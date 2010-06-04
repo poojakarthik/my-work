@@ -40,29 +40,45 @@ var Filter	= Class.create
 				this._hFilters[sField].oOptionsElement	= this._createOption(sField, oDefinition.oOption);
 				break;
 			case Filter.FILTER_TYPE_RANGE:
-				this._hFilters[sField].oOptionsElement	= $T.div();
+				// Create the options element
+				this._hFilters[sField].oOptionsElement	= 	$T.div(
+																$T.div(
+																	$T.select({class: 'filter-range-type-select'},
+																		$T.option({value: Filter.RANGE_TYPE_FROM},
+																			oDefinition.sGreaterThan
+																		),
+																		$T.option({value: Filter.RANGE_TYPE_TO},
+																			oDefinition.sLessThan
+																		),
+																		$T.option({value: Filter.RANGE_TYPE_BETWEEN},
+																			oDefinition.sBetween
+																		)
+																	)
+																),
+																$T.div(
+																	$T.span(oDefinition.sFrom + ' :'),
+																	this._createOption(sField, oDefinition.oOption)
+																),
+																$T.div(
+																	$T.span(oDefinition.sTo + ' :'),
+																	this._createOption(sField, oDefinition.oOption)
+																)
+															);
 				
-				if (oDefinition.bFrom)
-				{
-					this._hFilters[sField].mFrom	= null;
-					this._hFilters[sField].oOptionsElement.appendChild(
-						$T.div(
-							$T.span(oDefinition.sFrom + ' :'),
-							this._createOption(sField, oDefinition.oOption)
-						)
-					);
-				}
+				// Attach events to the type select
+				var oTypeSelect	= this._hFilters[sField].oOptionsElement.select('select.filter-range-type-select').first();
+				oTypeSelect.observe('change', this._rangeTypeSelected.bind(this, oTypeSelect, sField));
 				
-				if (oDefinition.bTo)
-				{
-					this._hFilters[sField].mTo	= null;
-					this._hFilters[sField].oOptionsElement.appendChild(
-						$T.div(
-							$T.span(oDefinition.sTo + ' :'),
-							this._createOption(sField, oDefinition.oOption)
-						)
-					);
-				}
+				this._hFilters[sField].oRangeDefinition	= 	{
+																sGreaterThan	: oDefinition.sGreaterThan,
+																sLessThan		: oDefinition.sLessThan,
+																sBetween		: oDefinition.sBetween,
+																oTypeSelect		: oTypeSelect
+															};
+				
+				// Set default type
+				this._rangeTypeSelected(oTypeSelect, sField);
+				
 				break;
 			case Filter.FILTER_TYPE_CONTAINS:
 				this._hFilters[sField].sContains		= null;
@@ -115,6 +131,24 @@ var Filter	= Class.create
 				break;
 		}
 		
+		if (bClear)
+		{
+			// Clear the control field values
+			var aControls	= this._hControls[sField];
+			
+			for (var i = 0; i < aControls.length; i++)
+			{
+				if (aControls[i].clearValue)
+				{
+					aControls[i].clearValue();
+				}
+				else
+				{
+					aControls[i].setElementValue(null);
+				}
+			}
+		}
+		
 		if (this._fnFilterUpdateCallback)
 		{
 			this._fnFilterUpdateCallback(sField);
@@ -134,11 +168,29 @@ var Filter	= Class.create
 				mValue	= (bRaw ? oFilter.aValues : oFilter.aStrValues.join(', '));
 				break;
 			case Filter.FILTER_TYPE_RANGE:
-				if (oFilter.mFrom !== null || oFilter.mTo !== null)
+				if (oFilter.mFrom != null || oFilter.mTo != null)
 				{
-					var sFrom	= (oFilter.sFrom ? oFilter.sFrom : '?');
-					var sTo		= (oFilter.sTo ? oFilter.sTo : '?');
-					mValue		= (bRaw ? {mFrom: oFilter.mFrom, mTo: oFilter.mTo} : sFrom + ' to ' + sTo);
+					if (bRaw)
+					{
+						// Return both limits
+						mValue	= {mFrom: oFilter.mFrom, mTo: oFilter.mTo};
+					}
+					else
+					{
+						// Return range type specific string
+						switch (parseInt(oFilter.oRangeDefinition.oTypeSelect.value))
+						{
+							case Filter.RANGE_TYPE_FROM:
+								mValue	= oFilter.oRangeDefinition.sGreaterThan + ' ' + oFilter.sFrom;
+								break;
+							case Filter.RANGE_TYPE_TO:
+								mValue	= oFilter.oRangeDefinition.sLessThan + ' ' + oFilter.sTo;
+								break;
+							case Filter.RANGE_TYPE_BETWEEN:
+								mValue	= oFilter.oRangeDefinition.sBetween + ' ' + oFilter.sFrom + ' and ' + oFilter.sTo;
+								break;
+						}
+					}
 				}
 				else
 				{
@@ -382,6 +434,40 @@ var Filter	= Class.create
 		
 		this._hideFilterOptions();
 		this.refreshData();
+	},
+	
+	isRegistered	: function(sField)
+	{
+		return (this._hFilters[sField] !== null && (typeof this._hFilters[sField] != 'undefined'));
+	},
+	
+	_rangeTypeSelected	: function(oSelect, sField)
+	{
+		var iRangeType	= parseInt(oSelect.value);
+		var oFromSelect	= this._hControls[sField][0];
+		var oToSelect	= this._hControls[sField][1];
+		
+		if (oFromSelect && oToSelect)
+		{
+			oFromSelect	= oFromSelect.getElement().parentNode;
+			oToSelect	= oToSelect.getElement().parentNode;
+			
+			switch (iRangeType)
+			{
+				case Filter.RANGE_TYPE_FROM:
+					oFromSelect.show();
+					oToSelect.hide();
+					break;
+				case Filter.RANGE_TYPE_TO:
+					oFromSelect.hide();
+					oToSelect.show();
+					break;
+				case Filter.RANGE_TYPE_BETWEEN:
+					oFromSelect.show();
+					oToSelect.show();
+					break;
+			}
+		}
 	}
 });
 
@@ -391,3 +477,7 @@ Filter.FILTER_TYPE_RANGE		= 3;	// e.g. x BETWEEN 1 AND 3
 Filter.FILTER_TYPE_CONTAINS		= 4;	// e.g. x LIKE '%1%'
 Filter.FILTER_TYPE_ENDS_WITH	= 5;	// e.g. x LIKE '%1'
 Filter.FILTER_TYPE_STARTS_WITH	= 6;	// e.g. x LIKE '1%'
+
+Filter.RANGE_TYPE_FROM		= 1;
+Filter.RANGE_TYPE_TO		= 2;
+Filter.RANGE_TYPE_BETWEEN	= 3;

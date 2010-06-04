@@ -128,6 +128,11 @@ var Sort	= Class.create
 	getSortDirection	: function(sField)
 	{
 		return this._hFields[sField];
+	},
+	
+	isRegistered	: function(sField)
+	{
+		return (this._hFields[sField] !== null && (typeof this._hFields[sField] != 'undefined'));
 	}
 });
 

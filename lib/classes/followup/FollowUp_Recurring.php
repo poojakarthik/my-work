@@ -270,6 +270,10 @@ class FollowUp_Recurring extends ORM_Cached
 	
 	public function save()
 	{
+		// Update modified fields
+		$this->modified_datetime	= date('Y-m-d H:i:s');
+		$this->modified_employee_id	= Flex::getUserId();
+		
 		parent::save();
 		
 		// Create followup_recurring_history record

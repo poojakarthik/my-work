@@ -12,7 +12,38 @@ var Page_FollowUp_List = Class.create(
 	{
 		this._iEmployeeId	= iEmployeeId;
 		this._bEditMode		= bEditMode;
-		this._hFilters		= {};
+		this._oContentDiv 	= 	$T.div({class: 'page-followup-list'},
+									$T.div({class: 'page-followup-list-active-container'}
+										// Active only - placeholder
+									),
+									$T.div({class: 'page-followup-list-recurring-container'}
+										// Recurring only - placeholder
+									),
+									$T.div({class: 'page-followup-list-all-container'}
+										// All - placeholder
+									)
+								);
+		
+		this._oFollowUpListActive		= 	new Component_FollowUp_List_Active(
+												this._oContentDiv.select('div.page-followup-list-active-container').first(), 
+												this._iEmployeeId, 
+												this._bEditMode
+											);
+		this._oFollowUpListRecurring	= 	new Component_FollowUp_List_Recurring(
+												this._oContentDiv.select('div.page-followup-list-recurring-container').first(), 
+												this._iEmployeeId, 
+												this._bEditMode
+											);
+		this._oFollowUpListAll			= 	new Component_FollowUp_List_All(
+												this._oContentDiv.select('div.page-followup-list-all-container').first(), 
+												this._iEmployeeId, 
+												this._bEditMode
+											);		
+		oContainerDiv.appendChild(this._oContentDiv);
+	}
+});
+
+		/*this._hFilters		= {};
 		
 		// Create DataSet & pagination object
 		this.oDataSet	= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_NO_CACHING, Page_FollowUp_List.DATA_SET_DEFINITION);
@@ -27,86 +58,144 @@ var Page_FollowUp_List = Class.create(
 			this._oFilter.addFilter(sFieldName, Page_FollowUp_List.FILTER_FIELDS[sFieldName]);
 		}
 		
+		if (this._iEmployeeId)
+		{
+			// Set the 'owner' filter
+			this._oFilter.setFilterValue(Page_FollowUp_List.FILTER_FIELD_OWNER, this._iEmployeeId, this._iEmployeeId);
+		}
+		
 		// Create sort object
 		this._oSort	= new Sort(this.oDataSet, this.oPagination, true);
 		
 		// Create the page HTML
 		var sButtonPathBase	= '../admin/img/template/resultset_';
-		this._oContentDiv 	= $T.div({class: 'followup-list'},
-								$T.table({class: 'reflex highlight-rows'},
-										$T.caption(
-											$T.div({class: 'caption_bar'},						
-												$T.div({class: 'caption_title'},
-													'No records'
-												),
-												$T.div({class: 'caption_options'},
-													$T.div({class: 'followup-list-pagination'},
-														$T.button({class: 'followup-list-pagination-button'},
-															$T.img({src: sButtonPathBase + 'first.png'})
-														),
-														$T.button({class: 'followup-list-pagination-button'},
-															$T.img({src: sButtonPathBase + 'previous.png'})
-														),
-														$T.button({class: 'followup-list-pagination-button'},
-															$T.img({src: sButtonPathBase + 'next.png'})
-														),
-														$T.button({class: 'followup-list-pagination-button'},
-															$T.img({src: sButtonPathBase + 'last.png'})
-														)
+		this._oContentDiv 	= 	$T.div({class: 'followup-list'},
+									// Active only
+									$T.div({class: 'section followup-list-active'},
+										$T.div({class: 'section-header'},
+											$T.div({class: 'section-header-title'},
+												$T.span('Active Follow-Ups')
+											)
+										),
+										$T.div({class: 'section-content'},
+											'active'
+										)
+									),
+									// Recurring only
+									$T.div({class: 'section followup-list-recurring'},
+										$T.div({class: 'section-header'},
+											$T.div({class: 'section-header-title'},
+												$T.span('Recurring Follow-Ups')
+											)
+										),
+										$T.div({class: 'section-content'},
+											'recurring'
+										)
+									),
+									// All
+									$T.div({class: 'section followup-list-all'},
+										$T.div({class: 'section-header'},
+											$T.div({class: 'section-header-title'},
+												$T.span('All Follow-Ups')
+											),
+											$T.div({class: 'section-header-options'},
+												$T.div({class: 'followup-list-pagination'},
+													$T.button({class: 'followup-list-pagination-button'},
+														$T.img({src: sButtonPathBase + 'first.png'})
+													),
+													$T.button({class: 'followup-list-pagination-button'},
+														$T.img({src: sButtonPathBase + 'previous.png'})
+													),
+													$T.button({class: 'followup-list-pagination-button'},
+														$T.img({src: sButtonPathBase + 'next.png'})
+													),
+													$T.button({class: 'followup-list-pagination-button'},
+														$T.img({src: sButtonPathBase + 'last.png'})
 													)
 												)
 											)
 										),
-										$T.thead(
-											// Column headings
-											$T.tr(
-												this._createFieldHeader('Details', false, false, true),
-												this._createFieldHeader('Summary', false, false, true),
-												this._createFieldHeader('Date Created', Page_FollowUp_List.SORT_FIELD_DATE_CREATED),
-												this._createFieldHeader('Owner', Page_FollowUp_List.SORT_FIELD_OWNER, Page_FollowUp_List.FILTER_FIELD_OWNER),
-												this._createFieldHeader('Follow-Up Date', Page_FollowUp_List.SORT_FIELD_FOLLOWUP_DATE, Page_FollowUp_List.FILTER_FIELD_FOLLOWUP_DATE),
-												this._createFieldHeader('Type', Page_FollowUp_List.SORT_FIELD_TYPE, Page_FollowUp_List.FILTER_FIELD_TYPE),
-												this._createFieldHeader('Last Modified', Page_FollowUp_List.SORT_FIELD_LAST_MODIFIED),
-												this._createFieldHeader('Category', Page_FollowUp_List.SORT_FIELD_CATEGORY, Page_FollowUp_List.FILTER_FIELD_CATEGORY),
-												this._createFieldHeader('Status', Page_FollowUp_List.SORT_FIELD_STATUS, Page_FollowUp_List.FILTER_FIELD_STATUS),
-												this._createFieldHeader('Actions')
+										$T.div({class: 'section-content section-content-fitted'},
+											$T.table({class: 'reflex highlight-rows'},
+												$T.thead(
+													// Column headings
+													$T.tr(
+														this._createFieldHeader(
+															'Type', 
+															Page_FollowUp_List.SORT_FIELD_TYPE,
+															Page_FollowUp_List.FILTER_FIELD_TYPE
+														),
+														this._createFieldHeader('Details', false, false, true),
+														this._createFieldHeader('Summary', false, false, true),
+														this._createFieldHeader(
+															'Created', 
+															Page_FollowUp_List.SORT_FIELD_DATE_CREATED
+														),
+														this._createFieldHeader(
+															'Owner', 
+															(this._iEmployeeId ? null : Page_FollowUp_List.SORT_FIELD_OWNER), 
+															(this._iEmployeeId ? null : Page_FollowUp_List.FILTER_FIELD_OWNER)
+														),
+														this._createFieldHeader(
+															'Due Date', 
+															Page_FollowUp_List.SORT_FIELD_FOLLOWUP_DATE, 
+															Page_FollowUp_List.FILTER_FIELD_FOLLOWUP_DATE
+														),
+														this._createFieldHeader(
+															'Last Modified', 
+															Page_FollowUp_List.SORT_FIELD_LAST_MODIFIED
+														),
+														this._createFieldHeader(
+															'Category', 
+															Page_FollowUp_List.SORT_FIELD_CATEGORY, 
+															Page_FollowUp_List.FILTER_FIELD_CATEGORY
+														),
+														this._createFieldHeader(
+															'Status', 
+															Page_FollowUp_List.SORT_FIELD_STATUS, 
+															Page_FollowUp_List.FILTER_FIELD_STATUS
+														),
+														this._createFieldHeader('')
+													),
+													// Filter values
+													$T.tr(
+														this._createFilterValueElement(Page_FollowUp_List.FILTER_FIELD_TYPE),
+														$T.th(),
+														$T.th(),
+														$T.th(),
+														(this._iEmployeeId ? $T.th() : this._createFilterValueElement(Page_FollowUp_List.FILTER_FIELD_OWNER)),
+														this._createFilterValueElement(Page_FollowUp_List.FILTER_FIELD_FOLLOWUP_DATE),
+														$T.th(),
+														this._createFilterValueElement(Page_FollowUp_List.FILTER_FIELD_CATEGORY),
+														this._createFilterValueElement(Page_FollowUp_List.FILTER_FIELD_STATUS),
+														$T.th()
+													)
+												),
+												$T.tbody({class: 'alternating'}
+													// ...
+												)
 											),
-											// Filter values
-											$T.tr(
-												$T.th(),
-												$T.th(),
-												$T.th(),
-												this._createFilterValueElement(Page_FollowUp_List.FILTER_FIELD_OWNER),
-												this._createFilterValueElement(Page_FollowUp_List.FILTER_FIELD_FOLLOWUP_DATE),
-												this._createFilterValueElement(Page_FollowUp_List.FILTER_FIELD_TYPE),
-												$T.th(),
-												this._createFilterValueElement(Page_FollowUp_List.FILTER_FIELD_CATEGORY),
-												this._createFilterValueElement(Page_FollowUp_List.FILTER_FIELD_STATUS),
-												$T.th()
+											$T.div({class: 'footer-pagination'},
+												$T.button(
+													$T.img({src: sButtonPathBase + 'first.png'})
+												),
+												$T.button(
+													$T.img({src: sButtonPathBase + 'previous.png'})
+												),
+												$T.button(
+													$T.img({src: sButtonPathBase + 'next.png'})
+												),
+												$T.button(
+													$T.img({src: sButtonPathBase + 'last.png'})
+												)
 											)
-										),
-										$T.tbody({class: 'alternating'}
-											// ...
-										)
-									),
-									$T.div({class: 'footer-pagination'},
-										$T.button(
-											$T.img({src: sButtonPathBase + 'first.png'})
-										),
-										$T.button(
-											$T.img({src: sButtonPathBase + 'previous.png'})
-										),
-										$T.button(
-											$T.img({src: sButtonPathBase + 'next.png'})
-										),
-										$T.button(
-											$T.img({src: sButtonPathBase + 'last.png'})
 										)
 									)
 								);
 		
 		// Bind events to the pagination buttons
-		var aTopPageButtons		= this._oContentDiv.select('table > caption div.caption_options button.followup-list-pagination-button');
+		//var aTopPageButtons		= this._oContentDiv.select('table > caption div.caption_options button.followup-list-pagination-button');
+		var aTopPageButtons		= this._oContentDiv.select('div.section-header-options button.followup-list-pagination-button');
 		var aBottomPageButtons 	= this._oContentDiv.select('div.footer-pagination button');
 		
 		// First
@@ -170,13 +259,13 @@ var Page_FollowUp_List = Class.create(
 		}
 		
 		// Add the new records
-		var oCaptionTitle = this._oContentDiv.select('table > caption > div.caption_bar > div.caption_title').first();
+		//var oCaptionTitle = this._oContentDiv.select('table > caption > div.caption_bar > div.caption_title').first();
 		
 		// Check if any results came back
 		if (!oResultSet || oResultSet.intTotalResults == 0 || oResultSet.arrResultSet.length == 0)
 		{
 			// No records
-			oCaptionTitle.innerHTML = 'No Records';
+			//oCaptionTitle.innerHTML = 'No Records';
 			
 			oTBody.appendChild( 
 								$T.tr(
@@ -190,7 +279,7 @@ var Page_FollowUp_List = Class.create(
 		{
 			// Update Page ? of ?
 			var iCurrentPage		= oResultSet.intCurrentPage + 1;
-			oCaptionTitle.innerHTML	= 'Page '+ iCurrentPage +' of ' + oResultSet.intPageCount;
+			//oCaptionTitle.innerHTML	= 'Page '+ iCurrentPage +' of ' + oResultSet.intPageCount;
 			
 			// Add the rows
 			var aData	= jQuery.json.arrayAsObject(oResultSet.arrResultSet);
@@ -219,12 +308,12 @@ var Page_FollowUp_List = Class.create(
 		if ((oFollowUp.followup_id != null) || (oFollowUp.followup_recurring_id != null))
 		{
 			var	oTR	=	$T.tr(
+							$T.td(Page_FollowUp_List._getTypeString(oFollowUp.followup_type_id)),		
 							Page_FollowUp_List.getFollowUpDescriptionTD(oFollowUp.followup_type_id, oFollowUp.details),
 							$T.td(oFollowUp.summary),
 							$T.td(Page_FollowUp_List.formatDate(oFollowUp.created_datetime)),				
 							$T.td(oFollowUp.assigned_employee_label),
 							$T.td(Page_FollowUp_List.formatDate(oFollowUp.due_datetime)),
-							$T.td(Page_FollowUp_List._getTypeString(oFollowUp.followup_type_id)),
 							$T.td(Page_FollowUp_List.formatDate(oFollowUp.modified_datetime)),
 							$T.td(oFollowUp.followup_category_label),
 							$T.td(oFollowUp.status),
@@ -281,16 +370,19 @@ var Page_FollowUp_List = Class.create(
 	{
 		for (var sField in Page_FollowUp_List.SORT_FIELDS)
 		{
-			var oSortImg	= this._oContentDiv.select('th.followup-list-header > img.followup-list-sort-' + sField).first();
-			var iDirection	= this._oSort.getSortDirection(sField);
-			if (iDirection == Sort.DIRECTION_OFF)
+			if (this._oSort.isRegistered(sField))
 			{
-				oSortImg.hide();
-			}
-			else
-			{
-				oSortImg.src	= Page_FollowUp_List.SORT_IMAGE_SOURCE[iDirection];
-				oSortImg.show();
+				var oSortImg	= this._oContentDiv.select('th.followup-list-header > img.followup-list-sort-' + sField).first();
+				var iDirection	= this._oSort.getSortDirection(sField);
+				if (iDirection == Sort.DIRECTION_OFF)
+				{
+					oSortImg.hide();
+				}
+				else
+				{
+					oSortImg.src	= Page_FollowUp_List.SORT_IMAGE_SOURCE[iDirection];
+					oSortImg.show();
+				}
 			}
 		}
 	},
@@ -299,19 +391,26 @@ var Page_FollowUp_List = Class.create(
 	{
 		for (var sField in Page_FollowUp_List.FILTER_FIELDS)
 		{
-			var mValue	= this._oFilter.getFilterValue(sField);
-			var oSpan	= this._oContentDiv.select('th.followup-list-filter > span.followup-list-filter-' + sField).first();
-			if (mValue !== null && (typeof mValue !== 'undefined'))
+			if (this._oFilter.isRegistered(sField))
 			{
-				// Value, show it
-				oSpan.innerHTML						= mValue;
-				oSpan.nextSibling.style.visibility	= 'visible';
-			}
-			else
-			{
-				// No value, hide delete image
-				oSpan.innerHTML						= 'All';
-				oSpan.nextSibling.style.visibility	= 'hidden';
+				var mValue	= this._oFilter.getFilterValue(sField);
+				var oSpan	= this._oContentDiv.select('th.followup-list-filter > span.followup-list-filter-' + sField).first();
+				
+				if (oSpan)
+				{
+					if (mValue !== null && (typeof mValue !== 'undefined'))
+					{
+						// Value, show it
+						oSpan.innerHTML						= mValue;
+						oSpan.nextSibling.style.visibility	= 'visible';
+					}
+					else
+					{
+						// No value, hide delete image
+						oSpan.innerHTML						= 'All';
+						oSpan.nextSibling.style.visibility	= 'hidden';
+					}
+				}
 			}
 		}
 	},
@@ -370,26 +469,90 @@ var Page_FollowUp_List = Class.create(
 	{
 		var oUL	= $T.ul({class: 'reset horizontal followup-list-actions'});
 		
+		var oClose	= $T.img({src: Page_FollowUp_List.ACTION_CLOSE_IMAGE_SOURCE, alt: 'Close the Follow-Up', title: 'Close the Follow-Up'});
+		oClose.observe('click', this._closeFollowUp.bind(this, oFollowUp, $CONSTANT.FOLLOWUP_CLOSURE_TYPE_COMPLETED));
+		oUL.appendChild($T.li(oClose));
+		
+		var oDismiss	= $T.img({src: Page_FollowUp_List.ACTION_DISMISS_IMAGE_SOURCE, alt: 'Dismiss the Follow-Up', title: 'Dismiss the Follow-Up'});
+		oDismiss.observe('click', this._closeFollowUp.bind(this, oFollowUp, $CONSTANT.FOLLOWUP_CLOSURE_TYPE_DISMISSED));
+		oUL.appendChild($T.li(oDismiss));
+		
+		var oEditDueDate	= $T.img({src: Page_FollowUp_List.ACTION_EDIT_DATE_IMAGE_SOURCE, alt: 'Edit Due Date', title: 'Edit Due Date'});
+		oEditDueDate.observe('click', this._editDueDate.bind(this, oFollowUp));
+		oUL.appendChild($T.li(oEditDueDate));
+		
+		var oReAssign	= $T.img({src: Page_FollowUp_List.ACTION_REASSIGN_IMAGE_SOURCE, alt: 'Reassign the Follow-Up', title: 'Reassign the Follow-Up'});
+		oReAssign.observe('click', this._reAssignFollowUp.bind(this, oFollowUp));
+		oUL.appendChild($T.li(oReAssign));
+		
+		var oInvAndPay	= 	$T.a({href: 'flex.php/Account/InvoicesAndPayments/?Account.Id=' + oFollowUp.details.account_id},
+								$T.img({src: Page_FollowUp_List.ACTION_INV_PAYMENTS_IMAGE_SOURCE, alt: 'Invoices & Payments', title: 'Invoices & Payments'})
+							);
+		oUL.appendChild($T.li(oInvAndPay));
+		
+		if (oFollowUp.followup_id && !oFollowUp.followup_closure_id && (this._bEditMode || (oFollowUp.assigned_employee_id == this._iEmployeeId)))
+		{
+			//oEditDueDate.show();
+		}
+		else
+		{
+			oEditDueDate.toggle();
+		}
+		
+		if (!oFollowUp.followup_closure_id && (this._bEditMode || (oFollowUp.assigned_employee_id == this._iEmployeeId)))
+		{
+			//oClose.show();
+			//oDismiss.show();
+		}
+		else
+		{
+			oClose.toggle();
+			oDismiss.toggle();
+		}
+		
+		if (this._bEditMode && !oFollowUp.followup_closure_id)
+		{
+			//oReAssign.show();
+		}
+		else
+		{
+			oReAssign.toggle();
+		}
+		
+		if (oFollowUp.details && oFollowUp.details.account_id)
+		{
+			//oInvAndPay.show();
+		}
+		else
+		{
+			oInvAndPay.toggle();
+		}
+		
+		/*
 		// Edit due date (only for active, once off followups)
 		if (oFollowUp.followup_id && !oFollowUp.followup_closure_id && (this._bEditMode || (oFollowUp.assigned_employee_id == this._iEmployeeId)))
 		{
-			var oEditDueDate	= $T.a('Edit Date');
+			var oEditDueDate	= $T.img({src: Page_FollowUp_List.ACTION_EDIT_DATE_IMAGE_SOURCE, alt: 'Edit Due Date', title: 'Edit Due Date'});
 			oEditDueDate.observe('click', this._editDueDate.bind(this, oFollowUp));
 			oUL.appendChild($T.li(oEditDueDate));
 		}
 		
-		// Close
-		if (this._bEditMode || (oFollowUp.assigned_employee_id == this._iEmployeeId))
+		// Close (can't close one that's already closed)
+		if (!oFollowUp.followup_closure_id && (this._bEditMode || (oFollowUp.assigned_employee_id == this._iEmployeeId)))
 		{
-			var oClose	= $T.a('Close');
-			oClose.observe('click', this._closeFollowUp.bind(this, oFollowUp));
+			var oClose	= $T.img({src: Page_FollowUp_List.ACTION_CLOSE_IMAGE_SOURCE, alt: 'Close the Follow-Up', title: 'Close the Follow-Up'});
+			oClose.observe('click', this._closeFollowUp.bind(this, oFollowUp, $CONSTANT.FOLLOWUP_CLOSURE_TYPE_COMPLETED));
 			oUL.appendChild($T.li(oClose));
+			
+			var oDismiss	= $T.img({src: Page_FollowUp_List.ACTION_DISMISS_IMAGE_SOURCE, alt: 'Dismiss the Follow-Up', title: 'Dismiss the Follow-Up'});
+			oDismiss.observe('click', this._closeFollowUp.bind(this, oFollowUp, $CONSTANT.FOLLOWUP_CLOSURE_TYPE_DISMISSED));
+			oUL.appendChild($T.li(oDismiss));
 		}
 		
 		// Re-assign
 		if (this._bEditMode && !oFollowUp.followup_closure_id)
 		{
-			var oReAssign	= $T.a('Reassign');
+			var oReAssign	= $T.img({src: Page_FollowUp_List.ACTION_REASSIGN_IMAGE_SOURCE, alt: 'Reassign the Follow-Up', title: 'Reassign the Follow-Up'});
 			oReAssign.observe('click', this._reAssignFollowUp.bind(this, oFollowUp));
 			oUL.appendChild($T.li(oReAssign));
 		}
@@ -398,17 +561,19 @@ var Page_FollowUp_List = Class.create(
 		if (oFollowUp.details && oFollowUp.details.account_id)
 		{
 			var oInvAndPay	= 	$T.a({href: 'flex.php/Account/InvoicesAndPayments/?Account.Id=' + oFollowUp.details.account_id},
-									'Inv/Payments'
+									$T.img({src: Page_FollowUp_List.ACTION_INV_PAYMENTS_IMAGE_SOURCE, alt: 'Invoices & Payments', title: 'Invoices & Payments'})
 								);
 			oUL.appendChild($T.li(oInvAndPay));
 		}
 		
+		
 		return oUL;
 	},
 	
-	_closeFollowUp	: function(oFollowUp)
+	_closeFollowUp	: function(oFollowUp, iFollowUpClosureTypeId)
 	{
 		var oPopup	= 	new Popup_FollowUp_Close(
+							iFollowUpClosureTypeId,
 							oFollowUp.followup_id, 
 							oFollowUp.followup_recurring_id,
 							oFollowUp.followup_recurring_iteration,
@@ -439,6 +604,12 @@ Page_FollowUp_List.MAX_RECORDS_PER_PAGE			= 15;
 Page_FollowUp_List.EDIT_IMAGE_SOURCE			= '../admin/img/template/pencil.png';
 Page_FollowUp_List.FILTER_IMAGE_SOURCE			= '../admin/img/template/table_row_insert.png';
 Page_FollowUp_List.REMOVE_FILTER_IMAGE_SOURCE	= '../admin/img/template/delete.png';
+
+Page_FollowUp_List.ACTION_CLOSE_IMAGE_SOURCE			= '../admin/img/template/approve.png';
+Page_FollowUp_List.ACTION_DISMISS_IMAGE_SOURCE			= '../admin/img/template/decline.png';
+Page_FollowUp_List.ACTION_EDIT_DATE_IMAGE_SOURCE		= '../admin/img/template/edit_date.png';
+Page_FollowUp_List.ACTION_REASSIGN_IMAGE_SOURCE			= '../admin/img/template/user_edit.png';
+Page_FollowUp_List.ACTION_INV_PAYMENTS_IMAGE_SOURCE		= '../admin/img/template/invoices_payments.png';
 
 Page_FollowUp_List.SORT_IMAGE_SOURCE						= {};
 Page_FollowUp_List.SORT_IMAGE_SOURCE[Sort.DIRECTION_ASC]	= '../admin/img/template/order_asc.png';
@@ -584,7 +755,7 @@ Page_FollowUp_List.getTicketLink	= function(iTicketId, iAccountId, sContact)
 Page_FollowUp_List.formatDate	= function(sMySQLDate)
 {
 	var oDate	= new Date(Date.parse(sMySQLDate.replace(/-/g, '/')));
-	return Reflex_Date_Format.format('d/m/Y h:m A', oDate);
+	return Reflex_Date_Format.format('d/m/Y h:i A', oDate);
 }
 
 // Filter Control field definitions
@@ -607,23 +778,26 @@ Page_FollowUp_List.FILTER_FIELDS[Page_FollowUp_List.FILTER_FIELD_OWNER]		= 	{
 																								}
 																				};
 Page_FollowUp_List.FILTER_FIELDS[Page_FollowUp_List.FILTER_FIELD_FOLLOWUP_DATE]	= 	{
-																						iType	: Filter.FILTER_TYPE_RANGE,
-																						bFrom	: true,
-																						sFrom	: 'From',
-																						bTo		: true,
-																						sTo		: 'To',
-																						oOption	: 	{
-																										sType		: 'combo_date',
-																										mDefault	: null,
-																										oDefinition	:	{
-																															sLabel		: 'Date',
-																															mEditable	: true,
-																															fnValidate	: Page_FollowUp_List._validateDueDate,
-																															iMinYear	: Page_FollowUp_List.YEAR_MINIMUM,
-																															iMaxYear	: Page_FollowUp_List.YEAR_MAXIMUM,
-																															iFormat		: Control_Field_Combo_Date.FORMAT_D_M_Y
-																														}
-																									}
+																						iType			: Filter.FILTER_TYPE_RANGE,
+																						bFrom			: true,
+																						sFrom			: 'Start Date',
+																						bTo				: true,
+																						sTo				: 'End Date',
+																						sGreaterThan	: 'On Or After',
+																						sLessThan		: 'On Or Before',
+																						sBetween		: 'Between',
+																						oOption			: 	{
+																												sType		: 'combo_date',
+																												mDefault	: null,
+																												oDefinition	:	{
+																																	sLabel		: 'Date',
+																																	mEditable	: true,
+																																	fnValidate	: Page_FollowUp_List._validateDueDate,
+																																	iMinYear	: Page_FollowUp_List.YEAR_MINIMUM,
+																																	iMaxYear	: Page_FollowUp_List.YEAR_MAXIMUM,
+																																	iFormat		: Control_Field_Combo_Date.FORMAT_D_M_Y
+																																}
+																											}
 																					};
 Page_FollowUp_List.FILTER_FIELDS[Page_FollowUp_List.FILTER_FIELD_TYPE]	= 	{
 																				iType	: Filter.FILTER_TYPE_VALUE,
@@ -678,3 +852,4 @@ Page_FollowUp_List.SORT_FIELDS	=	{
 										followup_category_id	: Sort.DIRECTION_OFF,
 										status					: Sort.DIRECTION_OFF
 									};
+*/

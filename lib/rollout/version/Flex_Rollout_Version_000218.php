@@ -144,7 +144,7 @@ class Flex_Rollout_Version_000218 extends Flex_Rollout_Version
 																	end_datetime 					DATETIME				NULL		DEFAULT '9999-12-31 23:59'	COMMENT 'DateTime that the Recurring FollowUp will stop recurring',
 																	followup_type_id				INT			UNSIGNED	NOT NULL								COMMENT '(fk) followup_type',
 																	followup_category_id			INT			UNSIGNED	NOT NULL								COMMENT '(fk) followup_category',
-																	recurrence_multiplier			INT			UNSIGNED	NOT NULL								COMMENT 'How many recurrence periods should pass between due dates',
+																	recurrence_multiplier			INT			UNSIGNED	NOT NULL								COMMENT 'How many recurrence periods should pass between iterations',
 																	followup_recurrence_period_id	INT			UNSIGNED	NOT NULL								COMMENT '(fk) followup_recurrence_period_id',
 																	modified_datetime				DATETIME				NOT NULL								COMMENT 'Last time that the Recurring FollowUp was modified',
 																	modified_employee_id			BIGINT		UNSIGNED	NOT NULL								COMMENT '(fk) Employee - who was last to modify the Recurring FollowUp',

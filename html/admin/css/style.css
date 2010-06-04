@@ -4024,36 +4024,52 @@ div.popup-account-edit-rebill > div.buttons
 	text-align	: center;
 }
 
-ul.control-field-combo-date > li
+/************************ END - Edit Rebill Popup - END ************************/
+
+/************************ START - Control Field Combo Date & Time - START ************************/
+
+ul.control-field-combo-date > li.control-field-combo-date-pad,
+ul.control-field-combo-time > li.control-field-combo-time-pad
 {
 	padding-right	: 0.25em;
 }
 
-ul.control-field-combo-date
+ul.control-field-combo-date-time > li:nth-child(1)
+{
+	padding-right	: 0.75em;
+}
+
+ul.control-field-combo-date,
+ul.control-field-combo-time,
+ul.control-field-combo-date-time
 {
 	margin	: 0em;
 }
 
-div.control-field-combo-date-day,
-div.control-field-combo-date-month,
-div.control-field-combo-date-year
+div.control-field-combo-date-select,
+div.control-field-combo-time-select
 {
 	display			: inline-block;
 	vertical-align	: top;
+	padding-right	: 0.5em;
 }
 
-div.control-field-combo-date-day,
-div.control-field-combo-date-month
+li.control-field-combo-time-select-separator,
+li.control-field-combo-date-select-separator > span
 {
-	width	: 4em;
+	font-size		: 1.5em;
+	vertical-align	: middle;
+	padding-right	: 0.25em;
 }
 
-div.control-field-combo-date-year
+li.control-field-combo-time-select-separator > span,
+li.control-field-combo-date-select-separator > span
 {
-	width	: 5em;
+	font-size		: 1.5em;
+	vertical-align	: middle;
 }
 
-/************************ END - Edit Rebill Popup - END ************************/
+/************************ START - Control Field Combo Date & Time - START ************************/
 
 /************************ START - CDR List Table - START ************************/
 
@@ -4263,36 +4279,36 @@ div.followup-category-validation-errors
 	padding	: 0.5em;
 }
 
-div.followup-list > table.reflex thead th > span
+div.followup-list-all table.reflex thead th > span
 {
 	vertical-align	: middle;
 	padding-right	: 1em;
 }
 
-div.followup-list > table.reflex thead th > img
+div.followup-list-all table.reflex thead th > img
 {
 	vertical-align	: middle;
 	cursor			: pointer;
 }
 
-div.followup-list > table.reflex thead th.followup-list-filter
+div.followup-list-all table.reflex thead th.followup-list-all-filter
 {
 	font-style	: italic;
 	font-size	: 0.85em;
 }
 
-div.followup-list > table.reflex thead th.followup-list-filter > img,
-div.followup-list > table.reflex thead th.followup-list-filter > span
+div.followup-list-all table.reflex thead th.followup-list-all-filter > img,
+div.followup-list-all table.reflex thead th.followup-list-all-filter > span
 {
 	vertical-align	: middle;
 }
 
-div.followup-list > table.reflex thead th.followup-list-filter > span
+div.followup-list-all table.reflex thead th.followup-list-all-filter > span
 {
 	margin-left	: 0.25em;
 }
 
-div.followup-list > table.reflex thead th.followup-list-filter > img
+div.followup-list-all table.reflex thead th.followup-list-all-filter > img
 {
 	padding-left	: 0.5em;
 	width			: 1.25em;
@@ -4300,46 +4316,84 @@ div.followup-list > table.reflex thead th.followup-list-filter > img
 	cursor			: pointer;
 }
 
-th.followup-list-header > img
+th.followup-list-all-header > img
 {
 	padding-right	: 0.5em;
 }
 
-span.followup-list-header-sort
+span.followup-list-all-header-sort
 {
 	cursor	: pointer;
 }
 
-th.followup-list-header-multiline
+th.followup-list-all-header-multiline
 {
 	width	: 15%;
 }
 
-#FollowUpListContainer div.caption_title
-{
-	min-height	: 1.55em;
-}
-
-ul.followup-list-actions
+ul.followup-list-all-actions
 {
 	margin	: 0em;
 }
 
-ul.followup-list-actions > li
+ul.followup-list-all-actions > li
 {
-	padding-right	: 0.5em;
+	padding-right	: 0.25em;
+	width			: 16px;
 }
 
-div.followup-list-duedate-edit > img,
-div.followup-list-duedate-edit > span
+ul.followup-list-all-actions > li > a,
+ul.followup-list-all-actions > li > img
+{
+	cursor			: pointer;
+	vertical-align	: middle;
+}
+
+div.followup-list-all-duedate-edit > img,
+div.followup-list-all-duedate-edit > span
 {
 	vertical-align	: middle;
 }
 
-div.followup-list-duedate-edit > img
+div.followup-list-all-duedate-edit > img
 {
 	padding-left	: 0.5em;
 	cursor			: pointer;
+}
+
+div.page-followup-list-active-container,
+div.page-followup-list-recurring-container
+{
+	width			: 48%;
+	margin-bottom	: 2em;
+}
+
+div.page-followup-list-active-container
+{
+	float	: left;
+}
+
+div.page-followup-list-recurring-container
+{
+	float	: right;
+}
+
+div.page-followup-list-all-container
+{
+	clear	: both;
+	float	: none;
+}
+
+div.page-followup-list-all-container div.section-content > table.reflex
+{
+	margin-left		: 0em;
+	margin-right	: 0em;
+	width			: 100%;
+}
+
+div.followup-list-all-pagination
+{
+	padding-right	: 1em;
 }
 
 /************************ END - Follow-Up Management Page - END ************************/
@@ -4358,6 +4412,11 @@ div.filter-overlay-options
 div.filter-validation-errors
 {
 	padding	: 0.5em;
+}
+
+select.filter-range-type-select
+{
+	width	: 100%;
 }
 
 /************************ END - Filter Class - END ************************/
@@ -4409,7 +4468,8 @@ div.popup-followup-due-date-select
 
 div.popup-followup-due-date-buttons
 {
-	text-align	: center;
+	text-align		: center;
+	margin-bottom	: 0.5em;
 }
 
 /************************ END - Popup Follow-Up Due Date - END ************************/

@@ -156,13 +156,24 @@ class JSON_Handler_FollowUp extends JSON_Handler
 		{
 			return 	array(
 						"Success"	=> false,
-						"Message"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $e->getMessage() : 'There was an error getting the dataset'
+						"Message"	=> Employee::getForId(Flex::getUserId())->isGod() ? $e->getMessage() : 'There was an error getting the dataset'
 					);
 		}
 	}
 	
 	public function closeFollowUp($iFollowUpId, $iFollowUpClosureId)
 	{
+		// Start a new database transaction
+		$oDataAccess	= DataAccess::getDataAccess();
+		if (!$oDataAccess->TransactionStart())
+		{
+			// Failure!
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> Employee::getForId(Flex::getUserId())->isGod() ? 'There was an error accessing the database' : ''
+					);
+		}
+		
 		try
 		{
 			// Validate the closure id
@@ -178,10 +189,16 @@ class JSON_Handler_FollowUp extends JSON_Handler
 				throw new JSON_Handler_FollowUp_Exception('Could not close the Follow-Up. Invalid closure reason given.');
 			}
 			
+			// Commit db transaction
+			$oDataAccess->TransactionCommit();
+			
 			return array("Success" => true);
 		}
 		catch (JSON_Handler_FollowUp_Exception $oException)
 		{
+			// Rollback db transaction
+			$oDataAccess->TransactionRollback();
+			
 			return 	array(
 						"Success"	=> false,
 						"Message"	=> $oException->getMessage()
@@ -189,6 +206,9 @@ class JSON_Handler_FollowUp extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
+			// Rollback db transaction
+			$oDataAccess->TransactionRollback();
+			
 			return 	array(
 						"Success"	=> false,
 						"Message"	=> Employee::getForId(Flex::getUserId())->isGod ? $e->getMessage() : 'There was an error closing the follow-up'
@@ -198,6 +218,17 @@ class JSON_Handler_FollowUp extends JSON_Handler
 	
 	public function closeRecurringFollowUpIteration($iFollowUpRecurringId, $iFollowUpClosureId, $iIteration)
 	{
+		// Start a new database transaction
+		$oDataAccess	= DataAccess::getDataAccess();
+		if (!$oDataAccess->TransactionStart())
+		{
+			// Failure!
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> Employee::getForId(Flex::getUserId())->isGod() ? 'There was an error accessing the database' : ''
+					);
+		}
+		
 		try
 		{
 			// Validate the closure id
@@ -211,8 +242,6 @@ class JSON_Handler_FollowUp extends JSON_Handler
 				
 				// Default values
 				$sNowDateTime						= date('Y-m-d H:i:s');
-				$oFollowUp->modified_datetime		= $sNowDateTime;
-				$oFollowUp->modified_employee_id	= Flex::getUserId();
 				
 				// Inherit fields from the recurring followup
 				$oFollowUp->assigned_employee_id	= $oFollowUpRecurring->assigned_employee_id;
@@ -229,6 +258,9 @@ class JSON_Handler_FollowUp extends JSON_Handler
 				// Save new record
 				$oFollowUp->save();
 				
+				// Commit db transaction
+				$oDataAccess->TransactionCommit();
+				
 				return array("Success" => true);
 			}
 			else
@@ -238,6 +270,9 @@ class JSON_Handler_FollowUp extends JSON_Handler
 		}
 		catch (JSON_Handler_FollowUp_Exception $oException)
 		{
+			// Rollback db transaction
+			$oDataAccess->TransactionRollback();
+			
 			return 	array(
 						"Success"	=> false,
 						"Message"	=> $oException->getMessage()
@@ -245,6 +280,9 @@ class JSON_Handler_FollowUp extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
+			// Rollback db transaction
+			$oDataAccess->TransactionRollback();
+			
 			return 	array(
 						"Success"	=> false,
 						"Message"	=> Employee::getForId(Flex::getUserId())->isGod ? $e->getMessage() : 'There was an error closing the follow-up'
@@ -254,6 +292,17 @@ class JSON_Handler_FollowUp extends JSON_Handler
 	
 	public function reassignFollowUp($iFollowUpId, $iToEmployeeId)
 	{
+		// Start a new database transaction
+		$oDataAccess	= DataAccess::getDataAccess();
+		if (!$oDataAccess->TransactionStart())
+		{
+			// Failure!
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> Employee::getForId(Flex::getUserId())->isGod() ? 'There was an error accessing the database' : ''
+					);
+		}
+		
 		try
 		{
 			// Update assigned_employee_id
@@ -261,10 +310,16 @@ class JSON_Handler_FollowUp extends JSON_Handler
 			$oFollowUp->assigned_employee_id	= $iToEmployeeId;
 			$oFollowUp->save();
 			
+			// Commit db transaction
+			$oDataAccess->TransactionCommit();
+			
 			return array("Success" => true);
 		}
 		catch (JSON_Handler_FollowUp_Exception $oException)
 		{
+			// Rollback db transaction
+			$oDataAccess->TransactionRollback();
+			
 			return 	array(
 						"Success"	=> false,
 						"Message"	=> $oException->getMessage()
@@ -272,6 +327,9 @@ class JSON_Handler_FollowUp extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
+			// Rollback db transaction
+			$oDataAccess->TransactionRollback();
+			
 			return 	array(
 						"Success"	=> false,
 						"Message"	=> Employee::getForId(Flex::getUserId())->isGod ? $e->getMessage() : 'There was an error updating the follow-up'
@@ -281,6 +339,17 @@ class JSON_Handler_FollowUp extends JSON_Handler
 	
 	public function reassignRecurringFollowUp($iFollowUpRecurringId, $iToEmployeeId)
 	{
+		// Start a new database transaction
+		$oDataAccess	= DataAccess::getDataAccess();
+		if (!$oDataAccess->TransactionStart())
+		{
+			// Failure!
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> Employee::getForId(Flex::getUserId())->isGod() ? 'There was an error accessing the database' : ''
+					);
+		}
+		
 		try
 		{
 			// Update assigned_employee_id
@@ -288,10 +357,16 @@ class JSON_Handler_FollowUp extends JSON_Handler
 			$oFollowUpRecurring->assigned_employee_id	= $iToEmployeeId;
 			$oFollowUpRecurring->save();
 			
+			// Commit db transaction
+			$oDataAccess->TransactionCommit();
+			
 			return array("Success" => true);
 		}
 		catch (JSON_Handler_FollowUp_Exception $oException)
 		{
+			// Rollback db transaction
+			$oDataAccess->TransactionRollback();
+			
 			return 	array(
 						"Success"	=> false,
 						"Message"	=> $oException->getMessage()
@@ -299,6 +374,46 @@ class JSON_Handler_FollowUp extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
+			// Rollback db transaction
+			$oDataAccess->TransactionRollback();
+			
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> Employee::getForId(Flex::getUserId())->isGod ? $e->getMessage() : 'There was an error updating the recurring follow-up'
+					);
+		}
+	}
+	
+	public function updateFollowUpDueDate($iFollowUpId, $sDueDateTime)
+	{
+		// Start a new database transaction
+		$oDataAccess	= DataAccess::getDataAccess();
+		if (!$oDataAccess->TransactionStart())
+		{
+			// Failure!
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> Employee::getForId(Flex::getUserId())->isGod() ? 'There was an error accessing the database' : ''
+					);
+		}
+		
+		try
+		{
+			// Update assigned_employee_id
+			$oFollowUp					= FollowUp::getForId($iFollowUpId);
+			$oFollowUp->due_datetime	= $sDueDateTime;
+			$oFollowUp->save();
+			
+			// Commit db transaction
+			$oDataAccess->TransactionCommit();
+			
+			return array("Success" => true, 'sDueDateTime' => $sDueDateTime);
+		}
+		catch (Exception $e)
+		{
+			// Rollback db transaction
+			$oDataAccess->TransactionRollback();
+			
 			return 	array(
 						"Success"	=> false,
 						"Message"	=> Employee::getForId(Flex::getUserId())->isGod ? $e->getMessage() : 'There was an error updating the recurring follow-up'

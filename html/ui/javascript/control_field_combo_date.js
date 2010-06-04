@@ -2,7 +2,7 @@
 
 var Control_Field_Combo_Date	= Class.create(/* extends */ Control_Field, 
 {
-	initialize	: function($super, sLabel, sLabelSeparator, iFormat)
+	initialize	: function($super, sLabel, sLabelSeparator, iFormat, mSeparatorElement, fnOnUpdate)
 	{
 		// Parent
 		$super(sLabel, sLabelSeparator);
@@ -11,8 +11,9 @@ var Control_Field_Combo_Date	= Class.create(/* extends */ Control_Field,
 		this.oMonth	= new Control_Field_Select('Month', '');
 		this.oYear	= new Control_Field_Select('Year', '');
 		
-		this.aControls	= [];
-		this.iFormat	= (iFormat ? iFormat : Control_Field_Combo_Date.FORMAT_D_M_Y);
+		this.aControls		= [];
+		this._fnOnUpdate	= fnOnUpdate;
+		this.iFormat		= (iFormat ? iFormat : Control_Field_Combo_Date.FORMAT_D_M_Y);
 		
 		switch (this.iFormat)
 		{
@@ -29,12 +30,13 @@ var Control_Field_Combo_Date	= Class.create(/* extends */ Control_Field,
 		this.oControlOutput.oElement.appendChild(oUL);
 		
 		// Add css classes to the selects
-		this.oDay.getElement().addClassName('control-field-combo-date-day');
-		this.oMonth.getElement().addClassName('control-field-combo-date-month');
-		this.oYear.getElement().addClassName('control-field-combo-date-year');
+		this.oDay.getElement().addClassName('control-field-combo-date-select');
+		this.oMonth.getElement().addClassName('control-field-combo-date-select');
+		this.oYear.getElement().addClassName('control-field-combo-date-select');
 		
 		var fnChildSelectUpdated	= this.childSelectUpdated.bind(this);
 		var oControl			 	= null;
+		var bNotLast				= null;
 		
 		for (var i = 0; i < this.aControls.length; i++)
 		{
@@ -46,11 +48,21 @@ var Control_Field_Combo_Date	= Class.create(/* extends */ Control_Field,
 			oControl.disableValidationStyling();
 			
 			// Add control inside LI
+			bNotLast	= i < (this.aControls.length - 1);
 			oUL.appendChild(
-				$T.li(
+				$T.li({class: (bNotLast ? 'control-field-combo-date-pad' : '')},
 					oControl.getElement()
 				)
 			);
+			
+			if (mSeparatorElement && bNotLast)
+			{
+				oUL.appendChild(
+					$T.li({class: 'control-field-combo-date-select-separator'},
+						$T.span(mSeparatorElement)
+					)
+				);
+			}
 		}
 	},
 	
@@ -106,10 +118,13 @@ var Control_Field_Combo_Date	= Class.create(/* extends */ Control_Field,
 	
 	setElementValue	: function(mValue)
 	{
-		var aValueSplit	= mValue.split('-');
-		this.oDay.setElementValue(parseInt(aValueSplit[2]).toString());
-		this.oMonth.setElementValue(parseInt(aValueSplit[1]).toString());
-		this.oYear.setElementValue(parseInt(aValueSplit[0]).toString());
+		var aValueSplit	= (mValue ? mValue.split('-') : []);
+		var sDay		= (isNaN(parseInt(aValueSplit[2])) ? null : parseInt(aValueSplit[2]).toString());
+		var sMonth		= (isNaN(parseInt(aValueSplit[1])) ? null : parseInt(aValueSplit[1]).toString());
+		var sYear		= (isNaN(parseInt(aValueSplit[0])) ? null : parseInt(aValueSplit[0]).toString());
+		this.oDay.setValue(sDay);
+		this.oMonth.setValue(sMonth);
+		this.oYear.setValue(sYear);
 	},
 	
 	getElementValue	: function()
@@ -220,6 +235,11 @@ var Control_Field_Combo_Date	= Class.create(/* extends */ Control_Field,
 	childSelectUpdated	: function()
 	{
 		this.validate();
+		
+		if (this._fnOnUpdate)
+		{
+			this._fnOnUpdate();	
+		}
 	},
 	
 	// Redefined, to allow formatted date output in validatation error text
@@ -312,7 +332,14 @@ var Control_Field_Combo_Date	= Class.create(/* extends */ Control_Field,
 		}
 		
 		return sDate;
-	}
+	}/*,
+	
+	clearValue	: function()
+	{
+		this.oYear.setElementValue(null);
+		this.oMonth.setElementValue(null);
+		this.oDay.setElementValue(null);
+	}*/
 });
 
 Control_Field_Combo_Date.FORMAT_D_M_Y	= 1;

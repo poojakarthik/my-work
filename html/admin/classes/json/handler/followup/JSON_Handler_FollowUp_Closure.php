@@ -11,12 +11,11 @@ class JSON_Handler_FollowUp_Closure extends JSON_Handler
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 	
-	public function getDataSet($bCountOnly=false, $iLimit=0, $iOffset=0)
+	public function getDataSet($bCountOnly=false, $iLimit=0, $iOffset=0, $oSort=null, $oFilter=null)
 	{
 		/*
-		 * This dataset ajax method does not support sorting or filtering 
+		 * This dataset ajax method does not support sorting 
 		 */
-		 
 		try
 		{
 			// Check permissions
@@ -37,6 +36,7 @@ class JSON_Handler_FollowUp_Closure extends JSON_Handler
 			{
 				$iLimit		= (max($iLimit, 0) == 0) ? null : (int)$iLimit;
 				$iOffset	= ($iLimit === null) ? null : max((int)$iOffset, 0);
+				$aFilter	= get_object_vars($oFilter);
 				$aClosures	= FollowUp_Closure::getAll();
 				$aResults	= array();
 				$iCount		= 0;		
@@ -49,8 +49,23 @@ class JSON_Handler_FollowUp_Closure extends JSON_Handler
 					}
 					elseif ($iCount >= $iOffset)
 					{
+						// Filter data
+						$bFilterSuccess	= true;
+						
+						foreach ($aFilter as $sField => $mValue)
+						{
+							if (!isset($oClosure->$sField) || ($oClosure->$sField != $mValue))
+							{
+								$bFilterSuccess	= false;
+								break;
+							}
+						}
+						
 						// Add to Result Set
-						$aResults[$iCount+$iOffset]	= $oClosure->toStdClass();
+						if ($bFilterSuccess)
+						{
+							$aResults[$iCount+$iOffset]	= $oClosure->toStdClass();
+						}
 					} 
 					
 					$iCount++;

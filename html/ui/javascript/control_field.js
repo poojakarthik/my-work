@@ -395,6 +395,17 @@ var Control_Field	= Class.create
 	disableValidationStyling	: function()
 	{
 		this.bValidationStylingEnabled	= false;
+	},
+	
+	clearValue	: function()
+	{
+		// Set not value to the element
+		this.setElementValue(null);
+		
+		// Remove all classes
+		this.oControlOutput.oElement.removeClassName('invalid');
+		this.oControlOutput.oElement.removeClassName('valid');
+		this.oControlOutput.oElement.removeClassName('mandatory');
 	}
 });
 
@@ -477,6 +488,10 @@ Control_Field.factory	= function(sType, oDefinition)
 		case 'combo_date':
 			oControlField	= new Control_Field_Combo_Date(oDefinition.sLabel, null, oDefinition.iFormat);
 			oControlField.setYearRange(oDefinition.iMinYear, oDefinition.iMaxYear);
+			break;
+		
+		case 'combo_time':
+			oControlField	= new Control_Field_Combo_Time(oDefinition.sLabel, null, oDefinition.iFormat);
 			break;
 			
 		default:

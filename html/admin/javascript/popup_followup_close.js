@@ -1,14 +1,30 @@
 
 var Popup_FollowUp_Close	= Class.create(Reflex_Popup,
 {
-	initialize	: function($super, iFollowUpId, iFollowUpRecurringId, iFollowUpRecurringIteration, fnOnFinish)
+	initialize	: function($super, iFollowUpClosureTypeId, iFollowUpId, iFollowUpRecurringId, iFollowUpRecurringIteration, fnOnFinish)
 	{
 		$super(30);
 		
+		this._iFollowUpClosureTypeId		= iFollowUpClosureTypeId;
 		this._iFollowUpId					= iFollowUpId;
 		this._iFollowUpRecurringId			= iFollowUpRecurringId;
 		this._iFollowUpRecurringIteration	= iFollowUpRecurringIteration;
 		this._fnOnFinish					= fnOnFinish;
+		
+		switch (this._iFollowUpClosureTypeId)
+		{
+			case $CONSTANT.FOLLOWUP_CLOSURE_TYPE_COMPLETED:
+				this._sPurpose		= 'Close';
+				this._sPurposeIng	= 'Clos';
+				break;
+			case $CONSTANT.FOLLOWUP_CLOSURE_TYPE_DISMISSED:
+				this._sPurpose		= 'Dismiss';
+				this._sPurposeIng	= 'Dismiss';
+				break;
+			default:
+				Reflex_Popup.alert('ERROR: This should not occur, incorrect follow-up closure type provided.');
+				return;
+		}
 		
 		if (this._iFollowUpId)
 		{
@@ -31,7 +47,7 @@ var Popup_FollowUp_Close	= Class.create(Reflex_Popup,
 	{
 		// Create the list of closures
 		var oSelect			= new Control_Field_Select('Reason');
-		oSelect.setPopulateFunction(FollowUp_Closure.getAllAsSelectOptions);
+		oSelect.setPopulateFunction(FollowUp_Closure.getForClosureTypeAsSelectOptions.curry(this._iFollowUpClosureTypeId));
 		oSelect.setVisible(true);
 		oSelect.setEditable(true);
 		oSelect.setMandatory(true);
@@ -41,14 +57,14 @@ var Popup_FollowUp_Close	= Class.create(Reflex_Popup,
 		// Build content
 		this._oContent	= 	$T.div({class: 'popup-followup-close'},
 								$T.div({class: 'popup-followup-close-reason'},
-									$T.div('Please choose a reason for closing this ' + this._sType + ':'),
+									$T.div('Please choose a reason for ' + this._sPurposeIng + 'ing this ' + this._sType + ':'),
 									$T.div({class: 'popup-followup-close-reason-list'},
 										oSelect.getElement()
 									)
 								),
 								$T.div({class: 'popup-followup-close-buttons'},
 									$T.button({class: 'icon-button'},
-										$T.span('Close ' + this._sType)
+										$T.span(this._sPurpose + ' ' + this._sType)
 									),
 									$T.button({class: 'icon-button'},
 										$T.span('Cancel')
@@ -64,7 +80,7 @@ var Popup_FollowUp_Close	= Class.create(Reflex_Popup,
 		oCancelButton.observe('click', this.hide.bind(this));
 					
 		// Popup setup
-		this.setTitle('Close ' + this._sType);
+		this.setTitle(this._sPurpose + ' ' + this._sType);
 		this.setIcon(Popup_FollowUp_Close.ICON_IMAGE_SOURCE);
 		this.setContent(this._oContent);
 		this.display();
@@ -98,7 +114,7 @@ var Popup_FollowUp_Close	= Class.create(Reflex_Popup,
 			if (this._oSelect.validate())
 			{
 				// Show loading
-				this.oLoading	= new Reflex_Popup.Loading('Closing ' + this._sType + '...');
+				this.oLoading	= new Reflex_Popup.Loading(this._sPurposeIng + 'ing ' + this._sType + '...');
 				this.oLoading.display();
 				
 				var iFollowUpClosureId	= this._oSelect.getElementValue(); 
@@ -126,7 +142,7 @@ var Popup_FollowUp_Close	= Class.create(Reflex_Popup,
 			}
 			else
 			{
-				Reflex_Popup.alert('Please choose a reason before closing the ' + this._sType);
+				Reflex_Popup.alert('Please choose a reason before ' + this._sPurposeIng + 'ing the ' + this._sType);
 			}
 		}
 		else if (oResponse.Success)

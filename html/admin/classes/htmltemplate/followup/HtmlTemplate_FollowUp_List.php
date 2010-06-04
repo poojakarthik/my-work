@@ -21,6 +21,7 @@ class HtmlTemplate_FollowUp_List extends FlexHtmlTemplate
 		$this->LoadJavascript('control_field_select');
 		$this->LoadJavascript('control_field_combo_date');
 		$this->LoadJavascript('control_field_combo_time');
+		$this->LoadJavascript('control_field_combo_date_time');
 		
 		// Pseudo ORM
 		$this->LoadJavascript('employee');
@@ -28,7 +29,10 @@ class HtmlTemplate_FollowUp_List extends FlexHtmlTemplate
 		$this->LoadJavascript('followup_status');
 		$this->LoadJavascript('followup_closure');
 		
-		// Class that renders the page
+		// Classes that renders the page
+		$this->LoadJavascript('component_followup_list_all');
+		$this->LoadJavascript('component_followup_list_active');
+		$this->LoadJavascript('component_followup_list_recurring');
 		$this->LoadJavascript('page_followup_list');
 		$this->LoadJavascript('popup_followup_close');
 		$this->LoadJavascript('popup_followup_reassign');
