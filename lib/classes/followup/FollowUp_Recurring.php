@@ -10,6 +10,7 @@ class FollowUp_Recurring extends ORM_Cached
 {
 	protected 			$_strTableName			= "followup_recurring";
 	protected static	$_strStaticTableName	= "followup_recurring";
+	const				ITERATION_LIMIT			= 12;
 	
 	protected static function getCacheName()
 	{
@@ -254,14 +255,15 @@ class FollowUp_Recurring extends ORM_Cached
 	{
 		$iStartDate		= strtotime($this->start_datetime);
 		$iProjectedDate	= null;
+		$iMultiplier	= (($iIteration + 1) * $this->recurrence_multiplier);
 		
 		switch ($this->followup_recurrence_period_id)
 		{
 			case FOLLOWUP_RECURRENCE_PERIOD_WEEK:
-				$iProjectedDate	= strtotime('+'.($iIteration + 1).' week', $iStartDate);
+				$iProjectedDate	= strtotime('+'.$iMultiplier.' week', $iStartDate);
 				break;
 			case FOLLOWUP_RECURRENCE_PERIOD_MONTH:
-				$iProjectedDate	= strtotime('+'.($iIteration + 1).' month', $iStartDate);
+				$iProjectedDate	= strtotime('+'.$iMultiplier.' month', $iStartDate);
 				break;
 		}
 		

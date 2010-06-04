@@ -349,91 +349,87 @@ class FollowUp extends ORM_Cached
 		foreach ($aRecurringFollowUps as $iId => $oRecurringFollowUp)
 		{
 			// Get all of the projected followups for this recurring followup
-			$iEndDate	= strtotime($oRecurringFollowUp->end_datetime);
-			
-			for($i = 0; $i < $oRecurringFollowUp->recurrence_multiplier; $i++)
+			$iEndDate		= strtotime($oRecurringFollowUp->end_datetime);
+			$iProjectedDate	= strtotime($oRecurringFollowUp->start_datetime);
+			$i				= 0;
+			while($iProjectedDate <= $iEndDate && ($i < FollowUp_Recurring::ITERATION_LIMIT))
 			{
 				// Calculates the projected followup date given an iteration
 				$iProjectedDate	= $oRecurringFollowUp->getProjectedDueDate($i);
-				if ($iProjectedDate > $iEndDate)
+				$i++;
+				
+				// Projected date is within recurrence date limit, convert into db string
+				$sDueDateTime	= date('Y-m-d H:i:s', $iProjectedDate);
+				
+				// Check that the iteration doesn't already exist as a once off (closed) follow-up
+				$sCheck	=	sprintf(
+								"	SELECT	followup_recurring_id, due_datetime
+									FROM	followup_search
+									WHERE	followup_recurring_id = %s
+									AND		due_datetime = '%s'",
+								$oRecurringFollowUp->id,
+								$sDueDateTime
+							);
+				
+				$mCheckResult	= $oQuery->Execute($sCheck);
+				if ($mCheckResult === false)
 				{
-					// Projected date is after the end of the recurring follow up, stop generating them
-					break;
+					throw new Exception("Error looking for recurring followup iteration in temporary table. Database Error = ".$oQuery->Error().". Query = {$sCheck}");
 				}
-				else
+				else 
 				{
-					// Projected date is within recurrence date limit, convert into db string
-					$sDueDateTime	= date('Y-m-d H:i:s', $iProjectedDate);
-					
-					// Check that the iteration doesn't already exist as a once off (closed) follow-up
-					$sCheck	=	sprintf(
-									"	SELECT	followup_recurring_id, due_datetime
-										FROM	followup_search
-										WHERE	followup_recurring_id = %s
-										AND		due_datetime = '%s'",
-									$oRecurringFollowUp->id,
-									$sDueDateTime
-								);
-					
-					$mCheckResult	= $oQuery->Execute($sCheck);
-					if ($mCheckResult === false)
+					if ($mCheckResult->num_rows == 0)
 					{
-						throw new Exception("Error looking for recurring followup iteration in temporary table. Database Error = ".$oQuery->Error().". Query = {$sCheck}");
-					}
-					else {
-						if ($mCheckResult->num_rows == 0)
+						// Insert new followup
+						$sInsert	= 	sprintf(
+									"	INSERT INTO	followup_search (
+														assigned_employee_id, 
+														created_datetime,
+														due_datetime,
+														followup_type_id,
+														followup_category_id,
+														followup_recurring_id,
+														followup_recurring_iteration,
+														modified_datetime,
+														modified_employee_id,
+														status
+													)
+										VALUES		(%s, '%s', '%s', %s, %s, %s, %s, '%s', %s, %s)",
+									$oRecurringFollowUp->assigned_employee_id,
+									$oRecurringFollowUp->created_datetime,
+									$sDueDateTime,
+									$oRecurringFollowUp->followup_type_id,
+									$oRecurringFollowUp->followup_category_id,
+									$oRecurringFollowUp->id,
+									$i,
+									$oRecurringFollowUp->modified_datetime,
+									$oRecurringFollowUp->modified_employee_id,
+									"'".FollowUp::getStatus(null, $sDueDateTime)."'"
+								);
+						
+						$mInsertResult	= $oQuery->Execute($sInsert);
+						if ($mInsertResult === false)
 						{
-							// Insert new followup
-							$sInsert	= 	sprintf(
-										"	INSERT INTO	followup_search (
-															assigned_employee_id, 
-															created_datetime,
-															due_datetime,
-															followup_type_id,
-															followup_category_id,
-															followup_recurring_id,
-															followup_recurring_iteration,
-															modified_datetime,
-															modified_employee_id,
-															status
-														)
-											VALUES		(%s, '%s', '%s', %s, %s, %s, %s, '%s', %s, %s)",
-										$oRecurringFollowUp->assigned_employee_id,
-										$oRecurringFollowUp->created_datetime,
-										$sDueDateTime,
-										$oRecurringFollowUp->followup_type_id,
-										$oRecurringFollowUp->followup_category_id,
-										$oRecurringFollowUp->id,
-										$i,
-										$oRecurringFollowUp->modified_datetime,
-										$oRecurringFollowUp->modified_employee_id,
-										"'".FollowUp::getStatus(null, $sDueDateTime)."'"
-									);
-							
-							$mInsertResult	= $oQuery->Execute($sInsert);
-							if ($mInsertResult === false)
-							{
-								throw new Exception("Error inserting recurring followup into temporary table. Database Error = ".$oQuery->Error().". Query = {$sInsert}");
-							}
+							throw new Exception("Error inserting recurring followup into temporary table. Database Error = ".$oQuery->Error().". Query = {$sInsert}");
 						}
-						else
+					}
+					else
+					{
+						// Update existing one, set it's iteration
+						$sUpdate	= 	sprintf(
+											"	UPDATE	followup_search
+												SET		followup_recurring_iteration = %s
+												WHERE	followup_recurring_id = %s
+												AND		due_datetime = '%s'",
+											$i,
+											$oRecurringFollowUp->id,
+											$sDueDateTime
+										);
+						
+						$mUpdateResult	= $oQuery->Execute($sUpdate);
+						if ($mUpdateResult === false)
 						{
-							// Update existing one, set it's iteration
-							$sUpdate	= 	sprintf(
-												"	UPDATE	followup_search
-													SET		followup_recurring_iteration = %s
-													WHERE	followup_recurring_id = %s
-													AND		due_datetime = '%s'",
-												$i,
-												$oRecurringFollowUp->id,
-												$sDueDateTime
-											);
-							
-							$mUpdateResult	= $oQuery->Execute($sUpdate);
-							if ($mUpdateResult === false)
-							{
-								throw new Exception("Error inserting recurring followup into temporary table. Database Error = ".$oQuery->Error().". Query = {$sInsert}");
-							}
+							throw new Exception("Error inserting recurring followup into temporary table. Database Error = ".$oQuery->Error().". Query = {$sInsert}");
 						}
 					}
 				}

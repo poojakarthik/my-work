@@ -52,12 +52,15 @@ class JSON_Handler_FollowUp_Closure extends JSON_Handler
 						// Filter data
 						$bFilterSuccess	= true;
 						
-						foreach ($aFilter as $sField => $mValue)
+						if ($aFilter)
 						{
-							if (!isset($oClosure->$sField) || ($oClosure->$sField != $mValue))
+							foreach ($aFilter as $sField => $mValue)
 							{
-								$bFilterSuccess	= false;
-								break;
+								if (!isset($oClosure->$sField) || ($oClosure->$sField != $mValue))
+								{
+									$bFilterSuccess	= false;
+									break;
+								}
 							}
 						}
 						
