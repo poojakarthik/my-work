@@ -10,23 +10,24 @@ $arrSQLSelect	= array();
 $arrSQLFields	= array();
 
 
-$arrDataReport['Name']			= "Recurring Charge Requests Awaiting Approval";
-$arrDataReport['Summary']		= "Lists all Recurring Charge Requests Currently Awaiting Approval";
-$arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
-$arrDataReport['Priviledges']	= 64;											// Credit Management
-//$arrDataReport['Priviledges']	= 1;											// Live
-$arrDataReport['CreatedOn']		= date("Y-m-d");
-$arrDataReport['SQLTable']		= "	RecurringCharge
-									INNER JOIN Account ON RecurringCharge.Account = Account.Id
-									LEFT JOIN Service ON RecurringCharge.Service = Service.Id
-									INNER JOIN CustomerGroup ON Account.CustomerGroup = CustomerGroup.Id
-									INNER JOIN Employee AS Creator ON RecurringCharge.CreatedBy = Creator.Id";
-$arrDataReport['SQLWhere']		= "	(<ChargeType> = 'ANY' OR CONCAT(RecurringCharge.Nature, ': ', RecurringCharge.ChargeType, ' - ', RecurringCharge.Description) = <ChargeType>)
-									AND (<CustomerGroupId> = 0 OR Account.CustomerGroup = <CustomerGroupId>)
-									AND (RecurringCharge.CreatedOn BETWEEN <EarliestDate> AND <LatestDate>)
-									AND RecurringCharge.recurring_charge_status_id = (SELECT id FROM recurring_charge_status WHERE system_name = 'AWAITING_APPROVAL')
-									ORDER BY RecurringCharge.CreatedOn ASC, RecurringCharge.Id ASC";
-$arrDataReport['SQLGroupBy']	= "";
+$arrDataReport['Name']					= "Recurring Charge Requests Awaiting Approval";
+$arrDataReport['Summary']				= "Lists all Recurring Charge Requests Currently Awaiting Approval";
+$arrDataReport['RenderMode']			= REPORT_RENDER_INSTANT;
+$arrDataReport['Priviledges']			= 64;											// Credit Management
+//$arrDataReport['Priviledges']			= 1;											// Live
+$arrDataReport['CreatedOn']				= date("Y-m-d");
+$arrDataReport['SQLTable']				= "	RecurringCharge
+											INNER JOIN Account ON RecurringCharge.Account = Account.Id
+											LEFT JOIN Service ON RecurringCharge.Service = Service.Id
+											INNER JOIN CustomerGroup ON Account.CustomerGroup = CustomerGroup.Id
+											INNER JOIN Employee AS Creator ON RecurringCharge.CreatedBy = Creator.Id";
+$arrDataReport['SQLWhere']				= "	(<ChargeType> = 'ANY' OR CONCAT(RecurringCharge.Nature, ': ', RecurringCharge.ChargeType, ' - ', RecurringCharge.Description) = <ChargeType>)
+											AND (<CustomerGroupId> = 0 OR Account.CustomerGroup = <CustomerGroupId>)
+											AND (RecurringCharge.CreatedOn BETWEEN <EarliestDate> AND <LatestDate>)
+											AND RecurringCharge.recurring_charge_status_id = (SELECT id FROM recurring_charge_status WHERE system_name = 'AWAITING_APPROVAL')
+											ORDER BY RecurringCharge.CreatedOn ASC, RecurringCharge.Id ASC";
+$arrDataReport['SQLGroupBy']			= "";
+$arrDataReport['data_report_status_id']	= DATA_REPORT_STATUS_DRAFT;
 
 // Documentation Reqs
 $arrDocReq[]	= "DataReport";

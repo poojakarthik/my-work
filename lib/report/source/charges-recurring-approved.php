@@ -10,27 +10,28 @@ $arrSQLSelect	= array();
 $arrSQLFields	= array();
 
 
-$arrDataReport['Name']			= "Recurring Charge Requests That Have Been Approved";
-$arrDataReport['Summary']		= "Lists all Recurring Charge Requests That Have Been Approved";
-$arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
-$arrDataReport['Priviledges']	= 64;											// Credit Management
-//$arrDataReport['Priviledges']	= 1;											// Live
-$arrDataReport['CreatedOn']		= date("Y-m-d");
-$arrDataReport['SQLTable']		= "	RecurringCharge
-									INNER JOIN Account ON RecurringCharge.Account = Account.Id
-									LEFT JOIN Service ON RecurringCharge.Service = Service.Id
-									INNER JOIN CustomerGroup ON Account.CustomerGroup = CustomerGroup.Id
-									INNER JOIN Employee AS Creator ON RecurringCharge.CreatedBy = Creator.Id
-									INNER JOIN Employee AS Approver ON RecurringCharge.ApprovedBy = Approver.Id
-									INNER JOIN recurring_charge_status ON RecurringCharge.recurring_charge_status_id = recurring_charge_status.id";
-$arrDataReport['SQLWhere']		= "	(<ChargeType> = 'ANY' OR CONCAT(RecurringCharge.Nature, ': ', RecurringCharge.ChargeType, ' - ', RecurringCharge.Description) = <ChargeType>)
-									AND (<CustomerGroupId> = 0 OR Account.CustomerGroup = <CustomerGroupId>)
-									AND (RecurringCharge.CreatedOn BETWEEN <EarliestDate> AND <LatestDate>)
-									AND RecurringCharge.ApprovedBy IS NOT NULL
-									AND RecurringCharge.recurring_charge_status_id != (SELECT id FROM recurring_charge_status WHERE system_name = 'DECLINED')
-									AND (<IncludeAutoApproved> = 1 OR (<IncludeAutoApproved> = 0 AND RecurringCharge.ApprovedBy != 0))
-									ORDER BY RecurringCharge.CreatedOn ASC, RecurringCharge.Id ASC";
-$arrDataReport['SQLGroupBy']	= "";
+$arrDataReport['Name']					= "Recurring Charge Requests That Have Been Approved";
+$arrDataReport['Summary']				= "Lists all Recurring Charge Requests That Have Been Approved";
+$arrDataReport['RenderMode']			= REPORT_RENDER_INSTANT;
+$arrDataReport['Priviledges']			= 64;											// Credit Management
+//$arrDataReport['Priviledges']			= 1;											// Live
+$arrDataReport['CreatedOn']				= date("Y-m-d");
+$arrDataReport['SQLTable']				= "	RecurringCharge
+											INNER JOIN Account ON RecurringCharge.Account = Account.Id
+											LEFT JOIN Service ON RecurringCharge.Service = Service.Id
+											INNER JOIN CustomerGroup ON Account.CustomerGroup = CustomerGroup.Id
+											INNER JOIN Employee AS Creator ON RecurringCharge.CreatedBy = Creator.Id
+											INNER JOIN Employee AS Approver ON RecurringCharge.ApprovedBy = Approver.Id
+											INNER JOIN recurring_charge_status ON RecurringCharge.recurring_charge_status_id = recurring_charge_status.id";
+$arrDataReport['SQLWhere']				= "	(<ChargeType> = 'ANY' OR CONCAT(RecurringCharge.Nature, ': ', RecurringCharge.ChargeType, ' - ', RecurringCharge.Description) = <ChargeType>)
+											AND (<CustomerGroupId> = 0 OR Account.CustomerGroup = <CustomerGroupId>)
+											AND (RecurringCharge.CreatedOn BETWEEN <EarliestDate> AND <LatestDate>)
+											AND RecurringCharge.ApprovedBy IS NOT NULL
+											AND RecurringCharge.recurring_charge_status_id != (SELECT id FROM recurring_charge_status WHERE system_name = 'DECLINED')
+											AND (<IncludeAutoApproved> = 1 OR (<IncludeAutoApproved> = 0 AND RecurringCharge.ApprovedBy != 0))
+											ORDER BY RecurringCharge.CreatedOn ASC, RecurringCharge.Id ASC";
+$arrDataReport['SQLGroupBy']			= "";
+$arrDataReport['data_report_status_id']	= DATA_REPORT_STATUS_DRAFT;
 
 // Documentation Reqs
 $arrDocReq[]	= "DataReport";

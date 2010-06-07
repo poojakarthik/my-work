@@ -3,25 +3,26 @@
 // CHARGE REQUESTS AWAITING APPROVAL
 //---------------------------------------------------------------------------//
 
-$arrDataReport['Name']			= "Charge Requests Awaiting Approval";
-$arrDataReport['Summary']		= "Lists all Charge Requests Currently Awaiting Approval";
-$arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
-$arrDataReport['Priviledges']	= 64;											// Credit Management
-//$arrDataReport['Priviledges']	= 1;											// Live
-$arrDataReport['CreatedOn']		= date("Y-m-d");
-$arrDataReport['SQLTable']		= "	Charge
-									INNER JOIN Account ON Charge.Account = Account.Id
-									LEFT JOIN Service ON Charge.Service = Service.Id
-									INNER JOIN CustomerGroup ON Account.CustomerGroup = CustomerGroup.Id
-									INNER JOIN Employee AS Creator ON Charge.CreatedBy = Creator.Id
-									JOIN charge_model cm ON (cm.id = Charge.charge_model_id)";
-$arrDataReport['SQLWhere']		= "	(<ChargeType> = 'ANY' OR CONCAT(Charge.Nature, ': ', Charge.ChargeType, ' - ', Charge.Description) = <ChargeType>)
-									AND (<CustomerGroupId> = 0 OR Account.CustomerGroup = <CustomerGroupId>)
-									AND (Charge.CreatedOn BETWEEN <EarliestDate> AND <LatestDate>)
-									AND Charge.Status = 100
-									AND (ISNULL(<charge_model_id>) OR cm.id = <charge_model_id>)
-									ORDER BY Charge.CreatedOn ASC, Charge.Id ASC";
-$arrDataReport['SQLGroupBy']	= "";
+$arrDataReport['Name']					= "Charge Requests Awaiting Approval";
+$arrDataReport['Summary']				= "Lists all Charge Requests Currently Awaiting Approval";
+$arrDataReport['RenderMode']			= REPORT_RENDER_INSTANT;
+$arrDataReport['Priviledges']			= 64;											// Credit Management
+//$arrDataReport['Priviledges']			= 1;											// Live
+$arrDataReport['CreatedOn']				= date("Y-m-d");
+$arrDataReport['SQLTable']				= "	Charge
+											INNER JOIN Account ON Charge.Account = Account.Id
+											LEFT JOIN Service ON Charge.Service = Service.Id
+											INNER JOIN CustomerGroup ON Account.CustomerGroup = CustomerGroup.Id
+											INNER JOIN Employee AS Creator ON Charge.CreatedBy = Creator.Id
+											JOIN charge_model cm ON (cm.id = Charge.charge_model_id)";
+$arrDataReport['SQLWhere']				= "	(<ChargeType> = 'ANY' OR CONCAT(Charge.Nature, ': ', Charge.ChargeType, ' - ', Charge.Description) = <ChargeType>)
+											AND (<CustomerGroupId> = 0 OR Account.CustomerGroup = <CustomerGroupId>)
+											AND (Charge.CreatedOn BETWEEN <EarliestDate> AND <LatestDate>)
+											AND Charge.Status = 100
+											AND (ISNULL(<charge_model_id>) OR cm.id = <charge_model_id>)
+											ORDER BY Charge.CreatedOn ASC, Charge.Id ASC";
+$arrDataReport['SQLGroupBy']			= "";
+$arrDataReport['data_report_status_id']	= DATA_REPORT_STATUS_DRAFT;
 
 // Documentation Reqs
 $arrDocReq[]	= "DataReport";
