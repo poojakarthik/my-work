@@ -1,7 +1,7 @@
 <?php
 
 //---------------------------------------------------------------------------//
-// RECURRING ADJUSTMENT REQUESTS THAT HAVE BEEN APPROVED
+// RECURRING CHARGE REQUESTS THAT HAVE BEEN APPROVED
 //---------------------------------------------------------------------------//
 
 $arrDataReport	= array();
@@ -10,8 +10,8 @@ $arrSQLSelect	= array();
 $arrSQLFields	= array();
 
 
-$arrDataReport['Name']			= "Recurring Adjustment Requests That Have Been Approved";
-$arrDataReport['Summary']		= "Lists all Recurring Adjustment Requests That Have Been Approved";
+$arrDataReport['Name']			= "Recurring Charge Requests That Have Been Approved";
+$arrDataReport['Summary']		= "Lists all Recurring Charge Requests That Have Been Approved";
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']	= 64;											// Credit Management
 //$arrDataReport['Priviledges']	= 1;											// Live
@@ -37,7 +37,7 @@ $arrDocReq[]	= "DataReport";
 $arrDataReport['Documentation']	= serialize($arrDocReq);
 
 // SQL Select
-$arrSQLSelect['Recurring Adjustment Id']		['Value']	= "RecurringCharge.Id";
+$arrSQLSelect['Recurring Charge Id']		['Value']	= "RecurringCharge.Id";
 $arrSQLSelect['Customer Group']					['Value']	= "CustomerGroup.internal_name";
 $arrSQLSelect['Account']						['Value']	= "RecurringCharge.Account";
 $arrSQLSelect['Service FNN']					['Value']	= "Service.FNN";
@@ -56,7 +56,7 @@ $arrSQLSelect['Current Status']					['Value']	= "recurring_charge_status.name";
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
 // SQL Fields
-$arrChargeTypeQuery = array('Query'			=> "SELECT DISTINCT CONCAT(Nature, ': ', ChargeType, ' - ', Description) AS Value, 
+$arrChargeTypeQuery = array('Query'			=> "SELECT DISTINCT CONCAT(Nature, ': ', ChargeType, ' - ', Description) AS Value,
 													IF(Archived = 0, CONCAT('[ACTIVE] ', Nature, ': ', ChargeType, ' - ', Description), CONCAT('[ARCHVIED] ', Nature, ': ', ChargeType, ' - ', Description)) AS Label
 												FROM RecurringChargeType
 												ORDER BY Label ASC;",
@@ -79,7 +79,7 @@ $arrCustomerGroupQuery = array(	'Query'			=> "SELECT Id AS Value, internal_name 
 $arrSQLFields['ChargeType']			= Array('Type'					=> "Query",
 											'DBQuery'				=> $arrChargeTypeQuery,
 											'Documentation-Entity'	=> "DataReport",
-											'Documentation-Field'	=> "Adjustment Type",
+											'Documentation-Field'	=> "Charge Type",
 											);
 
 $arrSQLFields['CustomerGroupId']	= Array('Type'					=> "Query",

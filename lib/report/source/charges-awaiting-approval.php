@@ -1,16 +1,10 @@
 <?php
 //---------------------------------------------------------------------------//
-// CHARGE REQUESTS THAT HAVE BEEN APPROVED (by anyone other than the system user)
+// CHARGE REQUESTS AWAITING APPROVAL
 //---------------------------------------------------------------------------//
 
-$arrDataReport	= array();
-$arrDocReq		= array();
-$arrSQLSelect	= array();
-$arrSQLFields	= array();
-
-
-$arrDataReport['Name']			= "Charge Requests That Have Been Approved";
-$arrDataReport['Summary']		= "Lists all Charge Requests That Have Been Approved";
+$arrDataReport['Name']			= "Charge Requests Awaiting Approval";
+$arrDataReport['Summary']		= "Lists all Charge Requests Currently Awaiting Approval";
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']	= 64;											// Credit Management
 //$arrDataReport['Priviledges']	= 1;											// Live
@@ -20,16 +14,13 @@ $arrDataReport['SQLTable']		= "	Charge
 									LEFT JOIN Service ON Charge.Service = Service.Id
 									INNER JOIN CustomerGroup ON Account.CustomerGroup = CustomerGroup.Id
 									INNER JOIN Employee AS Creator ON Charge.CreatedBy = Creator.Id
-									INNER JOIN Employee AS Approver ON Charge.ApprovedBy = Approver.Id
 									JOIN charge_model cm ON (cm.id = Charge.charge_model_id)";
 $arrDataReport['SQLWhere']		= "	(<ChargeType> = 'ANY' OR CONCAT(Charge.Nature, ': ', Charge.ChargeType, ' - ', Charge.Description) = <ChargeType>)
 									AND (<CustomerGroupId> = 0 OR Account.CustomerGroup = <CustomerGroupId>)
 									AND (Charge.CreatedOn BETWEEN <EarliestDate> AND <LatestDate>)
-									AND Charge.ApprovedBy > 0
-									AND Charge.Status != 104
-									AND (LinkType IS NULL OR LinkType != 501)
+									AND Charge.Status = 100
 									AND (ISNULL(<charge_model_id>) OR cm.id = <charge_model_id>)
-									ORDER BY Charge.CreatedOn ASC, Charge.Id ASC;";
+									ORDER BY Charge.CreatedOn ASC, Charge.Id ASC";
 $arrDataReport['SQLGroupBy']	= "";
 
 // Documentation Reqs
@@ -49,14 +40,6 @@ $arrSQLSelect['Amount ($ Ex GST)']			['Value']	= "Charge.Amount";
 $arrSQLSelect['Created On']					['Value']	= "DATE_FORMAT(Charge.CreatedOn, '%d/%m/%Y')";
 $arrSQLSelect['Created By']					['Value']	= "CONCAT(Creator.FirstName, ' ', Creator.LastName)";
 $arrSQLSelect['Charged On']					['Value']	= "DATE_FORMAT(Charge.ChargedOn, '%d/%m/%Y')";
-$arrSQLSelect['Approved By']				['Value']	= "CONCAT(Approver.FirstName, ' ', Approver.LastName)";
-$arrSQLSelect['Current Status']				['Value']	= "CASE WHEN Charge.Status = 100 THEN 'Awaiting Approval'
-															WHEN Charge.Status = 101 THEN 'Approved'
-															WHEN Charge.Status = 102 THEN 'Temporarily Invoiced'
-															WHEN Charge.Status = 103 THEN 'Invoiced'
-															WHEN Charge.Status = 104 THEN 'Declined'
-															WHEN Charge.Status = 105 THEN 'Deleted'
-															ELSE 'UNKNOWN' END";
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
@@ -95,7 +78,6 @@ $arrChargeModelQuery = array(	'Query'			=> "SELECT id AS Value, name AS Label
 								'IgnoreField'	=> array(	'Value'	=> NULL,
 															'Label'	=> 'Any')
 								);
-
 
 
 $arrSQLFields['charge_model_id']	= Array('Type'					=> "Query",
