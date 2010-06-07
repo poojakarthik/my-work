@@ -1,10 +1,12 @@
 
 var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field, 
 {
-	initialize	: function($super, sLabel, sLabelSeparator)
+	initialize	: function($super, sLabel, sLabelSeparator, sDateFormat, bTimePicker)
 	{
 		// Parent
 		$super(sLabel, sLabelSeparator);
+		
+		this._sDateFormat	= (sDateFormat ? sDateFormat : 'Y-m-d');
 		
 		// Create the DOM Elements
 		this.oControlOutput.oEdit	= document.createElement('div');
@@ -35,8 +37,19 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		this.oControlOutput.oView	= document.createElement('span');
 		this.oControlOutput.oElement.appendChild(this.oControlOutput.oView);
 		
-		var objDate	= new Date();
-		this.oDatePicker	= DateChooser.factory(this.oControlOutput.oHidden, Control_Field_Date_Picker.YEAR_START, Control_Field_Date_Picker.YEAR_END, 'Y-m-d', false, true, true, objDate.getFullYear(), objDate.getMonth(), objDate.getDay());
+		var objDate			= new Date();
+		this.oDatePicker	=	DateChooser.factory(
+									this.oControlOutput.oHidden, 
+									Control_Field_Date_Picker.YEAR_START, 
+									Control_Field_Date_Picker.YEAR_END, 
+									this._sDateFormat, 
+									(bTimePicker ? true : false), 
+									true, 
+									true, 
+									objDate.getFullYear(), 
+									objDate.getMonth(), 
+									objDate.getDay()
+								);
 		
 		this.validate();
 		
@@ -74,7 +87,7 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 	{
 		if (this.oControlOutput.oHidden.value && this.oControlOutput.oHidden.value.length)
 		{
-			var oDate	= Date.parseDate(this.oControlOutput.oHidden.value, 'Y-m-d');
+			var oDate	= Date.parseDate(this.oControlOutput.oHidden.value, this._sDateFormat);
 			
 			if (oDate && oDate.dateFormat)
 			{
@@ -85,11 +98,16 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		return "[ No date specified ]";
 	},
 	
+	_showDatePicker	: function(oEvent)
+	{
+		this.oDatePicker.show(oEvent.clientX, oEvent.clientY);
+	},
+	
 	addEventListeners	: function()
 	{
 		this.aEventHandlers					= {};
 		this.aEventHandlers.fnValidate		= this.validate.bind(this);
-		this.aEventHandlers.fnOpenPicker	= this.oDatePicker.show.bind(this.oDatePicker);
+		this.aEventHandlers.fnOpenPicker	= this._showDatePicker.bind(this);
 		
 		this.oControlOutput.oHidden.addEventListener('change' ,this.aEventHandlers.fnValidate, false);
 		this.oControlOutput.oHidden.addEventListener('change' ,this.aEventHandlers.fnValidate, false);

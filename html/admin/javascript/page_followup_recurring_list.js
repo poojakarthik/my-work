@@ -1,5 +1,5 @@
 
-var Component_FollowUp_List_All = Class.create(
+var Page_FollowUp_Recurring_List = Class.create(
 {
 	/*
 	 * iEmployeeId & bEditMode are used to determine which actions can be performed on a follow-up.
@@ -15,22 +15,22 @@ var Component_FollowUp_List_All = Class.create(
 		this._hFilters		= {};
 		
 		// Create DataSet & pagination object
-		this.oDataSet	= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_NO_CACHING, Component_FollowUp_List_All.DATA_SET_DEFINITION);
+		this.oDataSet	= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_NO_CACHING, Page_FollowUp_Recurring_List.DATA_SET_DEFINITION);
 		this.oDataSet.setSortingFields({due_datetime: 'ASC'});
 		
-		this.oPagination	= new Pagination(this._updateTable.bind(this), Component_FollowUp_List_All.MAX_RECORDS_PER_PAGE, this.oDataSet);
+		this.oPagination	= new Pagination(this._updateTable.bind(this), Page_FollowUp_Recurring_List.MAX_RECORDS_PER_PAGE, this.oDataSet);
 		
 		// Create filter object
 		this._oFilter	= new Filter(this.oDataSet, this.oPagination);
-		for (var sFieldName in Component_FollowUp_List_All.FILTER_FIELDS)
+		for (var sFieldName in Page_FollowUp_Recurring_List.FILTER_FIELDS)
 		{
-			this._oFilter.addFilter(sFieldName, Component_FollowUp_List_All.FILTER_FIELDS[sFieldName]);
+			this._oFilter.addFilter(sFieldName, Page_FollowUp_Recurring_List.FILTER_FIELDS[sFieldName]);
 		}
 		
 		if (this._iEmployeeId)
 		{
 			// Set the 'owner' filter
-			this._oFilter.setFilterValue(Component_FollowUp_List_All.FILTER_FIELD_OWNER, this._iEmployeeId, this._iEmployeeId);
+			this._oFilter.setFilterValue(Page_FollowUp_Recurring_List.FILTER_FIELD_OWNER, this._iEmployeeId, this._iEmployeeId);
 		}
 		
 		// Create sort object
@@ -43,7 +43,7 @@ var Component_FollowUp_List_All = Class.create(
 									$T.div({class: 'section'},
 										$T.div({class: 'section-header'},
 											$T.div({class: 'section-header-title'},
-												$T.span('All Follow-Ups'),
+												$T.span('Recurring Follow-Ups'),
 												$T.span({class: 'followup-list-all-pagination-info'},
 													''
 												)
@@ -72,52 +72,57 @@ var Component_FollowUp_List_All = Class.create(
 													$T.tr(
 														this._createFieldHeader(
 															'Type', 
-															Component_FollowUp_List_All.SORT_FIELD_TYPE,
-															Component_FollowUp_List_All.FILTER_FIELD_TYPE
+															Page_FollowUp_Recurring_List.SORT_FIELD_TYPE,
+															Page_FollowUp_Recurring_List.FILTER_FIELD_TYPE
 														),
 														this._createFieldHeader('Details', false, false, true),
 														this._createFieldHeader('Summary', false, false, true),
 														this._createFieldHeader(
 															'Created', 
-															Component_FollowUp_List_All.SORT_FIELD_DATE_CREATED
+															Page_FollowUp_Recurring_List.SORT_FIELD_DATE_CREATED
 														),
 														this._createFieldHeader(
 															'Owner', 
-															(this._iEmployeeId ? null : Component_FollowUp_List_All.SORT_FIELD_OWNER), 
-															(this._iEmployeeId ? null : Component_FollowUp_List_All.FILTER_FIELD_OWNER)
+															(this._iEmployeeId ? null : Page_FollowUp_Recurring_List.SORT_FIELD_OWNER), 
+															(this._iEmployeeId ? null : Page_FollowUp_Recurring_List.FILTER_FIELD_OWNER)
 														),
 														this._createFieldHeader(
-															'Due Date', 
-															Component_FollowUp_List_All.SORT_FIELD_FOLLOWUP_DATE, 
-															Component_FollowUp_List_All.FILTER_FIELD_FOLLOWUP_DATE
+															'Start Date', 
+															Page_FollowUp_Recurring_List.SORT_FIELD_START_DATE, 
+															Page_FollowUp_Recurring_List.FILTER_FIELD_START_DATE
+														),
+														this._createFieldHeader(
+															'End Date', 
+															Page_FollowUp_Recurring_List.SORT_FIELD_END_DATE, 
+															Page_FollowUp_Recurring_List.FILTER_FIELD_END_DATE
 														),
 														this._createFieldHeader(
 															'Last Modified', 
-															Component_FollowUp_List_All.SORT_FIELD_LAST_MODIFIED
+															Page_FollowUp_Recurring_List.SORT_FIELD_LAST_MODIFIED
 														),
 														this._createFieldHeader(
 															'Category', 
-															Component_FollowUp_List_All.SORT_FIELD_CATEGORY, 
-															Component_FollowUp_List_All.FILTER_FIELD_CATEGORY
+															Page_FollowUp_Recurring_List.SORT_FIELD_CATEGORY, 
+															Page_FollowUp_Recurring_List.FILTER_FIELD_CATEGORY
 														),
 														this._createFieldHeader(
-															'Status', 
-															Component_FollowUp_List_All.SORT_FIELD_STATUS, 
-															Component_FollowUp_List_All.FILTER_FIELD_STATUS
+															'Recurrence Period', 
+															Page_FollowUp_Recurring_List.SORT_FIELD_RECURRENCE_PERIOD
 														),
 														this._createFieldHeader('')
 													),
 													// Filter values
 													$T.tr(
-														this._createFilterValueElement(Component_FollowUp_List_All.FILTER_FIELD_TYPE),
+														this._createFilterValueElement(Page_FollowUp_Recurring_List.FILTER_FIELD_TYPE),
 														$T.th(),
 														$T.th(),
 														$T.th(),
-														(this._iEmployeeId ? $T.th() : this._createFilterValueElement(Component_FollowUp_List_All.FILTER_FIELD_OWNER)),
-														this._createFilterValueElement(Component_FollowUp_List_All.FILTER_FIELD_FOLLOWUP_DATE),
+														(this._iEmployeeId ? $T.th() : this._createFilterValueElement(Page_FollowUp_Recurring_List.FILTER_FIELD_OWNER)),
+														this._createFilterValueElement(Page_FollowUp_Recurring_List.FILTER_FIELD_START_DATE),
+														this._createFilterValueElement(Page_FollowUp_Recurring_List.FILTER_FIELD_END_DATE),
 														$T.th(),
-														this._createFilterValueElement(Component_FollowUp_List_All.FILTER_FIELD_CATEGORY),
-														this._createFilterValueElement(Component_FollowUp_List_All.FILTER_FIELD_STATUS),
+														this._createFilterValueElement(Page_FollowUp_Recurring_List.FILTER_FIELD_CATEGORY),
+														$T.th(),
 														$T.th()
 													)
 												),
@@ -213,8 +218,9 @@ var Component_FollowUp_List_All = Class.create(
 		
 		// Check if any results came back
 		if (!oResultSet || oResultSet.intTotalResults == 0 || oResultSet.arrResultSet.length == 0)
-		{	
-			oTBody.appendChild( 
+		{
+			// No records
+			oTBody.appendChild(
 				$T.tr(
 					$T.td({colspan: this._oContentDiv.select('table > thead > tr').first().childNodes.length},
 						'There are no records to display'
@@ -230,17 +236,13 @@ var Component_FollowUp_List_All = Class.create(
 			
 			// Add the rows
 			var aData	= jQuery.json.arrayAsObject(oResultSet.arrResultSet);
-			var iCount	= 0;
 			
-			for (var i in aData)
+			for(var i in aData)
 			{
-				iCount++;
 				oTBody.appendChild(this._createTableRow(aData[i]));
 			}
 			
 			this._updatePagination();
-
-			//alert(oResultSet.intTotalResults + ',' + iCount);
 		}
 		
 		this._updateSorting();
@@ -250,25 +252,25 @@ var Component_FollowUp_List_All = Class.create(
 		if (this.oLoadingOverlay)
 		{
 			this.oLoadingOverlay.hide();
-			delete this.oLoadingOverlay;
 		}
 	},
 	
-	_createTableRow	: function(oFollowUp)
+	_createTableRow	: function(oFollowUpRecurring)
 	{
-		if ((oFollowUp.followup_id != null) || (oFollowUp.followup_recurring_id != null))
+		if (oFollowUpRecurring.id != null)
 		{
 			var	oTR	=	$T.tr(
-							$T.td(Component_FollowUp_List_All._getTypeElement(oFollowUp.followup_type_id)),
-							Component_FollowUp_List_All.getFollowUpDescriptionTD(oFollowUp.followup_type_id, oFollowUp.details),
-							$T.td(oFollowUp.summary),
-							$T.td(Component_FollowUp_List_All.getDateTimeElement(oFollowUp.created_datetime)),				
-							$T.td(oFollowUp.assigned_employee_label),
-							$T.td(Component_FollowUp_List_All.getDateTimeElement(oFollowUp.due_datetime)),
-							$T.td(Component_FollowUp_List_All.getDateTimeElement(oFollowUp.modified_datetime)),
-							$T.td(oFollowUp.followup_category_label),
-							$T.td(oFollowUp.status),
-							$T.td(this._getFollowUpActions(oFollowUp))
+							$T.td(Page_FollowUp_Recurring_List._getTypeElement(oFollowUpRecurring.followup_type_id)),		
+							Page_FollowUp_Recurring_List.getFollowUpDescriptionTD(oFollowUpRecurring.followup_type_id, oFollowUpRecurring.details),
+							$T.td(oFollowUpRecurring.summary),
+							$T.td(Page_FollowUp_Recurring_List.getDateTimeElement(oFollowUpRecurring.created_datetime)),				
+							$T.td(oFollowUpRecurring.assigned_employee_label),
+							$T.td(Page_FollowUp_Recurring_List.getDateTimeElement(oFollowUpRecurring.start_datetime)),
+							$T.td(Page_FollowUp_Recurring_List.getDateTimeElement(oFollowUpRecurring.end_datetime)),
+							$T.td(Page_FollowUp_Recurring_List.getDateTimeElement(oFollowUpRecurring.modified_datetime)),
+							$T.td(oFollowUpRecurring.followup_category_label),
+							$T.td(Page_FollowUp_Recurring_List.getRecurrencePeriod(oFollowUpRecurring)),
+							$T.td(this._getFollowUpActions(oFollowUpRecurring))
 						);
 			return oTR;
 		}
@@ -319,7 +321,7 @@ var Component_FollowUp_List_All = Class.create(
 	
 	_updateSorting	: function()
 	{
-		for (var sField in Component_FollowUp_List_All.SORT_FIELDS)
+		for (var sField in Page_FollowUp_Recurring_List.SORT_FIELDS)
 		{
 			if (this._oSort.isRegistered(sField))
 			{
@@ -331,7 +333,7 @@ var Component_FollowUp_List_All = Class.create(
 				}
 				else
 				{
-					oSortImg.src	= Component_FollowUp_List_All.SORT_IMAGE_SOURCE[iDirection];
+					oSortImg.src	= Page_FollowUp_Recurring_List.SORT_IMAGE_SOURCE[iDirection];
 					oSortImg.show();
 				}
 			}
@@ -340,7 +342,7 @@ var Component_FollowUp_List_All = Class.create(
 	
 	_updateFilters	: function()
 	{
-		for (var sField in Component_FollowUp_List_All.FILTER_FIELDS)
+		for (var sField in Page_FollowUp_Recurring_List.FILTER_FIELDS)
 		{
 			if (this._oFilter.isRegistered(sField))
 			{
@@ -368,7 +370,7 @@ var Component_FollowUp_List_All = Class.create(
 	
 	_createFilterValueElement	: function(sField)
 	{
-		var oDeleteImage				= $T.img({src: Component_FollowUp_List_All.REMOVE_FILTER_IMAGE_SOURCE, alt: 'Remove Filter', title: 'Remove Filter'});
+		var oDeleteImage				= $T.img({src: Page_FollowUp_Recurring_List.REMOVE_FILTER_IMAGE_SOURCE, alt: 'Remove Filter', title: 'Remove Filter'});
 		oDeleteImage.style.visibility	= 'hidden';
 		oDeleteImage.observe('click', this._clearFilterValue.bind(this, sField));
 		
@@ -401,14 +403,14 @@ var Component_FollowUp_List_All = Class.create(
 			var oSpan	= oTH.select('span').first();
 			oSpan.addClassName('followup-list-all-header-sort');
 			
-			this._oSort.registerToggleElement(oSpan, sSortField, Component_FollowUp_List_All.SORT_FIELDS[sSortField]);
-			this._oSort.registerToggleElement(oSortImg, sSortField, Component_FollowUp_List_All.SORT_FIELDS[sSortField]);
+			this._oSort.registerToggleElement(oSpan, sSortField, Page_FollowUp_Recurring_List.SORT_FIELDS[sSortField]);
+			this._oSort.registerToggleElement(oSortImg, sSortField, Page_FollowUp_Recurring_List.SORT_FIELDS[sSortField]);
 		}
 		
 		// Optional filter field
 		if (sFilterField)
 		{
-			var oIcon	= $T.img({src: Component_FollowUp_List_All.FILTER_IMAGE_SOURCE, alt: 'Filter by ' + sLabel, title: 'Filter by ' + sLabel});
+			var oIcon	= $T.img({src: Page_FollowUp_Recurring_List.FILTER_IMAGE_SOURCE, alt: 'Filter by ' + sLabel, title: 'Filter by ' + sLabel});
 			this._oFilter.registerFilterIcon(sFilterField, oIcon, sLabel);
 			oTH.appendChild(oIcon);
 		}
@@ -416,56 +418,46 @@ var Component_FollowUp_List_All = Class.create(
 		return oTH;
 	},
 	
-	_getFollowUpActions	: function(oFollowUp)
+	_getFollowUpActions	: function(oFollowUpRecurring)
 	{
 		var oUL	= $T.ul({class: 'reset horizontal followup-list-all-actions'});
 		
-		var oClose	= $T.img({src: Component_FollowUp_List_All.ACTION_CLOSE_IMAGE_SOURCE, alt: 'Close the Follow-Up', title: 'Close the Follow-Up'});
-		oClose.observe('click', this._closeFollowUp.bind(this, oFollowUp, $CONSTANT.FOLLOWUP_CLOSURE_TYPE_COMPLETED));
-		oUL.appendChild($T.li(oClose));
+		var oEnd	= $T.img({src: Page_FollowUp_Recurring_List.ACTION_END_IMAGE_SOURCE, alt: 'End the Follow-Up', title: 'End the Follow-Up'});
+		oEnd.observe('click', this._end.bind(this, oFollowUpRecurring.id));
+		oUL.appendChild($T.li(oEnd));
 		
-		var oDismiss	= $T.img({src: Component_FollowUp_List_All.ACTION_DISMISS_IMAGE_SOURCE, alt: 'Dismiss the Follow-Up', title: 'Dismiss the Follow-Up'});
-		oDismiss.observe('click', this._closeFollowUp.bind(this, oFollowUp, $CONSTANT.FOLLOWUP_CLOSURE_TYPE_DISMISSED));
-		oUL.appendChild($T.li(oDismiss));
-		
-		var oEditDueDate	= $T.img({src: Component_FollowUp_List_All.ACTION_EDIT_DATE_IMAGE_SOURCE, alt: 'Edit Due Date', title: 'Edit Due Date'});
-		oEditDueDate.observe('click', this._editDueDate.bind(this, oFollowUp));
+		var oEditDueDate	= $T.img({src: Page_FollowUp_Recurring_List.ACTION_EDIT_DATE_IMAGE_SOURCE, alt: 'Edit End Date', title: 'Edit End Date'});
+		oEditDueDate.observe('click', this._editDueDate.bind(this, oFollowUpRecurring));
 		oUL.appendChild($T.li(oEditDueDate));
 		
-		var oReAssign	= $T.img({src: Component_FollowUp_List_All.ACTION_REASSIGN_IMAGE_SOURCE, alt: 'Reassign the Follow-Up', title: 'Reassign the Follow-Up'});
-		oReAssign.observe('click', this._reAssignFollowUp.bind(this, oFollowUp));
+		var oReAssign	= $T.img({src: Page_FollowUp_Recurring_List.ACTION_REASSIGN_IMAGE_SOURCE, alt: 'Reassign the Follow-Up', title: 'Reassign the Follow-Up'});
+		oReAssign.observe('click', this._reAssignFollowUp.bind(this, oFollowUpRecurring));
 		oUL.appendChild($T.li(oReAssign));
 		
-		var oInvAndPay	= 	$T.a({href: 'flex.php/Account/InvoicesAndPayments/?Account.Id=' + oFollowUp.details.account_id},
-								$T.img({src: Component_FollowUp_List_All.ACTION_INV_PAYMENTS_IMAGE_SOURCE, alt: 'Invoices & Payments', title: 'Invoices & Payments'})
+		var oInvAndPay	= 	$T.a({href: 'flex.php/Account/InvoicesAndPayments/?Account.Id=' + oFollowUpRecurring.details.account_id},
+								$T.img({src: Page_FollowUp_Recurring_List.ACTION_INV_PAYMENTS_IMAGE_SOURCE, alt: 'Invoices & Payments', title: 'Invoices & Payments'})
 							);
 		oUL.appendChild($T.li(oInvAndPay));
 		
-		var oRecurring	= 	$T.a({href: 'reflex.php/FollowUp/ManageRecurring/' + (this._iEmployeeId ? this._iEmployeeId : '')},
-								$T.img({src: Component_FollowUp_List_All.ACTION_RECURRING_IMAGE_SOURCE, alt: 'View Recurring Follow-Ups', title: 'View Recurring Follow-Ups'})
-							);
-		oUL.appendChild($T.li(oRecurring));
-		
-		if (oFollowUp.followup_id && !oFollowUp.followup_closure_id && (this._bEditMode || (oFollowUp.assigned_employee_id == this._iEmployeeId)))
+		if (oFollowUpRecurring.end_datetime)
 		{
-			// Leave visible
+			var iEndDate	= Date.parse(oFollowUpRecurring.end_datetime.replace(/-/g, '/'));
+			if ((iEndDate >= new Date().getTime()) && (this._bEditMode || (oFollowUpRecurring.assigned_employee_id == this._iEmployeeId)))
+			{
+				// Leave visible
+			}
+			else
+			{
+				oEnd.toggle();
+				oEditDueDate.toggle();
+			}
 		}
 		else
 		{
-			oEditDueDate.toggle();
-		}
-		
-		if (!oFollowUp.followup_closure_id && (this._bEditMode || (oFollowUp.assigned_employee_id == this._iEmployeeId)))
-		{
 			// Leave visible
 		}
-		else
-		{
-			oClose.toggle();
-			oDismiss.toggle();
-		}
 		
-		if (this._bEditMode && !oFollowUp.followup_closure_id)
+		if (this._bEditMode)
 		{
 			// Leave visible
 		}
@@ -474,7 +466,7 @@ var Component_FollowUp_List_All = Class.create(
 			oReAssign.toggle();
 		}
 		
-		if (oFollowUp.details && oFollowUp.details.account_id)
+		if (oFollowUpRecurring.details && oFollowUpRecurring.details.account_id)
 		{
 			// Leave visible
 		}
@@ -482,87 +474,128 @@ var Component_FollowUp_List_All = Class.create(
 		{
 			oInvAndPay.toggle();
 		}
-		
-		if (oFollowUp.followup_recurring_id && !oFollowUp.followup_id)
-		{
-			// Leave visible
-		}
-		else
-		{
-			oRecurring.toggle();
-		}
-		
+				
 		return oUL;
 	},
 	
-	_closeFollowUp	: function(oFollowUp, iFollowUpClosureTypeId)
-	{
-		var oPopup	= 	new Popup_FollowUp_Close(
-							iFollowUpClosureTypeId,
-							oFollowUp.followup_id, 
-							oFollowUp.followup_recurring_id,
-							oFollowUp.followup_recurring_iteration,
-							this.oPagination.getCurrentPage.bind(this.oPagination)
-						);
-	},
-	
-	_reAssignFollowUp	: function(oFollowUp)
+	_reAssignFollowUp	: function(oFollowUpRecurring)
 	{
 		var oPopup	= 	new Popup_FollowUp_Reassign(
-							oFollowUp.followup_id, 
-							oFollowUp.followup_recurring_id,
+							null, 
+							oFollowUpRecurring.id,
 							this.oPagination.getCurrentPage.bind(this.oPagination)
 						);
 	},
 	
-	_editDueDate	: function(oFollowUp)
+	_editDueDate	: function(oFollowUpRecurring)
 	{
-		var oPopup	= 	new Popup_FollowUp_Due_Date(
-							oFollowUp.followup_id, 
-							oFollowUp.due_datetime,
+		var oPopup	= 	new Popup_FollowUp_Recurring_End_Date(
+							oFollowUpRecurring,
 							this.oPagination.getCurrentPage.bind(this.oPagination)
 						);
+	},
+	
+	_end	: function(iFollowUpId)
+	{
+		Reflex_Popup.yesNoCancel(
+			'Are you sure you want to end this Recurring Follow-Up?', 
+			{fnOnYes: this._setEndDateNow.bind(this, iFollowUpId)}
+		);
+	},
+	
+	_setEndDateNow	: function(iFollowUpId, oResponse)
+	{
+		if (typeof oResponse == 'undefined')
+		{
+			// Show loading
+			this.oLoading	= new Reflex_Popup.Loading('Setting end date...');
+			this.oLoading.display();
+			
+			// Make request
+			var fnJSON	= 	jQuery.json.jsonFunction(
+								this._setEndDateNow.bind(this, iFollowUpId), 
+								this._ajaxError.bind(this, false), 
+								'FollowUp_Recurring', 
+								'updateEndDate'
+							);
+			fnJSON(iFollowUpId, Reflex_Date_Format.format('Y-m-d H:i:s', new Date()));
+		}
+		else if (oResponse.Success)
+		{
+			this.oLoading.hide();
+			delete this.oLoading;
+			
+			// Refresh the page
+			this.oPagination.getCurrentPage();
+		}
+		else
+		{
+			// Error
+			this._ajaxError(false, oResponse);
+		}
+	},
+	
+	_ajaxError	: function(bHideOnClose, oResponse)
+	{
+		if (this.oLoading)
+		{
+			this.oLoading.hide();
+			delete this.oLoading;
+		}
+		
+		var oConfig	= {sTitle: 'Error', fnOnClose: (bHideOnClose ? this.hide.bind(this) : null)};
+		
+		if (oResponse.Message)
+		{
+			Reflex_Popup.alert(oResponse.Message, oConfig);
+		}
+		else if (oResponse.ERROR)
+		{
+			Reflex_Popup.alert(oResponse.ERROR, oConfig);
+		}
 	}
 });
 
-Component_FollowUp_List_All.MAX_RECORDS_PER_PAGE		= 15;
-Component_FollowUp_List_All.EDIT_IMAGE_SOURCE			= '../admin/img/template/pencil.png';
-Component_FollowUp_List_All.FILTER_IMAGE_SOURCE			= '../admin/img/template/table_row_insert.png';
-Component_FollowUp_List_All.REMOVE_FILTER_IMAGE_SOURCE	= '../admin/img/template/delete.png';
+Page_FollowUp_Recurring_List.MAX_RECORDS_PER_PAGE		= 15;
+Page_FollowUp_Recurring_List.EDIT_IMAGE_SOURCE			= '../admin/img/template/pencil.png';
+Page_FollowUp_Recurring_List.FILTER_IMAGE_SOURCE		= '../admin/img/template/table_row_insert.png';
+Page_FollowUp_Recurring_List.REMOVE_FILTER_IMAGE_SOURCE	= '../admin/img/template/delete.png';
 
-Component_FollowUp_List_All.ACTION_CLOSE_IMAGE_SOURCE			= '../admin/img/template/approve.png';
-Component_FollowUp_List_All.ACTION_DISMISS_IMAGE_SOURCE			= '../admin/img/template/decline.png';
-Component_FollowUp_List_All.ACTION_EDIT_DATE_IMAGE_SOURCE		= '../admin/img/template/edit_date.png';
-Component_FollowUp_List_All.ACTION_REASSIGN_IMAGE_SOURCE		= '../admin/img/template/user_edit.png';
-Component_FollowUp_List_All.ACTION_INV_PAYMENTS_IMAGE_SOURCE	= '../admin/img/template/invoices_payments.png';
-Component_FollowUp_List_All.ACTION_RECURRING_IMAGE_SOURCE		= '../admin/img/template/followup_recurring.png';
+Page_FollowUp_Recurring_List.ACTION_END_IMAGE_SOURCE			= '../admin/img/template/decline.png';
+Page_FollowUp_Recurring_List.ACTION_EDIT_DATE_IMAGE_SOURCE		= '../admin/img/template/edit_date.png';
+Page_FollowUp_Recurring_List.ACTION_REASSIGN_IMAGE_SOURCE		= '../admin/img/template/user_edit.png';
+Page_FollowUp_Recurring_List.ACTION_INV_PAYMENTS_IMAGE_SOURCE	= '../admin/img/template/invoices_payments.png';
+Page_FollowUp_Recurring_List.ACTION_RECURRING_IMAGE_SOURCE		= '../admin/img/template/followup_recurring.png';
 
-Component_FollowUp_List_All.SORT_IMAGE_SOURCE						= {};
-Component_FollowUp_List_All.SORT_IMAGE_SOURCE[Sort.DIRECTION_ASC]	= '../admin/img/template/order_asc.png';
-Component_FollowUp_List_All.SORT_IMAGE_SOURCE[Sort.DIRECTION_DESC]	= '../admin/img/template/order_desc.png';
+Page_FollowUp_Recurring_List.SORT_IMAGE_SOURCE						= {};
+Page_FollowUp_Recurring_List.SORT_IMAGE_SOURCE[Sort.DIRECTION_ASC]	= '../admin/img/template/order_asc.png';
+Page_FollowUp_Recurring_List.SORT_IMAGE_SOURCE[Sort.DIRECTION_DESC]	= '../admin/img/template/order_desc.png';
 
-Component_FollowUp_List_All.TYPE_NOTE_IMAGE_SOURCE					= '../admin/img/template/followup_note.png';
-Component_FollowUp_List_All.TYPE_ACTION_IMAGE_SOURCE				= '../admin/img/template/followup_action.png';
-Component_FollowUp_List_All.TYPE_TICKET_CORRESPONDENCE_IMAGE_SOURCE	= '../admin/img/template/tickets.png';
+Page_FollowUp_Recurring_List.TYPE_NOTE_IMAGE_SOURCE						= '../admin/img/template/followup_note.png';
+Page_FollowUp_Recurring_List.TYPE_ACTION_IMAGE_SOURCE					= '../admin/img/template/followup_action.png';
+Page_FollowUp_Recurring_List.TYPE_TICKET_CORRESPONDENCE_IMAGE_SOURCE	= '../admin/img/template/tickets.png';
 
-Component_FollowUp_List_All.FILTER_FIELD_OWNER			= 'assigned_employee_id';
-Component_FollowUp_List_All.FILTER_FIELD_FOLLOWUP_DATE	= 'due_datetime';
-Component_FollowUp_List_All.FILTER_FIELD_TYPE			= 'followup_type_id';
-Component_FollowUp_List_All.FILTER_FIELD_CATEGORY		= 'followup_category_id';
-Component_FollowUp_List_All.FILTER_FIELD_STATUS			= 'status';
+Page_FollowUp_Recurring_List.FILTER_FIELD_OWNER			= 'assigned_employee_id';
+Page_FollowUp_Recurring_List.FILTER_FIELD_TYPE			= 'followup_type_id';
+Page_FollowUp_Recurring_List.FILTER_FIELD_CATEGORY		= 'followup_category_id';
+Page_FollowUp_Recurring_List.FILTER_FIELD_START_DATE	= 'start_datetime';
+Page_FollowUp_Recurring_List.FILTER_FIELD_END_DATE		= 'end_datetime';
 
-Component_FollowUp_List_All.SORT_FIELD_DATE_CREATED		= 'created_datetime';
-Component_FollowUp_List_All.SORT_FIELD_OWNER			= 'assigned_employee_id';
-Component_FollowUp_List_All.SORT_FIELD_FOLLOWUP_DATE	= 'due_datetime';
-Component_FollowUp_List_All.SORT_FIELD_TYPE				= 'followup_type_id';
-Component_FollowUp_List_All.SORT_FIELD_LAST_MODIFIED	= 'modified_datetime';
-Component_FollowUp_List_All.SORT_FIELD_CATEGORY			= 'followup_category_id';
-Component_FollowUp_List_All.SORT_FIELD_STATUS			= 'status';
+Page_FollowUp_Recurring_List.SORT_FIELD_DATE_CREATED		= 'created_datetime';
+Page_FollowUp_Recurring_List.SORT_FIELD_OWNER				= 'assigned_employee_id';
+Page_FollowUp_Recurring_List.SORT_FIELD_TYPE				= 'followup_type_id';
+Page_FollowUp_Recurring_List.SORT_FIELD_LAST_MODIFIED		= 'modified_datetime';
+Page_FollowUp_Recurring_List.SORT_FIELD_CATEGORY			= 'followup_category_id';
+Page_FollowUp_Recurring_List.SORT_FIELD_START_DATE			= 'start_datetime';
+Page_FollowUp_Recurring_List.SORT_FIELD_END_DATE			= 'end_datetime';
+Page_FollowUp_Recurring_List.SORT_FIELD_RECURRENCE_PERIOD	= 'recurrence_period';
 
-Component_FollowUp_List_All.DATA_SET_DEFINITION			= {sObject: 'FollowUp', sMethod: 'getDataSet'};
+Page_FollowUp_Recurring_List.DATA_SET_DEFINITION		= {sObject: 'FollowUp_Recurring', sMethod: 'getDataSet'};
+
+Page_FollowUp_Recurring_List.NO_END_DATE				= '9999-12-31 23:59:00';
 
 // Helper functions
-Component_FollowUp_List_All._getTypeElement	= function(iType)
+Page_FollowUp_Recurring_List._getTypeElement	= function(iType)
 {
 	if (Flex.Constant.arrConstantGroups.followup_type)
 	{
@@ -572,13 +605,13 @@ Component_FollowUp_List_All._getTypeElement	= function(iType)
 		switch (iType)
 		{
 			case $CONSTANT.FOLLOWUP_TYPE_NOTE:
-				sImgSrc	= Component_FollowUp_List_All.TYPE_NOTE_IMAGE_SOURCE;
+				sImgSrc	= Page_FollowUp_Recurring_List.TYPE_NOTE_IMAGE_SOURCE;
 				break;
 			case $CONSTANT.FOLLOWUP_TYPE_ACTION:
-				sImgSrc	= Component_FollowUp_List_All.TYPE_ACTION_IMAGE_SOURCE;
+				sImgSrc	= Page_FollowUp_Recurring_List.TYPE_ACTION_IMAGE_SOURCE;
 				break;
 			case $CONSTANT.FOLLOWUP_TYPE_TICKET_CORRESPONDENCE:
-				sImgSrc	= Component_FollowUp_List_All.TYPE_TICKET_CORRESPONDENCE_IMAGE_SOURCE;
+				sImgSrc	= Page_FollowUp_Recurring_List.TYPE_TICKET_CORRESPONDENCE_IMAGE_SOURCE;
 				break;
 		}
 		
@@ -588,7 +621,7 @@ Component_FollowUp_List_All._getTypeElement	= function(iType)
 	return 'Error';
 };
 
-Component_FollowUp_List_All._getAllTypesAsOptions	= function(fCallback)
+Page_FollowUp_Recurring_List._getAllTypesAsOptions	= function(fCallback)
 {
 	var aOptions	= [];
 	for (var iType in Flex.Constant.arrConstantGroups.followup_type)
@@ -606,7 +639,7 @@ Component_FollowUp_List_All._getAllTypesAsOptions	= function(fCallback)
 	}
 };
 
-Component_FollowUp_List_All._validateDueDate	= function(sValue)
+Page_FollowUp_Recurring_List._validateDueDate	= function(sValue)
 {
 	if (isNaN(Date.parse(sValue.replace(/-/g, '/'))))
 	{
@@ -618,7 +651,7 @@ Component_FollowUp_List_All._validateDueDate	= function(sValue)
 	}
 };
 
-Component_FollowUp_List_All.getFollowUpDescriptionTD	= function(iType, oDetails)
+Page_FollowUp_Recurring_List.getFollowUpDescriptionTD	= function(iType, oDetails)
 {
 	var oTD	= $T.td();
 	
@@ -631,29 +664,29 @@ Component_FollowUp_List_All.getFollowUpDescriptionTD	= function(iType, oDetails)
 				// Account, service or contact info
 				if (oDetails.account_id && oDetails.account_name)
 				{
-					oTD.appendChild(Component_FollowUp_List_All.getAccountLink(oDetails.account_id, oDetails.account_name));
+					oTD.appendChild(Page_FollowUp_Recurring_List.getAccountLink(oDetails.account_id, oDetails.account_name));
 				}
 				
 				if (oDetails.service_id && oDetails.service_fnn)
 				{
-					oTD.appendChild(Component_FollowUp_List_All.getServiceLink(oDetails.service_id, oDetails.service_fnn));
+					oTD.appendChild(Page_FollowUp_Recurring_List.getServiceLink(oDetails.service_id, oDetails.service_fnn));
 				}
 				
 				if (oDetails.contact_id && oDetails.contact_name)
 				{
-					oTD.appendChild(Component_FollowUp_List_All.getAccountContactLink(oDetails.contact_id, oDetails.contact_name));
+					oTD.appendChild(Page_FollowUp_Recurring_List.getAccountContactLink(oDetails.contact_id, oDetails.contact_name));
 				}
 				break;
 			case $CONSTANT.FOLLOWUP_TYPE_TICKET_CORRESPONDENCE:
 				// Account or ticket contact info
 				if (oDetails.account_id && oDetails.account_name)
 				{
-					oTD.appendChild(Component_FollowUp_List_All.getAccountLink(oDetails.account_id, oDetails.account_name));
+					oTD.appendChild(Page_FollowUp_Recurring_List.getAccountLink(oDetails.account_id, oDetails.account_name));
 				}
 				
 				if (oDetails.account_id && oDetails.ticket_id && oDetails.ticket_contact_name)
 				{
-					oTD.appendChild(Component_FollowUp_List_All.getTicketLink(oDetails.ticket_id, oDetails.account_id, oDetails.ticket_contact_name));
+					oTD.appendChild(Page_FollowUp_Recurring_List.getTicketLink(oDetails.ticket_id, oDetails.account_id, oDetails.ticket_contact_name));
 				}
 				break;
 		}
@@ -662,7 +695,7 @@ Component_FollowUp_List_All.getFollowUpDescriptionTD	= function(iType, oDetails)
 	return oTD;
 };
 
-Component_FollowUp_List_All.getAccountLink	= function(iId, sName)
+Page_FollowUp_Recurring_List.getAccountLink	= function(iId, sName)
 {
 	return 	$T.div(
 				$T.a({href: 'flex.php/Account/Overview/?Account.Id=' + iId},
@@ -671,7 +704,7 @@ Component_FollowUp_List_All.getAccountLink	= function(iId, sName)
 			);
 };
 
-Component_FollowUp_List_All.getAccountContactLink	= function(iId, sName)
+Page_FollowUp_Recurring_List.getAccountContactLink	= function(iId, sName)
 {
 	return 	$T.div(
 				$T.a({href: 'reflex.php/Contact/View/' + iId + '/'},
@@ -680,7 +713,7 @@ Component_FollowUp_List_All.getAccountContactLink	= function(iId, sName)
 			);
 };
 
-Component_FollowUp_List_All.getServiceLink	= function(iId, sFNN)
+Page_FollowUp_Recurring_List.getServiceLink	= function(iId, sFNN)
 {
 	return 	$T.div(
 				$T.a({href: 'flex.php/Service/View/?Service.Id=' + iId},
@@ -689,7 +722,7 @@ Component_FollowUp_List_All.getServiceLink	= function(iId, sFNN)
 			);
 };
 
-Component_FollowUp_List_All.getTicketLink	= function(iTicketId, iAccountId, sContact)
+Page_FollowUp_Recurring_List.getTicketLink	= function(iTicketId, iAccountId, sContact)
 {
 	return 	$T.div(
 				$T.a({href: 'reflex.php/Ticketing/Ticket/' + iTicketId + '/View/?Account=' + iAccountId},
@@ -698,11 +731,18 @@ Component_FollowUp_List_All.getTicketLink	= function(iTicketId, iAccountId, sCon
 			);
 };
 
-Component_FollowUp_List_All.getDateTimeElement	= function(sMySQLDate)
+Page_FollowUp_Recurring_List.getDateTimeElement	= function(sMySQLDate)
 {
-	var oDate	= new Date(Date.parse(sMySQLDate.replace(/-/g, '/')));
-	var sDate	= Reflex_Date_Format.format('d/m/Y', oDate);
-	var sTime	= Reflex_Date_Format.format('h:i A', oDate);
+	if (sMySQLDate && (sMySQLDate != Page_FollowUp_Recurring_List.NO_END_DATE))
+	{
+		var oDate	= new Date(Date.parse(sMySQLDate.replace(/-/g, '/')));
+		var sDate	= Reflex_Date_Format.format('d/m/Y', oDate);
+		var sTime	= Reflex_Date_Format.format('h:i A', oDate);
+	}
+	else
+	{
+		var sTime	= '';
+	}
 	
 	return 	$T.div(
 				$T.div(sDate),
@@ -710,15 +750,24 @@ Component_FollowUp_List_All.getDateTimeElement	= function(sMySQLDate)
 					sTime
 				)
 			);
-}
+};
+
+Page_FollowUp_Recurring_List.getRecurrencePeriod	= function(oFollowUpRecurring)
+{
+	var sSuffix	= (oFollowUpRecurring.recurrence_multiplier != 0 ? 's' : '');
+	return 	oFollowUpRecurring.recurrence_multiplier + 
+			' ' + 
+			Flex.Constant.arrConstantGroups.followup_recurrence_period[oFollowUpRecurring.followup_recurrence_period_id].Name + 
+			sSuffix;
+};
 
 // Filter Control field definitions
-var oNow										= new Date();
-Component_FollowUp_List_All.YEAR_MINIMUM		= oNow.getFullYear();
-Component_FollowUp_List_All.YEAR_MAXIMUM		= Component_FollowUp_List_All.YEAR_MINIMUM + 10;
+var oNow							= new Date();
+Page_FollowUp_Recurring_List.YEAR_MINIMUM		= oNow.getFullYear();
+Page_FollowUp_Recurring_List.YEAR_MAXIMUM		= Page_FollowUp_Recurring_List.YEAR_MINIMUM + 10;
 
-Component_FollowUp_List_All.FILTER_FIELDS														= {};
-Component_FollowUp_List_All.FILTER_FIELDS[Component_FollowUp_List_All.FILTER_FIELD_OWNER]		= 	{
+Page_FollowUp_Recurring_List.FILTER_FIELDS	= {};
+Page_FollowUp_Recurring_List.FILTER_FIELDS[Page_FollowUp_Recurring_List.FILTER_FIELD_OWNER]		= 	{
 																										iType	: Filter.FILTER_TYPE_VALUE,
 																										oOption	: 	{
 																														sType		: 'select',
@@ -731,7 +780,7 @@ Component_FollowUp_List_All.FILTER_FIELDS[Component_FollowUp_List_All.FILTER_FIE
 																																		}
 																													}
 																									};
-Component_FollowUp_List_All.FILTER_FIELDS[Component_FollowUp_List_All.FILTER_FIELD_FOLLOWUP_DATE]	= 	{
+Page_FollowUp_Recurring_List.FILTER_FIELDS[Page_FollowUp_Recurring_List.FILTER_FIELD_START_DATE]	= 	{
 																											iType			: Filter.FILTER_TYPE_RANGE,
 																											bFrom			: true,
 																											sFrom			: 'Start Date',
@@ -744,16 +793,38 @@ Component_FollowUp_List_All.FILTER_FIELDS[Component_FollowUp_List_All.FILTER_FIE
 																																	sType		: 'combo_date',
 																																	mDefault	: null,
 																																	oDefinition	:	{
-																																						sLabel		: 'Date',
+																																						sLabel		: 'Start Date',
 																																						mEditable	: true,
-																																						fnValidate	: Component_FollowUp_List_All._validateDueDate,
-																																						iMinYear	: Component_FollowUp_List_All.YEAR_MINIMUM,
-																																						iMaxYear	: Component_FollowUp_List_All.YEAR_MAXIMUM,
+																																						fnValidate	: Page_FollowUp_Recurring_List._validateDueDate,
+																																						iMinYear	: Page_FollowUp_Recurring_List.YEAR_MINIMUM,
+																																						iMaxYear	: Page_FollowUp_Recurring_List.YEAR_MAXIMUM,
 																																						iFormat		: Control_Field_Combo_Date.FORMAT_D_M_Y
 																																					}
 																																}
 																										};
-Component_FollowUp_List_All.FILTER_FIELDS[Component_FollowUp_List_All.FILTER_FIELD_TYPE]	= 	{
+Page_FollowUp_Recurring_List.FILTER_FIELDS[Page_FollowUp_Recurring_List.FILTER_FIELD_END_DATE]	= 	{
+																											iType			: Filter.FILTER_TYPE_RANGE,
+																											bFrom			: true,
+																											sFrom			: 'Start Date',
+																											bTo				: true,
+																											sTo				: 'End Date',
+																											sGreaterThan	: 'On Or After',
+																											sLessThan		: 'On Or Before',
+																											sBetween		: 'Between',
+																											oOption			: 	{
+																																	sType		: 'combo_date',
+																																	mDefault	: null,
+																																	oDefinition	:	{
+																																						sLabel		: 'End Date',
+																																						mEditable	: true,
+																																						fnValidate	: Page_FollowUp_Recurring_List._validateDueDate,
+																																						iMinYear	: Page_FollowUp_Recurring_List.YEAR_MINIMUM,
+																																						iMaxYear	: Page_FollowUp_Recurring_List.YEAR_MAXIMUM,
+																																						iFormat		: Control_Field_Combo_Date.FORMAT_D_M_Y
+																																					}
+																																}
+																										};
+Page_FollowUp_Recurring_List.FILTER_FIELDS[Page_FollowUp_Recurring_List.FILTER_FIELD_TYPE]	= 	{
 																									iType	: Filter.FILTER_TYPE_VALUE,
 																									oOption	:	{
 																													sType		: 'select',
@@ -762,26 +833,12 @@ Component_FollowUp_List_All.FILTER_FIELDS[Component_FollowUp_List_All.FILTER_FIE
 																																		sLabel		: 'Status',
 																																		mEditable	: true,
 																																		fnValidate	: null,
-																																		fnPopulate	: Component_FollowUp_List_All._getAllTypesAsOptions
+																																		fnPopulate	: Page_FollowUp_Recurring_List._getAllTypesAsOptions
 																																	}
 																												}
 																									
 																								};
-Component_FollowUp_List_All.FILTER_FIELDS[Component_FollowUp_List_All.FILTER_FIELD_STATUS]	= 	{
-																									iType	: Filter.FILTER_TYPE_VALUE,
-																									oOption	: 	{
-																													sType		: 'select',
-																													mDefault	: null,
-																													oDefinition	:	{
-																																		sLabel		: 'Type',
-																																		mEditable	: true,
-																																		fnValidate	: null,
-																																		fnPopulate	: FollowUp_Status.getAllAsSelectOptions.bind(FollowUp_Status)
-																																	}
-																												}
-																									
-																								};
-Component_FollowUp_List_All.FILTER_FIELDS[Component_FollowUp_List_All.FILTER_FIELD_CATEGORY]	= 	{
+Page_FollowUp_Recurring_List.FILTER_FIELDS[Page_FollowUp_Recurring_List.FILTER_FIELD_CATEGORY]	= 	{
 																										iType	: Filter.FILTER_TYPE_VALUE,
 																										oOption	:	{
 																														sType		: 'select',
@@ -797,12 +854,13 @@ Component_FollowUp_List_All.FILTER_FIELDS[Component_FollowUp_List_All.FILTER_FIE
 
 
 // Sorting definitions
-Component_FollowUp_List_All.SORT_FIELDS	=	{
-												created_datetime		: Sort.DIRECTION_OFF,
-												assigned_employee_id	: Sort.DIRECTION_OFF,
-												due_datetime			: Sort.DIRECTION_ASC,
-												followup_type_id		: Sort.DIRECTION_OFF,
-												modified_datetime		: Sort.DIRECTION_OFF,
-												followup_category_id	: Sort.DIRECTION_OFF,
-												status					: Sort.DIRECTION_OFF
-											};
+Page_FollowUp_Recurring_List.SORT_FIELDS	=	{
+													created_datetime		: Sort.DIRECTION_OFF,
+													assigned_employee_id	: Sort.DIRECTION_OFF,
+													followup_type_id		: Sort.DIRECTION_OFF,
+													modified_datetime		: Sort.DIRECTION_OFF,
+													followup_category_id	: Sort.DIRECTION_OFF,
+													start_datetime			: Sort.DIRECTION_OFF,
+													end_datetime			: Sort.DIRECTION_OFF,
+													recurrence_period		: Sort.DIRECTION_OFF
+												};

@@ -1,6 +1,6 @@
 <?php
 
-class HtmlTemplate_FollowUp_List extends FlexHtmlTemplate
+class HtmlTemplate_FollowUp_Recurring_List extends FlexHtmlTemplate
 {
 	public function __construct($intContext=NULL, $strId=NULL, $mxdDataToRender=NULL)
 	{
@@ -19,6 +19,7 @@ class HtmlTemplate_FollowUp_List extends FlexHtmlTemplate
 		
 		// Control fields & other inputs
 		$this->LoadJavascript('control_field');
+		$this->LoadJavascript('control_field_text');
 		$this->LoadJavascript('control_field_select');
 		$this->LoadJavascript('control_field_date_picker');
 		$this->LoadJavascript('control_field_combo_date');
@@ -30,11 +31,9 @@ class HtmlTemplate_FollowUp_List extends FlexHtmlTemplate
 		$this->LoadJavascript('followup_closure');
 		
 		// Classes that renders the page
-		$this->LoadJavascript('component_followup_list_all');
-		$this->LoadJavascript('page_followup_list');
-		$this->LoadJavascript('popup_followup_close');
+		$this->LoadJavascript('page_followup_recurring_list');
 		$this->LoadJavascript('popup_followup_reassign');
-		$this->LoadJavascript('popup_followup_due_date');
+		$this->LoadJavascript('popup_followup_recurring_end_date');
 	}
 
 	public function Render()
@@ -43,7 +42,7 @@ class HtmlTemplate_FollowUp_List extends FlexHtmlTemplate
 		$sEmployeeId	= (isset($this->mxdDataToRender['iEmployeeId']) ? $this->mxdDataToRender['iEmployeeId'] : 'null');
 		
 		echo "
-		<div id='FollowUpListContainer'></div>
+		<div id='FollowUpRecurringListContainer'></div>
 		<script type='text/javascript'>
 			Event.observe(
 				window, 
@@ -54,7 +53,7 @@ class HtmlTemplate_FollowUp_List extends FlexHtmlTemplate
 						['followup_closure_type', 'followup_type', 'followup_recurrence_period'], 
 						function()
 						{
-							objFollowUpList = new Page_FollowUp_List(\$ID('FollowUpListContainer'), $sEmployeeId, $sEditJSON);
+							objFollowUpRecurringList = new Page_FollowUp_Recurring_List(\$ID('FollowUpRecurringListContainer'), $sEmployeeId, $sEditJSON);
 						}, false
 					)
 				}

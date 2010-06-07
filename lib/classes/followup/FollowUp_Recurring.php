@@ -61,7 +61,7 @@ class FollowUp_Recurring extends ORM_Cached
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 
-	public static function searchFor($iLimit=null, $iOffset=null, $aSort=null, $aFilter=null)
+	public static function searchFor($iLimit=null, $iOffset=null, $aSort=null, $aFilter=null, $bCountOnly=false)
 	{
 		$sFromClause	= 'followup_recurring';
 		$sSelectClause	= '*';
@@ -71,13 +71,20 @@ class FollowUp_Recurring extends ORM_Cached
 		
 		// WHERE clause
 		$aWhereInfo		= StatementSelect::generateWhere(null, $aFilter);
-				
-		// ORDER BY clause
-		$sOrderByClause	= Statement::generateOrderBy($aSort);
-				
-		// LIMIT clause
-		$sOrderByClause	= Statement::generateOrderBy($iLimit, $iOffset);
-				
+		
+		if ($bCountOnly)
+		{
+			$sSelectClause	= 'COUNT(id) AS count';
+		}
+		else
+		{		
+			// ORDER BY clause
+			$sOrderByClause	= Statement::generateOrderBy(null, $aSort);
+			
+			// LIMIT clause
+			$sLimitClause	= Statement::generateOrderBy($iLimit, $iOffset);
+		}
+		
 		// Get records
 		$oSelect	= new StatementSelect($sFromClause, $sSelectClause, $aWhereInfo['sClause'], $sOrderByClause, $sLimitClause);
 		if ($oSelect->Execute($aWhereInfo['aValues']) === FALSE)
@@ -85,14 +92,22 @@ class FollowUp_Recurring extends ORM_Cached
 			throw new Exception("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oSelect->Error());
 		}
 		
-		// Create FollowUp_Recurring objects for each
-		$aRecurringFollowUps	= array();
-		while ($aRow = $oSelect->Fetch())
+		if ($bCountOnly)
 		{
-			$aRecurringFollowUps[$aRow['id']]	= new self($aRow);
+			$aCount	= $oSelect->Fetch();
+			return $aCount['count'];
 		}
-		
-		return $aRecurringFollowUps;
+		else
+		{
+			// Create FollowUp_Recurring objects for each
+			$aRecurringFollowUps	= array();
+			while ($aRow = $oSelect->Fetch())
+			{
+				$aRecurringFollowUps[$aRow['id']]	= new self($aRow);
+			}
+			
+			return $aRecurringFollowUps;
+		}
 	}
 
 	public function getDetails()

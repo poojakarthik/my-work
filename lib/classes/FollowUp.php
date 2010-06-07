@@ -234,7 +234,7 @@ class FollowUp extends ORM_Cached
 		$oFollowUpHistory->save();
 	}
 
-	public static function searchFor($iLimit=null, $iOffset=null, $aSort=null, $aFilter=null)
+	public static function searchFor($iLimit=null, $iOffset=null, $aSort=null, $aFilter=null, $bCountOnly=false)
 	{
 		$sFromClause	= '	followup f 
 							LEFT JOIN	followup_closure fc 
@@ -247,7 +247,6 @@ class FollowUp extends ORM_Cached
 		
 		// WHERE clause
 		$aWhereInfo		= StatementSelect::generateWhere(null, $aFilter);
-		//echo print_r($aWhereInfo, true);
 		
 		// ORDER BY clause (with field alias' for category and type)
 		$sOrderByClause	=	StatementSelect::generateOrderBy(
@@ -258,11 +257,10 @@ class FollowUp extends ORM_Cached
 								), 
 								$aSort
 							);
-		//echo $sOrderByClause;
 		
 		// LIMIT clause
 		$sLimitClause	= StatementSelect::generateLimit($iLimit, $iOffset);
-				
+			
 		// Get followups (ignore orderby and limit for this query, will be done on the temporary table)
 		$oFollowUpSelect	= new StatementSelect($sFromClause, $sSelectClause, $aWhereInfo['sClause'], '', '');
 		if ($oFollowUpSelect->Execute($aWhereInfo['aValues']) === FALSE)
@@ -275,30 +273,40 @@ class FollowUp extends ORM_Cached
 		unset($aFilter['followup_closure_id']);
 		unset($aFilter['followup_closure_type_id']);
 		
-		$aRecurringFollowUps	= FollowUp_Recurring::searchFor(null, null, $aSort, $aFilter);
+		$aRecurringFollowUps	= FollowUp_Recurring::searchFor(null, null, null, $aFilter);
 		
 		// Create temporary table 'followup_search'
-		$mResult	= $oQuery->Execute("	CREATE TEMPORARY TABLE followup_search
-											(
-												followup_id						INT			UNSIGNED	NULL,
-												assigned_employee_id			BIGINT		UNSIGNED	NOT NULL,
-												created_datetime				DATETIME				NOT NULL,
-												due_datetime					DATETIME				NOT NULL,
-												followup_type_id				INT			UNSIGNED	NOT NULL,
-												followup_category_id			INT			UNSIGNED	NOT NULL,
-												followup_closure_id				INT			UNSIGNED	NULL,
-												followup_closure_type_id		INT						NULL,
-												closed_datetime					DATETIME				NULL		DEFAULT NULL,
-												followup_recurring_id			INT			UNSIGNED	NULL,
-												followup_recurring_iteration	INT						NULL,
-												modified_datetime				DATETIME				NOT NULL,
-												modified_employee_id			BIGINT		UNSIGNED	NOT NULL,
-												status							VARCHAR(128)			NOT NULL
-											)");
-		
-		if ($mResult === false)
+		$mTempTablCheckResult	= $oQuery->Execute("	SELECT	count(*) 
+														FROM 	followup_search");
+		if ($mTempTablCheckResult === false)
 		{
-			throw new Exception("Error creating temporary table. Database Error = ".$oQuery->Error());
+			$mResult	= $oQuery->Execute("	CREATE TEMPORARY TABLE followup_search
+												(
+													followup_id						INT			UNSIGNED	NULL,
+													assigned_employee_id			BIGINT		UNSIGNED	NOT NULL,
+													created_datetime				DATETIME				NOT NULL,
+													due_datetime					DATETIME				NOT NULL,
+													followup_type_id				INT			UNSIGNED	NOT NULL,
+													followup_category_id			INT			UNSIGNED	NOT NULL,
+													followup_closure_id				INT			UNSIGNED	NULL,
+													followup_closure_type_id		INT						NULL,
+													closed_datetime					DATETIME				NULL		DEFAULT NULL,
+													followup_recurring_id			INT			UNSIGNED	NULL,
+													followup_recurring_iteration	INT						NULL,
+													modified_datetime				DATETIME				NOT NULL,
+													modified_employee_id			BIGINT		UNSIGNED	NOT NULL,
+													status							VARCHAR(128)			NOT NULL
+												)");
+			
+			if ($mResult === false)
+			{
+				throw new Exception("Error creating temporary table. Database Error = ".$oQuery->Error());
+			}
+		}
+		else
+		{
+			// Clear followup_search
+			$oQuery->Execute("TRUNCATE followup_search");
 		}
 		
 		// Insert followups into 'followup_search'
@@ -350,17 +358,14 @@ class FollowUp extends ORM_Cached
 		{
 			// Get all of the projected followups for this recurring followup
 			$iEndDate		= strtotime($oRecurringFollowUp->end_datetime);
-			$iProjectedDate	= strtotime($oRecurringFollowUp->start_datetime);
 			$i				= 0;
-			while($iProjectedDate <= $iEndDate && ($i < FollowUp_Recurring::ITERATION_LIMIT))
+			$iProjectedDate	= $oRecurringFollowUp->getProjectedDueDate($i);
+			//echo "$iId::{$oRecurringFollowUp->start_datetime}::{$oRecurringFollowUp->end_datetime}\n";
+			while(($iProjectedDate <= $iEndDate) && ($i < FollowUp_Recurring::ITERATION_LIMIT))
 			{
-				// Calculates the projected followup date given an iteration
-				$iProjectedDate	= $oRecurringFollowUp->getProjectedDueDate($i);
-				$i++;
-				
 				// Projected date is within recurrence date limit, convert into db string
 				$sDueDateTime	= date('Y-m-d H:i:s', $iProjectedDate);
-				
+				//echo "  --- $iId::$i::$sDueDateTime::{$oRecurringFollowUp->end_datetime}\n";
 				// Check that the iteration doesn't already exist as a once off (closed) follow-up
 				$sCheck	=	sprintf(
 								"	SELECT	followup_recurring_id, due_datetime
@@ -433,6 +438,10 @@ class FollowUp extends ORM_Cached
 						}
 					}
 				}
+				
+				// Calculates the projected followup date given an iteration
+				$iProjectedDate	= $oRecurringFollowUp->getProjectedDueDate($i);
+				$i++;
 			}
 		}
 		
@@ -444,13 +453,30 @@ class FollowUp extends ORM_Cached
 												ON fs.followup_type_id = ft.id
 									JOIN	Employee e
 												ON fs.assigned_employee_id = e.Id';
-		$oFollowUpSearchSelect	= new StatementSelect($sSearchFrom, 'fs.*', $aWhereInfo['sClause'], $sOrderByClause, $sLimitClause);
+		$sSelect				= 'fs.*';
+		
+		if ($bCountOnly)
+		{
+			$sOrderByClause	= '';
+			$sLimitClause	= '';
+			$sSelect		= 'COUNT(COALESCE(fs.followup_id, fs.followup_recurring_id)) AS count';
+		}
+		
+		$oFollowUpSearchSelect	= new StatementSelect($sSearchFrom, $sSelect, $aWhereInfo['sClause'], $sOrderByClause, $sLimitClause);
 		if ($oFollowUpSearchSelect->Execute($aWhereInfo['aValues']) === FALSE)
 		{
 			throw new Exception("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oFollowUpSelect->Error());
 		}
 		
-		return $oFollowUpSearchSelect->FetchAll();
+		if ($bCountOnly)
+		{
+			$aCount	= $oFollowUpSearchSelect->Fetch();
+			return $aCount['count'];
+		}
+		else
+		{
+			return $oFollowUpSearchSelect->FetchAll();
+		}
 	}
 
 	public static function getStatus($iFollowUpClosureId, $sDueDateTime)

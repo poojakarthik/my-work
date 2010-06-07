@@ -91,49 +91,43 @@ class JSON_Handler_FollowUp extends JSON_Handler
 				$iOffset	= ($iLimit === null) ? null : max((int)$iOffset, 0);
 				$aFollowUps	= FollowUp::searchFor($iLimit, $iOffset, get_object_vars($oFieldsToSort), $aFilter);
 				$aResults	= array();
-				$iCount		= 0;		
+				$iCount		= 0;
+				
+				//return count($aFollowUps)."---".$aFollowUps;
+				
 				foreach ($aFollowUps as $aFollowUp)
 				{
-					if ($iLimit && $iCount >= $iOffset+$iLimit)
-					{
-						// Break out, as there's no point in continuing
-						break;
-					}
-					elseif ($iCount >= $iOffset)
-					{
-						// Create ORM object
-						$oFollowUp			= new FollowUp($aFollowUp);
-						$oFollowUpStdClass	= $oFollowUp->toStdClass();
-						
-						// Add special 'followup_id' field (from temporary table 'followup_search')
-						$oFollowUpStdClass->followup_id	= $aFollowUp['followup_id'];
-						
-						// Add other special fields
-						$oFollowUpStdClass->followup_closure_type_id		= $aFollowUp['followup_closure_type_id'];
-						$oFollowUpStdClass->followup_recurring_iteration	= $aFollowUp['followup_recurring_iteration'];
-						$oFollowUpStdClass->assigned_employee_label			= Employee::getForId($oFollowUp->assigned_employee_id)->getName();
-						$oFollowUpStdClass->followup_category_label			= FollowUp_Category::getForId($oFollowUp->followup_category_id)->name;
-						$oFollowUpStdClass->status							= FollowUp::getStatus($oFollowUp->followup_closure_id, $oFollowUp->due_datetime);
-						
-						if ($oFollowUp->followup_recurring_id)
-						{
-							// Get the followup_recurring orm object to get the details
-							$oFollowUpRecurring			= FollowUp_Recurring::getForId($oFollowUp->followup_recurring_id);
-							$oFollowUpStdClass->details	= $oFollowUpRecurring->getDetails();
-							$oFollowUpStdClass->summary	= $oFollowUpRecurring->getSummary();
-						}
-						else
-						{
-							// Get the actual followup orm object to get details
-							$oFollowUpTemp				= FollowUp::getForId($oFollowUpStdClass->followup_id);
-							$oFollowUpStdClass->details	= $oFollowUpTemp->getDetails();
-							$oFollowUpStdClass->summary	= $oFollowUpTemp->getSummary();
-						}
-						
-						// Add to Result Set
-						$aResults[$iCount+$iOffset]	= $oFollowUpStdClass;
-					} 
+					// Create ORM object
+					$oFollowUp			= new FollowUp($aFollowUp);
+					$oFollowUpStdClass	= $oFollowUp->toStdClass();
 					
+					// Add special 'followup_id' field (from temporary table 'followup_search')
+					$oFollowUpStdClass->followup_id	= $aFollowUp['followup_id'];
+					
+					// Add other special fields
+					$oFollowUpStdClass->followup_closure_type_id		= $aFollowUp['followup_closure_type_id'];
+					$oFollowUpStdClass->followup_recurring_iteration	= $aFollowUp['followup_recurring_iteration'];
+					$oFollowUpStdClass->assigned_employee_label			= Employee::getForId($oFollowUp->assigned_employee_id)->getName();
+					$oFollowUpStdClass->followup_category_label			= FollowUp_Category::getForId($oFollowUp->followup_category_id)->name;
+					$oFollowUpStdClass->status							= FollowUp::getStatus($oFollowUp->followup_closure_id, $oFollowUp->due_datetime);
+					
+					if ($oFollowUp->followup_recurring_id)
+					{
+						// Get the followup_recurring orm object to get the details
+						$oFollowUpRecurring			= FollowUp_Recurring::getForId($oFollowUp->followup_recurring_id);
+						$oFollowUpStdClass->details	= $oFollowUpRecurring->getDetails();
+						$oFollowUpStdClass->summary	= $oFollowUpRecurring->getSummary();
+					}
+					else
+					{
+						// Get the actual followup orm object to get details
+						$oFollowUpTemp				= FollowUp::getForId($oFollowUpStdClass->followup_id);
+						$oFollowUpStdClass->details	= $oFollowUpTemp->getDetails();
+						$oFollowUpStdClass->summary	= $oFollowUpTemp->getSummary();
+					}
+					
+					// Add to Result Set
+					$aResults[$iCount+$iOffset]	= $oFollowUpStdClass;
 					$iCount++;
 				}
 				
@@ -141,7 +135,7 @@ class JSON_Handler_FollowUp extends JSON_Handler
 				return 	array(
 							"Success"		=> true,
 							"aRecords"		=> $aResults,
-							"iRecordCount"	=> $iCount
+							"iRecordCount"	=> FollowUp::searchFor(null, null, get_object_vars($oFieldsToSort), $aFilter, true)
 						);
 			}
 		}

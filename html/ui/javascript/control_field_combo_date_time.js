@@ -62,7 +62,7 @@ var Control_Field_Combo_Date_Time	= Class.create(/* extends */ Control_Field,
 	
 	setElementValue	: function(mValue)
 	{
-		var aValueSplit	= mValue.match(Control_Field_Combo_Date_Time.VALUE_REGEX);
+		var aValueSplit	= (mValue ? mValue.match(Control_Field_Combo_Date_Time.VALUE_REGEX) : null);
 		this.oDate.setElementValue(aValueSplit && aValueSplit[1] ? aValueSplit[1] : '');
 		this.oTime.setElementValue(aValueSplit && aValueSplit[2] ? aValueSplit[2] : '');
 	},

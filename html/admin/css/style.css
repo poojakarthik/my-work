@@ -4051,13 +4051,11 @@ div.control-field-combo-time-select
 {
 	display			: inline-block;
 	vertical-align	: top;
-	padding-right	: 0.5em;
 }
 
 li.control-field-combo-time-select-separator,
 li.control-field-combo-date-select-separator > span
 {
-	font-size		: 1.5em;
 	vertical-align	: middle;
 	padding-right	: 0.25em;
 }
@@ -4274,6 +4272,11 @@ div#ChargeListContainer > div.component-account-charge-list div.tab-page
 
 /************************ START - Follow-Up Management Page - START ************************/
 
+div.followup-list-all
+{
+	margin-top	: 0.5em;
+}
+
 div.followup-category-validation-errors
 {
 	padding	: 0.5em;
@@ -4361,30 +4364,7 @@ div.followup-list-all-duedate-edit > img
 	cursor			: pointer;
 }
 
-div.page-followup-list-active-container,
-div.page-followup-list-recurring-container
-{
-	width			: 48%;
-	margin-bottom	: 2em;
-}
-
-div.page-followup-list-active-container
-{
-	float	: left;
-}
-
-div.page-followup-list-recurring-container
-{
-	float	: right;
-}
-
-div.page-followup-list-all-container
-{
-	clear	: both;
-	float	: none;
-}
-
-div.page-followup-list-all-container div.section-content > table.reflex
+div.followup-list-all div.section-content > table.reflex
 {
 	margin-left		: 0em;
 	margin-right	: 0em;
@@ -4396,7 +4376,24 @@ div.followup-list-all-pagination
 	padding-right	: 1em;
 }
 
+div.section > div.section-header > div.section-header-title > span.followup-list-all-pagination-info
+{
+	padding-left	: 0.5em;
+	font-size		: 0.95em;
+}
+
+div.followup-list-all-datetime-time
+{
+	font-size	: 0.8em;
+}
+
 /************************ END - Follow-Up Management Page - END ************************/
+
+/************************ START - Recurring Follow-Up Management Page - START ************************/
+
+/* Uses followup-list-all for the most part */
+
+/************************ END - Recurring Follow-Up Management Page - END ************************/
 
 /************************ START - Filter Class - START ************************/
 
@@ -4466,6 +4463,11 @@ div.popup-followup-due-date-select
 	margin	: 1em;
 }
 
+div.popup-followup-due-date-select div.control-field
+{
+	margin-left	: 0.5em;
+}
+
 div.popup-followup-due-date-buttons
 {
 	text-align		: center;
@@ -4473,3 +4475,53 @@ div.popup-followup-due-date-buttons
 }
 
 /************************ END - Popup Follow-Up Due Date - END ************************/
+
+/************************ START - Popup Recurring Follow-Up End Date - START ************************/
+
+div.popup-followup-recurring-dates
+{
+	margin	: 1em;
+}
+
+li.popup-followup-recurring-dates-label span,
+li.popup-followup-recurring-dates-end-by span,
+li.popup-followup-recurring-dates-end-after span
+{
+	cursor	: pointer;
+}
+
+div.popup-followup-recurring-dates-select
+{
+	margin-bottom	: 0.5em;
+}
+
+div.popup-followup-recurring-dates-buttons
+{
+	text-align		: center;
+	margin-bottom	: 0.5em;
+}
+
+ul.popup-followup-recurring-dates-radio-list > li > ul.reset > li:nth-child(1)
+{
+	padding-bottom	: 0.75em;
+}
+
+ul.popup-followup-recurring-dates-radio-list > li > ul.reset div.control-field
+{
+	display	: inline-block;
+}
+
+ul.popup-followup-recurring-dates-radio-list > li > ul.reset > li > input[type="radio"]
+{
+	margin-right	: 0.75em;
+}
+
+ul.popup-followup-recurring-dates-radio-list > li > ul.reset > li.popup-followup-recurring-dates-end-after > div.control-field > input
+{
+	width			: 2em;
+	margin-left		: 0.5em;
+	margin-right	: 0.5em;
+}
+
+/************************ END - Popup Recurring Follow-Up End Date - END ************************/
+

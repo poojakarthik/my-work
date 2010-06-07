@@ -3,7 +3,7 @@ var Popup_FollowUp_Due_Date	= Class.create(Reflex_Popup,
 {
 	initialize	: function($super, iFollowUpId, initialDateTime, fnOnFinish)
 	{
-		$super(31.3);
+		$super(28.3);
 		
 		this._iFollowUpId		= iFollowUpId;
 		this._initialDateTime	= initialDateTime;
@@ -13,31 +13,23 @@ var Popup_FollowUp_Due_Date	= Class.create(Reflex_Popup,
 	
 	_buildUI	: function()
 	{
-		// Create date & time combo field
-		this._oDateTimeSelect	= 	new Control_Field_Combo_Date_Time(
-									'Date & Time', 
-									null, 
-									Control_Field_Combo_Date.FORMAT_D_M_Y, 
-									Popup_FollowUp_Due_Date.YEAR_MINIMUM, 
-									Popup_FollowUp_Due_Date.YEAR_MAXIMUM,
-									Control_Field_Combo_Date.FORMAT_12_HOUR,
-									'/',
-									':'
-								);
-		
-		this._oDateTimeSelect.setVisible(true);
-		this._oDateTimeSelect.setEditable(true);
-		this._oDateTimeSelect.setMandatory(true);
-		this._oDateTimeSelect.setValidateFunction(this._validateDate.bind(this));
-		this._oDateTimeSelect.setValidationReason(Popup_FollowUp_Due_Date.VALIDATION_REASON);
-		this._oDateTimeSelect.setRenderMode(Control_Field.RENDER_MODE_EDIT);
-		this._oDateTimeSelect.setValue(this._initialDateTime);
+		// Create date time picker
+		var oDatePicker	= new Control_Field_Date_Picker('Date', null, 'Y-m-d H:i:s', true);
+		oDatePicker.setVisible(true);
+		oDatePicker.setEditable(true);
+		oDatePicker.setMandatory(false);
+		oDatePicker.setValidateFunction(this._validateDate.bind(this));
+		oDatePicker.setValidationReason(Popup_FollowUp_Due_Date.VALIDATION_REASON_DATE);
+		oDatePicker.setRenderMode(Control_Field.RENDER_MODE_EDIT);
+		oDatePicker.setValue(this._initialDateTime);
+		this._oDatePicker	= oDatePicker;
 		
 		// Build content
 		this._oContent	= 	$T.div({class: 'popup-followup-due-date'},
 								$T.div({class: 'popup-followup-due-date-select'},
 									$T.ul({class: 'reset horizontal'},
-										$T.li(this._oDateTimeSelect.getElement())
+										$T.li('Choose a date: '),
+										$T.li(this._oDatePicker.getElement())
 									)
 								),
 								$T.div({class: 'popup-followup-due-date-buttons'},
@@ -91,7 +83,7 @@ var Popup_FollowUp_Due_Date	= Class.create(Reflex_Popup,
 			// Validate the date
 			try
 			{
-				this._oDateTimeSelect.validate(false);
+				this._oDatePicker.validate(false);
 			}
 			catch (ex)
 			{
@@ -111,10 +103,7 @@ var Popup_FollowUp_Due_Date	= Class.create(Reflex_Popup,
 								'FollowUp', 
 								'updateFollowUpDueDate'
 							);
-			
-			var sDateTime	= this._oDateTimeSelect.getElementValue();
-			var oDate		= new Date(Date.parse(sDateTime.replace(/-/g, '/')));
-			fnJSON(this._iFollowUpId, Reflex_Date_Format.format('Y-m-d H:i:s', oDate));
+			fnJSON(this._iFollowUpId, this._oDatePicker.getElementValue());
 		}
 		else if (oResponse.Success)
 		{

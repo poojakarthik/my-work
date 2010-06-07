@@ -656,7 +656,6 @@ DateChooser.prototype = {
 
 	// Hides the chooser
 	hide: function() {
-		debugger;
 		if (this._isVisible && !this.bNeverHide)
 		{
 			this._isVisible = false;
@@ -675,14 +674,10 @@ DateChooser.prototype = {
 	},
 
 	// Shows the chooser on the page
-	show: function() {
+	show: function(iPositionX, iPositionY) {
 		if (!this._constructed)
 		{
 			this.createChooserHtml();
-			// Keep it hidden until it has been repositioned
-			var position = this.cumulativeOffset(this._input);
-			this._div.style.left = (position.left + this._input.clientWidth + 24) + 'px';
-			this._div.style.top = (position.top + this._input.clientHeight - 18) + 'px';
 			this._constructed = true;
 		}
 		else
@@ -721,7 +716,20 @@ DateChooser.prototype = {
 				throw exception;
 			}
 		}
-	
+		
+		// Keep it hidden until it has been repositioned
+		if (iPositionX && iPositionY)
+		{
+			this._div.style.left 	= iPositionX + 'px';
+			this._div.style.top 	= iPositionY + 'px';
+		}
+		else
+		{
+			var position 			= this.cumulativeOffset(this._input);
+			this._div.style.left 	= (position.left + this._input.clientWidth + 24) + 'px';
+			this._div.style.top 	= (position.top + this._input.clientHeight - 18) + 'px';
+		}
+		
 		document.body.appendChild(this._div);
 		this._isVisible = true;
 	},
@@ -876,7 +884,9 @@ DateChooser.prototype = {
 		option.value = 0;
 		option.appendChild(document.createTextNode(12));
 		select.appendChild(option);
-
+		
+		option.selected = (this._date.getHours() == 0) || (this._date.getHours() == 12);
+		
 		// Add minutes
 		select = document.createElement("SELECT");
 		select.id = this._inputId + "min";
