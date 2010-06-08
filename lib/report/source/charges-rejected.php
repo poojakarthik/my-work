@@ -27,7 +27,7 @@ $arrDataReport['SQLWhere']				= "	(<ChargeType> = 'ANY' OR CONCAT(Charge.Nature,
 											AND (<CustomerGroupId> = 0 OR Account.CustomerGroup = <CustomerGroupId>)
 											AND (Charge.CreatedOn BETWEEN <EarliestDate> AND <LatestDate>)
 											AND Charge.Status = 104
-											AND (ISNULL(<charge_model_id>) OR cm.id = <charge_model_id>)
+											AND (<charge_model_id> = 0 OR cm.id = <charge_model_id>)
 											ORDER BY Charge.CreatedOn ASC, Charge.Id ASC;";
 $arrDataReport['SQLGroupBy']			= "";
 $arrDataReport['data_report_status_id']	= DATA_REPORT_STATUS_DRAFT;
@@ -85,7 +85,7 @@ $arrChargeModelQuery = array(	'Query'			=> "SELECT id AS Value, name AS Label
 													FROM charge_model
 													ORDER BY name ASC;",
 								'ValueType'		=> "dataInteger",
-								'IgnoreField'	=> array(	'Value'	=> NULL,
+								'IgnoreField'	=> array(	'Value'	=> 0,
 															'Label'	=> 'Any')
 								);
 
