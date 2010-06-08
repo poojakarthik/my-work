@@ -33,14 +33,6 @@ $arrSubscript['Directory']			= BACKEND_BASE_PATH.'rating/';
 $arrSubscript['ChildDie']			= TRUE;
 $arrConfig['Rate']					= $arrSubscript;
 
-// REMOVE ME!
-// Special Charges
-$arrSubscript = Array();
-$arrSubscript['Command']			= 'php special_charges.php';
-$arrSubscript['Directory']			= BACKEND_BASE_PATH.'charges/';
-$arrSubscript['ChildDie']			= TRUE;
-$arrConfig['SpecialCharges']		= $arrSubscript;
-
 // Recurring Charges
 $arrSubscript = Array();
 $arrSubscript['Command']			= 'php recurring_charges.php';
@@ -54,13 +46,5 @@ $arrSubscript['Command']			= 'php payments.php';
 $arrSubscript['Directory']			= BACKEND_BASE_PATH.'payment/';
 $arrSubscript['ChildDie']			= TRUE;
 $arrConfig['Payments']				= $arrSubscript;
-
-// REPLACE ME
-// Check CDR Files
-$arrSubscript = Array();
-$arrSubscript['Command']			= 'php cdrcheck.php -v';
-$arrSubscript['Directory']			= BACKEND_BASE_PATH.'billing/';
-$arrSubscript['ChildDie']			= TRUE;
-$arrConfig['CDRFileCheck']			= $arrSubscript;
 
 ?>
