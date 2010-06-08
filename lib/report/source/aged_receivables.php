@@ -23,6 +23,28 @@ $arrDataReport['SQLTable']		= "	Invoice i
 														SUM(
 															COALESCE(
 																IF(
+																	c.Nature = 'DR',
+																	0 - c.Amount,
+																	c.Amount
+																), 0
+															)
+															*
+															IF(
+																c.global_tax_exempt = 1,
+																1,
+																(
+																	SELECT		COALESCE(EXP(SUM(LN(1 + tt.rate_percentage))), 1)
+																	FROM		tax_type tt
+																	WHERE		c.ChargedOn BETWEEN tt.start_datetime AND tt.end_datetime
+																				AND tt.global = 1
+																)
+															)
+														), 0
+													)																								AS adjustment_total_debit,
+													COALESCE(
+														SUM(
+															COALESCE(
+																IF(
 																	c.Nature = 'CR',
 																	0 - c.Amount,
 																	c.Amount
@@ -40,7 +62,7 @@ $arrDataReport['SQLTable']		= "	Invoice i
 																)
 															)
 														), 0
-													)																								AS adjustment_total
+													)																								AS adjustment_total_credit
 										FROM		Charge c
 										WHERE		c.Status IN (101, 102)	/* Approved or Temp Invoice */
 													AND c.charge_model_id IN (SELECT id FROM charge_model WHERE system_name = 'ADJUSTMENT')
@@ -62,64 +84,72 @@ $arrDocReq[]	= "DataReport";
 $arrDataReport['Documentation']	= serialize($arrDocReq);
 
 // SQL Select
-$arrSQLSelect['Account']					['Value']	= "a.Id";
-$arrSQLSelect['Account']					['Type']	= EXCEL_TYPE_INTEGER;
+$arrSQLSelect['Account']							['Value']	= "a.Id";
+$arrSQLSelect['Account']							['Type']	= EXCEL_TYPE_INTEGER;
 
-$arrSQLSelect['Account Name']				['Value']	= "a.BusinessName";
+$arrSQLSelect['Account Name']						['Value']	= "a.BusinessName";
 
-$arrSQLSelect['Customer Group']				['Value']	= "cg.internal_name";
+$arrSQLSelect['Customer Group']						['Value']	= "cg.internal_name";
 
-$arrSQLSelect['Customer Name']				['Value']	= "CONCAT(c.FirstName, ' ', c.LastName)";
+$arrSQLSelect['Customer Name']						['Value']	= "CONCAT(c.FirstName, ' ', c.LastName)";
 
-$arrSQLSelect['Address Line 1']				['Value']	= "a.Address1";
+$arrSQLSelect['Address Line 1']						['Value']	= "a.Address1";
 
-$arrSQLSelect['Address Line 2']				['Value']	= "a.Address2";
+$arrSQLSelect['Address Line 2']						['Value']	= "a.Address2";
 
-$arrSQLSelect['Suburb']						['Value']	= "a.Suburb";
+$arrSQLSelect['Suburb']								['Value']	= "a.Suburb";
 
-$arrSQLSelect['Postcode']					['Value']	= "a.Postcode";
+$arrSQLSelect['Postcode']							['Value']	= "a.Postcode";
 
-$arrSQLSelect['State']						['Value']	= "a.State";
+$arrSQLSelect['State']								['Value']	= "a.State";
 
-$arrSQLSelect['Phone']						['Value']	= "c.Phone";
-$arrSQLSelect['Phone']						['Type']	= EXCEL_TYPE_FNN;
+$arrSQLSelect['Phone']								['Value']	= "c.Phone";
+$arrSQLSelect['Phone']								['Type']	= EXCEL_TYPE_FNN;
 
-$arrSQLSelect['Mobile']						['Value']	= "c.Mobile";
-$arrSQLSelect['Mobile']						['Type']	= EXCEL_TYPE_FNN;
+$arrSQLSelect['Mobile']								['Value']	= "c.Mobile";
+$arrSQLSelect['Mobile']								['Type']	= EXCEL_TYPE_FNN;
 
-$arrSQLSelect['Email']						['Value']	= "c.Email";
+$arrSQLSelect['Email']								['Value']	= "c.Email";
 
-$arrSQLSelect['Credit Control Status']		['Value']	= "ccs.name";
+$arrSQLSelect['Credit Control Status']				['Value']	= "ccs.name";
 
-$arrSQLSelect['TIO Reference Number']		['Value']	= "a.tio_reference_number";
+$arrSQLSelect['TIO Reference Number']				['Value']	= "a.tio_reference_number";
 
-$arrSQLSelect['Outstanding Not Overdue']	['Value']	= "SUM(IF(CURDATE() <= i.DueOn AND i.Status NOT IN (106, 105, 100), i.Balance, 0))  + COALESCE(aua.adjustment_total, 0)";
-$arrSQLSelect['Outstanding Not Overdue']	['Type']	= EXCEL_TYPE_CURRENCY;
-$arrSQLSelect['Outstanding Not Overdue']	['Total']	= EXCEL_TOTAL_SUM;
+$arrSQLSelect['Outstanding Not Overdue']			['Value']	= "SUM(IF(CURDATE() <= i.DueOn AND i.Status NOT IN (106, 105, 100), i.Balance, 0))";
+$arrSQLSelect['Outstanding Not Overdue']			['Type']	= EXCEL_TYPE_CURRENCY;
+$arrSQLSelect['Outstanding Not Overdue']			['Total']	= EXCEL_TOTAL_SUM;
 
-$arrSQLSelect['1-29 Days Overdue']			['Value']	= "SUM(IF(CURDATE() BETWEEN ADDDATE(i.DueOn, INTERVAL 1 DAY) AND ADDDATE(i.DueOn, INTERVAL 29 DAY) AND i.Status NOT IN (106, 105, 100), i.Balance, 0)) + COALESCE(aua.adjustment_total, 0)";
-$arrSQLSelect['1-29 Days Overdue']			['Type']	= EXCEL_TYPE_CURRENCY;
-$arrSQLSelect['1-29 Days Overdue']			['Total']	= EXCEL_TOTAL_SUM;
+$arrSQLSelect['1-29 Days Overdue']					['Value']	= "SUM(IF(CURDATE() BETWEEN ADDDATE(i.DueOn, INTERVAL 1 DAY) AND ADDDATE(i.DueOn, INTERVAL 29 DAY) AND i.Status NOT IN (106, 105, 100), i.Balance, 0))";
+$arrSQLSelect['1-29 Days Overdue']					['Type']	= EXCEL_TYPE_CURRENCY;
+$arrSQLSelect['1-29 Days Overdue']					['Total']	= EXCEL_TOTAL_SUM;
 
-$arrSQLSelect['30-59 Days Overdue']			['Value']	= "SUM(IF(CURDATE() BETWEEN ADDDATE(i.DueOn, INTERVAL 30 DAY) AND ADDDATE(i.DueOn, INTERVAL 59 DAY) AND i.Status NOT IN (106, 105, 100), i.Balance, 0)) + COALESCE(aua.adjustment_total, 0)";
-$arrSQLSelect['30-59 Days Overdue']			['Type']	= EXCEL_TYPE_CURRENCY;
-$arrSQLSelect['30-59 Days Overdue']			['Total']	= EXCEL_TOTAL_SUM;
+$arrSQLSelect['30-59 Days Overdue']					['Value']	= "SUM(IF(CURDATE() BETWEEN ADDDATE(i.DueOn, INTERVAL 30 DAY) AND ADDDATE(i.DueOn, INTERVAL 59 DAY) AND i.Status NOT IN (106, 105, 100), i.Balance, 0))";
+$arrSQLSelect['30-59 Days Overdue']					['Type']	= EXCEL_TYPE_CURRENCY;
+$arrSQLSelect['30-59 Days Overdue']					['Total']	= EXCEL_TOTAL_SUM;
 
-$arrSQLSelect['60-89 Days Overdue']			['Value']	= "SUM(IF(CURDATE() BETWEEN ADDDATE(i.DueOn, INTERVAL 60 DAY) AND ADDDATE(i.DueOn, INTERVAL 89 DAY) AND i.Status NOT IN (106, 105, 100), i.Balance, 0)) + COALESCE(aua.adjustment_total, 0)";
-$arrSQLSelect['60-89 Days Overdue']			['Type']	= EXCEL_TYPE_CURRENCY;
-$arrSQLSelect['60-89 Days Overdue']			['Total']	= EXCEL_TOTAL_SUM;
+$arrSQLSelect['60-89 Days Overdue']					['Value']	= "SUM(IF(CURDATE() BETWEEN ADDDATE(i.DueOn, INTERVAL 60 DAY) AND ADDDATE(i.DueOn, INTERVAL 89 DAY) AND i.Status NOT IN (106, 105, 100), i.Balance, 0))";
+$arrSQLSelect['60-89 Days Overdue']					['Type']	= EXCEL_TYPE_CURRENCY;
+$arrSQLSelect['60-89 Days Overdue']					['Total']	= EXCEL_TOTAL_SUM;
 
-$arrSQLSelect['90+ Days Overdue']			['Value']	= "SUM(IF(CURDATE() >= ADDDATE(i.DueOn, INTERVAL 90 DAY) AND i.Status NOT IN (106, 105, 100), i.Balance, 0)) + COALESCE(aua.adjustment_total, 0)";
-$arrSQLSelect['90+ Days Overdue']			['Type']	= EXCEL_TYPE_CURRENCY;
-$arrSQLSelect['90+ Days Overdue']			['Total']	= EXCEL_TOTAL_SUM;
+$arrSQLSelect['90+ Days Overdue']					['Value']	= "SUM(IF(CURDATE() >= ADDDATE(i.DueOn, INTERVAL 90 DAY) AND i.Status NOT IN (106, 105, 100), i.Balance, 0))";
+$arrSQLSelect['90+ Days Overdue']					['Type']	= EXCEL_TYPE_CURRENCY;
+$arrSQLSelect['90+ Days Overdue']					['Total']	= EXCEL_TOTAL_SUM;
 
-$arrSQLSelect['Total Overdue']				['Value']	= "SUM(IF(CURDATE() > i.DueOn AND i.Status NOT IN (106, 105, 100), i.Balance, 0)) + COALESCE(aua.adjustment_total, 0)";
-$arrSQLSelect['Total Overdue']				['Type']	= EXCEL_TYPE_CURRENCY;
-$arrSQLSelect['Total Overdue']				['Total']	= EXCEL_TOTAL_SUM;
+$arrSQLSelect['Total Overdue']						['Value']	= "SUM(IF(CURDATE() > i.DueOn AND i.Status NOT IN (106, 105, 100), i.Balance, 0))";
+$arrSQLSelect['Total Overdue']						['Type']	= EXCEL_TYPE_CURRENCY;
+$arrSQLSelect['Total Overdue']						['Total']	= EXCEL_TOTAL_SUM;
 
-$arrSQLSelect['Total Outstanding']			['Value']	= "SUM(IF(i.Status NOT IN (106, 105, 100), i.Balance, 0)) + COALESCE(aua.adjustment_total, 0)";
-$arrSQLSelect['Total Outstanding']			['Type']	= EXCEL_TYPE_CURRENCY;
-$arrSQLSelect['Total Outstanding']			['Total']	= EXCEL_TOTAL_SUM;
+$arrSQLSelect['Total Outstanding']					['Value']	= "SUM(IF(i.Status NOT IN (106, 105, 100), i.Balance, 0))";
+$arrSQLSelect['Total Outstanding']					['Type']	= EXCEL_TYPE_CURRENCY;
+$arrSQLSelect['Total Outstanding']					['Total']	= EXCEL_TOTAL_SUM;
+
+$arrSQLSelect['Unbilled Adjustments DR (inc GST)']	['Value']	= "COALESCE(aua.adjustment_total_debit, 0)";
+$arrSQLSelect['Unbilled Adjustments DR (inc GST)']	['Type']	= EXCEL_TYPE_CURRENCY;
+$arrSQLSelect['Unbilled Adjustments DR (inc GST)']	['Total']	= EXCEL_TOTAL_SUM;
+
+$arrSQLSelect['Unbilled Adjustments CR (inc GST)']	['Value']	= "0 - COALESCE(aua.adjustment_total_credit, 0)";
+$arrSQLSelect['Unbilled Adjustments CR (inc GST)']	['Type']	= EXCEL_TYPE_CURRENCY;
+$arrSQLSelect['Unbilled Adjustments CR (inc GST)']	['Total']	= EXCEL_TOTAL_SUM;
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
