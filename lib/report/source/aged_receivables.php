@@ -24,8 +24,8 @@ $arrDataReport['SQLTable']		= "	Invoice i
 															COALESCE(
 																IF(
 																	c.Nature = 'DR',
-																	0 - c.Amount,
-																	c.Amount
+																	c.Amount,
+																	NULL
 																), 0
 															)
 															*
@@ -47,7 +47,7 @@ $arrDataReport['SQLTable']		= "	Invoice i
 																IF(
 																	c.Nature = 'CR',
 																	0 - c.Amount,
-																	c.Amount
+																	NULL
 																), 0
 															)
 															*
@@ -147,7 +147,7 @@ $arrSQLSelect['Unbilled Adjustments DR (inc GST)']	['Value']	= "COALESCE(aua.adj
 $arrSQLSelect['Unbilled Adjustments DR (inc GST)']	['Type']	= EXCEL_TYPE_CURRENCY;
 $arrSQLSelect['Unbilled Adjustments DR (inc GST)']	['Total']	= EXCEL_TOTAL_SUM;
 
-$arrSQLSelect['Unbilled Adjustments CR (inc GST)']	['Value']	= "0 - COALESCE(aua.adjustment_total_credit, 0)";
+$arrSQLSelect['Unbilled Adjustments CR (inc GST)']	['Value']	= "COALESCE(aua.adjustment_total_credit, 0)";
 $arrSQLSelect['Unbilled Adjustments CR (inc GST)']	['Type']	= EXCEL_TYPE_CURRENCY;
 $arrSQLSelect['Unbilled Adjustments CR (inc GST)']	['Total']	= EXCEL_TOTAL_SUM;
 
