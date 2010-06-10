@@ -104,7 +104,7 @@ Object.extend(ActionsAndNotes,
 		this.loadActionAndNoteTypes(this._onLoaded.bind(this, "Loading Actions And Note Types"));
 		
 		// Step 2: Load constant groups required of this package
-		Flex.Constant.loadConstantGroup(new Array('action_association_type', 'action_type_detail_requirement', 'active_status'), this._onLoaded.bind(this, "Loading Constant Groups"));
+		Flex.Constant.loadConstantGroup(new Array('action_association_type', 'action_type_detail_requirement', 'active_status', 'followup_type'), this._onLoaded.bind(this, "Loading Constant Groups"));
 	},
 	
 	// The strCaller parameter is for debugging purposes, so you can check which step has loaded
@@ -470,7 +470,19 @@ Object.extend(ActionsAndNotes.Creator.prototype,
 		
 		if (response.success && response.success == true)
 		{
-			$Alert("Successfully saved the '"+ note.noteType.typeLabel +"' note");
+			// Show a popup which has an option to create a follow-up for the newly added action
+			Reflex_Popup.yesNoCancel(
+				"Successfully saved the '"+ note.noteType.typeLabel +"' note",
+				{
+					sYesLabel		: 'Create a Follow-Up',
+					sYesIconSource	: '../admin/img/template/followup.png',
+					sNoLabel		: 'Close',
+					fnOnYes			: 	function()
+										{
+											FollowUpLink.showAddFollowUpPopup($CONSTANT.FOLLOWUP_TYPE_NOTE, response.iNoteId);
+										}
+				}
+			);
 			
 			this.clearForm();
 			
@@ -490,7 +502,19 @@ Object.extend(ActionsAndNotes.Creator.prototype,
 		
 		if (response.success && response.success == true)
 		{
-			$Alert("Successfully saved the '"+ action.actionType.name +"' action");
+			// Show a popup which has an option to create a follow-up for the newly added action
+			Reflex_Popup.yesNoCancel(
+				"Successfully saved the '"+ action.actionType.name +"' action",
+				{
+					sYesLabel		: 'Create a Follow-Up',
+					sYesIconSource	: '../admin/img/template/followup.png',
+					sNoLabel		: 'Close',
+					fnOnYes			: 	function()
+										{
+											FollowUpLink.showAddFollowUpPopup($CONSTANT.FOLLOWUP_TYPE_ACTION, response.iActionId);
+										}
+				}
+			);
 			
 			this.clearForm();
 			
@@ -1182,6 +1206,9 @@ Object.extend(ActionsAndNotes.List.prototype,
 			this.elmItemsContainerDiv.scrollTop = 0;
 		}
 		
+		// Update the followup context lists for each action/note
+		FollowUpLink.generateContextLists();
+		
 		this.setLastSearchDetails();
 	},
 
@@ -1432,7 +1459,25 @@ Object.extend(ActionsAndNotes.List.prototype,
 			
 			// It is assumed that objItem.details has had all HTML special chars escaped, except for <br> elements
 			// to protect against html injection
-			elmDetailsDiv.innerHTML = objItem.details;
+			var oDetailsInnerDiv		= $T.div();
+			oDetailsInnerDiv.innerHTML	= objItem.details;
+			elmDetailsDiv.appendChild(oDetailsInnerDiv);
+			
+			// Attach a follow-up context list place holder for the note/action
+			var iFollowUpType	= null; 
+			switch (objItem.recordType)
+			{
+				case ActionsAndNotes.TYPE_NOTE:
+					iFollowUpType	= $CONSTANT.FOLLOWUP_TYPE_NOTE;
+					break;
+				case ActionsAndNotes.TYPE_ACTION:
+					iFollowUpType	= $CONSTANT.FOLLOWUP_TYPE_ACTION;
+					break;
+			}
+			
+			elmDetailsDiv.appendChild(
+				$T.div({class: FollowUp_Link.PLACEHOLDER_CLASS, type: iFollowUpType, type_detail: objItem.id})
+			);
 		}
 		
 		return elmItemDiv;

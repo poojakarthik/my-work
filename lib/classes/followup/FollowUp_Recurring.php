@@ -127,6 +127,7 @@ class FollowUp_Recurring extends ORM_Cached
 							$oAccount					= Account::getForId($oNote->Account);
 							$aDetails['account_id']		= $oAccount->Id;
 							$aDetails['account_name']	= $oAccount->BusinessName;
+							$aDetails['customer_group']	= $oAccount->getCustomerGroup()->internalName;
 						}
 						
 						if ($oNote->Service)
@@ -159,6 +160,7 @@ class FollowUp_Recurring extends ORM_Cached
 						{
 							$aDetails['account_id']		= $iAccountId;
 							$aDetails['account_name']	= $oAccount->BusinessName;
+							$aDetails['customer_group']	= $oAccount->getCustomerGroup()->internalName;
 						}
 						
 						$aServices	= $oAction->getAssociatedServices();
@@ -195,6 +197,7 @@ class FollowUp_Recurring extends ORM_Cached
 								$oAccount					= Account::getForId($oTicket->account_id);
 								$aDetails['account_id']		= $oAccount->Id;
 								$aDetails['account_name']	= $oAccount->BusinessName;
+								$aDetails['customer_group']	= $oAccount->getCustomerGroup()->internalName;
 							}
 						}
 						
@@ -211,7 +214,7 @@ class FollowUp_Recurring extends ORM_Cached
 		return $aDetails;
 	}
 
-	public function getSummary()
+	public function getSummary($iCharacterLimit=30)
 	{
 		$sSummary	= '';
 		switch ($this->followup_type_id)
@@ -257,10 +260,10 @@ class FollowUp_Recurring extends ORM_Cached
 		// Remove whitespace
 		$sSummary	= preg_replace('/\s/', ' ', $sSummary);
 		
-		// Limit to 30 characters
-		if (strlen($sSummary) > 30)
+		// Limit to $iCharacterLimit characters (default 30)
+		if (strlen($sSummary) > $iCharacterLimit)
 		{
-			return substr($sSummary, 0, 30).'...';
+			return substr($sSummary, 0, $iCharacterLimit).'...';
 		}
 		
 		return $sSummary;
@@ -270,7 +273,7 @@ class FollowUp_Recurring extends ORM_Cached
 	{
 		$iStartDate		= strtotime($this->start_datetime);
 		$iProjectedDate	= null;
-		$iMultiplier	= (($iIteration + 1) * $this->recurrence_multiplier);
+		$iMultiplier	= ($iIteration * $this->recurrence_multiplier);
 		
 		switch ($this->followup_recurrence_period_id)
 		{

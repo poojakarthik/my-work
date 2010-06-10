@@ -7,7 +7,7 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		$super(sLabel, sLabelSeparator);
 		
 		this._sDateFormat	= (sDateFormat ? sDateFormat : 'Y-m-d');
-		
+
 		// Create the DOM Elements
 		this.oControlOutput.oEdit	= document.createElement('div');
 		this.oControlOutput.oElement.appendChild(this.oControlOutput.oEdit);
@@ -50,6 +50,8 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 									objDate.getMonth(), 
 									objDate.getDay()
 								);
+		
+		this._aOnChangeCallbacks	= [];
 		
 		this.validate();
 		
@@ -106,11 +108,11 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 	addEventListeners	: function()
 	{
 		this.aEventHandlers					= {};
-		this.aEventHandlers.fnValidate		= this.validate.bind(this);
+		this.aEventHandlers.fnValueChange	= this._valueChange.bind(this);
 		this.aEventHandlers.fnOpenPicker	= this._showDatePicker.bind(this);
 		
-		this.oControlOutput.oHidden.addEventListener('change' ,this.aEventHandlers.fnValidate, false);
-		this.oControlOutput.oHidden.addEventListener('change' ,this.aEventHandlers.fnValidate, false);
+		this.oControlOutput.oHidden.addEventListener('change' ,this.aEventHandlers.fnValueChange, false);
+		this.oControlOutput.oHidden.addEventListener('change' ,this.aEventHandlers.fnValueChange, false);
 		this.oControlOutput.oIcon.addEventListener('click' ,this.aEventHandlers.fnOpenPicker, false);
 	},
 	
@@ -118,7 +120,23 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 	{
 		this.oControlOutput.oInput.removeEventListener('change'	, this.aEventHandlers.fnValidate, false);
 		this.oControlOutput.oIcon.removeEventListener('click'	, this.aEventHandlers.fnOpenPicker, false);
+	},
+	
+	addOnChangeCallback	: function(fnCallback)
+	{
+		this._aOnChangeCallbacks.push(fnCallback);
+	},
+	
+	_valueChange	: function()
+	{
+		this.validate();
+		
+		for (var i = 0; i < this._aOnChangeCallbacks.length; i++)
+		{
+			this._aOnChangeCallbacks[i]();
+		}
 	}
+	 
 });
 
 Control_Field_Date_Picker.DATE_FORMAT	= 'd/m/Y';

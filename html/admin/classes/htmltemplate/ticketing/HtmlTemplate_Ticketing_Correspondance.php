@@ -171,7 +171,10 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 		</tr>
 		<tr class="alt">
 			<td class="title">Details: </td>
-			<td><?=$details?></td>
+			<td>
+				<?=$details?>
+				<div class='followup-context-list-placeholder followup-context-list-placeholder-ticket-correspondence' type='<? echo FOLLOWUP_TYPE_TICKET_CORRESPONDENCE; ?>' type_detail='<?php echo $correspondence->id; ?>'></div>
+			</td>
 		</tr>
 	</tbody>
 </table>
@@ -185,7 +188,7 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 	{
 		$message = array_key_exists('email_not_sent', $this->mxdDataToRender) && $this->mxdDataToRender['email_not_sent'] 
 			? "The correspondence has been saved BUT THE EMAIL HAS NOT BEEN SENT." 
-			: "The correspondence has been saved.";
+			: "The correspondence has been saved. <button onclick='FollowUpLink.showAddFollowUpPopup(".FOLLOWUP_TYPE_TICKET_CORRESPONDENCE.", {$correspondence->id});'>Create a Follow-Up</button>";
 		$this->render_view($correspondence, $message);
 	}
 

@@ -60,7 +60,7 @@ class FollowUp_Action extends ORM_Cached
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 
-	public function getForFollowUpId($iFollowUpId)
+	public static function getForFollowUpId($iFollowUpId)
 	{
 		$oSelect	= self::_preparedStatement('selByFollowUpId');
 		$oSelect->Execute(array('followup_id' => $iFollowUpId));
@@ -71,6 +71,20 @@ class FollowUp_Action extends ORM_Cached
 		}
 		
 		return null;
+	}
+	
+	public static function getFollowUpsForAction($iActionId)
+	{
+		$aFollowUps	= array();
+		$oSelect	= self::_preparedStatement('selByActionId');
+		$oSelect->Execute(array('action_id' => $iActionId));
+		
+		while ($aRow = $oSelect->Fetch())
+		{
+			$aFollowUps[]	= FollowUp::getForId($aRow['followup_id']);	
+		}
+		
+		return $aFollowUps;
 	}
 
 	/**
@@ -105,7 +119,10 @@ class FollowUp_Action extends ORM_Cached
 				case 'selByFollowUpId':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "followup_id = <followup_id>", NULL, 1);
 					break;
-				
+				case 'selByActionId':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "action_id = <action_id>", NULL, 1);
+					break;
+					
 				// INSERTS
 				case 'insSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);

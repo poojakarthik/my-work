@@ -121,11 +121,13 @@ class JSON_Handler_ActionsAndNotes extends JSON_Handler
 				$intAccountId = $objService->account;
 			}
 			
-			Note::createNote($noteType->id, $strContent, Flex::getUserId(), $intAccountId, $intServiceId, $intContactId);
+			$oNote	= Note::createNote($noteType->id, $strContent, Flex::getUserId(), $intAccountId, $intServiceId, $intContactId);
 			TransactionCommit();
 			
-			return array(	"success" => true
-						);
+			return 	array(
+						"success" 	=> true,
+						"iNoteId"	=> $oNote->Id
+					);
 		}
 		catch (Exception $e)
 		{
@@ -188,11 +190,13 @@ class JSON_Handler_ActionsAndNotes extends JSON_Handler
 			
 			$intEmployeeId = Flex::getUserId();
 			
-			Action::createAction($actionType, $strExtraDetails, $intAccountId, $intServiceId, $intContactId, $intEmployeeId, $intEmployeeId);
+			$oAction	= Action::createAction($actionType, $strExtraDetails, $intAccountId, $intServiceId, $intContactId, $intEmployeeId, $intEmployeeId);
 			TransactionCommit();
 			
-			return array(	"success"		=> true
-						);
+			return 	array(
+						"success"	=> true,
+						"iActionId"	=> $oAction->id
+					);
 		}
 		catch (Exception $e)
 		{
@@ -436,6 +440,7 @@ class JSON_Handler_ActionsAndNotes extends JSON_Handler
 			// It's a Note
 			$objNote = $objActionOrNote;
 			
+			$objItem->id			= $objNote->Id;
 			$objItem->recordType	= ActionsAndNotes::TYPE_NOTE;
 			$objItem->typeId		= $objNote->noteType;
 			
@@ -486,6 +491,7 @@ class JSON_Handler_ActionsAndNotes extends JSON_Handler
 			// It's an Action
 			$objAction = $objActionOrNote;
 			
+			$objItem->id			= $objAction->id;
 			$objItem->recordType	= ActionsAndNotes::TYPE_ACTION;
 			$objItem->typeId		= $objAction->actionTypeId;
 			

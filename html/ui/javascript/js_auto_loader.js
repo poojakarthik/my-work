@@ -73,7 +73,8 @@ var JsAutoLoader = {
 				// The script has been requested -- Was an onLoad handler provided?
 				if (fncCallback != undefined)
 				{
-					if (this.loadedScripts[strScriptName] != undefined)
+					var sRegisteredScriptName	= JsAutoLoader.getFileNameOnly(strScriptName);
+					if (this.loadedScripts[sRegisteredScriptName] != undefined)
 					{
 						// This script should be loaded, so run the funcOnLoadEventHandler function, in global scope
 						// wrapping it in a timeout will give it global scope
@@ -95,7 +96,9 @@ var JsAutoLoader = {
 		var script = document.createElement("script");
 		script.setAttribute('type', 'text/javascript');
 		script.setAttribute('src', strSource);
-		Event.startObserving(script, "load", this.registerLoadedScript.bind(this, strScriptName), true);
+		
+		var sRegisteredScriptName	= JsAutoLoader.getFileNameOnly(strScriptName);
+		Event.startObserving(script, "load", this.registerLoadedScript.bind(this, sRegisteredScriptName), true);
 		
 		// Was an onLoad handler provided?
 		if (fncCallback != undefined)
@@ -140,7 +143,7 @@ var JsAutoLoader = {
 		for (var i = 0, j = scripts.length; i < j; i++)
 		{
 			var sSrc	= scripts[i].getAttribute('src');
-			sSrc		= sSrc.replace(/^(.*)(javascript(\/)(.*))$/, '$4');
+			sSrc		= JsAutoLoader.getFileNameOnly(sSrc);
 			
 			// Check for javascript.php source
 			if (sSrc.match(/javascript\.php/))
@@ -162,6 +165,11 @@ var JsAutoLoader = {
 				JsAutoLoader.registerLoadedScript(sSrc);
 			}
 		}
+	},
+	
+	getFileNameOnly	: function(sSrc)
+	{
+		return sSrc.replace(/^(.*)(javascript(\/)(.*))$/, '$4');
 	}
 }
 

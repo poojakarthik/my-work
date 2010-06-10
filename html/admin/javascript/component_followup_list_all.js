@@ -239,12 +239,13 @@ var Component_FollowUp_List_All = Class.create(
 			}
 			
 			this._updatePagination();
-
-			//alert(oResultSet.intTotalResults + ',' + iCount);
 		}
 		
 		this._updateSorting();
 		this._updateFilters();
+		
+		// Call manual refresh on the followup link
+		FollowUpLink.refresh();
 		
 		// Close the loading popup
 		if (this.oLoadingOverlay)
@@ -545,6 +546,11 @@ Component_FollowUp_List_All.TYPE_NOTE_IMAGE_SOURCE					= '../admin/img/template/
 Component_FollowUp_List_All.TYPE_ACTION_IMAGE_SOURCE				= '../admin/img/template/followup_action.png';
 Component_FollowUp_List_All.TYPE_TICKET_CORRESPONDENCE_IMAGE_SOURCE	= '../admin/img/template/tickets.png';
 
+Component_FollowUp_List_All.DETAILS_ACCOUNT_IMAGE_SOURCE			= '../admin/img/template/account.png';
+Component_FollowUp_List_All.DETAILS_ACCOUNT_CONTACT_IMAGE_SOURCE	= '../admin/img/template/contact_small.png';
+Component_FollowUp_List_All.DETAILS_ACCOUNT_SERVICE_IMAGE_SOURCE	= '../admin/img/template/service.png';
+Component_FollowUp_List_All.DETAILS_TICKET_IMAGE_SOURCE				= Component_FollowUp_List_All.TYPE_TICKET_CORRESPONDENCE_IMAGE_SOURCE;
+
 Component_FollowUp_List_All.FILTER_FIELD_OWNER			= 'assigned_employee_id';
 Component_FollowUp_List_All.FILTER_FIELD_FOLLOWUP_DATE	= 'due_datetime';
 Component_FollowUp_List_All.FILTER_FIELD_TYPE			= 'followup_type_id';
@@ -629,6 +635,11 @@ Component_FollowUp_List_All.getFollowUpDescriptionTD	= function(iType, oDetails)
 			case $CONSTANT.FOLLOWUP_TYPE_ACTION:
 			case $CONSTANT.FOLLOWUP_TYPE_NOTE:
 				// Account, service or contact info
+				if (oDetails.customer_group)
+				{
+					oTD.appendChild(Component_FollowUp_List_All.getCustomerGroupLink(oDetails.account_id, oDetails.customer_group));
+				}
+				
 				if (oDetails.account_id && oDetails.account_name)
 				{
 					oTD.appendChild(Component_FollowUp_List_All.getAccountLink(oDetails.account_id, oDetails.account_name));
@@ -646,6 +657,11 @@ Component_FollowUp_List_All.getFollowUpDescriptionTD	= function(iType, oDetails)
 				break;
 			case $CONSTANT.FOLLOWUP_TYPE_TICKET_CORRESPONDENCE:
 				// Account or ticket contact info
+				if (oDetails.customer_group)
+				{
+					oTD.appendChild(Component_FollowUp_List_All.getCustomerGroupLink(oDetails.account_id, oDetails.customer_group));
+				}
+				
 				if (oDetails.account_id && oDetails.account_name)
 				{
 					oTD.appendChild(Component_FollowUp_List_All.getAccountLink(oDetails.account_id, oDetails.account_name));
@@ -662,18 +678,26 @@ Component_FollowUp_List_All.getFollowUpDescriptionTD	= function(iType, oDetails)
 	return oTD;
 };
 
+Component_FollowUp_List_All.getCustomerGroupLink	= function(iAccountId, sName)
+{
+	return 	$T.div(sName);
+};
+
 Component_FollowUp_List_All.getAccountLink	= function(iId, sName)
 {
-	return 	$T.div(
-				$T.a({href: 'flex.php/Account/Overview/?Account.Id=' + iId},
-					iId + ': ' + sName
+	var sUrl	= 'flex.php/Account/Overview/?Account.Id=' + iId;
+	return 	$T.div({class: 'popup-followup-active-detail-subdetail'},
+				$T.img({src: Component_FollowUp_List_All.DETAILS_ACCOUNT_IMAGE_SOURCE}),
+				$T.a({href: sUrl},
+					sName + ' (' + iId + ')'
 				)
 			);
 };
 
 Component_FollowUp_List_All.getAccountContactLink	= function(iId, sName)
 {
-	return 	$T.div(
+	return 	$T.div({class: 'popup-followup-active-detail-subdetail'},
+				$T.img({src: Component_FollowUp_List_All.DETAILS_ACCOUNT_CONTACT_IMAGE_SOURCE}),
 				$T.a({href: 'reflex.php/Contact/View/' + iId + '/'},
 					sName
 				)
@@ -682,16 +706,18 @@ Component_FollowUp_List_All.getAccountContactLink	= function(iId, sName)
 
 Component_FollowUp_List_All.getServiceLink	= function(iId, sFNN)
 {
-	return 	$T.div(
+	return 	$T.div({class: 'popup-followup-active-detail-subdetail'},
+				$T.img({src: Component_FollowUp_List_All.DETAILS_ACCOUNT_SERVICE_IMAGE_SOURCE}),
 				$T.a({href: 'flex.php/Service/View/?Service.Id=' + iId},
-					sFNN
+					'FNN : ' + sFNN
 				)
 			);
 };
 
 Component_FollowUp_List_All.getTicketLink	= function(iTicketId, iAccountId, sContact)
 {
-	return 	$T.div(
+	return 	$T.div({class: 'popup-followup-active-detail-subdetail'},
+				$T.img({src: Component_FollowUp_List_All.DETAILS_TICKET_IMAGE_SOURCE}),
 				$T.a({href: 'reflex.php/Ticketing/Ticket/' + iTicketId + '/View/?Account=' + iAccountId},
 					'Ticket ' + iTicketId + ' (' + sContact + ')'
 				)

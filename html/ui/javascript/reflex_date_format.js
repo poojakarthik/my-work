@@ -86,7 +86,7 @@ Reflex_Date_Format.parseToken	= function(oDate, sToken)
 			break;
 		case 'S':
 			// English ordinal suffix for the day of the month, 2 characters
-			return Reflex_Date_Format.numberOrdinalSuffix[oDate.getDate()];
+			return Reflex_Date_Format.numberOrdinalSuffix(oDate.getDate());
 			break;
 		case 'w':
 			// Numeric representation of the day of the week
@@ -368,7 +368,7 @@ Reflex_Date_Format.numberOrdinalSuffix	= function(iNumber)
 	{
 		return 'nd';
 	}
-	else if (iNumber == 2)
+	else if (iNumber == 3)
 	{
 		return 'rd';
 	}

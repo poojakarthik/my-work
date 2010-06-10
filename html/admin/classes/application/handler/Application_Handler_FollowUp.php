@@ -2,6 +2,15 @@
 
 class Application_Handler_FollowUp extends Application_Handler
 {
+	/*
+	 * *** NOTE ON USING THIS HANDLER ***
+	 *
+	 * For Manage & ManageRecurring:
+	 * 	- If no sub path	: the logged in users follow-ups are shown
+	 *	- If 'All'			: all follow-ups are shown (only if proper admin(
+	 * 	- If an employee id	: that employees follow-ups are shown
+	 */
+	
 	public function Manage($subPath)
 	{
 		// Check user permissions
@@ -11,20 +20,34 @@ class Application_Handler_FollowUp extends Application_Handler
 		
 		try
 		{
-			// Set the bread crumb, diffferent if an employee id is specified in the url
-			$sBreadCrumb	= 'Manage All Follow-Ups';
-			$iEmployeeId	= null;
+			$sEmployee		= $subPath[0];
+			$bUserIsAdmin	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
 			
-			if ($subPath[0] && Employee::getForId(Flex::getUserId())->isGod())
+			if ($sEmployee)
 			{
-				$iEmployeeId	= (int)$subPath[0];
-				$oEmployee		= Employee::getForId($subPath[0]);
-				
-				if ($oEmployee)
+				if ($sEmployee == 'All')
+				{
+					if ($bUserIsAdmin)
+					{
+						$sBreadCrumb	= 'Manage All Follow-Ups';
+					}
+					else
+					{
+						// Only admin users can 
+						throw new Exception('You do not have permission to view this page');
+					}
+				}
+				else if ($oEmployee	= Employee::getForId((int)$sEmployee))
 				{
 					$sBreadCrumb						= 'Manage Follow-Ups For '.$oEmployee->getName();
-					$aDetailsToRender['iEmployeeId']	= $iEmployeeId;
+					$aDetailsToRender['iEmployeeId']	= $oEmployee->Id;
 				}
+			}
+			else
+			{
+				$oEmployee							= Employee::getForId(Flex::getUserId());
+				$sBreadCrumb						= 'Manage Follow-Ups For '.$oEmployee->getName();
+				$aDetailsToRender['iEmployeeId']	= $oEmployee->Id;
 			}
 			
 			$aDetailsToRender['bEditMode']	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
@@ -52,19 +75,34 @@ class Application_Handler_FollowUp extends Application_Handler
 		try
 		{
 			// Set the bread crumb, diffferent if an employee id is specified in the url
-			$sBreadCrumb	= 'Manage All Recurring Follow-Ups';
-			$iEmployeeId	= null;
+			$sEmployee		= $subPath[0];
+			$bUserIsAdmin	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
 			
-			if ($subPath[0] && Employee::getForId(Flex::getUserId())->isGod())
+			if ($sEmployee)
 			{
-				$iEmployeeId	= (int)$subPath[0];
-				$oEmployee		= Employee::getForId($subPath[0]);
-				
-				if ($oEmployee)
+				if ($sEmployee == 'All')
+				{
+					if ($bUserIsAdmin)
+					{
+						$sBreadCrumb	= 'Manage All Recurring Follow-Ups';
+					}
+					else
+					{
+						// Only admin users can 
+						throw new Exception('You do not have permission to view this page');
+					}
+				}
+				else if ($oEmployee	= Employee::getForId((int)$sEmployee))
 				{
 					$sBreadCrumb						= 'Manage Recurring Follow-Ups For '.$oEmployee->getName();
-					$aDetailsToRender['iEmployeeId']	= $iEmployeeId;
+					$aDetailsToRender['iEmployeeId']	= $oEmployee->Id;
 				}
+			}
+			else
+			{
+				$oEmployee							= Employee::getForId(Flex::getUserId());
+				$sBreadCrumb						= 'Manage Recurring Follow-Ups For '.$oEmployee->getName();
+				$aDetailsToRender['iEmployeeId']	= $oEmployee->Id;
 			}
 			
 			$aDetailsToRender['bEditMode']		= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);

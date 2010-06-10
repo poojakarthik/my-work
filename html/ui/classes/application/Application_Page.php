@@ -140,7 +140,8 @@ class Application_Page extends Page
 		echo "\t\t<script type='text/javascript' src='javascript.php?$strFiles'></script>\n";
 
 		// Add direct links to the following files as they are large and this will result in automatic caching of them
-		$strFrameworkDir = Flex::frameworkUrlBase();
+		$strFrameworkDir 	= Flex::frameworkUrlBase();
+		$sApplicationDir	= Flex::applicationUrlBase();
 		
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/prototype.js' ></script>\n";
 		
@@ -158,6 +159,8 @@ class Application_Page extends Page
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_debug.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/date.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_template.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$sApplicationDir}javascript/followup_link.js'></script>\n";
+		
 		// TODO: Add a non-vixen login handler to flex.js for when the session has timed out
 
 		if (!array_key_exists('*arrJavaScript', $GLOBALS) || !is_array($GLOBALS['*arrJavaScript']))
@@ -166,8 +169,24 @@ class Application_Page extends Page
 		}
 
 		// Remove any duplicates from the list, as well as files that have already been referenced
-		$arrStandardJsFiles		= array_merge($arrStandardJsFiles, array("prototype", "jquery", "json", "flex", "sha1", "reflex", "reflex_fx", "reflex_fx_morph", "reflex_fx_shift", "reflex_popup", "flex_constant", "reflex_template"));
-		$arrRemainingJsFiles	= array_unique($GLOBALS['*arrJavaScript']);
+		$arrStandardJsFiles		= 	array_merge(
+										$arrStandardJsFiles, 
+										array(
+											"prototype", 
+											"jquery", 
+											"json", 
+											"flex", 
+											"sha1", 
+											"reflex", 
+											"reflex_fx", 
+											"reflex_fx_morph", 
+											"reflex_fx_shift", 
+											"reflex_popup", 
+											"flex_constant", 
+											"reflex_template"
+										)
+									);
+		$arrRemainingJsFiles	= 	array_unique($GLOBALS['*arrJavaScript']);
 
 		$arrRemainingJsFilesToInclude = array();
 		foreach ($arrRemainingJsFiles as $strFile)

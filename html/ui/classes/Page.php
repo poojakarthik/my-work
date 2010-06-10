@@ -272,7 +272,8 @@ class Page
 		echo "\t\t<script type='text/javascript' src='javascript.php?$strFiles'></script>\n";
 
 		// Add direct links to the following files as they are large and this will result in automatic caching of them
-		$strFrameworkDir = Flex::frameworkUrlBase();
+		$strFrameworkDir 	= Flex::frameworkUrlBase();
+		$sApplicationDir	= Flex::applicationUrlBase();
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/prototype.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/jquery.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/json.js' ></script>\n";
@@ -287,6 +288,7 @@ class Page
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_debug.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/date.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_template.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$sApplicationDir}javascript/followup_link.js'></script>\n";
 		
 		// Include reference to all other javascript files required of the page
 		if (!array_key_exists('*arrJavaScript', $GLOBALS) || !is_array($GLOBALS['*arrJavaScript']))
@@ -294,8 +296,25 @@ class Page
 			$GLOBALS['*arrJavaScript'] = Array();
 		}
 
-		$arrRemainingJsFiles	= array_unique($GLOBALS['*arrJavaScript']);
-		$arrStandardJsFiles		= array_merge($arrStandardJsFiles, array("prototype", "jquery", "json", "flex", "flex_constant", "sha1", "reflex", "reflex_fx", "reflex_fx_morph", "reflex_fx_shift", "reflex_popup", "reflex_template"));
+		$arrRemainingJsFiles	= 	array_unique($GLOBALS['*arrJavaScript']);
+		$arrStandardJsFiles		= 	array_merge(
+										$arrStandardJsFiles,
+										array(
+											"prototype", 
+											"jquery", 
+											"json", 
+											"flex", 
+											"flex_constant", 
+											"sha1", 
+											"reflex", 
+											"reflex_fx", 
+											"reflex_fx_morph", 
+											"reflex_fx_shift", 
+											"reflex_popup", 
+											"reflex_template",
+											"followup_link"
+										)
+									);
 
 		$arrRemainingJsFilesToInclude = array();
 		foreach ($arrRemainingJsFiles as $strFile)
@@ -700,11 +719,13 @@ class Page
 		}
 		
 		$strDeveloperToolsLink	= (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? "| <a href='../admin/reflex.php/Developer/ViewList/' >Developer Tools</a>" : '';
+		$sFollowUps				= "<div id='followup_link'></div>";
+		$mixKbAdmin 			= NULL;
 		
-		$mixKbAdmin = NULL;
 		// The default menu links.
 		$mixMenuLinks = "
 		Logged in as: $strUserName
+		| $sFollowUps
 		| <a onclick='$strUserPreferencesLink'>Preferences</a>
 		{$strDeveloperToolsLink}
 		| <a onclick='Vixen.Logout();'>Logout</a>";
@@ -731,6 +752,7 @@ class Page
 			$mixKbAdmin<input type=\"hidden\" name=\"strUsername\" value=\"$strUserName\" />
 			<input type=\"hidden\" name=\"mixUsername\" value=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['User'] . "\" />
 			<input type=\"hidden\" name=\"mixPassword\" value=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['Password'] . "\" />
+			| $sFollowUps
 			| <a onclick=\"redirectOutput(this); var elemform = getElementById('kbform'); elemform.submit();\">Knowledge Base</a>	
 			| <a onclick='$strUserPreferencesLink'>Preferences</a>
 			{$strDeveloperToolsLink}

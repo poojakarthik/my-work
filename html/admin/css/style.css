@@ -1133,16 +1133,18 @@ div.action-list.embedded div.item
 
 div.action-list div.item.note
 {
+	
 }
 
 div.action-list div.item.action
 {
-	border-color : #000;
-	background-color : #bcd;
+	border-color 		: #000;
+	background-color 	: #bcd;
 }
 
 div.action-list div.item div.header
 {
+	
 }
 
 div.action-list div.item div.timestamp
@@ -1165,7 +1167,14 @@ div.action-list div.item div.by-line
 
 div.action-list div.item div.details
 {
-	margin-top : 0.5em;
+	margin-top 	: 0.5em;
+	display		: inline-block;
+	width		: 100%;
+}
+
+div.action-list div.item div.details > div:first-child
+{
+	display	: inline-block;
 }
 
 div.action-list-controls
@@ -4525,3 +4534,362 @@ ul.popup-followup-recurring-dates-radio-list > li > ul.reset > li.popup-followup
 
 /************************ END - Popup Recurring Follow-Up End Date - END ************************/
 
+/************************ START - Follow-Up Search Area Link - START ************************/
+
+div#followup_link
+{
+	display					: inline-block;
+	background-color		: #888888;
+	background-image		: url('../img/template/transparent-bg.png') !important;
+	background-repeat		: repeat-x !important;
+	color					: #1A1A33 !important;
+	font-family				: Arial, sans-serif !important;
+	font-size				: 0.85em !important;
+	font-weight				: bold !important;
+	margin					: .2em !important;
+	padding					: .1em .5em !important;
+	border-top				: solid .1em #999 !important;
+	border-left				: solid .1em #999 !important;
+	border-bottom			: solid .1em #666 !important;
+	border-right			: solid .1em #666 !important;
+	-moz-border-radius		: 4px !important;
+	-webkit-border-radius	: 4px !important;
+	cursor					: pointer !important;
+	-moz-user-select		: none;
+	-webkit-user-select		: none;
+	
+}
+
+div#followup_link > span#followup_link_count
+{
+	padding-right	: 0.25em;
+}
+
+div#followup_link.followup_link_flash
+{
+	background-color	: #ff8822 !important;
+}
+
+div#followup_link > span
+{
+	font-size	: 1em;	
+}
+
+/************************ END - Follow-Up Search Area Link - END ************************/
+
+/************************ START - Active Follow-Up Popup - START ************************/
+
+div.popup-followup-active
+{
+	margin	: 1em;
+}
+
+div.popup-followup-active > div.section
+{
+	margin-bottom	: 1em;
+}
+
+div.popup-followup-active > div.section > div.section-content > table
+{
+	border-color		: #111;
+	border-top-width	: 1px;
+	border-top-style	: solid;
+	border-bottom-width	: 1px;
+	border-bottom-style	: solid;
+	border-spacing		: 0em;
+	width				: 100%;
+}
+
+div.popup-followup-active > div.section > div.section-content > table > tbody > tr > td
+{
+	margin-bottom		: 0em;
+	vertical-align		: top;
+	background-color	: #fff;
+}
+
+td.popup-followup-active-summary div,
+td.popup-followup-active-summary span
+{
+	vertical-align	: top;
+}
+
+tr.popup-followup-active-row > td
+{
+	padding				: 0.25em 0em 0.25em 0em;
+	border-color		: #AAAAAA;
+	border-bottom-width	: 1px;
+	border-bottom-style	: solid;
+}
+
+tr.popup-followup-active-row:last-child > td
+{
+	padding				: 0.25em 0em 0.25em 0em;
+	border-bottom-width	: 0px;
+	border-bottom-style	: none;
+}
+
+tr.popup-followup-active-row > td:nth-child(1)
+{
+	padding-left	: 0.25em;
+}
+
+tr.popup-followup-active-row > td:last-child
+{
+	padding-right	: 0.25em;
+}
+
+div.popup-followup-active > div.section > div.section-content > table > tbody > tr > td.popup-followup-active-date
+{
+	text-align		: center;
+	vertical-align	: middle;
+	width			: 9%;
+}
+
+td.popup-followup-active-date-overdue
+{
+	font-weight	: bold;
+	color		: red;
+}
+
+td.popup-followup-active-detail
+{
+	width	: 32%;
+}
+
+td.popup-followup-active-actions
+{
+	width	: 12%;
+}
+
+div.popup-followup-active-date-subdate
+{
+	font-size	: 0.85em;
+}
+
+td.popup-followup-active-summary > div:nth-child(1) > img
+{
+	padding-right	: 0.5em;
+}
+
+td.popup-followup-active-summary > div:nth-child(1)
+{
+	padding-bottom	: 0.3em;
+}
+
+div.popup-followup-active-summary-text
+{
+	font-size	: 0.85em;
+}
+
+div.popup-followup-active-detail-subdetail
+{
+	padding-top	: 0.25em;
+	font-size	: 0.9em;
+}
+
+div.popup-followup-active-detail-subdetail > img
+{
+	padding-right	: 0.5em;
+}
+
+div.popup-followup-active-detail-subdetail > img,
+div.popup-followup-active-detail-subdetail > a
+{
+	vertical-align	: middle;
+}
+
+ul.popup-followup-active-actions
+{
+	margin		: 0em;
+	text-align	: right;
+}
+
+ul.popup-followup-active-actions > li
+{
+	padding-left	: 0.25em;
+	width			: 16px;
+}
+
+ul.popup-followup-active-actions > li > a,
+ul.popup-followup-active-actions > li > img
+{
+	cursor			: pointer;
+	vertical-align	: middle;
+}
+
+div.popup-followup-active-buttons
+{
+	text-align	: center;
+}
+
+td.popup-followup-active-empty
+{
+	padding		: 0.25em;
+	font-style	: italic;
+	opacity		: 0.75;
+}
+
+div.popup-followup-active-date-full
+{
+	position			: absolute;
+	width				: auto;
+	height				: auto;
+	padding				: 0.5em;
+	background-color	: #CCDDFF;
+	border				: solid 1px #000;
+	-moz-border-radius	: 4px;
+	z-index				: 999;
+}
+
+/************************ END - Active Follow-Up Popup - END ************************/
+
+/************************ START - Add Follow-Up Popup - START ************************/
+
+div.popup-followup-add
+{
+	margin	: 1em;
+}
+
+div.popup-followup-add > div.section
+{
+	margin-bottom	: 1em;
+}
+
+div.popup-followup-add-buttons
+{
+	text-align	: center;
+}
+
+table.popup-followup-add-followup-details
+{
+	width	: 100%;
+}
+
+div.popup-followup-add-details
+{
+	margin-left	: 1em;
+}
+
+div.popup-followup-add-details-subdetail > img
+{
+	padding-right	: 0.75em;
+}
+
+div.popup-followup-add-details-subdetail > img,
+div.popup-followup-add-details-subdetail > span,
+div.popup-followup-add-followup-details-type > img,
+div.popup-followup-add-followup-details-type > span
+{
+	vertical-align	: middle;
+}
+
+div.popup-followup-add-details-subdetail
+{
+	padding-bottom	: 0.5em;
+}
+
+div.popup-followup-add-followup-details-type > img
+{
+	padding-right	: 0.5em;
+}
+
+div.popup-followup-add-radio-inline,
+div.popup-followup-add-followup-details-occurences,
+div.popup-followup-add-followup-details-endby
+{
+	display	: inline-block;
+}
+
+div.popup-followup-add-radio
+{
+	padding-right	: 0.75em;
+	padding-bottom	: 0.5em;
+}
+
+div.popup-followup-add-radio > input
+{
+	margin-right	: 0.5em;
+}
+
+div.popup-followup-add-radio *:last-child
+{
+	cursor	: pointer;
+}
+
+td.popup-followup-add-followup-details > table
+{
+	width			: 100%;
+	border-spacing	: 0em 0.5em;
+}
+
+td.popup-followup-add-followup-details > table > tbody > tr > td:first-child
+{
+	font-weight	: bold;
+	text-align	: left;
+	width		: 6em;
+	padding-top	: 0.5em;
+}
+
+table.popup-followup-add-followup-details > tbody > tr > td
+{
+	padding-top	: 0.5em;
+}
+
+td.popup-followup-add-details-recurring-howoften > div.control-field,
+div.popup-followup-add-followup-details-occurences > div.control-field,
+div.popup-followup-add-followup-details-endby > div.control-field
+{
+	display			: inline-block;
+	vertical-align	: bottom;
+}
+
+td.popup-followup-add-details-recurring-howoften > div.control-field:nth-child(2),
+div.popup-followup-add-followup-details-occurences > div.control-field:nth-child(1)
+{
+	width			: 3em;
+	padding-left	: 0.25em;
+	padding-right	: 0.5em;
+}
+
+td.popup-followup-add-details-recurring-howoften > div.control-field:nth-child(3)
+{
+	width	: 6em;
+}
+
+td.popup-followup-add-details-recurring-end > div.popup-followup-add-radio > input,
+td.popup-followup-add-details-recurring-end > div.popup-followup-add-radio > span
+{
+	vertical-align	: middle;
+}
+
+/************************ END - Add Follow-Up Popup - END ************************/
+
+/************************ START - Follow-Up Context List - START ************************/
+
+div.followup-context-list > div
+{
+	padding-bottom	: 0.25em;
+}
+
+div.followup-context-list > div.followup-context-list-add
+{
+	cursor	: pointer;
+}
+
+td.ticket-history-record-details > div > div:first-child
+{
+	float	: left;
+}
+
+td.ticket-history-record-details > div > div.followup-context-list-placeholder,
+div.followup-context-list-placeholder-ticket-correspondence
+{
+	float	: right;
+}
+
+div.action-list div.item div.details div.followup-context-list-placeholder
+{
+	float	: right;
+}
+
+/************************ END - Follow-Up Context List - END ************************/

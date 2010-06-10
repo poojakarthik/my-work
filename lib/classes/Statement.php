@@ -353,14 +353,14 @@
 					// > (Greater than)
 					$sPlaceHolder						= $sAlias.$sPlaceHolderSuffix;
 					$aResult['aValues'][$sPlaceHolder]	= $mValue->mFrom;
-					$aWhereParts[]						= "{$sAlias} > <{$sPlaceHolder}>";
+					$aWhereParts[]						= "{$sAlias} >= <{$sPlaceHolder}>";
 				}
 				else if ($mValue->mTo)
 				{
 					// < (Less than)
 					$sPlaceHolder						= $sAlias.$sPlaceHolderSuffix;
 					$aResult['aValues'][$sPlaceHolder]	= $mValue->mTo;
-					$aWhereParts[]						= "{$sAlias} < <{$sPlaceHolder}>";
+					$aWhereParts[]						= "{$sAlias} <= <{$sPlaceHolder}>";
 				}
 			}
 			else if ($mValue->sStartsWith)

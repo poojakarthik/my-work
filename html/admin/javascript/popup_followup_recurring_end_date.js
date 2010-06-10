@@ -237,7 +237,8 @@ var Popup_FollowUp_Recurring_End_Date	= Class.create(Reflex_Popup,
 						return;
 					}
 					
-					var iIteration	= parseInt(this._oOccurrencesText.getElementValue());
+					// Subtract 1 from the value because 0 iterations is the start date, which is still an iteration
+					var iIteration	= parseInt(this._oOccurrencesText.getElementValue()) - 1;
 					var oDate		= new Date(Date.parse(this._oFollowUpRecurring.start_datetime.replace(/-/g, '/')));
 					
 					Popup_FollowUp_Recurring_End_Date.shiftDate(

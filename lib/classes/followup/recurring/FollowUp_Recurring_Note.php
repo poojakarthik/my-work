@@ -72,6 +72,20 @@ class FollowUp_Recurring_Note extends ORM_Cached
 		
 		return null;
 	}
+	
+	public static function getFollowUpRecurringsForNote($iNoteId)
+	{
+		$aFollowUps	= array();
+		$oSelect	= self::_preparedStatement('selByNoteId');
+		$oSelect->Execute(array('note_id' => $iNoteId));
+		
+		while ($aRow = $oSelect->Fetch())
+		{
+			$aFollowUps[]	= FollowUp_Recurring::getForId($aRow['followup_recurring_id']);	
+		}
+		
+		return $aFollowUps;
+	}
 
 	/**
 	 * _preparedStatement()
@@ -105,7 +119,10 @@ class FollowUp_Recurring_Note extends ORM_Cached
 				case 'selByFollowUpRecurringId':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "followup_recurring_id = <followup_recurring_id>", NULL, 1);
 					break;
-					
+				case 'selByNoteId':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "note_id = <note_id>", NULL, 1);
+					break;
+				
 				// INSERTS
 				case 'insSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);

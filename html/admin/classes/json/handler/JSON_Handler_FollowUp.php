@@ -11,7 +11,18 @@ class JSON_Handler_FollowUp extends JSON_Handler
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 	
-	public function getDataSet($bCountOnly=false, $iLimit=0, $iOffset=0, $oFieldsToSort=null, $oFilter=null)
+	public function getDataSetForAuthenticatedEmployee($bCountOnly=false, $iLimit=0, $iOffset=0, $oFieldsToSort=null, $oFilter=null, $iSummaryCharacterLimit=null)
+	{
+		if (is_null($oFilter))
+		{
+			$oFilter	= new StdClass();
+		}
+		
+		$oFilter->assigned_employee_id	= Flex::getUserId();
+		return self::getDataSet($bCountOnly, $iLimit, $iOffset, $oFieldsToSort, $oFilter, $iSummaryCharacterLimit);
+	}
+	
+	public function getDataSet($bCountOnly=false, $iLimit=0, $iOffset=0, $oFieldsToSort=null, $oFilter=null, $iSummaryCharacterLimit=30)
 	{
 		try
 		{
@@ -93,8 +104,6 @@ class JSON_Handler_FollowUp extends JSON_Handler
 				$aResults	= array();
 				$iCount		= 0;
 				
-				//return count($aFollowUps)."---".$aFollowUps;
-				
 				foreach ($aFollowUps as $aFollowUp)
 				{
 					// Create ORM object
@@ -116,14 +125,14 @@ class JSON_Handler_FollowUp extends JSON_Handler
 						// Get the followup_recurring orm object to get the details
 						$oFollowUpRecurring			= FollowUp_Recurring::getForId($oFollowUp->followup_recurring_id);
 						$oFollowUpStdClass->details	= $oFollowUpRecurring->getDetails();
-						$oFollowUpStdClass->summary	= $oFollowUpRecurring->getSummary();
+						$oFollowUpStdClass->summary	= $oFollowUpRecurring->getSummary($iSummaryCharacterLimit);
 					}
 					else
 					{
 						// Get the actual followup orm object to get details
 						$oFollowUpTemp				= FollowUp::getForId($oFollowUpStdClass->followup_id);
 						$oFollowUpStdClass->details	= $oFollowUpTemp->getDetails();
-						$oFollowUpStdClass->summary	= $oFollowUpTemp->getSummary();
+						$oFollowUpStdClass->summary	= $oFollowUpTemp->getSummary($iSummaryCharacterLimit);
 					}
 					
 					// Add to Result Set
@@ -411,6 +420,426 @@ class JSON_Handler_FollowUp extends JSON_Handler
 			return 	array(
 						"Success"	=> false,
 						"Message"	=> Employee::getForId(Flex::getUserId())->isGod ? $e->getMessage() : 'There was an error updating the recurring follow-up'
+					);
+		}
+	}
+	
+	public function getOverdueCountForLoggedInEmployee()
+	{
+		try
+		{
+			$oEmployee	= Employee::getForId(Flex::getUserId());
+			$iCount		= $oEmployee->getOverdueFollowUpCount();
+			
+			return 	array(
+						"Success"	=> true,
+						"iCount"	=> $iCount
+					);
+		}
+		catch (Exception $e)
+		{
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> Employee::getForId(Flex::getUserId())->isGod ? $e->getMessage() : 'There was an error updating the recurring follow-up'
+					);
+		}
+	}
+	
+	public function getFollowUpContextDetails($iFollowUpTypeId, $iContextId)
+	{
+		try
+		{
+			// Check permissions
+			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
+			{
+				throw new JSON_Handler_FollowUp_Exception('You do not have permission to view Follow-Ups.');
+			}
+			
+			$aDetails	= array();
+			$oAccount	= null;
+			$oService	= null;
+			$oContact	= null;
+			switch ($iFollowUpTypeId)
+			{
+				case FOLLOWUP_TYPE_NOTE:
+					// Context is note, get account,service and contact details
+					$oNote	= Note::getForId($iContextId);
+					if ($oNote)
+					{
+						if ($oNote->Account)
+						{
+							$oAccount	= Account::getForId($oNote->Account);
+						}
+						
+						if ($oNote->Service)
+						{
+							$oService	= Service::getForId($oNote->Service);
+						}
+						
+						if ($oNote->Contact)
+						{
+							$oContact	= Contact::getForId($oNote->Contact);
+						}
+					}
+					break;
+				case FOLLOWUP_TYPE_ACTION:
+					// Context is action, get account,service and contact details
+					$oAction	= Action::getForId($iContextId);
+					if ($oAction)
+					{
+						$aAccounts	= $oAction->getAssociatedAccounts();
+						foreach ($aAccounts as $iAccountId => $oAssocAccount)
+						{
+							$oAccount	= $oAssocAccount;
+						}
+						
+						$aServices	= $oAction->getAssociatedServices();
+						foreach ($aServices as $iServiceId => $oAssocService)
+						{
+							$oService	= $oAssocService;
+						}
+						
+						$aContacts	= $oAction->getAssociatedContacts();
+						foreach ($aContacts as $iContactId => $oAssocContact)
+						{
+							$oContact	= $oAssocContact;
+						}
+					}
+					break;
+				case FOLLOWUP_TYPE_TICKET_CORRESPONDENCE:
+					// Context is ticket, get account and ticketing contact details
+					$oTicketingCorrespondence	= Ticketing_Correspondance::getForId($iContextId);
+					if ($oTicketingCorrespondence)
+					{
+						$oTicket	= $oTicketingCorrespondence->getTicket();
+						if ($oTicket)
+						{
+							$aDetails['ticket_id']	= $oTicket->id;
+							
+							if ($oTicket->account_id)
+							{
+								$oAccount	= Account::getForId($oTicket->account_id);
+							}
+						}
+						
+						$oTicketContact	= $oTicketingCorrespondence->getContact();
+						if ($oTicketContact)
+						{
+							$aDetails['ticket_contact_name']	= $oTicketContact->getName();
+						}
+					}
+					break;
+			}
+			
+			if ($oAccount)
+			{
+				$aDetails['account_id']		= $oAccount->Id;
+				$aDetails['account_name']	= $oAccount->BusinessName;
+				$aDetails['customer_group']	= $oAccount->getCustomerGroup()->internalName;
+			}
+			
+			if ($oService)
+			{
+				$aDetails['service_id']		= $iServiceId;
+				$aDetails['service_fnn']	= $oService->FNN;
+			}
+			
+			if ($oContact)
+			{
+				$aDetails['contact_id']		= $iContactId;
+				$aDetails['contact_name']	= $oContact->FirstName.' '.$oContact->LastName;
+			}
+			
+			return	array(
+						"Success"	=> true,
+						"aDetails"	=> $aDetails
+					);
+		}
+		catch (JSON_Handler_FollowUp_Exception $oException)
+		{
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> $oException->getMessage()
+					);
+		}
+		catch (Exception $e)
+		{
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> Employee::getForId(Flex::getUserId())->isGod ? $e->getMessage() : 'There was an error getting the follow-up context details'
+					);
+		}
+	}
+	
+	public function createNew($iType, $iTypeDetail, $oDetails)
+	{
+		// Start a new database transaction
+		$oDataAccess	= DataAccess::getDataAccess();
+		if (!$oDataAccess->TransactionStart())
+		{
+			// Failure!
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> Employee::getForId(Flex::getUserId())->isGod() ? 'There was an error accessing the database' : ''
+					);
+		}
+		
+		try
+		{
+			// Check permissions
+			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
+			{
+				throw new JSON_Handler_FollowUp_Exception('You do not have permission to create Follow-Ups.');
+			}
+			
+			$bIsOnceOff	= isset($oDetails->sDueDateTime);
+			$aErrors	= array();
+			
+			// Validate input
+			if (!is_numeric($oDetails->iCategory))
+			{
+				$aErrors[]	= 'Invalid Category.';
+			}
+			
+			if ($bIsOnceOff)
+			{
+				// Once off
+				if (!is_numeric(strtotime($oDetails->sDueDateTime)))
+				{
+					$aErrors[]	= 'Invalid Due Date.';
+				}
+			}
+			else
+			{
+				// Recurring
+				if (!is_numeric(strtotime($oDetails->sStartDateTime)))
+				{
+					$aErrors[]	= 'Invalid Start Date.';
+				}
+				
+				if (!is_null($oDetails->sEndDateTime) && !is_numeric(strtotime($oDetails->sEndDateTime)))
+				{
+					$aErrors[]	= 'Invalid End Date.';
+				}
+				
+				if (!is_numeric($oDetails->iRecurrenceMultiplier))
+				{
+					$aErrors[]	= 'Invalid Recurrence Multiplier.';
+				}
+				
+				if (!is_numeric($oDetails->iRecurrencePeriod))
+				{
+					$aErrors[]	= 'Invalid Recurrence Period.';
+				}
+			}
+			
+			// Validate the type detail
+			switch ($iType)
+			{
+				case FOLLOWUP_TYPE_NOTE:
+					if (!Note::getForId($iTypeDetail))
+					{
+						$aErrors[]	= 'Invalid Note identifier supplied.';
+					}
+					break;
+				case FOLLOWUP_TYPE_ACTION:
+					if (!Action::getForId($iTypeDetail))
+					{
+						$aErrors[]	= 'Invalid Action identifier supplied.';
+					}
+					break;
+				case FOLLOWUP_TYPE_TICKET_CORRESPONDENCE:
+					if (!Ticketing_Correspondance::getForId($iTypeDetail))
+					{
+						$aErrors[]	= 'Invalid Ticketing Correspondance identifier supplied.';
+					}
+					break;
+			}
+			
+			if (count($aErrors) > 0)
+			{
+				// Return validation errors
+				return 	array(
+							"Success"			=> false,
+							"aValidationErrors"	=> $aErrors
+						);
+			}
+			else
+			{
+				// Create fup/recurring fup
+				if ($bIsOnceOff)
+				{
+					// Once off/single follow-up
+					$oFollowUp							= new FollowUp();
+					$oFollowUp->assigned_employee_id	= Flex::getUserId();
+					$oFollowUp->created_datetime		= date('Y-m-d H:i:s');
+					$oFollowUp->due_datetime			= $oDetails->sDueDateTime;
+					$oFollowUp->followup_type_id		= $iType;
+					$oFollowUp->followup_category_id	= $oDetails->iCategory;
+					$oFollowUp->save();
+					
+					// Create link to type detail
+					switch ($iType)
+					{
+						case FOLLOWUP_TYPE_NOTE:
+							$oFollowUpNote				= new FollowUp_Note();
+							$oFollowUpNote->followup_id	= $oFollowUp->id;
+							$oFollowUpNote->note_id		= $iTypeDetail;
+							$oFollowUpNote->save();
+							break;
+						case FOLLOWUP_TYPE_ACTION:
+							$oFollowUpAction				= new FollowUp_Action();
+							$oFollowUpAction->followup_id	= $oFollowUp->id;
+							$oFollowUpAction->action_id		= $iTypeDetail;
+							$oFollowUpAction->save();
+							break;
+						case FOLLOWUP_TYPE_TICKET_CORRESPONDENCE:
+							$oFollowUpTicketingCorrespondence								= new FollowUp_Ticketing_Correspondence();
+							$oFollowUpTicketingCorrespondence->followup_id					= $oFollowUp->id;
+							$oFollowUpTicketingCorrespondence->ticketing_correspondence_id	= $iTypeDetail;
+							$oFollowUpTicketingCorrespondence->save();
+							break;
+					}
+				}
+				else
+				{
+					// Recurring followup
+					$oFollowUpRecurring									= new FollowUp_Recurring();
+					$oFollowUpRecurring->assigned_employee_id			= Flex::getUserId();
+					$oFollowUpRecurring->created_datetime				= date('Y-m-d H:i:s');
+					$oFollowUpRecurring->start_datetime					= $oDetails->sStartDateTime;
+					
+					if (is_null($oDetails->sEndDateTime))
+					{
+						// No end date given, set to 9999-12-31 23:59:59 (the end of time)
+						$oFollowUpRecurring->end_datetime	= END_OF_TIME;
+					}
+					else
+					{
+						// Use end date given
+						$oFollowUpRecurring->end_datetime	= $oDetails->sEndDateTime;
+					}
+					
+					$oFollowUpRecurring->followup_type_id				= $iType;
+					$oFollowUpRecurring->followup_category_id			= $oDetails->iCategory;
+					$oFollowUpRecurring->recurrence_multiplier			= $oDetails->iRecurrenceMultiplier;
+					$oFollowUpRecurring->followup_recurrence_period_id	= $oDetails->iRecurrencePeriod;
+					$oFollowUpRecurring->save();
+					
+					// Create link to type detail
+					switch ($iType)
+					{
+						case FOLLOWUP_TYPE_NOTE:
+							$oFollowUpRecurringNote							= new FollowUp_Recurring_Note();
+							$oFollowUpRecurringNote->followup_recurring_id	= $oFollowUpRecurring->id;
+							$oFollowUpRecurringNote->note_id				= $iTypeDetail;
+							$oFollowUpRecurringNote->save();
+							break;
+						case FOLLOWUP_TYPE_ACTION:
+							$oFollowUpRecurringAction							= new FollowUp_Recurring_Action();
+							$oFollowUpRecurringAction->followup_recurring_id	= $oFollowUpRecurring->id;
+							$oFollowUpRecurringAction->action_id				= $iTypeDetail;
+							$oFollowUpRecurringAction->save();
+							break;
+						case FOLLOWUP_TYPE_TICKET_CORRESPONDENCE:
+							$oFollowUpRecurringTicketingCorrespondence								= new FollowUp_Recurring_Ticketing_Correspondence();
+							$oFollowUpRecurringTicketingCorrespondence->followup_recurring_id		= $oFollowUpRecurring->id;
+							$oFollowUpRecurringTicketingCorrespondence->ticketing_correspondence_id	= $iTypeDetail;
+							$oFollowUpRecurringTicketingCorrespondence->save();
+							break;
+					}
+				}
+				
+				// Commit db transaction
+				$oDataAccess->TransactionCommit();
+				
+				return	array("Success"	=> true);
+			}
+		}
+		catch (JSON_Handler_FollowUp_Exception $oException)
+		{
+			$oDataAccess->TransactionRollback();
+			
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> $oException->getMessage()
+					);
+		}
+		catch (Exception $e)
+		{
+			$oDataAccess->TransactionRollback();
+			
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> Employee::getForId(Flex::getUserId())->isGod ? $e->getMessage() : 'There was an error creating the new follow-up'
+					);
+		}
+	}
+	
+	public function getFollowUpsFromContext($iFollowUpType, $iTypeDetail)
+	{
+		try
+		{
+			// Check permissions
+			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
+			{
+				throw new JSON_Handler_FollowUp_Exception('You do not have permission to create Follow-Ups.');
+			}
+			
+			switch ($iFollowUpType)
+			{
+				case FOLLOWUP_TYPE_NOTE:
+					$aFollowUps				= FollowUp_Note::getFollowUpsForNote($iTypeDetail);
+					$aFollowUpRecurrings	= FollowUp_Recurring_Note::getFollowUpRecurringsForNote($iTypeDetail);
+					break;
+				case FOLLOWUP_TYPE_ACTION:
+					$aFollowUps				= FollowUp_Action::getFollowUpsForAction($iTypeDetail);
+					$aFollowUpRecurrings	= FollowUp_Recurring_Action::getFollowUpRecurringsForAction($iTypeDetail);
+					break;
+				case FOLLOWUP_TYPE_TICKET_CORRESPONDENCE:
+					$aFollowUps				= FollowUp_Ticketing_Correspondence::getFollowUpsForCorrespondence($iTypeDetail);
+					$aFollowUpRecurrings	= FollowUp_Recurring_Ticketing_Correspondence::getFollowUpRecurringsForCorrespondence($iTypeDetail);
+					break;
+			}
+			
+			// Convert result to StdClasses and return
+			$aStdClassFollowUps				= array();
+			$aStdClassFollowUpRecurrings	= array();
+			
+			if (isset($aFollowUps))
+			{
+				foreach ($aFollowUps as $oFollowUp)
+				{
+					$aStdClassFollowUps[]	= $oFollowUp->toStdClass();
+				}
+			}
+			
+			if (isset($aFollowUpRecurrings))
+			{
+				foreach ($aFollowUpRecurrings as $oFollowUpRecurring)
+				{
+					$aStdClassFollowUpRecurrings[]	= $oFollowUpRecurring->toStdClass();
+				}
+			}
+			
+			return	array(
+						"Success"				=> true,
+						"aFollowUps"			=> $aStdClassFollowUps,
+						"aFollowUpRecurrings"	=> $aStdClassFollowUpRecurrings
+					);
+		}
+		catch (JSON_Handler_FollowUp_Exception $oException)
+		{
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> $oException->getMessage()
+					);
+		}
+		catch (Exception $e)
+		{
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> Employee::getForId(Flex::getUserId())->isGod ? $e->getMessage() : 'There was an error creating the new follow-up'
 					);
 		}
 	}

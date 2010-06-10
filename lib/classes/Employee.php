@@ -420,6 +420,24 @@ class Employee extends ORM_Cached
 		return ($this->is_god == 1);
 	}
 	
+	public function getOverdueFollowUpCount()
+	{
+		$oDueDateTimeConstraint			= new StdClass();
+		$oDueDateTimeConstraint->mTo	= date('Y-m-d H:i:s');
+		
+		return 	FollowUp::searchFor(
+					null, 
+					null, 
+					null, 
+					array(
+						'assigned_employee_id'	=> $this->Id,				// Owner is the employee
+						'followup_closure_id'	=> 'NULL',					// Not closed
+						'due_datetime'			=> $oDueDateTimeConstraint	// Due date before now (overdue)
+					), 
+					true
+				);
+	}
+	
 	//------------------------------------------------------------------------//
 	// getColumns
 	//------------------------------------------------------------------------//

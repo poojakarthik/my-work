@@ -73,6 +73,20 @@ class FollowUp_Ticketing_Correspondence extends ORM_Cached
 		return null;
 	}
 
+	public static function getFollowUpsForCorrespondence($iCorrespondenceId)
+	{
+		$aFollowUps	= array();
+		$oSelect	= self::_preparedStatement('selByCorrespondenceId');
+		$oSelect->Execute(array('ticketing_correspondence_id' => $iCorrespondenceId));
+		
+		while ($aRow = $oSelect->Fetch())
+		{
+			$aFollowUps[]	= FollowUp::getForId($aRow['followup_id']);	
+		}
+		
+		return $aFollowUps;
+	}
+
 	/**
 	 * _preparedStatement()
 	 *
@@ -105,7 +119,10 @@ class FollowUp_Ticketing_Correspondence extends ORM_Cached
 				case 'selByFollowUpId':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "followup_id = <followup_id>", NULL, 1);
 					break;
-				
+				case 'selByCorrespondenceId':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "ticketing_correspondence_id = <ticketing_correspondence_id>", NULL, 1);
+					break;
+					
 				// INSERTS
 				case 'insSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);
