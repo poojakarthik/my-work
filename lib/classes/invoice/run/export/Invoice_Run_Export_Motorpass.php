@@ -13,7 +13,7 @@ class Invoice_Run_Export_Motorpass extends Invoice_Run_Export
 		@mkdir(dirname($sOutputPath), 0777, true);
 		
 		// Empty the export directory first -- as there should only ever be one file
-		foreach (glob(dirname($sOutputPath.'/*')) as $sPathToUnlink)
+		foreach (glob(dirname($sOutputPath).'/*') as $sPathToUnlink)
 		{
 			Log::getLog()->log("Unlinking old Motorpass export file: {$sPathToUnlink}...");
 			//unlink($sPathToUnlink);
