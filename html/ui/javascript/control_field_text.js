@@ -68,5 +68,21 @@ var Control_Field_Text	= Class.create(/* extends */ Control_Field,
 		{
 			this._aOnChangeCallbacks[i]();
 		}
+	},
+	
+	disableInput	: function()
+	{
+		if (this.bRenderMode == Control_Field.RENDER_MODE_EDIT)
+		{
+			this.oControlOutput.oEdit.disabled	= true;
+		}
+	},
+	
+	enableInput	: function()
+	{
+		if (this.bRenderMode == Control_Field.RENDER_MODE_EDIT)
+		{
+			this.oControlOutput.oEdit.removeAttribute('disabled');
+		}
 	}
 });

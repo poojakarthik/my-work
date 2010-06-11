@@ -600,7 +600,7 @@ Page_FollowUp_Recurring_List.SORT_FIELD_RECURRENCE_PERIOD	= 'recurrence_period';
 
 Page_FollowUp_Recurring_List.DATA_SET_DEFINITION		= {sObject: 'FollowUp_Recurring', sMethod: 'getDataSet'};
 
-Page_FollowUp_Recurring_List.NO_END_DATE				= '9999-12-31 23:59:00';
+Page_FollowUp_Recurring_List.NO_END_DATE				= '9999-12-31 23:59:59';
 
 // Helper functions
 Page_FollowUp_Recurring_List._getTypeElement	= function(iType)

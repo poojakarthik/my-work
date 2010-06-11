@@ -472,7 +472,7 @@ Popup_Recurring_Charge_Type.showValidationErrors	= function(aErrors)
 {
 	// Create a UL to list the errors and then show a reflex alert
 	var oAlertDom	=	$T.div({class: 'rebill-validation-errors'},
-							$T.div('There were errors in the rebill information: '),
+							$T.div('There were errors in the charge type information: '),
 							$T.ul(
 								// Added here...
 							)

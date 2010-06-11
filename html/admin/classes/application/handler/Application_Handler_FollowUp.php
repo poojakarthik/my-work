@@ -120,6 +120,27 @@ class Application_Handler_FollowUp extends Application_Handler
 			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
 		}
 	}
+	
+	public function Configure($subPath)
+	{
+		// Check user permissions
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
+		
+		$aDetailsToRender	= array();
+		
+		try
+		{
+			BreadCrumb()->Employee_Console();
+			BreadCrumb()->SetCurrentPage('Configure Follow-Ups');
+			$this->LoadPage('followup_configure', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
+		}
+		catch (Exception $e)
+		{
+			$aDetailsToRender['Message'] 		= "An error occured while trying to build the \"Configure Follow-Ups\" page";
+			$aDetailsToRender['ErrorMessage']	= $e->getMessage();
+			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
+		}
+	}
 }
 
 ?>

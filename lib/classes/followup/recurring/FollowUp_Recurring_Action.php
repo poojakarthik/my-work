@@ -117,10 +117,10 @@ class FollowUp_Recurring_Action extends ORM_Cached
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
 					break;
 				case 'selByFollowUpRecurringId':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "followup_recurring_id = <followup_recurring_id>", NULL, 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "followup_recurring_id = <followup_recurring_id>");
 					break;
 				case 'selByActionId':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "action_id = <action_id>", NULL, 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "action_id = <action_id>");
 					break;
 					
 				// INSERTS

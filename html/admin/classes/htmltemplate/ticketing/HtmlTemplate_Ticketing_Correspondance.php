@@ -186,9 +186,11 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 
 	private function render_save($correspondence)
 	{
+		$sNewFollowUpURLCallback	= Href()->TicketingTicket($correspondence->ticketId);
+		$sCreateFollowUp			= "<button onclick='FollowUpLink.showAddFollowUpPopup(".FOLLOWUP_TYPE_TICKET_CORRESPONDENCE.", {$correspondence->id}, \"{$sNewFollowUpURLCallback}\");'>Create a Follow-Up</button>";
 		$message = array_key_exists('email_not_sent', $this->mxdDataToRender) && $this->mxdDataToRender['email_not_sent'] 
 			? "The correspondence has been saved BUT THE EMAIL HAS NOT BEEN SENT." 
-			: "The correspondence has been saved. <button onclick='FollowUpLink.showAddFollowUpPopup(".FOLLOWUP_TYPE_TICKET_CORRESPONDENCE.", {$correspondence->id});'>Create a Follow-Up</button>";
+			: "The correspondence has been saved. {$sCreateFollowUp}";
 		$this->render_view($correspondence, $message);
 	}
 

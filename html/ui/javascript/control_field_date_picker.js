@@ -7,9 +7,11 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		$super(sLabel, sLabelSeparator);
 		
 		this._sDateFormat	= (sDateFormat ? sDateFormat : 'Y-m-d');
+		this._bTimePicker	= bTimePicker;
 
 		// Create the DOM Elements
-		this.oControlOutput.oEdit	= document.createElement('div');
+		//this.oControlOutput.oEdit	= document.createElement('div');
+		this.oControlOutput.oEdit	= $T.div({class: 'date-time-picker-dynamic'});
 		this.oControlOutput.oElement.appendChild(this.oControlOutput.oEdit);
 		
 		// FIXME: Temporary Id
@@ -93,7 +95,14 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 			
 			if (oDate && oDate.dateFormat)
 			{
-				return oDate.dateFormat(Control_Field_Date_Picker.DATE_FORMAT);
+				if (this._bTimePicker)
+				{
+					return oDate.dateFormat(Control_Field_Date_Picker.DATE_TIME_FORMAT);	
+				}
+				else
+				{
+					return oDate.dateFormat(Control_Field_Date_Picker.DATE_FORMAT);
+				}
 			}
 		}
 		
@@ -135,11 +144,27 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		{
 			this._aOnChangeCallbacks[i]();
 		}
+	},
+	
+	disableInput	: function()
+	{
+		if (this.bRenderMode == Control_Field.RENDER_MODE_EDIT)
+		{
+			this.oControlOutput.oInput.disabled	= true;
+		}
+	},
+	
+	enableInput	: function()
+	{
+		if (this.bRenderMode == Control_Field.RENDER_MODE_EDIT)
+		{
+			this.oControlOutput.oInput.removeAttribute('disabled');
+		}
 	}
-	 
 });
 
-Control_Field_Date_Picker.DATE_FORMAT	= 'd/m/Y';
+Control_Field_Date_Picker.DATE_FORMAT		= 'd/m/Y';
+Control_Field_Date_Picker.DATE_TIME_FORMAT	= Control_Field_Date_Picker.DATE_FORMAT + ' g:i A';
 
 Control_Field_Date_Picker.YEAR_START	= 1900;
 Control_Field_Date_Picker.YEAR_END		= 2050;

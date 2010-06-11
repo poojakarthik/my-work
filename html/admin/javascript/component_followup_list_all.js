@@ -33,6 +33,20 @@ var Component_FollowUp_List_All = Class.create(
 			this._oFilter.setFilterValue(Component_FollowUp_List_All.FILTER_FIELD_OWNER, this._iEmployeeId, this._iEmployeeId);
 		}
 		
+		// Set default due date filter (today + 7 days)
+		var oThen	= new Date();
+		oThen.shift(8, 'days');
+		var sThen	= Reflex_Date_Format.format('Y-m-d', oThen);
+		
+		this._oFilter.setFilterValue(
+			Component_FollowUp_List_All.FILTER_FIELD_FOLLOWUP_DATE, 
+			'', 
+			sThen, 
+			'', 
+			sThen, 
+			Filter.RANGE_TYPE_TO
+		);
+		
 		// Create sort object
 		this._oSort	= new Sort(this.oDataSet, this.oPagination, true);
 		

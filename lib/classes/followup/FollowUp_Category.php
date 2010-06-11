@@ -60,117 +60,53 @@ class FollowUp_Category extends ORM_Cached
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 
-	public static function searchFor($iLimit=null, $iOffset=null, $aSort=null, $aFilter=null)
+	public static function searchFor($iLimit=null, $iOffset=null, $aSort=null, $aFilter=null, $bCountOnly=false)
 	{
 		$sFromClause	= self::$_strStaticTableName;
 		$sSelectClause	= '*';
 		$sWhereClause	= '';
 		$sOrderByClause	= '';
 		$sLimitClause	= '';
-		$aColumns		= self::_getColumns();
-		$oQuery			= new Query();
 		
 		// WHERE clause
-		if (is_array($aFilter))
+		$aWhereInfo		= StatementSelect::generateWhere(null, $aFilter);
+		
+		if ($bCountOnly)
 		{
-			$aWhereConditions	= array();
-			foreach ($aFilter as $sFieldName => $mValue)
-			{
-				// Validate the filter field name before adding it
-				if (isset($aColumns[$sFieldName]))
-				{
-					if (is_array($mValue))
-					{
-						foreach ($mValue as $sName => $mVal)
-						{
-							$mVal	= self::_getColumnValue($oQuery, $mVal);
-						}
-						
-						// Value is an array of values, convert to IN
-						$aWhereConditions[]	= "{$sFieldName} IN (".implode(', ', $mValue).")";
-					}
-					else if (is_object($mValue) && $mValue->mFrom || $mValue->mTo)
-					{
-						$mFrom	= self::_getColumnValue($oQuery, $mValue->mFrom);
-						$mTo	= self::_getColumnValue($oQuery, $mValue->mTo);
-						
-						if ($mValue->mFrom && $mValue->mTo)
-						{
-							// BETWEEN
-							$aWhereConditions[]	= "{$sFieldName} BETWEEN {$mFrom} AND {$mTo}";
-						}
-						else if ($mValue->mFrom)
-						{
-							// > (Greater than)
-							$aWhereConditions[]	= "{$sFieldName} > {$mFrom}";
-						}
-						else if ($mValue->mTo)
-						{
-							// < (Less than)
-							$aWhereConditions[]	= "{$sFieldName} < {$mTo}";
-						}
-					}
-					else
-					{
-						// Value is a single value
-						$aWhereConditions[]	= "{$sFieldName} = ".self::_getColumnValue($oQuery, $mValue);
-					}
-				}
-			}
+			$sSelectClause	= 'COUNT(id) AS count';
+		}
+		else
+		{		
+			// ORDER BY clause
+			$sOrderByClause	= Statement::generateOrderBy(null, $aSort);
 			
-			if (count($aWhereConditions))
-			{
-				$sWhereClause	= implode(' AND ', $aWhereConditions);
-			}
+			// LIMIT clause
+			$sLimitClause	= Statement::generateOrderBy($iLimit, $iOffset);
 		}
 		
-		// ORDER BY clause
-		if (is_array($aSort))
-		{
-			$aSortFields	= array();
-			foreach ($aSort as $sFieldName => $sDirection)
-			{
-				if (isset($aColumns[$sFieldName]))
-				{
-					$aSortFields[]	= "{$sFieldName} {$sDirection}";
-				}
-			}
-			
-			if (count($aSortFields))
-			{
-				$sOrderByClause	= implode(', ', $aSortFields);
-			}
-		}
-		
-		// LIMIT clause
-		if ($iLimit !== NULL)
-		{
-			$sLimitClause = intval($iLimit);
-			if ($iOffset !== NULL)
-			{
-				$sLimitClause .= " OFFSET ". intval($iOffset);
-			}
-			else
-			{
-				$iOffset = 0;
-			}
-		}
-		
-		// Get results
-		$oSelect	= new StatementSelect($sFromClause, $sSelectClause, $sWhereClause, $sOrderByClause, $sLimitClause);
-		if ($oSelect->Execute() === FALSE)
+		// Get records
+		$oSelect	= new StatementSelect($sFromClause, $sSelectClause, $aWhereInfo['sClause'], $sOrderByClause, $sLimitClause);
+		if ($oSelect->Execute($aWhereInfo['aValues']) === FALSE)
 		{
 			throw new Exception("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oSelect->Error());
 		}
 		
-		// Create 'self' objects for each
-		$aResults	= array();
-		while ($aRow = $oSelect->Fetch())
+		if ($bCountOnly)
 		{
-			$aResults[$aRow['id']]	= new self($aRow);
+			$aCount	= $oSelect->Fetch();
+			return $aCount['count'];
 		}
-		
-		return $aResults;
+		else
+		{
+			// Create FollowUp_Category objects for each
+			$aFollowUpCategorys	= array();
+			while ($aRow = $oSelect->Fetch())
+			{
+				$aFollowUpCategorys[$aRow['id']]	= new self($aRow);
+			}
+			
+			return $aFollowUpCategorys;
+		}
 	}
 
 	/**
@@ -220,25 +156,6 @@ class FollowUp_Category extends ORM_Cached
 			}
 			return $arrPreparedStatements[$strStatement];
 		}
-	}
-	
-	// Retrieves a list of column names (array['ActualColumnName'] = tidyName)
-	private static function _getColumns()
-	{
-		static $aColumns;
-		
-		if (!isset($aColumns))
-		{
-			$aTableDefine = DataAccess::getDataAccess()->FetchTableDefine(self::$_strStaticTableName);
-			
-			foreach ($aTableDefine['Column'] as $sName=>$aColumn)
-			{
-				$aColumns[$sName] = self::tidyName($sName);
-			}
-			$aColumns[$aTableDefine['id']] = self::tidyName($aTableDefine['id']);
-		}
-		
-		return $aColumns;
 	}
 }
 ?>

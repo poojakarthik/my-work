@@ -117,10 +117,10 @@ class FollowUp_Recurring_Ticketing_Correspondence extends ORM_Cached
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
 					break;
 				case 'selByFollowUpRecurringId':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "followup_recurring_id = <followup_recurring_id>", NULL, 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "followup_recurring_id = <followup_recurring_id>");
 					break;
 				case 'selByCorrespondenceId':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "ticketing_correspondence_id = <ticketing_correspondence_id>", NULL, 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "ticketing_correspondence_id = <ticketing_correspondence_id>");
 					break;
 						
 				// INSERTS

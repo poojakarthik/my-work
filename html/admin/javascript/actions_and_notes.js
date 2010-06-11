@@ -1208,6 +1208,7 @@ Object.extend(ActionsAndNotes.List.prototype,
 		
 		// Update the followup context lists for each action/note
 		FollowUpLink.generateContextLists();
+		FollowUpLink.addNewFollowUpCallback(this.search.bind(this, true, this.lastSearch.currentPageOffset), null, true);
 		
 		this.setLastSearchDetails();
 	},

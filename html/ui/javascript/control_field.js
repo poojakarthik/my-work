@@ -34,6 +34,16 @@ var Control_Field	= Class.create
 		throw "OO Error: Control_Field::updateElementValue() is an unimplemented Virtual Method!";
 	},
 	
+	disableInput	: function()
+	{
+		throw "OO Error: Control_Field::disableInput() is an unimplemented Virtual Method!";
+	},
+	
+	enableInput	: function()
+	{
+		throw "OO Error: Control_Field::enableInput() is an unimplemented Virtual Method!";
+	},
+	
 	update	: function()
 	{
 		// Update value

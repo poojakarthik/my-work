@@ -87,8 +87,10 @@ class Flex_Rollout_Version_000218 extends Flex_Rollout_Version
 																	followup_closure_type_id	INT				UNSIGNED	NOT NULL					COMMENT	'(fk) followup_closure_type - the base type for this closure',
 																	name						VARCHAR(128)				NOT NULL					COMMENT	'Name of the FollowUp Closure',
 																	description					VARCHAR(256)				NOT NULL					COMMENT	'Reason for the closure of a FollowUp',
+																	status_id					BIGINT			UNSIGNED	NOT NULL					COMMENT '(fk) status',
 																	CONSTRAINT	pk_followup_closure_id							PRIMARY KEY	(id),
-																	CONSTRAINT	fk_followup_closure_followup_closure_type_id	FOREIGN KEY	(followup_closure_type_id)	REFERENCES	followup_closure_type(id)	ON UPDATE CASCADE	ON DELETE RESTRICT
+																	CONSTRAINT	fk_followup_closure_followup_closure_type_id	FOREIGN KEY	(followup_closure_type_id)	REFERENCES	followup_closure_type(id)	ON UPDATE CASCADE	ON DELETE RESTRICT,
+																	CONSTRAINT	fk_followup_closure_status_id					FOREIGN KEY	(status_id)					REFERENCES	status(id)					ON UPDATE CASCADE	ON DELETE RESTRICT
 																) ENGINE=InnoDB;",
 									'sRollbackSQL'		=>	"	DROP TABLE	followup_closure;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
@@ -101,7 +103,9 @@ class Flex_Rollout_Version_000218 extends Flex_Rollout_Version
 																	id				INT				UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT	'Unique Identifier',
 																	name			VARCHAR(128)				NOT NULL					COMMENT	'Name of the FollowUp Category',
 																	description		VARCHAR(256)				NOT NULL					COMMENT	'Description of the FollowUp Category',
-																	CONSTRAINT	pk_followup_category_id	PRIMARY KEY	(id)
+																	status_id		BIGINT			UNSIGNED	NOT NULL					COMMENT '(fk) status',
+																	CONSTRAINT	pk_followup_category_id			PRIMARY KEY	(id),
+																	CONSTRAINT	fk_followup_category_status_id	FOREIGN KEY	(status_id)	REFERENCES	status(id)	ON UPDATE CASCADE	ON DELETE RESTRICT
 																) ENGINE=InnoDB;",
 									'sRollbackSQL'		=>	"	DROP TABLE	followup_category;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN

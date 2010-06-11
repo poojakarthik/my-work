@@ -119,6 +119,12 @@ var Filter	= Class.create
 				oFilter.mTo		= (bClear ? null : arguments[2]);
 				oFilter.sFrom	= (bClear ? null : arguments[3]);
 				oFilter.sTo		= (bClear ? null : arguments[4]);
+				
+				if (arguments[5])
+				{
+					// Set the range definition value
+					oFilter.oRangeDefinition.oTypeSelect.value	= arguments[5];
+				}
 				break;
 			case Filter.FILTER_TYPE_CONTAINS:
 				oFilter.sContains	= (bClear ? null : arguments[1]);

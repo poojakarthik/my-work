@@ -78,7 +78,6 @@ class FollowUp_Note extends ORM_Cached
 		$aFollowUps	= array();
 		$oSelect	= self::_preparedStatement('selByNoteId');
 		$oSelect->Execute(array('note_id' => $iNoteId));
-		
 		while ($aRow = $oSelect->Fetch())
 		{
 			$aFollowUps[]	= FollowUp::getForId($aRow['followup_id']);	
@@ -117,10 +116,10 @@ class FollowUp_Note extends ORM_Cached
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
 					break;
 				case 'selByFollowUpId':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "followup_id = <followup_id>", NULL, 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "followup_id = <followup_id>");
 					break;
 				case 'selByNoteId':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "note_id = <note_id>", NULL, 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "note_id = <note_id>");
 					break;
 				
 				// INSERTS

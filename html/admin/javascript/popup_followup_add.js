@@ -62,9 +62,9 @@ var Popup_FollowUp_Add	= Class.create(Reflex_Popup,
 			oOccurrencesText.setVisible(true);
 			oOccurrencesText.setEditable(true);
 			oOccurrencesText.setMandatory(true);
-			oOccurrencesText.setValidateFunction(Popup_FollowUp_Add.validatePositiveNumber);
+			oOccurrencesText.setValidateFunction(Popup_FollowUp_Add.validateOccurrences);
 			oOccurrencesText.setRenderMode(Control_Field.RENDER_MODE_EDIT);
-			oOccurrencesText.setValue('1');
+			oOccurrencesText.setValue('2');
 			oOccurrencesText.addOnChangeCallback(this._calculateRecurringEndDate.bind(this));
 			this._oOccurrencesText	= oOccurrencesText;
 			
@@ -73,7 +73,7 @@ var Popup_FollowUp_Add	= Class.create(Reflex_Popup,
 			oMultiplierText.setVisible(true);
 			oMultiplierText.setEditable(true);
 			oMultiplierText.setMandatory(true);
-			oMultiplierText.setValidateFunction(Popup_FollowUp_Add.validatePositiveNumber);
+			oMultiplierText.setValidateFunction(Popup_FollowUp_Add.validateRecurrenceMultiplier);
 			oMultiplierText.setRenderMode(Control_Field.RENDER_MODE_EDIT);
 			oMultiplierText.setValue('1');
 			oMultiplierText.addOnChangeCallback(this._calculateRecurringEndDate.bind(this));
@@ -172,12 +172,12 @@ var Popup_FollowUp_Add	= Class.create(Reflex_Popup,
 																	this._recurrenceTypeRadioSelected,
 																	$T.span('Recurring'),
 																	true
-																)
-															)
+																),
+																/*)
 														),
 														$T.tr(
 															$T.th({class: 'label'}),
-															$T.td({class: 'popup-followup-add-followup-details'},
+															$T.td({class: 'popup-followup-add-followup-details'},*/
 																// Once-off follow-up specific information
 																$T.table({class: 'popup-followup-add-followup-details-onceoff', style: 'display: none;'},
 																	$T.tbody(
@@ -216,9 +216,9 @@ var Popup_FollowUp_Add	= Class.create(Reflex_Popup,
 																					Popup_FollowUp_Add.RADIO_RECURRING_END_DATE,
 																					this._recurringEndDateRadioSelected,
 																					$T.div({class: 'popup-followup-add-followup-details-occurences'},
-																						'...After ',
+																						$T.span('...After '),
 																						this._oOccurrencesText.getElement(),
-																						' occurrences'
+																						$T.span(' occurrences')
 																					)
 																				),
 																				this._createRadio(
@@ -226,7 +226,7 @@ var Popup_FollowUp_Add	= Class.create(Reflex_Popup,
 																					Popup_FollowUp_Add.RADIO_RECURRING_END_DATE,
 																					this._recurringEndDateRadioSelected,
 																					$T.div({class: 'popup-followup-add-followup-details-endby'},
-																						'...By ',
+																						$T.span('...By '),
 																						this._oEndByDatePicker.getElement()
 																					)
 																				)
@@ -501,6 +501,23 @@ var Popup_FollowUp_Add	= Class.create(Reflex_Popup,
 	{
 		this._iSelectedRecurringEndDate	= parseInt(oRadio.value);
 		oRadio.checked					= true;
+		
+		switch (this._iSelectedRecurringEndDate)
+		{
+			case Popup_FollowUp_Add.RADIO_RECURRING_END_DATE_NO_END:
+				this._oOccurrencesText.disableInput();
+				this._oEndByDatePicker.disableInput();
+				break;
+			case Popup_FollowUp_Add.RADIO_RECURRING_END_DATE_END_AFTER:
+				this._oOccurrencesText.enableInput();
+				this._oEndByDatePicker.disableInput();
+				break;
+			case  Popup_FollowUp_Add.RADIO_RECURRING_END_DATE_END_BY:
+				this._oOccurrencesText.disableInput();
+				this._oEndByDatePicker.enableInput();
+				break;
+		}
+		
 		this._calculateRecurringEndDate();
 		this._oOccurrencesText.validate();
 		this._oEndByDatePicker.validate();
@@ -559,13 +576,13 @@ var Popup_FollowUp_Add	= Class.create(Reflex_Popup,
 	
 	_validateEndDate	: function(sValue)
 	{
-		if (this._iSelectedRecurringEndDate != Popup_FollowUp_Add.RADIO_RECURRING_END_DATE_END_BY)
+		/*if (this._iSelectedRecurringEndDate != Popup_FollowUp_Add.RADIO_RECURRING_END_DATE_END_BY)
 		{
 			// end date radio not selected, validation not necessary
 			return true
 		}
 		else
-		{
+		{*/
 			var iStartDate		= Date.parse(this._oStartDatePicker.getElementValue().replace(/-/g, '/'));
 			var iMilliseconds	= Date.parse(sValue.replace(/-/g, '/'));
 			if (isNaN(iMilliseconds) || (iMilliseconds <= iStartDate))
@@ -576,7 +593,7 @@ var Popup_FollowUp_Add	= Class.create(Reflex_Popup,
 			{
 				return true;
 			}
-		}
+		//}
 	}
 });
 
@@ -729,10 +746,23 @@ Popup_FollowUp_Add.shiftDate	= function(oDate, iRecurrenceMultiplier, iRecurrenc
 	}
 };
 
-Popup_FollowUp_Add.validatePositiveNumber	= function(sValue)
+Popup_FollowUp_Add.validateRecurrenceMultiplier	= function(sValue)
 {
 	var bIsDigits	= Reflex_Validation.digits(sValue);
 	if (!bIsDigits || (parseInt(sValue) <= 0))
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+};
+
+Popup_FollowUp_Add.validateOccurrences	= function(sValue)
+{
+	var bIsDigits	= Reflex_Validation.digits(sValue);
+	if (!bIsDigits || (parseInt(sValue) <= 1))
 	{
 		return false;
 	}

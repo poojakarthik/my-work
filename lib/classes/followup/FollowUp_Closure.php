@@ -60,16 +60,53 @@ class FollowUp_Closure extends ORM_Cached
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 
-	public static function getCountOfAll()
+	public static function searchFor($iLimit=null, $iOffset=null, $aSort=null, $aFilter=null, $bCountOnly=false)
 	{
-		$iCount		= 0;
-		$aResults	= self::getAll();
-		foreach ($aResults as $oClosure)
+		$sFromClause	= self::$_strStaticTableName;
+		$sSelectClause	= '*';
+		$sWhereClause	= '';
+		$sOrderByClause	= '';
+		$sLimitClause	= '';
+		
+		// WHERE clause
+		$aWhereInfo		= StatementSelect::generateWhere(null, $aFilter);
+		
+		if ($bCountOnly)
 		{
-			$iCount++;
+			$sSelectClause	= 'COUNT(id) AS count';
+		}
+		else
+		{		
+			// ORDER BY clause
+			$sOrderByClause	= Statement::generateOrderBy(null, $aSort);
+			
+			// LIMIT clause
+			$sLimitClause	= Statement::generateOrderBy($iLimit, $iOffset);
 		}
 		
-		return $iCount;
+		// Get records
+		$oSelect	= new StatementSelect($sFromClause, $sSelectClause, $aWhereInfo['sClause'], $sOrderByClause, $sLimitClause);
+		if ($oSelect->Execute($aWhereInfo['aValues']) === FALSE)
+		{
+			throw new Exception("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oSelect->Error());
+		}
+		
+		if ($bCountOnly)
+		{
+			$aCount	= $oSelect->Fetch();
+			return $aCount['count'];
+		}
+		else
+		{
+			// Create FollowUp_Category objects for each
+			$aFollowUpCategorys	= array();
+			while ($aRow = $oSelect->Fetch())
+			{
+				$aFollowUpCategorys[$aRow['id']]	= new self($aRow);
+			}
+			
+			return $aFollowUpCategorys;
+		}
 	}
 
 	/**

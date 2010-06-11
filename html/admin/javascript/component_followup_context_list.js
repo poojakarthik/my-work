@@ -118,6 +118,6 @@ var Component_FollowUp_Context_List	= Class.create
 	}
 });
 
-Component_FollowUp_Context_List.ADD_ICON_IMAGE_SOURCE		= '../admin/img/template/new.png';
+Component_FollowUp_Context_List.ADD_ICON_IMAGE_SOURCE		= '../admin/img/template/followup_add.png';
 Component_FollowUp_Context_List.ONCE_OFF_ICON_IMAGE_SOURCE	= '../admin/img/template/followup.png';
 Component_FollowUp_Context_List.RECURRING_ICON_IMAGE_SOURCE	= '../admin/img/template/followup_recurring.png';

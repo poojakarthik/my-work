@@ -8,6 +8,8 @@ var FollowUp_Link	= Class.create
 		this._bLinkFlashEnabled						= false;
 		this._bRefreshOverdueCountTimeoutStarted	= false;
 		this._aFollowUpContextLists					= [];
+		this._sNewFollowUpCallbackURL				= null;
+		this._aNewFollowUpCallbacks					= [];
 		
 		// Create the overdue count request json function
 		this._fnGetCount	= 	jQuery.json.jsonFunction(
@@ -79,7 +81,7 @@ var FollowUp_Link	= Class.create
 			else
 			{
 				//
-				// NOTE: Not sure if this will ever happen... hmmm. rmctainsh
+				// NOTE: Not sure if this will ever happen
 				//
 				
 				// Update the context list within the place holder
@@ -100,8 +102,17 @@ var FollowUp_Link	= Class.create
 		oPlaceholder.setAttribute('context_list_index', iListIndex);
 	},
 	
-	showAddFollowUpPopup	: function(iType, iTypeDetail)
+	showAddFollowUpPopup	: function(iType, iTypeDetail, mCallback)
 	{
+		if (typeof mCallback == 'function')
+		{
+			this.addNewFollowUpCallback(mCallback);
+		}
+		else if (mCallback)
+		{
+			this._sNewFollowUpCallbackURL	= mCallback;
+		}
+		
 		this._require(
 			FollowUp_Link.FOLLOWUP_CONSTANT_GROUPS, 
 			[
@@ -127,14 +138,56 @@ var FollowUp_Link	= Class.create
 		);
 	},
 	
+	addNewFollowUpCallback	: function(fnCallback, sUrl, bRemoveAfterExecution)
+	{
+		if (sUrl)
+		{
+			this._sNewFollowUpCallbackURL	= sUrl;
+		}
+		else
+		{
+			this._aNewFollowUpCallbacks.push(
+				{
+					fnCallback				: fnCallback,
+					bRemoveAfterExecution	: bRemoveAfterExecution
+				}
+			);
+		}
+	},
+	
 	//------------------//
 	// Private methods
 	//------------------//
 
 	_followUpAddComplete	: function()
 	{
-		// TODO: Call registers callbacks/redirect to registered url
-		window.location	= window.location;
+		if (this._sNewFollowUpCallbackURL)
+		{
+			// Redirect
+			window.location	= this._sNewFollowUpCallbackURL;
+		}
+		else if (this._aNewFollowUpCallbacks.length)
+		{
+			// Execute the callbacks
+			var oCallback	= null;
+			for (var i = 0; i < this._aNewFollowUpCallbacks.length; i++)
+			{
+				// Execute
+				oCallback	= this._aNewFollowUpCallbacks[i];
+				oCallback.fnCallback();
+				
+				// Remove if necessary
+				if (oCallback.bRemoveAfterExecution)
+				{
+					this._aNewFollowUpCallbacks.splice(i, 1);
+				}
+			}
+		}
+		else
+		{
+			// Refresh by default
+			window.location	= window.location;
+		}
 	},
 	
 	_buildLink	: function()
@@ -215,10 +268,13 @@ var FollowUp_Link	= Class.create
 		this._require(
 			FollowUp_Link.FOLLOWUP_CONSTANT_GROUPS, 
 			[
+			 	'../ui/javascript/dataset_ajax.js',
 			 	'../ui/javascript/reflex_date_format.js', 
 			 	'../ui/javascript/date_time_picker_dynamic.js', 
-			 	'../ui/javascript/control_field.js', 
+			 	'../ui/javascript/control_field.js',
+			 	'../ui/javascript/control_field_select.js', 
 			 	'../ui/javascript/control_field_date_picker.js',
+			 	'javascript/followup_closure.js',
 			 	'javascript/popup_followup_close.js',
 			 	'javascript/popup_followup_due_date.js',
 			 	'javascript/popup_followup_active.js'

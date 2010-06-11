@@ -352,9 +352,19 @@ textarea
 
 input[type='text'][disabled],
 select[disabled],
-textarea[disabled]
+textarea[disabled],
+.control-field.required input[type='text'][disabled], 
+.control-field.required select[disabled], 
+.control-field.required textarea[disabled],
+.control-field.invalid input[type='text'][disabled], 
+.control-field.invalid select[disabled],
+.control-field.invalid textarea[disabled],
+.control-field.valid input[type='text'][disabled], 
+.control-field.valid select[disabled], 
+.control-field.valid textarea[disabled]
 {
 	background-color: #EFEBE7;
+	color			: #888;
 }
 
 input.required, 
@@ -364,9 +374,9 @@ textarea.required,
 .control-field.required select, 
 .control-field.required textarea 
 {
-	background: #fff;
-	color: #111;
-	border: .1em solid #da8;
+	background	: #fff;
+	color		: #111;
+	border		: .1em solid #da8;
 }
 
 input.invalid, 
@@ -376,9 +386,9 @@ textarea.invalid,
 .control-field.invalid select,
 .control-field.invalid textarea
 {
-	background: #ffecf0;
-	color: #111;
-	border: .1em solid #d30;
+	background	: #ffecf0;
+	color		: #111;
+	border		: .1em solid #d30;
 }
 
 input.valid, 
@@ -4286,7 +4296,7 @@ div.followup-list-all
 	margin-top	: 0.5em;
 }
 
-div.followup-category-validation-errors
+div.followup-closure-validation-errors
 {
 	padding	: 0.5em;
 }
@@ -4394,6 +4404,17 @@ div.section > div.section-header > div.section-header-title > span.followup-list
 div.followup-list-all-datetime-time
 {
 	font-size	: 0.8em;
+}
+
+td.followup-closure-list-actions
+{
+	text-align	: right;
+}
+
+td.followup-closure-list-actions > img
+{
+	cursor			: pointer;
+	padding-left	: 0.25em;
 }
 
 /************************ END - Follow-Up Management Page - END ************************/
@@ -4806,6 +4827,11 @@ div.popup-followup-add-radio
 	padding-bottom	: 0.5em;
 }
 
+table.input tbody tr td div.popup-followup-add-radio *
+{
+	vertical-align	: middle;
+}
+
 div.popup-followup-add-radio > input
 {
 	margin-right	: 0.5em;
@@ -4822,7 +4848,8 @@ td.popup-followup-add-followup-details > table
 	border-spacing	: 0em 0.5em;
 }
 
-td.popup-followup-add-followup-details > table > tbody > tr > td:first-child
+table.popup-followup-add-followup-details-onceoff > tbody > tr > td:first-child,
+table.popup-followup-add-followup-details-recurring > tbody > tr > td:first-child
 {
 	font-weight	: bold;
 	text-align	: left;
@@ -4843,23 +4870,17 @@ div.popup-followup-add-followup-details-endby > div.control-field
 	vertical-align	: bottom;
 }
 
-td.popup-followup-add-details-recurring-howoften > div.control-field:nth-child(2),
-div.popup-followup-add-followup-details-occurences > div.control-field:nth-child(1)
+td.popup-followup-add-details-recurring-howoften > div.control-field:nth-child(2) > input,
+div.popup-followup-add-followup-details-occurences > div.control-field:nth-child(2) > input
 {
 	width			: 3em;
-	padding-left	: 0.25em;
-	padding-right	: 0.5em;
+	padding-left	: 0.2em;
+	padding-right	: 0.25em;
 }
 
 td.popup-followup-add-details-recurring-howoften > div.control-field:nth-child(3)
 {
 	width	: 6em;
-}
-
-td.popup-followup-add-details-recurring-end > div.popup-followup-add-radio > input,
-td.popup-followup-add-details-recurring-end > div.popup-followup-add-radio > span
-{
-	vertical-align	: middle;
 }
 
 /************************ END - Add Follow-Up Popup - END ************************/
@@ -4893,3 +4914,230 @@ div.action-list div.item div.details div.followup-context-list-placeholder
 }
 
 /************************ END - Follow-Up Context List - END ************************/
+
+/************************ START - Control Field Date Picker - START ************************/
+
+div.control-field > div.date-time-picker-dynamic > img
+{
+	vertical-align	: bottom;
+}
+
+/************************ END - Control Field Date Picker - END ************************/
+
+/************************ START - Follow-Up Category List Component - START ************************/
+
+div.followup-category-list
+{
+	margin-top	: 0.5em;
+}
+
+div.followup-category-validation-errors
+{
+	padding	: 0.5em;
+}
+
+div.followup-category-list table.reflex thead th > span
+{
+	vertical-align	: middle;
+	padding-right	: 1em;
+}
+
+div.followup-category-list table.reflex thead th > img
+{
+	vertical-align	: middle;
+	cursor			: pointer;
+}
+
+div.followup-category-list table.reflex thead th.followup-category-list-filter
+{
+	font-style	: italic;
+	font-size	: 0.85em;
+}
+
+div.followup-category-list table.reflex thead th.followup-category-list-filter > img,
+div.followup-category-list table.reflex thead th.followup-category-list-filter > span
+{
+	vertical-align	: middle;
+}
+
+div.followup-category-list table.reflex thead th.followup-category-list-filter > span
+{
+	margin-left	: 0.25em;
+}
+
+div.followup-category-list table.reflex thead th.followup-category-list-filter > img
+{
+	padding-left	: 0.5em;
+	width			: 1.25em;
+	height			: 1.25em;
+	cursor			: pointer;
+}
+
+th.followup-category-list-header > img
+{
+	padding-right	: 0.5em;
+}
+
+span.followup-category-list-header-sort
+{
+	cursor	: pointer;
+}
+
+th.followup-category-list-header-multiline
+{
+	width	: 15%;
+}
+
+div.followup-category-list div.section-content > table.reflex
+{
+	margin-left		: 0em;
+	margin-right	: 0em;
+	width			: 100%;
+}
+
+div.section > div.section-header > div.section-header-title > span.followup-category-list-pagination-info
+{
+	padding-left	: 0.5em;
+	font-size		: 0.95em;
+}
+
+div.followup-category-list-datetime-time
+{
+	font-size	: 0.8em;
+}
+
+div.followup-category-list table.reflex > tbody > tr > td.followup-category-list-status-active
+{
+	color	: #008000;
+}
+
+div.followup-category-list table.reflex > tbody > tr > td.followup-category-list-status-inactive
+{
+	color	: #CC0000;
+}
+
+/************************ START - Follow-Up Category List Component - START ************************/
+
+/************************ START - Follow-Up Category Edit Popup - START ************************/
+
+div.followup-category-edit
+{
+	margin	: 0.75em;
+}
+
+div.followup-category-edit-buttons
+{
+	text-align	: center;
+	margin-top	: 0.5em;
+}
+
+/************************ END - Follow-Up Category Edit Popup - END ************************/
+
+/************************ START - Follow-Up Closure List Component - START ************************/
+
+div.followup-closure-list
+{
+	margin-top	: 0.5em;
+}
+
+div.followup-closure-validation-errors
+{
+	padding	: 0.5em;
+}
+
+div.followup-closure-list table.reflex thead th > span
+{
+	vertical-align	: middle;
+	padding-right	: 1em;
+}
+
+div.followup-closure-list table.reflex thead th > img
+{
+	vertical-align	: middle;
+	cursor			: pointer;
+}
+
+div.followup-closure-list table.reflex thead th.followup-closure-list-filter
+{
+	font-style	: italic;
+	font-size	: 0.85em;
+}
+
+div.followup-closure-list table.reflex thead th.followup-closure-list-filter > img,
+div.followup-closure-list table.reflex thead th.followup-closure-list-filter > span
+{
+	vertical-align	: middle;
+}
+
+div.followup-closure-list table.reflex thead th.followup-closure-list-filter > span
+{
+	margin-left	: 0.25em;
+}
+
+div.followup-closure-list table.reflex thead th.followup-closure-list-filter > img
+{
+	padding-left	: 0.5em;
+	width			: 1.25em;
+	height			: 1.25em;
+	cursor			: pointer;
+}
+
+th.followup-closure-list-header > img
+{
+	padding-right	: 0.5em;
+}
+
+span.followup-closure-list-header-sort
+{
+	cursor	: pointer;
+}
+
+th.followup-closure-list-header-multiline
+{
+	width	: 15%;
+}
+
+div.followup-closure-list div.section-content > table.reflex
+{
+	margin-left		: 0em;
+	margin-right	: 0em;
+	width			: 100%;
+}
+
+div.section > div.section-header > div.section-header-title > span.followup-closure-list-pagination-info
+{
+	padding-left	: 0.5em;
+	font-size		: 0.95em;
+}
+
+div.followup-closure-list-datetime-time
+{
+	font-size	: 0.8em;
+}
+
+div.followup-closure-list table.reflex > tbody > tr > td.followup-closure-list-status-active
+{
+	color	: #008000;
+}
+
+div.followup-closure-list table.reflex > tbody > tr > td.followup-closure-list-status-inactive
+{
+	color	: #CC0000;
+}
+
+/************************ START - Follow-Up Closure List Component - START ************************/
+
+/************************ START - Follow-Up Closure Edit Popup - START ************************/
+
+div.followup-closure-edit
+{
+	margin	: 0.75em;
+}
+
+div.followup-closure-edit-buttons
+{
+	text-align	: center;
+	margin-top	: 0.5em;
+}
+
+/************************ END - Follow-Up Closure Edit Popup - END ************************/
