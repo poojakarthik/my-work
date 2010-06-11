@@ -12,6 +12,13 @@ class Invoice_Run_Export_Motorpass extends Invoice_Run_Export
 						.$this->_makeFileName();
 		@mkdir(dirname($sOutputPath), 0777, true);
 		
+		// Empty the export directory first -- as there should only ever be one file
+		foreach (glob(dirname($sOutputPath.'/*')) as $sPathToUnlink)
+		{
+			Log::getLog()->log("Unlinking old Motorpass export file: {$sPathToUnlink}...");
+			//unlink($sPathToUnlink);
+		}
+		
 		if (!is_resource($rOutputFile = fopen($sOutputPath, 'w')))
 		{
 			throw new Exception("Unable to open export file @ '{$sOutputPath}'");
@@ -81,19 +88,17 @@ class Invoice_Run_Export_Motorpass extends Invoice_Run_Export
 		$iInvoiceCount	= 0;
 		while ($aInvoice = $mInvoicesResult->fetch_assoc())
 		{
-			if ($aAccountIds === null || in_array($aInvoice['account_id'], $aAccountIds))
-			{
-				$fBillingAmount	= round($aInvoice['invoice_total']+$aInvoice['invoice_tax'], 2);
-				
-				$aLines[]	=	array
-								(
-									$aInvoice['invoice_id'],
-									$aInvoice['motorpass_account_number'],
-									$fBillingAmount,
-									''
-								);
-				$iInvoiceCount++;
-			}
+			// This is a combined file, so we will export every invoice despite what's passed through to us
+			$fBillingAmount	= round($aInvoice['invoice_total']+$aInvoice['invoice_tax'], 2);
+			
+			$aLines[]	=	array
+							(
+								$aInvoice['invoice_id'],
+								$aInvoice['motorpass_account_number'],
+								$fBillingAmount,
+								''
+							);
+			$iInvoiceCount++;
 		}
 		
 		// Footer
