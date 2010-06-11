@@ -16,7 +16,7 @@ class Invoice_Run_Export_Motorpass extends Invoice_Run_Export
 		foreach (glob(dirname($sOutputPath).'/*') as $sPathToUnlink)
 		{
 			Log::getLog()->log("Unlinking old Motorpass export file: {$sPathToUnlink}...");
-			//unlink($sPathToUnlink);
+			unlink($sPathToUnlink);
 		}
 		
 		if (!is_resource($rOutputFile = fopen($sOutputPath, 'w')))
