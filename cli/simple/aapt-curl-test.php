@@ -14,6 +14,8 @@ else
 	throw new Exception("First argument must be a readable file to upload to conforms to the 8.3 filename standard");
 }
 
+$sDumpFile	= 'aapt-curl-test-'.date('YmdHis').'.dump';
+
 // Intialise cURL object
 $oCURL	= new CURL();
 
@@ -30,7 +32,8 @@ $sResponse	= $oCURL->execute();
 
 if (stripos($oCURL->EFFECTIVE_URL, 'welcome.asp') === false)
 {
-	throw new Exception("Login Failed");
+	file_put_contents($sDumpFile, $sResponse);
+	throw new Exception("Login Failed: Response Data dumped to {$sDumpFile}");
 }
 
 // Step 2: Upload
@@ -42,7 +45,8 @@ $sResponse	= $oCURL->execute();
 
 if (stripos($sResponse, 'UPLOAD SUCCESSFUL') === false)
 {
-	throw new Exception("Login Failed");
+	file_put_contents($sDumpFile, $sResponse);
+	throw new Exception("Upload Failed: Response Data dumped to {$sDumpFile}");
 }
 
 // Step 3: Logout? (probably isn't necessary, but why not?)
