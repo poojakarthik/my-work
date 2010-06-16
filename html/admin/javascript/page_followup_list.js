@@ -8,7 +8,7 @@ var Page_FollowUp_List = Class.create(
 	 * 
 	 * If bEditMode is false, then only those who belong to iEmployeeId can be closed or edited (not reassigned).
 	 */
-	initialize	: function(oContainerDiv, iEmployeeId, bEditMode)
+	initialize	: function(oContainerDiv, iEmployeeId, bEditMode, bActive)
 	{
 		this._iEmployeeId	= iEmployeeId;
 		this._bEditMode		= bEditMode;
@@ -21,7 +21,8 @@ var Page_FollowUp_List = Class.create(
 		this._oFollowUpListAll	= 	new Component_FollowUp_List_All(
 										this._oContentDiv.select('div.page-followup-list-all-container').first(), 
 										this._iEmployeeId, 
-										this._bEditMode
+										this._bEditMode,
+										bActive
 									);		
 		oContainerDiv.appendChild(this._oContentDiv);
 	}

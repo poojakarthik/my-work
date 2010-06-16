@@ -29,6 +29,8 @@ class HtmlTemplate_FollowUp_Recurring_List extends FlexHtmlTemplate
 		$this->LoadJavascript('followup_category');
 		$this->LoadJavascript('followup_status');
 		$this->LoadJavascript('followup_closure');
+		$this->LoadJavascript('followup_recurring_modify_reason');
+		$this->LoadJavascript('followup_reassign_reason');
 		
 		// Classes that renders the page
 		$this->LoadJavascript('page_followup_recurring_list');

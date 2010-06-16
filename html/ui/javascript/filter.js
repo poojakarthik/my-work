@@ -55,13 +55,29 @@ var Filter	= Class.create
 																		)
 																	)
 																),
-																$T.div(
-																	$T.span(oDefinition.sFrom + ' :'),
-																	this._createOption(sField, oDefinition.oOption)
-																),
-																$T.div(
-																	$T.span(oDefinition.sTo + ' :'),
-																	this._createOption(sField, oDefinition.oOption)
+																$T.table({class: 'filter-overlay-options-content-range'},
+																	$T.tbody(
+																		$T.tr(
+																			$T.td(
+																				$T.span({class: 'filter-overlay-options-content-range-label'},
+																					oDefinition.sFrom
+																				)
+																			),
+																			$T.td(
+																				this._createOption(sField, oDefinition.oOption)
+																			)
+																		),
+																		$T.tr(
+																			$T.td(
+																				$T.span({class: 'filter-overlay-options-content-range-label'},
+																					oDefinition.sTo
+																				)
+																			),
+																			$T.td(
+																				this._createOption(sField, oDefinition.oOption)
+																			)
+																		)
+																	)
 																)
 															);
 				
@@ -120,10 +136,18 @@ var Filter	= Class.create
 				oFilter.sFrom	= (bClear ? null : arguments[3]);
 				oFilter.sTo		= (bClear ? null : arguments[4]);
 				
+				// Set the option control field values
+				if (!bClear)
+				{
+					this._hControls[sField][0].setValue(oFilter.mFrom);
+					this._hControls[sField][1].setValue(oFilter.mTo);
+				}
+				
 				if (arguments[5])
 				{
 					// Set the range definition value
 					oFilter.oRangeDefinition.oTypeSelect.value	= arguments[5];
+					this._rangeTypeSelected(oFilter.oRangeDefinition.oTypeSelect, sField);
 				}
 				break;
 			case Filter.FILTER_TYPE_CONTAINS:
@@ -452,11 +476,10 @@ var Filter	= Class.create
 		var iRangeType	= parseInt(oSelect.value);
 		var oFromSelect	= this._hControls[sField][0];
 		var oToSelect	= this._hControls[sField][1];
-		
 		if (oFromSelect && oToSelect)
 		{
-			oFromSelect	= oFromSelect.getElement().parentNode;
-			oToSelect	= oToSelect.getElement().parentNode;
+			oFromSelect	= oFromSelect.getElement().parentNode.parentNode;
+			oToSelect	= oToSelect.getElement().parentNode.parentNode;
 			
 			switch (iRangeType)
 			{

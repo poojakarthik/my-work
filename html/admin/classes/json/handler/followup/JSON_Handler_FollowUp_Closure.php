@@ -13,13 +13,12 @@ class JSON_Handler_FollowUp_Closure extends JSON_Handler
 	
 	public function getDataSet($bCountOnly=false, $iLimit=0, $iOffset=0, $oSort=null, $oFilter=null)
 	{
-		// This dataset ajax method does not support sorting
 		try
 		{
 			// Check permissions
 			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
 			{
-				throw new JSON_Handler_FollowUp_Category_Exception('You do not have permission to view Follow-Up Closures.');
+				throw new JSON_Handler_FollowUp_Closure_Exception('You do not have permission to view Follow-Up Closures.');
 			}
 			
 			$aSort		= get_object_vars($oSort);
@@ -40,10 +39,10 @@ class JSON_Handler_FollowUp_Closure extends JSON_Handler
 				$aCategories	= FollowUp_Closure::searchFor($iLimit, $iOffset, $aSort, $aFilter);
 				$aResults		= array();
 				$iCount			= 0;		
-				foreach ($aCategories as $oCategory)
+				foreach ($aCategories as $oClosure)
 				{
 					// Add to Result Set
-					$aResults[$iCount+$iOffset]	= $oCategory->toStdClass();
+					$aResults[$iCount+$iOffset]	= $oClosure->toStdClass();
 					$iCount++;
 				}
 				
@@ -83,8 +82,8 @@ class JSON_Handler_FollowUp_Closure extends JSON_Handler
 			
 			// If no exceptions were thrown, then everything worked
 			return 	array(
-						"Success"		=> true,
-						"oClosure"		=> FollowUp_Closure::getForId($iClosureId)->toStdClass()
+						"Success"	=> true,
+						"oRecord"	=> FollowUp_Closure::getForId($iClosureId)->toStdClass()
 					);
 		}
 		catch (JSON_Handler_FollowUp_Closure_Exception $oException)
@@ -190,46 +189,46 @@ class JSON_Handler_FollowUp_Closure extends JSON_Handler
 			$iNameLength	= 128;
 			$iDescLength	= 256;
 			$aErrors		= array();
-			if (is_null($oDetails->sName) || strlen($oDetails->sName) == 0)
+			if (is_null($oDetails->name) || strlen($oDetails->name) == 0)
 			{
 				$aErrors[]	= 'Name missing.';
 			}
-			else if (strlen($oDetails->sDescription) > $iNameLength)
+			else if (strlen($oDetails->description) > $iNameLength)
 			{
 				$aErrors[]	= "Name is too long, maximum {$iNameLength} characters.";
 			}
 			
-			if (is_null($oDetails->sDescription) || strlen($oDetails->sDescription) == 0)
+			if (is_null($oDetails->description) || strlen($oDetails->description) == 0)
 			{
 				$aErrors[]	= 'Description missing.';
 			}
-			else if (strlen($oDetails->sDescription) > $iDescLength)
+			else if (strlen($oDetails->description) > $iDescLength)
 			{
 				$aErrors[]	= "Description is too long, maximum {$iDescLength} characters.";
 			}
 			
-			if (($oDetails->iStatusId != STATUS_ACTIVE) && ($oDetails->iStatusId != STATUS_INACTIVE))
+			if (($oDetails->status_id != STATUS_ACTIVE) && ($oDetails->status_id != STATUS_INACTIVE))
 			{
 				$aErrors[]	= 'Invalid status';
 			}
 			
-			if (($oDetails->iFollowUpClosureTypeId != FOLLOWUP_CLOSURE_TYPE_COMPLETED) && ($oDetails->iFollowUpClosureTypeId != FOLLOWUP_CLOSURE_TYPE_DISMISSED))
+			if (($oDetails->followup_closure_type_id != FOLLOWUP_CLOSURE_TYPE_COMPLETED) && ($oDetails->followup_closure_type_id != FOLLOWUP_CLOSURE_TYPE_DISMISSED))
 			{
 				$aErrors[]	= 'Invalid closure reason type';
 			}
 			
-			$oClosure->name						= $oDetails->sName;
-			$oClosure->description				= $oDetails->sDescription;
-			$oClosure->status_id				= $oDetails->iStatusId;
-			$oClosure->followup_closure_type_id	= $oDetails->iFollowUpClosureTypeId;
+			$oClosure->name						= $oDetails->name;
+			$oClosure->description				= $oDetails->description;
+			$oClosure->status_id				= $oDetails->status_id;
+			$oClosure->followup_closure_type_id	= $oDetails->followup_closure_type_id;
 			$oClosure->save();
 			
 			$oDataAccess->TransactionCommit();
 			
 			// If no exceptions were thrown, then everything worked
 			return 	array(
-						"Success"		=> true,
-						"iClosureId"	=> $oClosure->id
+						"Success"	=> true,
+						"iRecordId"	=> $oClosure->id
 					);
 		}
 		catch (JSON_Handler_FollowUp_Closure_Exception $oException)

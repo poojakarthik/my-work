@@ -37,12 +37,24 @@ var Popup_FollowUp_Reassign	= Class.create(Reflex_Popup,
 		oSelect.setRenderMode(Control_Field.RENDER_MODE_EDIT);
 		this._oSelect	= oSelect;
 		
+		var oReasonSelect	= new Control_Field_Select('Reason');
+		oReasonSelect.setPopulateFunction(FollowUp_Reassign_Reason.getAllAsSelectOptions.bind(FollowUp_Reassign_Reason));
+		oReasonSelect.setVisible(true);
+		oReasonSelect.setEditable(true);
+		oReasonSelect.setMandatory(true);
+		oReasonSelect.setRenderMode(Control_Field.RENDER_MODE_EDIT);
+		this._oReasonSelect	= oReasonSelect;
+		
 		// Build content
 		this._oContent	= 	$T.div({class: 'popup-followup-reassign'},
 								$T.div({class: 'popup-followup-reassign-reason'},
 									$T.div('Please choose an employee to assign the ' + this._sType + ' to:'),
-									$T.div({class: 'popup-followup-reassign-reason-list'},
+									$T.div({class: 'popup-followup-reassign-employee-list'},
 										oSelect.getElement()
+									),
+									$T.div('Please specify a reason why you are reassigning the ' + this._sType + ':'),
+									$T.div({class: 'popup-followup-reassign-reason-list'},
+										oReasonSelect.getElement()
 									)
 								),
 								$T.div({class: 'popup-followup-reassign-buttons'},
@@ -94,13 +106,14 @@ var Popup_FollowUp_Reassign	= Class.create(Reflex_Popup,
 		if (typeof oResponse == 'undefined')
 		{
 			// Make the reassign request
-			if (this._oSelect.validate())
+			if (this._oSelect.validate() && this._oReasonSelect.validate())
 			{
 				// Show loading
 				this.oLoading	= new Reflex_Popup.Loading('Reassigning ' + this._sType + '...');
 				this.oLoading.display();
 				
-				var iEmployeeId	= this._oSelect.getElementValue();
+				var iEmployeeId			= this._oSelect.getElementValue();
+				var iReassignReasonId	= this._oReasonSelect.getElementValue();
 				
 				if (this._iFollowUpId)
 				{
@@ -110,7 +123,7 @@ var Popup_FollowUp_Reassign	= Class.create(Reflex_Popup,
 										'FollowUp', 
 										'reassignFollowUp'
 									);
-					fnJSON(this._iFollowUpId, iEmployeeId);
+					fnJSON(this._iFollowUpId, iEmployeeId, iReassignReasonId);
 				}
 				else if (this._iFollowUpRecurringId)
 				{
@@ -120,12 +133,12 @@ var Popup_FollowUp_Reassign	= Class.create(Reflex_Popup,
 										'FollowUp', 
 										'reassignRecurringFollowUp'
 									);
-					fnJSON(this._iFollowUpRecurringId, iEmployeeId);
+					fnJSON(this._iFollowUpRecurringId, iEmployeeId, iReassignReasonId);
 				}
 			}
 			else
 			{
-				Reflex_Popup.alert('Please choose an employee to reassign the ' + this._sType + ' to.');
+				Reflex_Popup.alert('Please choose an employee to reassign the ' + this._sType + ' to and a reason for doing so.');
 			}
 		}
 		else if (oResponse.Success)

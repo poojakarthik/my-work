@@ -8,7 +8,7 @@ var Component_FollowUp_List_All = Class.create(
 	 * 
 	 * If bEditMode is false, then only those who belong to iEmployeeId can be closed or edited (not reassigned).
 	 */
-	initialize	: function(oContainerDiv, iEmployeeId, bEditMode)
+	initialize	: function(oContainerDiv, iEmployeeId, bEditMode, bActive)
 	{
 		this._iEmployeeId	= iEmployeeId;
 		this._bEditMode		= bEditMode;
@@ -31,6 +31,12 @@ var Component_FollowUp_List_All = Class.create(
 		{
 			// Set the 'owner' filter
 			this._oFilter.setFilterValue(Component_FollowUp_List_All.FILTER_FIELD_OWNER, this._iEmployeeId, this._iEmployeeId);
+		}
+		
+		if (bActive)
+		{
+			// Set the 'status' filter to 'Active'
+			this._oFilter.setFilterValue(Component_FollowUp_List_All.FILTER_FIELD_STATUS, FollowUp_Status.ACTIVE_VALUE, FollowUp_Status.ACTIVE_TEXT);
 		}
 		
 		// Set default due date filter (today + 7 days)
@@ -57,7 +63,7 @@ var Component_FollowUp_List_All = Class.create(
 									$T.div({class: 'section'},
 										$T.div({class: 'section-header'},
 											$T.div({class: 'section-header-title'},
-												$T.span('All Follow-Ups'),
+												$T.span('Follow-Ups'),
 												$T.span({class: 'followup-list-all-pagination-info'},
 													''
 												)
@@ -135,8 +141,8 @@ var Component_FollowUp_List_All = Class.create(
 														$T.th()
 													)
 												),
-												$T.tbody({class: 'alternating'}
-													// ...
+												$T.tbody({class: 'alternating'},
+													this._createNoRecordsRow(true)
 												)
 											),
 											$T.div({class: 'footer-pagination'},
@@ -158,7 +164,6 @@ var Component_FollowUp_List_All = Class.create(
 								);
 		
 		// Bind events to the pagination buttons
-		//var aTopPageButtons		= this._oContentDiv.select('table > caption div.caption_options button.followup-list-all-pagination-button');
 		var aTopPageButtons		= this._oContentDiv.select('div.section-header-options button.followup-list-all-pagination-button');
 		var aBottomPageButtons 	= this._oContentDiv.select('div.footer-pagination button');
 		
@@ -227,14 +232,8 @@ var Component_FollowUp_List_All = Class.create(
 		
 		// Check if any results came back
 		if (!oResultSet || oResultSet.intTotalResults == 0 || oResultSet.arrResultSet.length == 0)
-		{	
-			oTBody.appendChild( 
-				$T.tr(
-					$T.td({colspan: this._oContentDiv.select('table > thead > tr').first().childNodes.length},
-						'There are no records to display'
-					)
-				)
-			);
+		{
+			oTBody.appendChild(this._createNoRecordsRow());
 		}
 		else
 		{
@@ -267,6 +266,15 @@ var Component_FollowUp_List_All = Class.create(
 			this.oLoadingOverlay.hide();
 			delete this.oLoadingOverlay;
 		}
+	},
+	
+	_createNoRecordsRow	: function(bOnLoad)
+	{
+		return $T.tr(
+			$T.td({class: 'followup-list-all-norecords', colspan: 0},
+				(bOnLoad ? 'Loading...' : 'There are no records to display')
+			)
+		);
 	},
 	
 	_createTableRow	: function(oFollowUp)

@@ -288,7 +288,7 @@ class FollowUp_Recurring extends ORM_Cached
 		return $iProjectedDate;
 	}
 	
-	public function save()
+	public function save($iModifyReasonId=null, $iReassignReasonId=null)
 	{
 		// Update modified fields
 		$this->modified_datetime	= date('Y-m-d H:i:s');
@@ -304,6 +304,24 @@ class FollowUp_Recurring extends ORM_Cached
 		$oFollowUpRecurringHistory->modified_datetime		= $this->modified_datetime;
 		$oFollowUpRecurringHistory->modified_employee_id	= $this->modified_employee_id;
 		$oFollowUpRecurringHistory->save();
+		
+		if (!is_null($iModifyReasonId))
+		{
+			// Create a modification record for the history record and the given modification reason id
+			$oModify					= new FollowUp_Recurring_History_Modify_Reason();
+			$oModify->history_id		= $oFollowUpRecurringHistory->id;
+			$oModify->modify_reason_id	= $iModifyReasonId;
+			$oModify->save();
+		}
+		else if (!is_null($iReassignReasonId))
+		{
+			// Create a modification record for the history record and the given reassign reason id
+			$oModify						= new FollowUp_Recurring_History_Reassign_Reason();
+			$oModify->history_id			= $oFollowUpRecurringHistory->id;
+			$oModify->reassign_reason_id	= $iReassignReasonId;
+			$oModify->save();
+		}
+		
 	}
 	
 	/**

@@ -15,7 +15,7 @@ var Component_FollowUp_Context_List	= Class.create
 	
 	refresh	: function()
 	{
-		alert('refreshing');
+		//alert('refreshing');
 	},
 	
 	//-----------------//
@@ -39,9 +39,11 @@ var Component_FollowUp_Context_List	= Class.create
 			// Create UI
 			var sAddAlt		= 'Create a new Follow-Up';
 			var oAddLink	= 	$T.div({class: 'followup-context-list-add'},
-									$T.img({src: Component_FollowUp_Context_List.ADD_ICON_IMAGE_SOURCE, alt: sAddAlt, title: sAddAlt})
+									$T.img({src: Component_FollowUp_Context_List.ADD_ICON_IMAGE_SOURCE + '_off.png', alt: sAddAlt, title: sAddAlt})
 								);
 			oAddLink.observe('click', this._showAddPopup.bind(this));
+			oAddLink.observe('mouseover', this._updateAddLinkIcon.bind(this, oAddLink, '_hover.png'));
+			oAddLink.observe('mouseout', this._updateAddLinkIcon.bind(this, oAddLink, '_off.png'));
 			
 			var aChildren	= [{class: 'followup-context-list'}, oAddLink];
 			var aAll		= oResponse.aFollowUps.concat(oResponse.aFollowUpRecurrings);
@@ -97,13 +99,13 @@ var Component_FollowUp_Context_List	= Class.create
 	
 	_createIcon	: function(oFollowUp)
 	{
+		var oImg	= null;
 		if (oFollowUp.due_datetime)
 		{
 			// Once off
 			var sAlt	= 'Follow-Up: Due on ' + Reflex_Date_Format.format('l jS M Y g:i A', new Date(Date.parse(oFollowUp.due_datetime.replace(/-/g, '/'))));
-			return 	$T.div(
-						$T.img({src: Component_FollowUp_Context_List.ONCE_OFF_ICON_IMAGE_SOURCE, alt: sAlt, title: sAlt})
-					);
+			oImg		= $T.img({src: Component_FollowUp_Context_List.ONCE_OFF_ICON_IMAGE_SOURCE, alt: sAlt, title: sAlt});
+			
 		}
 		else
 		{
@@ -111,13 +113,26 @@ var Component_FollowUp_Context_List	= Class.create
 			var iMulitplier			= oFollowUp.recurrence_multiplier;
 			var sRecurrencePeriod	= Flex.Constant.arrConstantGroups.followup_recurrence_period[oFollowUp.followup_recurrence_period_id].Name;
 			var sAlt				= 'Recurring Follow-Up: Due Every ' + iMulitplier + ' ' + sRecurrencePeriod + (iMulitplier == 1 ? '' : 's' );
-			return 	$T.div(
-						$T.img({src: Component_FollowUp_Context_List.RECURRING_ICON_IMAGE_SOURCE, alt: sAlt, title: sAlt})
-					);
+			oImg					= $T.img({src: Component_FollowUp_Context_List.RECURRING_ICON_IMAGE_SOURCE, alt: sAlt, title: sAlt});
 		}
+		
+		oImg.observe('click', this._iconClick.bind(this, oFollowUp));
+		return 	$T.div({class: 'followup-context-list-followup'},
+					oImg
+				);
+	},
+	
+	_updateAddLinkIcon	: function(oAddLinkDiv, sIconSuffix)
+	{
+		oAddLinkDiv.select('img').first().src	= Component_FollowUp_Context_List.ADD_ICON_IMAGE_SOURCE + sIconSuffix;
+	},
+	
+	_iconClick	: function(oFollowUp)
+	{
+		var oPopup	= new Popup_FollowUp_View(this._iFollowUpType, this._iTypeDetail, oFollowUp);
 	}
 });
 
-Component_FollowUp_Context_List.ADD_ICON_IMAGE_SOURCE		= '../admin/img/template/followup_add.png';
+Component_FollowUp_Context_List.ADD_ICON_IMAGE_SOURCE		= '../admin/img/template/followup_add';
 Component_FollowUp_Context_List.ONCE_OFF_ICON_IMAGE_SOURCE	= '../admin/img/template/followup.png';
 Component_FollowUp_Context_List.RECURRING_ICON_IMAGE_SOURCE	= '../admin/img/template/followup_recurring.png';

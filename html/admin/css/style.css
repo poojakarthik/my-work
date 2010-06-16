@@ -1130,10 +1130,11 @@ div.action-list.embedded
 
 div.action-list div.item
 {
-	margin : 0.25em;
-	padding : 0.25em;
-	border : 1px solid #000;
-	background-color : #EFEBE7;
+	margin 				: 0.25em;
+	padding 			: 0.25em 0em 0.25em 0.25em;
+	/*padding				: 0.25em;*/
+	border 				: 1px solid #000;
+	background-color 	: #EFEBE7;
 }
 
 div.action-list.embedded div.item
@@ -1154,7 +1155,7 @@ div.action-list div.item.action
 
 div.action-list div.item div.header
 {
-	
+	padding-right : 0.25em;
 }
 
 div.action-list div.item div.timestamp
@@ -1177,15 +1178,26 @@ div.action-list div.item div.by-line
 
 div.action-list div.item div.details
 {
-	margin-top 	: 0.5em;
+	/*margin-top 	: 0.5em;*/
 	display		: inline-block;
 	width		: 100%;
 }
 
+div.action-list div.item div.details div.details-inner
+{
+	margin-top	: 0.5em;
+}
+
+/*
 div.action-list div.item div.details > div:first-child
 {
-	display	: inline-block;
+	display		: inline-block;
 }
+
+div.action-list div.item div.details > div > div.by-line
+{
+	margin-bottom	: 0.5em;
+}*/
 
 div.action-list-controls
 {
@@ -4417,6 +4429,13 @@ td.followup-closure-list-actions > img
 	padding-left	: 0.25em;
 }
 
+td.followup-list-all-norecords
+{
+	font-style		: italic;
+	opacity			: 0.75;
+	padding-left	: 0.5em;
+}	
+
 /************************ END - Follow-Up Management Page - END ************************/
 
 /************************ START - Recurring Follow-Up Management Page - START ************************/
@@ -4431,9 +4450,10 @@ div.filter-overlay-options
 {
 	position			: absolute;
 	padding				: 0.5em;
-	background-color	: #ffffff;
+	background-color	: #E5E5FF;
 	border				: solid 1px black;
 	-moz-box-sizing		: border-box;
+	-moz-border-radius	: 0.25em;
 }
 
 div.filter-validation-errors
@@ -4444,6 +4464,17 @@ div.filter-validation-errors
 select.filter-range-type-select
 {
 	width	: 100%;
+}
+
+table.filter-overlay-options-content-range
+{
+	margin	: 0.25em 0.25em 0em 0.25em;
+}
+
+div.filter-overlay-options-buttons
+{
+	margin-top	: 0.25em;
+	text-align	: center;
 }
 
 /************************ END - Filter Class - END ************************/
@@ -4479,10 +4510,18 @@ div.popup-followup-reassign-buttons
 	text-align	: center;
 }
 
-div.popup-followup-reassign-reason-list select
+div.popup-followup-reassign-reason-list select,
+div.popup-followup-reassign-employee-list select
 {
 	width	: 100%;
 }
+
+div.popup-followup-reassign-employee-list,
+div.popup-followup-reassign-reason-list
+{
+	margin-bottom	: 0.5em;
+}
+
 
 /************************ END - Popup Follow-Up Reassign - END ************************/
 
@@ -4557,7 +4596,7 @@ ul.popup-followup-recurring-dates-radio-list > li > ul.reset > li.popup-followup
 
 /************************ START - Follow-Up Search Area Link - START ************************/
 
-div#followup_link
+div#followup-link
 {
 	display					: inline-block;
 	background-color		: #888888;
@@ -4567,8 +4606,8 @@ div#followup_link
 	font-family				: Arial, sans-serif !important;
 	font-size				: 0.85em !important;
 	font-weight				: bold !important;
-	margin					: .2em !important;
-	padding					: .1em .5em !important;
+	margin					: 0.2em 0.5em 0.2em 0.2em !important;
+	padding					: 0.1em 0.5em !important;
 	border-top				: solid .1em #999 !important;
 	border-left				: solid .1em #999 !important;
 	border-bottom			: solid .1em #666 !important;
@@ -4581,17 +4620,23 @@ div#followup_link
 	
 }
 
-div#followup_link > span#followup_link_count
+div#followup-link > span.followup-link-count
 {
-	padding-right	: 0.25em;
+	padding-right	: 0.35em;
 }
 
-div#followup_link.followup_link_flash
+div#followup-link > img
+{
+	vertical-align	: bottom;
+	padding-left	: 0.25em;
+}
+
+div#followup-link.followup-link-flash
 {
 	background-color	: #ff8822 !important;
 }
 
-div#followup_link > span
+div#followup-link > span
 {
 	font-size	: 1em;	
 }
@@ -4602,12 +4647,12 @@ div#followup_link > span
 
 div.popup-followup-active
 {
-	margin	: 1em;
+	margin	: 0.5em;
 }
 
 div.popup-followup-active > div.section
 {
-	margin-bottom	: 1em;
+	margin-bottom	: 0.5em;
 }
 
 div.popup-followup-active > div.section > div.section-content > table
@@ -4743,11 +4788,17 @@ div.popup-followup-active-buttons
 	text-align	: center;
 }
 
-td.popup-followup-active-empty
+td.popup-followup-active-empty,
+td.popup-followup-active-empty-clickformore
 {
 	padding		: 0.25em;
 	font-style	: italic;
 	opacity		: 0.75;
+}
+
+td.popup-followup-active-empty-clickformore
+{
+	cursor	: pointer;
 }
 
 div.popup-followup-active-date-full
@@ -4781,10 +4832,12 @@ div.popup-followup-add-buttons
 	text-align	: center;
 }
 
-table.popup-followup-add-followup-details
+table.popup-followup-details
 {
 	width	: 100%;
 }
+
+
 
 div.popup-followup-add-details
 {
@@ -4798,8 +4851,8 @@ div.popup-followup-add-details-subdetail > img
 
 div.popup-followup-add-details-subdetail > img,
 div.popup-followup-add-details-subdetail > span,
-div.popup-followup-add-followup-details-type > img,
-div.popup-followup-add-followup-details-type > span
+div.popup-followup-details-type > img,
+div.popup-followup-details-type > span
 {
 	vertical-align	: middle;
 }
@@ -4809,14 +4862,14 @@ div.popup-followup-add-details-subdetail
 	padding-bottom	: 0.5em;
 }
 
-div.popup-followup-add-followup-details-type > img
+div.popup-followup-details-type > img
 {
 	padding-right	: 0.5em;
 }
 
 div.popup-followup-add-radio-inline,
-div.popup-followup-add-followup-details-occurences,
-div.popup-followup-add-followup-details-endby
+div.popup-followup-details-occurences,
+div.popup-followup-details-endby
 {
 	display	: inline-block;
 }
@@ -4827,7 +4880,13 @@ div.popup-followup-add-radio
 	padding-bottom	: 0.5em;
 }
 
-table.input tbody tr td div.popup-followup-add-radio *
+td.popup-followup-add-details-recurring-end > div.popup-followup-add-radio
+{
+	padding-top		: 0.35em;
+	padding-bottom	: 0em;
+}
+
+table.input tbody tr td div.popup-followup-add-radio > *
 {
 	vertical-align	: middle;
 }
@@ -4842,14 +4901,14 @@ div.popup-followup-add-radio *:last-child
 	cursor	: pointer;
 }
 
-td.popup-followup-add-followup-details > table
+td.popup-followup-details > table
 {
 	width			: 100%;
 	border-spacing	: 0em 0.5em;
 }
 
-table.popup-followup-add-followup-details-onceoff > tbody > tr > td:first-child,
-table.popup-followup-add-followup-details-recurring > tbody > tr > td:first-child
+table.popup-followup-details-onceoff > tbody > tr > td:first-child,
+table.popup-followup-details-recurring > tbody > tr > td:first-child
 {
 	font-weight	: bold;
 	text-align	: left;
@@ -4857,21 +4916,26 @@ table.popup-followup-add-followup-details-recurring > tbody > tr > td:first-chil
 	padding-top	: 0.5em;
 }
 
-table.popup-followup-add-followup-details > tbody > tr > td
+table.popup-followup-details > tbody > tr > th
 {
-	padding-top	: 0.5em;
+	vertical-align	: middle;
+}
+
+table.popup-followup-details > tbody > tr > td
+{
+	padding	:0.5em 0.5em 0;
 }
 
 td.popup-followup-add-details-recurring-howoften > div.control-field,
-div.popup-followup-add-followup-details-occurences > div.control-field,
-div.popup-followup-add-followup-details-endby > div.control-field
+div.popup-followup-details-occurences > div.control-field,
+div.popup-followup-details-endby > div.control-field
 {
 	display			: inline-block;
 	vertical-align	: bottom;
 }
 
 td.popup-followup-add-details-recurring-howoften > div.control-field:nth-child(2) > input,
-div.popup-followup-add-followup-details-occurences > div.control-field:nth-child(2) > input
+div.popup-followup-details-occurences > div.control-field:nth-child(2) > input
 {
 	width			: 3em;
 	padding-left	: 0.2em;
@@ -4887,85 +4951,113 @@ td.popup-followup-add-details-recurring-howoften > div.control-field:nth-child(3
 
 /************************ START - Follow-Up Context List - START ************************/
 
-div.followup-context-list > div
+div.followup-context-list
 {
-	padding-bottom	: 0.25em;
+	background-color	: #FFFFCC;
+	-moz-border-radius	: 6px 0 0 6px;
+	border-style		: solid;
+	border-color		: #666666;
+	border-width		: 1px 0px 1px 1px;
+	padding				: 0.25em 0.1em 0.25em 0.35em;
 }
 
-div.followup-context-list > div.followup-context-list-add
+div.followup-context-list > div.followup-context-list-followup
+{
+	padding-top	: 0.25em;
+}
+
+div.followup-context-list > div.followup-context-list-add,
+div.followup-context-list > div > img
 {
 	cursor	: pointer;
 }
+
+/* Ticketing correspondence modifications */
 
 td.ticket-history-record-details > div > div:first-child
 {
 	float	: left;
 }
 
-td.ticket-history-record-details > div > div.followup-context-list-placeholder,
-div.followup-context-list-placeholder-ticket-correspondence
+table.reflex td.ticket-history-record-details,
+table.reflex td.ticketing-correspondence-details
+{
+	padding	: 0.25em 0em 0.25em 0.5em;
+}
+
+td.ticket-history-record-details div.followup-context-list-placeholder
 {
 	float	: right;
 }
 
-div.action-list div.item div.details div.followup-context-list-placeholder
+div.followup-context-list-placeholder-ticket-correspondence
 {
-	float	: right;
+	position	: absolute;
+	right		: 0.6%;
+	top			: 4.252em;
+}
+
+/* Actions/Notes modifications */
+
+div.action-list div.item div.details div.followup-context-list-placeholder,
+div.action-list div.item div.header div.followup-context-list-placeholder,
+div.action-list div.item div.followup-context-list-placeholder
+{
+	float		: right;
+	display		: table-cell;
+	margin-top	: 0.1em;
 }
 
 /************************ END - Follow-Up Context List - END ************************/
 
 /************************ START - Control Field Date Picker - START ************************/
 
-div.control-field > div.date-time-picker-dynamic > img
-{
-	vertical-align	: bottom;
-}
+/* ... */
 
 /************************ END - Control Field Date Picker - END ************************/
 
-/************************ START - Follow-Up Category List Component - START ************************/
+/************************ START - Follow-Up Configure Page List Component - START ************************/
 
-div.followup-category-list
+div.followup-configure-list
 {
 	margin-top	: 0.5em;
 }
 
-div.followup-category-validation-errors
+div.followup-configure-validation-errors
 {
 	padding	: 0.5em;
 }
 
-div.followup-category-list table.reflex thead th > span
+div.followup-configure-list table.reflex thead th > span
 {
 	vertical-align	: middle;
 	padding-right	: 1em;
 }
 
-div.followup-category-list table.reflex thead th > img
+div.followup-configure-list table.reflex thead th > img
 {
 	vertical-align	: middle;
 	cursor			: pointer;
 }
 
-div.followup-category-list table.reflex thead th.followup-category-list-filter
+div.followup-configure-list table.reflex thead th.followup-configure-list-filter
 {
 	font-style	: italic;
 	font-size	: 0.85em;
 }
 
-div.followup-category-list table.reflex thead th.followup-category-list-filter > img,
-div.followup-category-list table.reflex thead th.followup-category-list-filter > span
+div.followup-configure-list table.reflex thead th.followup-configure-list-filter > img,
+div.followup-configure-list table.reflex thead th.followup-configure-list-filter > span
 {
 	vertical-align	: middle;
 }
 
-div.followup-category-list table.reflex thead th.followup-category-list-filter > span
+div.followup-configure-list table.reflex thead th.followup-configure-list-filter > span
 {
 	margin-left	: 0.25em;
 }
 
-div.followup-category-list table.reflex thead th.followup-category-list-filter > img
+div.followup-configure-list table.reflex thead th.followup-configure-list-filter > img
 {
 	padding-left	: 0.5em;
 	width			: 1.25em;
@@ -4973,171 +5065,142 @@ div.followup-category-list table.reflex thead th.followup-category-list-filter >
 	cursor			: pointer;
 }
 
-th.followup-category-list-header > img
+th.followup-configure-list-header > img
 {
 	padding-right	: 0.5em;
 }
 
-span.followup-category-list-header-sort
+span.followup-configure-list-header-sort
 {
 	cursor	: pointer;
 }
 
-th.followup-category-list-header-multiline
+th.followup-configure-list-header-multiline
 {
 	width	: 15%;
 }
 
-div.followup-category-list div.section-content > table.reflex
+div.followup-configure-list div.section-content > table.reflex
 {
 	margin-left		: 0em;
 	margin-right	: 0em;
 	width			: 100%;
 }
 
-div.section > div.section-header > div.section-header-title > span.followup-category-list-pagination-info
+div.section > div.section-header > div.section-header-title > span.followup-configure-list-pagination-info
 {
 	padding-left	: 0.5em;
 	font-size		: 0.95em;
 }
 
-div.followup-category-list-datetime-time
+div.followup-configure-list-datetime-time
 {
 	font-size	: 0.8em;
 }
 
-div.followup-category-list table.reflex > tbody > tr > td.followup-category-list-status-active
+div.followup-configure-list table.reflex > tbody > tr > td.followup-configure-list-status-active
 {
 	color	: #008000;
 }
 
-div.followup-category-list table.reflex > tbody > tr > td.followup-category-list-status-inactive
+div.followup-configure-list table.reflex > tbody > tr > td.followup-configure-list-status-inactive
 {
 	color	: #CC0000;
 }
 
-/************************ START - Follow-Up Category List Component - START ************************/
-
-/************************ START - Follow-Up Category Edit Popup - START ************************/
-
-div.followup-category-edit
+td.followup-configure-list-actions
 {
-	margin	: 0.75em;
+	text-align	: right;
 }
 
-div.followup-category-edit-buttons
+td.followup-configure-list-actions > ul.reset
 {
-	text-align	: center;
-	margin-top	: 0.5em;
+	margin	: 0em;
 }
 
-/************************ END - Follow-Up Category Edit Popup - END ************************/
-
-/************************ START - Follow-Up Closure List Component - START ************************/
-
-div.followup-closure-list
+td.followup-configure-list-actions > ul.reset > li
 {
-	margin-top	: 0.5em;
+	padding-left	: 0.25em;
 }
 
-div.followup-closure-validation-errors
-{
-	padding	: 0.5em;
-}
-
-div.followup-closure-list table.reflex thead th > span
-{
-	vertical-align	: middle;
-	padding-right	: 1em;
-}
-
-div.followup-closure-list table.reflex thead th > img
-{
-	vertical-align	: middle;
-	cursor			: pointer;
-}
-
-div.followup-closure-list table.reflex thead th.followup-closure-list-filter
-{
-	font-style	: italic;
-	font-size	: 0.85em;
-}
-
-div.followup-closure-list table.reflex thead th.followup-closure-list-filter > img,
-div.followup-closure-list table.reflex thead th.followup-closure-list-filter > span
-{
-	vertical-align	: middle;
-}
-
-div.followup-closure-list table.reflex thead th.followup-closure-list-filter > span
-{
-	margin-left	: 0.25em;
-}
-
-div.followup-closure-list table.reflex thead th.followup-closure-list-filter > img
-{
-	padding-left	: 0.5em;
-	width			: 1.25em;
-	height			: 1.25em;
-	cursor			: pointer;
-}
-
-th.followup-closure-list-header > img
-{
-	padding-right	: 0.5em;
-}
-
-span.followup-closure-list-header-sort
+td.followup-configure-list-actions > ul > li > img
 {
 	cursor	: pointer;
 }
 
-th.followup-closure-list-header-multiline
+/************************ END - Follow-Up Configure Page List Component - END ************************/
+
+/************************ START - Page Follow-Up Configure - START ************************/
+
+div.page-followup-configure-category-container,
+div.page-followup-configure-modify-reason-container
 {
-	width	: 15%;
+	margin-right	: 2%;
 }
 
-div.followup-closure-list div.section-content > table.reflex
+div.page-followup-configure-category-container,
+div.page-followup-configure-closure-container,
+div.page-followup-configure-modify-reason-container,
+div.page-followup-configure-recurring-modify-reason-container,
+div.page-followup-configure-reassign-reason-container
 {
-	margin-left		: 0em;
-	margin-right	: 0em;
-	width			: 100%;
+	display			: inline-block;
+	width			: 49%;
+	vertical-align	: top;
+	padding-bottom	: 1em;
 }
 
-div.section > div.section-header > div.section-header-title > span.followup-closure-list-pagination-info
-{
-	padding-left	: 0.5em;
-	font-size		: 0.95em;
-}
+/************************ END - Page Follow-Up Configure - END ************************/
 
-div.followup-closure-list-datetime-time
-{
-	font-size	: 0.8em;
-}
+/************************ START - Record Edit Popup - START ************************/
 
-div.followup-closure-list table.reflex > tbody > tr > td.followup-closure-list-status-active
-{
-	color	: #008000;
-}
-
-div.followup-closure-list table.reflex > tbody > tr > td.followup-closure-list-status-inactive
-{
-	color	: #CC0000;
-}
-
-/************************ START - Follow-Up Closure List Component - START ************************/
-
-/************************ START - Follow-Up Closure Edit Popup - START ************************/
-
-div.followup-closure-edit
+div.record-edit
 {
 	margin	: 0.75em;
 }
 
-div.followup-closure-edit-buttons
+div.record-edit-buttons
 {
 	text-align	: center;
 	margin-top	: 0.5em;
 }
 
-/************************ END - Follow-Up Closure Edit Popup - END ************************/
+div.record-edit-validation-errors
+{
+	margin	: 0.5em;
+}
+
+/************************ END - Record Edit Popup - END ************************/
+
+/************************ START - Popup View FollowUp - START ************************/
+
+table.popup-followup-view-followup-details-onceoff > tbody > tr > td:first-child,
+table.popup-followup-view-followup-details-recurring > tbody > tr > td:first-child
+{
+	font-weight	: bold;
+	text-align	: left;
+	width		: 6em;
+}
+
+table.popup-followup-view-followup-details-recurring,
+table.popup-followup-view-followup-details-onceoff
+{
+	background-color	: #D1D1D1;
+	width				: 100%;
+	margin				: 0.5em 0 0.5em 0;
+}
+
+table.popup-followup-view-followup-details-recurring > tbody > tr > td,
+table.popup-followup-view-followup-details-onceoff > tbody > tr > td
+{
+	padding-left		: 0.25em;
+	background-color	: #D1D1D1;
+}
+
+table.popup-followup-view-followup-details > tbody > tr > td,
+table.popup-followup-view-followup-details > tbody > tr > th
+{
+	padding	: 0.25em 0.5em 0em;
+}
+
+/************************ END - Popup View FollowUp - END ************************/

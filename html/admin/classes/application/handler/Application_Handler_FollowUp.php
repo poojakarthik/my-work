@@ -14,7 +14,7 @@ class Application_Handler_FollowUp extends Application_Handler
 	public function Manage($subPath)
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_CREDIT_MANAGEMENT);
+		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL));
 		
 		$aDetailsToRender	= array();
 		
@@ -51,6 +51,7 @@ class Application_Handler_FollowUp extends Application_Handler
 			}
 			
 			$aDetailsToRender['bEditMode']	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
+			$aDetailsToRender['bActive']	= (isset($_GET['Active']) && $_GET['Active'] == '1' ? true : false);
 			
 			BreadCrumb()->Employee_Console();
 			BreadCrumb()->SetCurrentPage($sBreadCrumb);
@@ -68,7 +69,7 @@ class Application_Handler_FollowUp extends Application_Handler
 	public function ManageRecurring($subPath)
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_CREDIT_MANAGEMENT);
+		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL));
 		
 		$aDetailsToRender	= array();
 		
@@ -124,7 +125,7 @@ class Application_Handler_FollowUp extends Application_Handler
 	public function Configure($subPath)
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL));
 		
 		$aDetailsToRender	= array();
 		

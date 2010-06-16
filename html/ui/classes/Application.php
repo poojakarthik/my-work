@@ -255,6 +255,9 @@ class Application
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
 				ContextMenu()->Admin->Actions->ManageActionTypes();
+				ContextMenu()->Admin->Follow_Ups->ManageAllFollowUps();
+				ContextMenu()->Admin->Follow_Ups->ManageAllRecurringFollowUps();
+				ContextMenu()->Admin->Follow_Ups->ConfigureFollowUps();
 			}
 		}
 
@@ -269,7 +272,13 @@ class Application
 		{
 			ContextMenu()->ViewInternalContactList();
 		}
-
+		
+		if (AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
+		{
+			ContextMenu()->Follow_Ups->MyFollowUps();
+			ContextMenu()->Follow_Ups->MyRecurringFollowUps();
+		}
+		
 		// Render Page
 		//ob_start();
 		$fltStart = microtime(TRUE);
@@ -486,6 +495,9 @@ class Application
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
 				ContextMenu()->Admin->Actions->ManageActionTypes();
+				ContextMenu()->Admin->Follow_Ups->ManageAllFollowUps();
+				ContextMenu()->Admin->Follow_Ups->ManageAllRecurringFollowUps();
+				ContextMenu()->Admin->Follow_Ups->ConfigureFollowUps();
 			}
 		}
 
@@ -499,6 +511,12 @@ class Application
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW) && Flex_Module::isActive(FLEX_MODULE_CONTACT_LIST))
 		{
 			ContextMenu()->ViewInternalContactList();
+		}
+		
+		if (AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
+		{
+			ContextMenu()->Follow_Ups->MyFollowUps();
+			ContextMenu()->Follow_Ups->MyRecurringFollowUps();
 		}
 
 		// Render Page

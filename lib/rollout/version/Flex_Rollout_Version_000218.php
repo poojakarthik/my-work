@@ -22,6 +22,13 @@
  *	16:	Insert records into 'followup_type'
  *	17:	Insert records into 'followup_recurrence_period'
  *	18:	Insert records into 'followup_closure_type'
+ *	19: Add 'followup_modify_reason' table
+ *	20: Add 'followup_recurring_modify_reason' table
+ *	21:	Add 'followup_history_modify_reason' table
+ *	22:	Add 'followup_recurring_history_modify_reason' table
+ *	23:	Add 'followup_reassign_reason' table
+ *	24: Add 'followup_history_reassign_reason' table
+ *	25:	Add 'followup_recurring_history_reassign_reason'
  */
 
 class Flex_Rollout_Version_000218 extends Flex_Rollout_Version
@@ -316,6 +323,111 @@ class Flex_Rollout_Version_000218 extends Flex_Rollout_Version
 																VALUES		('Completed',	'The Follow-Up has been completed',	'FOLLOWUP_CLOSURE_TYPE_COMPLETED', 	'COMPLETED'),
 																			('Dismissed',	'The Follow-Up has been dismissed',	'FOLLOWUP_CLOSURE_TYPE_DISMISSED',	'DISMISSED');",
 									'sRollbackSQL'		=>	"",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=>	"Add 'followup_modify_reason' table",
+									'sAlterSQL'			=>	"	CREATE TABLE	followup_modify_reason
+																(
+																	id				INT				UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT	'Unique Identifier',
+																	name			VARCHAR(128)				NOT NULL					COMMENT	'Name of the FollowUp Modification Reason',
+																	description		VARCHAR(256)				NOT NULL					COMMENT	'Description of the FollowUp Modification Reason',
+																	status_id		BIGINT			UNSIGNED	NOT NULL					COMMENT	'(fk) status',
+																	CONSTRAINT	pk_followup_modify_reason_id		PRIMARY KEY	(id),
+																	CONSTRAINT	fk_followup_modify_reason_status_id	FOREIGN KEY	(status_id)	REFERENCES	status(id)	ON UPDATE CASCADE	ON DELETE RESTRICT
+																) ENGINE=InnoDB;",
+									'sRollbackSQL'		=>	"DROP TABLE followup_modify_reason;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=>	"Add 'followup_recurring_modify_reason' table",
+									'sAlterSQL'			=>	"	CREATE TABLE	followup_recurring_modify_reason
+																(
+																	id				INT				UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT	'Unique Identifier',
+																	name			VARCHAR(128)				NOT NULL					COMMENT	'Name of the Recurring FollowUp Modification Reason',
+																	description		VARCHAR(256)				NOT NULL					COMMENT	'Description of the Recurring FollowUp Modification Reason',
+																	status_id		BIGINT			UNSIGNED	NOT NULL					COMMENT	'(fk) status',
+																	CONSTRAINT	pk_followup_recurring_reason_id			PRIMARY KEY	(id),
+																	CONSTRAINT	fk_followup_recurring_reason_status_id	FOREIGN KEY	(status_id)	REFERENCES	status(id)	ON UPDATE CASCADE	ON DELETE RESTRICT
+																) ENGINE=InnoDB;",
+									'sRollbackSQL'		=>	"DROP TABLE followup_recurring_modify_reason;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=>	"Add 'followup_history_modify_reason' table",
+									'sAlterSQL'			=>	"	CREATE TABLE	followup_history_modify_reason
+																(
+																	id					INT				UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT	'Unique Identifier',
+																	history_id			INT				UNSIGNED	NOT NULL					COMMENT	'(fk) followup_history',
+																	modify_reason_id	INT				UNSIGNED	NOT NULL					COMMENT	'(fk) followup_modify_reason',
+																	CONSTRAINT	pk_followup_history_modify_reason_id				PRIMARY KEY	(id),
+																	CONSTRAINT	fk_followup_history_modify_reason_history_id		FOREIGN KEY	(history_id)			REFERENCES	followup_history(id)		ON UPDATE CASCADE	ON DELETE RESTRICT,
+																	CONSTRAINT	fk_followup_history_modify_reason_modify_reason_id	FOREIGN KEY	(modify_reason_id)	REFERENCES	followup_modify_reason(id)	ON UPDATE CASCADE	ON DELETE RESTRICT
+																) ENGINE=InnoDB;",
+									'sRollbackSQL'		=>	"DROP TABLE followup_history_modify_reason;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=>	"Add 'followup_recurring_history_modify_reason' table",
+									'sAlterSQL'			=>	"	CREATE TABLE	followup_recurring_history_modify_reason
+																(
+																	id					INT				UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT	'Unique Identifier',
+																	history_id			INT				UNSIGNED	NOT NULL					COMMENT	'(fk) followup_recurring_history',
+																	modify_reason_id	INT				UNSIGNED	NOT NULL					COMMENT	'(fk) followup_recurring_modify_reason',
+																	CONSTRAINT	pk_followup_recurring_history_modify_reason_id					PRIMARY KEY	(id),
+																	CONSTRAINT	fk_followup_recurring_history_modify_reason_history_id			FOREIGN KEY	(history_id)			REFERENCES	followup_recurring_history(id)			ON UPDATE CASCADE	ON DELETE RESTRICT,
+																	CONSTRAINT	fk_followup_recurring_history_modify_reason_modify_reason_id	FOREIGN KEY	(modify_reason_id)	REFERENCES	followup_recurring_modify_reason(id)	ON UPDATE CASCADE	ON DELETE RESTRICT
+																) ENGINE=InnoDB;",
+									'sRollbackSQL'		=>	"DROP TABLE followup_recurring_history_modify_reason;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=>	"Add 'followup_reassign_reason' table",
+									'sAlterSQL'			=>	"	CREATE TABLE	followup_reassign_reason
+																(
+																	id				INT				UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT	'Unique Identifier',
+																	name			VARCHAR(128)				NOT NULL					COMMENT	'Name of the Follow-Up Reassign Reason',
+																	description		VARCHAR(256)				NOT NULL					COMMENT	'Description of the Follow-Up Reassign Reason',
+																	status_id		BIGINT			UNSIGNED	NOT NULL					COMMENT	'(fk) status',
+																	CONSTRAINT	pk_followup_reassign_reason_id			PRIMARY KEY	(id),
+																	CONSTRAINT	fk_followup_reassign_reason_status_id	FOREIGN KEY	(status_id)	REFERENCES	status(id)	ON UPDATE CASCADE	ON DELETE RESTRICT
+																) ENGINE=InnoDB;",
+									'sRollbackSQL'		=>	"DROP TABLE followup_reassign_reason;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=>	"Add 'followup_history_reassign_reason' table",
+									'sAlterSQL'			=>	"	CREATE TABLE	followup_history_reassign_reason
+																(
+																	id					INT				UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT	'Unique Identifier',
+																	history_id			INT				UNSIGNED	NOT NULL					COMMENT	'(fk) followup_history',
+																	reassign_reason_id	INT				UNSIGNED	NOT NULL					COMMENT	'(fk) followup_reassign_reason',
+																	CONSTRAINT	pk_followup_history_reassign_reason_id					PRIMARY KEY	(id),
+																	CONSTRAINT	fk_followup_history_reassign_reason_history_id			FOREIGN KEY	(history_id)			REFERENCES	followup_history(id)			ON UPDATE CASCADE	ON DELETE RESTRICT,
+																	CONSTRAINT	fk_followup_history_reassign_reason_modify_reason_id	FOREIGN KEY	(reassign_reason_id)	REFERENCES	followup_reassign_reason(id)	ON UPDATE CASCADE	ON DELETE RESTRICT
+																) ENGINE=InnoDB;",
+									'sRollbackSQL'		=>	"DROP TABLE followup_history_reassign_reason;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=>	"Add 'followup_recurring_history_reassign_reason' table",
+									'sAlterSQL'			=>	"	CREATE TABLE	followup_recurring_history_reassign_reason
+																(
+																	id					INT				UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT	'Unique Identifier',
+																	history_id			INT				UNSIGNED	NOT NULL					COMMENT	'(fk) followup_recurring_history',
+																	reassign_reason_id	INT				UNSIGNED	NOT NULL					COMMENT	'(fk) followup_reassign_reason',
+																	CONSTRAINT	pk_followup_recurring_history_reassign_reason_id				PRIMARY KEY	(id),
+																	CONSTRAINT	fk_followup_recurring_history_reassign_reason_history_id		FOREIGN KEY	(history_id)			REFERENCES	followup_recurring_history(id)	ON UPDATE CASCADE	ON DELETE RESTRICT,
+																	CONSTRAINT	fk_followup_recurring_history_reassign_reason_modify_reason_id	FOREIGN KEY	(reassign_reason_id)	REFERENCES	followup_reassign_reason(id)	ON UPDATE CASCADE	ON DELETE RESTRICT
+																) ENGINE=InnoDB;",
+									'sRollbackSQL'		=>	"DROP TABLE followup_recurring_history_reassign_reason;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								)
 							);

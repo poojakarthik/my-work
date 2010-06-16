@@ -60,6 +60,11 @@ class FollowUp_Recurring_History extends ORM_Cached
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 
+	public static function getForFollowUpRecurring()
+	{
+		// TODO
+	}
+
 	/**
 	 * _preparedStatement()
 	 *

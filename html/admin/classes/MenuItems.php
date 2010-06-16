@@ -3610,6 +3610,40 @@ class MenuItems {
 		return self::NEW_FRAMEWORK . "reflex.php/ActionType/Manage/";
 	}
 
+	function ManageAllFollowUps()
+	{
+		$this->strContextMenuLabel 	= "Manage Follow Ups";
+		$this->strLabel 			= "Manage Follow Ups";
+		return self::NEW_FRAMEWORK . "reflex.php/FollowUp/Manage/All/";
+	}
+
+	function ManageAllRecurringFollowUps()
+	{
+		$this->strContextMenuLabel 	= "Manage Recurring Follow Ups";
+		$this->strLabel 			= "Manage Recurring Follow Ups";
+		return self::NEW_FRAMEWORK . "reflex.php/FollowUp/ManageRecurring/All/";
+	}
+	
+	function ConfigureFollowUps()
+	{
+		$this->strContextMenuLabel 	= "Configure";
+		$this->strLabel 			= "Configure";
+		return self::NEW_FRAMEWORK . "reflex.php/FollowUp/Configure/";
+	}
+	
+	function MyFollowUps()
+	{
+		$this->strContextMenuLabel 	= "My Follow Ups";
+		$this->strLabel 			= "My Follow Ups";
+		return self::NEW_FRAMEWORK . "reflex.php/FollowUp/Manage/";
+	}
+
+	function MyRecurringFollowUps()
+	{
+		$this->strContextMenuLabel 	= "My Recurring Follow Ups";
+		$this->strLabel 			= "My Recurring Follow Ups";
+		return self::NEW_FRAMEWORK . "reflex.php/FollowUp/ManageRecurring/";
+	}
 
 	//------------------------------------------------------------------------//
 	// ActionsAndNotesCreatorPopup

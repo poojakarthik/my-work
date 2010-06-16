@@ -54,6 +54,14 @@ var Popup_FollowUp_Recurring_End_Date	= Class.create(Reflex_Popup,
 		oDatePicker.addOnChangeCallback(this._calculateEndDate.bind(this));
 		this._oDatePicker	= oDatePicker;
 		
+		var oReasonSelect	= new Control_Field_Select('Reason');
+		oReasonSelect.setPopulateFunction(FollowUp_Recurring_Modify_Reason.getAllAsSelectOptions.bind(FollowUp_Recurring_Modify_Reason));
+		oReasonSelect.setVisible(true);
+		oReasonSelect.setEditable(true);
+		oReasonSelect.setMandatory(true);
+		oReasonSelect.setRenderMode(Control_Field.RENDER_MODE_EDIT);
+		this._oReasonSelect	= oReasonSelect;
+		
 		// Build content
 		this._oContent	= 	$T.div({class: 'popup-followup-recurring-dates'},
 								$T.div(
@@ -102,6 +110,10 @@ var Popup_FollowUp_Recurring_End_Date	= Class.create(Reflex_Popup,
 											)
 										)
 									)
+								),
+								$T.div(
+									$T.div('Please specify a reason why you are changing the End Date:'),
+									$T.div(this._oReasonSelect.getElement())
 								),
 								$T.div({class: 'popup-followup-recurring-dates-buttons'},
 									$T.button({class: 'icon-button'},
@@ -272,6 +284,18 @@ var Popup_FollowUp_Recurring_End_Date	= Class.create(Reflex_Popup,
 					break;
 			}
 			
+			// Validate the reason
+			try
+			{
+				this._oReasonSelect.validate(false);
+			}
+			catch (ex)
+			{
+				// Validation error, show in popup
+				Reflex_Popup.alert(ex);
+				return;
+			}
+			
 			// Show loading
 			this.oLoading	= new Reflex_Popup.Loading('Updating end date...');
 			this.oLoading.display();
@@ -283,7 +307,7 @@ var Popup_FollowUp_Recurring_End_Date	= Class.create(Reflex_Popup,
 								'FollowUp_Recurring', 
 								'updateEndDate'
 							);
-			fnJSON(this._oFollowUpRecurring.id, sDate);
+			fnJSON(this._oFollowUpRecurring.id, sDate, this._oReasonSelect.getElementValue());
 		}
 		else if (oResponse.Success)
 		{

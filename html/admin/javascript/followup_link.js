@@ -3,7 +3,7 @@ var FollowUp_Link	= Class.create
 ({
 	initialize	: function()
 	{
-		this._oLinkDiv								= document.body.select('div#followup_link').first();
+		this._oLinkDiv								= document.body.select('div#followup-link').first();
 		this._oCountSpan							= null;
 		this._bLinkFlashEnabled						= false;
 		this._bRefreshOverdueCountTimeoutStarted	= false;
@@ -48,8 +48,11 @@ var FollowUp_Link	= Class.create
 			this._require(
 				FollowUp_Link.FOLLOWUP_CONSTANT_GROUPS, 
 				[
+				 	'../ui/javascript/dataset_ajax.js',
 				 	'../ui/javascript/reflex_date_format.js',
 				 	'../ui/javascript/reflex_sorter.js',
+				 	'javascript/followup_category.js',
+				 	'javascript/popup_followup_view.js',
 				 	'javascript/component_followup_context_list.js'
 				],
 				this._createFollowUpContextLists.bind(this, aContextListPlaceholders)
@@ -192,13 +195,14 @@ var FollowUp_Link	= Class.create
 	
 	_buildLink	: function()
 	{
-		this._oCountSpan	= 	$T.span({id: 'followup_link_count'},
+		this._oCountSpan	= 	$T.span({class: 'followup-link-count'},
 									'?'
 								);
+		
 		this._oLinkDiv.appendChild(this._oCountSpan);
 		this._oLinkDiv.appendChild($T.span('Follow-Ups Due'));
 		
-		// - Handle click to launch popup
+		// Handle click to launch popup
 		this._oLinkDiv.observe('click', this._showPopup.bind(this));
 	},
 	
@@ -229,7 +233,7 @@ var FollowUp_Link	= Class.create
 	},
 	
 	_setLinkOverdueCount	: function(iCount)
-	{
+	{	
 		this._oCountSpan.innerHTML	= iCount;
 		
 		// If the number of overdue followups is > 0, start the flash timer
@@ -269,7 +273,7 @@ var FollowUp_Link	= Class.create
 			FollowUp_Link.FOLLOWUP_CONSTANT_GROUPS, 
 			[
 			 	'../ui/javascript/dataset_ajax.js',
-			 	'../ui/javascript/reflex_date_format.js', 
+			 	'../ui/javascript/reflex_date_format.js',
 			 	'../ui/javascript/date_time_picker_dynamic.js', 
 			 	'../ui/javascript/control_field.js',
 			 	'../ui/javascript/control_field_select.js', 
@@ -369,7 +373,7 @@ FollowUp_Link.REFRESH_TIMEOUT		= 300000;
 FollowUp_Link.FLASH_TIMEOUT			= 200;
 FollowUp_Link.FLASH_WAIT_TIMEOUT	= 60000;
 FollowUp_Link.FLASH_COUNT_LIMIT		= 3;
-FollowUp_Link.FLASH_CSS_CLASS		= 'followup_link_flash';
+FollowUp_Link.FLASH_CSS_CLASS		= 'followup-link-flash';
 
 FollowUp_Link.PLACEHOLDER_CLASS		= 'followup-context-list-placeholder';
 

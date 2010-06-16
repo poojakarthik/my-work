@@ -191,6 +191,26 @@ FollowUp_Category.getAll	= function(fnCallback, iRecordCount, aResultSet)
 	}
 };
 
+FollowUp_Category.getAllIndexed	= function(fnCallback, aResultSet)
+{
+	if (aResultSet === undefined)
+	{
+		// Make Request
+		FollowUp_Category.getAll(FollowUp_Category.getAllIndexed.bind(FollowUp_Category, fnCallback));
+	}
+	else
+	{
+		// Pass Response to Callback
+		var hResultSet	= {};
+		for (var i in aResultSet)
+		{
+			hResultSet[aResultSet[i].id]	= aResultSet[i];
+		}
+		
+		fnCallback(hResultSet);
+	}
+};
+
 FollowUp_Category.getAllAsSelectOptions	= function(fnCallback, oResponse)
 {
 	if (!oResponse)

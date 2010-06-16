@@ -28,6 +28,8 @@ class HtmlTemplate_FollowUp_List extends FlexHtmlTemplate
 		$this->LoadJavascript('followup_category');
 		$this->LoadJavascript('followup_status');
 		$this->LoadJavascript('followup_closure');
+		$this->LoadJavascript('followup_modify_reason');
+		$this->LoadJavascript('followup_reassign_reason');
 		
 		// Classes that renders the page
 		$this->LoadJavascript('component_followup_list_all');
@@ -41,6 +43,7 @@ class HtmlTemplate_FollowUp_List extends FlexHtmlTemplate
 	{
 		$sEditJSON		= ($this->mxdDataToRender['bEditMode'] ? 'true' : 'false');
 		$sEmployeeId	= (isset($this->mxdDataToRender['iEmployeeId']) ? $this->mxdDataToRender['iEmployeeId'] : 'null');
+		$sActive		= ($this->mxdDataToRender['bActive'] ? 'true' : 'false');
 		
 		echo "
 		<div id='FollowUpListContainer'></div>
@@ -54,7 +57,7 @@ class HtmlTemplate_FollowUp_List extends FlexHtmlTemplate
 						['followup_closure_type', 'followup_type', 'followup_recurrence_period'], 
 						function()
 						{
-							objFollowUpList = new Page_FollowUp_List(\$ID('FollowUpListContainer'), $sEmployeeId, $sEditJSON);
+							objFollowUpList = new Page_FollowUp_List(\$ID('FollowUpListContainer'), $sEmployeeId, $sEditJSON, $sActive);
 						}, false
 					)
 				}

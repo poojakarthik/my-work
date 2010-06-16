@@ -28,28 +28,28 @@ var Component_FollowUp_Closure_List = Class.create(
 		
 		// Create the page HTML
 		var sButtonPathBase	= '../admin/img/template/resultset_';
-		this._oContentDiv 	= 	$T.div({class: 'followup-closure-list'},
+		this._oContentDiv 	= 	$T.div({class: 'followup-configure-list'},
 									// All
 									$T.div({class: 'section'},
 										$T.div({class: 'section-header'},
 											$T.div({class: 'section-header-title'},
 												$T.span('Closure Reasons'),
-												$T.span({class: 'followup-closure-list-pagination-info'},
+												$T.span({class: 'followup-configure-list-pagination-info'},
 													''
 												)
 											),
 											$T.div({class: 'section-header-options'},
-												$T.div({class: 'followup-closure-list-pagination'},
-													$T.button({class: 'followup-closure-list-pagination-button'},
+												$T.div({class: 'followup-configure-list-pagination'},
+													$T.button({class: 'followup-configure-list-pagination-button'},
 														$T.img({src: sButtonPathBase + 'first.png'})
 													),
-													$T.button({class: 'followup-closure-list-pagination-button'},
+													$T.button({class: 'followup-configure-list-pagination-button'},
 														$T.img({src: sButtonPathBase + 'previous.png'})
 													),
-													$T.button({class: 'followup-closure-list-pagination-button'},
+													$T.button({class: 'followup-configure-list-pagination-button'},
 														$T.img({src: sButtonPathBase + 'next.png'})
 													),
-													$T.button({class: 'followup-closure-list-pagination-button'},
+													$T.button({class: 'followup-configure-list-pagination-button'},
 														$T.img({src: sButtonPathBase + 'last.png'})
 													)
 												)
@@ -104,7 +104,7 @@ var Component_FollowUp_Closure_List = Class.create(
 								);
 		
 		// Bind events to the pagination buttons
-		var aTopPageButtons		= this._oContentDiv.select('div.section-header-options button.followup-closure-list-pagination-button');
+		var aTopPageButtons		= this._oContentDiv.select('div.section-header-options button.followup-configure-list-pagination-button');
 		aTopPageButtons[0].observe('click', this.oPagination.firstPage.bind(this.oPagination));
 		aTopPageButtons[1].observe('click', this.oPagination.previousPage.bind(this.oPagination));
 		aTopPageButtons[2].observe('click', this.oPagination.nextPage.bind(this.oPagination));
@@ -151,7 +151,7 @@ var Component_FollowUp_Closure_List = Class.create(
 		}
 		
 		// Add the new records
-		var oPageInfo	= this._oContentDiv.select('span.followup-closure-list-pagination-info').first();
+		var oPageInfo	= this._oContentDiv.select('span.followup-configure-list-pagination-info').first();
 		
 		// Check if any results came back
 		if (!oResultSet || oResultSet.intTotalResults == 0 || oResultSet.arrResultSet.length == 0)
@@ -203,10 +203,10 @@ var Component_FollowUp_Closure_List = Class.create(
 			switch (oClosure.status_id)
 			{
 				case $CONSTANT.STATUS_ACTIVE:
-					sStatusClass	= 'followup-closure-list-status-active';
+					sStatusClass	= 'followup-configure-list-status-active';
 					break;
 				case $CONSTANT.STATUS_INACTIVE:
-					sStatusClass	= 'followup-closure-list-status-inactive';
+					sStatusClass	= 'followup-configure-list-status-inactive';
 					break;
 			}
 			
@@ -217,22 +217,31 @@ var Component_FollowUp_Closure_List = Class.create(
 							$T.td({class: sStatusClass},
 								Flex.Constant.arrConstantGroups.status[oClosure.status_id].Name
 							),
-							$T.td({class: 'followup-closure-list-actions'}
-								// Action icons added below
+							$T.td({class: 'followup-configure-list-actions'},
+								$T.ul({class: 'reset horizontal'}
+									// Actions added below
+								)
 							)
 						);
 			
 			// Attach actions
-			var oActionsTD	= oTR.select('td.followup-closure-list-actions').first();
+			var oActionsUL	= oTR.select('td.followup-configure-list-actions > ul.reset').first();
 			var oEdit		= $T.img({src: Component_FollowUp_Closure_List.EDIT_IMAGE_SOURCE, alt: 'Edit the Closure Reason', title: 'Edit the Closure Reason'});
 			oEdit.observe('click', this._edit.bind(this, oClosure.id));
-			oActionsTD.appendChild(oEdit);
+			oActionsUL.appendChild(
+				$T.li(oEdit)
+			);
 			
-			if (oClosure.status_id == $CONSTANT.STATUS_ACTIVE)
+			var oDeactivate	= $T.img({src: Component_FollowUp_Closure_List.INACTIVE_IMAGE_SOURCE, alt: 'Deactivate the Closure Reason', title: 'Deactivate the Closure Reason'});
+			oDeactivate.observe('click', this._deactivate.bind(this, oClosure.id, oClosure.name, false));
+			oActionsUL.appendChild(
+				$T.li(oDeactivate)
+			);
+			
+			if (oClosure.status_id != $CONSTANT.STATUS_ACTIVE)
 			{
-				var oDeactivate	= $T.img({src: Component_FollowUp_Closure_List.INACTIVE_IMAGE_SOURCE, alt: 'Deactivate the Closure Reason', title: 'Deactivate the Closure Reason'});
-				oDeactivate.observe('click', this._deactivate.bind(this, oClosure.id, oClosure.name, false));
-				oActionsTD.appendChild(oDeactivate);
+				// Hide the deactivate, not active
+				oDeactivate.style.visibility	= 'hidden';
 			}
 			
 			return oTR;
@@ -280,7 +289,7 @@ var Component_FollowUp_Closure_List = Class.create(
 		{
 			if (this._oSort.isRegistered(sField))
 			{
-				var oSortImg	= this._oContentDiv.select('th.followup-closure-list-header > img.followup-closure-list-sort-' + sField).first();
+				var oSortImg	= this._oContentDiv.select('th.followup-configure-list-header > img.followup-configure-list-sort-' + sField).first();
 				var iDirection	= this._oSort.getSortDirection(sField);
 				if (iDirection == Sort.DIRECTION_OFF)
 				{
@@ -302,7 +311,7 @@ var Component_FollowUp_Closure_List = Class.create(
 			if (this._oFilter.isRegistered(sField))
 			{
 				var mValue	= this._oFilter.getFilterValue(sField);
-				var oSpan	= this._oContentDiv.select('th.followup-closure-list-filter > span.followup-closure-list-filter-' + sField).first();
+				var oSpan	= this._oContentDiv.select('th.followup-configure-list-filter > span.followup-configure-list-filter-' + sField).first();
 				
 				if (oSpan)
 				{
@@ -329,8 +338,8 @@ var Component_FollowUp_Closure_List = Class.create(
 		oDeleteImage.style.visibility	= 'hidden';
 		oDeleteImage.observe('click', this._clearFilterValue.bind(this, sField));
 		
-		return	$T.th({class: 'followup-closure-list-filter'},
-					$T.span({class: 'followup-closure-list-filter-' + sField},
+		return	$T.th({class: 'followup-configure-list-filter'},
+					$T.span({class: 'followup-configure-list-filter-' + sField},
 						'All'
 					),
 					oDeleteImage
@@ -345,8 +354,8 @@ var Component_FollowUp_Closure_List = Class.create(
 	
 	_createFieldHeader	: function(sLabel, sSortField, sFilterField, bMultiLine)
 	{
-		var oSortImg	= $T.img({class: 'followup-closure-list-sort-' + (sSortField ? sSortField : '')});
-		var oTH			= 	$T.th({class: 'followup-closure-list-header' + (bMultiLine ? '-multiline' : '')},
+		var oSortImg	= $T.img({class: 'followup-configure-list-sort-' + (sSortField ? sSortField : '')});
+		var oTH			= 	$T.th({class: 'followup-configure-list-header' + (bMultiLine ? '-multiline' : '')},
 								oSortImg,
 								$T.span(sLabel)
 							);
@@ -356,7 +365,7 @@ var Component_FollowUp_Closure_List = Class.create(
 		if (sSortField)
 		{
 			var oSpan	= oTH.select('span').first();
-			oSpan.addClassName('followup-closure-list-header-sort');
+			oSpan.addClassName('followup-configure-list-header-sort');
 			
 			this._oSort.registerToggleElement(oSpan, sSortField, Component_FollowUp_Closure_List.SORT_FIELDS[sSortField]);
 			this._oSort.registerToggleElement(oSortImg, sSortField, Component_FollowUp_Closure_List.SORT_FIELDS[sSortField]);
@@ -395,7 +404,14 @@ var Component_FollowUp_Closure_List = Class.create(
 	
 	_edit	: function(iClosureId)
 	{
-		var oPopup	= new Popup_FollowUp_Closure_Edit(iClosureId, this.oPagination.getCurrentPage.bind(this.oPagination));
+		var oPopup	= 	new Popup_Record_Edit(
+							'FollowUp_Closure', 
+							'Follow-Up Closure', 
+							'', 
+							iClosureId, 
+							Component_FollowUp_Closure_List.EDIT_FIELDS, 
+							this.oPagination.getCurrentPage.bind(this.oPagination)
+						);
 	},
 	
 	_deactivate	: function(iClosureId, sClosureName, bConfirmation)
@@ -508,4 +524,74 @@ Component_FollowUp_Closure_List.SORT_FIELDS	=	{
 													'followup_closure_type_id'	: Sort.DIRECTION_OFF,
 													'status_id'					: Sort.DIRECTION_OFF
 												};
+
+// EDIT CONSTANTS
+
+Component_FollowUp_Closure_List.getAllStatusAsSelectOptions	= function(fnCallback)
+{
+	var aOptions	= [];
+	for (var iId in Flex.Constant.arrConstantGroups.status)
+	{
+		aOptions.push(
+			$T.option({value: iId},
+				Flex.Constant.arrConstantGroups.status[iId].Name
+			)
+		);
+	}
+	
+	fnCallback(aOptions);
+};
+
+Component_FollowUp_Closure_List.getAllClosureTypesAsSelectOptions	= function(fnCallback)
+{
+	var aOptions	= [];
+	for (var iId in Flex.Constant.arrConstantGroups.followup_closure_type)
+	{
+		aOptions.push(
+			$T.option({value: iId},
+				Flex.Constant.arrConstantGroups.followup_closure_type[iId].Name
+			)
+		);
+	}
+	
+	fnCallback(aOptions);
+};
+
+// Control field definitions
+Component_FollowUp_Closure_List.EDIT_FIELDS				= {};
+Component_FollowUp_Closure_List.EDIT_FIELDS.name			= 	{
+																	sType		: 'text',
+																	oDefinition	:	{
+																						sLabel		: 'Name',
+																						fnValidate	: Reflex_Validation.stringOfLength.curry(null, 128),
+																						mMandatory	: true
+																					}
+																};
+Component_FollowUp_Closure_List.EDIT_FIELDS.description		= 	{
+																	sType		: 'text',
+																	oDefinition	:	{
+																						sLabel		: 'Description',
+																						fnValidate	: Reflex_Validation.stringOfLength.curry(null, 255),
+																						mMandatory	: true
+																					}
+																};
+Component_FollowUp_Closure_List.EDIT_FIELDS.followup_closure_type_id		=	{
+																					sType		: 'select',
+																					oDefinition	:	{
+																										sLabel		: 'Type',
+																										fnValidate	: null,
+																										fnPopulate	: Component_FollowUp_Closure_List.getAllClosureTypesAsSelectOptions,
+																										mMandatory	: true
+																									}
+																				};
+Component_FollowUp_Closure_List.EDIT_FIELDS.status_id		=	{
+																	sType			: 'select',
+																	mDefaultValue	: 1, // ACTIVE
+																	oDefinition		:	{
+																							sLabel		: 'Status',
+																							fnValidate	: null,
+																							fnPopulate	: Component_FollowUp_Closure_List.getAllStatusAsSelectOptions,
+																							mMandatory	: true
+																						}
+																};
 

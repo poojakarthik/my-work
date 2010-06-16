@@ -134,7 +134,7 @@ var Popup_FollowUp_Add	= Class.create(Reflex_Popup,
 												)
 											),
 											$T.div({class: 'section-content section-content-fitted'},
-												$T.table({class: 'input popup-followup-add-followup-details'},
+												$T.table({class: 'input popup-followup-details'},
 													$T.colgroup(
 														$T.col({style: 'width: 23%'}),
 														$T.col({style: 'width: 77%'})
@@ -158,7 +158,7 @@ var Popup_FollowUp_Add	= Class.create(Reflex_Popup,
 														),
 														$T.tr(
 															$T.th({class: 'label'}),
-															$T.td({class: 'popup-followup-add-followup-details-recurrence-type-select'},
+															$T.td({class: 'popup-followup-details-recurrence-type-select'},
 																this._createRadio(
 																	Popup_FollowUp_Add.RADIO_RECURRENCE_TYPE_ONCE_OFF, 
 																	Popup_FollowUp_Add.RADIO_RECURRENCE_TYPE,
@@ -177,9 +177,9 @@ var Popup_FollowUp_Add	= Class.create(Reflex_Popup,
 														),
 														$T.tr(
 															$T.th({class: 'label'}),
-															$T.td({class: 'popup-followup-add-followup-details'},*/
+															$T.td({class: 'popup-followup-details'},*/
 																// Once-off follow-up specific information
-																$T.table({class: 'popup-followup-add-followup-details-onceoff', style: 'display: none;'},
+																$T.table({class: 'popup-followup-details-onceoff', style: 'display: none;'},
 																	$T.tbody(
 																		$T.tr(
 																			$T.td('Due On'),
@@ -188,7 +188,7 @@ var Popup_FollowUp_Add	= Class.create(Reflex_Popup,
 																	)
 																),
 																// Recurring follow-up specific information
-																$T.table({class: 'popup-followup-add-followup-details-recurring', style: 'display: none;'},
+																$T.table({class: 'popup-followup-details-recurring', style: 'display: none;'},
 																	$T.tbody(
 																		$T.tr(
 																			$T.td('Start On'),
@@ -215,7 +215,7 @@ var Popup_FollowUp_Add	= Class.create(Reflex_Popup,
 																					Popup_FollowUp_Add.RADIO_RECURRING_END_DATE_END_AFTER, 
 																					Popup_FollowUp_Add.RADIO_RECURRING_END_DATE,
 																					this._recurringEndDateRadioSelected,
-																					$T.div({class: 'popup-followup-add-followup-details-occurences'},
+																					$T.div({class: 'popup-followup-details-occurences'},
 																						$T.span('...After '),
 																						this._oOccurrencesText.getElement(),
 																						$T.span(' occurrences')
@@ -225,7 +225,7 @@ var Popup_FollowUp_Add	= Class.create(Reflex_Popup,
 																					Popup_FollowUp_Add.RADIO_RECURRING_END_DATE_END_BY, 
 																					Popup_FollowUp_Add.RADIO_RECURRING_END_DATE,
 																					this._recurringEndDateRadioSelected,
-																					$T.div({class: 'popup-followup-add-followup-details-endby'},
+																					$T.div({class: 'popup-followup-details-endby'},
 																						$T.span('...By '),
 																						this._oEndByDatePicker.getElement()
 																					)
@@ -253,7 +253,7 @@ var Popup_FollowUp_Add	= Class.create(Reflex_Popup,
 								);
 			
 			// Pre-select radio buttons
-			var oOnceOffRadio	= this._oContent.select('td.popup-followup-add-followup-details-recurrence-type-select > div > input[value="' + Popup_FollowUp_Add.RADIO_RECURRENCE_TYPE_ONCE_OFF + '"]').first();
+			var oOnceOffRadio	= this._oContent.select('td.popup-followup-details-recurrence-type-select > div > input[value="' + Popup_FollowUp_Add.RADIO_RECURRENCE_TYPE_ONCE_OFF + '"]').first();
 			this._recurrenceTypeRadioSelected(oOnceOffRadio);
 			
 			var oNoEndDateRadio	= this._oContent.select('td.popup-followup-add-details-recurring-end > div > input[value="' + Popup_FollowUp_Add.RADIO_RECURRING_END_DATE_NO_END + '"]').first();
@@ -480,8 +480,8 @@ var Popup_FollowUp_Add	= Class.create(Reflex_Popup,
 	{
 		oRadio.checked		= true;
 		var iValue			= parseInt(oRadio.value);
-		var oOnceOffTable	= this._oContent.select('table.popup-followup-add-followup-details-onceoff').first();
-		var oRecurringTable	= this._oContent.select('table.popup-followup-add-followup-details-recurring').first();
+		var oOnceOffTable	= this._oContent.select('table.popup-followup-details-onceoff').first();
+		var oRecurringTable	= this._oContent.select('table.popup-followup-details-recurring').first();
 		switch (iValue)
 		{
 			case Popup_FollowUp_Add.RADIO_RECURRENCE_TYPE_ONCE_OFF:
@@ -528,8 +528,7 @@ var Popup_FollowUp_Add	= Class.create(Reflex_Popup,
 		switch (this._iSelectedRecurringEndDate)
 		{
 			case Popup_FollowUp_Add.RADIO_RECURRING_END_DATE_NO_END:
-				// Do nothing...
-				break;
+				// Calculate for the number of occurences when no end date is selected
 			case Popup_FollowUp_Add.RADIO_RECURRING_END_DATE_END_AFTER:
 				// Calculate the end date
 				var sStartDate				= this._oStartDatePicker.getElementValue();
@@ -681,7 +680,7 @@ Popup_FollowUp_Add._getTypeElement	= function(iType)
 			break;
 	}
 	
-	return 	$T.div({class: 'popup-followup-add-followup-details-type'},
+	return 	$T.div({class: 'popup-followup-details-type'},
 				$T.img({src: sImgSrc, alt: sText, title: sText}),
 				$T.span(
 					sText

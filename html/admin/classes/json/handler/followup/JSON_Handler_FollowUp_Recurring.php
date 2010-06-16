@@ -21,19 +21,42 @@ class JSON_Handler_FollowUp_Recurring extends JSON_Handler
 				throw new JSON_Handler_FollowUp_Recurring_Exception('You do not have permission to view Recurring Follow-Ups.');
 			}
 			
+			// Check for special sorting fields and convert them to actual fields
+			$aSort	= get_object_vars($oSort);
+			if (isset($aSort['recurrence_period']))
+			{
+				// Recurrence period (e.g. 3 Weeks, 1 Month)
+				// Sort by days: 7 (week) or 28 (month) times the recurrence multiplier for each. 
+				$aSort[
+					'(
+						CASE 
+							WHEN	followup_recurrence_period_id = '.FOLLOWUP_RECURRENCE_PERIOD_WEEK.' 
+							THEN 	(7 * recurrence_multiplier) 
+							ELSE 	(28 * recurrence_multiplier) 
+						END
+					)'
+				] = $aSort['recurrence_period'];
+				
+				// Also by period if there's a matching number of days (week=1, month=2)
+				$aSort['followup_recurrence_period_id']	= $aSort['recurrence_period'];
+				
+				// Remove the invalid field
+				unset($aSort['recurrence_period']);
+			}
+			
 			if ($bCountOnly)
 			{
 				// Count Only
 				return 	array(
 							"Success"		=> true,
-							"iRecordCount"	=> FollowUp_Recurring::searchFor(null, null, get_object_vars($oSort), get_object_vars($oFilter), true)
+							"iRecordCount"	=> FollowUp_Recurring::searchFor(null, null, $aSort, get_object_vars($oFilter), true)
 						);
 			}
 			else
 			{
 				$iLimit					= (max($iLimit, 0) == 0) ? null : (int)$iLimit;
 				$iOffset				= ($iLimit === null) ? null : max((int)$iOffset, 0);
-				$aFollowUpRecurrings	= FollowUp_Recurring::searchFor($iLimit, $iOffset, get_object_vars($oSort), get_object_vars($oFilter));
+				$aFollowUpRecurrings	= FollowUp_Recurring::searchFor($iLimit, $iOffset, $aSort, get_object_vars($oFilter));
 				$aResults				= array();
 				$iCount					= 0;		
 				foreach ($aFollowUpRecurrings as $oFollowUpRecurring)
@@ -87,7 +110,7 @@ class JSON_Handler_FollowUp_Recurring extends JSON_Handler
 		}
 	}
 	
-	public function updateEndDate($iFollowUpRecurringId, $sEndDate)
+	public function updateEndDate($iFollowUpRecurringId, $sEndDate, $iModifyReasonId)
 	{
 		// Start a new database transaction
 		$oDataAccess	= DataAccess::getDataAccess();
@@ -110,7 +133,7 @@ class JSON_Handler_FollowUp_Recurring extends JSON_Handler
 			
 			$oFollowUpRecurring					= FollowUp_Recurring::getForId($iFollowUpRecurringId);
 			$oFollowUpRecurring->end_datetime	= $sEndDate;
-			$oFollowUpRecurring->save();
+			$oFollowUpRecurring->save($iModifyReasonId);
 			
 			// Commit db transaction
 			$oDataAccess->TransactionCommit();

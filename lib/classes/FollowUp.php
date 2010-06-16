@@ -219,7 +219,7 @@ class FollowUp extends ORM_Cached
 		return $sSummary;
 	}
 	
-	public function save()
+	public function save($mModifyReasonId=null, $iReassignReasonId=null)
 	{
 		// Update modified fields
 		$this->modified_datetime	= date('Y-m-d H:i:s');
@@ -235,6 +235,25 @@ class FollowUp extends ORM_Cached
 		$oFollowUpHistory->modified_datetime	= $this->modified_datetime;
 		$oFollowUpHistory->modified_employee_id	= $this->modified_employee_id;
 		$oFollowUpHistory->save();
+		
+		if (!is_null($mModifyReasonId))
+		{
+			// Modified
+			// Create a modification record for the history record and the given modification reason id
+			$oModify					= new FollowUp_History_Modify_Reason();
+			$oModify->history_id		= $oFollowUpHistory->id;
+			$oModify->modify_reason_id	= $mModifyReasonId;
+			$oModify->save();
+		}
+		else if (!is_null($iReassignReasonId))
+		{
+			// Reassigned
+			// Create a modification record for the history record and the given reassign reason id
+			$oModify						= new FollowUp_History_Reassign_Reason();
+			$oModify->history_id			= $oFollowUpHistory->id;
+			$oModify->reassign_reason_id	= $iReassignReasonId;
+			$oModify->save();
+		}
 	}
 
 	public static function searchFor($iLimit=null, $iOffset=null, $aSort=null, $aFilter=null, $bCountOnly=false)

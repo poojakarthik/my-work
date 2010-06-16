@@ -33,8 +33,10 @@ class HtmlTemplate_FollowUp_Configure extends FlexHtmlTemplate
 		// Classes that renders the page
 		$this->LoadJavascript('component_followup_category_list');
 		$this->LoadJavascript('component_followup_closure_list');
-		$this->LoadJavascript('popup_followup_category_edit');
-		$this->LoadJavascript('popup_followup_closure_edit');
+		$this->LoadJavascript('component_followup_modify_reason_list');
+		$this->LoadJavascript('component_followup_recurring_modify_reason_list');
+		$this->LoadJavascript('component_followup_reassign_reason_list');
+		$this->LoadJavascript('popup_record_edit');
 		$this->LoadJavascript('page_followup_configure');
 	}
 

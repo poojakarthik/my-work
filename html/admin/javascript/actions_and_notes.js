@@ -1311,9 +1311,9 @@ Object.extend(ActionsAndNotes.List.prototype,
 		var elmItemDiv = document.createElement('div');
 		elmItemDiv.className = 'item';
 		
+		// Create header element
 		var elmHeaderDiv = document.createElement('div');
 		elmHeaderDiv.className = "header";
-		
 		elmItemDiv.appendChild(elmHeaderDiv);
 		
 		var elmTimestampContainer = document.createElement('div');
@@ -1368,26 +1368,33 @@ Object.extend(ActionsAndNotes.List.prototype,
 			strByLine = "Logged by "+ objItem.createdBy +", Performed by "+ objItem.performedBy;
 		}
 
-		var elmByLineContainer = document.createElement('div');
-		elmByLineContainer.className = 'by-line';
-		elmByLineContainer.appendChild(document.createTextNode(strByLine));
-
 		elmHeaderDiv.appendChild(elmTimestampContainer);
 		elmHeaderDiv.appendChild(elmTypeContainer);
-		elmHeaderDiv.appendChild(elmByLineContainer);
-
+		// End - Create header element
+		
+		// Create Details element
+		var elmDetailsDiv 		= document.createElement('div');
+		elmDetailsDiv.className	= 'details';
+		
+		var elmByLineContainer 			= document.createElement('div');
+		elmByLineContainer.className 	= 'by-line';
+		elmByLineContainer.appendChild(document.createTextNode(strByLine));
+		
+		var oDetailsLeftDiv				= $T.div(elmByLineContainer);
+		oDetailsLeftDiv.style.display	= 'table-cell';
+		
 		// Handle any associated Accounts
 		if (objItem.associatedAccounts && (j=objItem.associatedAccounts.length) > 0)
 		{
-			var strAccounts = (j)? "Accounts" : "Account";
-
-			elmHeaderDiv.appendChild(document.createTextNode(strAccounts + " : "));
+			var oAccountsElement	= $T.div();
+			var strAccounts 		= (j)? "Accounts" : "Account";
+			oAccountsElement.appendChild(document.createTextNode(strAccounts + " : "));
 			
 			// Make first one
 			elmLink = document.createElement('a');
 			elmLink.href = objItem.associatedAccounts[0].link;
 			elmLink.appendChild(document.createTextNode(objItem.associatedAccounts[0].name));
-			elmHeaderDiv.appendChild(elmLink);
+			oAccountsElement.appendChild(elmLink);
 			
 			// Now do the rest (comma separated)
 			for (i=1; i<j; i++)
@@ -1396,23 +1403,25 @@ Object.extend(ActionsAndNotes.List.prototype,
 				elmLink.href = objItem.associatedAccounts[i].link;
 				elmLink.appendChild(document.createTextNode(objItem.associatedAccounts[i].name));
 
-				elmHeaderDiv.appendChild(document.createTextNode(", "));
-				elmHeaderDiv.appendChild(elmLink);
+				oAccountsElement.appendChild(document.createTextNode(", "));
+				oAccountsElement.appendChild(elmLink);
 			}
+			
+			oDetailsLeftDiv.appendChild(oAccountsElement);
 		}
 		
 		// Handle any associated Services
 		if (objItem.associatedServices && (j=objItem.associatedServices.length) > 0)
 		{
-			var strServices = (j)? "Services" : "Service";
-
-			elmHeaderDiv.appendChild(document.createTextNode(strServices + " : "));
+			var oServicesElement	= $T.div();
+			var strServices 		= (j)? "Services" : "Service";
+			oServicesElement.appendChild(document.createTextNode(strServices + " : "));
 			
 			// Make first one
 			elmLink = document.createElement('a');
 			elmLink.href = objItem.associatedServices[0].link;
 			elmLink.appendChild(document.createTextNode(objItem.associatedServices[0].name));
-			elmHeaderDiv.appendChild(elmLink);
+			oServicesElement.appendChild(elmLink);
 			
 			// Now do the rest (comma separated)
 			for (i=1; i<j; i++)
@@ -1421,23 +1430,25 @@ Object.extend(ActionsAndNotes.List.prototype,
 				elmLink.href = objItem.associatedServices[i].link;
 				elmLink.appendChild(document.createTextNode(objItem.associatedServices[i].name));
 
-				elmHeaderDiv.appendChild(document.createTextNode(", "));
-				elmHeaderDiv.appendChild(elmLink);
+				oServicesElement.appendChild(document.createTextNode(", "));
+				oServicesElement.appendChild(elmLink);
 			}
+			
+			oDetailsLeftDiv.appendChild(oServicesElement);
 		}
 
 		// Handle any associated Contacts
 		if (objItem.associatedContacts && (j=objItem.associatedContacts.length) > 0)
 		{
-			var strContact = (j)? "Contacts" : "Contact";
-
-			elmHeaderDiv.appendChild(document.createTextNode(strContact + " : "));
+			var	oContactsElement	= $T.div();
+			var strContact 			= (j)? "Contacts" : "Contact";
+			oContactsElement.appendChild(document.createTextNode(strContact + " : "));
 			
 			// Make first one
 			elmLink = document.createElement('a');
 			elmLink.href = objItem.associatedContacts[0].link;
 			elmLink.appendChild(document.createTextNode(objItem.associatedContacts[0].name));
-			elmHeaderDiv.appendChild(elmLink);
+			oContactsElement.appendChild(elmLink);
 			
 			// Now do the rest (comma separated)
 			for (i=1; i<j; i++)
@@ -1446,44 +1457,41 @@ Object.extend(ActionsAndNotes.List.prototype,
 				elmLink.href = objItem.associatedContacts[i].link;
 				elmLink.appendChild(document.createTextNode(objItem.associatedContacts[i].name));
 
-				elmHeaderDiv.appendChild(document.createTextNode(", "));
-				elmHeaderDiv.appendChild(elmLink);
+				oContactsElement.appendChild(document.createTextNode(", "));
+				oContactsElement.appendChild(elmLink);
 			}
+			
+			oDetailsLeftDiv.appendChild(oContactsElement);
 		}
-
+		
 		if (objItem.details !== null)
 		{
-			// There are details
-			var elmDetailsDiv = document.createElement('div');
-			elmDetailsDiv.className = 'details';
-			elmItemDiv.appendChild(elmDetailsDiv);
-			
-			// It is assumed that objItem.details has had all HTML special chars escaped, except for <br> elements
-			// to protect against html injection
-			var oDetailsInnerDiv		= $T.div();
-			oDetailsInnerDiv.innerHTML	= objItem.details;
-			elmDetailsDiv.appendChild(oDetailsInnerDiv);
-			
-			// Attach a follow-up context list place holder for the note/action
-			var iFollowUpType	= null; 
-			switch (objItem.recordType)
-			{
-				case ActionsAndNotes.TYPE_NOTE:
-					iFollowUpType	= $CONSTANT.FOLLOWUP_TYPE_NOTE;
-					break;
-				case ActionsAndNotes.TYPE_ACTION:
-					iFollowUpType	= $CONSTANT.FOLLOWUP_TYPE_ACTION;
-					break;
-			}
-			
-			elmDetailsDiv.appendChild(
-				$T.div({class: FollowUp_Link.PLACEHOLDER_CLASS, type: iFollowUpType, type_detail: objItem.id})
-			);
+			// There are details. It is assumed that objItem.details has had all HTML special chars escaped, 
+			// except for <br> elements to protect against html injection
+			var oInnerDetails	= $T.div({class: 'details-inner'});
+			oInnerDetails.innerHTML	+= objItem.details;
+			oDetailsLeftDiv.appendChild(oInnerDetails);
 		}
+		
+		// Create a follow-up context list place holder for the note/action
+		var iFollowUpType	= null; 
+		switch (objItem.recordType)
+		{
+			case ActionsAndNotes.TYPE_NOTE:
+				iFollowUpType	= $CONSTANT.FOLLOWUP_TYPE_NOTE;
+				break;
+			case ActionsAndNotes.TYPE_ACTION:
+				iFollowUpType	= $CONSTANT.FOLLOWUP_TYPE_ACTION;
+				break;
+		}
+		
+		var oFollowUpContextListElement	= $T.div({class: FollowUp_Link.PLACEHOLDER_CLASS, type: iFollowUpType, type_detail: objItem.id});
+		elmDetailsDiv.appendChild(oFollowUpContextListElement);
+		elmDetailsDiv.appendChild(oDetailsLeftDiv);
+		elmItemDiv.appendChild(elmDetailsDiv);
 		
 		return elmItemDiv;
 	}
-	
 });
 
 

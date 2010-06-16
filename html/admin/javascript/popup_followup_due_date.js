@@ -24,12 +24,22 @@ var Popup_FollowUp_Due_Date	= Class.create(Reflex_Popup,
 		oDatePicker.setValue(this._initialDateTime);
 		this._oDatePicker	= oDatePicker;
 		
+		var oReasonSelect	= new Control_Field_Select('Reason');
+		oReasonSelect.setPopulateFunction(FollowUp_Modify_Reason.getAllAsSelectOptions.bind(FollowUp_Modify_Reason));
+		oReasonSelect.setVisible(true);
+		oReasonSelect.setEditable(true);
+		oReasonSelect.setMandatory(true);
+		oReasonSelect.setRenderMode(Control_Field.RENDER_MODE_EDIT);
+		this._oReasonSelect	= oReasonSelect;
+		
 		// Build content
 		this._oContent	= 	$T.div({class: 'popup-followup-due-date'},
 								$T.div({class: 'popup-followup-due-date-select'},
 									$T.ul({class: 'reset horizontal'},
 										$T.li('Choose a date: '),
-										$T.li(this._oDatePicker.getElement())
+										$T.li(this._oDatePicker.getElement()),
+										$T.li('Please specify a reason why you are modifying the Due Date:'),
+										$T.li(this._oReasonSelect.getElement())
 									)
 								),
 								$T.div({class: 'popup-followup-due-date-buttons'},
@@ -84,6 +94,7 @@ var Popup_FollowUp_Due_Date	= Class.create(Reflex_Popup,
 			try
 			{
 				this._oDatePicker.validate(false);
+				this._oReasonSelect.validate(false);
 			}
 			catch (ex)
 			{
@@ -103,7 +114,7 @@ var Popup_FollowUp_Due_Date	= Class.create(Reflex_Popup,
 								'FollowUp', 
 								'updateFollowUpDueDate'
 							);
-			fnJSON(this._iFollowUpId, this._oDatePicker.getElementValue());
+			fnJSON(this._iFollowUpId, this._oDatePicker.getElementValue(), this._oReasonSelect.getElementValue());
 		}
 		else if (oResponse.Success)
 		{

@@ -293,7 +293,7 @@ class JSON_Handler_FollowUp extends JSON_Handler
 		}
 	}
 	
-	public function reassignFollowUp($iFollowUpId, $iToEmployeeId)
+	public function reassignFollowUp($iFollowUpId, $iToEmployeeId, $iReassignReasonId)
 	{
 		// Start a new database transaction
 		$oDataAccess	= DataAccess::getDataAccess();
@@ -311,7 +311,7 @@ class JSON_Handler_FollowUp extends JSON_Handler
 			// Update assigned_employee_id
 			$oFollowUp							= FollowUp::getForId($iFollowUpId);
 			$oFollowUp->assigned_employee_id	= $iToEmployeeId;
-			$oFollowUp->save();
+			$oFollowUp->save(null, $iReassignReasonId);
 			
 			// Commit db transaction
 			$oDataAccess->TransactionCommit();
@@ -340,7 +340,7 @@ class JSON_Handler_FollowUp extends JSON_Handler
 		}
 	}
 	
-	public function reassignRecurringFollowUp($iFollowUpRecurringId, $iToEmployeeId)
+	public function reassignRecurringFollowUp($iFollowUpRecurringId, $iToEmployeeId, $iReassignReasonId)
 	{
 		// Start a new database transaction
 		$oDataAccess	= DataAccess::getDataAccess();
@@ -358,7 +358,7 @@ class JSON_Handler_FollowUp extends JSON_Handler
 			// Update assigned_employee_id
 			$oFollowUpRecurring							= FollowUp_Recurring::getForId($iFollowUpRecurringId);
 			$oFollowUpRecurring->assigned_employee_id	= $iToEmployeeId;
-			$oFollowUpRecurring->save();
+			$oFollowUpRecurring->save(null, $iReassignReasonId);
 			
 			// Commit db transaction
 			$oDataAccess->TransactionCommit();
@@ -387,7 +387,7 @@ class JSON_Handler_FollowUp extends JSON_Handler
 		}
 	}
 	
-	public function updateFollowUpDueDate($iFollowUpId, $sDueDateTime)
+	public function updateFollowUpDueDate($iFollowUpId, $sDueDateTime, $iModifyReasonId)
 	{
 		// Start a new database transaction
 		$oDataAccess	= DataAccess::getDataAccess();
@@ -405,7 +405,7 @@ class JSON_Handler_FollowUp extends JSON_Handler
 			// Update assigned_employee_id
 			$oFollowUp					= FollowUp::getForId($iFollowUpId);
 			$oFollowUp->due_datetime	= $sDueDateTime;
-			$oFollowUp->save();
+			$oFollowUp->save($iModifyReasonId);
 			
 			// Commit db transaction
 			$oDataAccess->TransactionCommit();

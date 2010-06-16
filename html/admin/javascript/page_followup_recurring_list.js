@@ -126,8 +126,8 @@ var Page_FollowUp_Recurring_List = Class.create(
 														$T.th()
 													)
 												),
-												$T.tbody({class: 'alternating'}
-													// ...
+												$T.tbody({class: 'alternating'},
+													this._createNoRecordsRow(true)
 												)
 											),
 											$T.div({class: 'footer-pagination'},
@@ -220,13 +220,7 @@ var Page_FollowUp_Recurring_List = Class.create(
 		if (!oResultSet || oResultSet.intTotalResults == 0 || oResultSet.arrResultSet.length == 0)
 		{
 			// No records
-			oTBody.appendChild(
-				$T.tr(
-					$T.td({colspan: this._oContentDiv.select('table > thead > tr').first().childNodes.length},
-						'There are no records to display'
-					)
-				)
-			);
+			oTBody.appendChild(this._createNoRecordsRow());
 		}
 		else
 		{
@@ -256,6 +250,15 @@ var Page_FollowUp_Recurring_List = Class.create(
 		{
 			this.oLoadingOverlay.hide();
 		}
+	},
+	
+	_createNoRecordsRow	: function(bOnLoad)
+	{
+		return $T.tr(
+			$T.td({class: 'followup-list-all-norecords', colspan: 0},
+				(bOnLoad ? 'Loading...' : 'There are no records to display')
+			)
+		);
 	},
 	
 	_createTableRow	: function(oFollowUpRecurring)
@@ -782,7 +785,7 @@ Page_FollowUp_Recurring_List.getDateTimeElement	= function(sMySQLDate)
 
 Page_FollowUp_Recurring_List.getRecurrencePeriod	= function(oFollowUpRecurring)
 {
-	var sSuffix	= (oFollowUpRecurring.recurrence_multiplier != 0 ? 's' : '');
+	var sSuffix	= (oFollowUpRecurring.recurrence_multiplier == 1 ? '' : 's');
 	return 	oFollowUpRecurring.recurrence_multiplier + 
 			' ' + 
 			Flex.Constant.arrConstantGroups.followup_recurrence_period[oFollowUpRecurring.followup_recurrence_period_id].Name + 

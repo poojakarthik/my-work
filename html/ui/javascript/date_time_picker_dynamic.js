@@ -525,7 +525,7 @@ DateChooser.checkClick = function(event)
 	{
 		return;
 	}
-
+	
 	if (!event) event = window.event;
 
 	// Get the target
@@ -563,15 +563,17 @@ DateChooser.setDate = function(prefix, value)
 // DateChooser prototype variables
 DateChooser.prototype = {
 
-	_isVisible: false,
+	_isVisible		: false,
+	_iPositionX		: null,
+	_iPositionY		: null,
 	
-	_ampmSelect: 	null,
-	_hourSelect: 	null,
-	_minuteSelect: 	null,
-	_monthSelect: 	null,
-	_yearSelect: 	null,
-	_dayGrid: 		null,
-	_hiddenInput: 	null,
+	_ampmSelect		: null,
+	_hourSelect		: null,
+	_minuteSelect	: null,
+	_monthSelect	: null,
+	_yearSelect		: null,
+	_dayGrid		: null,
+	_hiddenInput	: null,
 
 	handleDateChange: function()
 	{
@@ -658,7 +660,9 @@ DateChooser.prototype = {
 	hide: function() {
 		if (this._isVisible && !this.bNeverHide)
 		{
-			this._isVisible = false;
+			this._iPositionX	= null;
+			this._iPositionY	= null;
+			this._isVisible 	= false;
 			this._div.parentNode.removeChild(this._div);
 		}
 	},
@@ -720,18 +724,43 @@ DateChooser.prototype = {
 		// Keep it hidden until it has been repositioned
 		if (iPositionX && iPositionY)
 		{
-			this._div.style.left 	= iPositionX + 'px';
-			this._div.style.top 	= iPositionY + 'px';
+			// Store for when the chooser needs to be refreshed in the same position
+			this._iPositionX	= iPositionX;
+			this._iPositionY	= iPositionY;
 		}
-		else
+		else if ((this._iPositionX == null) && (this._iPositionY == null))
 		{
-			var position 			= this.cumulativeOffset(this._input);
-			this._div.style.left 	= (position.left + this._input.clientWidth + 24) + 'px';
-			this._div.style.top 	= (position.top + this._input.clientHeight - 18) + 'px';
+			// Position relative to the associated input and store
+			var position 		= this.cumulativeOffset(this._input);
+			this._iPositionX	= (position.left + this._input.clientWidth + 24);
+			this._iPositionY	= (position.top + this._input.clientHeight - 18);
 		}
 		
+		// Hide then attach the div, so that it's dimensions can be grabbed
+		this._div.style.visibility	= 'hidden';
 		document.body.appendChild(this._div);
-		this._isVisible = true;
+		
+		// Check that the chooser is not going to be positioned off screen
+		var iDivWidth		= this._div.clientWidth;
+		var iDivHeight		= this._div.clientHeight;
+		var bVerticalOk		= (this._iPositionY + iDivHeight) < window.innerHeight;
+		var bHorizontalOk	= (this._iPositionX + iDivWidth) < window.innerWidth;
+		
+		if (!bVerticalOk)
+		{
+			this._iPositionY	-= iDivHeight;
+		}
+		
+		if (!bHorizontalOk)
+		{
+			this._iPositionX	-= iDivWidth;
+		}
+		
+		// Position then show
+		this._div.style.left 		= this._iPositionX + 'px';
+		this._div.style.top 		= this._iPositionY + 'px';
+		this._div.style.visibility	= 'visible';
+		this._isVisible 			= true;
 	},
 
 	// Sets the date to what is in the input box

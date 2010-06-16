@@ -115,9 +115,9 @@ class HtmlTemplate_Ticketing_Ticket_History extends FlexHtmlTemplate
 				</tr>
 				<tr class='<?=$strDetailsRowClass?> <?=$altClass?>' altClass='<?=$altClass?>' id='ticket_history_record_details_<?=$i?>'>
 					<td colspan='6' class='ticket-history-record-details'>
+						<div class='followup-context-list-placeholder' type='<? echo FOLLOWUP_TYPE_TICKET_CORRESPONDENCE; ?>' type_detail='<?php echo $ticketHistoryRecord->mCorrespondenceId; ?>'></div>
 						<div style='margin:0% 5% 2em 5%;'>
 							<?=$ticketHistoryRecord->strDetails?>
-							<div class='followup-context-list-placeholder' type='<? echo FOLLOWUP_TYPE_TICKET_CORRESPONDENCE; ?>' type_detail='<?php echo $ticketHistoryRecord->mCorrespondenceId; ?>'></div>
 						</div>
 					</td>
 				</tr>

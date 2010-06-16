@@ -82,8 +82,8 @@ class JSON_Handler_FollowUp_Category extends JSON_Handler
 			
 			// If no exceptions were thrown, then everything worked
 			return 	array(
-						"Success"		=> true,
-						"oCategory"		=> FollowUp_Category::getForId($iCategoryId)->toStdClass()
+						"Success"	=> true,
+						"oRecord"	=> FollowUp_Category::getForId($iCategoryId)->toStdClass()
 					);
 		}
 		catch (JSON_Handler_FollowUp_Category_Exception $oException)
@@ -189,40 +189,40 @@ class JSON_Handler_FollowUp_Category extends JSON_Handler
 			$iNameLength	= 128;
 			$iDescLength	= 256;
 			$aErrors		= array();
-			if (is_null($oDetails->sName) || strlen($oDetails->sName) == 0)
+			if (is_null($oDetails->name) || strlen($oDetails->name) == 0)
 			{
 				$aErrors[]	= 'Name missing.';
 			}
-			else if (strlen($oDetails->sDescription) > $iNameLength)
+			else if (strlen($oDetails->description) > $iNameLength)
 			{
 				$aErrors[]	= "Name is too long, maximum {$iNameLength} characters.";
 			}
 			
-			if (is_null($oDetails->sDescription) || strlen($oDetails->sDescription) == 0)
+			if (is_null($oDetails->description) || strlen($oDetails->description) == 0)
 			{
 				$aErrors[]	= 'Description missing.';
 			}
-			else if (strlen($oDetails->sDescription) > $iDescLength)
+			else if (strlen($oDetails->description) > $iDescLength)
 			{
 				$aErrors[]	= "Description is too long, maximum {$iDescLength} characters.";
 			}
 			
-			if (($oDetails->iStatusId != STATUS_ACTIVE) && ($oDetails->iStatusId != STATUS_INACTIVE))
+			if (($oDetails->status_id != STATUS_ACTIVE) && ($oDetails->status_id != STATUS_INACTIVE))
 			{
 				$aErrors[]	= 'Invalid status';
 			}
 			
-			$oCategory->name		= $oDetails->sName;
-			$oCategory->description	= $oDetails->sDescription;
-			$oCategory->status_id	= $oDetails->iStatusId;
+			$oCategory->name		= $oDetails->name;
+			$oCategory->description	= $oDetails->description;
+			$oCategory->status_id	= $oDetails->status_id;
 			$oCategory->save();
 			
 			$oDataAccess->TransactionCommit();
 			
 			// If no exceptions were thrown, then everything worked
 			return 	array(
-						"Success"		=> true,
-						"iCategoryId"	=> $oCategory->id
+						"Success"	=> true,
+						"iRecordId"	=> $oCategory->id
 					);
 		}
 		catch (JSON_Handler_FollowUp_Category_Exception $oException)

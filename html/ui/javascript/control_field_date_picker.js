@@ -30,7 +30,7 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		this.oControlOutput.oInput.size			= 10;*/
 		this.oControlOutput.oEdit.appendChild(this.oControlOutput.oInput);
 		
-		this.oControlOutput.oIcon			= document.createElement('img');
+		this.oControlOutput.oIcon			= $T.img({class: 'date-time-picker-launch-icon'});
 		this.oControlOutput.oIcon.src		= '../admin/img/template/calendar_small.png';
 		this.oControlOutput.oIcon.title		= 'Choose Date with Picker...';
 		this.oControlOutput.oIcon.alt		= 'Choose Date';

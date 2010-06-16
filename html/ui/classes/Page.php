@@ -719,7 +719,7 @@ class Page
 		}
 		
 		$strDeveloperToolsLink	= (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? "| <a href='../admin/reflex.php/Developer/ViewList/' >Developer Tools</a>" : '';
-		$sFollowUps				= "<div id='followup_link'></div>";
+		$sFollowUps				= "<div id='followup-link'></div>";
 		$mixKbAdmin 			= NULL;
 		
 		// The default menu links.
@@ -752,9 +752,12 @@ class Page
 			$mixKbAdmin<input type=\"hidden\" name=\"strUsername\" value=\"$strUserName\" />
 			<input type=\"hidden\" name=\"mixUsername\" value=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['User'] . "\" />
 			<input type=\"hidden\" name=\"mixPassword\" value=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['Password'] . "\" />
-			| $sFollowUps
-			| <a onclick=\"redirectOutput(this); var elemform = getElementById('kbform'); elemform.submit();\">Knowledge Base</a>	
-			| <a onclick='$strUserPreferencesLink'>Preferences</a>
+			| $sFollowUps".
+
+			// Removed but kept just in case rmctainsh 20100615
+			//| <a onclick=\"redirectOutput(this); var elemform = getElementById('kbform'); elemform.submit();\">Knowledge Base</a>	
+
+			"| <a onclick='$strUserPreferencesLink'>Preferences</a>
 			{$strDeveloperToolsLink}
 			| <a onclick='Vixen.Logout();'>Logout</a>
 			</form>";

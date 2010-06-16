@@ -31,10 +31,10 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 				
 		// Footer button events
 		var oFollowUpButton	= this._oContent.select('button.icon-button').first();
-		oFollowUpButton.observe('click', this._goToPage.bind(this, 'Manage'));
+		oFollowUpButton.observe('click', this._goToPage.bind(this, 'Manage', null));
 		var oFollowUpRecurringButton	= this._oContent.select('button.icon-button').last();
-		oFollowUpRecurringButton.observe('click', this._goToPage.bind(this, 'ManageRecurring'));
-		
+		oFollowUpRecurringButton.observe('click', this._goToPage.bind(this, 'ManageRecurring', null));
+
 		this.setTitle('Active Follow-Ups');
 		this.addCloseButton();
 		this.setIcon(Popup_FollowUp_Active.FOLLOWUP_IMAGE_SOURCE);
@@ -79,10 +79,12 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 			// Add rows
 			var oFollowUp	= null;
 			var sSection	= null;
+			var iTotalCount	= 0;
+			
 			var aCounts											= {};
-			aCounts[Popup_FollowUp_Active.SECTION_OVERDUE]		= 0;
-			aCounts[Popup_FollowUp_Active.SECTION_TODAY]		= 0;
-			aCounts[Popup_FollowUp_Active.SECTION_NEXT_WEEK]	= 0;
+			aCounts[Popup_FollowUp_Active.SECTION_OVERDUE]		= {iTotal: 0, iAdded: 0};
+			aCounts[Popup_FollowUp_Active.SECTION_TODAY]		= {iTotal: 0, iAdded: 0};
+			aCounts[Popup_FollowUp_Active.SECTION_NEXT_WEEK]	= {iTotal: 0, iAdded: 0};
 			
 			for (var i = 0; i < oResponse.aRecords.length; i++)
 			{
@@ -111,21 +113,23 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 					}
 				}
 				
-				aCounts[sSection]++;
-				if (aCounts[sSection] <= Popup_FollowUp_Active.SECTION_ITEM_LIMIT)
+				aCounts[sSection].iTotal++;
+				iTotalCount++;
+				if (iTotalCount <= Popup_FollowUp_Active.TOTAL_ITEM_LIMIT)
 				{
 					// Only add if there is enough room in the section
 					this._addFollowUpToSection(sSection, oFollowUp);
+					aCounts[sSection].iAdded++;
 				}
 			}
 			
 			// Put empty table rows in
 			for (var sSection in aCounts)
 			{
-				if (aCounts[sSection] == 0)
+				if (aCounts[sSection].iTotal == 0)
 				{
 					// Add empty row
-					var oTBody	= this._oContent.select('tbody#section-' + sSection.replace(/\s/g, '_')).first() 
+					var oTBody	= this._oContent.select('tbody#section-' + Popup_FollowUp_Active.getClassFromSection(sSection)).first() 
 					oTBody.appendChild(
 						$T.tr({class: 'popup-followup-active-row'},
 							$T.td({class: 'popup-followup-active-empty'},
@@ -133,6 +137,18 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 							)
 						)
 					);
+				}
+				else if (aCounts[sSection].iAdded == 0)
+				{
+					// Add 'click to view more' row
+					var oTBody	= this._oContent.select('tbody#section-' + Popup_FollowUp_Active.getClassFromSection(sSection)).first()
+					var oTR		= 	$T.tr({class: 'popup-followup-active-row'},
+										$T.td({class: 'popup-followup-active-empty-clickformore'},
+											Popup_FollowUp_Active.CLICK_FOR_MORE_SECTION
+										)
+									);
+					oTR.observe('click', this._goToPage.bind(this, 'Manage', 'Active=1'));
+					oTBody.appendChild(oTR);
 				}
 			}
 		}
@@ -176,7 +192,7 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 			),
 			$T.div({class: 'section-content section-content-fitted'},
 				$T.table(
-					$T.tbody({id: 'section-' + sSection.replace(/\s/g, '_')},
+					$T.tbody({id: 'section-' + Popup_FollowUp_Active.getClassFromSection(sSection)},
 						$T.tr({class: 'popup-followup-active-row'},
 							$T.td({class: 'popup-followup-active-empty'},
 								Popup_FollowUp_Active.EMPTY_SECTION
@@ -263,7 +279,7 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 		var oEventElement	= oDateTD.select('div').first();
 		var sDate			= Reflex_Date_Format.format('l jS M Y g:i A', oFollowUpDueDate);
 		oEventElement.observe('mouseover', this._showFullDate.bind(this, sDate, sId));
-		oEventElement.observe('mouseout', this._hideFullDate.bind(this));
+		oDateTD.observe('mouseout', this._hideFullDate.bind(this));
 		
 		var oDetailTD	= 	$T.td({class: 'popup-followup-active-detail'},
 								Popup_FollowUp_Active.getFollowUpDetailsElement(oFollowUp)
@@ -280,7 +296,7 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 		var oActionTD	= 	$T.td({class: 'popup-followup-active-actions'},
 								this._getActions(oFollowUp)
 							);
-		var oTBody		= this._oContent.select('tbody#section-' + sSection.replace(/\s/g, '_')).first();
+		var oTBody		= this._oContent.select('tbody#section-' + Popup_FollowUp_Active.getClassFromSection(sSection)).first();
 		
 		oTBody.appendChild(
 			$T.tr({class: 'popup-followup-active-row'},
@@ -306,17 +322,37 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 		if (sId != this._sCurrentFullDateItemId)
 		{
 			this._oFullDateElement.innerHTML	= sDate;
-			this._oFullDateElement.style.left	= (oEvent.clientX + (oEvent.originalTarget.clientWidth / 2)) + 'px';
+			this._oFullDateElement.style.left	= (oEvent.clientX + 20) + 'px';
 			this._oFullDateElement.style.top	= (oEvent.clientY + window.pageYOffset - 10) + 'px';
 			this._sCurrentFullDateItemId		= sId;
 			this._oFullDateElement.show();
 		}
 	},
 	
-	_hideFullDate	: function()
+	_hideFullDate	: function(oEvent)
 	{
-		this._oFullDateElement.hide();
-		this._sCurrentFullDateItemId	= null;
+		if (this._sCurrentFullDateItemId != null)
+		{
+			// Make sure the mouse has left the td containing the date
+			var oNode	= oEvent.explicitOriginalTarget;
+			var bCancel	= (oNode.hasClassName ? oNode.hasClassName('popup-followup-active-date') : false);
+			while(!bCancel && oNode != document.body)
+			{
+				oNode	= oNode.parentNode;
+				if (oNode.hasClassName && oNode.hasClassName('popup-followup-active-date'))
+				{
+					bCancel	= true;
+				}
+			}
+			
+			if (bCancel)
+			{
+				return;
+			}
+			
+			this._oFullDateElement.hide();
+			this._sCurrentFullDateItemId	= null;
+		}
 	},
 	
 	_getActions	: function(oFollowUp)
@@ -377,23 +413,25 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 						);
 	},
 	
-	_goToPage	: function(sMethod)
+	_goToPage	: function(sMethod, sParameters)
 	{
-		window.location	= 'reflex.php/FollowUp/' + sMethod + '/';
+		sParameters		= (sParameters ? '?' + sParameters : '');
+		window.location	= 'reflex.php/FollowUp/' + sMethod + '/' + sParameters;
 	}
 });
 
-Popup_FollowUp_Active.MILLISECOND_SECOND	= 1000;
-Popup_FollowUp_Active.MILLISECOND_MINUTE	= Popup_FollowUp_Active.MILLISECOND_SECOND * 60;
-Popup_FollowUp_Active.MILLISECOND_HOUR		= Popup_FollowUp_Active.MILLISECOND_MINUTE * 60;
-Popup_FollowUp_Active.MILLISECOND_DAY		= Popup_FollowUp_Active.MILLISECOND_HOUR * 24;
-Popup_FollowUp_Active.MILLISECOND_WEEK		= Popup_FollowUp_Active.MILLISECOND_DAY * 7;
+Popup_FollowUp_Active.MILLISECOND_SECOND		= 1000;
+Popup_FollowUp_Active.MILLISECOND_MINUTE		= Popup_FollowUp_Active.MILLISECOND_SECOND * 60;
+Popup_FollowUp_Active.MILLISECOND_HOUR			= Popup_FollowUp_Active.MILLISECOND_MINUTE * 60;
+Popup_FollowUp_Active.MILLISECOND_DAY			= Popup_FollowUp_Active.MILLISECOND_HOUR * 24;
+Popup_FollowUp_Active.MILLISECOND_WEEK			= Popup_FollowUp_Active.MILLISECOND_DAY * 7;
 
-Popup_FollowUp_Active.SECTION_OVERDUE	= 'Overdue';
-Popup_FollowUp_Active.SECTION_TODAY		= 'Today';
-Popup_FollowUp_Active.SECTION_NEXT_WEEK	= 'Next 7 Days';
+Popup_FollowUp_Active.SECTION_OVERDUE			= 'Overdue';
+Popup_FollowUp_Active.SECTION_TODAY				= 'Today';
+Popup_FollowUp_Active.SECTION_NEXT_WEEK			= 'Next 7 Days';
 
-Popup_FollowUp_Active.EMPTY_SECTION		= 'There are no Follow-Ups for this period';
+Popup_FollowUp_Active.EMPTY_SECTION				= 'There are no Follow-Ups for this period';
+Popup_FollowUp_Active.CLICK_FOR_MORE_SECTION	= 'There are more Follow-Ups that have not been shown. Click here to view them.';
 
 Popup_FollowUp_Active.FOLLOWUP_IMAGE_SOURCE				= '../admin/img/template/followup.png';
 Popup_FollowUp_Active.FOLLOWUP_RECURRING_IMAGE_SOURCE	= '../admin/img/template/followup_recurring.png';
@@ -415,8 +453,7 @@ Popup_FollowUp_Active.DETAILS_TICKET_IMAGE_SOURCE			= Popup_FollowUp_Active.TYPE
 //Popup_FollowUp_Active.DETAILS_TICKET_CONTACT_IMAGE_SOURCE	= '../admin/img/template/account.png';
 
 Popup_FollowUp_Active.MAX_SUMMARY_CHARACTERS	= 130;
-
-Popup_FollowUp_Active.SECTION_ITEM_LIMIT		= 3;
+Popup_FollowUp_Active.TOTAL_ITEM_LIMIT			= 6;
 
 Popup_FollowUp_Active._getTypeElement	= function(iType)
 {
@@ -545,5 +582,8 @@ Popup_FollowUp_Active.getTicketLink	= function(iTicketId, iAccountId, sContact)
 			);
 };
 
-
+Popup_FollowUp_Active.getClassFromSection	= function(sSection)
+{
+	return sSection.replace(/\s/g, '_');
+};
 
