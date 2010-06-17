@@ -64,9 +64,9 @@
 	 * Constructor
 	 *
 	 * Constructor
-	 * 
+	 *
 	 * @param	integer	$intCarrier				The Carrier using this Module
-	 * 
+	 *
 	 * @return	ExportBase
 	 *
 	 * @method
@@ -86,13 +86,13 @@
  		// Statements
  		$this->_selRequestByCarrierRef	= new StatementSelect("ProvisioningRequest", "Id", "CarrierRef = <CarrierRef>");
  		
- 		$this->_selRequestByFNN			= new StatementSelect("ProvisioningRequest", "Id", 
+ 		$this->_selRequestByFNN			= new StatementSelect("ProvisioningRequest", "Id",
 												"FNN = <FNN> AND Type = <Type> AND Status = ".REQUEST_STATUS_PENDING);
 		
  		$this->_selServiceAddress		= new StatementSelect("ServiceAddress", "*", "Service = <Service>");
  		
  		$this->_selCarrierModule		= new StatementSelect("CarrierModule", "*", "Carrier = <Carrier> AND Module = <Module> AND Type = ".MODULE_TYPE_PROVISIONING_OUTPUT);
- 	} 	
+ 	}
  	
  	
  	//------------------------------------------------------------------------//
@@ -104,9 +104,9 @@
 	 * Renders this file to its final output format
 	 *
 	 * Renders this file to its final output format
-	 * 
+	 *
 	 * @param	boolean	$bolRenderToFile	optional	Whether to write to the output file (default: TRUE)
-	 * 
+	 *
 	 * @return	mixed									['Pass']		: boolean
 	 * 													['Description']	: string
 	 *
@@ -216,11 +216,11 @@
 	 * Renders a line into final output format
 	 *
 	 * Renders a line into final output format
-	 * 
+	 *
 	 * @param	array	$arrLine						Line to Render
 	 * @param	string	$strStyle			optional	Styling to apply to the line (XLS only)
 	 * @param	boolean	$bolRenderToFile	optional	Whether to write to the output file (default: TRUE)
-	 * 
+	 *
 	 * @return	mixed									['Pass'] : boolean
 	 * 													['Line'] : string
 	 *
@@ -254,16 +254,16 @@
 	 * Renders a line into final output format (Plaintext)
 	 *
 	 * Renders a line into final output format (Plaintext)
-	 * 
+	 *
 	 * @param	array	$arrLine						Line to Render
 	 * @param	boolean	$bolRenderToFile	optional	Whether to write to the output file (default: TRUE)
-	 * 
+	 *
 	 * @return	mixed									['Pass'] : boolean
 	 * 													['Line'] : string
 	 *
 	 * @method
 	 */
- 	private function _RenderLineTXT($arrLine, $bolRenderToFile = TRUE, $strDelimiterOverride = NULL)
+ 	protected function _RenderLineTXT($arrLine, $bolRenderToFile = TRUE, $strDelimiterOverride = NULL)
  	{
  		//Debug($arrLine);
  		
@@ -327,7 +327,7 @@
 							$strMessage	= "Request #{$arrLine['**Request']}; Field '$strField' with value '$strDate' is not a valid {$arrType[1]} date";
 							return Array('Pass' => FALSE, 'Line' => $strMessage);
 	 					}
-	 					$mixValue	= $strDate; 					
+	 					$mixValue	= $strDate;
 	 					break;
 	 				
 	 				default:
@@ -382,17 +382,17 @@
 	 * Renders a line into final output format (Excel 5)
 	 *
 	 * Renders a line into final output format (Excel 5)
-	 * 
+	 *
 	 * @param	array	$arrLine						Line to Render
 	 * @param	string	$strStyle			optional	Styling to apply to the line
 	 * @param	boolean	$bolRenderToFile	optional	Whether to write to the output file (default: TRUE)
-	 * 
+	 *
 	 * @return	mixed									['Pass'] : boolean
 	 * 													['Line'] : string
 	 *
 	 * @method
 	 */
- 	private function _RenderLineXLS($arrLine, $strStyle = NULL, $bolRenderToFile = TRUE)
+ 	protected function _RenderLineXLS($arrLine, $strStyle = NULL, $bolRenderToFile = TRUE)
  	{
  		// Set first column
  		$intCol	= ($this->_intColOffset) ? $this->_intColOffset : 0;
@@ -432,7 +432,7 @@
  							$strParse	= substr($strDate, -4, 4);
  							$strParse	.= substr($strDate, 4, 2);
  							$strParse	.= substr($strDate, 0, 2);
- 							break; 							
+ 							break;
  						
  						case 'HHII':
  							$strParse	= date("Y-m-d");
@@ -448,7 +448,7 @@
 						$strMessage	= "Request #{$arrLine['**Request']}; Field '$strField' with value '$strDate' is not a valid {$arrType[1]} date";
 						return Array('Pass' => FALSE, 'Line' => $strMessage);
  					}
- 					$mixValue	= $strDate; 					
+ 					$mixValue	= $strDate;
  					break;
  				
  				default:
@@ -519,12 +519,12 @@
 	 * Delivers this Request File to its Destination
 	 *
 	 * @return	array					['Pass']	: TRUE/FALSE
-	 * 									['Message']	: Optional Error Message					
+	 * 									['Message']	: Optional Error Message
 	 *
 	 * @method
 	 */
 	 protected function _Deliver()
-	 {	 	
+	 {
 	 	// Debug
 	 	//return Array('Pass' => TRUE, 'Message' => "Delivery Bypassed");
 	 	
@@ -544,7 +544,7 @@
 	 			break;
 	 	}
 	 	
-	 	// Update the FileExport and ProvisioningRequest tables	 	
+	 	// Update the FileExport and ProvisioningRequest tables
 	 	$arrCols					= Array();
  		$arrCols['Id']				= $this->_intFileExport;
  		$arrCols['Status']			= ($mixResult['Pass']) ? FILE_DELIVERED : FILE_DELIVERY_FAILED;
@@ -601,7 +601,7 @@
 	* Delivers this Request File to its Destination FTP Server
 	*
 	* @return	array					['Pass']	: TRUE/FALSE
-	* 									['Message']	: Optional Error Message					
+	* 									['Message']	: Optional Error Message
 	*
 	* @method
 	*/
@@ -660,12 +660,12 @@
 	* Delivers this Request Data to its Destination Email Address
 	*
 	* @return	array					['Pass']	: TRUE/FALSE
-	* 									['Message']	: Optional Error Message					
+	* 									['Message']	: Optional Error Message
 	*
 	* @method
 	*/
 	protected function _DeliverEmail()
-	{	
+	{
 		// Get Configuration
 		$strEmailAddress	= $this->GetConfigField('Destination');
 		$strSubject			= $this->GetConfigField('Subject');
@@ -708,7 +708,7 @@
 	* Delivers this Request File to its Destination Email Address
 	*
 	* @return	array					['Pass']	: TRUE/FALSE
-	* 									['Message']	: Optional Error Message					
+	* 									['Message']	: Optional Error Message
 	*
 	* @method
 	*/
@@ -785,7 +785,7 @@
 	 * @method
 	 */
  	private function _InitExcelFormats($wkbWorkbook)
- 	{		
+ 	{
  		$arrFormat = Array();
  		
  		// Integer format (make sure it doesn't show exponentials for large ints)
@@ -877,7 +877,7 @@
 		$fmtFNN->setNumFormat('0000000000');
 		$arrFormat['FNN']				= $fmtFNN;
 		
-		return $arrFormat; 		
+		return $arrFormat;
  	}
  	
  	
@@ -890,7 +890,7 @@
 	 * Builds the output file/email for delivery to Carrier
 	 *
 	 * Builds the output file/email for delivery to Carrier
-	 * 
+	 *
 	 * @return	array					'Pass'			: TRUE/FALSE/NULL (Skipped)
 	 * 									'Description'	: Error message
 	 *
@@ -907,7 +907,7 @@
 	 		$mixResult	= $this->_Render();
 	 		if ($mixResult['Pass'])
 	 		{
-		 		// Insert FileExport Record 
+		 		// Insert FileExport Record
 		 		$mixResult	= $this->_UpdateDB();
 		 		if ($mixResult['Pass'])
 		 		{
@@ -943,7 +943,7 @@
 	 * Updates the Request records and adds an entry to FileExport
 	 *
 	 * Updates the Request records and adds an entry to FileExport
-	 * 
+	 *
 	 * @return	array					'Pass'			: TRUE/FALSE
 	 * 									'Description'	: Error message
 	 *
@@ -981,9 +981,9 @@
 	 * Finds the Service Address Details for a Service, and cleans them as necessary
 	 *
 	 * Finds the Service Address Details for a Service, and cleans them as necessary
-	 * 
+	 *
 	 * @param	integer	$intService		The Service to grab Address Details for
-	 * 
+	 *
 	 * @return	mixed					array	: Cleaned array of ServiceAddress info
 	 * 									string	: Error message
 	 *
@@ -1110,7 +1110,7 @@
 				$arrClean['ServiceStreetTypeSuffix']		= "";
 				$arrClean['ServicePropertyName']			= "";
 				
-				// Optional	
+				// Optional
 				$arrClean['ServiceAddressTypeSuffix']		= $arrAddress['ServiceAddressTypeSuffix'];
 				break;
 			
@@ -1209,7 +1209,7 @@
 	 * Gets a list of the Provisioning Types this Output Module supports
 	 *
 	 * Gets a list of the Provisioning Types this Output Module supports
-	 * 
+	 *
 	 * @return	array						Indexed array of Provisioning Types
 	 * @method
 	 */
