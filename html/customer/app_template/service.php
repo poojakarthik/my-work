@@ -52,7 +52,7 @@ class AppTemplateService extends ApplicationTemplate
 	 * ViewUnbilledCharges()
 	 *
 	 * Performs the logic for the service_view_unbilled_charges.php webpage
-	 * 
+	 *
 	 * Performs the logic for the service_view_unbilled_charges.php webpage
 	 *
 	 * @return		void
@@ -112,15 +112,19 @@ class AppTemplateService extends ApplicationTemplate
 			$strFilter = " AND RecordType = ". DBO()->Filter->Id->Value;
 		}
 		
+		// Get related Services
+		$aFNNInstances		= Service::getFNNInstances(DBO()->Service->FNN->Value, DBO()->Service->Account->Value);
+		$aRelatedServiceIds	= array_keys($aFNNInstances);
+		
 		// build the where clause and array for retrieving the relevant CDRs
-		$strCDRWhereClause = "Service = <Service> AND (Status = <CDRRated> OR Status = <CDRTempInvoice>)$strFilter AND Credit != 1";
+		$strCDRWhereClause = "Service IN (".implode(', ', $aRelatedServiceIds).") AND (Status = <CDRRated> OR Status = <CDRTempInvoice>)$strFilter AND Credit != 1";
 		$arrCDRWhereClause = Array("Service"=> DBO()->Service->Id->Value, "CDRRated"=> CDR_RATED, "CDRTempInvoice"=> CDR_TEMP_INVOICE);
 		
 		// Find out how many records we are dealing with in the CDR table
 		$selCDRCount = new StatementSelect("CDR", "COUNT(Id) AS NumOfCDRs", $strCDRWhereClause);
 		$selCDRCount->Execute($arrCDRWhereClause);
 		$arrCDRCount = $selCDRCount->Fetch();
-	
+		
 		$intNumOfCDRs = $arrCDRCount['NumOfCDRs'];
 		$intMaxPossiblePage = (int)ceil($intNumOfCDRs / MAX_RECORDS_PER_PAGE);
 		if ($intNumOfCDRs == 0)
@@ -128,11 +132,11 @@ class AppTemplateService extends ApplicationTemplate
 			// No records were retrieved
 			$intMaxPossiblePage = 1;
 		}
-
+		
 		// Work out what page of the Call Information table has been requested
 		if (DBO()->Page->PageToLoad->Value)
 		{
-			// A request has been made to load a particular page.  
+			// A request has been made to load a particular page.
 			$intRequestedPage = DBO()->Page->PageToLoad->Value;
 			
 			// Check if it is within range
@@ -155,7 +159,7 @@ class AppTemplateService extends ApplicationTemplate
 		if ($intRequestedPage == 1)
 		{
 			$strWhere  = "(Account = ". DBO()->Service->Account->Value .")";
-			$strWhere .= " AND (Service = ". DBO()->Service->Id->Value .")";
+			$strWhere .= " AND (Service IN (".implode(', ', $aRelatedServiceIds)."))";
 			$strWhere .= " AND (Status = ". CHARGE_APPROVED .")";
 			DBL()->Charge->Where->SetString($strWhere);
 			DBL()->Charge->OrderBy("CreatedOn DESC, Id DESC");
