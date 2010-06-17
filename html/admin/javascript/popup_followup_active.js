@@ -6,10 +6,18 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 	{
 		$super(73);
 		
+		this._iWindowResizeCounter	= 0;
 		this._buildUI();
+		this._iCurrentHeightLimit	= this._getHeightLimit();
 		this._refresh();
 	},
 
+	dragEnd	: function($super, oEvent)
+	{
+		$super(oEvent);
+		this._windowResizeEvent();
+	},
+	
 	_buildUI	: function()
 	{
 		// All good
@@ -35,6 +43,9 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 		var oFollowUpRecurringButton	= this._oContent.select('button.icon-button').last();
 		oFollowUpRecurringButton.observe('click', this._goToPage.bind(this, 'ManageRecurring', null));
 
+		// Window resize event
+		Event.observe(window, 'resize', this._windowResizeEvent.bind(this));
+		
 		this.setTitle('Active Follow-Ups');
 		this.addCloseButton();
 		this.setIcon(Popup_FollowUp_Active.FOLLOWUP_IMAGE_SOURCE);
@@ -77,15 +88,16 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 			}
 			
 			// Add rows
-			var oFollowUp	= null;
-			var sSection	= null;
-			var iTotalCount	= 0;
+			var iTotalCount		= 0;
+			var oNow			= new Date();
 			
 			var aCounts											= {};
 			aCounts[Popup_FollowUp_Active.SECTION_OVERDUE]		= {iTotal: 0, iAdded: 0};
 			aCounts[Popup_FollowUp_Active.SECTION_TODAY]		= {iTotal: 0, iAdded: 0};
 			aCounts[Popup_FollowUp_Active.SECTION_NEXT_WEEK]	= {iTotal: 0, iAdded: 0};
 			
+			var oFollowUp		= null;
+			var sSection		= null;
 			for (var i = 0; i < oResponse.aRecords.length; i++)
 			{
 				oFollowUp	= oResponse.aRecords[i];
@@ -97,10 +109,8 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 				}
 				else
 				{
+					// Check if the date is today or within the next 7 days
 					var oDate	= new Date(Date.parse(oFollowUp.due_datetime.replace(/-/g, '/')));
-					var oNow	= new Date();
-					
-					// Check if the date is today
 					if ((oDate.getDate() == oNow.getDate()) && (oDate.getMonth() == oNow.getMonth()) && (oDate.getFullYear() == oNow.getFullYear()))
 					{
 						// Today
@@ -115,21 +125,25 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 				
 				aCounts[sSection].iTotal++;
 				iTotalCount++;
-				if (iTotalCount <= Popup_FollowUp_Active.TOTAL_ITEM_LIMIT)
+				
+				if (this.container.clientHeight < this._iCurrentHeightLimit)
 				{
 					// Only add if there is enough room in the section
-					this._addFollowUpToSection(sSection, oFollowUp);
-					aCounts[sSection].iAdded++;
+					if (this._addFollowUpToSection(sSection, oFollowUp))
+					{
+						aCounts[sSection].iAdded++;
+					}
 				}
 			}
 			
 			// Put empty table rows in
 			for (var sSection in aCounts)
 			{
+				var sClass	= Popup_FollowUp_Active.getClassFromSection(sSection);
 				if (aCounts[sSection].iTotal == 0)
 				{
 					// Add empty row
-					var oTBody	= this._oContent.select('tbody#section-' + Popup_FollowUp_Active.getClassFromSection(sSection)).first() 
+					var oTBody	= this._oContent.select('tbody#section-' + sClass).first() 
 					oTBody.appendChild(
 						$T.tr({class: 'popup-followup-active-row'},
 							$T.td({class: 'popup-followup-active-empty'},
@@ -142,13 +156,33 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 				{
 					// Add 'click to view more' row
 					var oTBody	= this._oContent.select('tbody#section-' + Popup_FollowUp_Active.getClassFromSection(sSection)).first()
-					var oTR		= 	$T.tr({class: 'popup-followup-active-row'},
-										$T.td({class: 'popup-followup-active-empty-clickformore'},
-											Popup_FollowUp_Active.CLICK_FOR_MORE_SECTION
-										)
-									);
-					oTR.observe('click', this._goToPage.bind(this, 'Manage', 'Active=1'));
-					oTBody.appendChild(oTR);
+					oTBody.appendChild(
+						$T.tr({class: 'popup-followup-active-row'},
+							$T.td({class: 'popup-followup-active-empty-clickformore'},
+								$T.span('There are more Follow-Ups that have not been shown. '),
+								$T.a({href: this._goToPage('Manage', 'Active=1', true)},
+									'Click here to view them'
+								)
+							)
+						)
+					);
+				}
+				
+				// Update the section summary
+				var oSummaryDiv			= this._oContent.select('div.section-header-summary-' + sClass).first();
+				oSummaryDiv.innerHTML	= 'Showing ' + aCounts[sSection].iAdded + ' of ' + aCounts[sSection].iTotal;
+				
+				if (aCounts[sSection].iAdded < aCounts[sSection].iTotal)
+				{
+					// Add a link to view more
+					oSummaryDiv.appendChild(
+						$T.span(
+							' - ',
+							$T.a({href: this._goToPage('Manage', 'Active=1', true)},
+								'View all Active Follow-Ups'
+							)
+						)
+					);
 				}
 			}
 		}
@@ -184,15 +218,19 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 	
 	_buildSectionContent	: function(sSection)
 	{
+		var sClass	= Popup_FollowUp_Active.getClassFromSection(sSection);
 		return $T.div({class: 'section'},
 			$T.div({class: 'section-header'},
 				$T.div({class: 'section-header-title'},
 					$T.span(sSection)
+				),
+				$T.div({class: 'section-header-options'},
+					$T.div({class: 'section-header-summary section-header-summary-' + sClass})
 				)
 			),
 			$T.div({class: 'section-content section-content-fitted'},
 				$T.table(
-					$T.tbody({id: 'section-' + Popup_FollowUp_Active.getClassFromSection(sSection)},
+					$T.tbody({id: 'section-' + sClass},
 						$T.tr({class: 'popup-followup-active-row'},
 							$T.td({class: 'popup-followup-active-empty'},
 								Popup_FollowUp_Active.EMPTY_SECTION
@@ -253,7 +291,7 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 					mDate	= iWeek + (iWeek == 1 ? ' week' : ' weeks');
 				}
 				
-				sDateClass	= ' popup-followup-active-date-overdue';
+				sDateClass	= ' followup-status-overdue';
 				break;
 			case Popup_FollowUp_Active.SECTION_TODAY:
 				// Date - time of day
@@ -297,15 +335,22 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 								this._getActions(oFollowUp)
 							);
 		var oTBody		= this._oContent.select('tbody#section-' + Popup_FollowUp_Active.getClassFromSection(sSection)).first();
+		var oTR			= 	$T.tr({class: 'popup-followup-active-row'},
+								oDateTD,
+								oDetailTD,
+								oSummaryTD,
+								oActionTD					
+							);
+		oTBody.appendChild(oTR);
 		
-		oTBody.appendChild(
-			$T.tr({class: 'popup-followup-active-row'},
-				oDateTD,
-				oDetailTD,
-				oSummaryTD,
-				oActionTD					
-			)
-		);
+		// Check that the height hasn't exceeded the limit
+		if (this.container.clientHeight > this._iCurrentHeightLimit)
+		{
+			oTBody.removeChild(oTR);
+			return false;
+		}
+		
+		return true;
 	},
 	
 	_showFullDate	: function(sDate, sId, oEvent)
@@ -413,12 +458,50 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 						);
 	},
 	
-	_goToPage	: function(sMethod, sParameters)
+	_goToPage	: function(sMethod, sParameters, bReturnURL)
 	{
 		sParameters		= (sParameters ? '?' + sParameters : '');
-		window.location	= 'reflex.php/FollowUp/' + sMethod + '/' + sParameters;
+		var sURL		= 'reflex.php/FollowUp/' + sMethod + '/' + sParameters;
+		
+		if (bReturnURL)
+		{
+			return sURL;
+		}
+		else
+		{
+			window.location	= sURL;
+		}
+	},
+	
+	_windowResizeTimeout	: function(iExpectedCount)
+	{
+		if (this._iWindowResizeCounter == iExpectedCount)
+		{
+			this._refresh();
+		}
+	},
+	
+	_windowResizeEvent	: function()
+	{
+		var iHeightLimit	= this._getHeightLimit();
+		if (iHeightLimit != this._iCurrentHeightLimit)
+		{
+			this._iCurrentHeightLimit	= iHeightLimit;
+			this._iWindowResizeCounter++;
+			setTimeout(this._windowResizeTimeout.bind(this, this._iWindowResizeCounter), Popup_FollowUp_Active.WINDOW_RESIZE_TIMEOUT);
+		}
+	},
+	
+	_getHeightLimit	: function()
+	{
+		return window.innerHeight - this.container.offsetTop - 50;
 	}
 });
+
+
+
+
+
 
 Popup_FollowUp_Active.MILLISECOND_SECOND		= 1000;
 Popup_FollowUp_Active.MILLISECOND_MINUTE		= Popup_FollowUp_Active.MILLISECOND_SECOND * 60;
@@ -431,7 +514,6 @@ Popup_FollowUp_Active.SECTION_TODAY				= 'Today';
 Popup_FollowUp_Active.SECTION_NEXT_WEEK			= 'Next 7 Days';
 
 Popup_FollowUp_Active.EMPTY_SECTION				= 'There are no Follow-Ups for this period';
-Popup_FollowUp_Active.CLICK_FOR_MORE_SECTION	= 'There are more Follow-Ups that have not been shown. Click here to view them.';
 
 Popup_FollowUp_Active.FOLLOWUP_IMAGE_SOURCE				= '../admin/img/template/followup.png';
 Popup_FollowUp_Active.FOLLOWUP_RECURRING_IMAGE_SOURCE	= '../admin/img/template/followup_recurring.png';
@@ -452,6 +534,7 @@ Popup_FollowUp_Active.DETAILS_ACCOUNT_SERVICE_IMAGE_SOURCE	= '../admin/img/templ
 Popup_FollowUp_Active.DETAILS_TICKET_IMAGE_SOURCE			= Popup_FollowUp_Active.TYPE_TICKET_CORRESPONDENCE_IMAGE_SOURCE;
 //Popup_FollowUp_Active.DETAILS_TICKET_CONTACT_IMAGE_SOURCE	= '../admin/img/template/account.png';
 
+Popup_FollowUp_Active.WINDOW_RESIZE_TIMEOUT		= 500;
 Popup_FollowUp_Active.MAX_SUMMARY_CHARACTERS	= 130;
 Popup_FollowUp_Active.TOTAL_ITEM_LIMIT			= 6;
 
@@ -584,6 +667,6 @@ Popup_FollowUp_Active.getTicketLink	= function(iTicketId, iAccountId, sContact)
 
 Popup_FollowUp_Active.getClassFromSection	= function(sSection)
 {
-	return sSection.replace(/\s/g, '_');
+	return sSection.replace(/\s/g, '_').toLowerCase();
 };
 

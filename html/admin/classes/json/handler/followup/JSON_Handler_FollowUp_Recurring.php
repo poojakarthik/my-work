@@ -161,6 +161,49 @@ class JSON_Handler_FollowUp_Recurring extends JSON_Handler
 					);
 		}
 	}
+	
+	public function getNextDueDate($iFollowUpRecurringId)
+	{
+		try
+		{
+			// Check permissions
+			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
+			{
+				throw new JSON_Handler_FollowUp_Recurring_Exception('You do not have permission to view Recurring Follow-Ups.');
+			}
+			
+			$oFollowUpRecurring	= FollowUp_Recurring::getForId($iFollowUpRecurringId);
+			$iProjectedDate		= strtotime($oFollowUpRecurring->start_datetime);
+			$sDueDateTime		= date('Y-m-d H:i:s', $iProjectedDate);
+			$iNow				= time();
+			$i					= 0;
+			while(($iProjectedDate <= $iNow) || FollowUp::getForDateAndRecurringId($sDueDateTime, $iFollowUpRecurringId))
+			{
+				$i++;
+				$iProjectedDate	= $oFollowUpRecurring->getProjectedDueDateSeconds($i);
+				$sDueDateTime	= date('Y-m-d H:i:s', $iProjectedDate);
+			}
+			
+			return	array(
+						"Success"		=> true,
+						"sDueDateTime"	=> $sDueDateTime
+					);
+		}
+		catch (JSON_Handler_FollowUp_Recurring_Exception $oException)
+		{
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> $oException->getMessage()
+					);
+		}
+		catch (Exception $e)
+		{
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> Employee::getForId(Flex::getUserId())->isGod() ? $e->getMessage() : 'There was an error getting the dataset'
+					);
+		}
+	}
 }
 
 class JSON_Handler_FollowUp_Recurring_Exception extends Exception

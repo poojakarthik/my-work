@@ -281,6 +281,17 @@ var Component_FollowUp_List_All = Class.create(
 	{
 		if ((oFollowUp.followup_id != null) || (oFollowUp.followup_recurring_id != null))
 		{
+			var sStatusClass	= '';
+			switch (oFollowUp.status)
+			{
+				case FollowUp_Status.OVERDUE_TEXT:
+					sStatusClass	= 'followup-status-overdue';
+					break;
+				case FollowUp_Status.CURRENT_TEXT:
+					sStatusClass	= 'followup-status-current';
+					break;
+			}
+			
 			var	oTR	=	$T.tr(
 							$T.td(Component_FollowUp_List_All._getTypeElement(oFollowUp.followup_type_id)),
 							Component_FollowUp_List_All.getFollowUpDescriptionTD(oFollowUp.followup_type_id, oFollowUp.details),
@@ -290,7 +301,9 @@ var Component_FollowUp_List_All = Class.create(
 							$T.td(Component_FollowUp_List_All.getDateTimeElement(oFollowUp.due_datetime)),
 							$T.td(Component_FollowUp_List_All.getDateTimeElement(oFollowUp.modified_datetime)),
 							$T.td(oFollowUp.followup_category_label),
-							$T.td(oFollowUp.status),
+							$T.td({class: sStatusClass},
+								oFollowUp.status
+							),
 							$T.td(this._getFollowUpActions(oFollowUp))
 						);
 			return oTR;

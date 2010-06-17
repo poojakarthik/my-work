@@ -249,7 +249,7 @@ class JSON_Handler_FollowUp extends JSON_Handler
 				// Inherit fields from the recurring followup
 				$oFollowUp->assigned_employee_id	= $oFollowUpRecurring->assigned_employee_id;
 				$oFollowUp->created_datetime		= $oFollowUpRecurring->created_datetime;
-				$oFollowUp->due_datetime			= date('Y-m-d H:i:s', $oFollowUpRecurring->getProjectedDueDate($iIteration));
+				$oFollowUp->due_datetime			= date('Y-m-d H:i:s', $oFollowUpRecurring->getProjectedDueDateSeconds($iIteration));
 				$oFollowUp->followup_type_id		= $oFollowUpRecurring->followup_type_id;
 				$oFollowUp->followup_category_id	= $oFollowUpRecurring->followup_category_id;
 				
@@ -783,7 +783,7 @@ class JSON_Handler_FollowUp extends JSON_Handler
 			// Check permissions
 			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
 			{
-				throw new JSON_Handler_FollowUp_Exception('You do not have permission to create Follow-Ups.');
+				throw new JSON_Handler_FollowUp_Exception('You do not have permission to retrieve Follow-Ups.');
 			}
 			
 			switch ($iFollowUpType)
@@ -805,12 +805,17 @@ class JSON_Handler_FollowUp extends JSON_Handler
 			// Convert result to StdClasses and return
 			$aStdClassFollowUps				= array();
 			$aStdClassFollowUpRecurrings	= array();
+			$iLoggedInEmployee				= Flex::getUserId();
 			
 			if (isset($aFollowUps))
 			{
 				foreach ($aFollowUps as $oFollowUp)
 				{
-					$aStdClassFollowUps[]	= $oFollowUp->toStdClass();
+					// Only return the followup if it is assigned to the current employee
+					if ($oFollowUp->assigned_employee_id == $iLoggedInEmployee)
+					{
+						$aStdClassFollowUps[]	= $oFollowUp->toStdClass();
+					}
 				}
 			}
 			
@@ -818,7 +823,11 @@ class JSON_Handler_FollowUp extends JSON_Handler
 			{
 				foreach ($aFollowUpRecurrings as $oFollowUpRecurring)
 				{
-					$aStdClassFollowUpRecurrings[]	= $oFollowUpRecurring->toStdClass();
+					// Only return the followup if it is assigned to the current employee
+					if ($oFollowUpRecurring->assigned_employee_id == $iLoggedInEmployee)
+					{
+						$aStdClassFollowUpRecurrings[]	= $oFollowUpRecurring->toStdClass();
+					}
 				}
 			}
 			

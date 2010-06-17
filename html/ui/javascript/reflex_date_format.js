@@ -166,13 +166,13 @@ Reflex_Date_Format.parseToken	= function(oDate, sToken)
 			var iYear		= oDate.getFullYear();
 			var iYear2Digit;
 			
-			if (iYear > 1970 || iYear < 2000)
+			if (iYear >= 2000 && iYear <= 2038)
 			{
-				iYear2Digit	= 1900 - iYear;
+				iYear2Digit	= iYear - 2000;// - iYear;
 			}
-			else if (iYear >= 2000 && iYear <= 2038)
+			else if (iYear > 1970 || iYear < 2000)
 			{
-				iYear2Digit	= 2000 - iYear;
+				iYear2Digit	= iYear - 1900;// - iYear;
 			}
 			else
 			{

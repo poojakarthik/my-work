@@ -256,6 +256,20 @@ class FollowUp extends ORM_Cached
 		}
 	}
 
+	public static function getForDateAndRecurringId($sDueDateTime, $iFollowUpRecurringId)
+	{
+		$oSelect	= self::_preparedStatement('selByDueDatetimeAndFollowUpRecurringId');
+		$oSelect->Execute(array('due_datetime' => $sDueDateTime, 'followup_recurring_id' => $iFollowUpRecurringId));
+		if ($aRow	= $oSelect->Fetch())
+		{
+			return new self($aRow);
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 	public static function searchFor($iLimit=null, $iOffset=null, $aSort=null, $aFilter=null, $bCountOnly=false)
 	{
 		// Build query parts based on the limit, offset, sort and filter parameters
@@ -267,6 +281,7 @@ class FollowUp extends ORM_Cached
 		$sOrderByClause	= '';
 		$sLimitClause	= '';
 		$oQuery			= new Query();
+		$iNow			= time();
 		
 		// WHERE clause for followup_search (includes closure constraints)
 		$aWhereInfoSearch	= StatementSelect::generateWhere(null, $aFilter);
@@ -385,14 +400,13 @@ class FollowUp extends ORM_Cached
 			// Get all of the projected followups for this recurring followup
 			$iEndDate		= strtotime($oRecurringFollowUp->end_datetime);
 			$i				= 0;
+			$iAfterNow		= 0;
 			$iProjectedDate	= strtotime($oRecurringFollowUp->start_datetime);
-			//echo "$iId::{$oRecurringFollowUp->start_datetime}::{$oRecurringFollowUp->start_datetime}\n";
 			
-			while(($iProjectedDate <= $iEndDate) && ($i < FollowUp_Recurring::ITERATION_LIMIT))
+			while(($iProjectedDate <= $iEndDate) && ($iAfterNow <= FollowUp_Recurring::ITERATION_LIMIT))
 			{
 				// Projected date is within recurrence date limit, convert into db string
 				$sDueDateTime	= date('Y-m-d H:i:s', $iProjectedDate);
-				//echo "  --- $iId::$i::$sDueDateTime::{$oRecurringFollowUp->end_datetime}\n";
 				
 				// Check that the iteration doesn't already exist as a once off (closed) follow-up
 				$sCheck	=	sprintf(
@@ -405,9 +419,6 @@ class FollowUp extends ORM_Cached
 							);
 						
 				$mCheckResult	= $oQuery->Execute($sCheck);
-				
-				//echo "RECURR: ".var_dump($mCheckResult, true)."\n--".$sCheck."\n--".print_r($mCheckResult->fetch_assoc(), true)."\n--{$mCheckResult->num_rows}\n";
-				
 				if ($mCheckResult === false)
 				{
 					throw new Exception("Error looking for recurring followup iteration in temporary table. Database Error = ".$oQuery->Error().". Query = {$sCheck}");
@@ -443,7 +454,6 @@ class FollowUp extends ORM_Cached
 											"'".FollowUp::getStatus(null, $sDueDateTime)."'"
 										);
 						
-						//echo "> INSERT - oRecurringFollowUp->id:: $i $sDueDateTime\n";
 						$mInsertResult	= $oQuery->Execute($sInsert);
 						if ($mInsertResult === false)
 						{
@@ -463,7 +473,6 @@ class FollowUp extends ORM_Cached
 											$sDueDateTime
 										);
 						
-						//echo "> UPDATE - $oRecurringFollowUp->id:: $i $sDueDateTime\n";
 						$mUpdateResult	= $oQuery->Execute($sUpdate);
 						if ($mUpdateResult === false)
 						{
@@ -474,17 +483,13 @@ class FollowUp extends ORM_Cached
 				
 				// Calculates the projected followup date given an iteration
 				$i++;
-				$iProjectedDate	= $oRecurringFollowUp->getProjectedDueDate($i);
+				$iProjectedDate	= $oRecurringFollowUp->getProjectedDueDateSeconds($i);
+				if ($iProjectedDate > $iNow)
+				{
+					$iAfterNow++;
+				}
 			}
 		}
-		
-		/*echo '------------------------\n';
-		$res	= $oQuery->Execute("select * from followup_search");
-		while ($r = $res->fetch_assoc())
-		{
-			echo print_r($r, true).'\n';
-		}
-		echo '------------------------\n';*/
 		
 		// Query 'followup_search'
 		$sSearchFrom	= '	followup_search fs
@@ -504,10 +509,6 @@ class FollowUp extends ORM_Cached
 		}
 		
 		$oFollowUpSearchSelect	= new StatementSelect($sSearchFrom, $sSelect, $aWhereInfoSearch['sClause'], $sOrderByClause, $sLimitClause);
-		
-		//echo 'QUERY: '.$oFollowUpSearchSelect->_strQuery.'\n';
-		//echo 'VALUES: '.print_r($aWhereInfoSearch['aValues'], true).'\n';
-		
 		if ($oFollowUpSearchSelect->Execute($aWhereInfoSearch['aValues']) === FALSE)
 		{
 			throw new Exception("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oFollowUpSelect->Error());
@@ -579,7 +580,10 @@ class FollowUp extends ORM_Cached
 				case 'selAll':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
 					break;
-				
+				case 'selByDueDatetimeAndFollowUpRecurringId':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "due_datetime = <due_datetime> AND followup_recurring_id = <followup_recurring_id>");
+					break;
+					
 				// INSERTS
 				case 'insSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);

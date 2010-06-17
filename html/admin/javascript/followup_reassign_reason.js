@@ -83,5 +83,3 @@ FollowUp_Reassign_Reason.getAllAsSelectOptions	= function(fnCallback, oResults)
 		fnCallback(aOptions);
 	}
 };
-
-

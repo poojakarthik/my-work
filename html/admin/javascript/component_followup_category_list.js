@@ -431,7 +431,7 @@ var Component_FollowUp_Category_List = Class.create(
 	}
 });
 
-Component_FollowUp_Category_List.MAX_RECORDS_PER_PAGE		= 10;
+Component_FollowUp_Category_List.MAX_RECORDS_PER_PAGE		= 5;
 Component_FollowUp_Category_List.FILTER_IMAGE_SOURCE		= '../admin/img/template/table_row_insert.png';
 Component_FollowUp_Category_List.REMOVE_FILTER_IMAGE_SOURCE	= '../admin/img/template/delete.png';
 Component_FollowUp_Category_List.EDIT_IMAGE_SOURCE			= '../admin/img/template/pencil.png';

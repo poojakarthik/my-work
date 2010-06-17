@@ -3,7 +3,7 @@ var Popup_FollowUp_Due_Date	= Class.create(Reflex_Popup,
 {
 	initialize	: function($super, iFollowUpId, initialDateTime, fnOnFinish)
 	{
-		$super(28.3);
+		$super(30);
 		
 		this._iFollowUpId		= iFollowUpId;
 		this._initialDateTime	= initialDateTime;
@@ -37,9 +37,15 @@ var Popup_FollowUp_Due_Date	= Class.create(Reflex_Popup,
 								$T.div({class: 'popup-followup-due-date-select'},
 									$T.ul({class: 'reset horizontal'},
 										$T.li('Choose a date: '),
-										$T.li(this._oDatePicker.getElement()),
-										$T.li('Please specify a reason why you are modifying the Due Date:'),
-										$T.li(this._oReasonSelect.getElement())
+										$T.li({class: 'popup-followup-due-date-picker'},
+											this._oDatePicker.getElement()
+										),
+										$T.li({class: 'popup-followup-due-date-reason'},
+											'Please specify a reason why you are modifying the Due Date:'
+										),
+										$T.li({class: 'popup-followup-due-date-reason-select'},
+											this._oReasonSelect.getElement()
+										)
 									)
 								),
 								$T.div({class: 'popup-followup-due-date-buttons'},

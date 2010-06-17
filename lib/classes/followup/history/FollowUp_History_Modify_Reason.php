@@ -60,6 +60,20 @@ class FollowUp_History_Modify_Reason extends ORM_Cached
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 
+	public static function getForHistoryId($iHistoryId)
+	{
+		$oSelect	= self::_preparedStatement('selByHistoryId');
+		$oSelect->Execute(array('history_id' => $iHistoryId));
+		
+		$aResults	= array();
+		while ($aRow = $oSelect->Fetch())
+		{
+			$aResults[$aRow['id']]	= new self($aRow);
+		}
+		
+		return $aResults;
+	}
+
 	public static function searchFor($iLimit=null, $iOffset=null, $aSort=null, $aFilter=null, $bCountOnly=false)
 	{
 		$sFromClause	= self::$_strStaticTableName;
@@ -138,7 +152,10 @@ class FollowUp_History_Modify_Reason extends ORM_Cached
 				case 'selAll':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
 					break;
-				
+				case 'selByHistoryId':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "history_id = <history_id>");
+					break;
+					
 				// INSERTS
 				case 'insSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);

@@ -59,7 +59,46 @@ class FollowUp_History extends ORM_Cached
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
+	
+	public function getModifyReasons()
+	{
+		$aHistoryReasons	= FollowUp_History_Modify_Reason::getForHistoryId($this->id);
+		$aReasons			= array();
+		foreach ($aHistoryReasons as $oHistoryReason)
+		{
+			$aReasons[$oHistoryReason->id]	= FollowUp_Modify_Reason::getForId($oHistoryReason->modify_reason_id);
+		}
+		
+		return $aReasons;
+	}
 
+	public function getReassignReason()
+	{
+		$oHistoryReason	= FollowUp_History_Reassign_Reason::getForHistoryId($this->id);
+		if ($oHistoryReason)
+		{
+			return FollowUp_Reassign_Reason::getForId($oHistoryReason->reassign_reason_id);
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	public static function getForFollowUpId($iFollowUpId)
+	{
+		$oSelect	= self::_preparedStatement('selByFollowupId');
+		$oSelect->Execute(array('followup_id' => $iFollowUpId));
+		
+		$aResults	= array();
+		while ($aRow = $oSelect->Fetch())
+		{
+			$aResults[$aRow['id']]	= new self($aRow);
+		}
+		
+		return $aResults;
+	}
+	
 	/**
 	 * _preparedStatement()
 	 *
@@ -89,7 +128,10 @@ class FollowUp_History extends ORM_Cached
 				case 'selAll':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
 					break;
-				
+				case 'selByFollowupId':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "followup_id = <followup_id>");
+					break;
+					
 				// INSERTS
 				case 'insSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);

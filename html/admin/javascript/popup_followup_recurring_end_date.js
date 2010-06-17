@@ -3,7 +3,7 @@ var Popup_FollowUp_Recurring_End_Date	= Class.create(Reflex_Popup,
 {
 	initialize	: function($super, oFollowUpRecurring, fnOnFinish)
 	{
-		$super(28);
+		$super(30);
 		
 		this._hRadios				= {};
 		this._fnOnFinish			= fnOnFinish;
@@ -111,7 +111,7 @@ var Popup_FollowUp_Recurring_End_Date	= Class.create(Reflex_Popup,
 										)
 									)
 								),
-								$T.div(
+								$T.div({class: 'popup-followup-recurring-dates-reason'},
 									$T.div('Please specify a reason why you are changing the End Date:'),
 									$T.div(this._oReasonSelect.getElement())
 								),

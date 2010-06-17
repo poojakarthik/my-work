@@ -1,6 +1,6 @@
 <?php
 
-class JSON_Handler_FollowUp_Recurring_History extends JSON_Handler
+class JSON_Handler_FollowUp_History extends JSON_Handler
 {
 	protected	$_JSONDebug	= '';
 	
@@ -11,24 +11,24 @@ class JSON_Handler_FollowUp_Recurring_History extends JSON_Handler
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 	
-	public function getForRecurringFollowUp($iFollowUpRecurringId)
+	public function getForFollowUp($iFollowUpId)
 	{
 		try
 		{
 			// Check permissions
 			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
 			{
-				throw new JSON_Handler_FollowUp_Recurring_History_Exception('You do not have permission to view Follow-Up History.');
+				throw new JSON_Handler_FollowUp_History_Exception('You do not have permission to view Follow-Up History.');
 			}
 			
-			$aHistoryRecords	= FollowUp_Recurring_History::getForFollowUpRecurringId($iFollowUpRecurringId);
+			$aHistoryRecords	= FollowUp_History::getForFollowUpId($iFollowUpId);
 			$aResult			= array();
 			foreach ($aHistoryRecords as $oRecord)
 			{
 				// Convert to std class
 				$oStdClassRecord							= $oRecord->toStdClass();
 				$oStdClassRecord->aModifyReasons			= array();
-				$oStdClassRecord->assigned_employee_name	= Employee::getForId($oStdClassRecord->assigned_employee_id)->getName();
+				$oStdClassRecord->assigned_employee_name	= Employee::getForId($oStdClassRecord->assigned_employee_id)->getName(); 
 				$oStdClassRecord->modified_employee_name	= Employee::getForId($oStdClassRecord->modified_employee_id)->getName();
 				
 				// Get modify reasons
@@ -54,7 +54,7 @@ class JSON_Handler_FollowUp_Recurring_History extends JSON_Handler
 						"aResults"	=> $aResult
 					);
 		}
-		catch (JSON_Handler_FollowUp_Recurring_History_Exception $oException)
+		catch (JSON_Handler_FollowUp_History_Exception $oException)
 		{
 			return 	array(
 						"Success"	=> false,
@@ -69,42 +69,9 @@ class JSON_Handler_FollowUp_Recurring_History extends JSON_Handler
 					);
 		}
 	}
-	/*
-	public function getForId($iId)
-	{
-		try
-		{
-			// Check permissions
-			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
-			{
-				throw new JSON_Handler_FollowUp_Recurring_History_Exception('You do not have permission to view Follow-Up History.');
-			}
-			
-			// If no exceptions were thrown, then everything worked
-			return 	array(
-						"Success"	=> true,
-						"oRecord"	=> FollowUp_Recurring_History::getForId($iId)->toStdClass()
-					);
-		}
-		catch (JSON_Handler_FollowUp_Recurring_History_Exception $oException)
-		{
-			return 	array(
-						"Success"	=> false,
-						"Message"	=> $oException->getMessage()
-					);
-		}
-		catch (Exception $e)
-		{
-			return 	array(
-						"Success"	=> false,
-						"Message"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $e->getMessage() : 'There was an error getting the history details'
-					);
-		}
-	}
-	*/
 }
 
-class JSON_Handler_FollowUp_Recurring_History_Exception extends Exception
+class JSON_Handler_FollowUp_History_Exception extends Exception
 {
 	// No changes
 }

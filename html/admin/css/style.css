@@ -4303,6 +4303,17 @@ div#ChargeListContainer > div.component-account-charge-list div.tab-page
 
 /************************ START - Follow-Up Management Page - START ************************/
 
+.followup-status-current
+{
+	color	: #006600 !important;
+}
+
+.followup-status-overdue
+{
+	color		: #dd0000 	!important;
+	font-weight	: bold 		!important;
+}
+
 div.followup-list-all
 {
 	margin-top	: 0.5em;
@@ -4532,7 +4543,7 @@ div.popup-followup-due-date-select
 	margin	: 1em;
 }
 
-div.popup-followup-due-date-select div.control-field
+div.popup-followup-due-date-select div.popup-followup-due-date-picker div.control-field
 {
 	margin-left	: 0.5em;
 }
@@ -4541,6 +4552,18 @@ div.popup-followup-due-date-buttons
 {
 	text-align		: center;
 	margin-bottom	: 0.5em;
+}
+
+li.popup-followup-due-date-reason-select,
+li.popup-followup-due-date-reason-select div.control-field,
+li.popup-followup-due-date-reason-select div.control-field > select
+{
+	width	: 100%;
+}
+
+li.popup-followup-due-date-reason
+{
+	padding	: 0.5em 0em;
 }
 
 /************************ END - Popup Follow-Up Due Date - END ************************/
@@ -4590,6 +4613,17 @@ ul.popup-followup-recurring-dates-radio-list > li > ul.reset > li.popup-followup
 	width			: 2em;
 	margin-left		: 0.5em;
 	margin-right	: 0.5em;
+}
+
+div.popup-followup-recurring-dates-reason div.control-field,
+div.popup-followup-recurring-dates-reason div.control-field > select
+{
+	width	: 100%;
+}
+
+div.popup-followup-recurring-dates-reason div:first-child
+{
+	padding-bottom	: 0.5em;
 }
 
 /************************ END - Popup Recurring Follow-Up End Date - END ************************/
@@ -4704,17 +4738,16 @@ tr.popup-followup-active-row > td:last-child
 	padding-right	: 0.25em;
 }
 
+div.popup-followup-active > div.section > div.section-content > table > tbody > tr.popup-followup-active-row:hover > td
+{
+	background-color	: #ffc;
+}
+
 div.popup-followup-active > div.section > div.section-content > table > tbody > tr > td.popup-followup-active-date
 {
 	text-align		: center;
 	vertical-align	: middle;
 	width			: 9%;
-}
-
-td.popup-followup-active-date-overdue
-{
-	font-weight	: bold;
-	color		: red;
 }
 
 td.popup-followup-active-detail
@@ -4811,6 +4844,18 @@ div.popup-followup-active-date-full
 	border				: solid 1px #000;
 	-moz-border-radius	: 4px;
 	z-index				: 999;
+}
+
+div.section-header-summary > span
+{
+	margin-left	: 0.25em;
+	cursor		: pointer;
+}
+
+div.section-header-summary
+{
+	margin		: 0.5em 0.25em 0em 0em;
+	font-style	: italic;
 }
 
 /************************ END - Active Follow-Up Popup - END ************************/
@@ -4944,7 +4989,24 @@ div.popup-followup-details-occurences > div.control-field:nth-child(2) > input
 
 td.popup-followup-add-details-recurring-howoften > div.control-field:nth-child(3)
 {
-	width	: 6em;
+	padding-left	: 0.25em;
+	width			: 6em;
+}
+
+table.popup-followup-details-recurring,
+table.popup-followup-details-onceoff
+{
+	-moz-border-radius	: 4px;
+	background-color	: #D1D1D1;
+	width				: 100%;
+	margin				: 0.5em 0 0.5em 0;
+}
+
+table.popup-followup-details-recurring > tbody > tr > td,
+table.popup-followup-details-onceoff > tbody > tr > td
+{
+	padding-left		: 0.25em;
+	background-color	: #D1D1D1;
 }
 
 /************************ END - Add Follow-Up Popup - END ************************/
@@ -4953,7 +5015,7 @@ td.popup-followup-add-details-recurring-howoften > div.control-field:nth-child(3
 
 div.followup-context-list
 {
-	background-color	: #FFFFCC;
+	background-color	: #F8F8EC;
 	-moz-border-radius	: 6px 0 0 6px;
 	border-style		: solid;
 	border-color		: #666666;
@@ -5178,29 +5240,144 @@ table.popup-followup-view-followup-details-onceoff > tbody > tr > td:first-child
 table.popup-followup-view-followup-details-recurring > tbody > tr > td:first-child
 {
 	font-weight	: bold;
-	text-align	: left;
+	text-align	: right;
 	width		: 6em;
 }
 
 table.popup-followup-view-followup-details-recurring,
 table.popup-followup-view-followup-details-onceoff
 {
-	background-color	: #D1D1D1;
+	background-color	: #F8F8EC;
 	width				: 100%;
-	margin				: 0.5em 0 0.5em 0;
+	margin				: 0em 0em 0.5em 0em;
+	-moz-border-radius	: 4px;
+	border				: 1px solid #34446A;
 }
 
 table.popup-followup-view-followup-details-recurring > tbody > tr > td,
 table.popup-followup-view-followup-details-onceoff > tbody > tr > td
 {
-	padding-left		: 0.25em;
-	background-color	: #D1D1D1;
+	padding-left		: 1.25em;
+	padding-bottom		: 0.25em;
+	background-color	: #F8F8EC;
+	vertical-align		: top;
 }
 
-table.popup-followup-view-followup-details > tbody > tr > td,
-table.popup-followup-view-followup-details > tbody > tr > th
+table.popup-followup-view-followup-details > tbody > tr > td
 {
-	padding	: 0.25em 0.5em 0em;
+	vertical-align	: inherit;
+}
+
+table.popup-followup-view-followup-details > tbody > tr > th,
+table.popup-followup-view-followup-details > tbody > tr > td
+{
+	padding	: 0.25em;
+}
+
+div.popup-followup-view-history > div.section-content
+{
+	padding	: 0em;
+}
+
+div.popup-followup-view-history > div.section-content > ul.reset
+{
+	height		: 14em;
+	overflow-y	: scroll;
+}
+
+div.popup-followup-view-history ul.reset
+{
+	margin	: 0em;
+}
+
+div.popup-followup-view-history ul.reset > li.popup-followup-view-history-item
+{
+	border-bottom	: 1px solid #CCCCCC;
+}
+
+li.popup-followup-view-history-item > ul.reset > li
+{
+	vertical-align	: top;
+}
+
+li.popup-followup-view-history-item > ul.reset > li > div
+{
+	margin-left		: 0.25em;
+}
+
+li.popup-followup-view-history-item li:first-child,
+li.popup-followup-view-history-item li:last-child
+{
+	width	: 25%;
+}
+
+li.popup-followup-view-history-item li:nth-child(2)
+{
+	width	: 75%;
+}
+
+.popup-followup-view-history-item-modified,
+.popup-followup-view-history-item-reasons
+{
+	color		: #333;
+	opacity		: 0.8;
+}
+
+.popup-followup-view-history-item-modified
+{
+	font-size	: 0.875em;
+}
+
+.popup-followup-view-history-item-reasons
+{
+	font-style	: italic;
+}
+
+span.popup-followup-view-history-item-bold
+{
+	font-weight	: bold;
+}
+
+span.popup-followup-view-history-item-from
+{
+	color	: #666;
+}
+
+span.popup-followup-view-history-item-to
+{
+	color	: #005500;
+}
+
+div.popup-followup-view-details
+{
+	margin-left	: 0em;
+}
+
+div.popup-followup-view-details-subdetail > img
+{
+	padding-right	: 0.5em;
+}
+
+div.popup-followup-view-details-subdetail > img,
+div.popup-followup-view-details-subdetail > span
+{
+	vertical-align	: middle;
+}
+
+div.popup-followup-view-details-subdetail
+{
+	padding-bottom	: 0.5em;
+}
+
+tr.popup-followup-view-followup-details-type-detail > th.label
+{
+	vertical-align	: top;
+}
+
+span.popup-followup-view-date-overdue
+{
+	color		: red;
+	font-weight	: bold;
 }
 
 /************************ END - Popup View FollowUp - END ************************/

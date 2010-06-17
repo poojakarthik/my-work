@@ -60,9 +60,43 @@ class FollowUp_Recurring_History extends ORM_Cached
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 
-	public static function getForFollowUpRecurring()
+	public function getModifyReasons()
 	{
-		// TODO
+		$aHistoryReasons	= FollowUp_Recurring_History_Modify_Reason::getForHistoryId($this->id);
+		$aReasons			= array();
+		foreach ($aHistoryReasons as $oHistoryReason)
+		{
+			$aReasons[$oHistoryReason->id]	= FollowUp_Recurring_Modify_Reason::getForId($oHistoryReason->modify_reason_id);
+		}
+		
+		return $aReasons;
+	}
+
+	public function getReassignReason()
+	{
+		$oHistoryReason	= FollowUp_Recurring_History_Reassign_Reason::getForHistoryId($this->id);
+		if ($oHistoryReason)
+		{
+			return FollowUp_Reassign_Reason::getForId($oHistoryReason->reassign_reason_id);
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	public static function getForFollowUpRecurringId($iFollowUpRecurringId)
+	{
+		$oSelect	= self::_preparedStatement('selByFollowupRecurringId');
+		$oSelect->Execute(array('followup_recurring_id' => $iFollowUpRecurringId));
+		
+		$aResults	= array();
+		while ($aRow = $oSelect->Fetch())
+		{
+			$aResults[$aRow['id']]	= new self($aRow);
+		}
+		
+		return $aResults;
 	}
 
 	/**
@@ -93,6 +127,9 @@ class FollowUp_Recurring_History extends ORM_Cached
 					break;
 				case 'selAll':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
+					break;
+				case 'selByFollowupRecurringId':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "followup_recurring_id = <followup_recurring_id>");
 					break;
 				
 				// INSERTS

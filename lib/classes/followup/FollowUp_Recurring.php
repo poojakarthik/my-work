@@ -269,7 +269,7 @@ class FollowUp_Recurring extends ORM_Cached
 		return $sSummary;
 	}
 
-	public function getProjectedDueDate($iIteration=0)
+	public function getProjectedDueDateSeconds($iIteration=0)
 	{
 		$iStartDate		= strtotime($this->start_datetime);
 		$iProjectedDate	= null;
