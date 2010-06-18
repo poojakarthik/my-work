@@ -1,12 +1,12 @@
 <?php
 /**
- * ExportAAPTFullServiceRebill
+ * ExportAAPTPreselection
  *
- * Exports AAPT Full Service File Requests
+ * Exports AAPT Preselection File Requests
  *
- * @class		ExportAAPTFullServiceRebill
+ * @class		ExportAAPTPreselection
  */
- class ExportAAPTFullServiceRebill extends ExportBase
+ class ExportAAPTPreselection extends ExportBase
  {
  	//------------------------------------------------------------------------//
 	// Properties
@@ -19,7 +19,7 @@
 	protected	$_ptrFile;
 	
 	public $intBaseCarrier			= CARRIER_AAPT;
-	public $intBaseFileType			= RESOURCE_TYPE_FILE_EXPORT_PROVISIONING_AAPT_FULLSERVICEREBILL;
+	public $intBaseFileType			= RESOURCE_TYPE_FILE_EXPORT_PROVISIONING_AAPT_PRESELECTION;
 	public $_strDeliveryType		= 'FTP';
 	
 	public $_intFrequencyType		= FREQUENCY_DAY;
@@ -43,7 +43,7 @@
  		parent::__construct($intCarrier);
  		
  		// Module Description
- 		$this->strDescription		= "Full Service Rebill Activation";
+ 		$this->strDescription		= "Preselection Activation";
 		
  		// Get Fields which are going to be modified
  		$this->intCarrierReference	= &$this->GetConfigField('RecordSequence');
@@ -124,7 +124,7 @@
 		
 		$arrDefine['FileTypeB']		['Start']		= 7;
 		$arrDefine['FileTypeB']		['Length']		= 1;
-		$arrDefine['FileTypeB']		['Value']		= 'F';
+		$arrDefine['FileTypeB']		['Value']		= 'M';
 		
 		$arrDefine['Date']			['Start']		= 8;
 		$arrDefine['Date']			['Length']		= 8;
@@ -162,7 +162,7 @@
  		
  		
  		//--------------------------------------------------------------------//
- 		// Churn/Full Service
+ 		// Preselection
  		//--------------------------------------------------------------------//
  		
  		$arrDefine = Array();
@@ -173,80 +173,17 @@
 		
 		$arrDefine['IDNo']					['Index']		= 2;
 		
-		$arrDefine['RecordType']			['Index']		= 3;
-		$arrDefine['RecordType']			['Value']		= 12;
-		$arrDefine['RecordType']			['Type']		= 'Integer';
+		$arrDefine['ASD']					['Index']		= 3;
+		$arrDefine['ASD']					['Type']		= 'Integer';
 		
 		$arrDefine['ServiceNumber']			['Index']		= 4;
 		
-		$arrDefine['CADate']				['Index']		= 5;
+		$arrDefine['Spectrum']				['Index']		= 5;
+		$arrDefine['Spectrum']				['Value']		= 'N';	// WTF is a SPECTRUM Service?  Do we want to support this?  We don't store this information in Flex.
 		
-		$arrDefine['BillName']				['Index']		= 6;
+		$arrDefine['WhitelistRefCode']		['Index']		= 6;
 		
-		$arrDefine['BillAddr1']				['Index']		= 7;
-		
-		$arrDefine['BillAddr2']				['Index']		= 8;
-		
-		$arrDefine['BillAddrLoc']			['Index']		= 9;
-		
-		$arrDefine['BillAddrPostcode']		['Index']		= 10;
-		$arrDefine['BillAddrPostcode']		['Length']		= 4;
-		$arrDefine['BillAddrPostcode']		['Type']		= 'Integer';
-		$arrDefine['BillAddrPostcode']		['PadChar']		= '0';
-		$arrDefine['BillAddrPostcode']		['PadType']		= STR_PAD_LEFT;
-		
-		$arrDefine['EndUserTitle']			['Index']		= 11;
-		
-		$arrDefine['EndUserFirstName']		['Index']		= 12;
-		
-		$arrDefine['EndUserSurname']		['Index']		= 13;
-		
-		$arrDefine['EndUserCmp']			['Index']		= 14;
-		
-		$arrDefine['EndUserDOB']			['Index']		= 15;
-		$arrDefine['EndUserDOB']			['Optional']	= '        ';
-		
-		$arrDefine['AddressType']			['Index']		= 16;
-		
-		$arrDefine['AddressTypeNumber']		['Index']		= 17;
-		$arrDefine['AddressTypeNumber']		['Length']		= 5;
-		$arrDefine['AddressTypeNumber']		['Type']		= 'Integer';
-		$arrDefine['AddressTypeNumber']		['PadChar']		= '0';
-		$arrDefine['AddressTypeNumber']		['PadType']		= STR_PAD_LEFT;
-		
-		$arrDefine['AddressTypeSuffix']		['Index']		= 18;
-		
-		$arrDefine['StreetNumberStart']		['Index']		= 19;
-		$arrDefine['StreetNumberStart']		['Length']		= 5;
-		$arrDefine['StreetNumberStart']		['Type']		= 'Integer';
-		$arrDefine['StreetNumberStart']		['PadChar']		= '0';
-		$arrDefine['StreetNumberStart']		['PadType']		= STR_PAD_LEFT;
-		
-		$arrDefine['StreetNumberEnd']		['Index']		= 20;
-		$arrDefine['StreetNumberEnd']		['Length']		= 5;
-		$arrDefine['StreetNumberEnd']		['Type']		= 'Integer';
-		$arrDefine['StreetNumberEnd']		['PadChar']		= '0';
-		$arrDefine['StreetNumberEnd']		['PadType']		= STR_PAD_LEFT;
-		
-		$arrDefine['StreetNumberSuffix']	['Index']		= 21;
-		
-		$arrDefine['StreetName']			['Index']		= 22;
-		
-		$arrDefine['StreetType']			['Index']		= 23;
-		
-		$arrDefine['StreetTypeSuffix']		['Index']		= 24;
-		
-		$arrDefine['PropertyName']			['Index']		= 25;
-		
-		$arrDefine['Locality']				['Index']		= 26;
-		
-		$arrDefine['State']					['Index']		= 27;
-		
-		$arrDefine['Postcode']				['Index']		= 28;
-		
-		$arrDefine['WhitelistRefCode']		['Index']		= 29;
-		
-		$this->_arrDefine[PROVISIONING_TYPE_FULL_SERVICE] = $arrDefine;
+		$this->_arrDefine[PROVISIONING_TYPE_PRESELECTION] = $arrDefine;
  	}
  	
 	/**
@@ -277,38 +214,6 @@
 	 		$arrRequest['Description']	= $arrServiceAddress;
 			return $arrRequest;
 		}
-		
-		// Common
-		$arrRendered['CADate']				= date("Ymd", strtotime($arrRequest['AuthorisationDate']));
-		$arrRendered['BillName']			= $arrServiceAddress['BillName'];
-		$arrRendered['BillAddr1']			= $arrServiceAddress['BillAddress1'];
-		$arrRendered['BillAddr2']			= $arrServiceAddress['BillAddress2'];
-		$arrRendered['BillAddrLoc']			= $arrServiceAddress['BillLocality'];
-		$arrRendered['BillAddrPostcode']	= $arrServiceAddress['BillPostcode'];
-		
-		// Residential
-		$arrRendered['EndUserTitle']		= $arrServiceAddress['EndUserTitle'];
-		$arrRendered['EndUserFirstName']	= $arrServiceAddress['EndUserGivenName'];
-		$arrRendered['EndUserSurname']		= $arrServiceAddress['EndUserFamilyName'];
-		$arrRendered['EndUserDOB']			= $arrServiceAddress['DateOfBirth'];
-		
-		// Business
-		$arrRendered['EndUserCmp']			= $arrServiceAddress['EndUserCompanyName'];
-		
-		// Service Location Details
-		$arrRendered['AddressType']			= $arrServiceAddress['ServiceAddressType'];
-		$arrRendered['AddressTypeNumber']	= $arrServiceAddress['ServiceAddressTypeNumber'];
-		$arrRendered['AddressTypeSuffix']	= $arrServiceAddress['ServiceAddressTypeSuffix'];
-		$arrRendered['StreetNumberStart']	= $arrServiceAddress['ServiceStreetNumberStart'];
-		$arrRendered['StreetNumberEnd']		= $arrServiceAddress['ServiceStreetNumberEnd'];
-		$arrRendered['StreetNumSuffix']		= $arrServiceAddress['ServiceStreetNumberSuffix'];
-		$arrRendered['StreetName']			= $arrServiceAddress['ServiceStreetName'];
-		$arrRendered['StreetType']			= $arrServiceAddress['ServiceStreetType'];
-		$arrRendered['StreetTypeSuffix']	= $arrServiceAddress['ServiceStreetTypeSuffix'];
-		$arrRendered['PropertyName']		= $arrServiceAddress['ServicePropertyName'];
-		$arrRendered['Locality']			= $arrServiceAddress['ServiceLocality'];
-		$arrRendered['State']				= $arrServiceAddress['ServiceState'];
-		$arrRendered['Postcode']			= $arrServiceAddress['ServicePostcode'];
  		
 		$arrRendered['ServiceNumber']		= $arrRequest['FNN'];
 		
