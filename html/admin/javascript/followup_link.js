@@ -49,7 +49,6 @@ var FollowUp_Link	= Class.create
 				FollowUp_Link.FOLLOWUP_CONSTANT_GROUPS, 
 				[
 				 	'../ui/javascript/dataset_ajax.js',
-				 	'../ui/javascript/reflex_date_format.js',
 				 	'../ui/javascript/reflex_sorter.js',
 				 	'javascript/followup_category.js',
 				 	'javascript/popup_followup_view.js',
@@ -120,9 +119,8 @@ var FollowUp_Link	= Class.create
 			FollowUp_Link.FOLLOWUP_CONSTANT_GROUPS, 
 			[
 			 	'../ui/javascript/dataset_ajax.js',
-			 	'../ui/javascript/reflex_date_format.js',
 			 	'../ui/javascript/reflex_validation.js', 
-			 	'../ui/javascript/date_time_picker_dynamic.js',
+			 	'../ui/javascript/component_date_picker.js',
 			 	'../ui/javascript/control_field.js',
 			 	'../ui/javascript/control_field_select.js',
 			 	'../ui/javascript/control_field_text.js',
@@ -273,12 +271,12 @@ var FollowUp_Link	= Class.create
 			FollowUp_Link.FOLLOWUP_CONSTANT_GROUPS, 
 			[
 			 	'../ui/javascript/dataset_ajax.js',
-			 	'../ui/javascript/reflex_date_format.js',
-			 	'../ui/javascript/date_time_picker_dynamic.js', 
+			 	'../ui/javascript/component_date_picker.js', 
 			 	'../ui/javascript/control_field.js',
 			 	'../ui/javascript/control_field_select.js', 
 			 	'../ui/javascript/control_field_date_picker.js',
 			 	'javascript/followup_closure.js',
+			 	'javascript/followup_modify_reason.js',
 			 	'javascript/popup_followup_close.js',
 			 	'javascript/popup_followup_due_date.js',
 			 	'javascript/popup_followup_active.js'

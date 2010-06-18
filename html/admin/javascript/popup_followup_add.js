@@ -80,7 +80,7 @@ var Popup_FollowUp_Add	= Class.create(Reflex_Popup,
 			this._oMultiplierText	= oMultiplierText;
 			
 			// Create default date value (now, with no seconds)
-			var sDefaultDate	= Reflex_Date_Format.format(Popup_FollowUp_Add.DATE_FORMAT, this._oInstanceCreatedDate);
+			var sDefaultDate	= this._oInstanceCreatedDate.$format(Popup_FollowUp_Add.DATE_FORMAT);
 			
 			// Create date time picker controls
 			var oStartDatePicker	= new Control_Field_Date_Picker('Date', null, Popup_FollowUp_Add.DATE_FORMAT, true);
@@ -713,7 +713,7 @@ Popup_FollowUp_Add.calculateEndDate	= function(sStartDate, iRecurrenceMultiplier
 		Popup_FollowUp_Add.shiftDate(oStartDate, iRecurrenceMultiplier, iRecurrencePeriod);
 	}
 	
-	return Reflex_Date_Format.format(Popup_FollowUp_Add.DATE_FORMAT, oStartDate);
+	return oStartDate.$format(Popup_FollowUp_Add.DATE_FORMAT);
 };
 
 Popup_FollowUp_Add.calculateOccurrences	= function(sStartDate, sEndDate, iRecurrenceMultiplier, iRecurrencePeriod)

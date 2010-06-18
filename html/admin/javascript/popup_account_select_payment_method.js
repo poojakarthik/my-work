@@ -504,7 +504,7 @@ Popup_Account_Select_Payment_Method._checkCreditCardExpiry	= function(oCreditCar
 
 Popup_Account_Select_Payment_Method._formatDate	= function(sDate)
 {
-	return Reflex_Date_Format.format('j/n/Y', Date.parse(sDate.replace(/-/g, '/')) / 1000);
+	return Date.$format('j/n/Y', Date.parse(sDate.replace(/-/g, '/')) / 1000);
 }
 
 //Check if $CONSTANT has correct constant groups loaded, if not this class won't work

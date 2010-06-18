@@ -964,6 +964,6 @@ Popup_Account_Change_Payment_Method._checkPaymentMethodExpiry	= function(iMonth,
 
 Popup_Account_Change_Payment_Method._formatDate	= function(sDate)
 {
-	return Reflex_Date_Format.format('j/n/Y', Date.parse(sDate.replace(/-/g, '/')) / 1000);
+	return Date.$format('j/n/Y', Date.parse(sDate.replace(/-/g, '/')) / 1000);
 }
 

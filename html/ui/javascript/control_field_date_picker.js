@@ -10,7 +10,6 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		this._bTimePicker	= bTimePicker;
 
 		// Create the DOM Elements
-		//this.oControlOutput.oEdit	= document.createElement('div');
 		this.oControlOutput.oEdit	= $T.div({class: 'date-time-picker-dynamic'});
 		this.oControlOutput.oElement.appendChild(this.oControlOutput.oEdit);
 		
@@ -19,15 +18,12 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		
 		this.oControlOutput.oHidden			= document.createElement('hidden');
 		this.oControlOutput.oHidden.id		= sHiddenId;
-		//this.oControlOutput.oHidden.value	= 'init value';
 		this.oControlOutput.oEdit.appendChild(this.oControlOutput.oHidden);
 		
 		this.oControlOutput.oInput				= document.createElement('input');
 		this.oControlOutput.oInput.type			= 'text';
 		this.oControlOutput.oInput.className	= 'date-formatted';
 		this.oControlOutput.oInput.readOnly		= true;
-		/*this.oControlOutput.oInput.maxLength	= 10;
-		this.oControlOutput.oInput.size			= 10;*/
 		this.oControlOutput.oEdit.appendChild(this.oControlOutput.oInput);
 		
 		this.oControlOutput.oIcon			= $T.img({class: 'date-time-picker-launch-icon'});
@@ -40,23 +36,18 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		this.oControlOutput.oElement.appendChild(this.oControlOutput.oView);
 		
 		var objDate			= new Date();
-		this.oDatePicker	=	DateChooser.factory(
-									this.oControlOutput.oHidden, 
-									Control_Field_Date_Picker.YEAR_START, 
-									Control_Field_Date_Picker.YEAR_END, 
-									this._sDateFormat, 
+		this._oDatePicker	= 	new Component_Date_Picker(
+									new Date(), 
 									(bTimePicker ? true : false), 
-									true, 
-									true, 
-									objDate.getFullYear(), 
-									objDate.getMonth(), 
-									objDate.getDay()
+									Control_Field_Date_Picker.YEAR_START, 
+									Control_Field_Date_Picker.YEAR_END,
+									this._sDateFormat, 
+									this._datePickerValueChange.bind(this)
 								);
 		
 		this._aOnChangeCallbacks	= [];
 		
-		this.validate();
-		
+		this.validate();		
 		this.addEventListeners();
 	},
 	
@@ -70,8 +61,12 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		this.oControlOutput.oHidden.value	= mValue;
 		this._updateFormattedInput();
 		
-		// Update the Datepicker's default date
-		this.oDatePicker.initializeDate();
+		// Parse the formatted date string & update the Datepicker's default date
+		var oDate	= Date.$parseDate(mValue, this._sDateFormat);
+		if (oDate)
+		{
+			this._oDatePicker.setDate(oDate);
+		}
 	},
 	
 	updateElementValue	: function()
@@ -80,6 +75,15 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		
 		this.setElementValue(mValue);
 		this.oControlOutput.oView.innerHTML	= this._getFormattedDate();
+	},
+	
+	_datePickerValueChange	: function(oDate)
+	{
+		// Convert the date object (from the picker) to a formatted string 
+		// and set this controls hidden value the update the visible input.
+		var sDate							= oDate.$format(this._sDateFormat);
+		this.oControlOutput.oHidden.value	= sDate;
+		this._updateFormattedInput();
 	},
 	
 	_updateFormattedInput	: function()
@@ -91,17 +95,17 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 	{
 		if (this.oControlOutput.oHidden.value && this.oControlOutput.oHidden.value.length)
 		{
-			var oDate	= Date.parseDate(this.oControlOutput.oHidden.value, this._sDateFormat);
+			var oDate	= Date.$parseDate(this.oControlOutput.oHidden.value, this._sDateFormat);
 			
-			if (oDate && oDate.dateFormat)
+			if (oDate && oDate.$format)
 			{
 				if (this._bTimePicker)
 				{
-					return oDate.dateFormat(Control_Field_Date_Picker.DATE_TIME_FORMAT);	
+					return oDate.$format(Control_Field_Date_Picker.DATE_TIME_FORMAT);	
 				}
 				else
 				{
-					return oDate.dateFormat(Control_Field_Date_Picker.DATE_FORMAT);
+					return oDate.$format(Control_Field_Date_Picker.DATE_FORMAT);
 				}
 			}
 		}
@@ -111,7 +115,7 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 	
 	_showDatePicker	: function(oEvent)
 	{
-		this.oDatePicker.show(oEvent.clientX, oEvent.clientY);
+		this._oDatePicker.show(oEvent);
 	},
 	
 	addEventListeners	: function()

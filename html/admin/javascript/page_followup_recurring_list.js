@@ -524,7 +524,8 @@ var Page_FollowUp_Recurring_List = Class.create(
 								'FollowUp_Recurring', 
 								'updateEndDate'
 							);
-			fnJSON(iFollowUpId, Reflex_Date_Format.format('Y-m-d H:i:s', new Date()));
+			var oNow	= new Date();
+			fnJSON(iFollowUpId, oNow.$format('Y-m-d H:i:s'));
 		}
 		else if (oResponse.Success)
 		{
@@ -767,8 +768,8 @@ Page_FollowUp_Recurring_List.getDateTimeElement	= function(sMySQLDate)
 	if (sMySQLDate && (sMySQLDate != Page_FollowUp_Recurring_List.NO_END_DATE))
 	{
 		var oDate	= new Date(Date.parse(sMySQLDate.replace(/-/g, '/')));
-		var sDate	= Reflex_Date_Format.format('d/m/Y', oDate);
-		var sTime	= Reflex_Date_Format.format('h:i A', oDate);
+		var sDate	= oDate.$format('d/m/Y');
+		var sTime	= oDate.$format('h:i A');
 	}
 	else
 	{

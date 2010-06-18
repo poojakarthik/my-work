@@ -481,14 +481,14 @@ Popup_FollowUp_View.formatDateTime	= function(sDateTime, bShortVersion, bShowIfO
 	if (bShortVersion)
 	{
 		return	$T.span({class: (bOverdue ? 'popup-followup-view-date-overdue' : '')},
-					Reflex_Date_Format.format(Popup_FollowUp_View.DATE_FORMAT_SHORT, oDate)
+					oDate.$format(Popup_FollowUp_View.DATE_FORMAT_SHORT)
 				);
 	}
 	else
 	{
 		return	$T.span({class: (bOverdue ? 'popup-followup-view-date-overdue' : '')},
-				Reflex_Date_Format.format(Popup_FollowUp_View.DATE_FORMAT, oDate)
-			);
+					oDate.$format(Popup_FollowUp_View.DATE_FORMAT)
+				);
 	}
 };
 

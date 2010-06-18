@@ -276,7 +276,7 @@ var Reflex_Date_Picker	= Class.create
 		
 		var oOldDate	= this.oDate ? this.oDate : null;
 		this.oDate		= (!mDate || (mDate.toLowerCase && mDate.toLowerCase() === 'now')) ? new Date() : new Date(mDate);
-		//$Alert("Date has now been set to " + Reflex_Date_Format.format("Y-m-d H:i:s", mDate));
+		//$Alert("Date has now been set to " + Date.$format("Y-m-d H:i:s", mDate));
 		
 		// If this is a Date only, then zero-out the time component
 		switch (this.sSelectMode)
@@ -301,9 +301,9 @@ var Reflex_Date_Picker	= Class.create
 		}
 		
 		// Update Label
-		//this.oContainer.oHeader.oLabel.domElement.innerHTML	= Reflex_Date_Format.format("l, j F Y H:i:s", this.oDate);
-		this.oContainer.oFooter.oDatetime.oDate.domElement.innerHTML	= Reflex_Date_Format.format("l, j F Y H:i:s ", this.oDate);
-		//this.oContainer.oFooter.oDatetime.oDate.domElement.innerHTML	= Reflex_Date_Format.format("l, j F Y ", this.oDate);
+		//this.oContainer.oHeader.oLabel.domElement.innerHTML	= Date.$format("l, j F Y H:i:s", this.oDate);
+		this.oContainer.oFooter.oDatetime.oDate.domElement.innerHTML	= Date.$format("l, j F Y H:i:s ", this.oDate);
+		//this.oContainer.oFooter.oDatetime.oDate.domElement.innerHTML	= Date.$format("l, j F Y ", this.oDate);
 		
 		// Update calendar (only if the date has changed)
 		if (oOldDate === null || oOldDate.getFullYear() != this.oDate.getFullYear() || oOldDate.getMonth() != this.oDate.getMonth() || oOldDate.getDate() != this.oDate.getDate())
@@ -389,7 +389,7 @@ var Reflex_Date_Picker	= Class.create
 		// Create Table innards
 		//------------------------------------------------------------------------//
 		var oMonthDate		= new Date(iYear, iMonth - 1, 1);
-		var iDaysInMonth	= parseInt(Reflex_Date_Format.format('t', oMonthDate));
+		var iDaysInMonth	= parseInt(Date.$format('t', oMonthDate));
 		
 		// Month Label/Header
 		oContainer.oGrid.oCaption				= {};
@@ -406,13 +406,13 @@ var Reflex_Date_Picker	= Class.create
 		
 		oContainer.oGrid.oCaption.oMonthYear.oMonth							= {};
 		oContainer.oGrid.oCaption.oMonthYear.oMonth.domElement				= document.createElement('span');
-		oContainer.oGrid.oCaption.oMonthYear.oMonth.domElement.innerHTML	= Reflex_Date_Format.format('F', oMonthDate);
+		oContainer.oGrid.oCaption.oMonthYear.oMonth.domElement.innerHTML	= Date.$format('F', oMonthDate);
 		oContainer.oGrid.oCaption.oMonthYear.oMonth.domElement.addClassName('month-name');
 		oContainer.oGrid.oCaption.oMonthYear.domElement.appendChild(oContainer.oGrid.oCaption.oMonthYear.oMonth.domElement);
 		
 		oContainer.oGrid.oCaption.oMonthYear.oYear						= {};
 		oContainer.oGrid.oCaption.oMonthYear.oYear.domElement			= document.createElement('span');
-		oContainer.oGrid.oCaption.oMonthYear.oYear.domElement.innerHTML	= Reflex_Date_Format.format('Y', oMonthDate);
+		oContainer.oGrid.oCaption.oMonthYear.oYear.domElement.innerHTML	= Date.$format('Y', oMonthDate);
 		oContainer.oGrid.oCaption.oMonthYear.oYear.domElement.addClassName('month-year');
 		oContainer.oGrid.oCaption.oMonthYear.domElement.appendChild(oContainer.oGrid.oCaption.oMonthYear.oYear.domElement);
 		
@@ -438,7 +438,7 @@ var Reflex_Date_Picker	= Class.create
 		for (var iDayOfWeek = 0; iDayOfWeek < 7; iDayOfWeek++)
 		{
 			var domDay			= document.createElement('th');
-			domDay.innerHTML	= (Reflex_Date_Format.oDays.oShortNames[(iDayOfWeek + this.iFirstDayOfWeek) % 7]).substr(0, 2);
+			domDay.innerHTML	= (Date.$oDays.oShortNames[(iDayOfWeek + this.iFirstDayOfWeek) % 7]).substr(0, 2);
 			
 			oContainer.oGrid.oHeader.oRow.domElement.appendChild(domDay);
 		}
@@ -464,7 +464,7 @@ var Reflex_Date_Picker	= Class.create
 			for (var iDayOfWeek = this.iFirstDayOfWeek; iDayOfWeek < (this.iFirstDayOfWeek + 7); iDayOfWeek++)
 			{
 				var domDay		= document.createElement('td');
-				domDay.id		= this.sUID + '_' + Reflex_Date_Format.format("Ymd", oDateOfMonth);
+				domDay.id		= this.sUID + '_' + Date.$format("Ymd", oDateOfMonth);
 				
 				// If the Day of the Month is the current day of the week, then add
 				if (oDateOfMonth.getDay() === (iDayOfWeek % 7) && oDateOfMonth.getMonth() === oMonthDate.getMonth())
@@ -475,7 +475,7 @@ var Reflex_Date_Picker	= Class.create
 					//domDay.addClassName('day');
 					//alert("Adding Cell for " + oDateOfMonth);
 					
-					var sFormattedDate	= Reflex_Date_Format.format("Y-m-d", oDateOfMonth);
+					var sFormattedDate	= Date.$format("Y-m-d", oDateOfMonth);
 					this.oSetDateHandlers[sFormattedDate]	=	{
 																	onClick		: (function(oEvent, iYear, iMonth, iDay){this.setDate(iYear, iMonth, iDay, false)}).bindAsEventListener(this, oDateOfMonth.getFullYear(), oDateOfMonth.getMonth(), oDateOfMonth.getDate()),
 																	onDblClick	: (function(oEvent, iYear, iMonth, iDay){this.setDate(iYear, iMonth, iDay, true)}).bindAsEventListener(this, oDateOfMonth.getFullYear(), oDateOfMonth.getMonth(), oDateOfMonth.getDate())

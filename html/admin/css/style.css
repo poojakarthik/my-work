@@ -1432,67 +1432,77 @@ div.console-calendar div.day tbody th.department-responsible
 /*************** START - Dodgey Date Time Picker Control - START **************/
 .date-time td
 {
-	cursor: default;
-	text-align: center !important;
-	border-bottom: .1em dotted #c0c0c0;
+	cursor			: default;
+	text-align		: center !important;
+	border-bottom	: .1em dotted #c0c0c0;
 }
 
 .date-time .bar
 {
-	text-align: center;
-	background: #F2F5FF;
-	padding: .2em 0 .2em;
+	text-align	: center;
+	background	: #F2F5FF;
+	padding		: .2em 0 .2em;
 }
 
 .date-time .date-time-active:hover
 {
-	color: #fff;
-	background: #666;
+	color		: #fff;
+	background	: #666;
+}
+
+.date-time td.date-time-active
+{
+	border-width	: .1em 0em .1em 0em;
+	border-style	: solid solid dotted solid;
+	border-color	: transparent transparent #c0c0c0 transparent;
+	cursor			: pointer;
+	padding			: 0em 0.1em 0em 0.1em;
 }
 
 .date-time td.date-time-active-today
 {
-	border: .1em solid #111;
+	border	: .1em solid #111;
+	padding	: 0em;
 }
 
 .date-time button
 {
-	border: none;
-	padding: 0;
+	border	: none;
+	padding	: 0;
 }
 
 .date-time title
 {
-	font-weight: bold;
+	font-weight	: bold;
 }
 
 .date-time th
 {
-	background: #fff;
-	color: #000;
-	border-bottom: .1em solid #c0c0c0;
-	text-align: center !important;
-	margin-top: .2em;
+	background		: #fff;
+	color			: #000;
+	border-bottom	: .1em solid #c0c0c0;
+	text-align		: center !important;
+	margin-top		: .2em;
 }
 
 .date-time option, .date-time select
 {
-	font-size: 1em;
+	font-size	: 1em;
 }
 
 .date-time
 {
-	border: .2em solid #111;
-	background: #eee;
-	padding: .1em;
-	width: 15em;
+	border		: .2em solid #111;
+	background	: #eee;
+	padding		: .1em;
+	width		: 15em;
 }
 
 .date-time table
 {
-	width: 100%;
-	font-size: 1em;
-	margin: 0 auto;
+	width		: 100%;
+	font-size	: 1em;
+	margin		: 0 auto;
 }
 /***************** END - Dodgey Date Time Picker Control - END ****************/
 

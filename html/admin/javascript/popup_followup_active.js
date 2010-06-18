@@ -39,9 +39,9 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 				
 		// Footer button events
 		var oFollowUpButton	= this._oContent.select('button.icon-button').first();
-		oFollowUpButton.observe('click', this._goToPage.bind(this, 'Manage', null));
+		oFollowUpButton.observe('click', this._goToPage.bind(this, 'Manage', null, false));
 		var oFollowUpRecurringButton	= this._oContent.select('button.icon-button').last();
-		oFollowUpRecurringButton.observe('click', this._goToPage.bind(this, 'ManageRecurring', null));
+		oFollowUpRecurringButton.observe('click', this._goToPage.bind(this, 'ManageRecurring', null, false));
 
 		// Window resize event
 		Event.observe(window, 'resize', this._windowResizeEvent.bind(this));
@@ -68,7 +68,7 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 			// Build filter object for request
 			var oEndDate	= new Date();
 			oEndDate.shift(7, 'days');
-			var sEndDate	= Reflex_Date_Format.format('Y-m-d H:i:s', oEndDate);
+			var sEndDate	= oEndDate.$format('Y-m-d H:i:s');
 			var oFilter		= 	{
 									due_datetime	: {mFrom: null, mTo: sEndDate},
 									status			: 'ACTIVE'
@@ -295,14 +295,14 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 				break;
 			case Popup_FollowUp_Active.SECTION_TODAY:
 				// Date - time of day
-				mDate	= Reflex_Date_Format.format('g:i A', oFollowUpDueDate);
+				mDate	= oFollowUpDueDate.$format('g:i A');
 				break;
 			case Popup_FollowUp_Active.SECTION_NEXT_WEEK:
 				// Date - day of week, day of month and short month
 				mDate	= 	$T.div(
-								$T.div(Reflex_Date_Format.format('l', oFollowUpDueDate)),
+								$T.div(oFollowUpDueDate.$format('l')),
 								$T.div({class: 'popup-followup-active-date-subdate'},
-									Reflex_Date_Format.format('jS M', oFollowUpDueDate)
+									oFollowUpDueDate.$format('jS M')
 								)
 							);
 				break;
@@ -315,7 +315,7 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 		
 		var sId				= (oFollowUp.followup_id ? oFollowUp.followup_id : 'r_' + oFollowUp.followup_recurring_id);
 		var oEventElement	= oDateTD.select('div').first();
-		var sDate			= Reflex_Date_Format.format('l jS M Y g:i A', oFollowUpDueDate);
+		var sDate			= oFollowUpDueDate.$format('l jS M Y g:i A');
 		oEventElement.observe('mouseover', this._showFullDate.bind(this, sDate, sId));
 		oDateTD.observe('mouseout', this._hideFullDate.bind(this));
 		

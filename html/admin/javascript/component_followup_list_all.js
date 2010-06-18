@@ -42,7 +42,7 @@ var Component_FollowUp_List_All = Class.create(
 		// Set default due date filter (today + 7 days)
 		var oThen	= new Date();
 		oThen.shift(8, 'days');
-		var sThen	= Reflex_Date_Format.format('Y-m-d', oThen);
+		var sThen	= oThen.$format('Y-m-d');
 		
 		this._oFilter.setFilterValue(
 			Component_FollowUp_List_All.FILTER_FIELD_FOLLOWUP_DATE, 
@@ -762,8 +762,8 @@ Component_FollowUp_List_All.getTicketLink	= function(iTicketId, iAccountId, sCon
 Component_FollowUp_List_All.getDateTimeElement	= function(sMySQLDate)
 {
 	var oDate	= new Date(Date.parse(sMySQLDate.replace(/-/g, '/')));
-	var sDate	= Reflex_Date_Format.format('d/m/Y', oDate);
-	var sTime	= Reflex_Date_Format.format('h:i A', oDate);
+	var sDate	= oDate.$format('d/m/Y');
+	var sTime	= oDate.$format('h:i A');
 	
 	return 	$T.div(
 				$T.div(sDate),

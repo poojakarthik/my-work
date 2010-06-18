@@ -216,7 +216,7 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 
 Popup_Account_Edit_Rebill._formatDate	= function(sDate)
 {
-	return Reflex_Date_Format.format('j/n/Y', Date.parse(sDate.replace(/-/g, '/')) / 1000);
+	return Date.$format('j/n/Y', Date.parse(sDate.replace(/-/g, '/')) / 1000);
 }
 
 Popup_Account_Edit_Rebill.showValidationErrors	= function(aErrors)

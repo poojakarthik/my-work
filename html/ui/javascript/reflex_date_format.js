@@ -1,8 +1,32 @@
+
+//
+// DEPRECATED OBJECT, DO NOT USE, use date.js prototype extensions instead.
+//
+throw ('Reflex_Date_Format has been deprecated, please use the Date prototype extensions (e.g. new Date().$format("Y-m-d");)');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // This is a Static-only Class at the moment, so we won't bother using Prototype for it
 /*var Reflex_Date_Format	= Class.create
 ({
 	
 });*/
+
 var Reflex_Date_Format	= {};
 
 // Static Methods
@@ -424,6 +448,24 @@ Reflex_Date_Format.stringPad	= function(sString, iLength, sPadString, sDirection
 	// Return the padded string
 	return sLeftPad + sString + sRightPad;
 };
+
+Reflex_Date_Format.getFirstDayOfMonth	= function(oDate) 
+{
+	var day = (oDate.getDay() - (oDate.getDate() - 1)) % 7;
+	return (day < 0) ? (day + 7) : day;
+}
+
+Reflex_Date_Format.getLastDayOfMonth	= function(oDate) 
+{
+	var day = (oDate.getDay() + (Reflex_Date_Format.oMonths.oDaysInMonth[oDate.getMonth()] - oDate.getDate())) % 7;
+	return (day < 0) ? (day + 7) : day;
+}
+
+Reflex_Date_Format.getDaysInMonth	= function(oDate) 
+{
+	Reflex_Date_Format.oMonths.oDaysInMonth[1] = Reflex_Date_Format.isLeapYear(oDate.getFullYear()) ? 29 : 28;
+	return Reflex_Date_Format.oMonths.oDaysInMonth[oDate.getMonth()];
+}
 
 // Formatting Data
 Reflex_Date_Format.oMonths	=	{

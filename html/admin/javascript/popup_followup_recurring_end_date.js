@@ -265,7 +265,7 @@ var Popup_FollowUp_Recurring_End_Date	= Class.create(Reflex_Popup,
 						this._oFollowUpRecurring.followup_recurrence_period_id
 					);
 					
-					sDate	= Reflex_Date_Format.format(Popup_FollowUp_Recurring_End_Date.DATE_FORMAT, oDate);
+					sDate	= oDate.$format(Popup_FollowUp_Recurring_End_Date.DATE_FORMAT);
 					break;
 				case Popup_FollowUp_Recurring_End_Date.END_BY.toString():
 					// Validate the date before saving
@@ -345,7 +345,8 @@ var Popup_FollowUp_Recurring_End_Date	= Class.create(Reflex_Popup,
 				this._oDatePicker.disableInput();
 			
 				this._oOccurrencesText.setValue(this._iMinimumOccurrences);
-				this._oDatePicker.setValue(Reflex_Date_Format.format(Popup_FollowUp_Recurring_End_Date.DATE_FORMAT, new Date()));
+				var oNow	= new Date();
+				this._oDatePicker.setValue(oNow.$format(Popup_FollowUp_Recurring_End_Date.DATE_FORMAT));
 				break;
 			case Popup_FollowUp_Recurring_End_Date.END_AFTER.toString():
 				this._oOccurrencesText.enableInput();
@@ -402,7 +403,8 @@ Popup_FollowUp_Recurring_End_Date.DATE_FORMAT					= 'Y-m-d H:i:s';
 
 Popup_FollowUp_Recurring_End_Date.getNowDateTime	= function()
 {
-	return Reflex_Date_Format.format(Popup_FollowUp_Recurring_End_Date.DATE_FORMAT, new Date());
+	var oNow	= new Date();
+	return oNow.$format(Popup_FollowUp_Recurring_End_Date.DATE_FORMAT);
 };
 
 Popup_FollowUp_Recurring_End_Date.calculateEndDate	= function(oStartDate, iRecurrenceMultiplier, iRecurrencePeriod, iOccurences)
@@ -414,7 +416,7 @@ Popup_FollowUp_Recurring_End_Date.calculateEndDate	= function(oStartDate, iRecur
 		Popup_FollowUp_Recurring_End_Date.shiftDate(oStartDate, iRecurrenceMultiplier, iRecurrencePeriod);
 	}
 	
-	return Reflex_Date_Format.format(Popup_FollowUp_Recurring_End_Date.DATE_FORMAT, oStartDate);
+	return oStartDate.$format(Popup_FollowUp_Recurring_End_Date.DATE_FORMAT);
 };
 
 Popup_FollowUp_Recurring_End_Date.calculateOccurrences	= function(oStartDate, sEndDate, iRecurrenceMultiplier, iRecurrencePeriod)

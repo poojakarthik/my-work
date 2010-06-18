@@ -1207,7 +1207,6 @@ class MenuItems {
 							JsAutoLoader.loadScript(
 								[
 									'javascript/popup_account_change_payment_method.js',
-									'../ui/javascript/reflex_date_format.js',
 									'../ui/javascript/reflex_validation.js',
 									'../ui/javascript/control_field.js',
 									'../ui/javascript/control_field_text.js',

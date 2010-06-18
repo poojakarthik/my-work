@@ -103,7 +103,7 @@ var Component_FollowUp_Context_List	= Class.create
 		if (oFollowUp.due_datetime)
 		{
 			// Once off
-			var sAlt	= 'Follow-Up: Due on ' + Reflex_Date_Format.format('l jS M Y g:i A', new Date(Date.parse(oFollowUp.due_datetime.replace(/-/g, '/'))));
+			var sAlt	= 'Follow-Up: Due on ' + Date.$format('l jS M Y g:i A', new Date(Date.parse(oFollowUp.due_datetime.replace(/-/g, '/'))));
 			oImg		= $T.img({src: Component_FollowUp_Context_List.ONCE_OFF_ICON_IMAGE_SOURCE, alt: sAlt, title: sAlt});
 			
 		}
