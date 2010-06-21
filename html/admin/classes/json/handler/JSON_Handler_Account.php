@@ -56,7 +56,7 @@ class JSON_Handler_Account extends JSON_Handler
 			$aResult						= array();
 			$oAccountGroup  				= Account_Group::getForAccountId($iAccountId);
 			$oAccount						= Account::getForId($iAccountId);
-			$bhasCreditControlPermission	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_CONTROL);
+			$bhasCreditControlPermission	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
 			
 			if(!$oAccountGroup)
 			{
@@ -402,7 +402,7 @@ class JSON_Handler_Account extends JSON_Handler
 						// This will only happen if the old rebill doesn't exist, so it shouldn't happen
 						$sOldBillingType	= 	"Rebill (unknown)";
 					}
-					break; 
+					break;
 			}
 			
 			// Determin the billing type (legacy concept) from the payment method and sub type
@@ -436,7 +436,7 @@ class JSON_Handler_Account extends JSON_Handler
 			$oAccount->CreditCard	= ($iBillingType == BILLING_TYPE_CREDIT_CARD ? $iBillingDetail : null);
 			
 			// Update proper detail field
-			$oDetails			= $oAccount->getPaymentMethodDetails();			 
+			$oDetails			= $oAccount->getPaymentMethodDetails();
 			$sNewBillingType	= '';
 			switch ($iBillingType)
 			{
@@ -466,14 +466,14 @@ class JSON_Handler_Account extends JSON_Handler
 													"Card Expiry: {$oRebillTypeDetails->card_expiry_date}";
 							break;
 					}
-					break; 
+					break;
 			}
 			
 			$oAccount->save();
 			
 			// Add a note
 			$sNote = "Payment method changed from:\n $sOldBillingType\n to $sNewBillingType";
-			Note::createNote(SYSTEM_NOTE_TYPE, $sNote, Flex::getUserId(), $iAccountId);				
+			Note::createNote(SYSTEM_NOTE_TYPE, $sNote, Flex::getUserId(), $iAccountId);
 			
 			// All good
 			$oDataAccess->TransactionCommit();
@@ -818,7 +818,7 @@ class JSON_Handler_Account extends JSON_Handler
 	
 	public function getCostCentres($iAccountId)
 	{
-		try 
+		try
 		{
 			$aStdObjects = array();
 			$aCostCentres = Cost_Centre::getForAccountId($iAccountId);
@@ -875,7 +875,7 @@ class JSON_Handler_Account extends JSON_Handler
 					// Update existing cost centre
 					$oCostCentre = Cost_Centre::getForId($iId);
 				}
-				else 
+				else
 				{
 					// New Cost centre required
 					$oAccountGroup 				= Account_Group::getForAccountId($iAccountId);
@@ -1004,7 +1004,7 @@ class JSON_Handler_Account extends JSON_Handler
 			switch ($iRebillTypeId)
 			{
 				case REBILL_TYPE_MOTORPASS:
-					// Validate card expiry date & convert it to the proper format so it can be compared to the 
+					// Validate card expiry date & convert it to the proper format so it can be compared to the
 					// existing card_expiry_date field (if need be)
 					$iTime	= strtotime($oDetails->card_expiry_date);
 					
@@ -1042,8 +1042,8 @@ class JSON_Handler_Account extends JSON_Handler
 					// No validation errors continue!
 					
 					// Check if a save is required (check if the rebill_motorpass details are the same, if so then no save needed)
-					if ($oCurrentRebillDetails && 
-						($oCurrentRebill->rebill_type_id == $iRebillTypeId) && 
+					if ($oCurrentRebillDetails &&
+						($oCurrentRebill->rebill_type_id == $iRebillTypeId) &&
 						($oCurrentRebillDetails->account_number == $oDetails->account_number) &&
 						($oCurrentRebillDetails->account_name == $oDetails->account_name) &&
 						($oCurrentRebillDetails->card_expiry_date == $oDetails->card_expiry_date))
