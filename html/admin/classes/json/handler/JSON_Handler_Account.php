@@ -134,7 +134,7 @@ class JSON_Handler_Account extends JSON_Handler
 			$aResult						= array();
 			$oAccountGroup  				= Account_Group::getForAccountId($iAccountId);
 			$oAccount						= Account::getForId($iAccountId);
-			$bhasCreditControlPermission	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_CONTROL);
+			$bhasCreditControlPermission	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
 			
 			if(!$oAccountGroup)
 			{
@@ -648,7 +648,7 @@ class JSON_Handler_Account extends JSON_Handler
 				$oStdClassCreditCard->card_type_name	= Constant_Group::getConstantGroup('credit_card_type')->getConstantName($oCreditCard->CardType);
 				
 				// Mask the card number and cvv
-				$bhasCreditControlPermission	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_CONTROL);
+				$bhasCreditControlPermission	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
 				$sCardNumber					= Decrypt($oCreditCard->CardNumber).'';
 				$sCVV							= (is_null($oCreditCard->CVV) ? '' : Decrypt($oCreditCard->CVV).'');
 				
