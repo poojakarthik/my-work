@@ -67,12 +67,14 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 			
 			// Build filter object for request
 			var oEndDate	= new Date();
-			oEndDate.shift(7, 'days');
-			var sEndDate	= oEndDate.$format('Y-m-d H:i:s');
+			oEndDate.shift(8, 'days');
+			var sEndDate	= oEndDate.$format('Y-m-d 00:00');
 			var oFilter		= 	{
 									due_datetime	: {mFrom: null, mTo: sEndDate},
-									status			: 'ACTIVE'
+									status			: 'ACTIVE',
+									now				: Math.floor(new Date().getTime() / 1000)
 								};
+			
 			fnGetFollowUps(false, null, null, {due_datetime: 'ASC'}, oFilter, Popup_FollowUp_Active.MAX_SUMMARY_CHARACTERS);
 			
 			// Call manual refresh on the followup link
@@ -88,8 +90,8 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 			}
 			
 			// Add rows
-			var iTotalCount		= 0;
-			var oNow			= new Date();
+			var iTotalCount	= 0;
+			var oNow		= new Date();
 			
 			var aCounts											= {};
 			aCounts[Popup_FollowUp_Active.SECTION_OVERDUE]		= {iTotal: 0, iAdded: 0};
@@ -160,7 +162,7 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 						$T.tr({class: 'popup-followup-active-row'},
 							$T.td({class: 'popup-followup-active-empty-clickformore'},
 								$T.span('There are more Follow-Ups that have not been shown. '),
-								$T.a({href: this._goToPage('Manage', 'Active=1', true)},
+								$T.a({href: this._goToPage('Manage', '', true)},
 									'Click here to view them'
 								)
 							)
@@ -178,7 +180,7 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 					oSummaryDiv.appendChild(
 						$T.span(
 							' - ',
-							$T.a({href: this._goToPage('Manage', 'Active=1', true)},
+							$T.a({href: this._goToPage('Manage', '', true)},
 								'View all Active Follow-Ups'
 							)
 						)
@@ -536,7 +538,6 @@ Popup_FollowUp_Active.DETAILS_TICKET_IMAGE_SOURCE			= Popup_FollowUp_Active.TYPE
 
 Popup_FollowUp_Active.WINDOW_RESIZE_TIMEOUT		= 500;
 Popup_FollowUp_Active.MAX_SUMMARY_CHARACTERS	= 130;
-Popup_FollowUp_Active.TOTAL_ITEM_LIMIT			= 6;
 
 Popup_FollowUp_Active._getTypeElement	= function(iType)
 {

@@ -56,10 +56,10 @@ class JSON_Handler_FollowUp_Recurring extends JSON_Handler
 			{
 				$iLimit					= (max($iLimit, 0) == 0) ? null : (int)$iLimit;
 				$iOffset				= ($iLimit === null) ? null : max((int)$iOffset, 0);
-				$aFollowUpRecurrings	= FollowUp_Recurring::searchFor($iLimit, $iOffset, $aSort, get_object_vars($oFilter));
+				$aFollowUpRecurrings	= FollowUp_Recurring::searchFor($iLimit, $iOffset, $aSort, get_object_vars($oFilter), false, true);
 				$aResults				= array();
 				$iCount					= 0;		
-				foreach ($aFollowUpRecurrings as $oFollowUpRecurring)
+				foreach ($aFollowUpRecurrings as $oFollowUpStdClass)
 				{
 					if ($iLimit && $iCount >= $iOffset+$iLimit)
 					{
@@ -68,14 +68,12 @@ class JSON_Handler_FollowUp_Recurring extends JSON_Handler
 					}
 					elseif ($iCount >= $iOffset)
 					{
-						// Create ORM object
-						$oFollowUpStdClass	= $oFollowUpRecurring->toStdClass();
-						
 						// Add other special fields
-						$oFollowUpStdClass->assigned_employee_label			= Employee::getForId($oFollowUpRecurring->assigned_employee_id)->getName();
-						$oFollowUpStdClass->followup_category_label			= FollowUp_Category::getForId($oFollowUpRecurring->followup_category_id)->name;
+						$oFollowUpStdClass->assigned_employee_label			= Employee::getForId($oFollowUpStdClass->assigned_employee_id)->getName();
+						$oFollowUpStdClass->followup_category_label			= FollowUp_Category::getForId($oFollowUpStdClass->followup_category_id)->name;
 						
 						// Get the followup_recurring orm object to get the details
+						$oFollowUpRecurring	= FollowUp_Recurring::getForId($oFollowUpStdClass->id);
 						$oFollowUpStdClass->details	= $oFollowUpRecurring->getDetails();
 						$oFollowUpStdClass->summary	= $oFollowUpRecurring->getSummary();
 						

@@ -34,6 +34,14 @@ class JSON_Handler_FollowUp extends JSON_Handler
 			
 			$aFilter	= get_object_vars($oFilter);
 			
+			// Retrieve and remove the 'now' filter value. It's only purpose is to tell this method what the client time is
+			$iNowSeconds	= time();
+			if (isset($aFilter['now']))
+			{
+				$iNowSeconds	= (int)$aFilter['now'];
+				unset($aFilter['now']);
+			}	
+			
 			// Convert the 'status' filter value to valid filters  
 			if (isset($aFilter['status']))
 			{
@@ -53,12 +61,12 @@ class JSON_Handler_FollowUp extends JSON_Handler
 						case 'CURRENT':
 							$aFilter['followup_closure_id']			= 'NULL';
 							$oNewDueDateTimeConstraint				= new StdClass();
-							$oNewDueDateTimeConstraint->mFrom		= date('Y-m-d H:i:s');
+							$oNewDueDateTimeConstraint->mFrom		= date('Y-m-d H:i:s', $iNowSeconds);
 							break;
 						case 'OVERDUE':
 							$aFilter['followup_closure_id']			= 'NULL';
 							$oNewDueDateTimeConstraint				= new StdClass();
-							$oNewDueDateTimeConstraint->mTo			= date('Y-m-d H:i:s');
+							$oNewDueDateTimeConstraint->mTo			= date('Y-m-d H:i:s', $iNowSeconds);
 							break;
 						case 'COMPLETED':
 							$aFilter['followup_closure_type_id']	= FOLLOWUP_CLOSURE_TYPE_COMPLETED;
@@ -118,7 +126,7 @@ class JSON_Handler_FollowUp extends JSON_Handler
 					$oFollowUpStdClass->followup_recurring_iteration	= $aFollowUp['followup_recurring_iteration'];
 					$oFollowUpStdClass->assigned_employee_label			= Employee::getForId($oFollowUp->assigned_employee_id)->getName();
 					$oFollowUpStdClass->followup_category_label			= FollowUp_Category::getForId($oFollowUp->followup_category_id)->name;
-					$oFollowUpStdClass->status							= FollowUp::getStatus($oFollowUp->followup_closure_id, $oFollowUp->due_datetime);
+					$oFollowUpStdClass->status							= FollowUp::getStatus($oFollowUp->followup_closure_id, $oFollowUp->due_datetime, $iNowSeconds);
 					
 					if ($oFollowUp->followup_recurring_id)
 					{
@@ -424,12 +432,12 @@ class JSON_Handler_FollowUp extends JSON_Handler
 		}
 	}
 	
-	public function getOverdueCountForLoggedInEmployee()
+	public function getOverdueCountForLoggedInEmployee($iNowSeconds)
 	{
 		try
 		{
 			$oEmployee	= Employee::getForId(Flex::getUserId());
-			$iCount		= $oEmployee->getOverdueFollowUpCount();
+			$iCount		= $oEmployee->getOverdueFollowUpCount($iNowSeconds);
 			
 			return 	array(
 						"Success"	=> true,
@@ -786,55 +794,12 @@ class JSON_Handler_FollowUp extends JSON_Handler
 				throw new JSON_Handler_FollowUp_Exception('You do not have permission to retrieve Follow-Ups.');
 			}
 			
-			switch ($iFollowUpType)
-			{
-				case FOLLOWUP_TYPE_NOTE:
-					$aFollowUps				= FollowUp_Note::getFollowUpsForNote($iTypeDetail);
-					$aFollowUpRecurrings	= FollowUp_Recurring_Note::getFollowUpRecurringsForNote($iTypeDetail);
-					break;
-				case FOLLOWUP_TYPE_ACTION:
-					$aFollowUps				= FollowUp_Action::getFollowUpsForAction($iTypeDetail);
-					$aFollowUpRecurrings	= FollowUp_Recurring_Action::getFollowUpRecurringsForAction($iTypeDetail);
-					break;
-				case FOLLOWUP_TYPE_TICKET_CORRESPONDENCE:
-					$aFollowUps				= FollowUp_Ticketing_Correspondence::getFollowUpsForCorrespondence($iTypeDetail);
-					$aFollowUpRecurrings	= FollowUp_Recurring_Ticketing_Correspondence::getFollowUpRecurringsForCorrespondence($iTypeDetail);
-					break;
-			}
-			
-			// Convert result to StdClasses and return
-			$aStdClassFollowUps				= array();
-			$aStdClassFollowUpRecurrings	= array();
-			$iLoggedInEmployee				= Flex::getUserId();
-			
-			if (isset($aFollowUps))
-			{
-				foreach ($aFollowUps as $oFollowUp)
-				{
-					// Only return the followup if it is assigned to the current employee
-					if ($oFollowUp->assigned_employee_id == $iLoggedInEmployee)
-					{
-						$aStdClassFollowUps[]	= $oFollowUp->toStdClass();
-					}
-				}
-			}
-			
-			if (isset($aFollowUpRecurrings))
-			{
-				foreach ($aFollowUpRecurrings as $oFollowUpRecurring)
-				{
-					// Only return the followup if it is assigned to the current employee
-					if ($oFollowUpRecurring->assigned_employee_id == $iLoggedInEmployee)
-					{
-						$aStdClassFollowUpRecurrings[]	= $oFollowUpRecurring->toStdClass();
-					}
-				}
-			}
+			$aData	= $this->_getFollowUpsFromContext($iFollowUpType, $iTypeDetail);
 			
 			return	array(
 						"Success"				=> true,
-						"aFollowUps"			=> $aStdClassFollowUps,
-						"aFollowUpRecurrings"	=> $aStdClassFollowUpRecurrings
+						"aFollowUps"			=> $aData['aFollowUps'],
+						"aFollowUpRecurrings"	=> $aData['aFollowUpRecurrings']
 					);
 		}
 		catch (JSON_Handler_FollowUp_Exception $oException)
@@ -851,6 +816,100 @@ class JSON_Handler_FollowUp extends JSON_Handler
 						"Message"	=> Employee::getForId(Flex::getUserId())->isGod ? $e->getMessage() : 'There was an error creating the new follow-up'
 					);
 		}
+	}
+	
+	public function getFollowUpsFromMultipleContexts($aFollowUpContexts)
+	{
+		try
+		{
+			// Check permissions
+			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
+			{
+				throw new JSON_Handler_FollowUp_Exception('You do not have permission to retrieve Follow-Ups.');
+			}
+			
+			$aResults	= array();
+			
+			foreach ($aFollowUpContexts as $oContext)
+			{
+				$aResults[$oContext->iType][$oContext->iTypeDetail]	=	$this->_getFollowUpsFromContext(
+																			$oContext->iType, 
+																			$oContext->iTypeDetail
+																		);
+			}
+			
+			return	array(
+						"Success"	=> true,
+						"aResults"	=> $aResults
+					);
+		}
+		catch (JSON_Handler_FollowUp_Exception $oException)
+		{
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> $oException->getMessage()
+					);
+		}
+		catch (Exception $e)
+		{
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> Employee::getForId(Flex::getUserId())->isGod ? $e->getMessage() : 'There was an error creating the new follow-up'
+					);
+		}
+	}
+	
+	private function _getFollowUpsFromContext($iFollowUpType, $iTypeDetail)
+	{
+		switch ($iFollowUpType)
+		{
+			case FOLLOWUP_TYPE_NOTE:
+				$aFollowUps				= FollowUp_Note::getFollowUpsForNote($iTypeDetail);
+				$aFollowUpRecurrings	= FollowUp_Recurring_Note::getFollowUpRecurringsForNote($iTypeDetail);
+				break;
+			case FOLLOWUP_TYPE_ACTION:
+				$aFollowUps				= FollowUp_Action::getFollowUpsForAction($iTypeDetail);
+				$aFollowUpRecurrings	= FollowUp_Recurring_Action::getFollowUpRecurringsForAction($iTypeDetail);
+				break;
+			case FOLLOWUP_TYPE_TICKET_CORRESPONDENCE:
+				$aFollowUps				= FollowUp_Ticketing_Correspondence::getFollowUpsForCorrespondence($iTypeDetail);
+				$aFollowUpRecurrings	= FollowUp_Recurring_Ticketing_Correspondence::getFollowUpRecurringsForCorrespondence($iTypeDetail);
+				break;
+		}
+		
+		// Convert result to StdClasses and return
+		$aStdClassFollowUps				= array();
+		$aStdClassFollowUpRecurrings	= array();
+		$iLoggedInEmployee				= Flex::getUserId();
+		
+		if (isset($aFollowUps))
+		{
+			foreach ($aFollowUps as $oFollowUp)
+			{
+				// Only return the followup if it is assigned to the current employee
+				if ($oFollowUp->assigned_employee_id == $iLoggedInEmployee)
+				{
+					$aStdClassFollowUps[]	= $oFollowUp->toStdClass();
+				}
+			}
+		}
+		
+		if (isset($aFollowUpRecurrings))
+		{
+			foreach ($aFollowUpRecurrings as $oFollowUpRecurring)
+			{
+				// Only return the followup if it is assigned to the current employee
+				if ($oFollowUpRecurring->assigned_employee_id == $iLoggedInEmployee)
+				{
+					$aStdClassFollowUpRecurrings[]	= $oFollowUpRecurring->toStdClass();
+				}
+			}
+		}
+		
+		return	array(
+					'aFollowUps'			=> $aStdClassFollowUps,
+					'aFollowUpRecurrings'	=> $aStdClassFollowUpRecurrings
+				);
 	}
 }
 

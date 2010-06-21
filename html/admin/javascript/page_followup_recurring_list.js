@@ -77,10 +77,10 @@ var Page_FollowUp_Recurring_List = Class.create(
 														),
 														this._createFieldHeader('Details', false, false, true),
 														this._createFieldHeader('Summary', false, false, true),
-														this._createFieldHeader(
+														/*this._createFieldHeader(
 															'Created', 
 															Page_FollowUp_Recurring_List.SORT_FIELD_DATE_CREATED
-														),
+														),*/
 														this._createFieldHeader(
 															'Owner', 
 															(this._iEmployeeId ? null : Page_FollowUp_Recurring_List.SORT_FIELD_OWNER), 
@@ -95,6 +95,11 @@ var Page_FollowUp_Recurring_List = Class.create(
 															'End Date', 
 															Page_FollowUp_Recurring_List.SORT_FIELD_END_DATE, 
 															Page_FollowUp_Recurring_List.FILTER_FIELD_END_DATE
+														),
+														this._createFieldHeader(
+															'Last Actioned', 
+															Page_FollowUp_Recurring_List.SORT_FIELD_LAST_ACTIONED,
+															Page_FollowUp_Recurring_List.FILTER_FIELD_LAST_ACTIONED
 														),
 														this._createFieldHeader(
 															'Last Modified', 
@@ -116,10 +121,11 @@ var Page_FollowUp_Recurring_List = Class.create(
 														this._createFilterValueElement(Page_FollowUp_Recurring_List.FILTER_FIELD_TYPE),
 														$T.th(),
 														$T.th(),
-														$T.th(),
+														//$T.th(),
 														(this._iEmployeeId ? $T.th() : this._createFilterValueElement(Page_FollowUp_Recurring_List.FILTER_FIELD_OWNER)),
 														this._createFilterValueElement(Page_FollowUp_Recurring_List.FILTER_FIELD_START_DATE),
 														this._createFilterValueElement(Page_FollowUp_Recurring_List.FILTER_FIELD_END_DATE),
+														this._createFilterValueElement(Page_FollowUp_Recurring_List.FILTER_FIELD_LAST_ACTIONED),
 														$T.th(),
 														this._createFilterValueElement(Page_FollowUp_Recurring_List.FILTER_FIELD_CATEGORY),
 														$T.th(),
@@ -149,7 +155,6 @@ var Page_FollowUp_Recurring_List = Class.create(
 								);
 		
 		// Bind events to the pagination buttons
-		//var aTopPageButtons		= this._oContentDiv.select('table > caption div.caption_options button.followup-list-all-pagination-button');
 		var aTopPageButtons		= this._oContentDiv.select('div.section-header-options button.followup-list-all-pagination-button');
 		var aBottomPageButtons 	= this._oContentDiv.select('div.footer-pagination button');
 		
@@ -235,10 +240,9 @@ var Page_FollowUp_Recurring_List = Class.create(
 			{
 				oTBody.appendChild(this._createTableRow(aData[i]));
 			}
-			
-			this._updatePagination();
 		}
 		
+		this._updatePagination();
 		this._updateSorting();
 		this._updateFilters();
 		
@@ -269,10 +273,11 @@ var Page_FollowUp_Recurring_List = Class.create(
 							$T.td(Page_FollowUp_Recurring_List._getTypeElement(oFollowUpRecurring.followup_type_id)),		
 							Page_FollowUp_Recurring_List.getFollowUpDescriptionTD(oFollowUpRecurring.followup_type_id, oFollowUpRecurring.details),
 							$T.td(oFollowUpRecurring.summary),
-							$T.td(Page_FollowUp_Recurring_List.getDateTimeElement(oFollowUpRecurring.created_datetime)),				
+							//$T.td(Page_FollowUp_Recurring_List.getDateTimeElement(oFollowUpRecurring.created_datetime)),				
 							$T.td(oFollowUpRecurring.assigned_employee_label),
 							$T.td(Page_FollowUp_Recurring_List.getDateTimeElement(oFollowUpRecurring.start_datetime)),
 							$T.td(Page_FollowUp_Recurring_List.getDateTimeElement(oFollowUpRecurring.end_datetime)),
+							$T.td(Page_FollowUp_Recurring_List.getDateTimeElement(oFollowUpRecurring.last_actioned)),
 							$T.td(Page_FollowUp_Recurring_List.getDateTimeElement(oFollowUpRecurring.modified_datetime)),
 							$T.td(oFollowUpRecurring.followup_category_label),
 							$T.td(Page_FollowUp_Recurring_List.getRecurrencePeriod(oFollowUpRecurring)),
@@ -592,6 +597,7 @@ Page_FollowUp_Recurring_List.FILTER_FIELD_TYPE			= 'followup_type_id';
 Page_FollowUp_Recurring_List.FILTER_FIELD_CATEGORY		= 'followup_category_id';
 Page_FollowUp_Recurring_List.FILTER_FIELD_START_DATE	= 'start_datetime';
 Page_FollowUp_Recurring_List.FILTER_FIELD_END_DATE		= 'end_datetime';
+Page_FollowUp_Recurring_List.FILTER_FIELD_LAST_ACTIONED	= 'last_actioned';
 
 Page_FollowUp_Recurring_List.SORT_FIELD_DATE_CREATED		= 'created_datetime';
 Page_FollowUp_Recurring_List.SORT_FIELD_OWNER				= 'assigned_employee_id';
@@ -601,6 +607,7 @@ Page_FollowUp_Recurring_List.SORT_FIELD_CATEGORY			= 'followup_category_id';
 Page_FollowUp_Recurring_List.SORT_FIELD_START_DATE			= 'start_datetime';
 Page_FollowUp_Recurring_List.SORT_FIELD_END_DATE			= 'end_datetime';
 Page_FollowUp_Recurring_List.SORT_FIELD_RECURRENCE_PERIOD	= 'recurrence_period';
+Page_FollowUp_Recurring_List.SORT_FIELD_LAST_ACTIONED		= 'last_actioned';
 
 Page_FollowUp_Recurring_List.DATA_SET_DEFINITION		= {sObject: 'FollowUp_Recurring', sMethod: 'getDataSet'};
 
@@ -835,6 +842,28 @@ Page_FollowUp_Recurring_List.FILTER_FIELDS[Page_FollowUp_Recurring_List.FILTER_F
 																																}
 																										};
 Page_FollowUp_Recurring_List.FILTER_FIELDS[Page_FollowUp_Recurring_List.FILTER_FIELD_END_DATE]	= 	{
+																										iType			: Filter.FILTER_TYPE_RANGE,
+																										bFrom			: true,
+																										sFrom			: 'Start Date',
+																										bTo				: true,
+																										sTo				: 'End Date',
+																										sGreaterThan	: 'On Or After',
+																										sLessThan		: 'On Or Before',
+																										sBetween		: 'Between',
+																										oOption			: 	{
+																																sType		: 'combo_date',
+																																mDefault	: null,
+																																oDefinition	:	{
+																																					sLabel		: 'End Date',
+																																					mEditable	: true,
+																																					fnValidate	: Page_FollowUp_Recurring_List._validateDueDate,
+																																					iMinYear	: Page_FollowUp_Recurring_List.YEAR_MINIMUM,
+																																					iMaxYear	: Page_FollowUp_Recurring_List.YEAR_MAXIMUM,
+																																					iFormat		: Control_Field_Combo_Date.FORMAT_D_M_Y
+																																				}
+																															}
+																									};
+Page_FollowUp_Recurring_List.FILTER_FIELDS[Page_FollowUp_Recurring_List.FILTER_FIELD_LAST_ACTIONED]	= 	{
 																											iType			: Filter.FILTER_TYPE_RANGE,
 																											bFrom			: true,
 																											sFrom			: 'Start Date',
@@ -847,7 +876,7 @@ Page_FollowUp_Recurring_List.FILTER_FIELDS[Page_FollowUp_Recurring_List.FILTER_F
 																																	sType		: 'combo_date',
 																																	mDefault	: null,
 																																	oDefinition	:	{
-																																						sLabel		: 'End Date',
+																																						sLabel		: 'Last Actioned',
 																																						mEditable	: true,
 																																						fnValidate	: Page_FollowUp_Recurring_List._validateDueDate,
 																																						iMinYear	: Page_FollowUp_Recurring_List.YEAR_MINIMUM,
@@ -894,5 +923,6 @@ Page_FollowUp_Recurring_List.SORT_FIELDS	=	{
 													followup_category_id	: Sort.DIRECTION_OFF,
 													start_datetime			: Sort.DIRECTION_OFF,
 													end_datetime			: Sort.DIRECTION_OFF,
-													recurrence_period		: Sort.DIRECTION_OFF
+													recurrence_period		: Sort.DIRECTION_OFF,
+													last_actioned			: Sort.DIRECTION_OFF
 												};

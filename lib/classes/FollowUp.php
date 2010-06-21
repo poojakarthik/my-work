@@ -525,7 +525,7 @@ class FollowUp extends ORM_Cached
 		}
 	}
 
-	public static function getStatus($iFollowUpClosureId, $sDueDateTime)
+	public static function getStatus($iFollowUpClosureId, $sDueDateTime, $iNowSeconds=false)
 	{
 		if ($iFollowUpClosureId)
 		{
@@ -536,7 +536,7 @@ class FollowUp extends ORM_Cached
 		{
 			// Active, check the date to see if overdue or current
 			$iDueDate	= strtotime($sDueDateTime);
-			$iNow		= time();
+			$iNow		= ($iNowSeconds ? $iNowSeconds : time());
 			
 			if ($iDueDate >= $iNow)
 			{

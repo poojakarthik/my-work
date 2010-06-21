@@ -40,6 +40,9 @@ class HtmlTemplate_FollowUp_List extends FlexHtmlTemplate
 
 	public function Render()
 	{
+		// Always show active ones to start with
+		$this->mxdDataToRender['bActive']	= true;
+		
 		$sEditJSON		= ($this->mxdDataToRender['bEditMode'] ? 'true' : 'false');
 		$sEmployeeId	= (isset($this->mxdDataToRender['iEmployeeId']) ? $this->mxdDataToRender['iEmployeeId'] : 'null');
 		$sActive		= ($this->mxdDataToRender['bActive'] ? 'true' : 'false');

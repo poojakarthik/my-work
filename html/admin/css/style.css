@@ -4455,7 +4455,12 @@ td.followup-list-all-norecords
 	font-style		: italic;
 	opacity			: 0.75;
 	padding-left	: 0.5em;
-}	
+}
+
+div.followup-list-all td
+{
+	vertical-align	: middle !important;
+}
 
 /************************ END - Follow-Up Management Page - END ************************/
 
@@ -4699,6 +4704,11 @@ div.popup-followup-active > div.section
 	margin-bottom	: 0.5em;
 }
 
+div.popup-followup-active div.section-header-title
+{
+	width	: 6em;
+}
+
 div.popup-followup-active > div.section > div.section-content > table
 {
 	border-color		: #111;
@@ -4713,7 +4723,7 @@ div.popup-followup-active > div.section > div.section-content > table
 div.popup-followup-active > div.section > div.section-content > table > tbody > tr > td
 {
 	margin-bottom		: 0em;
-	vertical-align		: top;
+	vertical-align		: middle;
 	background-color	: #fff;
 }
 
@@ -5278,6 +5288,11 @@ table.popup-followup-view-followup-details > tbody > tr > td
 	vertical-align	: inherit;
 }
 
+table.popup-followup-view-followup-details > tbody > tr > th
+{
+	width	: 29%;
+}
+
 table.popup-followup-view-followup-details > tbody > tr > th,
 table.popup-followup-view-followup-details > tbody > tr > td
 {
@@ -5335,7 +5350,8 @@ li.popup-followup-view-history-item li:nth-child(2)
 
 .popup-followup-view-history-item-modified
 {
-	font-size	: 0.875em;
+	padding-left	: 0.25em;
+	font-size		: 0.875em;
 }
 
 .popup-followup-view-history-item-reasons

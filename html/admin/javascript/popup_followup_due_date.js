@@ -170,4 +170,4 @@ Popup_FollowUp_Due_Date.ICON_IMAGE_SOURCE 	= '../admin/img/template/edit_date.pn
 Popup_FollowUp_Due_Date.YEAR_MINIMUM		= new Date().getFullYear();
 Popup_FollowUp_Due_Date.YEAR_MAXIMUM		= Popup_FollowUp_Due_Date.YEAR_MINIMUM + 10;
 
-Popup_FollowUp_Due_Date.VALIDATION_REASON	= 'The Date & Time must be in the future';
+Popup_FollowUp_Due_Date.VALIDATION_REASON_DATE	= 'The Date & Time must be in the future';

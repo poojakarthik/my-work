@@ -11,19 +11,11 @@ var FollowUp_Link	= Class.create
 		this._sNewFollowUpCallbackURL				= null;
 		this._aNewFollowUpCallbacks					= [];
 		
-		// Create the overdue count request json function
-		this._fnGetCount	= 	jQuery.json.jsonFunction(
-									this._getOverdueCount.bind(this, null), 
-									this._ajaxError.bind(this),
-									'FollowUp',
-									'getOverdueCountForLoggedInEmployee'
-								);
-
 		// Construct the link
 		this._buildLink();
 		
 		// Get number of overdue followups
-		this._getOverdueCount(null);
+		this.refresh(true);
 		
 		// Generate any context lists necessary
 		this.generateContextLists();
@@ -33,9 +25,9 @@ var FollowUp_Link	= Class.create
 	// Public methods
 	//------------------//
 	
-	refresh	: function()
+	refresh	: function(bSetTimeout)
 	{
-		this._getOverdueCount(null);
+		this._getOverdueCount(bSetTimeout);
 	},
 	
 	generateContextLists	: function()
@@ -58,52 +50,7 @@ var FollowUp_Link	= Class.create
 			);
 		}
 	},
-	
-	_createFollowUpContextLists	: function(aContextListPlaceholders)
-	{
-		var oPlaceholder	= null;
-		var sFilled			= null;
-		var iType			= null;
-		var iTypeDetail		= null;
-		for (var i = 0; i < aContextListPlaceholders.length; i++)
-		{
-			oPlaceholder	= aContextListPlaceholders[i];
-			sListIndex		= oPlaceholder.getAttribute('context_list_index');
-			if (!sListIndex)
-			{
-				iType		= parseInt(oPlaceholder.getAttribute('type'));
-				iTypeDetail	= parseInt(oPlaceholder.getAttribute('type_detail'));
-				if (isNaN(iType) || isNaN(iTypeDetail))
-				{
-					continue;
-				}
-				
-				this._createFollowUpContextList(oPlaceholder, iType, iTypeDetail);
-			}
-			else
-			{
-				//
-				// NOTE: Not sure if this will ever happen
-				//
-				
-				// Update the context list within the place holder
-				var oContextList	= this._aFollowUpContextLists[parseInt(sListIndex)];
-				if (oContextList)
-				{
-					oContextList.refresh();
-				}
-			}
-		}
-	},
-	
-	_createFollowUpContextList	: function(oPlaceholder, iType, iTypeDetail)
-	{
-		// Create the context list and insert into the place holder, then update the placeholders list index attribute
-		var oList		= new Component_FollowUp_Context_List(oPlaceholder, iType, iTypeDetail);
-		var iListIndex	= this._aFollowUpContextLists.push(oList) - 1;
-		oPlaceholder.setAttribute('context_list_index', iListIndex);
-	},
-	
+		
 	showAddFollowUpPopup	: function(iType, iTypeDetail, mCallback)
 	{
 		if (typeof mCallback == 'function')
@@ -204,23 +151,34 @@ var FollowUp_Link	= Class.create
 		this._oLinkDiv.observe('click', this._showPopup.bind(this));
 	},
 	
-	_getOverdueCount	: function(iTimeout, oResponse)
+	_getOverdueCount	: function(bSetTimeout, oResponse)
 	{
 		if (typeof oResponse == 'undefined')
 		{
 			// Make request
-			this._fnGetCount();
+			if (!this._bRefreshing)
+			{
+				this._bRefreshing	= true;
+				var fnGetCount		= 	jQuery.json.jsonFunction(
+											this._getOverdueCount.bind(this, bSetTimeout), 
+											this._ajaxError.bind(this),
+											'FollowUp',
+											'getOverdueCountForLoggedInEmployee'
+										);
+				// Send client 'now' seconds
+				fnGetCount(Math.floor(new Date().getTime() / 1000));
+			}
 		}
 		else if (oResponse.Success)
 		{
 			// All good
-			this._setLinkOverdueCount(oResponse.iCount);
+			this._setLinkOverdueCount(oResponse.iCount, bSetTimeout);
+			this._bRefreshing	= false;
 			
-			if (!this._bRefreshOverdueCountTimeoutStarted)
+			if (bSetTimeout)
 			{
-				// Every 30s re-get the number of overdue followups (can be done manually by calling refresh(), public function)
-				setTimeout(this._getOverdueCount.bind(this), FollowUp_Link.REFRESH_TIMEOUT);
-				this._bRefreshOverdueCountTimeoutStarted	= true;
+				// Every few seconds refresh the number of overdue followups (can be done manually by calling refresh(), public function)
+				setTimeout(this._refreshTimeout.bind(this), FollowUp_Link.REFRESH_TIMEOUT);
 			}
 		}
 		else
@@ -230,20 +188,28 @@ var FollowUp_Link	= Class.create
 		}
 	},
 	
-	_setLinkOverdueCount	: function(iCount)
-	{	
+	_refreshTimeout	: function()
+	{
+		this.refresh(true);
+	},
+	
+	_setLinkOverdueCount	: function(iCount, bFlash)
+	{
 		this._oCountSpan.innerHTML	= iCount;
 		
 		// If the number of overdue followups is > 0, start the flash timer
 		// - Every minute, turn on, wait .5 sec, turn off, wait .5 sec, turn on, wait .5 sec, turn off, wait minute...
 		// - background-color changes, grey to orange/yellow
-		if (iCount > 0)
+		if (bFlash)
 		{
-			this._startLinkFlash();
-		}
-		else
-		{
-			this._stopLinkFlash();
+			if (iCount > 0)
+			{
+				this._startLinkFlash();
+			}
+			else
+			{
+				this._stopLinkFlash();
+			}
 		}
 	},
 	
@@ -321,15 +287,14 @@ var FollowUp_Link	= Class.create
 			
 			if (this._bLinkFlashEnabled)
 			{
-				if (iCount == FollowUp_Link.FLASH_COUNT_LIMIT)
-				{
-					// The maximum flash count has been reached. Wait longer, then flash on again, restart the count
-					setTimeout(this._flash.bind(this, true, 1), FollowUp_Link.FLASH_WAIT_TIMEOUT);
-				}
-				else
+				if (iCount < FollowUp_Link.FLASH_COUNT_LIMIT)
 				{
 					// Increment the count then flash on again
 					setTimeout(this._flash.bind(this, true, iCount + 1), FollowUp_Link.FLASH_TIMEOUT);
+				}
+				else
+				{
+					this._stopLinkFlash();
 				}
 			}
 		}
@@ -363,17 +328,121 @@ var FollowUp_Link	= Class.create
 			// Load js files then callback
 			JsAutoLoader.loadScript(aJSFiles, fnCallback, false);
 		}
+	},
+	
+	_createFollowUpContextLists	: function(aContextListPlaceholders)
+	{
+		// Create a context list component for each place holder, if one is already present within the place holder, leave it
+		// If there are more than a certain number (SINGLE_GENERATE_LIMIT) placeholders, the details for each context list
+		// are preloaded in a 'batch' to reduce multiple ajax requests down to one.
+		var oPlaceholder			= null;
+		var sFilled					= null;
+		var iType					= null;
+		var iTypeDetail				= null;
+		var bBatchProcess			= aContextListPlaceholders.length > FollowUp_Link.SINGLE_GENERATE_LIMIT;
+		var aBatchProcessDetails	= (bBatchProcess ? {aPlaceholders: {}, aContexts: []} : null);
+		for (var i = 0; i < aContextListPlaceholders.length; i++)
+		{
+			oPlaceholder	= aContextListPlaceholders[i];
+			sListIndex		= oPlaceholder.getAttribute('context_list_index');
+			if (!sListIndex)
+			{
+				iType		= parseInt(oPlaceholder.getAttribute('type'));
+				iTypeDetail	= parseInt(oPlaceholder.getAttribute('type_detail'));
+				if (isNaN(iType) || isNaN(iTypeDetail))
+				{
+					continue;
+				}
+				
+				if (bBatchProcess)
+				{
+					// Cache the details for processing once all have been cached
+					if (!aBatchProcessDetails.aPlaceholders[iType])
+					{
+						aBatchProcessDetails.aPlaceholders[iType]	= {};
+					}
+					
+					aBatchProcessDetails.aPlaceholders[iType][iTypeDetail]	= oPlaceholder;
+					aBatchProcessDetails.aContexts.push({iType: iType, iTypeDetail: iTypeDetail});
+				}
+				else
+				{
+					// Generate a context list
+					this._createFollowUpContextList(oPlaceholder, iType, iTypeDetail);
+				}
+			}
+			else
+			{
+				// Tell the context list within the place holder to refresh its contents
+				var oContextList	= this._aFollowUpContextLists[parseInt(sListIndex)];
+				if (oContextList)
+				{
+					oContextList.refresh();
+				}
+			}
+		}
+		
+		if (bBatchProcess)
+		{
+			this._batchProcessFollowUpData(aBatchProcessDetails.aPlaceholders, aBatchProcessDetails.aContexts);
+		}
+	},
+	
+	_batchProcessFollowUpData	: function(aPlaceHolders, aContexts, oResponse)
+	{
+		if (typeof oResponse == 'undefined')
+		{
+			// Make request to get all followup data for the given types & type details
+			var fnGetFollowUps	=	jQuery.json.jsonFunction(
+										this._batchProcessFollowUpData.bind(this, aPlaceHolders, aContexts), 
+										this._ajaxError.bind(this),
+										'FollowUp', 
+										'getFollowUpsFromMultipleContexts'
+									);
+			fnGetFollowUps(aContexts);
+		}
+		else if (oResponse.Success)
+		{
+			// Success! Create the context lists
+			for (var iType in oResponse.aResults)
+			{
+				for (var iTypeDetail in oResponse.aResults[iType])
+				{
+					this._createFollowUpContextList(
+						aPlaceHolders[iType][iTypeDetail], 
+						iType, 
+						iTypeDetail, 
+						oResponse.aResults[iType][iTypeDetail]
+					);
+				}
+			}
+		}
+		else
+		{
+			// Error
+			this._ajaxError(oResponse);
+		}
+	},
+	
+	_createFollowUpContextList	: function(oPlaceholder, iType, iTypeDetail, oFollowUpData)
+	{
+		// Create the context list and insert into the place holder, then update the placeholders list index attribute
+		var oList		= new Component_FollowUp_Context_List(oPlaceholder, iType, iTypeDetail, oFollowUpData);
+		var iListIndex	= this._aFollowUpContextLists.push(oList) - 1;
+		oPlaceholder.setAttribute('context_list_index', iListIndex);
 	}
 });
 
 // Time & Flashing constants
-FollowUp_Link.REFRESH_TIMEOUT		= 300000;
+FollowUp_Link.REFRESH_TIMEOUT		= 60000;
 FollowUp_Link.FLASH_TIMEOUT			= 200;
-FollowUp_Link.FLASH_WAIT_TIMEOUT	= 60000;
+//FollowUp_Link.FLASH_WAIT_TIMEOUT	= 60000;
 FollowUp_Link.FLASH_COUNT_LIMIT		= 3;
 FollowUp_Link.FLASH_CSS_CLASS		= 'followup-link-flash';
 
 FollowUp_Link.PLACEHOLDER_CLASS		= 'followup-context-list-placeholder';
+
+FollowUp_Link.SINGLE_GENERATE_LIMIT	= 3;
 
 // Require constants
 FollowUp_Link.FOLLOWUP_CONSTANT_GROUPS	= ['followup_closure_type', 'followup_type', 'followup_recurrence_period'];

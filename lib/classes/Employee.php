@@ -420,10 +420,11 @@ class Employee extends ORM_Cached
 		return ($this->is_god == 1);
 	}
 	
-	public function getOverdueFollowUpCount()
+	public function getOverdueFollowUpCount($iNowSeconds=false)
 	{
 		$oDueDateTimeConstraint			= new StdClass();
-		$oDueDateTimeConstraint->mTo	= date('Y-m-d H:i:s');
+		$iNowSeconds					= ($iNowSeconds ? $iNowSeconds : time());
+		$oDueDateTimeConstraint->mTo	= date('Y-m-d H:i:s', $iNowSeconds);
 		
 		return 	FollowUp::searchFor(
 					null, 

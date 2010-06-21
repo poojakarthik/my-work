@@ -1096,7 +1096,6 @@ Object.extend(ActionsAndNotes.List.prototype,
 	{
 		var typeConstraint;
 		var loggedByConstraint;
-		
 		if (bolUseLast && this.lastSearch != null)
 		{
 			// Perform the same search as the last one, just use a different offset
@@ -1208,7 +1207,7 @@ Object.extend(ActionsAndNotes.List.prototype,
 		
 		// Update the followup context lists for each action/note
 		FollowUpLink.generateContextLists();
-		FollowUpLink.addNewFollowUpCallback(this.search.bind(this, true, this.lastSearch.currentPageOffset), null, true);
+		FollowUpLink.addNewFollowUpCallback(this.search.bind(this, true), null, true);
 		
 		this.setLastSearchDetails();
 	},

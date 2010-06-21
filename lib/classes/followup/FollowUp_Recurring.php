@@ -61,41 +61,95 @@ class FollowUp_Recurring extends ORM_Cached
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 
-	public static function searchFor($iLimit=null, $iOffset=null, $aSort=null, $aFilter=null, $bCountOnly=false)
+	public static function searchFor($iLimit=null, $iOffset=null, $aSort=null, $aFilter=null, $bCountOnly=false, $bIncludeExtraFields=false)
 	{
-		$sFromClause	= 'followup_recurring';
-		$sSelectClause	= '*';
+		$sFromClause	= '	followup_recurring fr
+							LEFT JOIN followup f ON fr.id = f.followup_recurring_id';
+		$sSelectClause	= 'fr.*, MAX(f.closed_datetime) AS last_actioned';
 		$sWhereClause	= '';
 		$sOrderByClause	= '';
 		$sLimitClause	= '';
+		$sHavingClause	= '';
+		
+		$aAliases		= 	array(
+								'assigned_employee_id'	=> 'fr.assigned_employee_id',
+								'created_datetime'		=> 'fr.created_datetime',
+								'start_datetime'		=> 'fr.start_datetime',
+								'end_datetime'			=> 'fr.end_datetime',
+								'followup_type_id'		=> 'fr.followup_type_id',
+								'followup_category_id'	=> 'fr.followup_category_id',
+								'followup_category_id'	=> 'fr.followup_category_id',
+								'modified_datetime'		=> 'fr.modified_datetime',
+								'last_actioned'			=> 'MAX(f.closed_datetime)'
+							);
+		
+		if (isset($aFilter['last_actioned']))
+		{
+			if ($aFilter['last_actioned']->mFrom || $aFilter['last_actioned']->mTo)
+			{
+				// Last Actioned date is being filtered, add it as a special having constraint
+				// Uses the same set of aliases as where, although on 'last_actioned' is really used
+				$aHavingInfo	= 	StatementSelect::generateWhere(
+										$aAliases, 
+										array('last_actioned' => $aFilter['last_actioned'])
+									);
+				$sHavingClause	= ' HAVING '.$aHavingInfo['sClause'];
+			}
+			
+			unset($aFilter['last_actioned']);
+		}
 		
 		// WHERE clause
-		$aWhereInfo		= StatementSelect::generateWhere(null, $aFilter);
+		$aWhereInfo				= StatementSelect::generateWhere($aAliases, $aFilter);
+		if ($aWhereInfo['sClause'] == '')
+		{
+			$aWhereInfo['sClause']	.= ' 1';
+		}
+		$aWhereInfo['sClause']	.= ' GROUP BY fr.id';
+		 
+		if ($sHavingClause != '')
+		{
+			// Add the having clause to the where clause
+			$aWhereInfo['sClause']	.=	$sHavingClause;
+			
+			// Add the having values into the where values array
+			foreach ($aHavingInfo['aValues'] as $sAlias => $mValue)
+			{
+				$aWhereInfo['aValues'][$sAlias]	= $mValue;
+			}
+		}
 		
 		if ($bCountOnly)
 		{
-			$sSelectClause	= 'COUNT(id) AS count';
+			$sSelectClause	= 'COUNT(DISTINCT fr.id) AS count';
 		}
 		else
-		{		
+		{
 			// ORDER BY clause
-			$sOrderByClause	= Statement::generateOrderBy(null, $aSort);
+			$sOrderByClause	= Statement::generateOrderBy($aAliases, $aSort);
 			
 			// LIMIT clause
 			$sLimitClause	= Statement::generateOrderBy($iLimit, $iOffset);
 		}
 		
 		// Get records
-		$oSelect	= new StatementSelect($sFromClause, $sSelectClause, $aWhereInfo['sClause'], $sOrderByClause, $sLimitClause);
-		if ($oSelect->Execute($aWhereInfo['aValues']) === FALSE)
+		$oSelect	= 	new StatementSelect(
+							$sFromClause, 
+							$sSelectClause, 
+							$aWhereInfo['sClause'], 
+							$sOrderByClause, 
+							$sLimitClause
+						);
+	
+		$iCount	= $oSelect->Execute($aWhereInfo['aValues']);
+		if ($iCount === FALSE)
 		{
 			throw new Exception("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oSelect->Error());
 		}
 		
 		if ($bCountOnly)
 		{
-			$aCount	= $oSelect->Fetch();
-			return $aCount['count'];
+			return $iCount;
 		}
 		else
 		{
@@ -103,7 +157,19 @@ class FollowUp_Recurring extends ORM_Cached
 			$aRecurringFollowUps	= array();
 			while ($aRow = $oSelect->Fetch())
 			{
-				$aRecurringFollowUps[$aRow['id']]	= new self($aRow);
+				$oFollowUpRecurring	= new self($aRow);
+				
+				if ($bIncludeExtraFields)
+				{
+					// Convert the object to Std class and include the 'last_actioned' field
+					$oStdClass							= $oFollowUpRecurring->toStdClass();
+					$oStdClass->last_actioned			= $aRow['last_actioned'];
+					$aRecurringFollowUps[$aRow['id']]	= $oStdClass;
+				}
+				else
+				{
+					$aRecurringFollowUps[$aRow['id']]	= $oFollowUpRecurring;
+				}
 			}
 			
 			return $aRecurringFollowUps;

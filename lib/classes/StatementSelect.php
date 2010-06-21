@@ -327,7 +327,7 @@
 		 		$arrParams[] = $strParam;
 	 			$i++;
 		 	}
-			//Debug($arrParams);
+			//var_dump($arrWhere);
 /*
 		 	if (count($this->_arrPlaceholders) != count($arrParams))
 		 	{
@@ -354,6 +354,7 @@
 	 	
 	 	// Run the Statement
 	 	$mixResult = $this->_execute();
+	 	
 	 	$this->Debug($mixResult);
 	 	if(!$mixResult)
 	 	{

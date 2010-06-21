@@ -21,7 +21,7 @@ var Component_FollowUp_List_All = Class.create(
 		this.oPagination	= new Pagination(this._updateTable.bind(this), Component_FollowUp_List_All.MAX_RECORDS_PER_PAGE, this.oDataSet);
 		
 		// Create filter object
-		this._oFilter	= new Filter(this.oDataSet, this.oPagination);
+		this._oFilter	= new Filter(this.oDataSet, this.oPagination, null, this._updateNowFilterValue.bind(this));
 		for (var sFieldName in Component_FollowUp_List_All.FILTER_FIELDS)
 		{
 			this._oFilter.addFilter(sFieldName, Component_FollowUp_List_All.FILTER_FIELDS[sFieldName]);
@@ -39,22 +39,12 @@ var Component_FollowUp_List_All = Class.create(
 			this._oFilter.setFilterValue(Component_FollowUp_List_All.FILTER_FIELD_STATUS, FollowUp_Status.ACTIVE_VALUE, FollowUp_Status.ACTIVE_TEXT);
 		}
 		
-		// Set default due date filter (today + 7 days)
-		var oThen	= new Date();
-		oThen.shift(8, 'days');
-		var sThen	= oThen.$format('Y-m-d');
-		
-		this._oFilter.setFilterValue(
-			Component_FollowUp_List_All.FILTER_FIELD_FOLLOWUP_DATE, 
-			'', 
-			sThen, 
-			'', 
-			sThen, 
-			Filter.RANGE_TYPE_TO
-		);
+		// Set 'now' filter value (used for properly determining overdueness based on the clients time)
+		this._oFilter.addFilter('now', Component_FollowUp_List_All.FILTER_FIELDS[sFieldName]);
+		this._updateNowFilterValue();
 		
 		// Create sort object
-		this._oSort	= new Sort(this.oDataSet, this.oPagination, true);
+		this._oSort	= new Sort(this.oDataSet, this.oPagination, true, this._updateNowFilterValue.bind(this, true));
 		
 		// Create the page HTML
 		var sButtonPathBase	= '../admin/img/template/resultset_';
@@ -250,10 +240,9 @@ var Component_FollowUp_List_All = Class.create(
 				iCount++;
 				oTBody.appendChild(this._createTableRow(aData[i]));
 			}
-			
-			this._updatePagination();
 		}
 		
+		this._updatePagination();
 		this._updateSorting();
 		this._updateFilters();
 		
@@ -558,6 +547,18 @@ var Component_FollowUp_List_All = Class.create(
 							oFollowUp.due_datetime,
 							this.oPagination.getCurrentPage.bind(this.oPagination)
 						);
+	},
+	
+	_updateNowFilterValue	: function(bFromSort)
+	{
+		// Set the 'now' filter value to the current time in seconds
+		this._oFilter.setFilterValue('now', Math.floor(new Date().getTime() / 1000), 'now');
+		
+		if (bFromSort)
+		{
+			// If not updated from a filter, refresh the dataset ajax's filter data
+			this._oFilter.refreshData(true);
+		}
 	}
 });
 

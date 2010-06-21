@@ -1,12 +1,12 @@
 
 var Component_FollowUp_Context_List	= Class.create
 ({
-	initialize	: function(oContainerElement, iFollowUpType, iTypeDetail)
+	initialize	: function(oContainerElement, iFollowUpType, iTypeDetail, oFollowUpData)
 	{
 		this._oContainerElement	= oContainerElement;
 		this._iFollowUpType		= iFollowUpType;
 		this._iTypeDetail		= iTypeDetail;
-		this._buildUI();
+		this._buildUI(oFollowUpData);
 	},
 	
 	//---------------//
@@ -15,16 +15,16 @@ var Component_FollowUp_Context_List	= Class.create
 	
 	refresh	: function()
 	{
-		//alert('refreshing');
+		// This doesn't do anything yet, it's not really necessary but is here if it becomes so. rmctainsh
 	},
 	
 	//-----------------//
 	// Private methods
 	//-----------------//
 	
-	_buildUI	: function(oResponse)
+	_buildUI	: function(oFollowUpData)
 	{
-		if (typeof oResponse == 'undefined')
+		if (typeof oFollowUpData == 'undefined')
 		{
 			var fnGetFollowUps	=	jQuery.json.jsonFunction(
 										this._buildUI.bind(this), 
@@ -34,7 +34,7 @@ var Component_FollowUp_Context_List	= Class.create
 									);
 			fnGetFollowUps(this._iFollowUpType, this._iTypeDetail);
 		}
-		else if (oResponse.Success)
+		else if (oFollowUpData.aFollowUps && oFollowUpData.aFollowUpRecurrings)
 		{
 			// Create UI
 			var sAddAlt		= 'Create a new Follow-Up';
@@ -46,7 +46,7 @@ var Component_FollowUp_Context_List	= Class.create
 			oAddLink.observe('mouseout', this._updateAddLinkIcon.bind(this, oAddLink, '_off.png'));
 			
 			var aChildren	= [{class: 'followup-context-list'}, oAddLink];
-			var aAll		= oResponse.aFollowUps.concat(oResponse.aFollowUpRecurrings);
+			var aAll		= oFollowUpData.aFollowUps.concat(oFollowUpData.aFollowUpRecurrings);
 			if (aAll.length)
 			{
 				// Sort the array, by first name ascending then last name ascending
@@ -74,7 +74,7 @@ var Component_FollowUp_Context_List	= Class.create
 		else
 		{
 			// Error
-			this._ajaxError(oResponse);
+			this._ajaxError(oFollowUpData);
 		}
 	},
 	

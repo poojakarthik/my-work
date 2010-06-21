@@ -218,103 +218,15 @@
 		
 		if ($aConstraints)
 		{
-			foreach($aConstraints as $sAlias => $mValue)
+			foreach($aConstraints as $sOriginalAlias => $mValue)
 			{
-				if (isset($aAliases[$sAlias]))
+				$sAlias	= $sOriginalAlias;
+				if (isset($aAliases[$sOriginalAlias]))
 				{
-					$sAlias	= $aAliases[$sAlias];
+					$sAlias	= $aAliases[$sOriginalAlias];
 				}
 				
-				self::processWhereConstraint($sAlias, $mValue, $aWhereParts, $aResult);
-				
-				/*if (is_array($mValue))
-				{
-					// AND (array of constraints)
-					foreach ($mValue as $mVal)
-					{
-						self::processWhereConstraint($sAlias, $mVal, $aWhereParts, $aResult);
-					}
-				}
-				else if (is_object($mValue))
-				{
-					if ($mValue->mFrom || $mValue->mTo)
-					{
-						// Range of values
-						if ($mValue->mFrom && $mValue->mTo)
-						{
-							// BETWEEN
-							$sFromAlias							= "{$sAlias}0";
-							$sToAlias							= "{$sAlias}1";
-							$aResult['aValues'][$sFromAlias]	= $mValue->mFrom;
-							$aResult['aValues'][$sToAlias]		= $mValue->mTo;
-							$aWhereParts[]						= "{$sAlias} BETWEEN <{$sFromAlias}> AND <{$sToAlias}>";
-						}
-						else if ($mValue->mFrom)
-						{
-							// > (Greater than)
-							$sValueAlias						= $sAlias;
-							$aResult['aValues'][$sValueAlias]	= $mValue->mFrom;
-							$aWhereParts[]						= "{$sAlias} > <{$sValueAlias}>";
-						}
-						else if ($mValue->mTo)
-						{
-							// < (Less than)
-							$sValueAlias						= $sAlias;
-							$aResult['aValues'][$sValueAlias]	= $mValue->mTo;
-							$aWhereParts[]						= "{$sAlias} < <{$sValueAlias}>";
-						}
-					}
-					else if ($mValue->sStartsWith)
-					{
-						// LIKE, starting with...
-						$sValueAlias						= $sAlias;
-						$aResult['aValues'][$sValueAlias]	= "'{$mValue->sStartsWith}%'";
-						$aWhereParts[]						= "{$sAlias} LIKE <{$sValueAlias}>";
-					}
-					else if ($mValue->sEndsWith)
-					{
-						// LIKE, ending with...
-						$sValueAlias						= $sAlias;
-						$aResult['aValues'][$sValueAlias]	= "'%{$mValue->sEndsWith}'";
-						$aWhereParts[]						= "{$sAlias} LIKE <{$sValueAlias}>";
-					}
-					else if ($mValue->sContains)
-					{
-						// LIKE, containing...
-						$sValueAlias						= $sAlias;
-						$aResult['aValues'][$sValueAlias]	= "'%{$mValue->sContains}%'";
-						$aWhereParts[]						= "{$sAlias} LIKE <{$sValueAlias}>";
-					}
-					else if ($mValue->aValues)
-					{
-						// An array of values, convert to IN (?,?,?)
-						$iValueIndex	= 0;
-						$aValueAliases	= array();
-						foreach ($mValue->aValues as $mVal)
-						{
-							$sValueAlias						= "{$sAlias}{$iValueIndex}";
-							$aResult['aValues'][$sValueAlias]	= $mVal;
-							$aValueAliases[]					= "<{$sValueAlias}>";
-							$iValueIndex++;
-						}
-						
-						$aWhereParts[]	= "{$sAlias} IN (".implode(', ', $aValueAliases).")";
-					}
-				}
-				else if (strtolower($mValue) == 'null')
-				{
-					// Value is a null comparison
-					$sValueAlias						= $sAlias;
-					$aResult['aValues'][$sValueAlias]	= $mValue;
-					$aWhereParts[]						= "{$sAlias} IS NULL";
-				}
-				else
-				{
-					// Value is a single value
-					$sValueAlias						= $sAlias;
-					$aResult['aValues'][$sValueAlias]	= $mValue;
-					$aWhereParts[]						= "{$sAlias} = <{$sValueAlias}>";
-				}*/
+				self::processWhereConstraint($sOriginalAlias, $sAlias, $mValue, $aWhereParts, $aResult);
 			}
 		}
 		
@@ -322,7 +234,7 @@
 		return $aResult;
 	}
 	
-	private static function processWhereConstraint($sAlias, $mValue, &$aWhereParts, &$aResult, $sPlaceHolderSuffix='')
+	private static function processWhereConstraint($sOriginalAlias, $sAlias, $mValue, &$aWhereParts, &$aResult, $sPlaceHolderSuffix='')
 	{
 		if (is_array($mValue))
 		{
@@ -330,7 +242,7 @@
 			$iSuffix	= 1;
 			foreach ($mValue as $mVal)
 			{
-				self::processWhereConstraint($sAlias, $mVal, $aWhereParts, $aResult, $iSuffix);
+				self::processWhereConstraint($sOriginalAlias, $sAlias, $mVal, $aWhereParts, $aResult, $iSuffix);
 				$iSuffix++;
 			}
 		}
@@ -342,8 +254,8 @@
 				if ($mValue->mFrom && $mValue->mTo)
 				{
 					// BETWEEN
-					$sFromPlaceHolder						= "{$sAlias}{$sPlaceHolderSuffix}0";
-					$sToPlaceHolder							= "{$sAlias}{$sPlaceHolderSuffix}1";
+					$sFromPlaceHolder						= "{$sOriginalAlias}{$sPlaceHolderSuffix}0";
+					$sToPlaceHolder							= "{$sOriginalAlias}{$sPlaceHolderSuffix}1";
 					$aResult['aValues'][$sFromPlaceHolder]	= $mValue->mFrom;
 					$aResult['aValues'][$sToPlaceHolder]	= $mValue->mTo;
 					$aWhereParts[]							= "{$sAlias} BETWEEN <{$sFromPlaceHolder}> AND <{$sToPlaceHolder}>";
@@ -351,14 +263,14 @@
 				else if ($mValue->mFrom)
 				{
 					// > (Greater than)
-					$sPlaceHolder						= $sAlias.$sPlaceHolderSuffix;
+					$sPlaceHolder						= $sOriginalAlias.$sPlaceHolderSuffix;
 					$aResult['aValues'][$sPlaceHolder]	= $mValue->mFrom;
 					$aWhereParts[]						= "{$sAlias} >= <{$sPlaceHolder}>";
 				}
 				else if ($mValue->mTo)
 				{
 					// < (Less than)
-					$sPlaceHolder						= $sAlias.$sPlaceHolderSuffix;
+					$sPlaceHolder						= $sOriginalAlias.$sPlaceHolderSuffix;
 					$aResult['aValues'][$sPlaceHolder]	= $mValue->mTo;
 					$aWhereParts[]						= "{$sAlias} <= <{$sPlaceHolder}>";
 				}
@@ -366,21 +278,21 @@
 			else if ($mValue->sStartsWith)
 			{
 				// LIKE, starting with...
-				$sPlaceHolder						= $sAlias.$sPlaceHolderSuffix;
+				$sPlaceHolder						= $sOriginalAlias.$sPlaceHolderSuffix;
 				$aResult['aValues'][$sPlaceHolder]	= "'{$mValue->sStartsWith}%'";
 				$aWhereParts[]						= "{$sAlias} LIKE <{$sPlaceHolder}>";
 			}
 			else if ($mValue->sEndsWith)
 			{
 				// LIKE, ending with...
-				$sPlaceHolder						= $sAlias.$sPlaceHolderSuffix;
+				$sPlaceHolder						= $sOriginalAlias.$sPlaceHolderSuffix;
 				$aResult['aValues'][$sPlaceHolder]	= "'%{$mValue->sEndsWith}'";
 				$aWhereParts[]						= "{$sAlias} LIKE <{$sPlaceHolder}>";
 			}
 			else if ($mValue->sContains)
 			{
 				// LIKE, containing...
-				$sPlaceHolder						= $sAlias.$sPlaceHolderSuffix;
+				$sPlaceHolder						= $sOriginalAlias.$sPlaceHolderSuffix;
 				$aResult['aValues'][$sPlaceHolder]	= "'%{$mValue->sContains}%'";
 				$aWhereParts[]						= "{$sAlias} LIKE <{$sPlaceHolder}>";
 			}
@@ -391,7 +303,7 @@
 				$aPlaceHolders	= array();
 				foreach ($mValue->aValues as $mVal)
 				{
-					$sPlaceHolder						= "{$sAlias}{$sPlaceHolderSuffix}{$iValueIndex}";
+					$sPlaceHolder						= "{$sOriginalAlias}{$sPlaceHolderSuffix}{$iValueIndex}";
 					$aResult['aValues'][$sPlaceHolder]	= $mVal;
 					$aPlaceHolders[]					= "<{$sPlaceHolder}>";
 					$iValueIndex++;
@@ -403,14 +315,14 @@
 		else if (strtolower($mValue) == 'null')
 		{
 			// Value is a null comparison
-			$sPlaceHolder						= $sAlias.$sPlaceHolderSuffix;
+			$sPlaceHolder						= $sOriginalAlias.$sPlaceHolderSuffix;
 			$aResult['aValues'][$sPlaceHolder]	= $mValue;
 			$aWhereParts[]						= "{$sAlias} IS NULL";
 		}
 		else
 		{
 			// Value is a single value
-			$sPlaceHolder						= $sAlias.$sPlaceHolderSuffix;
+			$sPlaceHolder						= $sOriginalAlias.$sPlaceHolderSuffix;
 			$aResult['aValues'][$sPlaceHolder]	= $mValue;
 			$aWhereParts[]						= "{$sAlias} = <{$sPlaceHolder}>";
 		}

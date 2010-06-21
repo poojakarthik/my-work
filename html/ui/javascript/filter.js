@@ -10,15 +10,20 @@
 */
 var Filter	= Class.create
 ({
-	initialize	: function(oDataSetAjax, oPagination, fnFilterUpdateCallback)
+	initialize	: function(oDataSetAjax, oPagination, fnFilterUpdateCallback, fnOnUseCallback)
 	{
 		this._oDataSetAjax				= oDataSetAjax;
 		this._oPagination				= oPagination;
 		this._hFilters					= {};
 		this._hControls					= {};
 		this._fnFilterUpdateCallback	= fnFilterUpdateCallback;
+		this._fnOnUseCallback			= fnOnUseCallback;
 		document.body.observe('click', this._hideFilterOptions.bind(this));
 	},
+	
+	// 
+	// Public Methods
+	//
 	
 	/*
 	 * oDefinition structure
@@ -33,80 +38,103 @@ var Filter	= Class.create
 		{
 			case Filter.FILTER_TYPE_VALUE:
 				this._hFilters[sField].mValue			= null;
-				this._hFilters[sField].oOptionsElement	= this._createOption(sField, oDefinition.oOption);
+				
+				if (oDefinition.oOption)
+				{
+					this._hFilters[sField].oOptionsElement	= this._createOption(sField, oDefinition.oOption);
+				}
 				break;
 			case Filter.FILTER_TYPE_SET:
 				this._hFilters[sField].aValues			= [];
-				this._hFilters[sField].oOptionsElement	= this._createOption(sField, oDefinition.oOption);
+				
+				if (oDefinition.oOption)
+				{
+					this._hFilters[sField].oOptionsElement	= this._createOption(sField, oDefinition.oOption);
+				}
 				break;
 			case Filter.FILTER_TYPE_RANGE:
-				// Create the options element
-				this._hFilters[sField].oOptionsElement	= 	$T.div(
-																$T.div(
-																	$T.select({class: 'filter-range-type-select'},
-																		$T.option({value: Filter.RANGE_TYPE_FROM},
-																			oDefinition.sGreaterThan
-																		),
-																		$T.option({value: Filter.RANGE_TYPE_TO},
-																			oDefinition.sLessThan
-																		),
-																		$T.option({value: Filter.RANGE_TYPE_BETWEEN},
-																			oDefinition.sBetween
-																		)
-																	)
-																),
-																$T.table({class: 'filter-overlay-options-content-range'},
-																	$T.tbody(
-																		$T.tr(
-																			$T.td(
-																				$T.span({class: 'filter-overlay-options-content-range-label'},
-																					oDefinition.sFrom
-																				)
+				if (oDefinition.oOption)
+				{
+					
+					// Create the options element
+					this._hFilters[sField].oOptionsElement	= 	$T.div(
+																	$T.div(
+																		$T.select({class: 'filter-range-type-select'},
+																			$T.option({value: Filter.RANGE_TYPE_FROM},
+																				oDefinition.sGreaterThan
 																			),
-																			$T.td(
-																				this._createOption(sField, oDefinition.oOption)
-																			)
-																		),
-																		$T.tr(
-																			$T.td(
-																				$T.span({class: 'filter-overlay-options-content-range-label'},
-																					oDefinition.sTo
-																				)
+																			$T.option({value: Filter.RANGE_TYPE_TO},
+																				oDefinition.sLessThan
 																			),
-																			$T.td(
-																				this._createOption(sField, oDefinition.oOption)
+																			$T.option({value: Filter.RANGE_TYPE_BETWEEN},
+																				oDefinition.sBetween
 																			)
 																		)
+																	),
+																	$T.table({class: 'filter-overlay-options-content-range'},
+																		$T.tbody(
+																			$T.tr(
+																				$T.td(
+																					$T.span({class: 'filter-overlay-options-content-range-label'},
+																						oDefinition.sFrom
+																					)
+																				),
+																				$T.td(
+																					this._createOption(sField, oDefinition.oOption)
+																				)
+																			),
+																			$T.tr(
+																				$T.td(
+																					$T.span({class: 'filter-overlay-options-content-range-label'},
+																						oDefinition.sTo
+																					)
+																				),
+																				$T.td(
+																					this._createOption(sField, oDefinition.oOption)
+																				)
+																			)
+																		)
 																	)
-																)
-															);
-				
-				// Attach events to the type select
-				var oTypeSelect	= this._hFilters[sField].oOptionsElement.select('select.filter-range-type-select').first();
-				oTypeSelect.observe('change', this._rangeTypeSelected.bind(this, oTypeSelect, sField));
-				
-				this._hFilters[sField].oRangeDefinition	= 	{
-																sGreaterThan	: oDefinition.sGreaterThan,
-																sLessThan		: oDefinition.sLessThan,
-																sBetween		: oDefinition.sBetween,
-																oTypeSelect		: oTypeSelect
-															};
-				
-				// Set default type
-				this._rangeTypeSelected(oTypeSelect, sField);
-				
+																);
+					
+					// Attach events to the type select
+					var oTypeSelect	= this._hFilters[sField].oOptionsElement.select('select.filter-range-type-select').first();
+					oTypeSelect.observe('change', this._rangeTypeSelected.bind(this, oTypeSelect, sField));
+					
+					this._hFilters[sField].oRangeDefinition	= 	{
+																	sGreaterThan	: oDefinition.sGreaterThan,
+																	sLessThan		: oDefinition.sLessThan,
+																	sBetween		: oDefinition.sBetween,
+																	oTypeSelect		: oTypeSelect
+																};
+					
+					// Set default type
+					this._rangeTypeSelected(oTypeSelect, sField);
+				}
 				break;
 			case Filter.FILTER_TYPE_CONTAINS:
-				this._hFilters[sField].sContains		= null;
-				this._hFilters[sField].oOptionsElement	= this._createOption(sField, oDefinition.oOption);
+				this._hFilters[sField].sContains	= null;
+				
+				if (oDefinition.oOption)
+				{
+					this._hFilters[sField].oOptionsElement	= this._createOption(sField, oDefinition.oOption);
+				}
 				break;
 			case Filter.FILTER_TYPE_ENDS_WITH:
 				this._hFilters[sField].sEndsWith		= null;
-				this._hFilters[sField].oOptionsElement	= this._createOption(sField, oDefinition.oOption);
+				
+				if (oDefinition.oOption)
+				{
+					this._hFilters[sField].oOptionsElement	= this._createOption(sField, oDefinition.oOption);
+				}
 				break;
 			case Filter.FILTER_TYPE_STARTS_WITH:
 				this._hFilters[sField].sStartsWith		= null;
-				this._hFilters[sField].oOptionsElement	= this._createOption(sField, oDefinition.oOption);
+				
+				if (oDefinition.oOption)
+				{
+					this._hFilters[sField].oOptionsElement	= this._createOption(sField, oDefinition.oOption);
+				}
 				break;
 		}
 	},
@@ -305,7 +333,30 @@ var Filter	= Class.create
 		
 		if (!bCancelRefresh)
 		{
-			this._oPagination.getCurrentPage();
+			this._getCurrentPage();
+		}
+	},
+	
+	_getCurrentPage	: function(iPageCount)
+	{
+		if (typeof iPageCount != 'undefined')
+		{
+			// Check current pages validity
+			if (iPageCount < (this._oPagination.intCurrentPage + 1))
+			{
+				// Filter has changed the number of pages, go to the last
+				this._oPagination.lastPage();
+			}
+			else
+			{
+				// Still valid, refresh
+				this._oPagination.getCurrentPage();
+			}
+		}
+		else
+		{
+			// Get the page count to see if the current page is still within the page limits
+			this._oPagination.getPageCount(this._getCurrentPage.bind(this), true);
 		}
 	},
 	
@@ -313,6 +364,10 @@ var Filter	= Class.create
 	{
 		oIcon.observe('click', this._showFilterOptions.bind(this, sField, sLabel));
 	},
+	
+	//
+	// Private methods
+	//
 	
 	_showFilterOptions	: function(sField, sLabel, oEvent)
 	{
@@ -408,7 +463,6 @@ var Filter	= Class.create
 		
 		// Check for validation errors in the controls
 		var aErrors		= [];
-		
 		for (var i = 0; i < aControls.length; i++)
 		{
 			try
@@ -463,6 +517,12 @@ var Filter	= Class.create
 		}
 		
 		this._hideFilterOptions();
+		
+		if (this._fnOnUseCallback)
+		{
+			this._fnOnUseCallback();
+		}
+		
 		this.refreshData();
 	},
 	
