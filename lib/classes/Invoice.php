@@ -1800,6 +1800,7 @@ class Invoice extends ORM_Cached
 						$fTotalReducable	-= $fSubsidy;
 						
 						// Save
+						$oInvoice->Balance	= Invoice::roundOut($oInvoice->Balance, 4);
 						$oInvoice->save();
 						
 						$fRedistributedBalanceGrandTotal	+= $oInvoice->Balance;
