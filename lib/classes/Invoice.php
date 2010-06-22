@@ -1773,7 +1773,7 @@ class Invoice extends ORM_Cached
 					foreach ($aInvoices as $oInvoice)
 					{
 						$fTotalCreditAdjustments	-= max(0.0, $oInvoice->adjustment_total + $oInvoice->adjustment_tax);	// Credit Adjustment Totals
-						$fTotalCreditCharges		-= min(0.0, $oInvoice->charges_total + $oInvoice->charges_tax);			// Credit Charge Totals
+						$fTotalCreditCharges		-= min(0.0, $oInvoice->charge_total + $oInvoice->charge_tax);			// Credit Charge Totals
 						$fTotalPayments				+= max(0.0, ($oInvoice->Total + $oInvoice->Tax) - $oInvoice->Balance);	// Payments
 						
 						$fInvoicesGrandTotal	+= $oInvoice->Total + $oInvoice->Tax;
