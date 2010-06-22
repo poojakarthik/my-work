@@ -11,7 +11,7 @@
  *
  * NOTE: An object is only implicitly cached if it is instanciated with the $bolLoadById==true, or retrieved using the 'getForId' method or saved using the 'save' method.
  * While the 'addToCache' function has been declared protected (so it can be extended by ORM_Enumerated), it should never be used or extended by a class that extends either ORM_Cached or ORM_Enurmerated
- * 
+ *
  * @class	ORM_Cached
  */
 abstract class ORM_Cached extends ORM
@@ -33,14 +33,14 @@ abstract class ORM_Cached extends ORM
 	 * __construct()
 	 *
 	 * constructor
-	 * 
+	 *
 	 * constructor
 	 *
 	 * @param	array	$arrProperties 		[optional]	Associative array defining the data source record that this object will model
 	 * @param	boolean	$bolLoadById		[optional]	Automatically load the Record with the passed Id
-	 * 
+	 *
 	 * @return	void
-	 * 
+	 *
 	 * @constructor
 	 */
 	public function __construct($arrProperties=array(), $bolLoadById=false)
@@ -148,7 +148,7 @@ abstract class ORM_Cached extends ORM
 	 *
 	 * Returns a copy of the cache for the $strClass class
 	 * Note that the objects in this copied array, will be references to the actual objects in the cache
-	 * 
+	 *
 	 * This is only really used by the ORM_Enumerated class, so that it can build its cache of system names associated with the cache of objects.
 	 * If it didn't need it, then I'd remove it
 	 *
@@ -172,14 +172,14 @@ abstract class ORM_Cached extends ORM
 	 * If an object to add is already in the cache, it will be overwritten and be considered to be newly added.
 	 * If the max cache size has been exceeded, then the oldest cached objects will be removed so long as they aren't one of the objects being added ($mixObjects).
 	 * If the number of objects being added exceeds the max cache size, then the earlier ones in the array ($mixObjects) will not be cached.
-	 * 
+	 *
 	 * This should be private, but ORM_Enumerated needs to be able to extend it
-	 * 
+	 *
 	 * @param	mixed	$mixObjects			object				: the object to add to the cache
 	 * 										array of objects	: and array of objects to add to the cache
 	 * @param	string	$strClass			The name of the child class/cache (This won't be needed for PHP 5.3)
 	 *
-	 * @return	void 
+	 * @return	void
 	 * @method
 	 */
 	protected static function addToCache($mixObjects, $strClass=NULL)
@@ -229,9 +229,9 @@ abstract class ORM_Cached extends ORM
 	
 	/**
 	 * setCacheCleanupRule
-	 * 
+	 *
 	 * Sets the rule for how to handle exceeding the maximum Cache size.  You should use the associated Class Constants.
-	 * 
+	 *
 	 * @return	void
 	 * @method
 	 */
@@ -248,14 +248,14 @@ abstract class ORM_Cached extends ORM
 				throw new Exception("Unknown Cache Cleanup Rule '{$iCacheCleanupRule}'");
 				break;
 		}
-	} 
+	}
 	
 	/**
 	 * truncateCache
-	 * 
+	 *
 	 * Truncates the cache for a Class if it has exceeded the maximum allowable size using the rule specified
 	 * by the setTruncateRule() method
-	 * 
+	 *
 	 * @return	void
 	 * @method
 	 */
@@ -297,7 +297,7 @@ abstract class ORM_Cached extends ORM
 	 * Returns the maximum size of the cache, specific to the class that extedns ORM_Cached
 	 * If you don't want to specify a maximum size, then just set it to 1000000000
 	 *
-	 * @return	int		the maximum allowable size of the cache 
+	 * @return	int		the maximum allowable size of the cache
 	 * @method
 	 */
 	abstract protected static function getMaxCacheSize();
@@ -370,7 +370,7 @@ abstract class ORM_Cached extends ORM
 	 * getAll
 	 *
 	 * Retreives all the objects comprising the Cached Type
-	 * 
+	 *
 	 * @param	bool	[ $bolForceReload ]		Defaults to false.  if true, then the cached objects will be reloaded from the database.
 	 * 											if false, then they will only be retreived from the database, if the cache doesn't already exist
 	 *
@@ -419,10 +419,10 @@ abstract class ORM_Cached extends ORM
 			
 			// We have fully cached -- don't do it again unless we're forced to
 			self::$_arrIsFullyCached[$strCacheName]	= true;
-		} 
+		}
 		
 		return call_user_func(array($strClass, 'getCachedObjects'));
-	} 
+	}
 	
 	/**
 	 * save
@@ -440,6 +440,13 @@ abstract class ORM_Cached extends ORM
 			// Add the object to the cache
 			$this->addToCache($this);
 		}
+	}
+	
+	public static function importResult($aResultSet, $sORMClass)
+	{
+		$aInstances	= parent::importResult($aResultSet, $sORMClass);
+		self::addtoCache($aInstances, $sORMClass);
+		return $aInstances;
 	}
 }
 ?>

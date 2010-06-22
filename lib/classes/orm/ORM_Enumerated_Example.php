@@ -7,7 +7,7 @@
  * @class	ORM_Enumerated_Example
  */
 class ORM_Enumerated_Example extends ORM_Enumerated
-{	
+{
 	protected 			$_strTableName			= "insert_table_name_here";
 	protected static	$_strStaticTableName	= "insert_table_name_here";
 	
@@ -62,6 +62,11 @@ class ORM_Enumerated_Example extends ORM_Enumerated
 		return parent::getIdForSystemName($strSystemName, __CLASS__);
 	}
 	
+	public static function importResult($aResultSet)
+	{
+		return parent::importResult($aResultSet, __CLASS__);
+	}
+	
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Enumerated UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
@@ -73,7 +78,7 @@ class ORM_Enumerated_Example extends ORM_Enumerated
 	 * Access a Static Cache of Prepared Statements used by this Class
 	 *
 	 * @param	string		$strStatement						Name of the statement
-	 * 
+	 *
 	 * @return	Statement										The requested Statement
 	 *
 	 * @method

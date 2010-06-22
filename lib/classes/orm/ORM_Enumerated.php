@@ -14,7 +14,7 @@
  * @extends	ORM_Cached
  */
 abstract class ORM_Enumerated extends ORM_Cached
-{	
+{
 	// Used to refere to an object by its system_name (for those objects that have a system name)
 	private static $_arrSystemNameObjectIdMapping = array();
 	
@@ -152,12 +152,12 @@ abstract class ORM_Enumerated extends ORM_Cached
 	 * addToCache
 	 *
 	 * Adds objects to the cache. (And updates the SystemName-ObjectId mapping)
-	 * 
+	 *
 	 * @param	mixed	$mixObjects			object				: the object to add to the cache
 	 * 										array of objects	: and array of objects to add to the cache
 	 * @param	string	$strClass			The name of the child class/cache (This won't be needed for PHP 5.3)
 	 *
-	 * @return	void 
+	 * @return	void
 	 * @method
 	 */
 	protected static function addToCache($mixObjects, $strClass=NULL)
@@ -171,7 +171,7 @@ abstract class ORM_Enumerated extends ORM_Cached
 	 * getAll
 	 *
 	 * Retreives all the objects comprising the Enumerated Type
-	 * 
+	 *
 	 * @param	bool	[ $bolForceReload ]		Defaults to false.  if true, then the cached objects will be reloaded from the database.
 	 * 											if false, then they will only be retreived from the database, if the cache doesn't already exist
 	 *
@@ -212,10 +212,10 @@ abstract class ORM_Enumerated extends ORM_Cached
 			
 			// Add the objects to the cache as a bulk operation
 			call_user_func(array($strClass, 'addToCache'), $arrObjects);
-		} 
+		}
 		
 		return call_user_func(array($strClass, 'getCachedObjects'));
-	} 
+	}
 
 	/**
 	 * __clone
@@ -240,17 +240,17 @@ abstract class ORM_Enumerated extends ORM_Cached
 	 * Retrieves the object that is uniquely referenced by the system_name passed, in the context of $strClass
 	 * If the object can't be found, then an Assertion Exception is thrown, because if we are referencing an object by its system name,
 	 * then it should always exist
-	 * 
-	 * @param	string	$strSystemName		The name that uniquely identifies the enumeration value desired 
+	 *
+	 * @param	string	$strSystemName		The name that uniquely identifies the enumeration value desired
 	 *
 	 * @param	string	$strClass			The name of the child class/cache (This won't be needed for PHP 5.3)
 	 *
-	 * @return	object						The object modelling the enumerated value that is referenced by $strSystemName 
+	 * @return	object						The object modelling the enumerated value that is referenced by $strSystemName
 	 * @method
 	 */
 	public static function getForSystemName($strSystemName, $strClass=NULL)
 	{
-		// PHP 5.3 - static::getAll(); and remove $strClass from the parameters		
+		// PHP 5.3 - static::getAll(); and remove $strClass from the parameters
 		$arrObjectCache = call_user_func(array($strClass, 'getAll'), false);
 
 		// PHP 5.3 - $strCacheName = static::getCacheName();
@@ -262,7 +262,7 @@ abstract class ORM_Enumerated extends ORM_Cached
 		{
 			// Found it
 			/* In theory we should call getForId to retrieve it, so that the object gets flagged as the most recently accessed object
-			 * but that is only done so it won't get removed from the cache if the max cache size is exceeded, but Enumerations don't have a 
+			 * but that is only done so it won't get removed from the cache if the max cache size is exceeded, but Enumerations don't have a
 			 * max cache size, so we don't have to worry about the object being removed if the cache is maxxed out
 			 */
 			return $arrObjectCache[$arrSystemNameObjectIdMapping[$strSystemName]];
@@ -283,12 +283,12 @@ abstract class ORM_Enumerated extends ORM_Cached
 	 * Retrieves the id of the object that is uniquely referenced by the system_name passed, in the context of $strClass
 	 * If the object can't be found, then an Assertion Exception is thrown, because if we are referencing an object by its system name,
 	 * then it should always exist
-	 * 
-	 * @param	string	$strSystemName		The name that uniquely identifies the enumeration value desired 
+	 *
+	 * @param	string	$strSystemName		The name that uniquely identifies the enumeration value desired
 	 *
 	 * @param	string	$strClass			The name of the child class/cache (This won't be needed for PHP 5.3)
 	 *
-	 * @return	int							The id of the object modelling the enumerated value that is referenced by $strSystemName 
+	 * @return	int							The id of the object modelling the enumerated value that is referenced by $strSystemName
 	 * @method
 	 */
 	public static function getIdForSystemName($strSystemName, $strClass)
@@ -316,7 +316,7 @@ abstract class ORM_Enumerated extends ORM_Cached
 	 */
 	public static function getForId($intId, $bolSilentFail=false, $strClass=NULL)
 	{
-		// PHP 5.3 - static::getAll(); and remove $strClass from the parameters		
+		// PHP 5.3 - static::getAll(); and remove $strClass from the parameters
 		call_user_func(array($strClass, 'getAll'), false);
 		
 		return parent::getForId($intId, $bolSilentFail, $strClass);
@@ -341,6 +341,13 @@ abstract class ORM_Enumerated extends ORM_Cached
 		parent::save();
 		
 		// We don't have to refresh the SystemName - ObjectId mapping, because SystemNames cannot be modified via ORM objects.  They must be set via rollout scripts
+	}
+	
+	public static function importResult($aResultSet, $sORMClass)
+	{
+		$aInstances	= parent::importResult($aResultSet, $sORMClass);
+		self::refreshSystemNameObjectIdMapping($sORMClass);
+		return $aInstances;
 	}
 	
 	/**

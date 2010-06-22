@@ -56,6 +56,11 @@ class ORM_Cached_Example extends ORM_Cached
 		return parent::getAll($bolForceReload, __CLASS__);
 	}
 	
+	public static function importResult($aResultSet)
+	{
+		return parent::importResult($aResultSet, __CLASS__);
+	}
+	
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
@@ -66,7 +71,7 @@ class ORM_Cached_Example extends ORM_Cached
 	 * Access a Static Cache of Prepared Statements used by this Class
 	 *
 	 * @param	string		$strStatement						Name of the statement
-	 * 
+	 *
 	 * @return	Statement										The requested Statement
 	 *
 	 * @method
