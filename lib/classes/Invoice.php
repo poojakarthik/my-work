@@ -1793,7 +1793,7 @@ class Invoice extends ORM_Cached
 					foreach ($aInvoices as $oInvoice)
 					{
 						// Pay out Invoice as much as possible
-						$oInvoice->Balance	= $oInvoice->Total + $oInvoice->Tax;
+						$oInvoice->Balance	= max(0, $oInvoice->Total + $oInvoice->Tax);
 						$fSubsidy			= min($oInvoice->Balance, $fTotalReducable);
 						
 						$oInvoice->Balance	-= $fSubsidy;
