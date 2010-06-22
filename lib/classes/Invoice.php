@@ -16,6 +16,8 @@ class Invoice extends ORM_Cached
 	protected			$_strTableName			= "Invoice";
 	protected static	$_strStaticTableName	= "Invoice";
 	
+	const	MAXIMUM_LOCK_RETRIES	= 100;
+	
 	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
@@ -83,11 +85,47 @@ class Invoice extends ORM_Cached
 	{
 		return parent::getAll($bForceReload, __CLASS__);
 	}
+	
+	public static function importResult($aResultSet)
+	{
+		return parent::importResult($aResultSet, __CLASS__);
+	}
 		
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	
+	public static function generateForInvoiceRunAndAccount($oInvoiceRun, $oAccount)
+	{
+		$iLocksEncountered	= 0;
+		while (!isset($oInvoice))
+		{
+			if ($iLocksEncountered <= Invoice::MAXIMUM_LOCK_RETRIES)
+			{
+				try
+				{
+					$oInvoice	= new Invoice();
+					$oInvoice->generate($oAccount, $oInvoiceRun);
+				}
+				catch (Exception $oException)
+				{
+					if ($oException instanceof Exception_Database_Deadlock || $oException instanceof Exception_Database_LockTimeout)
+					{
+						unset($oInvoice);
+						$iLocksEncountered++;
+					}
+					else
+					{
+						throw $oException;
+					}
+				}
+			}
+			else
+			{
+				throw new Exception("Too many database locks encountered (Maximum: ".Invoice_Run::MAXIMUM_LOCK_RETRIES.")");
+			}
+		}
+	}
 	
 	//------------------------------------------------------------------------//
 	// generate
@@ -1668,6 +1706,143 @@ class Invoice extends ORM_Cached
 		
 		// Add a note
 		Note::createNote(SYSTEM_NOTE_TYPE, $sStatus, $iUserId, $this->Account);
+	}
+	
+	public static function redistributeBalances($mAccount)
+	{
+		$oQuery	= new Query();
+		
+		// We want to redistribute Invoice balances so that payments and adjustments affect oldest invoices first
+		$sAccounts	= "	SELECT		i.Account																AS account_id,
+									MAX(IF(i.Balance != 0 AND i.Balance != (i.Total + i.Tax), i.Id, NULL))	AS latest_redistributable,
+									MIN(IF(i.Balance != 0 AND i.Balance != (i.Total + i.Tax), i.Id, NULL))	AS earliest_redistributable
+						
+						FROM		Invoice i
+						
+						WHERE		i.Status NOT IN (100, 106)
+						
+						GROUP BY	i.Account
+						
+						HAVING		latest_redistributable != earliest_redistributable;";
+		
+		if (($oAccountsResult = $oQuery->Execute($sAccounts)) === false)
+		{
+			throw new Exception($oQuery->Error());
+		}
+		
+		Log::getLog()->log(" * Redistributing {$oAccountsResult->num_rows} Accounts...");
+		
+		while ($aAccount = $oAccountsResult->fetch_assoc())
+		{
+			Log::getLog()->log("\t + Redistributing Account {$aAccount['account_id']}...");
+			
+			if (DataAccess::getDataAccess()->TransactionStart())
+			{
+				try
+				{
+					// Get affected Invoices
+					$sAffectedInvoices	= "	SELECT		i.*
+											
+											FROM		Invoice i
+											
+											WHERE		i.Status NOT IN (100, 106)
+														AND i.Id BETWEEN {$aAccount['earliest_redistributable']} AND {$aAccount['latest_redistributable']}
+														AND i.Account = {$aAccount['account_id']}
+											
+											ORDER BY	i.CreatedOn ASC,
+														i.Id ASC;";
+					
+					if (($oInvoicesResult = $oQuery->Execute($sAffectedInvoices)) === false)
+					{
+						throw new Exception($oQuery->Error());
+					}
+					
+					$aInvoices	= array();
+					while ($aInvoice = $oInvoicesResult->fetch_assoc())
+					{
+						$aInvoices[]	= $aInvoice;
+					}
+					$aInvoices	= Invoice::importResult($aInvoices);
+					
+					// Total Balances for redistribution
+					$fInvoicesGrandTotal		= 0.0;
+					$fTotalPayments				= 0.0;
+					$fTotalCreditCharges		= 0.0;
+					$fTotalCreditAdjustments	= 0.0;
+					$fBalanceGrandTotal			= 0.0;
+					foreach ($aInvoices as $oInvoice)
+					{
+						$fTotalCreditAdjustments	-= max(0.0, $oInvoice->adjustment_total + $oInvoice->adjustment_tax);	// Credit Adjustment Totals
+						$fTotalCreditCharges		-= min(0.0, $oInvoice->charges_total + $oInvoice->charges_tax);			// Credit Charge Totals
+						$fTotalPayments				+= max(0.0, ($oInvoice->Total + $oInvoice->Tax) - $oInvoice->Balance);	// Payments
+						
+						$fInvoicesGrandTotal	+= $oInvoice->Total + $oInvoice->Tax;
+						$fBalanceGrandTotal		+= $oInvoice->Balance;
+					}
+					$fTotalReducable	= $fTotalCreditAdjustments + $fTotalCreditCharges + $fTotalPayments;
+					
+					Log::getLog()->log("\t\t * Invoices Grand Total: \${$fInvoicesGrandTotal}");
+					Log::getLog()->log("\t\t * Balance Grand Total: \${$fBalanceGrandTotal}");
+					Log::getLog()->log("\t\t * Credit Charge Total: \${$fTotalCreditCharges}");
+					Log::getLog()->log("\t\t * Credit Adjustment Total: \${$fTotalCreditAdjustments}");
+					Log::getLog()->log("\t\t * Payment Total: \${$fTotalPayments}");
+					Log::getLog()->log("\t\t * Total Reducable: \${$fTotalReducable}");
+					
+					// Redistribute Balances
+					$fRedistributedBalanceGrandTotal	= 0.0;
+					foreach ($aInvoices as $oInvoice)
+					{
+						// Pay out Invoice as much as possible
+						$oInvoice->Balance	= $oInvoice->Total + $oInvoice->Tax;
+						$fSubsidy			= min($oInvoice->Balance, $fTotalReducable);
+						
+						$oInvoice->Balance	-= $fSubsidy;
+						$fTotalReducable	-= $fSubsidy;
+						
+						// Save
+						$oInvoice->save();
+						
+						$fRedistributedBalanceGrandTotal	+= $oInvoice->Balance;
+						
+						Log::getLog()->log("\t\t - Invoice {$oInvoice->Id} reduced to \${$oInvoice->Balance} (\${$fTotalReducable} remaining to distribute)");
+					}
+					
+					// Apply any remaining credits to the most recent Invoice
+					Log::getLog()->log("\t\t ! \${$fTotalReducable} left to distribute overall.");
+					if (Invoice::roundOut($fTotalReducable, 4) > 0)
+					{
+						$oInvoice	= end($aInvoices);
+						
+						$oInvoice->Balance	-= $fTotalReducable;
+						
+						$fRedistributedBalanceGrandTotal	+= $fTotalReducable;
+						
+						// Save
+						$oInvoice->save();
+						
+						Log::getLog()->log("\t\t - Invoice {$oInvoice->Id} reduced to \${$oInvoice->Balance} with the excess \${$fTotalReducable}");
+						
+						$fTotalReducable	= 0.0;
+					}
+					
+					// Ensure that the pre- and post-redistribution Balance grand totals are equal
+					if (Invoice::roundOut($fBalanceGrandTotal, 4) != Invoice::roundOut($fRedistributedBalanceGrandTotal, 4))
+					{
+						throw new Exception("Pre and Post Redistribution Balance Mismatch! (pre: \${$fBalanceGrandTotal}; post: \${$fRedistributedBalanceGrandTotal})");
+					}
+					
+					throw new Exception("Debugging!");
+					
+					// Commit
+					DataAccess::getDataAccess()->TransactionCommit();
+				}
+				catch (Exception $oException)
+				{
+					Log::getLog()->log("Exception: ".$oException->getMessage()."; Rolling back changes");
+					DataAccess::getDataAccess()->TransactionRollback();
+				}
+			}
+		}
 	}
 
 	protected function __set($strName, $mxdValue)

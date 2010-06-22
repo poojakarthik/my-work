@@ -431,7 +431,7 @@ class Service extends ORM
 			$arrFNNInstances	= array();
 			while ($arrFNNInstance = $selFNNInstances->Fetch())
 			{
-				$arrFNNInstances[]	= new Service($arrFNNInstance);
+				$arrFNNInstances[$arrFNNInstance['Id']]	= new Service($arrFNNInstance);
 			}
 			return $arrFNNInstances;
 		}

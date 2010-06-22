@@ -3,6 +3,7 @@ class CURL
 {
 	protected	$_rSession;
 	protected	$_aTransferInfo;
+	protected	$_bExceptionOnExecuteFailure;
 	
 	public function __construct()
 	{

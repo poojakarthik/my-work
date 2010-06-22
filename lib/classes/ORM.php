@@ -29,14 +29,14 @@ abstract class ORM
 	 * __construct()
 	 *
 	 * constructor
-	 * 
+	 *
 	 * constructor
 	 *
 	 * @param	array	$arrProperties 		[optional]	Associative array defining the data source record that this object will model
 	 * @param	boolean	$bolLoadById		[optional]	Automatically load the Record with the passed Id
-	 * 
+	 *
 	 * @return	void
-	 * 
+	 *
 	 * @constructor
 	 */
 	protected function __construct($arrProperties=array(), $bolLoadById=FALSE)
@@ -125,7 +125,7 @@ abstract class ORM
 	 * Inserts or Updates the Record for this instance
 	 *
 	 * Inserts or Updates the Record for this instance
-	 * 
+	 *
 	 * @return	boolean							Pass/Fail
 	 *
 	 * @method
@@ -226,7 +226,7 @@ abstract class ORM
 	 * tidyName()
 	 *
 	 * Converts a string from xxx_yyy_zzz to xxxYyyZzz
-	 * 
+	 *
 	 * Converts a string from xxx_yyy_zzz to xxxYyyZzz
 	 * If the string is already in the xxxYxxZzz format, then it will not be changed
 	 *
@@ -250,7 +250,7 @@ abstract class ORM
 	 * Returns an associative array modelling the Database Record
 	 *
 	 * Returns an associative array modelling the Database Record
-	 * 
+	 *
 	 * @param	bool	$bolUseTidyNames	Optional, defaults to FALSE.  If true then the keys of the array will be the tidy names.  If false, then the proper property names will be used
 	 * @return	array										DB Record
 	 *
@@ -278,10 +278,10 @@ abstract class ORM
 	 * toStdClass()
 	 *
 	 * Returns a stdClass object modelling the Database Record
-	 * 
+	 *
 	 * @param	[bool	$bolUseTidyNames				]	TRUE	: Use Tidied Names
 	 * 														FALSE	: Use DB Names (default)
-	 * 
+	 *
 	 * @return	stdClass
 	 *
 	 * @method
@@ -313,10 +313,10 @@ abstract class ORM
 	 * mysqlToPostgresArray()
 	 *
 	 * Converts an associative array of MySQL fields/values to their Postgres equivalent
-	 * 
+	 *
 	 * @param	array		$arrMySQL								MySQL version of the array
 	 * @param	array		$bolReturnConversionArray	[optional]	TRUE: Return a conversion array instead of Field=>Value
-	 * 
+	 *
 	 * @return	array												Postgres version of the array OR Array of Mysql Fields as keys, and Postgres Fields as the values
 	 *
 	 * @method
@@ -394,6 +394,28 @@ abstract class ORM
 		}
 	}
 	
+	public static function importResult($aResultSet, $sORMClass)
+	{
+		if (!is_subclass_of($sORMClass, 'ORM'))
+		{
+			throw new Exception("Supplied Class '{$sORMClass}' does not inherit from ORM");
+		}
+		
+		// If it is a single-dimensional array, wrap it in another array
+		if (!is_array(reset($aResultSet)))
+		{
+			$aResultSet	= array($aResultSet);
+		}
+		
+		$aInstances	= array();
+		foreach ($aResultSet as $aResult)
+		{
+			$aInstances[ORM::extractId($aResult)]	= new $sORMClass($aResult);
+		}
+		
+		return $aInstances;
+	}
+	
 	//------------------------------------------------------------------------//
 	// _preparedStatement
 	//------------------------------------------------------------------------//
@@ -403,13 +425,13 @@ abstract class ORM
 	 * Access a Static Cache of Prepared Statements used by a class that extends this one
 	 *
 	 * Access a Static Cache of Prepared Statements used by a class that extends this one
-	 * 
+	 *
 	 * @param	string		$strStatement		Name of the statement
 	 * 											Each derived class must handle the values
 	 * 											'selById' (SELECT by id),
 	 * 											'ubiSelf' (UPDATE by id of object),
 	 * 											'insSelf' (INSERT by id of object)
-	 * 
+	 *
 	 * @return	Statement										The requested Statement
 	 *
 	 * @method
