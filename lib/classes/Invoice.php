@@ -1708,7 +1708,7 @@ class Invoice extends ORM_Cached
 		Note::createNote(SYSTEM_NOTE_TYPE, $sStatus, $iUserId, $this->Account);
 	}
 	
-	public static function redistributeBalances($mAccount)
+	public static function redistributeBalances()
 	{
 		$oQuery	= new Query();
 		
@@ -1820,7 +1820,7 @@ class Invoice extends ORM_Cached
 						// Save
 						$oInvoice->save();
 						
-						Log::getLog()->log("\t\t - Invoice {$oInvoice->Id} reduced to \${$oInvoice->Balance} with the excess \${$fTotalReducable}");
+						Log::getLog()->log("\t\t - Invoice {$oInvoice->Id} of \$".($oInvoice->Total + $oInvoice->Tax)." reduced to \${$oInvoice->Balance} with the excess \${$fTotalReducable}");
 						
 						$fTotalReducable	= 0.0;
 					}
