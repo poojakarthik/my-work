@@ -264,6 +264,10 @@ class Cli_App_Billing extends Cli
 						throw $eException;
 					}
 					break;
+					
+				case 'REDISTRIBUTE':
+					Invoice::redistributeBalances();
+					break;
 
 				default:
 					throw new Exception("Invalid MODE '{$this->_arrArgs[self::SWITCH_MODE]}' specified!");
