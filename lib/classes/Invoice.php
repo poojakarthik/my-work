@@ -1804,7 +1804,7 @@ class Invoice extends ORM_Cached
 						
 						$fRedistributedBalanceGrandTotal	+= $oInvoice->Balance;
 						
-						Log::getLog()->log("\t\t - Invoice {$oInvoice->Id} of \$".($oInvoice->Total + $oInvoice->Tax)." reduced to \${$oInvoice->Balance} (\${$fTotalReducable} remaining to distribute)");
+						Log::getLog()->log("\t\t - Invoice {$oInvoice->Id} of \$".($oInvoice->Total + $oInvoice->Tax)." reduced by \${$fSubsidy} to \${$oInvoice->Balance} (\${$fTotalReducable} remaining to distribute)");
 					}
 					
 					// Apply any remaining credits to the most recent Invoice
