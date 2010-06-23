@@ -1765,26 +1765,26 @@ class Invoice extends ORM_Cached
 					$aInvoices	= Invoice::importResult($aInvoices);
 					
 					// Total Balances for redistribution
-					$fInvoicesGrandTotal		= 0.0;
-					$fTotalPayments				= 0.0;
-					$fTotalCreditCharges		= 0.0;
-					$fTotalCreditAdjustments	= 0.0;
-					$fBalanceGrandTotal			= 0.0;
+					$fInvoicesGrandTotal	= 0.0;
+					$fTotalPayments			= 0.0;
+					$fTotalCreditCharges	= 0.0;
+					$fTotalAdjustments		= 0.0;
+					$fBalanceGrandTotal		= 0.0;
 					foreach ($aInvoices as $oInvoice)
 					{
-						$fTotalCreditAdjustments	-= max(0.0, $oInvoice->adjustment_total + $oInvoice->adjustment_tax);	// Credit Adjustment Totals
-						$fTotalCreditCharges		-= min(0.0, $oInvoice->charge_total + $oInvoice->charge_tax);			// Credit Charge Totals
-						$fTotalPayments				+= max(0.0, ($oInvoice->Total + $oInvoice->Tax) - $oInvoice->Balance);	// Payments
+						$fTotalAdjustments		-= max(0.0, $oInvoice->adjustment_total + $oInvoice->adjustment_tax);	// Adjustment Totals (there shouldn't be any debits in here anyway)
+						$fTotalCreditCharges	-= min(0.0, $oInvoice->charge_total + $oInvoice->charge_tax);			// Credit Charge Totals
+						$fTotalPayments			+= max(0.0, ($oInvoice->Total + $oInvoice->Tax) - $oInvoice->Balance);	// Payments
 						
 						$fInvoicesGrandTotal	+= $oInvoice->Total + $oInvoice->Tax;
 						$fBalanceGrandTotal		+= $oInvoice->Balance;
 					}
-					$fTotalReducable	= $fTotalCreditAdjustments + $fTotalCreditCharges + $fTotalPayments;
+					$fTotalReducable	= $fTotalAdjustments + $fTotalCreditCharges + $fTotalPayments;
 					
 					Log::getLog()->log("\t\t * Invoices Grand Total: \${$fInvoicesGrandTotal}");
 					Log::getLog()->log("\t\t * Balance Grand Total: \${$fBalanceGrandTotal}");
 					Log::getLog()->log("\t\t * Credit Charge Total: \${$fTotalCreditCharges}");
-					Log::getLog()->log("\t\t * Credit Adjustment Total: \${$fTotalCreditAdjustments}");
+					Log::getLog()->log("\t\t * Adjustment Total: \${$fTotalAdjustments}");
 					Log::getLog()->log("\t\t * Payment Total: \${$fTotalPayments}");
 					Log::getLog()->log("\t\t * Total Reducable: \${$fTotalReducable}");
 					
