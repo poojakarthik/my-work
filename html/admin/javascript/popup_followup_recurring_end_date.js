@@ -174,12 +174,15 @@ var Popup_FollowUp_Recurring_End_Date	= Class.create(Reflex_Popup,
 	{
 		var sDate			= sValue;
 		var iMilliseconds	= Date.parse(sDate.replace(/-/g, '/'));
+		var oNow			= new Date();
+		oNow.setSeconds(0);
+		oNow.setMilliseconds(0);
 		
 		if (isNaN(iMilliseconds))
 		{
 			return false;
 		}
-		else if (iMilliseconds > new Date().getTime())
+		else if (iMilliseconds >= oNow.getTime())
 		{
 			return true;
 		}
@@ -192,12 +195,11 @@ var Popup_FollowUp_Recurring_End_Date	= Class.create(Reflex_Popup,
 	_validateOccurrence	: function(sValue)
 	{
 		var iValue	= parseInt(sValue);
-		
 		if (isNaN(iValue))
 		{
 			return false;
 		}
-		else if (iValue <= this._iMinimumOccurrences)
+		else if (iValue < this._iMinimumOccurrences)
 		{
 			return false
 		}

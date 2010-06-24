@@ -22,6 +22,10 @@ var Sort	= Class.create
 		this._fFieldUpdateCallback	= fFieldUpdateCallback;
 	},
 	
+	//
+	// Public methods
+	//
+	
 	registerToggleElement	: function(oElement, sField, sDefaultDirection)
 	{
 		oElement.observe('click', this._toggleField.bind(this, sField));
@@ -62,21 +66,6 @@ var Sort	= Class.create
 		this._aSortedFields.push(sField);
 	},
 	
-	_setFieldDirection	: function(sField, sDirection, bCancelRefresh)
-	{
-		this._hFields[sField]	= sDirection;
-		
-		if (this._fFieldUpdateCallback)
-		{
-			this._fFieldUpdateCallback(sField, sDirection);
-		}
-		
-		if (sDirection != Sort.DIRECTION_OFF)
-		{
-			this.refreshData(bCancelRefresh);
-		}
-	},
-	
 	getSortData	: function()
 	{
 		var hFields		= {};
@@ -108,6 +97,35 @@ var Sort	= Class.create
 		}
 	},
 	
+	getSortDirection	: function(sField)
+	{
+		return this._hFields[sField];
+	},
+	
+	isRegistered	: function(sField)
+	{
+		return (this._hFields[sField] !== null && (typeof this._hFields[sField] != 'undefined'));
+	},
+	
+	//
+	// Private methods
+	//
+	
+	_setFieldDirection	: function(sField, sDirection, bCancelRefresh)
+	{
+		this._hFields[sField]	= sDirection;
+		
+		if (this._fFieldUpdateCallback)
+		{
+			this._fFieldUpdateCallback(sField, sDirection);
+		}
+		
+		if (sDirection != Sort.DIRECTION_OFF)
+		{
+			this.refreshData(bCancelRefresh);
+		}
+	},
+	
 	_toggleField	: function(sField)
 	{
 		var sNewDirection	= Sort.DIRECTION_OFF;
@@ -123,16 +141,6 @@ var Sort	= Class.create
 		}
 		
 		this.sortField(sField, sNewDirection);
-	}, 
-	
-	getSortDirection	: function(sField)
-	{
-		return this._hFields[sField];
-	},
-	
-	isRegistered	: function(sField)
-	{
-		return (this._hFields[sField] !== null && (typeof this._hFields[sField] != 'undefined'));
 	}
 });
 

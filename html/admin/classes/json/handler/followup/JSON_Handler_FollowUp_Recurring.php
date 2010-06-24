@@ -108,6 +108,58 @@ class JSON_Handler_FollowUp_Recurring extends JSON_Handler
 		}
 	}
 	
+	public function endNow($iFollowUpRecurringId, $iModifyReasonId)
+	{
+		// Start a new database transaction
+		$oDataAccess	= DataAccess::getDataAccess();
+		if (!$oDataAccess->TransactionStart())
+		{
+			// Failure!
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> Employee::getForId(Flex::getUserId())->isGod() ? 'There was an error accessing the database' : ''
+					);
+		}
+		
+		try
+		{
+			// Check permissions
+			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
+			{
+				throw new JSON_Handler_FollowUp_Recurring_Exception('You do not have permission to edit Recurring Follow-Ups.');
+			}
+			
+			$oFollowUpRecurring					= FollowUp_Recurring::getForId($iFollowUpRecurringId);
+			$oFollowUpRecurring->end_datetime	= date('Y-m-d H:i:s');
+			$oFollowUpRecurring->save($iModifyReasonId);
+			
+			// Commit db transaction
+			$oDataAccess->TransactionCommit();
+			
+			return array("Success" => true);
+		}
+		catch (JSON_Handler_FollowUp_Recurring_Exception $oException)
+		{
+			// Rollback db transaction
+			$oDataAccess->TransactionRollback();
+			
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> $oException->getMessage()
+					);
+		}
+		catch (Exception $e)
+		{
+			// Rollback db transaction
+			$oDataAccess->TransactionRollback();
+			
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> Employee::getForId(Flex::getUserId())->isGod() ? $e->getMessage() : 'There was an error ending the follow-up.'
+					);
+		}
+	}
+	
 	public function updateEndDate($iFollowUpRecurringId, $sEndDate, $iModifyReasonId)
 	{
 		// Start a new database transaction
@@ -155,7 +207,7 @@ class JSON_Handler_FollowUp_Recurring extends JSON_Handler
 			
 			return 	array(
 						"Success"	=> false,
-						"Message"	=> Employee::getForId(Flex::getUserId())->isGod() ? $e->getMessage() : 'There was an error getting the dataset'
+						"Message"	=> Employee::getForId(Flex::getUserId())->isGod() ? $e->getMessage() : 'There was an error updating the end date'
 					);
 		}
 	}
@@ -172,10 +224,12 @@ class JSON_Handler_FollowUp_Recurring extends JSON_Handler
 			
 			$oFollowUpRecurring	= FollowUp_Recurring::getForId($iFollowUpRecurringId);
 			$iProjectedDate		= strtotime($oFollowUpRecurring->start_datetime);
+			$iEndDate			= strtotime($oRecurringFollowUp->end_datetime);
 			$sDueDateTime		= date('Y-m-d H:i:s', $iProjectedDate);
 			$iNow				= time();
 			$i					= 0;
-			while(($iProjectedDate <= $iNow) || FollowUp::getForDateAndRecurringId($sDueDateTime, $iFollowUpRecurringId))
+			while((($iProjectedDate <= $iNow) && ($iProjectedDate <= $iEndDate)) || 
+				FollowUp::getForDateAndRecurringId($sDueDateTime, $iFollowUpRecurringId))
 			{
 				$i++;
 				$iProjectedDate	= $oFollowUpRecurring->getProjectedDueDateSeconds($i);
@@ -199,6 +253,75 @@ class JSON_Handler_FollowUp_Recurring extends JSON_Handler
 			return 	array(
 						"Success"	=> false,
 						"Message"	=> Employee::getForId(Flex::getUserId())->isGod() ? $e->getMessage() : 'There was an error getting the dataset'
+					);
+		}
+	}
+	
+	public function getFollowUpDetails($iFollowUpId)
+	{
+		try
+		{
+			// Check permissions
+			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
+			{
+				throw new JSON_Handler_FollowUp_Exception('You do not have permission to view Recurring Follow-Ups.');
+			}
+			
+			$oFollowUpRecurring		= FollowUp_Recurring::getForId($iFollowUpId);
+			$aDetails				= $oFollowUpRecurring->getDetails();
+			$aDetails['sContent']	= $oFollowUpRecurring->getSummary(null, false);
+			
+			return	array(
+						"Success"	=> true,
+						"oFollowUp"	=> $oFollowUpRecurring->toStdClass(),
+						"aDetails"	=> $aDetails
+					);
+		}
+		catch (JSON_Handler_FollowUp_Recurring_Exception $oException)
+		{
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> $oException->getMessage()
+					);
+		}
+		catch (Exception $e)
+		{
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> Employee::getForId(Flex::getUserId())->isGod ? $e->getMessage() : 'There was an error getting the follow-up context details'
+					);
+		}
+	}
+	
+	public function getOccurrences($iFollowUpRecurringId, $iNowSeconds=false)
+	{
+		try
+		{
+			// Check permissions
+			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
+			{
+				throw new JSON_Handler_FollowUp_Exception('You do not have permission to view Recurring Follow-Up occurrences.');
+			}
+			
+			$oFollowUpRecurring	= FollowUp_Recurring::getForId($iFollowUpRecurringId);
+			$aOccurrences		= $oFollowUpRecurring->getOccurrenceDetails(false, false, $iNowSeconds);
+			return	array(
+						"Success"		=> true,
+						"aOccurrences"	=> $aOccurrences
+					);
+		}
+		catch (JSON_Handler_FollowUp_Recurring_Exception $oException)
+		{
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> $oException->getMessage()
+					);
+		}
+		catch (Exception $e)
+		{
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> Employee::getForId(Flex::getUserId())->isGod ? $e->getMessage() : 'There was an error getting the follow-up occurrences'
 					);
 		}
 	}

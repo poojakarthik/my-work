@@ -26,6 +26,7 @@ var Pagination	= Class.create
 									intPageSize		: this._intPageSize,
 									intPageCount	: this._calculatePageCount(intTotalResults)
 								}
+		//debugger;
 		this._fncCallback(objResultSet);
 	},
 	
@@ -84,8 +85,12 @@ var Pagination	= Class.create
 			intPageNumber	= intPageCount-1;
 		}
 		
+		if (intPageNumber < Pagination.PAGE_FIRST)
+		{
+			intPageNumber	= Pagination.PAGE_FIRST;
+		}
+		
 		this.intCurrentPage	= intPageNumber;
-		//alert("Current Page: "+this.intCurrentPage);
 		return this.getCurrentPage();
 	},
 	

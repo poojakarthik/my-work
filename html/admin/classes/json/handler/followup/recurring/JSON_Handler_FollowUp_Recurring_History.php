@@ -11,7 +11,7 @@ class JSON_Handler_FollowUp_Recurring_History extends JSON_Handler
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 	
-	public function getForRecurringFollowUp($iFollowUpRecurringId)
+	public function getForRecurringFollowUp($iFollowUpRecurringId, $bClosedOccurencesOnly, $iNowSeconds=false)
 	{
 		try
 		{
@@ -21,8 +21,9 @@ class JSON_Handler_FollowUp_Recurring_History extends JSON_Handler
 				throw new JSON_Handler_FollowUp_Recurring_History_Exception('You do not have permission to view Follow-Up History.');
 			}
 			
+			// Get history details
 			$aHistoryRecords	= FollowUp_Recurring_History::getForFollowUpRecurringId($iFollowUpRecurringId);
-			$aResult			= array();
+			$aHistoryDetails	= array();
 			foreach ($aHistoryRecords as $oRecord)
 			{
 				// Convert to std class
@@ -46,12 +47,17 @@ class JSON_Handler_FollowUp_Recurring_History extends JSON_Handler
 				}
 				
 				// Store
-				$aResult[$oRecord->id]				= $oStdClassRecord;  
+				$aHistoryDetails[$oRecord->id]	= $oStdClassRecord;  
 			}
 			
+			// Get occurence details
+			$oFollowUpRecurring	= FollowUp_Recurring::getForId($iFollowUpRecurringId);
+			$aOccurrenceDetails	= $oFollowUpRecurring->getOccurrenceDetails($bClosedOccurencesOnly, false, $iNowSeconds);
+			
 			return 	array(
-						"Success"	=> true,
-						"aResults"	=> $aResult
+						"Success"			=> true,
+						"aHistoryDetails"	=> $aHistoryDetails,
+						"aOccurenceDetails"	=> $aOccurrenceDetails
 					);
 		}
 		catch (JSON_Handler_FollowUp_Recurring_History_Exception $oException)

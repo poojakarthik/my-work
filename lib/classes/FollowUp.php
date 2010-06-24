@@ -93,6 +93,9 @@ class FollowUp extends ORM_Cached
 							$aDetails['contact_id']		= $oContact->Id;
 							$aDetails['contact_name']	= "{$oContact->FirstName} {$oContact->LastName}";
 						}
+						
+						$aDetails['note_id']		= $oNote->Id;
+						$aDetails['note_type_id']	= $oNote->NoteType;
 					}
 				}
 				break;
@@ -126,6 +129,8 @@ class FollowUp extends ORM_Cached
 							$aDetails['contact_id']		= $iContactId;
 							$aDetails['contact_name']	= $oContact->FirstName.' '.$aContacts[0]->LastName;
 						}
+						
+						$aDetails['action_id']	= $oAction->id;
 					}
 				}
 				break;
@@ -156,6 +161,8 @@ class FollowUp extends ORM_Cached
 						{
 							$aDetails['ticket_contact_name']	= $oContact->getName();
 						}
+						
+						$aDetails['ticketing_correspondence_id']	= $oTicketingCorrespondence->id;
 					}
 				}
 				break;
@@ -164,7 +171,7 @@ class FollowUp extends ORM_Cached
 		return $aDetails;
 	}
 
-	public function getSummary($iCharacterLimit=30)
+	public function getSummary($iCharacterLimit=30, $bRemoveWhitespace=true)
 	{
 		$sSummary	= '';
 		switch ($this->followup_type_id)
@@ -208,10 +215,13 @@ class FollowUp extends ORM_Cached
 		}
 		
 		// Remove whitespace
-		$sSummary	= preg_replace('/\s/', ' ', $sSummary);
+		if ($bRemoveWhitespace)
+		{
+			$sSummary	= preg_replace('/\s/', ' ', $sSummary);
+		}
 		
 		// Limit to $iCharacterLimit characters (30 is default)
-		if (strlen($sSummary) > $iCharacterLimit)
+		if (!is_null($iCharacterLimit) && (strlen($sSummary) > $iCharacterLimit))
 		{
 			return substr($sSummary, 0, $iCharacterLimit).'...';
 		}
@@ -267,6 +277,17 @@ class FollowUp extends ORM_Cached
 		else
 		{
 			return false;
+		}
+	}
+	
+	public static function getForRecurringId($iFollowUpRecurringId)
+	{
+		$oSelect	= self::_preparedStatement('selByFollowUpRecurringId');
+		$oSelect->Execute(array('followup_recurring_id' => $iFollowUpRecurringId));
+		$aResults	= array();
+		while ($aRow = $oSelect->Fetch())
+		{
+			$aResults[$aRow['id']]	= new self($aRow);
 		}
 	}
 
@@ -551,6 +572,11 @@ class FollowUp extends ORM_Cached
 		}
 	}
 	
+	public function isClosed()
+	{
+		return !(is_null($this->followup_closure_id) && is_null($this->closed_datetime));
+	}
+	
 	/**
 	 * _preparedStatement()
 	 *
@@ -583,7 +609,10 @@ class FollowUp extends ORM_Cached
 				case 'selByDueDatetimeAndFollowUpRecurringId':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "due_datetime = <due_datetime> AND followup_recurring_id = <followup_recurring_id>");
 					break;
-					
+				case 'selByFollowUpRecurringId':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "followup_recurring_id = <followup_recurring_id>");
+					break;
+				
 				// INSERTS
 				case 'insSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);

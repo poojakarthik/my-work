@@ -5,7 +5,7 @@ var Popup_FollowUp_Add	= Class.create(Reflex_Popup,
 	{
 		$super(40);
 		
-		this._iType						= iType;
+		this._iType						= parseInt(iType);
 		this._iTypeDetail				= iTypeDetail;
 		this._iSelectedRecurringEndDate	= null;
 		this._iSelectedRecurrenceType	= null;
@@ -626,22 +626,30 @@ Popup_FollowUp_Add.VALIDATION_REASON_END_DATE				= 'The End Date must be after t
 
 Popup_FollowUp_Add.getCustomerGroupLink	= function(iAccountId, sName)
 {
-	return 	$T.div({class: 'popup-followup-add-details-subdetail'},
+	return 	$T.div({class: 'popup-followup-detail-subdetail'},
 				$T.span(sName)
 			);
 };
 
 Popup_FollowUp_Add.getAccountLink	= function(iId, sName)
 {
-	return 	$T.div({class: 'popup-followup-add-details-subdetail'},
-				$T.img({src: Popup_FollowUp_Add.DETAILS_ACCOUNT_IMAGE_SOURCE}),
-				$T.span(sName + ' (' + iId + ')')
+	var sUrl	= 'flex.php/Account/Overview/?Account.Id=' + iId;
+	return 	$T.div({class: 'popup-followup-detail-subdetail account'},
+				$T.div({class: 'account-id'},
+					$T.img({src: Popup_FollowUp_Add.DETAILS_ACCOUNT_IMAGE_SOURCE}),
+					$T.a(
+						iId + ': '
+					)
+				),
+				$T.a({class: 'account-name'},
+					sName
+				)
 			);
 };
 
 Popup_FollowUp_Add.getAccountContactLink	= function(iId, sName)
 {
-	return 	$T.div({class: 'popup-followup-add-details-subdetail'},
+	return 	$T.div({class: 'popup-followup-detail-subdetail'},
 				$T.img({src: Popup_FollowUp_Add.DETAILS_ACCOUNT_CONTACT_IMAGE_SOURCE}),
 				$T.span(sName)
 			);
@@ -649,7 +657,7 @@ Popup_FollowUp_Add.getAccountContactLink	= function(iId, sName)
 
 Popup_FollowUp_Add.getServiceLink	= function(iId, sFNN)
 {
-	return 	$T.div({class: 'popup-followup-add-details-subdetail'},
+	return 	$T.div({class: 'popup-followup-detail-subdetail'},
 				$T.img({src: Popup_FollowUp_Add.DETAILS_ACCOUNT_SERVICE_IMAGE_SOURCE}),
 				$T.span('FNN : ' + sFNN)
 			);
@@ -657,7 +665,7 @@ Popup_FollowUp_Add.getServiceLink	= function(iId, sFNN)
 
 Popup_FollowUp_Add.getTicketLink	= function(iTicketId, iAccountId, sContact)
 {
-	return 	$T.div({class: 'popup-followup-add-details-subdetail'},
+	return 	$T.div({class: 'popup-followup-detail-subdetail'},
 				$T.img({src: Popup_FollowUp_Add.DETAILS_TICKET_IMAGE_SOURCE}),
 				$T.span('Ticket ' + iTicketId + ' (' + sContact + ')')
 			);

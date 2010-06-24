@@ -3275,6 +3275,9 @@ div.section > div.section-content
 	padding-bottom		: 0.25em;
 	padding-top			: 0.25em;
 	width				: 100%;
+	
+	/*float				: none;
+	clear				: both;*/
 }
 
 div.section > div.section-content.section-content-fitted
@@ -3295,10 +3298,14 @@ div.section > div.section-header > div.section-header-options
 {
 	display		: inline-block;
 	height		: 100%;
+	text-align	: right;
+	
 	position	: absolute;
 	right		: 0em;
-	text-align	: right;
 	bottom		: 0.25em;
+	
+	/*float			: right;
+	padding-bottom	: 0.25em;*/
 }
 
 div.section > div.section-header > div.section-header-title > h2,
@@ -3340,6 +3347,59 @@ div.section > div.section-header > div.section-header-title
 	-webkit-border-radius	: 6px 6px 0 0;
 }
 
+/* Section_Expandable */
+
+div.section-expandable-expand > img
+{
+	width		: 8px;
+	height		: 8px;
+	position	: absolute;
+	left		: 4px;
+	top			: 4px;
+}
+
+div.section-expandable-expand
+{
+	position			: relative;
+	-moz-border-radius	: 8px;
+	border				: solid 1px #333;
+	cursor				: pointer;
+	width				: 16px;
+	height				: 16px;
+	margin				: 0.25em;
+}
+
+div.section-expandable-expand:hover
+{
+	background-color	: #AEE085
+}
+
+div.section-expandable-header-retracted
+{
+	border-bottom	: solid 1px #000;
+}
+
+div.section-expandable-header-options
+{
+	top	: 0em;
+}
+
+div.section-expandable-header-options > ul.reset
+{
+	margin	: 0em;
+}
+
+div.section-expandable-header-options > ul.reset > li
+{
+	height			: 100%;
+	vertical-align	: middle;
+}
+
+div.section-expandable-header-options div.followup-configure-list-pagination
+{
+	position	: relative;
+	bottom		: 0.25em;
+}
 
 /************************ END - Generic Caption - END ************************/
 
@@ -4337,7 +4397,11 @@ div.followup-closure-validation-errors
 div.followup-list-all table.reflex thead th > span
 {
 	vertical-align	: middle;
-	padding-right	: 1em;
+}
+
+div.followup-list-all table.reflex thead tr:nth-child(2) > th
+{
+	background-color	: #666;	
 }
 
 div.followup-list-all table.reflex thead th > img
@@ -4351,6 +4415,21 @@ div.followup-list-all table.reflex thead th.followup-list-all-filter
 	font-style	: italic;
 	font-size	: 0.85em;
 }
+/*
+div.followup-list-all table.reflex thead th.followup-list-all-header
+{
+	vertical-align	: top;
+}
+*/
+div.followup-list-all table.reflex thead th.followup-list-all-header > span
+{
+	padding-right	: 0.25em;
+}
+
+div.followup-list-all table.reflex thead th.followup-list-all-header > img.followup-list-all-header-filter
+{
+	float	: right;
+}
 
 div.followup-list-all table.reflex thead th.followup-list-all-filter > img,
 div.followup-list-all table.reflex thead th.followup-list-all-filter > span
@@ -4360,12 +4439,19 @@ div.followup-list-all table.reflex thead th.followup-list-all-filter > span
 
 div.followup-list-all table.reflex thead th.followup-list-all-filter > span
 {
-	margin-left	: 0.25em;
+	margin-left		: 0.25em;
+	padding-right	: 0.5em;
 }
 
-div.followup-list-all table.reflex thead th.followup-list-all-filter > img
+div.followup-list-all table.reflex thead th.followup-list-all-filter > div
 {
-	padding-left	: 0.5em;
+	display			: inline-block;
+	vertical-align	: middle;
+}
+
+div.followup-list-all table.reflex thead th.followup-list-all-filter > div > img
+{
+	padding-left	: 0.25em;
 	width			: 1.25em;
 	height			: 1.25em;
 	cursor			: pointer;
@@ -4800,21 +4886,33 @@ div.popup-followup-active-summary-text
 	font-size	: 0.85em;
 }
 
-div.popup-followup-active-detail-subdetail
+div.popup-followup-detail-subdetail
 {
-	padding-top	: 0.25em;
 	font-size	: 0.9em;
 }
 
-div.popup-followup-active-detail-subdetail > img
+div.popup-followup-detail-subdetail img
 {
-	padding-right	: 0.5em;
+	padding-right	: 0.25em;
 }
 
-div.popup-followup-active-detail-subdetail > img,
-div.popup-followup-active-detail-subdetail > a
+div.popup-followup-detail-subdetail img,
+div.popup-followup-detail-subdetail a
 {
 	vertical-align	: middle;
+}
+
+div.popup-followup-detail-subdetail,
+div.popup-followup-detail-subdetail.account > div
+{
+	margin-bottom	: 0.25em;
+}
+
+div.popup-followup-detail-subdetail.account > div.account-id
+{
+	white-space		: nowrap;
+	display			: inline-block;
+	padding-right	: 0.25em;
 }
 
 ul.popup-followup-active-actions
@@ -4902,29 +5000,15 @@ table.popup-followup-details
 	width	: 100%;
 }
 
-
-
 div.popup-followup-add-details
 {
 	margin-left	: 1em;
 }
 
-div.popup-followup-add-details-subdetail > img
-{
-	padding-right	: 0.75em;
-}
-
-div.popup-followup-add-details-subdetail > img,
-div.popup-followup-add-details-subdetail > span,
 div.popup-followup-details-type > img,
 div.popup-followup-details-type > span
 {
 	vertical-align	: middle;
-}
-
-div.popup-followup-add-details-subdetail
-{
-	padding-bottom	: 0.5em;
 }
 
 div.popup-followup-details-type > img
@@ -5076,7 +5160,7 @@ div.followup-context-list-placeholder-ticket-correspondence
 {
 	position	: absolute;
 	right		: 0.6%;
-	top			: 4.252em;
+	/*top			: 4.252em;*/
 }
 
 /* Actions/Notes modifications */
@@ -5256,6 +5340,11 @@ div.record-edit-validation-errors
 
 /************************ START - Popup View FollowUp - START ************************/
 
+div.popup-followup-view.popup-followup-add
+{
+	margin	: 0.5em 1em;
+}
+
 table.popup-followup-view-followup-details-onceoff > tbody > tr > td:first-child,
 table.popup-followup-view-followup-details-recurring > tbody > tr > td:first-child
 {
@@ -5269,7 +5358,7 @@ table.popup-followup-view-followup-details-onceoff
 {
 	background-color	: #F8F8EC;
 	width				: 100%;
-	margin				: 0em 0em 0.5em 0em;
+	margin				: 0em 0em 1em 0em;
 	-moz-border-radius	: 4px;
 	border				: 1px solid #34446A;
 }
@@ -5306,8 +5395,8 @@ div.popup-followup-view-history > div.section-content
 
 div.popup-followup-view-history > div.section-content > ul.reset
 {
-	height		: 14em;
-	overflow-y	: scroll;
+	max-height	: 15em;
+	overflow-y	: auto;
 }
 
 div.popup-followup-view-history ul.reset
@@ -5379,22 +5468,6 @@ div.popup-followup-view-details
 	margin-left	: 0em;
 }
 
-div.popup-followup-view-details-subdetail > img
-{
-	padding-right	: 0.5em;
-}
-
-div.popup-followup-view-details-subdetail > img,
-div.popup-followup-view-details-subdetail > span
-{
-	vertical-align	: middle;
-}
-
-div.popup-followup-view-details-subdetail
-{
-	padding-bottom	: 0.5em;
-}
-
 tr.popup-followup-view-followup-details-type-detail > th.label
 {
 	vertical-align	: top;
@@ -5406,4 +5479,162 @@ span.popup-followup-view-date-overdue
 	font-weight	: bold;
 }
 
+div.popup-followup-view-full-details > img
+{
+	cursor			: pointer;
+	vertical-align	: top;
+}
+
+div.popup-followup-view-full-details
+{
+	margin-bottom	: 0.5em;
+}
+
+div.popup-followup-view-full-details.section > div.section-content.section-content-fitted
+{
+	width	: 100%;
+}
+
+div.popup-followup-view-full-details.section > div.section-content.section-content-fitted > div
+{
+	border-width	: 1px;
+	border-style	: solid;
+	max-height		: 10em;
+	overflow-y		: auto;
+}
+
+div.popup-followup-view-full-details.section.action-list.embedded > div.section-content-fitted div.item
+{
+	margin-top	: 0em;
+}
+
+div.popup-followup-view-full-details.section > div.section-content-fitted > div.ticket-correspondence
+{
+	background-color	: #F8F8EC;
+	border-color		: #1d1d1d;
+	padding				: 0.25em;
+}
+
+div.ticket-correspondence > div > span:first-child
+{
+	display			: inline-block;
+	width			: 6em;
+	font-weight		: bold;
+	padding-bottom	: 0.25em;
+}
+
+div.ticket-correspondence > div.ticket-correspondence-content
+{
+	margin	: 0.25em 0em 0em 0.5em;
+}
+
+div.popup-followup-view-history-toggle
+{
+	display		: inline-block;
+	margin-left	: 1em;
+}
+
+div.popup-followup-view-full-details > a,
+div.popup-followup-view-history-toggle > a
+{
+	color	: #0000FF;
+}
+
+div.popup-followup-view-history-message
+{
+	font-style	: italic;
+	opacity		: 0.5;
+	margin		: 0.25em 0em 0.25em 0.25em;
+}
+
+div.popup-followup-view-history-actioned > span:first-child
+{
+	font-weight	: bold;
+}
 /************************ END - Popup View FollowUp - END ************************/
+
+/*************** START - Component Date Time Picker - START **************/
+.component-date-picker td
+{
+	cursor			: default;
+	text-align		: center !important;
+	border-bottom	: .1em dotted #c0c0c0;
+}
+
+.component-date-picker .bar
+{
+	text-align	: center;
+	background	: #F2F5FF;
+	padding		: .2em 0 .2em;
+}
+
+.component-date-picker .bar > img
+{
+	padding-right	: 0.25em;
+	position		: relative;
+	top				: 0.25em;
+	cursor			: pointer;
+}
+
+.component-date-picker .component-date-picker-active:hover
+{
+	color		: #fff;
+	background	: #666;
+}
+
+.component-date-picker td.component-date-picker-active
+{
+	border-width	: .1em 0em .1em 0em;
+	border-style	: solid solid dotted solid;
+	border-color	: transparent transparent #c0c0c0 transparent;
+	cursor			: pointer;
+	padding			: 0em 0.1em 0em 0.1em;
+}
+
+.component-date-picker td.component-date-picker-active-today
+{
+	border	: .1em solid #111;
+	padding	: 0em;
+}
+
+.component-date-picker button
+{
+	border	: none;
+	padding	: 0;
+}
+
+.component-date-picker title
+{
+	font-weight	: bold;
+}
+
+.component-date-picker th
+{
+	background		: #fff;
+	color			: #000;
+	border-bottom	: .1em solid #c0c0c0;
+	text-align		: center !important;
+	margin-top		: .2em;
+}
+
+.component-date-picker option, .component-date-picker select
+{
+	font-size	: 1em;
+}
+
+.component-date-picker
+{
+	border		: 0.2em solid #111;
+	background	: #eee;
+	padding		: 0.1em 0.25em;
+	width		: autol
+}
+
+.component-date-picker table
+{
+	width		: 100%;
+	font-size	: 1em;
+	margin		: 0 auto;
+}
+/***************** END - Component Date Time Picker - END ****************/
+

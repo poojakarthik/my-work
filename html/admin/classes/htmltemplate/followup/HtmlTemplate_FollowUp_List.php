@@ -14,9 +14,13 @@ class HtmlTemplate_FollowUp_List extends FlexHtmlTemplate
 		
 		// Helper classes
 		$this->LoadJavascript('reflex_validation');
+		$this->LoadJavascript('reflex_sorter');
 		$this->LoadJavascript('component_date_picker');
+		$this->LoadJavascript('actions_and_notes');
 		
-		// Control fields & other inputs
+		// Control fields & other components
+		$this->LoadJavascript('section');
+		$this->LoadJavascript('section_expandable');
 		$this->LoadJavascript('control_field');
 		$this->LoadJavascript('control_field_select');
 		$this->LoadJavascript('control_field_date_picker');
@@ -36,6 +40,7 @@ class HtmlTemplate_FollowUp_List extends FlexHtmlTemplate
 		$this->LoadJavascript('popup_followup_close');
 		$this->LoadJavascript('popup_followup_reassign');
 		$this->LoadJavascript('popup_followup_due_date');
+		$this->LoadJavascript('popup_followup_view');
 	}
 
 	public function Render()

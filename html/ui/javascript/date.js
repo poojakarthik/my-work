@@ -114,7 +114,7 @@ Date.$_UNIT_TESTS_.shift	= function(oSourceDate, bProgressive)
 		var oTestData	= Date.$_UNIT_TEST_DATA_.shift[i];
 		
 		oNewDate.shift(oTestData.iInterval, oTestData.sIntervalType);
-		alert("Test " + (i + 1) + " of " + Date.$_UNIT_TEST_DATA_.shift.length + ": " + oDate + " + " + oTestData.iInterval + " " + oTestData.sIntervalType + " = " + oNewDate);
+		//alert("Test " + (i + 1) + " of " + Date.$_UNIT_TEST_DATA_.shift.length + ": " + oDate + " + " + oTestData.iInterval + " " + oTestData.sIntervalType + " = " + oNewDate);
 	}
 }
 

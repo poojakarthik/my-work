@@ -8,16 +8,15 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		
 		this._sDateFormat	= (sDateFormat ? sDateFormat : 'Y-m-d');
 		this._bTimePicker	= bTimePicker;
+		
+		// Default value is null
+		this.mValue			= null;
 
 		// Create the DOM Elements
 		this.oControlOutput.oEdit	= $T.div({class: 'date-time-picker-dynamic'});
 		this.oControlOutput.oElement.appendChild(this.oControlOutput.oEdit);
 		
-		// FIXME: Temporary Id
-		var sHiddenId	= 'hidden_' + Math.ceil(Math.random() * (new Date()).getTime());
-		
-		this.oControlOutput.oHidden			= document.createElement('hidden');
-		this.oControlOutput.oHidden.id		= sHiddenId;
+		this.oControlOutput.oHidden	= document.createElement('hidden');
 		this.oControlOutput.oEdit.appendChild(this.oControlOutput.oHidden);
 		
 		this.oControlOutput.oInput				= document.createElement('input');
@@ -35,18 +34,16 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		this.oControlOutput.oView	= document.createElement('span');
 		this.oControlOutput.oElement.appendChild(this.oControlOutput.oView);
 		
-		var objDate			= new Date();
-		this._oDatePicker	= 	new Component_Date_Picker(
-									new Date(), 
-									(bTimePicker ? true : false), 
-									Control_Field_Date_Picker.YEAR_START, 
-									Control_Field_Date_Picker.YEAR_END,
-									this._sDateFormat, 
-									this._datePickerValueChange.bind(this)
-								);
-		
 		this._aOnChangeCallbacks	= [];
-		
+		var objDate					= new Date();
+		this._oDatePicker			= 	new Component_Date_Picker(
+											new Date(), 
+											(bTimePicker ? true : false), 
+											Control_Field_Date_Picker.YEAR_START, 
+											Control_Field_Date_Picker.YEAR_END,
+											this._sDateFormat, 
+											this._datePickerValueChange.bind(this)
+										);
 		this.validate();		
 		this.addEventListeners();
 	},
@@ -62,10 +59,13 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		this._updateFormattedInput();
 		
 		// Parse the formatted date string & update the Datepicker's default date
-		var oDate	= Date.$parseDate(mValue, this._sDateFormat);
-		if (oDate)
+		if (mValue != null)
 		{
-			this._oDatePicker.setDate(oDate);
+			var oDate	= Date.$parseDate(mValue, this._sDateFormat);
+			if (oDate)
+			{
+				this._oDatePicker.setDate(oDate);
+			}
 		}
 	},
 	
@@ -77,13 +77,31 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		this.oControlOutput.oView.innerHTML	= this._getFormattedDate();
 	},
 	
+	getElementText	: function()
+	{
+		return this._getFormattedDate();
+	},
+	
+	clearValue	: function()
+	{
+		this._oDatePicker.clearDate();
+		this.oControlOutput.oHidden.value	= null;
+		this.save(true);
+		this.updateElementValue();
+	},
+	
 	_datePickerValueChange	: function(oDate)
 	{
 		// Convert the date object (from the picker) to a formatted string 
 		// and set this controls hidden value the update the visible input.
-		var sDate							= oDate.$format(this._sDateFormat);
-		this.oControlOutput.oHidden.value	= sDate;
-		this._updateFormattedInput();
+		var sDate	= oDate.$format(this._sDateFormat);
+		this.setElementValue(sDate);
+		this.validate();
+		
+		for (var i = 0; i < this._aOnChangeCallbacks.length; i++)
+		{
+			this._aOnChangeCallbacks[i]();
+		}
 	},
 	
 	_updateFormattedInput	: function()
@@ -121,17 +139,17 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 	addEventListeners	: function()
 	{
 		this.aEventHandlers					= {};
-		this.aEventHandlers.fnValueChange	= this._valueChange.bind(this);
+		//this.aEventHandlers.fnValueChange	= this._valueChange.bind(this);
 		this.aEventHandlers.fnOpenPicker	= this._showDatePicker.bind(this);
 		
-		this.oControlOutput.oHidden.addEventListener('change' ,this.aEventHandlers.fnValueChange, false);
-		this.oControlOutput.oHidden.addEventListener('change' ,this.aEventHandlers.fnValueChange, false);
+		//this.oControlOutput.oHidden.addEventListener('change' ,this.aEventHandlers.fnValueChange, false);
+		//this.oControlOutput.oHidden.addEventListener('change' ,this.aEventHandlers.fnValueChange, false);
 		this.oControlOutput.oIcon.addEventListener('click' ,this.aEventHandlers.fnOpenPicker, false);
 	},
 	
 	removeEventListeners	: function()
 	{
-		this.oControlOutput.oInput.removeEventListener('change'	, this.aEventHandlers.fnValidate, false);
+		//this.oControlOutput.oInput.removeEventListener('change'	, this.aEventHandlers.fnValidate, false);
 		this.oControlOutput.oIcon.removeEventListener('click'	, this.aEventHandlers.fnOpenPicker, false);
 	},
 	
@@ -140,7 +158,7 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		this._aOnChangeCallbacks.push(fnCallback);
 	},
 	
-	_valueChange	: function()
+	/*_valueChange	: function()
 	{
 		this.validate();
 		
@@ -148,7 +166,7 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		{
 			this._aOnChangeCallbacks[i]();
 		}
-	},
+	},*/
 	
 	disableInput	: function()
 	{

@@ -23,7 +23,7 @@ Object.extend(ActionsAndNotes,
 	intLoadingStepsCompleted : 0,
 	intTotalLoadingSteps : 2,
 	arrFuncsOnLoaded : null,
-
+	
 	setNoteTypes : function(objNoteTypes)
 	{
 		ActionsAndNotes.noteTypes = objNoteTypes;
@@ -1303,8 +1303,11 @@ Object.extend(ActionsAndNotes.List.prototype,
 		this.elmPageSummarySpan.appendChild(document.createTextNode(strPageDescription));
 	},
 	
-	renderItem : function(objItem)
+	renderItem : function(objItem, bInsertFollowUpPlaceholder)
 	{
+		// Default is to add the placeholder if no value given
+		bInsertFollowUpPlaceholder	= true;((bInsertFollowUpPlaceholder === false) ? false : true);
+		
 		var i, j;
 		var elmLink;
 		var elmItemDiv = document.createElement('div');
@@ -1473,19 +1476,23 @@ Object.extend(ActionsAndNotes.List.prototype,
 		}
 		
 		// Create a follow-up context list place holder for the note/action
-		var iFollowUpType	= null; 
-		switch (objItem.recordType)
+		if (bInsertFollowUpPlaceholder)
 		{
-			case ActionsAndNotes.TYPE_NOTE:
-				iFollowUpType	= $CONSTANT.FOLLOWUP_TYPE_NOTE;
-				break;
-			case ActionsAndNotes.TYPE_ACTION:
-				iFollowUpType	= $CONSTANT.FOLLOWUP_TYPE_ACTION;
-				break;
+			var iFollowUpType	= null; 
+			switch (objItem.recordType)
+			{
+				case ActionsAndNotes.TYPE_NOTE:
+					iFollowUpType	= $CONSTANT.FOLLOWUP_TYPE_NOTE;
+					break;
+				case ActionsAndNotes.TYPE_ACTION:
+					iFollowUpType	= $CONSTANT.FOLLOWUP_TYPE_ACTION;
+					break;
+			}
+			
+			var oFollowUpContextListElement	= $T.div({class: FollowUp_Link.PLACEHOLDER_CLASS, type: iFollowUpType, type_detail: objItem.id});
+			elmDetailsDiv.appendChild(oFollowUpContextListElement);
 		}
 		
-		var oFollowUpContextListElement	= $T.div({class: FollowUp_Link.PLACEHOLDER_CLASS, type: iFollowUpType, type_detail: objItem.id});
-		elmDetailsDiv.appendChild(oFollowUpContextListElement);
 		elmDetailsDiv.appendChild(oDetailsLeftDiv);
 		elmItemDiv.appendChild(elmDetailsDiv);
 		

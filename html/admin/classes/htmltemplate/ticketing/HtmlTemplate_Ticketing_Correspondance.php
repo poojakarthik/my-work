@@ -113,7 +113,10 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 	<tbody>
 		<tr class="alt">
 			<td class="title">Created: </td>
-			<td><?=htmlspecialchars($correspondence->creationDatetime)?></td>
+			<td>
+				<?=htmlspecialchars($correspondence->creationDatetime)?>
+				<div class='followup-context-list-placeholder followup-context-list-placeholder-ticket-correspondence' type='<? echo FOLLOWUP_TYPE_TICKET_CORRESPONDENCE; ?>' type_detail='<?php echo $correspondence->id; ?>'></div>
+			</td>
 		</tr>
 		<tr class="alt">
 			<td class="title">Summary: </td>
@@ -173,7 +176,6 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 			<td class="title">Details: </td>
 			<td class='ticketing-correspondence-details'>
 				<?=$details?>
-				<div class='followup-context-list-placeholder followup-context-list-placeholder-ticket-correspondence' type='<? echo FOLLOWUP_TYPE_TICKET_CORRESPONDENCE; ?>' type_detail='<?php echo $correspondence->id; ?>'></div>
 			</td>
 		</tr>
 	</tbody>

@@ -80,7 +80,13 @@ var Component_FollowUp_Context_List	= Class.create
 	
 	_showAddPopup	: function()
 	{
-		FollowUpLink.showAddFollowUpPopup(this._iFollowUpType, this._iTypeDetail);
+		var sUrl	= null;
+		if (parseInt(this._iFollowUpType) == $CONSTANT.FOLLOWUP_TYPE_TICKET_CORRESPONDENCE)
+		{
+			sUrl	= 'reflex.php/Ticketing/Correspondence/' + this._iTypeDetail;
+		}
+		
+		FollowUpLink.showAddFollowUpPopup(this._iFollowUpType, this._iTypeDetail, sUrl);
 	},
 	
 	_ajaxError	: function(oResponse)
@@ -129,7 +135,7 @@ var Component_FollowUp_Context_List	= Class.create
 	
 	_iconClick	: function(oFollowUp)
 	{
-		var oPopup	= new Popup_FollowUp_View(this._iFollowUpType, this._iTypeDetail, oFollowUp);
+		var oPopup	= new Popup_FollowUp_View(oFollowUp.id, !oFollowUp.due_datetime, false);
 	}
 });
 

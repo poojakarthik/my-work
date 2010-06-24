@@ -35,6 +35,7 @@ class HtmlTemplate_FollowUp_Recurring_List extends FlexHtmlTemplate
 		$this->LoadJavascript('page_followup_recurring_list');
 		$this->LoadJavascript('popup_followup_reassign');
 		$this->LoadJavascript('popup_followup_recurring_end_date');
+		$this->LoadJavascript('popup_followup_recurring_end_now');
 	}
 
 	public function Render()

@@ -59,6 +59,12 @@ var Component_Date_Picker	= Class.create(
 	
 	show	: function(mLocation)
 	{
+		// First... ensure that we've got a value
+		if (!this._oDate)
+		{
+			this._oDate	= new Date();
+		}
+		
 		var bPosition	= false;
 		var iPositionX	= null;
 		var iPositionY	= null;
@@ -188,6 +194,11 @@ var Component_Date_Picker	= Class.create(
 		this._showValue();
 	},
 	
+	clearDate	: function()
+	{
+		this._oDate	= null;
+	},
+	
 	//
 	// Private functions
 	//
@@ -233,18 +244,20 @@ var Component_Date_Picker	= Class.create(
 		}
 		
 		// 'Use selected' icon
-		var oUseDateImg	= $T.img({src: 'img/template/table_row_insert.png', style: 'position: relative; top: 3px;'});
+		var sUseDateAlt	= 'Use the selected date' + (this._bTimePicker ? ' & time' : '');
+		var oUseDateImg	= $T.img({src: 'img/template/table_row_insert.png', alt: sUseDateAlt, title: sUseDateAlt});
 		oUseDateImg.hide();
 		oUseDateImg.observe('click', this._useSelectedDate.bind(this));
 		this._oUseDateImg	= oUseDateImg;
 		
 		// Close icon
-		var oCloseImg	= $T.img({src: 'img/template/delete.png', style: 'position: relative; top: 3px;'});
+		var sCloseAlt	= 'Close the Date Picker';
+		var oCloseImg	= $T.img({src: 'img/template/delete.png', alt: sCloseAlt, title: sCloseAlt});
 		oCloseImg.hide();
 		oCloseImg.observe('click', this.hide.bind(this));
 		this._oCloseImg	= oCloseImg;
 
-		this._oContainerDiv	= 	$T.div({class: 'date-time select-free'},
+		this._oContainerDiv	= 	$T.div({class: 'component-date-picker select-free'},
 									$T.div({class: 'bar'},
 										this._oMonthSelect,
 										' ',
@@ -330,7 +343,8 @@ var Component_Date_Picker	= Class.create(
 			this._oAMPMSelect.options[1].selected	= true;
 		}
 		
-		var oUseTimeImg	= $T.img({src:  'img/template/table_row_insert.png', style: 'position: relative; top: 3px;'});
+		var sUseTimeAlt	= 'Use the selected date & time'
+		var oUseTimeImg	= $T.img({src: 'img/template/table_row_insert.png', alt: sUseTimeAlt, title: sUseTimeAlt});
 		oUseTimeImg.hide();
 		oUseTimeImg.observe('click', this._useSelectedDate.bind(this));
 		this._oUseTimeImg	= oUseTimeImg;
@@ -381,7 +395,7 @@ var Component_Date_Picker	= Class.create(
 			}
 			
 			var oCell			= oRow.insertCell(-1);
-			oCell.className		= "date-time-active" + (i == iSelectedDate ? " date-time-active-today" : "");
+			oCell.className		= "component-date-picker-active" + (i == iSelectedDate ? " component-date-picker-active-today" : "");
 			oCell.iDayOfMonth	= i;
 			oCell.observe('click', this._dayOfMonthSelected.bind(this, oCell));
 			oCell.appendChild(document.createTextNode(i));
@@ -410,10 +424,10 @@ var Component_Date_Picker	= Class.create(
 	
 	_updateSelectedCalendarDay	: function()
 	{
-		var aDayTDs			= this._oDayGrid.select('td.date-time-active');
+		var aDayTDs			= this._oDayGrid.select('td.component-date-picker-active');
 		var iCurrentDate	= this._oDate.getDate();
 		var oTD				= null;
-		var sTodayClass		= 'date-time-active-today';
+		var sTodayClass		= 'component-date-picker-active-today';
 		for (var i = 0; i < aDayTDs.length; i++)
 		{
 			oTD	= aDayTDs[i];

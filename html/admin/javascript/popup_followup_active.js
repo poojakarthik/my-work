@@ -9,6 +9,10 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 		this._iWindowResizeCounter	= 0;
 		this._buildUI();
 		this._iCurrentHeightLimit	= this._getHeightLimit();
+		
+		this.oLoading	= new Reflex_Popup.Loading('Getting Follow-Ups...');
+		this.oLoading.display();
+		
 		this._refresh();
 	},
 
@@ -36,7 +40,7 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 									)
 								)
 							);
-				
+		
 		// Footer button events
 		var oFollowUpButton	= this._oContent.select('button.icon-button').first();
 		oFollowUpButton.observe('click', this._goToPage.bind(this, 'Manage', null, false));
@@ -186,6 +190,12 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 						)
 					);
 				}
+			}
+			
+			if (this.oLoading)
+			{
+				this.oLoading.hide();
+				delete this.oLoading;
 			}
 		}
 		else
@@ -622,23 +632,30 @@ Popup_FollowUp_Active.getFollowUpDetailsElement	= function(oFollowUp)
 
 Popup_FollowUp_Active.getCustomerGroupLink	= function(iAccountId, sName)
 {
-	return 	$T.div(sName);
+	return 	$T.div({class: 'popup-followup-detail-subdetail'},
+				$T.span(sName)
+			);
 };
 
 Popup_FollowUp_Active.getAccountLink	= function(iId, sName)
 {
 	var sUrl	= 'flex.php/Account/Overview/?Account.Id=' + iId;
-	return 	$T.div({class: 'popup-followup-active-detail-subdetail'},
-				$T.img({src: Popup_FollowUp_Active.DETAILS_ACCOUNT_IMAGE_SOURCE}),
-				$T.a({href: sUrl},
-					sName + ' (' + iId + ')'
+	return 	$T.div({class: 'popup-followup-detail-subdetail account'},
+				$T.div({class: 'account-id'},
+					$T.img({src: Popup_FollowUp_Active.DETAILS_ACCOUNT_IMAGE_SOURCE}),
+					$T.a({href: sUrl},
+						iId + ': '
+					)
+				),
+				$T.a({class: 'account-name', href: sUrl},
+					sName
 				)
 			);
 };
 
 Popup_FollowUp_Active.getAccountContactLink	= function(iId, sName)
 {
-	return 	$T.div({class: 'popup-followup-active-detail-subdetail'},
+	return 	$T.div({class: 'popup-followup-detail-subdetail'},
 				$T.img({src: Popup_FollowUp_Active.DETAILS_ACCOUNT_CONTACT_IMAGE_SOURCE}),
 				$T.a({href: 'reflex.php/Contact/View/' + iId + '/'},
 					sName
@@ -648,7 +665,7 @@ Popup_FollowUp_Active.getAccountContactLink	= function(iId, sName)
 
 Popup_FollowUp_Active.getServiceLink	= function(iId, sFNN)
 {
-	return 	$T.div({class: 'popup-followup-active-detail-subdetail'},
+	return 	$T.div({class: 'popup-followup-detail-subdetail'},
 				$T.img({src: Popup_FollowUp_Active.DETAILS_ACCOUNT_SERVICE_IMAGE_SOURCE}),
 				$T.a({href: 'flex.php/Service/View/?Service.Id=' + iId},
 					'FNN : ' + sFNN
@@ -658,7 +675,7 @@ Popup_FollowUp_Active.getServiceLink	= function(iId, sFNN)
 
 Popup_FollowUp_Active.getTicketLink	= function(iTicketId, iAccountId, sContact)
 {
-	return 	$T.div({class: 'popup-followup-active-detail-subdetail'},
+	return 	$T.div({class: 'popup-followup-detail-subdetail'},
 				$T.img({src: Popup_FollowUp_Active.DETAILS_TICKET_IMAGE_SOURCE}),
 				$T.a({href: 'reflex.php/Ticketing/Ticket/' + iTicketId + '/View/?Account=' + iAccountId},
 					'Ticket ' + iTicketId + ' (' + sContact + ')'

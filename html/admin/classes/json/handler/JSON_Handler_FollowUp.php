@@ -42,6 +42,24 @@ class JSON_Handler_FollowUp extends JSON_Handler
 				unset($aFilter['now']);
 			}	
 			
+			// Add minutes & seconds to the 'due_datetime' filter if needed
+			/*if (isset($aFilter['due_datetime']))
+			{
+				$oDueDateTime	= $aFilter['due_datetime'];
+				
+				if (!preg_match('/\s\d{1,2}:\d{1,2}(:\d{1,2})$/', $oDueDateTime->mFrom))
+				{
+					$oDueDateTime->mFrom	.= ' 00:00:00';
+				}
+				
+				if (!preg_match('/\s\d{1,2}:\d{1,2}(:\d{1,2})$/', $oDueDateTime->mTo))
+				{
+					$oDueDateTime->mTo	.= ' 23:59:59';
+				}
+				
+				$aFilter['due_datetime']	= $oDueDateTime;
+			}*/
+			
 			// Convert the 'status' filter value to valid filters  
 			if (isset($aFilter['status']))
 			{
@@ -579,6 +597,58 @@ class JSON_Handler_FollowUp extends JSON_Handler
 		}
 	}
 	
+	public function getFollowUpDetails($iFollowUpId)
+	{
+		try
+		{
+			// Check permissions
+			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
+			{
+				throw new JSON_Handler_FollowUp_Exception('You do not have permission to view Follow-Ups.');
+			}
+			
+			$oFollowUp	= FollowUp::getForId($iFollowUpId);
+			if ($oFollowUp->followup_recurring_id)
+			{
+				$oFollowUpRecurring		= FollowUp_Recurring::getForId($oFollowUp->followup_recurring_id);
+				$aDetails				= $oFollowUpRecurring->getDetails();
+				$aDetails['sContent']	= $oFollowUpRecurring->getSummary(null, false);
+			}
+			else
+			{
+				$aDetails				= $oFollowUp->getDetails();
+				$aDetails['sContent']	= $oFollowUp->getSummary(null, false);
+			}
+			
+			// Convert to std class and add extra fields
+			$oStdClass	= $oFollowUp->toStdClass();
+			if ($oFollowUp->isClosed())
+			{
+				$oStdClass->followup_closure	= FollowUp_Closure::getForId($oStdClass->followup_closure_id)->toStdClass();
+			}
+			
+			return	array(
+						"Success"	=> true,
+						"oFollowUp"	=> $oStdClass,
+						"aDetails"	=> $aDetails
+					);
+		}
+		catch (JSON_Handler_FollowUp_Exception $oException)
+		{
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> $oException->getMessage()
+					);
+		}
+		catch (Exception $e)
+		{
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> Employee::getForId(Flex::getUserId())->isGod ? $e->getMessage() : 'There was an error getting the follow-up context details'
+					);
+		}
+	}
+	
 	public function createNew($iType, $iTypeDetail, $oDetails)
 	{
 		// Start a new database transaction
@@ -813,7 +883,7 @@ class JSON_Handler_FollowUp extends JSON_Handler
 		{
 			return 	array(
 						"Success"	=> false,
-						"Message"	=> Employee::getForId(Flex::getUserId())->isGod ? $e->getMessage() : 'There was an error creating the new follow-up'
+						"Message"	=> Employee::getForId(Flex::getUserId())->isGod ? $e->getMessage() : 'There was an error getting the follow-ups.'
 					);
 		}
 	}
@@ -854,7 +924,7 @@ class JSON_Handler_FollowUp extends JSON_Handler
 		{
 			return 	array(
 						"Success"	=> false,
-						"Message"	=> Employee::getForId(Flex::getUserId())->isGod ? $e->getMessage() : 'There was an error creating the new follow-up'
+						"Message"	=> Employee::getForId(Flex::getUserId())->isGod ? $e->getMessage() : 'There was an error getting the follow-ups.'.$e->getMessage()
 					);
 		}
 	}
@@ -886,8 +956,8 @@ class JSON_Handler_FollowUp extends JSON_Handler
 		{
 			foreach ($aFollowUps as $oFollowUp)
 			{
-				// Only return the followup if it is assigned to the current employee
-				if ($oFollowUp->assigned_employee_id == $iLoggedInEmployee)
+				// Only return the followup if it is assigned to the current employee & is NOT closed
+				if (($oFollowUp->assigned_employee_id == $iLoggedInEmployee) && !$oFollowUp->isClosed())
 				{
 					$aStdClassFollowUps[]	= $oFollowUp->toStdClass();
 				}
@@ -898,8 +968,8 @@ class JSON_Handler_FollowUp extends JSON_Handler
 		{
 			foreach ($aFollowUpRecurrings as $oFollowUpRecurring)
 			{
-				// Only return the followup if it is assigned to the current employee
-				if ($oFollowUpRecurring->assigned_employee_id == $iLoggedInEmployee)
+				// Only return the followup if it is assigned to the current employee & has NOT ended
+				if (($oFollowUpRecurring->assigned_employee_id == $iLoggedInEmployee) && !$oFollowUpRecurring->isClosed())
 				{
 					$aStdClassFollowUpRecurrings[]	= $oFollowUpRecurring->toStdClass();
 				}

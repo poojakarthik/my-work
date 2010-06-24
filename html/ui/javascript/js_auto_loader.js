@@ -65,15 +65,15 @@ var JsAutoLoader = {
 		}
 		
 		// Check if the script has already been requested
-		var scripts	= head.getElementsByTagName('script');
+		var scripts					= head.getElementsByTagName('script');
+		var sRegisteredScriptName	= JsAutoLoader.getFileNameOnly(strScriptName);
 		for (var i = 0, j = scripts.length; i < j; i++)
 		{
-			if (scripts[i].hasAttribute('src') && scripts[i].getAttribute('src').match(strScriptName) != null)
+			if (scripts[i].hasAttribute('src') && scripts[i].getAttribute('src').match(sRegisteredScriptName) != null)
 			{
 				// The script has been requested -- Was an onLoad handler provided?
 				if (fncCallback != undefined)
 				{
-					var sRegisteredScriptName	= JsAutoLoader.getFileNameOnly(strScriptName);
 					if (this.loadedScripts[sRegisteredScriptName] != undefined)
 					{
 						// This script should be loaded, so run the funcOnLoadEventHandler function, in global scope
@@ -140,6 +140,7 @@ var JsAutoLoader = {
 	registerPreLoadedScripts	: function()
 	{
 		var scripts	= document.getElementsByTagName('head')[0].getElementsByTagName('script');
+		
 		for (var i = 0, j = scripts.length; i < j; i++)
 		{
 			var sSrc	= scripts[i].getAttribute('src');
@@ -148,14 +149,17 @@ var JsAutoLoader = {
 			// Check for javascript.php source
 			if (sSrc.match(/javascript\.php/))
 			{
-				var aFiles	= sSrc.match(/File\[\]=([a-z_]*).js/i);
-				
+				var aFiles	= sSrc.match(/File\[\]=([a-z_]*).js/ig);
 				if (aFiles)
 				{
 					// Load multiple File[]=file.js sources
 					for (var k = 0; k < aFiles.length; k++)
 					{
-						JsAutoLoader.registerLoadedScript(aFiles[k].split('File[]=')[0]);
+						var sSrcTemp	= aFiles[k].split('File[]=')[1];
+						if (sSrcTemp != '')
+						{
+							JsAutoLoader.registerLoadedScript(sSrcTemp);
+						}
 					}
 				}
 			}

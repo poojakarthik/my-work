@@ -21,7 +21,16 @@ var Component_FollowUp_List_All = Class.create(
 		this.oPagination	= new Pagination(this._updateTable.bind(this), Component_FollowUp_List_All.MAX_RECORDS_PER_PAGE, this.oDataSet);
 		
 		// Create filter object
-		this._oFilter	= new Filter(this.oDataSet, this.oPagination, null, this._updateNowFilterValue.bind(this));
+		this._oFilter	=	new Filter(
+								this.oDataSet, 
+								this.oPagination, 
+								this._filterFieldUpdated.bind(this) 	// On field value change
+							);
+		
+		// Add and set a 'now' filter value (used for properly determining overdue-ness based on the clients time)
+		this._oFilter.addFilter('now', {iType: Filter.FILTER_TYPE_VALUE});
+		
+		// Add all filter fields
 		for (var sFieldName in Component_FollowUp_List_All.FILTER_FIELDS)
 		{
 			this._oFilter.addFilter(sFieldName, Component_FollowUp_List_All.FILTER_FIELDS[sFieldName]);
@@ -30,18 +39,14 @@ var Component_FollowUp_List_All = Class.create(
 		if (this._iEmployeeId)
 		{
 			// Set the 'owner' filter
-			this._oFilter.setFilterValue(Component_FollowUp_List_All.FILTER_FIELD_OWNER, this._iEmployeeId, this._iEmployeeId);
+			this._oFilter.setFilterValue(Component_FollowUp_List_All.FILTER_FIELD_OWNER, this._iEmployeeId);
 		}
 		
 		if (bActive)
 		{
 			// Set the 'status' filter to 'Active'
-			this._oFilter.setFilterValue(Component_FollowUp_List_All.FILTER_FIELD_STATUS, FollowUp_Status.ACTIVE_VALUE, FollowUp_Status.ACTIVE_TEXT);
+			this._oFilter.setFilterValue(Component_FollowUp_List_All.FILTER_FIELD_STATUS, FollowUp_Status.ACTIVE_VALUE);
 		}
-		
-		// Set 'now' filter value (used for properly determining overdueness based on the clients time)
-		this._oFilter.addFilter('now', Component_FollowUp_List_All.FILTER_FIELDS[sFieldName]);
-		this._updateNowFilterValue();
 		
 		// Create sort object
 		this._oSort	= new Sort(this.oDataSet, this.oPagination, true, this._updateNowFilterValue.bind(this, true));
@@ -82,24 +87,21 @@ var Component_FollowUp_List_All = Class.create(
 													$T.tr(
 														this._createFieldHeader(
 															'Type', 
-															Component_FollowUp_List_All.SORT_FIELD_TYPE,
-															Component_FollowUp_List_All.FILTER_FIELD_TYPE
+															Component_FollowUp_List_All.SORT_FIELD_TYPE
 														),
-														this._createFieldHeader('Details', false, false, true),
-														this._createFieldHeader('Summary', false, false, true),
+														this._createFieldHeader('Details', false, true),
+														this._createFieldHeader('Summary', false, true),
 														this._createFieldHeader(
 															'Created', 
 															Component_FollowUp_List_All.SORT_FIELD_DATE_CREATED
 														),
 														this._createFieldHeader(
 															'Owner', 
-															(this._iEmployeeId ? null : Component_FollowUp_List_All.SORT_FIELD_OWNER), 
-															(this._iEmployeeId ? null : Component_FollowUp_List_All.FILTER_FIELD_OWNER)
+															(this._iEmployeeId ? null : Component_FollowUp_List_All.SORT_FIELD_OWNER)
 														),
 														this._createFieldHeader(
 															'Due Date', 
-															Component_FollowUp_List_All.SORT_FIELD_FOLLOWUP_DATE, 
-															Component_FollowUp_List_All.FILTER_FIELD_FOLLOWUP_DATE
+															Component_FollowUp_List_All.SORT_FIELD_FOLLOWUP_DATE
 														),
 														this._createFieldHeader(
 															'Last Modified', 
@@ -107,27 +109,25 @@ var Component_FollowUp_List_All = Class.create(
 														),
 														this._createFieldHeader(
 															'Category', 
-															Component_FollowUp_List_All.SORT_FIELD_CATEGORY, 
-															Component_FollowUp_List_All.FILTER_FIELD_CATEGORY
+															Component_FollowUp_List_All.SORT_FIELD_CATEGORY
 														),
 														this._createFieldHeader(
 															'Status', 
-															Component_FollowUp_List_All.SORT_FIELD_STATUS, 
-															Component_FollowUp_List_All.FILTER_FIELD_STATUS
+															Component_FollowUp_List_All.SORT_FIELD_STATUS
 														),
 														this._createFieldHeader('')
 													),
 													// Filter values
 													$T.tr(
-														this._createFilterValueElement(Component_FollowUp_List_All.FILTER_FIELD_TYPE),
+														this._createFilterValueElement(Component_FollowUp_List_All.FILTER_FIELD_TYPE, 'Type'),
 														$T.th(),
 														$T.th(),
 														$T.th(),
-														(this._iEmployeeId ? $T.th() : this._createFilterValueElement(Component_FollowUp_List_All.FILTER_FIELD_OWNER)),
-														this._createFilterValueElement(Component_FollowUp_List_All.FILTER_FIELD_FOLLOWUP_DATE),
+														(this._iEmployeeId ? $T.th() : this._createFilterValueElement(Component_FollowUp_List_All.FILTER_FIELD_OWNER, 'Owner')),
+														this._createFilterValueElement(Component_FollowUp_List_All.FILTER_FIELD_FOLLOWUP_DATE, 'Due Date'),
 														$T.th(),
-														this._createFilterValueElement(Component_FollowUp_List_All.FILTER_FIELD_CATEGORY),
-														this._createFilterValueElement(Component_FollowUp_List_All.FILTER_FIELD_STATUS),
+														this._createFilterValueElement(Component_FollowUp_List_All.FILTER_FIELD_CATEGORY, 'Category'),
+														this._createFilterValueElement(Component_FollowUp_List_All.FILTER_FIELD_STATUS, 'Status'),
 														$T.th()
 													)
 												),
@@ -217,9 +217,6 @@ var Component_FollowUp_List_All = Class.create(
 			oTBody.firstChild.remove();
 		}
 		
-		// Add the new records
-		var oPageInfo	= this._oContentDiv.select('span.followup-list-all-pagination-info').first();
-		
 		// Check if any results came back
 		if (!oResultSet || oResultSet.intTotalResults == 0 || oResultSet.arrResultSet.length == 0)
 		{
@@ -227,10 +224,6 @@ var Component_FollowUp_List_All = Class.create(
 		}
 		else
 		{
-			// Update Page ? of ?
-			var iCurrentPage	= oResultSet.intCurrentPage + 1;
-			oPageInfo.innerHTML	= '(Page '+ iCurrentPage +' of ' + oResultSet.intPageCount + ')';
-			
 			// Add the rows
 			var aData	= jQuery.json.arrayAsObject(oResultSet.arrResultSet);
 			var iCount	= 0;
@@ -323,6 +316,10 @@ var Component_FollowUp_List_All = Class.create(
 		}
 		else
 		{
+			// Update Page ? of ?, show 1 for page count if it is 0 because there is technically still a page even though it's empty
+			var oPageInfo		= this._oContentDiv.select('span.followup-list-all-pagination-info').first();
+			oPageInfo.innerHTML	= '(Page '+ (this.oPagination.intCurrentPage + 1) +' of ' + (iPageCount == 0 ? 1 : iPageCount) + ')';
+			
 			if (this.oPagination.intCurrentPage != Pagination.PAGE_FIRST)
 			{
 				// Enable the first and previous buttons
@@ -371,37 +368,43 @@ var Component_FollowUp_List_All = Class.create(
 			{
 				var mValue	= this._oFilter.getFilterValue(sField);
 				var oSpan	= this._oContentDiv.select('th.followup-list-all-filter > span.followup-list-all-filter-' + sField).first();
-				
 				if (oSpan)
 				{
+					var oDeleteImage	= oSpan.up().select('img.followup-list-all-filter-delete').first();
 					if (mValue !== null && (typeof mValue !== 'undefined'))
 					{
 						// Value, show it
-						oSpan.innerHTML						= mValue;
-						oSpan.nextSibling.style.visibility	= 'visible';
+						oSpan.innerHTML					= this._formatFilterValueForDisplay(sField, mValue);
+						oDeleteImage.style.visibility	= 'visible';
 					}
 					else
 					{
 						// No value, hide delete image
-						oSpan.innerHTML						= 'All';
-						oSpan.nextSibling.style.visibility	= 'hidden';
+						oSpan.innerHTML					= 'All';
+						oDeleteImage.style.visibility	= 'hidden';
 					}
 				}
 			}
 		}
 	},
 	
-	_createFilterValueElement	: function(sField)
+	_createFilterValueElement	: function(sField, sLabel)
 	{
-		var oDeleteImage				= $T.img({src: Component_FollowUp_List_All.REMOVE_FILTER_IMAGE_SOURCE, alt: 'Remove Filter', title: 'Remove Filter'});
+		var oDeleteImage				= $T.img({class: 'followup-list-all-filter-delete', src: Component_FollowUp_List_All.REMOVE_FILTER_IMAGE_SOURCE, alt: 'Remove Filter', title: 'Remove Filter'});
 		oDeleteImage.style.visibility	= 'hidden';
 		oDeleteImage.observe('click', this._clearFilterValue.bind(this, sField));
+		
+		var oFiterImage	= $T.img({class: 'followup-list-all-header-filter', src: Component_FollowUp_List_All.FILTER_IMAGE_SOURCE, alt: 'Filter by ' + sLabel, title: 'Filter by ' + sLabel});
+		this._oFilter.registerFilterIcon(sField, oFiterImage, sLabel);
 		
 		return	$T.th({class: 'followup-list-all-filter'},
 					$T.span({class: 'followup-list-all-filter-' + sField},
 						'All'
 					),
-					oDeleteImage
+					$T.div(
+						oFiterImage,
+						oDeleteImage
+					)
 				);
 	},
 		
@@ -411,7 +414,7 @@ var Component_FollowUp_List_All = Class.create(
 		this._oFilter.refreshData();
 	},
 	
-	_createFieldHeader	: function(sLabel, sSortField, sFilterField, bMultiLine)
+	_createFieldHeader	: function(sLabel, sSortField, bMultiLine)
 	{
 		var oSortImg	= $T.img({class: 'followup-list-all-sort-' + (sSortField ? sSortField : '')});
 		var oTH			= 	$T.th({class: 'followup-list-all-header' + (bMultiLine ? '-multiline' : '')},
@@ -429,15 +432,7 @@ var Component_FollowUp_List_All = Class.create(
 			this._oSort.registerToggleElement(oSpan, sSortField, Component_FollowUp_List_All.SORT_FIELDS[sSortField]);
 			this._oSort.registerToggleElement(oSortImg, sSortField, Component_FollowUp_List_All.SORT_FIELDS[sSortField]);
 		}
-		
-		// Optional filter field
-		if (sFilterField)
-		{
-			var oIcon	= $T.img({src: Component_FollowUp_List_All.FILTER_IMAGE_SOURCE, alt: 'Filter by ' + sLabel, title: 'Filter by ' + sLabel});
-			this._oFilter.registerFilterIcon(sFilterField, oIcon, sLabel);
-			oTH.appendChild(oIcon);
-		}
-		
+				
 		return oTH;
 	},
 	
@@ -465,6 +460,10 @@ var Component_FollowUp_List_All = Class.create(
 								$T.img({src: Component_FollowUp_List_All.ACTION_INV_PAYMENTS_IMAGE_SOURCE, alt: 'Invoices & Payments', title: 'Invoices & Payments'})
 							);
 		oUL.appendChild($T.li(oInvAndPay));
+		
+		var oView	= $T.img({src: Component_FollowUp_List_All.ACTION_VIEW_IMAGE_SOURCE, alt: 'View More Details', title: 'View More Details'});
+		oView.observe('click', this._viewDetailsPopup.bind(this, oFollowUp));
+		oUL.appendChild($T.li(oView));
 		
 		var oRecurring	= 	$T.a({href: 'reflex.php/FollowUp/ManageRecurring/' + (this._iEmployeeId ? this._iEmployeeId : '')},
 								$T.img({src: Component_FollowUp_List_All.ACTION_RECURRING_IMAGE_SOURCE, alt: 'View Recurring Follow-Ups', title: 'View Recurring Follow-Ups'})
@@ -549,20 +548,101 @@ var Component_FollowUp_List_All = Class.create(
 						);
 	},
 	
+	_viewDetailsPopup	: function(oFollowUp)
+	{
+		if (oFollowUp.followup_id)
+		{
+			var oPopup	= new Popup_FollowUp_View(oFollowUp.followup_id, false, true);
+		}
+		else
+		{
+			var oPopup	= new Popup_FollowUp_View(oFollowUp.followup_recurring_id, true, true);
+		}
+	},
+	
 	_updateNowFilterValue	: function(bFromSort)
 	{
 		// Set the 'now' filter value to the current time in seconds
-		this._oFilter.setFilterValue('now', Math.floor(new Date().getTime() / 1000), 'now');
+		this._oFilter.setFilterValue('now', Math.floor(new Date().getTime() / 1000), true);
 		
 		if (bFromSort)
 		{
-			// If not updated from a filter, refresh the dataset ajax's filter data
+			// If not updated from a filter, refresh the dataset ajax's filter data.
 			this._oFilter.refreshData(true);
 		}
-	}
+	},
+	
+	_filterFieldUpdated	: function(sField)
+	{
+		// Make sure the from date has 00:00 (start of day) for minutes and the to date has 23:59 (end of day)
+		// so that both days are included in the search
+		if (sField.match(/due_datetime/))
+		{
+			var oValue	= this._oFilter.getFilterValue(sField);
+			if (oValue)
+			{
+				if (oValue.mFrom)
+				{
+					oValue.mFrom	= 	oValue.mFrom.replace(
+											Component_FollowUp_List_All.RANGE_FILTER_DATE_REGEX, 
+											'$1 ' + Component_FollowUp_List_All.RANGE_FILTER_FROM_MINUTES
+										);
+				}
+				
+				if (oValue.mTo)
+				{
+					oValue.mTo	= 	oValue.mTo.replace(
+										Component_FollowUp_List_All.RANGE_FILTER_DATE_REGEX, 
+										'$1 ' + Component_FollowUp_List_All.RANGE_FILTER_TO_MINUTES
+									);
+				}
+				
+				this._oFilter.setFilterValue(sField, oValue.mFrom, oValue.mTo, null, true);
+			}
+		}
+		
+		this._updateNowFilterValue(false);
+	},
+	
+	_formatFilterValueForDisplay	: function(sField, mValue)
+	{
+		var oDefinition	= Component_FollowUp_List_All.FILTER_FIELDS[sField];
+		var aControls	= this._oFilter.getControlsForField(sField);
+		var sValue		= '';
+		switch (sField)
+		{
+			case Component_FollowUp_List_All.FILTER_FIELD_FOLLOWUP_DATE:
+				var oState		= this._oFilter.getFilterState(sField);
+				var bGotFrom	= mValue.mFrom != null;
+				var bGotTo		= mValue.mTo != null;
+				var sFrom		= (bGotFrom ? Component_FollowUp_List_All.formatDateTimeFilterValue(mValue.mFrom) : null);
+				var sTo			= (bGotTo ? Component_FollowUp_List_All.formatDateTimeFilterValue(mValue.mTo) : null);
+				switch (parseInt(oState.oRangeTypeSelect.value))
+				{
+					case Filter.RANGE_TYPE_FROM:
+						sValue	= [oDefinition.sFromOption, sFrom].join(' ');
+						break;
+					case Filter.RANGE_TYPE_TO:
+						sValue	= [oDefinition.sToOption, sTo].join(' ');
+						break;
+					case Filter.RANGE_TYPE_BETWEEN:
+						sValue	= [oDefinition.sBetweenOption, sFrom, 'and', sTo].join(' ');
+						break;
+				}
+				break;
+			case Component_FollowUp_List_All.FILTER_FIELD_OWNER:
+			case Component_FollowUp_List_All.FILTER_FIELD_TYPE:
+			case Component_FollowUp_List_All.FILTER_FIELD_CATEGORY:
+			case Component_FollowUp_List_All.FILTER_FIELD_STATUS:
+				sValue	= aControls[0].getElementText();
+				break;
+		}
+		
+		return sValue;
+	},
 });
 
-Component_FollowUp_List_All.MAX_RECORDS_PER_PAGE		= 15;
+Component_FollowUp_List_All.MAX_RECORDS_PER_PAGE		= 10;
 Component_FollowUp_List_All.EDIT_IMAGE_SOURCE			= '../admin/img/template/pencil.png';
 Component_FollowUp_List_All.FILTER_IMAGE_SOURCE			= '../admin/img/template/table_row_insert.png';
 Component_FollowUp_List_All.REMOVE_FILTER_IMAGE_SOURCE	= '../admin/img/template/delete.png';
@@ -573,6 +653,7 @@ Component_FollowUp_List_All.ACTION_EDIT_DATE_IMAGE_SOURCE		= '../admin/img/templ
 Component_FollowUp_List_All.ACTION_REASSIGN_IMAGE_SOURCE		= '../admin/img/template/user_edit.png';
 Component_FollowUp_List_All.ACTION_INV_PAYMENTS_IMAGE_SOURCE	= '../admin/img/template/invoices_payments.png';
 Component_FollowUp_List_All.ACTION_RECURRING_IMAGE_SOURCE		= '../admin/img/template/followup_recurring.png';
+Component_FollowUp_List_All.ACTION_VIEW_IMAGE_SOURCE			= '../admin/img/template/magnifier.png';
 
 Component_FollowUp_List_All.SORT_IMAGE_SOURCE						= {};
 Component_FollowUp_List_All.SORT_IMAGE_SOURCE[Sort.DIRECTION_ASC]	= '../admin/img/template/order_asc.png';
@@ -600,6 +681,10 @@ Component_FollowUp_List_All.SORT_FIELD_TYPE				= 'followup_type_id';
 Component_FollowUp_List_All.SORT_FIELD_LAST_MODIFIED	= 'modified_datetime';
 Component_FollowUp_List_All.SORT_FIELD_CATEGORY			= 'followup_category_id';
 Component_FollowUp_List_All.SORT_FIELD_STATUS			= 'status';
+
+Component_FollowUp_List_All.RANGE_FILTER_DATE_REGEX			= /^(\d{4}-\d{2}-\d{2})(\s\d{2}:\d{2}:\d{2})?$/;
+Component_FollowUp_List_All.RANGE_FILTER_FROM_MINUTES		= '00:00:00';
+Component_FollowUp_List_All.RANGE_FILTER_TO_MINUTES			= '23:59:59';
 
 Component_FollowUp_List_All.DATA_SET_DEFINITION			= {sObject: 'FollowUp', sMethod: 'getDataSet'};
 
@@ -716,23 +801,30 @@ Component_FollowUp_List_All.getFollowUpDescriptionTD	= function(iType, oDetails)
 
 Component_FollowUp_List_All.getCustomerGroupLink	= function(iAccountId, sName)
 {
-	return 	$T.div(sName);
+	return 	$T.div({class: 'popup-followup-detail-subdetail customer-group'},
+				$T.span(sName)
+			);
 };
 
 Component_FollowUp_List_All.getAccountLink	= function(iId, sName)
 {
 	var sUrl	= 'flex.php/Account/Overview/?Account.Id=' + iId;
-	return 	$T.div({class: 'popup-followup-active-detail-subdetail'},
-				$T.img({src: Component_FollowUp_List_All.DETAILS_ACCOUNT_IMAGE_SOURCE}),
-				$T.a({href: sUrl},
-					sName + ' (' + iId + ')'
+	return 	$T.div({class: 'popup-followup-detail-subdetail account'},
+				$T.div({class: 'account-id'},
+					$T.img({src: Component_FollowUp_List_All.DETAILS_ACCOUNT_IMAGE_SOURCE}),
+					$T.a({href: sUrl},
+						iId + ': '
+					)
+				),
+				$T.a({class: 'account-name', href: sUrl},
+					sName
 				)
 			);
 };
 
 Component_FollowUp_List_All.getAccountContactLink	= function(iId, sName)
 {
-	return 	$T.div({class: 'popup-followup-active-detail-subdetail'},
+	return 	$T.div({class: 'popup-followup-detail-subdetail'},
 				$T.img({src: Component_FollowUp_List_All.DETAILS_ACCOUNT_CONTACT_IMAGE_SOURCE}),
 				$T.a({href: 'reflex.php/Contact/View/' + iId + '/'},
 					sName
@@ -742,17 +834,17 @@ Component_FollowUp_List_All.getAccountContactLink	= function(iId, sName)
 
 Component_FollowUp_List_All.getServiceLink	= function(iId, sFNN)
 {
-	return 	$T.div({class: 'popup-followup-active-detail-subdetail'},
+	return 	$T.div({class: 'popup-followup-detail-subdetail'},
 				$T.img({src: Component_FollowUp_List_All.DETAILS_ACCOUNT_SERVICE_IMAGE_SOURCE}),
 				$T.a({href: 'flex.php/Service/View/?Service.Id=' + iId},
-					'FNN : ' + sFNN
+					'FNN: ' + sFNN
 				)
 			);
 };
 
 Component_FollowUp_List_All.getTicketLink	= function(iTicketId, iAccountId, sContact)
 {
-	return 	$T.div({class: 'popup-followup-active-detail-subdetail'},
+	return 	$T.div({class: 'popup-followup-detail-subdetail'},
 				$T.img({src: Component_FollowUp_List_All.DETAILS_TICKET_IMAGE_SOURCE}),
 				$T.a({href: 'reflex.php/Ticketing/Ticket/' + iTicketId + '/View/?Account=' + iAccountId},
 					'Ticket ' + iTicketId + ' (' + sContact + ')'
@@ -772,7 +864,13 @@ Component_FollowUp_List_All.getDateTimeElement	= function(sMySQLDate)
 					sTime
 				)
 			);
-}
+};
+
+Component_FollowUp_List_All.formatDateTimeFilterValue	= function(sDateTime)
+{
+	var oDate	= Date.$parseDate(sDateTime, 'Y-m-d H:i:s');
+	return oDate.$format('j/m/y');
+};
 
 // Filter Control field definitions
 var oNow										= new Date();
@@ -788,6 +886,7 @@ Component_FollowUp_List_All.FILTER_FIELDS[Component_FollowUp_List_All.FILTER_FIE
 																														oDefinition	:	{
 																																			sLabel		: 'Owner',
 																																			mEditable	: true,
+																																			mMandatory	: false,
 																																			fnValidate	: null,
 																																			fnPopulate	: Employee.getAllAsSelectOptions.bind(Employee)
 																																		}
@@ -799,19 +898,18 @@ Component_FollowUp_List_All.FILTER_FIELDS[Component_FollowUp_List_All.FILTER_FIE
 																											sFrom			: 'Start Date',
 																											bTo				: true,
 																											sTo				: 'End Date',
-																											sGreaterThan	: 'On Or After',
-																											sLessThan		: 'On Or Before',
-																											sBetween		: 'Between',
+																											sFromOption		: 'On Or After',
+																											sToOption		: 'On Or Before',
+																											sBetweenOption	: 'Between',
 																											oOption			: 	{
-																																	sType		: 'combo_date',
+																																	sType		: 'date-picker',
 																																	mDefault	: null,
 																																	oDefinition	:	{
 																																						sLabel		: 'Date',
 																																						mEditable	: true,
+																																						mMandatory	: false,
 																																						fnValidate	: Component_FollowUp_List_All._validateDueDate,
-																																						iMinYear	: Component_FollowUp_List_All.YEAR_MINIMUM,
-																																						iMaxYear	: Component_FollowUp_List_All.YEAR_MAXIMUM,
-																																						iFormat		: Control_Field_Combo_Date.FORMAT_D_M_Y
+																																						sDateFormat	: 'Y-m-d'
 																																					}
 																																}
 																										};
@@ -823,6 +921,7 @@ Component_FollowUp_List_All.FILTER_FIELDS[Component_FollowUp_List_All.FILTER_FIE
 																													oDefinition	:	{
 																																		sLabel		: 'Status',
 																																		mEditable	: true,
+																																		mMandatory	: false,
 																																		fnValidate	: null,
 																																		fnPopulate	: Component_FollowUp_List_All._getAllTypesAsOptions
 																																	}
@@ -835,8 +934,9 @@ Component_FollowUp_List_All.FILTER_FIELDS[Component_FollowUp_List_All.FILTER_FIE
 																													sType		: 'select',
 																													mDefault	: null,
 																													oDefinition	:	{
-																																		sLabel		: 'Type',
+																																		sLabel		: 'Status',
 																																		mEditable	: true,
+																																		mMandatory	: false,
 																																		fnValidate	: null,
 																																		fnPopulate	: FollowUp_Status.getAllAsSelectOptions.bind(FollowUp_Status)
 																																	}
@@ -851,6 +951,7 @@ Component_FollowUp_List_All.FILTER_FIELDS[Component_FollowUp_List_All.FILTER_FIE
 																														oDefinition	:	{
 																																			sLabel		: 'Category',
 																																			mEditable	: true,
+																																			mMandatory	: false,
 																																			fnValidate	: null,
 																																			fnPopulate	: FollowUp_Category.getAllAsSelectOptions.bind(FollowUp_Category)
 																																		}

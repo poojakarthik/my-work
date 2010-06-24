@@ -10,15 +10,13 @@
 */
 var Filter	= Class.create
 ({
-	initialize	: function(oDataSetAjax, oPagination, fnFilterUpdateCallback, fnOnUseCallback)
+	initialize	: function(oDataSetAjax, oPagination, fnFilterUpdateCallback)
 	{
 		this._oDataSetAjax				= oDataSetAjax;
 		this._oPagination				= oPagination;
+		this._fnFilterUpdateCallback	= fnFilterUpdateCallback;
 		this._hFilters					= {};
 		this._hControls					= {};
-		this._fnFilterUpdateCallback	= fnFilterUpdateCallback;
-		this._fnOnUseCallback			= fnOnUseCallback;
-		document.body.observe('click', this._hideFilterOptions.bind(this));
 	},
 	
 	// 
@@ -29,6 +27,11 @@ var Filter	= Class.create
 	 * oDefinition structure
 	 * 	- iType: 	FILTER_TYPE constant
 	 *  - oOption: 	Control_Field.factory definition object
+	 *  	- iType
+	 *  	- oDefinition
+	 *  		- sLabel
+	 *  		- fnValidate
+	 *  		- etc...
 	 */
 	addFilter	: function(sField, oDefinition)
 	{
@@ -37,7 +40,7 @@ var Filter	= Class.create
 		switch (oDefinition.iType)
 		{
 			case Filter.FILTER_TYPE_VALUE:
-				this._hFilters[sField].mValue			= null;
+				this._hFilters[sField].mValue	= null;
 				
 				if (oDefinition.oOption)
 				{
@@ -45,7 +48,7 @@ var Filter	= Class.create
 				}
 				break;
 			case Filter.FILTER_TYPE_SET:
-				this._hFilters[sField].aValues			= [];
+				this._hFilters[sField].aValues	= [];
 				
 				if (oDefinition.oOption)
 				{
@@ -55,19 +58,25 @@ var Filter	= Class.create
 			case Filter.FILTER_TYPE_RANGE:
 				if (oDefinition.oOption)
 				{
+					// Create the controls for the options (the labels are overwritten here to help with validation messages)
+					oDefinition.oOption.oDefinition.sLabel	= oDefinition.sFrom;
+					var oFromControlElement	= this._createOption(sField, oDefinition.oOption);
+					
+					oDefinition.oOption.oDefinition.sLabel	= oDefinition.sTo;
+					var oToControlElement	= this._createOption(sField, oDefinition.oOption);
 					
 					// Create the options element
 					this._hFilters[sField].oOptionsElement	= 	$T.div(
 																	$T.div(
 																		$T.select({class: 'filter-range-type-select'},
 																			$T.option({value: Filter.RANGE_TYPE_FROM},
-																				oDefinition.sGreaterThan
+																				oDefinition.sFromOption
 																			),
 																			$T.option({value: Filter.RANGE_TYPE_TO},
-																				oDefinition.sLessThan
+																				oDefinition.sToOption
 																			),
 																			$T.option({value: Filter.RANGE_TYPE_BETWEEN},
-																				oDefinition.sBetween
+																				oDefinition.sBetweenOption
 																			)
 																		)
 																	),
@@ -80,7 +89,7 @@ var Filter	= Class.create
 																					)
 																				),
 																				$T.td(
-																					this._createOption(sField, oDefinition.oOption)
+																					oFromControlElement
 																				)
 																			),
 																			$T.tr(
@@ -90,7 +99,7 @@ var Filter	= Class.create
 																					)
 																				),
 																				$T.td(
-																					this._createOption(sField, oDefinition.oOption)
+																					oToControlElement
 																				)
 																			)
 																		)
@@ -101,12 +110,8 @@ var Filter	= Class.create
 					var oTypeSelect	= this._hFilters[sField].oOptionsElement.select('select.filter-range-type-select').first();
 					oTypeSelect.observe('change', this._rangeTypeSelected.bind(this, oTypeSelect, sField));
 					
-					this._hFilters[sField].oRangeDefinition	= 	{
-																	sGreaterThan	: oDefinition.sGreaterThan,
-																	sLessThan		: oDefinition.sLessThan,
-																	sBetween		: oDefinition.sBetween,
-																	oTypeSelect		: oTypeSelect
-																};
+					// Cache reference to the type select
+					this._hFilters[sField].oRangeTypeSelect	= oTypeSelect;
 					
 					// Set default type
 					this._rangeTypeSelected(oTypeSelect, sField);
@@ -121,7 +126,7 @@ var Filter	= Class.create
 				}
 				break;
 			case Filter.FILTER_TYPE_ENDS_WITH:
-				this._hFilters[sField].sEndsWith		= null;
+				this._hFilters[sField].sEndsWith	= null;
 				
 				if (oDefinition.oOption)
 				{
@@ -129,7 +134,7 @@ var Filter	= Class.create
 				}
 				break;
 			case Filter.FILTER_TYPE_STARTS_WITH:
-				this._hFilters[sField].sStartsWith		= null;
+				this._hFilters[sField].sStartsWith	= null;
 				
 				if (oDefinition.oOption)
 				{
@@ -139,66 +144,120 @@ var Filter	= Class.create
 		}
 	},
 	
-	clearFilterValue	: function(sField)
-	{
-		this.setFilterValue(sField);
-	},
-	
 	setFilterValue	: function(sField)
 	{
-		var oFilter	= this._hFilters[sField];
-		var bClear	= arguments.length == 1;
+		var oFilter				= this._hFilters[sField];
+		var bClear				= arguments.length == 1;
+		var bSetRawValueOnly	= false;
 		switch (oFilter.iType)
 		{
 			case Filter.FILTER_TYPE_VALUE:
-				oFilter.mValue	= (bClear ? null : arguments[1]);
-				oFilter.sValue	= (bClear ? null : arguments[2]);
+				// Get parameters
+				var mValue			= (bClear ? null : arguments[1]);
+				bSetRawValueOnly	= arguments[2];
+				
+				// Set value and update option control
+				oFilter.mValue		= mValue;
+				if (!bClear && !bSetRawValueOnly && this._hControls[sField])
+				{
+					this._hControls[sField][0].setValue(oFilter.mValue);
+				}
 				break;
 			case Filter.FILTER_TYPE_SET:
-				oFilter.aValues		= (bClear ? null : arguments[1]);
-				oFilter.aStrValues	= (bClear ? null : arguments[2]);
+				// Get parameters
+				var aValues			= (bClear ? null : arguments[1]);
+				bSetRawValueOnly	= arguments[2];
+				
+				// Set value and update option control
+				oFilter.aValues		= aValues;
+				if (!bClear && !bSetRawValueOnly && this._hControls[sField])
+				{
+					this._hControls[sField][0].setValue(oFilter.aValues);
+				}
 				break;
 			case Filter.FILTER_TYPE_RANGE:
-				oFilter.mFrom	= (bClear ? null : arguments[1]);
-				oFilter.mTo		= (bClear ? null : arguments[2]);
-				oFilter.sFrom	= (bClear ? null : arguments[3]);
-				oFilter.sTo		= (bClear ? null : arguments[4]);
+				// Get parameters
+				var mFrom			= (bClear ? null : arguments[1]);
+				var mTo				= (bClear ? null : arguments[2]);
+				var mRangeTypeValue	= arguments[3];
+				bSetRawValueOnly	= arguments[4];
 				
-				// Set the option control field values
-				if (!bClear)
+				// Set value and update option controls
+				oFilter.mFrom	= mFrom;
+				oFilter.mTo		= mTo;
+				if (!bClear && !bSetRawValueOnly)
 				{
 					this._hControls[sField][0].setValue(oFilter.mFrom);
 					this._hControls[sField][1].setValue(oFilter.mTo);
 				}
 				
-				if (arguments[5])
+				// Set the range definition value
+				if (mRangeTypeValue && !bSetRawValueOnly)
 				{
-					// Set the range definition value
-					oFilter.oRangeDefinition.oTypeSelect.value	= arguments[5];
-					this._rangeTypeSelected(oFilter.oRangeDefinition.oTypeSelect, sField);
+					oFilter.oRangeTypeSelect.value	= mRangeTypeValue;
+					this._rangeTypeSelected(oFilter.oRangeTypeSelect, sField);
 				}
 				break;
 			case Filter.FILTER_TYPE_CONTAINS:
-				oFilter.sContains	= (bClear ? null : arguments[1]);
+				// Get parameters
+				var sContains		= (bClear ? null : arguments[1]);
+				bSetRawValueOnly	= arguments[2];
+				
+				// Set value and update option control
+				oFilter.sContains	= sContains;				
+				if (!bClear && !bSetRawValueOnly && this._hControls[sField])
+				{
+					this._hControls[sField][0].setValue(oFilter.sContains);
+				}
 				break;
 			case Filter.FILTER_TYPE_ENDS_WITH:
-				oFilter.sEndsWith	= (bClear ? null : arguments[1]);
+				// Get parameters
+				var sEndsWith		= (bClear ? null : arguments[1]);
+				bSetRawValueOnly	= arguments[2];
+				
+				// Set value and update control
+				oFilter.sEndsWith	= sEndsWith;
+				if (!bClear && !bSetRawValueOnly && this._hControls[sField])
+				{
+					this._hControls[sField][0].setValue(oFilter.sEndsWith);
+				}
 				break;
 			case Filter.FILTER_TYPE_STARTS_WITH:
-				oFilter.sStartsWith	= (bClear ? null : arguments[1]);
+				// Get parameters
+				var sStartsWith		= (bClear ? null : arguments[1]);
+				bSetRawValueOnly	= arguments[2];
+				
+				// Set value and update control
+				oFilter.sStartsWith	= sStartsWith;
+				if (!bClear && !bSetRawValueOnly && this._hControls[sField])
+				{
+					this._hControls[sField][0].setValue(oFilter.sStartsWith);
+				}
 				break;
 		}
 		
-		if (bClear)
+		if (bClear && !bSetRawValueOnly)
 		{
 			// Clear the control field values
 			var aControls	= this._hControls[sField];
-			
 			for (var i = 0; i < aControls.length; i++)
 			{
 				if (aControls[i].clearValue)
 				{
+					// Turn mandatory off then clear value and turn back on
+					var bMandatory	= aControls[i].isMandatory();
+					
+					if (bMandatory)
+					{
+						aControls[i].setMandatory(false);
+					}
+					
 					aControls[i].clearValue();
+					
+					if (bMandatory)
+					{
+						aControls[i].setMandatory(bMandatory);
+					}
 				}
 				else
 				{
@@ -207,48 +266,34 @@ var Filter	= Class.create
 			}
 		}
 		
-		if (this._fnFilterUpdateCallback)
+		if (this._fnFilterUpdateCallback && !bSetRawValueOnly)
 		{
 			this._fnFilterUpdateCallback(sField);
 		}
 	},
 	
-	getFilterValue	: function(sField, bRaw)
+	clearFilterValue	: function(sField)
+	{
+		this.setFilterValue(sField);
+	},
+	
+	getFilterValue	: function(sField)
 	{
 		var oFilter	= this._hFilters[sField];
 		var mValue	= null;
 		switch (oFilter.iType)
 		{
 			case Filter.FILTER_TYPE_VALUE:
-				mValue	= (bRaw ? oFilter.mValue : oFilter.sValue);
+				mValue	= oFilter.mValue;
 				break;
 			case Filter.FILTER_TYPE_SET:
-				mValue	= (bRaw ? oFilter.aValues : oFilter.aStrValues.join(', '));
+				mValue	= oFilter.aValues;
 				break;
 			case Filter.FILTER_TYPE_RANGE:
 				if (oFilter.mFrom != null || oFilter.mTo != null)
 				{
-					if (bRaw)
-					{
-						// Return both limits
-						mValue	= {mFrom: oFilter.mFrom, mTo: oFilter.mTo};
-					}
-					else
-					{
-						// Return range type specific string
-						switch (parseInt(oFilter.oRangeDefinition.oTypeSelect.value))
-						{
-							case Filter.RANGE_TYPE_FROM:
-								mValue	= oFilter.oRangeDefinition.sGreaterThan + ' ' + oFilter.sFrom;
-								break;
-							case Filter.RANGE_TYPE_TO:
-								mValue	= oFilter.oRangeDefinition.sLessThan + ' ' + oFilter.sTo;
-								break;
-							case Filter.RANGE_TYPE_BETWEEN:
-								mValue	= oFilter.oRangeDefinition.sBetween + ' ' + oFilter.sFrom + ' and ' + oFilter.sTo;
-								break;
-						}
-					}
+					// Return both limits
+					mValue	= {mFrom: oFilter.mFrom, mTo: oFilter.mTo};
 				}
 				else
 				{
@@ -267,6 +312,11 @@ var Filter	= Class.create
 		}
 		
 		return mValue;
+	},
+	
+	getFilterState	: function(sField)
+	{
+		return this._hFilters[sField];
 	},
 	
 	refreshData	: function(bCancelRefresh)
@@ -333,11 +383,30 @@ var Filter	= Class.create
 		
 		if (!bCancelRefresh)
 		{
-			this._getCurrentPage();
+			this._refreshCurrentPageOfData();
 		}
 	},
 	
-	_getCurrentPage	: function(iPageCount)
+	registerFilterIcon	: function(sField, oIcon, sLabel)
+	{
+		oIcon.observe('click', this._showFilterOptions.bind(this, sField, sLabel));
+	},
+	
+	getControlsForField	: function(sField)
+	{
+		return this._hControls[sField];
+	},
+	
+	isRegistered	: function(sField)
+	{
+		return (this._hFilters[sField] !== null && (typeof this._hFilters[sField] != 'undefined'));
+	},
+	
+	//
+	// Private methods
+	//
+	
+	_refreshCurrentPageOfData	: function(iPageCount)
 	{
 		if (typeof iPageCount != 'undefined')
 		{
@@ -356,18 +425,9 @@ var Filter	= Class.create
 		else
 		{
 			// Get the page count to see if the current page is still within the page limits
-			this._oPagination.getPageCount(this._getCurrentPage.bind(this), true);
+			this._oPagination.getPageCount(this._refreshCurrentPageOfData.bind(this), true);
 		}
 	},
-	
-	registerFilterIcon	: function(sField, oIcon, sLabel)
-	{
-		oIcon.observe('click', this._showFilterOptions.bind(this, sField, sLabel));
-	},
-	
-	//
-	// Private methods
-	//
 	
 	_showFilterOptions	: function(sField, sLabel, oEvent)
 	{
@@ -442,9 +502,10 @@ var Filter	= Class.create
 	
 	_createOption	: function(sField, oOptionDefinition)
 	{
-		// Create the control field and cache it
+		// Create the control field and cache it, all are created mandatory, validation happens when 'use' is clicked
 		var oControl	= Control_Field.factory(oOptionDefinition.sType, oOptionDefinition.oDefinition);
 		oControl.setRenderMode(Control_Field.RENDER_MODE_EDIT);
+		oControl.setMandatory(true);
 		
 		if (!this._hControls[sField])
 		{
@@ -457,11 +518,9 @@ var Filter	= Class.create
 	
 	_useCurrentFilterOptions	: function()
 	{
+		// Check for validation errors in the controls
 		var sField		= this._oFilterOptionsElement.sField;
 		var aControls	= this._hControls[sField];
-		var oFilter		= this._hFilters[sField];
-		
-		// Check for validation errors in the controls
 		var aErrors		= [];
 		for (var i = 0; i < aControls.length; i++)
 		{
@@ -495,14 +554,13 @@ var Filter	= Class.create
 			return;
 		}
 		
+		var oFilter	= this._hFilters[sField];
 		switch (oFilter.iType)
 		{
 			case Filter.FILTER_TYPE_RANGE:
 				var mFrom	= aControls[0].getElementValue();
-				var sFrom	= (mFrom && aControls[0].getElementText ? aControls[0].getElementText() : mFrom);
 				var mTo		= (aControls[1] ? aControls[1].getElementValue() : null);
-				var sTo		= (mTo && aControls[1].getElementText ? aControls[1].getElementText() : mTo);
-				this.setFilterValue(sField, mFrom, mTo, sFrom, sTo);
+				this.setFilterValue(sField, mFrom, mTo);
 				break;
 			case Filter.FILTER_TYPE_VALUE:
 			case Filter.FILTER_TYPE_SET:	
@@ -511,24 +569,12 @@ var Filter	= Class.create
 			case Filter.FILTER_TYPE_ENDS_WITH:
 			case Filter.FILTER_TYPE_STARTS_WITH:
 				var mValue	= aControls[0].getElementValue();
-				var sValue	= (aControls[0].getElementText ? aControls[0].getElementText() : mValue);
-				this.setFilterValue(sField, mValue, sValue);
+				this.setFilterValue(sField, mValue);
 				break;
 		}
 		
 		this._hideFilterOptions();
-		
-		if (this._fnOnUseCallback)
-		{
-			this._fnOnUseCallback();
-		}
-		
 		this.refreshData();
-	},
-	
-	isRegistered	: function(sField)
-	{
-		return (this._hFilters[sField] !== null && (typeof this._hFilters[sField] != 'undefined'));
 	},
 	
 	_rangeTypeSelected	: function(oSelect, sField)
@@ -538,22 +584,27 @@ var Filter	= Class.create
 		var oToSelect	= this._hControls[sField][1];
 		if (oFromSelect && oToSelect)
 		{
-			oFromSelect	= oFromSelect.getElement().parentNode.parentNode;
-			oToSelect	= oToSelect.getElement().parentNode.parentNode;
-			
+			var oFromSelectParent	= oFromSelect.getElement().parentNode.parentNode;
+			var oToSelectParent		= oToSelect.getElement().parentNode.parentNode;
 			switch (iRangeType)
 			{
 				case Filter.RANGE_TYPE_FROM:
-					oFromSelect.show();
-					oToSelect.hide();
+					oFromSelectParent.show();
+					oFromSelect.setMandatory(true);
+					oToSelectParent.hide();
+					oToSelect.setMandatory(false);
 					break;
 				case Filter.RANGE_TYPE_TO:
-					oFromSelect.hide();
-					oToSelect.show();
+					oFromSelectParent.hide();
+					oFromSelect.setMandatory(false);
+					oToSelectParent.show();
+					oToSelect.setMandatory(true);
 					break;
 				case Filter.RANGE_TYPE_BETWEEN:
-					oFromSelect.show();
-					oToSelect.show();
+					oFromSelectParent.show();
+					oFromSelect.setMandatory(true);
+					oToSelectParent.show();
+					oToSelect.setMandatory(true);
 					break;
 			}
 		}
@@ -567,6 +618,6 @@ Filter.FILTER_TYPE_CONTAINS		= 4;	// e.g. x LIKE '%1%'
 Filter.FILTER_TYPE_ENDS_WITH	= 5;	// e.g. x LIKE '%1'
 Filter.FILTER_TYPE_STARTS_WITH	= 6;	// e.g. x LIKE '1%'
 
-Filter.RANGE_TYPE_FROM		= 1;
-Filter.RANGE_TYPE_TO		= 2;
-Filter.RANGE_TYPE_BETWEEN	= 3;
+Filter.RANGE_TYPE_FROM			= 1;
+Filter.RANGE_TYPE_TO			= 2;
+Filter.RANGE_TYPE_BETWEEN		= 3;

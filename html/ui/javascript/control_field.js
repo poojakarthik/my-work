@@ -451,7 +451,12 @@ Control_Field.factory	= function(sType, oDefinition)
 			break;
 			
 		case 'date-picker':
-			oControlField	= new Control_Field_Date_Picker(oDefinition.sLabel);
+			oControlField	= 	new Control_Field_Date_Picker(
+									oDefinition.sLabel, 
+									null, 
+									oDefinition.sDateFormat, 
+									oDefinition.bTimePicker
+								);
 			break;
 			
 		case 'hidden':
@@ -496,11 +501,13 @@ Control_Field.factory	= function(sType, oDefinition)
 			break;
 		
 		case 'combo_date':
+		case 'combo-date':
 			oControlField	= new Control_Field_Combo_Date(oDefinition.sLabel, null, oDefinition.iFormat);
 			oControlField.setYearRange(oDefinition.iMinYear, oDefinition.iMaxYear);
 			break;
 		
 		case 'combo_time':
+		case 'combo-time':
 			oControlField	= new Control_Field_Combo_Time(oDefinition.sLabel, null, oDefinition.iFormat);
 			break;
 			

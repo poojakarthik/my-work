@@ -23,6 +23,7 @@ class JSON_Handler_FollowUp_History extends JSON_Handler
 			
 			$aHistoryRecords	= FollowUp_History::getForFollowUpId($iFollowUpId);
 			$aResult			= array();
+			$iCount				= 0;
 			foreach ($aHistoryRecords as $oRecord)
 			{
 				// Convert to std class
@@ -32,9 +33,11 @@ class JSON_Handler_FollowUp_History extends JSON_Handler
 				$oStdClassRecord->modified_employee_name	= Employee::getForId($oStdClassRecord->modified_employee_id)->getName();
 				
 				// Get modify reasons
+				$bHaveAReason	= false;
 				$aModifyReasons	= $oRecord->getModifyReasons();
 				foreach ($aModifyReasons as $iHistoryReasonId => $oReason)
 				{
+					$bHaveAReason	= true;
 					$oStdClassRecord->aModifyReasons[$iHistoryReasonId]	= $oReason->toStdClass();
 				}
 				
@@ -42,16 +45,26 @@ class JSON_Handler_FollowUp_History extends JSON_Handler
 				$oReassignReason	= $oRecord->getReassignReason();
 				if ($oReassignReason)
 				{
+					$bHaveAReason	= true;
 					$oStdClassRecord->oReassignReason	= $oReassignReason->toStdClass();
 				}
 				
+				// Check, no reason found & (this is not the first record OR there is only one record and it is the first)
+				if (!$bHaveAReason && (($iCount > 0) || (count($aHistoryRecords) == 1)))
+				{
+					// Closed, get the followups closure reason
+					$oFollowUp							= FollowUp::getForId($iFollowUpId);
+					$oStdClassRecord->oFollowUpClosure	= FollowUp_Closure::getForId($oFollowUp->followup_closure_id)->toStdClass();
+				}
+				
 				// Store
-				$aResult[$oRecord->id]				= $oStdClassRecord;  
+				$aResult[$oRecord->id]	= $oStdClassRecord; 
+				$iCount++;
 			}
 			
 			return 	array(
-						"Success"	=> true,
-						"aResults"	=> $aResult
+						"Success"			=> true,
+						"aHistoryDetails"	=> $aResult
 					);
 		}
 		catch (JSON_Handler_FollowUp_History_Exception $oException)

@@ -34,6 +34,8 @@ var FollowUp_Link	= Class.create
 	{
 		// Fetch array of placeholders from the page
 		var aContextListPlaceholders	= document.body.select('div.' + FollowUp_Link.PLACEHOLDER_CLASS);
+		JsAutoLoader.registerPreLoadedScripts();
+		
 		if (aContextListPlaceholders.length > 0)
 		{
 			// There are place holders in the page, load constants and js files and then create the context lists
@@ -42,6 +44,9 @@ var FollowUp_Link	= Class.create
 				[
 				 	'../ui/javascript/dataset_ajax.js',
 				 	'../ui/javascript/reflex_sorter.js',
+				 	'../ui/javascript/section.js',
+				 	'../ui/javascript/section_expandable.js',
+				 	'javascript/actions_and_notes.js',
 				 	'javascript/followup_category.js',
 				 	'javascript/popup_followup_view.js',
 				 	'javascript/component_followup_context_list.js'

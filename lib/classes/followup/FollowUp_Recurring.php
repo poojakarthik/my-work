@@ -209,6 +209,9 @@ class FollowUp_Recurring extends ORM_Cached
 							$aDetails['contact_id']		= $oContact->Id;
 							$aDetails['contact_name']	= "{$oContact->FirstName} {$oContact->LastName}";
 						}
+						
+						$aDetails['note_id']		= $oNote->Id;
+						$aDetails['note_type_id']	= $oNote->NoteType;
 					}
 				}
 				break;
@@ -242,6 +245,8 @@ class FollowUp_Recurring extends ORM_Cached
 							$aDetails['contact_id']		= $iContactId;
 							$aDetails['contact_name']	= $oContact->FirstName.' '.$aContacts[0]->LastName;
 						}
+						
+						$aDetails['action_id']	= $oAction->id;
 					}
 				}
 				break;
@@ -272,6 +277,8 @@ class FollowUp_Recurring extends ORM_Cached
 						{
 							$aDetails['ticket_contact_name']	= $oContact->getName();
 						}
+						
+						$aDetails['ticketing_correspondence_id']	= $oTicketingCorrespondence->id;
 					}
 				}
 				break;
@@ -280,7 +287,7 @@ class FollowUp_Recurring extends ORM_Cached
 		return $aDetails;
 	}
 
-	public function getSummary($iCharacterLimit=30)
+	public function getSummary($iCharacterLimit=30, $bRemoveWhitespace=true)
 	{
 		$sSummary	= '';
 		switch ($this->followup_type_id)
@@ -323,11 +330,14 @@ class FollowUp_Recurring extends ORM_Cached
 				break;
 		}
 		
-		// Remove whitespace
-		$sSummary	= preg_replace('/\s/', ' ', $sSummary);
+		if ($bRemoveWhitespace)
+		{
+			// Remove whitespace
+			$sSummary	= preg_replace('/\s/', ' ', $sSummary);
+		}
 		
 		// Limit to $iCharacterLimit characters (default 30)
-		if (strlen($sSummary) > $iCharacterLimit)
+		if (!is_null($iCharacterLimit) && (strlen($sSummary) > $iCharacterLimit))
 		{
 			return substr($sSummary, 0, $iCharacterLimit).'...';
 		}
@@ -388,6 +398,82 @@ class FollowUp_Recurring extends ORM_Cached
 			$oModify->save();
 		}
 		
+	}
+	
+	public function isClosed()
+	{
+		return (strtotime($this->end_datetime) <= time());
+	}
+	
+	public function hasOverdueOccurences()
+	{
+		// For each possible iteration check if they've been closed, if not there are overdue occurences
+		$iEndDate		= strtotime($this->end_datetime);
+		$i				= 0;
+		$iAfterNow		= 0;
+		$iProjectedDate	= strtotime($this->start_datetime);
+		$iNow			= time();
+		$bHasOverdue	= false;
+		while(($iProjectedDate <= $iEndDate) && ($iAfterNow <= FollowUp_Recurring::ITERATION_LIMIT))
+		{
+			$oFollowUp	= FollowUp::getForDateAndRecurringId(date('Y-m-d H:i:s', $iProjectedDate), $this->id);
+			
+			if (!$oFollowUp)
+			{
+				// This iteration has not been completed, it is overdue
+				$bHasOverdue	= true;
+				break;
+			}
+			
+			// Calculates the projected followup date given an iteration
+			$i++;
+			$iProjectedDate	= $this->getProjectedDueDateSeconds($i);
+			if ($iProjectedDate > $iNow)
+			{
+				$iAfterNow++;
+			}
+		}
+		
+		return $bHasOverdue;
+	}
+	
+	public function getOccurrenceDetails($bClosedOccurencesOnly=false, $bPastOnly=false, $iNowSeconds=false)
+	{
+		// For each possible iteration fetch it's due_datetime, closure_type_id & ...
+		$aDetails		= array();
+		$iProjectedDate	= strtotime($this->start_datetime);
+		$iEndDate		= strtotime($this->end_datetime);
+		$iNow			= ($iNowSeconds ? $iNowSeconds : time());
+		$iAfterNow		= 0;
+		$i				= 0;
+		
+		while(($iProjectedDate <= $iEndDate) && 
+			  (!$bPastOnly || ($iProjectedDate <= $iNow)) && 
+			  ($bPastOnly || ($iAfterNow <= FollowUp_Recurring::ITERATION_LIMIT)))
+		{
+			$sDueDateTime	= date('Y-m-d H:i:s', $iProjectedDate);
+			$aOccurence		= array();
+			$oFollowUp		= FollowUp::getForDateAndRecurringId($sDueDateTime, $this->id);
+			if ($oFollowUp || !$bClosedOccurencesOnly)
+			{
+				$aOccurence['sDueDatetime']			= ($oFollowUp ? $oFollowUp->due_datetime : $sDueDateTime);
+				$aOccurence['sClosedDatetime']		= ($oFollowUp ? $oFollowUp->closed_datetime : null);
+				$aOccurence['oFollowUpClosure']		= ($oFollowUp ? FollowUp_Closure::getForId($oFollowUp->followup_closure_id)->toStdClass() : null);
+				$aOccurence['iAssignedEmployeeId']	= ($oFollowUp ? $oFollowUp->assigned_employee_id : null);
+				$aOccurence['sAssignedEmployee']	= ($oFollowUp ? Employee::getForId($oFollowUp->assigned_employee_id)->getName() : null);
+				$aDetails[]							= $aOccurence;
+			}
+			
+			// Calculates the projected followup date given an iteration
+			$i++;
+			$iProjectedDate	= $this->getProjectedDueDateSeconds($i);
+			if ($iProjectedDate > $iNow)
+			{
+				$iAfterNow++;
+			}
+		}
+		
+		return $aDetails;
 	}
 	
 	/**

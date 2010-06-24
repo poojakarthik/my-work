@@ -207,6 +207,72 @@ class JSON_Handler_ActionsAndNotes extends JSON_Handler
 		}
 	}
 	
+	public function getNoteDetails($iId)
+	{
+		try
+		{
+			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
+			{
+				throw new JSON_Handler_ActionsAndNotes_Exception('You do not have permission to view Notes.');
+			}
+			
+			$oNote		= Note::getForId($iId);
+			$oDetails	= $this->_processItemDetails($oNote, ActionsAndNotes::TYPE_NOTE);
+			
+			return	array(	
+						"Success"	=> true,
+						"oDetails"	=> $oDetails
+					);
+		}
+		catch(JSON_Handler_ActionsAndNotes_Exception $oException)
+		{
+			return	array(
+						"Success"	=> false,
+						"Message"	=> $oException->getMessage()
+					);
+		}
+		catch(Exception $e)
+		{
+			return	array(
+						"Success"	=> false,
+						"Message"	=> (Employee::getForId(Flex::getUserId())->isGod() ? $e->getMessage() : 'An error occurred getting the note details')
+					);
+		}
+	}
+	
+	public function getActionDetails($iId)
+	{
+		try
+		{
+			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
+			{
+				throw new JSON_Handler_ActionsAndNotes_Exception('You do not have permission to view Actions.');
+			}
+			
+			$oAction	= Action::getForId($iId);
+			$oDetails	= $this->_processItemDetails($oAction, ActionsAndNotes::TYPE_ACTION);
+			
+			return	array(	
+						"Success"	=> true,
+						"oDetails"	=> $oDetails
+					);
+		}
+		catch(JSON_Handler_ActionsAndNotes_Exception $oException)
+		{
+			return	array(
+						"Success"	=> false,
+						"Message"	=> $oException->getMessage()
+					);
+		}
+		catch(Exception $e)
+		{
+			return	array(
+						"Success"	=> false,
+						"Message"	=> (Employee::getForId(Flex::getUserId())->isGod() ? $e->getMessage() : 'An error occurred getting the action details')
+					);
+		}
+	}
+	
 	/**
 	 * search
 	 *
@@ -533,7 +599,11 @@ class JSON_Handler_ActionsAndNotes extends JSON_Handler
 		
 		return $objItem;
 	}
-	
-	
 }
+
+class JSON_Handler_ActionsAndNotes_Exception extends Exception
+{
+	// No changes...
+}
+
 ?>
