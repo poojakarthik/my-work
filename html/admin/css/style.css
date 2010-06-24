@@ -500,6 +500,7 @@ div.reflex-popup-title-bar {
 	background-image	: url('../img/template/background.png');
 	background-repeat	: repeat-x;
 	-moz-user-select	: none;
+	-webkit-user-select	: none;
 }
 
 div.reflex-popup-title {
@@ -987,6 +988,7 @@ img.document-explorer-icon-overlay
 table.document-explorer tbody
 {
 	-moz-user-select	: none;
+	-webkit-user-select	: none;
 }
 
 table.document-explorer th.notice-normal
@@ -1917,6 +1919,7 @@ table.tree-grid tr td.tree img
 	vertical-align	: top;
 	
 	-moz-user-select	: none;
+	-webkit-user-select	: none;
 }
 
 table.tree-grid tr td.tree span.label
@@ -1954,6 +1957,7 @@ table.tree-grid tr td.row-select input[type="checkbox"]
 table.tree-grid tr td.row-select img
 {
 	-moz-user-select	: none;
+	-webkit-user-select	: none;
 	cursor				: pointer;
 }
 
@@ -2419,6 +2423,7 @@ ul.reflex-tree-node-columns > li.reflex-tree-node-column:nth-child(n+2)
 {
 	border-left			: 1px dotted #3f3f3f;
 	-moz-box-sizing		: border-box;
+	-webkit-box-sizing	: border-box;
 }
 
 div.reflex-tree ul.reflex-tree-header
@@ -2931,7 +2936,8 @@ div.datareport-buttons > button > img
 
 div.datareport-select-options-columns
 {
-	-moz-column-count	: 3;
+	-moz-column-count		: 3;
+	-webkit-column-count	: 3;
 }
 
 div.datareport th
@@ -3360,13 +3366,21 @@ div.section-expandable-expand > img
 
 div.section-expandable-expand
 {
-	position			: relative;
-	-moz-border-radius	: 8px;
-	border				: solid 1px #333;
-	cursor				: pointer;
-	width				: 16px;
-	height				: 16px;
-	margin				: 0.25em;
+	position				: relative;
+	-moz-border-radius		: 8px;
+	-webkit-border-radius	: 8px;
+	border					: solid 1px #333;
+	cursor					: pointer;
+	width					: 16px;
+	height					: 16px;
+	margin					: 0.25em;
+	
+	/* Changes by Rich to make it appear more button-like */
+	border-color		: #999 #666 #666 #999;
+	background-color	: #ddd;
+	background-image	: url('../img/template/transparent-bg.png');
+	-moz-user-select	: none;
+	-webkit-user-select	: none;
 }
 
 div.section-expandable-expand:hover
@@ -3732,12 +3746,13 @@ tbody.employee-details-credentials div.control-field
 
 div.employee-details-is-god
 {
-	-moz-border-radius	: 4px 4px 4px 4px;
-	border				: 1px solid #34446A;
-	background-color	: #ffffff;
-	font-weight			: bold;
-	padding				: 0.05em 0.25em;
-	float				: right;
+	-moz-border-radius		: 4px;
+	-webkit-border-radius	: 4px;
+	border					: 1px solid #34446A;
+	background-color		: #ffffff;
+	font-weight				: bold;
+	padding					: 0.05em 0.25em;
+	float					: right;
 }
 
 div.employee-details-is-god > img
@@ -4566,6 +4581,9 @@ div.filter-overlay-options
 	border				: solid 1px black;
 	-moz-box-sizing		: border-box;
 	-moz-border-radius	: 0.25em;
+	
+	-webkit-box-sizing		: border-box;
+	-webkit-border-radius	: 0.25em;
 }
 
 div.filter-validation-errors
@@ -4954,14 +4972,15 @@ td.popup-followup-active-empty-clickformore
 
 div.popup-followup-active-date-full
 {
-	position			: absolute;
-	width				: auto;
-	height				: auto;
-	padding				: 0.5em;
-	background-color	: #CCDDFF;
-	border				: solid 1px #000;
-	-moz-border-radius	: 4px;
-	z-index				: 999;
+	position				: absolute;
+	width					: auto;
+	height					: auto;
+	padding					: 0.5em;
+	background-color		: #CCDDFF;
+	border					: solid 1px #000;
+	-moz-border-radius		: 4px;
+	-webkit-border-radius	: 4px;
+	z-index					: 999;
 }
 
 div.section-header-summary > span
@@ -5100,10 +5119,11 @@ td.popup-followup-add-details-recurring-howoften > div.control-field:nth-child(3
 table.popup-followup-details-recurring,
 table.popup-followup-details-onceoff
 {
-	-moz-border-radius	: 4px;
-	background-color	: #D1D1D1;
-	width				: 100%;
-	margin				: 0.5em 0 0.5em 0;
+	-moz-border-radius		: 4px;
+	-webkit-border-radius	: 4px;
+	background-color		: #D1D1D1;
+	width					: 100%;
+	margin					: 0.5em 0 0.5em 0;
 }
 
 table.popup-followup-details-recurring > tbody > tr > td,
@@ -5119,12 +5139,13 @@ table.popup-followup-details-onceoff > tbody > tr > td
 
 div.followup-context-list
 {
-	background-color	: #F8F8EC;
-	-moz-border-radius	: 6px 0 0 6px;
-	border-style		: solid;
-	border-color		: #666666;
-	border-width		: 1px 0px 1px 1px;
-	padding				: 0.25em 0.1em 0.25em 0.35em;
+	background-color		: #F8F8EC;
+	-moz-border-radius		: 6px 0 0 6px;
+	-webkit-border-radius	: 6px 0 0 6px;
+	border-style			: solid;
+	border-color			: #666666;
+	border-width			: 1px 0px 1px 1px;
+	padding					: 0.25em 0.1em 0.25em 0.35em;
 }
 
 div.followup-context-list > div.followup-context-list-followup
@@ -5356,11 +5377,12 @@ table.popup-followup-view-followup-details-recurring > tbody > tr > td:first-chi
 table.popup-followup-view-followup-details-recurring,
 table.popup-followup-view-followup-details-onceoff
 {
-	background-color	: #F8F8EC;
-	width				: 100%;
-	margin				: 0em 0em 1em 0em;
-	-moz-border-radius	: 4px;
-	border				: 1px solid #34446A;
+	background-color		: #F8F8EC;
+	width					: 100%;
+	margin					: 0em 0em 1em 0em;
+	-moz-border-radius		: 4px;
+	-webkit-border-radius	: 4px;
+	border					: 1px solid #34446A;
 }
 
 table.popup-followup-view-followup-details-recurring > tbody > tr > td,
