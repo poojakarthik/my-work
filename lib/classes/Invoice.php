@@ -106,6 +106,8 @@ class Invoice extends ORM_Cached
 				{
 					$oInvoice	= new Invoice();
 					$oInvoice->generate($oAccount, $oInvoiceRun);
+					
+					return $oInvoice;
 				}
 				catch (Exception $oException)
 				{
@@ -1713,9 +1715,9 @@ class Invoice extends ORM_Cached
 		$oQuery	= new Query();
 		
 		// We want to redistribute Invoice balances so that payments and adjustments affect oldest invoices first
-		$sAccounts	= "	SELECT		i.Account																AS account_id,
-									MAX(IF(i.Balance != 0 AND i.Balance != (i.Total + i.Tax), i.Id, NULL))	AS latest_redistributable,
-									MIN(IF(i.Balance != 0 AND i.Balance != (i.Total + i.Tax), i.Id, NULL))	AS earliest_redistributable
+		$sAccounts	= "	SELECT		i.Account																							AS account_id,
+									MAX(IF(i.Balance != 0 AND (i.Balance != (i.Total + i.Tax) OR i.adjustment_total < 0), i.Id, NULL))	AS latest_redistributable,
+									MIN(IF(i.Balance != 0 AND (i.Balance != (i.Total + i.Tax) OR i.adjustment_total < 0), i.Id, NULL))	AS earliest_redistributable
 						
 						FROM		Invoice i
 						

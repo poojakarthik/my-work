@@ -403,8 +403,9 @@ class Invoice_Run
 		{
 			$objAccount	= new Account($arrAccount);
 			Log::getLog()->log(" + Generating Invoice for {$objAccount->Id}...");
-			$objInvoice	= new Invoice();
-			$objInvoice->generate($objAccount, $this);
+			
+			$objInvoice	= Invoice::generateForInvoiceRunAndAccount($this, $objAccount);
+			
 			$this->InvoiceCount++;
 		}
 		
