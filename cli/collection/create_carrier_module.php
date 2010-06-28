@@ -40,7 +40,7 @@ if (!$objModule)
 	die;
 }
 
-if (($mixResult = $objModule->CreateModuleConfig()) !== TRUE)
+if (($mixResult = $objModule->CreateModuleConfig(true)) !== TRUE)
 {
 	CliEcho("[ FAILED ]\n\t".$mixResult."\n");
 	die;

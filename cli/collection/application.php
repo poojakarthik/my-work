@@ -71,8 +71,8 @@ class ApplicationCollection extends ApplicationBaseClass
  		$this->_selCarrierModules->Execute(Array('Type' => MODULE_TYPE_COLLECTION));
  		while ($arrModule = $this->_selCarrierModules->Fetch())
  		{
- 			$this->_arrModules[$arrModule['Carrier']][$arrModule['FileType']]	= new $arrModule['Module']($arrModule['Carrier']);
- 			CliEcho("\t + ".GetConstantDescription($arrModule['Carrier'], 'Carrier')." : ".$this->_arrModules[$arrModule['Carrier']][$arrModule['FileType']]->strDescription);
+ 			$this->_arrModules[$arrModule['Carrier']][$arrModule['Id']]	= new $arrModule['Module']($arrModule['Carrier']);
+ 			CliEcho("\t + ".GetConstantDescription($arrModule['Carrier'], 'Carrier')." : {$arrModule['Description']}");
  		}
 	}
 	
@@ -111,13 +111,13 @@ class ApplicationCollection extends ApplicationBaseClass
 			}
 			
 			CliEcho("\t * Provider: ".GetConstantDescription($intCarrier, 'Carrier'));
-			foreach ($arrFileTypes as $intResourceType=>&$modModule)
+			foreach ($arrFileTypes as $iCarrierModuleId=>&$modModule)
 			{
-				CliEcho("\n\t\t * Resource: ".GetConstantDescription($intResourceType, 'resource_type'));
+				//CliEcho("\n\t\t * Resource: ".GetConstantDescription($intResourceType, 'resource_type'));
 				
 				// Download paths
 				$strCarrierName			= preg_replace("/\W/", '_', GetConstantDescription($intCarrier, 'Carrier'));
-				$strDownloadDirectory	= FILES_BASE_PATH."download/current/{$strCarrierName}/".GetConstantName($intResourceType, 'resource_type').'/';
+				$strDownloadDirectory	= FILES_BASE_PATH."download/current/{$strCarrierName}/{$iCarrierModuleId}/";
 				@mkdir($strDownloadDirectory, 0777, TRUE);
 				
 				// Connect to the Source

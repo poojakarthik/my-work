@@ -41,11 +41,11 @@ class CarrierModule
 	 * Constructor
 	 *
 	 * Constructor
-	 * 
+	 *
 	 * @param	integer		$intCarrier						Carrier to load this Module for
 	 * @param	integer		$intModuleType					CarrierModule type
 	 * @param	integer		$intCustomerGroup	[optional]	CustomerGroup to load this Module for (default: NULL)
-	 * 
+	 *
 	 * @return	CarrierModule
 	 *
 	 * @method
@@ -74,7 +74,7 @@ class CarrierModule
  		$this->LoadModuleConfig();
  		
  		// Set CanRunModule variable
- 		$this->bolCanRunModule		= $this->_CanRunModule(); 
+ 		$this->bolCanRunModule		= $this->_CanRunModule();
  	}
  	
  	
@@ -85,18 +85,18 @@ class CarrierModule
 	 * GetConfigField()
 	 *
 	 * Retrieves a reference to a Config field
-	 * 
+	 *
 	 * Retrieves a reference to a Config field
-	 * 
+	 *
 	 * @param	string	$strName					Field to return
 	 * @param	string	$strParent		[optional]	Parent field that's reffering to this field
-	 * 
+	 *
 	 * @return	&mixed								Pass/Fail
 	 *
 	 * @method
 	 */
 	 function &GetConfigField($strName, $strParent = NULL)
-	 {	 	
+	 {
 	 	//CliEcho("Fetching Config Field '$strName' (Parent: '$strParent')");
 	 	
 	 	$mixValue	= &$this->_arrModuleConfig[$strName]['Value'];
@@ -205,9 +205,9 @@ class CarrierModule
 	 * _CanRunModule()
 	 *
 	 * Checks to see if this module can be used at the moment
-	 * 
+	 *
 	 * Checks to see if this module can be used at the moment
-	 * 
+	 *
 	 * @return	bool							Pass/Fail
 	 *
 	 * @method
@@ -259,9 +259,9 @@ class CarrierModule
 	 * LoadModuleConfig()
 	 *
 	 * Loads the Module's Config from the DB
-	 * 
+	 *
 	 * Loads the Module's Config from the DB
-	 * 
+	 *
 	 * @return	bool							Pass/Fail
 	 *
 	 * @method
@@ -278,7 +278,7 @@ class CarrierModule
 	 		$arrModule	= $this->_selCarrierModule->Fetch();
 	 		
 	 		// Keep a copy of the record
-	 		$this->_arrCarrierModule	= $arrModule;			
+	 		$this->_arrCarrierModule	= $arrModule;
 	 		
 	 		// Get the Config
 	 		$this->_selModuleConfig->Execute($arrModule);
@@ -305,9 +305,9 @@ class CarrierModule
 	 * _SaveModuleConfig()
 	 *
 	 * Saves the Module's Config back to the DB
-	 * 
+	 *
 	 * Saves the Module's Config back to the DB
-	 * 
+	 *
 	 * @return	array					'Pass'			: TRUE/FALSE
 	 * 									'Description'	: Error message
 	 *
@@ -350,7 +350,7 @@ class CarrierModule
 	 	$strError	= trim($strError);
 	 	
 	 	// If there is an error, then return the message, else TRUE
-	 	return Array('Pass' => (!$bolFailed), 'Description' => $strError); 
+	 	return Array('Pass' => (!$bolFailed), 'Description' => $strError);
 	 	//return ($bolFailed) ? $strError : TRUE;
 	 }
  	
@@ -362,9 +362,9 @@ class CarrierModule
 	 * SaveModule()
 	 *
 	 * Saves the Module back to the DB
-	 * 
+	 *
 	 * Saves the Module back to the DB
-	 * 
+	 *
 	 * @return	array					'Pass'			: TRUE/FALSE
 	 * 									'Description'	: Error message
 	 *
@@ -385,7 +385,7 @@ class CarrierModule
  		$arrResult	= $this->_SaveModuleConfig();
 	 	
 	 	// If there is an error, then return the message, else TRUE
-	 	return $arrResult; 
+	 	return $arrResult;
 	 }
  	
  	
@@ -396,17 +396,17 @@ class CarrierModule
 	 * CreateModuleConfig()
 	 *
 	 * Creates Module Config information in the CarrierModule and CarrierModuleConfig tables
-	 * 
+	 *
 	 * Creates Module Config information in the CarrierModule and CarrierModuleConfig tables
-	 * 
+	 *
 	 * @param	integer	$intCarrier		The Carrier to create this module for
-	 * 
+	 *
 	 * @return	mixed					TRUE	: Config Created
 	 * 									string	: Failure Reason
 	 *
 	 * @method
 	 */
-	 function CreateModuleConfig()
+	 function CreateModuleConfig($bAllowCarrierFileTypeDuplicates=false)
 	 {
  		$intCarrier				= $this->_intModuleCarrier;
  		
@@ -424,9 +424,9 @@ class CarrierModule
 	 	$arrWhere['Module']				= get_class($this);
 	 	$arrWhere['Type']				= $this->_intModuleType;
 	 	$arrWhere['CustomerGroup']		= $this->_intModuleCustomerGroup;
-	 	if (!$this->_selCarrierModule->Execute($arrWhere))
+	 	if ($this->_selCarrierModule->Execute($arrWhere) === 0 || $bAllowCarrierFileTypeDuplicates)
 	 	{
-			// Insert the CarrierModule data
+	 		// Insert the CarrierModule data
 			$arrCarrierModule						= Array();
 	 		$arrCarrierModule['Carrier']			= $intCarrier;
 	 		$arrCarrierModule['Type']				= $this->_intModuleType;
@@ -475,9 +475,9 @@ class CarrierModule
 	 * GetCarrier()
 	 *
 	 * Returns the Carrier that is implementing this Module
-	 * 
+	 *
 	 * Returns the Carrier that is implementing this Module
-	 *  
+	 *
 	 * @return	integer								Carrier
 	 *
 	 * @method
@@ -494,9 +494,9 @@ class CarrierModule
 	 * GetCustomerGroup()
 	 *
 	 * Returns the CustomerGroup that is implementing this Module
-	 * 
+	 *
 	 * Returns the CustomerGroup that is implementing this Module
-	 *  
+	 *
 	 * @return	integer								int: CustomerGroup; NULL: Available to all CustomerGroups
 	 *
 	 * @method
