@@ -182,7 +182,14 @@ var Popup_FollowUp_View	= Class.create(Reflex_Popup,
 		else if (oResponse.Success)
 		{
 			// All good, cache the next due date
-			this._sNextDueDate	= Popup_FollowUp_View.formatDateTime(oResponse.sDueDateTime, false, oResponse.bOverdue);
+			if (oResponse.bNoMore)
+			{
+				this._oNextDueDate	= $T.span(Popup_FollowUp_View.NO_MORE_OCCURRENCES_TEXT);
+			}
+			else
+			{
+				this._oNextDueDate	= Popup_FollowUp_View.formatDateTime(oResponse.sDueDateTime, false, oResponse.bOverdue);
+			}
 			
 			if (fnCallback)
 			{
@@ -575,7 +582,7 @@ var Popup_FollowUp_View	= Class.create(Reflex_Popup,
 				// Closed, show type of closure and reason
 				oDiv.appendChild(
 					$T.span(
-						Popup_FollowUp_View.getClosureTypeName(oOccur.oFollowUpClosure.id),
+						Popup_FollowUp_View.getClosureTypeName(oOccur.oFollowUpClosure.followup_closure_type_id),
 						' (',
 						$T.span({class: 'popup-followup-view-occurrences-closure-name'},
 							oOccur.oFollowUpClosure.name
@@ -775,7 +782,7 @@ var Popup_FollowUp_View	= Class.create(Reflex_Popup,
 			// Update the next due date
 			var oDueNextTD			= this._oContent.select('td.popup-followup-add-details-recurring-duenext').first();
 			oDueNextTD.innerHTML	= '';
-			oDueNextTD.innerHTML	= this._getDueNextValue();
+			oDueNextTD.appendChild(this._getDueNextValue());
 			
 			// Update occurrences
 			this._oOccurrencesSection.setContent(this._createOccurrencesContent());
@@ -809,7 +816,7 @@ var Popup_FollowUp_View	= Class.create(Reflex_Popup,
 	
 	_getDueNextValue	: function()
 	{
-		return (this._bIsClosed ? Popup_FollowUp_View.CLOSED_RECURRING_TEXT : this._sNextDueDate)
+		return (this._bIsClosed ? $T.span(Popup_FollowUp_View.CLOSED_RECURRING_TEXT) : this._oNextDueDate)
 	}
 });
 
@@ -828,12 +835,13 @@ Popup_FollowUp_View.DETAILS_TICKET_IMAGE_SOURCE					= Popup_FollowUp_View.TYPE_T
 Popup_FollowUp_View.COMPLETE_IMAGE_SOURCE						= '../admin/img/template/approve.png';
 Popup_FollowUp_View.DISMISS_IMAGE_SOURCE						= '../admin/img/template/decline.png';
 
-Popup_FollowUp_View.DATE_FORMAT			= 'l jS M Y g:i A';
-Popup_FollowUp_View.DATE_FORMAT_SHORT	= 'd/m/y g:i A';
+Popup_FollowUp_View.DATE_FORMAT									= 'l jS M Y g:i A';
+Popup_FollowUp_View.DATE_FORMAT_SHORT							= 'd/m/y g:i A';
 
-Popup_FollowUp_View.NO_END_DATE			= '9999-12-31 23:59:59';
+Popup_FollowUp_View.NO_END_DATE									= '9999-12-31 23:59:59';
 
-Popup_FollowUp_View.CLOSED_RECURRING_TEXT	= 'This Recurring Follow-Up has ended.';
+Popup_FollowUp_View.CLOSED_RECURRING_TEXT						= 'This Recurring Follow-Up has ended.';
+Popup_FollowUp_View.NO_MORE_OCCURRENCES_TEXT					= 'There are no more occurrences due.'
 
 Popup_FollowUp_View.formatDateTime	= function(sDateTime, bShortVersion, bOverdue, bTextOnly)
 {

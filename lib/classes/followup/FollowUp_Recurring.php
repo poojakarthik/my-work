@@ -501,19 +501,27 @@ class FollowUp_Recurring extends ORM_Cached
 	
 	public function getNextDueDateInformation()
 	{
+		$sDateFormat		= "Y-m-d H:i:s";
 		$iProjectedDate		= strtotime($this->start_datetime);
 		$iEndDate			= strtotime($this->end_datetime);
-		$sDueDateTime		= date('Y-m-d H:i:s', $iProjectedDate);
+		$sDueDateTime		= date($sDateFormat, $iProjectedDate);
 		$iNow				= time();
 		$i					= 0;
 		while((($iProjectedDate <= $iNow) && ($iProjectedDate <= $iEndDate)) || FollowUp::getForDateAndRecurringId($sDueDateTime, $this->id))
 		{
 			$i++;
 			$iProjectedDate	= $this->getProjectedDueDateSeconds($i);
-			$sDueDateTime	= date('Y-m-d H:i:s', $iProjectedDate);
+			$sDueDateTime	= date($sDateFormat, $iProjectedDate);
 		}
 		
-		return array('sDueDateTime' => $sDueDateTime, 'iIteration' => $i);
+		// Determine whether there are more to come, if the projected date is after the end date
+		$bNoMore	= false;
+		if ($iProjectedDate > $iEndDate)
+		{
+			$bNoMore	= true;
+		}
+		
+		return array("sDueDateTime" => $sDueDateTime, "iIteration" => $i, "bNoMore" => $bNoMore);
 	}
 	
 	/**

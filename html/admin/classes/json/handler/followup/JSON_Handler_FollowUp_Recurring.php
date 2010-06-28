@@ -271,13 +271,15 @@ class JSON_Handler_FollowUp_Recurring extends JSON_Handler
 			
 			$oFollowUpRecurring	= FollowUp_Recurring::getForId($iFollowUpRecurringId);
 			$aNextDueDate		= $oFollowUpRecurring->getNextDueDateInformation();
-			$bOverdue			= strtotime($aNextDueDate['sDateTime']) < time();
+			$iNextDueDate		= strtotime($aNextDueDate["sDueDateTime"]);
+			$bOverdue			= $iNextDueDate < time();
 			
 			return	array(
 						"Success"		=> true,
-						"sDueDateTime"	=> $aNextDueDate['sDueDateTime'],
-						"iIteration"	=> $aNextDueDate['iIteration'],
-						"$bOverdue"		=> $bOverdue
+						"sDueDateTime"	=> $aNextDueDate["sDueDateTime"],
+						"iIteration"	=> $aNextDueDate["iIteration"],
+						"bOverdue"		=> $bOverdue,
+						"bNoMore"		=> $aNextDueDate["bNoMore"]
 					);
 		}
 		catch (JSON_Handler_FollowUp_Recurring_Exception $oException)
