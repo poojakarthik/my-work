@@ -34,6 +34,16 @@ $aDirectories	=	array
 																)
 									)
 					);
+$aDirectories	=	array
+					(
+						'home/TB/speedi'	=>	array
+												(
+													'arrFileTypes'	=>	array
+																		(
+																			RESOURCE_TYPE_FILE_IMPORT_CDR_OPTUS_STANDARD	=> &$aFileTypes[RESOURCE_TYPE_FILE_IMPORT_CDR_OPTUS_STANDARD]
+																		)
+												)
+					);
 // PROPOSED FORMAT
 $aPaths	=	array
 			(
