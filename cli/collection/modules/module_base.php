@@ -122,9 +122,9 @@
 	 * Determines the FileImport type for a given file
 	 *
 	 * Determines the FileImport type for a given file
-	 * 
+	 *
 	 * @param	array	$arrDownloadFile				FileDownload properties
-	 * 
+	 *
 	 * @return	mixed									array: FileImport Type; NULL: Unrecognised type
 	 *
 	 * @method
@@ -145,7 +145,7 @@
 				if (preg_match($arrFileType['Regex'], trim(basename($arrDownloadFile['LocalPath']))))
 				{
 					// We have a match
-					$arrFileType['FileImportType']	= $intFileType; 
+					$arrFileType['FileImportType']	= $intFileType;
 					return $arrFileType;
 				}
 			}
@@ -164,9 +164,9 @@
 	 * isDownloadUnique()
 	 *
 	 * Checks whether a given Filename is unique in the DB for this Carrier
-	 * 
+	 *
 	 * @param	string	$strFilename					Filename to check
-	 * 
+	 *
 	 * @return	mixed									array: FileImport Type; NULL: Unrecognised type
 	 *
 	 * @method
