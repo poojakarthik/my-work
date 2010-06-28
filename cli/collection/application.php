@@ -88,7 +88,7 @@ class ApplicationCollection extends ApplicationBaseClass
 	 *
 	 * @method
 	 */
-	function Collect($iCarrierToCollect=null)
+	function Collect($iCarrierModule=null)
 	{
 		// Statements
 		$arrCols				= Array();
@@ -104,16 +104,16 @@ class ApplicationCollection extends ApplicationBaseClass
 		$arrFiles	= array();
 		foreach ($this->_arrModules as $intCarrier=>&$arrFileTypes)
 		{
-			// Are we restricting this run to a single Carrier?
-			if (isset($iCarrierToCollect) && $intCarrier !== $iCarrierToCollect)
-			{
-				continue;
-			}
-			
 			CliEcho("\t * Provider: ".GetConstantDescription($intCarrier, 'Carrier'));
 			foreach ($arrFileTypes as $iCarrierModuleId=>&$modModule)
 			{
-				//CliEcho("\n\t\t * Resource: ".GetConstantDescription($intResourceType, 'resource_type'));
+				// Are we restricting this run to a single CarrierModule?
+				if (isset($iCarrierModule) && $iCarrierModuleId !== $iCarrierModule)
+				{
+					continue;
+				}
+				
+				CliEcho("\n\t\t * Module: ".get_class($modModule));
 				
 				// Download paths
 				$strCarrierName			= preg_replace("/\W/", '_', GetConstantDescription($intCarrier, 'Carrier'));

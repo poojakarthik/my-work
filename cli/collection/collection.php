@@ -19,22 +19,22 @@ define('COLLECTION_DEBUG_MODE',		FALSE);
 $appCollection = new ApplicationCollection($arrConfig);
 
 // CLI Parameters
-$iCarrierId	= null;
+$iCarrierModuleId	= null;
 if ($argc > 1)
 {
 	if (is_numeric($argv[1]))
 	{
-		$iCarrierId	= (int)$argv[1];
+		$iCarrierModuleId	= (int)$argv[1];
 	}
 	else
 	{
-		throw new Exception("Invalid Carrier Id provided: '{$argv[1]}'");
+		throw new Exception("Invalid Carrier Module Id provided: '{$argv[1]}'");
 	}
 }
 
 // run the thing
 $intOldTrackErrors	= ini_set('track_errors', 1);
-$appCollection->Collect($iCarrierId);
+$appCollection->Collect($iCarrierModuleId);
 ini_set('track_errors', $intOldTrackErrors);
 
 // finished
