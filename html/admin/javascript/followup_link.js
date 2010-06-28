@@ -48,6 +48,7 @@ var FollowUp_Link	= Class.create
 				 	'../ui/javascript/section_expandable.js',
 				 	'javascript/actions_and_notes.js',
 				 	'javascript/followup_category.js',
+				 	'javascript/followup_status.js',
 				 	'javascript/popup_followup_view.js',
 				 	'javascript/component_followup_context_list.js'
 				],

@@ -300,22 +300,14 @@ Popup_FollowUp_History.DATE_FORMAT			= 'l jS M Y g:i A';
 Popup_FollowUp_History.DATE_FORMAT_SHORT	= 'd/m/y g:i A';
 Popup_FollowUp_History.NO_END_DATE			= '9999-12-31 23:59:59';
 
-Popup_FollowUp_History.formatDateTime	= function(sDateTime, bShortVersion, bShowIfOverdue)
+Popup_FollowUp_History.formatDateTime	= function(sDateTime, bShortVersion)
 {
-	var oDate		= new Date(Date.parse(sDateTime.replace(/-/g, '/')));
-	var bOverdue	= (bShowIfOverdue ? oDate.getTime() < new Date().getTime() : false);
-	if (bShortVersion)
-	{
-		return	$T.span({class: (bOverdue ? 'popup-followup-view-date-overdue' : '')},
-					oDate.$format(Popup_FollowUp_History.DATE_FORMAT_SHORT)
-				);
-	}
-	else
-	{
-		return	$T.span({class: (bOverdue ? 'popup-followup-view-date-overdue' : '')},
-					oDate.$format(Popup_FollowUp_History.DATE_FORMAT)
-				);
-	}
+	var oDate	= new Date(Date.parse(sDateTime.replace(/-/g, '/')));
+	return	$T.span(
+				oDate.$format(
+					bShortVersion ? Popup_FollowUp_History.DATE_FORMAT_SHORT : Popup_FollowUp_History.DATE_FORMAT
+				)
+			);
 };
 
 Popup_FollowUp_History.getChangeDescriptionElement	= function(sFieldName, oPrevious, oCurrent)

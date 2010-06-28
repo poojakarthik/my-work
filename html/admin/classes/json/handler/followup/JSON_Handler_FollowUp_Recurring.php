@@ -271,11 +271,13 @@ class JSON_Handler_FollowUp_Recurring extends JSON_Handler
 			
 			$oFollowUpRecurring	= FollowUp_Recurring::getForId($iFollowUpRecurringId);
 			$aNextDueDate		= $oFollowUpRecurring->getNextDueDateInformation();
+			$bOverdue			= strtotime($aNextDueDate['sDateTime']) < time();
 			
 			return	array(
 						"Success"		=> true,
 						"sDueDateTime"	=> $aNextDueDate['sDueDateTime'],
-						"iIteration"	=> $aNextDueDate['iIteration']
+						"iIteration"	=> $aNextDueDate['iIteration'],
+						"$bOverdue"		=> $bOverdue
 					);
 		}
 		catch (JSON_Handler_FollowUp_Recurring_Exception $oException)
@@ -308,7 +310,7 @@ class JSON_Handler_FollowUp_Recurring extends JSON_Handler
 			$aDetails				= $oFollowUpRecurring->getDetails();
 			$aDetails['sContent']	= $oFollowUpRecurring->getSummary(null, false);
 			
-			if ($iRecurringIteration)
+			if (is_numeric($iRecurringIteration))
 			{
 				$sDueDateTime	= date('Y-m-d H:i:s', $oFollowUpRecurring->getProjectedDueDateSeconds($iRecurringIteration));
 				$oFollowUp		= FollowUp::getForDateAndRecurringId($sDueDateTime, $oFollowUpRecurring->id);
@@ -334,6 +336,11 @@ class JSON_Handler_FollowUp_Recurring extends JSON_Handler
 					$oStdClass->closed_datetime			= null;
 					$oStdClass->due_datetime			= $sDueDateTime;
 				}
+				
+				$oStdClass->status	=	FollowUp::getStatus(
+											$oStdClass->followup_closure_id, 
+											$oStdClass->due_datetime
+										);
 			}
 			else
 			{

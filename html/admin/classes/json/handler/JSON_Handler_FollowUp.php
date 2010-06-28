@@ -478,7 +478,7 @@ class JSON_Handler_FollowUp extends JSON_Handler
 		{
 			return 	array(
 						"Success"	=> false,
-						"Message"	=> Employee::getForId(Flex::getUserId())->isGod ? $e->getMessage() : 'There was an error updating the recurring follow-up'
+						"Message"	=> $e->getMessage()//Employee::getForId(Flex::getUserId())->isGod ? $e->getMessage() : 'There was an error getting the overdue follow-up count.'
 					);
 		}
 	}
@@ -638,6 +638,12 @@ class JSON_Handler_FollowUp extends JSON_Handler
 			{
 				$oStdClass->followup_closure	= FollowUp_Closure::getForId($oStdClass->followup_closure_id)->toStdClass();
 			}
+			
+			// Add the status text to the object
+			$oStdClass->status	=	FollowUp::getStatus(
+											$oStdClass->followup_closure_id, 
+											$oStdClass->due_datetime
+										);
 			
 			return	array(
 						"Success"	=> true,

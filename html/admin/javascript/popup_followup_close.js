@@ -114,7 +114,7 @@ var Popup_FollowUp_Close	= Class.create(Reflex_Popup,
 			if (this._oSelect.validate())
 			{
 				// Show loading
-				this.oLoading	= new Reflex_Popup.Loading(this._sPurposeIng + 'ing ' + this._sType + '...');
+				this.oLoading	= new Reflex_Popup.Loading(this._sPurposeIng + 'ing...');
 				this.oLoading.display();
 				
 				var iFollowUpClosureId	= this._oSelect.getElementValue(); 

@@ -75,8 +75,7 @@ var Popup_FollowUp_Active	= Class.create(Reflex_Popup,
 			var sEndDate	= oEndDate.$format('Y-m-d 00:00');
 			var oFilter		= 	{
 									due_datetime	: {mFrom: null, mTo: sEndDate},
-									status			: 'ACTIVE',
-									now				: Math.floor(new Date().getTime() / 1000)
+									status			: 'ACTIVE'
 								};
 			
 			fnGetFollowUps(false, null, null, {due_datetime: 'ASC'}, oFilter, Popup_FollowUp_Active.MAX_SUMMARY_CHARACTERS);

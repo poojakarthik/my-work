@@ -342,21 +342,17 @@ class FollowUp extends ORM_Cached
 	public static function searchFor($iLimit=null, $iOffset=null, $aSort=null, $aFilter=null, $bCountOnly=false)
 	{
 		// Build query parts based on the limit, offset, sort and filter parameters
+		$sSelectClause	= '	f.*, fc.followup_closure_type_id';
 		$sFromClause	= '	followup f 
 							LEFT JOIN	followup_closure fc 
 											ON f.followup_closure_id = fc.id';
-		$sSelectClause	= 'f.*, fc.followup_closure_type_id';
-		$sWhereClause	= '';
-		$sOrderByClause	= '';
-		$sLimitClause	= '';
-		$oQuery			= new Query();
-		$iNow			= time();
 		
 		// WHERE clause for followup_search (includes closure constraints)
 		$aWhereInfoSearch	= StatementSelect::generateWhere(null, $aFilter);
 		
-		// WHERE clause for followup. Any closure constraints are removed so that closed recurring fup iterations are included
-		// in the temp table. These constraints are used when querying the resulting temp table (using $aWhereInfoSearch, defined above). 
+		// WHERE clause for followup. Any closure constraints are removed so that closed recurring fup 
+		// iterations are included in the temp table. These constraints are used when querying the resulting 
+		// temp table (using $aWhereInfoSearch, defined above). 
 		unset($aFilter['followup_closure_id']);
 		unset($aFilter['followup_closure_type_id']);
 		$aWhereInfoFollowUp	= StatementSelect::generateWhere(null, $aFilter);
@@ -375,7 +371,13 @@ class FollowUp extends ORM_Cached
 		$sLimitClause	= StatementSelect::generateLimit($iLimit, $iOffset);
 			
 		// Get followups (ignore orderby and limit for this query, will be done on the temporary table)
-		$oFollowUpSelect	= new StatementSelect($sFromClause, $sSelectClause, $aWhereInfoFollowUp['sClause'], '', '');
+		$oFollowUpSelect	=	new StatementSelect(
+									$sFromClause, 
+									$sSelectClause, 
+									$aWhereInfoFollowUp['sClause'], 
+									'', 
+									''
+								);
 		if ($oFollowUpSelect->Execute($aWhereInfoFollowUp['aValues']) === FALSE)
 		{
 			throw new Exception("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oFollowUpSelect->Error());
@@ -386,8 +388,9 @@ class FollowUp extends ORM_Cached
 		$aRecurringFollowUps	= FollowUp_Recurring::searchFor(null, null, null, $aFilter);
 		
 		// Create temporary table 'followup_search'
-		$mTempTablCheckResult	= $oQuery->Execute("	SELECT	count(*) 
-														FROM 	followup_search");
+		$oQuery					= new Query();
+		$mTempTablCheckResult	= $oQuery->Execute("SELECT	count(*) 
+													FROM 	followup_search");
 		if ($mTempTablCheckResult === false)
 		{
 			$mResult	= $oQuery->Execute("	CREATE TEMPORARY TABLE followup_search
@@ -407,7 +410,6 @@ class FollowUp extends ORM_Cached
 													modified_employee_id			BIGINT		UNSIGNED	NOT NULL,
 													status							VARCHAR(128)			NOT NULL
 												)");
-			
 			if ($mResult === false)
 			{
 				throw new Exception("Error creating temporary table. Database Error = ".$oQuery->Error());
@@ -415,7 +417,7 @@ class FollowUp extends ORM_Cached
 		}
 		else
 		{
-			// Clear followup_search
+			// The table has already been created, clear it's contents for this search
 			$oQuery->Execute("TRUNCATE followup_search");
 		}
 		
@@ -454,31 +456,71 @@ class FollowUp extends ORM_Cached
 								$aRow['modified_employee_id'],
 								"'".FollowUp::getStatus($aRow['followup_closure_id'], $aRow['due_datetime'])."'"
 							);
-			
 			$mResult	= $oQuery->Execute($sInsert);
-			
 			if ($mResult === false)
 			{
 				throw new Exception("Error inserting followup into temporary table. Database Error = ".$oQuery->Error().". Query = {$sInsert}");
 			}
 		}
 		
-		// Insert recurring followups into 'followup_search'
+		// Insert recurring followups into 'followup_search'. Calculate all 'projected' iterations of the
+		// recurring followup. Check if they've already been closed (will exist as a once off followup) before
+		// adding them to the temp table
+		$iNow	= time();
 		foreach ($aRecurringFollowUps as $iId => $oRecurringFollowUp)
 		{
-			// Get all of the projected followups for this recurring followup
 			$iEndDate		= strtotime($oRecurringFollowUp->end_datetime);
 			$i				= 0;
 			$iAfterNow		= 0;
 			$iProjectedDate	= strtotime($oRecurringFollowUp->start_datetime);
-			
 			while(($iProjectedDate <= $iEndDate) && ($iAfterNow <= FollowUp_Recurring::ITERATION_LIMIT))
 			{
-				// Projected date is within recurrence date limit, convert into db string
+				//
+				// Projected date is within recurrence date limit
+				//
+				// Convert it to db string
 				$sDueDateTime	= date('Y-m-d H:i:s', $iProjectedDate);
-				
-				// Check that the iteration doesn't already exist as a once off (closed) follow-up
-				$sCheck	=	sprintf(
+			
+				// Check all followups (not just those in the temp table) for an existing closed iteration
+				$oExisting	= self::getForDateAndRecurringId($sDueDateTime, $oRecurringFollowUp->id);
+				if ($oExisting == false)
+				{
+					// Doesn't exist at all. Insert a new followup into the temp table
+					$sInsert	= 	sprintf(
+										"	INSERT INTO	followup_search (
+															assigned_employee_id, 
+															created_datetime,
+															due_datetime,
+															followup_type_id,
+															followup_category_id,
+															followup_recurring_id,
+															followup_recurring_iteration,
+															modified_datetime,
+															modified_employee_id,
+															status
+														)
+											VALUES		(%s, '%s', '%s', %s, %s, %s, %s, '%s', %s, %s)",
+										$oRecurringFollowUp->assigned_employee_id,
+										$oRecurringFollowUp->created_datetime,
+										$sDueDateTime,
+										$oRecurringFollowUp->followup_type_id,
+										$oRecurringFollowUp->followup_category_id,
+										$oRecurringFollowUp->id,
+										$i,
+										$oRecurringFollowUp->modified_datetime,
+										$oRecurringFollowUp->modified_employee_id,
+										"'".FollowUp::getStatus(null, $sDueDateTime)."'"
+									);
+					$mInsertResult	= $oQuery->Execute($sInsert);
+					if ($mInsertResult === false)
+					{
+						throw new Exception("Error inserting recurring followup into temporary table. Database Error = ".$oQuery->Error().". Query = {$sInsert}");
+					}
+				}
+				else
+				{
+					// It does exist elsewhere, check for it in the temp table
+					$sCheck	=	sprintf(
 								"	SELECT	followup_recurring_id
 									FROM	followup_search
 									WHERE	followup_recurring_id = %s
@@ -486,17 +528,16 @@ class FollowUp extends ORM_Cached
 								$oRecurringFollowUp->id,
 								$sDueDateTime
 							);
-						
-				$mCheckResult	= $oQuery->Execute($sCheck);
-				if ($mCheckResult === false)
-				{
-					throw new Exception("Error looking for recurring followup iteration in temporary table. Database Error = ".$oQuery->Error().". Query = {$sCheck}");
-				}
-				else 
-				{
+					$mCheckResult	= $oQuery->Execute($sCheck);
+					if ($mCheckResult === false)
+					{
+						throw new Exception("Error looking for recurring followup iteration in temporary table. Database Error = ".$oQuery->Error().". Query = {$sCheck}");
+					}
+					
 					if ($mCheckResult->num_rows == 0)
 					{
-						// Insert new followup
+						// It isn't in the temp table, insert it using the existing followup record as a basis.
+						// The recurring followups details aren't used here because this followup has been closed.
 						$sInsert	= 	sprintf(
 											"	INSERT INTO	followup_search (
 																assigned_employee_id, 
@@ -504,34 +545,40 @@ class FollowUp extends ORM_Cached
 																due_datetime,
 																followup_type_id,
 																followup_category_id,
+																followup_closure_id,
+																followup_closure_type_id,
+																closed_datetime,
 																followup_recurring_id,
 																followup_recurring_iteration,
 																modified_datetime,
 																modified_employee_id,
 																status
 															)
-												VALUES		(%s, '%s', '%s', %s, %s, %s, %s, '%s', %s, %s)",
-											$oRecurringFollowUp->assigned_employee_id,
-											$oRecurringFollowUp->created_datetime,
-											$sDueDateTime,
-											$oRecurringFollowUp->followup_type_id,
-											$oRecurringFollowUp->followup_category_id,
-											$oRecurringFollowUp->id,
+												VALUES		(%s, '%s', '%s', %s, %s, %s, %s, '%s', %s, %s, '%s', %s, %s)",
+											$oExisting->assigned_employee_id,
+											$oExisting->created_datetime,
+											$oExisting->due_datetime,
+											$oExisting->followup_type_id,
+											$oExisting->followup_category_id,
+											$oExisting->followup_closure_id,
+											FollowUp_Closure::getForId($oExisting->followup_closure_id)->followup_closure_type_id,
+											$oExisting->closed_datetime,
+											$oExisting->followup_recurring_id,
 											$i,
-											$oRecurringFollowUp->modified_datetime,
-											$oRecurringFollowUp->modified_employee_id,
-											"'".FollowUp::getStatus(null, $sDueDateTime)."'"
+											$oExisting->modified_datetime,
+											$oExisting->modified_employee_id,
+											"'".FollowUp::getStatus($oExisting->followup_closure_id, $sDueDateTime)."'"
 										);
-						
 						$mInsertResult	= $oQuery->Execute($sInsert);
 						if ($mInsertResult === false)
 						{
-							throw new Exception("Error inserting recurring followup into temporary table. Database Error = ".$oQuery->Error().". Query = {$sInsert}");
+							throw new Exception("Error inserting followup into temporary table (second attempt). Database Error = ".$oQuery->Error().". Query = {$sInsert}");
 						}
 					}
 					else
 					{
-						// Update existing one, set it's iteration
+						// It IS in the temp table, update it's recurring iteration (which is a value that 
+						// exists only within the temp table)
 						$sUpdate	= 	sprintf(
 											"	UPDATE	followup_search
 												SET		followup_recurring_iteration = %s
@@ -541,7 +588,6 @@ class FollowUp extends ORM_Cached
 											$oRecurringFollowUp->id,
 											$sDueDateTime
 										);
-						
 						$mUpdateResult	= $oQuery->Execute($sUpdate);
 						if ($mUpdateResult === false)
 						{
@@ -550,17 +596,20 @@ class FollowUp extends ORM_Cached
 					}
 				}
 				
-				// Calculates the projected followup date given an iteration
+				// Calculates the next projected followup date after incrementing the iterator
 				$i++;
 				$iProjectedDate	= $oRecurringFollowUp->getProjectedDueDateSeconds($i);
 				if ($iProjectedDate > $iNow)
 				{
+					// We've gone past the present datetime, only a certain number of iterations are every 
+					// returned past the present, this value ($iAfterNow) helps maintain that limit.
 					$iAfterNow++;
 				}
 			}
 		}
 		
 		// Query 'followup_search'
+		$sSearchSelect	= '	fs.*';
 		$sSearchFrom	= '	followup_search fs
 							JOIN	followup_category fcat
 										ON fs.followup_category_id = fcat.id
@@ -568,16 +617,20 @@ class FollowUp extends ORM_Cached
 										ON fs.followup_type_id = ft.id
 							JOIN	Employee e
 										ON fs.assigned_employee_id = e.Id';
-		$sSelect		= 'fs.*';
-		
 		if ($bCountOnly)
 		{
+			$sSearchSelect	= 'COUNT(COALESCE(fs.followup_id, fs.followup_recurring_id)) AS count';
 			$sOrderByClause	= '';
 			$sLimitClause	= '';
-			$sSelect		= 'COUNT(COALESCE(fs.followup_id, fs.followup_recurring_id)) AS count';
 		}
 		
-		$oFollowUpSearchSelect	= new StatementSelect($sSearchFrom, $sSelect, $aWhereInfoSearch['sClause'], $sOrderByClause, $sLimitClause);
+		$oFollowUpSearchSelect	=	new StatementSelect(
+										$sSearchFrom, 
+										$sSearchSelect, 
+										$aWhereInfoSearch['sClause'], 
+										$sOrderByClause, 
+										$sLimitClause
+									);
 		if ($oFollowUpSearchSelect->Execute($aWhereInfoSearch['aValues']) === FALSE)
 		{
 			throw new Exception("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oFollowUpSelect->Error());

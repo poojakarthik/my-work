@@ -182,7 +182,7 @@ var Popup_FollowUp_View	= Class.create(Reflex_Popup,
 		else if (oResponse.Success)
 		{
 			// All good, cache the next due date
-			this._sNextDueDate	= Popup_FollowUp_View.formatDateTime(oResponse.sDueDateTime, false, true);
+			this._sNextDueDate	= Popup_FollowUp_View.formatDateTime(oResponse.sDueDateTime, false, oResponse.bOverdue);
 			
 			if (fnCallback)
 			{
@@ -309,7 +309,13 @@ var Popup_FollowUp_View	= Class.create(Reflex_Popup,
 									$T.tbody(
 										$T.tr({class: 'popup-followup-view-due-next'},
 											$T.td('Due On'),
-											$T.td(Popup_FollowUp_View.formatDateTime(this._oFollowUp.due_datetime, false, !this._bIsClosed)),
+											$T.td(
+												Popup_FollowUp_View.formatDateTime(
+													this._oFollowUp.due_datetime, 
+													false, 
+													this._oFollowUp.status == FollowUp_Status.OVERDUE_TEXT
+												)
+											),
 											$T.td(
 												(this._bIsClosed ? '' : this._getClosureButtons()) 
 											)
@@ -560,7 +566,7 @@ var Popup_FollowUp_View	= Class.create(Reflex_Popup,
 		{
 			oOccur	= aData[i];
 			oDiv	= 	$T.div({class: 'popup-followup-view-occurrences-item'},
-							Popup_FollowUp_View.formatDateTime(oOccur.sDueDatetime, true, false),
+							Popup_FollowUp_View.formatDateTime(oOccur.sDueDatetime, true),
 							' - '
 						);
 			
@@ -663,7 +669,10 @@ var Popup_FollowUp_View	= Class.create(Reflex_Popup,
 			var oPopup	= new Popup_FollowUp_History(this._iId, this._bIsRecurring);
 		}
 		
-		JsAutoLoader.loadScript('javascript/popup_followup_history.js', fnOnScriptLoad.bind(this));
+		JsAutoLoader.loadScript(
+			'javascript/popup_followup_history.js', 
+			fnOnScriptLoad.bind(this)
+		);
 	},
 	
 	_showRecurringFollowUpPopup	: function()
@@ -722,7 +731,13 @@ var Popup_FollowUp_View	= Class.create(Reflex_Popup,
 		};
 		
 		JsAutoLoader.loadScript(
-			'javascript/popup_followup_close.js', fnOnScriptLoad.bind(this, iFollowUpClosureTypeId)
+			[
+				'../ui/javascript/control_field.js',
+				'../ui/javascript/control_field_select.js',
+				'javascript/followup_closure.js',
+				'javascript/popup_followup_close.js'
+			],
+			fnOnScriptLoad.bind(this, iFollowUpClosureTypeId)
 		);
 	},
 	
@@ -737,7 +752,7 @@ var Popup_FollowUp_View	= Class.create(Reflex_Popup,
 			// Update the 'overdue-ness' of the date
 			var oDueOnTD	= oTBody.select('tr.popup-followup-view-due-next > td:nth-child(2)').first();
 			oDueOnTD.removeChild(oDueOnTD.select('span').first());
-			oDueOnTD.appendChild(Popup_FollowUp_View.formatDateTime(this._oFollowUp.due_datetime, false, false));
+			oDueOnTD.appendChild(Popup_FollowUp_View.formatDateTime(this._oFollowUp.due_datetime, false));
 			
 			// Remove the closure buttons
 			this._oContent.select('div.popup-followup-view-closure-buttons').first().remove();
@@ -820,11 +835,10 @@ Popup_FollowUp_View.NO_END_DATE			= '9999-12-31 23:59:59';
 
 Popup_FollowUp_View.CLOSED_RECURRING_TEXT	= 'This Recurring Follow-Up has ended.';
 
-Popup_FollowUp_View.formatDateTime	= function(sDateTime, bShortVersion, bShowIfOverdue, bTextOnly)
+Popup_FollowUp_View.formatDateTime	= function(sDateTime, bShortVersion, bOverdue, bTextOnly)
 {
 	var oDate		= new Date(Date.parse(sDateTime.replace(/-/g, '/')));
 	var bTextOnly	= (bTextOnly === true ? true : false);
-	var bOverdue	= (bShowIfOverdue ? oDate.getTime() < new Date().getTime() : false);
 	var sText		= oDate.$format((bShortVersion ? Popup_FollowUp_View.DATE_FORMAT_SHORT : Popup_FollowUp_View.DATE_FORMAT));
 	if (bTextOnly)
 	{
@@ -836,7 +850,6 @@ Popup_FollowUp_View.formatDateTime	= function(sDateTime, bShortVersion, bShowIfO
 					sText
 				);
 	}
-	
 };
 
 Popup_FollowUp_View.getCustomerGroupLink	= function(iAccountId, sName)
