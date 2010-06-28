@@ -26,7 +26,7 @@ $aDirectories	=	array
 																																(
 																																	'arrFileTypes'	=>	array
 																																						(
-																																							RESOURCE_TYPE_FILE_IMPORT_CDR_OPTUS_STANDARD	=> &$arrFileTypes[RESOURCE_TYPE_FILE_IMPORT_CDR_OPTUS_STANDARD]
+																																							RESOURCE_TYPE_FILE_IMPORT_CDR_OPTUS_STANDARD	=> &$aFileTypes[RESOURCE_TYPE_FILE_IMPORT_CDR_OPTUS_STANDARD]
 																																						)
 																																)
 																											)
@@ -37,7 +37,7 @@ $aDirectories	=	array
 // PROPOSED FORMAT
 $aPaths	=	array
 			(
-				'/home/TB/speedi/{/^tap_isk4_\d{14}_\d{8}_\d{6}_a_s\.dat$/i}'	=> &$arrFileTypes[RESOURCE_TYPE_FILE_IMPORT_CDR_OPTUS_STANDARD]
+				'/home/TB/speedi/{/^tap_isk4_\d{14}_\d{8}_\d{6}_a_s\.dat$/i}'	=> &$aFileTypes[RESOURCE_TYPE_FILE_IMPORT_CDR_OPTUS_STANDARD]
 			);
 
 // Output
