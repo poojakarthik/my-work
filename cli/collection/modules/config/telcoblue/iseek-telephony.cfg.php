@@ -44,7 +44,7 @@ $aPaths	=	array
 $strOutputFile	= basename(__FILE__, '.cfg.php').'.serialised';
 @unlink($strOutputFile);
 
-if (file_put_contents($strOutputFile, serialize($arrDirectories)))
+if (file_put_contents($strOutputFile, serialize($aDirectories)))
 {
 	echo "\nSerialised Data successfully dumped to '$strOutputFile'.\n\n";
 }
