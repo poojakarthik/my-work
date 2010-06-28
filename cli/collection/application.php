@@ -110,10 +110,11 @@ class ApplicationCollection extends ApplicationBaseClass
 				// Are we restricting this run to a single CarrierModule?
 				if (isset($iCarrierModule) && $iCarrierModuleId !== $iCarrierModule)
 				{
+				CliEcho("\n\t\t - Skipping Module #{$iCarrierModuleId}: ".get_class($modModule));
 					continue;
 				}
 				
-				CliEcho("\n\t\t * Module: ".get_class($modModule));
+				CliEcho("\n\t\t * Module #{$iCarrierModuleId}: ".get_class($modModule));
 				
 				// Download paths
 				$strCarrierName			= preg_replace("/\W/", '_', GetConstantDescription($intCarrier, 'Carrier'));
