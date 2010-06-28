@@ -3829,7 +3829,8 @@ div.operation-tree-loading img
 	padding-right	: 1em;
 }
 
-span.operation-tree-profile-description
+span.operation-tree-profile-description,
+.no-data
 {
 	padding-left	: 1em;
 	font-style		: italic;
@@ -5475,7 +5476,9 @@ span.popup-followup-view-history-item-bold
 	font-weight	: bold;
 }
 
-span.popup-followup-view-history-item-from
+span.popup-followup-view-history-item-from,
+span.popup-followup-view-occurrences-closure-name,
+div.popup-followup-view-occurrences-moretocome
 {
 	color	: #666;
 }
@@ -5573,6 +5576,57 @@ div.popup-followup-view-history-actioned > span:first-child
 {
 	font-weight	: bold;
 }
+
+div.popup-followup-view-occurrences > div.section-content
+{
+	max-height	: 10em;
+	overflow	: auto;
+}
+
+div.popup-followup-view-occurrences > div.section-content > div > div.popup-followup-view-occurrences-item
+{
+	padding	: 0.25em;
+}
+
+div.popup-followup-view-occurrences-actions
+{
+	float	: right;
+}
+
+div.popup-followup-view-occurrences-actions > img
+{
+	padding-left	: 0.25em;
+	cursor			: pointer;
+}
+
+div.popup-followup-view-occurrences-item:hover
+{
+	background-color	: #fff;
+}
+
+table.popup-followup-view-followup-details-recurring > tbody > tr.popup-followup-view-due-next > td,
+table.popup-followup-view-followup-details-onceoff > tbody > tr.popup-followup-view-due-next > td
+{
+	vertical-align	: middle;
+}
+
+table.popup-followup-view-followup-details-onceoff > tbody > tr.popup-followup-view-due-next > td:last-child
+{
+	text-align	: right;
+}
+
+tr.popup-followup-view-due-next button.icon-button
+{
+	margin-top		: 0em !important;
+	margin-bottom	: 0em !important;
+}
+
+thead.popup-followup-view-recurring-notice > tr > td
+{
+	text-align		: center;
+	padding-bottom	: 0.5em;
+}
+
 /************************ END - Popup View FollowUp - END ************************/
 
 /*************** START - Component Date Time Picker - START **************/
@@ -5660,3 +5714,39 @@ div.popup-followup-view-history-actioned > span:first-child
 }
 /***************** END - Component Date Time Picker - END ****************/
 
+/***************** START - Popup FollowUp Recurring Close Overdue - START ****************/
+
+div.followup-recurring-close-all-overdue > div.section-content
+{
+	max-height	: 15em;
+	overflow	: auto;
+}
+
+div.followup-recurring-close-all-overdue,
+div.followup-recurring-close-all-overdue-info
+{
+	margin-bottom	: 0.5em;
+}
+
+div.followup-recurring-close-all-overdue-item
+{
+	padding	: 0.25em;
+}
+
+div.followup-recurring-close-all-overdue-item:hover
+{
+	background-color	: #fff;
+}
+
+div.followup-recurring-close-all-overdue-item > div.close-buttons
+{
+	float	: right;
+}
+
+div.followup-recurring-close-all-overdue-item > div.close-buttons > img
+{
+	cursor			: pointer;
+	padding-left	: 0.25em;
+}
+
+/***************** END - Popup FollowUp Recurring Close Overdue - END ****************/

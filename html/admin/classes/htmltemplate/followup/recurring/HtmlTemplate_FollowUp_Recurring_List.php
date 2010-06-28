@@ -14,9 +14,14 @@ class HtmlTemplate_FollowUp_Recurring_List extends FlexHtmlTemplate
 		
 		// Helper classes
 		$this->LoadJavascript('reflex_validation');
+		$this->LoadJavascript('reflex_sorter');
+		$this->LoadJavascript('reflex_anchor');
 		$this->LoadJavascript('component_date_picker');
+		$this->LoadJavascript('actions_and_notes');
 		
 		// Control fields & other inputs
+		$this->LoadJavascript('section');
+		$this->LoadJavascript('section_expandable');
 		$this->LoadJavascript('control_field');
 		$this->LoadJavascript('control_field_text');
 		$this->LoadJavascript('control_field_select');
@@ -36,6 +41,8 @@ class HtmlTemplate_FollowUp_Recurring_List extends FlexHtmlTemplate
 		$this->LoadJavascript('popup_followup_reassign');
 		$this->LoadJavascript('popup_followup_recurring_end_date');
 		$this->LoadJavascript('popup_followup_recurring_end_now');
+		$this->LoadJavascript('popup_followup_recurring_close_overdue');
+		$this->LoadJavascript('popup_followup_view');
 	}
 
 	public function Render()

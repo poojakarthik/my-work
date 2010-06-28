@@ -190,10 +190,11 @@ class FollowUp_Recurring extends ORM_Cached
 					{
 						if ($oNote->Account)
 						{
-							$oAccount					= Account::getForId($oNote->Account);
-							$aDetails['account_id']		= $oAccount->Id;
-							$aDetails['account_name']	= $oAccount->BusinessName;
-							$aDetails['customer_group']	= $oAccount->getCustomerGroup()->internalName;
+							$oAccount						= Account::getForId($oNote->Account);
+							$aDetails['account_id']			= $oAccount->Id;
+							$aDetails['account_name']		= $oAccount->BusinessName;
+							$aDetails['customer_group']		= $oAccount->getCustomerGroup()->internalName;
+							$aDetails['customer_group_id']	= $oAccount->getCustomerGroup()->id;
 						}
 						
 						if ($oNote->Service)
@@ -227,9 +228,10 @@ class FollowUp_Recurring extends ORM_Cached
 						$aAccounts	= $oAction->getAssociatedAccounts();
 						foreach ($aAccounts as $iAccountId => $oAccount)
 						{
-							$aDetails['account_id']		= $iAccountId;
-							$aDetails['account_name']	= $oAccount->BusinessName;
-							$aDetails['customer_group']	= $oAccount->getCustomerGroup()->internalName;
+							$aDetails['account_id']			= $iAccountId;
+							$aDetails['account_name']		= $oAccount->BusinessName;
+							$aDetails['customer_group']		= $oAccount->getCustomerGroup()->internalName;
+							$aDetails['customer_group_id']	= $oAccount->getCustomerGroup()->id;
 						}
 						
 						$aServices	= $oAction->getAssociatedServices();
@@ -265,10 +267,11 @@ class FollowUp_Recurring extends ORM_Cached
 							
 							if ($oTicket->account_id)
 							{
-								$oAccount					= Account::getForId($oTicket->account_id);
-								$aDetails['account_id']		= $oAccount->Id;
-								$aDetails['account_name']	= $oAccount->BusinessName;
-								$aDetails['customer_group']	= $oAccount->getCustomerGroup()->internalName;
+								$oAccount						= Account::getForId($oTicket->account_id);
+								$aDetails['account_id']			= $oAccount->Id;
+								$aDetails['account_name']		= $oAccount->BusinessName;
+								$aDetails['customer_group']		= $oAccount->getCustomerGroup()->internalName;
+								$aDetails['customer_group_id']	= $oAccount->getCustomerGroup()->id;
 							}
 						}
 						
@@ -364,6 +367,47 @@ class FollowUp_Recurring extends ORM_Cached
 		return $iProjectedDate;
 	}
 	
+	public function assignTo($iEmployeeId, $iReassignReasonId)
+	{
+		// Do reassign
+		$this->assigned_employee_id	= $iEmployeeId;
+		$this->save(null, $iReassignReasonId);
+		
+		// Send email (need to set include path for the zend mail class require to work)
+		set_include_path(get_include_path().PATH_SEPARATOR.realpath(dirname(__FILE__).'/../../'));
+		require_once 'Zend/Mail.php';
+		
+		$oEmployee	= Employee::getForId($iEmployeeId);
+		if ($oEmployee->email)
+		{
+			$sUserEmail		= $oEmployee->email;
+			
+			// DEBUG
+			//$sUserEmail		= "rmctainsh@yellowbilling.com.au";
+			// DEBUG
+			
+			$aDetails		= $this->getDetails();
+			$oCustomerGroup	= Customer_Group::getForId($aDetails['customer_group_id']);
+			$sAssignedBy	= Flex::getDisplayName();
+			$sUrl			= $oCustomerGroup->flexUrl."/admin/reflex.php/FollowUp/ManageRecurring/#{$this->id}";
+			$sType			= Constant_Group::getConstantGroup('followup_type')->getConstantName($this->followup_type_id);
+			$sCategory		= FollowUp_Category::getForId($this->followup_category_id)->name;
+			$aDueNext		= $this->getNextDueDateInformation();
+			$sDueOn			= date('l jS M Y g:i A', strtotime($aDueNext['sDueDateTime']));
+			$sEmailContent	=	"<div style='font-family: Calibri,sans-serif;'>\n" .
+								"	You have been assigned a Recurring Follow-Up (of type '{$sType}') by {$sAssignedBy} with a category of '{$sCategory}' that is due next on <span style='font-weight: bold;'>{$sDueOn}</span>.<br/><br/>\n" .
+								"	<a href='{$sUrl}'>Click here</a> to go to your Recurring Follow-Up Management page.\n" .
+								"</div>";
+			
+			$oEmail	= new Zend_Mail();
+			$oEmail->setBodyHtml($sEmailContent);
+			$oEmail->setFrom("followups@ybs.net.au");
+			$oEmail->addTo($sUserEmail, $oEmployee->getName());
+			$oEmail->setSubject("You have been assigned a recurring follow-up");
+			$oEmail->send();
+		}
+	}
+	
 	public function save($iModifyReasonId=null, $iReassignReasonId=null)
 	{
 		// Update modified fields
@@ -405,42 +449,10 @@ class FollowUp_Recurring extends ORM_Cached
 		return (strtotime($this->end_datetime) <= time());
 	}
 	
-	public function hasOverdueOccurences()
-	{
-		// For each possible iteration check if they've been closed, if not there are overdue occurences
-		$iEndDate		= strtotime($this->end_datetime);
-		$i				= 0;
-		$iAfterNow		= 0;
-		$iProjectedDate	= strtotime($this->start_datetime);
-		$iNow			= time();
-		$bHasOverdue	= false;
-		while(($iProjectedDate <= $iEndDate) && ($iAfterNow <= FollowUp_Recurring::ITERATION_LIMIT))
-		{
-			$oFollowUp	= FollowUp::getForDateAndRecurringId(date('Y-m-d H:i:s', $iProjectedDate), $this->id);
-			
-			if (!$oFollowUp)
-			{
-				// This iteration has not been completed, it is overdue
-				$bHasOverdue	= true;
-				break;
-			}
-			
-			// Calculates the projected followup date given an iteration
-			$i++;
-			$iProjectedDate	= $this->getProjectedDueDateSeconds($i);
-			if ($iProjectedDate > $iNow)
-			{
-				$iAfterNow++;
-			}
-		}
-		
-		return $bHasOverdue;
-	}
-	
 	public function getOccurrenceDetails($bClosedOccurencesOnly=false, $bPastOnly=false, $iNowSeconds=false)
 	{
 		// For each possible iteration fetch it's due_datetime, closure_type_id & ...
-		$aDetails		= array();
+		$aDetails		= array('aOccurrences' => array(), 'bHasMore' => false);
 		$iProjectedDate	= strtotime($this->start_datetime);
 		$iEndDate		= strtotime($this->end_datetime);
 		$iNow			= ($iNowSeconds ? $iNowSeconds : time());
@@ -461,7 +473,7 @@ class FollowUp_Recurring extends ORM_Cached
 				$aOccurence['oFollowUpClosure']		= ($oFollowUp ? FollowUp_Closure::getForId($oFollowUp->followup_closure_id)->toStdClass() : null);
 				$aOccurence['iAssignedEmployeeId']	= ($oFollowUp ? $oFollowUp->assigned_employee_id : null);
 				$aOccurence['sAssignedEmployee']	= ($oFollowUp ? Employee::getForId($oFollowUp->assigned_employee_id)->getName() : null);
-				$aDetails[]							= $aOccurence;
+				$aDetails['aOccurrences'][]			= $aOccurence;
 			}
 			
 			// Calculates the projected followup date given an iteration
@@ -473,7 +485,30 @@ class FollowUp_Recurring extends ORM_Cached
 			}
 		}
 		
+		if ($iAfterNow > FollowUp_Recurring::ITERATION_LIMIT)
+		{
+			// The iteration was stopped, but not by an end date, there must be more interations to come
+			$aDetails['bHasMore']	= true;
+		}
+		
 		return $aDetails;
+	}
+	
+	public function getNextDueDateInformation()
+	{
+		$iProjectedDate		= strtotime($this->start_datetime);
+		$iEndDate			= strtotime($this->end_datetime);
+		$sDueDateTime		= date('Y-m-d H:i:s', $iProjectedDate);
+		$iNow				= time();
+		$i					= 0;
+		while((($iProjectedDate <= $iNow) && ($iProjectedDate <= $iEndDate)) || FollowUp::getForDateAndRecurringId($sDueDateTime, $this->id))
+		{
+			$i++;
+			$iProjectedDate	= $this->getProjectedDueDateSeconds($i);
+			$sDueDateTime	= date('Y-m-d H:i:s', $iProjectedDate);
+		}
+		
+		return array('sDueDateTime' => $sDueDateTime, 'iIteration' => $i);
 	}
 	
 	/**

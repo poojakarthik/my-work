@@ -86,7 +86,7 @@ var Popup_FollowUp_Close	= Class.create(Reflex_Popup,
 		this.display();
 	},
 	
-	_ajaxError	: function(bHideOnClose, oResponse)
+	_ajaxError	: function(oResponse)
 	{
 		if (this.oLoading)
 		{
@@ -94,7 +94,7 @@ var Popup_FollowUp_Close	= Class.create(Reflex_Popup,
 			delete this.oLoading;
 		}
 		
-		var oConfig	= {sTitle: 'Error', fnOnClose: (bHideOnClose ? this.hide.bind(this) : null)};
+		var oConfig	= {sTitle: 'Error'};
 		
 		if (oResponse.Message)
 		{

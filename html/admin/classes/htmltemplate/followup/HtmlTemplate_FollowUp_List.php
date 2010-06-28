@@ -15,6 +15,7 @@ class HtmlTemplate_FollowUp_List extends FlexHtmlTemplate
 		// Helper classes
 		$this->LoadJavascript('reflex_validation');
 		$this->LoadJavascript('reflex_sorter');
+		$this->LoadJavascript('reflex_anchor');
 		$this->LoadJavascript('component_date_picker');
 		$this->LoadJavascript('actions_and_notes');
 		

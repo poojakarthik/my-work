@@ -53,8 +53,12 @@ class JSON_Handler_FollowUp_History extends JSON_Handler
 				if (!$bHaveAReason && (($iCount > 0) || (count($aHistoryRecords) == 1)))
 				{
 					// Closed, get the followups closure reason
-					$oFollowUp							= FollowUp::getForId($iFollowUpId);
-					$oStdClassRecord->oFollowUpClosure	= FollowUp_Closure::getForId($oFollowUp->followup_closure_id)->toStdClass();
+					$oFollowUp	= FollowUp::getForId($iFollowUpId);
+					$oClosure	= FollowUp_Closure::getForId($oFollowUp->followup_closure_id);
+					if ($oClosure->id)
+					{
+						$oStdClassRecord->oFollowUpClosure	= $oClosure->toStdClass();
+					}
 				}
 				
 				// Store

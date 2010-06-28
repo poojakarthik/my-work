@@ -13,6 +13,10 @@ var Page_FollowUp_Recurring_List = Class.create(
 		this._iEmployeeId	= iEmployeeId;
 		this._bEditMode		= bEditMode;
 		this._hFilters		= {};
+		this._oReflexAnchor	= Reflex_Anchor.getInstance();
+		
+		this._bFirstLoadComplete		= false;
+		this._hControlOnChangeCallbacks	= {};
 		
 		// Create DataSet & pagination object
 		this.oDataSet	= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_NO_CACHING, Page_FollowUp_Recurring_List.DATA_SET_DEFINITION);
@@ -229,6 +233,7 @@ var Page_FollowUp_Recurring_List = Class.create(
 			}
 		}
 		
+		this._bFirstLoadComplete	= true;
 		this._updatePagination();
 		this._updateSorting();
 		this._updateFilters();
@@ -270,6 +275,14 @@ var Page_FollowUp_Recurring_List = Class.create(
 							$T.td(Page_FollowUp_Recurring_List.getRecurrencePeriod(oFollowUpRecurring)),
 							$T.td(this._getFollowUpActions(oFollowUpRecurring))
 						);
+			
+			// Register the followups id with reflex anchor -> '#{id}'. Will show the details popup
+			this._oReflexAnchor.registerCallback(
+				oFollowUpRecurring.id, 
+				this._viewDetailsPopup.bind(this, oFollowUpRecurring.id), 
+				!this._bFirstLoadComplete
+			);
+			
 			return oTR;
 		}
 		else
@@ -347,25 +360,30 @@ var Page_FollowUp_Recurring_List = Class.create(
 	{
 		for (var sField in Page_FollowUp_Recurring_List.FILTER_FIELDS)
 		{
-			if (this._oFilter.isRegistered(sField))
+			this._updateFilterDisplayValue(sField);
+		}
+	},
+	
+	_updateFilterDisplayValue	: function(sField)
+	{
+		if (this._oFilter.isRegistered(sField))
+		{
+			var mValue	= this._oFilter.getFilterValue(sField);
+			var oSpan	= this._oContentDiv.select('th.followup-list-all-filter > span.followup-list-all-filter-' + sField).first();
+			if (oSpan)
 			{
-				var mValue	= this._oFilter.getFilterValue(sField);
-				var oSpan	= this._oContentDiv.select('th.followup-list-all-filter > span.followup-list-all-filter-' + sField).first();
-				if (oSpan)
+				var oDeleteImage	= oSpan.up().select('img.followup-list-all-filter-delete').first();
+				if (mValue !== null && (typeof mValue !== 'undefined'))
 				{
-					var oDeleteImage	= oSpan.up().select('img.followup-list-all-filter-delete').first();
-					if (mValue !== null && (typeof mValue !== 'undefined'))
-					{
-						// Value, show it
-						oSpan.innerHTML					= this._formatFilterValueForDisplay(sField, mValue);
-						oDeleteImage.style.visibility	= 'visible';
-					}
-					else
-					{
-						// No value, hide delete image
-						oSpan.innerHTML					= 'All';
-						oDeleteImage.style.visibility	= 'hidden';
-					}
+					// Value, show it
+					oSpan.innerHTML					= this._formatFilterValueForDisplay(sField, mValue);
+					oDeleteImage.style.visibility	= 'visible';
+				}
+				else
+				{
+					// No value, hide delete image
+					oSpan.innerHTML					= 'All';
+					oDeleteImage.style.visibility	= 'hidden';
 				}
 			}
 		}
@@ -424,7 +442,7 @@ var Page_FollowUp_Recurring_List = Class.create(
 		var oUL	= $T.ul({class: 'reset horizontal followup-list-all-actions'});
 		
 		var oEnd	= $T.img({src: Page_FollowUp_Recurring_List.ACTION_END_IMAGE_SOURCE, alt: 'End the Follow-Up', title: 'End the Follow-Up'});
-		oEnd.observe('click', this._end.bind(this, oFollowUpRecurring.id));
+		oEnd.observe('click', this._end.bind(this, oFollowUpRecurring.id, false));
 		oUL.appendChild($T.li(oEnd));
 		
 		var oEditDueDate	= $T.img({src: Page_FollowUp_Recurring_List.ACTION_EDIT_DATE_IMAGE_SOURCE, alt: 'Edit End Date', title: 'Edit End Date'});
@@ -439,6 +457,10 @@ var Page_FollowUp_Recurring_List = Class.create(
 								$T.img({src: Page_FollowUp_Recurring_List.ACTION_INV_PAYMENTS_IMAGE_SOURCE, alt: 'Invoices & Payments', title: 'Invoices & Payments'})
 							);
 		oUL.appendChild($T.li(oInvAndPay));
+		
+		var oView	= $T.img({src: Page_FollowUp_Recurring_List.ACTION_VIEW_IMAGE_SOURCE, alt: 'View More Details', title: 'View More Details'});
+		oView.observe('click', this._viewDetailsPopup.bind(this, oFollowUpRecurring.id));
+		oUL.appendChild($T.li(oView));
 		
 		if (oFollowUpRecurring.end_datetime)
 		{
@@ -488,6 +510,16 @@ var Page_FollowUp_Recurring_List = Class.create(
 						);
 	},
 	
+	_checkForOverdueOccurrencesBeforeEnd	: function(iFollowUpRecurringId)
+	{
+		var oPopup	=	new Popup_FollowUp_Recurring_Close_Overdue(
+							iFollowUpRecurringId, 
+							null,
+							this._end.bind(this, iFollowUpRecurringId, true),
+							true
+						);
+	},
+	
 	_editDueDate	: function(oFollowUpRecurring)
 	{
 		var oPopup	= 	new Popup_FollowUp_Recurring_End_Date(
@@ -496,12 +528,25 @@ var Page_FollowUp_Recurring_List = Class.create(
 						);
 	},
 	
-	_end	: function(iFollowUpId)
+	_end	: function(iFollowUpRecurringId, bGoAhead)
 	{
-		var oPopup	= 	new Popup_FollowUp_Recurring_End_Now(
-							iFollowUpId,
-							this.oPagination.getCurrentPage.bind(this.oPagination)
-						);
+		if (bGoAhead)
+		{
+			// All good, no overdue occur. Can be ended
+			var oPopup	= 	new Popup_FollowUp_Recurring_End_Now(
+								iFollowUpRecurringId,
+								this.oPagination.getCurrentPage.bind(this.oPagination)
+							);
+		}
+		else
+		{
+			this._checkForOverdueOccurrencesBeforeEnd(iFollowUpRecurringId);
+		}
+	},
+	
+	_viewDetailsPopup	: function(iFollowUpId)
+	{
+		var oPopup	= new Popup_FollowUp_View(iFollowUpId, true, true);
 	},
 	
 	_ajaxError	: function(bHideOnClose, oResponse)
@@ -585,7 +630,27 @@ var Page_FollowUp_Recurring_List = Class.create(
 			case Page_FollowUp_Recurring_List.FILTER_FIELD_OWNER:
 			case Page_FollowUp_Recurring_List.FILTER_FIELD_TYPE:
 			case Page_FollowUp_Recurring_List.FILTER_FIELD_CATEGORY:
-				sValue	= aControls[0].getElementText();
+				var oControl	= aControls[0];
+				if (oControl.bPopulated)
+				{
+					sValue	= oControl.getElementText();
+					
+					// Remove the onchange callback, if it was used to update this filter value
+					if (typeof this._hControlOnChangeCallbacks[sField] != 'undefined')
+					{
+						oControl.removeOnChangeCallback(this._hControlOnChangeCallbacks[sField]);
+						delete this._hControlOnChangeCallbacks[sField];
+					}
+				}
+				else
+				{
+					// Set change handler
+					var iCallbackIndex	=	oControl.addOnChangeCallback(
+												this._updateFilterDisplayValue.bind(this, sField)
+											);
+					this._hControlOnChangeCallbacks[sField]	= iCallbackIndex;
+					sValue	= 'loading...';
+				}
 				break;
 		}
 		
@@ -603,6 +668,7 @@ Page_FollowUp_Recurring_List.ACTION_EDIT_DATE_IMAGE_SOURCE		= '../admin/img/temp
 Page_FollowUp_Recurring_List.ACTION_REASSIGN_IMAGE_SOURCE		= '../admin/img/template/user_edit.png';
 Page_FollowUp_Recurring_List.ACTION_INV_PAYMENTS_IMAGE_SOURCE	= '../admin/img/template/invoices_payments.png';
 Page_FollowUp_Recurring_List.ACTION_RECURRING_IMAGE_SOURCE		= '../admin/img/template/followup_recurring.png';
+Page_FollowUp_Recurring_List.ACTION_VIEW_IMAGE_SOURCE			= '../admin/img/template/magnifier.png';
 
 Page_FollowUp_Recurring_List.SORT_IMAGE_SOURCE						= {};
 Page_FollowUp_Recurring_List.SORT_IMAGE_SOURCE[Sort.DIRECTION_ASC]	= '../admin/img/template/order_asc.png';

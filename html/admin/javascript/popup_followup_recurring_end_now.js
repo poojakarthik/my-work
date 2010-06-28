@@ -119,7 +119,7 @@ var Popup_FollowUp_Recurring_End_Now	= Class.create(Reflex_Popup,
 		else
 		{
 			// Error
-			this._ajaxError(oResponse);
+			this._ajaxError(false, oResponse);
 		}
 	}
 });

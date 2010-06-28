@@ -34,7 +34,7 @@ var Popup_FollowUp_History	= Class.create(Reflex_Popup,
 			{
 				// Send now in seconds so that the server uses client time to get the past occurences
 				// also send 'true' for closed occurences only
-				fnHistory(this._iId, true, Math.floor(new Date().getTime() / 1000));
+				fnHistory(this._iId, Math.floor(new Date().getTime() / 1000));
 			}
 			else
 			{

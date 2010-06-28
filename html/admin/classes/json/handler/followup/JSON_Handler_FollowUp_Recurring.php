@@ -212,6 +212,53 @@ class JSON_Handler_FollowUp_Recurring extends JSON_Handler
 		}
 	}
 	
+	public function getOverdueOccurrences($iFollowUpRecurringId, $iNowSeconds=false)
+	{
+		try
+		{
+			// Check permissions
+			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
+			{
+				throw new JSON_Handler_FollowUp_Recurring_Exception('You do not have permission to get Recurring Follow-Up information.');
+			}
+			
+			$oFollowUpRecurring	= FollowUp_Recurring::getForId($iFollowUpRecurringId);
+			$aOccurrenceDetails	= $oFollowUpRecurring->getOccurrenceDetails(false, true, $iNowSeconds);
+			$aResult			= array();
+			$i					= 0;
+			
+			foreach ($aOccurrenceDetails['aOccurrences'] as $aOccurrence)
+			{
+				if (is_null($aOccurrence['sClosedDatetime']))
+				{
+					$aResult[$i]	= $aOccurrence;
+				}
+				
+				$i++;
+			}
+			
+			return	array(
+						"Success"		=> true,
+						"aOccurrences"	=> $aResult,
+						"iCount"		=> count($aResult)
+					);
+		}
+		catch (JSON_Handler_FollowUp_Recurring_Exception $oException)
+		{
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> $oException->getMessage()
+					);
+		}
+		catch (Exception $e)
+		{
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> Employee::getForId(Flex::getUserId())->isGod() ? $e->getMessage() : 'There was an error updating the end date'
+					);
+		}
+	}
+	
 	public function getNextDueDate($iFollowUpRecurringId)
 	{
 		try
@@ -223,22 +270,12 @@ class JSON_Handler_FollowUp_Recurring extends JSON_Handler
 			}
 			
 			$oFollowUpRecurring	= FollowUp_Recurring::getForId($iFollowUpRecurringId);
-			$iProjectedDate		= strtotime($oFollowUpRecurring->start_datetime);
-			$iEndDate			= strtotime($oRecurringFollowUp->end_datetime);
-			$sDueDateTime		= date('Y-m-d H:i:s', $iProjectedDate);
-			$iNow				= time();
-			$i					= 0;
-			while((($iProjectedDate <= $iNow) && ($iProjectedDate <= $iEndDate)) || 
-				FollowUp::getForDateAndRecurringId($sDueDateTime, $iFollowUpRecurringId))
-			{
-				$i++;
-				$iProjectedDate	= $oFollowUpRecurring->getProjectedDueDateSeconds($i);
-				$sDueDateTime	= date('Y-m-d H:i:s', $iProjectedDate);
-			}
+			$aNextDueDate		= $oFollowUpRecurring->getNextDueDateInformation();
 			
 			return	array(
 						"Success"		=> true,
-						"sDueDateTime"	=> $sDueDateTime
+						"sDueDateTime"	=> $aNextDueDate['sDueDateTime'],
+						"iIteration"	=> $aNextDueDate['iIteration']
 					);
 		}
 		catch (JSON_Handler_FollowUp_Recurring_Exception $oException)
@@ -257,7 +294,7 @@ class JSON_Handler_FollowUp_Recurring extends JSON_Handler
 		}
 	}
 	
-	public function getFollowUpDetails($iFollowUpId)
+	public function getFollowUpDetails($iFollowUpId, $iRecurringIteration=false)
 	{
 		try
 		{
@@ -271,9 +308,41 @@ class JSON_Handler_FollowUp_Recurring extends JSON_Handler
 			$aDetails				= $oFollowUpRecurring->getDetails();
 			$aDetails['sContent']	= $oFollowUpRecurring->getSummary(null, false);
 			
+			if ($iRecurringIteration)
+			{
+				$sDueDateTime	= date('Y-m-d H:i:s', $oFollowUpRecurring->getProjectedDueDateSeconds($iRecurringIteration));
+				$oFollowUp		= FollowUp::getForDateAndRecurringId($sDueDateTime, $oFollowUpRecurring->id);
+				
+				if ($oFollowUp)
+				{
+					// There is a closed occurrences for that iteration, return it
+					$oStdClass	= $oFollowUp->toStdClass();
+					
+					if ($oFollowUp->isClosed())
+					{
+						// Add the closure object because it is closed
+						$oStdClass->followup_closure	= FollowUp_Closure::getForId($oStdClass->followup_closure_id)->toStdClass();
+					}
+				}
+				else
+				{
+					// There is no closed occurrences for that iteration, return a simulated followup
+					$oStdClass							= new StdClass();
+					$oStdClass->followup_type_id		= $oFollowUpRecurring->followup_type_id;
+					$oStdClass->followup_category_id	= $oFollowUpRecurring->followup_category_id;
+					$oStdClass->followup_closure_id		= null;
+					$oStdClass->closed_datetime			= null;
+					$oStdClass->due_datetime			= $sDueDateTime;
+				}
+			}
+			else
+			{
+				$oStdClass	= $oFollowUpRecurring->toStdClass();
+			}
+			
 			return	array(
 						"Success"	=> true,
-						"oFollowUp"	=> $oFollowUpRecurring->toStdClass(),
+						"oFollowUp"	=> $oStdClass,
 						"aDetails"	=> $aDetails
 					);
 		}
@@ -305,9 +374,10 @@ class JSON_Handler_FollowUp_Recurring extends JSON_Handler
 			
 			$oFollowUpRecurring	= FollowUp_Recurring::getForId($iFollowUpRecurringId);
 			$aOccurrences		= $oFollowUpRecurring->getOccurrenceDetails(false, false, $iNowSeconds);
+			
 			return	array(
-						"Success"		=> true,
-						"aOccurrences"	=> $aOccurrences
+						"Success"	=> true,
+						"aDetails"	=> $aOccurrences
 					);
 		}
 		catch (JSON_Handler_FollowUp_Recurring_Exception $oException)

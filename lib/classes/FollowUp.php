@@ -74,10 +74,11 @@ class FollowUp extends ORM_Cached
 					{
 						if ($oNote->Account)
 						{
-							$oAccount					= Account::getForId($oNote->Account);
-							$aDetails['account_id']		= $oAccount->Id;
-							$aDetails['account_name']	= $oAccount->BusinessName;
-							$aDetails['customer_group']	= $oAccount->getCustomerGroup()->internalName;
+							$oAccount						= Account::getForId($oNote->Account);
+							$aDetails['account_id']			= $oAccount->Id;
+							$aDetails['account_name']		= $oAccount->BusinessName;
+							$aDetails['customer_group']		= $oAccount->getCustomerGroup()->internalName;
+							$aDetails['customer_group_id']	= $oAccount->getCustomerGroup()->id;
 						}
 						
 						if ($oNote->Service)
@@ -111,9 +112,10 @@ class FollowUp extends ORM_Cached
 						$aAccounts	= $oAction->getAssociatedAccounts();
 						foreach ($aAccounts as $iAccountId => $oAccount)
 						{
-							$aDetails['account_id']		= $iAccountId;
-							$aDetails['account_name']	= $oAccount->BusinessName;
-							$aDetails['customer_group']	= $oAccount->getCustomerGroup()->internalName;
+							$aDetails['account_id']			= $iAccountId;
+							$aDetails['account_name']		= $oAccount->BusinessName;
+							$aDetails['customer_group']		= $oAccount->getCustomerGroup()->internalName;
+							$aDetails['customer_group_id']	= $oAccount->getCustomerGroup()->id;
 						}
 						
 						$aServices	= $oAction->getAssociatedServices();
@@ -149,10 +151,11 @@ class FollowUp extends ORM_Cached
 							
 							if ($oTicket->account_id)
 							{
-								$oAccount					= Account::getForId($oTicket->account_id);
-								$aDetails['account_id']		= $oAccount->Id;
-								$aDetails['account_name']	= $oAccount->BusinessName;
-								$aDetails['customer_group']	= $oAccount->getCustomerGroup()->internalName;
+								$oAccount						= Account::getForId($oTicket->account_id);
+								$aDetails['account_id']			= $oAccount->Id;
+								$aDetails['account_name']		= $oAccount->BusinessName;
+								$aDetails['customer_group']		= $oAccount->getCustomerGroup()->internalName;
+								$aDetails['customer_group_id']	= $oAccount->getCustomerGroup()->id;
 							}
 						}
 						
@@ -227,6 +230,46 @@ class FollowUp extends ORM_Cached
 		}
 		
 		return $sSummary;
+	}
+	
+	public function assignTo($iEmployeeId, $iReassignReasonId)
+	{
+		// Do reassign
+		$this->assigned_employee_id	= $iEmployeeId;
+		$this->save(null, $iReassignReasonId);
+		
+		// Send email (need to set include path for the zend mail class require to work)
+		set_include_path(get_include_path().PATH_SEPARATOR.realpath(dirname(__FILE__).'/../'));
+		require_once 'Zend/Mail.php';
+		
+		$oEmployee	= Employee::getForId($iEmployeeId);
+		if ($oEmployee->email)
+		{
+			$sUserEmail		= $oEmployee->email;
+			
+			// DEBUG
+			//$sUserEmail		= "rmctainsh@yellowbilling.com.au";
+			// DEBUG
+			
+			$aDetails		= $this->getDetails();
+			$oCustomerGroup	= Customer_Group::getForId($aDetails['customer_group_id']);
+			$sAssignedBy	= Flex::getDisplayName();
+			$sUrl			= $oCustomerGroup->flexUrl."/admin/reflex.php/FollowUp/Manage/#{$this->id}";
+			$sType			= Constant_Group::getConstantGroup('followup_type')->getConstantName($this->followup_type_id);
+			$sCategory		= FollowUp_Category::getForId($this->followup_category_id)->name;
+			$sDueOn			= date('l jS M Y g:i A', strtotime($this->due_datetime));
+			$sEmailContent	=	"<div style='font-family: Calibri,sans-serif;'>\n" .
+								"	You have been assigned a Follow-Up (of type '{$sType}') by {$sAssignedBy} with a category of '{$sCategory}' that is due on <span style='font-weight: bold;'>{$sDueOn}</span>.<br/><br/>\n" .
+								"	<a href='{$sUrl}'>Click here</a> to go to your Follow-Up Management page.\n" .
+								"</div>";
+			
+			$oEmail	= new Zend_Mail();
+			$oEmail->setBodyHtml($sEmailContent);
+			$oEmail->setFrom("followups@ybs.net.au");
+			$oEmail->addTo($sUserEmail, $oEmployee->getName());
+			$oEmail->setSubject("You have been assigned a follow-up");
+			$oEmail->send();
+		}
 	}
 	
 	public function save($mModifyReasonId=null, $iReassignReasonId=null)

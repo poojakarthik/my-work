@@ -94,9 +94,8 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 			this.oControlOutput.oEdit.style.display		= this.oControlOutput.sEditDisplayDefault;
 			this.oControlOutput.oView.style.display		= this.oControlOutput.sViewDisplayDefault;
 			this.oControlOutput.oLoading.style.display	= 'none';
-			
 			this.updateElementValue();
-			this.validate();
+			this._valueChange();
 		}
 	},
 	
@@ -129,7 +128,15 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 	
 	addOnChangeCallback	: function(fnCallback)
 	{
-		this._aOnChangeCallbacks.push(fnCallback);
+		return this._aOnChangeCallbacks.push(fnCallback) - 1;
+	},
+	
+	removeOnChangeCallback	: function(iIndex)
+	{
+		if (this._aOnChangeCallbacks[iIndex])
+		{
+			this._aOnChangeCallbacks.splice(iIndex, 1);
+		}
 	},
 	
 	_valueChange	: function()

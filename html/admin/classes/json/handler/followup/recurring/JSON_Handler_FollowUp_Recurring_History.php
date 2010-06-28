@@ -11,7 +11,7 @@ class JSON_Handler_FollowUp_Recurring_History extends JSON_Handler
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 	
-	public function getForRecurringFollowUp($iFollowUpRecurringId, $bClosedOccurencesOnly, $iNowSeconds=false)
+	public function getForRecurringFollowUp($iFollowUpRecurringId, $iNowSeconds=false)
 	{
 		try
 		{
@@ -52,12 +52,12 @@ class JSON_Handler_FollowUp_Recurring_History extends JSON_Handler
 			
 			// Get occurence details
 			$oFollowUpRecurring	= FollowUp_Recurring::getForId($iFollowUpRecurringId);
-			$aOccurrenceDetails	= $oFollowUpRecurring->getOccurrenceDetails($bClosedOccurencesOnly, false, $iNowSeconds);
+			$aOccurrenceDetails	= $oFollowUpRecurring->getOccurrenceDetails(true, false, $iNowSeconds);
 			
 			return 	array(
 						"Success"			=> true,
 						"aHistoryDetails"	=> $aHistoryDetails,
-						"aOccurenceDetails"	=> $aOccurrenceDetails
+						"aOccurenceDetails"	=> $aOccurrenceDetails['aOccurrences']
 					);
 		}
 		catch (JSON_Handler_FollowUp_Recurring_History_Exception $oException)

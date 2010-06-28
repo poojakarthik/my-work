@@ -13,6 +13,10 @@ var Component_FollowUp_List_All = Class.create(
 		this._iEmployeeId	= iEmployeeId;
 		this._bEditMode		= bEditMode;
 		this._hFilters		= {};
+		this._oReflexAnchor	= Reflex_Anchor.getInstance();
+		
+		this._bFirstLoadComplete		= false;
+		this._hControlOnChangeCallbacks	= {};
 		
 		// Create DataSet & pagination object
 		this.oDataSet	= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_NO_CACHING, Component_FollowUp_List_All.DATA_SET_DEFINITION);
@@ -235,6 +239,7 @@ var Component_FollowUp_List_All = Class.create(
 			}
 		}
 		
+		this._bFirstLoadComplete	= true;
 		this._updatePagination();
 		this._updateSorting();
 		this._updateFilters();
@@ -288,6 +293,17 @@ var Component_FollowUp_List_All = Class.create(
 							),
 							$T.td(this._getFollowUpActions(oFollowUp))
 						);
+			
+			if (oFollowUp.followup_id)
+			{
+				// Register the followups id with reflex anchor -> '#{followup_id}'. Will show the details popup
+				this._oReflexAnchor.registerCallback(
+					oFollowUp.followup_id, 
+					this._viewDetailsPopup.bind(this, oFollowUp), 
+					!this._bFirstLoadComplete
+				);
+			}
+			
 			return oTR;
 		}
 		else
@@ -364,25 +380,30 @@ var Component_FollowUp_List_All = Class.create(
 	{
 		for (var sField in Component_FollowUp_List_All.FILTER_FIELDS)
 		{
-			if (this._oFilter.isRegistered(sField))
+			this._updateFilterDisplayValue(sField);
+		}
+	},
+	
+	_updateFilterDisplayValue	: function(sField)
+	{
+		if (this._oFilter.isRegistered(sField))
+		{
+			var mValue	= this._oFilter.getFilterValue(sField);
+			var oSpan	= this._oContentDiv.select('th.followup-list-all-filter > span.followup-list-all-filter-' + sField).first();
+			if (oSpan)
 			{
-				var mValue	= this._oFilter.getFilterValue(sField);
-				var oSpan	= this._oContentDiv.select('th.followup-list-all-filter > span.followup-list-all-filter-' + sField).first();
-				if (oSpan)
+				var oDeleteImage	= oSpan.up().select('img.followup-list-all-filter-delete').first();
+				if (mValue !== null && (typeof mValue !== 'undefined'))
 				{
-					var oDeleteImage	= oSpan.up().select('img.followup-list-all-filter-delete').first();
-					if (mValue !== null && (typeof mValue !== 'undefined'))
-					{
-						// Value, show it
-						oSpan.innerHTML					= this._formatFilterValueForDisplay(sField, mValue);
-						oDeleteImage.style.visibility	= 'visible';
-					}
-					else
-					{
-						// No value, hide delete image
-						oSpan.innerHTML					= 'All';
-						oDeleteImage.style.visibility	= 'hidden';
-					}
+					// Value, show it
+					oSpan.innerHTML					= this._formatFilterValueForDisplay(sField, mValue);
+					oDeleteImage.style.visibility	= 'visible';
+				}
+				else
+				{
+					// No value, hide delete image
+					oSpan.innerHTML					= 'All';
+					oDeleteImage.style.visibility	= 'hidden';
 				}
 			}
 		}
@@ -507,7 +528,7 @@ var Component_FollowUp_List_All = Class.create(
 			oInvAndPay.toggle();
 		}
 		
-		if (oFollowUp.followup_recurring_id && !oFollowUp.followup_id)
+		if (oFollowUp.followup_recurring_id || !oFollowUp.followup_id)
 		{
 			// Leave visible
 		}
@@ -556,7 +577,13 @@ var Component_FollowUp_List_All = Class.create(
 		}
 		else
 		{
-			var oPopup	= new Popup_FollowUp_View(oFollowUp.followup_recurring_id, true, true);
+			// Show the details for the recurring 'iteration' NOT the recurring fup as a whole
+			var oPopup	=	new Popup_FollowUp_View(
+								oFollowUp.followup_recurring_id, 
+								true, 
+								true, 
+								oFollowUp.followup_recurring_iteration
+							);
 		}
 	},
 	
@@ -634,7 +661,27 @@ var Component_FollowUp_List_All = Class.create(
 			case Component_FollowUp_List_All.FILTER_FIELD_TYPE:
 			case Component_FollowUp_List_All.FILTER_FIELD_CATEGORY:
 			case Component_FollowUp_List_All.FILTER_FIELD_STATUS:
-				sValue	= aControls[0].getElementText();
+				var oControl	= aControls[0];
+				if (oControl.bPopulated)
+				{
+					sValue	= oControl.getElementText();
+					
+					// Remove the onchange callback, if it was used to update this filter value
+					if (typeof this._hControlOnChangeCallbacks[sField] != 'undefined')
+					{
+						oControl.removeOnChangeCallback(this._hControlOnChangeCallbacks[sField]);
+						delete this._hControlOnChangeCallbacks[sField];
+					}
+				}
+				else
+				{
+					// Set change handler
+					var iCallbackIndex	=	oControl.addOnChangeCallback(
+												this._updateFilterDisplayValue.bind(this, sField)
+											);
+					this._hControlOnChangeCallbacks[sField]	= iCallbackIndex;
+					sValue	= 'loading...';
+				}
 				break;
 		}
 		

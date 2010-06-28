@@ -138,7 +138,7 @@ var Popup_FollowUp_Recurring_End_Date	= Class.create(Reflex_Popup,
 		
 		// Button events
 		var oSaveButton	= this._oContent.select('div.popup-followup-recurring-dates-buttons > button.icon-button').first();
-		oSaveButton.observe('click', this._save.bind(this));
+		oSaveButton.observe('click', this._preSaveCheck.bind(this));
 		
 		var oCancelButton	= this._oContent.select('div.popup-followup-recurring-dates-buttons > button.icon-button').last();
 		oCancelButton.observe('click', this.hide.bind(this));
@@ -175,14 +175,12 @@ var Popup_FollowUp_Recurring_End_Date	= Class.create(Reflex_Popup,
 		var sDate			= sValue;
 		var iMilliseconds	= Date.parse(sDate.replace(/-/g, '/'));
 		var oNow			= new Date();
-		oNow.setSeconds(0);
-		oNow.setMilliseconds(0);
 		
 		if (isNaN(iMilliseconds))
 		{
 			return false;
 		}
-		else if (iMilliseconds >= oNow.getTime())
+		else if (iMilliseconds > oNow.getTime())
 		{
 			return true;
 		}
@@ -199,7 +197,7 @@ var Popup_FollowUp_Recurring_End_Date	= Class.create(Reflex_Popup,
 		{
 			return false;
 		}
-		else if (iValue < this._iMinimumOccurrences)
+		else if (iValue <= this._iMinimumOccurrences)
 		{
 			return false
 		}
@@ -230,7 +228,37 @@ var Popup_FollowUp_Recurring_End_Date	= Class.create(Reflex_Popup,
 		this._calculateEndDate();
 	},
 	
-	_save	: function(oEvent, oResponse)
+	_preSaveCheck	: function()
+	{
+		// Validate the reason
+		try
+		{
+			this._oReasonSelect.validate(false);
+		}
+		catch (ex)
+		{
+			// Validation error, show in popup
+			Reflex_Popup.alert(ex);
+			return;
+		}
+		
+		if (this._mSelectedRadio == Popup_FollowUp_Recurring_End_Date.END_NOW.toString())
+		{
+			var oPopup	=	new Popup_FollowUp_Recurring_Close_Overdue(
+								this._oFollowUpRecurring.id, 
+								null,
+								this._save.bind(this),
+								true
+							);
+		}
+		else
+		{
+			// Can save without checking
+			this._save();
+		}
+	},
+	
+	_save	: function(oResponse)
 	{
 		if (typeof oResponse == 'undefined')
 		{
@@ -245,9 +273,9 @@ var Popup_FollowUp_Recurring_End_Date	= Class.create(Reflex_Popup,
 					sDate	= Popup_FollowUp_Recurring_End_Date.getNowDateTime();
 					break;
 				case Popup_FollowUp_Recurring_End_Date.END_AFTER.toString():
-					// Validate the number before saving
 					try
 					{
+						// Validate the number before saving
 						this._oOccurrencesText.validate(false);
 					}
 					catch (ex)
@@ -270,9 +298,9 @@ var Popup_FollowUp_Recurring_End_Date	= Class.create(Reflex_Popup,
 					sDate	= oDate.$format(Popup_FollowUp_Recurring_End_Date.DATE_FORMAT);
 					break;
 				case Popup_FollowUp_Recurring_End_Date.END_BY.toString():
-					// Validate the date before saving
 					try
 					{
+						// Validate the date before saving
 						this._oDatePicker.validate(false);
 					}
 					catch (ex)
@@ -286,25 +314,13 @@ var Popup_FollowUp_Recurring_End_Date	= Class.create(Reflex_Popup,
 					break;
 			}
 			
-			// Validate the reason
-			try
-			{
-				this._oReasonSelect.validate(false);
-			}
-			catch (ex)
-			{
-				// Validation error, show in popup
-				Reflex_Popup.alert(ex);
-				return;
-			}
-			
 			// Show loading
 			this.oLoading	= new Reflex_Popup.Loading('Updating end date...');
 			this.oLoading.display();
 			
 			// Make request
 			var fnJSON	= 	jQuery.json.jsonFunction(
-								this._save.bind(this, null), 
+								this._save.bind(this), 
 								this._ajaxError.bind(this, false), 
 								'FollowUp_Recurring', 
 								'updateEndDate'
@@ -346,9 +362,9 @@ var Popup_FollowUp_Recurring_End_Date	= Class.create(Reflex_Popup,
 				this._oOccurrencesText.disableInput();
 				this._oDatePicker.disableInput();
 			
-				this._oOccurrencesText.setValue(this._iMinimumOccurrences);
-				var oNow	= new Date();
-				this._oDatePicker.setValue(oNow.$format(Popup_FollowUp_Recurring_End_Date.DATE_FORMAT));
+				//this._oOccurrencesText.setValue(this._iMinimumOccurrences);
+				//var oNow	= new Date();
+				//this._oDatePicker.setValue(oNow.$format(Popup_FollowUp_Recurring_End_Date.DATE_FORMAT));
 				break;
 			case Popup_FollowUp_Recurring_End_Date.END_AFTER.toString():
 				this._oOccurrencesText.enableInput();

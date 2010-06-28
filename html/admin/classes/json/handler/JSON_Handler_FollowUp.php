@@ -42,24 +42,6 @@ class JSON_Handler_FollowUp extends JSON_Handler
 				unset($aFilter['now']);
 			}	
 			
-			// Add minutes & seconds to the 'due_datetime' filter if needed
-			/*if (isset($aFilter['due_datetime']))
-			{
-				$oDueDateTime	= $aFilter['due_datetime'];
-				
-				if (!preg_match('/\s\d{1,2}:\d{1,2}(:\d{1,2})$/', $oDueDateTime->mFrom))
-				{
-					$oDueDateTime->mFrom	.= ' 00:00:00';
-				}
-				
-				if (!preg_match('/\s\d{1,2}:\d{1,2}(:\d{1,2})$/', $oDueDateTime->mTo))
-				{
-					$oDueDateTime->mTo	.= ' 23:59:59';
-				}
-				
-				$aFilter['due_datetime']	= $oDueDateTime;
-			}*/
-			
 			// Convert the 'status' filter value to valid filters  
 			if (isset($aFilter['status']))
 			{
@@ -265,6 +247,12 @@ class JSON_Handler_FollowUp extends JSON_Handler
 			{
 				// Get the recurring followup (parent of the iteration)
 				$oFollowUpRecurring	= FollowUp_Recurring::getForId($iFollowUpRecurringId);
+				$sDueDateTime		= date('Y-m-d H:i:s', $oFollowUpRecurring->getProjectedDueDateSeconds($iIteration));
+				
+				if (FollowUp::getForDateAndRecurringId($sDueDateTime, $iFollowUpRecurringId))
+				{
+					throw new JSON_Handler_FollowUp_Exception('The follow-up you are trying to close is already closed.');
+				}
 				
 				// Create a once off (closed) followup for the iteration
 				$oFollowUp	= new FollowUp();
@@ -275,7 +263,7 @@ class JSON_Handler_FollowUp extends JSON_Handler
 				// Inherit fields from the recurring followup
 				$oFollowUp->assigned_employee_id	= $oFollowUpRecurring->assigned_employee_id;
 				$oFollowUp->created_datetime		= $oFollowUpRecurring->created_datetime;
-				$oFollowUp->due_datetime			= date('Y-m-d H:i:s', $oFollowUpRecurring->getProjectedDueDateSeconds($iIteration));
+				$oFollowUp->due_datetime			= $sDueDateTime;
 				$oFollowUp->followup_type_id		= $oFollowUpRecurring->followup_type_id;
 				$oFollowUp->followup_category_id	= $oFollowUpRecurring->followup_category_id;
 				
@@ -335,9 +323,8 @@ class JSON_Handler_FollowUp extends JSON_Handler
 		try
 		{
 			// Update assigned_employee_id
-			$oFollowUp							= FollowUp::getForId($iFollowUpId);
-			$oFollowUp->assigned_employee_id	= $iToEmployeeId;
-			$oFollowUp->save(null, $iReassignReasonId);
+			$oFollowUp	= FollowUp::getForId($iFollowUpId);
+			$oFollowUp->assignTo($iToEmployeeId, $iReassignReasonId);
 			
 			// Commit db transaction
 			$oDataAccess->TransactionCommit();
@@ -382,9 +369,8 @@ class JSON_Handler_FollowUp extends JSON_Handler
 		try
 		{
 			// Update assigned_employee_id
-			$oFollowUpRecurring							= FollowUp_Recurring::getForId($iFollowUpRecurringId);
-			$oFollowUpRecurring->assigned_employee_id	= $iToEmployeeId;
-			$oFollowUpRecurring->save(null, $iReassignReasonId);
+			$oFollowUpRecurring	= FollowUp_Recurring::getForId($iFollowUpRecurringId);
+			$oFollowUpRecurring->assignTo($iToEmployeeId, $iReassignReasonId);
 			
 			// Commit db transaction
 			$oDataAccess->TransactionCommit();
