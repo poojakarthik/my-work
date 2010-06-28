@@ -81,7 +81,7 @@ var Popup_FollowUp_Reassign	= Class.create(Reflex_Popup,
 		this.display();
 	},
 	
-	_ajaxError	: function(bHideOnClose, oResponse)
+	_ajaxError	: function(oResponse)
 	{
 		if (this.oLoading)
 		{
@@ -89,7 +89,7 @@ var Popup_FollowUp_Reassign	= Class.create(Reflex_Popup,
 			delete this.oLoading;
 		}
 		
-		var oConfig	= {sTitle: 'Error', fnOnClose: (bHideOnClose ? this.hide.bind(this) : null)};
+		var oConfig	= {sTitle: 'Error'};
 		
 		if (oResponse.Message)
 		{
@@ -109,7 +109,7 @@ var Popup_FollowUp_Reassign	= Class.create(Reflex_Popup,
 			if (this._oSelect.validate() && this._oReasonSelect.validate())
 			{
 				// Show loading
-				this.oLoading	= new Reflex_Popup.Loading('Reassigning ' + this._sType + '...');
+				this.oLoading	= new Reflex_Popup.Loading('Assigning...');
 				this.oLoading.display();
 				
 				var iEmployeeId			= this._oSelect.getElementValue();

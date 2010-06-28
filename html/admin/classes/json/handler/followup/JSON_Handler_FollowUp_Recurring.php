@@ -212,7 +212,7 @@ class JSON_Handler_FollowUp_Recurring extends JSON_Handler
 		}
 	}
 	
-	public function getOverdueOccurrences($iFollowUpRecurringId, $iNowSeconds=false)
+	public function getOverdueOccurrences($iFollowUpRecurringId)
 	{
 		try
 		{
@@ -223,7 +223,7 @@ class JSON_Handler_FollowUp_Recurring extends JSON_Handler
 			}
 			
 			$oFollowUpRecurring	= FollowUp_Recurring::getForId($iFollowUpRecurringId);
-			$aOccurrenceDetails	= $oFollowUpRecurring->getOccurrenceDetails(false, true, $iNowSeconds);
+			$aOccurrenceDetails	= $oFollowUpRecurring->getOccurrenceDetails(false, true);
 			$aResult			= array();
 			$i					= 0;
 			
@@ -362,7 +362,7 @@ class JSON_Handler_FollowUp_Recurring extends JSON_Handler
 		}
 	}
 	
-	public function getOccurrences($iFollowUpRecurringId, $iNowSeconds=false)
+	public function getOccurrences($iFollowUpRecurringId)
 	{
 		try
 		{
@@ -373,7 +373,7 @@ class JSON_Handler_FollowUp_Recurring extends JSON_Handler
 			}
 			
 			$oFollowUpRecurring	= FollowUp_Recurring::getForId($iFollowUpRecurringId);
-			$aOccurrences		= $oFollowUpRecurring->getOccurrenceDetails(false, false, $iNowSeconds);
+			$aOccurrences		= $oFollowUpRecurring->getOccurrenceDetails(false, false);
 			
 			return	array(
 						"Success"	=> true,

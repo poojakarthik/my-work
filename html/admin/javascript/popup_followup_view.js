@@ -59,8 +59,7 @@ var Popup_FollowUp_View	= Class.create(Reflex_Popup,
 					)
 				)
 			)
-		);				
-				
+		);
 	},
 	
 	_getFollowUpDetails	: function(fnCallback, oResponse)
@@ -297,7 +296,7 @@ var Popup_FollowUp_View	= Class.create(Reflex_Popup,
 			this._oOccurrencesSection	= new Section_Expandable(false, 'popup-followup-view-occurrences');
 			this._oOccurrencesSection.setTitleText('Occurences');
 			this._oOccurrencesSection.setContent(this._createOccurrencesContent());
-			this._oOccurrencesSection.setExpanded(true);
+			this._oOccurrencesSection.setExpanded(!this._bFullDetailsVisible);
 			
 			// Popup icon and title
 			this.setTitle('View Recurring Follow-Up');

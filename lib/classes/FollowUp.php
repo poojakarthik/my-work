@@ -232,6 +232,11 @@ class FollowUp extends ORM_Cached
 		return $sSummary;
 	}
 	
+	public function isAssignedTo($iEmployeeId)
+	{
+		return $iEmployeeId == $this->assigned_employee_id;
+	}
+	
 	public function assignTo($iEmployeeId, $iReassignReasonId)
 	{
 		// Do reassign
@@ -589,7 +594,7 @@ class FollowUp extends ORM_Cached
 		}
 	}
 
-	public static function getStatus($iFollowUpClosureId, $sDueDateTime, $iNowSeconds=false)
+	public static function getStatus($iFollowUpClosureId, $sDueDateTime)
 	{
 		if ($iFollowUpClosureId)
 		{
@@ -600,7 +605,7 @@ class FollowUp extends ORM_Cached
 		{
 			// Active, check the date to see if overdue or current
 			$iDueDate	= strtotime($sDueDateTime);
-			$iNow		= ($iNowSeconds ? $iNowSeconds : time());
+			$iNow		= time();
 			
 			if ($iDueDate >= $iNow)
 			{

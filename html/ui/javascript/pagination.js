@@ -25,8 +25,7 @@ var Pagination	= Class.create
 									intCurrentPage	: this.intCurrentPage,
 									intPageSize		: this._intPageSize,
 									intPageCount	: this._calculatePageCount(intTotalResults)
-								}
-		//debugger;
+								};
 		this._fncCallback(objResultSet);
 	},
 	

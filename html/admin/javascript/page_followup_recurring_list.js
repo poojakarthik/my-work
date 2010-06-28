@@ -37,6 +37,14 @@ var Page_FollowUp_Recurring_List = Class.create(
 			this._oFilter.setFilterValue(Page_FollowUp_Recurring_List.FILTER_FIELD_OWNER, this._iEmployeeId);
 		}
 		
+		// By default only show fups that end from today onwards
+		this._oFilter.setFilterValue(
+			Page_FollowUp_Recurring_List.FILTER_FIELD_END_DATE,
+			new Date().$format('Y-m-d'),
+			null,
+			Filter.RANGE_TYPE_FROM
+		);
+		
 		// Create sort object
 		this._oSort	= new Sort(this.oDataSet, this.oPagination, true);
 		

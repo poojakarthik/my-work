@@ -558,8 +558,9 @@ var Filter	= Class.create
 		switch (oFilter.iType)
 		{
 			case Filter.FILTER_TYPE_RANGE:
-				var mFrom	= aControls[0].getElementValue();
-				var mTo		= (aControls[1] ? aControls[1].getElementValue() : null);
+				// Only use each range limit if the control that supplies the value is mandatory (determined by this._rangeTypeSelected)
+				var mFrom	= (aControls[0].isMandatory() ? aControls[0].getElementValue() : null);
+				var mTo		= (aControls[1].isMandatory() ? aControls[1].getElementValue() : null);
 				this.setFilterValue(sField, mFrom, mTo);
 				break;
 			case Filter.FILTER_TYPE_VALUE:

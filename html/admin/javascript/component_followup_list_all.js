@@ -53,7 +53,7 @@ var Component_FollowUp_List_All = Class.create(
 		}
 		
 		// Create sort object
-		this._oSort	= new Sort(this.oDataSet, this.oPagination, true, this._updateNowFilterValue.bind(this, true));
+		this._oSort	= new Sort(this.oDataSet, this.oPagination, true);
 		
 		// Create the page HTML
 		var sButtonPathBase	= '../admin/img/template/resultset_';
@@ -587,18 +587,6 @@ var Component_FollowUp_List_All = Class.create(
 		}
 	},
 	
-	_updateNowFilterValue	: function(bFromSort)
-	{
-		// Set the 'now' filter value to the current time in seconds
-		this._oFilter.setFilterValue('now', Math.floor(new Date().getTime() / 1000), true);
-		
-		if (bFromSort)
-		{
-			// If not updated from a filter, refresh the dataset ajax's filter data.
-			this._oFilter.refreshData(true);
-		}
-	},
-	
 	_filterFieldUpdated	: function(sField)
 	{
 		// Make sure the from date has 00:00 (start of day) for minutes and the to date has 23:59 (end of day)
@@ -627,8 +615,6 @@ var Component_FollowUp_List_All = Class.create(
 				this._oFilter.setFilterValue(sField, oValue.mFrom, oValue.mTo, null, true);
 			}
 		}
-		
-		this._updateNowFilterValue(false);
 	},
 	
 	_formatFilterValueForDisplay	: function(sField, mValue)

@@ -419,18 +419,25 @@ Employee.getAllAsSelectOptions	= function(fCallback, oResponse)
 {
 	if (!oResponse)
 	{
-		// Make Request
-		this.getAll(this.getAllAsSelectOptions.bind(this, fCallback));
+		// Make Request for all active employees sorted by first name then last name 
+		var fnGetAll	=	jQuery.json.jsonFunction(
+								Employee.getAllAsSelectOptions.bind(Employee, fCallback), 
+								null, 
+								'Employee', 
+								'getDataSetActiveEmployees'
+							);
+		fnGetAll(false, null, null, {FirstName:	'ASC', LastName: 'ASC'});
 	}
 	else
 	{
 		// Create an Array of OPTION DOM Elements
+		var oResults	= jQuery.json.arrayAsObject(oResponse.aRecords);
 		var aOptions	= [];
-		for (i in oResponse)
+		for (i in oResults)
 		{
 			aOptions.push(
-				$T.option({value: oResponse[i].Id},
-					oResponse[i].FirstName + ' ' + oResponse[i].LastName
+				$T.option({value: oResults[i].Id},
+						oResults[i].FirstName + ' ' + oResults[i].LastName
 				)
 			);		
 		}

@@ -32,15 +32,8 @@ class JSON_Handler_FollowUp extends JSON_Handler
 				throw new JSON_Handler_FollowUp_Exception('You do not have permission to view Follow-Ups.');
 			}
 			
-			$aFilter	= get_object_vars($oFilter);
-			
-			// Retrieve and remove the 'now' filter value. It's only purpose is to tell this method what the client time is
+			$aFilter		= get_object_vars($oFilter);
 			$iNowSeconds	= time();
-			if (isset($aFilter['now']))
-			{
-				$iNowSeconds	= (int)$aFilter['now'];
-				unset($aFilter['now']);
-			}	
 			
 			// Convert the 'status' filter value to valid filters  
 			if (isset($aFilter['status']))
@@ -126,7 +119,7 @@ class JSON_Handler_FollowUp extends JSON_Handler
 					$oFollowUpStdClass->followup_recurring_iteration	= $aFollowUp['followup_recurring_iteration'];
 					$oFollowUpStdClass->assigned_employee_label			= Employee::getForId($oFollowUp->assigned_employee_id)->getName();
 					$oFollowUpStdClass->followup_category_label			= FollowUp_Category::getForId($oFollowUp->followup_category_id)->name;
-					$oFollowUpStdClass->status							= FollowUp::getStatus($oFollowUp->followup_closure_id, $oFollowUp->due_datetime, $iNowSeconds);
+					$oFollowUpStdClass->status							= FollowUp::getStatus($oFollowUp->followup_closure_id, $oFollowUp->due_datetime);
 					
 					if ($oFollowUp->followup_recurring_id)
 					{
@@ -324,10 +317,27 @@ class JSON_Handler_FollowUp extends JSON_Handler
 		{
 			// Update assigned_employee_id
 			$oFollowUp	= FollowUp::getForId($iFollowUpId);
-			$oFollowUp->assignTo($iToEmployeeId, $iReassignReasonId);
-			
-			// Commit db transaction
-			$oDataAccess->TransactionCommit();
+			if ($oFollowUp->isAssignedTo($iToEmployeeId))
+			{
+				// Already assigned to that employee, throw error
+				$sEmployee	= Employee::getForId($oFollowUp->assigned_employee_id)->getName();
+
+				// Rollback db transaction
+				$oDataAccess->TransactionRollback();
+				
+				return	array(
+							"Success" 	=> false,
+							"Message"	=> "The Follow-Up is already assigned to {$sEmployee}."
+						);
+			}
+			else
+			{
+				// Assign
+				$oFollowUp->assignTo($iToEmployeeId, $iReassignReasonId);
+				
+				// Commit db transaction
+				$oDataAccess->TransactionCommit();
+			}
 			
 			return array("Success" => true);
 		}
@@ -368,12 +378,28 @@ class JSON_Handler_FollowUp extends JSON_Handler
 		
 		try
 		{
-			// Update assigned_employee_id
 			$oFollowUpRecurring	= FollowUp_Recurring::getForId($iFollowUpRecurringId);
-			$oFollowUpRecurring->assignTo($iToEmployeeId, $iReassignReasonId);
-			
-			// Commit db transaction
-			$oDataAccess->TransactionCommit();
+			if ($oFollowUpRecurring->isAssignedTo($iToEmployeeId))
+			{
+				// Already assigned to that employee, throw error
+				$sEmployee	= Employee::getForId($oFollowUpRecurring->assigned_employee_id)->getName();
+				
+				// Rollback db transaction
+				$oDataAccess->TransactionRollback();
+				
+				return	array(
+							"Success" 	=> false,
+							"Message"	=> "The Recurring Follow-Up is already assigned to {$sEmployee}."
+						);
+			}
+			else
+			{
+				// Assign
+				$oFollowUpRecurring->assignTo($iToEmployeeId, $iReassignReasonId);
+				
+				// Commit db transaction
+				$oDataAccess->TransactionCommit();
+			}
 			
 			return array("Success" => true);
 		}
@@ -436,12 +462,12 @@ class JSON_Handler_FollowUp extends JSON_Handler
 		}
 	}
 	
-	public function getOverdueCountForLoggedInEmployee($iNowSeconds)
+	public function getOverdueCountForLoggedInEmployee()
 	{
 		try
 		{
 			$oEmployee	= Employee::getForId(Flex::getUserId());
-			$iCount		= $oEmployee->getOverdueFollowUpCount($iNowSeconds);
+			$iCount		= $oEmployee->getOverdueFollowUpCount();
 			
 			return 	array(
 						"Success"	=> true,

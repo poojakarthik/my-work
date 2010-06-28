@@ -367,6 +367,11 @@ class FollowUp_Recurring extends ORM_Cached
 		return $iProjectedDate;
 	}
 	
+	public function isAssignedTo($iEmployeeId)
+	{
+		return $iEmployeeId == $this->assigned_employee_id;
+	}
+	
 	public function assignTo($iEmployeeId, $iReassignReasonId)
 	{
 		// Do reassign
@@ -449,13 +454,13 @@ class FollowUp_Recurring extends ORM_Cached
 		return (strtotime($this->end_datetime) <= time());
 	}
 	
-	public function getOccurrenceDetails($bClosedOccurencesOnly=false, $bPastOnly=false, $iNowSeconds=false)
+	public function getOccurrenceDetails($bClosedOccurencesOnly=false, $bPastOnly=false)
 	{
 		// For each possible iteration fetch it's due_datetime, closure_type_id & ...
 		$aDetails		= array('aOccurrences' => array(), 'bHasMore' => false);
 		$iProjectedDate	= strtotime($this->start_datetime);
 		$iEndDate		= strtotime($this->end_datetime);
-		$iNow			= ($iNowSeconds ? $iNowSeconds : time());
+		$iNow			= time();
 		$iAfterNow		= 0;
 		$i				= 0;
 		

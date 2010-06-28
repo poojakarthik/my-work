@@ -84,7 +84,7 @@ var Dataset_Ajax	= Class.create
 	{
 		bForceRefresh	= (bForceRefresh == undefined) ? false : bForceRefresh;
 		
-		if (bForceRefresh || !this._iRecordCount)
+		if (bForceRefresh || (this._iRecordCount === null))
 		{
 			var fJsonFunc	=	jQuery.json.jsonFunction(
 									jQuery.json.handleResponse.curry(
