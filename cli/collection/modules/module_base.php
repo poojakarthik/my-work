@@ -196,6 +196,11 @@
 	{
 		return array();
 	}
+	
+	public function getCarrierModule()
+	{
+		return $this->_oCarrierModule;
+	}
 }
 
 ?>
