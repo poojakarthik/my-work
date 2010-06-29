@@ -3,35 +3,17 @@
  * CollectionModuleFOpenLocal
  *
  * Local (File Wrapper) Collection Module
- * 
+ *
  * @class	CollectionModuleFOpenLocal
  */
  class CollectionModuleFOpenLocal extends CollectionModuleFOpen
  {
+	const	RESOURCE_TYPE	= RESOURCE_TYPE_FILE_RESOURCE_LOCAL;
+	
 	protected	$_resConnection;
 	protected	$_strWrapper;
 	
 	public $intBaseFileType			= RESOURCE_TYPE_FILE_RESOURCE_LOCAL;
-	
-	/**
-	 * __construct()
-	 *
-	 * Constructor for CollectionModuleFOpenSFTP
-	 *
-	 * @method
-	 */
- 	function __construct($intCarrier)
- 	{
- 		parent::__construct($intCarrier);
- 		
-		//##----------------------------------------------------------------##//
-		// Define Module Configuration and Defaults
-		//##----------------------------------------------------------------##//
-		
- 		$this->_arrModuleConfig['FileDefine']				['Default']		= array();
- 		$this->_arrModuleConfig['FileDefine']				['Type']		= DATA_TYPE_ARRAY;
- 		$this->_arrModuleConfig['FileDefine']				['Description']	= "Definitions for where to download files from";
- 	}
  	
 	/**
 	 * Connect()

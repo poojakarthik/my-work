@@ -1,7 +1,9 @@
 <?php
 
 // Load Framework
-require_once("../../flex.require.php");
+require_once("../../lib/classes/Flex.php");
+Flex::load();
+
 LoadApplication();
 
 CliEcho("\n[ CREATE COLLECTION CARRIER MODULE ]\n");
@@ -25,26 +27,51 @@ if (!GetConstantName($intCarrier, 'Carrier'))
 	CliEcho("ERROR: '$intCarrier' is not a valid Carrier Id!\n");
 	die;
 }
-elseif (!class_exists($strClassName) || !is_subclass_of($strClassName, 'CarrierModule'))
+elseif (!class_exists($strClassName) || !is_subclass_of($strClassName, 'CollectionModuleBase'))
 {
 	CliEcho("ERROR: '$strClassName' is not a valid CarrierModule Class!\n");
 	die;
 }
 
 CliEcho("Creating new Module...\t\t\t", FALSE);
-$objModule	= new $strClassName($intCarrier);
 
-if (!$objModule)
+
+if (DataAccess::getDataAccess()->TransactionStart())
 {
-	CliEcho("[ FAILED ]\n\tERROR: There was an error instanciating the CarrierModule Class '$strClassName'\n");
-	die;
+	try
+	{
+		$oModuleReflection	= (new ReflectionClass($argument));
+		
+		// Define the new Carrier Module record
+		$oCarrierModule	= new Carrier_Module();
+		
+		$oCarrierModule->Carrier			= Carrier::getForId($intCarrier)->Id;
+		$oCarrierModule->customer_group		= null;									// Currently, we have no need for Customer Group-level Collection Modules
+		$oCarrierModule->Type				= MODULE_TYPE_COLLECTION;
+		$oCarrierModule->Module				= $strClassName;
+		$oCarrierModule->FileType			= $oModuleReflection->getConstant('RESOURCE_TYPE');
+		$oCarrierModule->FrequencyType		= 1;
+		$oCarrierModule->Frequency			= 1;
+		$oCarrierModule->LastSentOn			= Data_Source_Time::START_OF_TIME;
+		$oCarrierModule->EarliestDelivery	= 0;
+		$oCarrierModule->Active				= 0;	// Inactive by default
+		
+		$oCarrierModule->save();
+		
+		// Define the Carrier Module Configuration records
+		$oCarrierModule->getConfig()->define(call_user_method(array($strClassName, 'getConfigDefinition')));
+		$oCarrierModule->getConfig()->save();
+		
+		throw new Exception("DEBUG");
+		DataAccess::getDataAccess()->TransactionCommit();
+		
+		CliEcho("[   OK   ]\n");
+	}
+	catch (Exception $oException)
+	{
+		CliEcho("[ FAILED ]\n\t[!] ".$oException->getMessage());
+		DataAccess::getDataAccess()->TransactionRollback();
+	}
 }
 
-if (($mixResult = $objModule->CreateModuleConfig(true)) !== TRUE)
-{
-	CliEcho("[ FAILED ]\n\t".$mixResult."\n");
-	die;
-}
-
-CliEcho("[   OK   ]\n");
 ?>

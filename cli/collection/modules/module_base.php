@@ -41,17 +41,15 @@
  * @package		collection
  * @class		CollectionModuleBase
  */
- abstract class CollectionModuleBase extends CarrierModule
+ abstract class CollectionModuleBase implements Carrier_Module_Interface
  {
  	protected	$_selFileExists;
  	
- 	//------------------------------------------------------------------------//
-	// __construct
-	//------------------------------------------------------------------------//
+ 	protected	$_oCarrierModule;
+ 	protected	$_oConfig;
+ 	
 	/**
 	 * __construct()
-	 *
-	 * Constructor for CollectionModuleBase
 	 *
 	 * Constructor for CollectionModuleBase
 	 *
@@ -59,12 +57,13 @@
 	 *
 	 * @method
 	 */
- 	function __construct($intCarrier)
+ 	function __construct($iCarrierModuleId)
  	{
- 		parent::__construct($intCarrier, MODULE_TYPE_COLLECTION);
- 		
  		$this->_selFileDownloaded	= new StatementSelect("FileDownload", "Id", "FileName = <FileName>");
  		$this->_selFileImported		= new StatementSelect("FileImport", "Id", "FileName = <FileName>");
+ 		
+ 		$this->_oCarrierModule	= Carrier_Module::getForId($iCarrierModuleId);
+ 		$this->_oConfig			= $this->_oCarrierModule->getConfig();
  	}
  	
  	//------------------------------------------------------------------------//
@@ -191,6 +190,11 @@
 		{
 			return true;
 		}
+	}
+	
+	public static function getConfigDefinition()
+	{
+		return array();
 	}
 }
 

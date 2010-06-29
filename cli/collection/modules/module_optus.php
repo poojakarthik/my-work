@@ -43,50 +43,42 @@
  */
  class CollectionModuleOptus extends CollectionModuleBase
  {
+	const	RESOURCE_TYPE	= RESOURCE_TYPE_FILE_RESOURCE_OPTUS;
+	
 	private $_resConnection;
  	
 	//public $intBaseCarrier			= CARRIER_OPTUS;
 	public $intBaseFileType			= RESOURCE_TYPE_FILE_RESOURCE_OPTUS;
- 	
- 	//------------------------------------------------------------------------//
-	// __construct
-	//------------------------------------------------------------------------//
-	/**
-	 * __construct()
-	 *
-	 * Constructor for CollectionModuleOptus
-	 *
-	 * Constructor for CollectionModuleOptus
-	 *
-	 * @return		CollectionModuleOptus
-	 *
-	 * @method
-	 */
- 	function __construct($intCarrier)
- 	{
- 		parent::__construct($intCarrier);
- 		
-		//##----------------------------------------------------------------##//
-		// Define Module Configuration and Defaults
-		//##----------------------------------------------------------------##//
-		
-		// Mandatory
- 		$this->_arrModuleConfig['URL']			['Default']		= "https://www.optus.com.au/wholesalenet/catalog/catalog.taf?custid=<Config::CustomerId>&check=<Config::CheckId>&_function=catalog&_filetype=Speedi";
- 		$this->_arrModuleConfig['URL']			['Type']		= DATA_TYPE_STRING;
- 		$this->_arrModuleConfig['URL']			['Description']	= "URL to retrieve XML from";
- 		
- 		$this->_arrModuleConfig['CustomerId']	['Default']		= '';
- 		$this->_arrModuleConfig['CustomerId']	['Type']		= DATA_TYPE_INTEGER;
- 		$this->_arrModuleConfig['CustomerId']	['Description']	= "Customer Id";
- 		
- 		$this->_arrModuleConfig['CheckId']		['Default']		= '';
- 		$this->_arrModuleConfig['CheckId']		['Type']		= DATA_TYPE_INTEGER;
- 		$this->_arrModuleConfig['CheckId']		['Description']	= "6-digit Check Id";
- 		
- 		$this->_arrModuleConfig['FileDefine']	['Default']		= Array();
- 		$this->_arrModuleConfig['FileDefine']	['Type']		= DATA_TYPE_ARRAY;
- 		$this->_arrModuleConfig['FileDefine']	['Description']	= "Definitions for where to download files from";
- 	}
+	
+	public static function getConfigDefinition()
+	{
+		// Values defined in here are DEFAULT values
+		return	array
+				(
+					'URL'	=>		array
+									(
+										'Value'			=> "https://www.optus.com.au/wholesalenet/catalog/catalog.taf?custid=<Config::CustomerId>&check=<Config::CheckId>&_function=catalog&_filetype=Speedi",
+										'Type'			=> DATA_TYPE_STRING,
+										'Description'	=> 'URL to retrieve XML from'
+									),
+					'CustomerId'	=>	array
+									(
+										'Type'			=> DATA_TYPE_STRING,
+										'Description'	=> 'Customer Id'
+									),
+					'CheckId'		=>	array
+									(
+										'Type'			=> DATA_TYPE_STRING,
+										'Description'	=> '6-digit Check Id'
+									),
+					'FileDefine'	=>	array
+									(
+										'Value'			=> array(),
+										'Type'			=> DATA_TYPE_STRING,
+										'Description'	=> 'Definitions for where to download files from'
+									)
+				);
+	}
  	
  	//------------------------------------------------------------------------//
 	// Connect
@@ -207,7 +199,7 @@
 	 * Gets a full list of all files to download
 	 *
 	 * Gets a full list of all files to download
-	 * 
+	 *
 	 * @return		array							Array of files to download
 	 *
 	 * @method
@@ -215,9 +207,9 @@
 	protected function _GetDownloadPaths()
 	{
 		// Retrieve file listing
-		$intCustId		= $this->GetConfigField('CustomerId');
-		$intCheckId		= $this->GetConfigField('CheckId');
-		$strURL			= $this->GetConfigField('URL');
+		$intCustId		= $this->_oConfig->CustomerId;
+		$intCheckId		= $this->_oConfig->CheckId;
+		$strURL			= $this->_oConfig->URL;
 		
 		curl_setopt($this->_ptrSession, CURLOPT_URL				, $strURL);
 		curl_setopt($this->_ptrSession, CURLOPT_SSL_VERIFYPEER	, FALSE);
@@ -261,7 +253,7 @@
 		}
 		
 		// Get File Definitions
-		$arrDefinitions	= $this->GetConfigField('FileDefine');
+		$arrDefinitions	= $this->_oConfig->FileDefine;
 		
 		$arrDownloadPaths	= Array();
 		foreach ($arrDefinitions as $intFileType=>&$arrFileType)
@@ -270,7 +262,7 @@
 			if (is_array($arrFiles))
 			{
 				foreach ($arrFiles as $arrFileDetails)
-				{					
+				{
 					// Does this file match our REGEX?
 					if (!preg_match($arrFileType['Regex'], trim($arrFileDetails['FileName'])))
 					{

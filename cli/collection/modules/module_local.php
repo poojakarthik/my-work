@@ -43,37 +43,26 @@
  */
  class CollectionModuleLocal extends CollectionModuleBase
  {
+	const	RESOURCE_TYPE	= RESOURCE_TYPE_FILE_RESOURCE_LOCAL;
+	
 	private $_resConnection;
 	
 	//public $intBaseCarrier			= CARRIER_UNITEL;
 	public $intBaseFileType			= RESOURCE_TYPE_FILE_RESOURCE_LOCAL;
- 	
- 	//------------------------------------------------------------------------//
-	// __construct
-	//------------------------------------------------------------------------//
-	/**
-	 * __construct()
-	 *
-	 * Constructor for CollectionModuleLocal
-	 *
-	 * Constructor for CollectionModuleLocal
-	 *
-	 * @return		CollectionModuleLocal
-	 *
-	 * @method
-	 */
- 	function __construct($intCarrier)
- 	{
- 		parent::__construct($intCarrier);
- 		
-		//##----------------------------------------------------------------##//
-		// Define Module Configuration and Defaults
-		//##----------------------------------------------------------------##//
- 		
- 		$this->_arrModuleConfig['FileDefine']	['Default']		= Array();
- 		$this->_arrModuleConfig['FileDefine']	['Type']		= DATA_TYPE_ARRAY;
- 		$this->_arrModuleConfig['FileDefine']	['Description']	= "Definitions for where to download files from";
- 	}
+	
+	public static function getConfigDefinition()
+	{
+		// Values defined in here are DEFAULT values
+		return	array
+				(
+					'FileDefine'	=>	array
+									(
+										'Value'			=> array(),
+										'Type'			=> DATA_TYPE_STRING,
+										'Description'	=> 'Definitions for where to download files from'
+									)
+				);
+	}
  	
  	//------------------------------------------------------------------------//
 	// Connect
@@ -132,7 +121,7 @@
 	 * @method
 	 */
  	function Download($strDestination)
- 	{		
+ 	{
 		// Get the Current path element
 		if (!($arrCurrentFile = current($this->_arrDownloadPaths)))
 		{
@@ -168,7 +157,7 @@
 	 * Gets a full list of all files to download
 	 *
 	 * Gets a full list of all files to download
-	 * 
+	 *
 	 * @return		array							Array of files to download
 	 *
 	 * @method
@@ -176,7 +165,7 @@
 	protected function _GetDownloadPaths()
 	{
 		// Get Path Definitions
-		$arrDefinitions		= $this->GetConfigField('FileDefine');
+		$arrDefinitions		= $this->_oConfig->FileDefine;
 		
 		$arrDownloadPaths	= Array();
 		foreach ($arrDefinitions as $intFileType=>&$arrFileType)

@@ -17,17 +17,19 @@
 	const	DIRECTORY_NAME_REGEX_PREFIX	= 'regex:';
 	const	SKIP_IS_DIR_AFTER_REGEX		= true;
 	
-	/**
-	 * __construct()
-	 *
-	 * Constructor for CollectionModuleFOpen
-	 *
-	 * @method
-	 */
- 	function __construct($intCarrier)
- 	{
- 		parent::__construct($intCarrier);
- 	}
+	public static function getConfigDefinition()
+	{
+		// Values defined in here are DEFAULT values
+		return	array
+				(
+					'FileDefine'	=>	array
+									(
+										'Value'			=> array(),
+										'Type'			=> DATA_TYPE_STRING,
+										'Description'	=> 'Definitions for where to download files from'
+									)
+				);
+	}
  	
 	/**
 	 * Connect()
@@ -112,7 +114,7 @@
 		//CliEcho("\nGetting Download Paths...");
 		
 		// Get Path Definitions
-		$arrDefinitions		= $this->GetConfigField('FileDefine');
+		$arrDefinitions		= $this->_oConfig->FileDefine;
 		
 		$arrDownloadPaths	= array();
 		try

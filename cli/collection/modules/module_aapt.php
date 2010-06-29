@@ -43,50 +43,42 @@
  */
  class CollectionModuleAAPT extends CollectionModuleBase
  {
-	private $_resConnection;
+	const	RESOURCE_TYPE	= RESOURCE_TYPE_FILE_RESOURCE_AAPT;
+ 	
+ 	private $_resConnection;
  	
 	//public $intBaseCarrier			= CARRIER_AAPT;
 	public $intBaseFileType			= RESOURCE_TYPE_FILE_RESOURCE_AAPT;
 	
- 	//------------------------------------------------------------------------//
-	// __construct
-	//------------------------------------------------------------------------//
-	/**
-	 * __construct()
-	 *
-	 * Constructor for CollectionModuleFTP
-	 *
-	 * Constructor for CollectionModuleFTP
-	 *
-	 * @return		CollectionModuleFTP
-	 *
-	 * @method
-	 */
- 	function __construct($intCarrier)
- 	{
- 		parent::__construct($intCarrier);
- 		
-		//##----------------------------------------------------------------##//
-		// Define Module Configuration and Defaults
-		//##----------------------------------------------------------------##//
-		
-		// Mandatory
- 		$this->_arrModuleConfig['Host']			['Default']		= 'https://wholesalebbs.aapt.com.au/';
- 		$this->_arrModuleConfig['Host']			['Type']		= DATA_TYPE_STRING;
- 		$this->_arrModuleConfig['Host']			['Description']	= "AAPT XML Server to connect to";
- 		
- 		$this->_arrModuleConfig['Username']		['Default']		= '';
- 		$this->_arrModuleConfig['Username']		['Type']		= DATA_TYPE_STRING;
- 		$this->_arrModuleConfig['Username']		['Description']	= "AAPT XML Username";
- 		
- 		$this->_arrModuleConfig['Password']		['Default']		= '';
- 		$this->_arrModuleConfig['Password']		['Type']		= DATA_TYPE_STRING;
- 		$this->_arrModuleConfig['Password']		['Description']	= "AAPT XML Password";
- 		
- 		$this->_arrModuleConfig['FileDefine']	['Default']		= Array();
- 		$this->_arrModuleConfig['FileDefine']	['Type']		= DATA_TYPE_ARRAY;
- 		$this->_arrModuleConfig['FileDefine']	['Description']	= "Definitions for where to download files from";
- 	}
+	public static function getConfigDefinition()
+	{
+		// Values defined in here are DEFAULT values
+		return	array
+				(
+					'Host'	=>		array
+									(
+										'Value'			=> 'https://wholesalebbs.aapt.com.au/',
+										'Type'			=> DATA_TYPE_STRING,
+										'Description'	=> 'AAPT XML Server to connect to'
+									),
+					'Username'		=>	array
+									(
+										'Type'			=> DATA_TYPE_STRING,
+										'Description'	=> 'AAPT XML Username'
+									),
+					'Password'		=>	array
+									(
+										'Type'			=> DATA_TYPE_STRING,
+										'Description'	=> 'AAPT XML Password'
+									),
+					'FileDefine'	=>	array
+									(
+										'Value'			=> array(),
+										'Type'			=> DATA_TYPE_STRING,
+										'Description'	=> 'Definitions for where to download files from'
+									)
+				);
+	}
  	
  	//------------------------------------------------------------------------//
 	// Connect
@@ -108,10 +100,10 @@
  		$this->_resConnection = curl_init();
 		
 		// Connect to the remote server
-		$arrParams['username']		= "username=".urlencode($this->GetConfigField('Username'));
-		$arrParams['password']		= "password=".urlencode($this->GetConfigField('Password'));
+		$arrParams['username']		= "username=".urlencode($this->_oConfig->Username);
+		$arrParams['password']		= "password=".urlencode($this->_oConfig->Password);
 		$arrParams['fileAction']	= "fileAction=".urlencode("allNew");
-		curl_setopt($this->_resConnection, CURLOPT_URL				, $this->GetConfigField('Host').'preparedownloads.asp');
+		curl_setopt($this->_resConnection, CURLOPT_URL				, "{$this->_oConfig->Host}preparedownloads.asp");
 		curl_setopt($this->_resConnection, CURLOPT_SSL_VERIFYPEER	, FALSE);
 		curl_setopt($this->_resConnection, CURLOPT_SSL_VERIFYHOST	, FALSE);
 		curl_setopt($this->_resConnection, CURLOPT_HEADER			, FALSE);
@@ -191,7 +183,7 @@
 		}
 		
 		// Download the ZIP file
-		curl_setopt($this->_resConnection, CURLOPT_URL				, $this->GetConfigField('Host')."autodownload.asp?token={$this->_strToken}");
+		curl_setopt($this->_resConnection, CURLOPT_URL				, "{$this->_oConfig->Host}autodownload.asp?token={$this->_strToken}");
 		curl_setopt($this->_resConnection, CURLOPT_BINARYTRANSFER	, TRUE);
 		curl_setopt($this->_resConnection, CURLOPT_POST				, FALSE);
 		
@@ -205,7 +197,7 @@
 		$this->_strToken	= NULL;
 		
 		// Return file name, or FALSE on failure
-		$arrFileTypes	= $this->GetConfigField('FileDefine');
+		$arrFileTypes	= $this->_oConfig->FileDefine;
 		$arrFile		= Array();
 		$arrFile['FileType']					= &$arrFileTypes['XML_ARCHIVE'];
 		$arrFile['FileType']['FileImportType']	= 'XML_ARCHIVE';

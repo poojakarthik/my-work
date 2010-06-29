@@ -160,5 +160,20 @@ class Carrier_Module_Config_Set
 	{
 		return new self($mCarrierModule);
 	}
+	
+	public function define($aDefinition)
+	{
+		if (count($this->_aFields) === 0)
+		{
+			foreach ($aDefinition as $sFieldName)
+			{
+				
+			}
+		}
+		else
+		{
+			throw new Exception("Carrier Module Config has already been defined!");
+		}
+	}
 }
 ?>

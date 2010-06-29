@@ -43,59 +43,53 @@
  */
  class CollectionModuleSSH extends CollectionModuleBase
  {
+	const	RESOURCE_TYPE	= RESOURCE_TYPE_FILE_RESOURCE_SSH2;
+	
 	private $_resConnection;
  	
 	//public $intBaseCarrier			= CARRIER_UNITEL;
 	public $intBaseFileType			= RESOURCE_TYPE_FILE_RESOURCE_SSH2;
- 	
- 	//------------------------------------------------------------------------//
-	// __construct
-	//------------------------------------------------------------------------//
-	/**
-	 * __construct()
-	 *
-	 * Constructor for CollectionModuleSSH
-	 *
-	 * Constructor for CollectionModuleSSH
-	 *
-	 * @return		CollectionModuleSSH
-	 *
-	 * @method
-	 */
- 	function __construct($intCarrier)
- 	{
- 		parent::__construct($intCarrier);
- 		
-		//##----------------------------------------------------------------##//
-		// Define Module Configuration and Defaults
-		//##----------------------------------------------------------------##//
-		
-		// Mandatory
- 		$this->_arrModuleConfig['Host']			['Default']		= '';
- 		$this->_arrModuleConfig['Host']			['Type']		= DATA_TYPE_STRING;
- 		$this->_arrModuleConfig['Host']			['Description']	= "SSH Server to connect to";
- 		
- 		$this->_arrModuleConfig['Username']		['Default']		= '';
- 		$this->_arrModuleConfig['Username']		['Type']		= DATA_TYPE_STRING;
- 		$this->_arrModuleConfig['Username']		['Description']	= "SSH Username";
- 		
- 		$this->_arrModuleConfig['Password']		['Default']		= '';
- 		$this->_arrModuleConfig['Password']		['Type']		= DATA_TYPE_STRING;
- 		$this->_arrModuleConfig['Password']		['Description']	= "SSH Password";
- 		
- 		$this->_arrModuleConfig['FileDefine']	['Default']		= Array();
- 		$this->_arrModuleConfig['FileDefine']	['Type']		= DATA_TYPE_ARRAY;
- 		$this->_arrModuleConfig['FileDefine']	['Description']	= "Definitions for where to download files from";
- 		
- 		// Additional
- 		$this->_arrModuleConfig['SFTP']			['Default']		= FALSE;
- 		$this->_arrModuleConfig['SFTP']			['Type']		= DATA_TYPE_BOOLEAN;
- 		$this->_arrModuleConfig['SFTP']			['Description']	= "Enable/Disable SFTP";
- 		
- 		$this->_arrModuleConfig['Port']			['Default']		= 22;
- 		$this->_arrModuleConfig['Port']			['Type']		= DATA_TYPE_INTEGER;
- 		$this->_arrModuleConfig['Port']			['Description']	= "SSH Port";
- 	}
+	
+	public static function getConfigDefinition()
+	{
+		// Values defined in here are DEFAULT values
+		return	array
+				(
+					'Host'	=>		array
+									(
+										'Type'			=> DATA_TYPE_STRING,
+										'Description'	=> 'SSH Server to connect to'
+									),
+					'Username'		=>	array
+									(
+										'Type'			=> DATA_TYPE_STRING,
+										'Description'	=> 'SSH Username'
+									),
+					'Password'		=>	array
+									(
+										'Type'			=> DATA_TYPE_STRING,
+										'Description'	=> 'SSH Password'
+									),
+					'FileDefine'	=>	array
+									(
+										'Value'			=> array(),
+										'Type'			=> DATA_TYPE_STRING,
+										'Description'	=> 'Definitions for where to download files from'
+									),
+					'SFTP'			=>	array
+									(
+										'Value'			=> false,
+										'Type'			=> DATA_TYPE_BOOLEAN,
+										'Description'	=> 'Enable/Disable SFTP'
+									),
+					'Port'			=>	array
+									(
+										'Value'			=> 22,
+										'Type'			=> DATA_TYPE_INTEGER,
+										'Description'	=> 'SSH Port'
+									)
+				);
+	}
  	
  	//------------------------------------------------------------------------//
 	// Connect
@@ -113,11 +107,11 @@
 	 */
  	function Connect()
  	{
-		$strHost		= $this->GetConfigField('Host');
-		$strUsername	= $this->GetConfigField('Username');
-		$strPassword	= $this->GetConfigField('Password');
-		$intPort		= $this->GetConfigField('Port');
-		$bolSFTP		= $this->GetConfigField('SFTP');
+		$strHost		= $this->_oConfig->Host;
+		$strUsername	= $this->_oConfig->Username;
+		$strPassword	= $this->_oConfig->Password;
+		$intPort		= $this->_oConfig->Port;
+		$bolSFTP		= $this->_oConfig->SFTP;
 		
  		// Connect to SSH2 server
  		if ($this->_resConnection = ssh2_connect($strHost, $intPort))
@@ -230,13 +224,13 @@
 	 * Function wrapper for ssh2_exec, with blocking enabled
 	 *
 	 * Function wrapper for ssh2_exec, with blocking enabled
-	 * 
+	 *
 	 * @param	string		$strCommand		The shell command to execute
 	 *
 	 * @return	boolean
 	 *
 	 * @method
-	 */	
+	 */
  	protected function _SSH2Execute($strCommand)
  	{
  		$ptrStream = ssh2_exec($this->_resConnection, $strCommand);
@@ -255,13 +249,13 @@
 	 * Implements is_dir() for SSH2 connections
 	 *
 	 * Implements is_dir() for SSH2 connections
-	 * 
+	 *
 	 * @param	string		$strPath		The path to examine
 	 *
 	 * @return	boolean
 	 *
 	 * @method
-	 */	
+	 */
  	protected function _SSH2IsDir($strPath)
  	{
  		$strOutput = $this->_SSH2Execute("stat $strPath");
@@ -278,13 +272,13 @@
 	 * Implements dir/ls for SSH2 connections
 	 *
 	 * Implements dir/ls for SSH2 connections
-	 * 
+	 *
 	 * @param	string		$strPath		The path to ls
 	 *
 	 * @return	boolean
 	 *
 	 * @method
-	 */	
+	 */
  	protected function _directoryListing($strPath)
  	{
  		$arrFiles	= Array();
@@ -320,7 +314,7 @@
 	 * Gets a full list of all files to download
 	 *
 	 * Gets a full list of all files to download
-	 * 
+	 *
 	 * @return		array							Array of files to download
 	 *
 	 * @method
@@ -328,7 +322,7 @@
 	protected function _GetDownloadPaths()
 	{
 		// Get Path Definitions
-		$arrDefinitions		= $this->GetConfigField('FileDefine');
+		$arrDefinitions		= $this->_oConfig->FileDefine;
 		
 		$arrDownloadPaths	= Array();
 		foreach ($arrDefinitions as $intFileType=>&$arrFileType)

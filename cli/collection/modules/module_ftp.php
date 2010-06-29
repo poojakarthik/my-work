@@ -43,50 +43,41 @@
  */
  class CollectionModuleFTP extends CollectionModuleBase
  {
+	const	RESOURCE_TYPE	= RESOURCE_TYPE_FILE_RESOURCE_FTP;
+	
 	private $_resConnection;
 
 	//public $intBaseCarrier			= CARRIER_UNITEL;
 	public $intBaseFileType			= RESOURCE_TYPE_FILE_RESOURCE_FTP;
-
- 	//------------------------------------------------------------------------//
-	// __construct
-	//------------------------------------------------------------------------//
-	/**
-	 * __construct()
-	 *
-	 * Constructor for CollectionModuleFTP
-	 *
-	 * Constructor for CollectionModuleFTP
-	 *
-	 * @return		CollectionModuleFTP
-	 *
-	 * @method
-	 */
- 	function __construct($intCarrier)
- 	{
- 		parent::__construct($intCarrier);
-
-		//##----------------------------------------------------------------##//
-		// Define Module Configuration and Defaults
-		//##----------------------------------------------------------------##//
-
-		// Mandatory
- 		$this->_arrModuleConfig['Host']			['Default']		= '';
- 		$this->_arrModuleConfig['Host']			['Type']		= DATA_TYPE_STRING;
- 		$this->_arrModuleConfig['Host']			['Description']	= "FTP Server to connect to";
-
- 		$this->_arrModuleConfig['Username']		['Default']		= '';
- 		$this->_arrModuleConfig['Username']		['Type']		= DATA_TYPE_STRING;
- 		$this->_arrModuleConfig['Username']		['Description']	= "FTP Username";
-
- 		$this->_arrModuleConfig['Password']		['Default']		= '';
- 		$this->_arrModuleConfig['Password']		['Type']		= DATA_TYPE_STRING;
- 		$this->_arrModuleConfig['Password']		['Description']	= "FTP Password";
-
- 		$this->_arrModuleConfig['FileDefine']	['Default']		= Array();
- 		$this->_arrModuleConfig['FileDefine']	['Type']		= DATA_TYPE_ARRAY;
- 		$this->_arrModuleConfig['FileDefine']	['Description']	= "Definitions for where to download files from";
- 	}
+	
+	public static function getConfigDefinition()
+	{
+		// Values defined in here are DEFAULT values
+		return	array
+				(
+					'Host'	=>		array
+									(
+										'Type'			=> DATA_TYPE_STRING,
+										'Description'	=> 'FTP Server to connect to'
+									),
+					'Username'		=>	array
+									(
+										'Type'			=> DATA_TYPE_STRING,
+										'Description'	=> 'FTP Username'
+									),
+					'Password'		=>	array
+									(
+										'Type'			=> DATA_TYPE_STRING,
+										'Description'	=> 'FTP Password'
+									),
+					'FileDefine'	=>	array
+									(
+										'Value'			=> array(),
+										'Type'			=> DATA_TYPE_STRING,
+										'Description'	=> 'Definitions for where to download files from'
+									)
+				);
+	}
 
  	//------------------------------------------------------------------------//
 	// Connect
@@ -104,13 +95,13 @@
 	 */
  	function Connect()
  	{
-		$strHost		= $this->GetConfigField('Host');
-		$strUsername	= $this->GetConfigField('Username');
-		$strPassword	= $this->GetConfigField('Password');
+		$strHost				= $this->_oConfig->Host;
+		$strUsername			= $this->_oConfig->Username;
+		$strPassword			= $this->_oConfig->Password;
 
 		// Connect to the Server
 		//CliEcho("Connecting to {$strUsername}@{$strHost}");
-		$this->_resConnection	= ($this->GetConfigField('SSL') === TRUE) ? @ftp_ssl_connect($strHost) : @ftp_connect($strHost);
+		$this->_resConnection	= ($this->_oConfig->SSL === TRUE) ? @ftp_ssl_connect($strHost) : @ftp_connect($strHost);
 		if ($this->_resConnection)
 		{
 			// Log in to the Server
@@ -220,7 +211,7 @@
 	protected function _GetDownloadPaths()
 	{
 		// Get Path Definitions
-		$arrDefinitions		= $this->GetConfigField('FileDefine');
+		$arrDefinitions		= $this->_oConfig->FileDefine;
 
 		//Debug($arrDefinitions);
 		$strWorkingDir	= ftp_pwd($this->_resConnection);

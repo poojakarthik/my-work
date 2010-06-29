@@ -3,11 +3,13 @@
  * CollectionModuleFOpenSFTP
  *
  * SFTP (File Wrapper) Collection Module
- * 
+ *
  * @class	CollectionModuleFOpenSFTP
  */
  class CollectionModuleFOpenSFTP extends CollectionModuleFOpen
  {
+	const	RESOURCE_TYPE	= RESOURCE_TYPE_FILE_RESOURCE_SFTP;
+	
 	protected	$_resConnection;
 	protected	$_strWrapper;
 	
@@ -15,46 +17,45 @@
 	
 	const	SSH_KEY_PATH			= '/home/ybs-collection/.ssh/';
 	
-	/**
-	 * __construct()
-	 *
-	 * Constructor for CollectionModuleFOpenSFTP
-	 *
-	 * @method
-	 */
- 	function __construct($intCarrier)
- 	{
- 		parent::__construct($intCarrier);
- 		
-		//##----------------------------------------------------------------##//
-		// Define Module Configuration and Defaults
-		//##----------------------------------------------------------------##//
-		
-		// Mandatory
- 		$this->_arrModuleConfig['Host']						['Default']		= '';
- 		$this->_arrModuleConfig['Host']						['Type']		= DATA_TYPE_STRING;
- 		$this->_arrModuleConfig['Host']						['Description']	= "SFTP Server to connect to";
- 		
- 		$this->_arrModuleConfig['Username']					['Default']		= '';
- 		$this->_arrModuleConfig['Username']					['Type']		= DATA_TYPE_STRING;
- 		$this->_arrModuleConfig['Username']					['Description']	= "SFTP Username";
- 		
- 		$this->_arrModuleConfig['Password']					['Default']		= '';
- 		$this->_arrModuleConfig['Password']					['Type']		= DATA_TYPE_STRING;
- 		$this->_arrModuleConfig['Password']					['Description']	= "SFTP Password";
- 		
- 		$this->_arrModuleConfig['UsePublicKey']				['Default']		= '';
- 		$this->_arrModuleConfig['UsePublicKey']				['Type']		= DATA_TYPE_BOOLEAN;
- 		$this->_arrModuleConfig['UsePublicKey']				['Description']	= "Use Public/Private Key";
- 		
- 		$this->_arrModuleConfig['KeyEncryptionAlgorithm']	['Default']		= 'rsa';
- 		$this->_arrModuleConfig['KeyEncryptionAlgorithm']	['Type']		= DATA_TYPE_STRING;
- 		$this->_arrModuleConfig['KeyEncryptionAlgorithm']	['Description']	= "Key Encryption Algortihm (rsa/dsa)";
- 		
- 		$this->_arrModuleConfig['FileDefine']				['Default']		= array();
- 		$this->_arrModuleConfig['FileDefine']				['Type']		= DATA_TYPE_ARRAY;
- 		$this->_arrModuleConfig['FileDefine']				['Description']	= "Definitions for where to download files from";
- 	}
+	public static function getConfigDefinition()
+	{
+		// Values defined in here are DEFAULT values
+		return	array
+				(
+					'Host'						=>	array
+													(
+														'Type'			=> DATA_TYPE_STRING,
+														'Description'	=> 'SFTP Server to connect to'
+													),
+					'Username'					=>	array
+													(
+														'Type'			=> DATA_TYPE_STRING,
+														'Description'	=> 'SFTP Username'
+													),
+					'Password'					=>	array
+													(
+														'Type'			=> DATA_TYPE_STRING,
+														'Description'	=> 'SFTP Password'
+													),
+					'FileDefine'				=>	array
+													(
+														'Value'			=> array(),
+														'Type'			=> DATA_TYPE_STRING,
+														'Description'	=> 'Definitions for where to download files from'
+													),
+					'UsePublicKey'				=>	array
+													(
+														'Value'			=> false,
+														'Type'			=> DATA_TYPE_BOOLEAN,
+														'Description'	=> 'Use Public/Private Key'
+													),
+					'KeyEncryptionAlgorithm'	=>	array
+													(
+														'Type'			=> DATA_TYPE_STRING,
+														'Description'	=> 'Key Encryption Algortihm (rsa/dsa)'
+													)
+				);
+	}
  	
 	/**
 	 * Connect()
@@ -67,14 +68,14 @@
 	 */
 	function Connect()
 	{
-		$strHost				= $this->GetConfigField('Host');
-		$strUsername			= $this->GetConfigField('Username');
-		$strPassword			= $this->GetConfigField('Password');
-		$bolUsePrivateKey		= $this->GetConfigField('UsePublicKey');
-		$strEncryptionAlgorithm	= strtolower(trim($this->GetConfigField('KeyEncryptionAlgorithm')));
+		$strHost				= $this->_oConfig->Host;
+		$strUsername			= $this->_oConfig->Username;
+		$strPassword			= $this->_oConfig->Password;
+		$bolUsePrivateKey		= $this->_oConfig->UsePublicKey;
+		$strEncryptionAlgorithm	= strtolower(trim($this->_oConfig->KeyEncryptionAlgorithm));
 		$strEncryptionAlgorithm	= (in_array($strEncryptionAlgorithm, array('rsa', 'dsa'))) ? $strEncryptionAlgorithm : $this->_arrModuleConfig['KeyEncryptionAlgorithm']['Default'];
 		
-		switch (strtolower(trim($this->GetConfigField('KeyEncryptionAlgorithm'))))
+		switch (strtolower(trim($this->_oConfig->KeyEncryptionAlgorithm)))
 		{
 			case 'rsa':
 				$strEncryptionAlgorithmPHP	= 'rsa';
