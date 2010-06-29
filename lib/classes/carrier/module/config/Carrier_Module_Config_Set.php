@@ -136,6 +136,7 @@ class Carrier_Module_Config_Set
 	{
 		if (array_key_exists($sProperty, $this->_aFields))
 		{
+			Log::getLog()->log("__get()'ing property '{}' for Carrier Module {$this->_oCarrierModule->Id}");
 			return $this->_parseField($sProperty);
 		}
 	}
