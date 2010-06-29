@@ -87,7 +87,7 @@ class Carrier_Module_Config extends ORM_Cached
 		{
 			// Perform Cast
 			$mRawValue	= $mValue;
-			switch ($this->Type)
+			switch ((int)$this->Type)
 			{
 				case DATA_TYPE_INTEGER:
 					$mValue	= (int)$mValue;
@@ -111,7 +111,7 @@ class Carrier_Module_Config extends ORM_Cached
 					$mValue	= (string)$mValue;
 					break;
 			}
-			Log::getLog()->log("Casting .{$sProperty} from '{$mRawValue}' to Integer '".print_r($mValue, true)."'");
+			Log::getLog()->log("Casting {$this->CarrierModule}.{$sProperty} from '{$mRawValue}' to ".GetConstantName($this->Type, 'data_type')." '".print_r($mValue, true)."'");
 		}
 		
 		return $mValue;
