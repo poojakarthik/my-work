@@ -17,7 +17,7 @@ class Flex_Rollout_Version_000219 extends Flex_Rollout_Version
 		$aOperations	=	array();
 		
 		// Check to see if VNS Solutions has already been added
-		$oResult	= Data_Source::get($aOperation['sDataSourceName'])->query("SELECT Id FROM Carrier WHERE cosnt_name = 'CARRIER_VNS_SOLUTIONS'");
+		$oResult	= Data_Source::get(FLEX_DATABASE_CONNECTION_ADMIN)->query("SELECT Id FROM Carrier WHERE const_name = 'CARRIER_VNS_SOLUTIONS'");
 		if (PEAR::isError($oResult))
 		{
 			throw new Exception(__CLASS__ . " Failed to detect if VNS Solutions were already defined as a Carrier. " . $oResult->getMessage() . " (DB Error: " . $oResult->getUserInfo() . ")");
