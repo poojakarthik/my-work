@@ -95,7 +95,9 @@ abstract class ORM
 		foreach ($arrProperties as $strName=>$mixValue)
 		{
 			// Load from the Database
-			$this->{$strName}	= $mixValue;
+			// We want to access _arrProperties directly so we can set the raw value, rather than using __set() which can be overridden
+			//$this->{$strName}	= $mixValue;
+			$this->_arrProperties[$strName]	= $mixValue;
 		}
 	}
 	
