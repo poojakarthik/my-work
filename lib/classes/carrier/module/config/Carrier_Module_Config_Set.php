@@ -65,7 +65,7 @@ class Carrier_Module_Config_Set
 			switch ($sContext)
 			{
 				case 'config':
-					$sReplace	= $this->$sField;
+					$sReplace	= $this->$sAction;
 					break;
 					
 				case 'function':
