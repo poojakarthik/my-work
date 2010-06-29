@@ -71,7 +71,7 @@ class ApplicationCollection extends ApplicationBaseClass
  		$this->_selCarrierModules->Execute(Array('Type' => MODULE_TYPE_COLLECTION));
  		while ($arrModule = $this->_selCarrierModules->Fetch())
  		{
- 			$this->_arrModules[$arrModule['Carrier']][$arrModule['Id']]	= new $arrModule['Module']($arrModule['Carrier']);
+ 			$this->_arrModules[$arrModule['Carrier']][$arrModule['Id']]	= new $arrModule['Module']($arrModule['Id']);
  			CliEcho("\t + ".GetConstantDescription($arrModule['Carrier'], 'Carrier')." : {$arrModule['Description']}");
  		}
 	}
