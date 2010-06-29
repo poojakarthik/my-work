@@ -83,7 +83,7 @@ class Carrier_Module_Config extends ORM_Cached
 	{
 		$mValue	= parent::__get($sProperty);
 		
-		if ($this->_getFieldName($sProperty) === $this->_getFieldName('Value'))
+		if (strtolower($sProperty) === 'value')
 		{
 			// Perform Cast
 			switch ($this->Type)
@@ -117,7 +117,7 @@ class Carrier_Module_Config extends ORM_Cached
 	
 	public function __set($sProperty, $mValue)
 	{
-		if ($this->_getFieldName($sProperty) === $this->_getFieldName('Value'))
+		if (strtolower($sProperty) === 'value')
 		{
 			// Perform Cast
 			switch ($this->Type)
