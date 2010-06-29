@@ -86,6 +86,7 @@ class Carrier_Module_Config extends ORM_Cached
 		if (strtolower($sProperty) === 'value')
 		{
 			// Perform Cast
+			$mRawValue	= $mValue;
 			switch ($this->Type)
 			{
 				case DATA_TYPE_INTEGER:
@@ -110,6 +111,7 @@ class Carrier_Module_Config extends ORM_Cached
 					$mValue	= (string)$mValue;
 					break;
 			}
+			Log::getLog()->log("Casting .{$sProperty} from '{$mRawValue}' to Integer '".print_r($mValue, true)."'");
 		}
 		
 		return $mValue;
