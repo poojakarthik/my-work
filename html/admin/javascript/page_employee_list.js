@@ -14,6 +14,8 @@ var Page_Employee_List = Class.create(
 									this.oDataset
 								);
 		
+		this.oDataset.setSortingFields({UserName: 'ASC'});
+		
 		// Create the page HTML
 		var sButtonPathBase	= '../admin/img/template/resultset_';
 		this.oContentDiv 	= $T.div(
@@ -310,7 +312,7 @@ var Page_Employee_List = Class.create(
 				"reflex_control_tree_node",
 				"reflex_control_tree_node_root",
 				"reflex_control_tree_node_checkable",
-				"date_time_picker_dynamic",
+				'component_date_picker',
 				"control_field",
 				"control_field_text",
 				"control_field_password",
