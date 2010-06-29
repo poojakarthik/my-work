@@ -8,7 +8,10 @@
 //----------------------------------------------------------------------------//
 // rating application
 //----------------------------------------------------------------------------//
-require_once("../../flex.require.php");
+require_once('../../lib/classes/Flex.php');
+Flex::load();
+
+//require_once("../../flex.require.php");
 $arrConfig = LoadApplication();
 
 require_once("Archive/Tar.php");
