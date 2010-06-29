@@ -130,7 +130,7 @@ class Carrier_Module_Config_Set
 	{
 		if (array_key_exists($sProperty, $this->_aFields))
 		{
-			Log::getLog()->log("_getPropertyRaw()'ing property '{$sProperty}' for Carrier Module {$this->_oCarrierModule->Id}");
+			Log::getLog()->log("_getPropertyRaw()'ing property '{$sProperty}' for Carrier Module {$this->_oCarrierModule->Id} as '{$this->_aFields[$sProperty]->Value}'");
 			return $this->_aFields[$sProperty]->Value;
 		}
 	}
@@ -139,7 +139,7 @@ class Carrier_Module_Config_Set
 	{
 		if (array_key_exists($sProperty, $this->_aFields))
 		{
-			Log::getLog()->log("__get()'ing property '{$sProperty}' for Carrier Module {$this->_oCarrierModule->Id}");
+			Log::getLog()->log("__get()'ing property '{$sProperty}' for Carrier Module {$this->_oCarrierModule->Id} as '".$this->_parseField($sProperty)."'");
 			return $this->_parseField($sProperty);
 		}
 	}
