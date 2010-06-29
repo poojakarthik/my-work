@@ -136,7 +136,7 @@ class Carrier_Module_Config_Set
 	{
 		if (array_key_exists($sProperty, $this->_aFields))
 		{
-			return $this->_parseField($this->_aFields[$sProperty]->Value);
+			return $this->_parseField($sProperty);
 		}
 	}
 	
