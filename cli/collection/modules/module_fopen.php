@@ -111,7 +111,7 @@
 	 */
 	protected function _getDownloadPaths()
 	{
-		//CliEcho("\nGetting Download Paths...");
+		CliEcho("\nGetting Download Paths...");
 		
 		// Get Path Definitions
 		$arrDefinitions		= $this->_oConfig->FileDefine;
@@ -125,6 +125,9 @@
 		{
 			CliEcho("Error retrieving download paths: ".$eException->getMessage());
 		}
+		
+		CliEcho("Final Download Paths:");
+		CliEcho(print_r($arrDownloadPaths, true));
 		
 		return $arrDownloadPaths;
 	}
