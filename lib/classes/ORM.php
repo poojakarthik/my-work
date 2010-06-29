@@ -95,9 +95,9 @@ abstract class ORM
 		foreach ($arrProperties as $strName=>$mixValue)
 		{
 			// Load from the Database
-			// We want to access _arrProperties directly so we can set the raw value, rather than using __set() which can be overridden
+			// Use ___set() instead of __set(), because we want to ignore any overridden __set() methods and set the raw data directly
 			//$this->{$strName}	= $mixValue;
-			$this->_arrProperties[$strName]	= $mixValue;
+			$this->___set($strName, $mixValue);
 		}
 	}
 	
@@ -181,6 +181,12 @@ abstract class ORM
 	}
 
 	protected function __set($strName, $mxdValue)
+	{
+		$this->___set($strName, $mxdValue);
+	}
+	
+	// ___set() is essentially a protected method that allows us to bypass any overridden __set() methods if needed
+	final protected function ___set()
 	{
 		$strName	= $this->_getFieldName($strName);
 		
