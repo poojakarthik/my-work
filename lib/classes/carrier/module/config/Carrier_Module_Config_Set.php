@@ -165,9 +165,38 @@ class Carrier_Module_Config_Set
 	{
 		if (count($this->_aFields) === 0)
 		{
-			foreach ($aDefinition as $sFieldName)
+			if (DataAccess::getDataAccess()->TransactionStart())
 			{
-				
+				try
+				{
+					foreach ($aDefinition as $sFieldName=>$aField)
+					{
+						$oCarrierModuleConfig	= new Carrier_Module_Config();
+						
+						$oCarrierModuleConfig->CarrierModule	= $this->_oCarrierModule->Id;
+						$oCarrierModuleConfig->Name				= $sFieldName;
+						$oCarrierModuleConfig->Description		= $aField['Description'];
+						$oCarrierModuleConfig->Type				= (isset($aField['Type'])) ? $aField['Type'] : DATA_TYPE_STRING;
+						
+						$this->_aFields[$sFieldName]	= $oCarrierModuleConfig;
+						
+						$this->$sFieldName			= (isset($aField['Value'])) ? $aField['Value'] : null;
+						
+					}
+					
+					$this->save();
+					
+					DataAccess::getDataAccess()->TransactionCommit();
+				}
+				catch (Exception $oException)
+				{
+					DataAccess::getDataAccess()->TransactionRollback();
+					throw $oException;
+				}
+			}
+			else
+			{
+				throw new Exception("Unable to start a transaction");
 			}
 		}
 		else
