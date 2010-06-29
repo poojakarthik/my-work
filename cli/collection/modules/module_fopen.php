@@ -82,9 +82,9 @@
 			$arrCurrentFile['LocalPath']	= $strDestination.ltrim(basename($arrCurrentFile['RemotePath']), '/');
 			
 			// Attempt to download this file
-			if ($strFileContents = @file_get_contents($this->_strWrapper.$arrCurrentFile['RemotePath']))
+			if (($strFileContents = @file_get_contents($this->_strWrapper.$arrCurrentFile['RemotePath'])) !== false)
 			{
-				if (@file_put_contents($arrCurrentFile['LocalPath'], $strFileContents))
+				if (@file_put_contents($arrCurrentFile['LocalPath'], $strFileContents) !== false)
 				{
 					return $arrCurrentFile;
 				}
