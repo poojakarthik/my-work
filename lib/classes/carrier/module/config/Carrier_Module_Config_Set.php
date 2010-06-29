@@ -54,57 +54,63 @@ class Carrier_Module_Config_Set
 	{
 		//Log::getLog()->log("_parseField()'ing property '{$sField}' for Carrier Module {$this->_oCarrierModule->Id}");
 		
-		$aPlaceholders	= array();
-		$sValue			= $this->_getPropertyRaw($sField);
-		preg_match_all("/<(?P<context>[A-Z]+)::(?P<action>[A-Za-z]+)>/i", $sValue, $aPlaceholders, PREG_SET_ORDER);
+		$mValue	= $this->_getPropertyRaw($sField);
 		
-		foreach ($aPlaceholders as $aPlaceholderSet)
+		if ($this->_aFields[$sField]->Type === DATA_TYPE_STRING)
 		{
-			$sTag		= $aPlaceholderSet[0];
-			$sContext	= strtolower($aPlaceholderSet['context']);
-			$sAction	= strtolower($aPlaceholderSet['action']);
+			$mValue	= (string)$mValue;
 			
-			$sReplace	= null;
-			switch ($sContext)
-			{
-				case 'config':
-					$sReplace	= $this->$sAction;
-					break;
-					
-				case 'function':
-					switch ($sAction)
-					{
-						case 'datetime':
-							$sReplace	= date("Y-m-d H:i:s");
-							break;
-						
-						case 'date':
-							$sReplace	= date("Y-m-d");
-							break;
-					}
-					break;
-					
-				case 'property':
-					switch ($sAction)
-					{
-						case 'customergroup':
-							$sReplace	= ($this->_oCarrierModule->customer_group) ? Customer_Group::getForId($this->_oCarrierModule->customer_group)->externalName : '';
-							break;
-						
-						case 'carrier':
-							$sReplace	= ($this->_oCarrierModule->Carrier) ? Carrier::getForId($this->_oCarrierModule->Carrier)->Name : '';
-							break;
-					}
-					break;
-			}
+			$aPlaceholders	= array();
+			preg_match_all("/<(?P<context>[A-Z]+)::(?P<action>[A-Za-z]+)>/i", $mValue, $aPlaceholders, PREG_SET_ORDER);
 			
-			if (isset($sReplace))
+			foreach ($aPlaceholders as $aPlaceholderSet)
 			{
-				str_replace($sTag, $sReplace, $sValue);
+				$sTag		= $aPlaceholderSet[0];
+				$sContext	= strtolower($aPlaceholderSet['context']);
+				$sAction	= strtolower($aPlaceholderSet['action']);
+				
+				$sReplace	= null;
+				switch ($sContext)
+				{
+					case 'config':
+						$sReplace	= $this->$sAction;
+						break;
+						
+					case 'function':
+						switch ($sAction)
+						{
+							case 'datetime':
+								$sReplace	= date("Y-m-d H:i:s");
+								break;
+							
+							case 'date':
+								$sReplace	= date("Y-m-d");
+								break;
+						}
+						break;
+						
+					case 'property':
+						switch ($sAction)
+						{
+							case 'customergroup':
+								$sReplace	= ($this->_oCarrierModule->customer_group) ? Customer_Group::getForId($this->_oCarrierModule->customer_group)->externalName : '';
+								break;
+							
+							case 'carrier':
+								$sReplace	= ($this->_oCarrierModule->Carrier) ? Carrier::getForId($this->_oCarrierModule->Carrier)->Name : '';
+								break;
+						}
+						break;
+				}
+				
+				if (isset($sReplace))
+				{
+					str_replace($sTag, $sReplace, $mValue);
+				}
 			}
 		}
 		
-		return $sValue;
+		return $mValue;
 	}
 	
 	public function toArray()
