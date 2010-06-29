@@ -55,7 +55,8 @@ class Carrier_Module_Config_Set
 		Log::getLog()->log("_parseField()'ing property '{$sField}' for Carrier Module {$this->_oCarrierModule->Id}");
 		
 		$aPlaceholders	= array();
-		preg_match_all("/<(?P<context>[A-Z]+)::(?P<action>[A-Za-z]+)>/i", $this->_getPropertyRaw($sField), $aPlaceholders, PREG_SET_ORDER);
+		$sValue			= $this->_getPropertyRaw($sField);
+		preg_match_all("/<(?P<context>[A-Z]+)::(?P<action>[A-Za-z]+)>/i", $sValue, $aPlaceholders, PREG_SET_ORDER);
 		
 		foreach ($aPlaceholders as $aPlaceholderSet)
 		{
@@ -99,11 +100,11 @@ class Carrier_Module_Config_Set
 			
 			if (isset($sReplace))
 			{
-				str_replace($sTag, $sReplace, $sField);
+				str_replace($sTag, $sReplace, $sValue);
 			}
 		}
 		
-		return $sField;
+		return $sValue;
 	}
 	
 	public function toArray()
