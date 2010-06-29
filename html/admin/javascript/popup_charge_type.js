@@ -34,7 +34,7 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 														this._sChargeModel + ' Code :'
 												),
 												$T.td(
-													$T.input({type:'text'})
+													$T.input({type: 'text'})
 												)
 											),
 											$T.tr(
@@ -42,7 +42,7 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 													'Description :'	
 												),
 												$T.td(
-													$T.input({type:'text'})
+													$T.input({type: 'text'})
 												)
 											),
 											$T.tr(
@@ -50,7 +50,7 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 													'Amount ($):'	
 												),
 												$T.td(
-													$T.input({type:'text', value: '0.00'})
+													$T.input({type: 'text', value: '0.00'})
 												)
 											),
 											$T.tr(
@@ -58,13 +58,16 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 													'Nature :'
 												),
 												$T.td(
-													$T.select(
-														$T.option({value:'DR'},
+													$T.select({class: 'popup-charge-type-nature'},
+														$T.option({value: 'DR'},
 															'Debit'
 														),
-														$T.option({value:'CR'},
+														$T.option({value: 'CR'},
 															'Credit'
 														)
+													),
+													$T.span({class: 'popup-charge-type-nature'},
+														'Credit'
 													)
 												)
 											),
@@ -99,16 +102,34 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 								)
 							);
 		
+		// Treat the nature option differently depending on the charge model
+		var oNatureSelect	= oContent.select('select.popup-charge-type-nature').first();
+		var oNatureSpan		= oContent.select('span.popup-charge-type-nature').first();
+		switch (this._iChargeModel)
+		{
+			case $CONSTANT.CHARGE_MODEL_CHARGE:
+				oNatureSelect.show();
+				oNatureSpan.hide();
+				break;
+			case $CONSTANT.CHARGE_MODEL_ADJUSTMENT:
+				oNatureSelect.hide();
+				oNatureSpan.show();
+				
+				// Select 'Credit'
+				oNatureSelect.value	= 'CR';
+				break;
+		}
+		
 		// Set the save buttons event handler
-		var oSaveButton	= oContent.select( 'button' ).first();
+		var oSaveButton	= oContent.select('button').first();
 		oSaveButton.observe('click', this._saveChanges.bind(this));
 		
 		// Set the cancel buttons event handler
-		var oCancelButton = oContent.select( 'button' ).last();
+		var oCancelButton = oContent.select('button').last();
 		oCancelButton.observe('click', this._showCancelConfirmation.bind(this));
 		
 		// Set the fixation checkbox event
-		var oFixationCheckbox = oContent.select( 'tr.charge-type-checkbox input[type="checkbox"]' ).first();
+		var oFixationCheckbox = oContent.select('tr.charge-type-checkbox input[type="checkbox"]').first();
 		oFixationCheckbox.observe('click', this._updateFixationLabel.bind(this, oFixationCheckbox));
 			
 		// Setup validation handlers
@@ -135,9 +156,9 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 		
 		// Inputs
 		this.hInputs[this._sChargeModel + ' Code'].validate 	= 	Popup_Charge_Type._validateInput.bind(
-														this.hInputs[this._sChargeModel + ' Code'], 	
-														Reflex_Validation.Exception.nonEmptyString
-													);
+																		this.hInputs[this._sChargeModel + ' Code'], 	
+																		Reflex_Validation.Exception.nonEmptyString
+																	);
 		this.hInputs['Description'].validate 	= 	Popup_Charge_Type._validateInput.bind(
 														this.hInputs['Description'], 	
 														Reflex_Validation.Exception.nonEmptyString

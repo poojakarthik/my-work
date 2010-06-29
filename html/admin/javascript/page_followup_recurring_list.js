@@ -951,7 +951,9 @@ Page_FollowUp_Recurring_List.FILTER_FIELDS[Page_FollowUp_Recurring_List.FILTER_F
 																																						sLabel		: 'Start Date',
 																																						mEditable	: true,
 																																						fnValidate	: Page_FollowUp_Recurring_List._validateDateRangeValue,
-																																						sDateFormat	: 'Y-m-d'
+																																						sDateFormat	: 'Y-m-d',
+																																						iYearStart	: 2010,
+																																						iYearEnd	: oNow.getFullYear() + 5
 																																					}
 																																}
 																										};
@@ -971,7 +973,9 @@ Page_FollowUp_Recurring_List.FILTER_FIELDS[Page_FollowUp_Recurring_List.FILTER_F
 																																					sLabel		: 'End Date',
 																																					mEditable	: true,
 																																					fnValidate	: Page_FollowUp_Recurring_List._validateDateRangeValue,
-																																					sDateFormat	: 'Y-m-d'
+																																					sDateFormat	: 'Y-m-d',
+																																					iYearStart	: 2010,
+																																					iYearEnd	: oNow.getFullYear() + 5
 																																				}
 																															}
 																									};
@@ -991,7 +995,9 @@ Page_FollowUp_Recurring_List.FILTER_FIELDS[Page_FollowUp_Recurring_List.FILTER_F
 																																						sLabel		: 'Last Actioned',
 																																						mEditable	: true,
 																																						fnValidate	: Page_FollowUp_Recurring_List._validateDateRangeValue,
-																																						sDateFormat	: 'Y-m-d'
+																																						sDateFormat	: 'Y-m-d',
+																																						iYearStart	: 2010,
+																																						iYearEnd	: oNow.getFullYear() + 5
 																																					}
 																																}
 																										};

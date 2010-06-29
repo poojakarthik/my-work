@@ -3,7 +3,7 @@ var FollowUp_Link	= Class.create
 ({
 	initialize	: function()
 	{
-		this._oLinkDiv								= document.body.select('div#followup-link').first();
+		this._oLinkDiv								= document.body.select("div#followup-link").first();
 		this._oCountSpan							= null;
 		this._bLinkFlashEnabled						= false;
 		this._bRefreshOverdueCountTimeoutStarted	= false;
@@ -461,5 +461,4 @@ FollowUp_Link.windowLoaded	= function()
 
 var FollowUpLink	= null;
 Event.observe(window, 'load', FollowUp_Link.windowLoaded);
-
 

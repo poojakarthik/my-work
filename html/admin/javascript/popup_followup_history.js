@@ -296,7 +296,7 @@ Popup_FollowUp_History.CHANGE_FIELDS_TO_IGNORE	= 	{
 														'assigned_employee_name'	: true
 													};
 
-Popup_FollowUp_History.DATE_FORMAT			= 'l jS M Y g:i A';
+Popup_FollowUp_History.DATE_FORMAT			= 'l jS M, Y, g:i A';
 Popup_FollowUp_History.DATE_FORMAT_SHORT	= 'd/m/y g:i A';
 Popup_FollowUp_History.NO_END_DATE			= '9999-12-31 23:59:59';
 

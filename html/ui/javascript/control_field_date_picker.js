@@ -1,7 +1,7 @@
 
 var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field, 
 {
-	initialize	: function($super, sLabel, sLabelSeparator, sDateFormat, bTimePicker)
+	initialize	: function($super, sLabel, sLabelSeparator, sDateFormat, bTimePicker, iYearStart, iYearEnd)
 	{
 		// Parent
 		$super(sLabel, sLabelSeparator);
@@ -39,8 +39,8 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		this._oDatePicker			= 	new Component_Date_Picker(
 											new Date(), 
 											(bTimePicker ? true : false), 
-											Control_Field_Date_Picker.YEAR_START, 
-											Control_Field_Date_Picker.YEAR_END,
+											(iYearStart ? iYearStart : Control_Field_Date_Picker.YEAR_START), 
+											(iYearEnd ? iYearEnd : Control_Field_Date_Picker.YEAR_END),
 											this._sDateFormat, 
 											this._datePickerValueChange.bind(this)
 										);

@@ -455,7 +455,9 @@ Control_Field.factory	= function(sType, oDefinition)
 									oDefinition.sLabel, 
 									null, 
 									oDefinition.sDateFormat, 
-									oDefinition.bTimePicker
+									oDefinition.bTimePicker,
+									oDefinition.iYearStart,
+									oDefinition.iYearEnd
 								);
 			break;
 			

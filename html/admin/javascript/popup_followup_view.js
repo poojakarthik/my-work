@@ -835,7 +835,7 @@ Popup_FollowUp_View.DETAILS_TICKET_IMAGE_SOURCE					= Popup_FollowUp_View.TYPE_T
 Popup_FollowUp_View.COMPLETE_IMAGE_SOURCE						= '../admin/img/template/approve.png';
 Popup_FollowUp_View.DISMISS_IMAGE_SOURCE						= '../admin/img/template/decline.png';
 
-Popup_FollowUp_View.DATE_FORMAT									= 'l jS M Y g:i A';
+Popup_FollowUp_View.DATE_FORMAT									= 'l jS M, Y, g:i A';
 Popup_FollowUp_View.DATE_FORMAT_SHORT							= 'd/m/y g:i A';
 
 Popup_FollowUp_View.NO_END_DATE									= '9999-12-31 23:59:59';

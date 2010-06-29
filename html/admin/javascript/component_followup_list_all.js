@@ -942,7 +942,9 @@ Component_FollowUp_List_All.FILTER_FIELDS[Component_FollowUp_List_All.FILTER_FIE
 																																						mEditable	: true,
 																																						mMandatory	: false,
 																																						fnValidate	: Component_FollowUp_List_All._validateDueDate,
-																																						sDateFormat	: 'Y-m-d'
+																																						sDateFormat	: 'Y-m-d',
+																																						iYearStart	: 2010,
+																																						iYearEnd	: oNow.getFullYear() + 5
 																																					}
 																																}
 																										};
