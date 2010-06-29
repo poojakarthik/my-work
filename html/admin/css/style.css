@@ -485,7 +485,7 @@ div.reflex-popup {
 	-moz-box-shadow			: 0 0 20px;
 	
 	-webkit-border-radius	: 4px;
-	-webkit-box-shadow		: 0 0 20px;
+	-webkit-box-shadow		: 0 0 20px #000;
 	
 }
 
@@ -4590,7 +4590,7 @@ div.filter-overlay-options
 	-moz-border-radius	: 0.25em;
 	
 	-moz-box-shadow		: 0 0 20px;
-	-webkit-box-shadow	: 0 0 20px;
+	-webkit-box-shadow	: 0 0 20px #000;
 	
 	-webkit-box-sizing		: border-box;
 	-webkit-border-radius	: 0.25em;
