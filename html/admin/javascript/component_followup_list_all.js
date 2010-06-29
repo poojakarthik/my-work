@@ -487,7 +487,7 @@ var Component_FollowUp_List_All = Class.create(
 		oUL.appendChild($T.li(oView));
 		
 		var oRecurring	= 	$T.a({href: 'reflex.php/FollowUp/ManageRecurring/' + (this._iEmployeeId ? this._iEmployeeId : '')},
-								$T.img({src: Component_FollowUp_List_All.ACTION_RECURRING_IMAGE_SOURCE, alt: 'Part of a Recurring Follow-Up', title: 'View Recurring Follow-Ups'})
+								$T.img({src: Component_FollowUp_List_All.ACTION_RECURRING_IMAGE_SOURCE, alt: 'Part of a Recurring Follow-Up', title: 'Part of a Recurring Follow-Up'})
 							);
 		oUL.appendChild($T.li(oRecurring));
 		
