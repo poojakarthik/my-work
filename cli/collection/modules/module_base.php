@@ -177,7 +177,7 @@
 		static	$selFileDownloadUnique;
 		$selFileDownloadUnique	= ($selFileDownloadUnique) ? $selFileDownloadUnique : new StatementSelect("FileDownload", "Id", "Carrier = <carrier_id> AND FileName = <filename>", null, 1);
 		
-		$mixResult	= $selFileDownloadUnique->Execute(array('carrier_id'=>$this->GetCarrier(), 'filename'=>$strFilename));
+		$mixResult	= $selFileDownloadUnique->Execute(array('carrier_id'=>$this->_oCarrierModule->Carrier, 'filename'=>$strFilename));
 		if ($mixResult === false)
 		{
 			throw new Exception($selFileDownloadUnique->Error());
