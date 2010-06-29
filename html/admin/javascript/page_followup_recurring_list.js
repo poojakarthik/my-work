@@ -917,9 +917,9 @@ Page_FollowUp_Recurring_List.formatDateTimeFilterValue	= function(sDateTime)
 };
 
 // Filter Control field definitions
-var oNow										= new Date();
-Page_FollowUp_Recurring_List.YEAR_MINIMUM		= oNow.getFullYear();
-Page_FollowUp_Recurring_List.YEAR_MAXIMUM		= Page_FollowUp_Recurring_List.YEAR_MINIMUM + 10;
+var oNow									= new Date();
+Page_FollowUp_Recurring_List.YEAR_MINIMUM	= 2010;
+Page_FollowUp_Recurring_List.YEAR_MAXIMUM	= Page_FollowUp_Recurring_List.YEAR_MINIMUM + 5;
 
 Page_FollowUp_Recurring_List.FILTER_FIELDS	= {};
 Page_FollowUp_Recurring_List.FILTER_FIELDS[Page_FollowUp_Recurring_List.FILTER_FIELD_OWNER]		= 	{
@@ -952,8 +952,8 @@ Page_FollowUp_Recurring_List.FILTER_FIELDS[Page_FollowUp_Recurring_List.FILTER_F
 																																						mEditable	: true,
 																																						fnValidate	: Page_FollowUp_Recurring_List._validateDateRangeValue,
 																																						sDateFormat	: 'Y-m-d',
-																																						iYearStart	: 2010,
-																																						iYearEnd	: oNow.getFullYear() + 5
+																																						iYearStart	: Page_FollowUp_Recurring_List.YEAR_MINIMUM,
+																																						iYearEnd	: Page_FollowUp_Recurring_List.YEAR_MAXIMUM
 																																					}
 																																}
 																										};
@@ -974,8 +974,8 @@ Page_FollowUp_Recurring_List.FILTER_FIELDS[Page_FollowUp_Recurring_List.FILTER_F
 																																					mEditable	: true,
 																																					fnValidate	: Page_FollowUp_Recurring_List._validateDateRangeValue,
 																																					sDateFormat	: 'Y-m-d',
-																																					iYearStart	: 2010,
-																																					iYearEnd	: oNow.getFullYear() + 5
+																																					iYearStart	: Page_FollowUp_Recurring_List.YEAR_MINIMUM,
+																																					iYearEnd	: Page_FollowUp_Recurring_List.YEAR_MAXIMUM
 																																				}
 																															}
 																									};
@@ -996,8 +996,8 @@ Page_FollowUp_Recurring_List.FILTER_FIELDS[Page_FollowUp_Recurring_List.FILTER_F
 																																						mEditable	: true,
 																																						fnValidate	: Page_FollowUp_Recurring_List._validateDateRangeValue,
 																																						sDateFormat	: 'Y-m-d',
-																																						iYearStart	: 2010,
-																																						iYearEnd	: oNow.getFullYear() + 5
+																																						iYearStart	: Page_FollowUp_Recurring_List.YEAR_MINIMUM,
+																																						iYearEnd	: Page_FollowUp_Recurring_List.YEAR_MAXIMUM
 																																					}
 																																}
 																										};

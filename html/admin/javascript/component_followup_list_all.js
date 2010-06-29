@@ -487,7 +487,7 @@ var Component_FollowUp_List_All = Class.create(
 		oUL.appendChild($T.li(oView));
 		
 		var oRecurring	= 	$T.a({href: 'reflex.php/FollowUp/ManageRecurring/' + (this._iEmployeeId ? this._iEmployeeId : '')},
-								$T.img({src: Component_FollowUp_List_All.ACTION_RECURRING_IMAGE_SOURCE, alt: 'View Recurring Follow-Ups', title: 'View Recurring Follow-Ups'})
+								$T.img({src: Component_FollowUp_List_All.ACTION_RECURRING_IMAGE_SOURCE, alt: 'Part of a Recurring Follow-Up', title: 'View Recurring Follow-Ups'})
 							);
 		oUL.appendChild($T.li(oRecurring));
 		
@@ -907,8 +907,8 @@ Component_FollowUp_List_All.formatDateTimeFilterValue	= function(sDateTime)
 
 // Filter Control field definitions
 var oNow										= new Date();
-Component_FollowUp_List_All.YEAR_MINIMUM		= oNow.getFullYear();
-Component_FollowUp_List_All.YEAR_MAXIMUM		= Component_FollowUp_List_All.YEAR_MINIMUM + 10;
+Component_FollowUp_List_All.YEAR_MINIMUM		= 2010;
+Component_FollowUp_List_All.YEAR_MAXIMUM		= Component_FollowUp_List_All.YEAR_MINIMUM + 5;
 
 Component_FollowUp_List_All.FILTER_FIELDS														= {};
 Component_FollowUp_List_All.FILTER_FIELDS[Component_FollowUp_List_All.FILTER_FIELD_OWNER]		= 	{
@@ -943,8 +943,8 @@ Component_FollowUp_List_All.FILTER_FIELDS[Component_FollowUp_List_All.FILTER_FIE
 																																						mMandatory	: false,
 																																						fnValidate	: Component_FollowUp_List_All._validateDueDate,
 																																						sDateFormat	: 'Y-m-d',
-																																						iYearStart	: 2010,
-																																						iYearEnd	: oNow.getFullYear() + 5
+																																						iYearStart	: Component_FollowUp_List_All.YEAR_MINIMUM,
+																																						iYearEnd	: Component_FollowUp_List_All.YEAR_MAXIMUM
 																																					}
 																																}
 																										};

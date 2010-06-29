@@ -453,12 +453,11 @@ button img.icon
 
 /********************** START - Reflex Popup - START **************************/
 div.reflex-popup-overlay {
-	position			: fixed;
-	top					: 0em;
-	left				: 0em;
-	width				: 100%;
-	height				: 100%;
-	
+	position				: fixed;
+	top						: 0em;
+	left					: 0em;
+	width					: 100%;
+	height					: 100%;
 	z-index: 45;
 }
 
@@ -481,6 +480,13 @@ div.reflex-popup {
 	background-color	: #efefef;
 	z-index				: 50;
 	position			: absolute;
+	
+	-moz-border-radius		: 4px;
+	-moz-box-shadow			: 0 0 20px;
+	
+	-webkit-border-radius	: 4px;
+	-webkit-box-shadow		: 0 0 20px;
+	
 }
 
 div.reflex-popup table.reflex {
@@ -4578,10 +4584,13 @@ div.filter-overlay-options
 {
 	position			: absolute;
 	padding				: 0.5em;
-	background-color	: #E5E5FF;
+	background-color	: #fff;
 	border				: solid 1px black;
 	-moz-box-sizing		: border-box;
 	-moz-border-radius	: 0.25em;
+	
+	-moz-box-shadow		: 0 0 20px;
+	-webkit-box-shadow	: 0 0 20px;
 	
 	-webkit-box-sizing		: border-box;
 	-webkit-border-radius	: 0.25em;
