@@ -52,6 +52,8 @@ class Carrier_Module_Config_Set
 	
 	private function _parseField($sField)
 	{
+		Log::getLog()->log("_parseField()'ing property '{$sField}' for Carrier Module {$this->_oCarrierModule->Id}");
+		
 		$aPlaceholders	= array();
 		preg_match_all("/<(?P<context>[A-Z]+)::(?P<action>[A-Za-z]+)>/i", $this->_getPropertyRaw($sField), $aPlaceholders, PREG_SET_ORDER);
 		
@@ -128,6 +130,7 @@ class Carrier_Module_Config_Set
 	{
 		if (array_key_exists($sProperty, $this->_aFields))
 		{
+			Log::getLog()->log("_getPropertyRaw()'ing property '{$sProperty}' for Carrier Module {$this->_oCarrierModule->Id}");
 			return $this->_aFields[$sProperty]->Value;
 		}
 	}
