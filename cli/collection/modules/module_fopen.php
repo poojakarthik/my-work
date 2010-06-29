@@ -116,6 +116,9 @@
 		// Get Path Definitions
 		$arrDefinitions		= $this->_oConfig->FileDefine;
 		
+		CliEcho("Download Paths Definitions:");
+		CliEcho(print_r($arrDefinitions, true));
+		
 		$arrDownloadPaths	= array();
 		try
 		{
