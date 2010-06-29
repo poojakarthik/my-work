@@ -186,7 +186,7 @@ abstract class ORM
 	}
 	
 	// ___set() is essentially a protected method that allows us to bypass any overridden __set() methods if needed
-	final protected function ___set()
+	final protected function ___set($strName, $mxdValue)
 	{
 		$strName	= $this->_getFieldName($strName);
 		
