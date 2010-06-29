@@ -175,8 +175,11 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 													);
 		for (var sName in this.hInputs)
 		{
-			this.hInputs[sName].observe('keyup', this.hInputs[sName].validate);
-			this.hInputs[sName].observe('change', this.hInputs[sName].validate);
+			if (this.hInputs[sName].validate)
+			{
+				this.hInputs[sName].observe('keyup', this.hInputs[sName].validate);
+				this.hInputs[sName].observe('change', this.hInputs[sName].validate);
+			}
 		}
 		
 		this.oContent = oContent; 
