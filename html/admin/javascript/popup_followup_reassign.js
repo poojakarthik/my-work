@@ -29,7 +29,7 @@ var Popup_FollowUp_Reassign	= Class.create(Reflex_Popup,
 	_buildUI	: function(oResponse)
 	{
 		// Create the list of closures
-		var oSelect			= new Control_Field_Select('Employee');
+		var oSelect	= new Control_Field_Select('Employee');
 		oSelect.setPopulateFunction(Employee.getAllAsSelectOptions.bind(Employee));
 		oSelect.setVisible(true);
 		oSelect.setEditable(true);
@@ -148,6 +148,11 @@ var Popup_FollowUp_Reassign	= Class.create(Reflex_Popup,
 			{
 				this.oLoading.hide();
 				delete this.oLoading;
+			}
+			
+			if (oResponse.bNoEmail)
+			{
+				Reflex_Popup.alert('No email was sent to the recipient of this Follow-Up, due to this being a development version of Flex. In this version an email is only sent if you assign a Follow-Up to yourself.');
 			}
 			
 			if (this._fnOnFinish)

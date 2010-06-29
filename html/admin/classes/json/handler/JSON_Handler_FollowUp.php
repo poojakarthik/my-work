@@ -333,13 +333,16 @@ class JSON_Handler_FollowUp extends JSON_Handler
 			else
 			{
 				// Assign
-				$oFollowUp->assignTo($iToEmployeeId, $iReassignReasonId);
+				$bEmailSent	= $oFollowUp->assignTo($iToEmployeeId, $iReassignReasonId);
 				
 				// Commit db transaction
 				$oDataAccess->TransactionCommit();
 			}
 			
-			return array("Success" => true);
+			return	array(
+						"Success" => true, 
+						"bNoEmail" => !$bEmailSent
+					);
 		}
 		catch (JSON_Handler_FollowUp_Exception $oException)
 		{
@@ -395,13 +398,16 @@ class JSON_Handler_FollowUp extends JSON_Handler
 			else
 			{
 				// Assign
-				$oFollowUpRecurring->assignTo($iToEmployeeId, $iReassignReasonId);
+				$bEmailSent	= $oFollowUpRecurring->assignTo($iToEmployeeId, $iReassignReasonId);
 				
 				// Commit db transaction
 				$oDataAccess->TransactionCommit();
 			}
 			
-			return array("Success" => true);
+			return	array(
+						"Success" => true, 
+						"bNoEmail" => !$bEmailSent
+					);
 		}
 		catch (JSON_Handler_FollowUp_Exception $oException)
 		{

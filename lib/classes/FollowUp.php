@@ -248,7 +248,7 @@ class FollowUp extends ORM_Cached
 		require_once 'Zend/Mail.php';
 		
 		$oEmployee	= Employee::getForId($iEmployeeId);
-		if ($oEmployee->email)
+		if ($oEmployee->email && ($iEmployeeId == Flex::getUserId()))
 		{
 			$sUserEmail		= $oEmployee->email;
 			
@@ -274,7 +274,11 @@ class FollowUp extends ORM_Cached
 			$oEmail->addTo($sUserEmail, $oEmployee->getName());
 			$oEmail->setSubject("You have been assigned a follow-up");
 			$oEmail->send();
+			
+			return true;
 		}
+		
+		return false;
 	}
 	
 	public function save($mModifyReasonId=null, $iReassignReasonId=null)
