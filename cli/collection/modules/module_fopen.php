@@ -136,6 +136,9 @@
 	{
 		$arrDownloadPaths	= array();
 		
+		CliEcho("Entering path '{$strCurrentPath}'...");
+		
+		
 		while (list($strDirectory, $arrDefinition) = each($arrDirectories))
 		{
 			CliEcho("Currently ".(count($arrDirectories))." subdirectories for path '{$strCurrentPath}'");
