@@ -52,7 +52,7 @@ class Carrier_Module_Config_Set
 	
 	private function _parseField($sField)
 	{
-		Log::getLog()->log("_parseField()'ing property '{$sField}' for Carrier Module {$this->_oCarrierModule->Id}");
+		//Log::getLog()->log("_parseField()'ing property '{$sField}' for Carrier Module {$this->_oCarrierModule->Id}");
 		
 		$aPlaceholders	= array();
 		$sValue			= $this->_getPropertyRaw($sField);
@@ -131,7 +131,7 @@ class Carrier_Module_Config_Set
 	{
 		if (array_key_exists($sProperty, $this->_aFields))
 		{
-			Log::getLog()->log("_getPropertyRaw()'ing property '{$sProperty}' for Carrier Module {$this->_oCarrierModule->Id} as '{$this->_aFields[$sProperty]->Value}'");
+			//Log::getLog()->log("_getPropertyRaw()'ing property '{$sProperty}' for Carrier Module {$this->_oCarrierModule->Id} as '{$this->_aFields[$sProperty]->Value}'");
 			return $this->_aFields[$sProperty]->Value;
 		}
 	}
@@ -140,7 +140,7 @@ class Carrier_Module_Config_Set
 	{
 		if (array_key_exists($sProperty, $this->_aFields))
 		{
-			Log::getLog()->log("__get()'ing property '{$sProperty}' for Carrier Module {$this->_oCarrierModule->Id} as '".$this->_parseField($sProperty)."'");
+			//Log::getLog()->log("__get()'ing property '{$sProperty}' for Carrier Module {$this->_oCarrierModule->Id} as '".$this->_parseField($sProperty)."'");
 			return $this->_parseField($sProperty);
 		}
 	}
