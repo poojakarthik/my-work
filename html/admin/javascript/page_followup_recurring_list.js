@@ -1024,7 +1024,7 @@ Page_FollowUp_Recurring_List.FILTER_FIELDS[Page_FollowUp_Recurring_List.FILTER_F
 																																			sLabel		: 'Category',
 																																			mEditable	: true,
 																																			fnValidate	: null,
-																																			fnPopulate	: FollowUp_Category.getAllAsSelectOptions.bind(FollowUp_Category)
+																																			fnPopulate	: FollowUp_Category.getActiveAsSelectOptions.bind(FollowUp_Category)
 																																		}
 																													}
 																									};

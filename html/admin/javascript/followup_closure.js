@@ -130,5 +130,70 @@ FollowUp_Closure.getForClosureTypeAsSelectOptions	= function(iClosureType, fnCal
 		// Pass to Callback
 		fnCallback(aOptions);
 	}
-}
+};
 
+FollowUp_Closure.getActiveForClosureType	= function(iClosureType, fnCallback, iRecordCount, aResultSet)
+{
+	if (iRecordCount === undefined || aResultSet === undefined)
+	{
+		var fnConstantsLoaded	= function(fnCallback)
+		{
+			// Set filter
+			this._oDataset.setFilter(
+				{
+					followup_closure_type_id	: iClosureType,
+					status_id					: $CONSTANT.STATUS_ACTIVE
+				}
+			);
+			
+			// Make Request
+			this._oDataset.getRecords(
+				FollowUp_Closure.getForClosureType.bind(
+					FollowUp_Closure, 
+					iClosureType, 
+					fnCallback
+				)
+			);
+		};
+		
+		// Load the 'status' constant group before proceeding
+		Flex.Constant.loadConstantGroup('status', fnConstantsLoaded.bind(this, fnCallback));
+	}
+	else
+	{
+		// Pass aResultSet to Callback
+		fnCallback(aResultSet);
+	}
+};
+
+FollowUp_Closure.getActiveForClosureTypeAsSelectOptions	= function(iClosureType, fnCallback, oClosures)
+{
+	if (!oClosures)
+	{
+		// Make Request
+		FollowUp_Closure.getActiveForClosureType(
+			iClosureType,
+			FollowUp_Closure.getActiveForClosureTypeAsSelectOptions.bind(
+				FollowUp_Closure, 
+				iClosureType, 
+				fnCallback
+			)
+		);
+	}
+	else
+	{
+		// Create an Array of OPTION DOM Elements
+		var aOptions	= [];
+		for (i in oClosures)
+		{
+			aOptions.push(
+				$T.option({value: oClosures[i].id},
+						oClosures[i].name
+				)
+			);
+		}
+		
+		// Pass to Callback
+		fnCallback(aOptions);
+	}
+};

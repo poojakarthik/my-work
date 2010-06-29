@@ -25,7 +25,7 @@ var Popup_FollowUp_Due_Date	= Class.create(Reflex_Popup,
 		this._oDatePicker	= oDatePicker;
 		
 		var oReasonSelect	= new Control_Field_Select('Reason');
-		oReasonSelect.setPopulateFunction(FollowUp_Modify_Reason.getAllAsSelectOptions.bind(FollowUp_Modify_Reason));
+		oReasonSelect.setPopulateFunction(FollowUp_Modify_Reason.getActiveAsSelectOptions.bind(FollowUp_Modify_Reason));
 		oReasonSelect.setVisible(true);
 		oReasonSelect.setEditable(true);
 		oReasonSelect.setMandatory(true);

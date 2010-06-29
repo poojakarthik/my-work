@@ -988,7 +988,7 @@ Component_FollowUp_List_All.FILTER_FIELDS[Component_FollowUp_List_All.FILTER_FIE
 																																			mEditable	: true,
 																																			mMandatory	: false,
 																																			fnValidate	: null,
-																																			fnPopulate	: FollowUp_Category.getAllAsSelectOptions.bind(FollowUp_Category)
+																																			fnPopulate	: FollowUp_Category.getActiveAsSelectOptions.bind(FollowUp_Category)
 																																		}
 																													}
 																									};

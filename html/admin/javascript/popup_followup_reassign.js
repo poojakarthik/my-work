@@ -38,7 +38,7 @@ var Popup_FollowUp_Reassign	= Class.create(Reflex_Popup,
 		this._oSelect	= oSelect;
 		
 		var oReasonSelect	= new Control_Field_Select('Reason');
-		oReasonSelect.setPopulateFunction(FollowUp_Reassign_Reason.getAllAsSelectOptions.bind(FollowUp_Reassign_Reason));
+		oReasonSelect.setPopulateFunction(FollowUp_Reassign_Reason.getActiveAsSelectOptions.bind(FollowUp_Reassign_Reason));
 		oReasonSelect.setVisible(true);
 		oReasonSelect.setEditable(true);
 		oReasonSelect.setMandatory(true);

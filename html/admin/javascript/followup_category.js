@@ -236,6 +236,45 @@ FollowUp_Category.getAllAsSelectOptions	= function(fnCallback, oResponse)
 	}
 };
 
+FollowUp_Category.getActiveAsSelectOptions	= function(fnCallback, iRecordCount, aResultSet)
+{
+	if (!aResultSet)
+	{
+		var fnConstantsLoaded	= function(fnCallback)
+		{
+			// Set filter to return only active categories
+			this._oDataset.setFilter({status_id: $CONSTANT.STATUS_ACTIVE});
+			
+			// Make request
+			this._oDataset.getRecords(
+				FollowUp_Category.getActiveAsSelectOptions.bind(FollowUp_Category, fnCallback)
+			);
+		};
+		
+		// Load the 'status' constant group before proceeding
+		Flex.Constant.loadConstantGroup('status', fnConstantsLoaded.bind(this, fnCallback));
+	}
+	else
+	{
+		// Remove the filter
+		this._oDataset.setFilter(null);
+		
+		// Create an Array of OPTION DOM Elements
+		var aOptions	= [];
+		for (i in aResultSet)
+		{
+			aOptions.push(
+				$T.option({value: aResultSet[i].id},
+					aResultSet[i].name
+				)
+			);
+		}
+		
+		// Pass to Callback
+		fnCallback(aOptions);
+	}
+};
+
 // Controls definition
 FollowUp_Category.oProperties	= {};
 

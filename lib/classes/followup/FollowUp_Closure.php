@@ -99,13 +99,13 @@ class FollowUp_Closure extends ORM_Cached
 		else
 		{
 			// Create FollowUp_Category objects for each
-			$aFollowUpCategorys	= array();
+			$aResults	= array();
 			while ($aRow = $oSelect->Fetch())
 			{
-				$aFollowUpCategorys[$aRow['id']]	= new self($aRow);
+				$aResults[$aRow['id']]	= new self($aRow);
 			}
 			
-			return $aFollowUpCategorys;
+			return $aResults;
 		}
 	}
 

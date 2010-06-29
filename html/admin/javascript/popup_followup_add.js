@@ -43,7 +43,7 @@ var Popup_FollowUp_Add	= Class.create(Reflex_Popup,
 			oCategorySelect.setEditable(true);
 			oCategorySelect.setMandatory(true);
 			oCategorySelect.setRenderMode(Control_Field.RENDER_MODE_EDIT);
-			oCategorySelect.setPopulateFunction(FollowUp_Category.getAllAsSelectOptions.bind(FollowUp_Category));
+			oCategorySelect.setPopulateFunction(FollowUp_Category.getActiveAsSelectOptions.bind(FollowUp_Category));
 			this._oCategorySelect	= oCategorySelect;
 			
 			// Create period select control

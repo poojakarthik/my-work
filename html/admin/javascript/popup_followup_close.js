@@ -47,7 +47,7 @@ var Popup_FollowUp_Close	= Class.create(Reflex_Popup,
 	{
 		// Create the list of closures
 		var oSelect			= new Control_Field_Select('Reason');
-		oSelect.setPopulateFunction(FollowUp_Closure.getForClosureTypeAsSelectOptions.curry(this._iFollowUpClosureTypeId));
+		oSelect.setPopulateFunction(FollowUp_Closure.getActiveForClosureTypeAsSelectOptions.curry(this._iFollowUpClosureTypeId));
 		oSelect.setVisible(true);
 		oSelect.setEditable(true);
 		oSelect.setMandatory(true);
