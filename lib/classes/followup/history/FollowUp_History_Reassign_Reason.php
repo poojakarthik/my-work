@@ -96,7 +96,7 @@ class FollowUp_History_Reassign_Reason extends ORM_Cached
 			$sOrderByClause	= Statement::generateOrderBy(null, $aSort);
 			
 			// LIMIT clause
-			$sLimitClause	= Statement::generateOrderBy($iLimit, $iOffset);
+			$sLimitClause	= Statement::generateLimit($iLimit, $iOffset);
 		}
 		
 		// Get records

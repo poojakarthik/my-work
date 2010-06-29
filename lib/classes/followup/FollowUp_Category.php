@@ -81,11 +81,17 @@ class FollowUp_Category extends ORM_Cached
 			$sOrderByClause	= Statement::generateOrderBy(null, $aSort);
 			
 			// LIMIT clause
-			$sLimitClause	= Statement::generateOrderBy($iLimit, $iOffset);
+			$sLimitClause	= Statement::generateLimit($iLimit, $iOffset);
 		}
 		
 		// Get records
-		$oSelect	= new StatementSelect($sFromClause, $sSelectClause, $aWhereInfo['sClause'], $sOrderByClause, $sLimitClause);
+		$oSelect	=	new StatementSelect(
+							$sFromClause, 
+							$sSelectClause, 
+							$aWhereInfo['sClause'], 
+							$sOrderByClause, 
+							$sLimitClause
+						);
 		if ($oSelect->Execute($aWhereInfo['aValues']) === FALSE)
 		{
 			throw new Exception("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oSelect->Error());
