@@ -126,6 +126,13 @@ class Carrier_Module_Config_Set
 	
 	private function _getPropertyRaw($sProperty)
 	{
+		// Debug
+		if (!is_int($sProperty) || !is_string($sProperty))
+		{
+			Log::getLog()->log(print_r(debug_backtrace(), true));
+			throw new Exception("Invalid property '{$sProperty}' provided");
+		}
+		
 		if (array_key_exists($sProperty, $this->_aFields))
 		{
 			return $this->_aFields[$sProperty]->Value;
