@@ -181,7 +181,6 @@ class Carrier_Module_Config_Set
 						$this->_aFields[$sFieldName]	= $oCarrierModuleConfig;
 						
 						$this->$sFieldName			= (isset($aField['Value'])) ? $aField['Value'] : null;
-						
 					}
 					
 					$this->save();
