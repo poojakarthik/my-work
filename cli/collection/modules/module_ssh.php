@@ -70,12 +70,6 @@
 										'Type'			=> DATA_TYPE_STRING,
 										'Description'	=> 'SSH Password'
 									),
-					'FileDefine'	=>	array
-									(
-										'Value'			=> array(),
-										'Type'			=> DATA_TYPE_STRING,
-										'Description'	=> 'Definitions for where to download files from'
-									),
 					'SFTP'			=>	array
 									(
 										'Value'			=> false,
@@ -87,6 +81,12 @@
 										'Value'			=> 22,
 										'Type'			=> DATA_TYPE_INTEGER,
 										'Description'	=> 'SSH Port'
+									),
+					'FileDefine'	=>	array
+									(
+										'Value'			=> array(),
+										'Type'			=> DATA_TYPE_ARRAY,
+										'Description'	=> 'Definitions for where to download files from'
 									)
 				);
 	}

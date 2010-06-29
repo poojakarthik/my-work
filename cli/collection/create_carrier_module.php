@@ -40,7 +40,7 @@ if (DataAccess::getDataAccess()->TransactionStart())
 {
 	try
 	{
-		$oModuleReflection	= (new ReflectionClass($argument));
+		$oModuleReflection	= (new ReflectionClass($strClassName));
 		
 		// Define the new Carrier Module record
 		$oCarrierModule	= new Carrier_Module();
@@ -59,10 +59,10 @@ if (DataAccess::getDataAccess()->TransactionStart())
 		$oCarrierModule->save();
 		
 		// Define the Carrier Module Configuration records
-		$oCarrierModule->getConfig()->define(call_user_method(array($strClassName, 'getConfigDefinition')));
+		$oCarrierModule->getConfig()->define(call_user_func(array($strClassName, 'getConfigDefinition')));
 		$oCarrierModule->getConfig()->save();
 		
-		throw new Exception("DEBUG");
+		//throw new Exception("DEBUG");
 		DataAccess::getDataAccess()->TransactionCommit();
 		
 		CliEcho("[   OK   ]\n");
@@ -71,6 +71,8 @@ if (DataAccess::getDataAccess()->TransactionStart())
 	{
 		CliEcho("[ FAILED ]\n\t[!] ".$oException->getMessage());
 		DataAccess::getDataAccess()->TransactionRollback();
+		
+		throw $oException;
 	}
 }
 

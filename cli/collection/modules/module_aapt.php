@@ -74,7 +74,7 @@
 					'FileDefine'	=>	array
 									(
 										'Value'			=> array(),
-										'Type'			=> DATA_TYPE_STRING,
+										'Type'			=> DATA_TYPE_ARRAY,
 										'Description'	=> 'Definitions for where to download files from'
 									)
 				);
