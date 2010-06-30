@@ -76,33 +76,52 @@ class Carrier_Module_Config_Set
 				switch ($sContext)
 				{
 					case 'config':
+						Log::getLog()->log("CONFIG Replacement: Config '{$sAction}' with value '{$this->$sAction}'");
 						$sReplace	= $this->$sAction;
 						break;
 						
 					case 'function':
+						Log::getLog()->log("DATE Replacement: ", false);
 						switch ($sAction)
 						{
 							case 'datetime':
 								$sReplace	= date("Y-m-d H:i:s");
+								Log::getLog()->log("Type '{$sAction}' with value '{$sReplace}'");
 								break;
 							
 							case 'date':
 								$sReplace	= date("Y-m-d");
+								Log::getLog()->log("Type '{$sAction}' with value '{$sReplace}'");
+								break;
+								
+							default:
+								Log::getLog()->log("Unknown Type '{$sAction}'");
 								break;
 						}
 						break;
 						
 					case 'property':
+						Log::getLog()->log("PROPERTY Replacement: ", false);
 						switch ($sAction)
 						{
 							case 'customergroup':
 								$sReplace	= ($this->_oCarrierModule->customer_group) ? Customer_Group::getForId($this->_oCarrierModule->customer_group)->externalName : '';
+								Log::getLog()->log("Property '{$sAction}' with value '{$sReplace}'");
 								break;
 							
 							case 'carrier':
 								$sReplace	= ($this->_oCarrierModule->Carrier) ? Carrier::getForId($this->_oCarrierModule->Carrier)->Name : '';
+								Log::getLog()->log("Property '{$sAction}' with value '{$sReplace}'");
+								break;
+							
+							default:
+								Log::getLog()->log("Unknown Property '{$sAction}'");
 								break;
 						}
+						break;
+					
+					default:
+						Log::getLog()->log("Unknown Context '{$sContext}'");
 						break;
 				}
 				
