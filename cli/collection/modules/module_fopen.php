@@ -231,24 +231,23 @@
 							
 							foreach ($arrDirectories[$strDirectory]['arrFileTypes'] as $intResourceTypeId=>$arrFileType)
 							{
-								if (preg_match($arrFileType['Regex'], $strSubItem) && !is_dir($this->_strWrapper.$strSubItemFullPath))
+								if (	preg_match($arrFileType['Regex'], $strSubItem)
+										&& (!isset($arrFileType['DownloadUnique']) || !$arrFileType['DownloadUnique'] || $this->isDownloadUnique($strSubItem))
+										&& !is_dir($this->_strWrapper.$strSubItemFullPath))
 								{
-									// Does this File Name exist in the database?
-									if ($arrFileType['DownloadUnique'] && !$this->isDownloadUnique($strSubItem))
-									{
-										// Yes, so we should skip this file
-										break;
-									}
-									
-									// Regex matches -- is this a directory?
-									if (self::SKIP_IS_DIR_AFTER_REGEX || !is_dir($this->_strWrapper.$strSubItemFullPath))
-									{
-										// It's a File --matched a File Type definition
-										$arrFileType['FileImportType']	= $intResourceTypeId;
-										$arrDownloadPaths[]	= array('RemotePath' => trim($strSubItemFullPath), 'FileType' => $arrFileType);
-										$intMatches++;
-										break;
-									}
+									// It's a File --matched a File Type definition
+									$arrFileType['FileImportType']	= $intResourceTypeId;
+									$arrDownloadPaths[]	= array('RemotePath' => trim($strSubItemFullPath), 'FileType' => $arrFileType);
+									$intMatches++;
+									break;
+								}
+								else
+								{
+									// Break reasons:
+									//	* Doesn't match our regex
+									//	* Isn't unique and is required to be
+									//	* Is a directory
+									break;
 								}
 							}
 						}
