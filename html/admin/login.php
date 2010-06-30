@@ -11,6 +11,7 @@
 	
 	$oApplication	= Application::instance();
 	$oApplication->CheckAuth();
+	
 	header ("Location: ../admin/reflex.php/Console/View/");
 	die;
 ?>

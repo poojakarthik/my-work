@@ -223,7 +223,8 @@ jQuery.json = {
 					//this.funcRemote.apply(null, this.funcArgs);
 					// ... and get rid of the next line
 					//arguments[0]['ERROR'] = "Your session has timed out. Please log in to continue.";
-					Vixen.Popup.ShowAjaxPopup("LoginPopup", "medium", "Login", "User", "DisplayLoginPopup", null, "nonmodal");
+					
+					jQuery.json.showLoginPopup(arguments[0], this.onSuccess, this.onFailure);
 					return;
 				}
 				else if (arguments[0]['ERROR'] == 'PERMISSIONS')
@@ -406,5 +407,18 @@ jQuery.json = {
 		}
 		
 		return oReturn;
+	},
+	
+	showLoginPopup	: function(oResponse, fnOnSuccess, fnOnFailure)
+	{
+		var fnShowPopup	= function(sHandler, sMethod, aParameters, fnOnSuccess, fnOnFailure)
+		{
+			var oPopup	= new Popup_Login(sHandler, sMethod, aParameters, fnOnSuccess, fnOnFailure);
+		}
+		
+		JsAutoLoader.loadScript(
+			'javascript/popup_login.js', 
+			fnShowPopup.bind(this, oResponse.sHandler, oResponse.sMethod, oResponse.aParameters, fnOnSuccess, fnOnFailure)
+		);
 	}
 };

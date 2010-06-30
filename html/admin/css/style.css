@@ -5765,3 +5765,24 @@ div.followup-recurring-close-all-overdue-item > div.close-buttons > img
 }
 
 /***************** END - Popup FollowUp Recurring Close Overdue - END ****************/
+
+/***************** START - Login Popup - START ****************/
+
+div.popup-login > div.GroupedContent > table
+{
+	width	: 100%;
+}
+
+div.popup-login > div.GroupedContent > table > tbody > tr > td:first-child
+{
+	width	: 50%;
+}
+
+div.popup-login > div.GroupedContent > table > tbody > tr > td:last-child > input
+{
+	width	: 100%;
+}
+
+/***************** END - Login Popup - END ****************/
+
+

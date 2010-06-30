@@ -3,23 +3,43 @@
 // Get the Flex class...
 require_once '../../lib/classes/Flex.php';
 
+// Work out the application template and method from the URL
+$arrScript 		= Flex::getPathInfo();
+$strHandler 	= array_shift($arrScript);
+$strMethod 		= array_shift($arrScript);
+$bIsLogin		= (($strHandler == 'Login') && ($strMethod == ''));
+
 // ******** AUTHENTICATION ********
-if (!Flex::continueSession(Flex::FLEX_ADMIN_SESSION))
+if (!Flex::continueSession(Flex::FLEX_ADMIN_SESSION) && !$bIsLogin)
 {
-	// Prompt the user to extend their session or logout
-	$response = array('ERROR'=>'LOGIN');
 	require_once dirname(__FILE__) . '/../../lib/classes/json/JSON_Services.php';
-	echo JSON_Services::encode($response);
+	
+	// Prompt the user to extend their session or logout
+	echo 	JSON_Services::encode(
+				array(
+					'ERROR'			=>'LOGIN',
+					'sHandler'		=> $strHandler,
+					'sMethod'		=> $strMethod,
+					'aParameters'	=> JSON_Services::decode(isset($_POST['json']) ? $_POST['json'] : array())
+				)
+			);
 	exit;
 }
 
 // Load the Flex framework and application
 Flex::load();
 
-// Work out the application template and method from the URL
-$arrScript 		= Flex::getPathInfo();
-$strHandler 	= array_shift($arrScript);
-$strMethod 		= array_shift($arrScript);
+if ($bIsLogin && isset($_POST['json']))
+{
+	require_once dirname(__FILE__) . '/../../lib/classes/json/JSON_Services.php';
+	
+	// Attempt to authenticate given the passed username and password
+	$aParameters	= JSON_Services::decode($_POST['json']);
+	echo	JSON_Services::encode(
+				array('Success' => AuthenticatedUser()->CheckAuth($aParameters[0], $aParameters[1]))
+			);
+	exit;
+}
 
 // We never want to cache AJAX
 // FIXME: We should probably look into a better solution for this...

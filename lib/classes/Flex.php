@@ -18,7 +18,7 @@ final class Flex
 	{
 		// TODO :: Login to application
 	}
-
+	
 	public static function continueSession($sessionName=self::FLEX_CUSTOMER_SESSION)
 	{
 		// Start the session

@@ -714,7 +714,7 @@ class Application
 	 * @method
 	 *
 	 */
-	function CheckAuth()
+	function CheckAuth($strUserName=null, $strPassword=null)
 	{
 		// If there is nothing about login in the session, record that the user is not logged in
 		if (!array_key_exists('LoggedIn', $_SESSION))
@@ -728,7 +728,8 @@ class Application
 			$_SESSION['LoggedIn'] = FALSE;
 		}
 
-		$bolAttemptingLogIn = FALSE;
+		$bParameterLogin	= (!is_null($strUserName) && !is_null($strPassword));
+		$bolAttemptingLogIn = $bParameterLogin;
 		if (isset($_POST['VixenUserName']) && isset($_POST['VixenPassword']))
 		{
 			// The user is loging in via the login page
@@ -792,7 +793,11 @@ class Application
 		else
 		{
 			//The user is not logged in.  Redirect them to the login page
-			if ($this->_intMode == AJAX_MODE)
+			if ($bParameterLogin)
+			{
+				return false;
+			}
+			else if ($this->_intMode == AJAX_MODE)
 			{
 				//Ajax()->AddCommand("Reload");
 				if ($bolAttemptingLogIn)
@@ -869,14 +874,23 @@ class Application
 			setcookie("DebugMode", $bolDebugMode, 0, "/");
 		}
 		$GLOBALS['bolDebugMode'] = ($bolDebugMode && $this->UserHasPerm(PERMISSION_DEBUG)) ? TRUE : FALSE;
-
+		
 		// Check if the user has just successfully logged in via Ajax
-		if ($this->_intMode == AJAX_MODE && $bolAttemptingLogIn && $_SESSION['LoggedIn'])
+		if ($_SESSION['LoggedIn'])
 		{
-			// Reply to the Ajax request
-			AjaxReply(array("Success" => TRUE));
-			die;
+			if ($bolAttemptingLogIn)
+			{
+				if (!$bParameterLogin && $this->_intMode == AJAX_MODE)
+				{
+					AjaxReply(array("Success" => TRUE));
+					die;
+				}
+			}
+			
+			return true;
 		}
+		
+		return false;
 	}
 
 
