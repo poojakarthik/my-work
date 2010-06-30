@@ -63,8 +63,8 @@ class Carrier_Module_Config_Set
 			$aPlaceholders	= array();
 			preg_match_all("/<(?P<context>[A-Z]+)::(?P<action>[A-Za-z]+)>/i", $mValue, $aPlaceholders, PREG_SET_ORDER);
 			
-			Log::getLog()->log("Initial Value: {$mValue}");
-			Log::getLog()->log("Replacement Tasks: ".print_r($aPlaceholders, true));
+			//Log::getLog()->log("Initial Value: {$mValue}");
+			//Log::getLog()->log("Replacement Tasks: ".print_r($aPlaceholders, true));
 			
 			foreach ($aPlaceholders as $aPlaceholderSet)
 			{
@@ -76,63 +76,63 @@ class Carrier_Module_Config_Set
 				switch (strtolower($sContext))
 				{
 					case 'config':
-						Log::getLog()->log("CONFIG Replacement: Config '{$sAction}' with value '{$this->$sAction}'");
+						//Log::getLog()->log("CONFIG Replacement: Config '{$sAction}' with value '{$this->$sAction}'");
 						$sReplace	= $this->$sAction;
 						break;
 						
 					case 'function':
-						Log::getLog()->log("DATE Replacement: ", false);
+						//Log::getLog()->log("DATE Replacement: ", false);
 						switch (strtolower($sAction))
 						{
 							case 'datetime':
 								$sReplace	= date("Y-m-d H:i:s");
-								Log::getLog()->log("Type '{$sAction}' with value '{$sReplace}'");
+								//Log::getLog()->log("Type '{$sAction}' with value '{$sReplace}'");
 								break;
 							
 							case 'date':
 								$sReplace	= date("Y-m-d");
-								Log::getLog()->log("Type '{$sAction}' with value '{$sReplace}'");
+								//Log::getLog()->log("Type '{$sAction}' with value '{$sReplace}'");
 								break;
 								
 							default:
-								Log::getLog()->log("Unknown Type '{$sAction}'");
+								//Log::getLog()->log("Unknown Type '{$sAction}'");
 								break;
 						}
 						break;
 						
 					case 'property':
-						Log::getLog()->log("PROPERTY Replacement: ", false);
+						//Log::getLog()->log("PROPERTY Replacement: ", false);
 						switch (strtolower($sAction))
 						{
 							case 'customergroup':
 								$sReplace	= ($this->_oCarrierModule->customer_group) ? Customer_Group::getForId($this->_oCarrierModule->customer_group)->externalName : '';
-								Log::getLog()->log("Property '{$sAction}' with value '{$sReplace}'");
+								//Log::getLog()->log("Property '{$sAction}' with value '{$sReplace}'");
 								break;
 							
 							case 'carrier':
 								$sReplace	= ($this->_oCarrierModule->Carrier) ? Carrier::getForId($this->_oCarrierModule->Carrier)->Name : '';
-								Log::getLog()->log("Property '{$sAction}' with value '{$sReplace}'");
+								//Log::getLog()->log("Property '{$sAction}' with value '{$sReplace}'");
 								break;
 							
 							default:
-								Log::getLog()->log("Unknown Property '{$sAction}'");
+								//Log::getLog()->log("Unknown Property '{$sAction}'");
 								break;
 						}
 						break;
 					
 					default:
-						Log::getLog()->log("Unknown Context '{$sContext}'");
+						//Log::getLog()->log("Unknown Context '{$sContext}'");
 						break;
 				}
 				
 				if (isset($sReplace))
 				{
-					Log::getLog()->log("Replacing '{$sTag}' with '{$sReplace}'");
+					//Log::getLog()->log("Replacing '{$sTag}' with '{$sReplace}'");
 					$mValue	= str_replace($sTag, $sReplace, $mValue);
 				}
 			}
 			
-			Log::getLog()->log("Replaced Value: {$mValue}");
+			//Log::getLog()->log("Replaced Value: {$mValue}");
 		}
 		
 		return $mValue;

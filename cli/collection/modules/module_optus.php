@@ -211,7 +211,7 @@
 		$intCheckId		= $this->_oConfig->CheckId;
 		$strURL			= $this->_oConfig->URL;
 		
-		Log::getLog()->log("Connecting to: {$strURL}");
+		//Log::getLog()->log("Connecting to: {$strURL}");
 		
 		curl_setopt($this->_ptrSession, CURLOPT_URL				, $strURL);
 		curl_setopt($this->_ptrSession, CURLOPT_SSL_VERIFYPEER	, FALSE);
