@@ -108,6 +108,7 @@ class Carrier_Module_Config_Set
 				
 				if (isset($sReplace))
 				{
+					Log::getLog()->log("Replacing '{$sTag}' with '{$sReplace}'");
 					$mValue	= str_replace($sTag, $sReplace, $mValue);
 				}
 			}
