@@ -69,11 +69,11 @@ class Carrier_Module_Config_Set
 			foreach ($aPlaceholders as $aPlaceholderSet)
 			{
 				$sTag		= $aPlaceholderSet[0];
-				$sContext	= strtolower($aPlaceholderSet['context']);
-				$sAction	= strtolower($aPlaceholderSet['action']);
+				$sContext	= $aPlaceholderSet['context'];
+				$sAction	= $aPlaceholderSet['action'];
 				
 				$sReplace	= null;
-				switch ($sContext)
+				switch (strtolower($sContext))
 				{
 					case 'config':
 						Log::getLog()->log("CONFIG Replacement: Config '{$sAction}' with value '{$this->$sAction}'");
@@ -82,7 +82,7 @@ class Carrier_Module_Config_Set
 						
 					case 'function':
 						Log::getLog()->log("DATE Replacement: ", false);
-						switch ($sAction)
+						switch (strtolower($sAction))
 						{
 							case 'datetime':
 								$sReplace	= date("Y-m-d H:i:s");
@@ -102,7 +102,7 @@ class Carrier_Module_Config_Set
 						
 					case 'property':
 						Log::getLog()->log("PROPERTY Replacement: ", false);
-						switch ($sAction)
+						switch (strtolower($sAction))
 						{
 							case 'customergroup':
 								$sReplace	= ($this->_oCarrierModule->customer_group) ? Customer_Group::getForId($this->_oCarrierModule->customer_group)->externalName : '';
