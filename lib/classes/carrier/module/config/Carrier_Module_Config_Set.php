@@ -63,6 +63,8 @@ class Carrier_Module_Config_Set
 			$aPlaceholders	= array();
 			preg_match_all("/<(?P<context>[A-Z]+)::(?P<action>[A-Za-z]+)>/i", $mValue, $aPlaceholders, PREG_SET_ORDER);
 			
+			Log::getLog()->log(print_r($aPlaceholders, true));
+			
 			foreach ($aPlaceholders as $aPlaceholderSet)
 			{
 				$sTag		= $aPlaceholderSet[0];
@@ -105,7 +107,7 @@ class Carrier_Module_Config_Set
 				
 				if (isset($sReplace))
 				{
-					str_replace($sTag, $sReplace, $mValue);
+					$mValue	= str_replace($sTag, $sReplace, $mValue);
 				}
 			}
 		}
