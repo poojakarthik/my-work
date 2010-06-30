@@ -63,12 +63,12 @@
 									),
 					'CustomerId'	=>	array
 									(
-										'Type'			=> DATA_TYPE_STRING,
+										'Type'			=> DATA_TYPE_INTEGER,
 										'Description'	=> 'Customer Id'
 									),
 					'CheckId'		=>	array
 									(
-										'Type'			=> DATA_TYPE_STRING,
+										'Type'			=> DATA_TYPE_INTEGER,
 										'Description'	=> '6-digit Check Id'
 									),
 					'FileDefine'	=>	array
@@ -210,6 +210,8 @@
 		$intCustId		= $this->_oConfig->CustomerId;
 		$intCheckId		= $this->_oConfig->CheckId;
 		$strURL			= $this->_oConfig->URL;
+		
+		Log::getLog()->log("Connecting to: {$strURL}");
 		
 		curl_setopt($this->_ptrSession, CURLOPT_URL				, $strURL);
 		curl_setopt($this->_ptrSession, CURLOPT_SSL_VERIFYPEER	, FALSE);
