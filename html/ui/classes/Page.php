@@ -273,7 +273,6 @@ class Page
 
 		// Add direct links to the following files as they are large and this will result in automatic caching of them
 		$strFrameworkDir 	= Flex::frameworkUrlBase();
-		$sApplicationDir	= Flex::applicationUrlBase();
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/prototype.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/jquery.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/json.js' ></script>\n";
@@ -288,7 +287,6 @@ class Page
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_debug.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/date.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_template.js' ></script>\n";
-		echo "\t\t<script type='text/javascript' src='{$sApplicationDir}javascript/followup_link.js'></script>\n";
 		
 		// Include reference to all other javascript files required of the page
 		if (!array_key_exists('*arrJavaScript', $GLOBALS) || !is_array($GLOBALS['*arrJavaScript']))
@@ -297,26 +295,31 @@ class Page
 		}
 
 		$arrRemainingJsFiles	= 	array_unique($GLOBALS['*arrJavaScript']);
-		$arrStandardJsFiles		= 	array_merge(
-										$arrStandardJsFiles,
-										array(
-											"prototype", 
-											"jquery", 
-											"json", 
-											"flex", 
-											"flex_constant", 
-											"sha1", 
-											"reflex", 
-											"reflex_fx", 
-											"reflex_fx_morph", 
-											"reflex_fx_shift", 
-											"reflex_popup", 
-											"reflex_template",
-											"followup_link"
-										)
+		$arrFiles				=	array(
+										"prototype", 
+										"jquery", 
+										"json", 
+										"flex", 
+										"flex_constant", 
+										"sha1", 
+										"reflex", 
+										"reflex_fx", 
+										"reflex_fx_morph", 
+										"reflex_fx_shift", 
+										"reflex_popup", 
+										"reflex_template"
 									);
-
-		$arrRemainingJsFilesToInclude = array();
+		
+		// Only include this file for the admin framework
+		if (session_name() == Flex::FLEX_ADMIN_SESSION)
+		{
+			$sApplicationDir	= Flex::applicationUrlBase();
+			echo "\t\t<script type='text/javascript' src='{$sApplicationDir}javascript/followup_link.js'></script>\n";
+			$arrFiles[]	= 'followup_link';
+		}
+		
+		$arrStandardJsFiles				= array_merge($arrStandardJsFiles, $arrFiles);
+		$arrRemainingJsFilesToInclude 	= array();
 		foreach ($arrRemainingJsFiles as $strFile)
 		{
 			if (!in_array($strFile, $arrStandardJsFiles))
