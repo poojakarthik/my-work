@@ -315,6 +315,11 @@ class JSON_Handler_FollowUp extends JSON_Handler
 		
 		try
 		{
+			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
+			{
+				throw new JSON_Handler_FollowUp_Exception('You do not have permission to reassign follow-ups');
+			}
+			
 			// Update assigned_employee_id
 			$oFollowUp	= FollowUp::getForId($iFollowUpId);
 			if ($oFollowUp->isAssignedTo($iToEmployeeId))
@@ -381,6 +386,11 @@ class JSON_Handler_FollowUp extends JSON_Handler
 		
 		try
 		{
+			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
+			{
+				throw new JSON_Handler_FollowUp_Exception('You do not have permission to reassign recurring follow-ups');
+			}
+			
 			$oFollowUpRecurring	= FollowUp_Recurring::getForId($iFollowUpRecurringId);
 			if ($oFollowUpRecurring->isAssignedTo($iToEmployeeId))
 			{
@@ -446,6 +456,11 @@ class JSON_Handler_FollowUp extends JSON_Handler
 		
 		try
 		{
+			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
+			{
+				throw new JSON_Handler_FollowUp_Exception('You do not have permission to modify follow-ups');
+			}
+			
 			// Update assigned_employee_id
 			$oFollowUp					= FollowUp::getForId($iFollowUpId);
 			$oFollowUp->due_datetime	= $sDueDateTime;

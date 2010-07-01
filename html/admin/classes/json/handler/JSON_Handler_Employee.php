@@ -741,7 +741,186 @@ class JSON_Handler_Employee extends JSON_Handler
 						"sDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 					);
 		}
-	}	
+	}
+	
+	public function getCountActiveFollowUps($iEmployeeId)
+	{
+		try
+		{
+			// Search for followups filtering on employee and closure id
+			$aSort		= 	array(
+								'assigned_employee_id'	=> $iEmployeeId,
+								'followup_closure_id'	=> 'NULL'
+							);
+			$aFollowUps	= FollowUp::searchFor(null, null, null, $aSort);
+			
+			// Count once-off fups & record recurring ids
+			$aRecurringIds	= array();
+			$iCount			= 0;
+			foreach ($aFollowUps as $aFollowUp)
+			{
+				if (isset($aFollowUp['followup_id']))
+				{
+					$iCount++;
+				}
+				else
+				{
+					$aRecurringIds[$aFollowUp['followup_recurring_id']]	= true;
+				}
+			}
+			
+			// Count recurring fups
+			foreach ($aRecurringIds as $iId => $bTrue)
+			{
+				$iCount++;
+			}
+			
+			return 	array(
+						'Success'	=> true,
+						'iCount'	=> $iCount
+					);
+		}
+		catch (Exception $e)
+		{
+			return 	array(
+						'Success'	=> true,
+						'Message'	=> (Employee::getForId(Flex::getUserId())->isGod() ? $e->getMessage : 'There was a problem getting the active follow-ups for the employee')
+					);
+		}
+	}
+	
+	public function getCountActiveTickets($iEmployeeId)
+	{
+		try
+		{
+			$aTickets	= self::_getActiveTicketsForEmployee($iEmployeeId);
+			return 	array(
+						'Success'	=> true,
+						'iCount'	=> count($aTickets)
+					);
+		}
+		catch (Exception $e)
+		{
+			return 	array(
+						'Success'	=> false,
+						'Message'	=> (Employee::getForId(Flex::getUserId())->isGod() ? $e->getMessage() : 'There was a problem getting the active follow-ups for the employee')
+					);
+		}
+	}
+	
+	public function reassignAllTicketsAndFollowUps($iFromEmployeeId, $iTicketingUserId, $iFollowUpEmployeeId, $iFollowUpReassignReasonId)
+	{
+		// Start a new database transaction
+		$bIsGod			= Employee::getForId(Flex::getUserId())->isGod();
+		$oDataAccess	= DataAccess::getDataAccess();
+		
+		if (!$oDataAccess->TransactionStart())
+		{
+			// Failure!
+			return 	array(
+						'Success'	=> false,
+						'Message'	=> $bIsGod ? 'There was an error accessing the database' : ''
+					);
+		}
+		
+		try
+		{
+			// Check for permissions to reassign tickets and followups
+			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
+			{
+				throw new JSON_Handler_Employee_Exception('You do not have permission to reassign tasks');
+			}
+			
+			//
+			// Reassign tickets
+			//
+			$oTicketingUser	= Ticketing_User::getForId($iTicketingUserId);
+			$aTickets		= self::_getActiveTicketsForEmployee($iFromEmployeeId);
+			foreach ($aTickets as $oTicket)
+			{
+				$oTicket->assignTo($oTicketingUser);
+			}
+			
+			//
+			// Reassign followups
+			//
+			$aSort		= 	array(
+								'assigned_employee_id'	=> $iFromEmployeeId,
+								'followup_closure_id'	=> 'NULL'
+							);
+			$aFollowUps	= FollowUp::searchFor(null, null, null, $aSort);
+			
+			// Reassign once-off fups and build list of recurring fups needing reassignment
+			$aRecurringIds	= array();
+			foreach ($aFollowUps as $aFollowUp)
+			{
+				if (isset($aFollowUp['followup_id']))
+				{
+					$oFollowUp	= FollowUp::getForId($aFollowUp['followup_id']);
+					$oFollowUp->assignTo($iFollowUpEmployeeId, $iFollowUpReassignReasonId);
+				}
+				else
+				{
+					$aRecurringIds[$aFollowUp['followup_recurring_id']]	= true;
+				}
+			}
+			
+			// Reassign recurring fups
+			foreach ($aRecurringIds as $iId => $bTrue)
+			{
+				$oFollowUpRecurring	= FollowUp_Recurring::getForId($iId);
+				$oFollowUpRecurring->assignTo($iFollowUpEmployeeId, $iFollowUpReassignReasonId);
+			}
+			
+			$oDataAccess->TransactionCommit();
+			
+			return array('Success' => true);
+		}
+		catch (JSON_Handler_Employee_Exception $oException)
+		{
+			// Rollback db transaction
+			$oDataAccess->TransactionRollback();
+			
+			return 	array(
+						'Success'	=> false,
+						'Message'	=> $oException->getMessage()
+					);
+		}
+		catch (Exception $e)
+		{
+			// Rollback db transaction
+			$oDataAccess->TransactionRollback();
+			
+			return 	array(
+						'Success'	=> false,
+						'Message'	=> ($bIsGod ? $e->getMessage() : 'There was a problem reassigning the tasks')
+					);
+		}
+	}
+	
+	private static function _getActiveTicketsForEmployee($iEmployeeId)
+	{
+		//
+		// NOTE: Private because it is not used anywhere but within this class
+		//
+		
+		// Get tickets for the employee as owner with Pending & Open status_type_id's
+		$aFilter				= array();
+		$aFilter['ownerId'] 	= 	array(
+										'value' 		=> Ticketing_User::getForEmployeeId($iEmployeeId)->id, 
+										'comparison' 	=> '='
+									);
+		$oPending				= Ticketing_Status_Type::getForId(TICKETING_STATUS_TYPE_PENDING);
+		$oOpen					= Ticketing_Status_Type::getForId(TICKETING_STATUS_TYPE_OPEN);
+		$aFilter['statusId'] 	=	array(
+									'value' 		=> 	array_merge(
+																$oPending->listStatusIds(), 
+																$oOpen->listStatusIds()
+															), 
+										'comparison' 	=> '='
+									);
+		return Ticketing_Ticket::findMatching(null, array(), $aFilter, 0, 0, false);
+	}
 }
 
 class JSON_Handler_Employee_Exception extends Exception

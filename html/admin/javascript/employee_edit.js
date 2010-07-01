@@ -59,6 +59,47 @@ var EmployeeEdit = {
 	get: function(id)
 	{
 		return document.getElementById(id);
+	},
+	
+	showReassignPopup	: function(iId, fnCallback, bCloseIfNone, sMessage)
+	{
+		var fnShowPopup	= function(iId)
+		{
+			var oPopup	= new Popup_Employee_Reassign_Tasks(iId, fnCallback, bCloseIfNone, sMessage);
+		};
+		
+		JsAutoLoader.loadScript(
+			[
+			 	'../ui/javascript/dataset_ajax.js',
+				'../ui/javascript/reflex_validation.js',
+			 	'../ui/javascript/control_field.js',
+			 	'../ui/javascript/control_field_select.js',
+			 	'javascript/employee.js',
+			 	'javascript/ticketing_user.js',
+			 	'javascript/followup_reassign_reason.js',
+			 	'javascript/popup_employee_reassign_tasks.js',
+			],
+			fnShowPopup.curry(iId)
+		);
+	},
+	
+	checkForAssignedTasks	: function(iId, fnCallback)
+	{
+		var oArchivedCheckbox	= EmployeeEdit.get('Employee.Archived');
+		if (oArchivedCheckbox && oArchivedCheckbox.checked)
+		{
+			// Trying to archive the employee, check for assigned tasks
+			EmployeeEdit.showReassignPopup(
+				iId, 
+				fnCallback, 
+				true, 
+				'This Employee has Tickets and/or Follow-Ups still assigned to them, please reassign these tasks before you archive the Employee:'
+			);
+		}
+		else
+		{
+			// Proceed with save
+			fnCallback();
+		}
 	}
-
 };

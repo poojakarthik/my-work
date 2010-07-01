@@ -218,7 +218,7 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		$strCheckBoxID 			= "";
 		if (!$formRendered)
 		{
-			$this->FormStart('Employee', 'Employee', 'EmployeeList');
+			$this->FormStart('EmployeeList', 'Employee', 'EmployeeList');
 			$strCheckBoxID 			= "id='chbArchived'";
 			$strUpdateOtherCheckBox	= "try { var cb = document.getElementById(\"chbArchivedFooter\"); if (cb.checked != this.checked) cb.checked = this.checked; } catch(e){}";
 		}

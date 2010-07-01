@@ -338,7 +338,7 @@ var Popup_FollowUp_View	= Class.create(Reflex_Popup,
 				Popup_FollowUp_View.attachClosedOnceOffDateInformation(oTBody, this._oFollowUp);
 			}
 			
-			if (this._oFollowUp.followup_recurring_id || this._mRecurringIteration)
+			if (this._oFollowUp.followup_recurring_id || (this._mRecurringIteration !== null))
 			{
 				// Insert the 'this is part of a recurring fup...'
 				var oRecurringViewLink	= $T.a($T.span('Recurring Follow-Up'));

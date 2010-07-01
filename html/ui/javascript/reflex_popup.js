@@ -475,21 +475,17 @@ Object.extend(Reflex_Popup.Loading.prototype, {
 	{
 		this.parentInitialize(20);
 		
-		sMessage = sMessage ? String(sMessage) : 'Loading...';
+		var bShowTitle	= (sMessage ? true : false);
+		sMessage		= sMessage ? String(sMessage) : 'Loading...';
 		
-		var loading = this.loading = document.createElement('div');
-		loading.className = "reflex-loading-image";
-		loading.style.height = '8em';
-		p = document.createElement('p');
-		loading.appendChild(p);
-		p.appendChild(document.createTextNode(sMessage));
-		loading.appendChild(document.createElement('br'));
-		loading.appendChild(document.createElement('br'));
-		p = document.createElement('p');
-		loading.appendChild(p);
-		p.appendChild(document.createTextNode('Please wait.'));
+		this.loading	= 	$T.div({class: 'reflex-loading-image'},
+								$T.div(sMessage),
+								$T.div('Please wait.')
+							);
 		
-		this.setTitle(sMessage);
+		// Hide the title bar
+		this.titlePane.up().hide();
+		
 		this.setContent(this.loading);
 		this.setHeaderButtons(new Array());
 		this.setFooterButtons(new Array());

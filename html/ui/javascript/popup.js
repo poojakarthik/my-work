@@ -28,8 +28,6 @@ function VixenPopupClass()
 	
 	this.ViewContentCode = function()
 	{
-		//Vixen.debug = TRUE;
-		//debug(this.strSourceCode);
 		DebugWindow = window.open("", 'Debug Mode', 'scrollbars=yes');
 		DebugWindow.document.write('<xmp>');
 		DebugWindow.document.write(this.strContentCode);
@@ -53,6 +51,16 @@ function VixenPopupClass()
 	{
 		if (this.elmPopupContainer == null)
 		{
+			this.elmPopupContainer = Reflex_Popup.overlay;
+		}
+		
+		var aPopups	= this.elmPopupContainer.select('div.reflex-popup');
+		
+		return (aPopups.length != 0);
+		
+		/*
+		if (this.elmPopupContainer == null)
+		{
 			this.elmPopupContainer = $ID("PopupHolder");
 		}
 		
@@ -66,6 +74,7 @@ function VixenPopupClass()
 			// There are no popups
 			return false;
 		}
+		*/
 	}
 	
 	
@@ -73,6 +82,16 @@ function VixenPopupClass()
 	// Returns null if the popup cannot be found
 	this.GetPopupElement = function(strId)
 	{
+		if (this.elmPopupContainer == null)
+		{
+			this.elmPopupContainer = Reflex_Popup.overlay;
+		}
+		
+		var oPopup	= $ID('VixenPopup__' + strId);
+		
+		return (oPopup ? oPopup : null);
+		
+		/*
 		var strPopupId = 'VixenPopup__' + strId;
 		if (this.elmPopupContainer == null)
 		{
@@ -87,10 +106,12 @@ function VixenPopupClass()
 			}
 		}
 		return null;
+		*/
 	}
 	
 	this.Centre = function(strPopupId)
 	{
+		// Unchanged
 		var elmPopup = this.GetPopupElement(strPopupId);
 		if (elmPopup != null)
 		{
@@ -102,6 +123,7 @@ function VixenPopupClass()
 	// Set the title of a popup
 	this.SetTitle = function(strId, strTitle)
 	{
+		// Unchanged
 		var elmTitle = document.getElementById("VixenPopupTopBarTitle__" + strId);
 		if (elmTitle == null)
 		{
@@ -114,6 +136,28 @@ function VixenPopupClass()
 	// Sets the inner content of the popup identified by strId
 	this.SetContent = function(strId, strContent, strSize, strTitle)
 	{
+		//check that the popup exists; if it doesn't then return false
+		if (!(this.Exists(strId)))
+		{
+			return FALSE;
+		}
+		
+		var oPopupElement	= this.GetPopupElement(strId);
+		
+		// Set the content of the popup box
+		if (!strContent)
+		{
+			strContent	= "No data<br />Id: " + strId;
+		}
+		
+		oPopupElement.select('div.reflex-popup-content').first().innerHTML	= strContent;
+		
+		// Save the new content
+		this.strContentCode = strContent;
+		
+		return true;
+		
+		/*
 		//check that the popup exists; if it doesn't then return false
 		if (!(this.Exists(strId)))
 		{
@@ -150,10 +194,109 @@ function VixenPopupClass()
 		// Save the new content
 		this.strContentCode = strContent;
 		return TRUE;
+		*/
 	}
 
 	this.Create = function(strId, strContent, strSize, mixPosition, strModal, strTitle, strLocationOnClose, bolCanClose, fncAutohideCallback)
 	{
+		// set the location to relocate to, when the popup is closed.
+		// If null, then a page reload is not performed
+		// currently this only works when strModal == autohide 
+		this.strLocationOnClose	= strLocationOnClose;
+		
+		// If the title isn't specified then use the application name
+		strTitle	= (strTitle == null) ? VIXEN_APPLICATION_NAME : strTitle;
+		
+		// Try to find a previous popup
+		elmExists	= $ID('VixenPopup__' + strId);
+		if (elmExists)
+		{
+			// destroy it...
+			this.Close(elmExists);
+		}
+		
+		// ...and create it
+		var oPopup		= new Reflex_Popup();
+		var elmPopup	= oPopup.container;
+		elmPopup.setAttribute('Id', 'VixenPopup__' + strId);
+		elmPopup.oPopup	= oPopup;
+		
+		// Set the content of the popup box
+		if (!strContent)
+		{
+			strContent	= "No data<br />Id: " + strId;
+		}
+		
+		this.strContentCode	= strContent;
+		
+		// Set title bar id and close button
+		var oTitleBarElement	= elmPopup.select('div.reflex-popup-title-bar').first();
+		oTitleBarElement.setAttribute('id', "VixenPopupTopBar__" + strId);
+		
+		if (bolCanClose !== false)
+		{
+			oPopup.addCloseButton();
+		}
+		
+		// only display the debug button if we are operating in debug mode
+		/*if (DEBUG_MODE)
+		{
+			strContent += "<img src='img/template/debug.png' class='PopupBoxClose' onclick='Vixen.Popup.ViewContentCode()'>";
+		}*/
+		
+		oPopup.titleText.setAttribute('id', "VixenPopupTopBarTitle__" + strId);
+		oPopup.contentPane.setAttribute('id', "VixenPopupContent__" + strId);
+		oPopup.setTitle(strTitle);
+		oPopup.contentPane.innerHTML	= this.strContentCode;
+		
+		// set the top of the popup to the body.scrollTop, so that it doesn't move the page when it is added to it
+		elmPopup.style.top	= document.body.scrollTop + "px";
+
+		// Show the popup
+		oPopup.display();
+
+		// Set the size of the popup
+		var strWidth	= this.objSizes[strSize.toLowerCase()];
+		if (strWidth == null)
+		{
+			strWidth	= this.objSizes.defaultsize;
+		}
+		elmPopup.style.width	= strWidth + "px";
+
+		// Set the position (centre/pointer/target)
+		if (mixPosition == "centre")
+		{
+			// center the popup
+			elmPopup.style.left	= (((window.innerWidth / 2) - (elmPopup.offsetWidth / 2)) + window.scrollX) + "px";
+			elmPopup.style.top	= (((window.innerHeight / 2) - (elmPopup.offsetHeight / 2)) + window.scrollY) + "px";
+		}
+		else if (mixPosition == "[object MouseEvent]")
+		{
+			// set the popup to the cursor
+			elmPopup.style.left	= mixPosition.clientX + "px";
+			elmPopup.style.top	= mixPosition.clientY + "px";
+			
+		}
+		else if (typeof(mixPosition) == 'object')
+		{
+			// set the popup to the target
+			elmPopup.style.left	= mixPosition.offsetLeft + "px";
+			elmPopup.style.top	= mixPosition.offsetTop + "px";
+		}
+		else
+		{
+			// set the popup, well, wherever it wants
+		}
+		
+		// return a reference to the popup
+		return elmPopup;
+		
+		
+		
+		
+		
+		
+		/*
 		// set the location to relocate to, when the popup is closed.
 		// If null, then a page reload is not performed
 		// currently this only works when strModal == autohide 
@@ -399,6 +542,7 @@ function VixenPopupClass()
 		
 		// return a reference to the popup
 		return elmPopup;
+		*/
 	}
 	
 	//------------------------------------------------------------------------//
@@ -420,6 +564,55 @@ function VixenPopupClass()
 	 */
 	this.Close = function(mixId)
 	{
+		// Work out how we are going to find the popup element
+		if (typeof(mixId) == 'string')
+		{
+			// The id of the popup has been specified, find the popup element by id
+			var elmPopup = this.GetPopupElement(mixId);
+		}
+		else if (typeof(mixId) == 'object')
+		{
+			// An element on the popup has been specified, find the popup element through retracing the parents of this element
+			var elmElement = mixId;
+			var bolFoundPopup = false;
+			while (elmElement.tagName != "BODY")
+			{
+				if (elmElement.id.substr(0, 12) == "VixenPopup__")
+				{
+					bolFoundPopup = true;
+					break;
+				}
+				elmElement = elmElement.parentNode;
+			}
+			if (bolFoundPopup)
+			{
+				elmPopup = elmElement;
+			}
+			else
+			{
+				alert("Could not find the popup to close");
+				return;
+			}
+		}
+		else
+		{
+			alert("Could not close the popup.\nmixId must be a string or element on the popup.\nmixId = " + mixId.toString());
+			return;
+		}
+		
+		
+		if (elmPopup && elmPopup.oPopup)
+		{
+			elmPopup.oPopup.hide();
+			elmPopup.oPopup	= null;
+		}
+		
+		
+		
+		
+		
+		
+		/*
 		// Work out how we are going to find the popup element
 		if (typeof(mixId) == 'string')
 		{
@@ -479,6 +672,7 @@ function VixenPopupClass()
 				}
 			}
 		}
+		*/
 	}
 	
 	//------------------------------------------------------------------------//
@@ -512,7 +706,7 @@ function VixenPopupClass()
 	this.ShowAjaxPopup = function(strId, strSize, strTitle, strClass, strMethod, objParams, strWindowType)
 	{
 		var objSend = {};
-	
+	//debugger;
 		objSend.strId 		= strId;
 		objSend.strSize 	= strSize;
 		objSend.strTitle	= strTitle;
@@ -928,6 +1122,104 @@ function VixenPopupClass()
 		}
 		
 		// . . . and create it
+		var oPopup		= new Reflex_Popup();
+		var elmPopup	= oPopup.container;
+		elmPopup.setAttribute('Id', 'VixenPopup__Splash');
+		elmPopup.oPopup	= oPopup;
+		
+		// Set the content of the splash box
+		if (!strContent)
+		{
+			strContent = "No data<br />";
+		}
+		
+		// set the content of the splash
+		oPopup.contentPane.innerHTML	= strContent;
+		
+		// Hide the title bar
+		var oTitleBarElement	= elmPopup.select('div.reflex-popup-title-bar').first();
+		oTitleBarElement.hide();
+
+		// set the top of the splash to the body.scrollTop, so that it doesn't move the page when it is added to it
+		elmPopup.style.top	= document.body.scrollTop + "px";
+
+		// Add the splash to the PopupHolder element
+		oPopup.display();
+		
+		// Set the size of the splash
+		var strWidth	= this.objSizes[strSize.toLowerCase()];
+		if (strWidth == null)
+		{
+			strWidth	= this.objSizes.defaultsize;
+		}
+		elmPopup.style.width	= strWidth + "px";
+		
+		// Set the position
+		// MSIE and Firefox use different properties to find out the width and height of the window
+		if (window.innerWidth)
+		{
+			var intWindowInnerWidth		= window.innerWidth;
+			var intWindowInnerHeight	= window.innerHeight;
+		}
+		else if (document.body.offsetWidth)
+		{
+			var intWindowInnerWidth		= document.body.offsetWidth;
+			var intWindowInnerHeight	= document.body.offsetHeight;
+		}
+	
+		// center the splash
+		elmPopup.style.left	= (((intWindowInnerWidth / 2) - (elmPopup.offsetWidth / 2)) + document.body.scrollLeft) + "px";
+		elmPopup.style.top	= (((intWindowInnerHeight / 2) - (elmPopup.offsetHeight / 2)))  + "px";
+		
+		// Declaring it as being fixed position, must be done after left and top are set, not before it
+		elmPopup.style.position	= "fixed";
+		
+		// If elmElement has been defined, then position the splash above the element
+		// This has been incorporated into the functionality because sometimes in MSIE elements like comboboxes will
+		// always appear in front of the splash, regardless of their zIndex
+		if (elmElement)
+		{
+			// Find the absolute position of the element
+			var intOffsetTop	= elmElement.offsetTop;
+
+			while (elmElement.offsetParent)
+			{
+				elmElement		= elmElement.offsetParent;
+				intOffsetTop 	+= elmElement.offsetTop;
+			}
+	
+			elmPopup.style.top	= intOffsetTop - elmPopup.offsetHeight - 10 + "px";
+		}
+		
+		// Close the splash if intTime has been specified
+		if (intTime)
+		{
+			setTimeout(function(){Vixen.Popup.Close("Splash")}, intTime);
+		}
+		
+		
+		/*
+		// set defaults
+		if (strSize == null)
+		{
+			strSize = "medium";
+		}
+		
+		var elmElement = null;
+		if (strElement)
+		{
+			elmElement = $ID(strElement);
+		}
+	
+		// Try to find a previous splash
+		var elmExists = $ID('VixenPopup__Splash');
+		if (elmExists)
+		{
+			// destroy it . . .
+			elmExists.parentNode.removeChild(elmExists);
+		}
+		
+		// . . . and create it
 		var elmPopup = document.createElement('div');
 		elmPopup.setAttribute('className', 'PopupBox');
 		elmPopup.setAttribute('class', 'PopupBox');
@@ -1008,6 +1300,7 @@ function VixenPopupClass()
 		{
 			setTimeout(function(){Vixen.Popup.Close("Splash")}, intTime);
 		}
+		*/
 	}
 
 }

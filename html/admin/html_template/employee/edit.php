@@ -393,7 +393,14 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
 		{
 			echo "<div class='ButtonContainer' id='EmployeeButtons.Edit'$strEditDisplay><div class='right'>\n";
-			$this->AjaxSubmit('Save', NULL, $bolAdding ? 'Create' : 'Edit');
+			
+			if (!$bolAdding && $bolProperAdminUser)
+			{
+				$this->Button("Reassign Tickets & Follow-Ups", "EmployeeEdit.showReassignPopup(".DBO()->Employee->Id->Value.", Vixen.Popup.arrOverlayZIndexHistory.pop());");
+			}
+			
+			$this->_renderSaveButton(DBO()->Employee->Id->Value, 'Save', NULL, $bolAdding ? 'Create' : 'Edit');
+			
 			if (!$bolAdding)
 			{
 				$this->Button("Cancel", "EmployeeEdit.toggle();");
@@ -402,12 +409,18 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 			{
 				$this->Button("Cancel", "Vixen.Popup.Close(this);");
 			}
+			
 			echo "</div></div>";
 	
 			if (!$bolAdding)
 			{
 				echo "<div class='ButtonContainer' id='EmployeeButtons.View'$strViewDisplay><div class='right'>\n";
-
+				
+				if ($bolProperAdminUser)
+				{
+					$this->Button("Reassign Tickets & Follow-Ups", "EmployeeEdit.showReassignPopup(".DBO()->Employee->Id->Value.", Vixen.Popup.arrOverlayZIndexHistory.pop());");
+				}
+				
 				if ($bolProperAdminUser || $bolEditSelf)
 				{
 					$this->Button("Edit", "EmployeeEdit.toggle();");
@@ -423,6 +436,37 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 		$this->FormEnd();
 		
 		echo "<!-- END HtmlTemplateEmployeeEdit -->\n";
+	}
+	
+	// This is a copy of HtmlTemplate::AjaxSubmit, customised so that the save button can have an intermediate click event
+	private function _renderSaveButton($iEmployeeId, $strLabel, $strTemplate=NULL, $strMethod=NULL, $strTargetType=NULL, $strStyleClass="InputSubmit", $strButtonId='VixenButtonId')
+	{
+		$strTarget = '';
+		$strId = '';
+		$strSize = '';
+		
+		if (!$strTemplate)
+		{
+			$strTemplate = $this->_strTemplate;
+		}
+		if (!$strMethod)
+		{
+			$strMethod = $this->_strMethod;
+		}
+		if (is_object($this->_objAjax))
+		{
+			//echo $this->_objAjax->TargetType;
+			$strTarget = $this->_objAjax->TargetType;
+			$strId = $this->_objAjax->strId;
+			$strSize = $this->_objAjax->strSize;
+		}
+		
+		if ($strTargetType !== NULL)
+		{
+			$strTarget = $strTargetType;
+		}
+		
+		echo "<input type='button' value='$strLabel' class='$strStyleClass' id='$strButtonId' name='VixenButtonId' onclick=\"EmployeeEdit.checkForAssignedTasks({$iEmployeeId}, function() {Vixen.Ajax.SendForm('{$this->_strForm}', '$strLabel','$strTemplate', '$strMethod', '$strTarget', '$strId', '$strSize', '{$this->_strContainerDivId}');});\"></input>\n";
 	}
 }
 

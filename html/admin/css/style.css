@@ -570,8 +570,19 @@ div.reflex-loading-image {
 	text-align: center;
 }
 
-div.reflex-loading-image p {
-	text-align: center;
+div.reflex-loading-image > div
+{
+	text-align	: center;
+}
+
+div.reflex-loading-image > div:first-child
+{
+	padding	: 1em 1em 2em 1em;
+}
+
+div.reflex-loading-image > div:last-child
+{
+	padding	: 2em 1em 1em 1em;
 }
 
 div.reflex-popup-content h1 {
@@ -592,6 +603,21 @@ div.reflex-popup-footer input[type="button"] {
 div.reflex-popup-footer input.reflex-button {
 	margin-left: 0.5em;
 }
+
+div.reflex-popup-centred
+{
+	text-align	: center;
+	margin		: 0.5em 0em;
+}
+
+/* Vixen popup work around */
+div.reflex-popup > div.reflex-popup-content > div#PopupPageBody,
+div.reflex-popup > div.reflex-popup-content > div#GroupedContent
+{
+	background-color	: inherit;
+}
+
+
 /************************ END - Reflex Popup - END ****************************/
 
 /***************** START - Credit Card Payment Form - START *******************/
@@ -1202,20 +1228,10 @@ div.action-list div.item div.details div.details-inner
 	margin-top	: 0.5em;
 }
 
-/*
-div.action-list div.item div.details > div:first-child
-{
-	display		: inline-block;
-}
-
-div.action-list div.item div.details > div > div.by-line
-{
-	margin-bottom	: 0.5em;
-}*/
-
 div.action-list-controls
 {
 }
+
 /***************************** END - Actions - END ****************************/
 
 
@@ -4542,6 +4558,13 @@ div.followup-list-all-pagination
 	padding-right	: 1em;
 }
 
+span.pagination-loading
+{
+	font-style		: italic;
+	color			: #666;
+	padding-right	: 1em;
+}
+
 div.section > div.section-header > div.section-header-title > span.followup-list-all-pagination-info
 {
 	padding-left	: 0.5em;
@@ -5785,4 +5808,71 @@ div.popup-login > div.GroupedContent > table > tbody > tr > td:last-child > inpu
 
 /***************** END - Login Popup - END ****************/
 
+/***************** END - Login Popup - END ****************/
 
+div.popup-employee-reassign-tasks
+{
+	margin	: 0.5em;
+}
+
+div.popup-employee-reassign-tasks div.control-field,
+div.popup-employee-reassign-tasks-tickets-selects,
+div.popup-employee-reassign-tasks-followups-selects,
+div.popup-employee-reassign-tasks-tickets-none,
+div.popup-employee-reassign-tasks-followups-none
+{
+	display	: inline-block;
+}
+
+div.popup-employee-reassign-tasks-tickets-none,
+div.popup-employee-reassign-tasks-followups-none
+{
+	padding	: 0.5em 0em 0em 0em;
+}
+
+div.popup-employee-reassign-tasks-task-summary,
+div.popup-employee-reassign-tasks-message
+{
+	margin-bottom	: 0.5em;
+	padding-bottom	: 0.25em;
+}
+
+span.popup-employee-reassign-tasks-task-label
+{
+	display			: inline-block;
+	vertical-align	: top;
+	width			: 25%;
+	padding			: 0.5em 0.25em 0.25em 0.25em;
+}
+
+span.popup-employee-reassign-tasks-task-label > span:first-child
+{
+	font-weight	: bold;
+}
+
+span.popup-employee-reassign-tasks-select-label
+{
+	display			: inline-block;
+	width			: 5em;
+	vertical-align	: middle;
+}
+
+div.validation-errors
+{
+	padding	: 0.5em;
+}
+
+div.popup-employee-reassign-tasks-task-summary
+{
+	-moz-border-radius	:4px;
+	background-color	:#dfdfdf;
+	border				:1px solid #34446A;
+}
+
+div.popup-employee-reassign-tasks-followups-selects > div,
+div.popup-employee-reassign-tasks-tickets-selects > div
+{
+	padding-top	: 0.25em;
+}
+
+/***************** END - Login Popup - END ****************/

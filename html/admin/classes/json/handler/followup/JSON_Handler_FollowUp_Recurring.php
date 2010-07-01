@@ -22,7 +22,8 @@ class JSON_Handler_FollowUp_Recurring extends JSON_Handler
 			}
 			
 			// Check for special sorting fields and convert them to actual fields
-			$aSort	= get_object_vars($oSort);
+			$aSort		= get_object_vars($oSort);
+			$aFilter	= get_object_vars($oFilter);
 			if (isset($aSort['recurrence_period']))
 			{
 				// Recurrence period (e.g. 3 Weeks, 1 Month)
@@ -49,38 +50,30 @@ class JSON_Handler_FollowUp_Recurring extends JSON_Handler
 				// Count Only
 				return 	array(
 							"Success"		=> true,
-							"iRecordCount"	=> FollowUp_Recurring::searchFor(null, null, $aSort, get_object_vars($oFilter), true)
+							"iRecordCount"	=> FollowUp_Recurring::searchFor(null, null, $aSort, $aFilter, true)
 						);
 			}
 			else
 			{
 				$iLimit					= (max($iLimit, 0) == 0) ? null : (int)$iLimit;
 				$iOffset				= ($iLimit === null) ? null : max((int)$iOffset, 0);
-				$aFollowUpRecurrings	= FollowUp_Recurring::searchFor($iLimit, $iOffset, $aSort, get_object_vars($oFilter), false, true);
+				$aFollowUpRecurrings	= FollowUp_Recurring::searchFor($iLimit, $iOffset, $aSort, $aFilter, false, true);
 				$aResults				= array();
-				$iCount					= 0;		
+				$iCount					= 0;
 				foreach ($aFollowUpRecurrings as $oFollowUpStdClass)
 				{
-					if ($iLimit && $iCount >= $iOffset+$iLimit)
-					{
-						// Break out, as there's no point in continuing
-						break;
-					}
-					elseif ($iCount >= $iOffset)
-					{
-						// Add other special fields
-						$oFollowUpStdClass->assigned_employee_label			= Employee::getForId($oFollowUpStdClass->assigned_employee_id)->getName();
-						$oFollowUpStdClass->followup_category_label			= FollowUp_Category::getForId($oFollowUpStdClass->followup_category_id)->name;
-						
-						// Get the followup_recurring orm object to get the details
-						$oFollowUpRecurring	= FollowUp_Recurring::getForId($oFollowUpStdClass->id);
-						$oFollowUpStdClass->details	= $oFollowUpRecurring->getDetails();
-						$oFollowUpStdClass->summary	= $oFollowUpRecurring->getSummary();
-						
-						// Add to Result Set
-						$aResults[$iCount+$iOffset]	= $oFollowUpStdClass;
-					} 
+					// Add other special fields
+					$oFollowUpStdClass->assigned_employee_label			= Employee::getForId($oFollowUpStdClass->assigned_employee_id)->getName();
+					$oFollowUpStdClass->followup_category_label			= FollowUp_Category::getForId($oFollowUpStdClass->followup_category_id)->name;
 					
+					// Get the followup_recurring orm object to get the details
+					$oFollowUpRecurring	= FollowUp_Recurring::getForId($oFollowUpStdClass->id);
+					$oFollowUpStdClass->details	= $oFollowUpRecurring->getDetails();
+					$oFollowUpStdClass->summary	= $oFollowUpRecurring->getSummary();
+					
+					// Add to Result Set
+					$aResults[$iCount+$iOffset]	= $oFollowUpStdClass;
+				
 					$iCount++;
 				}
 				
@@ -88,7 +81,7 @@ class JSON_Handler_FollowUp_Recurring extends JSON_Handler
 				return 	array(
 							"Success"		=> true,
 							"aRecords"		=> $aResults,
-							"iRecordCount"	=> FollowUp_Recurring::searchFor(null, null, get_object_vars($oSort), get_object_vars($oFilter), true)
+							"iRecordCount"	=> FollowUp_Recurring::searchFor(null, null, $aSort, $aFilter, true)
 						);
 			}
 		}

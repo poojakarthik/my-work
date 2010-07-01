@@ -760,9 +760,6 @@ var Charge_Management = Class.create
 		var strPopupTitle = "hello";
 		
 		var objPopup = this._objConfirmationPopup;
-		
-		var elmTitle = document.createElement('span');
-		var elmTitleImage = document.createElement('img');
 
 		// Calculate all the totals for the summary
 		var fltTotalCredits = 0.0;
@@ -814,7 +811,7 @@ var Charge_Management = Class.create
 		objPopup.objSummary.objTotalCredits.elmValue.innerHTML = '$' + fltTotalCredits.toFixed(2);
 		objPopup.objSummary.objTotalDebits.elmValue.innerHTML = '$' + fltTotalDebits.toFixed(2);
 		
-		
+		var sIconSrc	= '';
 		if (action == Charge_Management.APPROVE_CHARGES)
 		{
 			// User wants to approve some charges
@@ -822,11 +819,9 @@ var Charge_Management = Class.create
 			objPopup.domApproveChargesConfirmButton.style.display = 'inline';
 			objPopup.domDeclineChargesConfirmButton.style.display = 'none';
 			
-			strPrompt = "Are you sure you want to approve these " + this._sChargeModel + " requests?";
-			strPopupTitle = "Approve " + this._sChargeModel + " Requests";
-			
-			elmTitleImage.src = 'img/template/approve.png';
-			elmTitleImage.alt = 'Approve';
+			strPrompt 		= "Are you sure you want to approve these " + this._sChargeModel + " requests?";
+			strPopupTitle 	= "Approve " + this._sChargeModel + " Requests";
+			sIconSrc		= 'img/template/approve.png';
 		}
 		else if (action == Charge_Management.DECLINE_CHARGES)
 		{
@@ -836,20 +831,18 @@ var Charge_Management = Class.create
 			objPopup.domApproveChargesConfirmButton.style.display = 'none';
 			objPopup.domDeclineChargesConfirmButton.style.display = 'inline';
 
-			strPrompt = "Are you sure you want to reject these " + this._sChargeModel + " requests?";
-			strPopupTitle = "Reject " + this._sChargeModel + " Requests";
-
-			elmTitleImage.src = 'img/template/decline.png';
-			elmTitleImage.alt = 'Reject';
+			strPrompt 		= "Are you sure you want to reject these " + this._sChargeModel + " requests?";
+			strPopupTitle	= "Reject " + this._sChargeModel + " Requests";
+			sIconSrc		= 'img/template/decline.png';
 		}
 		else
 		{
 			$Alert('Unknown action: '+ action);
 			return;
 		}
-		elmTitle.appendChild(elmTitleImage);
-		elmTitle.appendChild(document.createTextNode(strPopupTitle));
-		objPopup.popPopup.setTitleElement(elmTitle);
+		
+		objPopup.popPopup.setTitle(strPopupTitle);
+		objPopup.popPopup.setIcon(sIconSrc);
 		objPopup.objPrompt.domElement.innerHTML = strPrompt;
 		
 		objPopup.popPopup.display();

@@ -69,6 +69,9 @@ var Component_FollowUp_List_All = Class.create(
 											),
 											$T.div({class: 'section-header-options'},
 												$T.div({class: 'followup-list-all-pagination'},
+													$T.span({class: 'pagination-loading'},
+														'Loading...'
+													),
 													$T.button({class: 'followup-list-all-pagination-button'},
 														$T.img({src: sButtonPathBase + 'first.png'})
 													),
@@ -162,20 +165,20 @@ var Component_FollowUp_List_All = Class.create(
 		var aBottomPageButtons 	= this._oContentDiv.select('div.footer-pagination button');
 		
 		// First
-		aTopPageButtons[0].observe('click', this.oPagination.firstPage.bind(this.oPagination));
-		aBottomPageButtons[0].observe('click', this.oPagination.firstPage.bind(this.oPagination));
+		aTopPageButtons[0].observe('click', this._changePage.bind(this, 'firstPage'));
+		aBottomPageButtons[0].observe('click', this._changePage.bind(this, 'firstPage'));
 		
 		//Previous		
-		aTopPageButtons[1].observe('click', this.oPagination.previousPage.bind(this.oPagination));
-		aBottomPageButtons[1].observe('click', this.oPagination.previousPage.bind(this.oPagination));
+		aTopPageButtons[1].observe('click', this._changePage.bind(this, 'previousPage'));
+		aBottomPageButtons[1].observe('click', this._changePage.bind(this, 'previousPage'));
 		
 		// Next
-		aTopPageButtons[2].observe('click', this.oPagination.nextPage.bind(this.oPagination));
-		aBottomPageButtons[2].observe('click', this.oPagination.nextPage.bind(this.oPagination));
+		aTopPageButtons[2].observe('click', this._changePage.bind(this, 'nextPage'));
+		aBottomPageButtons[2].observe('click', this._changePage.bind(this, 'nextPage'));
 		
 		// Last
-		aTopPageButtons[3].observe('click', this.oPagination.lastPage.bind(this.oPagination));
-		aBottomPageButtons[3].observe('click', this.oPagination.lastPage.bind(this.oPagination));
+		aTopPageButtons[3].observe('click', this._changePage.bind(this, 'lastPage'));
+		aBottomPageButtons[3].observe('click', this._changePage.bind(this, 'lastPage'));
 		
 		// Setup pagination button object
 		this.oPaginationButtons = {
@@ -200,6 +203,25 @@ var Component_FollowUp_List_All = Class.create(
 		this._oSort.refreshData(true);
 		this._oFilter.refreshData(true);
 		this.oPagination.getCurrentPage();
+	},
+	
+	_showLoading	: function(bShow)
+	{
+		var oLoading	= this._oContentDiv.select('span.pagination-loading').first();
+		if (bShow)
+		{
+			oLoading.show();
+		}
+		else
+		{
+			oLoading.hide();
+		}
+	},
+	
+	_changePage	: function(sFunction)
+	{
+		this._showLoading(true);
+		this.oPagination[sFunction]();
 	},
 	
 	_updateTable	: function(oResultSet)
@@ -246,13 +268,8 @@ var Component_FollowUp_List_All = Class.create(
 		
 		// Call manual refresh on the followup link
 		FollowUpLink.refresh();
-		
-		// Close the loading popup
-		if (this.oLoadingOverlay)
-		{
-			this.oLoadingOverlay.hide();
-			delete this.oLoadingOverlay;
-		}
+	
+		this._showLoading(false);
 	},
 	
 	_createNoRecordsRow	: function(bOnLoad)

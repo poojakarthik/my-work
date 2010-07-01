@@ -100,7 +100,7 @@ class FollowUp_Recurring extends ORM_Cached
 		}
 		
 		// WHERE clause
-		$aWhereInfo				= StatementSelect::generateWhere($aAliases, $aFilter);
+		$aWhereInfo	= StatementSelect::generateWhere($aAliases, $aFilter);
 		if ($aWhereInfo['sClause'] == '')
 		{
 			$aWhereInfo['sClause']	.= ' 1';
@@ -140,7 +140,7 @@ class FollowUp_Recurring extends ORM_Cached
 							$sOrderByClause, 
 							$sLimitClause
 						);
-	
+		
 		$iCount	= $oSelect->Execute($aWhereInfo['aValues']);
 		if ($iCount === FALSE)
 		{
