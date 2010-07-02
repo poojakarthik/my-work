@@ -1,0 +1,12 @@
+{
+    "pre":	[
+
+			],
+    "post": [
+				"SP.Sale.ProductTypeModule",
+				"SP.*"
+
+
+
+			]
+}
