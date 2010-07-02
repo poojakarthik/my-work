@@ -37,11 +37,11 @@
  *
  * Defines the resultant Href for each paricular item that can be included in a menu.
  * Each type of menu item (a command in the context menu) should have a method
- * defined here which returns the Href that should be used when the menu item is 
+ * defined here which returns the Href that should be used when the menu item is
  * clicked.  Alternatively the menu item can be handled by the __call function.
  * You will notice that the menu item "ViewAccount" has been handled both ways as
  * an example of how they work.
- * These menu items can also be expressed as BreadCrumbMenu items, so long as they 
+ * These menu items can also be expressed as BreadCrumbMenu items, so long as they
  * set $strLabel to the label that will be displayed for the BreadCrumb.
  *
  * @prefix	mit
@@ -94,7 +94,7 @@ class MenuItems {
 	 * Returns the label for this menu item or NULL if not set
 	 *
 	 * Returns the label for this menu item or NULL if not set
-	 * 
+	 *
 	 * @return	string	the label for this menu item or NULL if not set
 	 *
 	 * @method
@@ -119,7 +119,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the EmployeeMessageManagement functionality is requested
 	 *
 	 * Compiles the Href to be executed when the EmployeeMessageManagement functionality is requested
-	 * 
+	 *
 	 * @return	string				Href
 	 *
 	 * @method
@@ -140,7 +140,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the TicketingConsole menu item is clicked
 	 *
 	 * Compiles the Href to be executed when the TicketingConsole menu item is clicked
-	 * 
+	 *
 	 * @return	string				Href to be executed when the TicketingConsole menu item is clicked
 	 *
 	 * @method
@@ -165,7 +165,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the TicketingAttachmentTypes menu item is clicked
 	 *
 	 * Compiles the Href to be executed when the TicketingAttachmentTypes menu item is clicked
-	 * 
+	 *
 	 * @return	string				Href to be executed when the TicketingAttachmentTypes menu item is clicked
 	 *
 	 * @method
@@ -183,7 +183,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the TicketingConsole menu item is clicked
 	 *
 	 * Compiles the Href to be executed when the TicketingConsole menu item is clicked
-	 * 
+	 *
 	 * @return	string				Href to be executed when the TicketingConsole menu item is clicked
 	 *
 	 * @method
@@ -195,7 +195,7 @@ class MenuItems {
 		$last = $lastQuery ? '/Last' : ($lastQuery === FALSE ? '/All/' : '/');
 		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/Tickets{$last}";
 	}
-	
+
 	/**
 	 * ViewTicketsForAccount()
 	 *
@@ -203,8 +203,8 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the ViewTicketsForAccount functionality is triggered
 	 * This is currently implemented in a hack way, by doing a normal ticket quickSearch using the account id as the search string
-	 * It can return tickets not associated with the account 
-	 * 
+	 * It can return tickets not associated with the account
+	 *
 	 * @return	string				Href to be executed when the TicketingConsole menu item is clicked
 	 *
 	 * @method
@@ -214,10 +214,10 @@ class MenuItems {
 		$this->strContextMenuLabel = "View All";
 		$this->strLabel = "Tickets";
 		$strLast = ($bolLastQuery)? "/Last" : "";
-		
+
 		return self::NEW_FRAMEWORK ."reflex.php/Ticketing/Tickets{$strLast}/?Account=$intAccountId";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// TicketingTicket
 	//------------------------------------------------------------------------//
@@ -227,10 +227,10 @@ class MenuItems {
 	 * Compiles the Href to be executed when the TicketingTicket menu item is clicked
 	 *
 	 * Compiles the Href to be executed when the TicketingTicket menu item is clicked
-	 * 
+	 *
 	 * @param	int		$ticketId		id of the ticket to view
 	 * @param	int		$intAccountId	(Optional, defaults to NULL, meaning no account context), if you want to view the ticket, in the context of a particular account, (should be the account that the ticket belongs to)
-	 * 
+	 *
 	 * @return	string				Href to be executed when the TicketingTicket menu item is clicked
 	 *
 	 * @method
@@ -239,7 +239,7 @@ class MenuItems {
 	{
 		$this->strContextMenuLabel = "View Ticket $ticketId";
 		$this->strLabel = "Ticket " . $ticketId;
-		
+
 		return self :: NEW_FRAMEWORK . "reflex.php/Ticketing/Ticket/$ticketId/View/?Account=$intAccountId";
 	}
 
@@ -252,7 +252,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the "View User's Tickets" menu item is clicked
 	 *
 	 * Compiles the Href to be executed when the "View User's Tickets" menu item is clicked
-	 * 
+	 *
 	 * @return	string				Href to be executed
 	 *
 	 * @method
@@ -273,7 +273,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the "Add Ticket" functionality is triggered
 	 *
 	 * Compiles the Href to be executed when the "Add Ticket" functionality is triggered
-	 * 
+	 *
 	 * @param	int			$intAccountId	OPTIONAL(defaults to NULL) - id of the account to associate the ticket with
 	 * @param	int			$intServiceId	OPTIONAL(defaults to NULL) - id of the service to associate the ticket with
 	 * @return	string						Href to be executed
@@ -293,9 +293,9 @@ class MenuItems {
 		{
 			$arrGetVars[] = "serviceId[]={$intServiceId}";
 		}
-		
+
 		$strGetVars = count($arrGetVars)? "?". implode('&', $arrGetVars) : "";
-		
+
 		$this->strContextMenuLabel = "Add New Ticket";
 		$this->strLabel = "New Ticket";
 		return self :: NEW_FRAMEWORK . "reflex.php/Ticketing/Ticket/Create/{$strGetVars}";
@@ -310,7 +310,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the TicketingSummaryReport menu item is clicked
 	 *
 	 * Compiles the Href to be executed when the TicketingSummaryReport menu item is clicked
-	 * 
+	 *
 	 * @param	bool	$bolRetrieveCachedReport	optional, defaults to false. Set to true to retrieve the last report generated, which is stored in the user's session object
 	 * @return	string								Href to be executed when the TicketingSummaryReport menu item is clicked
 	 *
@@ -332,7 +332,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the ManageCustomerStatuses menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the ManageCustomerStatuses menu item is triggered
-	 * 
+	 *
 	 * @return	string			Href
 	 *
 	 * @method
@@ -353,7 +353,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the ViewCustomerStatus menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the ViewCustomerStatus menu item is triggered
-	 * 
+	 *
 	 * @param	integer			id of the customer status to view
 	 * @return	string			Href
 	 *
@@ -376,7 +376,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the EditCustomerStatus menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the EditCustomerStatus menu item is triggered
-	 * 
+	 *
 	 * @param	integer			id of the customer status to edit
 	 * @return	string			Href
 	 *
@@ -399,7 +399,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the CustomerStatusSummaryReport menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the CustomerStatusSummaryReport menu item is triggered
-	 * 
+	 *
 	 * @return	string			Href
 	 *
 	 * @method
@@ -420,7 +420,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the CustomerStatusAccountReport menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the CustomerStatusAccountReport menu item is triggered
-	 * 
+	 *
 	 * @return	string			Href
 	 *
 	 * @method
@@ -441,7 +441,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the GenerateCustomerStatusAccountReport functionality is triggered
 	 *
 	 * Compiles the Href to be executed when the GenerateCustomerStatusAccountReport functionality is triggered
-	 * 
+	 *
 	 * @return	string			Href
 	 *
 	 * @method
@@ -470,7 +470,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the ViewServiceRatePlan menu item is clicked
 	 *
 	 * Compiles the Href to be executed when the ViewServiceRatePlan menu item is clicked
-	 * 
+	 *
 	 * @param	int		$intId		id of the service, to view the RatePlan of
 	 *
 	 * @return	string				Href to be executed when the ViewServiceRatePlan menu item is clicked
@@ -493,7 +493,7 @@ class MenuItems {
 	 * Compiles the Href for the Document Template History webpage
 	 *
 	 * Compiles the Href for the Document Template History webpage
-	 * 
+	 *
 	 * @param	int		$intCustomerGroup	id of the CustomerGroup
 	 * @param	int		$intTemplateType	DocumentTemplateType Id
 	 *
@@ -517,7 +517,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the ViewCustomerGroup menu item is clicked
 	 *
 	 * Compiles the Href to be executed when the ViewCustomerGroup menu item is clicked
-	 * 
+	 *
 	 * @param	int		$intId					id of the CustomerGroup
 	 * @param	string	$strBreadCrumbLabel		optional, breadcrumb label, preferably the name of the customer group
 	 *
@@ -548,7 +548,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the ViewCustomerGroupCreditCardConfig menu item is clicked
 	 *
 	 * Compiles the Href to be executed when the ViewCustomerGroupCreditCardConfig menu item is clicked
-	 * 
+	 *
 	 * @param	int		$intId					id of the CustomerGroup
 	 *
 	 * @return	string				Href to be executed when the ViewCustomerGroup menu item is clicked
@@ -571,7 +571,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the AddDocumentResource menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the AddDocumentResource menu item is triggered
-	 * 
+	 *
 	 * @param	int		$intCustomerGroup		id of the CustomerGroup
 	 * @param	int		$intResourceType		id of the DocumentResourceType to add a new resource to
 	 * @param	int		$strResourceTypeName	Name of the resource type (gets displayed in the popup's title bar)
@@ -600,7 +600,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the View Document Template Sample PDF menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the View Document Template Sample PDF menu item is triggered
-	 * 
+	 *
 	 * @param	int		$intCustomerGroup		optional, defaults to NULL, id of the CustomerGroup
 	 * @param	int		$intTemplateType		optional, defaults to NULL, id of the DocumentTemplateType to build a pdf of
 	 *
@@ -628,14 +628,14 @@ class MenuItems {
 	 * Compiles the Href to be executed when the ViewDocumentResource menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the ViewDocumentResource menu item is triggered
-	 * 
+	 *
 	 * @param	int		$intResourceId		id of the DocumentResource to view
 	 * @param	bool	$bolDownloadFile	optional, defaults to FALSE, if set to TRUE
 	 *										then the user will be prompted to save the file
 	 *										or choose a program to open it with
 	 *										If set to false, the resource will be sent to the
 	 *										browser with its MIME type declared and the browser
-	 *										will display it however it does for files of this 
+	 *										will display it however it does for files of this
 	 *										MIME type
 	 *
 	 * @return	string					Href to trigger the functionality
@@ -661,7 +661,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the ViewDocumentResources menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the ViewDocumentResources menu item is triggered
-	 * 
+	 *
 	 * @param	int		$intCustomerGroup	id of the CustomerGroup to view the resources of
 	 *
 	 * @return	string						Href to trigger the functionality
@@ -683,7 +683,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the ManageSales functionality is requested
 	 *
 	 * Compiles the Href to be executed when the ManageSales functionality is requested
-	 * 
+	 *
 	 * @param	bool	$bolLast			optional, defaults to FALSE. If true, then the Manage Sales functionality will load, reflecting the last
 	 * 										set of boundary conditions
 	 * @return	string						Href to trigger the functionality
@@ -707,7 +707,7 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the VerifySales functionality is requested
 	 * This is currently exactly the same as the ManageSales menu item, just named differently
-	 * 
+	 *
 	 * @param	bool	$bolLast			optional, defaults to FALSE. If true, then the Verify Sales functionality will load, reflecting the last
 	 * 										set of boundary conditions
 	 * @return	string						Href to trigger the functionality
@@ -730,7 +730,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the ViewSale functionality is requested
 	 *
 	 * Compiles the Href to be executed when the ViewSale functionality is requested
-	 * 
+	 *
 	 * @param	int			$intSaleId		id of the sale to view
 	 * @return	string						Href to trigger the functionality
 	 * @method
@@ -742,7 +742,7 @@ class MenuItems {
 
 		return self :: NEW_FRAMEWORK . "reflex.php/Sales/ViewSale/$intSaleId/";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// SalesReport
 	//------------------------------------------------------------------------//
@@ -752,9 +752,9 @@ class MenuItems {
 	 * Compiles the Href to be executed when the Sales Reporting functionality is requested
 	 *
 	 * Compiles the Href to be executed when the Sales Reporting functionality is requested
-	 * 
+	 *
 	 * @param	string	$strReportType		The type of report to generate
-	 * 										
+	 *
 	 * @return	string						Href to trigger the functionality
 	 * @method
 	 */
@@ -765,14 +765,14 @@ class MenuItems {
 		{
 			throw new Exception(__METHOD__ ." - Unknown sales report type: $strReportType");
 		}
-		
+
 		$this->strLabel				= $arrReportTypes[$strReportType]['Name'];
 		$this->strContextMenuLabel	= $this->strLabel;
 		$strRetrieveReport			= $bolRetrieveReport ? "GetReport/" : "";
 
 		return self::NEW_FRAMEWORK . "reflex.php/Sales/Report/{$strReportType}/$strRetrieveReport";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// ViewSalesForAccount
 	//------------------------------------------------------------------------//
@@ -782,7 +782,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the ViewSalesForAccount functionality is requested
 	 *
 	 * Compiles the Href to be executed when the ViewSalesForAccount functionality is requested
-	 * 
+	 *
 	 * @param	int			$intAccountId		id of the sale to view
 	 * @return	string							Href to trigger the functionality
 	 * @method
@@ -791,9 +791,9 @@ class MenuItems {
 	{
 		$this->strLabel = "View Sales";
 		$this->strContextMenuLabel = "View Sales";
-		
+
 		return "javascript:JsAutoLoader.loadScript('javascript/account_sales.js', function(){AccountSales.showSales($intAccountId);});";
-	}	
+	}
 
 	//------------------------------------------------------------------------//
 	// ManageDealers
@@ -804,7 +804,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the ManageDealers functionality is requested
 	 *
 	 * Compiles the Href to be executed when the ManageDealers functionality is requested
-	 * 
+	 *
 	 * @return	string						Href to trigger the functionality
 	 * @method
 	 */
@@ -824,7 +824,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the ViewDealer functionality is requested
 	 *
 	 * Compiles the Href to be executed when the ViewDealer functionality is requested
-	 * 
+	 *
 	 * @return	string						Href to trigger the functionality
 	 * @method
 	 */
@@ -844,7 +844,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the EditDealer functionality is requested
 	 *
 	 * Compiles the Href to be executed when the EditDealer functionality is requested
-	 * 
+	 *
 	 * @return	string						Href to trigger the functionality
 	 * @method
 	 */
@@ -864,7 +864,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the ViewAllCustomerGroups menu item is clicked
 	 *
 	 * Compiles the Href to be executed when the ViewAllCustomerGroups menu item is clicked
-	 * 
+	 *
 	 * @return	string				Href to be executed when the ViewAllCustomerGroups menu item is clicked
 	 *
 	 * @method
@@ -884,7 +884,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the ManagePaymentTerms menu item is clicked
 	 *
 	 * Compiles the Href to be executed when the ManagePaymentTerms menu item is clicked
-	 * 
+	 *
 	 * @return	string				Href to be executed when the ManagePaymentTerms menu item is clicked
 	 *
 	 * @method
@@ -904,7 +904,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the AddCustomerGroup menu item is clicked
 	 *
 	 * Compiles the Href to be executed when the AddCustomerGroup menu item is clicked
-	 * 
+	 *
 	 * @return	string				Href to be executed when the AddCustomerGroup menu item is clicked
 	 *
 	 * @method
@@ -925,7 +925,7 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the EmployeeConsolet menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @return	string				Href to be executed when the EmployeeConsole menu item is clicked
 	 *
 	 * @method
@@ -946,7 +946,7 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the EmployeeList menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @return	string				Href to be executed when the EmployeeList menu item is clicked
 	 *
 	 * @method
@@ -968,7 +968,7 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the AddCustomer menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @return	string				Href to be executed when the AddCustomer menu item is clicked
 	 *
 	 * @method
@@ -989,7 +989,7 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the FindCustomer menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @return	string				Href to be executed when the FindCustomer menu item is clicked
 	 *
 	 * @method
@@ -1011,7 +1011,7 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the CustomerSearch functionality is triggered
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @return	string				Href
 	 *
 	 * @method
@@ -1032,7 +1032,7 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the CustomerOverdueList functionality is triggered
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @return	string				Href
 	 *
 	 * @method
@@ -1040,7 +1040,7 @@ class MenuItems {
 	function CustomerOverdueList() {
 		$this->strLabel = "Overdue Customers";
 		$this->strContextMenuLabel = "Overdue Customers";
-		
+
 		//return "javascript:FlexCustomerOverdueList.displayPopup()";
 		return "javascript:JsAutoLoader.loadScript('javascript/customer_overdue_list.js', function(){FlexCustomerOverdueList.displayPopup();});";
 	}
@@ -1055,7 +1055,7 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the AddServices (service add bulk) menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param 	integer		$intAccountId	Id of the account that the services will be added to
 	 *
 	 * @return	string						Href to be executed when the AddServices menu item is clicked
@@ -1078,7 +1078,7 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the EditContact menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intId		id of the contact to edit
 	 *
 	 * @return	string				Href to be executed when the EditContact menu item is clicked
@@ -1101,7 +1101,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the ExportInvoiceAsCSV menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the ExportInvoiceAsCSV menu item is triggered
-	 * 
+	 *
 	 * @param	int		$intInvoiceId		id of the Invoice to download as a CSV file
 	 *
 	 * @return	string						Href to be executed when the ExportInvoiceAsCSV menu item is triggered
@@ -1123,7 +1123,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the ViewAllConstants menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the ViewAllConstants menu item is triggered
-	 * 
+	 *
 	 * @return	string			Href to be executed when the ViewAllConstants menu item is triggered
 	 *
 	 * @method
@@ -1143,7 +1143,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the SystemSettingsMenu menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the SystemSettingsMenu menu item is triggered
-	 * 
+	 *
 	 * @return	string						Href to be executed when the SystemSettingsMenu menu item is triggered
 	 *
 	 * @method
@@ -1164,7 +1164,7 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the AddContact menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intAccountId		id of the Account to add the contact to
 	 *
 	 * @return	string						Href to be executed when the AddContact menu item is clicked
@@ -1188,7 +1188,7 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the ChangePaymentMethod for Account menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intAccountId		id of the Account associated with this action
 	 *
 	 * @return	string						Href to be executed when the ChangePaymentMethod for Account menu item is clicked
@@ -1201,7 +1201,7 @@ class MenuItems {
 		// return self :: OLD_FRAMEWORK . "account_payment.php?Id=$intAccountId";
 		return "javascript:
 					Flex.Constant.loadConstantGroup(
-						['payment_method', 'rebill_type', 'direct_debit_type'], 
+						['payment_method', 'rebill_type', 'direct_debit_type'],
 						function()
 						{
 							JsAutoLoader.loadScript(
@@ -1223,7 +1223,7 @@ class MenuItems {
 						}
 					);";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// ViewCostCentres
 	//------------------------------------------------------------------------//
@@ -1234,7 +1234,7 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the ViewCostCentres for Account menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intAccountId		id of the Account associated with this action
 	 *
 	 * @return	string						Href to be executed when the ViewCostCentres for Account menu item is clicked
@@ -1258,7 +1258,7 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the ViewRecentCustomers menu item is clicked
 	 *
-	 * @return	string						
+	 * @return	string
 	 *
 	 * @method
 	 */
@@ -1282,7 +1282,7 @@ class MenuItems {
 	 * @param	bool	$bolModal		optional, Set to FALSE for non-modal window
 	 *									Defaults to TRUE (modal)
 	 *
-	 * @return	string						
+	 * @return	string
 	 *
 	 * @method
 	 */
@@ -1314,7 +1314,7 @@ class MenuItems {
 	 * @param	int		$intServiceId	optional, Id of the Service
 	 * @param	int		$intAccountId	optional, Id of the Account
 	 *
-	 * @return	string						
+	 * @return	string
 	 *
 	 * @method
 	 */
@@ -1353,7 +1353,7 @@ class MenuItems {
 	 *
 	 * @param	int		$intServiceId	Id of the Service
 	 *
-	 * @return	string						
+	 * @return	string
 	 *
 	 * @method
 	 */
@@ -1382,7 +1382,7 @@ class MenuItems {
 	 * @param	int		$intServiceId		Id of the Service of which you want to override one of the rate groups
 	 * @param 	int		$intRecordTypeId	Id of the RecordType which will be overridden
 	 *
-	 * @return	string						
+	 * @return	string
 	 *
 	 * @method
 	 */
@@ -1413,7 +1413,7 @@ class MenuItems {
 	 * @param	bool	$bolModal		optional, Set to FALSE for non-modal window
 	 *									Defaults to TRUE (modal)
 	 *
-	 * @return	string						
+	 * @return	string
 	 *
 	 * @method
 	 */
@@ -1441,9 +1441,9 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the AddConfigConstant menu item is triggered
 	 *
-	 * @param	int		$intConstantGroupId		id of the ConstantGroup that the 
+	 * @param	int		$intConstantGroupId		id of the ConstantGroup that the
 	 *											new constant will belong to.
-	 * @return	string						
+	 * @return	string
 	 *
 	 * @method
 	 */
@@ -1471,7 +1471,7 @@ class MenuItems {
 	 *
 	 * @param	int		$intConstantId		id of the constant to edit
 	 *
-	 * @return	string						
+	 * @return	string
 	 *
 	 * @method
 	 */
@@ -1556,7 +1556,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the ImportRateGroup menu item is clicked
 	 *
 	 * @param	int		$intRecordTypeId	id of the RecordType, of which you want to import a RateGroup of
-	 * @param	boolean	$bolIsFleet			TRUE if you want to import the RateGroup as a fleet RateGroup, else FALSE for normal RateGroup importing		
+	 * @param	boolean	$bolIsFleet			TRUE if you want to import the RateGroup as a fleet RateGroup, else FALSE for normal RateGroup importing
 	 *
 	 * @return	string						Href to be executed when the ImportRateGroup menu item is clicked
 	 *
@@ -1615,7 +1615,7 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the ViewContact menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intContactId		id of the contact to view
 	 *
 	 * @return	string						Href to be executed when the ViewContact menu item is clicked
@@ -1639,7 +1639,7 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the AccountOverview menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intAccountId		id of the account to view
 	 * @param	bool	$bolShowAccountName	[optional], defaults to false.  This should only be set to TRUE when being used for the breadcrumb menu.
 	 * 										It will use the account name instead of "Account" in the breadcrumb menu
@@ -1676,7 +1676,7 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the ListContacts menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intAccountId		id of the Account to view the Contacts of
 	 *
 	 * @return	string						Href to be executed when the ListContacts menu item is clicked
@@ -1799,7 +1799,7 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the View Invoiced CDR menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intInvoiceRunId		id of the invoice_run to view
 	 * @param	int		$intCdrId				id of the CDR to view
 	 *
@@ -1824,7 +1824,7 @@ class MenuItems {
 	 * Adds a customer to the employee_account_log table
 	 *
 	 * Adds a customer to the employee_account_log table
-	 * 
+	 *
 	 * @param	bool	$bolSupressErrors
 	 * @param	string	$strNextPage
 	 * @param	int		$intAccountId
@@ -1863,7 +1863,7 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the View CDR menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intId		id of the account to view
 	 *
 	 * @return	string				Href to be executed when the View CDR menu item is clicked
@@ -1887,7 +1887,7 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when viewing cdr details
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intId		id of the cdr to view
 	 *
 	 * @return	string				Href to be executed when viewing cdr details
@@ -1911,7 +1911,7 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the InvoicesAndPayments menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intId		id of the account to view
 	 *
 	 * @return	string				Href to be executed when the InvoicesAndPayments menu item is clicked
@@ -1936,7 +1936,7 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the EditEmployee menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intId		id of the Employee to edit
 	 *
 	 * @return	string				Href to be executed when the EditEmployee menu item is clicked
@@ -1946,7 +1946,7 @@ class MenuItems {
 	function EditEmployee($iId=false, $sUserName=false, $sJSCallback=false, $bEditingSelf=false)
 	{
 		$this->strContextMenuLabel	= "";
-	
+
 		// Setup data to send
 		if ($bEditingSelf)
 		{
@@ -1969,12 +1969,12 @@ class MenuItems {
 			$sJsonCode					= Json()->encode($aData);
 			return "javascript:Vixen.Popup.ShowAjaxPopup(\"Employee{}AddPopup\", \"medium\", \"Employee\", \"Employee\", \"Create\", $sJsonCode)";
 		}
-		
+
 		// Removed until permissions are released. rmctainsh 20100429
 		/*$this->strContextMenuLabel	= "";
 
 		$this->strLabel	= "Emp: ".($iId ? $sUserName : 'new');
-		
+
 		$aJSFiles	= 	array(
 							"dataset_ajax",
 							"reflex_validation",
@@ -2004,7 +2004,7 @@ class MenuItems {
 							"popup_employee_details_permissions",
 							"popup_operation_profile_edit"
 						);
-		
+
 		$sSelf		= ($bEditingSelf ? 'true' : 'false');
 		$sId		= ($iId ? $iId : 'null');
 		$sRender	= ($iId ? 'Control_Field.RENDER_MODE_VIEW' : 'Control_Field.RENDER_MODE_EDIT');
@@ -2014,7 +2014,7 @@ class MenuItems {
 		return "$sLoad";
 		*/
 	}
-	
+
 	/**
 	 * ManageEmployeePermissions()
 	 *
@@ -2022,7 +2022,7 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the ManageEmployeePermissions menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intId		id of the Employee to whose permissions to manage
 	 *
 	 * @return	string				Href to be executed when the ManageEmployeePermissions menu item is clicked
@@ -2034,7 +2034,7 @@ class MenuItems {
 		$this->strContextMenuLabel	= "";
 
 		$this->strLabel	= "emp permissions: $iId";
-		
+
 		$aJSFiles	= 	array(
 							"dataset_ajax",
 							"reflex_validation",
@@ -2058,12 +2058,12 @@ class MenuItems {
 							"popup_employee_details_permissions",
 							"popup_operation_profile_edit"
 						);
-		
+
 		$sPopup		= "var oPopup	= new Popup_Employee_Details_Permissions(Control_Field.RENDER_MODE_VIEW, {$iId});";
 		$sLoad		= "JsAutoLoader.loadScript(['".implode(".js','", $aJSFiles).".js'], function() {{$sPopup}}, true);";
 		return "$sLoad";
 	}
-	
+
 	function ManagePermissionProfiles()
 	{
 		$this->strContextMenuLabel	= "Manage Permission Profiles";
@@ -2080,7 +2080,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the AddRatePlan menu item is clicked
 	 *
 	 * Compiles the Href to be executed when the AddRatePlan menu item is clicked
-	 * 
+	 *
 	 * @param	int		$intBasePlanId			optional, Id of the RatePlan which the new one will be based on
 	 * @param	string	$strCallingPageHref		optional, href of the page that calls the AddRatePlan page.
 	 *											exiting the AddRatePlan page will relocate the user to this page
@@ -2122,7 +2122,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the EditRatePlan menu item is clicked
 	 *
 	 * Compiles the Href to be executed when the EditRatePlan menu item is clicked
-	 * 
+	 *
 	 * @param	int		$intPlanId				Id of the RatePlan to edit
 	 * @param	string	$strCallingPageHref		optional, href of the page that calls the EditRatePlan page.
 	 *											exiting the EditRatePlan page will relocate the user to this page
@@ -2155,8 +2155,8 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the AvailablePlans menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
-	 * @param	int		$intCustomerGroupId	optional, Will filter one customerGroup, defaults to NULL.  This will override the 
+	 *
+	 * @param	int		$intCustomerGroupId	optional, Will filter one customerGroup, defaults to NULL.  This will override the
 	 * @param	bool	$bolGetLast			optional, If set to TRUE, then the cached filter options will be used
 	 * @return	string						Href to be executed when the AvailablePlans menu item is clicked
 	 *
@@ -2165,12 +2165,12 @@ class MenuItems {
 	function AvailablePlans($bolGetLast=FALSE)
 	{
 		$strFilter = ($bolGetLast)? "?RatePlan.GetLast=1" : "";
-		
+
 		$this->strContextMenuLabel	= "Plans";
 		$this->strLabel				= "Available Plans";
 		return self::NEW_FRAMEWORK . "flex.php/Plan/AvailablePlans/$strFilter";
 	}
-	
+
 	function ListPlans($intCustomerGroupId=NULL)
 	{
 		if ($intCustomerGroupId == NULL)
@@ -2200,7 +2200,7 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the ViewPlan menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intRatePlanId	id of the Rate Plan that you want to view
 	 * @return	string					Href to be executed when the ViewPlan menu item is clicked
 	 *
@@ -2224,7 +2224,7 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the AddAssociatedAccount menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intAccountId		account number of the calling account
 	 *
 	 * @return	string					Href to be executed when the AddAssociatedAccount menu item is clicked
@@ -2248,7 +2248,7 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the View Invoice Pdf menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intAccount		Account Id of the invoice to view
 	 * @param	int		$intYear		year the invoice relates to
 	 * @param	int		$intMonth		month the invoice relates to
@@ -2257,7 +2257,7 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function ViewInvoicePDF($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRun = "") 
+	function ViewInvoicePDF($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRun = "")
 	{
 		$this->strContextMenuLabel = "";
 
@@ -2276,7 +2276,7 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the View Invoice menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intServiceTotal		service total number for the service
 	 * @param	str		$strFNN		FNN of the service
 	 *
@@ -2301,7 +2301,7 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the View Invoice menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intInvoice		invoice number of the invoice to view
 	 *
 	 * @return	string					Href to be executed when the View Invoice menu item is clicked
@@ -2309,7 +2309,7 @@ class MenuItems {
 	 * @method
 	 */
 	function ViewInvoice($iInvoice, $iAccountId) {
-		// The function now returns the url of the invoices and payments page 
+		// The function now returns the url of the invoices and payments page
 		// because the invoice view page is now a popup.
 		$this->strContextMenuLabel 	= "";
 		$this->strLabel 			= "Invoice: $iInvoice";
@@ -2327,7 +2327,7 @@ class MenuItems {
 	 *
 	 * Compiles the javascript to be executed when the ViewAccountNotes menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intAccountId	id of the account associated with the notes to view
 	 *
 	 * @return	string					action to be executed when the ViewAccountNotes menu item is clicked
@@ -2359,9 +2359,9 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the ViewServiceDetails menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intId		id of the service to view
-	 								
+
 	 *
 	 * @return	string				Href to be executed when the ViewServiceDetails menu item is clicked
 	 *
@@ -2384,7 +2384,7 @@ class MenuItems {
 	 *
 	 * Compiles the javascript to be executed when the ViewUnbilledCharges menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intId		id of the service associated with the unbilled charges
 	 *
 	 * @return	string				action to be executed when the ViewUnbilledCharges menu item is clicked
@@ -2408,7 +2408,7 @@ class MenuItems {
 	 *
 	 * Compiles the javascript to be executed when the ChangeOfLessee menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intId		id of the service associated
 	 *
 	 * @return	string				action to be executed when the ChangeOfLessee menu item is clicked
@@ -2431,7 +2431,7 @@ class MenuItems {
 	 * Compiles the javascript to be executed when the MoveService menu item is clicked
 	 *
 	 * Compiles the javascript to be executed when the MoveService menu item is clicked
-	 * 
+	 *
 	 * @param	int		$intServiceId	id of the service to move
 	 *
 	 * @return	string					action to be executed when the MoveService menu item is clicked
@@ -2459,7 +2459,7 @@ class MenuItems {
 	 *
 	 * Compiles the javascript to be executed when the ViewServiceNotes menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intId		id of the service associated with the notes to view
 	 *
 	 * @return	string				action to be executed when the ViewServiceNotes menu item is clicked
@@ -2491,7 +2491,7 @@ class MenuItems {
 	 *
 	 * Compiles the javascript to be executed when the ViewContactNotes menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intId		id of the contact associated with the notes to view
 	 *
 	 * @return	string				action to be executed when the ViewContactNotes menu item is clicked
@@ -2523,7 +2523,7 @@ class MenuItems {
 	 *
 	 * Compiles the javascript to be executed when the AddContactNote menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intId		id of the contact associated with the note to add
 	 *
 	 * @return	string				action to be executed when the AddContactNotes menu item is clicked
@@ -2554,7 +2554,7 @@ class MenuItems {
 	 *
 	 * Compiles the javascript to be executed when the AddAccountNote menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intId		id of the account associated with the note to add
 	 *
 	 * @return	string				action to be executed when the AddAccountNotes menu item is clicked
@@ -2585,7 +2585,7 @@ class MenuItems {
 	 *
 	 * Compiles the javascript to be executed when the AddServiceNote menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intId		id of the service associated with the note to add
 	 *
 	 * @return	string				action to be executed when the AddServiceNotes menu item is clicked
@@ -2615,7 +2615,7 @@ class MenuItems {
 	 * Compiles the javascript to be executed when the EmailPDFInvoice menu item is clicked
 	 *
 	 * Compiles the javascript to be executed when the EmailPDFInvoice menu item is clicked
-	 * 
+	 *
 	 * @param	int		$intId		id of the account associated with the invoice to email
 	 * @param	int		$intYear	year part of the date of the invoice to email
 	 * @param	int		$intMonth	month part of the date of the invoice to email
@@ -2652,7 +2652,7 @@ class MenuItems {
 	 *
 	 * Compiles the javascript to be executed when the AddCharge menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intAccountId		id of the account that the Charge will be added to
 	 * @param	int		$intServiceId		[optional] id of the service that the charge is associated with
 	 *
@@ -2685,7 +2685,7 @@ class MenuItems {
 	 *
 	 * Compiles the javascript to be executed when the AddRecurringCharge menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intAccountId		id of the account that the Charge will be added to
 	 * @param	int		$intServiceId		[optional] id of the service that the charge is associated with
 	 *
@@ -2718,7 +2718,7 @@ class MenuItems {
 	 *
 	 * Compiles the javascript to be executed when the AddAdjustment menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intAccountId		id of the account that the Adjustment will be added to
 	 * @param	int		$intServiceId		[optional] id of the service that the Adjustment is associated with
 	 *
@@ -2751,7 +2751,7 @@ class MenuItems {
 	 *
 	 * Compiles the javascript to be executed when the MakePayment menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intId		id of the account that is currently being viewed
 	 *
 	 * @return	string				action to be executed when the MakePayment menu item is clicked
@@ -2782,7 +2782,7 @@ class MenuItems {
 	 *
 	 * Compiles the javascript to be executed when the Edit Account menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intId		id of the account to edit
 	 *
 	 * @return	string	action to be executed when the Edit Account menu item is clicked
@@ -2813,7 +2813,7 @@ class MenuItems {
 	 *
 	 * Compiles the javascript to be executed when the List Service menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intId		id of the Account to view services of
 	 *
 	 * @return	string	action to be executed when the List Service menu item is clicked
@@ -2823,14 +2823,14 @@ class MenuItems {
 	function ListServices($intId) {
 		$this->strContextMenuLabel = "";
 		$this->strLabel = "Services";
-		
+
 		/*  The Old Way of open up the list of services in a popup.  Retain this as it will be eventually used again
 		// Setup data to send
 		$arrData['Account']['Id'] = $intId;
-		
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
+
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AccountServicesPopupId\", \"ExtraLarge\", null, \"Account\", \"ViewServices\", $strJsonCode)";
 		*/
 
@@ -2848,7 +2848,7 @@ class MenuItems {
 	 *
 	 * Compiles the javascript to be executed when the DeletePayment menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intPaymentId		id of the payment to delete
 	 *
 	 * @return	string						action to be executed when the DeletePayment menu item is clicked
@@ -2879,7 +2879,7 @@ class MenuItems {
 	 *
 	 * Compiles the javascript to be executed when the DeleteCharge menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intChargeId		id of the charge to delete
 	 *
 	 * @return	string							action to be executed when the DeleteCharge menu item is clicked
@@ -2910,7 +2910,7 @@ class MenuItems {
 	 *
 	 * Compiles the javascript to be executed when the CancelRecurringCharge menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
+	 *
 	 * @param	int		$intRecurringChargeId		id of the recurring charge to Cancel
 	 *
 	 * @return	string									action to be executed when the CancelRecurringCharge menu item is clicked
@@ -3066,7 +3066,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the AdvancedAccountSearch menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the AdvancedAccountSearch menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
@@ -3086,7 +3086,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the AdvancedContactSearch menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the AdvancedContactSearch menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
@@ -3106,7 +3106,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the AdvancedServiceSearch menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the AdvancedServiceSearch menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
@@ -3126,7 +3126,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the ManageCharges menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the ManageCharges menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
@@ -3143,7 +3143,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the ManageChargeRequests menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the ManageChargeRequests menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
@@ -3160,7 +3160,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the ManageRecurringChargeRequests menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the ManageRecurringChargeRequests menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
@@ -3180,7 +3180,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the ManageSingleChargeTypes menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the ManageSingleChargeTypes menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
@@ -3199,7 +3199,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the ManageRecurringChargeTypes menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the ManageRecurringChargeTypes menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
@@ -3218,7 +3218,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the ManageAdjustmentRequests menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the ManageAdjustmentRequests menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
@@ -3237,7 +3237,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the ManageAdjustmentTypes menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the ManageAdjustmentTypes menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
@@ -3256,7 +3256,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the PaymentDownload menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the PaymentDownload menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
@@ -3276,7 +3276,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the MoveDelinquentCDRs menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the MoveDelinquentCDRs menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
@@ -3295,7 +3295,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the DataReports menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the DataReports menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
@@ -3314,7 +3314,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the ManageEmployees menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the ManageEmployees menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
@@ -3335,7 +3335,7 @@ class MenuItems {
 	 * Compiles the Href to be executed when the ManageBreachedContracts menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the ManageBreachedContracts menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
@@ -3354,14 +3354,14 @@ class MenuItems {
 	 * Compiles the Href to be executed when the TelemarketUploadProposed menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the TelemarketUploadProposed menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
 	function TelemarketUploadProposed() {
 		$this->strContextMenuLabel = "Upload Proposed Dialling List";
 		$this->strLabel = "Upload Proposed Dialling List";
-		
+
 		return "javascript:JsAutoLoader.loadScript('javascript/telemarketing.js', function(){JsAutoLoader.loadScript('javascript/telemarketing_proposedupload.js', function(){Flex.Telemarketing.ProposedUpload.displayPopupUpload();})});";
 	}
 
@@ -3374,14 +3374,14 @@ class MenuItems {
 	 * Compiles the Href to be executed when the TelemarketDownloadDNCR menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the TelemarketDownloadDNCR menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
 	function TelemarketDownloadDNCR() {
 		$this->strContextMenuLabel = "Download DNCR Wash List";
 		$this->strLabel = "Download DNCR Wash List";
-		
+
 		return "javascript:JsAutoLoader.loadScript('javascript/telemarketing.js', function(){JsAutoLoader.loadScript('javascript/telemarketing_dncrdownload.js', function(){Flex.Telemarketing.DNCRDownload.displayPopupDownload();})});";
 	}
 
@@ -3394,14 +3394,14 @@ class MenuItems {
 	 * Compiles the Href to be executed when the TelemarketUploadDNCR menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the TelemarketUploadDNCR menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
 	function TelemarketUploadDNCR() {
 		$this->strContextMenuLabel = "Upload Washed DNCR List";
 		$this->strLabel = "Upload Washed DNCR List";
-		
+
 		return "javascript:JsAutoLoader.loadScript('javascript/telemarketing.js', function(){JsAutoLoader.loadScript('javascript/telemarketing_dncrupload.js', function(){Flex.Telemarketing.DNCRUpload.displayPopupUpload();})});";
 	}
 
@@ -3414,14 +3414,14 @@ class MenuItems {
 	 * Compiles the Href to be executed when the TelemarketDownloadPermitted menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the TelemarketDownloadPermitted menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
 	function TelemarketDownloadPermitted() {
 		$this->strContextMenuLabel = "Download Permitted Dialling List";
 		$this->strLabel = "Download Permitted Dialling List";
-		
+
 		return "javascript:JsAutoLoader.loadScript('javascript/telemarketing.js', function(){JsAutoLoader.loadScript('javascript/telemarketing_permitteddownload.js', function(){Flex.Telemarketing.PermittedDownload.displayPopupDownload();})});";
 	}
 
@@ -3434,14 +3434,14 @@ class MenuItems {
 	 * Compiles the Href to be executed when the TelemarketUploadDiallerReport menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the TelemarketUploadDiallerReport menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
 	function TelemarketUploadDiallerReport() {
 		$this->strContextMenuLabel = "Upload Dialler Report";
 		$this->strLabel = "Upload Dialler Report";
-		
+
 		return "javascript:JsAutoLoader.loadScript('javascript/telemarketing.js', function(){JsAutoLoader.loadScript('javascript/telemarketing_diallerreportupload.js', function(){Flex.Telemarketing.DiallerReportUpload.displayPopupUpload();})});";
 	}
 
@@ -3454,14 +3454,14 @@ class MenuItems {
 	 * Compiles the Href to be executed when the TelemarketDownloadReconciliationReport menu item is triggered
 	 *
 	 * Compiles the Href to be executed when the TelemarketDownloadReconciliationReport menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
 	function TelemarketDownloadReconciliationReport() {
 		$this->strContextMenuLabel = "Download Reconciliation Report";
 		$this->strLabel = "Download Reconciliation Report";
-		
+
 		return "javascript:JsAutoLoader.loadScript('javascript/telemarketing.js', function(){JsAutoLoader.loadScript('javascript/telemarketing_reconciliationdownload.js', function(){Flex.Telemarketing.ReconciliationDownload.displayPopupDownload();})});";
 	}
 
@@ -3469,7 +3469,7 @@ class MenuItems {
 	 * GenerateInterimInvoice()
 	 *
 	 * Compiles the Href to be executed when the GenerateInterimInvoice menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
@@ -3477,7 +3477,7 @@ class MenuItems {
 	{
 		$this->strContextMenuLabel = "Generate Final/Interim Invoice";
 		$this->strLabel = "Generate Final/Interim Invoice";
-		
+
 		return "JsAutoLoader.loadScript(\"javascript/invoice.js\", function(){Flex.Invoice.getPreGenerateValues({$intAccount});});";
 	}
 
@@ -3485,7 +3485,7 @@ class MenuItems {
 	 * CommitInterimInvoice()
 	 *
 	 * Compiles the Href to be executed when the CommitInterimInvoice menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
@@ -3493,7 +3493,7 @@ class MenuItems {
 	{
 		$this->strContextMenuLabel = "Commit Final/Interim Invoice";
 		$this->strLabel = "Commit Final/Interim Invoice";
-		
+
 		return "JsAutoLoader.loadScript(\"javascript/invoice.js\", function(){Flex.Invoice.commitInterimInvoiceConfirm({$intInvoice});});";
 	}
 
@@ -3501,7 +3501,7 @@ class MenuItems {
 	 * RevokeInterimInvoice()
 	 *
 	 * Compiles the Href to be executed when the CommitInterimInvoice menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
@@ -3509,15 +3509,15 @@ class MenuItems {
 	{
 		$this->strContextMenuLabel = "Revoke Final/Interim Invoice";
 		$this->strLabel = "Revoke Final/Interim Invoice";
-		
+
 		return "JsAutoLoader.loadScript(\"javascript/invoice.js\", function(){Flex.Invoice.revokeInterimInvoiceConfirm({$intInvoice});});";
 	}
-	
+
 	/**
 	 * ViewContactList()
 	 *
 	 * Compiles the Href to be executed when the ViewContactList menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
@@ -3525,15 +3525,15 @@ class MenuItems {
 	{
 		$this->strContextMenuLabel = "Contact List";
 		$this->strLabel = "Revoke Final/Interim Invoice";
-		
+
 		return "javascript:JsAutoLoader.loadScript('javascript/internal_contact_list.js', function(){Flex.InternalContactList.renderViewPopup();});";
 	}
-	
+
 	/**
 	 * TelemarketingBlacklistAddFNN()
 	 *
 	 * Compiles the Href to be executed when the TelemarketingBlacklistAddFNN menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
@@ -3541,15 +3541,15 @@ class MenuItems {
 	{
 		$this->strContextMenuLabel = "Add FNN to Blacklist";
 		$this->strLabel = "Add FNN to Blacklist";
-		
+
 		return "javascript:JsAutoLoader.loadScript('javascript/telemarketing.js', function(){Flex.Telemarketing.addFNNToBlacklist();});";
 	}
-	
+
 	/**
 	 * ShowDocumentExplorer()
 	 *
 	 * Compiles the Href to be executed when the ShowDocumentExplorer menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
@@ -3557,15 +3557,15 @@ class MenuItems {
 	{
 		$this->strContextMenuLabel = "Documents";
 		$this->strLabel = "Document Explorer";
-		
+
 		return "javascript:JsAutoLoader.loadScript('javascript/document.js', function(){JsAutoLoader.loadScript('javascript/document_explorer.js', function(){Flex.Document.Explorer.update(null);})});";
 	}
-	
+
 	/**
 	 * DownloadInterimEligibilityReport()
 	 *
 	 * Compiles the Href to be executed when the SubmitInterimInterimEligibilityReport menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
@@ -3573,15 +3573,15 @@ class MenuItems {
 	{
 		$this->strContextMenuLabel = "Download Interim Invoice Eligibility Report";
 		$this->strLabel = "Download Interim Invoice Eligibility Report";
-		
+
 		return self :: NEW_FRAMEWORK . "reflex.php/Invoice/InterimEligibilityReport/";
 	}
-	
+
 	/**
 	 * SubmitInterimInterimEligibilityReport()
 	 *
 	 * Compiles the Href to be executed when the SubmitInterimInterimEligibilityReport menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
@@ -3589,15 +3589,15 @@ class MenuItems {
 	{
 		$this->strContextMenuLabel = "Submit Interim Invoice Eligibility Report";
 		$this->strLabel = "Submit Interim Invoice Eligibility Report";
-		
+
 		return "javascript:JsAutoLoader.loadScript('javascript/invoice.js', function(){Flex.Invoice.buildPopupSubmitInterimInvoiceReport()});";
 	}
-	
+
 	/**
 	 * ManageActionTypes()
 	 *
 	 * Compiles the Href to be executed when the ManageActionTypes menu item is triggered
-	 * 
+	 *
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
@@ -3605,7 +3605,7 @@ class MenuItems {
 	{
 		$this->strContextMenuLabel = "Manage Action Types";
 		$this->strLabel = "Manage Action Types";
-		
+
 		return self::NEW_FRAMEWORK . "reflex.php/ActionType/Manage/";
 	}
 
@@ -3622,14 +3622,14 @@ class MenuItems {
 		$this->strLabel 			= "Manage Recurring Follow Ups";
 		return self::NEW_FRAMEWORK . "reflex.php/FollowUp/ManageRecurring/All/";
 	}
-	
+
 	function ConfigureFollowUps()
 	{
 		$this->strContextMenuLabel 	= "Configure";
 		$this->strLabel 			= "Configure";
 		return self::NEW_FRAMEWORK . "reflex.php/FollowUp/Configure/";
 	}
-	
+
 	function MyFollowUps()
 	{
 		$this->strContextMenuLabel 	= "My Follow Ups";
@@ -3653,12 +3653,12 @@ class MenuItems {
 	 * Compiles the Href (javascript) to execute this functionality
 	 *
 	 * Compiles the Href (javascript) to execute this functionality
-	 * 
+	 *
 	 * @param	int			$intAccountId		id of the account to associate the notes and actions with
 	 * @param	int			$intServiceId		id of the service to associate the notes and actions with
 	 * @param	int			$intContactId		id of the contact to associate the notes and actions with
 	 * @param	string		$strTitle			Title for the popup (usually the Account Name/number, or the service FNN)
-	 * 
+	 *
 	 * @return	string							Href(script) to trigger the functionality
 	 * @method
 	 */
@@ -3668,7 +3668,7 @@ class MenuItems {
 		$jsonServiceId	= JSON_Services::encode($intServiceId);
 		$jsonContactId	= JSON_Services::encode($intContactId);
 		$jsonTitle		= JSON_Services::encode($strTitle);
-		
+
 		$this->strContextMenuLabel = "Create Actions / Notes";
 		return "javascript:
 if (window.ActionsAndNotes)
@@ -3679,7 +3679,7 @@ if (window.ActionsAndNotes)
 else
 {
 	JsAutoLoader.loadScript('javascript/actions_and_notes.js', 	function()
-																{	
+																{
 																	ActionsAndNotes.load(	function()
 																							{
 																								Flex.ActionsAndNotesCreatorPopup = ActionsAndNotes.Creator.createPopup($jsonTitle, $jsonAccountId, $jsonServiceId, $jsonContactId);
@@ -3688,7 +3688,7 @@ else
 																});
 }
 ";
-	}	
+	}
 
 	//------------------------------------------------------------------------//
 	// ActionsAndNotesListPopup
@@ -3699,19 +3699,19 @@ else
 	 * Compiles the Href (javascript) to execute this functionality
 	 *
 	 * Compiles the Href (javascript) to execute this functionality
-	 * 
+	 *
 	 * @param	int			$intAATContextId					ActionAssocationType representing the context in which the list of Actions And Notes will refer to
-	 * 															For example, if this is set to ACTION_ASSOCIATION_TYPE_SERVICE, then the list will be refering 
+	 * 															For example, if this is set to ACTION_ASSOCIATION_TYPE_SERVICE, then the list will be refering
 	 * 															to the Actions And Notes of a single service with its id declared as $intAATContextReferenceId
 	 * @param	int			$intAATContextReferenceId			account id / contact id / service id
 	 * @param	int			$bolIncludeAllRelatableAATTypes		If TRUE, then the list will contain all actions and notes relating to $intAATContextReferenceId
 	 * 															as well as all actions and notes relating to other entities that are relatable to $intAATContextReferenceId
 	 *															For example, if $intAATContextId was ACTION_ASSOCIATION_TYPE_ACCOUNT, and $bolIncludeAllRelatableAATTypes == TRUE
-	 *															Then the list will show all Actions and Notes relating to the account, as well as all Actions and Notes relating to 
+	 *															Then the list will show all Actions and Notes relating to the account, as well as all Actions and Notes relating to
 	 *															all servies of the account, and all contacts associated with the account
 	 * @param	int			$intMaxRecordsPerPage				Max number of records to show per page, when paginating the list of actions and notes
 	 * @param	string		$strTitle							Title for the popup (usually the Account Name/number, or the service FNN)
-	 * 
+	 *
 	 * @return	string							Href(script) to trigger the functionality
 	 * @method
 	 */
@@ -3719,7 +3719,7 @@ else
 	{
 		$jsonBolIncludeAllRelatableAATTypes = JSON_Services::encode($bolIncludeAllRelatableAATTypes);
 		$jsonStrTitle = JSON_Services::encode($strTitle);
-		
+
 		$this->strContextMenuLabel = "View Actions / Notes";
 		return "javascript:
 if (window.ActionsAndNotes)
@@ -3733,7 +3733,7 @@ if (window.ActionsAndNotes)
 else
 {
 	JsAutoLoader.loadScript(\"javascript/actions_and_notes.js\",function()
-																{	
+																{
 																	ActionsAndNotes.load(	function()
 																							{
 																								Flex.ActionsAndNotesListPopup = ActionsAndNotes.List.createPopup($jsonStrTitle, $intAATContextId, $intAATContextReferenceId, $jsonBolIncludeAllRelatableAATTypes, $intMaxRecordsPerPage);
@@ -3742,9 +3742,9 @@ else
 																});
 }
 ";
-	}	
+	}
 
-	
+
 	//------------------------------------------------------------------------//
 	// BreadCrumb
 	//------------------------------------------------------------------------//
@@ -3754,7 +3754,7 @@ else
 	 * Compiles the passed menu item as a breadcrumb to be used in the breadcrumb menu
 	 *
 	 * Compiles the passed menu item as a breadcrumb to be used in the breadcrumb menu
-	 * Any menu item can be used as a breadcrumb so long as it defines a value for 
+	 * Any menu item can be used as a breadcrumb so long as it defines a value for
 	 * the public data attribute $strLabel
 	 *
 	 * @param	string	$strName	Name of the menu item to be used as a breadcrumb
@@ -3831,7 +3831,7 @@ else
 	 * Handles all menu items that have not had a specific method defined in this class
 	 *
 	 * Handles all menu items that have not had a specific method defined in this class
-	 * 
+	 *
 	 * @param	string		$strName		name of the menu item
 	 * @param	array		$arrParams		any parameters defined for the menu item
 	 *
@@ -3855,16 +3855,16 @@ else
 				break;
 		}
 	}
-	
+
 	private function deprecatedMenuItem($sFunctionName, $sURL)
 	{
 		try
 		{
 			// Create an assertion
 			Flex::assert(
-				false, 
-				"In MenuItems.php, the function {$sFunctionName} was called, which returns {$sURL}.", 
-				null, 
+				false,
+				"In MenuItems.php, the function {$sFunctionName} was called, which returns {$sURL}.",
+				null,
 				"Deprecated Page (Framework 1) Accessed: MenuItems.php - {$sFunctionName}"
 			);
 		}

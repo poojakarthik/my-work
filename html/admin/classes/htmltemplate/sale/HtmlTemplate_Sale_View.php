@@ -9,14 +9,12 @@ class HtmlTemplate_Sale_View extends FlexHtmlTemplate
 
 		$this->LoadJavascript('reflex_popup');
 		$this->LoadJavascript('sp/validation');
-		$this->LoadJavascript('sp/sale');
-		$this->LoadJavascript('sp/flex_sale');
 		$this->LoadJavascript('sp/SalesPortal');
-		
+
 		$this->LoadJavascript('date_time_picker_dynamic');
 
 		$productTypes = DO_Sales_ProductType::listAll();
-		
+
 		foreach ($productTypes as $productType)
 		{
 			$this->LoadJavascript('sp/product_type_module/Product_Type_Module_'.$productType->module);
@@ -26,11 +24,11 @@ class HtmlTemplate_Sale_View extends FlexHtmlTemplate
 	public function Render()
 	{
 		$objSale = $this->mxdDataToRender['Sale'];
-		
+
 
 
 		//$response = new Response_Sales_Portal();
-		
+
 
 		$p = $this->mxdDataToRender['ExtraPath'];
 		$bodyClassName = 'data-display';
@@ -43,7 +41,7 @@ class HtmlTemplate_Sale_View extends FlexHtmlTemplate
 		{
 			$saleId = 'null';
 		}
-		
+
 		//$response->addTrailItem("Sales History", $this->request->getRequestedBaseURI() . "/sales/view/last/");
 		if ($saleId != 'null')
 		{
@@ -62,8 +60,8 @@ class HtmlTemplate_Sale_View extends FlexHtmlTemplate
 		}
 
 		//$response->openPage();
-		
-		
+
+
 		$arrSaleTypes		= DO_Sales_SaleType::getAll();
 		$arrSaleTypeIdName	= array();
 		foreach($arrSaleTypes as $oSaleType) $arrSaleTypeIdName[$oSaleType->id] = '"' . $oSaleType->name . '"';
@@ -110,60 +108,68 @@ class HtmlTemplate_Sale_View extends FlexHtmlTemplate
 </style>
 <script type='text/JavaScript' language='JavaScript'>
 
-	var _sale = null;
-	
-	Sale.canCancelSale = <?=Sales_Portal_Sale::canBeCancelled($objSale) ? 'true' : 'false'?>;
-	Sale.canAmendSale = <?=Sales_Portal_Sale::canBeAmended($objSale) ? 'true' : 'false'?>;
-	Sale.canVerifySale = <?=Sales_Portal_Sale::canBeVerified($objSale) ? 'true' : 'false'?>;
-	Sale.canRejectSale = <?=Sales_Portal_Sale::canBeRejected($objSale) ? 'true' : 'false'?>;
-	Sale.canBeSetToAwaitingDispatch = <?=(Sales_Portal_Sale::canBeVerified($objSale) && $objSale->hasBeenVerified()) ? 'true' : 'false'?>;
-	
-	Sale.sale_type	= {
-		ids		: [<?=implode(',', array_keys($arrSaleTypeIdName))?>],
-		labels	: [<?=implode(',', array_values($arrSaleTypeIdName))?>],
-	}
-
-	Sale.contactTitles = {
-		ids: [<?=implode(',', array_keys($arrContactIdName))?>],
-		labels: [<?=implode(',', array_values($arrContactIdName))?>]
-	}
-
-	Sale.states = {
-		ids: [<?=implode(',', array_keys($arrStateIdName))?>],
-		labels: [<?=implode(',', array_values($arrStateIdName))?>]
-	}
-
-	Sale.vendors = {
-		ids: [<?=implode(',', array_keys($arrVendorIdName))?>],
-		labels: [<?=implode(',', array_values($arrVendorIdName))?>]
-	}
-
-	Sale.direct_debit_type = {
-		ids: [<?=implode(',', array_keys($arrDirectDebitTypeIdName))?>],
-		labels: [<?=implode(',', array_values($arrDirectDebitTypeIdName))?>]
-	}
-
-	Sale.bill_payment_type = {
-		ids: [<?=implode(',', array_keys($arrBillPaymentTypeIdName))?>],
-		labels: [<?=implode(',', array_values($arrBillPaymentTypeIdName))?>]
-	}
-
-	Sale.bill_delivery_type = {
-		ids: [<?=implode(',', array_keys($arrBillDeliveryTypeIdName))?>],
-		labels: [<?=implode(',', array_values($arrBillDeliveryTypeIdName))?>]
-	}
-
-	Sale.credit_card_type = {
-		ids: [<?=implode(',', array_keys($arrCreditCardTypeIdName))?>],
-		labels: [<?=implode(',', array_values($arrCreditCardTypeIdName))?>]
-	}
-
 	function initiateSale()
 	{
-		_sale = new Sale($ID('sale_panel'), <?=$saleId?>, '<?=$bodyClassName?>');
+		var _sale = null;
+
+		SP.Sale.canCancelSale = <?=Sales_Portal_Sale::canBeCancelled($objSale) ? 'true' : 'false'?>;
+		SP.Sale.canAmendSale = <?=Sales_Portal_Sale::canBeAmended($objSale) ? 'true' : 'false'?>;
+		SP.Sale.canVerifySale = <?=Sales_Portal_Sale::canBeVerified($objSale) ? 'true' : 'false'?>;
+		SP.Sale.canRejectSale = <?=Sales_Portal_Sale::canBeRejected($objSale) ? 'true' : 'false'?>;
+		SP.Sale.canBeSetToAwaitingDispatch = <?=(Sales_Portal_Sale::canBeVerified($objSale) && $objSale->hasBeenVerified()) ? 'true' : 'false'?>;
+
+		SP.Sale.sale_type	= {
+			ids		: [<?=implode(',', array_keys($arrSaleTypeIdName))?>],
+			labels	: [<?=implode(',', array_values($arrSaleTypeIdName))?>],
+		}
+
+		SP.Sale.contactTitles = {
+			ids: [<?=implode(',', array_keys($arrContactIdName))?>],
+			labels: [<?=implode(',', array_values($arrContactIdName))?>]
+		}
+
+		SP.Sale.states = {
+			ids: [<?=implode(',', array_keys($arrStateIdName))?>],
+			labels: [<?=implode(',', array_values($arrStateIdName))?>]
+		}
+
+		SP.Sale.vendors = {
+			ids: [<?=implode(',', array_keys($arrVendorIdName))?>],
+			labels: [<?=implode(',', array_values($arrVendorIdName))?>]
+		}
+
+		SP.Sale.direct_debit_type = {
+			ids: [<?=implode(',', array_keys($arrDirectDebitTypeIdName))?>],
+			labels: [<?=implode(',', array_values($arrDirectDebitTypeIdName))?>]
+		}
+
+		SP.Sale.bill_payment_type = {
+			ids: [<?=implode(',', array_keys($arrBillPaymentTypeIdName))?>],
+			labels: [<?=implode(',', array_values($arrBillPaymentTypeIdName))?>]
+		}
+
+		SP.Sale.bill_delivery_type = {
+			ids: [<?=implode(',', array_keys($arrBillDeliveryTypeIdName))?>],
+			labels: [<?=implode(',', array_values($arrBillDeliveryTypeIdName))?>]
+		}
+
+		SP.Sale.credit_card_type = {
+			ids: [<?=implode(',', array_keys($arrCreditCardTypeIdName))?>],
+			labels: [<?=implode(',', array_values($arrCreditCardTypeIdName))?>]
+		}
+
+
+		_sale = new SP.Sale($ID('sale_panel'), <?=$saleId?>, '<?=$bodyClassName?>');
 	}
 
-	Event.observe(window, 'load', initiateSale, true);
+	function initiateJS()
+	{
+		//var sSPOverride = 'sp/flex_sale.js';
+		var loadSPOverride = function(){FW.requireScript(['sp/flex_sale.js', 'json.js'], initiateSale);};
+		FW.requirePackage(['SP.Sale', 'SP.Sale.ProductTypeModule','SP.Sale.ProductTypeModule.Service_Mobile','SP.Sale.ProductTypeModule.Service_Landline','SP.Sale.ProductTypeModule.Service_Inbound','SP.Sale.ProductTypeModule.Service_ADSL'], loadSPOverride);
+	}
+
+	Event.observe(window, 'load', initiateJS, true);
 
 </script>
 
