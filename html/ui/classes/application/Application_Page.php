@@ -15,13 +15,13 @@ class Application_Page extends Page
 	/**
 	 * AddObject()
 	 *
-	 * Adds an extended HtmlTemplate object to the page 
+	 * Adds an extended HtmlTemplate object to the page
 	 *
 	 * Adds an extended HtmlTemplate object to the page.
 	 * Extended HtmlTemplate classes must be located in the html_template directory
 	 * The order in which objects are added will be the order in which they will be
 	 * displayed in their associated column
-	 * 
+	 *
 	 * @param	string	$strName		template name (does not include the 'HtmlTemplate' prefix)
 	 *									A file must exist in the html_template directory.
 	 *									For example if the class to load is called HtmlTemplateKnowledgeBaseDocView
@@ -71,10 +71,10 @@ class Application_Page extends Page
 	/**
 	 * Render()
 	 *
-	 * Renders the page 
+	 * Renders the page
 	 *
-	 * Renders the page 
-	 * 
+	 * Renders the page
+	 *
 	 * @method
 	 */
 	function Render()
@@ -92,7 +92,7 @@ class Application_Page extends Page
 	 * Renders the CSS part of the page
 	 *
 	 * Renders the CSS part of the page
-	 * 
+	 *
 	 * @method
 	 */
 	function RenderCSS()
@@ -103,8 +103,8 @@ class Application_Page extends Page
 		echo "\t\t<link rel='stylesheet' type='text/css' href='{$strRelativePath}css/reflex.css' />\n";
 		echo "\t\t<link rel='stylesheet' type='text/css' href='{$strRelativePath}css/style.css' />\n";
 
-		
-		/* Include all css files in the css directory 
+
+		/* Include all css files in the css directory
 		$strRelativePath = Flex::applicationUrlBase();
 		$cssFiles = glob("{$strRelativePath}css/*.css");
 		foreach($cssFiles as $cssFile)
@@ -123,9 +123,9 @@ class Application_Page extends Page
 	 * Renders the JS part of the page
 	 *
 	 * Renders the JS part of the page
-	 * Any js files that are included in HtmlTemplate constructors, are loaded 
+	 * Any js files that are included in HtmlTemplate constructors, are loaded
 	 * here, as well as the standard ones used by every page
-	 * 
+	 *
 	 * @return	void
 	 * @method
 	 */
@@ -141,8 +141,14 @@ class Application_Page extends Page
 
 		// Add direct links to the following files as they are large and this will result in automatic caching of them
 		$strFrameworkDir 	= Flex::frameworkUrlBase();
+
+		$sApplicationDir	= Flex::applicationUrlBase();
+
+
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/prototype.js' ></script>\n";
-		
+
+
+
 		//echo "\t\t<script type='text/javascript' src='javascript/ext.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/jquery.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/json.js' ></script>\n";
@@ -158,37 +164,41 @@ class Application_Page extends Page
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/date.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_template.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_template.js' ></script>\n";
-		
+
 		// Include reference to all other javascript files required of the page
 		if (!array_key_exists('*arrJavaScript', $GLOBALS) || !is_array($GLOBALS['*arrJavaScript']))
 		{
 			$GLOBALS['*arrJavaScript'] = Array();
 		}
 
+
 		$arrRemainingJsFiles	= 	array_unique($GLOBALS['*arrJavaScript']);
 		$arrFiles				=	array(
-										"prototype", 
-										"jquery", 
-										"json", 
-										"flex", 
-										"flex_constant", 
-										"sha1", 
-										"reflex", 
-										"reflex_fx", 
-										"reflex_fx_morph", 
-										"reflex_fx_shift", 
-										"reflex_popup", 
+										"prototype",
+										"jquery",
+										"json",
+										"flex",
+										"flex_constant",
+										"sha1",
+										"reflex",
+										"reflex_fx",
+										"reflex_fx_morph",
+										"reflex_fx_shift",
+										"reflex_popup",
 										"reflex_template"
 									);
-		
+
 		// Only include this file for the admin framework
 		if (session_name() == Flex::FLEX_ADMIN_SESSION)
 		{
 			$sApplicationDir	= Flex::applicationUrlBase();
 			echo "\t\t<script type='text/javascript' src='{$sApplicationDir}javascript/followup_link.js'></script>\n";
 			$arrFiles[]	= 'followup_link';
+
+			echo "\t\t<script type='text/javascript' src='".Flex::getUrlBase()."reflex.php/Package/Load/FW'></script>\n";
+			$arrFiles[]	= 'FW';
 		}
-		
+
 		$arrStandardJsFiles				= 	array_merge($arrStandardJsFiles, $arrFiles);
 		$arrRemainingJsFilesToInclude 	= array();
 		foreach ($arrRemainingJsFiles as $strFile)
@@ -234,14 +244,14 @@ class Application_Page extends Page
 	{
 		// Look for the file in the application's javascript dir
 		$strFile = $strFile = Flex::getRelativeBase() . Flex::relativeApplicationBase() . "javascript". '/' . $strJsFile;
-		
+
 		$arrFiles = glob($strFile);
 		if (is_array($arrFiles) && count($arrFiles) == 1)
 		{
 			// The file was found
 			return Flex::applicationUrlBase() . "javascript". '/' . $strJsFile;
 		}
-		
+
 		// Look for the file in the application's javascript dir
 		$strFile = $strFile = Flex::getRelativeBase() . Flex::relativeFrameworkBase() . "javascript". '/' . $strJsFile;
 		$arrFiles = glob($strFile);
@@ -250,10 +260,10 @@ class Application_Page extends Page
 			// The file was found
 			return Flex::frameworkUrlBase() . "javascript". '/' . $strJsFile;
 		}
-		
+
 		// The file could not be found
 		return FALSE;
-		
+
 	}
 
 	//------------------------------------------------------------------------//
@@ -265,10 +275,10 @@ class Application_Page extends Page
 	 * Includes any javascript files required of a popup page
 	 *
 	 * Includes any javascript files required of a popup page
-	 * Any js files that are included in HtmlTemplate constructors, are loaded 
+	 * Any js files that are included in HtmlTemplate constructors, are loaded
 	 * here.  This is used when a popup is loaded, assuming it is called from
 	 * within the layout template of the popup (popup_layout)
-	 * 
+	 *
 	 * @return	void
 	 * @method
 	 */
@@ -300,7 +310,7 @@ class Application_Page extends Page
 	 * Renders a single column of the page
 	 *
 	 * Renders a single column of the page
-	 * 
+	 *
 	 * @method
 	 */
 	function RenderColumn($intColumn)
@@ -313,7 +323,7 @@ class Application_Page extends Page
 				echo "<div id='{$arrObject['Id']}'>\n";
 				$arrObject['Object']->SetMode($this->_intTemplateMode, $this->_objAjax);
 				$arrObject['Object']->Render();
-				
+
 				// Check for Debug mode
 				if ($GLOBALS['bolDebugMode'])
 				{
@@ -321,7 +331,7 @@ class Application_Page extends Page
 					$fltTimeTaken = number_format(microtime(TRUE) - $fltStartTime, 4, ".", "");
 					echo "<div>Time taken to render {$arrObject['Name']}: $fltTimeTaken sec</div>";
 				}
-				
+
 				echo "</div>\n";
 			}
 		}
@@ -336,11 +346,11 @@ class Application_Page extends Page
 	 * Renders the header of a page
 	 *
 	 * Renders the header of a page
-	 * 
+	 *
 	 * @method
 	 */
 	function RenderHeader($bolWithSearch=TRUE)
-	{	
+	{
 		$strBaseDir = Flex::getUrlBase();
 
 		echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
@@ -370,11 +380,11 @@ class Application_Page extends Page
 	 * Renders the header of a 'flex modal page''
 	 *
 	 * Renders the header of a 'flex modal page''
-	 * 
+	 *
 	 * @method
 	 */
 	function RenderHeaderFlexModal()
-	{	
+	{
 		$arrScript = explode('.php', $_SERVER['REQUEST_URI'], 2);
 		$intLastSlash = strrpos($arrScript[0], "/");
 		$strBaseDir = substr($arrScript[0], 0, $intLastSlash + 1);
@@ -386,7 +396,7 @@ class Application_Page extends Page
 		{
 			$strBaseDir = "http://{$_SERVER['SERVER_NAME']}$strBaseDir";
 		}
-		
+
 		echo "<html><head><link rel=\"shortcut icon\" HREF=\"./img/favicon.ico\"><link rel=\"icon\" href=\"./img/favicon.ico\"><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>\n";
 		echo "<title>Flex - $this->_strPageName</title>\n";
 		echo "<base href='$strBaseDir'/>\n";
