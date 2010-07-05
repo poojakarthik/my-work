@@ -3,7 +3,8 @@
  * 
  * This is a Pseudo-ORM class for the FAKE type FollowUp_Status.
  * 
- * A followup_status is a combination of the followup_closure_types with followup_closure as sub-statuses and 3 'magic' values:
+ * A followup_status is a combination of the followup_closure_types with 
+ * followup_closure as sub-statuses and 3 'magic' values:
  * 
  *  - ACTIVE
  * 		- CURRENT
