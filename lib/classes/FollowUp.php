@@ -642,7 +642,7 @@ class FollowUp extends ORM_Cached
 			$sOrderByClause	= '';
 			$sLimitClause	= '';
 		}
-		
+		//throw new Exception($aWhereInfoSearch['sClause']."::".print_r($aWhereInfoSearch['aValues'], 1));
 		$oFollowUpSearchSelect	=	new StatementSelect(
 										$sSearchFrom, 
 										$sSearchSelect, 

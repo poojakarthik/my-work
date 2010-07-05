@@ -32,17 +32,27 @@ FollowUp_Status._oDataset				= 	new Dataset_Ajax(
 
 /* Static Methods */
 
-FollowUp_Status.getAllClosures	= function(fnCallback, iRecordCount, aResultSet)
+FollowUp_Status.getActiveClosures	= function(fnCallback, iRecordCount, aResultSet)
 {
 	if (iRecordCount === undefined || aResultSet === undefined)
 	{
-		// Make Request
-		this._oDataset.getRecords(
-			FollowUp_Status.getAllClosures.bind(FollowUp_Status, fnCallback)
-		);
+		// Constant group load callback
+		var fnGetData	= function(fnCallback)
+		{
+			this._oDataset.setFilter({status_id: $CONSTANT.STATUS_ACTIVE});
+			this._oDataset.getRecords(
+				this.getActiveClosures.bind(this, fnCallback)
+			);
+		}
+		
+		// Load constant group status
+		Flex.Constant.loadConstantGroup('status', fnGetData.bind(this, fnCallback));
 	}
 	else
 	{
+		// Clear filter
+		this._oDataset.setFilter(null);
+		
 		// Cache the result set
 		for (i = 0; i < aResultSet.length; i++)
 		{
@@ -59,7 +69,7 @@ FollowUp_Status.getAllAsSelectOptions	= function(fnCallback, oClosures)
 	if (!oClosures)
 	{
 		// Make Request
-		this.getAllClosures(this.getAllAsSelectOptions.bind(this, fnCallback));
+		this.getActiveClosures(this.getAllAsSelectOptions.bind(this, fnCallback));
 	}
 	else
 	{
@@ -131,7 +141,7 @@ FollowUp_Status.getStatusText	= function(oFollowUp)
 		}
 		else
 		{
-			// Need to have called FollowUp_Status.getAllClosures
+			// Need to have called FollowUp_Status.getActiveClosures
 		}
 	}
 	else

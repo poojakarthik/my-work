@@ -41,7 +41,7 @@ class JSON_Handler_FollowUp extends JSON_Handler
 				$mStatus	= $aFilter['status']; 
 				if (is_numeric($mStatus))
 				{
-					$aFilter['followup_closure_type_id']	= (int)$mStatus;
+					$aFilter['followup_closure_id']	= (int)$mStatus;
 				}
 				else
 				{
