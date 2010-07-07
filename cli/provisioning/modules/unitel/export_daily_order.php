@@ -425,7 +425,10 @@
 		$arrDefine['Date']			['PadChar']		= '0';
 		$arrDefine['Date']			['PadType']		= STR_PAD_LEFT;
 		
-		$this->_arrDefine[PROVISIONING_TYPE_VIRTUAL_PRESELECTION] = $arrDefine;
+		$this->_arrDefine[PROVISIONING_TYPE_PRESELECTION]			= $arrDefine;
+		
+		// Virtual Preselection support has been deprecated in favour of regular Preselection
+		//$this->_arrDefine[PROVISIONING_TYPE_VIRTUAL_PRESELECTION]	= $arrDefine;
 		
  		//--------------------------------------------------------------------//
  		// Virtual Preselection Reversal
@@ -449,7 +452,10 @@
 		$arrDefine['FNN']			['Length']		= 10;
 		$arrDefine['FNN']			['Type']		= 'FNN';
 		
-		$this->_arrDefine[PROVISIONING_TYPE_VIRTUAL_PRESELECTION_REVERSE] = $arrDefine;
+		$this->_arrDefine[PROVISIONING_TYPE_PRESELECTION_REVERSE]			= $arrDefine;
+		
+		// Virtual Preselection support has been deprecated in favour of regular Preselection
+		//$this->_arrDefine[PROVISIONING_TYPE_VIRTUAL_PRESELECTION_REVERSE]	= $arrDefine;
  	}
  	
  	//------------------------------------------------------------------------//

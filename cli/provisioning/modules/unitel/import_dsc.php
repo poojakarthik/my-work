@@ -55,9 +55,9 @@
 	 * Constructor
 	 *
 	 * Constructor
-	 * 
+	 *
 	 * @param	integer	$intCarrier				The Carrier using this Module
-	 * 
+	 *
 	 * @return	ImportBase
 	 *
 	 * @method
@@ -141,9 +141,9 @@
 	 * Pre-processes a file
 	 *
 	 * Pre-processes a file
-	 * 
+	 *
 	 * @param	array	$arrRawData		File Data to parse
-	 * 
+	 *
 	 * @return	array					Parsed data
 	 *
 	 * @method
@@ -189,9 +189,9 @@
 	 * Normalises a line from a Provisioning File
 	 *
 	 * Normalises a line from a Provisioning File
-	 * 
+	 *
 	 * @param	string	$strLine		Line to parse
-	 * 
+	 *
 	 * @return	array					Parsed data
 	 *
 	 * @method
@@ -226,13 +226,17 @@
 					$arrPDR['Type']	= PROVISIONING_TYPE_FULL_SERVICE;
 					break;
 				case "13":	// Virtual PreSelection
-					$arrPDR['Type']	= PROVISIONING_TYPE_VIRTUAL_PRESELECTION;
+					// Virtual Preselection support has been deprecated in favour of regular Preselection
+					//$arrPDR['Type']	= PROVISIONING_TYPE_VIRTUAL_PRESELECTION;
+					$arrPDR['Type']	= PROVISIONING_TYPE_PRESELECTION;
 					break;
 				case "52":
 					$arrPDR['Type']	= PROVISIONING_TYPE_FULL_SERVICE_REVERSE;
 					break;
 				case "53":
-					$arrPDR['Type']	= PROVISIONING_TYPE_VIRTUAL_PRESELECTION_REVERSE;
+					// Virtual Preselection support has been deprecated in favour of regular Preselection
+					//$arrPDR['Type']	= PROVISIONING_TYPE_VIRTUAL_PRESELECTION_REVERSE;
+					$arrPDR['Type']	= PROVISIONING_TYPE_PRESELECTION_REVERSE;
 					break;
 				default:
 					// Either unhandled or not required
@@ -440,9 +444,9 @@
 	 * Attempts to link a Response to a Request
 	 *
 	 * Attempts to link a Response to a Request
-	 * 
+	 *
 	 * @param	array	$arrResponse	Response to match against
-	 * 
+	 *
 	 * @return	integer					Request Id
 	 *
 	 * @method
