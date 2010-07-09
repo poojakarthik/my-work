@@ -245,12 +245,12 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			
 			?>
 			<div class="DefaultElement">
+				<div id="Account.BillingType.Output" name="Account.BillingType" class="DefaultOutput Default ">
+					<?php echo DBO()->Account->BillingType->BillingTypeName->Value; ?>
+				</div>
 				<div id="Account.BillingType.Label" class="DefaultLabel">
 					<span> &nbsp;</span>
 					<span id="Account.BillingType.Label.Text">Payment Method : </span>
-				</div>
-				<div id="Account.BillingType.Output" name="Account.BillingType" class="DefaultOutput Default ">
-					<?php echo DBO()->Account->BillingType->BillingTypeName; ?>
 				</div>
 			</div>
 			<?php
@@ -268,8 +268,8 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 ?>
 <div class="DefaultElement">
 	<div id="Account.Balance.Output" name="Account.Balance" class="DefaultOutput Currency">
-	<?php 
-		DBO()->Account->Balance->Render('Currency2DecWithNegAsCR'); 
+	<?php
+		DBO()->Account->Balance->Render('Currency2DecWithNegAsCR');
 		
 		if (Credit_Card_Payment::availableForCustomerGroup(DBO()->Account->CustomerGroup->Value) && AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
 		{
