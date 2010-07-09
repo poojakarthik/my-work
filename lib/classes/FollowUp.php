@@ -248,7 +248,7 @@ class FollowUp extends ORM_Cached
 		require_once 'Zend/Mail.php';
 		
 		$oEmployee	= Employee::getForId($iEmployeeId);
-		if ($oEmployee->email && ($iEmployeeId == Flex::getUserId()))
+		if ($oEmployee->email)
 		{
 			$sUserEmail		= $oEmployee->email;
 			
