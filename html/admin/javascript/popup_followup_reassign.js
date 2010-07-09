@@ -150,10 +150,10 @@ var Popup_FollowUp_Reassign	= Class.create(Reflex_Popup,
 				delete this.oLoading;
 			}
 			
-			if (oResponse.bNoEmail)
+			/*if (oResponse.bNoEmail)
 			{
-				Reflex_Popup.alert('No email was sent to the recipient of this Follow-Up, due to this being a development version of Flex. In this version an email is only sent if you assign a Follow-Up to yourself.');
-			}
+				Reflex_Popup.alert('No email was sent.');
+			}*/
 			
 			if (this._fnOnFinish)
 			{
