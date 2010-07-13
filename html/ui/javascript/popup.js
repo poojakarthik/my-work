@@ -250,7 +250,7 @@ function VixenPopupClass()
 		oPopup.contentPane.innerHTML	= this.strContentCode;
 		
 		// set the top of the popup to the body.scrollTop, so that it doesn't move the page when it is added to it
-		elmPopup.style.top	= document.body.scrollTop + "px";
+		//elmPopup.style.top	= document.body.scrollTop + "px";
 
 		// Show the popup
 		oPopup.display();
@@ -266,9 +266,12 @@ function VixenPopupClass()
 		// Set the position (centre/pointer/target)
 		if (mixPosition == "centre")
 		{
-			// center the popup
-			elmPopup.style.left	= (((window.innerWidth / 2) - (elmPopup.offsetWidth / 2)) + window.scrollX) + "px";
-			elmPopup.style.top	= (((window.innerHeight / 2) - (elmPopup.offsetHeight / 2)) + window.scrollY) + "px";
+			// Center the popup
+			// ----------------
+			// Addition of the window scroll distances has been removed because now Vixen Popups use Reflex_Popup and
+			// the Reflex_Popup overlay is position: fixed;
+			elmPopup.style.left	= (((window.innerWidth / 2) - (elmPopup.offsetWidth / 2))/* + window.scrollX*/) + "px";
+			elmPopup.style.top	= (((window.innerHeight / 2) - (elmPopup.offsetHeight / 2))/* + window.scrollY*/) + "px";
 		}
 		else if (mixPosition == "[object MouseEvent]")
 		{
