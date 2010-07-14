@@ -1837,7 +1837,7 @@ class Invoice extends ORM_Cached
 					Log::getLog()->log("\t\t ! \${$fTotalReducable} left to distribute overall.");
 					Log::getLog()->log("\t\t ! \${$fRedistributedBalanceGrandTotal} Balance remaining overall.");
 					
-					throw new Exception("Debugging!");
+					//throw new Exception("Debugging!");
 					
 					// Commit
 					DataAccess::getDataAccess()->TransactionCommit();
