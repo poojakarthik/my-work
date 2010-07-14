@@ -497,7 +497,9 @@ class AppTemplateAccount extends ApplicationTemplate
 									"AccountBalance"	=> "I.AccountBalance",
 									"DeliveryMethod"	=> "I.DeliveryMethod",
 									"Status"			=> "I.Status",
-									"invoice_run_id"	=> "I.invoice_run_id"
+									"invoice_run_id"	=> "I.invoice_run_id",
+									"charge_total"		=> "I.charge_total",
+									"charge_tax"		=> "I.charge_tax"
 									);
 		
 		

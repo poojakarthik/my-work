@@ -94,7 +94,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		echo "</a>";
 		echo "<h2 class='Invoice'>Invoices</h2>\n";
 		
-		Table()->InvoiceTable->SetHeader("Date", "Invoice #", "Invoice Amount", "Applied Amount", "Amount Owing", "Status", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;");
+		Table()->InvoiceTable->SetHeader("Date", "Invoice #", "New Charges", "Payments Applied", "Amount Owing", "Status", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;");
 		//Table()->InvoiceTable->SetWidth("10%", "12%", "17%", "17%", "17%", "11%", "4%", "4%", "4%", "4%");
 		Table()->InvoiceTable->SetAlignment("Left", "Left", "Right", "Right", "Right", "Left", "Center", "Center", "Center", "Center");
 		
@@ -209,11 +209,14 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 					$strExportCSV = "<a name='test' href='$strExportCSV'><img src='img/template/export.png' title='Export as CSV' /></a>";
 				}
 	
-				// Calculate Invoice Amount
-				$dboInvoice->Amount = $dboInvoice->Total->Value + $dboInvoice->Tax->Value;
+				// Calculate Invoice Amount (New Charges)
+				$dboInvoice->Amount = $dboInvoice->charge_total->Value + $dboInvoice->charge_tax->Value;
 	
-				// Calculate AppliedAmount
+				// Calculate AppliedAmount (Payments and Adjustments Applied)
 				$dboInvoice->AppliedAmount = $dboInvoice->Amount->Value - $dboInvoice->Balance->Value;
+				
+				// Calculate Amount Owing
+				$dboInvoice->AmountOwing	= $dboInvoice->Amount->Value - $dboInvoice->AppliedAmount->Value;
 	
 				$strCreatedOnFormatted = date("d-m-Y", strtotime($dboInvoice->CreatedOn->Value));
 	
@@ -222,7 +225,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 												$dboInvoice->Id->Value,
 												"<span class='Currency'>". $dboInvoice->Amount->FormattedValue() ."</span>",
 												"<span class='Currency'>". $dboInvoice->AppliedAmount->FormattedValue() ."</span>",
-												"<span class='Currency'>". $dboInvoice->Balance->FormattedValue() ."</span>",
+												"<span class='Currency'>". number_format($dboInvoice->AmountOwing->Value, 2, '.', '') ."</span>",
 												($bolIsSample ? $dboInvoice->Status->Value : GetConstantDescription($dboInvoice->Status->Value, "InvoiceStatus")),
 												$strPdfLabel,
 												$strEmailLabel,
