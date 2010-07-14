@@ -1743,7 +1743,8 @@ class Invoice extends ORM_Cached
 				try
 				{
 					// Get affected Invoices
-					$sAffectedInvoices	= "	SELECT		i.*
+					$sAffectedInvoices	= "	SELECT		i.*,
+														SUM(ip.Amount)	AS invoice_payment_total
 											
 											FROM		Invoice i
 											
@@ -1762,7 +1763,7 @@ class Invoice extends ORM_Cached
 					$aInvoices	= array();
 					while ($aInvoice = $oInvoicesResult->fetch_assoc())
 					{
-						$aInvoices[]	= $aInvoice;
+						$aInvoices[$aInvoice['Id']]	= $aInvoice;
 					}
 					$aInvoices	= Invoice::importResult($aInvoices);
 					
@@ -1776,7 +1777,11 @@ class Invoice extends ORM_Cached
 					{
 						$fTotalAdjustments		-= min(0.0, $oInvoice->adjustment_total + $oInvoice->adjustment_tax);		// Adjustment Totals (there shouldn't be any debits in here anyway)
 						$fTotalCreditCharges	-= min(0.0, $oInvoice->charge_total + $oInvoice->charge_tax);				// Credit Charge Totals
-						$fTotalPayments			+= max(0.0, ($oInvoice->Total + $oInvoice->Tax) - $oInvoice->Balance);		// Payments
+						
+						$fTotalPayments			+= min(0.0, $aInvoices[$oInvoice->Id]['invoice_payment_total']);
+						
+						// This payment calculation isn't accurate if balances have previously been distributed
+						//$fTotalPayments			+= max(0.0, ($oInvoice->Total + $oInvoice->Tax) - $oInvoice->Balance);		// Payments
 						
 						$fInvoicesGrandTotal	+= $oInvoice->Total + $oInvoice->Tax;
 						$fBalanceGrandTotal		+= $oInvoice->Balance;
