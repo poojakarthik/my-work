@@ -781,7 +781,7 @@ function VixenPopupClass()
 		}
 		if (strPopupId == null)
 		{
-			strPopupId = "VixenAlertBox";
+			strPopupId = "VixenAlertBox" + ($$('.VixenAlertBox').length);
 		}
 		if (strTitle == null)
 		{
@@ -791,17 +791,18 @@ function VixenPopupClass()
 		// TODO! fix this up so that the paragraph elements are being used properly
 		var strContent ="<p><div align='center' style='margin: 5px 10px 10px 10px'>" + strMessage + 
 						"<p></div>\n" +
-						"<div align='center' style='margin-bottom: 10px'><input type='button' id='VixenAlertOkButton' value='OK' "+ strOkButtonOnClick +"><br></div>" +
-						"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</" + "script>\n";
-		Vixen.Popup.Create(strPopupId, strContent, strSize, 'centre', strWindowType, strTitle, null, false, fncCallback);
+						"<div align='center' style='margin-bottom: 10px'><input type='button' id='"+strPopupId+"_OkButton' value='OK' "+ strOkButtonOnClick +"><br></div>" +
+						"<script type='text/javascript'>document.getElementById('"+strPopupId+"_OkButton').focus()</" + "script>\n";
+		var	elmPopup	= Vixen.Popup.Create(strPopupId, strContent, strSize, 'centre', strWindowType, strTitle, null, false, fncCallback);
+		elmPopup.addClassName('VixenAlertBox');
 		
 		if (fncCallback == undefined)
 		{
-			$ID("VixenAlertOkButton").onclick	= function(){Vixen.Popup.Close(strPopupId)};
+			$ID(strPopupId+"_OkButton").onclick	= function(){Vixen.Popup.Close(strPopupId)};
 		}
 		else
 		{
-			$ID("VixenAlertOkButton").onclick	= function(){Vixen.Popup.Close(strPopupId); fncCallback()};
+			$ID(strPopupId+"_OkButton").onclick	= function(){Vixen.Popup.Close(strPopupId); fncCallback()};
 		}
 	}
 	
@@ -843,7 +844,7 @@ function VixenPopupClass()
 		}
 		if (strPopupId == null)
 		{
-			strPopupId = "YesNoCancel";
+			strPopupId = "YesNoCancel" + ($$('.VixenYesNoCancel').length);
 		}
 		if (strTitle == null)
 		{
@@ -860,7 +861,8 @@ function VixenPopupClass()
 						strCancel +
 						"	<br />" +
 						"</div>\n";
-		Vixen.Popup.Create(strPopupId, strContent, strSize, 'centre', 'modal', strTitle, null, bolAllowCancel);
+		var	elmPopup	= Vixen.Popup.Create(strPopupId, strContent, strSize, 'centre', 'modal', strTitle, null, bolAllowCancel);
+		elmPopup.addClassName('VixenYesNoCancel');
 		
 		// Set the Button onclick Events
 		$ID(strPopupId+"_Yes").onclick	= function(){Vixen.Popup.Close(strPopupId); fncYesCallback()};
@@ -909,50 +911,65 @@ function VixenPopupClass()
 		strOkCaption = (strOkCaption == null) ? "Ok" : strOkCaption;
 		strCancelCaption = (strCancelCaption == null) ? "Cancel" : strCancelCaption;
 		
+		// Is there already another element with this ID?
+		if ($ID('VixenConfirmOkButton'))
+		{
+			//debugger;
+		}
 		
-		strOkBtnHtml		= "<input type='button' id='VixenConfirmOkButton' value='" + strOkCaption + "'>";
-		strCancelBtnHtml	= "<input type='button' id='VixenConfirmCancelButton' value='" + strCancelCaption + "'>";
+		var	strId	= 'VixenConfirmBox' + ($$('.VixenConfirmBox').length);
+		
+		//alert(strId);
+		
+		strOkBtnHtml		= "<input type='button' id='"+strId+"_OkButton' value='" + strOkCaption + "'>";
+		strCancelBtnHtml	= "<input type='button' id='"+strId+"_CancelButton' value='" + strCancelCaption + "'>";
 		
 		strContent =	"<table border='0' width='100%'>" + 
 						"<tr><td colspan='2' align='left' style='padding: 5px 10px 10px 10px'><span align='justify' style='line-height:1.5'>" + strMessage + "</span></td></tr>" +
 						"<tr><td align='center' width='50%'>" + strOkBtnHtml + "</td>" + 
 						"<td align='center' width='50%'>" + strCancelBtnHtml + "</td></tr>";
-		Vixen.Popup.Create('VixenConfirmBox', strContent, strSize, 'centre', 'modal', strPopupTitle);
+		var elmPopup	= Vixen.Popup.Create(strId, strContent, strSize, 'centre', 'modal', strPopupTitle);
+		elmPopup.addClassName('VixenConfirmBox');
 		
 		// get references to the Ok and Cancel buttons and attach the event listeners
-		var elmOkButton = document.getElementById("VixenConfirmOkButton");
-		var elmCancelButton = document.getElementById("VixenConfirmCancelButton");
+		var elmOkButton = document.getElementById(strId+"_OkButton");
+		var elmCancelButton = document.getElementById(strId+"_CancelButton");
+		
+		if (strMessage.substring(0, 3) === 'All')
+		{
+			//debugger;
+		}
 		
 		if (typeof(mixOkOnClick) == 'function')
 		{
 			// the button action is a function
-			elmOkButton.addEventListener("click", function() {Vixen.Popup.Close("VixenConfirmBox"); mixOkOnClick();}, false);
+			elmOkButton.observe("click", function() {Vixen.Popup.Close(strId); mixOkOnClick();});
 		}
 		else if (typeof(mixOkOnClick) == 'string')
 		{
 			// the button action is code stored as a string
-			elmOkButton.addEventListener("click", function() {Vixen.Popup.Close("VixenConfirmBox"); eval(mixOkOnClick);}, false);
+			elmOkButton.addEventListener("click", function() {Vixen.Popup.Close(strId); eval(mixOkOnClick);}, false);
 		}
 		else
 		{
 			// No valid action was declared for the ok button.
-			elmOkButton.addEventListener("click", function() {alert("No action has been declared"); Vixen.Popup.Close("VixenConfirmBox");}, false);
+			elmOkButton.addEventListener("click", function() {alert("No action has been declared"); Vixen.Popup.Close(strId);}, false);
 		}
 
 		if (typeof(mixCancelOnClick) == 'function')
 		{
 			// the button action is a function
-			elmCancelButton.addEventListener("click", function() {Vixen.Popup.Close("VixenConfirmBox"); mixCancelOnClick();}, false);
+			elmCancelButton.addEventListener("click", function() {Vixen.Popup.Close(strId); mixCancelOnClick();}, false);
 		}
 		else if (typeof(mixCancelOnClick) == 'string')
 		{
 			// the button action is code stored as a string
-			elmCancelButton.addEventListener("click", function() {Vixen.Popup.Close("VixenConfirmBox"); eval(mixCancelOnClick);}, false);
+			elmCancelButton.addEventListener("click", function() {Vixen.Popup.Close(strId); eval(mixCancelOnClick);}, false);
 		}
 		else if (mixCancelOnClick == null)
 		{
 			// No action was specified so just close the popup
-			elmCancelButton.addEventListener("click", function() {Vixen.Popup.Close("VixenConfirmBox");}, false);
+			elmCancelButton.addEventListener("click", function() {Vixen.Popup.Close(strId);}, false);
 		}
 		
 		// set focus to the Ok button
