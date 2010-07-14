@@ -1747,6 +1747,7 @@ class Invoice extends ORM_Cached
 														SUM(ip.Amount)	AS invoice_payment_total
 											
 											FROM		Invoice i
+														LEFT JOIN InvoicePayment ip ON (i.Account = ip.Account AND ip.invoice_run_id = i.invoice_run_id)
 											
 											WHERE		i.Status NOT IN (100, 106)
 														AND i.Id BETWEEN {$aAccount['earliest_redistributable']} AND {$aAccount['latest_redistributable']}
