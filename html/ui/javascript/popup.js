@@ -236,6 +236,9 @@ function VixenPopupClass()
 		if (bolCanClose !== false)
 		{
 			oPopup.addCloseButton(this.Close.bind(this, elmPopup));
+			
+			// Hack in the ID for any scripts that may depend on it
+			oTitleBarElement.select('img.PopupBoxClose').first().setAttribute('id', "VixenPopupTopBarClose__"+strId);
 		}
 		
 		// only display the debug button if we are operating in debug mode
