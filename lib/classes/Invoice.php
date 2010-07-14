@@ -1776,6 +1776,7 @@ class Invoice extends ORM_Cached
 					$fTotalCreditCharges	= 0.0;
 					$fTotalAdjustments		= 0.0;
 					$fBalanceGrandTotal		= 0.0;
+					$fChargesGrandTotal		= 0.0;
 					foreach ($aInvoices as $oInvoice)
 					{
 						$fTotalAdjustments		-= min(0.0, $oInvoice->adjustment_total + $oInvoice->adjustment_tax);		// Adjustment Totals (there shouldn't be any debits in here anyway)
@@ -1787,11 +1788,13 @@ class Invoice extends ORM_Cached
 						//$fTotalPayments			+= max(0.0, ($oInvoice->Total + $oInvoice->Tax) - $oInvoice->Balance);		// Payments
 						
 						$fInvoicesGrandTotal	+= $oInvoice->Total + $oInvoice->Tax;
+						$fChargesGrandTotal		+= $oInvoice->charge_total + $oInvoice->charge_tax;
 						$fBalanceGrandTotal		+= $oInvoice->Balance;
 					}
 					$fTotalReducable	= $fTotalAdjustments + $fTotalCreditCharges + $fTotalPayments;
 					
 					Log::getLog()->log("\t\t * Invoices Grand Total: \${$fInvoicesGrandTotal}");
+					Log::getLog()->log("\t\t * Charges Grand Total: \${$fChargesGrandTotal}");
 					Log::getLog()->log("\t\t * Balance Grand Total: \${$fBalanceGrandTotal}");
 					Log::getLog()->log("\t\t * Credit Charge Total: \${$fTotalCreditCharges}");
 					Log::getLog()->log("\t\t * Adjustment Total: \${$fTotalAdjustments}");
@@ -1818,7 +1821,7 @@ class Invoice extends ORM_Cached
 						
 						$fRedistributedBalanceGrandTotal	+= $oInvoice->Balance;
 						
-						Log::getLog()->log("\t\t - Invoice {$oInvoice->Id} of \$".($oInvoice->Total + $oInvoice->Tax)." reduced by \${$fSubsidy} to \${$oInvoice->Balance} (\${$fTotalReducable} remaining to distribute)");
+						Log::getLog()->log("\t\t - Invoice {$oInvoice->Id} of \$".($oInvoice->charge_total + $oInvoice->charge_tax)." reduced by \${$fSubsidy} to \${$oInvoice->Balance} (\${$fTotalReducable} remaining to distribute)");
 					}
 					
 					// Apply any remaining credits to the most recent Invoice
