@@ -1753,6 +1753,8 @@ class Invoice extends ORM_Cached
 														AND i.Id BETWEEN {$aAccount['earliest_redistributable']} AND {$aAccount['latest_redistributable']}
 														AND i.Account = {$aAccount['account_id']}
 											
+											GROUP BY	i.Id
+														
 											ORDER BY	i.CreatedOn ASC,
 														i.Id ASC;";
 					
