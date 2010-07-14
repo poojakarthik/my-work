@@ -1761,12 +1761,12 @@ class Invoice extends ORM_Cached
 						throw new Exception($oQuery->Error());
 					}
 					
-					$aInvoices	= array();
+					$aInvoicesAssoc	= array();
 					while ($aInvoice = $oInvoicesResult->fetch_assoc())
 					{
-						$aInvoices[$aInvoice['Id']]	= $aInvoice;
+						$aInvoicesAssoc[$aInvoice['Id']]	= $aInvoice;
 					}
-					$aInvoices	= Invoice::importResult($aInvoices);
+					$aInvoices	= Invoice::importResult($aInvoicesAssoc);
 					
 					// Total Balances for redistribution
 					$fInvoicesGrandTotal	= 0.0;
