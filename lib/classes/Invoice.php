@@ -1842,14 +1842,14 @@ class Invoice extends ORM_Cached
 						$fTotalReducable	= 0.0;
 					}
 					
+					Log::getLog()->log("\t\t ! \${$fTotalReducable} left to distribute overall.");
+					Log::getLog()->log("\t\t ! \${$fRedistributedBalanceGrandTotal} Balance remaining overall.");
+					
 					// Ensure that the pre- and post-redistribution Balance grand totals are equal
 					if (Invoice::roundOut($fBalanceGrandTotal, 4) != Invoice::roundOut($fRedistributedBalanceGrandTotal, 4))
 					{
 						throw new Exception("Pre and Post Redistribution Balance Mismatch! (pre: \${$fBalanceGrandTotal}; post: \${$fRedistributedBalanceGrandTotal})");
 					}
-					
-					Log::getLog()->log("\t\t ! \${$fTotalReducable} left to distribute overall.");
-					Log::getLog()->log("\t\t ! \${$fRedistributedBalanceGrandTotal} Balance remaining overall.");
 					
 					throw new Exception("Debugging!");
 					
