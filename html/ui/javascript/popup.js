@@ -115,8 +115,8 @@ function VixenPopupClass()
 		var elmPopup = this.GetPopupElement(strPopupId);
 		if (elmPopup != null)
 		{
-			elmPopup.style.left	= (((window.innerWidth / 2) - (elmPopup.offsetWidth / 2)) + window.scrollX) + "px";
-			elmPopup.style.top	= (((window.innerHeight / 2) - (elmPopup.offsetHeight / 2)) + window.scrollY) + "px";
+			elmPopup.style.left	= (((window.innerWidth / 2) - (elmPopup.offsetWidth / 2))/* + window.scrollX*/) + "px";
+			elmPopup.style.top	= (((window.innerHeight / 2) - (elmPopup.offsetHeight / 2))/* + window.scrollY*/) + "px";
 		}
 	}
 	
