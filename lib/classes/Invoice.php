@@ -1774,9 +1774,9 @@ class Invoice extends ORM_Cached
 					$fBalanceGrandTotal		= 0.0;
 					foreach ($aInvoices as $oInvoice)
 					{
-						$fTotalAdjustments		-= max(0.0, $oInvoice->adjustment_total + $oInvoice->adjustment_tax);	// Adjustment Totals (there shouldn't be any debits in here anyway)
-						$fTotalCreditCharges	-= min(0.0, $oInvoice->charge_total + $oInvoice->charge_tax);			// Credit Charge Totals
-						$fTotalPayments			+= max(0.0, ($oInvoice->Total + $oInvoice->Tax) - $oInvoice->Balance);	// Payments
+						$fTotalAdjustments		-= min(0.0, $oInvoice->adjustment_total + $oInvoice->adjustment_tax);		// Adjustment Totals (there shouldn't be any debits in here anyway)
+						$fTotalCreditCharges	-= min(0.0, $oInvoice->charge_total + $oInvoice->charge_tax);				// Credit Charge Totals
+						$fTotalPayments			+= max(0.0, ($oInvoice->Total + $oInvoice->Tax) - $oInvoice->Balance);		// Payments
 						
 						$fInvoicesGrandTotal	+= $oInvoice->Total + $oInvoice->Tax;
 						$fBalanceGrandTotal		+= $oInvoice->Balance;
@@ -1837,7 +1837,7 @@ class Invoice extends ORM_Cached
 					Log::getLog()->log("\t\t ! \${$fTotalReducable} left to distribute overall.");
 					Log::getLog()->log("\t\t ! \${$fRedistributedBalanceGrandTotal} Balance remaining overall.");
 					
-					//throw new Exception("Debugging!");
+					throw new Exception("Debugging!");
 					
 					// Commit
 					DataAccess::getDataAccess()->TransactionCommit();
