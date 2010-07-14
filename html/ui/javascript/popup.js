@@ -235,7 +235,7 @@ function VixenPopupClass()
 		
 		if (bolCanClose !== false)
 		{
-			oPopup.addCloseButton();
+			oPopup.addCloseButton(this.Close.bind(this, elmPopup));
 		}
 		
 		// only display the debug button if we are operating in debug mode
@@ -290,6 +290,18 @@ function VixenPopupClass()
 		{
 			// set the popup, well, wherever it wants
 		}
+		
+		// onClose Location
+		var	sOnCloseLocation	= (strLocationOnClose && typeof strLocationOnClose === 'string') ? strLocationOnClose : null;
+		switch (strModal)
+		{
+			case 'autohide-reload':
+				// Autohide Reload overrides any provided OnCloseLocation
+				sOnCloseLocation	= window.location.toString();
+				break;
+		}
+		// This is kinda dirty, but I need it to work... now...
+		elmPopup.sOnCloseLocation	= sOnCloseLocation;
 		
 		// return a reference to the popup
 		return elmPopup;
@@ -606,14 +618,17 @@ function VixenPopupClass()
 		
 		if (elmPopup && elmPopup.oPopup)
 		{
-			elmPopup.oPopup.hide();
-			elmPopup.oPopup	= null;
+			if (elmPopup.sOnCloseLocation && typeof elmPopup.sOnCloseLocation === 'string')
+			{
+				window.location	= elmPopup.sOnCloseLocation;
+			}
+			
+			if (elmPopup.oPopup)
+			{
+				elmPopup.oPopup.hide();
+				elmPopup.oPopup	= null;
+			}
 		}
-		
-		
-		
-		
-		
 		
 		/*
 		// Work out how we are going to find the popup element
