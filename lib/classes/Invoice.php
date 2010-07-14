@@ -1781,7 +1781,7 @@ class Invoice extends ORM_Cached
 						$fTotalAdjustments		-= min(0.0, $oInvoice->adjustment_total + $oInvoice->adjustment_tax);		// Adjustment Totals (there shouldn't be any debits in here anyway)
 						$fTotalCreditCharges	-= min(0.0, $oInvoice->charge_total + $oInvoice->charge_tax);				// Credit Charge Totals
 						
-						$fTotalPayments			+= min(0.0, $aInvoicesAssoc[$oInvoice->Id]['invoice_payment_total']);
+						$fTotalPayments			+= max(0.0, $aInvoicesAssoc[$oInvoice->Id]['invoice_payment_total']);
 						
 						// This payment calculation isn't accurate if balances have previously been distributed
 						//$fTotalPayments			+= max(0.0, ($oInvoice->Total + $oInvoice->Tax) - $oInvoice->Balance);		// Payments
