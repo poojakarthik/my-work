@@ -1715,17 +1715,40 @@ class Invoice extends ORM_Cached
 		$oQuery	= new Query();
 		
 		// We want to redistribute Invoice balances so that payments and adjustments affect oldest invoices first
-		$sAccounts	= "	SELECT		i.Account																							AS account_id,
-									MAX(IF(i.Balance != 0 AND (i.Balance != (i.Total + i.Tax) OR i.adjustment_total < 0), i.Id, NULL))	AS latest_redistributable,
-									MIN(IF(i.Balance != 0 AND (i.Balance != (i.Total + i.Tax) OR i.adjustment_total < 0), i.Id, NULL))	AS earliest_redistributable
+		$sAccounts	= "	SELECT		ir.*,
+									COUNT(IF(ROUND(i.Balance, 2) != 0, i.Id, NULL))	AS total_imbalanced,
+									COUNT(DISTINCT i.Id)							AS total_affected,
+									MIN(i.Id)										AS earliest_affected,
+									MAX(i.Id)										AS latest_affected
 						
 						FROM		Invoice i
+									JOIN
+									(
+										SELECT		Account													AS account_id,
+													MIN(IF(Balance > 0, Id, NULL))							AS earliest_outstanding,
+													MAX(IF(Balance > 0, Id, NULL))							AS latest_outstanding,
+													MIN(IF(Balance < 0 OR adjustment_total < 0, Id, NULL))	AS earliest_redistributable,
+													MAX(IF(Balance < 0 OR adjustment_total < 0, Id, NULL))	AS latest_redistributable
+													
+										FROM		Invoice
+										WHERE		Status NOT IN (100, 106)
+										GROUP BY	Account
+										HAVING		!ISNULL(earliest_outstanding)
+													AND !ISNULL(earliest_redistributable)
+									) /* invoice_redistributable */ ir ON (i.Account = ir.account_id)
 						
 						WHERE		i.Status NOT IN (100, 106)
+									AND
+									(
+										(i.Id >= earliest_outstanding OR i.Id >= ir.earliest_redistributable)
+										AND
+										(i.Id <= latest_outstanding OR i.Id <= ir.latest_redistributable)
+									)
 						
 						GROUP BY	i.Account
 						
-						HAVING		latest_redistributable != earliest_redistributable;";
+						HAVING		total_imbalanced > 0
+									AND total_affected > 1;";
 		
 		if (($oAccountsResult = $oQuery->Execute($sAccounts)) === false)
 		{
@@ -1750,7 +1773,7 @@ class Invoice extends ORM_Cached
 														LEFT JOIN InvoicePayment ip ON (i.Account = ip.Account AND ip.invoice_run_id = i.invoice_run_id)
 											
 											WHERE		i.Status NOT IN (100, 106)
-														AND i.Id BETWEEN {$aAccount['earliest_redistributable']} AND {$aAccount['latest_redistributable']}
+														AND i.Id BETWEEN {$aAccount['earliest_affected']} AND {$aAccount['latest_affected']}
 														AND i.Account = {$aAccount['account_id']}
 											
 											GROUP BY	i.Id
