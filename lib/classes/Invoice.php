@@ -1724,18 +1724,20 @@ class Invoice extends ORM_Cached
 						FROM		Invoice i
 									JOIN
 									(
-										SELECT		Account													AS account_id,
-													MIN(IF(Balance > 0, Id, NULL))							AS earliest_outstanding,
-													MAX(IF(Balance > 0, Id, NULL))							AS latest_outstanding,
-													MIN(IF(Balance < 0 OR adjustment_total < 0, Id, NULL))	AS earliest_redistributable,
-													MAX(IF(Balance < 0 OR adjustment_total < 0, Id, NULL))	AS latest_redistributable
+										SELECT		Account																							AS account_id,
+													MIN(IF(Status != 106 AND Balance >= 0.1, Id, NULL))												AS earliest_outstanding,
+													MAX(IF(Status != 106 AND Balance >= 0.1, Id, NULL))												AS latest_outstanding,
+													MIN(IF(Status != 106 AND (Balance != (charge_total + charge_tax) OR Balance < 0), Id, NULL))	AS earliest_redistributable,
+													MAX(IF(Status != 106 AND (Balance != (charge_total + charge_tax) OR Balance < 0), Id, NULL))	AS latest_redistributable,
+													MAX(IF(Status = 106, Id, NULL))																	AS latest_written_off
 													
 										FROM		Invoice
-										WHERE		Status NOT IN (100, 106)
+										WHERE		Status NOT IN (100)
 										GROUP BY	Account
 										HAVING		!ISNULL(earliest_outstanding)
 													AND !ISNULL(earliest_redistributable)
 									) /* invoice_redistributable */ ir ON (i.Account = ir.account_id)
+									JOIN Account a ON (a.Id = i.Account AND a.Archived != 1)
 						
 						WHERE		i.Status NOT IN (100, 106)
 									AND
@@ -1743,6 +1745,8 @@ class Invoice extends ORM_Cached
 										(i.Id >= earliest_outstanding OR i.Id >= ir.earliest_redistributable)
 										AND
 										(i.Id <= latest_outstanding OR i.Id <= ir.latest_redistributable)
+										AND
+										(i.Id > COALESCE(ir.latest_written_off, 0))
 									)
 						
 						GROUP BY	i.Account
@@ -1773,7 +1777,7 @@ class Invoice extends ORM_Cached
 														LEFT JOIN InvoicePayment ip ON (i.Account = ip.Account AND ip.invoice_run_id = i.invoice_run_id)
 											
 											WHERE		i.Status NOT IN (100, 106)
-											/*			AND i.Id BETWEEN {$aAccount['earliest_affected']} AND {$aAccount['latest_affected']}*/
+														AND i.Id >= {$aAccount['earliest_affected']}
 														AND i.Account = {$aAccount['account_id']}
 											
 											GROUP BY	i.Id
@@ -1800,7 +1804,9 @@ class Invoice extends ORM_Cached
 					$fTotalReducable		= 0.0;
 					foreach ($aInvoices as $oInvoice)
 					{
-						$fTotalReducable		+= ($oInvoice->charge_total + $oInvoice->_charge_tax) - $oInvoice->Balance;
+						$fReductions		= Invoice::roundOut(max(0.0, $oInvoice->charge_total + $oInvoice->charge_tax) - $oInvoice->Balance, 2);
+						$fTotalReducable	+= $fReductions;
+						Log::getLog()->log("\t\t + Invoice {$oInvoice->Id} has \${$fReductions} of reductions");
 						
 						$fInvoicesGrandTotal	+= $oInvoice->Total + $oInvoice->Tax;
 						$fChargesGrandTotal		+= $oInvoice->charge_total + $oInvoice->charge_tax;
@@ -1810,7 +1816,7 @@ class Invoice extends ORM_Cached
 					Log::getLog()->log("\t\t * Invoices Grand Total: \${$fInvoicesGrandTotal}");
 					Log::getLog()->log("\t\t * Charges Grand Total: \${$fChargesGrandTotal}");
 					Log::getLog()->log("\t\t * Balance Grand Total: \${$fBalanceGrandTotal}");
-					Log::getLog()->log("\t\t * Reductions Charge Total: \${$fTotalReducable}");
+					Log::getLog()->log("\t\t * Reductions Total: \${$fTotalReducable}");
 					
 					// Redistribute Balances
 					$fRedistributedBalanceGrandTotal	= 0.0;
@@ -1873,6 +1879,10 @@ class Invoice extends ORM_Cached
 					Log::getLog()->log("Exception: ".$oException->getMessage()."; Rolling back changes");
 					DataAccess::getDataAccess()->TransactionRollback();
 				}
+			}
+			else
+			{
+				throw new Exception("Unable to start a Transaction");
 			}
 		}
 	}
