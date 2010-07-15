@@ -1727,8 +1727,8 @@ class Invoice extends ORM_Cached
 										SELECT		Account																							AS account_id,
 													MIN(IF(Status != 106 AND Balance >= 0.1, Id, NULL))												AS earliest_outstanding,
 													MAX(IF(Status != 106 AND Balance >= 0.1, Id, NULL))												AS latest_outstanding,
-													MIN(IF(Status != 106 AND (Balance != (charge_total + charge_tax) OR Balance < 0), Id, NULL))	AS earliest_redistributable,
-													MAX(IF(Status != 106 AND (Balance != (charge_total + charge_tax) OR Balance < 0), Id, NULL))	AS latest_redistributable,
+													MIN(IF(Status != 106 AND (adjustment_total < 0 OR Balance < 0), Id, NULL))	AS earliest_redistributable,
+													MAX(IF(Status != 106 AND (adjustment_total < 0 OR Balance < 0), Id, NULL))	AS latest_redistributable,
 													MAX(IF(Status = 106, Id, NULL))																	AS latest_written_off
 													
 										FROM		Invoice
@@ -1804,7 +1804,7 @@ class Invoice extends ORM_Cached
 					$fTotalReducable		= 0.0;
 					foreach ($aInvoices as $oInvoice)
 					{
-						$fReductions		= Invoice::roundOut(max(0.0, $oInvoice->charge_total + $oInvoice->charge_tax) - $oInvoice->Balance, 2);
+						$fReductions		= Invoice::roundOut(max(0.0, $oInvoice->charge_total + $oInvoice->charge_tax) - $oInvoice->Balance, 4);
 						$fTotalReducable	+= $fReductions;
 						Log::getLog()->log("\t\t + Invoice {$oInvoice->Id} has \${$fReductions} of reductions");
 						
@@ -1849,7 +1849,7 @@ class Invoice extends ORM_Cached
 						
 						$oInvoice->Balance	-= $fTotalReducable;
 						
-						$fRedistributedBalanceGrandTotal	+= $fTotalReducable;
+						$fRedistributedBalanceGrandTotal	-= $fTotalReducable;
 						
 						// Save
 						$oInvoice->save();
