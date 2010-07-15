@@ -1843,7 +1843,7 @@ class Invoice extends ORM_Cached
 						
 						$oInvoice->Balance	-= $fTotalReducable;
 						
-						$fRedistributedBalanceGrandTotal	-= $fTotalReducable;
+						$fRedistributedBalanceGrandTotal	+= $fTotalReducable;
 						
 						// Save
 						$oInvoice->save();
