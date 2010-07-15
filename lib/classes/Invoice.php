@@ -1773,8 +1773,8 @@ class Invoice extends ORM_Cached
 														LEFT JOIN InvoicePayment ip ON (i.Account = ip.Account AND ip.invoice_run_id = i.invoice_run_id)
 											
 											WHERE		i.Status NOT IN (100, 106)
-														AND i.Id BETWEEN {$aAccount['earliest_affected']} AND {$aAccount['latest_affected']}
-														AND i.Account = {$aAccount['account_id']}
+											/*			AND i.Id BETWEEN {$aAccount['earliest_affected']} AND {$aAccount['latest_affected']}
+														AND i.Account = {$aAccount['account_id']}*/
 											
 											GROUP BY	i.Id
 														
