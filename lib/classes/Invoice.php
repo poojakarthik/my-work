@@ -1869,7 +1869,7 @@ class Invoice extends ORM_Cached
 						throw new Exception("Pre and Post Redistribution Balance Mismatch! (pre: \${$fBalanceGrandTotal}; post: \${$fRedistributedBalanceGrandTotal})");
 					}
 					
-					throw new Exception("Debugging!");
+					//throw new Exception("Debugging!");
 					
 					// Commit
 					DataAccess::getDataAccess()->TransactionCommit();
