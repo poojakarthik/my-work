@@ -1800,7 +1800,7 @@ class Invoice extends ORM_Cached
 					$fTotalReducable		= 0.0;
 					foreach ($aInvoices as $oInvoice)
 					{
-						$fTotalReducable		-= ($oInvoice->charge_total + $oInvoice->_charge_tax) - $oInvoice->Balance;
+						$fTotalReducable		+= ($oInvoice->charge_total + $oInvoice->_charge_tax) - $oInvoice->Balance;
 						
 						$fInvoicesGrandTotal	+= $oInvoice->Total + $oInvoice->Tax;
 						$fChargesGrandTotal		+= $oInvoice->charge_total + $oInvoice->charge_tax;
@@ -1837,7 +1837,7 @@ class Invoice extends ORM_Cached
 					
 					// Apply any remaining credits to the most recent Invoice
 					Log::getLog()->log("\t\t ! \${$fTotalReducable} left to distribute overall.");
-					if (Invoice::roundOut($fTotalReducable, 4) > 0)
+					if (Invoice::roundOut($fTotalReducable, 4) != 0)
 					{
 						$oInvoice	= end($aInvoices);
 						
