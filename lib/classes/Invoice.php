@@ -1795,34 +1795,22 @@ class Invoice extends ORM_Cached
 					
 					// Total Balances for redistribution
 					$fInvoicesGrandTotal	= 0.0;
-					$fTotalPayments			= 0.0;
-					$fTotalCreditCharges	= 0.0;
-					$fTotalAdjustments		= 0.0;
 					$fBalanceGrandTotal		= 0.0;
 					$fChargesGrandTotal		= 0.0;
+					$fTotalReducable		= 0.0;
 					foreach ($aInvoices as $oInvoice)
 					{
-						$fTotalAdjustments		-= min(0.0, $oInvoice->adjustment_total + $oInvoice->adjustment_tax);		// Adjustment Totals (there shouldn't be any debits in here anyway)
-						$fTotalCreditCharges	-= min(0.0, $oInvoice->charge_total + $oInvoice->charge_tax);				// Credit Charge Totals
-						
-						$fTotalPayments			+= max(0.0, $aInvoicesAssoc[$oInvoice->Id]['invoice_payment_total']);
-						
-						// This payment calculation isn't accurate if balances have previously been distributed
-						//$fTotalPayments			+= max(0.0, ($oInvoice->Total + $oInvoice->Tax) - $oInvoice->Balance);		// Payments
+						$fTotalReducable		-= ($oInvoice->charge_total + $oInvoice->_charge_tax) - $oInvoice->Balance;
 						
 						$fInvoicesGrandTotal	+= $oInvoice->Total + $oInvoice->Tax;
 						$fChargesGrandTotal		+= $oInvoice->charge_total + $oInvoice->charge_tax;
 						$fBalanceGrandTotal		+= $oInvoice->Balance;
 					}
-					$fTotalReducable	= $fTotalAdjustments + $fTotalCreditCharges + $fTotalPayments;
 					
 					Log::getLog()->log("\t\t * Invoices Grand Total: \${$fInvoicesGrandTotal}");
 					Log::getLog()->log("\t\t * Charges Grand Total: \${$fChargesGrandTotal}");
 					Log::getLog()->log("\t\t * Balance Grand Total: \${$fBalanceGrandTotal}");
-					Log::getLog()->log("\t\t * Credit Charge Total: \${$fTotalCreditCharges}");
-					Log::getLog()->log("\t\t * Adjustment Total: \${$fTotalAdjustments}");
-					Log::getLog()->log("\t\t * Payment Total: \${$fTotalPayments}");
-					Log::getLog()->log("\t\t * Total Reducable: \${$fTotalReducable}");
+					Log::getLog()->log("\t\t * Reductions Charge Total: \${$fTotalReducable}");
 					
 					// Redistribute Balances
 					$fRedistributedBalanceGrandTotal	= 0.0;
@@ -1863,9 +1851,10 @@ class Invoice extends ORM_Cached
 						Log::getLog()->log("\t\t - Invoice {$oInvoice->Id} of \$".($oInvoice->Total + $oInvoice->Tax)." reduced to \${$oInvoice->Balance} with the excess \${$fTotalReducable}");
 						
 						$fTotalReducable	= 0.0;
+						
+						Log::getLog()->log("\t\t ! \${$fTotalReducable} left to distribute overall.");
 					}
 					
-					Log::getLog()->log("\t\t ! \${$fTotalReducable} left to distribute overall.");
 					Log::getLog()->log("\t\t ! \${$fRedistributedBalanceGrandTotal} Balance remaining overall.");
 					
 					// Ensure that the pre- and post-redistribution Balance grand totals are equal
