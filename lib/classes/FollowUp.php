@@ -428,7 +428,7 @@ class FollowUp extends ORM_Cached
 		else
 		{
 			// The table has already been created, clear it's contents for this search
-			$oQuery->Execute("TRUNCATE followup_search");
+			$oQuery->Execute("DELETE FROM followup_search");
 		}
 		
 		// Insert followups into 'followup_search'
