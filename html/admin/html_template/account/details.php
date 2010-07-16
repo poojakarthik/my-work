@@ -243,10 +243,17 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 				DBO()->Account->Country->RenderOutput();
 			}
 			
+			$sPaymentMethodName	= GetConstantDescription(DBO()->Account->BillingType->Value, 'billing_type');
+			if (DBO()->Account->BillingType->Value === BILLING_TYPE_REBILL)
+			{
+				$oRebill	= Account::getForId(DBO()->Account->Id->Value)->getRebill();
+				$sPaymentMethodName	.= ': '.GetConstantDescription($oRebill->rebill_type_id, 'rebill_type');
+			}
+			
 			?>
 			<div class="DefaultElement">
 				<div id="Account.BillingType.Output" name="Account.BillingType" class="DefaultOutput Default ">
-					<?php echo DBO()->Account->BillingType->BillingTypeName->Value; ?>
+					<?php echo $sPaymentMethodName; ?>
 				</div>
 				<div id="Account.BillingType.Label" class="DefaultLabel">
 					<span> &nbsp;</span>
