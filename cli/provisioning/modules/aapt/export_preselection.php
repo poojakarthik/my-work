@@ -8,6 +8,9 @@
  */
  class ExportAAPTPreselection extends ExportBase
  {
+ 	const	WHITELIST_CODE		= 101;
+ 	const	ASD_CODE_TELSTRA	= 2;
+ 	
  	//------------------------------------------------------------------------//
 	// Properties
 	//------------------------------------------------------------------------//
@@ -44,18 +47,13 @@
  		
  		// Module Description
  		$this->strDescription		= "Preselection Activation";
-		
- 		// Get Fields which are going to be modified
- 		$this->intCarrierReference	= &$this->GetConfigField('RecordSequence');
- 		$this->intFileSequence		= &$this->GetConfigField('FileSequence');
- 		$this->strLastSent			= &$this->GetConfigField('LastSent');
  		
 		//##----------------------------------------------------------------##//
 		// Define Module Configuration and Defaults
 		//##----------------------------------------------------------------##//
-		
+		/*
 		// Mandatory
- 		$this->_arrModuleConfig['Server']			['Default']		= 'ftp.rslcom.com.au';
+ 		$this->_arrModuleConfig['Server']			['Default']		= 'ftp.powertel.com.au';
  		$this->_arrModuleConfig['Server']			['Type']		= DATA_TYPE_STRING;
  		$this->_arrModuleConfig['Server']			['Description']	= "FTP Server to connect to";
  		
@@ -67,32 +65,43 @@
  		$this->_arrModuleConfig['Password']			['Type']		= DATA_TYPE_STRING;
  		$this->_arrModuleConfig['Password']			['Description']	= "FTP Password";
  		
- 		$this->_arrModuleConfig['Path']				['Default']		= '/ebill_dailyorderfiles/';
+ 		$this->_arrModuleConfig['Path']				['Default']		= '';
  		$this->_arrModuleConfig['Path']				['Type']		= DATA_TYPE_STRING;
  		$this->_arrModuleConfig['Path']				['Description']	= "Directory to drop the file in";
+ 		*/
+ 		
+ 		// <DEBUG>
+		$this->_strDeliveryType	= 'EmailAttach';
+ 		
+ 		$this->_arrModuleConfig['Destination']		['Default']		= 'rdavis@ybs.net.au';
+ 		$this->_arrModuleConfig['Destination']		['Type']		= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['Destination']		['Description']	= "Destination Email Address";
+ 		
+ 		$this->_arrModuleConfig['Subject']			['Default']		= 'AAPT Deactivations File';
+ 		$this->_arrModuleConfig['Subject']			['Type']		= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['Subject']			['Description']	= "Email Subject";
+ 		
+ 		$this->_arrModuleConfig['ReplyTo']			['Default']		= 'provisioning@yellowbilling.com.au';
+ 		$this->_arrModuleConfig['ReplyTo']			['Type']		= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['ReplyTo']			['Description']	= "Reply-To Email Address";
+ 		
+ 		$this->_arrModuleConfig['EmailContent']		['Default']		= 'AAPT Deactivations File';
+ 		$this->_arrModuleConfig['EmailContent']		['Type']		= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['EmailContent']		['Description']	= "Content for the Email";
+ 		// </DEBUG>
  		
  		// Additional
- 		$this->_arrModuleConfig['FileSequence']		['Default']		= 0;
- 		$this->_arrModuleConfig['FileSequence']		['Type']		= DATA_TYPE_INTEGER;
- 		$this->_arrModuleConfig['FileSequence']		['Description']	= "File Sequence Number";
- 		$this->_arrModuleConfig['FileSequence']		['AutoUpdate']	= TRUE;
+ 		$this->_arrModuleConfig['ResellerCode']		['Default']		= '';
+ 		$this->_arrModuleConfig['ResellerCode']		['Type']		= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['ResellerCode']		['Description']	= "Reseller Code (3-character)";
  		
- 		$this->_arrModuleConfig['RecordSequence']	['Default']		= 0;
- 		$this->_arrModuleConfig['RecordSequence']	['Type']		= DATA_TYPE_INTEGER;
- 		$this->_arrModuleConfig['RecordSequence']	['Description']	= "Record Sequence Number";
- 		$this->_arrModuleConfig['RecordSequence']	['AutoUpdate']	= TRUE;
- 		
- 		$this->_arrModuleConfig['CarrierCode']		['Default']		= 'rsl';
- 		$this->_arrModuleConfig['CarrierCode']		['Type']		= DATA_TYPE_STRING;
- 		$this->_arrModuleConfig['CarrierCode']		['Description']	= "Receiving Carrier Code";
- 		
- 		$this->_arrModuleConfig['System']			['Default']		= 'w';
+ 		$this->_arrModuleConfig['System']			['Default']		= 'PWT';
  		$this->_arrModuleConfig['System']			['Type']		= DATA_TYPE_STRING;
- 		$this->_arrModuleConfig['System']			['Description']	= "Receiving Processing System";
+ 		$this->_arrModuleConfig['System']			['Description']	= "Receiving System (3-character)";
  		
- 		$this->_arrModuleConfig['CSPCode']			['Default']		= '';
- 		$this->_arrModuleConfig['CSPCode']			['Type']		= DATA_TYPE_STRING;
- 		$this->_arrModuleConfig['CSPCode']			['Description']	= "YBS Customer's CSP Code";
+ 		$this->_arrModuleConfig['PreselectionASD']	['Default']		= self::ASD_CODE_TELSTRA;
+ 		$this->_arrModuleConfig['PreselectionASD']	['Type']		= DATA_TYPE_INTEGER;
+ 		$this->_arrModuleConfig['PreselectionASD']	['Description']	= "Preselection ASD";
 		
 		//##----------------------------------------------------------------##//
 		// Define File Format
@@ -104,6 +113,8 @@
  		$this->_strNewLine		= "\r\n";
  		
  		$this->_arrDefine		= Array();
+ 		
+ 		$this->_iTimestamp	= time();
  		
  		//--------------------------------------------------------------------//
  		// FILENAME
@@ -128,9 +139,11 @@
 		
 		$arrDefine['Date']			['Start']		= 8;
 		$arrDefine['Date']			['Length']		= 8;
+		$arrDefine['Date']			['Value']		= date('Ymd', $this->_iTimestamp);
 		
 		$arrDefine['Time']			['Start']		= 16;
 		$arrDefine['Time']			['Length']		= 6;
+		$arrDefine['Time']			['Value']		= date('His', $this->_iTimestamp);
 		
 		$this->_arrDefine['Filename'] = $arrDefine;
  		
@@ -170,11 +183,13 @@
 		$arrDefine['RowCode']				['Value']		= 'D';
 		
 		$arrDefine['BatchNo']				['Index']		= 1;
+		$arrDefine['BatchNo']				['Value']		= date('YmdHis', $this->_iTimestamp);
 		
 		$arrDefine['IDNo']					['Index']		= 2;
 		
 		$arrDefine['ASD']					['Index']		= 3;
 		$arrDefine['ASD']					['Type']		= 'Integer';
+		$arrDefine['ASD']					['Config']		= 'PreselectionASD';
 		
 		$arrDefine['ServiceNumber']			['Index']		= 4;
 		
@@ -182,6 +197,7 @@
 		$arrDefine['Spectrum']				['Value']		= 'N';	// WTF is a SPECTRUM Service?  Do we want to support this?  We don't store this information in Flex.
 		
 		$arrDefine['WhitelistRefCode']		['Index']		= 6;
+		$arrDefine['WhitelistRefCode']		['Value']		= self::WHITELIST_CODE;
 		
 		$this->_arrDefine[PROVISIONING_TYPE_PRESELECTION] = $arrDefine;
  	}
@@ -202,20 +218,9 @@
  		//--------------------------------------------------------------------//
  		// RENDER
  		//--------------------------------------------------------------------//
- 		$arrRendered				= Array();
- 		
- 		// Service Address
-		$arrServiceAddress	= $this->_CleanServiceAddress($arrRequest['Service']);
-		
-		if (is_string($arrServiceAddress))
-		{
-			// Service Address Problems
-	 		$arrRequest['Status']		= REQUEST_STATUS_REJECTED_FLEX;
-	 		$arrRequest['Description']	= $arrServiceAddress;
-			return $arrRequest;
-		}
- 		
-		$arrRendered['ServiceNumber']		= $arrRequest['FNN'];
+ 		$arrRendered					= array();
+		$arrRendered['IDNo']			= $arrRequest['Id'];
+		$arrRendered['ServiceNumber']	= $arrRequest['FNN'];
 		
  		$this->intCarrierReference++;
  		
@@ -246,21 +251,15 @@
 	 */
  	function Export()
  	{
- 		$this->intFileSequence++;
- 		
  		// Generate File Name
  		$this->_arrFilename	= Array();
  		$this->_arrFilename['**Type']		= 'Filename';
  		$this->_arrFilename['**Request']	= 'Filename';
- 		$this->_arrFilename['Sequence']		= $this->intFileSequence;
- 		$this->_arrFilename['Date']			= date("Ymd");
- 		$this->_arrFilename['Time']			= date("His");
  		
  		// Generate Header
  		$this->_arrHeader	= Array();
  		$this->_arrHeader['**Type']			= 'Header';
  		$this->_arrHeader['**Request']		= 'Header';
- 		$this->_arrHeader['Sequence']		= $this->intFileSequence;
  		$this->_arrHeader['FileName']		= $this->_RenderLineTXT($this->_arrFilename, FALSE, '');
  		
  		// Generate Footer
