@@ -48,6 +48,12 @@ VixenRequire($strModuleDir."unitel/import_line_status.php");
 VixenRequire($strModuleDir."unitel/export_preselection.php");
 VixenRequire($strModuleDir."unitel/export_daily_order.php");
 
+VixenRequire($strModuleDir."aapt/export_preselection.php");
+VixenRequire($strModuleDir."aapt/export_fullservicerebill.php");
+VixenRequire($strModuleDir."aapt/export_deactivation.php");
+
+VixenRequire($strModuleDir."aapt/import_dailyevent.php");
+
 // Remote Copy
 VixenRequire("lib/framework/remote_copy.php");
  ?>
