@@ -21,7 +21,7 @@
 	protected	$_ptrFile;
 	
 	public $intBaseCarrier			= CARRIER_AAPT;
-	public $intBaseFileType			= RESOURCE_TYPE_FILE_EXPORT_PROVISIONING_AAPT_FULLSERVICEREBILL;
+	public $intBaseFileType			= RESOURCE_TYPE_FILE_EXPORT_PROVISIONING_AAPT_ESYSTEMS_FULLSERVICEREBILL;
 	public $_strDeliveryType		= 'FTP';
 	
 	public $_intFrequencyType		= FREQUENCY_DAY;
@@ -76,7 +76,7 @@
  		$this->_arrModuleConfig['Destination']		['Type']		= DATA_TYPE_STRING;
  		$this->_arrModuleConfig['Destination']		['Description']	= "Destination Email Address";
  		
- 		$this->_arrModuleConfig['Subject']			['Default']		= 'AAPT Deactivations File';
+ 		$this->_arrModuleConfig['Subject']			['Default']		= 'AAPT Full Service Rebill File';
  		$this->_arrModuleConfig['Subject']			['Type']		= DATA_TYPE_STRING;
  		$this->_arrModuleConfig['Subject']			['Description']	= "Email Subject";
  		
@@ -84,7 +84,7 @@
  		$this->_arrModuleConfig['ReplyTo']			['Type']		= DATA_TYPE_STRING;
  		$this->_arrModuleConfig['ReplyTo']			['Description']	= "Reply-To Email Address";
  		
- 		$this->_arrModuleConfig['EmailContent']		['Default']		= 'AAPT Deactivations File';
+ 		$this->_arrModuleConfig['EmailContent']		['Default']		= 'AAPT Full Service Rebill File';
  		$this->_arrModuleConfig['EmailContent']		['Type']		= DATA_TYPE_STRING;
  		$this->_arrModuleConfig['EmailContent']		['Description']	= "Content for the Email";
  		// </DEBUG>
@@ -151,7 +151,7 @@
 		$arrDefine['RowCode']		['Value']		= 'H';
 		
 		$arrDefine['FileName']		['Index']		= 1;
-		$arrDefine['FileName']		['Length']		= 12;
+		$arrDefine['FileName']		['Length']		= 22;
 		
 		$this->_arrDefine['Header'] = $arrDefine;
  		
@@ -290,6 +290,12 @@
 			return $arrRequest;
 		}
 		
+		// Remove all commas from the Service Address details
+		foreach ($arrServiceAddress as $sField=>$mValue)
+		{
+			$arrServiceAddress[$sField]	= str_replace(',', '', $mValue);
+		}
+		
 		// Common
 		$arrRendered['CADate']				= date("Ymd", strtotime($arrRequest['AuthorisationDate']));
 		$arrRendered['BillName']			= $arrServiceAddress['BillName'];
@@ -356,11 +362,13 @@
  		$this->_arrFilename['**Type']		= 'Filename';
  		$this->_arrFilename['**Request']	= 'Filename';
  		
+ 		$aFileName	= $this->_RenderLineTXT($this->_arrFilename, FALSE, '');
+ 		
  		// Generate Header
  		$this->_arrHeader	= Array();
  		$this->_arrHeader['**Type']			= 'Header';
  		$this->_arrHeader['**Request']		= 'Header';
- 		$this->_arrHeader['FileName']		= $this->_RenderLineTXT($this->_arrFilename, FALSE, '');
+ 		$this->_arrHeader['FileName']		= $aFileName['Line'];
  		
  		// Generate Footer
  		$this->_arrFooter	= Array();

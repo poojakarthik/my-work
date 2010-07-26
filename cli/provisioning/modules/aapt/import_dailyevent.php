@@ -9,7 +9,7 @@
  class ImportAAPTDailyEvent extends ImportBase
  {
 	public $intBaseCarrier		= CARRIER_UNITEL;
-	public $intBaseFileType		= RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_AAPT_DAILYEVENT;
+	public $intBaseFileType		= RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_AAPT_ESYSTEMS_DAILYEVENT;
 	
 	/**
 	 * __construct()

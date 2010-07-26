@@ -27,6 +27,7 @@ if (!GetConstantName($intCarrier, 'Carrier'))
 elseif (!class_exists($strClassName) || !is_subclass_of($strClassName, 'CarrierModule'))
 {
 	CliEcho("ERROR: '$strClassName' is not a valid CarrierModule Class!\n");
+	//CliEcho(print_r(get_included_files(), true));
 	die;
 }
 

@@ -19,7 +19,7 @@
 	protected	$_ptrFile;
 	
 	public $intBaseCarrier			= CARRIER_AAPT;
-	public $intBaseFileType			= RESOURCE_TYPE_FILE_EXPORT_PROVISIONING_AAPT_DEACTIVATION;
+	public $intBaseFileType			= RESOURCE_TYPE_FILE_EXPORT_PROVISIONING_AAPT_ESYSTEMS_DEACTIVATIONS;
 	public $_strDeliveryType		= 'FTP';
 	
 	public $_intFrequencyType		= FREQUENCY_DAY;
@@ -149,7 +149,7 @@
 		$arrDefine['RowCode']		['Value']		= 'H';
 		
 		$arrDefine['FileName']		['Index']		= 1;
-		$arrDefine['FileName']		['Length']		= 12;
+		$arrDefine['FileName']		['Length']		= 22;
 		
 		$this->_arrDefine['Header'] = $arrDefine;
  		
@@ -270,11 +270,13 @@
  		$this->_arrFilename['**Type']		= 'Filename';
  		$this->_arrFilename['**Request']	= 'Filename';
  		
+ 		$aFileName	= $this->_RenderLineTXT($this->_arrFilename, FALSE, '');
+ 		
  		// Generate Header
  		$this->_arrHeader	= Array();
  		$this->_arrHeader['**Type']			= 'Header';
  		$this->_arrHeader['**Request']		= 'Header';
- 		$this->_arrHeader['FileName']		= $this->_RenderLineTXT($this->_arrFilename, FALSE, '');
+ 		$this->_arrHeader['FileName']		= $aFileName['Line'];
  		
  		// Generate Footer
  		$this->_arrFooter	= Array();
