@@ -251,7 +251,7 @@ class Credit_Card_Payment
 
 		// Check to see if the transaction was approved
 		// This should be determined from the SecurePayMessage/Payment/TxnList/Txn/approved element in the XML (always 'Yes' or 'No'))
-		$approved = preg_match("/\<approved(?:| [^\>]*)\>Yes\</i", $response); 
+		$approved = preg_match("/\<approved(?:| [^\>]*)\>Yes\</i", $response);
 		// If not approved, we should return a message containing the response text (SecurePayMessage/Payment/TxnList/Txn/responseText)
 		if (!$approved)
 		{
@@ -334,7 +334,7 @@ class Credit_Card_Payment
 		
 				// Check to see if the transaction was approved
 				// This should be determined from the SecurePayMessage/Payment/TxnList/Txn/approved element in the XML (always 'Yes' or 'No'))
-				$reversalApproved = preg_match("/\<approved(?:| [^\>]*)\>Yes\</i", $xmlReversalResponse); 
+				$reversalApproved = preg_match("/\<approved(?:| [^\>]*)\>Yes\</i", $xmlReversalResponse);
 				// If not approved, we should return a message containing the response text (SecurePayMessage/Payment/TxnList/Txn/responseText)
 				if (!$reversalApproved)
 				{
@@ -350,7 +350,7 @@ class Credit_Card_Payment
 				}
 				
 				// Find the Purchase Order Number for the Reversal Response (I think this should always be the txnId of the original payment which is being reversed)
-				$reversalResponsePurchaseOrderNo = '[ Not Found ]'; 
+				$reversalResponsePurchaseOrderNo = '[ Not Found ]';
 				if (preg_match("/\<purchaseOrderNo(?:| [^\>]*)\>([0-9]+)\<\/purchaseOrderNo\>/i", $xmlReversalResponse, $matches))
 				{
 					$reversalResponsePurchaseOrderNo = $matches[1];
@@ -426,7 +426,7 @@ class Credit_Card_Payment
 					<strong>The payment has been successfully reversed.</strong>
 				</p>
 				<p>
-					Check that both the original payment transaction and its reversal are logged in the 
+					Check that both the original payment transaction and its reversal are logged in the
 					SecurePay portal, and <strong>follow up the payment with the customer.</strong>
 				</p>";
 				
@@ -453,7 +453,7 @@ class Credit_Card_Payment
 					<strong>A payment reversal was attempted with SecurePay but this also failed.</strong>
 				</p>
 				<p>
-					Please reverse the payment manually via the SecurePay portal or attempt to enter the payment into Flex 
+					Please reverse the payment manually via the SecurePay portal or attempt to enter the payment into Flex
 					as a manual payment.
 				</p>
 				<p>
@@ -681,8 +681,8 @@ class Credit_Card_Payment
 		$bolCanSendEmail = EmailAddressValid($strEmail);
 		$bolFailedToEmail = FALSE;
 
-		if ($bolCanSendEmail && 
-			(!self::isTestMode() || 
+		if ($bolCanSendEmail &&
+			(!self::isTestMode() ||
 			(defined('SEND_CREDIT_CARD_EMAILS_IN_TEST_MODE') && SEND_CREDIT_CARD_EMAILS_IN_TEST_MODE === TRUE)))
 		{
 			$customerGroup = Customer_Group::getForId($account->customerGroup);
@@ -713,11 +713,11 @@ class Credit_Card_Payment
 			}
 		}
 
-		$outputMessage = $creditCardPaymentConfig->confirmationText . 
-			($bolDD 
-				? ("\n\n\n" . ($bolFailedDD 
-								? 'We were unable to store your details for Direct Debit at this time. Please try again later.' 
-								: $creditCardPaymentConfig->directDebitText)) 
+		$outputMessage = $creditCardPaymentConfig->confirmationText .
+			($bolDD
+				? ("\n\n\n" . ($bolFailedDD
+								? 'We were unable to store your details for Direct Debit at this time. Please try again later.'
+								: $creditCardPaymentConfig->directDebitText))
 				: '');
 
 		if (!$bolCanSendEmail)
@@ -907,7 +907,7 @@ class Credit_Card_Payment
 		set_time_limit($itimelimit + 10);
 
 		$headers = "";
-		while ($str = @fgets($h, 4096)) 
+		while ($str = @fgets($h, 4096))
 		{
 			if ($str === FALSE)
 			{
@@ -921,7 +921,7 @@ class Credit_Card_Payment
 		}
 
 		$headers2 = "";
-		while ($str = @fgets($h, 4096)) 
+		while ($str = @fgets($h, 4096))
 		{
 			if ($str === FALSE)
 			{
@@ -939,7 +939,7 @@ class Credit_Card_Payment
 		/**********************************************************/
 	
 		$body = "";
-		while (!feof($h)) 
+		while (!feof($h))
 		{
 			$str = @fgets($h, 4096);
 			if ($str === FALSE)
@@ -970,7 +970,7 @@ class Credit_Card_Payment
 	{
 		foreach ($tokens as $token => $value)
 		{
-			do 
+			do
 			{
 				$oldMessage = $message;
 				$message = str_replace($token, $value, $message);
@@ -1096,7 +1096,7 @@ class Credit_Card_Payment
 		$contactId = NULL;
 		if (Flex::isAdminSession())
 		{
-			// Take contact id from the account.PrimaryContact 
+			// Take contact id from the account.PrimaryContact
 			$contactId = $account->primaryContact;
 		}
 		else if (Flex::isCustomerSession())
@@ -1112,11 +1112,11 @@ class Credit_Card_Payment
 			return FALSE;
 		}
 
-		$contactName = str_replace("'", "\\'", $contact->getName());
-		$contactEmail = str_replace("'", "\\'", $contact->email);
+		$contactName = str_replace("'", "\\'", str_replace("\\", "\\\\", $contact->getName()));
+		$contactEmail = str_replace("'", "\\'", str_replace("\\", "\\\\", $contact->email));
 
 		$amountOwing = $account->getBalance();
-		$accountName = str_replace("'", "\\'", $account->getName());
+		$accountName = str_replace("'", "\\'", str_replace("\\", "\\\\", $account->getName()));
 
 		// Output a link for making a credit card payment, using the credit_card_payment.js file.
 		$allowDD = Flex::isCustomerSession() ? 'true' : 'false';
@@ -1126,7 +1126,7 @@ class Credit_Card_Payment
 }
 
 class Credit_Card_Payment_Incorrect_Password_Exception extends Exception
-{	
+{
 	function __construct()
 	{
 		parent::__construct("The customer password specified was incorrect.");
