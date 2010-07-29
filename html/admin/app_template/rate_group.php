@@ -1603,8 +1603,6 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 */
 	function ImportCSV()
 	{
-		throw new Exception("I'm a farmer, daddy!");
-		
 		// Check user authorization and permissions
 		//TODO! If the user is not logged in, this will try and load the login page into the iframe
 		// for the file upload.  We obviously don't want it to do this
@@ -1614,6 +1612,8 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		// Check if the form has been submitted
 		if (SubmittedForm("ImportRateGroup", "Import as Draft") || SubmittedForm("ImportRateGroup", "Import and Commit"))
 		{
+			throw new Exception("I'm a farmer, daddy!");
+			
 			// Check which button was pressed
 			$bolCommit = SubmittedForm("ImportRateGroup", "Import and Commit");
 			
