@@ -59,7 +59,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 *						where $arrRate	[Id] = Id of the Rate
 	 *										[StartTime] = The time of day that the rate starts being applied (in seconds past midnight)
 	 *										[EndTime]	= The time of day that the rate ends being applied (in seconds past midnight)
-	 *										[FirstInterval]	= The interval of the day which this rate is first applied 
+	 *										[FirstInterval]	= The interval of the day which this rate is first applied
 	 *															(00:00:00 - 00:14:59 = interval 1, 00:15:00 - 00:29:59 = interval 2)
 	 *															There are 96 intervals in a day
 	 *										[LastInterval]	= The interval of the day which this rate is last applied
@@ -79,7 +79,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 *
 	 * This declares whether there are over allocations or under allocations in the RateGroup
 	 *
-	 * @type		array	('OverAllocated' => boolean, 'UnderAllocated' => boolean, 'Destinations' => Array)	
+	 * @type		array	('OverAllocated' => boolean, 'UnderAllocated' => boolean, 'Destinations' => Array)
 	 * 	where					['OverAllocated']	= boolean, TRUE if at least 1 of the Destinations is Over Allocated at some point during the week
 	 * 							['UnderAllocated']	= boolean, TRUE if at least 1 of the Destinations is Under Allocated at some point during the week
 	 *							['Destinations'][DestinationCode] = $arrDestinationSummary
@@ -103,7 +103,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 * Add()
 	 *
 	 * Performs the logic for the Add Rate Group webpage
-	 * 
+	 *
 	 * Performs the logic for the Add Rate Group webpage
 	 *		DBO()->CallingPage->AddRatePlan		Set to TRUE if this popup is being called from the "Add Rate Plan" page
 	 *		DBO()->RateGroup->Id		If you want to edit an existing draft Rate Group
@@ -113,7 +113,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 *		knowing what the calling page is.  If, in the future, this popup can be opened from numerous pages, then I would
 	 *		recommend modifying it to use the new Custom-Event Model.
 	 *		The user needs PERMISSION_RATE_MANAGEMENT and PERMISSION_ADMIN permissions to view this page
-	 *		
+	 *
 	 *
 	 * @return		void
 	 * @method
@@ -234,7 +234,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 * View()
 	 *
 	 * Performs the logic for the View Rate Group popup
-	 * 
+	 *
 	 * Performs the logic for the View Rate Group popup
 	 * 		DBO()->RateGroup->Id		Id of the RateGroup to view
 	 * 		DBO()->Rate->SearchString	This search string is used on the Rate.Name and Rate.Description properties
@@ -264,7 +264,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			$strSearchString = trim(DBO()->Rate->SearchString->Value);
 			if ($strSearchString == "")
 			{
-				// The Search string is empty and considered invalid  
+				// The Search string is empty and considered invalid
 				Ajax()->AddCommand("Alert", "ERROR: Please specify a name or partial name to search");
 				return TRUE;
 			}
@@ -290,7 +290,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		$selRateCount = new StatementSelect("Rate", Array("RateCount"=>"Count(Id)"), "Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup = $intRateGroupId  AND NOW() BETWEEN effective_start_datetime AND effective_end_datetime)");
 		$selRateCount->Execute();
 		$arrRateCount = $selRateCount->Fetch();
-		DBO()->RateGroup->TotalRateCount = $arrRateCount['RateCount']; 
+		DBO()->RateGroup->TotalRateCount = $arrRateCount['RateCount'];
 		
 		$this->LoadPage('rate_group_view');
 		return TRUE;
@@ -304,25 +304,25 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 * _ValidateRateGroup()
 	 *
 	 * Validates a RateGroup which has been defined in the (Add/Edit)RateGroup Popup
-	 * 
+	 *
 	 * Validates a RateGroup which has been defined in the (Add/Edit)RateGroup Popup
 	 * This will only work with the "Add Rate Group" popup webpage as it assumes specific DBObjects have been defined within DBO()
 	 *
 	 * @return		mix				returns TRUE if the new RateGroup is valid
 	 *								returns an appropriate error message (string) if something was found to be invalid
-	 *								
+	 *
 	 * @method
 	 *
 	 */
 	private function _ValidateRateGroup()
 	{
-		/* 
+		/*
 		 * Validation process:
 		 *		Check that a Name and Description have been declared	(implemented)
 		 *		Check that a service type has been declared				(implemented)
 		 *		Check that a record type has been declared				(implemented)
 		 *		Check that the Name is unique when compared with all other Rate Groups of the declared RecordType			(implemented)
-		 *		For every distination associated with the context of the RecordType of the RateGroup:	
+		 *		For every distination associated with the context of the RecordType of the RateGroup:
 		 *			Check that every minute of every day of the week is accounted for by a Rate and there are no overlaps	(implemented)
 		 */
 	
@@ -415,7 +415,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 * _SaveRateGroup()
 	 *
 	 * Performs saving the records to the database, required for defining a RateGroup
-	 * 
+	 *
 	 * Performs saving the records to the database, required for defining a RateGroup
 	 * This will only work with the "Add Rate Group" popup webpage as it assumes specific DBObjects have been defined within DBO()
 	 *
@@ -426,7 +426,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 */
 	private function _SaveRateGroup()
 	{
-		/* 
+		/*
 		 * Saving process:
 		 *		Set up values for properties of the RateGroup object that are not already defined										(DONE)
 		 *		Save the record to the RateGroup table 																					(DONE)
@@ -503,7 +503,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 * PreviewRateSummary()
 	 *
 	 * Displays the Rate Summary, for a RateGroup, in a popup
-	 * 
+	 *
 	 * Displays the Rate Summary, for a RateGroup, in a popup
 	 *		DBO()->RecordType->Id			RecordType of the RateGroup
 	 *		DBO()->RateGroup->Fleet			TRUE if the RateGroup is a Fleet RateGroup, else FALSE
@@ -539,7 +539,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 * _BuildRateSummaryProblemReport()
 	 *
 	 * Builds a Report outlining the various problems with the RateGroup
-	 * 
+	 *
 	 * Builds a Report outlining the various problems with the RateGroup
 	 *
 	 * @param		integer		$intRecordType	The RecordType of the RateGroup
@@ -629,7 +629,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 				
 				if ($intDestination == 0)
 				{
-					// RecordType does not have destinations 
+					// RecordType does not have destinations
 					$strDestinationSummary = "\tThe Rate Group has:\n" . $strUnderAllocation . $strOverAllocation;
 				}
 				else
@@ -688,7 +688,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 * _BuildDestinationRates()
 	 *
 	 * Builds a Rate Allocation Summary, for each destination of the RecordType, as a multi-dimensional array
-	 * 
+	 *
 	 * Builds a Rate Allocation Summary, for each destination of the RecordType, as a multi-dimensional array
 	 * This array is stored in the private member varibale $this->_arrDestinationRates
 	 * And is of the form [Destination][]	= $arrRateDetails
@@ -774,7 +774,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 * _BuildRateSummary()
 	 *
 	 * Builds the Rate Summary as a multi-dimensional array
-	 * 
+	 *
 	 * Builds the Rate Summary as a multi-dimensional array.  This defines which Destinations are Over or Under allocated, and the time ranges
 	 * of the week where they are over or under allocated
 	 * This summary is stored in the private data attribute _arrDestinationRateSummary, the structure of which is:
@@ -787,7 +787,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 *							[Weekday]['UnderAllocations'][]	= $arrIntervalRange (defining the range of intervals affected by an Under Allocation for that day)
 	 * arrIntervalRange	['Start']	= The first interval of the day in which the Over Allocation or Under Allocation applies
 	 *					['End']		= The last interval of the day in which the Over Allocation or Under Allocation applies
-	 *	
+	 *
 	 *
 	 * @param	integer		$intRecordType	Id of the RecordType of the RateGroup
 	 * @param	array		$arrRateIds		indexed array of Ids of the Rates that belong to this RateGroup
@@ -844,7 +844,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 							// There is a gap in the Rate applying to this day.  This means there is an underallocation for the day
 							$arrDestinationSummary[$intDestination]['UnderAllocated'] = TRUE;
 							$bolUnderAllocated = TRUE;
-							$arrDestinationSummary[$intDestination][$strDay]['UnderAllocations'][] = Array(	"Start" => $intNextIntervalToAccountFor, 
+							$arrDestinationSummary[$intDestination][$strDay]['UnderAllocations'][] = Array(	"Start" => $intNextIntervalToAccountFor,
 																											"End" => $arrRate['FirstInterval'] - 1);
 						}
 						elseif ($arrRate['FirstInterval'] < $intNextIntervalToAccountFor)
@@ -878,7 +878,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 					}
 				}
 				
-				// Check that the latest LastInterval is the last interval of the day 
+				// Check that the latest LastInterval is the last interval of the day
 				if ($intLatestLastInterval < $intLastIntervalForDay)
 				{
 					// There must be an under allocation which won't have been picked up yet
@@ -903,7 +903,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 * _BuildGraphicalRateSummary()
 	 *
 	 * Builds the array required to display the graphical representation of the Rate Summary
-	 * 
+	 *
 	 * Builds the array required to display the graphical representation of the Rate Summary
 	 *
 	 * @param	integer		$intRecordType	Id of the RecordType of the RateGroup
@@ -1011,13 +1011,13 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 * SetRateSelectorControl()
 	 *
 	 * Draws the Rate Selector Control used in the "Add Rate Group" form
-	 * 
+	 *
 	 * Draws the Rate Selector Control used in the "Add Rate Group" form
 	 * This will only work with the "Add Rate Group" popup webpage as it assumes specific DBObjects have been defined within DBO()
 	 * This function expects DBO()->RecordType->Id to be set, as it only displays the Rates for a specified RecordType.
 	 * It also expects DBO()->RecordType->IsFleet to be set to either TRUE or FALSE
 	 * If (DBO()->RateGroup->Id is set XOR DBO()->BaseRateGroup->Id is set) then it will flag which Rates are currently used by the RateGroup
-	 * 
+	 *
 	 *
 	 * @return		bool			TRUE
 	 * @method
@@ -1092,7 +1092,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 * _UpdateAddRatePlanPage()
 	 *
 	 * Executes javascript associated with the "Add Rate Plan" page, in order to update it, after a Rate Group has been saved
-	 * 
+	 *
 	 * Executes javascript associated with the "Add Rate Plan" page, in order to update it, after a Rate Group has been saved
 	 * It is assumed DBO()->RateGroup contains a valid RateGroup
 	 * (This functionality should be modified so that it makes use of the javascript custom event handler (event_handler.js))
@@ -1122,7 +1122,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 * Override()
 	 *
 	 * Performs the logic for the "Override Rate Group" popup
-	 * 
+	 *
 	 * Performs the logic for the "Override Rate Group" popup
 	 *		This assumes the following data is passed:
 	 *			DBO()->Service->Id			Id of the service that the Override will take place on
@@ -1179,7 +1179,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			// Convert Current date into seconds
 			$intCurrentDate = strtotime($strCurrentDate);
 			$intStartDate = strtotime(ConvertUserDateToMySqlDate(DBO()->ServiceRateGroup->StartDate->Value));
-			$intEndDate  = strtotime(ConvertUserDateToMySqlDate(DBO()->ServiceRateGroup->EndDate->Value));	
+			$intEndDate  = strtotime(ConvertUserDateToMySqlDate(DBO()->ServiceRateGroup->EndDate->Value));
 
 			if (DBO()->RateGroup->ImmediateStart->Value != 1 && DBO()->RateGroup->IndefinateEnd->Value != 1)
 			{
@@ -1189,7 +1189,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 					DBO()->ServiceRateGroup->EndDate->SetToInvalid();
 					Ajax()->AddCommand("Alert", "ERROR: Can not have a date ending in the past");
 					Ajax()->RenderHtmlTemplate("RateGroupOverride", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
-					return TRUE;								
+					return TRUE;
 				}
 			}
 
@@ -1205,7 +1205,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 						DBO()->ServiceRateGroup->StartDate->SetToInvalid();
 						Ajax()->AddCommand("Alert", "ERROR: The override cannot start in the past");
 						Ajax()->RenderHtmlTemplate("RateGroupOverride", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
-						return TRUE;							
+						return TRUE;
 					}
 					// If User date equals the current date
 					if ($intStartDate == $intCurrentDate)
@@ -1231,7 +1231,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			{
 				// Validate the user supplied End Date (if there is one)
 				if ($intEndDate)
-				{	
+				{
 
 				
 					if ($intEndDate < $intCurrentDate)
@@ -1240,7 +1240,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 						DBO()->ServiceRateGroup->EndDate->SetToInvalid();
 						Ajax()->AddCommand("Alert", "ERROR: Can not have a date ending in the past");
 						Ajax()->RenderHtmlTemplate("RateGroupOverride", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
-						return TRUE;							
+						return TRUE;
 					}
 					elseif (DBO()->RateGroup->ImmediateStart->Value == 1 && $intEndDate < $intStartDate)
 					{
@@ -1248,7 +1248,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 						DBO()->ServiceRateGroup->EndDate->SetToInvalid();
 						Ajax()->AddCommand("Alert", "ERROR: Can not have a date ending before the start date");
 						Ajax()->RenderHtmlTemplate("RateGroupOverride", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
-						return TRUE;							
+						return TRUE;
 					}
 				}
 				else
@@ -1336,7 +1336,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 * Export()
 	 *
 	 * Exports a RateGroup as a csv file
-	 * 
+	 *
 	 * Exports a RateGroup as a csv file
 	 * This method expects the following values to be defined:
 	 *	Either:
@@ -1365,20 +1365,20 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		$strRateGroupCSV = "";
 		$strFilename = "";
 		
-		$arrRateGroupColumns = Array("RateGroup Id", "Name", "Description", "Service Type",	"Record Type", "Fleet", "CapLimit (optional)");		
+		$arrRateGroupColumns = Array("RateGroup Id", "Name", "Description", "Service Type",	"Record Type", "Fleet", "CapLimit (optional)");
 
 		$arrRateColumnNames = Array("Rate Id", 	"Editable", "Destination Code",
-												"Destination",												
-												"Name", 
+												"Destination",
+												"Name",
 												"Description",
-												"Start Time", 
-												"End Time", 
-												"Monday", 
-												"Tuesday", 
-												"Wednesday" , 
-												"Thursday", 
-												"Friday", 
-												"Saturday", 
+												"Start Time",
+												"End Time",
+												"Monday",
+												"Tuesday",
+												"Wednesday" ,
+												"Thursday",
+												"Friday",
+												"Saturday",
 												"Sunday",
 												"Pass through at cost",
 												"Excluded from Cap Plan",
@@ -1504,7 +1504,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			$strRateGroupCSV .= MakeCSVLine($arrRateGroupColumns);
 			$strRateGroupCSV .= MakeCSVLine($arrBlankRateGroup);
 			$strRateGroupCSV .= "\n";
-			$strRateGroupCSV .= MakeCSVLine($arrRateColumnNames);	
+			$strRateGroupCSV .= MakeCSVLine($arrRateColumnNames);
 			
 			if (DBO()->RecordType->Context->Value > 0)
 			{
@@ -1536,7 +1536,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		else
 		{
 			// The Input parameters have not been set up properly for this function
-			//TODO! The user should probably be warned, however this function is not being triggered via an ajax call, 
+			//TODO! The user should probably be warned, however this function is not being triggered via an ajax call,
 			// so we can't use popups.  For now it is acceptable to just have the process die
 			die;
 		}
@@ -1560,11 +1560,11 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 * Import()
 	 *
 	 * Logic for the Import RateGroup popup
-	 * 
+	 *
 	 * Logic for the Import RateGroup popup
 	 * This method expects the following values to be defined:
 	 *		DBO()->RecordType->Id			RecordType of the RateGroup
-	 *		DBO()->RateGroup->Fleet			TRUE if you want to import the RateGroup as a Fleet RateGroup; 
+	 *		DBO()->RateGroup->Fleet			TRUE if you want to import the RateGroup as a Fleet RateGroup;
 	 *										FALSE for importing normal Rate Groups
 	 *
 	 * @return		void
@@ -1590,11 +1590,11 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 * ImportCSV()
 	 *
 	 * Logic for the embedded Import RateGroup page required for uploading the csv file
-	 * 
+	 *
 	 * Logic for the embedded Import RateGroup page required for uploading the csv file
 	 * This method expects the following values to be defined:
 	 *		DBO()->RecordType->Id			RecordType of the RateGroup
-	 *		DBO()->RateGroup->Fleet			TRUE if you want to import the RateGroup as a Fleet RateGroup; 
+	 *		DBO()->RateGroup->Fleet			TRUE if you want to import the RateGroup as a Fleet RateGroup;
 	 *										FALSE for importing normal Rate Groups
 	 *		$_FILES['RateGroupCSVFile']		References the RateGroupCSV file uploaded
 	 *
@@ -1603,9 +1603,11 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 */
 	function ImportCSV()
 	{
+		throw new Exception("I'm a farmer, daddy!");
+		
 		// Check user authorization and permissions
 		//TODO! If the user is not logged in, this will try and load the login page into the iframe
-		// for the file upload.  We obviously don't want it to do this 
+		// for the file upload.  We obviously don't want it to do this
 		//AuthenticatedUser()->CheckAuth();
 		//AuthenticatedUser()->PermissionOrDie(PERMISSION_RATE_MANAGEMENT | PERMISSION_ADMIN);
 		
@@ -1636,7 +1638,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 				// The import was successful
 				DBO()->RateGroupImport->Success = TRUE;
 				$arrRateGroup['Draft'] = ($arrRateGroup['Archived'] == RATE_STATUS_DRAFT)? 1 : 0;
-				$arrRateGroup['Fleet'] = ($arrRateGroup['Fleet'])? 1 : 0; 
+				$arrRateGroup['Fleet'] = ($arrRateGroup['Fleet'])? 1 : 0;
 				DBO()->RateGroupImport->ArrRateGroup = $arrRateGroup;
 			}
 		}
@@ -1653,7 +1655,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 * _ImportCSV()
 	 *
 	 * Parses the uploaded CSV file, validates, saves and reports on the proceedure
-	 * 
+	 *
 	 * Parses the uploaded CSV file, validates, saves and reports on the proceedure
 	 * This method expects the following values to be defined:
 	 *		$_FILES['RateGroupCSVFile']		References the RateGroupCSV file uploaded
@@ -1663,7 +1665,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 * 										FALSE for normal RateGroups
 	 * @param	bool	$bolCommit			TRUE if the RateGroup is to be saved and commited
 	 * 										FALSE if the RateGroup is to be saved as a draft
-	 * @param	array	&$arrReport			The import report (this will be passed by reference, and 
+	 * @param	array	&$arrReport			The import report (this will be passed by reference, and
 	 * 										updated appropriately)
 	 *
 	 * @return	mix							returns $arrRateGroup (defining the imported rate group) on successful importing
@@ -1674,7 +1676,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	{
 		// Declare the keys for the records stored in the csv file
 		$arrRateGroupKeys	= Array("Id", "Name", "Description", "ServiceType", "RecordType", "Fleet", "CapLimit");
-		$arrRateKeys		= Array("Id", "Editable", "Destination", "DestinationDescription", "Name", "Description", 
+		$arrRateKeys		= Array("Id", "Editable", "Destination", "DestinationDescription", "Name", "Description",
 									"StartTime", "EndTime", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday",
 									"Sunday", "PassThrough", "Uncapped", "Prorate", "allow_cdr_hiding", "StdMinCharge", "discount_percentage", "StdFlagfall", "StdUnits",
 									"StdRatePerUnit", "StdMarkup", "StdPercentage", "CapUnits", "CapCost", "CapUsage", "CapLimit",
@@ -1785,7 +1787,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 				return FALSE;
 			}
 
-			// Check that this rate does not have the same name as any of the other rates 
+			// Check that this rate does not have the same name as any of the other rates
 			// that have already been read from the csv file (case insensitive)
 			foreach ($arrRates as $arrRateFromCSVFile)
 			{
@@ -1902,7 +1904,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		$this->_BuildRateSummary($arrRecordType['Id'], $arrRateIds);
 		if (($this->_arrDestinationRateSummary['OverAllocated']) || ($this->_arrDestinationRateSummary['UnderAllocated'] && (!$bolIsFleet)))
 		{
-			// The RateGroup is either OverAllocated OR (UnderAllocated AND not a fleet RateGroup) 
+			// The RateGroup is either OverAllocated OR (UnderAllocated AND not a fleet RateGroup)
 			$strAllocationReport = $this->_BuildRateSummaryProblemReport($arrRecordType['Id'], $arrRateIds, $bolIsFleet);
 			TransactionRollback();
 			$arrReport[] = "\nFATAL ERROR: ". $strAllocationReport ."\nImport Aborted";
@@ -1942,7 +1944,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		if ($arrRateGroup['Archived'] == RATE_STATUS_ACTIVE)
 		{
 			// The RateGroup has been committed
-			$strFinalComment .= ($arrRateGroup['DraftUpdate']) ? "has been updated and committed to the database." : "has been committed to the database."; 
+			$strFinalComment .= ($arrRateGroup['DraftUpdate']) ? "has been updated and committed to the database." : "has been committed to the database.";
 		}
 		else
 		{
@@ -1963,7 +1965,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 * _ValidateImportedRateGroupDetails()
 	 *
 	 * Validates the RateGroup Details for an imported RateGroup
-	 * 
+	 *
 	 * Validates the RateGroup Details for an imported RateGroup
 	 *
 	 * @param		array	$arrRateGroup			The Rate Group record, pulled from the csv file
@@ -1972,7 +1974,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 * 												was found in the database as a draft)
 	 * @param		array	$arrRecordType			RecordType record of the importing RateGroup
 	 * @param		bool	$bolIsFleet				TRUE if the RateGroup is supposed to be Fleet, else FALSE
-	 * @param		array	&$arrReport				The import report (this will be passed by reference, and 
+	 * @param		array	&$arrReport				The import report (this will be passed by reference, and
 	 * 												updated appropriately)
 	 *
 	 * @return		bool	TRUE if the RateGroup is Valid, else FALSE
@@ -1980,7 +1982,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 *
 	 * @method
 	 */
-	private function _ValidateImportedRateGroupDetails(&$arrRateGroup, $arrRecordType, $bolIsFleet, &$arrReport)	
+	private function _ValidateImportedRateGroupDetails(&$arrRateGroup, $arrRecordType, $bolIsFleet, &$arrReport)
 	{
 		$bolFailed = FALSE;
 		
@@ -2009,7 +2011,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			$intNumRecords = $selRateGroup->Execute(Array("RateGroup"=> $arrRateGroup['Id']));
 			if (!$intNumRecords)
 			{
-				// The RateGroup could not be found in the database	
+				// The RateGroup could not be found in the database
 				$arrReport[] = "FATAL ERROR: RateGroup with Id = {$arrRateGroup['Id']} could not be found in the database.";
 				return FALSE;
 			}
@@ -2096,7 +2098,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 * _ValidateImportedRate()
 	 *
 	 * Validates the Details for an imported Rate
-	 * 
+	 *
 	 * Validates the Details for an imported Rate
 	 *
 	 * @param		array	$arrRate		The Rate record, pulled from the csv file
@@ -2105,7 +2107,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 * 										makes reference to an active Rate in the database, else
 	 * 										this property will not be set
 	 * @param		array	$arrRecordType	RecordType record of the importing RateGroup
-	 * @param		array	&$arrReport		The import report (this will be passed by reference, and 
+	 * @param		array	&$arrReport		The import report (this will be passed by reference, and
 	 * 										updated appropriately)
 	 *
 	 * @return		bool	TRUE if the Rate is Valid, else FALSE
@@ -2149,7 +2151,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			
 			if (!$bolFound)
 			{
-				// The Rate could not be found in the database	
+				// The Rate could not be found in the database
 				$arrReport[] = "\tFATAL ERROR: The Rate could not be found in the database.";
 				return FALSE;
 			}
@@ -2199,7 +2201,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		// Now validate each value of $arrRate much like the validation of a new Rate in the AddRate popup
 		$arrReport[] = "Validating the rate's properties...";
 		
-		//TODO! I should probably check that the name and description properties are not 
+		//TODO! I should probably check that the name and description properties are not
 		// longer than 255 chars, otherwise they will be truncated
 		
 		// Validate StartTime (00:00:00, 00:15:00, ..., 23:45:00)
@@ -2269,7 +2271,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		}
 		
 		// Validate all properties that must be floats
-		$arrFloatProperties = Array(	"StdMinCharge", "StdFlagfall", "StdRatePerUnit", "StdMarkup", "StdPercentage", 
+		$arrFloatProperties = Array(	"StdMinCharge", "StdFlagfall", "StdRatePerUnit", "StdMarkup", "StdPercentage",
 										"CapCost", "CapLimit", "ExsFlagfall", "ExsRatePerUnit", "ExsMarkup", "ExsPercentage");
 		foreach ($arrFloatProperties as $strKey)
 		{
@@ -2382,7 +2384,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		if ($intCount > 1)
 		{
 			$bolFailed = TRUE;
-			$arrReport[] = "\tERROR: Only one of 'Charge Per Single Unit', 'Markup on Cost(\$)' or 'Markup on Cost(%)' can be specified";	
+			$arrReport[] = "\tERROR: Only one of 'Charge Per Single Unit', 'Markup on Cost(\$)' or 'Markup on Cost(%)' can be specified";
 		}
 		
 		// At most only one of ExsRatePerUnit, ExsMarkup or ExsPercentage, can be greater than 0
@@ -2435,15 +2437,15 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		}
 		
 		// Check that the Destination code and destination description are valid for this record type
-		// The Destination description doesn't really matter, because the code is used to declare the 
-		// destination. I just think it would help the user, to make sure they haven't changed the 
+		// The Destination description doesn't really matter, because the code is used to declare the
+		// destination. I just think it would help the user, to make sure they haven't changed the
 		// destination description, thinking it will do something
 		if ($arrRecordType['Context'])
 		{
 			// The RecordType is Destination based (all imported RateGroups probably will be)
 			if (!isset($arrDestinations))
 			{
-				// Cache the Destination details relating to this RecordType			
+				// Cache the Destination details relating to this RecordType
 				$arrDestinations = Array();
 				
 				$selDestinations = new StatementSelect("Destination", "Code, Description", "Context = <Context>");
@@ -2492,12 +2494,12 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	/**
 	 * IsValidRateGroup()
 	 *
-	 * Validates a RateGroup that is already stored in the database 
-	 * 
+	 * Validates a RateGroup that is already stored in the database
+	 *
 	 * Validates a RateGroup that is already stored in the database
 	 * This only checks for over or under-allocations
 	 * If a RateGroup is in the database then it should already be valid, however
-	 * draft RateGroups can be stored in the database, and then have their draft 
+	 * draft RateGroups can be stored in the database, and then have their draft
 	 * rates change, which would turn the RateGroup invalid
 	 *
 	 * @param		int		$intRateGroupId		Id of the RateGroup to validate
@@ -2526,18 +2528,18 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		$arrRates = array();
 		foreach ($arrRateGroupRates as $arrRate)
 		{
-			$arrRates[] = $arrRate['Rate']; 
+			$arrRates[] = $arrRate['Rate'];
 		}
 		
 		// Check that the selected Rates cover all hours of the week and don't overlap unless they are destination based
 		$this->_arrDestinationRates = NULL;
 		$this->_BuildRateSummary(DBO()->RateGroup->RecordType->Value, $arrRates);
-		if (($this->_arrDestinationRateSummary['OverAllocated']) || ($this->_arrDestinationRateSummary['UnderAllocated'] && !DBO()->RateGroup->Fleet->Value)) 
+		if (($this->_arrDestinationRateSummary['OverAllocated']) || ($this->_arrDestinationRateSummary['UnderAllocated'] && !DBO()->RateGroup->Fleet->Value))
 		{
 			return FALSE;
 		}
 		
-		return TRUE;		
+		return TRUE;
 	}
 	
 }
@@ -2550,7 +2552,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
  * CompareArrays()
  *
  * Makes a soft comparison against the corresponding elements of the two arrays, and reports on any discrepancies
- * 
+ *
  * Makes a soft comparison against the corresponding elements of the two arrays, and reports on any discrepancies
  * This is used by the _ValidateImportedRateGroupDetails() and _ValidateImportedRate() functions
  *
