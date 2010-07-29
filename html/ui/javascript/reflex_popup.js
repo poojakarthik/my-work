@@ -43,7 +43,8 @@ Object.extend(Reflex_Popup, {
 		else
 		{
 			//alert(Reflex_Popup.overlay.childNodes.length);
-			Reflex_Popup.overlay.appendChild(aPopups.last());
+			//Reflex_Popup.overlay.appendChild(aPopups.last());
+			Reflex_Popup.overlay.insertBefore(Reflex_Popup.opaquePane, aPopups.last());
 		}
 	},
 
