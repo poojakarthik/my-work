@@ -1609,7 +1609,6 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		//AuthenticatedUser()->CheckAuth();
 		//AuthenticatedUser()->PermissionOrDie(PERMISSION_RATE_MANAGEMENT | PERMISSION_ADMIN);
 		
-			throw new Exception("I'm a farmer, daddy!");
 		// Check if the form has been submitted
 		if (SubmittedForm("ImportRateGroup", "Import as Draft") || SubmittedForm("ImportRateGroup", "Import and Commit"))
 		{
