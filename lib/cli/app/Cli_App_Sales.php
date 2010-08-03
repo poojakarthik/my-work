@@ -196,7 +196,7 @@ class Cli_App_Sales extends Cli
 						
 						// Already Exists -- do an UPDATE
 						$arrProduct			= $resProduct->fetchRow(MDB2_FETCHMODE_ASSOC);
-						$strUpdateSQL		= "UPDATE product SET vendor_id = {$intProductVendor}, name = '{$strProductName}', description = '{$strProductDescription}', product_type_id = {$intProductType}, product_status_id = {$intProductStatus} " .
+						$strUpdateSQL		= "UPDATE product SET vendor_id = {$intProductVendor}, name = {$strProductName}, description = {$strProductDescription}, product_type_id = {$intProductType}, product_status_id = {$intProductStatus} " .
 												"WHERE id = {$arrProduct['id']}";
 						$resProductUpdate	= $dsSalesPortal->query($strUpdateSQL);
 						if (PEAR::isError($resProductUpdate))
@@ -210,7 +210,7 @@ class Cli_App_Sales extends Cli
 						
 						// Doesn't Exist -- do an INSERT
 						$strInsertSQL		= "INSERT INTO product (	vendor_id			, name					, description					, product_type_id	, product_status_id		, external_reference) VALUES " .
-																	"(	{$intProductVendor}	, '{$strProductName}'	, '{$strProductDescription}'	, {$intProductType}	, {$intProductStatus}	, 'RatePlan.Id={$arrRatePlan['Id']}')";
+																	"(	{$intProductVendor}	, {$strProductName}		, {$strProductDescription}		, {$intProductType}	, {$intProductStatus}	, 'RatePlan.Id={$arrRatePlan['Id']}')";
 						$resProductInsert	= $dsSalesPortal->query($strInsertSQL);
 						if (PEAR::isError($resProductInsert))
 						{
