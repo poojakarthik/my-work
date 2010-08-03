@@ -83,7 +83,7 @@ class Cli_App_Sales extends Cli
 		$objSyncSales->_pushAll();
 	}
 	
-	// _pushVendors()	-- Synchronises the Flex.CustomerGroup table with SP Vendors 
+	// _pushVendors()	-- Synchronises the Flex.CustomerGroup table with SP Vendors
 	protected function _pushVendors()
 	{
 		$this->log("\t* Pushing Customer Groups/Vendors from Flex to the Sales Portal...");
@@ -179,8 +179,8 @@ class Cli_App_Sales extends Cli
 					
 					// Determine the values
 					$intProductVendor		= $arrRatePlan['customer_group'];
-					$strProductName			= $arrRatePlan['Name'];
-					$strProductDescription	= $arrRatePlan['Description'];
+					$strProductName			= self::_toDBValue($arrRatePlan['Name']);
+					$strProductDescription	= self::_toDBValue($arrRatePlan['Description']);
 					$intProductType			= $this->_convertFlexToSalesPortal('servicetype', $arrRatePlan['ServiceType']);
 					$intProductStatus		= $this->_convertFlexToSalesPortal('planarchived', $arrRatePlan['Archived']);
 					
@@ -235,7 +235,7 @@ class Cli_App_Sales extends Cli
 		}
 	}
 	
-	// _pushDealers()	-- Synchronises the Flex Dealers with SP Dealers 
+	// _pushDealers()	-- Synchronises the Flex Dealers with SP Dealers
 	protected function _pushDealers()
 	{
 		$this->log("\t* Pushing Dealers from Flex to the Sales Portal...");
@@ -262,7 +262,7 @@ class Cli_App_Sales extends Cli
 			{
 				$this->log("\t\t\t+ Id #{$arrFlexDealer['id']} ({$arrFlexDealer['first_name']} {$arrFlexDealer['last_name']})...");
 				
-				//-------------------------- DEALERS -------------------------//		
+				//-------------------------- DEALERS -------------------------//
 				// Escape values
 				foreach ($arrFlexDealer as $strField=>$mixValue)
 				{
@@ -400,7 +400,7 @@ class Cli_App_Sales extends Cli
 			}
 			while ($arrDealerRatePlan = $resDealerRatePlan->fetch_assoc())
 			{
-				// Insert an SP-equivalent record	
+				// Insert an SP-equivalent record
 				$resDealerProductInsert	= $dsSalesPortal->query("INSERT INTO dealer_product (dealer_id, product_id) VALUES " .
 																"({$arrDealerRatePlan['dealer_id']}, (SELECT id FROM product WHERE external_reference = 'RatePlan.Id={$arrDealerRatePlan['rate_plan_id']}'))");
 				if (PEAR::isError($resDealerProductInsert))
@@ -427,7 +427,7 @@ class Cli_App_Sales extends Cli
 			}
 			while ($arrDealerSaleType = $resDealerSaleType->fetch_assoc())
 			{
-				// Insert an SP-equivalent record	
+				// Insert an SP-equivalent record
 				$resDealerSaleTypeInsert	= $dsSalesPortal->query("INSERT INTO dealer_sale_type (dealer_id, sale_type_id) VALUES " .
 																"({$arrDealerSaleType['dealer_id']}, {$arrDealerSaleType['sale_type_id']})");
 				if (PEAR::isError($resDealerSaleTypeInsert))
@@ -454,7 +454,7 @@ class Cli_App_Sales extends Cli
 			}
 			while ($arrDealerCustomerGroup = $resDealerCustomerGroup->fetch_assoc())
 			{
-				// Insert an SP-equivalent record	
+				// Insert an SP-equivalent record
 				$resDealerVendorInsert	= $dsSalesPortal->query("INSERT INTO dealer_vendor (dealer_id, vendor_id) VALUES " .
 																"({$arrDealerCustomerGroup['dealer_id']}, {$arrDealerCustomerGroup['customer_group_id']})");
 				if (PEAR::isError($resDealerVendorInsert))
@@ -477,7 +477,7 @@ class Cli_App_Sales extends Cli
 	//------------------------------------------------------------------------//
 	
 	//---------------------------- PULL OPERATIONS ---------------------------//
-	// _pullAll()	-- Pulls all shared Data from the Sales Portal to Flex 
+	// _pullAll()	-- Pulls all shared Data from the Sales Portal to Flex
 	protected function _pullAll()
 	{
 		if (Invoice_Run::checkTemporary())
@@ -1177,7 +1177,7 @@ class Cli_App_Sales extends Cli
 									$arrProduct		= $resProduct->fetchRow(MDB2_FETCHMODE_ASSOC);
 									$arrRatePlanId	= explode('=', $arrProduct['external_reference']);
 									$objRatePlan	= new Rate_Plan(Array('Id'=>(int)$arrRatePlanId[1]), TRUE);
-									$this->log("\t\t\t\t\t\t+ Setting Plan to '{$objRatePlan->Name}'...");									
+									$this->log("\t\t\t\t\t\t+ Setting Plan to '{$objRatePlan->Name}'...");
 									$objService->changePlan($objRatePlan, TRUE, TRUE);
 									
 									$objService->objRatePlan	= $objRatePlan;
@@ -1266,7 +1266,7 @@ class Cli_App_Sales extends Cli
 							$strNote .= "\nContacts:\n";
 							foreach ($arrContacts as $objContact)
 							{
-								$strNote .= "\t{$objContact->FirstName} {$objContact->LastName} " . (($objAccount->PrimaryContact == $objContact->Id) ? "(Primary Contact)" : '') . "\n";								
+								$strNote .= "\t{$objContact->FirstName} {$objContact->LastName} " . (($objAccount->PrimaryContact == $objContact->Id) ? "(Primary Contact)" : '') . "\n";
 							}
 						}
 						
@@ -1275,7 +1275,7 @@ class Cli_App_Sales extends Cli
 							$strNote .= "\nServices:\n";
 							foreach ($arrServices as $objService)
 							{
-								$strNote .= "\t{$objService->FNN} (".trim($objService->objRatePlan->Name).")\n";								
+								$strNote .= "\t{$objService->FNN} (".trim($objService->objRatePlan->Name).")\n";
 							}
 						}
 						
@@ -1292,7 +1292,7 @@ class Cli_App_Sales extends Cli
 							$strNote .= "\nContacts:\n";
 							foreach ($arrContacts as $objContact)
 							{
-								$strNote .= "\t{$objContact->FirstName} {$objContact->LastName} " . (($objAccount->PrimaryContact == $objContact->Id) ? "(Primary Contact)" : '') . "\n";								
+								$strNote .= "\t{$objContact->FirstName} {$objContact->LastName} " . (($objAccount->PrimaryContact == $objContact->Id) ? "(Primary Contact)" : '') . "\n";
 							}
 						}
 						
@@ -1301,7 +1301,7 @@ class Cli_App_Sales extends Cli
 							$strNote .= "\nServices:\n";
 							foreach ($arrServices as $objService)
 							{
-								$strNote .= "\t{$objService->FNN} (".trim($objService->objRatePlan->Name).")\n";								
+								$strNote .= "\t{$objService->FNN} (".trim($objService->objRatePlan->Name).")\n";
 							}
 						}
 						
@@ -1421,7 +1421,7 @@ class Cli_App_Sales extends Cli
 		
 		$strType	= str_replace('_', '', strtolower($strType));
 		switch ($strType)
-		{		
+		{
 			case 'servicetype':
 				// HACK: These should work, at least for now
 				$arrConversion[$strType]	= array(
@@ -1460,7 +1460,7 @@ class Cli_App_Sales extends Cli
 		
 		$strType	= str_replace('_', '', strtolower($strType));
 		switch ($strType)
-		{		
+		{
 			case 'billdeliverytype':
 				// HACK: These should work, at least for now
 				$arrConversion[$strType]	= array(
@@ -1730,7 +1730,7 @@ class Cli_App_Sales extends Cli
 						// The Sale Item associated with this pending service has been cancelled, but has not yet been 'Closed' in flex
 						$arrServicesToCancel[] = $objService->id;
 					}
-					else 
+					else
 					{
 						// The Sale Item probably has the status COMPLETED, but the corresponding service is still pending activation
 						$arrOddServiceCases[] = array(	"ServiceId"		=> $objService->id,
@@ -1749,7 +1749,7 @@ class Cli_App_Sales extends Cli
 				$this->log("\t\t\t* Sale Item\t: ". $objFlexSaleItem->getExternalReferenceValue() ." ...");
 				$this->log("\t\t\t* Rate Plan\t: {$objRatePlan->Name} ...");
 				
-				// Create 
+				// Create
 				switch ($objService->ServiceType)
 				{
 					case SERVICE_TYPE_LAND_LINE:
