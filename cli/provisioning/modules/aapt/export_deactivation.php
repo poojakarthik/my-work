@@ -181,8 +181,6 @@
 		
 		$arrDefine['Action']				['Index']		= 5;
 		
-		$arrDefine['WhitelistRefCode']		['Index']		= 6;
-		
 		/* This is for LCR (Prefix Codes)
  		//--------------------------------------------------------------------//
  		// Deactivation
