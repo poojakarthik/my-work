@@ -54,6 +54,7 @@ class Invoice_Run_Export_Motorpass extends Invoice_Run_Export
 							FROM		Invoice i
 										JOIN account_history ah ON	(
 																		i.Account = ah.account_id
+																		AND ah.billing_type = (SELECT id FROM billing_type WHERE system_name = 'REBILL' LIMIT 1)
 																		AND change_timestamp < '{$this->_oInvoiceRun->billing_period_end_datetime}'
 																		AND ah.id =	(
 																						SELECT		id
