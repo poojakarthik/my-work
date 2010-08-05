@@ -39,7 +39,7 @@
  		
  		// Field Delimiter
  		$this->_strDelimiter	= ",";
- 		$this->_strEndOfLine	= "\r\n";
+ 		$this->_strEndOfLine	= "\n";
  		
 		$arrDefine['FNN']			['Index']		= 0;
  		

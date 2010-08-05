@@ -105,7 +105,7 @@
  		// Delimiter & New Line
  		$this->_strFileFormat	= 'CSV';
  		$this->_strDelimiter	= ",";
- 		$this->_strNewLine		= "\r\n";
+ 		$this->_strNewLine		= "\n";
  		
  		$this->_arrDefine		= Array();
  		
