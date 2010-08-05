@@ -51,7 +51,7 @@ class AppTemplateCharge extends ApplicationTemplate
 	 * Add()
 	 *
 	 * Performs the logic for the Add Charge popup window (Used to request an charge)
-	 * 
+	 *
 	 * Performs the logic for the Add Charge popup window (Used to request an charge)
 	 * Note that regardless of whether or not the charge is a credit or debit charge, and regardless
 	 * of the user's permission level, no manually requested charges (using this function) are automatically approved.
@@ -77,7 +77,7 @@ class AppTemplateCharge extends ApplicationTemplate
 	 * AddRecurring()
 	 *
 	 * Performs the logic for the Add Recurring Charge popup window
-	 * 
+	 *
 	 * Performs the logic for the Add Recurring Charge popup window
 	 *
 	 * @return		void
@@ -199,7 +199,7 @@ class AppTemplateCharge extends ApplicationTemplate
 				DBO()->RecurringCharge->CreatedOn	= $strCurrentDate;
 
 				// I'm pretty sure I should just leave this even though the charge will be pending approval
-				// StartedOn, is the date that the recurring charge should have started on 
+				// StartedOn, is the date that the recurring charge should have started on
 				if ($intCurrentDay >= 29 && $intCurrentDay <= 31)
 				{
 					// The StartedOn date has to snap to either the 28th or the 1st of next month
@@ -257,7 +257,7 @@ class AppTemplateCharge extends ApplicationTemplate
 						
 					case BILLING_FREQ_HALF_MONTH:
 						$strFreqType = "half-month";
-						break; 
+						break;
 				}
 				if ($intRecurringFreq == 1)
 				{
@@ -274,7 +274,7 @@ class AppTemplateCharge extends ApplicationTemplate
 				$strInAdvanceInArrears = (DBO()->RecurringCharge->in_advance->Value == TRUE)? "advance" : "arrears";
 				$strStartDateFormatted = date('d-m-Y', strtotime(DBO()->RecurringCharge->StartedOn->Value));
 				
-				// These have already been set				
+				// These have already been set
 				//DBO()->RecurringCharge->MinCharge
 				//DBO()->RecurringCharge->RecursionCharge
 				
@@ -294,7 +294,7 @@ class AppTemplateCharge extends ApplicationTemplate
 				$strNote = "Type: " . DBO()->RecurringCharge->ChargeType->FormattedValue() ." - ". DBO()->RecurringCharge->Description->FormattedValue() . "\n";
 				$strNote .= "Nature: " . DBO()->RecurringCharge->Nature->FormattedValue() . "\n";
 				$strNote .= "Minimum Charge (inc GST): {$strMinCharge}\n";
-				$strNote .= "Recurring Charge (inc GST): {$strRecursionCharge} charged in {$strInAdvanceInArrears}, every {$strIndividualChargePeriod}, starting $strStartDateFormatted"; 
+				$strNote .= "Recurring Charge (inc GST): {$strRecursionCharge} charged in {$strInAdvanceInArrears}, every {$strIndividualChargePeriod}, starting $strStartDateFormatted";
 
 				TransactionStart();
 				
@@ -378,7 +378,7 @@ class AppTemplateCharge extends ApplicationTemplate
 	 * DeleteCharge()
 	 *
 	 * Performs Delete Charge functionality
-	 * 
+	 *
 	 * Performs Delete Charge functionality
 	 *
 	 * @return		void
@@ -501,7 +501,7 @@ class AppTemplateCharge extends ApplicationTemplate
 	 * DeleteRecurringCharge()
 	 *
 	 * Performs Delete Recurring Charge functionality
-	 * 
+	 *
 	 * Performs Delete Recurring Charge functionality
 	 *
 	 * @return		void
@@ -572,6 +572,9 @@ class AppTemplateCharge extends ApplicationTemplate
 		//$bolCanCreateCreditCharges = ($bolUserHasProperAdminPerm || $bolHasCreditManagementPerm);
 		$bolCanCreateCreditCharges	= TRUE;
 		$sChargeModel				= Constant_Group::getConstantGroup('charge_model')->getConstantName($iChargeModel);
+		
+		// Set the charge_model_id (had to move this up, as it needs to be defined for the HTMLTemplate to work)
+		DBO()->ChargeModel->Id	= $iChargeModel;
 
 		// The account should already be set up as a DBObject
 		if (!DBO()->Account->Load())
@@ -636,9 +639,9 @@ class AppTemplateCharge extends ApplicationTemplate
 		// load the last 6 invoices with the most recent being first (Committed Live, Interim and Final invoices only)
 		$arrWhere = array("AccountId" => DBO()->Account->Id->Value);
 		$strWhere = "	Account = <AccountId>
-						AND invoice_run_id IN (	SELECT id 
+						AND invoice_run_id IN (	SELECT id
 												FROM InvoiceRun
-												WHERE invoice_run_status_id = ". INVOICE_RUN_STATUS_COMMITTED ." 
+												WHERE invoice_run_status_id = ". INVOICE_RUN_STATUS_COMMITTED ."
 												AND invoice_run_type_id IN (". INVOICE_RUN_TYPE_LIVE .", ". INVOICE_RUN_TYPE_INTERIM .", ".INVOICE_RUN_TYPE_FINAL .")
 											)";
 		DBL()->AccountInvoices->SetTable("Invoice");
@@ -646,9 +649,6 @@ class AppTemplateCharge extends ApplicationTemplate
 		DBL()->AccountInvoices->OrderBy("CreatedOn DESC, Id DESC");
 		DBL()->AccountInvoices->SetLimit(6);
 		DBL()->AccountInvoices->Load();
-		
-		// Set the charge_model_id
-		DBO()->ChargeModel->Id	= $iChargeModel;
 
 		// check if an charge is being submitted
 		if (SubmittedForm("Add{$sChargeModel}", "Add {$sChargeModel}"))
