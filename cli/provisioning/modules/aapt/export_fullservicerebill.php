@@ -140,6 +140,10 @@
 		$arrDefine['Time']			['Length']		= 6;
 		$arrDefine['Time']			['Value']		= date('His', $this->_iTimestamp);
 		
+		$arrDefine['Extension']		['Start']		= 22;
+		$arrDefine['Extension']		['Length']		= 4;
+		$arrDefine['Extension']		['Value']		= '.DAT';
+		
 		$this->_arrDefine['Filename'] = $arrDefine;
  		
  		//--------------------------------------------------------------------//
@@ -368,7 +372,7 @@
  		$this->_arrHeader	= Array();
  		$this->_arrHeader['**Type']			= 'Header';
  		$this->_arrHeader['**Request']		= 'Header';
- 		$this->_arrHeader['FileName']		= $aFileName['Line'];
+ 		$this->_arrHeader['FileName']		= substr($aFileName['Line'], 0, 0-strlen($this->_arrDefine['Filename']['Extension']['Value']));
  		
  		// Generate Footer
  		$this->_arrFooter	= Array();
