@@ -172,14 +172,9 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 				$strContent	=	"
 Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} Invoice for Account number {$arrInvoice['Account']} dated {$strFullInvoiceDate} is attached.
 
-Should you have any questions regarding your account, please email to  contact@{$arrCustomerGroups[$arrDetail['CustomerGroup']]['email_domain']} or call our Business Service Centre between 8.30am and 5.30pm Monday to Friday EST on {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_service_phone']}.  We are happy to hear from you!
+Did you know that if you have your own Domain name registered, that you never have to change your email address again, regardless of your internet provider?
 
-In the meantime we are excited to release our ADSL2+ range of plans.
-The lucky customers who can access ADSL2+ can now have super fast and most importantly more reliable internet than ever before.
-If you would like to know if you are in an ADSL2+ area or would like a brochure detailing these exciting new offers email sales@{$arrCustomerGroups[$arrDetail['CustomerGroup']]['email_domain']}
-Thank you for your continued business.
-
-We look forward to talking with you soon.
+Many customers find changing email addresses inconvenient, so if you haven’t registered your own “Company Domain Name”, then spring is in the air and  {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} is giving them away free of charge until the end of September 2010. We also offer hosting packages from as low as $19.95 ex GST per month.  See the front page of your attached invoice for details or call {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_service_phone']} for an information brochure.
 
 Best regards
 The {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} Team\n";
