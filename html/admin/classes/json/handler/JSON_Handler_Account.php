@@ -1013,8 +1013,8 @@ class JSON_Handler_Account extends JSON_Handler
 						$aErrors[]	= 'Invalid Card Expiry Date';
 					}
 					
-					$sLastDayInMonth			= date('t', $iTime);
-					$iExpiryDate				= strtotime($oDetails->card_expiry_date.'-'.$sLastDayInMonth);
+					$sLastDayInMonth	= date('t', $iTime);
+					$iExpiryDate		= strtotime($oDetails->card_expiry_date.'-'.$sLastDayInMonth);
 					$oDetails->card_expiry_date	= date('Y-m-d', $iExpiryDate);
 					
 					// Validate input
@@ -1088,6 +1088,7 @@ class JSON_Handler_Account extends JSON_Handler
 		}
 		catch (JSON_Handler_Account_Exception $oException)
 		{
+			// Exception thrown & caught, rollback db transaction
 			$oDataAccess->TransactionRollback();
 			
 			return 	array(
@@ -1097,6 +1098,7 @@ class JSON_Handler_Account extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
+			// Exception caught, rollback db transaction
 			$oDataAccess->TransactionRollback();
 			
 			return 	array(

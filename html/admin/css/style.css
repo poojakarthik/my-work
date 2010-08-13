@@ -4169,6 +4169,18 @@ div.popup-account-edit-rebill > div.buttons
 	text-align	: center;
 }
 
+.popup-account-edit-rebill .tab-page
+{
+	padding	: 0em !important;
+}
+
+.popup-account-edit-rebill .tab-page > table.reflex.input
+{
+	border	: solid 0px transparent;
+	margin	: 0em !important;
+	width	: 100% !important;
+}
+
 /************************ END - Edit Rebill Popup - END ************************/
 
 /************************ START - Control Field Combo Date & Time - START ************************/

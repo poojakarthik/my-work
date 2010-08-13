@@ -1,4 +1,3 @@
-
 var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 {
 	initialize	: function($super, iAccountId, iRebillTypeId, fnOnSave, fnOnCancel)
@@ -7,7 +6,7 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 		{
 			return;
 		}
-		
+
 		$super(40);
 		
 		this.iAccountId		= iAccountId;
@@ -15,11 +14,13 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 		this.fnOnSave		= fnOnSave;
 		this.fnOnCancel		= fnOnCancel;
 		this.oRebill		= null;
-		this.hControlFields	= {};
+		this._hFields		= {};
 		this.oLoading		= new Reflex_Popup.Loading('Please Wait');
 		this.oLoading.display();
 		this._buildUI();
 	},
+	
+	// Private
 	
 	_buildUI	: function(oResponse)
 	{
@@ -45,7 +46,10 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 			
 			// Build content
 			this._oContent	= 	$T.div({class: 'popup-account-edit-rebill'},
-									$T.table({class: 'reflex input'},
+									$T.div({class: 'tabgroup'}
+										// Content to come
+									),
+									/*$T.table({class: 'reflex input'},
 										$T.caption(
 											$T.div({class: 'caption_bar', id: 'caption_bar'},
 												$T.div({class: 'caption_title', id: 'caption_title'},
@@ -56,7 +60,7 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 										$T.tbody({class: 'popup-account-edit-rebill-fields'}
 											// Rows will vary depending on rebill_type_id
 										)
-									),
+									),*/
 									$T.div({class: 'buttons'},
 										$T.button({class: 'icon-button'},
 											$T.img({src: Popup_Account_Edit_Rebill.SAVE_IMAGE_SOURCE, alt: '', title: 'Save'}),
@@ -76,31 +80,55 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 			var oCancelButton	= this._oContent.select('div.buttons > button.icon-button').last();
 			oCancelButton.observe('click', this._cancelEdit.bind(this));
 			
+			// Create tab group
+			var oTabContainer	= this._oContent.select('div.tabgroup').first(); 
+			this._oTabGroup		= new Control_Tab_Group(oTabContainer, true);
+			
 			// Generate control fields
-			var oTBody		= this._oContent.select('table.input > tbody').first();
+			var hPanels		= Popup_Account_Edit_Rebill.PANELS;
 			var hFields		= Popup_Account_Edit_Rebill.FIELDS[this.iRebillTypeId];
 			var oField		= null;
 			var oControl	= null;
-			
-			for (var sFieldName in hFields)
+			var aFields		= null;
+			var sFieldName	= null;
+			var oTabContent	= null;
+			var oTBody		= null;
+			for (var sPanelName in hPanels)
 			{
-				oField		= hFields[sFieldName];
-				oControl	= Control_Field.factory(oField.sType, oField.oDefinition);
-				
-				if (this.oRebill && (typeof this.oRebill.oDetails[sFieldName] != 'undefined'))
+				oTabContent	=	$T.table({class: 'reflex input'},
+									oTBody = $T.tbody({class: 'popup-account-edit-rebill-fields'})
+								);
+				aFields		= hPanels[sPanelName].aFields;
+				for (var i = 0; i < aFields.length; i++)
 				{
-					oControl.setValue(this.oRebill.oDetails[sFieldName]);
+					sFieldName	= aFields[i];
+					oField		= hFields[sFieldName];
+					oControl	= Control_Field.factory(oField.sType, oField.oDefinition);
+					
+					if (this.oRebill && (typeof this.oRebill.oDetails[sFieldName] != 'undefined'))
+					{
+						oControl.setValue(this.oRebill.oDetails[sFieldName]);
+					}
+					else
+					{
+						oControl.setValue('');
+					}
+					
+					oControl.setRenderMode(Control_Field.RENDER_MODE_EDIT);
+					oTBody.appendChild(oControl.generateInputTableRow().oElement);
+					this._hFields[sFieldName]	= oControl;
 				}
-				else
-				{
-					oControl.setValue('');
-				}
-				
-				oControl.setRenderMode(Control_Field.RENDER_MODE_EDIT);
-				oTBody.appendChild(oControl.generateInputTableRow().oElement);
-				
-				this.hControlFields[sFieldName]	= oControl;
+				this._oTabGroup.addTab(sPanelName, new Control_Tab(sPanelName, oTabContent));
 			}
+			
+			// Special events
+			// ... business structure & description
+			//var oBusStructure	= this._hFields['account_business_structure_id'];
+			//oBusStructure.addOnChangeCallback(this._businessStructureChange.bind(this));
+			
+			// ... card type & description
+			//var oCardType	= this._hFields['card_card_type_id'];
+			//oCardType.addOnChangeCallback(this._cardTypeChange.bind(this));
 			
 			// Popup setup
 			this.setTitle('Edit Rebill (' + Flex.Constant.arrConstantGroups.rebill_type[this.iRebillTypeId].Name + ')');
@@ -146,15 +174,14 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 			// Validate fields
 			var aValidationErrors	= [];
 			var oDetails			= {};
-			
-			for (var sFieldName in this.hControlFields)
+			for (var sFieldName in this._hFields)
 			{
 				try
 				{
 					// If valid, record the value
-					if (this.hControlFields[sFieldName].validate(false))
+					if (this._hFields[sFieldName].validate(false))
 					{
-						oDetails[sFieldName]	= this.hControlFields[sFieldName].getValue(true);
+						oDetails[sFieldName]	= this._hFields[sFieldName].getValue(true);
 					}
 				}
 				catch (ex)
@@ -163,6 +190,7 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 				}
 			}
 			
+			// Check for errors, show popup if any
 			if (aValidationErrors.length)
 			{
 				Popup_Account_Edit_Rebill.showValidationErrors(aValidationErrors);
@@ -179,7 +207,7 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 									'Account',
 									'addRebill'
 								);
-			fnAddRebill(this.iAccountId, this.iRebillTypeId, oDetails);
+			//fnAddRebill(this.iAccountId, this.iRebillTypeId, oDetails);
 		}
 		else if (oResponse.Success)
 		{
@@ -211,8 +239,42 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 		}
 		
 		this.hide();
+	},
+	
+	_businessStructureChange	: function()
+	{
+		var oField	= this._hFields['account_business_structure_id'];
+		var oDesc	= this._hFields['account_business_structure_description'];
+		if (oField.getElementValue() == $CONSTANT.MOTORPASS_BUSINESS_STRUCTURE_OTHER)
+		{
+			oDesc.show();
+		}
+		else
+		{
+			oDesc.hide();
+		}
+	},
+	
+	_cardTypeChange	: function()
+	{
+		var oField	= this._hFields['card_card_type_id'];
+		var oDesc	= this._hFields['card_card_type_description'];
+		if (oField.getElementValue() == $CONSTANT.MOTORPASS_CARD_TYPE_OTHER)
+		{
+			oDesc.show();
+		}
+		else
+		{
+			oDesc.hide();
+		}
 	}
 });
+
+
+// ----------------
+// STATIC MEMBERS
+// ----------------
+
 
 Popup_Account_Edit_Rebill._formatDate	= function(sDate)
 {
@@ -280,12 +342,52 @@ Popup_Account_Edit_Rebill.validateCardExpiry	= function(sValue)
 	return false;
 };
 
+Popup_Account_Edit_Rebill.validatePastDate	= function(mValue)
+{
+	var oDate	= Date.$parseDate(mValue, 'Y-m-d');
+	if (oDate)
+	{
+		if (oDate.getTime() >= new Date().getTime())
+		{
+			// Future or present
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+	
+	// Not a valid date
+	return false;
+};
+
+Popup_Account_Edit_Rebill.getOptions	= function(sConstantGroup, fnCallback)
+{
+	var oConstantGroup	= Flex.Constant.arrConstantGroups[sConstantGroup];
+	if (oConstantGroup)
+	{
+		var aOptions	= [];
+		for (var i in oConstantGroup)
+		{
+			aOptions.push(
+				$T.option({value: i}, 
+					oConstantGroup[i].Name
+				)
+			);
+		}
+		fnCallback(aOptions);
+	}
+};
+
 //Check if $CONSTANT has correct constant groups loaded, if not this class won't work
 if (typeof Flex.Constant.arrConstantGroups.rebill_type == 'undefined' || 
-	typeof Flex.Constant.arrConstantGroups.payment_method == 'undefined')
+	typeof Flex.Constant.arrConstantGroups.payment_method == 'undefined' || 
+	typeof Flex.Constant.arrConstantGroups.motorpass_business_structure == 'undefined' ||
+	typeof Flex.Constant.arrConstantGroups.motorpass_card_type == 'undefined')
 {
 	Popup_Account_Edit_Rebill.HAS_CONSTANTS	= false;
-	throw ('Please load the "payment_method" & "rebill_type" constant groups before using Popup_Account_Edit_Rebill');
+	throw ('Please load the correct constant groups before using Popup_Account_Edit_Rebill (see source for more info).');
 }
 else
 {
@@ -298,44 +400,489 @@ Popup_Account_Edit_Rebill.CANCEL_IMAGE_SOURCE 	= '../admin/img/template/delete.p
 Popup_Account_Edit_Rebill.SAVE_IMAGE_SOURCE 	= '../admin/img/template/tick.png';
 
 // Editing fields
-Popup_Account_Edit_Rebill.FIELDS									= {};
-
-// rebill_motorpass
-Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	= {};
-
-// rebill_motorpass.account_number
-Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_number		= {};
-Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_number.sType	= 'text';
-
-Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_number.oDefinition			= {};
-Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_number.oDefinition.sLabel		= 'Account Number';
-Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_number.oDefinition.mEditable	= true;
-Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_number.oDefinition.mMandatory	= true;
-Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_number.oDefinition.fnValidate	= Popup_Account_Edit_Rebill.validateWithLength.curry(Reflex_Validation.digits, 9); 
-
-// rebill_motorpass.account_name
-Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_name			= {};
-Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_name.sType	= 'text';
-
-Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_name.oDefinition				= {};
-Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_name.oDefinition.sLabel		= 'Account Name';
-Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_name.oDefinition.mEditable	= true;
-Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_name.oDefinition.mMandatory	= true;
-Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_name.oDefinition.fnValidate	= Popup_Account_Edit_Rebill.validateWithLength.curry(null, 256);
-
-// rebill_motorpass.card_expiry_date_mm
 var oNow	= new Date();
-Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].card_expiry_date			= {};
-Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].card_expiry_date.sType	= 'combo_date';
+Popup_Account_Edit_Rebill.FIELDS	= {};
+Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	= 
+{
+	account_number	:
+	{
+		sType		: 'text',
+		oDefinition	: 
+		{
+			sLabel		: 'Account Number',
+			mEditable	: true,
+			mMandatory	: true,
+			fnValidate	: Popup_Account_Edit_Rebill.validateWithLength.curry(Reflex_Validation.digits, 9)
+		}
+	},
+	account_name	: 
+	{
+		sType		: 'text',
+		oDefinition	: 
+		{
+			sLabel		: 'Account Name',
+			mEditable	: true,
+			mMandatory	: true,
+			fnValidate	: Popup_Account_Edit_Rebill.validateWithLength.curry(null, 256)
+		}
+	},
+	card_expiry_date	: 
+	{
+		sType		: 'combo_date',
+		oDefinition	: 
+		{
+			sLabel				: 'Card Expiry Month',
+			mEditable			: true,
+			mMandatory			: true,
+			iMinYear			: oNow.getFullYear(),
+			iMaxYear			: oNow.getFullYear() + 10,
+			fnValidate			: Popup_Account_Edit_Rebill.validateCardExpiry,
+			sValidationReason	: 'It must be in the future.',
+			iFormat				: Control_Field_Combo_Date.FORMAT_M_Y
+		}
+	},
+	account_promotion_code_id	:
+	{
+		sType		: 'select',
+		oDefinition	:
+		{
+			sLabel		: 'Promotion Code',
+			mEditable	: true,
+			mMandatory	: true,
+			fnPopulate	: Popup_Account_Edit_Rebill.getOptions.curry('motorpass_promotion_code')
+		}
+	},
+	
+	account_business_commencement_date	:
+	{
+		sType	: 'date-picker',
+		oDefinition	:
+		{
+			sLabel		: 'Business Commencement Date',
+			iMinYear	: 1900,
+			iMaxYear	: new Date().getFullYear(),
+			Mandatory	: true,
+			mEditable	: true,
+			fnValidate	: Popup_Account_Edit_Rebill.validatePastDate
+		}
+	},
+	account_business_structure_id	:
+	{
+		sType	: 'select',
+		oDefinition	:
+		{
+			sLabel		: 'Business Structure',
+			mMandatory	: true,
+			mEditable	: true,
+			fnPopulate	: Popup_Account_Edit_Rebill.getOptions.curry('motorpass_business_structure')
+		}
+	},
+	account_business_structure_description	:
+	{
+		sType	: 'text',
+		oDefinition	:
+		{
+			sLabel		: 'Business Structure Description',
+			mEditable	: true
+		}
+	},
+	card_card_type_id	:
+	{
+		sType	: 'select',
+		oDefinition	:
+		{
+			sLabel		: 'Type',
+			mEditable	: true,
+			mMandatory	: true,
+			fnPopulate	: Popup_Account_Edit_Rebill.getOptions.curry('motorpass_card_type')
+		}
+	},
+	card_card_type_description	:
+	{
+		sType	: 'text',
+		oDefinition	:
+		{
+			sLabel		: 'Description',
+			mEditable	: true
+		}
+	},
+	card_shared	:
+	{
+		sType	: 'checkbox',
+		oDefinition	:
+		{
+			sLabel		: 'Shared',
+			mEditable	: true
+		}
+	},
+	card_holder_title_id	:
+	{
+		sType	: 'select',
+		oDefinition	:
+		{
+			sLabel		: 'Title',
+			mEditable	: true,
+			fnPopulate	: Popup_Account_Edit_Rebill.getOptions.curry('contact_title')
+		}
+	},
+	card_holder_first_name	:
+	{
+		sType	: 'text',
+		oDefinition	:
+		{
+			sLabel		: 'First Name',
+			mEditable	: true
+		}
+	},
+	card_holder_last_name	:
+	{
+		sType	: 'text',
+		oDefinition	:
+		{
+			sLabel		: 'Last Name',
+			mEditable	: true
+		}
+	},
+	card_vehicle_model	:
+	{
+		sType	: 'text',
+		oDefinition	:
+		{
+			sLabel		: 'Model',
+			mEditable	: true
+		}
+	},
+	card_vehicle_rego	:
+	{
+		sType	: 'text',
+		oDefinition	:
+		{
+			sLabel		: 'Rego',
+			mEditable	: true
+		}
+	},
+	card_vehicle_make	:
+	{
+		sType	: 'text',
+		oDefinition	:
+		{
+			sLabel		: 'Make',
+			mEditable	: true
+		}
+	},
+	street_address_line_1	:
+	{
+		sType	: 'text',
+		oDefinition	:
+		{
+			sLabel		: 'Address 1',
+			mMandatory	: true,
+			mEditable	: true
+		}
+	},
+	street_address_line_2	:
+	{
+		sType	: 'text',
+		oDefinition	:
+		{
+			sLabel		: 'Address 2',
+			mEditable	: true
+		}
+	},
+	street_address_suburb	:
+	{
+		sType	: 'text',
+		oDefinition	:
+		{
+			sLabel		: 'Suburb',
+			mMandatory	: true,
+			mEditable	: true
+		}
+	},
+	street_address_state_id	:
+	{
+		sType	: 'select',
+		oDefinition	:
+		{
+			sLabel		: 'State',
+			mMandatory	: true,
+			mEditable	: true,
+			fnPopulate	: Popup_Account_Edit_Rebill.getOptions.curry('state')
+		}
+	},
+	street_address_postcode	:
+	{
+		sType	: 'text',
+		oDefinition	:
+		{
+			sLabel		: 'Postcode',
+			mMandatory	: true,
+			mEditable	: true
+		}
+	},
+	postal_address_same	:
+	{
+		sType	: 'checkbox',
+		oDefinition	:
+		{
+			sLabel		: 'Same as Street Address',
+			mEditable	: true
+		}
+	},
+	postal_address_line_1	:
+	{
+		sType	: 'text',
+		oDefinition	:
+		{
+			sLabel		: 'Address 1',
+			mEditable	: true
+		}
+	},
+	postal_address_line_2	:
+	{
+		sType	: 'text',
+		oDefinition	:
+		{
+			sLabel		: 'Address 2',
+			mEditable	: true
+		}
+	},
+	postal_address_suburb	:
+	{
+		sType	: 'text',
+		oDefinition	:
+		{
+			sLabel		: 'Suburb',
+			mEditable	: true
+		}
+	},
+	postal_address_state_id	:
+	{
+		sType	: 'select',
+		oDefinition	:
+		{
+			sLabel		: 'State',
+			fnPopulate	: Popup_Account_Edit_Rebill.getOptions.curry('state'),
+			mEditable	: true
+		}
+	},
+	postal_address_postcode	:
+	{
+		sType	: 'text',
+		oDefinition	:
+		{
+			sLabel		: 'Postcode',
+			mEditable	: true
+		}
+	},
+	contact_title_id	:
+	{
+		sType	: 'select',
+		oDefinition	:
+		{
+			sLabel		: 'Title',
+			mEditable	: true,
+			fnPopulate	: Popup_Account_Edit_Rebill.getOptions.curry('contact_title')
+		}
+	},
+	contact_first_name	:
+	{
+		sType	: 'text',
+		oDefinition	:
+		{
+			sLabel		: 'First Name',
+			mEditable	: true,
+			mMandatory	: true
+		}
+	},
+	contact_last_name	:
+	{
+		sType	: 'text',
+		oDefinition	:
+		{
+			sLabel		: 'Last Name',
+			mEditable	: true,
+			mMandatory	: true
+		}
+	},
+	contact_dob	:
+	{
+		sType	: 'date-picker',
+		oDefinition	:
+		{
+			sLabel		: 'D.O.B',
+			mEditable	: true,
+			mMandatory	: true,
+			iMinYear	: 1900,
+			iMaxYear	: new Date().getFullYear(),
+			fnValidate	: Popup_Account_Edit_Rebill.validatePastDate
+		}
+	},
+	contact_drivers_license	:
+	{
+		sType	: 'text',
+		oDefinition	:
+		{
+			sLabel		: 'Drivers License Number',
+			mEditable	: true
+		}
+		
+	},
+	contact_position	:
+	{
+		sType	: 'text',
+		oDefinition	:
+		{
+			sLabel		: 'Position',
+			mEditable	: true,
+			mMandatory	: true
+		}
+	},
+	contact_landline_number	:
+	{
+		sType	: 'text',
+		oDefinition	:
+		{
+			sLabel		: 'Landline',
+			mEditable	: true,
+			mMandatory	: true,
+			fnValidate	: Reflex_Validation.fnnFixedLine
+		}
+	},
+	reference1_company_name	:
+	{
+		sType	: 'text',
+		oDefinition	:
+		{
+			sLabel		: 'Company Name',
+			mEditable	: true,
+			mMandatory	: true
+		}
+	},
+	reference1_contact_person	:
+	{
+		sType	: 'text',
+		oDefinition	:
+		{
+			sLabel		: 'Contact Person',
+			mEditable	: true,
+			mMandatory	: true
+		}
+	},
+	reference1_phone_number	:
+	{
+		sType	: 'text',
+		oDefinition	:
+		{
+			sLabel		: 'Landline',
+			mEditable	: true,
+			mMandatory	: true,
+			fnValidate	: Reflex_Validation.fnnFixedLine
+		}
+	},
+	reference2_company_name	:
+	{
+		sType	: 'text',
+		oDefinition	:
+		{
+			sLabel		: 'Company Name',
+			mEditable	: true,
+			mMandatory	: true
+		}
+	},
+	reference2_contact_person	:
+	{
+		sType	: 'text',
+		oDefinition	:
+		{
+			sLabel		: 'Contact Person',
+			mEditable	: true,
+			mMandatory	: true
+		}
+	},
+	reference2_phone_number	:
+	{
+		sType	: 'text',
+		oDefinition	:
+		{
+			sLabel		: 'Landline',
+			mEditable	: true,
+			mMandatory	: true,
+			fnValidate	: Reflex_Validation.fnnFixedLine
+		}
+	},
+};
 
-Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].card_expiry_date.oDefinition						= {};
-Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].card_expiry_date.oDefinition.sLabel				= 'Card Expiry Month';
-Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].card_expiry_date.oDefinition.mEditable			= true;
-Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].card_expiry_date.oDefinition.mMandatory			= true;
-Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].card_expiry_date.oDefinition.iMinYear				= oNow.getFullYear();
-Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].card_expiry_date.oDefinition.iMaxYear				= oNow.getFullYear() + 10;
-Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].card_expiry_date.oDefinition.fnValidate			= Popup_Account_Edit_Rebill.validateCardExpiry;
-Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].card_expiry_date.oDefinition.sValidationReason	= 'It must be in the future.';
-Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].card_expiry_date.oDefinition.iFormat				= Control_Field_Combo_Date.FORMAT_M_Y;
-
-
+Popup_Account_Edit_Rebill.PANELS	=
+{
+	'Account'	:
+	{
+		aFields	: 
+		[
+			'account_number',
+			'account_name',
+			'account_business_commencement_date',
+			'account_business_structure_id',
+			'account_business_structure_description',
+			'account_promotion_code_id' 
+		]
+	},
+	'Card'	:
+	{
+		aFields	:
+		[
+			'card_card_type_id',
+			'card_card_type_description',
+			'card_expiry_date',
+			'card_shared',
+			'card_holder_title_id',
+			'card_holder_first_name',
+			'card_holder_last_name',
+			'card_vehicle_model',
+			'card_vehicle_rego',
+			'card_vehicle_make'
+		]
+	},
+	'Address'	:
+	{
+		aFields	:
+		[
+			'street_address_line_1',
+			'street_address_line_2',
+			'street_address_suburb',
+			'street_address_state_id',
+			'street_address_postcode',
+			'postal_address_same',
+			'postal_address_line_1',
+			'postal_address_line_2',
+			'postal_address_suburb',
+			'postal_address_state_id',
+			'postal_address_postcode'
+		]
+	},
+	'Contact'	:
+	{
+		aFields	:
+		[
+			'contact_title_id',
+			'contact_first_name',
+			'contact_last_name',
+			'contact_dob',
+			'contact_drivers_license',
+			'contact_position',
+			'contact_landline_number'
+		]
+	},
+	'Reference'	:
+	{
+		aFields	:
+		[
+			'reference1_company_name',
+			'reference1_contact_person',
+			'reference1_phone_number',
+			'reference2_company_name',
+			'reference2_contact_person',
+			'reference2_phone_number'	
+		]
+	}
+}

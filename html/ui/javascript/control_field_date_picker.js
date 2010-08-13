@@ -186,6 +186,7 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 });
 
 Control_Field_Date_Picker.DATE_FORMAT		= 'd/m/Y';
+Control_Field_Date_Picker.DATE_FORMAT_MY	= 'm/Y';
 Control_Field_Date_Picker.DATE_TIME_FORMAT	= Control_Field_Date_Picker.DATE_FORMAT + ' g:i A';
 
 Control_Field_Date_Picker.YEAR_START	= 1900;

@@ -788,7 +788,15 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 			new Popup_Account_Edit_Rebill(this.iAccountId, iSubType, fnOnSelect, fnOnCancel);
 		};
 		
-		JsAutoLoader.loadScript('javascript/popup_account_edit_rebill.js', fnLoad.bind(this));
+		var fnConstantLoad	= function()
+		{
+			JsAutoLoader.loadScript('javascript/popup_account_edit_rebill.js', fnLoad.bind(this));
+		};
+		
+		Flex.Constant.loadConstantGroup(
+			['motorpass_business_structure', 'motorpass_card_type'], 
+			fnConstantLoad.bind(this)
+		);
 	},
 	
 	_ajaxError	: function(oResponse, bHideOnClose)

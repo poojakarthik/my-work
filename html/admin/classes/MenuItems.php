@@ -1210,7 +1210,10 @@ class MenuItems {
 									'../ui/javascript/reflex_validation.js',
 									'../ui/javascript/control_field.js',
 									'../ui/javascript/control_field_text.js',
+									'../ui/javascript/control_field_checkbox.js',
 									'../ui/javascript/control_field_select.js',
+									'../ui/javascript/component_date_picker.js',
+									'../ui/javascript/control_field_date_picker.js',
 									'../ui/javascript/control_field_combo_date.js'
 								],
 								function()
