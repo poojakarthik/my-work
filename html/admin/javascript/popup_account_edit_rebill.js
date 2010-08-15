@@ -49,18 +49,6 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 									$T.div({class: 'tabgroup'}
 										// Content to come
 									),
-									/*$T.table({class: 'reflex input'},
-										$T.caption(
-											$T.div({class: 'caption_bar', id: 'caption_bar'},
-												$T.div({class: 'caption_title', id: 'caption_title'},
-													'Details'
-												)
-											)
-										),
-										$T.tbody({class: 'popup-account-edit-rebill-fields'}
-											// Rows will vary depending on rebill_type_id
-										)
-									),*/
 									$T.div({class: 'buttons'},
 										$T.button({class: 'icon-button'},
 											$T.img({src: Popup_Account_Edit_Rebill.SAVE_IMAGE_SOURCE, alt: '', title: 'Save'}),
@@ -87,7 +75,7 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 			// Generate control fields
 			var hPanels		= Popup_Account_Edit_Rebill.PANELS;
 			var hFields		= Popup_Account_Edit_Rebill.FIELDS[this.iRebillTypeId];
-			var oField		= null;
+			var mConfig		= null;
 			var oControl	= null;
 			var aFields		= null;
 			var sFieldName	= null;
@@ -102,33 +90,38 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 				for (var i = 0; i < aFields.length; i++)
 				{
 					sFieldName	= aFields[i];
-					oField		= hFields[sFieldName];
-					oControl	= Control_Field.factory(oField.sType, oField.oDefinition);
-					
-					if (this.oRebill && (typeof this.oRebill.oDetails[sFieldName] != 'undefined'))
+					mConfig		= hFields[sFieldName];
+					if (typeof mConfig == 'string')
 					{
-						oControl.setValue(this.oRebill.oDetails[sFieldName]);
+						// Sub title
+						oTBody.appendChild(
+							$T.tr({class: 'subtitle'},
+								$T.th(mConfig),
+								$T.td()
+							)
+						);
 					}
 					else
 					{
-						oControl.setValue('');
+						// Field definition
+						oControl	= Control_Field.factory(mConfig.sType, mConfig.oDefinition);
+						
+						if (this.oRebill && (typeof this.oRebill.oDetails[sFieldName] != 'undefined'))
+						{
+							oControl.setValue(this.oRebill.oDetails[sFieldName]);
+						}
+						else
+						{
+							oControl.setValue('');
+						}
+						
+						oControl.setRenderMode(Control_Field.RENDER_MODE_EDIT);
+						oTBody.appendChild(oControl.generateInputTableRow().oElement);
+						this._hFields[sFieldName]	= oControl;
 					}
-					
-					oControl.setRenderMode(Control_Field.RENDER_MODE_EDIT);
-					oTBody.appendChild(oControl.generateInputTableRow().oElement);
-					this._hFields[sFieldName]	= oControl;
 				}
 				this._oTabGroup.addTab(sPanelName, new Control_Tab(sPanelName, oTabContent));
 			}
-			
-			// Special events
-			// ... business structure & description
-			//var oBusStructure	= this._hFields['account_business_structure_id'];
-			//oBusStructure.addOnChangeCallback(this._businessStructureChange.bind(this));
-			
-			// ... card type & description
-			//var oCardType	= this._hFields['card_card_type_id'];
-			//oCardType.addOnChangeCallback(this._cardTypeChange.bind(this));
 			
 			// Popup setup
 			this.setTitle('Edit Rebill (' + Flex.Constant.arrConstantGroups.rebill_type[this.iRebillTypeId].Name + ')');
@@ -207,6 +200,7 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 									'Account',
 									'addRebill'
 								);
+			debugger;
 			//fnAddRebill(this.iAccountId, this.iRebillTypeId, oDetails);
 		}
 		else if (oResponse.Success)
@@ -449,7 +443,7 @@ Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	=
 			sLabel		: 'Promotion Code',
 			mEditable	: true,
 			mMandatory	: true,
-			fnPopulate	: Popup_Account_Edit_Rebill.getOptions.curry('motorpass_promotion_code')
+			fnPopulate	: Motorpass_Promotion_Code.getAllAsSelectOptions
 		}
 	},
 	
@@ -515,6 +509,7 @@ Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	=
 			mEditable	: true
 		}
 	},
+	card_holder_label		: 'Card Holder',
 	card_holder_title_id	:
 	{
 		sType	: 'select',
@@ -522,7 +517,7 @@ Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	=
 		{
 			sLabel		: 'Title',
 			mEditable	: true,
-			fnPopulate	: Popup_Account_Edit_Rebill.getOptions.curry('contact_title')
+			fnPopulate	: Contact_Title.getAllAsSelectOptions
 		}
 	},
 	card_holder_first_name	:
@@ -570,6 +565,7 @@ Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	=
 			mEditable	: true
 		}
 	},
+	street_address_label	: 'Street Address',
 	street_address_line_1	:
 	{
 		sType	: 'text',
@@ -607,7 +603,7 @@ Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	=
 			sLabel		: 'State',
 			mMandatory	: true,
 			mEditable	: true,
-			fnPopulate	: Popup_Account_Edit_Rebill.getOptions.curry('state')
+			fnPopulate	: State.getAllAsSelectOptions
 		}
 	},
 	street_address_postcode	:
@@ -620,7 +616,8 @@ Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	=
 			mEditable	: true
 		}
 	},
-	postal_address_same	:
+	postal_address_label	: 'Postal Address',
+	/*postal_address_same	:
 	{
 		sType	: 'checkbox',
 		oDefinition	:
@@ -628,7 +625,7 @@ Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	=
 			sLabel		: 'Same as Street Address',
 			mEditable	: true
 		}
-	},
+	},*/
 	postal_address_line_1	:
 	{
 		sType	: 'text',
@@ -662,7 +659,7 @@ Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	=
 		oDefinition	:
 		{
 			sLabel		: 'State',
-			fnPopulate	: Popup_Account_Edit_Rebill.getOptions.curry('state'),
+			fnPopulate	: State.getAllAsSelectOptions,
 			mEditable	: true
 		}
 	},
@@ -682,7 +679,7 @@ Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	=
 		{
 			sLabel		: 'Title',
 			mEditable	: true,
-			fnPopulate	: Popup_Account_Edit_Rebill.getOptions.curry('contact_title')
+			fnPopulate	: Contact_Title.getAllAsSelectOptions
 		}
 	},
 	contact_first_name	:
@@ -749,6 +746,7 @@ Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	=
 			fnValidate	: Reflex_Validation.fnnFixedLine
 		}
 	},
+	reference1_label		: 'Trade Reference 1',
 	reference1_company_name	:
 	{
 		sType	: 'text',
@@ -780,6 +778,7 @@ Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	=
 			fnValidate	: Reflex_Validation.fnnFixedLine
 		}
 	},
+	reference2_label		: 'Trade Reference 2',
 	reference2_company_name	:
 	{
 		sType	: 'text',
@@ -835,6 +834,7 @@ Popup_Account_Edit_Rebill.PANELS	=
 			'card_card_type_description',
 			'card_expiry_date',
 			'card_shared',
+			'card_holder_label',
 			'card_holder_title_id',
 			'card_holder_first_name',
 			'card_holder_last_name',
@@ -847,12 +847,14 @@ Popup_Account_Edit_Rebill.PANELS	=
 	{
 		aFields	:
 		[
+		 	'street_address_label',
 			'street_address_line_1',
 			'street_address_line_2',
 			'street_address_suburb',
 			'street_address_state_id',
 			'street_address_postcode',
-			'postal_address_same',
+			'postal_address_label',
+			//'postal_address_same',
 			'postal_address_line_1',
 			'postal_address_line_2',
 			'postal_address_suburb',
@@ -877,9 +879,11 @@ Popup_Account_Edit_Rebill.PANELS	=
 	{
 		aFields	:
 		[
+		 	'reference1_label',
 			'reference1_company_name',
 			'reference1_contact_person',
 			'reference1_phone_number',
+			'reference2_label',
 			'reference2_company_name',
 			'reference2_contact_person',
 			'reference2_phone_number'	

@@ -4181,6 +4181,12 @@ div.popup-account-edit-rebill > div.buttons
 	width	: 100% !important;
 }
 
+.popup-account-edit-rebill .tab-page > table.reflex.input tr.subtitle > th,
+.popup-account-edit-rebill .tab-page > table.reflex.input tr.subtitle > td
+{
+	background-color	: #CFCFCF;
+}
+
 /************************ END - Edit Rebill Popup - END ************************/
 
 /************************ START - Control Field Combo Date & Time - START ************************/

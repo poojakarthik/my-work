@@ -29,7 +29,11 @@ class JSON_Handler_State extends JSON_Handler
 				$aResults	= array();
 				foreach ($aStates as $oState)
 				{
-					$aResults[$oState->id]	= $oState->toStdClass();
+					$aResults[$oState->id]	=	array(
+													'id'	=> $oState->id,
+													'name'	=> $oState->name,
+													'code'	=> $oState->description
+												);
 				}
 				
 				// If no exceptions were thrown, then everything worked

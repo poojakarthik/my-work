@@ -15,28 +15,32 @@ class JSON_Handler_Contact_Title extends JSON_Handler
 	{
 		try
 		{
-			$aStates	= Contact_Title::getAll();
+			$aTitles	= Contact_Title::getAll();
 			if ($bCountOnly)
 			{
 				// Count Only
 				return 	array(
 							"Success"		=> true,
-							"iRecordCount"	=> count($aStates)
+							"iRecordCount"	=> count($aTitles)
 						);
 			}
 			else
 			{
 				$aResults	= array();
-				foreach ($aStates as $oState)
+				foreach ($aTitles as $oTitle)
 				{
-					$aResults[$oState->id]	= $oState->toStdClass();
+					$aResults[$oTitle->id]	=	array(
+													'id'			=> $oTitle->id,
+													'name'			=> $oTitle->name,
+													'description'	=> $oTitle->description
+												);
 				}
 				
 				// If no exceptions were thrown, then everything worked
 				return 	array(
 							"Success"		=> true,
 							"aRecords"		=> $aResults,
-							"iRecordCount"	=> count($aStates)
+							"iRecordCount"	=> count($aTitles)
 						);
 			}
 		}
