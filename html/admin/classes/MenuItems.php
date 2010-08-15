@@ -1215,6 +1215,8 @@ class MenuItems {
 									'../ui/javascript/component_date_picker.js',
 									'../ui/javascript/control_field_date_picker.js',
 									'../ui/javascript/control_field_combo_date.js',
+									'../ui/javascript/control_tab.js',
+									'../ui/javascript/control_tab_group.js',
 									'javascript/motorpass_promotion_code.js',
 									'javascript/state.js',
 									'javascript/contact_title.js'
