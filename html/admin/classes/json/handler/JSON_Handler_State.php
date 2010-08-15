@@ -3,14 +3,14 @@
 class JSON_Handler_State extends JSON_Handler
 {
 	protected	$_JSONDebug	= '';
-	
+
 	public function __construct()
 	{
 		// Send Log output to a debug string
 		Log::registerLog('JSON_Handler_Debug', Log::LOG_TYPE_STRING, $this->_JSONDebug);
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
-	
+
 	public function getDataSet($bCountOnly=false, $iLimit=0, $iOffset=0, $oSort=null, $oFilter=null)
 	{
 		try
@@ -32,10 +32,10 @@ class JSON_Handler_State extends JSON_Handler
 					$aResults[$oState->id]	=	array(
 													'id'	=> $oState->id,
 													'name'	=> $oState->name,
-													'code'	=> $oState->description
+													'code'	=> $oState->code
 												);
 				}
-				
+
 				// If no exceptions were thrown, then everything worked
 				return 	array(
 							"Success"		=> true,
