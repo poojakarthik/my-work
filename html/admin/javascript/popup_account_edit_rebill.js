@@ -201,7 +201,7 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 									'addRebill'
 								);
 			debugger;
-			//fnAddRebill(this.iAccountId, this.iRebillTypeId, oDetails);
+			fnAddRebill(this.iAccountId, this.iRebillTypeId, oDetails);
 		}
 		else if (oResponse.Success)
 		{
