@@ -56,6 +56,11 @@ class Motorpass_Trade_Reference extends ORM_Cached
 		return parent::getAll($bolForceReload, __CLASS__);
 	}
 
+	public static function getFor($sWhere)
+	{
+
+	}
+
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
@@ -100,12 +105,45 @@ class Motorpass_Trade_Reference extends ORM_Cached
 					$arrPreparedStatements[$strStatement]	= new StatementUpdateById(self::$_strStaticTableName);
 					break;
 
-				// UPDATES
+				case 'selByAccountId':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "motorpass_account_id = <account_id>");
+					break;
+					// UPDATES
 
 				default:
 					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
 			}
 			return $arrPreparedStatements[$strStatement];
+		}
+	}
+
+	public static function getForAccountId($iAccountId, $bSecondLatest=false)
+	{
+		$oSelect	= self::_preparedStatement('selByAccountId');
+		$oSelect->Execute(array('account_id' => $iAccountId));
+
+		if ($aLatest = $oSelect->Fetch())
+		{
+			if ($bSecondLatest)
+			{
+				// Try second latest
+				$aSecondLatest	= $oSelect->Fetch();
+
+				if ($aSecondLatest)
+				{
+					// Got it use it
+					return new self($aSecondLatest);
+				}
+
+				// Don't have second latest, fallback to latest
+			}
+
+			// Either want latest or don't have second latest
+			return new self($aLatest);
+		}
+		else
+		{
+			return false;
 		}
 	}
 
