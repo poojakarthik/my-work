@@ -21,12 +21,12 @@ class Motorpass_Address extends ORM_Cached
 		}
 		return $strCacheName;
 	}
-	
+
 	protected static function getMaxCacheSize()
 	{
 		return 100;
 	}
-	
+
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
 	//---------------------------------------------------------------------------------------------------------------------------------//
@@ -40,7 +40,7 @@ class Motorpass_Address extends ORM_Cached
 	{
 		return parent::getCachedObjects(__CLASS__);
 	}
-	
+
 	protected static function addToCache($mixObjects)
 	{
 		parent::addToCache($mixObjects, __CLASS__);
@@ -50,23 +50,23 @@ class Motorpass_Address extends ORM_Cached
 	{
 		return parent::getForId($intId, $bolSilentFail, __CLASS__);
 	}
-	
+
 	public static function getAll($bolForceReload=false)
 	{
 		return parent::getAll($bolForceReload, __CLASS__);
 	}
-	
+
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
-	
+
 	/**
 	 * _preparedStatement()
 	 *
 	 * Access a Static Cache of Prepared Statements used by this Class
 	 *
 	 * @param	string		$strStatement						Name of the statement
-	 * 
+	 *
 	 * @return	Statement										The requested Statement
 	 *
 	 * @method
@@ -89,23 +89,55 @@ class Motorpass_Address extends ORM_Cached
 				case 'selAll':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
 					break;
-				
+
 				// INSERTS
 				case 'insSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);
 					break;
-				
+
 				// UPDATE BY IDS
 				case 'ubiSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementUpdateById(self::$_strStaticTableName);
 					break;
-				
+
 				// UPDATES
-				
+
 				default:
 					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
 			}
 			return $arrPreparedStatements[$strStatement];
+		}
+	}
+
+	public function isValidValue($propertyName, $value)
+	{
+
+
+		switch ($propertyName)
+		{
+
+			case 'id':
+				return ($value === null) || (preg_match("/^(\-?[0-9]+|[0-9]+\-?)$/", "$value"));
+
+			case 'line_1':
+				return (is_string($value) && trim($value)  && strlen($value) <= 45);
+
+			case 'line_2':
+				return ($value === null) || (is_string($value) && strlen($value) <= 45);
+
+			case 'suburb':
+				return (is_string($value) && trim($value)  && strlen($value) <= 45);
+
+			case 'state_id':
+				return ($value === null) || (preg_match("/^(\-?[0-9]+|[0-9]+\-?)$/", "$value"));// && ($this->getState(true) !== null));
+
+			case 'postcode':
+				return (is_string($value) && trim($value)  && strlen($value) <= 4);
+
+			default:
+				// No validation - assume is correct already as is not for data source
+				return true;
+
 		}
 	}
 }
