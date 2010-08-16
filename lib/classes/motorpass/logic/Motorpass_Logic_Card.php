@@ -14,7 +14,7 @@ class Motorpass_Logic_Card extends Motorpass_Logic_LogicClass
 
 	public function _save()
 	{
-			if($this->oDO->hasUnsavedChanges())
+			if($this->bUnsavedChanges)
 			{
 				$this->oDO->modified = Data_Source_Time::currentTimestamp();
 				$this->oDO->modified_employee_id = Flex::getUserId();;

@@ -13,7 +13,7 @@ class Motorpass_Logic_Account extends Motorpass_Logic_LogicClass
 
 	public function __construct($mAccountDetails)
 	{
-		$this->aUneditable = array('contact_id', 'card_id', 'modified','modified_dealer_id');
+		$this->aUneditable = array('motorpass_contact_id', 'motorpass_card_id', 'modified','modified_employee_id');
 
 
 		if ($mAccountDetails && get_class($mAccountDetails)=='stdClass')
@@ -35,35 +35,42 @@ class Motorpass_Logic_Account extends Motorpass_Logic_LogicClass
 			unset($mAccountDetails->contact);
 
 			//now create the account object itself
-			$mAccountDetails->card_id = $this->oCard->id;
+			$mAccountDetails->motorpass_card_id = $this->oCard->id;
 			$mAccountDetails->street_address_id = $this->oStreetAddress->id;
 			$mAccountDetails->postal_address_id = $this->oPostalAddress->id;
-			$mAccountDetails->referrer_id = $this->oDOReferrer->id;
-			$mAccountDetails->contact_id = $this->oContact->id;
+
+			$mAccountDetails->motorpass_contact_id = $this->oContact->id;
 
 			$this->aTradeRefs = Motorpass_Logic_TradeReference::createFromStd($aTradeRefs, $this);
+			parent::__construct($mAccountDetails, 'Motorpass_Account');
 
 
 		}
+		else if (is_numeric($mAccountDetails))
+		{
+			$this->oDO = Motorpass_Account::getForId($mAccountDetails);
+		}
+		else
+		{
+			throw new Exception_InvalidJSONObject('The Sale data supplied does not represent a valid Sale.');
+		}
 
-		parent::__construct($mAccountDetails, 'Motorpass_Account');
+
+
 
 		if (get_class($mAccountDetails)!='stdClass')
 		{
-			$this->oStreetAddress = new Motorpass_Logic_Address($this->oDO->getStreetAddress());
-			$this->oPostalAddress = new Motorpass_Logic_Address($this->oDO->getPostalAddress());
-			$this->oContact = new Motorpass_Logic_Contact($this->oDO->getContact());
-			//$this->oDOReferrer = $this->oDO->getReferrer(true);
-			//if (!isset($this->oDOReferrer))
-			//	$this->oDOReferrer = new DO_Spmotorpass_Spmotorpass_Referrer();
-			$this->oCard = new Motorpass_Logic_Card($this->oDO->getCard());
+			$this->oStreetAddress = new Motorpass_Logic_Address(Motorpass_Address::getForId($this->oDO->street_address_id));
+			$this->oPostalAddress = new Motorpass_Logic_Address(Motorpass_Address::getForId($this->oDO->postal_address_id));
+			$this->oContact = new Motorpass_Logic_Contact(Motorpass_Contact::getForId($this->oDO->motorpass_contact_id));
+			$this->oCard = new Motorpass_Logic_Card(Motorpass_Card::getForId($this->oDO->motorpass_card_id));
 			$this->aTradeRefs = Motorpass_Logic_TradeReference::getForParent($this);
 		}
 
 
 		if ($this->oDO->id == null)
 		{
-			$this->oDO->modified_dealer_id = Flex::getUserId();;
+			$this->oDO->modified_employee_id = Flex::getUserId();;
 			$this->oDO->modified = Data_Source_Time::currentTimestamp();
 		}
 		return $this->oDO->id;
@@ -71,97 +78,85 @@ class Motorpass_Logic_Account extends Motorpass_Logic_LogicClass
 	}
 
 
-	public function save()
+	public function save($bSeparateTransaction = true)
 	{
-		$this->validate();
-		if (count($this->aErrors)==0)
-		{
+		if (count($this->validate())>0)
+			return $this->aErrors;
 
-			// Start a new database transaction
-			$oDataAccess	= DataAccess::getDataAccess();
 
-			if (!$oDataAccess->TransactionStart())
+			if ($bSeparateTransaction)
 			{
-				// Failure!
+				// Start a new database transaction
+				$oDataAccess	= DataAccess::getDataAccess();
+
+				if (!$oDataAccess->TransactionStart())
+				{
+					// Failure!
+					return 	array(
+								"Success"	=> false,
+								"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? 'Could not start database transaction.' : false,
+							);
+				}
+
+				try
+				{
+					if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
+					{
+						throw new JSON_Handler_Account_Exception('You do not have permission to add a rebill');
+					}
+
+					$aErrors	= array();
+
+					return $this->_save();
+
+					// Everything looks OK -- Commit!
+					$oDataAccess->TransactionCommit();
+
+					return 	array(
+								"Success"	=> true,
+								"oRebill"	=> $oStdClassRebill
+							);
+			}
+
+			catch (Exception $e)
+			{
+				// Exception caught, rollback db transaction
+				$oDataAccess->TransactionRollback();
+
 				return 	array(
 							"Success"	=> false,
-							"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? 'Could not start database transaction.' : false,
+							"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database'
 						);
 			}
 
-			try
+
+
+
+
+
+			}
+			else
 			{
-				if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
-				{
-					throw new JSON_Handler_Account_Exception('You do not have permission to add a rebill');
-				}
-
-				$aErrors	= array();
-
-				$this->_save();
-
-				// Everything looks OK -- Commit!
-				$oDataAccess->TransactionCommit();
-
-				return 	array(
-							"Success"	=> true,
-							"oRebill"	=> $oStdClassRebill
-						);
-		}
-
-		catch (Exception $e)
-		{
-			// Exception caught, rollback db transaction
-			$oDataAccess->TransactionRollback();
-
-			return 	array(
-						"Success"	=> false,
-						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database'
-					);
-		}
-
-
-
-
-
-		}
-		else
-		{
-			return $this->aErrors;
-		}
+				return $this->_save();
+			}
 
 	}
 
 	public function _save()
 	{
-			$this->oDO->card_id = $this->oCard->_save();
+			$this->oDO->motorpass_card_id = $this->oCard->_save();
 			$this->oDO->street_address_id = $this->oStreetAddress->_save();
 			$this->oDO->postal_address_id = $this->oPostalAddress->_save();
-			$this->oDO->contact_id = $this->oContact->_save();
+			$this->oDO->motorpass_contact_id = $this->oContact->_save();
 
-			//save the referrer
-			if($this->oDOReferrer->hasUnsavedChanges())
-			{
-				//create a new record to contain the new data
-				$this->oDOReferrer->id = null;
-				$this->oDOReferrer->save();
-				//set the account referrer_id field to point to the new record
-				$this->oDO->referrer_id = $this->oDOReferrer->id;
-			}
 
 			//save the account
-			if ($this->oDO->hasUnsavedChanges())
+			if ($this->bUnsavedChanges)
 			{
 				$this->oDO->modified = Data_Source_Time::currentTimestamp();
-				$this->oDO->modified_dealer_id = Flex::getUserId();;
+				$this->oDO->modified_employee_id = Flex::getUserId();;
 				$this->oDO->save();
-				$this->oDOSale->account_id = $this->oDO->id;
-				//create the account history record
-				$aAccountData = $this->oDO->toArray();
-				$aAccountData['account_id'] = $aAccountData['id'];
-				$aAccountData['id'] = null;
-				$oHistory = new DO_Spmotorpass_Spmotorpass_AccountHistory($aAccountData);
-				$oHistory->save();
+
 			}
 
 			Motorpass_Logic_TradeReference::saveForParent($this->aTradeRefs);
@@ -221,10 +216,9 @@ class Motorpass_Logic_Account extends Motorpass_Logic_LogicClass
 		unset($oStdAccount->postal_address_id);
 		$oStdAccount->contact =$this->oContact->toStdClass();
 		unset($oStdAccount->contact_id);
-		$oStdAccount->referrer =$this->oDOReferrer->toStdClass();
-		unset($oStdAccount->referrer_id);
 		$oStdAccount->card =$this->oCard->toStdClass();
 		unset($oStdAccount->card_id);
+		$oStdAccount->trade_references = Motorpass_Logic_TradeReference::toStdClassForParent($this->aTradeRefs);
 
 		//the trade references are added to the sale object, for historical reasons, but we have to unset them here
 

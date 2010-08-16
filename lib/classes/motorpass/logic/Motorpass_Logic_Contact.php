@@ -4,12 +4,12 @@ class Motorpass_Logic_Contact extends Motorpass_Logic_LogicClass
 
 	public function __construct($mDetails)
 	{
-		$this->aUneditable = array('modified', 'modified_dealer_id');
+		$this->aUneditable = array('modified', 'modified_employee_id');
 		parent::__construct($mDetails, 'Motorpass_Contact');
 		if ($this->oDO->id == null)
 		{
 			$this->oDO->modified = Data_Source_Time::currentTimestamp();
-			$this->oDO->modified_dealer_id = Flex::getUserId();;
+			$this->oDO->modified_employee_id = Flex::getUserId();;
 		}
 
 		return $this->id;
@@ -28,17 +28,12 @@ class Motorpass_Logic_Contact extends Motorpass_Logic_LogicClass
 
 	public function _save()
 	{
-		if($this->oDO->hasUnsavedChanges())
+		if($this->bUnsavedChanges)
 		{
 			$this->oDO->modified = Data_Source_Time::currentTimestamp();
-			$this->oDO->modified_dealer_id = Flex::getUserId();;
+			$this->oDO->modified_employee_id = Flex::getUserId();;
 			$this->oDO->save();
-			//create the contact history record
-			$aContactData = $this->oDO->toArray();
-			$aContactData['contact_id'] = $aContactData['id'];
-			$aContactData['id'] = null;
-			$oHistory = new DO_Spmotorpass_Spmotorpass_ContactHistory($aContactData);
-			$oHistory->save();
+
 		}
 		return $this->id;
 	}

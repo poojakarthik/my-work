@@ -20,10 +20,10 @@ class Motorpass_Logic_Address extends Motorpass_Logic_LogicClass
 
 	public function _save()
 	{
-		if($this->oDO->hasUnsavedChanges())
+		if($this->bUnsavedChanges)
 		{
 			//create a new record to contain the new data
-			$this->oDO->id = null;
+			//$this->oDO->id = null;
 			$this->oDO->save();
 
 		}
