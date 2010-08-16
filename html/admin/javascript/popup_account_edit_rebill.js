@@ -398,7 +398,7 @@ var oNow	= new Date();
 Popup_Account_Edit_Rebill.FIELDS	= {};
 Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	= 
 {
-	account_number	:
+	account_account_number	:
 	{
 		sType		: 'text',
 		oDefinition	: 
@@ -409,7 +409,7 @@ Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	=
 			fnValidate	: Popup_Account_Edit_Rebill.validateWithLength.curry(Reflex_Validation.digits, 9)
 		}
 	},
-	account_name	: 
+	account_account_name	: 
 	{
 		sType		: 'text',
 		oDefinition	: 
@@ -420,7 +420,7 @@ Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	=
 			fnValidate	: Popup_Account_Edit_Rebill.validateWithLength.curry(null, 256)
 		}
 	},
-	card_expiry_date	: 
+	card_card_expiry_date	: 
 	{
 		sType		: 'combo_date',
 		oDefinition	: 
@@ -435,7 +435,7 @@ Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	=
 			iFormat				: Control_Field_Combo_Date.FORMAT_M_Y
 		}
 	},
-	account_promotion_code_id	:
+	account_motorpass_promotion_code_id	:
 	{
 		sType		: 'select',
 		oDefinition	:
@@ -460,7 +460,7 @@ Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	=
 			fnValidate	: Popup_Account_Edit_Rebill.validatePastDate
 		}
 	},
-	account_business_structure_id	:
+	account_motorpass_business_structure_id	:
 	{
 		sType	: 'select',
 		oDefinition	:
@@ -480,7 +480,7 @@ Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	=
 			mEditable	: true
 		}
 	},
-	card_card_type_id	:
+	card_motorpass_card_type_id	:
 	{
 		sType	: 'select',
 		oDefinition	:
@@ -509,8 +509,8 @@ Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	=
 			mEditable	: true
 		}
 	},
-	card_holder_label		: 'Card Holder',
-	card_holder_title_id	:
+	card_holder_label				: 'Card Holder',
+	card_holder_contact_title_id	:
 	{
 		sType	: 'select',
 		oDefinition	:
@@ -672,7 +672,7 @@ Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	=
 			mEditable	: true
 		}
 	},
-	contact_title_id	:
+	contact_contact_title_id	:
 	{
 		sType	: 'select',
 		oDefinition	:
@@ -818,24 +818,24 @@ Popup_Account_Edit_Rebill.PANELS	=
 	{
 		aFields	: 
 		[
-			'account_number',
-			'account_name',
+			'account_account_number',
+			'account_account_name',
 			'account_business_commencement_date',
-			'account_business_structure_id',
+			'account_motorpass_business_structure_id',
 			'account_business_structure_description',
-			'account_promotion_code_id' 
+			'account_motorpass_promotion_code_id' 
 		]
 	},
 	'Card'	:
 	{
 		aFields	:
 		[
-			'card_card_type_id',
+			'card_motorpass_card_type_id',
 			'card_card_type_description',
-			'card_expiry_date',
+			'card_card_expiry_date',
 			'card_shared',
 			'card_holder_label',
-			'card_holder_title_id',
+			'card_holder_contact_title_id',
 			'card_holder_first_name',
 			'card_holder_last_name',
 			'card_vehicle_model',
@@ -866,7 +866,7 @@ Popup_Account_Edit_Rebill.PANELS	=
 	{
 		aFields	:
 		[
-			'contact_title_id',
+			'contact_contact_title_id',
 			'contact_first_name',
 			'contact_last_name',
 			'contact_dob',
