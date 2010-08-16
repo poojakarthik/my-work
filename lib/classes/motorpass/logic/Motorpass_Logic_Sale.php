@@ -9,7 +9,7 @@ class Sale extends LogicClass
 	public function __construct($mSaleDetails)
 	{
 
-		$this->aUneditable = array('dealer_id', 'created', 'created_dealer_id', 'modified', 'modified_dealer_id');
+		$this->aUneditable = array('dealer_id', 'created', 'created_dealer_id', 'modified', 'modified_employee_id');
 		if ($mSaleDetails && get_class($mSaleDetails)=='stdClass')
 		{
 			//before we create the sale object itself, delete what we don't want to be in the object
@@ -52,7 +52,7 @@ class Sale extends LogicClass
 		if ($this->oDO->id ==null)
 		{
 				$this->oDO->created_dealer_id = Flex::getUserId();;
-			$this->oDO->modified_dealer_id = Flex::getUserId();;
+			$this->oDO->modified_employee_id = Flex::getUserId();;
 		}
 		return $this;
 
@@ -95,10 +95,10 @@ class Sale extends LogicClass
 			$this->oDO->account_id = $this->oAccount->_save();
 			//save the sale
 
-			if ($this->oDO->hasUnsavedChanges())
+			if ($this-> $bUnsavedChanges)
 			{
 				$this->oDO->modified = Data_Source_Time::currentTimestamp();
-				$this->oDO->modified_dealer_id = Flex::getUserId();;
+				$this->oDO->modified_employee_id = Flex::getUserId();;
 				if ($this->oDO->id == null)
 				{
 					$this->oDO->sale_status_id = DO_Spmotorpass_Spmotorpass_SaleStatus::SUBMITTED;
@@ -158,7 +158,7 @@ class Sale extends LogicClass
 		$oSale = DO_Spmotorpass_Spmotorpass_Sale::getForId($iSale);
 		$oSale->sale_status_id = $iStatus;
 		$oSale->modified =  Data_Source_Time::currentTimestamp();
-		$oSale->modified_dealer_id =  Flex::getUserId();;
+		$oSale->modified_employee_id =  Flex::getUserId();;
 		$oSale->save();
 
 		//create the sale history record

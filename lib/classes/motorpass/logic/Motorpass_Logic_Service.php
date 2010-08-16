@@ -7,7 +7,7 @@ class Service extends ManyToOneLogicClass
 
 	public function __construct($mServiceDetails, $oSale = null)
 	{
-		$this->aUneditable = array('created', 'created_dealer_id', 'modified','modified_dealer_id','status_id', 'sale_id');
+		$this->aUneditable = array('created', 'created_dealer_id', 'modified','modified_employee_id','status_id', 'sale_id');
 		parent::__construct($mServiceDetails, 'DO_Spmotorpass_Spmotorpass_Service');
 		$this->oSale = $oSale?$oSale:null;
 
@@ -15,7 +15,7 @@ class Service extends ManyToOneLogicClass
 		if ($this->id == null)
 		{
 			$this->created_dealer_id = Flex::getUserId();;
-			$this->modified_dealer_id = Flex::getUserId();;
+			$this->modified_employee_id = Flex::getUserId();;
 		}
 
 		return $this->oDO->id;
@@ -65,7 +65,7 @@ class Service extends ManyToOneLogicClass
 
 	public function _save()
 	{
-			if ($this->oDO->hasUnsavedChanges())
+			if ($this-> $bUnsavedChanges)
 			{
 				$bNew = false;
 				if ($this->oDO->id == null)
@@ -78,7 +78,7 @@ class Service extends ManyToOneLogicClass
 				}
 				$this->oDO->sale_id = $this->oSale->id;
 				$this->oDO->modified = Data_Source_Time::currentTimestamp();
-				$this->oDO->modified_dealer_id = Flex::getUserId();;
+				$this->oDO->modified_employee_id = Flex::getUserId();;
 				$this->oDO->save();
 
 
@@ -141,7 +141,7 @@ class Service extends ManyToOneLogicClass
 		{
 				$oDOService->status_id = DO_Spmotorpass_Spmotorpass_Status::INACTIVE;
 				$oDOService->modified = Data_Source_Time::currentTimestamp();
-				$oDOService->modified_dealer_id = Flex::getUserId();;
+				$oDOService->modified_employee_id = Flex::getUserId();;
 				$oDOService->save();
 				//create the service history record
 				$aServiceData = $oDOService->toArray();

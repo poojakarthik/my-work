@@ -27,7 +27,7 @@ class Motorpass_Logic_TradeReference extends Motorpass_Logic_ManyToOneLogicClass
 
 	public function _save()
 	{
-		if($this->oDO->hasUnsavedChanges())
+		if($this->bUnsavedChanges)
 		{
 			$this->{self::$sFKField} = $this->oParent->id;
 			if($this->id!=null)
@@ -51,11 +51,14 @@ class Motorpass_Logic_TradeReference extends Motorpass_Logic_ManyToOneLogicClass
 
 	public static function getForParent($oParent)
 	{
-		$aDOObjects = DO_Spmotorpass_Spmotorpass_TradeReference::getFor(self::$sFKField."=".$oParent->id." AND status_id = ".DO_Spmotorpass_Spmotorpass_Status::ACTIVE, true);
+		$aDOObjects = Motorpass_Trade_Reference::getForAccountId($oParent->id);
 		$aInstances = array();
+		if ($aDOObjects)
+		{
 		foreach ($aDOObjects as $oDOObject)
 		{
 			$aInstances[] = new self($oDOObject, $oParent);
+		}
 		}
 
 		return $aInstances;
@@ -74,24 +77,24 @@ class Motorpass_Logic_TradeReference extends Motorpass_Logic_ManyToOneLogicClass
 		$bAllTradereferencesRetrieved = false;
 		foreach ($aTradeReferences as $oTradeRef)
 		{
-			if (!bAllTradereferencesRetrieved)
+			/*if (!$bAllTradereferencesRetrieved)
 			{
 				$bAllTradereferencesRetrieved = true;
-				$aAllTradeReferences= DO_Spmotorpass_Spmotorpass_TradeReference::getFor(self::$sFKField."=".$oTradeRef->oParent->id." AND status_id = ".DO_Spmotorpass_Spmotorpass_Status::ACTIVE, true);
+				$aAllTradeReferences= Motorpass_Trade_Reference::getFor(self::$sFKField."=".$oTradeRef->oParent->id." AND status_id = ".DO_Spmotorpass_Spmotorpass_Status::ACTIVE, true);
 			}
 
 			//as we loop through the trade refs to be saved we delete the current trade ref from the array of trade refs currently stored in the database
 			//all the trade refs that are still left in the array when we're done saving must be set to 'inactive'
-			unset($aAllTradeReferences[$oTradeRef->id]);
+			unset($aAllTradeReferences[$oTradeRef->id]);*/
 			$oTradeRef->_save();
 		}
 
 		//now set any tradereferences that were deleted by the user to inactive
-		foreach ($aAllTradeReferences as $oTradeRef)
+	/*	foreach ($aAllTradeReferences as $oTradeRef)
 		{
 			$oTradeRef->status_id = DO_Spmotorpass_Spmotorpass_Status::INACTIVE;
 			$oTradeRef->save();
-		}
+		}*/
 
 	}
 
