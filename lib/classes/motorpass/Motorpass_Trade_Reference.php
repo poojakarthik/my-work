@@ -121,30 +121,14 @@ class Motorpass_Trade_Reference extends ORM_Cached
 	{
 		$oSelect	= self::_preparedStatement('selByAccountId');
 		$oSelect->Execute(array('account_id' => $iAccountId));
-
-		if ($aLatest = $oSelect->Fetch())
+		$aResults = $oSelect->FetchAll();
+		$aObjects = array();
+		foreach ($aResults as $aResult)
 		{
-			if ($bSecondLatest)
-			{
-				// Try second latest
-				$aSecondLatest	= $oSelect->Fetch();
-
-				if ($aSecondLatest)
-				{
-					// Got it use it
-					return new self($aSecondLatest);
-				}
-
-				// Don't have second latest, fallback to latest
-			}
-
-			// Either want latest or don't have second latest
-			return new self($aLatest);
+			$aObjects[]= new self($aResult);
 		}
-		else
-		{
-			return false;
-		}
+		return $aObjects;
+
 	}
 
 	public function isValidValue($propertyName, $value)
@@ -170,13 +154,13 @@ class Motorpass_Trade_Reference extends ORM_Cached
 				return (is_string($value) && trim($value)  && strlen($value) <= 25);
 
 			case 'status_id':
-				return ($value === null) || (preg_match("/^(\-?[0-9]+|[0-9]+\-?)$/", "$value") && ($this->getStatus(true) !== null));
+				return ($value === null) || (preg_match("/^(\-?[0-9]+|[0-9]+\-?)$/", "$value"));// && ($this->getStatus(true) !== null));
 
 			case 'created':
 				return ($value === null) || (preg_match("/^(2[0-1]|19)[0-9]{2,2}\-((0[469]|11)\-(0[1-9]|[12][0-9]|30)|(0[13578]|1[02])\-(0[1-9]|[12][0-9]|3[01])|02\-(0[1-9]|[12][0-9])) (?:[01][0-9]|2[0-3])\:[0-5][0-9](?:|\:[0-5][0-9](?:|\.[0-9]{1,6}))$/", $value) && (substr($value, 5, 2) != "02" || substr($value, 8, 2) != "29" || date("L", mktime(0,0,0,1,1,substr($value, 0, 4))) == "1"));
 
 			case 'created_employee_id':
-				return ($value === null) || (preg_match("/^(\-?[0-9]+|[0-9]+\-?)$/", "$value") && ($this->getCreatedDealer(true) !== null));
+				return ($value === null) || (preg_match("/^(\-?[0-9]+|[0-9]+\-?)$/", "$value"));// && ($this->getCreatedDealer(true) !== null));
 
 			default:
 				// No validation - assume is correct already as is not for data source
