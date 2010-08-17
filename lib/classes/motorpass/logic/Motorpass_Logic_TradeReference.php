@@ -3,16 +3,16 @@ class Motorpass_Logic_TradeReference extends Motorpass_Logic_ManyToOneLogicClass
 {
 
 	public static $sDO = 'Motorpass_Trade_Reference';
-	public static $sFKField = 'account_id';
+	public static $sFKField = 'motorpass_account_id';
 
 
 	public function __construct($mDetails, $oParent = null)
 	{
-		$this->aUneditable = array('status_id', 'account_id','created', 'created_dealer_id');
+		$this->aUneditable = array('status_id', 'account_id','created', 'created_employee_id');
 		parent::__construct($mDetails, 'Motorpass_Trade_Reference');
 		$this->oParent = $oParent?$oParent:null;
 		if ($this->id == null)
-			$this->created_dealer_id = Flex::getUserId();;
+			$this->created_employee_id = Flex::getUserId();;
 		return $this->oDO->id;
 	}
 
@@ -30,20 +30,16 @@ class Motorpass_Logic_TradeReference extends Motorpass_Logic_ManyToOneLogicClass
 		if($this->bUnsavedChanges)
 		{
 			$this->{self::$sFKField} = $this->oParent->id;
-			if($this->id!=null)
+
+
+
+			if ($this->id ==null)
 			{
-				//if there are, set the current one to inactive
-				$oCurrentRererrerObject = DO_Spmotorpass_Spmotorpass_TradeReference::getForId($this->id);
-				$oCurrentRererrerObject->status_id = DO_Spmotorpass_Spmotorpass_Status::INACTIVE;
-				$oCurrentRererrerObject->save();
+			$this->created = Data_Source_Time::currentTimestamp();
+			$this->created_employee_id = Flex::getUserId();
+			$this->status_id = 1;
 			}
 
-
-			//create a new record to contain the new data
-			$this->id = null; //make sure id is nulll
-			$this->created = Data_Source_Time::currentTimestamp();
-			$this->created_dealer_id = Flex::getUserId();;
-			$this->oDO->status_id  = DO_Spmotorpass_Spmotorpass_Status::ACTIVE;
 			$this->oDO->save();
 		}
 	}
