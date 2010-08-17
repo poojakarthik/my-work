@@ -102,6 +102,10 @@ class JSON_Handler_Account extends JSON_Handler
 					$aResult[]							= $oStdClassCreditCard;
 				}
 			}
+			else
+			{
+				$aResult = array(1,2,3,4,5);
+			}
 
 			return 	array(
 						"Success"			=> true,
@@ -937,7 +941,7 @@ class JSON_Handler_Account extends JSON_Handler
 		}
 	}
 
-	public function getRebill($iAccountId = 1000174123)
+	public function getRebill($iAccountId )
 	{
 		try
 		{
@@ -970,20 +974,11 @@ class JSON_Handler_Account extends JSON_Handler
 	    return (strncmp($string, $search, strlen($search)) == 0);
 	}
 
-	public function addRebill($iAccountId = 1000174123, $iRebillTypeId = 1 , $oDetails = null)
+	public function addRebill($iAccountId , $iRebillTypeId  , $oDetails)
 	{
 
-		//$oDetails = json_decode('{"account_account_number":"234234234","account_account_name":"sfsafdadf","account_business_commencement_date":"2010-08-01","account_motorpass_business_structure_id":"4","account_business_structure_description":"","account_motorpass_promotion_code_id":"1","card_motorpass_card_type_id":"2","card_card_type_description":"","card_card_expiry_date":"2011-2","card_shared":true,"card_holder_contact_title_id":null,"card_holder_first_name":"","card_holder_last_name":"","card_vehicle_model":"","card_vehicle_rego":"","card_vehicle_make":"","street_address_line_1":"asdfasdf","street_address_line_2":"","street_address_suburb":"asdfdsa","street_address_state_id":"2","street_address_postcode":"3333","postal_address_line_1":"","postal_address_line_2":"","postal_address_suburb":"","postal_address_state_id":null,"postal_address_postcode":"","contact_contact_title_id":null,"contact_first_name":"sdafdsfa","contact_last_name":"adsfsdaf","contact_dob":"2010-08-01","contact_drivers_license":"","contact_position":"asdffsda","contact_landline_number":"0765555555","reference1_company_name":"sdfgf","reference1_contact_person":"sdfgds","reference1_phone_number":"0765555555","reference2_company_name":"sghgh","reference2_contact_person":"hdh","reference2_phone_number":"0756555555"}');
-
-		/*//For query debug purpose
-		  $myFile = "account.txt";
-			$fh = fopen($myFile, 'w') or die("can't open file");
-			fwrite($fh, json_encode($oDetails));
-			fclose($fh);*/
-
-		//create the object from the details
-
-
+		//for debug purposes only
+		//$oDetails = json_decode('{"account_id":32,"account_account_number":"1000174123","account_account_name":"sfsafdadf","account_business_commencement_date":"2010-08-01","account_motorpass_business_structure_id":"4","account_business_structure_description":"","account_motorpass_promotion_code_id":"1","card_motorpass_card_type_id":"2","card_card_type_description":"","card_card_expiry_date":"2011-2","card_shared":true,"card_holder_contact_title_id":null,"card_holder_first_name":"","card_holder_last_name":"","card_vehicle_model":"","card_vehicle_rego":"","card_vehicle_make":"","street_address_line_1":"asdfasdf","street_address_line_2":"","street_address_suburb":"asdfdsa","street_address_state_id":"2","street_address_postcode":"3333","postal_address_line_1":"","postal_address_line_2":"","postal_address_suburb":"","postal_address_state_id":null,"postal_address_postcode":"","contact_contact_title_id":null,"contact_first_name":"sdafdsfa","contact_last_name":"adsfsdaf","contact_dob":"2010-08-01","contact_drivers_license":"","contact_position":"asdffsda","contact_landline_number":"0765555555","reference1_company_name":"sdfgf","reference1_contact_person":"sdfgds","reference1_phone_number":"0765555555","reference2_company_name":"sghgh","reference2_contact_person":"hdh","reference2_phone_number":"0756555555"}');
 
 		// Start a new database transaction
 		$oDataAccess	= DataAccess::getDataAccess();
@@ -1027,9 +1022,9 @@ class JSON_Handler_Account extends JSON_Handler
 				case REBILL_TYPE_MOTORPASS:
 					// Validate card expiry date & convert it to the proper format so it can be compared to the
 					// existing card_expiry_date field (if need be)
-					$iTime	= strtotime($oDetails->card_expiry_date);
+					$iTime	= strtotime($oDetails->card_card_expiry_date);
 					$sLastDayInMonth	= date('t', $iTime);
-					$iExpiryDate		= strtotime($oDetails->card_expiry_date.'-'.$sLastDayInMonth);
+					$iExpiryDate		= strtotime($oDetails->card_card_expiry_date.'-'.$sLastDayInMonth);
 					$oDetails->card_card_expiry_date = date('Y-m-d', $iExpiryDate);
 
 
@@ -1053,9 +1048,9 @@ class JSON_Handler_Account extends JSON_Handler
 					// Check if a save is required (check if the rebill_motorpass details are the same, if so then no save needed)
 					if ($oCurrentRebillDetails &&
 						($oCurrentRebill->rebill_type_id == $iRebillTypeId) &&
-						($oCurrentRebillDetails->account_number == $oDetails->account_number) &&
-						($oCurrentRebillDetails->account_name == $oDetails->account_name) &&
-						($oCurrentRebillDetails->card_expiry_date == $oDetails->card_expiry_date))
+						($oCurrentRebillDetails->account_number == $iAccountId) &&
+						($oCurrentRebillDetails->account_name == $oDetails->account_account_name) &&
+						($oCurrentRebillDetails->card_expiry_date == $oDetails->card_card_expiry_date))
 					{
 						// No save required, the last rebill for the account is a motorpass with the same account number
 						// Return the last one
