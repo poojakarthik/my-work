@@ -571,12 +571,33 @@
 		 		$arrCols['SentOn']		= new MySQLFunction("NOW()");
 		 		$arrCols['FileExport']	= $this->_intFileExport;
 	 		}
-	 		$ubiRequest				= new StatementUpdateById("ProvisioningRequest", $arrCols);
-	 		foreach ($this->_arrFileContent as $arrRequest)
+	 		
+	 		$ubiRequest			= new StatementUpdateById("ProvisioningRequest", $arrCols);
+	 		$aUpdatedRequests	= array();
+	 		foreach ($this->_arrFileContent as &$arrRequest)
 	 		{
+	 			if (!isset($aUpdatedRequests[$arrRequest['**Type']]))
+	 			{
+	 				$aUpdatedRequests[$arrRequest['**Type']]	= array();
+	 			}
+	 			
+	 			// Save
 	 			$arrCols['Id']	= $arrRequest['**Request'];
-	 			$ubiRequest->Execute($arrCols);
+	 			if ($ubiRequest->Execute($arrCols) === false)
+	 			{
+	 				// Error
+	 				$aUpdatedRequests[$arrRequest['**Type']][$arrRequest['**Request']]	= $ubiRequest->Error();
+	 			}
+	 			else
+	 			{
+	 				$aUpdatedRequests[$arrRequest['**Type']][$arrRequest['**Request']]	= true;
+	 			}
 	 		}
+ 			
+	 		// DEBUG
+	 		CliEcho("Requests updated by FileExport Id {$this->_intFileExport}:");
+ 			CliEcho(print_r($aUpdatedRequests, true));
+	 		unset($arrRequest);
  		}
  		
 	 	if ($mixResult['Pass'])
