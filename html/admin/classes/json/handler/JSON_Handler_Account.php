@@ -3,20 +3,20 @@
 class JSON_Handler_Account extends JSON_Handler
 {
 	protected	$_JSONDebug	= '';
-		
+
 	public function __construct()
 	{
 		// Send Log output to a debug string
 		Log::registerLog('JSON_Handler_Debug', Log::LOG_TYPE_STRING, $this->_JSONDebug);
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
-	
+
 	public function getAccountsReferees()
 	{
 		try
 		{
 			$qryQuery	= new Query();
-			
+
 			// Get list of referees (everyone with PERMISSION_CREDIT_MANAGEMENT and without PERMISSION_GOD)
 			$arrReferees	= array();
 			$resReferees	= $qryQuery->Execute("SELECT * FROM Employee WHERE user_role_id = ".USER_ROLE_CREDIT_CONTROL_MANAGER." AND Archived = 0");
@@ -28,7 +28,7 @@ class JSON_Handler_Account extends JSON_Handler
 			{
 				$arrReferees[]	= $arrReferee;
 			}
-			
+
 			// If no exceptions were thrown, then everything worked
 			return array(
 							"Success"		=> true,
@@ -40,7 +40,7 @@ class JSON_Handler_Account extends JSON_Handler
 		{
 			// Send an Email to Devs
 			//SendEmail("rdavis@yellowbilling.com.au", "Exception in ".__CLASS__, $e->__toString(), CUSTOMER_URL_NAME.'.errors@yellowbilling.com.au');
-			
+
 			return array(
 							"Success"		=> false,
 							"ErrorMessage"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $e->getMessage() : '',
@@ -48,7 +48,7 @@ class JSON_Handler_Account extends JSON_Handler
 						);
 		}
 	}
-	
+
 	public function getPaymentMethods($iAccountId, $iPaymentMethodSubType)
 	{
 		try
@@ -57,18 +57,18 @@ class JSON_Handler_Account extends JSON_Handler
 			$oAccountGroup  				= Account_Group::getForAccountId($iAccountId);
 			$oAccount						= Account::getForId($iAccountId);
 			$bhasCreditControlPermission	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
-			
+
 			if(!$oAccountGroup)
 			{
 				throw new JSON_Handler_Account_Exception('Invalid Account Id');
 			}
-			
+
 			// Check billing type to see what to return
 			if ($iPaymentMethodSubType == DIRECT_DEBIT_TYPE_BANK_ACCOUNT)
 			{
 				// Get all DirectDebit for the accountgroup
 				$aDirectDebits	= DirectDebit::getForAccountGroup($oAccountGroup->Id);
-				
+
 				foreach ($aDirectDebits as $oDirectDebit)
 				{
 					$aResult[]	= $oDirectDebit->toStdClass();
@@ -78,31 +78,31 @@ class JSON_Handler_Account extends JSON_Handler
 			{
 				// Get all Credit_Card for the accountgroup
 				$aCreditCards	= Credit_Card::getForAccountGroup($oAccountGroup->Id);
-				
+
 				foreach ($aCreditCards as $oCreditCard)
 				{
 					$oStdClassCreditCard	= $oCreditCard->toStdClass();
-					
+
 					// Get the card type name
 					$oStdClassCreditCard->card_type_name	= Constant_Group::getConstantGroup('credit_card_type')->getConstantName($oCreditCard->CardType);
-					
+
 					// Get the card number and cvv
 					$sCardNumber	= Decrypt($oCreditCard->CardNumber).'';
 					$sCVV			= (is_null($oCreditCard->CVV) ? '' : Decrypt($oCreditCard->CVV).'');
-					
+
 					// Hide card number and cvv if the user doesn't have sufficient priviledges
 					if (!$bhasCreditControlPermission)
 					{
 						$sCardNumber	= $oCreditCard->getMaskedCardNumber($sCardNumber);
 						$sCVV			= ($sCVV == '' ? 'Not Supplied' : 'Supplied');
 					}
-					
+
 					$oStdClassCreditCard->card_number	= $sCardNumber;
 					$oStdClassCreditCard->cvv			= $sCVV;
 					$aResult[]							= $oStdClassCreditCard;
 				}
 			}
-			
+
 			return 	array(
 						"Success"			=> true,
 						"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : '',
@@ -126,7 +126,7 @@ class JSON_Handler_Account extends JSON_Handler
 					);
 		}
 	}
-	
+
 	public function getCurrentPaymentMethod($iAccountId)
 	{
 		try
@@ -135,12 +135,12 @@ class JSON_Handler_Account extends JSON_Handler
 			$oAccountGroup  				= Account_Group::getForAccountId($iAccountId);
 			$oAccount						= Account::getForId($iAccountId);
 			$bhasCreditControlPermission	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
-			
+
 			if(!$oAccountGroup)
 			{
 				throw new JSON_Handler_Account_Exception('Invalid Account Id');
 			}
-			
+
 			$oPaymentMethod			= false;
 			$iPaymentMethod			= null;
 			$iPaymentMethodSubType	= null;
@@ -149,7 +149,7 @@ class JSON_Handler_Account extends JSON_Handler
 											PAYMENT_METHOD_DIRECT_DEBIT	=> array(),
 											PAYMENT_METHOD_REBILL		=> array(),
 										);
-			
+
 			switch ($oAccount->BillingType)
 			{
 				case BILLING_TYPE_DIRECT_DEBIT:
@@ -163,10 +163,10 @@ class JSON_Handler_Account extends JSON_Handler
 					$iPaymentMethod	= PAYMENT_METHOD_REBILL;
 					break;
 			}
-			
+
 			// Get all DirectDebit for the accountgroup to see if there is any
 			$aDirectDebits	= DirectDebit::getForAccountGroup($oAccountGroup->Id);
-			
+
 			foreach ($aDirectDebits as $oDirectDebit)
 			{
 				// Store the direct debits id in aHasPaymentMethods
@@ -174,9 +174,9 @@ class JSON_Handler_Account extends JSON_Handler
 				{
 					$aHasPaymentMethod[PAYMENT_METHOD_DIRECT_DEBIT][DIRECT_DEBIT_TYPE_BANK_ACCOUNT]	 = array();
 				}
-				
+
 				$aHasPaymentMethod[PAYMENT_METHOD_DIRECT_DEBIT][DIRECT_DEBIT_TYPE_BANK_ACCOUNT][]	= $oDirectDebit->Id;
-				
+
 				// Check if it is the current method
 				if ($oAccount->BillingType == BILLING_TYPE_DIRECT_DEBIT)
 				{
@@ -191,10 +191,10 @@ class JSON_Handler_Account extends JSON_Handler
 					break;
 				}
 			}
-			
+
 			// Get all Credit_Card for the accountgroup to see if there is any
 			$aCreditCards	= Credit_Card::getForAccountGroup($oAccountGroup->Id);
-			
+
 			foreach ($aCreditCards as $oCreditCard)
 			{
 				// Store the credit cards id in aHasPaymentMethods
@@ -202,30 +202,30 @@ class JSON_Handler_Account extends JSON_Handler
 				{
 					$aHasPaymentMethod[PAYMENT_METHOD_DIRECT_DEBIT][DIRECT_DEBIT_TYPE_CREDIT_CARD]	 = array();
 				}
-				
+
 				$aHasPaymentMethod[PAYMENT_METHOD_DIRECT_DEBIT][DIRECT_DEBIT_TYPE_CREDIT_CARD][]	= $oCreditCard->Id;
-				
+
 				// Check if it is the current method
 				if ($oAccount->BillingType == BILLING_TYPE_CREDIT_CARD)
 				{
 					if ($oAccount->CreditCard == $oCreditCard->Id)
 					{
 						$oStdClassCreditCard	= $oCreditCard->toStdClass();
-				
+
 						// Get the card type name
 						$oStdClassCreditCard->card_type_name	= Constant_Group::getConstantGroup('credit_card_type')->getConstantName($oCreditCard->CardType);
-						
+
 						// Get the card number and cvv
 						$sCardNumber	= Decrypt($oCreditCard->CardNumber).'';
 						$sCVV			= (is_null($oCreditCard->CVV) ? '' : Decrypt($oCreditCard->CVV).'');
-						
+
 						// Hide card number and cvv if the user doesn't have sufficient priviledges
 						if (!$bhasCreditControlPermission)
 						{
 							$sCardNumber	= $oCreditCard->getMaskedCardNumber($sCardNumber);
 							$sCVV			= ($sCVV == '' ? 'Not Supplied' : 'Supplied');
 						}
-						
+
 						$oStdClassCreditCard->card_number	= $sCardNumber;
 						$oStdClassCreditCard->cvv			= $sCVV;
 						$oPaymentMethod						= $oStdClassCreditCard;
@@ -237,14 +237,14 @@ class JSON_Handler_Account extends JSON_Handler
 					break;
 				}
 			}
-			
+
 			// Get the latest rebill for the account
 			$oRebill	= $oAccount->getRebill();
-			
+
 			if ($oRebill)
 			{
 				$aHasPaymentMethod[PAYMENT_METHOD_REBILL][$oRebill->rebill_type_id]	 = true;
-				
+
 				if ($oAccount->BillingType == BILLING_TYPE_REBILL)
 				{
 					$oRebillDetails					= $oRebill->getDetails();
@@ -254,7 +254,7 @@ class JSON_Handler_Account extends JSON_Handler
 					$iPaymentMethodSubType			= $oRebill->rebill_type_id;
 				}
 			}
-			
+
 			switch ($oAccount->BillingType)
 			{
 				case BILLING_TYPE_DIRECT_DEBIT:
@@ -269,17 +269,17 @@ class JSON_Handler_Account extends JSON_Handler
 				default:
 					$iBillingDetail = false;
 			}
-			
+
 			// Get the available billing types for the accounts customer group
 			$aPaymentMethods	= $oAccount->getPaymentMethods();
-			
+
 			if (is_null($iPaymentMethod) || is_null($iPaymentMethodSubType))
 			{
 				// Could not retrieve correct payment method details, maybe the cc/account was deleted, send back 'ACCOUNT'
 				$iPaymentMethod			= PAYMENT_METHOD_ACCOUNT;
 				$iPaymentMethodSubType	= null;
 			}
-			
+
 			return 	array(
 						"Success"				=> true,
 						"iPaymentMethod"		=> $iPaymentMethod,
@@ -307,12 +307,12 @@ class JSON_Handler_Account extends JSON_Handler
 					);
 		}
 	}
-	
+
 	public function setPaymentMethod($iAccountId, $iPaymentMethodType, $iPaymentMethodSubType, $iBillingDetail)
 	{
 		// Start a new database transaction
 		$oDataAccess	= DataAccess::getDataAccess();
-		
+
 		if (!$oDataAccess->TransactionStart())
 		{
 			// Failure!
@@ -322,26 +322,26 @@ class JSON_Handler_Account extends JSON_Handler
 						"strDebug"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $this->_JSONDebug : ''
 					);
 		}
-		
+
 		try
 		{
 			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
 			{
 				throw new JSON_Handler_Account_Exception('You do not have permission to set the payment method');
 			}
-			
+
 			// Update billing type
 			$oAccount	= Account::getForId($iAccountId);
-			
+
 			// Get the old billing type description
 			$sOldBillingType	= '';
-			
+
 			switch ($oAccount->BillingType)
 			{
 				case BILLING_TYPE_DIRECT_DEBIT:
 					$sAccountName	= 'Unknown';
 					$sAccountNumber	= 'Unknown';
-					
+
 					try
 					{
 						$oDirectDebit	= DirectDebit::getForId($oAccount->DirectDebit);
@@ -352,7 +352,7 @@ class JSON_Handler_Account extends JSON_Handler
 					{
 						// No direct debit exists
 					}
-					
+
 					$sOldBillingType	= 	"Direct Debit via Bank Account\n".
 											"Account Name: {$sAccountName}\n".
 											"Account Number: {$sAccountNumber}";
@@ -360,7 +360,7 @@ class JSON_Handler_Account extends JSON_Handler
 				case BILLING_TYPE_CREDIT_CARD:
 					$sCardName		= 'Unknown';
 					$sCardNumber	= 'Unknown';
-					
+
 					try
 					{
 						$oCreditCard	= Credit_Card::getForId($oAccount->CreditCard);
@@ -371,7 +371,7 @@ class JSON_Handler_Account extends JSON_Handler
 					{
 						// No credit card exists
 					}
-				
+
 					$sOldBillingType	= 	"Direct Debit via Credit Card\n".
 											"Card Name: {$sCardName}\n".
 											"Card Number: {$sCardNumber}";
@@ -379,14 +379,14 @@ class JSON_Handler_Account extends JSON_Handler
 				case BILLING_TYPE_ACCOUNT:	// Invoice
 					$sOldBillingType	= 'Invoice';
 					break;
-				
+
 				case BILLING_TYPE_REBILL:
 					$oOldRebill			= Rebill::getForAccountId($oAccount->Id, true);
-					
+
 					if ($oOldRebill)
 					{
 						$oOldRebillDetails	= $oOldRebill->getDetails();
-					
+
 						switch ($oOldRebill->rebill_type_id)
 						{
 							case REBILL_TYPE_MOTORPASS:
@@ -404,10 +404,10 @@ class JSON_Handler_Account extends JSON_Handler
 					}
 					break;
 			}
-			
+
 			// Determin the billing type (legacy concept) from the payment method and sub type
 			$iBillingType	= BILLING_TYPE_ACCOUNT;
-			
+
 			switch ($iPaymentMethodType)
 			{
 				case PAYMENT_METHOD_ACCOUNT:
@@ -428,13 +428,13 @@ class JSON_Handler_Account extends JSON_Handler
 					$iBillingType	= BILLING_TYPE_REBILL;
 					break;
 			}
-			
+
 			$oAccount->BillingType	= $iBillingType;
-			
+
 			// Reset detail values first
 			$oAccount->DirectDebit	= ($iBillingType == BILLING_TYPE_DIRECT_DEBIT ? $iBillingDetail : null);
 			$oAccount->CreditCard	= ($iBillingType == BILLING_TYPE_CREDIT_CARD ? $iBillingDetail : null);
-			
+
 			// Update proper detail field
 			$oDetails			= $oAccount->getPaymentMethodDetails();
 			$sNewBillingType	= '';
@@ -453,10 +453,10 @@ class JSON_Handler_Account extends JSON_Handler
 				case BILLING_TYPE_ACCOUNT:
 					$sNewBillingType	= 'Invoice';
 					break;
-				
+
 				case BILLING_TYPE_REBILL:
 					$oRebillTypeDetails	= $oDetails->getDetails();
-					
+
 					switch ($oDetails->rebill_type_id)
 					{
 						case REBILL_TYPE_MOTORPASS:
@@ -468,22 +468,22 @@ class JSON_Handler_Account extends JSON_Handler
 					}
 					break;
 			}
-			
+
 			$oAccount->save();
-			
+
 			// Add a note
 			$sNote = "Payment method changed from:\n $sOldBillingType\n to $sNewBillingType";
 			Note::createNote(SYSTEM_NOTE_TYPE, $sNote, Flex::getUserId(), $iAccountId);
-			
+
 			// All good
 			$oDataAccess->TransactionCommit();
-			
+
 			return array("Success" => true);
 		}
 		catch (JSON_Handler_Account_Exception $oException)
 		{
 			$oDataAccess->TransactionRollback();
-			
+
 			return 	array(
 						"Success"	=> false,
 						"Message"	=> $oException->getMessage(),
@@ -493,7 +493,7 @@ class JSON_Handler_Account extends JSON_Handler
 		catch (Exception $e)
 		{
 			$oDataAccess->TransactionRollback();
-			
+
 			return 	array(
 						"Success"	=> false,
 						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database',
@@ -501,14 +501,14 @@ class JSON_Handler_Account extends JSON_Handler
 					);
 		}
 	}
-	
+
 	public function getCreditCardTypes()
 	{
 		try
 		{
 			$aTypes		= Credit_Card_Type::listAll();
 			$aResult	= array();
-			
+
 			foreach ($aTypes as $iId => $oType)
 			{
 				$aResult[$iId]	=	array(
@@ -518,7 +518,7 @@ class JSON_Handler_Account extends JSON_Handler
 										'cvv_length' 		=> $oType->cvv_length
 									);
 			}
-			
+
 			// All good
 			return 	array(
 						"Success"	=> true,
@@ -535,12 +535,12 @@ class JSON_Handler_Account extends JSON_Handler
 					);
 		}
 	}
-	
+
 	public function addCreditCard($iAccountId, $oDetails)
 	{
 		// Start a new database transaction
 		$oDataAccess	= DataAccess::getDataAccess();
-		
+
 		if (!$oDataAccess->TransactionStart())
 		{
 			// Failure!
@@ -550,78 +550,78 @@ class JSON_Handler_Account extends JSON_Handler
 						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 					);
 		}
-		
+
 		try
 		{
 			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
 			{
 				throw new JSON_Handler_Account_Exception('You do not have permission to add a credit card');
 			}
-			
+
 			// Create orm object
 			$oCreditCard	= new Credit_Card();
-			
+
 			// Set the account group
 			$oAccountGroup				= Account_Group::getForAccountId($iAccountId);
 			$oCreditCard->AccountGroup	= $oAccountGroup->Id;
-			
+
 			// Default values, that aren't supplied by interface
 			$oCreditCard->Archived		= 0;
 			$oCreditCard->employee_id	= Flex::getUserId();
-			
+
 			// Validate input
 			$aErrors	= array();
 			if (!is_numeric($oDetails->iCardType))
 			{
 				$aErrors[]	= 'Card Type missing';
 			}
-			
+
 			if (!isset($oDetails->sCardHolderName) || $oDetails->sCardHolderName == '')
 			{
 				$aErrors[]	= 'Card Holder Name missing';
 			}
-			
+
 			if (!is_numeric($oDetails->iCardNumber))
 			{
 				$aErrors[]	= 'Credit Card Number missing';
 			}
-			
+
 			if (!CheckLuhn($oDetails->iCardNumber))
 			{
 				$aErrors[]	= 'Invalid Credit Card Number';
 			}
-			
+
 			if (!CheckCC($oDetails->iCardNumber, $oDetails->iCardType))
 			{
 				$aErrors[]	= 'Invalid Credit Card Number for the Card Type';
 			}
-			
+
 			if (!is_numeric($oDetails->iExpiryMonth))
 			{
 				$aErrors[]	= 'Expiration Month missing';
 			}
-			
+
 			if (!is_numeric($oDetails->iExpiryYear))
 			{
 				$aErrors[]	= 'Expiration Year missing';
 			}
-			
+
 			if (!is_numeric($oDetails->iCVV))
 			{
 				$aErrors[]	= 'CVV missing';
 			}
-			
+
 			$oCardType	= Credit_Card_Type::getForId($oDetails->iCardType);
 			if (!preg_match('/^\d{'.$oCardType->cvv_length.'}$/', "{$oDetails->iCVV}"))
 			{
 				$aErrors[]	= 'CVV is an incorrect length';
 			}
-			
+
 			if (count($aErrors) > 0)
 			{
 				// Validation errors found, rollback transaction and return the errors
 				$oDataAccess->TransactionRollback();
-				
+
 				return 	array(
 							"Success"			=> false,
 							"aValidationErrors"	=> $aErrors,
@@ -639,29 +639,29 @@ class JSON_Handler_Account extends JSON_Handler
 				$oCreditCard->CVV			= Encrypt($oDetails->iCVV);
 				$oCreditCard->created_on	= date('Y-m-d H:i:s');
 				$oCreditCard->save();
-				
+
 				// Everything looks OK -- Commit!
 				$oDataAccess->TransactionCommit();
-				
+
 				// Get the card type name
 				$oStdClassCreditCard					= $oCreditCard->toStdClass();
 				$oStdClassCreditCard->card_type_name	= Constant_Group::getConstantGroup('credit_card_type')->getConstantName($oCreditCard->CardType);
-				
+
 				// Mask the card number and cvv
 				$bhasCreditControlPermission	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
 				$sCardNumber					= Decrypt($oCreditCard->CardNumber).'';
 				$sCVV							= (is_null($oCreditCard->CVV) ? '' : Decrypt($oCreditCard->CVV).'');
-				
+
 				// Hide card number and cvv if the user doesn't have sufficient priviledges
 				if (!$bhasCreditControlPermission)
 				{
 					$sCardNumber	= $oCreditCard->getMaskedCardNumber($sCardNumber);
 					$sCVV			= ($sCVV == '' ? 'Not Supplied' : 'Supplied');
 				}
-				
+
 				$oStdClassCreditCard->card_number	= $sCardNumber;
 				$oStdClassCreditCard->cvv			= $sCVV;
-				
+
 				// All good
 				return 	array(
 							"Success"		=> true,
@@ -674,7 +674,7 @@ class JSON_Handler_Account extends JSON_Handler
 		{
 			// Rollback db transaction
 			$oDataAccess->TransactionRollback();
-			
+
 			return 	array(
 						"Success"	=> false,
 						"Message"	=> $oException->getMessage(),
@@ -685,7 +685,7 @@ class JSON_Handler_Account extends JSON_Handler
 		{
 			// Rollback db transaction
 			$oDataAccess->TransactionRollback();
-			
+
 			return 	array(
 						"Success"	=> false,
 						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database',
@@ -693,12 +693,12 @@ class JSON_Handler_Account extends JSON_Handler
 					);
 		}
 	}
-	
+
 	public function addDirectDebit($iAccountId, $oDetails)
 	{
 		// Start a new database transaction
 		$oDataAccess	= DataAccess::getDataAccess();
-		
+
 		if (!$oDataAccess->TransactionStart())
 		{
 			// Failure!
@@ -708,63 +708,63 @@ class JSON_Handler_Account extends JSON_Handler
 						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 					);
 		}
-		
+
 		try
 		{
 			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
 			{
 				throw new JSON_Handler_Account_Exception('You do not have permission to add a direct debit');
 			}
-			
+
 			// Create orm object
 			$oDirectDebit	= new DirectDebit();
-			
+
 			// Set the account group
 			$oAccountGroup				= Account_Group::getForAccountId($iAccountId);
 			$oDirectDebit->AccountGroup	= $oAccountGroup->Id;
-			
+
 			// Default values, that aren't supplied by interface
 			$oDirectDebit->Archived		= 0;
 			$oDirectDebit->employee_id	= Flex::getUserId();
-			
+
 			// Validate input
 			$aErrors	= array();
-			
+
 			if (!isset($oDetails->sBankName) || $oDetails->sBankName == '')
 			{
 				$aErrors[]	= 'Bank Name missing';
 			}
-			
+
 			if (!isset($oDetails->sBSB) || $oDetails->sBSB == '')
 			{
 				$aErrors[]	= 'BSB missing';
 			}
-			
+
 			if (!BSBValid($oDetails->sBSB))
 			{
 				$aErrors[]	= 'Invalid BSB';
 			}
-			
+
 			if (!isset($oDetails->sAccountNumber) || $oDetails->sAccountNumber == '')
 			{
 				$aErrors[]	= 'Account Number missing';
 			}
-			
+
 			if (!BankAccountValid($oDetails->sAccountNumber))
 			{
 				$aErrors[]	= 'Invalid Account Number';
 			}
-			
+
 			if (!isset($oDetails->sAccountName) || $oDetails->sAccountName == '')
 			{
 				$aErrors[]	= 'Account Name missing';
 			}
-			
+
 			if (count($aErrors) > 0)
 			{
 				// Validation errors found, rollback transaction and return the errors
 				$oDataAccess->TransactionRollback();
-				
+
 				return 	array(
 							"Success"			=> false,
 							"aValidationErrors"	=> $aErrors,
@@ -780,10 +780,10 @@ class JSON_Handler_Account extends JSON_Handler
 				$oDirectDebit->AccountName		= $oDetails->sAccountName;
 				$oDirectDebit->created_on		= date('Y-m-d H:i:s');
 				$oDirectDebit->save();
-				
+
 				// Everything looks OK -- Commit!
 				$oDataAccess->TransactionCommit();
-				
+
 				// All good
 				return 	array(
 							"Success"		=> true,
@@ -796,7 +796,7 @@ class JSON_Handler_Account extends JSON_Handler
 		{
 			// Rollback db transaction
 			$oDataAccess->TransactionRollback();
-			
+
 			return 	array(
 						"Success"	=> false,
 						"Message"	=> $oException->getMessage(),
@@ -807,7 +807,7 @@ class JSON_Handler_Account extends JSON_Handler
 		{
 			// Rollback db transaction
 			$oDataAccess->TransactionRollback();
-			
+
 			return 	array(
 						"Success"	=> false,
 						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database',
@@ -815,19 +815,19 @@ class JSON_Handler_Account extends JSON_Handler
 					);
 		}
 	}
-	
+
 	public function getCostCentres($iAccountId)
 	{
 		try
 		{
 			$aStdObjects = array();
 			$aCostCentres = Cost_Centre::getForAccountId($iAccountId);
-			
+
 			foreach ($aCostCentres as $iId => $oCostCentre)
 			{
 				$aStdObjects[$iId] = $oCostCentre->toStdClass();
 			}
-			
+
 			return array(
 							"Success"			=> true,
 							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : '',
@@ -843,12 +843,12 @@ class JSON_Handler_Account extends JSON_Handler
 					);
 		}
 	}
-	
+
 	public function saveCostCentreChanges($iAccountId, $aChanges)
 	{
 		// Start a new database transaction
 		$oDataAccess	= DataAccess::getDataAccess();
-		
+
 		if (!$oDataAccess->TransactionStart())
 		{
 			// Failure!
@@ -858,17 +858,17 @@ class JSON_Handler_Account extends JSON_Handler
 						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 					);
 		}
-		
+
 		try
 		{
 			$aValidationErrors = array();
-			
+
 			// Handles multiple changes
 			foreach ($aChanges as $aCostCentre)
 			{
 				$iId 	= $aCostCentre->iId;
 				$sName 	= $aCostCentre->sName;
-				
+
 				// If iId is given, get the cost centre for the id and update, otherwise create a new cost centre
 				if (is_numeric($iId))
 				{
@@ -883,16 +883,16 @@ class JSON_Handler_Account extends JSON_Handler
 					$oCostCentre->AccountGroup	= $oAccountGroup->Id;
 					$oCostCentre->Account 		= $iAccountId;
 				}
-				
+
 				// Validate input
 				$bValidInput = true;
-				
+
 				if (!isset($sName) || $sName == '')
 				{
 					$aValidationErrors[] = 'Cost Centre Name missing';
 					$bValidInput = false;
 				}
-				
+
 				if ($bValidInput)
 				{
 					// Validation passed, update the object and save
@@ -900,12 +900,12 @@ class JSON_Handler_Account extends JSON_Handler
 					$oCostCentre->save();
 				}
 			}
-			
+
 			if (count($aValidationErrors) > 0)
 			{
 				// Validation errors found, rollback transaction and return errors
 				$oDataAccess->TransactionRollback();
-				
+
 				return array(
 							"Success"			=> false,
 							"aValidationErrors"	=> $aValidationErrors,
@@ -916,7 +916,7 @@ class JSON_Handler_Account extends JSON_Handler
 			{
 				// Everything looks OK -- Commit!
 				$oDataAccess->TransactionCommit();
-				
+
 				// Return successfully
 				return 	array(
 							"Success"		=> true,
@@ -928,7 +928,7 @@ class JSON_Handler_Account extends JSON_Handler
 		catch (Exception $e)
 		{
 			$oDataAccess->TransactionRollback();
-			
+
 			return array(
 						"Success"	=> false,
 						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database',
@@ -936,19 +936,21 @@ class JSON_Handler_Account extends JSON_Handler
 					);
 		}
 	}
-	
-	public function getRebill($iAccountId)
+
+	public function getRebill($iAccountId = 1000174123)
 	{
 		try
 		{
 			$oRebill	= Rebill::getForAccountId($iAccountId);
 			$mResult	= ($oRebill ? $oRebill->toStdClass() : null);
-			
+
 			if ($oRebill)
 			{
-				$mResult->oDetails	= $oRebill->getDetails()->toStdClass();
+				$oDetails	= $oRebill->getDetails()->toStdClass();
+				$oAccount = new Motorpass_Logic_Account($oDetails->motorpass_account_id);
+				$mResult->oDetails = Motorpass_Logic_Account::makeFlatObject($oAccount->toStdClass(), 'account');
 			}
-			
+
 			return 	array(
 						"Success"	=> true,
 						"oRebill"	=> $mResult
@@ -962,12 +964,30 @@ class JSON_Handler_Account extends JSON_Handler
 					);
 		}
 	}
-	
-	public function addRebill($iAccountId, $iRebillTypeId, $oDetails)
+
+	function starts_with($string, $search)
 	{
+	    return (strncmp($string, $search, strlen($search)) == 0);
+	}
+
+	public function addRebill($iAccountId = 1000174123, $iRebillTypeId = 1 , $oDetails = null)
+	{
+
+		//$oDetails = json_decode('{"account_account_number":"234234234","account_account_name":"sfsafdadf","account_business_commencement_date":"2010-08-01","account_motorpass_business_structure_id":"4","account_business_structure_description":"","account_motorpass_promotion_code_id":"1","card_motorpass_card_type_id":"2","card_card_type_description":"","card_card_expiry_date":"2011-2","card_shared":true,"card_holder_contact_title_id":null,"card_holder_first_name":"","card_holder_last_name":"","card_vehicle_model":"","card_vehicle_rego":"","card_vehicle_make":"","street_address_line_1":"asdfasdf","street_address_line_2":"","street_address_suburb":"asdfdsa","street_address_state_id":"2","street_address_postcode":"3333","postal_address_line_1":"","postal_address_line_2":"","postal_address_suburb":"","postal_address_state_id":null,"postal_address_postcode":"","contact_contact_title_id":null,"contact_first_name":"sdafdsfa","contact_last_name":"adsfsdaf","contact_dob":"2010-08-01","contact_drivers_license":"","contact_position":"asdffsda","contact_landline_number":"0765555555","reference1_company_name":"sdfgf","reference1_contact_person":"sdfgds","reference1_phone_number":"0765555555","reference2_company_name":"sghgh","reference2_contact_person":"hdh","reference2_phone_number":"0756555555"}');
+
+		/*//For query debug purpose
+		  $myFile = "account.txt";
+			$fh = fopen($myFile, 'w') or die("can't open file");
+			fwrite($fh, json_encode($oDetails));
+			fclose($fh);*/
+
+		//create the object from the details
+
+
+
 		// Start a new database transaction
 		$oDataAccess	= DataAccess::getDataAccess();
-		
+
 		if (!$oDataAccess->TransactionStart())
 		{
 			// Failure!
@@ -976,30 +996,31 @@ class JSON_Handler_Account extends JSON_Handler
 						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? 'Could not start database transaction.' : false,
 					);
 		}
-		
+
 		try
 		{
 			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
 			{
 				throw new JSON_Handler_Account_Exception('You do not have permission to add a rebill');
 			}
-			
+
 			$aErrors	= array();
-			
+
+
 			$oCurrentRebill			= Rebill::getForAccountId($iAccountId);
 			$oCurrentRebillDetails	= false;
 			if ($oCurrentRebill)
 			{
 				$oCurrentRebillDetails	= $oCurrentRebill->getDetails();
 			}
-			
+
 			// Create a new rebill
 			$oRebill						= new Rebill();
 			$oRebill->account_id			= $iAccountId;
 			$oRebill->rebill_type_id		= $iRebillTypeId;
 			$oRebill->created_employee_id	= Flex::getUserId();
 			$oRebill->created_timestamp		= date('Y-m-d H:i:s');
-			
+
 			// Set the extra rebill type specific information
 			switch ($iRebillTypeId)
 			{
@@ -1007,40 +1028,28 @@ class JSON_Handler_Account extends JSON_Handler
 					// Validate card expiry date & convert it to the proper format so it can be compared to the
 					// existing card_expiry_date field (if need be)
 					$iTime	= strtotime($oDetails->card_expiry_date);
-					
-					if ($iTime === false)
-					{
-						$aErrors[]	= 'Invalid Card Expiry Date';
-					}
-					
 					$sLastDayInMonth	= date('t', $iTime);
 					$iExpiryDate		= strtotime($oDetails->card_expiry_date.'-'.$sLastDayInMonth);
-					$oDetails->card_expiry_date	= date('Y-m-d', $iExpiryDate);
-					
-					// Validate input
-					if (!isset($oDetails->account_name) || $oDetails->account_name == '')
-					{
-						$aErrors[]	= 'Account Name missing';
-					}
-					
-					if (!isset($oDetails->account_number) || $oDetails->account_number == '')
-					{
-						$aErrors[]	= 'Invalid Account Number';
-					}
-					
-					if (count($aErrors) > 0)
+					$oDetails->card_card_expiry_date = date('Y-m-d', $iExpiryDate);
+
+
+					//create the logic object
+					$oMotorpassAccount = new Motorpass_Logic_Account(Motorpass_Logic_Account::makeNestedObject($oDetails));
+					$mResult = $oMotorpassAccount->save(false);
+
+					if (is_array($mResult))
 					{
 						// Validation errors found, rollback transaction and return the errors
 						$oDataAccess->TransactionRollback();
-				
+
 						return 	array(
 									"Success"			=> false,
 									"aValidationErrors"	=> $aErrors
 								);
 					}
-					
+
 					// No validation errors continue!
-					
+
 					// Check if a save is required (check if the rebill_motorpass details are the same, if so then no save needed)
 					if ($oCurrentRebillDetails &&
 						($oCurrentRebill->rebill_type_id == $iRebillTypeId) &&
@@ -1052,35 +1061,36 @@ class JSON_Handler_Account extends JSON_Handler
 						// Return the last one
 						$oStdClassRebill			= $oCurrentRebill->toStdClass();
 						$oStdClassRebill->oDetails	= $oCurrentRebillDetails->toStdClass();
-						
+
 						return 	array(
 									"Success"	=> true,
 									"bNoChange"	=> true,
 									"oRebill"	=> $oStdClassRebill
 								);
 					}
-					
+
 					// Save required, save the new rebill before creating the rebill_motorpass
 					$oRebill->save();
-					
+
 					// Save a new Rebill_Motorpass
 					$oRebillMotorpass					= new Rebill_Motorpass();
 					$oRebillMotorpass->rebill_id		= $oRebill->id;
-					$oRebillMotorpass->account_number	= $oDetails->account_number;
-					$oRebillMotorpass->account_name		= $oDetails->account_name;
-					$oRebillMotorpass->card_expiry_date	= $oDetails->card_expiry_date;
-					
+					$oRebillMotorpass->account_number	= $iAccountId;
+					$oRebillMotorpass->account_name		= $oMotorpassAccount->account_name;
+					$oRebillMotorpass->card_expiry_date	= $oMotorpassAccount->oCard->card_expiry_date;
+					$oRebillMotorpass->motorpass_account_id = $mResult;
 					$oRebillMotorpass->save();
-					
+
 					// Return new details
 					$oStdClassRebill			= $oRebill->toStdClass();
 					$oStdClassRebill->oDetails	= $oRebillMotorpass->toStdClass();
+					$oStdClassRebill->oAccount = $oMotorpassAccount->toStdClass();
 					break;
 			}
-			
+
 			// Everything looks OK -- Commit!
 			$oDataAccess->TransactionCommit();
-			
+
 			return 	array(
 						"Success"	=> true,
 						"oRebill"	=> $oStdClassRebill
@@ -1090,7 +1100,7 @@ class JSON_Handler_Account extends JSON_Handler
 		{
 			// Exception thrown & caught, rollback db transaction
 			$oDataAccess->TransactionRollback();
-			
+
 			return 	array(
 						"Success"	=> false,
 						"Message"	=> $oException->getMessage()
@@ -1100,7 +1110,7 @@ class JSON_Handler_Account extends JSON_Handler
 		{
 			// Exception caught, rollback db transaction
 			$oDataAccess->TransactionRollback();
-			
+
 			return 	array(
 						"Success"	=> false,
 						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database'
