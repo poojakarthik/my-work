@@ -561,6 +561,7 @@
  				break;
  				
  			case PROVISIONING_TYPE_VIRTUAL_PRESELECTION:
+ 			case PROVISIONING_TYPE_PRESELECTION:
 		 		/*// Add Basket 2 Re-Request
 				$this->intCarrierReference++;
 				$arrRendered['Sequence']		= $this->intCarrierReference;
@@ -582,12 +583,20 @@
  				break;
  				
  			case PROVISIONING_TYPE_VIRTUAL_PRESELECTION_REVERSE:
+ 			case PROVISIONING_TYPE_PRESELECTION_REVERSE:
  				$this->intCarrierReference++;
  				$arrRendered['Sequence']		= $this->intCarrierReference;
 		 		$arrRendered['**Type']			= $arrRequest['Type'];
 		 		$arrRendered['**Request']		= $arrRequest['Id'];
 			 	$arrRendered['**CarrierRef']	= $this->intCarrierReference;
 		 		$this->_arrFileContent[]		= $arrRendered;
+ 				break;
+ 			
+ 			default:
+				// Service Address Problems
+		 		$arrRequest['Status']		= REQUEST_STATUS_REJECTED_FLEX;
+		 		$arrRequest['Description']	= "Internal Error (Contact YBS): Provisioning Type {$arrRequest['Type']} not supported by Daily Order File.";
+				return $arrRequest;
  				break;
  		}
  		
