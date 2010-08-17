@@ -8,29 +8,30 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 		}
 
 		$super(40);
-		
+
 		this.iAccountId		= iAccountId;
 		this.iRebillTypeId	= iRebillTypeId;
 		this.fnOnSave		= fnOnSave;
 		this.fnOnCancel		= fnOnCancel;
 		this.oRebill		= null;
 		this._hFields		= {};
+		this._hHiddenValues = {};
 		this.oLoading		= new Reflex_Popup.Loading('Please Wait');
 		this.oLoading.display();
 		this._buildUI();
 	},
-	
+
 	// Private
-	
+
 	_buildUI	: function(oResponse)
 	{
 		if (typeof oResponse == 'undefined')
 		{
 			// Make request to get the current payment and information on other methods
 			var fnGetRebillForAccount	=	jQuery.json.jsonFunction(
-												this._buildUI.bind(this), 
-												this._ajaxError.bind(this, true), 
-												'Account', 
+												this._buildUI.bind(this),
+												this._ajaxError.bind(this, true),
+												'Account',
 												'getRebill'
 											);
 			fnGetRebillForAccount(this.iAccountId);
@@ -40,10 +41,10 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 			// Hide the loading popup
 			this.oLoading.hide();
 			delete this.oLoading;
-				
+
 			// Cache the response
 			this.oRebill	= (oResponse.oRebill ? oResponse.oRebill : false);
-			
+
 			// Build content
 			this._oContent	= 	$T.div({class: 'popup-account-edit-rebill'},
 									$T.div({class: 'tabgroup'}
@@ -60,18 +61,18 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 										)
 									)
 								);
-			
+
 			// Button events
 			var oAddButton		= this._oContent.select('div.buttons > button.icon-button').first();
 			oAddButton.observe('click', this._saveButtonClick.bind(this));
-			
+
 			var oCancelButton	= this._oContent.select('div.buttons > button.icon-button').last();
 			oCancelButton.observe('click', this._cancelEdit.bind(this));
-			
+
 			// Create tab group
-			var oTabContainer	= this._oContent.select('div.tabgroup').first(); 
+			var oTabContainer	= this._oContent.select('div.tabgroup').first();
 			this._oTabGroup		= new Control_Tab_Group(oTabContainer, true);
-			
+
 			// Generate control fields
 			var hPanels		= Popup_Account_Edit_Rebill.PANELS;
 			var hFields		= Popup_Account_Edit_Rebill.FIELDS[this.iRebillTypeId];
@@ -81,6 +82,7 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 			var sFieldName	= null;
 			var oTabContent	= null;
 			var oTBody		= null;
+			//debugger;
 			for (var sPanelName in hPanels)
 			{
 				oTabContent	=	$T.table({class: 'reflex input'},
@@ -101,11 +103,23 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 							)
 						);
 					}
+					else if (mConfig.bHidden)
+					{
+
+						if (this.oRebill && (typeof this.oRebill.oDetails[sFieldName] != 'undefined'))
+						{
+							this._hHiddenValues[sFieldName]	= this.oRebill.oDetails[sFieldName];
+						}
+						else
+						{
+							this._hHiddenValues[sFieldName]	= null;
+						}
+					}
 					else
 					{
 						// Field definition
 						oControl	= Control_Field.factory(mConfig.sType, mConfig.oDefinition);
-						
+
 						if (this.oRebill && (typeof this.oRebill.oDetails[sFieldName] != 'undefined'))
 						{
 							oControl.setValue(this.oRebill.oDetails[sFieldName]);
@@ -114,7 +128,7 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 						{
 							oControl.setValue('');
 						}
-						
+
 						oControl.setRenderMode(Control_Field.RENDER_MODE_EDIT);
 						oTBody.appendChild(oControl.generateInputTableRow().oElement);
 						this._hFields[sFieldName]	= oControl;
@@ -122,7 +136,7 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 				}
 				this._oTabGroup.addTab(sPanelName, new Control_Tab(sPanelName, oTabContent));
 			}
-			
+
 			// Popup setup
 			this.setTitle('Edit Rebill (' + Flex.Constant.arrConstantGroups.rebill_type[this.iRebillTypeId].Name + ')');
 			this.setIcon(Popup_Account_Edit_Rebill.ICON_IMAGE_SOURCE);
@@ -130,7 +144,7 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 			this.display();
 		}
 	},
-	
+
 	_ajaxError	: function(bHideOnClose, oResponse)
 	{
 		if (this.oLoading)
@@ -138,9 +152,9 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 			this.oLoading.hide();
 			delete this.oLoading;
 		}
-		
+
 		var oConfig	= {sTitle: 'Error', fnOnClose: (bHideOnClose ? this.hide.bind(this) : null)};
-		
+
 		if (oResponse.Message)
 		{
 			Reflex_Popup.alert(oResponse.Message, oConfig);
@@ -154,12 +168,12 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 			Popup_Account_Edit_Rebill.showValidationErrors(oResponse.aValidationErrors);
 		}
 	},
-	
+
 	_saveButtonClick	: function()
 	{
 		this._addRebill();
 	},
-	
+
 	_addRebill	: function(oResponse)
 	{
 		if (typeof oResponse == 'undefined')
@@ -182,25 +196,31 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 					aValidationErrors.push(ex);
 				}
 			}
-			
+
+			// Add hidden field values to the details object
+			for (var sFieldName in this._hHiddenValues)
+			{
+				oDetails[sFieldName]	= this._hHiddenValues[sFieldName];
+			}
+
 			// Check for errors, show popup if any
 			if (aValidationErrors.length)
 			{
 				Popup_Account_Edit_Rebill.showValidationErrors(aValidationErrors);
 				return;
 			}
-			
+
 			// Make ajax request, sending rebill type and rebill details
 			this.oLoading	= new Reflex_Popup.Loading('Please Wait');
 			this.oLoading.display();
-			
+
 			var fnAddRebill	=	jQuery.json.jsonFunction(
 									this._addRebill.bind(this),
 									this._ajaxError.bind(this, false),
 									'Account',
 									'addRebill'
 								);
-			debugger;
+			//debugger;
 			fnAddRebill(this.iAccountId, this.iRebillTypeId, oDetails);
 		}
 		else if (oResponse.Success)
@@ -208,13 +228,13 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 			// Hide loading
 			this.oLoading.hide();
 			delete this.oLoading;
-			
+
 			// All good
 			if (this.fnOnSave)
 			{
 				this.fnOnSave(oResponse.oRebill);
 			}
-			
+
 			this.hide();
 		}
 		else
@@ -223,7 +243,7 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 			this._ajaxError(false, oResponse);
 		}
 	},
-	
+
 	_cancelEdit	: function()
 	{
 		// Cancel callback
@@ -231,10 +251,10 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 		{
 			this.fnOnCancel();
 		}
-		
+
 		this.hide();
 	},
-	
+
 	_businessStructureChange	: function()
 	{
 		var oField	= this._hFields['account_business_structure_id'];
@@ -248,7 +268,7 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 			oDesc.hide();
 		}
 	},
-	
+
 	_cardTypeChange	: function()
 	{
 		var oField	= this._hFields['card_card_type_id'];
@@ -285,12 +305,12 @@ Popup_Account_Edit_Rebill.showValidationErrors	= function(aErrors)
 							)
 						);
 	var oUL	= oAlertDom.select('ul').first();
-	
+
 	for (var i = 0; i < aErrors.length; i++)
 	{
 		oUL.appendChild($T.li(aErrors[i]));
 	}
-	
+
 	Reflex_Popup.alert(oAlertDom, {iWidth: 30});
 }
 
@@ -302,7 +322,7 @@ Popup_Account_Edit_Rebill.validateWithLength	= function(fnValidate, iLength, sVa
 		{
 			return false;
 		}
-		
+
 		return true;
 	}
 	else
@@ -324,15 +344,15 @@ Popup_Account_Edit_Rebill.validateCardExpiry	= function(sValue)
 	var iNow	= oDate.getTime();
 	oDate.setFullYear(parseInt(aSplit[0]));
 	oDate.setMonth(parseInt(aSplit[1]) - 1);
-	
+
 	// No day, use the end of the month
 	oDate.setDate(Popup_Account_Edit_Rebill.getDaysInMonth(oDate.getMonth() + 1, oDate.getFullYear()));
-	
+
 	if (oDate.getTime() > iNow)
 	{
 		return true;
 	}
-	
+
 	return false;
 };
 
@@ -351,7 +371,7 @@ Popup_Account_Edit_Rebill.validatePastDate	= function(mValue)
 			return true;
 		}
 	}
-	
+
 	// Not a valid date
 	return false;
 };
@@ -365,7 +385,7 @@ Popup_Account_Edit_Rebill.getOptions	= function(sConstantGroup, fnCallback)
 		for (var i in oConstantGroup)
 		{
 			aOptions.push(
-				$T.option({value: i}, 
+				$T.option({value: i},
 					oConstantGroup[i].Name
 				)
 			);
@@ -375,8 +395,8 @@ Popup_Account_Edit_Rebill.getOptions	= function(sConstantGroup, fnCallback)
 };
 
 //Check if $CONSTANT has correct constant groups loaded, if not this class won't work
-if (typeof Flex.Constant.arrConstantGroups.rebill_type == 'undefined' || 
-	typeof Flex.Constant.arrConstantGroups.payment_method == 'undefined' || 
+if (typeof Flex.Constant.arrConstantGroups.rebill_type == 'undefined' ||
+	typeof Flex.Constant.arrConstantGroups.payment_method == 'undefined' ||
 	typeof Flex.Constant.arrConstantGroups.motorpass_business_structure == 'undefined' ||
 	typeof Flex.Constant.arrConstantGroups.motorpass_card_type == 'undefined')
 {
@@ -396,12 +416,16 @@ Popup_Account_Edit_Rebill.SAVE_IMAGE_SOURCE 	= '../admin/img/template/tick.png';
 // Editing fields
 var oNow	= new Date();
 Popup_Account_Edit_Rebill.FIELDS	= {};
-Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	= 
+Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	=
 {
+	account_id	:
+	{
+		bHidden	: true
+	},
 	account_account_number	:
 	{
 		sType		: 'text',
-		oDefinition	: 
+		oDefinition	:
 		{
 			sLabel		: 'Account Number',
 			mEditable	: true,
@@ -409,10 +433,10 @@ Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	=
 			fnValidate	: Popup_Account_Edit_Rebill.validateWithLength.curry(Reflex_Validation.digits, 9)
 		}
 	},
-	account_account_name	: 
+	account_account_name	:
 	{
 		sType		: 'text',
-		oDefinition	: 
+		oDefinition	:
 		{
 			sLabel		: 'Account Name',
 			mEditable	: true,
@@ -420,10 +444,10 @@ Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	=
 			fnValidate	: Popup_Account_Edit_Rebill.validateWithLength.curry(null, 256)
 		}
 	},
-	card_card_expiry_date	: 
+	card_card_expiry_date	:
 	{
 		sType		: 'combo_date',
-		oDefinition	: 
+		oDefinition	:
 		{
 			sLabel				: 'Card Expiry Month',
 			mEditable			: true,
@@ -446,7 +470,7 @@ Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	=
 			fnPopulate	: Motorpass_Promotion_Code.getAllAsSelectOptions
 		}
 	},
-	
+
 	account_business_commencement_date	:
 	{
 		sType	: 'date-picker',
@@ -723,7 +747,7 @@ Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	=
 			sLabel		: 'Drivers License Number',
 			mEditable	: true
 		}
-		
+
 	},
 	contact_position	:
 	{
@@ -816,14 +840,15 @@ Popup_Account_Edit_Rebill.PANELS	=
 {
 	'Account'	:
 	{
-		aFields	: 
+		aFields	:
 		[
 			'account_account_number',
 			'account_account_name',
 			'account_business_commencement_date',
 			'account_motorpass_business_structure_id',
 			'account_business_structure_description',
-			'account_motorpass_promotion_code_id' 
+			'account_motorpass_promotion_code_id',
+			'account_id'
 		]
 	},
 	'Card'	:
@@ -886,7 +911,7 @@ Popup_Account_Edit_Rebill.PANELS	=
 			'reference2_label',
 			'reference2_company_name',
 			'reference2_contact_person',
-			'reference2_phone_number'	
+			'reference2_phone_number'
 		]
 	}
 }
