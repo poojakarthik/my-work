@@ -13,19 +13,16 @@ class Motorpass_Logic_Account extends Motorpass_Logic_LogicClass
 
 	public function __construct($mAccountDetails)
 	{
-		$this->aUneditable = array('motorpass_contact_id', 'motorpass_card_id', 'modified','modified_employee_id');
+		$this->aUneditable = array('motorpass_contact_id', 'motorpass_card_id', 'street_address_id','postal_address_id','modified','modified_employee_id');
 
 
 		if ($mAccountDetails && get_class($mAccountDetails)=='stdClass')
 		{
 			//create the objects that are part of the account
-			$this->oCard = new Motorpass_Logic_Card($mAccountDetails->card);
-			$this->oStreetAddress = new Motorpass_Logic_Address($mAccountDetails->street_address);
-			$this->oPostalAddress = new Motorpass_Logic_Address($mAccountDetails->postal_address);
-			//$this->oDOReferrer = new DO_Spmotorpass_Spmotorpass_Referrer((array)$mAccountDetails->referrer);
-			//$this->oDOReferrer->setUnsavedChangesFlag();
-			$this->oContact = new Motorpass_Logic_Contact($mAccountDetails->contact);
-			//delete from the account object what we don't want to be in there
+			$oCard = $mAccountDetails->card;
+			$oStreet = $mAccountDetails->street_address;
+			$oPostal = $mAccountDetails->postal_address;
+			$oContact = $mAccountDetails->contact;
 			$aTradeRefs = $mAccountDetails->trade_references;
 			unset($mAccountDetails->trade_references);
 			unset($mAccountDetails->card);
@@ -33,18 +30,21 @@ class Motorpass_Logic_Account extends Motorpass_Logic_LogicClass
 			unset($mAccountDetails->postal_address);
 			unset($mAccountDetails->referrer);
 			unset($mAccountDetails->contact);
-
-			//now create the account object itself
-			$mAccountDetails->motorpass_card_id = $this->oCard->id;
-			$mAccountDetails->street_address_id = $this->oStreetAddress->id;
-			$mAccountDetails->postal_address_id = $this->oPostalAddress->id;
-
-			$mAccountDetails->motorpass_contact_id = $this->oContact->id;
-
-			$this->aTradeRefs = Motorpass_Logic_TradeReference::createFromStd($aTradeRefs, $this);
 			parent::__construct($mAccountDetails, 'Motorpass_Account');
 
+			if ($this->id!=null)
+			{
+				$oCard->id = $this->motorpass_card_id;
+				$oStreet->id = $this->street_address_id;
+				$oPostal->id = $this->postal_address_id;
+				$oContact->id = $this->motorpass_contact_id;
+			}
 
+			$this->oCard = new Motorpass_Logic_Card($oCard);
+			$this->oStreetAddress = new Motorpass_Logic_Address($oStreet);
+			$this->oPostalAddress = new Motorpass_Logic_Address($oPostal);
+			$this->oContact = new Motorpass_Logic_Contact($oContact);
+			$this->aTradeRefs = Motorpass_Logic_TradeReference::createFromStd($aTradeRefs, $this);
 		}
 		else if (is_numeric($mAccountDetails))
 		{
@@ -52,10 +52,8 @@ class Motorpass_Logic_Account extends Motorpass_Logic_LogicClass
 		}
 		else
 		{
-			throw new Exception_InvalidJSONObject('The Sale data supplied does not represent a valid Sale.');
+			throw new Exception_InvalidJSONObject('The data supplied does not represent a valid motorpass account.');
 		}
-
-
 
 
 		if (get_class($mAccountDetails)!='stdClass')

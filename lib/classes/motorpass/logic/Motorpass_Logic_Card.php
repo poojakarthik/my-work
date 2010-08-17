@@ -5,6 +5,7 @@ class Motorpass_Logic_Card extends Motorpass_Logic_LogicClass
 
 	public function __construct($mDetails)
 	{
+		$this->aUneditable = array('modified', 'modified_employee_id');
 		parent::__construct($mDetails, 'Motorpass_Card');
 		if ($this->oDO->id == null)
 			$this->oDO->modified = Data_Source_Time::currentTimestamp();

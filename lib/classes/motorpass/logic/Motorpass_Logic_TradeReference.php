@@ -8,7 +8,7 @@ class Motorpass_Logic_TradeReference extends Motorpass_Logic_ManyToOneLogicClass
 
 	public function __construct($mDetails, $oParent = null)
 	{
-		$this->aUneditable = array('status_id', 'account_id','created', 'created_employee_id');
+		$this->aUneditable = array('status_id', 'motorpass_account_id','created', 'created_employee_id');
 		parent::__construct($mDetails, 'Motorpass_Trade_Reference');
 		$this->oParent = $oParent?$oParent:null;
 		if ($this->id == null)
@@ -65,6 +65,11 @@ class Motorpass_Logic_TradeReference extends Motorpass_Logic_ManyToOneLogicClass
 	public static function createFromStd($mStd, $oParent)
 	{
 		return parent::createFromStd('Motorpass_Logic_TradeReference',$mStd, $oParent, self::$sFKField);
+	}
+
+	public static function getIdForObject($aArgs)
+	{
+		return call_user_func ( array(self::$sDO, 'getActiveId') , $aArgs);
 	}
 
 	public static function saveForParent($aTradeReferences)

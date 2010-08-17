@@ -108,7 +108,9 @@ class Motorpass_Trade_Reference extends ORM_Cached
 				case 'selByAccountId':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "motorpass_account_id = <account_id>");
 					break;
-					// UPDATES
+				case 'getActiveId':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "id", "motorpass_account_id = <motorpass_account_id> and company_name = <company_name> and contact_person = <contact_person> and phone_number =<phone_number> and status_id = 1");
+					break;
 
 				default:
 					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
@@ -128,6 +130,15 @@ class Motorpass_Trade_Reference extends ORM_Cached
 			$aObjects[]= new self($aResult);
 		}
 		return $aObjects;
+
+	}
+
+	public static function getActiveId($aWhereClause)
+	{
+		$oSelect	= self::_preparedStatement('getActiveId');
+		$oSelect->Execute($aWhereClause);
+		$aResult = $oSelect->Fetch();
+		return $aResult?$aResult['id']:null;
 
 	}
 

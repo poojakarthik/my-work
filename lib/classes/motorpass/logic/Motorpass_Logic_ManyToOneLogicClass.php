@@ -4,6 +4,8 @@ abstract class Motorpass_Logic_ManyToOneLogicClass extends Motorpass_Logic_Logic
 
 	protected $oParent;
 
+	abstract public static function getIdForObject($aArgs);
+
 	public static function toStdClassForParent($aInstances)
 	{
 		$aStdClasses = array();
@@ -36,9 +38,17 @@ abstract class Motorpass_Logic_ManyToOneLogicClass extends Motorpass_Logic_Logic
 		else
 		{
 			$mStd->{$sFKField} = $oParent->id;
+			self::getId($sLO,$mStd, $oParent,$sFKField );
 			$oInstance = new $sLO($mStd, $oParent);
 			return $oInstance;
 		}
+	}
+
+	public static function getId ($sclass, $oObject, $oParent, $sFKField)
+	{
+
+		$oObject->id = call_user_func ( array($sclass, 'getIdForObject') , (array)$oObject);
+
 	}
 
 
