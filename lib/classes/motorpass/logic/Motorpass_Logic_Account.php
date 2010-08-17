@@ -225,5 +225,93 @@ class Motorpass_Logic_Account extends Motorpass_Logic_LogicClass
 		return $oStdAccount;
 	}
 
+	public static function makeFlatObject($oObject, $sObjectGroup)
+	{
+		$oResult = new stdClass();
+		foreach ((array)$oObject as $key=>$value )
+		{
+
+			if (get_class($value)=='stdClass')
+			{
+				foreach((array)$value as $nestedKey=>$nestedValue)
+				{
+					$newKey = $key.'_'.$nestedKey;
+					$oResult->$newKey = $nestedValue;
+				}
+			}
+			else if (is_array($value))
+			{
+				$i=1;
+				foreach($value as $nestedValue)
+				{
+					$oFlatObject = self::makeFlatObject($nestedValue, 'reference'.$i);
+					$merge = array_merge((array)$oResult, (array)$oFlatObject);
+					$oResult = (object)$merge;
+					$i++;
+				}
+			}
+			else
+			{
+				$newKey = $sObjectGroup.'_'.$key;
+				$oResult->$newKey = $value;
+			}
+		}
+
+		return $oResult;
+	}
+
+	public static function makeNestedObject($oDetails)
+	{
+		$oAccount = new stdClass();
+		$oPostalAddress = new stdClass();
+		$oStreetAddress = new stdClass();
+		$oCard = new stdClass();
+		$oContact = new stdClass();
+		$oReference1 = new stdClass();
+		$oReference2 = new stdClass();
+
+		foreach ((array)$oDetails as $key=>$value )
+		{
+			$object = substr($key, 0, strpos( $key, '_'));
+			$sObjectKey = substr($key, strpos( $key, '_')+1);
+			switch($object)
+			{
+				case 'card':
+					$oCard->$sObjectKey = $value;
+					break;
+				case 'account':
+					$oAccount->$sObjectKey = $value;
+					break;
+				case 'street':
+					$sObjectKey = substr($sObjectKey, strpos( $sObjectKey, '_')+1);
+					$oStreetAddress->$sObjectKey = $value;
+					break;
+				case 'postal':
+					$sObjectKey = substr($sObjectKey, strpos( $sObjectKey, '_')+1);
+					$oPostalAddress->$sObjectKey = $value;
+					break;
+				case 'contact':
+					$oContact->$sObjectKey = $value;
+					break;
+				case 'reference1':
+					$oReference1->$sObjectKey = $value;
+					break;
+				case 'reference2':
+					$oReference2->$sObjectKey = $value;
+				default:
+					break;
+
+			}
+
+		}
+
+		$oAccount->card = $oCard;
+		$oAccount->street_address = $oStreetAddress;
+		$oAccount->postal_address = $oPostalAddress;
+		$oAccount->trade_references = array($oReference1,$oReference2);
+		$oAccount->contact = $oContact;
+		return $oAccount;
+	}
+
 }
 ?>
