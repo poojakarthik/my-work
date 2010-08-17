@@ -149,8 +149,8 @@ public function isValidValue($propertyName, $value)
 			case 'modified':
 				return ($value === null) || (preg_match("/^(2[0-1]|19)[0-9]{2,2}\-((0[469]|11)\-(0[1-9]|[12][0-9]|30)|(0[13578]|1[02])\-(0[1-9]|[12][0-9]|3[01])|02\-(0[1-9]|[12][0-9])) (?:[01][0-9]|2[0-3])\:[0-5][0-9](?:|\:[0-5][0-9](?:|\.[0-9]{1,6}))$/", $value) && (substr($value, 5, 2) != "02" || substr($value, 8, 2) != "29" || date("L", mktime(0,0,0,1,1,substr($value, 0, 4))) == "1"));
 
-			case 'modified_dealer_id':
-				return ($value === null) || (preg_match("/^(\-?[0-9]+|[0-9]+\-?)$/", "$value") && ($this->getModifiedDealer(true) !== null));
+			case 'modified_employee_id':
+				return ($value === null) || (preg_match("/^(\-?[0-9]+|[0-9]+\-?)$/", "$value"));// && ($this->getModifiedDealer(true) !== null));
 
 			default:
 				// No validation - assume is correct already as is not for data source
