@@ -195,6 +195,8 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 																  business_commencement_date DATE NOT NULL ,
 																  motorpass_business_structure_id BIGINT UNSIGNED NOT NULL ,
 																  business_structure_description VARCHAR(128) NOT NULL ,
+																  email_address VARCHAR(100) NULL ,
+  																  email_invoice INTEGER NOT NULL ,
 																  street_address_id BIGINT UNSIGNED NOT NULL ,
 																  postal_address_id BIGINT UNSIGNED NULL ,
 																  motorpass_contact_id BIGINT UNSIGNED NOT NULL ,
