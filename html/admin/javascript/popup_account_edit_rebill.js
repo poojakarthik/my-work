@@ -28,7 +28,7 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 		if (typeof oResponse == 'undefined')
 		{
 			// Make request to get the current payment and information on other methods
-			var fnGetRebillForAccount	=	jQuery.json.jsonFunction(
+			var fnGetRebillForAccount	= jQuery.json.jsonFunction(
 												this._buildUI.bind(this),
 												this._ajaxError.bind(this, true),
 												'Account',
@@ -421,6 +421,14 @@ Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	=
 	account_id	:
 	{
 		bHidden	: true
+	},
+	reference1_id :
+	{
+		bHidden : true
+	},
+	reference2_id :
+	{
+		bHidden : true
 	},
 	account_account_number	:
 	{
@@ -911,7 +919,9 @@ Popup_Account_Edit_Rebill.PANELS	=
 			'reference2_label',
 			'reference2_company_name',
 			'reference2_contact_person',
-			'reference2_phone_number'
+			'reference2_phone_number',
+			'reference1_id',
+			'reference2_id'
 		]
 	}
 }
