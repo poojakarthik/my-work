@@ -269,10 +269,17 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 							array
 								(
 									'sDescription'		=>	"alter table rebill_motorpass",
-									'sAlterSQL'			=>	"ALTER TABLE		rebill_motorpass
-															ADD COLUMN		motorpass_account_id 	BIGINT UNSIGNED ;	",
+									'sAlterSQL'			=>	"	ALTER TABLE		rebill_motorpass
+																ADD COLUMN		motorpass_account_id 	BIGINT UNSIGNED,
+																MODIFY COLUMN	account_number INT NULL,
+																MODIFY COLUMN	account_name VARCHAR(256) NULL,
+																MODIFY COLUMN	card_expiry_date DATE NULL;
+															",
 									'sRollbackSQL'		=>	"	ALTER TABLE		rebill_motorpass
-															DROP COLUMN		motorpass_account_id ;	",
+																DROP COLUMN		motorpass_account_id,
+																MODIFY COLUMN	account_number INT NOT NULL,
+																MODIFY COLUMN	account_name VARCHAR(256) NOT NULL,
+																MODIFY COLUMN	card_expiry_date DATE NOT NULL;	",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								),
 							);
