@@ -35,6 +35,7 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 																	description VARCHAR(128) NOT NULL ,
 																	system_name VARCHAR(128) NOT NULL ,
 																	const_name VARCHAR(128) NOT NULL ,
+																	code_numeric INT NOT NULL,
 																	CONSTRAINT pk_motorpass_business_structure_id	PRIMARY KEY (id) ) ENGINE = InnoDB
 																;",
 									'sRollbackSQL'		=>	"	DROP TABLE motorpass_business_structure;",
@@ -44,19 +45,19 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 								(
 									'sDescription'		=>	"Populate table motorpass_business_structure",
 									'sAlterSQL'			=>	"	INSERT INTO motorpass_business_structure (name, description, system_name, const_name)
-																VALUES	('Unlisted Pty Ltd',			'Unlisted Pty Ltd', 			'UNLISTED_PTY_LTD', 		'MOTORPASS_BUSINESS_STRUCTURE_UNLISTED_PTY_LTD'),
-																		('Listed Ltd Co', 				'Listed Ltd Co', 				'LISTED_LTD_CO', 			'MOTORPASS_BUSINESS_STRUCTURE_LISTED_LTD_CO'),
-																		('Trust', 						'Trust', 						'TRUST', 					'MOTORPASS_BUSINESS_STRUCTURE_TRUST'),
-																		('Partnership', 				'Partnership', 					'PARTNERSHIP', 				'MOTORPASS_BUSINESS_STRUCTURE_PARTNERSHIP'),
-																		('Sole Trader', 				'Sole Trader', 					'SOLE_TRADER', 				'MOTORPASS_BUSINESS_STRUCTURE_SOLE_TRADER'),
-																		('Govt Department', 			'Govt Department', 				'GOVT_DEPARTMENT', 			'MOTORPASS_BUSINESS_STRUCTURE_GOVT_DEPARTMENT'),
-																		('Subsidiary of Foreign Co.', 	'Subsidiary of Foreign Co.', 	'SUBSIDIARY_OF_FOREIGN_CO', 'MOTORPASS_BUSINESS_STRUCTURE_SUBSIDIARY_OF_FOREIGN_CO'),
-																		('Association', 				'Association', 					'ASSOCIATION', 				'MOTORPASS_BUSINESS_STRUCTURE_ASSOCIATION'),
-																		('Trustee', 					'Trustee', 						'TRUSTEE', 					'MOTORPASS_BUSINESS_STRUCTURE_TRUSTEE'),
-																		('Trading Subsidiary', 			'Trading Subsidiary', 			'TRADING_SUBSIDIARY', 		'MOTORPASS_BUSINESS_STRUCTURE_TRADING_SUBSIDIARY'),
-																		('Non Profit Organisation', 	'Non Profit Organisation', 		'NON_PROFIT_ORGANISATION', 	'MOTORPASS_BUSINESS_STRUCTURE_NON_PROFIT_ORGANISATION'),
-																		('Incorporated Body', 			'Incorporated Body', 			'INCORPORATED_BODY', 		'MOTORPASS_BUSINESS_STRUCTURE_INCORPORATED_BODY'),
-																		('Other', 						'Other', 						'OTHER', 					'MOTORPASS_BUSINESS_STRUCTURE_OTHER');",
+																VALUES	('Unlisted Pty Ltd',			'Unlisted Pty Ltd', 			'UNLISTED_PTY_LTD', 		'MOTORPASS_BUSINESS_STRUCTURE_UNLISTED_PTY_LTD'			, 1),
+																		('Listed Ltd Co', 				'Listed Ltd Co', 				'LISTED_LTD_CO', 			'MOTORPASS_BUSINESS_STRUCTURE_LISTED_LTD_CO'			, 2),
+																		('Trust', 						'Trust', 						'TRUST', 					'MOTORPASS_BUSINESS_STRUCTURE_TRUST'					, 5),
+																		('Partnership', 				'Partnership', 					'PARTNERSHIP', 				'MOTORPASS_BUSINESS_STRUCTURE_PARTNERSHIP'				, 6),
+																		('Sole Trader', 				'Sole Trader', 					'SOLE_TRADER', 				'MOTORPASS_BUSINESS_STRUCTURE_SOLE_TRADER'				, 7),
+																		('Govt Department', 			'Govt Department', 				'GOVT_DEPARTMENT', 			'MOTORPASS_BUSINESS_STRUCTURE_GOVT_DEPARTMENT'			, 8),
+																		('Subsidiary of Foreign Co.', 	'Subsidiary of Foreign Co.', 	'SUBSIDIARY_OF_FOREIGN_CO', 'MOTORPASS_BUSINESS_STRUCTURE_SUBSIDIARY_OF_FOREIGN_CO'	, 9),
+																		('Association', 				'Association', 					'ASSOCIATION', 				'MOTORPASS_BUSINESS_STRUCTURE_ASSOCIATION'				, 10),
+																		('Trustee', 					'Trustee', 						'TRUSTEE', 					'MOTORPASS_BUSINESS_STRUCTURE_TRUSTEE'					, 11),
+																		('Trading Subsidiary', 			'Trading Subsidiary', 			'TRADING_SUBSIDIARY', 		'MOTORPASS_BUSINESS_STRUCTURE_TRADING_SUBSIDIARY'		, 12),
+																		('Non Profit Organisation', 	'Non Profit Organisation', 		'NON_PROFIT_ORGANISATION', 	'MOTORPASS_BUSINESS_STRUCTURE_NON_PROFIT_ORGANISATION'	, 13),
+																		('Incorporated Body', 			'Incorporated Body', 			'INCORPORATED_BODY', 		'MOTORPASS_BUSINESS_STRUCTURE_INCORPORATED_BODY'		, 14),
+																		('Other', 						'Other', 						'OTHER', 					'MOTORPASS_BUSINESS_STRUCTURE_OTHER'					, 15);",
 									'sRollbackSQL'		=>	"	TRUNCATE motorpass_business_structure;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								),
@@ -74,7 +75,7 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 																   				FOREIGN KEY (status_id)
 																    			REFERENCES status (id)
 																    			ON DELETE RESTRICT
-																    			ON UPDATE CASCADE 
+																    			ON UPDATE CASCADE
 																) ENGINE = InnoDB
 																;",
 									'sRollbackSQL'		=>	"	DROP TABLE motorpass_promotion_code;",
