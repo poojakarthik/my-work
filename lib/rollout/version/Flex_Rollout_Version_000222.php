@@ -2,19 +2,6 @@
 
 /**
  * Version 222 of database update.
- * This version: -
- *
- *	1:	Add table motorpass_business_structure
- *	2:	Populate table motorpass_business_structure
- *	3:	Add table motorpass_promotion_code
- *	4:	Add table motorpass_address
- *	5:	Add table motorpass_contact
- *	6:	Add table motorpass_card_type
- *	7:  Populate table motorpass_card_type
- *	8:  Add table motorpass_card
- *	9:  Add table motorpass_account
- *	10: Add table motorpass_trade_reference
- *
  */
 
 class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
@@ -154,6 +141,33 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 								),
 								array
 								(
+									'sDescription'		=>	"Create table motorpass_account_status",
+									'sAlterSQL'			=>	"	CREATE  TABLE motorpass_account_status (
+																  	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+																  	name VARCHAR(128) NOT NULL ,
+																  	description VARCHAR(128) NOT NULL ,
+																  	system_name VARCHAR(128) NOT NULL ,
+																  	const_name VARCHAR(128) NOT NULL ,
+																  	CONSTRAINT pk_motorpass_account_status_id PRIMARY KEY (id) ) ENGINE = InnoDB
+																;",
+									'sRollbackSQL'		=>	"	DROP TABLE motorpass_account_status;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=>	"Populate table motorpass_account_status",
+									'sAlterSQL'			=>	"	INSERT INTO motorpass_account_status (name, description, system_name, const_name)
+																VALUES	('Awaiting Dispatch', 	'Awaiting Dispatch', 	'AWAITING_DISPATCH',	'MOTORPASS_ACCOUNT_STATUS_AWAITING_DISPATCH'),
+																		('Dispatched', 			'Dispatched', 			'DISPATCHED',			'MOTORPASS_ACCOUNT_STATUS_DISPATCHED'),
+																		('Approved', 			'Approved', 			'APPROVED',				'MOTORPASS_ACCOUNT_STATUS_APPROVED'),
+																		('Declined', 			'Declined',				'DECLINED',				'MOTORPASS_ACCOUNT_STATUS_DECLINED'),
+																		('Withdrawn', 			'Withdrawn', 			'WITHDRAWN'	,			'MOTORPASS_ACCOUNT_STATUS_WITHDRAWN')
+																;",
+									'sRollbackSQL'		=>	"	TRUNCATE TABLE motorpass_account_status;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
 									'sDescription'		=>	"Add table motorpass_card",
 									'sAlterSQL'			=>	"	CREATE  TABLE motorpass_card (
 																  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -201,6 +215,8 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 																  postal_address_id BIGINT UNSIGNED NULL ,
 																  motorpass_contact_id BIGINT UNSIGNED NOT NULL ,
 																  motorpass_card_id BIGINT UNSIGNED NOT NULL ,
+																  external_sale_id BIGINT UNSIGNED NOT NULL,
+																  motorpass_account_status_id BIGINT UNSIGNED NOT NULL,
 																  modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 																  modified_employee_id BIGINT UNSIGNED NOT NULL ,
 																  CONSTRAINT pk_motorpass_account_id PRIMARY KEY (id) ,
@@ -232,6 +248,11 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 																  CONSTRAINT fk_motorpass_account_motorpass_card_id
 																    FOREIGN KEY (motorpass_card_id )
 																    REFERENCES motorpass_card (id )
+																    ON DELETE RESTRICT
+																    ON UPDATE CASCADE,
+																  CONSTRAINT fk_motorpass_account_motorpass_account_status_id
+																    FOREIGN KEY (motorpass_account_status_id )
+																    REFERENCES motorpass_account_status (id )
 																    ON DELETE RESTRICT
 																    ON UPDATE CASCADE) ENGINE = InnoDB
 																;",
