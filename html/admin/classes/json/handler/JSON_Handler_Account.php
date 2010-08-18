@@ -976,21 +976,8 @@ class JSON_Handler_Account extends JSON_Handler
 
 	public function addRebill($iAccountId , $iRebillTypeId  , $oDetails)
 	{
-
 		//for debug purposes only
 		//$oDetails = json_decode('{"account_id":32,"account_account_number":"1000174123","account_account_name":"sfsafdadf","account_business_commencement_date":"2010-08-01","account_motorpass_business_structure_id":"4","account_business_structure_description":"","account_motorpass_promotion_code_id":"1","card_motorpass_card_type_id":"2","card_card_type_description":"","card_card_expiry_date":"2011-2","card_shared":true,"card_holder_contact_title_id":null,"card_holder_first_name":"","card_holder_last_name":"","card_vehicle_model":"","card_vehicle_rego":"","card_vehicle_make":"","street_address_line_1":"asdfasdf","street_address_line_2":"","street_address_suburb":"asdfdsa","street_address_state_id":"2","street_address_postcode":"3333","postal_address_line_1":"","postal_address_line_2":"","postal_address_suburb":"","postal_address_state_id":null,"postal_address_postcode":"","contact_contact_title_id":null,"contact_first_name":"sdafdsfa","contact_last_name":"adsfsdaf","contact_dob":"2010-08-01","contact_drivers_license":"","contact_position":"asdffsda","contact_landline_number":"0765555555","reference1_company_name":"sdfgf","reference1_contact_person":"sdfgds","reference1_phone_number":"0765555555","reference2_company_name":"sghgh","reference2_contact_person":"hdh","reference2_phone_number":"0756555555"}');
-
-		// Start a new database transaction
-		$oDataAccess	= DataAccess::getDataAccess();
-
-		if (!$oDataAccess->TransactionStart())
-		{
-			// Failure!
-			return 	array(
-						"Success"	=> false,
-						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? 'Could not start database transaction.' : false,
-					);
-		}
 
 		try
 		{
@@ -1000,21 +987,6 @@ class JSON_Handler_Account extends JSON_Handler
 			}
 
 			$aErrors	= array();
-
-
-			$oCurrentRebill			= Rebill::getForAccountId($iAccountId);
-			$oCurrentRebillDetails	= false;
-			if ($oCurrentRebill)
-			{
-				$oCurrentRebillDetails	= $oCurrentRebill->getDetails();
-			}
-
-			// Create a new rebill
-			$oRebill						= new Rebill();
-			$oRebill->account_id			= $iAccountId;
-			$oRebill->rebill_type_id		= $iRebillTypeId;
-			$oRebill->created_employee_id	= Flex::getUserId();
-			$oRebill->created_timestamp		= date('Y-m-d H:i:s');
 
 			// Set the extra rebill type specific information
 			switch ($iRebillTypeId)
@@ -1027,10 +999,9 @@ class JSON_Handler_Account extends JSON_Handler
 					$iExpiryDate		= strtotime($oDetails->card_card_expiry_date.'-'.$sLastDayInMonth);
 					$oDetails->card_card_expiry_date = date('Y-m-d', $iExpiryDate);
 
-
 					//create the logic object
 					$oMotorpassAccount = new Motorpass_Logic_Account(Motorpass_Logic_Account::makeNestedObject($oDetails));
-					$mResult = $oMotorpassAccount->save(false);
+					$mResult = $oMotorpassAccount->save();
 
 					if (is_array($mResult))
 					{
@@ -1042,54 +1013,22 @@ class JSON_Handler_Account extends JSON_Handler
 									"aValidationErrors"	=> $aErrors
 								);
 					}
-
-					// No validation errors continue!
-
-					// Check if a save is required (check if the rebill_motorpass details are the same, if so then no save needed)
-					if ($oCurrentRebillDetails &&
-						($oCurrentRebill->rebill_type_id == $iRebillTypeId) &&
-						($oCurrentRebillDetails->account_number == $iAccountId) &&
-						($oCurrentRebillDetails->account_name == $oDetails->account_account_name) &&
-						($oCurrentRebillDetails->card_expiry_date == $oDetails->card_card_expiry_date))
+					else
 					{
-						// No save required, the last rebill for the account is a motorpass with the same account number
-						// Return the last one
-						$oStdClassRebill			= $oCurrentRebill->toStdClass();
-						$oStdClassRebill->oDetails	= $oCurrentRebillDetails->toStdClass();
 
-						return 	array(
-									"Success"	=> true,
-									"bNoChange"	=> true,
-									"oRebill"	=> $oStdClassRebill
+					$oCurrentRebill			= Rebill::getForAccountId($iAccountId);
+					$oCurrentRebillDetails	= $oCurrentRebill->getDetails();
+					$oStd = $oCurrentRebill->toStdClass();
+					$oStd->oDetails = $oCurrentRebillDetails->toStdClass();
+
+								return array(
+									"Success"			=> true,
+									"oRebill"			=>$oStd
 								);
 					}
-
-					// Save required, save the new rebill before creating the rebill_motorpass
-					$oRebill->save();
-
-					// Save a new Rebill_Motorpass
-					$oRebillMotorpass					= new Rebill_Motorpass();
-					$oRebillMotorpass->rebill_id		= $oRebill->id;
-					$oRebillMotorpass->account_number	= $iAccountId;
-					$oRebillMotorpass->account_name		= $oMotorpassAccount->account_name;
-					$oRebillMotorpass->card_expiry_date	= $oMotorpassAccount->oCard->card_expiry_date;
-					$oRebillMotorpass->motorpass_account_id = $mResult;
-					$oRebillMotorpass->save();
-
-					// Return new details
-					$oStdClassRebill			= $oRebill->toStdClass();
-					$oStdClassRebill->oDetails	= $oRebillMotorpass->toStdClass();
-					$oStdClassRebill->oAccount = $oMotorpassAccount->toStdClass();
 					break;
 			}
 
-			// Everything looks OK -- Commit!
-			$oDataAccess->TransactionCommit();
-
-			return 	array(
-						"Success"	=> true,
-						"oRebill"	=> $oStdClassRebill
-					);
 		}
 		catch (JSON_Handler_Account_Exception $oException)
 		{
