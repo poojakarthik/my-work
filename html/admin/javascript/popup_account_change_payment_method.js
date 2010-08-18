@@ -180,7 +180,6 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 			// No payment method returned, if Invoice is the current
 			if (oMethod)
 			{
-				debugger;
 				// Check for method expiry
 				if (this.hMethods[iMethod][iSubType].fnCheckExpiry)
 				{
@@ -466,7 +465,7 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 						var sAccountClass = 'value';
 						if (oMethod.oDetails.account_account_number == null || oMethod.oDetails.account_account_number == 0)
 						{
-							oMethod.oDetails.account_account_number = 'not supplied';
+							oMethod.oDetails.account_account_number = 'Not supplied';
 							sAccountClass += ' empty';
 
 						}
@@ -474,7 +473,7 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 						var sExpiryClass = 'value';
 						if (oMethod.oDetails.card_card_expiry_date==null || oMethod.oDetails.card_card_expiry_date=='0000-00-00')
 						{
-							oMethod.oDetails.card_card_expiry_date = 'not supplied';
+							oMethod.oDetails.card_card_expiry_date = 'Not supplied';
 							sExpiryClass += ' empty';
 						}
 
@@ -630,7 +629,6 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 				break;
 			case $CONSTANT.PAYMENT_METHOD_REBILL:
 				// Show the rebill edit popup
-				//////debugger;
 				//this._showRebillPopup(iSubType, fnOnSelect, fnOnCancel);
 				fnGetRebill = jQuery.json.jsonFunction(
 						fnOnSelect.bind(this),
@@ -647,8 +645,7 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 	{
 		if (oRebill==null)
 		{
-
-			Reflex_Popup.alert('There is no Rebill via Motorpass option available for this account.', {fnOnOK: this._selectBillingType.bind(this, $CONSTANT.PAYMENT_METHOD_ACCOUNT)});
+			Reflex_Popup.alert('There is no Rebill via Motorpass option available for this account.', {fnClose: this._selectBillingType.bind(this, $CONSTANT.PAYMENT_METHOD_ACCOUNT, null)});
 		}
 		else
 		{
@@ -718,7 +715,7 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 
 			case $CONSTANT.PAYMENT_METHOD_REBILL:
 				// Rebill, Show the rebill edit popup
-				Reflex_Popup.alert('There is no Rebill via Motorpass option available for this account.');
+				Reflex_Popup.alert('There is no Rebill via Motorpass option available for this account.', {fnClose: this._selectBillingType.bind(this, $CONSTANT.PAYMENT_METHOD_ACCOUNT, null)});
 
 				/*this._showRebillPopup(
 					iSubType,
@@ -737,7 +734,6 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 
 	_paymentMethodSelected	: function(iMethod, iSubType, oMethod)
 	{
-		//////debugger;
 		// Check for method expiry
 		if (this.hMethods[iMethod][iSubType].fnCheckExpiry)
 		{
@@ -994,7 +990,6 @@ Popup_Account_Change_Payment_Method._checkCreditCardExpiry	= function(oCreditCar
 
 Popup_Account_Change_Payment_Method._checkMotorpassExpiry	= function(oRebill)
 {
-	////debugger;
 	var aSplit	= oRebill.oDetails.card_card_expiry_date.split('-');
 	iYear 		= parseInt(aSplit[0]);
 	iMonth 		= parseInt(aSplit[1]);
