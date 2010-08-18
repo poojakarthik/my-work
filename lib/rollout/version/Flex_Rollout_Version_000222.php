@@ -44,7 +44,7 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 								array
 								(
 									'sDescription'		=>	"Populate table motorpass_business_structure",
-									'sAlterSQL'			=>	"	INSERT INTO motorpass_business_structure (name, description, system_name, const_name)
+									'sAlterSQL'			=>	"	INSERT INTO motorpass_business_structure (name, description, system_name, const_name, code_numeric)
 																VALUES	('Unlisted Pty Ltd',			'Unlisted Pty Ltd', 			'UNLISTED_PTY_LTD', 		'MOTORPASS_BUSINESS_STRUCTURE_UNLISTED_PTY_LTD'			, 1),
 																		('Listed Ltd Co', 				'Listed Ltd Co', 				'LISTED_LTD_CO', 			'MOTORPASS_BUSINESS_STRUCTURE_LISTED_LTD_CO'			, 2),
 																		('Trust', 						'Trust', 						'TRUST', 					'MOTORPASS_BUSINESS_STRUCTURE_TRUST'					, 5),
