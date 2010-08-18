@@ -3634,6 +3634,12 @@ div.payment-method-details-description
 	font-style		: italic;
 }
 
+.payment-method-details-info .value.empty
+{
+	font-style	: italic;
+	opacity		: 0.75;
+}
+
 /************************ END - Change Payment Method Popup - END ************************/
 
 /************************ START - Choose Payment Method Popup - START ************************/
