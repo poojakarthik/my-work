@@ -31,8 +31,6 @@ class Motorpass_Logic_TradeReference extends Motorpass_Logic_ManyToOneLogicClass
 		{
 			$this->{self::$sFKField} = $this->oParent->id;
 
-
-
 			if ($this->id ==null)
 			{
 			$this->created = Data_Source_Time::currentTimestamp();

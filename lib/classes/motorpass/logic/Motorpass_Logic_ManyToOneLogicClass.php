@@ -38,7 +38,7 @@ abstract class Motorpass_Logic_ManyToOneLogicClass extends Motorpass_Logic_Logic
 		else
 		{
 			$mStd->{$sFKField} = $oParent->id;
-			self::getId($sLO,$mStd, $oParent,$sFKField );
+			//self::getId($sLO,$mStd, $oParent,$sFKField );
 			$oInstance = new $sLO($mStd, $oParent);
 			return $oInstance;
 		}
