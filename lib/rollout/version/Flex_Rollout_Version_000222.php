@@ -67,7 +67,15 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 																	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 																	name VARCHAR(128) NOT NULL ,
 																 	description VARCHAR(128) NOT NULL ,
-																	CONSTRAINT pk_motorpass_promotion_code_id PRIMARY KEY (id) ) ENGINE = InnoDB
+																	status_id BIGINT UNSIGNED DEFAULT 1 NOT NULL,
+																	CONSTRAINT	pk_motorpass_promotion_code_id
+																				PRIMARY KEY (id),
+																	CONSTRAINT	fk_motorpass_promotion_code_status_id
+																   				FOREIGN KEY (status_id)
+																    			REFERENCES status (id)
+																    			ON DELETE RESTRICT
+																    			ON UPDATE CASCADE 
+																) ENGINE = InnoDB
 																;",
 									'sRollbackSQL'		=>	"	DROP TABLE motorpass_promotion_code;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
