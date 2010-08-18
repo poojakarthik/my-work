@@ -110,7 +110,7 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 																  	first_name VARCHAR(45) NOT NULL ,
 																  	last_name VARCHAR(45) NOT NULL ,
 																  	dob  DATE NOT NULL ,
-																  	drivers_license VARCHAR(20) NULL ,
+																  	drivers_licence VARCHAR(20) NULL ,
 																  	position VARCHAR(45) NOT NULL ,
 																  	landline_number VARCHAR(25) NOT NULL ,
 																  	modified TIMESTAMP DEFAULT NOW(),
