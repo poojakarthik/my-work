@@ -105,15 +105,12 @@ class Motorpass_Logic_Account extends Motorpass_Logic_LogicClass
 
 					$aErrors	= array();
 
-					return $this->_save();
+					$this->_save();
 
 					// Everything looks OK -- Commit!
 					$oDataAccess->TransactionCommit();
+					return $this->id;
 
-					return 	array(
-								"Success"	=> true,
-								"oRebill"	=> $oStdClassRebill
-							);
 			}
 
 			catch (Exception $e)
@@ -217,6 +214,7 @@ class Motorpass_Logic_Account extends Motorpass_Logic_LogicClass
 		$oStdAccount->card =$this->oCard->toStdClass();
 		unset($oStdAccount->card_id);
 		$oStdAccount->trade_references = Motorpass_Logic_TradeReference::toStdClassForParent($this->aTradeRefs);
+
 
 		//the trade references are added to the sale object, for historical reasons, but we have to unset them here
 
