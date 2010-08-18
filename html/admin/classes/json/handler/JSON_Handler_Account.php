@@ -243,7 +243,7 @@ class JSON_Handler_Account extends JSON_Handler
 			}
 
 			// Get the latest rebill for the account
-			$oRebill	= $oAccount->getRebill();
+			$oRebill	= $this->getRebill($iAccountId);
 
 			if ($oRebill)
 			{
@@ -251,9 +251,8 @@ class JSON_Handler_Account extends JSON_Handler
 
 				if ($oAccount->BillingType == BILLING_TYPE_REBILL)
 				{
-					$oRebillDetails					= $oRebill->getDetails();
-					$oPaymentMethod					= $oRebill->toStdClass();
-					$oPaymentMethod->oDetails		= $oRebillDetails->toStdClass();
+					$oRebillDetails					= $oRebill->oDetails;
+					$oPaymentMethod					= $oRebill;
 					$oPaymentMethod->Id				= $oPaymentMethod->id;
 					$iPaymentMethodSubType			= $oRebill->rebill_type_id;
 				}
@@ -945,20 +944,21 @@ class JSON_Handler_Account extends JSON_Handler
 	{
 		try
 		{
+			$mResult = new stdClass();
 			$oRebill	= Rebill::getForAccountId($iAccountId);
-			$mResult	= ($oRebill ? $oRebill->toStdClass() : null);
-
 			if ($oRebill)
 			{
 				$oDetails	= $oRebill->getDetails()->toStdClass();
 				$oAccount = new Motorpass_Logic_Account($oDetails->motorpass_account_id);
+				$mResult = $oRebill->toStdClass();
 				$mResult->oDetails = Motorpass_Logic_Account::makeFlatObject($oAccount->toStdClass(), 'account');
+
 			}
 
-			return 	array(
-						"Success"	=> true,
-						"oRebill"	=> $mResult
-					);
+
+
+						return  $mResult;
+
 		}
 		catch (Exception $e)
 		{
