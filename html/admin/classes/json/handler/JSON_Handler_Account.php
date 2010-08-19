@@ -400,14 +400,19 @@ class JSON_Handler_Account extends JSON_Handler
 					if ($oOldRebill)
 					{
 						$oOldRebillDetails	= $oOldRebill->getDetails();
-
+						$oOldRebillAccount	= new Motorpass_Logic_Account($oOldRebillDetails->motorpass_account_id);
+						$oOldRebillAccount	= $oOldRebillAccount->toStdClass();
+						
 						switch ($oOldRebill->rebill_type_id)
 						{
 							case REBILL_TYPE_MOTORPASS:
+								$sAccountNumber		= ($oOldRebillAccount->account_number ? $oOldRebillAccount->account_number : 'Not supplied');
+								$sAccountName		= ($oOldRebillAccount->account_name ? $oOldRebillAccount->account_name : 'Not supplied');
+								$sCCExpiry			= (($oOldRebillAccount->card && $oOldRebillAccount->card->card_expiry_date)? $oOldRebillAccount->card->card_expiry_date : 'Not supplied');
 								$sOldBillingType	= 	"Rebill via Motorpass\n" .
-														"Account Number: {$oOldRebillDetails->account_number}\n" .
-														"Account Name: {$oOldRebillDetails->account_name}\n" .
-														"Card Expiry: {$oOldRebillDetails->card_expiry_date}";
+														"Account Number: {$sAccountNumber}\n" .
+														"Account Name: {$sAccountName}\n" .
+														"Card Expiry: {$sCCExpiry}";
 								break;
 						}
 					}
