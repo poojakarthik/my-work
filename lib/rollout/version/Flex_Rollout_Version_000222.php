@@ -292,6 +292,11 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 									'sDescription'		=>	"alter table rebill_motorpass",
 									'sAlterSQL'			=>	"	ALTER TABLE		rebill_motorpass
 																ADD COLUMN		motorpass_account_id 	BIGINT UNSIGNED,
+																ADD CONSTRAINT	fk_rebill_motorpass_motorpass_account_id
+																				FOREIGN KEY (motorpass_account_id)
+																			    REFERENCES motorpass_account (id)
+																			    ON DELETE RESTRICT
+																			    ON UPDATE CASCADE,
 																MODIFY COLUMN	account_number INT NULL,
 																MODIFY COLUMN	account_name VARCHAR(256) NULL,
 																MODIFY COLUMN	card_expiry_date DATE NULL;
