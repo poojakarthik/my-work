@@ -336,6 +336,17 @@ class JSON_Handler_Account extends JSON_Handler
 			// Update billing type
 			$oAccount	= Account::getForId($iAccountId);
 
+			/**
+			 * ----------------------------------------------------------------------------------------
+			 * VERY IMPORTANT!!!!
+			 * ----------------------------------------------------------------------------------------
+			 * IF YOU CHANGE THE CONTENTS OF THE NOTE THAT IS ADDED DURING THIS PROCESS, MAKE SURE THAT
+			 * YOU UPDATE THE Motorpass Sales Portal IMPLEMENTATION OF IT AS WELL.
+			 * 
+			 * THE CODE TO DO SO IS LOCATED IN Cli_App_FlexSync.php WITHIN THE SPMP APPLICATION.			 * 
+			 * ----------------------------------------------------------------------------------------
+			 */
+			 
 			// Get the old billing type description
 			$sOldBillingType	= '';
 
