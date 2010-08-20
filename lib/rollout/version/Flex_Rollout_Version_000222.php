@@ -308,7 +308,36 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 																MODIFY COLUMN	card_expiry_date DATE NOT NULL;	",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								),
+								array
+								(
+									'sDescription'		=>	"create table motorpass_promotioncode_rateplan",
+									'sAlterSQL'			=>	"	 CREATE TABLE motorpass_promotioncode_rateplan (
+																  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+																  motorpass_promotioncode_id BIGINT UNSIGNED NOT NULL,
+																  rateplan_id BIGINT UNSIGNED NOT NULL,
+																  CONSTRAINT pk_motorpass_promotioncode_rateplan
+																			 PRIMARY KEY (id),
+																  CONSTRAINT fk_motorpass_promotioncode_rateplan_promotion_code
+																			 FOREIGN KEY ( motorpass_promotioncode_id)
+																			 REFERENCES motorpass_promotion_code (id)
+																			 ON DELETE RESTRICT
+																			 ON UPDATE CASCADE,
+																  CONSTRAINT fk_motorpass_promotioncode_rateplan_rateplan
+																			 FOREIGN KEY (rateplan_id)
+																			REFERENCES RatePlan (Id)) ENGINE = InnoDB
+															;",
+									'sRollbackSQL'		=>	"	DROP TABLEmotorpass_promotioncode_rateplan;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								)
+
 							);
+
+
+
+
+
+
+
 
 		// Perform Batch Rollout
 		$iRolloutVersionNumber	= self::getRolloutVersionNumber(__CLASS__);
