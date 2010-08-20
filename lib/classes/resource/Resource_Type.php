@@ -2,31 +2,14 @@
 /**
  * Resource_Type
  *
- * Models a record of the resource_type table
+ * Models the Resource_Type table
  *
- * @class	Service
+ * @class	Resource_Type
  */
-class Resource_Type extends ORM
+class Resource_Type extends ORM_Cached
 {
-	protected	$_strTableName	= "resource_type";
-	
-	/**
-	 * __construct()
-	 *
-	 * constructor
-	 *
-	 * @param	array	$arrProperties 		[optional]	Associative array defining the class with keys for each field of the table
-	 * @param	boolean	$bolLoadById		[optional]	Automatically load the object with the passed Id
-	 * 
-	 * @return	void
-	 * 
-	 * @constructor
-	 */
-	public function __construct($arrProperties=Array(), $bolLoadById=FALSE)
-	{
-		// Parent constructor
-		parent::__construct($arrProperties, $bolLoadById);
-	}
+	protected 			$_strTableName			= "resource_type";
+	protected static	$_strStaticTableName	= "resource_type";
 	
 	/**
 	 * getFor()
@@ -35,9 +18,9 @@ class Resource_Type extends ORM
 	 *
 	 * @param	string	$strWhere					WHERE clause (can also include GROUP BY, ORDER BY and LIMIT clauses)
 	 * @param	boolean	$bolAsArray		[optional]	If set to TRUE, will return Associative Arrays instead of objects
-	 * 
+	 *
 	 * @return	void
-	 * 
+	 *
 	 * @constructor
 	 */
 	public static function getFor($strWhere, $bolAsArray=false)
@@ -71,9 +54,9 @@ class Resource_Type extends ORM
 	 *
 	 * @param	integer	$intResourceType			WHERE clause (can also include GROUP BY, ORDER BY and LIMIT clauses)
 	 * @param	boolean	$bolAsArray		[optional]	If set to TRUE, will return Associative Arrays instead of objects
-	 * 
+	 *
 	 * @return	void
-	 * 
+	 *
 	 * @constructor
 	 */
 	public function validateFileName($intResourceTypeId, $strFileName)
@@ -91,13 +74,67 @@ class Resource_Type extends ORM
 		}
 	}
 	
+	protected static function getCacheName()
+	{
+		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
+		static $strCacheName;
+		if (!isset($strCacheName))
+		{
+			$strCacheName = __CLASS__;
+		}
+		return $strCacheName;
+	}
+	
+	protected static function getMaxCacheSize()
+	{
+		return 100;
+	}
+	
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
+	//---------------------------------------------------------------------------------------------------------------------------------//
+
+	public static function clearCache()
+	{
+		parent::clearCache(__CLASS__);
+	}
+
+	protected static function getCachedObjects()
+	{
+		return parent::getCachedObjects(__CLASS__);
+	}
+	
+	protected static function addToCache($mixObjects)
+	{
+		parent::addToCache($mixObjects, __CLASS__);
+	}
+
+	public static function getForId($intId, $bolSilentFail=false)
+	{
+		return parent::getForId($intId, $bolSilentFail, __CLASS__);
+	}
+	
+	public static function getAll($bolForceReload=false)
+	{
+		return parent::getAll($bolForceReload, __CLASS__);
+	}
+	
+	public static function importResult($aResultSet)
+	{
+		return parent::importResult($aResultSet, __CLASS__);
+	}
+	
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
+	//---------------------------------------------------------------------------------------------------------------------------------//
+
 	/**
 	 * _preparedStatement()
 	 *
 	 * Access a Static Cache of Prepared Statements used by this Class
-	 * 
+	 *
 	 * @param	string		$strStatement						Name of the statement
-	 * 
+	 *
 	 * @return	Statement										The requested Statement
 	 *
 	 * @method
@@ -115,17 +152,20 @@ class Resource_Type extends ORM
 			{
 				// SELECTS
 				case 'selById':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"resource_type", "*", "id = <Id>", NULL, 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
+					break;
+				case 'selAll':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "name ASC");
 					break;
 				
 				// INSERTS
 				case 'insSelf':
-					$arrPreparedStatements[$strStatement]	= new StatementInsert("resource_type");
+					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);
 					break;
 				
 				// UPDATE BY IDS
 				case 'ubiSelf':
-					$arrPreparedStatements[$strStatement]	= new StatementUpdateById("resource_type");
+					$arrPreparedStatements[$strStatement]	= new StatementUpdateById(self::$_strStaticTableName);
 					break;
 				
 				// UPDATES

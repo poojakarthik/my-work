@@ -10,6 +10,7 @@
 class Cli_App_Motorpass extends Cli
 {
 	const	SWITCH_TEST_RUN		= 't';
+	const	SWITCH_MODE			= 'm';
 	
 	function run()
 	{
@@ -23,11 +24,15 @@ class Cli_App_Motorpass extends Cli
 				$this->log("Running in test mode.  No files will be sent or imported.", true);
 			}
 			
-			// Export
-			$this->_export();
-			
-			// Import
-			$this->_import();
+			switch ($this->_arrArgs[self::SWITCH_MODE])
+			{
+				case 'EXPORT':
+					$this->_export();
+					break;
+				case 'IMPORT':
+					$this->_import();
+					break;
+			}
 		}
 		catch (Exception $oException)
 		{
@@ -37,13 +42,75 @@ class Cli_App_Motorpass extends Cli
 	
 	protected function _export()
 	{
+		/*
+			SUPERHACK!
+			This is very specific, only supporting one export module
+		 */
+		$aCarrierModules	= Carrier_Module::getForCarrierModuleType(MODULE_TYPE_MOTORPASS_FILE_EXPORT);
+		if ($aCarrierModules > 1)
+		{
+			throw new Exception("There is more than one Motorpass Provisioning Export Carrier Module defined: ".print_r($aCarrierModules, true));
+		}
+		if ($aCarrierModules < 1)
+		{
+			throw new Exception("There is no Motorpass Provisioning Export Carrier Module defined");
+		}
+		
+		$oCarrierModule			= array_pop($aCarrierModules);
+		$sClassName				= $oCarrierModule->Module;
+		$oResourceTypeHandler	= new $sClassName($oCarrierModule);
+		
 		// Find a list of "requests" to export
-		$sSQL	= "	SELECT		*
+		// FIXME:	Should this logic be moved to the Resource Type handler itself?
+		//			Base class (for 'type group', e.g. Motorpass Export base class) would contain the query to retrieve and update records
+		//			This would allow us to have a generic provisioning export program, which delegates service/whatever specifics to the modules themselves
+		$oQuery	= new Query();
+		$sSQL	= "	SELECT		rm.*
 								
 					FROM		rebill_motorpass rm
+								JOIN motorpass_account ma ON (ma.id = rm.motorpass_account_id)
 					
-					WHERE		account_number IS NULL
-								AND motorpass_status_id = ".MOTORPASS_STATUS_REQUESTED;
+					WHERE		motorpass_account_status_id = ".MOTORPASS_ACCOUNT_STATUS_AWAITING_DISPATCH;
+		if (($mResult = $oQuery->Execute($sSQL)) === false)
+		{
+			throw new Exception($oQuery->Error());
+		}
+		$aExportedRecords	= array();
+		while ($aRebillMotorpass = $mResult->fetch_assoc())
+		{
+			// Process the record
+			$oResourceTypeHandler->addRecord($aRebillMotorpass);
+			$aExportedRecords[] = $aRebillMotorpass;
+		}
+		
+		// Render the file & log to the database
+		$oResourceTypeHandler->render()->save();
+		
+		// Update Records
+		// FIXME:	Should this logic be moved to the Resource Type handler itself?
+		//			Base class (for 'type group', e.g. Motorpass Export base class) would contain the query to retrieve and update records
+		//			This would allow us to have a generic provisioning export program, which delegates service/whatever specifics to the modules themselves
+		foreach ($aExportedRecords as $aRebillMotorpass)
+		{
+			$oRebillMotorpass	= Rebill_Motorpass::getForId(ORM::extractId($aRebillMotorpass));
+			
+			$oRebillMotorpass->motorpass_account_status_id	= MOTORPASS_ACCOUNT_STATUS_DISPATCHED;
+			$oRebillMotorpass->file_export_id				= $oResourceTypeHandler->getFileExport()->Id;
+		}
+		
+		if (!$this->_arrArgs[self::SWITCH_TEST_RUN])
+		{
+			// Deliver the file
+			// DEBUG: Never deliver this file! (until we hit production)
+			//$oResourceTypeHandler->deliver();
+		}
+		else
+		{
+			throw new Exception("Test Mode: No files have been delivered, and database changes will be reverted");
+		}
+		
+		// All appears to be OK!
+		return;
 	}
 	
 	protected function _import()
@@ -71,14 +138,7 @@ class Cli_App_Motorpass extends Cli
 				self::ARG_REQUIRED		=> TRUE,
 				self::ARG_DESCRIPTION	=> "Provisioning operation to perform [IMPORT|EXPORT]",
 				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("IMPORT","EXPORT"))'
-			),
-			
-			self::SWITCH_INPUT_FILE => array(
-				self::ARG_REQUIRED		=> true,
-				self::ARG_LABEL			=> "CSV_FILE",
-				self::ARG_DESCRIPTION	=> "CSV File to Import from",
-				self::ARG_VALIDATION	=> 'Cli::_validFile("%1$s", true)'
-			),
+			)
 		);
 	}
 }

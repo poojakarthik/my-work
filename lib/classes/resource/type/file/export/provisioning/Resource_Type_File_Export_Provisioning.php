@@ -8,9 +8,16 @@
  */
 abstract class Resource_Type_File_Export_Provisioning
 {
+	const	CARRIER_MODULE_TYPE	= MODULE_TYPE_PROVISIONING_OUTPUT;
+	
 	public static function getExportPath($iCarrier, $sClass)
 	{
 		return parent::getExportPath()."provisioning/{$iCarrier}/{$sClass}/";
+	}
+	
+	static public function createCarrierModule($iCarrier, $sClassName, $iResourceType)
+	{
+		parent::createCarrierModule($iCarrier, $sClassName, $iResourceType, self::CARRIER_MODULE_TYPE);
 	}
 }
 ?>

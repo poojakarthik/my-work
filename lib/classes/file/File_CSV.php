@@ -1,6 +1,6 @@
 <?php
 
-class File_CSV implements Iterator 
+class File_CSV implements Iterator
 {
 	protected	$_aColumns	= array();
 	protected	$_aRows		= array();
@@ -8,6 +8,7 @@ class File_CSV implements Iterator
 	protected	$_sDelimiter;
 	protected	$_sQuote;
 	protected	$_sEscape;
+	protected	$_sNewLine	= "\n";
 	
 	public function __construct($sDelimiter=',', $sQuote='"', $sEscape='\\', $aColumns=null)
 	{
@@ -37,6 +38,21 @@ class File_CSV implements Iterator
 	{
 		$sEscape		= (string)$sEscape;
 		$this->_sEscape	= ($sEscape) ? $sEscape[0] : '';
+	}
+	
+	public function setNewLine($sNewLine)
+	{
+		$this->_sNewLine	= (string)$sNewLine;
+	}
+	
+	protected function _getSpecialCharacters()
+	{
+		return array($this->_sNewLine, $this->_sDelimiter, $this->_sEscape, $this->_sQuote);
+	}
+	
+	protected function _getQuotableCharacters()
+	{
+		return array($this->_sNewLine, $this->_sDelimiter, $this->_sEscape, $this->_sQuote, ' ');
 	}
 	
 	public function setColumns($aColumns)
@@ -79,9 +95,9 @@ class File_CSV implements Iterator
 			$aRowOutput	= array();
 			foreach ($this->_aColumns as $sColumn)
 			{
-				$aRowOutput[]	= $this->_prepare($sColumn);
+				$aRowOutput[]	= self::_prepare($sColumn, $this->_sQuote, $this->_sEscape, $this->_getSpecialCharacters(), $this->_getQuotableCharacters());
 			}
-			$sOutput	.= implode($this->_sDelimiter, $aRowOutput)."\n";
+			$sOutput	.= implode($this->_sDelimiter, $aRowOutput).$this->_sNewLine;
 		}
 		
 		// Add Content
@@ -90,9 +106,9 @@ class File_CSV implements Iterator
 			$aRowOutput	= array();
 			foreach ($this->_aColumns as $sColumn)
 			{
-				$aRowOutput[]	= $this->_prepare((array_key_exists($sColumn, $aRow)) ? $aRow[$sColumn] : '');
+				$aRowOutput[]	= self::_prepare((array_key_exists($sColumn, $aRow)) ? $aRow[$sColumn] : '', $this->_sQuote, $this->_sEscape, $this->_getSpecialCharacters(), $this->_getQuotableCharacters());
 			}
-			$sOutput	.= implode($this->_sDelimiter, $aRowOutput)."\n";
+			$sOutput	.= implode($this->_sDelimiter, $aRowOutput).$this->_sNewLine;
 		}
 		
 		return $sOutput;
@@ -184,33 +200,12 @@ class File_CSV implements Iterator
 			$aRowOutput	= array();
 			foreach ($this->_aColumns as $sColumn)
 			{
-				$aRowOutput[$sColumn]	= $this->_prepare((array_key_exists($sColumn, $aRow)) ? $aRow[$sColumn] : '');
+				$aRowOutput[$sColumn]	= self::_prepare((array_key_exists($sColumn, $aRow)) ? $aRow[$sColumn] : '', $this->_sQuote, $this->_sEscape, $this->_getSpecialCharacters(), $this->_getQuotableCharacters());
 			}
 			$aOutput[]	= $aRowOutput;
 		}
 		
 		return $aOutput;
-	}
-	
-	protected function _escape($mValue)
-	{
-		// Escape any instances of the escape character
-		$mValue	= str_replace($this->_sEscape, $this->_sEscape.$this->_sEscape, $mValue);
-		
-		// Escape and instances of the quote string
-		$mValue	= str_replace($this->_sQuote, $this->_sEscape.$this->_sQuote, $mValue);
-		
-		return $mValue;
-	}
-	
-	protected function _quote($mValue)
-	{
-		return "{$this->_sQuote}{$mValue}{$this->_sQuote}";
-	}
-	
-	protected function _prepare($mValue)
-	{
-		return $this->_quote($this->_escape($mValue));
 	}
 	
 	public function current()
@@ -315,6 +310,56 @@ class File_CSV implements Iterator
 		
 		// Return the Array representing this Line
 		return $aLine;
+	}
+	
+	public static function buildLine($aRecord, $sDelimiter=',', $sQuote='"', $sEscape='\\', $aSpecialCharacters=array())
+	{
+		$aPreparedRecords	= array();
+		foreach ($aRecord as $mValue)
+		{
+			$aPreparedRecords[]	= self::_prepare($mValue, $sQuote, $sEscape, $aSpecialCharacters, $mQuote);
+		}
+		
+		return implode($sDelimiter, $aPreparedRecords);
+	}
+	
+	protected static function _prepare($mValue, $sQuote='"', $sEscape='\\', $aSpecialCharacters=array(), $mQuote=null)
+	{
+		return self::_quote(self::_escape($mValue, $sEscape, $aSpecialCharacters), $sQuote, $mQuote);
+	}
+	
+	protected static function _escape($mValue, $sEscape='\\', $aSpecicalCharacters=array())
+	{
+		// Escape the escape character
+		$mValue	= str_replace($sEscape, $sEscape.$sEscape, $mValue);
+		
+		// Escape all other special characters
+		foreach ($aSpecicalCharacters as $sSpecialCharacter)
+		{
+			$mValue	= str_replace($sSpecialCharacter, $sEscape.$sSpecialCharacter, $mValue);
+		}
+		
+		return $mValue;
+	}
+	
+	protected static function _quote($mValue, $sQuote, $mQuote=null)
+	{
+		$bQuote	= (is_bool($mQuote) && $mQuote);
+		if (is_array($mQuote))
+		{
+			// Only quote if one of these characters is in the string
+			foreach ($mQuote as $sQuotableCharacter)
+			{
+				$bQuote	= (stripos($mValue, $sQuotableCharacter) === false) ? $bQuote : true;
+			}
+		}
+		
+		if ($bQuote)
+		{
+			$mValue	= $sQuote.$mValue.$sQuote;
+		}
+		
+		return $mValue;
 	}
 }
 
