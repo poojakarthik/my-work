@@ -203,8 +203,8 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 									'sDescription'		=>	"Add table motorpass_account",
 									'sAlterSQL'			=>	"	CREATE  TABLE motorpass_account (
 																  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-																  account_number INT(9) UNSIGNED NOT NULL,
-																  account_name VARCHAR(256) NULL,
+																  account_number INT(9) UNSIGNED NULL,
+																  account_name VARCHAR(256) NOT NULL,
 																  motorpass_promotion_code_id BIGINT UNSIGNED NOT NULL ,
 																  business_commencement_date DATE NOT NULL ,
 																  motorpass_business_structure_id BIGINT UNSIGNED NOT NULL ,
