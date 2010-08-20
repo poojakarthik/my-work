@@ -183,7 +183,7 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 				// Check for method expiry
 				if (this.hMethods[iMethod][iSubType].fnCheckExpiry)
 				{
-					if (oMethod.oDetails.card_card_expiry_date!=null && oMethod.oDetails.card_card_expiry_date!='0000-00-00')
+					if (oMethod.oDetails.card_expiry_date!=null && oMethod.oDetails.card_expiry_date!='0000-00-00')
 					{
 						this.hMethods[iMethod][iSubType].fnCheckExpiry(oMethod);
 					}
@@ -463,18 +463,18 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 				{
 					case $CONSTANT.REBILL_TYPE_MOTORPASS:
 						var sAccountClass = 'value';
-						if (oMethod.oDetails.account_account_number == null || oMethod.oDetails.account_account_number == 0)
+						if (oMethod.oDetails.account_number == null || oMethod.oDetails.account_number == 0)
 						{
-							oMethod.oDetails.account_account_number = 'Not supplied';
-							sAccountClass += ' empty';
+							oMethod.oDetails.account_number	= 'Not supplied';
+							sAccountClass					+= ' empty';
 
 						}
 
 						var sExpiryClass = 'value';
-						if (oMethod.oDetails.card_card_expiry_date==null || oMethod.oDetails.card_card_expiry_date=='0000-00-00')
+						if (oMethod.oDetails.card_expiry_date==null || oMethod.oDetails.card_expiry_date=='0000-00-00')
 						{
-							oMethod.oDetails.card_card_expiry_date = 'Not supplied';
-							sExpiryClass += ' empty';
+							oMethod.oDetails.card_expiry_date 	= 'Not supplied';
+							sExpiryClass						+= ' empty';
 						}
 
 
@@ -485,7 +485,7 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 												'Account Number: '
 											),
 											$T.span({class: sAccountClass},
-												oMethod.oDetails.account_account_number
+												oMethod.oDetails.account_number
 											)
 										),
 
@@ -494,7 +494,7 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 												'Card Expiry: '
 											),
 											$T.span({class: sExpiryClass},
-												oMethod.oDetails.card_card_expiry_date
+												oMethod.oDetails.card_expiry_date
 											)
 										)
 									);
@@ -990,7 +990,7 @@ Popup_Account_Change_Payment_Method._checkCreditCardExpiry	= function(oCreditCar
 
 Popup_Account_Change_Payment_Method._checkMotorpassExpiry	= function(oRebill)
 {
-	var aSplit	= oRebill.oDetails.card_card_expiry_date.split('-');
+	var aSplit	= oRebill.oDetails.card_expiry_date.split('-');
 	iYear 		= parseInt(aSplit[0]);
 	iMonth 		= parseInt(aSplit[1]);
 	Popup_Account_Change_Payment_Method._checkPaymentMethodExpiry(iMonth, iYear, oRebill);

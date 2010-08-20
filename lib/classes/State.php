@@ -114,6 +114,15 @@ class State
 	{
 		return self::getFor("country_id = $intCountryId", $strOrderBy);
 	}
+	
+	public static function getForCode($sCode)
+	{
+		$aStates	= self::getFor("code = '{$sCode}'");
+		foreach ($aStates as $oState)
+		{
+			return $oState;
+		}
+	}
 
 	//------------------------------------------------------------------------//
 	// getColumns

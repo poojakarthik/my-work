@@ -107,6 +107,20 @@ class Contact_Title
 		$arrObjects = self::getAll();
 		return array_key_exists($intId, $arrObjects)? $arrObjects[$intId] : NULL;
 	}
+	
+	public static function getForName($sName)
+	{
+		$aObjects	= self::getAll();
+		$oResult	= null;
+		foreach ($aObjects as $oObject)
+		{
+			if ($oObject->name == $sName)
+			{
+				$oResult	= $oObject;
+			}
+		}
+		return $oResult;
+	}
 
 	//------------------------------------------------------------------------//
 	// getColumns

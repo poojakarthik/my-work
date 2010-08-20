@@ -127,7 +127,7 @@ public function isValidValue($propertyName, $value)
 				return ($value === null) || (is_string($value) && strlen($value) <= 100);
 
 			case 'shared':
-				return is_bool($value);
+				return is_numeric($value);
 
 			case 'vehicle_model':
 				return ($value === null) || (is_string($value) && strlen($value) <= 45);

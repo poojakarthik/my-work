@@ -60,6 +60,17 @@ class Motorpass_Promotion_Code extends ORM_Cached
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	
+	public static function getForName($sName)
+	{
+		$oStmt	= self::_preparedStatement('selByName');
+		$iNumRows	= $oStmt->Execute(array('name' => $sName));
+		if ($aRow = $oStmt->Fetch())
+		{
+			return new self($aRow);	
+		}
+		return null;
+	}
+	
 	/**
 	 * _preparedStatement()
 	 *
@@ -88,6 +99,9 @@ class Motorpass_Promotion_Code extends ORM_Cached
 					break;
 				case 'selAll':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
+					break;
+				case 'selByName':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "name = <name>", NULL, 1);
 					break;
 				
 				// INSERTS

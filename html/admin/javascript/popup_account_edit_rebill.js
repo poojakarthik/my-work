@@ -903,7 +903,7 @@ Popup_Account_Edit_Rebill.PANELS	=
 			'contact_first_name',
 			'contact_last_name',
 			'contact_dob',
-			'contact_drivers_license',
+			'contact_drivers_licence',
 			'contact_position',
 			'contact_landline_number'
 		]

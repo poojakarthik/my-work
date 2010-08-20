@@ -18,7 +18,7 @@ class Motorpass_Logic_Contact extends Motorpass_Logic_LogicClass
 	public function validate()
 	{
 		parent::validate();
-		if ($this->oDO->landline_number && !Motorpass_Logic_Validation::isValidLandlineFNN($this->oDO->landline_number))
+		if ($this->oDO->landline_number && !Motorpass_Logic_Validation::isValidLandlineFNN($this->oDO->landline_number) && !Motorpass_Logic_Validation::isValidInboundFNN($this->oDO->landline_number))
 					$this->aErrors[] = $this->oDO->landline_number." is not a valid landline number for contact.";
 		if ($this->oDO->dob  && ($this->oDO->dob > Data_Source_Time::currentDate()))
 			$this->aErrors[] = "Contact D.O.B should not be in the future";

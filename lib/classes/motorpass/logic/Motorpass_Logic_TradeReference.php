@@ -20,8 +20,8 @@ class Motorpass_Logic_TradeReference extends Motorpass_Logic_ManyToOneLogicClass
 	public function validate()
 	{
 		parent::validate();
-		if (!Motorpass_Logic_Validation::isValidLandlineFNN($this->oDO->phone_number))
-					$this->aErrors[] = $this->oDO->landline_number." is not a valid landline number for contact.";
+		if (!Motorpass_Logic_Validation::isValidLandlineFNN($this->oDO->phone_number) && !Motorpass_Logic_Validation::isValidInboundFNN($this->oDO->phone_number))
+					$this->aErrors[] = $this->oDO->phone_number." is not a valid landline number for a trade reference.";
 		return $this->aErrors;
 	}
 
