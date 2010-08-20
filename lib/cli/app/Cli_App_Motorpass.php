@@ -1,13 +1,13 @@
 <?php
 /**
- * Cli_App_RetailDecisions
+ * Cli_App_Motorpass
  *
  * Application to
  *
- * @class	Cli_App_RetailDecisions
+ * @class	Cli_App_Motorpass
  * @parent	Cli
  */
-class Cli_App_RetailDecisions extends Cli
+class Cli_App_Motorpass extends Cli
 {
 	const	SWITCH_TEST_RUN		= 't';
 	
