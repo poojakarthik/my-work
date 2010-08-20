@@ -328,8 +328,131 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 															;",
 									'sRollbackSQL'		=>	"	DROP TABLEmotorpass_promotioncode_rateplan;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=> "Create trigger for motorpass_account.account_name & account_number, to update rebill_motorpass",
+									'sAlterSQL'			=> "CREATE TRIGGER rebill_motorpass_account_name_and_number AFTER UPDATE ON motorpass_account
+															FOR EACH ROW
+																UPDATE	rebill_motorpass rm
+																SET		rm.account_number = NEW.account_number,
+																		rm.account_name = NEW.account_name
+																WHERE	rm.motorpass_account_id = NEW.id;",
+									'sRollbackSQL'		=> "DROP TRIGGER rebill_motorpass_account_name_and_number;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=> "Create trigger for motorpass_card.card_expiry_date, to update rebill_motorpass",
+									'sAlterSQL'			=> "CREATE TRIGGER rebill_motorpass_card_expiry_date AFTER UPDATE ON motorpass_card
+															FOR EACH ROW
+																UPDATE	rebill_motorpass rm
+																SET		rm.card_expiry_date = NEW.card_expiry_date
+																WHERE	rm.motorpass_account_id IN (
+																			SELECT	ma.id
+																			FROM	motorpass_account ma
+																			WHERE	ma.motorpass_card_id = NEW.id
+																		);",
+									'sRollbackSQL'		=> "DROP TRIGGER rebill_motorpass_card_expiry_date;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=> "Set delimiter to | (required for CREATE TRIGGER in next step)",
+									'sAlterSQL'			=> "delimiter |",
+									'sRollbackSQL'		=> "delimiter ;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=> "Create trigger for rebill_motorpass on insert",
+									'sAlterSQL'			=> "CREATE TRIGGER rebill_motorpass_insert BEFORE INSERT ON rebill_motorpass
+															FOR EACH ROW
+															BEGIN
+																DECLARE acc_num INTEGER;
+																DECLARE expiry DATE;
+																DECLARE acc_name VARCHAR(256);
+																
+																IF (NEW.motorpass_account_id IS NOT NULL) THEN
+																	SELECT	ma.account_name
+																	INTO	acc_name
+																	FROM	motorpass_account ma
+																	WHERE	ma.id = NEW.motorpass_account_id;
+																	
+																	SELECT	ma.account_number
+																	INTO	acc_num
+																	FROM	motorpass_account ma
+																	WHERE	ma.id = NEW.motorpass_account_id;
+																	
+																	SELECT	mc.card_expiry_date
+																	INTO	expiry
+																	FROM	motorpass_account ma
+																	JOIN	motorpass_card mc
+																				ON ma.motorpass_card_id = mc.id
+																	WHERE	ma.id = NEW.motorpass_account_id;
+																	
+																	SET	NEW.account_name = acc_name;
+																	SET	NEW.account_number = acc_num;
+																	SET	NEW.card_expiry_date = expiry;
+																ELSE
+																	SET	NEW.account_name = NULL;
+																	SET	NEW.account_number = NULL;
+																	SET	NEW.card_expiry_date = NULL;
+																END IF;
+															END;|
+															delimiter ;
+",
+									'sRollbackSQL'		=> "DROP TRIGGER rebill_motorpass_insert;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=> "Set delimiter to | (required for CREATE TRIGGER in next step)",
+									'sAlterSQL'			=> "delimiter |",
+									'sRollbackSQL'		=> "delimiter ;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=> "Create trigger for rebill_motorpass on update",
+									'sAlterSQL'			=> "CREATE TRIGGER rebill_motorpass_update BEFORE UPDATE ON rebill_motorpass
+															FOR EACH ROW
+															BEGIN
+																DECLARE acc_num INTEGER;
+																DECLARE expiry DATE;
+																DECLARE acc_name VARCHAR(256);
+																
+																IF (NEW.motorpass_account_id IS NOT NULL) THEN
+																	SELECT	ma.account_name
+																	INTO	acc_name
+																	FROM	motorpass_account ma
+																	WHERE	ma.id = NEW.motorpass_account_id;
+																	
+																	SELECT	ma.account_number
+																	INTO	acc_num
+																	FROM	motorpass_account ma
+																	WHERE	ma.id = NEW.motorpass_account_id;
+																	
+																	SELECT	mc.card_expiry_date
+																	INTO	expiry
+																	FROM	motorpass_account ma
+																	JOIN	motorpass_card mc
+																				ON ma.motorpass_card_id = mc.id
+																	WHERE	ma.id = NEW.motorpass_account_id;
+																	
+																	SET	NEW.account_name = acc_name;
+																	SET	NEW.account_number = acc_num;
+																	SET	NEW.card_expiry_date = expiry;
+																ELSE
+																	SET	NEW.account_name = NULL;
+																	SET	NEW.account_number = NULL;
+																	SET	NEW.card_expiry_date = NULL;
+																END IF;
+															END;|
+															delimiter ;",
+									'sRollbackSQL'		=> "DROP TRIGGER rebill_motorpass_update;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								)
-
 							);
 
 
