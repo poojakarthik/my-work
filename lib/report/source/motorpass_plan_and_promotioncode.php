@@ -5,7 +5,7 @@
 $arrDataReport['Name']					= "Motorpass Plan & Promotion Code Report";
 $arrDataReport['Summary']				= "A list of all Accounts where the active payment method is Motorpass";
 $arrDataReport['RenderMode']			= REPORT_RENDER_INSTANT;
-$arrDataReport['Priviledges']			= 2147483648;
+$arrDataReport['Priviledges']			= 64;
 $arrDataReport['CreatedOn']				= date("Y-m-d");
 $arrDataReport['SQLTable']				= "	Account a
 												JOIN billing_type b                		   	ON  (a.BillingType = b.id AND b.system_name = 'REBILL')
@@ -44,7 +44,7 @@ $arrDataReport['SQLTable']				= "	Account a
 																								)
 												JOIN RatePlan rp               				ON  (rp.Id = srp.RatePlan)
 												JOIN motorpass_promotioncode_rateplan mprp 	ON (rp.Id = mprp.rateplan_id)
-												LEFT JOIN account_history ah2            	ON  (a.Id = ah2.account_id
+												JOIN account_history ah2            	ON  (a.Id = ah2.account_id
 																								 AND ah2.change_timestamp =
 																									     (
 																										    SELECT min(change_timestamp) AS 'mindate'
@@ -52,14 +52,13 @@ $arrDataReport['SQLTable']				= "	Account a
 							                                          										JOIN rebill q ON (x.account_id = q.account_id and DATE(q.created_timestamp) = DATE(x.change_timestamp) and q.rebill_type_id = 1)
 																										    where x.account_id = a.Id
 																										    and a.BillingType = x.billing_type
+																										    AND x.change_timestamp BETWEEN <StartDate> AND <EndDate>
 																										  )
 																								)
 
 												order by a.Id, s.FNN";
-/*$arrDataReport['SQLWhere']				= "	i.Balance > 0
-											AND cc.const_name = 'CREDIT_CONTROL_STATUS_SENDING_TO_DEBT_COLLECTION'
-											AND a.tio_reference_number IS NULL";*/
-$arrDataReport['SQLGroupBy']			= " i.Account HAVING `Balance Due` > 0";
+$arrDataReport['SQLWhere']				= "";
+$arrDataReport['SQLGroupBy']			= "";
 $arrDataReport['data_report_status_id']	= DATA_REPORT_STATUS_DRAFT;
 
 // Documentation Reqs
@@ -76,7 +75,7 @@ $arrSQLSelect['Service Number']	['Value']	= "s.FNN";
 
 $arrSQLSelect['Rate Plan']	['Value']	= "rp.Name";
 
-$arrSQLSelect['Date Motorpass Processed']			['Value']	= "COALESCE(ah2.change_timestamp, 'UNKNOWN')";
+$arrSQLSelect['Date Motorpass Processed']			['Value']	= "ah2.change_timestamp";
 
 
 $arrSQLSelect['Promotion Code']	['Value']	= "mpc.name";
@@ -100,6 +99,18 @@ $arrDataReport['SQLSelect'] 	= serialize($arrSQLSelect);
 
 // SQL Fields
 $arrSQLFields = array();
+$arrSQLFields['StartDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "Start Date",
+									);
+$arrSQLFields['EndDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "End Date",
+									);
 $arrDataReport['SQLFields'] 	= serialize($arrSQLFields);
+
+
 
 ?>
