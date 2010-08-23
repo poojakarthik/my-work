@@ -217,6 +217,7 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 																  motorpass_card_id BIGINT UNSIGNED NOT NULL ,
 																  external_sale_id BIGINT UNSIGNED NOT NULL,
 																  file_export_id BIGINT UNSIGNED NULL,
+																  file_import_id BIGINT UNSIGNED NULL,
 																  motorpass_account_status_id BIGINT UNSIGNED NOT NULL,
 																  modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 																  modified_employee_id BIGINT UNSIGNED NOT NULL ,
@@ -259,6 +260,11 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 																  CONSTRAINT fk_motorpass_account_file_export_id
 																    FOREIGN KEY (file_export_id )
 																    REFERENCES FileExport (Id )
+																    ON DELETE RESTRICT
+																    ON UPDATE CASCADE,
+																  CONSTRAINT fk_motorpass_account_file_import_id
+																    FOREIGN KEY (file_import_id )
+																    REFERENCES FileImport (Id )
 																    ON DELETE RESTRICT
 																    ON UPDATE CASCADE) ENGINE = InnoDB
 																;",
