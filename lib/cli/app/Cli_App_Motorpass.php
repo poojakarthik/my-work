@@ -27,7 +27,7 @@ class Cli_App_Motorpass extends Cli
 			switch ($this->_arrArgs[self::SWITCH_MODE])
 			{
 				case 'EXPORT':
-					$this->_export();
+					$this->_export(!$this->_arrArgs[self::SWITCH_MODE]);
 					break;
 				case 'IMPORT':
 					$this->_import();
@@ -40,12 +40,13 @@ class Cli_App_Motorpass extends Cli
 		}
 	}
 	
-	protected function _export()
+	protected function _export($bCommit=false)
 	{
 		/*
 			SUPERHACK!
-			This is very specific, only supporting one export module
+			This is very specific, only supporting one export module at a time
 		 */
+		Log::getLog()->log('Getting Carrier Modules');
 		$aCarrierModules	= Carrier_Module::getForCarrierModuleType(MODULE_TYPE_MOTORPASS_FILE_EXPORT);
 		if ($aCarrierModules > 1)
 		{
@@ -60,53 +61,92 @@ class Cli_App_Motorpass extends Cli
 		$sClassName				= $oCarrierModule->Module;
 		$oResourceTypeHandler	= new $sClassName($oCarrierModule);
 		
-		// Find a list of "requests" to export
-		// FIXME:	Should this logic be moved to the Resource Type handler itself?
-		//			Base class (for 'type group', e.g. Motorpass Export base class) would contain the query to retrieve and update records
-		//			This would allow us to have a generic provisioning export program, which delegates service/whatever specifics to the modules themselves
-		$oQuery	= new Query();
-		$sSQL	= "	SELECT		rm.*
-								
-					FROM		rebill_motorpass rm
-								JOIN motorpass_account ma ON (ma.id = rm.motorpass_account_id)
-					
-					WHERE		motorpass_account_status_id = ".MOTORPASS_ACCOUNT_STATUS_AWAITING_DISPATCH;
-		if (($mResult = $oQuery->Execute($sSQL)) === false)
+		Log::getLog()->log('Starting Transaction...');
+		if (!DataAccess::getDataAccess()->TransactionStart())
 		{
-			throw new Exception($oQuery->Error());
-		}
-		$aExportedRecords	= array();
-		while ($aRebillMotorpass = $mResult->fetch_assoc())
-		{
-			// Process the record
-			$oResourceTypeHandler->addRecord($aRebillMotorpass);
-			$aExportedRecords[] = $aRebillMotorpass;
+			throw new Exception('Unable to start a transaction');
 		}
 		
-		// Render the file & log to the database
-		$oResourceTypeHandler->render()->save();
-		
-		// Update Records
-		// FIXME:	Should this logic be moved to the Resource Type handler itself?
-		//			Base class (for 'type group', e.g. Motorpass Export base class) would contain the query to retrieve and update records
-		//			This would allow us to have a generic provisioning export program, which delegates service/whatever specifics to the modules themselves
-		foreach ($aExportedRecords as $aRebillMotorpass)
+		try
 		{
-			$oRebillMotorpass	= Rebill_Motorpass::getForId(ORM::extractId($aRebillMotorpass));
+			// NOTE!
+			// Generally, this would happen in a common base class for the module 'type',
+			// but seeing as this is both the module type and the module itself, it lives in here
 			
-			$oRebillMotorpass->motorpass_account_status_id	= MOTORPASS_ACCOUNT_STATUS_DISPATCHED;
-			$oRebillMotorpass->file_export_id				= $oResourceTypeHandler->getFileExport()->Id;
+			// Get Records to Export
+			// NOTE!
+			// Generally, this would happen in a common base class for the module 'type',
+			// but seeing as this is both the module type and the module itself, it lives in here.
+			// This method would also only return records that should be exported by this particular module
+			
+			Log::getLog()->log('Retrieving Records to Export');
+			$oQuery	= new Query();
+			$sSQL	= "	SELECT		rm.*
+									
+						FROM		rebill_motorpass rm
+									JOIN motorpass_account ma ON (ma.id = rm.motorpass_account_id)
+						
+						WHERE		motorpass_account_status_id = ".MOTORPASS_ACCOUNT_STATUS_AWAITING_DISPATCH;
+			if (($mResult = $oQuery->Execute($sSQL)) === false)
+			{
+				throw new Exception($oQuery->Error());
+			}
+			$aRecords	= array();
+			while ($aRebillMotorpass = $mResult->fetch_assoc())
+			{
+				$aRecords[] = $aRebillMotorpass;
+			}
+			
+			Log::getLog()->log('Processing '.count($aRecords).' Records');
+			// Process each Record
+			$aProcessedRecords	= array();
+			foreach ($aRecords as $aRecord)
+			{
+				$this->addRecord($aRecord);
+				$aProcessedRecords	= $aRecord;
+			}
+			
+			Log::getLog()->log('Rendering & Saving the File');
+			// Render & Save the File
+			$oResourceTypeHandler->render()->save();
+			
+			Log::getLog()->log('Saving exported Records');
+			// Save the exported Records
+			foreach ($aProcessedRecords as $aRecord)
+			{
+				$oMotorpassAccount	= Motorpass_Account::getForId(ORM::extractId($aRecord));
+				
+				$oMotorpassAccount->motorpass_account_status_id	= MOTORPASS_ACCOUNT_STATUS_DISPATCHED;
+				$oMotorpassAccount->file_export_id				= $oResourceTypeHandler->getFileExport()->Id;
+				
+				$oMotorpassAccount->save();
+			}
+			
+			if ($bCommit)
+			{
+				throw new Exception("DEBUG -- Remove me in production!");
+				
+				Log::getLog()->log('Delivering to Carrier');
+				// Deliver
+				//FIXME: Not until production!
+				//$oResourceTypeHandler->deliver();
+				
+				Log::getLog()->log('Committing changes to the Flex Database');
+				// Commit
+				DataAccess::getDataAccess()->TransactionCommit();
+			}
+			else
+			{
+				Log::getLog()->log('Test Mode: Rolling back changes');
+				// Rollback
+				DataAccess::getDataAccess()->TransactionRollback();
+			}
 		}
-		
-		if (!$this->_arrArgs[self::SWITCH_TEST_RUN])
+		catch (Exception $oException)
 		{
-			// Deliver the file
-			// DEBUG: Never deliver this file! (until we hit production)
-			//$oResourceTypeHandler->deliver();
-		}
-		else
-		{
-			throw new Exception("Test Mode: No files have been delivered, and database changes will be reverted");
+			// Rollback and rethrow
+			DataAccess::getDataAccess()->TransactionRollback();
+			throw $oException;
 		}
 		
 		// All appears to be OK!

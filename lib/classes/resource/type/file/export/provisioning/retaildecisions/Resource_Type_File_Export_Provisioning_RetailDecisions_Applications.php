@@ -306,6 +306,10 @@ class Resource_Type_File_Export_Provisioning_RetailDecisions_Applications extend
 		);
 	}
 	
+	/***************************************************************************
+	 * COMMON METHODS FOR ALL Resource_Type_Base CHILDREN
+	 **************************************************************************/
+	
 	static public function createCarrierModule($iCarrier, $sClass=__CLASS__)
 	{
 		parent::createCarrierModule($iCarrier, $sClass, self::RESOURCE_TYPE);
