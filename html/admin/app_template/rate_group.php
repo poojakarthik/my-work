@@ -227,6 +227,34 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		return TRUE;
 	}
 	
+	// Pagination method for 'View'
+	public function ViewFirstPage()
+	{
+		DBO()->Pagination->PageNumber	= 0;
+		$this->View(true);
+	}
+	
+	// Pagination method for 'View'
+	public function ViewPreviousPage()
+	{
+		DBO()->Pagination->PageNumber	= DBO()->Pagination->PageNumber->Value - 1;
+		$this->View(true);
+	}
+	
+	// Pagination method for 'View'
+	public function ViewNextPage()
+	{
+		DBO()->Pagination->PageNumber	= DBO()->Pagination->PageNumber->Value + 1;
+		$this->View(true);
+	}
+	
+	// Pagination method for 'View'
+	public function ViewLastPage()
+	{
+		DBO()->Pagination->PageNumber	= ceil(DBO()->Pagination->TotalSearchCount->Value / DBO()->Pagination->Limit->Value) - 1;
+		$this->View(true);
+	}
+	
 	//------------------------------------------------------------------------//
 	// View
 	//------------------------------------------------------------------------//
@@ -242,7 +270,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 * @return		void
 	 * @method
 	 */
-	function View()
+	function View($bPageChange=false)
 	{
 		// Check user authorization
 		AuthenticatedUser()->CheckAuth();
@@ -250,19 +278,19 @@ class AppTemplateRateGroup extends ApplicationTemplate
 
 		// Load the RateGroup
 		DBO()->RateGroup->Load();
-		$intRateGroupId = DBO()->RateGroup->Id->Value;
+		$iRateGroupId	= DBO()->RateGroup->Id->Value;
 		
 		// Load the RecordType record associated with the RateGroup
 		DBO()->RecordType->Id = DBO()->RateGroup->RecordType->Value;
 		DBO()->RecordType->Load();
 		
-		$arrColumns = Array("Id", "Name", "Description", "Archived");
-		DBL()->Rate->SetColumns($arrColumns);
+		$aColumns	= Array("Id", "Name", "Description", "Archived");
+		DBL()->Rate->SetColumns($aColumns);
 		if (DBO()->Rate->SearchString->IsSet)
 		{
 			// Retrieve only those Rates that satisfy the search criterea
-			$strSearchString = trim(DBO()->Rate->SearchString->Value);
-			if ($strSearchString == "")
+			$sSearchString	= trim(DBO()->Rate->SearchString->Value);
+			if (($sSearchString === '') && !$bPageChange)
 			{
 				// The Search string is empty and considered invalid
 				Ajax()->AddCommand("Alert", "ERROR: Please specify a name or partial name to search");
@@ -270,27 +298,63 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			}
 			
 			// Escape any special characters
-			$strSearchString = str_replace("'", "\'", $strSearchString);
-			
-			$strLimitToRateGroup = "Id IN (SELECT Rate FROM RateGroupRate rgr WHERE RateGroup = $intRateGroupId AND NOW() BETWEEN effective_start_datetime AND effective_end_datetime)";
-			$strWhere = "(Name LIKE '%$strSearchString%' OR Description LIKE '%$strSearchString%') AND $strLimitToRateGroup";
-			DBL()->Rate->Where->SetString($strWhere);
+			$sSearchString = str_replace("'", "\'", $sSearchString);
+			$sLimitToRateGroup = "Id IN (SELECT Rate FROM RateGroupRate rgr WHERE RateGroup = $iRateGroupId AND NOW() BETWEEN effective_start_datetime AND effective_end_datetime)";
+			if ($sSearchString === '')
+			{
+				$sWhere	= $sLimitToRateGroup;
+			}
+			else
+			{
+				$sWhere	= "(Name LIKE '%$sSearchString%' OR Description LIKE '%$sSearchString%') AND $sLimitToRateGroup";
+			}
+			DBL()->Rate->Where->SetString($sWhere);
 		}
 		else
 		{
 			// A search string has not been specified
-			// Load the Rates belonging to the RateGroup (Limit to 11)
-			DBL()->Rate->Where->SetString("Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup = $intRateGroupId AND NOW() BETWEEN effective_start_datetime AND effective_end_datetime)");
+			// Load the Rates belonging to the RateGroup
+			DBL()->Rate->Where->SetString("Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup = $iRateGroupId AND NOW() BETWEEN effective_start_datetime AND effective_end_datetime)");
 			DBL()->Rate->OrderBy("Name");
-			DBL()->Rate->SetLimit(10);
 		}
+		
+		// Default Page Number (if not set)
+		if (!DBO()->Pagination->PageNumber->IsSet)
+		{
+			DBO()->Pagination->PageNumber	= 0;
+		}
+		
+		// Default Limit (if not set)
+		if (!DBO()->Pagination->Limit->IsSet)
+		{
+			DBO()->Pagination->Limit	= 10;
+		}
+		
+		// Load once without limit
+		DBL()->Rate->Load();
+		$iTotalSearchCount	= DBL()->Rate->RecordCount();
+		if (DBO()->Pagination->TotalSearchCount->IsSet && ($iTotalSearchCount !== (int)DBO()->Pagination->TotalSearchCount->Value))
+		{
+			// Search has changed, reset pagination number & offset
+			DBO()->Pagination->PageNumber	= 0;
+			DBO()->Pagination->Offset		= 0;
+		}
+		else
+		{
+			// Calculate offset (set default limit if not set)
+			DBO()->Pagination->Offset	= DBO()->Pagination->PageNumber->Value * DBO()->Pagination->Limit->Value;
+		}
+		DBO()->Pagination->TotalSearchCount	= $iTotalSearchCount;
+		
+		// Load second time, with limit and offset
+		DBL()->Rate->SetLimit(DBO()->Pagination->Limit->Value, DBO()->Pagination->Offset->Value);
 		DBL()->Rate->Load();
 		
 		// Retrieve the number of Rates belonging to the RateGroup
-		$selRateCount = new StatementSelect("Rate", Array("RateCount"=>"Count(Id)"), "Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup = $intRateGroupId  AND NOW() BETWEEN effective_start_datetime AND effective_end_datetime)");
-		$selRateCount->Execute();
-		$arrRateCount = $selRateCount->Fetch();
-		DBO()->RateGroup->TotalRateCount = $arrRateCount['RateCount'];
+		$oRateCount	= new StatementSelect("Rate", Array("RateCount"=>"Count(Id)"), "Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup = $iRateGroupId  AND NOW() BETWEEN effective_start_datetime AND effective_end_datetime)");
+		$oRateCount->Execute();
+		$aRateCount	= $oRateCount->Fetch();
+		DBO()->RateGroup->TotalRateCount = $aRateCount['RateCount'];
 		
 		$this->LoadPage('rate_group_view');
 		return TRUE;

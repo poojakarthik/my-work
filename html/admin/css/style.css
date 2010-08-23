@@ -5900,3 +5900,23 @@ div.popup-employee-reassign-tasks-tickets-selects > div
 }
 
 /***************** END - Login Popup - END ****************/
+
+/***************** START - Rate Group Search Popup (Vixen) - START *****************/
+
+.rate-group-search
+{
+	text-align	: right;
+}
+
+.rate-group-search .record-summary
+{
+	position	: absolute;
+	left		: 0.5em;
+}
+
+.rate-group-search .pagination
+{
+	display	: inline-block;
+}
+
+/***************** END - Rate Group Search Popup (Vixen) - END *****************/
