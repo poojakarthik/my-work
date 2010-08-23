@@ -289,17 +289,9 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		if (DBO()->Rate->SearchString->IsSet)
 		{
 			// Retrieve only those Rates that satisfy the search criterea
-			$sSearchString	= trim(DBO()->Rate->SearchString->Value);
-			if (($sSearchString === '') && !$bPageChange)
-			{
-				// The Search string is empty and considered invalid
-				Ajax()->AddCommand("Alert", "ERROR: Please specify a name or partial name to search");
-				return TRUE;
-			}
-			
-			// Escape any special characters
-			$sSearchString = str_replace("'", "\'", $sSearchString);
-			$sLimitToRateGroup = "Id IN (SELECT Rate FROM RateGroupRate rgr WHERE RateGroup = $iRateGroupId AND NOW() BETWEEN effective_start_datetime AND effective_end_datetime)";
+			$sSearchString		= trim(DBO()->Rate->SearchString->Value);
+			$sSearchString		= str_replace("'", "\'", $sSearchString);
+			$sLimitToRateGroup	= "Id IN (SELECT Rate FROM RateGroupRate rgr WHERE RateGroup = $iRateGroupId AND NOW() BETWEEN effective_start_datetime AND effective_end_datetime)";
 			if ($sSearchString === '')
 			{
 				$sWhere	= $sLimitToRateGroup;

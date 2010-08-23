@@ -201,22 +201,33 @@ class HtmlTemplateRateGroupView extends HtmlTemplate
 		// Display details of how many records are being shown
 		if (DBO()->RateGroup->TotalRateCount->Value > 10)
 		{
-			// Record summary
-			$sRecordSummary = "Showing ".(DBO()->Pagination->Offset->Value + 1)." to ".(DBO()->Pagination->Offset->Value + $iRetrievedRatesCount)." of ". DBO()->Pagination->TotalSearchCount->Value ." Rates";
 			echo "<div class='TinySeperator'></div>";
+			
+			// Record summary
+			if (DBO()->Pagination->TotalSearchCount->Value == 0)
+			{
+				$sRecordSummary = "There are no Rates that match the search";
+			}
+			else
+			{
+				$sRecordSummary = "Showing ".(DBO()->Pagination->Offset->Value + 1)." to ".(DBO()->Pagination->Offset->Value + $iRetrievedRatesCount)." of ". DBO()->Pagination->TotalSearchCount->Value ." Rates";
+			}
 			echo "<div class='rate-group-search'><div class='record-summary'>$sRecordSummary</div>";
 			
 			// Pagination buttons
-			echo "<div class='pagination'>";
-			$bNotFirstPage	= DBO()->Pagination->PageNumber->Value > 0;
-			$this->_generatePaginationButton('First', $bNotFirstPage);
-			$this->_generatePaginationButton('Previous', $bNotFirstPage);
-			
-			$iTotalShown	= DBO()->Pagination->Offset->Value + DBO()->Pagination->Limit->Value;
-			$bNotLastPage	= $iTotalShown < DBO()->Pagination->TotalSearchCount->Value;
-			$this->_generatePaginationButton('Next', $bNotLastPage);
-			$this->_generatePaginationButton('Last', $bNotLastPage);
-			echo "</div></div>\n";
+			if (DBO()->Pagination->TotalSearchCount->Value > 0)
+			{
+				echo "<div class='pagination'>";
+				$bNotFirstPage	= DBO()->Pagination->PageNumber->Value > 0;
+				$this->_generatePaginationButton('First', $bNotFirstPage);
+				$this->_generatePaginationButton('Previous', $bNotFirstPage);
+				
+				$iTotalShown	= DBO()->Pagination->Offset->Value + DBO()->Pagination->Limit->Value;
+				$bNotLastPage	= $iTotalShown < DBO()->Pagination->TotalSearchCount->Value;
+				$this->_generatePaginationButton('Next', $bNotLastPage);
+				$this->_generatePaginationButton('Last', $bNotLastPage);
+				echo "</div></div>\n";
+			}
 		}
 		
 		echo "</div>\n"; // GroupedContent
