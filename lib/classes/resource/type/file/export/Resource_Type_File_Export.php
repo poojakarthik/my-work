@@ -16,7 +16,7 @@ abstract class Resource_Type_File_Export extends Resource_Type_Base
 		$oFileDeliverCarrierModule	= Carrier_Module::getForId($this->getConfig()->FileDeliverCarrierModuleId, true);
 		if (!$oFileDeliverCarrierModule)
 		{
-			throw new Exception("Unable to load Carrier Module with Id '".$this->getConfig()->FileDeliverCarrierModuleId."'");
+			throw new Exception("Unable to load 'File Deliver' Carrier Module with Id '".$this->getConfig()->FileDeliverCarrierModuleId."'");
 		}
 		$sFileDeliverClass		= $oFileDeliverCarrierModule->Module;
 		$this->_oFileDeliver	= new $sFileDeliverClass($oFileDeliverCarrierModule);
