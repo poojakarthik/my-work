@@ -4,7 +4,7 @@
  * Version 223 of database update.
  * This version: -
  *
- *	1:	Add the new Motorpass Provisioning Import/Export Carrier Module Types
+ *	1:	Add the new Motorpass Provisioning Import/Export and File Deliver Carrier Module Types
  *	2:	Add the new 'File Deliverer' Resource Type Nature
  *	3:	Add the 'Filesystem' and 'Filesystem_FTP' File Delivery Resource Types
  *
@@ -26,8 +26,9 @@ class Flex_Rollout_Version_000223 extends Flex_Rollout_Version
 																	(name								, description						, const_name)
 																VALUES
 																	('Motorpass Provisioning Import'	, 'Motorpass Provisioning Import'	, 'MODULE_TYPE_MOTORPASS_PROVISIONING_EXPORT'),
-																	('Motorpass Provisioning Export'	, 'Motorpass Provisioning Export'	, 'MODULE_TYPE_MOTORPASS_PROVISIONING_IMPORT');",
-									'sRollbackSQL'		=>	"	DELETE FROM	carrier_module_type	WHERE const_name IN ('MODULE_TYPE_MOTORPASS_PROVISIONING_EXPORT', MODULE_TYPE_MOTORPASS_PROVISIONING_IMPORT');",
+																	('Motorpass Provisioning Export'	, 'Motorpass Provisioning Export'	, 'MODULE_TYPE_MOTORPASS_PROVISIONING_IMPORT'),
+																	('File Deliver'						, 'File Deliver'					, 'MODULE_TYPE_FILE_DELIVER');",
+									'sRollbackSQL'		=>	"	DELETE FROM	carrier_module_type	WHERE const_name IN ('MODULE_TYPE_MOTORPASS_PROVISIONING_EXPORT', MODULE_TYPE_MOTORPASS_PROVISIONING_IMPORT', 'MODULE_TYPE_FILE_DELIVER');",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								),
 								array
