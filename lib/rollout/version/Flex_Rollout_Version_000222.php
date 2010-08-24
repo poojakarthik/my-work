@@ -340,7 +340,7 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 																			 FOREIGN KEY (rateplan_id)
 																			REFERENCES RatePlan (Id)) ENGINE = InnoDB
 															;",
-									'sRollbackSQL'		=>	"	DROP TABLEmotorpass_promotioncode_rateplan;",
+									'sRollbackSQL'		=>	"	DROP TABLE motorpass_promotioncode_rateplan;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								),
 								array
@@ -369,14 +369,14 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 																		);",
 									'sRollbackSQL'		=> "DROP TRIGGER rebill_motorpass_card_expiry_date;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
-								),
+								),/*
 								array
 								(
 									'sDescription'		=> "Set delimiter to | (required for CREATE TRIGGER in next step)",
 									'sAlterSQL'			=> "delimiter |",
 									'sRollbackSQL'		=> "delimiter ;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
-								),
+								),*/
 								array
 								(
 									'sDescription'		=> "Create trigger for rebill_motorpass on insert",
@@ -414,18 +414,18 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 																	SET	NEW.card_expiry_date = NULL;
 																END IF;
 															END;|
-															delimiter ;
+															/*delimiter ;*/
 ",
 									'sRollbackSQL'		=> "DROP TRIGGER rebill_motorpass_insert;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
-								),
+								),/*
 								array
 								(
 									'sDescription'		=> "Set delimiter to | (required for CREATE TRIGGER in next step)",
 									'sAlterSQL'			=> "delimiter |",
 									'sRollbackSQL'		=> "delimiter ;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
-								),
+								),*/
 								array
 								(
 									'sDescription'		=> "Create trigger for rebill_motorpass on update",
@@ -463,7 +463,7 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 																	SET	NEW.card_expiry_date = NULL;
 																END IF;
 															END;|
-															delimiter ;",
+															/*delimiter ;*/",
 									'sRollbackSQL'		=> "DROP TRIGGER rebill_motorpass_update;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								)
