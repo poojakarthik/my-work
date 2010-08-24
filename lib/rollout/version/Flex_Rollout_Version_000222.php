@@ -461,8 +461,8 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 																	SET	NEW.account_number = NULL;
 																	SET	NEW.card_expiry_date = NULL;
 																END IF;
-															END;|
-															/*delimiter ;*/",
+															END;/*|
+															delimiter ;*/",
 									'sRollbackSQL'		=> "DROP TRIGGER rebill_motorpass_update;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								)
