@@ -217,7 +217,7 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 																  motorpass_contact_id BIGINT UNSIGNED NOT NULL ,
 																  motorpass_card_id BIGINT UNSIGNED NOT NULL ,
 																  external_sale_id BIGINT UNSIGNED NOT NULL,
-																  external_sale_datetime TIMESTAMP NOT NULL,
+																  external_sale_datetime DATETIME NOT NULL,
 																  file_export_id BIGINT UNSIGNED NULL,
 																  file_import_id BIGINT UNSIGNED NULL,
 																  motorpass_account_status_id BIGINT UNSIGNED NOT NULL,
