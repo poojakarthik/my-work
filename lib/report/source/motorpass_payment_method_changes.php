@@ -48,7 +48,7 @@ $arrDataReport['SQLTable']				= "	(
 																										JOIN ServiceRatePlan srp2 ON (
 																																		s2.Id = srp2.Service
 																																		AND CAST(srp2.EndDateTime AS DATE) > <EndDate>
-																																		AND CAST(srp2.StartDatetime AS DATE) <=  <StartDate>
+																																		AND CAST(srp2.StartDatetime AS DATE) <=  <EndDate>
 																																	)
 																										JOIN RatePlan rp2 ON (rp2.Id = srp2.RatePlan)
 																										JOIN motorpass_promotioncode_rateplan mprp2 ON (rp2.Id = mprp2.rateplan_id)
