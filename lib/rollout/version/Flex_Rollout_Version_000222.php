@@ -136,7 +136,6 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 																		('All Vehicle Expenses', 	'All Vehicle Expenses',	'ALL_VEHICLE_EXPENSES',	'MOTORPASS_CARD_TYPE_ALL_VEHICLE_EXPENSES'),
 																		('Other', 					'Other', 				'OTHER'	,				'MOTORPASS_CARD_TYPE_OTHER')
 																;",
-									'sRollbackSQL'		=>	"	TRUNCATE TABLE motorpass_card_type;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								),
 								array
@@ -163,7 +162,6 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 																		('Declined', 			'Declined',				'DECLINED',				'MOTORPASS_ACCOUNT_STATUS_DECLINED'),
 																		('Withdrawn', 			'Withdrawn', 			'WITHDRAWN'	,			'MOTORPASS_ACCOUNT_STATUS_WITHDRAWN')
 																;",
-									'sRollbackSQL'		=>	"	TRUNCATE TABLE motorpass_account_status;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								),
 								array
@@ -315,11 +313,12 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 																MODIFY COLUMN	account_name VARCHAR(256) NULL,
 																MODIFY COLUMN	card_expiry_date DATE NULL;
 															",
-									'sRollbackSQL'		=>	"	ALTER TABLE		rebill_motorpass
-																DROP COLUMN		motorpass_account_id,
-																MODIFY COLUMN	account_number INT NOT NULL,
-																MODIFY COLUMN	account_name VARCHAR(256) NOT NULL,
-																MODIFY COLUMN	card_expiry_date DATE NOT NULL;	",
+									'sRollbackSQL'		=>	"	ALTER TABLE			rebill_motorpass
+																DROP FOREIGN KEY	fk_rebill_motorpass_motorpass_account_id,
+																DROP COLUMN			motorpass_account_id,
+																MODIFY COLUMN		account_number INT NOT NULL,
+																MODIFY COLUMN		account_name VARCHAR(256) NOT NULL,
+																MODIFY COLUMN		card_expiry_date DATE NOT NULL;	",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								),
 								array
