@@ -57,6 +57,7 @@ abstract class Resource_Type_Base
 		$oCarrierModule->FrequencyType		= FREQUENCY_DAY;
 		$oCarrierModule->Frequency			= 1;
 		$oCarrierModule->EarliestDelivery	= 0;
+		$oCarrierModule->LastSentOn			= Data_Source_Time::START_OF_TIME;
 		$oCarrierModule->Active				= 0;
 		$oCarrierModule->save();
 		

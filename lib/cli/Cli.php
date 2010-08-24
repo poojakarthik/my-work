@@ -192,13 +192,13 @@ abstract class Cli
 		foreach ($this->_arrCommandLineArguments as $switch => $param)
 		{
 			$req = pow(2, $i);
-			if ($param[Cli::ARG_REQUIRED])
+			if (isset($param[Cli::ARG_REQUIRED]) && $param[Cli::ARG_REQUIRED])
 			{
 				$requiredSwitches = $requiredSwitches | $req;
 			}
 			else
 			{
-				$validArgs[$switch] = $param[Cli::ARG_DEFAULT];
+				$validArgs[$switch] = (isset($param[Cli::ARG_DEFAULT])) ? $param[Cli::ARG_DEFAULT] : null;
 				$switched = $switched | $req;
 			}
 			$i++;

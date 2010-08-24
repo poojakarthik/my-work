@@ -6,7 +6,7 @@
  *
  * @class	Resource_Type_File_Export_Provisioning
  */
-abstract class Resource_Type_File_Export_Provisioning
+abstract class Resource_Type_File_Export_Provisioning extends Resource_Type_File_Export
 {
 	const	CARRIER_MODULE_TYPE	= MODULE_TYPE_PROVISIONING_OUTPUT;
 	

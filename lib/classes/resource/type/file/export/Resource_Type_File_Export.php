@@ -33,6 +33,11 @@ abstract class Resource_Type_File_Export extends Resource_Type_Base
 	
 	abstract public function deliver();
 	
+	public function getFileExport()
+	{
+		return $this->_oFileExport;
+	}
+	
 	protected function _logToDatabase()
 	{
 		// FIXME: Perhaps this can be moved directly into save()
@@ -56,7 +61,7 @@ abstract class Resource_Type_File_Export extends Resource_Type_Base
 	static public function defineCarrierModuleConfig()
 	{
 		return array_merge(parent::defineCarrierModuleConfig(), array(
-			'FileDeliverCarrierModuleId'	=>	array('Type'=>DATA_TYPE_INTEGER)
+			'FileDeliverCarrierModuleId'	=>	array('Description'=>'CarrierModule.Id for the method of delivery','Type'=>DATA_TYPE_INTEGER)
 		));
 	}
 }

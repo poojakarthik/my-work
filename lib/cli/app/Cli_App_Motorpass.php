@@ -27,7 +27,7 @@ class Cli_App_Motorpass extends Cli
 			switch ($this->_arrArgs[self::SWITCH_MODE])
 			{
 				case 'EXPORT':
-					$this->_export(!$this->_arrArgs[self::SWITCH_MODE]);
+					$this->_export(!$this->_arrArgs[self::SWITCH_TEST_RUN]);
 					break;
 				case 'IMPORT':
 					$this->_import();
@@ -36,6 +36,7 @@ class Cli_App_Motorpass extends Cli
 		}
 		catch (Exception $oException)
 		{
+			echo "\n".$oException."\n";
 			return 1;
 		}
 	}
@@ -47,12 +48,12 @@ class Cli_App_Motorpass extends Cli
 			This is very specific, only supporting one export module at a time
 		 */
 		Log::getLog()->log('Getting Carrier Modules');
-		$aCarrierModules	= Carrier_Module::getForCarrierModuleType(MODULE_TYPE_MOTORPASS_FILE_EXPORT);
-		if ($aCarrierModules > 1)
+		$aCarrierModules	= Carrier_Module::getForCarrierModuleType(MODULE_TYPE_MOTORPASS_PROVISIONING_EXPORT);
+		if (count($aCarrierModules) > 1)
 		{
 			throw new Exception("There is more than one Motorpass Provisioning Export Carrier Module defined: ".print_r($aCarrierModules, true));
 		}
-		if ($aCarrierModules < 1)
+		if (count($aCarrierModules) < 1)
 		{
 			throw new Exception("There is no Motorpass Provisioning Export Carrier Module defined");
 		}
@@ -102,8 +103,16 @@ class Cli_App_Motorpass extends Cli
 			$aProcessedRecords	= array();
 			foreach ($aRecords as $aRecord)
 			{
-				$this->addRecord($aRecord);
-				$aProcessedRecords	= $aRecord;
+				$oResourceTypeHandler->addRecord($aRecord);
+				$aProcessedRecords[]	= $aRecord;
+			}
+			
+			// FIXME: This should really go somewhere in the module - the file should determine if it's fit for delivery
+			if (count($aProcessedRecords) === 0)
+			{
+				Log::getLog()->log('No Records to Export -- Aborting');
+				DataAccess::getDataAccess()->TransactionRollback();
+				return;
 			}
 			
 			Log::getLog()->log('Rendering & Saving the File');
@@ -114,7 +123,7 @@ class Cli_App_Motorpass extends Cli
 			// Save the exported Records
 			foreach ($aProcessedRecords as $aRecord)
 			{
-				$oMotorpassAccount	= Motorpass_Account::getForId(ORM::extractId($aRecord));
+				$oMotorpassAccount	= Motorpass_Account::getForId($aRecord['motorpass_account_id']);
 				
 				$oMotorpassAccount->motorpass_account_status_id	= MOTORPASS_ACCOUNT_STATUS_DISPATCHED;
 				$oMotorpassAccount->file_export_id				= $oResourceTypeHandler->getFileExport()->Id;
@@ -124,12 +133,12 @@ class Cli_App_Motorpass extends Cli
 			
 			if ($bCommit)
 			{
-				throw new Exception("DEBUG -- Remove me in production!");
+				//throw new Exception("DEBUG -- Remove me in production!");
 				
 				Log::getLog()->log('Delivering to Carrier');
 				// Deliver
 				//FIXME: Not until production!
-				//$oResourceTypeHandler->deliver();
+				$oResourceTypeHandler->deliver();
 				
 				Log::getLog()->log('Committing changes to the Flex Database');
 				// Commit

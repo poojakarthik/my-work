@@ -35,6 +35,7 @@ class Cli_App_CarrierModule extends Cli
 		}
 		catch (Exception $oException)
 		{
+			echo "\n".$oException."\n";
 			return 1;
 		}
 	}
@@ -44,11 +45,12 @@ class Cli_App_CarrierModule extends Cli
 		$iCarrierId	= $this->_arrArgs[self::SWITCH_CARRIER_ID];
 		$sClassName	= $this->_arrArgs[self::SWITCH_CLASS_NAME];
 		
-		if (!is_subclass_of($sClassName, Resource_Type_Base))
+		if (!is_subclass_of($sClassName, 'Resource_Type_Base'))
 		{
-			throw new Exception("'{$sClassName}' does not extends Resource_Type_Base");
+			throw new Exception("Class '{$sClassName}' does not extends Resource_Type_Base");
 		}
 		
+		Log::getLog()->log("Creating Carrier Module for Carrier '{$iCarrierId}' with Class '{$sClassName}'");
 		Callback::create('createCarrierModule', $sClassName)->invoke($iCarrierId);
 	}
 	
@@ -64,22 +66,23 @@ class Cli_App_CarrierModule extends Cli
 			
 			self::SWITCH_MODE => array(
 				self::ARG_REQUIRED		=> TRUE,
+				self::ARG_LABEL			=> "MODE",
 				self::ARG_DESCRIPTION	=> "Carrier Module operation to perform [CREATE]",
 				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("CREATE"))'
 			),
 			
 			self::SWITCH_CARRIER_ID => array(
-				self::ARG_REQUIRED		=> true,
+				self::ARG_REQUIRED		=> false,
 				self::ARG_LABEL			=> "CARRIER_ID",
 				self::ARG_DESCRIPTION	=> "Carrier Id",
 				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
 			),
 			
 			self::SWITCH_CLASS_NAME => array(
-				self::ARG_REQUIRED		=> true,
+				self::ARG_REQUIRED		=> false,
 				self::ARG_LABEL			=> "MODULE_CLASS_NAME",
 				self::ARG_DESCRIPTION	=> "Carrier Id",
-				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
+				self::ARG_VALIDATION	=> 'Cli::_validClassName("%1$s")'
 			)
 		);
 	}

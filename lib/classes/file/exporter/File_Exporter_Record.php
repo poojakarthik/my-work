@@ -39,11 +39,11 @@ class File_Exporter_Record
 	{
 		try
 		{
-			$this->_oRecordType->getField($this);
+			$this->_oRecordType->getField($sProperty);
 		}
 		catch (Exception $oException)
 		{
-			throw new Exception("Field '{$sProperty}' is not defined on Record Type '{$oRecordType}'");
+			throw new Exception("Field '{$sProperty}' is not defined on Record Type '".print_r($this->_oRecordType, true)."'");
 		}
 		
 		$this->_aRecord[$sProperty]	= $mValue;

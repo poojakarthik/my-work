@@ -48,7 +48,8 @@ class Flex_Rollout_Version_000223 extends Flex_Rollout_Version
 																	(name					, description						, const_name									, resource_type_nature)
 																VALUES
 																	('Filesystem'			, 'Filesystem (fopen stream)'		, 'RESOURCE_TYPE_FILE_DELIVERER_FILESYSTEM'		, (SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_FILE_DELIVERER' LIMIT 1)),
-																	('FTP (Filesystem)'		, 'FTP (fopen stream)'				, 'RESOURCE_TYPE_FILE_DELIVERER_FILESYSTEM_FTP'	, (SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_FILE_DELIVERER' LIMIT 1));",
+																	('FTP (Filesystem)'		, 'FTP (fopen stream)'				, 'RESOURCE_TYPE_FILE_DELIVERER_FILESYSTEM_FTP'	, (SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_FILE_DELIVERER' LIMIT 1)),
+																	('FTP'					, 'FTP (ftp_connect)'				, 'RESOURCE_TYPE_FILE_DELIVERER_FTP'			, (SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_FILE_DELIVERER' LIMIT 1));",
 									'sRollbackSQL'		=>	"	DELETE FROM	resource_type	WHERE const_name IN ('RESOURCE_TYPE_FILE_DELIVERER_FILESYSTEM', 'RESOURCE_TYPE_FILE_DELIVERER_FILESYSTEM_FTP');",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								)

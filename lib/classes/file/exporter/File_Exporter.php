@@ -6,6 +6,8 @@ abstract class File_Exporter
 	protected	$_aRecordTypes	= array();
 	protected	$_aRecords		= array();
 	
+	public function __construct(){}
+	
 	public function addRecord(File_Exporter_Record $oRecord, $sRecordGroup=self::RECORD_GROUP_BODY)
 	{
 		$this->_aRecords[$sRecordGroup][]	= $oRecord;
@@ -45,6 +47,7 @@ abstract class File_Exporter
 	
 	public function renderToFile($sPath)
 	{
+		@mkdir(dirname($sPath), 0777, true);
 		return @(bool)file_put_contents($sPath, $this->render());
 	}
 }

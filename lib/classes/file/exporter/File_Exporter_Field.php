@@ -39,7 +39,7 @@ class File_Exporter_Field
 	{
 		if ($this->_sValidationRegex)
 		{
-			if (!preg_match($this->_sValidationRegex))
+			if (!preg_match($this->_sValidationRegex, $mValue))
 			{
 				throw new Exception("Value '{$mValue}' doesn't match validation regex '{$this->_sValidationRegex}'");
 			}

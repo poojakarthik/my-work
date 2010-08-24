@@ -65,60 +65,6 @@ class Motorpass_Trade_Reference extends ORM_Cached
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 
-	/**
-	 * _preparedStatement()
-	 *
-	 * Access a Static Cache of Prepared Statements used by this Class
-	 *
-	 * @param	string		$strStatement						Name of the statement
-	 *
-	 * @return	Statement										The requested Statement
-	 *
-	 * @method
-	 */
-	protected static function _preparedStatement($strStatement)
-	{
-		static	$arrPreparedStatements	= Array();
-		if (isset($arrPreparedStatements[$strStatement]))
-		{
-			return $arrPreparedStatements[$strStatement];
-		}
-		else
-		{
-			switch ($strStatement)
-			{
-				// SELECTS
-				case 'selById':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
-					break;
-				case 'selAll':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
-					break;
-
-				// INSERTS
-				case 'insSelf':
-					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);
-					break;
-
-				// UPDATE BY IDS
-				case 'ubiSelf':
-					$arrPreparedStatements[$strStatement]	= new StatementUpdateById(self::$_strStaticTableName);
-					break;
-
-				case 'selByAccountId':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "motorpass_account_id = <account_id> AND (<active_only> = 0 OR active_id = ".STATUS_ACTIVE.")");
-					break;
-				case 'getActiveId':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "id", "motorpass_account_id = <motorpass_account_id> and company_name = <company_name> and contact_person = <contact_person> and phone_number =<phone_number> and status_id = 1");
-					break;
-
-				default:
-					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
-			}
-			return $arrPreparedStatements[$strStatement];
-		}
-	}
-
 	public static function getForAccountId($iAccountId, $bActiveOnly=false)
 	{
 		$oSelect	= self::_preparedStatement('selByAccountId');
@@ -177,6 +123,60 @@ class Motorpass_Trade_Reference extends ORM_Cached
 				// No validation - assume is correct already as is not for data source
 				return true;
 
+		}
+	}
+
+	/**
+	 * _preparedStatement()
+	 *
+	 * Access a Static Cache of Prepared Statements used by this Class
+	 *
+	 * @param	string		$strStatement						Name of the statement
+	 *
+	 * @return	Statement										The requested Statement
+	 *
+	 * @method
+	 */
+	protected static function _preparedStatement($strStatement)
+	{
+		static	$arrPreparedStatements	= Array();
+		if (isset($arrPreparedStatements[$strStatement]))
+		{
+			return $arrPreparedStatements[$strStatement];
+		}
+		else
+		{
+			switch ($strStatement)
+			{
+				// SELECTS
+				case 'selById':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
+					break;
+				case 'selAll':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
+					break;
+
+				// INSERTS
+				case 'insSelf':
+					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);
+					break;
+
+				// UPDATE BY IDS
+				case 'ubiSelf':
+					$arrPreparedStatements[$strStatement]	= new StatementUpdateById(self::$_strStaticTableName);
+					break;
+
+				case 'selByAccountId':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "motorpass_account_id = <account_id> AND (<active_only> = 0 OR status_id = ".STATUS_ACTIVE.")");
+					break;
+				case 'getActiveId':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "id", "motorpass_account_id = <motorpass_account_id> and company_name = <company_name> and contact_person = <contact_person> and phone_number =<phone_number> and status_id = 1");
+					break;
+
+				default:
+					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
+			}
+			return $arrPreparedStatements[$strStatement];
 		}
 	}
 }

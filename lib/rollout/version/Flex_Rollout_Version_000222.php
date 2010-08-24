@@ -205,6 +205,7 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 																  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 																  account_number INT(9) UNSIGNED NULL,
 																  account_name VARCHAR(256) NOT NULL,
+																  abn CHAR(11) NOT NULL,
 																  motorpass_promotion_code_id BIGINT UNSIGNED NOT NULL ,
 																  business_commencement_date DATE NOT NULL ,
 																  motorpass_business_structure_id BIGINT UNSIGNED NOT NULL ,

@@ -22,8 +22,25 @@ class File_Exporter_RecordType
 			throw new Exception("Field Alias '{$sAlias}' is already registered!");
 		}
 		
-		$iInsertIndex	= ($mBeforeField) ? $this->getField($mBeforeField) : count($this->_aFields);
-		$this->_aFields	= array_splice($this->_aFields, $iInsertIndex, 0, array($sAlias=>$oField));
+		// Insert the new Field (can't use array_splice, as it doesn't preserve associative keys)
+		$aExistingFields	= $this->_aFields;
+		$this->_aFields		= array();
+		foreach ($aExistingFields as $sFieldAlias=>$oFieldDefinition)
+		{
+			// Insert our new Field if this is the 'before' Field
+			if ($mBeforeField && $oFieldDefinition === $this->getField($mBeforeField))
+			{
+				$this->_aFields[$sAlias]	= $oField;
+			}
+			
+			$this->_aFields[$sFieldAlias]	= $oFieldDefinition;
+		}
+		
+		// If our new Field haven't been inserted yet, push it on to the end of the array
+		if (!in_array($oField, $this->_aFields, true))
+		{
+			$this->_aFields[$sAlias]	= $oField;
+		}
 		
 		return $this;
 	}
