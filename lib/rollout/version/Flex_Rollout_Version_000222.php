@@ -216,6 +216,7 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 																  motorpass_contact_id BIGINT UNSIGNED NOT NULL ,
 																  motorpass_card_id BIGINT UNSIGNED NOT NULL ,
 																  external_sale_id BIGINT UNSIGNED NOT NULL,
+																  external_sale_datetime TIMESTAMP NOT NULL,
 																  file_export_id BIGINT UNSIGNED NULL,
 																  file_import_id BIGINT UNSIGNED NULL,
 																  motorpass_account_status_id BIGINT UNSIGNED NOT NULL,
@@ -384,25 +385,25 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 																DECLARE acc_num INTEGER;
 																DECLARE expiry DATE;
 																DECLARE acc_name VARCHAR(256);
-																
+
 																IF (NEW.motorpass_account_id IS NOT NULL) THEN
 																	SELECT	ma.account_name
 																	INTO	acc_name
 																	FROM	motorpass_account ma
 																	WHERE	ma.id = NEW.motorpass_account_id;
-																	
+
 																	SELECT	ma.account_number
 																	INTO	acc_num
 																	FROM	motorpass_account ma
 																	WHERE	ma.id = NEW.motorpass_account_id;
-																	
+
 																	SELECT	mc.card_expiry_date
 																	INTO	expiry
 																	FROM	motorpass_account ma
 																	JOIN	motorpass_card mc
 																				ON ma.motorpass_card_id = mc.id
 																	WHERE	ma.id = NEW.motorpass_account_id;
-																	
+
 																	SET	NEW.account_name = acc_name;
 																	SET	NEW.account_number = acc_num;
 																	SET	NEW.card_expiry_date = expiry;
@@ -433,25 +434,25 @@ class Flex_Rollout_Version_000222 extends Flex_Rollout_Version
 																DECLARE acc_num INTEGER;
 																DECLARE expiry DATE;
 																DECLARE acc_name VARCHAR(256);
-																
+
 																IF (NEW.motorpass_account_id IS NOT NULL) THEN
 																	SELECT	ma.account_name
 																	INTO	acc_name
 																	FROM	motorpass_account ma
 																	WHERE	ma.id = NEW.motorpass_account_id;
-																	
+
 																	SELECT	ma.account_number
 																	INTO	acc_num
 																	FROM	motorpass_account ma
 																	WHERE	ma.id = NEW.motorpass_account_id;
-																	
+
 																	SELECT	mc.card_expiry_date
 																	INTO	expiry
 																	FROM	motorpass_account ma
 																	JOIN	motorpass_card mc
 																				ON ma.motorpass_card_id = mc.id
 																	WHERE	ma.id = NEW.motorpass_account_id;
-																	
+
 																	SET	NEW.account_name = acc_name;
 																	SET	NEW.account_number = acc_num;
 																	SET	NEW.card_expiry_date = expiry;
