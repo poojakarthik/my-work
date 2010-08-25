@@ -312,7 +312,7 @@ class File_CSV implements Iterator
 		return $aLine;
 	}
 	
-	public static function buildLine($aRecord, $sDelimiter=',', $sQuote='"', $sEscape='\\', $aSpecialCharacters=array())
+	public static function buildLine($aRecord, $sDelimiter=',', $sQuote='"', $sEscape='\\', $aSpecialCharacters=array(), $mQuote=false)
 	{
 		$aPreparedRecords	= array();
 		foreach ($aRecord as $mValue)
@@ -323,7 +323,7 @@ class File_CSV implements Iterator
 		return implode($sDelimiter, $aPreparedRecords);
 	}
 	
-	protected static function _prepare($mValue, $sQuote='"', $sEscape='\\', $aSpecialCharacters=array(), $mQuote=null)
+	protected static function _prepare($mValue, $sQuote='"', $sEscape='\\', $aSpecialCharacters=array(), $mQuote=false)
 	{
 		return self::_quote(self::_escape($mValue, $sEscape, $aSpecialCharacters), $sQuote, $mQuote);
 	}
@@ -342,7 +342,7 @@ class File_CSV implements Iterator
 		return $mValue;
 	}
 	
-	protected static function _quote($mValue, $sQuote, $mQuote=null)
+	protected static function _quote($mValue, $sQuote, $mQuote=false)
 	{
 		$bQuote	= (is_bool($mQuote) && $mQuote);
 		if (is_array($mQuote))
