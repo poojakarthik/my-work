@@ -177,12 +177,16 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 				}
 				
 				// Build Approve/Reject Buttons for Samples
-				if ($bolIsSample && $bolUserHasInterimPerm && ($arrInvoiceRun['invoice_run_type_id'] == INVOICE_RUN_TYPE_INTERIM || $arrInvoiceRun['invoice_run_type_id'] == INVOICE_RUN_TYPE_FINAL))
+				$iInvoiceRunTypeId	= $arrInvoiceRun['invoice_run_type_id'];
+				if ($bolIsSample && $bolUserHasInterimPerm && ($iInvoiceRunTypeId == INVOICE_RUN_TYPE_INTERIM || $iInvoiceRunTypeId == INVOICE_RUN_TYPE_FINAL || $iInvoiceRunTypeId == INVOICE_RUN_TYPE_INTERIM_FIRST))
 				{
 					switch ($arrInvoiceRun['invoice_run_type_id'])
 					{
 						case INVOICE_RUN_TYPE_INTERIM:
 							$strCommitType	= 'Interim';
+							break;
+						case INVOICE_RUN_TYPE_INTERIM_FIRST:
+							$strCommitType	= 'Interim First';
 							break;
 						case INVOICE_RUN_TYPE_FINAL:
 							$strCommitType	= 'Final';
@@ -190,7 +194,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 					}
 					
 					// If this is an Temporary Interim/Final Invoice and has sufficient privileges, replace the Email button with a Commit button
-					$strCommitHref	= Href()->CommitInterimInvoice($dboInvoice->Id->Value);
+					$strCommitHref	= Href()->CommitInterimInvoice($dboInvoice->Id->Value, $arrInvoiceRun['invoice_run_type_id']);
 					$strRevokeHref	= Href()->RevokeInterimInvoice($dboInvoice->Id->Value);
 					$strEmailLabel	= "<img src='img/template/invoice_commit.png' title='Approve {$strCommitType} Invoice' onclick='{$strCommitHref}' />";
 					$strEmailLabel	.= "<img src='img/template/invoice_revoke.png' title='Reject {$strCommitType} Invoice' onclick='{$strRevokeHref}' />";
@@ -313,6 +317,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 				$bolInterimAllowed	= Flex_Module::isActive(FLEX_MODULE_INVOICE_FINAL);
 				break;
 			case INVOICE_RUN_TYPE_INTERIM:
+			case INVOICE_RUN_TYPE_INTERIM_FIRST:
 				$bolInterimAllowed	= Flex_Module::isActive(FLEX_MODULE_INVOICE_INTERIM);
 				break;
 		}

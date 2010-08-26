@@ -46,7 +46,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 					throw new Exception($qryQuery->Error());
 				}
 				$aLastInvoiceType	= $rLastInvoiceType->fetch_assoc();
-				if ($aLastInvoiceType && in_array($aLastInvoiceType['invoice_run_type_id'], array(INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL)))
+				if ($aLastInvoiceType && in_array($aLastInvoiceType['invoice_run_type_id'], array(INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL, INVOICE_RUN_TYPE_INTERIM_FIRST)))
 				{
 					throw new Exception_Invoice_Interim_NotAllowed("You are not permitted to generate a ".GetConstantDescription($intInvoiceRunType, 'invoice_run_type').", as the last Invoice Run was a ".GetConstantDescription($aLastInvoiceType['invoice_run_type_id'], 'invoice_run_type').", dated ".date('d/m/Y', strtotime($aLastInvoiceType['BillingDate'])).".");
 				}
@@ -70,7 +70,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				// Check if there has already been a Committed Interim/Final Invoice today (well, with tomorrow's date)
 				$resInterimInvoiceRuns	= $qryQuery->Execute(	"SELECT InvoiceRun.Id, invoice_run_type_id " .
 																"FROM InvoiceRun JOIN Invoice ON InvoiceRun.Id = Invoice.invoice_run_id " .
-																"WHERE InvoiceRun.BillingDate = '{$strTomorrowsDate}' AND Invoice.Account = {$objAccount->Id} AND invoice_run_status_id IN (".INVOICE_RUN_STATUS_COMMITTING.", ".INVOICE_RUN_STATUS_COMMITTED.") AND invoice_run_type_id IN (".INVOICE_RUN_TYPE_INTERIM.", ".INVOICE_RUN_TYPE_FINAL.") " .
+																"WHERE InvoiceRun.BillingDate = '{$strTomorrowsDate}' AND Invoice.Account = {$objAccount->Id} AND invoice_run_status_id IN (".INVOICE_RUN_STATUS_COMMITTING.", ".INVOICE_RUN_STATUS_COMMITTED.") AND invoice_run_type_id IN (".INVOICE_RUN_TYPE_INTERIM.", ".INVOICE_RUN_TYPE_FINAL.", ".INVOICE_RUN_TYPE_INTERIM_FIRST.") " .
 																"LIMIT 1");
 				if ($resInterimInvoiceRuns === false)
 				{
@@ -325,7 +325,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				$objInvoiceRun	= new Invoice_Run(array('Id'=>$objInvoice->invoice_run_id), true);
 				
 				// Ensure that this Invoice Run is either Interim or Final, and is Temporary
-				$arrAllowableInvoiceRunTypes	= array(INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL);
+				$arrAllowableInvoiceRunTypes	= array(INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL, INVOICE_RUN_TYPE_INTERIM_FIRST);
 				if ($objInvoiceRun->invoice_run_status_id === INVOICE_RUN_STATUS_TEMPORARY)
 				{
 					if (in_array($objInvoiceRun->invoice_run_type_id, $arrAllowableInvoiceRunTypes))
@@ -407,7 +407,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				$objInvoiceRun	= new Invoice_Run(array('Id'=>(int)$objInvoice->invoice_run_id), true);
 				
 				// Ensure that this Invoice Run is either Interim or Final, and is Temporary
-				$arrAllowableInvoiceRunTypes	= array(INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL);
+				$arrAllowableInvoiceRunTypes	= array(INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL, INVOICE_RUN_TYPE_INTERIM_FIRST);
 				if ($objInvoiceRun->invoice_run_status_id === INVOICE_RUN_STATUS_TEMPORARY)
 				{
 					if (in_array($objInvoiceRun->invoice_run_type_id, $arrAllowableInvoiceRunTypes))
@@ -427,7 +427,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				
 				// Add a System Note
 				$fltGrandTotal	= number_format($objInvoice->Total + $objInvoice->Tax, 2, '.', '');
-				$strAn			= ($objInvoiceRun->invoice_run_type_id === INVOICE_RUN_TYPE_INTERIM) ? 'An' : 'A';
+				$strAn			= (($objInvoiceRun->invoice_run_type_id === INVOICE_RUN_TYPE_INTERIM) || ($objInvoiceRun->invoice_run_type_id === INVOICE_RUN_TYPE_INTERIM_FIRST)) ? 'An' : 'A';
 				$strContent		= $strAn." ".GetConstantDescription($objInvoiceRun->invoice_run_type_id, 'invoice_run_type') . " has been generated to the value of \${$fltGrandTotal}";
 				$objSystemNote	= Note::createSystemNote($strContent, Flex::getUserId(), $objInvoice->Account);
 				
@@ -464,6 +464,23 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 							"ErrorMessage"	=> 'ERROR: '.$e->getMessage(),
 							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
 						);
+		}
+	}
+	
+	public function submitAllEligible()
+	{
+		try
+		{
+			Invoice_Interim::submitAllEligible();
+			return array("bSuccess" => true);
+		}
+		catch (Exception $e)
+		{
+			$bIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+			return array(
+						"bSuccess"	=> false,
+						"sError"	=> ($bIsGod ? $e->getMessage() : '')
+					);
 		}
 	}
 }

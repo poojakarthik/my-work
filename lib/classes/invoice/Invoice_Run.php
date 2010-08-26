@@ -217,6 +217,7 @@ class Invoice_Run
 		if	(
 				!(
 					$intInvoiceRunType === INVOICE_RUN_TYPE_INTERIM
+					|| $intInvoiceRunType === INVOICE_RUN_TYPE_INTERIM_FIRST
 					|| $intInvoiceRunType === INVOICE_RUN_TYPE_FINAL
 					|| $intInvoiceRunType === INVOICE_RUN_TYPE_SAMPLES
 				)
@@ -236,7 +237,7 @@ class Invoice_Run
 			// If there are any Temporary InvoiceRuns with only this Account in them, then Revoke
 			$resSoloInvoiceRuns	= $qryQuery->Execute(	"SELECT InvoiceRun.* " .
 														"FROM Invoice JOIN InvoiceRun ON Invoice.invoice_run_id = InvoiceRun.Id " .
-														"WHERE Invoice.Account = {$intAccount} AND InvoiceRun.invoice_run_type_id IN (".INVOICE_RUN_TYPE_INTERIM.", ".INVOICE_RUN_TYPE_FINAL.") AND InvoiceRun.invoice_run_status_id = ".INVOICE_RUN_STATUS_TEMPORARY);
+														"WHERE Invoice.Account = {$intAccount} AND InvoiceRun.invoice_run_type_id IN (".INVOICE_RUN_TYPE_INTERIM.", ".INVOICE_RUN_TYPE_FINAL.", ".INVOICE_RUN_TYPE_INTERIM_FIRST.") AND InvoiceRun.invoice_run_status_id = ".INVOICE_RUN_STATUS_TEMPORARY);
 			if ($resSoloInvoiceRuns === false)
 			{
 				throw new Exception($qryQuery->Error());
@@ -284,7 +285,7 @@ class Invoice_Run
 		// Init variables
 		$dbaDB					= DataAccess::getDataAccess();
 
-		if ($intInvoiceRunType === INVOICE_RUN_TYPE_INTERIM || $intInvoiceRunType === INVOICE_RUN_TYPE_FINAL)
+		if (($intInvoiceRunType === INVOICE_RUN_TYPE_INTERIM) || ($intInvoiceRunType === INVOICE_RUN_TYPE_FINAL) || ($intInvoiceRunType === INVOICE_RUN_TYPE_INTERIM_FIRST))
 		{
 			throw new Exception("InvoiceRun::generateCustomerGroup() does not support Interim or Final Invoice Runs");
 		}
@@ -1306,7 +1307,7 @@ class Invoice_Run
 				case 'selCheckTemporaryInvoiceRun':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"InvoiceRun",
 																					"Id",
-																					"(invoice_run_type_id = ".INVOICE_RUN_TYPE_LIVE." OR (<Account> IS NOT NULL AND (SELECT COUNT(Id) FROM Invoice WHERE invoice_run_id = InvoiceRun.Id AND Account = <Account>) > 0 AND invoice_run_type_id IN (".INVOICE_RUN_TYPE_INTERIM.", ".INVOICE_RUN_TYPE_FINAL."))) AND invoice_run_status_id != ".INVOICE_RUN_STATUS_COMMITTED." AND (customer_group_id <=> <CustomerGroup> OR <CustomerGroup> IS NULL)",
+																					"(invoice_run_type_id = ".INVOICE_RUN_TYPE_LIVE." OR (<Account> IS NOT NULL AND (SELECT COUNT(Id) FROM Invoice WHERE invoice_run_id = InvoiceRun.Id AND Account = <Account>) > 0 AND invoice_run_type_id IN (".INVOICE_RUN_TYPE_INTERIM.", ".INVOICE_RUN_TYPE_FINAL.", ".INVOICE_RUN_TYPE_INTERIM_FIRST."))) AND invoice_run_status_id != ".INVOICE_RUN_STATUS_COMMITTED." AND (customer_group_id <=> <CustomerGroup> OR <CustomerGroup> IS NULL)",
 																					null,
 																					1);
 					break;

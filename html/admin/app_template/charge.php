@@ -642,7 +642,7 @@ class AppTemplateCharge extends ApplicationTemplate
 						AND invoice_run_id IN (	SELECT id
 												FROM InvoiceRun
 												WHERE invoice_run_status_id = ". INVOICE_RUN_STATUS_COMMITTED ."
-												AND invoice_run_type_id IN (". INVOICE_RUN_TYPE_LIVE .", ". INVOICE_RUN_TYPE_INTERIM .", ".INVOICE_RUN_TYPE_FINAL .")
+												AND invoice_run_type_id IN (". INVOICE_RUN_TYPE_LIVE .", ". INVOICE_RUN_TYPE_INTERIM.", ".INVOICE_RUN_TYPE_INTERIM_FIRST.", ".INVOICE_RUN_TYPE_FINAL .")
 											)";
 		DBL()->AccountInvoices->SetTable("Invoice");
 		DBL()->AccountInvoices->Where->Set($strWhere, $arrWhere);

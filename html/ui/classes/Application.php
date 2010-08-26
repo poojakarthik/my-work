@@ -135,6 +135,8 @@ class Application
 			{
 				ContextMenu()->Customer->Interim_Invoice->DownloadInterimEligibilityReport();
 				ContextMenu()->Customer->Interim_Invoice->SubmitInterimInterimEligibilityReport();
+				ContextMenu()->Customer->Interim_Invoice->AutomaticInterimInvoiceSubmission();
+				ContextMenu()->Customer->Interim_Invoice->CommitAndSendInterimInvoices();
 			}
 		}
 
@@ -374,6 +376,8 @@ class Application
 			{
 				ContextMenu()->Customer->Interim_Invoice->DownloadInterimEligibilityReport();
 				ContextMenu()->Customer->Interim_Invoice->SubmitInterimInterimEligibilityReport();
+				ContextMenu()->Customer->Interim_Invoice->AutomaticInterimInvoiceSubmission();
+				ContextMenu()->Customer->Interim_Invoice->CommitAndSendInterimInvoices();
 			}
 		}
 

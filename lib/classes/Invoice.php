@@ -456,7 +456,7 @@ class Invoice extends ORM_Cached
 				// Obey Account Status restrictions
 				$this->DeliveryMethod	= DELIVERY_METHOD_DO_NOT_SEND;
 			}
-			elseif (in_array($objInvoiceRun->invoice_run_type_id, array(INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL)) && $objCustomerGroup && $objCustomerGroup->interimInvoiceDeliveryMethodId)
+			elseif (in_array($objInvoiceRun->invoice_run_type_id, array(INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL, INVOICE_RUN_TYPE_INTERIM_FIRST)) && $objCustomerGroup && $objCustomerGroup->interimInvoiceDeliveryMethodId)
 			{
 				// Interim/Final Invoices use the Customer Group's setting (if one is configured)
 				$this->DeliveryMethod	= $objCustomerGroup->interimInvoiceDeliveryMethodId;
@@ -802,11 +802,30 @@ class Invoice extends ORM_Cached
 			// No, throw an Exception
 			throw new Exception("Invoice '{$this->Id}' is not a Temporary Invoice!");
 		}
-		else
-		{
-			Log::getLog()->log("(Revoking {$this->Id})");
-		}
 
+		// Check if this invoice is final, interim or interim first.
+		$oInvoiceRun		= Invoice_Run::getForId($this->invoice_run_id);
+		$aInvoiceRunTypes	= array(INVOICE_RUN_TYPE_FINAL, INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_INTERIM_FIRST);
+		if (in_array($oInvoiceRun->invoice_run_type_id, $aInvoiceRunTypes))
+		{
+			// If this is the only invoice left in it's run, revoke the run instead
+			$oStmt	= self::_preparedStatement('selByInvoiceRunId');
+			if ($oStmt->Execute(Array('invoice_run_id' => $this->invoice_run_id)) === FALSE)
+			{
+				// Database Error -- throw Exception
+				throw new Exception("DB ERROR: ".$oStmt->Error());
+			} 
+			else if ($oStmt->Count() == 1)
+			{
+				// Only one left, exit and revoke the run instead
+				Log::getLog()->log("Invoice {$this->Id} is last in it's invoice run, revoke the run instead...");
+				$oInvoiceRun->revoke();
+				return;
+			}
+		}
+		
+		Log::getLog()->log("(Revoking {$this->Id})");
+		
 		static	$dbaDB;
 		static	$qryQuery;
 		$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
@@ -1272,7 +1291,7 @@ class Invoice extends ORM_Cached
 			Log::getLog()->log("Arrears period start: ".date("Y-m-d H:i:s", $intArrearsPeriodStart));
 
 			// Charge In Advance (only if this is not an interim Invoice Run)
-			if ($arrPlanDetails['InAdvance'] && !in_array($this->_objInvoiceRun->invoice_run_type_id, array(INVOICE_RUN_TYPE_FINAL, INVOICE_RUN_TYPE_INTERIM)))
+			if ($arrPlanDetails['InAdvance'] && !in_array($this->_objInvoiceRun->invoice_run_type_id, array(INVOICE_RUN_TYPE_FINAL, INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_INTERIM_FIRST)))
 			{
 				$arrPlanChargeSteps[]	= ($bolFirstInvoice) ? 'FIRST_ADVANCE' : 'NORMAL_ADVANCE';
 
@@ -2043,7 +2062,9 @@ class Invoice extends ORM_Cached
 																						)																						AS adjustment_tax",
 																					"c.Account = <account_id> AND c.Status = ".CHARGE_TEMP_INVOICE." AND c.charge_model_id = ".CHARGE_MODEL_ADJUSTMENT." AND c.invoice_run_id = <invoice_run_id>");
 					break;
-
+				case 'selByInvoiceRunId':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Invoice", "*", "invoice_run_id = <invoice_run_id>");
+					break;
 
 				// INSERTS
 				case 'insServiceTotal':

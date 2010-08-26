@@ -119,7 +119,7 @@ class Cli_App_Billing extends Cli
 
 				case 'REVOKE_ALL_INTERIM':
 					// Retrieve list of Temporary Interim (not Final) Invoice Runs
-					$oResult	= $oQuery->Execute("SELECT Id FROM InvoiceRun WHERE invoice_run_type_id = ".INVOICE_RUN_TYPE_INTERIM." AND invoice_run_status_id = ".INVOICE_RUN_STATUS_TEMPORARY);
+					$oResult	= $oQuery->Execute("SELECT Id FROM InvoiceRun WHERE invoice_run_type_id = ".INVOICE_RUN_TYPE_INTERIM_FIRST." AND invoice_run_status_id = ".INVOICE_RUN_STATUS_TEMPORARY);
 					if ($oResult === false)
 					{
 						throw new Exception($oQuery);

@@ -112,6 +112,8 @@
 		//--------------------------------------------------------------------//
 		$xmlInvoice	= self::_addElement($xmlDocument, 'Invoice');
 		self::_addAttribute($xmlInvoice, 'Id', $arrInvoice['Id']);
+		$oInvoiceRun	= Invoice_Run::getForId($arrInvoice['invoice_run_id']);
+		self::_addAttribute($xmlInvoice, 'InvoiceRunType', Constant_Group::getConstantGroup('invoice_run_type')->getConstantAlias($oInvoiceRun->invoice_run_type_id));
 		
 		//--------------------------------------------------------------------//
 		// Currency Symbol (at the moment, we always use AUD, so $)
@@ -150,6 +152,8 @@
 		self::_addElement($xmlAccount, 'Suburb', strtoupper($arrCustomer['Suburb']));
 		self::_addElement($xmlAccount, 'Postcode', strtoupper($arrCustomer['Postcode']));
 		self::_addElement($xmlAccount, 'State', strtoupper($arrCustomer['State']));
+		$oPrimaryContact	= Contact::getForId(Account::getForId($arrInvoice['Account'])->PrimaryContact);
+		self::_addElement($xmlAccount, 'ContactPerson', $oPrimaryContact->title." ".$oPrimaryContact->getName());
 		
 		//--------------------------------------------------------------------//
 		// Adjustments

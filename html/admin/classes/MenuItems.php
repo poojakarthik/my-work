@@ -3497,12 +3497,12 @@ class MenuItems {
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
-	function CommitInterimInvoice($intInvoice)
+	function CommitInterimInvoice($intInvoice, $iInvoiceRunTypeId)
 	{
 		$this->strContextMenuLabel = "Commit Final/Interim Invoice";
 		$this->strLabel = "Commit Final/Interim Invoice";
 
-		return "JsAutoLoader.loadScript(\"javascript/invoice.js\", function(){Flex.Invoice.commitInterimInvoiceConfirm({$intInvoice});});";
+		return "JsAutoLoader.loadScript(\"javascript/invoice.js\", function(){Flex.Invoice.commitInterimInvoiceConfirm({$intInvoice}, ".($iInvoiceRunTypeId == INVOICE_RUN_TYPE_INTERIM_FIRST ? 'true' : 'false').");});";
 	}
 
 	/**
@@ -3599,6 +3599,29 @@ class MenuItems {
 		$this->strLabel = "Submit Interim Invoice Eligibility Report";
 
 		return "javascript:JsAutoLoader.loadScript('javascript/invoice.js', function(){Flex.Invoice.buildPopupSubmitInterimInvoiceReport()});";
+	}
+
+	function AutomaticInterimInvoiceSubmission()
+	{
+		$this->strContextMenuLabel = "Automatic Interim Invoice Submission";
+		$this->strLabel = "AutomaticInterimInvoiceSubmission";
+		
+		return "javascript: JsAutoLoader.loadScript(
+								'javascript/component_interim_first_invoice_submission.js',
+								function()
+								{
+									new Component_Interim_First_Invoice_Submission()
+								},
+								false
+							);";
+	}
+	
+	function CommitAndSendInterimInvoices()
+	{
+		$this->strContextMenuLabel = "Commit and Send Interim Invoices";
+		$this->strLabel = "Commit and Send Interim Invoices";
+		
+		return self :: NEW_FRAMEWORK . "reflex.php/Invoice/CommitAndSendInterimInvoices/";
 	}
 
 	/**

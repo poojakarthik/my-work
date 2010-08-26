@@ -503,14 +503,14 @@ class AppTemplateAccount extends ApplicationTemplate
 									);
 		
 		
-		$arrPermittedTypes = array(INVOICE_RUN_TYPE_SAMPLES, INVOICE_RUN_TYPE_LIVE, INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL);
+		$arrPermittedTypes = array(INVOICE_RUN_TYPE_SAMPLES, INVOICE_RUN_TYPE_LIVE, INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_INTERIM_FIRST, INVOICE_RUN_TYPE_FINAL);
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
 		{
 			$arrPermittedTypes[] = INVOICE_RUN_TYPE_INTERNAL_SAMPLES;
 		}
 		$strInvoiceTables = "Invoice AS I INNER JOIN InvoiceRun AS ir ON I.invoice_run_id = ir.Id";
 		
-		$strInvoiceWhere = "I.Account = $intAccountId AND I.Status != ". INVOICE_TEMP ." AND ir.invoice_run_status_id = ". INVOICE_RUN_STATUS_COMMITTED ." AND ir.invoice_run_type_id IN (". INVOICE_RUN_TYPE_LIVE.", ".INVOICE_RUN_TYPE_INTERIM.", ".INVOICE_RUN_TYPE_FINAL.")";
+		$strInvoiceWhere = "I.Account = $intAccountId AND I.Status != ". INVOICE_TEMP ." AND ir.invoice_run_status_id = ". INVOICE_RUN_STATUS_COMMITTED ." AND ir.invoice_run_type_id IN (". INVOICE_RUN_TYPE_LIVE.", ".INVOICE_RUN_TYPE_INTERIM.", ".INVOICE_RUN_TYPE_INTERIM_FIRST.", ".INVOICE_RUN_TYPE_FINAL.")";
 
 		DBL()->InvoicedInvoice->SetTable($strInvoiceTables);
 		DBL()->InvoicedInvoice->SetColumns($arrInvoiceColumns);

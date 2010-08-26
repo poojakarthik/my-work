@@ -225,12 +225,19 @@ var Invoice	= Class.create
 		return;
 	},
 	
-	commitInterimInvoiceConfirm	: function(intInvoice)
+	commitInterimInvoiceConfirm	: function(intInvoice, bInvoiceRunTypeIsInterimFirst)
 	{
-		Vixen.Popup.YesNoCancel("Are you sure you want to Commit this Invoice?  This process is irreversible.",
-								Flex.Invoice.commitInterimInvoice.curry(intInvoice),
-								function(){},
-								null);
+		if (bInvoiceRunTypeIsInterimFirst)
+		{
+			Reflex_Popup.alert("This invoice is a First Interim Invoice, it cannot be commited manually. To commit all temporary First Interim Invoices, do so by choosing the menu item: 'Customer' - 'Interim Invoice' - 'Commit and Send Interim Invoices'.");
+		}
+		else
+		{
+			Vixen.Popup.YesNoCancel("Are you sure you want to Commit this Invoice?  This process is irreversible.",
+									Flex.Invoice.commitInterimInvoice.curry(intInvoice),
+									function(){},
+									null);
+		}
 	},
 	
 	commitInterimInvoice	: function(intInvoice)
