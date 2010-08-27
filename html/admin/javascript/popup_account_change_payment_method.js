@@ -183,10 +183,7 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 				// Check for method expiry
 				if (this.hMethods[iMethod][iSubType].fnCheckExpiry)
 				{
-					if (!oMethod.oDetails || (oMethod.oDetails.card_expiry_date!=null && oMethod.oDetails.card_expiry_date!='0000-00-00'))
-					{
-						this.hMethods[iMethod][iSubType].fnCheckExpiry(oMethod);
-					}
+					this.hMethods[iMethod][iSubType].fnCheckExpiry(oMethod);
 
 
 					if (!this._bInitialLoadComplete && oMethod.bExpired)
