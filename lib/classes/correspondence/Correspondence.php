@@ -11,6 +11,11 @@ class Correspondence
 		$this->_oDO = $aData;
 	}
 
+	public function toArray()
+	{
+		return $this->_oDO;//change this to a real toArray when the time is right.
+	}
+
 
 	public function save()
 	{

@@ -31,7 +31,7 @@ class Correspondence_Template
 	public function  createRun($sScheduleDateTime = null, $sProcessDateTime = null)
 	{
 
-		$aDefinition = array ('schedule_datetime'=> $sScheduleDateTime, 'process_datetime'=>$sProcessDateTime);
+		$aDefinition = array ('scheduled_datetime'=> $sScheduleDateTime, 'processed_datetime'=>$sProcessDateTime);
 		$this->_aRuns[]= new Correspondence_Run($this, $aDefinition);
 
 	}
@@ -53,6 +53,11 @@ class Correspondence_Template
 	{
 		$aDefinition = array('name'=>$sName, 'description'=>$sDescription);
 		return new self ($aDefinition, $oSource);
+	}
+
+	public function __get($sField)
+	{
+		return $this->_oDO[$sField];
 	}
 
 

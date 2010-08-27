@@ -11,9 +11,9 @@ class Correspondence_Run
 		$this->_oCorrespondenceTemplate = $oCorrespondenceTemplate;
 		if (is_array($mDefinition))
 		{
-			if ($mDefinition['schedule_datetime']== null)
+			if ($mDefinition['scheduled_datetime']== null)
 			{
-				$mDefinition['schedule_datetime'] = Data_Source_Time::currentTimestamp();
+				$mDefinition['scheduled_datetime'] = Data_Source_Time::currentTimestamp();
 			}
 
 			$this->_oDO = $mDefinition;
@@ -38,6 +38,7 @@ class Correspondence_Run
 		{
 			$oCorrespondence->_oCorrespondenceRun = $this;
 		}
+		$this->_aCorrespondence = $aCorrespondence;
 		$x = time() - $x;
 		echo count($aCorrespondence)." results processed in $x seconds.<br>";
 		$this->_oDO['processed_datetime'] = Data_Source_Time::currentTimestamp();
@@ -45,9 +46,9 @@ class Correspondence_Run
 
 	public function save()
 	{
-		$this->_oCorrespondenceTemplate->save();
+		/*$this->_oCorrespondenceTemplate->save();
 		$this->oDO->correspondence_template_id = $this->_oCorrespondenceTemplate->id;
-		$this->oDO->save();
+		$this->oDO->save();*/
 
 	}
 
@@ -60,13 +61,21 @@ class Correspondence_Run
 
 	public function getTemplateName()
 	{
-
+		return $this->_oCorrespondenceTemplate->name;
 	}
 
 	public function getTemplateId()
 	{
-
+		return $this->_oCorrespondenceTemplate->id;
 	}
+
+
+	public function setDeliveryDetails ($iFileExportId, $sDeliveredTimeStamp)
+	{
+		$this->file_export_id = $iFileExportId;
+		$this->delivered_timestamp = $sDeliveredTimeStamp;
+	}
+
 
 	public static function get($iId)
 	{
@@ -87,7 +96,7 @@ class Correspondence_Run
 		//for initial testing purposes create new objects instead of retrieving data
 		$oSource = new Correspondence_Source_Csv();
 		$oTemplate = Correspondence_Template::create('motorpass correspondence', 'blah blah', $oSource);
-			$aDefinition = array ('schedule_datetime'=> Data_Source_Time::currentTimestamp(), 'process_datetime'=>Data_Source_Time::currentTimestamp());
+			$aDefinition = array ('scheduled_datetime'=> Data_Source_Time::currentTimestamp(), 'processed_datetime'=>Data_Source_Time::currentTimestamp());
 		$aRuns[]= new Correspondence_Run($oTemplate, $aDefinition);
 
 
@@ -107,6 +116,11 @@ class Correspondence_Run
 
 	public function __get($sField)
 	{
-		return $this->_oDO->$sField;
+		return $this->_oDO[$sField];
+	}
+
+	public function __set($sField, $mValue)
+	{
+		$this->_oDO[$sField]=$mValue;
 	}
 }
