@@ -32,7 +32,7 @@ class Correspondence_Run
 	public function process()
 	{
 		$x = time();
-		$aCorrespondence = $this->_oCorrespondenceTemplate->getData();
+		$aCorrespondence = $this->_oCorrespondenceTemplate->getData($this->_oDO->preprinted);
 		foreach ($aCorrespondence as $oCorrespondence)
 		{
 			$oCorrespondence->_oCorrespondenceRun = $this;
