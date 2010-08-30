@@ -48,6 +48,7 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 									'sAlterSQL'			=>	"CREATE  TABLE IF NOT EXISTS correspondence_source (
 															  id BIGINT(20) NOT NULL AUTO_INCREMENT ,
 															  correspondence_source_type_id BIGINT(20) NOT NULL ,
+															  user_selectable TINYINT(4) NOT NULL,
 															  PRIMARY KEY (id) ,
 															  INDEX source_type_id (correspondence_source_type_id ASC) ,
 															  CONSTRAINT fk_correspondence_source_type_id
@@ -69,6 +70,8 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 															  created_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
 															  correspondence_source_id BIGINT(20) NOT NULL ,
 															  carrier_id BIGINT(20) NOT NULL ,
+															  system_name VARCHAR(255) NULL,
+															  status_id TINYINT(4) NOT NULL,
 															  PRIMARY KEY (id) ,
 															  INDEX correspondence_source_id (correspondence_source_id ASC) ,
 															  CONSTRAINT fk_correspondence_template_correspondence_source_id
@@ -131,7 +134,7 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 															  email VARCHAR(255) NULL DEFAULT NULL ,
 															  mobile VARCHAR(25) NULL DEFAULT NULL ,
 															  landline VARCHAR(25) NULL DEFAULT NULL ,
-															  tar_file_path VARCHAR (255) NULL, DEFAULT NULL,
+															  tar_file_path VARCHAR (255) NULL DEFAULT NULL,
 															  PRIMARY KEY (id) ,
 															  INDEX correspondence_run_id (correspondence_run_id ASC) ,
 															  INDEX account_id (account_id ASC) ,
@@ -194,24 +197,6 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 																    ON UPDATE CASCADE)
 																ENGINE = InnoDB;",
 									'sRollbackSQL'		=>	"	DROP TABLE correspondence_data;",
-									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
-								),
-								array
-								(
-									'sDescription'		=>	"Add table correspondence_source_script",
-									'sAlterSQL'			=>	"CREATE  TABLE IF NOT EXISTS correspondence_source_script (
-															  id BIGINT(20) NOT NULL AUTO_INCREMENT ,
-															  correspondence_source_id BIGINT(20) NOT NULL ,
-															  class_name VARCHAR(255) NOT NULL ,
-															  method_name VARCHAR(45) NOT NULL ,
-															  PRIMARY KEY (id) ,
-															  INDEX correspondence_source_id (correspondence_source_id ASC) ,
-															  CONSTRAINT fk_correspondence_source_script_correspondence_source_id
-															    FOREIGN KEY (correspondence_source_id )
-															    REFERENCES correspondence_source (id )
-															    ON UPDATE CASCADE)
-															ENGINE = InnoDB;",
-									'sRollbackSQL'		=>	"	DROP TABLE correspondence_source_script;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								),
 
