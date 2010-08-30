@@ -42,12 +42,12 @@ class Correspondence_Template
 
 	}
 
-	public function getData()
+	public function getData($bPreprinted)
 	{
-		return $this->_oCorrespondenceSource->getData($this->createFullColumnSet());
+		return $this->_oCorrespondenceSource->getData($this->createFullColumnSet($bPreprinted));
 	}
 
-	public function createFullColumnSet($bIncludeNonSuppliedFields = false)
+	public function createFullColumnSet($bIncludeNonSuppliedFields = false, $bPreprinted)
 	{
 		$aColumns = Correspondence_ORM::getFieldNames();
 		if (!$bIncludeNonSuppliedFields)
@@ -57,6 +57,12 @@ class Correspondence_Template
 				$iIndex = array_search($sField,$aColumns);
 				unset($aColumns[$iIndex]);
 			}
+		}
+
+		if (!$bPreprinted)
+		{
+				$iIndex = array_search('tar_file-path',$aColumns);
+				unset($aColumns[$iIndex]);
 		}
 
 
