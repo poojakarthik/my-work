@@ -13,6 +13,9 @@ class Correspondence
 
 	public function toArray()
 	{
+		//return an associative array that can be used for csv file genereation
+		//for this, retrieve the column list from the template object, through the run object
+
 		return $this->_oDO;//change this to a real toArray when the time is right.
 	}
 
