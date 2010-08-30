@@ -29,7 +29,7 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 								),
 								array
 								(
-									'sDescription'		=>	"create table correspondence_data",
+									'sDescription'		=>	"create table correspondence_source_type",
 									'sAlterSQL'			=>	"CREATE  TABLE IF NOT EXISTS correspondence_source_type (
 															  id BIGINT(20) NOT NULL AUTO_INCREMENT ,
 															  name VARCHAR(255) NOT NULL ,
@@ -37,6 +37,7 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 															  system_name VARCHAR(255) NOT NULL ,
 															  const_name VARCHAR(255) NOT NULL ,
 															  class_name VARCHAR(255) NOT NULL ,
+															  user_selectable TINYINT(4) NOT NULL,
 															  PRIMARY KEY (id) )
 															ENGINE = InnoDB;",
 									'sRollbackSQL'		=>	"	DROP TABLE correspondence_data;",
@@ -48,7 +49,6 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 									'sAlterSQL'			=>	"CREATE  TABLE IF NOT EXISTS correspondence_source (
 															  id BIGINT(20) NOT NULL AUTO_INCREMENT ,
 															  correspondence_source_type_id BIGINT(20) NOT NULL ,
-															  user_selectable TINYINT(4) NOT NULL,
 															  PRIMARY KEY (id) ,
 															  INDEX source_type_id (correspondence_source_type_id ASC) ,
 															  CONSTRAINT fk_correspondence_source_type_id
