@@ -21,7 +21,7 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 																  name VARCHAR(255) NOT NULL ,
 																  system_name VARCHAR(255) NOT NULL ,
 																  const_name VARCHAR(255) NOT NULL ,
-																  PRIMARY KEY (`id`) )
+																  PRIMARY KEY (id) )
 																ENGINE = InnoDB
 																;",
 									'sRollbackSQL'		=>	"	DROP TABLE correspondence_delivery_method;",
@@ -37,7 +37,7 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 															  system_name VARCHAR(255) NOT NULL ,
 															  const_name VARCHAR(255) NOT NULL ,
 															  class_name VARCHAR(255) NOT NULL ,
-															  PRIMARY KEY (`id`) )
+															  PRIMARY KEY (id) )
 															ENGINE = InnoDB;",
 									'sRollbackSQL'		=>	"	DROP TABLE correspondence_data;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
@@ -48,11 +48,11 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 									'sAlterSQL'			=>	"CREATE  TABLE IF NOT EXISTS correspondence_source (
 															  id BIGINT(20) NOT NULL AUTO_INCREMENT ,
 															  correspondence_source_type_id BIGINT(20) NOT NULL ,
-															  PRIMARY KEY (`id`) ,
-															  INDEX source_type_id (`correspondence_source_type_id ASC) ,
+															  PRIMARY KEY (id) ,
+															  INDEX source_type_id (correspondence_source_type_id ASC) ,
 															  CONSTRAINT fk_correspondence_source_type_id
-															    FOREIGN KEY (`correspondence_source_type_id )
-															    REFERENCES correspondence_source_type (`id )
+															    FOREIGN KEY (correspondence_source_type_id )
+															    REFERENCES correspondence_source_type (id )
 															    ON UPDATE CASCADE)
 															ENGINE = InnoDB;",
 									'sRollbackSQL'		=>	"	DROP TABLE correspondence_source;",
@@ -69,15 +69,15 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 															  created_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
 															  correspondence_source_id BIGINT(20) NOT NULL ,
 															  carrier_id BIGINT(20) NOT NULL ,
-															  PRIMARY KEY (`id`) ,
-															  INDEX correspondence_source_id (`correspondence_source_id ASC) ,
+															  PRIMARY KEY (id) ,
+															  INDEX correspondence_source_id (correspondence_source_id ASC) ,
 															  CONSTRAINT fk_correspondence_template_correspondence_source_id
-															    FOREIGN KEY (`correspondence_source_id )
-															    REFERENCES correspondence_source (`id )
+															    FOREIGN KEY (correspondence_source_id )
+															    REFERENCES correspondence_source (id )
 															    ON UPDATE CASCADE,
 															 CONSTRAINT fk_correspondence_template_carrier_id
-															    FOREIGN KEY (`carrier_id )
-															    REFERENCES Carrier (`Id )
+															    FOREIGN KEY (carrier_id )
+															    REFERENCES Carrier (Id )
 															    ON UPDATE CASCADE)
 															ENGINE = InnoDB;",
 									'sRollbackSQL'		=>	"	DROP TABLE correspondence_template;",
@@ -95,16 +95,16 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 															  created_employee_id INT(11) NOT NULL ,
 															  created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
 															  file_export_id BIGINT(20) UNSIGNED NOT NULL ,
-															  PRIMARY KEY (`id`) ,
-															  INDEX correspondence_template_id (`correspondence_template_id ASC) ,
-															  INDEX file_export_id (`file_export_id ASC) ,
+															  PRIMARY KEY (id) ,
+															  INDEX correspondence_template_id (correspondence_template_id ASC) ,
+															  INDEX file_export_id (file_export_id ASC) ,
 															  CONSTRAINT fk_correspondence_run_file_export
-															    FOREIGN KEY (`file_export_id )
-															    REFERENCES FileExport (`Id )
+															    FOREIGN KEY (file_export_id )
+															    REFERENCES FileExport (Id )
 															    ON UPDATE CASCADE,
 															  CONSTRAINT fk_correspondence_template_id
-															    FOREIGN KEY (`correspondence_template_id )
-															    REFERENCES correspondence_template (`id )
+															    FOREIGN KEY (correspondence_template_id )
+															    REFERENCES correspondence_template (id )
 															    ON UPDATE CASCADE)
 															ENGINE = InnoDB;",
 									'sRollbackSQL'		=>	"	DROP TABLE correspondence_run;",
@@ -129,21 +129,21 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 															  email VARCHAR(255) NULL DEFAULT NULL ,
 															  mobile VARCHAR(25) NULL DEFAULT NULL ,
 															  landline VARCHAR(25) NULL DEFAULT NULL ,
-															  PRIMARY KEY (`id`) ,
-															  INDEX correspondence_run_id (`correspondence_run_id ASC) ,
-															  INDEX account_id (`account_id ASC) ,
-															  INDEX correspondence_delivery_method_id (`correspondence_delivery_method_id ASC) ,
+															  PRIMARY KEY (id) ,
+															  INDEX correspondence_run_id (correspondence_run_id ASC) ,
+															  INDEX account_id (account_id ASC) ,
+															  INDEX correspondence_delivery_method_id (correspondence_delivery_method_id ASC) ,
 															  CONSTRAINT fk_correspondence_account
-															    FOREIGN KEY (`account_id )
-															    REFERENCES Account (`Id )
+															    FOREIGN KEY (account_id )
+															    REFERENCES Account (Id )
 															    ON UPDATE CASCADE,
 															  CONSTRAINT fk_correspondence_delivery_method_id
-															    FOREIGN KEY (`correspondence_delivery_method_id )
-															    REFERENCES correspondence_delivery_method (`id )
+															    FOREIGN KEY (correspondence_delivery_method_id )
+															    REFERENCES correspondence_delivery_method (id )
 															    ON UPDATE CASCADE,
 															  CONSTRAINT fk_correspondence_run
-															    FOREIGN KEY (`correspondence_run_id )
-															    REFERENCES correspondence_run (`id )
+															    FOREIGN KEY (correspondence_run_id )
+															    REFERENCES correspondence_run (id )
 															    ON UPDATE CASCADE)
 															ENGINE = InnoDB;",
 									'sRollbackSQL'		=>	"	DROP TABLE correspondence;",
@@ -156,13 +156,13 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 															  id BIGINT(20) NOT NULL AUTO_INCREMENT ,
 															  name VARCHAR(255) NOT NULL ,
 															  description VARCHAR(500) NOT NULL ,
-															  index INT NOT NULL ,
+															  column_index INT(5) NOT NULL ,
 															  correspondence_template_id BIGINT(20) NOT NULL ,
-															  PRIMARY KEY (`id`) ,
-															  INDEX correspondence_template_id (`correspondence_template_id ASC) ,
+															  PRIMARY KEY (id) ,
+															  INDEX correspondence_template_id (correspondence_template_id ASC) ,
 															  CONSTRAINT fk_correspondence_template_column_correspondence_template
-															    FOREIGN KEY (`correspondence_template_id )
-															    REFERENCES correspondence_template (`id )
+															    FOREIGN KEY (correspondence_template_id )
+															    REFERENCES correspondence_template (id )
 															    ON UPDATE CASCADE)
 															ENGINE = InnoDB;",
 									'sRollbackSQL'		=>	"	DROP TABLE orrespondence_template_column;",
@@ -177,16 +177,16 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 																  value VARCHAR(2048) NULL DEFAULT NULL ,
 																  correspondence_template_column_id BIGINT(20) NOT NULL ,
 																  correspondence_id BIGINT(20) NOT NULL ,
-																  PRIMARY KEY (`id`) ,
-																  INDEX correspondence_template_column_id (`correspondence_template_column_id ASC) ,
-																  INDEX correspondence_id (`correspondence_id ASC) ,
+																  PRIMARY KEY (id) ,
+																  INDEX correspondence_template_column_id (correspondence_template_column_id ASC) ,
+																  INDEX correspondence_id (correspondence_id ASC) ,
 																  CONSTRAINT fk_correspondence_data_correspondence_template_column
-																    FOREIGN KEY (`correspondence_template_column_id )
-																    REFERENCES correspondence_template_column (`id )
+																    FOREIGN KEY (correspondence_template_column_id )
+																    REFERENCES correspondence_template_column (id )
 																    ON UPDATE CASCADE,
 																  CONSTRAINT fk_correspondence_data_correspondence
-																    FOREIGN KEY (`correspondence_id )
-																    REFERENCES correspondence (`id )
+																    FOREIGN KEY (correspondence_id )
+																    REFERENCES correspondence (id )
 																    ON DELETE CASCADE
 																    ON UPDATE CASCADE)
 																ENGINE = InnoDB;",
@@ -201,11 +201,11 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 															  correspondence_source_id BIGINT(20) NOT NULL ,
 															  class_name VARCHAR(255) NOT NULL ,
 															  method_name VARCHAR(45) NOT NULL ,
-															  PRIMARY KEY (`id`) ,
-															  INDEX correspondence_source_id (`correspondence_source_id ASC) ,
+															  PRIMARY KEY (id) ,
+															  INDEX correspondence_source_id (correspondence_source_id ASC) ,
 															  CONSTRAINT fk_correspondence_source_script_correspondence_source_id
-															    FOREIGN KEY (`correspondence_source_id )
-															    REFERENCES correspondence_source (`id )
+															    FOREIGN KEY (correspondence_source_id )
+															    REFERENCES correspondence_source (id )
 															    ON UPDATE CASCADE)
 															ENGINE = InnoDB;",
 									'sRollbackSQL'		=>	"	DROP TABLE correspondence_source_script;",
@@ -218,12 +218,12 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 									'sAlterSQL'			=>	"	CREATE  TABLE IF NOT EXISTS correspondence_source_sql (
 																  id BIGINT(20) NOT NULL AUTO_INCREMENT ,
 																  correspondence_source_id BIGINT(20) NOT NULL ,
-																  sql LONGTEXT NOT NULL ,
-																  PRIMARY KEY (`id`) ,
-																  INDEX correspondence_source_id (`correspondence_source_id ASC) ,
+																  sql_syntax LONGTEXT NOT NULL ,
+																  PRIMARY KEY (id) ,
+																  INDEX correspondence_source_id (correspondence_source_id ASC) ,
 																  CONSTRAINT fk_correspondence_source_sql_correspondence_source_id
-																    FOREIGN KEY (`correspondence_source_id )
-																    REFERENCES correspondence_source (`id )
+																    FOREIGN KEY (correspondence_source_id )
+																    REFERENCES correspondence_source (id )
 																    ON UPDATE CASCADE)
 																ENGINE = InnoDB;",
 									'sRollbackSQL'		=>	"	DROP TABLE correspondence_source_sql;",
