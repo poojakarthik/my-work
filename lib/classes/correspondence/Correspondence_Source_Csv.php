@@ -6,21 +6,28 @@ class Correspondence_Source_Csv extends Correspondence_Source
 
 public function __construct($sCsv = null)
 {
-
-	$sCsv = file_get_contents(dirname(__FILE__).'/sample_csv.csv');
+	parent::__construct(Correspondence_Source::CSV);
 	$this->_aCsv = explode("\n",$sCsv);
+
 }
 
 
-function getData()
+function getData($aColumns)
 {
+
+
+
 	$aCorrespondence = array();
 	foreach($this->_aCsv as $sLine)
 	{
-		$aCorrespondence[] = new Correspondence(File_CSV::parseLine(rtrim($sLine,"\r\n"), $sDelimiter=',', $sQuote='"', $sEscape='\\'));
+		$aLine = File_CSV::parseLineHashed(rtrim($sLine,"\r\n"), $sDelimiter=',', $sQuote='"', $sEscape='\\', $aColumns);
+
+		$aCorrespondence[] = new Correspondence();
 	}
 	return $aCorrespondence;
 }
+
+
 
 
 

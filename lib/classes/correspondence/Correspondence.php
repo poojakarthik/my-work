@@ -8,7 +8,7 @@ class Correspondence
 
 	public function __construct($aData)
 	{
-		$this->_oDO = $aData;
+		$this->_oDO = new Correspondence_ORM($aData);
 	}
 
 	public function toArray()

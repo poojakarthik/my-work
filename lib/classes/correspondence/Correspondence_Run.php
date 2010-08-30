@@ -6,7 +6,7 @@ class Correspondence_Run
 	protected $_oDO;
 
 
-	public function __construct($oCorrespondenceTemplate, $mDefinition)
+	public function __construct($oCorrespondenceTemplate, $mDefinition, $bProcessNow = true)
 	{
 		$this->_oCorrespondenceTemplate = $oCorrespondenceTemplate;
 		if (is_array($mDefinition))
@@ -16,11 +16,10 @@ class Correspondence_Run
 				$mDefinition['scheduled_datetime'] = Data_Source_Time::currentTimestamp();
 			}
 
-			$this->_oDO = $mDefinition;
-			if ($mDefinition['processed_datetime']==null)
+			$mDefinition['bPreprinted'] = $mDefinition['bPreprinted']?1:0;
+			$this->_oDO = new Correspondence_Run_ORM($mDefinition);
+			if ($bProcessNow)
 				$this->process();
-
-			//save the thing
 		}
 		else
 		{
@@ -46,9 +45,14 @@ class Correspondence_Run
 
 	public function save()
 	{
-		/*$this->_oCorrespondenceTemplate->save();
+		$this->_oCorrespondenceTemplate->save();
 		$this->oDO->correspondence_template_id = $this->_oCorrespondenceTemplate->id;
-		$this->oDO->save();*/
+		$this->oDO->save();
+		foreach ($this->_aCorrespondence as $oCorrespondence)
+		{
+			$oCorrespondence->correspondence_run_id = $this->id;
+			$oCorresponcence->save();
+		}
 
 	}
 
