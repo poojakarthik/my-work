@@ -5920,3 +5920,22 @@ div.popup-employee-reassign-tasks-tickets-selects > div
 }
 
 /***************** END - Rate Group Search Popup (Vixen) - END *****************/
+
+/***************** START - Commit All Interim First Invoices Popup - START *****************/
+
+.popup-interim-first-invoice-commit-all
+{
+	padding	: 0em 0.5em 0.5em 0.5em;
+}
+
+.popup-interim-first-invoice-commit-all .control-field select
+{
+	width	: 100%;
+}
+
+.popup-interim-first-invoice-commit-all .buttons
+{
+	text-align	: center;
+}
+
+/***************** END - Commit All Interim First Invoices Popup - END *****************/

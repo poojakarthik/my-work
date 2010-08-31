@@ -29,9 +29,6 @@ class Invoice_Interim
 			'ACCOUNT_ELIGIBLE'						=> 'Account Eligible',
 			'EXCLUDED_REQUIRES_TOLLING'				=> 'Excluded Requires Tolling',
 			'EXCLUDED_PENDING_SERVICES'				=> 'Excluded Pending Services'
-			//'DEBUG_BILLING_PERIOD_START'			=> 'DEBUG: Billing Period Start Date',
-			//'DEBUG_BILLING_PERIOD_END'				=> 'DEBUG: Billing Period End Date',
-			//'DEBUG_BILLING_PERIOD_DAYS'				=> 'DEBUG: Billing Period Length (Days)',
 		);
 	
 	private static 	$_aInterimExceptionsColumns	=	
@@ -68,18 +65,19 @@ class Invoice_Interim
 		$oCSVFile	= self::generateEligibilityReport($aServices);
 		
 		// Create account list where all services are white listed
+		$aAccounts	= array();
 		foreach ($aServices as $aService)
 		{
-			$iAccountId	= (int)$aService[self::$_aInterimEligibilityColumns['ACCOUNT_ID']];
-			
-			// Dirty hacks to prepend 0s to FNNs which have had them stripped off
-			$sFNN		= $aService[self::$_aInterimEligibilityColumns['SERVICE_FNN']];
-			$sFNN		= self::preg_match_string("/\d{9,10}(i)?$/", $sFNN);
+			// Determine the proper FNN --> Dirty hacks to prepend 0s to FNNs which have had them stripped off
+			$sFNN	= $aService['fnn'];
+			$sFNN	= self::preg_match_string("/\d{9,10}(i)?$/", $sFNN);
 			if ($sFNN[0] != '0' && !preg_match("/^(13\d{4}|1[38]00\d{6})$/", $sFNN))
 			{
 				$sFNN	= '0'.$sFNN;
 			}
 			
+			// Cache the FNN as white listed, due there being no re-submission of the eligibility report
+			$iAccountId	= (int)$aService['account_id'];
 			if (!isset($aAccounts[$iAccountId]))
 			{
 				$aAccounts[$iAccountId]	=	array(
@@ -92,9 +90,10 @@ class Invoice_Interim
 		}
 		
 		$aCustomerGroups	= self::_preProcessEligibleAccounts($aServices, $aAccounts);
+		
 		self::_processEligibleAccounts(
 			$aServices, 
-			$aAccounts, 
+			$aCustomerGroups, 
 			$oCSVFile, 
 			"auto-interim-invoice-eligibility-report-".date('Ymd')
 		);
@@ -155,9 +154,6 @@ class Invoice_Interim
 			$aOutput[self::$_aInterimEligibilityColumns['ACCOUNT_ELIGIBLE']]					= ($aAccountEligible[$aService['account_id']] ? 'Yes' : 'No');
 			$aOutput[self::$_aInterimEligibilityColumns['EXCLUDED_REQUIRES_TOLLING']]			= $aService['requires_tolling'];
 			$aOutput[self::$_aInterimEligibilityColumns['EXCLUDED_PENDING_SERVICES']]			= $aService['has_pending_services'];
-			//$aOutput[self::$_aInterimEligibilityColumns['DEBUG_BILLING_PERIOD_START']]			= $aService['aCharges']['billing_period_start'];
-			//$aOutput[self::$_aInterimEligibilityColumns['DEBUG_BILLING_PERIOD_END']]			= $aService['aCharges']['billing_period_end'];
-			//$aOutput[self::$_aInterimEligibilityColumns['DEBUG_BILLING_PERIOD_DAYS']]			= $aService['aCharges']['billing_period_days'];
 			
 			// Add the CSV
 			$oCSVFile->addRow($aOutput);
@@ -352,7 +348,7 @@ class Invoice_Interim
 		$aCustomerGroups	= self::_preProcessEligibleAccounts($aServices, $aAccounts);
 		self::_processEligibleAccounts(
 			$aServices, 
-			$aAccounts, 
+			$aCustomerGroups, 
 			$oCSVImportFile, 
 			basename($sFilePath), 
 			self::generateEligibilityReport($aServices)
@@ -360,20 +356,112 @@ class Invoice_Interim
 	}
 	
 	// commitAll
-	public static function commitAll()
+	public static function commitAll($sBillingDate)
 	{
-		// TODO: Commit all temporary invoice runs.
-		
-		// TODO: Deliver the invoices
+		// Start outer transaction
+		$oFlexDataAccess	= DataAccess::getDataAccess();
+		if (!$oFlexDataAccess->TransactionStart())
+		{
+			throw new Exception("There was an internal error in Flex.  Please notify YBS of this issue with the following message: 'Unable to start a Transaction'");
+		}
+		try
+		{
+			$oQuery				= new Query();
+			$aCustomerGroups	= Customer_Group::getAll();
+			$iCountDelivered	= 0;
+			foreach ($aCustomerGroups as $iId => $oCustomerGroup)
+			{
+				// Start inner transaction
+				if (!$oFlexDataAccess->TransactionStart())
+				{
+					throw new Exception("There was an internal error in Flex.  Please notify YBS of this issue with the following message: 'Unable to start a nested Transaction'");
+				}
+				try
+				{
+					// Get all temporary first interim invoice runs for the customer group
+					$sQuery		= "	SELECT	Id
+									FROM	InvoiceRun
+									WHERE	customer_group_id = {$iId}
+									AND		BillingDate = '{$sBillingDate}'
+									AND 	invoice_run_status_id = ".INVOICE_RUN_STATUS_TEMPORARY."
+									AND		invoice_run_type_id = ".INVOICE_RUN_TYPE_INTERIM_FIRST;
+					$oResult	= $oQuery->Execute($sQuery);
+					if ($oResult === false)
+					{
+						throw new Exception("Failed getting temporary invoice runs for the customer group {$oCustomerGroup->internal_name}.");
+					}
+					
+					// Commit each invoice run
+					while($aRow = $oResult->fetch_assoc())
+					{
+						$oInvoiceRun	= Invoice_Run::getForId($aRow['Id']);
+						$oInvoiceRun->commit();
+						$oInvoiceRun->deliver();
+						$iCountDelivered++;
+					}
+					
+					// Commit the inner transaction!
+					$oFlexDataAccess->TransactionCommit();	
+				}
+				catch (Exception $oException)
+				{
+					$oFlexDataAccess->TransactionRollback();
+					throw new Exception("Failed to commit invoice runs for customer group {$oCustomerGroup->internal_name}. ".$oException->getMessage());
+				}
+			}
+	
+			// Test mode, rollback
+			throw new Exception("TEST MODE -- commitAll successfull, {$iCountDelivered} delivered");
+			
+			// Commit the outer transaction!
+			$oFlexDataAccess->TransactionCommit();
+		}
+		catch (Exception $oException)
+		{
+			$oFlexDataAccess->TransactionRollback();
+			throw new Exception("Failed to commit and send all uncomitted interim first invoices. ".$oException->getMessage());
+		}
+	}
+	
+	public static function getTemporaryFirstInterimInvoiceBillingDates()
+	{
+		try
+		{
+			// Query for billing dates
+			$oQuery		= new Query();
+			$mResult	= $oQuery->Execute("SELECT	DISTINCT BillingDate
+											FROM	InvoiceRun
+											WHERE	invoice_run_status_id = ".INVOICE_RUN_STATUS_TEMPORARY."
+											AND		invoice_run_type_id = ".INVOICE_RUN_TYPE_INTERIM_FIRST);
+			if ($mResult === false)
+			{
+				throw new Exception("Query failed.");
+			}
+			
+			// Build array of date strings
+			$aDates	= array();
+			while ($aRow = $mResult->fetch_assoc())
+			{
+				$aDates[]	= $aRow['BillingDate'];
+			}
+			
+			return $aDates;
+		} 
+		catch (Exception $oEx)
+		{
+			throw new Exception("Failed to get temporary First Interim Invoice billing dates. ".$oException->getMessage());
+		}
 	}
 	
 	/*
 	 * Private functions
 	 */
 	
+	// _preProcessEligibleAccounts
 	private static function _preProcessEligibleAccounts(&$aServices, &$aAccounts)
 	{
 		// Remove any accounts that are ineligible
+		$aAccountCustomerGroups	= array();
 		foreach ($aServices as $sAccountServiceIndex => $aService)
 		{
 			$aAccountServiceIndex	= explode('.', $sAccountServiceIndex);
@@ -384,7 +472,7 @@ class Invoice_Interim
 			$bEligible	= ($aService['requires_tolling'] == 0) && ($aService['has_pending_services'] == 0);
 			if (!$bEligible)
 			{
-				// Remove the service
+				// Ineligible, remove the service
 				unset($aServices[$sAccountServiceIndex]);
 				
 				// Remove the account (if not already done)
@@ -393,25 +481,28 @@ class Invoice_Interim
 					unset($aAccounts[$iAccountId]);
 				}
 			}
+			
+			// Cache the customer group against the account id for later
+			$aAccountCustomerGroups[$iAccountId]	= $aService['customer_group'];
 		}
 		
-		// Organise the accounts by customer group
+		// Build (customer group) -> (account array) hash
 		$aCustomerGroups	= array();
 		foreach ($aAccounts as $iAccountId => $aAccount)
 		{
-			if (!isset($aCustomerGroups[$aAccount['customer_group']]))
+			$iCustomerGroupId	= $aAccountCustomerGroups[$iAccountId];
+			if (!isset($aCustomerGroups[$iCustomerGroupId]))
 			{
-				$aCustomerGroups[$aAccount['customer_group']]	= array();
+				$aCustomerGroups[$iCustomerGroupId]	= array();
 			}
-			
-			$aCustomerGroups[$aAccount['customer_group']][$iAccountId]	= $aAccount;
+			$aCustomerGroups[$iCustomerGroupId][$iAccountId]	= $aAccount;
 		}
 		
 		return $aCustomerGroups;
 	}
 	
-	// processEligibileAccounts
-	private static function _processEligibleAccounts($aServices, $aCustomerGroups, $oCSVEligibileReport, $sCSVEligibleFilename, $oOldCSVEligibleReport=null)
+	// _processEligibleAccounts
+	private static function _processEligibleAccounts($aServices, $aCustomerGroups, $oCSVEligibleReport, $sCSVEligibleFilename, $oOldCSVEligibleReport=null)
 	{
 		// Start the outer transaction
 		$oFlexDataAccess	= DataAccess::getDataAccess();
@@ -458,7 +549,7 @@ class Invoice_Interim
 						// If we have any Exceptions, add all Black/Whitelisted Services to the Exceptions report
 						if (count($aAccount['aBlacklist']))
 						{
-							foreach ($aAccount['aBlacklist'] as $sFNN=>$sReason)
+							foreach ($aAccount['aBlacklist'] as $sFNN => $sReason)
 							{
 								$oCSVExceptionsReport->addRow(
 									array 
@@ -471,7 +562,7 @@ class Invoice_Interim
 								$iServicesFailed++;
 							}
 							
-							foreach ($aAccount['aGreylist'] as $sFNN=>$sReason)
+							foreach ($aAccount['aGreylist'] as $sFNN => $sReason)
 							{
 								$oCSVExceptionsReport->addRow(
 									array 
@@ -484,7 +575,7 @@ class Invoice_Interim
 								$iServicesFailed++;
 							}
 							
-							foreach ($aAccount['aWhitelist'] as $sFNN=>$bWhitelisted)
+							foreach ($aAccount['aWhitelist'] as $sFNN => $bWhitelisted)
 							{
 								$oCSVExceptionsReport->addRow(
 									array 
@@ -507,17 +598,14 @@ class Invoice_Interim
 						}
 						else
 						{
-							// Action this Account!
-							
-							// Add the Charges for each Service
+							// Action this Account! Add the Charges for each Service
 							foreach($aAccount['aWhitelist'] as $sFNN=>$bWhitelisted)
 							{
 								self::_applyInterimInvoiceCharges($aServices["{$iAccountId}.{$sFNN}"]);
 							}
 							
 							// Add to the list of accounts to receive invoices
-							$oAccount				= new Account(array('Id'=>$iAccountId), false, true);
-							$aAccountsToInvoice[]	= $oAccount;
+							$aAccountsToInvoice[]	= Account::getForId($iAccountId);
 						}
 					}
 					// END: Build a list of accounts to create invoices for within this customer group
@@ -526,12 +614,7 @@ class Invoice_Interim
 					{
 						// Create an invoice run (of type 'INVOICE_RUN_TYPE_INTERIM_FIRST')
 						$oInvoiceRun	= new Invoice_Run();
-						$oInvoiceRun->generate(
-							$iCustomerGroupId,								// Customer group id
-							INVOICE_RUN_TYPE_INTERIM_FIRST,					// Invoice Run Type id
-							strtotime(date('Y-m-d', strtotime('+1 day'))), 	// Invoice Date Time
-							$aAccountsToInvoice								// Array of account objects to create invoices for
-						);
+						$oInvoiceRun->generateForAccounts($iCustomerGroupId, $aAccountsToInvoice, INVOICE_RUN_TYPE_INTERIM_FIRST);
 					}
 					catch (Exception $oEx)
 					{
@@ -543,14 +626,16 @@ class Invoice_Interim
 						throw $oEx;
 					}
 					
-					// Commit the inner transaction (invoice run created successfully)
-					$oFlexDataAccess->TransactionCommit();
-					
 					// Add to Processing Report (all Services that had Debits/Credits added)
 					foreach ($aAccounts as $iAccountId => $aAccount)
 					{
+						if (!isset($aAccount['aWhitelist']))
+						{
+							throw new Exception("No white list for $iAccountId. debug::'".print_r($aAccounts, true)."'");
+						}
+						
 						$bAccountHasCharges	= false;
-						foreach($aAccount['aWhitelist'] as $sFNN=>$bWhitelisted)
+						foreach ($aAccount['aWhitelist'] as $sFNN => $bWhitelisted)
 						{
 							$sServiceKey	= "{$iAccountId}.{$sFNN}";
 							if ($aServices[$sServiceKey]['aCharges']['plan_charge'])
@@ -603,6 +688,9 @@ class Invoice_Interim
 						$iAccountsInvoiced++;
 					}
 					// END: Add to Processing Report
+					
+					// Commit the inner transaction (invoice run created successfully)
+					$oFlexDataAccess->TransactionCommit();
 				}
 				catch (Exception $oException)
 				{
@@ -637,9 +725,9 @@ class Invoice_Interim
 				'text/csv'
 			);
 			
-			$sSubmittedEligibilityReportFileName	= "submitted-{$sCSVEligibleFilename}";
+			$sSubmittedEligibilityReportFileName	= "submitted-{$sCSVEligibleFilename}.csv";
 			$oProcessingEmailNotification->addAttachment(
-				$oCSVEligibileReport->save(), 
+				$oCSVEligibleReport->save(), 
 				$sSubmittedEligibilityReportFileName, 
 				'text/csv'
 			);
@@ -650,6 +738,7 @@ class Invoice_Interim
 				{
 					$oOldCSVEligibleReport	= self::generateEligibilityReport($aServices);
 				}
+				
 				$sCurrentEligibilityReportFileName	= "current-interim-invoice-eligibility-report-".date("YmdHis").".csv";
 				$oProcessingEmailNotification->addAttachment(
 					$oOldCSVEligibleReport->save(), 
@@ -767,7 +856,7 @@ class Invoice_Interim
 			$oProcessingEmailNotification->setBodyHTML($sEmailBody);
 			$oProcessingEmailNotification->send();
 			
-			throw new Exception("TEST MODE -- Everything worked");
+			//throw new Exception("TEST MODE -- Everything worked");
 			
 			// Everything looks ok -- Commit
 			$oFlexDataAccess->TransactionCommit();
@@ -792,7 +881,7 @@ class Invoice_Interim
 		return $aChanges;
 	}
 	
-	// getEligibileAccounts
+	// _getEligibleServices
 	private static function _getEligibleServices()
 	{
 		$qQuery	= new Query();
@@ -966,6 +1055,7 @@ class Invoice_Interim
 		return $aServices;
 	}
 	
+	// _calculateInterimInvoiceCharges
 	private static function _calculateInterimInvoiceCharges($aService)
 	{
 		$aCharges	=	array
@@ -1041,6 +1131,7 @@ class Invoice_Interim
 		return $aCharges;
 	}
 	
+	// _applyInterimInvoiceCharges
 	private static function _applyInterimInvoiceCharges(&$aService)
 	{
 		// Skip Charges with no value
@@ -1129,7 +1220,8 @@ class Invoice_Interim
 			throw new Exception("There was an error adding the Interim Charges: ".$eException->getMessage());
 		}
 	}
-		
+	
+	// _compareInterimEligible
 	private static function _compareInterimEligible($mLeftValue, $mRightValue, $sMessage, $bStrict=true)
 	{
 		// Round floats to 8 decimal places
@@ -1139,6 +1231,7 @@ class Invoice_Interim
 		return self::_assertInterimEligible((($bStrict && $mLeftValue === $mRightValue) || $mLeftValue == $mRightValue), $sMessage);
 	}
 	
+	// _assertInterimEligible
 	private static function _assertInterimEligible($mExpression, $sMessage)
 	{
 		if (!(bool)$mExpression)
@@ -1148,6 +1241,7 @@ class Invoice_Interim
 		return true;
 	}
 	
+	// preg_match_string
 	public static function preg_match_string($sRegex, $sMatch)
 	{
 		$aMatches	= array();

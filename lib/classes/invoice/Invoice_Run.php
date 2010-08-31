@@ -311,6 +311,52 @@ class Invoice_Run
 		$this->generate($intCustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, $selInvoiceableAccounts->FetchAll(), $intScheduledInvoiceRun);
 	}
 
+	public function generateForAccounts($iCustomerGroupId, $aAccountObjects, $iInvoiceRunType)
+	{
+		$oDataAccess	= DataAccess::getDataAccess();
+		if (!$oDataAccess->TransactionStart())
+		{
+			throw new Exception("There was an internal error in Flex.  Please notify YBS of this issue with the following message: 'Unable to start the inner Transaction' ({$oFlexDataAccess->refMysqliConnection->error}).");
+		}
+		try
+		{
+			// Verify that the invoice run type is interim first
+			if (!in_array($iInvoiceRunType, array(INVOICE_RUN_TYPE_INTERIM_FIRST)))
+			{
+				throw new Exception("Invoice Run Type is not allowed.");
+			}
+			
+			// Validate account list
+			$aAccountArrays	= array();
+			foreach ($aAccountObjects as $oAccount)
+			{
+				// Is it in the right customer group?
+				if ($oAccount->CustomerGroup != $iCustomerGroupId)
+				{
+					throw new Exception("All accounts must belong to the same customer group: Should be '{$iCustomerGroupId}' where Account '{$oAccount->Id}' was '{$oAccount->CustomerGroup}' instead}.");
+				}
+				// Is it able to be invoiced?
+				else if (!Account_Status::getForId($oAccount->Archived)->can_invoice)
+				{
+					throw new Exception("Account {$oAccount->Id} cannot be invoiced.");
+				}
+				$aAccountArrays[]	= $oAccount->toArray();
+			}
+			
+			$iInvoiceDateTime			= strtotime(date('Y-m-d', strtotime('+1 day')));
+			$this->BillingDate			= date('Y-m-d', $iInvoiceDateTime);
+			$this->customer_group_id	= $iCustomerGroupId;
+			$this->calculateBillingPeriodDates(date("Y-m-d", $iInvoiceDateTime));
+			$this->generate($iCustomerGroupId, $iInvoiceRunType, $iInvoiceDateTime, $aAccountArrays);
+			
+			$oDataAccess->TransactionCommit();
+		}
+		catch (Exception $oException)
+		{
+			$oDataAccess->TransactionRollback();
+			throw new Exception("Failed to generate invoice run for list of accounts. ".$oException->getMessage());
+		}
+	}
 
 	//------------------------------------------------------------------------//
 	// generate
@@ -692,6 +738,89 @@ class Invoice_Run
 			$dbaDB->TransactionRollback();
 			throw $eException;
 		}
+	}
+	
+	// deliver: Generates the pdf's for all invoices within this invoice run, tar's them up and then creates a 
+	// correspondence run so that they are delivered to the mail house
+	public function deliver()
+	{
+		$sInvoiceRunPDFBasePath	= PATH_INVOICE_PDFS ."pdf/$this->Id/";
+		
+		// Generate pdf's
+		$aInvoices		= Invoice::getForInvoiceRunId($this->Id);
+		$aPDFFilenames	= array();
+		foreach ($aInvoices as $iId => $oInvoice)
+		{
+			// Generate the PDF file
+			$iCreatedOn = strtotime("-1 month", strtotime($oInvoice->CreatedOn));
+			$iYear 		= (int)date("Y", $iCreatedOn);
+			$iMonth 	= (int)date("m", $iCreatedOn);
+			GetPDFContent($oInvoice->Account, $iYear, $iMonth, $iId, $this->Id);
+			$aPDFFilenames[$iId]	= $sInvoiceRunPDFBasePath.GetPdfFilename($oInvoice->Account, $iYear, $iMonth, $oInvoice->Id, $this->Id);
+		}
+		
+		// Create tar file
+		require_once("Archive/Tar.php");
+		$oTar		= new Archive_Tar($sInvoiceRunPDFBasePath."{$this->Id}.tar");
+		$aFiles		= array_values($aPDFFilenames);
+		if (!$oTar->createModify($aFiles, '', $sInvoiceRunPDFBasePath))
+		{
+			 throw new Exception("Failed to create tar file for invoice run {$this->Id}. Files = ".print_r($aFiles, true));
+		}
+		
+		// Generate the correspondence data
+		$aCorrespondenceData	= array();
+		foreach ($aPDFFilenames as $iInvoiceId => $sPDFFilename)
+		{
+			// Determine the correspondence_delivery_method for the invoice
+			$oInvoice			= $aInvoices[$iInvoiceId];
+			$iDeliveryMethod	= null;
+			switch ($oInvoice->DeliveryMethod)
+			{
+				case DELIVERY_METHOD_POST:
+					$iDeliveryMethod	= CORRESPONDENCE_DELIVERY_METHOD_POST;
+					break;
+				case DELIVERY_METHOD_EMAIL_SENT:
+				case DELIVERY_METHOD_EMAIL:
+					$iDeliveryMethod	= CORRESPONDENCE_DELIVERY_METHOD_EMAIL;
+					break;
+			}
+			
+			if (is_null($iDeliveryMethod))
+			{
+				// No appropriate correspondence_delivery_method was found. The invoice is not to be delivered, skip it.
+				continue;
+			}
+			
+			// Cache the correspondence data for the invoice
+			$oAccount				= Account::getForId($oInvoice->Account);
+			$oContact				= Contact::getForId($oAccount->PrimaryContact);
+			$aCorrespondenceData[]	= 	array(
+											'account_id'						=> $oAccount->Id,
+											'correspondence_delivery_method_id'	=> $iDeliveryMethod,
+											'title'								=> $oContact->title,
+											'first_name'						=> $oContact->firstName,
+											'last_name'							=> $oContact->lastName,
+											'address_line_1'					=> $oAccount->Address1,
+											'address_line2'						=> $oAccount->Address2,
+											'suburb'							=> $oAccount->Suburb,
+											'postcode'							=> $oAccount->Postcode,
+											'state'								=> $oAccount->State,
+											'email'								=> $oContact->Email,
+											'mobile'							=> $oContact->Mobile,
+											'landline'							=> $oContact->Phone,
+											'tar_file_path'						=> basename($aPDFFilenames[$iInvoiceId])
+										);
+		}
+		
+		//echo "<pre>".print_r($aCorrespondenceData, true)."</pre>";
+		
+		/*
+		// Create correspondence run 
+		$oSource	= new Correspondeonce_Source_CSV($aCorrespondenceData);
+		$oTemplate	= new Correspondence_Template::getForSystemName('INVOICE');
+		$oRun		= $oTemplate->createRun();
+		$oRun->save();*/
 	}
 	
 	private function _commitOptimised()

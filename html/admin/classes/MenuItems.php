@@ -3607,10 +3607,11 @@ class MenuItems {
 		$this->strLabel = "AutomaticInterimInvoiceSubmission";
 		
 		return "javascript: JsAutoLoader.loadScript(
-								'javascript/component_interim_first_invoice_submission.js',
+								'javascript/component_interim_first_invoice.js',
 								function()
 								{
-									new Component_Interim_First_Invoice_Submission()
+									var oComponent	= new Component_Interim_First_Invoice();
+									oComponent.submitAll();
 								},
 								false
 							);";
@@ -3621,7 +3622,15 @@ class MenuItems {
 		$this->strContextMenuLabel = "Commit and Send Interim Invoices";
 		$this->strLabel = "Commit and Send Interim Invoices";
 		
-		return self :: NEW_FRAMEWORK . "reflex.php/Invoice/CommitAndSendInterimInvoices/";
+		return "javascript: JsAutoLoader.loadScript(
+								['javascript/component_interim_first_invoice.js', 'javascript/popup_interim_first_invoice_commit_all.js'],
+								function()
+								{
+									var oComponent	= new Component_Interim_First_Invoice();
+									oComponent.commitAll();
+								},
+								false
+							);";
 	}
 
 	/**

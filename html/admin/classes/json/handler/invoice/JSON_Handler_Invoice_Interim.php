@@ -483,7 +483,59 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 					);
 		}
 	}
+	
+	public function commitAllInterimFirst($sBillingDate=null)
+	{
+		try
+		{
+			// Validate billing date
+			if (is_null($sBillingDate))
+			{
+				throw new Exception_Invoice_Interim_Custom("Could not commit invoices because no billing date was supplied");
+			}
+			
+			Invoice_Interim::commitAll($sBillingDate);
+			return array("bSuccess" => true);
+		}
+		catch (Exception_Invoice_Interim_Custom $oEx)
+		{
+			return array(
+						"bSuccess"	=> false,
+						"sError"	=> $oEx->getMessage()
+					);
+		}
+		catch (Exception $e)
+		{
+			$bIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+			return array(
+						"bSuccess"	=> false,
+						"sError"	=> ($bIsGod ? $e->getMessage() : '')
+					);
+		}
+	}
+	
+	public function getTemporaryFirstInterimInvoiceBillingDates()
+	{
+		try
+		{
+			$aDates	= Invoice_Interim::getTemporaryFirstInterimInvoiceBillingDates();
+			return	array(
+						'bSuccess' 	=> true, 
+						'aDates' 	=> $aDates
+					);
+		}
+		catch (Exception $e)
+		{
+			$bIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+			return array(
+						"bSuccess"	=> false,
+						"sError"	=> ($bIsGod ? $e->getMessage() : '')
+					);
+		}
+	}
 }
 
-class Exception_Invoice_Interim_NotAllowed extends Exception{}
+class Exception_Invoice_Interim_Custom 		extends Exception{}
+class Exception_Invoice_Interim_NotAllowed 	extends Exception{}
+
 ?>

@@ -129,6 +129,27 @@ class Invoice extends ORM_Cached
 		}
 	}
 	
+	public static function getForInvoiceRunId($iInvoiceRunId)
+	{
+		$oStmt	= self::_preparedStatement('selByInvoiceRunId');
+		if ($oStmt->Execute(array('invoice_run_id' => $iInvoiceRunId)) === false)
+		{
+			// Database Error -- throw Exception
+			throw new Exception("Failed to get invoices for invoice run id {$iInvoiceRunId}. ".$oStmt->Error());
+		}
+		else
+		{
+			// Return array of Invoice objects
+			$aInvoices	= array();
+			while ($aInvoice = $oStmt->Fetch())
+			{
+				$aInvoices[$aInvoice['Id']]	= new Invoice($aInvoice);
+			}
+			
+			return $aInvoices;
+		}
+	}
+	
 	//------------------------------------------------------------------------//
 	// generate
 	//------------------------------------------------------------------------//

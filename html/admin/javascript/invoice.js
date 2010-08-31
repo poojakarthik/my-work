@@ -229,7 +229,12 @@ var Invoice	= Class.create
 	{
 		if (bInvoiceRunTypeIsInterimFirst)
 		{
-			Reflex_Popup.alert("This invoice is a First Interim Invoice, it cannot be commited manually. To commit all temporary First Interim Invoices, do so by choosing the menu item: 'Customer' - 'Interim Invoice' - 'Commit and Send Interim Invoices'.");
+			Reflex_Popup.alert(
+				$T.div({style: 'margin: 0.5em;'},
+					$T.p("This invoice is a First Interim Invoice, it cannot be commited manually."),
+					$T.p("To commit all temporary First Interim Invoices, choose: 'Commit and Send Interim Invoices' in the Interim Invoice (Customer) menu.")
+				)
+			);
 		}
 		else
 		{
