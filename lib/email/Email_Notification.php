@@ -73,6 +73,11 @@ class Email_Notification extends Zend_Mail
 	{
 		return parent::addBcc(trim($email), $name);
 	}
+	
+	public function setFrom($email, $name)
+	{
+		return parent::setFrom(trim($email), $name);
+	}
 
 	// If $inCustomerGroupId is specified, then the address retreived from email_notification_address will be the ones relevent to the customer group, or any with customer_group == NULL
 	// This is mostly usefull for specifying an appropriate 'from' address specific to the customer group that the email is allegedly from
