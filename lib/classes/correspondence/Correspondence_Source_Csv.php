@@ -12,20 +12,116 @@ public function __construct($sCsv = null)
 }
 
 
-function getData($aColumns)
+function getData($bPreprinted, $aAdditionalColumns = array())
 {
 
-
-
+	$aColumns = Correspondence::getStandardColumns($bPreprinted);
 	$aCorrespondence = array();
 	foreach($this->_aCsv as $sLine)
 	{
-		$aLine = File_CSV::parseLineHashed(rtrim($sLine,"\r\n"), $sDelimiter=',', $sQuote='"', $sEscape='\\', $aColumns);
+		$aLine = self::parseLineHashed(rtrim($sLine,"\r\n"), $sDelimiter=',', $sQuote='"', $sEscape='\\', $aColumns, $aAdditionalColumns);
 
-		$aCorrespondence[] = new Correspondence();
+		$aCorrespondence[] = new Correspondence($aLine);
 	}
 	return $aCorrespondence;
 }
+
+public function __get($sField)
+{
+	return $this->_oDO->$sField;
+}
+
+// Mimic the fgetcsv() function from PHP 5.3
+	public static function parseLineHashed($sLine, $sDelimiter=',', $sQuote='"', $sEscape='\\', $aFieldNames, $aAdditionalFieldNames)
+	{
+		$sDelimiter	= ($sDelimiter)	? $sDelimiter[0]	: ',';
+		$sQuote		= ($sQuote)		? $sQuote[0]		: '';
+		$sEscape	= ($sEscape)	? $sEscape[0]		: '';
+
+		// Parse the Line character-by-character
+		$bEscaped	= false;
+		$bQuoted	= false;
+		$aLine		= array();
+		$sField		= '';
+
+		$iFieldIndex = 0;
+		for ($i=0, $iLineLength=strlen($sLine); $i < $iLineLength; $i++)
+		{
+			$sCharacter	= $sLine[$i];
+			switch($sCharacter)
+			{
+				case $sEscape:
+					if ($bEscaped)
+					{
+						// Escape Character is Escaped
+						$sField	.= $sEscape;
+					}
+					$bEscaped	= !$bEscaped;
+					break;
+
+				case $sQuote:
+					if ($bEscaped)
+					{
+						// Quote Character is Escaped
+						$sField		.= $sQuote;
+						$bEscaped	= false;
+					}
+					else
+					{
+						$bQuoted	= !$bQuoted;
+					}
+					break;
+
+				case $sDelimiter:
+					if ($bEscaped)
+					{
+						// Delimiter Character is Escaped
+						$sField		.= $sDelimiter;
+						$bEscaped	= false;
+					}
+					elseif ($bQuoted)
+					{
+						// Delimiter Character is Quoted
+						$sField		.= $sDelimiter;
+					}
+					else
+					{
+						// End of Field
+						if ($iFieldIndex>=count($aFieldNames))
+						{
+								$aLine['additional_fields'][$aAdditionalFieldNames[$iFieldIndex]] = $sField;
+						}
+						else
+						{
+							$aLine['standard_fields'][$aFieldNames[$iFieldIndex]]	= $sField;
+						}
+						$iFieldIndex++;
+						$sField		= '';
+					}
+					break;
+
+				default:
+					// Not a special character
+					$sField		.= $sCharacter;
+					$bEscaped	= false;
+					break;
+			}
+
+		}
+
+		// Finish the current Field
+		if ($iFieldIndex>=count($aFieldNames))
+		{
+				$aLine['additional_fields'][$aAdditionalFieldNames[$iFieldIndex]]= $sField;
+		}
+		else
+		{
+			$aLine['standard_fields'][$aFieldNames[$iFieldIndex]]	= $sField;
+		}
+
+		// Return the Array representing this Line
+		return $aLine;
+	}
 
 
 

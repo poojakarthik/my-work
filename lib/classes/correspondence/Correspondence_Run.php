@@ -2,21 +2,25 @@
 class Correspondence_Run
 {
 	protected $_oCorrespondenceTemplate;
-	protected $_aCorrespondence;
+	protected $_aCorrespondence = array();
 	protected $_oDO;
-
+	public static $aNonSuppliedFields = array('processed_datetime', 'delivered_datetime', 'created_employee_id', 'created', 'file_export_id');
 
 	public function __construct($oCorrespondenceTemplate, $mDefinition, $bProcessNow = true)
 	{
 		$this->_oCorrespondenceTemplate = $oCorrespondenceTemplate;
 		if (is_array($mDefinition))
 		{
+			foreach (self::$aNonSuppliedFields as $sField)
+			{
+				$mDefinition[$sField] = null;
+			}
 			if ($mDefinition['scheduled_datetime']== null)
 			{
 				$mDefinition['scheduled_datetime'] = Data_Source_Time::currentTimestamp();
 			}
 
-			$mDefinition['bPreprinted'] = $mDefinition['bPreprinted']?1:0;
+			$mDefinition['preprinted'] = $mDefinition['preprinted']?1:0;
 			$this->_oDO = new Correspondence_Run_ORM($mDefinition);
 			if ($bProcessNow)
 				$this->process();
@@ -32,7 +36,8 @@ class Correspondence_Run
 	public function process()
 	{
 		$x = time();
-		$aCorrespondence = $this->_oCorrespondenceTemplate->getData($this->_oDO->preprinted);
+		$bPreprinted = $this->_oDO->preprinted==0?false:true;
+		$aCorrespondence = $this->_oCorrespondenceTemplate->getData($bPreprinted);
 		foreach ($aCorrespondence as $oCorrespondence)
 		{
 			$oCorrespondence->_oCorrespondenceRun = $this;
@@ -40,18 +45,25 @@ class Correspondence_Run
 		$this->_aCorrespondence = $aCorrespondence;
 		$x = time() - $x;
 		echo count($aCorrespondence)." results processed in $x seconds.<br>";
-		$this->_oDO['processed_datetime'] = Data_Source_Time::currentTimestamp();
+		$this->processed_datetime = Data_Source_Time::currentTimestamp();
 	}
 
 	public function save()
 	{
-		$this->_oCorrespondenceTemplate->save();
-		$this->oDO->correspondence_template_id = $this->_oCorrespondenceTemplate->id;
-		$this->oDO->save();
+		if ($this->_oCorrespondenceTemplate->id == null)
+			$this->_oCorrespondenceTemplate->save();
+		$this->correspondence_template_id = $this->_oCorrespondenceTemplate->id;
+		if ($this->id == null)
+		{
+			$this->created_employee_id = Flex::getUserId();
+
+		}
+
+		$this->_oDO->save();
 		foreach ($this->_aCorrespondence as $oCorrespondence)
 		{
-			$oCorrespondence->correspondence_run_id = $this->id;
-			$oCorresponcence->save();
+
+			$oCorrespondence->save();
 		}
 
 	}
@@ -120,11 +132,11 @@ class Correspondence_Run
 
 	public function __get($sField)
 	{
-		return $this->_oDO[$sField];
+		return $this->_oDO->$sField;
 	}
 
 	public function __set($sField, $mValue)
 	{
-		$this->_oDO[$sField]=$mValue;
+		$this->_oDO->$sField =$mValue;
 	}
 }

@@ -109,10 +109,10 @@ class Correspondence_ORM extends ORM_Cached
 		}
 	}
 
-	public function getFieldNames()
+	public static function getFieldNames()
 	{
-		$arrTableDefine		= DataAccess::getDataAccess()->FetchTableDefine($this->_strTableName);
-		return $arrTableDefine;
+		$arrTableDefine		= DataAccess::getDataAccess()->FetchTableDefine(self::$_strStaticTableName);
+		return array_keys($arrTableDefine['Column']);
 	}
 
 

@@ -4,11 +4,33 @@ class Correspondence
 {
 	protected $_oDO;
 	protected $_oCorrespondenceRun;
+	public static  $aCorrespondenceFieldsNotSupplied = array( 'correspondence_run_id');
+	protected $_aAdditionalFields = array();
 
 
-	public function __construct($aData)
+	public function __construct($mData)
 	{
-		$this->_oDO = new Correspondence_ORM($aData);
+		if (is_array($mData))
+		{
+			foreach (self::$aCorrespondenceFieldsNotSupplied as $sField)
+			{
+				$mData['standard_fields'][$sField] = null;
+			}
+
+			$mData['standard_fields']['tar_file_path'] = isset($mData['tar_file_path'])?$mData['tar_file_path']:null;
+
+			$this->_oDO = new Correspondence_ORM($mData['standard_fields']);
+			foreach ($mData['additional_fields'] as $key=>$value)
+			{
+
+				$this->_aAdditionalFields[$key] = new Correspondence_Data(array('value'=>$value, 'correspondence_template_column_id'=>null, 'correspondence_id'=>null));
+			}
+		}
+		else
+		{
+			$this->_oDO = $mData;
+		}
+
 	}
 
 	public function toArray()
@@ -25,10 +47,17 @@ class Correspondence
 
 		if ($this->_oCorrespondenceRun == null)
 			throw new Exception();
+		if ($this->_oCorrespondenceRun->id == null)
+			$this->_oCorrespondenceRun->save();
+		$this->correspondence_run_id = $this->_oCorrespondenceRun->id;
+		$this->_oDO->save();
 
-		$this->oCorrespondenceRun->save();
-		$this->oDO->correspondence_run_id = $this->oCorrespondenceRun->id;
-		$this->oDO->save();
+		foreach ($this->_aAdditionalFields as $sName => $oField)
+		{
+			$oField->correspondence_id = $this->id;
+			$oField->correspondence_template_column_id = $this->_oCorrespondenceRun->getTemplate()->getColumnIdForName($sName);
+			$oField->save();
+		}
 	}
 
 	public function __set($sField, $mValue)
@@ -38,9 +67,49 @@ class Correspondence
 			case '_oCorrespondenceRun':
 									$this->_oCorrespondenceRun = $mValue;
 									break;
+			case 'correspondence_run_id':
+									$this->_oDO->correspondence_run_id = $mValue;
+									break;
 
 
 		}
+	}
+
+	public function __get($sField)
+	{
+		return $this->_oDO->$sField;
+	}
+
+	public static function getStandardColumnCount($bPreprinted, $bIncludeNonSuppliedFields = false)
+	{
+		return count (self::getStandardColumns($bPreprinted, $bIncludeNonSuppliedFields));
+	}
+
+	public static function getStandardColumns($bPreprinted,$bIncludeNonSuppliedFields = false)
+	{
+		$aColumns = Correspondence_ORM::getFieldNames();
+
+
+		if (!$bIncludeNonSuppliedFields)
+		{
+			foreach (Correspondence::$aCorrespondenceFieldsNotSupplied  as $sField)
+			{
+				$iIndex = array_search($sField,$aColumns);
+				//unset($aColumns[$iIndex]);
+				array_splice ( $aColumns ,$iIndex ,1);
+			}
+		}
+
+		if (!$bPreprinted)
+		{
+				$iIndex = array_search('tar_file_path',$aColumns);
+				//unset($aColumns[$iIndex]);
+				array_splice ( $aColumns ,$iIndex ,1);
+		}
+
+		//we have to recreate the array as by now we possibly have created gaps
+
+		return $aColumns;
 	}
 
 

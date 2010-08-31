@@ -6,10 +6,10 @@
  *
  * @class	Correspondence_Template_ORM
  */
-class Correspondence_Template_ORM extends ORM_Cached
+class Correspondence_Template_Column_ORM extends ORM_Cached
 {
-	protected 			$_strTableName			= "correspondence_template";
-	protected static	$_strStaticTableName	= "correspondence_template";
+	protected 			$_strTableName			= "correspondence_template_column";
+	protected static	$_strStaticTableName	= "correspondence_template_column";
 
 	protected static function getCacheName()
 	{
