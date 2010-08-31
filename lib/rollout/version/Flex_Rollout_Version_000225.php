@@ -40,7 +40,7 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 															  user_selectable TINYINT(4) NOT NULL,
 															  PRIMARY KEY (id) )
 															ENGINE = InnoDB;",
-									'sRollbackSQL'		=>	"	DROP TABLE correspondence_data;",
+									'sRollbackSQL'		=>	"	DROP TABLE correspondence_source_type;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								),
 								array
@@ -64,6 +64,7 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 									'sDescription'		=>	"Add tablecorrespondence_template",
 									'sAlterSQL'			=>	"CREATE  TABLE IF NOT EXISTS correspondence_template (
 															  id BIGINT(20) NOT NULL AUTO_INCREMENT ,
+															  template_code VARCHAR(10) NULL,
 															  name VARCHAR(255) NOT NULL ,
 															  description VARCHAR(510) NOT NULL ,
 															  created_employee_id BIGINT(20) NOT NULL ,
@@ -120,9 +121,11 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 									'sDescription'		=>	"Add table correspondence",
 									'sAlterSQL'			=>	"CREATE  TABLE IF NOT EXISTS correspondence (
 															  id BIGINT(20) NOT NULL AUTO_INCREMENT ,
-															  account_id BIGINT(20) UNSIGNED NOT NULL ,
 															  correspondence_run_id BIGINT(20) NOT NULL ,
+															  account_id BIGINT(20) UNSIGNED NULL ,
+															  customer_group_id BIGINT(20) NOT NULL,
 															  correspondence_delivery_method_id BIGINT(20) NOT NULL ,
+															  acount_name VARCHAR(255) NOT NULL,
 															  title VARCHAR(45) DEFAULT NULL,
 															  first_name VARCHAR(255) NOT NULL ,
 															  last_name VARCHAR(255) NOT NULL ,
@@ -142,6 +145,10 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 															  CONSTRAINT fk_correspondence_account
 															    FOREIGN KEY (account_id )
 															    REFERENCES Account (Id )
+															    ON UPDATE CASCADE,
+															  CONSTRAINT fk_correspondence_customergroup_id
+															    FOREIGN KEY (customer_group_id )
+															    REFERENCES CustomerGroup (Id )
 															    ON UPDATE CASCADE,
 															  CONSTRAINT fk_correspondence_delivery_method_id
 															    FOREIGN KEY (correspondence_delivery_method_id )
