@@ -15,6 +15,11 @@ class Correspondence_Data
 
 	}
 
+	public function save()
+	{
+		$this->_oDO->save();
+	}
+
 	public function __set($sField, $mValue)
 	{
 		$this->_oDO->$sField = $mValue;

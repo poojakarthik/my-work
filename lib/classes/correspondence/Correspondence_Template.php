@@ -74,6 +74,17 @@ class Correspondence_Template
 
 	}
 
+	public function getColumnIdForName($sColumnName)
+	{
+		foreach ($this->_aExtraColumns as $oColumn)
+		{
+			if ($oColumn->name == $sColumnName)
+				return $oColumn->id;
+		}
+
+		return false;
+	}
+
 	public function getData($bPreprinted)
 	{
 		return $this->_oCorrespondenceSource->getData($bPreprinted,$this->getAdditionalColumnSet(Correspondence::getStandardColumnCount($bPreprinted)));

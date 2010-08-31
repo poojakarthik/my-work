@@ -24,6 +24,8 @@ class Correspondence_Template_Column
 
 	}
 
+
+
 	public function __get($sField)
 	{
 		return $this->_oDO->$sField;

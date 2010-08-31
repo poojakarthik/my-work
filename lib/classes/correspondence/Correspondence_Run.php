@@ -68,6 +68,11 @@ class Correspondence_Run
 
 	}
 
+	public function getTemplate()
+	{
+		return $this->_oCorrespondenceTemplate;
+	}
+
 	public function getCorrespondence()
 	{
 		if ($this->_aCorrespondence == null)
