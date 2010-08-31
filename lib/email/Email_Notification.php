@@ -58,6 +58,21 @@ class Email_Notification extends Zend_Mail
 				return $this->getFrom();
 		}
 	}
+	
+	public function addTo($email, $name)
+	{
+		return parent::addTo(trim($email), $name);
+	}
+	
+	public function addCc($email, $name)
+	{
+		return parent::addCc(trim($email), $name);
+	}
+	
+	public function addBcc($email, $name)
+	{
+		return parent::addBcc(trim($email), $name);
+	}
 
 	// If $inCustomerGroupId is specified, then the address retreived from email_notification_address will be the ones relevent to the customer group, or any with customer_group == NULL
 	// This is mostly usefull for specifying an appropriate 'from' address specific to the customer group that the email is allegedly from
@@ -147,7 +162,7 @@ class Email_Notification extends Zend_Mail
 			'EmailUsage' => 'email_address_usage_id',
 			'EmailAddress' => 'LCASE(email_address)',
 		);
-		$strTables = " email_notification_address"; 
+		$strTables = " email_notification_address";
 		$custWhere = '';
 		if (is_int($intCustGroupId))
 		{
@@ -209,7 +224,7 @@ class Email_Notification extends Zend_Mail
 	 * sendEmailNotification()
 	 *
 	 * Wrapper function for sending an email notification
-	 * 
+	 *
 	 * Wrapper function for sending an email notification
 	 *
 	 * @param	int		$intEmailNotificationId		Email Notification constant, defining the type of notification to send.  This can be set to NULL to send an email with no
@@ -230,9 +245,9 @@ class Email_Notification extends Zend_Mail
 	 *																			self::EMAIL_ATTACHMENT_MIME_TYPE	=> mime type
 	 *																		)
 	 * @param	bool	[ $bolSilentFail ]			Defaults to False. If TRUE then it will return FALSE on failure. If FALSE, then it will throw an exception on failure.
-	 * 
+	 *
 	 * @return	bool								TRUE on success, FALSE on failure (so long as $bolSilentFail == TRUE)
-	 * 
+	 *
 	 * @static
 	 * @method
 	 */
