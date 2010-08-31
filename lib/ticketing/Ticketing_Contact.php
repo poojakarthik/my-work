@@ -104,7 +104,7 @@ class Ticketing_Contact
 		}
 
 		$selContacts = new StatementSelect(
-			'ticketing_contact_account t JOIN ticketing_contact c ON t.ticketing_contact_id = c.id', 
+			'ticketing_contact_account t JOIN ticketing_contact c ON t.ticketing_contact_id = c.id',
 			$arrColumns,
 			'account_id = <ACCOUNT_ID>');
 		$arrWhere = array('ACCOUNT_ID' => $accountId);
@@ -144,8 +144,8 @@ class Ticketing_Contact
 	{
 		// Note: Email address should be unique, so only fetch the first record
 		$selContacts = new StatementSelect(
-			"ticketing_contact", 
-			array("id", "title", "first_name", "last_name", "job_title", "email", "fax", "mobile", "phone", "status", "auto_reply"), 
+			"ticketing_contact",
+			array("id", "title", "first_name", "last_name", "job_title", "email", "fax", "mobile", "phone", "status", "auto_reply"),
 			$where);
 		if (($outcome = $selContacts->Execute($arrWhere)) === FALSE)
 		{
@@ -245,14 +245,14 @@ class Ticketing_Contact
 		$arrValues = array();
 		foreach($arrColumns as $strColumn)
 		{
-			if ($strColumn == 'id') 
+			if ($strColumn == 'id')
 			{
 				continue;
 			}
 			$arrValues[$strColumn] = $this->{$strColumn};
 		}
 		return $arrValues;
-	} 
+	}
 
 	public function save()
 	{
@@ -309,6 +309,17 @@ class Ticketing_Contact
 	{
 		if (property_exists($this, $strName) || (($strName = self::tidyName($strName)) && property_exists($this, $strName)))
 		{
+			// Clean
+			switch ($strName)
+			{
+				case 'firstName':
+				case 'lastName':
+				case 'email':
+					$mixValue	= trim($mixValue);
+					break;
+			}
+			
+			// Assign
 			if ($this->{$strName} != $mixValue)
 			{
 				$this->{$strName} = $mixValue;
