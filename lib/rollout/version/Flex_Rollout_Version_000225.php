@@ -90,14 +90,14 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 								(
 									'sDescription'		=>	"Add table correspondence_run",
 									'sAlterSQL'			=>	"CREATE  TABLE IF NOT EXISTS correspondence_run (
-															  id BIGINT(20) NOT NULL ,
+															  id BIGINT(20) NOT NULL AUTO_INCREMENT,
 															  correspondence_template_id BIGINT(20) NOT NULL ,
 															  processed_datetime TIMESTAMP NULL DEFAULT NULL ,
 															  scheduled_datetime DATETIME NOT NULL ,
 															  delivered_datetime TIMESTAMP NULL DEFAULT NULL ,
 															  created_employee_id INT(11) NOT NULL ,
 															  created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
-															  file_export_id BIGINT(20) UNSIGNED NOT NULL ,
+															  file_export_id BIGINT(20) UNSIGNED NULL ,
 															  preprinted TINYINT(3) UNSIGNED NOT NULL,
 															  tar_file_name VARCHAR(255) NULL,
 															  PRIMARY KEY (id) ,
