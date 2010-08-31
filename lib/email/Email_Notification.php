@@ -59,22 +59,22 @@ class Email_Notification extends Zend_Mail
 		}
 	}
 	
-	public function addTo($email, $name)
+	public function addTo($email, $name='')
 	{
 		return parent::addTo(trim($email), $name);
 	}
 	
-	public function addCc($email, $name)
+	public function addCc($email, $name='')
 	{
 		return parent::addCc(trim($email), $name);
 	}
 	
-	public function addBcc($email, $name)
+	public function addBcc($email)
 	{
-		return parent::addBcc(trim($email), $name);
+		return parent::addBcc(trim($email));
 	}
 	
-	public function setFrom($email, $name)
+	public function setFrom($email, $name='')
 	{
 		return parent::setFrom(trim($email), $name);
 	}
