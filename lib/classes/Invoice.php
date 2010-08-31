@@ -1743,12 +1743,12 @@ class Invoice extends ORM_Cached
 						FROM		Invoice i
 									JOIN
 									(
-										SELECT		Account																							AS account_id,
-													MIN(IF(Status != 106 AND Balance >= 0.1, Id, NULL))												AS earliest_outstanding,
-													MAX(IF(Status != 106 AND Balance >= 0.1, Id, NULL))												AS latest_outstanding,
-													MIN(IF(Status != 106 AND (adjustment_total < 0 OR Balance < 0), Id, NULL))	AS earliest_redistributable,
-													MAX(IF(Status != 106 AND (adjustment_total < 0 OR Balance < 0), Id, NULL))	AS latest_redistributable,
-													MAX(IF(Status = 106, Id, NULL))																	AS latest_written_off
+										SELECT		Account																																	AS account_id,
+													MIN(IF(Status != 106 AND Balance >= 0.1, Id, NULL))																						AS earliest_outstanding,
+													MAX(IF(Status != 106 AND Balance >= 0.1, Id, NULL))																						AS latest_outstanding,
+													MIN(IF(Status != 106 AND (adjustment_total < 0 OR charge_total < 0 OR Balance < 0 OR Balance < (charge_total + charge_tax)), Id, NULL))	AS earliest_redistributable,
+													MAX(IF(Status != 106 AND (adjustment_total < 0 OR charge_total < 0 OR Balance < 0 OR Balance < (charge_total + charge_tax)), Id, NULL))	AS latest_redistributable,
+													MAX(IF(Status = 106, Id, NULL))																											AS latest_written_off
 													
 										FROM		Invoice
 										WHERE		Status NOT IN (100)
