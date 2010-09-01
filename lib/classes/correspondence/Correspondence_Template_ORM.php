@@ -112,7 +112,7 @@ class Correspondence_Template_ORM extends ORM_Cached
 		}
 	}
 
-	public function getForSystemName($sSystemName)
+	public static function getForSystemName($sSystemName)
 	{
 
 		$oSelect	= self::_preparedStatement('selBySysName');

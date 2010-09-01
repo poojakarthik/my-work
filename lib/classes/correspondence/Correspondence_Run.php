@@ -44,7 +44,7 @@ class Correspondence_Run
 		}
 		$this->_aCorrespondence = $aCorrespondence;
 		$x = time() - $x;
-		echo count($aCorrespondence)." results processed in $x seconds.<br>";
+		//echo count($aCorrespondence)." results processed in $x seconds.<br>";
 		$this->processed_datetime = Data_Source_Time::currentTimestamp();
 	}
 
