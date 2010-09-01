@@ -125,7 +125,7 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 															  account_id BIGINT(20) UNSIGNED NULL ,
 															  customer_group_id BIGINT(20) NOT NULL,
 															  correspondence_delivery_method_id BIGINT(20) NOT NULL ,
-															  acount_name VARCHAR(255) NOT NULL,
+															  account_name VARCHAR(255) NOT NULL,
 															  title VARCHAR(45) DEFAULT NULL,
 															  first_name VARCHAR(255) NOT NULL ,
 															  last_name VARCHAR(255) NOT NULL ,
