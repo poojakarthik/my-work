@@ -83,6 +83,9 @@ class Correspondence_Template_ORM extends ORM_Cached
 			switch ($strStatement)
 			{
 				// SELECTS
+				case 'selBySysName':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "system_name = <system_name> AND status_id = 1", NULL, 1);
+					break;
 				case 'selById':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
 					break;
@@ -107,6 +110,21 @@ class Correspondence_Template_ORM extends ORM_Cached
 			}
 			return $arrPreparedStatements[$strStatement];
 		}
+	}
+
+	public function getForSystemName($sSystemName)
+	{
+
+		$oSelect	= self::_preparedStatement('selBySysName');
+		$oSelect->Execute(array('system_name' => $sSystemName));
+		$aResults = $oSelect->FetchAll();
+		$aObjects = array();
+		foreach ($aResults as $aResult)
+		{
+			$aObjects[]= new self($aResult);
+		}
+		return $aObjects[0];
+
 	}
 
 

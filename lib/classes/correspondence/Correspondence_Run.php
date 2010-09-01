@@ -50,6 +50,44 @@ class Correspondence_Run
 
 	public function save()
 	{
+					// Start a new database transaction
+				$oDataAccess	= DataAccess::getDataAccess();
+
+				if (!$oDataAccess->TransactionStart())
+				{
+
+					return 	array(
+								"Success"	=> false,
+								"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? 'Could not start database transaction.' : false,
+							);
+				}
+
+				try
+				{
+
+					$this->_save();
+
+					// Everything looks OK -- Commit!
+					$oDataAccess->TransactionCommit();
+					return $this->id;
+
+			}
+
+			catch (Exception $e)
+			{
+				// Exception caught, rollback db transaction
+				$oDataAccess->TransactionRollback();
+
+				return 	array(
+							"Success"	=> false,
+							"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database'
+						);
+			}
+
+	}
+
+	public function _save()
+	{
 		if ($this->_oCorrespondenceTemplate->id == null)
 			$this->_oCorrespondenceTemplate->save();
 		$this->correspondence_template_id = $this->_oCorrespondenceTemplate->id;
@@ -65,7 +103,6 @@ class Correspondence_Run
 
 			$oCorrespondence->save();
 		}
-
 	}
 
 	public function getTemplate()

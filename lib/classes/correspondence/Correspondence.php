@@ -17,7 +17,7 @@ class Correspondence
 				$mData['standard_fields'][$sField] = null;
 			}
 
-			$mData['standard_fields']['tar_file_path'] = isset($mData['tar_file_path'])?$mData['tar_file_path']:null;
+			$mData['standard_fields']['tar_file_path'] = isset($mData['standard_fields']['tar_file_path'])?$mData['standard_fields']['tar_file_path']:null;
 
 			$this->_oDO = new Correspondence_ORM($mData['standard_fields']);
 			foreach ($mData['additional_fields'] as $key=>$value)
@@ -25,6 +25,9 @@ class Correspondence
 
 				$this->_aAdditionalFields[$key] = new Correspondence_Data(array('value'=>$value, 'correspondence_template_column_id'=>null, 'correspondence_id'=>null));
 			}
+
+			//just for debugging
+			$this->correspondence_delivery_method_id = 2;
 		}
 		else
 		{
@@ -50,6 +53,8 @@ class Correspondence
 		if ($this->_oCorrespondenceRun->id == null)
 			$this->_oCorrespondenceRun->save();
 		$this->correspondence_run_id = $this->_oCorrespondenceRun->id;
+		if ($this->_oDO->customer_group_id == null)
+			$x=5;
 		$this->_oDO->save();
 
 		foreach ($this->_aAdditionalFields as $sName => $oField)
@@ -69,6 +74,9 @@ class Correspondence
 									break;
 			case 'correspondence_run_id':
 									$this->_oDO->correspondence_run_id = $mValue;
+									break;
+			case 'correspondence_delivery_method_id':
+									$this->_oDO->correspondence_delivery_method_id = $mValue;
 									break;
 
 

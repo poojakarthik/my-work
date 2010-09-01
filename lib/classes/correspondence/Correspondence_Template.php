@@ -12,6 +12,7 @@ class Correspondence_Template
 
 	public function __construct($mDefinition, $oSource = null, $aColumns = array())
 	{
+		$this->_oCorrespondenceSource = $oSource;
 		if (is_numeric($mDefinition))
 		{
 			//implement code to retrieve data and instantiate the object
@@ -24,7 +25,7 @@ class Correspondence_Template
 				$mDefinition[$sField] = null;
 			}
 			$this->_oDO = new Correspondence_Template_ORM($mDefinition);
-			$this->_oCorrespondenceSource = $oSource;
+
 
 			foreach($aColumns as $aColumn)
 			{
@@ -36,18 +37,58 @@ class Correspondence_Template
 		else
 		{
 			$this->_oDO = $mDefinition;
-			//implement this further
+			//retrieve all columns and runs from the database that belong to this template.
+
 		}
 	}
 
 	public function save()
+	{
+				// Start a new database transaction
+				$oDataAccess	= DataAccess::getDataAccess();
+
+				if (!$oDataAccess->TransactionStart())
+				{
+
+					return 	array(
+								"Success"	=> false,
+								"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? 'Could not start database transaction.' : false,
+							);
+				}
+
+				try
+				{
+
+					$this->_save();
+
+					// Everything looks OK -- Commit!
+					$oDataAccess->TransactionCommit();
+					return $this->id;
+
+			}
+
+			catch (Exception $e)
+			{
+				// Exception caught, rollback db transaction
+				$oDataAccess->TransactionRollback();
+
+				return 	array(
+							"Success"	=> false,
+							"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database'
+						);
+			}
+
+	}
+
+
+	public function _save()
 	{
 		$this->_oCorrespondenceSource->save();
 		$this->correspondence_source_id = $this->_oCorrespondenceSource->id;
 		if ($this->id == null)
 		{
 			$this->created_employee_id = Flex::getUserId();
-			$this->system_name = strtoupper($this->name);
+			//$this->system_name = strtoupper($this->name);
 			$this->status_id = 1;
 		}
 
@@ -59,15 +100,15 @@ class Correspondence_Template
 
 		foreach ($this->_aRuns as $oRun)
 		{
-			$oRun->save();
+			$oRun->_save();
 		}
 
 	}
 
-	public function  createRun($bPreprinted = false, $sScheduleDateTime = null, $sProcessDateTime = null, $sTarFileName = null)
+	public function  createRun($bPreprinted = false, $sScheduleDateTime = null, $sProcessDateTime = null, $sTarFileName = null, $bProcessNow = true)
 	{
 
-		$aDefinition = array ('scheduled_datetime'=> $sScheduleDateTime, 'processed_datetime'=>$sProcessDateTime, 'preprinted'=>$bPreprinted, 'tar_file_name'=>$sTarFileName);
+		$aDefinition = array ('scheduled_datetime'=> $sScheduleDateTime, 'preprinted'=>$bPreprinted, 'tar_file_name'=>$sTarFileName,$bProcessNow);
 		$oRun = new Correspondence_Run($this, $aDefinition);
 		$this->_aRuns[]=$oRun;
 		return $oRun;
@@ -118,12 +159,20 @@ class Correspondence_Template
 
 
 
+	public static function getForSystemName($sSystemName, $aData)
+	{
+		$oSource = new Correspondence_Source_System($aData);
+		$oDO = Correspondence_Template_ORM::getForSystemName($sSystemName);
+		return self::createFromORM($oDO, $oSource);
+	}
+
+	public static function createFromORM($oORM, $oSource)
+	{
+		return new self ($oORM, $oSource);
+	}
 
 
-
-
-
-	public static function get($iId)
+	public static function getForId($iId)
 	{
 		return new self (array('id'=>$iId));
 	}
