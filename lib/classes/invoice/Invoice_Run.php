@@ -797,7 +797,9 @@ class Invoice_Run
 			$oContact				= Contact::getForId($oAccount->PrimaryContact);
 			$aCorrespondenceData[]	= 	array(
 											'account_id'						=> $oAccount->Id,
+											'customer_group_id'					=> $oAccount->CustomerGroup,
 											'correspondence_delivery_method_id'	=> $iDeliveryMethod,
+											'account_name'						=> $oAccount->BusinessName,
 											'title'								=> $oContact->title,
 											'first_name'						=> $oContact->firstName,
 											'last_name'							=> $oContact->lastName,

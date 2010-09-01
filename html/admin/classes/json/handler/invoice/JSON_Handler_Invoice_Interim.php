@@ -320,29 +320,9 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 			try
 			{
 				$dacFlex->TransactionStart();
-				
 				$objInvoice		= new Invoice(array('Id'=>$intInvoice), true);
 				$objInvoiceRun	= new Invoice_Run(array('Id'=>$objInvoice->invoice_run_id), true);
-				
-				// Ensure that this Invoice Run is either Interim or Final, and is Temporary
-				$arrAllowableInvoiceRunTypes	= array(INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL, INVOICE_RUN_TYPE_INTERIM_FIRST);
-				if ($objInvoiceRun->invoice_run_status_id === INVOICE_RUN_STATUS_TEMPORARY)
-				{
-					if (in_array($objInvoiceRun->invoice_run_type_id, $arrAllowableInvoiceRunTypes))
-					{
-						// Revoke the Invoice Run
-						$objInvoiceRun->revoke();
-					}
-					else
-					{
-						throw new Exception("Invoice Run {$objInvoiceRun->Id} is not an Interim or Final Invoice Run");
-					}
-				}
-				else
-				{
-					throw new Exception("Invoice Run {$objInvoiceRun->Id} is not a Temporary Invoice Run");
-				}
-				
+				$objInvoice->revoke();
 				$dacFlex->TransactionCommit();
 			}
 			catch (Exception $eException)
