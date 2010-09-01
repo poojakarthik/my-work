@@ -190,11 +190,11 @@ class Application_Handler_Invoice extends Application_Handler
 	}
 	
 	// TODO: DEV ONLY
-	/*public function pdftest($subPath)
+	public function pdftest($subPath)
 	{
 		$oInvoiceRun	= Invoice_Run::getForId($_GET['Invoice_Run_Id']);
 		$oInvoiceRun->deliver();
-	}*/
+	}
 	
 	public function PDF($subPath)
 	{
