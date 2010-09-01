@@ -166,7 +166,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 					$strPdfLabel 	= "<a href='$strPdfHref'><img src='img/template/pdf_small.png' title='View PDF Invoice' /></a>";
 					
 					// TODO: DEV ONLY
-					$strPdfLabel	.= "<a href='/admin/reflex.php/Invoice/pdftest/?Invoice_Run_Id={$dboInvoice->invoice_run_id->Value}'>DELIVERY TEST</a>";
+					//$strPdfLabel	.= "<a href='/admin/reflex.php/Invoice/pdftest/?Invoice_Run_Id={$dboInvoice->invoice_run_id->Value}'>DELIVERY TEST</a>";
 					
 					// Build "Email invoice pdf" link, if the user has OPERATOR or OPERATOR_EXTERNAL privileges
 					if (!$bolIsSample)
