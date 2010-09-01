@@ -113,7 +113,7 @@ class AppTemplateService extends ApplicationTemplate
 		}
 		
 		// Get related Services
-		$aFNNInstances		= Service::getFNNInstances(DBO()->Service->FNN->Value, DBO()->Service->Account->Value);
+		$aFNNInstances		= Service::getFNNInstances(DBO()->Service->FNN->Value, DBO()->Service->Account->Value, false);
 		$aRelatedServiceIds	= array_keys($aFNNInstances);
 		
 		echo "\n<!-- SERVICES: \n".print_r($aFNNInstances, true)." -->\n";
