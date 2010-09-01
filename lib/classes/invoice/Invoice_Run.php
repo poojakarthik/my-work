@@ -210,10 +210,10 @@ class Invoice_Run
 	public function generateSingle($intCustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, $intAccount)
 	{
 		$intAccount	= (int)$intAccount;
-		
+
 		// Init variables
 		$dbaDB					= DataAccess::getDataAccess();
-		
+
 		if	(
 				!(
 					$intInvoiceRunType === INVOICE_RUN_TYPE_INTERIM
@@ -325,7 +325,7 @@ class Invoice_Run
 			{
 				throw new Exception("Invoice Run Type is not allowed.");
 			}
-			
+
 			// Validate account list
 			$aAccountArrays	= array();
 			foreach ($aAccountObjects as $oAccount)
@@ -342,13 +342,13 @@ class Invoice_Run
 				}
 				$aAccountArrays[]	= $oAccount->toArray();
 			}
-			
+
 			$iInvoiceDateTime			= strtotime(date('Y-m-d', strtotime('+1 day')));
 			$this->BillingDate			= date('Y-m-d', $iInvoiceDateTime);
 			$this->customer_group_id	= $iCustomerGroupId;
 			$this->calculateBillingPeriodDates(date("Y-m-d", $iInvoiceDateTime));
 			$this->generate($iCustomerGroupId, $iInvoiceRunType, $iInvoiceDateTime, $aAccountArrays);
-			
+
 			$oDataAccess->TransactionCommit();
 		}
 		catch (Exception $oException)
@@ -381,19 +381,19 @@ class Invoice_Run
 		// Init variables
 		static	$dbaDB;
 		$dbaDB	= (isset($dbaDB)) ? $dbaDB : DataAccess::getDataAccess();
-		
+
 		$fStopwatchStart	= microtime(true);
 		Log::getLog()->log("\t* Invoice Run processing started at ".date("Y-m-d H:i:s", (int)$fStopwatchStart));
-		
+
 		// Create InvoiceRun record
 		try
 		{
 			// Start Transaction
 			$dbaDB->TransactionStart();
-			
+
 			//------------------- START INVOICE RUN GENERATION -------------------//
 			$aMicrotime	= explode(' ', microtime());
-			
+
 			// Create the initial InvoiceRun record
 			$this->BillingDate				= date("Y-m-d", $intInvoiceDatetime);
 			$this->InvoiceRun				= date("YmdHis").$aMicrotime[0];
@@ -401,7 +401,7 @@ class Invoice_Run
 			$this->invoice_run_schedule_id	= $intScheduledInvoiceRun;
 			$this->invoice_run_status_id	= INVOICE_RUN_STATUS_GENERATING;
 			$this->customer_group_id		= $intCustomerGroup;
-			
+
 			$fltPreviousInvoiceRunBalance		= 0.0;
 			$fltTotalPreviousInvoiceRunsBalance	= 0.0;
 			$selInvoiceBalanceHistory			= self::_preparedStatement('selInvoiceBalanceHistory');
@@ -424,18 +424,18 @@ class Invoice_Run
 				$arrPreviousBalanceTotal			= $selInvoiceBalanceHistory->Fetch();
 				$fltPreviousInvoiceRunBalance		= $arrPreviousBalanceTotal['TotalBalance'];
 				$fltTotalPreviousInvoiceRunsBalance	= $fltPreviousInvoiceRunBalance;
-				
+
 				while (($arrInvoiceRunBalanceTotal = $selInvoiceBalanceHistory->Fetch()) !== FALSE)
 				{
 					$fltTotalPreviousInvoiceRunsBalance += $arrInvoiceRunBalanceTotal['TotalBalance'];
 				}
 			}
-			
+
 			$this->previous_balance			= $fltPreviousInvoiceRunBalance;
 			$this->total_balance			= $fltTotalPreviousInvoiceRunsBalance;
-			
+
 			$this->save();
-			
+
 			$dbaDB->TransactionCommit();
 		}
 		catch (Exception $eException)
@@ -443,31 +443,31 @@ class Invoice_Run
 			$dbaDB->TransactionRollback();
 			throw $eException;
 		}
-		
+
 		// Generate an Invoice for each Account
 		$this->InvoiceCount	= 0;
 		foreach ($arrAccounts as $arrAccount)
 		{
 			$objAccount	= new Account($arrAccount);
 			Log::getLog()->log(" + Generating Invoice for {$objAccount->Id}...");
-			
+
 			$objInvoice	= Invoice::generateForInvoiceRunAndAccount($this, $objAccount);
-			
+
 			$this->InvoiceCount++;
 		}
-		
+
 		// Generated Balance Data
 		$this->calculateTotals();
-		
+
 		// Update Status
 		try
 		{
 			// Start Transaction
 			$dbaDB->TransactionStart();
-			
+
 			$this->invoice_run_status_id	= INVOICE_RUN_STATUS_TEMPORARY;
 			$this->save();
-			
+
 			$dbaDB->TransactionCommit();
 		}
 		catch (Exception $eException)
@@ -475,22 +475,22 @@ class Invoice_Run
 			$dbaDB->TransactionRollback();
 			throw $eException;
 		}
-		
+
 		$fStopwatchCommit	= microtime(true);
 		Log::getLog()->log("\t* Total Invoice Run processing time: ".($fStopwatchCommit - $fStopwatchStart)."s...");
 		//--------------------------------------------------------------------//
 	}
-	
+
 	public function calculateTotals()
 	{
 		static	$dbaDB;
 		$dbaDB	= (isset($dbaDB)) ? $dbaDB : DataAccess::getDataAccess();
-		
+
 		try
 		{
 			// Start Transaction
 			$dbaDB->TransactionStart();
-			
+
 			$selInvoiceTotals	= self::_preparedStatement('selInvoiceTotals');
 			if ($selInvoiceTotals->Execute(Array('invoice_run_id'=>$this->Id)) === FALSE)
 			{
@@ -498,7 +498,7 @@ class Invoice_Run
 				throw new Exception("DB ERROR: ".$selInvoiceTotals->Error());
 			}
 			$arrInvoiceTotals	= $selInvoiceTotals->Fetch();
-	
+
 			$selInvoiceCDRTotals	= self::_preparedStatement('selInvoiceCDRTotals');
 			if ($selInvoiceCDRTotals->Execute(Array('invoice_run_id'=>$this->Id)) === FALSE)
 			{
@@ -506,14 +506,14 @@ class Invoice_Run
 				throw new Exception("DB ERROR: ".$selInvoiceCDRTotals->Error());
 			}
 			$arrInvoiceCDRTotals	= $selInvoiceCDRTotals->Fetch();
-			
+
 			// Finalised InvoiceRun record
 			$this->BillCost					= $arrInvoiceCDRTotals['BillCost'];
 			$this->BillRated				= $arrInvoiceCDRTotals['BillRated'];
 			$this->BillInvoiced				= $arrInvoiceTotals['BillInvoiced'];
 			$this->BillTax					= $arrInvoiceTotals['BillTax'];
 			$this->save();
-			
+
 			$dbaDB->TransactionCommit();
 		}
 		catch (Exception $eException)
@@ -522,7 +522,7 @@ class Invoice_Run
 			throw $eException;
 		}
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// revokeAll
 	//------------------------------------------------------------------------//
@@ -604,24 +604,24 @@ class Invoice_Run
 	{
 		static	$dbaDB;
 		$dbaDB	= (isset($dbaDB)) ? $dbaDB : DataAccess::getDataAccess();
-		
+
 		Log::getLog()->log(" * Revoking Invoice Run with Id {$this->Id}...");
-		
+
 		// Is this InvoiceRun Temporary?
 		if (!in_array($this->invoice_run_status_id, Array(INVOICE_RUN_STATUS_TEMPORARY, INVOICE_RUN_STATUS_GENERATING)))
 		{
 			// No, throw an Exception
 			throw new Exception("InvoiceRun '{$this->Id}' is not a Temporary InvoiceRun!");
 		}
-		
+
 		try
 		{
 			// Start Transaction
 			$dbaDB->TransactionStart();
-			
+
 			// Revoke Invoice Run as a whole
 			$this->_revokeOptimised();
-			
+
 			// Commit the Transaction
 			$dbaDB->TransactionCommit();
 		}
@@ -631,12 +631,12 @@ class Invoice_Run
 			throw $eException;
 		}
 	}
-	
+
 	private function _revokeOptimised()
 	{
 		static	$qryQuery;
 		$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
-		
+
 		// Change CDR Statuses back to CDR_RATED
 		$updCDRRevoke	= self::_preparedStatement('updCDRRevoke');
 		if ($updCDRRevoke->Execute(Array('invoice_run_id'=>NULL, 'Status'=>CDR_RATED), $this->toArray()) === FALSE)
@@ -694,7 +694,7 @@ class Invoice_Run
 		{
 			throw new Exception("DB ERROR: ".$qryQuery->Error());
 		}
-		
+
 		// Remove entry from the InvoiceRun table
 		Log::getLog()->log(" * Removing Invoice Run with Id {$this->Id}");
 		if ($qryQuery->Execute("DELETE FROM InvoiceRun WHERE Id = {$this->Id}") === FALSE)
@@ -713,23 +713,23 @@ class Invoice_Run
 	public function commit($bolOptimised=true)
 	{
 		Log::getLog()->log(" * Committing Invoice Run with Id {$this->Id}...");
-		
+
 		// Is this InvoiceRun Temporary?
 		if ($this->invoice_run_status_id !== INVOICE_RUN_STATUS_TEMPORARY)
 		{
 			// No, throw an Exception
 			throw new Exception("InvoiceRun '{$this->Id}' is not a Temporary InvoiceRun!");
 		}
-		
+
 		$dbaDB	= DataAccess::getDataAccess();
 		try
 		{
 			// Start Transaction
 			$dbaDB->TransactionStart();
-			
+
 			// Commit Invoice Run as a whole
 			$this->_commitOptimised();
-			
+
 			// Commit the Transaction
 			$dbaDB->TransactionCommit();
 		}
@@ -739,13 +739,13 @@ class Invoice_Run
 			throw $eException;
 		}
 	}
-	
-	// deliver: Generates the pdf's for all invoices within this invoice run, tar's them up and then creates a 
+
+	// deliver: Generates the pdf's for all invoices within this invoice run, tar's them up and then creates a
 	// correspondence run so that they are delivered to the mail house
 	public function deliver()
 	{
 		$sInvoiceRunPDFBasePath	= PATH_INVOICE_PDFS ."pdf/$this->Id/";
-		
+
 		// Generate pdf's
 		$aInvoices		= Invoice::getForInvoiceRunId($this->Id);
 		$aPDFFilenames	= array();
@@ -758,7 +758,7 @@ class Invoice_Run
 			GetPDFContent($oInvoice->Account, $iYear, $iMonth, $iId, $this->Id);
 			$aPDFFilenames[$iId]	= $sInvoiceRunPDFBasePath.GetPdfFilename($oInvoice->Account, $iYear, $iMonth, $oInvoice->Id, $this->Id);
 		}
-		
+
 		// Create tar file
 		require_once("Archive/Tar.php");
 		$oTar		= new Archive_Tar($sInvoiceRunPDFBasePath."{$this->Id}.tar");
@@ -767,7 +767,7 @@ class Invoice_Run
 		{
 			 throw new Exception("Failed to create tar file for invoice run {$this->Id}. Files = ".print_r($aFiles, true));
 		}
-		
+
 		// Generate the correspondence data
 		$aCorrespondenceData	= array();
 		foreach ($aPDFFilenames as $iInvoiceId => $sPDFFilename)
@@ -785,13 +785,13 @@ class Invoice_Run
 					$iDeliveryMethod	= CORRESPONDENCE_DELIVERY_METHOD_EMAIL;
 					break;
 			}
-			
+
 			if (is_null($iDeliveryMethod))
 			{
 				// No appropriate correspondence_delivery_method was found. The invoice is not to be delivered, skip it.
 				continue;
 			}
-			
+
 			// Cache the correspondence data for the invoice
 			$oAccount				= Account::getForId($oInvoice->Account);
 			$oContact				= Contact::getForId($oAccount->PrimaryContact);
@@ -814,22 +814,23 @@ class Invoice_Run
 											'tar_file_path'						=> basename($aPDFFilenames[$iInvoiceId])
 										);
 		}
-		
+
+		Correspondence_Template::getForSystemName('INTERIM_INVOICE',$aCorrespondenceData)->createRun(true, null, null,$sInvoiceRunPDFBasePath."{$this->Id}.tar")->save();
 		//echo "<pre>".print_r($aCorrespondenceData, true)."</pre>";
-		
+
 		/*
-		// Create correspondence run 
+		// Create correspondence run
 		$oSource	= new Correspondeonce_Source_CSV($aCorrespondenceData);
 		$oTemplate	= new Correspondence_Template::getForSystemName('INVOICE');
 		$oRun		= $oTemplate->createRun();
 		$oRun->save();*/
 	}
-	
+
 	private function _commitOptimised()
 	{
 		static	$qryQuery;
 		$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
-		
+
 		// Commit the CDRs
 		Log::getLog()->log(" * Committing CDRs...");
 		$resCommitCDRs	= $qryQuery->Execute("UPDATE CDR SET Status = ".CDR_INVOICED." WHERE Status = ".CDR_TEMP_INVOICE." AND invoice_run_id = {$this->Id}");
@@ -837,7 +838,7 @@ class Invoice_Run
 		{
 			throw new Exception($qryQuery->Error());
 		}
-		
+
 		// Commit the Charges
 		Log::getLog()->log(" * Committing Charges...");
 		$resCommitCharges	= $qryQuery->Execute("UPDATE Charge SET Status = ".CHARGE_INVOICED." WHERE Status = ".CHARGE_TEMP_INVOICE." AND invoice_run_id = {$this->Id}");
@@ -845,7 +846,7 @@ class Invoice_Run
 		{
 			throw new Exception($qryQuery->Error());
 		}
-		
+
 		//------------------------------ ACCOUNT -----------------------------//
 		Log::getLog()->log(" * Updating Accounts...");
 		$resUpdateAccounts	= $qryQuery->Execute(	"UPDATE Account JOIN Invoice ON Account.Id = Invoice.Account \n" .
@@ -855,7 +856,7 @@ class Invoice_Run
 		{
 			throw new Exception($qryQuery->Error());
 		}
-		
+
 		//------------------------------ SERVICE -----------------------------//
 		Log::getLog()->log(" * Updating Services...");
 		$resUpdateInvoices	= $qryQuery->Execute(	"UPDATE (ServiceTotal JOIN service_total_service ON ServiceTotal.Service = service_total_service.service_total_id) JOIN Service ON Service.Id = service_total_service.service_id " .
@@ -865,7 +866,7 @@ class Invoice_Run
 		{
 			throw new Exception($qryQuery->Error());
 		}
-		
+
 		//------------------------------ INVOICE -----------------------------//
 		Log::getLog()->log(" * Updating Invoices...");
 		$resUpdateInvoices	= $qryQuery->Execute(	"UPDATE Invoice \n" .
@@ -875,7 +876,7 @@ class Invoice_Run
 		{
 			throw new Exception($qryQuery->Error());
 		}
-		
+
 		// Finalise entry in the InvoiceRun table
 		Log::getLog()->log(" * Finalising Invoice Run with Id {$this->Id}");
 		$this->invoice_run_status_id	= INVOICE_RUN_STATUS_COMMITTED;
@@ -897,7 +898,7 @@ class Invoice_Run
 	public function export($aAccounts=null, $aExportModules=null)
 	{
 		Log::getLog()->log(" * Exporting Invoice Run {$this->Id}".((is_array($aAccounts) && count($aAccounts)) ? " (Accounts: ".implode(', ', $aAccounts) : '').")...");
-	
+
 		// Export Invoice Run as a whole
 		$aCarrierModules	= Invoice_Run_Export::getModulesForCustomerGroup($this->customer_group_id);
 		/*
@@ -911,7 +912,7 @@ class Invoice_Run
 			if ($aExportModules === null || in_array($sInvoiceRunExportClass, $aExportModules))
 			{
 				Log::getLog()->log("\t+ Module: {$sInvoiceRunExportClass}");
-				
+
 				$oInvoiceRunExport		= new $sInvoiceRunExportClass($this, $oCarrierModule);
 				$oInvoiceRunExport->export((is_array($aAccounts) ? $aAccounts : null));
 			}
@@ -1001,7 +1002,7 @@ class Invoice_Run
 	public static function getLastInvoiceDateByCustomerGroup($intCustomerGroup, $strEffectiveDate=null)
 	{
 		$strEffectiveDate	= ($strEffectiveDate) ? $strEffectiveDate : date('Y-m-d');
-		
+
 		//Debug('CustomerGroup: '.$intCustomerGroup);
 		//Debug('EffectiveDate: '.$strEffectiveDate);
 		$selPaymentTerms	= self::_preparedStatement('selPaymentTerms');
