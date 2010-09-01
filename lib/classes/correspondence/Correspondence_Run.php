@@ -6,7 +6,7 @@ class Correspondence_Run
 	protected $_oDO;
 	public static $aNonSuppliedFields = array('processed_datetime', 'delivered_datetime', 'created_employee_id', 'created', 'file_export_id');
 
-	public function __construct($oCorrespondenceTemplate, $mDefinition, $bProcessNow = true)
+	public function __construct($oCorrespondenceTemplate = null, $mDefinition, $bProcessNow = true)
 	{
 		$this->_oCorrespondenceTemplate = $oCorrespondenceTemplate;
 		if (is_array($mDefinition))
@@ -28,7 +28,8 @@ class Correspondence_Run
 		else
 		{
 			$this->_oDO = $mDefinition;
-			$this->_aCorrespondence = Correspondence::getForRunId($this->oDO->id);
+			$this->_aCorrespondence = Correspondence::getForRun($this);
+			$this->_oCorrespondenceTemplate = Correspondence_Template::getForId($this->template_id);
 		}
 	}
 
@@ -147,22 +148,19 @@ class Correspondence_Run
 		if ($sScheduledDateTime == null)
 			$sScheduledDateTime = Data_Source_Time::currentTimestamp();
 
+		$aRunORM = Correspondence_Run_ORM::getForScheduledDateTime($sScheduledDateTime);
+
 		$aRuns = array();
-		//retrieve from the database the set of Correspondence_Run ORM objects that must be run now.
-		//retrieve the corresponding template ORMs, process these into template objects,then construct the Run objects.
-
-		//for initial testing purposes create new objects instead of retrieving data
-		$oSource = new Correspondence_Source_Csv();
-		$oTemplate = Correspondence_Template::create('motorpass correspondence', 'blah blah', $oSource);
-			$aDefinition = array ('scheduled_datetime'=> Data_Source_Time::currentTimestamp(), 'processed_datetime'=>Data_Source_Time::currentTimestamp());
-		$aRuns[]= new Correspondence_Run($oTemplate, $aDefinition);
-
+		foreach ($aRunORM as $oRunORM)
+		{
+			$aRuns[]= new Correspondence_Run(null, $oRunORM);
+		}
 
 
 		//for each run: get the correspondence objects associated with it,by either simply retrieving them,or by processing the run first
 		foreach ($aRuns as $oRun)
 		{
-			if ($oRun->processed_dateTime == null)
+			if ($oRun->processed_datetime == null)
 				$oRun->process();
 		}
 

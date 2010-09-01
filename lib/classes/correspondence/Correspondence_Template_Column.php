@@ -6,14 +6,10 @@ class Correspondence_Template_Column
 	protected $_oDO;
 	protected $_oTemplate;
 
-	public function __construct($mDefinition, $oTemplate)
+	public function __construct($mDefinition, $oTemplate = null)
 	{
 		$this->_oTemplate = $oTemplate;
-		if (is_array($mDefinition))
-		{
-			$this->_oDO = new Correspondence_Template_Column_ORM($mDefinition);
-		}
-
+		$this->_oDO =is_array($mDefinition)?new Correspondence_Template_Column_ORM($mDefinition):$mDefinition;
 
 	}
 
@@ -34,6 +30,11 @@ class Correspondence_Template_Column
 	public function __set($sField, $mValue)
 	{
 		$this->_oDO->$sField = $mValue;
+	}
+
+	public static function getForData($oData)
+	{
+		return new self(Correspondence_Template_Column_ORM::getForId($oData->correspondence_template_column_id));
 	}
 
 

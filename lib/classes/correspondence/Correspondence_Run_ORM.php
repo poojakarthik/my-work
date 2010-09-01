@@ -83,6 +83,9 @@ class Correspondence_Run_ORM extends ORM_Cached
 			switch ($strStatement)
 			{
 				// SELECTS
+				case 'selByScheduleDateTime':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "scheduled_datetime <= <scheduled_datetime> ");
+					break;
 				case 'selById':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
 					break;
@@ -107,6 +110,19 @@ class Correspondence_Run_ORM extends ORM_Cached
 			}
 			return $arrPreparedStatements[$strStatement];
 		}
+	}
+
+	public static function getForScheduledDateTime($sScheduledDateTime)
+	{
+		$oSelect	= self::_preparedStatement('selByScheduleDateTime');
+		$oSelect->Execute(array('scheduled_datetime' => $sScheduledDateTime));
+		$aResults = $oSelect->FetchAll();
+		$aObjects = array();
+		foreach ($aResults as $aResult)
+		{
+			$aObjects[]= new self($aResult);
+		}
+		return $aObjects;
 	}
 
 

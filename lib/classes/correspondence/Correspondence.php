@@ -8,8 +8,9 @@ class Correspondence
 	protected $_aAdditionalFields = array();
 
 
-	public function __construct($mData)
+	public function __construct($mData, $oCorrrespondenceRun = null)
 	{
+		$this->_oCorrespondenceRun = $oCorrrespondenceRun;
 		if (is_array($mData))
 		{
 			foreach (self::$aCorrespondenceFieldsNotSupplied as $sField)
@@ -32,6 +33,7 @@ class Correspondence
 		else
 		{
 			$this->_oDO = $mData;
+			$this->_aAdditionalFields = Correspondence_Data::getForCorrespondence($this);
 		}
 
 	}
@@ -39,9 +41,14 @@ class Correspondence
 	public function toArray()
 	{
 		//return an associative array that can be used for csv file genereation
-		//for this, retrieve the column list from the template object, through the run object
 
-		return $this->_oDO;//change this to a real toArray when the time is right.
+		$aData = $this->_oDO->toArray();
+		foreach($this->_aAdditionalFields as $sField=>$oData)
+		{
+			$aData[$sField]= $oData->value;
+		}
+
+		return $aData;
 	}
 
 
@@ -118,6 +125,17 @@ class Correspondence
 		//we have to recreate the array as by now we possibly have created gaps
 
 		return $aColumns;
+	}
+
+	public static function getForRun($oRun)
+	{
+		$aORM = Correspondence_ORM::getForRunId($oRun->id);
+		$aCorrespondence = array();
+		foreach ($aORM as $oORM)
+		{
+			$aCorrespondence[] = new Correspondence($oORM, $oRun);
+		}
+		return $aCorrespondence;
 	}
 
 

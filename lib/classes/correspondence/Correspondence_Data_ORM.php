@@ -83,6 +83,9 @@ class Correspondence_Data_ORM extends ORM_Cached
 			switch ($strStatement)
 			{
 				// SELECTS
+				case 'selByCorrespondenceId':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "correspondence_id = <correspondence_id>");
+					break;
 				case 'selById':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
 					break;
@@ -115,7 +118,25 @@ class Correspondence_Data_ORM extends ORM_Cached
 		return array_keys($arrTableDefine['Column']);
 	}
 
+	public function toArray()
+	{
+		return $this->_aProperties;
+	}
 
+	public static function getForCorrespondenceId($iCorrespondenceId)
+	{
+
+	$oSelect	= self::_preparedStatement('selByCorrespondenceId');
+		$oSelect->Execute(array('correspondence_id' => $iCorrespondenceId));
+		$aResults = $oSelect->FetchAll();
+		$aObjects = array();
+		foreach ($aResults as $aResult)
+		{
+			$aObjects[]= new self($aResult);
+		}
+		return $aObjects;
+
+	}
 
 
 

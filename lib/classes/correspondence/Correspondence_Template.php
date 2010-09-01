@@ -16,6 +16,8 @@ class Correspondence_Template
 		if (is_numeric($mDefinition))
 		{
 			//implement code to retrieve data and instantiate the object
+			$this->_oDO = Correspondence_Template_ORM::getForId($mDefinition);
+			//todo: instantiate the run and extra columns members
 
 		}
 		else if (is_array($mDefinition))
@@ -174,7 +176,7 @@ class Correspondence_Template
 
 	public static function getForId($iId)
 	{
-		return new self (array('id'=>$iId));
+		return new self ($iId);
 	}
 
 	public static function create($sName, $sDescription, $aColumns, $iCarrierId, $oSource)
@@ -182,6 +184,8 @@ class Correspondence_Template
 		$aDefinition = array('name'=>$sName, 'description'=>$sDescription, 'carrier_id'=>$iCarrierId);
 		return new self ($aDefinition, $oSource, $aColumns);
 	}
+
+
 
 	public function __get($sField)
 	{
