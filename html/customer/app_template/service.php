@@ -117,7 +117,7 @@ class AppTemplateService extends ApplicationTemplate
 		$aRelatedServiceIds	= array_keys($aFNNInstances);
 		
 		// build the where clause and array for retrieving the relevant CDRs
-		$strCDRWhereClause = "Service IN (".implode(', ', $aRelatedServiceIds).") AND (Status = <CDRRated> OR Status = <CDRTempInvoice>)$strFilter AND Credit != 1";
+		$strCDRWhereClause = "Service = <Service> OR Service IN (".implode(', ', $aRelatedServiceIds).") AND (Status = <CDRRated> OR Status = <CDRTempInvoice>)$strFilter AND Credit != 1";
 		$arrCDRWhereClause = Array("Service"=> DBO()->Service->Id->Value, "CDRRated"=> CDR_RATED, "CDRTempInvoice"=> CDR_TEMP_INVOICE);
 		
 		// Find out how many records we are dealing with in the CDR table
