@@ -712,7 +712,7 @@ class Service extends ORM
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ServiceRatePlan", "*", "Service = <service_id> AND <effective_datetime> BETWEEN StartDatetime AND EndDatetime", "CreatedOn DESC", 1);
 					break;
 				case 'selFNNInstances':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Service", "*", "FNN = <FNN> AND Account = <AccountId>", "Id ASC");
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Service", "*", "FNN = <FNN> AND (ISNULL(<AccountId) OR Account = <AccountId>)", "Id ASC");
 					break;
 				case 'selServiceAddress':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ServiceAddress", "*", "Service = <Id>");
