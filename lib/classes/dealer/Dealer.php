@@ -1002,7 +1002,7 @@ class Dealer
 			}
 		}
 
-		// If the dealer is an employee then copy accross values that should never differ from their employee record
+				// If the dealer is an employee then copy accross values that should never differ from their employee record
 		if ($arrDetails['employeeId'] !== NULL)
 		{
 			$objEmployee = Employee::getForId($arrDetails['employeeId'], true);
@@ -1015,8 +1015,8 @@ class Dealer
 				// Copy across the details that should never differ
 				$arrDetails['firstName']		= (($strFirstName = trim($objEmployee->firstName)) == '')? NULL : $strFirstName;
 				$arrDetails['lastName']			= (($strLastName = trim($objEmployee->lastName)) == '')? NULL : $strLastName;
-				$arrDetails['username']			= (($strUsername = trim($objEmployee->username)) == '')? NULL : $strUsername;
-				$arrDetails['password']			= (($strPassword = trim($objEmployee->password)) == '')? NULL : $strPassword;
+				$arrDetails['username']			= (($strUsername = trim($objEmployee->userName)) == '')? NULL : $strUsername;
+				$arrDetails['password']			= (($strPassword = trim($objEmployee->passWord)) == '')? NULL : $strPassword;
 				$arrDetails['phone']			= (($strPhone = trim($objEmployee->phone)) == '')? NULL : $strPhone;
 				$arrDetails['mobile']			= (($strMobile = trim($objEmployee->mobile)) == '')? NULL : $strMobile;
 				$arrDetails['email']			= (($strEmail = trim($objEmployee->email)) == '')? NULL : $strEmail;

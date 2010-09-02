@@ -855,11 +855,7 @@ class JSON_Handler_Dealer extends JSON_Handler
 		try
 		{
 			// Convert the details object into an associative array
-			$arrDetails = array();
-			foreach ($objDetails as $strPropName=>$mixPropValue)
-			{
-				$arrDetails[$strPropName] = $mixPropValue;
-			}
+			$arrDetails	= get_object_vars($objDetails);
 			
 			// Validate the details
 			$mixResult = Dealer::parseDealerDetails($arrDetails);
