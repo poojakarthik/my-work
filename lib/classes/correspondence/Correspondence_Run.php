@@ -33,6 +33,10 @@ class Correspondence_Run
 		}
 	}
 
+	public function getCarrierId()
+	{
+		return $this->_oCorrespondenceTemplate->carrier_id;
+	}
 
 	public function process()
 	{
@@ -144,6 +148,12 @@ class Correspondence_Run
 	}
 
 
+	public function getCarrierModule()
+	{
+
+		return $this->_oCorrespondenceTemplate->getCarrierModule();
+	}
+
 	public static function get($iId)
 	{
 		//create a new object based on the id passed in
@@ -161,22 +171,17 @@ class Correspondence_Run
 		$aRuns = array();
 		foreach ($aRunORM as $oRunORM)
 		{
-			$aRuns[]= new Correspondence_Run(null, $oRunORM);
-		}
-
-
-		//for each run: get the correspondence objects associated with it,by either simply retrieving them,or by processing the run first
-		foreach ($aRuns as $oRun)
-		{
+			$oRun = new Correspondence_Run(null, $oRunORM);
 			if ($oRun->processed_datetime == null)
 				$oRun->process();
+			$aRuns[] = $oRun;
 		}
 
 		return $aRuns;
 
-
-
 	}
+
+
 
 	public function getCorrespondenceCode()
 	{

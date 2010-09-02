@@ -3,14 +3,16 @@
 class Correspondence_Template
 {
 
+	protected static $_aCorrespondence_Templates = array();
+
 	protected $_oCorrespondenceSource;
 	protected $_oDO;
 	protected $_aRuns = array();
 	protected $_aExtraColumns = array();
 	public static $aNonSuppliedFields = array('created_employee_id', 'created_timestamp', 'system_name', 'status_id');
+	protected $_oCarrierModule;
 
-
-	public function __construct($mDefinition, $oSource = null, $aColumns = array())
+	private function __construct($mDefinition, $oSource = null, $aColumns = array())
 	{
 		$this->_oCorrespondenceSource = $oSource;
 		if (is_numeric($mDefinition))
@@ -42,6 +44,25 @@ class Correspondence_Template
 			//retrieve all columns and runs from the database that belong to this template.
 
 		}
+	}
+
+	public function getCarrierModule()
+	{
+		if ($this->_oCarrierModule !=null)
+			return $this->_oCarrierModule;
+
+		$aCarrierModules = Carrier_Module::getForCarrierModuleType(MODULE_TYPE_CORRESPONDENCE_EXPORT);
+		foreach($aCarrierModules as $oCarrierModule)
+		{
+			if ($oCarrierModule->Carrier = $this->carrier_id)
+			{
+				$sClassName = $oCarrierModule->Module;
+				$this->_oCarrierModule = new $sClassName();
+				return $this->_oCarrierModule;
+			}
+		}
+		return false;
+
 	}
 
 	public function save()
@@ -176,6 +197,13 @@ class Correspondence_Template
 
 	public static function getForId($iId)
 	{
+
+		foreach(self::$_aCorrespondence_Templates as $iTemplateId => $oTemplate)
+		{
+			if ( $iTemplateId = $iId )
+				return $oTemplate;
+
+		}
 		return new self ($iId);
 	}
 
@@ -197,7 +225,17 @@ class Correspondence_Template
 		$this->_oDO->$sField = $mValue;
 	}
 
+public static function getInstance($iId = null, $sCode= null, $sName= null, $sDescription= null, $aColumns = null, $iCarrierId = null, $oSource = null)
+{
+		foreach(self::$_aCorrespondence_Templates as $iTemplateId => $oTemplate)
+		{
+			if ( $iTemplateId = $iId || $oTemplate->template_code = $sCode)
+				return $oTemplate;
 
+		}
+		$aDefinition = array('id' => $iId, 'template_code' => $sCode, 'name'=>$sName, 'description'=>$sDescription, 'carrier_id'=>$iCarrierId);
+		return new self ($aDefinition, $oSource, $aColumns);
+}
 
 }
 

@@ -4,34 +4,69 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 
 	const	RESOURCE_TYPE		= RESOURCE_TYPE_FILE_EXPORT_CORRESPONDENCE_YELLOWBILLINGCSV;
 
-	protected function export()
+
+	public function __construct($mCarrierModule)
 	{
-			//process the data into csv format
-			$oFile = new File_CSV($sDelimiter=',', $sQuote='"', $sEscape='\\', $oRun->getAllColumns());
-			//get their data
-			foreach ($oRun->getCorrespondence() as $oCorrespondence)
-			{
-				$oFile->addRow($oCorrespondence->toArray());
-			}
-			//save the file and send it off
-			$sTimeStamp = str_replace(array(' ',':','-'), '',Data_Source_Time::currentTimestamp());
-			$sFilename	= $oRun->getCorrespondenceCode()
-					.'_'
-					.$sTimeStamp
-					.'_'
-					.$oRun->id
-					.'.csv';
-
-			$this->_sFilePath = $sFileDirectoryPath.$sFilename;
-
-			$oFile->saveToFile($this->_sFilePath);
-			$this->_oFileDeliver->connect()->deliver($this->_sFilePath)->disconnect();
+		parent::__construct($mCarrierModule);
+		$this->_iTimestamp	= time();
+		$this->_oFileExporterCSV	= new File_Exporter_CSV();
 
 	}
 
+	public function render()
+	{
+		$sFileDirectoryPath	= self::getExportPath($this->getCarrierModule()->Carrier, __CLASS__);
+		$sTimeStamp = str_replace(array(' ',':','-'), '',Data_Source_Time::currentTimestamp());
+		$sFilename	= $oRun->getCorrespondenceCode()
+				.'_'
+				.$sTimeStamp
+				.'_'
+				.$this->_oRun->id
+				.'.csv';
+
+		$this->_sFilePath = $sFileDirectoryPath.$sFilename;
+
+		// Render and write to disk
+		$this->_oFileExporterCSV->renderToFile($this->_sFilePath);
+
+		// TODO: Do we need to return anything special?
+		return $this;
+	}
+
+	public function deliver()
+	{
+		$this->_oFileDeliver->connect()->deliver($this->_sFilePath)->disconnect();
+		return $this;
+	}
+
+
+
+	public function addRecord($mRecord)
+	{
+		$oRecord	= $this->_oFileExporterCSV->getRecordType(self::RECORD_TYPE_DETAIL)->newRecord();
+		foreach ($mRecord as $sField=>$mValue)
+		{
+			$oRecord->$sField = $mValue;
+		}
+		$this->_oFileExporterCSV->addRecord($oRecord, File_Exporter_CSV::RECORD_GROUP_BODY);
+	}
+
+	public function export()
+	{
+		$this->_configureFileExporter($this->_oRun->getAllColumns());
+
+		foreach ($this->oRun->getCorrespondence() as $oCorrespondence)
+		{
+			$oFile->addRecord($oCorrespondence->toArray());
+		}
+
+
+	}
+
+
 	public static function getExportPath($iCarrier, $sClass)
 	{
-		return parent::getExportPath()."correspondence/{$iCarrier}/{$sClass}/";
+		return parent::getExportPath()."$iCarrier/$sClass/";
 	}
 
 
@@ -45,7 +80,17 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 			return new self();
 		}
 
+	protected function _configureFileExporter($aColumns)
+	{
+		$this->_iTimestamp	= time();
+		$oRecordType = File_Exporter_RecordType::factory();
+		foreach($aColumn as $sColumn)
+		{
+			$oRecord->addField($sColumn, File_Exporter_Field::factory());
+		}
 
+		$this->_oFileExporterCSV->registerRecordType(self::RECORD_TYPE_DETAIL, $oRecordType);
+	}
 
 
 }
