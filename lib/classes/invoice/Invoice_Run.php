@@ -720,6 +720,11 @@ class Invoice_Run
 			// No, throw an Exception
 			throw new Exception("InvoiceRun '{$this->Id}' is not a Temporary InvoiceRun!");
 		}
+		else if (in_array($this->invoice_run_type_id, array(INVOICE_RUN_TYPE_SAMPLES, INVOICE_RUN_TYPE_INTERNAL_SAMPLES)))
+		{
+			// Cannot commit sample invoice runs
+			throw new Exception("InvoiceRun '{$this->Id}' is a sample InvoiceRun, it cannot be commited!");
+		}
 
 		$dbaDB	= DataAccess::getDataAccess();
 		try
@@ -729,7 +734,7 @@ class Invoice_Run
 
 			// Commit Invoice Run as a whole
 			$this->_commitOptimised();
-
+			
 			// Commit the Transaction
 			$dbaDB->TransactionCommit();
 		}
@@ -815,15 +820,15 @@ class Invoice_Run
 										);
 		}
 
-		Correspondence_Template::getForSystemName('INTERIM_INVOICE',$aCorrespondenceData)->createRun(true, null, null,$sInvoiceRunPDFBasePath."{$this->Id}.tar")->save();
-		//echo "<pre>".print_r($aCorrespondenceData, true)."</pre>";
-
-		/*
-		// Create correspondence run
-		$oSource	= new Correspondeonce_Source_CSV($aCorrespondenceData);
-		$oTemplate	= new Correspondence_Template::getForSystemName('INVOICE');
-		$oRun		= $oTemplate->createRun();
-		$oRun->save();*/
+		// Create the correspondence run
+		try
+		{
+			Correspondence_Template::getForSystemName('INTERIM_INVOICE',$aCorrespondenceData)->createRun(true, null, null,$sInvoiceRunPDFBasePath."{$this->Id}.tar")->save();
+		}
+		catch (Exception $oEx)
+		{
+			throw new Exception("Failed to create the correspondence run. ".$oEx->getMessage());
+		}
 	}
 
 	private function _commitOptimised()

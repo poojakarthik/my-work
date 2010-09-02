@@ -42,19 +42,11 @@ var Popup_Interim_First_Invoice_Commit_All	= Class.create(Reflex_Popup,
 	
 	_commitAll	: function()
 	{
-		var fnGo	=	jQuery.json.jsonFunction(
-							this._finishedCommit.bind(this), 
-							this._finishedCommit.bind(this), 
-							'Invoice_Interim', 
-							'commitAllInterimFirst'
-						);
-		
 		var sDate	= this._oDateField.getElementValue();
 		if (sDate && sDate !== '')
 		{
-			this._oLoading	= new Reflex_Popup.Loading('Comitting All Interim Invoices...');
-			this._oLoading.display();
-			fnGo(sDate);
+			new Popup_Interim_First_Invoice_Commit(sDate);
+			this.hide();
 		}
 		else
 		{
@@ -62,34 +54,9 @@ var Popup_Interim_First_Invoice_Commit_All	= Class.create(Reflex_Popup,
 		}
 	},
 	
-	_finishedCommit	: function(oResponse)
+	_refreshPage	: function()
 	{
-		this._oLoading.hide();
-		delete this._oLoading;
-		
-		if (oResponse.bSuccess)
-		{
-			// Success
-			Reflex_Popup.alert(
-				'All Interim First Invoices have been committed.', 
-				{
-					sTitle	: 'Success', 
-					iWidth	: 35,
-					fnClose	: this._refreshPage.bind(this)
-				}
-			);
-			
-			this.hide();
-		}
-		else
-		{
-			// Error
-			Reflex_Popup.alert(
-				'An error occurred committing the Interim First Invoices. ' +
-				(oResponse.sError ? oResponse.sError + '.' : '') + ' Please contact YBS if you require assistance.',
-				{sTitle: 'Error', iWidth: 35}
-			);
-		}
+		window.location	= window.location;
 	}
 });
 

@@ -355,74 +355,6 @@ class Invoice_Interim
 		);
 	}
 	
-	// commitAll
-	public static function commitAll($sBillingDate)
-	{
-		// Start outer transaction
-		$oFlexDataAccess	= DataAccess::getDataAccess();
-		if (!$oFlexDataAccess->TransactionStart())
-		{
-			throw new Exception("There was an internal error in Flex.  Please notify YBS of this issue with the following message: 'Unable to start a Transaction'");
-		}
-		try
-		{
-			$oQuery				= new Query();
-			$aCustomerGroups	= Customer_Group::getAll();
-			$iCountDelivered	= 0;
-			foreach ($aCustomerGroups as $iId => $oCustomerGroup)
-			{
-				// Start inner transaction
-				if (!$oFlexDataAccess->TransactionStart())
-				{
-					throw new Exception("There was an internal error in Flex.  Please notify YBS of this issue with the following message: 'Unable to start a nested Transaction'");
-				}
-				try
-				{
-					// Get all temporary first interim invoice runs for the customer group
-					$sQuery		= "	SELECT	Id
-									FROM	InvoiceRun
-									WHERE	customer_group_id = {$iId}
-									AND		BillingDate = '{$sBillingDate}'
-									AND 	invoice_run_status_id = ".INVOICE_RUN_STATUS_TEMPORARY."
-									AND		invoice_run_type_id = ".INVOICE_RUN_TYPE_INTERIM_FIRST;
-					$oResult	= $oQuery->Execute($sQuery);
-					if ($oResult === false)
-					{
-						throw new Exception("Failed getting temporary invoice runs for the customer group {$oCustomerGroup->internal_name}.");
-					}
-					
-					// Commit each invoice run
-					while($aRow = $oResult->fetch_assoc())
-					{
-						$oInvoiceRun	= Invoice_Run::getForId($aRow['Id']);
-						$oInvoiceRun->commit();
-						$oInvoiceRun->deliver();
-						$iCountDelivered++;
-					}
-					
-					// Commit the inner transaction!
-					$oFlexDataAccess->TransactionCommit();	
-				}
-				catch (Exception $oException)
-				{
-					$oFlexDataAccess->TransactionRollback();
-					throw new Exception("Failed to commit invoice runs for customer group {$oCustomerGroup->internal_name}. ".$oException->getMessage());
-				}
-			}
-	
-			// Test mode, rollback
-			throw new Exception("TEST MODE -- commitAll successfull, {$iCountDelivered} delivered");
-			
-			// Commit the outer transaction!
-			$oFlexDataAccess->TransactionCommit();
-		}
-		catch (Exception $oException)
-		{
-			$oFlexDataAccess->TransactionRollback();
-			throw new Exception("Failed to commit and send all uncomitted interim first invoices. ".$oException->getMessage());
-		}
-	}
-	
 	public static function getTemporaryFirstInterimInvoiceBillingDates()
 	{
 		try
@@ -1003,7 +935,7 @@ class Invoice_Interim
 					
 					ORDER BY	account_id,
 								service_id";
-		
+		//throw new Exception($sSQL);
 		// Run Query
 		$rResult	= $qQuery->Execute($sSQL);
 		if ($rResult === false)

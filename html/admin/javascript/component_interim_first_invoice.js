@@ -19,7 +19,8 @@ var Component_Interim_First_Invoice	= Class.create(
 		JsAutoLoader.loadScript(
 			[
 			 	'../ui/javascript/control_field.js', 
-			 	'../ui/javascript/control_field_select.js'
+			 	'../ui/javascript/control_field_select.js',
+			 	'javascript/popup_interim_first_invoice_commit.js'
 			],
 			function()
 			{

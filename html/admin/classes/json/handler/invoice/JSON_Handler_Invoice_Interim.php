@@ -464,36 +464,6 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 		}
 	}
 	
-	public function commitAllInterimFirst($sBillingDate=null)
-	{
-		try
-		{
-			// Validate billing date
-			if (is_null($sBillingDate))
-			{
-				throw new Exception_Invoice_Interim_Custom("Could not commit invoices because no billing date was supplied");
-			}
-			
-			Invoice_Interim::commitAll($sBillingDate);
-			return array("bSuccess" => true);
-		}
-		catch (Exception_Invoice_Interim_Custom $oEx)
-		{
-			return array(
-						"bSuccess"	=> false,
-						"sError"	=> $oEx->getMessage()
-					);
-		}
-		catch (Exception $e)
-		{
-			$bIsGod	= Employee::getForId(Flex::getUserId())->isGod();
-			return array(
-						"bSuccess"	=> false,
-						"sError"	=> ($bIsGod ? $e->getMessage() : '')
-					);
-		}
-	}
-	
 	public function getTemporaryFirstInterimInvoiceBillingDates()
 	{
 		try
@@ -510,6 +480,52 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 			return array(
 						"bSuccess"	=> false,
 						"sError"	=> ($bIsGod ? $e->getMessage() : '')
+					);
+		}
+	}
+	
+	public function getInvoiceRunsForBillingDate($sBillingDate)
+	{
+		try
+		{
+			$aInvoiceRuns		= array();
+			$oQuery				= new Query();
+			$aCustomerGroups	= Customer_Group::getAll();
+			foreach ($aCustomerGroups as $iId => $oCustomerGroup)
+			{
+				// Get all temporary first interim invoice runs for the customer group
+				$sQuery		= "	SELECT	Id
+								FROM	InvoiceRun
+								WHERE	customer_group_id = {$iId}
+								AND		BillingDate = '{$sBillingDate}'
+								AND 	invoice_run_status_id = ".INVOICE_RUN_STATUS_TEMPORARY."
+								AND		invoice_run_type_id = ".INVOICE_RUN_TYPE_INTERIM_FIRST;
+				$oResult	= $oQuery->Execute($sQuery);
+				if ($oResult === false)
+				{
+					throw new Exception("Failed getting temporary invoice runs for the customer group {$oCustomerGroup->internal_name}.");
+				}
+				
+				// Commit each invoice run
+				while($aRow = $oResult->fetch_assoc())
+				{
+					$aInvoiceRun						= Invoice_Run::getForId($aRow['Id'])->toArray();
+					$aInvoiceRun['customer_group_name']	= $oCustomerGroup->internal_name;
+					$aInvoiceRuns[$aRow['Id']]			= $aInvoiceRun;
+				}
+			}
+			
+			return	array(
+						'bSuccess' 		=> true, 
+						'aInvoiceRuns' 	=> $aInvoiceRuns
+					);
+		}
+		catch (Exception $oEx)
+		{
+			$bIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+			return array(
+						"bSuccess"		=> false,
+						"sErrorMessage"	=> ($bIsGod ? $oEx->getMessage() : '')
 					);
 		}
 	}
