@@ -21,6 +21,7 @@ class Correspondence
 			$mData['standard_fields']['tar_file_path'] = isset($mData['standard_fields']['tar_file_path'])?$mData['standard_fields']['tar_file_path']:null;
 
 			$this->_oDO = new Correspondence_ORM($mData['standard_fields']);
+
 			foreach ($mData['additional_fields'] as $key=>$value)
 			{
 
@@ -33,6 +34,7 @@ class Correspondence
 		else
 		{
 			$this->_oDO = $mData;
+			$this->_oDO->setSaved();
 			$this->_aAdditionalFields = Correspondence_Data::getForCorrespondence($this);
 		}
 
@@ -60,14 +62,12 @@ class Correspondence
 		if ($this->_oCorrespondenceRun->id == null)
 			$this->_oCorrespondenceRun->save();
 		$this->correspondence_run_id = $this->_oCorrespondenceRun->id;
-		if ($this->_oDO->customer_group_id == null)
-			$x=5;
 		$this->_oDO->save();
 
 		foreach ($this->_aAdditionalFields as $sName => $oField)
 		{
-			$oField->correspondence_id = $this->id;
-			$oField->correspondence_template_column_id = $this->_oCorrespondenceRun->getTemplate()->getColumnIdForName($sName);
+			$oField->correspondence_id = $oField->correspondence_id==null?$this->id:$oField->correspondence_id;
+			$oField->correspondence_template_column_id = $oField->correspondence_template_column_id==null?$this->_oCorrespondenceRun->getTemplate()->getColumnIdForName($sName):$oField->correspondence_template_column_id;
 			$oField->save();
 		}
 	}
@@ -98,6 +98,13 @@ class Correspondence
 	public static function getStandardColumnCount($bPreprinted, $bIncludeNonSuppliedFields = false)
 	{
 		return count (self::getStandardColumns($bPreprinted, $bIncludeNonSuppliedFields));
+	}
+
+	public function getAllColumns()
+	{
+		$bPreprinted = $this->_oCorrespondenceRun->preprinted==1?true:false;
+		return $this->_oCorrespondenceRun->getTemplate()->createFullColumnSet( $bPreprinted);
+
 	}
 
 	public static function getStandardColumns($bPreprinted,$bIncludeNonSuppliedFields = false)
@@ -133,6 +140,7 @@ class Correspondence
 		$aCorrespondence = array();
 		foreach ($aORM as $oORM)
 		{
+
 			$aCorrespondence[] = new Correspondence($oORM, $oRun);
 		}
 		return $aCorrespondence;

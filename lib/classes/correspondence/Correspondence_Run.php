@@ -29,7 +29,7 @@ class Correspondence_Run
 		{
 			$this->_oDO = $mDefinition;
 			$this->_aCorrespondence = Correspondence::getForRun($this);
-			$this->_oCorrespondenceTemplate = Correspondence_Template::getForId($this->template_id);
+			$this->_oCorrespondenceTemplate = Correspondence_Template::getForId($this->correspondence_template_id);
 		}
 	}
 
@@ -111,6 +111,13 @@ class Correspondence_Run
 		return $this->_oCorrespondenceTemplate;
 	}
 
+	public function getAllColumns()
+	{
+		$bPreprinted = $this->preprinted==1?true:false;
+		return $this->_oCorrespondenceTemplate->createFullColumnSet( $bPreprinted);
+
+	}
+
 	public function getCorrespondence()
 	{
 		if ($this->_aCorrespondence == null)
@@ -129,10 +136,11 @@ class Correspondence_Run
 	}
 
 
-	public function setDeliveryDetails ($iFileExportId, $sDeliveredTimeStamp)
+	public function setDeliveryDetails ($iFileExportId, $sDeliveredTimeStamp, $iBatchId)
 	{
 		$this->file_export_id = $iFileExportId;
-		$this->delivered_timestamp = $sDeliveredTimeStamp;
+		$this->delivered_datetime = $sDeliveredTimeStamp;
+		$this->correspondence_run_batch_id = $iBatchId;
 	}
 
 
@@ -168,6 +176,11 @@ class Correspondence_Run
 
 
 
+	}
+
+	public function getCorrespondenceCode()
+	{
+		return $this->_oCorrespondenceTemplate->template_code;
 	}
 
 	public function __get($sField)

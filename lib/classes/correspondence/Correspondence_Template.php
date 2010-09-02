@@ -136,7 +136,7 @@ class Correspondence_Template
 	public function createFullColumnSet( $bPreprinted,$bIncludeNonSuppliedFields = false)
 	{
 
-		$aColumns = Correspondence::getStandardColums($bPreprinted,$bIncludeNonSuppliedFields);
+		$aColumns = Correspondence::getStandardColumns($bPreprinted,$bIncludeNonSuppliedFields);
 		$iColumnCount = count($aColumns);
 		$aAdditionalColumns = $this->getAdditionalColumnSet($iColumnCount);
 		$aColumns = array_merge($aColumns, $aAdditionalColumns);

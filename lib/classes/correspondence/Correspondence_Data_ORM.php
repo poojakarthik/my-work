@@ -132,10 +132,24 @@ class Correspondence_Data_ORM extends ORM_Cached
 		$aObjects = array();
 		foreach ($aResults as $aResult)
 		{
-			$aObjects[]= new self($aResult);
+			$x =new self($aResult);
+			$x->setSaved();
+			$aObjects[]= $x;
 		}
 		return $aObjects;
 
+	}
+
+	public function setSaved()
+	{
+		$this->_bolSaved = true;
+	}
+
+	public function save()
+	{
+		if (!$this->_bolSaved)
+			$this->save();
+		$this->setSaved();
 	}
 
 
