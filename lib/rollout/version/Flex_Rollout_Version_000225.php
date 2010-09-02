@@ -331,6 +331,14 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 									'sAlterSQL'			=>	"INSERT INTO correspondence_template_system  (name, description, system_name, constant_name, correspondence_template_id) VALUES
 															('invoice', 'invoice','INVOICE', 'CORRESPONDENCE_TEMPLATE_SYSTEM_INVOICE', (SELECT id FROM correspondence_template WHERE name = 'Invoice'));",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=>	"Add data to resource_type table",
+									'sAlterSQL'			=>	"INSERT INTO resource_type  (name, description, const_name, resource_type_nature ) VALUES
+															('Yellow Billing Correspondence File Export CSV File', 'Yellow Billing Correspondence File Export CSV File', 'RESOURCE_TYPE_FILE_EXPORT_CORRESPONDENCE_YELLOWBILLINGCSV', 2);",
+									'sRollbackSQL'		=>	"	DELETE FROM resource_type WHERE name = 'Yellow Billing Correspondence File Export CSV File';",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								)
 
 
