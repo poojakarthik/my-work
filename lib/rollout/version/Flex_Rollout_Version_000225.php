@@ -19,6 +19,7 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 									'sAlterSQL'			=>	"	CREATE  TABLE IF NOT EXISTS correspondence_delivery_method (
 																  id BIGINT(20) NOT NULL AUTO_INCREMENT ,
 																  name VARCHAR(255) NOT NULL ,
+																  description VARCHAR(255) NOT NULL ,
 																  system_name VARCHAR(255) NOT NULL ,
 																  const_name VARCHAR(255) NOT NULL ,
 																  PRIMARY KEY (id) )
@@ -37,7 +38,7 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 															  system_name VARCHAR(255) NOT NULL ,
 															  const_name VARCHAR(255) NOT NULL ,
 															  class_name VARCHAR(255) NOT NULL ,
-															  user_selectable TINYINT(4) NOT NULL,
+															  is_user_selectable TINYINT(4) NOT NULL,
 															  PRIMARY KEY (id) )
 															ENGINE = InnoDB;",
 									'sRollbackSQL'		=>	"	DROP TABLE correspondence_source_type;",
@@ -70,8 +71,7 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 															  created_employee_id BIGINT(20) NOT NULL ,
 															  created_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
 															  correspondence_source_id BIGINT(20) NOT NULL ,
-															  carrier_id BIGINT(20) NOT NULL ,
-															  system_name VARCHAR(255) NULL,
+															  carrier_id BIGINT(20) NULL ,
 															  status_id TINYINT(4) NOT NULL,
 															  PRIMARY KEY (id) ,
 															  INDEX correspondence_source_id (correspondence_source_id ASC) ,
@@ -89,6 +89,18 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 								),
 								array
 								(
+									'sDescription'		=> "Add table correspondence_run_batch",
+									'sAlterSQL'			=> "CREATE  TABLE IF NOT EXISTS correspondence_run_batch (
+															  id BIGINT(20) NOT NULL AUTO_INCREMENT ,
+															  batch_datetime TIMESTAMP NOT NULL ,
+															  PRIMARY KEY (id) )
+																ENGINE = InnoDB;",
+									'sRollbackSQL'		=>	"	DROP TABLE correspondence_run_batch;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+
+								),
+								array
+								(
 									'sDescription'		=>	"Add table correspondence_run",
 									'sAlterSQL'			=>	"CREATE  TABLE IF NOT EXISTS correspondence_run (
 															  id BIGINT(20) NOT NULL AUTO_INCREMENT,
@@ -101,6 +113,7 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 															  file_export_id BIGINT(20) UNSIGNED NULL ,
 															  preprinted TINYINT(3) UNSIGNED NOT NULL,
 															  tar_file_name VARCHAR(255) NULL,
+															  correspondence_run_batch_id BIGINT(20) NULL ,
 															  PRIMARY KEY (id) ,
 															  INDEX correspondence_template_id (correspondence_template_id ASC) ,
 															  INDEX file_export_id (file_export_id ASC) ,
@@ -111,6 +124,11 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 															  CONSTRAINT fk_correspondence_template_id
 															    FOREIGN KEY (correspondence_template_id )
 															    REFERENCES correspondence_template (id )
+															    ON UPDATE CASCADE,
+															  CONSTRAINT fk_correspondence_run_correspondence_delivery_batch
+															    FOREIGN KEY (correspondence_run_batch_id )
+															    REFERENCES correspondence_run_batch (id )
+															    ON DELETE RESTRICT
 															    ON UPDATE CASCADE)
 															ENGINE = InnoDB;",
 									'sRollbackSQL'		=>	"	DROP TABLE correspondence_run;",
@@ -178,7 +196,7 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 															    REFERENCES correspondence_template (id )
 															    ON UPDATE CASCADE)
 															ENGINE = InnoDB;",
-									'sRollbackSQL'		=>	"	DROP TABLE orrespondence_template_column;",
+									'sRollbackSQL'		=>	"	DROP TABLE correspondence_template_column;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								),
 								array
@@ -223,7 +241,99 @@ class Flex_Rollout_Version_000225 extends Flex_Rollout_Version
 																ENGINE = InnoDB;",
 									'sRollbackSQL'		=>	"	DROP TABLE correspondence_source_sql;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=>	"Add table correspondence_template_system",
+									'sAlterSQL'			=>	"CREATE  TABLE IF NOT EXISTS correspondence_template_system (
+															  id BIGINT(20) NOT NULL AUTO_INCREMENT ,
+															  name VARCHAR(125) NOT NULL ,
+															  description VARCHAR(255) NOT NULL ,
+															  system_name VARCHAR(255) NOT NULL ,
+															  constant_name VARCHAR(255) NOT NULL ,
+															  correspondence_template_id BIGINT(20) NULL ,
+															  PRIMARY KEY (id) ,
+															  INDEX fk_correspondence_system_correspondence_template1 (correspondence_template_id ASC) ,
+															  CONSTRAINT fk_correspondence_system_correspondence_template1
+															    FOREIGN KEY (correspondence_template_id )
+															    REFERENCES correspondence_template (id )
+															    ON DELETE SET NULL
+															    ON UPDATE CASCADE)
+															ENGINE = InnoDB;",
+									'sRollbackSQL'		=>	"	DROP TABLE correspondence_template_system;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+
+								array
+								(
+									'sDescription'		=>	"Add data to carrier_module_type table",
+									'sAlterSQL'			=>	"INSERT INTO carrier_module_type (name,  description, const_name)
+																VALUES ('Correspondence Export', 'Correspondence Export','MODULE_TYPE_CORRESPONDENCE_EXPORT')",
+									'sRollbackSQL'		=>	"	DELETE FROM carrier_module_type WHERE name = 'Correspondence Export';",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+
+								array
+								(
+									'sDescription'		=>	"Add data to carrier_type table",
+									'sAlterSQL'			=>	"INSERT INTO carrier_type (Name,  description, const_name)
+																VALUES ('Mailing House', 'Mailing House','CARRIER_TYPE_MAILINGHOUSE')",
+									'sRollbackSQL'		=>	"	DELETE FROM carrier_type WHERE Name = 'Mailing House';",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+
+								array
+								(
+									'sDescription'		=>	"Add data to Carrier table",
+									'sAlterSQL'			=>	"INSERT INTO Carrier (Name, carrier_type, description, const_name)
+																VALUES ('Billprint', (SELECT id FROM carrier_type WHERE const_name = 'CARRIER_TYPE_MAILINGHOUSE'),'Billprint', 'CARRIER_BILLPRINT')",
+									'sRollbackSQL'		=>	"	DELETE FROM Carrier WHERE Name = 'Billprint';",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=>	"Add data to correspondence_delivery_method table",
+									'sAlterSQL'			=>	"INSERT INTO correspondence_delivery_method (name, description, system_name, const_name) VALUES
+																( 'Post','Post', 'POST', 'CORRESPONDENCE_DELIVERY_METHOD_POST'),
+																( 'Email','Email', 'EMAIL', 'CORRESPONDENCE_DELIVERY_METHOD_EMAIL'),
+																( 'SMS','SMS', 'SMS', 'CORRESPONDENCE_DELIVERY_METHOD_SMS');",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=>	"Add data to correspondence_source_type table",
+									'sAlterSQL'			=>	"INSERT INTO correspondence_source_type ( name, description, system_name, const_name, class_name, is_user_selectable) VALUES
+																( 'System', 'System', 'SYSTEM', 'CORRESPONDENCE_SOURCE_TYPE_SYSTEM', 'Correspondence_Source_System', 0),
+																( 'CSV', 'CSV', 'CSV', 'CORRESPONDENCE_SOURCE_TYPE_CSV', 'Correspondence_Source_CSV', 1),
+																( 'SQL', 'SQL', 'SQL', 'CORRESPONDENCE_SOURCE_TYPE_SQL', 'Correspondence_Source_SQL', 1);",
+
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=>	"Add data to correspondence_source table",
+									'sAlterSQL'			=>	"INSERT INTO correspondence_source ( correspondence_source_type_id) VALUES
+																((SELECT id FROM correspondence_source_type WHERE name = 'System'));",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+
+								array
+								(
+									'sDescription'		=>	"Add data to correspondence_template table",
+									'sAlterSQL'			=>	"INSERT INTO correspondence_template ( name, description, created_employee_id, correspondence_source_id, status_id) VALUES
+															('Invoice', 'Invoice', 0,  (SELECT id FROM correspondence_source WHERE correspondence_source_type_id = (SELECT id from correspondence_source_type WHERE name = 'System' )),  1);",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+
+								array
+								(
+									'sDescription'		=>	"Add data to correspondence_template_system table",
+									'sAlterSQL'			=>	"INSERT INTO correspondence_template_system  (name, description, system_name, constant_name, correspondence_template_id) VALUES
+															('invoice', 'invoice','INVOICE', 'CORRESPONDENCE_TEMPLATE_SYSTEM_INVOICE', (SELECT id FROM correspondence_template WHERE name = 'Invoice'));",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								)
+
+
 							);
 
 
