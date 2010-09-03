@@ -19,6 +19,7 @@ class Correspondence_Template
 		{
 			//implement code to retrieve data and instantiate the object
 			$this->_oDO = Correspondence_Template_ORM::getForId($mDefinition);
+			$this->_aExtraColumns = Correspondence_Template_Column::getForTemplate($this);
 			//todo: instantiate the run and extra columns members
 
 		}
@@ -57,7 +58,7 @@ class Correspondence_Template
 			if ($oCarrierModule->Carrier = $this->carrier_id)
 			{
 				$sClassName = $oCarrierModule->Module;
-				$this->_oCarrierModule = new $sClassName();
+				$this->_oCarrierModule = new $sClassName($oCarrierModule);
 				return $this->_oCarrierModule;
 			}
 		}
@@ -200,7 +201,7 @@ class Correspondence_Template
 
 		foreach(self::$_aCorrespondence_Templates as $iTemplateId => $oTemplate)
 		{
-			if ( $iTemplateId = $iId )
+			if ( $iTemplateId == $iId )
 				return $oTemplate;
 
 		}

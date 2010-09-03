@@ -37,6 +37,18 @@ class Correspondence_Template_Column
 		return new self(Correspondence_Template_Column_ORM::getForId($oData->correspondence_template_column_id));
 	}
 
+	public static function getForTemplate($oTemplate)
+	{
+		$aORM = Correspondence_Template_Column_ORM::getForTemplateId($oTemplate->id);
+		$aColumns = array();
+		foreach ($aORM as $oORM)
+		{
+			$aColumns[] = new self($oORM, $oTemplate);
+		}
+
+		return $aColumns;
+	}
+
 
 }
 

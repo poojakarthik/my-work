@@ -118,10 +118,10 @@ class Correspondence_Data_ORM extends ORM_Cached
 		return array_keys($arrTableDefine['Column']);
 	}
 
-	public function toArray()
+	/*public function toArray()
 	{
 		return $this->_aProperties;
-	}
+	}*/
 
 	public static function getForCorrespondenceId($iCorrespondenceId)
 	{
@@ -148,7 +148,7 @@ class Correspondence_Data_ORM extends ORM_Cached
 	public function save()
 	{
 		if (!$this->_bolSaved)
-			$this->save();
+			parent::save();
 		$this->setSaved();
 	}
 

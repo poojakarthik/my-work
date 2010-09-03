@@ -40,11 +40,24 @@ class Correspondence
 
 	}
 
-	public function toArray()
+	public function toArray($bIncludeSystemFields = false)
 	{
 		//return an associative array that can be used for csv file genereation
 
 		$aData = $this->_oDO->toArray();
+		if (!$bIncludeSystemFields)
+		{
+			$aTemp = array();
+			$aColumns = $this->_oCorrespondenceRun->getAllColumns();
+			foreach ($aData as $sField=>$mValue)
+			{
+				if (in_array($sField, $aColumns))
+					$aTemp[$sField]= $mValue;
+			}
+			$aData = $aTemp;
+
+		}
+
 		foreach($this->_aAdditionalFields as $sField=>$oData)
 		{
 			$aData[$sField]= $oData->value;

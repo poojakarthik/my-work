@@ -83,6 +83,9 @@ class Correspondence_Template_Column_ORM extends ORM_Cached
 			switch ($strStatement)
 			{
 				// SELECTS
+				case 'selByTemplateId':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "correspondence_template_id = <correspondence_template_id>");
+					break;
 				case 'selById':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
 					break;
@@ -109,7 +112,19 @@ class Correspondence_Template_Column_ORM extends ORM_Cached
 		}
 	}
 
-
+	public static function getForTemplateId($iTemplateId)
+	{
+		$oSelect	= self::_preparedStatement('selByTemplateId');
+		$oSelect->Execute(array('correspondence_template_id' => $iTemplateId));
+		$aResults = $oSelect->FetchAll();
+		$aObjects = array();
+		foreach ($aResults as $aResult)
+		{
+			$x =new self($aResult);
+			$aObjects[]= $x;
+		}
+		return $aObjects;
+	}
 
 
 

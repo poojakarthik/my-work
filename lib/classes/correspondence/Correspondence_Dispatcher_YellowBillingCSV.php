@@ -3,6 +3,17 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 {
 
 	const	RESOURCE_TYPE		= RESOURCE_TYPE_FILE_EXPORT_CORRESPONDENCE_YELLOWBILLINGCSV;
+	const	RECORD_TYPE_DETAIL	= 'detail';
+
+
+	const	NEW_LINE_DELIMITER	= "\n";
+	const	FIELD_DELIMITER		= ',';
+	const	FIELD_ENCAPSULATOR	= '';
+	const	ESCAPE_CHARACTER	= '\\';
+
+
+	protected	$_oFileExporterCSV;
+	protected	$_iTimestamp;
 
 
 	public function __construct($mCarrierModule)
@@ -17,7 +28,7 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 	{
 		$sFileDirectoryPath	= self::getExportPath($this->getCarrierModule()->Carrier, __CLASS__);
 		$sTimeStamp = str_replace(array(' ',':','-'), '',Data_Source_Time::currentTimestamp());
-		$sFilename	= $oRun->getCorrespondenceCode()
+		$sFilename	= $this->_oRun->getCorrespondenceCode()
 				.'_'
 				.$sTimeStamp
 				.'_'
@@ -55,9 +66,9 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 	{
 		$this->_configureFileExporter($this->_oRun->getAllColumns());
 
-		foreach ($this->oRun->getCorrespondence() as $oCorrespondence)
+		foreach ($this->_oRun->getCorrespondence() as $oCorrespondence)
 		{
-			$oFile->addRecord($oCorrespondence->toArray());
+			$this->addRecord($oCorrespondence->toArray());
 		}
 
 
@@ -84,9 +95,9 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 	{
 		$this->_iTimestamp	= time();
 		$oRecordType = File_Exporter_RecordType::factory();
-		foreach($aColumn as $sColumn)
+		foreach($aColumns as $sColumn)
 		{
-			$oRecord->addField($sColumn, File_Exporter_Field::factory());
+			$oRecordType->addField($sColumn, File_Exporter_Field::factory());
 		}
 
 		$this->_oFileExporterCSV->registerRecordType(self::RECORD_TYPE_DETAIL, $oRecordType);

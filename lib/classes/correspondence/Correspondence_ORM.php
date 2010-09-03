@@ -118,10 +118,10 @@ class Correspondence_ORM extends ORM_Cached
 		return array_keys($arrTableDefine['Column']);
 	}
 
-	public function toArray()
+	/*public function toArray()
 	{
 		return $this->_arrProperties;
-	}
+	}*/
 
 	public static function getForRunId($iRunId)
 	{
@@ -146,7 +146,7 @@ class Correspondence_ORM extends ORM_Cached
 	public function save()
 	{
 		if (!$this->_bolSaved)
-			$this->save();
+			parent::save();
 		$this->setSaved();
 	}
 

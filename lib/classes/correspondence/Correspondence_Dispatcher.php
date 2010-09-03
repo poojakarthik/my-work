@@ -40,7 +40,7 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 	{
 		//retrieve the set of correspondence runs that should be sent
 		$aRuns = Correspondence_Run::getWaitingRuns();
-		$oBatch = new Correspondence_Run_Batch_ORM();
+		$oBatch = new Correspondence_Run_Batch();
 		$oBatch->batch_datetime = Data_Source_Time::currentTimestamp();
 		$oBatch->save();
 		foreach ($aRuns as $oRun)

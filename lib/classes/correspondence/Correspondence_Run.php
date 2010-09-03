@@ -140,6 +140,8 @@ class Correspondence_Run
 	}
 
 
+
+
 	public function setDeliveryDetails ($iFileExportId, $sDeliveredTimeStamp, $iBatchId)
 	{
 		$this->file_export_id = $iFileExportId;
