@@ -4,7 +4,7 @@ class Correspondence_Run
 	protected $_oCorrespondenceTemplate;
 	protected $_aCorrespondence = array();
 	protected $_oDO;
-	public static $aNonSuppliedFields = array('processed_datetime', 'delivered_datetime', 'created_employee_id', 'created', 'file_export_id');
+	public static $aNonSuppliedFields = array('processed_datetime', 'delivered_datetime', 'created_employee_id', 'created', 'data_file_export_id', 'pdf_file_export_id');
 
 	public function __construct($oCorrespondenceTemplate = null, $mDefinition, $bProcessNow = true)
 	{
@@ -142,9 +142,10 @@ class Correspondence_Run
 
 
 
-	public function setDeliveryDetails ($iFileExportId, $sDeliveredTimeStamp, $iBatchId)
+	public function setDeliveryDetails ($iDataFileExportId, $sDeliveredTimeStamp, $iPDFFileExportId, $iBatchId)
 	{
-		$this->file_export_id = $iFileExportId;
+		$this->data_file_export_id = $iDataFileExportId;
+		$this->pdf_file_export_id = $iPDFFileExportId;
 		$this->delivered_datetime = $sDeliveredTimeStamp;
 		$this->correspondence_run_batch_id = $iBatchId;
 	}

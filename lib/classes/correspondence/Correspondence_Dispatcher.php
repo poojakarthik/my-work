@@ -6,6 +6,13 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 	protected $_oRun;
 	protected $_iBatchId;
 
+	protected $_oTARFileExport;
+
+	protected 	$_aPDFFilenames = array();
+	protected $_aTARFilePath = array();
+	protected $_bPreprinted;
+	protected $_sInvoiceRunPDFBasePath;
+
 	final public function sendRun($oRun, $iBatchId)
 	{
 
@@ -17,7 +24,8 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 		//create the file export record
 		$this->_logToDatabase();
 		//set the file export id of the run object and timestamp
-		$oRun->setDeliveryDetails($this->_oFileExport->id,$this->_oFileExport->ExportedOn, $iBatchId);
+		$oRun->setDeliveryDetails($this->_oFileExport->id,$this->_oFileExport->ExportedOn, $this->_oTARFileExport->id, $iBatchId);
+
 
 
 	}
@@ -49,6 +57,26 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 			$oDispatcher->sendRun($oRun, $oBatch->id);
 			$oRun->save();
 		}
+
+	}
+
+protected function _logToDatabase()
+	{
+
+
+		parent::_logToDatabase();
+		if ($this->_bPreprinted)
+		{
+			$this->_oTARFileExport->FileName	= basename($this->_aTARFilePath);
+			$this->_oTARFileExport->Location	= $this->_aTARFilePath;
+			$this->_oTARFileExport->Carrier		= $this->getCarrier();
+			$this->_oTARFileExport->ExportedOn	= $this->_oFileExport->ExportedOn;
+			$this->_oTARFileExport->Status		= FILE_DELIVERED;	// FIXME: Is this correct?
+			$this->_oTARFileExport->FileType	= 10036;
+			$this->_oTARFileExport->SHA1		= sha1_file($this->_oTARFileExport->Location);
+			$this->_oTARFileExport->save();
+		}
+
 
 	}
 

@@ -16,9 +16,12 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 	protected	$_iTimestamp;
 
 
+
+
 	public function __construct($mCarrierModule)
 	{
 		parent::__construct($mCarrierModule);
+		$this->_oTARFileExport	= new File_Export();
 		$this->_iTimestamp	= time();
 		$this->_oFileExporterCSV	= new File_Exporter_CSV();
 
@@ -33,12 +36,29 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 				.$sTimeStamp
 				.'_'
 				.$this->_oRun->id
-				.'.csv';
+				;
 
-		$this->_sFilePath = $sFileDirectoryPath.$sFilename;
+		$this->_sFilePath = $sFileDirectoryPath.$sFilename.'.csv';
 
 		// Render and write to disk
 		$this->_oFileExporterCSV->renderToFile($this->_sFilePath);
+
+		if ($this->_bPreprinted)
+		{
+			// Create tar file
+			require_once("Archive/Tar.php");
+			$this->_aTARFilePath = $sFileDirectoryPath.$sFilename.'.tar';
+			$oTar		= new Archive_Tar($this->_aTARFilePath);
+			if (!$oTar->createModify($this->_aPDFFilenames, '', $this->_sInvoiceRunPDFBasePath))
+			{
+				 throw new Exception("Failed to create tar file for invoice run {$this->Id}. Files = ".print_r($aFiles, true));
+			}
+
+			foreach($this->_aPDFFilenames as $sFile)
+			{
+				unlink($sFile);
+			}
+		}
 
 		// TODO: Do we need to return anything special?
 		return $this;
@@ -47,6 +67,8 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 	public function deliver()
 	{
 		$this->_oFileDeliver->connect()->deliver($this->_sFilePath)->disconnect();
+		if ($this->_bPreprinted)
+			$this->_oFileDeliver->connect()->deliver($this->_aTARFilePath)->disconnect();
 		return $this;
 	}
 
@@ -64,12 +86,30 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 
 	public function export()
 	{
-		$this->_configureFileExporter($this->_oRun->getAllColumns());
+		$aColumns = $this->_oRun->getAllColumns();
+		$this->_bPreprinted = $this->_oRun->preprinted==1?true:false;
+
+
+		$this->_configureFileExporter($aColumns);
 
 		foreach ($this->_oRun->getCorrespondence() as $oCorrespondence)
 		{
 			$this->addRecord($oCorrespondence->toArray());
+			if ($this->_bPreprinted)
+			{
+				if ($this->_sInvoiceRunPDFBasePath == null)
+					$this->_sInvoiceRunPDFBasePath = substr ($oCorrespondence->pdf_file_path , 0 , strrpos ( $oCorrespondence->pdf_file_path, "/" )+1 );
+
+				$sTempPdfName = $this->_sInvoiceRunPDFBasePath.$oCorrespondence->id.'.pdf';
+				copy ( $oCorrespondence->pdf_file_path , $sTempPdfName );
+				$this->_aPDFFilenames[]=$sTempPdfName;
+			}
+
 		}
+
+
+
+
 
 
 	}

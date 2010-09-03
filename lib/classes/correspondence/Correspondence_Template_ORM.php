@@ -115,7 +115,9 @@ class Correspondence_Template_ORM extends ORM_Cached
 	public static function getForSystemName($sSystemName)
 	{
 
-		$oSelect	= self::_preparedStatement('selBySysName');
+		$oSystemReference = Correspondence_Template_System_ORM::getForSystemName($sSystemName);
+		return self::getForId($oSystemReference->correspondence_template_id);
+		/*$oSelect	= self::_preparedStatement('selBySysName');
 		$oSelect->Execute(array('system_name' => $sSystemName));
 		$aResults = $oSelect->FetchAll();
 		$aObjects = array();
@@ -123,7 +125,7 @@ class Correspondence_Template_ORM extends ORM_Cached
 		{
 			$aObjects[]= new self($aResult);
 		}
-		return $aObjects[0];
+		return $aObjects[0];*/
 
 	}
 

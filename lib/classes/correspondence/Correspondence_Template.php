@@ -129,10 +129,10 @@ class Correspondence_Template
 
 	}
 
-	public function  createRun($bPreprinted = false, $sScheduleDateTime = null, $sProcessDateTime = null, $sTarFileName = null, $bProcessNow = true)
+	public function  createRun($bPreprinted = false, $sScheduleDateTime = null, $sProcessDateTime = null, $bProcessNow = true)
 	{
 
-		$aDefinition = array ('scheduled_datetime'=> $sScheduleDateTime, 'preprinted'=>$bPreprinted, 'tar_file_name'=>$sTarFileName,$bProcessNow);
+		$aDefinition = array ('scheduled_datetime'=> $sScheduleDateTime, 'preprinted'=>$bPreprinted, $bProcessNow);
 		$oRun = new Correspondence_Run($this, $aDefinition);
 		$this->_aRuns[]=$oRun;
 		return $oRun;
