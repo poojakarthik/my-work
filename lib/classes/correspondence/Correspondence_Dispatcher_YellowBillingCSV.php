@@ -16,25 +16,24 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 	const	FIELD_DELIMITER		= ',';
 	const	FIELD_ENCAPSULATOR	= "";
 	const	ESCAPE_CHARACTER	= '\\';
-
 	protected final $_aDetailColumns 	= array(
-												array('field'=> 'Record Type',						'data_type'=>'string',	'mandatory'=>true, 		'length'=>1, 	'default'=>'D'),
-												array('field'=> 'Correspondence Unique Identifier',	'data_type'=>'numeric',	'mandatory'=>true, 		'length'=>null, 'default'=>null),
-												array('field'=> 'Customer Group', 					'data_type'=>'numeric',	'mandatory'=>true,		'length'=>null, 'default'=>null),
-												array('field'=> 'Account Identifier', 				'data_type'=>'numeric', 'mandatory'=>false, 	'length'=>null, 'default'=>null),
-												array('field'=> 'Account Name', 					'data_type'=>'string', 	'mandatory'=>true, 		'length'=>null, 'default'=>null),
-												array('field'=> 'Addressee Title', 					'data_type'=>'string', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
-												array('field'=> 'Addressee First Name', 			'data_type'=>'string', 	'mandatory'=>true, 		'length'=>null, 'default'=>null),
-												array('field'=> 'Addressee Last Name', 				'data_type'=>'string', 	'mandatory'=>true, 		'length'=>null, 'default'=>null),
-												array('field'=> 'Address Line 1', 					'data_type'=>'string', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
-												array('field'=> 'Address Line 2', 					'data_type'=>'string', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
-												array('field'=> 'Suburb', 							'data_type'=>'string', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
-												array('field'=> 'Postcode', 						'data_type'=>'numeric', 'mandatory'=>false, 	'length'=>4, 	'default'=>null),
-												array('field'=> 'State', 							'data_type'=>'string', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
-												array('field'=> 'Email Address', 					'data_type'=>'string', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
-												array('field'=> 'Mobile', 							'data_type'=>'fnn', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
-												array('field'=> 'Landline', 						'data_type'=>'fnn', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
-												array('field'=> 'Delivery Method', 					'data_type'=>'string', 	'mandatory'=>true, 		'length'=>null, 'default'=>null)
+												array('field'=> 'Record Type',										'data_type'=>'string',	'mandatory'=>true, 		'length'=>1, 	'default'=>'D'),
+												array('field'=> 'id',	'data_type'=>'numeric',						'mandatory'=>true, 		'length'=>null, 'default'=>null),
+												array('field'=> 'customer_group_id', 								'data_type'=>'numeric',	'mandatory'=>true,		'length'=>null, 'default'=>null),
+												array('field'=> 'account_id', 										'data_type'=>'numeric', 'mandatory'=>false, 	'length'=>null, 'default'=>null),
+												array('field'=> 'account_name', 									'data_type'=>'string', 	'mandatory'=>true, 		'length'=>null, 'default'=>null),
+												array('field'=> 'title', 											'data_type'=>'string', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
+												array('field'=> 'first_name', 										'data_type'=>'string', 	'mandatory'=>true, 		'length'=>null, 'default'=>null),
+												array('field'=> 'last_name', 										'data_type'=>'string', 	'mandatory'=>true, 		'length'=>null, 'default'=>null),
+												array('field'=> 'address_line_1', 									'data_type'=>'string', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
+												array('field'=> 'address_line2', 									'data_type'=>'string', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
+												array('field'=> 'suburb', 											'data_type'=>'string', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
+												array('field'=> 'postcode', 										'data_type'=>'numeric', 'mandatory'=>false, 	'length'=>4, 	'default'=>null),
+												array('field'=> 'state', 											'data_type'=>'string', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
+												array('field'=> 'email', 											'data_type'=>'string', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
+												array('field'=> 'mobile', 											'data_type'=>'fnn', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
+												array('field'=> 'landline', 										'data_type'=>'fnn', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
+												array('field'=> 'correspondence_delivery_method', 					'data_type'=>'string', 	'mandatory'=>true, 		'length'=>null, 'default'=>null)
 											);
 	protected final $_aHeaderColumns 	= array(
 												array('field'=>'Record Type'								,'data_type'=>'string'		,'default'=>'H'),
@@ -173,6 +172,7 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 	{
 		$this->_iTimestamp	= time();
 		$oRecordType = File_Exporter_RecordType::factory();
+		//File_Exporter_Field::factory()->setDefaultValue(date('d/m/Y', $this->_iTimestamp)
 		foreach($aColumns as $sColumn)
 		{
 			$oRecordType->addField($sColumn, File_Exporter_Field::factory());
