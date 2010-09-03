@@ -4,12 +4,50 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 
 	const	RESOURCE_TYPE		= RESOURCE_TYPE_FILE_EXPORT_CORRESPONDENCE_YELLOWBILLINGCSV;
 	const	RECORD_TYPE_DETAIL	= 'detail';
+	const	RECORD_TYPE_HEADER	= 'header';
+	const	RECORD_TYPE_FOOTER	= 'footer';
+
+	const RECORD_TYPE_FOOTER_CODE = 'F';
+	const RECORD_TYPE_DETAIL_CODE = 'D';
+	const RECORD_TYPE_HEADER_CODE = 'H';
 
 
 	const	NEW_LINE_DELIMITER	= "\n";
 	const	FIELD_DELIMITER		= ',';
-	const	FIELD_ENCAPSULATOR	= '';
+	const	FIELD_ENCAPSULATOR	= "";
 	const	ESCAPE_CHARACTER	= '\\';
+
+	protected final $_aDetailColumns 	= array(
+												array('field'=> 'Record Type',						'data_type'=>'string',	'mandatory'=>true, 		'length'=>1, 	'default'=>'D'),
+												array('field'=> 'Correspondence Unique Identifier',	'data_type'=>'numeric',	'mandatory'=>true, 		'length'=>null, 'default'=>null),
+												array('field'=> 'Customer Group', 					'data_type'=>'numeric',	'mandatory'=>true,		'length'=>null, 'default'=>null),
+												array('field'=> 'Account Identifier', 				'data_type'=>'numeric', 'mandatory'=>false, 	'length'=>null, 'default'=>null),
+												array('field'=> 'Account Name', 					'data_type'=>'string', 	'mandatory'=>true, 		'length'=>null, 'default'=>null),
+												array('field'=> 'Addressee Title', 					'data_type'=>'string', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
+												array('field'=> 'Addressee First Name', 			'data_type'=>'string', 	'mandatory'=>true, 		'length'=>null, 'default'=>null),
+												array('field'=> 'Addressee Last Name', 				'data_type'=>'string', 	'mandatory'=>true, 		'length'=>null, 'default'=>null),
+												array('field'=> 'Address Line 1', 					'data_type'=>'string', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
+												array('field'=> 'Address Line 2', 					'data_type'=>'string', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
+												array('field'=> 'Suburb', 							'data_type'=>'string', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
+												array('field'=> 'Postcode', 						'data_type'=>'numeric', 'mandatory'=>false, 	'length'=>4, 	'default'=>null),
+												array('field'=> 'State', 							'data_type'=>'string', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
+												array('field'=> 'Email Address', 					'data_type'=>'string', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
+												array('field'=> 'Mobile', 							'data_type'=>'fnn', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
+												array('field'=> 'Landline', 						'data_type'=>'fnn', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
+												array('field'=> 'Delivery Method', 					'data_type'=>'string', 	'mandatory'=>true, 		'length'=>null, 'default'=>null)
+											);
+	protected final $_aHeaderColumns 	= array(
+												array('field'=>'Record Type'								,'data_type'=>'string'		,'default'=>'H'),
+												array('field'=>'Letter Code'								,'data_type'=>'string'		,'default'=>null),
+												array('field'=>'Correspondence Run Unique Identifier'		,'data_type'=>'numeric'		,'default'=>null),
+												array('field'=>'Creation Timestamp'							,'data_type'=>'timestamp'	,'default'=>null),
+												array('field'=>'Data File Name'								,'data_type'=>'string'		,'default'=>null),
+												array('field'=>'TAR File Name'								,'data_type'=>'string'		,'default'=>null)
+											);
+	protected final $_aFooterColumns 	= array(
+												array('field'=>'Record Type'				,'data_type'=>'string'	,'default'=>'F'),
+												array('field'=>'Correspondence Item Count'	,'data_type'=>'numeric'	,'default'=>null)
+											);
 
 
 	protected	$_oFileExporterCSV;
@@ -32,9 +70,9 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 		$sFileDirectoryPath	= self::getExportPath($this->getCarrierModule()->Carrier, __CLASS__);
 		$sTimeStamp = str_replace(array(' ',':','-'), '',Data_Source_Time::currentTimestamp());
 		$sFilename	= $this->_oRun->getCorrespondenceCode()
-				.'_'
+				.'.'
 				.$sTimeStamp
-				.'_'
+				.'.'
 				.$this->_oRun->id
 				;
 
