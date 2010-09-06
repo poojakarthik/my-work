@@ -120,7 +120,7 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 		{
 			if ($sField == 'correspondence_delivery_method_id')
 			{
-				$oRecord->correspondence_delivery_method =Correspondence_Delivery_Method_ORM::getSystemNameForId($mValue);
+				$oRecord->correspondence_delivery_method =Correspondence_Delivery_Method::getSystemNameForId($mValue);
 			}
 			else if (!in_array($sField, $this->_aCorrespondenceFieldsNotIncluded))
 			{
@@ -189,25 +189,21 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 
 	public function setHeaderAndFooter()
 	{
+		$oHeaderRecord								= 	$this->_oFileExporterCSV->getRecordType(self::RECORD_TYPE_HEADER)->newRecord();
+		$oFooterRecord								= 	$this->_oFileExporterCSV->getRecordType(self::RECORD_TYPE_FOOTER)->newRecord();
 
+		$oHeaderRecord->record_type 				= 	self::RECORD_TYPE_HEADER_CODE;
+		$oHeaderRecord->letter_code 				= 	$this->_oRun->getCorrespondenceCode();
+		$oHeaderRecord->correspondence_run_id 		= 	$this->_oRun->id;
+		$oHeaderRecord->created_timestamp			= 	$this->_sTimeStamp;
+		$oHeaderRecord->data_file_name 				= 	$this->_sFilename.'.csv';
+		$oHeaderRecord->tar_file_name 				= 	$this->_bPreprinted?$this->_sFilename.'.tar':null;
 
-		$oRecord	= $this->_oFileExporterCSV->getRecordType(self::RECORD_TYPE_HEADER)->newRecord();
+		$oFooterRecord->record_type 				= 	self::RECORD_TYPE_FOOTER_CODE;
+		$oFooterRecord->correspondence_item_count 	= 	$this->_oRun->count();
 
-		$oRecord->record_type = self::RECORD_TYPE_HEADER_CODE;
-		$oRecord->letter_code = $this->_oRun->getCorrespondenceCode();
-		$oRecord->correspondence_run_id = $this->_oRun->id;
-		$oRecord->created_timestamp = $this->_sTimeStamp;
-		$oRecord->data_file_name = $this->_sFilename.'.csv';
-		$oRecord->tar_file_name = $this->_sFilename.'.tar';
-
-		$this->_oFileExporterCSV->addRecord($oRecord, File_Exporter_CSV::RECORD_GROUP_HEADER);
-
-			$oRecord	= $this->_oFileExporterCSV->getRecordType(self::RECORD_TYPE_FOOTER)->newRecord();
-
-		$oRecord->record_type = self::RECORD_TYPE_FOOTER_CODE;
-		$oRecord->correspondence_item_count = $this->_oRun->count();
-		$this->_oFileExporterCSV->addRecord($oRecord, File_Exporter_CSV::RECORD_GROUP_FOOTER);
-
+		$this->_oFileExporterCSV->addRecord($oHeaderRecord, File_Exporter_CSV::RECORD_GROUP_HEADER);
+		$this->_oFileExporterCSV->addRecord($oFooterRecord, File_Exporter_CSV::RECORD_GROUP_FOOTER);
 	}
 
 

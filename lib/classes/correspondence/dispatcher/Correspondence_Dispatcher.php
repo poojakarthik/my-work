@@ -64,7 +64,7 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 	public static function sendWaitingRuns()
 	{
 		//retrieve the set of correspondence runs that should be sent
-		$aRuns = Correspondence_Run::getWaitingRuns();
+		$aRuns = Correspondence_Logic_Run::getWaitingRuns();
 		$oBatch = new Correspondence_Run_Batch();
 		$oBatch->batch_datetime = Data_Source_Time::currentTimestamp();
 		$oBatch->save();
