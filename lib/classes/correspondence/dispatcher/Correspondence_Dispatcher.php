@@ -42,8 +42,6 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 
 	protected function _logToDatabase()
 	{
-
-
 		parent::_logToDatabase();
 		if ($this->_bPreprinted)
 		{
@@ -56,8 +54,6 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 			$this->_oTARFileExport->SHA1		= sha1_file($this->_oTARFileExport->Location);
 			$this->_oTARFileExport->save();
 		}
-
-
 	}
 
 
