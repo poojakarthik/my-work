@@ -149,7 +149,17 @@ class Correspondence_Run
 		return $this->_oCorrespondenceTemplate->id;
 	}
 
-
+	public function toArray()
+	{
+		$aRun = $this->_oDO->toArray();
+		$aRun['template']= $this->_oCorrespondenceTemplate->toArray();
+		$aRun['correspondence'] = array();
+		foreach ($this->_aCorrespondence as $oCorrespondence)
+		{
+			$aRun['correspondence'][]= $oCorrespondence->toArray(true);
+		}
+		return $aRun;
+	}
 
 
 	public function setDeliveryDetails ($iDataFileExportId, $sDeliveredTimeStamp, $iPDFFileExportId, $iBatchId)
@@ -192,6 +202,20 @@ class Correspondence_Run
 
 		return $aRuns;
 
+	}
+
+	public static function getForBatchId($iBatchId, $bToArray = false)
+	{
+		$aRunORM = Correspondence_Run_ORM::getForBatchId($iBatchId);
+		$aRuns = array();
+		foreach ($aRunORM as $oRunORM)
+		{
+			$oRun = new self(null, $oRunORM);
+
+			$aRuns[]= $bToArray?$oRun->toArray():$oRun;
+		}
+
+		return $aRuns;
 	}
 
 

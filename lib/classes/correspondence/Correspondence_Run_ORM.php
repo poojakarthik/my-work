@@ -83,6 +83,9 @@ class Correspondence_Run_ORM extends ORM_Cached
 			switch ($strStatement)
 			{
 				// SELECTS
+				case 'selByBatchId':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "correspondence_run_batch_id =  <correspondence_run_batch_id> ");
+					break;
 				case 'selByScheduleDateTime':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "scheduled_datetime <= <scheduled_datetime> AND delivered_datetime IS NULL");
 					break;
@@ -114,8 +117,22 @@ class Correspondence_Run_ORM extends ORM_Cached
 
 	public static function getForScheduledDateTime($sScheduledDateTime)
 	{
+
 		$oSelect	= self::_preparedStatement('selByScheduleDateTime');
 		$oSelect->Execute(array('scheduled_datetime' => $sScheduledDateTime));
+		$aResults = $oSelect->FetchAll();
+		$aObjects = array();
+		foreach ($aResults as $aResult)
+		{
+			$aObjects[]= new self($aResult);
+		}
+		return $aObjects;
+	}
+
+	public static function getForBatchId($iBatchId)
+	{
+		$oSelect	= self::_preparedStatement('selByBatchId');
+		$oSelect->Execute(array('correspondence_run_batch_id' => $iBatchId));
 		$aResults = $oSelect->FetchAll();
 		$aObjects = array();
 		foreach ($aResults as $aResult)

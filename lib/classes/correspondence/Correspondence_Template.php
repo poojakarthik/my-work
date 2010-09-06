@@ -104,6 +104,13 @@ class Correspondence_Template
 
 	}
 
+	public function toArray()
+	{
+		$aTemplate = $this->_oDO->toArray();
+		//add column data whenever needed
+		return $aTemplate;
+	}
+
 
 	public function _save()
 	{
