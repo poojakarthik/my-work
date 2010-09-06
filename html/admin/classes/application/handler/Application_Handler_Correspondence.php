@@ -46,10 +46,10 @@ class Application_Handler_Correspondence extends Application_Handler
 				{
 					case UPLOAD_ERR_OK:
 						// Check file extension
-						if ($aFileInfo['type'] !== 'text/csv')
-						{
-							$aErrors[]	= "The incorrect type of file was supplied ('".$aFileInfo['type']."'). Please supply a CSV (Comma Separated Values) file.";
-						}
+						//if ($aFileInfo['type'] !== 'text/csv')
+					//	{
+						//	$aErrors[]	= "The incorrect type of file was supplied ('".$aFileInfo['type']."'). Please supply a CSV (Comma Separated Values) file.";
+						//}
 						break;
 					case UPLOAD_ERR_INI_SIZE:
 						$aErrors[]	= "The CSV file you supplied is too large. Maximum size is ".ini_get('upload_max_filesize').".";
@@ -78,8 +78,8 @@ class Application_Handler_Correspondence extends Application_Handler
 				try
 				{
 					// Try and load it
-					$oTemplateORM	= Correspondence_Template_ORM::getForId($iCorrespondenceTemplateId);
-					
+					$oTemplateORM	= Correspondence_Template_ORM::getForId($_POST['correspondence_template_id']);
+
 					// All good
 					$iCorrespondenceTemplateId	= (int)$_POST['correspondence_template_id'];
 				}
