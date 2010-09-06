@@ -6,13 +6,13 @@ class Application_Handler_Correspondence extends Application_Handler
 	{
 		// TODO: Check user permissions
 		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR));
-		
+
 		$aOutput	= array();
 		try
 		{
 			// Validate input before proceeding
 			$aErrors	= array();
-			
+
 			// Delivery date time
 			$iDeliveryDateTime	= null;
 			if (!isset($_POST['delivery_datetime']))
@@ -30,7 +30,7 @@ class Application_Handler_Correspondence extends Application_Handler
 					$aErrors[]	= "Invalid delivery date time supplied ('".$_POST['delivery_datetime']."').";
 				}
 			}
-			
+
 			// CSV file
 			$aFileInfo	= null;
 			if (!isset($_FILES['csv_file']))
@@ -61,10 +61,10 @@ class Application_Handler_Correspondence extends Application_Handler
 					case UPLOAD_ERR_NO_TMP_DIR:
 					case UPLOAD_ERR_CANT_WRITE:
 					case UPLOAD_ERR_EXTENSION:
-						$aErrors[]	= 'Unable to receive your CSV file due a server error. Please contact YBS for assistance.'; 
+						$aErrors[]	= 'Unable to receive your CSV file due a server error. Please contact YBS for assistance.';
 				}
 			}
-			
+
 			// Correspondence_Template id
 			$iCorrespondenceTemplateId	= null;
 			$oTemplateORM				= null;
@@ -90,14 +90,14 @@ class Application_Handler_Correspondence extends Application_Handler
 					$aErrors[]	= "Invalid Correspondence Template Id supplied (".($sId == '' ? 'Not supplied' : "'{$sId}'").")";
 				}
 			}
-			
+
 			if (count($aErrors) > 0)
 			{
-				// Got errors, add them to the output array and throw exception 
+				// Got errors, add them to the output array and throw exception
 				$aOutput['aErrors']	= $aErrors;
 				throw new Exception("There was errors in the form information.");
 			}
-			
+
 			// Create correspondence run
 			$oDA	= DataAccess::getDataAccess();
 			$oDA->TransactionStart();
@@ -105,7 +105,7 @@ class Application_Handler_Correspondence extends Application_Handler
 			$oTemplate	= Correspondence_Template::createFromORM($oTemplateORM, $oSource);
 			$oTemplate->createRun(false, date('Y-m-d H:i:s', $iDeliveryDateTime), null, true);
 			$oDA->TransactionRollback();
-			
+
 			$aOutput['bSuccess']	= true;
 		}
 		catch (Exception $e)
@@ -113,8 +113,66 @@ class Application_Handler_Correspondence extends Application_Handler
 			$aOutput['bSuccess']	= false;
 			$aOutput['sMessage']	= $e->getMessage();
 		}
-		
-		echo JSON_Services::instance()->encode($aOutput);		
+
+		echo JSON_Services::instance()->encode($aOutput);
+		die;
+	}
+
+
+public function createRun()
+	{
+		$oSource = new Correspondence_Source_Csv(file_get_contents(dirname(__FILE__).'/sample_csv.csv'));
+		$iCarrierId = 39;
+		$aColumns = array(
+
+							array('id'=>null, 'name'=>'abn' ,						'description'=> 'abn', 	'column_index'=>1 ,'correspondence_template_id' => null ),
+							array('id'=>null, 'name'=>'fnn' ,								'description'=> 'service fnn', 		'column_index'=>2 ,'correspondence_template_id' => null ),
+							array('id'=>null, 'name'=>'plan' ,								'description'=> 'service rateplan', 'column_index'=>3 ,'correspondence_template_id' => null ),
+
+		);
+		$oTemplate = Correspondence_Template::create('motorpass correspondence', 'blah blah',$aColumns, $iCarrierId, $oSource);
+		$oRun = $oTemplate->createRun();
+		$oTemplate->save();
+		$oRun->save();
+
+
+		echo 'all done';
+		die;
+
+	}
+
+	public function sendWaitingRuns()
+	{
+		Correspondence_Dispatcher::sendWaitingRuns();
+		die;
+	}
+
+	public function interimInvoice()
+	{
+		//'account_name' => 'Bobs Yeruncle',
+		$aCorrespondenceData = array(array
+        (
+            'account_id' => 1000179892,
+        	'customer_group_id'=>2,
+            'correspondence_delivery_method_id' => 'CORRESPONDENCE_DELIVERY_METHOD_EMAIL',
+        	'account_name' => 'Bobs Yeruncle',
+        	'title' => 'Miss',
+            'first_name' => 'Cheryl',
+            'last_name' => 'Schird',
+            'address_line_1' => '121 Brisbane Street',
+            'address_line2' => '',
+            'suburb' => 'Beaudesert',
+            'postcode' => '4285',
+            'state' => 'QLD',
+            'email' => 'col_noemail@protalk.com.au',
+            'mobile' => '',
+            'landline' => '0755413848',
+            'pdf_file_path' => '/x/y/z/1000179892.pdf'
+        )
+		);
+		$sTarFilePath = "c://wamp/www/flex/file/pdf/4910/";
+
+		Correspondence_Template::getForSystemName('INVOICE',$aCorrespondenceData)->createRun(true, null, null)->save();
 		die;
 	}
 }
