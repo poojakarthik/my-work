@@ -14,36 +14,34 @@ class File_Exporter_CSV extends File_Exporter
 	protected	$_sNewLine		= "\n";
 	protected	$_bQuoteMode	= self::QUOTE_MODE_REACTIVE;
 	
-	public function __construct()
-	{
-		parent::__construct();
-		
-		$this->_oCSVFile	= new File_CSV();
-	}
-	
 	public function setDelimiter($sDelimiter)
 	{
 		$this->_sDelimiter	= (string)$sDelimiter;
+		return $this;
 	}
 	
 	public function setQuote($sQuote)
 	{
 		$this->_sQuote	= (string)$sQuote;
+		return $this;
 	}
 	
 	public function setQuoteMode($bQuoteMode)
 	{
 		$this->_bQuoteMode	= ($bQuoteMode === null) ? null : !!$bQuoteMode;
+		return $this;
 	}
 	
 	public function setEscape($sEscape)
 	{
 		$this->_sEscape	= (string)$sEscape;
+		return $this;
 	}
 	
 	public function setNewLine($sNewLine)
 	{
 		$this->_sNewLine	= (string)$sNewLine;
+		return $this;
 	}
 	
 	protected function _getSpecialCharacters()
@@ -58,13 +56,12 @@ class File_Exporter_CSV extends File_Exporter
 	
 	protected function _buildLine($oRecord)
 	{
+		$mQuote	= ($this->_bQuoteMode === null) ? $this->_getQuotableCharacters() : $this->_bQuoteMode;
 		return File_CSV::buildLine($oRecord->getProcessedRecord(), $this->_sDelimiter, $this->_sQuote, $this->_sEscape, $this->_getSpecialCharacters(), $mQuote);
 	}
 	
 	public function render()
 	{
-		$mQuote	= ($this->_bQuoteMode === null) ? $this->_getQuotableCharacters() : $this->_bQuoteMode;
-		
 		$aLines	= array();
 		
 		// Header

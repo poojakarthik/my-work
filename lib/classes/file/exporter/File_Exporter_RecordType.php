@@ -7,7 +7,7 @@ class File_Exporter_RecordType
 	public function process($aRecord)
 	{
 		$aProcessedRecord	= array();
-		foreach ($aRecord as $sFieldAlias=>$mValue)
+		foreach ($this->_aFields as $sFieldAlias=>$oField)
 		{
 			$aProcessedRecord[$sFieldAlias]	= $this->getField($sFieldAlias)->process($mValue);
 		}
