@@ -41,7 +41,7 @@ public function __get($sField)
 		// Parse the Line character-by-character
 		$bEscaped	= false;
 		$bQuoted	= false;
-		$aLine		= array();
+		$aLine = array('standard_fields'=>array(), 'additional_fields'=>array());
 		$sField		= '';
 
 		$iFieldIndex = 0;
