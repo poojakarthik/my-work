@@ -80,14 +80,14 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 	_buildSQLContent	: function()
 	{
 		// Delivery date time picker
-		var oDelivery	= Popup_Correspondence_Create._createField('delivery');
+		this._oDeliveryDateTime	= Popup_Correspondence_Create._createField('delivery');
 		
 		// Run Query: now/on delivery (radio button group)
-		var oProcessWhen	= Popup_Correspondence_Create._createField('run_query');
+		this._oProcessSQLWhen	= Popup_Correspondence_Create._createField('run_query');
 		
 		return 	$T.div(
-					oDelivery.getElement(),
-					oProcessWhen.getElement()
+					this._oDeliveryDateTime.getElement(),
+					this._oProcessSQLWhen.getElement()
 				);
 	},
 	
@@ -96,22 +96,59 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 		switch (this._oSourceType.system_name)
 		{
 			case 'CSV':
+				// CSV
 				var oForm	= this._oContent.select('form').first();
 				if (jQuery.json.jsonIframeFormSubmit(oForm, this._csvSubmitted.bind(this)))
 				{
 					this._oDeliveryDateTimeHidden.value	= this._oDeliveryDateTime.getElementValue();
+					this._showLoading();
 					oForm.submit();
 				}
 				break;
 			case 'SQL':
-				alert('to, sql submit');
+				// SQL
+				var fnSQL	=	jQuery.json.jsonFunction(
+									this._sqlSubmitted.bind(this), 
+									this._sqlSubmitted.bind(this), 
+									'Correspondence_Run', 
+									'scheduleRunFromSQLTemplate'
+								);
+				
+				// Process now?
+				var iProcessNow	= parseInt(this._oProcessSQLWhen.getElementValue());
+				var bProcessNow	= null;
+				switch (iProcessNow)
+				{
+					case Popup_Correspondence_Create.RUN_QUERY_NOW:
+						bProcessNow	= true;
+						break;
+					case Popup_Correspondence_Create.RUN_QUERY_ON_DELIVERY:
+						bProcessNow	= false;
+						break;
+					default:
+						bProcessNow	= null;
+				}
+				
+				// Send request
+				this._showLoading();
+				fnSQL(this._iTemplateId, this._oDeliveryDateTime.getElementValue(), bProcessNow);
 				break;
 		}
 	},
 	
 	_sqlSubmitted	: function(oResponse)
 	{
+		if (!oResponse.bSuccess)
+		{
+			// Error
+			this._ajaxError(oResponse);
+			return;
+		}
 		
+		this._hideLoading();
+		debugger;
+		// Success
+		Reflex_Popup.alert('Correspondence Run created from SQL template', {sTitle: 'Success'});
 	},
 	
 	_csvSubmitted	: function(oResponse)
@@ -122,9 +159,11 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 			this._ajaxError(oResponse);
 			return;
 		}
+		
+		this._hideLoading();
 		debugger;
 		// Success
-		Reflex_Popup.alert('Correspondence Run created', {sTitle: 'Success'});
+		Reflex_Popup.alert('Correspondence Run created from CSV file', {sTitle: 'Success'});
 	},
 	
 	_ajaxError	: function(oResponse)
@@ -136,7 +175,6 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 		}
 		
 		var oConfig	= {sTitle: 'Error'};
-		
 		if (oResponse.aErrors)
 		{
 			// Validation errors
@@ -147,7 +185,7 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 			}
 			
 			Reflex_Popup.alert(
-				$T.div({style: 'padding: 0.5em'},
+				$T.div({class: 'popup-correspondence-create-error-content'},
 					$T.div(oResponse.sMessage),
 					$T.div(oUL)
 				), 
@@ -163,6 +201,39 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 		{
 			// System error, not thrown by handler code
 			Reflex_Popup.alert(oResponse.ERROR, oConfig);
+		}
+		else if (oResponse.Message)
+		{
+			// TODO: DEV ONLY -- Disable for production
+			// IFrame ajax output, most likely php error
+			oConfig.iWidth	= 25;
+			Reflex_Popup.alert(
+				$T.div({class: 'popup-correspondence-create-error-content'},
+					$T.div('A server error has occured, please contact YBS for assistance.'),
+					$T.textarea(
+						oResponse.Message
+					)
+				),
+				oConfig
+			);
+		}
+	},
+	
+	_showLoading	: function()
+	{
+		if (!this._oLoading)
+		{
+			this._oLoading	= new Reflex_Popup.Loading('');
+		}
+		this._oLoading.display();
+	},
+	
+	_hideLoading	: function()
+	{
+		if (this._oLoading)
+		{
+			this._oLoading.hide();
+			delete this._oLoading;
 		}
 	}
 });
@@ -208,7 +279,7 @@ Object.extend(Popup_Correspondence_Create,
 			oConfig	:
 			{
 				sLabel		: 'Delivery On', 
-				sDateFormat	: 'd/m/Y H:i', 
+				sDateFormat	: 'Y-m-d H:i:s', 
 				bTimePicker	: true,
 				iYearStart	: 2010,
 				iYearEnd	: new Date().getFullYear() + 1,

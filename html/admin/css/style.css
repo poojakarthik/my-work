@@ -5943,6 +5943,7 @@ div.popup-employee-reassign-tasks-tickets-selects > div
 /***************** START - Create Correspondence Popup(s) - START *****************/
 
 .popup-correspondence-create-choose-template,
+.popup-correspondence-create-error-content,
 .popup-correspondence-create
 {
 	padding	: 0.5em;
@@ -5957,6 +5958,13 @@ div.popup-employee-reassign-tasks-tickets-selects > div
 .popup-correspondence-create-choose-template .control-field select
 {
 	width	: 100%;
+}
+
+.popup-correspondence-create-error-content textarea
+{
+	margin	: 0.5em;
+	width	: 20em;
+	height	: 15em;
 }
 
 /***************** END - Create Correspondence Popup(s) - END *****************/

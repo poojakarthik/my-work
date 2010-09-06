@@ -329,7 +329,7 @@ jQuery.json = {
 		//alert("Raw Response: " + objIframeDocument.body.innerHTML);
 		var objResponse			= jQuery.json.decode(objIframeDocument.body.innerHTML);
 		objResponse				= (objResponse) ? objResponse : {Message: objIframeDocument.body.innerHTML};
-		debugger;
+		
 		// Call the Handler Function (if one was supplied)
 		if (elmIframe.funcResponseHandler != undefined)
 		{

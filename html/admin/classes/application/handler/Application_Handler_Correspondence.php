@@ -22,7 +22,7 @@ class Application_Handler_Correspondence extends Application_Handler
 			}
 			else
 			{
-				// Given, validate the date string
+				// Given, validate the date string (should be Y-m-d H:i:s)
 				$iDeliveryDateTime	= strtotime($_POST['delivery_datetime']);
 				if ($iDeliveryDateTime === false)
 				{
@@ -67,21 +67,28 @@ class Application_Handler_Correspondence extends Application_Handler
 			
 			// Correspondence_Template id
 			$iCorrespondenceTemplateId	= null;
+			$oTemplateORM				= null;
 			if (!isset($_POST['correspondence_template_id']))
 			{
 				// Missing
 				$aErrors[]	= "No Correspondence Template Id supplied.";
 			}
-			else if (!Correspondence_Template_ORM::getForId($_POST['correspondence_template_id'])->id)
-			{
-				// Invalid
-				$sId		= $_POST['correspondence_template_id'];
-				$aErrors[]	= "Invalid Correspondence Template Id supplied (".($sId == '' ? 'Not supplied' : "'{$sId}'").")";
-			}
 			else
 			{
-				// All good
-				$iCorrespondenceTemplateId	= (int)$_POST['correspondence_template_id'];
+				try
+				{
+					// Try and load it
+					$oTemplateORM	= Correspondence_Template_ORM::getForId($iCorrespondenceTemplateId);
+					
+					// All good
+					$iCorrespondenceTemplateId	= (int)$_POST['correspondence_template_id'];
+				}
+				catch (Exception $oEx)
+				{
+					// Invalid
+					$sId		= $_POST['correspondence_template_id'];
+					$aErrors[]	= "Invalid Correspondence Template Id supplied (".($sId == '' ? 'Not supplied' : "'{$sId}'").")";
+				}
 			}
 			
 			if (count($aErrors) > 0)
@@ -95,8 +102,7 @@ class Application_Handler_Correspondence extends Application_Handler
 			$oDA	= DataAccess::getDataAccess();
 			$oDA->TransactionStart();
 			$oSource	= new Correspondence_Source_Csv(file_get_contents($aFileInfo['tmp_name']));
-			$oORM		= Correspondence_Template_ORM::getForId($iCorrespondenceTemplateId);
-			$oTemplate	= Correspondence_Template::createFromORM($oORM, $oSource);
+			$oTemplate	= Correspondence_Template::createFromORM($oTemplateORM, $oSource);
 			$oTemplate->createRun(false, date('Y-m-d H:i:s', $iDeliveryDateTime), null, true);
 			$oDA->TransactionRollback();
 			
