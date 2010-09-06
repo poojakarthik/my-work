@@ -175,6 +175,18 @@ public function createRun()
 		Correspondence_Template::getForSystemName('INVOICE',$aCorrespondenceData)->createRun(true, null, null)->save();
 		die;
 	}
+
+	public function getForBatch()
+	{
+		$aRuns = Correspondence_Run::getForBatchId(45, true);
+		die;
+	}
+
+	public function getForAccount($iAccountId)
+	{
+		$aRuns = Correspondence::getForAccountId(1000179892, true);
+		die;
+	}
 }
 
 ?>
