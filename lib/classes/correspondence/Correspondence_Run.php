@@ -6,7 +6,7 @@ class Correspondence_Run
 	protected $_oDO;
 	public static $aNonSuppliedFields = array('processed_datetime', 'delivered_datetime', 'created_employee_id', 'created', 'data_file_export_id', 'pdf_file_export_id');
 
-	public function __construct($oCorrespondenceTemplate = null, $mDefinition, $bProcessNow = true)
+	public function __construct($oCorrespondenceTemplate = null, $mDefinition, $bProcessNow = true, $bIncludeCorrespondence = true)
 	{
 		$this->_oCorrespondenceTemplate = $oCorrespondenceTemplate;
 		if (is_array($mDefinition))
@@ -28,7 +28,7 @@ class Correspondence_Run
 		else
 		{
 			$this->_oDO = $mDefinition;
-			$this->_aCorrespondence = Correspondence::getForRun($this);
+			$this->_aCorrespondence = $bIncludeCorrespondence?Correspondence::getForRun($this):array();
 			$this->_oCorrespondenceTemplate = Correspondence_Template::getForId($this->correspondence_template_id);
 		}
 	}
@@ -216,6 +216,11 @@ class Correspondence_Run
 		}
 
 		return $aRuns;
+	}
+
+	public static function getForId($iId, $bIncludeCorrespondence = true)
+	{
+		return new Correspondence_Run(null, Correspondence_Run_ORM::getForId($iId), false, false);
 	}
 
 

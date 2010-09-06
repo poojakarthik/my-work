@@ -83,6 +83,9 @@ class Correspondence_ORM extends ORM_Cached
 			switch ($strStatement)
 			{
 				// SELECTS
+				case 'selByAccountId':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "account_id = <account_id>");
+					break;
 				case 'selByRunId':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "correspondence_run_id = <correspondence_run_id>");
 					break;
@@ -138,6 +141,21 @@ class Correspondence_ORM extends ORM_Cached
 		return $aObjects;
 	}
 
+	public static function getForAccountId($iAccountId)
+	{
+		$oSelect	= self::_preparedStatement('selByAccountId');
+		$oSelect->Execute(array('account_id' => $iAccountId));
+		$aResults = $oSelect->FetchAll();
+		$aObjects = array();
+		foreach ($aResults as $aResult)
+		{
+			$x =new self($aResult);
+			$x->setSaved();
+			$aObjects[]= $x;
+		}
+		return $aObjects;
+	}
+
 	public function setSaved()
 	{
 		$this->_bolSaved = true;
@@ -149,6 +167,8 @@ class Correspondence_ORM extends ORM_Cached
 			parent::save();
 		$this->setSaved();
 	}
+
+
 
 
 

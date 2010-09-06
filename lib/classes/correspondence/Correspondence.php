@@ -36,11 +36,14 @@ class Correspondence
 			$this->_oDO = $mData;
 			$this->_oDO->setSaved();
 			$this->_aAdditionalFields = Correspondence_Data::getForCorrespondence($this);
+			if ($this->_oCorrespondenceRun == null)
+				$this->_oCorrespondenceRun = Correspondence_Run::getForId($this->correspondence_run_id, false);
+
 		}
 
 	}
 
-	public function toArray($bIncludeSystemFields = false)
+	public function toArray($bIncludeSystemFields = false, $bIncludeRun = false)
 	{
 		//return an associative array that can be used for csv file genereation
 
@@ -61,6 +64,13 @@ class Correspondence
 		foreach($this->_aAdditionalFields as $sField=>$oData)
 		{
 			$aData[$sField]= $oData->value;
+		}
+
+		if ($bIncludeRun)
+		{
+
+			$aData['correspondencde_run'] = $this->_oCorrespondenceRun->toArray();
+
 		}
 
 		return $aData;
@@ -155,6 +165,19 @@ class Correspondence
 		{
 
 			$aCorrespondence[] = new Correspondence($oORM, $oRun);
+		}
+		return $aCorrespondence;
+	}
+
+	public static function getForAccountId($iAccount, $bToArray = false)
+	{
+		$aORM = Correspondence_ORM::getForAccountId($iAccount);
+		$aCorrespondence = array();
+		foreach ($aORM as $oORM)
+		{
+
+			$x =  new Correspondence($oORM);
+			$aCorrespondence[] = $bToArray?$x->toArray(true, true):$x;
 		}
 		return $aCorrespondence;
 	}
