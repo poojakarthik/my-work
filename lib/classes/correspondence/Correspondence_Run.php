@@ -1,242 +1,150 @@
 <?php
-class Correspondence_Run
+/**
+ * Correspondence_Source_SQL_Orm
+ *
+ * This is an example of a class that extends ORM_Cached
+ *
+ * @class	Correspondence_Source_SQL_Orm
+ */
+class Correspondence_Run extends ORM_Cached
 {
-	protected $_oCorrespondenceTemplate;
-	protected $_aCorrespondence = array();
-	protected $_oDO;
-	public static $aNonSuppliedFields = array('processed_datetime', 'delivered_datetime', 'created_employee_id', 'created', 'data_file_export_id', 'pdf_file_export_id');
+	protected 			$_strTableName			= "correspondence_run";
+	protected static	$_strStaticTableName	= "correspondence_run";
 
-	public function __construct($oCorrespondenceTemplate = null, $mDefinition, $bProcessNow = true, $bIncludeCorrespondence = true)
+	protected static function getCacheName()
 	{
-		$this->_oCorrespondenceTemplate = $oCorrespondenceTemplate;
-		if (is_array($mDefinition))
+		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
+		static $strCacheName;
+		if (!isset($strCacheName))
 		{
-			foreach (self::$aNonSuppliedFields as $sField)
-			{
-				$mDefinition[$sField] = null;
-			}
-			if ($mDefinition['scheduled_datetime']== null)
-			{
-				$mDefinition['scheduled_datetime'] = Data_Source_Time::currentTimestamp();
-			}
+			$strCacheName = __CLASS__;
+		}
+		return $strCacheName;
+	}
 
-			$mDefinition['preprinted'] = $mDefinition['preprinted']?1:0;
-			$this->_oDO = new Correspondence_Run_ORM($mDefinition);
-			if ($bProcessNow)
-				$this->process();
+	protected static function getMaxCacheSize()
+	{
+		return 100;
+	}
+
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
+	//---------------------------------------------------------------------------------------------------------------------------------//
+
+	public static function clearCache()
+	{
+		parent::clearCache(__CLASS__);
+	}
+
+	protected static function getCachedObjects()
+	{
+		return parent::getCachedObjects(__CLASS__);
+	}
+
+	protected static function addToCache($mixObjects)
+	{
+		parent::addToCache($mixObjects, __CLASS__);
+	}
+
+	public static function getForId($intId, $bolSilentFail=false)
+	{
+		return parent::getForId($intId, $bolSilentFail, __CLASS__);
+	}
+
+	public static function getAll($bolForceReload=false)
+	{
+		return parent::getAll($bolForceReload, __CLASS__);
+	}
+
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
+	//---------------------------------------------------------------------------------------------------------------------------------//
+
+	/**
+	 * _preparedStatement()
+	 *
+	 * Access a Static Cache of Prepared Statements used by this Class
+	 *
+	 * @param	string		$strStatement						Name of the statement
+	 *
+	 * @return	Statement										The requested Statement
+	 *
+	 * @method
+	 */
+	protected static function _preparedStatement($strStatement)
+	{
+		static	$arrPreparedStatements	= Array();
+		if (isset($arrPreparedStatements[$strStatement]))
+		{
+			return $arrPreparedStatements[$strStatement];
 		}
 		else
 		{
-			$this->_oDO = $mDefinition;
-			$this->_aCorrespondence = $bIncludeCorrespondence?Correspondence::getForRun($this):array();
-			$this->_oCorrespondenceTemplate = Correspondence_Template::getForId($this->correspondence_template_id);
-		}
-	}
-
-	public function getCarrierId()
-	{
-		return $this->_oCorrespondenceTemplate->carrier_id;
-	}
-
-	public function process()
-	{
-		$x = time();
-		$bPreprinted = $this->_oDO->preprinted==0?false:true;
-		$aCorrespondence = $this->_oCorrespondenceTemplate->getData($bPreprinted);
-		foreach ($aCorrespondence as $oCorrespondence)
-		{
-			$oCorrespondence->_oCorrespondenceRun = $this;
-		}
-		$this->_aCorrespondence = $aCorrespondence;
-		$x = time() - $x;
-		//echo count($aCorrespondence)." results processed in $x seconds.<br>";
-		$this->processed_datetime = Data_Source_Time::currentTimestamp();
-	}
-
-	public function save()
-	{
-					// Start a new database transaction
-				$oDataAccess	= DataAccess::getDataAccess();
-
-				if (!$oDataAccess->TransactionStart())
-				{
-
-					return 	array(
-								"Success"	=> false,
-								"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? 'Could not start database transaction.' : false,
-							);
-				}
-
-				try
-				{
-
-					$this->_save();
-
-					// Everything looks OK -- Commit!
-					$oDataAccess->TransactionCommit();
-					return $this->id;
-
-			}
-
-			catch (Exception $e)
+			switch ($strStatement)
 			{
-				// Exception caught, rollback db transaction
-				$oDataAccess->TransactionRollback();
+				// SELECTS
+				case 'selByBatchId':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "correspondence_run_batch_id =  <correspondence_run_batch_id> ");
+					break;
+				case 'selByScheduleDateTime':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "scheduled_datetime <= <scheduled_datetime> AND delivered_datetime IS NULL");
+					break;
+				case 'selById':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
+					break;
+				case 'selAll':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
+					break;
 
-				return 	array(
-							"Success"	=> false,
-							"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database'
-						);
+				// INSERTS
+				case 'insSelf':
+					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);
+					break;
+
+				// UPDATE BY IDS
+				case 'ubiSelf':
+					$arrPreparedStatements[$strStatement]	= new StatementUpdateById(self::$_strStaticTableName);
+					break;
+
+				// UPDATES
+
+				default:
+					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
 			}
-
-	}
-
-	public function _save()
-	{
-		if ($this->_oCorrespondenceTemplate->id == null)
-			$this->_oCorrespondenceTemplate->save();
-		$this->correspondence_template_id = $this->_oCorrespondenceTemplate->id;
-		if ($this->id == null)
-		{
-			$this->created_employee_id = Flex::getUserId();
-
-		}
-
-		$this->_oDO->save();
-		foreach ($this->_aCorrespondence as $oCorrespondence)
-		{
-
-			$oCorrespondence->save();
+			return $arrPreparedStatements[$strStatement];
 		}
 	}
 
-	public function getTemplate()
+	public static function getForScheduledDateTime($sScheduledDateTime)
 	{
-		return $this->_oCorrespondenceTemplate;
-	}
 
-	public function getAllColumns()
-	{
-		$bPreprinted = $this->preprinted==1?true:false;
-		return $this->_oCorrespondenceTemplate->createFullColumnSet( $bPreprinted);
-
-	}
-
-	public function count()
-	{
-		return count($this->_aCorrespondence);
-	}
-
-	public function getAdditionalColumns($iNumberOfDefaultColumns)
-	{
-		return $this->_oCorrespondenceTemplate->getAdditionalColumnSet($iNumberOfDefaultColumns);
-	}
-
-	public function getCorrespondence()
-	{
-		if ($this->_aCorrespondence == null)
-			$this->_aCorrespondence = Correspondence::getForRunId($this->id);
-		return $this->_aCorrespondence;
-	}
-
-	public function getTemplateName()
-	{
-		return $this->_oCorrespondenceTemplate->name;
-	}
-
-	public function getTemplateId()
-	{
-		return $this->_oCorrespondenceTemplate->id;
-	}
-
-	public function toArray()
-	{
-		$aRun = $this->_oDO->toArray();
-		$aRun['template']= $this->_oCorrespondenceTemplate->toArray();
-		$aRun['correspondence'] = array();
-		foreach ($this->_aCorrespondence as $oCorrespondence)
+		$oSelect	= self::_preparedStatement('selByScheduleDateTime');
+		$oSelect->Execute(array('scheduled_datetime' => $sScheduledDateTime));
+		$aResults = $oSelect->FetchAll();
+		$aObjects = array();
+		foreach ($aResults as $aResult)
 		{
-			$aRun['correspondence'][]= $oCorrespondence->toArray(true);
+			$aObjects[]= new self($aResult);
 		}
-		return $aRun;
+		return $aObjects;
 	}
 
-
-	public function setDeliveryDetails ($iDataFileExportId, $sDeliveredTimeStamp, $iPDFFileExportId, $iBatchId)
+	public static function getForBatchId($iBatchId)
 	{
-		$this->data_file_export_id = $iDataFileExportId;
-		$this->pdf_file_export_id = $iPDFFileExportId;
-		$this->delivered_datetime = $sDeliveredTimeStamp;
-		$this->correspondence_run_batch_id = $iBatchId;
-	}
-
-
-	public function getCarrierModule()
-	{
-
-		return $this->_oCorrespondenceTemplate->getCarrierModule();
-	}
-
-	public static function get($iId)
-	{
-		//create a new object based on the id passed in
-	}
-
-
-
-	public static function getWaitingRuns($sScheduledDateTime = null)
-	{
-		if ($sScheduledDateTime == null)
-			$sScheduledDateTime = Data_Source_Time::currentTimestamp();
-
-		$aRunORM = Correspondence_Run_ORM::getForScheduledDateTime($sScheduledDateTime);
-
-		$aRuns = array();
-		foreach ($aRunORM as $oRunORM)
+		$oSelect	= self::_preparedStatement('selByBatchId');
+		$oSelect->Execute(array('correspondence_run_batch_id' => $iBatchId));
+		$aResults = $oSelect->FetchAll();
+		$aObjects = array();
+		foreach ($aResults as $aResult)
 		{
-			$oRun = new Correspondence_Run(null, $oRunORM);
-			if ($oRun->processed_datetime == null)
-				$oRun->process();
-			$aRuns[] = $oRun;
+			$aObjects[]= new self($aResult);
 		}
-
-		return $aRuns;
-
-	}
-
-	public static function getForBatchId($iBatchId, $bToArray = false)
-	{
-		$aRunORM = Correspondence_Run_ORM::getForBatchId($iBatchId);
-		$aRuns = array();
-		foreach ($aRunORM as $oRunORM)
-		{
-			$oRun = new self(null, $oRunORM);
-
-			$aRuns[]= $bToArray?$oRun->toArray():$oRun;
-		}
-
-		return $aRuns;
-	}
-
-	public static function getForId($iId, $bIncludeCorrespondence = true)
-	{
-		return new Correspondence_Run(null, Correspondence_Run_ORM::getForId($iId), false, false);
+		return $aObjects;
 	}
 
 
 
-	public function getCorrespondenceCode()
-	{
-		return $this->_oCorrespondenceTemplate->template_code;
-	}
 
-	public function __get($sField)
-	{
-		return $this->_oDO->$sField;
-	}
 
-	public function __set($sField, $mValue)
-	{
-		$this->_oDO->$sField =$mValue;
-	}
 }
+?>

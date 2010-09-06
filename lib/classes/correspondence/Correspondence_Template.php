@@ -1,252 +1,137 @@
 <?php
-
-class Correspondence_Template
+/**
+ * Correspondence_Template_ORM
+ *
+ * This is an example of a class that extends ORM_Cached
+ *
+ * @class	Correspondence_Template_ORM
+ */
+class Correspondence_Template extends ORM_Cached
 {
+	protected 			$_strTableName			= "correspondence_template";
+	protected static	$_strStaticTableName	= "correspondence_template";
 
-	protected static $_aCorrespondence_Templates = array();
-
-	protected $_oCorrespondenceSource;
-	protected $_oDO;
-	protected $_aRuns = array();
-	protected $_aExtraColumns = array();
-	public static $aNonSuppliedFields = array('created_employee_id', 'created_timestamp', 'system_name', 'status_id');
-	protected $_oCarrierModule;
-
-	private function __construct($mDefinition, $oSource = null, $aColumns = array())
+	protected static function getCacheName()
 	{
-		$this->_oCorrespondenceSource = $oSource;
-		if (is_numeric($mDefinition))
+		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
+		static $strCacheName;
+		if (!isset($strCacheName))
 		{
-			//implement code to retrieve data and instantiate the object
-			$this->_oDO = Correspondence_Template_ORM::getForId($mDefinition);
-			$this->_aExtraColumns = Correspondence_Template_Column::getForTemplate($this);
-			//todo: instantiate the run and extra columns members
-
+			$strCacheName = __CLASS__;
 		}
-		else if (is_array($mDefinition))
+		return $strCacheName;
+	}
+
+	protected static function getMaxCacheSize()
+	{
+		return 100;
+	}
+
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
+	//---------------------------------------------------------------------------------------------------------------------------------//
+
+	public static function clearCache()
+	{
+		parent::clearCache(__CLASS__);
+	}
+
+	protected static function getCachedObjects()
+	{
+		return parent::getCachedObjects(__CLASS__);
+	}
+
+	protected static function addToCache($mixObjects)
+	{
+		parent::addToCache($mixObjects, __CLASS__);
+	}
+
+	public static function getForId($intId, $bolSilentFail=false)
+	{
+		return parent::getForId($intId, $bolSilentFail, __CLASS__);
+	}
+
+	public static function getAll($bolForceReload=false)
+	{
+		return parent::getAll($bolForceReload, __CLASS__);
+	}
+
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
+	//---------------------------------------------------------------------------------------------------------------------------------//
+
+	/**
+	 * _preparedStatement()
+	 *
+	 * Access a Static Cache of Prepared Statements used by this Class
+	 *
+	 * @param	string		$strStatement						Name of the statement
+	 *
+	 * @return	Statement										The requested Statement
+	 *
+	 * @method
+	 */
+	protected static function _preparedStatement($strStatement)
+	{
+		static	$arrPreparedStatements	= Array();
+		if (isset($arrPreparedStatements[$strStatement]))
 		{
-			foreach (self::$aNonSuppliedFields as $sField)
-			{
-				$mDefinition[$sField] = null;
-			}
-			$this->_oDO = new Correspondence_Template_ORM($mDefinition);
-
-
-			foreach($aColumns as $aColumn)
-			{
-				$this->_aExtraColumns[]= new Correspondence_Template_Column($aColumn, $this);
-			}
-
-
+			return $arrPreparedStatements[$strStatement];
 		}
 		else
 		{
-			$this->_oDO = $mDefinition;
-			//retrieve all columns and runs from the database that belong to this template.
-
-		}
-	}
-
-	public function getCarrierModule()
-	{
-		if ($this->_oCarrierModule !=null)
-			return $this->_oCarrierModule;
-
-		$aCarrierModules = Carrier_Module::getForCarrierModuleType(MODULE_TYPE_CORRESPONDENCE_EXPORT);
-		foreach($aCarrierModules as $oCarrierModule)
-		{
-			if ($oCarrierModule->Carrier = $this->carrier_id)
+			switch ($strStatement)
 			{
-				$sClassName = $oCarrierModule->Module;
-				$this->_oCarrierModule = new $sClassName($oCarrierModule);
-				return $this->_oCarrierModule;
+				// SELECTS
+				case 'selBySysName':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "system_name = <system_name> AND status_id = 1", NULL, 1);
+					break;
+				case 'selById':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
+					break;
+				case 'selAll':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
+					break;
+
+				// INSERTS
+				case 'insSelf':
+					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);
+					break;
+
+				// UPDATE BY IDS
+				case 'ubiSelf':
+					$arrPreparedStatements[$strStatement]	= new StatementUpdateById(self::$_strStaticTableName);
+					break;
+
+				// UPDATES
+
+				default:
+					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
 			}
+			return $arrPreparedStatements[$strStatement];
 		}
-		return false;
-
 	}
 
-	public function save()
+	public static function getForSystemName($sSystemName)
 	{
-				// Start a new database transaction
-				$oDataAccess	= DataAccess::getDataAccess();
 
-				if (!$oDataAccess->TransactionStart())
-				{
-
-					return 	array(
-								"Success"	=> false,
-								"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? 'Could not start database transaction.' : false,
-							);
-				}
-
-				try
-				{
-
-					$this->_save();
-
-					// Everything looks OK -- Commit!
-					$oDataAccess->TransactionCommit();
-					return $this->id;
-
-			}
-
-			catch (Exception $e)
-			{
-				// Exception caught, rollback db transaction
-				$oDataAccess->TransactionRollback();
-
-				return 	array(
-							"Success"	=> false,
-							"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database'
-						);
-			}
-
-	}
-
-	public function toArray()
-	{
-		$aTemplate = $this->_oDO->toArray();
-		//add column data whenever needed
-		return $aTemplate;
-	}
-
-
-	public function _save()
-	{
-		$this->_oCorrespondenceSource->save();
-		$this->correspondence_source_id = $this->_oCorrespondenceSource->id;
-		if ($this->id == null)
+		$oSystemReference = Correspondence_Template_System_ORM::getForSystemName($sSystemName);
+		return self::getForId($oSystemReference->correspondence_template_id);
+		/*$oSelect	= self::_preparedStatement('selBySysName');
+		$oSelect->Execute(array('system_name' => $sSystemName));
+		$aResults = $oSelect->FetchAll();
+		$aObjects = array();
+		foreach ($aResults as $aResult)
 		{
-			$this->created_employee_id = Flex::getUserId();
-			//$this->system_name = strtoupper($this->name);
-			$this->status_id = 1;
+			$aObjects[]= new self($aResult);
 		}
-
-		$this->_oDO->save();
-		foreach ($this->_aExtraColumns as $oColumn)
-		{
-			$oColumn->save();
-		}
-
-		foreach ($this->_aRuns as $oRun)
-		{
-			$oRun->_save();
-		}
-
-	}
-
-	public function  createRun($bPreprinted = false, $sScheduleDateTime = null, $sProcessDateTime = null, $bProcessNow = true)
-	{
-
-		$aDefinition = array ('scheduled_datetime'=> $sScheduleDateTime, 'preprinted'=>$bPreprinted, $bProcessNow);
-		$oRun = new Correspondence_Run($this, $aDefinition);
-		$this->_aRuns[]=$oRun;
-		return $oRun;
-
-	}
-
-	public function getColumnIdForName($sColumnName)
-	{
-		foreach ($this->_aExtraColumns as $oColumn)
-		{
-			if ($oColumn->name == $sColumnName)
-				return $oColumn->id;
-		}
-
-		return false;
-	}
-
-	public function getData($bPreprinted)
-	{
-		return $this->_oCorrespondenceSource->getData($bPreprinted,$this->getAdditionalColumnSet(Correspondence::getStandardColumnCount($bPreprinted)));
-	}
-
-	public function createFullColumnSet( $bPreprinted,$bIncludeNonSuppliedFields = false)
-	{
-
-		$aColumns = Correspondence::getStandardColumns($bPreprinted,$bIncludeNonSuppliedFields);
-		$iColumnCount = count($aColumns);
-		$aAdditionalColumns = $this->getAdditionalColumnSet($iColumnCount);
-		$aColumns = array_merge($aColumns, $aAdditionalColumns);
-
-		return $aColumns;
+		return $aObjects[0];*/
 
 	}
 
 
 
-	public function getAdditionalColumnSet($iStandardColumnCount)
-	{
 
-		$aColumns = array();
-		foreach ($this->_aExtraColumns as $oColumn)
-		{
-			$aColumns[$iStandardColumnCount -1 + $oColumn->column_index] = $oColumn->name;
-		}
-		return $aColumns;
-
-	}
-
-
-
-	public static function getForSystemName($sSystemName, $aData)
-	{
-		$oSource = new Correspondence_Source_System($aData);
-		$oDO = Correspondence_Template_ORM::getForSystemName($sSystemName);
-		return self::createFromORM($oDO, $oSource);
-	}
-
-	public static function createFromORM($oORM, $oSource)
-	{
-		return new self ($oORM, $oSource);
-	}
-
-
-	public static function getForId($iId)
-	{
-
-		foreach(self::$_aCorrespondence_Templates as $iTemplateId => $oTemplate)
-		{
-			if ( $iTemplateId == $iId )
-				return $oTemplate;
-
-		}
-		return new self ($iId);
-	}
-
-	public static function create($sName, $sDescription, $aColumns, $iCarrierId, $oSource)
-	{
-		$aDefinition = array('name'=>$sName, 'description'=>$sDescription, 'carrier_id'=>$iCarrierId);
-		return new self ($aDefinition, $oSource, $aColumns);
-	}
-
-
-
-	public function __get($sField)
-	{
-		return $this->_oDO->$sField;
-	}
-
-	public function __set($sField, $mValue)
-	{
-		$this->_oDO->$sField = $mValue;
-	}
-
-public static function getInstance($iId = null, $sCode= null, $sName= null, $sDescription= null, $aColumns = null, $iCarrierId = null, $oSource = null)
-{
-		foreach(self::$_aCorrespondence_Templates as $iTemplateId => $oTemplate)
-		{
-			if ( $iTemplateId = $iId || $oTemplate->template_code = $sCode)
-				return $oTemplate;
-
-		}
-		$aDefinition = array('id' => $iId, 'template_code' => $sCode, 'name'=>$sName, 'description'=>$sDescription, 'carrier_id'=>$iCarrierId);
-		return new self ($aDefinition, $oSource, $aColumns);
-}
 
 }
-
-
-
 ?>

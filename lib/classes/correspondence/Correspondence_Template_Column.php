@@ -1,57 +1,132 @@
 <?php
-
-class Correspondence_Template_Column
+/**
+ * Correspondence_Template_ORM
+ *
+ * This is an example of a class that extends ORM_Cached
+ *
+ * @class	Correspondence_Template_ORM
+ */
+class Correspondence_Template_Column extends ORM_Cached
 {
+	protected 			$_strTableName			= "correspondence_template_column";
+	protected static	$_strStaticTableName	= "correspondence_template_column";
 
-	protected $_oDO;
-	protected $_oTemplate;
-
-	public function __construct($mDefinition, $oTemplate = null)
+	protected static function getCacheName()
 	{
-		$this->_oTemplate = $oTemplate;
-		$this->_oDO =is_array($mDefinition)?new Correspondence_Template_Column_ORM($mDefinition):$mDefinition;
-
-	}
-
-	public function save()
-	{
-		$this->correspondence_template_id = $this->_oTemplate->id;
-		$this->_oDO->save();
-
-	}
-
-
-
-	public function __get($sField)
-	{
-		return $this->_oDO->$sField;
-	}
-
-	public function __set($sField, $mValue)
-	{
-		$this->_oDO->$sField = $mValue;
-	}
-
-	public static function getForData($oData)
-	{
-		return new self(Correspondence_Template_Column_ORM::getForId($oData->correspondence_template_column_id));
-	}
-
-	public static function getForTemplate($oTemplate)
-	{
-		$aORM = Correspondence_Template_Column_ORM::getForTemplateId($oTemplate->id);
-		$aColumns = array();
-		foreach ($aORM as $oORM)
+		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
+		static $strCacheName;
+		if (!isset($strCacheName))
 		{
-			$aColumns[] = new self($oORM, $oTemplate);
+			$strCacheName = __CLASS__;
 		}
-
-		return $aColumns;
+		return $strCacheName;
 	}
+
+	protected static function getMaxCacheSize()
+	{
+		return 100;
+	}
+
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
+	//---------------------------------------------------------------------------------------------------------------------------------//
+
+	public static function clearCache()
+	{
+		parent::clearCache(__CLASS__);
+	}
+
+	protected static function getCachedObjects()
+	{
+		return parent::getCachedObjects(__CLASS__);
+	}
+
+	protected static function addToCache($mixObjects)
+	{
+		parent::addToCache($mixObjects, __CLASS__);
+	}
+
+	public static function getForId($intId, $bolSilentFail=false)
+	{
+		return parent::getForId($intId, $bolSilentFail, __CLASS__);
+	}
+
+	public static function getAll($bolForceReload=false)
+	{
+		return parent::getAll($bolForceReload, __CLASS__);
+	}
+
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
+	//---------------------------------------------------------------------------------------------------------------------------------//
+
+	/**
+	 * _preparedStatement()
+	 *
+	 * Access a Static Cache of Prepared Statements used by this Class
+	 *
+	 * @param	string		$strStatement						Name of the statement
+	 *
+	 * @return	Statement										The requested Statement
+	 *
+	 * @method
+	 */
+	protected static function _preparedStatement($strStatement)
+	{
+		static	$arrPreparedStatements	= Array();
+		if (isset($arrPreparedStatements[$strStatement]))
+		{
+			return $arrPreparedStatements[$strStatement];
+		}
+		else
+		{
+			switch ($strStatement)
+			{
+				// SELECTS
+				case 'selByTemplateId':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "correspondence_template_id = <correspondence_template_id>");
+					break;
+				case 'selById':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
+					break;
+				case 'selAll':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
+					break;
+
+				// INSERTS
+				case 'insSelf':
+					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);
+					break;
+
+				// UPDATE BY IDS
+				case 'ubiSelf':
+					$arrPreparedStatements[$strStatement]	= new StatementUpdateById(self::$_strStaticTableName);
+					break;
+
+				// UPDATES
+
+				default:
+					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
+			}
+			return $arrPreparedStatements[$strStatement];
+		}
+	}
+
+	public static function getForTemplateId($iTemplateId)
+	{
+		$oSelect	= self::_preparedStatement('selByTemplateId');
+		$oSelect->Execute(array('correspondence_template_id' => $iTemplateId));
+		$aResults = $oSelect->FetchAll();
+		$aObjects = array();
+		foreach ($aResults as $aResult)
+		{
+			$x =new self($aResult);
+			$aObjects[]= $x;
+		}
+		return $aObjects;
+	}
+
 
 
 }
-
-
-
 ?>

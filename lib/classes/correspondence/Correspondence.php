@@ -1,189 +1,178 @@
 <?php
-
-class Correspondence
+/**
+ * Correspondence_ORM
+ *
+ * This is an example of a class that extends ORM_Cached
+ *
+ * @class	Correspondence_ORM
+ */
+class Correspondence extends ORM_Cached
 {
-	protected $_oDO;
-	protected $_oCorrespondenceRun;
-	public static  $aCorrespondenceFieldsNotSupplied = array( 'correspondence_run_id');
-	protected $_aAdditionalFields = array();
+	protected 			$_strTableName			= "correspondence";
+	protected static	$_strStaticTableName	= "correspondence";
 
-
-	public function __construct($mData, $oCorrrespondenceRun = null)
+	protected static function getCacheName()
 	{
-		$this->_oCorrespondenceRun = $oCorrrespondenceRun;
-		if (is_array($mData))
+		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
+		static $strCacheName;
+		if (!isset($strCacheName))
 		{
-			foreach (self::$aCorrespondenceFieldsNotSupplied as $sField)
-			{
-				$mData['standard_fields'][$sField] = null;
-			}
+			$strCacheName = __CLASS__;
+		}
+		return $strCacheName;
+	}
 
-			$mData['standard_fields']['tar_file_path'] = isset($mData['standard_fields']['tar_file_path'])?$mData['standard_fields']['tar_file_path']:null;
+	protected static function getMaxCacheSize()
+	{
+		return 100;
+	}
 
-			$this->_oDO = new Correspondence_ORM($mData['standard_fields']);
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
+	//---------------------------------------------------------------------------------------------------------------------------------//
 
-			foreach ($mData['additional_fields'] as $key=>$value)
-			{
+	public static function clearCache()
+	{
+		parent::clearCache(__CLASS__);
+	}
 
-				$this->_aAdditionalFields[$key] = new Correspondence_Data(array('value'=>$value, 'correspondence_template_column_id'=>null, 'correspondence_id'=>null));
-			}
+	protected static function getCachedObjects()
+	{
+		return parent::getCachedObjects(__CLASS__);
+	}
 
-			//just for debugging
-			$this->correspondence_delivery_method_id = 2;
+	protected static function addToCache($mixObjects)
+	{
+		parent::addToCache($mixObjects, __CLASS__);
+	}
+
+	public static function getForId($intId, $bolSilentFail=false)
+	{
+		return parent::getForId($intId, $bolSilentFail, __CLASS__);
+	}
+
+	public static function getAll($bolForceReload=false)
+	{
+		return parent::getAll($bolForceReload, __CLASS__);
+	}
+
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
+	//---------------------------------------------------------------------------------------------------------------------------------//
+
+	/**
+	 * _preparedStatement()
+	 *
+	 * Access a Static Cache of Prepared Statements used by this Class
+	 *
+	 * @param	string		$strStatement						Name of the statement
+	 *
+	 * @return	Statement										The requested Statement
+	 *
+	 * @method
+	 */
+	protected static function _preparedStatement($strStatement)
+	{
+		static	$arrPreparedStatements	= Array();
+		if (isset($arrPreparedStatements[$strStatement]))
+		{
+			return $arrPreparedStatements[$strStatement];
 		}
 		else
 		{
-			$this->_oDO = $mData;
-			$this->_oDO->setSaved();
-			$this->_aAdditionalFields = Correspondence_Data::getForCorrespondence($this);
-			if ($this->_oCorrespondenceRun == null)
-				$this->_oCorrespondenceRun = Correspondence_Run::getForId($this->correspondence_run_id, false);
-
-		}
-
-	}
-
-	public function toArray($bIncludeSystemFields = false, $bIncludeRun = false)
-	{
-		//return an associative array that can be used for csv file genereation
-
-		$aData = $this->_oDO->toArray();
-		if (!$bIncludeSystemFields)
-		{
-			$aTemp = array();
-			$aColumns = $this->_oCorrespondenceRun->getAllColumns();
-			foreach ($aData as $sField=>$mValue)
+			switch ($strStatement)
 			{
-				if (in_array($sField, $aColumns))
-					$aTemp[$sField]= $mValue;
+				// SELECTS
+				case 'selByAccountId':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "account_id = <account_id>");
+					break;
+				case 'selByRunId':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "correspondence_run_id = <correspondence_run_id>");
+					break;
+				case 'selById':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
+					break;
+				case 'selAll':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
+					break;
+
+				// INSERTS
+				case 'insSelf':
+					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);
+					break;
+
+				// UPDATE BY IDS
+				case 'ubiSelf':
+					$arrPreparedStatements[$strStatement]	= new StatementUpdateById(self::$_strStaticTableName);
+					break;
+
+				// UPDATES
+
+				default:
+					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
 			}
-			$aData = $aTemp;
-
+			return $arrPreparedStatements[$strStatement];
 		}
-
-		foreach($this->_aAdditionalFields as $sField=>$oData)
-		{
-			$aData[$sField]= $oData->value;
-		}
-
-		if ($bIncludeRun)
-		{
-
-			$aData['correspondencde_run'] = $this->_oCorrespondenceRun->toArray();
-
-		}
-
-		return $aData;
 	}
 
+	public static function getFieldNames()
+	{
+		$arrTableDefine		= DataAccess::getDataAccess()->FetchTableDefine(self::$_strStaticTableName);
+		return array_keys($arrTableDefine['Column']);
+	}
+
+	/*public function toArray()
+	{
+		return $this->_arrProperties;
+	}*/
+
+	public static function getForRunId($iRunId)
+	{
+		$oSelect	= self::_preparedStatement('selByRunId');
+		$oSelect->Execute(array('correspondence_run_id' => $iRunId));
+		$aResults = $oSelect->FetchAll();
+		$aObjects = array();
+		foreach ($aResults as $aResult)
+		{
+			$x =new self($aResult);
+			$x->setSaved();
+			$aObjects[]= $x;
+		}
+		return $aObjects;
+	}
+
+	public static function getForAccountId($iAccountId)
+	{
+		$oSelect	= self::_preparedStatement('selByAccountId');
+		$oSelect->Execute(array('account_id' => $iAccountId));
+		$aResults = $oSelect->FetchAll();
+		$aObjects = array();
+		foreach ($aResults as $aResult)
+		{
+			$x =new self($aResult);
+			$x->setSaved();
+			$aObjects[]= $x;
+		}
+		return $aObjects;
+	}
+
+	public function setSaved()
+	{
+		$this->_bolSaved = true;
+	}
 
 	public function save()
 	{
-
-		if ($this->_oCorrespondenceRun == null)
-			throw new Exception();
-		if ($this->_oCorrespondenceRun->id == null)
-			$this->_oCorrespondenceRun->save();
-		$this->correspondence_run_id = $this->_oCorrespondenceRun->id;
-		$this->_oDO->save();
-
-		foreach ($this->_aAdditionalFields as $sName => $oField)
-		{
-			$oField->correspondence_id = $oField->correspondence_id==null?$this->id:$oField->correspondence_id;
-			$oField->correspondence_template_column_id = $oField->correspondence_template_column_id==null?$this->_oCorrespondenceRun->getTemplate()->getColumnIdForName($sName):$oField->correspondence_template_column_id;
-			$oField->save();
-		}
+		if (!$this->_bolSaved)
+			parent::save();
+		$this->setSaved();
 	}
 
-	public function __set($sField, $mValue)
-	{
-		switch ($sField)
-		{
-			case '_oCorrespondenceRun':
-									$this->_oCorrespondenceRun = $mValue;
-									break;
-			case 'correspondence_run_id':
-									$this->_oDO->correspondence_run_id = $mValue;
-									break;
-			case 'correspondence_delivery_method_id':
-									$this->_oDO->correspondence_delivery_method_id = $mValue;
-									break;
 
 
-		}
-	}
-
-	public function __get($sField)
-	{
-		return $this->_oDO->$sField;
-	}
-
-	public static function getStandardColumnCount($bPreprinted, $bIncludeNonSuppliedFields = false)
-	{
-		return count (self::getStandardColumns($bPreprinted, $bIncludeNonSuppliedFields));
-	}
-
-	public function getAllColumns()
-	{
-		$bPreprinted = $this->_oCorrespondenceRun->preprinted==1?true:false;
-		return $this->_oCorrespondenceRun->getTemplate()->createFullColumnSet( $bPreprinted);
-
-	}
-
-	public static function getStandardColumns($bPreprinted,$bIncludeNonSuppliedFields = false)
-	{
-		$aColumns = Correspondence_ORM::getFieldNames();
 
 
-		if (!$bIncludeNonSuppliedFields)
-		{
-			foreach (Correspondence::$aCorrespondenceFieldsNotSupplied  as $sField)
-			{
-				$iIndex = array_search($sField,$aColumns);
-				//unset($aColumns[$iIndex]);
-				array_splice ( $aColumns ,$iIndex ,1);
-			}
-		}
-
-		if (!$bPreprinted)
-		{
-				$iIndex = array_search('tar_file_path',$aColumns);
-				//unset($aColumns[$iIndex]);
-				array_splice ( $aColumns ,$iIndex ,1);
-		}
-
-		//we have to recreate the array as by now we possibly have created gaps
-
-		return $aColumns;
-	}
-
-	public static function getForRun($oRun)
-	{
-		$aORM = Correspondence_ORM::getForRunId($oRun->id);
-		$aCorrespondence = array();
-		foreach ($aORM as $oORM)
-		{
-
-			$aCorrespondence[] = new Correspondence($oORM, $oRun);
-		}
-		return $aCorrespondence;
-	}
-
-	public static function getForAccountId($iAccount, $bToArray = false)
-	{
-		$aORM = Correspondence_ORM::getForAccountId($iAccount);
-		$aCorrespondence = array();
-		foreach ($aORM as $oORM)
-		{
-
-			$x =  new Correspondence($oORM);
-			$aCorrespondence[] = $bToArray?$x->toArray(true, true):$x;
-		}
-		return $aCorrespondence;
-	}
 
 
 }
-
-
 ?>

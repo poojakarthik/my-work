@@ -1,15 +1,15 @@
 <?php
 /**
- * Correspondence_Source_SQL_ORM
+ * Correspondence_Template_ORM
  *
  * This is an example of a class that extends ORM_Cached
  *
- * @class	Correspondence_Source_SQL_ORM
+ * @class	Correspondence_Template_ORM
  */
-class Correspondence_Source_SQL extends ORM_Cached
+class Correspondence_Delivery_Method extends ORM_Cached
 {
-	protected 			$_strTableName			= "correspondence_source_sql";
-	protected static	$_strStaticTableName	= "correspondence_source_sql";
+	protected 			$_strTableName			= "correspondence_delivery_method";
+	protected static	$_strStaticTableName	= "correspondence_delivery_method";
 
 	protected static function getCacheName()
 	{
@@ -83,6 +83,9 @@ class Correspondence_Source_SQL extends ORM_Cached
 			switch ($strStatement)
 			{
 				// SELECTS
+				case 'selBySysName':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "system_name = <system_name> AND status_id = 1", NULL, 1);
+					break;
 				case 'selById':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
 					break;
@@ -107,6 +110,14 @@ class Correspondence_Source_SQL extends ORM_Cached
 			}
 			return $arrPreparedStatements[$strStatement];
 		}
+	}
+
+	public static function getSystemNameForId($iId)
+	{
+
+		$oObject = self::getForId($iId);
+		return $oObject->system_name;
+
 	}
 
 
