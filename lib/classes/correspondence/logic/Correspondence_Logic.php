@@ -176,7 +176,7 @@ class Correspondence_Logic
 		foreach ($aORM as $oORM)
 		{
 
-			$x =  new Correspondence($oORM);
+			$x =  new Correspondence_Logic($oORM);
 			$aCorrespondence[] = $bToArray?$x->toArray(true, true):$x;
 		}
 		return $aCorrespondence;
