@@ -1,10 +1,10 @@
 <?php
 /**
- * Correspondence_Source_ORM
+ * Correspondence_Source
  *
  * This is an example of a class that extends ORM_Cached
  *
- * @class	Correspondence_Source_ORM
+ * @class	Correspondence_Source
  */
 class Correspondence_Run_Batch extends ORM_Cached
 {

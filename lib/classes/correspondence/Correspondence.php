@@ -1,10 +1,10 @@
 <?php
 /**
- * Correspondence_ORM
+ * Correspondence
  *
  * This is an example of a class that extends ORM_Cached
  *
- * @class	Correspondence_ORM
+ * @class	Correspondence
  */
 class Correspondence extends ORM_Cached
 {

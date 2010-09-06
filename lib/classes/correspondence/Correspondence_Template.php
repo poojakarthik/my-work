@@ -1,10 +1,10 @@
 <?php
 /**
- * Correspondence_Template_ORM
+ * Correspondence_Template
  *
  * This is an example of a class that extends ORM_Cached
  *
- * @class	Correspondence_Template_ORM
+ * @class	Correspondence_Template
  */
 class Correspondence_Template extends ORM_Cached
 {
@@ -115,7 +115,7 @@ class Correspondence_Template extends ORM_Cached
 	public static function getForSystemName($sSystemName)
 	{
 
-		$oSystemReference = Correspondence_Template_System_ORM::getForSystemName($sSystemName);
+		$oSystemReference = Correspondence_Template_System::getForSystemName($sSystemName);
 		return self::getForId($oSystemReference->correspondence_template_id);
 		/*$oSelect	= self::_preparedStatement('selBySysName');
 		$oSelect->Execute(array('system_name' => $sSystemName));
