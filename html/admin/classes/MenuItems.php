@@ -3684,6 +3684,41 @@ class MenuItems {
 		return self::NEW_FRAMEWORK . "reflex.php/FollowUp/ManageRecurring/";
 	}
 
+	function CreateCorrespondence()
+	{
+		$this->strContextMenuLabel 	= "Create Correspondence";
+		$this->strLabel 			= "Create Correspondence";
+		return "javascript: JsAutoLoader.loadScript(
+								[
+									'../ui/javascript/component_date_picker.js',
+									'../ui/javascript/control_field.js',
+									'../ui/javascript/control_field_select.js',
+									'../ui/javascript/control_field_date_picker.js',
+									'javascript/correspondence_template.js',
+									'javascript/popup_correspondence_create_choose_template.js',
+									'javascript/popup_correspondence_create.js'
+								],
+								function()
+								{
+									new Popup_Correspondence_Create_Choose_Template();
+								}
+							);;";
+	}
+
+	function ViewCorrespondenceLedger()
+	{
+		$this->strContextMenuLabel 	= "View Ledger";
+		$this->strLabel 			= "View Ledger";
+		return self::NEW_FRAMEWORK . "reflex.php/Correspondence/ViewLedger/";
+	}
+	
+	function ViewAccountCorrespondenceLedger()
+	{
+		$this->strContextMenuLabel 	= "View Correspondence Ledger";
+		$this->strLabel 			= "View Correspondence Ledger";
+		return self::NEW_FRAMEWORK . "reflex.php/Account/ViewCorrespondenceLedger/";
+	}
+
 	//------------------------------------------------------------------------//
 	// ActionsAndNotesCreatorPopup
 	//------------------------------------------------------------------------//

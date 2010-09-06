@@ -6,7 +6,7 @@ var Control_Field_Checkbox	= Class.create(/* extends */ Control_Field,
 		$super(sLabel, sLabelSeparator);
 		
 		// Create the DOM Elements
-		this.oControlOutput.oEdit			= document.createElement('input');
+		this.oControlOutput.oEdit		= document.createElement('input');
 		this.oControlOutput.oEdit.type	= 'checkbox';
 		this.oControlOutput.oElement.appendChild(this.oControlOutput.oEdit);
 		

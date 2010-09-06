@@ -5939,3 +5939,24 @@ div.popup-employee-reassign-tasks-tickets-selects > div
 }
 
 /***************** END - Commit All Interim First Invoices Popup - END *****************/
+
+/***************** START - Create Correspondence Popup(s) - START *****************/
+
+.popup-correspondence-create-choose-template,
+.popup-correspondence-create
+{
+	padding	: 0.5em;
+}
+
+.popup-correspondence-create-choose-template .buttons,
+.popup-correspondence-create .buttons
+{
+	text-align	: center;
+}
+
+.popup-correspondence-create-choose-template .control-field select
+{
+	width	: 100%;
+}
+
+/***************** END - Create Correspondence Popup(s) - END *****************/

@@ -107,6 +107,9 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 		
 		ContextMenu()->Account->{"Actions / Notes"}->ActionsAndNotesListPopup(ACTION_ASSOCIATION_TYPE_ACCOUNT, $intAccountId, true, 99999, "$intAccountId - ". $objAccount->getName());
+		
+		// TODO: Check for permission to view correspondence
+		ContextMenu()->Account->ViewAccountCorrespondenceLedger();
 	}
 	
 	//------------------------------------------------------------------------//

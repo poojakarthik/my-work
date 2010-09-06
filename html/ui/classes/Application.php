@@ -261,6 +261,10 @@ class Application
 				ContextMenu()->Admin->Follow_Ups->ManageAllRecurringFollowUps();
 				ContextMenu()->Admin->Follow_Ups->ConfigureFollowUps();
 			}
+			
+			// TODO: Check for permission to create correspondence
+			ContextMenu()->Admin->Correspondence->CreateCorrespondence();
+			ContextMenu()->Admin->Correspondence->ViewCorrespondenceLedger();
 		}
 
 		// Document Management
@@ -503,6 +507,10 @@ class Application
 				ContextMenu()->Admin->Follow_Ups->ManageAllRecurringFollowUps();
 				ContextMenu()->Admin->Follow_Ups->ConfigureFollowUps();
 			}
+			
+			// TODO: Check for permission to create correspondence
+			ContextMenu()->Admin->Correspondence->CreateCorrespondence();
+			ContextMenu()->Admin->Correspondence->ViewCorrespondenceLedger();
 		}
 
 		// Document Management
