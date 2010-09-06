@@ -122,6 +122,16 @@ class Correspondence_Run
 
 	}
 
+	public function count()
+	{
+		return count($this->_aCorrespondence);
+	}
+
+	public function getAdditionalColumns($iNumberOfDefaultColumns)
+	{
+		return $this->_oCorrespondenceTemplate->getAdditionalColumnSet($iNumberOfDefaultColumns);
+	}
+
 	public function getCorrespondence()
 	{
 		if ($this->_aCorrespondence == null)

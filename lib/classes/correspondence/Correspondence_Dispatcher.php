@@ -26,8 +26,6 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 		//set the file export id of the run object and timestamp
 		$oRun->setDeliveryDetails($this->_oFileExport->id,$this->_oFileExport->ExportedOn, $this->_oTARFileExport->id, $iBatchId);
 
-
-
 	}
 
 	static public function createCarrierModule($iCarrier, $sClassName, $iResourceType)
@@ -42,25 +40,7 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 		));
 	}
 
-
-
-	public static function sendWaitingRuns()
-	{
-		//retrieve the set of correspondence runs that should be sent
-		$aRuns = Correspondence_Run::getWaitingRuns();
-		$oBatch = new Correspondence_Run_Batch();
-		$oBatch->batch_datetime = Data_Source_Time::currentTimestamp();
-		$oBatch->save();
-		foreach ($aRuns as $oRun)
-		{
-			$oDispatcher = $oRun->getCarrierModule();
-			$oDispatcher->sendRun($oRun, $oBatch->id);
-			$oRun->save();
-		}
-
-	}
-
-protected function _logToDatabase()
+	protected function _logToDatabase()
 	{
 
 
@@ -77,6 +57,23 @@ protected function _logToDatabase()
 			$this->_oTARFileExport->save();
 		}
 
+
+	}
+
+
+	public static function sendWaitingRuns()
+	{
+		//retrieve the set of correspondence runs that should be sent
+		$aRuns = Correspondence_Run::getWaitingRuns();
+		$oBatch = new Correspondence_Run_Batch();
+		$oBatch->batch_datetime = Data_Source_Time::currentTimestamp();
+		$oBatch->save();
+		foreach ($aRuns as $oRun)
+		{
+			$oDispatcher = $oRun->getCarrierModule();
+			$oDispatcher->sendRun($oRun, $oBatch->id);
+			$oRun->save();
+		}
 
 	}
 
