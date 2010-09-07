@@ -15,9 +15,9 @@ abstract class Resource_Type_File_Export_Provisioning extends Resource_Type_File
 		return parent::getExportPath()."provisioning/{$iCarrier}/{$sClass}/";
 	}
 	
-	static public function createCarrierModule($iCarrier, $sClassName, $iResourceType)
+	static public function createCarrierModule($iCarrier, $sClassName, $iResourceType, $iCarrierModuleType=self::CARRIER_MODULE_TYPE)
 	{
-		parent::createCarrierModule($iCarrier, $sClassName, $iResourceType, self::CARRIER_MODULE_TYPE);
+		parent::createCarrierModule($iCarrier, $sClassName, $iResourceType, $iCarrierModuleType);
 	}
 }
 ?>

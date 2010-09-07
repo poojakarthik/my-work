@@ -263,7 +263,7 @@ class Resource_Type_File_Export_Provisioning_RetailDecisions_Applications extend
 	
 	static public function createCarrierModule($iCarrier, $sClass=__CLASS__)
 	{
-		parent::createCarrierModule($iCarrier, $sClass, self::RESOURCE_TYPE);
+		parent::createCarrierModule($iCarrier, $sClass, self::RESOURCE_TYPE, self::RESOURCE_TYPE_FILE_EXPORT_PROVISIONING_RETAILDECISIONS_APPLICATIONS);
 	}
 	
 	static public function defineCarrierModuleConfig()
