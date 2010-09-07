@@ -22,11 +22,6 @@ class Correspondence_Delivery_Method_ORM extends ORM_Enumerated
 		return $strCacheName;
 	}
 
-	protected static function getMaxCacheSize()
-	{
-		return 100;
-	}
-
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
 	//---------------------------------------------------------------------------------------------------------------------------------//
