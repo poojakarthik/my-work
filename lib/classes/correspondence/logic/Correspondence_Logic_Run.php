@@ -6,7 +6,7 @@ class Correspondence_Logic_Run
 	protected $_oDO;
 	public static $aNonSuppliedFields = array('processed_datetime', 'delivered_datetime', 'created_employee_id', 'created', 'data_file_export_id', 'pdf_file_export_id');
 
-	public function __construct($oCorrespondenceTemplate = null, $mDefinition, $bProcessNow = true, $bIncludeCorrespondence = true)
+	public function __construct($mDefinition, $oCorrespondenceTemplate = null, $bIncludeCorrespondence = true, $bProcessNow = true)
 	{
 		$this->_oCorrespondenceTemplate = $oCorrespondenceTemplate;
 		if (is_array($mDefinition))
@@ -40,7 +40,7 @@ class Correspondence_Logic_Run
 
 	public function process()
 	{
-		$x = time();
+
 		$bPreprinted = $this->_oDO->preprinted==0?false:true;
 		$aCorrespondence = $this->_oCorrespondenceTemplate->getData($bPreprinted);
 		foreach ($aCorrespondence as $oCorrespondence)
@@ -48,8 +48,6 @@ class Correspondence_Logic_Run
 			$oCorrespondence->_oCorrespondenceRun = $this;
 		}
 		$this->_aCorrespondence = $aCorrespondence;
-		$x = time() - $x;
-		//echo count($aCorrespondence)." results processed in $x seconds.<br>";
 		$this->processed_datetime = Data_Source_Time::currentTimestamp();
 	}
 
@@ -99,13 +97,11 @@ class Correspondence_Logic_Run
 		if ($this->id == null)
 		{
 			$this->created_employee_id = Flex::getUserId();
-
 		}
 
 		$this->_oDO->save();
 		foreach ($this->_aCorrespondence as $oCorrespondence)
 		{
-
 			$oCorrespondence->save();
 		}
 	}
@@ -177,11 +173,10 @@ class Correspondence_Logic_Run
 		return $this->_oCorrespondenceTemplate->getCarrierModule();
 	}
 
-	public static function get($iId)
+	public function getCorrespondenceCode()
 	{
-		//create a new object based on the id passed in
+		return $this->_oCorrespondenceTemplate->template_code;
 	}
-
 
 
 	public static function getWaitingRuns($sScheduledDateTime = null)
@@ -194,7 +189,7 @@ class Correspondence_Logic_Run
 		$aRuns = array();
 		foreach ($aRunORM as $oRunORM)
 		{
-			$oRun = new Correspondence_Logic_Run(null, $oRunORM);
+			$oRun = new Correspondence_Logic_Run($oRunORM);
 			if ($oRun->processed_datetime == null)
 				$oRun->process();
 			$aRuns[] = $oRun;
@@ -210,7 +205,7 @@ class Correspondence_Logic_Run
 		$aRuns = array();
 		foreach ($aRunORM as $oRunORM)
 		{
-			$oRun = new self(null, $oRunORM);
+			$oRun = new self($oRunORM);
 
 			$aRuns[]= $bToArray?$oRun->toArray():$oRun;
 		}
@@ -220,15 +215,10 @@ class Correspondence_Logic_Run
 
 	public static function getForId($iId, $bIncludeCorrespondence = true)
 	{
-		return new Correspondence_Logic_Run(null, Correspondence_Run::getForId($iId), false, false);
+		return new Correspondence_Logic_Run(Correspondence_Run::getForId($iId),null, $bIncludeCorrespondence);
 	}
 
 
-
-	public function getCorrespondenceCode()
-	{
-		return $this->_oCorrespondenceTemplate->template_code;
-	}
 
 	public function __get($sField)
 	{

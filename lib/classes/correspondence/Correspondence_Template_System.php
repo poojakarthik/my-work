@@ -114,9 +114,6 @@ class Correspondence_Template_System extends ORM_Cached
 
 	public static function getForSystemName($sSystemName)
 	{
-
-
-
 		$oSelect	= self::_preparedStatement('selBySysName');
 		$oSelect->Execute(array('system_name' => $sSystemName));
 		$aResults = $oSelect->FetchAll();

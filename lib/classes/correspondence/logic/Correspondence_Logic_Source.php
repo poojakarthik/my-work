@@ -8,6 +8,23 @@ const CSV = 1;
 const SQL = 2;
 const SCRIPT = 3;
 
+protected $_aInputColumns =  array(	'customer_group_id',
+									'account_id',
+									'account_name',
+									'title',
+									'first_name',
+									'last_name',
+									'address_line_1',
+									'address_line2',
+									'suburb',
+									'postcode',
+									'state',
+									'email',
+									'mobile',
+									'landline',
+									'correspondence_delivery_method'
+								);
+
 public function __construct( $iSourceType, $iId = null)
 {
 		$this->_oDO = $iId ==null?new Correspondence_Source(array('correspondence_source_type_id'=>$iSourceType)):Correspondence_Source::getForId($iId);
@@ -26,6 +43,11 @@ public function save()
 {
 	if (isset($this->_oDO))
 		$this->_oDO->save();
+}
+
+public function validateDataRecord($aRecord)
+{
+
 }
 
 }

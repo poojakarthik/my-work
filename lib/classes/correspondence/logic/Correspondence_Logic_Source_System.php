@@ -19,20 +19,17 @@ function getData($bPreprinted, $aAdditionalColumns = array())
 	foreach($this->_aData as $aRecord)
 	{
 		$aLine = array('standard_fields'=>array(), 'additional_fields'=>array());
-		$iFieldIndex = 0;
 		foreach ($aRecord as $sField => $mValue)
 		{
 			if (in_array($sField,$aColumns ))
 			{
 
-					$aLine['standard_fields'][$sField]	= $mValue;
+				$aLine['standard_fields'][$sField]	= $mValue;
 			}
 			else
 			{
 				$aLine['additional_fields'][$sField] = $mValue;
 			}
-
-			$iFieldIndex++;
 		}
 		$aCorrespondence[] = new Correspondence_Logic($aLine);
 	}

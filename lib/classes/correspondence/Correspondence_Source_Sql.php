@@ -83,6 +83,9 @@ class Correspondence_Source_SQL extends ORM_Cached
 			switch ($strStatement)
 			{
 				// SELECTS
+				case 'selBySourceId':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "correspondence_source_id = <correspondence_source_id>", NULL, 1);
+					break;
 				case 'selById':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
 					break;
@@ -109,7 +112,18 @@ class Correspondence_Source_SQL extends ORM_Cached
 		}
 	}
 
-
+	public static function getForCorrespondenceSourceId($iId)
+	{
+		$oSelect	= self::_preparedStatement('selBySourceId');
+		$oSelect->Execute(array('correspondence_source_id' => $iId));
+		$aResults = $oSelect->FetchAll();
+		$aObjects = array();
+		foreach ($aResults as $aResult)
+		{
+			$aObjects[]= new self($aResult);
+		}
+		return $aObjects[0];
+	}
 
 
 

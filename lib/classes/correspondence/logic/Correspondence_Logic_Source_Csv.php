@@ -32,7 +32,7 @@ public function __get($sField)
 }
 
 // Mimic the fgetcsv() function from PHP 5.3
-	public static function parseLineHashed($sLine, $sDelimiter=',', $sQuote='"', $sEscape='\\', $aFieldNames, $aAdditionalFieldNames)
+	public function parseLineHashed($sLine, $sDelimiter=',', $sQuote='"', $sEscape='\\', $aFieldNames, $aAdditionalFieldNames)
 	{
 		$sDelimiter	= ($sDelimiter)	? $sDelimiter[0]	: ',';
 		$sQuote		= ($sQuote)		? $sQuote[0]		: '';
@@ -93,7 +93,8 @@ public function __get($sField)
 						}
 						else
 						{
-							$aLine['standard_fields'][$aFieldNames[$iFieldIndex]]	= $sField;
+							$sFieldName = $iFieldIndex<count($this->_aInputColumns)?$this->_aInputColumns[$iFieldIndex]:$aFieldNames[$iFieldIndex];
+							$aLine['standard_fields'][$sFieldName]	= $sField;
 						}
 						$iFieldIndex++;
 						$sField		= '';
@@ -116,7 +117,8 @@ public function __get($sField)
 		}
 		else
 		{
-			$aLine['standard_fields'][$aFieldNames[$iFieldIndex]]	= $sField;
+			$sFieldName = $iFieldIndex<count($this->_aInputColumns)?$this->_aInputColumns[$iFieldIndex]:$aFieldNames[$iFieldIndex];
+			$aLine['standard_fields'][$sFieldName]	= $sField;
 		}
 
 		// Return the Array representing this Line
