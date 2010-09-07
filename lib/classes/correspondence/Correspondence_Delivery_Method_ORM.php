@@ -6,7 +6,7 @@
  *
  * @class	Correspondence_Template_ORM
  */
-class Correspondence_Delivery_Method_ORM extends ORM_Cached
+class Correspondence_Delivery_Method_ORM extends ORM_Enumerated
 {
 	protected 			$_strTableName			= "correspondence_delivery_method";
 	protected static	$_strStaticTableName	= "correspondence_delivery_method";
@@ -30,7 +30,7 @@ class Correspondence_Delivery_Method_ORM extends ORM_Cached
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
 	//---------------------------------------------------------------------------------------------------------------------------------//
-
+	
 	public static function clearCache()
 	{
 		parent::clearCache(__CLASS__);
@@ -40,7 +40,7 @@ class Correspondence_Delivery_Method_ORM extends ORM_Cached
 	{
 		return parent::getCachedObjects(__CLASS__);
 	}
-
+	
 	protected static function addToCache($mixObjects)
 	{
 		parent::addToCache($mixObjects, __CLASS__);
@@ -50,10 +50,25 @@ class Correspondence_Delivery_Method_ORM extends ORM_Cached
 	{
 		return parent::getForId($intId, $bolSilentFail, __CLASS__);
 	}
-
+	
 	public static function getAll($bolForceReload=false)
 	{
 		return parent::getAll($bolForceReload, __CLASS__);
+	}
+	
+	public static function getForSystemName($strSystemName)
+	{
+		return parent::getForSystemName($strSystemName, __CLASS__);
+	}
+	
+	public static function getIdForSystemName($strSystemName)
+	{
+		return parent::getIdForSystemName($strSystemName, __CLASS__);
+	}
+	
+	public static function importResult($aResultSet)
+	{
+		return parent::importResult($aResultSet, __CLASS__);
 	}
 
 	//---------------------------------------------------------------------------------------------------------------------------------//
@@ -83,9 +98,6 @@ class Correspondence_Delivery_Method_ORM extends ORM_Cached
 			switch ($strStatement)
 			{
 				// SELECTS
-				case 'selBySysName':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "system_name = <system_name> AND status_id = 1", NULL, 1);
-					break;
 				case 'selById':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
 					break;
