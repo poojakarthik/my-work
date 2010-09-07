@@ -3,35 +3,59 @@ class Correspondence_Logic_Source_Csv extends Correspondence_Logic_Source
 {
 
 	protected $_aCsv;
-
-public function __construct($sCsv = null)
-{
-	parent::__construct(Correspondence_Logic_Source::CSV);
-	$this->_aCsv = explode("\n",$sCsv);
-
-}
+	protected $_aLines = array();
 
 
-function getData($bPreprinted, $aAdditionalColumns = array())
-{
-
-	$aColumns = Correspondence_Logic::getStandardColumns($bPreprinted);
-	$aCorrespondence = array();
-	foreach($this->_aCsv as $sLine)
+	public function __construct($sCsv = null)
 	{
-		$aLine = self::parseLineHashed(rtrim($sLine,"\r\n"), $sDelimiter=',', $sQuote='"', $sEscape='\\', $aColumns, $aAdditionalColumns);
-
-		$aCorrespondence[] = new Correspondence_Logic($aLine);
+		parent::__construct(Correspondence_Logic_Source::CSV);
+		$this->_aCsv = explode("\n",trim($sCsv));
 	}
-	return $aCorrespondence;
-}
 
-public function __get($sField)
-{
-	return $this->_oDO->$sField;
-}
 
-// Mimic the fgetcsv() function from PHP 5.3
+	function getData($bPreprinted, $aAdditionalColumns = array())
+	{
+		$aCorrespondence = array();
+		if (count($this->_aCsv)>0)
+		{
+			$aColumns = Correspondence_Logic::getStandardColumns($bPreprinted);
+
+
+			if (count($aColums) + count($aAdditionalColumns)!= count($this->_aCsv[0]))
+			{
+				$this->_bValidationFailed = true;
+				return 'The number of columns of the supplied data and the correspondence template do not match.';
+			}
+
+			foreach($this->_aCsv as $sLine)
+			{
+				$aLine = self::parseLineHashed(rtrim($sLine,"\r\n"), $sDelimiter=',', $sQuote='"', $sEscape='\\', $aColumns, $aAdditionalColumns);
+				$bValid = $this->validate($aLine);
+				if (!$bValid)
+					$this->_bValidationFailed = true;
+				if (!$this->_bValidationFailed)
+				{
+					$aCorrespondence[] = new Correspondence_Logic($aLine);
+				}
+				$this->_aLines[]=$aLine;
+
+			}
+			if ($this->_bValidationFailed)
+			{
+				//create data file with error messages
+				//generate email
+				//return a summary error message and url for the error file
+
+			}
+
+		}
+
+			return $aCorrespondence;
+
+	}
+
+
+
 	public function parseLineHashed($sLine, $sDelimiter=',', $sQuote='"', $sEscape='\\', $aFieldNames, $aAdditionalFieldNames)
 	{
 		$sDelimiter	= ($sDelimiter)	? $sDelimiter[0]	: ',';
@@ -123,6 +147,11 @@ public function __get($sField)
 
 		// Return the Array representing this Line
 		return $aLine;
+	}
+
+	public function __get($sField)
+	{
+		return $this->_oDO->$sField;
 	}
 
 
