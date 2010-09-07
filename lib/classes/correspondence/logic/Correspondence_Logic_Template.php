@@ -32,10 +32,6 @@ class Correspondence_Logic_Template
 		}
 		else
 		{
-			foreach (self::$aNonSuppliedFields as $sField)
-			{
-				$mDefinition->$sField = null;
-			}
 			$this->_oDO = $mDefinition;
 		}
 
@@ -188,7 +184,7 @@ class Correspondence_Logic_Template
 	{
 		$oSource = new Correspondence_Logic_Source_System($aData);
 		$oDO = Correspondence_Template::getForSystemName($sSystemName);
-		return new self ($oORM, $oSource);
+		return new self ($oDO, $oSource);
 	}
 
 	public static function getForId($iId, $oSource = null)
