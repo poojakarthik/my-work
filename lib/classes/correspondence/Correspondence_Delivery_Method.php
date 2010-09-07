@@ -1,12 +1,6 @@
 <?php
-/**
- * Correspondence_Template
- *
- * This is an example of a class that extends ORM_Cached
- *
- * @class	Correspondence_Template
- */
-class Correspondence_Delivery_Method extends ORM_Cached
+
+class Correspondence_Delivery_Method extends ORM_Enumerated
 {
 	protected 			$_strTableName			= "correspondence_delivery_method";
 	protected static	$_strStaticTableName	= "correspondence_delivery_method";
@@ -20,11 +14,6 @@ class Correspondence_Delivery_Method extends ORM_Cached
 			$strCacheName = __CLASS__;
 		}
 		return $strCacheName;
-	}
-
-	protected static function getMaxCacheSize()
-	{
-		return 100;
 	}
 
 	//---------------------------------------------------------------------------------------------------------------------------------//
@@ -56,6 +45,21 @@ class Correspondence_Delivery_Method extends ORM_Cached
 		return parent::getAll($bolForceReload, __CLASS__);
 	}
 
+	public static function getForSystemName($strSystemName)
+	{
+		return parent::getForSystemName($strSystemName, __CLASS__);
+	}
+
+	public static function getIdForSystemName($strSystemName)
+	{
+		return parent::getIdForSystemName($strSystemName, __CLASS__);
+	}
+
+	public static function importResult($aResultSet)
+	{
+		return parent::importResult($aResultSet, __CLASS__);
+	}
+
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
@@ -83,9 +87,6 @@ class Correspondence_Delivery_Method extends ORM_Cached
 			switch ($strStatement)
 			{
 				// SELECTS
-				case 'selBySysName':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "system_name = <system_name> AND status_id = 1", NULL, 1);
-					break;
 				case 'selById':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
 					break;
