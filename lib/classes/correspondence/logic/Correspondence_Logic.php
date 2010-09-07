@@ -29,7 +29,7 @@ class Correspondence_Logic
 			}
 
 			//just for debugging
-			$this->correspondence_delivery_method_id = 2;
+			$this->correspondence_delivery_method_id = Correspondence_Delivery_Method::getForSystemName($mData['standard_fields']['delivery_method']);
 		}
 		else
 		{
