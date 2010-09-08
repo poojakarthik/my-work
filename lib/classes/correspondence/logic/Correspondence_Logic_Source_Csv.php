@@ -22,7 +22,7 @@ class Correspondence_Logic_Source_Csv extends Correspondence_Logic_Source
 			foreach($this->_aCsv as $sLine)
 			{
 				$aLine = self::parseLineHashed(rtrim($sLine,"\r\n"), $sDelimiter=',', $sQuote='"', $sEscape='\\', $aColumns, $aAdditionalColumns);
-				$this->processCorrespondenceRecord($aRecord);
+				$this->processCorrespondenceRecord($aLine);
 				$this->iLineNumber++;
 			}
 			if ($this->_bValidationFailed)
