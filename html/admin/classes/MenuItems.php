@@ -3702,21 +3702,103 @@ class MenuItems {
 								{
 									new Popup_Correspondence_Create_Choose_Template();
 								}
-							);;";
+							);";
 	}
 
-	function ViewCorrespondenceLedger()
+	function ViewCorrespondenceRunLedger()
 	{
-		$this->strContextMenuLabel 	= "View Ledger";
-		$this->strLabel 			= "View Ledger";
-		return self::NEW_FRAMEWORK . "reflex.php/Correspondence/ViewLedger/";
+		$this->strContextMenuLabel 	= "Correspondence Runs";
+		$this->strLabel 			= "Correspondence Runs";
+		
+		return	"javascript: 	JsAutoLoader.loadScript(
+									[
+										'../ui/javascript/component_date_picker.js',
+										'../ui/javascript/control_field.js',
+										'../ui/javascript/control_field_date_picker.js',
+										'../ui/javascript/control_field_select.js',
+										'../ui/javascript/control_field_checkbox.js',
+										'../ui/javascript/dataset_ajax.js',
+										'../ui/javascript/pagination.js',
+										'../ui/javascript/filter.js',
+										'../ui/javascript/sort.js',
+										'../ui/javascript/reflex_validation.js',
+										'javascript/correspondence_template.js',
+										'javascript/employee.js',
+										'javascript/correspondence_delivery_method.js',
+										'javascript/customer_group.js',
+										'javascript/correspondence_run.js',
+										'javascript/component_correspondence_run_ledger.js',
+										'javascript/popup_correspondence_run_ledger.js',
+										'javascript/component_correspondence_ledger_for_run.js',
+										'javascript/popup_correspondence_run.js',
+										'javascript/popup_correspondence_ledger_columns.js'
+									],
+									function()
+									{
+										new Popup_Correspondence_Run_Ledger();
+									}
+								);";
+	}
+
+	function ViewCorrespondenceBatchLedger()
+	{
+		$this->strContextMenuLabel 	= "Correspondence Run Batches";
+		$this->strLabel 			= "Correspondence Run Batches";
+		
+		return	"javascript: 	JsAutoLoader.loadScript(
+									[
+										'../ui/javascript/component_date_picker.js',
+										'../ui/javascript/control_field.js',
+										'../ui/javascript/control_field_select.js',
+										'../ui/javascript/control_field_date_picker.js',
+										'../ui/javascript/dataset_ajax.js',
+										'../ui/javascript/pagination.js',
+										'../ui/javascript/filter.js',
+										'../ui/javascript/sort.js',
+										'../ui/javascript/reflex_validation.js',
+										'javascript/correspondence_template.js',
+										'javascript/employee.js',
+										'javascript/customer_group.js',
+										'javascript/correspondence_run.js',
+										'javascript/correspondence_delivery_method.js',
+										'javascript/popup_correspondence_run_batch_ledger.js',
+										'javascript/popup_correspondence_run.js',
+										'javascript/component_correspondence_ledger_for_run.js',
+										'javascript/popup_correspondence_ledger_columns.js'
+									],
+									function()
+									{
+										new Popup_Correspondence_Run_Batch_Ledger();
+									}
+								);";
 	}
 	
-	function ViewAccountCorrespondenceLedger()
+	function ViewAccountCorrespondenceLedger($iAccountId)
 	{
 		$this->strContextMenuLabel 	= "View Correspondence Ledger";
 		$this->strLabel 			= "View Correspondence Ledger";
-		return self::NEW_FRAMEWORK . "reflex.php/Account/ViewCorrespondenceLedger/";
+		
+		return	"javascript: 	JsAutoLoader.loadScript(
+									[
+										'../ui/javascript/control_field.js',
+										'../ui/javascript/control_field_select.js',
+										'../ui/javascript/dataset_ajax.js',
+										'../ui/javascript/pagination.js',
+										'../ui/javascript/filter.js',
+										'../ui/javascript/sort.js',
+										'../ui/javascript/reflex_validation.js',
+										'javascript/customer_group.js',
+										'javascript/correspondence.js',
+										'javascript/correspondence_delivery_method.js',
+										'javascript/component_correspondence_ledger_for_account.js',
+										'javascript/popup_account_correspondence_ledger.js',
+										'javascript/popup_correspondence_data.js'
+									],
+									function()
+									{
+										new Popup_Account_Correspondence_Ledger($iAccountId);
+									}
+								);";
 	}
 
 	//------------------------------------------------------------------------//

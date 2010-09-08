@@ -46,10 +46,12 @@ class Application_Handler_Correspondence extends Application_Handler
 				{
 					case UPLOAD_ERR_OK:
 						// Check file extension
-						//if ($aFileInfo['type'] !== 'text/csv')
-					//	{
-						//	$aErrors[]	= "The incorrect type of file was supplied ('".$aFileInfo['type']."'). Please supply a CSV (Comma Separated Values) file.";
-						//}
+						/*if ($aFileInfo['type'] !== 'text/csv')
+						{
+							$aErrors[]	= "The incorrect type of file was supplied ('".$aFileInfo['type']."'). Please supply a CSV (Comma Separated Values) file.";
+						}*/
+						$rInfo = finfo_open(FILEINFO_MIME);
+						throw new Exception(finfo_file($rInfo, $aFileInfo['tmp_name']));
 						break;
 					case UPLOAD_ERR_INI_SIZE:
 						$aErrors[]	= "The CSV file you supplied is too large. Maximum size is ".ini_get('upload_max_filesize').".";
@@ -78,7 +80,7 @@ class Application_Handler_Correspondence extends Application_Handler
 				try
 				{
 					// Try and load it
-					$oTemplateORM	= Correspondence_Template_ORM::getForId($_POST['correspondence_template_id']);
+					$oTemplateORM	= Correspondence_Template::getForId($_POST['correspondence_template_id']);
 
 					// All good
 					$iCorrespondenceTemplateId	= (int)$_POST['correspondence_template_id'];
@@ -101,8 +103,8 @@ class Application_Handler_Correspondence extends Application_Handler
 			// Create correspondence run
 			$oDA	= DataAccess::getDataAccess();
 			$oDA->TransactionStart();
-			$oSource	= new Correspondence_Source_Csv(file_get_contents($aFileInfo['tmp_name']));
-			$oTemplate	= Correspondence_Template::createFromORM($oTemplateORM, $oSource);
+			$oSource	= new Correspondence_Logic_Source_Csv(file_get_contents($aFileInfo['tmp_name']));
+			$oTemplate	= Correspondence_Logic_Template::createFromORM($oTemplateORM, $oSource);
 			$oTemplate->createRun(false, date('Y-m-d H:i:s', $iDeliveryDateTime), null, true);
 			$oDA->TransactionRollback();
 

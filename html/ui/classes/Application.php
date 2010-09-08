@@ -264,7 +264,8 @@ class Application
 			
 			// TODO: Check for permission to create correspondence
 			ContextMenu()->Admin->Correspondence->CreateCorrespondence();
-			ContextMenu()->Admin->Correspondence->ViewCorrespondenceLedger();
+			ContextMenu()->Admin->Correspondence->Ledger->ViewCorrespondenceBatchLedger();
+			ContextMenu()->Admin->Correspondence->Ledger->ViewCorrespondenceRunLedger();
 		}
 
 		// Document Management
@@ -510,7 +511,8 @@ class Application
 			
 			// TODO: Check for permission to create correspondence
 			ContextMenu()->Admin->Correspondence->CreateCorrespondence();
-			ContextMenu()->Admin->Correspondence->ViewCorrespondenceLedger();
+			ContextMenu()->Admin->Correspondence->Ledger->ViewCorrespondenceBatchLedger();
+			ContextMenu()->Admin->Correspondence->Ledger->ViewCorrespondenceRunLedger();
 		}
 
 		// Document Management

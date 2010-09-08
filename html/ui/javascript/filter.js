@@ -185,14 +185,14 @@ var Filter	= Class.create
 				// Set value and update option controls
 				oFilter.mFrom	= mFrom;
 				oFilter.mTo		= mTo;
-				if (!bClear && !bSetRawValueOnly)
+				if (!bClear && !bSetRawValueOnly && this._hControls[sField])
 				{
 					this._hControls[sField][0].setValue(oFilter.mFrom);
 					this._hControls[sField][1].setValue(oFilter.mTo);
 				}
 				
 				// Set the range definition value
-				if (mRangeTypeValue && !bSetRawValueOnly)
+				if (mRangeTypeValue && !bSetRawValueOnly && this._hControls[sField])
 				{
 					oFilter.oRangeTypeSelect.value	= mRangeTypeValue;
 					this._rangeTypeSelected(oFilter.oRangeTypeSelect, sField);
@@ -387,9 +387,9 @@ var Filter	= Class.create
 		}
 	},
 	
-	registerFilterIcon	: function(sField, oIcon, sLabel)
+	registerFilterIcon	: function(sField, oIcon, sLabel, oParentElement, iDisplayOffsetX, iDisplayOffsetY)
 	{
-		oIcon.observe('click', this._showFilterOptions.bind(this, sField, sLabel));
+		oIcon.observe('click', this._showFilterOptions.bind(this, sField, sLabel, oParentElement, iDisplayOffsetX, iDisplayOffsetY));
 	},
 	
 	getControlsForField	: function(sField)
@@ -429,7 +429,7 @@ var Filter	= Class.create
 		}
 	},
 	
-	_showFilterOptions	: function(sField, sLabel, oEvent)
+	_showFilterOptions	: function(sField, sLabel, oParentElement, iDisplayOffsetX, iDisplayOffsetY, oEvent)
 	{
 		if (!this._oFilterOptionsElement)
 		{
@@ -444,7 +444,6 @@ var Filter	= Class.create
 													)
 												)
 											);
-			document.body.appendChild(this._oFilterOptionsElement);
 			
 			// Attach button events
 			var oUseButton		= this._oFilterOptionsElement.select('button.icon-button').first();
@@ -453,15 +452,40 @@ var Filter	= Class.create
 			oCancelButton.observe('click', this._hideFilterOptions.bind(this, null));
 		}
 		
+		iDisplayOffsetY	= (iDisplayOffsetY ? iDisplayOffsetY : 0);
+		iDisplayOffsetX	= (iDisplayOffsetX ? iDisplayOffsetX : 0);
+		
 		var oContent		= this._oFilterOptionsElement.select('div.filter-overlay-options-content').first();
 		oContent.innerHTML	= '';
 		
-		this._oFilterOptionsElement.style.left	= oEvent.clientX + 'px';
-		this._oFilterOptionsElement.style.top	= oEvent.clientY + 'px';
-		this._oFilterOptionsElement.sField		= sField;
+		if (oParentElement)
+		{
+			// Attach and position relative to the given element
+			var iValueT		= 0;
+			var iValueL		= 0;
+			var oElement	= oParentElement;
+			do 
+			{
+				iValueT += oElement.offsetTop || 0;
+				iValueL += oElement.offsetLeft || 0;
+				oElement = oElement.offsetParent;
+			} 
+			while (oElement);
+			
+			this._oFilterOptionsElement.style.left	= (oEvent.clientX - iValueL + iDisplayOffsetX) + 'px';
+			this._oFilterOptionsElement.style.top	= (oEvent.clientY - iValueT + iDisplayOffsetY) + 'px';
+			oParentElement.appendChild(this._oFilterOptionsElement);
+		}
+		else
+		{
+			// Attach and position relative to the document
+			this._oFilterOptionsElement.style.left	= (oEvent.clientX + iDisplayOffsetX) + 'px';
+			this._oFilterOptionsElement.style.top	= (oEvent.clientY + iDisplayOffsetY) + 'px';
+			document.body.appendChild(this._oFilterOptionsElement);
+		}
 		
+		this._oFilterOptionsElement.sField	= sField;
 		oContent.appendChild(this._hFilters[sField].oOptionsElement);
-		
 		this._oFilterOptionsElement.show();
 		oEvent.stop();
 	},
@@ -505,7 +529,6 @@ var Filter	= Class.create
 		// Create the control field and cache it, all are created mandatory, validation happens when 'use' is clicked
 		var oControl	= Control_Field.factory(oOptionDefinition.sType, oOptionDefinition.oDefinition);
 		oControl.setRenderMode(Control_Field.RENDER_MODE_EDIT);
-		oControl.setMandatory(true);
 		
 		if (!this._hControls[sField])
 		{

@@ -150,6 +150,33 @@ class JSON_Handler_Correspondence_Template extends JSON_Handler
 					);
 		}
 	}
+	
+	public function getAdditionalColumns($iId)
+	{
+		try
+		{
+			// TODO: Check permissions
+			return 	array(
+						"bSuccess"				=> true,
+						"aAdditionalColumns"	=> Correspondence_Logic_Template::getForId($iId)->getAdditionalColumnSet()
+					);
+		}
+		catch (JSON_Handler_Correspondence_Template_Exception $oException)
+		{
+			return 	array(
+						"bSuccess"	=> false,
+						"sMessage"	=> $oException->getMessage()
+					);
+		}
+		catch (Exception $e)
+		{
+			$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+			return 	array(
+						"bSuccess"	=> false,
+						"sMessage"	=> $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'
+					);
+		}
+	}
 }
 
 class JSON_Handler_Correspondence_Template_Exception extends Exception

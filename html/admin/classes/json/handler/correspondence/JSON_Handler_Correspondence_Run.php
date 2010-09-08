@@ -156,7 +156,7 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 		{
 			$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 			return 	array(
-						'bSuccess'	=> false,
+						'Success'	=> false,
 						'sMessage'	=> $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'
 					);
 		}
@@ -211,15 +211,33 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 		{
 			$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 			return 	array(
-						'bSuccess'	=> false,
+						'Success'	=> false,
 						'sMessage'	=> $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'
 					);
 		}
 	}
 	
-	public function getForId()
+	public function getForId($iId)
 	{
-		
+		try
+		{
+			return array('bSuccess' => true, 'oCorrespondenceRun' => Correspondence_Run::getForId($iId)->toStdClass());
+		}
+		catch (JSON_Handler_Correspondence_Run_Exception $oException)
+		{
+			return 	array(
+						'bSuccess'	=> false,
+						'sMessage'	=> $oException->getMessage()
+					);
+		}
+		catch (Exception $e)
+		{
+			$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+			return 	array(
+						'bSuccess'	=> false,
+						'sMessage'	=> $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'
+					);
+		}
 	}
 }
 
