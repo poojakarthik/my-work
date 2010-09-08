@@ -36,6 +36,7 @@ abstract class Correspondence_Logic_Source
 									'account_name'					=>array(),
 									'first_name'					=>array(),
 									'last_name'						=>array(),
+									'address_line_1'				=>array(),
 									'suburb'						=>array(),
 									'postcode'						=>array(),
 									'state'							=>array(),
