@@ -4,7 +4,15 @@ abstract class Correspondence_Logic_Source
 {
 	protected $_oDO;
 	protected $_bValidationFailed = false;
+	protected $_aColumns;
+	protected $_aCorrespondence = array();
+	protected $_aLines = array();
+	protected $_errorReport;
 
+	protected $_oTemplate;
+
+
+	protected $iLineNumber;
 
 	protected $_aInputColumns =  array(	'customer_group_id',
 										'account_id',
@@ -37,9 +45,10 @@ abstract class Correspondence_Logic_Source
 									'column_count'					=>array('required'=>null, 'supplied'=>null)
 								);
 
-	public function __construct( $iSourceType, $iId = null)
+	public function __construct( $iSourceType= null, $iId = null)
 	{
 		$this->_oDO = $iId ==null?new Correspondence_Source(array('correspondence_source_type_id'=>$iSourceType)):Correspondence_Source::getForId($iId);
+		$this->_errorReport = new File_Exporter_CSV();
 	}
 
 
@@ -145,7 +154,7 @@ abstract class Correspondence_Logic_Source
 				}
 				else if ($oAccount->CustomerGroup != $aData['customer_group_id'])
 				{
-					$aErrors['customer_group_conflict'] = 'Incorrect Customergroup: provided value is \''.$oAccount->CustomerGroup.'\' but must be \''.$aData['customer_group_id'];
+					$aErrors['customer_group_conflict'] = 'Incorrect Customergroup: provided value must be \''.$oAccount->CustomerGroup.'\' but is \''.$aData['customer_group_id'].'\'';
 				}
 
 				//if delivery method is null: derive delivery method
@@ -181,7 +190,114 @@ abstract class Correspondence_Logic_Source
 
 	}
 
+	public function columnCountValidation($aAdditionalColumns, $mRecord)
+	{
+		if (count($this->_aColumns) + count($aAdditionalColumns)!= $this->columnCount($mRecord))
+			{
+				$this->_bValidationFailed = true;
+			}
+			$this->_aReport['column_count']['required']	= count($this->_aColumns) + count($aAdditionalColumns);
+			$this->_aReport['column_count']['supplied']	= $this->columnCount($mRecord);
+
+			return $this->_bValidationFailed;
+	}
+
+	abstract public function columnCount($mDataRecord);
+
+
+	protected function processCorrespondenceRecord($aRecord)
+	{
+		$bValid = $this->validateDataRecord($aRecord);
+		if (!$bValid)
+			$this->_bValidationFailed = true;
+		if (!$this->_bValidationFailed)
+		{
+			$this->_aCorrespondence[] = new Correspondence_Logic($aRecord);
+		}
+
+		$this->_aLines[]=$aRecord;
+		foreach ($aRecord['validation_errors'] as $sErrorType=>$sMessage)
+		{
+			$this->_aReport[$sErrorType][]=$iLineNumber;
+		}
+		if (count($aRecord['validation_errors'])==0)
+			$this->_aReport['success'][]= $this->iLineNumber;
+	}
+
+	protected function processValidationErrors()
+	{
+		//create data file with error messages
+		$oRecordType = File_Exporter_RecordType::factory();
+
+		foreach($this->_aLines[0] as $key =>$aLinePart)
+		{
+			if ($key == 'validation_errors')
+			{
+				$oRecordType->addField($key, File_Exporter_Field::factory());
+			}
+			else
+			{
+				foreach($aLinePart as $key2=>$value)
+					$oRecordType->addField($key2, File_Exporter_Field::factory());
+			}
+		}
+
+		$this->_errorReport->registerRecordType('detail', $oRecordType);
+
+		foreach($this->_aLines as $aLine)
+		{
+			$this->addErrorRecord($aLine);
+		}
+		$sPath = FILES_BASE_PATH.'temp/';
+		$sTimeStamp = str_replace(array(' ',':','-'), '',Data_Source_Time::currentTimestamp());
+
+
+		$sFilename	= $this->_oTemplate->template_code
+		.'.'
+		.$sTimeStamp
+		.'.'
+		.'error_report'
+		.'.csv'
+		;
+		$this->_errorReport->renderToFile($sPath.$sFilename);
+		throw new Correspondence_DataValidation_Exception($this->_aReport, $sPath.$sFilename);
+		//generate email
+		//return a summary error message and url for the error file
+	}
+
+	public function setTemplate($oTemplate)
+	{
+		$this->_oTemplate = $oTemplate;
+	}
+
+	public function addErrorRecord($aLine)
+	{
+		$oRecord	= $this->_errorReport->getRecordType('detail')->newRecord();
+
+		foreach ($aLine as $sField=>$aValue)
+		{
+
+			if ($sField == 'validation_errors')
+			{
+				$oRecord->$sField = implode(';', $aValue);
+
+			}
+			else
+			{
+				foreach ($aValue as $key=>$mValue)
+				{
+					$oRecord->$key = $mValue;
+				}
+			}
+		}
+		$this->_errorReport->addRecord($oRecord, File_Exporter_CSV::RECORD_GROUP_BODY);
+
+	}
+
+
 }
+
+
 
 class Correspondence_DataValidation_Exception extends Exception
 {

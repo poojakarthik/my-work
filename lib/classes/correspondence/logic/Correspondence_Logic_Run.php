@@ -131,7 +131,7 @@ class Correspondence_Logic_Run
 	public function getCorrespondence()
 	{
 		if ($this->_aCorrespondence == null)
-			$this->_aCorrespondence = Correspondence_Logic::getForRunId($this->id);
+			$this->_aCorrespondence = Correspondence_Logic::getForRun($this);
 		return $this->_aCorrespondence;
 	}
 

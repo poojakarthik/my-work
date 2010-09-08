@@ -3,112 +3,40 @@ class Correspondence_Logic_Source_Csv extends Correspondence_Logic_Source
 {
 
 	protected $_aCsv;
-	protected $_aLines = array();
-	protected $_errorReport;
-	protected $_oTemplate;
+
 
 
 	public function __construct($sCsv = null)
 	{
 		parent::__construct(CORRESPONDENCE_SOURCE_TYPE_CSV);
 		$this->_aCsv = explode("\n",trim($sCsv));
-		$this->_errorReport = new File_Exporter_CSV();
 	}
-
-	public function setTemplate($oTemplate)
-	{
-		$this->_oTemplate = $oTemplate;
-	}
-
 
 	function getData($bPreprinted, $aAdditionalColumns = array())
 	{
-		$aCorrespondence = array();
 		if (count($this->_aCsv)>0)
 		{
-			$aColumns = Correspondence_Logic::getStandardColumns($bPreprinted);
-
-
-			if (count($aColumns) + count($aAdditionalColumns)!= $this->columnCount($this->_aCsv[0]))
-			{
-				$this->_bValidationFailed = true;
-			}
-			$this->_aReport['column_count']['required']	= count($aColumns) + count($aAdditionalColumns);
-			$this->_aReport['column_count']['supplied']	= $this->columnCount($this->_aCsv[0]);
-			$iLineNumber = 1;
+			$this->_aColumns = Correspondence_Logic::getStandardColumns($bPreprinted);
+			$this->columnCountValidation($aAdditionalColumns, $this->_aCsv[0]);
+			$this->iLineNumber = 1;
 			foreach($this->_aCsv as $sLine)
 			{
 				$aLine = self::parseLineHashed(rtrim($sLine,"\r\n"), $sDelimiter=',', $sQuote='"', $sEscape='\\', $aColumns, $aAdditionalColumns);
-				$bValid = $this->validateDataRecord($aLine);
-				if (!$bValid)
-					$this->_bValidationFailed = true;
-				if (!$this->_bValidationFailed)
-				{
-					$aCorrespondence[] = new Correspondence_Logic($aLine);
-				}
-
-				$this->_aLines[]=$aLine;
-				foreach ($aLine['validation_errors'] as $sErrorType=>$sMessage)
-				{
-					$this->_aReport[$sErrorType][]=$iLineNumber;
-				}
-				if (count($aLine['validation_errors'])==0)
-					$this->_aReport['success'][]= $iLineNumber;
-				$iLineNumber++;
+				$this->processCorrespondenceRecord($aRecord);
+				$this->iLineNumber++;
 			}
 			if ($this->_bValidationFailed)
 			{
-				//create data file with error messages
-
-				$oRecordType = File_Exporter_RecordType::factory();
-
-				foreach($aLine as $key =>$aLinePart)
-				{
-					if ($key == 'validation_errors')
-					{
-						$oRecordType->addField($key, File_Exporter_Field::factory());
-					}
-					else
-					{
-						foreach($aLinePart as $key2=>$value)
-							$oRecordType->addField($key2, File_Exporter_Field::factory());
-					}
-				}
-
-				$this->_errorReport->registerRecordType('detail', $oRecordType);
-
-				foreach($this->_aLines as $aLine)
-				{
-					$this->addErrorRecord($aLine);
-				}
-				$sPath = FILES_BASE_PATH.'temp/';
-				$sTimeStamp = str_replace(array(' ',':','-'), '',Data_Source_Time::currentTimestamp());
-
-
-				$sFilename	= $this->_oTemplate->template_code
-				.'.'
-				.$sTimeStamp
-				.'.'
-				.'error_report'
-				.'.csv'
-				;
-				$this->_errorReport->renderToFile($sPath.$sFilename);
-				throw new Correspondence_DataValidation_Exception($this->_aReport, $sPath.$sFilename);
-				//generate email
-				//return a summary error message and url for the error file
-
-
+				$this->processValidationErrors();
 			}
 
 		}
-
-			return $aCorrespondence;
-
+		return $aCorrespondence;
 	}
 
-	public function columnCount($sLine)
+	public function columnCount($mDataRecord)
 	{
-		return count(File_CSV::parseLine(rtrim($sLine,"\r\n"), $sDelimiter=',', $sQuote='"', $sEscape='\\'));
+		return count(File_CSV::parseLine(rtrim($mDataRecord,"\r\n"), $sDelimiter=',', $sQuote='"', $sEscape='\\'));
 	}
 
 
@@ -204,31 +132,6 @@ class Correspondence_Logic_Source_Csv extends Correspondence_Logic_Source
 
 		// Return the Array representing this Line
 		return $aLine;
-	}
-
-
-	public function addErrorRecord($aLine)
-	{
-		$oRecord	= $this->_errorReport->getRecordType('detail')->newRecord();
-
-		foreach ($aLine as $sField=>$aValue)
-		{
-
-			if ($sField == 'validation_errors')
-			{
-				$oRecord->$sField = implode(';', $aValue);
-
-			}
-			else
-			{
-				foreach ($aValue as $key=>$mValue)
-				{
-					$oRecord->$key = $mValue;
-				}
-			}
-		}
-		$this->_errorReport->addRecord($oRecord, File_Exporter_CSV::RECORD_GROUP_BODY);
-
 	}
 
 	public function __get($sField)
