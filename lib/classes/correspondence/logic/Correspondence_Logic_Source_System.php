@@ -13,33 +13,39 @@ class Correspondence_Logic_Source_System extends Correspondence_Logic_Source
 
 	public function getData($bPreprinted, $aAdditionalColumns = array())
 	{
-		$this->_aColumns = Correspondence_Logic::getStandardColumns($bPreprinted);
-
- 		$this->iLineNumber = 1;
-		foreach ($this->_aData as $aDataRecord)
+		if (count($this->_aData)>0)
 		{
- 			if ($this->iLineNumber == 1)
- 				$this->columnCountValidation($aAdditionalColumns, $aDataRecord);
-
- 			$aRecord = array('standard_fields'=>array(), 'additional_fields'=>array());
- 			foreach ($aDataRecord as $sField => $mValue)
+			$this->_aColumns = Correspondence_Logic::getStandardColumns($bPreprinted);
+	 		$this->iLineNumber = 1;
+			foreach ($this->_aData as $aDataRecord)
 			{
-				if (in_array($sField,$this->_aColumns))
-				{
-					$aRecord['standard_fields'][$sField]= $mValue;
-				}
-				else
-				{
-					$aRecord['additional_fields'][$sField] = $mValue;
-				}
-			}
-			$this->processCorrespondenceRecord($aRecord);
-			$this->iLineNumber++;
- 		}
+	 			if ($this->iLineNumber == 1)
+	 				$this->columnCountValidation($aAdditionalColumns, $aDataRecord);
 
-		if ($this->_bValidationFailed)
+	 			$aRecord = array('standard_fields'=>array(), 'additional_fields'=>array());
+	 			foreach ($aDataRecord as $sField => $mValue)
+				{
+					if (in_array($sField,$this->_aColumns))
+					{
+						$aRecord['standard_fields'][$sField]= $mValue;
+					}
+					else
+					{
+						$aRecord['additional_fields'][$sField] = $mValue;
+					}
+				}
+				$this->processCorrespondenceRecord($aRecord);
+				$this->iLineNumber++;
+	 		}
+
+			if ($this->_bValidationFailed)
+			{
+				$this->processValidationErrors();
+			}
+		}
+		else
 		{
-			$this->processValidationErrors();
+			throw new Correspondence_DataValidation_Exception(null, null, true);
 		}
 
 

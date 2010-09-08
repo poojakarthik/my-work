@@ -115,7 +115,6 @@ class Correspondence_Logic_Run
 	{
 		$bPreprinted = $this->preprinted==1?true:false;
 		return $this->_oCorrespondenceTemplate->createFullColumnSet( $bPreprinted);
-
 	}
 
 	public function count()
@@ -191,7 +190,39 @@ class Correspondence_Logic_Run
 		{
 			$oRun = new Correspondence_Logic_Run($oRunORM);
 			if ($oRun->processed_datetime == null)
-				$oRun->process();
+				try
+				{
+					$oRun->process();
+				}
+				catch(Exception $e)
+				{
+					if (get_class($e)== 'Correspondence_DataValidation_Exception')
+					{
+						$sErrorReportFilePath;
+						$sMessage = 'The following problems occurred when generating correspondence for run with id '.$oRun->id.' , for letter code '.$oRun->getTemplate()->template_code.': ';
+						if ($e->bSqlError)
+						{
+							$sMessage.=' The data source sql query is invalid';
+						}
+						else if ($e->bNoData)
+						{
+							$sMessage.=' The data source contained no data. No correspondence was generated';
+						}
+						else
+						{
+							$sMessage.=' The generated correspondence data contains validation errors. See attached CSV file for details.';
+							$sErrorReportFilePath = $e->sFileName;
+						}
+
+						$sMessage.= 'This correspondence run will be marked as \'delivered\', but no data file will be sent to the mailing house';
+
+						//send email
+					}
+					else
+					{
+						throw $e;
+					}
+				}
 			$aRuns[] = $oRun;
 		}
 

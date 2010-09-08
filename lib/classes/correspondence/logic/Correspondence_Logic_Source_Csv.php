@@ -31,6 +31,10 @@ class Correspondence_Logic_Source_Csv extends Correspondence_Logic_Source
 			}
 
 		}
+		else
+		{
+			throw new Correspondence_DataValidation_Exception(null, null, true);
+		}
 		return $aCorrespondence;
 	}
 

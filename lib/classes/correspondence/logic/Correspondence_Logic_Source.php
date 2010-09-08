@@ -303,16 +303,17 @@ class Correspondence_DataValidation_Exception extends Exception
 {
 	public $aReport;
 	public $sFileName;
+	public $bNoData;
+	public $bSqlError;
 
-	public function __construct($aReport, $sFileName)
+	public function __construct($aReport = null, $sFileName = null, $bNoData = false, $bSqlError = false)
 	{
 		parent::__construct();
-		$this->aReport 		= $aReport;
+		$this->aReport 		= $aReport	;
 		$this->sFileName 	= $sFileName;
+		$this->bNodata		= $bNoData	;
+		$this->bSqlError	= $bSqlError;
 	}
-
-
-
 }
 
 
