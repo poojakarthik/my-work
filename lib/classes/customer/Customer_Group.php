@@ -131,6 +131,17 @@ class Customer_Group
 		return Customer_Group_Payment_Method::getForCustomerGroup($this->Id);
 	}
 	
+	public function toArray()
+	{
+		$aMe		= array();
+		$aColumns	= self::getColumns();
+		foreach ($aColumns as $sColumn)
+		{
+			$aMe[$sColumn]	= $this->{self::tidyName($sColumn)};
+		}
+		return $aMe;
+	}
+	
 	private static function _makeConstantName($sInternalName)
 	{
 		return 'CUSTOMER_GROUP_'.strtoupper(str_replace(' ', '_', $sInternalName));

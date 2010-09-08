@@ -60,6 +60,69 @@ class Correspondence_Run_Batch extends ORM_Cached
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 
+	public function getForBatchDateTime($bCountOnly=false, $iLimit=null, $iOffset=null, $iMinDateTime=null, $iMaxDateTime=null, $sSortDirection='DESC')
+	{
+		// Build where clause
+		if (!is_null($iMinDateTime) && !is_null($iMaxDateTime))
+		{
+			$sWhere	= "WHERE	batch_datetime BETWEEN '".date('Y-m-d H:i:s', $iMinDateTime)."' AND '".date('Y-m-d H:i:s', $iMaxDateTime)."'";
+		}
+		else if (!is_null($iMinDateTime))
+		{
+			$sWhere	= "WHERE	batch_datetime >= '".date('Y-m-d H:i:s', $iMinDateTime)."'";
+		}
+		else if (!is_null($iMaxDateTime))
+		{
+			$sWhere	= "WHERE	batch_datetime <= '".date('Y-m-d H:i:s', $iMaxDateTime)."'";
+		}
+		else
+		{
+			$sWhere	= "";
+		}
+		
+		if ($bCountOnly)
+		{
+			// Count records only
+			$oQuery	= new Query();
+			$sQuery	= "	SELECT	count(*) as batch_count
+						FROM	correspondence_run_batch
+						{$sWhere}";
+			$mResult	= $oQuery->Execute($sQuery);
+			if ($mResult === false)
+			{
+				// Most likely a sql or connectivity error
+				throw new Exception("Unable to count correspondence_run_batch records, SQL Error. ".$oQuery->Error());
+			}
+			$aRow	= $mResult->fetch_assoc();
+			return $aRow['batch_count'];
+		}
+		else
+		{
+			// Return all records
+			$sLimit	= StatementSelect::generateLimit($iLimit, $iOffset);
+			$oQuery	= new Query();
+			$sQuery	= "	SELECT	*
+						FROM	correspondence_run_batch
+						{$sWhere}
+						ORDER BY batch_datetime {$sSortDirection}
+						LIMIT {$sLimit}";
+			$mResult	= $oQuery->Execute($sQuery);
+			if ($mResult === false)
+			{
+				// Most likely a sql or connectivity error
+				throw new Exception("Unable to retrieve correspondence_run_batch records, SQL Error. ".$oQuery->Error());
+			}
+			
+			// Create ORM objects and return
+			$aORMs	= array();
+			while ($aRow = $mResult->fetch_assoc())
+			{
+				$aORMs[]	= self::getForId($aRow['id']);
+			}
+			return $aORMs;
+		}
+	}
+
 	/**
 	 * _preparedStatement()
 	 *

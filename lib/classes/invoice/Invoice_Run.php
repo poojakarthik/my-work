@@ -823,7 +823,7 @@ class Invoice_Run
 		// Create the correspondence run
 		try
 		{
-			Correspondence_Template::getForSystemName('INTERIM_INVOICE',$aCorrespondenceData)->createRun(true, null, null,$sInvoiceRunPDFBasePath."{$this->Id}.tar")->save();
+			Correspondence_Logic_Template::getForSystemName('INTERIM_INVOICE',$aCorrespondenceData)->createRun(true, null, null,$sInvoiceRunPDFBasePath."{$this->Id}.tar")->save();
 		}
 		catch (Exception $oEx)
 		{

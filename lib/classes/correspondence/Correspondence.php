@@ -60,6 +60,68 @@ class Correspondence extends ORM_Cached
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 
+	public static function searchFor($bCountOnly=false, $iLimit=0, $iOffset=0, $aFilter=null, $aSort=null)
+	{
+		$sFrom			= '	correspondence c
+							JOIN CustomerGroup cg ON cg.id = c.customer_group_id
+							JOIN correspondence_delivery_method cdm ON cdm.id = c.correspondence_delivery_method_id';
+		$sSelect		= ($bCountOnly ? 'count(c.id) AS record_count' : "c.*, cg.internal_name AS customer_group_name, cdm.name AS correspondence_delivery_method_name");
+		$aWhereAlias	=	array(
+								'id'								=> 'c.id',
+								'correspondence_run_id'				=> 'c.correspondence_run_id',
+								'account_id'						=> 'c.account_id',
+								'customer_group_id'					=> 'c.customer_group_id',
+								'correspondence_delivery_method_id'	=> 'c.correspondence_delivery_method_id',
+								'account_name'						=> 'c.account_name',
+								'email'								=> 'c.email',
+								'mobile'							=> 'c.mobile',
+								'landline'							=> 'c.landline',
+								'title'								=> 'c.title',
+								'first_name'						=> 'c.first_name',
+								'last_name'							=> 'c.last_name',
+								'address_line_1'					=> 'c.address_line_1',
+								'address_line_2'					=> 'c.address_line_2',
+								'suburb'							=> 'c.suburb',
+								'postcode'							=> 'c.postcode',
+								'state'								=> 'c.state'
+							);
+		$aWhere			= StatementSelect::generateWhere($aWhereAlias, $aFilter);
+		$aSortAlias		= $aWhereAlias;
+		$sOrderByClause	= StatementSelect::generateOrderBy($aSortAlias, $aSort);
+		$sLimitClause	= StatementSelect::generateLimit($iLimit, $iOffset);
+		
+		$oStmt	=	new StatementSelect(
+						$sFrom, 
+						$sSelect, 
+						$aWhere['sClause'], 
+						($bCountOnly ? '' : $sOrderByClause), 
+						($bCountOnly ? '' : $sLimitClause)
+					);
+		
+		if ($oStmt->Execute($aWhere['aValues']) === false)
+		{
+			throw new Exception("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ".$oStmt->Error());
+		}
+		
+		if ($bCountOnly)
+		{
+			// Count only
+			$aRow	= $oStmt->Fetch();
+			return $aRow['record_count'];
+		}
+		else
+		{
+			// Results required
+			$aResults	= array();
+			while ($aRow = $oStmt->Fetch())
+			{
+				$oResult				= self::getForId($aRow['id']);
+				$aResults[$oResult->id]	= $oResult;
+			}
+			return $aResults;
+		}
+	}
+
 	/**
 	 * _preparedStatement()
 	 *

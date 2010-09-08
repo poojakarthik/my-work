@@ -142,9 +142,63 @@ class Correspondence_Run extends ORM_Cached
 		return $aObjects;
 	}
 
-
-
-
-
+	public static function searchFor($bCountOnly=false, $iLimit=0, $iOffset=0, $aFilter=null, $aSort=null)
+	{
+		$sFrom			= '	correspondence_run c
+							JOIN Employee e ON c.created_employee_id = e.id
+							JOIN correspondence_template ct ON ct.id = c.correspondence_template_id';
+		$sSelect		= ($bCountOnly ? 'count(c.id) AS record_count' : "c.*, CONCAT(e.FirstName,' ',e.LastName) AS created_employee_name, ct.name AS correspondence_template_name");
+		$aWhereAlias	=	array(
+								'processed_datetime' 	=> 'c.processed_datetime',
+								'scheduled_datetime' 	=> 'c.scheduled_datetime',
+								'delivered_datetime' 	=> 'c.delivered_datetime',
+								'created' 				=> 'c.created',
+								'created_employee_id'	=> 'c.created_employee_id',
+								'preprinted'			=> 'c.preprinted'
+							);
+		$aWhere			= 	StatementSelect::generateWhere($aWhereAlias, $aFilter);
+		$aSortAlias		=	array(
+								'correspondence_template_name'	=> 'correspondence_template_name',
+								'processed_datetime' 			=> 'c.processed_datetime',
+								'scheduled_datetime' 			=> 'c.scheduled_datetime',
+								'delivered_datetime' 			=> 'c.delivered_datetime',
+								'created' 						=> 'c.created',
+								'created_employee_name'			=> 'created_employee_name',
+								'preprinted'					=> 'c.preprinted'
+							);
+		$sOrderByClause	= StatementSelect::generateOrderBy($aSortAlias, $aSort);
+		$sLimitClause	= StatementSelect::generateLimit($iLimit, $iOffset);
+		
+		$oStmt	=	new StatementSelect(
+						$sFrom, 
+						$sSelect, 
+						$aWhere['sClause'], 
+						($bCountOnly ? '' : $sOrderByClause), 
+						($bCountOnly ? '' : $sLimitClause)
+					);
+		
+		if ($oStmt->Execute($aWhere['aValues']) === false)
+		{
+			throw new Exception("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ".$oStmt->Error());
+		}
+		
+		if ($bCountOnly)
+		{
+			// Count only
+			$aRow	= $oStmt->Fetch();
+			return $aRow['record_count'];
+		}
+		else
+		{
+			// Results required
+			$aResults	= array();
+			while ($aRow = $oStmt->Fetch())
+			{
+				$oResult				= self::getForId($aRow['id']);
+				$aResults[$oResult->id]	= $oResult;
+			}
+			return $aResults;
+		}
+	}
 }
 ?>
