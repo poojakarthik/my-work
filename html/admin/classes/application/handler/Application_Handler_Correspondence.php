@@ -100,13 +100,10 @@ class Application_Handler_Correspondence extends Application_Handler
 				throw new Exception("There was errors in the form information.");
 			}
 
-			// Create correspondence run
-			$oDA	= DataAccess::getDataAccess();
-			$oDA->TransactionStart();
+
 			$oSource	= new Correspondence_Logic_Source_Csv(file_get_contents($aFileInfo['tmp_name']));
-			$oTemplate	= Correspondence_Logic_Template::createFromORM($oTemplateORM, $oSource);
-			$oTemplate->createRun(false, date('Y-m-d H:i:s', $iDeliveryDateTime), null, true);
-			$oDA->TransactionRollback();
+			$oTemplate	= Correspondence_Logic_Template::getForId(18, $oSource);
+			$oTemplate->createRun(false, date('Y-m-d H:i:s', $iDeliveryDateTime), null, true)->save();
 
 			$aOutput['bSuccess']	= true;
 		}
@@ -120,10 +117,9 @@ class Application_Handler_Correspondence extends Application_Handler
 		die;
 	}
 
-
-public function createRun()
+	public function createRun()
 	{
-		$oSource = new Correspondence_Source_Csv(file_get_contents(dirname(__FILE__).'/sample_csv.csv'));
+		$oSource = new Correspondence_Logic_Source_Csv(file_get_contents(dirname(__FILE__).'/sample_csv.csv'));
 		$iCarrierId = 39;
 		$aColumns = array(
 
@@ -132,7 +128,7 @@ public function createRun()
 							array('id'=>null, 'name'=>'plan' ,								'description'=> 'service rateplan', 'column_index'=>3 ,'correspondence_template_id' => null ),
 
 		);
-		$oTemplate = Correspondence_Template::create('motorpass correspondence', 'blah blah',$aColumns, $iCarrierId, $oSource);
+		$oTemplate = Correspondence_Logic_Template::create('motorpass correspondence', 'blah blah',$aColumns, $iCarrierId, $oSource);
 		$oRun = $oTemplate->createRun();
 		$oTemplate->save();
 		$oRun->save();
@@ -151,12 +147,12 @@ public function createRun()
 
 	public function interimInvoice()
 	{
-		//'account_name' => 'Bobs Yeruncle',
+
 		$aCorrespondenceData = array(array
         (
             'account_id' => 1000179892,
-        	'customer_group_id'=>2,
-            'correspondence_delivery_method_id' => 'CORRESPONDENCE_DELIVERY_METHOD_EMAIL',
+        	'customer_group_id'=>3,
+            'correspondence_delivery_method_id' => null,
         	'account_name' => 'Bobs Yeruncle',
         	'title' => 'Miss',
             'first_name' => 'Cheryl',
@@ -169,26 +165,27 @@ public function createRun()
             'email' => 'col_noemail@protalk.com.au',
             'mobile' => '',
             'landline' => '0755413848',
-            'pdf_file_path' => '/x/y/z/1000179892.pdf'
+            'pdf_file_path' => 'C:/wamp/www/flex/files/invoices/pdf/Important_Info.pdf'
         )
 		);
 		$sTarFilePath = "c://wamp/www/flex/file/pdf/4910/";
 
-		Correspondence_Template::getForSystemName('INVOICE',$aCorrespondenceData)->createRun(true, null, null)->save();
+		Correspondence_Logic_Template::getForSystemName('INVOICE',$aCorrespondenceData)->createRun(true)->save();
 		die;
 	}
 
 	public function getForBatch()
 	{
-		$aRuns = Correspondence_Run::getForBatchId(45, true);
+		$aRuns = Correspondence_Logic_Run::getForBatchId(49, true);
 		die;
 	}
 
 	public function getForAccount($iAccountId)
 	{
-		$aRuns = Correspondence::getForAccountId(1000179892, true);
+		$aRuns = Correspondence_Logic::getForAccountId(1000179892, true);
 		die;
 	}
 }
+
 
 ?>
