@@ -13,11 +13,15 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 										account_id							: true,
 										customer_group_name					: true,
 										correspondence_delivery_method_name	: true,
-										account_name						: true,
-										email								: true,
-										mobile								: true,
-										landline							: true
+										addressee							: true,
+										address								: true
 									};
+		this._hColumnElements	= {};
+		this._hColumnFilters	= 	{
+										customer_group_name					: 'customer_group_id',
+										correspondence_delivery_method_name	: 'correspondence_delivery_method_id'
+									};
+		
 		
 		// Create DataSet & pagination object
 		this.oDataSet	= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_NO_CACHING, Component_Correspondence_Ledger_For_Run.DATA_SET_DEFINITION);
@@ -150,9 +154,56 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 		);
 	},
 	
-	_additionalColumnsLoaded	: function(hColumns)
+	_additionalColumnsLoaded	: function(aColumns)
 	{
-		this._setupColumns();
+		// Setup column elements
+		this._hColumnElements	=
+		{
+			id	:
+			{
+				oHeader	: this._createFieldHeader('Id', 'id'),
+				oFilter	: $T.th()
+			},
+			account_id	:
+			{
+				oHeader	: this._createFieldHeader('Account', 'account_id'),
+				oFilter	: $T.th()
+			},
+			customer_group_name	:
+			{
+				oHeader	: this._createFieldHeader('Customer Group', 'customer_group_name'),
+				oFilter	: this._createFilterValueElement('customer_group_id', 'Customer Group')
+			},
+			correspondence_delivery_method_name	:
+			{
+				oHeader	: this._createFieldHeader('Method', 'correspondence_delivery_method_name'),
+				oFilter	: this._createFilterValueElement('correspondence_delivery_method_id', 'Delivery Method')
+			},
+			addressee	:
+			{
+				oHeader	: this._createFieldHeader('Addressee'),
+				oFilter	: $T.th()
+			},
+			address	:
+			{
+				oHeader	: this._createFieldHeader('Address'),
+				oFilter	: $T.th()
+			}
+		};
+		
+		// Setup additional columns
+		var sColumn	= null;
+		for (var i = 0; i < aColumns.length; i++)
+		{
+			sColumn								= aColumns[i];
+			this._hColumnVisibility[sColumn]	= true;
+			this._hColumnElements[sColumn]		=	{
+														oHeader	: this._createFieldHeader(sColumn),
+														oFilter	: $T.th()
+													};
+		}
+		
+		this._updateColumnVisibility();
 		
 		// Attach content and get data
 		this._oContainerDiv.appendChild(this._oContentDiv);
@@ -163,10 +214,34 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 		this.oPagination.getCurrentPage();
 	},
 	
-	_setupColumns	: function()
+	_updateColumnVisibility	: function()
 	{
 		var oHeaderTR	= this._oContentDiv.select('thead > tr').first();
 		var oFilterTR	= this._oContentDiv.select('thead > tr').last();
+		for (var sColumn in this._hColumnVisibility)
+		{
+			var oElements	= this._hColumnElements[sColumn];
+			if (!oElements.oHeader.parentNode)
+			{
+				oHeaderTR.appendChild(oElements.oHeader);
+			}
+			
+			if (!oElements.oFilter.parentNode)
+			{
+				oFilterTR.appendChild(oElements.oFilter);
+			}
+			
+			if (this._hColumnVisibility[sColumn])
+			{
+				oElements.oHeader.show();
+				oElements.oFilter.show();
+			}
+			else
+			{
+				oElements.oHeader.hide();
+				oElements.oFilter.hide();
+			}
+		}
 	},
 	
 	_showLoading	: function(bShow)
@@ -190,6 +265,8 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 	
 	_updateTable	: function(oResultSet)
 	{
+		this._updateColumnVisibility();
+		
 		var oTBody = this._oContentDiv.select('table > tbody').first();
 		
 		// Remove all existing rows
@@ -235,8 +312,17 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 	
 	_createNoRecordsRow	: function(bOnLoad)
 	{
+		var iVisibleCount	= 0;
+		for (var sColumn in this._hColumnVisibility)
+		{
+			if (this._hColumnVisibility[sColumn])
+			{
+				iVisibleCount++;
+			}
+		}
+		
 		return $T.tr(
-			$T.td({class: 'no-rows', colspan: 0},
+			$T.td({class: 'no-rows', colspan: iVisibleCount},
 				(bOnLoad ? 'Loading...' : 'There are no records to display')
 			)
 		);
@@ -246,65 +332,14 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 	{
 		if (oItem.id !== null)
 		{
-			// Delivery Method
-			var oDeliveryMethodTD	=	$T.td(
-											$T.div(oItem.correspondence_delivery_method_name)
-										);
-			switch (oItem.correspondence_delivery_method_id)
+			var	oTR	= $T.tr();
+			for (var sColumn in this._hColumnVisibility)
 			{
-				case $CONSTANT.CORRESPONDENCE_DELIVERY_METHOD_POST:
-					// Add nothing, address is always shown
-					break;
-				case $CONSTANT.CORRESPONDENCE_DELIVERY_METHOD_EMAIL:
-					// Add email
-					var sEmail	= ((oItem.email && oItem.email) !== '' ? oItem.email : 'Not Supplied');
-					oDeliveryMethodTD.appendChild(
-						$T.div(sEmail)
-					);
-					break;
-				case $CONSTANT.CORRESPONDENCE_DELIVERY_METHOD_SMS:
-					// Add both landline and mobile numbers
-					if (oItem.landline)
-					{
-						oDeliveryMethodTD.appendChild(
-							$T.div('L: ' + oItem.landline)
-						);
-					}
-					
-					if (oItem.mobile)
-					{
-						oDeliveryMethodTD.appendChild(
-							$T.div('M: ' + oItem.mobile)
-						);
-					}
-					break;
+				if (this._hColumnVisibility[sColumn])
+				{
+					oTR.appendChild(this._getColumnValue(oItem, sColumn));
+				}
 			}
-			
-			var	oTR	=	$T.tr(
-							$T.td(oItem.id),
-							$T.td(
-								$T.div(oItem.account_id),
-								$T.div(oItem.account_name)
-							),
-							$T.td(oItem.customer_group_name),
-							oDeliveryMethodTD,
-							//$T.td(oItem.account_name),
-							$T.td(
-								(oItem.title ? oItem.title : '') + 
-								' ' + (oItem.first_name ? oItem.first_name : '') + 
-								' ' + (oItem.last_name ? oItem.last_name : '')
-							),
-							$T.td(
-								$T.div(oItem.address_line_1), 
-								$T.div(oItem.address_line_2 ? oItem.address_line_2 : ''), 
-								$T.div(oItem.suburb), 
-								$T.div(oItem.postcode + ' ' + oItem.state)
-							),
-							//$T.td(oItem.email),
-							//$T.td(oItem.mobile),
-							//$T.td(oItem.landline),
-							$T.td(this._getItemActions(oItem))
-						);
 			
 			return oTR;
 		}
@@ -312,6 +347,77 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 		{
 			// Invalid, return empty row
 			return $T.tr();
+		}
+	},
+	
+	_getColumnValue	: function(oItem, sColumn)
+	{
+		switch (sColumn)
+		{
+			case 'account_id':
+				return 	$T.td(
+							$T.div(oItem.account_id),
+							$T.div(oItem.account_name)
+						);
+				break;
+				
+			case 'correspondence_delivery_method_name':
+				// Delivery Method
+				var oDeliveryMethodTD	=	$T.td(
+												$T.div(oItem.correspondence_delivery_method_name)
+											);
+				switch (oItem.correspondence_delivery_method_id)
+				{
+					case $CONSTANT.CORRESPONDENCE_DELIVERY_METHOD_POST:
+						// Add nothing, address is always shown
+						break;
+					case $CONSTANT.CORRESPONDENCE_DELIVERY_METHOD_EMAIL:
+						// Add email
+						var sEmail	= ((oItem.email && oItem.email) !== '' ? oItem.email : 'Not Supplied');
+						oDeliveryMethodTD.appendChild(
+							$T.div(sEmail)
+						);
+						break;
+					case $CONSTANT.CORRESPONDENCE_DELIVERY_METHOD_SMS:
+						// Add both landline and mobile numbers
+						if (oItem.landline)
+						{
+							oDeliveryMethodTD.appendChild(
+								$T.div('L: ' + oItem.landline)
+							);
+						}
+						
+						if (oItem.mobile)
+						{
+							oDeliveryMethodTD.appendChild(
+								$T.div('M: ' + oItem.mobile)
+							);
+						}
+						break;
+				}
+				
+				return oDeliveryMethodTD;
+				break;
+				
+			case 'addressee':
+				return	$T.td(
+							(oItem.title ? oItem.title : '') + 
+							' ' + (oItem.first_name ? oItem.first_name : '') + 
+							' ' + (oItem.last_name ? oItem.last_name : '')
+						);
+				break;
+				
+			case 'address':
+				return	$T.td(
+							$T.div(oItem.address_line_1), 
+							$T.div(oItem.address_line_2 ? oItem.address_line_2 : ''), 
+							$T.div(oItem.suburb), 
+							$T.div(oItem.postcode + ' ' + oItem.state)
+						);
+				break;
+				
+			default:
+				return $T.td(oItem[sColumn] ? oItem[sColumn] : '');
 		}
 	},
 	
@@ -446,17 +552,7 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 				
 		return oTH;
 	},
-	
-	_getItemActions	: function(oItem)
-	{
-		var oUL		= $T.ul({class: 'reset horizontal actions'});
-		/*var oView	= $T.img({src: Component_Correspondence_Ledger_For_Run.ACTION_VIEW_IMAGE_SOURCE, alt: 'View More Details', title: 'View More Details'});
-		oView.observe('click', this._viewDetailsPopup.bind(this, oItem));
-		oUL.appendChild($T.li(oView));*/
-		return oUL;
-	},
-	
-	
+		
 	_filterFieldUpdated	: function(sField)
 	{
 		
@@ -507,8 +603,24 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 	
 	_refreshWithNewColumns	: function(hColumns)
 	{
+		// Cache the new column visibility
 		this._hColumnVisibility	= hColumns;
-		debugger;
+		
+		// Remove and filter values from invisible columns
+		for (var sColumn in hColumns)
+		{
+			if (!hColumns[sColumn])
+			{
+				var sFilterField	= (this._hColumnFilters[sColumn] ? this._hColumnFilters[sColumn] : sColumn);
+				if (this._oFilter.isRegistered(sFilterField))
+				{
+					this._oFilter.clearFilterValue(sFilterField);
+				}
+			}
+		}
+		
+		// Refresh page
+		this._oFilter.refreshData();
 	}
 });
 
@@ -588,10 +700,6 @@ Object.extend(Component_Correspondence_Ledger_For_Run,
 						account_id							: Sort.DIRECTION_OFF,
 						customer_group_name					: Sort.DIRECTION_OFF,
 						correspondence_delivery_method_name	: Sort.DIRECTION_OFF,
-						account_name						: Sort.DIRECTION_OFF,
-						email								: Sort.DIRECTION_OFF,
-						mobile								: Sort.DIRECTION_OFF,
-						landline							: Sort.DIRECTION_OFF
 					},
 });
 

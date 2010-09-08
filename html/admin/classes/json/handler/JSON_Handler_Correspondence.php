@@ -37,10 +37,12 @@ class JSON_Handler_Correspondence extends JSON_Handler
 			$aResults	= array();
 			foreach ($aItems as $oItem)
 			{
-				$oStdItem										= $oItem->toStdClass();
-				$oStdItem->customer_group_name					= Customer_Group::getForId($oStdItem->customer_group_id)->internal_name;
-				$oStdItem->correspondence_delivery_method_name	= Correspondence_Delivery_Method::getForId($oStdItem->correspondence_delivery_method_id)->name;
-				$aResults[$iOffset + $i]						= $oStdItem;
+				$oLogic											= new Correspondence_Logic($oItem);
+				$aItem											= $oLogic->toArray();
+				$aItem['id']									= $oLogic->id;
+				$aItem['customer_group_name']					= Customer_Group::getForId($aItem['customer_group_id'])->internal_name;
+				$aItem['correspondence_delivery_method_name']	= Correspondence_Delivery_Method::getForId($aItem['correspondence_delivery_method_id'])->name;
+				$aResults[$iOffset + $i]						= $aItem;
 				$i++;
 			}
 			
