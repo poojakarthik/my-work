@@ -39,7 +39,8 @@ class Correspondence_Logic_Template
 		{
 			$oCorrespondenceSource = Correspondence_Source::getForId($this->correspondence_source_id);
 			$this->_oCorrespondenceSource = $oCorrespondenceSource->correspondence_source_type_id == CORRESPONDENCE_SOURCE_TYPE_SQL?Correspondence_Logic_Source_SQL::getForCorrespondenceSourceId($oCorrespondenceSource->id):$oSource;
-			$this->_oCorrespondenceSource->setTemplate($this);
+			if($this->_oCorrespondenceSource!=null)
+				$this->_oCorrespondenceSource->setTemplate($this);
 		}
 
 		//if this is not a new template, set the saved flag as there is no changed data
