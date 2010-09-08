@@ -170,7 +170,7 @@ abstract class Correspondence_Logic_Source
 			if ($aData['correspondence_delivery_method'] == null)
 				$aErrors['delivery_method_account_id'] = 'No Account ID and no Delivery Method provided.';
 			if ($aData['correspondence_delivery_method'] == $sEmailDelivery && $aData['email']== null)//add email address validation
-				$aErrors['email'] ='Delivery Method is Email, but no email address supplied.';
+				$aErrors['email'] ='Delivery Method is Email but no email address supplied.';
 
 		}
 
