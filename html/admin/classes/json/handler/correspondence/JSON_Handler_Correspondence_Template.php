@@ -11,6 +11,46 @@ class JSON_Handler_Correspondence_Template extends JSON_Handler
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 	
+	public function getAll()
+	{
+		try
+		{
+			// TODO: Check permissions
+			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR)))
+			{
+				throw new JSON_Handler_Correspondence_Template_Exception('You do not have permission to view Correspdondence Templates.');
+			}
+			
+			$aTemplates	= Correspondence_Template::getAll();
+			$aResults	= array();
+			foreach ($aTemplates as $oTemplate)
+			{
+				$aResults[$oTemplate->id]	= $oTemplate->toStdClass();
+			}
+			
+			// If no exceptions were thrown, then everything worked
+			return 	array(
+						"bSuccess"	=> true,
+						"aResults"	=> $aResults 
+					);
+		}
+		catch (JSON_Handler_Correspondence_Template_Exception $oException)
+		{
+			return 	array(
+						"bSuccess"	=> false,
+						"sMessage"	=> $oException->getMessage()
+					);
+		}
+		catch (Exception $e)
+		{
+			$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+			return 	array(
+						"bSuccess"	=> false,
+						"sMessage"	=> $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'
+					);
+		}
+	}
+	
 	public function getAllWithNonSystemSources()
 	{
 		try
@@ -38,7 +78,7 @@ class JSON_Handler_Correspondence_Template extends JSON_Handler
 			while ($aRow = $mResult->fetch_assoc())
 			{
 				$iTemplateId			= $aRow['correspondence_template_id'];
-				$aResults[$iTemplateId]	= Correspondence_Template_ORM::getForId($iTemplateId)->toStdClass();
+				$aResults[$iTemplateId]	= Correspondence_Template::getForId($iTemplateId)->toStdClass();
 			}
 			// END: Get templates
 			
@@ -75,8 +115,8 @@ class JSON_Handler_Correspondence_Template extends JSON_Handler
 				throw new JSON_Handler_Correspondence_Template_Exception('You do not have permission to view Correspdondence Templates.');
 			}
 			
-			$oTemplate		= Correspondence_Template_ORM::getForId($iTemplateId);
-			$oSource		= Correspondence_Source_ORM::getForId($oTemplate->correspondence_source_id);
+			$oTemplate		= Correspondence_Template::getForId($iTemplateId);
+			$oSource		= Correspondence_Source::getForId($oTemplate->correspondence_source_id);
 			
 			// TODO: Replace with an ORM way of doing this (done like this because ORM re-factor in progress)
 			$oQuery		= new Query();
