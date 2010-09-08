@@ -172,9 +172,25 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 				$strContent	=	"
 Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} Invoice for Account number {$arrInvoice['Account']} dated {$strFullInvoiceDate} is attached.
 
-Did you know that if you have your own Domain name registered, that you never have to change your email address again, regardless of your internet provider?
+Have you ever considered a 1300 number for your business?
 
-Many customers find changing email addresses inconvenient, so if you haven’t registered your own “Company Domain Name”, then spring is in the air and  {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} is giving them away free of charge until the end of September 2010. We also offer hosting packages from as low as $19.95 ex GST per month.  See the front page of your attached invoice for details or call {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_service_phone']} for an information brochure.
+Thousands of businesses across Australia have a 1300 number because they:
+
+	* Can be purchased in the name of your business to promote your company image. Example 1300 TELCOB (1300 835 262).
+	* Create a professional company image.
+	* Are simple to remember.
+	* Attract customers to call your business.
+	* Can move with you, should you move business premises, anywhere in Australia.
+	* Save on printing costs – never have to reprint company stationery.
+	* Can be answered from any landline phone or a mobile phone.
+
+For our current customers we are happy to offer you a NO CONTRACT, NO CONNECTION FEE 1300 number until 30th October 2010, with low rates and only $16.50 ex GST per month service fee to access it.
+
+Our prices are almost half the major carriers.
+
+If you would like a free rate brochure or more information about acquiring a 1300 number call {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_service_phone']} or check out  www.smartnumbers.com  and see if your business name is available for purchase.
+
+Don’t want to purchase a number? You can also select from a list of free and available  numbers directly with {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']}.
 
 Best regards
 The {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} Team\n";
