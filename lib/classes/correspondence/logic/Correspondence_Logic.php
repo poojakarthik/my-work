@@ -132,7 +132,7 @@ class Correspondence_Logic
 
 	public function getAdditionalColumns()
 	{
-		return $this->_oCorrespondenceRun->getTemplate()->getAdditionalColumnSet(0);
+		return $this->_oCorrespondenceRun->getTemplate()->getAdditionalColumnSet();
 	}
 
 	public static function getStandardColumns($bPreprinted,$bIncludeNonSuppliedFields = false)
@@ -168,7 +168,6 @@ class Correspondence_Logic
 		$aCorrespondence = array();
 		foreach ($aORM as $oORM)
 		{
-
 			$aCorrespondence[] = new Correspondence_Logic($oORM, $oRun);
 		}
 		return $aCorrespondence;
