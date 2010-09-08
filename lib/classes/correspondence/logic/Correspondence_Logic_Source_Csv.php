@@ -35,7 +35,7 @@ class Correspondence_Logic_Source_Csv extends Correspondence_Logic_Source
 		{
 			throw new Correspondence_DataValidation_Exception(null, null, true);
 		}
-		return $aCorrespondence;
+		return $this->_aCorrespondence;
 	}
 
 	public function columnCount($mDataRecord)
