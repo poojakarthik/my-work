@@ -3,14 +3,14 @@
 class JSON_Handler_Correspondence_Run extends JSON_Handler
 {
 	protected	$_JSONDebug	= '';
-	
+
 	public function __construct()
 	{
 		// Send Log output to a debug string
 		Log::registerLog('JSON_Handler_Debug', Log::LOG_TYPE_STRING, $this->_JSONDebug);
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
-	
+
 	public function scheduleRunFromSQLTemplate($iCorrespondenceTemplateId, $sScheduleDateTime, $bProcessNow)
 	{
 		try
@@ -20,10 +20,10 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 			{
 				throw new JSON_Handler_Correspondence_Run_Exception('You do not have permission to create Correspdondence Runs.');
 			}
-			
+
 			// Validate input before proceeding
 			$aErrors	= array();
-			
+
 			// Delivery date time
 			$iDeliveryDateTime	= null;
 			if (is_null($sScheduleDateTime))
@@ -41,7 +41,7 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 					$aErrors[]	= "Invalid delivery date time supplied ('".$sScheduleDateTime."').";
 				}
 			}
-			
+
 			// Correspondence_Template id
 			$oTemplateORM	= null;
 			if (is_null($iCorrespondenceTemplateId))
@@ -54,8 +54,8 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 				try
 				{
 					// Try and load it
-					$oTemplateORM	= Correspondence_Template_ORM::getForId($iCorrespondenceTemplateId);
-					
+					$oTemplateORM	= Correspondence_Template::getForId($iCorrespondenceTemplateId);
+
 					// All good
 					$iCorrespondenceTemplateId	= (int)$iCorrespondenceTemplateId;
 				}
@@ -65,14 +65,14 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 					$aErrors[]	= "Invalid Correspondence Template Id supplied (".($iCorrespondenceTemplateId == '' ? 'Not supplied' : "'{$iCorrespondenceTemplateId}'").")";
 				}
 			}
-			
+
 			// Process now
 			if (is_null($bProcessNow))
 			{
 				// Missing
 				$aErrors[]	= "Please specify whether to process the SQL template now or at time of delivery.";
 			}
-			
+
 			if (count($aErrors) > 0)
 			{
 				// Validation errors, return
@@ -82,11 +82,11 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 					 		'sMessage'	=> 'There were errors in the form information.'
 						);
 			}
-			
-			//$oSource	= new Correspondence_Source_SQL();
-			//$oTemplate	= Correspondence_Template::createFromORM($oTemplateORM, $oSource);
-			//$oTemplate->createRun($bProcessNow, date('Y-m-d H:i:s', $iDeliveryDateTime), null, true);
-			
+
+
+			$oTemplate	= Correspondence_Logic_Template::getForId($iCorrespondenceTemplateId);
+			$oTemplate->createRun(false, date('Y-m-d H:i:s', $iDeliveryDateTime), $bProcessNow)->save();
+
 			// If no exceptions were thrown, then everything worked
 			return 	array(
 						'bSuccess'	=> true,
