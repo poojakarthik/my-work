@@ -289,7 +289,8 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 			}
 		}
 
-		if (iMethod == $CONSTANT.PAYMENT_METHOD_ACCOUNT || iMethod == $CONSTANT.PAYMENT_METHOD_REBILL)
+		// NOTE: This condition has been altered so that rebill details can be changed again, temporarily -- rmctainsh
+		if (iMethod == $CONSTANT.PAYMENT_METHOD_ACCOUNT/* || iMethod == $CONSTANT.PAYMENT_METHOD_REBILL*/)
 		{
 			// Remove it, not needed for 'Invoice'
 			this.oChangeButton.hide();
@@ -626,14 +627,21 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 				break;
 			case $CONSTANT.PAYMENT_METHOD_REBILL:
 				// Show the rebill edit popup
+				
 				//this._showRebillPopup(iSubType, fnOnSelect, fnOnCancel);
-				fnGetRebill = jQuery.json.jsonFunction(
+				
+				Reflex_Popup.yesNoCancel(
+					Popup_Account_Change_Payment_Method.REBILL_WARNING,
+					{fnOnYes: this._showRebillPopup.bind(this, iSubType, fnOnSelect, fnOnCancel), fnOnNo: fnOnCancel}
+				);
+				
+				/*fnGetRebill = jQuery.json.jsonFunction(
 						fnOnSelect.bind(this),
 						this._ajaxError.bind(this, true),
 						'Account',
 						'getRebill'
 					);
-				fnGetRebill(this.iAccountId);
+				fnGetRebill(this.iAccountId);*/
 				break;
 		}
 	},
@@ -712,19 +720,34 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 
 			case $CONSTANT.PAYMENT_METHOD_REBILL:
 				// Rebill, Show the rebill edit popup
-				Reflex_Popup.alert('There is no Rebill via Motorpass option available for this account.', {fnClose: this._selectBillingType.bind(this, $CONSTANT.PAYMENT_METHOD_ACCOUNT, null)});
-
-				/*this._showRebillPopup(
-					iSubType,
-					this._paymentMethodSelected.bind(this, iMethod, iSubType),
-					this._paymentMethodSelectCancelled.bind(
-						this,
-						iMethod,
-						iSubType,
-						$CONSTANT.PAYMENT_METHOD_ACCOUNT,
-						null
-					)
-				);*/
+				
+				//Reflex_Popup.alert('There is no Rebill via Motorpass option available for this account.', {fnClose: this._selectBillingType.bind(this, $CONSTANT.PAYMENT_METHOD_ACCOUNT, null)});
+				
+				Reflex_Popup.yesNoCancel(
+					Popup_Account_Change_Payment_Method.REBILL_WARNING,
+					{
+						fnOnYes	:	this._showRebillPopup.bind(
+										this,
+										iSubType,
+										this._paymentMethodSelected.bind(this, iMethod, iSubType),
+										this._paymentMethodSelectCancelled.bind(
+											this,
+											iMethod,
+											iSubType,
+											$CONSTANT.PAYMENT_METHOD_ACCOUNT,
+											null
+										)
+									),
+						fnOnNo	: 	this._paymentMethodSelectCancelled.bind(
+										this,
+										iMethod,
+										iSubType,
+										$CONSTANT.PAYMENT_METHOD_ACCOUNT,
+										null
+									)
+					}
+				);
+				
 				break;
 		}
 	},
@@ -1011,3 +1034,4 @@ Popup_Account_Change_Payment_Method._formatDate	= function(sDate)
 	return Date.$format('j/n/Y', Date.parse(sDate.replace(/-/g, '/')) / 1000);
 }
 
+Popup_Account_Change_Payment_Method.REBILL_WARNING	= 'You are about to edit the Rebill details for this Account. You should only do this if there has be NO sale entered for this Account via the Motorpass Sales Portal. Are you sure you want to change the Rebill details?';

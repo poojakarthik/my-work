@@ -82,7 +82,6 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 			var sFieldName	= null;
 			var oTabContent	= null;
 			var oTBody		= null;
-			//debugger;
 			for (var sPanelName in hPanels)
 			{
 				oTabContent	=	$T.table({class: 'reflex input'},
@@ -105,7 +104,6 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 					}
 					else if (mConfig.bHidden)
 					{
-
 						if (this.oRebill && (typeof this.oRebill.oDetails[sFieldName] != 'undefined'))
 						{
 							this._hHiddenValues[sFieldName]	= this.oRebill.oDetails[sFieldName];
@@ -122,7 +120,7 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 
 						if (this.oRebill && (typeof this.oRebill.oDetails[sFieldName] != 'undefined'))
 						{
-							oControl.setValue(this.oRebill.oDetails[sFieldName]);
+							oControl.setValue(this.oRebill.oDetails[sFieldName] === null ? '' : this.oRebill.oDetails[sFieldName]);
 						}
 						else
 						{
@@ -220,7 +218,6 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 									'Account',
 									'addRebill'
 								);
-			//debugger;
 			fnAddRebill(this.iAccountId, this.iRebillTypeId, oDetails);
 		}
 		else if (oResponse.Success)
@@ -418,6 +415,46 @@ var oNow	= new Date();
 Popup_Account_Edit_Rebill.FIELDS	= {};
 Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	=
 {
+	account_number	:
+	{
+		sType		: 'text',
+		oDefinition	:
+		{
+			sLabel		: 'Account Number',
+			mEditable	: true,
+			mMandatory	: true,
+			fnValidate	: Popup_Account_Edit_Rebill.validateWithLength.curry(Reflex_Validation.digits, 9)
+		}
+	},
+	account_name	:
+	{
+		sType		: 'text',
+		oDefinition	:
+		{
+			sLabel		: 'Account Name',
+			mEditable	: true,
+			mMandatory	: true,
+			fnValidate	: Popup_Account_Edit_Rebill.validateWithLength.curry(null, 256)
+		}
+	},
+	card_expiry_date	:
+	{
+		sType		: 'combo_date',
+		oDefinition	:
+		{
+			sLabel				: 'Card Expiry Month',
+			mEditable			: true,
+			mMandatory			: true,
+			iMinYear			: oNow.getFullYear(),
+			iMaxYear			: oNow.getFullYear() + 10,
+			fnValidate			: Popup_Account_Edit_Rebill.validateCardExpiry,
+			sValidationReason	: 'It must be in the future.',
+			iFormat				: Control_Field_Combo_Date.FORMAT_M_Y
+		}
+	},
+	//
+	// Anything below here is not used currently
+	//
 	account_id	:
 	{
 		bHidden	: true
@@ -846,11 +883,20 @@ Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	=
 
 Popup_Account_Edit_Rebill.PANELS	=
 {
-	'Account'	:
+	'Details'	:
 	{
 		aFields	:
 		[
-			'account_account_number',
+			'account_number',
+			'account_name',
+			'card_expiry_date'
+		]
+	}
+	/*'Account'	:
+	{
+		aFields	:
+		[
+			/*'account_account_number',
 			'account_account_name',
 			'account_business_commencement_date',
 			'account_motorpass_business_structure_id',
@@ -923,5 +969,5 @@ Popup_Account_Edit_Rebill.PANELS	=
 			'reference1_id',
 			'reference2_id'
 		]
-	}
+	}*/
 }
