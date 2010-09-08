@@ -18,7 +18,7 @@ class Correspondence_Logic
 				$mData['standard_fields'][$sField] = null;
 			}
 
-			$mData['standard_fields']['tar_file_path'] = isset($mData['standard_fields']['tar_file_path'])?$mData['standard_fields']['tar_file_path']:null;
+			$mData['standard_fields']['pdf_file_path'] = isset($mData['standard_fields']['pdf_file_path'])?$mData['standard_fields']['pdf_file_path']:null;
 
 			$this->_oDO = new Correspondence($mData['standard_fields']);
 
@@ -128,6 +128,11 @@ class Correspondence_Logic
 		$bPreprinted = $this->_oCorrespondenceRun->preprinted==1?true:false;
 		return $this->_oCorrespondenceRun->getTemplate()->createFullColumnSet( $bPreprinted);
 
+	}
+
+	public function getAdditionalColumns()
+	{
+		return $this->_oCorrespondenceRun->getTemplate()->getAdditionalColumnSet();
 	}
 
 	public static function getStandardColumns($bPreprinted,$bIncludeNonSuppliedFields = false)
