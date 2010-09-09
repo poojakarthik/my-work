@@ -49,11 +49,25 @@ abstract class Correspondence_Logic_Source
 									'invalid account id'			=>array(),
 									'column_count'					=>array()
 								);
+	protected $_aNullableFields = array (
+											'account_id',
+											'title',
+											'address_line2',
+											'email',
+											'mobile',
+											'landline',
+											'pdf_file_path'
+										);
 
 	public function __construct( $iSourceType= null, $iId = null)
 	{
 		$this->_oDO = $iId ==null?new Correspondence_Source(array('correspondence_source_type_id'=>$iSourceType)):Correspondence_Source::getForId($iId);
 		$this->_errorReport = new File_Exporter_CSV();
+		$this->_errorReport->setDelimiter(Correspondence_Dispatcher_YellowBillingCSV::FIELD_DELIMITER);
+		$this->_errorReport->setQuote(Correspondence_Dispatcher_YellowBillingCSV::FIELD_ENCAPSULATOR);
+		$this->_errorReport->setQuoteMode(File_Exporter_CSV::QUOTE_MODE_ALWAYS);
+		$this->_errorReport->setEscape(Correspondence_Dispatcher_YellowBillingCSV::ESCAPE_CHARACTER);
+		$this->_errorReport->setNewLine(Correspondence_Dispatcher_YellowBillingCSV::NEW_LINE_DELIMITER);
 	}
 
 
@@ -230,18 +244,30 @@ abstract class Correspondence_Logic_Source
 		$bValid = $this->validateDataRecord($aRecord);
 		if (!$bValid)
 			$this->_bValidationFailed = true;
+
+		$aRecord = $this->_sanitize($aRecord);
 		if (!$this->_bValidationFailed)
 		{
 			$this->_aCorrespondence[] = new Correspondence_Logic($aRecord);
 		}
 
-		$this->_aLines[]=$aRecord;
+		$this->_aLines[]= $aRecord;
 		foreach ($aRecord['validation_errors'] as $sErrorType=>$sMessage)
 		{
 			$this->_aReport[$sErrorType][$this->iLineNumber]=$sMessage;
 		}
 		if (count($aRecord['validation_errors'])==0)
 			$this->_aReport['success'][]= $this->iLineNumber;
+	}
+
+	protected function _sanitize($aRecord)
+	{
+		foreach ($this->_aNullableFields as $sField)
+		{
+			if (isset($aRecord['standard_fields'][$sField]))
+				$aRecord['standard_fields'][$sField] = $aRecord['standard_fields'][$sField]==""?null:$aRecord['standard_fields'][$sField];
+		}
+		return $aRecord;
 	}
 
 	protected function processValidationErrors()
