@@ -219,7 +219,7 @@ abstract class Correspondence_Logic_Source
 		$this->_aLines[]=$aRecord;
 		foreach ($aRecord['validation_errors'] as $sErrorType=>$sMessage)
 		{
-			$this->_aReport[$sErrorType][]=$iLineNumber;
+			$this->_aReport[$sErrorType][]=$this->iLineNumber;
 		}
 		if (count($aRecord['validation_errors'])==0)
 			$this->_aReport['success'][]= $this->iLineNumber;
@@ -230,17 +230,10 @@ abstract class Correspondence_Logic_Source
 		//create data file with error messages
 		$oRecordType = File_Exporter_RecordType::factory();
 
-		foreach($this->_aLines[0] as $key =>$aLinePart)
+		$aCols = $this->getColumnsForErrorReport();
+		foreach($aCols as $sColumn)
 		{
-			if ($key == 'validation_errors')
-			{
-				$oRecordType->addField($key, File_Exporter_Field::factory());
-			}
-			else
-			{
-				foreach($aLinePart as $key2=>$value)
-					$oRecordType->addField($key2, File_Exporter_Field::factory());
-			}
+			$oRecordType->addField($sColumn, File_Exporter_Field::factory());
 		}
 
 		$this->_errorReport->registerRecordType('detail', $oRecordType);
@@ -264,6 +257,24 @@ abstract class Correspondence_Logic_Source
 		throw new Correspondence_DataValidation_Exception($this->_aReport, $sPath.$sFilename);
 		//generate email
 		//return a summary error message and url for the error file
+	}
+
+	public function getColumnsForErrorReport()
+	{
+		$aColumnModel;
+		$iMaxColCount;
+		//find the line with the most number of columns
+		foreach ($this->_aLines as $aLine)
+		{
+			$iColumnCount = count($aLine['standard_fields'])+count($aLine['additional_fields']);
+			if ($iMaxColCount == null || $iColumnCount>$iMaxColCount)
+			{
+				$aColumnModel = $aLine;
+				$iMaxColCount = $iColumnCount;
+			}
+
+		}
+		return array_merge(array_keys($aColumnModel['standard_fields']), array_keys($aColumnModel['additional_fields']), array('validation_errors'));
 	}
 
 	public function setTemplate($oTemplate)
