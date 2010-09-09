@@ -80,11 +80,8 @@ class Correspondence_Logic_Run
 			{
 				// Exception caught, rollback db transaction
 				$oDataAccess->TransactionRollback();
+				throw($e);
 
-				return 	array(
-							"Success"	=> false,
-							"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database'
-						);
 			}
 
 	}
