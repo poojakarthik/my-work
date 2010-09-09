@@ -126,10 +126,10 @@ class Correspondence_Logic_Template
 
 	}
 
-	public function  createRun($bPreprinted = false, $sScheduleDateTime = null, $bProcessNow = true)
+	public function  createRun($bPreprinted = false, $sScheduleDateTime = null, $bProcessNow = true, $bForceIfNoData = false)
 	{
 
-		$aDefinition = array ('scheduled_datetime'=> $sScheduleDateTime, 'preprinted'=>$bPreprinted, $bProcessNow);
+		$aDefinition = array ('scheduled_datetime'=> $sScheduleDateTime, 'preprinted'=>$bPreprinted, $bProcessNow, 'forece_empty_run'=>$bForceIfNoData);
 		$oRun = new Correspondence_Logic_Run($aDefinition, $this);
 		$this->_aRuns[]=$oRun;
 		return $oRun;
@@ -147,9 +147,9 @@ class Correspondence_Logic_Template
 		return false;
 	}
 
-	public function getData($bPreprinted)
+	public function getData($bPreprinted, $bNoDataOk = false)
 	{
-		return $this->_oCorrespondenceSource->getData($bPreprinted,$this->getAdditionalColumnSet(Correspondence_Logic::getStandardColumnCount($bPreprinted)));
+		return $this->_oCorrespondenceSource->getData($bPreprinted,$this->getAdditionalColumnSet(Correspondence_Logic::getStandardColumnCount($bPreprinted)), $bNoDataOk);
 	}
 
 	public function createFullColumnSet( $bPreprinted,$bIncludeNonSuppliedFields = false)

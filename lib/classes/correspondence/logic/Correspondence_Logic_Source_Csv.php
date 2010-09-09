@@ -9,19 +9,20 @@ class Correspondence_Logic_Source_Csv extends Correspondence_Logic_Source
 	public function __construct($sCsv = null)
 	{
 		parent::__construct(CORRESPONDENCE_SOURCE_TYPE_CSV);
-		$this->_aCsv = explode("\n",trim($sCsv));
+		$this->_aCsv = trim($sCsv)==null?null:explode("\n",trim($sCsv));
 	}
 
-	function getData($bPreprinted, $aAdditionalColumns = array())
+	function getData($bPreprinted, $aAdditionalColumns = array(), $bNoDataOk = false)
 	{
 		if (count($this->_aCsv)>0)
 		{
+			$this->_bPreprinted = $bPreprinted;
 			$this->_aColumns = Correspondence_Logic::getStandardColumns($bPreprinted);
-			$this->columnCountValidation($aAdditionalColumns, $this->_aCsv[0]);
+			$this->_aAdditionalColumns = $aAdditionalColumns;
 			$this->iLineNumber = 1;
 			foreach($this->_aCsv as $sLine)
 			{
-				$aLine = self::parseLineHashed(rtrim($sLine,"\r\n"), $sDelimiter=',', $sQuote='"', $sEscape='\\', $this->_aColumns, $aAdditionalColumns);
+				$aLine = self::parseLineHashed(rtrim($sLine,"\r\n"), $sDelimiter=',', $sQuote='"', $sEscape='\\');
 				$this->processCorrespondenceRecord($aLine);
 				$this->iLineNumber++;
 			}
@@ -31,21 +32,15 @@ class Correspondence_Logic_Source_Csv extends Correspondence_Logic_Source
 			}
 
 		}
-		else
+		else if (!$bNoDataOk)
 		{
 			throw new Correspondence_DataValidation_Exception(null, null, true);
 		}
 		return $this->_aCorrespondence;
 	}
 
-	public function columnCount($mDataRecord)
-	{
-		return count(File_CSV::parseLine(rtrim($mDataRecord,"\r\n"), $sDelimiter=',', $sQuote='"', $sEscape='\\'));
-	}
 
-
-
-	public function parseLineHashed($sLine, $sDelimiter=',', $sQuote='"', $sEscape='\\', $aFieldNames, $aAdditionalFieldNames)
+	public function parseLineHashed($sLine, $sDelimiter=',', $sQuote='"', $sEscape='\\')
 	{
 		$sDelimiter	= ($sDelimiter)	? $sDelimiter[0]	: ',';
 		$sQuote		= ($sQuote)		? $sQuote[0]		: '';
@@ -99,14 +94,17 @@ class Correspondence_Logic_Source_Csv extends Correspondence_Logic_Source
 					}
 					else
 					{
+
+
 						// End of Field
-						if ($iFieldIndex>=count($aFieldNames))
+						if ($iFieldIndex>=count($this->_aInputColumns))
 						{
-								$aLine['additional_fields'][$aAdditionalFieldNames[$iFieldIndex]] = $sField;
+							$sFieldName = $iFieldIndex<$this->getColumnCount()?$this->_aAdditionalColumns[$iFieldIndex]:$iFieldIndex;
+							$aLine['additional_fields'][$sFieldName] = $sField;
 						}
 						else
 						{
-							$sFieldName = $iFieldIndex<count($this->_aInputColumns)?$this->_aInputColumns[$iFieldIndex]:$aFieldNames[$iFieldIndex];
+							$sFieldName = $iFieldIndex<count($this->_aInputColumns)?$this->_aInputColumns[$iFieldIndex]:$this->_aColumns[$iFieldIndex];
 							$aLine['standard_fields'][$sFieldName]	= $sField;
 						}
 						$iFieldIndex++;
@@ -124,13 +122,14 @@ class Correspondence_Logic_Source_Csv extends Correspondence_Logic_Source
 		}
 
 		// Finish the current Field
-		if ($iFieldIndex>=count($aFieldNames))
+		if ($iFieldIndex>=count($this->_aInputColumns))
 		{
-				$aLine['additional_fields'][$aAdditionalFieldNames[$iFieldIndex]]= $sField;
+			$sFieldName = $iFieldIndex<$this->getColumnCount()?$this->_aAdditionalColumns[$iFieldIndex]:$iFieldIndex;
+			$aLine['additional_fields'][$sFieldName]= $sField;
 		}
 		else
 		{
-			$sFieldName = $iFieldIndex<count($this->_aInputColumns)?$this->_aInputColumns[$iFieldIndex]:$aFieldNames[$iFieldIndex];
+			$sFieldName = $iFieldIndex<count($this->_aInputColumns)?$this->_aInputColumns[$iFieldIndex]:$this->_aColumns[$iFieldIndex];
 			$aLine['standard_fields'][$sFieldName]	= $sField;
 		}
 

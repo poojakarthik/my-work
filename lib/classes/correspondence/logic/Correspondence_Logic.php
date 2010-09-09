@@ -28,8 +28,8 @@ class Correspondence_Logic
 				$this->_aAdditionalFields[$key] = new Correspondence_Logic_Data(array('value'=>$value, 'correspondence_template_column_id'=>null, 'correspondence_id'=>null));
 			}
 
-			//just for debugging
-			$this->correspondence_delivery_method_id = Correspondence_Delivery_Method::getForSystemName($mData['standard_fields']['correspondence_delivery_method'])->id;
+
+			$this->correspondence_delivery_method_id = Correspondence_Delivery_Method::getForSystemName($mData['standard_fields']['correspondence_delivery_method_id'])->id;
 		}
 		else
 		{

@@ -11,17 +11,16 @@ class Correspondence_Logic_Source_System extends Correspondence_Logic_Source
 		$this->_aData = $aData;
 	}
 
-	public function getData($bPreprinted, $aAdditionalColumns = array())
+	public function getData($bPreprinted, $aAdditionalColumns = array(), $bNoDataOk = false)
 	{
 		if (count($this->_aData)>0)
 		{
+			$this->_bPreprinted = $bPreprinted;
 			$this->_aColumns = Correspondence_Logic::getStandardColumns($bPreprinted);
+			$this->_aAdditionalColumns = $aAdditionalColumns;
 	 		$this->iLineNumber = 1;
 			foreach ($this->_aData as $aDataRecord)
 			{
-	 			if ($this->iLineNumber == 1)
-	 				$this->columnCountValidation($aAdditionalColumns, $aDataRecord);
-
 	 			$aRecord = array('standard_fields'=>array(), 'additional_fields'=>array());
 	 			foreach ($aDataRecord as $sField => $mValue)
 				{
@@ -43,18 +42,13 @@ class Correspondence_Logic_Source_System extends Correspondence_Logic_Source
 				$this->processValidationErrors();
 			}
 		}
-		else
+		else if (!$bNoDataOk)
 		{
 			throw new Correspondence_DataValidation_Exception(null, null, true);
 		}
 
 
 		return $this->_aCorrespondence;
-	}
-
-	public function columnCount($mDataRecord)
-	{
-		return count($mDataRecord);
 	}
 
 	public function __get($sField)

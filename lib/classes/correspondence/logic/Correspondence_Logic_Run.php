@@ -23,7 +23,7 @@ class Correspondence_Logic_Run
 			$mDefinition['preprinted'] = $mDefinition['preprinted']?1:0;
 			$this->_oDO = new Correspondence_Run($mDefinition);
 			if ($bProcessNow)
-				$this->process();
+				$this->process($mDefinition['forece_empty_run']);
 		}
 		else
 		{
@@ -38,11 +38,11 @@ class Correspondence_Logic_Run
 		return $this->_oCorrespondenceTemplate->carrier_id;
 	}
 
-	public function process()
+	public function process($bNoDataOk = false)
 	{
 
 		$bPreprinted = $this->_oDO->preprinted==0?false:true;
-		$aCorrespondence = $this->_oCorrespondenceTemplate->getData($bPreprinted);
+		$aCorrespondence = $this->_oCorrespondenceTemplate->getData($bPreprinted, $bNoDataOk);
 		foreach ($aCorrespondence as $oCorrespondence)
 		{
 			$oCorrespondence->_oCorrespondenceRun = $this;
