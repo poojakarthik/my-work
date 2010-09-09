@@ -191,9 +191,16 @@ class Correspondence_Logic_Run
 				try
 				{
 					$oRun->process();
+					$oRun->save();
 				}
 				catch(Exception $e)
 				{
+
+					if ($e->bNoData && !$e->bSqlError && $e->aReport == null)
+					{
+						$oRun->process(true);
+						$oRun->save();
+					}
 					if (get_class($e)== 'Correspondence_DataValidation_Exception')
 					{
 						$sErrorReportFilePath;
@@ -215,6 +222,22 @@ class Correspondence_Logic_Run
 						$sMessage.= 'This correspondence run will be marked as \'delivered\', but no data file will be sent to the mailing house';
 
 						//send email
+						$oEmail = new Email_Notification();
+						$oEmail->setSubject("Correspondence Dispatch Notice for ".$this->getCorrespondenceCode().", run id ".$this->id);
+						if ($sErrorReportFilePath!=null)
+						{
+							$sFile = file_get_contents($sErrorReportFilePath);
+							$sFileName = substr($sErrorReportFilePath, strrpos( $sErrorReportFilePath , "/" ));
+							$oEmail->addAttachment($sFile, $sName, 'text/csv');
+						}
+						$oEmail->setBodyHTML($sMessage);
+						$oEmployee = Employee::getForId($this->created_employee_id);
+						$oEmail->addTo($oEmployee->Email, $name='');
+						//$oEmail->addCc($email, $name='');
+						//$oEmail->addBcc($email);
+						$oEmail->setFrom($oEmployee->Email, $name='');
+						$oEmail->send();
+
 					}
 					else
 					{
