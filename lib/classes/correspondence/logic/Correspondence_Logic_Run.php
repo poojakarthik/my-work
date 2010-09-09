@@ -24,6 +24,7 @@ class Correspondence_Logic_Run
 			$this->_oDO = new Correspondence_Run($mDefinition);
 			if ($bProcessNow)
 				$this->process($mDefinition['forece_empty_run']);
+
 		}
 		else
 		{
