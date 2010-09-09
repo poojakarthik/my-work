@@ -33,7 +33,7 @@ class Correspondence_Logic_Source_Sql extends Correspondence_Logic_Source
 			$iFieldIndex = 0;
  			foreach ($row as $sField => $mValue)
 			{
-				if ($iFieldIndex<= count($this->_aColumns))
+				if ($iFieldIndex<count($this->_aColumns))
 				{
 					$sFieldName = $iFieldIndex<count($this->_aInputColumns)?$this->_aInputColumns[$iFieldIndex]:$aFieldNames[$iFieldIndex];
 
@@ -41,8 +41,8 @@ class Correspondence_Logic_Source_Sql extends Correspondence_Logic_Source
 				}
 				else
 				{
-					$sFieldName = $iFieldIndex<$this->columnCount()?$aAdditionalFieldNames[$iFieldIndex]:$iFieldIndex;
-					$aLine['additional_fields'][] = $sField;
+					$sFieldName = $iFieldIndex<$this->getColumnCount()?$this->_aAdditionalColumns[$iFieldIndex]:$iFieldIndex;
+					$aRecord['additional_fields'][$sFieldName] = $mValue;
 				}
 				$iFieldIndex++;
 			}
