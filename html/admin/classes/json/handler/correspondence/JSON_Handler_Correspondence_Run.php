@@ -84,12 +84,23 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 			}
 
 			$oTemplate	= Correspondence_Logic_Template::getForId($iCorrespondenceTemplateId);
-			$oTemplate->createRun(false, date('Y-m-d H:i:s', $iDeliveryDateTime), $bProcessNow)->save();
+			try
+			{
+				$oTemplate->createRun(false, date('Y-m-d H:i:s', $iDeliveryDateTime), $bProcessNow)->save();
+			} 
+			catch (Correspondence_DataValidation_Exception $oEx)
+			{
+				// Invalid CSV file, build an error message
+				$oEx->sFileName	= basename($oEx->sFileName);
+				return 	array(
+							'bSuccess'		=> false,
+							'oException'	=> $oEx
+						);
+			}
 
 			// If no exceptions were thrown, then everything worked
 			return 	array(
-						'bSuccess'	=> true,
-						'sDebug'	=> "{$iCorrespondenceTemplateId}, {$iDeliveryDateTime}, ".($bProcessNow ? 'now' : 'deliv.')
+						'bSuccess'	=> true
 					);
 		}
 		catch (JSON_Handler_Correspondence_Run_Exception $oException)
@@ -221,7 +232,8 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 	{
 		try
 		{
-			return array('bSuccess' => true, 'oCorrespondenceRun' => Correspondence_Run::getForId($iId)->toStdClass());
+			$oRun	= Correspondence_Logic_Run::getForId($iId, false)->toArray();
+			return array('bSuccess' => true, 'oCorrespondenceRun' => $oRun);
 		}
 		catch (JSON_Handler_Correspondence_Run_Exception $oException)
 		{

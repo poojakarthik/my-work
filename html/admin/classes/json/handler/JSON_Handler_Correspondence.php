@@ -74,11 +74,13 @@ class JSON_Handler_Correspondence extends JSON_Handler
 		try
 		{
 			// TODO: Check permissions
-			$oCorrespondence	= new Correspondence_Logic(Correspondence::getForId($iId));
-			$aAdditionalColumns	= $oCorrespondence->getAdditionalColumns();
+			$oCorrespondence		= new Correspondence_Logic(Correspondence::getForId($iId));
+			$aAdditionalColumns		= $oCorrespondence->getAdditionalColumns();
+			$aCorrespondence		= $oCorrespondence->toArray();
+			$aCorrespondence['id']	= $iId;
 			return	array(
-						'bSuccess'	=> true,
-						'aData'		=> $oCorrespondence->toArray(),
+						'bSuccess'				=> true,
+						'aData'					=> $aCorrespondence,
 						'aAdditionalColumns'	=> $aAdditionalColumns
 					);
 		}

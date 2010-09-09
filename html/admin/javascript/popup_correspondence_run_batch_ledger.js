@@ -36,55 +36,63 @@ var Popup_Correspondence_Run_Batch_Ledger	= Class.create(Reflex_Popup,
 										'Loading...'
 									);
 		
-		// Create the page HTML
-		var sButtonPathBase	= '../admin/img/template/resultset_';
+		var sButtonPathBase		= '../admin/img/template/resultset_';
+		var oSection			= new Section(true);
+		oSection.setTitleContent(
+			$T.span(
+				$T.span('Batches '),
+				$T.span({class: 'pagination-info'},
+					''
+				)
+			)
+		);
+		
+		oSection.addToHeaderOptions(
+			$T.li('From: ', oMinDateTime.getElement())
+		);
+		
+		oSection.addToHeaderOptions(
+				$T.li('To: ', oMaxDateTime.getElement())
+		);
+		
+		oSection.addToHeaderOptions(
+			$T.li(
+				$T.button({class: 'icon-button'},
+					'Search'	
+				).observe('click', this._filterResults.bind(this))
+			)
+		);
+		
+		oSection.setContent(
+			$T.table({class: 'reflex'},
+				$T.tbody({class: 'alternating'}
+					// ...
+				)
+			)
+		);
+		
+		oSection.setFooterContent(
+			$T.div(
+				this._oLoadingElement,
+				$T.div({class: 'pagination'},
+					$T.button({class: 'pagination-button'},
+						$T.img({src: sButtonPathBase + 'first.png'})
+					),
+					$T.button({class: 'pagination-button'},
+						$T.img({src: sButtonPathBase + 'previous.png'})
+					),
+					$T.button({class: 'pagination-button'},
+						$T.img({src: sButtonPathBase + 'next.png'})
+					),
+					$T.button({class: 'pagination-button'},
+						$T.img({src: sButtonPathBase + 'last.png'})
+					)
+				)
+			)
+		);
+		
 		this._oContentDiv 	= 	$T.div({class: 'popup-correspondence-ledger'},
-									// All
-									$T.div({class: 'section'},
-										$T.div({class: 'section-header'},
-											$T.div({class: 'section-header-title'},
-												$T.span('Batches'),
-												$T.span({class: 'pagination-info'},
-													''
-												)
-											),
-											$T.div({class: 'section-header-options'},
-												$T.ul({class: 'reset horizontal filter-fields'},
-													$T.li('From: ', oMinDateTime.getElement()),
-													$T.li('To: ', oMaxDateTime.getElement()),
-													$T.li(
-														$T.button({class: 'icon-button'},
-															'Search'	
-														).observe('click', this._filterResults.bind(this))
-													)
-												)
-											)
-										),
-										$T.div({class: 'section-content section-content-fitted'},
-											$T.table({class: 'reflex'},
-												$T.tbody({class: 'alternating'}
-													// ...
-												)
-											)
-										),
-										$T.div({class: 'section-footer'},
-											this._oLoadingElement,
-											$T.div({class: 'pagination'},
-												$T.button({class: 'pagination-button'},
-													$T.img({src: sButtonPathBase + 'first.png'})
-												),
-												$T.button({class: 'pagination-button'},
-													$T.img({src: sButtonPathBase + 'previous.png'})
-												),
-												$T.button({class: 'pagination-button'},
-													$T.img({src: sButtonPathBase + 'next.png'})
-												),
-												$T.button({class: 'pagination-button'},
-													$T.img({src: sButtonPathBase + 'last.png'})
-												)
-											)
-										)
-									)
+									oSection.getElement()
 								);
 		
 		// Bind events to the pagination buttons
@@ -191,7 +199,8 @@ var Popup_Correspondence_Run_Batch_Ledger	= Class.create(Reflex_Popup,
 					oRunsTBody.appendChild(
 						$T.tr(
 							$T.td(oRun.id),
-							$T.td(oRun.created),
+							$T.td(Date.$parseDate(oRun.created, 'Y-m-d H:i:s').$format('d/m/y g:i A')),
+							$T.td(oRun.correspondence.length + ' Items'),							
 							$T.td({class: 'actions'},
 								$T.img({src: '../admin/img/template/magnifier.png', alt: 'View Run Details', title: 'View Run Details'}
 								).observe('click', this._showRunDetails.bind(this, oRun.id))
@@ -216,6 +225,7 @@ var Popup_Correspondence_Run_Batch_Ledger	= Class.create(Reflex_Popup,
 			var oTHead	= 	$T.thead(
 								$T.th('ID'),
 								$T.th('Created'),
+								$T.th('Correspondence'),
 								$T.th('')
 							);
 			

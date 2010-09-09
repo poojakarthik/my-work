@@ -16,12 +16,7 @@ var Popup_Account_Correspondence_Ledger = Class.create(Reflex_Popup,
 		this._oLedger		= new Component_Correspondence_Ledger_For_Account(oLedgerDiv, this._iId);
 		
 		this._oContentDiv 	= 	$T.div({class: 'popup-account-correspondence-ledger'},
-									oLedgerDiv,
-									$T.div({class: 'buttons'},
-										$T.button({class: 'icon-button'},
-											'Download CSV Version'
-										).observe('click', this._downloadCSV.bind(this))
-									)
+									oLedgerDiv
 								);
 		
 		this.setContent(this._oContentDiv);

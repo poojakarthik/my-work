@@ -3693,6 +3693,7 @@ class MenuItems {
 									'../ui/javascript/component_date_picker.js',
 									'../ui/javascript/control_field.js',
 									'../ui/javascript/control_field_select.js',
+									'../ui/javascript/control_field_checkbox.js',
 									'../ui/javascript/control_field_date_picker.js',
 									'javascript/correspondence_template.js',
 									'javascript/popup_correspondence_create_choose_template.js',
@@ -3722,6 +3723,8 @@ class MenuItems {
 										'../ui/javascript/filter.js',
 										'../ui/javascript/sort.js',
 										'../ui/javascript/reflex_validation.js',
+										'../ui/javascript/section.js',
+										'../ui/javascript/section_expandable.js',
 										'javascript/correspondence_template.js',
 										'javascript/employee.js',
 										'javascript/correspondence_delivery_method.js',
@@ -3730,6 +3733,7 @@ class MenuItems {
 										'javascript/component_correspondence_run_ledger.js',
 										'javascript/popup_correspondence_run_ledger.js',
 										'javascript/component_correspondence_ledger_for_run.js',
+										'javascript/component_correspondence_run_details.js',
 										'javascript/popup_correspondence_run.js',
 										'javascript/popup_correspondence_ledger_columns.js'
 									],
@@ -3756,6 +3760,8 @@ class MenuItems {
 										'../ui/javascript/filter.js',
 										'../ui/javascript/sort.js',
 										'../ui/javascript/reflex_validation.js',
+										'../ui/javascript/section.js',
+										'../ui/javascript/section_expandable.js',
 										'javascript/correspondence_template.js',
 										'javascript/employee.js',
 										'javascript/customer_group.js',
@@ -3764,6 +3770,7 @@ class MenuItems {
 										'javascript/popup_correspondence_run_batch_ledger.js',
 										'javascript/popup_correspondence_run.js',
 										'javascript/component_correspondence_ledger_for_run.js',
+										'javascript/component_correspondence_run_details.js',
 										'javascript/popup_correspondence_ledger_columns.js'
 									],
 									function()

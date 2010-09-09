@@ -7,6 +7,7 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 		this._oContainerDiv				= oContainerDiv;
 		this._bFirstLoadComplete		= false;
 		this._hControlOnChangeCallbacks	= {};
+		this._iCorrespondenceRunId		= iCorrespondenceRunId;
 		
 		this._hColumnVisibility	=	{
 										id									: true,
@@ -16,7 +17,7 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 										addressee							: true,
 										address								: true
 									};
-		this._hColumnElements	= {};
+		this._hColumnElements	= 	{};
 		this._hColumnFilters	= 	{
 										customer_group_name					: 'customer_group_id',
 										correspondence_delivery_method_name	: 'correspondence_delivery_method_id'
@@ -62,8 +63,11 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 												)
 											),
 											$T.div({class: 'section-header-options'},
+												$T.button({class: 'icon-button'},
+													'Export to CSV'
+												).observe('click', this._downloadCSV.bind(this)),
 												$T.button({class: 'icon-button'}, 
-													'Edit Columns'
+													'Show/Hide Columns'
 												).observe('click', this._editColumns.bind(this))		
 											)
 										),
@@ -71,25 +75,9 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 											$T.table({class: 'reflex highlight-rows'},
 												$T.thead(
 													// Column headings
-													$T.tr(
-														/*this._createFieldHeader('Id', 'id', false),
-														this._createFieldHeader('Account', 'account_id', false),
-														this._createFieldHeader('Customer Group', 'customer_group_name', false),
-														this._createFieldHeader('Method', 'correspondence_delivery_method_name', false),
-														this._createFieldHeader('Addressee'),
-														this._createFieldHeader('Address'),
-														this._createFieldHeader('')	// Actions*/
-													),
+													$T.tr(),
 													// Filter values
-													$T.tr(
-														/*$T.th(),
-														$T.th(),
-														this._createFilterValueElement('customer_group_id', 'Customer Group'),
-														this._createFilterValueElement('correspondence_delivery_method_id', 'Delivery Method'),
-														$T.th(),
-														$T.th(),
-														$T.th()*/
-													)
+													$T.tr()
 												),
 												$T.tbody({class: 'alternating'},
 													this._createNoRecordsRow(true)
@@ -597,8 +585,12 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 	
 	_editColumns	: function()
 	{
-		// TODO: Pass in a hash of the columns and whether or not they're visible
 		new Popup_Correspondence_Ledger_Columns(this._hColumnVisibility, this._refreshWithNewColumns.bind(this));
+	},
+	
+	_downloadCSV	: function()
+	{
+		window.location	= 'reflex.php/Correspondence/ExportRunToCSV/' + this._iCorrespondenceRunId;
 	},
 	
 	_refreshWithNewColumns	: function(hColumns)

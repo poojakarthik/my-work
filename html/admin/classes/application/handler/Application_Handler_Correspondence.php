@@ -2,6 +2,24 @@
 
 class Application_Handler_Correspondence extends Application_Handler
 {
+	public function DownloadCSVErrorFile($aSubPath)
+	{
+		// TODO: Check permissions
+		
+		if (!$aSubPath[0])
+		{
+			throw new Exception('Invalid error file path supplied');
+		}
+		
+		$sFileBaseName	= urldecode($aSubPath[0]);
+		$sFilePath		= FILES_BASE_PATH."temp/{$sFileBaseName}";
+		
+		header('Content-type: text/csv');
+		header('Content-Disposition: attachment; filename="'.$sFileBaseName.'"');
+		echo @file_get_contents($sFilePath);
+		die;
+	}
+	
 	public function CreateFromCSV($subPath)
 	{
 		// TODO: Check user permissions
@@ -45,13 +63,7 @@ class Application_Handler_Correspondence extends Application_Handler
 				switch ($aFileInfo['error'])
 				{
 					case UPLOAD_ERR_OK:
-						// Check file extension
-						/*if ($aFileInfo['type'] !== 'text/csv')
-						{
-							$aErrors[]	= "The incorrect type of file was supplied ('".$aFileInfo['type']."'). Please supply a CSV (Comma Separated Values) file.";
-						}*/
-						$rInfo = finfo_open(FILEINFO_MIME);
-						throw new Exception(finfo_file($rInfo, $aFileInfo['tmp_name']));
+						// All good
 						break;
 					case UPLOAD_ERR_INI_SIZE:
 						$aErrors[]	= "The CSV file you supplied is too large. Maximum size is ".ini_get('upload_max_filesize').".";
@@ -100,11 +112,23 @@ class Application_Handler_Correspondence extends Application_Handler
 				throw new Exception("There was errors in the form information.");
 			}
 
-
-			$oSource	= new Correspondence_Logic_Source_Csv(file_get_contents($aFileInfo['tmp_name']));
-			$oTemplate	= Correspondence_Logic_Template::getForId(18, $oSource);
-			$oTemplate->createRun(false, date('Y-m-d H:i:s', $iDeliveryDateTime), null, true)->save();
-
+			try
+			{
+				$oDA	= DataAccess::getDataAccess();
+				$oDA->TransactionStart();
+				$oSource	= new Correspondence_Logic_Source_Csv(file_get_contents($aFileInfo['tmp_name']));
+				$oTemplate	= Correspondence_Logic_Template::getForId($iCorrespondenceTemplateId, $oSource);
+				$oTemplate->createRun(false, date('Y-m-d H:i:s', $iDeliveryDateTime), true)->save();
+				$oDA->TransactionRollback();
+			}
+			catch (Correspondence_DataValidation_Exception $oEx)
+			{
+				// Invalid CSV file, build an error message
+				$oEx->sFileName	= basename($oEx->sFileName);
+				$aOutput['oException']	= $oEx;
+				throw new Exception();
+			}
+			
 			$aOutput['bSuccess']	= true;
 		}
 		catch (Exception $e)
@@ -114,6 +138,78 @@ class Application_Handler_Correspondence extends Application_Handler
 		}
 
 		echo JSON_Services::instance()->encode($aOutput);
+		die;
+	}
+	
+	public function ExportRunToCSV($aSubPath)
+	{
+		try
+		{
+			// TODO: Check permissions
+			
+			$iCorrespondenceRunId	= (int)$aSubPath[0];
+			$oRun					= Correspondence_Logic_Run::getForId($iCorrespondenceRunId);
+			$aCorrespondence		= $oRun->getCorrespondence();
+			$aLines					= array();
+			$oFile	= new File_CSV();
+			$oFile->setColumns(
+				array(
+					'Customer Group',
+					'Account Id',
+					'Account Name',
+					'Addressee Title',
+					'Addressee First Name',
+					'Addressee Last Name',
+					'Address Line 1',
+					'Address Line 2',
+					'Suburb',
+					'Postcode',
+					'State',
+					'Email Address',
+					'Mobile',
+					'Landline',
+					'Delivery Method'
+				)
+			);
+			
+			foreach ($aCorrespondence as $oCorrespondence)
+			{
+				$sDeliveryMethod	= Correspondence_Delivery_Method::getForId($oCorrespondence->correspondence_delivery_method_id)->name;
+				$aLines[]	= 	array
+								(
+									'Customer Group'		=> $oCorrespondence->customer_group_id,
+									'Account Id'			=> $oCorrespondence->account_id,
+									'Account Name'			=> $oCorrespondence->account_name,
+									'Addressee Title'		=> $oCorrespondence->title,
+									'Addressee First Name'	=> $oCorrespondence->first_name,
+									'Addressee Last Name'	=> $oCorrespondence->last_name,
+									'Address Line 1'		=> $oCorrespondence->address_line_1,
+									'Address Line 2'		=> $oCorrespondence->address_line_2,
+									'Suburb'				=> $oCorrespondence->suburb,
+									'Postcode'				=> $oCorrespondence->postcode,
+									'State'					=> $oCorrespondence->state,
+									'Email Address'			=> $oCorrespondence->email,
+									'Mobile'				=> $oCorrespondence->mobile,
+									'Landline'				=> $oCorrespondence->landline,
+									'Delivery Method'		=> $sDeliveryMethod
+								);
+			}
+			
+			foreach ($aLines as $aLine)
+			{
+				$oFile->addRow($aLine);
+			}
+			
+			header('Content-type: text/csv');
+			header("Content-Disposition: attachment; filename=\"correspondence-run-export-$iCorrespondenceRunId-".date('YmdHis').".csv\"");
+			echo $oFile->save();
+		}
+		catch (Exception $e)
+		{
+			$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+			echo $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
+		}
+		
 		die;
 	}
 

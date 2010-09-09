@@ -3,7 +3,7 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 {
 	initialize	: function($super, iCorrespondenceTemplateId)
 	{
-		$super(50);
+		$super(30);
 		
 		this._iTemplateId	= parseInt(iCorrespondenceTemplateId);
 		this._buildUI();
@@ -62,16 +62,36 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 	
 	_buildCSVContent	: function()
 	{
-		// Delivery date time picker
+		// Fields
 		this._oDeliveryDateTime			= Popup_Correspondence_Create._createField('delivery');
 		this._oDeliveryDateTimeHidden	= $T.input({type: 'hidden', name: 'delivery_datetime'});
+		this._oDeliverNow				= Popup_Correspondence_Create._createField('deliver_now');
 		
 		// File upload form
 		var oForm	= 	$T.form({method: 'POST', action: '../admin/reflex.php/Correspondence/CreateFromCSV/', enctype: 'multipart/form-data'},
 							$T.input({type: 'hidden', name: 'correspondence_template_id', value: this._iTemplateId}),
-							$T.input({type: 'file', name: 'csv_file'}),
-							this._oDeliveryDateTime.getElement(),
-							this._oDeliveryDateTimeHidden
+							$T.table(
+								$T.tbody(
+									$T.tr(
+										$T.td('CSV File'),
+										$T.input({type: 'file', name: 'csv_file'})
+									),
+									$T.tr(
+										$T.td('When to Deliver'),
+										$T.td(
+											this._oDeliveryDateTime.getElement(),
+											this._oDeliveryDateTimeHidden
+										)
+									),
+									$T.tr(
+										$T.td(),
+										$T.td({class: 'deliver-now'},
+											this._oDeliverNow.getElement(),
+											$T.span(' Deliver Immediately')
+										)
+									)
+								)
+							)
 						);
 		
 		return $T.div(oForm);
@@ -79,15 +99,29 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 	
 	_buildSQLContent	: function()
 	{
-		// Delivery date time picker
+		// Fields
 		this._oDeliveryDateTime	= Popup_Correspondence_Create._createField('delivery');
-		
-		// Run Query: now/on delivery (radio button group)
 		this._oProcessSQLWhen	= Popup_Correspondence_Create._createField('run_query');
+		this._oDeliverNow		= Popup_Correspondence_Create._createField('deliver_now');
 		
-		return 	$T.div(
-					this._oDeliveryDateTime.getElement(),
-					this._oProcessSQLWhen.getElement()
+		return 	$T.table(
+					$T.tbody(
+						$T.tr(
+							$T.td('When to Deliver'),
+							$T.td(this._oDeliveryDateTime.getElement())
+						),
+						$T.tr(
+							$T.td(),
+							$T.td(
+								this._oDeliverNow.getElement(),
+								$T.span(' Deliver Immediately')
+							)
+						),
+						$T.tr(
+							$T.td('When to Process'),
+							$T.td(this._oProcessSQLWhen.getElement())
+						)
+					)
 				);
 	},
 	
@@ -100,7 +134,13 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 				var oForm	= this._oContent.select('form').first();
 				if (jQuery.json.jsonIframeFormSubmit(oForm, this._csvSubmitted.bind(this)))
 				{
-					this._oDeliveryDateTimeHidden.value	= this._oDeliveryDateTime.getElementValue();
+					
+					var sDeliveryDateTime	= this._oDeliveryDateTime.getElementValue();
+					if (this._oDeliverNow.getElementValue())
+					{
+						sDeliveryDateTime	= new Date().$format('Y-m-d H:i:s');
+					}
+					this._oDeliveryDateTimeHidden.value	= sDeliveryDateTime;
 					this._showLoading();
 					oForm.submit();
 				}
@@ -129,9 +169,15 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 						bProcessNow	= null;
 				}
 				
+				var sDeliveryDateTime	= this._oDeliveryDateTime.getElementValue();
+				if (this._oDeliverNow.getElementValue())
+				{
+					sDeliveryDateTime	= new Date().$format('Y-m-d H:i:s');
+				}
+				
 				// Send request
 				this._showLoading();
-				fnSQL(this._iTemplateId, this._oDeliveryDateTime.getElementValue(), bProcessNow);
+				fnSQL(this._iTemplateId, sDeliveryDateTime, bProcessNow);
 				break;
 		}
 	},
@@ -146,7 +192,7 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 		}
 		
 		this._hideLoading();
-		debugger;
+		
 		// Success
 		Reflex_Popup.alert('Correspondence Run created from SQL template', {sTitle: 'Success'});
 	},
@@ -161,7 +207,7 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 		}
 		
 		this._hideLoading();
-		debugger;
+		
 		// Success
 		Reflex_Popup.alert('Correspondence Run created from CSV file', {sTitle: 'Success'});
 	},
@@ -175,20 +221,24 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 		}
 		
 		var oConfig	= {sTitle: 'Error'};
-		if (oResponse.aErrors)
+		if (oResponse.oException)
 		{
-			// Validation errors
-			var oUL	= $T.ul();
-			for (var i = 0; i < oResponse.aErrors.length; i++)
+			// Validation exception
+			if (oResponse.oException.bNoData)
 			{
-				oUL.appendChild($T.li(oResponse.aErrors[i]));
+				Reflex_Popup.alert('There is no data in the CSV file', oConfig);
 			}
-			
+			else
+			{
+				// Show alert outlining a summary of each error
+				Popup_Correspondence_Create._showExceptionPopup(oResponse.oException);
+			}
+		}
+		else if (oResponse.aErrors)
+		{
+			// Multiple input errors
 			Reflex_Popup.alert(
-				$T.div({class: 'popup-correspondence-create-error-content'},
-					$T.div(oResponse.sMessage),
-					$T.div(oUL)
-				), 
+				Popup_Correspondence_Create._getMultipleErrorHTML(oResponse.aErrors, oResponse.sMessage), 
 				oConfig
 			);
 		}
@@ -266,9 +316,95 @@ Object.extend(Popup_Correspondence_Create,
 	      	 	)
 	      	]
 	    );
+	},
+	
+	_getMultipleErrorHTML	: function(aErrors, sMessage)
+	{
+		// Validation errors
+		var oUL	= $T.ul();
+		for (var i = 0; i < aErrors.length; i++)
+		{
+			oUL.appendChild($T.li(aErrors[i]));
+		}
+		
+		return 	$T.div({class: 'popup-correspondence-create-error-content'},
+					$T.div(sMessage ? sMessage : ''),
+					$T.div(oUL)
+				);
+	},
+	
+	_showExceptionPopup	: function(oException)
+	{
+		var oTBody		= $T.tbody();
+		var oErrorTable	=	$T.table({class: 'reflex input correspondence-csv-exception-summary'},
+								oTBody
+							);
+		for (var sErrorType in oException.aReport)
+		{
+			var mErrorType	= oException.aReport[sErrorType];
+			var mErrorName	= null;
+			var mErrorText	= null;
+			if (sErrorType != 'success')
+			{
+				// Count the number of lines that errored
+				var iCount	= 0;
+				for (var i in mErrorType)
+				{
+					if (!isNaN(i))
+					{
+						iCount++;
+					}
+				}
+				
+				// Generic error, contains array of line numbers where the error occurred
+				if (iCount)
+				{
+					if (Popup_Correspondence_Create.CSV_ERROR_NAMES[sErrorType])
+					{
+						mErrorName	= Popup_Correspondence_Create.CSV_ERROR_NAMES[sErrorType]
+					}
+					else
+					{
+						mErrorName	= Popup_Correspondence_Create.CSV_ERROR_NAME_UNKNOWN + ' (' + sErrorType + ')';
+					}
+					mErrorText	= iCount + ' lines';
+				}
+			}
+			
+			if (mErrorName && mErrorText)
+			{
+				// Add a row to the error output table
+				oTBody.appendChild(
+					$T.tr(
+						$T.th(mErrorName),
+						$T.td(mErrorText)
+					)
+				);
+			}
+		}
+		
+		// Show modified yesnocancel popup
+		Reflex_Popup.yesNoCancel(
+			oErrorTable,
+			{
+				sNoLabel		: 'Download Full Error Information', 
+				sYesLabel		: 'OK',
+				fnOnNo			: Popup_Correspondence_Create._downloadErrorCSV.bind(this, oException.sFileName),
+				bOverrideStyle	: true,
+				iWidth			: 45,
+				sTitle			: 'Error Summary'
+			}
+		);
+	},
+	
+	_downloadErrorCSV	: function(sFilename)
+	{
+		sFilename	= sFilename.replace(/\//g, "\\");
+		window.location	= 'reflex.php/Correspondence/DownloadCSVErrorFile/' + encodeURIComponent(sFilename);
 	}
 });
 
+// These static properties require references to other static properties (at time of definition) so they are separate
 Object.extend(Popup_Correspondence_Create,
 {
 	FIELD_CONFIG	:
@@ -299,6 +435,39 @@ Object.extend(Popup_Correspondence_Create,
 				mVisible	: true,
 				fnPopulate	: Popup_Correspondence_Create._getRunQueryOptions
 			}
+		},
+		deliver_now	:
+		{
+			sType	: 'checkbox',
+			oConfig	:
+			{
+				sLabel		: 'Deliver Now',
+				mMandatory	: true,
+				mEditable	: true,
+				mVisible	: true
+			}
 		}
-	}
+	},
+	
+	CSV_ERROR_NAMES	:
+	{
+		//invalid_account_id			: 'Invalid Account Id',
+		customer_group_account_id	: 'Neither Customer Group nor Account Id provided',
+		account_name				: 'Account Name is missing',
+		first_name					: 'Contact First Name is missing',
+		last_name					: 'Contact Last Name is missing',
+		address_line_1				: 'Address Line 1 is missing',
+		suburb						: 'Suburb is missing',
+		postcode					: 'Postcode is missing',
+		state						: 'State missing',
+		customer_group_conflict		: "Customer Group doesn't match the Account's Customer Group",
+		email						: 'Delivery Method is POST and no email is provided',
+		delivery_method_account_id	: 'Account Id and Delivery Method is missing',
+		column_count				: 'Column Count Mismatch'
+	},
+	
+	CSV_ERROR_NAME_UNKNOWN	: 'Unkown Error'
 });
+
+// Special cases
+Popup_Correspondence_Create.CSV_ERROR_NAMES['invalid account id']	= 'Invalid Account Id';

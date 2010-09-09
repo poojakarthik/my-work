@@ -5967,6 +5967,34 @@ div.popup-employee-reassign-tasks-tickets-selects > div
 	height	: 15em;
 }
 
+table.correspondence-csv-exception-summary > tbody > tr > th
+{
+	width	: 16em;
+}
+
+.popup-correspondence-create table
+{
+	padding-bottom	: 0.25em;
+}
+
+.popup-correspondence-create table td:first-child
+{
+	font-weight	: bold;
+	width		: 10em;
+}
+
+.popup-correspondence-create td.deliver-now > .control-field
+{
+	display			: inline-block;
+	vertical-align	: middle;
+	padding-right	: 0.25em;
+}
+
+.popup-correspondence-create td.deliver-now > span
+{
+	vertical-align	: middle;
+}
+
 /***************** END - Create Correspondence Popup(s) - END *****************/
 
 /***************** START - Correspondence Ledger Popup(s) - START *****************/
@@ -5975,14 +6003,16 @@ div.popup-correspondence-ledger,
 div.correspondence-run-ledger,
 .popup-correspondence-data,
 .popup-account-correspondence-ledger,
-.popup-correspondence-run
+.popup-correspondence-run,
+.popup-correspondence-ledger-columns
 {
 	margin	: 0.5em;
 }
 
 .reflex-popup div.popup-correspondence-ledger table.reflex,
 .reflex-popup div.correspondence-run-ledger table.reflex,
-.reflex-popup .correspondence-ledger-for-run table.reflex
+.reflex-popup .correspondence-ledger-for-run table.reflex,
+.component-correspondence-run-details > div.section-content table.reflex
 {
 	margin	: 0em;
 }
@@ -6006,7 +6036,8 @@ div.popup-correspondence-ledger table.reflex thead th > img
 
 div.popup-correspondence-ledger div.section-content > table.reflex,
 div.correspondence-run-ledger div.section-content > table.reflex,
-.correspondence-ledger-for-run div.section-content > table.reflex
+.correspondence-ledger-for-run div.section-content > table.reflex,
+.component-correspondence-run-details > div.section-content table.reflex
 {
 	margin-left		: 0em;
 	margin-right	: 0em;
@@ -6090,17 +6121,17 @@ div.datetime-time
 	padding	: 0.25em 0em 0em 0.5em;
 }
 
-.popup-correspondence-ledger .filter-fields
+.popup-correspondence-ledger .section-header-options ul
 {
 	margin	: 0.1em 0em 0em 0em;
 }
 
-.popup-correspondence-ledger .filter-fields > li
+.popup-correspondence-ledger .section-header-options ul > li
 {
 	padding-left	: 0.5em;
 }
 
-.popup-correspondence-ledger .filter-fields .control-field
+.popup-correspondence-ledger .section-header-options ul .control-field
 {
 	display	: inline-block;
 }
@@ -6211,9 +6242,41 @@ div.datetime-time
 }
 
 .popup-account-correspondence-ledger .buttons,
-.popup-correspondence-run .buttons
+.popup-correspondence-run .buttons,
+.popup-correspondence-ledger-columns .buttons
 {
 	text-align	: center;
+}
+
+.component-correspondence-run-details
+{
+	margin-bottom	: 1em;
+}
+
+.component-correspondence-run-details table.reflex th
+{
+	width	: 13em;
+}
+
+.popup-correspondence-ledger-columns .columns > li
+{
+	vertical-align	: top;
+}
+
+.popup-correspondence-ledger-columns .columns > li > ul > li
+{
+	padding	: 0.25em 0em 0em 0.25em;
+}
+
+.popup-correspondence-ledger-columns .columns li input,
+.popup-correspondence-ledger-columns .columns li span
+{
+	vertical-align	: middle;
+}
+
+.popup-correspondence-ledger-columns .columns li input
+{
+	margin-right	: 0.25em;
 }
 
 /***************** END - Correspondence Ledger Popup(s) - END *****************/

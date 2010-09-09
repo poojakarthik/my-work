@@ -3,13 +3,14 @@ var Popup_Correspondence_Ledger_Columns	= Class.create(Reflex_Popup,
 {
 	initialize	: function($super, hColumns, fnCallback)
 	{
-		$super(60);
+		$super(0);
+		this.container.style.width = 'auto';
 		
 		this._fnCallback	= fnCallback;
 		this._hCheckboxes	= {};
 		
-		var oUL			= $T.ul({class: 'reset horizontal'});
-		var oContent	= 	$T.div(
+		var oUL			= $T.ul({class: 'columns reset horizontal'});
+		var oContent	= 	$T.div({class: 'popup-correspondence-ledger-columns'},
 								oUL,
 								$T.div({class: 'buttons'},
 									$T.button({class: 'icon-button'},
@@ -33,10 +34,16 @@ var Popup_Correspondence_Ledger_Columns	= Class.create(Reflex_Popup,
 			var oCheckbox		= $T.input({type: 'checkbox'});
 			oCheckbox.checked	= !!hColumns[sColumn];
 			
+			var sDisplayName	= sColumn;
+			if (Popup_Correspondence_Ledger_Columns.COLUMN_DISPLAY_NAMES[sColumn])
+			{
+				sDisplayName	= Popup_Correspondence_Ledger_Columns.COLUMN_DISPLAY_NAMES[sColumn];
+			}
+			
 			oCurrentUL.appendChild(
 				$T.li(
 					oCheckbox,
-					$T.span(sColumn)
+					$T.span(sDisplayName)
 				)
 			);
 			
@@ -70,5 +77,15 @@ var Popup_Correspondence_Ledger_Columns	= Class.create(Reflex_Popup,
 
 Object.extend(Popup_Correspondence_Ledger_Columns, 
 {
-	MAX_LINES	: 4
+	MAX_LINES	: 4,
+	
+	COLUMN_DISPLAY_NAMES	:
+	{
+		id									: 'Id',
+		account_id							: 'Account Id',
+		customer_group_name					: 'Customer Group',
+		correspondence_delivery_method_name	: 'Correspondence Delivery Method',
+		addressee							: 'Addressee',
+		address								: 'Address'
+	}
 });

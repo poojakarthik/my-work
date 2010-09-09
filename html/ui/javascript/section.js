@@ -92,7 +92,7 @@ var Section	= Class.create(
 	addToHeaderOptions	: function(mContent)
 	{
 		this._checkForHeaderOptions();
-		this._oHeaderOptions.appendChild(this._getElementFromContent(mContent));
+		this._oHeaderOptionsUL.appendChild(this._getElementFromContent(mContent));
 	},
 	
 	/*

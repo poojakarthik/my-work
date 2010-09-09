@@ -147,21 +147,38 @@ class Correspondence_Run extends ORM_Cached
 		$sFrom			= '	correspondence_run c
 							JOIN Employee e ON c.created_employee_id = e.id
 							JOIN correspondence_template ct ON ct.id = c.correspondence_template_id';
-		$sSelect		= ($bCountOnly ? 'count(c.id) AS record_count' : "c.*, CONCAT(e.FirstName,' ',e.LastName) AS created_employee_name, ct.name AS correspondence_template_name");
+		if ($bCountOnly)
+		{
+			$sSelect	= 'count(c.id) AS record_count';
+		}
+		else
+		{
+			$sSelect	= "	c.id, 
+							c.correspondence_template_id, 
+							c.processed_datetime, 
+							c.scheduled_datetime, 
+							COALESCE(c.delivered_datetime, '".Data_Source_Time::END_OF_TIME."') AS delivered_datetime, 
+							c.created_employee_id, 
+							c.created, 
+							c.data_file_export_id, 
+							c.preprinted, 
+							c.pdf_file_export_id, 
+							c.correspondence_run_batch_id, 
+							CONCAT(e.FirstName,' ',e.LastName) AS created_employee_name, 
+							ct.name AS correspondence_template_name";
+		}
+		
 		$aWhereAlias	=	array(
 								'processed_datetime' 	=> 'c.processed_datetime',
 								'scheduled_datetime' 	=> 'c.scheduled_datetime',
-								'delivered_datetime' 	=> 'c.delivered_datetime',
 								'created' 				=> 'c.created',
 								'created_employee_id'	=> 'c.created_employee_id',
 								'preprinted'			=> 'c.preprinted'
 							);
 		$aWhere			= 	StatementSelect::generateWhere($aWhereAlias, $aFilter);
 		$aSortAlias		=	array(
-								'correspondence_template_name'	=> 'correspondence_template_name',
 								'processed_datetime' 			=> 'c.processed_datetime',
 								'scheduled_datetime' 			=> 'c.scheduled_datetime',
-								'delivered_datetime' 			=> 'c.delivered_datetime',
 								'created' 						=> 'c.created',
 								'created_employee_name'			=> 'created_employee_name',
 								'preprinted'					=> 'c.preprinted'
