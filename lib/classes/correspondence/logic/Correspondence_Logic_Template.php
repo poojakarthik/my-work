@@ -129,8 +129,8 @@ class Correspondence_Logic_Template
 	public function  createRun($bPreprinted = false, $sScheduleDateTime = null, $bProcessNow = true, $bForceIfNoData = false)
 	{
 
-		$aDefinition = array ('scheduled_datetime'=> $sScheduleDateTime, 'preprinted'=>$bPreprinted, $bProcessNow, 'forece_empty_run'=>$bForceIfNoData);
-		$oRun = new Correspondence_Logic_Run($aDefinition, $this);
+		$aDefinition = array ('scheduled_datetime'=> $sScheduleDateTime, 'preprinted'=>$bPreprinted, 'forece_empty_run'=>$bForceIfNoData);
+		$oRun = new Correspondence_Logic_Run($aDefinition, $this, true, $bProcessNow);
 		$this->_aRuns[]=$oRun;
 		return $oRun;
 
