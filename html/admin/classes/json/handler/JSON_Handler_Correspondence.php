@@ -15,8 +15,11 @@ class JSON_Handler_Correspondence extends JSON_Handler
 	{
 		try
 		{
-			// TODO: Check permissions
-			
+			// Require proper admin priviledges when the account has not been limited (i.e. is from a system wide search)
+			if (!isset($oFilter->account_id) && !AuthenticatedUser()->UserHasPerm(array(PERMISSION_PROPER_ADMIN)))
+			{
+				throw new JSON_Handler_Correspondence_Exception('You do not have permission to view Correspdondence.');
+			}
 			
 			$aFilter	= get_object_vars($oFilter);
 			$aSort		= get_object_vars($oSort);

@@ -69,7 +69,8 @@ var JsAutoLoader = {
 		var sRegisteredScriptName	= JsAutoLoader.getFileNameOnly(strScriptName);
 		for (var i = 0, j = scripts.length; i < j; i++)
 		{
-			if (scripts[i].hasAttribute('src') && scripts[i].getAttribute('src').match(sRegisteredScriptName) != null)
+			var sRegex	= new RegExp("(^|/|=)" + sRegisteredScriptName);
+			if (scripts[i].hasAttribute('src') && scripts[i].getAttribute('src').match(sRegex) != null)
 			{
 				// The script has been requested -- Was an onLoad handler provided?
 				if (fncCallback != undefined)
@@ -82,6 +83,7 @@ var JsAutoLoader = {
 					}
 					else
 					{
+						debugger;
 						// The script element has been included in the header, but has not finished loading yet
 						// add the funcOnLoadEventHandler to it as an event listener
 						Event.startObserving(scripts[i], "load", fncCallback, true);
@@ -98,12 +100,12 @@ var JsAutoLoader = {
 		script.setAttribute('src', strSource);
 		
 		var sRegisteredScriptName	= JsAutoLoader.getFileNameOnly(strScriptName);
-		Event.startObserving(script, "load", this.registerLoadedScript.bind(this, sRegisteredScriptName), true);
+		Event.observe(script, "load", this.registerLoadedScript.bind(this, sRegisteredScriptName), true);
 		
 		// Was an onLoad handler provided?
 		if (fncCallback != undefined)
 		{
-			Event.startObserving(script, "load", fncCallback, true);
+			Event.observe(script, "load", fncCallback, true);
 		}
 		
 		// Load the JS Script
@@ -129,6 +131,10 @@ var JsAutoLoader = {
 	// This is used to register the fact that a script has been loaded into the dom
 	registerLoadedScript : function(strScriptName)
 	{
+		if(strScriptName.match(/sort/))
+		{
+			document.title += strScriptName + ',';
+		}
 		this.loadedScripts[strScriptName]	= true;
 	},
 	

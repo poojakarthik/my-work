@@ -15,12 +15,6 @@ class JSON_Handler_Correspondence_Template extends JSON_Handler
 	{
 		try
 		{
-			// TODO: Check permissions
-			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR)))
-			{
-				throw new JSON_Handler_Correspondence_Template_Exception('You do not have permission to view Correspdondence Templates.');
-			}
-			
 			$aTemplates	= Correspondence_Template::getAll();
 			$aResults	= array();
 			foreach ($aTemplates as $oTemplate)
@@ -55,8 +49,8 @@ class JSON_Handler_Correspondence_Template extends JSON_Handler
 	{
 		try
 		{
-			// TODO: Check permissions
-			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR)))
+			// Proper admin required
+			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_PROPER_ADMIN)))
 			{
 				throw new JSON_Handler_Correspondence_Template_Exception('You do not have permission to view Correspdondence Templates.');
 			}
@@ -109,8 +103,8 @@ class JSON_Handler_Correspondence_Template extends JSON_Handler
 	{
 		try
 		{
-			// TODO: Check permissions
-			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR)))
+			// Proper admin required
+			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_PROPER_ADMIN)))
 			{
 				throw new JSON_Handler_Correspondence_Template_Exception('You do not have permission to view Correspdondence Templates.');
 			}
@@ -155,7 +149,12 @@ class JSON_Handler_Correspondence_Template extends JSON_Handler
 	{
 		try
 		{
-			// TODO: Check permissions
+			// Proper admin required
+			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_PROPER_ADMIN)))
+			{
+				throw new JSON_Handler_Correspondence_Template_Exception('You do not have permission to view Correspdondence Templates.');
+			}
+			
 			return 	array(
 						"bSuccess"				=> true,
 						"aAdditionalColumns"	=> Correspondence_Logic_Template::getForId($iId)->getAdditionalColumnSet()

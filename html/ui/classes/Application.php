@@ -262,10 +262,12 @@ class Application
 				ContextMenu()->Admin->Follow_Ups->ConfigureFollowUps();
 			}
 			
-			// TODO: Check for permission to create correspondence
-			ContextMenu()->Admin->Correspondence->CreateCorrespondence();
-			ContextMenu()->Admin->Correspondence->Ledger->ViewCorrespondenceBatchLedger();
-			ContextMenu()->Admin->Correspondence->Ledger->ViewCorrespondenceRunLedger();
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
+			{
+				ContextMenu()->Admin->Correspondence->CreateCorrespondence();
+				ContextMenu()->Admin->Correspondence->Ledger->ViewCorrespondenceBatchLedger();
+				ContextMenu()->Admin->Correspondence->Ledger->ViewCorrespondenceRunLedger();
+			}
 		}
 
 		// Document Management
@@ -509,10 +511,12 @@ class Application
 				ContextMenu()->Admin->Follow_Ups->ConfigureFollowUps();
 			}
 			
-			// TODO: Check for permission to create correspondence
-			ContextMenu()->Admin->Correspondence->CreateCorrespondence();
-			ContextMenu()->Admin->Correspondence->Ledger->ViewCorrespondenceBatchLedger();
-			ContextMenu()->Admin->Correspondence->Ledger->ViewCorrespondenceRunLedger();
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
+			{
+				ContextMenu()->Admin->Correspondence->CreateCorrespondence();
+				ContextMenu()->Admin->Correspondence->Ledger->ViewCorrespondenceBatchLedger();
+				ContextMenu()->Admin->Correspondence->Ledger->ViewCorrespondenceRunLedger();
+			}
 		}
 
 		// Document Management

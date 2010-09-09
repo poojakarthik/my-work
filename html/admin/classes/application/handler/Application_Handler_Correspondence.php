@@ -22,9 +22,8 @@ class Application_Handler_Correspondence extends Application_Handler
 	
 	public function CreateFromCSV($subPath)
 	{
-		// TODO: Check user permissions
-		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR));
-
+		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_PROPER_ADMIN));
+		
 		$aOutput	= array();
 		try
 		{
@@ -145,61 +144,83 @@ class Application_Handler_Correspondence extends Application_Handler
 	{
 		try
 		{
-			// TODO: Check permissions
+			// Proper admin required
+			AuthenticatedUser()->PermissionOrDie(array(PERMISSION_PROPER_ADMIN));
 			
+			// Get the correspondence item for the run
 			$iCorrespondenceRunId	= (int)$aSubPath[0];
 			$oRun					= Correspondence_Logic_Run::getForId($iCorrespondenceRunId);
 			$aCorrespondence		= $oRun->getCorrespondence();
-			$aLines					= array();
-			$oFile	= new File_CSV();
-			$oFile->setColumns(
-				array(
-					'Customer Group',
-					'Account Id',
-					'Account Name',
-					'Addressee Title',
-					'Addressee First Name',
-					'Addressee Last Name',
-					'Address Line 1',
-					'Address Line 2',
-					'Suburb',
-					'Postcode',
-					'State',
-					'Email Address',
-					'Mobile',
-					'Landline',
-					'Delivery Method'
-				)
-			);
 			
+			// Build the list of columns for the csv file
+			$aAdditionalColumns		= $oRun->getAdditionalColumns(0);
+			$aColumns				= 	array(
+											'Customer Group',
+											'Account Id',
+											'Account Name',
+											'Addressee Title',
+											'Addressee First Name',
+											'Addressee Last Name',
+											'Address Line 1',
+											'Address Line 2',
+											'Suburb',
+											'Postcode',
+											'State',
+											'Email Address',
+											'Mobile',
+											'Landline',
+											'Delivery Method'
+										);
+			
+			foreach ($aAdditionalColumns as $sColumn)
+			{
+				$aColumns[]	= $sColumn;
+			}
+			
+			// Create File_CSV to do the file creation
+			$oFile	= new File_CSV();
+			$oFile->setColumns($aColumns);
+			
+			// BUild list of lines for the file
+			$aLines	= array();
 			foreach ($aCorrespondence as $oCorrespondence)
 			{
 				$sDeliveryMethod	= Correspondence_Delivery_Method::getForId($oCorrespondence->correspondence_delivery_method_id)->name;
-				$aLines[]	= 	array
-								(
-									'Customer Group'		=> $oCorrespondence->customer_group_id,
-									'Account Id'			=> $oCorrespondence->account_id,
-									'Account Name'			=> $oCorrespondence->account_name,
-									'Addressee Title'		=> $oCorrespondence->title,
-									'Addressee First Name'	=> $oCorrespondence->first_name,
-									'Addressee Last Name'	=> $oCorrespondence->last_name,
-									'Address Line 1'		=> $oCorrespondence->address_line_1,
-									'Address Line 2'		=> $oCorrespondence->address_line_2,
-									'Suburb'				=> $oCorrespondence->suburb,
-									'Postcode'				=> $oCorrespondence->postcode,
-									'State'					=> $oCorrespondence->state,
-									'Email Address'			=> $oCorrespondence->email,
-									'Mobile'				=> $oCorrespondence->mobile,
-									'Landline'				=> $oCorrespondence->landline,
-									'Delivery Method'		=> $sDeliveryMethod
-								);
+				$aLine				=	array
+										(
+											'Customer Group'		=> $oCorrespondence->customer_group_id,
+											'Account Id'			=> $oCorrespondence->account_id,
+											'Account Name'			=> $oCorrespondence->account_name,
+											'Addressee Title'		=> $oCorrespondence->title,
+											'Addressee First Name'	=> $oCorrespondence->first_name,
+											'Addressee Last Name'	=> $oCorrespondence->last_name,
+											'Address Line 1'		=> $oCorrespondence->address_line_1,
+											'Address Line 2'		=> $oCorrespondence->address_line_2,
+											'Suburb'				=> $oCorrespondence->suburb,
+											'Postcode'				=> $oCorrespondence->postcode,
+											'State'					=> $oCorrespondence->state,
+											'Email Address'			=> $oCorrespondence->email,
+											'Mobile'				=> $oCorrespondence->mobile,
+											'Landline'				=> $oCorrespondence->landline,
+											'Delivery Method'		=> $sDeliveryMethod
+										);
+				
+				// Additional column values						
+				$aItem	= $oCorrespondence->toArray();
+				foreach ($aAdditionalColumns as $sColumn)
+				{
+					$aLine[$sColumn]	= $aItem[$sColumn];
+				}
+				$aLines[]	= $aLine;
 			}
 			
+			// Add the lines to the file
 			foreach ($aLines as $aLine)
 			{
 				$oFile->addRow($aLine);
 			}
 			
+			// Output for download
 			header('Content-type: text/csv');
 			header("Content-Disposition: attachment; filename=\"correspondence-run-export-$iCorrespondenceRunId-".date('YmdHis').".csv\"");
 			echo $oFile->save();

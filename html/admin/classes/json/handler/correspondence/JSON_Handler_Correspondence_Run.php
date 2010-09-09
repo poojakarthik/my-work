@@ -15,12 +15,11 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 	{
 		try
 		{
-			// TODO: Check permissions
-			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR)))
+			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_PROPER_ADMIN)))
 			{
 				throw new JSON_Handler_Correspondence_Run_Exception('You do not have permission to create Correspdondence Runs.');
 			}
-
+			
 			// Validate input before proceeding
 			$aErrors	= array();
 
@@ -177,6 +176,11 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 	{
 		try
 		{
+			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_PROPER_ADMIN)))
+			{
+				throw new JSON_Handler_Correspondence_Run_Exception('You do not have permission to view Correspdondence Runs.');
+			}
+			
 			$iMinDate	= ($oFilter->batch_datetime->mFrom ? strtotime($oFilter->batch_datetime->mFrom) : null);
 			$iMaxDate	= ($oFilter->batch_datetime->mTo ? strtotime($oFilter->batch_datetime->mTo) : null);
 			
@@ -232,6 +236,11 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 	{
 		try
 		{
+			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_PROPER_ADMIN)))
+			{
+				throw new JSON_Handler_Correspondence_Run_Exception('You do not have permission to view Correspdondence Runs.');
+			}
+			
 			$oRun	= Correspondence_Logic_Run::getForId($iId, false)->toArray();
 			return array('bSuccess' => true, 'oCorrespondenceRun' => $oRun);
 		}

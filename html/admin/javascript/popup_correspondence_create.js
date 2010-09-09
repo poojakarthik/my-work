@@ -112,7 +112,7 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 						),
 						$T.tr(
 							$T.td(),
-							$T.td(
+							$T.td({class: 'deliver-now'},
 								this._oDeliverNow.getElement(),
 								$T.span(' Deliver Immediately')
 							)
@@ -187,7 +187,7 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 		if (!oResponse.bSuccess)
 		{
 			// Error
-			this._ajaxError(oResponse);
+			this._ajaxError(oResponse, 'SQL Query Result');
 			return;
 		}
 		
@@ -195,6 +195,7 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 		
 		// Success
 		Reflex_Popup.alert('Correspondence Run created from SQL template', {sTitle: 'Success'});
+		this.hide();
 	},
 	
 	_csvSubmitted	: function(oResponse)
@@ -202,7 +203,7 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 		if (!oResponse.bSuccess)
 		{
 			// Error
-			this._ajaxError(oResponse);
+			this._ajaxError(oResponse, 'CSV File');
 			return;
 		}
 		
@@ -210,9 +211,10 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 		
 		// Success
 		Reflex_Popup.alert('Correspondence Run created from CSV file', {sTitle: 'Success'});
+		this.hide();
 	},
 	
-	_ajaxError	: function(oResponse)
+	_ajaxError	: function(oResponse, sDescription)
 	{
 		if (this._oLoading)
 		{
@@ -226,7 +228,7 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 			// Validation exception
 			if (oResponse.oException.bNoData)
 			{
-				Reflex_Popup.alert('There is no data in the CSV file', oConfig);
+				Reflex_Popup.alert('There is no data in the ' + sDescription, oConfig);
 			}
 			else
 			{

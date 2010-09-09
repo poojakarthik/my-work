@@ -34,6 +34,8 @@ var Component_Correspondence_Run_Ledger = Class.create(
 		
 		// Create the page HTML
 		var sButtonPathBase	= '../admin/img/template/resultset_';
+		//var oSection	= new Section(true);
+		//oSection.setTitle()
 		this._oContentDiv 	= 	$T.div({class: 'correspondence-run-ledger'},
 									// All
 									$T.div({class: 'section'},
