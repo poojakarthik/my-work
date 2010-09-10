@@ -192,6 +192,7 @@ class Correspondence_Logic_Run
 				{
 					$oRun->process();
 					$oRun->save();
+					$aRuns[] = $oRun;
 				}
 				catch(Exception $e)
 				{
@@ -200,11 +201,12 @@ class Correspondence_Logic_Run
 					{
 						$oRun->process(true);
 						$oRun->save();
+						$aRuns[] = $oRun;
 					}
 					if (get_class($e)== 'Correspondence_DataValidation_Exception')
 					{
 						$sErrorReportFilePath;
-						$sMessage = 'The following problems occurred when generating correspondence for run with id '.$oRun->id.' , for letter code '.$oRun->getTemplate()->template_code.': ';
+						$sMessage = 'The following problems occurred when generating correspondence for run id '.$oRun->id.' (letter code '.$oRun->getTemplate()->template_code.'). ';
 						if ($e->bSqlError)
 						{
 							$sMessage.=' The data source sql query is invalid';
@@ -212,6 +214,7 @@ class Correspondence_Logic_Run
 						else if ($e->bNoData)
 						{
 							$sMessage.=' The data source contained no data. No correspondence was generated';
+							$sMessage.= 'This correspondence run will be marked as \'delivered\', but no data file will be sent to the mailing house';
 						}
 						else
 						{
@@ -219,24 +222,24 @@ class Correspondence_Logic_Run
 							$sErrorReportFilePath = $e->sFileName;
 						}
 
-						$sMessage.= 'This correspondence run will be marked as \'delivered\', but no data file will be sent to the mailing house';
-
 						//send email
 						$oEmail = new Email_Notification();
-						$oEmail->setSubject("Correspondence Dispatch Notice for ".$this->getCorrespondenceCode().", run id ".$this->id);
+						$oEmail->setSubject("Correspondence Dispatch Notice for ".$oRun->getCorrespondenceCode().", run id ".$oRun->id);
 						if ($sErrorReportFilePath!=null)
 						{
 							$sFile = file_get_contents($sErrorReportFilePath);
-							$sFileName = substr($sErrorReportFilePath, strrpos( $sErrorReportFilePath , "/" ));
-							$oEmail->addAttachment($sFile, $sName, 'text/csv');
+							$sFileName = substr($sErrorReportFilePath, strrpos( $sErrorReportFilePath , "/" )+1);
+							$oEmail->addAttachment($sFile, $sFileName, 'text/csv');
 						}
 						$oEmail->setBodyHTML($sMessage);
-						$oEmployee = Employee::getForId($this->created_employee_id);
+						$oEmployee = Employee::getForId($oRun->created_employee_id);
 						$oEmail->addTo($oEmployee->Email, $name='');
 						//$oEmail->addCc($email, $name='');
 						//$oEmail->addBcc($email);
 						$oEmail->setFrom($oEmployee->Email, $name='');
 						$oEmail->send();
+
+						echo 'sent mail to '.$oEmployee->Email;
 
 					}
 					else
@@ -244,7 +247,7 @@ class Correspondence_Logic_Run
 						throw $e;
 					}
 				}
-			$aRuns[] = $oRun;
+
 		}
 
 		return $aRuns;
