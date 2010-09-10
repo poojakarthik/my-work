@@ -1090,6 +1090,63 @@ class JSON_Handler_Account extends JSON_Handler
 		}
 	}
 	
+	public function getDeliveredCorrespondence($bCountOnly=false, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null)
+	{
+		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		try
+		{
+			// Require proper admin priviledges when the account has not been limited (i.e. is from a system wide search)
+			if (!isset($oFilter->account_id) && !AuthenticatedUser()->UserHasPerm(array(PERMISSION_PROPER_ADMIN)))
+			{
+				throw new JSON_Handler_Account_Exception('You do not have permission to view Correspdondence.');
+			}
+			
+			$aFilter	= get_object_vars($oFilter);
+			$aSort		= get_object_vars($oSort);
+			
+			$iRecordCount	= Correspondence::getLedgerInformation(true, null, null, $aFilter, $aSort, true);
+			if ($bCountOnly)
+			{
+				return	array(
+							'Success'		=> true,
+							'iRecordCount'	=> $iRecordCount
+						);
+			}
+			
+			$iLimit		= is_null($iLimit) ? 0 : $iLimit;
+			$iOffset	= is_null($iOffset) ? 0 : $iOffset;
+			$aItems		= Correspondence::getLedgerInformation(false, $iLimit, $iOffset, $aFilter, $aSort, true);
+			$i			= 0;
+			$aResults	= array();
+			foreach ($aItems as $aItem)
+			{
+				$aItem['bViewRun']			= $bUserIsGod;
+				$aResults[$iOffset + $i]	= $aItem;
+				$i++;
+			}
+			
+			return	array(
+						'Success'		=> true,
+						'aRecords'		=> $aResults,
+						'iRecordCount'	=> $iRecordCount
+					);
+		}
+		catch (JSON_Handler_Account_Exception $oException)
+		{
+			return 	array(
+						'Success'	=> false,
+						'sMessage'	=> $oException->getMessage()
+					);
+		}
+		catch (Exception $e)
+		{
+			return 	array(
+						'Success'	=> false,
+						'sMessage'	=> $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'
+					);
+		}
+	}
+	
 	private function _getRebill($iAccountId)
 	{
 		$oRebill	= Rebill::getForAccountId($iAccountId);

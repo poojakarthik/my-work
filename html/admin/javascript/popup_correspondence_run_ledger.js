@@ -11,6 +11,12 @@ var Popup_Correspondence_Run_Ledger = Class.create(Reflex_Popup,
 		this.setTitle('Correspondence Run Ledger');
 		this.addCloseButton();
 		this.display();
-	}
+	},
+	
+	display	: function($super)
+	{
+		$super();
+		this.container.style.top = '150px';
+	},
 });
 

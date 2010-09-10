@@ -319,6 +319,13 @@
 			$aResult['aValues'][$sPlaceHolder]	= $mValue;
 			$aWhereParts[]						= "{$sAlias} IS NULL";
 		}
+		else if (strtolower($mValue) == 'not null')
+		{
+			// Value is a not null comparison
+			$sPlaceHolder						= $sOriginalAlias.$sPlaceHolderSuffix;
+			$aResult['aValues'][$sPlaceHolder]	= $mValue;
+			$aWhereParts[]						= "{$sAlias} IS NOT NULL";
+		}
 		else
 		{
 			// Value is a single value

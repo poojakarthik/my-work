@@ -36,77 +36,66 @@ var Component_Correspondence_Ledger_For_Account = Class.create(
 		
 		// Create the page HTML
 		var sButtonPathBase	= '../admin/img/template/resultset_';
+		var oSection	= new Section(true);
+		oSection.setTitleContent(
+			$T.span(
+				$T.span('Correspondence Items'),
+				$T.span({class: 'pagination-info'},
+					''
+				)
+			)
+		);
+		
+		oSection.setContent(
+			$T.table({class: 'reflex highlight-rows'},
+				$T.thead(
+					// Column headings
+					$T.tr(
+						this._createFieldHeader('Id', 'id'),
+						this._createFieldHeader('Template', 'correspondence_template_name'),
+						this._createFieldHeader('Method', 'correspondence_delivery_method_name'),
+						this._createFieldHeader('Dispatched', 'correspondence_run_delivered_datetime'),
+						this._createFieldHeader('')	// Actions
+					),
+					// Filter values
+					$T.tr(
+						$T.th(),
+						this._createFilterValueElement('correspondence_template_id', 'Template'),
+						this._createFilterValueElement('correspondence_delivery_method_id', 'Dispatch Method'),
+						this._createFilterValueElement('correspondence_run_delivered_datetime', 'Dispatched'),
+						$T.th()
+					)
+				),
+				$T.tbody({class: 'alternating'},
+					this._createNoRecordsRow(true)
+				)
+			)
+		);
+		
+		oSection.setFooterContent(
+			$T.div(
+				$T.span({class: 'loading'},
+					'Loading...'
+				),
+				$T.div(
+					$T.button(
+						$T.img({src: sButtonPathBase + 'first.png'})
+					),
+					$T.button(
+						$T.img({src: sButtonPathBase + 'previous.png'})
+					),
+					$T.button(
+						$T.img({src: sButtonPathBase + 'next.png'})
+					),
+					$T.button(
+						$T.img({src: sButtonPathBase + 'last.png'})
+					)
+				)
+			)
+		);
+		
 		this._oContentDiv 	= 	$T.div({class: 'correspondence-ledger-for-run'},
-									// All
-									$T.div({class: 'section'},
-										$T.div({class: 'section-header'},
-											$T.div({class: 'section-header-title'},
-												$T.span('Correspondence Items'),
-												$T.span({class: 'pagination-info'},
-													''
-												)
-											),
-											$T.div({class: 'section-header-options'}
-												
-											)
-										),
-										$T.div({class: 'section-content section-content-fitted'},
-											$T.table({class: 'reflex highlight-rows'},
-												$T.thead(
-													// Column headings
-													$T.tr(
-														this._createFieldHeader('Id', 'id', false),
-														this._createFieldHeader('Correspondence Run', 'correspondence_run_id', false),
-														this._createFieldHeader('Customer Group', 'customer_group_name', false),
-														this._createFieldHeader('Method', 'correspondence_delivery_method_name', false),
-														//this._createFieldHeader('Account Name', 'account_name', false),
-														this._createFieldHeader('Addressee'),
-														this._createFieldHeader('Address'),
-														//this._createFieldHeader('Email', 'email', false),
-														//this._createFieldHeader('Mobile', 'mobile', false),
-														//this._createFieldHeader('Landline', 'landline', false),
-														this._createFieldHeader('')	// Actions
-													),
-													// Filter values
-													$T.tr(
-														$T.th(),
-														$T.th(),
-														this._createFilterValueElement('customer_group_id', 'Customer Group'),
-														this._createFilterValueElement('correspondence_delivery_method_id', 'Delivery Method'),
-														//$T.th(),
-														$T.th(),
-														$T.th(),
-														//$T.th(),
-														//$T.th(),
-														//$T.th(),
-														$T.th()
-													)
-												),
-												$T.tbody({class: 'alternating'},
-													this._createNoRecordsRow(true)
-												)
-											)
-										),
-										$T.div({class: 'section-footer'}, 
-											$T.span({class: 'loading'},
-												'Loading...'
-											),
-											$T.div(
-												$T.button(
-													$T.img({src: sButtonPathBase + 'first.png'})
-												),
-												$T.button(
-													$T.img({src: sButtonPathBase + 'previous.png'})
-												),
-												$T.button(
-													$T.img({src: sButtonPathBase + 'next.png'})
-												),
-												$T.button(
-													$T.img({src: sButtonPathBase + 'last.png'})
-												)
-											)
-										)
-									)
+									oSection.getElement()
 								);
 		
 		// Bind events to the pagination buttons
@@ -210,7 +199,7 @@ var Component_Correspondence_Ledger_For_Account = Class.create(
 	_createNoRecordsRow	: function(bOnLoad)
 	{
 		return $T.tr(
-			$T.td({class: 'no-rows', colspan: 0},
+			$T.td({class: 'no-rows', colspan: 7},
 				(bOnLoad ? 'Loading...' : 'There are no records to display')
 			)
 		);
@@ -256,23 +245,18 @@ var Component_Correspondence_Ledger_For_Account = Class.create(
 			
 			var	oTR	=	$T.tr(
 							$T.td(oItem.id),
-							$T.td(oItem.correspondence_run_id),
-							$T.td(oItem.customer_group_name),
+							$T.td(
+								$T.div(
+									$T.div(oItem.correspondence_template_name),
+									$T.div({class: 'template-lettercode'},
+										oItem.correspondence_template_code
+									)
+								)
+							),
 							oDeliveryMethodTD,
 							$T.td(
-								(oItem.title ? oItem.title : '') + 
-								' ' + (oItem.first_name ? oItem.first_name : '') + 
-								' ' + (oItem.last_name ? oItem.last_name : '')
+								Component_Correspondence_Ledger_For_Account.getDateTimeElement(oItem.correspondence_run_delivered_datetime)
 							),
-							$T.td(
-								$T.div(oItem.address_line_1), 
-								$T.div(oItem.address_line_2 ? oItem.address_line_2 : ''), 
-								$T.div(oItem.suburb), 
-								$T.div(oItem.postcode + ' ' + oItem.state)
-							),
-							//$T.td(oItem.email),
-							//$T.td(oItem.mobile),
-							//$T.td(oItem.landline),
 							$T.td(this._getItemActions(oItem))
 						);
 			
@@ -395,10 +379,10 @@ var Component_Correspondence_Ledger_For_Account = Class.create(
 		this._oFilter.refreshData();
 	},
 	
-	_createFieldHeader	: function(sLabel, sSortField, bMultiLine)
+	_createFieldHeader	: function(sLabel, sSortField)
 	{
 		var oSortImg	= $T.img({class: 'sort-' + (sSortField ? sSortField : '')});
-		var oTH			= 	$T.th({class: 'header' + (bMultiLine ? '-multiline' : '')},
+		var oTH			= 	$T.th({class: 'header'},
 								oSortImg,
 								$T.span(sLabel)
 							);
@@ -420,15 +404,31 @@ var Component_Correspondence_Ledger_For_Account = Class.create(
 	_getItemActions	: function(oItem)
 	{
 		var oUL		= $T.ul({class: 'reset horizontal actions'});
-		var oView	= $T.img({class: 'pointer', src: Component_Correspondence_Ledger_For_Account.ACTION_VIEW_IMAGE_SOURCE, alt: 'View Additional Columns', title: 'View Additional Columns'});
+		
+		var sAlt	= 'View the details of the Correspondence';
+		var oView	= $T.img({class: 'pointer', src: '../admin/img/template/magnifier.png', alt: sAlt, title: sAlt});
 		oView.observe('click', this._viewDetailsPopup.bind(this, oItem));
 		oUL.appendChild($T.li(oView));
+		
+		if (oItem.bViewRun)
+		{
+			var sAlt	= 'View the Correspondence Run details';
+			var oRun	= $T.img({class: 'pointer', src: '../admin/img/template/view.png', alt: sAlt, title: sAlt});
+			oRun.observe('click', this._viewRunDetailsPopup.bind(this, oItem));
+			oUL.appendChild($T.li(oRun));
+		}
+		
 		return oUL;
 	},
 	
 	_viewDetailsPopup	: function(oItem)
 	{
 		new Popup_Correspondence_Data(oItem.id);
+	},
+	
+	_viewRunDetailsPopup	: function(oItem)
+	{
+		new Popup_Correspondence_Run(oItem.correspondence_run_id);
 	},
 	
 	_filterFieldUpdated	: function(sField)
@@ -468,7 +468,27 @@ var Component_Correspondence_Ledger_For_Account = Class.create(
 		var sValue		= '';
 		switch (sField)
 		{
-			case 'customer_group_id':
+			case 'correspondence_run_delivered_datetime':
+				var oState		= this._oFilter.getFilterState(sField);
+				var bGotFrom	= mValue.mFrom != null;
+				var bGotTo		= mValue.mTo != null;
+				var sFrom		= (bGotFrom ? Component_Correspondence_Ledger_For_Account.formatDateTimeFilterValue(mValue.mFrom)	: null);
+				var sTo			= (bGotTo 	? Component_Correspondence_Ledger_For_Account.formatDateTimeFilterValue(mValue.mTo) 	: null);
+				switch (parseInt(oState.oRangeTypeSelect.value))
+				{
+					case Filter.RANGE_TYPE_FROM:
+						sValue	= [oDefinition.sFromOption, sFrom].join(' ');
+						break;
+					case Filter.RANGE_TYPE_TO:
+						sValue	= [oDefinition.sToOption, sTo].join(' ');
+						break;
+					case Filter.RANGE_TYPE_BETWEEN:
+						sValue	= [oDefinition.sBetweenOption, sFrom, 'and', sTo].join(' ');
+						break;
+				}
+				break;
+		
+			case 'correspondence_template_id':
 			case 'correspondence_delivery_method_id':
 				// Control Field Select
 				var oControl	= aControls[0];
@@ -508,13 +528,11 @@ Object.extend(Component_Correspondence_Ledger_For_Account,
 	FILTER_IMAGE_SOURCE			: '../admin/img/template/table_row_insert.png',
 	REMOVE_FILTER_IMAGE_SOURCE	: '../admin/img/template/delete.png',
 
-	ACTION_VIEW_IMAGE_SOURCE	: '../admin/img/template/magnifier.png',
-
 	RANGE_FILTER_DATE_REGEX		: /^(\d{4}-\d{2}-\d{2})(\s\d{2}:\d{2}:\d{2})?$/,
 	RANGE_FILTER_FROM_MINUTES	: '00:00:00',
 	RANGE_FILTER_TO_MINUTES		: '23:59:59',
 
-	DATA_SET_DEFINITION			: {sObject: 'Correspondence', sMethod: 'getDataSet'},
+	DATA_SET_DEFINITION			: {sObject: 'Account', sMethod: 'getDeliveredCorrespondence'},
 
 	// Helper functions
 	_validateDueDate	: function(sValue)
@@ -554,7 +572,6 @@ Object.extend(Component_Correspondence_Ledger_For_Account,
 		return oDate.$format('j/m/y');
 	},
 
-
 	getPrePrintedOptions	: function(fnCallback)
 	{
 		fnCallback(
@@ -571,14 +588,10 @@ Object.extend(Component_Correspondence_Ledger_For_Account,
 	
 	//Sorting definitions
 	SORT_FIELDS	:	{
-						id									: Sort.DIRECTION_ASC,
-						correspondence_run_id				: Sort.DIRECTION_OFF,
-						customer_group_name					: Sort.DIRECTION_OFF,
-						correspondence_delivery_method_name	: Sort.DIRECTION_OFF,
-						account_name						: Sort.DIRECTION_OFF,
-						email								: Sort.DIRECTION_OFF,
-						mobile								: Sort.DIRECTION_OFF,
-						landline							: Sort.DIRECTION_OFF
+						id										: Sort.DIRECTION_OFF,
+						correspondence_delivery_method_name		: Sort.DIRECTION_OFF,
+						correspondence_run_delivered_datetime	: Sort.DIRECTION_DESC,
+						correspondence_template_name			: Sort.DIRECTION_OFF
 					},
 });
 
@@ -597,6 +610,23 @@ Component_Correspondence_Ledger_For_Account.FILTER_FIELDS	=
 	account_id	: 
 	{
 		iType	: Filter.FILTER_TYPE_VALUE
+	},
+	correspondence_template_id	: 
+	{
+		iType	: Filter.FILTER_TYPE_VALUE,
+		oOption	: 	
+		{
+			sType		: 'select',
+			mDefault	: null,
+			oDefinition	:	
+			{
+				sLabel		: 'Template',
+				mEditable	: true,
+				mMandatory	: false,
+				fnValidate	: null,
+				fnPopulate	: Correspondence_Template.getAllAsSelectOptions
+			}
+		}
 	},
 	customer_group_id	: 
 	{
@@ -631,5 +661,32 @@ Component_Correspondence_Ledger_For_Account.FILTER_FIELDS	=
 				fnPopulate	: Correspondence_Delivery_Method.getAllAsSelectOptions
 			}
 		}
-	}
+	},
+	correspondence_run_delivered_datetime	:
+	{
+		iType			: Filter.FILTER_TYPE_RANGE,
+		bFrom			: true,
+		sFrom			: 'Start Date',
+		bTo				: true,
+		sTo				: 'End Date',
+		sFromOption		: 'On Or After',
+		sToOption		: 'On Or Before',
+		sBetweenOption	: 'Between',
+		oOption			: 	
+		{
+			sType		: 	'date-picker',
+			mDefault	:	null,
+			oDefinition	:	
+			{
+				sLabel		: 'Date',
+				mEditable	: true,
+				bTimePicker	: true,
+				mMandatory	: false,
+				fnValidate	: Component_Correspondence_Ledger_For_Account._validateDueDate,
+				sDateFormat	: 'Y-m-d H:i:s',
+				iYearStart	: Component_Correspondence_Ledger_For_Account.YEAR_MINIMUM,
+				iYearEnd	: Component_Correspondence_Ledger_For_Account.YEAR_MAXIMUM
+			}
+		}
+	},
 };

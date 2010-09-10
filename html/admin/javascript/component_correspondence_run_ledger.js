@@ -34,75 +34,78 @@ var Component_Correspondence_Run_Ledger = Class.create(
 		
 		// Create the page HTML
 		var sButtonPathBase	= '../admin/img/template/resultset_';
-		//var oSection	= new Section(true);
-		//oSection.setTitle()
+		var oSection		= new Section(true);
+		oSection.setTitleContent(
+			$T.span(
+				$T.span('Correspondence Runs'),
+				$T.span({class: 'pagination-info'},
+					''
+				)
+			)
+		);
+		
+		oSection.setContent(
+			$T.table({class: 'reflex highlight-rows'},
+				$T.thead(
+					// Column headings
+					$T.tr(
+						this._createFieldHeader('Processed', 'processed_datetime'),
+						this._createFieldHeader('Source'),
+						this._createFieldHeader('Template', 'correspondence_template_name'),
+						this._createFieldHeader('Created By', 'created_employee_name'),
+						this._createFieldHeader('Items', 'count_correspondence'),
+						//this._createFieldHeader('Emailed', 'count_email'),
+						//this._createFieldHeader('Posted', 'count_post'),
+						this._createFieldHeader('Dispatched', 'delivered_datetime'),
+						this._createFieldHeader('Data File', 'data_file_name'),
+						this._createFieldHeader('Status'),
+						this._createFieldHeader('')	// Actions
+					),
+					// Filter values
+					$T.tr(
+						this._createFilterValueElement('processed_datetime', 'Processed'),
+						$T.th(),
+						this._createFilterValueElement('correspondence_template_id', 'Template'),
+						this._createFilterValueElement('created_employee_id', 'Created By'),
+						$T.th(),
+						//$T.th(),
+						//$T.th(),
+						this._createFilterValueElement('delivered_datetime', 'Dispatched'),
+						$T.th(),
+						this._createFilterValueElement('status', 'Status'),
+						$T.th()
+					)
+				),
+				$T.tbody({class: 'alternating'},
+					this._createNoRecordsRow(true)
+				)
+			)
+		);
+		
+		oSection.setFooterContent(
+			$T.div(
+				$T.span({class: 'loading'},
+					'Loading...'
+				),
+				$T.div(
+					$T.button(
+						$T.img({src: sButtonPathBase + 'first.png'})
+					),
+					$T.button(
+						$T.img({src: sButtonPathBase + 'previous.png'})
+					),
+					$T.button(
+						$T.img({src: sButtonPathBase + 'next.png'})
+					),
+					$T.button(
+						$T.img({src: sButtonPathBase + 'last.png'})
+					)
+				)
+			)
+		);
+		
 		this._oContentDiv 	= 	$T.div({class: 'correspondence-run-ledger'},
-									// All
-									$T.div({class: 'section'},
-										$T.div({class: 'section-header'},
-											$T.div({class: 'section-header-title'},
-												$T.span('Correspondence Runs'),
-												$T.span({class: 'pagination-info'},
-													''
-												)
-											),
-											$T.div({class: 'section-header-options'}
-												
-											)
-										),
-										$T.div({class: 'section-content section-content-fitted'},
-											$T.table({class: 'reflex highlight-rows'},
-												$T.thead(
-													// Column headings
-													$T.tr(
-														this._createFieldHeader('Id', 'id', false),
-														this._createFieldHeader('Template', 'correspondence_template_name', false),
-														this._createFieldHeader('Processed', 'processed_datetime', false),
-														this._createFieldHeader('Scheduled For Delivery', 'scheduled_datetime', false),
-														this._createFieldHeader('Delivered', 'delivered_datetime', false),
-														this._createFieldHeader('Created By', 'created_employee_name', false),
-														this._createFieldHeader('Created', 'created', false),
-														this._createFieldHeader('Pre-Printed', 'preprinted', false),
-														this._createFieldHeader('')	// Actions
-													),
-													// Filter values
-													$T.tr(
-														$T.th(),
-														this._createFilterValueElement('correspondence_template_id', 'Template'),
-														this._createFilterValueElement('processed_datetime', 'Processed'),
-														this._createFilterValueElement('scheduled_datetime', 'Scheduled For Delivery'),
-														this._createFilterValueElement('delivered_datetime', 'Delivered'),
-														this._createFilterValueElement('created_employee_id', 'Created By'),
-														this._createFilterValueElement('created', 'Created'),
-														this._createFilterValueElement('preprinted', 'Pre-Printed'),
-														$T.th()
-													)
-												),
-												$T.tbody({class: 'alternating'},
-													this._createNoRecordsRow(true)
-												)
-											)
-										),
-										$T.div({class: 'section-footer'}, 
-											$T.span({class: 'loading'},
-												'Loading...'
-											),
-											$T.div(
-												$T.button(
-													$T.img({src: sButtonPathBase + 'first.png'})
-												),
-												$T.button(
-													$T.img({src: sButtonPathBase + 'previous.png'})
-												),
-												$T.button(
-													$T.img({src: sButtonPathBase + 'next.png'})
-												),
-												$T.button(
-													$T.img({src: sButtonPathBase + 'last.png'})
-												)
-											)
-										)
-									)
+									oSection.getElement()
 								);
 		
 		// Bind events to the pagination buttons
@@ -206,7 +209,7 @@ var Component_Correspondence_Run_Ledger = Class.create(
 	_createNoRecordsRow	: function(bOnLoad)
 	{
 		return $T.tr(
-			$T.td({class: 'no-rows', colspan: 0},
+			$T.td({class: 'no-rows', colspan: 9},
 				(bOnLoad ? 'Loading...' : 'There are no records to display')
 			)
 		);
@@ -217,14 +220,35 @@ var Component_Correspondence_Run_Ledger = Class.create(
 		if (oRun.id !== null)
 		{
 			var	oTR	=	$T.tr(
-							$T.td(oRun.id),
-							$T.td(oRun.correspondence_template_name),
 							$T.td(Component_Correspondence_Run_Ledger.getDateTimeElement(oRun.processed_datetime)),
-							$T.td(Component_Correspondence_Run_Ledger.getDateTimeElement(oRun.scheduled_datetime)),
-							$T.td(Component_Correspondence_Run_Ledger.getDateTimeElement(oRun.delivered_datetime)),
+							$T.td(oRun.source ? oRun.source : ''),
+							$T.td(
+								$T.div(
+									$T.div(oRun.correspondence_template_name),
+									$T.div({class: 'template-lettercode'},
+										oRun.correspondence_template_code
+									)
+								)
+							),
 							$T.td(oRun.created_employee_name),
-							$T.td(Component_Correspondence_Run_Ledger.getDateTimeElement(oRun.created)),
-							$T.td(oRun.preprinted ? 'Yes' : 'No'),
+							$T.td(
+								$T.div({class: 'correspondence-count'},
+									oRun.count_correspondence
+								),
+								$T.div({class: 'correspondence-count-detail'},
+									$T.div(
+										$T.img({src: '../admin/img/template/correspondence_email.png', alt: 'Email', title: 'Email'}),
+										$T.span(oRun.count_email)
+									),
+									$T.div(
+										$T.img({src: '../admin/img/template/lorry.png', alt: 'Post', title: 'Post'}),
+										$T.span(oRun.count_post)
+									)
+								)
+							),
+							$T.td(Component_Correspondence_Run_Ledger.getDateTimeElement(oRun.delivered_datetime)),
+							$T.td(oRun.date_file_name),
+							$T.td(Correspondence_Run_Status.getStatusFromCorrespondenceRun(oRun).name),
 							$T.td(this._getRunActions(oRun))
 						);
 			
@@ -385,32 +409,7 @@ var Component_Correspondence_Run_Ledger = Class.create(
 	
 	_filterFieldUpdated	: function(sField)
 	{
-		// Make sure the from date has 00:00 (start of day) for minutes and the to date has 23:59 (end of day)
-		// so that both days are included in the search
-		if (sField.match(/due_datetime/))
-		{
-			var oValue	= this._oFilter.getFilterValue(sField);
-			if (oValue)
-			{
-				if (oValue.mFrom)
-				{
-					oValue.mFrom	= 	oValue.mFrom.replace(
-											Component_Correspondence_Run_Ledger.RANGE_FILTER_DATE_REGEX, 
-											'$1 ' + Component_Correspondence_Run_Ledger.RANGE_FILTER_FROM_MINUTES
-										);
-				}
-				
-				if (oValue.mTo)
-				{
-					oValue.mTo	= 	oValue.mTo.replace(
-										Component_Correspondence_Run_Ledger.RANGE_FILTER_DATE_REGEX, 
-										'$1 ' + Component_Correspondence_Run_Ledger.RANGE_FILTER_TO_MINUTES
-									);
-				}
-				
-				this._oFilter.setFilterValue(sField, oValue.mFrom, oValue.mTo, null, true);
-			}
-		}
+		
 	},
 	
 	_formatFilterValueForDisplay	: function(sField, mValue)
@@ -421,9 +420,7 @@ var Component_Correspondence_Run_Ledger = Class.create(
 		switch (sField)
 		{
 			case 'processed_datetime':
-			case 'scheduled_datetime':
 			case 'delivered_datetime':
-			case 'created':
 				var oState		= this._oFilter.getFilterState(sField);
 				var bGotFrom	= mValue.mFrom != null;
 				var bGotTo		= mValue.mTo != null;
@@ -444,7 +441,7 @@ var Component_Correspondence_Run_Ledger = Class.create(
 				break;
 			case 'correspondence_template_id':
 			case 'created_employee_id':
-			case 'preprinted':
+			case 'status':
 				// Control Field Select
 				var oControl	= aControls[0];
 				if (oControl.bPopulated)
@@ -546,14 +543,14 @@ Object.extend(Component_Correspondence_Run_Ledger,
 	
 	//Sorting definitions
 	SORT_FIELDS	:	{
-						id								: Sort.DIRECTION_OFF,
-						correspondence_template_name	: Sort.DIRECTION_OFF,
 						processed_datetime				: Sort.DIRECTION_OFF,
-						scheduled_datetime				: Sort.DIRECTION_OFF,
-						delivered_datetime				: Sort.DIRECTION_DESC,
+						correspondence_template_name	: Sort.DIRECTION_OFF,
 						created_employee_name			: Sort.DIRECTION_OFF,
-						created							: Sort.DIRECTION_OFF,
-						preprinted						: Sort.DIRECTION_OFF
+						count_correspondence			: Sort.DIRECTION_OFF,
+						count_email						: Sort.DIRECTION_OFF,
+						count_post						: Sort.DIRECTION_OFF,
+						delivered_datetime				: Sort.DIRECTION_DESC,
+						data_file_name					: Sort.DIRECTION_OFF
 					},
 });
 
@@ -613,61 +610,7 @@ Component_Correspondence_Run_Ledger.FILTER_FIELDS	=
 			}
 		}
 	},
-	scheduled_datetime	:
-	{
-		iType			: Filter.FILTER_TYPE_RANGE,
-		bFrom			: true,
-		sFrom			: 'Start Date',
-		bTo				: true,
-		sTo				: 'End Date',
-		sFromOption		: 'On Or After',
-		sToOption		: 'On Or Before',
-		sBetweenOption	: 'Between',
-		oOption			: 	
-		{
-			sType		: 	'date-picker',
-			mDefault	:	null,
-			oDefinition	:	
-			{
-				sLabel		: 'Date',
-				mEditable	: true,
-				bTimePicker	: true,
-				mMandatory	: false,
-				fnValidate	: Component_Correspondence_Run_Ledger._validateDueDate,
-				sDateFormat	: 'Y-m-d H:i:s',
-				iYearStart	: Component_Correspondence_Run_Ledger.YEAR_MINIMUM,
-				iYearEnd	: Component_Correspondence_Run_Ledger.YEAR_MAXIMUM
-			}
-		}
-	},
 	delivered_datetime	:
-	{
-		iType			: Filter.FILTER_TYPE_RANGE,
-		bFrom			: true,
-		sFrom			: 'Start Date',
-		bTo				: true,
-		sTo				: 'End Date',
-		sFromOption		: 'On Or After',
-		sToOption		: 'On Or Before',
-		sBetweenOption	: 'Between',
-		oOption			: 	
-		{
-			sType		: 	'date-picker',
-			mDefault	:	null,
-			oDefinition	:	
-			{
-				sLabel		: 'Date',
-				mEditable	: true,
-				bTimePicker	: true,
-				mMandatory	: false,
-				fnValidate	: Component_Correspondence_Run_Ledger._validateDueDate,
-				sDateFormat	: 'Y-m-d H:i:s',
-				iYearStart	: Component_Correspondence_Run_Ledger.YEAR_MINIMUM,
-				iYearEnd	: Component_Correspondence_Run_Ledger.YEAR_MAXIMUM
-			}
-		}
-	},
-	created	:
 	{
 		iType			: Filter.FILTER_TYPE_RANGE,
 		bFrom			: true,
@@ -711,7 +654,7 @@ Component_Correspondence_Run_Ledger.FILTER_FIELDS	=
 			}
 		}
 	},
-	preprinted	:
+	status	:
 	{
 		iType	: Filter.FILTER_TYPE_VALUE,
 		oOption	: 	
@@ -720,12 +663,13 @@ Component_Correspondence_Run_Ledger.FILTER_FIELDS	=
 			mDefault	: null,
 			oDefinition	:	
 			{
-				sLabel		: 'Pre-Printed',
+				sLabel		: 'Status',
 				mEditable	: true,
 				mMandatory	: false,
 				fnValidate	: null,
-				fnPopulate	: Component_Correspondence_Run_Ledger.getPrePrintedOptions
+				fnPopulate	: Correspondence_Run_Status.getAllAsSelectOptions
 			}
 		}
 	}
 };
+

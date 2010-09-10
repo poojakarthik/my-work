@@ -142,57 +142,87 @@ class Correspondence_Run extends ORM_Cached
 		return $aObjects;
 	}
 
-	public static function searchFor($bCountOnly=false, $iLimit=0, $iOffset=0, $aFilter=null, $aSort=null)
+	public static function getLedgerInformation($bCountOnly=false, $iLimit=0, $iOffset=0, $aFilter=null, $aSort=null)
 	{
-		$sFrom			= '	correspondence_run c
-							JOIN Employee e ON c.created_employee_id = e.id
-							JOIN correspondence_template ct ON ct.id = c.correspondence_template_id';
+		$sFrom			= "	correspondence_run cr
+							JOIN Employee e ON cr.created_employee_id = e.id
+							JOIN correspondence_template ct ON ct.id = cr.correspondence_template_id
+							JOIN correspondence c ON c.correspondence_run_id = cr.id
+							LEFT JOIN FileExport fe ON fe.id = cr.data_file_export_id ";
 		if ($bCountOnly)
 		{
-			$sSelect	= 'count(c.id) AS record_count';
+			$sSelect	= "count(cr.id) AS record_count";
 		}
 		else
 		{
-			$sSelect	= "	c.id, 
-							c.correspondence_template_id, 
-							c.processed_datetime, 
-							c.scheduled_datetime, 
-							COALESCE(c.delivered_datetime, '".Data_Source_Time::END_OF_TIME."') AS delivered_datetime, 
-							c.created_employee_id, 
-							c.created, 
-							c.data_file_export_id, 
-							c.preprinted, 
-							c.pdf_file_export_id, 
-							c.correspondence_run_batch_id, 
+			$sSelect	= "	cr.id, 
+							cr.correspondence_template_id, 
+							cr.processed_datetime, 
+							cr.scheduled_datetime, 
+							COALESCE(cr.delivered_datetime, '".Data_Source_Time::END_OF_TIME."') AS delivered_datetime, 
+							cr.created_employee_id, 
+							cr.created, 
+							cr.data_file_export_id, 
+							cr.preprinted, 
+							cr.pdf_file_export_id, 
+							cr.correspondence_run_batch_id, 
 							CONCAT(e.FirstName,' ',e.LastName) AS created_employee_name, 
-							ct.name AS correspondence_template_name";
+							ct.name AS correspondence_template_name,
+							ct.template_code AS correspondence_template_code,
+							ct.correspondence_source_id AS correspondence_template_source_id,
+							cr.correspondence_run_error_id,
+							COALESCE(fe.FileName, NULL) AS data_file_name, 
+							COUNT(c.id) AS count_correspondence,
+							COUNT(IF(c.correspondence_delivery_method_id = ".CORRESPONDENCE_DELIVERY_METHOD_EMAIL.", c.id, NULL)) AS count_email,
+							COUNT(IF(c.correspondence_delivery_method_id = ".CORRESPONDENCE_DELIVERY_METHOD_POST.", c.id, NULL)) AS count_post
+							";
 		}
 		
 		$aWhereAlias	=	array(
-								'processed_datetime' 	=> 'c.processed_datetime',
-								'scheduled_datetime' 	=> 'c.scheduled_datetime',
-								'created' 				=> 'c.created',
-								'created_employee_id'	=> 'c.created_employee_id',
-								'preprinted'			=> 'c.preprinted'
+								'processed_datetime' 			=> 'cr.processed_datetime',
+								'scheduled_datetime' 			=> 'cr.scheduled_datetime',
+								'created' 						=> 'cr.created',
+								'created_employee_id'			=> 'cr.created_employee_id',
+								'preprinted'					=> 'cr.preprinted',
+								'data_file_name'				=> 'COALESCE(fe.FileName, NULL)',
+								'count_correspondence'			=> 'COUNT(c.id)',
+								'count_email'					=> "COUNT(IF(c.correspondence_delivery_method_id = ".CORRESPONDENCE_DELIVERY_METHOD_EMAIL.", c.id, NULL))",
+								'count_post'					=> "COUNT(IF(c.correspondence_delivery_method_id = ".CORRESPONDENCE_DELIVERY_METHOD_POST.", c.id, NULL))",
+								'correspondence_run_error_id'	=> 'cr.correspondence_run_error_id'
 							);
 		$aWhere			= 	StatementSelect::generateWhere($aWhereAlias, $aFilter);
 		$aSortAlias		=	array(
-								'processed_datetime' 			=> 'c.processed_datetime',
-								'scheduled_datetime' 			=> 'c.scheduled_datetime',
-								'created' 						=> 'c.created',
+								'processed_datetime' 			=> 'cr.processed_datetime',
+								'scheduled_datetime' 			=> 'cr.scheduled_datetime',
+								'created' 						=> 'cr.created',
 								'created_employee_name'			=> 'created_employee_name',
-								'preprinted'					=> 'c.preprinted'
+								'preprinted'					=> 'cr.preprinted',
+								'data_file_name'				=> 'COALESCE(fe.FileName, NULL)',
+								'count_correspondence'			=> 'COUNT(c.id)',
+								'count_email'					=> "COUNT(IF(c.correspondence_delivery_method_id = ".CORRESPONDENCE_DELIVERY_METHOD_EMAIL.", c.id, NULL))",
+								'count_post'					=> "COUNT(IF(c.correspondence_delivery_method_id = ".CORRESPONDENCE_DELIVERY_METHOD_POST.", c.id, NULL))",
+								'correspondence_run_error_id'	=> 'cr.correspondence_run_error_id'
 							);
-		$sOrderByClause	= StatementSelect::generateOrderBy($aSortAlias, $aSort);
-		$sLimitClause	= StatementSelect::generateLimit($iLimit, $iOffset);
+		$sOrderByClause	= 	StatementSelect::generateOrderBy($aSortAlias, $aSort);
+		$sLimitClause	= 	StatementSelect::generateLimit($iLimit, $iOffset);
+		$sWhereClause	= 	$aWhere['sClause'];
 		
-		$oStmt	=	new StatementSelect(
-						$sFrom, 
-						$sSelect, 
-						$aWhere['sClause'], 
-						($bCountOnly ? '' : $sOrderByClause), 
-						($bCountOnly ? '' : $sLimitClause)
-					);
+		if (!$bCountOnly)
+		{
+			if ($sWhereClause == "")
+			{
+				$sWhereClause	.= " 1";
+			}
+			$sWhereClause	.= " GROUP BY cr.id";
+		}
+		
+		$oStmt			=	new StatementSelect(
+								$sFrom, 
+								$sSelect, 
+								$sWhereClause, 
+								($bCountOnly ? '' : $sOrderByClause), 
+								($bCountOnly ? '' : $sLimitClause)
+							);
 		
 		if ($oStmt->Execute($aWhere['aValues']) === false)
 		{
@@ -211,8 +241,7 @@ class Correspondence_Run extends ORM_Cached
 			$aResults	= array();
 			while ($aRow = $oStmt->Fetch())
 			{
-				$oResult				= self::getForId($aRow['id']);
-				$aResults[$oResult->id]	= $oResult;
+				$aResults[$aRow['id']]	= $aRow;
 			}
 			return $aResults;
 		}

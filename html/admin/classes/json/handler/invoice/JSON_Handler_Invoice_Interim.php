@@ -449,17 +449,23 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 	
 	public function submitAllEligible()
 	{
+		$bIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 		try
 		{
+			Log::getLog()->log("Attempting to submit all eligibile interim first invoices");
+			
 			Invoice_Interim::submitAllEligible();
-			return array("bSuccess" => true);
+			return	array(
+						'bSuccess' 	=> true,
+						'sDebug'	=> ($bIsGod ? $this->_JSONDebug : '')
+					);
 		}
 		catch (Exception $e)
 		{
-			$bIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 			return array(
-						"bSuccess"	=> false,
-						"sError"	=> ($bIsGod ? $e->getMessage() : '')
+						'bSuccess'	=> false,
+						'sError'	=> ($bIsGod ? $e->getMessage() : ''),
+						'sDebug'	=> ($bIsGod ? $this->_JSONDebug : '')
 					);
 		}
 	}

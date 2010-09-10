@@ -49,15 +49,15 @@ var Popup_Correspondence_Data	= Class.create(Reflex_Popup,
 				);
 			}
 			
+			var oSection	= new Section();
+			oSection.setContent(
+				$T.table({class: 'reflex input'},
+					oTBody
+				)
+			);
+			
 			this._oContent	=	$T.div({class: 'popup-correspondence-data'},
-									$T.div({class: 'section'},
-										$T.div({class: 'section-content'},
-											$T.table({class: 'reflex input'},
-												oTBody
-											)
-										)
-									)
-									
+									oSection.getElement()
 								);
 			this.addCloseButton();
 			this.setTitle('Correspondence Data');

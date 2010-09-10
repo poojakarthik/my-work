@@ -52,58 +52,66 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 		
 		// Create the page HTML
 		var sButtonPathBase	= '../admin/img/template/resultset_';
+		var oSection		= new Section(true);
+		oSection.setTitleContent(
+			$T.span(
+				$T.span('Correspondence Items'),
+				$T.span({class: 'pagination-info'},
+					''
+				)
+			)
+		);
+		
+		oSection.addToHeaderOptions(
+			$T.button({class: 'icon-button'},
+				'Export to CSV'
+			).observe('click', this._downloadCSV.bind(this))
+		);
+		
+		oSection.addToHeaderOptions(
+			$T.button({class: 'icon-button'}, 
+				'Show/Hide Columns'
+			).observe('click', this._editColumns.bind(this))
+		);
+		
+		oSection.setContent(
+			$T.table({class: 'reflex highlight-rows'},
+				$T.thead(
+					// Column headings
+					$T.tr(),
+					// Filter values
+					$T.tr()
+				),
+				$T.tbody({class: 'alternating'},
+					this._createNoRecordsRow(true)
+				)
+			)
+		);
+		
+		oSection.setFooterContent(
+			$T.div(
+				$T.span({class: 'loading'},
+					'Loading...'
+				),
+				$T.div(
+					$T.button(
+						$T.img({src: sButtonPathBase + 'first.png'})
+					),
+					$T.button(
+						$T.img({src: sButtonPathBase + 'previous.png'})
+					),
+					$T.button(
+						$T.img({src: sButtonPathBase + 'next.png'})
+					),
+					$T.button(
+						$T.img({src: sButtonPathBase + 'last.png'})
+					)
+				)
+			)
+		);
+		
 		this._oContentDiv 	= 	$T.div({class: 'correspondence-ledger-for-run'},
-									// All
-									$T.div({class: 'section'},
-										$T.div({class: 'section-header'},
-											$T.div({class: 'section-header-title'},
-												$T.span('Correspondence Items'),
-												$T.span({class: 'pagination-info'},
-													''
-												)
-											),
-											$T.div({class: 'section-header-options'},
-												$T.button({class: 'icon-button'},
-													'Export to CSV'
-												).observe('click', this._downloadCSV.bind(this)),
-												$T.button({class: 'icon-button'}, 
-													'Show/Hide Columns'
-												).observe('click', this._editColumns.bind(this))		
-											)
-										),
-										$T.div({class: 'section-content section-content-fitted'},
-											$T.table({class: 'reflex highlight-rows'},
-												$T.thead(
-													// Column headings
-													$T.tr(),
-													// Filter values
-													$T.tr()
-												),
-												$T.tbody({class: 'alternating'},
-													this._createNoRecordsRow(true)
-												)
-											)
-										),
-										$T.div({class: 'section-footer'}, 
-											$T.span({class: 'loading'},
-												'Loading...'
-											),
-											$T.div(
-												$T.button(
-													$T.img({src: sButtonPathBase + 'first.png'})
-												),
-												$T.button(
-													$T.img({src: sButtonPathBase + 'previous.png'})
-												),
-												$T.button(
-													$T.img({src: sButtonPathBase + 'next.png'})
-												),
-												$T.button(
-													$T.img({src: sButtonPathBase + 'last.png'})
-												)
-											)
-										)
-									)
+									oSection.getElement()
 								);
 		
 		// Bind events to the pagination buttons

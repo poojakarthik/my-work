@@ -83,7 +83,6 @@ var JsAutoLoader = {
 					}
 					else
 					{
-						debugger;
 						// The script element has been included in the header, but has not finished loading yet
 						// add the funcOnLoadEventHandler to it as an event listener
 						Event.startObserving(scripts[i], "load", fncCallback, true);
@@ -131,10 +130,6 @@ var JsAutoLoader = {
 	// This is used to register the fact that a script has been loaded into the dom
 	registerLoadedScript : function(strScriptName)
 	{
-		if(strScriptName.match(/sort/))
-		{
-			document.title += strScriptName + ',';
-		}
 		this.loadedScripts[strScriptName]	= true;
 	},
 	

@@ -61,8 +61,15 @@ class Invoice_Interim
 	// submitAllEligible
 	public static function submitAllEligible()
 	{
+		Log::getLog()->log("Getting list of eligible accounts & services");
+		
 		$aServices	= self::_getEligibleServices();
+		
+		Log::getLog()->log("Generating the eligiblity report");
+		
 		$oCSVFile	= self::generateEligibilityReport($aServices);
+		
+		Log::getLog()->log("Creating account list where all services are white listed");
 		
 		// Create account list where all services are white listed
 		$aAccounts	= array();
@@ -76,6 +83,8 @@ class Invoice_Interim
 				$sFNN	= '0'.$sFNN;
 			}
 			
+			Log::getLog()->log("Adding Account {$iAccountId} -> Service {$sFNN}");
+			
 			// Cache the FNN as white listed, due there being no re-submission of the eligibility report
 			$iAccountId	= (int)$aService['account_id'];
 			if (!isset($aAccounts[$iAccountId]))
@@ -87,9 +96,15 @@ class Invoice_Interim
 											);
 			}
 			$aAccounts[$iAccountId]['aWhitelist'][$sFNN]	= true;
+			
+			Log::getLog()->log("Account {$iAccountId} -> Service {$sFNN} added to white list");
 		}
 		
+		Log::getLog()->log("Generating customer group grouping of account/service data");
+		
 		$aCustomerGroups	= self::_preProcessEligibleAccounts($aServices, $aAccounts);
+		
+		Log::getLog()->log("Processing account/service data");
 		
 		self::_processEligibleAccounts(
 			$aServices, 
@@ -97,6 +112,8 @@ class Invoice_Interim
 			$oCSVFile, 
 			"auto-interim-invoice-eligibility-report-".date('Ymd')
 		);
+		
+		Log::getLog()->log("All eligible interim first invoices submitted");
 	}
 	
 	// generateEligibilityReport
@@ -445,6 +462,8 @@ class Invoice_Interim
 		
 		try
 		{
+			Log::getLog()->log("Create csv files for exception reporting");
+			
 			// Action the Eligible Accounts
 			$oCSVExceptionsReport	= new File_CSV();
 			$oCSVExceptionsReport->setColumns(array_values(self::$_aInterimExceptionsColumns));
@@ -467,6 +486,8 @@ class Invoice_Interim
 			// Process all accounts, one customer group at a time
 			foreach ($aCustomerGroups as $iCustomerGroupId => $aAccounts)
 			{
+				Log::getLog()->log("Processing customer group {$iCustomerGroupId}");
+				
 				// Create an invoice run for all of the eligible accounts in the customer group
 				if (!$oFlexDataAccess->TransactionStart())
 				{
@@ -478,9 +499,13 @@ class Invoice_Interim
 					$aAccountsToInvoice	= array();
 					foreach ($aAccounts as $iAccountId => $aAccount)
 					{
+						Log::getLog()->log("Processing Account {$iAccountId}");
+						
 						// If we have any Exceptions, add all Black/Whitelisted Services to the Exceptions report
 						if (count($aAccount['aBlacklist']))
 						{
+							Log::getLog()->log("Account {$iAccountId} has black listed services, adding all services to exception report");
+							
 							foreach ($aAccount['aBlacklist'] as $sFNN => $sReason)
 							{
 								$oCSVExceptionsReport->addRow(
@@ -524,15 +549,21 @@ class Invoice_Interim
 						}
 						elseif (!count($aAccount['aWhitelist']))
 						{
+							Log::getLog()->log("Account {$iAccountId} has no listed services, Ignoring the account");
+							
 							// Ignore this Account
 							$iAccountsIgnored++;
 							$iServicesIgnored	+= count($aAccount['aGreylist']);
 						}
 						else
 						{
+							Log::getLog()->log("Account {$iAccountId} is to be added to the run");
+							
 							// Action this Account! Add the Charges for each Service
 							foreach($aAccount['aWhitelist'] as $sFNN=>$bWhitelisted)
 							{
+								Log::getLog()->log("Applying interim invoice charges to Account {$iAccountId} -> Service {$sFNN}");
+								
 								self::_applyInterimInvoiceCharges($aServices["{$iAccountId}.{$sFNN}"]);
 							}
 							
@@ -544,12 +575,16 @@ class Invoice_Interim
 					
 					try
 					{
+						Log::getLog()->log("Creating an interim first invoice run for customer group {$iCustomerGroupId} with ".(count($aAccountsToInvoice))." accounts");
+						
 						// Create an invoice run (of type 'INVOICE_RUN_TYPE_INTERIM_FIRST')
 						$oInvoiceRun	= new Invoice_Run();
 						$oInvoiceRun->generateForAccounts($iCustomerGroupId, $aAccountsToInvoice, INVOICE_RUN_TYPE_INTERIM_FIRST);
 					}
 					catch (Exception $oEx)
 					{
+						Log::getLog()->log("Failed to create invoice run, revoke it");
+						
 						// Perform a Revoke on the Temporary Invoice Run
 						if ($oInvoiceRun->Id)
 						{
@@ -561,6 +596,8 @@ class Invoice_Interim
 					// Add to Processing Report (all Services that had Debits/Credits added)
 					foreach ($aAccounts as $iAccountId => $aAccount)
 					{
+						Log::getLog()->log("Adding account {$iAccountId} to processing report");
+						
 						if (!isset($aAccount['aWhitelist']))
 						{
 							throw new Exception("No white list for $iAccountId. debug::'".print_r($aAccounts, true)."'");
@@ -572,6 +609,8 @@ class Invoice_Interim
 							$sServiceKey	= "{$iAccountId}.{$sFNN}";
 							if ($aServices[$sServiceKey]['aCharges']['plan_charge'])
 							{
+								Log::getLog()->log("Adding account {$iAccountId} -> Service {$sFNN} to processing report");
+								
 								// Get 'Part Month Plan Charge Debit' & 'Description Plan Charge Debit'
 								$aService			= $aServices[$sServiceKey];
 								$oQuery				= new Query();
@@ -644,6 +683,8 @@ class Invoice_Interim
 			}
 			// END: Process all accounts, one customer group at a time
 			
+			Log::getLog()->log("Generate & Send Processing/Exceptions Report");
+			
 			// Generate & Send Processing/Exceptions Report
 			$bHasExceptions	= (bool)$oCSVExceptionsReport->count();
 			
@@ -666,8 +707,12 @@ class Invoice_Interim
 			
 			if ($bHasExceptions)
 			{
+				Log::getLog()->log("We have exceptions");
+				
 				if (is_null($oOldCSVEligibleReport))
 				{
+					Log::getLog()->log("No older elibility report submitted, using the same dataset to generate one for the email");
+					
 					$oOldCSVEligibleReport	= self::generateEligibilityReport($aServices);
 				}
 				
@@ -692,99 +737,101 @@ class Invoice_Interim
 			}
 			else
 			{
-					$sReportsSummary	.= "<li><strong>Processing Report</strong><em> ({$sProcessingReportFileName})</em> &mdash;&nbsp;Lists which Accounts/Services had Interim Invoice Charges added to them</li>
-											<li><strong>Submitted Interim Eligibility Report</strong><em> ({$sSubmittedEligibilityReportFileName})</em> &mdash;&nbsp;The Report you submitted to initiate this process</li>";
+				Log::getLog()->log("We have no exceptions");
+				
+				$sReportsSummary	.= "<li><strong>Processing Report</strong><em> ({$sProcessingReportFileName})</em> &mdash;&nbsp;Lists which Accounts/Services had Interim Invoice Charges added to them</li>
+										<li><strong>Submitted Interim Eligibility Report</strong><em> ({$sSubmittedEligibilityReportFileName})</em> &mdash;&nbsp;The Report you submitted to initiate this process</li>";
 			}
 				
-				$sEmailBody	= "	<div style='font-family: Calibri,Arial,sans-serif;'>
-									<h1 style='font-size: 1.5em;'>First Interim Invoice Processing Report</h1>
-									
-									<p>
-										Please find attached the following Reports:
-										<ul>
-											{$sReportsSummary}
-										</ul>
-									</p>
-									
-									<table style='font-family: Calibri,Arial,sans-serif; border: 1px solid #111; border-collapse: collapse;'>
-										<tbody>
-											<tr>
-												<td style='vertical-align: top; padding: 1em;'>
-													<h2 style='font-size: 1.2em;'>Invoice Summary</h2>
-													<table style='font-family: Calibri,Arial,sans-serif; margin-left: 0.5em; font-family: inherit;'>
-														<tbody>
-															<tr>
-																<th style='text-align: left;' >Accounts Invoiced&nbsp;:&nbsp;</th>
-																<td>{$iAccountsInvoiced}</td>
-															</tr>
-															<tr>
-																<th style='text-align: left;' >Services Invoiced&nbsp;:&nbsp;</th>
-																<td>{$iServicesInvoiced}</td>
-															</tr>
-															<tr>
-																<th style='text-align: left;' >Accounts Ignored&nbsp;:&nbsp;</th>
-																<td>{$iAccountsIgnored}</td>
-															</tr>
-															<tr>
-																<th style='text-align: left;' >Services Ignored&nbsp;:&nbsp;</th>
-																<td>{$iServicesIgnored}</td>
-															</tr>
-														</tbody>
-													</table>
-												</td>
-												<td rowspan='2' style='vertical-align: top; border-left: 1px solid #111; padding: 1em;'>
-													<h2 style='font-size: 1.2em;'>Charges Summary</h2>
-													<table style='font-family: Calibri,Arial,sans-serif; margin-left: 0.5em; font-family: inherit;'>
-														<tbody>
-															<tr>
-																<th style='text-align: left;' >Accounts with Charges&nbsp;:&nbsp;</th>
-																<td>{$iAccountsChargesAdded}</td>
-															</tr>
-															<tr>
-																<th style='text-align: left;' >Services with Charges&nbsp;:&nbsp;</th>
-																<td>{$iServicesChargesAdded}</td>
-															</tr>
-															<tr>
-																<th style='text-align: left;' >Total Plan Charge Value&nbsp;:&nbsp;</th>
-																<td>\$".number_format($fTotalPlanCharge, 2, '.', ',')."</td>
-															</tr>
-															<tr>
-																<th style='text-align: left;' >Total Interim Plan Credit Value&nbsp;:&nbsp;</th>
-																<td>\$".number_format($fTotalInterimPlanCredit, 2, '.', ',')."</td>
-															</tr>
-															<tr>
-																<th style='text-align: left;' >Total Production Plan Credit Value&nbsp;:&nbsp;</th>
-																<td>\$".number_format($fTotalProductionPlanCredit, 2, '.', ',')."</td>
-															</tr>
-														</tbody>
-													</table>
-												</td>
-											</tr>
-											<tr>
-												<td style='vertical-align: top; padding: 1em; border-top: 1px solid #111;'>
-													<h2 style='font-size: 1.2em;'>Exceptions Summary (see Exceptions Report for details)</h2>
-													<table style='font-family: Calibri,Arial,sans-serif; margin-left: 0.5em; font-family: inherit;'>
-														<tbody>
-															<tr>
-																<th style='text-align: left;' >Accounts Failed&nbsp;:&nbsp;</th>
-																<td>{$iAccountsFailed}</td>
-															</tr>
-															<tr>
-																<th style='text-align: left;' >Services Failed&nbsp;:&nbsp;</th>
-																<td>{$iServicesFailed}</td>
-															</tr>
-														</tbody>
-													</table>
-												</td>
-											</tr>
-									</table>
-									
-									<p>
-										Regards<br />
-										<strong>Flexor</strong>
-									</p>
-								</div>";
-				
+			$sEmailBody	= "	<div style='font-family: Calibri,Arial,sans-serif;'>
+								<h1 style='font-size: 1.5em;'>First Interim Invoice Processing Report</h1>
+								
+								<p>
+									Please find attached the following Reports:
+									<ul>
+										{$sReportsSummary}
+									</ul>
+								</p>
+								
+								<table style='font-family: Calibri,Arial,sans-serif; border: 1px solid #111; border-collapse: collapse;'>
+									<tbody>
+										<tr>
+											<td style='vertical-align: top; padding: 1em;'>
+												<h2 style='font-size: 1.2em;'>Invoice Summary</h2>
+												<table style='font-family: Calibri,Arial,sans-serif; margin-left: 0.5em; font-family: inherit;'>
+													<tbody>
+														<tr>
+															<th style='text-align: left;' >Accounts Invoiced&nbsp;:&nbsp;</th>
+															<td>{$iAccountsInvoiced}</td>
+														</tr>
+														<tr>
+															<th style='text-align: left;' >Services Invoiced&nbsp;:&nbsp;</th>
+															<td>{$iServicesInvoiced}</td>
+														</tr>
+														<tr>
+															<th style='text-align: left;' >Accounts Ignored&nbsp;:&nbsp;</th>
+															<td>{$iAccountsIgnored}</td>
+														</tr>
+														<tr>
+															<th style='text-align: left;' >Services Ignored&nbsp;:&nbsp;</th>
+															<td>{$iServicesIgnored}</td>
+														</tr>
+													</tbody>
+												</table>
+											</td>
+											<td rowspan='2' style='vertical-align: top; border-left: 1px solid #111; padding: 1em;'>
+												<h2 style='font-size: 1.2em;'>Charges Summary</h2>
+												<table style='font-family: Calibri,Arial,sans-serif; margin-left: 0.5em; font-family: inherit;'>
+													<tbody>
+														<tr>
+															<th style='text-align: left;' >Accounts with Charges&nbsp;:&nbsp;</th>
+															<td>{$iAccountsChargesAdded}</td>
+														</tr>
+														<tr>
+															<th style='text-align: left;' >Services with Charges&nbsp;:&nbsp;</th>
+															<td>{$iServicesChargesAdded}</td>
+														</tr>
+														<tr>
+															<th style='text-align: left;' >Total Plan Charge Value&nbsp;:&nbsp;</th>
+															<td>\$".number_format($fTotalPlanCharge, 2, '.', ',')."</td>
+														</tr>
+														<tr>
+															<th style='text-align: left;' >Total Interim Plan Credit Value&nbsp;:&nbsp;</th>
+															<td>\$".number_format($fTotalInterimPlanCredit, 2, '.', ',')."</td>
+														</tr>
+														<tr>
+															<th style='text-align: left;' >Total Production Plan Credit Value&nbsp;:&nbsp;</th>
+															<td>\$".number_format($fTotalProductionPlanCredit, 2, '.', ',')."</td>
+														</tr>
+													</tbody>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td style='vertical-align: top; padding: 1em; border-top: 1px solid #111;'>
+												<h2 style='font-size: 1.2em;'>Exceptions Summary (see Exceptions Report for details)</h2>
+												<table style='font-family: Calibri,Arial,sans-serif; margin-left: 0.5em; font-family: inherit;'>
+													<tbody>
+														<tr>
+															<th style='text-align: left;' >Accounts Failed&nbsp;:&nbsp;</th>
+															<td>{$iAccountsFailed}</td>
+														</tr>
+														<tr>
+															<th style='text-align: left;' >Services Failed&nbsp;:&nbsp;</th>
+															<td>{$iServicesFailed}</td>
+														</tr>
+													</tbody>
+												</table>
+											</td>
+										</tr>
+								</table>
+								
+								<p>
+									Regards<br />
+									<strong>Flexor</strong>
+								</p>
+							</div>";
+			
 			$oProcessingEmailNotification->setBodyHTML($sEmailBody);
 			$oProcessingEmailNotification->send();
 			
@@ -799,6 +846,8 @@ class Invoice_Interim
 			$oFlexDataAccess->TransactionRollback();
 			throw $eException;
 		}
+		
+		Log::getLog()->log("Completed processing eligible accounts");
 		
 		$aChanges							= array();
 		$aChanges['iAccountsInvoiced']		= $iAccountsInvoiced;
@@ -935,7 +984,7 @@ class Invoice_Interim
 					
 					ORDER BY	account_id,
 								service_id";
-		//throw new Exception($sSQL);
+		
 		// Run Query
 		$rResult	= $qQuery->Execute($sSQL);
 		if ($rResult === false)

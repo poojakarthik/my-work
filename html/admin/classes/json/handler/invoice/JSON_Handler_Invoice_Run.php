@@ -2,30 +2,37 @@
 
 class JSON_Handler_Invoice_Run extends JSON_Handler
 {
-	protected	$_JSONDebug	= '';
+	protected	$_sJSONDebug	= '';
 		
 	public function __construct()
 	{
 		// Send Log output to a debug string
-		Log::registerLog('JSON_Handler_Debug', Log::LOG_TYPE_STRING, $this->_JSONDebug);
+		Log::registerLog('JSON_Handler_Debug', Log::LOG_TYPE_STRING, $this->_sJSONDebug);
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 	
 	public function commitInvoiceRun($iInvoiceRunId)
 	{
+		$bIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		
 		// TODO: DEV ONLY -- Remove this, don't use transaction in this function
 		$oDataAccess	= DataAccess::getDataAccess();
 		$oDataAccess->TransactionStart();
 		
 		try
 		{
+			Log::getLog()->log("Attempting to commit invoice run {$iInvoiceRunId}");
+			
 			Invoice_Run::getForId($iInvoiceRunId)->commit();
+			
+			Log::getLog()->log("Invoice run {$iInvoiceRunId} committed successfully");
 			
 			// TODO: DEV ONLY -- Remove this, don't use transaction in this function
 			$oDataAccess->TransactionRollback();
 			
 			return	array(
-						'bSuccess'	=> true
+						'bSuccess'	=> true,
+						'sDebug'	=> ($bIsGod ? $this->_sJSONDebug : false)
 					);
 		}
 		catch (Exception $oEx)
@@ -35,19 +42,24 @@ class JSON_Handler_Invoice_Run extends JSON_Handler
 			
 			return array(
 						"bSuccess"	=> false,
-						"sMessage"	=> (Employee::getForId(Flex::getUserId())->isGod() ? $e->getMessage() : '')
+						"sMessage"	=> ($bIsGod ? $e->getMessage() : ''),
+						'sDebug'	=> ($bIsGod ? $this->_sJSONDebug : false)
 					);
 		}
 	}
 	
 	public function deliverInvoiceRun($iInvoiceRunId)
 	{
+		$bIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		
 		// TODO: DEV ONLY -- Remove this, don't use transaction in this function
 		$oDataAccess	= DataAccess::getDataAccess();
 		$oDataAccess->TransactionStart();
 		
 		try
 		{
+			Log::getLog()->log("Attempting to deliver invoice run {$iInvoiceRunId}");
+			
 			$oInvoiceRun	= Invoice_Run::getForId($iInvoiceRunId);
 			// TODO: DEV ONLY -- use this condition, remove the || true (only put there so that the commit isn't required when in development)
 			if ($oInvoiceRun->invoice_run_status_id === INVOICE_RUN_STATUS_COMMITTED || true)
@@ -63,8 +75,11 @@ class JSON_Handler_Invoice_Run extends JSON_Handler
 			//$oDataAccess->TransactionRollback();
 			$oDataAccess->TransactionCommit();
 			
+			Log::getLog()->log("Invoice run {$iInvoiceRunId} delivered successfully");
+			
 			return	array(
-						'bSuccess'	=> true
+						'bSuccess'	=> true,
+						'sDebug'	=> ($bIsGod ? $this->_sJSONDebug : false)
 					);
 		}
 		catch (Exception $oEx)
@@ -74,7 +89,8 @@ class JSON_Handler_Invoice_Run extends JSON_Handler
 			
 			return array(
 						"bSuccess"	=> false,
-						"sMessage"	=> (Employee::getForId(Flex::getUserId())->isGod() ? $oEx->getMessage() : '')
+						"sMessage"	=> ($bIsGod ? $oEx->getMessage() : ''),
+						'sDebug'	=> ($bIsGod ? $this->_sJSONDebug : false)
 					);
 		}
 	}

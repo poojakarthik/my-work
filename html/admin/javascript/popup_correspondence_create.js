@@ -1,11 +1,10 @@
 
 var Popup_Correspondence_Create	= Class.create(Reflex_Popup, 
 {
-	initialize	: function($super, iCorrespondenceTemplateId)
+	initialize	: function($super)
 	{
 		$super(30);
 		
-		this._iTemplateId	= parseInt(iCorrespondenceTemplateId);
 		this._buildUI();
 	},
 	
@@ -13,51 +12,68 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 	
 	_buildUI	: function(oSourceType)
 	{
-		if (typeof oSourceType == 'undefined')
+		var oTemplateSelect		= 	Control_Field.factory(
+				'select', 
+				{
+					sLabel		: 'Template',
+					mEditable	: true,
+					mMandatory	: true,
+					fnPopulate	: Correspondence_Template.getAllWithNonSystemSourcesAsSelectOptions
+				}
+			);
+		oTemplateSelect.setRenderMode(Control_Field.RENDER_MODE_EDIT);
+		oTemplateSelect.disableValidationStyling();
+		oTemplateSelect.addOnChangeCallback(this._templateChanged.bind(this));
+		this._oTemplateSelect	= oTemplateSelect;
+		
+		this._oInputContainer	= $T.div();
+		
+		this._oContent	=	$T.div({class: 'popup-correspondence-create'},
+								$T.div(
+									this._oTemplateSelect.getElement()
+								),
+								this._oInputContainer,
+								$T.div({class: 'buttons'},
+									$T.button({class: 'icon-button'},
+										'Create'
+									).observe('click', this._doCreate.bind(this)),
+									$T.button({class: 'icon-button'},
+										'Cancel'
+									).observe('click', this.hide.bind(this))
+								)
+							);
+		
+		this.setTitle('Schedule Correspondence');
+		this.addCloseButton();
+		this.setContent(this._oContent);
+		this.display();
+	},
+	
+	_templateChanged	: function()
+	{
+		var iTemplateId	= parseInt(this._oTemplateSelect.getElementValue());
+		if (!isNaN(iTemplateId))
 		{
-			// Get the correspondence_source_type for the template
-			this._oLoading	= new Reflex_Popup.Loading();
-			this._oLoading.display();
-			
-			Correspondence_Template.getCorrespondenceSourceType(this._iTemplateId, this._buildUI.bind(this));
+			this._iTemplateId	= iTemplateId;
+			Correspondence_Template.getCorrespondenceSourceType(iTemplateId, this._templateSourceLoaded.bind(this));
 		}
-		else
+	},
+	
+	_templateSourceLoaded	: function(oSourceType)
+	{
+		var oInputContent	= null;
+		switch (oSourceType.system_name)
 		{
-			this._oLoading.hide();
-			delete this._oLoading;
-			
-			var sTitleDetail	= '';
-			var oInputContent	= null;
-			switch (oSourceType.system_name)
-			{
-				case 'CSV':
-					sTitleDetail	= ' - CSV File Upload';
-					oInputContent	= this._buildCSVContent();
-					break;
-				case 'SQL':
-					sTitleDetail	= ' - SQL Query';
-					oInputContent	= this._buildSQLContent();
-					break;
-			}
-			this._oSourceType	= oSourceType;
-			
-			this._oContent	=	$T.div({class: 'popup-correspondence-create'},
-									oInputContent,
-									$T.div({class: 'buttons'},
-										$T.button({class: 'icon-button'},
-											'Create'
-										).observe('click', this._doCreate.bind(this)),
-										$T.button({class: 'icon-button'},
-											'Cancel'
-										).observe('click', this.hide.bind(this))
-									)
-								);
-			
-			this.setTitle('Create Correspondence' + sTitleDetail);
-			this.addCloseButton();
-			this.setContent(this._oContent);
-			this.display();
+			case 'CSV':
+				oInputContent	= this._buildCSVContent();
+				break;
+			case 'SQL':
+				oInputContent	= this._buildSQLContent();
+				break;
 		}
+		this._oInputContainer.innerHTML	= '';
+		this._oInputContainer.appendChild(oInputContent);
+		this._oSourceType	= oSourceType;
 	},
 	
 	_buildCSVContent	: function()

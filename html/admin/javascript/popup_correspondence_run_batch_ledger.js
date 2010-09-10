@@ -123,6 +123,12 @@ var Popup_Correspondence_Run_Batch_Ledger	= Class.create(Reflex_Popup,
 		this.oPagination.getCurrentPage();
 	},
 	
+	display	: function($super)
+	{
+		$super();
+		this.container.style.top = '150px';
+	},
+	
 	_changePage	: function(sAction)
 	{
 		this._oLoadingElement.show();
@@ -175,9 +181,9 @@ var Popup_Correspondence_Run_Batch_Ledger	= Class.create(Reflex_Popup,
 			{
 				oTBody.appendChild(this._createTableRow(aData[i]));
 			}
-			
-			this._updatePagination();
 		}
+		
+		this._updatePagination();
 		
 		// Hide the loading div
 		this._oLoadingElement.hide();

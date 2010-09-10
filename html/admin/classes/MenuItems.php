@@ -3686,8 +3686,8 @@ class MenuItems {
 
 	function CreateCorrespondence()
 	{
-		$this->strContextMenuLabel 	= "Create Correspondence";
-		$this->strLabel 			= "Create Correspondence";
+		$this->strContextMenuLabel 	= "Schedule Correspondence";
+		$this->strLabel 			= "Schedule Correspondence";
 		return "javascript: JsAutoLoader.loadScript(
 								[
 									'../ui/javascript/component_date_picker.js',
@@ -3696,12 +3696,11 @@ class MenuItems {
 									'../ui/javascript/control_field_checkbox.js',
 									'../ui/javascript/control_field_date_picker.js',
 									'javascript/correspondence_template.js',
-									'javascript/popup_correspondence_create_choose_template.js',
 									'javascript/popup_correspondence_create.js'
 								],
 								function()
 								{
-									new Popup_Correspondence_Create_Choose_Template();
+									new Popup_Correspondence_Create();
 								}
 							);";
 	}
@@ -3730,6 +3729,7 @@ class MenuItems {
 										'javascript/correspondence_delivery_method.js',
 										'javascript/customer_group.js',
 										'javascript/correspondence_run.js',
+										'javascript/correspondence_run_status.js',
 										'javascript/component_correspondence_run_ledger.js',
 										'javascript/popup_correspondence_run_ledger.js',
 										'javascript/component_correspondence_ledger_for_run.js',
@@ -3787,8 +3787,10 @@ class MenuItems {
 		
 		return	"javascript: 	JsAutoLoader.loadScript(
 									[
+										'../ui/javascript/component_date_picker.js',
 										'../ui/javascript/control_field.js',
 										'../ui/javascript/control_field_select.js',
+										'../ui/javascript/control_field_date_picker.js',
 										'../ui/javascript/dataset_ajax.js',
 										'../ui/javascript/pagination.js',
 										'../ui/javascript/filter.js',
@@ -3797,9 +3799,14 @@ class MenuItems {
 										'javascript/customer_group.js',
 										'javascript/correspondence.js',
 										'javascript/correspondence_delivery_method.js',
+										'javascript/correspondence_template.js',
+										'javascript/correspondence_run.js',
 										'javascript/component_correspondence_ledger_for_account.js',
 										'javascript/popup_account_correspondence_ledger.js',
-										'javascript/popup_correspondence_data.js'
+										'javascript/popup_correspondence_data.js',
+										'javascript/component_correspondence_ledger_for_run.js',
+										'javascript/component_correspondence_run_details.js',
+										'javascript/popup_correspondence_run.js'
 									],
 									function()
 									{

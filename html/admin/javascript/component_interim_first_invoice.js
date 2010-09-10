@@ -58,23 +58,43 @@ var Component_Interim_First_Invoice	= Class.create(
 		if (oResponse.bSuccess)
 		{
 			// Success
-			Reflex_Popup.alert(
+			Reflex_Popup.yesNoCancel(
 				'All Interim First Invoices have been submitted.', 
 				{
-					sTitle	: 'Success', 
-					iWidth	: 35,
-					fnClose	: this._refreshPage.bind(this)
+					sYesLabel	: 'OK',
+					sNoLabel	: 'View Log',
+					sTitle		: 'Success', 
+					iWidth		: 35,
+					fnOnYes		: this._refreshPage.bind(this),
+					fnOnNo		: this._viewLog.bind(this, oResponse.sDebug)
 				}
 			);
 		}
 		else
 		{
 			// Error
-			Reflex_Popup.alert(
+			Reflex_Popup.yesNoCancel(
 				'An error occurred submitting the Interim First Invoices. ' +
 				(oResponse.sError ? oResponse.sError + '.' : '') + ' Please contact YBS if you require assistance.',
-				{sTitle: 'Error', iWidth: 35}
+				{
+					sYesLabel	: 'OK',
+					sNoLabel	: 'View Log',
+					sTitle		: 'Error', 
+					iWidth		: 35,
+					fnOnNo		: this._viewLog.bind(this, oResponse.sDebug)
+				}
 			);
+		}
+	},
+	
+	_viewLog	: function(sLog)
+	{
+		if (sLog)
+		{
+			var oTextArea	=	$T.textarea({class: 'log-text'},
+									sLog
+								);
+			Reflex_Popup.alert(oTextArea, {sTitle: 'Log', iWidth: 61});
 		}
 	}
 });

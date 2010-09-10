@@ -717,11 +717,15 @@ class Invoice_Run
 		// Is this InvoiceRun Temporary?
 		if ($this->invoice_run_status_id !== INVOICE_RUN_STATUS_TEMPORARY)
 		{
+			Log::getLog()->log("Invoice run {$this->Id} is not temporary, cannot commit it");
+			
 			// No, throw an Exception
 			throw new Exception("InvoiceRun '{$this->Id}' is not a Temporary InvoiceRun!");
 		}
 		else if (in_array($this->invoice_run_type_id, array(INVOICE_RUN_TYPE_SAMPLES, INVOICE_RUN_TYPE_INTERNAL_SAMPLES)))
 		{
+			Log::getLog()->log("Invoice run {$this->Id} is a sample run, cannot commit it");
+			
 			// Cannot commit sample invoice runs
 			throw new Exception("InvoiceRun '{$this->Id}' is a sample InvoiceRun, it cannot be commited!");
 		}
@@ -751,6 +755,8 @@ class Invoice_Run
 	{
 		$sInvoiceRunPDFBasePath	= PATH_INVOICE_PDFS ."pdf/$this->Id/";
 
+		Log::getLog()->log("Generate PDF's");
+
 		// Generate pdf's
 		$aInvoices		= Invoice::getForInvoiceRunId($this->Id);
 		$aPDFFilenames	= array();
@@ -762,21 +768,18 @@ class Invoice_Run
 			$iMonth 	= (int)date("m", $iCreatedOn);
 			GetPDFContent($oInvoice->Account, $iYear, $iMonth, $iId, $this->Id);
 			$aPDFFilenames[$iId]	= $sInvoiceRunPDFBasePath.GetPdfFilename($oInvoice->Account, $iYear, $iMonth, $oInvoice->Id, $this->Id);
+			
+			Log::getLog()->log("Generated PDF '".basename($aPDFFilenames[$iId])."' for invoice {$iId}");
 		}
 
-		// Create tar file
-		require_once("Archive/Tar.php");
-		$oTar		= new Archive_Tar($sInvoiceRunPDFBasePath."{$this->Id}.tar");
-		$aFiles		= array_values($aPDFFilenames);
-		if (!$oTar->createModify($aFiles, '', $sInvoiceRunPDFBasePath))
-		{
-			 throw new Exception("Failed to create tar file for invoice run {$this->Id}. Files = ".print_r($aFiles, true));
-		}
+		Log::getLog()->log("Generate correspondence data");
 
 		// Generate the correspondence data
 		$aCorrespondenceData	= array();
 		foreach ($aPDFFilenames as $iInvoiceId => $sPDFFilename)
 		{
+			Log::getLog()->log("Generating correspondence data for invoice {$iInvoiceId}");
+			
 			// Determine the correspondence_delivery_method for the invoice
 			$oInvoice			= $aInvoices[$iInvoiceId];
 			$iDeliveryMethod	= null;
@@ -787,43 +790,72 @@ class Invoice_Run
 					break;
 				case DELIVERY_METHOD_EMAIL_SENT:
 				case DELIVERY_METHOD_EMAIL:
-					$iDeliveryMethod	= CORRESPONDENCE_DELIVERY_METHOD_EMAIL;
+					// Email delivered invoices are ignored in this stage, these are delivered using a cli app
+					//$iDeliveryMethod	= CORRESPONDENCE_DELIVERY_METHOD_EMAIL;
 					break;
 			}
-
+			
 			if (is_null($iDeliveryMethod))
 			{
+				Log::getLog()->log("No appropriate delivery method for invoice {$iInvoiceId}");
+				
 				// No appropriate correspondence_delivery_method was found. The invoice is not to be delivered, skip it.
 				continue;
 			}
 
+			Log::getLog()->log("Delivery method for invoice {$iInvoiceId} is '".Correspondence_Delivery_Method::getForId($iDeliveryMethod)->system_name."'");
+
 			// Cache the correspondence data for the invoice
 			$oAccount				= Account::getForId($oInvoice->Account);
 			$oContact				= Contact::getForId($oAccount->PrimaryContact);
-			$aCorrespondenceData[]	= 	array(
+			$aInvoice				= 	array(
 											'account_id'						=> $oAccount->Id,
 											'customer_group_id'					=> $oAccount->CustomerGroup,
-											'correspondence_delivery_method_id'	=> $iDeliveryMethod,
+											'correspondence_delivery_method_id'	=> Correspondence_Delivery_Method::getForId($iDeliveryMethod)->system_name,
 											'account_name'						=> $oAccount->BusinessName,
 											'title'								=> $oContact->title,
 											'first_name'						=> $oContact->firstName,
 											'last_name'							=> $oContact->lastName,
 											'address_line_1'					=> $oAccount->Address1,
-											'address_line2'						=> $oAccount->Address2,
+											'address_line_2'					=> $oAccount->Address2,
 											'suburb'							=> $oAccount->Suburb,
 											'postcode'							=> $oAccount->Postcode,
 											'state'								=> $oAccount->State,
 											'email'								=> $oContact->Email,
 											'mobile'							=> $oContact->Mobile,
 											'landline'							=> $oContact->Phone,
-											'tar_file_path'						=> basename($aPDFFilenames[$iInvoiceId])
+											'pdf_file_path'						=> $aPDFFilenames[$iInvoiceId]
 										);
+			$aCorrespondenceData[]	= $aInvoice;
+			
+			Log::getLog()->log("Created correspondence data for invoice {$iInvoiceId}");	
+			Log::getLog()->log(print_r($aInvoice, true));
 		}
 
 		// Create the correspondence run
 		try
 		{
-			Correspondence_Logic_Template::getForSystemName('INTERIM_INVOICE',$aCorrespondenceData)->createRun(true, null, null,$sInvoiceRunPDFBasePath."{$this->Id}.tar")->save();
+			Log::getLog()->log("Create correspondence run");
+			
+			$oTemplate	= Correspondence_Logic_Template::getForSystemName('INVOICE', $aCorrespondenceData);
+			
+			Log::getLog()->log("Got template");
+			
+			$oRun		= $oTemplate->createRun(true);
+			
+			Log::getLog()->log("Run created");
+			
+			$oRun->save();
+			
+			Log::getLog()->log("Run saved");
+		}
+		catch (Correspondence_DataValidation_Exception $oEx)
+		{
+			Log::getLog()->log("Validation errors in the correspondence data for the run: ");
+			Log::getLog()->log("No Data: ".($oEx->bNoData ? 'true' : 'false'));
+			Log::getLog()->log("Error detail: ".print_r($oEx->aReport, true));
+			
+			throw new Exception("Failed to create the correspondence run. ");
 		}
 		catch (Exception $oEx)
 		{

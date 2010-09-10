@@ -3426,6 +3426,7 @@ div.section-expandable-header-options
 	top	: 0em;
 }
 
+div.section-header-options > ul.reset,
 div.section-expandable-header-options > ul.reset
 {
 	margin	: 0em;
@@ -5938,6 +5939,13 @@ div.popup-employee-reassign-tasks-tickets-selects > div
 	text-align	: center;
 }
 
+.log-text
+{
+	width	: 59em;
+	margin	: 0.5em;
+	height	: 30em;
+}
+
 /***************** END - Commit All Interim First Invoices Popup - END *****************/
 
 /***************** START - Create Correspondence Popup(s) - START *****************/
@@ -6044,7 +6052,7 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 	width			: 100%;
 }
 
-div.section > div.section-header > div.section-header-title > span.pagination-info
+div.section > div.section-header > div.section-header-title span.pagination-info
 {
 	padding-left	: 0.5em;
 	font-size		: 0.95em;
@@ -6277,6 +6285,34 @@ div.datetime-time
 .popup-correspondence-ledger-columns .columns li input
 {
 	margin-right	: 0.25em;
+}
+
+.correspondence-count
+{
+	font-size		: 1.5em;
+	padding-right	: 0.5em;
+}
+
+.correspondence-count,
+.correspondence-count-detail
+{
+	display			: inline-block;
+	vertical-align	: middle;
+}
+
+.correspondence-count-detail > div > img
+{
+	padding-right	: 0.25em;
+}
+
+.correspondence-run-ledger tbody td
+{
+	vertical-align	: middle;
+}
+
+div.template-lettercode
+{
+	font-size	: 0.8em;
 }
 
 /***************** END - Correspondence Ledger Popup(s) - END *****************/

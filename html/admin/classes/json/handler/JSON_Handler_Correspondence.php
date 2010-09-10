@@ -24,7 +24,7 @@ class JSON_Handler_Correspondence extends JSON_Handler
 			$aFilter	= get_object_vars($oFilter);
 			$aSort		= get_object_vars($oSort);
 			
-			$iRecordCount	= Correspondence::searchFor(true, null, null, $aFilter, $aSort);
+			$iRecordCount	= Correspondence::getLedgerInformation(true, null, null, $aFilter, $aSort);
 			if ($bCountOnly)
 			{
 				return	array(
@@ -35,17 +35,24 @@ class JSON_Handler_Correspondence extends JSON_Handler
 			
 			$iLimit		= is_null($iLimit) ? 0 : $iLimit;
 			$iOffset	= is_null($iOffset) ? 0 : $iOffset;
-			$aItems		= Correspondence::searchFor(false, $iLimit, $iOffset, $aFilter, $aSort);
+			$aItems		= Correspondence::getLedgerInformation(false, $iLimit, $iOffset, $aFilter, $aSort);
 			$i			= 0;
 			$aResults	= array();
-			foreach ($aItems as $oItem)
+			foreach ($aItems as $aItem)
 			{
-				$oLogic											= new Correspondence_Logic($oItem);
-				$aItem											= $oLogic->toArray();
-				$aItem['id']									= $oLogic->id;
-				$aItem['customer_group_name']					= Customer_Group::getForId($aItem['customer_group_id'])->internal_name;
-				$aItem['correspondence_delivery_method_name']	= Correspondence_Delivery_Method::getForId($aItem['correspondence_delivery_method_id'])->name;
-				$aResults[$iOffset + $i]						= $aItem;
+				// Add Additional columns to the result set
+				$oCorrespondenceLogic	= new Correspondence_Logic(Correspondence::getForId($aItem['id']));
+				$aColumns	= $oCorrespondenceLogic->getAdditionalColumns();
+				$aLogic		= $oCorrespondenceLogic->toArray();
+				foreach ($aColumns as $sColumn)
+				{
+					if (!isset($aItem[$sColumn]))
+					{
+						$aItem[$sColumn]	= $aLogic[$sColumn];
+					}
+				}
+				
+				$aResults[$iOffset + $i]	= $aItem;
 				$i++;
 			}
 			

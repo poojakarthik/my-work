@@ -9,6 +9,12 @@ var Popup_Correspondence_Run = Class.create(Reflex_Popup,
 		
 		Flex.Constant.loadConstantGroup('correspondence_delivery_method', this._buildUI.bind(this));
 	},
+
+	display	: function($super)
+	{
+		$super();
+		this.container.style.top = '150px';
+	},
 	
 	_buildUI	: function()
 	{

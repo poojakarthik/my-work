@@ -5,6 +5,7 @@ var Popup_Interim_First_Invoice_Commit	= Class.create(Reflex_Popup,
 	{
 		$super(26);
 		
+		this._aDebugInfo		= [];
 		this._bProcessing		= false;
 		this._hInvoiceRunStatus	= {};
 		this._getInvoiceRuns(sBillingDate);
@@ -47,7 +48,10 @@ var Popup_Interim_First_Invoice_Commit	= Class.create(Reflex_Popup,
 									).observe('click', this.hide.bind(this)),
 									$T.button({class: 'icon-button'},
 										'Cancel'
-									).observe('click', this.hide.bind(this))
+									).observe('click', this.hide.bind(this)),
+									$T.button({class: 'icon-button'},
+										'View Log'
+									).observe('click', this._viewLog.bind(this))
 								)
 							);
 		
@@ -58,9 +62,11 @@ var Popup_Interim_First_Invoice_Commit	= Class.create(Reflex_Popup,
 		this._oRetry	= oContent.select('button.icon-button')[1];
 		this._oClose	= oContent.select('button.icon-button')[2];
 		this._oCancel	= oContent.select('button.icon-button')[3];
+		this._oLog		= oContent.select('button.icon-button')[4];
 		
 		this._oRetry.hide();
 		this._oClose.hide();
+		this._oLog.hide();
 		
 		// Add invoice runs to table
 		var oInvoiceRun	= null;
@@ -110,6 +116,8 @@ var Popup_Interim_First_Invoice_Commit	= Class.create(Reflex_Popup,
 	{
 		if (!this._bProcessing)
 		{
+			this._aDebug	= [];
+			
 			this._oCommit.hide();
 			this._oRetry.hide();
 			
@@ -166,6 +174,15 @@ var Popup_Interim_First_Invoice_Commit	= Class.create(Reflex_Popup,
 			this._oCancel.show();
 		}
 		
+		if (this._aDebugInfo.length)
+		{
+			this._oLog.show();
+		}
+		else
+		{
+			this._oLog.hide();
+		}
+		
 		this._bProcessing	= false;
 	},
 	
@@ -195,6 +212,11 @@ var Popup_Interim_First_Invoice_Commit	= Class.create(Reflex_Popup,
 			{
 				this._hInvoiceRunStatus[iId].bCommitted	= false;
 				this._hInvoiceRunStatus[iId].oStatusElement.innerHTML	= Popup_Interim_First_Invoice_Commit_All.STATUS_FAILED_COMMIT;
+			}
+			
+			if (oResponse.sDebug)
+			{
+				this._aDebugInfo.push(oResponse.sDebug);
 			}
 			
 			this._processNext();
@@ -228,8 +250,21 @@ var Popup_Interim_First_Invoice_Commit	= Class.create(Reflex_Popup,
 				this._hInvoiceRunStatus[iId].oStatusElement.innerHTML	= Popup_Interim_First_Invoice_Commit_All.STATUS_FAILED_DELIVERY;
 			}
 			
+			if (oResponse.sDebug)
+			{
+				this._aDebugInfo.push(oResponse.sDebug);
+			}
+			
 			this._processNext();
 		}
+	},
+	
+	_viewLog	: function()
+	{
+		var oTextArea	=	$T.textarea({class: 'log-text'},
+								this._aDebugInfo.join("\n= = = = = = = = = = = = =\n")
+							);
+		Reflex_Popup.alert(oTextArea, {sTitle: 'Log', iWidth: 61, bOverrideStyles: false});
 	}
 });
 

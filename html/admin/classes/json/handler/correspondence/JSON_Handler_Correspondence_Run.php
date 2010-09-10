@@ -126,7 +126,33 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 			$aFilter	= get_object_vars($oFilter);
 			$aSort		= get_object_vars($oSort);
 			
-			$iRecordCount	= Correspondence_Run::searchFor(true, null, null, $aFilter, $aSort);
+			// Manipulate filter if status is filtered
+			if (isset($aFilter['status']))
+			{
+				switch ($aFilter['status'])
+				{
+					case 'SUBMITTED':
+						// a.k.a Having not yet been processed
+						$aFilter['processed_datetime']	= 'NULL';
+						break;
+					case 'PROCESSED':
+						// a.k.a Having been processd but not delivered
+						$aFilter['processed_datetime']	= 'NOT NULL';
+						$aFilter['delivered_datetime']	= 'NULL';
+						break;
+					case 'PROCESSING_FAILED':
+						// a.k.a Having an error
+						$aFilter['correspondence_run_error_id']	= 'NOT NULL';
+						break;
+					case 'DISPATCHED':
+						// a.k.a Having been delivered
+						$aFilter['delivered_datetime']	= 'NOT NULL';
+						break;
+				}
+				unset($aFilter['status']);
+			}
+			
+			$iRecordCount	= Correspondence_Run::getLedgerInformation(true, null, null, $aFilter, $aSort);
 			if ($bCountOnly)
 			{
 				return	array(
@@ -137,15 +163,38 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 			
 			$iLimit		= is_null($iLimit) ? 0 : $iLimit;
 			$iOffset	= is_null($iOffset) ? 0 : $iOffset;
-			$aRuns		= Correspondence_Run::searchFor(false, $iLimit, $iOffset, $aFilter, $aSort);
+			$aRuns		= Correspondence_Run::getLedgerInformation(false, $iLimit, $iOffset, $aFilter, $aSort);
 			$i			= 0;
 			$aResults	= array();
-			foreach ($aRuns as $oRun)
+			foreach ($aRuns as $aRun)
 			{
-				$oStdRun								= $oRun->toStdClass();
-				$oStdRun->correspondence_template_name	= Correspondence_Template::getForId($oStdRun->correspondence_template_id)->name;
-				$oStdRun->created_employee_name			= Employee::getForId($oStdRun->created_employee_id)->getName();
-				$aResults[$iOffset + $i]				= $oStdRun;
+				// Nullify end of time delivered datetime
+				if ($aRun['delivered_datetime'] == Data_Source_Time::END_OF_TIME)
+				{
+					$aRun['delivered_datetime']	= null;
+				}
+				
+				// Get the source of the run data
+				$oSource	= Correspondence_Source::getForId($aRun['correspondence_template_source_id']);
+				switch ($oSource->correspondence_source_type_id)
+				{
+					case CORRESPONDENCE_SOURCE_TYPE_SQL:
+						$aRun['source'] = 'SQL';
+						break;
+						
+					case CORRESPONDENCE_SOURCE_TYPE_SYSTEM:
+						$aRun['source'] = 'System';
+						break;
+						
+					case CORRESPONDENCE_SOURCE_TYPE_CSV:
+						$aRun['source']	= 'TODO.csv';
+						break;
+					
+					default:
+						$aRun['source']	= null;
+				}
+				
+				$aResults[$iOffset + $i]	= $aRun;
 				$i++;
 			}
 			

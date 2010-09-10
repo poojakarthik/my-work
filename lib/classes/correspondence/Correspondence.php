@@ -60,40 +60,59 @@ class Correspondence extends ORM_Cached
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 
-	public static function searchFor($bCountOnly=false, $iLimit=0, $iOffset=0, $aFilter=null, $aSort=null)
+	public static function getLedgerInformation($bCountOnly=false, $iLimit=0, $iOffset=0, $aFilter=null, $aSort=null, $bDelivered=false)
 	{
-		$sFrom			= '	correspondence c
+		$sFrom			= "	correspondence c
 							JOIN CustomerGroup cg ON cg.id = c.customer_group_id
-							JOIN correspondence_delivery_method cdm ON cdm.id = c.correspondence_delivery_method_id';
-		$sSelect		= ($bCountOnly ? 'count(c.id) AS record_count' : "c.*, cg.internal_name AS customer_group_name, cdm.name AS correspondence_delivery_method_name");
+							JOIN correspondence_delivery_method cdm ON cdm.id = c.correspondence_delivery_method_id
+							JOIN correspondence_run cr ON cr.id = c.correspondence_run_id
+							JOIN correspondence_template ct ON ct.id = cr.correspondence_template_id";
+		if ($bCountOnly)
+		{
+			$sSelect	= "	count(c.id) AS record_count";
+		}
+		else
+		{
+			$sSelect	= "	c.*, 
+							cg.internal_name AS customer_group_name, 
+							cdm.name AS correspondence_delivery_method_name,
+							ct.name AS correspondence_template_name,
+							ct.template_code AS correspondence_template_code,
+							cr.delivered_datetime AS correspondence_run_delivered_datetime";
+		}
+	
 		$aWhereAlias	=	array(
-								'id'								=> 'c.id',
-								'correspondence_run_id'				=> 'c.correspondence_run_id',
-								'account_id'						=> 'c.account_id',
-								'customer_group_id'					=> 'c.customer_group_id',
-								'correspondence_delivery_method_id'	=> 'c.correspondence_delivery_method_id',
-								'account_name'						=> 'c.account_name',
-								'email'								=> 'c.email',
-								'mobile'							=> 'c.mobile',
-								'landline'							=> 'c.landline',
-								'title'								=> 'c.title',
-								'first_name'						=> 'c.first_name',
-								'last_name'							=> 'c.last_name',
-								'address_line_1'					=> 'c.address_line_1',
-								'address_line_2'					=> 'c.address_line_2',
-								'suburb'							=> 'c.suburb',
-								'postcode'							=> 'c.postcode',
-								'state'								=> 'c.state'
+								'id'									=> 'c.id',
+								'correspondence_run_id'					=> 'c.correspondence_run_id',
+								'account_id'							=> 'c.account_id',
+								'customer_group_id'						=> 'c.customer_group_id',
+								'correspondence_delivery_method_id'		=> 'c.correspondence_delivery_method_id',
+								'account_name'							=> 'c.account_name',
+								'email'									=> 'c.email',
+								'mobile'								=> 'c.mobile',
+								'landline'								=> 'c.landline',
+								'title'									=> 'c.title',
+								'first_name'							=> 'c.first_name',
+								'last_name'								=> 'c.last_name',
+								'address_line_1'						=> 'c.address_line_1',
+								'address_line_2'						=> 'c.address_line_2',
+								'suburb'								=> 'c.suburb',
+								'postcode'								=> 'c.postcode',
+								'state'									=> 'c.state',
+								'correspondence_delivery_method_name'	=> 'cdm.name',
+								'correspondence_template_name'			=> "ct.template_code",
+								"correspondence_run_delivered_datetime"	=> "cr.delivered_datetime"
 							);
 		$aWhere			= StatementSelect::generateWhere($aWhereAlias, $aFilter);
 		$aSortAlias		= $aWhereAlias;
 		$sOrderByClause	= StatementSelect::generateOrderBy($aSortAlias, $aSort);
 		$sLimitClause	= StatementSelect::generateLimit($iLimit, $iOffset);
+		$sWhereClause	= $aWhere['sClause'].($bDelivered ? " AND cr.delivered_datetime IS NOT NULL" : "");
 		
 		$oStmt	=	new StatementSelect(
 						$sFrom, 
 						$sSelect, 
-						$aWhere['sClause'], 
+						$sWhereClause, 
 						($bCountOnly ? '' : $sOrderByClause), 
 						($bCountOnly ? '' : $sLimitClause)
 					);
@@ -115,8 +134,7 @@ class Correspondence extends ORM_Cached
 			$aResults	= array();
 			while ($aRow = $oStmt->Fetch())
 			{
-				$oResult				= self::getForId($aRow['id']);
-				$aResults[$oResult->id]	= $oResult;
+				$aResults[$aRow['id']]	= $aRow;
 			}
 			return $aResults;
 		}
