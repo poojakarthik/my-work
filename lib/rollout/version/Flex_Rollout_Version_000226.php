@@ -30,6 +30,21 @@ class Flex_Rollout_Version_000226 extends Flex_Rollout_Version
 								),
 								array
 								(
+									'sDescription'		=>	"Add table correspondence_run_error",
+									'sAlterSQL'			=>	"	CREATE  TABLE IF NOT EXISTS correspondence_run_error (
+																  id BIGINT NOT NULL AUTO_INCREMENT ,
+																  name VARCHAR(255) NOT NULL ,
+																  description VARCHAR(255) NOT NULL ,
+																  system_name VARCHAR(255) NOT NULL ,
+																  const_name VARCHAR(255) NOT NULL ,
+																  PRIMARY KEY (id) )
+																ENGINE = InnoDB
+																;",
+									'sRollbackSQL'		=>	"	DROP TABLE correspondence_run_error;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
 									'sDescription'		=>	"create table correspondence_source_type",
 									'sAlterSQL'			=>	"CREATE  TABLE IF NOT EXISTS correspondence_source_type (
 															  id BIGINT(20) NOT NULL AUTO_INCREMENT ,
@@ -114,6 +129,7 @@ class Flex_Rollout_Version_000226 extends Flex_Rollout_Version
 															  preprinted TINYINT(3) UNSIGNED NOT NULL,
 															  pdf_file_export_id BIGINT(20) UNSIGNED NULL ,
 															  correspondence_run_batch_id BIGINT(20) NULL ,
+															  correspondence_run_error_id BIGINT NULL,
 															  PRIMARY KEY (id) ,
 															  INDEX correspondence_template_id (correspondence_template_id ASC) ,
 															  INDEX data_file_export_id (data_file_export_id ASC) ,
@@ -132,6 +148,11 @@ class Flex_Rollout_Version_000226 extends Flex_Rollout_Version
 															  CONSTRAINT fk_correspondence_run_correspondence_delivery_batch
 															    FOREIGN KEY (correspondence_run_batch_id )
 															    REFERENCES correspondence_run_batch (id )
+															    ON DELETE RESTRICT
+															    ON UPDATE CASCADE,
+															    CONSTRAINT fk_correspondence_run_correspondence_error_id
+															    FOREIGN KEY (correspondence_run_error_id )
+															    REFERENCES correspondence_run_error (id )
 															    ON DELETE RESTRICT
 															    ON UPDATE CASCADE)
 															ENGINE = InnoDB;",
@@ -296,6 +317,15 @@ class Flex_Rollout_Version_000226 extends Flex_Rollout_Version
 								),*/
 								array
 								(
+									'sDescription'		=>	"Add data to correspondence_run_error table",
+									'sAlterSQL'			=>	"INSERT INTO correspondence_run_error (name, description, system_name, const_name) VALUES
+																( 'Sql Syntax Error','Sql Syntax Error', 'SQL_SYNTAX', 'CORRESPONDENCE_RUN_ERROR_SQL_SYNTAX'),
+																( 'Malformed Input','Malformed Input', 'MALFORMED_INPUT', 'CORRESPONDENCE_RUN_ERROR_MALFORMED_INPUT'),
+																( 'No Data','No Data', 'NO_DATA', 'CORRESPONDENCE_RUN_ERROR_NO_DATA');",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
 									'sDescription'		=>	"Add data to correspondence_delivery_method table",
 									'sAlterSQL'			=>	"INSERT INTO correspondence_delivery_method (name, description, system_name, const_name) VALUES
 																( 'Post','Post', 'POST', 'CORRESPONDENCE_DELIVERY_METHOD_POST'),
@@ -351,7 +381,7 @@ class Flex_Rollout_Version_000226 extends Flex_Rollout_Version
 								(
 									'sDescription'		=>	"Add data to correspondence_template_system table",
 									'sAlterSQL'			=>	"INSERT INTO resource_type (name, description, const_name, resource_type_nature) VALUES
-('Yellow Billing Correspondence File Export TAR File', 'Yellow Billing Correspondence File Export TAR File', 'RESOURCE_TYPE_FILE_EXPORT_CORRESPONDENCE_YELLOWBILLING_TAR', 2);",
+										('Yellow Billing Correspondence File Export TAR File', 'Yellow Billing Correspondence File Export TAR File', 'RESOURCE_TYPE_FILE_EXPORT_CORRESPONDENCE_YELLOWBILLING_TAR', 2);",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								)
 
