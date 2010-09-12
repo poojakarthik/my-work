@@ -13,7 +13,7 @@ class Flex_Rollout_Version_000226 extends Flex_Rollout_Version
 		// Define operations
 		$aOperations	=	array
 							(
-								array
+							/*	array
 								(
 									'sDescription'		=>	"Add table correspondence_delivery_method",
 									'sAlterSQL'			=>	"	CREATE  TABLE IF NOT EXISTS correspondence_delivery_method (
@@ -158,8 +158,19 @@ class Flex_Rollout_Version_000226 extends Flex_Rollout_Version
 															ENGINE = InnoDB;",
 									'sRollbackSQL'		=>	"	DROP TABLE correspondence_run;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
-								),
-								array
+								),*/
+							array
+								(
+									'sDescription'		=>	"alter correspondence_run, add file import column",
+									'sAlterSQL'			=>	"ALTER TABLE correspondence_run ADD COLUMN file_import_id BIGINT(20) UNSIGNED AFTER correspondence_template_id,
+															ADD CONSTRAINT fk_correspondence_run_file_import_id FOREIGN KEY fk_correspondence_run_file_import_id (file_import_id)
+															    REFERENCES FileImport (Id)
+															    ON DELETE RESTRICT
+															    ON UPDATE CASCADE;",
+									'sRollbackSQL'		=>	"	ALTER TABLE correspondence_run DROP COLUMN file_import_id;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								)
+								/*,array
 								(
 									'sDescription'		=>	"Add table correspondence",
 									'sAlterSQL'			=>	"CREATE  TABLE IF NOT EXISTS correspondence (
@@ -266,8 +277,9 @@ class Flex_Rollout_Version_000226 extends Flex_Rollout_Version
 																ENGINE = InnoDB;",
 									'sRollbackSQL'		=>	"	DROP TABLE correspondence_source_sql;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
-								),
-								array
+								),*/
+
+							/*	array
 								(
 									'sDescription'		=>	"Add table correspondence_template_system",
 									'sAlterSQL'			=>	"CREATE  TABLE IF NOT EXISTS correspondence_template_system (
@@ -287,7 +299,7 @@ class Flex_Rollout_Version_000226 extends Flex_Rollout_Version
 															ENGINE = InnoDB;",
 									'sRollbackSQL'		=>	"	DROP TABLE correspondence_template_system;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
-								),
+								),*/
 
 								/*array
 								(
@@ -315,7 +327,7 @@ class Flex_Rollout_Version_000226 extends Flex_Rollout_Version
 									'sRollbackSQL'		=>	"	DELETE FROM Carrier WHERE Name = 'Billprint';",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								),*/
-								array
+							/*	array
 								(
 									'sDescription'		=>	"Add data to correspondence_run_error table",
 									'sAlterSQL'			=>	"INSERT INTO correspondence_run_error (name, description, system_name, const_name) VALUES
@@ -365,25 +377,30 @@ class Flex_Rollout_Version_000226 extends Flex_Rollout_Version
 									'sAlterSQL'			=>	"INSERT INTO correspondence_template_system  (name, description, system_name, constant_name, correspondence_template_id) VALUES
 															('invoice', 'invoice','INVOICE', 'CORRESPONDENCE_TEMPLATE_SYSTEM_INVOICE', (SELECT id FROM correspondence_template WHERE name = 'Invoice'));",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
-								)/*,
-								array
+								),*/
+								/*array
 								(
 									'sDescription'		=>	"Add data to resource_type table",
 									'sAlterSQL'			=>	"INSERT INTO resource_type  (name, description, const_name, resource_type_nature ) VALUES
-															('Yellow Billing Correspondence File Export CSV File', 'Yellow Billing Correspondence File Export CSV File', 'RESOURCE_TYPE_FILE_EXPORT_CORRESPONDENCE_YELLOWBILLING_CSV', 2);",
+															('Yellow Billing Correspondence File Export CSV File', 'Yellow Billing Correspondence File Export CSV File', 'RESOURCE_TYPE_FILE_EXPORT_CORRESPONDENCE_YELLOWBILLING_CSV', 2);															;",
 									'sRollbackSQL'		=>	"	DELETE FROM resource_type WHERE name = 'Yellow Billing Correspondence File Export CSV File';",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
-								)*/
-
-
-
-								,array
+								),
+								array
 								(
-									'sDescription'		=>	"Add data to correspondence_template_system table",
+									'sDescription'		=>	"Add data to resource_type table",
 									'sAlterSQL'			=>	"INSERT INTO resource_type (name, description, const_name, resource_type_nature) VALUES
 										('Yellow Billing Correspondence File Export TAR File', 'Yellow Billing Correspondence File Export TAR File', 'RESOURCE_TYPE_FILE_EXPORT_CORRESPONDENCE_YELLOWBILLING_TAR', 2);",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
-								)
+								),*/
+								/*array
+								(
+									'sDescription'		=>	"Add data to resource_type table",
+									'sAlterSQL'			=>	"INSERT INTO resource_type (name, description, const_name, resource_type_nature) VALUES
+										('Yellow Billing Correspondence File Import CSV File', 'Yellow Billing Correspondence File Import CSV File', 'RESOURCE_TYPE_FILE_IMPORT_CORRESPONDENCE_YELLOWBILLING_CSV', 1);",
+									'sRollbackSQL'		=>	"	DELETE FROM resource_type WHERE name = 'Yellow Billing Correspondence File Import CSV File';",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								)*/
 
 							);
 
