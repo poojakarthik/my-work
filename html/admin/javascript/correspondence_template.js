@@ -125,7 +125,7 @@ Object.extend(Correspondence_Template,
 		}
 		else
 		{
-			fnCallback($A(oResponse.aAdditionalColumns));
+			fnCallback(oResponse.aAdditionalColumns);
 		}
 	},
 	

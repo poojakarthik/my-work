@@ -5965,6 +5965,7 @@ div.popup-employee-reassign-tasks-tickets-selects > div
 .popup-first-interim-invoice-commit-and-send table.reflex
 {
 	margin	: 0em !important;
+	width	: 100% !important;
 }
 
 .popup-first-interim-invoice-commit-and-send div.section

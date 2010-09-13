@@ -86,6 +86,7 @@ var Popup_Interim_First_Invoice_Commit_And_Send	= Class.create(Reflex_Popup,
 		this._oCancel	= oContent.select('button.icon-button')[3];
 		this._oLog		= oContent.select('button.icon-button')[4];
 		
+		this._oCommit.hide();
 		this._oRetry.hide();
 		this._oClose.hide();
 		this._oLog.hide();
@@ -134,6 +135,8 @@ var Popup_Interim_First_Invoice_Commit_And_Send	= Class.create(Reflex_Popup,
 			};
 		}
 		
+		this._oCommit.show();
+		
 		this._oLoading.hide();
 		delete this._oLoading;
 	},
@@ -156,6 +159,8 @@ var Popup_Interim_First_Invoice_Commit_And_Send	= Class.create(Reflex_Popup,
 		var sBillingDate	= this._oDateSelect.getElementValue();
 		if (sBillingDate !== null && sBillingDate !== '')
 		{
+			this._aDebugInfo	= [];
+			this._oLog.hide();
 			this._getInvoiceRuns(this._oDateSelect.getElementValue());
 		}
 	},
@@ -169,7 +174,7 @@ var Popup_Interim_First_Invoice_Commit_And_Send	= Class.create(Reflex_Popup,
 	{
 		if (!this._bProcessing)
 		{
-			this._aDebug	= [];
+			this._aDebugInfo	= [];
 			
 			this._oCommit.hide();
 			this._oRetry.hide();

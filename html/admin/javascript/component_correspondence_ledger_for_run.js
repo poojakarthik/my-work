@@ -192,8 +192,13 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 		
 		// Setup additional columns, default to not visible
 		var sColumn	= null;
-		for (var i = 0; i < aColumns.length; i++)
+		for (var i in aColumns)
 		{
+			if (isNaN(i))
+			{
+				continue;
+			}
+			
 			sColumn								= aColumns[i];
 			this._hColumnVisibility[sColumn]	= false;
 			this._hColumnElements[sColumn]		=	{

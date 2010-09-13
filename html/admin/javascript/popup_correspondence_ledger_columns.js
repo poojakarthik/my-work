@@ -43,7 +43,9 @@ var Popup_Correspondence_Ledger_Columns	= Class.create(Reflex_Popup,
 			oCurrentUL.appendChild(
 				$T.li(
 					oCheckbox,
-					$T.span(sDisplayName)
+					$T.span({class: 'pointer'},
+						sDisplayName
+					).observe('click', this._toggleCheckbox.bind(this, oCheckbox))
 				)
 			);
 			
@@ -55,6 +57,11 @@ var Popup_Correspondence_Ledger_Columns	= Class.create(Reflex_Popup,
 		this.setTitle('Choose Columns to Show');
 		this.addCloseButton();
 		this.display();
+	},
+	
+	_toggleCheckbox	: function(oCheckbox)
+	{
+		oCheckbox.checked	= !oCheckbox.checked;
 	},
 	
 	_useSelected	: function()

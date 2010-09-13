@@ -92,12 +92,10 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 		this._oDeliveryDateTimeHidden	= $T.input({type: 'hidden', name: 'delivery_datetime'});
 		this._oDeliverNow				= Popup_Correspondence_Create._createField('deliver_now');
 		this._oDeliverNow.addOnChangeCallback(this._deliverNowChanged.bind(this));
-		this._oForceIfNoData			= $T.input({type: 'hidden', name: 'force_if_no_data', value: 0});
 		
 		// File upload form
 		var oForm	= 	$T.form({method: 'POST', action: '../admin/reflex.php/Correspondence/CreateFromCSV/', enctype: 'multipart/form-data'},
 							$T.input({type: 'hidden', name: 'correspondence_template_id', value: this._iTemplateId}),
-							this._oForceIfNoData,
 							$T.table({class: 'reflex input'},
 								$T.tbody(
 									$T.tr(
@@ -117,7 +115,9 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 										$T.th(),
 										$T.td({class: 'deliver-now'},
 											this._oDeliverNow.getElement(),
-											$T.span(' Deliver Immediately')
+											$T.span({class: 'pointer'},
+												' Deliver Immediately'
+											).observe('click', this._toggleDeliverNow.bind(this))
 										)
 									)
 								)
@@ -149,16 +149,24 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 							$T.th(),
 							$T.td({class: 'deliver-now'},
 								this._oDeliverNow.getElement(),
-								$T.span(' Deliver Immediately')
+								$T.span({class: 'pointer'},
+									' Deliver Immediately'
+								).observe('click', this._toggleDeliverNow.bind(this))
 							)
 						)	
 					)
 				);
 	},
 	
-	_deliverNowChanged	: function(oField)
+	_toggleDeliverNow	: function()
 	{
-		if (oField.getElementValue())
+		this._oDeliverNow.setValue(!this._oDeliverNow.getElementValue());
+		this._deliverNowChanged();
+	},
+	
+	_deliverNowChanged	: function()
+	{
+		if (this._oDeliverNow.getElementValue())
 		{
 			var sNow	= new Date().$format(Popup_Correspondence_Create.FIELD_CONFIG.delivery.oConfig.sDateFormat);
 			this._oDeliveryDateTime.setValue(sNow);
@@ -179,7 +187,6 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 				var oForm	= this._oContent.select('form').first();
 				if (jQuery.json.jsonIframeFormSubmit(oForm, this._csvSubmitted.bind(this)))
 				{
-					this._oForceIfNoData.value	= (bForceIfNoData ? 1 : 0);
 					var sDeliveryDateTime	= this._oDeliveryDateTime.getElementValue();
 					if (this._oDeliverNow.getElementValue())
 					{

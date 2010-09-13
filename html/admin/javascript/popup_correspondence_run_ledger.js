@@ -3,7 +3,13 @@ var Popup_Correspondence_Run_Ledger = Class.create(Reflex_Popup,
 {
 	initialize	: function($super)
 	{
-		$super(75);
+		var iEmWidth	= 75;
+		if (document.viewport.getWidth() > 1024)
+		{
+			iEmWidth	= 95;
+		}
+	
+		$super(iEmWidth);
 		
 		this._oLoadingPopup	= new Reflex_Popup.Loading();
 		
