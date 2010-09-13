@@ -149,7 +149,7 @@ class Motorpass_Logic_Account extends Motorpass_Logic_LogicClass
 			if ($this->bUnsavedChanges)
 			{
 				$this->oDO->modified = Data_Source_Time::currentTimestamp();
-				$this->oDO->modified_employee_id = Flex::getUserId();;
+				$this->oDO->modified_employee_id = Flex::getUserId();
 				$this->oDO->save();
 
 			}
