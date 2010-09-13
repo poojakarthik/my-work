@@ -13,7 +13,7 @@ class Correspondence_Logic_Source_CSV extends Correspondence_Logic_Source
 	{
 
 			parent::__construct(CORRESPONDENCE_SOURCE_TYPE_CSV);
-			$aFileImport = File_Import::getForFileName($sFileName);
+			/*$aFileImport = File_Import::getForFileName($sFileName);
 			foreach ($aFileImport as $oFileImport)
 			{
 				if ($oFileImport->FileName == $sFileName &&
@@ -21,7 +21,7 @@ class Correspondence_Logic_Source_CSV extends Correspondence_Logic_Source
 					{
 						throw new Correspondence_DataValidation_Exception(Correspondence_DataValidation_Exception::DUPLICATE_FILE);
 					}
-			}
+			}*/
 			$this->_sFileName = $sFileName;
 			$this->_sTmpPath = $sTmpPath;
 			$sCsv = file_get_contents($sTmpPath);
@@ -161,21 +161,8 @@ class Correspondence_Logic_Source_CSV extends Correspondence_Logic_Source
 
 	public function import()
 	{
-
-	 	/*	$myFile = $this->getFilePath().$this->_sFileName;
-			$fh = fopen($myFile, 'w');
-			fwrite($fh, implode($this->_aCsv));
-			fclose($fh);*/
-			$oFileImport = File_Import::import($this->_sTmpPath, RESOURCE_TYPE_FILE_IMPORT_CORRESPONDENCE_YELLOWBILLING_CSV,CARRIER_YELLOW_BILLING, $this->_sFileName);
-			/*$this->_oFileImport->FileName = $this->_sFileName;
-			$this->_oFileImport->Location = $this->getFilePath();
-			$this->_oFileImport->Carrier = CARRIER_YELLOW_BILLING;
-			$this->_oFileImport->FileType = RESOURCE_TYPE_FILE_IMPORT_CORRESPONDENCE_YELLOWBILLING_CSV;
-			$this->_oFileImport->SHA1 = sha1($this->_sCSV);
-			$this->_oFileImport->Status = IMPORTED;
-			$this->_oFileImport->save();*/
-			return $oFileImport->id;
-
+		$oFileImport = File_Import::import($this->_sTmpPath, RESOURCE_TYPE_FILE_IMPORT_CORRESPONDENCE_YELLOWBILLING_CSV,CARRIER_YELLOW_BILLING, $this->_sFileName);
+		return $oFileImport->id;
 	}
 
 	public function __get($sField)

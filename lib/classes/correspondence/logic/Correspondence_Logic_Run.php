@@ -58,8 +58,8 @@ class Correspondence_Logic_Run
 		{
 			$this->processed_datetime = Data_Source_Time::currentTimestamp();
 			$this->file_import_id = $this->_oCorrespondenceTemplate->importSource();
+			$this->handleProcessError($e);
 			$this->save();
-			$this->handleProcessError($oDataValidationException);
 			throw $e;
 		}
 	}
@@ -211,12 +211,12 @@ class Correspondence_Logic_Run
 	{
 		$sErrorReportFilePath;
 		$sMessage = 'The following problems occurred when generating correspondence for run id '.$this->id.' (letter code '.$this->getTemplate()->template_code.'). ';
-		if ($e->bSqlError)
+		if ($oDataValidationException->iError == CORRESPONDENCE_RUN_ERROR_SQL_SYNTAX)
 		{
 			$sMessage.=' The data source sql query is invalid. No correspondence data could be retrieved. No correspondence was generated.';
 			$this->correspondence_run_error_id = CORRESPONDENCE_RUN_ERROR_SQL_SYNTAX;
 		}
-		else if ($e->bNoData)
+		else if ($oDataValidationException->iError == CORRESPONDENCE_RUN_ERROR_NO_DATA)
 		{
 			$sMessage.=' The data source contained no data. No correspondence was generated.';
 			$this->correspondence_run_error_id = CORRESPONDENCE_RUN_ERROR_NO_DATA;
@@ -224,9 +224,10 @@ class Correspondence_Logic_Run
 		else
 		{
 			$sMessage.=' The generated correspondence data contains validation errors. See attached CSV file for details. No correspondence was generated.';
-			$sErrorReportFilePath = $e->sFileName;
-			$this->correspondence_run_error_id = CORRESPONDENCE_RUN_ERROR_MALFORMED_INPUT;
+			$sErrorReportFilePath = $oDataValidationException->sFileName;
+
 		}
+		$this->correspondence_run_error_id = $oDataValidationException->iError;
 
 		$this->sendErrorEmail($sMessage, $sErrorReportFilePath);
 	}
