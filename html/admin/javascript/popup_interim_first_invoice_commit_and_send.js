@@ -30,8 +30,8 @@ var Popup_Interim_First_Invoice_Commit_And_Send	= Class.create(Reflex_Popup,
 		oBillingSection.setTitleText('Billing Date');
 		oBillingSection.setContent(
 			$T.div({class: 'billing-section'},
-				$T.p('Specify the date on which the invoices were generated:'),
-				$T.p(
+				$T.div('Specify the date on which the invoices were generated:'),
+				$T.div(
 					this._oDateSelect.getElement()
 				)
 			)

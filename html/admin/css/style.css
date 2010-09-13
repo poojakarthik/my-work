@@ -5962,6 +5962,11 @@ div.popup-employee-reassign-tasks-tickets-selects > div
 	padding				: 0.5em;
 }
 
+.popup-first-interim-invoice-commit-and-send .billing-section > div
+{
+	padding-bottom	: 0.5em;
+}
+
 .popup-first-interim-invoice-commit-and-send table.reflex
 {
 	margin	: 0em !important;

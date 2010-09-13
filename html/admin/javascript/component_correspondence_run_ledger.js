@@ -554,13 +554,13 @@ Object.extend(Component_Correspondence_Run_Ledger,
 	
 	//Sorting definitions
 	SORT_FIELDS	:	{
-						processed_datetime				: Sort.DIRECTION_OFF,
+						processed_datetime				: Sort.DIRECTION_DESC,
 						correspondence_template_name	: Sort.DIRECTION_OFF,
 						created_employee_name			: Sort.DIRECTION_OFF,
 						count_correspondence			: Sort.DIRECTION_OFF,
 						count_email						: Sort.DIRECTION_OFF,
 						count_post						: Sort.DIRECTION_OFF,
-						delivered_datetime				: Sort.DIRECTION_DESC,
+						delivered_datetime				: Sort.DIRECTION_OFF,
 						data_file_name					: Sort.DIRECTION_OFF
 					},
 });
