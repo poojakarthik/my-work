@@ -58,7 +58,7 @@ class Correspondence_Logic_Run
 		{
 			$this->processed_datetime = Data_Source_Time::currentTimestamp();
 			$this->file_import_id = $this->_oCorrespondenceTemplate->importSource();
-			$this->correspondence_run_error_id = $oDataValidationException->iError;
+			$this->correspondence_run_error_id = $e->iError;
 			$this->save();
 			$this->handleProcessError($e);
 			throw $e;
