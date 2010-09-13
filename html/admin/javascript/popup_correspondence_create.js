@@ -295,6 +295,10 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 					// Show alert outlining a summary of each error
 					Popup_Correspondence_Create._showExceptionPopup(oEx);
 					break;
+				case Popup_Correspondence_Create.CORRESPONDENCE_RUN_ERROR_DUPLICATE_FILE:
+					// Duplicate file
+					Reflex_Popup.alert('A file with that name has already been uploaded, please change it or choose a different file', oConfig);
+					break;
 			}
 		}
 		else if (oResponse.aErrors)
@@ -531,7 +535,9 @@ Object.extend(Popup_Correspondence_Create,
 		column_count				: 'Column Count Mismatch'
 	},
 	
-	CSV_ERROR_NAME_UNKNOWN	: 'Unkown Error'
+	CSV_ERROR_NAME_UNKNOWN	: 'Unkown Error',
+	
+	CORRESPONDENCE_RUN_ERROR_DUPLICATE_FILE	: 4
 });
 
 // Special cases

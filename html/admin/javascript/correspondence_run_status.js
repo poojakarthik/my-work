@@ -60,13 +60,13 @@ Object.extend(Correspondence_Run_Status,
 		{
 			iStatusId	= Correspondence_Run_Status.DISPATCHED;
 		}
-		else if (oRun.processed_datetime !== null)
-		{
-			iStatusId	= Correspondence_Run_Status.PROCESSED;
-		}
 		else if (oRun.correspondence_run_error_id !== null)
 		{
 			iStatusId	= Correspondence_Run_Status.PROCESSING_FAILED;
+		}
+		else if (oRun.processed_datetime !== null)
+		{
+			iStatusId	= Correspondence_Run_Status.PROCESSED;
 		}
 		else
 		{

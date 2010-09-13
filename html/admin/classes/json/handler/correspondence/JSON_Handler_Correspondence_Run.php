@@ -290,8 +290,46 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 				throw new JSON_Handler_Correspondence_Run_Exception('You do not have permission to view Correspdondence Runs.');
 			}
 			
-			$oRun	= Correspondence_Logic_Run::getForId($iId, false)->toArray();
-			return array('bSuccess' => true, 'oCorrespondenceRun' => $oRun);
+			$oRun	= Correspondence_Logic_Run::getForId($iId, true);
+			$aRun	= $oRun->toArray();
+			
+			// Get the source of the run data
+			$oTemplate	= Correspondence_Template::getForId($oRun->correspondence_template_id);
+			$oSource	= Correspondence_Source::getForId($oTemplate->correspondence_source_id);
+			switch ($oSource->correspondence_source_type_id)
+			{
+				case CORRESPONDENCE_SOURCE_TYPE_SQL:
+					$aRun['source'] = 'SQL';
+					break;
+					
+				case CORRESPONDENCE_SOURCE_TYPE_SYSTEM:
+					$aRun['source'] = 'System';
+					break;
+					
+				case CORRESPONDENCE_SOURCE_TYPE_CSV:
+					$aRun['source']	= 'CSV';
+					break;
+				
+				default:
+					$aRun['source']	= null;
+			}
+			
+			// Get the file import/export names
+			$oFileImport	= File_Import::getForId($oRun->file_import_id);
+			if ($oFileImport)
+			{
+				$aRun['import_file_name']	= $oFileImport->FileName;
+			}
+			$oFileExport	= File_Export::getForId($oRun->date_file_export_id);
+			if ($oFileExport)
+			{
+				$aRun['export_file_name']	= $oFileExport->FileName;
+			}
+			
+			return	array(
+						'bSuccess' 				=> true, 
+						'oCorrespondenceRun' 	=> $aRun
+					);
 		}
 		catch (JSON_Handler_Correspondence_Run_Exception $oException)
 		{

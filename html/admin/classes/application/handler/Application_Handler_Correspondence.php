@@ -22,6 +22,7 @@ class Application_Handler_Correspondence extends Application_Handler
 
 	public function CreateFromCSV($subPath)
 	{
+		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_PROPER_ADMIN));
 
 		$aOutput	= array();
@@ -132,7 +133,7 @@ class Application_Handler_Correspondence extends Application_Handler
 		catch (Exception $e)
 		{
 			$aOutput['bSuccess']	= false;
-			$aOutput['sMessage']	= $e->getMessage();
+			$aOutput['sMessage']	= ($bUserIsGod ? $e->getMessage() : 'An error occured trying to schedule the correspondence, please contact YBS for assitance.');
 		}
 
 		echo JSON_Services::instance()->encode($aOutput);
