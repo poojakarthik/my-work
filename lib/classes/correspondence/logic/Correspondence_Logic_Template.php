@@ -177,6 +177,16 @@ class Correspondence_Logic_Template
 
 	}
 
+	public function getSourceType()
+	{
+
+	}
+
+	public function importSource()
+	{
+		return $this->_oCorrespondenceSource->import();
+	}
+
 	public static function getForLetterCode($sLetterCode)
 	{
 

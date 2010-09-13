@@ -283,16 +283,6 @@ abstract class Correspondence_Logic_Source
 
 		$this->_errorReport->registerRecordType('detail', $oRecordType);
 
-
-/*		$oRecordType = File_Exporter_RecordType::factory();
-
-		foreach($aCols as $sCol)
-		{
-			$oRecordType->addField($sCol, File_Exporter_Field::factory());
-		}
-
-		$this->_errorReport->registerRecordType('header', $oRecordType);*/
-
 		$oRecord	= $this->_errorReport->getRecordType('detail')->newRecord();
 		foreach($aCols as $sColumn)
 		{
@@ -315,9 +305,8 @@ abstract class Correspondence_Logic_Source
 		.'.csv'
 		;
 		$this->_errorReport->renderToFile($sPath.$sFilename);
-		throw new Correspondence_DataValidation_Exception($this->_aReport, $sPath.$sFilename);
-		//generate email
-		//return a summary error message and url for the error file
+		throw new Correspondence_DataValidation_Exception(Correspondence_DataValidation_Exception::DATAERROR, $this->_aReport, $sPath.$sFilename);
+
 	}
 
 	public function getColumnsForErrorReport()
@@ -369,6 +358,11 @@ abstract class Correspondence_Logic_Source
 
 	}
 
+	public function import()
+	{
+		return null;
+	}
+
 
 }
 
@@ -378,18 +372,23 @@ class Correspondence_DataValidation_Exception extends Exception
 {
 	public $aReport;
 	public $sFileName;
-	public $bNoData;
-	public $bSqlError;
+	public $iError;
 
-	public function __construct($aReport = null, $sFileName = null, $bNoData = false, $bSqlError = false)
+	const NODATA = CORRESPONDENCE_RUN_ERROR_NO_DATA;
+	const SQLERROR = CORRESPONDENCE_RUN_ERROR_SQL_SYNTAX;
+	const DATAERROR = CORRESPONDENCE_RUN_ERROR_MALFORMED_INPUT;
+	const DUPLICATE_FILE = 4;
+
+
+	public function __construct($iError, $aReport = null, $sFileName = null)
 	{
 		parent::__construct();
 		$this->aReport 		= $aReport	;
 		$this->sFileName 	= $sFileName;
-		$this->bNoData		= $bNoData	;
-		$this->bSqlError	= $bSqlError;
+		$this->iError		= $iError;
 	}
 }
+
 
 
 ?>

@@ -19,11 +19,11 @@ class Correspondence_Logic_Source_Sql extends Correspondence_Logic_Source
 		$result = $this->db->refMysqliConnection->query($this->sql_syntax);
 		if (!$result)
 		{
-			throw new Correspondence_DataValidation_Exception(null, null, true, true);
+			throw new Correspondence_DataValidation_Exception(Correspondence_DataValidation_Exception::SQLERROR);
 		}
 		else if ($result->num_rows == 0 && !$bNoDataOk)
 		{
-			throw new Correspondence_DataValidation_Exception(null, null, true);
+			throw new Correspondence_DataValidation_Exception(Correspondence_DataValidation_Exception::NODATA);
 		}
 
  		$this->iLineNumber = 1;

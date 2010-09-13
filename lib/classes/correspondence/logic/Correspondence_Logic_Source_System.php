@@ -44,7 +44,7 @@ class Correspondence_Logic_Source_System extends Correspondence_Logic_Source
 		}
 		else if (!$bNoDataOk)
 		{
-			throw new Correspondence_DataValidation_Exception(null, null, true);
+			throw new Correspondence_DataValidation_Exception(Correspondence_DataValidation_Exception::NODATA);
 		}
 
 

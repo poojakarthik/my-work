@@ -1,15 +1,33 @@
 <?php
-class Correspondence_Logic_Source_Csv extends Correspondence_Logic_Source
+class Correspondence_Logic_Source_CSV extends Correspondence_Logic_Source
 {
 
 	protected $_aCsv;
+	protected $_sFileName;
+	protected $_sTmpPath;
+	protected $_oDO;
+	protected $_oFileImport;
 
 
-
-	public function __construct($sCsv = null)
+	public function __construct($sTmpPath, $sFileName)
 	{
-		parent::__construct(CORRESPONDENCE_SOURCE_TYPE_CSV);
-		$this->_aCsv = trim($sCsv)==null?null:explode("\n",trim($sCsv));
+
+			parent::__construct(CORRESPONDENCE_SOURCE_TYPE_CSV);
+			$aFileImport = File_Import::getForFileName($sFileName);
+			foreach ($aFileImport as $oFileImport)
+			{
+				if ($oFileImport->FileName == $sFileName &&
+					$oFileImport->FileType == RESOURCE_TYPE_FILE_IMPORT_CORRESPONDENCE_YELLOWBILLING_CSV)
+					{
+						throw new Correspondence_DataValidation_Exception(Correspondence_DataValidation_Exception::DUPLICATE_FILE);
+					}
+			}
+			$this->_sFileName = $sFileName;
+			$this->_sTmpPath = $sTmpPath;
+			$sCsv = file_get_contents($sTmpPath);
+			$this->_aCsv = trim($sCsv)==null?null:explode("\n",trim($sCsv));
+
+
 	}
 
 	function getData($bPreprinted, $aAdditionalColumns = array(), $bNoDataOk = false)
@@ -26,6 +44,9 @@ class Correspondence_Logic_Source_Csv extends Correspondence_Logic_Source
 				$this->processCorrespondenceRecord($aLine);
 				$this->iLineNumber++;
 			}
+
+
+
 			if ($this->_bValidationFailed)
 			{
 				$this->processValidationErrors();
@@ -34,10 +55,11 @@ class Correspondence_Logic_Source_Csv extends Correspondence_Logic_Source
 		}
 		else if (!$bNoDataOk)
 		{
-			throw new Correspondence_DataValidation_Exception(null, null, true);
+			throw new Correspondence_DataValidation_Exception(Correspondence_DataValidation_Exception::NODATA);
 		}
 		return $this->_aCorrespondence;
 	}
+
 
 
 	public function parseLineHashed($sLine, $sDelimiter=',', $sQuote='"', $sEscape='\\')
@@ -137,9 +159,35 @@ class Correspondence_Logic_Source_Csv extends Correspondence_Logic_Source
 		return $aLine;
 	}
 
+	public function import()
+	{
+
+	 	/*	$myFile = $this->getFilePath().$this->_sFileName;
+			$fh = fopen($myFile, 'w');
+			fwrite($fh, implode($this->_aCsv));
+			fclose($fh);*/
+			$oFileImport = File_Import::import($this->_sTmpPath, RESOURCE_TYPE_FILE_IMPORT_CORRESPONDENCE_YELLOWBILLING_CSV,CARRIER_YELLOW_BILLING, $this->_sFileName);
+			/*$this->_oFileImport->FileName = $this->_sFileName;
+			$this->_oFileImport->Location = $this->getFilePath();
+			$this->_oFileImport->Carrier = CARRIER_YELLOW_BILLING;
+			$this->_oFileImport->FileType = RESOURCE_TYPE_FILE_IMPORT_CORRESPONDENCE_YELLOWBILLING_CSV;
+			$this->_oFileImport->SHA1 = sha1($this->_sCSV);
+			$this->_oFileImport->Status = IMPORTED;
+			$this->_oFileImport->save();*/
+			return $oFileImport->id;
+
+	}
+
 	public function __get($sField)
 	{
 		return $this->_oDO->$sField;
+	}
+
+	public static function getFilePath()
+	{
+		//return FILES_BASE_PATH.'import/'.CARRIER_YELLOW_BILLING."/Correspondence_Logic_Source_CSV/";
+
+		return FILES_BASE_PATH."import/".$intCarrier.'/'.GetConstantName(RESOURCE_TYPE_FILE_IMPORT_CORRESPONDENCE_YELLOWBILLING_CSV, 'resource_type').'/';
 	}
 
 

@@ -41,49 +41,52 @@ class Correspondence_Logic_Run
 
 	public function process($bNoDataOk = false)
 	{
-
-		$bPreprinted = $this->_oDO->preprinted==0?false:true;
-		$aCorrespondence = $this->_oCorrespondenceTemplate->getData($bPreprinted, $bNoDataOk);
-		foreach ($aCorrespondence as $oCorrespondence)
+		try
 		{
-			$oCorrespondence->_oCorrespondenceRun = $this;
+			$bPreprinted = $this->_oDO->preprinted==0?false:true;
+			$aCorrespondence = $this->_oCorrespondenceTemplate->getData($bPreprinted, $bNoDataOk);
+			foreach ($aCorrespondence as $oCorrespondence)
+			{
+				$oCorrespondence->_oCorrespondenceRun = $this;
+			}
+			$this->_aCorrespondence = $aCorrespondence;
+			$this->processed_datetime = Data_Source_Time::currentTimestamp();
+			$this->file_import_id = $this->_oCorrespondenceTemplate->importSource();
+			$this->save();
 		}
-		$this->_aCorrespondence = $aCorrespondence;
-		$this->processed_datetime = Data_Source_Time::currentTimestamp();
+		catch(Correspondence_DataValidation_Exception $e)
+		{
+			$this->processed_datetime = Data_Source_Time::currentTimestamp();
+			$this->file_import_id = $this->_oCorrespondenceTemplate->importSource();
+			$this->save();
+			$this->handleProcessError($oDataValidationException);
+			throw $e;
+		}
 	}
 
 	public function save()
 	{
-					// Start a new database transaction
-				$oDataAccess	= DataAccess::getDataAccess();
-
-				if (!$oDataAccess->TransactionStart())
-				{
-
-					return 	array(
-								"Success"	=> false,
-								"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? 'Could not start database transaction.' : false,
-							);
-				}
-
-				try
-				{
-
-					$this->_save();
-
-					// Everything looks OK -- Commit!
-					$oDataAccess->TransactionCommit();
-					return $this->id;
-
-			}
-
-			catch (Exception $e)
-			{
-				// Exception caught, rollback db transaction
-				$oDataAccess->TransactionRollback();
-				throw($e);
-
-			}
+		$oDataAccess	= DataAccess::getDataAccess();
+		if (!$oDataAccess->TransactionStart())
+		{
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? 'Could not start database transaction.' : false,
+					);
+		}
+		try
+		{
+			$this->_save();
+			// Everything looks OK -- Commit!
+			$oDataAccess->TransactionCommit();
+			return $this->id;
+		}
+		catch (Exception $e)
+		{
+			// Exception caught, rollback db transaction
+			$oDataAccess->TransactionRollback();
+			throw $e;
+		}
 
 	}
 
@@ -196,62 +199,57 @@ class Correspondence_Logic_Run
 				}
 				catch(Exception $e)
 				{
-
-					if ($e->bNoData && !$e->bSqlError && $e->aReport == null)
-					{
-						$oRun->process(true);
-						$oRun->save();
-						$aRuns[] = $oRun;
-					}
-					if (get_class($e)== 'Correspondence_DataValidation_Exception')
-					{
-						$sErrorReportFilePath;
-						$sMessage = 'The following problems occurred when generating correspondence for run id '.$oRun->id.' (letter code '.$oRun->getTemplate()->template_code.'). ';
-						if ($e->bSqlError)
-						{
-							$sMessage.=' The data source sql query is invalid';
-						}
-						else if ($e->bNoData)
-						{
-							$sMessage.=' The data source contained no data. No correspondence was generated';
-							$sMessage.= 'This correspondence run will be marked as \'delivered\', but no data file will be sent to the mailing house';
-						}
-						else
-						{
-							$sMessage.=' The generated correspondence data contains validation errors. See attached CSV file for details.';
-							$sErrorReportFilePath = $e->sFileName;
-						}
-
-						//send email
-						$oEmail = new Email_Notification();
-						$oEmail->setSubject("Correspondence Dispatch Notice for ".$oRun->getCorrespondenceCode().", run id ".$oRun->id);
-						if ($sErrorReportFilePath!=null)
-						{
-							$sFile = file_get_contents($sErrorReportFilePath);
-							$sFileName = substr($sErrorReportFilePath, strrpos( $sErrorReportFilePath , "/" )+1);
-							$oEmail->addAttachment($sFile, $sFileName, 'text/csv');
-						}
-						$oEmail->setBodyHTML($sMessage);
-						$oEmployee = Employee::getForId($oRun->created_employee_id);
-						$oEmail->addTo($oEmployee->Email, $name='');
-						//$oEmail->addCc($email, $name='');
-						//$oEmail->addBcc($email);
-						$oEmail->setFrom($oEmployee->Email, $name='');
-						$oEmail->send();
-
-						echo 'sent mail to '.$oEmployee->Email;
-
-					}
-					else
-					{
+					if (get_class($e)!= 'Correspondence_DataValidation_Exception')//datavalidation exceptions have already been dealt with at this stage.
 						throw $e;
-					}
 				}
-
 		}
-
 		return $aRuns;
 
+	}
+
+	private function handleProcessError($oDataValidationException)
+	{
+		$sErrorReportFilePath;
+		$sMessage = 'The following problems occurred when generating correspondence for run id '.$this->id.' (letter code '.$this->getTemplate()->template_code.'). ';
+		if ($e->bSqlError)
+		{
+			$sMessage.=' The data source sql query is invalid. No correspondence data could be retrieved. No correspondence was generated.';
+			$this->correspondence_run_error_id = CORRESPONDENCE_RUN_ERROR_SQL_SYNTAX;
+		}
+		else if ($e->bNoData)
+		{
+			$sMessage.=' The data source contained no data. No correspondence was generated.';
+			$this->correspondence_run_error_id = CORRESPONDENCE_RUN_ERROR_NO_DATA;
+		}
+		else
+		{
+			$sMessage.=' The generated correspondence data contains validation errors. See attached CSV file for details. No correspondence was generated.';
+			$sErrorReportFilePath = $e->sFileName;
+			$this->correspondence_run_error_id = CORRESPONDENCE_RUN_ERROR_MALFORMED_INPUT;
+		}
+
+		$this->sendErrorEmail($sMessage, $sErrorReportFilePath);
+	}
+
+	private function sendErrorEmail($sMessage, $sErrorReportFilePath = null)
+	{
+
+		//send email
+		$oEmail = new Email_Notification();
+		$oEmail->setSubject("Correspondence Run Error Notification for Letter Code ".$this->getCorrespondenceCode().", Run ID ".$this->id);
+		if ($sErrorReportFilePath!=null)
+		{
+			$sFile = file_get_contents($sErrorReportFilePath);
+			$sFileName = substr($sErrorReportFilePath, strrpos( $sErrorReportFilePath , "/" )+1);
+			$oEmail->addAttachment($sFile, $sFileName, 'text/csv');
+		}
+		$oEmail->setBodyHTML($sMessage);
+		$oEmployee = Employee::getForId($this->created_employee_id);
+		$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
+		//$oEmail->addCc($email, $name='');
+		//$oEmail->addBcc($email);
+		$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
+		$oEmail->send();
 	}
 
 	public static function getForBatchId($iBatchId, $bToArray = false)
