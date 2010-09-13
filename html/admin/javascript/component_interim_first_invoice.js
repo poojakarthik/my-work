@@ -20,6 +20,7 @@ var Component_Interim_First_Invoice	= Class.create(
 			[
 			 	'../ui/javascript/control_field.js', 
 			 	'../ui/javascript/control_field_select.js',
+			 	'../ui/javascript/section.js',
 			 	'javascript/popup_interim_first_invoice_commit_and_send.js'
 			],
 			function()
