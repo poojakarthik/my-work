@@ -5,25 +5,25 @@ class Application_Handler_Correspondence extends Application_Handler
 	public function DownloadCSVErrorFile($aSubPath)
 	{
 		// TODO: Check permissions
-		
+
 		if (!$aSubPath[0])
 		{
 			throw new Exception('Invalid error file path supplied');
 		}
-		
+
 		$sFileBaseName	= urldecode($aSubPath[0]);
 		$sFilePath		= FILES_BASE_PATH."temp/{$sFileBaseName}";
-		
+
 		header('Content-type: text/csv');
 		header('Content-Disposition: attachment; filename="'.$sFileBaseName.'"');
 		echo @file_get_contents($sFilePath);
 		die;
 	}
-	
+
 	public function CreateFromCSV($subPath)
 	{
 		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_PROPER_ADMIN));
-		
+
 		$aOutput	= array();
 		try
 		{
@@ -110,15 +110,14 @@ class Application_Handler_Correspondence extends Application_Handler
 				$aOutput['aErrors']	= $aErrors;
 				throw new Exception("There was errors in the form information.");
 			}
-			
+
 			try
 			{
-				$oDA	= DataAccess::getDataAccess();
-				$oDA->TransactionStart();
-				$oSource	= new Correspondence_Logic_Source_Csv(file_get_contents($aFileInfo['tmp_name']));
+				$oSource	= new Correspondence_Logic_Source_Csv($aFileInfo['tmp_name'], $aFileInfo['name']);
 				$oTemplate	= Correspondence_Logic_Template::getForId($iCorrespondenceTemplateId, $oSource);
+
 				$oTemplate->createRun(false, date('Y-m-d H:i:s', $iDeliveryDateTime), true);
-				$oDA->TransactionRollback();
+
 			}
 			catch (Correspondence_DataValidation_Exception $oEx)
 			{
@@ -127,7 +126,7 @@ class Application_Handler_Correspondence extends Application_Handler
 				$aOutput['oException']	= $oEx;
 				throw new Exception();
 			}
-			
+
 			$aOutput['bSuccess']	= true;
 		}
 		catch (Exception $e)
@@ -139,19 +138,19 @@ class Application_Handler_Correspondence extends Application_Handler
 		echo JSON_Services::instance()->encode($aOutput);
 		die;
 	}
-	
+
 	public function ExportRunToCSV($aSubPath)
 	{
 		try
 		{
 			// Proper admin required
 			AuthenticatedUser()->PermissionOrDie(array(PERMISSION_PROPER_ADMIN));
-			
+
 			// Get the correspondence item for the run
 			$iCorrespondenceRunId	= (int)$aSubPath[0];
 			$oRun					= Correspondence_Logic_Run::getForId($iCorrespondenceRunId);
 			$aCorrespondence		= $oRun->getCorrespondence();
-			
+
 			// Build the list of columns for the csv file
 			$aAdditionalColumns		= $oRun->getAdditionalColumns(0);
 			$aColumns				= 	array(
@@ -171,16 +170,16 @@ class Application_Handler_Correspondence extends Application_Handler
 											'Landline',
 											'Delivery Method'
 										);
-			
+
 			foreach ($aAdditionalColumns as $sColumn)
 			{
 				$aColumns[]	= $sColumn;
 			}
-			
+
 			// Create File_CSV to do the file creation
 			$oFile	= new File_CSV();
 			$oFile->setColumns($aColumns);
-			
+
 			// BUild list of lines for the file
 			$aLines	= array();
 			foreach ($aCorrespondence as $oCorrespondence)
@@ -204,8 +203,8 @@ class Application_Handler_Correspondence extends Application_Handler
 											'Landline'				=> $oCorrespondence->landline,
 											'Delivery Method'		=> $sDeliveryMethod
 										);
-				
-				// Additional column values						
+
+				// Additional column values
 				$aItem	= $oCorrespondence->toArray();
 				foreach ($aAdditionalColumns as $sColumn)
 				{
@@ -213,13 +212,13 @@ class Application_Handler_Correspondence extends Application_Handler
 				}
 				$aLines[]	= $aLine;
 			}
-			
+
 			// Add the lines to the file
 			foreach ($aLines as $aLine)
 			{
 				$oFile->addRow($aLine);
 			}
-			
+
 			// Output for download
 			header('Content-type: text/csv');
 			header("Content-Disposition: attachment; filename=\"correspondence-run-export-$iCorrespondenceRunId-".date('YmdHis').".csv\"");
@@ -230,7 +229,7 @@ class Application_Handler_Correspondence extends Application_Handler
 			$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 			echo $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
 		}
-		
+
 		die;
 	}
 
