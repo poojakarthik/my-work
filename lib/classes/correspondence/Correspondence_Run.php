@@ -87,7 +87,7 @@ class Correspondence_Run extends ORM_Cached
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "correspondence_run_batch_id =  <correspondence_run_batch_id> ");
 					break;
 				case 'selByScheduleDateTime':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "scheduled_datetime <= <scheduled_datetime> AND delivered_datetime IS NULL");
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "scheduled_datetime <= <scheduled_datetime> AND correspondence_run_error_id IS NULL AND delivered_datetime IS NULL");
 					break;
 				case 'selById':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
@@ -157,33 +157,33 @@ class Correspondence_Run extends ORM_Cached
 							JOIN Employee e ON cr.created_employee_id = e.id
 							JOIN correspondence_template ct ON ct.id = cr.correspondence_template_id
 							LEFT JOIN correspondence c ON c.correspondence_run_id = cr.id
-							LEFT JOIN FileExport fe ON fe.id = cr.data_file_export_id 
+							LEFT JOIN FileExport fe ON fe.id = cr.data_file_export_id
 							LEFT JOIN FileImport fi ON fi.id = cr.file_import_id ";
-							
-			$sSelect	= "	cr.id, 
-							cr.correspondence_template_id, 
-							cr.processed_datetime, 
-							cr.scheduled_datetime, 
-							COALESCE(cr.delivered_datetime, '".Data_Source_Time::END_OF_TIME."') AS delivered_datetime, 
-							cr.created_employee_id, 
-							cr.created, 
-							cr.data_file_export_id, 
-							cr.preprinted, 
-							cr.pdf_file_export_id, 
-							cr.correspondence_run_batch_id, 
-							CONCAT(e.FirstName,' ',e.LastName) AS created_employee_name, 
+
+			$sSelect	= "	cr.id,
+							cr.correspondence_template_id,
+							cr.processed_datetime,
+							cr.scheduled_datetime,
+							COALESCE(cr.delivered_datetime, '".Data_Source_Time::END_OF_TIME."') AS delivered_datetime,
+							cr.created_employee_id,
+							cr.created,
+							cr.data_file_export_id,
+							cr.preprinted,
+							cr.pdf_file_export_id,
+							cr.correspondence_run_batch_id,
+							CONCAT(e.FirstName,' ',e.LastName) AS created_employee_name,
 							ct.name AS correspondence_template_name,
 							ct.template_code AS correspondence_template_code,
 							ct.correspondence_source_id AS correspondence_template_source_id,
 							cr.correspondence_run_error_id,
-							COALESCE(fe.FileName, NULL) AS data_file_name, 
+							COALESCE(fe.FileName, NULL) AS data_file_name,
 							COALESCE(COUNT(c.id), 0) AS count_correspondence,
 							fi.FileName as import_file_name,
 							COALESCE(COUNT(IF(c.correspondence_delivery_method_id = ".CORRESPONDENCE_DELIVERY_METHOD_EMAIL.", c.id, NULL)), 0) AS count_email,
 							COALESCE(COUNT(IF(c.correspondence_delivery_method_id = ".CORRESPONDENCE_DELIVERY_METHOD_POST.", c.id, NULL)), 0) AS count_post
 							";
 		}
-		
+
 		$aWhereAlias	=	array(
 								'processed_datetime' 			=> 'cr.processed_datetime',
 								'scheduled_datetime' 			=> 'cr.scheduled_datetime',
@@ -206,7 +206,7 @@ class Correspondence_Run extends ORM_Cached
 		$sOrderByClause	= 	StatementSelect::generateOrderBy($aSortAlias, $aSort);
 		$sLimitClause	= 	StatementSelect::generateLimit($iLimit, $iOffset);
 		$sWhereClause	= 	$aWhere['sClause'];
-		
+
 		if (!$bCountOnly)
 		{
 			if ($sWhereClause == "")
@@ -215,20 +215,20 @@ class Correspondence_Run extends ORM_Cached
 			}
 			$sWhereClause	.= " GROUP BY cr.id";
 		}
-		
+
 		$oStmt			=	new StatementSelect(
-								$sFrom, 
-								$sSelect, 
-								$sWhereClause, 
-								($bCountOnly ? '' : $sOrderByClause), 
+								$sFrom,
+								$sSelect,
+								$sWhereClause,
+								($bCountOnly ? '' : $sOrderByClause),
 								($bCountOnly ? '' : $sLimitClause)
 							);
-		
+
 		if ($oStmt->Execute($aWhere['aValues']) === false)
 		{
 			throw new Exception("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ".$oStmt->Error());
 		}
-		
+
 		if ($bCountOnly)
 		{
 			//throw new Exception($oStmt->_strQuery);
