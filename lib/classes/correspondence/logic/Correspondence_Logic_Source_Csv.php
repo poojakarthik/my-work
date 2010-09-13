@@ -14,14 +14,14 @@ class Correspondence_Logic_Source_CSV extends Correspondence_Logic_Source
 
 			parent::__construct(CORRESPONDENCE_SOURCE_TYPE_CSV);
 			$aFileImport = File_Import::getForFileName($sFileName);
-			foreach ($aFileImport as $oFileImport)
+			/*foreach ($aFileImport as $oFileImport)
 			{
 				if ($oFileImport->FileName == $sFileName &&
 					$oFileImport->FileType == RESOURCE_TYPE_FILE_IMPORT_CORRESPONDENCE_YELLOWBILLING_CSV)
 					{
 						throw new Correspondence_DataValidation_Exception(Correspondence_DataValidation_Exception::DUPLICATE_FILE);
 					}
-			}
+			}*/
 			$this->_sFileName = $sFileName;
 			$this->_sTmpPath = $sTmpPath;
 			$sCsv = file_get_contents($sTmpPath);
