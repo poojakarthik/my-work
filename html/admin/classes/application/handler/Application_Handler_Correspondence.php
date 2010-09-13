@@ -117,7 +117,7 @@ class Application_Handler_Correspondence extends Application_Handler
 				$oDA->TransactionStart();
 				$oSource	= new Correspondence_Logic_Source_Csv(file_get_contents($aFileInfo['tmp_name']));
 				$oTemplate	= Correspondence_Logic_Template::getForId($iCorrespondenceTemplateId, $oSource);
-				$oTemplate->createRun(false, date('Y-m-d H:i:s', $iDeliveryDateTime), true)->save();
+				$oTemplate->createRun(false, date('Y-m-d H:i:s', $iDeliveryDateTime), true);
 				$oDA->TransactionRollback();
 			}
 			catch (Correspondence_DataValidation_Exception $oEx)

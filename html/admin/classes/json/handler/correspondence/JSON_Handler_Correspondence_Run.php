@@ -85,7 +85,7 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 			$oTemplate	= Correspondence_Logic_Template::getForId($iCorrespondenceTemplateId);
 			try
 			{
-				$oTemplate->createRun(false, date('Y-m-d H:i:s', $iDeliveryDateTime), $bProcessNow)->save();
+				$oTemplate->createRun(false, date('Y-m-d H:i:s', $iDeliveryDateTime), $bProcessNow);
 			} 
 			catch (Correspondence_DataValidation_Exception $oEx)
 			{
