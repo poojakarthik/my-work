@@ -13,7 +13,7 @@ class Correspondence_Logic_Source_CSV extends Correspondence_Logic_Source
 	{
 
 			parent::__construct(CORRESPONDENCE_SOURCE_TYPE_CSV);
-			/*$aFileImport = File_Import::getForFileName($sFileName);
+			$aFileImport = File_Import::getForFileName($sFileName);
 			foreach ($aFileImport as $oFileImport)
 			{
 				if ($oFileImport->FileName == $sFileName &&
@@ -21,7 +21,7 @@ class Correspondence_Logic_Source_CSV extends Correspondence_Logic_Source
 					{
 						throw new Correspondence_DataValidation_Exception(Correspondence_DataValidation_Exception::DUPLICATE_FILE);
 					}
-			}*/
+			}
 			$this->_sFileName = $sFileName;
 			$this->_sTmpPath = $sTmpPath;
 			$sCsv = file_get_contents($sTmpPath);
