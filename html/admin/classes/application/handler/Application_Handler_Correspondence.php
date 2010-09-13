@@ -110,14 +110,15 @@ class Application_Handler_Correspondence extends Application_Handler
 				$aOutput['aErrors']	= $aErrors;
 				throw new Exception("There was errors in the form information.");
 			}
-
+			
 			try
 			{
 				$oDA	= DataAccess::getDataAccess();
 				$oDA->TransactionStart();
-				$oSource	= new Correspondence_Logic_Source_Csv(file_get_contents($aFileInfo['tmp_name']));
-				$oTemplate	= Correspondence_Logic_Template::getForId($iCorrespondenceTemplateId, $oSource);
-				$oTemplate->createRun(false, date('Y-m-d H:i:s', $iDeliveryDateTime), true)->save();
+				$bForceIfNoData	= ((isset($_POST['force_if_no_data']) && ((int)$_POST['force_if_no_data'] == 1)) ? true : false);
+				$oSource		= new Correspondence_Logic_Source_Csv(file_get_contents($aFileInfo['tmp_name']));
+				$oTemplate		= Correspondence_Logic_Template::getForId($iCorrespondenceTemplateId, $oSource);
+				$oTemplate->createRun(false, date('Y-m-d H:i:s', $iDeliveryDateTime), true, $bForceIfNoData)->save();
 				$oDA->TransactionRollback();
 			}
 			catch (Correspondence_DataValidation_Exception $oEx)

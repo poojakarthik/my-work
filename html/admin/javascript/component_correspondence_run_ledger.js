@@ -219,31 +219,40 @@ var Component_Correspondence_Run_Ledger = Class.create(
 	{
 		if (oRun.id !== null)
 		{
+			var oTDSource	= $T.td($T.span(oRun.source ? oRun.source : ''));
+			if (oRun.import_file_name)
+			{
+				oTDSource.appendChild(
+					$T.div({class: 'subscript'},
+						oRun.import_file_name
+					)
+				)
+			}
+			
 			var	oTR	=	$T.tr(
 							$T.td(Component_Correspondence_Run_Ledger.getDateTimeElement(oRun.processed_datetime)),
-							$T.td(oRun.source ? oRun.source : ''),
+							oTDSource,
 							$T.td(
 								$T.div(
 									$T.div(oRun.correspondence_template_name),
-									$T.div({class: 'template-lettercode'},
+									$T.div({class: 'subscript'},
 										oRun.correspondence_template_code
 									)
 								)
 							),
 							$T.td(oRun.created_employee_name),
-							$T.td(
-								$T.div({class: 'correspondence-count'},
-									oRun.count_correspondence
+							$T.td({class: 'correspondence-items'},
+								$T.div(
+									$T.img({src: '../admin/img/template/correspondence_email.png', alt: 'Email', title: 'Email'}),
+									$T.span(oRun.count_email)
 								),
-								$T.div({class: 'correspondence-count-detail'},
-									$T.div(
-										$T.img({src: '../admin/img/template/correspondence_email.png', alt: 'Email', title: 'Email'}),
-										$T.span(oRun.count_email)
-									),
-									$T.div(
-										$T.img({src: '../admin/img/template/lorry.png', alt: 'Post', title: 'Post'}),
-										$T.span(oRun.count_post)
-									)
+								$T.div(
+									$T.img({src: '../admin/img/template/lorry.png', alt: 'Post', title: 'Post'}),
+									$T.span(oRun.count_post)
+								),
+								$T.div({class: 'correspondence-item-total'},
+									$T.img({src: '../admin/img/template/sum.png', alt: 'Total', title: 'Total'}),
+									$T.span(oRun.count_correspondence)
 								)
 							),
 							$T.td(Component_Correspondence_Run_Ledger.getDateTimeElement(oRun.delivered_datetime)),

@@ -187,12 +187,12 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 			}
 		};
 		
-		// Setup additional columns
+		// Setup additional columns, default to not visible
 		var sColumn	= null;
 		for (var i = 0; i < aColumns.length; i++)
 		{
 			sColumn								= aColumns[i];
-			this._hColumnVisibility[sColumn]	= true;
+			this._hColumnVisibility[sColumn]	= false;
 			this._hColumnElements[sColumn]		=	{
 														oHeader	: this._createFieldHeader(sColumn),
 														oFilter	: $T.th()

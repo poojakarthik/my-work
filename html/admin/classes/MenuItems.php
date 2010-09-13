@@ -3695,12 +3695,19 @@ class MenuItems {
 									'../ui/javascript/control_field_select.js',
 									'../ui/javascript/control_field_checkbox.js',
 									'../ui/javascript/control_field_date_picker.js',
+									'../ui/javascript/section.js',
 									'javascript/correspondence_template.js',
 									'javascript/popup_correspondence_create.js'
 								],
 								function()
 								{
-									new Popup_Correspondence_Create();
+									Flex.Constant.loadConstantGroup(
+										'correspondence_run_error',
+										function()
+										{
+											new Popup_Correspondence_Create();
+										}
+									); 
 								}
 							);";
 	}

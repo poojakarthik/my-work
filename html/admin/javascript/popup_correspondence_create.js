@@ -3,7 +3,7 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 {
 	initialize	: function($super)
 	{
-		$super(30);
+		$super(39);
 		
 		this._buildUI();
 	},
@@ -26,13 +26,23 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 		oTemplateSelect.addOnChangeCallback(this._templateChanged.bind(this));
 		this._oTemplateSelect	= oTemplateSelect;
 		
-		this._oInputContainer	= $T.div();
+		var oTemplateSection	= new Section(false, 'template-section');
+		oTemplateSection.setTitleText('Choose Template');
+		oTemplateSection.setContent(
+			this._oTemplateSelect.getElement()
+		);
+		
+		this._oSection	= new Section(true);
+		this._oSection.setTitleText('Schedule Information');
+		this._oSection.setContent(
+			$T.div({class: 'no-template'}, 
+				'No Template has been selected'
+			)
+		);
 		
 		this._oContent	=	$T.div({class: 'popup-correspondence-create'},
-								$T.div(
-									this._oTemplateSelect.getElement()
-								),
-								this._oInputContainer,
+								oTemplateSection.getElement(),
+								this._oSection.getElement(),
 								$T.div({class: 'buttons'},
 									$T.button({class: 'icon-button'},
 										'Create'
@@ -71,8 +81,7 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 				oInputContent	= this._buildSQLContent();
 				break;
 		}
-		this._oInputContainer.innerHTML	= '';
-		this._oInputContainer.appendChild(oInputContent);
+		this._oSection.setContent(oInputContent);
 		this._oSourceType	= oSourceType;
 	},
 	
@@ -82,25 +91,30 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 		this._oDeliveryDateTime			= Popup_Correspondence_Create._createField('delivery');
 		this._oDeliveryDateTimeHidden	= $T.input({type: 'hidden', name: 'delivery_datetime'});
 		this._oDeliverNow				= Popup_Correspondence_Create._createField('deliver_now');
+		this._oDeliverNow.addOnChangeCallback(this._deliverNowChanged.bind(this));
+		this._oForceIfNoData			= $T.input({type: 'hidden', name: 'force_if_no_data', value: 0});
 		
 		// File upload form
 		var oForm	= 	$T.form({method: 'POST', action: '../admin/reflex.php/Correspondence/CreateFromCSV/', enctype: 'multipart/form-data'},
 							$T.input({type: 'hidden', name: 'correspondence_template_id', value: this._iTemplateId}),
-							$T.table(
+							this._oForceIfNoData,
+							$T.table({class: 'reflex input'},
 								$T.tbody(
 									$T.tr(
-										$T.td('CSV File'),
-										$T.input({type: 'file', name: 'csv_file'})
+										$T.th('CSV File'),
+										$T.td(
+											$T.input({class: 'csv-file-input', type: 'file', name: 'csv_file', size: 38})
+										)
 									),
 									$T.tr(
-										$T.td('When to Deliver'),
+										$T.th('When to Deliver'),
 										$T.td(
 											this._oDeliveryDateTime.getElement(),
 											this._oDeliveryDateTimeHidden
 										)
 									),
 									$T.tr(
-										$T.td(),
+										$T.th(),
 										$T.td({class: 'deliver-now'},
 											this._oDeliverNow.getElement(),
 											$T.span(' Deliver Immediately')
@@ -119,29 +133,44 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 		this._oDeliveryDateTime	= Popup_Correspondence_Create._createField('delivery');
 		this._oProcessSQLWhen	= Popup_Correspondence_Create._createField('run_query');
 		this._oDeliverNow		= Popup_Correspondence_Create._createField('deliver_now');
+		this._oDeliverNow.addOnChangeCallback(this._deliverNowChanged.bind(this));
 		
-		return 	$T.table(
+		return 	$T.table({class: 'reflex input'},
 					$T.tbody(
 						$T.tr(
-							$T.td('When to Deliver'),
+							$T.th('When to Process'),
+							$T.td(this._oProcessSQLWhen.getElement())
+						),
+						$T.tr(
+							$T.th('When to Deliver'),
 							$T.td(this._oDeliveryDateTime.getElement())
 						),
 						$T.tr(
-							$T.td(),
+							$T.th(),
 							$T.td({class: 'deliver-now'},
 								this._oDeliverNow.getElement(),
 								$T.span(' Deliver Immediately')
 							)
-						),
-						$T.tr(
-							$T.td('When to Process'),
-							$T.td(this._oProcessSQLWhen.getElement())
-						)
+						)	
 					)
 				);
 	},
 	
-	_doCreate	: function(oEvent)
+	_deliverNowChanged	: function(oField)
+	{
+		if (oField.getElementValue())
+		{
+			var sNow	= new Date().$format(Popup_Correspondence_Create.FIELD_CONFIG.delivery.oConfig.sDateFormat);
+			this._oDeliveryDateTime.setValue(sNow);
+		}
+	},
+	
+	_doCreate	: function()
+	{
+		this._create();
+	},
+	
+	_create	: function(bForceIfNoData)
 	{
 		switch (this._oSourceType.system_name)
 		{
@@ -150,7 +179,7 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 				var oForm	= this._oContent.select('form').first();
 				if (jQuery.json.jsonIframeFormSubmit(oForm, this._csvSubmitted.bind(this)))
 				{
-					
+					this._oForceIfNoData.value	= (bForceIfNoData ? 1 : 0);
 					var sDeliveryDateTime	= this._oDeliveryDateTime.getElementValue();
 					if (this._oDeliverNow.getElementValue())
 					{
@@ -193,7 +222,7 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 				
 				// Send request
 				this._showLoading();
-				fnSQL(this._iTemplateId, sDeliveryDateTime, bProcessNow);
+				fnSQL(this._iTemplateId, sDeliveryDateTime, bProcessNow, !!bForceIfNoData);
 				break;
 		}
 	},
@@ -203,7 +232,7 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 		if (!oResponse.bSuccess)
 		{
 			// Error
-			this._ajaxError(oResponse, 'SQL Query Result');
+			this._ajaxError(oResponse);
 			return;
 		}
 		
@@ -219,7 +248,7 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 		if (!oResponse.bSuccess)
 		{
 			// Error
-			this._ajaxError(oResponse, 'CSV File');
+			this._ajaxError(oResponse);
 			return;
 		}
 		
@@ -241,15 +270,33 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 		var oConfig	= {sTitle: 'Error'};
 		if (oResponse.oException)
 		{
-			// Validation exception
-			if (oResponse.oException.bNoData)
+			var oEx	= oResponse.oException;
+			switch (oEx.iError)
 			{
-				Reflex_Popup.alert('There is no data in the ' + sDescription, oConfig);
-			}
-			else
-			{
-				// Show alert outlining a summary of each error
-				Popup_Correspondence_Create._showExceptionPopup(oResponse.oException);
+				case $CONSTANT.CORRESPONDENCE_RUN_ERROR_NO_DATA:
+					// No data to process, confirm the processing
+					var sNoDataDescription	= '';
+					switch (this._oSourceType.system_name)
+					{
+						case 'CSV':
+							sNoDataDescription	= 'CSV File';
+							break;
+						case 'SQL':
+							sNoDataDescription	= 'SQL Query Result';
+							break;
+					}
+					
+					oConfig.fnOnYes	= this._create.bind(this, true);
+					Reflex_Popup.alert('There was no data in the ' + sNoDataDescription + '.', oConfig);
+					break;
+				case $CONSTANT.CORRESPONDENCE_RUN_ERROR_SQL_SYNTAX:
+					// SQL error
+					Reflex_Popup.alert('There is an error in the configuration of the Template', oConfig);
+					break;
+				case $CONSTANT.CORRESPONDENCE_RUN_ERROR_MALFORMED_INPUT:
+					// Show alert outlining a summary of each error
+					Popup_Correspondence_Create._showExceptionPopup(oEx);
+					break;
 			}
 		}
 		else if (oResponse.aErrors)
@@ -318,7 +365,6 @@ Object.extend(Popup_Correspondence_Create,
 		var oConfig	= Popup_Correspondence_Create.FIELD_CONFIG[sName];
 		var oField	= Control_Field.factory(oConfig.sType, oConfig.oConfig);
 		oField.setRenderMode(Control_Field.RENDER_MODE_EDIT);
-		oField.disableValidationStyling();
 		return oField;
 	},
 	
@@ -439,7 +485,8 @@ Object.extend(Popup_Correspondence_Create,
 				iYearEnd	: new Date().getFullYear() + 1,
 				mMandatory	: true,
 				mEditable	: true,
-				mVisible	: true
+				mVisible	: true,
+				bDisableValidationStyling	: true
 			}
 		},
 		run_query	:
@@ -451,7 +498,8 @@ Object.extend(Popup_Correspondence_Create,
 				mMandatory	: true,
 				mEditable	: true,
 				mVisible	: true,
-				fnPopulate	: Popup_Correspondence_Create._getRunQueryOptions
+				fnPopulate	: Popup_Correspondence_Create._getRunQueryOptions,
+				bDisableValidationStyling	: true
 			}
 		},
 		deliver_now	:
@@ -462,7 +510,8 @@ Object.extend(Popup_Correspondence_Create,
 				sLabel		: 'Deliver Now',
 				mMandatory	: true,
 				mEditable	: true,
-				mVisible	: true
+				mVisible	: true,
+				bDisableValidationStyling	: true
 			}
 		}
 	},

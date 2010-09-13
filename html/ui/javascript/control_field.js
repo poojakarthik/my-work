@@ -523,6 +523,11 @@ Control_Field.factory	= function(sType, oDefinition)
 	oControlField.setEditable(oDefinition.mEditable ? oDefinition.mEditable : false);
 	oControlField.setMandatory(oDefinition.mMandatory ? oDefinition.mMandatory : false);
 	
+	if (oDefinition.bDisableValidationStyling)
+	{
+		oControlField.disableValidationStyling();
+	}
+	
 	if (oDefinition.fnValidate)
 	{
 		oControlField.setValidateFunction(oDefinition.fnValidate);

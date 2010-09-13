@@ -340,6 +340,12 @@ tbody.alternating > tr:nth-child(odd) > td
 	background-color	: #fff;
 }
 
+table.reflex th .subscript,
+table.reflex td .subscript
+{
+	font-size	: 0.8em;
+}
+
 /************************** END - Reflex Table - END **************************/
 
 /******************* START - Reflex Input Controls - START ********************/
@@ -5980,11 +5986,6 @@ table.correspondence-csv-exception-summary > tbody > tr > th
 	width	: 16em;
 }
 
-.popup-correspondence-create table
-{
-	padding-bottom	: 0.25em;
-}
-
 .popup-correspondence-create table td:first-child
 {
 	font-weight	: bold;
@@ -6001,6 +6002,35 @@ table.correspondence-csv-exception-summary > tbody > tr > th
 .popup-correspondence-create td.deliver-now > span
 {
 	vertical-align	: middle;
+}
+
+.popup-correspondence-create .template-section
+{
+	padding-bottom	: 1em;
+}
+
+.popup-correspondence-create .template-section .control-field select
+{
+	width	: 100%;
+}
+
+.popup-correspondence-create .no-template
+{
+	font-style			: italic;
+	opacity				: 0.75em;
+	border-style		: solid;
+	border-width		: 0.1em 0em 0.1em 0em;
+	border-color		: #1C1C1C;
+	background-color	: #DDDDDD;
+	color				: #333333;
+	padding				: 0.5em;
+}
+
+.popup-correspondence-create div.section div.section-content table.reflex,
+.popup-correspondence-create .csv-file-input
+{
+	margin	: 0em;
+	width	: 100%;
 }
 
 /***************** END - Create Correspondence Popup(s) - END *****************/
@@ -6287,22 +6317,16 @@ div.datetime-time
 	margin-right	: 0.25em;
 }
 
-.correspondence-count
+.correspondence-items img
 {
-	font-size		: 1.5em;
-	padding-right	: 0.5em;
-}
-
-.correspondence-count,
-.correspondence-count-detail
-{
-	display			: inline-block;
+	padding-right	: 0.25em;
 	vertical-align	: middle;
 }
 
-.correspondence-count-detail > div > img
+.correspondence-items span,
+.correspondence-items img
 {
-	padding-right	: 0.25em;
+	vertical-align	: middle;
 }
 
 .correspondence-run-ledger tbody td
@@ -6310,9 +6334,9 @@ div.datetime-time
 	vertical-align	: middle;
 }
 
-div.template-lettercode
+.correspondence-item-total
 {
-	font-size	: 0.8em;
+	font-weight	: bold;
 }
 
 /***************** END - Correspondence Ledger Popup(s) - END *****************/

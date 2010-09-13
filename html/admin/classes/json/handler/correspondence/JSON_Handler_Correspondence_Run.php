@@ -11,7 +11,7 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 
-	public function scheduleRunFromSQLTemplate($iCorrespondenceTemplateId, $sScheduleDateTime, $bProcessNow)
+	public function scheduleRunFromSQLTemplate($iCorrespondenceTemplateId, $sScheduleDateTime, $bProcessNow, $bForceIfNoData=false)
 	{
 		try
 		{
@@ -85,7 +85,7 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 			$oTemplate	= Correspondence_Logic_Template::getForId($iCorrespondenceTemplateId);
 			try
 			{
-				$oTemplate->createRun(false, date('Y-m-d H:i:s', $iDeliveryDateTime), $bProcessNow)->save();
+				$oTemplate->createRun(false, date('Y-m-d H:i:s', $iDeliveryDateTime), $bProcessNow, $bForceIfNoData)->save();
 			} 
 			catch (Correspondence_DataValidation_Exception $oEx)
 			{
@@ -187,7 +187,7 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 						break;
 						
 					case CORRESPONDENCE_SOURCE_TYPE_CSV:
-						$aRun['source']	= 'TODO.csv';
+						$aRun['source']	= 'CSV';
 						break;
 					
 					default:

@@ -144,17 +144,22 @@ class Correspondence_Run extends ORM_Cached
 
 	public static function getLedgerInformation($bCountOnly=false, $iLimit=0, $iOffset=0, $aFilter=null, $aSort=null)
 	{
-		$sFrom			= "	correspondence_run cr
-							JOIN Employee e ON cr.created_employee_id = e.id
-							JOIN correspondence_template ct ON ct.id = cr.correspondence_template_id
-							JOIN correspondence c ON c.correspondence_run_id = cr.id
-							LEFT JOIN FileExport fe ON fe.id = cr.data_file_export_id ";
 		if ($bCountOnly)
 		{
 			$sSelect	= "count(cr.id) AS record_count";
+			$sFrom		= "	correspondence_run cr
+							JOIN Employee e ON cr.created_employee_id = e.id
+							JOIN correspondence_template ct ON ct.id = cr.correspondence_template_id";
 		}
 		else
 		{
+			$sFrom		= "	correspondence_run cr
+							JOIN Employee e ON cr.created_employee_id = e.id
+							JOIN correspondence_template ct ON ct.id = cr.correspondence_template_id
+							LEFT JOIN correspondence c ON c.correspondence_run_id = cr.id
+							LEFT JOIN FileExport fe ON fe.id = cr.data_file_export_id 
+							LEFT JOIN FileImport fi ON fi.id = cr.file_import_id ";
+							
 			$sSelect	= "	cr.id, 
 							cr.correspondence_template_id, 
 							cr.processed_datetime, 
@@ -172,9 +177,10 @@ class Correspondence_Run extends ORM_Cached
 							ct.correspondence_source_id AS correspondence_template_source_id,
 							cr.correspondence_run_error_id,
 							COALESCE(fe.FileName, NULL) AS data_file_name, 
-							COUNT(c.id) AS count_correspondence,
-							COUNT(IF(c.correspondence_delivery_method_id = ".CORRESPONDENCE_DELIVERY_METHOD_EMAIL.", c.id, NULL)) AS count_email,
-							COUNT(IF(c.correspondence_delivery_method_id = ".CORRESPONDENCE_DELIVERY_METHOD_POST.", c.id, NULL)) AS count_post
+							COALESCE(COUNT(c.id), 0) AS count_correspondence,
+							fi.FileName as import_file_name,
+							COALESCE(COUNT(IF(c.correspondence_delivery_method_id = ".CORRESPONDENCE_DELIVERY_METHOD_EMAIL.", c.id, NULL)), 0) AS count_email,
+							COALESCE(COUNT(IF(c.correspondence_delivery_method_id = ".CORRESPONDENCE_DELIVERY_METHOD_POST.", c.id, NULL)), 0) AS count_post
 							";
 		}
 		
@@ -185,9 +191,6 @@ class Correspondence_Run extends ORM_Cached
 								'created_employee_id'			=> 'cr.created_employee_id',
 								'preprinted'					=> 'cr.preprinted',
 								'data_file_name'				=> 'COALESCE(fe.FileName, NULL)',
-								'count_correspondence'			=> 'COUNT(c.id)',
-								'count_email'					=> "COUNT(IF(c.correspondence_delivery_method_id = ".CORRESPONDENCE_DELIVERY_METHOD_EMAIL.", c.id, NULL))",
-								'count_post'					=> "COUNT(IF(c.correspondence_delivery_method_id = ".CORRESPONDENCE_DELIVERY_METHOD_POST.", c.id, NULL))",
 								'correspondence_run_error_id'	=> 'cr.correspondence_run_error_id'
 							);
 		$aWhere			= 	StatementSelect::generateWhere($aWhereAlias, $aFilter);
@@ -198,9 +201,6 @@ class Correspondence_Run extends ORM_Cached
 								'created_employee_name'			=> 'created_employee_name',
 								'preprinted'					=> 'cr.preprinted',
 								'data_file_name'				=> 'COALESCE(fe.FileName, NULL)',
-								'count_correspondence'			=> 'COUNT(c.id)',
-								'count_email'					=> "COUNT(IF(c.correspondence_delivery_method_id = ".CORRESPONDENCE_DELIVERY_METHOD_EMAIL.", c.id, NULL))",
-								'count_post'					=> "COUNT(IF(c.correspondence_delivery_method_id = ".CORRESPONDENCE_DELIVERY_METHOD_POST.", c.id, NULL))",
 								'correspondence_run_error_id'	=> 'cr.correspondence_run_error_id'
 							);
 		$sOrderByClause	= 	StatementSelect::generateOrderBy($aSortAlias, $aSort);
@@ -231,12 +231,14 @@ class Correspondence_Run extends ORM_Cached
 		
 		if ($bCountOnly)
 		{
+			//throw new Exception($oStmt->_strQuery);
 			// Count only
 			$aRow	= $oStmt->Fetch();
 			return $aRow['record_count'];
 		}
 		else
 		{
+			//throw new Exception($oStmt->_strQuery);
 			// Results required
 			$aResults	= array();
 			while ($aRow = $oStmt->Fetch())
