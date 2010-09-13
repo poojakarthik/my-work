@@ -159,7 +159,7 @@ class Flex_Rollout_Version_000226 extends Flex_Rollout_Version
 									'sRollbackSQL'		=>	"	DROP TABLE correspondence_run;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								),*/
-							array
+							/*array
 								(
 									'sDescription'		=>	"alter correspondence_run, add file import column",
 									'sAlterSQL'			=>	"ALTER TABLE correspondence_run ADD COLUMN file_import_id BIGINT(20) UNSIGNED AFTER correspondence_template_id,
@@ -169,7 +169,7 @@ class Flex_Rollout_Version_000226 extends Flex_Rollout_Version
 															    ON UPDATE CASCADE;",
 									'sRollbackSQL'		=>	"	ALTER TABLE correspondence_run DROP COLUMN file_import_id;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
-								)
+								)*/
 								/*,array
 								(
 									'sDescription'		=>	"Add table correspondence",
@@ -400,7 +400,15 @@ class Flex_Rollout_Version_000226 extends Flex_Rollout_Version
 										('Yellow Billing Correspondence File Import CSV File', 'Yellow Billing Correspondence File Import CSV File', 'RESOURCE_TYPE_FILE_IMPORT_CORRESPONDENCE_YELLOWBILLING_CSV', 1);",
 									'sRollbackSQL'		=>	"	DELETE FROM resource_type WHERE name = 'Yellow Billing Correspondence File Import CSV File';",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
-								)*/
+								),*/
+								array
+								(
+									'sDescription'		=>	"Add data to email_notification table",
+									'sAlterSQL'			=>	"INSERT INTO email_notification (name, description, const_name, allow_customer_group_emails) VALUES
+										('Correspondence', 'Correspondence Notification Emails', 'EMAIL_NOTIFICATION_CORRESPONDENCE', 0);",
+									'sRollbackSQL'		=>	"	DELETE FROM email_notification WHERE name = 'Correspondence';",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								)
 
 							);
 
