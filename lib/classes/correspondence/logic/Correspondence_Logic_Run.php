@@ -244,7 +244,8 @@ class Correspondence_Logic_Run
 	{
 
 		//send email
-		$oEmail = new Email_Notification();
+		$oEmail = new Email_Notification(EMAIL_NOTIFICATION_CORRESPONDENCE);
+
 		$oEmail->setSubject("Correspondence Run Error Notification for Letter Code ".$this->getCorrespondenceCode().", Run ID ".$this->id);
 		if ($sErrorReportFilePath!=null)
 		{
@@ -259,6 +260,8 @@ class Correspondence_Logic_Run
 		//$oEmail->addBcc($email);
 		$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
 		$oEmail->send();
+
+
 	}
 
 	public static function getForBatchId($iBatchId, $bToArray = false)
