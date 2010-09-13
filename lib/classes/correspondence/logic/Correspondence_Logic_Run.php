@@ -192,6 +192,7 @@ class Correspondence_Logic_Run
 		{
 			$oRun = new Correspondence_Logic_Run($oRunORM);
 			if ($oRun->processed_datetime == null)
+			{
 				try
 				{
 					$oRun->process();
@@ -203,7 +204,13 @@ class Correspondence_Logic_Run
 					if (get_class($e)!= 'Correspondence_DataValidation_Exception')//datavalidation exceptions have already been dealt with at this stage.
 						throw $e;
 				}
+			}
+			else
+			{
+				$aRuns[] = $oRun;
+			}
 		}
+
 		return $aRuns;
 
 	}
