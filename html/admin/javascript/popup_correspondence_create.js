@@ -287,7 +287,7 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 					}
 					
 					oConfig.fnOnYes	= this._create.bind(this, true);
-					Reflex_Popup.alert('There was no data in the ' + sNoDataDescription + '.', oConfig);
+					Reflex_Popup.alert('There was no data in the ' + sNoDataDescription, oConfig);
 					break;
 				case $CONSTANT.CORRESPONDENCE_RUN_ERROR_SQL_SYNTAX:
 					// SQL error
