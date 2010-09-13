@@ -20,11 +20,11 @@ var Component_Interim_First_Invoice	= Class.create(
 			[
 			 	'../ui/javascript/control_field.js', 
 			 	'../ui/javascript/control_field_select.js',
-			 	'javascript/popup_interim_first_invoice_commit.js'
+			 	'javascript/popup_interim_first_invoice_commit_and_send.js'
 			],
 			function()
 			{
-				new Popup_Interim_First_Invoice_Commit_All();
+				new Popup_Interim_First_Invoice_Commit_And_Send();
 			}
 		);
 	},

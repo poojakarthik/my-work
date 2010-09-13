@@ -232,6 +232,7 @@ class Correspondence_Run extends ORM_Cached
 		if ($bCountOnly)
 		{
 			//throw new Exception($oStmt->_strQuery);
+			
 			// Count only
 			$aRow	= $oStmt->Fetch();
 			return $aRow['record_count'];
@@ -239,6 +240,7 @@ class Correspondence_Run extends ORM_Cached
 		else
 		{
 			//throw new Exception($oStmt->_strQuery);
+			
 			// Results required
 			$aResults	= array();
 			while ($aRow = $oStmt->Fetch())

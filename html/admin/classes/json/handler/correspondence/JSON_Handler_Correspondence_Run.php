@@ -208,15 +208,18 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 		{
 			return 	array(
 						'Success'	=> false,
-						'sMessage'	=> $oException->getMessage()
+						'sMessage'	=> $oException->getMessage(),
+						'Message'	=> $oException->getMessage()
 					);
 		}
 		catch (Exception $e)
 		{
 			$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+			$sMessage	= $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
 			return 	array(
 						'Success'	=> false,
-						'sMessage'	=> $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'
+						'sMessage'	=> $sMessage,
+						'Message'	=> $sMessage
 					);
 		}
 	}
@@ -320,7 +323,7 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 			{
 				$aRun['import_file_name']	= $oFileImport->FileName;
 			}
-			$oFileExport	= File_Export::getForId($oRun->date_file_export_id);
+			$oFileExport	= File_Export::getForId($oRun->data_file_export_id);
 			if ($oFileExport)
 			{
 				$aRun['export_file_name']	= $oFileExport->FileName;

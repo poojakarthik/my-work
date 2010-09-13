@@ -13,14 +13,14 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 	_buildUI	: function(oSourceType)
 	{
 		var oTemplateSelect		= 	Control_Field.factory(
-				'select', 
-				{
-					sLabel		: 'Template',
-					mEditable	: true,
-					mMandatory	: true,
-					fnPopulate	: Correspondence_Template.getAllWithNonSystemSourcesAsSelectOptions
-				}
-			);
+										'select', 
+										{
+											sLabel		: 'Template',
+											mEditable	: true,
+											mMandatory	: true,
+											fnPopulate	: Correspondence_Template.getAllWithNonSystemSourcesAsSelectOptions
+										}
+									);
 		oTemplateSelect.setRenderMode(Control_Field.RENDER_MODE_EDIT);
 		oTemplateSelect.disableValidationStyling();
 		oTemplateSelect.addOnChangeCallback(this._templateChanged.bind(this));

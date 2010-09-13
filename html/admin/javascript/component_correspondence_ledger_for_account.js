@@ -126,6 +126,9 @@ var Component_Correspondence_Ledger_For_Account = Class.create(
 		// Attach content and get data
 		oContainerDiv.appendChild(this._oContentDiv);
 		
+		this._oLoadingPopup	= new Reflex_Popup.Loading();
+		this._oLoadingPopup.display();
+		
 		// Send the initial sorting parameters to dataset ajax 
 		this._oSort.refreshData(true);
 		this._oFilter.refreshData(true);
@@ -194,6 +197,11 @@ var Component_Correspondence_Ledger_For_Account = Class.create(
 		this._updateFilters();
 		
 		this._showLoading(false);
+		if (this._oLoadingPopup)
+		{
+			this._oLoadingPopup.hide();
+			delete this._oLoadingPopup;
+		}
 	},
 	
 	_createNoRecordsRow	: function(bOnLoad)
@@ -248,7 +256,7 @@ var Component_Correspondence_Ledger_For_Account = Class.create(
 							$T.td(
 								$T.div(
 									$T.div(oItem.correspondence_template_name),
-									$T.div({class: 'template-lettercode'},
+									$T.div({class: 'subscript'},
 										oItem.correspondence_template_code
 									)
 								)

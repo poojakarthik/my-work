@@ -3,7 +3,7 @@ var Popup_Account_Correspondence_Ledger = Class.create(Reflex_Popup,
 {
 	initialize	: function($super, iId)
 	{
-		$super(50);
+		$super(55);
 		this._iId	= iId;
 		Flex.Constant.loadConstantGroup('correspondence_delivery_method', this._buildUI.bind(this));
 	},
@@ -17,7 +17,6 @@ var Popup_Account_Correspondence_Ledger = Class.create(Reflex_Popup,
 	_buildUI	: function()
 	{
 		var oLedgerDiv		= $T.div();
-		this._oLedger		= new Component_Correspondence_Ledger_For_Account(oLedgerDiv, this._iId);
 		this._oContentDiv 	= 	$T.div({class: 'popup-account-correspondence-ledger'},
 									oLedgerDiv
 								);
@@ -25,5 +24,7 @@ var Popup_Account_Correspondence_Ledger = Class.create(Reflex_Popup,
 		this.setTitle('Account Correspondence Ledger');
 		this.addCloseButton();
 		this.display();
+		
+		this._oLedger	= new Component_Correspondence_Ledger_For_Account(oLedgerDiv, this._iId);
 	}
 });

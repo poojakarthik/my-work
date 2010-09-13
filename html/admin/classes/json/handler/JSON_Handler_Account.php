@@ -1096,14 +1096,14 @@ class JSON_Handler_Account extends JSON_Handler
 		try
 		{
 			// Require proper admin priviledges when the account has not been limited (i.e. is from a system wide search)
-			if (!isset($oFilter->account_id) && !AuthenticatedUser()->UserHasPerm(array(PERMISSION_PROPER_ADMIN)))
+			$bUserIsProperAdmin	= AuthenticatedUser()->UserHasPerm(array(PERMISSION_PROPER_ADMIN));
+			if (!isset($oFilter->account_id) && !$bUserIsProperAdmin)
 			{
 				throw new JSON_Handler_Account_Exception('You do not have permission to view Correspdondence.');
 			}
 			
-			$aFilter	= get_object_vars($oFilter);
-			$aSort		= get_object_vars($oSort);
-			
+			$aFilter		= get_object_vars($oFilter);
+			$aSort			= get_object_vars($oSort);
 			$iRecordCount	= Correspondence::getLedgerInformation(true, null, null, $aFilter, $aSort, true);
 			if ($bCountOnly)
 			{
@@ -1120,7 +1120,7 @@ class JSON_Handler_Account extends JSON_Handler
 			$aResults	= array();
 			foreach ($aItems as $aItem)
 			{
-				$aItem['bViewRun']			= $bUserIsGod;
+				$aItem['bViewRun']			= $bUserIsProperAdmin;
 				$aResults[$iOffset + $i]	= $aItem;
 				$i++;
 			}

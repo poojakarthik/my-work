@@ -1,12 +1,13 @@
 
 var Component_Correspondence_Run_Ledger = Class.create(
 {
-	initialize	: function(oContainerDiv)
+	initialize	: function(oContainerDiv, oLoadingPopup)
 	{
-		this._hFilters		= {};
-		this._oContainerDiv	= oContainerDiv;
+		this._hFilters					= {};
+		this._oContainerDiv				= oContainerDiv;
 		this._bFirstLoadComplete		= false;
 		this._hControlOnChangeCallbacks	= {};
+		this._oLoadingPopup				= oLoadingPopup;
 		
 		// Create DataSet & pagination object
 		this.oDataSet	= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_NO_CACHING, Component_Correspondence_Run_Ledger.DATA_SET_DEFINITION);
@@ -200,6 +201,11 @@ var Component_Correspondence_Run_Ledger = Class.create(
 		this._updateFilters();
 		
 		this._showLoading(false);
+		if (this._oLoadingPopup)
+		{
+			this._oLoadingPopup.hide();
+			delete this._oLoadingPopup;
+		}
 	},
 	
 	_createNoRecordsRow	: function(bOnLoad)
@@ -252,7 +258,7 @@ var Component_Correspondence_Run_Ledger = Class.create(
 								)
 							),
 							$T.td(Component_Correspondence_Run_Ledger.getDateTimeElement(oRun.delivered_datetime)),
-							$T.td(oRun.date_file_name),
+							$T.td(oRun.data_file_name),
 							$T.td(Correspondence_Run_Status.getStatusFromCorrespondenceRun(oRun).name),
 							$T.td(this._getRunActions(oRun))
 						);

@@ -21,20 +21,20 @@ Object.extend(Correspondence_Delivery_Method,
 		}
 	},
 	
-	getAllAsSelectOptions	: function(fnCallback, hCustomerGroups)
+	getAllAsSelectOptions	: function(fnCallback, hData)
 	{
-		if (!hCustomerGroups)
+		if (!hData)
 		{
 			Correspondence_Delivery_Method.getAll(Correspondence_Delivery_Method.getAllAsSelectOptions.curry(fnCallback));
 		}
 		else
 		{
 			var aOptions	= [];
-			for (var i in hCustomerGroups)
+			for (var i in hData)
 			{
 				aOptions.push(
 					$T.option({value: i}, 
-						hCustomerGroups[i].name
+						hData[i].name
 					)
 				);
 			}

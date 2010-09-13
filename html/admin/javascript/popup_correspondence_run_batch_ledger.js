@@ -118,6 +118,9 @@ var Popup_Correspondence_Run_Batch_Ledger	= Class.create(Reflex_Popup,
 		this.setContent(this._oContentDiv);
 		this.display();
 		
+		this._oLoadingPopup	= new Reflex_Popup.Loading();
+		this._oLoadingPopup.display();
+		
 		// Send the initial filter parameters to dataset ajax 
 		this._oFilter.refreshData(true);
 		this.oPagination.getCurrentPage();
@@ -187,6 +190,12 @@ var Popup_Correspondence_Run_Batch_Ledger	= Class.create(Reflex_Popup,
 		
 		// Hide the loading div
 		this._oLoadingElement.hide();
+		
+		if (this._oLoadingPopup)
+		{
+			this._oLoadingPopup.hide();
+			delete this._oLoadingPopup;
+		}
 	},
 	
 	_createTableRow	: function(oBatch)
@@ -250,11 +259,15 @@ var Popup_Correspondence_Run_Batch_Ledger	= Class.create(Reflex_Popup,
 			
 			// Create the batch row
 			var	oTR	=	$T.tr(
-							$T.td(
+							$T.td({class: 'batch-table'},
 								$T.table({class: 'reflex highlight-rows'},
 									oCaption,
-									oTHead,
-									oRunsTBody
+									oTHead
+								),
+								$T.div({class: 'batch-table-container'},
+									$T.table({class: 'reflex highlight-rows'},
+										oRunsTBody
+									)
 								)
 							)
 						);

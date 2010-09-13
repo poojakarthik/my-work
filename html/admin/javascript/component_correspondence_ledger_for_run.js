@@ -3,6 +3,9 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 {
 	initialize	: function(oContainerDiv, iCorrespondenceRunId)
 	{
+		this._oLoadingPopup	= new Reflex_Popup.Loading();
+		this._oLoadingPopup.display();
+	
 		this._hFilters					= {};
 		this._oContainerDiv				= oContainerDiv;
 		this._bFirstLoadComplete		= false;
@@ -304,6 +307,11 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 		this._updateFilters();
 		
 		this._showLoading(false);
+		if (this._oLoadingPopup)
+		{
+			this._oLoadingPopup.hide();
+			delete this._oLoadingPopup;
+		}
 	},
 	
 	_createNoRecordsRow	: function(bOnLoad)
@@ -371,7 +379,9 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 						// Add email
 						var sEmail	= ((oItem.email && oItem.email) !== '' ? oItem.email : 'Not Supplied');
 						oDeliveryMethodTD.appendChild(
-							$T.div(sEmail)
+							$T.div({class: 'subscript'},
+								sEmail
+							)
 						);
 						break;
 					case $CONSTANT.CORRESPONDENCE_DELIVERY_METHOD_SMS:
@@ -508,7 +518,7 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 		oDeleteImage.observe('click', this._clearFilterValue.bind(this, sField));
 		
 		var oFiterImage	= $T.img({class: 'header-filter', src: Component_Correspondence_Ledger_For_Run.FILTER_IMAGE_SOURCE, alt: 'Filter by ' + sLabel, title: 'Filter by ' + sLabel});
-		this._oFilter.registerFilterIcon(sField, oFiterImage, sLabel, this._oContainerDiv, 0, 22);
+		this._oFilter.registerFilterIcon(sField, oFiterImage, sLabel, this._oContentDiv, 0, 22);
 		
 		return	$T.th({class: 'filter-heading'},
 					$T.span({class: 'filter-' + sField},
@@ -618,6 +628,10 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 				}
 			}
 		}
+		
+		// Show loading
+		this._oLoadingPopup	= new Reflex_Popup.Loading();
+		this._oLoadingPopup.display();
 		
 		// Refresh page
 		this._oFilter.refreshData();

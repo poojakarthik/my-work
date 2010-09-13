@@ -3623,7 +3623,7 @@ class MenuItems {
 		$this->strLabel = "Commit and Send Interim Invoices";
 		
 		return "javascript: JsAutoLoader.loadScript(
-								['javascript/component_interim_first_invoice.js', 'javascript/popup_interim_first_invoice_commit_all.js'],
+								['javascript/component_interim_first_invoice.js'],
 								function()
 								{
 									var oComponent	= new Component_Interim_First_Invoice();
@@ -3773,6 +3773,7 @@ class MenuItems {
 										'javascript/employee.js',
 										'javascript/customer_group.js',
 										'javascript/correspondence_run.js',
+										'javascript/correspondence_run_status.js',
 										'javascript/correspondence_delivery_method.js',
 										'javascript/popup_correspondence_run_batch_ledger.js',
 										'javascript/popup_correspondence_run.js',
@@ -3808,12 +3809,14 @@ class MenuItems {
 										'javascript/correspondence_delivery_method.js',
 										'javascript/correspondence_template.js',
 										'javascript/correspondence_run.js',
+										'javascript/correspondence_run_status.js',
 										'javascript/component_correspondence_ledger_for_account.js',
 										'javascript/popup_account_correspondence_ledger.js',
 										'javascript/popup_correspondence_data.js',
 										'javascript/component_correspondence_ledger_for_run.js',
 										'javascript/component_correspondence_run_details.js',
-										'javascript/popup_correspondence_run.js'
+										'javascript/popup_correspondence_run.js',
+										'javascript/popup_correspondence_ledger_columns.js'
 									],
 									function()
 									{
