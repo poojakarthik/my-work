@@ -26,7 +26,7 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 												array('field'=> 'first_name', 										'data_type'=>'string', 	'mandatory'=>true, 		'length'=>null, 'default'=>null),
 												array('field'=> 'last_name', 										'data_type'=>'string', 	'mandatory'=>true, 		'length'=>null, 'default'=>null),
 												array('field'=> 'address_line_1', 									'data_type'=>'string', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
-												array('field'=> 'address_line2', 									'data_type'=>'string', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
+												array('field'=> 'address_line_2', 									'data_type'=>'string', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
 												array('field'=> 'suburb', 											'data_type'=>'string', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
 												array('field'=> 'postcode', 										'data_type'=>'numeric', 'mandatory'=>false, 	'length'=>4, 	'default'=>null),
 												array('field'=> 'state', 											'data_type'=>'string', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
@@ -62,6 +62,7 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 	public function __construct($mCarrierModule)
 	{
 		parent::__construct($mCarrierModule);
+
 		$this->_oTARFileExport	= new File_Export();
 		$this->_iTimestamp	= time();
 		$this->_oFileExporterCSV	= new File_Exporter_CSV();
