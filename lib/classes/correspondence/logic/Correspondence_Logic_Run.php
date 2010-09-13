@@ -58,8 +58,9 @@ class Correspondence_Logic_Run
 		{
 			$this->processed_datetime = Data_Source_Time::currentTimestamp();
 			$this->file_import_id = $this->_oCorrespondenceTemplate->importSource();
-			$this->handleProcessError($e);
+			$this->correspondence_run_error_id = $oDataValidationException->iError;
 			$this->save();
+			$this->handleProcessError($e);
 			throw $e;
 		}
 	}
@@ -227,7 +228,7 @@ class Correspondence_Logic_Run
 			$sErrorReportFilePath = $oDataValidationException->sFileName;
 
 		}
-		$this->correspondence_run_error_id = $oDataValidationException->iError;
+
 
 		$this->sendErrorEmail($sMessage, $sErrorReportFilePath);
 	}
