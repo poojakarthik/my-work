@@ -98,7 +98,8 @@ class Correspondence_Logic_Run
 		$this->correspondence_template_id = $this->_oCorrespondenceTemplate->id;
 		if ($this->id == null)
 		{
-			$this->created_employee_id = Flex::getUserId();
+			//for cli apps we use the system user id (0)
+			$this->created_employee_id = Flex::getUserId()!=null?Flex::getUserId():Employee::SYSTEM_EMPLOYEE_ID;
 		}
 
 		$this->_oDO->save();
@@ -235,8 +236,6 @@ class Correspondence_Logic_Run
 			$sErrorReportFilePath = $oDataValidationException->sFileName;
 
 		}
-
-
 		$this->sendErrorEmail($sMessage, $sErrorReportFilePath);
 	}
 
