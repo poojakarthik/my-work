@@ -56,19 +56,8 @@ class JSON_Handler_Invoice_Run extends JSON_Handler
 		{
 			Log::getLog()->log("Attempting to deliver invoice run {$iInvoiceRunId}");
 			
-			$oInvoiceRun	= Invoice_Run::getForId($iInvoiceRunId);
+			$oInvoiceRun	= Invoice_Run::getForId($iInvoiceRunId)->deliver();
 			
-			// TODO: DEV ONLY -- use the commented condition, the one without the '|| true' (only put there so that the commit isn't required when in development)
-			if ($oInvoiceRun->invoice_run_status_id === INVOICE_RUN_STATUS_COMMITTED || true)
-			//if ($oInvoiceRun->invoice_run_status_id === INVOICE_RUN_STATUS_COMMITTED)
-			{
-				$oInvoiceRun->deliver();
-			}
-			else
-			{
-				throw new Exception("Cannot deliver, the invoice run ({$iInvoiceRunId}) is uncommited");
-			}
-		
 			Log::getLog()->log("Invoice run {$iInvoiceRunId} delivered successfully");
 			
 			return	array(
