@@ -150,27 +150,26 @@ class Application_Handler_Correspondence extends Application_Handler
 			// Get the correspondence item for the run
 			$iCorrespondenceRunId	= (int)$aSubPath[0];
 			$oRun					= Correspondence_Logic_Run::getForId($iCorrespondenceRunId);
-			$aCorrespondence		= $oRun->getCorrespondence();
-
+			
 			// Build the list of columns for the csv file
-			$aAdditionalColumns		= $oRun->getAdditionalColumns(0);
-			$aColumns				= 	array(
-											'Customer Group',
-											'Account Id',
-											'Account Name',
-											'Addressee Title',
-											'Addressee First Name',
-											'Addressee Last Name',
-											'Address Line 1',
-											'Address Line 2',
-											'Suburb',
-											'Postcode',
-											'State',
-											'Email Address',
-											'Mobile',
-											'Landline',
-											'Delivery Method'
-										);
+			$aAdditionalColumns	= $oRun->getAdditionalColumns(0);
+			$aColumns			= 	array(
+										'Customer Group',
+										'Account Id',
+										'Account Name',
+										'Addressee Title',
+										'Addressee First Name',
+										'Addressee Last Name',
+										'Address Line 1',
+										'Address Line 2',
+										'Suburb',
+										'Postcode',
+										'State',
+										'Email Address',
+										'Mobile',
+										'Landline',
+										'Delivery Method'
+									);
 
 			foreach ($aAdditionalColumns as $sColumn)
 			{
@@ -181,12 +180,33 @@ class Application_Handler_Correspondence extends Application_Handler
 			$oFile	= new File_CSV();
 			$oFile->setColumns($aColumns);
 
-			// BUild list of lines for the file
-			$aLines			= array();
-			$aAllowedItems	= explode(',', $_GET['items']);
-			foreach ($aAllowedItems as $iCorrespondenceId)
+			// Determine the contents of the file
+			if (isset($_GET['items']))
 			{
-				$oCorrespondence	= new Correspondence_Logic(Correspondence::getForId($iCorrespondenceId));
+				// Individual Correspondence ids supplied
+				$bUsingLogic		= false;
+				$aCorrespondence	= explode(',', $_GET['items']);
+			}
+			else
+			{
+				// Use all of the Correspondence in the run
+				$bUsingLogic		= true;
+				$aCorrespondence	= $oRun->getCorrespondence();
+			}
+			
+			// Build list of lines for the file
+			$aLines	= array();
+			foreach ($aCorrespondence as $mCorrespondence)
+			{
+				if ($bUsingLogic)
+				{
+					$oCorrespondence	= $mCorrespondence;
+				}
+				else
+				{
+					$oCorrespondence	= new Correspondence_Logic(Correspondence::getForId($mCorrespondence));
+				}
+				
 				$sDeliveryMethod	= Correspondence_Delivery_Method::getForId($oCorrespondence->correspondence_delivery_method_id)->name;
 				$aLine				=	array
 										(
