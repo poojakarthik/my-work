@@ -365,7 +365,11 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 		{
 			case 'account_id':
 				return 	$T.td(
-							$T.div(oItem.account_id),
+							$T.div(
+								$T.a({href: 'flex.php/Account/Overview/?Account.Id=' + oItem.account_id},
+									oItem.account_id
+								)
+							),
 							$T.div(oItem.account_name)
 						);
 				break;

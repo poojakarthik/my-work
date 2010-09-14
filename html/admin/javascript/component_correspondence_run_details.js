@@ -97,7 +97,7 @@ var Component_Correspondence_Run_Details	= Class.create(
 					),
 					$T.tr(
 						$T.th('Dispatched'),
-						$T.td(Component_Correspondence_Run_Details._formatDateTime(oRun.delivered_datetime, 'Not yet delivered')),
+						$T.td(Component_Correspondence_Run_Details._formatDateTime(oRun.delivered_datetime, 'Awaiting Dispatch')),
 						$T.th('Data File'),
 						$T.td(oRun.export_file_name ? oRun.export_file_name : 'N/A')
 					),

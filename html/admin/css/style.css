@@ -6320,7 +6320,7 @@ div.datetime-time
 	margin	: 0em;
 }
 
-.popup-correspondence-data .section-content
+.popup-correspondence-data div.section-content
 {
 	max-height	: 35em;
 	overflow	: auto;

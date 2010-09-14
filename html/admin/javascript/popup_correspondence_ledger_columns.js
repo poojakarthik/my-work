@@ -84,7 +84,7 @@ var Popup_Correspondence_Ledger_Columns	= Class.create(Reflex_Popup,
 
 Object.extend(Popup_Correspondence_Ledger_Columns, 
 {
-	MAX_LINES	: 4,
+	MAX_LINES	: 10,
 	
 	COLUMN_DISPLAY_NAMES	:
 	{
