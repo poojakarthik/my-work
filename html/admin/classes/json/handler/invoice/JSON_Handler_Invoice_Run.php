@@ -52,17 +52,15 @@ class JSON_Handler_Invoice_Run extends JSON_Handler
 	{
 		$bIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 		
-		// TODO: DEV ONLY -- Remove this, don't use transaction in this function
-		$oDataAccess	= DataAccess::getDataAccess();
-		$oDataAccess->TransactionStart();
-		
 		try
 		{
 			Log::getLog()->log("Attempting to deliver invoice run {$iInvoiceRunId}");
 			
 			$oInvoiceRun	= Invoice_Run::getForId($iInvoiceRunId);
-			// TODO: DEV ONLY -- use this condition, remove the || true (only put there so that the commit isn't required when in development)
+			
+			// TODO: DEV ONLY -- use the commented condition, the one without the '|| true' (only put there so that the commit isn't required when in development)
 			if ($oInvoiceRun->invoice_run_status_id === INVOICE_RUN_STATUS_COMMITTED || true)
+			//if ($oInvoiceRun->invoice_run_status_id === INVOICE_RUN_STATUS_COMMITTED)
 			{
 				$oInvoiceRun->deliver();
 			}
@@ -70,11 +68,7 @@ class JSON_Handler_Invoice_Run extends JSON_Handler
 			{
 				throw new Exception("Cannot deliver, the invoice run ({$iInvoiceRunId}) is uncommited");
 			}
-			
-			// TODO: DEV ONLY -- Remove this, don't use transaction in this function
-			//$oDataAccess->TransactionRollback();
-			$oDataAccess->TransactionCommit();
-			
+		
 			Log::getLog()->log("Invoice run {$iInvoiceRunId} delivered successfully");
 			
 			return	array(
@@ -84,9 +78,6 @@ class JSON_Handler_Invoice_Run extends JSON_Handler
 		}
 		catch (Exception $oEx)
 		{
-			// TODO: DEV ONLY -- Remove this, don't use transaction in this function
-			$oDataAccess->TransactionRollback();
-			
 			return array(
 						"bSuccess"	=> false,
 						"sMessage"	=> ($bIsGod ? $oEx->getMessage() : ''),
