@@ -790,7 +790,7 @@ class Invoice_Run
 					break;
 				case DELIVERY_METHOD_EMAIL_SENT:
 				case DELIVERY_METHOD_EMAIL:
-					// Email delivered invoices are ignored in this stage, these are delivered using a cli app
+					// Email delivered invoices are ignored in this stage, these are delivered using a cli app which is run manually
 					//$iDeliveryMethod	= CORRESPONDENCE_DELIVERY_METHOD_EMAIL;
 					break;
 			}
@@ -824,7 +824,7 @@ class Invoice_Run
 											'email'								=> $oContact->Email,
 											'mobile'							=> $oContact->Mobile,
 											'landline'							=> $oContact->Phone,
-											'pdf_file_path'						=> $aPDFFilenames[$iInvoiceId]
+											'pdf_file_path'						=> $sPDFFilename
 										);
 			$aCorrespondenceData[]	= $aInvoice;
 			
@@ -844,16 +844,13 @@ class Invoice_Run
 			$oRun		= $oTemplate->createRun(true);
 			
 			Log::getLog()->log("Run created");
-			
-			$oRun->save();
-			
-			Log::getLog()->log("Run saved");
 		}
 		catch (Correspondence_DataValidation_Exception $oEx)
 		{
 			Log::getLog()->log("Validation errors in the correspondence data for the run: ");
-			Log::getLog()->log("No Data: ".($oEx->bNoData ? 'true' : 'false'));
-			Log::getLog()->log("Error detail: ".print_r($oEx->aReport, true));
+			$sErrorType	= GetConstantName($oEx->iError, 'correspondence_run_error');
+			Log::getLog()->log("Error Type: $oEx->iError => '{$sErrorType}'");
+			Log::getLog()->log("Error report: ".print_r($oEx->aReport, true));
 			
 			throw new Exception("Failed to create the correspondence run. ");
 		}

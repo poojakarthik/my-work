@@ -4056,7 +4056,9 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 		'TotalOutstanding'					=> "SUM(i_overdue.Balance - i_overdue.Disputed) + COALESCE(aua.adjustment_total, 0)",
 		'TotalFromOverdueInvoices'			=> "SUM(IF(config.effective_date > i_overdue.DueOn AND (i_overdue.Balance - i_overdue.Disputed + COALESCE(aua.adjustment_total, 0)) > 0, i_overdue.Total + i_overdue.Tax, 0))",
 		'TotalFromEligibleOverdueInvoices'	=> "SUM(IF(config.effective_date > i_overdue.DueOn AND (i_overdue.Balance - i_overdue.Disputed + COALESCE(aua.adjustment_total, 0)) > 0 AND i_overdue.CreatedOn <= i_latepayment.CreatedOn, i_overdue.Total + i_overdue.Tax, 0))",
-		'minBalanceToPursue'				=> "pt.minimum_balance_to_pursue"
+		'minBalanceToPursue'				=> "pt.minimum_balance_to_pursue",
+		'Mobile'							=> "c.Mobile",
+		'Landline'							=> "c.Phone"
 	);
 
 	$strTables	= "

@@ -62,6 +62,8 @@ class Cli_App_LateNoticeRun extends Cli
 
 			$sendEmail = FALSE;
 
+			$aCorrespondenceToPost	= array();
+
 			foreach($arrNoticeTypes as $intNoticeType => $intAutomaticInvoiceAction)
 			{
 				// This query is repeated by the GenerateLatePaymentNotices function. Consider revising.
@@ -127,9 +129,21 @@ class Cli_App_LateNoticeRun extends Cli
 						}
 					}
 
+					$aCorrespondenceToPost[$intNoticeType]	= array();
+					
+					// TODO: DEV ONLY -- REMOVE ME
+					$iAccountCount	= 0;
+					
 					// We now need to email/print each of the notices that have been generated
 					foreach($mixResult['Details'] as $arrDetails)
 					{
+						// TODO: DEV ONLY -- REMOVE ME
+						$iAccountCount++;
+						if ($iAccountCount > 10)
+						{
+							break;
+						}
+						
 						$intCustGrp = $arrDetails['Account']['CustomerGroup'];
 						$strCustGroupName = $arrDetails['Account']['CustomerGroupName'];
 						$intAccountId = $arrDetails['Account']['AccountId'];
@@ -248,6 +262,30 @@ class Cli_App_LateNoticeRun extends Cli
 										}
 									}
 									
+									$this->log("Generating Corerspondence Data for account ". $intAccountId);
+									
+									// Cache the correspondence data for the notice
+									$aCorrespondence	= 	array(
+																'account_id'						=> $intAccountId,
+																'customer_group_id'					=> $intCustGrp,
+																'correspondence_delivery_method_id'	=> Correspondence_Delivery_Method::getForId(CORRESPONDENCE_DELIVERY_METHOD_POST)->system_name,
+																'account_name'						=> $arrDetails['Account']['BusinessName'],
+																'title'								=> $arrDetails['Account']['Title'],
+																'first_name'						=> $arrDetails['Account']['FirstName'],
+																'last_name'							=> $arrDetails['Account']['LastName'],
+																'address_line_1'					=> $arrDetails['Account']['AddressLine1'],
+																'address_line_2'					=> $arrDetails['Account']['AddressLine2'],
+																'suburb'							=> $arrDetails['Account']['Suburb'],
+																'postcode'							=> $arrDetails['Account']['Postcode'],
+																'state'								=> $arrDetails['Account']['State'],
+																'email'								=> $arrDetails['Account']['Email'],
+																'mobile'							=> $arrDetails['Account']['Mobile'],	// TODO: Add to the query that fills arrDetails, or use Contact orm here
+																'landline'							=> $arrDetails['Account']['Landline'],	// TODO: ... ditto
+																'pdf_file_path'						=> $targetFile
+															);
+									
+									$aCorrespondenceToPost[$intNoticeType][]	= $aCorrespondence;
+									
 									// This is the sample Post Notice -- email
 									if ($this->_bolTestRun && $arrSampleAccounts[DELIVERY_METHOD_POST][$intCustGrp] === $intAccountId)
 									{
@@ -263,8 +301,9 @@ class Cli_App_LateNoticeRun extends Cli
 										$attachment[self::EMAIL_ATTACHMENT_MIME_TYPE] = 'application/pdf';
 										$attachment[self::EMAIL_ATTACHMENT_CONTENT] = $pdfContent;
 										$attachments[] = $attachment;
-	
-										if (Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, self::EMAIL_BILLING_NOTIFICATIONS, $subject, NULL, $strContent, $attachments, TRUE))
+										
+										// TODO: DEV ONLY -- UNCOMMENT ME AND REMOVE 'false' to re-enable email send
+										if (false /*Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, self::EMAIL_BILLING_NOTIFICATIONS, $subject, NULL, $strContent, $attachments, TRUE)*/)
 										{
 											$this->log("[SAMPLE:SUCCESS]: Sample POST {$strLetterType} for {$strCustGroupName} delivered to '".self::EMAIL_BILLING_NOTIFICATIONS."'");
 										}
@@ -332,7 +371,8 @@ class Cli_App_LateNoticeRun extends Cli
 
 									if (!$arrArgs[self::SWITCH_TEST_RUN])
 									{
-										if (Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, $to, $subject, NULL, $strContent, $attachments, TRUE))
+										// TODO: DEV ONLY -- UNCOMMENT ME AND REMOVE 'false' to re-enable email send
+										if (false /*Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, $to, $subject, NULL, $strContent, $attachments, TRUE)*/)
 										{
 											$arrSummary[$strCustGroupName][$strLetterType]['emails'][] = $intAccountId;
 	
@@ -372,8 +412,9 @@ class Cli_App_LateNoticeRun extends Cli
 										$attachment[self::EMAIL_ATTACHMENT_MIME_TYPE] = 'application/pdf';
 										$attachment[self::EMAIL_ATTACHMENT_CONTENT] = $pdfContent;
 										$attachments[] = $attachment;
-	
-										if (Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, self::EMAIL_BILLING_NOTIFICATIONS, $subject, NULL, $strContent, $attachments, TRUE))
+										
+										// TODO: DEV ONLY -- UNCOMMENT ME AND REMOVE 'false' to re-enable email send
+										if (false/*Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, self::EMAIL_BILLING_NOTIFICATIONS, $subject, NULL, $strContent, $attachments, TRUE)*/)
 										{
 											$this->log("[SAMPLE:SUCCESS]: Sample EMAIL {$strLetterType} for {$strCustGroupName} delivered to '".self::EMAIL_BILLING_NOTIFICATIONS."'");
 										}
@@ -405,7 +446,11 @@ class Cli_App_LateNoticeRun extends Cli
 				}
 			}
 
-			foreach($arrSummary as $strCustGroupName => $letterTypes)
+			// TODO: DEV ONLY -- UNCOMMENT ME. Moved into the rollback stage for test mode so that it doesn't fall within the rollback
+			//$this->createCorrespondenceRuns($aCorrespondenceToPost);
+			
+			// TODO: Remove this deprecated code once it has become irrelevant
+			/*foreach($arrSummary as $strCustGroupName => $letterTypes)
 			{
 				foreach($letterTypes as $strLetterType => $details)
 				{
@@ -436,7 +481,7 @@ class Cli_App_LateNoticeRun extends Cli
 						$this->log("There were no print $strLetterType PDFs for customer group $strCustGroupName");
 					}
 				}
-			}
+			}*/
 
 			if (!$sendEmail)
 			{
@@ -537,7 +582,8 @@ class Cli_App_LateNoticeRun extends Cli
 			$body = implode("\r\n", $report);
 
 			$this->log("Sending report");
-			if (Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE_REPORT, NULL, NULL, $subject, NULL, $body, NULL, TRUE))
+			// TODO: DEV ONLY -- UNCOMMENT ME AND REMOVE 'false' to re-enable email send
+			if (false/*Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE_REPORT, NULL, NULL, $subject, NULL, $body, NULL, TRUE)*/)
 			{
 				$this->log("Report sent");
 			}
@@ -566,8 +612,66 @@ class Cli_App_LateNoticeRun extends Cli
 				return 1;
 			}
 			
+			// TODO: DEV ONLY -- REMOVE ME
+			if ($this->_bolTestRun)
+			{
+				$this->createCorrespondenceRuns($aCorrespondenceToPost);
+			}
+			
 			$this->showUsage('ERROR: ' . $exception->getMessage());
+			
 			return 1;
+		}
+	}
+	
+	private function createCorrespondenceRuns($aCorrespondenceToPost=array())
+	{
+		$this->log("Creating Correspondence Runs");
+
+		// Generate a correspondence run for each notice type and to it correspondence that is to be posted for that notice type
+		foreach ($aCorrespondenceToPost as $iNoticeType => $aCorrespondenceData)
+		{
+			$this->log("Creating Correspondence Run for document template type '{$iNoticeType}'");
+			
+			// Determine the Correspondence (System) Template name from the notice type
+			$sTemplateName	= null;
+			switch ($iNoticeType)
+			{
+				case DOCUMENT_TEMPLATE_TYPE_FRIENDLY_REMINDER:
+					$sTemplateName	= 'FRIENDLY_REMINDER';
+					break;
+				case DOCUMENT_TEMPLATE_TYPE_OVERDUE_NOTICE:
+					$sTemplateName	= 'OVERDUE_NOTICE';
+					break;
+				case DOCUMENT_TEMPLATE_TYPE_SUSPENSION_NOTICE:
+					$sTemplateName	= 'SUSPENSION_NOTICE';
+					break;
+				case DOCUMENT_TEMPLATE_TYPE_FINAL_DEMAND:
+					$sTemplateName	= 'FINAL_DEMAND';
+					break;
+			}
+			
+			$this->log("... using Correspondence Template '{$sTemplateName}'");
+			
+			try
+			{
+				// Create Correspondence Run using the pre-deterimined (System) Correspondence Template name
+				$this->log("Retrieving Template");
+				
+				$oTemplate	= Correspondence_Logic_Template::getForSystemName($sTemplateName, $aCorrespondenceData);
+				
+				$this->log("Template retrieved, creating Correspondence Run");
+				
+				$oRun	= $oTemplate->createRun(true);
+				
+				$this->log("Run created succesfully (id={$oRun->id})");
+			}
+			catch (Correspondence_DataValidation_Exception $oEx)
+			{
+				// Use the exception information to display a meaningful message
+				$sErrorType	= GetConstantName($oEx->iError, 'correspondence_run_error');
+				throw new Exception("Validation errors in the correspondence data for the run: \nError Type: $oEx->iError => '{$sErrorType}'\nError report: ".print_r($oEx->aReport, true));
+			}
 		}
 	}
 

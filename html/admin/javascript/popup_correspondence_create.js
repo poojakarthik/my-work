@@ -527,7 +527,6 @@ Object.extend(Popup_Correspondence_Create,
 	
 	CSV_ERROR_NAMES	:
 	{
-		//invalid_account_id			: 'Invalid Account Id',
 		customer_group_account_id	: 'Neither Customer Group nor Account Id provided',
 		account_name				: 'Account Name is missing',
 		first_name					: 'Contact First Name is missing',
@@ -537,9 +536,10 @@ Object.extend(Popup_Correspondence_Create,
 		postcode					: 'Postcode is missing',
 		state						: 'State missing',
 		customer_group_conflict		: "Customer Group doesn't match the Account's Customer Group",
-		email						: 'Delivery Method is POST and no email is provided',
+		email						: 'Delivery Method is EMAIL and no email is provided',
 		delivery_method_account_id	: 'Account Id and Delivery Method is missing',
-		column_count				: 'Column Count Mismatch'
+		column_count				: 'Column Count Mismatch',
+		delivery_method				: 'Delivery Method is invalid'
 	},
 	
 	CSV_ERROR_NAME_UNKNOWN	: 'Unkown Error',
