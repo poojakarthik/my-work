@@ -208,8 +208,18 @@ abstract class Correspondence_Logic_Source
 					$aErrors['delivery_method'] = 'Invalid Delivery Method selected';
 
 				//if delivery method is email: check required fields
-				if ($aData['correspondence_delivery_method_id'] == $sEmailDelivery && $aData['email']== null)//add validation of email address
-					$aErrors['email'] ='Delivery Method is Email but no email address supplied.';
+				if ($aData['correspondence_delivery_method_id'] == $sEmailDelivery)
+				{
+					if ($aData['email']== null)
+					{
+						$aErrors['email'] ='Delivery Method is Email but no email address supplied.';
+					}
+					else if (!DO_SalesValidation::isValidEmailAddress($aData['email']))
+					{
+						$aErrors['email'] ='Invalid email address supplied.';
+					}
+
+				}
 			}
 		}
 		//Validation Group D - validations that are unique to category 1 (see block comment above this method)
@@ -235,8 +245,19 @@ abstract class Correspondence_Logic_Source
 				$aErrors['delivery_method'] = 'Invalid Delivery Method selected';
 
 
-			if ($aData['correspondence_delivery_method_id'] == $sEmailDelivery && $aData['email']== null)//add email address validation
-				$aErrors['email'] ='Delivery Method is Email but no email address supplied.';
+			//if delivery method is email: check required fields
+			if ($aData['correspondence_delivery_method_id'] == $sEmailDelivery)
+			{
+				if ($aData['email']== null)
+				{
+					$aErrors['email'] ='Delivery Method is Email but no email address supplied.';
+				}
+				else if (!DO_SalesValidation::isValidEmailAddress($aData['email']))
+				{
+					$aErrors['email'] ='Invalid email address supplied.';
+				}
+
+			}
 
 		}
 
