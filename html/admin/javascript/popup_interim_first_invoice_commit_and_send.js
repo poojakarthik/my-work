@@ -60,7 +60,7 @@ var Popup_Interim_First_Invoice_Commit_And_Send	= Class.create(Reflex_Popup,
 								oCommitSection.getElement(),
 								$T.div({class: 'buttons'},
 									$T.button({class: 'icon-button'},
-										'Commit'
+										'Commit & Send'
 									).observe('click', this._doProcess.bind(this)),
 									$T.button({class: 'icon-button'},
 										'Retry'
