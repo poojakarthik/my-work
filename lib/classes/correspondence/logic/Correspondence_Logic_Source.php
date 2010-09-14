@@ -47,7 +47,8 @@ abstract class Correspondence_Logic_Source
 									'email'							=>array(),
 									'delivery_method_account_id'	=>array(),
 									'invalid account id'			=>array(),
-									'column_count'					=>array()
+									'column_count'					=>array(),
+									'delivery_method'				=>array(),
 								);
 	protected $_aNullableFields = array (
 											'account_id',
@@ -58,6 +59,8 @@ abstract class Correspondence_Logic_Source
 											'landline',
 											'pdf_file_path'
 										);
+	protected $_aValidCustomerGroups;
+	protected $_aValidDeliveryMethods;
 
 	public function __construct( $iSourceType= null, $iId = null)
 	{
@@ -105,6 +108,7 @@ abstract class Correspondence_Logic_Source
 
 		$aData = $aRecord['standard_fields'];
 		$aErrors = array();
+
 
 		$sEmailDelivery = Correspondence_Delivery_Method::getForId(CORRESPONDENCE_DELIVERY_METHOD_EMAIL)->system_name;
 		$sPostDelivery = Correspondence_Delivery_Method::getForId(CORRESPONDENCE_DELIVERY_METHOD_POST)->system_name;
@@ -199,6 +203,9 @@ abstract class Correspondence_Logic_Source
 					}
 				}
 
+				//check that a valid delivery method was selected
+				if ($aData['correspondence_delivery_method_id'] != $sEmailDelivery && $aData['correspondence_delivery_method_id'] != $sPostDelivery)
+					$aErrors['delivery_method'] = 'Invalid Delivery Method selected';
 
 				//if delivery method is email: check required fields
 				if ($aData['correspondence_delivery_method_id'] == $sEmailDelivery && $aData['email']== null)//add validation of email address
@@ -209,12 +216,25 @@ abstract class Correspondence_Logic_Source
 		else //account number was not supplied
 		{
 			//customer group
+			$this->_aValidCustomerGroups = $this->_aValidCustomerGroups==null?array_keys(Customer_Group::getAll()):$this->_aValidCustomerGroups;
 			if ($aData['customer_group_id']==null)
+			{
 				$aErrors['customer_group_account_id'] = 'No Account ID and no Customer Group ID provided.';
+			}
+			else if (!in_array($aData['customer_group_id'], $this->_aValidCustomerGroups))
+			{
+				$aErrors['customer_group_account_id'] = 'Selected Customer Group does not exist.';
+			}
 
 			//check that delivery method is not null
 			if ($aData['correspondence_delivery_method_id'] == null)
 				$aErrors['delivery_method_account_id'] = 'No Account ID and no Delivery Method provided.';
+
+			//check that a valid delivery method was selected
+			if ($aData['correspondence_delivery_method_id'] != $sEmailDelivery && $aData['correspondence_delivery_method_id'] != $sPostDelivery)
+				$aErrors['delivery_method'] = 'Invalid Delivery Method selected';
+
+
 			if ($aData['correspondence_delivery_method_id'] == $sEmailDelivery && $aData['email']== null)//add email address validation
 				$aErrors['email'] ='Delivery Method is Email but no email address supplied.';
 
