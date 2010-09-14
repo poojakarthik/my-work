@@ -144,6 +144,17 @@ class Cli_App_Billing extends Cli
 					$objInvoiceRun->commit();
 					break;
 
+				case 'DELIVER':
+					if (!$this->_arrArgs[self::SWITCH_INVOICE_RUN])
+					{
+						throw new Exception("You must supply an Invoice Run Id when running DELIVER!");
+					}
+					
+					// Deliver the Invoice Run
+					$objInvoiceRun	= new Invoice_Run(Array('Id' => $this->_arrArgs[self::SWITCH_INVOICE_RUN]), TRUE);
+					$objInvoiceRun->deliver();
+					break;
+
 				case 'REGENERATE':
 					if (!$this->_arrArgs[self::SWITCH_INVOICE_RUN])
 					{
@@ -614,8 +625,8 @@ class Cli_App_Billing extends Cli
 			self::SWITCH_MODE => array(
 				self::ARG_LABEL			=> "MODE",
 				self::ARG_REQUIRED		=> TRUE,
-				self::ARG_DESCRIPTION	=> "Invoice Run operation to perform [GENERATE|COMMIT|REVOKE|REVOKE_ALL_INTERIM|EXPORT|REPORTS|REGENERATE|ARCHIVE|SAMPLE_ACCOUNT|REDISTRIBUTE]",
-				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("GENERATE","COMMIT","REVOKE","REVOKE_ALL_INTERIM","EXPORT","REPORTS","REGENERATE","ARCHIVE","SAMPLE_ACCOUNT","REDISTRIBUTE"))'
+				self::ARG_DESCRIPTION	=> "Invoice Run operation to perform [GENERATE|COMMIT|REVOKE|REVOKE_ALL_INTERIM|EXPORT|REPORTS|REGENERATE|ARCHIVE|SAMPLE_ACCOUNT|REDISTRIBUTE|DELIVER]",
+				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("GENERATE","COMMIT","REVOKE","REVOKE_ALL_INTERIM","EXPORT","REPORTS","REGENERATE","ARCHIVE","SAMPLE_ACCOUNT","REDISTRIBUTE","DELIVER"))'
 			),
 
 			self::SWITCH_INVOICE_RUN	=> array(
