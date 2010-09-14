@@ -178,7 +178,7 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 		this._create();
 	},
 	
-	_create	: function(bForceIfNoData)
+	_create	: function()
 	{
 		switch (this._oSourceType.system_name)
 		{
@@ -229,7 +229,7 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 				
 				// Send request
 				this._showLoading();
-				fnSQL(this._iTemplateId, sDeliveryDateTime, bProcessNow, !!bForceIfNoData);
+				fnSQL(this._iTemplateId, sDeliveryDateTime, bProcessNow);
 				break;
 		}
 	},
@@ -440,7 +440,7 @@ Object.extend(Popup_Correspondence_Create,
 					{
 						mErrorName	= Popup_Correspondence_Create.CSV_ERROR_NAME_UNKNOWN + ' (' + sErrorType + ')';
 					}
-					mErrorText	= iCount + ' lines';
+					mErrorText	= iCount + ' line' + (iCount != 1 ? 's' : '');
 				}
 			}
 			

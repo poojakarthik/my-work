@@ -60,7 +60,7 @@ class Correspondence extends ORM_Cached
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 
-	public static function getLedgerInformation($bCountOnly=false, $iLimit=0, $iOffset=0, $aFilter=null, $aSort=null, $bDelivered=false)
+	public static function getLedgerInformation($bCountOnly=false, $iLimit=null, $iOffset=0, $aFilter=null, $aSort=null, $bDelivered=false)
 	{
 		$sFrom			= "	correspondence c
 							JOIN CustomerGroup cg ON cg.id = c.customer_group_id
@@ -130,6 +130,8 @@ class Correspondence extends ORM_Cached
 		}
 		else
 		{
+			//throw new Exception($oStmt->_strQuery);
+			
 			// Results required
 			$aResults	= array();
 			while ($aRow = $oStmt->Fetch())

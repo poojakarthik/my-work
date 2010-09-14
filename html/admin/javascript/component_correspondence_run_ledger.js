@@ -36,6 +36,11 @@ var Component_Correspondence_Run_Ledger = Class.create(
 		// Create the page HTML
 		var sButtonPathBase	= '../admin/img/template/resultset_';
 		var oSection		= new Section(true);
+		
+		this._oContentDiv 	= 	$T.div({class: 'correspondence-run-ledger'},
+									oSection.getElement()
+								);
+		
 		oSection.setTitleContent(
 			$T.span(
 				$T.span('Correspondence Runs'),
@@ -100,10 +105,6 @@ var Component_Correspondence_Run_Ledger = Class.create(
 				)
 			)
 		);
-		
-		this._oContentDiv 	= 	$T.div({class: 'correspondence-run-ledger'},
-									oSection.getElement()
-								);
 		
 		// Bind events to the pagination buttons
 		var aBottomPageButtons 	= this._oContentDiv.select('div.section-footer button');
@@ -363,7 +364,7 @@ var Component_Correspondence_Run_Ledger = Class.create(
 		oDeleteImage.observe('click', this._clearFilterValue.bind(this, sField));
 		
 		var oFiterImage	= $T.img({class: 'header-filter', src: Component_Correspondence_Run_Ledger.FILTER_IMAGE_SOURCE, alt: 'Filter by ' + sLabel, title: 'Filter by ' + sLabel});
-		this._oFilter.registerFilterIcon(sField, oFiterImage, sLabel, this._oContainerDiv, 0, 22);
+		this._oFilter.registerFilterIcon(sField, oFiterImage, sLabel, this._oContentDiv, 0, 10);
 		
 		return	$T.th({class: 'filter-heading'},
 					$T.span({class: 'filter-' + sField},

@@ -33,7 +33,7 @@ class JSON_Handler_Correspondence extends JSON_Handler
 						);
 			}
 			
-			$iLimit		= is_null($iLimit) ? 0 : $iLimit;
+			$iLimit		= is_null($iLimit) ? null : $iLimit;
 			$iOffset	= is_null($iOffset) ? 0 : $iOffset;
 			$aItems		= Correspondence::getLedgerInformation(false, $iLimit, $iOffset, $aFilter, $aSort);
 			$i			= 0;
@@ -66,15 +66,18 @@ class JSON_Handler_Correspondence extends JSON_Handler
 		{
 			return 	array(
 						'Success'	=> false,
-						'sMessage'	=> $oException->getMessage()
+						'sMessage'	=> $oException->getMessage(),
+						'Message'	=> $oException->getMessage()
 					);
 		}
 		catch (Exception $e)
 		{
 			$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+			$sMessage	= $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
 			return 	array(
 						'Success'	=> false,
-						'sMessage'	=> $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'
+						'sMessage'	=> $sMessage,
+						'Message'	=> $sMessage
 					);
 		}
 	}

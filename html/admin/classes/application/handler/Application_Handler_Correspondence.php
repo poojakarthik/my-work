@@ -182,9 +182,11 @@ class Application_Handler_Correspondence extends Application_Handler
 			$oFile->setColumns($aColumns);
 
 			// BUild list of lines for the file
-			$aLines	= array();
-			foreach ($aCorrespondence as $oCorrespondence)
+			$aLines			= array();
+			$aAllowedItems	= explode(',', $_GET['items']);
+			foreach ($aAllowedItems as $iCorrespondenceId)
 			{
+				$oCorrespondence	= new Correspondence_Logic(Correspondence::getForId($iCorrespondenceId));
 				$sDeliveryMethod	= Correspondence_Delivery_Method::getForId($oCorrespondence->correspondence_delivery_method_id)->name;
 				$aLine				=	array
 										(

@@ -6047,6 +6047,14 @@ table.correspondence-csv-exception-summary > tbody > tr > th
 	width	: 100%;
 }
 
+.popup-correspondence-create .template-section .section-content
+{
+	width			: auto;
+	padding-top		: 0.35em;
+	padding-left	: 0.5em;
+	padding-right	: 0.5em;
+}
+
 .popup-correspondence-create .no-template
 {
 	font-style			: italic;
@@ -6397,6 +6405,12 @@ div.datetime-time
 .component-correspondence-run-details > div.section-content > table > tbody > tr > th
 {
 	width	: 20%; 
+}
+
+.correspondence-ledger-for-run,
+.correspondence-run-ledger
+{
+	position	: relative;
 }
 
 /***************** END - Correspondence Ledger Popup(s) - END *****************/

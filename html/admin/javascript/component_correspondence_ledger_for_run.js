@@ -523,7 +523,7 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 		oDeleteImage.observe('click', this._clearFilterValue.bind(this, sField));
 		
 		var oFiterImage	= $T.img({class: 'header-filter', src: Component_Correspondence_Ledger_For_Run.FILTER_IMAGE_SOURCE, alt: 'Filter by ' + sLabel, title: 'Filter by ' + sLabel});
-		this._oFilter.registerFilterIcon(sField, oFiterImage, sLabel, this._oContentDiv, 0, 22);
+		this._oFilter.registerFilterIcon(sField, oFiterImage, sLabel, this._oContentDiv, 0, 10);
 		
 		return	$T.th({class: 'filter-heading'},
 					$T.span({class: 'filter-' + sField},
@@ -611,9 +611,32 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 		new Popup_Correspondence_Ledger_Columns(this._hColumnVisibility, this._refreshWithNewColumns.bind(this));
 	},
 	
-	_downloadCSV	: function()
+	_downloadCSV	: function(oEvent, iRecordCount, hRecords)
 	{
-		window.location	= 'reflex.php/Correspondence/ExportRunToCSV/' + this._iCorrespondenceRunId;
+		if (!iRecordCount)
+		{
+			// Step 1: Get record count
+			this.oDataSet.getRecordCount(this._downloadCSV.bind(this, null));
+		}
+		else if (!hRecords)
+		{
+			// Step 2: Get all records
+			this.oDataSet.getRecords(this._downloadCSV.bind(this, null), iRecordCount, 0);
+		}
+		else
+		{
+			// Step 3: Send to Correspondence app handler to generate the csv content and allow download
+			var aIds	= [];
+			for (var i in hRecords)
+			{
+				if (typeof hRecords[i].id != 'undefined')
+				{
+					aIds.push(hRecords[i].id);
+				}
+			}
+			
+			window.location	= 'reflex.php/Correspondence/ExportRunToCSV/' + this._iCorrespondenceRunId + '?items=' + aIds.join();
+		}
 	},
 	
 	_refreshWithNewColumns	: function(hColumns)
