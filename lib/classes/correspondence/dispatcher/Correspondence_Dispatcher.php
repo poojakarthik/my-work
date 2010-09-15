@@ -60,26 +60,32 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 	public static function sendWaitingRuns()
 	{
 		//retrieve the set of correspondence runs that should be sent
+		Log::getLog()->log('Retrieving Correspondence Runs');
 		$aRuns = Correspondence_Logic_Run::getWaitingRuns();
 		if (count($aRuns)>0)
 		{
 			$oBatch = new Correspondence_Run_Batch();
 			$oBatch->batch_datetime = Data_Source_Time::currentTimestamp();
 			$oBatch->save();
+
 			foreach ($aRuns as $oRun)
 			{
 				if (!$oRun->getDataValidationException())
 				{
+					Log::getLog()->log('Dispatching Run '.$oRun->id);
 					$oDispatcher = $oRun->getCarrierModule();
 					$oDispatcher->sendRun($oRun, $oBatch->id);
 					$oRun->save();
 					$oRun->sendDispatchEmail();
 				}
 			}
-
+			Log::getLog()->log('Sending Batch Delivery Email');
 			//send the batch report email
 			self::sendBatchDeliveryEmail($oBatch, $aRuns);
+			Log::getLog()->log('Finished Batch '.$oBatch->id);
 		}
+		$sMessage = count($aRuns)==0?"There were no runs to process":(count($aRuns)==1?"Processed ".count($aRuns)." run":"Processed ".count($aRuns)." runs");
+		Log::getLog()->log($sMessage);
 
 	}
 
