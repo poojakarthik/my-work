@@ -6,7 +6,7 @@ class Correspondence_Logic_Source_Sql extends Correspondence_Logic_Source
 
 	public function __construct($mDefinition)
 	{
-		parent::__construct($mDefinition->correspondence_source_id);
+		parent::__construct(null, $mDefinition->correspondence_source_id);
 		$this->_oDO = $mDefinition;
 	}
 
@@ -68,7 +68,7 @@ class Correspondence_Logic_Source_Sql extends Correspondence_Logic_Source
 
 	public function __get($sField)
 	{
-		return $this->_oDO->$sField;
+		return $this->_oDO->$sField!=null?$this->_oDO->$sField:parent::__get($sField);
 	}
 
 

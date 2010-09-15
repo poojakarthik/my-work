@@ -33,6 +33,7 @@ class Correspondence_Logic_Template
 		else
 		{
 			$this->_oDO = $mDefinition;
+
 		}
 
 		if ($this->correspondence_source_id !=null)
@@ -179,7 +180,7 @@ class Correspondence_Logic_Template
 
 	public function getSourceType()
 	{
-
+		return $this->_oCorrespondenceSource == null?Correspondence_Source::getForId($this->correspondence_source_id)->correspondence_source_type_id:$this->_oCorrespondenceSource->correspondence_source_type_id;
 	}
 
 	public function importSource()

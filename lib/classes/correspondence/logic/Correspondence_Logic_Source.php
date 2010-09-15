@@ -64,7 +64,7 @@ abstract class Correspondence_Logic_Source
 
 	public function __construct( $iSourceType= null, $iId = null)
 	{
-		$this->_oDO = $iId ==null?new Correspondence_Source(array('correspondence_source_type_id'=>$iSourceType)):Correspondence_Source::getForId($iId);
+		$this->_oDataObject = $iId ==null?new Correspondence_Source(array('correspondence_source_type_id'=>$iSourceType)):Correspondence_Source::getForId($iId);
 		$this->_errorReport = new File_Exporter_CSV();
 		$this->_errorReport->setDelimiter(Correspondence_Dispatcher_YellowBillingCSV::FIELD_DELIMITER);
 		$this->_errorReport->setQuote(Correspondence_Dispatcher_YellowBillingCSV::FIELD_ENCAPSULATOR);
@@ -82,8 +82,8 @@ abstract class Correspondence_Logic_Source
 
 	public function save()
 	{
-		if (isset($this->_oDO))
-			$this->_oDO->save();
+		if (isset($this->_oDataObject))
+			$this->_oDataObject->save();
 	}
 
 	/*
@@ -133,9 +133,9 @@ abstract class Correspondence_Logic_Source
 				$aErrors['last_name'] ='Mandatory field Contact Last Name was not provided.';
 			//regardless of delivery method, the postal address must be supplied, this is not explicitly stated in the spec, but must be concluded from REQ03
 			if ($aData['address_line_1']== null)
-				$aErrors['street_address'] ='Mandatory field Street Address was not provided.';
+				$aErrors['street_address'] ='Mandatory field Addressline 1 was not provided.';
 			if ($aData['suburb']== null)
-				$aErrors['suburub'] ='Mandatory field Suburb was not provided.';
+				$aErrors['suburb'] ='Mandatory field Suburb was not provided.';
 			if ($aData['postcode']== null)
 				$aErrors['postcode'] ='Mandatory field Postcode was notprovided.';
 			if ($aData['state']== null)
@@ -256,12 +256,8 @@ abstract class Correspondence_Logic_Source
 				{
 					$aErrors['email'] ='Invalid email address supplied.';
 				}
-
 			}
-
 		}
-
-
 
 		$aRecord['standard_fields'] = $aData;
 
@@ -402,6 +398,11 @@ abstract class Correspondence_Logic_Source
 	public function import()
 	{
 		return null;
+	}
+
+	public function  __get($sField)
+	{
+		return $this->_oDataObject->$sField;
 	}
 
 

@@ -315,7 +315,7 @@ class Correspondence_Logic_Run
 		$sHtml = $body->saveHTML();
 		$oEmail->setBodyHTML($sHtml);
 		$oEmployee = Employee::getForId($this->created_employee_id);
-		$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
+		//$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
 		//$oEmail->addCc($email, $name='');
 		//$oEmail->addBcc($email);
 		$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
@@ -346,15 +346,15 @@ class Correspondence_Logic_Run
 
 		$oEmail->setBodyHTML($sHtml);
 		$oEmployee = Employee::getForId($this->created_employee_id);
-		$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
+		//$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
 		$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
-		//$oEmail->send();
+		$oEmail->send();
 	}
 
 	public function generateReportEmailTableRow(&$table, $key, $mValue)
 	{
-		$strTHStyle			= "text-align: right; color: #eee; background-color: #333; width: 15em; padding-right:10px;";
-		$strTDStyle			= "text-align: left; color: #333; background-color: #eee; padding-left:10px;";
+		$strTHStyle			= "text-align: right; vertical-align: top;color: #eee; background-color: #333; width: 15em; padding-right:10px;";
+		$strTDStyle			= "text-align: left;vertical-align: top; color: #333; background-color: #eee; padding-left:10px;";
 		$tr =& $table->tr();
 		$tr->td(0)->setValue($key);
 		if (is_array($mValue))
@@ -370,7 +370,7 @@ class Correspondence_Logic_Run
 		}
 		else
 		{
-			$tr->td(1)->setValue($value);
+			$tr->td(1)->setValue($mValue);
 		}
 
 		$tr->td(0)->style = $strTHStyle;
@@ -380,8 +380,8 @@ class Correspondence_Logic_Run
 
 	public function generateReportEmailBody($sHeader, $sMessage)
 	{
-		$strTHStyle			= "text-align: right; color: #eee; background-color: #333; width: 15em; padding-right:10px;";
-		$strTDStyle			= "text-align: left; color: #333; background-color: #eee; padding-left:10px;";
+		$strTHStyle			= "text-align: right; vertical-align: top;color: #eee; background-color: #333; width: 15em; padding-right:10px;";
+		$strTDStyle			= "text-align: left;vertical-align: top; color: #333; background-color: #eee; padding-left:10px;";
 		$strTDAutoStyle		= "";
 		$strTDWidthStyle	= "min-width: 15em; max-width: 15em;";
 		$strTableStyle		= "font-family: Calibri, Arial, sans-serif; width:99%; border: .1em solid #333; border-spacing: 0; border-collapse: collapse;";
@@ -412,7 +412,7 @@ class Correspondence_Logic_Run
 		$tr->td(0)->setValue('Data Source');
 
 		$sSourceType = Correspondence_Source_Type::getForId($this->getSourceType())->name;
-		$sSourceFile = $this->getSourceFileName()==null?null:" (file name: ".$this->getSourceFileName().")";
+		$sSourceFile = $this->getSourceFileName()==null?null:" (".$this->getSourceFileName().")";
 
 		$tr->td(1)->setValue($sSourceType.$sSourceFile);
 		$tr->td(0)->style = $strTHStyle;
