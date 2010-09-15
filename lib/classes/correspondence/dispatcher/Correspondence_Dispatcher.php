@@ -50,7 +50,7 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 			$this->_oTARFileExport->Carrier		= $this->getCarrier();
 			$this->_oTARFileExport->ExportedOn	= $this->_oFileExport->ExportedOn;
 			$this->_oTARFileExport->Status		= FILE_DELIVERED;	// FIXME: Is this correct?
-			$this->_oTARFileExport->FileType	= 10036;
+			$this->_oTARFileExport->FileType	= RESOURCE_TYPE_FILE_EXPORT_CORRESPONDENCE_YELLOWBILLINGTAR;
 			$this->_oTARFileExport->SHA1		= sha1_file($this->_oTARFileExport->Location);
 			$this->_oTARFileExport->save();
 		}
@@ -68,12 +68,123 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 			$oBatch->save();
 			foreach ($aRuns as $oRun)
 			{
-				$oDispatcher = $oRun->getCarrierModule();
-				$oDispatcher->sendRun($oRun, $oBatch->id);
-				$oRun->save();
+				if (!$oRun->getDataValidationException())
+				{
+					$oDispatcher = $oRun->getCarrierModule();
+					$oDispatcher->sendRun($oRun, $oBatch->id);
+					$oRun->save();
+					$oRun->sendDispatchEmail();
+				}
 			}
+
+			//send the batch report email
+			self::sendBatchDeliveryEmail($oBatch, $aRuns);
 		}
 
+	}
+
+
+	public static  function sendBatchDeliveryEmail($oBatch, $aRuns)
+	{
+		$oEmail = new Email_Notification(EMAIL_NOTIFICATION_CORRESPONDENCE);
+		$oEmail->setSubject("Correspondence Delivery Summary for Batch ID  '".$oBatch->id);
+
+		$strTHStyle			= "text-align:left; color: #eee; background-color: #333;  width: 15em; padding-left:10px;";
+		$strTDStyle			= "text-align:left; color: #333; background-color: #eee; padding-left:20px;";
+		$strTDStyleTwo			= "text-align:left; color: #333; background-color: #FFFFFF; padding-left:20px;";
+		$strTDAutoStyle		= "";
+		$strTDWidthStyle	= "min-width: 15em; max-width: 15em;";
+		$strTableStyle		= "font-family: Calibri, Arial, sans-serif; width:99%; border: .1em solid #333; border-spacing: 0; border-collapse: collapse;";
+		$sStyle				= "font-family: Calibri, Arial, sans-serif;";
+		$body = new Flex_Dom_Document();
+		$h3 = $body->html->body->h3();
+		$h3->setValue ("Correspondence Delivery Summary for Batch ID ".$oBatch->id);
+		$h3->style = $sStyle;
+		//$body->html->body->h3->style = $sStyle;
+		$h4 = $body->html->body->h4();
+		$h4->setValue ("Batch ID ".$oBatch->id." was dispatched on ".date('d/m/Y', strtotime($oBatch->batch_date_time))." - ".date('h:i:s', strtotime($oBatch->batch_date_time))." Run details:");
+		$h4->style = $sStyle;
+
+		$table =& $body->html->body->table();
+		$table->style = $strTableStyle;
+
+		$table->tr(0)->th(0)->setValue('Processed');
+		$table->tr(0)->th(0)->style = $strTHStyle;
+
+		$table->tr(0)->th(1)->setValue('Source');
+		$table->tr(0)->th(1)->style =$strTHStyle;
+
+		$table->tr(0)->th(2)->setValue('Template');
+		$table->tr(0)->th(2)->style = $strTHStyle;
+
+		$table->tr(0)->th(3)->setValue('Created By');
+		$table->tr(0)->th(3)->style = $strTHStyle;
+
+		$table->tr(0)->th(4)->setValue('Items');
+		$table->tr(0)->th(4)->style = $strTHStyle;
+
+		$table->tr(0)->th(5)->setValue('Data File');
+		$table->tr(0)->th(5)->style = $strTHStyle;
+
+		$table->tr(0)->th(6)->setValue('Status');
+		$table->tr(0)->th(6)->style = $strTHStyle;
+
+
+		$sStyle = $strTDStyle;
+		foreach ($aRuns as $oRun)
+		{
+
+			$tr =& $table->tr();
+			$tr->td(0)->setValue(date('d/m/Y', strtotime($oRun->processed_datetime))." - ".date('h:i:s', strtotime($oRun->processed_datetime)));
+			$tr->td(0)->style = $sStyle;
+
+			$sSourceType = Correspondence_Source_Type::getForId($oRun->getSourceType())->name;
+			$sSourceFile = $oRun->getSourceFileName()==null?null:" (file name: ".$oRun->getSourceFileName().")";
+			$tr->td(1)->setValue($sSourceType.$sSourceFile);
+			$tr->td(1)->style = $sStyle;
+
+			$tr->td(2)->setValue($oRun->getTemplateName()."(Letter Code ".$oRun->getCorrespondenceCode().")");
+			$tr->td(2)->style = $sStyle;
+
+			$tr->td(3)->setValue($oRun->getCreatedEmployeeName());
+			$tr->td(3)->style = $sStyle;
+
+			$aCount = $oRun->getCorrespondenceCount();
+			$td = $tr->td(4);
+			$td->div(0)->setValue("Post:".$aCount['post']);
+			$td->div(1)->setValue("Email:".$aCount['email']);
+			$td->div(2)->setValue("Total: ".$aCount['total']);
+			$tr->td(4)->style = $sStyle;
+
+			$tr->td(5)->setValue($oRun->getExportFileName());
+			$tr->td(5)->style = $sStyle;
+
+			$sStatus = $oRun->getDataValidationException()?"Processing Failed":"Dispatched";
+			$oException = $oRun->getDataValidationException();
+			$sFailureReason = $oException==null?null:$oException->iError==CORRESPONDENCE_RUN_ERROR_NO_DATA?"(No Data)":$oException->iError==CORRESPONDENCE_RUN_ERROR_MALFORMED_INPUT?"(Invalid Data)":$oException->iError==CORRESPONDENCE_RUN_ERROR_SQL_SYNTAX?"(Invalid SQL)":null;
+			$tr->td(6)->setValue($sStatus." ".$sFailureReason);
+			$tr->td(6)->style = $sStyle;
+			if ($oException!=null && $oException->sFileName!=null)
+			{
+				$sFile = file_get_contents($oException->sFileNam);
+				$sFileName = substr($oException->sFileNam, strrpos($oException->sFileNam , "/" )+1);
+				$oEmail->addAttachment($sFile, $sFileName, 'text/csv');
+			}
+			$sStyle = $sStyle==$strTDStyle?$strTDStyleTwo:$strTDStyle;
+		}
+
+
+		$sHtml = $body->saveHTML();
+		/*//For query debug purpose
+		  $myFile = "c:/wamp/www/email text.html";
+			$fh = fopen($myFile, 'w') or die("can't open file");
+			fwrite($fh, $sHtml);
+			fclose($fh);*/
+
+		$oEmail->setBodyHTML($sHtml);
+		$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
+		$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
+		$oEmail->send();
 	}
 
 
