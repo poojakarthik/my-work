@@ -775,10 +775,10 @@ class Invoice_Run
 			$iCreatedOn = strtotime("-1 month", strtotime($oInvoice->CreatedOn));
 			$iYear 		= (int)date("Y", $iCreatedOn);
 			$iMonth 	= (int)date("m", $iCreatedOn);
-			GetPDFContent($oInvoice->Account, $iYear, $iMonth, $iId, $this->Id);
+			$sContent	= GetPDFContent($oInvoice->Account, $iYear, $iMonth, $iId, $this->Id);
 			$aPDFFilenames[$iId]	= $sInvoiceRunPDFBasePath.GetPdfFilename($oInvoice->Account, $iYear, $iMonth, $oInvoice->Id, $this->Id);
 			
-			Log::getLog()->log("Generated PDF '".basename($aPDFFilenames[$iId])."' for invoice {$iId}");
+			Log::getLog()->log("Generated PDF '".basename($aPDFFilenames[$iId])."' for invoice {$iId}, length=".strlen($sContent));
 		}
 
 		Log::getLog()->log("Generate correspondence data");
