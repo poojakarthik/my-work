@@ -203,6 +203,7 @@ class Correspondence_Logic_Run
 			{
 				try
 				{
+					Log::getLog()->log('Processing Run'.$oRun->id);
 					$oRun->process();
 					$oRun->save();
 
@@ -211,6 +212,7 @@ class Correspondence_Logic_Run
 				{
 					if (get_class($e)!= 'Correspondence_DataValidation_Exception')//datavalidation exceptions have already been dealt with at this stage.
 						throw $e;
+					Log::getLog()->log('Run '.$oRun->id.' failed to process due to '.$e->getFailureReason());
 				}
 			}
 
