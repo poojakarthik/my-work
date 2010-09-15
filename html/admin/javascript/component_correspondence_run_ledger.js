@@ -18,7 +18,7 @@ var Component_Correspondence_Run_Ledger = Class.create(
 		this._oFilter	=	new Filter(
 								this.oDataSet, 
 								this.oPagination, 
-								this._filterFieldUpdated.bind(this) 	// On field value change
+								this._showLoading.bind(this, true) 	// On field value change
 							);
 		
 		// Add all filter fields
@@ -31,7 +31,7 @@ var Component_Correspondence_Run_Ledger = Class.create(
 		}
 		
 		// Create sort object
-		this._oSort	= new Sort(this.oDataSet, this.oPagination, true);
+		this._oSort	= new Sort(this.oDataSet, this.oPagination, true, this._showLoading.bind(this, true));
 		
 		// Create the page HTML
 		var sButtonPathBase	= '../admin/img/template/resultset_';
@@ -143,7 +143,11 @@ var Component_Correspondence_Run_Ledger = Class.create(
 	_showLoading	: function(bShow)
 	{
 		var oLoading	= this._oContentDiv.select('span.loading').first();
-		if (bShow)
+		if (!oLoading)
+		{
+			return;
+		}
+		else if (bShow)
 		{
 			oLoading.show();
 		}
@@ -417,11 +421,6 @@ var Component_Correspondence_Run_Ledger = Class.create(
 	_viewDetailsPopup	: function(oRun)
 	{
 		new Popup_Correspondence_Run(oRun.id);
-	},
-	
-	_filterFieldUpdated	: function(sField)
-	{
-		
 	},
 	
 	_formatFilterValueForDisplay	: function(sField, mValue)

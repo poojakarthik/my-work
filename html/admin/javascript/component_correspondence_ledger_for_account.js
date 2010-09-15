@@ -7,6 +7,7 @@ var Component_Correspondence_Ledger_For_Account = Class.create(
 		this._oContainerDiv				= oContainerDiv;
 		this._bFirstLoadComplete		= false;
 		this._hControlOnChangeCallbacks	= {};
+		this._iAccountId				= iAccountId;
 		
 		// Create DataSet & pagination object
 		this.oDataSet	= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_NO_CACHING, Component_Correspondence_Ledger_For_Account.DATA_SET_DEFINITION);
@@ -17,7 +18,7 @@ var Component_Correspondence_Ledger_For_Account = Class.create(
 		this._oFilter	=	new Filter(
 								this.oDataSet, 
 								this.oPagination, 
-								this._filterFieldUpdated.bind(this) // On field value change
+								this._showLoading.bind(this, true) // On field value change
 							);
 		
 		// Add all filter fields
@@ -29,10 +30,8 @@ var Component_Correspondence_Ledger_For_Account = Class.create(
 			}
 		}
 		
-		this._oFilter.setFilterValue('account_id', iAccountId);
-		
 		// Create sort object
-		this._oSort	= new Sort(this.oDataSet, this.oPagination, true);
+		this._oSort	= new Sort(this.oDataSet, this.oPagination, true, this._showLoading.bind(this, true));
 		
 		// Create the page HTML
 		var sButtonPathBase	= '../admin/img/template/resultset_';
@@ -130,6 +129,8 @@ var Component_Correspondence_Ledger_For_Account = Class.create(
 		this._oLoadingPopup	= new Reflex_Popup.Loading();
 		this._oLoadingPopup.display();
 		
+		this._oFilter.setFilterValue('account_id', this._iAccountId);
+		
 		// Send the initial sorting parameters to dataset ajax 
 		this._oSort.refreshData(true);
 		this._oFilter.refreshData(true);
@@ -139,7 +140,11 @@ var Component_Correspondence_Ledger_For_Account = Class.create(
 	_showLoading	: function(bShow)
 	{
 		var oLoading	= this._oContentDiv.select('span.loading').first();
-		if (bShow)
+		if (!oLoading)
+		{
+			return;
+		}
+		else if (bShow)
 		{
 			oLoading.show();
 		}
@@ -438,36 +443,6 @@ var Component_Correspondence_Ledger_For_Account = Class.create(
 	_viewRunDetailsPopup	: function(oItem)
 	{
 		new Popup_Correspondence_Run(oItem.correspondence_run_id);
-	},
-	
-	_filterFieldUpdated	: function(sField)
-	{
-		// Make sure the from date has 00:00 (start of day) for minutes and the to date has 23:59 (end of day)
-		// so that both days are included in the search
-		if (sField.match(/due_datetime/))
-		{
-			var oValue	= this._oFilter.getFilterValue(sField);
-			if (oValue)
-			{
-				if (oValue.mFrom)
-				{
-					oValue.mFrom	= 	oValue.mFrom.replace(
-											Component_Correspondence_Ledger_For_Account.RANGE_FILTER_DATE_REGEX, 
-											'$1 ' + Component_Correspondence_Ledger_For_Account.RANGE_FILTER_FROM_MINUTES
-										);
-				}
-				
-				if (oValue.mTo)
-				{
-					oValue.mTo	= 	oValue.mTo.replace(
-										Component_Correspondence_Ledger_For_Account.RANGE_FILTER_DATE_REGEX, 
-										'$1 ' + Component_Correspondence_Ledger_For_Account.RANGE_FILTER_TO_MINUTES
-									);
-				}
-				
-				this._oFilter.setFilterValue(sField, oValue.mFrom, oValue.mTo, null, true);
-			}
-		}
 	},
 	
 	_formatFilterValueForDisplay	: function(sField, mValue)
