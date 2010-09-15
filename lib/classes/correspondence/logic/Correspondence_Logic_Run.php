@@ -324,7 +324,8 @@ class Correspondence_Logic_Run
 		$sHtml = $body->saveHTML();
 		$oEmail->setBodyHTML($sHtml);
 		$oEmployee = Employee::getForId($this->created_employee_id);
-		//$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
+		if ($oEmployee!= null)
+			$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
 		//$oEmail->addCc($email, $name='');
 		//$oEmail->addBcc($email);
 		$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
@@ -363,7 +364,8 @@ class Correspondence_Logic_Run
 
 		$oEmail->setBodyHTML($sHtml);
 		$oEmployee = Employee::getForId($this->created_employee_id);
-		//$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
+		if ($oEmployee!= null)
+			$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
 		$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
 		$oEmail->send();
 	}
