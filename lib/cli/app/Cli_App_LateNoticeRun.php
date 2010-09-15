@@ -131,19 +131,9 @@ class Cli_App_LateNoticeRun extends Cli
 
 					$aCorrespondenceToPost[$intNoticeType]	= array();
 					
-					// TODO: DEV ONLY -- REMOVE ME
-					$iAccountCount	= 0;
-					
 					// We now need to email/print each of the notices that have been generated
 					foreach($mixResult['Details'] as $arrDetails)
 					{
-						// TODO: DEV ONLY -- REMOVE ME
-						$iAccountCount++;
-						if ($iAccountCount > 10)
-						{
-							break;
-						}
-						
 						$intCustGrp = $arrDetails['Account']['CustomerGroup'];
 						$strCustGroupName = $arrDetails['Account']['CustomerGroupName'];
 						$intAccountId = $arrDetails['Account']['AccountId'];
@@ -302,8 +292,7 @@ class Cli_App_LateNoticeRun extends Cli
 										$attachment[self::EMAIL_ATTACHMENT_CONTENT] = $pdfContent;
 										$attachments[] = $attachment;
 										
-										// TODO: DEV ONLY -- UNCOMMENT ME AND REMOVE 'false' to re-enable email send
-										if (false /*Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, self::EMAIL_BILLING_NOTIFICATIONS, $subject, NULL, $strContent, $attachments, TRUE)*/)
+										if (Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, self::EMAIL_BILLING_NOTIFICATIONS, $subject, NULL, $strContent, $attachments, TRUE))
 										{
 											$this->log("[SAMPLE:SUCCESS]: Sample POST {$strLetterType} for {$strCustGroupName} delivered to '".self::EMAIL_BILLING_NOTIFICATIONS."'");
 										}
@@ -371,8 +360,7 @@ class Cli_App_LateNoticeRun extends Cli
 
 									if (!$arrArgs[self::SWITCH_TEST_RUN])
 									{
-										// TODO: DEV ONLY -- UNCOMMENT ME AND REMOVE 'false' to re-enable email send
-										if (false /*Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, $to, $subject, NULL, $strContent, $attachments, TRUE)*/)
+										if (Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, $to, $subject, NULL, $strContent, $attachments, TRUE))
 										{
 											$arrSummary[$strCustGroupName][$strLetterType]['emails'][] = $intAccountId;
 	
@@ -413,8 +401,7 @@ class Cli_App_LateNoticeRun extends Cli
 										$attachment[self::EMAIL_ATTACHMENT_CONTENT] = $pdfContent;
 										$attachments[] = $attachment;
 										
-										// TODO: DEV ONLY -- UNCOMMENT ME AND REMOVE 'false' to re-enable email send
-										if (false/*Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, self::EMAIL_BILLING_NOTIFICATIONS, $subject, NULL, $strContent, $attachments, TRUE)*/)
+										if (Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, self::EMAIL_BILLING_NOTIFICATIONS, $subject, NULL, $strContent, $attachments, TRUE))
 										{
 											$this->log("[SAMPLE:SUCCESS]: Sample EMAIL {$strLetterType} for {$strCustGroupName} delivered to '".self::EMAIL_BILLING_NOTIFICATIONS."'");
 										}
@@ -446,43 +433,8 @@ class Cli_App_LateNoticeRun extends Cli
 				}
 			}
 
-			// TODO: DEV ONLY -- UNCOMMENT ME. Moved into the rollback stage for test mode so that it doesn't fall within the rollback
-			//$this->createCorrespondenceRuns($aCorrespondenceToPost);
+			$this->createCorrespondenceRuns($aCorrespondenceToPost);
 			
-			// TODO: Remove this deprecated code once it has become irrelevant
-			/*foreach($arrSummary as $strCustGroupName => $letterTypes)
-			{
-				foreach($letterTypes as $strLetterType => $details)
-				{
-					if (count($details['pdfs']))
-					{
-						$letterType = strtolower(str_replace(' ', '_', $strLetterType));
-						$custGroup = strtolower(str_replace(' ', '_', $strCustGroupName));
-						$strTarPath = FILES_BASE_PATH . '/' . date('YmdHis', $now) . '.' .$letterType . '.' . $custGroup . '.tar';
-						$this->log("Moving generated $strLetterType PDFs for customer group $strCustGroupName to $strTarPath");
-
-						require_once "Archive/Tar.php";
-						$objArchive = new Archive_Tar($strTarPath, NULL);
-						$pathToRemove = $arrSummary[$strCustGroupName][$strLetterType]['output_directory'];
-						$objArchive->addModify($details['pdfs'], NULL, $pathToRemove);
-
-						// Remove the archived folder
-						$this->log("Removing unarchived copies of PDFs");
-						foreach ($details['pdfs'] as $strTempPdf)
-						{
-							unlink($strTempPdf);
-						}
-
-						$arrSummary[$strCustGroupName][$strLetterType]['output_directory'] = $strTarPath;
-						$this->log("Finished moving $strLetterType PDFs for customer group $strCustGroupName to $strTarPath");
-					}
-					else
-					{
-						$this->log("There were no print $strLetterType PDFs for customer group $strCustGroupName");
-					}
-				}
-			}*/
-
 			if (!$sendEmail)
 			{
 				$this->log("No applicable invoice runs found. Exiting normally.");
@@ -582,8 +534,7 @@ class Cli_App_LateNoticeRun extends Cli
 			$body = implode("\r\n", $report);
 
 			$this->log("Sending report");
-			// TODO: DEV ONLY -- UNCOMMENT ME AND REMOVE 'false' to re-enable email send
-			if (false/*Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE_REPORT, NULL, NULL, $subject, NULL, $body, NULL, TRUE)*/)
+			if (Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE_REPORT, NULL, NULL, $subject, NULL, $body, NULL, TRUE))
 			{
 				$this->log("Report sent");
 			}
@@ -610,12 +561,6 @@ class Cli_App_LateNoticeRun extends Cli
 			{
 				$this->showUsage('ERROR: Transaction Rollback Failed');
 				return 1;
-			}
-			
-			// TODO: DEV ONLY -- REMOVE ME
-			if ($this->_bolTestRun)
-			{
-				$this->createCorrespondenceRuns($aCorrespondenceToPost);
 			}
 			
 			$this->showUsage('ERROR: ' . $exception->getMessage());

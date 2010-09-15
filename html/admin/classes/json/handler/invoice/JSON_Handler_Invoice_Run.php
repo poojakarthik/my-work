@@ -27,7 +27,7 @@ class JSON_Handler_Invoice_Run extends JSON_Handler
 			
 			Log::getLog()->log("Invoice run {$iInvoiceRunId} committed successfully");
 			
-			// TODO: DEV ONLY -- Remove this, don't use transaction in this function
+			// TODO: DEV ONLY -- Remove this, don't rollback (or use transaction at all)
 			$oDataAccess->TransactionRollback();
 			
 			return	array(

@@ -91,6 +91,8 @@ class JSON_Handler_Correspondence extends JSON_Handler
 			$aAdditionalColumns		= $oCorrespondence->getAdditionalColumns();
 			$aCorrespondence		= $oCorrespondence->toArray();
 			$aCorrespondence['id']	= $iId;
+			$aCorrespondence['customer_group_name']	= Customer_Group::getForId($aCorrespondence['customer_group_id'])->internalName;
+			$aCorrespondence['correspondence_delivery_method_name']	= Correspondence_Delivery_Method::getForId($aCorrespondence['correspondence_delivery_method_id'])->name;
 			return	array(
 						'bSuccess'				=> true,
 						'aData'					=> $aCorrespondence,

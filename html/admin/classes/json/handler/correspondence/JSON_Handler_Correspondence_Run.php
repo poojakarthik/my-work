@@ -136,9 +136,10 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 						$aFilter['processed_datetime']	= 'NULL';
 						break;
 					case 'PROCESSED':
-						// a.k.a Having been processd but not delivered
-						$aFilter['processed_datetime']	= 'NOT NULL';
-						$aFilter['delivered_datetime']	= 'NULL';
+						// a.k.a Having been processd (without error) but not delivered
+						$aFilter['processed_datetime']			= 'NOT NULL';
+						$aFilter['delivered_datetime']			= 'NULL';
+						$aFilter['correspondence_run_error_id']	= 'NULL';
 						break;
 					case 'PROCESSING_FAILED':
 						// a.k.a Having an error

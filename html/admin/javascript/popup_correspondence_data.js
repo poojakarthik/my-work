@@ -30,10 +30,25 @@ var Popup_Correspondence_Data	= Class.create(Reflex_Popup,
 			
 			for (var sProperty in Popup_Correspondence_Data.COLUMNS)
 			{
+				var mValue	= aData[sProperty];
+				
+				// Certain properties have extra (not included in the raw correspondence data) information
+				switch (sProperty)
+				{
+					case 'customer_group_id':
+						// Customer Group name
+						mValue	= mValue.toString() + ' (' + aData.customer_group_name + ')';
+						break;
+					case 'correspondence_delivery_method_id':
+						// Correspondence Delivery Method name
+						mValue	= mValue.toString() + ' (' + aData.correspondence_delivery_method_name + ')';
+						break;
+				}
+				
 				oTBody.appendChild(
 					$T.tr(
 						$T.th(Popup_Correspondence_Data.COLUMNS[sProperty]),
-						$T.td(aData[sProperty])
+						$T.td(mValue)
 					)
 				);
 			}
