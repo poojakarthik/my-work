@@ -329,6 +329,9 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 				$aRun['export_file_name']	= $oFileExport->FileName;
 			}
 			
+			// Employee name
+			$aRun['created_employee_name']	= Employee::getForId($aRun['created_employee_id'])->getName();
+			
 			return	array(
 						'bSuccess' 				=> true, 
 						'oCorrespondenceRun' 	=> $aRun

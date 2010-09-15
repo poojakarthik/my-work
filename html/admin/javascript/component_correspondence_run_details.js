@@ -64,8 +64,8 @@ var Component_Correspondence_Run_Details	= Class.create(
 					$T.tr(
 						$T.th('Id'),
 						$T.td(oRun.id),
-						$T.th('Number of Items'),
-						$T.td(oRun.correspondence.length)
+						$T.th('Pre-Printed'),
+						$T.td(oRun.preprinted ? 'Yes' : 'No')
 					),
 					$T.tr(
 						$T.th('Template'),
@@ -75,18 +75,24 @@ var Component_Correspondence_Run_Details	= Class.create(
 								oRun.template.template_code
 							)
 						),
-						$T.th('Emailed Items'),
-						$T.td(iEmail)
+						$T.th('Number of Items'),
+						$T.td(oRun.correspondence.length)
 					),
 					$T.tr(
 						$T.th('Processed'),
 						$T.td(Component_Correspondence_Run_Details._formatDateTime(oRun.processed_datetime)),
-						$T.th('Posted Items'),
-						$T.td(iPost)
+						$T.th('Emailed Items'),
+						$T.td(iEmail)
 					),
 					$T.tr(
 						$T.th('Scheduled for Dispatch'),
 						$T.td(Component_Correspondence_Run_Details._formatDateTime(oRun.scheduled_datetime)),
+						$T.th('Posted Items'),
+						$T.td(iPost)
+					),
+					$T.tr(
+						$T.th('Dispatched'),
+						$T.td(Component_Correspondence_Run_Details._formatDateTime(oRun.delivered_datetime, 'Awaiting Dispatch')),
 						$T.th('Source'),
 						$T.td(
 							$T.div(oRun.source ? oRun.source : ''),
@@ -96,8 +102,8 @@ var Component_Correspondence_Run_Details	= Class.create(
 						)
 					),
 					$T.tr(
-						$T.th('Dispatched'),
-						$T.td(Component_Correspondence_Run_Details._formatDateTime(oRun.delivered_datetime, 'Awaiting Dispatch')),
+						$T.th('Created By'),
+						$T.td(oRun.created_employee_name),
 						$T.th('Data File'),
 						$T.td(oRun.export_file_name ? oRun.export_file_name : 'N/A')
 					),
@@ -106,12 +112,6 @@ var Component_Correspondence_Run_Details	= Class.create(
 						$T.td(Component_Correspondence_Run_Details._formatDateTime(oRun.created)),
 						$T.th('Status'),
 						$T.td(oStatusElement)
-					),
-					$T.tr(
-						$T.th('Pre-Printed'),
-						$T.td(oRun.preprinted ? 'Yes' : 'No'),
-						$T.th(''),
-						$T.td('')
 					)
 				)
 			)
