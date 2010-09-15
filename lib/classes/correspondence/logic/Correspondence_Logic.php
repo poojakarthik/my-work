@@ -48,6 +48,7 @@ class Correspondence_Logic
 		//return an associative array that can be used for csv file genereation
 
 		$aData = $this->_oDO->toArray();
+		$aData['postcode'] = str_pad($aData['postcode'], 4, "0", STR_PAD_LEFT);
 		if (!$bIncludeSystemFields)
 		{
 			$aTemp = array();
@@ -55,7 +56,7 @@ class Correspondence_Logic
 			foreach ($aData as $sField=>$mValue)
 			{
 				if (in_array($sField, $aColumns))
-					$aTemp[$sField]= $mValue;
+					$aTemp[$sField]= $sField == 'postcode'?str_pad($mValue, 4, "0", STR_PAD_LEFT):$mValue;
 			}
 			$aData = $aTemp;
 

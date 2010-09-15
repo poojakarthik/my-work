@@ -141,7 +141,7 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 				.'.'
 				.$this->_sTimeStamp
 				.'.'
-				.$this->_oRun->id
+				. str_pad($this->_oRun->id, 10, "0", STR_PAD_LEFT);
 				;
 
 		$this->_sFilePath = $this->_sFileDirectoryPath.$this->_sFilename.'.csv';
@@ -174,7 +174,7 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 				if ($this->_sInvoiceRunPDFBasePath == null)
 					$this->_sInvoiceRunPDFBasePath = substr ($oCorrespondence->pdf_file_path , 0 , strrpos ( $oCorrespondence->pdf_file_path, "/" )+1 );
 
-				$sTempPdfName = $this->_sInvoiceRunPDFBasePath.$oCorrespondence->id.'.pdf';
+				$sTempPdfName = $this->_sInvoiceRunPDFBasePath.str_pad($oCorrespondence->id, 10, "0", STR_PAD_LEFT).'.pdf';
 				copy ( $oCorrespondence->pdf_file_path , $sTempPdfName );
 				$this->_aPDFFilenames[]=$sTempPdfName;
 			}

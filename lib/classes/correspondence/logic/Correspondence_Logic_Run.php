@@ -312,6 +312,13 @@ class Correspondence_Logic_Run
 			fwrite($fh, $sHtml);
 			fclose($fh);*/
 
+		$body->div();
+		$div = $body->div();
+		$div->setValue("Regards");
+		$div->style = $sStyle;
+		$div = $body->div();
+		$div->setValue("Flexor");
+
 		$sHtml = $body->saveHTML();
 		$oEmail->setBodyHTML($sHtml);
 		$oEmployee = Employee::getForId($this->created_employee_id);
@@ -337,6 +344,14 @@ class Correspondence_Logic_Run
 		$this->generateReportEmailTableRow($body->html->body->table(0),'Dispatch Date', date('d/m/Y', strtotime($this->delivered_datetime))." - ".date('h:i:s', strtotime($this->delivered_datetime)));
 		$this->generateReportEmailTableRow($body->html->body->table(0), 'Data File', $this->getExportFileName());
 		$this->generateReportEmailTableRow($body->html->body->table(0), 'Status', 'Dispatched');
+
+		$body->div();
+		$div = $body->div();
+		$div->setValue("Regards");
+		$div->style = $sStyle;
+		$div = $body->div();
+		$div->setValue("Flexor");
+
 		$sHtml = $body->saveHTML();
 		//For query debug purpose
 	/*	  $myFile = "c:/wamp/www/email text.html";
