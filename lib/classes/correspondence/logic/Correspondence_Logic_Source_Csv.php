@@ -167,7 +167,7 @@ class Correspondence_Logic_Source_CSV extends Correspondence_Logic_Source
 
 	public function __get($sField)
 	{
-		return $this->_oDO->$sField;
+		return $this->_oDO->$sField!=null?$this->_oDO->$sField:parent::__get($sField);
 	}
 
 	public static function getFilePath()
