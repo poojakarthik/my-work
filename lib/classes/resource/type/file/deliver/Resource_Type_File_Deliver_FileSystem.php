@@ -3,7 +3,7 @@ class Resource_Type_File_Deliver_FileSystem extends Resource_Type_File_Deliver
 {
 	const	RESOURCE_TYPE		= RESOURCE_TYPE_FILE_DELIVERER_FILESYSTEM;
 
-	//protected	$_sWrapper = FILES_BASE_PATH;
+	protected	$_sWrapper;
 
 	public function connect()
 	{
