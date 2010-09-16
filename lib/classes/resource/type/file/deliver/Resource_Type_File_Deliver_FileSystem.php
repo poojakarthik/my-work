@@ -14,8 +14,7 @@ class Resource_Type_File_Deliver_FileSystem extends Resource_Type_File_Deliver
 	{
 
 		$sDeliveryPath	= $this->_getDeliveryPath($sLocalPath);
-		$sDirectoryPath = str_replace ( strrchr($sDeliveryPath, '/') , "" ,$sDeliveryPath );
-//$sDirectoryPath .= '/';
+
 		$aErrorData	=	array
 						(
 							'sLocalPath'			=> $sLocalPath,
@@ -23,6 +22,7 @@ class Resource_Type_File_Deliver_FileSystem extends Resource_Type_File_Deliver
 							'aCarrierModuleConfig'	=> $this->getConfig()->toArray()
 						);
 
+		$sDirectoryPath = str_replace ( strrchr($sDeliveryPath, '/') , "" ,$sDeliveryPath );
 		Flex::assert(!$this->_checkRemoteWritable() || @is_writable($sDirectoryPath),
 			"File Delivery Path '{$sDeliveryPath}' is not writable",
 			print_r(array_merge($aErrorData, array('PHP Warning'=>$php_errormsg)), true),
