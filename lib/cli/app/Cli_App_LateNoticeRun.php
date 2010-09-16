@@ -63,7 +63,8 @@ class Cli_App_LateNoticeRun extends Cli
 			$sendEmail = FALSE;
 
 			$aCorrespondenceToPost	= array();
-			$aEmailsToSend			= array();
+			
+			$aAccountsById	= array();
 			
 			foreach($arrNoticeTypes as $intNoticeType => $intAutomaticInvoiceAction)
 			{
@@ -131,7 +132,8 @@ class Cli_App_LateNoticeRun extends Cli
 					}
 
 					$aCorrespondenceToPost[$intNoticeType]	= array();
-					$aEmailsToSend[$intNoticeType]			= array();
+					$oCustomerEmailQueue					= Email_Queue::get("CUSTOMER_{$strLetterType}");
+					$oSamplesEmailQueue						= Email_Queue::get("SAMPLES_{$strLetterType}");
 					
 					// We now need to email/print each of the notices that have been generated
 					foreach($mixResult['Details'] as $arrDetails)
@@ -141,7 +143,10 @@ class Cli_App_LateNoticeRun extends Cli
 						$intAccountId = $arrDetails['Account']['AccountId'];
 						$xmlFilePath = $arrDetails['XMLFilePath'];
 						$intAutoInvoiceAction = $arrDetails['Account']['automatic_invoice_action'];
-
+						
+						// Cache this information for use when reporting on email send status
+						$aAccountsById[$intAccountId]	= $arrDetails['Account'];
+						
 						$custGroupName = strtolower(str_replace(' ', '_', $strCustGroupName));
 
 						$letterType = strtolower(str_replace(' ', '_', $strLetterType));
@@ -275,7 +280,6 @@ class Cli_App_LateNoticeRun extends Cli
 																'landline'							=> $arrDetails['Account']['Landline'],
 																'pdf_file_path'						=> $targetFile
 															);
-									
 									$aCorrespondenceToPost[$intNoticeType][]	= $aCorrespondence;
 									
 									// This is the sample Post Notice -- email
@@ -294,14 +298,8 @@ class Cli_App_LateNoticeRun extends Cli
 										$attachment[self::EMAIL_ATTACHMENT_CONTENT] = $pdfContent;
 										$attachments[] = $attachment;
 										
-										if (Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, self::EMAIL_BILLING_NOTIFICATIONS, $subject, NULL, $strContent, $attachments, TRUE))
-										{
-											$this->log("[SAMPLE:SUCCESS]: Sample POST {$strLetterType} for {$strCustGroupName} delivered to '".self::EMAIL_BILLING_NOTIFICATIONS."'");
-										}
-										else
-										{
-											$this->log("[SAMPLE:ERROR]: Unable to deliver Sample POST {$strLetterType} for {$strCustGroupName} to '".self::EMAIL_BILLING_NOTIFICATIONS."'");
-										}
+										// Add to the samples queue for this notice type, giving it the account id as an email id
+										$oSamplesEmailQueue->push(Email_Notification::factory(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, self::EMAIL_BILLING_NOTIFICATIONS, $subject, NULL, $strContent, $attachments, TRUE), $intAccountId);
 									}
 								}
 
@@ -362,18 +360,10 @@ class Cli_App_LateNoticeRun extends Cli
 
 									if (!$this->_bolTestRun)
 									{
-										// Cache email data for sending later
-										$aEmailsToSend[$intNoticeType][]	=	array(
-																					'iCustomerGroup'	=> $intCustGrp,
-																					'sCustomerGroup'	=> $strCustGroupName,
-																					'sEmailTo'			=> $emailTo,
-																					'sTo'				=> $to,
-																					'sSubject'			=> $subject,
-																					'sContent'			=> $strContent,
-																					'aAttachments'		=> $attachments,
-																					'bSilentFail'		=> true,
-																					'iAccountId'		=> $intAccountId
-																				);
+										// Add to the customer queue for this notice type, giving it the account id as an email id
+										$oCustomerEmailQueue->push(Email_Notification::factory(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, $to, $subject, NULL, $strContent, $attachments, TRUE), $intAccountId);
+										
+										$this->log("Email queued to be sent to: $to");
 										
 										// We need to log the fact that we're sending it, by updating the account automatic_invoice_action
 										$outcome = $this->changeAccountAutomaticInvoiceAction($intAccountId, $intAutoInvoiceAction, $intAutomaticInvoiceAction, "$strLetterType emailed to $name ($emailTo)", $invoiceRunId);
@@ -383,7 +373,7 @@ class Cli_App_LateNoticeRun extends Cli
 											$errors++;
 										}
 									}
-									
+																		
 									// This is the sample Email Notice -- email
 									if ($this->_bolTestRun && $arrSampleAccounts[DELIVERY_METHOD_EMAIL][$intCustGrp] === $intAccountId)
 									{
@@ -400,16 +390,9 @@ class Cli_App_LateNoticeRun extends Cli
 										$attachment[self::EMAIL_ATTACHMENT_CONTENT] = $pdfContent;
 										$attachments[] = $attachment;
 										
-										if (Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, self::EMAIL_BILLING_NOTIFICATIONS, $subject, NULL, $strContent, $attachments, TRUE))
-										{
-											$this->log("[SAMPLE:SUCCESS]: Sample EMAIL {$strLetterType} for {$strCustGroupName} delivered to '".self::EMAIL_BILLING_NOTIFICATIONS."'");
-										}
-										else
-										{
-											$this->log("[SAMPLE:ERROR]: Unable to deliver Sample {$strLetterType} for {$strCustGroupName} to '".self::EMAIL_BILLING_NOTIFICATIONS."'");
-										}
+										// Add to the samples queue for this notice type, giving it the account id as an email id
+										$oSamplesEmailQueue->push(Email_Notification::factory(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, self::EMAIL_BILLING_NOTIFICATIONS, $subject, NULL, $strContent, $attachments, TRUE), $intAccountId);
 									}
-
 								}
 								break;
 						}
@@ -431,45 +414,110 @@ class Cli_App_LateNoticeRun extends Cli
 					}
 				}
 			}
-
-			// Create correspondence runs containing all notices to be posted, done BEFORE the emailing just incase there is invalid correspondence data
+			
+			// Create correspondence runs containing all notices to be posted
 			$this->createCorrespondenceRuns($aCorrespondenceToPost);
 			
-			// Send all of the required emails (only if NOT testing)
-			if ($this->_bolTestRun)
+			if (!$this->_bolTestRun)
 			{
-				$this->log("Not sending emails, in TEST mode");
-			}
-			else
-			{
-				$this->log("Sending Emails to account holders");
-				
-				foreach ($aEmailsToSend as $iNoticeType => $aEmailData)
+				// Live run, attempt transaction commit before the emails are sent
+				if (!$dacFlex->TransactionCommit())
 				{
-					$sLetterType	= GetConstantDescription($iNoticeType, 'DocumentTemplateType');
-					foreach ($aEmailData as $aEmail)
+					throw new Exception("Transaction Commit Failed");
+				}
+			}
+			
+			$this->log("START: Sending all emails that have been queued");
+			
+			// Attempt to send all emails
+			foreach($arrNoticeTypes as $iNoticeType => $iAutomaticInvoiceAction)
+			{
+				$sLetterType	= GetConstantDescription($iNoticeType, 'DocumentTemplateType');
+				
+				// Send SAMPLES email queue & show status of each email
+				if ($this->_bolTestRun)
+				{
+					$oSamplesQueue	= Email_Queue::get("SAMPLES_{$sLetterType}");
+					$oSamplesQueue->commit();
+					$oSamplesQueue->send();
+					$aSampleEmails	= $oSamplesQueue->getEmails();
+					foreach ($aSampleEmails as $iAccountId => $oEmail)
 					{
-						$this->log("Email {$sLetterType} being sent for account ".$aEmail['iAccountId']." to ".$aEmail['sEmailTo']);
-						
-						// Try and send email
-						if (Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE, $aEmail['iCustomerGroup'], $aEmail['sTo'], $aEmail['sSubject'], NULL, $aEmail['sContent'], $aEmail['aAttachments'], $aEmail['bSilentFail']))
+						$aAccountDetails	= $aAccountsById[$iAccountId];
+						$sCustomerGroupName	= $aAccountDetails['CustomerGroupName'];
+						switch ($aAccountDetails['DeliveryMethod'])
 						{
-							$this->log("... Successful!");
-							
-							// ... Success
-							$arrSummary[$aEmail['sCustomerGroup']][$sLetterType]['emails'][] = $aEmail['iAccountId'];
+							case DELIVERY_METHOD_POST:
+								$sDeliveryMethod	= 'POST';
+								break;
+							case DELIVERY_METHOD_EMAIL:
+								$sDeliveryMethod	= 'EMAIL';
+								break;
+							default:
+								throw new Exception("Invalid delivery method for Account '{$iAccountId}': '".$aAccountDetails['DeliveryMethod']."', this should never happen");
+								break;
 						}
-						else
+						
+						$sRecipients	= implode(', ', $oEmail->getRecipients());
+						$mStatus		= $oEmail->getSendStatus();
+						if ($mStatus === Email_Flex::SEND_STATUS_SENT)
 						{
-							// ... Failure, we need to log this
-							$sMessage	= "Failed to email $sLetterType PDF for account " . $aEmail['iAccountId'] . ' to ' . $aEmail['sEmailTo'];
-							$arrSummary[$aEmail['sCustomerGroup']][$sLetterType]['errors'][] = $sMessage;
-							$errors++;
-							$this->log($sMessage, TRUE);
+							// Email sent
+							$this->log("[SAMPLE:SUCCESS]: Sample {$sDeliveryMethod} {$sLetterType} for {$sCustomerGroupName} delivered to '{$sRecipients}'");
+						}
+						else if ($mStatus === Email_Flex::SEND_STATUS_FAILED)
+						{
+							// Email sending failed
+							$this->log("[SAMPLE:ERROR]: Unable to deliver Sample {$sDeliveryMethod} {$sLetterType} for {$sCustomerGroupName} to '{$sRecipients}'");
+						}
+						else if ($mStatus === Email_Flex::SEND_STATUS_NOT_SENT)
+						{
+							// Not sent
+							$this->log("[SAMPLE:NOT SENT]: Sample {$sDeliveryMethod} {$sLetterType} for {$sCustomerGroupName} was not sent");
 						}
 					}
 				}
+				
+				// Send CUSTOMER email queue & show status of each email
+				$oCustomerQueue	= Email_Queue::get("CUSTOMER_{$sLetterType}");
+				if (!$this->_bolTestRun)
+				{
+					// Only commit the customer email queues when in a live run, NOT FOR TESTING 
+					// !!!! THIS WILL ALLOW THE SENDING OF EMAILS TO THE CUSTOMERS UNLESS YOU HAVE PUT OTHER SAFEGUARDS IN PLACE, DON'T RISK IT IF YOU ARE TESTING !!!!
+					$oCustomerQueue->commit();
+				}
+				$oCustomerQueue->send();
+				$aCustomerEmails	= $oCustomerQueue->getEmails();
+				foreach ($aCustomerEmails as $iAccountId => $oEmail)
+				{
+					$aAccountDetails	= $aAccountsById[$iAccountId];
+					$sCustomerGroupName	= $aAccountDetails['CustomerGroupName'];
+					$sToEmail			= $aAccountDetails['Email'];
+					$sRecipients		= implode(', ', $oEmail->getRecipients());
+					$mStatus			= $oEmail->getSendStatus();
+					if ($mStatus === Email_Flex::SEND_STATUS_SENT)
+					{
+						// Email sent
+						$arrSummary[$sCustomerGroupName][$sLetterType]['emails'][]	= $iAccountId;
+						$this->log("Email {$sLetterType} being sent for account {$iAccountId} to '{$sToEmail}' (actual recipients: '{$sRecipients}')");
+					}
+					else if ($mStatus === Email_Flex::SEND_STATUS_FAILED)
+					{
+						// Email sending failed
+						$sMessage	= "Failed to send email $sLetterType PDF for account {$iAccountId} to '{$sToEmail}' (actual recipients: '{$sRecipients}')";
+						$arrSummary[$sCustomerGroupName][$sLetterType]['errors'][]	= $sMessage;
+						$errors++;
+						$this->log($sMessage, TRUE);
+					}
+					else if ($mStatus === Email_Flex::SEND_STATUS_NOT_SENT)
+					{
+						// Not sent
+						$this->log("Email NOT SENT: {$sLetterType} for account {$iAccountId} addressed to '{$sToEmail}' (actual recipients: '{$sRecipients}')");
+					}
+				}
 			}
+			
+			$this->log("FINISHED: Sending all emails that have been queued");
 			
 			// We now need to build a report detailing actions taken for each of the customer groups 
 			if (!$sendEmail)
@@ -568,7 +616,8 @@ class Cli_App_LateNoticeRun extends Cli
 				$report[] = "No automated late notices were generated.";
 			}
 			$body = implode("\r\n", $report);
-
+			
+			// Send the report email, not queued
 			$this->log("Sending report");
 			if (Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE_REPORT, NULL, NULL, $subject, NULL, $body, NULL, TRUE))
 			{
@@ -578,17 +627,14 @@ class Cli_App_LateNoticeRun extends Cli
 			{
 				$this->log("Failed to email report.", TRUE);
 			}
+
+			$this->log("Finished.");
 			
 			if ($this->_bolTestRun)
 			{
 				throw new Exception("Test Mode!  Rolling back all database changes.");
 			}
-			if (!$dacFlex->TransactionCommit())
-			{
-				throw new Exception("Transaction Commit Failed");
-			}
-
-			$this->log("Finished.");
+			
 			return $errors;
 		}
 		catch(Exception $exception)

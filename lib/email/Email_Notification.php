@@ -1,11 +1,6 @@
 <?php
 
-// Ensure that the Zend folder (lib) is in the incoude path
-set_include_path(get_include_path() . PATH_SEPARATOR . realpath(dirname(__FILE__) . '/' . ".." . '/'));
-
-require_once 'Zend/Mail.php';
-
-class Email_Notification extends Zend_Mail
+class Email_Notification extends Email_Flex
 {
 	private $intEmailNotification = NULL;
 	private $intCustomerGroupId = NULL;
@@ -225,39 +220,10 @@ class Email_Notification extends Zend_Mail
 	const EMAIL_ATTACHMENT_MIME_TYPE = 'dfilename';
 	const EMAIL_ATTACHMENT_CONTENT = 'CONTENT';
 
-	/**
-	 * sendEmailNotification()
-	 *
-	 * Wrapper function for sending an email notification
-	 *
-	 * Wrapper function for sending an email notification
-	 *
-	 * @param	int		$intEmailNotificationId		Email Notification constant, defining the type of notification to send.  This can be set to NULL to send an email with no
-	 * 												predefined to's, cc's, bcc's or from addresses. Although it will use ybs-admin@ybs.net.au as the from address
-	 * @param	int		$intCustomerGroupId			if specified, it will use the address from email_notification_address specific to this customer group.  Only really useful for
-	 * 												chosing a CustomerGroup specific 'from' address
-	 * @param	mixed	$mixToEmail					string				: single email address for the 'to' address
-	 * 												array				: multiple address' for the 'to' address
-	 * 												NULL or empty array	: Only the predefined 'to' address' will be used
-	 * 												Note that any predefined 'to' email address' in the email_notification_address table, will also be used, even if you explicitly
-	 * 												specify email address' using $mixToEmail
-	 * @param	string	$strSubject					Subject for the email
-	 * @param	string	$strBodyHTML				The body of the email as HTML.  If you want to use text instead of html, then set this to NULL, and use $strBodyText
-	 * @param	string	[ $strBodyText ]			The body of the email as Text.  if $strBodyHTML is also set, then it will be used instead of this
-	 * @param	array	[ $arrAttachments ]			defaults to NULL.  Declare attachements here, using the format
-	 *												$arrAttachments[] = array(	self::EMAIL_ATTACHMENT_CONTENT		=> file content,
-	 *																			self::EMAIL_ATTACHMENT_NAME			=> filename,
-	 *																			self::EMAIL_ATTACHMENT_MIME_TYPE	=> mime type
-	 *																		)
-	 * @param	bool	[ $bolSilentFail ]			Defaults to False. If TRUE then it will return FALSE on failure. If FALSE, then it will throw an exception on failure.
-	 *
-	 * @return	bool								TRUE on success, FALSE on failure (so long as $bolSilentFail == TRUE)
-	 *
-	 * @static
-	 * @method
-	 */
-	public static function sendEmailNotification($intEmailNotificationId, $intCustomerGroupId, $mixToEmail, $strSubject, $strBodyHTML, $strBodyText=NULL, $arrAttachments=NULL, $bolSilentFail=FALSE)
+	// factory: Create and return an email notitifcation from the given parameters
+	public static function factory($intEmailNotificationId, $intCustomerGroupId, $mixToEmail, $strSubject, $strBodyHTML, $strBodyText=NULL, $arrAttachments=NULL, $bolSilentFail=FALSE)
 	{
+		$email	= null;
 		try
 		{
 			if (!$intEmailNotificationId)
@@ -307,8 +273,63 @@ class Email_Notification extends Zend_Mail
 					$email->addAttachment($attchment[self::EMAIL_ATTACHMENT_CONTENT], $attchment[self::EMAIL_ATTACHMENT_NAME], $attchment[self::EMAIL_ATTACHMENT_MIME_TYPE]);
 				}
 			}
-			
-			$email->send();
+		}
+		catch (Exception $e)
+		{
+			if ($bolSilentFail)
+			{
+				return null;
+			}
+			else
+			{
+				throw $e;
+			}
+		}
+		
+		return $email;
+	}
+
+	/**
+	 * sendEmailNotification()
+	 *
+	 * Wrapper function for sending an email notification
+	 *
+	 * Wrapper function for sending an email notification
+	 *
+	 * @param	int		$intEmailNotificationId		Email Notification constant, defining the type of notification to send.  This can be set to NULL to send an email with no
+	 * 												predefined to's, cc's, bcc's or from addresses. Although it will use ybs-admin@ybs.net.au as the from address
+	 * @param	int		$intCustomerGroupId			if specified, it will use the address from email_notification_address specific to this customer group.  Only really useful for
+	 * 												chosing a CustomerGroup specific 'from' address
+	 * @param	mixed	$mixToEmail					string				: single email address for the 'to' address
+	 * 												array				: multiple address' for the 'to' address
+	 * 												NULL or empty array	: Only the predefined 'to' address' will be used
+	 * 												Note that any predefined 'to' email address' in the email_notification_address table, will also be used, even if you explicitly
+	 * 												specify email address' using $mixToEmail
+	 * @param	string	$strSubject					Subject for the email
+	 * @param	string	$strBodyHTML				The body of the email as HTML.  If you want to use text instead of html, then set this to NULL, and use $strBodyText
+	 * @param	string	[ $strBodyText ]			The body of the email as Text.  if $strBodyHTML is also set, then it will be used instead of this
+	 * @param	array	[ $arrAttachments ]			defaults to NULL.  Declare attachements here, using the format
+	 *												$arrAttachments[] = array(	self::EMAIL_ATTACHMENT_CONTENT		=> file content,
+	 *																			self::EMAIL_ATTACHMENT_NAME			=> filename,
+	 *																			self::EMAIL_ATTACHMENT_MIME_TYPE	=> mime type
+	 *																		)
+	 * @param	bool	[ $bolSilentFail ]			Defaults to False. If TRUE then it will return FALSE on failure. If FALSE, then it will throw an exception on failure.
+	 *
+	 * @return	bool								TRUE on success, FALSE on failure (so long as $bolSilentFail == TRUE)
+	 *
+	 * @static
+	 * @method
+	 */
+	public static function sendEmailNotification($intEmailNotificationId, $intCustomerGroupId, $mixToEmail, $strSubject, $strBodyHTML, $strBodyText=NULL, $arrAttachments=NULL, $bolSilentFail=FALSE)
+	{
+		try
+		{
+			$oEmailNotification	= self::factory($intEmailNotificationId, $intCustomerGroupId, $mixToEmail, $strSubject, $strBodyHTML, $strBodyText, $arrAttachments, $bolSilentFail);
+			if ($oEmailNotification === null)
+			{
+				return false;
+			}
+			$oEmailNotification->send();
 		}
 		catch (Exception $e)
 		{
@@ -321,8 +342,7 @@ class Email_Notification extends Zend_Mail
 				throw $e;
 			}
 		}
-		
-		return TRUE;
+		return true;
 	}
 }
 
