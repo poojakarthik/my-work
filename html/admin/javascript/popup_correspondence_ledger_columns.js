@@ -29,6 +29,7 @@ var Popup_Correspondence_Ledger_Columns	= Class.create(Reflex_Popup,
 				oUL.appendChild(
 					$T.li(oCurrentUL)
 				);
+				i	= 0;
 			}
 			
 			var oCheckbox		= $T.input({type: 'checkbox'});
