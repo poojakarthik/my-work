@@ -621,7 +621,7 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 			// Step 1: Get record count
 			this.oDataSet.getRecordCount(this._downloadCSV.bind(this, null));
 		}
-		else if (!hRecords)
+		else if (typeof hRecords == 'undefined')
 		{
 			// Step 2: Get all records
 			this.oDataSet.getRecords(this._downloadCSV.bind(this, null), iRecordCount, 0);

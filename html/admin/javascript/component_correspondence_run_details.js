@@ -97,7 +97,7 @@ var Component_Correspondence_Run_Details	= Class.create(
 					),
 					$T.tr(
 						$T.th('Processed'),
-						$T.td(Component_Correspondence_Run_Details._formatDateTime(oRun.processed_datetime), 'Not Yet Processed'),
+						$T.td(Component_Correspondence_Run_Details._formatDateTime(oRun.processed_datetime, 'Not Yet Processed')),
 						$T.th('Posted Items'),
 						$T.td(iPost)
 					),

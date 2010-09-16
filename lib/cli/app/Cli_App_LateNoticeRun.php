@@ -63,7 +63,8 @@ class Cli_App_LateNoticeRun extends Cli
 			$sendEmail = FALSE;
 
 			$aCorrespondenceToPost	= array();
-
+			$aEmailsToSend			= array();
+			
 			foreach($arrNoticeTypes as $intNoticeType => $intAutomaticInvoiceAction)
 			{
 				// This query is repeated by the GenerateLatePaymentNotices function. Consider revising.
@@ -130,6 +131,7 @@ class Cli_App_LateNoticeRun extends Cli
 					}
 
 					$aCorrespondenceToPost[$intNoticeType]	= array();
+					$aEmailsToSend[$intNoticeType]			= array();
 					
 					// We now need to email/print each of the notices that have been generated
 					foreach($mixResult['Details'] as $arrDetails)
@@ -269,8 +271,8 @@ class Cli_App_LateNoticeRun extends Cli
 																'postcode'							=> $arrDetails['Account']['Postcode'],
 																'state'								=> $arrDetails['Account']['State'],
 																'email'								=> $arrDetails['Account']['Email'],
-																'mobile'							=> $arrDetails['Account']['Mobile'],	// TODO: Add to the query that fills arrDetails, or use Contact orm here
-																'landline'							=> $arrDetails['Account']['Landline'],	// TODO: ... ditto
+																'mobile'							=> $arrDetails['Account']['Mobile'],
+																'landline'							=> $arrDetails['Account']['Landline'],
 																'pdf_file_path'						=> $targetFile
 															);
 									
@@ -322,7 +324,7 @@ class Cli_App_LateNoticeRun extends Cli
 								// We have a PDF, so we should email it
 								else
 								{
-									$this->log("Emailing $strLetterType for account ". $intAccountId . ' to ' . $arrDetails['Account']['Email']);
+									$this->log("Generating data to send $strLetterType email for account ". $intAccountId . ' to ' . $arrDetails['Account']['Email']);
 									if ($arrArgs[self::SWITCH_TEST_RUN])
 									{
 										$this->log("...NOT!!!");
@@ -358,30 +360,27 @@ class Cli_App_LateNoticeRun extends Cli
 									$attachment[self::EMAIL_ATTACHMENT_CONTENT] = $pdfContent;
 									$attachments[] = $attachment;
 
-									if (!$arrArgs[self::SWITCH_TEST_RUN])
+									if (!$this->_bolTestRun)
 									{
-										if (Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, $to, $subject, NULL, $strContent, $attachments, TRUE))
+										// Cache email data for sending later
+										$aEmailsToSend[$intNoticeType][]	=	array(
+																					'iCustomerGroup'	=> $intCustGrp,
+																					'sCustomerGroup'	=> $strCustGroupName,
+																					'sEmailTo'			=> $emailTo,
+																					'sTo'				=> $to,
+																					'sSubject'			=> $subject,
+																					'sContent'			=> $strContent,
+																					'aAttachments'		=> $attachments,
+																					'bSilentFail'		=> true,
+																					'iAccountId'		=> $intAccountId
+																				);
+										
+										// We need to log the fact that we're sending it, by updating the account automatic_invoice_action
+										$outcome = $this->changeAccountAutomaticInvoiceAction($intAccountId, $intAutoInvoiceAction, $intAutomaticInvoiceAction, "$strLetterType emailed to $name ($emailTo)", $invoiceRunId);
+										if ($outcome !== TRUE)
 										{
-											$arrSummary[$strCustGroupName][$strLetterType]['emails'][] = $intAccountId;
-	
-											// We need to log the fact that we've sent it, by updating the account automatic_invoice_action
-											if (!$arrArgs[self::SWITCH_TEST_RUN])
-											{
-												$outcome = $this->changeAccountAutomaticInvoiceAction($intAccountId, $intAutoInvoiceAction, $intAutomaticInvoiceAction, "$strLetterType emailed to $name ($emailTo)", $invoiceRunId);
-												if ($outcome !== TRUE)
-												{
-													$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $outcome;
-													$errors++;
-												}
-											}
-										}
-										else
-										{
-											// We need to log the fact that the sending of the email failed
-											$message = "Failed to email $strLetterType PDF for account " . $intAccountId . ' to ' . $emailTo . ($outcome ? "\n$outcome" : '');
-											$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $message;
+											$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $outcome;
 											$errors++;
-											$this->log($message, TRUE);
 										}
 									}
 									
@@ -433,15 +432,52 @@ class Cli_App_LateNoticeRun extends Cli
 				}
 			}
 
+			// Create correspondence runs containing all notices to be posted, done BEFORE the emailing just incase there is invalid correspondence data
 			$this->createCorrespondenceRuns($aCorrespondenceToPost);
 			
+			// Send all of the required emails (only if NOT testing)
+			if ($this->_bolTestRun)
+			{
+				$this->log("Not sending emails, in TEST mode");
+			}
+			else
+			{
+				$this->log("Sending Emails to account holders");
+				
+				foreach ($aEmailsToSend as $iNoticeType => $aEmailData)
+				{
+					$sLetterType	= GetConstantDescription($iNoticeType, 'DocumentTemplateType');
+					foreach ($aEmailData as $aEmail)
+					{
+						$this->log("Email {$sLetterType} being sent for account ".$aEmail['iAccountId']." to ".$aEmail['sEmailTo']);
+						
+						// Try and send email
+						if (Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE, $aEmail['iCustomerGroup'], $aEmail['sTo'], $aEmail['sSubject'], NULL, $aEmail['sContent'], $aEmail['aAttachments'], $aEmail['bSilentFail']))
+						{
+							$this->log("... Successful!");
+							
+							// ... Success
+							$arrSummary[$aEmail['sCustomerGroup']][$sLetterType]['emails'][] = $aEmail['iAccountId'];
+						}
+						else
+						{
+							// ... Failure, we need to log this
+							$sMessage	= "Failed to email $sLetterType PDF for account " . $aEmail['iAccountId'] . ' to ' . $aEmail['sEmailTo'];
+							$arrSummary[$aEmail['sCustomerGroup']][$sLetterType]['errors'][] = $sMessage;
+							$errors++;
+							$this->log($sMessage, TRUE);
+						}
+					}
+				}
+			}
+			
+			// We now need to build a report detailing actions taken for each of the customer groups 
 			if (!$sendEmail)
 			{
-				$this->log("No applicable invoice runs found. Exiting normally.");
+				$this->log("No applicable accounts found. Exiting normally.");
 				return 0;
 			}
 
-			// We now need to build a report detailing actions taken for each of the customer groups
 			$this->log("Building report");
 			$subject = ($errors ? '[FAILURE]' : '[SUCCESS]') . ($arrArgs[self::SWITCH_TEST_RUN] ? ' [TEST]' : '') . ' Automated late notice generation log for run dated ' . $this->runDateTime;
 			$report = array();
@@ -615,7 +651,7 @@ class Cli_App_LateNoticeRun extends Cli
 			{
 				// Use the exception information to display a meaningful message
 				$sErrorType	= GetConstantName($oEx->iError, 'correspondence_run_error');
-				throw new Exception("Validation errors in the correspondence data for the run: \nError Type: $oEx->iError => '{$sErrorType}'\nError report: ".print_r($oEx->aReport, true));
+				throw new Exception("Correspondence Run Processing Failed:\n - Validation errors in the correspondence data for the run: \n -- Error Type: $oEx->iError => '{$sErrorType}'");
 			}
 		}
 	}
