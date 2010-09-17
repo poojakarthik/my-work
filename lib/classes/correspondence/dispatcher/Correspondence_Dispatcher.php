@@ -169,8 +169,8 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 
 			$aCount = $oRun->getCorrespondenceCount();
 			$td = $tr->td(4);
-			$td->div(0)->setValue("Post :".$aCount['post']);
-			$td->div(1)->setValue("Email:".$aCount['email']);
+			$td->div(0)->setValue("Post : ".$aCount['post']);
+			$td->div(1)->setValue("Email: ".$aCount['email']);
 			$td->div(2)->setValue("Total: ".$aCount['total']);
 			$tr->td(4)->style = $sTableStyle;
 
@@ -193,20 +193,9 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 			$sTableStyle = $sTableStyle==$strTDStyle?$strTDStyleTwo:$strTDStyle;
 		}
 
-		$body->div();
-		$div = $body->div();
-		$div->setValue("Regards");
-		$div->style = $sStyle;
-		$div = $body->div();
-		$div->setValue("Flexor");
-		$div->style = $sBoldStyle;
-		$sHtml = $body->saveHTML();
-		/*//For query debug purpose
-		  $myFile = "c:/wamp/www/email text.html";
-			$fh = fopen($myFile, 'w') or die("can't open file");
-			fwrite($fh, $sHtml);
-			fclose($fh);*/
+		Correspondence_Logic_Run::appendEmailSignature($body);
 
+		$sHtml = $body->saveHTML();
 		$oEmail->setBodyHTML($sHtml);
 		$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
 		$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
