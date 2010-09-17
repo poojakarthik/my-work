@@ -25,6 +25,7 @@ class Correspondence_Logic_Run
 			$this->_oDO = new Correspondence_Run($mDefinition);
 
 			$bProcessNow?$this->process():$this->save();
+			$bProcessNow?null:$this->sendRunCreatedEmail();
 
 		}
 		else
@@ -59,6 +60,7 @@ class Correspondence_Logic_Run
 			$this->processed_datetime = Data_Source_Time::currentTimestamp();
 			$this->file_import_id = $this->_oCorrespondenceTemplate->importSource();
 			$this->save();
+			$this->sendRunCreatedEmail();
 		}
 		catch(Correspondence_DataValidation_Exception $e)
 		{
@@ -297,6 +299,40 @@ class Correspondence_Logic_Run
 		return $aCount;
 	}
 
+	private function sendRunCreatedEmail()
+	{
+		$oEmail = new Email_Notification(EMAIL_NOTIFICATION_CORRESPONDENCE);
+
+
+		$oEmail->setSubject("Correspondence Run Scheduling Notification for '".$this->getTemplateName()."' (Letter Code ".$this->getCorrespondenceCode().")");
+		$sHeader = "Correspondence Run Delivery Scheduling Notification for '".$this->getTemplateName()."' (Letter Code ".$this->getCorrespondenceCode().")";
+		$sMessage = 'Details for Run ID '.$this->id.":";
+		$body = $this->generateReportEmailBody($sHeader,$sMessage );
+		$this->generateReportEmailTableRow($body->html->body->table(0),'Scheduled for Delivery', date('d/m/Y', strtotime($this->scheduled_datetime))." - ".date('H:i:s', strtotime($this->scheduled_datetime)));
+		if ($this->processed_datetime!=null)
+		{
+			$aCount = $this->getCorrespondenceCount();
+			$this->generateReportEmailTableRow($body->html->body->table(0),'Correspondence Items', array("Post : ".$aCount['post'], "Email: ".$aCount['email'], "Total: ".$aCount['total']));
+			$this->generateReportEmailTableRow($body->html->body->table(0), 'Status', 'Processed');
+		}
+		else
+		{
+			$this->generateReportEmailTableRow($body->html->body->table(0), 'Status', 'Submitted');
+		}
+
+		self::appendEmailSignature($body);
+
+		$sHtml = $body->saveHTML();
+		$oEmail->setBodyHTML($sHtml);
+		$oEmployee = Employee::getForId($this->created_employee_id);
+		if ($oEmployee!= null)
+			$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
+
+		$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
+		$oEmail->send();
+
+	}
+
 	private function sendErrorEmail($sMessage, $sErrorReportFilePath = null)
 	{
 		//send email
@@ -328,8 +364,6 @@ class Correspondence_Logic_Run
 	public function sendDispatchEmail($bDispatchFailed = false)
 	{
 		$oEmail = new Email_Notification(EMAIL_NOTIFICATION_CORRESPONDENCE);
-		$oEmail = new Email_Notification();
-
 		$sFailure = $bDispatchFailed?'Failure':null;
 		$oEmail->setSubject("Correspondence Delivery ".$sFailure." Notification for '".$this->getTemplateName()."' (Letter Code ".$this->getCorrespondenceCode().")");
 		$sHeader = "Correspondence Delivery ".$sFailure." Notification for '".$this->getTemplateName()."' (Letter Code ".$this->getCorrespondenceCode().")";
@@ -340,7 +374,7 @@ class Correspondence_Logic_Run
 		$this->generateReportEmailTableRow($body->html->body->table(0),'Correspondence Items', array("Post : ".$aCount['post'], "Email: ".$aCount['email'], "Total: ".$aCount['total']));
 		if (!$bDispatchFailed)
 		{
-			$this->generateReportEmailTableRow($body->html->body->table(0),'Dispatch Date', date('d/m/Y', strtotime($this->delivered_datetime))." - ".date('h:i:s', strtotime($this->delivered_datetime)));
+			$this->generateReportEmailTableRow($body->html->body->table(0),'Dispatch Date', date('d/m/Y', strtotime($this->delivered_datetime))." - ".date('H:i:s', strtotime($this->delivered_datetime)));
 			$this->generateReportEmailTableRow($body->html->body->table(0), 'Data File', $this->getExportFileName());
 			$this->generateReportEmailTableRow($body->html->body->table(0), 'Status', 'Dispatched');
 		}
@@ -412,7 +446,7 @@ class Correspondence_Logic_Run
 
 		$tr =& $table->tr();
 		$tr->td(0)->setValue('Process Date');
-		$tr->td(1)->setValue(date('d/m/Y', strtotime($this->processed_datetime))." - ".date('h:i:s', strtotime($this->processed_datetime)));
+		$tr->td(1)->setValue($this->processed_datetime==null?'process at delivery time':date('d/m/Y', strtotime($this->processed_datetime))." - ".date('H:i:s', strtotime($this->processed_datetime)));
 		$tr->td(0)->style = $strTHStyle;
 		$tr->td(1)->style = $strTDStyle;
 
