@@ -80,7 +80,22 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 
 
 		// Render and write to disk
-		$this->_oFileExporterCSV->renderToFile($this->_sFilePath);
+
+		$aLastError = error_get_last();
+		try
+		{
+			@$this->_oFileExporterCSV->renderToFile('c:/bob');($this->_sFilePath);
+			$aError = error_get_last();
+			if ($aLastError!=$aError)
+			{
+				throw new Correspondence_Dispatch_Exception(Correspondence_Dispatch_Exception::EXPORT_FILE_SAVE, "Message: ".$aError['message']." File: ".$aError['file']." Line: ".$aError['line'] );
+			}
+		}
+		catch(Exception $e)
+		{
+			throw new Correspondence_Dispatch_Exception(Correspondence_Dispatch_Exception::EXPORT_FILE_SAVE, $e );
+		}
+
 
 		if ($this->_bPreprinted)
 		{

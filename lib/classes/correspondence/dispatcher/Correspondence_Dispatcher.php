@@ -177,8 +177,9 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 			$tr->td(5)->setValue($oRun->getExportFileName());
 			$tr->td(5)->style = $sTableStyle;
 
-			$sStatus = $oRun->getDataValidationException()?"Processing Failed":"Dispatched";
+
 			$oException = $oRun->getDataValidationException();
+			$sStatus = $oException == null?"Dispatched":(get_class($oException) == 'Correspondence_Dispatch_Exception'?"Dispatch Failed":"Data Processing Failed");
 			$sFailureReason = $oException==null?null:$oException->failureReasonToString();//iError==CORRESPONDENCE_RUN_ERROR_NO_DATA?"(No Data)":($oException->iError==CORRESPONDENCE_RUN_ERROR_MALFORMED_INPUT?"(Invalid Data, see attched error report)":($oException->iError==CORRESPONDENCE_RUN_ERROR_SQL_SYNTAX?"(Invalid SQL)":null));
 			$sFailureReason .=$sFailureReason=="Invalid Data"?". See attached error report.":null;
 			$tr->td(6)->setValue($sStatus." - ".$sFailureReason);
@@ -221,8 +222,9 @@ class Correspondence_Dispatch_Exception extends Exception
 
 	public $iError;
 
-	const DATAFILEBUILD = 1;
-	const PDF_FILE_COPY = 2;
+	const DATAFILEBUILD 	= 1;
+	const PDF_FILE_COPY 	= 2;
+	const EXPORT_FILE_SAVE	= 3;
 
 
 	public function __construct($iErrorCode, $mException = null)
@@ -233,7 +235,7 @@ class Correspondence_Dispatch_Exception extends Exception
 
 	public function failureReasonToString()
 	{
-		return $this->iError==null?null:($this->iError==self::DATAFILEBUILD?"Error adding records to export file":($this->iError==self::PDF_FILE_COPY?"Could not create PDF for TAR file":($this->iError==CORRESPONDENCE_RUN_ERROR_SQL_SYNTAX?"Invalid SQL":null)));
+		return $this->iError==null?null:($this->iError==self::DATAFILEBUILD?"Error adding records to export file":($this->iError==self::PDF_FILE_COPY?"Could not create PDF for TAR file":($this->iError==self::EXPORT_FILE_SAVE?"Failed to save export file":null)));
 	}
 }
 
