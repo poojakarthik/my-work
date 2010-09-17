@@ -753,14 +753,11 @@ class Invoice_Run
 	// correspondence run so that they are delivered to the mail house
 	public function deliver()
 	{
-		// TODO: DEV ONLY -- UNCOMMENT THIS, in place so that commits can be rolled back and delivery still succeed
-		/*
 		// Verify that the invoice run is commited
 		if ($this->invoice_run_status_id !== INVOICE_RUN_STATUS_COMMITTED)
 		{
-			throw new Exception("Cannot deliver invoice run {$this->id}, it is not commited");
+			throw new Exception("Cannot deliver invoice run {$this->Id}, it is not commited");
 		}
-		*/
 		
 		$sInvoiceRunPDFBasePath	= PATH_INVOICE_PDFS ."pdf/$this->Id/";
 

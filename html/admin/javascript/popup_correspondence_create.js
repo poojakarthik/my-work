@@ -328,15 +328,14 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 		}
 		else if (oResponse.Message)
 		{
-			// TODO: DEV ONLY -- Disable for production
 			// IFrame ajax output, most likely php error
 			oConfig.iWidth	= 25;
 			Reflex_Popup.alert(
 				$T.div({class: 'popup-correspondence-create-error-content'},
-					$T.div('A server error has occured, please contact YBS for assistance.'),
-					$T.textarea(
+					$T.div('A server error has occured, please contact YBS for assistance.')
+					/*$T.textarea(
 						oResponse.Message
-					)
+					)*/
 				),
 				oConfig
 			);

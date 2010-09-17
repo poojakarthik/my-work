@@ -15,10 +15,6 @@ class JSON_Handler_Invoice_Run extends JSON_Handler
 	{
 		$bIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 		
-		// TODO: DEV ONLY -- Remove this, don't use transaction in this function
-		$oDataAccess	= DataAccess::getDataAccess();
-		$oDataAccess->TransactionStart();
-		
 		try
 		{
 			Log::getLog()->log("Attempting to commit invoice run {$iInvoiceRunId}");
@@ -27,9 +23,6 @@ class JSON_Handler_Invoice_Run extends JSON_Handler
 			
 			Log::getLog()->log("Invoice run {$iInvoiceRunId} committed successfully");
 			
-			// TODO: DEV ONLY -- Remove this, don't rollback (or use transaction at all)
-			$oDataAccess->TransactionRollback();
-			
 			return	array(
 						'bSuccess'	=> true,
 						'sDebug'	=> ($bIsGod ? $this->_sJSONDebug : false)
@@ -37,9 +30,6 @@ class JSON_Handler_Invoice_Run extends JSON_Handler
 		}
 		catch (Exception $oEx)
 		{
-			// TODO: DEV ONLY -- Remove this, don't use transaction in this function
-			$oDataAccess->TransactionRollback();
-			
 			return array(
 						"bSuccess"	=> false,
 						"sMessage"	=> ($bIsGod ? $e->getMessage() : ''),

@@ -65,8 +65,7 @@ class Cli_App_LateNoticeRun extends Cli
 			$aCorrespondenceToPost	= array();
 			
 			$aAccountsById	= array();
-			// TODO: DEV ONLY
-			$iLimit = 1;
+			
 			foreach($arrNoticeTypes as $intNoticeType => $intAutomaticInvoiceAction)
 			{
 				// This query is repeated by the GenerateLatePaymentNotices function. Consider revising.
@@ -142,9 +141,6 @@ class Cli_App_LateNoticeRun extends Cli
 					// We now need to email/print each of the notices that have been generated
 					foreach($mixResult['Details'] as $arrDetails)
 					{
-						// TODO: DEV ONLY
-						if ($iLimit == 0) break;
-				
 						$intCustGrp = $arrDetails['Account']['CustomerGroup'];
 						$strCustGroupName = $arrDetails['Account']['CustomerGroupName'];
 						$intAccountId = $arrDetails['Account']['AccountId'];
@@ -307,9 +303,6 @@ class Cli_App_LateNoticeRun extends Cli
 										
 										// Add to the samples queue for this notice type, giving it the account id as an email id
 										$oSamplesEmailQueue->push(Email_Notification::factory(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, self::EMAIL_BILLING_NOTIFICATIONS, $subject, NULL, $strContent, $attachments, TRUE), $intAccountId);
-										
-										// TODO: DEV ONLY
-										$iLimit--;
 									}
 								}
 
