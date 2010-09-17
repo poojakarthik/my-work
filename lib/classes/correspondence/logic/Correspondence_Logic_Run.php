@@ -349,7 +349,7 @@ class Correspondence_Logic_Run
 		$body = $this->generateReportEmailBody($sHeader,$sMessage );
 
 		$aCount = $this->getCorrespondenceCount();
-		$this->generateReportEmailTableRow($body->html->body->table(0),'Correspondence Items', array("Post:".$aCount['post'], "Email:".$aCount['email'], "Total: ".$aCount['total']));
+		$this->generateReportEmailTableRow($body->html->body->table(0),'Correspondence Items', array("Post :".$aCount['post'], "Email:".$aCount['email'], "Total: ".$aCount['total']));
 		if (!$bDispatchFailed)
 		{
 			$this->generateReportEmailTableRow($body->html->body->table(0),'Dispatch Date', date('d/m/Y', strtotime($this->delivered_datetime))." - ".date('h:i:s', strtotime($this->delivered_datetime)));
