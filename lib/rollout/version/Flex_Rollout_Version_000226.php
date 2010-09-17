@@ -279,28 +279,6 @@ class Flex_Rollout_Version_000226 extends Flex_Rollout_Version
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								),*/
 
-							/*	array
-								(
-									'sDescription'		=>	"Add table correspondence_template_system",
-									'sAlterSQL'			=>	"CREATE  TABLE IF NOT EXISTS correspondence_template_system (
-															  id BIGINT(20) NOT NULL AUTO_INCREMENT ,
-															  name VARCHAR(125) NOT NULL ,
-															  description VARCHAR(255) NOT NULL ,
-															  system_name VARCHAR(255) NOT NULL ,
-															  constant_name VARCHAR(255) NOT NULL ,
-															  correspondence_template_id BIGINT(20) NULL ,
-															  PRIMARY KEY (id) ,
-															  INDEX fk_correspondence_system_correspondence_template1 (correspondence_template_id ASC) ,
-															  CONSTRAINT fk_correspondence_system_correspondence_template1
-															    FOREIGN KEY (correspondence_template_id )
-															    REFERENCES correspondence_template (id )
-															    ON DELETE SET NULL
-															    ON UPDATE CASCADE)
-															ENGINE = InnoDB;",
-									'sRollbackSQL'		=>	"	DROP TABLE correspondence_template_system;",
-									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
-								),*/
-
 								/*array
 								(
 									'sDescription'		=>	"Add data to carrier_module_type table",
@@ -408,8 +386,37 @@ class Flex_Rollout_Version_000226 extends Flex_Rollout_Version
 										('Correspondence', 'Correspondence Notification Emails', 'EMAIL_NOTIFICATION_CORRESPONDENCE', 0);",
 									'sRollbackSQL'		=>	"	DELETE FROM email_notification WHERE name = 'Correspondence';",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=>	"Create invoice_run_type_correspondence_template table",
+									'sAlterSQL'			=>	"	CREATE TABLE invoice_run_type_correspondence_template
+																(
+																	id 							INT 			NOT NULL AUTO_INCREMENT,
+																	invoice_run_type_id 		BIGINT UNSIGNED	NOT NULL,
+																	correspondence_template_id 	BIGINT 			NOT NULL,
+																	PRIMARY KEY	(id),
+																	CONSTRAINT	fk_invoice_run_type_correspondence_template_invoice_run_type	FOREIGN KEY (invoice_run_type_id)			REFERENCES invoice_run_type (id)		ON UPDATE CASCADE	ON DELETE RESTRICT,
+																	CONSTRAINT	fk_invoice_run_type_correspondence_template_template			FOREIGN KEY (correspondence_template_id)	REFERENCES correspondence_template (id)	ON UPDATE CASCADE	ON DELETE RESTRICT
+																) ENGINE = InnoDB;",
+									'sRollbackSQL'		=>	"	DROP TABLE invoice_run_type_correspondence_template;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=>	"Create automatic_invoice_action_correspondence_template table",
+									'sAlterSQL'			=>	"	CREATE TABLE automatic_invoice_action_correspondence_template
+																(
+																	id 							INT 			NOT NULL AUTO_INCREMENT,
+																	automatic_invoice_action_id	BIGINT UNSIGNED	NOT NULL,
+																	correspondence_template_id	BIGINT 			NOT NULL,
+																	PRIMARY KEY	(id),
+																	CONSTRAINT	fk_automatic_invoice_action_correspondence_template_action		FOREIGN KEY (automatic_invoice_action_id)	REFERENCES automatic_invoice_action (id)	ON UPDATE CASCADE	ON DELETE RESTRICT,
+																	CONSTRAINT	fk_automatic_invoice_action_correspondence_template_template	FOREIGN KEY (correspondence_template_id)	REFERENCES correspondence_template (id)		ON UPDATE CASCADE	ON DELETE RESTRICT
+																) ENGINE = InnoDB;",
+									'sRollbackSQL'		=>	"	DROP TABLE automatic_invoice_action_correspondence_template;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								)
-
 							);
 
 
