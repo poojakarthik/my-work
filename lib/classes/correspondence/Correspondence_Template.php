@@ -112,14 +112,6 @@ class Correspondence_Template extends ORM_Cached
 		}
 	}
 
-	public static function getForSystemName($sSystemName)
-	{
-		$oSystemReference = Correspondence_Template_System::getForSystemName($sSystemName);
-		$oObject =  self::getForId($oSystemReference->correspondence_template_id);
-		$oObject->setSaved();
-		return $oObject;
-	}
-
 	public function setSaved()
 	{
 		$this->_bolSaved = true;

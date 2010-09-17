@@ -284,35 +284,6 @@ class Application_Handler_Correspondence extends Application_Handler
 		die;
 	}
 
-	public function interimInvoice()
-	{
-
-		$aCorrespondenceData = array(array
-        (
-            'account_id' => 1000179892,
-        	'customer_group_id'=>3,
-            'correspondence_delivery_method_id' => null,
-        	'account_name' => 'Bobs Yeruncle',
-        	'title' => 'Miss',
-            'first_name' => 'Cheryl',
-            'last_name' => 'Schird',
-            'address_line_1' => '121 Brisbane Street',
-            'address_line2' => '',
-            'suburb' => 'Beaudesert',
-            'postcode' => '4285',
-            'state' => 'QLD',
-            'email' => 'col_noemail@protalk.com.au',
-            'mobile' => '',
-            'landline' => '0755413848',
-            'pdf_file_path' => 'C:/wamp/www/flex/files/invoices/pdf/Important_Info.pdf'
-        )
-		);
-		$sTarFilePath = "c://wamp/www/flex/file/pdf/4910/";
-
-		Correspondence_Logic_Template::getForSystemName('INVOICE',$aCorrespondenceData)->createRun(true)->save();
-		die;
-	}
-
 	public function getForBatch()
 	{
 		$aRuns = Correspondence_Logic_Run::getForBatchId(49, true);

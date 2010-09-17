@@ -192,14 +192,6 @@ class Correspondence_Logic_Template
 	{
 
 	}
-
-	// NOTE: This is deprecated, TODO: DEV ONLY -- REMOVE ME
-	public static function getForSystemName($sSystemName, $aData = null)
-	{
-		$oSource = new Correspondence_Logic_Source_System($aData);
-		$oDO = Correspondence_Template::getForSystemName($sSystemName);
-		return new self ($oDO, $oSource);
-	}
 	
 	// getForInvoiceRunType: Uses the Invoice_Run_Type_Correspondence_Template linking class/table to retrieve the template for the given invoice run type
 	public static function getForInvoiceRunType($iInvoiceRunTypeId, $aData)
