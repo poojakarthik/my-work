@@ -83,6 +83,7 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 					catch(Exception $e)
 					{
 						$oRun->setException($e);
+						Log::getLog()->log("exception class: ".get_class($e)." Message: ".$e->getMessage());
 						Log::getLog()->log($oRun->id.' could not be dispatched. Reason: '.$e->failureReasonToString()."(message: ".$e->getMessage().")");
 						$oRun->sendDispatchEmail(true);
 					}
@@ -151,7 +152,6 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 		$sTableStyle = $strTDStyle;
 		foreach ($aRuns as $oRun)
 		{
-
 			$tr =& $table->tr();
 			$tr->td(0)->setValue(date('d/m/Y', strtotime($oRun->processed_datetime))." - ".date('h:i:s', strtotime($oRun->processed_datetime)));
 			$tr->td(0)->style = $sTableStyle;
@@ -169,7 +169,7 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 
 			$aCount = $oRun->getCorrespondenceCount();
 			$td = $tr->td(4);
-			$td->div(0)->setValue("Post:".$aCount['post']);
+			$td->div(0)->setValue("Post :".$aCount['post']);
 			$td->div(1)->setValue("Email:".$aCount['email']);
 			$td->div(2)->setValue("Total: ".$aCount['total']);
 			$tr->td(4)->style = $sTableStyle;
@@ -182,7 +182,7 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 			$sStatus = $oException == null?"Dispatched":(get_class($oException) == 'Correspondence_Dispatch_Exception'?"Dispatch Failed":"Data Processing Failed");
 			$sFailureReason = $oException==null?null:$oException->failureReasonToString();//iError==CORRESPONDENCE_RUN_ERROR_NO_DATA?"(No Data)":($oException->iError==CORRESPONDENCE_RUN_ERROR_MALFORMED_INPUT?"(Invalid Data, see attched error report)":($oException->iError==CORRESPONDENCE_RUN_ERROR_SQL_SYNTAX?"(Invalid SQL)":null));
 			$sFailureReason .=$sFailureReason=="Invalid Data"?". See attached error report.":null;
-			$tr->td(6)->setValue($sStatus." - ".$sFailureReason);
+			$tr->td(6)->setValue($sFailureReason == null?$sStatus:$sStatus." - ".$sFailureReason);
 			$tr->td(6)->style = $sTableStyle;
 			if ($oException!=null && $oException->sFileName!=null)
 			{
@@ -212,9 +212,6 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 		$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
 		$oEmail->send();
 	}
-
-
-
 }
 
 class Correspondence_Dispatch_Exception extends Exception
@@ -222,9 +219,12 @@ class Correspondence_Dispatch_Exception extends Exception
 
 	public $iError;
 
-	const DATAFILEBUILD 	= 1;
-	const PDF_FILE_COPY 	= 2;
-	const EXPORT_FILE_SAVE	= 3;
+	const DATAFILEBUILD 		= 1;
+	const PDF_FILE_COPY 		= 2;
+	const EXPORT_FILE_SAVE		= 3;
+	const EXPORT_TAR_FILE_SAVE 	= 4;
+	const FILE_DELIVER 			= 5;
+	const TAR_FILE_DELIVER 		= 6;
 
 
 	public function __construct($iErrorCode, $mException = null)
@@ -235,7 +235,7 @@ class Correspondence_Dispatch_Exception extends Exception
 
 	public function failureReasonToString()
 	{
-		return $this->iError==null?null:($this->iError==self::DATAFILEBUILD?"Error adding records to export file":($this->iError==self::PDF_FILE_COPY?"Could not create PDF for TAR file":($this->iError==self::EXPORT_FILE_SAVE?"Failed to save export file":null)));
+		return $this->iError==null?null:($this->iError==self::DATAFILEBUILD?"Error adding records to export file":($this->iError==self::PDF_FILE_COPY?"Could not create PDF for TAR file":($this->iError==self::EXPORT_FILE_SAVE?"Failed to save export file":($this->iError==self:: EXPORT_TAR_FILE_SAVE?"Failed to create PDF TAR file":($this->iError==self::FILE_DELIVER?"Failed to deliver datafile to mailing house":"Failed to deliver PDF TAR file to mailing house")))));
 	}
 }
 

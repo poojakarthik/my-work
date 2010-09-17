@@ -77,35 +77,35 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 
 	public function render()
 	{
-
-
-		// Render and write to disk
-
-		$aLastError = error_get_last();
 		try
 		{
-			@$this->_oFileExporterCSV->renderToFile('c:/bob');($this->_sFilePath);
-			$aError = error_get_last();
-			if ($aLastError!=$aError)
-			{
-				throw new Correspondence_Dispatch_Exception(Correspondence_Dispatch_Exception::EXPORT_FILE_SAVE, "Message: ".$aError['message']." File: ".$aError['file']." Line: ".$aError['line'] );
-			}
+			$aLastError = error_get_last();
+			@$this->_oFileExporterCSV->renderToFile($this->_sFilePath);
+			//$aError = error_get_last();
+			//if ($aLastError!=$aError)
+			//{
+			//	throw new Correspondence_Dispatch_Exception(Correspondence_Dispatch_Exception::EXPORT_FILE_SAVE, "Message: ".$aError['message']." File: ".$aError['file']." Line: ".$aError['line'] );
+			//}
 		}
 		catch(Exception $e)
 		{
 			throw new Correspondence_Dispatch_Exception(Correspondence_Dispatch_Exception::EXPORT_FILE_SAVE, $e );
 		}
 
-
 		if ($this->_bPreprinted)
 		{
-			// Create tar file
-			require_once("Archive/Tar.php");
-
-			$oTar		= new Archive_Tar($this->_aTARFilePath);
-			if (!$oTar->createModify($this->_aPDFFilenames, '', $this->_sInvoiceRunPDFBasePath))
+			try
 			{
-				 throw new Exception("Failed to create tar file for invoice run {$this->Id}. Files = ".print_r($aFiles, true));
+				require_once("Archive/Tar.php");
+				$oTar		= new Archive_Tar($this->_aTARFilePath);
+				if (!$oTar->createModify($this->_aPDFFilenames, '', $this->_sInvoiceRunPDFBasePath))
+				{
+					 throw new Exception("Failed to create tar file for Files = ".print_r($this->_aPDFFilenames, true) );
+				}
+			}
+			catch(Exception $e)
+			{
+				throw new Correspondence_Dispatch_Exception(Correspondence_Dispatch_Exception::EXPORT_TAR_FILE_SAVE, $e);
 			}
 
 			foreach($this->_aPDFFilenames as $sFile)
@@ -114,15 +114,30 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 			}
 		}
 
-		// TODO: Do we need to return anything special?
+
 		return $this;
 	}
 
 	public function deliver()
 	{
-		$this->_oFileDeliver->connect()->deliver($this->_sFilePath)->disconnect();
+		try
+		{
+			$this->_oFileDeliver->connect()->deliver($this->_sFilePath)->disconnect();
+		}
+		catch(Exception $e)
+		{
+			throw new Correspondence_Dispatch_Exception(Correspondence_Dispatch_Exception::FILE_DELIVER, $e);
+		}
+
+		try
+		{
 		if ($this->_bPreprinted)
 			$this->_oFileDeliver->connect()->deliver($this->_aTARFilePath)->disconnect();
+		}
+		catch (Exception $e)
+		{
+			throw new Correspondence_Dispatch_Exception(Correspondence_Dispatch_Exception::TAR_FILE_DELIVER, $e);
+		}
 		return $this;
 	}
 
