@@ -168,14 +168,28 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 
 		foreach ($this->_oRun->getCorrespondence() as $oCorrespondence)
 		{
-			$this->addRecord($oCorrespondence->toArray(true));
+			try
+			{
+				$this->addRecord($oCorrespondence->toArray(true));
+			}
+			catch (Exception $e)
+			{
+				throw new Correspondence_Dispatch_Exception(Correspondence_Dispatch_Exception::DATAFILEBUILD, $e);
+			}
+
 			if ($this->_bPreprinted)
 			{
 				if ($this->_sInvoiceRunPDFBasePath == null)
 					$this->_sInvoiceRunPDFBasePath = substr ($oCorrespondence->pdf_file_path , 0 , strrpos ( $oCorrespondence->pdf_file_path, "/" )+1 );
 
 				$sTempPdfName = $this->_sInvoiceRunPDFBasePath.str_pad($oCorrespondence->id, 10, "0", STR_PAD_LEFT).'.pdf';
-				copy ( $oCorrespondence->pdf_file_path , $sTempPdfName );
+				$aLastError = error_get_last();
+				@copy ( $oCorrespondence->pdf_file_path , $sTempPdfName );
+				$aError = error_get_last();
+				if ($aLastError!=$aError)
+				{
+					throw new Correspondence_Dispatch_Exception(Correspondence_Dispatch_Exception::PDF_FILE_COPY, "Message: ".$aError['message']." File: ".$aError['file']." Line: ".$aError['line'] );
+				}
 				$this->_aPDFFilenames[]=$sTempPdfName;
 			}
 

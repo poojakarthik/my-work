@@ -73,10 +73,21 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 				if (!$oRun->getDataValidationException())
 				{
 					Log::getLog()->log('Dispatching Run '.$oRun->id);
-					$oDispatcher = $oRun->getCarrierModule();
-					$oDispatcher->sendRun($oRun, $oBatch->id);
-					$oRun->save();
-					$oRun->sendDispatchEmail();
+					try
+					{
+						$oDispatcher = $oRun->getCarrierModule();
+						$oDispatcher->sendRun($oRun, $oBatch->id);
+						$oRun->save();
+						$oRun->sendDispatchEmail();
+					}
+					catch(Exception $e)
+					{
+						$oRun->setException($e);
+						Log::getLog()->log($oRun->id.' could not be dispatched. Reason: '.$e->failureReasonToString()."(message: ".$e->getMessage().")");
+						$oRun->sendDispatchEmail(true);
+					}
+
+
 				}
 			}
 			Log::getLog()->log('Sending Batch Delivery Email');
@@ -168,8 +179,9 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 
 			$sStatus = $oRun->getDataValidationException()?"Processing Failed":"Dispatched";
 			$oException = $oRun->getDataValidationException();
-			$sFailureReason = $oException==null?null:$oException->iError==CORRESPONDENCE_RUN_ERROR_NO_DATA?"(No Data)":($oException->iError==CORRESPONDENCE_RUN_ERROR_MALFORMED_INPUT?"(Invalid Data, see attched error report)":($oException->iError==CORRESPONDENCE_RUN_ERROR_SQL_SYNTAX?"(Invalid SQL)":null));
-			$tr->td(6)->setValue($sStatus." ".$sFailureReason);
+			$sFailureReason = $oException==null?null:$oException->failureReasonToString();//iError==CORRESPONDENCE_RUN_ERROR_NO_DATA?"(No Data)":($oException->iError==CORRESPONDENCE_RUN_ERROR_MALFORMED_INPUT?"(Invalid Data, see attched error report)":($oException->iError==CORRESPONDENCE_RUN_ERROR_SQL_SYNTAX?"(Invalid SQL)":null));
+			$sFailureReason .=$sFailureReason=="Invalid Data"?". See attached error report.":null;
+			$tr->td(6)->setValue($sStatus." - ".$sFailureReason);
 			$tr->td(6)->style = $sTableStyle;
 			if ($oException!=null && $oException->sFileName!=null)
 			{
@@ -202,6 +214,27 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 
 
 
+}
+
+class Correspondence_Dispatch_Exception extends Exception
+{
+
+	public $iError;
+
+	const DATAFILEBUILD = 1;
+	const PDF_FILE_COPY = 2;
+
+
+	public function __construct($iErrorCode, $mException = null)
+	{
+		parent::__construct($mException);
+		$this->iError		= $iErrorCode;
+	}
+
+	public function failureReasonToString()
+	{
+		return $this->iError==null?null:($this->iError==self::DATAFILEBUILD?"Error adding records to export file":($this->iError==self::PDF_FILE_COPY?"Could not create PDF for TAR file":($this->iError==CORRESPONDENCE_RUN_ERROR_SQL_SYNTAX?"Invalid SQL":null)));
+	}
 }
 
 
