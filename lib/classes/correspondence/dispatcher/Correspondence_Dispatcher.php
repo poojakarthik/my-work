@@ -121,7 +121,7 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 		$h3->style = $sStyle;
 		//$body->html->body->h3->style = $sStyle;
 		$h4 = $body->html->body->h4();
-		$h4->setValue ("Batch ID ".$oBatch->id." was dispatched on ".date('d/m/Y', strtotime($oBatch->batch_datetime))." - ".date('h:i:s', strtotime($oBatch->batch_datetime))." Run details:");
+		$h4->setValue ("Batch ID ".$oBatch->id." was dispatched on ".date('d/m/Y', strtotime($oBatch->batch_datetime))." - ".date('H:i:s', strtotime($oBatch->batch_datetime))." Run details:");
 		$h4->style = $sStyle;
 
 		$table =& $body->html->body->table();
@@ -153,7 +153,7 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 		foreach ($aRuns as $oRun)
 		{
 			$tr =& $table->tr();
-			$tr->td(0)->setValue(date('d/m/Y', strtotime($oRun->processed_datetime))." - ".date('h:i:s', strtotime($oRun->processed_datetime)));
+			$tr->td(0)->setValue(date('d/m/Y', strtotime($oRun->processed_datetime))." - ".date('H:i:s', strtotime($oRun->processed_datetime)));
 			$tr->td(0)->style = $sTableStyle;
 
 			$sSourceType = Correspondence_Source_Type::getForId($oRun->getSourceType())->name;
