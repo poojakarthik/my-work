@@ -13,14 +13,14 @@ class CDR extends ORM
 	 * __construct()
 	 *
 	 * constructor
-	 * 
+	 *
 	 * constructor
 	 *
 	 * @param	array	$arrProperties 		[optional]	Associative array defining the class with keys for each field of the table
 	 * @param	boolean	$bolLoadById		[optional]	Automatically load the object with the passed Id
-	 * 
+	 *
 	 * @return	void
-	 * 
+	 *
 	 * @constructor
 	 */
 	public function __construct($arrProperties=Array(), $bolLoadById=FALSE)
@@ -29,13 +29,48 @@ class CDR extends ORM
 		parent::__construct($arrProperties, $bolLoadById);
 	}
 	
+	public function rate($bForceReRate=false)
+	{
+		if (in_array($oRate->Status, array(CDR_NORMALISED, CDR_RERATE, CDR_RATE_NOT_FOUND)) || ($bForceReRate && $this->Rate))
+		{
+			$this->Charge	= $this->calculcateCharge(false);
+			
+			// SERVICE TOTALS
+			// TODO
+			
+			// DISCOUNTING
+			// TODO
+			
+			
+			
+			$this->save();
+		}
+		else
+		{
+			throw new Exception("Cannot Rate CDR #{$this->Id} with Status ".GetConstantName($this->Status, 'CDR').((!$bForceReRate) ? '' : ' (even when forced)'));
+		}
+	}
+	
+	public function calculcateCharge($bUseExistingRate=true)
+	{
+		if (in_array($oRate->Status, array(CDR_NORMALISED, CDR_RERATE, CDR_RATE_NOT_FOUND, CDR_RATED, CDR_TEMP_INVOICE, CDR_INVOICED)))
+		{
+			$oRate	= ($bUseExistingRate && $this->Rate) ? Rate::getForId($this->Rate) : Rate::getForCDR($this);
+			return $oRate->calculateChargeForCDR($this);
+		}
+		else
+		{
+			throw new Exception("Cannot calculate Charge for CDR #{$this->Id} with Status ".GetConstantName($this->Status, 'CDR'));
+		}
+	}
+	
 	/**
 	 * updateQuarantineStatus()
 	 *
 	 * Updates the Quarantine Status for this CDR
-	 * 
+	 *
 	 * @return	void
-	 * 
+	 *
 	 * @constructor
 	 */
 	public function updateQuarantineStatus()
@@ -61,10 +96,10 @@ class CDR extends ORM
 	 * getForInvoice
 	 *
 	 * Returns all CDRs for the given invoice
-	 * 
+	 *
 	 * @param	mixed	$mxdInvoice		integer			: Invoice Id representing the invoice in question
 	 * 									Invoice object	: Representing the invoice in question
-	 * 
+	 *
 	 * @return	array					array of associative arrays representing the cdr records
 	 * @method
 	 */
@@ -85,20 +120,20 @@ class CDR extends ORM
 		$cdrDb = Data_Source::get($dataSource);
 		if ($dataSource == FLEX_DATABASE_CONNECTION_CDR)
 		{
-			$strCdrSelect = 
+			$strCdrSelect =
 				'SELECT id as "Id", fnn as "FNN", file as "File", carrier as "Carrier", carrier_ref as "CarrierRef", source as "Source", destination as "Destination", start_date_time as "StartDatetime", end_date_time as "EndDatetime", units as "Units", account_group as "AccountGroup", account as "Account", service as "Service", cost as "Cost", status as "Status", cdr as "CDR", description as "Description", destination_code as "DestinationCode", record_type as "RecordType", service_type as "ServiceType", charge as "Charge", rate as "Rate", normalised_on as "NormalisedOn", rated_on as "RatedOn", invoice_run_id, sequence_no as "SequenceNo", credit as "Credit" ' .
 				"  FROM cdr_invoiced " .
-				" WHERE account = " . $cdrDb->quote($objInvoice->account) . 
+				" WHERE account = " . $cdrDb->quote($objInvoice->account) .
 				"   AND invoice_run_id = " . $cdrDb->quote($objInvoice->invoiceRunId) .
 				" ORDER BY service_type ASC, fnn ASC, record_type ASC, start_date_time ASC";
 		}
 		else
 		{
 			// Must be in CDR table of default db
-			$strCdrSelect = 
+			$strCdrSelect =
 				'SELECT Id as "Id", FNN as "FNN", File as "File", Carrier as "Carrier", CarrierRef as "CarrierRef", Source as "Source", Destination as "Destination", StartDatetime as "StartDatetime", EndDatetime as "EndDatetime", Units as "Units", AccountGroup as "AccountGroup", Account as "Account", Service as "Service", Cost as "Cost", Status as "Status", CDR as "CDR", Description as "Description", DestinationCode as "DestinationCode", RecordType as "RecordType", ServiceType as "ServiceType", Charge as "Charge", Rate as "Rate", NormalisedOn as "NormalisedOn", RatedOn as "RatedOn", invoice_run_id, SequenceNo as "SequenceNo", Credit as "Credit" ' .
 				"  FROM CDR " .
-				" WHERE Account = " . $cdrDb->quote($objInvoice->account) . 
+				" WHERE Account = " . $cdrDb->quote($objInvoice->account) .
 				"   AND invoice_run_id = " . $cdrDb->quote($objInvoice->invoiceRunId) .
 				" ORDER BY ServiceType ASC, FNN ASC, RecordType ASC, StartDatetime ASC";
 		}
@@ -122,10 +157,10 @@ class CDR extends ORM
 	 *
 	 * Returns the name of the data source which currently stores the CDRs for the invoice run specified
 	 * The way it does this is, if it finds at least 1 cdr in the flex data source referencing this invoice run, then it assumes all the cdrs are in the flex
-	 * data source, else it will assume the CDRs are in the cdr data source (but won't actually test this) 
-	 * 
+	 * data source, else it will assume the CDRs are in the cdr data source (but won't actually test this)
+	 *
 	 * @param	int		$intInvoiceRunId	The invoice run id for the CDRs to find
-	 * 
+	 *
 	 * @return	string						either FLEX_DATABASE_CONNECTION_DEFAULT or FLEX_DATABASE_CONNECTION_CDR
 	 * @method
 	 */
@@ -178,11 +213,11 @@ class CDR extends ORM
 					FROM 	CDR c INNER JOIN RecordType t ON c.RecordType = t.Id
 					WHERE 	invoice_run_id = $iInvoiceRunId
 					AND 	c.Id = $iCdrId
-				";		
+				";
 			}
 			else
 			{
-				// PostgreSQL Database, 
+				// PostgreSQL Database,
 				$sCdr = "
 					SELECT 	t.name as \"RecordType\", c.description as \"Description\", c.source as \"Source\", c.destination as \"Destination\", c.end_date_time as \"EndDatetime\", c.start_date_time as \"StartDatetime\", c.units as \"Units\", t.display_type as \"DisplayType\", c.charge as \"Charge\",
 						   	c.file as \"FileId\", c.carrier as \"CarrierId\", c.carrier_ref as \"CarrierRef\", c.cost as \"Cost\", c.status as \"Status\", c.destination_code as \"DestinationCode\", c.rate as \"RateId\", c.normalised_on as \"NormalisedOn\", c.rated_on as \"RatedOn\", c.sequence_no as \"SequenceNo\", c.credit as \"Credit\", c.cdr as \"RawCDR\"
@@ -248,9 +283,9 @@ class CDR extends ORM
 	 * Access a Static Cache of Prepared Statements used by this Class
 	 *
 	 * Access a Static Cache of Prepared Statements used by this Class
-	 * 
+	 *
 	 * @param	string		$strStatement						Name of the statement
-	 * 
+	 *
 	 * @return	Statement										The requested Statement
 	 *
 	 * @method
