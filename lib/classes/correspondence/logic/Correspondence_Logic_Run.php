@@ -312,19 +312,7 @@ class Correspondence_Logic_Run
 			$sFileName = substr($sErrorReportFilePath, strrpos( $sErrorReportFilePath , "/" )+1);
 			$oEmail->addAttachment($sFile, $sFileName, 'text/csv');
 		}
-		/*$sHtml = $body->saveHTML();
-
-				  $myFile = "c:/wamp/www/email text.html";
-			$fh = fopen($myFile, 'w') or die("can't open file");
-			fwrite($fh, $sHtml);
-			fclose($fh);*/
-
-		$body->div();
-		$div = $body->div();
-		$div->setValue("Regards");
-		$div->style = $sStyle;
-		$div = $body->div();
-		$div->setValue("Flexor");
+		self::appendEmailSignature($body);
 
 		$sHtml = $body->saveHTML();
 		$oEmail->setBodyHTML($sHtml);
@@ -349,7 +337,7 @@ class Correspondence_Logic_Run
 		$body = $this->generateReportEmailBody($sHeader,$sMessage );
 
 		$aCount = $this->getCorrespondenceCount();
-		$this->generateReportEmailTableRow($body->html->body->table(0),'Correspondence Items', array("Post :".$aCount['post'], "Email:".$aCount['email'], "Total: ".$aCount['total']));
+		$this->generateReportEmailTableRow($body->html->body->table(0),'Correspondence Items', array("Post : ".$aCount['post'], "Email: ".$aCount['email'], "Total: ".$aCount['total']));
 		if (!$bDispatchFailed)
 		{
 			$this->generateReportEmailTableRow($body->html->body->table(0),'Dispatch Date', date('d/m/Y', strtotime($this->delivered_datetime))." - ".date('h:i:s', strtotime($this->delivered_datetime)));
@@ -360,20 +348,8 @@ class Correspondence_Logic_Run
 		{
 			$this->generateReportEmailTableRow($body->html->body->table(0), 'Status', 'Dispatch Failed. Reason:'.$this->_oDataValidationException->failureReasonToString());
 		}
-
-		$body->div();
-		$div = $body->div();
-		$div->setValue("Regards");
-		$div->style = $sStyle;
-		$div = $body->div();
-		$div->setValue("Flexor");
-
+		self::appendEmailSignature($body);
 		$sHtml = $body->saveHTML();
-		//For query debug purpose
-	/*	  $myFile = "c:/wamp/www/email text.html";
-			$fh = fopen($myFile, 'w') or die("can't open file");
-			fwrite($fh, $sHtml);
-			fclose($fh);*/
 
 		$oEmail->setBodyHTML($sHtml);
 		$oEmployee = Employee::getForId($this->created_employee_id);
@@ -483,7 +459,16 @@ class Correspondence_Logic_Run
 		return new Correspondence_Logic_Run(Correspondence_Run::getForId($iId),null, $bIncludeCorrespondence);
 	}
 
-
+	public static function appendEmailSignature(&$body)
+	{
+		$body->div();
+		$div = $body->div();
+		$div->setValue("Regards");
+		$div->style = "font-family: Calibri, Arial, sans-serif;";
+		$div = $body->div();
+		$div->setValue("Flexor");
+		$div->style = "font-family: Calibri, Arial, sans-serif;font-weight:bold;";;
+	}
 
 	public function __get($sField)
 	{
