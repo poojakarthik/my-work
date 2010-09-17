@@ -846,7 +846,7 @@ class Invoice_Run
 		{
 			Log::getLog()->log("Create correspondence run");
 			
-			$oTemplate	= Correspondence_Logic_Template::getForSystemName('INVOICE', $aCorrespondenceData);
+			$oTemplate	= $this->getCorrespondenceTemplate($aCorrespondenceData);
 			
 			Log::getLog()->log("Got template");
 			
@@ -1349,6 +1349,11 @@ class Invoice_Run
 		$objEmailNotification->html	= $strHTMLContent;
 
 		return $objEmailNotification->send();
+	}
+	
+	public function getCorrespondenceTemplate($aData)
+	{
+		return Correspondence_Logic_Template::getForInvoiceRunType($this->invoice_run_type_id, $aData);
 	}
 
 	//------------------------------------------------------------------------//

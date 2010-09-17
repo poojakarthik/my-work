@@ -4,6 +4,8 @@ class Email_Queue
 {
 	private static $_aQueues	= array();
 	
+	const DEFAULT_QUEUE_NAME	= 'default';
+	
 	private $_bIsSent		= false;
 	private $_aEmails		= array();
 	private $_bCommited		= false;
@@ -73,7 +75,7 @@ class Email_Queue
 		return $this->_aEmails;
 	}
 	
-	public static function get($sQueueName)
+	public static function get($sQueueName=self::DEFAULT_QUEUE_NAME)
 	{
 		if (!isset(self::$_aQueues[$sQueueName]))
 		{

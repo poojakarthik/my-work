@@ -65,7 +65,8 @@ class Cli_App_LateNoticeRun extends Cli
 			$aCorrespondenceToPost	= array();
 			
 			$aAccountsById	= array();
-			
+			// TODO: DEV ONLY
+			$iLimit = 1;
 			foreach($arrNoticeTypes as $intNoticeType => $intAutomaticInvoiceAction)
 			{
 				// This query is repeated by the GenerateLatePaymentNotices function. Consider revising.
@@ -131,13 +132,19 @@ class Cli_App_LateNoticeRun extends Cli
 						}
 					}
 
-					$aCorrespondenceToPost[$intNoticeType]	= array();
-					$oCustomerEmailQueue					= Email_Queue::get("CUSTOMER_{$strLetterType}");
-					$oSamplesEmailQueue						= Email_Queue::get("SAMPLES_{$strLetterType}");
+					// Create array to hold the correspondence for this automatic invoice action (id)
+					$aCorrespondenceToPost[$intAutomaticInvoiceAction]	= array();
+					
+					// Create a customer and samples queue for the letter type
+					$oCustomerEmailQueue	= Email_Queue::get("CUSTOMER_{$strLetterType}");
+					$oSamplesEmailQueue		= Email_Queue::get("SAMPLES_{$strLetterType}");
 					
 					// We now need to email/print each of the notices that have been generated
 					foreach($mixResult['Details'] as $arrDetails)
 					{
+						// TODO: DEV ONLY
+						if ($iLimit == 0) break;
+				
 						$intCustGrp = $arrDetails['Account']['CustomerGroup'];
 						$strCustGroupName = $arrDetails['Account']['CustomerGroupName'];
 						$intAccountId = $arrDetails['Account']['AccountId'];
@@ -259,7 +266,7 @@ class Cli_App_LateNoticeRun extends Cli
 										}
 									}
 									
-									$this->log("Generating Corerspondence Data for account ". $intAccountId);
+									$this->log("Generating Correspondence Data for account ". $intAccountId);
 									
 									// Cache the correspondence data for the notice
 									$aCorrespondence	= 	array(
@@ -280,7 +287,7 @@ class Cli_App_LateNoticeRun extends Cli
 																'landline'							=> $arrDetails['Account']['Landline'],
 																'pdf_file_path'						=> $targetFile
 															);
-									$aCorrespondenceToPost[$intNoticeType][]	= $aCorrespondence;
+									$aCorrespondenceToPost[$intAutomaticInvoiceAction][]	= $aCorrespondence;
 									
 									// This is the sample Post Notice -- email
 									if ($this->_bolTestRun && $arrSampleAccounts[DELIVERY_METHOD_POST][$intCustGrp] === $intAccountId)
@@ -300,6 +307,9 @@ class Cli_App_LateNoticeRun extends Cli
 										
 										// Add to the samples queue for this notice type, giving it the account id as an email id
 										$oSamplesEmailQueue->push(Email_Notification::factory(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, self::EMAIL_BILLING_NOTIFICATIONS, $subject, NULL, $strContent, $attachments, TRUE), $intAccountId);
+										
+										// TODO: DEV ONLY
+										$iLimit--;
 									}
 								}
 
@@ -415,8 +425,33 @@ class Cli_App_LateNoticeRun extends Cli
 				}
 			}
 			
-			// Create correspondence runs containing all notices to be posted
-			$this->createCorrespondenceRuns($aCorrespondenceToPost);
+			// Generate a correspondence run for each notice type and to it correspondence that is to be posted for that notice type
+			$this->log("START: Creating Correspondence Runs");
+			foreach ($aCorrespondenceToPost as $iAutomaticInvoiceAction => $aCorrespondenceData)
+			{
+				$this->log("Creating Correspondence Run for automatic invoice action '{$iAutomaticInvoiceAction}'");
+				try
+				{
+					// Create Correspondence Run using the pre-deterimined (System) Correspondence Template name
+					$this->log("Retrieving Template");
+					
+					// Get the template
+					$oTemplate	= Correspondence_Logic_Template::getForAutomaticInvoiceAction($iAutomaticInvoiceAction, $aCorrespondenceData);
+					
+					$this->log("Template retrieved, creating Correspondence Run");
+					
+					$oRun	= $oTemplate->createRun(true);
+					
+					$this->log("Run created succesfully (id={$oRun->id})");
+				}
+				catch (Correspondence_DataValidation_Exception $oEx)
+				{
+					// Use the exception information to display a meaningful message
+					$sErrorType	= GetConstantName($oEx->iError, 'correspondence_run_error');
+					throw new Exception("Correspondence Run Processing Failed:\n - Validation errors in the correspondence data for the run: \n -- Error Type: $oEx->iError => '{$sErrorType}'");
+				}
+			}
+			$this->log("FINISHED: Creating Correspondence Runs");
 			
 			if (!$this->_bolTestRun)
 			{
@@ -427,9 +462,8 @@ class Cli_App_LateNoticeRun extends Cli
 				}
 			}
 			
-			$this->log("START: Sending all emails that have been queued");
-			
 			// Attempt to send all emails
+			$this->log("START: Sending all emails that have been queued");
 			foreach($arrNoticeTypes as $iNoticeType => $iAutomaticInvoiceAction)
 			{
 				$sLetterType	= GetConstantDescription($iNoticeType, 'DocumentTemplateType');
@@ -516,7 +550,6 @@ class Cli_App_LateNoticeRun extends Cli
 					}
 				}
 			}
-			
 			$this->log("FINISHED: Sending all emails that have been queued");
 			
 			// We now need to build a report detailing actions taken for each of the customer groups 
@@ -651,57 +684,6 @@ class Cli_App_LateNoticeRun extends Cli
 		}
 	}
 	
-	private function createCorrespondenceRuns($aCorrespondenceToPost=array())
-	{
-		$this->log("Creating Correspondence Runs");
-
-		// Generate a correspondence run for each notice type and to it correspondence that is to be posted for that notice type
-		foreach ($aCorrespondenceToPost as $iNoticeType => $aCorrespondenceData)
-		{
-			$this->log("Creating Correspondence Run for document template type '{$iNoticeType}'");
-			
-			// Determine the Correspondence (System) Template name from the notice type
-			$sTemplateName	= null;
-			switch ($iNoticeType)
-			{
-				case DOCUMENT_TEMPLATE_TYPE_FRIENDLY_REMINDER:
-					$sTemplateName	= 'FRIENDLY_REMINDER';
-					break;
-				case DOCUMENT_TEMPLATE_TYPE_OVERDUE_NOTICE:
-					$sTemplateName	= 'OVERDUE_NOTICE';
-					break;
-				case DOCUMENT_TEMPLATE_TYPE_SUSPENSION_NOTICE:
-					$sTemplateName	= 'SUSPENSION_NOTICE';
-					break;
-				case DOCUMENT_TEMPLATE_TYPE_FINAL_DEMAND:
-					$sTemplateName	= 'FINAL_DEMAND';
-					break;
-			}
-			
-			$this->log("... using Correspondence Template '{$sTemplateName}'");
-			
-			try
-			{
-				// Create Correspondence Run using the pre-deterimined (System) Correspondence Template name
-				$this->log("Retrieving Template");
-				
-				$oTemplate	= Correspondence_Logic_Template::getForSystemName($sTemplateName, $aCorrespondenceData);
-				
-				$this->log("Template retrieved, creating Correspondence Run");
-				
-				$oRun	= $oTemplate->createRun(true);
-				
-				$this->log("Run created succesfully (id={$oRun->id})");
-			}
-			catch (Correspondence_DataValidation_Exception $oEx)
-			{
-				// Use the exception information to display a meaningful message
-				$sErrorType	= GetConstantName($oEx->iError, 'correspondence_run_error');
-				throw new Exception("Correspondence Run Processing Failed:\n - Validation errors in the correspondence data for the run: \n -- Error Type: $oEx->iError => '{$sErrorType}'");
-			}
-		}
-	}
-
 	private function changeInvoiceRunAutoActionDateTime($invoiceRunId, $intAutomaticInvoiceAction)
 	{
 		$qryQuery = new Query();

@@ -193,11 +193,28 @@ class Correspondence_Logic_Template
 
 	}
 
+	// NOTE: This is deprecated, TODO: DEV ONLY -- REMOVE ME
 	public static function getForSystemName($sSystemName, $aData = null)
 	{
 		$oSource = new Correspondence_Logic_Source_System($aData);
 		$oDO = Correspondence_Template::getForSystemName($sSystemName);
 		return new self ($oDO, $oSource);
+	}
+	
+	// getForInvoiceRunType: Uses the Invoice_Run_Type_Correspondence_Template linking class/table to retrieve the template for the given invoice run type
+	public static function getForInvoiceRunType($iInvoiceRunTypeId, $aData)
+	{
+		$oSource	= new Correspondence_Logic_Source_System($aData);
+		$oDO 		= Invoice_Run_Type_Correspondence_Template::getTemplateForInvoiceRunType($iInvoiceRunTypeId);
+		return new self($oDO, $oSource);
+	}
+
+	// getForInvoiceRunType: Uses the Automatic_Invoice_Action_Correspondence_Template linking class/table to retrieve the template for the given automatic invoice action
+	public static function getForAutomaticInvoiceAction($iAutomaticInvoiceActionId, $aData)
+	{
+		$oSource	= new Correspondence_Logic_Source_System($aData);
+		$oDO 		= Automatic_Invoice_Action_Correspondence_Template::getTemplateForAutomaticInvoiceAction($iAutomaticInvoiceActionId);
+		return new self($oDO, $oSource);
 	}
 
 	public static function getForId($iId, $oSource = null)
