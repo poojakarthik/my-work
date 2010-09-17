@@ -409,7 +409,6 @@ abstract class Correspondence_Logic_Source
 }
 
 
-
 class Correspondence_DataValidation_Exception extends Exception
 {
 	public $aReport;
@@ -430,7 +429,7 @@ class Correspondence_DataValidation_Exception extends Exception
 		$this->iError		= $iError;
 	}
 
-	public function getFailureReason()
+	public function failureReasonToString()
 	{
 
 		return $this->iError==null?null:($this->iError==CORRESPONDENCE_RUN_ERROR_NO_DATA?"No Data":($this->iError==CORRESPONDENCE_RUN_ERROR_MALFORMED_INPUT?"Invalid Data":($this->iError==CORRESPONDENCE_RUN_ERROR_SQL_SYNTAX?"Invalid SQL":null)));

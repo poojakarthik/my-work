@@ -40,6 +40,11 @@ class Correspondence_Logic_Run
 		return $this->_oCorrespondenceTemplate->carrier_id;
 	}
 
+	public function setException($oException)
+	{
+		$this->_oDataValidationException = $oException;
+	}
+
 	public function process($bNoDataOk = false)
 	{
 		try
@@ -212,7 +217,7 @@ class Correspondence_Logic_Run
 				{
 					if (get_class($e)!= 'Correspondence_DataValidation_Exception')//datavalidation exceptions have already been dealt with at this stage.
 						throw $e;
-					Log::getLog()->log('Run '.$oRun->id.' failed to process due to '.$e->getFailureReason());
+					Log::getLog()->log('Run '.$oRun->id.' failed to process due to '.$e->failureReasonToString());
 				}
 			}
 
@@ -332,21 +337,29 @@ class Correspondence_Logic_Run
 		$oEmail->send();
 	}
 
-	public function sendDispatchEmail()
+	public function sendDispatchEmail($bDispatchFailed = false)
 	{
 		$oEmail = new Email_Notification(EMAIL_NOTIFICATION_CORRESPONDENCE);
-		$oEmail->setSubject("Correspondence Delivery Notification for '".$this->getTemplateName()."' (Letter Code ".$this->getCorrespondenceCode().")");
+		$oEmail = new Email_Notification();
 
-
-		$sHeader = "Correspondence Delivery Notification for '".$this->getTemplateName()."' (Letter Code ".$this->getCorrespondenceCode().")";
-		$sMessage = 'Delivery Details for Run ID '.$this->id.":";
+		$sFailure = $bDispatchFailed?'Failure':null;
+		$oEmail->setSubject("Correspondence Delivery ".$sFailure." Notification for '".$this->getTemplateName()."' (Letter Code ".$this->getCorrespondenceCode().")");
+		$sHeader = "Correspondence Delivery ".$sFailure." Notification for '".$this->getTemplateName()."' (Letter Code ".$this->getCorrespondenceCode().")";
+		$sMessage = 'Delivery '.$sFailure.' Details for Run ID '.$this->id.":";
 		$body = $this->generateReportEmailBody($sHeader,$sMessage );
 
 		$aCount = $this->getCorrespondenceCount();
-		$this->generateReportEmailTableRow($body->html->body->table(0),'Correspondence Items', array("Mail:".$aCount['post'], "Email:".$aCount['email'], "Total: ".$aCount['total']));
-		$this->generateReportEmailTableRow($body->html->body->table(0),'Dispatch Date', date('d/m/Y', strtotime($this->delivered_datetime))." - ".date('h:i:s', strtotime($this->delivered_datetime)));
-		$this->generateReportEmailTableRow($body->html->body->table(0), 'Data File', $this->getExportFileName());
-		$this->generateReportEmailTableRow($body->html->body->table(0), 'Status', 'Dispatched');
+		$this->generateReportEmailTableRow($body->html->body->table(0),'Correspondence Items', array("Post:".$aCount['post'], "Email:".$aCount['email'], "Total: ".$aCount['total']));
+		if (!$bDispatchFailed)
+		{
+			$this->generateReportEmailTableRow($body->html->body->table(0),'Dispatch Date', date('d/m/Y', strtotime($this->delivered_datetime))." - ".date('h:i:s', strtotime($this->delivered_datetime)));
+			$this->generateReportEmailTableRow($body->html->body->table(0), 'Data File', $this->getExportFileName());
+			$this->generateReportEmailTableRow($body->html->body->table(0), 'Status', 'Dispatched');
+		}
+		else
+		{
+			$this->generateReportEmailTableRow($body->html->body->table(0), 'Status', 'Dispatch Failed. Reason:'.$this->_oDataValidationException->failureReasonToString());
+		}
 
 		$body->div();
 		$div = $body->div();
