@@ -636,7 +636,14 @@ function VixenAjaxClass()
 					Vixen.EventHandler.FireEvent(objInput[intKey].Data.Event, objInput[intKey].Data.EventData);
 					break;
 				case "VerifyUser":
+					// User verification (authentication) required, show the login popup
 					Vixen.Popup.ShowAjaxPopup("LoginPopup", "medium", "Login", "User", "DisplayLoginPopup", null, "nonmodal");
+					
+					// If the failed request data was returned, tell Vixen.Login to use next time login is successfull
+					if (objInput[intKey].Data)
+					{
+						Vixen.Login.setLoginSuccessRetryRequestData(objInput[intKey].Data);
+					}
 					break;
 				default:
 					alert("Command: (default case)\nError: Don't know how to process command type '" + objInput[intKey].Type + "'");

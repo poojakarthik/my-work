@@ -825,8 +825,10 @@ class Application
 					die;
 				}
 
-				// The user needs to log in.  Show the login popup
-				Ajax()->AddCommand("VerifyUser");
+				// The user needs to log in.  Show the login popup, 
+				// returning the failed request data so it can be retried on a successful login
+				$objSubmit	= new SubmittedData();
+				Ajax()->AddCommand("VerifyUser", $objSubmit->Ajax());
 				Ajax()->Reply();
 				die;
 			}

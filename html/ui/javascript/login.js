@@ -43,6 +43,8 @@ function VixenLoginClass()
 {
 	this.objInputs = {};
 	
+	this.oLoginSuccessRetryData	= null;
+	
 	// Initialises the Login popup
 	this.InitialisePopup = function()
 	{
@@ -88,7 +90,15 @@ function VixenLoginClass()
 			if (objReply.Success)
 			{
 				// The login was successful
-				$Alert("Successfully logged in");
+				if (this.oLoginSuccessRetryRequestData)
+				{
+					Vixen.Popup.Alert("Successfully logged in", null, null, null, null, this.retryRequestAfterLoginSuccess.bind(this));
+				}
+				else
+				{
+					$Alert("Successfully logged in");
+				}
+				
 				Vixen.Popup.Close(this.objInputs.UserName);
 			}
 			else
@@ -103,6 +113,17 @@ function VixenLoginClass()
 			$Alert("Login doesn't appear to have been successful.  But you might be logged in.  Try something");
 			Vixen.Popup.Close(this.objInputs.UserName);
 		}
+	}
+	
+	this.retryRequestAfterLoginSuccess	= function()
+	{
+		Vixen.Ajax.Send(this.oLoginSuccessRetryRequestData);
+		this.oLoginSuccessRetryRequestData	= null;
+	}
+	
+	this.setLoginSuccessRetryRequestData	= function(oData)
+	{
+		this.oLoginSuccessRetryRequestData	= oData;
 	}
 }
 

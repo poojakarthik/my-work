@@ -223,7 +223,6 @@ jQuery.json = {
 					//this.funcRemote.apply(null, this.funcArgs);
 					// ... and get rid of the next line
 					//arguments[0]['ERROR'] = "Your session has timed out. Please log in to continue.";
-					
 					jQuery.json.showLoginPopup(arguments[0], this.onSuccess, this.onFailure);
 					return;
 				}
