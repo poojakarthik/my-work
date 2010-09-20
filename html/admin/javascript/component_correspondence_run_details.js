@@ -9,7 +9,108 @@ var Component_Correspondence_Run_Details	= Class.create(
 		this._oContainer		= oContainer;
 		this._iId				= iId;
 		this._hDeliveryMethods	= null;
-		Correspondence_Delivery_Method.getAll(this._deliveryMethodsLoaded.bind(this));	
+		Correspondence_Delivery_Method.getAll(this._deliveryMethodsLoaded.bind(this));
+		
+		this._oSection	= new Section_Expandable(true, 'component-correspondence-run-details');
+		this._oSection.setTitleText('Details');
+		this._oSection.setContent(
+			$T.table({class: 'reflex input'},
+				$T.tbody(
+					$T.tr(
+						$T.th('Id'),
+						$T.td({class: 'id'},
+							'-'
+							//oRun.id
+						),
+						$T.th('Status'),
+						$T.td({class: 'status'},
+							'-'
+							//oStatusElement
+						)
+					),
+					$T.tr(
+						$T.th('Template'),
+						$T.td({class: 'template'},
+							'-'
+							/*$T.div(oRun.template.name),
+							$T.div({class: 'subscript'},
+								oRun.template.template_code
+							)*/
+						),
+						$T.th('Source'),
+						$T.td({class: 'source'},
+							/*$T.div(oRun.source ? oRun.source : ''),
+							$T.div({class:'subscript'},
+								oRun.import_file_name ? oRun.import_file_name : ''
+							)*/
+							'-'
+						)
+					),
+					$T.tr(
+						$T.th('Created By'),
+						$T.td({class: 'created-by'},
+							'-'
+							//oRun.created_employee_name
+						),
+						$T.th('Number of Items'),
+						$T.td({class: 'number-of-items'},
+							'-'
+							//oRun.correspondence.length
+						)
+					),
+					$T.tr(
+						$T.th('Created'),
+						$T.td({class: 'created'},
+							//Component_Correspondence_Run_Details._formatDateTime(oRun.created)
+							'-'
+						),
+						$T.th('Emailed Items'),
+						$T.td({class: 'emailed-items'},
+							//iEmail
+							'-'
+						)
+					),
+					$T.tr(
+						$T.th('Processed'),
+						$T.td({class: 'processed'},
+							'-'
+							//Component_Correspondence_Run_Details._formatDateTime(oRun.processed_datetime, 'Not Yet Processed')
+						),						
+						$T.th('Posted Items'),
+						$T.td({class: 'posted-items'},
+							'-'
+							//iPost
+						)
+					),
+					$T.tr(
+						$T.th('Scheduled for Dispatch'),
+						$T.td({class: 'scheduled-for-dispatch'},
+							'-'
+							//Component_Correspondence_Run_Details._formatDateTime(oRun.scheduled_datetime)
+						),
+						$T.th('Data File'),
+						$T.td({class: 'data-file'},
+							'-'
+							//oRun.export_file_name ? oRun.export_file_name : 'N/A'
+						)
+					),
+					$T.tr(
+						$T.th('Dispatched'),
+						$T.td({class: 'dispatched'},
+							'-'
+							//Component_Correspondence_Run_Details._formatDateTime(oRun.delivered_datetime, 'Awaiting Dispatch')
+						),
+						$T.th('Pre-Printed'),
+						$T.td({class: 'pre-printed'},
+							'-'
+							//oRun.preprinted ? 'Yes' : 'No'
+						)
+					)
+				)
+			)
+		);
+		this._oSection.setExpanded(true);
+		this._oContainer.appendChild(this._oSection.getElement());
 	},
 	
 	_deliveryMethodsLoaded	: function(hMethods)
@@ -56,68 +157,68 @@ var Component_Correspondence_Run_Details	= Class.create(
 			);
 		}
 		
-		this._oSection	= new Section_Expandable(true, 'component-correspondence-run-details');
-		this._oSection.setTitleText('Details');
-		this._oSection.setContent(
-			$T.table({class: 'reflex input'},
-				$T.tbody(
-					$T.tr(
-						$T.th('Id'),
-						$T.td(oRun.id),
-						$T.th('Status'),
-						$T.td(oStatusElement)
-					),
-					$T.tr(
-						$T.th('Template'),
-						$T.td(
-							$T.div(oRun.template.name),
-							$T.div({class: 'subscript'},
-								oRun.template.template_code
-							)
-						),
-						$T.th('Source'),
-						$T.td(
-							$T.div(oRun.source ? oRun.source : ''),
-							$T.div({class:'subscript'},
-								oRun.import_file_name ? oRun.import_file_name : ''
-							)
+		var aTDs		= this._oContainer.select('td');
+		var oTD			= null;
+		for (var i = 0; i < aTDs.length; i++)
+		{
+			oTD				= aTDs[i];
+			oTD.innerHTML	= '';
+			switch (oTD.className)
+			{
+				case 'id':
+					oTD.appendChild($T.span(oRun.id));
+					break;
+				case 'status':
+					oTD.appendChild(oStatusElement)
+					break;
+				case 'source':
+					oTD.appendChild($T.div(oRun.source ? oRun.source : ''));
+					oTD.appendChild(
+						$T.div({class:'subscript'},
+							oRun.import_file_name ? oRun.import_file_name : ''
 						)
-					),
-					$T.tr(
-						$T.th('Created By'),
-						$T.td(oRun.created_employee_name),
-						$T.th('Number of Items'),
-						$T.td(oRun.correspondence.length)
-					),
-					$T.tr(
-						$T.th('Created'),
-						$T.td(Component_Correspondence_Run_Details._formatDateTime(oRun.created)),
-						$T.th('Emailed Items'),
-						$T.td(iEmail)
-					),
-					$T.tr(
-						$T.th('Processed'),
-						$T.td(Component_Correspondence_Run_Details._formatDateTime(oRun.processed_datetime, 'Not Yet Processed')),
-						$T.th('Posted Items'),
-						$T.td(iPost)
-					),
-					$T.tr(
-						$T.th('Scheduled for Dispatch'),
-						$T.td(Component_Correspondence_Run_Details._formatDateTime(oRun.scheduled_datetime)),
-						$T.th('Data File'),
-						$T.td(oRun.export_file_name ? oRun.export_file_name : 'N/A')
-					),
-					$T.tr(
-						$T.th('Dispatched'),
-						$T.td(Component_Correspondence_Run_Details._formatDateTime(oRun.delivered_datetime, 'Awaiting Dispatch')),
-						$T.th('Pre-Printed'),
-						$T.td(oRun.preprinted ? 'Yes' : 'No')
-					)
-				)
-			)
-		);
-		this._oSection.setExpanded(true);
-		this._oContainer.appendChild(this._oSection.getElement());
+					);
+					break;
+				case 'template':
+					oTD.appendChild($T.div(oRun.template.name));
+					oTD.appendChild(
+						$T.div({class: 'subscript'},
+							oRun.template.template_code
+						)
+					);
+					break;
+				case 'created-by':
+					oTD.appendChild($T.span(oRun.created_employee_name));
+					break;
+				case 'number-of-items':
+					oTD.appendChild($T.span(oRun.correspondence.length));
+					break;
+				case 'emailed-items':
+					oTD.appendChild($T.span(iEmail));
+					break;
+				case 'posted-items':
+					oTD.appendChild($T.span(iPost));
+					break;
+				case 'scheduled-for-dispatch':
+					oTD.appendChild($T.span(Component_Correspondence_Run_Details._formatDateTime(oRun.scheduled_datetime)));
+					break;
+				case 'data-file':
+					oTD.appendChild($T.span(oRun.export_file_name ? oRun.export_file_name : 'N/A'));
+					break;
+				case 'created':
+					oTD.appendChild($T.span(Component_Correspondence_Run_Details._formatDateTime(oRun.created)));
+					break;
+				case 'dispatched':
+					oTD.appendChild($T.span(Component_Correspondence_Run_Details._formatDateTime(oRun.delivered_datetime, 'Awaiting Dispatch')));
+					break;
+				case 'pre-printed':
+					oTD.appendChild($T.span(oRun.preprinted ? 'Yes' : 'No'));
+					break;
+				case 'processed':
+					oTD.appendChild($T.span(Component_Correspondence_Run_Details._formatDateTime(oRun.processed_datetime, 'Not Yet Processed')));
+					break;
+			}
+		}
 		
 		if (this._oLoadingPopup)
 		{

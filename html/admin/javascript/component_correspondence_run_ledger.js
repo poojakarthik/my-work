@@ -236,6 +236,16 @@ var Component_Correspondence_Run_Ledger = Class.create(
 				)
 			}
 			
+			var oDataFileTD	= $T.td({class: 'data-file-name'});
+			if (oRun.data_file_name)
+			{
+				var aSplit	= oRun.data_file_name.split('.');
+				for (var i = 0; i < aSplit.length; i++)
+				{
+					oDataFileTD.appendChild($T.span(aSplit[i] + (i == (aSplit.length - 1) ? '' : '.')));
+				}
+			}
+			
 			var	oTR	=	$T.tr(
 							$T.td(Component_Correspondence_Run_Ledger.getDateTimeElement(oRun.processed_datetime)),
 							oTDSource,
@@ -263,7 +273,7 @@ var Component_Correspondence_Run_Ledger = Class.create(
 								)
 							),
 							$T.td(Component_Correspondence_Run_Ledger.getDateTimeElement(oRun.delivered_datetime)),
-							$T.td(oRun.data_file_name),
+							oDataFileTD,
 							$T.td(Correspondence_Run_Status.getStatusFromCorrespondenceRun(oRun).name),
 							$T.td(this._getRunActions(oRun))
 						);

@@ -6259,8 +6259,8 @@ div.datetime-time
 	cursor			: pointer;
 }
 
-.correspondence-run-ledger table.reflex thead th.filter-heading,
-.correspondence-ledger-for-run table.reflex thead th.filter-heading
+.correspondence-run-ledger table.reflex thead th.filter-heading > span,
+.correspondence-ledger-for-run table.reflex thead th.filter-heading > span
 {
 	font-style	: italic;
 	font-size	: 0.85em;
@@ -6418,6 +6418,31 @@ div.datetime-time
 .correspondence-run-ledger
 {
 	position	: relative;
+}
+
+.correspondence-run-ledger tbody tr td.data-file-name > span
+{
+	display: inline-block;
+}
+
+.correspondence-run-ledger tbody tr td:nth-child(1),
+.correspondence-run-ledger tbody tr td:nth-child(5),
+.correspondence-run-ledger tbody tr td:nth-child(6),
+.correspondence-run-ledger tbody tr td:nth-child(8)
+{
+	width	: 6em;
+}
+
+.correspondence-run-ledger tbody tr td:nth-child(2)
+{
+	width	: 15em;
+}
+
+.correspondence-run-ledger tbody tr td:nth-child(3),
+.correspondence-run-ledger tbody tr td:nth-child(4),
+.correspondence-run-ledger tbody tr td:nth-child(7)
+{
+	width	: 20em;
 }
 
 /***************** END - Correspondence Ledger Popup(s) - END *****************/

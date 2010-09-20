@@ -84,7 +84,7 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 					$T.tr()
 				),
 				$T.tbody({class: 'alternating'},
-					this._createNoRecordsRow(true)
+					this._createNoRecordsRow()
 				)
 			)
 		);
@@ -141,6 +141,9 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 		};
 		
 		Correspondence_Run.getForId(iCorrespondenceRunId, this._detailsLoaded.bind(this));
+		
+		// Attach content and get data
+		this._oContainerDiv.appendChild(this._oContentDiv);
 	},
 	
 	_detailsLoaded	: function(oDetails)
@@ -208,10 +211,7 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 		this._updateColumnVisibility();
 		
 		this._oFilter.setFilterValue('correspondence_run_id', this._iCorrespondenceRunId);
-		
-		// Attach content and get data
-		this._oContainerDiv.appendChild(this._oContentDiv);
-		
+				
 		// Send the initial sorting parameters to dataset ajax
 		this._oSort.refreshData(true);
 		this._oFilter.refreshData(true);
@@ -323,7 +323,7 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 		}
 	},
 	
-	_createNoRecordsRow	: function(bOnLoad)
+	_createNoRecordsRow	: function()
 	{
 		var iVisibleCount	= 0;
 		for (var sColumn in this._hColumnVisibility)
@@ -336,7 +336,7 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 		
 		return $T.tr(
 			$T.td({class: 'no-rows', colspan: iVisibleCount},
-				(bOnLoad ? 'Loading...' : 'There are no records to display')
+				'There are no records to display'
 			)
 		);
 	},
