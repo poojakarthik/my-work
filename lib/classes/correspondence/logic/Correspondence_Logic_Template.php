@@ -11,7 +11,6 @@ class Correspondence_Logic_Template
 
 	private function __construct($mDefinition, $oSource = null, $aColumns = array())
 	{
-
 		if (is_numeric($mDefinition))
 		{
 			$this->_oDO = Correspondence_Template::getForId($mDefinition);
@@ -148,9 +147,9 @@ class Correspondence_Logic_Template
 		return false;
 	}
 
-	public function getData($bPreprinted, $bNoDataOk = false)
+	public function getData($bPreprinted)
 	{
-		return $this->_oCorrespondenceSource->getData($bPreprinted,$this->getAdditionalColumnSet(Correspondence_Logic::getStandardColumnCount($bPreprinted)), $bNoDataOk);
+		return $this->_oCorrespondenceSource->getData($bPreprinted,$this->getAdditionalColumnSet(Correspondence_Logic::getStandardColumnCount($bPreprinted)));
 	}
 
 	public function createFullColumnSet( $bPreprinted,$bIncludeNonSuppliedFields = false)
@@ -192,7 +191,7 @@ class Correspondence_Logic_Template
 	{
 
 	}
-	
+
 	// getForInvoiceRunType: Uses the Invoice_Run_Type_Correspondence_Template linking class/table to retrieve the template for the given invoice run type
 	public static function getForInvoiceRunType($iInvoiceRunTypeId, $aData)
 	{
