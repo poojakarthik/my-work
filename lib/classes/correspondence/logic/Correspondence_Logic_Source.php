@@ -53,7 +53,7 @@ abstract class Correspondence_Logic_Source
 	protected $_aNullableFields = array (
 											'account_id',
 											'title',
-											'address_line2',
+											'address_line_2',
 											'email',
 											'mobile',
 											'landline',
@@ -158,7 +158,7 @@ abstract class Correspondence_Logic_Source
 					$aData['first_name'] = $oContact->FirstName;
 					$aData['last_name'] = $oContact->LastName;
 					$aData['address_line_1'] = $oAccount->Address1;
-					$aData['address_line2'] = $oAccount->Address2;
+					$aData['address_line_2'] = $oAccount->Address2;
 					$aData['suburb'] = $oAccount->Suburb;
 					$aData['postcode'] = $oAccount->Postcode;
 					$aData['state'] = $oAccount->State;
