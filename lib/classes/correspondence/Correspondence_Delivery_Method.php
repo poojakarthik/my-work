@@ -5,6 +5,13 @@ class Correspondence_Delivery_Method extends ORM_Enumerated
 	protected 			$_strTableName			= "correspondence_delivery_method";
 	protected static	$_strStaticTableName	= "correspondence_delivery_method";
 
+
+	public static function getSystemNameForId($iId)
+	{
+		$oObject = self::getForId($iId);
+		return $oObject->system_name;
+	}
+
 	protected static function getCacheName()
 	{
 		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
@@ -112,18 +119,6 @@ class Correspondence_Delivery_Method extends ORM_Enumerated
 			return $arrPreparedStatements[$strStatement];
 		}
 	}
-
-	public static function getSystemNameForId($iId)
-	{
-
-		$oObject = self::getForId($iId);
-		return $oObject->system_name;
-
-	}
-
-
-
-
 
 }
 ?>

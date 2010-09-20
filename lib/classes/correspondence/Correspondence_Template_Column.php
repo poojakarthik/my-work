@@ -27,6 +27,20 @@ class Correspondence_Template_Column extends ORM_Cached
 		return 100;
 	}
 
+	public static function getForTemplateId($iTemplateId)
+	{
+		$oSelect	= self::_preparedStatement('selByTemplateId');
+		$oSelect->Execute(array('correspondence_template_id' => $iTemplateId));
+		$aResults = $oSelect->FetchAll();
+		$aObjects = array();
+		foreach ($aResults as $aResult)
+		{
+			$x =new self($aResult);
+			$aObjects[]= $x;
+		}
+		return $aObjects;
+	}
+
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
 	//---------------------------------------------------------------------------------------------------------------------------------//
@@ -111,22 +125,5 @@ class Correspondence_Template_Column extends ORM_Cached
 			return $arrPreparedStatements[$strStatement];
 		}
 	}
-
-	public static function getForTemplateId($iTemplateId)
-	{
-		$oSelect	= self::_preparedStatement('selByTemplateId');
-		$oSelect->Execute(array('correspondence_template_id' => $iTemplateId));
-		$aResults = $oSelect->FetchAll();
-		$aObjects = array();
-		foreach ($aResults as $aResult)
-		{
-			$x =new self($aResult);
-			$aObjects[]= $x;
-		}
-		return $aObjects;
-	}
-
-
-
 }
 ?>

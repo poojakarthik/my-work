@@ -11,6 +11,20 @@ class Correspondence_Source_SQL extends ORM_Cached
 	protected 			$_strTableName			= "correspondence_source_sql";
 	protected static	$_strStaticTableName	= "correspondence_source_sql";
 
+	public static function getForCorrespondenceSourceId($iId)
+	{
+		$oSelect	= self::_preparedStatement('selBySourceId');
+		$oSelect->Execute(array('correspondence_source_id' => $iId));
+		$aResults = $oSelect->FetchAll();
+		$aObjects = array();
+		foreach ($aResults as $aResult)
+		{
+			$aObjects[]= new self($aResult);
+		}
+		return $aObjects[0];
+	}
+
+
 	protected static function getCacheName()
 	{
 		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
@@ -111,21 +125,6 @@ class Correspondence_Source_SQL extends ORM_Cached
 			return $arrPreparedStatements[$strStatement];
 		}
 	}
-
-	public static function getForCorrespondenceSourceId($iId)
-	{
-		$oSelect	= self::_preparedStatement('selBySourceId');
-		$oSelect->Execute(array('correspondence_source_id' => $iId));
-		$aResults = $oSelect->FetchAll();
-		$aObjects = array();
-		foreach ($aResults as $aResult)
-		{
-			$aObjects[]= new self($aResult);
-		}
-		return $aObjects[0];
-	}
-
-
 
 }
 ?>

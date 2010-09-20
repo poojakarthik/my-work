@@ -27,6 +27,18 @@ class Correspondence_Template extends ORM_Cached
 		return 100;
 	}
 
+	public function setSaved()
+	{
+		$this->_bolSaved = true;
+	}
+
+	public function save()
+	{
+		if (!$this->_bolSaved)
+			parent::save();
+		$this->setSaved();
+	}
+
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
 	//---------------------------------------------------------------------------------------------------------------------------------//
@@ -111,22 +123,6 @@ class Correspondence_Template extends ORM_Cached
 			return $arrPreparedStatements[$strStatement];
 		}
 	}
-
-	public function setSaved()
-	{
-		$this->_bolSaved = true;
-	}
-
-	public function save()
-	{
-		if (!$this->_bolSaved)
-			parent::save();
-		$this->setSaved();
-	}
-
-
-
-
 
 }
 ?>

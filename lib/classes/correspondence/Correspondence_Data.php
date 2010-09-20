@@ -11,6 +11,46 @@ class Correspondence_Data extends ORM_Cached
 	protected 			$_strTableName			= "correspondence_data";
 	protected static	$_strStaticTableName	= "correspondence_data";
 
+	public static function getFieldNames()
+	{
+		$arrTableDefine		= DataAccess::getDataAccess()->FetchTableDefine(self::$_strStaticTableName);
+		return array_keys($arrTableDefine['Column']);
+	}
+
+	/*public function toArray()
+	{
+		return $this->_aProperties;
+	}*/
+
+	public static function getForCorrespondenceId($iCorrespondenceId)
+	{
+
+	$oSelect	= self::_preparedStatement('selByCorrespondenceId');
+		$oSelect->Execute(array('correspondence_id' => $iCorrespondenceId));
+		$aResults = $oSelect->FetchAll();
+		$aObjects = array();
+		foreach ($aResults as $aResult)
+		{
+			$x =new self($aResult);
+			$x->setSaved();
+			$aObjects[]= $x;
+		}
+		return $aObjects;
+
+	}
+
+	public function setSaved()
+	{
+		$this->_bolSaved = true;
+	}
+
+	public function save()
+	{
+		if (!$this->_bolSaved)
+			parent::save();
+		$this->setSaved();
+	}
+
 	protected static function getCacheName()
 	{
 		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
@@ -111,48 +151,5 @@ class Correspondence_Data extends ORM_Cached
 			return $arrPreparedStatements[$strStatement];
 		}
 	}
-
-	public static function getFieldNames()
-	{
-		$arrTableDefine		= DataAccess::getDataAccess()->FetchTableDefine(self::$_strStaticTableName);
-		return array_keys($arrTableDefine['Column']);
-	}
-
-	/*public function toArray()
-	{
-		return $this->_aProperties;
-	}*/
-
-	public static function getForCorrespondenceId($iCorrespondenceId)
-	{
-
-	$oSelect	= self::_preparedStatement('selByCorrespondenceId');
-		$oSelect->Execute(array('correspondence_id' => $iCorrespondenceId));
-		$aResults = $oSelect->FetchAll();
-		$aObjects = array();
-		foreach ($aResults as $aResult)
-		{
-			$x =new self($aResult);
-			$x->setSaved();
-			$aObjects[]= $x;
-		}
-		return $aObjects;
-
-	}
-
-	public function setSaved()
-	{
-		$this->_bolSaved = true;
-	}
-
-	public function save()
-	{
-		if (!$this->_bolSaved)
-			parent::save();
-		$this->setSaved();
-	}
-
-
-
 }
 ?>

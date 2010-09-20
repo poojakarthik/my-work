@@ -329,7 +329,7 @@ class Correspondence_Logic_Run
 			$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
 
 		$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
-		$oEmail->send();
+		//$oEmail->send();
 
 	}
 
@@ -358,7 +358,7 @@ class Correspondence_Logic_Run
 		//$oEmail->addCc($email, $name='');
 		//$oEmail->addBcc($email);
 		$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
-		$oEmail->send();
+		//$oEmail->send();
 	}
 
 	public function sendDispatchEmail($bDispatchFailed = false)
@@ -390,7 +390,7 @@ class Correspondence_Logic_Run
 		if ($oEmployee!= null)
 			$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
 		$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
-		$oEmail->send();
+		//$oEmail->send();
 	}
 
 	public function generateReportEmailTableRow(&$table, $key, $mValue)

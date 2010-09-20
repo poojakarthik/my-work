@@ -16,39 +16,42 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 	const	FIELD_DELIMITER		= ',';
 	const	FIELD_ENCAPSULATOR	= '"';
 	const	ESCAPE_CHARACTER	= '\\';
-	protected $_aDetailColumns 	= array(
-												array('field'=> 'record_type',										'data_type'=>'string',	'mandatory'=>true, 		'length'=>1, 	'default'=>'D'),
-												array('field'=> 'id',												'data_type'=>'numeric',						'mandatory'=>true, 		'length'=>null, 'default'=>null),
-												array('field'=> 'customer_group_id', 								'data_type'=>'numeric',	'mandatory'=>true,		'length'=>null, 'default'=>null),
-												array('field'=> 'account_id', 										'data_type'=>'numeric', 'mandatory'=>false, 	'length'=>null, 'default'=>null),
-												array('field'=> 'account_name', 									'data_type'=>'string', 	'mandatory'=>true, 		'length'=>null, 'default'=>null),
-												array('field'=> 'title', 											'data_type'=>'string', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
-												array('field'=> 'first_name', 										'data_type'=>'string', 	'mandatory'=>true, 		'length'=>null, 'default'=>null),
-												array('field'=> 'last_name', 										'data_type'=>'string', 	'mandatory'=>true, 		'length'=>null, 'default'=>null),
-												array('field'=> 'address_line_1', 									'data_type'=>'string', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
-												array('field'=> 'address_line_2', 									'data_type'=>'string', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
-												array('field'=> 'suburb', 											'data_type'=>'string', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
-												array('field'=> 'postcode', 										'data_type'=>'numeric', 'mandatory'=>false, 	'length'=>4, 	'default'=>null),
-												array('field'=> 'state', 											'data_type'=>'string', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
-												array('field'=> 'email', 											'data_type'=>'string', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
-												array('field'=> 'mobile', 											'data_type'=>'fnn', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
-												array('field'=> 'landline', 										'data_type'=>'fnn', 	'mandatory'=>false, 	'length'=>null, 'default'=>null),
-												array('field'=> 'correspondence_delivery_method', 					'data_type'=>'string', 	'mandatory'=>true, 		'length'=>null, 'default'=>null)
+
+	protected $_aDetailColumns 				= array(
+												array('field'=> 'record_type'										,'data_type'=>'string'		,'pad'=>false											,'length'=>1		,'default'=>self::RECORD_TYPE_DETAIL_CODE),
+												array('field'=> 'id'												,'data_type'=>'numeric'		,'pad'=>false											,'length'=>null		,'default'=>null),
+												array('field'=> 'customer_group_id' 								,'data_type'=>'numeric'		,'pad'=>false											,'length'=>null		,'default'=>null),
+												array('field'=> 'account_id' 										,'data_type'=>'numeric'		,'pad'=>false											,'length'=>null		,'default'=>null),
+												array('field'=> 'account_name'	 									,'data_type'=>'string'		,'pad'=>false											,'length'=>null		,'default'=>null),
+												array('field'=> 'title' 											,'data_type'=>'string'		,'pad'=>false											,'length'=>null		,'default'=>null),
+												array('field'=> 'first_name' 										,'data_type'=>'string'		,'pad'=>false											,'length'=>null		,'default'=>null),
+												array('field'=> 'last_name' 										,'data_type'=>'string'		,'pad'=>false											,'length'=>null		,'default'=>null),
+												array('field'=> 'address_line_1' 									,'data_type'=>'string'		,'pad'=>false											,'length'=>null		,'default'=>null),
+												array('field'=> 'address_line_2' 									,'data_type'=>'string'		,'pad'=>false											,'length'=>null		,'default'=>null),
+												array('field'=> 'suburb' 											,'data_type'=>'string'		,'pad'=>false											,'length'=>null		,'default'=>null),
+												array('field'=> 'postcode'	 										,'data_type'=>'numeric'		,'pad'=>array('style'=>STR_PAD_LEFT, 'string'=>'0')		,'length'=>4		,'default'=>null),
+												array('field'=> 'state' 											,'data_type'=>'string'		,'pad'=>false											,'length'=>null		,'default'=>null),
+												array('field'=> 'email' 											,'data_type'=>'string'		,'pad'=>false											,'length'=>null		,'default'=>null),
+												array('field'=> 'mobile' 											,'data_type'=>'fnn'			,'pad'=>false											,'length'=>null		,'default'=>null),
+												array('field'=> 'landline'	 										,'data_type'=>'fnn'			,'pad'=>false											,'length'=>null		,'default'=>null),
+												array('field'=> 'correspondence_delivery_method' 					,'data_type'=>'string'		,'pad'=>false											,'length'=>null		,'default'=>null)
 											);
-	protected  $_aHeaderColumns 	= array(
-												array('field'=>'record_type'										,'data_type'=>'string'		,'default'=>'H'),
+
+	protected  $_aHeaderColumns 			= array(
+												array('field'=>'record_type'										,'data_type'=>'string'		,'default'=>self::RECORD_TYPE_HEADER_CODE),
 												array('field'=>'letter_code'										,'data_type'=>'string'		,'default'=>null),
 												array('field'=>'correspondence_run_id'								,'data_type'=>'numeric'		,'default'=>null),
 												array('field'=>'created_timestamp'									,'data_type'=>'timestamp'	,'default'=>null),
 												array('field'=>'data_file_name'										,'data_type'=>'string'		,'default'=>null),
 												array('field'=>'tar_file_name'										,'data_type'=>'string'		,'default'=>null)
 											);
-	protected  $_aFooterColumns 	= array(
-												array('field'=>'record_type'										,'data_type'=>'string'	,'default'=>'F'),
-												array('field'=>'correspondence_item_count'							,'data_type'=>'numeric'	,'default'=>null)
+
+	protected  $_aFooterColumns 		= array(
+												array('field'=>'record_type'										,'data_type'=>'string'		,'default'=>self::RECORD_TYPE_FOOTER_CODE),
+												array('field'=>'correspondence_item_count'							,'data_type'=>'numeric'		,'default'=>null)
 											);
 
-
+	/*Correspondence data members that are not included in the csv correspondence records*/
 	protected $_aCorrespondenceFieldsNotIncluded = array('pdf_file_path', 'correspondence_run_id');
 	protected	$_oFileExporterCSV;
 	protected	$_iTimestamp;
@@ -79,13 +82,7 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 	{
 		try
 		{
-			$aLastError = error_get_last();
-			@$this->_oFileExporterCSV->renderToFile($this->_sFilePath);
-			//$aError = error_get_last();
-			//if ($aLastError!=$aError)
-			//{
-			//	throw new Correspondence_Dispatch_Exception(Correspondence_Dispatch_Exception::EXPORT_FILE_SAVE, "Message: ".$aError['message']." File: ".$aError['file']." Line: ".$aError['line'] );
-			//}
+			$this->_oFileExporterCSV->renderToFile($this->_sFilePath);
 		}
 		catch(Exception $e)
 		{
@@ -146,7 +143,7 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 	public function addRecord($mRecord)
 	{
 		$oRecord	= $this->_oFileExporterCSV->getRecordType(self::RECORD_TYPE_DETAIL)->newRecord();
-		$oRecord->record_type = self::RECORD_TYPE_DETAIL_CODE;
+
 		foreach ($mRecord as $sField=>$mValue)
 		{
 			if ($sField == 'correspondence_delivery_method_id')
@@ -177,20 +174,17 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 		$this->_sFilePath = $this->_sFileDirectoryPath.$this->_sFilename.'.csv';
 		$this->_aTARFilePath = $this->_sFileDirectoryPath.$this->_sFilename.'.tar';
 
-
-
 		$aColumns = array_merge($this->_aDetailColumns, $this->_oRun->getAdditionalColumns(count($this->_aDetailColumns)));
 
 		foreach ($aColumns as $key => $mColumn)
 		{
 			if (!is_array($mColumn))
 			{
-				$aColumns[$key] = array('field'=>$mColumn);
+				$aColumns[$key] = array('field'=>$mColumn, 'pad'=>false, 'length'=>null, 'default'=>null);
 			}
 		}
 
 		$this->_bPreprinted = $this->_oRun->preprinted==1?true:false;
-
 
 		$this->_configureFileExporter($aColumns);
 
@@ -222,14 +216,7 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 				}
 				$this->_aPDFFilenames[]=$sTempPdfName;
 			}
-
 		}
-
-
-
-
-
-
 	}
 
 	public function setHeaderAndFooter()
@@ -237,14 +224,12 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 		$oHeaderRecord								= 	$this->_oFileExporterCSV->getRecordType(self::RECORD_TYPE_HEADER)->newRecord();
 		$oFooterRecord								= 	$this->_oFileExporterCSV->getRecordType(self::RECORD_TYPE_FOOTER)->newRecord();
 
-		$oHeaderRecord->record_type 				= 	self::RECORD_TYPE_HEADER_CODE;
 		$oHeaderRecord->letter_code 				= 	$this->_oRun->getCorrespondenceCode();
 		$oHeaderRecord->correspondence_run_id 		= 	$this->_oRun->id;
 		$oHeaderRecord->created_timestamp			= 	$this->_sTimeStamp;
 		$oHeaderRecord->data_file_name 				= 	$this->_sFilename.'.csv';
 		$oHeaderRecord->tar_file_name 				= 	$this->_bPreprinted?$this->_sFilename.'.tar':null;
 
-		$oFooterRecord->record_type 				= 	self::RECORD_TYPE_FOOTER_CODE;
 		$oFooterRecord->correspondence_item_count 	= 	$this->_oRun->count();
 
 		$this->_oFileExporterCSV->addRecord($oHeaderRecord, File_Exporter_CSV::RECORD_GROUP_HEADER);
@@ -272,10 +257,13 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 	{
 		$this->_iTimestamp	= time();
 		$oRecordType = File_Exporter_RecordType::factory();
-		//File_Exporter_Field::factory()->setDefaultValue(date('d/m/Y', $this->_iTimestamp)
+
 		foreach($aColumns as $aColumn)
 		{
-			$oRecordType->addField($aColumn['field'], File_Exporter_Field::factory());
+			$oField = File_Exporter_Field::factory();
+			$aColumn['length']!=null&&$aColumn['pad']?$oField->setMinimumLength($aColumn['length'])->setMaximumLength($aColumn['length'])->setPaddingString($aColumn['pad']['string'])->setPaddingStyle($aColumn['pad']['style']):null;
+			$aColumn['default']!=null?$oField->setDefaultValue($aColumn['default']):null;
+			$oRecordType->addField($aColumn['field'], $oField);
 		}
 
 		$this->_oFileExporterCSV->registerRecordType(self::RECORD_TYPE_DETAIL, $oRecordType);
@@ -284,7 +272,9 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 
 		foreach($this->_aHeaderColumns as $aColumn)
 		{
-			$oRecordType->addField($aColumn['field'], File_Exporter_Field::factory());
+			$oField = File_Exporter_Field::factory();
+			$aColumn['default']!=null?$oField->setDefaultValue($aColumn['default']):null;
+			$oRecordType->addField($aColumn['field'], $oField);
 		}
 
 		$this->_oFileExporterCSV->registerRecordType(self::RECORD_TYPE_HEADER, $oRecordType);
@@ -293,7 +283,9 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 
 		foreach($this->_aFooterColumns as $aColumn)
 		{
-			$oRecordType->addField($aColumn['field'], File_Exporter_Field::factory());
+			$oField = File_Exporter_Field::factory();
+			$aColumn['default']!=null?$oField->setDefaultValue($aColumn['default']):null;
+			$oRecordType->addField($aColumn['field'], $oField);
 		}
 
 		$this->_oFileExporterCSV->registerRecordType(self::RECORD_TYPE_FOOTER, $oRecordType);

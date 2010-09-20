@@ -60,6 +60,62 @@ class Correspondence extends ORM_Cached
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 
+	public static function getFieldNames()
+	{
+		$arrTableDefine		= DataAccess::getDataAccess()->FetchTableDefine(self::$_strStaticTableName);
+		return array_keys($arrTableDefine['Column']);
+	}
+
+	/*public function toArray()
+	{
+		return $this->_arrProperties;
+	}*/
+
+	public static function getForRunId($iRunId)
+	{
+		$oSelect	= self::_preparedStatement('selByRunId');
+		$oSelect->Execute(array('correspondence_run_id' => $iRunId));
+		$aResults = $oSelect->FetchAll();
+		$aObjects = array();
+		foreach ($aResults as $aResult)
+		{
+			$x =new self($aResult);
+			$x->setSaved();
+			$aObjects[]= $x;
+		}
+		return $aObjects;
+	}
+
+	public static function getForAccountId($iAccountId)
+	{
+		$oSelect	= self::_preparedStatement('selByAccountId');
+		$oSelect->Execute(array('account_id' => $iAccountId));
+		$aResults = $oSelect->FetchAll();
+		$aObjects = array();
+		foreach ($aResults as $aResult)
+		{
+			$x =new self($aResult);
+			$x->setSaved();
+			$aObjects[]= $x;
+		}
+		return $aObjects;
+	}
+
+	public function setSaved()
+	{
+		$this->_bolSaved = true;
+	}
+
+	public function save()
+	{
+		if (!$this->_bolSaved)
+			parent::save();
+		$this->setSaved();
+	}
+
+
+
+
 	public static function getLedgerInformation($bCountOnly=false, $iLimit=null, $iOffset=0, $aFilter=null, $aSort=null, $bDelivered=false)
 	{
 		$sFrom			= "	correspondence c
@@ -73,14 +129,14 @@ class Correspondence extends ORM_Cached
 		}
 		else
 		{
-			$sSelect	= "	c.*, 
-							cg.internal_name AS customer_group_name, 
+			$sSelect	= "	c.*,
+							cg.internal_name AS customer_group_name,
 							cdm.name AS correspondence_delivery_method_name,
 							ct.name AS correspondence_template_name,
 							ct.template_code AS correspondence_template_code,
 							cr.delivered_datetime AS correspondence_run_delivered_datetime";
 		}
-	
+
 		$aWhereAlias	=	array(
 								'id'									=> 'c.id',
 								'correspondence_run_id'					=> 'c.correspondence_run_id',
@@ -108,20 +164,20 @@ class Correspondence extends ORM_Cached
 		$sOrderByClause	= StatementSelect::generateOrderBy($aSortAlias, $aSort);
 		$sLimitClause	= StatementSelect::generateLimit($iLimit, $iOffset);
 		$sWhereClause	= $aWhere['sClause'].($bDelivered ? " AND cr.delivered_datetime IS NOT NULL" : "");
-		
+
 		$oStmt	=	new StatementSelect(
-						$sFrom, 
-						$sSelect, 
-						$sWhereClause, 
-						($bCountOnly ? '' : $sOrderByClause), 
+						$sFrom,
+						$sSelect,
+						$sWhereClause,
+						($bCountOnly ? '' : $sOrderByClause),
 						($bCountOnly ? '' : $sLimitClause)
 					);
-		
+
 		if ($oStmt->Execute($aWhere['aValues']) === false)
 		{
 			throw new Exception("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ".$oStmt->Error());
 		}
-		
+
 		if ($bCountOnly)
 		{
 			// Count only
@@ -131,7 +187,7 @@ class Correspondence extends ORM_Cached
 		else
 		{
 			//throw new Exception($oStmt->_strQuery);
-			
+
 			// Results required
 			$aResults	= array();
 			while ($aRow = $oStmt->Fetch())
@@ -197,58 +253,7 @@ class Correspondence extends ORM_Cached
 		}
 	}
 
-	public static function getFieldNames()
-	{
-		$arrTableDefine		= DataAccess::getDataAccess()->FetchTableDefine(self::$_strStaticTableName);
-		return array_keys($arrTableDefine['Column']);
-	}
 
-	/*public function toArray()
-	{
-		return $this->_arrProperties;
-	}*/
-
-	public static function getForRunId($iRunId)
-	{
-		$oSelect	= self::_preparedStatement('selByRunId');
-		$oSelect->Execute(array('correspondence_run_id' => $iRunId));
-		$aResults = $oSelect->FetchAll();
-		$aObjects = array();
-		foreach ($aResults as $aResult)
-		{
-			$x =new self($aResult);
-			$x->setSaved();
-			$aObjects[]= $x;
-		}
-		return $aObjects;
-	}
-
-	public static function getForAccountId($iAccountId)
-	{
-		$oSelect	= self::_preparedStatement('selByAccountId');
-		$oSelect->Execute(array('account_id' => $iAccountId));
-		$aResults = $oSelect->FetchAll();
-		$aObjects = array();
-		foreach ($aResults as $aResult)
-		{
-			$x =new self($aResult);
-			$x->setSaved();
-			$aObjects[]= $x;
-		}
-		return $aObjects;
-	}
-
-	public function setSaved()
-	{
-		$this->_bolSaved = true;
-	}
-
-	public function save()
-	{
-		if (!$this->_bolSaved)
-			parent::save();
-		$this->setSaved();
-	}
 
 
 

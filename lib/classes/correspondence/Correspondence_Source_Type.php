@@ -21,6 +21,19 @@ class Correspondence_Source_Type extends ORM_Cached
 		return 100;
 	}
 
+	public static function getForCorrespondenceSourceId($iId)
+	{
+		$oSelect	= self::_preparedStatement('selBySourceId');
+		$oSelect->Execute(array('correspondence_source_id' => $iId));
+		$aResults = $oSelect->FetchAll();
+		$aObjects = array();
+		foreach ($aResults as $aResult)
+		{
+			$aObjects[]= new self($aResult);
+		}
+		return $aObjects[0];
+	}
+
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
 	//---------------------------------------------------------------------------------------------------------------------------------//
@@ -105,21 +118,5 @@ class Correspondence_Source_Type extends ORM_Cached
 			return $arrPreparedStatements[$strStatement];
 		}
 	}
-
-	public static function getForCorrespondenceSourceId($iId)
-	{
-		$oSelect	= self::_preparedStatement('selBySourceId');
-		$oSelect->Execute(array('correspondence_source_id' => $iId));
-		$aResults = $oSelect->FetchAll();
-		$aObjects = array();
-		foreach ($aResults as $aResult)
-		{
-			$aObjects[]= new self($aResult);
-		}
-		return $aObjects[0];
-	}
-
-
-
 }
 ?>

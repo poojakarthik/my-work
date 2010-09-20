@@ -15,7 +15,6 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 
 	final public function sendRun($oRun, $iBatchId)
 	{
-
 		$this->_oRun = $oRun;
 		$this->_iBatchId = $iBatchId;
 		$this->export();
@@ -25,7 +24,6 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 		$this->_logToDatabase();
 		//set the file export id of the run object and timestamp
 		$oRun->setDeliveryDetails($this->_oFileExport->id,$this->_oFileExport->ExportedOn, $this->_oTARFileExport->id, $iBatchId);
-
 	}
 
 	static public function createCarrierModule($iCarrier, $sClassName, $iResourceType)
@@ -49,7 +47,7 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 			$this->_oTARFileExport->Location	= $this->_aTARFilePath;
 			$this->_oTARFileExport->Carrier		= $this->getCarrier();
 			$this->_oTARFileExport->ExportedOn	= $this->_oFileExport->ExportedOn;
-			$this->_oTARFileExport->Status		= FILE_DELIVERED;	// FIXME: Is this correct?
+			$this->_oTARFileExport->Status		= FILE_DELIVERED;
 			$this->_oTARFileExport->FileType	= RESOURCE_TYPE_FILE_EXPORT_CORRESPONDENCE_YELLOWBILLINGTAR;
 			$this->_oTARFileExport->SHA1		= sha1_file($this->_oTARFileExport->Location);
 			$this->_oTARFileExport->save();
@@ -87,8 +85,6 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 						Log::getLog()->log($oRun->id.' could not be dispatched. Reason: '.$e->failureReasonToString()."(message: ".$e->getMessage().")");
 						$oRun->sendDispatchEmail(true);
 					}
-
-
 				}
 			}
 			Log::getLog()->log('Sending Batch Delivery Email');
@@ -98,14 +94,13 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 		}
 		$sMessage = count($aRuns)==0?"There were no runs to process":(count($aRuns)==1?"Processed ".count($aRuns)." run":"Processed ".count($aRuns)." runs");
 		Log::getLog()->log($sMessage);
-
 	}
 
 
 	public static  function sendBatchDeliveryEmail($oBatch, $aRuns)
 	{
 		$oEmail = new Email_Notification(EMAIL_NOTIFICATION_CORRESPONDENCE);
-		$oEmail->setSubject("Correspondence Delivery Summary for Batch ID  '".$oBatch->id);
+		$oEmail->setSubject("Correspondence Delivery Summary for Batch ID  ".$oBatch->id);
 
 		$strTHStyle			= "text-align:left; color: #eee; background-color: #333;  width: 15em; padding-left:10px;";
 		$strTDStyle			= "text-align:left; color: #333; background-color: #eee; padding-left:20px;font-size:90%;";
