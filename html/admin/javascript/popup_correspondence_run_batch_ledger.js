@@ -215,7 +215,14 @@ var Popup_Correspondence_Run_Batch_Ledger	= Class.create(Reflex_Popup,
 						$T.tr(
 							$T.td(oRun.id),
 							$T.td(Date.$parseDate(oRun.created, 'Y-m-d H:i:s').$format('d/m/y g:i A')),
-							$T.td(oRun.correspondence.length + ' Items'),							
+							$T.td({class: 'item-count'},
+								$T.img({src: '../admin/img/template/correspondence_email.png', alt: 'Email', title: 'Email'}),
+								$T.span(oRun.correspondence_count.email),
+								$T.img({src: '../admin/img/template/lorry.png', alt: 'Post', title: 'Post'}),
+								$T.span(oRun.correspondence_count.post),
+								$T.img({src: '../admin/img/template/sum.png', alt: 'Total', title: 'Total'}),
+								$T.span(oRun.correspondence_count.total)
+							),
 							$T.td({class: 'actions'},
 								$T.img({src: '../admin/img/template/magnifier.png', alt: 'View Run Details', title: 'View Run Details'}
 								).observe('click', this._showRunDetails.bind(this, oRun.id))

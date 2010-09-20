@@ -480,9 +480,19 @@ class Correspondence_Logic_Run
 		$aRuns = array();
 		foreach ($aRunORM as $oRunORM)
 		{
-			$oRun = new self($oRunORM);
-
-			$aRuns[]= $bToArray?$oRun->toArray():$oRun;
+			$oRun 	= new self($oRunORM);
+			$aCount	= $oRun->getCorrespondenceCount();
+			if ($bToArray)
+			{
+				$aRun							= $oRun->toArray();
+				$aRun['correspondence_count']	= $aCount;
+				$aRuns[]						= $aRun;
+			}
+			else
+			{
+				$oRun->correspondence_count	= $aCount;
+				$aRuns[]					= $oRun;
+			}
 		}
 
 		return $aRuns;

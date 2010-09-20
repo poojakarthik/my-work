@@ -6134,6 +6134,13 @@ div.datetime-time
 	font-size	: 0.8em;
 }
 
+.popup-correspondence-ledger .item-count > img,
+.popup-correspondence-ledger .item-count > span
+{
+	vertical-align	: middle;
+	padding-right	: 0.25em;
+}
+
 .popup-correspondence-ledger td.actions
 {
 	text-align	: right;

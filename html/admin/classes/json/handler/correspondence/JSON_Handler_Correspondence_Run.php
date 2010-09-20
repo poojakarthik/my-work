@@ -234,9 +234,8 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 				throw new JSON_Handler_Correspondence_Run_Exception('You do not have permission to view Correspdondence Runs.');
 			}
 			
-			$iMinDate	= ($oFilter->batch_datetime->mFrom ? strtotime($oFilter->batch_datetime->mFrom) : null);
-			$iMaxDate	= ($oFilter->batch_datetime->mTo ? strtotime($oFilter->batch_datetime->mTo) : null);
-			
+			$iMinDate		= ($oFilter->batch_datetime->mFrom ? strtotime($oFilter->batch_datetime->mFrom) : null);
+			$iMaxDate		= ($oFilter->batch_datetime->mTo ? strtotime($oFilter->batch_datetime->mTo) : null);
 			$iRecordCount	= Correspondence_Run_Batch::getForBatchDateTime(true, null, null, $iMinDate, $iMaxDate);
 			if ($bCountOnly)
 			{
@@ -270,17 +269,21 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 		}
 		catch (JSON_Handler_Correspondence_Run_Exception $oException)
 		{
+			$sMessage	= $oException->getMessage();
 			return 	array(
 						'Success'	=> false,
-						'sMessage'	=> $oException->getMessage()
+						'sMessage'	=> $sMessage,
+						'Message'	=> $sMessage
 					);
 		}
 		catch (Exception $e)
 		{
 			$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+			$sMessage	= $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
 			return 	array(
 						'Success'	=> false,
-						'sMessage'	=> $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'
+						'sMessage'	=> $sMessage,
+						'Message'	=> $sMessage
 					);
 		}
 	}
