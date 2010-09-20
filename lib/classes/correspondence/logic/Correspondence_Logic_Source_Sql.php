@@ -10,7 +10,7 @@ class Correspondence_Logic_Source_Sql extends Correspondence_Logic_Source
 		$this->_oDO = $mDefinition;
 	}
 
-	public function getData($bPreprinted, $aAdditionalColumns = array(), $bNoDataOk = false)
+	public function getData($bPreprinted, $aAdditionalColumns = array())
 	{
 		$this->_bPreprinted = $bPreprinted;
 		$this->_aColumns = Correspondence_Logic::getStandardColumns($bPreprinted);
@@ -21,7 +21,7 @@ class Correspondence_Logic_Source_Sql extends Correspondence_Logic_Source
 		{
 			throw new Correspondence_DataValidation_Exception(Correspondence_DataValidation_Exception::SQLERROR);
 		}
-		else if ($result->num_rows == 0 && !$bNoDataOk)
+		else if ($result->num_rows == 0)
 		{
 			throw new Correspondence_DataValidation_Exception(Correspondence_DataValidation_Exception::NODATA);
 		}

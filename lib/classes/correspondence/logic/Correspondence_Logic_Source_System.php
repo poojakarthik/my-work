@@ -11,7 +11,7 @@ class Correspondence_Logic_Source_System extends Correspondence_Logic_Source
 		$this->_aData = $aData;
 	}
 
-	public function getData($bPreprinted, $aAdditionalColumns = array(), $bNoDataOk = false)
+	public function getData($bPreprinted, $aAdditionalColumns = array())
 	{
 		if (count($this->_aData)>0)
 		{
@@ -42,7 +42,7 @@ class Correspondence_Logic_Source_System extends Correspondence_Logic_Source
 				$this->processValidationErrors();
 			}
 		}
-		else if (!$bNoDataOk)
+		else
 		{
 			throw new Correspondence_DataValidation_Exception(Correspondence_DataValidation_Exception::NODATA);
 		}

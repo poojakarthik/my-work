@@ -25,10 +25,9 @@ class Correspondence_Logic_Source_CSV extends Correspondence_Logic_Source
 		$this->_sTmpPath = $sTmpPath;
 		$sCsv = file_get_contents($sTmpPath);
 		$this->_aCsv = trim($sCsv)==null?null:explode("\n",trim($sCsv));
-
 	}
 
-	function getData($bPreprinted, $aAdditionalColumns = array(), $bNoDataOk = false)
+	function getData($bPreprinted, $aAdditionalColumns = array())
 	{
 		if (count($this->_aCsv)>0)
 		{
@@ -43,15 +42,13 @@ class Correspondence_Logic_Source_CSV extends Correspondence_Logic_Source
 				$this->iLineNumber++;
 			}
 
-
-
 			if ($this->_bValidationFailed)
 			{
 				$this->processValidationErrors();
 			}
 
 		}
-		else if (!$bNoDataOk)
+		else
 		{
 			throw new Correspondence_DataValidation_Exception(Correspondence_DataValidation_Exception::NODATA);
 		}

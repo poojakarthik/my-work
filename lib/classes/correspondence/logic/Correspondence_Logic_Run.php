@@ -46,12 +46,12 @@ class Correspondence_Logic_Run
 		$this->_oDataValidationException = $oException;
 	}
 
-	public function process($bNoDataOk = false)
+	public function process()
 	{
 		try
 		{
 			$bPreprinted = $this->_oDO->preprinted==0?false:true;
-			$aCorrespondence = $this->_oCorrespondenceTemplate->getData($bPreprinted, $bNoDataOk);
+			$aCorrespondence = $this->_oCorrespondenceTemplate->getData($bPreprinted);
 			foreach ($aCorrespondence as $oCorrespondence)
 			{
 				$oCorrespondence->_oCorrespondenceRun = $this;
@@ -322,12 +322,11 @@ class Correspondence_Logic_Run
 
 		$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
 		$oEmail->send();
-			//For query debug purpose
+		/*
 	  	$myFile = "email.html";
 		$fh = fopen($myFile, 'w') or die("can't open file");
 		fwrite($fh, $oEmail->toString());
-		fclose($fh);
-
+		fclose($fh);*/
 	}
 
 	private function sendErrorEmail($sMessage, $sErrorReportFilePath = null)
@@ -353,11 +352,6 @@ class Correspondence_Logic_Run
 
 		$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
 		$oEmail->send();
-
-		$myFile = "email.html";
-		$fh = fopen($myFile, 'w') or die("can't open file");
-		fwrite($fh, $oEmail->toString());
-		fclose($fh);
 	}
 
 	public function sendDispatchEmail($bDispatchFailed = false)
@@ -388,10 +382,6 @@ class Correspondence_Logic_Run
 			$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
 		$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
 		$oEmail->send();
-		$myFile = "email.html";
-		$fh = fopen($myFile, 'w') or die("can't open file");
-		fwrite($fh, $oEmail->toString());
-		fclose($fh);
 	}
 
 	public function generateReportEmailBody($oEmail,$sHeader, $sMessage)

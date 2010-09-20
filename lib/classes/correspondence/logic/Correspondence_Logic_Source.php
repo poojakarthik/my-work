@@ -78,7 +78,7 @@ abstract class Correspondence_Logic_Source
 	 * to be implemented by each child class
 	 * every implementation of this method must return data in the same format
 	  */
-	abstract public function getData($bPreprinted, $aAdditionalColumns = array(), $bNoDataOk = false);
+	abstract public function getData($bPreprinted, $aAdditionalColumns = array());
 
 	public function save()
 	{
