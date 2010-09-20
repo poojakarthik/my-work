@@ -99,52 +99,22 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 
 	public static  function sendBatchDeliveryEmail($oBatch, $aRuns)
 	{
-		$oEmail = new Email_Notification(EMAIL_NOTIFICATION_CORRESPONDENCE);
+		$oEmail = new Correspondence_Email(EMAIL_NOTIFICATION_CORRESPONDENCE);
 		$oEmail->setSubject("Correspondence Delivery Summary for Batch ID  ".$oBatch->id);
 
-		$strTHStyle			= "text-align:left; color: #eee; background-color: #333;  width: 15em; padding-left:10px;";
-		$strTDStyle			= "text-align:left; color: #333; background-color: #eee; padding-left:20px;font-size:90%;";
-		$strTDStyleTwo			= "text-align:left; color: #333; background-color: #FFFFFF; padding-left:20px;font-size:90%;";
-		$strTDAutoStyle		= "";
-		$strTDWidthStyle	= "min-width: 15em; max-width: 15em;";
-		$strTableStyle		= "font-family: Calibri, Arial, sans-serif; width:99%; border: .1em solid #333; border-spacing: 0; border-collapse: collapse;";
-		$sStyle				= "font-family: Calibri, Arial, sans-serif;";
-		$sBoldStyle			= "font-family: Calibri, Arial, sans-serif;font-weight:bold;";
-		$body = new Flex_Dom_Document();
+		$body = $oEmail->getBody();
+
 		$h3 = $body->html->body->h3();
 		$h3->setValue ("Correspondence Delivery Summary for Batch ID ".$oBatch->id);
-		$h3->style = $sStyle;
-		//$body->html->body->h3->style = $sStyle;
+		$h3->style = Correspondence_Email::FONT_STYLE;
+
 		$h4 = $body->html->body->h4();
 		$h4->setValue ("Batch ID ".$oBatch->id." was dispatched on ".date('d/m/Y', strtotime($oBatch->batch_datetime))." - ".date('H:i:s', strtotime($oBatch->batch_datetime))." Run details:");
-		$h4->style = $sStyle;
+		$h4->style = Correspondence_Email::FONT_STYLE;
 
-		$table =& $body->html->body->table();
-		$table->style = $strTableStyle;
+		$table =& $oEmail->setTable(array('Processed','Source','Template','Created By','Items','Data File','Status'));
 
-		$table->tr(0)->th(0)->setValue('Processed');
-		$table->tr(0)->th(0)->style = $strTHStyle;
-
-		$table->tr(0)->th(1)->setValue('Source');
-		$table->tr(0)->th(1)->style =$strTHStyle;
-
-		$table->tr(0)->th(2)->setValue('Template');
-		$table->tr(0)->th(2)->style = $strTHStyle;
-
-		$table->tr(0)->th(3)->setValue('Created By');
-		$table->tr(0)->th(3)->style = $strTHStyle;
-
-		$table->tr(0)->th(4)->setValue('Items');
-		$table->tr(0)->th(4)->style = $strTHStyle;
-
-		$table->tr(0)->th(5)->setValue('Data File');
-		$table->tr(0)->th(5)->style = $strTHStyle;
-
-		$table->tr(0)->th(6)->setValue('Status');
-		$table->tr(0)->th(6)->style = $strTHStyle;
-
-
-		$sTableStyle = $strTDStyle;
+		$sTableStyle = Correspondence_Email::TD_STYLE;
 		foreach ($aRuns as $oRun)
 		{
 			$tr =& $table->tr();
@@ -172,10 +142,9 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 			$tr->td(5)->setValue($oRun->getExportFileName());
 			$tr->td(5)->style = $sTableStyle;
 
-
 			$oException = $oRun->getDataValidationException();
 			$sStatus = $oException == null?"Dispatched":(get_class($oException) == 'Correspondence_Dispatch_Exception'?"Dispatch Failed":"Data Processing Failed");
-			$sFailureReason = $oException==null?null:$oException->failureReasonToString();//iError==CORRESPONDENCE_RUN_ERROR_NO_DATA?"(No Data)":($oException->iError==CORRESPONDENCE_RUN_ERROR_MALFORMED_INPUT?"(Invalid Data, see attched error report)":($oException->iError==CORRESPONDENCE_RUN_ERROR_SQL_SYNTAX?"(Invalid SQL)":null));
+			$sFailureReason = $oException==null?null:$oException->failureReasonToString();
 			$sFailureReason .=$sFailureReason=="Invalid Data"?". See attached error report.":null;
 			$tr->td(6)->setValue($sFailureReason == null?$sStatus:$sStatus." - ".$sFailureReason);
 			$tr->td(6)->style = $sTableStyle;
@@ -185,16 +154,18 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 				$sFileName = substr($oException->sFileName, strrpos($oException->sFileName , "/" )+1);
 				$oEmail->addAttachment($sFile, $sFileName, 'text/csv');
 			}
-			$sTableStyle = $sTableStyle==$strTDStyle?$strTDStyleTwo:$strTDStyle;
+			$sTableStyle = $sTableStyle==Correspondence_Email::TD_STYLE?Correspondence_Email::TD_ALTERNATIVE_STYLE:Correspondence_Email::TD_STYLE;
 		}
 
-		Correspondence_Logic_Run::appendEmailSignature($body);
-
-		$sHtml = $body->saveHTML();
-		$oEmail->setBodyHTML($sHtml);
+		$oEmail->appendSignature();
+		$oEmail->setBodyHTML();
 		$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
 		$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
 		$oEmail->send();
+		$myFile = "email.html";
+		$fh = fopen($myFile, 'w') or die("can't open file");
+		fwrite($fh, $oEmail->toString());
+		fclose($fh);
 	}
 }
 
