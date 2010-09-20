@@ -301,46 +301,49 @@ class Correspondence_Logic_Run
 
 	private function sendRunCreatedEmail()
 	{
-		$oEmail = new Email_Notification(EMAIL_NOTIFICATION_CORRESPONDENCE);
-
+		$oEmail = new Correspondence_Email(EMAIL_NOTIFICATION_CORRESPONDENCE);
 
 		$oEmail->setSubject("Correspondence Run Scheduling Notification for '".$this->getTemplateName()."' (Letter Code ".$this->getCorrespondenceCode().")");
 		$sHeader = "Correspondence Run Delivery Scheduling Notification for '".$this->getTemplateName()."' (Letter Code ".$this->getCorrespondenceCode().")";
 		$sMessage = 'Details for Run ID '.$this->id.":";
-		$body = $this->generateReportEmailBody($sHeader,$sMessage );
-		$this->generateReportEmailTableRow($body->html->body->table(0),'Scheduled for Delivery', date('d/m/Y', strtotime($this->scheduled_datetime))." - ".date('H:i:s', strtotime($this->scheduled_datetime)));
+
+		$this->generateReportEmailBody($oEmail,$sHeader,$sMessage);
+		$oEmail->addPivotTableRow('Scheduled for Delivery', date('d/m/Y', strtotime($this->scheduled_datetime))." - ".date('H:i:s', strtotime($this->scheduled_datetime)));
 		if ($this->processed_datetime!=null)
 		{
 			$aCount = $this->getCorrespondenceCount();
-			$this->generateReportEmailTableRow($body->html->body->table(0),'Correspondence Items', array("Post : ".$aCount['post'], "Email: ".$aCount['email'], "Total: ".$aCount['total']));
-			$this->generateReportEmailTableRow($body->html->body->table(0), 'Status', 'Processed');
+			$oEmail->addPivotTableRow('Correspondence Items', array("Post : ".$aCount['post'], "Email: ".$aCount['email'], "Total: ".$aCount['total']));
+			$oEmail->addPivotTableRow('Status', 'Processed');
 		}
 		else
 		{
-			$this->generateReportEmailTableRow($body->html->body->table(0), 'Status', 'Submitted');
+			$oEmail->addPivotTableRow('Status', 'Submitted');
 		}
 
-		self::appendEmailSignature($body);
-
-		$sHtml = $body->saveHTML();
-		$oEmail->setBodyHTML($sHtml);
+		$oEmail->appendSignature();
+		$oEmail->setBodyHTML();
 		$oEmployee = Employee::getForId($this->created_employee_id);
 		if ($oEmployee!= null)
 			$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
 
 		$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
-		//$oEmail->send();
+		$oEmail->send();
+			//For query debug purpose
+	  	$myFile = "email.html";
+		$fh = fopen($myFile, 'w') or die("can't open file");
+		fwrite($fh, $oEmail->toString());
+		fclose($fh);
 
 	}
 
 	private function sendErrorEmail($sMessage, $sErrorReportFilePath = null)
 	{
 		//send email
-		$oEmail = new Email_Notification(EMAIL_NOTIFICATION_CORRESPONDENCE);
+		$oEmail = new Correspondence_Email(EMAIL_NOTIFICATION_CORRESPONDENCE);
 		$oEmail->setSubject("Correspondence Run Error Notification for Letter Code ".$this->getCorrespondenceCode());
 		$sHeader = "Correspondence Procsessing Error Notification for '".$this->getTemplateName()."' (Letter Code ".$this->getCorrespondenceCode()."), Run ID ".$this->id;
-		$body = $this->generateReportEmailBody($sHeader,"Details:" );
-		$this->generateReportEmailTableRow($body->html->body->table(0),'Error Details', $sMessage);
+		$this->generateReportEmailBody($oEmail,$sHeader,"Details:");
+		$oEmail->addPivotTableRow('Error Details', $sMessage);
 
 		if ($sErrorReportFilePath!=null)
 		{
@@ -348,130 +351,77 @@ class Correspondence_Logic_Run
 			$sFileName = substr($sErrorReportFilePath, strrpos( $sErrorReportFilePath , "/" )+1);
 			$oEmail->addAttachment($sFile, $sFileName, 'text/csv');
 		}
-		self::appendEmailSignature($body);
-
-		$sHtml = $body->saveHTML();
-		$oEmail->setBodyHTML($sHtml);
+		$oEmail->appendSignature();
+		$oEmail->setBodyHTML();
 		$oEmployee = Employee::getForId($this->created_employee_id);
 		if ($oEmployee!= null)
 			$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
-		//$oEmail->addCc($email, $name='');
-		//$oEmail->addBcc($email);
+
 		$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
-		//$oEmail->send();
+		$oEmail->send();
+
+		$myFile = "email.html";
+		$fh = fopen($myFile, 'w') or die("can't open file");
+		fwrite($fh, $oEmail->toString());
+		fclose($fh);
 	}
 
 	public function sendDispatchEmail($bDispatchFailed = false)
 	{
-		$oEmail = new Email_Notification(EMAIL_NOTIFICATION_CORRESPONDENCE);
+		$oEmail = new Correspondence_Email(EMAIL_NOTIFICATION_CORRESPONDENCE);
 		$sFailure = $bDispatchFailed?'Failure':null;
 		$oEmail->setSubject("Correspondence Delivery ".$sFailure." Notification for '".$this->getTemplateName()."' (Letter Code ".$this->getCorrespondenceCode().")");
 		$sHeader = "Correspondence Delivery ".$sFailure." Notification for '".$this->getTemplateName()."' (Letter Code ".$this->getCorrespondenceCode().")";
 		$sMessage = 'Delivery '.$sFailure.' Details for Run ID '.$this->id.":";
-		$body = $this->generateReportEmailBody($sHeader,$sMessage );
+		$this->generateReportEmailBody($oEmail,$sHeader,$sMessage);
 
 		$aCount = $this->getCorrespondenceCount();
-		$this->generateReportEmailTableRow($body->html->body->table(0),'Correspondence Items', array("Post : ".$aCount['post'], "Email: ".$aCount['email'], "Total: ".$aCount['total']));
+		$oEmail->addPivotTableRow('Correspondence Items', array("Post : ".$aCount['post'], "Email: ".$aCount['email'], "Total: ".$aCount['total']));
 		if (!$bDispatchFailed)
 		{
-			$this->generateReportEmailTableRow($body->html->body->table(0),'Dispatch Date', date('d/m/Y', strtotime($this->delivered_datetime))." - ".date('H:i:s', strtotime($this->delivered_datetime)));
-			$this->generateReportEmailTableRow($body->html->body->table(0), 'Data File', $this->getExportFileName());
-			$this->generateReportEmailTableRow($body->html->body->table(0), 'Status', 'Dispatched');
+			$oEmail->addPivotTableRow('Dispatch Date', date('d/m/Y', strtotime($this->delivered_datetime))." - ".date('H:i:s', strtotime($this->delivered_datetime)));
+			$oEmail->addPivotTableRow( 'Data File', $this->getExportFileName());
+			$oEmail->addPivotTableRow( 'Status', 'Dispatched');
 		}
 		else
 		{
-			$this->generateReportEmailTableRow($body->html->body->table(0), 'Status', 'Dispatch Failed. Reason:'.$this->_oDataValidationException->failureReasonToString());
+			$oEmail->addPivotTableRow( 'Status', 'Dispatch Failed. Reason:'.$this->_oDataValidationException->failureReasonToString());
 		}
-		self::appendEmailSignature($body);
-		$sHtml = $body->saveHTML();
-
-		$oEmail->setBodyHTML($sHtml);
+		$oEmail->appendSignature();
+		$oEmail->setBodyHTML();
 		$oEmployee = Employee::getForId($this->created_employee_id);
 		if ($oEmployee!= null)
 			$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
 		$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
-		//$oEmail->send();
+		$oEmail->send();
+		$myFile = "email.html";
+		$fh = fopen($myFile, 'w') or die("can't open file");
+		fwrite($fh, $oEmail->toString());
+		fclose($fh);
 	}
 
-	public function generateReportEmailTableRow(&$table, $key, $mValue)
+	public function generateReportEmailBody($oEmail,$sHeader, $sMessage)
 	{
-		$strTHStyle			= "text-align: right; vertical-align: top;color: #eee; background-color: #333; width: 15em; padding-right:10px;";
-		$strTDStyle			= "text-align: left;vertical-align: top; color: #333; background-color: #eee; padding-left:10px;";
-		$tr =& $table->tr();
-		$tr->td(0)->setValue($key);
-		if (is_array($mValue))
-		{
-			$td = $tr->td(1);
-			$iDivCount = 0;
-			foreach ($mValue as $value)
-			{
-				$td->div($iDivCount)->setValue($value);
-				$iDivCount++;
-			}
-
-		}
-		else
-		{
-			$tr->td(1)->setValue($mValue);
-		}
-
-		$tr->td(0)->style = $strTHStyle;
-		$tr->td(1)->style = $strTDStyle;
-
-	}
-
-	public function generateReportEmailBody($sHeader, $sMessage)
-	{
-		$strTHStyle			= "text-align: right; vertical-align: top;color: #eee; background-color: #333; width: 15em; padding-right:10px;";
-		$strTDStyle			= "text-align: left;vertical-align: top; color: #333; background-color: #eee; padding-left:10px;";
-		$strTDAutoStyle		= "";
-		$strTDWidthStyle	= "min-width: 15em; max-width: 15em;";
-		$strTableStyle		= "font-family: Calibri, Arial, sans-serif; width:99%; border: .1em solid #333; border-spacing: 0; border-collapse: collapse;";
-		$sStyle				= "font-family: Calibri, Arial, sans-serif;";
-
-		$body = new Flex_Dom_Document();
+		$body = $oEmail->getBody();
 
 		$h3 = $body->html->body->h3();
 		$h3->setValue ($sHeader);
-		$h3->style = $sStyle;
+		$h3->style = Correspondence_Email::FONT_STYLE;
 
 		$h4 = $body->html->body->h4();
 		$h4->setValue ($sMessage);
-		$h4->style =  $sStyle;
+		$h4->style =  Correspondence_Email::FONT_STYLE;
+
+		$table =& $oEmail->setTable();
 
 
-
-		$table =& $body->html->body->table();
-		$table->style = $strTableStyle;
-
-		$tr =& $table->tr();
-		$tr->td(0)->setValue('Process Date');
-		$tr->td(1)->setValue($this->processed_datetime==null?'process at delivery time':date('d/m/Y', strtotime($this->processed_datetime))." - ".date('H:i:s', strtotime($this->processed_datetime)));
-		$tr->td(0)->style = $strTHStyle;
-		$tr->td(1)->style = $strTDStyle;
-
-		$tr =& $table->tr();
-		$tr->td(0)->setValue('Data Source');
+		$oEmail->addPivotTableRow('Process Date', $this->processed_datetime==null?'process at delivery time':date('d/m/Y', strtotime($this->processed_datetime))." - ".date('H:i:s', strtotime($this->processed_datetime)));
 
 		$sSourceType = Correspondence_Source_Type::getForId($this->getSourceType())->name;
 		$sSourceFile = $this->getSourceFileName()==null?null:" (".$this->getSourceFileName().")";
-
-		$tr->td(1)->setValue($sSourceType.$sSourceFile);
-		$tr->td(0)->style = $strTHStyle;
-		$tr->td(1)->style = $strTDStyle;
-
-		$tr =& $table->tr();
-		$tr->td(0)->setValue('Template');
-		$tr->td(1)->setValue($this->getTemplateName()."(Letter Code ".$this->getCorrespondenceCode().")");
-		$tr->td(0)->style = $strTHStyle;
-		$tr->td(1)->style = $strTDStyle;
-
-		$tr =& $table->tr();
-		$tr->td(0)->setValue('Created By');
-		$tr->td(1)->setValue($this->getCreatedEmployeeName());
-		$tr->td(0)->style = $strTHStyle;
-		$tr->td(1)->style = $strTDStyle;
-		return $body;
+		$oEmail->addPivotTableRow('Data Source', $sSourceType.$sSourceFile);
+		$oEmail->addPivotTableRow('Template', $this->getTemplateName()."(Letter Code ".$this->getCorrespondenceCode().")");
+		$oEmail->addPivotTableRow('Created By', $this->getCreatedEmployeeName());
 	}
 
 	public static function getForBatchId($iBatchId, $bToArray = false)
@@ -501,17 +451,6 @@ class Correspondence_Logic_Run
 	public static function getForId($iId, $bIncludeCorrespondence = true)
 	{
 		return new Correspondence_Logic_Run(Correspondence_Run::getForId($iId),null, $bIncludeCorrespondence);
-	}
-
-	public static function appendEmailSignature(&$body)
-	{
-		$body->div();
-		$div = $body->div();
-		$div->setValue("Regards");
-		$div->style = "font-family: Calibri, Arial, sans-serif;";
-		$div = $body->div();
-		$div->setValue("Flexor");
-		$div->style = "font-family: Calibri, Arial, sans-serif;font-weight:bold;";;
 	}
 
 	public function __get($sField)
