@@ -87,7 +87,6 @@ class Correspondence_Logic_Run
 		try
 		{
 			$this->_save();
-			// Everything looks OK -- Commit!
 			$oDataAccess->TransactionCommit();
 			return $this->id;
 		}
@@ -176,7 +175,6 @@ class Correspondence_Logic_Run
 		$this->delivered_datetime = $sDeliveredTimeStamp;
 		$this->correspondence_run_batch_id = $iBatchId;
 	}
-
 
 	public function getCarrierModule()
 	{
@@ -271,10 +269,6 @@ class Correspondence_Logic_Run
 		}
 	}
 
-/*	public function getTemplateName()
-	{
-		return $this->_oCorrespondenceTemplate->name;
-	}*/
 
 	public function getCreatedEmployeeName()
 	{
@@ -413,7 +407,6 @@ class Correspondence_Logic_Run
 		$h4->style =  Correspondence_Email::FONT_STYLE;
 
 		$table =& $oEmail->setTable();
-
 
 		$oEmail->addPivotTableRow('Process Date', $this->processed_datetime==null?'process at delivery time':date('d/m/Y', strtotime($this->processed_datetime))." - ".date('H:i:s', strtotime($this->processed_datetime)));
 
