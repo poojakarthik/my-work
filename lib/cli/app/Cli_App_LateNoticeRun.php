@@ -8,7 +8,7 @@ class Cli_App_LateNoticeRun extends Cli
 	const SWITCH_EFFECTIVE_DATE = "e";
 	const SWITCH_TEST_RUN = "t";
 	const SWITCH_SAMPLE = "p";
-	
+
 	const	EMAIL_BILLING_NOTIFICATIONS	= 'ybs-admin@ybs.net.au';
 
 	private $runDateTime = '';
@@ -18,9 +18,9 @@ class Cli_App_LateNoticeRun extends Cli
 		$now = time();
 		$this->runDateTime = date('Y-m-d H:i:s', $now);
 		$pathDate = date('Ymd', $now);
-		
+
 		$dacFlex	= DataAccess::getDataAccess();
-		
+
 		if (!$dacFlex->TransactionStart())
 		{
 			$this->showUsage('ERROR: There was an error starting the transaction');
@@ -31,7 +31,7 @@ class Cli_App_LateNoticeRun extends Cli
 		{
 			// The arguments are present and in a valid format if we get past this point.
 			$arrArgs = $this->getValidatedArguments();
-			
+
 			$this->_bolTestRun	= (bool)$arrArgs[self::SWITCH_TEST_RUN];
 			if ($this->_bolTestRun)
 			{
@@ -63,9 +63,9 @@ class Cli_App_LateNoticeRun extends Cli
 			$sendEmail = FALSE;
 
 			$aCorrespondenceToPost	= array();
-			
+
 			$aAccountsById	= array();
-			
+
 			foreach($arrNoticeTypes as $intNoticeType => $intAutomaticInvoiceAction)
 			{
 				// This query is repeated by the GenerateLatePaymentNotices function. Consider revising.
@@ -104,7 +104,7 @@ class Cli_App_LateNoticeRun extends Cli
 					{
 						$invoiceRunAutoFields[$intAutomaticInvoiceAction] = array();
 					}
-					
+
 					// If we're in Test Mode, get samples
 					$arrSampleAccounts	= array(DELIVERY_METHOD_POST=>null, DELIVERY_METHOD_EMAIL=>null);
 					if ($this->_bolTestRun)
@@ -115,7 +115,7 @@ class Cli_App_LateNoticeRun extends Cli
 						{
 							$arrDeliveryMethodAccounts[$arrDetails['Account']['DeliveryMethod']][$arrDetails['Account']['CustomerGroup']][]	= $mixKey;
 						}
-						
+
 						// Pick a random sample for each Delivery Method
 						foreach ($arrDeliveryMethodAccounts as $intDeliveryMethod=>$arrCustomerGroups)
 						{
@@ -123,9 +123,9 @@ class Cli_App_LateNoticeRun extends Cli
 							{
 								$mixRandomKey	= array_rand($arrAccounts);
 								$arrAccount		= $mixResult['Details'][$arrAccounts[$mixRandomKey]]['Account'];
-								
+
 								$arrSampleAccounts[$intDeliveryMethod][$intCustomerGroupId]	= $arrAccount['AccountId'];
-								
+
 								$this->log("{$arrAccount['AccountId']} has been selected as the random sample for {$arrAccount['CustomerGroupName']}:".GetConstantDescription($intDeliveryMethod, 'delivery_method'));
 							}
 						}
@@ -133,11 +133,11 @@ class Cli_App_LateNoticeRun extends Cli
 
 					// Create array to hold the correspondence for this automatic invoice action (id)
 					$aCorrespondenceToPost[$intAutomaticInvoiceAction]	= array();
-					
+
 					// Create a customer and samples queue for the letter type
 					$oCustomerEmailQueue	= Email_Queue::get("CUSTOMER_{$strLetterType}");
 					$oSamplesEmailQueue		= Email_Queue::get("SAMPLES_{$strLetterType}");
-					
+
 					// We now need to email/print each of the notices that have been generated
 					foreach($mixResult['Details'] as $arrDetails)
 					{
@@ -146,10 +146,10 @@ class Cli_App_LateNoticeRun extends Cli
 						$intAccountId = $arrDetails['Account']['AccountId'];
 						$xmlFilePath = $arrDetails['XMLFilePath'];
 						$intAutoInvoiceAction = $arrDetails['Account']['automatic_invoice_action'];
-						
+
 						// Cache this information for use when reporting on email send status
 						$aAccountsById[$intAccountId]	= $arrDetails['Account'];
-						
+
 						$custGroupName = strtolower(str_replace(' ', '_', $strCustGroupName));
 
 						$letterType = strtolower(str_replace(' ', '_', $strLetterType));
@@ -249,7 +249,7 @@ class Cli_App_LateNoticeRun extends Cli
 
 										$arrSummary[$strCustGroupName][$strLetterType]['prints'][] = $intAccountId;
 										$arrSummary[$strCustGroupName][$strLetterType]['pdfs'][] = $targetFile;
-	
+
 										// We need to log the fact that we've created it, by updating the account automatic_invoice_action
 										if (!$arrArgs[self::SWITCH_TEST_RUN])
 										{
@@ -261,9 +261,9 @@ class Cli_App_LateNoticeRun extends Cli
 											}
 										}
 									}
-									
+
 									$this->log("Generating Correspondence Data for account ". $intAccountId);
-									
+
 									// Cache the correspondence data for the notice
 									$aCorrespondence	= 	array(
 																'account_id'						=> $intAccountId,
@@ -284,12 +284,12 @@ class Cli_App_LateNoticeRun extends Cli
 																'pdf_file_path'						=> $targetFile
 															);
 									$aCorrespondenceToPost[$intAutomaticInvoiceAction][]	= $aCorrespondence;
-									
+
 									// This is the sample Post Notice -- email
 									if ($this->_bolTestRun && $arrSampleAccounts[DELIVERY_METHOD_POST][$intCustGrp] === $intAccountId)
 									{
 										$subject = "[SAMPLE:POST] $strCustGroupName $strLetterType for Account $intAccountId";
-										
+
 										$to = self::EMAIL_BILLING_NOTIFICATIONS;
 
 					 					$strContent = "Please find attached a SAMPLE POST $strCustGroupName $strLetterType for Account $intAccountId.";
@@ -300,7 +300,7 @@ class Cli_App_LateNoticeRun extends Cli
 										$attachment[self::EMAIL_ATTACHMENT_MIME_TYPE] = 'application/pdf';
 										$attachment[self::EMAIL_ATTACHMENT_CONTENT] = $pdfContent;
 										$attachments[] = $attachment;
-										
+
 										// Add to the samples queue for this notice type, giving it the account id as an email id
 										$oSamplesEmailQueue->push(Email_Notification::factory(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, self::EMAIL_BILLING_NOTIFICATIONS, $subject, NULL, $strContent, $attachments, TRUE), $intAccountId);
 									}
@@ -365,9 +365,9 @@ class Cli_App_LateNoticeRun extends Cli
 									{
 										// Add to the customer queue for this notice type, giving it the account id as an email id
 										$oCustomerEmailQueue->push(Email_Notification::factory(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, $to, $subject, NULL, $strContent, $attachments, TRUE), $intAccountId);
-										
+
 										$this->log("Email queued to be sent to: $to");
-										
+
 										// We need to log the fact that we're sending it, by updating the account automatic_invoice_action
 										$outcome = $this->changeAccountAutomaticInvoiceAction($intAccountId, $intAutoInvoiceAction, $intAutomaticInvoiceAction, "$strLetterType emailed to $name ($emailTo)", $invoiceRunId);
 										if ($outcome !== TRUE)
@@ -376,12 +376,12 @@ class Cli_App_LateNoticeRun extends Cli
 											$errors++;
 										}
 									}
-																		
+
 									// This is the sample Email Notice -- email
 									if ($this->_bolTestRun && $arrSampleAccounts[DELIVERY_METHOD_EMAIL][$intCustGrp] === $intAccountId)
 									{
 										$subject = "[SAMPLE:EMAIL]".$subject;
-										
+
 										$to = self::EMAIL_BILLING_NOTIFICATIONS;
 
 					 					$strContent = "[SAMPLE:EMAIL]\r\n\r\n".$strContent."\r\n\r\n[SAMPLE:EMAIL]";
@@ -392,7 +392,7 @@ class Cli_App_LateNoticeRun extends Cli
 										$attachment[self::EMAIL_ATTACHMENT_MIME_TYPE] = 'application/pdf';
 										$attachment[self::EMAIL_ATTACHMENT_CONTENT] = $pdfContent;
 										$attachments[] = $attachment;
-										
+
 										// Add to the samples queue for this notice type, giving it the account id as an email id
 										$oSamplesEmailQueue->push(Email_Notification::factory(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, self::EMAIL_BILLING_NOTIFICATIONS, $subject, NULL, $strContent, $attachments, TRUE), $intAccountId);
 									}
@@ -402,7 +402,7 @@ class Cli_App_LateNoticeRun extends Cli
 					}
 				}
 			}
-			
+
 			if (!$arrArgs[self::SWITCH_TEST_RUN])
 			{
 				foreach ($invoiceRunAutoFields as $intAutomaticInvoiceAction => $invoiceRunCounts)
@@ -417,7 +417,7 @@ class Cli_App_LateNoticeRun extends Cli
 					}
 				}
 			}
-			
+
 			// Generate a correspondence run for each notice type and to it correspondence that is to be posted for that notice type
 			$this->log("START: Creating Correspondence Runs");
 			foreach ($aCorrespondenceToPost as $iAutomaticInvoiceAction => $aCorrespondenceData)
@@ -427,14 +427,14 @@ class Cli_App_LateNoticeRun extends Cli
 				{
 					// Create Correspondence Run using the pre-deterimined (System) Correspondence Template name
 					$this->log("Retrieving Template");
-					
+
 					// Get the template
-					$oTemplate	= Correspondence_Logic_Template::getForAutomaticInvoiceAction($iAutomaticInvoiceAction, $aCorrespondenceData);
-					
+					$oTemplate	= Correspondence_Logic_Template::getForAutomaticInvoiceAction($iAutomaticInvoiceAction);
+
 					$this->log("Template retrieved, creating Correspondence Run");
-					
-					$oRun	= $oTemplate->createRun(true);
-					
+
+					$oRun	= $oTemplate->createRun(true, $aCorrespondenceData);
+
 					$this->log("Run created succesfully (id={$oRun->id})");
 				}
 				catch (Correspondence_DataValidation_Exception $oEx)
@@ -445,7 +445,7 @@ class Cli_App_LateNoticeRun extends Cli
 				}
 			}
 			$this->log("FINISHED: Creating Correspondence Runs");
-			
+
 			if (!$this->_bolTestRun)
 			{
 				// Live run, attempt transaction commit before the emails are sent
@@ -454,13 +454,13 @@ class Cli_App_LateNoticeRun extends Cli
 					throw new Exception("Transaction Commit Failed");
 				}
 			}
-			
+
 			// Attempt to send all emails
 			$this->log("START: Sending all emails that have been queued");
 			foreach($arrNoticeTypes as $iNoticeType => $iAutomaticInvoiceAction)
 			{
 				$sLetterType	= GetConstantDescription($iNoticeType, 'DocumentTemplateType');
-				
+
 				// Send SAMPLES email queue & show status of each email
 				if ($this->_bolTestRun)
 				{
@@ -484,7 +484,7 @@ class Cli_App_LateNoticeRun extends Cli
 								throw new Exception("Invalid delivery method for Account '{$iAccountId}': '".$aAccountDetails['DeliveryMethod']."', this should never happen");
 								break;
 						}
-						
+
 						$sRecipients	= implode(', ', $oEmail->getRecipients());
 						$mStatus		= $oEmail->getSendStatus();
 						if ($mStatus === Email_Flex::SEND_STATUS_SENT)
@@ -504,12 +504,12 @@ class Cli_App_LateNoticeRun extends Cli
 						}
 					}
 				}
-				
+
 				// Send CUSTOMER email queue & show status of each email
 				$oCustomerQueue	= Email_Queue::get("CUSTOMER_{$sLetterType}");
 				if (!$this->_bolTestRun)
 				{
-					// Only commit the customer email queues when in a live run, NOT FOR TESTING 
+					// Only commit the customer email queues when in a live run, NOT FOR TESTING
 					// !!!! THIS WILL ALLOW THE SENDING OF EMAILS TO THE CUSTOMERS UNLESS YOU HAVE PUT OTHER SAFEGUARDS IN PLACE, DON'T RISK IT IF YOU ARE TESTING !!!!
 					$oCustomerQueue->commit();
 				}
@@ -544,8 +544,8 @@ class Cli_App_LateNoticeRun extends Cli
 				}
 			}
 			$this->log("FINISHED: Sending all emails that have been queued");
-			
-			// We now need to build a report detailing actions taken for each of the customer groups 
+
+			// We now need to build a report detailing actions taken for each of the customer groups
 			if (!$sendEmail)
 			{
 				$this->log("No applicable accounts found. Exiting normally.");
@@ -642,7 +642,7 @@ class Cli_App_LateNoticeRun extends Cli
 				$report[] = "No automated late notices were generated.";
 			}
 			$body = implode("\r\n", $report);
-			
+
 			// Send the report email, not queued
 			$this->log("Sending report");
 			if (Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE_REPORT, NULL, NULL, $subject, NULL, $body, NULL, TRUE))
@@ -655,12 +655,12 @@ class Cli_App_LateNoticeRun extends Cli
 			}
 
 			$this->log("Finished.");
-			
+
 			if ($this->_bolTestRun)
 			{
 				throw new Exception("Test Mode!  Rolling back all database changes.");
 			}
-			
+
 			return $errors;
 		}
 		catch(Exception $exception)
@@ -670,13 +670,13 @@ class Cli_App_LateNoticeRun extends Cli
 				$this->showUsage('ERROR: Transaction Rollback Failed');
 				return 1;
 			}
-			
+
 			$this->showUsage('ERROR: ' . $exception->getMessage());
-			
+
 			return 1;
 		}
 	}
-	
+
 	private function changeInvoiceRunAutoActionDateTime($invoiceRunId, $intAutomaticInvoiceAction)
 	{
 		$qryQuery = new Query();
@@ -783,21 +783,21 @@ class Cli_App_LateNoticeRun extends Cli
 				self::ARG_DEFAULT		=> time(),
 				self::ARG_VALIDATION	=> 'Cli::_validDate("%1$s")'
 			),
-		
+
 			self::SWITCH_TEST_RUN => array(
 				self::ARG_REQUIRED		=> FALSE,
 				self::ARG_DESCRIPTION	=> "for testing script outcome [fully functional EXCEPT emails will not be sent to clients]",
 				self::ARG_DEFAULT		=> FALSE,
 				self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
 			),
-		
+
 			self::SWITCH_SAMPLE => array(
 				self::ARG_REQUIRED		=> FALSE,
 				self::ARG_DESCRIPTION	=> "will send sample Notices to ".self::EMAIL_BILLING_NOTIFICATIONS,
 				self::ARG_DEFAULT		=> FALSE,
 				self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
 			),
-		
+
 		);
 	}
 
