@@ -11,6 +11,14 @@ class Correspondence_Source extends ORM_Cached
 	protected 			$_strTableName			= "correspondence_source";
 	protected static	$_strStaticTableName	= "correspondence_source";
 
+
+	public static function getForTemplateId($iTemplateId)
+	{
+		$oTemplate 	= Correspondence_Template::getForId($iTemplateId);
+		return self::getForId($oTemplate->correspondence_source_id);
+	}
+
+
 	protected static function getCacheName()
 	{
 		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
