@@ -271,7 +271,7 @@ class Correspondence_Logic_Run
 	public function getCreatedEmployeeName()
 	{
 		$oEmployee = Employee::getForId($this->created_employee_id);
-		return $oEmployee->FirstName." ".$oEmployee->LastName;
+		return $this->created_employee_id==0?'System User':$oEmployee->FirstName." ".$oEmployee->LastName;
 
 	}
 
@@ -315,7 +315,7 @@ class Correspondence_Logic_Run
 		$oEmail->appendSignature();
 		$oEmail->setBodyHTML();
 		$oEmployee = Employee::getForId($this->created_employee_id);
-		if ($oEmployee!= null)
+		if ($oEmployee!= null && $oEmployee->email!=null)
 			$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
 
 		$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
@@ -345,7 +345,7 @@ class Correspondence_Logic_Run
 		$oEmail->appendSignature();
 		$oEmail->setBodyHTML();
 		$oEmployee = Employee::getForId($this->created_employee_id);
-		if ($oEmployee!= null)
+		if ($oEmployee!= null && $oEmployee->email!=null)
 			$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
 
 		$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
@@ -376,7 +376,7 @@ class Correspondence_Logic_Run
 		$oEmail->appendSignature();
 		$oEmail->setBodyHTML();
 		$oEmployee = Employee::getForId($this->created_employee_id);
-		if ($oEmployee!= null)
+		if ($oEmployee!= null && $oEmployee->email!=null)
 			$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
 		$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
 		$oEmail->send();
