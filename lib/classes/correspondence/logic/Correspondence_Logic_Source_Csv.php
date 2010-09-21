@@ -9,21 +9,30 @@ class Correspondence_Logic_Source_CSV extends Correspondence_Logic_Source
 	protected $_oFileImport;
 
 
-	public function __construct($sTmpPath, $sFileName)
+	public function __construct($iTemplateId, $aFileInfo = null)
 	{
-		parent::__construct(CORRESPONDENCE_SOURCE_TYPE_CSV);
-		$aFileImport = File_Import::getForFileName($sFileName);
+		parent::__construct(Correspondence_Source::getForTemplateId($iTemplateId));
+
+		if ($aFileInfo!=null)
+		{
+			$this->setData($aFileInfo);
+		}
+	}
+
+	function setData($aFileInfo)
+	{
+		$this->_sTmpPath =$aFileInfo['tmp_name'];
+		$this->_sFileName = $aFileInfo['name'];
+		/*$aFileImport = File_Import::getForFileName($this->_sFileName);
 		foreach ($aFileImport as $oFileImport)
 		{
-			if ($oFileImport->FileName == $sFileName &&
+			if ($oFileImport->FileName == $this->_sFileName &&
 				$oFileImport->FileType == RESOURCE_TYPE_FILE_IMPORT_CORRESPONDENCE_YELLOWBILLING_CSV)
 			{
 				throw new Correspondence_DataValidation_Exception(Correspondence_DataValidation_Exception::DUPLICATE_FILE);
 			}
-		}
-		$this->_sFileName = $sFileName;
-		$this->_sTmpPath = $sTmpPath;
-		$sCsv = file_get_contents($sTmpPath);
+		}*/
+		$sCsv = file_get_contents($this->_sTmpPath);
 		$this->_aCsv = trim($sCsv)==null?null:explode("\n",trim($sCsv));
 	}
 

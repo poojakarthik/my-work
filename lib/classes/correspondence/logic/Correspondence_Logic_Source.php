@@ -62,9 +62,9 @@ abstract class Correspondence_Logic_Source
 	protected $_aValidCustomerGroups;
 	protected $_aValidDeliveryMethods;
 
-	public function __construct( $iSourceType= null, $iId = null)
+	public function __construct($oDataObject)
 	{
-		$this->_oDataObject = $iId ==null?new Correspondence_Source(array('correspondence_source_type_id'=>$iSourceType)):Correspondence_Source::getForId($iId);
+		$this->_oDataObject = $oDataObject;// $iId ==null?new Correspondence_Source(array('correspondence_source_type_id'=>$iSourceType)):Correspondence_Source::getForId($iId);
 		$this->_errorReport = new File_Exporter_CSV();
 		$this->_errorReport->setDelimiter(Correspondence_Dispatcher_YellowBillingCSV::FIELD_DELIMITER);
 		$this->_errorReport->setQuote(Correspondence_Dispatcher_YellowBillingCSV::FIELD_ENCAPSULATOR);
@@ -79,6 +79,8 @@ abstract class Correspondence_Logic_Source
 	 * every implementation of this method must return data in the same format
 	  */
 	abstract public function getData($bPreprinted, $aAdditionalColumns = array());
+
+	abstract public function setData($mData);
 
 	public function save()
 	{
@@ -435,6 +437,8 @@ class Correspondence_DataValidation_Exception extends Exception
 		return $this->iError==null?null:($this->iError==CORRESPONDENCE_RUN_ERROR_NO_DATA?"No Data":($this->iError==CORRESPONDENCE_RUN_ERROR_MALFORMED_INPUT?"Invalid Data":($this->iError==CORRESPONDENCE_RUN_ERROR_SQL_SYNTAX?"Invalid SQL":null)));
 
 	}
+
+
 }
 
 

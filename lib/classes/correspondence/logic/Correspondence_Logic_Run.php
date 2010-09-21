@@ -7,7 +7,7 @@ class Correspondence_Logic_Run
 	protected $_oDataValidationException;
 	public static $aNonSuppliedFields = array('processed_datetime', 'delivered_datetime', 'created_employee_id', 'created', 'data_file_export_id', 'pdf_file_export_id');
 
-	public function __construct($mDefinition, $oCorrespondenceTemplate = null, $bIncludeCorrespondence = true, $bProcessNow = true)
+	public function __construct($mDefinition, $oCorrespondenceTemplate = null, $bProcessNow = true, $bIncludeCorrespondence = true)
 	{
 		$this->_oCorrespondenceTemplate = $oCorrespondenceTemplate;
 		if (is_array($mDefinition))
@@ -16,6 +16,7 @@ class Correspondence_Logic_Run
 			{
 				$mDefinition[$sField] = null;
 			}
+
 			if ($mDefinition['scheduled_datetime']== null)
 			{
 				$mDefinition['scheduled_datetime'] = Data_Source_Time::currentTimestamp();
@@ -25,8 +26,7 @@ class Correspondence_Logic_Run
 			$this->_oDO = new Correspondence_Run($mDefinition);
 
 			$bProcessNow?$this->process():$this->save();
-			$bProcessNow?null:$this->sendRunCreatedEmail();
-
+			$this->sendRunCreatedEmail();
 		}
 		else
 		{
@@ -60,7 +60,6 @@ class Correspondence_Logic_Run
 			$this->processed_datetime = Data_Source_Time::currentTimestamp();
 			$this->file_import_id = $this->_oCorrespondenceTemplate->importSource();
 			$this->save();
-			$this->sendRunCreatedEmail();
 		}
 		catch(Correspondence_DataValidation_Exception $e)
 		{
@@ -96,7 +95,6 @@ class Correspondence_Logic_Run
 			$oDataAccess->TransactionRollback();
 			throw $e;
 		}
-
 	}
 
 	public function _save()

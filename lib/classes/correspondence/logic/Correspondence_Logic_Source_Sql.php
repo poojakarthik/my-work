@@ -4,10 +4,15 @@ class Correspondence_Logic_Source_Sql extends Correspondence_Logic_Source
 
 	protected $_oDO;
 
-	public function __construct($mDefinition)
+	public function __construct($iTemplateId)
 	{
-		parent::__construct(null, $mDefinition->correspondence_source_id);
-		$this->_oDO = $mDefinition;
+		parent::__construct(Correspondence_Source::getForTemplateId($iTemplateId));
+		$this->_oDO = Correspondence_Source_Sql::getForCorrespondenceSourceId(parent::__get('id'));
+	}
+
+	public function setData($mData)
+	{
+		return false;
 	}
 
 	public function getData($bPreprinted, $aAdditionalColumns = array())
@@ -60,11 +65,11 @@ class Correspondence_Logic_Source_Sql extends Correspondence_Logic_Source
 
 
 
-	public static function getForCorrespondenceSourceId($iId)
+/*	public static function getForCorrespondenceSourceId($iId)
 	{
 		$oORM = Correspondence_Source_Sql::getForCorrespondenceSourceId($iId);
 		return new self ($oORM);
-	}
+	}*/
 
 	public function __get($sField)
 	{

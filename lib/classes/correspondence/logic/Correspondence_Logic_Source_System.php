@@ -5,9 +5,15 @@ class Correspondence_Logic_Source_System extends Correspondence_Logic_Source
 
 	protected $_aData;
 
-	public function __construct($aData)
+	public function __construct($iTemplateId, $aData = null)
 	{
-		parent::__construct(CORRESPONDENCE_SOURCE_TYPE_SYSTEM);
+		parent::__construct(Correspondence_Source::getForTemplateId($iTemplateId));
+		if ($aData!=null)
+			$this->setData($aData);
+	}
+
+	public function setData($aData)
+	{
 		$this->_aData = $aData;
 	}
 
@@ -53,7 +59,7 @@ class Correspondence_Logic_Source_System extends Correspondence_Logic_Source
 
 	public function __get($sField)
 	{
-		return $this->_oDO->$sField;
+		return $this->_oDO->$sField!=null?$this->_oDO->$sField:parent::__get($sField);
 	}
 
 

@@ -32,13 +32,26 @@ class Correspondence_Logic_Template
 		else
 		{
 			$this->_oDO = $mDefinition;
-
 		}
 
 		if ($this->correspondence_source_id !=null)
 		{
 			$oCorrespondenceSource = Correspondence_Source::getForId($this->correspondence_source_id);
-			$this->_oCorrespondenceSource = $oCorrespondenceSource->correspondence_source_type_id == CORRESPONDENCE_SOURCE_TYPE_SQL?Correspondence_Logic_Source_Sql::getForCorrespondenceSourceId($oCorrespondenceSource->id):$oSource;
+			//$this->_oCorrespondenceSource = $oCorrespondenceSource->correspondence_source_type_id == CORRESPONDENCE_SOURCE_TYPE_SQL?Correspondence_Logic_Source_Sql::getForCorrespondenceSourceId($oCorrespondenceSource->id):$oSource;
+			switch($oCorrespondenceSource->correspondence_source_type_id)
+			{
+				case(CORRESPONDENCE_SOURCE_TYPE_CSV):
+										$this->_oCorrespondenceSource = $oSource==null?new Correspondence_Logic_Source_Csv($this->id):$oSource;
+										break;
+				case (CORRESPONDENCE_SOURCE_TYPE_SQL):
+										$this->_oCorrespondenceSource = new Correspondence_Logic_Source_Sql($this->id);
+										break;
+				case (CORRESPONDENCE_SOURCE_TYPE_SYSTEM):
+										$this->_oCorrespondenceSource = $oSource==null?new Correspondence_Logic_Source_System($this->id):$oSource;
+										break;
+			}
+
+
 			if($this->_oCorrespondenceSource!=null)
 				$this->_oCorrespondenceSource->setTemplate($this);
 		}
@@ -126,11 +139,15 @@ class Correspondence_Logic_Template
 
 	}
 
-	public function  createRun($bPreprinted = false, $sScheduleDateTime = null, $bProcessNow = true, $bForceIfNoData = false)
+	public function  createRun($bPreprinted = false, $mData = null, $sScheduleDateTime = null, $bProcessNow = true)
 	{
 
-		$aDefinition = array ('scheduled_datetime'=> $sScheduleDateTime, 'preprinted'=>$bPreprinted, 'forece_empty_run'=>$bForceIfNoData);
-		$oRun = new Correspondence_Logic_Run($aDefinition, $this, true, $bProcessNow);
+		if ($mData!=null)
+		{
+			$this->_oCorrespondenceSource->setData($mData);
+		}
+		$aDefinition = array ('scheduled_datetime'=> $sScheduleDateTime, 'preprinted'=>$bPreprinted);
+		$oRun = new Correspondence_Logic_Run($aDefinition, $this, $bProcessNow);
 		$this->_aRuns[]=$oRun;
 		return $oRun;
 
@@ -187,30 +204,26 @@ class Correspondence_Logic_Template
 		return $this->_oCorrespondenceSource->import();
 	}
 
-	public static function getForLetterCode($sLetterCode)
-	{
-
-	}
 
 	// getForInvoiceRunType: Uses the Invoice_Run_Type_Correspondence_Template linking class/table to retrieve the template for the given invoice run type
-	public static function getForInvoiceRunType($iInvoiceRunTypeId, $aData)
+	public static function getForInvoiceRunType($iInvoiceRunTypeId)
 	{
-		$oSource	= new Correspondence_Logic_Source_System($aData);
 		$oDO 		= Invoice_Run_Type_Correspondence_Template::getTemplateForInvoiceRunType($iInvoiceRunTypeId);
-		return new self($oDO, $oSource);
+		//$oSource	= new Correspondence_Logic_Source_System($oDO->id,$aData);
+		return new self($oDO);
 	}
 
 	// getForInvoiceRunType: Uses the Automatic_Invoice_Action_Correspondence_Template linking class/table to retrieve the template for the given automatic invoice action
-	public static function getForAutomaticInvoiceAction($iAutomaticInvoiceActionId, $aData)
+	public static function getForAutomaticInvoiceAction($iAutomaticInvoiceActionId)
 	{
-		$oSource	= new Correspondence_Logic_Source_System($aData);
 		$oDO 		= Automatic_Invoice_Action_Correspondence_Template::getTemplateForAutomaticInvoiceAction($iAutomaticInvoiceActionId);
-		return new self($oDO, $oSource);
+		//$oSource	= new Correspondence_Logic_Source_System($oDO->id, $aData);
+		return new self($oDO);
 	}
 
-	public static function getForId($iId, $oSource = null)
+	public static function getForId($iId)
 	{
-		return new self ($iId, $oSource);
+		return new self ($iId);
 	}
 
 	public static function create($sTemplateCode, $sName, $sDescription, $iCarrierId, $oSource, $aColumns)
