@@ -161,7 +161,7 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 		$oEmail->setBodyHTML();
 		$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
 		$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
-		//$oEmail->send();
+		$oEmail->send();
 	}
 }
 
