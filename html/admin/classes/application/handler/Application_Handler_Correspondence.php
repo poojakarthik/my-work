@@ -20,6 +20,7 @@ class Application_Handler_Correspondence extends Application_Handler
 		die;
 	}
 
+
 	public function CreateFromCSV($subPath)
 	{
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
@@ -114,11 +115,9 @@ class Application_Handler_Correspondence extends Application_Handler
 
 			try
 			{
-				$oSource	= new Correspondence_Logic_Source_Csv($aFileInfo['tmp_name'], $aFileInfo['name']);
-				$oTemplate	= Correspondence_Logic_Template::getForId($iCorrespondenceTemplateId, $oSource);
-
-				$oTemplate->createRun(false, date('Y-m-d H:i:s', $iDeliveryDateTime), true);
-
+				//$oSource	= new Correspondence_Logic_Source_Csv($iCorrespondenceTemplateId, $aFileInfo['tmp_name'], $aFileInfo['name']);
+				$oTemplate	= Correspondence_Logic_Template::getForId($iCorrespondenceTemplateId);
+				$oTemplate->createRun(false, $aFileInfo, date('Y-m-d H:i:s', $iDeliveryDateTime), true);
 			}
 			catch (Correspondence_DataValidation_Exception $oEx)
 			{
@@ -150,7 +149,7 @@ class Application_Handler_Correspondence extends Application_Handler
 			// Get the correspondence item for the run
 			$iCorrespondenceRunId	= (int)$aSubPath[0];
 			$oRun					= Correspondence_Logic_Run::getForId($iCorrespondenceRunId);
-			
+
 			// Build the list of columns for the csv file
 			$aAdditionalColumns	= $oRun->getAdditionalColumns(0);
 			$aColumns			= 	array(
@@ -193,7 +192,7 @@ class Application_Handler_Correspondence extends Application_Handler
 				$bUsingLogic		= true;
 				$aCorrespondence	= $oRun->getCorrespondence();
 			}
-			
+
 			// Build list of lines for the file
 			$aLines	= array();
 			foreach ($aCorrespondence as $mCorrespondence)
@@ -206,7 +205,7 @@ class Application_Handler_Correspondence extends Application_Handler
 				{
 					$oCorrespondence	= new Correspondence_Logic(Correspondence::getForId($mCorrespondence));
 				}
-				
+
 				$sDeliveryMethod	= Correspondence_Delivery_Method::getForId($oCorrespondence->correspondence_delivery_method_id)->name;
 				$aLine				=	array
 										(
@@ -276,6 +275,36 @@ class Application_Handler_Correspondence extends Application_Handler
 		echo 'all done';
 		die;
 
+	}
+
+	public function testRunEmail()
+	{
+		$aCorrespondence = Correspondence_Run::getAll();
+		foreach ($aCorrespondence as $oCorrespondence)
+		{
+			if ($oCorrespondence->data_file_export_id != null && $oCorrespondence->file_import_id!=null)
+				Correspondence_Logic_Run::getForId($oCorrespondence->id, true)->sendDispatchEmail();
+		}
+		die;
+	}
+
+	public function testBatchEmail()
+	{
+		$aCorrespondence = Correspondence_Run::getAll();
+		$aObjects = array();
+		$oBatch = Correspondence_Run_Batch::getForId(1);
+		foreach ($aCorrespondence as $oCorrespondence)
+		{
+			//if ($oCorrespondence->data_file_export_id != null)
+				$aObjects[]=Correspondence_Logic_Run::getForId($oCorrespondence->id, true);
+		}
+		Correspondence_Dispatcher::sendBatchDeliveryEmail($oBatch,$aObjects);
+		die;
+	}
+
+	public function invoice()
+	{
+		Invoice_Run::getForId(4197)->deliver();
 	}
 
 	public function sendWaitingRuns()
