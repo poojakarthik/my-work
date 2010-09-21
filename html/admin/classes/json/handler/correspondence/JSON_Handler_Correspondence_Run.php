@@ -19,7 +19,7 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 			{
 				throw new JSON_Handler_Correspondence_Run_Exception('You do not have permission to create Correspdondence Runs.');
 			}
-			
+
 			// Validate input before proceeding
 			$aErrors	= array();
 
@@ -85,8 +85,8 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 			$oTemplate	= Correspondence_Logic_Template::getForId($iCorrespondenceTemplateId);
 			try
 			{
-				$oTemplate->createRun(false, date('Y-m-d H:i:s', $iDeliveryDateTime), $bProcessNow);
-			} 
+				$oTemplate->createRun(false, null, date('Y-m-d H:i:s', $iDeliveryDateTime), $bProcessNow);
+			}
 			catch (Correspondence_DataValidation_Exception $oEx)
 			{
 				// Invalid CSV file, build an error message
@@ -118,14 +118,14 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 					);
 		}
 	}
-	
+
 	public function getDataset($bCountOnly=false, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null)
 	{
 		try
 		{
 			$aFilter	= get_object_vars($oFilter);
 			$aSort		= get_object_vars($oSort);
-			
+
 			// Manipulate filter if status is filtered
 			if (isset($aFilter['status']))
 			{
@@ -152,7 +152,7 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 				}
 				unset($aFilter['status']);
 			}
-			
+
 			$iRecordCount	= Correspondence_Run::getLedgerInformation(true, null, null, $aFilter, $aSort);
 			if ($bCountOnly)
 			{
@@ -161,7 +161,7 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 							'iRecordCount'	=> $iRecordCount
 						);
 			}
-			
+
 			$iLimit		= is_null($iLimit) ? 0 : $iLimit;
 			$iOffset	= is_null($iOffset) ? 0 : $iOffset;
 			$aRuns		= Correspondence_Run::getLedgerInformation(false, $iLimit, $iOffset, $aFilter, $aSort);
@@ -174,7 +174,7 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 				{
 					$aRun['delivered_datetime']	= null;
 				}
-				
+
 				// Get the source of the run data
 				$oSource	= Correspondence_Source::getForId($aRun['correspondence_template_source_id']);
 				switch ($oSource->correspondence_source_type_id)
@@ -182,23 +182,23 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 					case CORRESPONDENCE_SOURCE_TYPE_SQL:
 						$aRun['source'] = 'SQL';
 						break;
-						
+
 					case CORRESPONDENCE_SOURCE_TYPE_SYSTEM:
 						$aRun['source'] = 'System';
 						break;
-						
+
 					case CORRESPONDENCE_SOURCE_TYPE_CSV:
 						$aRun['source']	= 'CSV';
 						break;
-					
+
 					default:
 						$aRun['source']	= null;
 				}
-				
+
 				$aResults[$iOffset + $i]	= $aRun;
 				$i++;
 			}
-			
+
 			return	array(
 						'Success'		=> true,
 						'aRecords'		=> $aResults,
@@ -224,7 +224,7 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 					);
 		}
 	}
-	
+
 	public function getAllBatches($bCountOnly=false, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null)
 	{
 		try
@@ -233,9 +233,11 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 			{
 				throw new JSON_Handler_Correspondence_Run_Exception('You do not have permission to view Correspdondence Runs.');
 			}
-			
+
+
 			$iMinDate		= ($oFilter->batch_datetime->mFrom ? strtotime($oFilter->batch_datetime->mFrom) : null);
 			$iMaxDate		= ($oFilter->batch_datetime->mTo ? strtotime($oFilter->batch_datetime->mTo) : null);
+
 			$iRecordCount	= Correspondence_Run_Batch::getForBatchDateTime(true, null, null, $iMinDate, $iMaxDate);
 			if ($bCountOnly)
 			{
@@ -244,7 +246,7 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 							'iRecordCount'	=> $iRecordCount
 						);
 			}
-			
+
 			$iLimit		= is_null($iLimit) ? 0 : $iLimit;
 			$iOffset	= is_null($iOffset) ? 0 : $iOffset;
 			$aBatches	= Correspondence_Run_Batch::getForBatchDateTime(false, $iLimit, $iOffset, $iMinDate, $iMaxDate);
@@ -255,12 +257,12 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 				// Add the correspondence runs for the batch to the std class object
 				$oStdBatch	= $oBatch->toStdClass();
 				$oStdBatch->aCorrespondenceRuns	= Correspondence_Logic_Run::getForBatchId($oBatch->id, true);
-				
+
 				// Cache for the result
 				$aResults[$iOffset + $i]	= $oStdBatch;
 				$i++;
 			}
-			
+
 			return	array(
 						'Success'		=> true,
 						'aRecords'		=> $aResults,
@@ -287,7 +289,7 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 					);
 		}
 	}
-	
+
 	public function getForId($iId)
 	{
 		try
@@ -296,10 +298,10 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 			{
 				throw new JSON_Handler_Correspondence_Run_Exception('You do not have permission to view Correspdondence Runs.');
 			}
-			
+
 			$oRun	= Correspondence_Logic_Run::getForId($iId, true);
 			$aRun	= $oRun->toArray();
-			
+
 			// Get the source of the run data
 			$oTemplate	= Correspondence_Template::getForId($oRun->correspondence_template_id);
 			$oSource	= Correspondence_Source::getForId($oTemplate->correspondence_source_id);
@@ -308,19 +310,19 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 				case CORRESPONDENCE_SOURCE_TYPE_SQL:
 					$aRun['source'] = 'SQL';
 					break;
-					
+
 				case CORRESPONDENCE_SOURCE_TYPE_SYSTEM:
 					$aRun['source'] = 'System';
 					break;
-					
+
 				case CORRESPONDENCE_SOURCE_TYPE_CSV:
 					$aRun['source']	= 'CSV';
 					break;
-				
+
 				default:
 					$aRun['source']	= null;
 			}
-			
+
 			// Get the file import/export names
 			$oFileImport	= File_Import::getForId($oRun->file_import_id);
 			if ($oFileImport)
@@ -332,12 +334,12 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 			{
 				$aRun['export_file_name']	= $oFileExport->FileName;
 			}
-			
+
 			// Employee name
 			$aRun['created_employee_name']	= Employee::getForId($aRun['created_employee_id'])->getName();
-			
+
 			return	array(
-						'bSuccess' 				=> true, 
+						'bSuccess' 				=> true,
 						'oCorrespondenceRun' 	=> $aRun
 					);
 		}
