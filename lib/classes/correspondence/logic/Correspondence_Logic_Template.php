@@ -105,7 +105,7 @@ class Correspondence_Logic_Template
 		$oRun = new Correspondence_Logic_Run($aDefinition, $this);
 		$bProcessNow?$oRun->process($mData):null;
 		$oRun->save();
-		//$oRun->sendRunCreatedEmail();
+		$oRun->sendRunCreatedEmail();
 		return $oRun;
 	}
 
