@@ -51,6 +51,43 @@ class Correspondence_Email extends Email_Notification
 		}
 	}
 
+	public function addTableRow($aData, $sStyle = null)
+	{
+		$tr =& $this->_oTable->tr();
+		$iCurrentField = 0;
+		foreach ($aData as $mData)
+		{
+			$td =& $tr->td($iCurrentField);
+			if (is_array($mData))
+			{
+				$iDivCount = 0;
+				foreach ($mData as $sFieldName=>$sValue)
+				{
+					$td->div($iDivCount)->setValue($sFieldName." : ".$sValue);
+					$iDivCount++;
+				}
+			}
+			else
+			{
+				$td->setValue($mData);
+			}
+			$td->style = $sStyle!=null?$sStyle:self::TD_STYLE;
+			$iCurrentField++;
+		}
+
+		return tr;
+
+	}
+
+	public function addTextHeader($iHeaderStyle, $sText)
+	{
+		$sHeaderStyle = "h".$iHeaderStyle;
+		$header = $this->_oBody->html->body->$sHeaderStyle();
+		$header->setValue ($sText);
+		$header->style = Correspondence_Email::FONT_STYLE;
+		return $header;
+	}
+
 	public function setBodyHtml()
 	{
 		$this->html = $this->_oBody->saveHTML();
