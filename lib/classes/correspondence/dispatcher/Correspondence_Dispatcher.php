@@ -81,7 +81,7 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 					catch(Exception $e)
 					{
 						$oRun->setException($e);
-						Log::getLog()->log("exception class: ".get_class($e)." Message: ".$e->getMessage());
+						//Log::getLog()->log("exception class: ".get_class($e)." Message: ".$e->getMessage());
 						Log::getLog()->log($oRun->id.' could not be dispatched. Reason: '.$e->failureReasonToString()."(message: ".$e->getMessage().")");
 						$oRun->sendDispatchEmail(true);
 					}
@@ -102,52 +102,47 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 		$oEmail = new Correspondence_Email(EMAIL_NOTIFICATION_CORRESPONDENCE);
 		$oEmail->setSubject("Correspondence Delivery Summary for Batch ID  ".$oBatch->id);
 
-		$body = $oEmail->getBody();
 
-		$h3 = $body->html->body->h3();
-		$h3->setValue ("Correspondence Delivery Summary for Batch ID ".$oBatch->id);
-		$h3->style = Correspondence_Email::FONT_STYLE;
+		$oEmail->addTextHeader(3, "Correspondence Delivery Summary for Batch ID ".$oBatch->id);
+		$oEmail->addTextHeader(4, "Batch ID ".$oBatch->id." was dispatched on ".date('d/m/Y', strtotime($oBatch->batch_datetime))." - ".date('H:i:s', strtotime($oBatch->batch_datetime))." Run details:");
 
-		$h4 = $body->html->body->h4();
-		$h4->setValue ("Batch ID ".$oBatch->id." was dispatched on ".date('d/m/Y', strtotime($oBatch->batch_datetime))." - ".date('H:i:s', strtotime($oBatch->batch_datetime))." Run details:");
-		$h4->style = Correspondence_Email::FONT_STYLE;
 
-		$table =& $oEmail->setTable(array('Processed','Source','Template','Created By','Items','Data File','Status'));
+
+		$oEmail->setTable(array('Processed','Source','Template','Created By','Items','Data File','Status'));
 
 		$sTableStyle = Correspondence_Email::TD_STYLE;
 		foreach ($aRuns as $oRun)
 		{
-			$tr =& $table->tr();
-			$tr->td(0)->setValue(date('d/m/Y', strtotime($oRun->processed_datetime))." - ".date('H:i:s', strtotime($oRun->processed_datetime)));
-			$tr->td(0)->style = $sTableStyle;
+			$aRowData = array();
+
+			$aRowData[]= date('d/m/Y', strtotime($oRun->processed_datetime))." - ".date('H:i:s', strtotime($oRun->processed_datetime));
+
 
 			$sSourceType = Correspondence_Source_Type::getForId($oRun->getSourceType())->name;
 			$sSourceFile = $oRun->getSourceFileName()==null?null:" (".$oRun->getSourceFileName().")";
-			$tr->td(1)->setValue($sSourceType.$sSourceFile);
-			$tr->td(1)->style = $sTableStyle;
+			$aRowData[]=$sSourceType.$sSourceFile;
 
-			$tr->td(2)->setValue($oRun->getTemplateName()."(".$oRun->getCorrespondenceCode().")");
-			$tr->td(2)->style = $sTableStyle;
+			$aRowData[]=$oRun->getTemplateName()."(".$oRun->getCorrespondenceCode().")";
 
-			$tr->td(3)->setValue($oRun->getCreatedEmployeeName());
-			$tr->td(3)->style = $sTableStyle;
+			$aRowData[]=$oRun->getCreatedEmployeeName();
 
 			$aCount = $oRun->getCorrespondenceCount();
-			$td = $tr->td(4);
-			$td->div(0)->setValue("Post : ".$aCount['post']);
-			$td->div(1)->setValue("Email: ".$aCount['email']);
-			$td->div(2)->setValue("Total: ".$aCount['total']);
-			$tr->td(4)->style = $sTableStyle;
+			$aFormattedCount = array('Post'=>$aCount['post'], 'Email'=>$aCount['email'], 'Total'=>$aCount['total']);
+			$aRowData[]=$aFormattedCount;
 
-			$tr->td(5)->setValue($oRun->getExportFileName());
-			$tr->td(5)->style = $sTableStyle;
+			$aRowData[]=$oRun->getExportFileName();
+
 
 			$oException = $oRun->getDataValidationException();
 			$sStatus = $oException == null?"Dispatched":(get_class($oException) == 'Correspondence_Dispatch_Exception'?"Dispatch Failed":"Data Processing Failed");
 			$sFailureReason = $oException==null?null:$oException->failureReasonToString();
 			$sFailureReason .=$sFailureReason=="Invalid Data"?". See attached error report.":null;
-			$tr->td(6)->setValue($sFailureReason == null?$sStatus:$sStatus." - ".$sFailureReason);
-			$tr->td(6)->style = $sTableStyle;
+
+			$aRowData[]= $sFailureReason == null?$sStatus:$sStatus." - ".$sFailureReason;
+
+
+			$tr = $oEmail-> addTableRow($aRowData, $sTableStyle);
+
 			if ($oException!=null && $oException->sFileName!=null)
 			{
 				$sFile = file_get_contents($oException->sFileName);
@@ -161,7 +156,11 @@ abstract class Correspondence_Dispatcher extends Resource_Type_File_Export
 		$oEmail->setBodyHTML();
 		$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
 		$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
-		$oEmail->send();
+		//$oEmail->send();
+		$myFile = "email.html";
+		$fh = fopen($myFile, 'w') or die("can't open file");
+		fwrite($fh, $oEmail->toString());
+		fclose($fh);
 	}
 }
 
