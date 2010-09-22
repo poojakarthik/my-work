@@ -236,7 +236,7 @@ class Correspondence_Logic_Run
 			$sErrorReportFilePath = $oDataValidationException->sFileName;
 
 		}
-		//$this->sendErrorEmail($sMessage, $sErrorReportFilePath);
+		$this->sendErrorEmail($sMessage, $sErrorReportFilePath);
 	}
 
 
@@ -311,12 +311,12 @@ class Correspondence_Logic_Run
 			$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
 
 		$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
-		//$oEmail->send();
+		$oEmail->send();
 
-	  	$myFile = "email.html";
+	/*  	$myFile = "email.html";
 		$fh = fopen($myFile, 'w') or die("can't open file");
 		fwrite($fh, $oEmail->toString());
-		fclose($fh);
+		fclose($fh);*/
 	}
 
 	private function sendErrorEmail($sMessage, $sErrorReportFilePath = null)
@@ -341,7 +341,7 @@ class Correspondence_Logic_Run
 			$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
 
 		$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
-		//$oEmail->send();
+		$oEmail->send();
 	}
 
 	public function sendDispatchEmail($bDispatchFailed = false)
@@ -371,7 +371,7 @@ class Correspondence_Logic_Run
 		if ($oEmployee!= null && $oEmployee->email!=null)
 			$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
 		$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
-		//$oEmail->send();
+		$oEmail->send();
 	}
 
 	public function generateReportEmailBody($oEmail,$sHeader, $sMessage)
