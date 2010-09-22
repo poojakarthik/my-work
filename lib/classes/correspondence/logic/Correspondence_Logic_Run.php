@@ -46,15 +46,14 @@ class Correspondence_Logic_Run
 
 	public function process($aData = null)
 	{
+		$oSource = $this->_oCorrespondenceTemplate->getSource();
+		if ($aData!=null)
+			$this->file_import_id = $oSource->setData($aData);
+		$bPreprinted = $this->_oDO->preprinted==0?false:true;
 		try
 		{
-			$bPreprinted = $this->_oDO->preprinted==0?false:true;
-			$oSource = $this->_oCorrespondenceTemplate->getSource();
-			if ($aData!=null)
-				$this->file_import_id = $oSource->setData($aData);
 			$this->_aCorrespondence =  $oSource->getCorrespondence($bPreprinted, $this);
 			$this->processed_datetime = Data_Source_Time::currentTimestamp();
-
 		}
 		catch(Correspondence_DataValidation_Exception $e)
 		{
