@@ -16,15 +16,10 @@ class Correspondence_Logic_Source_System extends Correspondence_Logic_Source
 		return null;
 	}
 
-	public function getCorrespondence($bPreprinted, $oRun)
+	public function _getCorrespondence()
 	{
 		if (count($this->_aData)>0)
 		{
-			$this->_bPreprinted = $bPreprinted;
-			$this->_oRun = $oRun;
-			$this->_aColumns = Correspondence_Logic::getStandardColumns($bPreprinted);
-			$this->_aAdditionalColumns = $this->_oTemplate->getAdditionalColumnSet(Correspondence_Logic::getStandardColumnCount($bPreprinted));
-	 		$this->iLineNumber = 1;
 			foreach ($this->_aData as $aDataRecord)
 			{
 	 			$aRecord = array('standard_fields'=>array(), 'additional_fields'=>array());
@@ -42,11 +37,6 @@ class Correspondence_Logic_Source_System extends Correspondence_Logic_Source
 				$this->processCorrespondenceRecord($aRecord);
 				$this->iLineNumber++;
 	 		}
-
-			if ($this->_bValidationFailed)
-			{
-				$this->processValidationErrors();
-			}
 		}
 		else
 		{
@@ -54,7 +44,6 @@ class Correspondence_Logic_Source_System extends Correspondence_Logic_Source
 		}
 
 
-		return $this->_aCorrespondence;
 	}
 
 	public function __get($sField)

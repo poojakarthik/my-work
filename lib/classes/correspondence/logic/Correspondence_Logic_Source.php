@@ -76,11 +76,19 @@ abstract class Correspondence_Logic_Source
 	}
 
 
-	/*
-	 * to be implemented by each child class
-	 * every implementation of this method must return data in the same format
-	  */
-	abstract public function getCorrespondence($bPreprinted, $oRun);
+	final public function getCorrespondence($bPreprinted, $oRun)
+	{
+		$this->_oRun = $oRun;
+		$this->_bPreprinted = $bPreprinted;
+		$this->_aColumns = Correspondence_Logic::getStandardColumns($bPreprinted);
+		$this->_aAdditionalColumns = $this->_oTemplate->getAdditionalColumnSet(Correspondence_Logic::getStandardColumnCount($bPreprinted));
+		$this->iLineNumber = 1;
+		$this->_getCorrespondence();
+		$this->_bValidationFailed?$this->processValidationErrors():null;
+		return $this->_aCorrespondence;
+	}
+
+	abstract protected function _getCorrespondence();
 
 	abstract public function setData($mData);
 

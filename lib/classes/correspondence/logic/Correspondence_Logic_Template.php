@@ -40,36 +40,36 @@ class Correspondence_Logic_Template
 
 	public function save()
 	{
-				// Start a new database transaction
-				$oDataAccess	= DataAccess::getDataAccess();
-				if (!$oDataAccess->TransactionStart())
-				{
-					return 	array(
-								"Success"	=> false,
-								"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? 'Could not start database transaction.' : false,
-							);
-				}
+		// Start a new database transaction
+		$oDataAccess	= DataAccess::getDataAccess();
+		if (!$oDataAccess->TransactionStart())
+		{
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? 'Could not start database transaction.' : false,
+					);
+		}
 
-				try
-				{
+		try
+		{
 
-					$this->_save();
+			$this->_save();
 
-					// Everything looks OK -- Commit!
-					$oDataAccess->TransactionCommit();
-					return $this->id;
+			// Everything looks OK -- Commit!
+			$oDataAccess->TransactionCommit();
+			return $this->id;
 
-			}
-			catch (Exception $e)
-			{
-				// Exception caught, rollback db transaction
-				$oDataAccess->TransactionRollback();
+		}
+		catch (Exception $e)
+		{
+			// Exception caught, rollback db transaction
+			$oDataAccess->TransactionRollback();
 
-				return 	array(
-							"Success"	=> false,
-							"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database'
-						);
-			}
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database'
+					);
+		}
 
 	}
 
@@ -121,24 +121,18 @@ class Correspondence_Logic_Template
 			if ($oColumn->name == $sColumnName)
 				return $oColumn->id;
 		}
-
 		return false;
 	}
 
 
-
 	public function createFullColumnSet( $bPreprinted,$bIncludeNonSuppliedFields = false)
 	{
-
 		$aColumns = Correspondence_Logic::getStandardColumns($bPreprinted,$bIncludeNonSuppliedFields);
 		$iColumnCount = count($aColumns);
 		$aAdditionalColumns = $this->getAdditionalColumnSet($iColumnCount);
 		$aColumns = array_merge($aColumns, $aAdditionalColumns);
-
 		return $aColumns;
-
 	}
-
 
 	public function getAdditionalColumnSet($iStandardColumnCount = 0)
 	{
@@ -212,10 +206,6 @@ class Correspondence_Logic_Template
 		//add column data whenever needed
 		return $aTemplate;
 	}
-
-
-
-
 }
 
 

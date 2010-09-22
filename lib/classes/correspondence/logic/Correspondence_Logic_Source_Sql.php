@@ -15,12 +15,8 @@ class Correspondence_Logic_Source_Sql extends Correspondence_Logic_Source
 		return false;
 	}
 
-	public function getCorrespondence($bPreprinted, $oRun)
+	public function _getCorrespondence()
 	{
-		$this->_bPreprinted = $bPreprinted;
-		$this->_oRun = $oRun;
-		$this->_aColumns = Correspondence_Logic::getStandardColumns($bPreprinted);
-		$this->_aAdditionalColumns = $this->_oTemplate->getAdditionalColumnSet(Correspondence_Logic::getStandardColumnCount($bPreprinted));
 		$this->db = DataAccess::getDataAccess();
 		$result = $this->db->refMysqliConnection->query($this->sql_syntax);
 		if (!$result)
@@ -32,7 +28,6 @@ class Correspondence_Logic_Source_Sql extends Correspondence_Logic_Source
 			throw new Correspondence_DataValidation_Exception(Correspondence_DataValidation_Exception::NODATA);
 		}
 
- 		$this->iLineNumber = 1;
 		while($row = $result->fetch_array(MYSQLI_ASSOC))
  		{
  			$aRecord = array('standard_fields'=>array(), 'additional_fields'=>array());
@@ -61,7 +56,7 @@ class Correspondence_Logic_Source_Sql extends Correspondence_Logic_Source
 			$this->processValidationErrors();
 		}
 
-		return $this->_aCorrespondence;
+
 	}
 
 
