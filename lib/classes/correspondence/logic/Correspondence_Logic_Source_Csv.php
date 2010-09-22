@@ -18,7 +18,7 @@ class Correspondence_Logic_Source_CSV extends Correspondence_Logic_Source
 	{
 		$this->_sTmpPath =$aFileInfo['tmp_name'];
 		$this->_sFileName = $aFileInfo['name'];
-		/*$aFileImport = File_Import::getForFileName($this->_sFileName);
+		$aFileImport = File_Import::getForFileName($this->_sFileName);
 		foreach ($aFileImport as $oFileImport)
 		{
 			if ($oFileImport->FileName == $this->_sFileName &&
@@ -26,7 +26,7 @@ class Correspondence_Logic_Source_CSV extends Correspondence_Logic_Source
 			{
 				throw new Correspondence_DataValidation_Exception(Correspondence_DataValidation_Exception::DUPLICATE_FILE);
 			}
-		}*/
+		}
 		$sCsv = file_get_contents($this->_sTmpPath);
 		$this->_aCsv = trim($sCsv)==null?null:explode("\n",trim($sCsv));
 		return $this->import();
