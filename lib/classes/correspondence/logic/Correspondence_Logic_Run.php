@@ -7,7 +7,7 @@ class Correspondence_Logic_Run
 	protected $_oDataValidationException;
 	public static $aNonSuppliedFields = array('processed_datetime', 'delivered_datetime', 'created_employee_id', 'created', 'data_file_export_id', 'pdf_file_export_id');
 
-	public function __construct($mDefinition, $oCorrespondenceTemplate = null, $bProcessNow = true, $bIncludeCorrespondence = true)
+	public function __construct($mDefinition, $oCorrespondenceTemplate = null, $bIncludeCorrespondence = true)
 	{
 		$this->_oCorrespondenceTemplate = $oCorrespondenceTemplate;
 		if (is_array($mDefinition))
@@ -25,8 +25,6 @@ class Correspondence_Logic_Run
 			$mDefinition['preprinted'] = $mDefinition['preprinted']?1:0;
 			$this->_oDO = new Correspondence_Run($mDefinition);
 
-			$bProcessNow?$this->process():$this->save();
-			$this->sendRunCreatedEmail();
 		}
 		else
 		{
@@ -46,25 +44,21 @@ class Correspondence_Logic_Run
 		$this->_oDataValidationException = $oException;
 	}
 
-	public function process()
+	public function process($aData = null)
 	{
 		try
 		{
 			$bPreprinted = $this->_oDO->preprinted==0?false:true;
-			$aCorrespondence = $this->_oCorrespondenceTemplate->getData($bPreprinted);
-			foreach ($aCorrespondence as $oCorrespondence)
-			{
-				$oCorrespondence->_oCorrespondenceRun = $this;
-			}
-			$this->_aCorrespondence = $aCorrespondence;
+			$oSource = $this->_oCorrespondenceTemplate->getSource();
+			if ($aData!=null)
+				$this->file_import_id = $oSource->setData($aData);
+			$this->_aCorrespondence =  $oSource->getCorrespondence($bPreprinted, $this);
 			$this->processed_datetime = Data_Source_Time::currentTimestamp();
-			$this->file_import_id = $this->_oCorrespondenceTemplate->importSource();
-			$this->save();
+
 		}
 		catch(Correspondence_DataValidation_Exception $e)
 		{
 			$this->processed_datetime = Data_Source_Time::currentTimestamp();
-			$this->file_import_id = $this->_oCorrespondenceTemplate->importSource();
 			$this->correspondence_run_error_id = $e->iError;
 			$this->save();
 			$this->handleProcessError($e);
@@ -244,7 +238,7 @@ class Correspondence_Logic_Run
 			$sErrorReportFilePath = $oDataValidationException->sFileName;
 
 		}
-		$this->sendErrorEmail($sMessage, $sErrorReportFilePath);
+		//$this->sendErrorEmail($sMessage, $sErrorReportFilePath);
 	}
 
 

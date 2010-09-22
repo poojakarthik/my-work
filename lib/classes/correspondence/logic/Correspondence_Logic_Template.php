@@ -9,55 +9,15 @@ class Correspondence_Logic_Template
 	public static $aNonSuppliedFields = array('created_employee_id', 'created_timestamp', 'status_id', 'correspondence_source_id');
 	protected $_oCarrierModule;
 
-	private function __construct($mDefinition, $oSource = null, $aColumns = array())
+	private function __construct($mDefinition, $aColumns = array())
 	{
-		if (is_numeric($mDefinition))
-		{
-			$this->_oDO = Correspondence_Template::getForId($mDefinition);
-			$this->_aExtraColumns = Correspondence_Logic_Template_Column::getForTemplate($this);
-		}
-		else if (is_array($mDefinition))
-		{
-			$this->_oCorrespondenceSource = $oSource;
-			foreach (self::$aNonSuppliedFields as $sField)
-			{
-				$mDefinition[$sField] = null;
-			}
-			$this->_oDO = new Correspondence_Template($mDefinition);
-			foreach($aColumns as $aColumn)
-			{
-				$this->_aExtraColumns[]= new Correspondence_Logic_Template_Column($aColumn, $this);
-			}
-		}
-		else
-		{
-			$this->_oDO = $mDefinition;
-		}
+		is_numeric($mDefinition)?$this->_oDO = Correspondence_Template::getForId($mDefinition):$this->_oDO = $mDefinition;
 
-		if ($this->correspondence_source_id !=null)
-		{
-			$oCorrespondenceSource = Correspondence_Source::getForId($this->correspondence_source_id);
-			//$this->_oCorrespondenceSource = $oCorrespondenceSource->correspondence_source_type_id == CORRESPONDENCE_SOURCE_TYPE_SQL?Correspondence_Logic_Source_Sql::getForCorrespondenceSourceId($oCorrespondenceSource->id):$oSource;
-			switch($oCorrespondenceSource->correspondence_source_type_id)
-			{
-				case(CORRESPONDENCE_SOURCE_TYPE_CSV):
-										$this->_oCorrespondenceSource = $oSource==null?new Correspondence_Logic_Source_Csv($this->id):$oSource;
-										break;
-				case (CORRESPONDENCE_SOURCE_TYPE_SQL):
-										$this->_oCorrespondenceSource = new Correspondence_Logic_Source_Sql($this->id);
-										break;
-				case (CORRESPONDENCE_SOURCE_TYPE_SYSTEM):
-										$this->_oCorrespondenceSource = $oSource==null?new Correspondence_Logic_Source_System($this->id):$oSource;
-										break;
-			}
+		$this->_aExtraColumns = Correspondence_Logic_Template_Column::getForTemplate($this);
 
+		$this->_oCorrespondenceSource = Correspondence_Logic_Source::factory($this);
 
-			if($this->_oCorrespondenceSource!=null)
-				$this->_oCorrespondenceSource->setTemplate($this);
-		}
-
-		//if this is not a new template, set the saved flag as there is no changed data
-		if ($this->id!=null)$this->_oDO->setSaved();
+		$this->_oDO->setSaved();
 	}
 
 	public function getCarrierModule()
@@ -141,16 +101,17 @@ class Correspondence_Logic_Template
 
 	public function  createRun($bPreprinted = false, $mData = null, $sScheduleDateTime = null, $bProcessNow = true)
 	{
-
-		if ($mData!=null)
-		{
-			$this->_oCorrespondenceSource->setData($mData);
-		}
 		$aDefinition = array ('scheduled_datetime'=> $sScheduleDateTime, 'preprinted'=>$bPreprinted);
-		$oRun = new Correspondence_Logic_Run($aDefinition, $this, $bProcessNow);
-		$this->_aRuns[]=$oRun;
+		$oRun = new Correspondence_Logic_Run($aDefinition, $this);
+		$bProcessNow?$oRun->process($mData):null;
+		$oRun->save();
+		//$oRun->sendRunCreatedEmail();
 		return $oRun;
+	}
 
+	public function getData($bPreprinted)
+	{
+		return $this->_oCorrespondenceSource->getData($bPreprinted,$this->getAdditionalColumnSet(Correspondence_Logic::getStandardColumnCount($bPreprinted)));
 	}
 
 	public function getColumnIdForName($sColumnName)
@@ -164,10 +125,7 @@ class Correspondence_Logic_Template
 		return false;
 	}
 
-	public function getData($bPreprinted)
-	{
-		return $this->_oCorrespondenceSource->getData($bPreprinted,$this->getAdditionalColumnSet(Correspondence_Logic::getStandardColumnCount($bPreprinted)));
-	}
+
 
 	public function createFullColumnSet( $bPreprinted,$bIncludeNonSuppliedFields = false)
 	{
@@ -199,6 +157,11 @@ class Correspondence_Logic_Template
 		return $this->_oCorrespondenceSource == null?Correspondence_Source::getForId($this->correspondence_source_id)->correspondence_source_type_id:$this->_oCorrespondenceSource->correspondence_source_type_id;
 	}
 
+	public function getSource()
+	{
+		return $this->_oCorrespondenceSource;
+	}
+
 	public function importSource()
 	{
 		return $this->_oCorrespondenceSource->import();
@@ -226,11 +189,11 @@ class Correspondence_Logic_Template
 		return new self ($iId);
 	}
 
-	public static function create($sTemplateCode, $sName, $sDescription, $iCarrierId, $oSource, $aColumns)
+	/*public static function create($sTemplateCode, $sName, $sDescription, $iCarrierId, $oSource, $aColumns)
 	{
 		$aDefinition = array('template_code'=>$sTemplateCode, 'name'=>$sName, 'description'=>$sDescription, 'carrier_id'=>$iCarrierId);
 		return new self ($aDefinition, $oSource, $aColumns);
-	}
+	}*/
 
 
 	public function __get($sField)

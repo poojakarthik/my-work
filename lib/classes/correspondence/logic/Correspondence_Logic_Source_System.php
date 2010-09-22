@@ -5,25 +5,25 @@ class Correspondence_Logic_Source_System extends Correspondence_Logic_Source
 
 	protected $_aData;
 
-	public function __construct($iTemplateId, $aData = null)
+	public function __construct($oTemplate)
 	{
-		parent::__construct(Correspondence_Source::getForTemplateId($iTemplateId));
-		if ($aData!=null)
-			$this->setData($aData);
+		parent::__construct(Correspondence_Source::getForTemplateId($oTemplate->id),$oTemplate);
 	}
 
 	public function setData($aData)
 	{
 		$this->_aData = $aData;
+		return null;
 	}
 
-	public function getData($bPreprinted, $aAdditionalColumns = array())
+	public function getCorrespondence($bPreprinted, $oRun)
 	{
 		if (count($this->_aData)>0)
 		{
 			$this->_bPreprinted = $bPreprinted;
+			$this->_oRun = $oRun;
 			$this->_aColumns = Correspondence_Logic::getStandardColumns($bPreprinted);
-			$this->_aAdditionalColumns = $aAdditionalColumns;
+			$this->_aAdditionalColumns = $this->_oTemplate->getAdditionalColumnSet(Correspondence_Logic::getStandardColumnCount($bPreprinted));
 	 		$this->iLineNumber = 1;
 			foreach ($this->_aData as $aDataRecord)
 			{

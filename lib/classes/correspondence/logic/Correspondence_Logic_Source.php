@@ -14,6 +14,7 @@ abstract class Correspondence_Logic_Source
 
 	protected $_oTemplate;
 
+	protected $_oRun;
 
 	protected $iLineNumber;
 
@@ -62,9 +63,10 @@ abstract class Correspondence_Logic_Source
 	protected $_aValidCustomerGroups;
 	protected $_aValidDeliveryMethods;
 
-	public function __construct($oDataObject)
+	public function __construct($oDataObject, $oTemplate)
 	{
 		$this->_oDataObject = $oDataObject;// $iId ==null?new Correspondence_Source(array('correspondence_source_type_id'=>$iSourceType)):Correspondence_Source::getForId($iId);
+		$this->_oTemplate = $oTemplate;
 		$this->_errorReport = new File_Exporter_CSV();
 		$this->_errorReport->setDelimiter(Correspondence_Dispatcher_YellowBillingCSV::FIELD_DELIMITER);
 		$this->_errorReport->setQuote(Correspondence_Dispatcher_YellowBillingCSV::FIELD_ENCAPSULATOR);
@@ -78,7 +80,7 @@ abstract class Correspondence_Logic_Source
 	 * to be implemented by each child class
 	 * every implementation of this method must return data in the same format
 	  */
-	abstract public function getData($bPreprinted, $aAdditionalColumns = array());
+	abstract public function getCorrespondence($bPreprinted, $oRun);
 
 	abstract public function setData($mData);
 
@@ -287,7 +289,9 @@ abstract class Correspondence_Logic_Source
 		$aRecord = $this->_sanitize($aRecord);
 		if (!$this->_bValidationFailed)
 		{
-			$this->_aCorrespondence[] = new Correspondence_Logic($aRecord);
+			$oCorrespondence = new Correspondence_Logic($aRecord);
+			$oCorrespondence->_oCorrespondenceRun = $this->_oRun;
+			$this->_aCorrespondence[] = $oCorrespondence;
 		}
 
 		$this->_aLines[]= $aRecord;
@@ -368,11 +372,6 @@ abstract class Correspondence_Logic_Source
 		return array_merge(array('validation_errors'),$aStandardColumns, $aAdditionalColumns);
 	}
 
-	public function setTemplate($oTemplate)
-	{
-		$this->_oTemplate = $oTemplate;
-	}
-
 	public function addErrorRecord($aLine)
 	{
 		$oRecord	= $this->_errorReport->getRecordType('detail')->newRecord();
@@ -400,6 +399,27 @@ abstract class Correspondence_Logic_Source
 	public function import()
 	{
 		return null;
+	}
+
+
+	public static function factory($oTemplate)
+	{
+			$oCorrespondenceSource = Correspondence_Source::getForId($oTemplate->correspondence_source_id);
+			$iSourceTypeId = $oCorrespondenceSource!=null?$oCorrespondenceSource->correspondence_source_type_id:null;
+			switch($iSourceTypeId)
+			{
+				case(CORRESPONDENCE_SOURCE_TYPE_CSV):
+										return new Correspondence_Logic_Source_Csv($oTemplate);
+										break;
+				case (CORRESPONDENCE_SOURCE_TYPE_SQL):
+										return new Correspondence_Logic_Source_Sql($oTemplate);
+										break;
+				case (CORRESPONDENCE_SOURCE_TYPE_SYSTEM):
+										return new Correspondence_Logic_Source_System($oTemplate);
+										break;
+				default:
+										return null;
+			}
 	}
 
 	public function  __get($sField)

@@ -9,14 +9,9 @@ class Correspondence_Logic_Source_CSV extends Correspondence_Logic_Source
 	protected $_oFileImport;
 
 
-	public function __construct($iTemplateId, $aFileInfo = null)
+	public function __construct($oTemplate)
 	{
-		parent::__construct(Correspondence_Source::getForTemplateId($iTemplateId));
-
-		if ($aFileInfo!=null)
-		{
-			$this->setData($aFileInfo);
-		}
+		parent::__construct(Correspondence_Source::getForTemplateId($oTemplate->id),$oTemplate);
 	}
 
 	function setData($aFileInfo)
@@ -34,15 +29,17 @@ class Correspondence_Logic_Source_CSV extends Correspondence_Logic_Source
 		}*/
 		$sCsv = file_get_contents($this->_sTmpPath);
 		$this->_aCsv = trim($sCsv)==null?null:explode("\n",trim($sCsv));
+		return $this->import();
 	}
 
-	function getData($bPreprinted, $aAdditionalColumns = array())
+	function getCorrespondence($bPreprinted, $oRun)
 	{
 		if (count($this->_aCsv)>0)
 		{
+			$this->_oRun = $oRun;
 			$this->_bPreprinted = $bPreprinted;
 			$this->_aColumns = Correspondence_Logic::getStandardColumns($bPreprinted);
-			$this->_aAdditionalColumns = $aAdditionalColumns;
+			$this->_aAdditionalColumns = $this->_oTemplate->getAdditionalColumnSet(Correspondence_Logic::getStandardColumnCount($bPreprinted));
 			$this->iLineNumber = 1;
 			foreach($this->_aCsv as $sLine)
 			{

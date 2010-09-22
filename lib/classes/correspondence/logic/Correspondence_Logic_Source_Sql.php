@@ -4,9 +4,9 @@ class Correspondence_Logic_Source_Sql extends Correspondence_Logic_Source
 
 	protected $_oDO;
 
-	public function __construct($iTemplateId)
+	public function __construct($oTemplate)
 	{
-		parent::__construct(Correspondence_Source::getForTemplateId($iTemplateId));
+		parent::__construct(Correspondence_Source::getForTemplateId($oTemplate->id),$oTemplate);
 		$this->_oDO = Correspondence_Source_Sql::getForCorrespondenceSourceId(parent::__get('id'));
 	}
 
@@ -15,11 +15,12 @@ class Correspondence_Logic_Source_Sql extends Correspondence_Logic_Source
 		return false;
 	}
 
-	public function getData($bPreprinted, $aAdditionalColumns = array())
+	public function getCorrespondence($bPreprinted, $oRun)
 	{
 		$this->_bPreprinted = $bPreprinted;
+		$this->_oRun = $oRun;
 		$this->_aColumns = Correspondence_Logic::getStandardColumns($bPreprinted);
-		$this->_aAdditionalColumns = $aAdditionalColumns;
+		$this->_aAdditionalColumns = $this->_oTemplate->getAdditionalColumnSet(Correspondence_Logic::getStandardColumnCount($bPreprinted));
 		$this->db = DataAccess::getDataAccess();
 		$result = $this->db->refMysqliConnection->query($this->sql_syntax);
 		if (!$result)
