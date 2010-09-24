@@ -4,6 +4,8 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 {
 	protected	$_JSONDebug	= '';
 	protected $xml;
+	protected $_aText = array();
+	protected $_iOLCount;
 
 	public function __construct()
 	{
@@ -12,32 +14,44 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 
+	public function save($aEmailText)
+	{
+		return	array(
+						'Success'		=> true,
+						'html'		=> $aEmailText
+					);
+	}
+
+	public function toText($sHTML)
+	{
+		$sHTML = $this->_processHTML($sHTML);
+		$this->_toText();
+
+		return	array(
+						'Success'		=> true,
+						'text'		=> implode("\n",$this->_aText)
+					);
+
+	}
+
 	public function processHTML($sHTML)
 	{
-$sHTML = str_replace ( 'xmlns="http://www.w3.org/1999/xhtml"' , "" , $sHTML);
+		$this->_processHTML($sHTML);
 
-	/*$sHTML = " <div>
-					<cssclass name = 'div' style = 'background: yellow; color: #00ff00; margin-left: 2cm'></cssclass>
 
-					<div>
-						<cssclass name = 'h1' style = 'background: yellow; color: #00ff00; margin-left: 2cm'></cssclass>
-					  <h1>text</h1>
-					  <h2>stuff</h2>
-					 </div>
-					  <p>code</p>
-					 <script>
-					 alert('hello');
-					 </script>
-					</div>";*/
+		return	array(
+						'Success'		=> true,
+						'html'		=> $this->xml->saveXML()
+					);
+	}
 
-//$root = $xml->documentElement;
-//
-//foreach ($root->attributes as $attrName => $attrNode)
-//{
-//	$root->removeAttribute ( $attrName );
-//}
+	protected function _processHTML($sHTML)
+	{
+			$sHTML = str_replace ( 'xmlns="http://www.w3.org/1999/xhtml"' , "" , $sHTML);
 
-$this->xml = DOMDocument::loadXML($sHTML);
+
+
+		$this->xml = DOMDocument::loadXML($sHTML);
 		$xpath = new DOMXPath($this->xml);
 
         $query = '//cssclass';
@@ -80,11 +94,7 @@ $this->xml = DOMDocument::loadXML($sHTML);
 		 	$this->removeNode($node);
 		 }
 
-
-		return	array(
-						'Success'		=> true,
-						'html'		=> $this->xml->saveXML()
-					);
+		return $this->xml->saveXML();
 	}
 
 	public function removeNode($oNodeToRemove, $parentNode = null)
@@ -119,6 +129,38 @@ $this->xml = DOMDocument::loadXML($sHTML);
 		}
 
 		return false;
+
+	}
+
+	public function _toText($oNode = null, $tagName = null)
+	{
+		$oNode = $oNode ==null?$this->xml->documentElement:$oNode;
+		$tagName==null?$this->_iOLCount = 0:null;
+		$x = $oNode->childNodes;
+		if ($x!=null)
+		{
+			foreach ($x as $node)
+			{
+				if (get_class($node) == 'DOMText')
+				{
+					if (trim($node->wholeText)!=null)
+					{
+						$sListChar = $tagName=='ul'?'* ':($tagName=='ol'?++$this->_iOLCount." ":null);
+
+						$this->_aText[]=$sListChar.trim($node->wholeText);
+					}
+
+				}
+				else
+				{
+
+					$oNode->tagName == 'ul'||$oNode->tagName=='ol'?$this->_toText($node,$oNode->tagName ):$this->_toText($node) ;
+
+				}
+			}
+		}
+
+		//$oNode->nextSibling == null?null:$this->_toText($oNode->nextSibling);
 
 	}
 
