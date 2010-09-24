@@ -1198,7 +1198,7 @@ class MenuItems {
 	function ChangePaymentMethod($iAccountId) {
 		$this->strLabel				= "Change Payment Method";
 		$this->strContextMenuLabel	= "";
-		
+
 		return "javascript:
 					Flex.Constant.loadConstantGroup(
 						['payment_method', 'rebill_type', 'direct_debit_type'],
@@ -3605,7 +3605,7 @@ class MenuItems {
 	{
 		$this->strContextMenuLabel = "Automatic Interim Invoice Submission";
 		$this->strLabel = "AutomaticInterimInvoiceSubmission";
-		
+
 		return "javascript: JsAutoLoader.loadScript(
 								'javascript/component_interim_first_invoice.js',
 								function()
@@ -3616,12 +3616,12 @@ class MenuItems {
 								false
 							);";
 	}
-	
+
 	function CommitAndSendInterimInvoices()
 	{
 		$this->strContextMenuLabel = "Commit and Send Interim Invoices";
 		$this->strLabel = "Commit and Send Interim Invoices";
-		
+
 		return "javascript: JsAutoLoader.loadScript(
 								['javascript/component_interim_first_invoice.js'],
 								function()
@@ -3707,7 +3707,7 @@ class MenuItems {
 										{
 											new Popup_Correspondence_Create();
 										}
-									); 
+									);
 								}
 							);";
 	}
@@ -3716,7 +3716,7 @@ class MenuItems {
 	{
 		$this->strContextMenuLabel 	= "Correspondence Runs";
 		$this->strLabel 			= "Correspondence Runs";
-		
+
 		return	"javascript: 	JsAutoLoader.loadScript(
 									[
 										'../ui/javascript/component_date_picker.js',
@@ -3755,7 +3755,7 @@ class MenuItems {
 	{
 		$this->strContextMenuLabel 	= "Correspondence Run Batches";
 		$this->strLabel 			= "Correspondence Run Batches";
-		
+
 		return	"javascript: 	JsAutoLoader.loadScript(
 									[
 										'../ui/javascript/component_date_picker.js',
@@ -3787,12 +3787,12 @@ class MenuItems {
 									}
 								);";
 	}
-	
+
 	function ViewAccountCorrespondenceLedger($iAccountId)
 	{
 		$this->strContextMenuLabel 	= "View Correspondence Ledger";
 		$this->strLabel 			= "View Correspondence Ledger";
-		
+
 		return	"javascript: 	JsAutoLoader.loadScript(
 									[
 										'../ui/javascript/component_date_picker.js',
@@ -3823,6 +3823,33 @@ class MenuItems {
 										new Popup_Account_Correspondence_Ledger($iAccountId);
 									}
 								);";
+	}
+
+
+	function EmailTextEditor()
+	{
+		$this->strContextMenuLabel 	= "Email Text Editor";
+		$this->strLabel 			= "Email Text Editor";
+
+		return	"javascript: 	JsAutoLoader.loadScript(
+							[
+								'../ui/javascript/section.js',
+								'javascript/popup_email_text_editor.js',
+								'../ui/javascript/control_tab_group.js',
+								'../ui/javascript/control_tab.js',
+								'../ui/javascript/control_tab.js',
+								'../ui/javascript/control_field.js',
+								'../ui/javascript/control_field_textarea.js',
+
+							],
+							function()
+							{
+								new Popup_Email_Text_Editor();
+							}
+					);";
+
+
+
 	}
 
 	//------------------------------------------------------------------------//
