@@ -444,8 +444,10 @@ Control_Field.factory	= function(sType, oDefinition)
 	var oControlField;
 	
 	// Determine type
+	
 	switch (sType.toLowerCase())
 	{
+		
 		case 'checkbox':
 			oControlField	= new Control_Field_Checkbox(oDefinition.sLabel);
 			break;
@@ -496,7 +498,9 @@ Control_Field.factory	= function(sType, oDefinition)
 			oControlField.setMaxLength(oDefinition.iMaxLength ? oDefinition.iMaxLength : false);
 			oControlField.setAutoTrim(oDefinition.mAutoTrim ? oDefinition.mAutoTrim : false);
 			break;
-		
+		case 'textarea':
+			oControlField	= new Control_Field_Textarea(oDefinition.sLabel, oDefinition.sLabelSeparator, oDefinition.rows, oDefinition.cols);
+			break;
 		case 'password_change':
 			oControlField	= new Control_Field_Password_Change(oDefinition.sLabel);
 			oControlField.setMaxLength(oDefinition.iMaxLength ? oDefinition.iMaxLength : false);
