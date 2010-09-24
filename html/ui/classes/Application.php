@@ -113,7 +113,7 @@ class Application
 		{
 			ContextMenu()->Customer->View_Recent_Customers();
 		}
-		
+
 		ContextMenu()->Customer->Customer_Search();
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
 		{
@@ -123,12 +123,12 @@ class Application
 		{
 			ContextMenu()->Customer->VerifySales();
 		}
-		
+
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW))
 		{
 			ContextMenu()->Customer->Customer_Overdue_List();
 		}
-		
+
 		if (Flex_Module::isActive(FLEX_MODULE_INVOICE_INTERIM))
 		{
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
@@ -147,7 +147,7 @@ class Application
 			{
 				// There are multiple customer groups
 				ContextMenu()->Plans->ListPlans();
-	
+
 				foreach ($arrCustomerGroups as $objCustomerGroup)
 				{
 					ContextMenu()->Plans->ListPlans($objCustomerGroup->id);
@@ -185,7 +185,7 @@ class Application
 				ContextMenu()->Admin->Charges_and_Adjustments->Manage_Charges->ManageRecurringChargeRequests();
 				ContextMenu()->Admin->Charges_and_Adjustments->Manage_Charges->ManageSingleChargeTypes();
 				ContextMenu()->Admin->Charges_and_Adjustments->Manage_Charges->ManageRecurringChargeTypes();
-				
+
 				// Manage Adjustments
 				ContextMenu()->Admin->Charges_and_Adjustments->Manage_Adjustments->ManageAdjustmentRequests();
 				ContextMenu()->Admin->Charges_and_Adjustments->Manage_Adjustments->ManageAdjustmentTypes();
@@ -193,7 +193,7 @@ class Application
 
 			// Payment Download has been moved to 2 data reports 'Payment Download' & 'Cheque Payment Download'
 			//ContextMenu()->Admin->PaymentDownload();
-			
+
 			ContextMenu()->Admin->MoveDelinquentCDRs();
 			ContextMenu()->Admin->DataReports();
 
@@ -208,10 +208,10 @@ class Application
 			{
 				ContextMenu()->Admin->Employees->EmployeeMessageManagement();
 			}
-			
+
 			// Permissions menu
 			//ContextMenu()->Admin->Employees->Permissions->ManagePermissionProfiles();
-			
+
 			if (Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL))
 			{
 				if (AuthenticatedUser()->UserHasPerm(PERMISSION_SALES))
@@ -246,14 +246,14 @@ class Application
 					ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketDownloadDNCR();
 					ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketUploadDNCR();
 					ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketDownloadPermitted();
-					
+
 					ContextMenu()->Admin->Telemarketing->Call_Reconciliation->TelemarketUploadDiallerReport();
 					ContextMenu()->Admin->Telemarketing->Call_Reconciliation->TelemarketDownloadReconciliationReport();
-	
+
 					ContextMenu()->Admin->Telemarketing->TelemarketingBlacklistAddFNN();
 				}
 			}
-			
+
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
 				ContextMenu()->Admin->Actions->ManageActionTypes();
@@ -261,13 +261,15 @@ class Application
 				ContextMenu()->Admin->Follow_Ups->ManageAllRecurringFollowUps();
 				ContextMenu()->Admin->Follow_Ups->ConfigureFollowUps();
 			}
-			
+
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
 				ContextMenu()->Admin->Correspondence->CreateCorrespondence();
 				ContextMenu()->Admin->Correspondence->Ledger->ViewCorrespondenceBatchLedger();
 				ContextMenu()->Admin->Correspondence->Ledger->ViewCorrespondenceRunLedger();
 			}
+			ContextMenu()->Admin->EmailTextEditor();
+
 		}
 
 		// Document Management
@@ -281,13 +283,13 @@ class Application
 		{
 			ContextMenu()->ViewInternalContactList();
 		}
-		
+
 		if (AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
 		{
 			ContextMenu()->Follow_Ups->MyFollowUps();
 			ContextMenu()->Follow_Ups->MyRecurringFollowUps();
 		}
-		
+
 		// Render Page
 		//ob_start();
 		$fltStart = microtime(TRUE);
@@ -360,7 +362,7 @@ class Application
 		{
 			ContextMenu()->Customer->View_Recent_Customers();
 		}
-		
+
 		ContextMenu()->Customer->Customer_Search();
 
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
@@ -371,12 +373,12 @@ class Application
 		{
 			ContextMenu()->Customer->VerifySales();
 		}
-		
+
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW))
 		{
 			ContextMenu()->Customer->Customer_Overdue_List();
 		}
-		
+
 		if (Flex_Module::isActive(FLEX_MODULE_INVOICE_INTERIM))
 		{
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
@@ -389,14 +391,14 @@ class Application
 		}
 
 		$arrCustomerGroups = Customer_Group::listAll();
-		
+
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW))
 		{
 			if (count($arrCustomerGroups) > 1)
 			{
 				// There are multiple customer groups
 				ContextMenu()->Plans->ListPlans();
-	
+
 				foreach ($arrCustomerGroups as $objCustomerGroup)
 				{
 					ContextMenu()->Plans->ListPlans($objCustomerGroup->id);
@@ -434,7 +436,7 @@ class Application
 				ContextMenu()->Admin->Charges_and_Adjustments->Manage_Charges->ManageRecurringChargeRequests();
 				ContextMenu()->Admin->Charges_and_Adjustments->Manage_Charges->ManageSingleChargeTypes();
 				ContextMenu()->Admin->Charges_and_Adjustments->Manage_Charges->ManageRecurringChargeTypes();
-				
+
 				// Manage Adjustments
 				ContextMenu()->Admin->Charges_and_Adjustments->Manage_Adjustments->ManageAdjustmentRequests();
 				ContextMenu()->Admin->Charges_and_Adjustments->Manage_Adjustments->ManageAdjustmentTypes();
@@ -442,7 +444,7 @@ class Application
 
 			// Payment Download has been moved to 2 data reports 'Payment Download' & 'Cheque Payment Download''. rmctainsh 20100415
 			//ContextMenu()->Admin->PaymentDownload();
-			
+
 			ContextMenu()->Admin->MoveDelinquentCDRs();
 			ContextMenu()->Admin->DataReports();
 
@@ -457,10 +459,10 @@ class Application
 			{
 				ContextMenu()->Admin->Employees->EmployeeMessageManagement();
 			}
-			
+
 			// Permissions menu
 			//ContextMenu()->Admin->Employees->Permissions->ManagePermissionProfiles();
-			
+
 			if (Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL))
 			{
 				if (AuthenticatedUser()->UserHasPerm(PERMISSION_SALES))
@@ -495,14 +497,14 @@ class Application
 					ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketDownloadDNCR();
 					ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketUploadDNCR();
 					ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketDownloadPermitted();
-					
+
 					ContextMenu()->Admin->Telemarketing->Call_Reconciliation->TelemarketUploadDiallerReport();
 					ContextMenu()->Admin->Telemarketing->Call_Reconciliation->TelemarketDownloadReconciliationReport();
-	
+
 					ContextMenu()->Admin->Telemarketing->TelemarketingBlacklistAddFNN();
 				}
 			}
-			
+
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
 				ContextMenu()->Admin->Actions->ManageActionTypes();
@@ -510,7 +512,7 @@ class Application
 				ContextMenu()->Admin->Follow_Ups->ManageAllRecurringFollowUps();
 				ContextMenu()->Admin->Follow_Ups->ConfigureFollowUps();
 			}
-			
+
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
 				ContextMenu()->Admin->Correspondence->CreateCorrespondence();
@@ -518,6 +520,8 @@ class Application
 				ContextMenu()->Admin->Correspondence->Ledger->ViewCorrespondenceRunLedger();
 			}
 		}
+
+		ContextMenu()->Admin->EmailTextEditor();
 
 		// Document Management
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW) && Flex_Module::isActive(FLEX_MODULE_DOCUMENT_MANAGEMENT))
@@ -530,7 +534,7 @@ class Application
 		{
 			ContextMenu()->ViewInternalContactList();
 		}
-		
+
 		if (AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
 		{
 			ContextMenu()->Follow_Ups->MyFollowUps();
@@ -606,7 +610,7 @@ class Application
 			header( 'Cache-Control: post-check=0, pre-check=0', false );
 			header( 'Cache-Control: max-age=0', false );
 			header( 'Pragma: no-cache' );
-			
+
 			// Send back AJAX data as JSON
 			Ajax()->Reply();
 		}
@@ -839,7 +843,7 @@ class Application
 					// Set flag for the login page to let it know that login has failed, it will be unset by the page.
 					$_SESSION['LoginFailed']	= true;
 				}
-				
+
 				require_once(TEMPLATE_BASE_DIR . "page_template/login.php");
 				die;
 			}
@@ -894,7 +898,7 @@ class Application
 			setcookie("DebugMode", $bolDebugMode, 0, "/");
 		}
 		$GLOBALS['bolDebugMode'] = ($bolDebugMode && $this->UserHasPerm(PERMISSION_DEBUG)) ? TRUE : FALSE;
-		
+
 		// Check if the user has just successfully logged in via Ajax
 		if ($_SESSION['LoggedIn'])
 		{
@@ -906,10 +910,10 @@ class Application
 					die;
 				}
 			}
-			
+
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -988,16 +992,16 @@ class Application
 		{
 			return FALSE;
 		}
-		
+
 		// Ensure $mixPerms is an array
 		$arrPerms	= (is_array($mixPerms)) ? $mixPerms : array($mixPerms);
-		
+
 		// If the user has at least one of the specified permissions, then return TRUE
 		foreach ($arrPerms as $intPerms)
 		{
 			// Do a binary 'AND' between the user's privilages and the paramerter
 			$intChecked = $_SESSION['User']['Privileges'] & $intPerms;
-	
+
 			// If the user has all the privileges defined in $intPerms, then $intChecked will equal $intPerms
 			if ($intChecked == $intPerms)
 			{
@@ -1272,7 +1276,7 @@ class Application
 		}
 		return (int)$id;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// Login
 	//------------------------------------------------------------------------//
@@ -1295,10 +1299,10 @@ class Application
 	{
 		// Get the Id of the Employee (Identified by UserName and PassWord combination)
 		$oSelectStatement = new StatementSelect (
-			"Employee", 
-			"*", 
-			"UserName = <UserName> AND PassWord = SHA1(<PassWord>) AND Archived = 0", 
-			NULL, 
+			"Employee",
+			"*",
+			"UserName = <UserName> AND PassWord = SHA1(<PassWord>) AND Archived = 0",
+			NULL,
 			"1"
 		);
 
@@ -1331,7 +1335,7 @@ class Application
 		$_SESSION['SessionExpire'] = time() + $_SESSION['SessionDuration'];
 		return TRUE;
 	}
-	
+
 
 	//----------------------------------------------------------------------------//
 	// __get
