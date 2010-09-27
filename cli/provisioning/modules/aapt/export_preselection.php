@@ -51,7 +51,6 @@
 		//##----------------------------------------------------------------##//
 		// Define Module Configuration and Defaults
 		//##----------------------------------------------------------------##//
-		/*
 		// Mandatory
  		$this->_arrModuleConfig['Server']			['Default']		= 'ftp.powertel.com.au';
  		$this->_arrModuleConfig['Server']			['Type']		= DATA_TYPE_STRING;
@@ -68,27 +67,6 @@
  		$this->_arrModuleConfig['Path']				['Default']		= '';
  		$this->_arrModuleConfig['Path']				['Type']		= DATA_TYPE_STRING;
  		$this->_arrModuleConfig['Path']				['Description']	= "Directory to drop the file in";
- 		*/
- 		
- 		// <DEBUG>
-		$this->_strDeliveryType	= 'EmailAttach';
- 		
- 		$this->_arrModuleConfig['Destination']		['Default']		= 'rdavis@ybs.net.au';
- 		$this->_arrModuleConfig['Destination']		['Type']		= DATA_TYPE_STRING;
- 		$this->_arrModuleConfig['Destination']		['Description']	= "Destination Email Address";
- 		
- 		$this->_arrModuleConfig['Subject']			['Default']		= 'AAPT Preselection File';
- 		$this->_arrModuleConfig['Subject']			['Type']		= DATA_TYPE_STRING;
- 		$this->_arrModuleConfig['Subject']			['Description']	= "Email Subject";
- 		
- 		$this->_arrModuleConfig['ReplyTo']			['Default']		= 'provisioning@yellowbilling.com.au';
- 		$this->_arrModuleConfig['ReplyTo']			['Type']		= DATA_TYPE_STRING;
- 		$this->_arrModuleConfig['ReplyTo']			['Description']	= "Reply-To Email Address";
- 		
- 		$this->_arrModuleConfig['EmailContent']		['Default']		= 'AAPT Preselection File';
- 		$this->_arrModuleConfig['EmailContent']		['Type']		= DATA_TYPE_STRING;
- 		$this->_arrModuleConfig['EmailContent']		['Description']	= "Content for the Email";
- 		// </DEBUG>
  		
  		// Additional
  		$this->_arrModuleConfig['ResellerCode']		['Default']		= '';

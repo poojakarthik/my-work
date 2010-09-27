@@ -65,9 +65,6 @@
  		$this->_arrModuleConfig['Path']				['Default']		= '';
  		$this->_arrModuleConfig['Path']				['Type']		= DATA_TYPE_STRING;
  		$this->_arrModuleConfig['Path']				['Description']	= "Directory to drop the file in";
- 		*/
- 		
- 		// <DEBUG>
 		$this->_strDeliveryType	= 'EmailAttach';
  		
  		$this->_arrModuleConfig['Destination']		['Default']		= 'rdavis@ybs.net.au';
@@ -85,7 +82,6 @@
  		$this->_arrModuleConfig['EmailContent']		['Default']		= 'AAPT Deactivations File';
  		$this->_arrModuleConfig['EmailContent']		['Type']		= DATA_TYPE_STRING;
  		$this->_arrModuleConfig['EmailContent']		['Description']	= "Content for the Email";
- 		// </DEBUG>
  		
  		// Additional
  		$this->_arrModuleConfig['ResellerCode']		['Default']		= '';
