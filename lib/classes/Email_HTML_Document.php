@@ -7,6 +7,10 @@ class Email_HTML_Document
 	protected $_iOLCount;
 	protected $_lastParent;
 
+	protected static $_aVariables = array(
+											'CustomerGroup'	=>array('external_name'),
+											'Account'		=>array('BusinessName')
+										);
 
 
 	public function __construct($sHTML)
@@ -143,6 +147,11 @@ class Email_HTML_Document
 				}
 			}
 		}
+	}
+
+	public static function getVariables()
+	{
+		return self::$_aVariables;
 	}
 
 
