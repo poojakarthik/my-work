@@ -14,7 +14,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 			Popup_Email_Text_Editor.SAVE_IMAGE_SOURCE 	= '../admin/img/template/tick.png';
 		$super(70);
 		
-				
+				this._oLoadingPopup	= new Reflex_Popup.Loading();
 		// Build content
 			this._oContent	= 	$T.div({class: 'popup-account-edit-rebill'},
 									$T.div({class: 'tabgroup'}
@@ -32,7 +32,26 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 									)
 								);
 								
-								
+			this._getVariables();					
+			
+
+	},
+	
+	_getVariables: function()
+	{
+		var fnRequest     = jQuery.json.jsonFunction(this._getVariablesSuccess.bind(this), this.errorCallback.bind(this), 'Email_Text_Editor', 'getVariables');
+		fnRequest();
+	},
+	
+	_getVariablesSuccess: function(oResponse)
+	{
+		this._buildGUI(oResponse.variables);
+	
+	},
+	
+	_buildGUI: function()
+	{
+	
 			// Button events
 			var oAddButton		= this._oContent.select('div.buttons > button.icon-button').first();
 			oAddButton.observe('click', this._saveButtonClick.bind(this));
@@ -78,7 +97,21 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 												 // alert('hello'); \
 												 // </script> \
 												// </div>";
-			oTBody.appendChild(oControl.generateInputTableRow().oElement);
+			oTableRow = oControl.generateInputTableRow().oElement;
+			var th = oTableRow.select('th').first();
+			
+			
+			th.appendChild($T.div({class: 'buttons'},
+										$T.button({class: 'icon-button'},
+											$T.img({src: Popup_Email_Text_Editor.ICON_IMAGE_SOURCE, alt: '', title: 'Generate Text'}),
+											$T.span('Generate Text')
+										)
+									));
+									
+			var oGenerateTextButton	= th.select('div.buttons > button.icon-button').first();
+			oGenerateTextButton.observe('click', this._generateTextButtonClick.bind(this));
+		
+			oTBody.appendChild(oTableRow);
 			this._oTabGroup.addTab("HTML", new Control_Tab("HTML", oTabContent));
 			
 			//generate the Preview tab	
@@ -86,21 +119,26 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 							 oTBody = $T.tbody({class: 'popup-account-edit-rebill-fields'})
 							 );
 
-			this._oTabGroup.addTab("Preview", new Control_Tab("Preview", oTabContent));
+			
+			var oPreviewTab = new Control_Tab("Preview", oTabContent)
+			oPreviewTab.oTabButton.observe('click', this._htmlPreviewSelected.bind(this));
+			this._oTabGroup.addTab("Preview", oPreviewTab);
 			this.oHTMLPreviewDiv = document.createElement('div');
 			this.oHTMLPreviewDiv.innerHTML = this.oHTMLTextArea.value;
 			oTBody.appendChild(this.oHTMLPreviewDiv);
 				//oHTMLPreviewDiv.innerHTML = "<h1>Hello</h1>";
 		
-			//add listener method to the html tabl
-			this.oHTMLTextArea.observe('blur', this._htmlPaneChange.bind(this));
+			//add listener method to the preview tab
+			//this.oHTMLTextArea.observe('blur', this._htmlPreviewSelected.bind(this));
 		
 		// Attach content and get data
 		this.setTitle('Email Text Editor');
 		this.addCloseButton();
 		this.setContent(this._oContent);
 		this.display();
-
+	
+	
+	
 	},
 	
 	display	: function($super)
@@ -119,8 +157,10 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	
 	_htmlPreviewSelected: function(html)
 	{
-		var fnRequest     = jQuery.json.jsonFunction(this.successCallback.bind(this), this.errorCallback.bind(this), 'Email_Text_Editor', 'processHTML');
-		fnRequest(html);
+		//this._oLoadingPopup	= new Reflex_Popup.Loading();
+		this._oLoadingPopup.display();
+		var fnRequest     = jQuery.json.jsonFunction(this.successPreviewCallback.bind(this), this.errorCallback.bind(this), 'Email_Text_Editor', 'processHTML');
+		fnRequest(this._preprocessHTML());
 	
 	},
 
@@ -130,22 +170,47 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		  alert('error');
 	},
 
-	 successCallback: function (oResponse)
+	successPreviewCallback: function (oResponse)
 	{
-		 
-		 
-		  var html = oResponse.html;
-		  this.oTextArea.innerHTML = html;
-		  this.oHTMLPreviewDiv.innerHTML = html;		  
+	    this._oLoadingPopup.hide();	
+		 var html = oResponse.html;
+		this.oHTMLPreviewDiv.innerHTML = html;		 	  
 	},
 	
-	_saveButtonClick: function()
+	successToTextCallback: function (oResponse)
 	{
-		var parser=new DOMParser();
+	    this._oLoadingPopup.hide();	
+		
+		var text = oResponse.text;
+		this.oTextArea.value = text;		 	  
+	},
+	
+	_preprocessHTML: function ()
+	{
 		var oDiv = document.createElement('div');
 		oDiv.innerHTML = this.oHTMLTextArea.value;
 		var s = new XMLSerializer(); 
-		this._htmlPreviewSelected(s.serializeToString(oDiv));
+		xml =  XML(s.serializeToString(oDiv)).toXMLString();
+		return s.serializeToString(oDiv);	
+	
+	},
+	
+	_saveButtonClick: function()
+	{		
+		//this._oLoadingPopup	= new Reflex_Popup.Loading();
+		this._oLoadingPopup.display();
+		var fnRequest     = jQuery.json.jsonFunction(this.successCallback.bind(this), this.errorCallback.bind(this), 'Email_Text_Editor', 'save');
+		fnRequest(this._preprocessHTML());		
+	},
+	
+	_generateTextButtonClick: function()
+	{
+		//this._oLoadingPopup	= new Reflex_Popup.Loading();
+		this._oLoadingPopup.display();
+		var fnRequest     = jQuery.json.jsonFunction(this.successToTextCallback.bind(this), this.errorCallback.bind(this), 'Email_Text_Editor', 'toText');
+		fnRequest(this._preprocessHTML());	
+	
+	
 	}
 
 	
