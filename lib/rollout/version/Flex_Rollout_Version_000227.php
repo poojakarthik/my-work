@@ -17,11 +17,11 @@ class Flex_Rollout_Version_000227 extends Flex_Rollout_Version
 								(
 									'sDescription'		=>	"Add table email_template",
 									'sAlterSQL'			=>	"CREATE  TABLE IF NOT EXISTS email_template (
-															  id BIGINT NOT NULL ,
+															  id BIGINT NOT NULL  AUTO_INCREMENT ,
 															  customer_group_id BIGINT(20) NOT NULL ,
 															  name VARCHAR(255) NOT NULL ,
 															  description VARCHAR(255) NOT NULL ,
-															  created_timestamp TIMESTAMP NOT NULL ,
+															  created_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 															  created_employee_id BIGINT NOT NULL ,
 															  PRIMARY KEY (id) ,
 															  INDEX fk_email_template_customer_group_id (customer_group_id ASC) ,
@@ -38,11 +38,11 @@ class Flex_Rollout_Version_000227 extends Flex_Rollout_Version
 								(
 									'sDescription'		=>	"Add table email_template_details",
 									'sAlterSQL'			=>	"CREATE  TABLE IF NOT EXISTS email_template_details (
-															  id BIGINT NOT NULL ,
+															  id BIGINT NOT NULL  AUTO_INCREMENT ,
 															  email_template_id BIGINT NOT NULL ,
 															  email_text VARCHAR(10000) NOT NULL ,
 															  email_html VARCHAR(10000) NULL ,
-															  created_timestamp TIMESTAMP NOT NULL ,
+															  created_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 															  created_employee_id BIGINT NOT NULL ,
 															  effective_datetime DATETIME NOT NULL ,
 															  PRIMARY KEY (id) ,
@@ -60,7 +60,7 @@ class Flex_Rollout_Version_000227 extends Flex_Rollout_Version
 								(
 									'sDescription'		=>	"Add table email_template_ebill",
 									'sAlterSQL'			=>	"CREATE  TABLE IF NOT EXISTS email_template_ebill (
-															  id BIGINT NOT NULL ,
+															  id BIGINT NOT NULL  AUTO_INCREMENT ,
 															  email_template_id BIGINT NOT NULL ,
 															  customer_group_id BIGINT(20) NOT NULL ,
 															  PRIMARY KEY (id) ,
