@@ -69,7 +69,17 @@ $arrDataReport['SQLTable']		= "	Invoice i
 													AND c.Nature = 'CR'
 													AND c.ChargedOn <= CURDATE()
 										GROUP BY	c.Account
-									) /* account_unbilled_adjustments */ aua ON (a.Id = aua.account_id)";
+									) /* account_unbilled_adjustments */ aua ON (a.Id = aua.account_id)
+									JOIN 		billing_type bt 	ON bt.id = a.BillingType
+									JOIN		payment_method pm	ON pm.id = bt.payment_method_id
+									LEFT JOIN	rebill r 			ON r.id = 	(
+																					SELECT		id
+																					FROM		rebill r2
+																					WHERE		account_id = a.Id
+																					ORDER BY	created_timestamp DESC
+																					LIMIT 1
+																				)
+									LEFT JOIN	rebill_type rt		ON rt.id = r.rebill_type_id";
 $arrDataReport['SQLWhere']		= "	(
 										(<ShowArchived> = 1)
 										OR (<ShowArchived> = 0 AND a.Archived != 1)
@@ -150,6 +160,29 @@ $arrSQLSelect['Unbilled Adjustments DR (inc GST)']	['Total']	= EXCEL_TOTAL_SUM;
 $arrSQLSelect['Unbilled Adjustments CR (inc GST)']	['Value']	= "COALESCE(aua.adjustment_total_credit, 0)";
 $arrSQLSelect['Unbilled Adjustments CR (inc GST)']	['Type']	= EXCEL_TYPE_CURRENCY;
 $arrSQLSelect['Unbilled Adjustments CR (inc GST)']	['Total']	= EXCEL_TOTAL_SUM;
+
+$arrSQLSelect['VIP Status']							['Value']	= "IF(a.vip = 1, 'VIP', 'Non-VIP')";
+
+$arrSQLSelect['Payment Method']						['Value']	= "	(
+																		CASE
+																			WHEN	pm.const_name = 'PAYMENT_METHOD_ACCOUNT'
+																			THEN	pm.Description
+																			WHEN	pm.const_name = 'PAYMENT_METHOD_DIRECT_DEBIT'
+																			THEN	CONCAT
+																					(
+																						'Direct Debit via ',
+																						CASE
+																							WHEN	a.CreditCard IS NOT NULL
+																							THEN	'Credit Card'
+																							WHEN	a.DirectDebit IS NOT NULL
+																							THEN	'Bank Account'
+																							ELSE	'Invalid Direct Debit'
+																						END
+																					)
+																			WHEN	pm.const_name = 'PAYMENT_METHOD_REBILL'
+																			THEN	CONCAT(pm.Name, ' via ', rt.Name)
+																		END
+																	)";
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
