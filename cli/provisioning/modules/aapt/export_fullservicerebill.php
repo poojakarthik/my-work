@@ -191,7 +191,7 @@
 		$arrDefine['EndUserCmp']			['Index']		= 14;
 		
 		$arrDefine['EndUserDOB']			['Index']		= 15;
-		$arrDefine['EndUserDOB']			['Optional']	= '        ';
+		$arrDefine['EndUserDOB']			['Optional']	= '';
 		
 		$arrDefine['AddressType']			['Index']		= 16;
 		
