@@ -65,7 +65,7 @@ var Popup_Email_Templates	= Class.create(Reflex_Popup,
 			)
 		);
 		
-		this._oContentDiv 	= 	$T.div({class: 'popup-correspondence-ledger'},
+		this._oContentDiv 	= 	$T.div({class: 'popup-email-templates'/*'popup-correspondence-ledger'*/},
 									oSection.getElement()
 								);
 		
@@ -194,8 +194,8 @@ var Popup_Email_Templates	= Class.create(Reflex_Popup,
 							
 							$T.td(oCustomerGroup.external_name),
 							$T.td({class: 'actions'},
-								$T.img({src: '../admin/img/template/magnifier.png', alt: 'Edit Template Text', title: 'Edit Template Text'}
-								).observe('click', this._doEdit.bind(this, oCustomerGroup.id))
+								$T.img({src: '../admin/img/template/edit.png', alt: 'Edit Template Text', title: 'Edit Template Text'}
+								).observe('click', this._doEdit.bind(this, oTemplate.name, oCustomerGroup.external_name, oCustomerGroup.id))
 							)
 							)
 						
@@ -225,7 +225,7 @@ var Popup_Email_Templates	= Class.create(Reflex_Popup,
 			
 			
 			// Caption for batch information
-			var oCaption	= 	$T.caption({class: 'batch-row'},
+			var oCaption	= 	$T.caption({class: 'template-row'},
 									$T.img({src: '../admin/img/template/menu_open_right.png'}),
 									$T.span(oTemplate.name ),
 									$T.span({class: 'run-count'},
@@ -236,12 +236,12 @@ var Popup_Email_Templates	= Class.create(Reflex_Popup,
 			
 			// Create the batch row
 			var	oTR	=	$T.tr(
-							$T.td({class: 'batch-table'},
+							$T.td({class: 'template-table'},
 								$T.table({class: 'reflex highlight-rows'},
 									oCaption
 									//oTHead
 								),
-								$T.div({class: 'batch-table-container'},
+								$T.div({class: 'template-table-container'},
 									$T.table({class: 'reflex highlight-rows'},
 										oCustomerGroupTBody
 									)
@@ -262,15 +262,16 @@ var Popup_Email_Templates	= Class.create(Reflex_Popup,
 		}
 	},
 	
-	_doEdit	: function(iTemplateId)
+	_doEdit	: function(sTemplateName, customerGroupName,iTemplateId) 
 	{
-		var fnRequest     = jQuery.json.jsonFunction(this._getTemplateDetailsSuccess.bind(this), Popup_Email_Template_Select._ajaxError.bind(this), 'Email_Text_Editor', 'getTemplateDetails');
+		var fnRequest     = jQuery.json.jsonFunction(this._getTemplateDetailsSuccess.bind(this, sTemplateName, customerGroupName), Popup_Email_Template_Select._ajaxError.bind(this), 'Email_Text_Editor', 'getTemplateDetails');
 		fnRequest(iTemplateId);		
 	},
 	
-	_getTemplateDetailsSuccess: function (oResponse)
+	_getTemplateDetailsSuccess: function (sTemplateName, customerGroupName, oResponse)
 	{
-		new Popup_Email_Text_Editor(oResponse.aTemplateDetails, this._unhide.bind(this));
+		
+		new Popup_Email_Text_Editor(oResponse.aTemplateDetails, sTemplateName, customerGroupName, this._unhide.bind(this));
 		this.hide();	
 	},
 	
@@ -360,22 +361,5 @@ Object.extend(Popup_Email_Templates,
 {
 	MAX_RECORDS_PER_PAGE	: 10,
 	DATA_SET_DEFINITION		: {sObject: 'Email_Text_Editor', sMethod: 'getTemplates'},
-	FIELD_CONFIG	:
-	{
-		batch_datetime	:
-		{
-			sType	: 'date-picker',
-			oConfig	:
-			{
-				sLabel		: 'Batch Date & Time', 
-				sDateFormat	: 'Y-m-d H:i:s', 
-				bTimePicker	: true,
-				iYearStart	: 2010,
-				iYearEnd	: new Date().getFullYear() + 1,
-				mMandatory	: true,
-				mEditable	: true,
-				mVisible	: true
-			}
-		}
-	}
+
 });
