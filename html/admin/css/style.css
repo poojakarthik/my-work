@@ -78,7 +78,7 @@ div#logo {
 	display: block;
 	background-image: url("../img/template/yellow_billing_logo_small.png");
 	background-repeat: no-repeat;
-	
+
 	cursor: pointer;
 }
 
@@ -238,9 +238,9 @@ table.reflex tbody tr th.label
 {
 	min-height		: 1.5em;
 	max-height		: 1.5em;
-	
+
 	font-size		: inherit;
-	
+
 	vertical-align	: middle;
 	text-align		: right;
 	overflow		: hidden;
@@ -250,7 +250,7 @@ table.reflex tbody tr td.input
 {
 	min-height		: 1.5em;
 	max-height		: 1.5em;
-	
+
 	vertical-align	: middle;
 	text-align		: left;
 }
@@ -269,13 +269,13 @@ table.reflex tbody tr td.input input[type="checkbox"]
 	vertical-align	: text-bottom;
 }
 
-table.reflex th.reflex-unsorted, 
-table.reflex th.reflex-sorted-ascending, 
+table.reflex th.reflex-unsorted,
+table.reflex th.reflex-sorted-ascending,
 table.reflex th.reflex-sorted-descending
 {
 	cursor: pointer;
-	background-position: 0% 50%; 
-	background-repeat: no-repeat; 
+	background-position: 0% 50%;
+	background-repeat: no-repeat;
 	background-image: url(../img/template/order_neither.png);
 	padding-left: 0.8em;
 }
@@ -359,36 +359,36 @@ textarea
 input[type='text'][disabled],
 select[disabled],
 textarea[disabled],
-.control-field.required input[type='text'][disabled], 
-.control-field.required select[disabled], 
+.control-field.required input[type='text'][disabled],
+.control-field.required select[disabled],
 .control-field.required textarea[disabled],
-.control-field.invalid input[type='text'][disabled], 
+.control-field.invalid input[type='text'][disabled],
 .control-field.invalid select[disabled],
 .control-field.invalid textarea[disabled],
-.control-field.valid input[type='text'][disabled], 
-.control-field.valid select[disabled], 
+.control-field.valid input[type='text'][disabled],
+.control-field.valid select[disabled],
 .control-field.valid textarea[disabled]
 {
 	background-color: #EFEBE7;
 	color			: #888;
 }
 
-input.required, 
-select.required, 
+input.required,
+select.required,
 textarea.required,
-.control-field.required input, 
-.control-field.required select, 
-.control-field.required textarea 
+.control-field.required input,
+.control-field.required select,
+.control-field.required textarea
 {
 	background	: #fff;
 	color		: #111;
 	border		: .1em solid #da8;
 }
 
-input.invalid, 
-select.invalid, 
+input.invalid,
+select.invalid,
 textarea.invalid,
-.control-field.invalid input, 
+.control-field.invalid input,
 .control-field.invalid select,
 .control-field.invalid textarea
 {
@@ -397,12 +397,12 @@ textarea.invalid,
 	border		: .1em solid #d30;
 }
 
-input.valid, 
-select.valid, 
+input.valid,
+select.valid,
 textarea.valid,
-.control-field.valid input, 
-.control-field.valid select, 
-.control-field.valid textarea 
+.control-field.valid input,
+.control-field.valid select,
+.control-field.valid textarea
 {
 	background: #ecfff0;
 	color: #111;
@@ -433,7 +433,7 @@ input[type='button'], input.normal-button[type='submit'], a.button, button
 	cursor: 			pointer !important;
 	-moz-user-select:	none;
 	-webkit-user-select	: none;
-	
+
 	/* This is experimental -- remove if it looks shit */
 	text-shadow	: 0px 1px 2px #fff;
 }
@@ -446,7 +446,7 @@ button[disabled]
 	-moz-user-select	: none !important;
 	-webkit-user-select	: none !important;
 	cursor				: default !important;
-	
+
 	/* This is experimental -- remove if it looks shit */
 	text-shadow	: 0px 1px 2px #ddd;
 }
@@ -492,13 +492,13 @@ div.reflex-popup {
 	background-color	: #efefef;
 	z-index				: 50;
 	position			: absolute;
-	
+
 	-moz-border-radius		: 4px;
 	-moz-box-shadow			: 0 0 20px;
-	
+
 	-webkit-border-radius	: 4px;
 	-webkit-box-shadow		: 0 0 20px #000;
-	
+
 }
 
 div.reflex-popup table.reflex {
@@ -526,7 +526,7 @@ div.reflex-popup-title {
 	float : left;
 	width : 79%;
 	font-weight: bold;
-	
+
 }
 
 span.reflex-popup-title-text {
@@ -691,8 +691,8 @@ table.sp th.sp-sorted-ascending,
 table.sp th.sp-sorted-descending
 {
 	cursor: pointer;
-	background-position: 0% 50%; 
-	background-repeat: no-repeat; 
+	background-position: 0% 50%;
+	background-repeat: no-repeat;
 	background-image: url(../img/order_neither.png);
 	padding-left: 0.8em;
 }
@@ -807,7 +807,7 @@ div.Title{
 	color:					#eeeeee;
 	background-color:		#333333;
 	height:					20px;
-	width:					965px; 
+	width:					965px;
 	text-indent:			10px;
 	font-weight:			bold;
 	padding:				0px;
@@ -820,7 +820,7 @@ div.PartTitle{
 	color:					#eeeeee;
 	background-color:		#333333;
 	height:					20px;
-	width:					470px; 
+	width:					470px;
 	text-indent:			10px;
 	font-weight:			bold;
 	padding:				0px;
@@ -1054,7 +1054,7 @@ table.document-explorer th span[onclick]:hover
 table.document-explorer th img.icon
 {
 	vertical-align	: text-bottom;
-	
+
 }
 
 table.document-explorer th img.icon.overlay
@@ -1163,7 +1163,7 @@ div.action-list
 {
 	margin : 0.25em;
 	background-color : #FFF;
-	
+
 	overflow-x : hidden;
 	overflow-y : auto;
 }
@@ -1190,7 +1190,7 @@ div.action-list.embedded div.item
 
 div.action-list div.item.note
 {
-	
+
 }
 
 div.action-list div.item.action
@@ -1291,11 +1291,11 @@ div#PopupPageBody
 div.popup-debug
 {
 	background-color	: #fff;
-	
+
 	color				: #000;
 	font-family			: monospace;
 	font-size			: 1.2em;
-	
+
 	height				: 20em;
 	width				: 100%;
 	overflow			: scroll;
@@ -1305,7 +1305,7 @@ div.popup-debug table
 {
 	font-family			: inherit;
 	font-size			: inherit;
-	
+
 	border-collapse		: collapse;
 	padding				: 0;
 }
@@ -1314,7 +1314,7 @@ div.popup-debug table tbody tr th
 {
 	vertical-align		: top;
 	text-align			: right;
-	
+
 	font-family			: inherit;
 	font-weight			: bold;
 }
@@ -1323,7 +1323,7 @@ div.popup-debug table tbody tr td
 {
 	vertical-align		: top;
 	text-align			: left;
-	
+
 	font-family			: inherit;
 }
 
@@ -1649,7 +1649,7 @@ div.message {
 	margin-left: auto;
 	margin-right: auto;
 	margin-bottom: 1em;
-} 
+}
 
 div.error {
 	background: #ffecf0;
@@ -1707,7 +1707,7 @@ div.tab-group div.tab
 	-moz-border-radius				: 0.5em 0.5em 0 0;
 	-webkit-border-top-left-radius	: 0.5em;
 	-webkit-border-top-right-radius	: 0.5em;
-	
+
 	-moz-user-select				: none;
 	-webkit-user-select				: none;
 }
@@ -1856,7 +1856,7 @@ div.select-list
 	background-color	: #fff;
 	border				: 1px solid #000;
 	overflow-y			: scroll;
-	
+
 	/* Default Height */
 	height				: 10em;
 }
@@ -1888,7 +1888,7 @@ div.select-list-group
 	column-count			: 2;
 	-moz-column-count		: 2;
 	-webkit-column-count	: 2;
-	
+
 	column-gap				: 0.5em;
 	-moz-column-gap			: 0.5em;
 	-webkit-column-gap		: 0.5em;
@@ -1909,10 +1909,10 @@ div.tree-grid
 	background-color	: #fff;
 	border				: 1px solid #000;
 	overflow-y			: scroll;
-	
+
 	/* Default Height */
 	height				: 15em;
-	
+
 	position			: relative;
 }
 
@@ -1951,7 +1951,7 @@ table.tree-grid tr td.tree img
 	min-height		: 16px;
 	max-height		: 16px;
 	vertical-align	: top;
-	
+
 	-moz-user-select	: none;
 	-webkit-user-select	: none;
 }
@@ -1969,7 +1969,7 @@ table.tree-grid tr td.tree img.icon
 	/*height		: 16px;*/
 	/*min-height	: 16px;*/
 	max-height	: 16px;
-	
+
 	vertical-align	: top;
 }
 
@@ -2014,7 +2014,7 @@ div.tree-grid div.loading
 	background-color	: rgba(150, 150, 150, 0.5);
 	height				: 100%;
 	width				: 100%;
-	
+
 	position			: absolute;
 	top					: 0px;
 	left				: 0px;
@@ -2032,7 +2032,7 @@ div.tree-grid div.loading div span
 {
 	border				: 1px solid #000000;
 	background-color	: #ffffff;
-	
+
 	display				: inline-block;
 	padding				: 0.25em;
 }
@@ -2051,13 +2051,13 @@ div.reflex-datepicker
 {
 	border				: 0.1em solid #BF8E5F;
 	background-color	: #FFF7EF;
-	
+
 	padding		: 0.2em;
-	
+
 	font-size	: 0.8em;
-	
+
 	font-family	: "Trebuchet MS", Verdana, Tahoma, Arial, sans-serif;
-	
+
 	-moz-border-radius-topleft			: 0.5em;
 	-moz-border-radius-bottomleft		: 0.5em;
 	-webkit-border-top-left-radius		: 0.5em;
@@ -2070,14 +2070,14 @@ div.reflex-datepicker
 
 div.reflex-datepicker div.header
 {
-	
+
 }
 
 div.reflex-datepicker div.footer
 {
 	border-top	: 0.1em solid #BF8E5F;
 	padding		: 0.25em;
-	
+
 	font-size	: 1.1em;
 	font-weight	: bolder;
 }
@@ -2101,7 +2101,7 @@ div.reflex-datepicker div.footer div.reflex-datepicker-datetime-time span
 
 div.reflex-datepicker div.content
 {
-	
+
 }
 
 div.reflex-datepicker div.content div.clear
@@ -2120,18 +2120,18 @@ div.reflex-datepicker div.content div.month caption
 {
 	font-size	: 1.2em;
 	font-weight	: bold;
-	
+
 	color		: #fff;
-	
+
 	background-image	: url('../../admin/img/template/wave.png');
 	background-color	: #D7812A;
 	background-position	: 0% 45%;
-	
+
 	height		: 2em;
 	line-height	: 2em;
-	
+
 	vertical-align	: middle;
-	
+
 	border-top		: 0.1em solid #DFA66F;
 	border-bottom	: 0.1em solid #8F5823;
 	border-left		: 0.1em solid #DFA66F;
@@ -2172,27 +2172,27 @@ div.reflex-datepicker div.content div.month caption span
 
 div.reflex-datepicker div.content div.month td
 {
-	
+
 	min-width	: 2em;
 	max-width	: 2em;
 	width		: 2em;
-	
+
 	min-height	: 2em;
 	max-height	: 2em;
 	height		: 2em;
-	
+
 	padding-right	: 0.25em;
 }
 
 div.reflex-datepicker div.content div.month td.day
 {
 	border	: 0.1em solid #BF8E5F;
-	
+
 	background-color	: #EFE0D1;
 	background-image	: url('../../admin/img/template/wave.png');
 	background-repeat	: repeat-x;
 	background-position	: 50%;
-	
+
 	text-align		: right;
 	vertical-align	: middle;
 }
@@ -2200,9 +2200,9 @@ div.reflex-datepicker div.content div.month td.day
 div.reflex-datepicker div.content div.month td.day.selectable:hover
 {
 	border	: 0.1em solid #BF6A17;
-	
+
 	background-color	: #FFF7EF;
-	
+
 	color		: #BF6A17;
 	cursor		: pointer;
 }
@@ -2212,7 +2212,7 @@ div.reflex-datepicker div.content div.time-picker
 	border-top	: 0.1em solid #BF8E5F;
 	/*padding		: 0.25em;*/
 	padding		: 2em;
-	
+
 	font-size	: 1.1em;
 	font-weight	: bolder;
 }
@@ -2228,7 +2228,7 @@ div.reflex-datepicker div.content div.month td.day.reflex-datepicker-day-selecte
 {
 	color				: #fff;
 	font-weight			: bolder;
-	
+
 	background-color	: #CF8D4D;
 }
 
@@ -2258,9 +2258,9 @@ div.reflex-slider-rail-handle
 div.reflex-slider-rail
 {
 	position	: relative;
-	
+
 	border		: 0.1em solid #DFA66F;
-	
+
 	min-height	: 0.5em;
 	max-height	: 0.5em;
 	height		: 0.5em;
@@ -2270,7 +2270,7 @@ div.reflex-slider-rail-label
 {
 	position	: absolute;
 	top			: -1.5em;
-	
+
 	border				: 0.1em solid #BF6A17;
 	background-color	: #fff;
 }
@@ -2278,11 +2278,11 @@ div.reflex-slider-rail-label
 div.reflex-slider-rail-range
 {
 	position	: absolute;
-	
+
 	min-height	: 100%;
 	max-height	: 100%;
 	height		: 100%;
-	
+
 	background-color	: #CF8D4D;
 	background-image	: url('../../admin/img/template/wave.png');
 }
@@ -2292,22 +2292,22 @@ div.reflex-slider-rail-handle
 	position	: absolute;
 	top			: -0.25em;
 	left		: 0%;			/* default position -- overridden element style */
-	
+
 	border		: 0.1em solid #BF6A17;
-	
+
 	background-image	: url('../../admin/img/template/wave.png');
 	background-color	: #EFE0D1;
-	
+
 	min-width	: 0.5em;
 	max-width	: 0.5em;
 	width		: 0.5em;
-	
+
 	min-height	: 1em;
 	max-height	: 1em;
 	height		: 1em;
-	
+
 	margin-left	: -0.25em;
-	
+
 	cursor		: default;
 }
 
@@ -2326,7 +2326,7 @@ div.reflex-slider-rail-marker
 /******************************************************************************/
 
 /*
-	Emulates the old Listing Table style from Framework v2 
+	Emulates the old Listing Table style from Framework v2
 	This is only so that new tables on old pages don't break style
 */
 table.listing-fw3
@@ -2372,10 +2372,10 @@ table.listing-fw3 tbody tr:nth-child(even) th,
 table.listing-fw3 tbody tr:nth-child(even) td
 {
 	background-color:    #ddd;
-	vertical-align:			top;		
+	vertical-align:			top;
 }
 
-table.listing-fw3 thead th.VixenTableSortColumn div.VixenTableSortColumnWrapper 
+table.listing-fw3 thead th.VixenTableSortColumn div.VixenTableSortColumnWrapper
 {
 	display: 				inline;
 	background-repeat:   	no-repeat;
@@ -2398,14 +2398,14 @@ table.listing-fw3 thead th.VixenTableSortColumnDesc div.VixenTableSortColumnWrap
 table.listing-fw3 tbody tr.Archived td
 {
 	background-color:    #C0C0C0;
-	vertical-align:			top;		
+	vertical-align:			top;
 }
 
 table.listing-fw3 tbody tr.Selected th,
 table.listing-fw3 tbody tr.Selected td
 {
 	background-color:	#99FF33;
-	vertical-align:		top;		
+	vertical-align:		top;
 }
 
 table.listing-fw3 tbody tr.PrimarySelected th,
@@ -2420,7 +2420,7 @@ table.listing-fw3 tbody tr.Hover th,
 table.listing-fw3 tbody tr.Hover td
 {
 	background-color:    #FFFFAA;
-	vertical-align:			top;		
+	vertical-align:			top;
 }
 
 
@@ -2464,7 +2464,7 @@ div.reflex-tree ul.reflex-tree-header
 {
 	border-top		: 1px solid #3f3f3f;
 	border-bottom	: 1px solid #111;
-	
+
 	font-weight			: bold;
 	color				: #eee;
 	background-image	: url(../img/template/background.png);
@@ -2514,7 +2514,7 @@ span.reflex-tree-node-expand
 	/* Using padding instead of width/height because padding will override the span collapse */
 	padding-top		: 16px;
 	padding-left	: 16px;
-	
+
 	margin-right	: 0.25em;
 }
 
@@ -2533,10 +2533,10 @@ span.reflex-tree-node-icon img
 {
 	vertical-align	: middle;
 	text-align		: center;
-	
+
 	max-width		: 16px;
 	max-height		: 16px;
-	
+
 	margin-right	: 0.25em;
 }
 
@@ -2591,7 +2591,7 @@ div.page-reset
 }
 
 div.page-reset h1
-{	
+{
 	color:				#006599;
 	font-size:			18pt;
 }
@@ -2632,7 +2632,7 @@ div.Required
 	color:				#CC0000;
 	text-align:			left;
 	font-size:			0.8em;
-	vertical-align:		top; 
+	vertical-align:		top;
 }
 
 .Attention
@@ -2705,7 +2705,7 @@ ol.reset
 ul.reset > li,
 ol.reset > li
 {
-	list-style-type	: none;	
+	list-style-type	: none;
 }
 
 ul.horizontal > li,
@@ -2792,7 +2792,7 @@ td.cost-centre-name > img
 	margin-right	: 0.25em;
 }
 
-td.add 
+td.add
 {
 	font-style	: italic;
 }
@@ -2846,13 +2846,13 @@ td.charge-amount-fixation
 table > tbody > tr > td.charge-nature-debit
 {
 	color	: #006599;
-	width	: 2em; 
+	width	: 2em;
 }
 
 table > tbody > tr > td.charge-nature-credit
 {
 	color	: #008000;
-	width	: 2em; 
+	width	: 2em;
 }
 
 div.footer-pagination
@@ -3105,7 +3105,7 @@ div.invoice-dispute table.reflex > tbody > tr > td.currency
 }
 
 div.invoice-dispute table.reflex > tbody > tr > td.dispute-currency-disputed,
-td.invoice-view-dispute > span 
+td.invoice-view-dispute > span
 {
 	color	: #cc0000;
 }
@@ -3168,7 +3168,7 @@ table.contact-view-account td.overdue
 }
 
 table.contact-view-account,
-table.contact-view-details 
+table.contact-view-details
 {
 	width	: 100%;
 }
@@ -3193,7 +3193,7 @@ table.contact-view-details > tbody > tr > th
 
 table.contact-view-details th:nth-child(1)
 {
-	text-align	: left;	
+	text-align	: left;
 	width		: 20%;
 }
 
@@ -3202,7 +3202,7 @@ table.contact-view-details th:nth-child(2)
 	width	: 1em;
 }
 
-table.contact-view-details 
+table.contact-view-details
 {
 	margin-left	: 1em;
 }
@@ -3233,7 +3233,7 @@ button.icon-button > img
 
 div.contact-edit-table
 {
-	padding	: 0.5em;	
+	padding	: 0.5em;
 }
 
 div.contact-edit-table table td
@@ -3280,7 +3280,7 @@ table.contact-view-details > tbody > tr > td.contact-available
 td.contact-edit-password > ul.reset
 {
 	padding-top	: 0.5em;
-}	
+}
 
 td.contact-edit-password > ul.reset > li
 {
@@ -3298,7 +3298,7 @@ td.contact-edit-password > ul.reset > li > ul.reset.horizontal > li:nth-child(1)
 
 div.section
 {
-	width	: 100%;	
+	width	: 100%;
 }
 
 div.section > div.section-header
@@ -3315,7 +3315,7 @@ div.section > div.section-content
 	padding-bottom		: 0.25em;
 	padding-top			: 0.25em;
 	width				: 100%;
-	
+
 	/*float				: none;
 	clear				: both;*/
 }
@@ -3339,11 +3339,11 @@ div.section > div.section-header > div.section-header-options
 	display		: inline-block;
 	height		: 100%;
 	text-align	: right;
-	
+
 	position	: absolute;
 	right		: 0em;
 	bottom		: 0.25em;
-	
+
 	/*float			: right;
 	padding-bottom	: 0.25em;*/
 }
@@ -3351,7 +3351,7 @@ div.section > div.section-header > div.section-header-options
 div.section > div.section-header > div.section-header-title > h2,
 div.section > div.section-header > div.section-header-title > span
 {
-	display			: inline;	
+	display			: inline;
 	vertical-align	: middle;
 	font-size		: 1.1em;
 }
@@ -3408,7 +3408,7 @@ div.section-expandable-expand
 	width					: 16px;
 	height					: 16px;
 	margin					: 0.25em;
-	
+
 	/* Changes by Rich to make it appear more button-like */
 	border-color		: #999 #666 #666 #999;
 	background-color	: #ddd;
@@ -3737,7 +3737,7 @@ li.payment-methods-list-item-details
 input[type="radio"].payment-methods-list-item-radio
 {
 	margin-top	: 0.25em;
-}                                                        
+}
 
 div.payment-methods-list div.section-content > table.reflex td.payment-method-credit-card-expired
 {
@@ -4013,7 +4013,7 @@ li.data-report-permissions-employee-to div.section-header
 }
 
 li.data-report-permissions-employee-from div.section-header > div.section-header-title,
-li.data-report-permissions-employee-to div.section-header > div.section-header-title 
+li.data-report-permissions-employee-to div.section-header > div.section-header-title
 {
 	margin-left	: 1.7em;
 }
@@ -4041,7 +4041,7 @@ li.data-report-permissions-employee-from div.data-report-permissions-employee-te
 
 li.data-report-permissions-employee-from img.data-report-permissions-employee-remove
 {
-	display	: none;	
+	display	: none;
 }
 
 li.data-report-permissions-employee-from img.data-report-permissions-employee-add
@@ -4071,7 +4071,7 @@ div.data-report-permissions-employee-clear
 option.data-report-permissions-employee img.data-report-permissions-employee-add,
 option.data-report-permissions-employee img.data-report-permissions-employee-remove
 {
-	opacity	: 0.3;	
+	opacity	: 0.3;
 }
 
 option.data-report-permissions-employee:hover img.data-report-permissions-employee-add,
@@ -4106,7 +4106,7 @@ div.data-report-permissions-report-name
 	font-size		: 1.25em;
 	text-align		: center;
 	padding-bottom	: 0.5em;
-}	
+}
 
 span.data-report-permissions-employee-username
 {
@@ -4125,14 +4125,14 @@ li.data-report-permissions-employee-to div.section-content-fitted
 
 /************************ START - Employee List Page - START ************************/
 
-#EmployeeListContainer div.caption_title 
+#EmployeeListContainer div.caption_title
 {
 	min-height	: 1.55em;
 }
 
-#EmployeeListContainer div.caption_options > div 
+#EmployeeListContainer div.caption_options > div
 {
-	display	: inline-block;	
+	display	: inline-block;
 }
 
 div.employee-list-show-archived
@@ -4300,7 +4300,7 @@ td.recurring-charge-type-definition-charge,
 td.recurring-charge-type-definition-time,
 td.recurring-charge-type-definition-total
 {
-	padding-right	: 0.5em;	
+	padding-right	: 0.5em;
 }
 
 td.recurring-charge-type-definition-symbol
@@ -4383,8 +4383,8 @@ div#ChargeListContainer
 	/*padding-bottom	: 2em;*/
 }
 
-div.component-account-charge-list > table.Listing th, 
-div.component-account-charge-list > table.Listing td 
+div.component-account-charge-list > table.Listing th,
+div.component-account-charge-list > table.Listing td
 {
 	vertical-align   : top;
 }
@@ -4476,7 +4476,7 @@ div.followup-list-all table.reflex thead th > span
 
 div.followup-list-all table.reflex thead tr:nth-child(2) > th
 {
-	background-color	: #666;	
+	background-color	: #666;
 }
 
 div.followup-list-all table.reflex thead th > img
@@ -4648,10 +4648,10 @@ div.filter-overlay-options
 	border				: solid 1px black;
 	-moz-box-sizing		: border-box;
 	-moz-border-radius	: 0.25em;
-	
+
 	-moz-box-shadow		: 0 0 20px;
 	-webkit-box-shadow	: 0 0 20px #000;
-	
+
 	-webkit-box-sizing		: border-box;
 	-webkit-border-radius	: 0.25em;
 }
@@ -4840,7 +4840,7 @@ div#followup-link
 	cursor					: pointer !important;
 	-moz-user-select		: none;
 	-webkit-user-select		: none;
-	
+
 }
 
 div#followup-link > span.followup-link-count
@@ -4861,7 +4861,7 @@ div#followup-link.followup-link-flash
 
 div#followup-link > span
 {
-	font-size	: 1em;	
+	font-size	: 1em;
 }
 
 /************************ END - Follow-Up Search Area Link - END ************************/
@@ -6249,7 +6249,7 @@ div.datetime-time
 .correspondence-run-ledger table.reflex thead tr:nth-child(2) > th,
 .correspondence-ledger-for-run table.reflex thead tr:nth-child(2) > th
 {
-	background-color	: #666;	
+	background-color	: #666;
 }
 
 .correspondence-run-ledger table.reflex thead th > img,
@@ -6411,7 +6411,7 @@ div.datetime-time
 
 .component-correspondence-run-details > div.section-content > table > tbody > tr > th
 {
-	width	: 20%; 
+	width	: 20%;
 }
 
 .correspondence-ledger-for-run,
@@ -6446,3 +6446,231 @@ div.datetime-time
 }
 
 /***************** END - Correspondence Ledger Popup(s) - END *****************/
+
+
+/************************* - Email Editor Popup -  *******************************/
+
+
+
+span.varobject
+{
+	font-size	: 0.90em;
+	text-align:left;
+	font-weight	: bold;
+
+   left: 0;
+
+}
+
+div.popup-email-text-edit
+{
+	margin	: 0.5em;
+}
+
+.popup-email-text-edit .buttons
+{
+	 text-align: center;
+}
+
+
+.popup-email-text-edit textarea {	
+	
+	border: 3px solid #cccccc;
+	padding: 5px;
+	font-family: Monospace;
+	font-size: 1.3em;	
+}
+
+.popup-email-text-edit .variables
+{
+	text-align: left;
+	margin:10px;
+}
+
+.popup-email-text-edit .variables ul
+{
+	text-align: left;
+	font-style	: italic;
+	font-size	: 0.85em;
+	list-style-type: none;
+	margin-left : 3px;
+	 padding-left: 3px;
+	
+}
+
+.popup-email-text-edit .variables .vars
+{	
+	text-align: left;
+}
+
+.popup-email-text-edit .variables .varLabel
+{	
+	text-align: left;
+	
+	font-size: 1.1em;
+	left: 0;
+}
+
+/************- END - Email Editor Popup - END - **********************************/
+
+/************************ - Popup Email Template Select - *******************************/
+.popup-email-templates-columns .columns > li
+{
+	vertical-align	: top;
+}
+
+.popup-email-templates-columns .columns > li > ul > li
+{
+	padding	: 0.25em 0em 0em 0.25em;
+}
+
+.popup-email-templates-columns .columns li input,
+.popup-email-templates-columns .columns li span
+{
+	vertical-align	: middle;
+}
+
+.popup-email-templates-columns .columns li input
+{
+	margin-right	: 0.25em;
+}
+
+
+.popup-email-templates-columns .buttons
+{
+	text-align	: center;
+}
+
+
+.popup-email-templates .item-count > img,
+.popup-email-templates .item-count > span
+{
+	vertical-align	: middle;
+	padding-right	: 0.25em;
+}
+
+.popup-email-templates td.actions
+{
+	text-align	: right;
+}
+
+.popup-email-templates td.actions > img
+{
+	cursor	: pointer;
+}
+
+.popup-email-templates table.reflex .template-row
+{
+	text-align	: left;
+	cursor		: pointer;
+}
+
+.popup-email-templates .template-table th,
+.popup-email-templates .template-table td
+{
+	width	: 30%;
+	margin	: 0 !important;
+}
+
+.popup-email-templates .template-table-container
+{
+	max-height	: 20em;
+
+}
+
+.popup-email-templates .template-table table
+{
+	width	: 100% !important;
+	margin	: 0
+}
+
+.popup-email-templates table.reflex .template-row:hover
+{
+	color	: #001499;
+}
+
+.popup-email-templates table.reflex .template-row > span
+{
+	vertical-align	: middle;
+}
+
+.popup-email-templates table.reflex .template-row > img
+{
+	vertical-align	: middle;
+	padding-right	: 0.25em;
+	display			: none;
+}
+
+.popup-email-templates table.reflex .template-row.open
+{
+	padding-bottom	: 0.5em;
+}
+
+.popup-email-templates table.reflex .template-row.open > img
+{
+	display	: inline-block;
+}
+
+.popup-email-templates .run-count
+{
+	float	: right;
+}
+
+.popup-email-templates td.no-rows,
+.popup-email-templates .loading,
+
+
+.popup-email-templates .loading,
+
+
+.popup-email-templates .section-header-options ul
+{
+	margin	: 0.1em 0em 0em 0em;
+}
+
+.popup-email-templates .section-header-options ul > li
+{
+	padding-left	: 0.5em;
+}
+
+.popup-email-templates .section-header-options ul .control-field
+{
+	display	: inline-block;
+}
+
+div.popup-email-templates table.reflex {
+	width: 98%;
+	margin-left: 1%;
+	margin-right: 1%;
+	margin-top: 0.0em;
+	margin-bottom: 0.0em;
+	border: .1em solid #333;
+	border-spacing: 0;
+}
+
+/************************* END - Popup Email Template Select -  END *******************************/
+
+/*************************  Popup Email HTML Preview *******************************/
+
+.popup-email-html-preview
+{
+	padding: 15px;
+
+}
+
+.popup-email-html-preview .preview-pane
+{
+	background: white;
+	border-style:solid;
+	border-width:1px;
+	font-family:Arial,Verdana,Helvetica;
+
+}
+.popup-email-html-preview .buttons
+{
+	 text-align: center;
+}
+
+
+
+/************************* END - Popup Email HTML Preview -  END *******************************/
