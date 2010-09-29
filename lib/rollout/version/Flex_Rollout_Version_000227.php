@@ -15,19 +15,36 @@ class Flex_Rollout_Version_000227 extends Flex_Rollout_Version
 							(
 								array
 								(
-									'sDescription'		=>	"Add table email_template",
-									'sAlterSQL'			=>	"CREATE  TABLE IF NOT EXISTS email_template (
-															  id BIGINT NOT NULL  AUTO_INCREMENT ,
-															  customer_group_id BIGINT(20) NOT NULL ,
+									'sDescription'		=>	"Add table email_template_type",
+									'sAlterSQL'			=>	"CREATE  TABLE IF NOT EXISTS email_template_type (
+															  id BIGINT NOT NULL AUTO_INCREMENT ,
 															  name VARCHAR(255) NOT NULL ,
 															  description VARCHAR(255) NOT NULL ,
-															  created_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-															  created_employee_id BIGINT NOT NULL ,
+															  system_name VARCHAR(45) NOT NULL ,
+															  const_name VARCHAR(45) NOT NULL ,
+															  PRIMARY KEY (id) )
+															ENGINE = InnoDB;",
+									'sRollbackSQL'		=>	"	DROP TABLE IF EXISTS email_template_type;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=>	"Add table email_template",
+									'sAlterSQL'			=>	"CREATE  TABLE IF NOT EXISTS email_template (
+															  id BIGINT NOT NULL AUTO_INCREMENT,
+															  customer_group_id BIGINT(20) NOT NULL ,
+															  email_template_type_id BIGINT NOT NULL ,
 															  PRIMARY KEY (id) ,
 															  INDEX fk_email_template_customer_group_id (customer_group_id ASC) ,
+															  INDEX fk_email_template_email_template_type_id (email_template_type_id ASC) ,
 															  CONSTRAINT fk_email_template_customer_group_id
 															    FOREIGN KEY (customer_group_id )
 															    REFERENCES CustomerGroup (Id )
+															    ON DELETE RESTRICT
+															    ON UPDATE CASCADE,
+															  CONSTRAINT fk_email_template_email_template_type_id
+															    FOREIGN KEY (email_template_type_id )
+															    REFERENCES email_template_type (id )
 															    ON DELETE RESTRICT
 															    ON UPDATE CASCADE)
 															ENGINE = InnoDB;",
@@ -38,7 +55,7 @@ class Flex_Rollout_Version_000227 extends Flex_Rollout_Version
 								(
 									'sDescription'		=>	"Add table email_template_details",
 									'sAlterSQL'			=>	"CREATE  TABLE IF NOT EXISTS email_template_details (
-															  id BIGINT NOT NULL  AUTO_INCREMENT ,
+															  id BIGINT NOT NULL AUTO_INCREMENT,
 															  email_template_id BIGINT NOT NULL ,
 															  email_text VARCHAR(10000) NOT NULL ,
 															  email_html VARCHAR(10000) NULL ,
@@ -54,31 +71,6 @@ class Flex_Rollout_Version_000227 extends Flex_Rollout_Version
 															    ON UPDATE CASCADE)
 															ENGINE = InnoDB;",
 									'sRollbackSQL'		=>	"	DROP TABLE IF EXISTS email_template_details;",
-									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
-								),
-								array
-								(
-									'sDescription'		=>	"Add table email_template_ebill",
-									'sAlterSQL'			=>	"CREATE  TABLE IF NOT EXISTS email_template_ebill (
-															  id BIGINT NOT NULL  AUTO_INCREMENT ,
-															  email_template_id BIGINT NOT NULL ,
-															  customer_group_id BIGINT(20) NOT NULL ,
-															  PRIMARY KEY (id) ,
-															  INDEX fk_ebill_email_template_email_template_id (email_template_id ASC) ,
-															  INDEX fk_email_template_ebill_CustomerGroup_id (customer_group_id ASC) ,
-															  UNIQUE INDEX customerGroup_id_UNIQUE (customer_group_id ASC) ,
-															  CONSTRAINT fk_ebill_email_template_email_template_id
-															    FOREIGN KEY (email_template_id )
-															    REFERENCES email_template (id )
-															    ON DELETE RESTRICT
-															    ON UPDATE CASCADE,
-															  CONSTRAINT fk_email_template_ebill_CustomerGroup_id
-															    FOREIGN KEY (customer_group_id )
-															    REFERENCES CustomerGroup (Id )
-															    ON DELETE RESTRICT
-															    ON UPDATE CASCADE)
-															ENGINE = InnoDB;",
-									'sRollbackSQL'		=>	"	DROP TABLE IF EXISTS email_template_ebill;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								),
 								array
