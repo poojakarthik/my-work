@@ -2,11 +2,14 @@
 var Popup_Email_Text_Editor	= Class.create(Reflex_Popup, 
 {	
 	
-	initialize	: function($super, oTemplateDetails, fnCallback)
+	initialize	: function($super, oTemplateDetails, sTemplateName, customerGroupName, fnCallback)
 	{
 			
 			this._oTemplateDetails = oTemplateDetails;
 			this._fnCallback = fnCallback;
+			
+			this._sTemplateName = sTemplateName;
+			this._sCustomerGroupName = customerGroupName;
 			// Image paths
 			Popup_Email_Text_Editor.ICON_IMAGE_SOURCE 	= '../admin/img/template/rebill.png';
 			Popup_Email_Text_Editor.CANCEL_IMAGE_SOURCE 	= '../admin/img/template/delete.png';
@@ -15,8 +18,9 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		$super(70);
 		
 				this._oLoadingPopup	= new Reflex_Popup.Loading();
+				this._oLoadingPopup.display();
 		// Build content
-			this._oContent	= 	$T.div({class: 'popup-account-edit-rebill'},
+			this._oContent	= 	$T.div({class: 'popup-email-text-edit'},
 									$T.div({class: 'tabgroup'}
 										// Content to come
 									),
@@ -103,7 +107,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 			
 			//generate the Text tab	
 			oTabContent	=	$T.table({class: 'reflex input'},
-							 oTBody = $T.tbody({class: 'popup-account-edit-rebill-fields'})
+							 oTBody = $T.tbody({class: 'popup-email-text-edit-fields'})
 							 );
 			oControl	= Control_Field.factory('textarea', oDefinition);
 			this.oTextArea = oControl.oControlOutput.oEdit;
@@ -120,7 +124,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 			
 			//generate the HTML tab
 			oTabContent	=	$T.table({class: 'reflex input'},
-							 oTBody = $T.tbody({class: 'popup-account-edit-rebill-fields'})
+							 oTBody = $T.tbody({class: 'popup-email-text-edit-fields'})
 							 );
 				 
 			oControl	= Control_Field.factory('textarea', oDefinition);
@@ -161,9 +165,10 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 				
 		
 		// Attach content and get data
-		this.setTitle('Email Text Editor');
+		this.setTitle('Email Text Editor - Template \'' + this._sTemplateName +'\' for ' + this._sCustomerGroupName);
 		this.addCloseButton(this._close.bind(this));
 		this.setContent(this._oContent);
+		this._oLoadingPopup.hide();
 		this.display();
 	
 	
