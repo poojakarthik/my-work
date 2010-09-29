@@ -326,7 +326,7 @@ jQuery.json = {
 		
 		// Parse Iframe contents for response data (JSON'd PHP Array)
 		//alert("Raw Response: " + objIframeDocument.body.innerHTML);
-		var objResponse			= jQuery.json.decode(objIframeDocument.body.innerHTML);
+		var objResponse			= jQuery.json.decode(objIframeDocument.body.innerHTML.unescapeHTML());
 		objResponse				= (objResponse) ? objResponse : {Message: objIframeDocument.body.innerHTML};
 		
 		// Call the Handler Function (if one was supplied)
