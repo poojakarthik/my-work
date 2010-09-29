@@ -14,15 +14,20 @@ var Popup_email_HTML_Preview	= Class.create(Reflex_Popup,
 	
 	_buildUI	: function(sHTML)
 	{
-		var oTemplateSelect		= 	$T.div({class: 'popup-account-edit-rebill'},
+		var oTemplateSelect		= 	$T.div({class: 'popup-email-html-preview'},
 									$T.div({class: 'preview-pane'}
 										
 									),
 									
+									
+									$T.div({class: 'buttons'},
 										$T.button({class: 'icon-button'},
 											$T.img({src: Popup_Email_Text_Editor.CANCEL_IMAGE_SOURCE, alt: '', title: 'Close'}),
 											$T.span('Close')
 										).observe('click', this._close.bind(this))
+									)
+									
+
 									
 								);
 		this._oTemplateSelect	= oTemplateSelect;		
