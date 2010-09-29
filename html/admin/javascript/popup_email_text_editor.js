@@ -1,17 +1,17 @@
 
 var Popup_Email_Text_Editor	= Class.create(Reflex_Popup, 
-{
+{	
 	
-
-	
-	
-	
-	initialize	: function($super)
+	initialize	: function($super, oTemplateDetails, fnCallback)
 	{
+			
+			this._oTemplateDetails = oTemplateDetails;
+			this._fnCallback = fnCallback;
 			// Image paths
 			Popup_Email_Text_Editor.ICON_IMAGE_SOURCE 	= '../admin/img/template/rebill.png';
 			Popup_Email_Text_Editor.CANCEL_IMAGE_SOURCE 	= '../admin/img/template/delete.png';
 			Popup_Email_Text_Editor.SAVE_IMAGE_SOURCE 	= '../admin/img/template/tick.png';
+			Popup_Email_Text_Editor.PREVIEW_IMAGE_SOURCE 	='../admin/img/template/magnifier.png';
 		$super(70);
 		
 				this._oLoadingPopup	= new Reflex_Popup.Loading();
@@ -45,22 +45,56 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	
 	_getVariablesSuccess: function(oResponse)
 	{
-		this._buildGUI(oResponse.variables);
+		this._oVariables  = oResponse.variables;
+		this._buildGUI();
+		
 	
 	},
 	
-	_buildGUI: function()
+	_buildGUI: function(oVariables)
 	{
 	
 			// Button events
 			var oAddButton		= this._oContent.select('div.buttons > button.icon-button').first();
 			oAddButton.observe('click', this._saveButtonClick.bind(this));
+			
+						var oAddButton		= this._oContent.select('div.buttons > button.icon-button').last();
+			oAddButton.observe('click', this._close.bind(this));
 
 			//var oCancelButton	= this._oContent.select('div.buttons > button.icon-button').last();
 			//oCancelButton.observe('click', this._cancelEdit.bind(this));
 
+			//the list of possible variables, for both the text and the html panes	
+			var oHTMLVariableList	= 	$T.div({class: 'variables'},
+									$T.label({class: 'varLabel'}
+									
+										// Content to come
+									),
+									$T.div({class: 'vars'}
+									
+										// Content to come
+									)
+								);
+			var oTextVariableList	= 	$T.div({class: 'variables'},
+									$T.label({class: 'varLabel'}
+									
+										// Content to come
+									),
+									$T.div({class: 'vars'}
+									
+										// Content to come
+									)
+								);
 			
-			 //define the content for the tab group
+			
+			this.defineVariableList(oHTMLVariableList, oVariables);
+			this.defineVariableList(oTextVariableList, oVariables);
+			
+			
+			
+			
+
+			//define the content for the tab group
 			 var oTabContainer		= this._oContent.select('div.tabgroup').first();
 			 this._oTabGroup		= new Control_Tab_Group(oTabContainer, true);
 
@@ -73,7 +107,15 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 							 );
 			oControl	= Control_Field.factory('textarea', oDefinition);
 			this.oTextArea = oControl.oControlOutput.oEdit;
-			oTBody.appendChild(oControl.generateInputTableRow().oElement);
+			this.oTextArea.value = this._oTemplateDetails.email_text;
+			
+			
+			var oTableRow = oControl.generateInputTableRow().oElement;
+			var th = oTableRow.select('th').first();
+			th.appendChild(oTextVariableList);
+			
+			
+			oTBody.appendChild(oTableRow);
 			this._oTabGroup.addTab("Text", new Control_Tab("Text", oTabContent));
 			
 			//generate the HTML tab
@@ -83,62 +125,91 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 				 
 			oControl	= Control_Field.factory('textarea', oDefinition);
 			
-			oControl.oControlOutput.oEdit
+			
 			this.oHTMLTextArea = oControl.oControlOutput.oEdit;
-			// this.oHTMLTextArea.value   = " <div> \
-												// <cssclass name = 'yellow' style = 'background: yellow; color: #00ff00; margin-left: 2cm'></cssclass> \
-												// <cssclass name = 'blue' style = 'background: blue; color: #00ff00; margin-left: 2cm'></cssclass> \
-												// <div> \
-												  // <h1 class = 'yellow'>text</h1> \
-												  // <h2>stuff</h2> \
-												 // </div> \
-												  // <p class = 'blue'>code</p> \
-												 // <script> \
-												 // alert('hello'); \
-												 // </script> \
-												// </div>";
-			oTableRow = oControl.generateInputTableRow().oElement;
-			var th = oTableRow.select('th').first();
+			this.oHTMLTextArea.value  = this._oTemplateDetails.email_html;
+			 oTableRow = oControl.generateInputTableRow().oElement;
 			
+			//the side bar
+			th = oTableRow.select('th').first();
+		
+			 th.appendChild($T.div({class: 'buttons'},
+							$T.button({class: 'icon-button'},
+								$T.img({src: Popup_Email_Text_Editor.ICON_IMAGE_SOURCE, alt: '', title: 'Generate Text'}),
+								$T.span('Generate Text')
+							),
+							$T.button({class: 'icon-button'},
+								$T.img({src: Popup_Email_Text_Editor.PREVIEW_IMAGE_SOURCE, alt: '', title: 'HTML Preview'}),
+								$T.span('HTML Preview')
+							).observe('click', this._htmlPreviewSelected.bind(this))
+							)					
+						);
+			th.appendChild(oHTMLVariableList);
 			
-			th.appendChild($T.div({class: 'buttons'},
-										$T.button({class: 'icon-button'},
-											$T.img({src: Popup_Email_Text_Editor.ICON_IMAGE_SOURCE, alt: '', title: 'Generate Text'}),
-											$T.span('Generate Text')
-										)
-									));
+
 									
 			var oGenerateTextButton	= th.select('div.buttons > button.icon-button').first();
 			oGenerateTextButton.observe('click', this._generateTextButtonClick.bind(this));
+			
+			//var oPreviewButton = th.select('div.buttons > button.icon-button').second();
+			//oPreviewButton.observe(clic
 		
 			oTBody.appendChild(oTableRow);
 			this._oTabGroup.addTab("HTML", new Control_Tab("HTML", oTabContent));
 			
-			//generate the Preview tab	
-			oTabContent	=	$T.table({class: 'reflex input'},
-							 oTBody = $T.tbody({class: 'popup-account-edit-rebill-fields'})
-							 );
-
 			
-			var oPreviewTab = new Control_Tab("Preview", oTabContent)
-			oPreviewTab.oTabButton.observe('click', this._htmlPreviewSelected.bind(this));
-			this._oTabGroup.addTab("Preview", oPreviewTab);
-			this.oHTMLPreviewDiv = document.createElement('div');
-			this.oHTMLPreviewDiv.innerHTML = this.oHTMLTextArea.value;
-			oTBody.appendChild(this.oHTMLPreviewDiv);
-				//oHTMLPreviewDiv.innerHTML = "<h1>Hello</h1>";
-		
-			//add listener method to the preview tab
-			//this.oHTMLTextArea.observe('blur', this._htmlPreviewSelected.bind(this));
+				
 		
 		// Attach content and get data
 		this.setTitle('Email Text Editor');
-		this.addCloseButton();
+		this.addCloseButton(this._close.bind(this));
 		this.setContent(this._oContent);
 		this.display();
 	
 	
 	
+	},
+	
+	_close : function ()
+	{
+		this.hide();
+		this._fnCallback();
+	
+	},
+	
+	_previewButtonClicked: function()
+	{
+		new Popup_email_HTML_Preview(this.oHTMLTextArea.value, this._unhide.bind(this));
+		this.hide();
+	},
+	
+	_unhide: function()
+	{
+		this.display();
+	
+	},
+	
+	defineVariableList: function(oVariableList)
+	{
+		oVariableList.select('label.varLabel').first().innerHTML = "Variables";
+		var div = oVariableList.select('div.vars').first();			
+		//aKeys = oVariables.keys();
+		
+		for(var key in this._oVariables)
+		{
+			$T.span
+			oLabel = $T.span({class:'varobject'});
+			oLabel.innerHTML = key;
+			div.appendChild(oLabel);
+			ul = $T.ul({class:'list'});
+			div.appendChild(ul);
+			for (var i=0;i<this._oVariables[key].length;i++)
+			{
+				li = document.createElement('li');
+				li.innerHTML = this._oVariables[key][i];
+				ul.appendChild(li);				
+			}		
+		}			
 	},
 	
 	display	: function($super)
@@ -174,7 +245,9 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	{
 	    this._oLoadingPopup.hide();	
 		 var html = oResponse.html;
-		this.oHTMLPreviewDiv.innerHTML = html;		 	  
+		//this.oHTMLPreviewDiv.innerHTML = html;
+		new Popup_email_HTML_Preview(html, this._unhide.bind(this));
+		this.hide();		
 	},
 	
 	successToTextCallback: function (oResponse)
@@ -199,8 +272,23 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	{		
 		//this._oLoadingPopup	= new Reflex_Popup.Loading();
 		this._oLoadingPopup.display();
-		var fnRequest     = jQuery.json.jsonFunction(this.successCallback.bind(this), this.errorCallback.bind(this), 'Email_Text_Editor', 'save');
-		fnRequest(this._preprocessHTML());		
+		var fnRequest     = jQuery.json.jsonFunction(this._saveSuccess.bind(this), this.errorCallback.bind(this), 'Email_Text_Editor', 'save');
+		this._oTemplateDetails.email_text = this.oTextArea.value;
+		this._oTemplateDetails.email_html = this._preprocessHTML();
+		
+		fnRequest(this._oTemplateDetails);		
+	},
+	
+	_saveSuccess: function (oResponse)
+	{
+		this._oTemplateDetails = oResponse.oTemplateDetails;
+		this.oHTMLTextArea.value  = this._oTemplateDetails.email_html;
+		this.oTextArea.value = this._oTemplateDetails.email_text;
+		this._oLoadingPopup.hide();	
+		
+		alert('your template was saved successfully');
+	
+	
 	},
 	
 	_generateTextButtonClick: function()
