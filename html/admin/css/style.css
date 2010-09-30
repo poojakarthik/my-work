@@ -234,6 +234,19 @@ table.reflex tbody
 	font-size		: inherit;
 }
 
+table.reflex tbody tr th label
+{
+	display	: block;
+}
+
+table.reflex tbody tr th span.label-description
+{
+	font-size	: 0.8em;
+	color		: #999;
+	font-weight	: normal;
+	font-style	: italic;
+}
+
 table.reflex tbody tr th.label
 {
 	min-height		: 1.5em;
@@ -6446,6 +6459,71 @@ div.datetime-time
 }
 
 /***************** END - Correspondence Ledger Popup(s) - END *****************/
+
+/****************** START - Destination Import Popup - START ******************/
+.destination-import
+{
+	padding	: 0.5em;
+}
+
+.destination-import img.icon
+{
+	width		: 16px;
+	min-width	: 16px;
+	max-width	: 16px;
+	height		: 16px;
+	min-height	: 16px;
+	max-height	: 16px;
+}
+
+.destination-import img.icon.button
+{
+	cursor	: pointer;
+}
+
+.destination-import .destination-output-message
+{
+	color		: #999;
+	font-style	: italic;
+}
+
+.destination-import .destination-import-manual-select
+{
+	font-style	: italic;
+}
+
+.destination-import .destination-import-match-unknown
+{
+	padding-left		: 16px;
+	background-image	: url('../img/template/bullet_red.png');
+	background-repeat	: no-repeat;
+}
+
+.destination-import .destination-import-match-perfect
+{
+	padding-left		: 16px;
+	background-image	: url('../img/template/bullet_green.png');
+	background-repeat	: no-repeat;
+}
+
+.destination-import .destination-import-match-manual
+{
+	padding-left		: 16px;
+	background-image	: url('../img/template/bullet_yellow.png');
+	background-repeat	: no-repeat;
+}
+
+.destination-import select
+{
+	width	: 98%;
+}
+
+.destination-import .destination-import-output
+{
+	max-height	: 40em;
+	overflow-y	: scroll;
+}
+/******************** END - Destination Import Popup - END ********************/
 
 
 /************************* - Email Editor Popup -  *******************************/
