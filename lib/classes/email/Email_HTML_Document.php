@@ -118,12 +118,13 @@ class Email_HTML_Document
 		{
 			foreach ($x as $node)
 			{
+
 				if (get_class($node) == 'DOMText')
 				{
 					if (trim($node->wholeText)!=null)
 					{
-						if ($this->_lastParent->tagName == 'li' && ($node->parentNode->tagName!='li' || !($node->parentNode->parentNode===$this->_lastParent->parentNode)))
-							$this->_aText[count($this->_aText)-1]= $this->_aText[count($this->_aText)-1]."\n";
+						//if ($this->_lastParent->tagName == 'li' && ($node->parentNode->tagName!='li' || !($node->parentNode->parentNode===$this->_lastParent->parentNode)))
+						//	$this->_aText[count($this->_aText)-1]= $this->_aText[count($this->_aText)-1]."\n";
 
 						$sListChar = "";
 						if (!($node->parentNode === $this->_lastParent))
@@ -137,8 +138,12 @@ class Email_HTML_Document
 						{
 							$sBreak		= "\n";
 						}
-						$this->_aText[]=$sListChar.trim($node->wholeText).$sBreak;
+						$this->_aText[]=$sListChar.ltrim($node->wholeText);//.$sBreak;
 						$this->_lastParent = $node->parentNode;
+					}
+					else
+					{
+						$this->_aText[count($this->_aText)-1]= rtrim($this->_aText[count($this->_aText)-1]);
 					}
 				}
 				else if ($node->tagName == 'variable')
@@ -146,8 +151,8 @@ class Email_HTML_Document
 					$oAttributes 	= $node->attributes;
 					$oObject 		= $oAttributes->getNamedItem('object');
 					$oField 		= $oAttributes->getNamedItem('field');
-					if ($node->parentNode === $this->_lastParent)
-						$this->_aText[count($this->_aText)-1]= rtrim($this->_aText[count($this->_aText)-1])." ";
+					//if ($node->parentNode === $this->_lastParent)
+					//	$this->_aText[count($this->_aText)-1]= rtrim($this->_aText[count($this->_aText)-1])." ";
 
 
 					$sPad = null;
@@ -163,11 +168,11 @@ class Email_HTML_Document
 					}
 					else if ($node->parentNode->tagName == 'li' && !($node->parentNode->parentNode->lastChild === $node->parentNode))
 					{
-						$sBreak = "\n";
+						$sBreak = "";//\n";
 					}
 					else
 					{
-						$sBreak		= "\n\n";
+						$sBreak		= ""; //\n\n";
 					}
 
 					$this->_aText[] = $sPad."{".$oObject->value.".".$oField->value."}$sBreak";
@@ -175,9 +180,21 @@ class Email_HTML_Document
 				else
 				{
 					//$oNode->tagName == 'ul'||$oNode->tagName=='ol'?$this->_toText($node,$oNode->tagName ):$this->_toText($node, $oNode->tagName) ;
+
+
+
 					$this->_toText($node,$oNode->tagName );
 				}
 			}
+
+					if ($oNode->tagName == 'p' || $oNode->tagName == 'br' ||$oNode->tagName == 'div' ||$oNode->tagName == 'h1' ||$oNode->tagName == 'h2' )
+					{
+						$this->_aText[] = "\n\n";
+					}
+					else if ($oNode->tagName == 'li' ||$oNode->tagName == 'ul' ||$oNode->tagName == 'ol')
+					{
+						$this->_aText[] = "\n";
+					}
 		}
 	}
 
