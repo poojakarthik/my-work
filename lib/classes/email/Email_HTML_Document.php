@@ -2,6 +2,7 @@
 class Email_HTML_Document
 {
 
+	protected $_sHTML;
 	protected $_oDOMDocument;
 	protected $_aText = array();
 	protected $_iOLCount;
@@ -17,15 +18,14 @@ class Email_HTML_Document
 	{
 
 		$sHTML = str_replace ( 'xmlns="http://www.w3.org/1999/xhtml"' , "" , $sHTML);
-		$this->_oDOMDocument = DOMDocument::loadXML($sHTML);
-		$this->_sHTML = $this->_processHTML();
+
+		$this->_preProcessHTML($sHTML);
 		$this->_toText();
 	}
 
-	public function getHTML()
+	public function getHTML($bProcess = false)
 	{
-		return $this->_oDOMDocument->saveXML();
-		//	return $this->domNodeList_to_string($this->_oDOMDocument->documentElement->childNodes);
+		return $bProcess?$this->_processHTML():$this->_sHTML;
 	}
 
 	public function getText()
@@ -33,9 +33,39 @@ class Email_HTML_Document
 		return $this->_aText;
 	}
 
+	protected function _preProcessHTML($sHTML)
+	{
+
+		$x = @DOMDocument::loadHTML($sHTML);
+		$this->_oDOMDocument = DOMDocument::loadXML(str_replace ( '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">' , "" , $x->saveHTML()));
+		$xpath = new DOMXPath($this->_oDOMDocument);
+		$oRootElement = $this->_oDOMDocument->documentElement->firstChild;
+		$oRootElement->firstChild->nextSibling == null?$oRootElement=$oRootElement->firstChild:null;
+		$sRootName = $oRootElement->tagName =='body'?'div':$oRootElement->tagName;
+	 	$x = DOMDocument::loadXML("<".$sRootName."> </".$sRootName.">");
+
+	 	$oChildren = $oRootElement->childNodes;
+		if ($oChildren!=null)
+		{
+			foreach ($oChildren as $node)
+			{
+				$node = $x->importNode($node, true);
+				$x->documentElement->appendChild($node);
+			}
+
+		}
+
+
+	 	$sString = $x->saveXML();
+
+ 		$this->_sHTML = str_replace ( '<?xml version="1.0"?>' , "" , $x->saveXML());
+
+	}
+
 	protected function _processHTML()
 	{
 
+		$this->_oDOMDocument = DOMDocument::loadXML($this->_sHTML);
 		$xpath = new DOMXPath($this->_oDOMDocument);
 
         $query = '//cssclass';
@@ -75,12 +105,13 @@ class Email_HTML_Document
 		 	$node->parentNode->removeChild($node);
 		 }
 
+		 return str_replace ( '<?xml version="1.0"?>' , "" , $this->_oDOMDocument->saveXML());
 
 	}
 
 	protected function _toText($oNode = null, $tagName = null)
 	{
-		$oNode = $oNode ==null?$this->_oDOMDocument->documentElement:$oNode;
+		$oNode = $oNode ==null?DOMDocument::loadXML($this->getHTML(true))->documentElement:$oNode;
 		$tagName==null?$this->_iOLCount = 0:null;
 		$x = $oNode->childNodes;
 		if ($x!=null)
