@@ -1,16 +1,17 @@
 var Control_Field_Text_AJAX	= Class.create(/* extends */ Control_Field, 
 {
-	initialize	: function($super, sLabel, sLabelSeparator, oDatasetAjax, sValueProperty, oColumnProperties, iResultLimit, sResultPaneClass)
+	initialize	: function($super, sLabel, sLabelSeparator, oDatasetAjax, sValueProperty, sDisplayValueProperty, oColumnProperties, iResultLimit, sResultPaneClass)
 	{
 		// Parent
 		$super(sLabel, sLabelSeparator);
 		
 		// Configuration
-		this._oDatasetAjax		= oDatasetAjax;
-		this._sValueProperty	= sValueProperty;
-		this._oColumnProperties	= oColumnProperties;
-		this._iResultLimit		= (iResultLimit ? iResultLimit : 0);
-		this._sResultPaneClass	= (sResultPaneClass ? sResultPaneClass : '');
+		this._oDatasetAjax			= oDatasetAjax;
+		this._sValueProperty		= sValueProperty;
+		this._sDisplayValueProperty	= (sDisplayValueProperty ? sDisplayValueProperty : sValueProperty);
+		this._oColumnProperties		= oColumnProperties;
+		this._iResultLimit			= (iResultLimit ? iResultLimit : 0);
+		this._sResultPaneClass		= (sResultPaneClass ? sResultPaneClass : '');
 		
 		// Create filter object to use with dataset ajax
 		this._oFilter	= new Filter(oDatasetAjax);
@@ -32,6 +33,7 @@ var Control_Field_Text_AJAX	= Class.create(/* extends */ Control_Field,
 		this._aOnSelectCallbacks	= [];
 		this._sLastSearchTerm		= null;
 		this._oHighlightedResult	= null;
+		this._hDisplayValues		= {};
 		
 		// Events
 		var fnValueChange	= this._valueChange.bind(this);
@@ -58,9 +60,10 @@ var Control_Field_Text_AJAX	= Class.create(/* extends */ Control_Field,
 	
 	updateElementValue	: function()
 	{
-		var mValue	= this.getValue();
-		this.setElementValue(mValue);
-		this.oControlOutput.oView.innerHTML	= mValue;
+		var mValue			= this.getValue();
+		var mDisplayValue	= this._hDisplayValues[mValue];
+		this.setElementValue(mDisplayValue);
+		this.oControlOutput.oView.innerHTML	= mDisplayValue;
 	},
 	
 	addOnChangeCallback	: function(fnCallback)
@@ -129,12 +132,14 @@ var Control_Field_Text_AJAX	= Class.create(/* extends */ Control_Field,
 			return;
 		}
 		
+		// Clear display value cache
+		this._hDisplayValues	= {};
+		
 		// Build table of results
 		var oTBody	= 	$T.tbody();
 		var oTable	= 	$T.table({class: 'control-field-text-ajax-result-table'},
 							oTBody
 						);
-		
 		for (var i in hResults)
 		{
 			// Add all of the configured properties as columns
@@ -154,7 +159,9 @@ var Control_Field_Text_AJAX	= Class.create(/* extends */ Control_Field,
 				}
 				oTR.appendChild(oTD);
 			}
-			oTR.mValue	= oResult[this._sValueProperty];
+			
+			oTR.mValue							= oResult[this._sValueProperty];
+			this._hDisplayValues[oTR.mValue]	= oResult[this._sDisplayValueProperty];
 			oTR.observe('click', this._resultClicked.bind(this, oTR));
 			oTBody.appendChild(oTR);
 		}
@@ -168,8 +175,10 @@ var Control_Field_Text_AJAX	= Class.create(/* extends */ Control_Field,
 	
 	_resultClicked	: function(oTR, oEvent)
 	{
-		this._sLastSearchTerm	= oTR.mValue;
+		this._sLastSearchTerm	= this._hDisplayValues[oTR.mValue];
+		
 		this.setValue(oTR.mValue);
+		
 		this._hideResults();
 		
 		// Invoke on select callbacks
