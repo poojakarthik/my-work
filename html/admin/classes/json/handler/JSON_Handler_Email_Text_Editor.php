@@ -14,12 +14,7 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 
 	public function getTemplates($bCountOnly=false, $iLimit=null, $iOffset=null, $sSortDirection='DESC')
 	{
-
 		$aTemplates = Email_Template_Type::getForAllCustomerGroups($bCountOnly, $iLimit, $iOffset, $sSortDirection);
-
-
-
-
 		return	array(
 						'Success'		=> true,
 						'aRecords'		=> $aTemplates,
@@ -30,15 +25,11 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 
 	public function getTemplateDetails($iTemplateId)
 	{
-
 		$oDetails = Email_Template_Details::getCurrentDetailsForTemplateId($iTemplateId);
 		return	array(
 						'bSuccess'						=> true,
 						'aTemplateDetails'		=> $oDetails->toArray()
 					);
-
-
-
 	}
 
 	public function save($aTemplateDetails)
@@ -67,17 +58,20 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 						'Success'		=> true,
 						'text'		=> implode("",$oEmail->getText())
 					);
-
 	}
 
 	public function processHTML($sHTML)
 	{
+
+
+
+
+
+
 		$oEmail = new Email_HTML_Document($sHTML);
-
-
 		return	array(
 						'Success'		=> true,
-						'html'		=> $oEmail->getHTML()
+						'html'		=> $oEmail->getHTML(true)
 					);
 	}
 
