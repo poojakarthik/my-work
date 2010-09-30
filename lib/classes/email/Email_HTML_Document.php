@@ -13,6 +13,13 @@ class Email_HTML_Document
 											'Account'		=>array('BusinessName', 'ABN')
 										);
 
+	protected $_aReport = array(
+								'javascript' 	=>array(),
+								'events'		=>array(),
+								'form'			=>array(),
+								'input'			=>array()
+							);
+
 
 	public function __construct($sHTML)
 	{
@@ -36,12 +43,12 @@ class Email_HTML_Document
 	protected function _preProcessHTML($sHTML)
 	{
 
-		$x = @DOMDocument::loadHTML($sHTML);
-		$this->_oDOMDocument = DOMDocument::loadXML(str_replace ( '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">' , "" , $x->saveHTML()));
+		$this->_oDOMDocument = @DOMDocument::loadHTML($sHTML);
+		//$this->_oDOMDocument = @DOMDocument::loadXML(str_replace ( '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">' , "" , $x->saveHTML()));
 		$xpath = new DOMXPath($this->_oDOMDocument);
-		$oRootElement = $this->_oDOMDocument->documentElement->firstChild;
-		$oRootElement->firstChild->nextSibling == null?$oRootElement=$oRootElement->firstChild:null;
-		$sRootName = $oRootElement->tagName =='body'?'div':$oRootElement->tagName;
+		$oRootElement = $this->_oDOMDocument->documentElement;//->firstChild;
+		$oRootElement->firstChild->nextSibling == null&&$oRootElement->tagName =='html'?$oRootElement=$oRootElement->firstChild:null;
+		$sRootName = $oRootElement->tagName =='body'||$oRootElement->tagName =='html'?'div':$oRootElement->tagName;
 	 	$x = DOMDocument::loadXML("<".$sRootName."> </".$sRootName.">");
 
 	 	$oChildren = $oRootElement->childNodes;
@@ -56,10 +63,14 @@ class Email_HTML_Document
 		}
 
 
-	 	$sString = $x->saveXML();
-
  		$this->_sHTML = str_replace ( '<?xml version="1.0"?>' , "" , $x->saveXML());
 
+	}
+
+	public function getProcessReport()
+	{
+		$this->_processHTML();
+		return $this-_aReport;
 	}
 
 	protected function _processHTML()
@@ -102,7 +113,49 @@ class Email_HTML_Document
 		 $result = $xpath->query("//script");
 		  foreach ($result as $node)
 		 {
+		 	$this->_aReport['javascript'][] =  $node->textContent;
 		 	$node->parentNode->removeChild($node);
+		 }
+
+		//$oElements = $xpath->query("//*[@onclick]");
+		//foreach ($oElements as $oElement)
+	 	//{
+	 	//	$oElement->removeAttribute('onclick');
+	 	//}
+
+	 	$oElements = $xpath->query("//*[@*]");
+		foreach ($oElements as $oElement)
+	 	{
+	 		foreach ($oElement->attributes as $attrName => $attrNode)
+		  	{
+		  		if (strpos($attrName, 'on') === 0)
+		  		{
+		  			$this->_aReport['events'][]= $node->textContent;
+		  			$oElement->removeAttribute($attrName);
+		  		}
+
+		  	}
+	 	}
+
+	 	/*remove form related things*/
+		$result = $xpath->query("//input");
+		  foreach ($result as $node)
+		 {
+		 	$this->_aReport['input'][]=$node->textContent;
+		 	$node->parentNode->removeChild($node);
+		 }
+
+		$result = $xpath->query("//form");
+		foreach ($result as $node)
+		{
+			foreach ($node->attributes as $attrName => $attrNode)
+		  	{
+		  		if ($attrName == 'action' || $attrName == 'method')
+		  		{
+		  			$this->_aReport['form'][]=$node->textContent;
+		  			$node->removeAttribute($attrName);
+		  		}
+		  	}
 		 }
 
 		 return str_replace ( '<?xml version="1.0"?>' , "" , $this->_oDOMDocument->saveXML());
@@ -187,7 +240,7 @@ class Email_HTML_Document
 				}
 			}
 
-					if ($oNode->tagName == 'p' || $oNode->tagName == 'br' ||$oNode->tagName == 'div' ||$oNode->tagName == 'h1' ||$oNode->tagName == 'h2' )
+					if ($oNode->tagName == 'p' || $oNode->tagName == 'br' ||$oNode->tagName == 'div' ||$oNode->tagName == 'h1' ||$oNode->tagName == 'h2' ||$oNode->tagName == 'form')
 					{
 						$this->_aText[] = "\n\n";
 					}
