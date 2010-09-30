@@ -516,6 +516,10 @@ Control_Field.factory	= function(sType, oDefinition)
 		case 'combo-time':
 			oControlField	= new Control_Field_Combo_Time(oDefinition.sLabel, null, oDefinition.iFormat);
 			break;
+		
+		case 'text_ajax':
+			oControlField	= new Control_Field_Text_AJAX(oDefinition.sLabel, null, oDefinition.oDatasetAjax, oDefinition.sValueProperty, oDefinition.oColumnProperties, oDefinition.iResultLimit, oDefinition.sResultPaneClass);
+			break;
 			
 		default:
 			throw "'" + sType + "' is not a valid Control_Field type!";
