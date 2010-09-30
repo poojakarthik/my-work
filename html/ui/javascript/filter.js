@@ -381,7 +381,7 @@ var Filter	= Class.create
 		
 		this._oDataSetAjax.setFilter(hFilters);
 		
-		if (!bCancelRefresh)
+		if (!bCancelRefresh && this._oPagination)
 		{
 			this._refreshCurrentPageOfData();
 		}
