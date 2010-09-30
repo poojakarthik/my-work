@@ -423,6 +423,45 @@ textarea.valid,
 	border-color:   #33DD00;
 }
 
+.control-field-text-ajax-overlay
+{
+	position			: absolute;
+	padding				: 0.5em;
+	background-color	: #fff;
+	border				: solid 1px black;
+	z-index				: 45;
+	
+	-moz-box-sizing		: border-box;
+	-moz-border-radius	: 0.25em;
+	
+	-webkit-box-sizing		: border-box;
+	-webkit-border-radius	: 0.25em;
+}
+
+table.control-field-text-ajax-result-table
+{
+	border-spacing	: 0;
+}
+
+table.control-field-text-ajax-result-table > tbody > tr.highlighted-row td.control-field-text-ajax-result-column
+{
+	background-color	: #aaa;
+}
+
+table.control-field-text-ajax-result-table > tbody > tr > td.control-field-text-ajax-result-column
+{
+	cursor				: pointer;
+	font-size			: 10pt;
+	color				: #000;
+	background-color	: #fff;
+}
+
+div.control-field > input.text-ajax-input
+{
+	-moz-box-sizing		: border-box;
+	-webkit-box-sizing	: border-box;
+}
+
 /********************* END - Reflex Input Controls - END **********************/
 
 /************************** START - Buttons - START ***************************/
@@ -6459,6 +6498,419 @@ div.datetime-time
 }
 
 /***************** END - Correspondence Ledger Popup(s) - END *****************/
+
+/***************** START - Invoice Rerating Popup(s) - START *****************/
+
+.popup-invoice-rerate,
+.popup-invoice-rerate-summary,
+.popup-rate-plan-test
+{
+	margin	: 0.5em;
+}
+
+.popup-invoice-rerate div.section
+{
+	margin-bottom	: 0.5em;
+}
+
+.popup-invoice-rerate .buttons
+{
+	text-align	: center;
+}
+
+.popup-invoice-rerate .invoice-details table
+{
+	margin-left		: 0.5em;
+	width			: 75%;
+	border-spacing	: 0em;
+}
+
+.popup-invoice-rerate .service-list table
+{
+	width			: 100%;
+	border-spacing	: 0em;
+}
+
+.popup-invoice-rerate .service-list .section-content
+{
+	max-height	: 20em;
+	overflow	: auto;
+}
+
+.popup-invoice-rerate .invoice-details th
+{
+	text-align	: left;
+	width		: 9em;
+}
+
+.popup-invoice-rerate .invoice-details th > span:last-child
+{
+	float			: right;
+	padding-right	: 0.5em;
+}
+
+.popup-invoice-rerate .service-list table td .control-field > select
+{
+	width	: 98%;
+}
+
+.popup-invoice-rerate-summary .section-content
+{
+	max-height	: 35em;
+	overflow	: auto;
+}
+
+.popup-invoice-rerate-summary .section-content ul > li
+{
+	vertical-align	: top;
+}
+
+.popup-invoice-rerate-summary .section-content ul > li:first-child
+{
+	width	: 48%;
+}
+
+.popup-invoice-rerate-summary .section-content ul > li:nth-child(2)
+{
+	margin-left	: 1em;
+	width		: 50%;
+}
+
+.popup-invoice-rerate-summary .invoice-summary
+{
+	-moz-border-radius		: 1em;
+	-webkit-border-radius	: 1em;
+	background-color		: #fff;
+	border					: 1px solid #787878;
+	border-spacing			: 0;
+	padding					: 0.5em;
+	width					: 100%;
+}
+
+.popup-invoice-rerate-summary .invoice-summary .toggle-row td
+{
+	cursor	: pointer;
+}
+
+.popup-invoice-rerate-summary .invoice-summary .toggle-row img
+{
+	padding-right	: 0.25em;
+	vertical-align	: bottom;
+}
+
+.popup-invoice-rerate-summary .invoice-summary .padding-cell
+{
+	width	: 2em;
+}
+
+.popup-invoice-rerate-summary .invoice-summary .underline
+{
+	border-bottom	: solid 1px #aaa;
+}
+
+.popup-invoice-rerate-summary .invoice-summary .amount.total
+{
+	font-weight	: bold;
+}
+
+.popup-invoice-rerate-summary .invoice-summary .amount.subtotal
+{
+	color	: #004F9E;
+}
+
+.popup-invoice-rerate-summary .invoice-summary .highlight
+{
+	background-color	: #FFFFE5;
+}
+
+.popup-invoice-rerate-summary .invoice-summary .subitem
+{
+	padding-left	: 0.5em;
+}
+
+.popup-invoice-rerate-summary .invoice-summary .title,
+.popup-invoice-rerate-summary .invoice-summary .title > span
+{
+	font-size	: 1.2em;
+}
+
+.popup-invoice-rerate-summary .buttons,
+.popup-rate-plan-test .buttons
+{
+	margin-top	: 0.5em;
+	text-align	: center;
+}
+
+.popup-invoice-rerate-summary .pdf-link 
+{
+	cursor			: pointer;
+	padding-left	: 1em;
+}
+
+.popup-invoice-rerate-summary .rate-plan-name
+{
+	font-size	: 0.8em;
+}
+
+.popup-invoice-rerate-summary ul.reset
+{
+	margin-left	: 0.5em;
+}
+
+.popup-invoice-rerate-summary .different-rate-plan
+{
+	color	: #0000dd;
+}
+
+td.popup-rate-plan-test-account-business-name
+{
+	font-weight	: bold;
+	padding		: 0.25em;
+	max-width	: 14em;
+	white-space	: nowrap;
+	overflow	: hidden;
+}
+
+select.popup-rate-plan-test-invoices
+{
+	width			: 100%;
+	margin-bottom	: 0.25em;
+}
+
+div.popup-rate-plan-test > table.reflex
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.popup-rate-plan-test > table.reflex > tbody th
+{
+	width	: 8em;
+}
+
+.popup-rate-plan-test > table.reflex > tbody > tr:first-child > th
+{
+	vertical-align	: middle;
+}
+
+.popup-rate-plan-test > table.reflex > tbody > tr:last-child > th
+{
+	vertical-align	: top;
+}
+
+/***************** END - Invoice Rerating Popup(s) - END *****************/
+
+
+/***************** START - Default IO Styles from style_template/default.css - START *****************/
+.Default
+{
+}
+
+.RequiredInput
+{
+	color:               #CC0000;
+}
+
+.TD_DefaultLabel
+{
+	font-family: 		Arial, sans-serif;
+/*	line-height: 		18pt;*/
+	font-size: 			10pt;
+	position:			absolute;
+	height:				20px;
+}
+
+.DefaultLabel,
+.DefaultInvalidLabel
+{
+	font-family: 		Arial, sans-serif;
+	line-height: 		18pt; /* Things break down if this isn't here */
+	font-size: 			10pt;
+	position:			absolute;
+	height:				20px;
+	overflow:			hidden;
+	float:				left;
+	top:				0px; /* Things break down if this isn't here */
+/*	left:				0px;*/
+}
+
+.DefaultOutput
+{
+	font-family: 		Arial, sans-serif;
+	line-height: 		18pt;
+	font-size: 			10pt;
+	position:			relative;
+	top:				0px;
+	padding-left:		200px;
+	overflow:			hidden;
+}
+
+.DefaultRegularOutput
+{
+	font-family: 		Arial, sans-serif;
+	line-height: 		18pt;
+	font-size: 			10pt;
+	position:			relative;
+	top:				0px;
+	overflow:			hidden;
+}
+
+.StatusMessage
+{
+	padding-left:		55px;
+}
+
+.DefaultInvalidOutput
+{
+	font-family: 		Arial, sans-serif;
+	line-height: 		18pt;
+	font-size: 			10pt;
+	position:			relative;
+	top:				0px;
+	padding-left:		200px;
+	overflow:			hidden;
+	color:				#CC0000;
+}
+
+.DefaultInputRadioButtons,
+.DefaultInputCheckBox,
+.DefaultInputComboBox,
+.DefaultInputText,
+.DefaultInput
+{
+	font-family:		Arial, sans-serif;
+	line-height:		18pt;
+	font-size:			10pt;
+	position:			relative;
+	left:				200px;
+	top:				0px;
+	overflow:			hidden;	
+}
+
+.DefaultInputCheckBox2
+{
+	line-height: 		18pt;
+	font-size:			10pt;
+	position:			relative;
+	left:				197px;
+	top:				1px;
+	overflow:			hidden;
+}
+
+.DefaultInputRadioButtons extends 
+
+.DefaultInputComboBox
+{
+	border:				solid 1px #000000;
+}
+
+.DefaultInputText,
+.DefaultInputTextArea
+{
+	border:				solid 1px #000000;
+	padding-left:		3px;
+	padding-right:		0px;
+	position:			relative;
+	left:				200px;
+	top:				0px;
+	overflow:			hidden;
+}
+
+.DefaultInputTextSmall
+{
+
+	font-family: 		Arial, sans-serif;
+	line-height: 		18pt;
+	font-size: 			10pt;
+	position:			relative;
+	left:				0px;
+	top:				0px;
+	overflow:			hidden;
+	border:				solid 1px #000000;
+}
+
+.DefaultInputCheckBox
+{
+	left:				0px;
+}
+
+.DefaultInputRadioButtons
+{
+	left:				0px;
+}
+
+.DefaultInvalidInputRadioButtons,
+.DefaultInvalidInputCheckBox,
+.DefaultInvalidInputComboBox,
+.DefaultInvalidInputText,
+.DefaultInvalidInputTextArea,
+.DefaultInvalidInput
+{
+	font-family: 		Arial, sans-serif;
+	line-height: 		1.2;
+	font-size: 			10pt;
+	position:			relative;
+	left:				200px;
+	top:				0px;
+	/*height:				20px;*/
+	overflow:			hidden;
+	background-color:	#FA8072;
+}
+
+.DefaultInvalidInputComboBox
+{
+	border:				solid 1px #000000;
+}
+
+.DefaultInvalidInputText,
+.DefaultInvalidInputTextArea
+{
+	border:				solid 1px #000000;
+	padding-left:		3px;
+	padding-right:		0px;
+}
+
+.DefaultInputSpan,
+.DefaultInvalidInputSpan,
+.DefaultOutputSpan,
+.DefaultInvalidOutputSpan
+{
+	font-family: 		Arial, sans-serif;
+	line-height: 		18pt;
+	font-size: 			10pt;
+	position:			relative;
+	left:				0px;
+	top:				0px;
+	overflow:			hidden;
+	line-height: 		1.2;
+}
+
+.DefaultInvalidInputSpan
+{
+	background-color:	#FA8072;
+}
+
+.DefaultInvalidOutputSpan
+{
+	color:				#CC0000;
+}
+
+.DefaultHiddenElement,
+.DefaultElement,
+.DefaultInvalidElement
+{
+	position:			relative;
+	overflow:			visible;
+	height:				auto;
+	clear:				both;
+}
+
+.DefaultHiddenElement
+{
+	display: none;
+}
+
+/***************** END - Default IO Styles from style_template/default.css - END *****************/
 
 /****************** START - Destination Import Popup - START ******************/
 .destination-import
