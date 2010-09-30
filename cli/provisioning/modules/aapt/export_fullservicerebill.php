@@ -200,6 +200,7 @@
 		$arrDefine['AddressTypeNumber']		['Type']		= 'Integer';
 		$arrDefine['AddressTypeNumber']		['PadChar']		= '0';
 		$arrDefine['AddressTypeNumber']		['PadType']		= STR_PAD_LEFT;
+		$arrDefine['AddressTypeNumber']		['Optional']	= '';
 		
 		$arrDefine['AddressTypeSuffix']		['Index']		= 18;
 		
@@ -208,12 +209,14 @@
 		$arrDefine['StreetNumberStart']		['Type']		= 'Integer';
 		$arrDefine['StreetNumberStart']		['PadChar']		= '0';
 		$arrDefine['StreetNumberStart']		['PadType']		= STR_PAD_LEFT;
+		$arrDefine['StreetNumberStart']		['Optional']	= '';
 		
 		$arrDefine['StreetNumberEnd']		['Index']		= 20;
 		$arrDefine['StreetNumberEnd']		['Length']		= 5;
 		$arrDefine['StreetNumberEnd']		['Type']		= 'Integer';
 		$arrDefine['StreetNumberEnd']		['PadChar']		= '0';
 		$arrDefine['StreetNumberEnd']		['PadType']		= STR_PAD_LEFT;
+		$arrDefine['StreetNumberEnd']		['Optional']	= '';
 		
 		$arrDefine['StreetNumberSuffix']	['Index']		= 21;
 		
