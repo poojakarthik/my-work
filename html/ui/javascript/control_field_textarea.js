@@ -1,6 +1,6 @@
 var Control_Field_Textarea	= Class.create(/* extends */ Control_Field, 
 {
-	initialize	: function($super, sLabel, sLabelSeparator, rows, cols)
+	initialize	: function($super, sLabel, sLabelSeparator, rows, cols, bCancelFocusShiftOnTab)
 	{
 		// Parent
 		$super(sLabel, sLabelSeparator);
@@ -15,6 +15,8 @@ var Control_Field_Textarea	= Class.create(/* extends */ Control_Field,
 		
 		this.oControlOutput.oView	= document.createElement('span');
 		this.oControlOutput.oElement.appendChild(this.oControlOutput.oView);
+		
+		this._bCancelFocusShiftOnTab	= (typeof bCancelFocusShiftOnTab == 'undefined') || bCancelFocusShiftOnTab;
 		
 		this._aOnChangeCallbacks	= [];
 		
@@ -64,6 +66,11 @@ var Control_Field_Textarea	= Class.create(/* extends */ Control_Field,
 		this._aOnChangeCallbacks.push(fnCallback);
 	},
 	
+	cancelFocusShiftOnTab	: function()
+	{
+		this._bCancelFocusShiftOnTab	= true;
+	},
+	
 	_valueChange	: function()
 	{
 		this.validate();
@@ -92,7 +99,7 @@ var Control_Field_Textarea	= Class.create(/* extends */ Control_Field,
 	
 	_keyDown	: function(oEvent)
 	{
-		if (oEvent.keyCode == Event.KEY_TAB)
+		if (this._bCancelFocusShiftOnTab && oEvent.keyCode == Event.KEY_TAB)
 		{
 			// Get cursor position from text area
 			var oTextArea	= this.oControlOutput.oEdit;
