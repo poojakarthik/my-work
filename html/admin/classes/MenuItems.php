@@ -3835,16 +3835,25 @@ class MenuItems {
 							[
 								'../ui/javascript/section.js',
 								'javascript/popup_email_text_editor.js',
+								'javascript/popup_email_template_select.js',
+								'javascript/popup_email_html_preview.js',
+								'javascript/popup_email_templates.js',
+								'javascript/popup_email_save_confirm.js',
 								'../ui/javascript/control_tab_group.js',
 								'../ui/javascript/control_tab.js',
 								'../ui/javascript/control_tab.js',
 								'../ui/javascript/control_field.js',
+								'../ui/javascript/dataset_ajax.js',
+								'../ui/javascript/dataset_ajax.js',
+										'../ui/javascript/pagination.js',
+										'../ui/javascript/filter.js',
 								'../ui/javascript/control_field_textarea.js',
+								'../ui/javascript/control_field_select.js'
 
 							],
 							function()
 							{
-								new Popup_Email_Text_Editor();
+								new Popup_Email_Templates();
 							}
 					);";
 
