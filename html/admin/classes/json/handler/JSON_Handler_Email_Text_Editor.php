@@ -32,22 +32,39 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 					);
 	}
 
-	public function save($aTemplateDetails)
+	public function save($aTemplateDetails, $bConfirm = false)
 	{
 		$aTemplateDetails = is_array($aTemplateDetails)?$aTemplateDetails:(array)$aTemplateDetails;
-		$oHTML = new Email_HTML_Document($aTemplateDetails['email_html']);
-		$aTemplateDetails['id'] = null;
-		$aTemplateDetails['created_timestamp'] = null;
-		$aTemplateDetails['created_employee_id'] = Flex::getUserId();
-		$aTemplateDetails['email_html']	= $oHTML->getHTML();
-		$aTemplateDetails['effective_datetime'] = Data_Source_Time::currentTimestamp();
-		$oDetails = new Email_Template_Details($aTemplateDetails);
-		$oDetails->save();
 
-		return	array(
-						'Success'		=> true,
-						'oTemplateDetails'		=> $oDetails->toArray()
-					);
+
+		if ($bConfirm)
+		{
+			$aTemplateDetails['id'] = null;
+			$aTemplateDetails['created_timestamp'] = null;
+			$aTemplateDetails['created_employee_id'] = Flex::getUserId();
+			$aTemplateDetails['email_html']	= $aTemplateDetails['email_html'];
+			$aTemplateDetails['effective_datetime'] = Data_Source_Time::currentTimestamp();
+			$oDetails = new Email_Template_Details($aTemplateDetails);
+			$oDetails->save();
+			return	array(
+							'Success'		=> true,
+							'oTemplateDetails'		=> $oDetails->toArray(),
+							'Confirm'			=> $bConfirm,
+							'Report'			=> array()
+						);
+		}
+		else
+		{
+			$oHTML = new Email_HTML_Document($aTemplateDetails['email_html']);
+
+			return	array(
+							'Success'		=> true,
+							'oTemplateDetails'		=> $aTemplateDetails,
+							'Confirm'			=> $bConfirm,
+							'Report'			=> $oHTML->getProcessReport()
+						);
+
+		}
 	}
 
 	public function toText($sHTML)
