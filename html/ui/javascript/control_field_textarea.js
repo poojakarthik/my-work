@@ -49,6 +49,7 @@ var Control_Field_Textarea	= Class.create(/* extends */ Control_Field,
 		this.oControlOutput.oEdit.observe('click'	, this.aEventHandlers.fnValueChange);
 		this.oControlOutput.oEdit.observe('change'	, this.aEventHandlers.fnValueChange);
 		this.oControlOutput.oEdit.observe('keyup'	, this.aEventHandlers.fnValueChange);
+		this.oControlOutput.oEdit.observe('keydown'	, this._keyDown.bind(this));
 	},
 	
 	removeEventListeners	: function()
@@ -86,6 +87,29 @@ var Control_Field_Textarea	= Class.create(/* extends */ Control_Field,
 		if (this.bRenderMode == Control_Field.RENDER_MODE_EDIT)
 		{
 			this.oControlOutput.oEdit.removeAttribute('disabled');
+		}
+	},
+	
+	_keyDown	: function(oEvent)
+	{
+		if (oEvent.keyCode == Event.KEY_TAB)
+		{
+			// Get cursor position from text area
+			var oTextArea	= this.oControlOutput.oEdit;
+			var sTab		= "\t";
+			var iStartPos 	= oTextArea.selectionStart;
+	        var iEndPos 	= oTextArea.selectionEnd;
+	        var iScrollTop 	= oTextArea.scrollTop;
+
+	        // Insert the tab
+	        oTextArea.value	= oTextArea.value.substring(0, iStartPos) + sTab + oTextArea.value.substring(iEndPos, oTextArea.value.length);
+			
+	        // Reset the cursor position
+	        oTextArea.selectionStart	= iStartPos + sTab.length;
+	        oTextArea.selectionEnd 		= iStartPos + sTab.length;
+	        oTextArea.scrollTop 		= iScrollTop;
+	        
+			oEvent.stop();
 		}
 	}
 });
