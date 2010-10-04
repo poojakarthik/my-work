@@ -279,6 +279,10 @@ class Email_HTML_Document
 					{
 						$this->_aText[] = "\t\t";
 					}
+					else if ($oNode->tagName == 'span' || $oNode->tagName == 'a')
+					{
+						$this->_aText[] = " ";
+					}
 		}
 	}
 
