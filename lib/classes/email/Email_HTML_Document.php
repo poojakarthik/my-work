@@ -70,7 +70,7 @@ class Email_HTML_Document
 	public function getProcessReport()
 	{
 		$this->_processHTML();
-		return $this-_aReport;
+		return $this->_aReport;
 	}
 
 	protected function _processHTML()
@@ -109,6 +109,26 @@ class Email_HTML_Document
 		 		$oElement->setAttribute('style',$sStyle);
 		 	}
 		 }
+
+		/*  $query = '//css';
+        $result = $xpath->query($query);
+		require_once('C:\wamp\www\CssSelector\CSSParser.php');
+        foreach($result as $node)
+        {
+        	$sSelector = $node->getAttributeNode('selector')->value;
+        	$sXpath = CSSParser::cssToXpath($sSelector);
+        	$sStyle = $node->textContent;
+        	$nodesToStyle = $xpath->query($sXpath);
+        	foreach ($nodesToStyle as $nodeToStyle)
+        	{
+        		$nodeToStyle->setAttribute('style', $sStyle);
+        	}
+			$node->parentNode->removeChild($node);
+        }*/
+
+
+
+
 
 		 $result = $xpath->query("//script");
 		  foreach ($result as $node)
@@ -165,8 +185,13 @@ class Email_HTML_Document
 	protected function _toText($oNode = null, $tagName = null)
 	{
 		$oNode = $oNode ==null?DOMDocument::loadXML($this->getHTML(true))->documentElement:$oNode;
-		$tagName==null?$this->_iOLCount = 0:null;
+		$tagName!='ol'?$this->_iOLCount = 0:null;
 		$x = $oNode->childNodes;
+		if ($oNode->tagName == 'li')
+		{
+			$sListChar 	= $tagName=='ul'?"\t* ":($tagName=='ol'?"\t".++$this->_iOLCount." ":null);
+			$this->_aText[] = $sListChar;
+		}
 		if ($x!=null)
 		{
 			foreach ($x as $node)
@@ -180,17 +205,17 @@ class Email_HTML_Document
 						//	$this->_aText[count($this->_aText)-1]= $this->_aText[count($this->_aText)-1]."\n";
 
 						$sListChar = "";
-						if (!($node->parentNode === $this->_lastParent))
-						{
-							$sListChar 	= $tagName=='ul'?"\t* ":($tagName=='ol'?"\t".++$this->_iOLCount." ":null);
-						}
+						//if (!($node->parentNode === $this->_lastParent))
+						//{
+						//	$sListChar 	= $tagName=='ul'?"\t* ":($tagName=='ol'?"\t".++$this->_iOLCount." ":null);
+					//	}
 
 
-						$sBreak		= "\n\n";
-						if ($node->parentNode->tagName == 'li')
-						{
-							$sBreak		= "\n";
-						}
+						//$sBreak		= "\n\n";
+						//if ($node->parentNode->tagName == 'li')
+						//{
+						//	$sBreak		= "\n";
+						//}
 						$this->_aText[]=$sListChar.ltrim($node->wholeText);//.$sBreak;
 						$this->_lastParent = $node->parentNode;
 					}
@@ -211,7 +236,7 @@ class Email_HTML_Document
 					$sPad = null;
 					if (($node->previousSibling == null || $node->previousSibling->wholeText == " ") && $node->parentNode->tagName == 'li')
 					{
-						$sPad = $tagName=='ul'?"\t* ":($tagName=='ol'?"\t".++$this->_iOLCount." ":null);
+						//$sPad = $tagName=='ul'?"\t* ":($tagName=='ol'?"\t".++$this->_iOLCount." ":null);
 						$this->_lastParent = $node->parentNode;
 					}
 
@@ -240,13 +265,19 @@ class Email_HTML_Document
 				}
 			}
 
-					if ($oNode->tagName == 'p' || $oNode->tagName == 'br' ||$oNode->tagName == 'div' ||$oNode->tagName == 'h1' ||$oNode->tagName == 'h2' ||$oNode->tagName == 'form')
+					if ($oNode->tagName == 'p' || $oNode->tagName == 'br' ||$oNode->tagName == 'div' ||$oNode->tagName == 'h1' ||$oNode->tagName == 'h2' ||$oNode->tagName == 'form' ||$oNode->tagName == 'table')
 					{
 						$this->_aText[] = "\n\n";
 					}
-					else if ($oNode->tagName == 'li' ||$oNode->tagName == 'ul' ||$oNode->tagName == 'ol')
+					else if ($oNode->tagName == 'li' ||$oNode->tagName == 'ul' ||$oNode->tagName == 'ol' ||$oNode->tagName == 'tr')
 					{
+
 						$this->_aText[] = "\n";
+
+					}
+					else if ($oNode->tagName == 'td' || $oNode->tagName == 'th')
+					{
+						$this->_aText[] = "\t\t";
 					}
 		}
 	}
