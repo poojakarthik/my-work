@@ -185,7 +185,6 @@ var Popup_Email_Templates	= Class.create(Reflex_Popup,
 			var oCustomerGroup		= null;
 			if (oTemplate.customerGroupInstances.length)
 			{
-				// There are runs
 				for (var i = 0; i < oTemplate.customerGroupInstances.length; i++)
 				{
 					oCustomerGroup	= oTemplate.customerGroupInstances[i];

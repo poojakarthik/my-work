@@ -284,8 +284,9 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	
 	},
 	
-	_saveButtonClick: function()
+	_saveButtonClick: function(bUserConfirmed)
 	{		
+		
 		//this._oLoadingPopup	= new Reflex_Popup.Loading();
 		this._oLoadingPopup.display();
 		var fnRequest     = jQuery.json.jsonFunction(this._saveSuccess.bind(this), this.errorCallback.bind(this), 'Email_Text_Editor', 'save');
@@ -295,8 +296,21 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		fnRequest(this._oTemplateDetails);		
 	},
 	
+	_save: function (oResponse)
+	{
+		
+		this._oLoadingPopup.display();
+		var fnRequest     = jQuery.json.jsonFunction(this._saveSuccess.bind(this), this.errorCallback.bind(this), 'Email_Text_Editor', 'save');
+		this._oTemplateDetails.email_text = this.oTextArea.value;
+		this._oTemplateDetails.email_html = this.oHTMLTextArea.value;
+		this._oTemplateDetails.effective_datetime = oResponse.effectiveDate;
+		fnRequest(this._oTemplateDetails, true);	
+	},
+	
 	_saveSuccess: function (oResponse)
 	{
+		
+		debugger;
 		if (oResponse.Confirm)
 		{
 			this._oTemplateDetails = oResponse.oTemplateDetails;
@@ -307,7 +321,8 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		}
 		else
 		{
-			new Popup_Email_Save_Confirm(oResponse, this._saveSuccess.bind(this));		
+			new Popup_Email_Save_Confirm(oResponse, this._save.bind(this));
+			this._oLoadingPopup.hide();			
 		}
 	
 	},
