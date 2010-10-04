@@ -110,13 +110,13 @@ class Email_HTML_Document
 		 	}
 		 }
 
-		/*  $query = '//css';
+		  $query = '//css';
         $result = $xpath->query($query);
-		require_once('C:\wamp\www\CssSelector\CSSParser.php');
+		//require_once('C:\wamp\www\CssSelector\CSSParser.php');
         foreach($result as $node)
         {
         	$sSelector = $node->getAttributeNode('selector')->value;
-        	$sXpath = CSSParser::cssToXpath($sSelector);
+        	$sXpath = CSS_Parser::cssToXpath($sSelector);
         	$sStyle = $node->textContent;
         	$nodesToStyle = $xpath->query($sXpath);
         	foreach ($nodesToStyle as $nodeToStyle)
@@ -124,7 +124,7 @@ class Email_HTML_Document
         		$nodeToStyle->setAttribute('style', $sStyle);
         	}
 			$node->parentNode->removeChild($node);
-        }*/
+        }
 
 
 
