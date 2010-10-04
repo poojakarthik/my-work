@@ -3848,7 +3848,10 @@ class MenuItems {
 										'../ui/javascript/pagination.js',
 										'../ui/javascript/filter.js',
 								'../ui/javascript/control_field_textarea.js',
-								'../ui/javascript/control_field_select.js'
+								'../ui/javascript/control_field_select.js',
+								'../ui/javascript/control_field_date_picker.js',
+								'../ui/javascript/component_date_picker.js',
+								'../ui/javascript/control_field_checkbox.js'
 
 							],
 							function()
