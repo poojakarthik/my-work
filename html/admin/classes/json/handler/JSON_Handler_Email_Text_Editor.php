@@ -36,14 +36,16 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 	{
 		$aTemplateDetails = is_array($aTemplateDetails)?$aTemplateDetails:(array)$aTemplateDetails;
 
-
 		if ($bConfirm)
 		{
 			$aTemplateDetails['id'] = null;
 			$aTemplateDetails['created_timestamp'] = null;
 			$aTemplateDetails['created_employee_id'] = Flex::getUserId();
 			$aTemplateDetails['email_html']	= $aTemplateDetails['email_html'];
-			$aTemplateDetails['effective_datetime'] = Data_Source_Time::currentTimestamp();
+			$aTemplateDetails['effective_datetime'] = $aTemplateDetails['effective_datetime'];
+			$aTemplateDetails['email_subject'] = 'to be implemented';
+
+
 			$oDetails = new Email_Template_Details($aTemplateDetails);
 			$oDetails->save();
 			return	array(
