@@ -22,6 +22,7 @@ class Flex_Rollout_Version_000227 extends Flex_Rollout_Version
 															  description VARCHAR(255) NOT NULL ,
 															  system_name VARCHAR(45) NOT NULL ,
 															  const_name VARCHAR(45) NOT NULL ,
+															  class_name VARCHAR(255) NOT NULL,
 															  PRIMARY KEY (id) )
 															ENGINE = InnoDB;",
 									'sRollbackSQL'		=>	"	DROP TABLE IF EXISTS email_template_type;",
