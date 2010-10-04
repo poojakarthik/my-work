@@ -113,7 +113,7 @@ class Email_Template_Details extends ORM_Cached
 				// SELECTS
 				//id, email_template_id, email_text, email_html, created_timestamp, created_employee_id, effective_datetime
 				case 'selCurrentForTemplateId':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "email_template_id = <email_template_id> AND effective_datetime <= NOW() AND created_timestamp = (SELECT MAX(created_timestamp) FROM ".self::$_strStaticTableName." WHERE email_template_id = <email_template_id>)", NULL, 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "email_template_id = <email_template_id> AND effective_datetime <= NOW() AND created_timestamp = (SELECT MAX(created_timestamp) FROM ".self::$_strStaticTableName." WHERE email_template_id = <email_template_id> AND effective_datetime <= NOW())", NULL, 1);
 					break;
 				case 'selBySysName':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "system_name = <system_name> AND status_id = 1", NULL, 1);
