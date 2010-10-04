@@ -72,10 +72,21 @@ class Email_Template extends ORM_Cached
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 
-
-
-
-
+	public static function getForCustomerGroupAndType($iCustomerGroup, $iEmailTemplateType)
+	{
+		$oStmt	= self::_preparedStatement('selByCustomerGroupAndType');
+		$oStmt->Execute(array('customer_group_id' => $iCustomerGroup, 'email_template_type_id' => $iEmailTemplateType));
+		$oTemplate	= null;
+		if ($aTemplate = $oStmt->Fetch())
+		{
+			$oTemplate	= new self($aTemplate);
+		}
+		else 
+		{
+			throw new Exception("Failed to get Email_Template for customer group & type. ".$oStmt->Error());
+		}
+		return $oTemplate;
+	}
 
 	/**
 	 * _preparedStatement()
@@ -100,6 +111,9 @@ class Email_Template extends ORM_Cached
 			switch ($strStatement)
 			{
 				// SELECTS
+				case 'selByCustomerGroupAndType':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "customer_group_id = <customer_group_id> AND email_template_type_id = <email_template_type_id>", null, 1);
+					break;
 				case 'selBySysName':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "system_name = <system_name> AND status_id = 1", NULL, 1);
 					break;
