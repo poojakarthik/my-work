@@ -60,6 +60,7 @@ class Flex_Rollout_Version_000227 extends Flex_Rollout_Version
 															  email_template_id BIGINT NOT NULL ,
 															  email_text VARCHAR(10000) NOT NULL ,
 															  email_html VARCHAR(10000) NULL ,
+															  email_subject VARCHAR(512) NOT NULL,
 															  created_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 															  created_employee_id BIGINT NOT NULL ,
 															  effective_datetime DATETIME NOT NULL ,
