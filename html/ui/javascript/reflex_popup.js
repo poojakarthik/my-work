@@ -299,10 +299,18 @@ Object.extend(Reflex_Popup.prototype, {
 		this.footerPane.style.display	= 'none';
 		this.container.appendChild(this.footerPane);
 		
+		// Dragging the Title Bar
 		Event.observe(tb, "mousedown", this.dragStart.bind(this));
 		Event.observe(document.body, "mousemove", this.drag.bind(this));
 		Event.observe(document.body, "mouseup", this.dragEnd.bind(this));
 		Event.observe(document.body, "drag", this.dragCancel.bind(this));
+		
+		// Dragging the Content (only in special cases)
+		Event.observe(this.contentPane, 'mousedown', this.dragStartComplex.bind(this));
+		Event.observe(document, 'keydown', this.dragStartComplex.bind(this));
+		Event.observe(document, 'keyup', this.dragStartComplex.bind(this));
+		
+		this.KEYSTATES	= {};
 		
 		// Fancy FX init
 		this.fx	=	{
@@ -313,6 +321,30 @@ Object.extend(Reflex_Popup.prototype, {
 	},
 	
 	draggedFrom: null,
+	
+	dragStartComplex	: function(oEvent)
+	{
+		var	iKeyCode	= oEvent.which || oEvent.keyCode;
+		if (oEvent.type == 'keyup')
+		{
+			this.KEYSTATES.CTRL	= (iKeyCode == Reflex_Popup.KEYS.CTRL)	? false	: !!this.KEYSTATES.CTRL;
+			this.KEYSTATES.ALT	= (iKeyCode == Reflex_Popup.KEYS.ALT)	? false	: !!this.KEYSTATES.ALT;
+		}
+		else if (oEvent.type == 'keydown')
+		{
+			this.KEYSTATES.CTRL	= (iKeyCode == Reflex_Popup.KEYS.CTRL)	? true	: !!this.KEYSTATES.CTRL;
+			this.KEYSTATES.ALT	= (iKeyCode == Reflex_Popup.KEYS.ALT)	? true	: !!this.KEYSTATES.ALT;
+		}
+		else if (oEvent.type == 'mousedown')
+		{
+			// Start the drag, if our hotkeys are currently depressed
+			if (this.KEYSTATES.CTRL && this.KEYSTATES.ALT)
+			{
+				//debugger;
+				this.dragStart(oEvent);
+			}
+		}
+	},
 	
 	dragStart: function(event)
 	{
@@ -457,6 +489,11 @@ Object.extend(Reflex_Popup.prototype, {
 	}
 });
 
+Reflex_Popup.KEYS	= {
+	SHIFT	: 16,
+	CTRL	: 17,
+	ALT		: 18
+};
 
 Reflex_Popup.Loading = Class.create();
 
