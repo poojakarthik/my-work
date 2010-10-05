@@ -327,7 +327,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	_saveSuccess: function (oResponse)
 	{
 		
-		
+		debugger;
 		if (oResponse.Confirm)
 		{
 			this._oTemplateDetails = oResponse.oTemplateDetails;
