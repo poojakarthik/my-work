@@ -29,7 +29,7 @@ span[onclick]
 	color: #00F;
 	text-decoration: none;
 }
-
+/*
 .DefaultHiddenElement,
 .DefaultElement,
 .DefaultInvalidElement
@@ -42,7 +42,7 @@ span[onclick]
 {
 	display: none;
 }
-
+*/
 div.reflex-content
 {
 	color				: #1C1C1C;
@@ -238,7 +238,7 @@ input[type="checkbox"] {
 textarea {
 	font-family: Arial,Verdana,Helvetica;
 }
-
+/*
 div.DefaultOutput, 
 div input.DefaultInputText, 
 div select.DefaultInputText {
@@ -251,7 +251,7 @@ div.DefaultLabel {
 	margin: .1em .5em;
 	font-weight: bold;
 }
-
+*/
 div.GroupedContent {
 	clear: both;
 	position: relative;
@@ -300,5 +300,4 @@ table.Listing tr.PrimarySelected td {
 	background-color:#11FF33;
 	vertical-align:top;
 }
-
 
