@@ -151,14 +151,36 @@ class Email_Template_Logic
 
 	public static  function processHTML($sHTML, $bReport = false)
 	{
-		$sHTML = self::_preprocessHTML($sHTML);
+
 		$aReport = array();
 		foreach(self::$_aReport as $sItem)
 		{
 			$aReport[$sItem] = array();
 		}
 
-		$oDOMDocument = DOMDocument::loadXML($sHTML);
+
+		//***************/
+
+		$oDOMDocument = @DOMDocument::loadHTML($sHTML);
+		$oRootElement = $oDOMDocument->documentElement;//->firstChild;
+		$oRootElement->firstChild->nextSibling == null&&$oRootElement->tagName =='html'?$oRootElement=$oRootElement->firstChild:null;
+		$sRootName = $oRootElement->tagName =='body'||$oRootElement->tagName =='html'?'div':$oRootElement->tagName;
+	 	$x = DOMDocument::loadXML("<".$sRootName."> </".$sRootName.">");
+
+	 	$oChildren = $oRootElement->childNodes;
+		if ($oChildren!=null)
+		{
+			foreach ($oChildren as $node)
+			{
+				$node = $x->importNode($node, true);
+				$x->documentElement->appendChild($node);
+			}
+
+		}
+
+
+
+		$oDOMDocument = $x;//*DOMDocument::loadXML(str_replace ( '<?xml version="1.0">' , "" , $x->saveXML()));
 		$xpath = new DOMXPath($oDOMDocument);
 
         $query = '//cssclass';
@@ -242,17 +264,34 @@ class Email_Template_Logic
 		$result = $xpath->query("//form");
 		foreach ($result as $node)
 		{
+			$aReport['form'][]=$node->textContent;
+			$oNewNode = new DOMElement('div');
+			$node->parentNode->replaceChild($oNewNode, $node);
+
 			foreach ($node->attributes as $attrName => $attrNode)
 		  	{
-		  		if ($attrName == 'action' || $attrName == 'method')
+		  		if ($attrName != 'action' && $attrName != 'method')
 		  		{
-		  			$aReport['form'][]=$node->textContent;
-		  			$node->removeAttribute($attrName);
+		  			$oNewNode->setAttributeNode ($attrNode );
+
 		  		}
 		  	}
-		 }
 
-		 return $bReport?$aReport:str_replace ( '<?xml version="1.0"?>' , "" , $oDOMDocument->saveXML());
+		  	$x = $node->childNodes;
+
+			if ($x!=null)
+			{
+				foreach ($x as $childNode)
+				{
+					$oNewChild = $childNode->cloneNode(true);
+					$oNewNode->appendChild($oNewChild);
+				}
+			 }
+
+			 //$oNewNode =  $oDomDocument->importNode($oNewNode, true);
+			//$oDomDocument->replaceChild($oNewNode, $node);
+		}
+			 return $bReport?$aReport:str_replace ( '<?xml version="1.0"?>' , "" , $oDOMDocument->saveXML());
 
 	}
 
