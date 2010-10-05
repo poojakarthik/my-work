@@ -45,7 +45,6 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 			$aTemplateDetails['effective_datetime'] = $aTemplateDetails['effective_datetime'];
 			$aTemplateDetails['email_subject'] = $aTemplateDetails['email_subject'];
 
-
 			$oDetails = new Email_Template_Details($aTemplateDetails);
 			$oDetails->save();
 			return	array(
@@ -63,7 +62,7 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 							'Success'		=> true,
 							'oTemplateDetails'		=> $aTemplateDetails,
 							'Confirm'			=> $bConfirm,
-							'Report'			=> $oHTML->getProcessReport()
+							'Report'			=> Email_template_Logic::processHTML($aTemplateDetails['email_html'], true)
 						);
 
 		}
@@ -75,22 +74,17 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 
 		return	array(
 						'Success'		=> true,
-						'text'		=> implode("",$oEmail->getText())
+						'text'		=> implode("",Email_template_Logic::toText($sHTML))
 					);
 	}
 
 	public function processHTML($sHTML)
 	{
 
-
-
-
-
-
-		$oEmail = new Email_HTML_Document($sHTML);
+		//		$oEmail = new Email_HTML_Document($sHTML);
 		return	array(
 						'Success'		=> true,
-						'html'		=> $oEmail->getHTML(true)
+						'html'		=> Email_template_Logic::processHTML($sHTML)
 					);
 	}
 
