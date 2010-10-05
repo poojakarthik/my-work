@@ -290,8 +290,7 @@ class Email_Template_Logic
 				}
 			 }
 
-			 //$oNewNode =  $oDomDocument->importNode($oNewNode, true);
-			//$oDomDocument->replaceChild($oNewNode, $node);
+
 		}
 			 return $bReport?$aReport:str_replace ( '<?xml version="1.0"?>' , "" , $oDOMDocument->saveXML());
 
