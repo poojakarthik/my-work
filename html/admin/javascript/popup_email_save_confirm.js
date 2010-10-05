@@ -64,7 +64,7 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 	
 	_createReport : function()
 	{
-		debugger;
+		
 		var ul = document.createElement('ul');
 		var aKeys = Object.keys(this._oResponse.Report);
 		
