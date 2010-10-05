@@ -66,7 +66,7 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 			
 		
 		
-		debugger;
+	
 		var ul = document.createElement('ul');
 		var aKeys = Object.keys(this._oResponse.Report);
 		
@@ -165,7 +165,7 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 	
 	_dateChanged: function()
 	{
-		debugger;
+		
 		this._oResponse.effectiveDate = this._oChangeDateTime.getElementValue();
 	},
 	
