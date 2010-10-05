@@ -20,14 +20,14 @@ class Email_Template_Logic
 	}
 
 	// getHTMLContent: Return the 'ready-to-send' HTML content for the given array of data
-	public function getHTMLContent($aData)
+	public function getHTMLContent($mData)
 	{
 		try
 		{
+			$aData		= self::_getArrayFromData($mData);//(is_array($mData) ? $mData : get_object_vars($mData));
 			$oDetails	= Email_Template_Details::getCurrentDetailsForTemplateId($this->_oEmailTemplate->id);
 			$oParser	= new Email_HTML_Document($oDetails->email_html);
-			$sHTML		= $oParser->getHTML(true);
-			//$sHTML	= self::processHTML($oDetails->email_html);
+			$sHTML		= self::processHTML($oDetails->email_html);
 			foreach ($this->_aVariables as $sObject => $aProperties)
 			{
 				if (isset($aData[$sObject]))
@@ -53,10 +53,11 @@ class Email_Template_Logic
 	}
 
 	// getTextContent: Return the 'ready-to-send' Text content for the given array of data
-	public function getTextContent($aData)
+	public function getTextContent($mData)
 	{
 		try
 		{
+			$aData		= self::_getArrayFromData($mData);
 			$oDetails	= Email_Template_Details::getCurrentDetailsForTemplateId($this->_oEmailTemplate->id);
 			$sText		= $this->_replaceVariablesInText($oDetails->email_text, $aData);
 			return $sText;
@@ -68,10 +69,11 @@ class Email_Template_Logic
 	}
 
 	// getSubjectContent: Return the 'ready-to-send' Subject content for the given array of data
-	public function getSubjectContent($aData)
+	public function getSubjectContent($mData)
 	{
 		try
 		{
+			$aData		= self::_getArrayFromData($mData);
 			$oDetails	= Email_Template_Details::getCurrentDetailsForTemplateId($this->_oEmailTemplate->id);
 			$sText		= $this->_replaceVariablesInText($oDetails->email_subject, $aData);
 			return $sText;
@@ -401,9 +403,26 @@ class Email_Template_Logic
 		return $aTextArray;
 	}
 
-
-
-
-
-
+	// _getArrayFromData: Return an array representation of the given data (object or array)
+	protected static function _getArrayFromData($mData)
+	{
+		if (is_array($mData))
+		{
+			$aData	= $mData;
+		}
+		else
+		{
+			$aData	= get_object_vars($mData);
+		}
+		
+		foreach ($aData as $sKey => $mVal)
+		{
+			if (!is_array($mVal))
+			{
+				$aData[$sKey]	= get_object_vars($mVal);
+			}
+		}
+		
+		return $aData;
+	}
 }
