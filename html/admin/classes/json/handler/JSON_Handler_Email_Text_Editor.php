@@ -43,7 +43,7 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 			$aTemplateDetails['created_employee_id'] = Flex::getUserId();
 			$aTemplateDetails['email_html']	= $aTemplateDetails['email_html'];
 			$aTemplateDetails['effective_datetime'] = $aTemplateDetails['effective_datetime'];
-			$aTemplateDetails['email_subject'] = 'to be implemented';
+			$aTemplateDetails['email_subject'] = $aTemplateDetails['email_subject'];
 
 
 			$oDetails = new Email_Template_Details($aTemplateDetails);
