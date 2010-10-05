@@ -520,6 +520,7 @@ Object.extend(Reflex_Popup.Loading.prototype, {
 								$T.div(sMessage),
 								$T.div('Please wait.')
 							);
+		this.loading.observe('dblclick', this._hideOverride.bind(this));
 		
 		// Hide the title bar
 		this.titlePane.up().hide();
@@ -527,5 +528,13 @@ Object.extend(Reflex_Popup.Loading.prototype, {
 		this.setContent(this.loading);
 		this.setHeaderButtons(new Array());
 		this.setFooterButtons(new Array());
+	},
+	
+	_hideOverride	: function(oEvent)
+	{
+		if (oEvent.ctrlKey)
+		{
+			this.hide();
+		}
 	}
 });
