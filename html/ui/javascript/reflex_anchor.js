@@ -25,6 +25,11 @@ var Reflex_Anchor	=	Class.create(
 		}
 	},
 	
+	setHash	: function(sHash)
+	{
+		window.location.hash	= sHash.toString();
+	},
+	
 	_hashChanged	: function()
 	{
 		this.executeCallbacks(window.location.hash);
