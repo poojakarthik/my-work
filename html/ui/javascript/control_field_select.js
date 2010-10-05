@@ -74,9 +74,9 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 			this.oControlOutput.oLoading.style.display	= 'inline';
 			
 			// Remove any existing Options
-			for (var i = 0; i < this.oControlOutput.oEdit.options.length; i++)
+			while (this.oControlOutput.oEdit.options.length)
 			{
-				this.oControlOutput.oEdit.remove(this.oControlOutput.oEdit.options[i]);
+				this.oControlOutput.oEdit.options[0].remove();
 			}
 			
 			// Retrieve Options
