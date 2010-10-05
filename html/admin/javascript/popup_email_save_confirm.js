@@ -42,15 +42,10 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 									
 								);
 		this._oTemplateSelect	= oTemplateSelect;		
-		this.oChangeReportDiv = document.createElement('div');
-		var header = document.createElement('div');
-		header.innerHTML = 'In order to make it render consistently across different mail clients, the HTML you supplied will be modified as follows:';
-			this.oChangeReportDiv.appendChild(header);
-		var ul = this._createReport();
-			this.oChangeReportDiv.appendChild(ul);
+		
 			
 		var oReportDiv = oTemplateSelect.select('div.report').last();
-		oReportDiv.appendChild(this.oChangeReportDiv);
+		oReportDiv.appendChild(this._createReport());
 		
 		var oDateSection = oTemplateSelect.select('div.date').first();
 		oDateSection.appendChild(this._buildDateContent());
@@ -65,20 +60,40 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 	_createReport : function()
 	{
 		
+		this.oChangeReportDiv = document.createElement('div');
+		
+		
+			
+		
+		
+		debugger;
 		var ul = document.createElement('ul');
 		var aKeys = Object.keys(this._oResponse.Report);
 		
+		
+		var header = document.createElement('div');
+		header.innerHTML = 'In order to make it render consistently across different mail clients, the HTML you supplied will be modified as follows:';
+		
+		
+		var bChanges = false;
 		for (var i = 0; i < aKeys.length; i++)
-				{
-					oChange	= this._oResponse.Report[aKeys[i]];
-					if (oChange.length>0)
-					{
-						var li = document.createElement('li');
-						li.innerHTML = Popup_Email_Save_Confirm.HTML_CHANGES[aKeys[i]];
-						ul.appendChild(li);
-					}
-				}
-		return ul;
+		{
+			oChange	= this._oResponse.Report[aKeys[i]];
+			if (oChange.length>0)
+			{
+				bChanges = true;
+				var li = document.createElement('li');
+				li.innerHTML = Popup_Email_Save_Confirm.HTML_CHANGES[aKeys[i]];
+				ul.appendChild(li);
+			}
+		}
+				
+		if (bChanges)
+		{
+			this.oChangeReportDiv.appendChild(header);
+			this.oChangeReportDiv.appendChild(ul);
+		}
+		return this.oChangeReportDiv;
 	
 	},
 	
@@ -86,6 +101,8 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 	{
 		// Fields
 		this._oChangeDateTime			= this._createField('changeDate');
+		this._oChangeDateTime.addOnChangeCallback(this._dateChanged.bind(this));
+		
 		this._oChangeDateTimeHidden	= $T.input({type: 'hidden', name: 'change_datetime'});
 		this._oChangeNow				= this._createField('change_now');
 		this._oChangeNow.addOnChangeCallback(this._changeNowChanged.bind(this));
@@ -95,11 +112,11 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 		this._radioSelect.type = 'radio';
 		this._radioSelect.value = 'selected_date';
 		this._radioSelect.checked = true;
-		//radio.setAttribute('label', $labels[i]);
+		
 		this._radioSelect.label = 'select date';
-		//radio.setAttirbute('name', uniqueName);
+		
 		this._radioSelect.name = 'date_select';
-		//radio.id = 'selected_date';
+		
 		this._radioSelect.className = 'date-select';
 		this._radioSelect.observe('click',this._changeNowChanged.bind(this));
 		
@@ -107,11 +124,11 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 		this._radioNow.type = 'radio';
 		this._radioNow.value = 'date_now';
 		this._radioNow.checked = false;
-		//radio.setAttribute('label', $labels[i]);
+		
 		this._radioNow.label = 'Now';
-		//radio.setAttirbute('name', uniqueName);
+		
 		this._radioNow.name = 'date_select';
-		//radio.id = 'selected_date';
+		
 		this._radioNow.className = 'date-select';
 		this._radioNow.observe('click',this._changeNowChanged.bind(this));
 		
@@ -144,6 +161,12 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 						);
 		
 		return $T.div(oForm);
+	},
+	
+	_dateChanged: function()
+	{
+		debugger;
+		this._oResponse.effectiveDate = this._oChangeDateTime.getElementValue();
 	},
 	
 	_changeNowChanged	: function()
@@ -273,7 +296,7 @@ Object.extend(Popup_Email_Save_Confirm,
 	{
 		javascript	: 'Javascript tags and code removed',
 		events		: 'Event triggers (eg \'onClick\' removed',
-		form		: '\'action\' and \'method\' attributes removed from form element',
+		form		: 'HTML Forms changed to DIVs',
 		input		: 'form input elements removed',
 		
 	},
