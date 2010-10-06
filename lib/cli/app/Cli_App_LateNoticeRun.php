@@ -422,26 +422,35 @@ class Cli_App_LateNoticeRun extends Cli
 			$this->log("START: Creating Correspondence Runs");
 			foreach ($aCorrespondenceToPost as $iAutomaticInvoiceAction => $aCorrespondenceData)
 			{
-				$this->log("Creating Correspondence Run for automatic invoice action '{$iAutomaticInvoiceAction}'");
-				try
+				if (count($aCorrespondenceData) > 0)
 				{
-					// Create Correspondence Run using the pre-deterimined (System) Correspondence Template name
-					$this->log("Retrieving Template");
-
-					// Get the template
-					$oTemplate	= Correspondence_Logic_Template::getForAutomaticInvoiceAction($iAutomaticInvoiceAction);
-
-					$this->log("Template retrieved, creating Correspondence Run");
-
-					$oRun	= $oTemplate->createRun(true, $aCorrespondenceData);
-
-					$this->log("Run created succesfully (id={$oRun->id})");
+					// Got correspondence data, create run
+					$this->log("Creating Correspondence Run for automatic invoice action '{$iAutomaticInvoiceAction}'");
+					try
+					{
+						// Create Correspondence Run using the pre-deterimined (System) Correspondence Template name
+						$this->log("Retrieving Template");
+	
+						// Get the template
+						$oTemplate	= Correspondence_Logic_Template::getForAutomaticInvoiceAction($iAutomaticInvoiceAction);
+	
+						$this->log("Template retrieved, creating Correspondence Run");
+	
+						$oRun	= $oTemplate->createRun(true, $aCorrespondenceData);
+	
+						$this->log("Run created succesfully (id={$oRun->id})");
+					}
+					catch (Correspondence_DataValidation_Exception $oEx)
+					{
+						// Use the exception information to display a meaningful message
+						$sErrorType	= GetConstantName($oEx->iError, 'correspondence_run_error');
+						throw new Exception("Correspondence Run Processing Failed:\n - Validation errors in the correspondence data for the run: \n -- Error Type: $oEx->iError => '{$sErrorType}'");
+					}
 				}
-				catch (Correspondence_DataValidation_Exception $oEx)
+				else
 				{
-					// Use the exception information to display a meaningful message
-					$sErrorType	= GetConstantName($oEx->iError, 'correspondence_run_error');
-					throw new Exception("Correspondence Run Processing Failed:\n - Validation errors in the correspondence data for the run: \n -- Error Type: $oEx->iError => '{$sErrorType}'");
+					// No correspondence data, no run
+					$this->log("No Correspondence data for automatic invoice action '{$iAutomaticInvoiceAction}', no run created");
 				}
 			}
 			$this->log("FINISHED: Creating Correspondence Runs");
