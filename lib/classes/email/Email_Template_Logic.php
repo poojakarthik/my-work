@@ -26,7 +26,6 @@ class Email_Template_Logic
 		{
 			$aData		= self::_getArrayFromData($mData);//(is_array($mData) ? $mData : get_object_vars($mData));
 			$oDetails	= Email_Template_Details::getCurrentDetailsForTemplateId($this->_oEmailTemplate->id);
-			$oParser	= new Email_HTML_Document($oDetails->email_html);
 			$sHTML		= self::processHTML($oDetails->email_html);
 			foreach ($this->_aVariables as $sObject => $aProperties)
 			{
@@ -147,7 +146,7 @@ class Email_Template_Logic
 		}
 		catch (Exception $oException)
 		{
-			throw new Exception("Failed to get Email_HTML_Template instance. ".$oException->getMessage());
+			throw new Exception("Failed to get Email_Template_Logic instance. ".$oException->getMessage());
 		}
 	}
 
