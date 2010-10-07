@@ -1,5 +1,7 @@
 <?php
 
+require_once "Zend/Pdf/Resource.php";
+
 class Flex_Pdf_Resource_Raw extends Zend_Pdf_Resource
 {
 	private static $rawResources = array();

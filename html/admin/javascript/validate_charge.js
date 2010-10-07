@@ -52,7 +52,10 @@ function VixenValidateChargeClass()
 	 * @property
 	 */
 	this._objChargeTypeData = {};
-
+	
+	// Holds a string representation of an optional override amount for the charge that is to be requested
+	this._sOverrideAmount	= null;
+	
 	//------------------------------------------------------------------------//
 	// SetChargeTypes
 	//------------------------------------------------------------------------//
@@ -75,6 +78,12 @@ function VixenValidateChargeClass()
 	this.SetChargeTypes = function(objChargeTypeData)
 	{
 		this._objChargeTypeData = objChargeTypeData;
+	}
+	
+	// SetOverrideAmount: Sets the string charge amount override value
+	this.SetOverrideAmount	= function(sOverrideAmount)
+	{
+		this._sOverrideAmount	= sOverrideAmount;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -108,7 +117,7 @@ function VixenValidateChargeClass()
 		{
 			return;
 		}
-
+		
 		// retrieve values relating to the Charge Type selected
 		intChargeTypeId		= objComboBox.value;
 		strDefaultAmount	= this._objChargeTypeData[intChargeTypeId].Amount;
@@ -132,8 +141,18 @@ function VixenValidateChargeClass()
 		document.getElementById('ChargeType.ChargeType.Output').innerHTML = strChargeType;
 		document.getElementById('ChargeType.Description.Output').innerHTML = strDescription;
 		document.getElementById('ChargeType.Nature.Output').innerHTML = strNature;
-		var elmChargeAmount = document.getElementById('Charge.Amount');
-		elmChargeAmount.value = strDefaultAmount;
+		var elmChargeAmount 		= document.getElementById('Charge.Amount');
+		if ((this._objChargeTypeData[intChargeTypeId].Fixed == 0) && (this._sOverrideAmount !== null))
+		{
+			// A charge override has been specified and the charge type is not fixed, 
+			// use the override amount
+			elmChargeAmount.value = this._sOverrideAmount;
+		}
+		else
+		{
+			// Use the default amount of the charge type
+			elmChargeAmount.value = strDefaultAmount;
+		}
 		elmChargeAmount.style.backgroundColor = "#FFFFFF";
 		document.getElementById('ChargeType.Id').value = intChargeTypeId;
 		

@@ -93,6 +93,7 @@
 															"CDR.Id AS Id",
 															"CDR.Account = <Account> AND " .
 															"CDR.Status IN (".CDR_RATED.", ".CDR_TEMP_INVOICE.") AND " .
+															"CDR.invoice_run_id = <invoice_run_id> AND " .
 															"CDR.Credit = 0 " .
 															"\nLIMIT 1\n" .
 															"UNION\n" .
@@ -100,6 +101,7 @@
 															"FROM Charge\n" .
 															"WHERE Charge.Account = <Account> AND \n" .
 															"Charge.Status IN (".CHARGE_APPROVED.", ".CHARGE_TEMP_INVOICE.") AND " .
+															"Charge.invoice_run_id = <invoice_run_id> AND " .
 															"Charge.Nature = 'DR'\n" .
 															"LIMIT 1");
 															
@@ -107,12 +109,14 @@
 														"Id",
 														"AccountGroup = <AccountGroup> AND " .
 														"Archived = 0 AND " .
-														"DATE(CONCAT(ExpYear, '-', ExpMonth, '-01')) >= CURDATE()");
+														"DATE(CONCAT(ExpYear, '-', ExpMonth, '-01')) >= <expiry_date> AND ".
+														"Id = <Id>");
 		
 		$this->_selDirectDebit = new StatementSelect(	"DirectDebit",
 														"Id",
 														"AccountGroup = <AccountGroup> AND " .
-														"Archived = 0");
+														"Archived = 0 AND ".
+														"Id = <Id>");
  	}
  	
  	
@@ -133,28 +137,37 @@
 	 */
  	function Generate($objInvoice, $objAccount)
  	{
+ 		Log::getLog()->log("Attempting to generate Account Processing Billing Charge");
+ 		
  		// Does this account qualify?
  		if ($objAccount->DisableDDR === 1)
  		{
+ 			Log::getLog()->log("Account doesn't qualify, DisableDDR set to 1");
+ 			
  			// No, return TRUE
  			return TRUE;
  		}
- 		
- 		// Do we have a valid CreditCard/DirectDebit entry?
- 		if ($objAccount->BillingType === BILLING_TYPE_CREDIT_CARD)
+		
+		// Do we have a valid CreditCard/DirectDebit entry?
+		$oAccountHistory	= Account_History::getForAccountAndEffectiveDatetime($objAccount->Id, $objInvoice->billing_period_end_datetime);
+ 		if ($oAccountHistory->billing_type === BILLING_TYPE_CREDIT_CARD)
  		{
- 			// Check for Credit Card
- 			if ($this->_selCreditCard->Execute(Array('AccountGroup' => $objAccount->AccountGroup)))
+ 			// Check for Credit Card (use account history credit_card_id, and the invoices billing_period_end_datetime
+ 			if ($this->_selCreditCard->Execute(Array('AccountGroup' => $objAccount->AccountGroup, 'expiry_date' => date('Y-m', strtotime($objInvoice->billing_period_end_datetime)), 'Id' => $oAccountHistory->credit_card_id)))
  			{
+ 				Log::getLog()->log("Valid Credit card, cancel generate");
+ 				
  				// Valid Credit Card
  				return TRUE; 
  			}
  		}
- 		elseif ($objAccount->BillingType == BILLING_TYPE_DIRECT_DEBIT)
+ 		elseif ($oAccountHistory->billing_type == BILLING_TYPE_DIRECT_DEBIT)
  		{
- 			// Check for DD Details
- 			if ($this->_selDirectDebit->Execute(Array('AccountGroup' => $objAccount->AccountGroup)))
+ 			// Check for DD Details (use account history direct_debit_id)
+ 			if ($this->_selDirectDebit->Execute(Array('AccountGroup' => $objAccount->AccountGroup, 'Id' => $oAccountHistory->direct_debit_id)))
  			{
+ 				Log::getLog()->log("Valid Direct Debit, cancel generate");
+ 				
  				// Valid DD Details
  				return TRUE;
  			}
@@ -163,16 +176,22 @@
  		// Is the Invoice Total > NON_DDR_MINIMUM_CHARGE?
  		if ($objInvoice->Total < $this->_cfgModuleConfig->InvoiceMinimum)
  		{
+ 			Log::getLog()->log("Invoice Total is less than module minimum charge ({$this->_cfgModuleConfig->InvoiceMinimum}), cancel generate");
+ 			
  			// Yes, return TRUE
  			return TRUE;
  		}
  		
  		// Is this Account tolling?
- 		if (!$this->_selTollingAccounts->Execute(Array('Account' => $objAccount->Id)))
+ 		if (!$this->_selTollingAccounts->Execute(Array('Account' => $objAccount->Id, 'invoice_run_id' => $objInvoice->invoice_run_id)))
  		{
+ 			Log::getLog()->log("Account is not tolling, cancel generate");
+ 			
  			// No, return TRUE
  			return TRUE;
  		}
+ 		
+ 		Log::getLog()->log("Generating Account Processing Billing Charge");
  		
  		// Yes, add the charge
 		$arrCharge = Array();

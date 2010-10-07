@@ -16,6 +16,9 @@ class Account_History
 {
 	const SYSTEM_ACTION_EMPLOYEE_ID = USER_ID;
 
+	protected  			$_sTableName		= 'account_history';
+	protected static	$_sStaticTableName	= 'account_history';
+
 	//------------------------------------------------------------------------//
 	// recordCurrentState
 	//------------------------------------------------------------------------//
@@ -373,6 +376,69 @@ class Account_History
 					);
 	}
 
+	public static function getForAccountAndEffectiveDatetime($iAccountId, $sEffectiveDatetime=null)
+	{
+		// NOTE: 	Effective datetime: means that the change timestamp must be the latest 
+		//			possible up to the and including effectived datetime 
+				
+		// Default effective datetime is now
+		if ($sEffectiveDatetime === null)
+		{
+			$sEffectiveDatetime	= date('Y-m-d H:i:s');
+		}
+		
+		// Use prepared statment
+		$oStmt	= self::_preparedStatement('selByAccountIdAndEffectiveDatetime');
+		$iRows	= $oStmt->Execute(array('account_id' => $iAccountId, 'effective_datetime' => "'{$sEffectiveDatetime}'"));
+		if ($iRows === false)
+		{
+			throw new Exception("Failed to get account history for account & effective date time. ".$oStmt->Error());
+		}
+		
+		if ($aRow = $oStmt->Fetch())
+		{
+			return new self($aRow);	
+		}
+		return null;
+	}
+
+	protected static function _preparedStatement($sStatement)
+	{
+		static	$arrPreparedStatements	= Array();
+		if (isset($arrPreparedStatements[$sStatement]))
+		{
+			return $arrPreparedStatements[$sStatement];
+		}
+		else
+		{
+			switch ($sStatement)
+			{
+				// SELECTS
+				case 'selById':
+					$arrPreparedStatements[$sStatement]	= new StatementSelect(self::$_sStaticTableName, "*", "id = <id>", NULL, 1);
+					break;
+				case 'selByAccountIdAndEffectiveDatetime':
+					$arrPreparedStatements[$sStatement]	= new StatementSelect(self::$_sStaticTableName, "*", "account_id = <account_id> AND change_timestamp <= <effective_datetime>", "change_timestamp DESC", 1);
+					break;
+				
+				// INSERTS
+				case 'insSelf':
+					$arrPreparedStatements[$sStatement]	= new StatementInsert(self::$_sStaticTableName);
+					break;
+				
+				// UPDATE BY IDS
+				case 'ubiSelf':
+					$arrPreparedStatements[$sStatement]	= new StatementUpdateById(self::$_sStaticTableName);
+					break;
+				
+				// UPDATES
+				
+				default:
+					throw new Exception(__CLASS__."::{$sStatement} does not exist!");
+			}
+			return $arrPreparedStatements[$sStatement];
+		}
+	}
 }
 
 ?>

@@ -85,5 +85,77 @@ class JSON_Handler_Rate_Plan extends JSON_Handler
 						);
 		}
 	}
+	
+	public function getForAccount($iAccountId, $bReturnArchived=false)
+	{
+		return $this->getForCustomerGroup(Account::getForId($iAccountId)->CustomerGroup, $bReturnArchived);
+	}
+	
+	public function getForCustomerGroup($iCustomerGroup, $bReturnArchived=false)
+	{
+		$bIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		
+		try
+		{
+			// Retrieve all RatePlans within the given customer group
+			$sWhere	= "customer_group = <CustomerGroup>";
+			$aWhere	= array("CustomerGroup"	=> $iCustomerGroup);
+			
+			if (!$bReturnArchived)
+			{
+				// Limit the status to ACTIVE
+				$sWhere .= " AND Archived = <RatePlanActive>";
+				$aWhere["RatePlanActive"]	= RATE_STATUS_ACTIVE;
+			}
+			
+			$oStmt		= new StatementSelect("RatePlan", "Id, ServiceType, Name", $sWhere, "Name ASC");
+			$mResult	= $oStmt->Execute($aWhere);
+			$aRatePlans	= array();
+			if ($mResult)
+			{
+				$aRecordSet	= $oStmt->FetchAll();
+				foreach ($aRecordSet as $aRecord)
+				{
+					$aRatePlans[$aRecord['ServiceType']][$aRecord['Id']]	= $aRecord;
+				}
+			}
+					
+			return	array(
+						'bSuccess'		=> true,
+						'aRatePlans'	=> $aRatePlans,
+						'aRecordSet'	=> $aRecordSet,
+						'sDebug'		=> ($bIsGod ? $this->_JSONDebug : false)
+					);
+		}
+		catch (Exception $oEx)
+		{
+			return array(
+						'bSuccess'	=> false,
+						'sMessage'	=> ($bIsGod ? $oEx->getMessage() : ''),
+						'sDebug'	=> ($bIsGod ? $this->_JSONDebug : false)
+					);
+		}
+	}
+	
+	public function getForId($iId)
+	{
+		$bIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		try
+		{
+			return	array(
+						'bSuccess'	=> true,
+						'oRatePlan'	=> Rate_Plan::getForId($iId)->toStdClass(),
+						'sDebug'	=> ($bIsGod ? $this->_JSONDebug : false)
+					);
+		}
+		catch (Exception $oEx)
+		{
+			return array(
+						'bSuccess'	=> false,
+						'sMessage'	=> ($bIsGod ? $oEx->getMessage() : ''),
+						'sDebug'	=> ($bIsGod ? $this->_JSONDebug : false)
+					);
+		}
+	}
 }
 ?>

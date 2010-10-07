@@ -35,29 +35,31 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 	private $fontParts = array(self::FONT_FAMILY => "helvetica", self::FONT_WEIGHT => "", self::FONT_STYLE => "");
 
 	// Non-inherited properties
-	private $intTop 	= NULL;
-	private $intLeft 	= NULL;
-	private $intBottom 	= NULL;
-	private $intRight 	= NULL;
-	private $intWidth 	= NULL;
-	private $intHeight 	= NULL;
+	private $intTop 				= NULL;
+	private $intLeft 				= NULL;
+	private $intBottom 				= NULL;
+	private $intRight 				= NULL;
+	private $intWidth 				= NULL;
+	private $intHeight 				= NULL;
 	private $intBorderCornerRadius	= 0;
 	private $intBorderWidthTop		= 0;
 	private $intBorderWidthBottom	= 0;
 	private $intBorderWidthLeft		= 0;
 	private $intBorderWidthRight	= 0;
 	private $objBorderColor			= NULL;
-	private $intPaddingTop		= 0;
-	private $intPaddingBottom	= 0;
-	private $intPaddingLeft		= 0;
-	private $intPaddingRight	= 0;
-	private $objBackgroundColor	= NULL;
-	private $objColor	= NULL;
-	private $intTextAlign = self::TEXT_ALIGN_LEFT;
-	private $intOverflow = self::OVERFLOW_VISIBLE;
-	private $intCornerRadius = 0;
-	private $strPageSize = Zend_Pdf_Page::SIZE_A4;
-	private $intMedia = self::MEDIA_ALL;
+	private $intPaddingTop			= 0;
+	private $intPaddingBottom		= 0;
+	private $intPaddingLeft			= 0;
+	private $intPaddingRight		= 0;
+	private $objBackgroundColor		= NULL;
+	private $objColor				= NULL;
+	private $intTextAlign 			= self::TEXT_ALIGN_LEFT;
+	private $intOverflow 			= self::OVERFLOW_VISIBLE;
+	private $intCornerRadius 		= 0;
+	private $strPageSize 			= Zend_Pdf_Page::SIZE_A4;
+	private $intMedia 				= self::MEDIA_ALL;
+	private $fltRotateAngle 		= 0;
+	private $intOpacity				= 1;
 
 	private $bolInheritedFromStyle = FALSE;
 
@@ -226,7 +228,15 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 				case "PAGE-SIZE":
 					$this->setPageSize($styleParts[1]);
 					break;
-
+				
+				case "ROTATE-ANGLE":
+					$this->setRotateAngle($styleParts[1]);
+					break;
+				
+				case "OPACITY":
+					$this->setOpacity($styleParts[1]);
+					break;
+					
 					// Ignore - not supported!
 
 			}
@@ -837,6 +847,8 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 		// Corners
 		$style[] = "corner-radius: " . $this->getCornerRadius() . "pt";
 
+		// Rotate Angle
+		$style[] = "rotate-angle: " . $this->getRotateAngle();
 
 		// Padding
 		$style[] = "padding-top: " . $this->getPaddingTop() . "pt";
@@ -869,6 +881,35 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 		return implode("; ", $style);
 	}
 
+	public function setRotateAngle($fltAngle)
+	{
+		$this->fltRotateAngle	= $fltAngle;
+	}
+
+	public function getRotateAngle()
+	{
+		return deg2rad($this->fltRotateAngle);
+	}
+
+	public function isRotated()
+	{
+		return ((int)$this->fltRotateAngle !== 0);
+	}
+
+	public function setOpacity($intOpacity)
+	{
+		$this->intOpacity	= $intOpacity;
+	}
+
+	public function getOpacity()
+	{
+		return $this->intOpacity;
+	}
+
+	public function hasOpacity()
+	{
+		return $this->intOpacity !== 1;
+	}
 
 	public static function mediaForMediaName($strMediaName)
 	{

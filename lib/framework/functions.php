@@ -2765,7 +2765,7 @@ function GetPDFContent($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvo
 			{
 				$xml = file_get_contents($mxdInvoicePath);
 			}
-			$pdf	= generateInvoicePDF($xml, $intInvoiceId, $intTargetMedia);
+			$pdf	= generateInvoicePDF($xml, $intInvoiceId, $intTargetMedia, $intInvoiceRunId, $intAccount);
 			break;
 
 		case '.pdf':
@@ -2779,7 +2779,7 @@ function GetPDFContent($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvo
 	}
 }
 
-function generateInvoicePDF($strXML, $intInvoiceId, $intTargetMedia)
+function generateInvoicePDF($strXML, $intInvoiceId, $intTargetMedia, $iInvoiceRunId, $iAccountId)
 {
 	static	$qryQuery;
 	$qryQuery	= ($qryQuery) ? $qryQuery : new Query();
@@ -2849,7 +2849,7 @@ function generateInvoicePDF($strXML, $intInvoiceId, $intTargetMedia)
 		if (PHP_SAPI !== 'cli')
 		{
 			$intInvoiceId	= (int)$intInvoiceId;
-			$resInvoice		= $qryQuery->Execute("SELECT * FROM Invoice WHERE Id = {$intInvoiceId} LIMIT 1");
+			/*$resInvoice		= $qryQuery->Execute("SELECT * FROM Invoice WHERE Id = {$intInvoiceId} LIMIT 1");
 			if ($resInvoice === false)
 			{
 				throw new Exception($qryQuery->Error());
@@ -2857,9 +2857,9 @@ function generateInvoicePDF($strXML, $intInvoiceId, $intTargetMedia)
 			elseif (!($arrInvoice = $resInvoice->fetch_assoc()))
 			{
 				throw new Exception("Unable to load Invoice with Id '{$intInvoiceId}'");
-			}
+			}*/
 			
-			$strPDFPath	= PATH_INVOICE_PDFS."pdf/{$arrInvoice['invoice_run_id']}/{$arrInvoice['Account']}.pdf";
+			$strPDFPath	= PATH_INVOICE_PDFS."pdf/{$iInvoiceRunId}/{$iAccountId}.pdf";
 			@mkdir(dirname($strPDFPath), 0777, true);
 			if (!file_exists(dirname($strPDFPath)) || !@file_put_contents($strPDFPath, $strPDFContent))
 			{

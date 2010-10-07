@@ -9,7 +9,102 @@ var Invoice	= Class.create
 		
 	},
 	
-	_getInvoiceRunType		: function(intInvoiceRunType)
+	// getForId: JSON Handler wrapper
+	getForId	: function(iId, fnCallback, oResponse)
+	{
+		if (typeof oResponse == 'undefined')
+		{
+			// Make request
+			var fnResponseCallback	= this.getForId.bind(this, iId, fnCallback);
+			var fnGetForId			= jQuery.json.jsonFunction(fnResponseCallback, fnResponseCallback, 'Invoice_View', 'getForId');
+			fnGetForId(iId);
+		}
+		else
+		{
+			if (!oResponse.Success)
+			{
+				Reflex_Popup.alert(oResponse.sMessage + ((oResponse.strDebug != '') ? ' DEBUG LOG: ' + oResponse.strDebug : ''));
+				fnCallback(null);
+				return;
+			}
+			
+			// Handle request
+			fnCallback(oResponse.oInvoice);
+		}
+	},
+	
+	getServicesForInvoice	: function(iInvoiceId, fnCallback, oResponse)
+	{
+		if (typeof oResponse == 'undefined')
+		{
+			// Make request
+			var fnResponse				= this.getServicesForInvoice.bind(this, iInvoiceId, fnCallback);
+			var fnGetServicesForInvoice	= jQuery.json.jsonFunction(fnResponse, fnResponse, 'Invoice', 'getServicesForInvoice');
+			fnGetServicesForInvoice(iInvoiceId);
+		}
+		else
+		{
+			if (!oResponse.bSuccess)
+			{
+				Reflex_Popup.alert(oResponse.sMessage + ((oResponse.sDebug != '') ? ' DEBUG LOG: ' + oResponse.sDebug : ''));
+				fnCallback(null);
+				return;
+			}
+			
+			// Handle request
+			fnCallback(oResponse.aServices);
+		}
+	},
+	
+	// rerateInvoice: JSON Handler wrapper
+	rerateInvoice	: function(iInvoiceId, hServiceRatePlans, fnCallback, oResponse)
+	{
+		if (typeof oResponse == 'undefined')
+		{
+			// Make request
+			var fnResponseCallback	= this.rerateInvoice.bind(this, iInvoiceId, hServiceRatePlans, fnCallback);
+			var fnRerateInvoice		= jQuery.json.jsonFunction(fnResponseCallback, fnResponseCallback, 'Invoice', 'rerateInvoice');
+			fnRerateInvoice(iInvoiceId, hServiceRatePlans);
+		}
+		else
+		{
+			if (!oResponse.bSuccess)
+			{
+				Reflex_Popup.alert(oResponse.sMessage + ((oResponse.sDebug != '') ? ' DEBUG LOG: ' + oResponse.sDebug : ''));
+				fnCallback(null);
+				return;
+			}
+			
+			// Handle request
+			fnCallback(oResponse.oNewInvoice, oResponse.oOriginalInvoice, oResponse.sDebug);
+		}
+	},
+	
+	// hasUnarchivedCDRs: JSON Handler Wrapper
+	hasUnarchivedCDRs	: function(iInvoiceId, fnCallback, oResponse)
+	{
+		if (typeof oResponse == 'undefined')
+		{
+			// Make request
+			var fnResponseCallback	= this.hasUnarchivedCDRs.bind(this, iInvoiceId, fnCallback);
+			var fnHasUnarchivedCDRs	= jQuery.json.jsonFunction(fnResponseCallback, fnResponseCallback, 'Invoice', 'hasUnarchivedCDRs');
+			fnHasUnarchivedCDRs(iInvoiceId);
+		}
+		else
+		{
+			if (!oResponse.bSuccess)
+			{
+				Reflex_Popup.alert(oResponse.sMessage + ((oResponse.sDebug != '') ? ' DEBUG LOG: ' + oResponse.sDebug : ''));
+				fnCallback(null);
+				return;
+			}
+			
+			// Handle request
+			fnCallback(oResponse.bHasUnarchivedCDRs);
+		}
+	},
+	
+	_getInvoiceRunType	: function(intInvoiceRunType)
 	{
 		var strInvoiceRunType;
 		switch (intInvoiceRunType)

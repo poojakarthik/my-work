@@ -192,8 +192,33 @@ class Flex_Pdf_Template_Paragraph extends Flex_Pdf_Template_Element
 					}
 				}
 
+				if ($page->getStyle()->isRotated())
+				{
+					// Rotate page
+					$page->rotate($drawX, $availableHeight - $drawY, $page->getStyle()->getRotateAngle());
+				}
+				
+				if ($page->getStyle()->hasOpacity())
+				{
+					// Set page alpha
+					$page->setAlpha($page->getStyle()->getOpacity());
+				}
+				
+				// Draw text
 				$page->drawText($drawY, $drawX, $strings[$i], $widths[$i], $this->getStyle());
-
+				
+				if ($page->getStyle()->isRotated())
+				{
+					// Rotate page back
+					$page->rotate($drawX, $availableHeight - $drawY, 0 - $page->getStyle()->getRotateAngle());
+				}
+				
+				if ($page->getStyle()->hasOpacity())
+				{
+					// Reset page alpha to fully opaque
+					$page->setAlpha(1);
+				}
+				
 				// If the span is a link target...
 				if ($i === 0 && $childElements[$c]->isLinkTarget())
 				{

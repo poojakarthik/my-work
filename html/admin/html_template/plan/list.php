@@ -130,7 +130,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 		echo "<div class='SmallSeparator'></div>";
 		
 		// Render the header of the Plan Table
-		Table()->PlanTable->SetHeader("&nbsp;", "&nbsp;", "Name", "Customer Group", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;", "Status", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;");
+		Table()->PlanTable->SetHeader("&nbsp;", "&nbsp;", "Name", "Customer Group", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;", "Status", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;");
 		Table()->PlanTable->SetWidth("2%", "2%", "60%", "20%", "2%", "2%", "2%", "2%", "2%", "2%", "2%", "2%", "2%", "2%", "2%", "2%");
 		Table()->PlanTable->SetAlignment("Left", "Left", "Left", "Left", "Left", "Left","Left", "Left", "Left", "Left", "Left", "Left", "Center", "Center", "Center", "Center", "Center");
 		
@@ -282,7 +282,12 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 				}
 				$strAddPlanLink	= Href()->AddRatePlan($arrRatePlan['Id']);
 				$strAddCell		= "<a href='$strAddPlanLink' title='Create a new plan based on this one'><img src='img/template/new.png' /></a>";
-				$strActionCell	= "{$strEdit}{$strAdd}";
+				$strTestCell	= '';
+				if ($arrRatePlan['Archived'] == RATE_STATUS_DRAFT)
+				{
+					$strTestPlanLink	= Href()->TestRatePlan($arrRatePlan['Id']);
+					$strTestCell		= "<a href=\"$strTestPlanLink\" title='Test the Plan against an existing Invoice'><img src='img/template/rerate.png'/></a>";
+				}
 			}
 			
 			$strCheckboxCell	= "<input id='RatePlan_{$arrRatePlan['Id']}_Checkbox' name='RatePlan_Checkbox' type='checkbox' onclick='this.checked = !this.checked;' value='{$arrRatePlan['Id']}' />";
@@ -296,7 +301,25 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			$strCustomerGroupCell	= "<input id='RatePlan_{$arrRatePlan['Id']}_CustomerGroup' type='hidden' value='{$arrRatePlan['customer_group']}' /><span id='RatePlan_{$arrRatePlan['Id']}_CustomerGroup_Name'>".$strCustomerGroup."</span>";
 			
 			// Add the row
-			Table()->PlanTable->AddRow($strCheckboxCell, $strServiceTypeCell, $strNameCell, $strCustomerGroupCell, $strDefaultCell, $strAdvanceCell, $strContractCell, $strLockedCell, $strCDRRequiredCell, $strSharedCell, $strCDRHiding, $strStatusCell, $strBrochureCell, $strVoiceAuthCell, $strEditCell, $strAddCell);
+			Table()->PlanTable->AddRow(
+				$strCheckboxCell, 
+				$strServiceTypeCell, 
+				$strNameCell, 
+				$strCustomerGroupCell, 
+				$strDefaultCell, 
+				$strAdvanceCell, 
+				$strContractCell, 
+				$strLockedCell, 
+				$strCDRRequiredCell, 
+				$strSharedCell, 
+				$strCDRHiding, 
+				$strStatusCell, 
+				$strBrochureCell, 
+				$strVoiceAuthCell,
+				$strTestCell, 
+				$strEditCell, 
+				$strAddCell
+			);
 			Table()->PlanTable->SetOnClick("\$ID('RatePlan_{$arrRatePlan['Id']}_Checkbox').checked = !\$ID('RatePlan_{$arrRatePlan['Id']}_Checkbox').checked;");
 			
 			$arrRatePlanDetails[$arrRatePlan['Id']] = array(	"Name"			=> $strName,

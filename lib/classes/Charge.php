@@ -19,6 +19,8 @@ class Charge extends ORM_Cached
 	const SEARCH_CONSTRAINT_CHARGE_STATUS	= "Charge|Status";
 	const SEARCH_CONSTRAINT_CHARGE_MODEL_ID	= "Charge|charge_model_id";
 	const SEARCH_CONSTRAINT_ACCOUNT_ID		= "Account|Id";
+	const SEARCH_CONSTRAINT_INVOICE_RUN_ID	= "Charge|invoice_run_id";
+	const SEARCH_CONSTRAINT_CHARGE_TYPE		= "Charge|ChargeType";
 
 	const ORDER_BY_ACCOUNT_NAME		= "Account|accountName";
 	const ORDER_BY_ACCOUNT_ID		= "Charge|Account";
@@ -95,6 +97,8 @@ class Charge extends ORM_Cached
 					case self::SEARCH_CONSTRAINT_CHARGE_STATUS:
 					case self::SEARCH_CONSTRAINT_CHARGE_MODEL_ID:
 					case self::SEARCH_CONSTRAINT_ACCOUNT_ID:
+					case self::SEARCH_CONSTRAINT_INVOICE_RUN_ID:
+					case self::SEARCH_CONSTRAINT_CHARGE_TYPE:
 						$arrWhereClauseParts[] = self::_prepareSearchConstraint(str_replace( '|', '.', $arrConstraint['Type']), $arrConstraint['Value']);
 						break;
 				}

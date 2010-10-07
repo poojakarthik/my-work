@@ -9,6 +9,29 @@ var Account	= Class.create
 		
 	},
 	
+	// getForId: JSON Handler Request Wrapper
+	getForId	: function(iAccountId, fnCallback, oResponse)
+	{
+		if (typeof oResponse == 'undefined')
+		{
+			// Make request
+			var fnHandler	= this.getForId.bind(this, iAccountId, fnCallback);
+			var fnGetForId	= jQuery.json.jsonFunction(fnHandler, fnHandler, 'Account', 'getForId');
+			fnGetForId(iAccountId);
+		}
+		else
+		{
+			// Handle response
+			if (!oResponse.bSuccess)
+			{
+				Reflex_Popup.alert(oResponse.sMessage + (oResponse.sDebug !== '' ? oResponse.sDebug : ''), {sTitle: 'Error'});
+				return;
+			}
+			
+			fnCallback(oResponse.oAccount);
+		}
+	},
+	
 	displayReferAccountsPopup	: function(intAccount, strBusinessName, strAccountStatus)
 	{
 		var strReferees	= "";

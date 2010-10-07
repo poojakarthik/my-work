@@ -1353,6 +1353,30 @@ class Invoice_Run
 		return Correspondence_Logic_Template::getForInvoiceRunType($this->invoice_run_type_id, $aData);
 	}
 
+	// hasUnarchivedCDRsForAccount: Used to determine if there are any CDRs still in the Flex database for this invoice id
+	//								for the given account id.
+	public function hasUnarchivedCDRsForAccount($iAccountId)
+	{
+		$sQuery	= "SELECT	CASE 
+								WHEN	(
+											SELECT 	'Still In CDR table' 
+											FROM 	CDR 
+											WHERE 	invoice_run_id = {$this->Id} 
+											AND		Account = {$iAccountId} LIMIT 1
+										) = 'Still In CDR table' 
+								THEN '".FLEX_DATABASE_CONNECTION_DEFAULT."' 
+								ELSE '".FLEX_DATABASE_CONNECTION_CDR."' 
+							END AS DataSource";
+		$oDB	= Data_Source::get();
+		$oRes	= $oDB->query($sQuery);
+		if (PEAR::isError($oRes))
+		{
+			throw new Exception("Failed to find the data source storing CDRs for invoice run: {$this->Id} and Account: {$iAccountId} - " . $oRes->getMessage());
+		}
+		$sDataSourceName	= $oRes->fetchOne();
+		return ($sDataSourceName == FLEX_DATABASE_CONNECTION_DEFAULT);
+	}
+
 	//------------------------------------------------------------------------//
 	// save
 	//------------------------------------------------------------------------//

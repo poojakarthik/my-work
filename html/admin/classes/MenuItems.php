@@ -1136,6 +1136,31 @@ class MenuItems {
 		return self :: NEW_FRAMEWORK . "flex.php/Invoice/ExportAsCSV/?Invoice.Id=$intInvoiceId";
 	}
 
+	// RerateInvoice
+	function RerateInvoice($iInvoiceId)
+	{
+		$this->strLabel = "";
+		$this->strContextMenuLabel = "";
+		
+		return "javascript: JsAutoLoader.loadScript(
+								[
+									'invoice.js',
+									'plan.js',
+									'account.js',
+									'control_field.js',
+									'control_field_select.js',
+									'section.js',
+									'popup_invoice_rerate.js',
+									'popup_invoice_rerate_summary.js'
+								],
+								function()
+								{
+									var oPopup = new Popup_Invoice_Rerate({$iInvoiceId});
+								},
+								true
+							);";
+	}
+
 	//------------------------------------------------------------------------//
 	// ViewAllConstants
 	//------------------------------------------------------------------------//
@@ -2141,6 +2166,35 @@ class MenuItems {
 		}
 
 		return self :: NEW_FRAMEWORK . "flex.php/Plan/Add/$strGetVariables";
+	}
+
+	function TestRatePlan($iRatePlanId)
+	{
+		$this->strContextMenuLabel	= '';
+		$this->strLabel				= '';
+		
+		return "javascript: JsAutoLoader.loadScript(
+								[
+									'invoice.js',
+									'plan.js',
+									'account.js',
+									'control_field.js',
+									'control_field_select.js',
+									'control_field_text.js',
+									'control_field_text_ajax.js',
+									'section.js',
+									'dataset_ajax.js',
+									'filter.js',
+									'popup_rate_plan_test.js',
+									'popup_invoice_rerate.js',
+									'popup_invoice_rerate_summary.js'
+								],
+								function()
+								{
+									var oPopup = new Popup_Rate_Plan_Test({$iRatePlanId});
+								},
+								true
+							);";
 	}
 
 	//------------------------------------------------------------------------//
@@ -3857,7 +3911,6 @@ class MenuItems {
 							[
 								'../ui/javascript/section.js',
 								'javascript/popup_email_text_editor.js',
-								'javascript/popup_email_template_select.js',
 								'javascript/popup_email_html_preview.js',
 								'javascript/popup_email_templates.js',
 								'javascript/popup_email_save_confirm.js',

@@ -175,12 +175,6 @@ class Service extends ORM
 		}
 		$strStartDatetime = date("Y-m-d H:i:s", $intStartDatetime);
 
-		// Work out the EndDatetime for the old records of the ServiceRatePlan and ServiceRateGroup tables, which have an EndDatetime
-		// greater than $strStartDatetime
-		// The EndDatetime will be set to 1 second before the StartDatetime of the records relating to the new plan
-		$intOldPlanEndDatetime = $intStartDatetime - 1;
-		$strOldPlanEndDatetime = date("Y-m-d H:i:s", $intOldPlanEndDatetime);
-		
 		// Find the current plan (if there is one)
 		$objCurrentRatePlan = $this->getCurrentPlan();
 
@@ -198,58 +192,8 @@ class Service extends ORM
 			throw new Exception("Plan '{$objNewRatePlan->name}' (id: {$objNewRatePlan->id}) does not belong to the CustomerGroup that this account belongs to");
 		}
 		
-		// Set the EndDatetime to $strOldPlanEndDatetime for all records in the ServiceRatePlan and ServiceRateGroup tables
-		// which relate this service.  Do not alter the records' "Active" property regardless of what it is.
-		
-		// Update existing ServiceRateGroup records
-		$arrUpdate = Array('EndDatetime' => $strOldPlanEndDatetime);
-		$updServiceRateGroup = new StatementUpdate("ServiceRateGroup", "Service = <Service> AND EndDatetime >= <StartDatetime>", $arrUpdate);
-		if ($updServiceRateGroup->Execute($arrUpdate, Array("Service"=>$this->Id, "StartDatetime"=>$strStartDatetime)) === FALSE)
-		{
-			throw new Exception($updServiceRateGroup->Error());
-		}
-		
-		// Update existing ServiceRatePlan records
-		$updServiceRatePlan = new StatementUpdate("ServiceRatePlan", "Service = <Service> AND EndDatetime >= <StartDatetime>", $arrUpdate);
-		if ($updServiceRatePlan->Execute($arrUpdate, Array("Service"=>$this->Id, "StartDatetime"=>$strStartDatetime)) === FALSE)
-		{
-			// Could not update records in ServiceRatePlan table. Exit gracefully
-			throw new Exception($updServiceRatePlan->Error());
-		}
-		
-		// Get the current User
-		$intUserId	= Flex::getUserId();
-		$intUserId	= ($intUserId) ? $intUserId : 0;
-		
-		// Declare the new plan for the service
-		// Insert a record into the ServiceRatePlan table
-		$objServiceRatePlan	= new Service_Rate_Plan();
-		$objServiceRatePlan->Service 							= $this->Id;
-		$objServiceRatePlan->RatePlan 							= $objNewRatePlan->Id;
-		$objServiceRatePlan->CreatedBy 							= $intUserId;
-		$objServiceRatePlan->CreatedOn 							= $strCurrentDateAndTime;
-		$objServiceRatePlan->StartDatetime 						= $strStartDatetime;
-		$objServiceRatePlan->EndDatetime 						= '9999-12-31 23:59:59';
-		$objServiceRatePlan->LastChargedOn						= NULL;
-		$objServiceRatePlan->Active								= $intActive;
-		
-		$intContractTerm										= (int)$objNewRatePlan->ContractTerm;
-		$objServiceRatePlan->contract_scheduled_end_datetime	= ($intContractTerm && $intContractTerm > 0) ? date('Y-m-d H:i:s', strtotime("-1 second", strtotime("+{$intContractTerm} months", $intStartDatetime))) : NULL;
-		$objServiceRatePlan->contract_effective_end_datetime	= NULL;
-		$objServiceRatePlan->contract_status_id					= ($intContractTerm && $intContractTerm > 0) ? CONTRACT_STATUS_ACTIVE : NULL;
-		
-		$objServiceRatePlan->save();
-		
-		// Declare the new RateGroups for the service
-		$strInsertRateGroupsIntoServiceRateGroup  = "INSERT INTO ServiceRateGroup (Id, Service, RateGroup, CreatedBy, CreatedOn, StartDatetime, EndDatetime, Active) ";
-		$strInsertRateGroupsIntoServiceRateGroup .= "SELECT NULL, {$this->Id}, RateGroup, {$intUserId}, '{$strCurrentDateAndTime}', '{$strStartDatetime}', '9999-12-31 23:59:59', {$intActive} ";
-		$strInsertRateGroupsIntoServiceRateGroup .= "FROM RatePlanRateGroup WHERE RatePlan = {$objNewRatePlan->Id} ORDER BY RateGroup";
-		$qryInsertServiceRateGroup = new Query();
-		if ($qryInsertServiceRateGroup->Execute($strInsertRateGroupsIntoServiceRateGroup) === FALSE)
-		{
-			// Inserting the records into the ServiceRateGroup table failed.  Exit gracefully
-			throw new Exception($qryInsertServiceRateGroup->Error());
-		}
+		// Make the rate plan effective for the deterimined period
+		$this->setPlanFromStartDatetime($objNewRatePlan, $intActive, $strStartDatetime);
 		
 		// If the plan goes into affect at the begining of the current month, then you must rerate all the cdrs which are currently
 		// rated but not billed
@@ -281,11 +225,82 @@ class Service extends ORM
 		//TODO! Do automatic provisioning here
 		
 		// Add a system note describing the change of plan
+		$intUserId			= Flex::getUserId();
+		$intUserId			= ($intUserId) ? $intUserId : 0;
 		$strCurrentRatePlan	= ($objCurrentRatePlan) ? $objCurrentRatePlan->Name : "undefined";
-		$strNote  = "This service has had its plan changed from '{$strCurrentRatePlan}' to '{$objNewRatePlan->Name}'.  $strNotePlanStart";
-		
+		$strNote  			= "This service has had its plan changed from '{$strCurrentRatePlan}' to '{$objNewRatePlan->Name}'.  $strNotePlanStart";
 		Note::createSystemNote($strNote, $intUserId, $this->Account, $this->Id);
+		
 		return TRUE;
+	}
+	
+	// setPlanFromStartDatetime
+	public function setPlanFromStartDatetime($oNewRatePlan, $iActive, $sStartDatetime)
+	{
+		$sCurrentDateAndTime	= Data_Source_Time::currentTimestamp();
+		$iStartDatetime			= strtotime($sStartDatetime);
+		
+		// Work out the EndDatetime for the old records of the ServiceRatePlan and ServiceRateGroup tables, which have an EndDatetime greater than $strStartDatetime
+		// The EndDatetime will be set to 1 second before the StartDatetime of the records relating to the new plan
+		$iOldPlanEndDatetime	= $iStartDatetime - 1;
+		$sOldPlanEndDatetime	= date("Y-m-d H:i:s", $iOldPlanEndDatetime);
+		
+		// Set the EndDatetime to $sOldPlanEndDatetime for all records in the ServiceRatePlan and ServiceRateGroup tables
+		// which relate this service.  Do not alter the records' "Active" property regardless of what it is.
+		
+		// Update existing ServiceRateGroup records
+		$aUpdate			= array('EndDatetime' => $sOldPlanEndDatetime);
+		$oServiceRateGroup	= new StatementUpdate("ServiceRateGroup", "Service = <Service> AND EndDatetime >= <StartDatetime>", $aUpdate);
+		if ($oServiceRateGroup->Execute($aUpdate, Array("Service" => $this->Id, "StartDatetime" => $sStartDatetime)) === FALSE)
+		{
+			throw new Exception("Failed to update existing ServiceRateGroup records. ".$oServiceRateGroup->Error());
+		}
+		
+		// Update existing ServiceRatePlan records
+		$oServiceRatePlan	= new StatementUpdate("ServiceRatePlan", "Service = <Service> AND EndDatetime >= <StartDatetime>", $aUpdate);
+		if ($oServiceRatePlan->Execute($aUpdate, Array("Service" => $this->Id, "StartDatetime" => $sStartDatetime)) === FALSE)
+		{
+			// Could not update records in ServiceRatePlan table. Exit gracefully
+			throw new Exception("Failed to update existing ServiceRatePlan records. ".$oServiceRatePlan->Error());
+		}
+		
+		// Get the current User
+		$iUserId	= Flex::getUserId();
+		$iUserId	= ($iUserId) ? $iUserId : 0;
+		
+		// Declare the new plan for the service. Insert a record into the ServiceRatePlan table
+		$oServiceRatePlan					= new Service_Rate_Plan();
+		$oServiceRatePlan->Service			= $this->Id;
+		$oServiceRatePlan->RatePlan			= $oNewRatePlan->Id;
+		$oServiceRatePlan->CreatedBy		= $iUserId;
+		$oServiceRatePlan->CreatedOn		= $sCurrentDateAndTime;
+		$oServiceRatePlan->StartDatetime	= $sStartDatetime;
+		$oServiceRatePlan->EndDatetime		= Data_Source_Time::END_OF_TIME;
+		$oServiceRatePlan->LastChargedOn	= NULL;
+		$oServiceRatePlan->Active			= $iActive;
+		
+		$iContractTerm	= (int)$oNewRatePlan->ContractTerm;
+		
+		$oServiceRatePlan->contract_scheduled_end_datetime	= ($iContractTerm && $iContractTerm > 0) ? date('Y-m-d H:i:s', strtotime("-1 second", strtotime("+{$intContractTerm} months", $iStartDatetime))) : NULL;
+		$oServiceRatePlan->contract_effective_end_datetime	= NULL;
+		$oServiceRatePlan->contract_status_id				= ($iContractTerm && $iContractTerm > 0) ? CONTRACT_STATUS_ACTIVE : NULL;
+		
+		$oServiceRatePlan->save();
+		
+		// Declare the new RateGroups for the service
+		$sInsertRateGroupsIntoServiceRateGroup	=  "INSERT INTO ServiceRateGroup (Id, Service, RateGroup, CreatedBy, CreatedOn, StartDatetime, EndDatetime, Active) ";
+		$sInsertRateGroupsIntoServiceRateGroup	.= "SELECT NULL, {$this->Id}, RateGroup, {$iUserId}, '{$sCurrentDateAndTime}', '{$sStartDatetime}', '".Data_Source_Time::END_OF_TIME."', {$iActive} ";
+		$sInsertRateGroupsIntoServiceRateGroup	.= "FROM RatePlanRateGroup WHERE RatePlan = {$oNewRatePlan->Id} ORDER BY RateGroup";
+		
+		// Perform insert
+		$oInsertServiceRateGroup	= new Query();
+		if ($oInsertServiceRateGroup->Execute($sInsertRateGroupsIntoServiceRateGroup) === FALSE)
+		{
+			// Inserting the records into the ServiceRateGroup table failed.  Exit gracefully
+			throw new Exception("Failed to insert ServiceRateGroup records. ".$oInsertServiceRateGroup->Error());
+		}
+		
+		return $oServiceRatePlan;
 	}
 	
 	//------------------------------------------------------------------------//

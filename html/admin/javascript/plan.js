@@ -166,6 +166,78 @@ var Plan	= Class.create
 			$Alert(objResponse.Message);
 		}
 	},
+	
+	// getForAccount: JSON Handler wrapper
+	getForAccount	: function(iAccountId, bReturnArchived, fnCallback, oResponse)
+	{
+		if (typeof oResponse == 'undefined')
+		{
+			// Make request
+			var fnResponse		= this.getForAccount.bind(this, iAccountId, bReturnArchived, fnCallback);
+			var fnGetForAccount	= jQuery.json.jsonFunction(fnResponse, fnResponse, 'Rate_Plan', 'getForAccount');
+			fnGetForAccount(iAccountId, bReturnArchived);
+		}
+		else
+		{
+			// Handle response
+			if (!oResponse.bSuccess)
+			{
+				Reflex_Popup.alert(oResponse.sMessage + ((oResponse.sDebug != '') ? ' DEBUG LOG: ' + oResponse.sDebug : ''));
+				fnCallback(null);
+				return;
+			}
+			
+			fnCallback(oResponse.aRatePlans);
+		}
+	},
+	
+	// getForCustomerGroup: JSON Handler wrapper
+	getForCustomerGroup	: function(iCustomerGroupId, bReturnArchived, fnCallback, oResponse)
+	{
+		if (typeof oResponse == 'undefined')
+		{
+			// Make request
+			var fnResponse				= this.getForCustomerGroup.bind(this, iCustomerGroupId, bReturnArchived, fnCallback);
+			var fnGetForCustomerGroup	= jQuery.json.jsonFunction(fnResponse, fnResponse, 'Rate_Plan', 'getForCustomerGroup');
+			fnGetForCustomerGroup(iCustomerGroupId, bReturnArchived);
+		}
+		else
+		{
+			// Handle response
+			if (!oResponse.bSuccess)
+			{
+				Reflex_Popup.alert(oResponse.sMessage + ((oResponse.sDebug != '') ? ' DEBUG LOG: ' + oResponse.sDebug : ''));
+				fnCallback(null);
+				return;
+			}
+			
+			fnCallback(oResponse.aRatePlans);
+		}
+	},
+	
+	// getForId: JSON Handler wrapper
+	getForId	: function(iId, fnCallback, oResponse)
+	{
+		if (typeof oResponse == 'undefined')
+		{
+			// Make request
+			var fnResponse	= this.getForId.bind(this, iId, fnCallback);
+			var fnGetForId	= jQuery.json.jsonFunction(fnResponse, fnResponse, 'Rate_Plan', 'getForId');
+			fnGetForId(iId);
+		}
+		else
+		{
+			// Handle response
+			if (!oResponse.bSuccess)
+			{
+				Reflex_Popup.alert(oResponse.sMessage + ((oResponse.sDebug != '') ? ' DEBUG LOG: ' + oResponse.sDebug : ''));
+				fnCallback(null);
+				return;
+			}
+			
+			fnCallback(oResponse.oRatePlan);
+		}
+	}
 });
 
 Flex.Plan = (Flex.Plan == undefined) ? new Plan() : Flex.Plan;

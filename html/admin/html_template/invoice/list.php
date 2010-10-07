@@ -94,9 +94,9 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		echo "</a>";
 		echo "<h2 class='Invoice'>Invoices</h2>\n";
 		
-		Table()->InvoiceTable->SetHeader("Date", "Invoice #", "New Charges", "Payments Applied", "Amount Owing", "Status", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;");
+		Table()->InvoiceTable->SetHeader("Date", "Invoice #", "New Charges", "Payments Applied", "Amount Owing", "Status", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;");
 		//Table()->InvoiceTable->SetWidth("10%", "12%", "17%", "17%", "17%", "11%", "4%", "4%", "4%", "4%");
-		Table()->InvoiceTable->SetAlignment("Left", "Left", "Right", "Right", "Right", "Left", "Center", "Center", "Center", "Center");
+		Table()->InvoiceTable->SetAlignment("Left", "Left", "Right", "Right", "Right", "Left", "Center", "Center", "Center", "Center", "Center");
 		
 		// Invoices that are older than 1 year will not have CDR records stored in the database
 		$strCDRCutoffDate = date("Y-m-01", strtotime("-1 year"));
@@ -212,7 +212,15 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 					$strExportCSV = Href()->ExportInvoiceAsCSV($dboInvoice->Id->Value);
 					$strExportCSV = "<a name='test' href='$strExportCSV'><img src='img/template/export.png' title='Export as CSV' /></a>";
 				}
-	
+				
+				// Rerating link
+				$sRerate	= '&nbsp;';
+				if (Invoice::getForId($dboInvoice->Id->Value)->hasUnarchivedCDRs())
+				{
+					$sDoRerate	= Href()->RerateInvoice($dboInvoice->Id->Value);
+					$sRerate	= "<a href=\"$sDoRerate\"><img src='img/template/rerate.png' title='Rerate Invoice' alt='Rerate Invoice'/>";
+				}
+				
 				// Calculate Invoice Amount (New Charges)
 				$dboInvoice->Amount = $dboInvoice->charge_total->Value + $dboInvoice->charge_tax->Value;
 	
@@ -234,7 +242,8 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 												$strPdfLabel,
 												$strEmailLabel,
 												$strViewInvoiceLabel,
-												$strExportCSV);
+												$strExportCSV,
+												$sRerate);
 												
 				// Set the drop down detail
 				$strDetailHtml = "<div class='VixenTableDetail'>\n";

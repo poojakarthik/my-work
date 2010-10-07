@@ -98,14 +98,16 @@ class HtmlTemplateChargeAdd extends HtmlTemplate
 	 * @method
 	 */
 	function Render()
-	{	
+	{
 		$bolUserHasProperAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
 		$bolUserHasCreditManagementPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
 		
 		// Currently anyone can create credit charges
 		// Originally the user required either the Proper Admin permission or the Credit Management permission
 		//$bolCanCreateCreditCharges = ($bolUserHasProperAdminPerm || $bolUserHasCreditManagementPerm);
-		$bolCanCreateCreditCharges = TRUE;
+		$bolCanCreateCreditCharges	= TRUE;
+		
+		$bHasAmountOverride	= !!DBO()->AmountOverride->Amount->Value;
 		
 		// Only apply the output mask if the DBO()->Charge is not invalid
 		$bolApplyOutputMask = !DBO()->Charge->IsInvalid();
@@ -152,17 +154,22 @@ class HtmlTemplateChargeAdd extends HtmlTemplate
 		echo "      <select id='Charge.charge_type_id' name='Charge.charge_type_id' style='width:100%' onchange='Vixen.ValidateCharge.DeclareChargeType(this)'>\n";
 		foreach (DBL()->ChargeTypesAvailable as $dboChargeType)
 		{
-			$intChargeTypeId = $dboChargeType->Id->Value;
+			if (($dboChargeType->Fixed->Value == 1) && $bHasAmountOverride)
+			{
+				continue;
+			}
+			
+			$intChargeTypeId	= $dboChargeType->Id->Value;
 			// check if this ChargeType was the last one selected
 			if ((DBO()->ChargeType->Id->Value) && ($intChargeTypeId == DBO()->ChargeType->Id->Value))
 			{
-				$strSelected = "selected='selected'";
+				$strSelected	= "selected='selected'";
 			}
 			else
 			{
-				$strSelected = "";
+				$strSelected	= "";
 			}
-			$strDescription = $dboChargeType->Nature->Value .": ". $dboChargeType->Description->Value ." (". $dboChargeType->ChargeType->Value .")";
+			$strDescription	= $dboChargeType->Nature->Value .": ". $dboChargeType->Description->Value ." (". $dboChargeType->ChargeType->Value .")";
 			echo "         <option id='ChargeType.$intChargeTypeId' $strSelected value='$intChargeTypeId'>". htmlspecialchars($strDescription) ."</option>\n";
 			
 			// add ChargeType details to an array that will be passed to the javascript that handles events on the ChargeTypeCombo
@@ -188,11 +195,13 @@ class HtmlTemplateChargeAdd extends HtmlTemplate
 		{
 			reset($arrChargeTypes);
 			DBO()->ChargeType->Id	= key($arrChargeTypes);
-			DBO()->Charge->Amount	= $arrChargeTypes[DBO()->ChargeType->Id->Value]['Amount'];
 		}
 		
 		DBO()->ChargeType->Id->RenderHidden();
 		$intChargeTypeId	= DBO()->ChargeType->Id->Value;
+		
+		// Use the default amount of the charge type
+		DBO()->Charge->Amount = $arrChargeTypes[$intChargeTypeId]['Amount'];
 		
 		// display the charge code when the Charge Type has been selected
 		DBO()->ChargeType->ChargeType = $arrChargeTypes[$intChargeTypeId]['ChargeType'];
@@ -210,6 +219,17 @@ class HtmlTemplateChargeAdd extends HtmlTemplate
 		// display the nature of the charge
 		DBO()->ChargeType->Nature = $arrChargeTypes[$intChargeTypeId]['Nature'];
 		DBO()->ChargeType->Nature->RenderOutput();
+		
+		// Override the amount if specified 
+		if ($bHasAmountOverride)
+		{
+			// Use override amount
+			DBO()->Charge->Amount = DBO()->AmountOverride->Amount->Value;
+			
+			// Tell the ValidateCharge javascript object what the amount override is
+			$sOverrideAmount	= OutputMask()->MoneyValue(DBO()->AmountOverride->Amount->Value, 2, TRUE);
+			echo "<script type='text/javascript'>Vixen.ValidateCharge.SetOverrideAmount('$sOverrideAmount');</script>\n";
+		}
 		
 		DBO()->Charge->Amount->RenderInput(CONTEXT_INCLUDES_GST, TRUE, $bolApplyOutputMask);
 		// if the charge type has a fixed amount then disable the amount textbox
