@@ -3,6 +3,7 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 	initialize	: function($super, sLabel, sLabelSeparator)
 	{
 		// Parent
+		
 		$super(sLabel, sLabelSeparator);
 		
 		// Create the DOM Elements

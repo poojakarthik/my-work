@@ -95,7 +95,15 @@ var Control_Field	= Class.create
 	setVisible	: function(mVisible)
 	{
 		this.mVisible	= mVisible;
-		//this.updateElementValue();
+		if (typeof this.mVisible == 'function')
+		{
+			// Callback
+			this.mVisible()?this.getElement().style.display = '': this.getElement().style.display = 'none';
+		}
+		else
+		{
+			this.mVisible?this.getElement().style.display = '': this.getElement().style.display = 'none';
+		}
 	},
 	
 	isVisible	: function()
@@ -527,7 +535,7 @@ Control_Field.factory	= function(sType, oDefinition)
 	}
 	
 	// Set common properties
-	oControlField.setVisible(oDefinition.mVisible ? oDefinition.mVisible : false);
+	oControlField.setVisible(oDefinition.mVisible ? oDefinition.mVisible : true);
 	oControlField.setEditable(oDefinition.mEditable ? oDefinition.mEditable : false);
 	oControlField.setMandatory(oDefinition.mMandatory ? oDefinition.mMandatory : false);
 	
