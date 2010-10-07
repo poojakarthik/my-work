@@ -718,14 +718,14 @@ class Invoice_Run
 		if ($this->invoice_run_status_id !== INVOICE_RUN_STATUS_TEMPORARY)
 		{
 			Log::getLog()->log("Invoice run {$this->Id} is not temporary, cannot commit it");
-			
+
 			// No, throw an Exception
 			throw new Exception("InvoiceRun '{$this->Id}' is not a Temporary InvoiceRun!");
 		}
 		else if (in_array($this->invoice_run_type_id, array(INVOICE_RUN_TYPE_SAMPLES, INVOICE_RUN_TYPE_INTERNAL_SAMPLES)))
 		{
 			Log::getLog()->log("Invoice run {$this->Id} is a sample run, cannot commit it");
-			
+
 			// Cannot commit sample invoice runs
 			throw new Exception("InvoiceRun '{$this->Id}' is a sample InvoiceRun, it cannot be commited!");
 		}
@@ -738,7 +738,7 @@ class Invoice_Run
 
 			// Commit Invoice Run as a whole
 			$this->_commitOptimised();
-			
+
 			// Commit the Transaction
 			$dbaDB->TransactionCommit();
 		}
@@ -754,11 +754,11 @@ class Invoice_Run
 	public function deliver()
 	{
 		// Verify that the invoice run is commited
-		if ($this->invoice_run_status_id !== INVOICE_RUN_STATUS_COMMITTED)
+		/*if ($this->invoice_run_status_id !== INVOICE_RUN_STATUS_COMMITTED)
 		{
 			throw new Exception("Cannot deliver invoice run {$this->Id}, it is not commited");
-		}
-		
+		}*/
+
 		$sInvoiceRunPDFBasePath	= PATH_INVOICE_PDFS ."pdf/$this->Id/";
 
 		Log::getLog()->log("Generate PDF's");
@@ -774,7 +774,7 @@ class Invoice_Run
 			$iMonth 	= (int)date("m", $iCreatedOn);
 			$sContent	= GetPDFContent($oInvoice->Account, $iYear, $iMonth, $iId, $this->Id);
 			$aPDFFilenames[$iId]	= $sInvoiceRunPDFBasePath.GetPdfFilename($oInvoice->Account, $iYear, $iMonth, $oInvoice->Id, $this->Id);
-			
+
 			Log::getLog()->log("Generated PDF '".basename($aPDFFilenames[$iId])."' for invoice {$iId}, length=".strlen($sContent));
 		}
 
@@ -785,7 +785,7 @@ class Invoice_Run
 		foreach ($aPDFFilenames as $iInvoiceId => $sPDFFilename)
 		{
 			Log::getLog()->log("Generating correspondence data for invoice {$iInvoiceId}");
-			
+
 			// Determine the correspondence_delivery_method for the invoice
 			$oInvoice			= $aInvoices[$iInvoiceId];
 			$iDeliveryMethod	= null;
@@ -800,11 +800,11 @@ class Invoice_Run
 					//$iDeliveryMethod	= CORRESPONDENCE_DELIVERY_METHOD_EMAIL;
 					break;
 			}
-			
+
 			if (is_null($iDeliveryMethod))
 			{
 				Log::getLog()->log("No appropriate delivery method for invoice {$iInvoiceId}");
-				
+
 				// No appropriate correspondence_delivery_method was found. The invoice is not to be delivered, skip it.
 				continue;
 			}
@@ -833,8 +833,8 @@ class Invoice_Run
 											'pdf_file_path'						=> $sPDFFilename
 										);
 			$aCorrespondenceData[]	= $aInvoice;
-			
-			Log::getLog()->log("Created correspondence data for invoice {$iInvoiceId}");	
+
+			Log::getLog()->log("Created correspondence data for invoice {$iInvoiceId}");
 			Log::getLog()->log(print_r($aInvoice, true));
 		}
 
@@ -842,13 +842,13 @@ class Invoice_Run
 		try
 		{
 			Log::getLog()->log("Create correspondence run");
-			
-			$oTemplate	= $this->getCorrespondenceTemplate($aCorrespondenceData);
-			
+
+			$oTemplate	= $this->getCorrespondenceTemplate();
+
 			Log::getLog()->log("Got template");
-			
-			$oRun		= $oTemplate->createRun(true);
-			
+
+			$oRun		= $oTemplate->createRun(true, $aCorrespondenceData);
+
 			Log::getLog()->log("Run created");
 		}
 		catch (Correspondence_DataValidation_Exception $oEx)
@@ -857,7 +857,7 @@ class Invoice_Run
 			$sErrorType	= GetConstantName($oEx->iError, 'correspondence_run_error');
 			Log::getLog()->log("Error Type: $oEx->iError => '{$sErrorType}'");
 			Log::getLog()->log("Error report: ".print_r($oEx->aReport, true));
-			
+
 			throw new Exception("Failed to create the correspondence run. ");
 		}
 		catch (Exception $oEx)
@@ -1347,10 +1347,10 @@ class Invoice_Run
 
 		return $objEmailNotification->send();
 	}
-	
-	public function getCorrespondenceTemplate($aData)
+
+	public function getCorrespondenceTemplate()
 	{
-		return Correspondence_Logic_Template::getForInvoiceRunType($this->invoice_run_type_id, $aData);
+		return Correspondence_Logic_Template::getForInvoiceRunType($this->invoice_run_type_id);
 	}
 
 	// hasUnarchivedCDRsForAccount: Used to determine if there are any CDRs still in the Flex database for this invoice id
