@@ -14,7 +14,7 @@ class Flex_Rollout_Version_000228 extends Flex_Rollout_Version
 	
 	public function rollout()
 	{
-		// Check to see if VNS Solutions has already been added
+		// Check to see if AAPT CTOP File was already defined as a Resource Type
 		$oResult	= Data_Source::get(FLEX_DATABASE_CONNECTION_ADMIN)->query("SELECT Id FROM resource_type WHERE const_name = 'RESOURCE_TYPE_FILE_IMPORT_CDR_AAPT_ESYSTEMS_CTOP'");
 		if (PEAR::isError($oResult))
 		{
@@ -22,7 +22,7 @@ class Flex_Rollout_Version_000228 extends Flex_Rollout_Version
 		}
 		elseif ($oResult->numRows())
 		{
-			// VNS Solutions already exists as a Carrier
+			// AAPT CTOP File was already defined as a Resource Type
 			$this->outputMessage("Skipping ".self::getRolloutVersionNumber(__CLASS__).": AAPT CTOP File already exists as a Resource Type...\n");
 			return;
 		}
