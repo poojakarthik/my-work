@@ -1,6 +1,12 @@
 <?php
 class Email_Template_Logic
 {
+
+	const READ = 1;
+	const EDIT = 2;
+	const CREATE = 3;
+
+
 	private		$_oEmailTemplate	= null;
 	protected	$_aVariables		= array();
 
@@ -412,7 +418,7 @@ class Email_Template_Logic
 		{
 			$aData	= get_object_vars($mData);
 		}
-		
+
 		foreach ($aData as $sKey => $mVal)
 		{
 			if (!is_array($mVal))
@@ -420,7 +426,7 @@ class Email_Template_Logic
 				$aData[$sKey]	= get_object_vars($mVal);
 			}
 		}
-		
+
 		return $aData;
 	}
 }
