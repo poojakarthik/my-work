@@ -149,8 +149,9 @@ var Control_Field_Text_AJAX	= Class.create(/* extends */ Control_Field,
 			return;
 		}
 		
-		// Clear display value cache
-		this._hDisplayValues	= {};
+		// Clear display value cache & highlighted result ref
+		this._hDisplayValues		= {};
+		this._oHighlightedResult	= null;
 		
 		// Build table of results
 		var oTBody	= 	$T.tbody();
