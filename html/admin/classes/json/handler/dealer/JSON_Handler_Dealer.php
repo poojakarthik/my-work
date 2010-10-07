@@ -74,7 +74,7 @@ class JSON_Handler_Dealer extends JSON_Handler
 					// Record the states against the country they belong to
 					$arrCountryStates[$objCountry->id][$objState->id] = htmlspecialchars($objState->name);
 				}
-				$strCountryComboOptions .= "<option value='{$objCountry->id}'>". htmlspecialchars($objCountry->name) ."</option>"; 
+				$strCountryComboOptions .= "<option value='{$objCountry->id}'>". htmlspecialchars($objCountry->name) ."</option>";
 			}
 			
 			// Dealer status combo box
@@ -521,7 +521,7 @@ class JSON_Handler_Dealer extends JSON_Handler
 				$strManagerName = "No up line manager";
 			}
 			$arrDetails['upLineManager']		= htmlspecialchars($strManagerName);
-			$arrDetails['syncSaleConstraints']	= ($objDealer->syncSaleConstraints)? "Yes" : "No";  
+			$arrDetails['syncSaleConstraints']	= ($objDealer->syncSaleConstraints)? "Yes" : "No";
 			$arrDetails['canVerify']			= ($objDealer->canVerify)? "Yes" : "No";
 			$arrDetails['phone']				= ($objDealer->phone !== NULL)? htmlspecialchars($objDealer->phone) : "[Not Specified]";
 			$arrDetails['mobile']				= ($objDealer->mobile !== NULL)? htmlspecialchars($objDealer->mobile) : "[Not Specified]";
@@ -533,13 +533,13 @@ class JSON_Handler_Dealer extends JSON_Handler
 			$arrDetails['status'] = ($objDealerStatus !== NULL)? htmlspecialchars($objDealerStatus->name) : "Status: {$objDealer->dealerStatusId} could not be found";
 			$arrDetails['isEmployee'] = ($objDealer->employeeId !== NULL)? "Yes" : "No";
 			
-			$arrDetails['carrierName'] = ($objDealer->carrierId === NULL)? "[Not Specified]" : htmlspecialchars(Carrier::getForId($objDealer->carrierId, TRUE)->name);
+			$arrDetails['carrierName'] = ($objDealer->carrierId === NULL)? "[Not Specified]" : htmlspecialchars(Carrier::getForId($objDealer->carrierId)->name);
 			
 			$arrDetails['businessName'] = ($objDealer->businessName !== NULL)? htmlspecialchars($objDealer->businessName): "[Not Specified]";
 			$arrDetails['tradingName'] = ($objDealer->tradingName !== NULL)? htmlspecialchars($objDealer->tradingName): "[Not Specified]";
 			if ($objDealer->abn !== NULL)
 			{
-				$arrDetails['abn'] = htmlspecialchars($objDealer->abn) . ($objDealer->abnRegistered ? " (registered)" : " (not registered)"); 
+				$arrDetails['abn'] = htmlspecialchars($objDealer->abn) . ($objDealer->abnRegistered ? " (registered)" : " (not registered)");
 			}
 			else
 			{

@@ -35,7 +35,7 @@ abstract class Resource_Type_Base
 		{
 			throw new Exception("Carrier Module Class '{$sClassName}' does not extend ".__CLASS__);
 		}
-		if (!Carrier::getForId($iCarrier, false))
+		if (!Carrier::getForId($iCarrier, true))
 		{
 			throw new Exception("Carrier '{$iCarrier}' can not be found");
 		}

@@ -8,7 +8,7 @@ $iCarrier			= (int)$argv[1];
 $sImportFilename	= $argv[2];
 
 // Load Carrier Details
-if (!($oCarrier = Carrier::getForId($iCarrier)))
+if (!($oCarrier = Carrier::getForId($iCarrier, true)))
 {
 	throw new Exception("Unable to load Carrier with Id '{$iCarrier}'");
 }
