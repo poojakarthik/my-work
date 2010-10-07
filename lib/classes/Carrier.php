@@ -1,64 +1,19 @@
 <?php
-//----------------------------------------------------------------------------//
-// Carrier
-//----------------------------------------------------------------------------//
 /**
  * Carrier
  *
- * Models a record of the Carrier table
- *
- * Models a record of the Carrier table
+ * This is an example of a class that extends ORM_Cached
  *
  * @class	Carrier
  */
-class Carrier extends ORM
-{	
-	protected $_strTableName = "Carrier";
+class Carrier extends ORM_Cached
+{
+	protected 			$_strTableName			= "Carrier";
+	protected static	$_strStaticTableName	= "Carrier";
 	
-	//------------------------------------------------------------------------//
-	// __construct
-	//------------------------------------------------------------------------//
-	/**
-	 * __construct()
-	 *
-	 * constructor
-	 * 
-	 * constructor
-	 *
-	 * @param	array	$arrProperties 		[optional]	Associative array defining the class with keys for each field of the table
-	 * @param	boolean	$bolLoadById		[optional]	Automatically load the object with the passed Id
-	 * 
-	 * @return	void
-	 * 
-	 * @constructor
-	 */
-	public function __construct($arrProperties=Array(), $bolLoadById=FALSE)
-	{
-		// Parent constructor
-		parent::__construct($arrProperties, $bolLoadById);
-	}
-	
-	// The id will be the key to the array
 	public static function listAll()
 	{
-		static $arrCache;
-		if (!isset($arrCache))
-		{
-			$selAll = self::_preparedStatement('selAll');
-			
-			$mixResult = $selAll->Execute();
-			if ($mixResult === FALSE)
-			{
-				throw new Exception(__METHOD__ ." - Failed to retrieve all carrier records from database - ". $selAll->Error());
-			}
-			$arrCache = array();
-			
-			while ($arrRecord = $selAll->Fetch())
-			{
-				$arrCache[$arrRecord['Id']] = new self($arrRecord);
-			}
-		}
-		return $arrCache;
+		return self::getAll();
 	}
 	
 	public static function listForCarrierTypeId($intCarrierTypeId)
@@ -75,36 +30,67 @@ class Carrier extends ORM
 		return $arrCarrierTypeCarriers;
 	}
 	
-	public static function getForId($intId, $bolExceptionOnNotFound=FALSE)
+	protected static function getCacheName()
 	{
-		$arrCarriers = self::listAll();
-		if (array_key_exists($intId, $arrCarriers))
+		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
+		static $strCacheName;
+		if (!isset($strCacheName))
 		{
-			return $arrCarriers[$intId];
+			$strCacheName = __CLASS__;
 		}
-		elseif ($bolExceptionOnNotFound)
-		{
-			throw new Exception(__METHOD__ ." - Could not find Carrier with id: $intId");
-		}
-		else
-		{
-			return NULL;
-		}
+		return $strCacheName;
 	}
 	
+	protected static function getMaxCacheSize()
+	{
+		return 100;
+	}
 	
-	//------------------------------------------------------------------------//
-	// _preparedStatement
-	//------------------------------------------------------------------------//
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
+	//---------------------------------------------------------------------------------------------------------------------------------//
+
+	public static function clearCache()
+	{
+		parent::clearCache(__CLASS__);
+	}
+
+	protected static function getCachedObjects()
+	{
+		return parent::getCachedObjects(__CLASS__);
+	}
+	
+	protected static function addToCache($mixObjects)
+	{
+		parent::addToCache($mixObjects, __CLASS__);
+	}
+
+	public static function getForId($intId, $bolSilentFail=false)
+	{
+		return parent::getForId($intId, $bolSilentFail, __CLASS__);
+	}
+	
+	public static function getAll($bolForceReload=false)
+	{
+		return parent::getAll($bolForceReload, __CLASS__);
+	}
+	
+	public static function importResult($aResultSet)
+	{
+		return parent::importResult($aResultSet, __CLASS__);
+	}
+	
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
+	//---------------------------------------------------------------------------------------------------------------------------------//
+
 	/**
 	 * _preparedStatement()
 	 *
 	 * Access a Static Cache of Prepared Statements used by this Class
 	 *
-	 * Access a Static Cache of Prepared Statements used by this Class
-	 * 
 	 * @param	string		$strStatement						Name of the statement
-	 * 
+	 *
 	 * @return	Statement										The requested Statement
 	 *
 	 * @method
@@ -122,20 +108,20 @@ class Carrier extends ORM
 			{
 				// SELECTS
 				case 'selById':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Carrier", "*", "Id = <Id>", NULL, 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
 					break;
 				case 'selAll':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Carrier", "*", "TRUE", "Name ASC");
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
 					break;
 				
 				// INSERTS
 				case 'insSelf':
-					$arrPreparedStatements[$strStatement]	= new StatementInsert("Carrier");
+					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);
 					break;
 				
 				// UPDATE BY IDS
 				case 'ubiSelf':
-					$arrPreparedStatements[$strStatement]	= new StatementUpdateById("Carrier");
+					$arrPreparedStatements[$strStatement]	= new StatementUpdateById(self::$_strStaticTableName);
 					break;
 				
 				// UPDATES
