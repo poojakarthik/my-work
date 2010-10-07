@@ -2,12 +2,13 @@
 var Popup_Email_Text_Editor	= Class.create(Reflex_Popup, 
 {	
 	
-	initialize	: function($super, oTemplateDetails, sTemplateName, customerGroupName, fnCallback)
+	initialize	: function($super, iTemplateDetailsId, sTemplateName, customerGroupName, iMode)
 	{
 			
-			this._oTemplateDetails = oTemplateDetails;
-			this._fnCallback = fnCallback;
 			
+			//this._fnCallback = fnCallback;
+			this._iTemplateDetailsId = iTemplateDetailsId;
+			this._iMode = iMode;
 			this._sTemplateName = sTemplateName;
 			this._sCustomerGroupName = customerGroupName;
 			// Image paths
@@ -36,20 +37,23 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 									)
 								);
 								
-			this._getVariables();					
+			this._getTemplateDetails();					
 			
 
 	},
 	
-	_getVariables: function()
+	_getTemplateDetails: function()
 	{
+		
+		
 		var fnRequest     = jQuery.json.jsonFunction(this._getVariablesSuccess.bind(this), this.errorCallback.bind(this), 'Email_Text_Editor', 'getVariables');
-		fnRequest();
+		fnRequest(this._iTemplateDetailsId);
 	},
 	
 	_getVariablesSuccess: function(oResponse)
 	{
 		
+		this._oTemplateDetails = oResponse.oTemplateDetails;
 		this._oVariables  = oResponse.variables;
 		this._buildGUI();
 		
@@ -183,16 +187,32 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 			this._oSubjectTextField = document.createElement('input');
 			this._oSubjectTextField.type = 'text';
 				this._oSubjectTextField.className = 'email-subject-input';
-				this._oSubjectTextField.size = 90;
+				this._oSubjectTextField.size = 50;
 				
 			this._oSubjectTextField.value = this._oTemplateDetails.email_subject;
 				
 				subjectElementDiv.appendChild(oSpan );
 			subjectElementDiv.appendChild(this._oSubjectTextField );
+			
+			var oDescriptionLabel  = document.createElement('span');
+			oDescriptionLabel.innerHTML = 'Description';
+			oDescriptionLabel.className = 'email-subject-label';
+			
+			this._oDescriptionTextField = document.createElement('input');
+			this._oDescriptionTextField.type = 'text';
+			this._oDescriptionTextField.size = 30;
+			this._oDescriptionTextField.className = 'email-subject-input';
+			this._oDescriptionTextField.value = this._sTemplateName + " - " + new Date().$format('d/m/Y');
+			subjectElementDiv.appendChild(oDescriptionLabel );
+			subjectElementDiv.appendChild(this._oDescriptionTextField );
+			
+			
 			subjectDiv.appendChild(subjectElementDiv);	
 		
 		// Attach content and get data
-		this.setTitle('Email Text Editor - Template \'' + this._sTemplateName +'\' for ' + this._sCustomerGroupName);
+		var sPopupMode = this._iMode == Popup_Email_Text_Editor.CREATE?'Create New Version':(this._iMode == Popup_Email_Text_Editor.READ?'Read Only':'Edit');
+		
+		this.setTitle('Email Text Editor (' + sPopupMode +' Mode) - Template \'' + this._sTemplateName +'\'(version ' +this._iTemplateDetailsId + ')  for ' + this._sCustomerGroupName);
 		this.addCloseButton(this._close.bind(this));
 		this.setContent(this._oContent);
 		this._oLoadingPopup.hide();
@@ -205,7 +225,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	_close : function ()
 	{
 		this.hide();
-		this._fnCallback();
+		
 	
 	},
 	
@@ -308,20 +328,26 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		var fnRequest     = jQuery.json.jsonFunction(this._saveSuccess.bind(this), this.errorCallback.bind(this), 'Email_Text_Editor', 'save');
 		this._oTemplateDetails.email_text = this.oTextArea.value;
 		this._oTemplateDetails.email_html = this.oHTMLTextArea.value;
-		
-		fnRequest(this._oTemplateDetails);		
+		this._oTemplateDetails.email_subject = this._oSubjectTextField.value;
+		this._oTemplateDetails.description = this._oDescriptionTextField.value;
+		this._oTemplateDetails.id = this._iTemplateDetailsId;
+		fnRequest(this._oTemplateDetails, false, this._iMode);		
 	},
 	
 	_save: function (oResponse)
 	{
 		
+		debugger;
 		this._oLoadingPopup.display();
 		var fnRequest     = jQuery.json.jsonFunction(this._saveSuccess.bind(this), this.errorCallback.bind(this), 'Email_Text_Editor', 'save');
 		this._oTemplateDetails.email_text = this.oTextArea.value;
 		this._oTemplateDetails.email_html = this.oHTMLTextArea.value;
 		this._oTemplateDetails.effective_datetime = oResponse.effectiveDate;		
 		this._oTemplateDetails.email_subject = this._oSubjectTextField.value;
-		fnRequest(this._oTemplateDetails, true);	
+		this._oTemplateDetails.description = this._oDescriptionTextField.value;
+		this._iMode == Popup_Email_Text_Editor.EDIT?this._oTemplateDetails.id = this._iTemplateDetailsId:null;
+		fnRequest(oResponse, true, this._iMode);
+		//fnRequest(this._oTemplateDetails, true, this._iMode);	
 	},
 	
 	_saveSuccess: function (oResponse)
@@ -360,6 +386,23 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	
 	
 });
+
+
+
+Object.extend(Popup_Email_Text_Editor,
+{
+	 READ : 1,
+	 EDIT : 2,
+	 CREATE : 3,
+	 
+	 READ_LABEL: 'Read Only Mode',
+	 EDIT_LABEL: 'Edit Mode',
+	 CREATE_LABEL: 'Create Mode',
+	 
+ 
+
+});
+	
 
 
 
