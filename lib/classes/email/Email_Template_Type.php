@@ -75,10 +75,6 @@ class Email_Template_Type extends ORM_Cached
 
 	public static function getForAllCustomerGroups($bCountOnly=false, $iLimit=null, $iOffset=null, $sSortDirection='DESC')
 	{
-				// Build where clause
-
-
-
 
 		if ($bCountOnly)
 		{
@@ -150,6 +146,28 @@ class Email_Template_Type extends ORM_Cached
 		}
 
 	}
+
+	public function getTemplateVersionDetailsForCustomerGroup($iCustomerGroup)
+	{
+		$sSql = "SELECT et.id, e.name, count(ed.id) as version, max(ed.effective_datetime) as effective
+		FROM email_template_type e, email_template et, email_template_details ed
+		where et.email_template_type_id = e.id
+		and et.customer_group_id = $iCustomerGroup
+		and ed.email_template_id = et.id
+		group by ed.email_template_id";
+		$oCustmerGroupQuery	= new Query();
+		$mCustomerGroupResult	= $oCustmerGroupQuery->Execute($sSql);
+		$aTemplateVersionDetails = array();
+		while ($aRow = $mCustomerGroupResult->fetch_assoc())
+		{
+			$aTemplateVersionDetails[]= $aRow;//$oOrm->toArray();
+		}
+
+		return $aTemplateVersionDetails;
+
+	}
+
+
 
 	/**
 	 * _preparedStatement()
