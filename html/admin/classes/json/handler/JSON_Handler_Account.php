@@ -10,6 +10,114 @@ class JSON_Handler_Account extends JSON_Handler
 		Log::registerLog('JSON_Handler_Debug', Log::LOG_TYPE_STRING, $this->_JSONDebug);
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
+	
+	public function getForId($iAccountId)
+	{
+		$bIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		try
+		{
+			$oAccount	= Account::getForId($iAccountId);
+			$aAccount	= $oAccount->toArray();
+			$aAccount['customer_group']	= Customer_Group::getForId($oAccount->CustomerGroup)->toArray();
+			
+			return	array(
+						'bSuccess'	=> true,
+						'oAccount'	=> $aAccount,
+						'sDebug'	=> $bIsGod ? $this->_JSONDebug : ''
+					);
+		}
+		catch (Exception $oException)
+		{
+			return	array(
+						'bSuccess'	=> false,
+						'sMessage'	=> ($bIsGod ? $oException->getMessage() : 'An error occured accessing the database'),
+						'sDebug'	=> $bIsGod ? $this->_JSONDebug : ''
+					);
+		}
+	}
+
+	// searchCustomerGroup: Search for accounts within the given customer group (within filter data) using 
+	//						the given search term (within filter data) which can be used to search the 
+	//						fields: Id, BusinessName & TradingName
+	public function searchCustomerGroup($bCountOnly=false, $iLimit=0, $iOffset=0, $oSort=null, $oFilter=null)
+	{
+		$bIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		try
+		{
+			//
+			// NOTE: 	This is designed to be used by a Control_Field_Text_AJAX object on the client side
+			//			As a result, the count only, offset and sorting data are ignored.
+			//
+			
+			// Extract filter data
+			$sSearchTerm		= $oFilter->search_term;
+			$iCustomerGroupId	= $oFilter->customer_group;
+			
+			// Split the search term by spaces then use each part as a search term
+			$sWhere	= '';	
+			$aTerms	= split(' ', $sSearchTerm);
+			foreach ($aTerms as $sTerm)
+			{
+				if ($sTerm == '')
+				{
+					continue;
+				}
+				
+				// Create constraint
+				// By default every term is checked against BusinessName & TradingName
+				$sConstraint	= "(BusinessName LIKE '%{$sTerm}%') OR (TradingName LIKE '%{$sTerm}%')";
+				if (is_numeric($sTerm))
+				{
+					// The term is numeric, so Id is checked also
+					$sConstraint	.= " OR (Id LIKE '%{$sTerm}%')";
+				}
+				
+				// Add constraint to where clause
+				$sWhere	.= ($sWhere == '') ? "({$sConstraint})" : " AND ({$sConstraint})";
+			}
+			
+			// Perform the search query
+			$sQuery		= "	SELECT	*
+							FROM	Account
+							WHERE	CustomerGroup = {$iCustomerGroupId}
+							".($sWhere !== '' ? "AND {$sWhere}" : '')."
+							ORDER BY Id
+							LIMIT {$iLimit}";
+			Log::getLog()->log($sQuery);
+			$oQuery		= new Query();
+			$mResult	= $oQuery->Execute($sQuery);
+			if ($mResult === false)
+			{
+				throw new Exception("Failed account customer group search. ".$oQuery->Error());
+			}
+			
+			// Create array of results
+			$aResults	= array();
+			while($aRow = $mResult->fetch_assoc())
+			{
+				$aResults[]	= $aRow;
+			}
+			
+			return	array(
+						'bSuccess'		=> true,
+						'Success'		=> true,
+						'aRecords'		=> $aResults,
+						'iRecordCount'	=> count($aResults),
+						'sDebug'		=> $bIsGod ? $this->_JSONDebug : ''
+					);
+		}
+		catch (Exception $oException)
+		{
+			$sMessage	= ($bIsGod ? $oException->getMessage() : 'An error occured accessing the database');
+			return	array(
+						'bSuccess'	=> false,
+						'Success'	=> false,
+						'sMessage'	=> $sMessage,
+						'Message'	=> $sMessage,
+						'sDebug'	=> $bIsGod ? $this->_JSONDebug : ''
+					);
+		}
+	}
 
 	public function getAccountsReferees()
 	{
