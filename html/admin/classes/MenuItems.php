@@ -508,6 +508,28 @@ class MenuItems {
 		return self :: NEW_FRAMEWORK . "flex.php/CustomerGroup/ViewDocumentTemplateHistory/?CustomerGroup.Id=$intCustomerGroup&DocumentTemplateType.Id=$intTemplateType";
 	}
 
+/**
+	 * ViewDocumentTemplateHistory()
+	 *
+	 * Compiles the Href for the Document Template History webpage
+	 *
+	 * Compiles the Href for the Document Template History webpage
+	 *
+	 * @param	int		$intCustomerGroup	id of the CustomerGroup
+	 * @param	int		$intTemplateType	DocumentTemplateType Id
+	 *
+	 * @return	string						Href
+	 *
+	 * @method
+	 */
+	function ViewEmailTemplateHistory($iCustomerGroupId, $sTemplateName, $intTemplateId)
+	{
+		$this->strLabel = "Email Template History";
+		$this->strContextMenuLabel = "Email Template History";
+		return self :: NEW_FRAMEWORK . "flex.php/CustomerGroup/ViewEmailTemplateHistory/?CustomerGroup.Id=$iCustomerGroupId&Template.Name=$sTemplateName&EmailTemplate.Id=$intTemplateId";
+	}
+
+
 	//------------------------------------------------------------------------//
 	// ViewCustomerGroup
 	//------------------------------------------------------------------------//
