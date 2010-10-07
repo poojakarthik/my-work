@@ -233,6 +233,12 @@ var Popup_Invoice_View	= Class.create(Reflex_Popup,
 			'javascript/popup_invoice_dispute.js', 
 			fnAutoLoadHandler.bind(this)
 		);
+	},
+	
+	hide	: function($super)
+	{
+		Reflex_Anchor.getInstance().setHash('');
+		$super();
 	}
 });
 
