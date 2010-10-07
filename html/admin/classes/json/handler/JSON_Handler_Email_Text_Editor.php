@@ -26,26 +26,65 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 	public function getTemplateDetails($iTemplateId)
 	{
 		$oDetails = Email_Template_Details::getCurrentDetailsForTemplateId($iTemplateId);
+
 		return	array(
 						'bSuccess'						=> true,
 						'aTemplateDetails'		=> $oDetails->toArray()
 					);
 	}
 
-	public function save($aTemplateDetails, $bConfirm = false)
+	public function save($aTemplateDetails, $bConfirm = false, $iSaveMode)
 	{
 		$aTemplateDetails = is_array($aTemplateDetails)?$aTemplateDetails:(array)$aTemplateDetails;
 
+		/*
+		 Email_Template_Logic::CREATE);
+			Email_Template_Logic::EDIT);
+			 Email_Template_Logic::READ);
+		*/
+
+
 		if ($bConfirm)
 		{
-			$aTemplateDetails['id'] = null;
-			$aTemplateDetails['created_timestamp'] = null;
-			$aTemplateDetails['created_employee_id'] = Flex::getUserId();
-			$aTemplateDetails['email_html']	= $aTemplateDetails['email_html'];
-			$aTemplateDetails['effective_datetime'] = $aTemplateDetails['effective_datetime'];
-			$aTemplateDetails['email_subject'] = $aTemplateDetails['email_subject'];
 
-			$oDetails = new Email_Template_Details($aTemplateDetails);
+			///if there are future versions that are affected by this one, process them into the database
+			if (array_key_exists('aFutureVersions', $aTemplateDetails) && $aTemplateDetails['aFutureVersions']!=null)
+			{
+				foreach ($aTemplateDetails['aFutureVersions'] as $oFutureVersion)
+				{
+					$x = new Email_Template_Details((array)$oFutureVersion);
+					$x->save();
+				}
+
+
+
+			}
+
+			//set the end date on the current version
+				$y = Email_Template_Details::getCurrentDetailsForTemplateId($aTemplateDetails['oTemplateDetails']->email_template_id);
+				if ($y->end_datetime>$aTemplateDetails['oTemplateDetails']->effective_datetime)
+				{
+					$y->end_datetime = $aTemplateDetails['oTemplateDetails']->effective_datetime;
+					$y->save();
+
+				}
+			//save the new version
+
+			$aTemplateDetails = (array)$aTemplateDetails['oTemplateDetails'];
+
+			$aNewVersion = array();
+			$aNewVersion['id'] = null;
+			$aNewVersion['email_template_id'] = $aTemplateDetails['email_template_id'];
+			$aNewVersion['created_timestamp'] = null;
+			$aNewVersion['created_employee_id'] = Flex::getUserId();
+			$aNewVersion['email_html']	= $aTemplateDetails['email_html'];
+			$aNewVersion['email_text'] = $aTemplateDetails['email_text'];
+			$aNewVersion['effective_datetime'] = $aTemplateDetails['effective_datetime'];
+			$aNewVersion['email_subject'] = $aTemplateDetails['email_subject'];
+			$aNewVersion['description'] = $aTemplateDetails['description'];
+			$aNewVersion['end_datetime'] = $aTemplateDetails['end_datetime'];
+
+			$oDetails = new Email_Template_Details($aNewVersion);
 			$oDetails->save();
 			return	array(
 							'Success'		=> true,
@@ -88,50 +127,28 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 					);
 	}
 
-	public function getVariables()
+	public function getVariables($iTemplateDetailsId)
 	{
+		$aTemplateDetails = Email_Template_Details::getForId($iTemplateDetailsId);
 		$aVars = Email_HTML_Document::getVariables();
+
 		return	array(
 						'Success'		=> true,
-						'variables'		=> $aVars
+						'variables'		=> $aVars,
+						'oTemplateDetails' =>$aTemplateDetails->toArray()
 					);
 	}
 
 
 
-	//this does the job, but it looks like using $node->parentNode->removeChild($node) works just as well, and much simpler!
-	public function removeNode($oNodeToRemove, $parentNode = null)
+	function getFutureVersions($iVersionId)
 	{
-		$parentNode = $parentNode ==null?$this->xml->documentElement:$parentNode;
-		try
-		{
 
-			$x = $parentNode->tagName;
-			if ($parentNode->removeChild($oNodeToRemove))
-			{
-				return true;
-			}
-			else
-			{
-				throw new Exception();
-			}
-		}
-		catch (Exception $e)
-		{
-			$x = $parentNode->childNodes;
-			if ($x!=null)
-			{
-				foreach ($x as $node)
-				{
-					if ($this->removeNode($oNodeToRemove,$node ))
-					{
-						return true;
-					}
-				}
-			}
-		}
+		return	array(
+						'Success'		=> true,
 
-		return false;
+						'aTemplateDetails' =>Email_Template_Details::getFutureVersionsForId($iVersionId)
+					);
 
 	}
 
