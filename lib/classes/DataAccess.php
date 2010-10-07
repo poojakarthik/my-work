@@ -21,7 +21,7 @@ class DataAccess
 	public $arrTableDefine;
 	
 	//------------------------------------------------------------------------//
-	// refMysqliConnection	
+	// refMysqliConnection
 	//------------------------------------------------------------------------//
 	/**
 	 * refMysqliConnection
@@ -56,11 +56,11 @@ class DataAccess
 
 	/**
 	 * connected()
-	 * 
+	 *
 	 * Determines whether or not a connection has already been established to a gived
 	 * database.
-	 * 
-	 * @param string $strConnectionType A configured database connection 
+	 *
+	 * @param string $strConnectionType A configured database connection
 	 * 									(Default is FLEX_DATABASE_CONNECTION_DEFAULT)
 	 */
 	public static function connected($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
@@ -79,13 +79,13 @@ class DataAccess
 	 *
 	 * Constructor for DataAccess
 	 * Access instances throught the DataAccess::getDataAccess() factory function.
-	 * 
+	 *
 	 * @return		void
 	 *
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
 	 * @access private
-	 */ 
+	 */
 	private function __construct($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 	{
 		// TODO: Remove this once all config files have been ported to the new format
@@ -158,7 +158,7 @@ class DataAccess
 	 * @return		mixed	array table definition or FALSE if table doesn't exist
 	 *
 	 * @method
-	 */ 
+	 */
 	function FetchTableDefine($strTableName)
 	{
 		if($this->arrTableDefine->{$strTableName})
@@ -184,7 +184,7 @@ class DataAccess
 	 * @return		mixed	array of table definitions for tables that exist on the database this DataAccess object points to
 	 *
 	 * @method
-	 */ 
+	 */
 	function FetchAllTableDefinitions()
 	{
 		$arrAllTables = $this->arrTableDefine->getAll();
@@ -221,7 +221,7 @@ class DataAccess
 	 * @return		mixed	array record or FALSE if table doesn't exist
 	 *
 	 * @method
-	 */ 
+	 */
 	function FetchClean($strTableName)
 	{
 		if($this->arrTableDefine->{$strTableName})
@@ -256,7 +256,7 @@ class DataAccess
 	 * @return		bool
 	 *
 	 * @method
-	 */ 
+	 */
 	function FetchCleanOblib($strTableName, $oblobjPushObject)
 	{
 		// return false if we were not passed an oblib object
@@ -281,7 +281,7 @@ class DataAccess
 				(
 					new $strValue["ObLib"]
 					(
-						$strKey, '' 
+						$strKey, ''
 					)
 				);
 			}
@@ -308,7 +308,7 @@ class DataAccess
 	 * 										FALSE	: Failed
 	 *
 	 * @method
-	 */ 
+	 */
 	function TransactionStart()
 	{
 		if ($this->_bolHasTransaction)
@@ -360,7 +360,7 @@ class DataAccess
 	 * 										FALSE	: Failed
 	 *
 	 * @method
-	 */ 
+	 */
 	function TransactionRollback()
 	{
 		if (!$this->_bolHasTransaction)
@@ -410,7 +410,7 @@ class DataAccess
 	 * 										FALSE	: Failed
 	 *
 	 * @method
-	 */ 
+	 */
 	function TransactionCommit()
 	{
 		if (!$this->_bolHasTransaction)
@@ -446,6 +446,22 @@ class DataAccess
 		}
 	}
 	
+	public function TransactionCurrent()
+	{
+		if (!$this->_bolHasTransaction)
+		{
+			return false;
+		}
+		elseif (count($this->_arrSavepoints))
+		{
+			return $this->_arrSavepoints[count($this->_arrSavepoints)];
+		}
+		else
+		{
+			return true;
+		}
+	}
+	
 	//------------------------------------------------------------------------//
 	// __shutdown
 	//------------------------------------------------------------------------//
@@ -457,7 +473,7 @@ class DataAccess
 	 * If PHP dies, this will prevent table locking
 	 *
 	 * @method
-	 */ 
+	 */
 	function __shutdown()
 	{
 		// Roll back all transactions

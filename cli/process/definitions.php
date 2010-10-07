@@ -35,7 +35,7 @@
 define("USER_NAME"						, "Skel_app");
 
 // Email Addresses
-define("PROCESS_ALERT_EMAIL"			, "rich@voiptelsystems.com.au");
+define("PROCESS_ALERT_EMAIL"			, "rdavis@ybs.net.au");
 define("PROCESS_ALERT_FROM"				, "alerts@yellowbilling.com.au");
 
 ?>

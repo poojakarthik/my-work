@@ -27,5 +27,10 @@ class File_Importer_CSV_Field extends File_Importer_Field
 		}
 		return parent::extract($aData[$this->_iColumn]);
 	}
+	
+	public static function factory()
+	{
+		return new self();
+	}
 }
 ?>

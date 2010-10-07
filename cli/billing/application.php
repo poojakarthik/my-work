@@ -65,8 +65,8 @@
 		parent::__construct();
 		
 		// Initiate Reports
-		$this->_rptBillingReport 	= new Report("Billing Report for ".date("Y-m-d H:i:s"), "rich@voiptelsystems.com.au", TRUE, "dispatch@voiptelsystems.com.au");
-		$this->_rptAuditReport		= new Report("Bill Audit Report for ".date("Y-m-d H:i:s"), "rich@voiptelsystems.com.au", TRUE, "dispatch@voiptelsystems.com.au");
+		$this->_rptBillingReport 	= new Report("Billing Report for ".date("Y-m-d H:i:s"), "rdavis@ybs.net.au", TRUE, "dispatch@voiptelsystems.com.au");
+		$this->_rptAuditReport		= new Report("Bill Audit Report for ".date("Y-m-d H:i:s"), "rdavis@ybs.net.au", TRUE, "dispatch@voiptelsystems.com.au");
 		
 		// Report headers
 		$this->_rptBillingReport->AddMessage(MSG_HORIZONTAL_RULE);
@@ -1123,7 +1123,7 @@
 		*/
 		
 		// Alert YBS that file is ready for upload
-		//SendEmail('rich@voiptelsystems.com.au, msergeant@yellowbilling.com.au, turdminator@hotmail.com', 'Invoice Run Ready for Upload', 'The Invoice Run VBF file is ready for upload');
+		//SendEmail('rdavis@ybs.net.au, msergeant@yellowbilling.com.au, turdminator@hotmail.com', 'Invoice Run Ready for Upload', 'The Invoice Run VBF file is ready for upload');
 		
 		
 		// update Invoice Status to COMMITTED, or SETTLED if the invoice balance is zero
@@ -2585,7 +2585,7 @@
 		 			$emlMail =& Mail::factory('mail');
 		 			
 		 			// Uncomment this to Debug
-		 			$strEmail = 'rich@voiptelsystems.com.au';
+		 			$strEmail = 'rdavis@ybs.net.au';
 		 			$strEmail = 'turdminator@hotmail.com';
 		 			
 		 			// Send the email

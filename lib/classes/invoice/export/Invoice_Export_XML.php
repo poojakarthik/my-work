@@ -644,7 +644,7 @@
 					 			$emlMail	= &Mail::factory('mail');
 					 			
 					 			// Uncomment this to Debug
-					 			//$strEmail = 'rich@voiptelsystems.com.au, joel@voiptelsystems.com.au, turdminator@hotmail.com, rj.davis@student.qut.edu.au, jmdawkins@optusnet.com.au, n2333511@student.qut.edu.au, holiver@yellowbilling.com.au';
+					 			//$strEmail = 'rdavis@ybs.net.au, turdminator@hotmail.com, rj.davis@student.qut.edu.au';
 					 			
 					 			// Send the email
 					 			if (!$emlMail->send($strEmail, $strHeaders, $strBody))

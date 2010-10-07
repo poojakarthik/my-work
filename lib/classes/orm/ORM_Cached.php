@@ -442,6 +442,19 @@ abstract class ORM_Cached extends ORM
 		}
 	}
 	
+	protected function _delete($bClearId=true, $bRemoveFromCache=true)
+	{
+		$iId		= $this->id;
+		$bDeleted	= parent::_delete();
+		if (parent::_delete($bClearId) && $iId !== null && $bRemoveFromCache)
+		{
+			// Remove from the cache
+			$arrCache = &self::getReferenceToCache($this->getCacheName());
+			unset($arrCache[$iId]);
+		}
+		return $bDeleted;
+	}
+	
 	public static function importResult($aResultSet, $sORMClass)
 	{
 		$aInstances	= parent::importResult($aResultSet, $sORMClass);

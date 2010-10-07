@@ -92,6 +92,14 @@ class Application_Handler_Developer extends Application_Handler
 																)
 													);
 			
+			$arrFunctions[]	= self::_stdClassFactory(
+														array	(
+																	'strName'	=> 'Destination Import',
+																	'strType'	=> self::URL_TYPE_JS,
+																	'strURL'	=> 'JsAutoLoader.loadScript(["popup_destination_import.js","popup_destination_import_manual.js","control_field.js","control_field_select.js","control_field_text_ajax.js","filter.js"], function(){(new Popup_Destination_Import()).display()}, true);'
+																)
+													);
+			
 			$arrDetailsToRender = array();
 			$arrDetailsToRender['arrFunctions']		= $arrFunctions;
 			
@@ -103,6 +111,51 @@ class Application_Handler_Developer extends Application_Handler
 			$arrDetailsToRender['ErrorMessage']	= $e->getMessage();
 			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
 		}
+	}
+	
+	public function MatchDestinationsFromCSV($subPath)
+	{
+		//require_once(dirname(__FILE__).'/../../json/handler/JSON_Handler_Destination.php');
+		
+		try
+		{
+			if (($sFileContents = @file_get_contents(ini_get('upload_tmp_dir').'/'.$_FILES['destinations']['tmp_name'])) === false)
+			{
+				throw new Exception("There was an error while reading the uploaded file (".$php_errormsg.")");
+			}
+			$aIgnoreWords	= preg_split('/[\s\,\;\|]+/', $_REQUEST['ignore_words'], null, PREG_SPLIT_NO_EMPTY);
+			
+			$aResult	= JSON_Handler_Destination::matchDestinationsCSV($sFileContents, ($aIgnoreWords) ? $aIgnoreWords : array());
+		}
+		catch (Exception $oException)
+		{
+			$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+			$sMessage	= $bUserIsGod ? $oException->getMessage() : 'There was an error accessing the database. Please contact YBS for assistance.';
+			$aResult	= array(
+							'Success'	=> false,
+							'sMessage'	=> $sMessage,
+							'Message'	=> $sMessage
+						);
+		}
+		$sJSONResponse	= @JSON_Services::instance()->encode($aResult);
+		
+		if ($sJSONResponse === false)
+		{
+			echo "Error producing JSON output: ".$php_errormsg;
+		}
+		elseif (PEAR::isError($sJSONResponse))
+		{
+			echo "PEAR Error:\n";
+			echo print_r($sJSONResponse, true);
+		}
+		else
+		{
+			//echo "Debug:\n";
+			//echo print_r($sJSONResponse, true);
+			echo $sJSONResponse;
+		}
+		
+		die;
 	}
 	
 	protected static function _stdClassFactory($arrProperties)

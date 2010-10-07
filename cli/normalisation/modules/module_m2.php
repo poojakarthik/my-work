@@ -137,7 +137,7 @@ class NormalisationModuleM2 extends NormalisationModule
 				
 			case 'OC':
 				// M2 say that they will never send 'OC' records, but this is here just incase they decide to
-				SendEmail("rich@voiptelsystems.com.au", "M2 CDR RecordType 'OC' Encountered!", "Unhandled M2 CDR RecordType 'OC' Encountered in CDR #{$arrCDR['Id']}");
+				SendEmail("rdavis@ybs.net.au", "M2 CDR RecordType 'OC' Encountered!", "Unhandled M2 CDR RecordType 'OC' Encountered in CDR #{$arrCDR['Id']}");
 			default:
 				// Unrecognised Type
 				return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
@@ -167,7 +167,7 @@ class NormalisationModuleM2 extends NormalisationModule
 		else
 		{
 			// Temporary Debugging until ServiceType() can parse all FNNs
-			SendEmail("rich@voiptelsystems.com.au", "ServiceType() Unhandled FNN", "ServiceType() was unable to handle the FNN: '{$strFNN}' for CDR with Id '{$arrCDR['Id']}'");
+			SendEmail("rdavis@ybs.net.au", "ServiceType() Unhandled FNN", "ServiceType() was unable to handle the FNN: '{$strFNN}' for CDR with Id '{$arrCDR['Id']}'");
 			return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
 		}
 		

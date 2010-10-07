@@ -7,6 +7,8 @@ var JsAutoLoader = {
 	// funcOnLoadEventHandler will be executed as soon as the javascript file finishes loading
 	loadScript : function(mixScripts, funcOnLoadEventHandler, bolUseJavascriptPhp, bShowLoading)
 	{
+		//debugger;
+		
 		// If necessary, show the loading popup (only if not already shown)
 		if (bShowLoading && !this.oLoading)
 		{

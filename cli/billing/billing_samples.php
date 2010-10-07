@@ -205,8 +205,8 @@ $rcpRemoteCopy->Disconnect();
 
 // Email link to samples
 $strSubject	= "$strMode Samples for $strMonth";
-//$strEmail	= "paula@staralliance.com.au, jade@wxc.com.au, adele.k@telcoblue.com.au, mshield@telcoblue.com.au, jared@telcoblue.com.au, rich@voiptelsystems.com.au, turdminator@hotmail.com, aphplix@gmail.com";
-$strEmail	= "rich@voiptelsystems.com.au, turdminator@hotmail.com, mark.s@yellowbilling.com.au";
+//$strEmail	= "paula@staralliance.com.au, jade@wxc.com.au, adele.k@telcoblue.com.au, mshield@telcoblue.com.au, jared@telcoblue.com.au, rdavis@ybs.net.au, turdminator@hotmail.com, aphplix@gmail.com";
+$strEmail	= "rdavis@ybs.net.au, turdminator@hotmail.com, mark.s@yellowbilling.com.au";
 $strContent	= "Below is a link to the $strMode Samples for $strMonth Billing.\n\n";
 SendEmail($strEmail, $strSubject, $strContent);
 */

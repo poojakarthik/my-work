@@ -197,7 +197,7 @@
 		parent::__construct();
 
 	 	// Initialise framework components
-		$this->rptNormalisationReport	= new Report("Normalisation Report for " . date("Y-m-d H:i:s"), "rich@voiptelsystems.com.au");
+		$this->rptNormalisationReport	= new Report("Normalisation Report for " . date("Y-m-d H:i:s"), "rdavis@ybs.net.au");
 		$this->rptDelinquentsReport		= new Report("Delinquents Report for ". date("Y-m-d H:i:s"), $$mixEmailAddress, FALSE);
 		$this->errErrorHandler			= new ErrorHandler();
 

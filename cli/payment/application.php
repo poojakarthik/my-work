@@ -65,7 +65,7 @@
 		
 		$this->_arrPaymentModules = Array();
 		
-		$this->_rptPaymentReport = new Report("Payments Report for ".date("Y-m-d H:i:s"), "rich@voiptelsystems.com.au");
+		$this->_rptPaymentReport = new Report("Payments Report for ".date("Y-m-d H:i:s"), "rdavis@ybs.net.au");
 		$this->_rptPaymentReport->AddMessage(MSG_HORIZONTAL_RULE);
 		
 		$arrColumns = Array();

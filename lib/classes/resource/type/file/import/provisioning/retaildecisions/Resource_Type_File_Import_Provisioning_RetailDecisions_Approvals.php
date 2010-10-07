@@ -12,26 +12,26 @@ class Resource_Type_File_Import_Provisioning_RetailDecisions_Approvals extends R
 	const	NEW_LINE_DELIMITER	= "\n";
 	const	FIELD_DELIMITER		= '\t';
 	const	FIELD_ENCAPSULATOR	= '';
-	const	ESCAPE_CHARACTER	= '\\';
+	const	ESCAPE_CHARACTER	= '';
 	
 	const	RECORD_TYPE_HEADER		= 'HEADER';
 	const	RECORD_TYPE_TRANSACTION	= 'TRANSCATION';
 	const	RECORD_TYPE_TRAILER		= 'TRAILER';
 	
-	public function normalise()
+	public function process()
 	{
 		while (($sRecord = $this->_oFileImporter->fetch()) !== false)
 		{
-			$this->normaliseRecord($sRecord);
+			$this->processRecord($sRecord);
 		}
 	}
 	
-	public function normaliseRecord($sRecord)
+	public function processRecord($sRecord)
 	{
 		switch (self::calculateRecordType($sRecord))
 		{
 			case self::RECORD_TYPE_TRANSACTION:
-				return $this->_normaliseTransaction($sRecord);
+				return $this->_processTransaction($sRecord);
 				break;
 			default:
 				// Unknown or unhandled Record Type
@@ -40,7 +40,7 @@ class Resource_Type_File_Import_Provisioning_RetailDecisions_Approvals extends R
 		}
 	}
 	
-	protected function _normaliseTransaction($sRecord)
+	protected function _processTransaction($sRecord)
 	{
 		// Process the Record
 		//--------------------------------------------------------------------//
@@ -65,6 +65,7 @@ class Resource_Type_File_Import_Provisioning_RetailDecisions_Approvals extends R
 			{
 				// File Import
 				$oMotorpassAccount->file_import_id	= $this->getFileImport()->Id;
+				$oMotorpassAccount->account_number	= (int)$oRecord->AccountNumber;
 			}
 		}
 		else

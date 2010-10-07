@@ -4,7 +4,6 @@ class File_Importer_CSV extends File_Importer
 	protected	$_sEscape		= '\\';
 	protected	$_sQuote		= '"';
 	protected	$_sDelimiter	= ",";
-	protected	$_sNewLine		= "\n";
 	
 	public function setDelimiter($sDelimiter)
 	{
@@ -21,12 +20,6 @@ class File_Importer_CSV extends File_Importer
 	public function setEscape($sEscape)
 	{
 		$this->_sEscape	= (string)$sEscape;
-		return $this;
-	}
-	
-	public function setNewLine($sNewLine)
-	{
-		$this->_sNewLine	= (string)$sNewLine;
 		return $this;
 	}
 }

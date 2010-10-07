@@ -50,7 +50,7 @@ foreach ($argv as $intIndex=>$strArg)
 // Application entry point - create an instance of the application object
 $appRating = new ApplicationRating($arrConfig);
 
-// Change status of all CDRs with missing rate 
+// Change status of all CDRs with missing rate
 $appRating->ReRate(CDR_RATE_NOT_FOUND);
 
 if ($intLimit)
@@ -94,7 +94,7 @@ while ($mixRemaining)
 }
 
 // Check our profit margin
-Debug("Profit Margin: ".$appRating->GetMargin(49, 1000, 'flame@voiptelsystems.com.au, rich@voiptelsystems.com.au')."%");
+Debug("Profit Margin: ".$appRating->GetMargin(49, 1000, 'rdavis@ybs.net.au')."%");
 
 // Empty the Donkey Account
 Debug("Donkey Account = $".$appRating->_DonkeyAccount);

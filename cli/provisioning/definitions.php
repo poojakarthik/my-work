@@ -108,7 +108,7 @@ define("REQUEST_EMAIL_MESSAGE"			,	"Hi <Employee>,\n\n" .
 											"\tDescription\t: <Description>\n\n" .
 											" - Pablo, the Helpful Donkey\n\n" .
 											"(NOTE: This is an automated message.  Do NOT reply to this email.)");
-define("REQUEST_EMAIL_ADMIN"			,	"rich@voiptelsystems.com.au");
+define("REQUEST_EMAIL_ADMIN"			,	"rdavis@ybs.net.au");
 
 
 // Connection Definitions

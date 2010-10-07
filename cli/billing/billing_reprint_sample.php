@@ -243,7 +243,7 @@ $strHeaders = $mimMime->headers($arrHeaders);
 $emlMail =& Mail::factory('mail');
 
 // Send the email
-$strEmail = "jade@wxc.com.au, adele.k@telcoblue.com.au, andrew.p@telcoblue.com.au, mshield@telcoblue.com.au, jared@telcoblue.com.au, rich@voiptelsystems.com.au, turdminator@hotmail.com, aphplix@gmail.com";
+$strEmail = "jade@wxc.com.au, adele.k@telcoblue.com.au, andrew.p@telcoblue.com.au, mshield@telcoblue.com.au, jared@telcoblue.com.au, rdavis@ybs.net.au, turdminator@hotmail.com, aphplix@gmail.com";
 $emlMail->send($strEmail, $strHeaders, $strBody);
 
 

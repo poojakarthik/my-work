@@ -27,37 +27,37 @@ $arrProcessType['Debug']			= TRUE;
 // AlertEmail	: (NULL) Email address to alert if this process fails
 
 $arrDependencies['Payments']			['WaitMode']	= -1;
-$arrDependencies['Payments']			['AlertEmail']	= 'rich@voiptelsystems.com.au';
+$arrDependencies['Payments']			['AlertEmail']	= 'rdavis@ybs.net.au';
 
 $arrDependencies['Collection']			['WaitMode']	= -1;
-$arrDependencies['Collection']			['AlertEmail']	= 'rich@voiptelsystems.com.au';
+$arrDependencies['Collection']			['AlertEmail']	= 'rdavis@ybs.net.au';
 
 $arrDependencies['ProvisioningExport']	['WaitMode']	= -1;
-$arrDependencies['ProvisioningExport']	['AlertEmail']	= 'rich@voiptelsystems.com.au';
+$arrDependencies['ProvisioningExport']	['AlertEmail']	= 'rdavis@ybs.net.au';
 
 $arrDependencies['ProvisioningImport']	['WaitMode']	= -1;
-$arrDependencies['ProvisioningImport']	['AlertEmail']	= 'rich@voiptelsystems.com.au';
+$arrDependencies['ProvisioningImport']	['AlertEmail']	= 'rdavis@ybs.net.au';
 
 $arrDependencies['Normalise10000']		['WaitMode']	= -1;
-$arrDependencies['Normalise10000']		['AlertEmail']	= 'rich@voiptelsystems.com.au';
+$arrDependencies['Normalise10000']		['AlertEmail']	= 'rdavis@ybs.net.au';
 
 $arrDependencies['ImportSingle']		['WaitMode']	= -1;
-$arrDependencies['ImportSingle']		['AlertEmail']	= 'rich@voiptelsystems.com.au';
+$arrDependencies['ImportSingle']		['AlertEmail']	= 'rdavis@ybs.net.au';
 
 $arrDependencies['FullNormalisation']	['WaitMode']	= -1;
-$arrDependencies['FullNormalisation']	['AlertEmail']	= 'rich@voiptelsystems.com.au';
+$arrDependencies['FullNormalisation']	['AlertEmail']	= 'rdavis@ybs.net.au';
 
 $arrDependencies['RateNew']				['WaitMode']	= -1;
-$arrDependencies['RateNew']				['AlertEmail']	= 'rich@voiptelsystems.com.au';
+$arrDependencies['RateNew']				['AlertEmail']	= 'rdavis@ybs.net.au';
 
 $arrDependencies['RateAll']				['WaitMode']	= -1;
-$arrDependencies['RateAll']				['AlertEmail']	= 'rich@voiptelsystems.com.au';
+$arrDependencies['RateAll']				['AlertEmail']	= 'rdavis@ybs.net.au';
 
 $arrDependencies['RecurringCharges']	['WaitMode']	= -1;
-$arrDependencies['RecurringCharges']	['AlertEmail']	= 'rich@voiptelsystems.com.au';
+$arrDependencies['RecurringCharges']	['AlertEmail']	= 'rdavis@ybs.net.au';
 
 $arrDependencies['PayNegativeBalances']	['WaitMode']	= -1;
-$arrDependencies['PayNegativeBalances']	['AlertEmail']	= 'rich@voiptelsystems.com.au';
+$arrDependencies['PayNegativeBalances']	['AlertEmail']	= 'rdavis@ybs.net.au';
 
 
 

@@ -318,7 +318,7 @@ class ApplicationCollection extends ApplicationBaseClass
 				$emlMail =& Mail::factory('mail');
 				
 				// Send the email
-				if (!$emlMail->send('rich@voiptelsystems.com.au', $strHeaders, $strBody))
+				if (!$emlMail->send('rdavis@ybs.net.au', $strHeaders, $strBody))
 				{
 					$this->_rptCollectionReport->AddMessage("[ FAILED ]\n\t\t\t-Reason: Mail send failed");
 					continue;
@@ -570,7 +570,7 @@ class ApplicationCollection extends ApplicationBaseClass
 			{
 				// The File Name exists, but the Hash is unique
 				$strContent	= "File '$strFileName' already exists in FileImport, but has a unique hash.";
-				SendEmail("rich@voiptelsystems.com.au", "viXen Collection: Possible File Double-Up", $strContent);
+				SendEmail("rdavis@ybs.net.au", "viXen Collection: Possible File Double-Up", $strContent);
 				$this->_arrCurrentImportFile['Status'] = CDRFILE_NAME_NOT_UNIQUE;
 				return FALSE;
 			}

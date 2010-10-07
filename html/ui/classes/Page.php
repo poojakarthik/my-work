@@ -78,11 +78,11 @@ class Page
 	 * list of extended Html_Template objects that will be included in the page
 	 *
 	 * List of extended html_template objects that will be included in the page.
-	 * Each object is stored in an associated array which also defines the type 
+	 * Each object is stored in an associated array which also defines the type
 	 * of extended html_template object it is and which column it will belong to
 	 * in the page layout.
 	 *
-	 * @type		array 
+	 * @type		array
 	 *
 	 * @property
 	 */
@@ -97,7 +97,7 @@ class Page
 	 * Sets the name of the page (the title of the webpage)
 	 *
 	 * Sets the name of the page (the title of the webpage)
-	 * 
+	 *
 	 * @param	string	$strName		the value to set the page name to
 	 *
 	 * @method
@@ -119,7 +119,7 @@ class Page
 	 * Gets the name of the page (the title of the webpage)
 	 *
 	 * Gets the name of the page (the title of the webpage)
-	 * 
+	 *
 	 * @return	string	$strName		the value the page name is set to
 	 *
 	 * @method
@@ -138,7 +138,7 @@ class Page
 	 * Sets the layout of the page
 	 *
 	 * Sets the layout of the page.  See comments regarding the _strPageLayout property
-	 * 
+	 *
 	 * @param	string	$strLayout		the value to set the page layout to
 	 *
 	 * @method
@@ -154,13 +154,13 @@ class Page
 	/**
 	 * AddObject()
 	 *
-	 * Adds an extended HtmlTemplate object to the page 
+	 * Adds an extended HtmlTemplate object to the page
 	 *
 	 * Adds an extended HtmlTemplate object to the page.
 	 * Extended HtmlTemplate classes must be located in the html_template directory
 	 * The order in which objects are added will be the order in which they will be
 	 * displayed in their associated column
-	 * 
+	 *
 	 * @param	string	$strName		template name (does not include the 'HtmlTemplate' prefix)
 	 *									A file must exist in the html_template directory.
 	 *									For example if the class to load is called HtmlTemplateKnowledgeBaseDocView
@@ -211,10 +211,10 @@ class Page
 	/**
 	 * Render()
 	 *
-	 * Renders the page 
+	 * Renders the page
 	 *
-	 * Renders the page 
-	 * 
+	 * Renders the page
+	 *
 	 * @method
 	 */
 	function Render()
@@ -232,7 +232,7 @@ class Page
 	 * Renders the CSS part of the page
 	 *
 	 * Renders the CSS part of the page
-	 * 
+	 *
 	 * @method
 	 */
 	function RenderCSS()
@@ -258,9 +258,9 @@ class Page
 	 * Renders the JS part of the page
 	 *
 	 * Renders the JS part of the page
-	 * Any js files that are included in HtmlTemplate constructors, are loaded 
+	 * Any js files that are included in HtmlTemplate constructors, are loaded
 	 * here, as well as the standard ones used by every page
-	 * 
+	 *
 	 * @return	void
 	 * @method
 	 */
@@ -287,6 +287,7 @@ class Page
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_debug.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/date.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_template.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_queue.js' ></script>\n";
 		
 		// Include reference to all other javascript files required of the page
 		if (!array_key_exists('*arrJavaScript', $GLOBALS) || !is_array($GLOBALS['*arrJavaScript']))
@@ -296,18 +297,19 @@ class Page
 
 		$arrRemainingJsFiles	= 	array_unique($GLOBALS['*arrJavaScript']);
 		$arrFiles				=	array(
-										"prototype", 
-										"jquery", 
-										"json", 
-										"flex", 
-										"flex_constant", 
-										"sha1", 
-										"reflex", 
-										"reflex_fx", 
-										"reflex_fx_morph", 
-										"reflex_fx_shift", 
-										"reflex_popup", 
-										"reflex_template"
+										"prototype",
+										"jquery",
+										"json",
+										"flex",
+										"flex_constant",
+										"sha1",
+										"reflex",
+										"reflex_fx",
+										"reflex_fx_morph",
+										"reflex_fx_shift",
+										"reflex_popup",
+										"reflex_template",
+										"reflex_queue"
 									);
 		
 		// Only include this file for the admin framework
@@ -346,10 +348,10 @@ class Page
 	 * Includes any javascript files required of a popup page
 	 *
 	 * Includes any javascript files required of a popup page
-	 * Any js files that are included in HtmlTemplate constructors, are loaded 
+	 * Any js files that are included in HtmlTemplate constructors, are loaded
 	 * here.  This is used when a popup is loaded, assuming it is called from
 	 * within the layout template of the popup (popup_layout)
-	 * 
+	 *
 	 * @return	void
 	 * @method
 	 */
@@ -381,7 +383,7 @@ class Page
 	 * Renders a single column of the page
 	 *
 	 * Renders a single column of the page
-	 * 
+	 *
 	 * @method
 	 */
 	function RenderColumn($intColumn)
@@ -417,11 +419,11 @@ class Page
 	 * Renders the footer of a page
 	 *
 	 * Renders the footer of a page
-	 * 
+	 *
 	 * @method
 	 */
 	function RenderFooter()
-	{	
+	{
 		echo "\n\t</body>\n</html>\n";
 	}
 		
@@ -434,11 +436,11 @@ class Page
 	 * Renders the header of a page
 	 *
 	 * Renders the header of a page
-	 * 
+	 *
 	 * @method
 	 */
 	function RenderHeader()
-	{	
+	{
 		$arrScript = explode('.php', $_SERVER['REQUEST_URI'], 2);
 		$intLastSlash = strrpos($arrScript[0], "/");
 		$strBaseDir = substr($arrScript[0], 0, $intLastSlash + 1);
@@ -451,7 +453,7 @@ class Page
 		{
 			$strBaseDir = "http://{$_SERVER['SERVER_NAME']}$strBaseDir";
 		}
-// DTD has not been defined in framework2.  It is defined in framework3 (ApplicationPage::RenderHeader)		
+// DTD has not been defined in framework2.  It is defined in framework3 (ApplicationPage::RenderHeader)
 //		echo "
 //<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
 //<html xmlns=\"http://www.w3.org/1999/xhtml\">
@@ -481,11 +483,11 @@ class Page
 	 * Renders the header of a 'flex modal page''
 	 *
 	 * Renders the header of a 'flex modal page''
-	 * 
+	 *
 	 * @method
 	 */
 	function RenderHeaderFlexModal()
-	{	
+	{
 		$arrScript = explode('.php', $_SERVER['REQUEST_URI'], 2);
 		$intLastSlash = strrpos($arrScript[0], "/");
 		$strBaseDir = substr($arrScript[0], 0, $intLastSlash + 1);
@@ -516,11 +518,11 @@ class Page
 	 * Renders the header of a page, for the client app (web_app)
 	 *
 	 * Renders the header of a page, for the client app (web_app)
-	 * 
+	 *
 	 * @method
 	 */
 	function RenderClientHeader()
-	{	
+	{
 		$arrScript = explode('.php', $_SERVER['REQUEST_URI'], 2);
 		$intLastSlash = strrpos($arrScript[0], "/");
 		$strBaseDir = substr($arrScript[0], 0, $intLastSlash + 1);
@@ -568,11 +570,11 @@ class Page
 	 * Renders the header of a page, for the client app (web_app)
 	 *
 	 * Renders the header of a page, for the client app (web_app)
-	 * 
+	 *
 	 * @method
 	 */
 	function RenderClientPOPHeader()
-	{	
+	{
 		$arrScript = explode('.php', $_SERVER['REQUEST_URI'], 2);
 		$intLastSlash = strrpos($arrScript[0], "/");
 		$strBaseDir = substr($arrScript[0], 0, $intLastSlash + 1);
@@ -614,7 +616,7 @@ class Page
 	 * Renders the breadcrumb menu
 	 *
 	 * Renders the breadcrumb menu
-	 * 
+	 *
 	 * @method
 	 */
 	function RenderBreadCrumbMenu()
@@ -653,11 +655,11 @@ class Page
 	 *
 	 * Renders the Flex header including the context menu
 	 * (This is the new Flex header with the horizontal context menu and search functionality)
-	 * 
+	 *
 	 * @param	bool	$bolWithSearch		optional, defaults to TRUE.  Set to FALSE to suppress rendering of search controls and user details
 	 * @param	bool	$bolWithMenu		optional, defaults to TRUE.  Set to FALSE to suppress rendering of the context menu
 	 * @param	bool	$bolWithBreadCrumbs	optional, defaults to TRUE.  Set to FALSE to suppress rendering of the bread crumb menu
-	 * 
+	 *
 	 * @method
 	 */
 	function RenderFlexHeader($bolWithSearch=TRUE, $bolWithMenu=TRUE, $bolWithBreadCrumbs=TRUE)
@@ -697,7 +699,7 @@ class Page
 	 * Renders the user details and search controls in the page header
 	 *
 	 * Renders the user details and search controls in the page header
-	 * 
+	 *
 	 * @method
 	 */
 	function RenderSearchField()
@@ -758,7 +760,7 @@ class Page
 			| $sFollowUps".
 
 			// Removed but kept just in case rmctainsh 20100615
-			//| <a onclick=\"redirectOutput(this); var elemform = getElementById('kbform'); elemform.submit();\">Knowledge Base</a>	
+			//| <a onclick=\"redirectOutput(this); var elemform = getElementById('kbform'); elemform.submit();\">Knowledge Base</a>
 
 			"| <a onclick='$strUserPreferencesLink'>Preferences</a>
 			{$strDeveloperToolsLink}
@@ -772,7 +774,7 @@ class Page
 				</div>
 				<div id='search_bar' name='search_bar'>
 					<form action='#' onsubmit='FlexSearch.quickSearch();return false;'>
-						Search: 
+						Search:
 						<input type='text' id='search_string' name='search_string' value='$strLastConstraint' onkeypress='FlexSearch.quickSearchOnEnter(event)' />
 						<select name='category' id='quick_search_category'>$strCategoryOptions
 						</select>
@@ -791,7 +793,7 @@ class Page
 	 * Renders the context menu
 	 *
 	 * Renders the context menu
-	 * 
+	 *
 	 * @method
 	 */
 	function RenderContextMenu()
@@ -854,7 +856,7 @@ class Page
 	 * Renders the Client App header
 	 *
 	 * Renders the Client App header
-	 * 
+	 *
 	 * @method
 	 */
 	function RenderClientAppHeader()
@@ -870,7 +872,7 @@ class Page
 	 * SetMode()
 	 *
 	 * Sets the mode of the template
-	 * 
+	 *
 	 * Sets the mode of the template
 	 *
 	 * @param		int	$intMode	The mode number to set
@@ -894,7 +896,7 @@ class Page
 	 * SetModal()
 	 *
 	 * Sets the modality of the template
-	 * 
+	 *
 	 * Sets the modality of the template
 	 *
 	 * @param		int	$bolModal	Whether the page is to be rendered as a modal (complete) page
@@ -915,7 +917,7 @@ class Page
 	 * IsModal()
 	 *
 	 * Sets the modality of the template
-	 * 
+	 *
 	 * Sets the modality of the template
 	 *
 	 * @param		void
@@ -936,7 +938,7 @@ class Page
 	 * SetStyleOverride()
 	 *
 	 * Allows the programmer to override the styling of the page, at the page level
-	 * 
+	 *
 	 * Allows the programmer to override the styling of the page, at the page level
 	 * This will probably only be used with the popup_layout LayoutTemplate
 	 *
@@ -966,7 +968,7 @@ class Page
 	 * then doing an md5 sum on that.
 	 *
 	 * @param	array		$arrFilenames	indexed array of javascript files that are required of the page.
-	 * 										These will filenames should not include the ".js" extension 
+	 * 										These will filenames should not include the ".js" extension
 	 *
 	 * @return	string		query string in the form "File[]=<jsFile1>.js&File[]=<jsFile2>.js&v=<md5Sum>"
 	 * @method

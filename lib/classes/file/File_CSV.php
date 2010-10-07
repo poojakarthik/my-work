@@ -128,13 +128,16 @@ class File_CSV implements Iterator
 	{
 		if (is_array($aArray))
 		{
-			// Set Columns
-			$this->setColumns(array_keys($aArray));
-			
-			// Set Data
-			foreach ($aArray as $aRow)
+			if (count($aArray) > 0)
 			{
-				$this->addRow($aRow);
+				// Set Columns
+				$this->setColumns(array_keys($aArray[0]));
+				
+				// Set Data
+				foreach ($aArray as $aRow)
+				{
+					$this->addRow($aRow);
+				}
 			}
 		}
 		else
@@ -154,10 +157,22 @@ class File_CSV implements Iterator
 			throw new Exception("Unable to import from path '{$sPath}': There was an unknown error reading from the path");
 		}
 		
+		if (($sDataString = @file_get_contents()) === false)
+		{
+			throw new Exception("Unable to import from path '{$sPath}': There was an unknown error reading from the path");
+		}
+		
+		return $this->importFileAsString($sDataString);
+	}
+	
+	public function importFileAsString($sDataString, $bHasHeader=false, $bImportHeader=false)
+	{
+		$aLines	= explode($this->_sNewLine, $sDataString);
+		
 		// Parse the first row as a Header
 		if ($bHasHeader)
 		{
-			if ($sHeader = trim(fgets($rImportFile), "\n\r\0\x0B"))
+			if ($sHeader = trim(reset($aLines), "\n\r\0\x0B"))
 			{
 				if ($bImportHeader)
 				{
@@ -168,7 +183,7 @@ class File_CSV implements Iterator
 		}
 		
 		// Import each row
-		while ($sRow = trim(fgets($rImportFile), "\n\r\0\x0B"))
+		while (($sRow = current($aLines)) !== false)
 		{
 			$aRow			= self::parseLine($sRow, $this->_sDelimiter, $this->_sQuote, $this->_sEscape);
 			$aFormattedRow	= array();
@@ -186,6 +201,7 @@ class File_CSV implements Iterator
 			}
 			
 			$this->addRow($aFormattedRow);
+			next($aLines);
 		}
 		
 		return true;

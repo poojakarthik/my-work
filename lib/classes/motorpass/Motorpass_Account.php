@@ -26,6 +26,31 @@ class Motorpass_Account extends ORM_Cached
 	{
 		return 100;
 	}
+	
+	public static function getForAccount($mAccount)
+	{
+		$oForAccount	= self::_preparedStatement('selForAccount');
+		if ($oForAccount->Execute(array('account_id'=>ORM::extractId($mAccount))) === false)
+		{
+			throw new Exception($oForAccount->Error());
+		}
+		$aResults	= array();
+		while ($aResult = $oWaitingForAccount->Fetch())
+		{
+			$aResults[$aResult['id']]	= new self($aResult);
+		}
+		return $aResults;
+	}
+	
+	public static function getCurrentForAccount($mAccount)
+	{
+		$oForAccount	= self::_preparedStatement('selCurrentForAccount');
+		if ($oForAccount->Execute(array('account_id'=>ORM::extractId($mAccount))) === false)
+		{
+			throw new Exception($oForAccount->Error());
+		}
+		return new self($aResult);
+	}
 
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
@@ -88,6 +113,24 @@ class Motorpass_Account extends ORM_Cached
 					break;
 				case 'selAll':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
+					break;
+				case 'selForAccount':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"	motorpass_account ma
+																						JOIN rebill_motorpass rm ON (ma.id = rm.motorpass_account_id)
+																						JOIN rebill r ON (r.id = rm.rebill_id)
+																						JOIN Account a ON (a.Id = r.account_id)",
+																					"ma.*",
+																					"	r.account_id = <account_id>",
+																					"rm.id ASC");
+				case 'selCurrentForAccount':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"	motorpass_account ma
+																						JOIN rebill_motorpass rm ON (ma.id = rm.motorpass_account_id)
+																						JOIN rebill r ON (r.id = rm.rebill_id)
+																						JOIN Account a ON (a.Id = r.account_id)",
+																					"ma.*",
+																					"	r.account_id = <account_id>",
+																					"r.id ASC",
+																					1);
 					break;
 
 				// INSERTS

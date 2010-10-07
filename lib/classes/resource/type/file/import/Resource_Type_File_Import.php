@@ -22,6 +22,8 @@ abstract class Resource_Type_File_Import extends Resource_Type_Base
 	
 	abstract public function process();
 	
+	abstract public function processRecord($sRecord);
+	
 	public function getFileImport()
 	{
 		return $this->_oFileImport;

@@ -63,7 +63,7 @@
  	{
 		parent::__construct();
 		
-		$this->_rptProvisioningReport = new Report("Provisioning Report for ".date("Y-m-d H:i:s", time()), "rich@voiptelsystems.com.au");
+		$this->_rptProvisioningReport = new Report("Provisioning Report for ".date("Y-m-d H:i:s", time()), "rdavis@ybs.net.au");
 		$this->_rptProvisioningReport->AddMessage(MSG_HORIZONTAL_RULE);
 		
 		// Init Provisioning Import Modules

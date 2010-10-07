@@ -90,7 +90,7 @@
 		$this->_insAddToChargesTable	= new StatementInsert("Charge");
 
 		// Init Report
-		$this->_rptRecurringChargesReport	= new Report("Charges Report for ".date("Y-m-d H:i:s"), "rich@voiptelsystems.com.au");
+		$this->_rptRecurringChargesReport	= new Report("Charges Report for ".date("Y-m-d H:i:s"), "rdavis@ybs.net.au");
 		$this->_rptRecurringChargesReport->AddMessage(MSG_HORIZONTAL_RULE);
 		return;
 	}

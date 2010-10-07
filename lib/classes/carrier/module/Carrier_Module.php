@@ -86,6 +86,26 @@ class Carrier_Module extends ORM_Cached
 		return $aRecords;
 	}
 	
+	public static function getForDefinition($mCarrierModuleType, $mResourceType, $mCarrier, $mCustomerGroup=null)
+	{
+		$oStatement	= self::_preparedStatement('selForDefinition');
+		
+		$iRows	= $oStatement->Execute(array('carrier_module_type_id'=>ORM::extractId($mCarrierModuleType), 'resource_type_id'=>ORM::extractId($mResourceType), 'carrier_id'=>ORM::extractId($mCarrier), 'customer_group_id'=>ORM::extractId($mCustomerGroup)));
+		if ($iRows === false)
+		{
+			throw new Exception($oStatement->Error());
+		}
+		
+		$aRecords	= array();
+		while ($aRecord = $oStatement->Fetch())
+		{
+			$oInstace					= new self($aRecord);
+			$aRecords[$oInstace->id]	= $oInstace;
+		}
+		
+		return $aRecords;
+	}
+	
 	public function getConfig()
 	{
 		if (!isset($this->_oCarrierModuleConfigSet))
@@ -126,6 +146,14 @@ class Carrier_Module extends ORM_Cached
 					break;
 				case 'selForCarrierModuleTypeAndCustomerGroup':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "Type = <carrier_module_type_id> AND (ISNULL(<customer_group_id>) OR ISNULL(customer_group) OR <customer_group_id> = customer_group) AND (<include_inactive> = 0 OR Active = 1)");
+					break;
+				case 'selForDefinition':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	self::$_strStaticTableName,
+																					"*",
+																					"	Type = <carrier_module_type_id>
+																						AND FileType = <resource_type_id>
+																						AND Carrier = <carrier_id>
+																						AND <customer_group_id> <=> customer_group");
 					break;
 				
 				// INSERTS

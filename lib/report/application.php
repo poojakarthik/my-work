@@ -52,7 +52,7 @@
 	 * Constructor for the Application
 	 *
 	 * Constructor for the Application
-	 * 
+	 *
 	 * @param	array	$arrConfig				Configuration array
 	 *
 	 * @return			ApplicationReport
@@ -63,7 +63,7 @@
  	{
 		parent::__construct();
 		
-		$this->_rptReport	= new Report("Report Report (wtfmate) for ".date("Y-m-d H:i:s"), "rich@voiptelsystems.com.au", (bool)$arrConfig['Display'], "dispatch@voiptelsystems.com.au");
+		$this->_rptReport	= new Report("Report Report (wtfmate) for ".date("Y-m-d H:i:s"), "rdavis@ybs.net.au", (bool)$arrConfig['Display'], "dispatch@yellowbilling.com.au");
 		$this->_rptReport->AddMessage(MSG_HORIZONTAL_RULE);
 		
 		// Statements
@@ -87,7 +87,7 @@
 	 *
 	 * Execute the application
 	 *
-	 * @return	array		
+	 * @return	array
 	 *
 	 * @method
 	 */
@@ -108,7 +108,7 @@
 			// Prepare Columns and Where Array
 			$arrAliases	= unserialize($arrReport['SQLSelect']);
 			$arrValues	= unserialize($arrDataReport['SQLSelect']);
-			$arrColumns = Array();			
+			$arrColumns = Array();
 			foreach ($arrAliases as $strAlias)
 			{
 				$arrColumns["'$strAlias'"] = $arrValues[$strAlias]['Value'];
@@ -630,7 +630,7 @@
 	 * @method
 	 */
  	private function _InitExcelFormats($wkbWorkbook)
- 	{		
+ 	{
  		$arrFormat = Array();
  		
  		// Integer format (make sure it doesn't show exponentials for large ints)
@@ -722,7 +722,7 @@
 		$fmtFNN->setNumFormat('0000000000');
 		$arrFormat['FNN']				= $fmtFNN;
 		
-		return $arrFormat; 		
+		return $arrFormat;
  	}
  	
  	
@@ -766,7 +766,7 @@
  			foreach ($arrTemplate as $arrMatch)
  			{
  				// Get the value we want
- 				$arrVariable = explode('::', $arrMatch[1]); 				
+ 				$arrVariable = explode('::', $arrMatch[1]);
  				//Debug($arrMatch[0]);
  				
 				if (count($arrVariable) == 2)

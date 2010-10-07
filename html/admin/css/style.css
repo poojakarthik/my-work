@@ -441,6 +441,7 @@ textarea.valid,
 table.control-field-text-ajax-result-table
 {
 	border-spacing	: 0;
+	width			: 100%;
 }
 
 table.control-field-text-ajax-result-table > tbody > tr.highlighted-row td.control-field-text-ajax-result-column
@@ -6974,6 +6975,27 @@ div.popup-rate-plan-test > table.reflex
 {
 	max-height	: 40em;
 	overflow-y	: scroll;
+}
+
+.destination-import-manual input[type='text']
+{
+	width	: 98%;
+}
+
+.destination-import-manual .destination-import-manual-search
+{
+	text-align	: center;
+}
+
+.destination-import-manual label
+{
+	font-weight	: bold;
+	
+}
+
+.destination-import-manual .destination-import-manual-results td
+{
+	text-align	: left;
 }
 /******************** END - Destination Import Popup - END ********************/
 

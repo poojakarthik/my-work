@@ -48,7 +48,7 @@ foreach ($arrFees as $strType=>$arrFee)
 
 // Email results
 Debug("Emailing results...");
-$strAddress	= 'rich@voiptelsystems.com.au, turdminator@hotmail.com';
+$strAddress	= 'rdavis@ybs.net.au, turdminator@hotmail.com';
 $strSubject	= "Unbilled Special Charges Report for ".date('Y-m-d H:i:s');
 SendEmail($strAddress, $strSubject, nl2br($strContent));
 ?>

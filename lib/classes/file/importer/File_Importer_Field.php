@@ -25,5 +25,10 @@ class File_Importer_Field
 	{
 		return substr($mData, $this->_iStartIndex, $this->_iLength);
 	}
+	
+	public static function factory()
+	{
+		return new self();
+	}
 }
 ?>

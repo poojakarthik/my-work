@@ -306,7 +306,7 @@ Object.extend(Reflex_Popup.prototype, {
 		Event.observe(document.body, "drag", this.dragCancel.bind(this));
 		
 		// Dragging the Content (only in special cases)
-		Event.observe(this.contentPane, 'mousedown', this.dragStartComplex.bind(this));
+		Event.observe(this.container, 'mousedown', this.dragStartComplex.bind(this));
 		Event.observe(document, 'keydown', this.dragStartComplex.bind(this));
 		Event.observe(document, 'keyup', this.dragStartComplex.bind(this));
 		

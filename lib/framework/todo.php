@@ -6,7 +6,7 @@
 //----------------------------------------------------------------------------//
 
 // config
-$strDomain	= "voiptelsystems.com.au";
+$strDomain	= "yellowbilling.com.au";
 $strSubject	= "TODO List : ".Date('Y-m-d');
 $strHeader	= "The following TODOs are currently assigned to you;\n";
 $strFooter	= "\n\nThis is an automated message, do not reply\n\n";

@@ -343,6 +343,13 @@ abstract class ORM_Enumerated extends ORM_Cached
 		// We don't have to refresh the SystemName - ObjectId mapping, because SystemNames cannot be modified via ORM objects.  They must be set via rollout scripts
 	}
 	
+	protected function _delete($bClearId=true, $bRemoveFromCache=true)
+	{
+		$bDeleted	= parent::_delete($bClearId, $bRemoveFromCache);
+		self::refreshSystemNameObjectIdMapping($strClass);
+		return $bDeleted;
+	}
+	
 	public static function importResult($aResultSet, $sORMClass)
 	{
 		$aInstances	= parent::importResult($aResultSet, $sORMClass);

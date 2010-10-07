@@ -167,6 +167,30 @@ abstract class ORM
 			return $mixResult;
 		}
 	}
+	
+	// By default this only has protected visibility, so we don't accidentally go deleting everything
+	// A child class can reveal this to the outside world if it feels that it really needs to
+	protected function _delete($bClearId=true)
+	{
+		static	$oQuery;
+		$oQuery	= (isset($oQuery)) ? $oQuery : new Query();
+		
+		if (isset($this->_arrProperties[$this->_strIdField]))
+		{
+			$sDeleteSQL	= "	DELETE FROM	{$this->_strTableName}
+							WHERE		id = {$this->_arrProperties[$this->_strIdField]}";
+			
+			if ($oQuery->Execute($sDeleteSQL) === false)
+			{
+				throw new Exception("Unable to delete {$this->_strTableName} record where {$this->_strIdField} is '{$this->_arrProperties[$this->_strIdField]}'");
+			}
+			
+			$this->setId(null);
+			$this->_bolSaved	= false;
+		}
+		
+		return true;
+	}
 
 	// This private function is used to set the id of the object, because this functionality is prohibited in the protected __set method (shouldn't the __set method be public?)
 	private function setId($intId)

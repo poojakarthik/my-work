@@ -324,10 +324,30 @@ jQuery.json = {
 	{
 		var objIframeDocument	= (elmIframe.contentDocument) ? elmIframe.contentDocument : (elmIframe.contentWindow) ? elmIframe.contentWindow.document : window.frames[elmIframe.id].document;
 		
-		// Parse Iframe contents for response data (JSON'd PHP Array)
-		//alert("Raw Response: " + objIframeDocument.body.innerHTML);
-		var objResponse			= jQuery.json.decode(objIframeDocument.body.innerHTML.unescapeHTML());
-		objResponse				= (objResponse) ? objResponse : {Message: objIframeDocument.body.innerHTML};
+		//debugger;
+		
+		try
+		{
+			// Parse Iframe contents for response data (JSON'd PHP Array)
+			//alert("Raw Response: " + objIframeDocument.body.innerHTML);
+			var sIframeContent		= objIframeDocument.body.innerHTML,
+				objResponse;
+		}
+		catch (mError)
+		{
+			Reflex_Popup.alert(mError);
+		}
+		
+		//debugger;
+		
+		try
+		{
+			objResponse	= sIframeContent.unescapeHTML().evalJSON();
+		}
+		catch (mException)
+		{
+			objResponse	= {Message: sIframeContent};
+		}
 		
 		// Call the Handler Function (if one was supplied)
 		if (elmIframe.funcResponseHandler != undefined)

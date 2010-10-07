@@ -163,7 +163,7 @@ class Application_Page extends Page
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_debug.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/date.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_template.js' ></script>\n";
-		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_template.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_queue.js' ></script>\n";
 
 		// Include reference to all other javascript files required of the page
 		if (!array_key_exists('*arrJavaScript', $GLOBALS) || !is_array($GLOBALS['*arrJavaScript']))
@@ -185,7 +185,8 @@ class Application_Page extends Page
 										"reflex_fx_morph",
 										"reflex_fx_shift",
 										"reflex_popup",
-										"reflex_template"
+										"reflex_template",
+										"reflex_queue"
 									);
 
 		// Only include this file for the admin framework

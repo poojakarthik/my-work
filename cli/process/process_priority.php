@@ -28,7 +28,7 @@ $arrProcessTypes[]	= "PayNegativeBalances";
 // AlertEmail	: (NULL) Email address to alert if this process fails
 
 $arrDependencies['Billing']			['WaitMode']	= 0;
-$arrDependencies['Billing']			['AlertEmail']	= 'rich@voiptelsystems.com.au';
+$arrDependencies['Billing']			['AlertEmail']	= 'rdavis@ybs.net.au';
 
 
 

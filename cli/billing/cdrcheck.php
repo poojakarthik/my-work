@@ -155,7 +155,7 @@ CLIEchoString("Emailing results...", 70, FALSE);
 
 // Email results to flame & rich
 $arrHeaders = Array();
-$arrHeaders['From']		= 'billing@voiptelsystems.com.au';
+$arrHeaders['From']		= 'billing@ybs.net.au';
 $arrHeaders['Subject']	= "CDR File Check for ".date("Y-m-d");
 $mimMime = new Mail_mime("\n");
 $mimMime->setTXTBody($GLOBALS['*strEmailContents']);
@@ -164,8 +164,8 @@ $strHeaders = $mimMime->headers($arrHeaders);
 $emlMail =& Mail::factory('mail');
 
 // Send the email
-$strEmailAddresses = "flame@voiptelsystems.com.au, rich@voiptelsystems.com.au";
-if (!$emlMail->send('rich@voiptelsystems.com.au, mark.s@yellowbilling.com.au', $strHeaders, $strBody))
+$strEmailAddresses = "rdavis@ybs.net.au";
+if (!$emlMail->send('rdavis@ybs.net.au', $strHeaders, $strBody))
 {
 	CLIEchoString("[ FAILED ]\n\n", NULL, FALSE);
 }
@@ -190,6 +190,6 @@ function CLIEchoString($strOutput, $intPadLength = NULL, $bolAddToEmail = TRUE)
 	if ($bolAddToEmail)
 	{
 		$GLOBALS['*strEmailContents'] .= $strOutput;
-	}	
+	}
 }
 ?>

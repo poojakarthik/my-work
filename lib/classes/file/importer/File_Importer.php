@@ -5,21 +5,70 @@ abstract class File_Importer
 	protected	$_aRecords		= array();
 	
 	protected	$_sData;
+	protected	$_aLines;
+	
+	protected	$_sNewLine	= "\n";
 	
 	protected	$_oRecordTypeCallback;
 	
 	public function __construct(){}
 	
-	abstract protected function _fetch();
+	public function getRecordTypeForData($sRecord)
+	{
+		$mRecordType	= $this->_oRecordTypeCallback->invoke($sRecord);
+		return (is_string($mRecordType) || $mRecordType instanceof File_Importer_RecordType) ? $this->getRecordType()->newRecord($sRecord) : null;
+	}
 	
 	public function fetch()
+	{
+		return $this->_fetch();
+	}
+	
+	public function fetchProcessed()
 	{
 		if (!isset($this->_oRecordTypeCallback))
 		{
 			throw new Exception("Record Type Callback is not yet defined");
 		}
-		$aRecord	= $this->_fetch();
-		return $this->getRecordType($this->_oRecordTypeCallback->invoke($aRecord))->newRecord($aRecord);
+		$sRecord	= $this->fetch();
+		if ($sRecord !== false)
+		{
+			return $this->getRecordTypeForData($sRecord);
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	protected function _fetch()
+	{
+		if (!isset($this->_aLines))
+		{
+			$this->_splitLines();
+		}
+		$sCurrent	= current($this->_aLines);
+		if ($sCurrent !== false)
+		{
+			next($this->_aLines);
+		}
+		return $sCurrent;
+	}
+	
+	protected function _splitLines()
+	{
+		if (!isset($this->_sData))
+		{
+			throw new Exception("Data has not been provided");
+		}
+		$this->_aLines	= explode($this->_sNewLine, $this->_sData);
+		return $this;
+	}
+	
+	public function setNewLine($sNewLine)
+	{
+		$this->_sNewLine	= (string)$sNewLine;
+		return $this;
 	}
 	
 	public function setData($sData)
@@ -29,6 +78,7 @@ abstract class File_Importer
 			throw new Exception("Input data cannot be redefined");
 		}
 		$this->_sData	= (string)$sData;
+		return $this;
 	}
 	
 	public function setDataFile($sDataFilePath)
@@ -45,11 +95,13 @@ abstract class File_Importer
 		}
 		
 		$this->setData($sData);
+		return $this;
 	}
 	
 	public function setRecordTypeCallback(Callback $oCallback)
 	{
 		$this->_oRecordTypeCallback	= $oCallback;
+		return $this;
 	}
 	
 	public function registerRecordType($mIdentifier, File_Importer_RecordType $oRecordType)
@@ -60,6 +112,7 @@ abstract class File_Importer
 		}
 		
 		$this->_aRecordTypes[$mIdentifier]	= $oRecordType;
+		return $this;
 	}
 	
 	public function getRecordType($sIdentifier)

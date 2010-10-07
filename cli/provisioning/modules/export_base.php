@@ -700,7 +700,7 @@
 		
 		if (PROVISIONING_DEBUG_MODE === TRUE)
 		{
-	 		$strEmailAddress	= "rich@voiptelsystems.com.au";
+	 		$strEmailAddress	= "rdavis@ybs.net.au";
 		}
 		
 		// Send Email
@@ -748,7 +748,7 @@
 		
 		if (PROVISIONING_DEBUG_MODE === TRUE)
 		{
-	 		$strEmailAddress	= "rich@voiptelsystems.com.au";
+	 		$strEmailAddress	= "rdavis@ybs.net.au";
 		}
 		
 		// Set content
