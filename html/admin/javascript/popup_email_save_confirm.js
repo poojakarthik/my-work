@@ -7,9 +7,29 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 		this._oLoadingPopup	= new Reflex_Popup.Loading();
 		this._fnCallback = fnCallback;
 		this._oResponse = oResponse;
-		
 		this._buildUI();
+		
 	},
+	
+	_getFutureVersions: function(oResponse)
+	{
+		
+		if(oResponse == null)
+		{
+			var fnRequest     = jQuery.json.jsonFunction(this._getFutureVersions.bind(this), this.errorCallback.bind(this), 'Email_Text_Editor', 'getFutureVersions');
+			fnRequest(this._oResponse.oTemplateDetails.id);	
+		
+		}
+		else
+		{
+			
+			this._futureVersions = oResponse.oTemplateDetails;
+			this._buildUI();
+		}
+	
+	},
+	
+	
 	
 	// Private
 	
@@ -132,10 +152,13 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 		this._radioNow.className = 'date-select';
 		this._radioNow.observe('click',this._changeNowChanged.bind(this));
 		
-		
-		
-		
-		
+		this._comboFuture = Control_Field.factory('select',{sLabel: 'Select End Date',fnPopulate: this.getFutureVersions.bind(this),mEditable	: true,
+											mMandatory	: true,});
+		this._comboFuture.setRenderMode(Control_Field.RENDER_MODE_EDIT);
+		this._comboFuture.disableValidationStyling();
+		this._comboFuture.addOnChangeCallback(this._endDateChanged.bind(this));
+		this._comboFutureLabel = document.createElement('span');
+		this._comboFutureLabel.innerHTML = 'End Date';
 		// File upload form
 		var oForm	= 	$T.div(	{class: 'email-template-effective-date-select'}	,					
 							$T.table({class: 'reflex input'},
@@ -153,20 +176,37 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 										$T.th(''),
 										$T.td(
 											this._radioNow,
-											$T.span('Now')
+											$T.span('Immediately')
+										)
+									),
+									$T.tr(
+										$T.th(this._comboFutureLabel),
+										$T.td(
+											this._comboFuture.getElement()
 										)
 									)
 								)
 							)
+							
+							
 						);
 		
 		return $T.div(oForm);
 	},
 	
+	_endDateChanged : function()
+	{
+		//this._oResponse.oTemplateDetails.end_datetime = 	this._comboFuture.getElementValue();
+		this._oResponse.oTemplateDetails.end_datetime = this._comboFuture.getElementValue();
+	
+	},
+	
 	_dateChanged: function()
 	{
 		
-		this._oResponse.effectiveDate = this._oChangeDateTime.getElementValue();
+		this._oResponse.oTemplateDetails.effective_datetime = this._oChangeDateTime.getElementValue();
+		//this._oResponse.oTemplateDetails.effective_datetime = this._oChangeDateTime.getElementValue();
+		this._comboFuture.populate();
 	},
 	
 	_changeNowChanged	: function()
@@ -177,10 +217,16 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 			var sNow	= new Date().$format(Popup_Email_Save_Confirm.FIELD_CONFIG.changeDate.oConfig.sDateFormat);
 			this._oChangeDateTime.setValue(sNow);
 			this._oChangeDateTime.disableInput();
-			this._oResponse.effectiveDate = sNow;
+			this._oResponse.oTemplateDetails.effective_datetime = sNow;
+			this._oResponse.oTemplateDetails.effective_datetime = sNow;
+			this._comboFuture.populate();
 		}
 		else
 		{
+			this._oResponse.oTemplateDetails.effective_datetime = null;
+			//this._oResponse.oTemplateDetails.effective_datetime = null;
+			this._comboFuture.populate();
+			this._oChangeDateTime.clearValue();
 			this._oChangeDateTime.enableInput();
 		}
 	},
@@ -205,12 +251,47 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 	
 	_save: function()
 	{
-		if (typeof (this._oResponse.effectiveDate) == 'undefined')
+		
+		
+		
+		this._bFutureVersionsComboHasValues?null:this._oResponse.oTemplateDetails.end_datetime=Popup_Email_Save_Confirm.END_OF_TIME;
+		
+		if (typeof (this._oResponse.oTemplateDetails.effective_datetime) == 'undefined')
 		{
 			alert('you must specify the effective date');
 		}
+		else if (this._bFutureVersionsComboHasValues && (typeof(this._oResponse.oTemplateDetails.end_datetime)=='undefined' ||  this._oResponse.oTemplateDetails.end_datetime == null))
+		{
+			alert('you must either specify an end date, or select an effective date further into the future.');
+		
+		}		
 		else
 		{
+
+			if (this._futureVersions!=null)
+			{
+				for (var i=0;i<this._futureVersions.length;i++)
+				{
+					if (this._futureVersions[i].effective_datetime<this._oResponse.oTemplateDetails.effective_datetime)
+					{
+						this._futureVersions[i].end_datetime >this._oResponse.oTemplateDetails.effective_datetime? this._futureVersions[i].end_datetime = this._oResponse.oTemplateDetails.effective_datetime:null;				
+					}
+					else
+					{
+						//debugger;
+						//sEndDate = new Date(new Date(this._futureVersions[i].effective_datetime).getTime()-1000).$format(Popup_Email_Save_Confirm.FIELD_CONFIG.changeDate.oConfig.sDateFormat);
+						sEndDate = new Date(Date.$parseDate(this._futureVersions[i].effective_datetime,'Y-m-d H:i:s').getTime()-1000).$format(Popup_Email_Save_Confirm.FIELD_CONFIG.changeDate.oConfig.sDateFormat);
+						this._oResponse.oTemplateDetails.end_datetime >this._futureVersions[i].effective_datetime?this._futureVersions[i].end_datetime = sEndDate:null;
+					
+					}
+				
+				}
+			}
+				
+			this._oResponse.aFutureVersions = this._futureVersions;	
+			//if this._oResponse.oTemplateDetails.effective_datetime < start date of a future template
+				//give the user a choice: either 'cancel' the other future templates (in which case, set their end date to smaller than their start date); or leave them in place, in which case set the end date on this template
+			
 			this.hide();
 			this._oResponse.Confirm = true;
 			this._fnCallback(this._oResponse);
@@ -251,13 +332,106 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 	{
 		this.display();
 	
-	}
+	},
+	
+	getFutureVersions	: function(fnCallback, oResponse)
+	{		
+		var aOptions	= [];
+		if (typeof this._futureVersions != 'undefined')
+		{
+			fnCallback(this._createSelectList());
+			//this._comboFuture.populate();
+			this._bFutureVersionsComboHasValues?this._comboFuture.setVisible(true):this._comboFuture.setVisible(false);
+			this._bFutureVersionsComboHasValues?this._comboFutureLabel.style.display = '':this._comboFutureLabel.style.display = 'none';
+				this._comoFutureLabel
+		}
+		else if (typeof oResponse == 'undefined')
+		{
+			// Make Request
+			var fnGetTemplates	=	jQuery.json.jsonFunction(
+										this.getFutureVersions.bind(this,fnCallback),
+										Popup_Email_Save_Confirm._ajaxError,
+										'Email_Text_Editor', 'getFutureVersions'
+									);
+			fnGetTemplates(this._oResponse.oTemplateDetails.id);
+		}
+		else
+		{
+			// Build array of option elements
+			
+			if (!oResponse.Success)
+			{
+				// Failed
+				Popup_Email_Save_Confirm._ajaxError(oResponse);
+			}
+			else
+			{
+				// Success
+				this._futureVersions = oResponse.aTemplateDetails;
+				fnCallback(this._createSelectList());
+				this._comboFuture.setVisible(false);
+				this._comboFutureLabel.style.display = 'none';				
+			
+			}
+		
+		}
+		
+	},
+		
+		_createSelectList: function()
+		{
+			this._bFutureVersionsComboHasValues = false;
+			
+			var aOptions	= [$T.option({value: Popup_Email_Save_Confirm.END_OF_TIME},
+							"No end date. This will cancel all versions with an effective date greater than the selected start date."
+					)];
+			var oTemplate	= null;
+								
+			
+			
+			//aKeys = this._futureVersions.keys();
+			
+			if (this._futureVersions!=null)
+			{
+				for (var i=0;i< this._futureVersions.length;i++)
+				{				
+					if (isNaN(i))
+					{
+						continue;
+					}
+					
+					
+					oTemplate	= this._futureVersions[i];
+					if (oTemplate.effective_datetime>this._oResponse.oTemplateDetails.effective_datetime) 
+					{
+						this._bFutureVersionsComboHasValues = true;
+						aOptions.push(
+							$T.option({value: oTemplate.effective_datetime},
+									oTemplate.effective_datetime + " (the start date of version " + oTemplate.description + ")"
+							)
+						);	
+					}		
+				}
+			}
+			return this._bFutureVersionsComboHasValues?aOptions:[];
+		}
+		
+		
+		
+		
+		
+		
+	
+	
+	
 });	
 
 
 // These static properties require references to other static properties (at time of definition) so they are separate
 Object.extend(Popup_Email_Save_Confirm,
 {
+	END_OF_TIME		: "9999-12-31 23:59:59",
+	
 	FIELD_CONFIG	:
 	{
 		changeDate	:
@@ -305,4 +479,3 @@ Object.extend(Popup_Email_Save_Confirm,
 	
 	CORRESPONDENCE_RUN_ERROR_DUPLICATE_FILE	: 4
 });
-	
