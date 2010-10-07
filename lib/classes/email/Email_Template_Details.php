@@ -27,6 +27,48 @@ class Email_Template_Details extends ORM_Cached
 
 	}
 
+	public static function getFutureVersionsForId($iId)
+	{
+		$oThis = self::getForId($iId);
+		$oQuery	= new Query();
+		$sSql	= "SELECT id
+					FROM email_template_details
+					WHERE email_template_id = $oThis->email_template_id
+					AND effective_datetime>NOW()
+					AND end_datetime>effective_datetime";
+
+		$oQuery	= new Query();
+		$mResult	= $oQuery->Execute($sSql);
+		$aFutureVersions = array();
+		while ($aRow = $mResult->fetch_assoc())
+		{
+			$afutureVersions[]= self::getForId($aRow['id'])->toArray();//$oOrm->toArray();
+		}
+
+		return $afutureVersions;
+
+	}
+
+
+	public static function getForTemplateId($iTemplateId)
+	{
+		$sSql = "SELECT et.id as template_id, ed.id as template_version_id, e.name, ed.created_timestamp, ed.effective_datetime
+				FROM email_template_type e, email_template et, email_template_details ed
+				where et.email_template_type_id = e.id
+				and et.id = $iTemplateId
+				and ed.email_template_id = et.id
+				order by effective_datetime";
+		$oQuery	= new Query();
+		$mCustomerGroupResult	= $oQuery->Execute($sSql);
+		$aTemplateVersionDetails = array();
+		while ($aRow = $mCustomerGroupResult->fetch_assoc())
+		{
+			$aTemplateVersionDetails[]= $aRow;//$oOrm->toArray();
+		}
+
+		return $aTemplateVersionDetails;
+	}
+
 	protected static function getCacheName()
 	{
 		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
@@ -113,7 +155,7 @@ class Email_Template_Details extends ORM_Cached
 				// SELECTS
 				//id, email_template_id, email_text, email_html, created_timestamp, created_employee_id, effective_datetime
 				case 'selCurrentForTemplateId':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "email_template_id = <email_template_id> AND effective_datetime <= NOW() AND created_timestamp = (SELECT MAX(created_timestamp) FROM ".self::$_strStaticTableName." WHERE email_template_id = <email_template_id> AND effective_datetime <= NOW())", NULL, 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "email_template_id = <email_template_id> AND effective_datetime <NOW() AND end_datetime>NOW()", NULL, 1);
 					break;
 				case 'selBySysName':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "system_name = <system_name> AND status_id = 1", NULL, 1);
