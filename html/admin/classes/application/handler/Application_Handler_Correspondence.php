@@ -115,7 +115,6 @@ class Application_Handler_Correspondence extends Application_Handler
 
 			try
 			{
-				//$oSource	= new Correspondence_Logic_Source_Csv($iCorrespondenceTemplateId, $aFileInfo['tmp_name'], $aFileInfo['name']);
 				$oTemplate	= Correspondence_Logic_Template::getForId($iCorrespondenceTemplateId);
 				$oTemplate->createRun(false, $aFileInfo, date('Y-m-d H:i:s', $iDeliveryDateTime), true);
 			}
