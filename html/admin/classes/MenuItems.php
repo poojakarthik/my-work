@@ -526,7 +526,9 @@ class MenuItems {
 	{
 		$this->strLabel = "Email Template History";
 		$this->strContextMenuLabel = "Email Template History";
-		return self :: NEW_FRAMEWORK . "flex.php/CustomerGroup/ViewEmailTemplateHistory/?CustomerGroup.Id=$iCustomerGroupId&Template.Name=$sTemplateName&EmailTemplate.Id=$intTemplateId";
+		//return self :: NEW_FRAMEWORK . "flex.php/CustomerGroup/ViewEmailTemplateHistory/?CustomerGroup.Id=$iCustomerGroupId&Template.Name=$sTemplateName&EmailTemplate.Id=$intTemplateId";
+		return self :: NEW_FRAMEWORK . "reflex.php/CustomerGroup/ViewEmailTemplateHistory/$iCustomerGroupId/$sTemplateName/$intTemplateId";
+
 	}
 
 
@@ -1141,7 +1143,7 @@ class MenuItems {
 	{
 		$this->strLabel = "";
 		$this->strContextMenuLabel = "";
-		
+
 		return "javascript: JsAutoLoader.loadScript(
 								[
 									'invoice.js',
@@ -2172,7 +2174,7 @@ class MenuItems {
 	{
 		$this->strContextMenuLabel	= '';
 		$this->strLabel				= '';
-		
+
 		return "javascript: JsAutoLoader.loadScript(
 								[
 									'invoice.js',
