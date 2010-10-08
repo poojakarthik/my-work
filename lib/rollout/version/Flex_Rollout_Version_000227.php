@@ -77,10 +77,11 @@ class Flex_Rollout_Version_000227 extends Flex_Rollout_Version
 								),
 								array
 								(
-									'sDescription'	=> 'Add new invoice_run_type RERATE',
-									'sAlterSQL'		=> "	INSERT INTO invoice_run_type (name, description, const_name)
+									'sDescription'		=> 'Add new invoice_run_type RERATE',
+									'sAlterSQL'			=> "INSERT INTO invoice_run_type (name, description, const_name)
 															VALUES ('Invoice Rerate', 'Invoice Rerate', 'INVOICE_RUN_TYPE_RERATE');",
-									'sRollbackSQL'	=> "	DELETE FROM invoice_run_type WHERE const_name = 'INVOICE_RUN_TYPE_RERATE';"
+									'sRollbackSQL'		=> "DELETE FROM invoice_run_type WHERE const_name = 'INVOICE_RUN_TYPE_RERATE';",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								)
 							);
 
