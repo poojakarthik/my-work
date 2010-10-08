@@ -113,6 +113,42 @@ class Application_Handler_CustomerGroup extends Application_Handler
 		$this->LoadPage('customer_group_credit_card_config', HTML_CONTEXT_DEFAULT, $detailsToRender);
 	}
 
+	function ViewEmailTemplateHistory($subPath)
+	{
+
+		$iCustomerGroupId 		= $subPath[0];
+		$sTemplateName		 	= $subPath[1];
+		$iTemplateId			= $subPath[2];
+		// Check user permissions
+		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL));
+
+		$aDetailsToRender	= array();
+
+		$aDetailsToRender['customerGroup'] 		= $iCustomerGroupId ? Customer_Group::getForId($iCustomerGroupId) : NULL;
+		$aDetailsToRender['sTemplateName']		= $sTemplateName;
+		$aDetailsToRender['iTemplateId'] 		= $iTemplateId;
+
+		BreadCrumb()->Employee_Console();
+		BreadCrumb()->ViewAllCustomerGroups();
+		BreadCrumb()->ViewCustomerGroup($iCustomerGroupId, $aDetailsToRender['customerGroup'] ? $aDetailsToRender['customerGroup']->name : NULL);
+		BreadCrumb()->SetCurrentPage("View Email Template History");
+
+		try
+		{
+			$this->LoadPage('email_template_history', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
+		}
+		catch (Exception $e)
+		{
+			$aDetailsToRender['Message'] 		= "An error occured while trying to build the \"View Email History\" page";
+			$aDetailsToRender['ErrorMessage']	= $e->getMessage();
+			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
+		}
+
+
+
+
+	}
+
 }
 
 ?>
