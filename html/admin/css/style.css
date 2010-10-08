@@ -372,9 +372,9 @@ textarea
 input[type='text'][disabled],
 select[disabled],
 textarea[disabled],
-.control-field.required input[type='text'][disabled],
-.control-field.required select[disabled],
-.control-field.required textarea[disabled],
+.control-field.mandatory input[type='text'][disabled],
+.control-field.mandatory select[disabled],
+.control-field.mandatory textarea[disabled],
 .control-field.invalid input[type='text'][disabled],
 .control-field.invalid select[disabled],
 .control-field.invalid textarea[disabled],
@@ -389,9 +389,9 @@ textarea[disabled],
 input.required,
 select.required,
 textarea.required,
-.control-field.required input,
-.control-field.required select,
-.control-field.required textarea
+.control-field.mandatory input,
+.control-field.mandatory select,
+.control-field.mandatory textarea
 {
 	background	: #fff;
 	color		: #111;
@@ -7248,3 +7248,9 @@ div.popup-email-templates table.reflex {
 
 
 /************************* END - Popup Email HTML Preview -  END *******************************/
+.line-through
+{
+	text-decoration:line-through;
+	color: red;
+
+}
