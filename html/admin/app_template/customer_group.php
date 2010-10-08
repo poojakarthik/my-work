@@ -51,7 +51,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	 * ViewAll()
 	 *
 	 * Displays all the CustomerGroups in a table, from which they can be managed
-	 * 
+	 *
 	 * Displays all the CustomerGroups in a table, from which they can be managed
 	 * It does assume anything to be passed to it via GET variables
 	 *
@@ -64,21 +64,21 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
-		
+
 		// Breadcrumb menu
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->SetCurrentPage("Customer Groups");
-		
+
 		// Retrieve the list of customer groups
 		DBL()->CustomerGroup->OrderBy("internal_name");
 		DBL()->CustomerGroup->Load();
-		
+
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('customer_groups_list');
 
 		return TRUE;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// Add
 	//------------------------------------------------------------------------//
@@ -86,7 +86,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	 * Add()
 	 *
 	 * Handles the logic for adding a new customer group
-	 * 
+	 *
 	 * Handles the logic for adding a new customer group
 	 * It does not assume anything to be passed to it via GET variables, intially
 	 *
@@ -97,8 +97,8 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);		
-		
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+
 		// Check if the form was submitted
 		if (SubmittedForm('NewCustomerGroup', 'Ok'))
 		{
@@ -109,10 +109,10 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 				Ajax()->RenderHtmlTemplate("CustomerGroupNew", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 				return TRUE;
 			}
-			
+
 			// Default Values
 			DBO()->CustomerGroup->invoice_cdr_credits	= 0;
-			
+
 			// Check that the CustomerGroup's internal_name is not being used by another CustomerGroup
 			$selCustomerGroup = new StatementSelect("CustomerGroup", "Id", "internal_name LIKE <Name>", "", "1");
 			$intRecordFound = $selCustomerGroup->Execute(Array("Name"=> DBO()->CustomerGroup->internal_name->Value));
@@ -132,18 +132,18 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 				Ajax()->AddCommand("Alert", "ERROR: Saving the CustomerGroup failed, unexpectedly");
 				return TRUE;
 			}
-			
+
 			// Create default customer_group_delivery_method entries
 			$arrDeliveryMethods	= Delivery_Method::getAll();
 			foreach ($arrDeliveryMethods as $objDeliveryMethod)
 			{
 				$objCustomerGroupDeliveryMethod	= new Customer_Group_Delivery_Method();
-				
+
 				$objCustomerGroupDeliveryMethod->customer_group_id		= DBO()->CustomerGroup->Id->Value;
 				$objCustomerGroupDeliveryMethod->delivery_method_id		= $objDeliveryMethod->id;
 				$objCustomerGroupDeliveryMethod->minimum_invoice_value	= Customer_Group_Delivery_Method::DEFAULT_MINIMUM_INVOICE_VALUE;
 				$objCustomerGroupDeliveryMethod->employee_id			= Flex::getUserId();
-				
+
 				try
 				{
 					$objCustomerGroupDeliveryMethod->save();
@@ -154,17 +154,17 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 					return TRUE;
 				}
 			}
-			
+
 			// The CustomerGroup has now been saved
 			Ajax()->AddCommand("AlertAndRelocate", Array("Alert"=>"The new Customer Group has been successfully created", "Location"=>Href()->ViewAllCustomerGroups()));
 			return TRUE;
 		}
-		
+
 		// Breadcrumb menu
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->ViewAllCustomerGroups();
 		BreadCrumb()->SetCurrentPage("New Customer Group");
-		
+
 		// Declare which Page Template to use
 		$this->LoadPage('customer_group_add');
 
@@ -179,7 +179,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	 * ChangeLogo()
 	 *
 	 * Handles the logic for adding a new customer group logo
-	 * 
+	 *
 	 * Handles the logic for adding a new customer group logo
 	 *
 	 * @return		void
@@ -190,7 +190,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
-		
+
 		// Breadcrumb menu
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->ViewAllCustomerGroups();
@@ -203,7 +203,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			$strFileName = $_FILES['userfile']['name'];
 			$strTmpName  = $_FILES['userfile']['tmp_name'];
 			$strFileType = $_FILES['userfile']['type'];
-			
+
 			$resImage      = fopen($strTmpName, 'r');
 			$mixContent = fread($resImage, filesize($strTmpName));
 			fclose($resImage);
@@ -240,7 +240,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	 * ChangeAdvertisement()
 	 *
 	 * Handles the logic for adding a new customer group advertisement image
-	 * 
+	 *
 	 * Handles the logic for adding a new customer group advertisement image
 	 *
 	 * @return		void
@@ -251,7 +251,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
-		
+
 		// Breadcrumb menu
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->ViewAllCustomerGroups();
@@ -273,7 +273,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 						$strFileName = $_FILES['userfile']['name'];
 						$strTmpName  = $_FILES['userfile']['tmp_name'];
 						$strFileType = $_FILES['userfile']['type'];
-						
+
 						$resImage      = fopen($strTmpName, 'r');
 						$mixContent = fread($resImage, filesize($strTmpName));
 						fclose($resImage);
@@ -309,7 +309,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	 * CreditCardConfig()
 	 *
 	 * Handles the logic for CreditCardConfig Customer Group functionality
-	 * 
+	 *
 	 * Handles the logic for CreditCardConfig Customer Group functionality
 	 * Assumes DBO()->CustomerGroup->Id to be set
 	 *
@@ -357,7 +357,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	 * View()
 	 *
 	 * Handles the logic for View Customer Group functionality
-	 * 
+	 *
 	 * Handles the logic for View Customer Group functionality
 	 * Assumes DBO()->CustomerGroup->Id to be set
 	 *
@@ -369,7 +369,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
-		
+
 		// Load the CustomerGroupDetails
 		if (!DBO()->CustomerGroup->Load())
 		{
@@ -377,7 +377,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			$this->LoadPage('error');
 			return FALSE;
 		}
-		
+
 		$intCustomerGroupId = DBO()->CustomerGroup->Id->Value;
 		// Load the currently used DocumentTemplates
 		$arrColumns = Array("TypeId"		=> "DTT.Id",
@@ -385,8 +385,8 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 							"TemplateId"	=> "DT.Id",
 							"Version"		=> "DT.Version",
 							"EffectiveOn"	=> "DT.EffectiveOn");
-							
-		$strTables	= "DocumentTemplateType AS DTT LEFT JOIN DocumentTemplate AS DT 
+
+		$strTables	= "DocumentTemplateType AS DTT LEFT JOIN DocumentTemplate AS DT
 						ON DTT.Id = DT.TemplateType AND DT.CustomerGroup = $intCustomerGroupId AND DT.EffectiveOn <= NOW()
 						AND DT.CreatedOn =	(	SELECT Max(CreatedOn)
 												FROM DocumentTemplate AS DT2
@@ -396,18 +396,18 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		DBL()->DocumentTemplate->SetColumns($arrColumns);
 		DBL()->DocumentTemplate->OrderBy("TypeId ASC");
 		DBL()->DocumentTemplate->Load();
-		
+
 		// Breadcrumb menu
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->ViewAllCustomerGroups();
 		BreadCrumb()->SetCurrentPage("Customer Group");
-		
+
 		// Declare which Page Template to use
 		$this->LoadPage('customer_group_view');
 
 		return TRUE;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// RenderHtmlTemplateCustomerGroupDetails
 	//------------------------------------------------------------------------//
@@ -415,9 +415,9 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	 * RenderHtmlTemplateCustomerGroupDetails()
 	 *
 	 * Renders the CustomerGroupDetails Html Template in the specified context (View or Edit)
-	 * 
+	 *
 	 * Renders the CustomerGroupDetails Html Template in the specified context (View or Edit)
-	 * It expects	DBO()->CustomerGroup->Id 	CustomerGroup Id 
+	 * It expects	DBO()->CustomerGroup->Id 	CustomerGroup Id
 	 *				DBO()->Container->Id		id of the container div in which to place the Rendered HtmlTemplate
 	 *				DBO()->Context->View		true if rending in viewing context (defaults to this)
 	 *				DBO()->Context->Edit		true if rending in edit context (View takes precedence)
@@ -434,7 +434,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 
 		// Load the CustomerGroup
 		DBO()->CustomerGroup->Load();
-		
+
 		// Work out which context to render the HtmlTemplate in
 		$intContext = HTML_CONTEXT_VIEW;
 		if (DBO()->Context->View->Value)
@@ -445,7 +445,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		{
 			$intContext = HTML_CONTEXT_EDIT;
 		}
-		
+
 		// Render the CustomerGroupDetails HtmlTemplate for Viewing
 		Ajax()->RenderHtmlTemplate("CustomerGroupDetails", $intContext, DBO()->Container->Id->Value);
 
@@ -459,7 +459,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	 * SaveDetails()
 	 *
 	 * Handles the logic of validating and saving the details of a CustomerGroup
-	 * 
+	 *
 	 * Handles the logic of validating and saving the details of a CustomerGroup
 	 * This works with the HtmlTemplateCustomerGroupDetails object, when rendered in Edit mode (HTML_CONTEXT_EDIT)
 	 * It fires the OnCustomerGroupDetailsUpdate Event if the CustomerGroup is successfully modified
@@ -482,10 +482,10 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			Ajax()->RenderHtmlTemplate("CustomerGroupDetails", HTML_CONTEXT_EDIT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 			return TRUE;
 		}
-		
+
 		// Check that the CustomerGroup's internal_name is not being used by another CustomerGroup
 		$selCustomerGroup	= new StatementSelect("CustomerGroup", "Id", "internal_name LIKE <Name> AND Id != <Id>", "", "1");
-		$intRecordFound		= $selCustomerGroup->Execute(Array(	"Name"=> DBO()->CustomerGroup->internal_name->Value, 
+		$intRecordFound		= $selCustomerGroup->Execute(Array(	"Name"=> DBO()->CustomerGroup->internal_name->Value,
 																"Id"=> DBO()->CustomerGroup->Id->Value));
 		if ($intRecordFound)
 		{
@@ -501,10 +501,10 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
 		// DBO()->CustomerGroup->customer_primary_color = ereg_replace("[^a-zA-Z0-9]", "", DBO()->CustomerGroup->customer_primary_color->Value);
 		// DBO()->CustomerGroup->customer_secondary_color = ereg_replace("[^a-zA-Z0-9]", "", DBO()->CustomerGroup->customer_secondary_color->Value);
-		
+
 		DBO()->CustomerGroup->customer_primary_color = preg_replace("/[^a-zA-Z0-9]/", "", DBO()->CustomerGroup->customer_primary_color->Value);
 		DBO()->CustomerGroup->customer_secondary_color = preg_replace("/[^a-zA-Z0-9]/", "", DBO()->CustomerGroup->customer_secondary_color->Value);
-		
+
 		DBO()->CustomerGroup->SetColumns("Id,internal_name,external_name,outbound_email,flex_url,email_domain,customer_primary_color,customer_secondary_color,customer_exit_url,external_name_possessive,bill_pay_biller_code,abn,acn,business_phone,business_fax,business_web,business_contact_email,business_info_email,customer_service_phone,customer_service_email,customer_service_contact_name,business_payable_name,business_payable_address,credit_card_payment_phone,faults_phone,customer_advert_url,cooling_off_period");
 		// The CustomerGroup is valid.  Save it
 		if (!DBO()->CustomerGroup->Save())
@@ -513,7 +513,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			Ajax()->AddCommand("Alert", "ERROR: Saving changes to the CustomerGroup failed, unexpectedly");
 			return TRUE;
 		}
-		
+
 		// If the sales module is active then update the sales database (the vendor table)
 		if (Data_Source::dsnExists(FLEX_DATABASE_CONNECTION_SALES))
 		{
@@ -527,9 +527,9 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 				$strWarning = "Pushing the data from Flex to the Sales database, failed. Contact your system administrators to have them manually trigger the data push.  (Error message: ". htmlspecialchars($e->getMessage()) .")";
 				Ajax()->AddCommand("Alert", $strWarning);
 			}
-			
+
 		}
-		
+
 		// Fire the OnCustomerGroupDetailsUpdate Event
 		$arrEvent['CustomerGroup']['Id'] = DBO()->CustomerGroup->Id->Value;
 		Ajax()->FireEvent(EVENT_ON_CUSTOMER_GROUP_DETAILS_UPDATE, $arrEvent);
@@ -542,8 +542,8 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	/**
 	 * ViewDocumentTemplateHistory()
 	 *
-	 * Builds the "View Document Template History" webpage 
-	 * 
+	 * Builds the "View Document Template History" webpage
+	 *
 	 * Builds the "View Document Template History" webpage
 	 *
 	 * @return		void
@@ -555,21 +555,21 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
 		$bolUserIsSuperAdmin = AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN);
-		
+
 		if (!DBO()->CustomerGroup->Load())
 		{
 			DBO()->Error->Message = "The CustomerGroup with id: ". DBO()->CustomerGroup->Id->Value ." could not be found";
 			$this->LoadPage('error');
 			return TRUE;
 		}
-		
+
 		if (!DBO()->DocumentTemplateType->Load())
 		{
 			DBO()->Error->Message = "The DocumentTemplateType with id: ". DBO()->DocumentTemplateType->Id->Value ." could not be found";
 			$this->LoadPage('error');
 			return TRUE;
 		}
-		
+
 		// Retrieve the Template history
 		$arrColumns = Array(	"Id"			=> "DT.Id",
 								"Version"		=> "DT.Version",
@@ -581,9 +581,9 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 								"SchemaVersion"	=> "DS.Version",
 								"Overridden"	=> "CASE WHEN (	SELECT Count(DT2.Id)
 																FROM DocumentTemplate AS DT2
-																WHERE DT2.CustomerGroup = DT.CustomerGroup 
-																AND DT2.TemplateType = DT.TemplateType 
-																AND DT2.CreatedOn > DT.CreatedOn 
+																WHERE DT2.CustomerGroup = DT.CustomerGroup
+																AND DT2.TemplateType = DT.TemplateType
+																AND DT2.CreatedOn > DT.CreatedOn
 																AND DT2.EffectiveOn <= DT.EffectiveOn
 													) > 0 THEN 1 ELSE 0 END"
 							);
@@ -597,7 +597,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		DBL()->Templates->Where->Set($strWhere, $arrWhere);
 		DBL()->Templates->OrderBy("DT.Version DESC");
 		DBL()->Templates->Load();
-		
+
 		if (DBL()->Templates->RecordCount() == 0)
 		{
 			// There aren't any templates for this CustomerGroup/TemplateType combination
@@ -613,16 +613,96 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 				return TRUE;
 			}
 		}
-		
+
 		// Breadcrumb menu
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->ViewAllCustomerGroups();
 		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->internal_name->Value);
 		BreadCrumb()->SetCurrentPage("Template History");
-		
+
 		$this->LoadPage('document_template_history');
 		return TRUE;
 	}
+
+
+	function ViewEmailTemplateHistory()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
+		$bolUserIsSuperAdmin = AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN);
+
+		if (!DBO()->CustomerGroup->Load())
+		{
+			DBO()->Error->Message = "The CustomerGroup with id: ". DBO()->CustomerGroup->Id->Value ." could not be found";
+			$this->LoadPage('error');
+			return TRUE;
+		}
+
+		/*if (!DBO()->DocumentTemplateType->Load())
+		{
+			DBO()->Error->Message = "The DocumentTemplateType with id: ". DBO()->DocumentTemplateType->Id->Value ." could not be found";
+			$this->LoadPage('error');
+			return TRUE;
+		}*/
+
+		// Retrieve the Template history
+/*		$arrColumns = Array(	"Id"			=> "DT.Id",
+								"Version"		=> "DT.Version",
+								"Description"	=> "DT.Description",
+								"EffectiveOn"	=> "DT.EffectiveOn",
+								"CreatedOn"		=> "DT.CreatedOn",
+								"ModifiedOn"	=> "ModifiedOn",
+								"LastUsedOn"	=> "LastUsedOn",
+								"SchemaVersion"	=> "DS.Version",
+								"Overridden"	=> "CASE WHEN (	SELECT Count(DT2.Id)
+																FROM DocumentTemplate AS DT2
+																WHERE DT2.CustomerGroup = DT.CustomerGroup
+																AND DT2.TemplateType = DT.TemplateType
+																AND DT2.CreatedOn > DT.CreatedOn
+																AND DT2.EffectiveOn <= DT.EffectiveOn
+													) > 0 THEN 1 ELSE 0 END"
+							);
+		$strTable	= "DocumentTemplate AS DT INNER JOIN DocumentTemplateSchema AS DS ON DT.TemplateSchema = DS.Id";
+		$strWhere	= "DT.CustomerGroup = <CustomerGroup> AND DT.TemplateType = <TemplateType>";
+		$arrWhere	= Array("CustomerGroup"	=> DBO()->CustomerGroup->Id->Value,
+							"TemplateType"	=> DBO()->DocumentTemplateType->Id->Value
+							);
+		DBL()->Templates->SetTable($strTable);
+		DBL()->Templates->SetColumns($arrColumns);
+		DBL()->Templates->Where->Set($strWhere, $arrWhere);
+		DBL()->Templates->OrderBy("DT.Version DESC");
+		DBL()->Templates->Load();
+
+		if (DBL()->Templates->RecordCount() == 0)
+		{
+			// There aren't any templates for this CustomerGroup/TemplateType combination
+			// Redirect the user to the AddNewTemplate page, if they have permission to add a new template
+			if ($bolUserIsSuperAdmin)
+			{
+				return $this->BuildNewTemplate();
+			}
+			else
+			{
+				DBO()->Error->Message = "You do not have permission to build a new template";
+				$this->LoadPage('error');
+				return TRUE;
+			}
+		}*/
+
+		// Breadcrumb menu
+		BreadCrumb()->Employee_Console();
+		BreadCrumb()->ViewAllCustomerGroups();
+		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->internal_name->Value);
+		BreadCrumb()->SetCurrentPage("Email Template History");
+
+		$this->LoadPage('email_template_history');
+		return TRUE;
+	}
+
+
+
+
 
 	//------------------------------------------------------------------------//
 	// BuildNewTemplate
@@ -630,8 +710,8 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	/**
 	 * BuildNewTemplate()
 	 *
-	 * Builds the "Edit Template page" webpage, but configures it for building a brand new Template, which could possibly be based on an existing one 
-	 * 
+	 * Builds the "Edit Template page" webpage, but configures it for building a brand new Template, which could possibly be based on an existing one
+	 *
 	 * Builds the "Edit Template page" webpage, but configures it for building a brand new Template, which could possibly be based on an existing one
 	 * It expects the following values to be defined:
 	 * 	DBO()->CustomerGroup->Id			Id of the customer group
@@ -646,14 +726,14 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
-		
+
 		if (!DBO()->CustomerGroup->Load())
 		{
 			DBO()->Error->Message = "The CustomerGroup with id: ". DBO()->CustomerGroup->Id->Value ." could not be found";
 			$this->LoadPage('error');
 			return TRUE;
 		}
-		
+
 		if (DBO()->BaseTemplate->Id->IsSet)
 		{
 			// The new template will be based on an existing one
@@ -665,7 +745,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 				$this->LoadPage('error');
 				return TRUE;
 			}
-			
+
 			if (DBO()->BaseTemplate->CustomerGroup->Value != DBO()->CustomerGroup->Id->Value)
 			{
 				// The base template does not belong to the CustomerGroup
@@ -673,21 +753,21 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 				$this->LoadPage('error');
 				return TRUE;
 			}
-			
+
 			DBO()->DocumentTemplateType->Id = DBO()->BaseTemplate->TemplateType->Value;
 		}
-		
+
 		if (!DBO()->DocumentTemplateType->Load())
 		{
 			DBO()->Error->Message = "The DocumentTemplateType with id: ". DBO()->DocumentTemplateType->Id->Value ." could not be found";
 			$this->LoadPage('error');
 			return TRUE;
 		}
-		
+
 		// Load the most recent schema for this DocumentTemplateType
 		$arrSchema = $this->_GetCurrentSchema(DBO()->DocumentTemplateType->Id->Value);
 		DBO()->DocumentTemplateSchema->_arrProperties = $arrSchema;
-		
+
 		// If there is a draft template, then load it, and copy the contents of the BaseTemplate into it
 		$arrDraft = $this->_GetDraftTemplate(DBO()->CustomerGroup->Id->Value, DBO()->DocumentTemplateType->Id->Value);
 		DBO()->DocumentTemplate->CustomerGroup	= DBO()->CustomerGroup->Id->Value;
@@ -703,42 +783,42 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			DBO()->DocumentTemplate->CreatedOn	= $arrDraft['CreatedOn'];
 			DBO()->DocumentTemplate->ModifiedOn	= $arrDraft['ModifiedOn'];
 		}
-		
+
 
 		// Set a default description
-		DBO()->DocumentTemplate->Description = "Version ". DBO()->DocumentTemplate->Version->Value ." for ". DBO()->CustomerGroup->internal_name->Value ." ". DBO()->DocumentTemplateType->Name->Value ." Template";		
+		DBO()->DocumentTemplate->Description = "Version ". DBO()->DocumentTemplate->Version->Value ." for ". DBO()->CustomerGroup->internal_name->Value ." ". DBO()->DocumentTemplateType->Name->Value ." Template";
 
 		if (DBO()->BaseTemplate->Id->Value)
 		{
 			// Load the Template Source code from the BaseTemplate, into the new one
 			DBO()->DocumentTemplate->Source	= DBO()->BaseTemplate->Source->Value;
 		}
-		
+
 		// Load all the DocumentResourceTypes
 		DBL()->DocumentResourceType->OrderBy("PlaceHolder ASC");
 		DBL()->DocumentResourceType->Load();
-		
+
 		//BreadCrumb Menu
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->ViewAllCustomerGroups();
 		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->internal_name->Value);
 		BreadCrumb()->ViewDocumentTemplateHistory(DBO()->CustomerGroup->Id->Value, DBO()->DocumentTemplateType->Id->Value);
 		BreadCrumb()->SetCurrentPage("Template");
-		
+
 		DBO()->Render->Context = HTML_CONTEXT_NEW;
-		
+
 		$this->LoadPage('document_template');
 		return TRUE;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// EditTemplate
 	//------------------------------------------------------------------------//
 	/**
 	 * EditTemplate()
 	 *
-	 * Builds the "Edit Template page" webpage 
-	 * 
+	 * Builds the "Edit Template page" webpage
+	 *
 	 * Builds the "Edit Template page" webpage
 	 * It expects the following values to be defined:
 	 * 	DBO()->DocumentTemplate->Id			The Template to edit
@@ -751,7 +831,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
-		
+
 		if (!$this->_LoadTemplate(DBO()->DocumentTemplate->Id->Value, TRUE))
 		{
 			// The template could not be loaded
@@ -759,20 +839,20 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			$this->LoadPage('error');
 			return TRUE;
 		}
-		
+
 		// Load all the DocumentResourceTypes
 		DBL()->DocumentResourceType->OrderBy("PlaceHolder ASC");
 		DBL()->DocumentResourceType->Load();
-		
+
 		//BreadCrumb Menu
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->ViewAllCustomerGroups();
 		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->internal_name->Value);
 		BreadCrumb()->ViewDocumentTemplateHistory(DBO()->CustomerGroup->Id->Value, DBO()->DocumentTemplate->TemplateType->Value);
 		BreadCrumb()->SetCurrentPage("Template");
-		
+
 		DBO()->Render->Context = HTML_CONTEXT_EDIT;
-		
+
 		$this->LoadPage('document_template');
 		return TRUE;
 	}
@@ -783,8 +863,8 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	/**
 	 * ViewTemplate()
 	 *
-	 * Builds the "View Template page" webpage 
-	 * 
+	 * Builds the "View Template page" webpage
+	 *
 	 * Builds the "View Template page" webpage
 	 * It expects the following values to be defined:
 	 * 	DBO()->DocumentTemplate->Id			The Template to view
@@ -797,7 +877,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
-		
+
 		if (!$this->_LoadTemplate(DBO()->DocumentTemplate->Id->Value, FALSE))
 		{
 			// The template could not be loaded
@@ -805,28 +885,28 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			$this->LoadPage('error');
 			return TRUE;
 		}
-		
+
 		//BreadCrumb Menu
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->ViewAllCustomerGroups();
 		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->internal_name->Value);
 		BreadCrumb()->ViewDocumentTemplateHistory(DBO()->CustomerGroup->Id->Value, DBO()->DocumentTemplate->TemplateType->Value);
 		BreadCrumb()->SetCurrentPage("Template");
-		
+
 		DBO()->Render->Context = HTML_CONTEXT_VIEW;
-		
+
 		$this->LoadPage('document_template');
 		return TRUE;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// SaveTemplate
 	//------------------------------------------------------------------------//
 	/**
 	 * SaveTemplate()
 	 *
-	 * Handles the ajax request to save a template 
-	 * 
+	 * Handles the ajax request to save a template
+	 *
 	 * Handles the ajax request to save a template
 	 * It expects the following values to be defined:
 	 *
@@ -840,7 +920,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
 
 		$strNow = GetCurrentDateAndTimeForMySQL();
-		
+
 		if (DBO()->Template->Id->Value != NULL)
 		{
 			// The user is saving changes made to an existing template
@@ -851,14 +931,14 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 				return TRUE;
 			}
 			$arrCurrentTemplate = $selCurrentTemplate->Fetch();
-			
+
 			// If the Template's EffectiveOn date is set and in the past then they cannot update it
 			if ($arrCurrentTemplate['EffectiveOn'] != NULL && $arrCurrentTemplate['EffectiveOn'] <= $strNow)
 			{
 				Ajax()->AddCommand("Alert", "ERROR: This template has already come into effect, and can therefore not be modified");
 				return TRUE;
 			}
-			 
+
 			// Copy over values that should not have changed
 			DBO()->Template->CreatedOn = $arrCurrentTemplate["CreatedOn"];
 		}
@@ -871,13 +951,13 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			{
 				DBO()->Template->Id = $arrDraft['Id'];
 			}
-			
+
 			// Set the Version to the next available version
 			DBO()->Template->Version = $this->_GetNextVersionForTemplate(DBO()->Template->CustomerGroup->Value, DBO()->Template->TemplateType->Value);
-			
+
 			DBO()->Template->CreatedOn = $strNow;
 		}
-		
+
 		// Build a default description if one has not been supplied
 		if (!Validate("IsNotEmptyString", DBO()->Template->Description->Value))
 		{
@@ -887,13 +967,13 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			DBO()->DocumentTemplateType->Load();
 			DBO()->Template->Description = "Version ". DBO()->Template->Version->Value ." for ". DBO()->CustomerGroup->internal_name->Value ." ". DBO()->DocumentTemplateType->Name->Value;
 		}
-		
+
 		switch (DBO()->Template->EffectiveOnType->Value)
 		{
 			case "immediately":
 				DBO()->Template->EffectiveOn = $strNow;
 				break;
-			
+
 			case "date":
 				// Validate the date and check that it is in the future
 				if (!Validate("ShortDate", DBO()->Template->EffectiveOn->Value))
@@ -902,10 +982,10 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 					Ajax()->AddCommand("Alert", "ERROR: Invalid 'Effective On' date.<br />It must be in the format dd/mm/yyyy and in the future");
 					return TRUE;
 				}
-				
+
 				// Convert the date into the YYYY-MM-DD format
 				DBO()->Template->EffectiveOn = ConvertUserDateToMySqlDate(DBO()->Template->EffectiveOn->Value);
-				
+
 				// Check that the Date is in the future
 				if ($strNow > DBO()->Template->EffectiveOn->Value)
 				{
@@ -914,7 +994,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 					return TRUE;
 				}
 				break;
-				
+
 			case "undeclared":
 			default:
 				// Check that there isn't a current value for EffectiveOn
@@ -923,12 +1003,12 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 					Ajax()->AddCommand("Alert", "ERROR: 'Effective On' date has already been set and can not be set back to 'undeclared'");
 					return TRUE;
 				}
-				
+
 				DBO()->Template->EffectiveOn = NULL;
 		}
-		
+
 		DBO()->Template->ModifiedOn = $strNow;
-		
+
 		// Save the record
 		DBO()->Template->SetTable("DocumentTemplate");
 		if (!DBO()->Template->Save())
@@ -937,11 +1017,11 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			Ajax()->AddCommand("Alert", "ERROR: Saving the template failed, unexpectedly.  Please notify your system administrator");
 			return TRUE;
 		}
-		
+
 		// The Template was successfully saved
-		
+
 		// If the EffectiveOn Date is set.  Check if the Template will be totally overridden by a newer one
-		if (DBO()->Template->EffectiveOn->Value != NULL) 
+		if (DBO()->Template->EffectiveOn->Value != NULL)
 		{
 			$strWhere = "CustomerGroup = <CustomerGroup> AND TemplateType = <TemplateType> AND Id != <TemplateId> AND CreatedOn > <CreatedOn> AND EffectiveOn IS NOT NULL AND EffectiveOn <= <EffectiveOn>";
 			$arrWhere = Array(	"CustomerGroup"	=> DBO()->Template->CustomerGroup->Value,
@@ -970,12 +1050,12 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			Ajax()->AddCommand("AlertAndRelocate", $arrData);
 			return TRUE;
 		}
-		
+
 		$arrReply["Template"]	= DBO()->Template->_arrProperties;
 		// Don't send back the template's source code
 		unset($arrReply['Template']['Source']);
 		$arrReply["Success"]	= TRUE;
-		
+
 		AjaxReply($arrReply);
 		return TRUE;
 	}
@@ -987,7 +1067,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	 * ViewDocumentResources()
 	 *
 	 * Displays the page which allows the user to view DocumentResources and upload new ones
-	 * 
+	 *
 	 * Displays the page which allows the user to view DocumentResources and upload new ones
 	 * It assumes the following data objects have been set:
 	 * 	DBO()->CustomerGroup->Id		Id of the customer group to view the DocumentResources of
@@ -1000,14 +1080,14 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
-		
+
 		if (!DBO()->CustomerGroup->Load())
 		{
 			DBO()->Error->Message = "The CustomerGroup with id: ". DBO()->CustomerGroup->Id->Value ." could not be found";
 			$this->LoadPage('error');
 			return TRUE;
 		}
-		
+
 		// Define all the objects required to retrieve the DocumentResourceType information from the database
 		$selResourceType = new StatementSelect("DocumentResourceType", "*", "", "PlaceHolder");
 		if ($selResourceType->Execute() === FALSE)
@@ -1016,10 +1096,10 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			$this->LoadPage('error');
 			return TRUE;
 		}
-		
+
 		// This array has to be wrapped in the DBO() so that they are accessable within the HtmlTemplates
 		DBO()->DocumentResourceTypes->AsArray = $selResourceType->FetchAll();
-		
+
 		// Breadcrumb menu
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->ViewAllCustomerGroups();
@@ -1038,7 +1118,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	 * GetDocumentResourceHistory()
 	 *
 	 * Draws a table representing the history of resources associated with a DocumentResourceType and Customer Group
-	 * 
+	 *
 	 * Draws a table representing the history of resources associated with a DocumentResourceType and Customer Group
 	 * It assumes the following data objects have been set:
 	 * 	DBO()->History->ResourceType		Id of the DocumentResourceType, to view the history of resources, of.
@@ -1052,16 +1132,16 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
-		
+
 		$intResourceType	= DBO()->History->ResourceType->Value;
 		$intCustomerGroup	= DBO()->History->CustomerGroup->Value;
-		
+
 		DBO()->DocumentResourceType->Id = $intResourceType;
 		DBO()->DocumentResourceType->Load();
-		
+
 		DBO()->CustomerGroup->Id = $intCustomerGroup;
 		DBO()->CustomerGroup->Load();
-		
+
 		// Retrieve the DocumentResources
 		$selResources = new StatementSelect("DocumentResource", "*", "CustomerGroup = <CustomerGroup> AND Type = <ResourceType>", "CreatedOn DESC, StartDatetime DESC");
 		if ($selResources->Execute(Array("CustomerGroup" => $intCustomerGroup, "ResourceType" => $intResourceType)) === FALSE)
@@ -1076,31 +1156,31 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		echo $objHistoryTableGenerator->GetHistory($arrHistory);
 		return TRUE;
 	}
-	
+
 	// Displays the popup for adding a new resource
 	function AddDocumentResource()
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
-		
+
 		if (!DBO()->CustomerGroup->Load())
 		{
 			Ajax()->AddCommand("Alert", "ERROR: Could not load the customer group.  Please notify your system administrator");
 			return TRUE;
 		}
-		
+
 		if (!DBO()->DocumentResourceType->Load())
 		{
 			Ajax()->AddCommand("Alert", "ERROR: Could not load the DocumentResourceType.  Please notify your system administrator");
 			return TRUE;
 		}
-		
+
 		if (!AuthenticatedUser()->UserHasPerm(DBO()->DocumentResourceType->PermissionRequired->Value))
 		{
 			Ajax()->AddCommand("Alert", "ERROR: The user does not have permission to upload resources of this type");
 			return TRUE;
-		} 
+		}
 
 		// Load the page template
 		$this->LoadPage('document_resource_add');
@@ -1114,12 +1194,12 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	 * ViewDocumentResource()
 	 *
 	 * Retrieves a Document Resource and declares its MIME type so that an apropriate application can display it
-	 * 
+	 *
 	 * Retrieves a Document Resource and declares its MIME type so that an apropriate application can display it
 	 * It expects the following objects to be defined
 	 * 	DBO()->DocumentResource->Id					Id of the resource to view
 	 *  DBO()->DocumentResource->DownloadFile		Set to TRUE, to download the file, instead of just viewing it
-	 * 
+	 *
 	 * @return		void
 	 * @method	ViewDocumentResource
 	 */
@@ -1128,10 +1208,10 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
-		
+
 		$intResourceId			= DBO()->DocumentResource->Id->Value;
 		$bolDownloadResource	= DBO()->DocumentResource->DownloadFile->Value;
-		
+
 		$arrColumns 	= Array(	"ResourceId"		=> "DR.Id",
 									"CustomerGroup"		=> "DR.CustomerGroup",
 									"OriginalFilename"	=> "DR.OriginalFilename",
@@ -1141,7 +1221,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		$strFrom		= "DocumentResource AS DR INNER JOIN FileType AS FT ON DR.FileType = FT.Id";
 		$selResource	= new StatementSelect($strFrom, $arrColumns, "DR.Id = <Id>");
 		$mixResult		= $selResource->Execute(Array("Id" => $intResourceId));
-		
+
 		if ($mixResult === FALSE)
 		{
 			DBO()->Error->Message = "An unexpected error occurred when trying to retrieve the Resource from the database.  Please notify your system administrator";
@@ -1154,9 +1234,9 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			$this->LoadPage('error');
 			return TRUE;
 		}
-		
+
 		$arrResource = $selResource->Fetch();
-		
+
 		// Send the file to the user
 		header("Content-Type: {$arrResource['MIMEType']}");
 		if ($bolDownloadResource)
@@ -1176,11 +1256,11 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	 * UploadDocumentResource()
 	 *
 	 * Handles the uploading of a file to be used as a DocumentResource
-	 * 
+	 *
 	 * Handles the uploading of a file to be used as a DocumentResource
-	 * The HTML generated by this function will be displayed in an iframe which 
+	 * The HTML generated by this function will be displayed in an iframe which
 	 * will be embedded in the "View Document Resources" webpage
-	 * When initialy called, it expects the following objects to be defined 
+	 * When initialy called, it expects the following objects to be defined
 	 *		(I don't think it needs anything defined)
 	 *
 	 * When the form is submitted, it expects the following values to be defined
@@ -1195,16 +1275,16 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
-		
+
 		// Retrieve the FileTypes that this resource can be
 		$intResourceType = DBO()->DocumentResource->Type->Value;
-		
+
 		$strWhere = "Id IN (SELECT file_type_id FROM document_resource_type_file_type WHERE document_resource_type_id = $intResourceType)";
 		$selFileTypes = new StatementSelect("FileType", "*", $strWhere);
 		$selFileTypes->Execute();
 		$arrFileTypes = $selFileTypes->FetchAll();
 		DBO()->FileTypes->AsArray = $arrFileTypes;
-		
+
 		// Check if the form has been submitted
 		if (SubmittedForm("ImportResource"))
 		{
@@ -1212,7 +1292,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			$intResourceType	= DBO()->DocumentResource->Type->Value;
 			$mixStart			= DBO()->DocumentResource->Start->Value;
 			$mixEnd				= DBO()->DocumentResource->End->Value;
-			
+
 			$mixResult = $this->_UploadDocumentResource($arrFileTypes, $intResourceType, $intCustomerGroup, $mixStart, $mixEnd);
 
 			if ($mixResult === TRUE)
@@ -1227,7 +1307,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 				DBO()->Import->ErrorMsg	= $mixResult;
 			}
 		}
-		
+
 		// Load the page template
 		$this->LoadPage('document_resource_upload_component');
 		return TRUE;
@@ -1240,7 +1320,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	 * ViewSamplePDF()
 	 *
 	 * Produces the "Sample PDF" popup (THIS ISN'T USED YET)
-	 * 
+	 *
 	 * Produces the "Sample PDF" popup
 	 * It can have the following values declared, although they are both optional:
 	 *	DBO()->CustomerGroup->Id			Id of the customer group
@@ -1253,25 +1333,25 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	{
 		//TODO! Implement this popup
 		//(Currently Sample PDFs are built through a popup that is defined in the DocumentTemplate HtmlTemplate and document_template.js files)
-		
+
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
-		
+
 		// Load all Customer Groups
 		DBL()->CustomerGroup->OrderBy("internal_name ASC");
 		DBL()->CustomerGroup->Load();
-		
+
 		// Load all the Document Template Types
 		DBL()->DocumentTemplateType->OrderBy("Name");
 		DBL()->DocumentTemplateType->Load();
-		
-		
+
+
 		// Load the page template
 		$this->LoadPage('ViewSamplePDF');
 		return TRUE;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// BuildSamplePDFOldMethodUsingFormSubmittion DEPRICATED
 	//------------------------------------------------------------------------//
@@ -1279,7 +1359,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	 * BuildSamplePDFOldMethodUsingFormSubmittion()
 	 *
 	 * Produces a sample pdf based on a Document Template
-	 * 
+	 *
 	 * Produces a sample pdf based on a Document Template
 	 * It must have the following values declared:
 	 * 	DBO()->DocumentTemplateType->Id
@@ -1315,40 +1395,40 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
-		
+
 		if (!DBO()->CustomerGroup->Load())
 		{
 			echo "ERROR: Could not load the CustomerGroup record";
 			exit;
 		}
-		
+
 		if (!DBO()->DocumentTemplateType->Load())
 		{
 			echo "ERROR: Could not load the DocumentTemplateType record";
 			exit;
 		}
-		
+
 		// Validate the Date and Time parameters
 		if (!Validate("ShortDate", DBO()->Generation->Date->Value))
 		{
 			echo "ERROR: The Generation Date is invalid.  It must be in the format DD/MM/YYYY";
 			exit;
 		}
-		
+
 		if (!Validate("Time", DBO()->Generation->Time->Value))
 		{
 			echo "ERROR: The Generation Time is invalid.  It must be in the format HH:MM:SS";
 			exit;
 		}
 		$strGenerationDate = ConvertUserDateToMySqlDate(DBO()->Generation->Date->Value) ." ". DBO()->Generation->Time->Value;
-		
-		
+
+
 		// Check if the template's source code hasn't been supplied
 		if (!DBO()->Template->Source->IsSet)
 		{
 			// Find the right template to use
 			$strWhere = "TemplateType = <TemplateType> AND CustomerGroup = <CustomerGroup> AND EffectiveOn <= <GenerationDate>";
-			$arrWhere = Array	(	
+			$arrWhere = Array	(
 									"TemplateType"	=> DBO()->DocumentTemplateType->Id->Value,
 									"CustomerGroup"	=> DBO()->CustomerGroup->Id->Value,
 									"EffectiveOn"	=> $strGenerationDate
@@ -1365,12 +1445,12 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 				echo "ERROR: Could not find an appropriate DocumentTemplate for CustomerGroup: ". DBO()->CustomerGroup->internal_name->Value .", TemplateType: ". DBO()->DocumentTemplateType->Name->Value .", for generation on $strGenerationDate";
 				exit;
 			}
-			
+
 			$arrTemplate			= $selTemplate->Fetch();
 			DBO()->Template->Source	= $arrTemplate['Source'];
 			DBO()->Schema->Id		= $arrTemplate['TemplateSchema'];
 		}
-		
+
 		// Load the Schema
 		DBO()->Schema->SetTable("DocumentTemplateSchema");
 		if (!DBO()->Schema->Load())
@@ -1378,17 +1458,17 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			echo "ERROR: Could not load DocumentTemplateSchema record";
 			exit;
 		}
-		
+
 		$strDate			= ConvertUserDateToMySqlDate(DBO()->Generation->Date->Value);
 		$strEffectiveDate	= $strDate ." ". DBO()->Generation->Time->Value;
 		$strTemplateXSLT	= DBO()->Template->Source->Value;
 		$intCustomerGroup	= DBO()->CustomerGroup->Id->Value;
 		$strSampleXML		= DBO()->Schema->Sample->Value;
-		
+
 		VixenRequire("lib/pdf/Flex_Pdf_Template.php");
-		
+
 		set_time_limit(120);
-		
+
 		try
 		{
 			$objPDFTemplate	= new Flex_Pdf_Template($intCustomerGroup, $strEffectiveDate, $strTemplateXSLT, $strSampleXML, Flex_Pdf_Style::MEDIA_ALL, TRUE);
@@ -1398,14 +1478,14 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			echo $objPDFDocument->render();
 			$strPdf = ob_get_clean();
 		}
-		catch (Exception $objException) 
+		catch (Exception $objException)
 		{
 			// Turn output buffering off, if it was on
 			ob_get_clean();
 			echo "ERROR: PDF generation failed<br /><br />". $objException->getMessage();
 			exit;
 		}
-		
+
 		// The pdf was successfully created
 		$strFilename = "Sample_". str_replace(" ", "_", DBO()->CustomerGroup->internal_name->Value) ."_". str_replace(" ", "_", DBO()->DocumentTemplateType->Name->Value) ."_". str_replace("-", "_", $strDate) ."_". str_replace(":", "_", DBO()->Generation->Time->Value) .".pdf";
 		header("Content-type: application/pdf;");
@@ -1413,7 +1493,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		echo $strPdf;
 		exit;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// BuildSamplePDF
 	//------------------------------------------------------------------------//
@@ -1421,7 +1501,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	 * BuildSamplePDF()
 	 *
 	 * Produces a sample pdf based on a Document Template
-	 * 
+	 *
 	 * Produces a sample pdf based on a Document Template
 	 * It must have the following values declared:
 	 * 	DBO()->DocumentTemplateType->Id
@@ -1448,42 +1528,42 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
-		
+
 		$_SESSION['DocumentTemplateSamplePDF'] = "";
-				
+
 		if (!DBO()->CustomerGroup->Load())
 		{
 			Ajax()->AddCommand("Alert", "ERROR: Could not load the CustomerGroup record");
 			return TRUE;
 		}
-		
+
 		if (!DBO()->DocumentTemplateType->Load())
 		{
 			Ajax()->AddCommand("Alert", "ERROR: Could not load the DocumentTemplateType record");
 			return TRUE;
 		}
-		
+
 		// Validate the Date and Time parameters
 		if (!Validate("ShortDate", DBO()->Generation->Date->Value))
 		{
 			Ajax()->AddCommand("Alert", "ERROR: The Generation Date is invalid.  It must be in the format DD/MM/YYYY");
 			return TRUE;
 		}
-		
+
 		if (!Validate("Time", DBO()->Generation->Time->Value))
 		{
 			Ajax()->AddCommand("Alert", "ERROR: The Generation Time is invalid.  It must be in the format HH:MM:SS");
 			return TRUE;
 		}
 		$strGenerationDate = ConvertUserDateToMySqlDate(DBO()->Generation->Date->Value) ." ". DBO()->Generation->Time->Value;
-		
-		
+
+
 		// Check if the template's source code hasn't been supplied
 		if (!DBO()->Template->Source->IsSet)
 		{
 			// Find the right template to use
 			$strWhere = "TemplateType = <TemplateType> AND CustomerGroup = <CustomerGroup> AND EffectiveOn <= <GenerationDate>";
-			$arrWhere = Array	(	
+			$arrWhere = Array	(
 									"TemplateType"	=> DBO()->DocumentTemplateType->Id->Value,
 									"CustomerGroup"	=> DBO()->CustomerGroup->Id->Value,
 									"EffectiveOn"	=> $strGenerationDate
@@ -1500,12 +1580,12 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 				Ajax()->AddCommand("Alert", "ERROR: Could not find an appropriate DocumentTemplate for CustomerGroup: ". DBO()->CustomerGroup->internal_name->Value .", TemplateType: ". DBO()->DocumentTemplateType->Name->Value .", for generation on $strGenerationDate");
 				return TRUE;
 			}
-			
+
 			$arrTemplate			= $selTemplate->Fetch();
 			DBO()->Template->Source	= $arrTemplate['Source'];
 			DBO()->Schema->Id		= $arrTemplate['TemplateSchema'];
 		}
-		
+
 		// Load the Schema
 		DBO()->Schema->SetTable("DocumentTemplateSchema");
 		if (!DBO()->Schema->Load())
@@ -1513,16 +1593,16 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			Ajax()->AddCommand("Alert", "ERROR: Could not load DocumentTemplateSchema record");
 			return TRUE;
 		}
-		
+
 		$strDate			= ConvertUserDateToMySqlDate(DBO()->Generation->Date->Value);
 		$intMediaType		= DBO()->Generation->MediaType->Value;
 		$strEffectiveDate	= $strDate ." ". DBO()->Generation->Time->Value;
 		$strTemplateXSLT	= DBO()->Template->Source->Value;
 		$intCustomerGroup	= DBO()->CustomerGroup->Id->Value;
 		$strSampleXML		= DBO()->Schema->Sample->Value;
-		
+
 		VixenRequire("lib/pdf/Flex_Pdf_Template.php");
-		
+
 		set_time_limit(120);
 
 		try
@@ -1534,7 +1614,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			echo $objPDFDocument->render();
 			$strPdf = ob_get_clean();
 		}
-		catch (Exception $objException) 
+		catch (Exception $objException)
 		{
 			// Turn output buffering off, if it was on
 			ob_get_clean();
@@ -1547,12 +1627,12 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		$strFilename = "Sample_". str_replace(" ", "_", DBO()->CustomerGroup->internal_name->Value) ."_". str_replace(" ", "_", DBO()->DocumentTemplateType->Name->Value) ."_". str_replace("-", "_", $strDate) ."_". str_replace(":", "_", DBO()->Generation->Time->Value) .".pdf";
 		$_SESSION['DocumentTemplateSamplePdf'] = $strPdf;
 		$_SESSION['DocumentTemplateSamplePdfFilename'] = $strFilename;
-		
+
 		$arrReply = Array('Success' => TRUE);
 		AjaxReply($arrReply);
 		return TRUE;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// GetSamplePDF
 	//------------------------------------------------------------------------//
@@ -1560,7 +1640,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	 * GetSamplePDF()
 	 *
 	 * Retrieves the sample pdf which should be stored in the user's session data
-	 * 
+	 *
 	 * Retrieves the sample pdf which should be stored in the user's session data
 	 *
 	 * @return	void
@@ -1570,24 +1650,24 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	{
 		$strPdf			= $_SESSION['DocumentTemplateSamplePdf'];
 		$strFilename	= $_SESSION['DocumentTemplateSamplePdfFilename'];
-		
+
 		// Remove the pdf from the session array
 		unset($_SESSION['DocumentTemplateSamplePdf']);
 		unset($_SESSION['DocumentTemplateSamplePdfFilename']);
-		
+
 		if ($strPdf == "")
 		{
 			DBO()->Error->Message = "ERROR: Could not find the pdf requested";
 			$this->LoadPage('error');
 			return TRUE;
 		}
-		
+
 		header("Content-type: application/pdf;");
 		header("Content-Disposition: attachment; filename=\"$strFilename\"");
 		echo $strPdf;
 		exit;
 	}
-	
+
 	// Returns TRUE on success, or an error msg on failure
 	private function _UploadDocumentResource($arrFileTypes, $intResourceType, $intCustomerGroup, $mixStart, $mixEnd)
 	{
@@ -1596,10 +1676,10 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		$intFileStatus		= $_FILES['ResourceFile']['error'];
 		$strFileType		= $_FILES['ResourceFile']['type'];
 		$intFileSize		= $_FILES['ResourceFile']['size'];
-		
+
 		$arrFilenameParts	= explode(".", $strFilename);
 		$strExtension		= strtolower($arrFilenameParts[count($arrFilenameParts)-1]);
-		
+
 		// Load the DocumentResourceType record
 		$selResourceType = new StatementSelect("DocumentResourceType", "*", "Id = <Id>");
 		if (!$selResourceType->Execute(Array("Id" => $intResourceType)))
@@ -1607,7 +1687,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			return "ERROR: Could not find the DocumentResourceType with Id: $intResourceType";
 		}
 		$arrResourceType = $selResourceType->Fetch();
-		
+
 		// Load the CustomerGroup record
 		$selCustomerGroup = new StatementSelect("CustomerGroup", "*", "Id = <Id>");
 		if (!$selCustomerGroup->Execute(Array("Id" => $intCustomerGroup)))
@@ -1615,7 +1695,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			return "ERROR: Could not find the CustomerGroup with Id: $intCustomerGroup";
 		}
 		$arrCustomerGroup = $selCustomerGroup->Fetch();
-		
+
 		// Check that the user has the required permissions to added resources of this type
 		if (!AuthenticatedUser()->UserHasPerm($arrResourceType['PermissionRequired']))
 		{
@@ -1640,7 +1720,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		{
 			return "ERROR: File is empty";
 		}
-		
+
 
 		// Check that the file is of an appropriate type
 		$bolFoundFileType = FALSE;
@@ -1651,19 +1731,19 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 				// Check that their MIME Type matches
 				if ($strFileType == $arrFileType['MIMEType'])
 				{
-					$intFileTypeId		= $arrFileType['Id']; 
+					$intFileTypeId		= $arrFileType['Id'];
 					$bolFoundFileType	= TRUE;
 					break;
 				}
 			}
 		}
-		
+
 		if (!$bolFoundFileType)
 		{
 			// The file is not of an appropriate type
 			return "ERROR: The file is not of an appropriate type, for the '{$arrResourceType['PlaceHolder']}' Resource";
 		}
-		
+
 		// Validate the Start time and End time
 		$strNow = GetCurrentDateAndTimeForMySQL();
 		if ($mixStart == 0)
@@ -1677,7 +1757,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			{
 				return "ERROR: The Starting date is invalid.  It must be in the format dd/mm/yyyy";
 			}
-			
+
 			// Check that the StartDate is greater than today
 			$strStartDatetime = ConvertUserDateToMySqlDate($mixStart) . " 00:00:00";
 			if ($strNow >= $strStartDatetime)
@@ -1685,7 +1765,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 				return "ERROR: The Starting date is invalid.  It must be in the future";
 			}
 		}
-		
+
 		if ($mixEnd == 0)
 		{
 			// The resource will be used indefinitely
@@ -1697,7 +1777,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			{
 				return "ERROR: The Ending date is invalid.  It must be in the format dd/mm/yyyy";
 			}
-			
+
 			// Check that the EndDate is greater than the StartDate
 			$strEndDatetime = ConvertUserDateToMySqlDate($mixEnd) . " 23:59:59";
 			if ($strStartDatetime > $strEndDatetime)
@@ -1705,13 +1785,13 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 				return "ERROR: The Ending date is invalid.  It must be greater than the Starting date";
 			}
 		}
-		
+
 		$blobFileContent = file_get_contents($strTempFilename);
 		if ($blobFileContent === FALSE)
 		{
 			return "ERROR: Could not read the file";
 		}
-		
+
 		// Add the DocumentResource Record
 		TransactionStart();
 		$arrResource = Array(	"CustomerGroup"		=> $intCustomerGroup,
@@ -1723,29 +1803,29 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 								"OriginalFilename"	=> $strFilename,
 								"FileContent"		=> $blobFileContent
 							);
-		 
+
 		$insResource	= new StatementInsert("DocumentResource", $arrResource);
 		$intResourceId	= $insResource->Execute($arrResource);
-		
+
 		if (!$intResourceId)
 		{
 			// Inserting the DocumentResource record failed
 			TransactionRollback();
 			return "ERROR: Adding the Resource to the database failed, unexpectedly.  Please notify your system administrator";
 		}
-/*		
+/*
 		// Move the file to {SHARED_BASE_PATH}/template/resource/{CustomerGroupId}/{ResourceId}.Extension
 		$strNewFilename	= "{$intResourceId}.{$strExtension}";
 		$strPath		= SHARED_BASE_PATH . "/template/resource/$intCustomerGroup";
-		
+
 		// Make the directory if it doesn't already exist
 		if (!RecursiveMkdir($strPath))
 		{
 			TransactionRollback();
-			return "ERROR: Creating the directory structure, for resources belong to this customer group, failed unexpectedly.  Please notify your system administrator"; 
+			return "ERROR: Creating the directory structure, for resources belong to this customer group, failed unexpectedly.  Please notify your system administrator";
 		}
 		$strDestination = $strPath . "/". $strNewFilename;
-		
+
 		if (!move_uploaded_file($strTempFilename, $strDestination))
 		{
 			TransactionRollback();
@@ -1766,7 +1846,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		{
 			return FALSE;
 		}
-		
+
 		return $selSchema->Fetch();
 	}
 
@@ -1776,7 +1856,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	{
 		$selTemplate	= new StatementSelect("DocumentTemplate", "*", "CustomerGroup = <CustomerGroup> AND TemplateType = <TemplateType> AND EffectiveOn IS NULL", "CreatedOn DESC", "1");
 		$mixResult		= $selTemplate->Execute(Array("CustomerGroup" => $intCustomerGroup, "TemplateType" => $intTemplateType));
-		
+
 		if ($mixResult === FALSE)
 		{
 			return FALSE;
@@ -1787,7 +1867,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		}
 		return NULL;
 	}
-	
+
 	// Returns the next version number to use.
 	// If there is a draft DocumentTemplate for this particular CustomerGroup/TemplateType, then it will
 	// return the draft's assigned version
@@ -1816,8 +1896,8 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	/**
 	 * LoadTemplate()
 	 *
-	 * Loads the template and associated objects into the DBO() collection for use by the "Edit Template" and "View Template" pages 
-	 * 
+	 * Loads the template and associated objects into the DBO() collection for use by the "Edit Template" and "View Template" pages
+	 *
 	 * Loads the template and associated objects into the DBO() collection for use by the "Edit Template" and "View Template" pages
 	 * It expects the following values to be defined:
 	 *
@@ -1837,15 +1917,15 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			// The template could not be loaded
 			return FALSE;
 		}
-		
+
 		// Load the CustomerGroup record as it is needed for the breadcrumb menu
 		DBO()->CustomerGroup->Id = DBO()->DocumentTemplate->CustomerGroup->Value;
 		DBO()->CustomerGroup->Load();
-		
+
 		// Load the details of the DocumentTemplateType as this is also needed
 		DBO()->DocumentTemplateType->Id = DBO()->DocumentTemplate->TemplateType->Value;
 		DBO()->DocumentTemplateType->Load();
-		
+
 		// Load the schema
 		if ($bolUseCurrentSchema)
 		{
@@ -1859,12 +1939,12 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			DBO()->DocumentTemplateSchema->Id = DBO()->DocumentTemplate->TemplateSchema->Value;
 			DBO()->DocumentTemplateSchema->Load();
 		}
-		
+
 		return TRUE;
 	}
 
 
     //----- DO NOT REMOVE -----//
-	
+
 }
 ?>
