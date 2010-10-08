@@ -205,29 +205,28 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 	{
 		
 		this._oResponse.oTemplateDetails.effective_datetime = this._oChangeDateTime.getElementValue();
-		//this._oResponse.oTemplateDetails.effective_datetime = this._oChangeDateTime.getElementValue();
-		this._comboFuture.populate();
+		if (this._oChangeDateTime.validate())
+			this._comboFuture.populate();
 	},
 	
 	_changeNowChanged	: function()
 	{
 		
+		//debugger;
 		if (this._radioNow.checked)
 		{
 			var sNow	= new Date().$format(Popup_Email_Save_Confirm.FIELD_CONFIG.changeDate.oConfig.sDateFormat);
-			this._oChangeDateTime.setValue(sNow);
-			this._oChangeDateTime.disableInput();
-			this._oResponse.oTemplateDetails.effective_datetime = sNow;
-			this._oResponse.oTemplateDetails.effective_datetime = sNow;
+			this._oChangeDateTime.clearValue();
+			this._oChangeDateTime.disableInput();			
+			this._oResponse.oTemplateDetails.effective_datetime = sNow;			
 			this._comboFuture.populate();
 		}
 		else
 		{
 			this._oResponse.oTemplateDetails.effective_datetime = null;
-			//this._oResponse.oTemplateDetails.effective_datetime = null;
-			this._comboFuture.populate();
 			this._oChangeDateTime.clearValue();
 			this._oChangeDateTime.enableInput();
+			this._comboFuture.populate();
 		}
 	},
 	
@@ -250,11 +249,13 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 	
 	
 	_save: function()
-	{
-		
-		
-		
+	{		
 		this._bFutureVersionsComboHasValues?null:this._oResponse.oTemplateDetails.end_datetime=Popup_Email_Save_Confirm.END_OF_TIME;
+		
+		if (this._radioNow.checked)
+		{
+			this._oResponse.oTemplateDetails.effective_datetime = new Date().$format(Popup_Email_Save_Confirm.FIELD_CONFIG.changeDate.oConfig.sDateFormat);		
+		}
 		
 		if (typeof (this._oResponse.oTemplateDetails.effective_datetime) == 'undefined')
 		{
@@ -264,7 +265,12 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 		{
 			alert('you must either specify an end date, or select an effective date further into the future.');
 		
-		}		
+		}
+		else if (!this._oChangeDateTime.validate() && !this._radioNow.checked )
+		{
+			alert ('No valid effective date was entered.');
+		
+		}
 		else
 		{
 
@@ -418,9 +424,6 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 		
 		
 		
-		
-		
-		
 	
 	
 	
@@ -444,10 +447,11 @@ Object.extend(Popup_Email_Save_Confirm,
 				bTimePicker	: true,
 				iYearStart	: 2010,
 				iYearEnd	: new Date().getFullYear() + 1,
-				mMandatory	: true,
+				mMandatory	: false,
 				mEditable	: true,
 				mVisible	: true,
-				bDisableValidationStyling	: true
+				bDisableValidationStyling	: false,
+				fnValidate	: function(sDate){return sDate<new Date((new Date()).getTime()-1000).$format(Popup_Email_Save_Confirm.FIELD_CONFIG.changeDate.oConfig.sDateFormat)?false:true;}	
 			}
 		},
 
@@ -475,7 +479,8 @@ Object.extend(Popup_Email_Save_Confirm,
 		
 	},
 	
-	CSV_ERROR_NAME_UNKNOWN	: 'Unkown Error',
-	
-	CORRESPONDENCE_RUN_ERROR_DUPLICATE_FILE	: 4
+	startDateValidation : function(sDate)
+	{			
+		return sDate<new Date().$format(Popup_Email_Save_Confirm.FIELD_CONFIG.changeDate.oConfig.sDateFormat)?false:true;		
+	}	
 });
