@@ -3,14 +3,25 @@
 class JSON_Handler_Customer_Group extends JSON_Handler
 {
 	protected	$_JSONDebug	= '';
-	
+
 	public function __construct()
 	{
 		// Send Log output to a debug string
 		Log::registerLog('JSON_Handler_Debug', Log::LOG_TYPE_STRING, $this->_JSONDebug);
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
-	
+
+	public function getEmailTemplateHistory($iEmailTemplateId)
+	{
+		$aTemplateDetails = Email_Template_Details::getForTemplateId($iEmailTemplateId);
+		return	array(
+						'Success'	=> true,
+						'aResults'	=> $aTemplateDetails
+					);
+
+
+	}
+
 	public function getAll()
 	{
 		try
@@ -21,7 +32,7 @@ class JSON_Handler_Customer_Group extends JSON_Handler
 			{
 				$aResults[$oItem->id]	= $oItem->toArray();
 			}
-			
+
 			return	array(
 						'Success'	=> true,
 						'aResults'	=> $aResults
