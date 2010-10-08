@@ -3,14 +3,14 @@
 class JSON_Handler_Correspondence extends JSON_Handler
 {
 	protected	$_JSONDebug	= '';
-	
+
 	public function __construct()
 	{
 		// Send Log output to a debug string
 		Log::registerLog('JSON_Handler_Debug', Log::LOG_TYPE_STRING, $this->_JSONDebug);
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
-	
+
 	public function getDataset($bCountOnly=false, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null)
 	{
 		try
@@ -20,10 +20,10 @@ class JSON_Handler_Correspondence extends JSON_Handler
 			{
 				throw new JSON_Handler_Correspondence_Exception('You do not have permission to view Correspdondence.');
 			}
-			
+
 			$aFilter	= get_object_vars($oFilter);
 			$aSort		= get_object_vars($oSort);
-			
+
 			$iRecordCount	= Correspondence::getLedgerInformation(true, null, null, $aFilter, $aSort);
 			if ($bCountOnly)
 			{
@@ -32,7 +32,7 @@ class JSON_Handler_Correspondence extends JSON_Handler
 							'iRecordCount'	=> $iRecordCount
 						);
 			}
-			
+
 			$iLimit		= is_null($iLimit) ? null : $iLimit;
 			$iOffset	= is_null($iOffset) ? 0 : $iOffset;
 			$aItems		= Correspondence::getLedgerInformation(false, $iLimit, $iOffset, $aFilter, $aSort);
@@ -51,11 +51,11 @@ class JSON_Handler_Correspondence extends JSON_Handler
 						$aItem[$sColumn]	= $aLogic[$sColumn];
 					}
 				}
-				
+
 				$aResults[$iOffset + $i]	= $aItem;
 				$i++;
 			}
-			
+
 			return	array(
 						'Success'		=> true,
 						'aRecords'		=> $aResults,
@@ -81,7 +81,7 @@ class JSON_Handler_Correspondence extends JSON_Handler
 					);
 		}
 	}
-	
+
 	public function getForId($iId)
 	{
 		try
