@@ -57,6 +57,7 @@ class Flex_Rollout_Version_000227 extends Flex_Rollout_Version
 									'sDescription'		=>	"Add table email_template_details",
 									'sAlterSQL'			=>	"CREATE  TABLE IF NOT EXISTS email_template_details (
 															  id BIGINT NOT NULL AUTO_INCREMENT,
+															  description VARCHAR(512) NOT NULL,
 															  email_template_id BIGINT NOT NULL ,
 															  email_text VARCHAR(10000) NOT NULL ,
 															  email_html VARCHAR(10000) NULL ,
@@ -64,6 +65,7 @@ class Flex_Rollout_Version_000227 extends Flex_Rollout_Version
 															  created_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 															  created_employee_id BIGINT NOT NULL ,
 															  effective_datetime DATETIME NOT NULL ,
+															  end_datetime DATETIME NOT NULL ,
 															  PRIMARY KEY (id) ,
 															  INDEX fk_email_template_details_email_template (email_template_id ASC) ,
 															  CONSTRAINT fk_email_template_details_email_template
