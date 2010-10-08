@@ -212,7 +212,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		// Attach content and get data
 		var sPopupMode = this._iMode == Popup_Email_Text_Editor.CREATE?'Create New Version':(this._iMode == Popup_Email_Text_Editor.READ?'Read Only':'Edit');
 		
-		this.setTitle('Email Text Editor (' + sPopupMode +' Mode) - Template \'' + this._sTemplateName +'\'(version ' +this._iTemplateDetailsId + ')  for ' + this._sCustomerGroupName);
+		this.setTitle('Email Text Editor - Template \'' + this._sTemplateName +'\'(version ' +this._iTemplateDetailsId + ')  for ' + this._sCustomerGroupName);
 		this.addCloseButton(this._close.bind(this));
 		this.setContent(this._oContent);
 		this._oLoadingPopup.hide();
