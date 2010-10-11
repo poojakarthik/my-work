@@ -2,46 +2,101 @@
 
 require_once dirname(__FILE__) . '/data/Data_Source.php';
 
-class CDR extends ORM
+/**
+ * CDR
+ *
+ * CDR Table
+ *
+ * @class	CDR
+ */
+class CDR extends ORM_Cached
 {
-	protected	$_strTableName	= "CDR";
+	protected 			$_strTableName			= "CDR";
+	protected static	$_strStaticTableName	= "CDR";
 	
-	//------------------------------------------------------------------------//
-	// __construct
-	//------------------------------------------------------------------------//
-	/**
-	 * __construct()
-	 *
-	 * constructor
-	 *
-	 * constructor
-	 *
-	 * @param	array	$arrProperties 		[optional]	Associative array defining the class with keys for each field of the table
-	 * @param	boolean	$bolLoadById		[optional]	Automatically load the object with the passed Id
-	 *
-	 * @return	void
-	 *
-	 * @constructor
-	 */
-	public function __construct($arrProperties=Array(), $bolLoadById=FALSE)
+	public function rate($bForceReRate=false, $bUseExistingRate=false)
 	{
-		// Parent constructor
-		parent::__construct($arrProperties, $bolLoadById);
-	}
-	
-	public function rate($bForceReRate=false)
-	{
+		static	$oQuery;
+		$oQuery	= ($oQuery) ? $oQuery : new Query();
+		
 		if (in_array($oRate->Status, array(CDR_NORMALISED, CDR_RERATE, CDR_RATE_NOT_FOUND)) || ($bForceReRate && $this->Rate))
 		{
+			$oRate	= ($bUseExistingRate && $this->Rate) ? Rate::getForId($this->Rate) : Rate::getForCDR($this);
+			
+			$this->Rate		= $oRate->Id;
+			
+			// DISCOUNTING (per-CDR): Eligibility
+			$bDiscount	= false;
+			
+			// Does the Rate Plan have discounting enabled?
+			$oService	= Service::getForId($this->Service);
+			$oRatePlan	= $oService->getRatePlan($this->StartDatetime);
+			if ($oRatePlan->discount_cap !== null && (float)$oRatePlan->discount_cap >= 0.01)
+			{
+				// Plan has a Discount Cap
+				// Check to see that this CDR is not older than our latest discounted CDR
+				if ($oService->discount_start_datetime !== null && $this->StartDatetime < $oService->discount_start_datetime)
+				{
+					// We need to re-rate all CDRs that are newer or as new as this CDR to ensure our ordering is correct
+					throw new Exception_Rating_CDROutOfSequence($this->Id);
+				}
+				else
+				{
+					$bDiscount	= true;
+				}
+			}
+			
+			// CHARGE: Calculate Base Charge
 			$this->Charge	= $this->calculcateCharge(false);
 			
-			// SERVICE TOTALS
-			// TODO
+			// DISCOUNTING (per-CDR): Application
+			if ($bDiscount)
+			{
+				$oGetUnbilledCDRTotal	= self::_preparedStatement('selUnbilledCDRTotal');
+				if ($oGetUnbilledCDRTotal->Execute(array('service_id'=>$this->Service,'invoice_run_id'=>$this->invoice_run_id)) === false)
+				{
+					throw new Exception($oGetUnbilledCDRTotal->Error());
+				}
+				$aUnbilledCDRTotal	= $oGetUnbilledCDRTotal->Fetch();
+				
+				// Have we exceeded our discount cap?
+				if ((float)$aUnbilledCDRTotal['cdr_charge'] >= (float)$oRatePlan->discount_cap)
+				{
+					// Apply Discount
+					$fDiscountPercentage	= (float)$oRate->discount_percentage;
+					if ($fDiscountPercentage)
+					{
+						// NOTE: This looks incorrect (discount percentage should be divided by 100), but this is how it behaved in the last implementation
+						$this->Charge	-= $fDiscountPercentage * $fDiscountPercentage;
+					}
+				}
+				else
+				{
+					// Update
+					$oService->discount_start_datetime	= $this->StartDatetime;
+					$oService->save();
+				}
+			}
 			
-			// DISCOUNTING
-			// TODO
+			// ROUNDING
+			$this->Charge	= Rate::roundToRatingStandard($this->Charge);
 			
+			// SERVICE TOTALS: Update progressive totals (deprecated, but we'll copy the functionality anyway)
+			if ($this->Charge > 0 && $this->Credit == 0)
+			{
+				if ($oRate->Uncapped)
+				{
+					$oService->UncappedCharge	+= $this->Charge;
+				}
+				else
+				{
+					$oService->CappedCharge		+= $this->Charge;
+				}
+				$oService->save();
+			}
 			
+			$this->Status	= CDR_RATED;
+			$this->RatedOn	= Data_Source_Time::currentTimestamp();
 			
 			$this->save();
 		}
@@ -51,11 +106,11 @@ class CDR extends ORM
 		}
 	}
 	
-	public function calculcateCharge($bUseExistingRate=true)
+	public function calculcateCharge()
 	{
-		if (in_array($oRate->Status, array(CDR_NORMALISED, CDR_RERATE, CDR_RATE_NOT_FOUND, CDR_RATED, CDR_TEMP_INVOICE, CDR_INVOICED)))
+		if ($this->Rate)
 		{
-			$oRate	= ($bUseExistingRate && $this->Rate) ? Rate::getForId($this->Rate) : Rate::getForCDR($this);
+			$oRate	= Rate::getForId($this->Rate);
 			return $oRate->calculateChargeForCDR($this);
 		}
 		else
@@ -274,13 +329,62 @@ class CDR extends ORM
 		return $aCDR;
 	}
 	
-	//------------------------------------------------------------------------//
-	// _preparedStatement
-	//------------------------------------------------------------------------//
+	protected static function getCacheName()
+	{
+		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
+		static $strCacheName;
+		if (!isset($strCacheName))
+		{
+			$strCacheName = __CLASS__;
+		}
+		return $strCacheName;
+	}
+	
+	protected static function getMaxCacheSize()
+	{
+		return 100;
+	}
+	
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
+	//---------------------------------------------------------------------------------------------------------------------------------//
+
+	public static function clearCache()
+	{
+		parent::clearCache(__CLASS__);
+	}
+
+	protected static function getCachedObjects()
+	{
+		return parent::getCachedObjects(__CLASS__);
+	}
+	
+	protected static function addToCache($mixObjects)
+	{
+		parent::addToCache($mixObjects, __CLASS__);
+	}
+
+	public static function getForId($intId, $bolSilentFail=false)
+	{
+		return parent::getForId($intId, $bolSilentFail, __CLASS__);
+	}
+	
+	public static function getAll($bolForceReload=false)
+	{
+		return parent::getAll($bolForceReload, __CLASS__);
+	}
+	
+	public static function importResult($aResultSet)
+	{
+		return parent::importResult($aResultSet, __CLASS__);
+	}
+	
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
+	//---------------------------------------------------------------------------------------------------------------------------------//
+
 	/**
 	 * _preparedStatement()
-	 *
-	 * Access a Static Cache of Prepared Statements used by this Class
 	 *
 	 * Access a Static Cache of Prepared Statements used by this Class
 	 *
@@ -303,17 +407,28 @@ class CDR extends ORM
 			{
 				// SELECTS
 				case 'selById':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Note", "*", "Id = <Id>", NULL, 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
+					break;
+				case 'selAll':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
+					break;
+				case 'selUnbilledCDRTotal':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"CDR",
+																					"	COUNT(Id)	AS cdr_count,
+																						SUM(Charge)	AS cdr_charge",
+																					"	Status	= ".CDR_RATED."
+																						AND Service = <service_id>
+																						AND (ISNULL(<invoice_run_id>) OR invoice_run_id = <invoice_run_id>)");
 					break;
 				
 				// INSERTS
 				case 'insSelf':
-					$arrPreparedStatements[$strStatement]	= new StatementInsert("Note");
+					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);
 					break;
 				
 				// UPDATE BY IDS
 				case 'ubiSelf':
-					$arrPreparedStatements[$strStatement]	= new StatementUpdateById("Note");
+					$arrPreparedStatements[$strStatement]	= new StatementUpdateById(self::$_strStaticTableName);
 					break;
 				
 				// UPDATES

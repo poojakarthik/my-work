@@ -51,10 +51,11 @@ class Rate extends ORM_Cached
 	 	$aWhere							= array();
 	 	$aWhere['service_id']			= $oService->Id;
 	 	$aWhere['effective_datetime']	= date('Y-m-d H:i:s', $iDatetime);
-		$aWhere['record_type_id']		= $oRecordType->Id;
+		$aWhere['record_type_id']		= ($oRecordType === null) ? null : $oRecordType->Id;
 		$aWhere['destination_code']		= ($oDestination) ? $oDestination->Code : 0;
 		$aWhere['is_fleet']				= (int)!!$bFleet;
 		$aWhere['use_perfect_match']	= (int)!!$bPerfectMatch;
+		$aWhere['is_fleet_check_only']	= ($oRecordType === null) ? 1 : 0;
 		
 		$selForServiceAndDefinition	= self::_preparedStatement('selForServiceAndDefinition');
 		if ($selForServiceAndDefinition->Execute($aWhere) === false)
@@ -291,20 +292,29 @@ class Rate extends ORM_Cached
 																					"	r.*,
 																						srg.StartDatetime	AS start_datetime,
 																						srg.EndDatetime		AS end_datetime",
-																					"	(
-																							(r.Monday		= 1 AND	DAYOFWEEK(<effective_datetime>) = 2)
-																							OR (r.Tuesday	= 1 AND	DAYOFWEEK(<effective_datetime>) = 3)
-																							OR (r.Wednesday	= 1 AND	DAYOFWEEK(<effective_datetime>) = 4)
-																							OR (r.Thursday	= 1 AND	DAYOFWEEK(<effective_datetime>) = 5)
-																							OR (r.Friday	= 1 AND	DAYOFWEEK(<effective_datetime>) = 6)
-																							OR (r.Saturday	= 1 AND	DAYOFWEEK(<effective_datetime>) = 7)
-																							OR (r.Sunday	= 1 AND	DAYOFWEEK(<effective_datetime>) = 1)
-																						)
-																						AND EXTRACT(HOUR_SECOND FROM <effective_datetime>) BETWEEN r.StartTime AND r.EndTime
-																						AND srg.Service = <service_id>
-																						AND r.RecordType = <record_type_id>
+																					"	srg.Service = <service_id>
 																						AND r.Fleet = <is_fleet>
-																						AND r.DestinationCode = <destination_code>
+																						AND
+																						(
+																							/* For Destination-end Fleet checking, we don't care about RecordType, DestinationCode, or Time of Day */
+																							(<is_fleet_check_only> != 0)
+																							OR
+																							(
+																								r.RecordType = <record_type_id>
+																								AND r.DestinationCode = <destination_code>
+																								AND
+																								(
+																									(r.Monday		= 1 AND	DAYOFWEEK(<effective_datetime>) = 2)
+																									OR (r.Tuesday	= 1 AND	DAYOFWEEK(<effective_datetime>) = 3)
+																									OR (r.Wednesday	= 1 AND	DAYOFWEEK(<effective_datetime>) = 4)
+																									OR (r.Thursday	= 1 AND	DAYOFWEEK(<effective_datetime>) = 5)
+																									OR (r.Friday	= 1 AND	DAYOFWEEK(<effective_datetime>) = 6)
+																									OR (r.Saturday	= 1 AND	DAYOFWEEK(<effective_datetime>) = 7)
+																									OR (r.Sunday	= 1 AND	DAYOFWEEK(<effective_datetime>) = 1)
+																								)
+																								AND EXTRACT(HOUR_SECOND FROM <effective_datetime>) BETWEEN r.StartTime AND r.EndTime
+																							)
+																						)
 																						AND (<use_perfect_match> = 0 OR <effective_datetime> BETWEEN rgr.effective_start_datetime AND rgr.effective_end_datetime)",
 																					"	(<effective_date> BETWEEN srg.StartDatetime AND srg.EndDatetime) DESC,
 																						(LEAST(ABS(TIMESTAMPDIFF(SECOND, <effective_datetime>, srg.StartDatetime)), ABS(TIMESTAMPDIFF(SECOND, <effective_datetime>, srg.EndDatetime)))) ASC,

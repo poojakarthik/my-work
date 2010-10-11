@@ -847,7 +847,7 @@ class Invoice extends ORM_Cached
 			{
 				// Database Error -- throw Exception
 				throw new Exception("DB ERROR: ".$oStmt->Error());
-			} 
+			}
 			else if ($oStmt->Count() == 1)
 			{
 				// Only one left, exit and revoke the run instead
@@ -1112,7 +1112,7 @@ class Invoice extends ORM_Cached
 			$fltProratedAmount			= ($fltAmount / $iBillingPeriodDays) * $iProratePeriodDays;
 			Log::getLog()->log("{$fltProratedAmount}\t= ({$fltAmount} / {$iBillingPeriodDays}) * {$iProratePeriodDays}");
 			
-			$fltProratedAmount			= round($fltProratedAmount, $intDecimalPlaces);
+			$fltProratedAmount			= ($intDecimalPlaces === null) ? $fltProratedAmount : round($fltProratedAmount, $intDecimalPlaces);
 			return $fltProratedAmount;
 		}
 		else

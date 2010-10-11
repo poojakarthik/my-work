@@ -452,6 +452,18 @@ class Service extends ORM
 		}
 	}
 	
+	public static function getCurrentForFNN($sFNN, $sEffectiveDatetime=null)
+	{
+		$sEffectiveDatetime	= ($sEffectiveDatetime === null) ? $sEffectiveDatetime : date('Y-m-d H:i:s');
+		
+		$selCurrentForFNN	= self::_preparedStatement('selCurrentForFNN');
+		if ($selCurrentForFNN->Execute(array('fnn'=>$sFNN, 'effective_datetime'=>$sEffectiveDatetime)) === false)
+		{
+			throw new Exception($selFNNInstances->Error());
+		}
+		return ($aService = $selCurrentForFNN->Fetch()) ? new Service($aService) : null;
+	}
+	
 	/**
 	 * getServiceAddress()
 	 *
@@ -731,6 +743,9 @@ class Service extends ORM
 					break;
 				case 'selServiceAddress':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ServiceAddress", "*", "Service = <Id>");
+					break;
+				case 'selCurrentForFNN':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Service s", "s.*", "s.FNN = <fnn> AND <effective_datetime> >= s.CreatedOn AND (s.ClosedOn IS NULL OR <effective_datetime> <= s.ClosedOn)", "CreatedOn DESC, Id DESC", 1);
 					break;
 				
 				// INSERTS
