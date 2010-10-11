@@ -59,32 +59,6 @@ class Email_Queue_Batch extends ORM_Cached
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
-
-	public static function deliverWaitingQueues($bTestMode=true)
-	{
-		try
-		{
-			// Get the waiting email_queue records
-			$aEmailQueues	= Email_Queue::getWaitingQueues();
-			if (count($aEmailQueues) > 0)
-			{
-				// Create and save an Email_Queue_Batch
-				$oEmailQueueBatch					= new Email_Queue_Batch();
-				$oEmailQueueBatch->created_datetime	= date('Y-m-d H:i:s');
-				$oEmailQueueBatch->save();
-				
-				foreach ($aEmailQueues as $oEmailQueue)
-				{
-					// Deliver the email queue, only commit (actually send) if NOT in test mode
-					$oEmailQueue->deliver($oEmailQueueBatch, $bTestMode === false);
-				}
-			}
-		}
-		catch (Exception $oException)
-		{
-			throw new Exception("Failed to deliver waiting email queues. ".$oException->getMessage());
-		}
-	}	
 	
 	/**
 	 * _preparedStatement()

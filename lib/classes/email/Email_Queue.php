@@ -65,23 +65,41 @@ class Email_Queue extends ORM_Cached
 		return Email::getForQueue($this->id);
 	}
 	
-	public function deliver($oEmailQueueBatch, $bCommitQueue=false)
+	public function deliver($oEmailQueueBatch, $bTestMode=true, $mDebugAddress=null)
 	{
+		// Check if this queue has already been delivered
+		if ($this->email_queue_batch_id !== null || $this->delivered_datetime !== null)
+		{
+			throw new Exception("This queue, '{$this->id}', has already been delivered."); 
+		}
+		
+		$bCommitQueue	= $bTestMode === false;
+		
+		Log::getLog()->log("Delivering queue {$this->id}, committing = ".($bCommitQueue ? 'YES' : 'NO'));
+		
 		// Create a queue
 		$oEmailFlexQueue	= new Email_Flex_Queue();
+		if ($bTestMode && ($mDebugAddress !== null) && EmailAddressValid($mDebugAddress))
+		{
+			$oEmailFlexQueue->setDebugAddress($mDebugAddress);
+		}
 		
 		// Create the Email_Flex objects
 		$aEmails	= $this->getEmails();
 		foreach ($aEmails as $oEmail)
 		{
+			Log::getLog()->log("Email: {$oEmail->id}");
+			
 			$oEmailFlex	= new Email_Flex();
 			
 			$aTo	= split(',', $oEmail->recipients);
 			foreach ($aTo as $sTo)
 			{
+				Log::getLog()->log("\trecipient: $sTo");
 				$oEmailFlex->addTo($sTo);
 			}
 			
+			Log::getLog()->log("\tsender: $oEmail->sender");
 			$oEmailFlex->setFrom($oEmail->sender);
 			$oEmailFlex->setSubject($oEmail->subject);
 			$oEmailFlex->setBodyText($oEmail->text);
@@ -98,9 +116,13 @@ class Email_Queue extends ORM_Cached
 				$sDisposition	= ($oAttachment->disposition === null	? Zend_Mime::DISPOSITION_ATTACHMENT : $oAttachment->disposition);
 				$sEncoding		= ($oAttachment->encoding === null 		? Zend_Mime::ENCODING_BASE64 		: $oAttachment->encoding);
 				
+				Log::getLog()->log("\tattachment: $oAttachment->filename ({$oAttachment->mime_type})");
+				
 				// Create/add the attachment
 				$oEmailFlex->createAttachment($oAttachment->content, $oAttachment->mime_type, $sDisposition, $sEncoding, $oAttachment->filename);
 			}
+			
+			Log::getLog()->log("added to queue\n");
 			
 			// Add the email to the queue
 			$oEmailFlexQueue->push($oEmailFlex, $oEmail->id);
@@ -108,12 +130,18 @@ class Email_Queue extends ORM_Cached
 		
 		if ($bCommitQueue)
 		{
+			Log::getLog()->log("COMMITTING QUEUE");
+			
 			// Commit the queue
 			$oEmailFlexQueue->commit();
 		}
 		
+		Log::getLog()->log("SENDING QUEUE");
+		
 		// Send the queue
 		$oEmailFlexQueue->send();
+		
+		Log::getLog()->log("\nSend Status");
 		
 		// Update the status of the queued emails
 		$aEmailFlexes	= $oEmailFlexQueue->getEmails();
@@ -121,29 +149,35 @@ class Email_Queue extends ORM_Cached
 		{
 			$oEmail			= $aEmails[$iEmailId];
 			$mStatus		= $oEmailFlex->getSendStatus();
-			$iEmailStatus	= Email_Status::EMAIL_STATUS_AWAITING_SEND;
+			$iEmailStatus	= EMAIL_STATUS_AWAITING_SEND;
+			$sRecipient		= implode(', ', $oEmailFlex->getRecipients());
 			if ($mStatus === Email_Flex::SEND_STATUS_SENT)
 			{
 				// Email sent
-				$iEmailStatus	= Email_Status::EMAIL_STATUS_AWAITING_SEND;
+				$iEmailStatus	= EMAIL_STATUS_SENT;
+				Log::getLog()->log("\t{$iEmailId}: Sent to ($sRecipient)");
 			}
 			else if ($mStatus === Email_Flex::SEND_STATUS_FAILED)
 			{
 				// Email sending failed
-				$iEmailStatus	= Email_Status::EMAIL_STATUS_SENDING_FAILED;
+				$iEmailStatus	= EMAIL_STATUS_SENDING_FAILED;
+				Log::getLog()->log("\t{$iEmailId}: Failed sending to ($sRecipient)");
 			}
 			else if ($mStatus === Email_Flex::SEND_STATUS_NOT_SENT)
 			{
 				// Not sent
-				$iEmailStatus	= Email_Status::EMAIL_STATUS_NOT_SENT;
+				$iEmailStatus	= EMAIL_STATUS_NOT_SENT;
+				Log::getLog()->log("\t{$iEmailId}: Not sent");
 			}
 			$oEmail->setStatus($iEmailStatus);
 		}
 		
+		Log::getLog()->log("\nUpdating batch reference: {$oEmailQueueBatch->id}");
+		
 		// Update the queues delivery datetime and batch reference
-		$oEmailFlexQueue->delivered_datetime	= date('Y-m-d H:i:s');
-		$oEmailFlexQueue->email_queue_batch_id	= $oEmailQueueBatch->id;
-		$oEmailFlexQueue->save();
+		$this->delivered_datetime	= date('Y-m-d H:i:s');
+		$this->email_queue_batch_id	= $oEmailQueueBatch->id;
+		$this->save();
 	}
 	
 	public static function getWaitingQueues()

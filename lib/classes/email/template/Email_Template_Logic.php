@@ -53,7 +53,7 @@ class Email_Template_Logic
 		}
 		catch (Exception $oException)
 		{
-			throw new Exception("Failed to get HTML content. ".$oException->getMessage());
+			throw new Exception("Failed to get HTML content. ".$oException->getMessage().". Data = ".print_r($mData, true));
 		}
 	}
 
