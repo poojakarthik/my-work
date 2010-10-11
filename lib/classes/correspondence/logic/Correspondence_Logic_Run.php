@@ -236,6 +236,7 @@ class Correspondence_Logic_Run
 			$sErrorReportFilePath = $oDataValidationException->sFileName;
 
 		}
+		Log::getLog()->log("Sending Correspondence Run Error email");
 		$this->sendErrorEmail($sMessage, $sErrorReportFilePath);
 	}
 
@@ -342,6 +343,7 @@ class Correspondence_Logic_Run
 
 		$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
 		$oEmail->send();
+		Log::getLog()->log("\t ... Email success: ".(string)$oEmail->getSendStatus());
 	}
 
 	public function sendDispatchEmail($bDispatchFailed = false)
