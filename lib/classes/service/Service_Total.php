@@ -60,6 +60,25 @@ class Service_Total extends ORM_Cached
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 
+	public function getServices()
+	{
+		$oStmt	= self::_preparedStatement('selServiceIds');
+		if ($oStmt->Execute(array('service_total_id' => $this->Id)) === false)
+		{
+			throw new Exception("Failed to get services for service total {$this->Id}. ".$oStmt->Error());
+		}
+		
+		$aRows		= $oStmt->FetchAll();
+		$aServices	= array();
+		foreach ($aRows as $aRow)
+		{
+			$oService					= Service::getForId($aRow['service_id']);
+			$aServices[$oService->Id]	= $oService;
+		}
+		
+		return $aServices;
+	}
+
 	public static function getForInvoiceRunAndAccount($iInvoiceRunId, $iAccountId)
 	{
 		// Retrieve the objects from the database
@@ -112,6 +131,14 @@ class Service_Total extends ORM_Cached
 				case 'selByAccountAndInvoiceRunId':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "invoice_run_id = <invoice_run_id> AND Account = <Account>");
 					break;
+				case 'selServiceIds':
+					$arrPreparedStatements[$strStatement]	= 	new StatementSelect(	
+																	"service_total_service",
+																	"service_id",
+																	"service_total_id = <service_total_id>"
+																);
+					break;
+					
 				// INSERTS
 				case 'insSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);
