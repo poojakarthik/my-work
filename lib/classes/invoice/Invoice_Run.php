@@ -754,18 +754,42 @@ class Invoice_Run
 	public function deliver()
 	{
 		// Verify that the invoice run is commited
-		/*if ($this->invoice_run_status_id !== INVOICE_RUN_STATUS_COMMITTED)
+		if ($this->invoice_run_status_id !== INVOICE_RUN_STATUS_COMMITTED)
 		{
 			throw new Exception("Cannot deliver invoice run {$this->Id}, it is not commited");
-		}*/
+		}
 
 		$sInvoiceRunPDFBasePath	= PATH_INVOICE_PDFS ."pdf/$this->Id/";
-
+		$oCustomerGroup			= Customer_Group::getForId($this->customer_group_id);
+		$oDeliveryMethod		= Constant_Group::getConstantGroup('delivery_method');
+		
+		// Build billing period string for the EBills
+		$sBillingPeriodEndMonth		= date("F", strtotime("-1 day", strtotime($this->BillingDate)));
+		$sBillingPeriodEndYear		= date("Y", strtotime("-1 day", strtotime($this->BillingDate)));
+		$sBillingPeriodStartMonth	= date("F", strtotime("-1 month", strtotime($this->BillingDate)));
+		$sBillingPeriodStartYear	= date("Y", strtotime("-1 month", strtotime($this->BillingDate)));
+		$sBillingPeriod				= $sBillingPeriodStartMonth;
+		if ($sBillingPeriodStartYear !== $sBillingPeriodEndYear)
+		{
+			$sBillingPeriod	.= " {$sBillingPeriodStartYear} / {$sBillingPeriodEndMonth} {$sBillingPeriodEndYear}";
+		}
+		else if ($sBillingPeriodStartMonth !== $sBillingPeriodEndMonth)
+		{
+			$sBillingPeriod	.= " / {$sBillingPeriodEndMonth} {$sBillingPeriodEndYear}";
+		}
+		else
+		{
+			$sBillingPeriod	.= " {$sBillingPeriodStartYear}";
+		}
+		
+		$sInvoiceDate	= date('dmY', strtotime($this->BillingDate));
+		
 		Log::getLog()->log("Generate PDF's");
 
 		// Generate pdf's
 		$aInvoices		= Invoice::getForInvoiceRunId($this->Id);
 		$aPDFFilenames	= array();
+		$aPDFContent	= array();
 		foreach ($aInvoices as $iId => $oInvoice)
 		{
 			// Generate the PDF file
@@ -774,95 +798,184 @@ class Invoice_Run
 			$iMonth 	= (int)date("m", $iCreatedOn);
 			$sContent	= GetPDFContent($oInvoice->Account, $iYear, $iMonth, $iId, $this->Id);
 			$aPDFFilenames[$iId]	= $sInvoiceRunPDFBasePath.GetPdfFilename($oInvoice->Account, $iYear, $iMonth, $oInvoice->Id, $this->Id);
-
+			$aPDFContent[$iId]		= $sContent;
 			Log::getLog()->log("Generated PDF '".basename($aPDFFilenames[$iId])."' for invoice {$iId}, length=".strlen($sContent));
 		}
 
-		Log::getLog()->log("Generate correspondence data");
-
-		// Generate the correspondence data
-		$aCorrespondenceData	= array();
-		foreach ($aPDFFilenames as $iInvoiceId => $sPDFFilename)
-		{
-			Log::getLog()->log("Generating correspondence data for invoice {$iInvoiceId}");
-
-			// Determine the correspondence_delivery_method for the invoice
-			$oInvoice			= $aInvoices[$iInvoiceId];
-			$iDeliveryMethod	= null;
-			switch ($oInvoice->DeliveryMethod)
-			{
-				case DELIVERY_METHOD_POST:
-					$iDeliveryMethod	= CORRESPONDENCE_DELIVERY_METHOD_POST;
-					break;
-				case DELIVERY_METHOD_EMAIL_SENT:
-				case DELIVERY_METHOD_EMAIL:
-					// Email delivered invoices are ignored in this stage, these are delivered using a cli app which is run manually
-					//$iDeliveryMethod	= CORRESPONDENCE_DELIVERY_METHOD_EMAIL;
-					break;
-			}
-
-			if (is_null($iDeliveryMethod))
-			{
-				Log::getLog()->log("No appropriate delivery method for invoice {$iInvoiceId}");
-
-				// No appropriate correspondence_delivery_method was found. The invoice is not to be delivered, skip it.
-				continue;
-			}
-
-			Log::getLog()->log("Delivery method for invoice {$iInvoiceId} is '".Correspondence_Delivery_Method::getForId($iDeliveryMethod)->system_name."'");
-
-			// Cache the correspondence data for the invoice
-			$oAccount				= Account::getForId($oInvoice->Account);
-			$oContact				= Contact::getForId($oAccount->PrimaryContact);
-			$aInvoice				= 	array(
-											'account_id'						=> $oAccount->Id,
-											'customer_group_id'					=> $oAccount->CustomerGroup,
-											'correspondence_delivery_method_id'	=> Correspondence_Delivery_Method::getForId($iDeliveryMethod)->system_name,
-											'account_name'						=> $oAccount->BusinessName,
-											'title'								=> $oContact->title,
-											'first_name'						=> $oContact->firstName,
-											'last_name'							=> $oContact->lastName,
-											'address_line_1'					=> $oAccount->Address1,
-											'address_line_2'					=> $oAccount->Address2,
-											'suburb'							=> $oAccount->Suburb,
-											'postcode'							=> $oAccount->Postcode,
-											'state'								=> $oAccount->State,
-											'email'								=> $oContact->Email,
-											'mobile'							=> $oContact->Mobile,
-											'landline'							=> $oContact->Phone,
-											'pdf_file_path'						=> $sPDFFilename
-										);
-			$aCorrespondenceData[]	= $aInvoice;
-
-			Log::getLog()->log("Created correspondence data for invoice {$iInvoiceId}");
-			Log::getLog()->log(print_r($aInvoice, true));
-		}
-
-		// Create the correspondence run
+		Log::getLog()->log("Generate correspondence data & emails");
+		
 		try
 		{
-			Log::getLog()->log("Create correspondence run");
-
-			$oTemplate	= $this->getCorrespondenceTemplate();
-
-			Log::getLog()->log("Got template");
-
-			$oRun		= $oTemplate->createRun(true, $aCorrespondenceData);
-
-			Log::getLog()->log("Run created");
+			
+			// Generate the correspondence data & build the email queue (for Email_Flex objects)
+			$aCorrespondenceData	= array();
+			$oEmailFlexQueue		= new Email_Flex_Queue();
+			$oEmailTemplate			= Email_Template_Logic::getInstance(EMAIL_TEMPLATE_TYPE_EBILL, $this->customer_group_id);
+			foreach ($aPDFFilenames as $iInvoiceId => $sPDFFilename)
+			{
+				Log::getLog()->log("\nInvoice {$iInvoiceId}");
+	
+				// Determine the correspondence_delivery_method for the invoice
+				$oInvoice			= $aInvoices[$iInvoiceId];
+				$iDeliveryMethod	= null;
+				switch ($oInvoice->DeliveryMethod)
+				{
+					case DELIVERY_METHOD_POST:
+						// Create correspondence data
+						$iDeliveryMethod	= CORRESPONDENCE_DELIVERY_METHOD_POST;
+						
+						Log::getLog()->log("Delivery method for invoice {$iInvoiceId} is '".Correspondence_Delivery_Method::getForId($iDeliveryMethod)->system_name."'");
+	
+						// Cache the correspondence data for the invoice
+						$oAccount				= Account::getForId($oInvoice->Account);
+						$oContact				= Contact::getForId($oAccount->PrimaryContact);
+						$aInvoice				= 	array(
+														'account_id'						=> $oAccount->Id,
+														'customer_group_id'					=> $oAccount->CustomerGroup,
+														'correspondence_delivery_method_id'	=> Correspondence_Delivery_Method::getForId($iDeliveryMethod)->system_name,
+														'account_name'						=> $oAccount->BusinessName,
+														'title'								=> $oContact->title,
+														'first_name'						=> $oContact->firstName,
+														'last_name'							=> $oContact->lastName,
+														'address_line_1'					=> $oAccount->Address1,
+														'address_line_2'					=> $oAccount->Address2,
+														'suburb'							=> $oAccount->Suburb,
+														'postcode'							=> $oAccount->Postcode,
+														'state'								=> $oAccount->State,
+														'email'								=> $oContact->Email,
+														'mobile'							=> $oContact->Mobile,
+														'landline'							=> $oContact->Phone,
+														'pdf_file_path'						=> $sPDFFilename
+													);
+						$aCorrespondenceData[]	= $aInvoice;
+			
+						Log::getLog()->log("Created correspondence data for invoice {$iInvoiceId}");
+						Log::getLog()->log(print_r($aInvoice, true));
+						break;
+					case DELIVERY_METHOD_EMAIL:
+						// Create email object using Email Template & add to the queue
+						Log::getLog()->log("Delivery method for invoice {$iInvoiceId} is '".$oDeliveryMethod->getConstantName(DELIVERY_METHOD_EMAIL)."'");
+						
+						// Get the contact details for the invoice/account
+						$oStmtAccountEmail	= new StatementSelect(	"Account JOIN Contact USING (AccountGroup)",
+																	"Contact.Account, Email, FirstName",
+																	"Account.Id = <Account> AND Email != '' AND Contact.Archived = 0 AND (Contact.Account = Account.Id OR Contact.CustomerContact = 1 OR Account.PrimaryContact = Contact.Id)");
+						if ($oStmtAccountEmail->Execute($oInvoice->toArray()) === FALSE)
+						{
+							throw new Exception("Failed to get contacts for invoice {$iInvoiceId}.");
+						}
+						if (!$aContacts = $oStmtAccountEmail->FetchAll())
+						{
+							// Bad Account Number or Non-Email Account
+							continue;
+						}
+						
+						Log::getLog()->log("Generate emails for each contact");
+						
+						// Queue up an email for each contact
+						foreach ($aContacts as $aContact)
+						{
+							Log::getLog()->log("...Contact ".$aContact['Email']." (".$aContact['FirstName'].")");
+							
+							// Generate Email_Flex object from Ebill template
+							$oEmail	= 	$oEmailTemplate->generateEmail(
+											array(
+												'CustomerGroup'	=> $oCustomerGroup->toArray(),
+												'Account'		=> array('id' => $aContact['Account']),
+												'Invoice'		=> array('created_on' => date('F jS, Y', strtotime($oInvoice->CreatedOn)), 'billing_period' => $sBillingPeriod),
+												'Contact'		=> array('first_name' => $aContact['FirstName'])
+											)
+										);
+							
+							// Account for , separated email addresses
+							$aEmails	= explode(',', $aContact['Email']);
+							foreach ($aEmails as $sEmail)
+							{
+								$sEmail	= trim($sEmail);
+								
+								Log::getLog()->log("\tAddress: '{$sEmail}'");
+								
+								// Validate email address
+								if (!preg_match('/^([[:alnum:]]([+-_.]?[[:alnum:]])*)@([[:alnum:]]([.]?[-[:alnum:]])*[[:alnum:]])\.([[:alpha:]]){2,25}$/', $sEmail))
+								{
+									Log::getLog()->log("\tERROR: Email address is invalid.");
+									continue;
+								}
+								
+								// Add recipient
+								$oEmail->addTo($sEmail);
+							}
+							
+							$oEmail->setFrom($oCustomerGroup->outbound_email);
+							$sAttachment	= "{$oInvoice->Account}_{$sInvoiceDate}.pdf";
+							$oEmail->createAttachment(
+								$aPDFContent[$iInvoiceId],			// Content
+								'application/pdf',  				// Mime Type
+								Zend_Mime::DISPOSITION_ATTACHMENT, 	// Disposition
+								Zend_Mime::ENCODING_BASE64, 		// Encoding
+								$sAttachment						// Filename
+							);
+							
+							Log::getLog()->log("\tAttachment: '{$sAttachment}'");
+							
+							$sEmailId	= $aContact['Account']."_".$aContact['Email'];
+							$oEmailFlexQueue->push($oEmail, $sEmailId);
+							
+							// Update the invoices delivery method
+							$oInvoice->DeliveryMethod	= DELIVERY_METHOD_EMAIL_SENT;
+							$oInvoice->save();
+						}
+						break;
+					case DELIVERY_METHOD_EMAIL_SENT:
+						// Email has already been sent, this shouldn't happen
+						Log::getLog()->log("Invoice {$iInvoiceId} has already been delivered an email. This shouldn't happen, invoices only get delivered once.");
+						break;
+					default:
+						// Skip delivering the invoice
+						Log::getLog()->log("No appropriate delivery method for invoice {$iInvoiceId}");
+				}
+			}
 		}
-		catch (Correspondence_DataValidation_Exception $oEx)
+		catch (Exception $oException)
 		{
-			Log::getLog()->log("Validation errors in the correspondence data for the run: ");
-			$sErrorType	= GetConstantName($oEx->iError, 'correspondence_run_error');
-			Log::getLog()->log("Error Type: $oEx->iError => '{$sErrorType}'");
-			Log::getLog()->log("Error report: ".print_r($oEx->aReport, true));
-
-			throw new Exception("Failed to create the correspondence run. ");
+			throw new Exception("Failed to generated invoice delivery data. ".$oException->getMessage());
 		}
-		catch (Exception $oEx)
+		
+		Log::getLog()->log("Schedule the email queue for immediate delivery");
+		$oEmailFlexQueue->scheduleForDelivery();
+
+		if (count($aCorrespondenceData) > 0)
 		{
-			throw new Exception("Failed to create the correspondence run. ".$oEx->getMessage());
+			// Create the correspondence run using all of the correspondence data
+			try
+			{
+				Log::getLog()->log("Create correspondence run");
+	
+				$oTemplate	= $this->getCorrespondenceTemplate();
+	
+				Log::getLog()->log("Got template");
+	
+				$oRun	= $oTemplate->createRun(true, $aCorrespondenceData);
+	
+				Log::getLog()->log("Run created");
+			}
+			catch (Correspondence_DataValidation_Exception $oEx)
+			{
+				Log::getLog()->log("Validation errors in the correspondence data for the run: ");
+				$sErrorType	= GetConstantName($oEx->iError, 'correspondence_run_error');
+				Log::getLog()->log("Error Type: $oEx->iError => '{$sErrorType}'");
+				Log::getLog()->log("Error report: ".print_r($oEx->aReport, true));
+	
+				throw new Exception("Failed to create the correspondence run. ");
+			}
+			catch (Exception $oEx)
+			{
+				throw new Exception("Failed to create the correspondence run. ".$oEx->getMessage());
+			}
+		}
+		else
+		{
+			Log::getLog()->log("No correspondence to post, no run created");
 		}
 	}
 
