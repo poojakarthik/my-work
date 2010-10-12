@@ -32,11 +32,6 @@ class Cli_App_Rating extends Cli
 	
 	const	RATING_EXCEPTION_CONTINUE	= false;
 	
-	public function logFlex($sMessage, $bAddNewLine=true)
-	{
-		$this->log($sMessage, false, !$bAddNewLine, false);
-	}
-	
 	function run()
 	{
 		try
