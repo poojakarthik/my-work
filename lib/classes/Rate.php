@@ -10,31 +10,62 @@ class Rate extends ORM_Cached
 {
 	const	RATING_PRECISION	= 2;	// Round to the nearest whole cent
 	
+	const	RATE_SEARCH_LOGGING		= false;
+	const	RATE_ALGORITHM_LOGGING	= true;
+	
 	protected 			$_strTableName			= "Rate";
 	protected static	$_strStaticTableName	= "Rate";
+	
+	protected static function _logRateSearch($sMessage, $bNewLine=true)
+	{
+		if (self::RATE_SEARCH_LOGGING)
+		{
+			Log::getLog()->log($sMessage, $bNewLine);
+		}
+	}
+	
+	protected static function _logRateAlgorithm($sMessage, $bNewLine=true)
+	{
+		if (self::RATE_ALGORITHM_LOGGING)
+		{
+			Log::getLog()->log($sMessage, $bNewLine);
+		}
+	}
 	
 	public static function getForCDR($mCDR)
 	{
 		$oCDR		= CDR::getForId(ORM::extractId($mCDR));
+		
+		self::_logRateSearch("Finding a Rate for CDR {$oCDR->Id}...");
 		
 		// Is this a Fleet call?
 		$bFleet					= false;
 		$oDestinationService	= Service::getCurrentForFNN($oCDR->Destination, $oCDR->StartDatetime);
 		if ($oDestinationService && $oDestinationService->Account == $oCDR->Account)
 		{
+			self::_logRateSearch("Destination Service {$oCDR->Destination} is on the same Flex Account {$oCDR->Account} - searching for Fleet Rate on Destination...");
 			// Same Account -- try to find a Fleet Rate on the Destination Service (must be a perfect match)
 			if ($oDestinationFleetRate = Rate::getForServiceAndDefinition($oDestinationService, null, $oCDR->StartDatetime, null, true))
 			{
 				// Fleet Rate found on Destination Service
+				self::_logRateSearch("Fleet Rate {$oDestinationFleetRate->Id} found on Destination");
 				$bFleet	= true;
 			}
 		}
 		
 		// Search for a Rate (try Fleet first, if eligible)
-		if (!$bFleet || null === ($oRate = Rate::getForServiceAndDefinition($oCDR->Service, $oCDR->RecordType, $oCDR->StartDatetime, $oCDR->DestinationCode, true)))
+		if ($bFleet && null !== ($oRate = Rate::getForServiceAndDefinition($oCDR->Service, $oCDR->RecordType, $oCDR->StartDatetime, $oCDR->DestinationCode, true)))
+		{
+			self::_logRateSearch("Fleet Rate {$oRate->Id} found on Service");
+		}
+		elseif (null !== ($oRate = Rate::getForServiceAndDefinition($oCDR->Service, $oCDR->RecordType, $oCDR->StartDatetime, $oCDR->DestinationCode, false, false)))
 		{
 			// Allow "closest match" for non-Fleet Rates
-			$oRate = Rate::getForServiceAndDefinition($oCDR->Service, $oCDR->RecordType, $oCDR->StartDatetime, $oCDR->DestinationCode, false, false);
+			self::_logRateSearch("Normal Rate {$oRate->Id} found on Service");
+		}
+		else
+		{
+			self::_logRateSearch("No Rate found on Service!");
 		}
 		return $oRate;
 	}
@@ -78,7 +109,7 @@ class Rate extends ORM_Cached
 	{
 		// Round up to the specified precision (and then round() to make sure there aren't float precision errors)
 		$iFraction	= pow(10, $iDecimalPlaces);
-		return round(ceil($fAmount * $iFraction) / $iFraction, $iDecimalPlaces);
+		return round(ceil($fAmountInDollars * $iFraction) / $iFraction, $iDecimalPlaces);
 	}
 	
 	public function calculateChargeForCDR($mCDR)
@@ -89,6 +120,8 @@ class Rate extends ORM_Cached
 	
 	public function calculateCharge($iUnits, $fCost, $sStartDatetime, $sEndDatetime)
 	{
+		$this->_logRateAlgorithm("Rating {$iUnits} Units at \$".number_format($fCost, '4', '.', '')." from {$sStartDatetime} to {$sEndDatetime}");
+		
 		$fCost			= (float)$fCost;
 		$iUnits			= (int)$iUnits;
 		$bPassthrough	= !!$this->PassThrough;
@@ -123,6 +156,7 @@ class Rate extends ORM_Cached
 			// PASSTHROUGH
 			// Passthroughs have a much simpler calculation
 			$fCharge	= max($fCost + $aStandardRate['fFlagfall'], $fMinimumCharge);
+			$this->_logRateAlgorithm("PASSTHROUGH: \$".number_format($fCharge, '4', '.', '')."\t= max({$fCost} + {$aStandardRate['fFlagfall']}, {$fMinimumCharge})");
 		}
 		else
 		{
@@ -130,6 +164,8 @@ class Rate extends ORM_Cached
 			// Apply Standard Rate
 			$fStandardCharge	= $this->_calculateChargeStage($iUnits, $fCost, $aStandardRate);
 			$fCharge			= $fStandardCharge;
+			
+			$this->_logRateAlgorithm("STANDARD CHARGE: \$".number_format($fCharge, '4', '.', ''));
 			
 			// CAPPING
 			// Apply Capping (unit-based capping takes priority over charge-based capping)
@@ -139,6 +175,7 @@ class Rate extends ORM_Cached
 				{
 					// Reapply Standard Rate but capped to $iCapUnits Units
 					$fCharge	= $this->_calculateChargeStage($iCapUnits, $fCost, $aStandardRate);
+					$this->_logRateAlgorithm("STANDARD CHARGE UNIT CAPPED: \$".number_format($fCharge, '4', '.', '')." @ {$iCapUnits} Units");
 				}
 			}
 			elseif ($fCapCost > 0.0)
@@ -147,6 +184,7 @@ class Rate extends ORM_Cached
 				{
 					// Limit the Standard Rate to our dollar Cap
 					$fCharge	= $fCapCost;
+					$this->_logRateAlgorithm("STANDARD CHARGE DOLLAR CAPPED: \$".number_format($fCharge, '4', '.', '')." @ \$".number_format($fCapCost, '4', '.', ''));
 				}
 			}
 			
@@ -155,13 +193,20 @@ class Rate extends ORM_Cached
 			if ($iCapUsage && $iUnits > $iCapUsage)
 			{
 				// Apply the Excess Rate to any usage over $iCapUsage and add to our Charge
-				$fCharge	+= $this->_calculateChargeStage($iUnits - $iCapUsage, $fCost, $aExcessRate);
+				$iExcessUnits	= $iUnits - $iCapUsage;
+				$fExcessCharge	= $this->_calculateChargeStage($iExcessUnits, $fCost, $aExcessRate);
+				$fCharge		+= $fExcessCharge;
+				$this->_logRateAlgorithm("EXCESS CHARGE UNIT START: \$".number_format($fExcessCharge, '4', '.', '')." @ {$iExcessUnits} Excess Units (Excess Start: {$iCapUsage} Units)");
 			}
 			elseif ($fCapLimit && $fStandardCharge > $fCapLimit)
 			{
 				// Add Excess Charge & Excess Flagfall to our Charge
-				$fCharge	+= ($fStandardCharge - $fCapLimit) + $aExcessRate['fFlagfall'];
+				$fExcessCharge	= ($fStandardCharge - $fCapLimit);
+				$fCharge		+= $fExcessCharge + $aExcessRate['fFlagfall'];
+				$this->_logRateAlgorithm("EXCESS CHARGE DOLLAR START: \$".number_format($fExcessCharge, '4', '.', '')." @ \$".number_format($fCapLimit, '4', '.', '')." + \$".number_format($aExcessRate['fFlagfall'], '4', '.', '')." Flagfall");
 			}
+			
+			$this->_logRateAlgorithm("STANDARD + EXCESS CHARGES: \$".number_format($fCharge, '4', '.', ''));
 			
 			// PRORATE
 			if ($bProrate)
@@ -172,12 +217,14 @@ class Rate extends ORM_Cached
 				$iPeriodEndDate		= strtotime('+1 month', $iChargeStartDate) - 1;
 				
 				$fCharge	= Invoice::prorate($fCharge, $iChargeStartDate, $iChargeEndDate, $iPeriodStartDate, $iPeriodEndDate, DATE_TRUNCATE_DAY, false, null);
+				$this->_logRateAlgorithm("PRORATED: \$".number_format($fCharge, '4', '.', ''));
 			}
 		}
 		
 		// ROUNDING
 		// Round according to the Rating Standard
 		$fCharge	= Rate::roundToRatingStandard($fCharge);
+		$this->_logRateAlgorithm("ROUNDED: \$".number_format($fCharge, '4', '.', ''));
 		
 		return $fCharge;
 	}
@@ -288,7 +335,7 @@ class Rate extends ORM_Cached
 				case 'selForServiceAndDefinition':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"	ServiceRateGroup srg
 																						JOIN RateGroupRate rgr ON (srg.RateGroup = rgr.RateGroup)
-																						JOIN Rate r ON (rgr.Rate = Rate.Id)",
+																						JOIN Rate r ON (rgr.Rate = r.Id)",
 																					"	r.*,
 																						srg.StartDatetime	AS start_datetime,
 																						srg.EndDatetime		AS end_datetime",
@@ -301,7 +348,7 @@ class Rate extends ORM_Cached
 																							OR
 																							(
 																								r.RecordType = <record_type_id>
-																								AND r.DestinationCode = <destination_code>
+																								AND r.Destination = <destination_code>
 																								AND
 																								(
 																									(r.Monday		= 1 AND	DAYOFWEEK(<effective_datetime>) = 2)

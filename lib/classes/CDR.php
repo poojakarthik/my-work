@@ -23,6 +23,16 @@ class CDR extends ORM_Cached
 		{
 			$oRate	= ($bUseExistingRate && $this->Rate) ? Rate::getForId($this->Rate) : Rate::getForCDR($this);
 			
+			// Did we find a Rate?
+			if (!$oRate)
+			{
+				$this->Charge	= null;
+				$this->Rate		= null;
+				$this->Status	= CDR_RATE_NOT_FOUND;
+				$this->save();
+				
+				throw new Exception_Rating_RateNotFound("No Rate found for CDR {$this->Id}");
+			}
 			$this->Rate		= $oRate->Id;
 			
 			// DISCOUNTING (per-CDR): Eligibility
@@ -30,7 +40,7 @@ class CDR extends ORM_Cached
 			
 			// Does the Rate Plan have discounting enabled?
 			$oService	= Service::getForId($this->Service);
-			$oRatePlan	= $oService->getRatePlan($this->StartDatetime);
+			$oRatePlan	= $oService->getCurrentPlan($this->StartDatetime, false);
 			if ($oRatePlan->discount_cap !== null && (float)$oRatePlan->discount_cap >= 0.01)
 			{
 				// Plan has a Discount Cap
@@ -67,7 +77,10 @@ class CDR extends ORM_Cached
 					if ($fDiscountPercentage)
 					{
 						// NOTE: This looks incorrect (discount percentage should be divided by 100), but this is how it behaved in the last implementation
-						$this->Charge	-= $fDiscountPercentage * $fDiscountPercentage;
+						//$this->Charge	-= $this->Charge * $fDiscountPercentage;
+						
+						// Replaced with correct code -- couldn't find any cases of discounting in reality
+						$this->Charge	-= $this->Charge * ($fDiscountPercentage / 100);
 					}
 				}
 				else

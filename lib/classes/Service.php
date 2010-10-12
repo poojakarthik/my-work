@@ -83,17 +83,21 @@ class Service extends ORM
 	 *
 	 * @method
 	 */
-	public function getCurrentPlan($strEffectiveDatetime=NULL)
+	public function getCurrentPlan($strEffectiveDatetime=null, $bSilentFail=true)
 	{
 		$objServiceRatePlan	= $this->getCurrentServiceRatePlan($strEffectiveDatetime);
 		if ($objServiceRatePlan instanceof Service_Rate_Plan)
 		{
 			return new Rate_Plan(array('Id'=>$objServiceRatePlan->RatePlan), true);
 		}
-		else
+		elseif ($bSilentFail)
 		{
 			// No Current Plan
 			return null;
+		}
+		else
+		{
+			throw new Exception("No current Rate Plan for Service {$this->Id} at {$strEffectiveDatetime}");
 		}
 	}
 	

@@ -2,6 +2,10 @@
 
 class DataAccess
  {
+	const	PROFILER_LOG_PATH	= 'logs/profiling/data_access/';
+	
+	const	TRANSACTION_LOGGING	= false;
+	
  	private	$_arrSavepoints	= array();
  	
  	//------------------------------------------------------------------------//
@@ -39,8 +43,6 @@ class DataAccess
 	private $_bProfilingEnabled	= false;
 	
 	private	$_aProfiling		= array();
-
-	const	PROFILER_LOG_PATH	= 'logs/profiling/data_access/';
 
 	private static $arrDataAccessCache = array();
 
@@ -316,11 +318,17 @@ class DataAccess
 			// Create a Savepoint to simulate Nested Transactions
 			$strSavepointUID	= "FLEX_NESTED_".sha1(time() * (rand(1, 100) / 100));
 			
-			//Log::getLog()->log("Creating Savepoint '{$strSavepointUID}'...");
+			if (self::TRANSACTION_LOGGING)
+			{
+				Log::getLog()->log("Creating Savepoint '{$strSavepointUID}'...");
+			}
 			
 			if (!$this->refMysqliConnection->query("SAVEPOINT {$strSavepointUID}"))
 			{
-				//Log::getLog()->log($this->refMysqliConnection->error);
+				if (self::TRANSACTION_LOGGING)
+				{
+					Log::getLog()->log($this->refMysqliConnection->error);
+				}
 				
 				// Failure
 				// TODO: Throw an Exception
@@ -333,7 +341,10 @@ class DataAccess
 		}
 		else
 		{
-			//Log::getLog()->log("Starting transaction...");
+			if (self::TRANSACTION_LOGGING)
+			{
+				Log::getLog()->log("Starting transaction...");
+			}
 			
 			// Create a Transaction
 			$this->_bolHasTransaction = true;
@@ -365,7 +376,10 @@ class DataAccess
 	{
 		if (!$this->_bolHasTransaction)
 		{
-			//Log::getLog()->log("No Transaction to roll back!");
+			if (self::TRANSACTION_LOGGING)
+			{
+				Log::getLog()->log("No Transaction to roll back!");
+			}
 			
 			// No transaction to roll back
 			return false;
@@ -375,11 +389,17 @@ class DataAccess
 			// Roll back to last Savepoint
 			$strSavepointUID	= array_pop($this->_arrSavepoints);
 			
-			//Log::getLog()->log("Rolling back to Savepoint '{$strSavepointUID}'...");
+			if (self::TRANSACTION_LOGGING)
+			{
+				Log::getLog()->log("Rolling back to Savepoint '{$strSavepointUID}'...");
+			}
 			
 			if (!$this->refMysqliConnection->query("ROLLBACK TO SAVEPOINT {$strSavepointUID}"))
 			{
-				//Log::getLog()->log($this->refMysqliConnection->error);
+				if (self::TRANSACTION_LOGGING)
+				{
+					Log::getLog()->log($this->refMysqliConnection->error);
+				}
 				
 				// Failure
 				// TODO: Throw an Exception
@@ -388,7 +408,10 @@ class DataAccess
 		}
 		else
 		{
-			//Log::getLog()->log("Rolling back transaction...");
+			if (self::TRANSACTION_LOGGING)
+			{
+				Log::getLog()->log("Rolling back transaction...");
+			}
 			
 			// Roll back, then disable transactioning
 			$this->_bolHasTransaction	= false;
@@ -415,7 +438,10 @@ class DataAccess
 	{
 		if (!$this->_bolHasTransaction)
 		{
-			//Log::getLog()->log("No Transaction to commit!");
+			if (self::TRANSACTION_LOGGING)
+			{
+				Log::getLog()->log("No Transaction to commit!");
+			}
 			
 			// No transaction to commit
 			return false;
@@ -425,24 +451,58 @@ class DataAccess
 			// Roll back to last Savepoint
 			$strSavepointUID	= array_pop($this->_arrSavepoints);
 			
-			//Log::getLog()->log("Releasing Savepoint '{$strSavepointUID}'...");
+			if (self::TRANSACTION_LOGGING)
+			{
+				Log::getLog()->log("Releasing Savepoint '{$strSavepointUID}'...");
+			}
 			
 			if (!$this->refMysqliConnection->query("RELEASE SAVEPOINT {$strSavepointUID}"))
 			{
-				//Log::getLog()->log($this->refMysqliConnection->error);
+				if (self::TRANSACTION_LOGGING)
+				{
+					Log::getLog()->log("Unable to release savepoint '{$strSavepointUID}': {$this->refMysqliConnection->error}");
+				}
 				
 				// Failure
 				// TODO: Throw an Exception
 				return false;
 			}
+			else
+			{
+				return true;
+			}
 		}
 		else
 		{
-			//Log::getLog()->log("Committing transaction...");
+			if (self::TRANSACTION_LOGGING)
+			{
+				Log::getLog()->log("Committing transaction...");
+			}
 			
 			// Commit, then disable transactioning
 			$this->_bolHasTransaction	= false;
-			return ($this->refMysqliConnection->commit() && $this->refMysqliConnection->autocommit(TRUE));
+			
+			$bCommitted		= $this->refMysqliConnection->commit();
+			if (!$bCommitted)
+			{
+				if (self::TRANSACTION_LOGGING)
+				{
+					Log::getLog()->log("Commit failed: {$this->refMysqliConnection->error}");
+				}
+			}
+			else
+			{
+				$bAutoCommit	= $this->refMysqliConnection->autocommit(true);
+				if (!$bAutoCommit)
+				{
+					if (self::TRANSACTION_LOGGING)
+					{
+						Log::getLog()->log("Unable to enable Autocommit Mode: {$this->refMysqliConnection->error}");
+					}
+				}
+			}
+			
+			return ($bCommitted && $bAutoCommit);
 		}
 	}
 	
@@ -638,6 +698,33 @@ class DataAccess
 	public function getProfilingEnabled()
 	{
 		return $this->_bProfilingEnabled;
+	}
+	
+	//------------------------------------------------------------------------//
+	// Error()
+	//------------------------------------------------------------------------//
+	/**
+	 * Error()
+	 *
+	 * Return an SQL error message
+	 *
+	 * Returns the latest SQL error message
+	 *
+	 * @return		string					SQL Error Message
+	 *
+	 * @method
+	 */
+	function Error()
+	{
+		if (mysqli_error($this->refMysqliConnection))
+		{
+			$strReturn = mysqli_error($this->refMysqliConnection);
+			$strReturn .= "\n Call Stack:\n".Backtrace(debug_backtrace())."\n";
+			return $strReturn;
+		}
+		
+		// There was no error
+		return FALSE;
 	}
 }
 

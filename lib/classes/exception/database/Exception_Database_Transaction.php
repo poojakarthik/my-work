@@ -1,0 +1,1 @@
+<?php class Exception_Database_Transaction extends Exception {} ?>

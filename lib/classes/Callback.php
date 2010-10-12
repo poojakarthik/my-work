@@ -19,14 +19,24 @@ final class Callback
 	
 	public function invoke()
 	{
-		$mCallback	= (isset($this->_mContext)) ? array($this->_mContext, $this->_sFunction) : $this->_sFunction;
 		$aArgs		= func_get_args();
+		return call_user_func_array(array($this, 'invokeArray'), $aArgs);
+	}
+	
+	public function invokeArray($aArgs)
+	{
+		$mCallback	= (isset($this->_mContext)) ? array($this->_mContext, $this->_sFunction) : $this->_sFunction;
 		return call_user_func_array($mCallback, array_merge($this->_aParameters, $aArgs));
 	}
 	
 	public function curry()
 	{
-		$aArgs	= func_get_args();
+		$aArgs		= func_get_args();
+		return call_user_func_array(array($this, 'curryArray'), $aArgs);
+	}
+	
+	public function curryArray($aArgs)
+	{
 		return new self($this->_sFunction, $this->_mContext, array_merge($this->_aParameters, $aArgs));
 	}
 	

@@ -1,4 +1,8 @@
 <?php
+
+// Just in case there is no autoloader
+require_once(dirname(__FILE__).'/Callback.php');
+
 /**
  * Log
  *
@@ -79,9 +83,8 @@ class Log
 				break;
 				
 			case self::LOG_TYPE_FUNCTION:
-				$strFunction	= (($this->_arrConfig['Class']) ? $this->_arrConfig['Class'].'::' : '') . $this->_arrConfig['Function'];
 				$arrFuncArgs	= func_get_args();
-				call_user_func_array($strFunction, $arrFuncArgs);
+				$this->_arrConfig['Callback']->invokeArray($arrFuncArgs);
 				break;
 			
 			default:
@@ -229,8 +232,15 @@ class Log
 		
 		// Config
 		$arrConfig				= array();
-		$arrConfig['Function']	= $strFunction;
-		$arrConfig['Class']		= $strClass;
+		
+		if ($strFunction instanceof Callback)
+		{
+			$arrConfig['Callback']	= $strFunction;
+		}
+		else
+		{
+			$arrConfig['Callback']	= Callback::create($strFunction, $strClass);
+		}
 		
 		// Create Instance
 		$objLog	= new Log(self::LOG_TYPE_FUNCTION, $arrConfig);

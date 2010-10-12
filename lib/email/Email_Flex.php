@@ -80,7 +80,7 @@ class Email_Flex extends Zend_Mail
 				$sContent	= $sRawContent;
 		}
 		return $sContent;
-    } 
+    }
 }
 
 ?>

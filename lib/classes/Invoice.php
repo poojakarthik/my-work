@@ -694,11 +694,11 @@ class Invoice extends ORM_Cached
 		$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($fltTaxableUncappedCharge, $this->intInvoiceDatetime);
 				
 		// Mark all Service Charges as TEMPORARY_INVOICE
-		if ($qryQuery->Execute("UPDATE 	Charge 
-								SET		Status = ".CHARGE_TEMP_INVOICE.", 
-										invoice_run_id = {$this->invoice_run_id} 
-								WHERE 	Status IN (".CHARGE_APPROVED.", ".CHARGE_TEMP_INVOICE.") 
-								AND 	Service IN (".implode(', ', $arrServiceDetails['Ids']).") 
+		if ($qryQuery->Execute("UPDATE 	Charge
+								SET		Status = ".CHARGE_TEMP_INVOICE.",
+										invoice_run_id = {$this->invoice_run_id}
+								WHERE 	Status IN (".CHARGE_APPROVED.", ".CHARGE_TEMP_INVOICE.")
+								AND 	Service IN (".implode(', ', $arrServiceDetails['Ids']).")
 								AND 	ChargedOn <= '{$this->billing_period_end_datetime}'") === FALSE)
 		{
 			throw new Exception("DB ERROR: ".$qryQuery->Error());
@@ -1097,20 +1097,20 @@ class Invoice extends ORM_Cached
 		
 		$iProratePeriodDays	= floor($intProratePeriod / Flex_Date::SECONDS_IN_DAY);
 		$iBillingPeriodDays	= floor($intBillingPeriod / Flex_Date::SECONDS_IN_DAY);
-		
+		/*
 		Log::getLog()->log("Prorating Charge Start Date: ".date("Y-m-d H:i:s", $intChargeStartDate));
 		Log::getLog()->log("Prorating Charge End Date: ".date("Y-m-d H:i:s", $intChargeEndDate));
 		Log::getLog()->log("Prorating Period Start Date: ".date("Y-m-d H:i:s", $intPeriodStartDate));
 		Log::getLog()->log("Prorating Period End Date: ".date("Y-m-d H:i:s", $intPeriodEndDate));
 		Log::getLog()->log("Prorating Period Length (days): {$iProratePeriodDays}");
 		Log::getLog()->log("Billing Period Length (days): {$iBillingPeriodDays}");
-		
+		*/
 		$aArguments	= func_get_args();
 		Flex::assert(($iBillingPeriodDays > 0), "Invoice Billing Period length in days is not greater than 0", print_r(array('charge-date-start'=>date("Y-m-d H:i:s", $intChargeStartDate), 'charge-date-end'=>date("Y-m-d H:i:s", $intChargeEndDate), 'period-date-start'=>date("Y-m-d H:i:s", $intPeriodStartDate), 'period-date-end'=>date("Y-m-d H:i:s", $intPeriodEndDate), 'prorate-period-days'=>$iProratePeriodDays, 'billing-period-days'=>$iBillingPeriodDays, 'arguments' => $aArguments), true), "Invoice Prorating: Invalid Billing Period");
 		if ($iProratePeriodDays)
 		{
 			$fltProratedAmount			= ($fltAmount / $iBillingPeriodDays) * $iProratePeriodDays;
-			Log::getLog()->log("{$fltProratedAmount}\t= ({$fltAmount} / {$iBillingPeriodDays}) * {$iProratePeriodDays}");
+			//Log::getLog()->log("{$fltProratedAmount}\t= ({$fltAmount} / {$iBillingPeriodDays}) * {$iProratePeriodDays}");
 			
 			$fltProratedAmount			= ($intDecimalPlaces === null) ? $fltProratedAmount : round($fltProratedAmount, $intDecimalPlaces);
 			return $fltProratedAmount;
@@ -1804,7 +1804,7 @@ class Invoice extends ORM_Cached
 														FROM 	Charge
 														WHERE	Account = {$oOriginalInvoice->Account}
 														AND		invoice_run_id = {$oOriginalInvoiceRun->Id}
-														AND		ChargeType NOT IN ('PCAD', 'PCAR', 'PCR', 'PDCR') 
+														AND		ChargeType NOT IN ('PCAD', 'PCAR', 'PCR', 'PDCR')
 														AND 	CreatedBy IS NOT NULL
 														AND		Status = ".CHARGE_INVOICED."
 													)");
