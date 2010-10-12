@@ -37,78 +37,106 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 	{
 		$aTemplateDetails = is_array($aTemplateDetails)?$aTemplateDetails:(array)$aTemplateDetails;
 
-		/*
-		 Email_Template_Logic::CREATE);
-			Email_Template_Logic::EDIT);
-			 Email_Template_Logic::READ);
-		*/
+
 
 
 		count(Email_template_Logic::validateTemplateDetails((array)$aTemplateDetails['oTemplateDetails']))>0?$bConfirm = false:null;
 
 
 		if ($bConfirm)
-		{	///if there are future versions that are affected by this one, process them into the database
-			if (array_key_exists('aFutureVersions', $aTemplateDetails) && $aTemplateDetails['aFutureVersions']!=null)
-			{
-				foreach ($aTemplateDetails['aFutureVersions'] as $oFutureVersion)
+		{
+				$oDataAccess	= DataAccess::getDataAccess();
+				if (!$oDataAccess->TransactionStart())
 				{
-					$x = new Email_Template_Details((array)$oFutureVersion);
-					$x->save();
+					return 	array(
+								"Success"	=> false,
+								"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? 'Could not start database transaction.' : false,
+							);
+				}
+				try
+				{
+					///if there are future versions that are affected by this one, process them into the database
+					if (array_key_exists('aFutureVersions', $aTemplateDetails) && $aTemplateDetails['aFutureVersions']!=null)
+					{
+						foreach ($aTemplateDetails['aFutureVersions'] as $oFutureVersion)
+						{
+							$x = new Email_Template_Details((array)$oFutureVersion);
+							$x->save();
+						}
+					}
+
+					//set the end date on the current version
+					$y = Email_Template_Details::getCurrentDetailsForTemplateId($aTemplateDetails['oTemplateDetails']->email_template_id);
+					if ($y->end_datetime>$aTemplateDetails['oTemplateDetails']->effective_datetime)
+					{
+						$y->end_datetime = $aTemplateDetails['oTemplateDetails']->effective_datetime;
+						$y->save();
+
+					}
+					//save the new version
+
+					$aTemplateDetails = (array)$aTemplateDetails['oTemplateDetails'];
+
+					$aNewVersion = array();
+					$aNewVersion['id'] = null;
+					$aNewVersion['email_template_id'] = $aTemplateDetails['email_template_id'];
+					$aNewVersion['created_timestamp'] = null;
+					$aNewVersion['created_employee_id'] = Flex::getUserId();
+					$aNewVersion['email_html']	= trim($aTemplateDetails['email_html']);
+					$aNewVersion['email_text'] = trim($aTemplateDetails['email_text']);
+					$aNewVersion['effective_datetime'] = $aTemplateDetails['effective_datetime'];
+					$aNewVersion['email_subject'] = trim($aTemplateDetails['email_subject']);
+					$aNewVersion['description'] = trim($aTemplateDetails['description']);
+					$aNewVersion['end_datetime'] = $aTemplateDetails['end_datetime'];
+
+					$oDetails = new Email_Template_Details($aNewVersion);
+					$oDetails->save();
+					$oDataAccess->TransactionCommit();
+					return	array(
+									'Success'				=> true,
+									'Confirm'				=> true
+								);
+
+
+				}
+				catch (Exception $e)
+				{
+					// Exception caught, rollback db transaction
+					$oDataAccess->TransactionRollback();
+					return	array(
+									'Success'			=> false,
+									'message'			=> $e->getMessage(),
+									'Confirm'			=>true
+								);
 				}
 
-
-
-			}
-
-			//set the end date on the current version
-				$y = Email_Template_Details::getCurrentDetailsForTemplateId($aTemplateDetails['oTemplateDetails']->email_template_id);
-				if ($y->end_datetime>$aTemplateDetails['oTemplateDetails']->effective_datetime)
-				{
-					$y->end_datetime = $aTemplateDetails['oTemplateDetails']->effective_datetime;
-					$y->save();
-
-				}
-			//save the new version
-
-			$aTemplateDetails = (array)$aTemplateDetails['oTemplateDetails'];
-
-			$aNewVersion = array();
-			$aNewVersion['id'] = null;
-			$aNewVersion['email_template_id'] = $aTemplateDetails['email_template_id'];
-			$aNewVersion['created_timestamp'] = null;
-			$aNewVersion['created_employee_id'] = Flex::getUserId();
-			$aNewVersion['email_html']	= trim($aTemplateDetails['email_html']);
-			$aNewVersion['email_text'] = trim($aTemplateDetails['email_text']);
-			$aNewVersion['effective_datetime'] = $aTemplateDetails['effective_datetime'];
-			$aNewVersion['email_subject'] = trim($aTemplateDetails['email_subject']);
-			$aNewVersion['description'] = trim($aTemplateDetails['description']);
-			$aNewVersion['end_datetime'] = $aTemplateDetails['end_datetime'];
-
-			$oDetails = new Email_Template_Details($aNewVersion);
-			$oDetails->save();
-			return	array(
-							'Success'		=> true,
-							'oTemplateDetails'		=> $oDetails->toArray(),
-							'Confirm'			=> $bConfirm,
-							'Report'			=> array()
-						);
 		}
-		else
+		else//this is a validation only, not the actual save
 		{
 
-			$aErrors = array();
-			trim($aTemplateDetails['email_text']) == ''?$aErrors[]= "Your template must have a text version.":null;
-			trim($aTemplateDetails['email_subject']) == ''?$aErrors[]= "Your template must have a subject.":null;
-			trim($aTemplateDetails['description']) == ''?$aErrors[]= "Your template must have a description.":null;
+			try
+			{
+
+			$aErrors = Email_template_Logic::validateTemplateDetails($aTemplateDetails);
+
 
 			return	array(
-							'Success'		=> true,
-							'oTemplateDetails'		=> $aTemplateDetails,
+							'Success'			=> true,
+							'oTemplateDetails'	=> $aTemplateDetails,
 							'Confirm'			=> $bConfirm,
 							'Report'			=> Email_template_Logic::processHTML($aTemplateDetails['email_html'], true),
 							'Errors'			=>$aErrors
 						);
+			}
+			catch (Exception $e)
+			{
+				return	array(
+									'Success'			=> false,
+									'message'			=> $e->getMessage(),
+									'Confirm'			=>false
+								);
+
+			}
 
 		}
 	}
