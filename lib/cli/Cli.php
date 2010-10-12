@@ -78,6 +78,15 @@ abstract class Cli
 			self::ARG_DEFAULT		=> FALSE,
 			self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
 		);
+		
+		// Route general Flex logging through Cli's internal logging
+		Log::registerFunctionLog(__CLASS__, Callback::create('logFlex', $this));
+		Log::setDefaultLog(__CLASS__);
+	}
+
+	public function logFlex($sMessage, $bAddNewLine=true)
+	{
+		$this->log($sMessage, false, !$bAddNewLine, false);
 	}
 
 	public static final function execute($class)

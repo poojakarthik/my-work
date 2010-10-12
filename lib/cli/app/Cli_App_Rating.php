@@ -39,10 +39,6 @@ class Cli_App_Rating extends Cli
 	
 	function run()
 	{
-		// Route general Flex logging through Cli's internal logging
-		Log::registerFunctionLog(__CLASS__, Callback::create('logFlex', $this));
-		Log::setDefaultLog(__CLASS__);
-		
 		try
 		{
 			// The arguments are present and in a valid format if we get past this point.
