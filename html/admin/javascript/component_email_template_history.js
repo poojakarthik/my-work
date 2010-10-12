@@ -115,7 +115,7 @@ var Component_Email_Template_History = Class.create(
 				var tr = this._createTableRow(oRow);
 				tr.style.display!='none'?body.appendChild(tr):null;			
 			}
-			debugger;
+			
 			if (body.childElementCount == 0)
 			{
 				var tr = document.createElement('tr');
@@ -236,7 +236,7 @@ var Component_Email_Template_History = Class.create(
 	_editPopupNew: function (iTemplateId)
 	{
 	
-		debugger;
+		
 		new Popup_Email_Text_Editor(null ,  null , null, this._refresh.bind(this), iTemplateId);	
 	
 	},
