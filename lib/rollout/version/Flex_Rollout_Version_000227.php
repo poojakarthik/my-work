@@ -64,8 +64,8 @@ class Flex_Rollout_Version_000227 extends Flex_Rollout_Version
 															  email_subject VARCHAR(512) NOT NULL,
 															  created_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 															  created_employee_id BIGINT NOT NULL ,
-															  effective_datetime DATETIME NOT NULL ,
-															  end_datetime DATETIME NOT NULL ,
+															  effective_datetime DATE NOT NULL ,
+															  end_datetime DATE NOT NULL ,
 															  PRIMARY KEY (id) ,
 															  INDEX fk_email_template_details_email_template (email_template_id ASC) ,
 															  CONSTRAINT fk_email_template_details_email_template
