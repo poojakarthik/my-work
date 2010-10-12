@@ -793,10 +793,10 @@ class Invoice_Run
 		foreach ($aInvoices as $iId => $oInvoice)
 		{
 			// Generate the PDF file
-			$iCreatedOn = strtotime("-1 month", strtotime($oInvoice->CreatedOn));
-			$iYear 		= (int)date("Y", $iCreatedOn);
-			$iMonth 	= (int)date("m", $iCreatedOn);
-			$sContent	= GetPDFContent($oInvoice->Account, $iYear, $iMonth, $iId, $this->Id);
+			$iCreatedOn 			= strtotime("-1 month", strtotime($oInvoice->CreatedOn));
+			$iYear 					= (int)date("Y", $iCreatedOn);
+			$iMonth 				= (int)date("m", $iCreatedOn);
+			$sContent				= GetPDFContent($oInvoice->Account, $iYear, $iMonth, $iId, $this->Id);
 			$aPDFFilenames[$iId]	= $sInvoiceRunPDFBasePath.GetPdfFilename($oInvoice->Account, $iYear, $iMonth, $oInvoice->Id, $this->Id);
 			$aPDFContent[$iId]		= $sContent;
 			Log::getLog()->log("Generated PDF '".basename($aPDFFilenames[$iId])."' for invoice {$iId}, length=".strlen($sContent));

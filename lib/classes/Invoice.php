@@ -1832,11 +1832,29 @@ class Invoice extends ORM_Cached
 			
 			Log::getLog()->log("... ".$oQuery->AffectedRows()." records copied");
 			
-			// TODO: DEV ONLY -- THIS NEEDS TO BE UNCOMMENTED IN ORDER TO PROPERLY TEST RERATING
-			/*Log::getLog()->log("Selecting the copied CDRs for rerating");
+			// Update service fields to prepare for rerating
+			Log::getLog()->log("Updating services to prepare for rerating");
+			
+			$aServiceTotals	= Service_Total::getForInvoiceRunAndAccount($oOriginalInvoiceRun->Id, $oOriginalInvoice->Account);
+			foreach ($aServiceTotals as $oServiceTotal)
+			{
+				// Get service ids for the service total
+				$aServices	= $oServiceTotal->getServices();
+				foreach ($aServices as $oService)
+				{
+					Log::getLog()->log("\t...Updating service {$oService->Id} ({$oService->FNN})");
+					$oService->discount_start_datetime	= null;
+					$oService->UncappedCharge			= 0.00;
+					$oService->CappedCharge				= 0.00;
+					$oService->save();
+				}
+			}
+			
+			// Rerate CDRs
+			Log::getLog()->log("Selecting the copied CDRs for rerating");
 			
 			$oStmt	= new StatementSelect('CDR', 'Id', "Account = <Account> AND invoice_run_id = <invoice_run_id> AND Status = <Status>", "StartDatetime ASC");
-			$iRows	= $oStmt->Execute(array('Account' => $oOriginalInvoice->Account, 'invoice_run_id' => $oInvoiceRun->Id, 'Status' => CDR_RERATE));
+			$iRows	= $oStmt->Execute(array('Account' => $oOriginalInvoice->Account, 'invoice_run_id' => $oInvoiceRun->Id, 'Status' => CDR_RATED));
 			if ($iRows === false)
 			{
 				throw new Exception("Failed to retrieve CDR records after copying them. ".$oStmt->Error());
@@ -1844,15 +1862,14 @@ class Invoice extends ORM_Cached
 			
 			Log::getLog()->log("Rerate CDRs");
 			
-			// Rerate CDRs
 			while ($aRow = $oStmt->Fetch())
 			{
-				Log::getLog()->log("Rerating CDR ".$aRow['Id']);
 				$oCDR	= CDR::getForId($aRow['Id']);
+				Log::getLog()->log("Rerating CDR ".$aRow['Id']);
+				//Log::getLog()->log(print_r($oCDR->toArray(), true));
 				$oCDR->rate(true);
 				Log::getLog()->log("... Complete");
 			}
-			*/
 			
 			Log::getLog()->log("Generating the NEW invoice");
 			
@@ -1878,7 +1895,11 @@ class Invoice extends ORM_Cached
 			
 			Log::getLog()->log("Rolling back transaction");
 			
+			//
+			//
 			// ALWAYS ROLLBACK THIS PROCESS, NEVER COMMIT A REGENERATED INVOICE
+			//
+			//
 			$oDA->TransactionRollback();
 			
 			Log::getLog()->log("END: Regenerating Invoice - {$oOriginalInvoice->Id}");
