@@ -22,9 +22,22 @@ class Cli_App_EmailQueueFlush extends Cli
 			$sDebugAddress	= $arrArgs[self::SWITCH_DEBUG_EMAIL_ADDRESS];
 			$sDebugAddress	= !!$sDebugAddress ? $sDebugAddress	: null;
 			
+			if ($bTestRun)
+			{
+				Log::getLog()->log("-----");
+				Log::getLog()->log("Test Mode Enabled - None of the email queues will be commited.");
+				if ($sDebugAddress !== null)
+				{
+					Log::getLog()->log("\nDebug email address: {$sDebugAddress}, all emails will be sent to this address.");
+				}
+				Log::getLog()->log("-----");
+			}
+			
 			$aEmailQueues	= array();
 			if($iQueueId && is_numeric($iQueueId))
 			{
+				Log::getLog()->log("Will attempt to deliver single queue: $iQueueId");
+				
 				// Deliver the single queue
 				$aEmailQueues[]	= Email_Queue::getForId($iQueueId);
 			}
@@ -36,7 +49,8 @@ class Cli_App_EmailQueueFlush extends Cli
 			
 			$iQueueCount	= count($aEmailQueues);
 			Log::getLog()->log("{$iQueueCount} queue".($iQueueCount == 1 ? '' : 's')." to deliver");
-			if (count($aEmailQueues) > 0)
+			
+			if ($iQueueCount > 0)
 			{
 				// Create and save an Email_Queue_Batch
 				$oEmailQueueBatch					= new Email_Queue_Batch();
