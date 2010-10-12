@@ -153,5 +153,14 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 	getElementText	: function()
 	{
 		return ((this.oControlOutput.oEdit.selectedIndex >= 0) ? this.oControlOutput.oEdit.options[this.oControlOutput.oEdit.selectedIndex].innerHTML : null);
+	},
+	
+	emptyList: function()
+	{
+		while (this.oControlOutput.oEdit.options.length)
+			{
+				this.oControlOutput.oEdit.options[0].remove();
+			}
+	
 	}
 });
