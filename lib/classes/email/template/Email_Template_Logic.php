@@ -8,7 +8,7 @@ class Email_Template_Logic
 
 
 	private		$_oEmailTemplate	= null;
-	protected	$_aVariables		= array();
+	//protected	$_aVariables		= array();
 
 
 	protected static $_aReport = array(
@@ -159,146 +159,149 @@ class Email_Template_Logic
 	public static  function processHTML($sHTML, $bReport = false)
 	{
 
-		$aReport = array();
-		foreach(self::$_aReport as $sItem)
+		if ($sHTML !=null)
 		{
-			$aReport[$sItem] = array();
-		}
-
-
-		//***************/
-
-		$oDOMDocument = @DOMDocument::loadHTML($sHTML);
-		$oRootElement = $oDOMDocument->documentElement;//->firstChild;
-		$oRootElement->firstChild->nextSibling == null&&$oRootElement->tagName =='html'?$oRootElement=$oRootElement->firstChild:null;
-		$sRootName = $oRootElement->tagName =='body'||$oRootElement->tagName =='html'?'div':$oRootElement->tagName;
-	 	$x = DOMDocument::loadXML("<".$sRootName."> </".$sRootName.">");
-
-	 	$oChildren = $oRootElement->childNodes;
-		if ($oChildren!=null)
-		{
-			foreach ($oChildren as $node)
+			$aReport = array();
+			foreach(self::$_aReport as $sItem)
 			{
-				$node = $x->importNode($node, true);
-				$x->documentElement->appendChild($node);
+				$aReport[$sItem] = array();
 			}
 
-		}
 
+			//***************/
 
+			$oDOMDocument = @DOMDocument::loadHTML($sHTML);
+			$oRootElement = $oDOMDocument->documentElement;//->firstChild;
+			$oRootElement->firstChild->nextSibling == null&&$oRootElement->tagName =='html'?$oRootElement=$oRootElement->firstChild:null;
+			$sRootName = $oRootElement->tagName =='body'||$oRootElement->tagName =='html'?'div':$oRootElement->tagName;
+		 	$x = DOMDocument::loadXML("<".$sRootName."> </".$sRootName.">");
 
-		$oDOMDocument = $x;//*DOMDocument::loadXML(str_replace ( '<?xml version="1.0">' , "" , $x->saveXML()));
-		$xpath = new DOMXPath($oDOMDocument);
-
-        $query = '//cssclass';
-        $result = $xpath->query($query);
-
-		$aStyles = array();
-		 foreach ($result as $node)
-		 {
-		 	foreach ($node->attributes as $attrName => $attrNode)
-		  	{
-		  		if ($attrName == 'name')
-		  		{
-		  			$sName = $attrNode->value;
-		  		}
-
-		  		if ($attrName == 'style')
-		  		{
-		  			$sStyle = $attrNode->value;
-		  		}
-			}
-			$aStyles[$sName] = $sStyle;
-			$node->parentNode->removeChild($node);
-		}
-
-		 foreach ($aStyles as $sSelector=>$sStyle)
-		 {
-		 	$oElements = $xpath->query("//*[@class = '".$sSelector."']");
-		 	foreach ($oElements as $oElement)
-		 	{
-		 		$oElement->setAttribute('style',$sStyle);
-		 	}
-		 }
-
-		  $query = '//css';
-        $result = $xpath->query($query);
-
-        foreach($result as $node)
-        {
-        	$sSelector = $node->getAttributeNode('selector')->value;
-        	$sXpath = CSS_Parser::cssToXpath($sSelector);
-        	$sStyle = $node->textContent;
-        	$nodesToStyle = $xpath->query($sXpath);
-        	foreach ($nodesToStyle as $nodeToStyle)
-        	{
-        		$nodeToStyle->setAttribute('style', $sStyle);
-        	}
-			$node->parentNode->removeChild($node);
-        }
-
-		 $result = $xpath->query("//script");
-		  foreach ($result as $node)
-		 {
-		 	$aReport['javascript'][] =  $node->textContent;
-		 	$node->parentNode->removeChild($node);
-		 }
-
-
-
-	 	$oElements = $xpath->query("//*[@*]");
-		foreach ($oElements as $oElement)
-	 	{
-	 		foreach ($oElement->attributes as $attrName => $attrNode)
-		  	{
-		  		if (strpos($attrName, 'on') === 0)
-		  		{
-		  			$aReport['events'][]= $node->textContent;
-		  			$oElement->removeAttribute($attrName);
-		  		}
-
-		  	}
-	 	}
-
-	 	/*remove form related things*/
-		$result = $xpath->query("//input");
-		  foreach ($result as $node)
-		 {
-		 	$aReport['input'][]=$node->textContent;
-		 	$node->parentNode->removeChild($node);
-		 }
-
-		$result = $xpath->query("//form");
-		foreach ($result as $node)
-		{
-			$aReport['form'][]=$node->textContent;
-			$oNewNode = new DOMElement('div');
-			$node->parentNode->replaceChild($oNewNode, $node);
-
-			foreach ($node->attributes as $attrName => $attrNode)
-		  	{
-		  		if ($attrName != 'action' && $attrName != 'method')
-		  		{
-		  			$oNewNode->setAttributeNode ($attrNode );
-
-		  		}
-		  	}
-
-		  	$x = $node->childNodes;
-
-			if ($x!=null)
+		 	$oChildren = $oRootElement->childNodes;
+			if ($oChildren!=null)
 			{
-				foreach ($x as $childNode)
+				foreach ($oChildren as $node)
 				{
-					$oNewChild = $childNode->cloneNode(true);
-					$oNewNode->appendChild($oNewChild);
+					$node = $x->importNode($node, true);
+					$x->documentElement->appendChild($node);
 				}
+
+			}
+
+
+
+			$oDOMDocument = $x;//*DOMDocument::loadXML(str_replace ( '<?xml version="1.0">' , "" , $x->saveXML()));
+			$xpath = new DOMXPath($oDOMDocument);
+
+	        $query = '//cssclass';
+	        $result = $xpath->query($query);
+
+			$aStyles = array();
+			 foreach ($result as $node)
+			 {
+			 	foreach ($node->attributes as $attrName => $attrNode)
+			  	{
+			  		if ($attrName == 'name')
+			  		{
+			  			$sName = $attrNode->value;
+			  		}
+
+			  		if ($attrName == 'style')
+			  		{
+			  			$sStyle = $attrNode->value;
+			  		}
+				}
+				$aStyles[$sName] = $sStyle;
+				$node->parentNode->removeChild($node);
+			}
+
+			 foreach ($aStyles as $sSelector=>$sStyle)
+			 {
+			 	$oElements = $xpath->query("//*[@class = '".$sSelector."']");
+			 	foreach ($oElements as $oElement)
+			 	{
+			 		$oElement->setAttribute('style',$sStyle);
+			 	}
+			 }
+
+			  $query = '//css';
+	        $result = $xpath->query($query);
+
+	        foreach($result as $node)
+	        {
+	        	$sSelector = $node->getAttributeNode('selector')->value;
+	        	$sXpath = CSS_Parser::cssToXpath($sSelector);
+	        	$sStyle = $node->textContent;
+	        	$nodesToStyle = $xpath->query($sXpath);
+	        	foreach ($nodesToStyle as $nodeToStyle)
+	        	{
+	        		$nodeToStyle->setAttribute('style', $sStyle);
+	        	}
+				$node->parentNode->removeChild($node);
+	        }
+
+			 $result = $xpath->query("//script");
+			  foreach ($result as $node)
+			 {
+			 	$aReport['javascript'][] =  $node->textContent;
+			 	$node->parentNode->removeChild($node);
 			 }
 
 
-		}
-			 return $bReport?$aReport:str_replace ( '<?xml version="1.0"?>' , "" , $oDOMDocument->saveXML());
 
+		 	$oElements = $xpath->query("//*[@*]");
+			foreach ($oElements as $oElement)
+		 	{
+		 		foreach ($oElement->attributes as $attrName => $attrNode)
+			  	{
+			  		if (strpos($attrName, 'on') === 0)
+			  		{
+			  			$aReport['events'][]= $node->textContent;
+			  			$oElement->removeAttribute($attrName);
+			  		}
+
+			  	}
+		 	}
+
+		 	/*remove form related things*/
+			$result = $xpath->query("//input");
+			  foreach ($result as $node)
+			 {
+			 	$aReport['input'][]=$node->textContent;
+			 	$node->parentNode->removeChild($node);
+			 }
+
+			$result = $xpath->query("//form");
+			foreach ($result as $node)
+			{
+				$aReport['form'][]=$node->textContent;
+				$oNewNode = new DOMElement('div');
+				$node->parentNode->replaceChild($oNewNode, $node);
+
+				foreach ($node->attributes as $attrName => $attrNode)
+			  	{
+			  		if ($attrName != 'action' && $attrName != 'method')
+			  		{
+			  			$oNewNode->setAttributeNode ($attrNode );
+
+			  		}
+			  	}
+
+			  	$x = $node->childNodes;
+
+				if ($x!=null)
+				{
+					foreach ($x as $childNode)
+					{
+						$oNewChild = $childNode->cloneNode(true);
+						$oNewNode->appendChild($oNewChild);
+					}
+				 }
+
+
+			}
+			 return $bReport?$aReport:str_replace ( '<?xml version="1.0"?>' , "" , $oDOMDocument->saveXML());
+		}
+		return null;
 	}
 
 	protected function _preProcessHTML($sHTML)
@@ -429,4 +432,21 @@ class Email_Template_Logic
 
 		return $aData;
 	}
+
+	public static function validateTemplateDetails($aTemplateDetails)
+	{
+		$aErrors = array();
+		trim($aTemplateDetails['email_text']) == ''?$aErrors[]= "Your template must have a text version.":null;
+		trim($aTemplateDetails['email_subject']) == ''?$aErrors[]= "Your template must have a subject.":null;
+		trim($aTemplateDetails['description']) == ''?$aErrors[]= "Your template must have a description.":null;
+		return $aErrors;
+	}
+
+
+
+	public function __get($sField)
+	{
+		return $sField == "_aVariables"?$this->getVariables():null;
+	}
+
 }

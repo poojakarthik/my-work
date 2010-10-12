@@ -149,12 +149,14 @@ class Email_Template_Type extends ORM_Cached
 
 	public function getTemplateVersionDetailsForCustomerGroup($iCustomerGroup)
 	{
-		$sSql = "SELECT et.id, e.name, count(ed.id) as version, max(ed.effective_datetime) as effective
-		FROM email_template_type e, email_template et, email_template_details ed
-		where et.email_template_type_id = e.id
-		and et.customer_group_id = $iCustomerGroup
-		and ed.email_template_id = et.id
-		group by ed.email_template_id";
+		$sSql = 'SELECT et.id,
+					e.name,
+					ed.effective_datetime,
+					COALESCE(ed.description, "There is No Current Version for this Template") as description
+					FROM email_template_type e
+					JOIN email_template et ON (et.email_template_type_id = e.id)
+					LEFT JOIN email_template_details ed ON (ed.email_template_id = et.id AND ed.effective_datetime<NOW() AND ed.end_datetime>NOW())
+					WHERE et.customer_group_id ='.$iCustomerGroup;
 		$oCustmerGroupQuery	= new Query();
 		$mCustomerGroupResult	= $oCustmerGroupQuery->Execute($sSql);
 		$aTemplateVersionDetails = array();

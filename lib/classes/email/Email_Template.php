@@ -81,12 +81,33 @@ class Email_Template extends ORM_Cached
 		{
 			$oTemplate	= new self($aTemplate);
 		}
-		else 
+		else
 		{
 			throw new Exception("Failed to get Email_Template for customer group & type. ".$oStmt->Error());
 		}
 		return $oTemplate;
 	}
+
+	function getVariablesForTemplate($iTemplateId)
+	{
+			$sSql = "select class_name
+					FROM email_template_type e, email_template et
+					WHERE e.id = et.email_template_type_id
+
+					and et.id = $iTemplateId";
+		$oQuery	= new Query();
+		$mResult	= $oQuery->Execute($sSql);
+		$sClassName = '';
+		while ($aRow = $mResult->fetch_assoc())
+		{
+			$sClassName =  $aRow['class_name'];
+		}
+
+
+		return call_user_func( array($sClassName,"getVariables"));
+
+	}
+
 
 	/**
 	 * _preparedStatement()

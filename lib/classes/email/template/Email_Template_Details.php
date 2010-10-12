@@ -34,7 +34,7 @@ class Email_Template_Details extends ORM_Cached
 		$sSql	= "SELECT id
 					FROM email_template_details
 					WHERE email_template_id = $oThis->email_template_id
-					AND effective_datetime>NOW()
+					AND effective_datetime>= Date(now())
 					AND end_datetime>effective_datetime";
 
 		$oQuery	= new Query();
@@ -52,12 +52,14 @@ class Email_Template_Details extends ORM_Cached
 
 	public static function getForTemplateId($iTemplateId)
 	{
-		$sSql = "SELECT et.id as template_id, ed.id as template_version_id, e.name, ed.created_timestamp, ed.effective_datetime
-				FROM email_template_type e, email_template et, email_template_details ed
+		$sSql = 'SELECT ed.description, ed.effective_datetime, ed.end_datetime, ed.created_timestamp, et.id as template_id, e.name,  ed.id as template_version_id, concat(ep.FirstName," ",ep.LastName) as employee, c.external_name as customergroup
+				FROM email_template_type e, email_template et, email_template_details ed, Employee ep, CustomerGroup c
 				where et.email_template_type_id = e.id
-				and et.id = $iTemplateId
+				and et.id = '.$iTemplateId.'
 				and ed.email_template_id = et.id
-				order by effective_datetime";
+				and ep.Id = ed.created_employee_id
+				and c.Id = et.customer_group_id
+				order by effective_datetime desc';
 		$oQuery	= new Query();
 		$mCustomerGroupResult	= $oQuery->Execute($sSql);
 		$aTemplateVersionDetails = array();
@@ -67,6 +69,29 @@ class Email_Template_Details extends ORM_Cached
 		}
 
 		return $aTemplateVersionDetails;
+	}
+
+
+
+
+public static function getVariablesForTemplateVersion($iTemplateDetailsId)
+	{
+		$sSql = "select class_name
+					FROM email_template_type e, email_template et, email_template_details ed
+					WHERE e.id = et.email_template_type_id
+					AND ed.email_template_id = et.id
+					and ed.id = $iTemplateDetailsId";
+		$oQuery	= new Query();
+		$mResult	= $oQuery->Execute($sSql);
+		$sClassName = '';
+		while ($aRow = $mResult->fetch_assoc())
+		{
+			$sClassName =  $aRow['class_name'];
+		}
+
+
+		return call_user_func( array($sClassName,"getVariables"));
+
 	}
 
 	protected static function getCacheName()
