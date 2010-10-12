@@ -2,26 +2,36 @@
 var Popup_Email_Text_Editor	= Class.create(Reflex_Popup, 
 {	
 	
-	initialize	: function($super, iTemplateDetailsId, sTemplateName, customerGroupName, iMode)
+	initialize	: function($super, iTemplateDetailsId, sTemplateName, customerGroupName, fnCallback, iTemplateId)
 	{
-			
-			
-			//this._fnCallback = fnCallback;
-			this._iTemplateDetailsId = iTemplateDetailsId;
-			this._iMode = iMode;
-			this._sTemplateName = sTemplateName;
-			this._sCustomerGroupName = customerGroupName;
-			// Image paths
 			Popup_Email_Text_Editor.ICON_IMAGE_SOURCE 	= '../admin/img/template/rebill.png';
 			Popup_Email_Text_Editor.CANCEL_IMAGE_SOURCE 	= '../admin/img/template/delete.png';
 			Popup_Email_Text_Editor.SAVE_IMAGE_SOURCE 	= '../admin/img/template/tick.png';
 			Popup_Email_Text_Editor.PREVIEW_IMAGE_SOURCE 	='../admin/img/template/magnifier.png';
-		$super(70);
+			$super(70);
+			debugger;
+			
+			this._fnCallback = fnCallback;
+			if (iTemplateDetailsId == null && iTemplateId!=null)
+			{
+				this._getTemplate(iTemplateId);
+			}
+			else
+			{				
+				this._iTemplateDetailsId = iTemplateDetailsId;			
+				this._sTemplateName = sTemplateName;
+				this._sCustomerGroupName = customerGroupName;
+				this._getTemplateDetails();			
+			}
+		
 		
 				this._oLoadingPopup	= new Reflex_Popup.Loading();
 				this._oLoadingPopup.display();
 		// Build content
 			this._oContent	= 	$T.div({class: 'popup-email-text-edit'},
+									$T.div({class: 'subject-description'}
+										// Content to come
+									),	
 									$T.div({class: 'tabgroup'}
 										// Content to come
 									),
@@ -37,15 +47,50 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 									)
 								);
 								
-			this._getTemplateDetails();					
+							
 			
 
 	},
 	
-	_getTemplateDetails: function()
+	_getTemplate: function(iTemplateId, oResponse)
 	{
-		
-		
+		if (typeof(oResponse)=='undefined')
+		{
+			var fnRequest     = jQuery.json.jsonFunction(this._getTemplate.bind(this,iTemplateId ), this.errorCallback.bind(this), 'Email_Text_Editor', 'getTemplate');
+			fnRequest(iTemplateId);
+		}
+		else
+		{
+			debugger;
+			
+			
+			var oTemplateDetails = {};
+			oTemplateDetails.email_template_id = iTemplateId;
+			oTemplateDetails.email_text = ' ';
+			oTemplateDetails.email_html = ' ';
+			oTemplateDetails.created_timestamp = null;
+			oTemplateDetails.created_employee_id = null;
+			oTemplateDetails.effective_datetime = null;
+			oTemplateDetails.email_subject = ' ';
+			oTemplateDetails.end_datetime = null;
+			oTemplateDetails.description = ' ';
+			oTemplateDetails.variables = oResponse.variables;
+			
+			
+			this._iTemplateDetailsId = null;			
+			this._sTemplateName = oResponse.oTemplateDetails.template_type.name;
+			this._sCustomerGroupName = oResponse.oTemplateDetails.customer_group.external_name;
+				
+			
+			
+			this._getVariablesSuccess({oTemplateDetails: oTemplateDetails, variables: oResponse.variables});
+		}
+	
+	},
+	
+	
+	_getTemplateDetails: function()
+	{		
 		var fnRequest     = jQuery.json.jsonFunction(this._getVariablesSuccess.bind(this), this.errorCallback.bind(this), 'Email_Text_Editor', 'getVariables');
 		fnRequest(this._iTemplateDetailsId);
 	},
@@ -100,7 +145,71 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 			this.defineVariableList(oTextVariableList, oVariables);
 			
 			
+			//add the subject and description text fields	
 			
+			
+			// var subjectDiv = oTabContainer.select('div.tab-row').first();
+			
+			
+			
+			
+			var oSpan = document.createElement('span');
+			oSpan.innerHTML = 'Email Subject';
+			oSpan.className = 'email-subject-label';
+			
+			this._oSubjectTextField = document.createElement('input');
+			this._oSubjectTextField.type = 'text';
+				this._oSubjectTextField.className = 'email-subject-input';
+				this._oSubjectTextField.size = 50;
+				
+			this._oSubjectTextField.value = this._oTemplateDetails.email_subject;
+				
+			//	subjectElementDiv.appendChild(oSpan );
+			//subjectElementDiv.appendChild(this._oSubjectTextField );
+			
+			var oDescriptionLabel  = document.createElement('span');
+			oDescriptionLabel.innerHTML = 'Description';
+			oDescriptionLabel.className = 'email-subject-label';
+			
+			this._oDescriptionTextField = document.createElement('input');
+			this._oDescriptionTextField.type = 'text';
+			this._oDescriptionTextField.size = 30;
+			this._oDescriptionTextField.className = 'email-subject-input';
+			this._oDescriptionTextField.value = this._sTemplateName + " - " + new Date().$format('d/m/Y');
+			//var subjectElementDiv = $T.div({class: 'email-subject-container'});
+					var oForm	= 	$T.div(	{class: 'email-subject-container'}	,					
+							$T.table({class: 'reflex input'},
+								$T.tbody(
+									
+									$T.tr(
+										$T.th({class: 'description'},oDescriptionLabel),
+										$T.td(
+																					
+											this._oDescriptionTextField
+											
+										)),
+										$T.tr(
+											$T.th(oSpan),
+											$T.td(
+												this._oSubjectTextField
+											)
+										)
+								)
+							)
+							
+							
+						);
+						
+						 var oContainer		= this._oContent.select('.subject-description').first();
+							oContainer.appendChild(oForm);
+			
+			//subjectElementDiv.appendChild(oDescriptionLabel );
+			//subjectElementDiv.appendChild(this._oDescriptionTextField );
+			
+			
+			//subjectDiv.appendChild(subjectElementDiv);	
+			
+			//end subject and description fields
 			
 
 			//define the content for the tab group
@@ -174,45 +283,12 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 			oTBody.appendChild(oTableRow);
 			this._oTabGroup.addTab("HTML", new Control_Tab("HTML", oTabContent));
 			
-			//add the subject text field next to the tabs
-			 var subjectDiv = oTabContainer.select('div.tab-row').first();
-			
-			var subjectElementDiv = document.createElement('div');
-			subjectElementDiv.className = 'email-subject-container';
-			
-			var oSpan = document.createElement('span');
-			oSpan.innerHTML = 'Email Subject';
-			oSpan.className = 'email-subject-label';
-			
-			this._oSubjectTextField = document.createElement('input');
-			this._oSubjectTextField.type = 'text';
-				this._oSubjectTextField.className = 'email-subject-input';
-				this._oSubjectTextField.size = 50;
-				
-			this._oSubjectTextField.value = this._oTemplateDetails.email_subject;
-				
-				subjectElementDiv.appendChild(oSpan );
-			subjectElementDiv.appendChild(this._oSubjectTextField );
-			
-			var oDescriptionLabel  = document.createElement('span');
-			oDescriptionLabel.innerHTML = 'Description';
-			oDescriptionLabel.className = 'email-subject-label';
-			
-			this._oDescriptionTextField = document.createElement('input');
-			this._oDescriptionTextField.type = 'text';
-			this._oDescriptionTextField.size = 30;
-			this._oDescriptionTextField.className = 'email-subject-input';
-			this._oDescriptionTextField.value = this._sTemplateName + " - " + new Date().$format('d/m/Y');
-			subjectElementDiv.appendChild(oDescriptionLabel );
-			subjectElementDiv.appendChild(this._oDescriptionTextField );
-			
-			
-			subjectDiv.appendChild(subjectElementDiv);	
+
 		
 		// Attach content and get data
-		var sPopupMode = this._iMode == Popup_Email_Text_Editor.CREATE?'Create New Version':(this._iMode == Popup_Email_Text_Editor.READ?'Read Only':'Edit');
+		//var sPopupMode = this._iMode == Popup_Email_Text_Editor.CREATE?'Create New Version':(this._iMode == Popup_Email_Text_Editor.READ?'Read Only':'Edit');
 		
-		this.setTitle('Email Text Editor - Template \'' + this._sTemplateName +'\'(version ' +this._iTemplateDetailsId + ')  for ' + this._sCustomerGroupName);
+		this.setTitle('Email Text Editor - Template \'' + this._sTemplateName + '\' for ' + this._sCustomerGroupName);
 		this.addCloseButton(this._close.bind(this));
 		this.setContent(this._oContent);
 		this._oLoadingPopup.hide();
@@ -326,18 +402,18 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		//this._oLoadingPopup	= new Reflex_Popup.Loading();
 		this._oLoadingPopup.display();
 		var fnRequest     = jQuery.json.jsonFunction(this._saveSuccess.bind(this), this.errorCallback.bind(this), 'Email_Text_Editor', 'save');
-		this._oTemplateDetails.email_text = this.oTextArea.value;
-		this._oTemplateDetails.email_html = this.oHTMLTextArea.value;
-		this._oTemplateDetails.email_subject = this._oSubjectTextField.value;
-		this._oTemplateDetails.description = this._oDescriptionTextField.value;
+		this._oTemplateDetails.email_text = this.oTextArea.value=='undefined'?'':this.oTextArea.value;
+		this._oTemplateDetails.email_html = this.oHTMLTextArea.value == 'undefined'?'':this.oHTMLTextArea.value;
+		this._oTemplateDetails.email_subject = this._oSubjectTextField.value== 'undefined'?'':this._oSubjectTextField.value;
+		this._oTemplateDetails.description = this._oDescriptionTextField.value== 'undefined'?'':this._oDescriptionTextField.value;
 		this._oTemplateDetails.id = this._iTemplateDetailsId;
-		fnRequest(this._oTemplateDetails, false, this._iMode);		
+		fnRequest(this._oTemplateDetails, false);		
 	},
 	
 	_save: function (oResponse)
 	{
 		
-		debugger;
+		
 		this._oLoadingPopup.display();
 		var fnRequest     = jQuery.json.jsonFunction(this._saveSuccess.bind(this), this.errorCallback.bind(this), 'Email_Text_Editor', 'save');
 		this._oTemplateDetails.email_text = this.oTextArea.value;
@@ -345,8 +421,8 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		this._oTemplateDetails.effective_datetime = oResponse.effectiveDate;		
 		this._oTemplateDetails.email_subject = this._oSubjectTextField.value;
 		this._oTemplateDetails.description = this._oDescriptionTextField.value;
-		this._iMode == Popup_Email_Text_Editor.EDIT?this._oTemplateDetails.id = this._iTemplateDetailsId:null;
-		fnRequest(oResponse, true, this._iMode);
+		//this._iMode == Popup_Email_Text_Editor.EDIT?this._oTemplateDetails.id = this._iTemplateDetailsId:null;
+		fnRequest(oResponse, true);
 		//fnRequest(this._oTemplateDetails, true, this._iMode);	
 	},
 	
@@ -356,11 +432,13 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	
 		if (oResponse.Confirm)
 		{
+			this._fnCallback();
 			this._oTemplateDetails = oResponse.oTemplateDetails;
 			this.oHTMLTextArea.value  = this._oTemplateDetails.email_html;
 			this.oTextArea.value = this._oTemplateDetails.email_text;
-			this._oLoadingPopup.hide();				
-			alert('your template was saved successfully');
+			this._oLoadingPopup.hide();	
+			this.hide();	
+			Reflex_Popup.alert("The template was saved successfully", {sTitle: 'Email Template Save Success'});
 		}
 		else
 		{

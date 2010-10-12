@@ -3,10 +3,13 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 {
 	initialize	: function($super, oResponse, fnCallback)
 	{
-		$super(30);
+		$super(50);
+		this._bFutureVersionsComboHasValues = false;
+		this._aErrors = [];
 		this._oLoadingPopup	= new Reflex_Popup.Loading();
 		this._fnCallback = fnCallback;
 		this._oResponse = oResponse;
+		
 		this._buildUI();
 		
 	},
@@ -35,32 +38,31 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 	
 	_buildUI	: function(sHTML)
 	{
-		var oTemplateSelect		= 	$T.div({class: 'popup-email-html-preview'},
-									$T.div({class: 'report'}
-										
-									),
-									$T.div({class: 'date'}
-										
-									),
-									
-									$T.div({class: 'buttons'},
-										$T.button({class: 'icon-button'},
-											$T.img({src: Popup_Email_Text_Editor.SAVE_IMAGE_SOURCE, alt: '', title: 'Save'}),
-											$T.span('Save')
-										).observe('click', this._save.bind(this)),
-										$T.button({class: 'icon-button'},
-											$T.img({src: Popup_Email_Text_Editor.CANCEL_IMAGE_SOURCE, alt: '', title: 'Cancel'}),
-											$T.span('Cancel')
-										).observe('click', this._close.bind(this)),
-										$T.button({class: 'icon-button'},
-											$T.img({src: Popup_Email_Text_Editor.PREVIEW_IMAGE_SOURCE, alt: '', title: 'Preview'}),
-											$T.span('Preview')
-										).observe('click', this._preview.bind(this))
-									)
-									
-
-									
-								);
+		var oTemplateSelect		= 	$T.div(	{class: 'popup-email-html-preview'},
+											
+											$T.div({class: 'report'}),
+											$T.div({class: 'date'}),
+											$T.div({class: 'footer'},
+													$T.span({class: 'preview-button'},
+															$T.button
+																	({class: 'icon-button'},											
+																	$T.img({src: Popup_Email_Text_Editor.PREVIEW_IMAGE_SOURCE, alt: '', title: 'Preview'}),
+																	$T.span('Preview')																	
+																	).observe('click', this._preview.bind(this))
+															
+															),
+													$T.span({class: 'save-button'},
+															this._saveButton = $T.button({class: 'icon-button'},
+																$T.img({src: Popup_Email_Text_Editor.SAVE_IMAGE_SOURCE, alt: '', title: 'Save'}),
+																$T.span('Save')
+																	).observe('click', this._save.bind(this)),
+															$T.button({class: 'icon-button'},
+																$T.img({src: Popup_Email_Text_Editor.CANCEL_IMAGE_SOURCE, alt: '', title: 'Cancel'}),
+																$T.span('Cancel')
+																	).observe('click', this._close.bind(this))
+															)
+													)
+											);
 		this._oTemplateSelect	= oTemplateSelect;		
 		
 			
@@ -69,30 +71,59 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 		
 		var oDateSection = oTemplateSelect.select('div.date').first();
 		oDateSection.appendChild(this._buildDateContent());
-						
-		this.setTitle('Email Save Confirm');
+		this._comboFuture.populate();				
+		this.setTitle('Save Email Template');
 		
 		this.addCloseButton(this._close.bind(this));
 		this.setContent(oTemplateSelect);
 		this.display();
 	},
 	
+	// _createErrorList: function()
+	// {
+			// this.oErrorDiv = document.createElement('div');		
+	
+		// var ul = document.createElement('ul');
+		// var aKeys = Object.keys(this._oResponse.Errors);
+		
+		
+		// var header = document.createElement('div');
+		// header.className = 'email-confirm-report-header';
+		// header.innerHTML = 'Your new template version contains the following errors:';
+		
+		
+		// var bErrors = false;
+		// for (var i = 0; i < this._oResponse.Errors.length; i++)
+		// {
+			// bErrors = true;
+			// var li = document.createElement('li');
+			// li.innerHTML = this._oResponse.Errors[i];
+			// ul.appendChild(li);
+			
+		// }
+				
+		// if (bErrors)
+		// {
+			// this.oErrorDiv.appendChild(header);
+			// this.oErrorDiv.appendChild(ul);
+		// }
+		// return this.oErrorDiv;
+	
+	
+	// },
+	
 	_createReport : function()
 	{
 		
-		this.oChangeReportDiv = document.createElement('div');
-		
-		
-			
-		
-		
+		this.oChangeReportDiv = document.createElement('div');		
 	
 		var ul = document.createElement('ul');
 		var aKeys = Object.keys(this._oResponse.Report);
 		
 		
 		var header = document.createElement('div');
-		header.innerHTML = 'In order to make it render consistently across different mail clients, the HTML you supplied will be modified as follows:';
+		header.className = 'email-confirm-report-header';
+		header.innerHTML = 'To ensure consistent rendering in different mail clients, your HTML will be modified:';
 		
 		
 		var bChanges = false;
@@ -122,7 +153,7 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 		// Fields
 		this._oChangeDateTime			= this._createField('changeDate');
 		this._oChangeDateTime.addOnChangeCallback(this._dateChanged.bind(this));
-		
+		this._oChangeDateTime.disableInput();
 		this._oChangeDateTimeHidden	= $T.input({type: 'hidden', name: 'change_datetime'});
 		this._oChangeNow				= this._createField('change_now');
 		this._oChangeNow.addOnChangeCallback(this._changeNowChanged.bind(this));
@@ -131,7 +162,7 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 		this._radioSelect = document.createElement('input');
 		this._radioSelect.type = 'radio';
 		this._radioSelect.value = 'selected_date';
-		this._radioSelect.checked = true;
+		this._radioSelect.checked = false;
 		
 		this._radioSelect.label = 'select date';
 		
@@ -143,7 +174,8 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 		this._radioNow = document.createElement('input');
 		this._radioNow.type = 'radio';
 		this._radioNow.value = 'date_now';
-		this._radioNow.checked = false;
+		this._radioNow.checked = true;
+		this._oResponse.oTemplateDetails.effective_datetime = new Date().$format(Popup_Email_Save_Confirm.FIELD_CONFIG.changeDate.oConfig.sDateFormat);
 		
 		this._radioNow.label = 'Now';
 		
@@ -154,11 +186,14 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 		
 		this._comboFuture = Control_Field.factory('select',{sLabel: 'Select End Date',fnPopulate: this.getFutureVersions.bind(this),mEditable	: true,
 											mMandatory	: true,});
+		this._comboFuture.setVisible(false);
 		this._comboFuture.setRenderMode(Control_Field.RENDER_MODE_EDIT);
 		this._comboFuture.disableValidationStyling();
 		this._comboFuture.addOnChangeCallback(this._endDateChanged.bind(this));
+		
 		this._comboFutureLabel = document.createElement('span');
 		this._comboFutureLabel.innerHTML = 'End Date';
+		this._comboFutureLabel.style.display = 'none';
 		// File upload form
 		var oForm	= 	$T.div(	{class: 'email-template-effective-date-select'}	,					
 							$T.table({class: 'reflex input'},
@@ -167,22 +202,22 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 									$T.tr(
 										$T.th('Effective Date'),
 										$T.td(
-											this._radioSelect,
-											$T.span('Select Date'),
-											this._oChangeDateTime.getElement()
-											
+										
+										this._radioNow,
+											$T.span('Immediately')											
 										)),
 										$T.tr(
 										$T.th(''),
 										$T.td(
-											this._radioNow,
-											$T.span('Immediately')
+											this._radioSelect,
+											this._oChangeDateTime.getElement()
 										)
 									),
 									$T.tr(
 										$T.th(this._comboFutureLabel),
 										$T.td(
-											this._comboFuture.getElement()
+											this._comboFuture.getElement(),
+										this._endDateMessage = $T.div(	{class: 'email-template-enddate-message'})	
 										)
 									)
 								)
@@ -194,10 +229,62 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 		return $T.div(oForm);
 	},
 	
+	_formatDate: function(sDate)
+	{
+		return new Date(Date.$parseDate(sDate,'Y-m-d').getTime()).$format('j F Y');	
+	},
+	
 	_endDateChanged : function()
 	{
 		//this._oResponse.oTemplateDetails.end_datetime = 	this._comboFuture.getElementValue();
 		this._oResponse.oTemplateDetails.end_datetime = this._comboFuture.getElementValue();
+		var sEndDateDescription = '';
+		var iNumberOfAffectedVersions = 0;
+		
+		if (typeof (this._futureVersions) != 'undefined' && this._futureVersions!=null)
+		{
+			for (var i=0;i< this._futureVersions.length;i++)
+			{
+						
+				if (this._futureVersions[i].effective_datetime>this._oResponse.oTemplateDetails.effective_datetime &&  this._futureVersions[i].effective_datetime<this._comboFuture.getElementValue())
+				{
+					sEndDateDescription+= "<li>" + this._futureVersions[i].description + "(From: " + this._formatDate(this._futureVersions[i].effective_datetime) + ")</li>";
+					iNumberOfAffectedVersions++;
+				}
+				else if (this._futureVersions[i].effective_datetime==this._oResponse.oTemplateDetails.effective_datetime)
+				{
+					sEndDateDescription+= "<li>" + this._futureVersions[i].description + "(From: " + this._formatDate(this._futureVersions[i].effective_datetime) + ")</li>";
+					iNumberOfAffectedVersions++;
+				
+				}
+			
+			}
+		}
+		var sEndDateMessage = '';
+		iNumberOfAffectedVersions>1?sEndDateMessage = "<span>The following versions will be cancelled:</span><ul>" + sEndDateDescription:iNumberOfAffectedVersions==1?sEndDateMessage = "<span>The following version will be cancelled:</span><ul>" + sEndDateDescription:null;
+		sEndDateMessage!=''?sEndDateMessage+='</ul>':null;
+		this._endDateMessage.innerHTML = sEndDateMessage;
+	
+	},
+	
+	_setEndateMessage: function()
+	{
+		var sEndDateDescription = '';
+		if (typeof (this._futureVersions) != 'undefined' && this._futureVersions!=null)
+		{
+			for (var i=0;i< this._futureVersions.length;i++)
+			{
+						
+				if (this._futureVersions[i].effective_datetime==this._oResponse.oTemplateDetails.effective_datetime)
+				{
+					sEndDateDescription+= "<li>" + this._futureVersions[i].description + "(From: " + this._formatDate(this._futureVersions[i].effective_datetime) + ")</li>";
+					
+				}
+			
+			}
+		}
+		sEndDateDescription!=''?sEndDateMessage = "<span>The following version will be cancelled:</span><ul>" + sEndDateDescription + "</span></ul>":null;
+		this._endDateMessage.innerHTML = sEndDateMessage;
 	
 	},
 	
@@ -244,31 +331,61 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 		return oField;
 	},
 	
-	
+	_validate: function()
+	{
+		this._oChangeDateTime.setMandatory(true);
+		var aErrors = [];
+		debugger;
+		for (var i = 0; i < this._oResponse.Errors.length; i++)
+		{
+			aErrors.push(this._oResponse.Errors[i]);
+		
+		}
+		
+		
+		if (typeof (this._oResponse.oTemplateDetails.effective_datetime) == 'undefined')
+		{
+			aErrors.push('you must specify the effective date');		
+		}
+		else if (!this._oChangeDateTime.validate() && !this._radioNow.checked)
+		{
+			aErrors.push('You must specify a valid effective date.');
+		}
+		else if (this._bFutureVersionsComboHasValues && (typeof(this._oResponse.oTemplateDetails.end_datetime)=='undefined' ||  this._oResponse.oTemplateDetails.end_datetime == null))
+		{			
+			aErrors.push('you must either specify an end date, or select an effective date further into the future.');
+		}
+		this._oChangeDateTime.setMandatory(false);
+		return aErrors;
+	},
 	
 	
 	
 	_save: function()
 	{		
 		this._bFutureVersionsComboHasValues?null:this._oResponse.oTemplateDetails.end_datetime=Popup_Email_Save_Confirm.END_OF_TIME;
+				
 		
 		if (this._radioNow.checked)
 		{
 			this._oResponse.oTemplateDetails.effective_datetime = new Date().$format(Popup_Email_Save_Confirm.FIELD_CONFIG.changeDate.oConfig.sDateFormat);		
 		}
 		
-		if (typeof (this._oResponse.oTemplateDetails.effective_datetime) == 'undefined')
+		var aErrors = this._validate();	
+		if (aErrors.length>0)
 		{
-			alert('you must specify the effective date');
-		}
-		else if (this._bFutureVersionsComboHasValues && (typeof(this._oResponse.oTemplateDetails.end_datetime)=='undefined' ||  this._oResponse.oTemplateDetails.end_datetime == null))
-		{
-			alert('you must either specify an end date, or select an effective date further into the future.');
-		
-		}
-		else if (!this._oChangeDateTime.validate() && !this._radioNow.checked )
-		{
-			alert ('No valid effective date was entered.');
+			var oErrors = document.createElement("ul");
+			for (var i=0;i<aErrors.length;i++)
+			{
+				var li = document.createElement("li");
+				var span = document.createElement("span");
+				span.innerHTML = aErrors[i];
+				li.appendChild(span)
+				oErrors.appendChild(li);
+					
+			}
+			
+			Reflex_Popup.alert(oErrors, {sTitle: 'Email Template Save Errors'});
 		
 		}
 		else
@@ -286,7 +403,7 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 					{
 						//debugger;
 						//sEndDate = new Date(new Date(this._futureVersions[i].effective_datetime).getTime()-1000).$format(Popup_Email_Save_Confirm.FIELD_CONFIG.changeDate.oConfig.sDateFormat);
-						sEndDate = new Date(Date.$parseDate(this._futureVersions[i].effective_datetime,'Y-m-d H:i:s').getTime()-1000).$format(Popup_Email_Save_Confirm.FIELD_CONFIG.changeDate.oConfig.sDateFormat);
+						sEndDate = new Date(Date.$parseDate(this._futureVersions[i].effective_datetime,'Y-m-d').getTime()-1000).$format(Popup_Email_Save_Confirm.FIELD_CONFIG.changeDate.oConfig.sDateFormat);
 						this._oResponse.oTemplateDetails.end_datetime >this._futureVersions[i].effective_datetime?this._futureVersions[i].end_datetime = sEndDate:null;
 					
 					}
@@ -343,13 +460,15 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 	getFutureVersions	: function(fnCallback, oResponse)
 	{		
 		var aOptions	= [];
+		this._comboFuture
 		if (typeof this._futureVersions != 'undefined')
 		{
+			this._comboFuture.emptyList();
 			fnCallback(this._createSelectList());
 			//this._comboFuture.populate();
 			this._bFutureVersionsComboHasValues?this._comboFuture.setVisible(true):this._comboFuture.setVisible(false);
 			this._bFutureVersionsComboHasValues?this._comboFutureLabel.style.display = '':this._comboFutureLabel.style.display = 'none';
-				this._comoFutureLabel
+			this._bStartDateEqualsFutureStartDate?this._endDateChanged():null;	
 		}
 		else if (typeof oResponse == 'undefined')
 		{
@@ -364,7 +483,7 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 		else
 		{
 			// Build array of option elements
-			
+			this._comboFuture.emptyList();
 			if (!oResponse.Success)
 			{
 				// Failed
@@ -375,21 +494,25 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 				// Success
 				this._futureVersions = oResponse.aTemplateDetails;
 				fnCallback(this._createSelectList());
-				this._comboFuture.setVisible(false);
-				this._comboFutureLabel.style.display = 'none';				
+				this._bFutureVersionsComboHasValues?this._comboFuture.setVisible(true):this._comboFuture.setVisible(false);
+				this._bFutureVersionsComboHasValues?this._comboFutureLabel.style.display = '':this._comboFutureLabel.style.display = 'none';
+				this._bStartDateEqualsFutureStartDate?this._endDateChanged():null;			
 			
 			}
 		
 		}
+		
+		
 		
 	},
 		
 		_createSelectList: function()
 		{
 			this._bFutureVersionsComboHasValues = false;
+			this._bStartDateEqualsFutureStartDate = false;
 			
 			var aOptions	= [$T.option({value: Popup_Email_Save_Confirm.END_OF_TIME},
-							"No end date. This will cancel all versions with an effective date greater than the selected start date."
+							"No end date."
 					)];
 			var oTemplate	= null;
 								
@@ -413,13 +536,26 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 						this._bFutureVersionsComboHasValues = true;
 						aOptions.push(
 							$T.option({value: oTemplate.effective_datetime},
-									oTemplate.effective_datetime + " (the start date of version " + oTemplate.description + ")"
+									this._formatDate(oTemplate.effective_datetime) + " ("+ oTemplate.description + ")"
 							)
 						);	
-					}		
+					}
+					else if (oTemplate.effective_datetime==this._oResponse.oTemplateDetails.effective_datetime)
+					{
+						this._bStartDateEqualsFutureStartDate = true;
+					
+					}
 				}
 			}
 			return this._bFutureVersionsComboHasValues?aOptions:[];
+		},
+		
+		_displayEndDateCombo: function()
+		{
+		
+		
+		
+		
 		}
 		
 		
@@ -433,7 +569,7 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 // These static properties require references to other static properties (at time of definition) so they are separate
 Object.extend(Popup_Email_Save_Confirm,
 {
-	END_OF_TIME		: "9999-12-31 23:59:59",
+	END_OF_TIME		: "9999-12-31",
 	
 	FIELD_CONFIG	:
 	{
@@ -443,8 +579,8 @@ Object.extend(Popup_Email_Save_Confirm,
 			oConfig	:
 			{
 				sLabel		: 'Change On', 
-				sDateFormat	: 'Y-m-d H:i:s', 
-				bTimePicker	: true,
+				sDateFormat	: 'Y-m-d', 
+				bTimePicker	: false,
 				iYearStart	: 2010,
 				iYearEnd	: new Date().getFullYear() + 1,
 				mMandatory	: false,
