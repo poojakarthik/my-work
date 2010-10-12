@@ -3232,6 +3232,12 @@ td.contact-view-notes #ActionsAndNotesListContainer > div.GroupedContent
 	margin-right	: 0em;
 }
 
+td.contact-view-notes .section .section-header-options button.icon-button
+{
+	position	: relative;
+	bottom		: 0.25em;
+}
+
 table.contact-view > tbody > tr > td
 {
 	width	: 50%;
@@ -3395,10 +3401,7 @@ div.section > div.section-header > div.section-header-options
 
 	position	: absolute;
 	right		: 0em;
-	bottom		: 0.25em;
-
-	/*float			: right;
-	padding-bottom	: 0.25em;*/
+	bottom		: 0em;
 }
 
 div.section > div.section-header > div.section-header-title > h2,
@@ -3497,7 +3500,7 @@ div.section-expandable-header-options > ul.reset > li
 	vertical-align	: middle;
 }
 
-div.section-expandable-header-options div.followup-configure-list-pagination
+div.section-header-options div.followup-configure-list-pagination
 {
 	position	: relative;
 	bottom		: 0.25em;
@@ -3707,6 +3710,12 @@ div.payment-method-details-description
 div.payment-methods-list
 {
 	padding	: 1em;
+}
+
+div.payment-methods-list .section .section-header-options button.icon-button
+{
+	position	: relative;
+	bottom		: 0.25em;
 }
 
 div.payment-methods-list > div.section > div.section-content > table.reflex
@@ -4640,6 +4649,8 @@ div.followup-list-all div.section-content > table.reflex
 div.followup-list-all-pagination
 {
 	padding-right	: 1em;
+	position		: relative;
+	bottom			: 0.25em;
 }
 
 span.pagination-loading
@@ -6174,6 +6185,13 @@ div.correspondence-run-ledger div.section-content > table.reflex,
 	margin-left		: 0em;
 	margin-right	: 0em;
 	width			: 100%;
+}
+
+.popup-correspondence-ledger .section .section-header-options ul.reset,
+.correspondence-ledger-for-run .section .section-header-options ul.reset
+{
+	position	: relative;
+	bottom		: 0.25em;
 }
 
 div.section > div.section-header > div.section-header-title span.pagination-info

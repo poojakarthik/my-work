@@ -12,61 +12,11 @@ var Popup_Invoice_Rerate	= Class.create(Reflex_Popup,
 		this._hServices				= null;
 		
 		this._showLoading();
-		this._checkForUnarchivedCDRs();
+		//this._checkForUnarchivedCDRs();
+		this._buildUI();
 	},
 	
 	// Private
-	_checkForUnarchivedCDRs	: function()
-	{
-		Flex.Invoice.hasUnarchivedCDRs(this._iInvoiceId, this._getInvoice.bind(this));
-	},
-	
-	_getInvoice	: function(bHasUnarchivedCDRs)
-	{
-		if (bHasUnarchivedCDRs === true)
-		{
-			// Yes, get invoice details
-			Flex.Invoice.getForId(this._iInvoiceId, this._invoiceLoaded.bind(this));
-		}
-		else if (bHasUnarchivedCDRs === false)
-		{
-			// No
-			Reflex_Popup.alert('This CDR Usage data for this invoice has been archived, it cannot be rerated.');
-			this._hideLoading();
-		}
-		else
-		{
-			// Error
-			Reflex_Popup.alert('There was an error accessing the database, please contact YBS for assistance.', {sTitle: 'Error'});
-			this._hideLoading();
-		}
-	},
-	
-	_invoiceLoaded	: function(oInvoice)
-	{
-		this._oInvoice	= oInvoice;
-		Flex.Account.getForId(oInvoice.Account, this._accountLoaded.bind(this));
-	},
-	
-	_accountLoaded	: function(oAccount)
-	{
-		this._oAccount	= oAccount;
-		Flex.Invoice.getServicesForInvoice(this._iInvoiceId, this._servicesLoaded.bind(this));
-	},
-	
-	_servicesLoaded	: function(hServices)
-	{
-		this._hServices	= hServices;
-		
-		if (this._iRatePlanOverrideId)
-		{
-			Flex.Plan.getForId(this._iRatePlanOverrideId, this._ratePlanOverrideLoaded.bind(this));
-		}
-		else
-		{
-			this._buildUI();
-		}
-	},
 	
 	_ratePlanOverrideLoaded	: function(oRatePlan)
 	{
@@ -74,8 +24,71 @@ var Popup_Invoice_Rerate	= Class.create(Reflex_Popup,
 		this._buildUI();
 	},
 	
-	_buildUI	: function()
+	_buildUI	: function(bHasUnarchivedCDRs, oInvoice, oAccount, hServices, oRatePlan)
 	{
+		// Data preparation
+		if (typeof bHasUnarchivedCDRs == 'undefined')
+		{
+			// Step 1: Check if the invoice has unarchived CDR records
+			Flex.Invoice.hasUnarchivedCDRs(this._iInvoiceId, this._buildUI.bind(this));
+			return;
+		}
+		else if (typeof oInvoice == 'undefined')
+		{
+			// Step 2: Get the invoice data
+			if (bHasUnarchivedCDRs === true)
+			{
+				// Yes, get invoice details
+				Flex.Invoice.getForId(this._iInvoiceId, this._buildUI.bind(this, bHasUnarchivedCDRs));
+			}
+			else
+			{
+				if (bHasUnarchivedCDRs === false)
+				{
+					// No
+					Reflex_Popup.alert('This CDR Usage data for this invoice has been archived, it cannot be rerated.');
+				}
+				else
+				{
+					// Error
+					Reflex_Popup.alert('There was an error accessing the database, please contact YBS for assistance.', {sTitle: 'Error'});
+				}				
+				this._hideLoading();
+			}
+			return;
+		}
+		else if (typeof oAccount == 'undefined')
+		{
+			// Step 3: Get the account data
+			Flex.Account.getForId(oInvoice.Account, this._buildUI.bind(this, bHasUnarchivedCDRs, oInvoice));
+			return;
+		}
+		else if (typeof hServices == 'undefined')
+		{
+			// Step 4: Get the service information for the account/invoice
+			Flex.Invoice.getServicesForInvoice(this._iInvoiceId, this._buildUI.bind(this, bHasUnarchivedCDRs, oInvoice, oAccount));
+			return;
+		}
+		else if (typeof oRatePlan == 'undefined')
+		{
+			// Step 5: Get the rate plan information (if override id provided)
+			if (this._iRatePlanOverrideId)
+			{
+				Flex.Plan.getForId(this._iRatePlanOverrideId, this._buildUI.bind(this, bHasUnarchivedCDRs, oInvoice, oAccount, hServices));
+				return;
+			}
+			else
+			{
+				// Continue on to buildUI
+			}
+		}
+		
+		// Step 6: Build UI
+		this._oInvoice			= oInvoice;
+		this._oAccount			= oAccount;
+		this._hServices			= hServices;
+		this._oRatePlanOverride	= oRatePlan;
+		
 		var oDetailsSection	= new Section(false, 'invoice-details');
 		oDetailsSection.setTitleText('Invoice Details');
 		oDetailsSection.setContent(
@@ -260,9 +273,12 @@ var Popup_Invoice_Rerate	= Class.create(Reflex_Popup,
 	
 	_rerateComplete	: function(oNewInvoice, oOldInvoice, mDebugLog)
 	{
-		this._hideLoading();
-		this.hide();
-		new Popup_Invoice_Rerate_Summary(oNewInvoice, oOldInvoice, mDebugLog, !this._oRatePlanOverride);
+		if (oNewInvoice && oOldInvoice)
+		{
+			this._hideLoading();
+			this.hide();
+			new Popup_Invoice_Rerate_Summary(oNewInvoice, oOldInvoice, mDebugLog, !this._oRatePlanOverride);
+		}
 	},
 	
 	_ajaxError	: function(oResponse, sDescription)

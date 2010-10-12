@@ -24,7 +24,7 @@ var Account	= Class.create
 			// Handle response
 			if (!oResponse.bSuccess)
 			{
-				Reflex_Popup.alert(oResponse.sMessage + (oResponse.sDebug !== '' ? oResponse.sDebug : ''), {sTitle: 'Error'});
+				Reflex_Popup.alert(oResponse.sMessage + (oResponse.sDebug !== '' ? ' -- DEBUG LOG: ' + oResponse.sDebug : ''), {sTitle: 'Error'});
 				return;
 			}
 			

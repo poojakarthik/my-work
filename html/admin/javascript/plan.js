@@ -182,7 +182,7 @@ var Plan	= Class.create
 			// Handle response
 			if (!oResponse.bSuccess)
 			{
-				Reflex_Popup.alert(oResponse.sMessage + ((oResponse.sDebug != '') ? ' DEBUG LOG: ' + oResponse.sDebug : ''));
+				Reflex_Popup.alert(oResponse.sMessage + ((oResponse.sDebug != '') ? ' -- DEBUG LOG: ' + oResponse.sDebug : ''));
 				fnCallback(null);
 				return;
 			}
@@ -206,7 +206,7 @@ var Plan	= Class.create
 			// Handle response
 			if (!oResponse.bSuccess)
 			{
-				Reflex_Popup.alert(oResponse.sMessage + ((oResponse.sDebug != '') ? ' DEBUG LOG: ' + oResponse.sDebug : ''));
+				Reflex_Popup.alert(oResponse.sMessage + ((oResponse.sDebug != '') ? ' -- DEBUG LOG: ' + oResponse.sDebug : ''));
 				fnCallback(null);
 				return;
 			}
@@ -230,7 +230,7 @@ var Plan	= Class.create
 			// Handle response
 			if (!oResponse.bSuccess)
 			{
-				Reflex_Popup.alert(oResponse.sMessage + ((oResponse.sDebug != '') ? ' DEBUG LOG: ' + oResponse.sDebug : ''));
+				Reflex_Popup.alert(oResponse.sMessage + ((oResponse.sDebug != '') ? ' -- DEBUG LOG: ' + oResponse.sDebug : ''));
 				fnCallback(null);
 				return;
 			}

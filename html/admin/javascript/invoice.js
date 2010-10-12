@@ -23,7 +23,7 @@ var Invoice	= Class.create
 		{
 			if (!oResponse.Success)
 			{
-				Reflex_Popup.alert(oResponse.sMessage + ((oResponse.strDebug != '') ? ' DEBUG LOG: ' + oResponse.strDebug : ''));
+				Reflex_Popup.alert(oResponse.sMessage + ((oResponse.strDebug != '') ? ' -- DEBUG LOG:' + oResponse.strDebug : ''));
 				fnCallback(null);
 				return;
 			}
@@ -46,7 +46,7 @@ var Invoice	= Class.create
 		{
 			if (!oResponse.bSuccess)
 			{
-				Reflex_Popup.alert(oResponse.sMessage + ((oResponse.sDebug != '') ? ' DEBUG LOG: ' + oResponse.sDebug : ''));
+				Reflex_Popup.alert(oResponse.sMessage + ((oResponse.sDebug != '') ? ' -- DEBUG LOG: ' + oResponse.sDebug : ''));
 				fnCallback(null);
 				return;
 			}
@@ -70,7 +70,7 @@ var Invoice	= Class.create
 		{
 			if (!oResponse.bSuccess)
 			{
-				Reflex_Popup.alert(oResponse.sMessage + ((oResponse.sDebug != '') ? ' DEBUG LOG: ' + oResponse.sDebug : ''));
+				Reflex_Popup.alert(oResponse.sMessage + ((oResponse.sDebug != '') ? ' -- DEBUG LOG: ' + oResponse.sDebug : ''));
 				fnCallback(null);
 				return;
 			}
@@ -94,7 +94,7 @@ var Invoice	= Class.create
 		{
 			if (!oResponse.bSuccess)
 			{
-				Reflex_Popup.alert(oResponse.sMessage + ((oResponse.sDebug != '') ? ' DEBUG LOG: ' + oResponse.sDebug : ''));
+				Reflex_Popup.alert(oResponse.sMessage + ((oResponse.sDebug != '') ? ' -- DEBUG LOG: ' + oResponse.sDebug : ''));
 				fnCallback(null);
 				return;
 			}

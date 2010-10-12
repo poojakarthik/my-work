@@ -48,15 +48,15 @@ var Popup_Correspondence_Run_Batch_Ledger	= Class.create(Reflex_Popup,
 		);
 		
 		oSection.addToHeaderOptions(
-			$T.li('From: ', oMinDateTime.getElement())
+			$T.div('From: ', oMinDateTime.getElement())
 		);
 		
 		oSection.addToHeaderOptions(
-				$T.li('To: ', oMaxDateTime.getElement())
+			$T.div('To: ', oMaxDateTime.getElement())
 		);
 		
 		oSection.addToHeaderOptions(
-			$T.li(
+			$T.div(
 				$T.button({class: 'icon-button'},
 					'Search'	
 				).observe('click', this._filterResults.bind(this))

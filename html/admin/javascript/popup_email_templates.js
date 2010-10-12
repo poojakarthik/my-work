@@ -263,7 +263,7 @@ var Popup_Email_Templates	= Class.create(Reflex_Popup,
 	
 	_doEdit	: function(sTemplateName, customerGroupName,iTemplateId) 
 	{
-		var fnRequest     = jQuery.json.jsonFunction(this._getTemplateDetailsSuccess.bind(this, sTemplateName, customerGroupName), Popup_Email_Template_Select._ajaxError.bind(this), 'Email_Text_Editor', 'getTemplateDetails');
+		var fnRequest     = jQuery.json.jsonFunction(this._getTemplateDetailsSuccess.bind(this, sTemplateName, customerGroupName), Popup_Email_Templates._ajaxError.bind(this), 'Email_Text_Editor', 'getTemplateDetails');
 		fnRequest(iTemplateId);		
 	},
 	
@@ -360,5 +360,18 @@ Object.extend(Popup_Email_Templates,
 {
 	MAX_RECORDS_PER_PAGE	: 10,
 	DATA_SET_DEFINITION		: {sObject: 'Email_Text_Editor', sMethod: 'getTemplates'},
-
+	
+	_ajaxError	: function(oResponse)
+	{
+		var oConfig	= {sTitle: 'Error'};
+		
+		if (oResponse.Message)
+		{
+			Reflex_Popup.alert(oResponse.Message, oConfig);
+		}
+		else if (oResponse.ERROR)
+		{
+			Reflex_Popup.alert(oResponse.ERROR, oConfig);
+		}
+	},
 });

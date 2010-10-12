@@ -6,22 +6,24 @@ var Popup_Rate_Plan_Test	= Class.create(Reflex_Popup,
 		$super(35);
 		
 		this._showLoading();
+	
+		this._iRatePlanId	= iRatePlanId;
+		this._oRatePlan		= null;
 		
-		this._oRatePlan	= null;
-		
-		Flex.Plan.getForId(iRatePlanId, this._ratePlanLoaded.bind(this));
+		this._buildUI();
 	},
 	
 	// Private
 	
-	_ratePlanLoaded	: function(oRatePlan)
+	_buildUI	: function(oRatePlan)
 	{
+		if (typeof oRatePlan == 'undefined')
+		{
+			Flex.Plan.getForId(this._iRatePlanId, this._buildUI.bind(this));
+			return;
+		}
+		
 		this._oRatePlan	= oRatePlan;
-		this._buildUI();
-	},
-	
-	_buildUI	: function()
-	{
 		this._hideLoading();
 		
 		// Create control fields

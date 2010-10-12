@@ -14,7 +14,7 @@ var Popup_Interim_First_Invoice_Commit_And_Send	= Class.create(Reflex_Popup,
 	
 	// Private
 	
-	_buildUI	: function(oResponse)
+	_buildUI	: function()
 	{
 		// Control field
 		var oDateSelect	= new Control_Field_Select();
