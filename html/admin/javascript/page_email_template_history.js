@@ -10,15 +10,16 @@ var Page_Email_Template_History = Class.create(
 	 */
 	initialize	: function(oContainerDiv, iTemplateId, sTemplateName)
 	{
-		
-		this._oContentDiv 	= 	$T.div({class: 'page-followup-list'},
-									$T.div({class: 'page-followup-list-all-container'}
+		//'page-followup-list'
+		//'page-followup-list-all-container'
+		this._oContentDiv 	= 	$T.div({class: 'page-email-template-history'},
+									$T.div({class: 'page-email-template-history-container'}
 										// All - placeholder
 									)
 								);
 
 		this._oFollowUpListAll	= 	new Component_Email_Template_History(
-										this._oContentDiv.select('div.page-followup-list-all-container').first(), 
+										this._oContentDiv.select('div.page-email-template-history-container').first(), 
 										iTemplateId, sTemplateName
 									);		
 		oContainerDiv.appendChild(this._oContentDiv);
