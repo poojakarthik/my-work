@@ -7073,16 +7073,21 @@ div.popup-email-text-edit
 {
 	text-align: left;
 	margin:10px;
+	
 }
 
 .popup-email-text-edit .variables ul
 {
 	text-align: left;
-	font-style	: italic;
-	font-size	: 0.85em;
+	
+	font-size	: 0.80em;
 	list-style-type: none;
 	margin-left : 3px;
 	 padding-left: 3px;
+	 margin-top: 1px;
+	 padding-top:1px;
+	 margin-bottom: 2px;
+	 padding-bottom:2px;
 	
 }
 
@@ -7094,20 +7099,27 @@ div.popup-email-text-edit
 .popup-email-text-edit .variables .varLabel
 {	
 	text-align: left;
-	
+	margin-bottom: 2px;
 	font-size: 1.1em;
 	left: 0;
 }
 
+
+.email-subject-container >table.reflex th
+{	
+	
+	width: 13em;
+}
+
 .email-subject-container
 {
-	display: inline-block;
-	padding-left: 67px;
+	
+	padding-bottom: 10px;
 }
 
 .email-subject-label
 {
-	padding-left: 3px;
+	padding-left: 50px;
 	font-size	: 1.0em;
 	font-weight	: bold;
 }
@@ -7284,9 +7296,107 @@ div.popup-email-templates table.reflex {
 
 
 /************************* END - Popup Email HTML Preview -  END *******************************/
+
+
+/*************************** Component Email Template History *******************************/
+
 .line-through
 {
 	text-decoration:line-through;
 	color: red;
 
 }
+
+
+.email-template-history-createdby
+{
+	text-align: left;
+	font-style	: italic;
+	font-size	: 0.85em;
+	list-style-type: none;
+	margin-left : 1px;
+	 padding-left: 1px;
+	
+	 
+	
+}
+
+.no-versions
+{
+	margin-right: 160px;
+	padding-right: 160px;
+	font-style	: italic;
+	font-weight: bold;
+}
+
+.version-details >div > table.reflex > tbody > tr > td:last-child {
+text-align: right;
+}
+
+
+.page-email-template-history-container  div.section > div.section-header > div.section-header-options
+{
+	display		: inline-block;
+	height		: 100%;
+	text-align	: right;
+
+	position	: absolute;
+	right		: 0em;
+	bottom		: 0em;
+	padding-right: 15px;
+	/*float			: right;
+	padding-bottom	: 0.25em;*/
+}
+
+.page-email-template-history-container div.control-field
+{
+
+padding-right: 5px;
+
+}
+
+
+/****************************END******************************************/
+
+.email-template-enddate-message
+{
+	padding-top: 5px;
+
+}
+
+.email-template-enddate-message>ul
+{
+	padding-top: 1px;
+	margin-top: 1px;
+
+}
+
+span.save-button
+{
+
+	padding-left: 360px;
+
+}
+
+div.email-template-effective-date-select div.control-field, div.email-template-effective-date-select div.date-time-picker-dynamic
+{
+
+	display:inline;
+}
+
+div.email-template-enddate-message span
+{
+	font-weight: bold;
+
+}
+
+.email-confirm-report-header
+{
+	font-size: 1.2em;
+	font-weight: bold;
+
+
+}
+
+
+
