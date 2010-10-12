@@ -61,15 +61,15 @@ class HtmlTemplateCustomerGroupEmailTemplates extends HtmlTemplate
 		echo "<h2 class='CustomerGroup'>Current Email Templates</h2>\n";
 
 		// Set up the header for the table of LetterTemplates
-		Table()->EmailTemplate->SetHeader("Type", "Version", "Effective From");
+		Table()->EmailTemplate->SetHeader("Type", "Current Version Description", "Effective From");
 		Table()->EmailTemplate->SetWidth("20%", "65%", "15%");
 		Table()->EmailTemplate->SetAlignment("Left", "Left", "Left");
 		$aTemplateDetails = Email_Template_Type::getTemplateVersionDetailsForCustomerGroup(DBO()->CustomerGroup->Id->value);
 		foreach ($aTemplateDetails as $aTemplate)
 		{
 			$strTemplateType = $aTemplate['name'];
-			$strVersion		= $aTemplate['version'];
-			$strEffectiveOn	= $aTemplate['effective'];
+			$strVersion		= $aTemplate['description'];
+			$strEffectiveOn	= OutputMask()->ShortDate($aTemplate['effective_datetime']);
 			/*if ($dboTemplate->TemplateId->Value != NULL)
 			{
 				// There is an active template
