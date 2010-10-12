@@ -58,7 +58,7 @@ class HtmlTemplate_Email_Template_History extends FlexHtmlTemplate
 
 
 		echo "
-		<div id='FollowUpListContainer'></div>
+		<div id='TemplateVersionContainer'></div>
 		<script type='text/javascript'>
 			Event.observe(
 				window,
@@ -66,7 +66,7 @@ class HtmlTemplate_Email_Template_History extends FlexHtmlTemplate
 				function()
 				{
 
-					objFollowUpList = new Page_Email_Template_History(\$ID('FollowUpListContainer'),". $this->mxdDataToRender['iTemplateId'].",'". $this->mxdDataToRender['sTemplateName']."');
+					objFollowUpList = new Page_Email_Template_History(\$ID('TemplateVersionContainer'),". $this->mxdDataToRender['iTemplateId'].",'". $this->mxdDataToRender['sTemplateName']."');
 
 
 				}
