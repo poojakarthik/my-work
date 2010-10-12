@@ -33,7 +33,7 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 					);
 	}
 
-	public function save($aTemplateDetails, $bConfirm = false, $iSaveMode)
+	public function save($aTemplateDetails, $bConfirm = false)
 	{
 		$aTemplateDetails = is_array($aTemplateDetails)?$aTemplateDetails:(array)$aTemplateDetails;
 
@@ -44,10 +44,11 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 		*/
 
 
-		if ($bConfirm)
-		{
+		count(Email_template_Logic::validateTemplateDetails((array)$aTemplateDetails['oTemplateDetails']))>0?$bConfirm = false:null;
 
-			///if there are future versions that are affected by this one, process them into the database
+
+		if ($bConfirm)
+		{	///if there are future versions that are affected by this one, process them into the database
 			if (array_key_exists('aFutureVersions', $aTemplateDetails) && $aTemplateDetails['aFutureVersions']!=null)
 			{
 				foreach ($aTemplateDetails['aFutureVersions'] as $oFutureVersion)
@@ -77,11 +78,11 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 			$aNewVersion['email_template_id'] = $aTemplateDetails['email_template_id'];
 			$aNewVersion['created_timestamp'] = null;
 			$aNewVersion['created_employee_id'] = Flex::getUserId();
-			$aNewVersion['email_html']	= $aTemplateDetails['email_html'];
-			$aNewVersion['email_text'] = $aTemplateDetails['email_text'];
+			$aNewVersion['email_html']	= trim($aTemplateDetails['email_html']);
+			$aNewVersion['email_text'] = trim($aTemplateDetails['email_text']);
 			$aNewVersion['effective_datetime'] = $aTemplateDetails['effective_datetime'];
-			$aNewVersion['email_subject'] = $aTemplateDetails['email_subject'];
-			$aNewVersion['description'] = $aTemplateDetails['description'];
+			$aNewVersion['email_subject'] = trim($aTemplateDetails['email_subject']);
+			$aNewVersion['description'] = trim($aTemplateDetails['description']);
 			$aNewVersion['end_datetime'] = $aTemplateDetails['end_datetime'];
 
 			$oDetails = new Email_Template_Details($aNewVersion);
@@ -95,13 +96,18 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 		}
 		else
 		{
-			$oHTML = new Email_HTML_Document($aTemplateDetails['email_html']);
+
+			$aErrors = array();
+			trim($aTemplateDetails['email_text']) == ''?$aErrors[]= "Your template must have a text version.":null;
+			trim($aTemplateDetails['email_subject']) == ''?$aErrors[]= "Your template must have a subject.":null;
+			trim($aTemplateDetails['description']) == ''?$aErrors[]= "Your template must have a description.":null;
 
 			return	array(
 							'Success'		=> true,
 							'oTemplateDetails'		=> $aTemplateDetails,
 							'Confirm'			=> $bConfirm,
-							'Report'			=> Email_template_Logic::processHTML($aTemplateDetails['email_html'], true)
+							'Report'			=> Email_template_Logic::processHTML($aTemplateDetails['email_html'], true),
+							'Errors'			=>$aErrors
 						);
 
 		}
@@ -130,13 +136,30 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 	public function getVariables($iTemplateDetailsId)
 	{
 		$aTemplateDetails = Email_Template_Details::getForId($iTemplateDetailsId);
-		$aVars = Email_HTML_Document::getVariables();
+		$aVars = Email_Template_Details::getVariablesForTemplateVersion($iTemplateDetailsId);
 
 		return	array(
 						'Success'		=> true,
 						'variables'		=> $aVars,
 						'oTemplateDetails' =>$aTemplateDetails->toArray()
 					);
+	}
+
+	function getTemplate($iTemplateId)
+	{
+		$oTemplate = Email_Template::getForId($iTemplateId);
+		$oCustomerGroup = Customer_Group::getForId($oTemplate->customer_group_id);
+		$oTemplateType =  Email_Template_Type::getForId($oTemplate->email_template_type_id);
+		$aVars = Email_Template::getVariablesForTemplate($iTemplateId);
+
+				return	array(
+						'Success'		=> true,
+						'oTemplateDetails' =>array('template'=>$oTemplate->toArray(),'customer_group'=>$oCustomerGroup->toArray(),'template_type'=>$oTemplateType->toArray()),
+						'variables'		=> $aVars
+					);
+
+
+
 	}
 
 
