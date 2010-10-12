@@ -9,7 +9,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 			Popup_Email_Text_Editor.SAVE_IMAGE_SOURCE 	= '../admin/img/template/tick.png';
 			Popup_Email_Text_Editor.PREVIEW_IMAGE_SOURCE 	='../admin/img/template/magnifier.png';
 			$super(70);
-			debugger;
+			
 			
 			this._fnCallback = fnCallback;
 			if (iTemplateDetailsId == null && iTemplateId!=null)
@@ -61,9 +61,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		}
 		else
 		{
-			debugger;
-			
-			
+					
 			var oTemplateDetails = {};
 			oTemplateDetails.email_template_id = iTemplateId;
 			oTemplateDetails.email_text = ' ';
@@ -429,21 +427,27 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	_saveSuccess: function (oResponse)
 	{
 		
-	
-		if (oResponse.Confirm)
+		if (!oResponse.Success)
 		{
-			this._fnCallback();
-			this._oTemplateDetails = oResponse.oTemplateDetails;
-			this.oHTMLTextArea.value  = this._oTemplateDetails.email_html;
-			this.oTextArea.value = this._oTemplateDetails.email_text;
+			Reflex_Popup.alert("There was an error, your template could not be saved: " + oResponse.message, {sTitle: 'Email Template Save Error'});		
 			this._oLoadingPopup.hide();	
-			this.hide();	
-			Reflex_Popup.alert("The template was saved successfully", {sTitle: 'Email Template Save Success'});
 		}
 		else
-		{
-			new Popup_Email_Save_Confirm(oResponse, this._save.bind(this));
-			this._oLoadingPopup.hide();			
+		{		
+			if (oResponse.Confirm)
+			{
+				this._fnCallback();
+				this._oLoadingPopup.hide();	
+				this.hide();			
+				this._oLoadingPopup.hide();
+				Reflex_Popup.alert("The template was saved successfully", {sTitle: 'Email Template Save Success'});
+			}
+			else
+			{				
+				this._oLoadingPopup.hide();
+				new Popup_Email_Save_Confirm(oResponse, this._save.bind(this));
+							
+			}		
 		}
 	
 	},
@@ -454,14 +458,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		this._oLoadingPopup.display();
 		var fnRequest     = jQuery.json.jsonFunction(this.successToTextCallback.bind(this), this.errorCallback.bind(this), 'Email_Text_Editor', 'toText');
 		fnRequest(this.oHTMLTextArea.value);	
-	
-	
-	}
-
-	
-	
-	
-	
+	}	
 	
 });
 
