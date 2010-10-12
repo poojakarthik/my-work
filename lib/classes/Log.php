@@ -280,7 +280,7 @@ class Log
 	 *
 	 * @method
 	 */
-	private static function echoMessage($strMessage, $bolAddNewLine=true)
+	public static function echoMessage($strMessage, $bolAddNewLine=true)
 	{
 		$strMessage	.= ($bolAddNewLine ? "\n" : '');
 		if ($resSTDOUT = fopen('php://stdout','w'))
