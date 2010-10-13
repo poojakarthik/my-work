@@ -10,7 +10,7 @@ class Rate extends ORM_Cached
 {
 	const	RATING_PRECISION	= 2;	// Round to the nearest whole cent
 	
-	const	RATE_SEARCH_LOGGING		= false;
+	const	RATE_SEARCH_LOGGING		= true;
 	const	RATE_ALGORITHM_LOGGING	= true;
 	
 	protected 			$_strTableName			= "Rate";
@@ -73,7 +73,7 @@ class Rate extends ORM_Cached
 	public static function getForServiceAndDefinition($mService, $mRecordType, $mDatetime, $mDestination=null, $bFleet=false, $bPerfectMatch=true)
 	{
 		$oService		= Service::getForId(ORM::extractId($mService));
-		$oRecordType	= ($mDestination !== null) ? Record_Type::getForId(ORM::extractId($mRecordType)) : null;
+		$oRecordType	= ($mRecordType !== null) ? Record_Type::getForId(ORM::extractId($mRecordType)) : null;
 		$oDestination	= ($mDestination) ? Destination::getForId(ORM::extractId($mRecordType)) : null;
 		
 		$iDatetime	= (is_string($mDatetime)) ? strtotime($mDatetime) : (int)$mDatetime;
@@ -87,6 +87,22 @@ class Rate extends ORM_Cached
 		$aWhere['is_fleet']				= (int)!!$bFleet;
 		$aWhere['use_perfect_match']	= (int)!!$bPerfectMatch;
 		$aWhere['is_fleet_check_only']	= ($oRecordType === null) ? 1 : 0;
+		
+		self::_logRateSearch("Search for ", false);
+		self::_logRateSearch(($bFleet) ? 'Fleet' : 'Standard', false);
+		self::_logRateSearch(" Rate for Service {$aWhere['service_id']} ({$oService->FNN}) on {$aWhere['effective_datetime']} ({$sDay}) for ", false);
+		if ($oRecordType === null)
+		{
+			self::_logRateSearch("any Call Type and date/time restrictions (Destination Fleet eligibility)");
+		}
+		elseif ($oDestination === null)
+		{
+			self::_logRateSearch("Call Type {$oRecordType->Name} ({$oRecordType->Id})");
+		}
+		else
+		{
+			self::_logRateSearch("Call Type {$oRecordType->Name}: {$oDestination->Description} ({$oRecordType->Id}:{$oDestination->Code})");
+		}
 		
 		$selForServiceAndDefinition	= self::_preparedStatement('selForServiceAndDefinition');
 		if ($selForServiceAndDefinition->Execute($aWhere) === false)

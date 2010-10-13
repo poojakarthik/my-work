@@ -19,7 +19,7 @@ class CDR extends ORM_Cached
 		static	$oQuery;
 		$oQuery	= ($oQuery) ? $oQuery : new Query();
 		
-		if (in_array($this->Status, array(CDR_NORMALISED, CDR_RERATE, CDR_RATE_NOT_FOUND)) || $bForceReRate)
+		if (in_array($this->Status, array(CDR_NORMALISED, CDR_RERATE, CDR_RATE_NOT_FOUND)) || ($bForceReRate && $this->Rate))
 		{
 			$oRate	= ($bUseExistingRate && $this->Rate) ? Rate::getForId($this->Rate) : Rate::getForCDR($this);
 			
