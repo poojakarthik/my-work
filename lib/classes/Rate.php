@@ -74,7 +74,7 @@ class Rate extends ORM_Cached
 	{
 		$oService		= Service::getForId(ORM::extractId($mService));
 		$oRecordType	= ($mRecordType !== null) ? Record_Type::getForId(ORM::extractId($mRecordType)) : null;
-		$oDestination	= ($mDestination) ? Destination::getForId(ORM::extractId($mRecordType)) : null;
+		$oDestination	= ($mDestination) ? Destination::getForId(ORM::extractId($mDestination)) : null;
 		
 		$iDatetime	= (is_string($mDatetime)) ? strtotime($mDatetime) : (int)$mDatetime;
 		$sDay		= date('l', $iDatetime);
