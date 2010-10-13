@@ -19,7 +19,7 @@ final class Callback
 	
 	public function invoke()
 	{
-		$aArgs		= func_get_args();
+		$aArgs		= (func_num_args()) ? func_get_args() : array();
 		return call_user_func_array(array($this, 'invokeArray'), $aArgs);
 	}
 	
