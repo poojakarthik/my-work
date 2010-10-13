@@ -167,7 +167,6 @@ class Flex_Rollout_Version_000226 extends Flex_Rollout_Version
 															    REFERENCES FileImport (Id)
 															    ON DELETE RESTRICT
 															    ON UPDATE CASCADE;",
-									'sRollbackSQL'		=>	"	ALTER TABLE correspondence_run DROP COLUMN file_import_id;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								)
 								,array
@@ -348,14 +347,7 @@ class Flex_Rollout_Version_000226 extends Flex_Rollout_Version
 															('Invoice', 'Invoice', 0,  (SELECT id FROM correspondence_source WHERE correspondence_source_type_id = (SELECT id from correspondence_source_type WHERE name = 'System' )),  1);",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								),
-
-								array
-								(
-									'sDescription'		=>	"Add data to correspondence_template_system table",
-									'sAlterSQL'			=>	"INSERT INTO correspondence_template_system  (name, description, system_name, constant_name, correspondence_template_id) VALUES
-															('invoice', 'invoice','INVOICE', 'CORRESPONDENCE_TEMPLATE_SYSTEM_INVOICE', (SELECT id FROM correspondence_template WHERE name = 'Invoice'));",
-									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
-								),
+								
 								array
 								(
 									'sDescription'		=>	"Add data to resource_type table",
