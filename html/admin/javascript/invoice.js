@@ -70,7 +70,23 @@ var Invoice	= Class.create
 		{
 			if (!oResponse.bSuccess)
 			{
-				Reflex_Popup.alert(oResponse.sMessage + ((oResponse.sDebug != '') ? ' -- DEBUG LOG: ' + oResponse.sDebug : ''));
+				if (oResponse.sDebug != '')
+				{
+					// Have log, show message & 'View Log' button
+					Reflex_Popup.yesNoCancel(
+						oResponse.sMessage, 
+						{
+							iWidth		: 40, 
+							sYesLabel	: 'View Log',
+							fnOnYes		: this._showLogPopup.bind(this, oResponse.sDebug)
+						}
+					);
+				}
+				else
+				{
+					// NO log, show message
+					Reflex_Popup.alert(oResponse.sMessage);
+				}
 				fnCallback(null);
 				return;
 			}
@@ -78,6 +94,11 @@ var Invoice	= Class.create
 			// Handle request
 			fnCallback(oResponse.oNewInvoice, oResponse.oOriginalInvoice, oResponse.sDebug);
 		}
+	},
+	
+	_showLogPopup	: function(sLog)
+	{
+		Reflex_Popup.debug(sLog);
 	},
 	
 	// hasUnarchivedCDRs: JSON Handler Wrapper

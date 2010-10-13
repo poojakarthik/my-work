@@ -452,10 +452,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 	
 	_showDebugLog	: function(sText)
 	{
-		var oTextArea	=	$T.textarea({class: 'log-text'},
-								sText
-							);
-		Reflex_Popup.alert(oTextArea, {sTitle: 'Log', iWidth: 61, bOverrideStyles: false});
+		Reflex_Popup.debug(sText);
 	}
 });
 

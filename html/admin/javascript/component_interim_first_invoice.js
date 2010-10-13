@@ -92,10 +92,7 @@ var Component_Interim_First_Invoice	= Class.create(
 	{
 		if (sLog)
 		{
-			var oTextArea	=	$T.textarea({class: 'log-text'},
-									sLog
-								);
-			Reflex_Popup.alert(oTextArea, {sTitle: 'Log', iWidth: 61});
+			Reflex_Popup.debug(sLog);
 		}
 	}
 });

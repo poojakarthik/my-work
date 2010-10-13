@@ -222,6 +222,20 @@ Object.extend(Reflex_Popup, {
 		
 		oPopup.setContent(mContent);
 		oPopup.display();
+	},
+	
+	debug	: function(sText)
+	{
+		Reflex_Popup.alert(
+			$T.textarea({class: 'popup-debug-text'},
+				sText
+			), 
+			{
+				sTitle			: 'Debug', 
+				iWidth			: 61, 
+				bOverrideStyles	: false
+			}
+		);
 	}
 });
 

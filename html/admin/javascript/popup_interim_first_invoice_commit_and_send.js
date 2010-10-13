@@ -319,10 +319,7 @@ var Popup_Interim_First_Invoice_Commit_And_Send	= Class.create(Reflex_Popup,
 	
 	_viewLog	: function()
 	{
-		var oTextArea	=	$T.textarea({class: 'log-text'},
-								this._aDebugInfo.join("\n= = = = = = = = = = = = =\n")
-							);
-		Reflex_Popup.alert(oTextArea, {sTitle: 'Log', iWidth: 61, bOverrideStyles: false});
+		Reflex_Popup.debug(this._aDebugInfo.join("\n= = = = = = = = = = = = =\n"));
 	}
 });
 
