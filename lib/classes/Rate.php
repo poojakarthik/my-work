@@ -70,11 +70,11 @@ class Rate extends ORM_Cached
 		return $oRate;
 	}
 	
-	public static function getForServiceAndDefinition($mService, $mRecordType, $mDatetime, $mDestination=null, $bFleet=false, $bPerfectMatch=true)
+	public static function getForServiceAndDefinition($mService, $mRecordType, $mDatetime, $iDestinationCode=null, $bFleet=false, $bPerfectMatch=true)
 	{
 		$oService		= Service::getForId(ORM::extractId($mService));
 		$oRecordType	= ($mRecordType !== null) ? Record_Type::getForId(ORM::extractId($mRecordType)) : null;
-		$oDestination	= ($mDestination) ? Destination::getForId(ORM::extractId($mDestination)) : null;
+		$oDestination	= ($iDestinationCode) ? Destination::getForCode($iDestinationCode) : null;
 		
 		$iDatetime	= (is_string($mDatetime)) ? strtotime($mDatetime) : (int)$mDatetime;
 		$sDay		= date('l', $iDatetime);
