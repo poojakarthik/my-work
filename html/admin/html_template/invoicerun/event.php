@@ -196,7 +196,7 @@ class HtmlTemplateInvoiceRunEvent extends HtmlTemplate
 
 		$this->FormStart("InvoiceRunEvents", "InvoiceRunEvents", "x");
 
-		$customerGroup = DBO()->InvoiceRun->customer_group_id->Value ? Customer_Group::getForId(1)->name : '[Mixed]'; 
+		$customerGroup = DBO()->InvoiceRun->customer_group_id->Value ? Customer_Group::getForId(DBO()->InvoiceRun->customer_group_id->Value)->name : '[Mixed]'; 
 
 		echo "<div class='GroupedContent'>\n";
 		echo "
