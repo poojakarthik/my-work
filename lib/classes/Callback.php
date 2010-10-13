@@ -19,8 +19,8 @@ final class Callback
 	
 	public function invoke()
 	{
-		$aArgs		= (func_num_args()) ? func_get_args() : array();
-		return call_user_func_array(array($this, 'invokeArray'), $aArgs);
+		$aArgs		= func_get_args();
+		return $this->invokeArray($aArgs);
 	}
 	
 	public function invokeArray($aArgs)
@@ -32,7 +32,7 @@ final class Callback
 	public function curry()
 	{
 		$aArgs		= func_get_args();
-		return call_user_func_array(array($this, 'curryArray'), $aArgs);
+		return $this->curryArray($aArgs);
 	}
 	
 	public function curryArray($aArgs)
