@@ -93,6 +93,7 @@ class CDR extends ORM_Cached
 			
 			// ROUNDING
 			$this->Charge	= Rate::roundToRatingStandard($this->Charge);
+			$this->_logRateAlgorithm("ROUNDED 2: \$".number_format($fCharge, '4', '.', ''));
 			
 			// SERVICE TOTALS: Update progressive totals (deprecated, but we'll copy the functionality anyway)
 			if ($this->Charge > 0 && $this->Credit == 0)

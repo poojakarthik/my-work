@@ -18,7 +18,10 @@ class Stopwatch
 	
 	public function lap()
 	{
-		return microtime(true) - $this->_fLastLapTimestamp;
+		$fLapTimestamp				= microtime(true);
+		$fLapTime					= $fLapTimestamp - $this->_fLastLapTimestamp;
+		$this->_fLastLapTimestamp	= $fLapTimestamp;
+		return $fLapTime;
 	}
 }
 ?>
