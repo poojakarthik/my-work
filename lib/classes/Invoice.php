@@ -1864,9 +1864,22 @@ class Invoice extends ORM_Cached
 			
 			while ($aRow = $oStmt->Fetch())
 			{
-				$oCDR	= CDR::getForId($aRow['Id']);
+				$oCDR			= CDR::getForId($aRow['Id']);
+				$fInitialCharge	= $oCDR->Charge;
+				$iInitialRate	= $oCDR->Rate;
+				
+				Log::getLog()->log("");
+				Log::getLog()->log("Before rate: ");
+				Log::getLog()->log("\tCharge: {$fInitialCharge}");
+				Log::getLog()->log("\tRate : {$iInitialRate}");
+				
 				//Log::getLog()->log(print_r($oCDR->toArray(), true));
 				$oCDR->rate(true);
+				
+				Log::getLog()->log("After rate: ");
+				Log::getLog()->log("\tCharge: {$oCDR->Charge}".	(($oCDR->Charge != $fInitialCharge) ? ", DIFFERENCE: ".($oCDR->Charge - $fInitialCharge) : ''));
+				Log::getLog()->log("\tRate: {$oCDR->Rate}".		(($oCDR->Rate != $iInitialRate) ? ", DIFFERENCE" : ''));
+				
 				Log::getLog()->log("... Complete");
 			}
 			
