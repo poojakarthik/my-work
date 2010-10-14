@@ -121,11 +121,14 @@ class Rate extends ORM_Cached
 		}
 	}
 	
+	// Round up to the specified precision
 	public static function roundToRatingStandard($fAmountInDollars, $iDecimalPlaces=self::RATING_PRECISION)
 	{
-		// Round up to the specified precision (and then round() to make sure there aren't float precision errors)
-		$iFraction	= pow(10, $iDecimalPlaces);
-		return round(ceil($fAmountInDollars * $iFraction) / $iFraction, $iDecimalPlaces);
+		// We need to round the original multiplication, to ensure something like 0.08 doesn't become 8.00000000001 or 7.99999999999
+		// Then we ceil the resulting integer
+		// Then we round the division for the same reason as the multiplication
+		$iFraction		= pow(10, (int)$iDecimalPlaces);
+		return round(ceil(round($fAmountInDollars * $iFraction, 6)) / $iFraction, $iDecimalPlaces);
 	}
 	
 	public function calculateChargeForCDR($mCDR)
