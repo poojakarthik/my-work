@@ -144,10 +144,10 @@ class Rate extends ORM_Cached
 		$bProrate		= !!$this->Prorate;
 		$fMinimumCharge	= (float)$this->StdMinCharge;
 		
-		$iCapUnits		= (float)$this->CapUnits;	// Maximum Units for Standard Rate
+		$iCapUnits		= (int)$this->CapUnits;		// Maximum Units for Standard Rate
 		$fCapCost		= (float)$this->CapCost;	// Maximum Charge for Standard Rate
-		$iCapUsage		= (float)$this->CapUsage;	// Minimum Units for Excess Rate
-		$fCapLimit		= (float)$this->CapCost;	// Minimum Charge for Excess Rate
+		$iCapUsage		= (int)$this->CapUsage;		// Minimum Units for Excess Rate
+		$fCapLimit		= (float)$this->CapLimit;	// Minimum Charge for Excess Rate
 		
 		$aStandardRate	= array(
 									'fRatePerUnitBlock'				=> (float)$this->StdRatePerUnit,
