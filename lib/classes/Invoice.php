@@ -1449,6 +1449,9 @@ class Invoice extends ORM_Cached
 		{
 			throw new Exception("Unable to create '{$arrPlanCharge['Description']}' for {$intAccount}::{$intService}!");
 		}
+		
+		Log::getLog()->log("Added Charge: \n".print_r($arrPlanCharge, true));
+		
 		return true;
 	}
 	
@@ -1798,14 +1801,16 @@ class Invoice extends ORM_Cached
 			Log::getLog()->log("Copying Charge records from the original invoice, setting status to CHARGE_INVOICED (".CHARGE_INVOICED.")");
 			
 			// Copy all (NON Billing time charges/discounts) charges from the original invoice and changing the invoice_run_id
+			// Selecting these charges is done by checking that ChargedOn = the billing date of the original invoice run
 			$mChargeResult	= $oQuery->Execute("	INSERT INTO Charge (AccountGroup, Account, Service, invoice_run_id, CreatedBy, CreatedOn, ApprovedBy, ChargeType, charge_type_id, Description, ChargedOn, Nature, Amount, Invoice, Notes, LinkType, LinkId, Status, global_tax_exempt, charge_model_id)
 													(
 														SELECT	AccountGroup, Account, Service, {$oInvoiceRun->Id}, CreatedBy, CreatedOn, ApprovedBy, ChargeType, charge_type_id, Description, ChargedOn, Nature, Amount, Invoice, Notes, LinkType, LinkId, ".CHARGE_APPROVED.", global_tax_exempt, charge_model_id
 														FROM 	Charge
 														WHERE	Account = {$oOriginalInvoice->Account}
 														AND		invoice_run_id = {$oOriginalInvoiceRun->Id}
-														AND		ChargeType NOT IN ('PCAD', 'PCAR', 'PCR', 'PDCR')
-														AND 	CreatedBy IS NOT NULL
+														/*AND		ChargeType NOT IN ('PCAD', 'PCAR', 'PCR', 'PDCR')
+														AND 	CreatedBy IS NOT NULL*/
+														AND		ChargedOn < '{$oOriginalInvoiceRun->BillingDate}'
 														AND		Status = ".CHARGE_INVOICED."
 													)");
 			if ($mChargeResult === false)
