@@ -1808,8 +1808,6 @@ class Invoice extends ORM_Cached
 														FROM 	Charge
 														WHERE	Account = {$oOriginalInvoice->Account}
 														AND		invoice_run_id = {$oOriginalInvoiceRun->Id}
-														/*AND		ChargeType NOT IN ('PCAD', 'PCAR', 'PCR', 'PDCR')
-														AND 	CreatedBy IS NOT NULL*/
 														AND		ChargedOn < '{$oOriginalInvoiceRun->BillingDate}'
 														AND		Status = ".CHARGE_INVOICED."
 													)");
