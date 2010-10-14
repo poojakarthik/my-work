@@ -57,7 +57,7 @@ class CDR extends ORM_Cached
 			}
 			
 			// CHARGE: Calculate Base Charge
-			$this->Charge	= $this->calculcateCharge(false);
+			$this->Charge	= $this->calculcateCharge();
 			
 			// DISCOUNTING (per-CDR): Application
 			if ($bDiscount)
