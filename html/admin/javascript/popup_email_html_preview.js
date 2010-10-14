@@ -10,8 +10,7 @@ var Popup_email_HTML_Preview	= Class.create(Reflex_Popup,
 		this._buildUI(sHTML);
 	},
 	
-	// Private
-	
+		
 	_buildUI	: function(sHTML)
 	{
 		var oTemplateSelect		= 	$T.div({class: 'popup-email-html-preview'},
