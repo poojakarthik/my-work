@@ -5,14 +5,14 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 	protected	$_JSONDebug	= '';
 
 
-	public function __construct()
+	 function __construct()
 	{
 		// Send Log output to a debug string
 		Log::registerLog('JSON_Handler_Debug', Log::LOG_TYPE_STRING, $this->_JSONDebug);
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 
-	public function getTemplates($bCountOnly=false, $iLimit=null, $iOffset=null, $sSortDirection='DESC')
+	 function getTemplates($bCountOnly=false, $iLimit=null, $iOffset=null, $sSortDirection='DESC')
 	{
 		$aTemplates = Email_Template_Type::getForAllCustomerGroups($bCountOnly, $iLimit, $iOffset, $sSortDirection);
 		return	array(
@@ -23,7 +23,7 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 	}
 
 
-	public function getTemplateDetails($iTemplateId)
+	 function getTemplateDetails($iTemplateId)
 	{
 		$oDetails = Email_Template_Details::getCurrentDetailsForTemplateId($iTemplateId);
 
@@ -33,14 +33,14 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 					);
 	}
 
-	public function save($aTemplateDetails, $bConfirm = false)
+	 function save($aTemplateDetails, $bConfirm = false)
 	{
 		$aTemplateDetails = is_array($aTemplateDetails)?$aTemplateDetails:(array)$aTemplateDetails;
 
 
 
 
-		count(Email_template_Logic::validateTemplateDetails((array)$aTemplateDetails['oTemplateDetails']))>0?$bConfirm = false:null;
+		count(Email_Template_Logic::validateTemplateDetails((array)$aTemplateDetails['oTemplateDetails']))>0?$bConfirm = false:null;
 
 
 		if ($bConfirm)
@@ -117,14 +117,14 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 			try
 			{
 
-			$aErrors = Email_template_Logic::validateTemplateDetails($aTemplateDetails);
+			$aErrors = Email_Template_Logic::validateTemplateDetails($aTemplateDetails);
 
 
 			return	array(
 							'Success'			=> true,
 							'oTemplateDetails'	=> $aTemplateDetails,
 							'Confirm'			=> $bConfirm,
-							'Report'			=> Email_template_Logic::processHTML($aTemplateDetails['email_html'], true),
+							'Report'			=> Email_Template_Logic::processHTML($aTemplateDetails['email_html'], true),
 							'Errors'			=>$aErrors
 						);
 			}
@@ -141,27 +141,27 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 		}
 	}
 
-	public function toText($sHTML)
+	 function toText($sHTML)
 	{
 		$oEmail = new Email_HTML_Document($sHTML);
 
 		return	array(
 						'Success'		=> true,
-						'text'		=> implode("",Email_template_Logic::toText($sHTML))
+						'text'		=> implode("",Email_Template_Logic::toText($sHTML))
 					);
 	}
 
-	public function processHTML($sHTML)
+ function processHTML($sHTML)
 	{
 
 		//		$oEmail = new Email_HTML_Document($sHTML);
 		return	array(
 						'Success'		=> true,
-						'html'		=> Email_template_Logic::processHTML($sHTML)
+						'html'		=> Email_Template_Logic::processHTML($sHTML)
 					);
 	}
 
-	public function getVariables($iTemplateDetailsId)
+	 function getTemplateVersionDetails($iTemplateDetailsId)
 	{
 		$aTemplateDetails = Email_Template_Details::getForId($iTemplateDetailsId);
 		$aVars = Email_Template_Details::getVariablesForTemplateVersion($iTemplateDetailsId);
@@ -173,16 +173,15 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 					);
 	}
 
-	function getTemplate($iTemplateId)
+	 function  getTemplateVariables($iTemplateId)
 	{
-		$oTemplate = Email_Template::getForId($iTemplateId);
-		$oCustomerGroup = Customer_Group::getForId($oTemplate->customer_group_id);
-		$oTemplateType =  Email_Template_Type::getForId($oTemplate->email_template_type_id);
+
+
 		$aVars = Email_Template::getVariablesForTemplate($iTemplateId);
 
 				return	array(
 						'Success'		=> true,
-						'oTemplateDetails' =>array('template'=>$oTemplate->toArray(),'customer_group'=>$oCustomerGroup->toArray(),'template_type'=>$oTemplateType->toArray()),
+						//'oTemplateDetails' =>array('template'=>$oTemplate->toArray(),'customer_group'=>$oCustomerGroup->toArray(),'template_type'=>$oTemplateType->toArray()),
 						'variables'		=> $aVars
 					);
 
@@ -192,16 +191,30 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 
 
 
-	function getFutureVersions($iVersionId)
+	 function getFutureVersions($iTemplateId)
 	{
 
 		return	array(
 						'Success'		=> true,
-
-						'aTemplateDetails' =>Email_Template_Details::getFutureVersionsForId($iVersionId)
+						'aTemplateDetails' =>Email_Template_Details::getFutureVersionsForTemplateId($iTemplateId)
 					);
 
 	}
+
+
+	function sendTestEmail($oData)
+	{
+		Email_Template_Logic::sendTestEmail((array)$oData);
+		return	array(
+						'Success'		=> true,
+
+					);
+
+	}
+
+
+
+
 
 
 }
