@@ -6716,6 +6716,16 @@ div.datetime-time
 	color	: #0000dd;
 }
 
+.popup-invoice-rerate-summary .difference-credit
+{
+	color	: #007700;
+}
+
+.popup-invoice-rerate-summary .difference-debit
+{
+	color	: #bb0000;
+}
+
 td.popup-rate-plan-test-account-business-name
 {
 	font-weight	: bold;

@@ -555,20 +555,22 @@ Object.extend(Popup_Invoice_Rerate_Summary,
 			var fCompareTo	= Popup_Invoice_Rerate_Summary._getCurrency(mCompareTo);
 			var fDifference	= Popup_Invoice_Rerate_Summary._getCurrency(fValue - fCompareTo);
 			var sExtraClass	= '';
+			var sPrefix		= '';
 			if (fDifference > 0)
 			{
 				// Debit
-				sExtraClass	= 'amount-debit';
+				sExtraClass	= 'difference-debit';
 			}
 			else if (fDifference < 0)
 			{
 				// Credit
+				sPrefix		= '- ';
 				fDifference	= Math.abs(fDifference);
-				sExtraClass	= 'amount-credit';
+				sExtraClass	= 'difference-credit';
 			}
 			
 			return 	$T.td({class: 'amount ' + sExtraClass},
-						(fDifference === 0 ? '' : '$' + fDifference.toFixed(2))
+						(fDifference === 0 ? '' : sPrefix + '$' + fDifference.toFixed(2))
 					);
 		}
 		return $T.td();

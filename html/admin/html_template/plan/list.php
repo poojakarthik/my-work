@@ -336,8 +336,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			// There are no RatePlans to stick in this table
 			Table()->PlanTable->AddRow("No Rate Plans to display");
 			Table()->PlanTable->SetRowAlignment("left");
-			$intNumofColumns = ($bolHasPlanEditPerm) ? 8 : 7;
-			Table()->PlanTable->SetRowColumnSpan($intNumofColumns);
+			Table()->PlanTable->SetRowColumnSpan(17);
 		}
 		else
 		{

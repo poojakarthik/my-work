@@ -1865,7 +1865,6 @@ class Invoice extends ORM_Cached
 			while ($aRow = $oStmt->Fetch())
 			{
 				$oCDR	= CDR::getForId($aRow['Id']);
-				Log::getLog()->log("Rerating CDR ".$aRow['Id']);
 				//Log::getLog()->log(print_r($oCDR->toArray(), true));
 				$oCDR->rate(true);
 				Log::getLog()->log("... Complete");
