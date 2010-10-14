@@ -1798,7 +1798,7 @@ class Invoice extends ORM_Cached
 			
 			$oQuery	= new Query();
 			
-			Log::getLog()->log("Copying Charge records from the original invoice, setting status to CHARGE_INVOICED (".CHARGE_INVOICED.")");
+			Log::getLog()->log("Copying Charge records from the original invoice, setting status to CHARGE_APPROVED (".CHARGE_APPROVED.")");
 			
 			// Copy all (NON Billing time charges/discounts) charges from the original invoice and changing the invoice_run_id
 			// Selecting these charges is done by checking that ChargedOn = the billing date of the original invoice run
