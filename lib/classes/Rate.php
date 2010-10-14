@@ -379,7 +379,7 @@ class Rate extends ORM_Cached
 																							)
 																						)
 																						AND (<use_perfect_match> = 0 OR <effective_datetime> BETWEEN rgr.effective_start_datetime AND rgr.effective_end_datetime)",
-																					"	(<effective_date> BETWEEN srg.StartDatetime AND srg.EndDatetime) DESC,
+																					"	(<effective_datetime> BETWEEN srg.StartDatetime AND srg.EndDatetime) DESC,
 																						(LEAST(ABS(TIMESTAMPDIFF(SECOND, <effective_datetime>, srg.StartDatetime)), ABS(TIMESTAMPDIFF(SECOND, <effective_datetime>, srg.EndDatetime)))) ASC,
 																						srg.CreatedOn DESC,
 																						srg.Id DESC");
