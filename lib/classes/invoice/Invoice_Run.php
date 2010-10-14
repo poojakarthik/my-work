@@ -814,6 +814,7 @@ class Invoice_Run
 			foreach ($aPDFFilenames as $iInvoiceId => $sPDFFilename)
 			{
 				Log::getLog()->log("\nInvoice {$iInvoiceId}");
+				Log::getLog()->log("----------------------");
 	
 				// Determine the correspondence_delivery_method for the invoice
 				$oInvoice			= $aInvoices[$iInvoiceId];
@@ -921,6 +922,8 @@ class Invoice_Run
 							$sEmailId	= $aContact['Account']."_".$aContact['Email'];
 							$oEmailFlexQueue->push($oEmail, $sEmailId);
 							
+							Log::getLog()->log("Email queued: '$sEmailId'");
+							
 							// Update the invoices delivery method
 							$oInvoice->DeliveryMethod	= DELIVERY_METHOD_EMAIL_SENT;
 							$oInvoice->save();
@@ -941,7 +944,7 @@ class Invoice_Run
 			throw new Exception("Failed to generated invoice delivery data. ".$oException->getMessage());
 		}
 		
-		Log::getLog()->log("Schedule the email queue for immediate delivery");
+		Log::getLog()->log("\nSchedule the email queue for immediate delivery (delivery method = $oInvoice->DeliveryMethod)");
 		$oEmailFlexQueue->scheduleForDelivery();
 
 		if (count($aCorrespondenceData) > 0)
@@ -949,7 +952,7 @@ class Invoice_Run
 			// Create the correspondence run using all of the correspondence data
 			try
 			{
-				Log::getLog()->log("Create correspondence run");
+				Log::getLog()->log("\nCreate correspondence run");
 	
 				$oTemplate	= $this->getCorrespondenceTemplate();
 	
@@ -975,7 +978,7 @@ class Invoice_Run
 		}
 		else
 		{
-			Log::getLog()->log("No correspondence to post, no run created");
+			Log::getLog()->log("\nNo correspondence to post, no run created");
 		}
 	}
 
