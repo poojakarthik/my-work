@@ -139,13 +139,13 @@ class Rate extends ORM_Cached
 	
 	public function calculateCharge($iUnits, $fCost, $sStartDatetime, $sEndDatetime)
 	{
-		$this->_logRateAlgorithm("Rating {$iUnits} Units at \$".number_format($fCost, '4', '.', '')." from {$sStartDatetime} to {$sEndDatetime}");
+		$this->_logRateAlgorithm("Rating {$iUnits} Units at \$".number_format($fCost, '4', '.', '')." Cost from {$sStartDatetime} to {$sEndDatetime}");
 		
-		$fCost			= (float)$fCost;
-		$iUnits			= (int)$iUnits;
-		$bPassthrough	= !!$this->PassThrough;
-		$bProrate		= !!$this->Prorate;
-		$fMinimumCharge	= (float)$this->StdMinCharge;
+		$fCost					= (float)$fCost;
+		$iUnits					= (int)$iUnits;
+		$bPassthrough			= !!$this->PassThrough;
+		$bProrate				= !!$this->Prorate;
+		$fStandardMinimumCharge	= (float)$this->StdMinCharge;
 		
 		$iCapUnits		= (int)$this->CapUnits;		// Maximum Units for Standard Rate
 		$fCapCost		= (float)$this->CapCost;	// Maximum Charge for Standard Rate
@@ -174,8 +174,8 @@ class Rate extends ORM_Cached
 		{
 			// PASSTHROUGH
 			// Passthroughs have a much simpler calculation
-			$fCharge	= max($fCost + $aStandardRate['fFlagfall'], $fMinimumCharge);
-			$this->_logRateAlgorithm("PASSTHROUGH: \$".number_format($fCharge, '4', '.', '')."\t= max({$fCost} + {$aStandardRate['fFlagfall']}, {$fMinimumCharge})");
+			$fCharge	= max($fCost + $aStandardRate['fFlagfall'], $fStandardMinimumCharge);
+			$this->_logRateAlgorithm("PASSTHROUGH: \$".number_format($fCharge, '4', '.', '')."\t= max({$fCost} + {$aStandardRate['fFlagfall']}, {$fStandardMinimumCharge})");
 		}
 		else
 		{
@@ -185,6 +185,13 @@ class Rate extends ORM_Cached
 			$fCharge			= $fStandardCharge;
 			
 			$this->_logRateAlgorithm("STANDARD CHARGE: \$".number_format($fCharge, '4', '.', ''));
+			
+			// STANDARD MINIMUM CHARGE
+			if ($fStandardMinimumCharge)
+			{
+				$fCharge	= max($fCharge, $fStandardMinimumCharge);
+				$this->_logRateAlgorithm("STANDARD MINIMUM CHARGE: \$".number_format($fCharge, '4', '.', '')."\t= max({$fCharge}, {$fStandardMinimumCharge})");
+			}
 			
 			// CAPPING
 			// Apply Capping (unit-based capping takes priority over charge-based capping)
