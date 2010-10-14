@@ -356,6 +356,7 @@ class Rate extends ORM_Cached
 																						srg.StartDatetime	AS start_datetime,
 																						srg.EndDatetime		AS end_datetime",
 																					"	srg.Service = <service_id>
+																						AND <effective_datetime> BETWEEN rgr.effective_start_datetime AND rgr.effective_end_datetime
 																						AND r.Fleet = <is_fleet>
 																						AND
 																						(
@@ -378,7 +379,7 @@ class Rate extends ORM_Cached
 																								AND EXTRACT(HOUR_SECOND FROM <effective_datetime>) BETWEEN r.StartTime AND r.EndTime
 																							)
 																						)
-																						AND (<use_perfect_match> = 0 OR <effective_datetime> BETWEEN rgr.effective_start_datetime AND rgr.effective_end_datetime)",
+																						AND (<use_perfect_match> = 0 OR <effective_datetime> BETWEEN srg.StartDatetime AND srg.EndDatetime)",
 																					"	(<effective_datetime> BETWEEN srg.StartDatetime AND srg.EndDatetime) DESC,
 																						(LEAST(ABS(TIMESTAMPDIFF(SECOND, <effective_datetime>, srg.StartDatetime)), ABS(TIMESTAMPDIFF(SECOND, <effective_datetime>, srg.EndDatetime)))) ASC,
 																						srg.CreatedOn DESC,
