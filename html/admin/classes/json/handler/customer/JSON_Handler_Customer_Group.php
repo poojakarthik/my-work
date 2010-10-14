@@ -13,11 +13,24 @@ class JSON_Handler_Customer_Group extends JSON_Handler
 
 	public function getEmailTemplateHistory($iEmailTemplateId)
 	{
-		$aTemplateDetails = Email_Template_Details::getForTemplateId($iEmailTemplateId);
-		return	array(
-						'Success'	=> true,
-						'aResults'	=> $aTemplateDetails
-					);
+		try
+		{
+			$aTemplateDetails = Email_Template_Details::getForTemplateId($iEmailTemplateId);
+			return	array(
+							'Success'	=> true,
+							'aResults'	=> $aTemplateDetails
+						);
+
+		}
+		catch(Exception $e)
+		{
+			return	array(
+							'Success'	=> false,
+							'message'	=> $e->getMessage()
+						);
+
+
+		}
 
 
 	}
