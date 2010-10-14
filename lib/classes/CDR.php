@@ -92,6 +92,7 @@ class CDR extends ORM_Cached
 			}
 			
 			// ROUNDING
+			Log::getLog()->log("ROUNDED 1.5: \$".number_format($this->Charge, '4', '.', ''));
 			$this->Charge	= Rate::roundToRatingStandard($this->Charge);
 			Log::getLog()->log("ROUNDED 2: \$".number_format($this->Charge, '4', '.', ''));
 			
