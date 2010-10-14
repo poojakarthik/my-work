@@ -27,25 +27,28 @@ class Email_Template_Details extends ORM_Cached
 
 	}
 
-	public static function getFutureVersionsForId($iId)
+	public static function getFutureVersionsForTemplateId($iId)
 	{
-		$oThis = self::getForId($iId);
+		//$oThis = self::getForId($iId);
 		$oQuery	= new Query();
 		$sSql	= "SELECT id
 					FROM email_template_details
-					WHERE email_template_id = $oThis->email_template_id
+					WHERE email_template_id = $iId
 					AND effective_datetime>= Date(now())
 					AND end_datetime>effective_datetime";
 
 		$oQuery	= new Query();
 		$mResult	= $oQuery->Execute($sSql);
 		$aFutureVersions = array();
-		while ($aRow = $mResult->fetch_assoc())
+		if ($mResult)
 		{
-			$afutureVersions[]= self::getForId($aRow['id'])->toArray();//$oOrm->toArray();
+			while ($aRow = $mResult->fetch_assoc())
+			{
+				$aFutureVersions[]= self::getForId($aRow['id'])->toArray();//$oOrm->toArray();
+			}
 		}
 
-		return $afutureVersions;
+		return $aFutureVersions;
 
 	}
 
@@ -74,7 +77,7 @@ class Email_Template_Details extends ORM_Cached
 
 
 
-public static function getVariablesForTemplateVersion($iTemplateDetailsId)
+	public static function getVariablesForTemplateVersion($iTemplateDetailsId)
 	{
 		$sSql = "select class_name
 					FROM email_template_type e, email_template et, email_template_details ed
