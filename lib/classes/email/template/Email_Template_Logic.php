@@ -15,7 +15,10 @@ class Email_Template_Logic
 										'javascript',
 										'events',
 										'form',
-										'input'
+										'input',
+										'link',
+										'style',
+										'head'
 									);
 
 
@@ -156,10 +159,11 @@ class Email_Template_Logic
 		}
 	}
 
-	public static  function processHTML($sHTML, $bReport = false)
+
+	public static  function processHTML($sHTML, $bReport = false, $bForTestEmail=false)
 	{
 
-		if ($sHTML !=null)
+		if ($sHTML !=null && trim($sHTML)!='')
 		{
 			$aReport = array();
 			foreach(self::$_aReport as $sItem)
@@ -167,32 +171,10 @@ class Email_Template_Logic
 				$aReport[$sItem] = array();
 			}
 
-
-			//***************/
-
 			$oDOMDocument = @DOMDocument::loadHTML($sHTML);
-			$oRootElement = $oDOMDocument->documentElement;//->firstChild;
-			$oRootElement->firstChild->nextSibling == null&&$oRootElement->tagName =='html'?$oRootElement=$oRootElement->firstChild:null;
-			$sRootName = $oRootElement->tagName =='body'||$oRootElement->tagName =='html'?'div':$oRootElement->tagName;
-		 	$x = DOMDocument::loadXML("<".$sRootName."> </".$sRootName.">");
-
-		 	$oChildren = $oRootElement->childNodes;
-			if ($oChildren!=null)
-			{
-				foreach ($oChildren as $node)
-				{
-					$node = $x->importNode($node, true);
-					$x->documentElement->appendChild($node);
-				}
-
-			}
-
-
-
-			$oDOMDocument = $x;//*DOMDocument::loadXML(str_replace ( '<?xml version="1.0">' , "" , $x->saveXML()));
 			$xpath = new DOMXPath($oDOMDocument);
 
-	        $query = '//cssclass';
+/*	        $query = '//cssclass';
 	        $result = $xpath->query($query);
 
 			$aStyles = array();
@@ -219,11 +201,12 @@ class Email_Template_Logic
 			 	$oElements = $xpath->query("//*[@class = '".$sSelector."']");
 			 	foreach ($oElements as $oElement)
 			 	{
-			 		$oElement->setAttribute('style',$sStyle);
+			 		$sInlineStyle = $oElement->getAttributeNode('style')?$oElement->getAttributeNode ('style')->value:'';
+			 		$oElement->setAttribute('style',$sStyle." ".$sInlineStyle);
 			 	}
-			 }
+			 }*/
 
-			  $query = '//css';
+			$query = '//css';
 	        $result = $xpath->query($query);
 
 	        foreach($result as $node)
@@ -234,18 +217,34 @@ class Email_Template_Logic
 	        	$nodesToStyle = $xpath->query($sXpath);
 	        	foreach ($nodesToStyle as $nodeToStyle)
 	        	{
-	        		$nodeToStyle->setAttribute('style', $sStyle);
+	        		$sInlineStyle = $nodeToStyle->getAttributeNode('style')?$nodeToStyle->getAttributeNode ('style')->value:'';
+	        		$nodeToStyle->setAttribute('style', $sStyle." ".$sInlineStyle);
 	        	}
 				$node->parentNode->removeChild($node);
 	        }
 
+
+
 			 $result = $xpath->query("//script");
-			  foreach ($result as $node)
+			 foreach ($result as $node)
 			 {
-			 	$aReport['javascript'][] =  $node->textContent;
-			 	$node->parentNode->removeChild($node);
+				 $aReport['javascript'][] =  $node->textContent;
+				 $node->parentNode->removeChild($node);
 			 }
 
+			$result = $xpath->query("//link");
+			foreach ($result as $node)
+			{
+				$aReport['link'][] =  $node->textContent;
+				$node->parentNode->removeChild($node);
+			}
+
+			$result = $xpath->query("//style");
+			foreach ($result as $node)
+			 {
+				 $aReport['style'][] =  $node->textContent;
+			 	$node->parentNode->removeChild($node);
+			 }
 
 
 		 	$oElements = $xpath->query("//*[@*]");
@@ -258,13 +257,19 @@ class Email_Template_Logic
 			  			$aReport['events'][]= $node->textContent;
 			  			$oElement->removeAttribute($attrName);
 			  		}
-
 			  	}
 		 	}
 
 		 	/*remove form related things*/
 			$result = $xpath->query("//input");
-			  foreach ($result as $node)
+			foreach ($result as $node)
+			{
+				$aReport['input'][]=$node->textContent;
+			 	$node->parentNode->removeChild($node);
+			 }
+
+			$result = $xpath->query("//select");
+			 foreach ($result as $node)
 			 {
 			 	$aReport['input'][]=$node->textContent;
 			 	$node->parentNode->removeChild($node);
@@ -296,10 +301,57 @@ class Email_Template_Logic
 						$oNewNode->appendChild($oNewChild);
 					}
 				 }
+			}
 
+			 if ($bForTestEmail)
+			 {
+			 	$result = $xpath->query("//variable");
+				foreach ($result as $node)
+				{
+					$oAttributes 	= $node->attributes;
+					$oObject 		= $oAttributes->getNamedItem('object');
+					$oField 		= $oAttributes->getNamedItem('field');
+					$sText = "{".$oObject->value.".".$oField->value."}";
+					$oNewNode = new DOMElement('span', $sText);
+					$node->parentNode->replaceChild($oNewNode, $node);
+				}
+			 }
+
+
+			$oHeader = $oDOMDocument->getElementsByTagName ('head');
+			foreach ($oHeader as $node)
+			{
+			 	$aReport['head'][] = $node->textContent;
+				$node->parentNode->removeChild($node);
 
 			}
-			 return $bReport?$aReport:str_replace ( '<?xml version="1.0"?>' , "" , $oDOMDocument->saveXML());
+
+			$oRootElement = $oDOMDocument->documentElement;//->firstChild;
+			$oRootElement->firstChild->nextSibling == null&&$oRootElement->tagName =='html'?$oRootElement=$oRootElement->firstChild:null;
+			$sRootName = $oRootElement->tagName =='body'||$oRootElement->tagName =='html'?'div':$oRootElement->tagName;
+		 	$x = DOMDocument::loadXML("<".$sRootName."> </".$sRootName.">");
+
+		 	$oChildren = $oRootElement->childNodes;
+			if ($oChildren!=null)
+			{
+				foreach ($oChildren as $node)
+				{
+					$node = $x->importNode($node, true);
+					$x->documentElement->appendChild($node);
+				}
+
+			}
+
+			$oDOMDocument = $x;//*DOMDocument::loadXML(str_replace ( '<?xml version="1.0">' , "" , $x->saveXML()));
+
+
+			//For query debug purpose
+		  	$myFile = "html.txt";
+			$fh = fopen($myFile, 'w') or die("can't open file");
+			fwrite($fh, str_replace ( '<?xml version="1.0"?>' , "" , $oDOMDocument->saveXML()));
+			fclose($fh);
+
+			return $bReport?$aReport:str_replace ( '<?xml version="1.0"?>' , "" , $oDOMDocument->saveXML());
 		}
 		return null;
 	}
@@ -328,6 +380,7 @@ class Email_Template_Logic
 
  		return str_replace ( '<?xml version="1.0"?>' , "" , $x->saveXML());
 	}
+
 
 
 	public static function toText($sHTML)
@@ -440,6 +493,25 @@ class Email_Template_Logic
 		trim($aTemplateDetails['email_subject']) == ''?$aErrors[]= "Your template must have a subject.":null;
 		trim($aTemplateDetails['description']) == ''?$aErrors[]= "Your template must have a description.":null;
 		return $aErrors;
+	}
+
+	public static function sendTestEmail($aData)
+	{
+		$oEmail	= new Email_Flex();
+
+		$oEmail->setBodyText($aData['text']);
+
+		if ($aData['html']!=null && trim($aData['html'])!='')
+		{
+			$oEmail->setBodyHtml(self::processHTML($aData['html'], false, true));
+		}
+
+		$oEmail->setSubject($aData['subject']);
+
+		$oEmail->addTo($aData['to'], $aData['name']);
+		$oEmail->setFrom('ybs-admin@ybs.net.au', $name = 'Yellow Billing Services');
+		$oEmail->send();
+		return $oEmail;
 	}
 
 
