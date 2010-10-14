@@ -1873,7 +1873,6 @@ class Invoice extends ORM_Cached
 				Log::getLog()->log("\tCharge: {$fInitialCharge}");
 				Log::getLog()->log("\tRate : {$iInitialRate}");
 				
-				//Log::getLog()->log(print_r($oCDR->toArray(), true));
 				$oCDR->rate(true);
 				
 				Log::getLog()->log("After rate: ");
