@@ -15,6 +15,7 @@ class JSON_Handler_Customer_Group extends JSON_Handler
 	{
 		try
 		{
+
 			$aTemplateDetails = Email_Template_Details::getForTemplateId($iEmailTemplateId);
 			return	array(
 							'Success'	=> true,
@@ -26,13 +27,9 @@ class JSON_Handler_Customer_Group extends JSON_Handler
 		{
 			return	array(
 							'Success'	=> false,
-							'message'	=> $e->getMessage()
+							'message'	=> $e->__toString()
 						);
-
-
 		}
-
-
 	}
 
 	public function getAll()
