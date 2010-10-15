@@ -151,11 +151,15 @@ class ApplicationCollection extends ApplicationBaseClass
 							
 							// Insert into FileDownload table
 							$arrFileDownload	= Array();
-							$arrFileDownload['FileName']	= basename($strDownloadPath);
-							$arrFileDownload['Location']	= $strDownloadPath;
-							$arrFileDownload['Carrier']		= $intCarrier;
-							$arrFileDownload['CollectedOn']	= date("Y-m-d H:i:s");
-							$arrFileDownload['Status']		= FILE_COLLECTED;
+							$arrFileDownload['FileName']					= basename($strDownloadPath);
+							$arrFileDownload['Location']					= $strDownloadPath;
+							$arrFileDownload['Carrier']						= $intCarrier;
+							$arrFileDownload['CollectedOn']					= date("Y-m-d H:i:s");
+							$arrFileDownload['Status']						= FILE_COLLECTED;
+							
+							// I can't see why we'd want to Import Archives or Compressed File Types (instead of just their contents), but allow an override just in case
+							$arrFileDownload['FileType']['DownloadOnly']	= (isset($arrFileDownload['DownloadOnly'])) ? !!$arrFileDownload['FileType']['DownloadOnly'] : ($arrFileDownload['FileType']['Compression'] || $arrFileDownload['FileType']['ArchiveType']);
+							
 							if (!defined('COLLECTION_DEBUG_MODE') || !COLLECTION_DEBUG_MODE)
 							{
 								$arrFileDownload['Id']	= $insFileDownload->Execute($arrFileDownload);
@@ -174,6 +178,59 @@ class ApplicationCollection extends ApplicationBaseClass
 								{
 									$mixIndex	= key($arrDownloadedFiles);
 									next($arrDownloadedFiles);
+									
+									// Compression
+									if ($arrFile['FileType']['Compression'])
+									{
+										CliEcho("\n\t\t\t\t\t * Decompressing File... ", FALSE);
+										
+										$sStreamWrapper	= preg_replace('/\:\/\/\s+$/', '', $arrFile['FileType']['Compression']['StreamWrapper']);
+										
+										// Calculate Output Path
+										$sUncompressedFileName	= $sCompressedFileName;
+										if ($arrFile['FileType']['Compression']['FileExtensions'])
+										{
+											foreach ($arrFile['FileType']['Compression']['FileExtensions'] as $sMatch=>$sReplace)
+											{
+												$sMatch					= ($sMatch[0] === '.') ? $sMatch : ".{$sMatch}";
+												$sExtensionlessFileName	= basename($arrFile['FileName'], $sMatch);
+												
+												// If the extensionless filename is not the same as the original filename, then use it instead
+												if ($arrFile['FileName'] !== $sExtensionlessFileName)
+												{
+													$sUncompressedFileName	= $sExtensionlessFileName;
+													break;
+												}
+											}
+										}
+										
+										// Uncompress
+										$sUncompressedPath	= "{$arrFile['Location']}_files/{$sUncompressedFileName}";
+										if (false === ($sCompressedData = @file_get_contents("{$sStreamWrapper}://{$arrFile['Location']}")))
+										{
+											// Error
+											CliEcho("\t\t\t[ FAILED ]");
+											CliEcho("\t\t\t\t\t -- Unable to read compressed file '{$arrFile['Location']}': ".$php_errormsg);
+											continue;
+										}
+										
+										if (false === @file_put_contents($sUncompressedPath, $sUncompressedData))
+										{
+											// Error
+											CliEcho("\t\t\t[ FAILED ]");
+											CliEcho("\t\t\t\t\t -- Unable to write uncompressed file '{$sUncompressedPath}': ".$php_errormsg);
+											continue;
+										}
+										
+										$aUncompressedFile	= array(
+											'LocalPath'		=> $sUncompressedPath,
+											'RemotePath'	=> $arrFile['RemotePath'],
+											'FileType'		=> $arrFile['FileType'],
+											'file_download'	=> $arrFileDownload['Id']
+										);
+										
+										$arrDownloadedFiles[]	= $aUncompressedFile;
+									}
 									
 									// If this file is an archive, unpack it
 									if ($arrFile['FileType']['ArchiveType'])

@@ -17,6 +17,16 @@
 	const	DIRECTORY_NAME_REGEX_PREFIX	= 'regex:';
 	const	SKIP_IS_DIR_AFTER_REGEX		= true;
 	
+	const	ENABLE_DEBUG_OUTPUT	= true;
+	
+	protected function _cliEcho($sMessage='', $bNewLine=true)
+	{
+		if (self::ENABLE_DEBUG_OUTPUT)
+		{
+			CliEcho($sMessage, $bNewLine);
+		}
+	}
+	
 	public static function getConfigDefinition()
 	{
 		// Values defined in here are DEFAULT values
@@ -111,13 +121,13 @@
 	 */
 	protected function _getDownloadPaths()
 	{
-		//CliEcho("\nGetting Download Paths...");
+		$this->_cliEcho("\nGetting Download Paths...");
 		
 		// Get Path Definitions
 		$arrDefinitions		= $this->_oConfig->FileDefine;
 		
-		//CliEcho("Download Paths Definitions:");
-		//CliEcho(print_r($arrDefinitions, true));
+		$this->_cliEcho("Download Paths Definitions:");
+		$this->_cliEcho(print_r($arrDefinitions, true));
 		
 		$arrDownloadPaths	= array();
 		try
@@ -126,11 +136,11 @@
 		}
 		catch (Exception $eException)
 		{
-			//CliEcho("Error retrieving download paths: ".$eException->getMessage());
+			$this->_cliEcho("Error retrieving download paths: ".$eException->getMessage());
 		}
 		
-		//CliEcho("Final Download Paths:");
-		//CliEcho(print_r($arrDownloadPaths, true));
+		$this->_cliEcho("Final Download Paths:");
+		$this->_cliEcho(print_r($arrDownloadPaths, true));
 		
 		return $arrDownloadPaths;
 	}
@@ -139,31 +149,31 @@
 	{
 		$arrDownloadPaths	= array();
 		
-		//CliEcho("Entering path '{$strCurrentPath}'...");
+		$this->_cliEcho("Entering path '{$strCurrentPath}'...");
 		
 		
 		while (list($strDirectory, $arrDefinition) = each($arrDirectories))
 		{
-			//CliEcho("Currently ".(count($arrDirectories))." subdirectories for path '{$strCurrentPath}'");
+			$this->_cliEcho("Currently ".(count($arrDirectories))." subdirectories for path '{$strCurrentPath}'");
 			
 			// Is this a Regex/Variable Directory?
 			if (stripos($strDirectory, self::DIRECTORY_NAME_REGEX_PREFIX) === 0)
 			{
-				//CliEcho("'{$strDirectory}' is a Regex/Variable Directory");
+				$this->_cliEcho("'{$strDirectory}' is a Regex/Variable Directory");
 				
 				// Regex -- get list of subdirectories that match this criteria
 				$strRegex	= substr($strDirectory, strlen(self::DIRECTORY_NAME_REGEX_PREFIX));
-				//CliEcho("Checking for Subdirectory matches against '{$strRegex}'");
+				$this->_cliEcho("Checking for Subdirectory matches against '{$strRegex}'");
 				
 				$sWrappedPath			= $this->_strWrapper.$strCurrentPath.'/';
 				$arrDirectoryContents	= @scandir($sWrappedPath);
 				
 				if (is_array($arrDirectoryContents))
 				{
-					//CliEcho("Found ".count($arrDirectoryContents)." remote objects...");
+					$this->_cliEcho("Found ".count($arrDirectoryContents)." remote objects...");
 					foreach ($arrDirectoryContents as $intIndex=>$strSubItem)
 					{
-						//CliEcho("Subitem {$intIndex}: {$strSubItem}");
+						$this->_cliEcho("Subitem {$intIndex}: {$strSubItem}");
 						
 						$strSubItemFullPath	= $strCurrentPath.'/'.$strSubItem;
 						if (preg_match($strRegex, $strSubItem) && is_dir($this->_strWrapper.$strSubItemFullPath))
@@ -171,7 +181,7 @@
 							// We have a matching subdirectory -- add it to our list of directories to download from
 							if (!array_key_exists($strSubItemFullPath, $arrDirectories))
 							{
-								//CliEcho("Physical Subdirectory '{$strSubItem}' matches regex of '{$strRegex}'");
+								$this->_cliEcho("Physical Subdirectory '{$strSubItem}' matches regex of '{$strRegex}'");
 								$arrDirectories[$strSubItem]	= $arrDefinition;
 							}
 						}
@@ -185,7 +195,7 @@
 			}
 			else
 			{
-				//CliEcho("'{$strDirectory}' is a Normal Directory");
+				$this->_cliEcho("'{$strDirectory}' is a Normal Directory");
 				
 				// Normal Directory
 				$strDirectoryFullPath	= $strCurrentPath.'/'.$strDirectory;
@@ -193,7 +203,7 @@
 				// Browse Subdirectories
 				if (array_key_exists('arrSubdirectories', $arrDirectories[$strDirectory]) && is_array($arrDirectories[$strDirectory]['arrSubdirectories']) && count($arrDirectories[$strDirectory]['arrSubdirectories']))
 				{
-					//CliEcho("Traversing subdirectories for '{$strDirectory}'");
+					$this->_cliEcho("Traversing subdirectories for '{$strDirectory}'");
 					
 					$arrSubdirectoryDownloadPaths	= $this->_getDownloadPathsForDirectories($arrDirectories[$strDirectory]['arrSubdirectories'], $strDirectoryFullPath);
 					foreach ($arrSubdirectoryDownloadPaths as $arrSubdirectoryDownloadPath)
@@ -203,7 +213,7 @@
 				}
 				else
 				{
-					//CliEcho("'{$strDirectory}' has no Subdirectory definitions");
+					$this->_cliEcho("'{$strDirectory}' has no Subdirectory definitions");
 				}
 				
 				// Get any Files in this Directory
@@ -214,9 +224,9 @@
 					
 					$intFileCount	= count($arrDirectoryContents);
 					
-					//CliEcho("{$intFileCount} files (including '.' and '..')");
+					$this->_cliEcho("{$intFileCount} files (including '.' and '..')");
 					
-					//CliEcho("\033[s");
+					$this->_cliEcho("\033[s");
 					
 					if (is_array($arrDirectoryContents))
 					{
@@ -225,7 +235,7 @@
 						foreach ($arrDirectoryContents as $strSubItem)
 						{
 							$intProgress++;
-							//CliEcho("\033[2K\033[uProcessing File {$intProgress}/{$intFileCount}; Matches: {$intMatches}", false);
+							$this->_cliEcho("\033[2K\033[uProcessing File {$intProgress}/{$intFileCount}; Matches: {$intMatches}", false);
 							
 							$strSubItemFullPath	= $strDirectoryFullPath.'/'.$strSubItem;
 							
@@ -251,7 +261,7 @@
 								}
 							}
 						}
-						//CliEcho();
+						$this->_cliEcho();
 					}
 					else
 					{
@@ -261,7 +271,7 @@
 				}
 				else
 				{
-					//CliEcho("'{$strDirectory}' has no File Type definitions");
+					$this->_cliEcho("'{$strDirectory}' has no File Type definitions");
 				}
 			}
 		}

@@ -61,24 +61,24 @@
 		
 		// Init wrapper
 		$this->_strWrapper	= "ftp://{$strUsername}:{$strPassword}@{$strHost}";
-		$rResource	= fopen($this->_strWrapper.'/2009/W015657972.K16', 'r');
+		/*$rResource	= fopen($this->_strWrapper.'/2009/W015657972.K16', 'r');
 		ftp_pasv($rResource);
-		throw new Exception("TEST");
+		throw new Exception("TEST");*/
 		
 		// Test if the connection works...
-		if ($this->_resConnection = fopen($this->_strWrapper.'/2009/W015657972.K16', 'r'))
-		{
+		/*if ($this->_resConnection = fopen($this->_strWrapper.'/~', 'r'))
+		{*/
 			// Get list of files to download
 			$this->_arrDownloadPaths	= $this->_getDownloadPaths();
 			reset($this->_arrDownloadPaths);
 			
 			return true;
-		}
+		/*}
 		else
 		{
 			// Error
 			return "Unable to connect to host {$strHost}";
-		}
+		}*/
 	}
 }
 ?>
