@@ -2,7 +2,7 @@
 class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatcher
 {
 
-	const	RESOURCE_TYPE		= RESOURCE_TYPE_FILE_EXPORT_CORRESPONDENCE_YELLOWBILLINGCSV;
+	const	RESOURCE_TYPE		= RESOURCE_TYPE_FILE_EXPORT_CORRESPONDENCE_YELLOWBILLING_CSV;
 	const	RECORD_TYPE_DETAIL	= 'detail';
 	const	RECORD_TYPE_HEADER	= 'header';
 	const	RECORD_TYPE_FOOTER	= 'footer';
