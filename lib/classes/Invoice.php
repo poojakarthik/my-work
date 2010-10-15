@@ -1521,7 +1521,9 @@ class Invoice extends ORM_Cached
 									"FROM CDR cdr JOIN Rate r ON r.Id = cdr.Rate JOIN RecordType rt ON (rt.Id = cdr.RecordType) " .
 									"WHERE cdr.Service IN ({$sServices}) AND cdr.invoice_run_id = {$this->invoice_run_id} AND r.Uncapped = 0 AND cdr.RecordType IN ($sRecordTypes) " .
 									"ORDER BY cdr.StartDatetime ";
-				//Log::getLog()->log($sIncludedUsage);
+				
+				Log::getLog()->log("Included Usage Query: $sIncludedUsage");
+				
 				$oResult	= $oQuery->Execute($sIncludedUsage);
 				if ($oResult === FALSE)
 				{

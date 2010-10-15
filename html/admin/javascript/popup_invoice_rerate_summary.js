@@ -10,7 +10,6 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 		this._mDebugLog			= mDebugLog;
 		this._hToggleRows		= {};
 		this._bAllowAdjustment	= (typeof bAllowAdjustment == 'undefined') ? true : !!bAllowAdjustment;
-		
 		this._buildUI();
 	},
 	

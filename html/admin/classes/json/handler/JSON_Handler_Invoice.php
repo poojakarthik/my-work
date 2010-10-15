@@ -277,14 +277,22 @@ class JSON_Handler_Invoice extends JSON_Handler
 					$fAmount	= 0 - $fAmount;
 				}
 				
-				$bIsPlanCharge	= in_array($oCharge->ChargeType, array('PCAD', 'PCAR', 'PCR', 'PDCR'));
+				$bPlanCharge	= in_array($oCharge->ChargeType, array('PCAD', 'PCAR', 'PCR', 'PDCR'));
+				$bCredit		= in_array($oCharge->ChargeType, array('PCR', 'PDCR'));
 				if ($oCharge->Service !== null)
 				{
 					$aStdCharges[$oCharge->ChargeType]['service_totals'][$oCharge->Service]	+= $fAmount;
 				}
-				else if ($bIsPlanCharge)
+				else if ($bPlanCharge)
 				{
-					$fSharedPlanCharges	+= $fAmount;
+					if ($bCredit)
+					{
+						$fSharedPlanDiscounts	+= $fAmount;
+					}
+					else
+					{
+						$fSharedPlanCharges	+= $fAmount;
+					}
 				}
 				else 
 				{
