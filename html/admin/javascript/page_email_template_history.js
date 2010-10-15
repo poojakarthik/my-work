@@ -8,7 +8,7 @@ var Page_Email_Template_History = Class.create(
 	 * 
 	 * If bEditMode is false, then only those who belong to iEmployeeId can be closed or edited (not reassigned).
 	 */
-	initialize	: function(oContainerDiv, iTemplateId, sTemplateName)
+	initialize	: function(oContainerDiv, iTemplateId, sTemplateName, sCustomerGroup)
 	{
 		//'page-followup-list'
 		//'page-followup-list-all-container'
@@ -20,7 +20,7 @@ var Page_Email_Template_History = Class.create(
 
 		this._oFollowUpListAll	= 	new Component_Email_Template_History(
 										this._oContentDiv.select('div.page-email-template-history-container').first(), 
-										iTemplateId, sTemplateName
+										iTemplateId, sTemplateName, sCustomerGroup
 									);		
 		oContainerDiv.appendChild(this._oContentDiv);
 	}
