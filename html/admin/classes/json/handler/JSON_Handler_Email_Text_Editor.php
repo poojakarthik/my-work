@@ -14,23 +14,46 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 
 	 function getTemplates($bCountOnly=false, $iLimit=null, $iOffset=null, $sSortDirection='DESC')
 	{
-		$aTemplates = Email_Template_Type::getForAllCustomerGroups($bCountOnly, $iLimit, $iOffset, $sSortDirection);
-		return	array(
-						'Success'		=> true,
-						'aRecords'		=> $aTemplates,
-						'iRecordCount'	=> count($aTemplates)
-					);
+		try
+		{
+
+			$aTemplates = Email_Template_Type::getForAllCustomerGroups($bCountOnly, $iLimit, $iOffset, $sSortDirection);
+			return	array(
+							'Success'		=> true,
+							'aRecords'		=> $aTemplates,
+							'iRecordCount'	=> count($aTemplates)
+						);
+		}
+		catch (Exception $e)
+		{
+			return	array(
+								'Success'			=> false,
+								'message'			=> $e->__toString(),
+							);
+		}
 	}
 
 
 	 function getTemplateDetails($iTemplateId)
 	{
-		$oDetails = Email_Template_Details::getCurrentDetailsForTemplateId($iTemplateId);
+		try
+		{
 
-		return	array(
-						'bSuccess'						=> true,
-						'aTemplateDetails'		=> $oDetails->toArray()
-					);
+			$oDetails = Email_Template_Details::getCurrentDetailsForTemplateId($iTemplateId);
+
+			return	array(
+							'bSuccess'						=> true,
+							'aTemplateDetails'		=> $oDetails->toArray()
+						);
+		}
+		catch (Exception $e)
+		{
+			return	array(
+								'Success'			=> false,
+								'message'			=> $e->__toString(),
+							);
+		}
+
 	}
 
 	 function save($aTemplateDetails, $bConfirm = false)
@@ -55,6 +78,7 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 				}
 				try
 				{
+
 					///if there are future versions that are affected by this one, process them into the database
 					if (array_key_exists('aFutureVersions', $aTemplateDetails) && $aTemplateDetails['aFutureVersions']!=null)
 					{
@@ -99,16 +123,15 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 
 
 				}
-				catch (Exception $e)
-				{
-					// Exception caught, rollback db transaction
-					$oDataAccess->TransactionRollback();
-					return	array(
+			catch (Exception $e)
+			{
+				return	array(
 									'Success'			=> false,
-									'message'			=> $e->getMessage(),
+									'message'			=> $e->__toString(),
 									'Confirm'			=>true
 								);
-				}
+
+			}
 
 		}
 		else//this is a validation only, not the actual save
@@ -117,22 +140,23 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 			try
 			{
 
-			$aErrors = Email_Template_Logic::validateTemplateDetails($aTemplateDetails);
+
+					$aErrors = Email_Template_Logic::validateTemplateDetails($aTemplateDetails);
 
 
-			return	array(
-							'Success'			=> true,
-							'oTemplateDetails'	=> $aTemplateDetails,
-							'Confirm'			=> $bConfirm,
-							'Report'			=> Email_Template_Logic::processHTML($aTemplateDetails['email_html'], true),
-							'Errors'			=>$aErrors
-						);
+				return	array(
+								'Success'			=> true,
+								'oTemplateDetails'	=> $aTemplateDetails,
+								'Confirm'			=> $bConfirm,
+								'Report'			=> Email_Template_Logic::processHTML($aTemplateDetails['email_html'], true),
+								'Errors'			=>$aErrors
+							);
 			}
 			catch (Exception $e)
 			{
 				return	array(
 									'Success'			=> false,
-									'message'			=> $e->getMessage(),
+									'message'			=> $e->__toString(),
 									'Confirm'			=>false
 								);
 
@@ -143,79 +167,132 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 
 	 function toText($sHTML)
 	{
-		$oEmail = new Email_HTML_Document($sHTML);
+		try
+		{
 
-		return	array(
-						'Success'		=> true,
-						'text'		=> implode("",Email_Template_Logic::toText($sHTML))
-					);
+			$oEmail = new Email_HTML_Document($sHTML);
+
+			return	array(
+							'Success'		=> true,
+							'text'		=> implode("",Email_Template_Logic::toText($sHTML))
+						);
+		}
+		catch (Exception $e)
+		{
+			return	array(
+								'Success'			=> false,
+								'message'			=> $e->__toString(),
+							);
+		}
 	}
 
- function processHTML($sHTML)
+	 function processHTML($sHTML)
 	{
 
-		//		$oEmail = new Email_HTML_Document($sHTML);
-		return	array(
-						'Success'		=> true,
-						'html'		=> Email_Template_Logic::processHTML($sHTML)
-					);
+		try
+		{
+
+			return	array(
+							'Success'		=> true,
+							'html'		=> Email_Template_Logic::processHTML($sHTML)
+						);
+		}
+		catch (Exception $e)
+		{
+			return	array(
+								'Success'			=> false,
+								'message'			=> $e->__toString(),
+							);
+		}
 	}
 
 	 function getTemplateVersionDetails($iTemplateDetailsId)
 	{
-		$aTemplateDetails = Email_Template_Details::getForId($iTemplateDetailsId);
-		$aVars = Email_Template_Details::getVariablesForTemplateVersion($iTemplateDetailsId);
+		try
+		{
 
-		return	array(
-						'Success'		=> true,
-						'variables'		=> $aVars,
-						'oTemplateDetails' =>$aTemplateDetails->toArray()
-					);
+			$aTemplateDetails = Email_Template_Details::getForId($iTemplateDetailsId);
+			$aVars = Email_Template_Details::getVariablesForTemplateVersion($iTemplateDetailsId);
+
+			return	array(
+							'Success'		=> true,
+							'variables'		=> $aVars,
+							'oTemplateDetails' =>$aTemplateDetails->toArray()
+						);
+		}
+		catch (Exception $e)
+		{
+			return	array(
+								'Success'			=> false,
+								'message'			=> $e->__toString(),
+							);
+		}
 	}
 
 	 function  getTemplateVariables($iTemplateId)
 	{
+		try
+		{
 
+			$aVars = Email_Template::getVariablesForTemplate($iTemplateId);
 
-		$aVars = Email_Template::getVariablesForTemplate($iTemplateId);
-
-				return	array(
-						'Success'		=> true,
-						//'oTemplateDetails' =>array('template'=>$oTemplate->toArray(),'customer_group'=>$oCustomerGroup->toArray(),'template_type'=>$oTemplateType->toArray()),
-						'variables'		=> $aVars
-					);
-
-
+			return	array(
+					'Success'		=> true,
+					//'oTemplateDetails' =>array('template'=>$oTemplate->toArray(),'customer_group'=>$oCustomerGroup->toArray(),'template_type'=>$oTemplateType->toArray()),
+					'variables'		=> $aVars
+				);
+		}
+		catch (Exception $e)
+		{
+			return	array(
+								'Success'			=> false,
+								'message'			=> $e->__toString(),
+							);
+		}
 
 	}
-
-
 
 	 function getFutureVersions($iTemplateId)
 	{
 
-		return	array(
-						'Success'		=> true,
-						'aTemplateDetails' =>Email_Template_Details::getFutureVersionsForTemplateId($iTemplateId)
-					);
+		try
+		{
+
+			return	array(
+							'Success'		=> true,
+							'aTemplateDetails' =>Email_Template_Details::getFutureVersionsForTemplateId($iTemplateId)
+						);
+		}
+		catch (Exception $e)
+		{
+			return	array(
+								'Success'			=> false,
+								'message'			=> $e->__toString(),
+							);
+		}
 
 	}
 
 
 	function sendTestEmail($oData)
 	{
-		Email_Template_Logic::sendTestEmail((array)$oData);
-		return	array(
-						'Success'		=> true,
+		try
+		{
 
-					);
+			Email_Template_Logic::sendTestEmail((array)$oData);
+			return	array(
+							'Success'		=> true,
+						);
+		}
+		catch (Exception $e)
+		{
+			return	array(
+								'Success'			=> false,
+								'message'			=> $e->__toString(),
+							);
+		}
 
 	}
-
-
-
-
-
 
 }
 
