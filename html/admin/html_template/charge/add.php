@@ -99,7 +99,7 @@ class HtmlTemplateChargeAdd extends HtmlTemplate
 	 */
 	function Render()
 	{
-		$bolUserHasProperAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
+		$bolUserHasProperAdminPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
 		$bolUserHasCreditManagementPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
 		
 		// Currently anyone can create credit charges
@@ -107,11 +107,12 @@ class HtmlTemplateChargeAdd extends HtmlTemplate
 		//$bolCanCreateCreditCharges = ($bolUserHasProperAdminPerm || $bolUserHasCreditManagementPerm);
 		$bolCanCreateCreditCharges	= TRUE;
 		
-		$bHasAmountOverride	= !!DBO()->AmountOverride->Amount->Value;
+		// If IsRerateAdjustment & AmountOverride given, it must be an adjustment made post rerating an invoice
+		$bRerateAdjustment	= !!DBO()->Rerate->IsRerateAdjustment->Value && !!DBO()->AmountOverride->Amount->Value;
 		
 		// Only apply the output mask if the DBO()->Charge is not invalid
 		$bolApplyOutputMask = !DBO()->Charge->IsInvalid();
-
+		
 		$sChargeModel	= Constant_Group::getConstantGroup('charge_model')->getConstantName(DBO()->ChargeModel->Id->Value);
 		
 		$this->FormStart("Add{$sChargeModel}", "{$sChargeModel}", "Add");
@@ -147,30 +148,46 @@ class HtmlTemplateChargeAdd extends HtmlTemplate
 			DBO()->Account->TradingName->RenderOutput();
 		}
 		
-		// create a combobox containing all the charge types
-		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;{$sChargeModel}:</div>\n";
-		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='Charge.charge_type_id' name='Charge.charge_type_id' style='width:100%' onchange='Vixen.ValidateCharge.DeclareChargeType(this)'>\n";
+		if ($bRerateAdjustment)
+		{
+			$oChargeType			= Charge_Type_System_Config::getChargeTypeForSystemChargeType(CHARGE_TYPE_SYSTEM_RERATE);
+			DBO()->ChargeType->Id	= $oChargeType->Id;
+			DBO()->ChargeType->Load();
+		}
+		
+		if ($bRerateAdjustment === false)
+		{
+			// Normal charge, create a combobox containing all the charge types
+			echo "<div class='DefaultElement'>\n";
+			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;{$sChargeModel}:</div>\n";
+			echo "   <div class='DefaultOutput'>\n";
+			echo "      <select id='Charge.charge_type_id' name='Charge.charge_type_id' style='width:100%' onchange='Vixen.ValidateCharge.DeclareChargeType(this)'>\n";
+		}
+		else
+		{
+			// Rerate adjustment, render the charge_type_id as hidden
+			DBO()->Charge->charge_type_id	= DBO()->ChargeType->Id->Value;
+			DBO()->Charge->charge_type_id->RenderHidden();
+		}
+		
 		foreach (DBL()->ChargeTypesAvailable as $dboChargeType)
 		{
-			if (($dboChargeType->Fixed->Value == 1) && $bHasAmountOverride)
-			{
-				continue;
-			}
-			
 			$intChargeTypeId	= $dboChargeType->Id->Value;
-			// check if this ChargeType was the last one selected
-			if ((DBO()->ChargeType->Id->Value) && ($intChargeTypeId == DBO()->ChargeType->Id->Value))
+			
+			if ($bRerateAdjustment === false)
 			{
-				$strSelected	= "selected='selected'";
+				// check if this ChargeType was the last one selected
+				if ((DBO()->ChargeType->Id->Value) && ($intChargeTypeId == DBO()->ChargeType->Id->Value))
+				{
+					$strSelected	= "selected='selected'";
+				}
+				else
+				{
+					$strSelected	= "";
+				}
+				$strDescription	= $dboChargeType->Nature->Value .": ". $dboChargeType->Description->Value ." (". $dboChargeType->ChargeType->Value .")";
+				echo "         <option id='ChargeType.$intChargeTypeId' $strSelected value='$intChargeTypeId'>". htmlspecialchars($strDescription) ."</option>\n";
 			}
-			else
-			{
-				$strSelected	= "";
-			}
-			$strDescription	= $dboChargeType->Nature->Value .": ". $dboChargeType->Description->Value ." (". $dboChargeType->ChargeType->Value .")";
-			echo "         <option id='ChargeType.$intChargeTypeId' $strSelected value='$intChargeTypeId'>". htmlspecialchars($strDescription) ."</option>\n";
 			
 			// add ChargeType details to an array that will be passed to the javascript that handles events on the ChargeTypeCombo
 			$arrChargeTypeData['ChargeType']	= $dboChargeType->ChargeType->Value;
@@ -186,9 +203,13 @@ class HtmlTemplateChargeAdd extends HtmlTemplate
 			
 			$arrChargeTypes[$intChargeTypeId] = $arrChargeTypeData;
 		}
-		echo "      </select>\n";
-		echo "   </div>\n";
-		echo "</div>\n";
+		
+		if ($bRerateAdjustment === false)
+		{
+			echo "      </select>\n";
+			echo "   </div>\n";
+			echo "</div>\n";
+		}
 		
 		// if a charge type hasn't been selected then use the first one from the list
 		if (!DBO()->ChargeType->Id->Value)
@@ -200,11 +221,17 @@ class HtmlTemplateChargeAdd extends HtmlTemplate
 		DBO()->ChargeType->Id->RenderHidden();
 		$intChargeTypeId	= DBO()->ChargeType->Id->Value;
 		
-		// Use the default amount of the charge type
-		DBO()->Charge->Amount = $arrChargeTypes[$intChargeTypeId]['Amount'];
-		
 		// display the charge code when the Charge Type has been selected
-		DBO()->ChargeType->ChargeType = $arrChargeTypes[$intChargeTypeId]['ChargeType'];
+		if ($bRerateAdjustment === false)
+		{
+			// Use the default amount of the charge type
+			DBO()->Charge->Amount = $arrChargeTypes[$intChargeTypeId]['Amount'];
+		
+			DBO()->ChargeType->ChargeType 	= $arrChargeTypes[$intChargeTypeId]['ChargeType'];
+			DBO()->ChargeType->Description 	= $arrChargeTypes[$intChargeTypeId]['Description'];
+			DBO()->ChargeType->Nature 		= $arrChargeTypes[$intChargeTypeId]['Nature'];
+		}
+		
 		echo "	<div class='DefaultElement'>
 		  			<div id='ChargeType.ChargeType.Label' class='DefaultLabel'>&nbsp;&nbsp;{$sChargeModel} Type:</div>
 		   			<div id='ChargeType.ChargeType.Output' class='DefaultOutput'>
@@ -213,15 +240,13 @@ class HtmlTemplateChargeAdd extends HtmlTemplate
 				<div class='DefaultElement'>";
 		
 		// display the description
-		DBO()->ChargeType->Description = $arrChargeTypes[$intChargeTypeId]['Description'];
 		DBO()->ChargeType->Description->RenderOutput();
 		
 		// display the nature of the charge
-		DBO()->ChargeType->Nature = $arrChargeTypes[$intChargeTypeId]['Nature'];
 		DBO()->ChargeType->Nature->RenderOutput();
 		
 		// Override the amount if specified 
-		if ($bHasAmountOverride)
+		if ($bRerateAdjustment)
 		{
 			// Use override amount
 			DBO()->Charge->Amount = DBO()->AmountOverride->Amount->Value;
@@ -232,6 +257,7 @@ class HtmlTemplateChargeAdd extends HtmlTemplate
 		}
 		
 		DBO()->Charge->Amount->RenderInput(CONTEXT_INCLUDES_GST, TRUE, $bolApplyOutputMask);
+		
 		// if the charge type has a fixed amount then disable the amount textbox
 		if ($arrChargeTypes[$intChargeTypeId]['Fixed'])
 		{
@@ -260,6 +286,12 @@ class HtmlTemplateChargeAdd extends HtmlTemplate
 		// Create a textbox for including a note
 		DBO()->Charge->Notes->RenderInput(CONTEXT_DEFAULT);
 		
+		// Check if being called from a rerate, if so add the 'fake' invoice run id to the form (hidden)
+		if (DBO()->RerateInvoiceRun->Id->Value)
+		{
+			DBO()->RerateInvoiceRun->Id->RenderHidden();
+		}
+		
 		echo "</div>\n"; // GroupedContent
 
 		// create the buttons
@@ -281,7 +313,10 @@ class HtmlTemplateChargeAdd extends HtmlTemplate
 		echo "<script type='text/javascript'>Vixen.ValidateCharge.SetChargeTypes($strJsonCode);</script>\n";
 
 		// give the ChargeTypeCombo initial focus
-		echo "<script type='text/javascript'>document.getElementById('Charge.charge_type_id').focus();</script>\n";
+		if ($bRerateAdjustment === false)
+		{
+			echo "<script type='text/javascript'>document.getElementById('Charge.charge_type_id').focus();</script>\n";
+		}
 		
 		$this->FormEnd();
 	}

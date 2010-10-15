@@ -1151,9 +1151,11 @@ class MenuItems {
 									'account.js',
 									'control_field.js',
 									'control_field_select.js',
+									'control_field_textarea.js',
 									'section.js',
 									'popup_invoice_rerate.js',
-									'popup_invoice_rerate_summary.js'
+									'popup_invoice_rerate_summary.js',
+									'popup_invoice_rerate_ticket.js'
 								],
 								function()
 								{

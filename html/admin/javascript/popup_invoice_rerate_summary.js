@@ -10,6 +10,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 		this._mDebugLog			= mDebugLog;
 		this._hToggleRows		= {};
 		this._bAllowAdjustment	= (typeof bAllowAdjustment == 'undefined') ? true : !!bAllowAdjustment;
+		
 		this._buildUI();
 	},
 	
@@ -37,6 +38,9 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 										$T.div({class: 'buttons'},
 											oAdjustmentButton,
 											oLogButton,
+											$T.button({class: 'icon-button'},
+												'Add Ticket'
+											).observe('click', this._addTicket.bind(this)),
 											$T.button({class: 'icon-button'},
 												'Cancel'
 											).observe('click', this.hide.bind(this))
@@ -348,6 +352,12 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 	
 	_doAddAdjustment	: function()
 	{
+		if (Popup_Invoice_Rerate_Summary._hAdjustments[this._oNewInvoice.invoice_run_id])
+		{
+			Reflex_Popup.alert('You have already added an adjustment for this Invoice');
+			return;
+		}
+		
 		this._addAdjustment(false);
 	},
 	
@@ -356,7 +366,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 		if ((this._fAdjustmentAmount >= Popup_Invoice_Rerate_Summary.MIN_ADJUSTMENT) && !bForceIfNoDifference)
 		{
 			Reflex_Popup.yesNoCancel(
-				'There difference between the original invoice and the rerated invoice totals is not a Credit amount. Do you still want to add an adjustment?', 
+				'There difference between the original Invoice and the rerated Invoice totals is not a Credit amount. Do you still want to add an adjustment?', 
 				{fnOnYes: this._addAdjustment.bind(this, true)}
 			);
 			return;
@@ -378,8 +388,19 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 							{
 								// Invoice the adjustment is related to
 								Invoice	: this._oOriginalInvoice.Id
+							},
+							Rerate	:
+							{
+								IsRerateAdjustment	: true
 							}
 						};
+		
+		if (!Popup_Invoice_Rerate_Summary._hTickets[this._oNewInvoice.invoice_run_id])
+		{
+			// Haven't already added a ticket, send through the rerated invoice id so that one is added on adjustment request completion
+			oData.RerateInvoiceRun	= {Id: this._oNewInvoice.invoice_run_id};
+		}
+		
 		Vixen.Popup.ShowAjaxPopup('AddAdjustmentPopupId', 'medium', 'Request Adjustment', 'Adjustment', 'Add', oData);
 	},
 	
@@ -452,6 +473,22 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 	_showDebugLog	: function(sText)
 	{
 		Reflex_Popup.debug(sText);
+	},
+	
+	_addTicket	: function()
+	{
+		var iRerateInvoiceRunId	= this._oNewInvoice.invoice_run_id;
+		if (Popup_Invoice_Rerate_Summary._hTickets[iRerateInvoiceRunId])
+		{
+			Reflex_Popup.alert('You have already added a ticket for this Invoice');
+			return;
+		}
+		
+		// Record that a ticket has been (is to be) added for the rerated invoice
+		Popup_Invoice_Rerate_Summary._hTickets[iRerateInvoiceRunId]	= true;
+		
+		// Create the ticket
+		Popup_Invoice_Rerate_Summary.createTicket(null, this._oOriginalInvoice.Id, iRerateInvoiceRunId, null, true);
 	}
 });
 
@@ -463,6 +500,36 @@ Object.extend(Popup_Invoice_Rerate_Summary,
 	TOGGLE_OPEN		: '../admin/img/template/tree_open.png',
 	
 	MIN_ADJUSTMENT	: -1,
+	
+	_hAdjustments	: {},
+	_hTickets		: {},
+	
+	// Public
+	
+	createTicket	: function(sPopupMessage, iOriginalInvoiceId, iRerateInvoiceRunId, iAdjustmentId, bGoAhead)
+	{
+		if (iAdjustmentId !== null)
+		{
+			// Record that an adjustment has been added for the rerated invoice
+			Popup_Invoice_Rerate_Summary._hAdjustments[iRerateInvoiceRunId]	= true;
+		}
+		
+		// Record that a ticket has been (is to be) added for the rerated invoice
+		Popup_Invoice_Rerate_Summary._hTickets[iRerateInvoiceRunId]	= true;
+		
+		if (!bGoAhead && (sPopupMessage !== null))
+		{
+			// Show an alert with given message
+			Reflex_Popup.alert(sPopupMessage, {fnClose: Popup_Invoice_Rerate_Summary.createTicket.curry(null, iOriginalInvoiceId, iRerateInvoiceRunId, iAdjustmentId, true)});
+		}
+		else
+		{
+			// Show the 'add ticket' popup
+			new Popup_Invoice_Rerate_Ticket(iOriginalInvoiceId, iRerateInvoiceRunId, iAdjustmentId);
+		}
+	},
+	
+	// Private
 	
 	_getAmountTD	: function(mValue, sExtraClass)
 	{

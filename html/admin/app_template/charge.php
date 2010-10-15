@@ -768,11 +768,24 @@ class AppTemplateCharge extends ApplicationTemplate
 						return TRUE;
 					}
 					
-					
-
 					TransactionCommit();
 					Ajax()->AddCommand("ClosePopup", $objAjax->strId);
-					Ajax()->AddCommand("AlertReload", "The request for {$sChargeModel} has been successfully logged.");
+					
+					if (DBO()->RerateInvoiceRun->Id->Value && DBO()->Charge->Invoice->Value)
+					{
+						// The adjustment/charge has been added post invoice rerate, create a ticket
+						$iOriginalInvoiceId		= DBO()->Charge->Invoice->Value;
+						$iRerateInvoiceRunId	= DBO()->RerateInvoiceRun->Id->Value;
+						Ajax()->AddCommand(
+							"ExecuteJavascript", 
+							"Popup_Invoice_Rerate_Summary.createTicket(\"The request for {$sChargeModel} has been successfully logged.\", {$iOriginalInvoiceId}, {$iRerateInvoiceRunId}, {$intChargeId});"
+						);
+					}
+					else
+					{
+						// All finished
+						Ajax()->AddCommand("AlertReload", "The request for {$sChargeModel} has been successfully logged.");
+					}
 					return TRUE;
 				}
 			}

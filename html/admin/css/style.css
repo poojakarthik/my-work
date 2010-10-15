@@ -683,6 +683,12 @@ div.reflex-popup .popup-debug-text
 	height	: 30em;
 }
 
+.reflex-popup .alert-content
+{
+	margin		: 0.5em; 
+	text-align	: center;
+}
+
 /************************ END - Reflex Popup - END ****************************/
 
 /***************** START - Credit Card Payment Form - START *******************/
@@ -6557,7 +6563,8 @@ div.datetime-time
 
 .popup-invoice-rerate,
 .popup-invoice-rerate-summary,
-.popup-rate-plan-test
+.popup-rate-plan-test,
+.popup-invoice-rerate-ticket
 {
 	margin	: 0.5em;
 }
@@ -6689,7 +6696,8 @@ div.datetime-time
 }
 
 .popup-invoice-rerate-summary .buttons,
-.popup-rate-plan-test .buttons
+.popup-rate-plan-test .buttons,
+.popup-invoice-rerate-ticket .buttons
 {
 	margin-top	: 0.5em;
 	text-align	: center;
@@ -6760,6 +6768,12 @@ div.popup-rate-plan-test > table.reflex
 .popup-rate-plan-test > table.reflex > tbody > tr:last-child > th
 {
 	vertical-align	: top;
+}
+
+.popup-invoice-rerate-ticket .control-field textarea
+{
+	width	: 100%;
+	height	: 10em;
 }
 
 /***************** END - Invoice Rerating Popup(s) - END *****************/

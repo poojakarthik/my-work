@@ -107,7 +107,7 @@ Object.extend(Reflex_Popup, {
 		// Apply padding if text only content
 		if (typeof mContent == 'string')
 		{
-			mContent = 	$T.div({style: 'margin: 0.5em; text-align: center;'},
+			mContent = 	$T.div({class: 'alert-content'},
 							mContent
 						);
 		}
@@ -215,7 +215,7 @@ Object.extend(Reflex_Popup, {
 		// Apply padding if text only content
 		if ((typeof mContent == 'string') || !oConfig.bOverrideStyle)
 		{
-			mContent = 	$T.div({style: 'margin: 0.5em; text-align: center;'},
+			mContent = 	$T.div({class: 'alert-content'},
 							mContent
 						);
 		}

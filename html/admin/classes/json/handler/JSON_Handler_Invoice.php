@@ -215,6 +215,100 @@ class JSON_Handler_Invoice extends JSON_Handler
 		}
 	}
 	
+	public function createRerateTicket($iInvoiceId, $iRerateInvoiceRunId, $iAdjustmentId=null, $sAdditionalComments=null)
+	{
+		try
+		{
+			// Employee who will create the ticket
+			$oEmployee	= Employee::getForId(Flex::getUserId());
+			
+			// Original Invoice
+			$oInvoice	= Invoice::getForId($iInvoiceId);
+			
+			// Account invoice belongs to
+			$oAccount	= Account::getForId($oInvoice->Account);
+			
+			// Ticketing_Customer_Group_Email for the accounts customer group
+			$oCustomerGroupConfig	= Ticketing_Customer_Group_Config::getForId($oAccount->CustomerGroup);
+			$oCustomerGroupEmail 	= $oCustomerGroupConfig->getDefaultCustomerGroupEmail();
+			
+			// Get PDF content
+			$iBillingDate	= strtotime($oInvoice->CreatedOn);
+			$iYear 			= (int)date('Y', $iBillingDate);
+			$iMonth 		= (int)date('m', $iBillingDate);
+			$sInvoice 		= GetPDFContent($oAccount->Id, $iYear, $iMonth, $iInvoiceId, $iRerateInvoiceRunId);
+			if (!$sInvoice)
+			{
+				throw new Exception("Rerated Invoice PDF not found.");
+			}
+			
+			// Get PDF Filename
+			$sInvoiceFilename	= GetPdfFilename($oAccount->Id, $iYear, $iMonth, $iInvoiceId, $iRerateInvoiceRunId);
+			
+			// Build the message
+			$sMessage	= "Invoice {$iInvoiceId} has been rerated, the PDF is attached.\n";
+			if ($iAdjustmentId !== null)
+			{
+				$oCharge	= Charge::getForId($iAdjustmentId);
+				$sMessage	.= "\nAn adjustment has been requested.\n";
+				$sMessage	.= "Adjustment Type: {$oCharge->ChargeType}.\n";
+				$sMessage	.= "Amount: $".round($oCharge->Amount, 2)."\n";
+			}
+			
+			if ($sAdditionalComments !== null)
+			{
+				$sMessage	.= "\nAdditional Comments:\n{$sAdditionalComments}";
+			}
+			
+			// Details used to create the ticketing correspondence (& the ticket)
+			$aDetails	=	array(
+								'default_email_id'	=> $oCustomerGroupEmail->id,
+								'from'				=>	array(
+															'address'	=> $oEmployee->Email,
+															'name'		=> $oEmployee->getName(),
+														),
+								'delivery_status'	=> 	TICKETING_CORRESPONDANCE_DELIVERY_STATUS_RECEIVED,
+								'source_id'			=> 	TICKETING_CORRESPONDANCE_SOURCE_WEB,
+								'creation_datetime'	=> 	date('Y-m-d H:i:s'),
+								'subject'			=> 	"Rerated Invoice for ".date('jS M Y', strtotime($oInvoice->CreatedOn)),
+								'message'			=> 	$sMessage,
+								'attachments'		=>	array(
+															array(
+																'name'	=> $sInvoiceFilename,
+																'type'	=> 'application/pdf',
+																'data'	=> $sInvoice
+															)
+														)
+							);
+			
+			// Create the ticketing correspondence
+			$oCorrespondence	= Ticketing_Correspondance::createForDetails($aDetails);
+			if ($oCorrespondence === null)
+			{
+				throw new Exception("Ticketing Correspondence not created, most likely invalid customer group.");
+			}
+			
+			// Set the account id of the ticket
+			$oTicket			= $oCorrespondence->getTicket();
+			$oTicket->accountId	= $oAccount->Id;
+			$oTicket->save();
+			
+			// Success!
+			return	array(
+						'bSuccess'	=> true,
+						'iTicketId'	=> $oTicket->id
+					);
+		}
+		catch (Exception $oException)
+		{
+			$bGod	= Employee::getForId(Flex::getUserId())->isGod();
+			return	array(
+						'bSuccess'	=> false,
+						'sMessage'	=> ($bGod ? 'Failed to save ticket. '.$oException->getMessage() : 'An error occured accessing the database')
+					);
+		}
+	}
+	
 	private function _generateInvoiceSummary($oInvoice)
 	{
 		try
