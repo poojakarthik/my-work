@@ -148,7 +148,6 @@ class Application_Handler_CustomerGroup extends Application_Handler
 
 
 	}
-
 }
 
 ?>
