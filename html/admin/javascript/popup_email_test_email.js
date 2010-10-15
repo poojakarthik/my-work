@@ -2,7 +2,7 @@ var Popup_Email_Test_Email	= Class.create(Reflex_Popup,
 {
 	initialize	: function($super, oData)
 	{
-		$super(25);
+		$super(35);
 		this._oLoadingPopup	= new Reflex_Popup.Loading();		
 		this._oData = oData;	
 		this._buildUI();		
@@ -12,29 +12,30 @@ var Popup_Email_Test_Email	= Class.create(Reflex_Popup,
 	_buildUI	: function()
 	{
 		
-		var oToSpan 								= document.createElement('span');
-		oToSpan .innerHTML 						= 'To:';
+		var oAddressSpan 							= document.createElement('span');
+		oAddressSpan.innerHTML 						= 'Add Email Address:';
 		
 		
-		var oNameSpan 								= document.createElement('span');
-		oNameSpan.innerHTML 						= 'Name';
-		
+		var oToSpan 							= document.createElement('span');
+		oToSpan.innerHTML 						= 'To:';
+		oToSpan.className 						= 'email-address-list';
 		
 		this._oRecipientInput = Control_Field.factory('text', {mAutoTrim: true, sLabel: 'Recipient Email'});		
-		this._oRecipientInput.addOnChangeCallback(this._RecipientChange.bind(this));
+		//this._oRecipientInput.addOnChangeCallback(this._RecipientChange.bind(this));
 		
-		this._oRecipientName = Control_Field.factory('text', {mAutoTrim: true, sLabel: 'Recipient Name'});	
+		this._oTo = $T.div({class: 'popup-email-test-to'});	
 		
 		
 		var oTable 								= new Email_Template_Table({}, {}, {class: 'reflex input'});
 		oTable.appendRow($T.tr(
-								$T.th(oToSpan),
-								$T.td(this._oRecipientInput.getElement())
+								$T.th(oAddressSpan),
+								$T.td(this._oRecipientInput.getElement(), 
+								$T.img({src: Popup_Email_Text_Editor.ADD_IMAGE_SOURCE ,class:'add-icon', title: 'Add Address' }).observe('click', this._addAddress.bind(this)))
 								)
 						);
 		oTable.appendRow($T.tr(
-								$T.th(oNameSpan),
-								$T.td(this._oRecipientName.getElement())
+								$T.th(oToSpan),
+								$T.td(this._oTo)
 								)
 						);
 		
@@ -63,14 +64,7 @@ button.observe('click', this._sendMail.bind(this));
 											);
 
 		
-		// var oRecipientSection = oContent.select('div.recipient').first();
-		
-		// oRecipientSection.appendChild($T.span('To:'));
-		// oRecipientSection.appendChild(this._oRecipientInput.getElement());
-		
-		
-		// oRecipientSection.appendChild($T.span('Name:'));
-		// oRecipientSection.appendChild(this._oRecipientName.getElement());
+
 		
 		
 		this._oSendButton = oContent.select('div.footer .icon-button').first();
@@ -84,7 +78,8 @@ button.observe('click', this._sendMail.bind(this));
 	
 	_RecipientChange: function ()
 	{
-		this._oRecipientInput.getElementValue()!=null&&this._validEmail(this._oRecipientInput.getElementValue())?this._oSendButton.disabled = false:this._oSendButton.disabled = true;	
+		debugger;
+		this._oTo.childNodes.length>0?this._oSendButton.disabled = false:this._oSendButton.disabled = true;	
 	},
 	
 	_sendMail: function(oResponse)
@@ -93,11 +88,19 @@ button.observe('click', this._sendMail.bind(this));
 		if (typeof oResponse == 'undefined' || typeof oResponse.Success == 'undefined')
 		{		
 			this._oLoadingPopup.display();
+			var aTo = [];
+			
+			for (var i=0;i<this._oTo.childNodes.length;i++)
+			{
+				aTo.push(this._oTo.childNodes[i].childNodes[0].wholeText);
+			
+			}
+			
+			sSubject = this._oData.html==null?'[Flex Test Email - Text Only] ':'[Flex Test Email] ';
 			var oData =	{	text: this._oData.text,
 							html:	this._oData.html, 
-							subject:"[Flex Test Email] " + this._oData.subject,
-							to: this._oRecipientInput.getElementValue(),
-							name: this._oRecipientName.getElementValue()
+							subject: sSubject + this._oData.subject,
+							to: aTo							
 						};
 			var fnRequest     = jQuery.json.jsonFunction(this._sendMail.bind(this), this._sendMail.bind(this), 'Email_Text_Editor', 'sendTestEmail');
 			fnRequest(oData);
@@ -113,10 +116,8 @@ button.observe('click', this._sendMail.bind(this));
 			
 			}
 			else
-			{
-				Reflex_Popup.alert("There was a problem. Your test email could not be sent", {sTitle: 'Send Test Email'});
-				this._oLoadingPopup.hide();
-			
+			{		
+				Popup_Email_Text_Editor.serverErrorMessage.bind(this,oResponse.message, 'Email Template Test Mail Error')();			
 			}
 			
 		
@@ -130,6 +131,37 @@ button.observe('click', this._sendMail.bind(this));
 		return expEmail.test(strEmail);	
 	},
 	
+	_addAddress: function()
+	{
+		debugger;
+		var address = this._oRecipientInput.getElementValue();
+		if (this._validEmail(address))
+		{
+			var img = $T.img({src: Popup_Email_Text_Editor.CANCEL_IMAGE_SOURCE, alt: '', title: 'Cancel', class: 'remove-icon'})
+			
+			var span = $T.span(	address,
+								img,
+								";"		
+								);
+			img.observe('click',this._removeAddress.bind(this,span));
+			this._oTo.appendChild(span);
+			this._RecipientChange();
+		
+		}
+		else
+		{
+			Reflex_Popup.alert('That\'s not a valid email address', {sTitle: 'email address error'})
+			
+		
+		}
+	
+	},
+	
+	_removeAddress: function(span)
+	{
+		this._oTo.removeChild(span);
+		this._RecipientChange();	
+	},
 	_close : function ()
 	{
 		

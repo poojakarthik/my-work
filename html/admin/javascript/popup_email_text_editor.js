@@ -51,6 +51,8 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		}
 		else
 		{					
+			if (oResponse.Success)
+			{
 			this._oTemplateDetails = {};
 			this._oTemplateDetails.email_template_id = iTemplateId;
 			this._oTemplateDetails.email_text = ' ';
@@ -62,7 +64,13 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 			this._oTemplateDetails.end_datetime = null;
 			this._oTemplateDetails.description = ' ';			
 			this._oVariables  = oResponse.variables;
-			this._buildGUI();			
+			this._buildGUI();
+			}
+			else
+			{
+				Popup_Email_Text_Editor.serverErrorMessage.bind(this,oResponse.message, 'Email Template Retrieval Error')();			
+			
+			}
 		}	
 	},
 	
@@ -76,9 +84,17 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		}
 		else
 		{
-			this._oTemplateDetails = oResponse.oTemplateDetails;
-			this._oVariables  = oResponse.variables;
-			this._buildGUI();	
+			
+			if (oResponse.Success)
+			{
+				this._oTemplateDetails = oResponse.oTemplateDetails;
+				this._oVariables  = oResponse.variables;
+				this._buildGUI();
+			}
+			else
+			{
+				Popup_Email_Text_Editor.serverErrorMessage.bind(this,oResponse.message, 'Email Template Retrieval Error')();				
+			}
 		
 		}
 	},
@@ -147,6 +163,16 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		this.oTextArea.value 	= this._oTemplateDetails.email_text;			
 		var oTableRow 			= oControl.generateInputTableRow().oElement;
 		var th 					= oTableRow.select('th').first();
+		th.appendChild($T.div({class: 'buttons'},
+
+				$T.button({class: 'icon-button'},
+					$T.img({src: Popup_Email_Text_Editor.EMAIL_IMAGE_SOURCE, alt: '', title: 'Text Only Test Mail'}),
+					$T.span('Text Only Test')
+				).observe('click', this._sendTestMail.bind(this, true))
+				)					
+			);
+		
+		
 		th.appendChild(this.defineVariableList());			
 		oTBody.appendChild(oTableRow);
 		
@@ -175,7 +201,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 						$T.button({class: 'icon-button'},
 							$T.img({src: Popup_Email_Text_Editor.EMAIL_IMAGE_SOURCE, alt: '', title: 'Send Test Mail'}),
 							$T.span('Send Test Mail')
-						).observe('click', this._sendTestMail.bind(this))
+						).observe('click', this._sendTestMail.bind(this, false))
 						)					
 					);
 		th.appendChild(this.defineVariableList());	
@@ -189,9 +215,11 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		this.display();	
 	},
 	
-	_sendTestMail: function()
+	_sendTestMail: function(bTextOnly)
 	{
-		new Popup_Email_Test_Email({text: this.oTextArea.value, html:this.oHTMLTextArea.value, subject:this._oSubjectTextField.value });	
+		sHTML = bTextOnly?null:this.oHTMLTextArea.value;		
+		oData = {text: this.oTextArea.value, html:sHTML, subject:this._oSubjectTextField.value }
+		new Popup_Email_Test_Email(oData);	
 	},
 	
 	_close : function ()
@@ -263,9 +291,15 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	successPreviewCallback: function (oResponse)
 	{
 	    this._oLoadingPopup.hide();	
-		var html = oResponse.html;
-		new Popup_email_HTML_Preview(html, this._unhide.bind(this));
-		//this.hide();		
+		if (oResponse.Success)
+		{
+			var html = oResponse.html;
+			new Popup_email_HTML_Preview(html, this._unhide.bind(this));
+		}
+		else
+		{
+			Popup_Email_Text_Editor.serverErrorMessage.bind(this,oResponse.message, 'Email Template HTML Preview Error')();				
+		}	
 	},
 	
 	_generateTextButtonClick: function()
@@ -277,10 +311,17 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	
 	successToTextCallback: function (oResponse)
 	{
-	    this._oLoadingPopup.hide();		
-		var text = oResponse.text;
-		this.oTextArea.value = text;
-		this._oTabGroup.switchToTab(this._oTextTab);
+	    if (oResponse.Success)
+		{
+			this._oLoadingPopup.hide();		
+			var text = oResponse.text;
+			this.oTextArea.value = text;
+			this._oTabGroup.switchToTab(this._oTextTab);
+		}
+		else
+		{
+			Popup_Email_Text_Editor.serverErrorMessage.bind(this,oResponse.message, 'Email Template Text Generation Error')();				
+		}
 	},	
 	
 	_saveButtonClick: function()
@@ -306,7 +347,8 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	{		
 		if (!oResponse.Success)
 		{
-			Reflex_Popup.alert("There was an error, your template could not be saved: " + oResponse.message, {sTitle: 'Email Template Save Error'});		
+					
+			Popup_Email_Text_Editor.serverErrorMessage.bind(this,oResponse.message, 'Email Template Save Error')();
 			this._oLoadingPopup.hide();	
 		}
 		else
@@ -328,13 +370,45 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	
 	errorCallback: function()
 	{		  
-		alert('error');
+		Popup_Email_Text_Editor.serverErrorMessage.bind(this,"Ajax error. No details available", 'Email Template System Error')();
 	},
 	
 });
 
-Popup_Email_Text_Editor.ICON_IMAGE_SOURCE 	= '../admin/img/template/rebill.png';
+
+Popup_Email_Text_Editor.serverErrorMessage = function (sMessage,sTitle){
+
+	var detailsDiv = document.createElement('div');
+	detailsDiv.innerHTML = sMessage;
+	detailsDiv.style.display = 'none';
+	detailsDiv.className = 'error-details';
+
+	var div = document.createElement('div');
+
+	div.observe('click', Popup_Email_Text_Editor._toggleErrorDetails.bind(this,detailsDiv));
+	div.innerHTML = "Error Details";
+	div.className = 'details-link';
+	var containerDiv = document.createElement('div');
+	containerDiv.innerHTML = "There was a server processing error. Please contact YBS for assistance.";
+	containerDiv.appendChild(div);
+	containerDiv.appendChild(detailsDiv);
+	containerDiv.className = "email-template-error";
+	
+	this._oLoadingPopup.hide();
+	Reflex_Popup.alert(containerDiv, {sTitle: sTitle});
+};
+
+Popup_Email_Text_Editor._toggleErrorDetails = function (oDiv)
+{
+	oDiv.style.display == 'none'?oDiv.style.display = '':oDiv.style.display = 'none';
+
+};
+
+
+
+Popup_Email_Text_Editor.ICON_IMAGE_SOURCE 		= '../admin/img/template/rebill.png';
 Popup_Email_Text_Editor.CANCEL_IMAGE_SOURCE 	= '../admin/img/template/delete.png';
-Popup_Email_Text_Editor.SAVE_IMAGE_SOURCE 	= '../admin/img/template/tick.png';
+Popup_Email_Text_Editor.SAVE_IMAGE_SOURCE 		= '../admin/img/template/tick.png';
 Popup_Email_Text_Editor.PREVIEW_IMAGE_SOURCE 	='../admin/img/template/magnifier.png';
-Popup_Email_Text_Editor.EMAIL_IMAGE_SOURCE 	='../admin/img/template/email.png';
+Popup_Email_Text_Editor.EMAIL_IMAGE_SOURCE 		='../admin/img/template/email.png';
+Popup_Email_Text_Editor.ADD_IMAGE_SOURCE  	= '../admin/img/template/new.png';

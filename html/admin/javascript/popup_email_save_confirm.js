@@ -15,7 +15,7 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 	
 	_buildUI	: function()
 	{
-		this._oTemplateSelect		= 	$T.div(	{class: 'popup-email-html-preview'},
+		this._oTemplateSelect		= 	$T.div(	{class: 'popup-email-html-save'},
 											
 											$T.div({class: 'report'}),
 											$T.div({class: 'date'}),
@@ -336,10 +336,18 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 	
 	successPreviewCallback: function (oResponse)
 	{
-	    this._oLoadingPopup.hide();	
-		var html = oResponse.html;
-		new Popup_email_HTML_Preview(html, this._unhide.bind(this));
-		this.hide();		
+	    if (oResponse.Success)
+		{
+			this._oLoadingPopup.hide();	
+			var html = oResponse.html;
+			new Popup_email_HTML_Preview(html, this._unhide.bind(this));
+			this.hide();
+		}
+		else
+		{
+			Popup_Email_Text_Editor.serverErrorMessage.bind(this,oResponse.message, 'Email Template HTML Preview Error')();				
+		}
+			
 	},
 	
 	_close : function ()
@@ -382,10 +390,8 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 			// Build array of option elements
 			this._comboFuture.emptyList();
 			if (!oResponse.Success)
-			{
-				// Failed
-				Popup_Email_Save_Confirm._ajaxError(oResponse);
-				this._oLoadingPopup.hide();
+			{				
+				Popup_Email_Text_Editor.serverErrorMessage.bind(this,oResponse.message, 'Email Template HTML Save Error')();			
 			}
 			else
 			{
