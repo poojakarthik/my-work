@@ -172,39 +172,7 @@ class Email_Template_Logic
 			}
 
 			$oDOMDocument = @DOMDocument::loadHTML($sHTML);
-			$xpath = new DOMXPath($oDOMDocument);
-
-/*	        $query = '//cssclass';
-	        $result = $xpath->query($query);
-
-			$aStyles = array();
-			 foreach ($result as $node)
-			 {
-			 	foreach ($node->attributes as $attrName => $attrNode)
-			  	{
-			  		if ($attrName == 'name')
-			  		{
-			  			$sName = $attrNode->value;
-			  		}
-
-			  		if ($attrName == 'style')
-			  		{
-			  			$sStyle = $attrNode->value;
-			  		}
-				}
-				$aStyles[$sName] = $sStyle;
-				$node->parentNode->removeChild($node);
-			}
-
-			 foreach ($aStyles as $sSelector=>$sStyle)
-			 {
-			 	$oElements = $xpath->query("//*[@class = '".$sSelector."']");
-			 	foreach ($oElements as $oElement)
-			 	{
-			 		$sInlineStyle = $oElement->getAttributeNode('style')?$oElement->getAttributeNode ('style')->value:'';
-			 		$oElement->setAttribute('style',$sStyle." ".$sInlineStyle);
-			 	}
-			 }*/
+			$xpath = @new DOMXPath($oDOMDocument);
 
 			$query = '//css';
 	        $result = $xpath->query($query);
@@ -212,13 +180,16 @@ class Email_Template_Logic
 	        foreach($result as $node)
 	        {
 	        	$sSelector = $node->getAttributeNode('selector')->value;
-	        	$sXpath = CSS_Parser::cssToXpath($sSelector);
-	        	$sStyle = $node->textContent;
-	        	$nodesToStyle = $xpath->query($sXpath);
-	        	foreach ($nodesToStyle as $nodeToStyle)
+	        	if ($sSelector!=null)
 	        	{
-	        		$sInlineStyle = $nodeToStyle->getAttributeNode('style')?$nodeToStyle->getAttributeNode ('style')->value:'';
-	        		$nodeToStyle->setAttribute('style', $sStyle." ".$sInlineStyle);
+		        	$sXpath = CSS_Parser::cssToXpath($sSelector);
+		        	$sStyle = $node->textContent;
+		        	$nodesToStyle = $xpath->query($sXpath);
+		        	foreach ($nodesToStyle as $nodeToStyle)
+		        	{
+		        		$sInlineStyle = $nodeToStyle->getAttributeNode('style')?$nodeToStyle->getAttributeNode ('style')->value:'';
+		        		$nodeToStyle->setAttribute('style', $sStyle." ".$sInlineStyle);
+		        	}
 	        	}
 				$node->parentNode->removeChild($node);
 	        }
@@ -329,14 +300,21 @@ class Email_Template_Logic
 			$oRootElement = $oDOMDocument->documentElement;//->firstChild;
 			$oRootElement->firstChild->nextSibling == null&&$oRootElement->tagName =='html'?$oRootElement=$oRootElement->firstChild:null;
 			$sRootName = $oRootElement->tagName =='body'||$oRootElement->tagName =='html'?'div':$oRootElement->tagName;
-		 	$x = DOMDocument::loadXML("<".$sRootName."> </".$sRootName.">");
+
+			$aError = error_get_last();
+			$x = @DOMDocument::loadXML("<".$sRootName."> </".$sRootName.">");
+			$aNewError = error_get_last();
+			if ($aNewError!=$aError && $aNewError['message'] != "Non-static method DOMDocument::loadXML() should not be called statically")
+			{
+				throw new Exception ("DOM Document XML Error whilst processing HTML: ".$aNewError['message']);
+			}
 
 		 	$oChildren = $oRootElement->childNodes;
 			if ($oChildren!=null)
 			{
 				foreach ($oChildren as $node)
 				{
-					$node = $x->importNode($node, true);
+					$node = @$x->importNode($node, true);
 					$x->documentElement->appendChild($node);
 				}
 
@@ -345,11 +323,11 @@ class Email_Template_Logic
 			$oDOMDocument = $x;//*DOMDocument::loadXML(str_replace ( '<?xml version="1.0">' , "" , $x->saveXML()));
 
 
-			//For query debug purpose
+		/*	//For query debug purpose
 		  	$myFile = "html.txt";
 			$fh = fopen($myFile, 'w') or die("can't open file");
 			fwrite($fh, str_replace ( '<?xml version="1.0"?>' , "" , $oDOMDocument->saveXML()));
-			fclose($fh);
+			fclose($fh);*/
 
 			return $bReport?$aReport:str_replace ( '<?xml version="1.0"?>' , "" , $oDOMDocument->saveXML());
 		}
@@ -439,7 +417,7 @@ class Email_Template_Logic
 			}
 
 
-					if ($oNode->tagName == 'p' || $oNode->tagName == 'br' ||$oNode->tagName == 'div' ||$oNode->tagName == 'h1' ||$oNode->tagName == 'h2' ||$oNode->tagName == 'form' ||$oNode->tagName == 'table')
+					if ($oNode->tagName == 'p' || $oNode->tagName == 'br' ||$oNode->tagName == 'div' ||$oNode->tagName == 'h1' ||$oNode->tagName == 'h2' ||$oNode->tagName == 'h3'||$oNode->tagName == 'h4'||$oNode->tagName == 'form' ||$oNode->tagName == 'table')
 					{
 						$aTextArray[] = "\n\n";
 					}
@@ -508,9 +486,18 @@ class Email_Template_Logic
 
 		$oEmail->setSubject($aData['subject']);
 
-		$oEmail->addTo($aData['to'], $aData['name']);
+		foreach ($aData['to'] as $sAddress)
+		{
+			$oEmail->addTo($sAddress);
+		}
 		$oEmail->setFrom('ybs-admin@ybs.net.au', $name = 'Yellow Billing Services');
-		$oEmail->send();
+		$aError = error_get_last();
+		@$oEmail->send();
+		$aNewError = error_get_last();
+			if ($aNewError!=$aError && $aNewError['type']!=2048)
+			{
+				throw new Exception ("Email Error: ".$aNewError['message']);
+			}
 		return $oEmail;
 	}
 
