@@ -268,7 +268,7 @@ class Application
 				ContextMenu()->Admin->Correspondence->Ledger->ViewCorrespondenceBatchLedger();
 				ContextMenu()->Admin->Correspondence->Ledger->ViewCorrespondenceRunLedger();
 			}
-			ContextMenu()->Admin->EmailTextEditor();
+
 
 		}
 
@@ -521,7 +521,7 @@ class Application
 			}
 		}
 
-		ContextMenu()->Admin->EmailTextEditor();
+
 
 		// Document Management
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW) && Flex_Module::isActive(FLEX_MODULE_DOCUMENT_MANAGEMENT))
@@ -829,7 +829,7 @@ class Application
 					die;
 				}
 
-				// The user needs to log in.  Show the login popup, 
+				// The user needs to log in.  Show the login popup,
 				// returning the failed request data so it can be retried on a successful login
 				$objSubmit	= new SubmittedData();
 				Ajax()->AddCommand("VerifyUser", $objSubmit->Ajax());
