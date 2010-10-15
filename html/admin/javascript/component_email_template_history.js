@@ -5,6 +5,7 @@ var Component_Email_Template_History = Class.create(
 	initialize	: function(oContainerDiv, iTemplateId, sTemplateName, sCustomerGroup)
 	{
 		
+		this._oLoadingPopup	= new Reflex_Popup.Loading();
 		this._iTemplateId 		= iTemplateId;
 		this._sTemplateName 	= sTemplateName;
 		this._oContainerDiv 	= oContainerDiv;
@@ -35,7 +36,7 @@ var Component_Email_Template_History = Class.create(
 			
 			if (!oResponse.Success)
 			{
-				Reflex_Popup.alert($T.div($T.span("There was an error, the email template history could not be retrieved: "),$T.textarea( oResponse.message)), {sTitle: 'Email Template Save Error', iWidth: 50});
+				Popup_Email_Text_Editor.serverErrorMessage.bind(this,oResponse.message, 'Email Template History Error')();				
 			}
 			else
 			{
