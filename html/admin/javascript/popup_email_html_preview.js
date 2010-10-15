@@ -3,20 +3,21 @@ var Popup_email_HTML_Preview	= Class.create(Reflex_Popup,
 {
 	initialize	: function($super, sHTML, fnCallback)
 	{
-		$super(70);
+		$super(70,70);
 		this._oLoadingPopup	= new Reflex_Popup.Loading();
 		this._fnCallback = fnCallback;
-		
-		this._buildUI(sHTML);
+		this._sHTML = sHTML;
+		this._buildUI();
 	},
 	
 		
-	_buildUI	: function(sHTML)
+	_buildUI	: function()
 	{
-		var oTemplateSelect		= 	$T.div({class: 'popup-email-html-preview'},
-									$T.div({class: 'preview-pane'}
+		
+		var oContent		= 	$T.div({class: 'popup-email-html-preview'},
+									$T.iframe({class: 'preview-pane' }
 										
-									),
+									).observe('load', this._setFrameContent.bind(this)),
 									
 									
 									$T.div({class: 'buttons'},
@@ -29,18 +30,24 @@ var Popup_email_HTML_Preview	= Class.create(Reflex_Popup,
 
 									
 								);
-		this._oTemplateSelect	= oTemplateSelect;		
-		this.oHTMLPreviewDiv = document.createElement('div');
-			this.oHTMLPreviewDiv.innerHTML = sHTML;
 			
-			
-		var oPreviewDiv = oTemplateSelect.select('div.preview-pane').first();
-		oPreviewDiv.appendChild(this.oHTMLPreviewDiv);
-		this.setTitle('HTML Preview');
 		
+		this._ifrm = oContent.select('iframe.preview-pane').first();		
+		
+		this.setTitle('HTML Preview');		
 		this.addCloseButton(this._close.bind(this));
-		this.setContent(oTemplateSelect);
+		this.setContent(oContent);
 		this.display();
+	},
+	
+	_setFrameContent: function()
+	{
+		debugger;
+		ifrm = (this._ifrm.contentWindow) ? this._ifrm.contentWindow : (this._ifrm.contentDocument.document) ? this._ifrm.contentDocument.document : this._ifrm.contentDocument;
+		ifrm.document.open();
+		ifrm.document.write(this._sHTML);
+		ifrm.document.close();
+		//this._ifrm.style.height = ifrm.document.body.scrollHeight + (ifrm.document.body.offsetHeight - ifrm.document.body.clientHeight);	
 	},
 	
 	_close : function ()
