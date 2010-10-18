@@ -331,7 +331,7 @@ class Email_Template_Logic
 
 			return $bReport?$aReport:str_replace ( '<?xml version="1.0"?>' , "" , $oDOMDocument->saveXML());
 		}
-		return null;
+		return "";
 	}
 
 	protected function _preProcessHTML($sHTML)
@@ -363,8 +363,8 @@ class Email_Template_Logic
 
 	public static function toText($sHTML)
 	{
-		//$sHTML = self::processHTML($sHTML);
-		return self::_toText(DOMDocument::loadXML(self::processHTML($sHTML))->documentElement, array());
+
+		return !empty($sHTML) && trim($sHTML)!='' && $sHTML!=null?self::_toText(DOMDocument::loadXML(self::processHTML($sHTML))->documentElement, array()):array();
 	}
 
 	protected static function _toText($oNode, $aTextArray, $sParentTagName = null, $iListCount = null)
