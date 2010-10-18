@@ -6695,7 +6695,24 @@ div.datetime-time
 	font-size	: 1.2em;
 }
 
-.popup-invoice-rerate-summary .buttons,
+.popup-invoice-rerate-summary .buttons-left,
+.popup-invoice-rerate-summary .buttons-right
+{
+	margin-top	: 0.5em;
+	display		: inline-block;
+	width		: 50%;
+}
+
+.popup-invoice-rerate-summary .buttons-left
+{
+	text-align	: left;
+}
+
+.popup-invoice-rerate-summary .buttons-right
+{
+	text-align	: right;
+}
+
 .popup-rate-plan-test .buttons,
 .popup-invoice-rerate-ticket .buttons
 {

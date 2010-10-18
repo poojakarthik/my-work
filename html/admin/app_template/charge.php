@@ -770,21 +770,25 @@ class AppTemplateCharge extends ApplicationTemplate
 					
 					TransactionCommit();
 					Ajax()->AddCommand("ClosePopup", $objAjax->strId);
-					
-					if (DBO()->RerateInvoiceRun->Id->Value && DBO()->Charge->Invoice->Value)
+					$sAlert	= "The request for {$sChargeModel} has been successfully logged.";
+					if (DBO()->Rerate->IsRerateAdjustment->Value)
 					{
-						// The adjustment/charge has been added post invoice rerate, create a ticket
+						// The adjustment/charge has been added post invoice rerate
 						$iOriginalInvoiceId		= DBO()->Charge->Invoice->Value;
 						$iRerateInvoiceRunId	= DBO()->RerateInvoiceRun->Id->Value;
+						$sRerateInvoiceRunId	= ($iRerateInvoiceRunId == null ? 'null' : $iRerateInvoiceRunId);
+						$bAddTicket				= DBO()->RerateInvoiceRun->Id->Value && DBO()->Charge->Invoice->Value;
+						$sAddTicket				= ($bAddTicket ? 'true' : 'false');
+						
 						Ajax()->AddCommand(
 							"ExecuteJavascript", 
-							"Popup_Invoice_Rerate_Summary.createTicket(\"The request for {$sChargeModel} has been successfully logged.\", {$iOriginalInvoiceId}, {$iRerateInvoiceRunId}, {$intChargeId});"
+							"Popup_Invoice_Rerate_Summary.adjustmentAdded(\"{$sAlert}\", {$iOriginalInvoiceId}, {$sRerateInvoiceRunId}, {$intChargeId}, {$sAddTicket});"
 						);
 					}
 					else
 					{
 						// All finished
-						Ajax()->AddCommand("AlertReload", "The request for {$sChargeModel} has been successfully logged.");
+						Ajax()->AddCommand("AlertReload", $sAlert);
 					}
 					return TRUE;
 				}

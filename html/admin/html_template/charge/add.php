@@ -99,30 +99,25 @@ class HtmlTemplateChargeAdd extends HtmlTemplate
 	 */
 	function Render()
 	{
-		$bolUserHasProperAdminPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
-		$bolUserHasCreditManagementPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
-		
 		// Currently anyone can create credit charges
 		// Originally the user required either the Proper Admin permission or the Credit Management permission
-		//$bolCanCreateCreditCharges = ($bolUserHasProperAdminPerm || $bolUserHasCreditManagementPerm);
 		$bolCanCreateCreditCharges	= TRUE;
 		
 		// If IsRerateAdjustment & AmountOverride given, it must be an adjustment made post rerating an invoice
-		$bRerateAdjustment	= !!DBO()->Rerate->IsRerateAdjustment->Value && !!DBO()->AmountOverride->Amount->Value;
+		$bolRerateAdjustment	= !!DBO()->Rerate->IsRerateAdjustment->Value && !!DBO()->AmountOverride->Amount->Value;
 		
 		// Only apply the output mask if the DBO()->Charge is not invalid
-		$bolApplyOutputMask = !DBO()->Charge->IsInvalid();
+		$bolApplyOutputMask	= !DBO()->Charge->IsInvalid();
 		
-		$sChargeModel	= Constant_Group::getConstantGroup('charge_model')->getConstantName(DBO()->ChargeModel->Id->Value);
+		// Name of the charge model (e.g. 'Charge' or 'Adjustment')
+		$strChargeModel	= Constant_Group::getConstantGroup('charge_model')->getConstantName(DBO()->ChargeModel->Id->Value);
 		
-		$this->FormStart("Add{$sChargeModel}", "{$sChargeModel}", "Add");
-		
+		$this->FormStart("Add{$strChargeModel}", "{$strChargeModel}", "Add");
 		if (!$bolCanCreateCreditCharges)
 		{
 			// The user cannot create credit charges because they don't have the required permissions
-			echo "<div class='MsgNotice'>You do not have the required permissions to create credit {$sChargeModel}s</div>";
+			echo "<div class='MsgNotice'>You do not have the required permissions to create credit {$strChargeModel}s</div>";
 		}
-		
 		echo "<div class='GroupedContent'>\n";
 		
 		// include all the properties necessary to add the record, which shouldn't have controls visible on the form
@@ -133,11 +128,9 @@ class HtmlTemplateChargeAdd extends HtmlTemplate
 			// Display the Service's FNN
 			DBO()->Service->FNN->RenderOutput();
 		}
-
-		DBO()->Account->Id->RenderHidden();
-
 		
 		// Display account details
+		DBO()->Account->Id->RenderHidden();
 		DBO()->Account->Id->RenderOutput();
 		if (DBO()->Account->BusinessName->Value)
 		{
@@ -148,48 +141,12 @@ class HtmlTemplateChargeAdd extends HtmlTemplate
 			DBO()->Account->TradingName->RenderOutput();
 		}
 		
-		if ($bRerateAdjustment)
-		{
-			$oChargeType			= Charge_Type_System_Config::getChargeTypeForSystemChargeType(CHARGE_TYPE_SYSTEM_RERATE);
-			DBO()->ChargeType->Id	= $oChargeType->Id;
-			DBO()->ChargeType->Load();
-		}
-		
-		if ($bRerateAdjustment === false)
-		{
-			// Normal charge, create a combobox containing all the charge types
-			echo "<div class='DefaultElement'>\n";
-			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;{$sChargeModel}:</div>\n";
-			echo "   <div class='DefaultOutput'>\n";
-			echo "      <select id='Charge.charge_type_id' name='Charge.charge_type_id' style='width:100%' onchange='Vixen.ValidateCharge.DeclareChargeType(this)'>\n";
-		}
-		else
-		{
-			// Rerate adjustment, render the charge_type_id as hidden
-			DBO()->Charge->charge_type_id	= DBO()->ChargeType->Id->Value;
-			DBO()->Charge->charge_type_id->RenderHidden();
-		}
-		
+		// Build array of available charge type information
 		foreach (DBL()->ChargeTypesAvailable as $dboChargeType)
 		{
 			$intChargeTypeId	= $dboChargeType->Id->Value;
 			
-			if ($bRerateAdjustment === false)
-			{
-				// check if this ChargeType was the last one selected
-				if ((DBO()->ChargeType->Id->Value) && ($intChargeTypeId == DBO()->ChargeType->Id->Value))
-				{
-					$strSelected	= "selected='selected'";
-				}
-				else
-				{
-					$strSelected	= "";
-				}
-				$strDescription	= $dboChargeType->Nature->Value .": ". $dboChargeType->Description->Value ." (". $dboChargeType->ChargeType->Value .")";
-				echo "         <option id='ChargeType.$intChargeTypeId' $strSelected value='$intChargeTypeId'>". htmlspecialchars($strDescription) ."</option>\n";
-			}
-			
-			// add ChargeType details to an array that will be passed to the javascript that handles events on the ChargeTypeCombo
+			// Add ChargeType details to an array that will be passed to the javascript that handles events on the ChargeTypeCombo
 			$arrChargeTypeData['ChargeType']	= $dboChargeType->ChargeType->Value;
 			$arrChargeTypeData['Nature']		= $dboChargeType->Nature->Value;
 			$arrChargeTypeData['Fixed']			= $dboChargeType->Fixed->Value;
@@ -199,19 +156,49 @@ class HtmlTemplateChargeAdd extends HtmlTemplate
 			$strAmount							= OutputMask()->MoneyValue($fltAmountIncGST, 2, TRUE);
 			$arrChargeTypeData['Amount']		= $strAmount;
 			$arrChargeTypeData['Description']	= $dboChargeType->Description->Value;
-			//$arrChargeTypeData['Id']		= $dboChargeType->Id->Value;
 			
-			$arrChargeTypes[$intChargeTypeId] = $arrChargeTypeData;
+			// Cache charge type info
+			$arrChargeTypes[$intChargeTypeId] 	= $arrChargeTypeData;
 		}
 		
-		if ($bRerateAdjustment === false)
+		if ($bolRerateAdjustment)
 		{
+			// Rerate Adjustment, show only the System Charge Type for Rerating, disallow selection of a charge type 
+			$objChargeType			= Charge_Type_System_Config::getChargeTypeForSystemChargeType(CHARGE_TYPE_SYSTEM_RERATE);
+			DBO()->ChargeType->Id	= $objChargeType->Id;
+			DBO()->ChargeType->Load();
+			
+			// Render the charge_type_id as hidden
+			DBO()->Charge->charge_type_id	= DBO()->ChargeType->Id->Value;
+			DBO()->Charge->charge_type_id->RenderHidden();
+		}
+		else
+		{
+			// Show a select with all available charge types as options
+			echo "<div class='DefaultElement'>\n";
+			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;{$strChargeModel}:</div>\n";
+			echo "   <div class='DefaultOutput'>\n";
+			echo "      <select id='Charge.charge_type_id' name='Charge.charge_type_id' style='width:100%' onchange='Vixen.ValidateCharge.DeclareChargeType(this)'>\n";
+			foreach ($arrChargeTypes as $intChargeTypeId => $arrChargeTypeData)
+			{
+				// Check if this ChargeType was the last one selected
+				if ((DBO()->ChargeType->Id->Value) && ($intChargeTypeId == DBO()->ChargeType->Id->Value))
+				{
+					$strSelected	= "selected='selected'";
+				}
+				else
+				{
+					$strSelected	= "";
+				}
+				$strDescription	= "{$arrChargeTypeData['Nature']}: {$arrChargeTypeData['Description']} ({$arrChargeTypeData['ChargeType']})";
+				echo "		<option id='ChargeType.{$intChargeTypeId}' {$strSelected} value='{$intChargeTypeId}'>". htmlspecialchars($strDescription) ."</option>\n";
+			}
 			echo "      </select>\n";
 			echo "   </div>\n";
 			echo "</div>\n";
 		}
 		
-		// if a charge type hasn't been selected then use the first one from the list
+		// If a charge type hasn't been selected then use the first one from the list
 		if (!DBO()->ChargeType->Id->Value)
 		{
 			reset($arrChargeTypes);
@@ -221,44 +208,43 @@ class HtmlTemplateChargeAdd extends HtmlTemplate
 		DBO()->ChargeType->Id->RenderHidden();
 		$intChargeTypeId	= DBO()->ChargeType->Id->Value;
 		
-		// display the charge code when the Charge Type has been selected
-		if ($bRerateAdjustment === false)
+		// Display the charge code when the Charge Type has been selected
+		if ($bolRerateAdjustment === false)
 		{
 			// Use the default amount of the charge type
-			DBO()->Charge->Amount = $arrChargeTypes[$intChargeTypeId]['Amount'];
-		
+			DBO()->Charge->Amount			= $arrChargeTypes[$intChargeTypeId]['Amount'];
 			DBO()->ChargeType->ChargeType 	= $arrChargeTypes[$intChargeTypeId]['ChargeType'];
 			DBO()->ChargeType->Description 	= $arrChargeTypes[$intChargeTypeId]['Description'];
 			DBO()->ChargeType->Nature 		= $arrChargeTypes[$intChargeTypeId]['Nature'];
 		}
 		
 		echo "	<div class='DefaultElement'>
-		  			<div id='ChargeType.ChargeType.Label' class='DefaultLabel'>&nbsp;&nbsp;{$sChargeModel} Type:</div>
+		  			<div id='ChargeType.ChargeType.Label' class='DefaultLabel'>&nbsp;&nbsp;{$strChargeModel} Type:</div>
 		   			<div id='ChargeType.ChargeType.Output' class='DefaultOutput'>
 		   				".DBO()->ChargeType->ChargeType->Value."
 		   			</div class='DefaultOutput'>
 				<div class='DefaultElement'>";
 		
-		// display the description
+		// Display the description
 		DBO()->ChargeType->Description->RenderOutput();
 		
-		// display the nature of the charge
+		// Display the nature of the charge
 		DBO()->ChargeType->Nature->RenderOutput();
 		
 		// Override the amount if specified 
-		if ($bRerateAdjustment)
+		if ($bolRerateAdjustment)
 		{
 			// Use override amount
-			DBO()->Charge->Amount = DBO()->AmountOverride->Amount->Value;
+			DBO()->Charge->Amount	= DBO()->AmountOverride->Amount->Value;
 			
 			// Tell the ValidateCharge javascript object what the amount override is
-			$sOverrideAmount	= OutputMask()->MoneyValue(DBO()->AmountOverride->Amount->Value, 2, TRUE);
-			echo "<script type='text/javascript'>Vixen.ValidateCharge.SetOverrideAmount('$sOverrideAmount');</script>\n";
+			$strOverrideAmount	= OutputMask()->MoneyValue(DBO()->AmountOverride->Amount->Value, 2, TRUE);
+			echo "<script type='text/javascript'>Vixen.ValidateCharge.SetOverrideAmount('$strOverrideAmount');</script>\n";
 		}
 		
 		DBO()->Charge->Amount->RenderInput(CONTEXT_INCLUDES_GST, TRUE, $bolApplyOutputMask);
 		
-		// if the charge type has a fixed amount then disable the amount textbox
+		// If the charge type has a fixed amount then disable the amount textbox
 		if ($arrChargeTypes[$intChargeTypeId]['Fixed'])
 		{
 			echo "<script type='text/javascript'>document.getElementById('Charge.Amount').disabled = TRUE;</script>\n";
@@ -272,8 +258,9 @@ class HtmlTemplateChargeAdd extends HtmlTemplate
 		echo "         <option value=''>No Association</option>\n";
 		foreach (DBL()->AccountInvoices as $dboInvoice)
 		{
-			$strInvoiceId = $dboInvoice->Id->Value;
-			$strInvoiceCreatedOn = OutputMask()->ShortDate($dboInvoice->CreatedOn->Value);
+			$strInvoiceId 			= $dboInvoice->Id->Value;
+			$strInvoiceCreatedOn 	= OutputMask()->ShortDate($dboInvoice->CreatedOn->Value);
+			
 			// Check if this invoice Id was the last one selected
 			$strSelected = ($strInvoiceId == DBO()->Charge->Invoice->Value) ? "selected='selected'" : "";
 			
@@ -286,7 +273,12 @@ class HtmlTemplateChargeAdd extends HtmlTemplate
 		// Create a textbox for including a note
 		DBO()->Charge->Notes->RenderInput(CONTEXT_DEFAULT);
 		
-		// Check if being called from a rerate, if so add the 'fake' invoice run id to the form (hidden)
+		// Check if being called from a rerate, if so add 'isRerateAdjustment' & the fake invoice run id to the form (hidden)
+		if (DBO()->Rerate->IsRerateAdjustment->Value)
+		{
+			DBO()->Rerate->IsRerateAdjustment->RenderHidden();
+		}
+		
 		if (DBO()->RerateInvoiceRun->Id->Value)
 		{
 			DBO()->RerateInvoiceRun->Id->RenderHidden();
@@ -294,27 +286,27 @@ class HtmlTemplateChargeAdd extends HtmlTemplate
 		
 		echo "</div>\n"; // GroupedContent
 
-		// create the buttons
-		echo "
-<div>
-	<div style='float:right'>
-		<input type='button' style='display:none;' id='AddChargeSubmitButton' value='Apply Changes' onclick=\"Vixen.Ajax.SendForm('VixenForm_Add{$sChargeModel}', 'Add {$sChargeModel}', '{$sChargeModel}', 'Add', 'Popup', 'Add{$sChargeModel}PopupId', 'medium', '{$this->_strContainerDivId}')\"></input>
-		<input type='button' value='Submit Request' onclick='Vixen.ValidateCharge.SubmitRequest()'></input>
-		<input type='button' value='Cancel' onclick='Vixen.Popup.Close(this)'></input>
-	</div>
-	<div style='float:none;clear:both'></div>
-</div>
-";
+		// Create the buttons
+		$strAddChargeJS	= "Vixen.Ajax.SendForm('VixenForm_Add{$strChargeModel}', 'Add {$strChargeModel}', '{$strChargeModel}', 'Add', 'Popup', 'Add{$strChargeModel}PopupId', 'medium', '{$this->_strContainerDivId}')";
+		echo "	<div>
+					<div style='float:right'>
+						<input type='button' style='display:none;' id='AddChargeSubmitButton' value='Apply Changes' onclick=\"{$strAddChargeJS}\"></input>
+						<input type='button' value='Submit Request' onclick='Vixen.ValidateCharge.SubmitRequest()'></input>
+						<input type='button' value='Cancel' onclick='Vixen.Popup.Close(this)'></input>
+					</div>
+					<div style='float:none;clear:both'></div>
+				</div>
+				";
 
-		// define the data required of the javacode that handles events and validation of this form
+		// Define the data required of the javacode that handles events and validation of this form
 		$strJsonCode = Json()->encode($arrChargeTypes);
 		
 		// Set the charge types in the javascript object that handles interactions with this popup window
 		echo "<script type='text/javascript'>Vixen.ValidateCharge.SetChargeTypes($strJsonCode);</script>\n";
 
-		// give the ChargeTypeCombo initial focus
-		if ($bRerateAdjustment === false)
+		if ($bolRerateAdjustment === false)
 		{
+			// Give the ChargeTypeCombo initial focus
 			echo "<script type='text/javascript'>document.getElementById('Charge.charge_type_id').focus();</script>\n";
 		}
 		

@@ -1,13 +1,14 @@
 
 var Popup_Invoice_Rerate_Ticket	= Class.create(Reflex_Popup, 
 {
-	initialize	: function($super, iOriginalInvoiceId, iRerateInvoiceRunId, iAdjustmentId)
+	initialize	: function($super, iOriginalInvoiceId, iRerateInvoiceRunId, iAdjustmentId, fnOnComplete)
 	{
 		$super(40);
 		
 		this._iOriginalInvoiceId	= iOriginalInvoiceId;
 		this._iRerateInvoiceRunId	= iRerateInvoiceRunId;
 		this._iAdjustmentId			= iAdjustmentId;
+		this._fnOnComplete			= fnOnComplete;
 		
 		this._buildUI();
 	},
@@ -33,6 +34,12 @@ var Popup_Invoice_Rerate_Ticket	= Class.create(Reflex_Popup,
 									).observe('click', this._createTicket.bind(this))
 								)
 							);
+		
+		if (this._iAdjustmentId === null)
+		{
+			// No adjustment added, the ticket isn't mandatory
+			this.addCloseButton();
+		}
 		
 		this.setTitle('Add Rerate Ticket');
 		this.setContent(this._oContent);
@@ -86,6 +93,12 @@ var Popup_Invoice_Rerate_Ticket	= Class.create(Reflex_Popup,
 						$T.span(' created')
 					)
 				);
+				
+				// Completion callback
+				if (this._fnOnComplete)
+				{
+					this._fnOnComplete(oResponse.iTicketId);
+				}
 			}
 			else
 			{

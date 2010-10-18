@@ -11,10 +11,21 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 		this._hToggleRows		= {};
 		this._bAllowAdjustment	= (typeof bAllowAdjustment == 'undefined') ? true : !!bAllowAdjustment;
 		
+		Popup_Invoice_Rerate_Summary._hInstances[oOriginalInvoice.Id]	= this;
+		
 		this._buildUI();
 	},
 	
+	// Public
+	
+	hide	: function($super)
+	{
+		$super();
+		delete Popup_Invoice_Rerate_Summary._hInstances[this._oOriginalInvoice.Id];
+	},
+	
 	// Private
+	
 	_buildUI	: function()
 	{
 		var oSection	= new Section(false);
@@ -28,24 +39,34 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 		this._fAdjustmentAmount	= this._oNewInvoice.oSummaryData.fInvoiceTotal - this._oOriginalInvoice.oSummaryData.fInvoiceTotal;
 		
 		var oLogButton			= 	$T.button({class: 'icon-button'},
-										'View Log'
+										$T.img({src: Popup_Invoice_Rerate_Summary.VIEW_LOG_SRC}),
+										$T.span('View Log')
 									).observe('click', this._showDebugLog.bind(this, this._mDebugLog));
 		var oAdjustmentButton	= 	$T.button({class: 'icon-button'},
-										'Add Adjustment'
+										$T.img({src: Popup_Invoice_Rerate_Summary.ADD_ADJUSTMENT_SRC}),
+										$T.span('Add Adjustment')
 									).observe('click', this._doAddAdjustment.bind(this));
+		var oTicketButton		= 	$T.button({class: 'icon-button'},
+										$T.img({src: Popup_Invoice_Rerate_Summary.ADD_TICKET_SRC}),
+										$T.span('Add Ticket')
+									).observe('click', this._addTicket.bind(this));
 		this._oContent			=	$T.div({class: 'popup-invoice-rerate-summary'},
 										oSection.getElement(),
-										$T.div({class: 'buttons'},
+										$T.div({class: 'buttons-left'},
 											oAdjustmentButton,
+											oTicketButton
+										),
+										$T.div({class: 'buttons-right'},
 											oLogButton,
 											$T.button({class: 'icon-button'},
-												'Add Ticket'
-											).observe('click', this._addTicket.bind(this)),
-											$T.button({class: 'icon-button'},
-												'Cancel'
+												$T.img({src: Popup_Invoice_Rerate_Summary.CLOSE_SRC}),
+												$T.span('Close')
 											).observe('click', this.hide.bind(this))
 										)
 									);
+		
+		this.oAdjustmentButton	= oAdjustmentButton;
+		this.oTicketButton		= oTicketButton;
 		
 		if (!this._mDebugLog || this._mDebugLog === '')
 		{
@@ -488,7 +509,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 		Popup_Invoice_Rerate_Summary._hTickets[iRerateInvoiceRunId]	= true;
 		
 		// Create the ticket
-		Popup_Invoice_Rerate_Summary.createTicket(null, this._oOriginalInvoice.Id, iRerateInvoiceRunId, null, true);
+		Popup_Invoice_Rerate_Summary.addTicket(this._oOriginalInvoice.Id, iRerateInvoiceRunId, null);
 	}
 });
 
@@ -496,37 +517,61 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 
 Object.extend(Popup_Invoice_Rerate_Summary,
 {
-	TOGGLE_CLOSED	: '../admin/img/template/tree_closed.png',
-	TOGGLE_OPEN		: '../admin/img/template/tree_open.png',
+	TOGGLE_CLOSED		: '../admin/img/template/tree_closed.png',
+	TOGGLE_OPEN			: '../admin/img/template/tree_open.png',
+	ADD_TICKET_SRC		: '../admin/img/template/ticket_add.png',
+	ADD_ADJUSTMENT_SRC	: '../admin/img/template/charge_add.png',
+	VIEW_LOG_SRC		: '../admin/img/template/view.png',
+	CLOSE_SRC			: '../admin/img/template/delete.png',
+	MIN_ADJUSTMENT		: -1,
 	
-	MIN_ADJUSTMENT	: -1,
-	
+	_hInstances		: {},
 	_hAdjustments	: {},
 	_hTickets		: {},
 	
 	// Public
 	
-	createTicket	: function(sPopupMessage, iOriginalInvoiceId, iRerateInvoiceRunId, iAdjustmentId, bGoAhead)
+	// adjustmentAdded:	Static callback for use when an adjustment request has been made for the rerate.  
+	//					Once this has been called, the 'Add Adjustment' button is disabled
+	adjustmentAdded	: function(sPopupMessage, iOriginalInvoiceId, iRerateInvoiceRunId, iAdjustmentId, bAddTicket, bShowTicketPopup)
 	{
-		if (iAdjustmentId !== null)
-		{
-			// Record that an adjustment has been added for the rerated invoice
-			Popup_Invoice_Rerate_Summary._hAdjustments[iRerateInvoiceRunId]	= true;
-		}
+		// Record that an adjustment has been added for the rerated invoice
+		Popup_Invoice_Rerate_Summary._hAdjustments[iRerateInvoiceRunId]	= true;
 		
+		// Disable the 'add adjustment' button on the instance that the adjustment was added from
+		Popup_Invoice_Rerate_Summary._hInstances[iOriginalInvoiceId].oAdjustmentButton.disabled	= true;
+		
+		if (!bShowTicketPopup)
+		{
+			// Show an alert with given message, on close comes back to this function with 'bShowTicketPopup' set to true, (if ticket to be added)
+			Reflex_Popup.alert(
+				sPopupMessage, 
+				{fnClose: (bAddTicket ? Popup_Invoice_Rerate_Summary.addTicket.curry(iOriginalInvoiceId, iRerateInvoiceRunId, iAdjustmentId) : null)}
+			);
+		}
+		else if (bShowTicketPopup)
+		{
+			// Create the ticket
+			Popup_Invoice_Rerate_Summary.addTicket(iOriginalInvoiceId, iRerateInvoiceRunId, iAdjustmentId);
+		}
+	},
+	
+	// addTicket: Allows creation of a ticket which will be tied to the rerating of an invoice
+	addTicket	: function(iOriginalInvoiceId, iRerateInvoiceRunId, iAdjustmentId)
+	{	
+		// Show the 'add ticket' popup
+		new Popup_Invoice_Rerate_Ticket(iOriginalInvoiceId, iRerateInvoiceRunId, iAdjustmentId, Popup_Invoice_Rerate_Summary.ticketAdded.curry(iOriginalInvoiceId, iRerateInvoiceRunId));
+	},
+	
+	// ticketAdded: This is used as a callback for the Invoice Rerate Ticket popup, is only called on successful ticket creation.
+	//				Disallows anymore ticket creation for the popup (as well after any adjustments that are added for the invoice)
+	ticketAdded	: function(iOriginalInvoiceId, iRerateInvoiceRunId, iTicketId)
+	{
 		// Record that a ticket has been (is to be) added for the rerated invoice
 		Popup_Invoice_Rerate_Summary._hTickets[iRerateInvoiceRunId]	= true;
 		
-		if (!bGoAhead && (sPopupMessage !== null))
-		{
-			// Show an alert with given message
-			Reflex_Popup.alert(sPopupMessage, {fnClose: Popup_Invoice_Rerate_Summary.createTicket.curry(null, iOriginalInvoiceId, iRerateInvoiceRunId, iAdjustmentId, true)});
-		}
-		else
-		{
-			// Show the 'add ticket' popup
-			new Popup_Invoice_Rerate_Ticket(iOriginalInvoiceId, iRerateInvoiceRunId, iAdjustmentId);
-		}
+		// Disable the 'add ticket' button on the instance that the ticket is being added from
+		Popup_Invoice_Rerate_Summary._hInstances[iOriginalInvoiceId].oTicketButton.disabled	= true;
 	},
 	
 	// Private
