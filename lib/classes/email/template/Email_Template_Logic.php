@@ -163,13 +163,15 @@ class Email_Template_Logic
 	public static  function processHTML($sHTML, $bReport = false, $bForTestEmail=false)
 	{
 
+		$aReport = array();
+		foreach(self::$_aReport as $sItem)
+		{
+			$aReport[$sItem] = array();
+		}
+
 		if ($sHTML !=null && trim($sHTML)!='')
 		{
-			$aReport = array();
-			foreach(self::$_aReport as $sItem)
-			{
-				$aReport[$sItem] = array();
-			}
+
 
 			$oDOMDocument = @DOMDocument::loadHTML($sHTML);
 			$xpath = @new DOMXPath($oDOMDocument);
@@ -331,7 +333,7 @@ class Email_Template_Logic
 
 			return $bReport?$aReport:str_replace ( '<?xml version="1.0"?>' , "" , $oDOMDocument->saveXML());
 		}
-		return "";
+		return $bReport?$aReport:"";
 	}
 
 	protected function _preProcessHTML($sHTML)
