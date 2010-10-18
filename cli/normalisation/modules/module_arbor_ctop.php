@@ -9,7 +9,7 @@
 class NormalisationModuleArborCTOP extends NormalisationModule
 {
 	public $intBaseCarrier	= CARRIER_AAPT;
-	public $intBaseFileType	= RESOURCE_TYPE_FILE_IMPORT_CDR_ARBOR_CTOP;
+	public $intBaseFileType	= RESOURCE_TYPE_FILE_IMPORT_CDR_AAPT_ESYSTEMS_CTOP;
 	
 	const	UNIT_TYPE_SECONDS			= 100;
 	const	UNIT_TYPE_TENTH_OF_A_SECOND	= 101;
@@ -61,8 +61,22 @@ class NormalisationModuleArborCTOP extends NormalisationModule
 		// SequenceNo
 		$this->_AppendCDR('SequenceNo', $this->_iSequence++);
 		
+		$this->_SplitRawCDR($arrCDR['CDR']);
+		
 		//--------------------------------------------------------------------//
-		$this->_normalise();
+		switch (substr($arrCDR['CDR'], 0, 6))
+		{
+			case 'PWTDET':
+				$this->_SplitRawCDR($arrCDR['CDR']);
+				$this->_normalise();
+				break;
+				
+			case 'PWTHDR':
+			case 'PWTTRL':
+			default:
+				return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
+				break;
+		}
 		//--------------------------------------------------------------------//
 		
 		//Debug($this->_arrNormalisedData);
@@ -87,7 +101,7 @@ class NormalisationModuleArborCTOP extends NormalisationModule
 		$sFNN	= null;
 		try
 		{
-			$iIdType	= (int)$this->_FetchRawCDR('IdValue');
+			$iIdType	= (int)$this->_FetchRawCDR('IdType');
 			Flex::assert($iIdType === 1, "CTOP CDR File: Invalid Id Type '".self::_getIdTypeDescription($iIdType)."' encountered", print_r($this->DebugCDR(), true));
 			
 			$sFNN	= self::RemoveAusCode(trim($this->_FetchRawCDR('IdValue')));
@@ -140,13 +154,13 @@ class NormalisationModuleArborCTOP extends NormalisationModule
 		// Units
 		$aUnitSets	= array();
 		
-		$aUnitSets[]	= array('iUnits'=>(int)$this->_FetchRawCDR('RawUnits'), 'iUnitType'=>(int)$this->_FetchRawCDR('UnitOfMeasureCode'));
+		$aUnitSets[]	= array('iUnits'=>(int)$this->_FetchRawCDR('RawUnits'), 'iUnitType'=>(int)$this->_FetchRawCDR('RawUnitsType'));
 		
 		$aUnits	= $aUnitSets[0];	// FIXME: If there is more than one unit set, we should try to match with Record Type
 		$this->_AppendCDR('Units',abs(self::_normaliseUnits($aUnits['iUnits'], $aUnits['iUnitType'])));
 		
 		// StartDatetime
-		$sStartDatetime	= trim($this->_FetchRawCDR('TransactionDatetime'));
+		$sStartDatetime	= date('Y-m-d H:i:s', strtotime(trim($this->_FetchRawCDR('TransactionDatetime'))));
 		$this->_AppendCDR('StartDatetime', $sStartDatetime);
 		
 		// EndDatetime
@@ -370,8 +384,6 @@ class NormalisationModuleArborCTOP extends NormalisationModule
 	const	ID_TYPE_TELSTRA_SP_ACCOUNT					= 4;
 	const	ID_TYPE_OPTUS_SP_ACCOUNT					= 5;
 	const	ID_TYPE_VODAFONE_SP_ACCOUNT					= 6;
-	const	ID_TYPE_SERVICE_ADDRESS_A					= 6;
-	const	ID_TYPE_BT_TELECONFERENCING_REFERENCE		= 6;
 	const	ID_TYPE_SERVICE_ADDRESS_A					= 9;
 	const	ID_TYPE_BT_TELECONFERENCING_REFERENCE_ID	= 10;
 	const	ID_TYPE_MOBILE_SERVICE_NUMBER				= 11;

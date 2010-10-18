@@ -157,9 +157,6 @@ class ApplicationCollection extends ApplicationBaseClass
 							$arrFileDownload['CollectedOn']					= date("Y-m-d H:i:s");
 							$arrFileDownload['Status']						= FILE_COLLECTED;
 							
-							// I can't see why we'd want to Import Archives or Compressed File Types (instead of just their contents), but allow an override just in case
-							$mixDownloadFile['FileType']['DownloadOnly']	= (isset($mixDownloadFile['FileType']['DownloadOnly'])) ? !!$mixDownloadFile['FileType']['DownloadOnly'] : (isset($mixDownloadFile['FileType']['Compression']) || isset($mixDownloadFile['FileType']['ArchiveType']));
-							
 							if (!defined('COLLECTION_DEBUG_MODE') || !COLLECTION_DEBUG_MODE)
 							{
 								$arrFileDownload['Id']	= $insFileDownload->Execute($arrFileDownload);
@@ -182,12 +179,13 @@ class ApplicationCollection extends ApplicationBaseClass
 									// Compression
 									if ($arrFile['FileType']['Compression'])
 									{
-										CliEcho("\n\t\t\t\t\t * Decompressing File... ", FALSE);
+										$sCompressedFileName	= basename($arrFile['LocalPath']);
+										
+										CliEcho("\n\t\t\t\t\t * Decompressing File '{$sCompressedFileName}' ", FALSE);
 										
 										$sStreamWrapper	= preg_replace('/\:\/\/\s+$/', '', $arrFile['FileType']['Compression']['StreamWrapper']);
 										
 										// Calculate Output Path
-										$sCompressedFileName	= basename($arrFile['LocalPath']);
 										$sUncompressedFileName	= $sCompressedFileName;
 										if ($arrFile['FileType']['Compression']['FileExtensions'])
 										{
@@ -207,7 +205,9 @@ class ApplicationCollection extends ApplicationBaseClass
 										
 										// Uncompress
 										$sUncompressedDirectory	= rtrim($arrFile['LocalPath'], '/')."_files/";
-										$sUncompressedPath		= "{$sUncompressedDirectory}/{$sUncompressedFileName}";
+										$sUncompressedPath		= "{$sUncompressedDirectory}{$sUncompressedFileName}";
+										
+										CliEcho("to '".substr($sUncompressedPath, strlen($strDownloadDirectory))."' ", FALSE);
 										
 										@mkdir($sUncompressedDirectory, 0777, true);
 										
@@ -219,7 +219,7 @@ class ApplicationCollection extends ApplicationBaseClass
 											continue;
 										}
 										
-										if (false === ($sCompressedData = @file_get_contents("{$sStreamWrapper}://{$arrFile['LocalPath']}")))
+										if (false === ($sUncompressedData = @file_get_contents("{$sStreamWrapper}://{$arrFile['LocalPath']}")))
 										{
 											// Error
 											CliEcho("\t\t\t[ FAILED ]");
@@ -235,6 +235,10 @@ class ApplicationCollection extends ApplicationBaseClass
 											continue;
 										}
 										
+										$intSize			= ceil(filesize($sUncompressedPath) / 1024);
+										
+										CliEcho("({$intSize}KB)", FALSE);
+										
 										$aUncompressedFile	= array(
 											'LocalPath'		=> $sUncompressedPath,
 											'RemotePath'	=> $arrFile['RemotePath'],
@@ -242,6 +246,8 @@ class ApplicationCollection extends ApplicationBaseClass
 											'file_download'	=> $arrFileDownload['Id']
 										);
 										unset($aUncompressedFile['FileType']['Compression']);
+										
+										$arrDownloadedFiles[$mixIndex]['FileType']['DownloadOnly']	= true;
 										
 										$arrDownloadedFiles[]	= $aUncompressedFile;
 									}
@@ -274,6 +280,7 @@ class ApplicationCollection extends ApplicationBaseClass
 												
 												$arrDownloadedFiles[]	= $arrArchivedFile;
 											}
+											$arrDownloadedFiles[$mixIndex]['FileType']['DownloadOnly']	= true;
 											CliEcho(count($arrResult['Files'])." file(s) extracted.\t", FALSE);
 										}
 										else
