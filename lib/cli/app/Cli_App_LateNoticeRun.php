@@ -5,46 +5,40 @@ require_once dirname(__FILE__) . '/' . '../../pdf/Flex_Pdf.php';
 
 class Cli_App_LateNoticeRun extends Cli
 {
+	// Valid argument switches
 	const SWITCH_EFFECTIVE_DATE			= "e";
 	const SWITCH_TEST_RUN 				= "t";
 	const SWITCH_SAMPLE 				= "p";
 	
-	// If not null, this limits the number of notices to be generated per delivery method (& the number of samples).
+	const SAMPLES_PER_CUSTOMER_GROUP	= 1;	
+	const EMAIL_BILLING_NOTIFICATIONS	= 'ybs-admin@ybs.net.au';
+	
+	// If not null, this limits the number of notices to be generated per delivery method.
 	// i.e. if set to 1 then there will be 1 post & 1 email notice generated, then the process will stop
 	const TEST_LIMIT					= 1;
 	
-	const SAMPLES_PER_CUSTOMER_GROUP	= 1;
-	
-	const EMAIL_BILLING_NOTIFICATIONS	= 'ybs-admin@ybs.net.au';
-	
-	private $runDateTime = '';
+	private $_sRunDateTime				= '';
+	private $_bTestRun					= true;
 
 	function run()
 	{
-		$now = time();
-		$this->runDateTime = date('Y-m-d H:i:s', $now);
-		$pathDate = date('Ymd', $now);
-
-		$dacFlex	= DataAccess::getDataAccess();
-		
-		if (!$dacFlex->TransactionStart())
+		$iNow					= time();
+		$this->_sRunDateTime	= date('Y-m-d H:i:s', $iNow);
+		$sPathDate				= date('Ymd', $iNow);
+		$oDataAccess			= DataAccess::getDataAccess();
+		if (!$oDataAccess->TransactionStart())
 		{
 			$this->showUsage('There was an error starting the transaction');
 			return 1;
 		}
-
 		try
 		{
-			// The arguments are present and in a valid format if we get past this point.
-			$arrArgs 			= $this->getValidatedArguments();
-			
-			// TODO: DEV ONLY -- uncomment this
-			//$this->_bTestRun	= (bool)$arrArgs[self::SWITCH_TEST_RUN];
-			// TODO: DEV ONLY -- delete this
-			$this->_bTestRun	= true;
+			// Validate and examine arguments
+			$aArgs				= $this->getValidatedArguments();
+			$this->_bTestRun	= (bool)$aArgs[self::SWITCH_TEST_RUN];
 			if ($this->_bTestRun)
 			{
-				$this->log("Running in test mode. Emails will not be sent to account holders.", TRUE);
+				$this->log("Running in Test Mode. Emails will not be sent to account holders.", TRUE);
 			}
 
 			if (!file_exists(FILES_BASE_PATH))
@@ -52,23 +46,15 @@ class Cli_App_LateNoticeRun extends Cli
 				throw new Exception('The configured FILES_BASE_PATH does not exists. Please add a valid setting to the configuration file.');
 			}
 
-			$arrNoticeTypes	= 	array(
+			$aNoticeTypes	= 	array(
 									DOCUMENT_TEMPLATE_TYPE_FRIENDLY_REMINDER 	=> AUTOMATIC_INVOICE_ACTION_FRIENDLY_REMINDER,
 									DOCUMENT_TEMPLATE_TYPE_OVERDUE_NOTICE 		=> AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE,
 									DOCUMENT_TEMPLATE_TYPE_SUSPENSION_NOTICE 	=> AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE,
 									DOCUMENT_TEMPLATE_TYPE_FINAL_DEMAND 		=> AUTOMATIC_INVOICE_ACTION_FINAL_DEMAND,
 								);
 
-			$outputs 				= array();
-			$errors 				= 0;
-			$arrSummary 			= array();
-			$arrGeneralErrors 		= array();
-			$invoiceRunAutoFields 	= array();
-			$sendEmail 				= FALSE;
-			$aCorrespondenceToPost	= array();
-			$aAccountsById			= array();
-			
-			// Create email template logic classes
+			// Create email template logic classes, one for each customer group. Used to generate the email body for notices that
+			// are to be emailed to the customer
 			$aEmailTemplates	= array();
 			$aCustomerGroups	= Customer_Group::getAll();
 			foreach ($aCustomerGroups as $oCustomerGroup)
@@ -83,10 +69,20 @@ class Cli_App_LateNoticeRun extends Cli
 				}
 			}
 			
+			$aOutputs 				= array();
+			$aSummary 				= array();
+			$aGeneralErrors 		= array();
+			$aInvoiceRunAutoFields 	= array();
+			$aCorrespondenceToPost	= array();
+			$aAccountsById			= array();
+			$iErrors 				= 0;
+			$bSendEmail 			= FALSE;
+			
+			// Test Mode Only: Used to keep track of how many notices have been generated
 			$iTestEmailCount	= 0;
 			$iTestPostCount		= 0;
 			
-			foreach($arrNoticeTypes as $intNoticeType => $intAutomaticInvoiceAction)
+			foreach($aNoticeTypes as $iNoticeType => $iAutomaticInvoiceAction)
 			{
 				if ($this->_bTestRun && (self::TEST_LIMIT !== null) && ($iTestEmailCount >= self::TEST_LIMIT) && ($iTestPostCount >= self::TEST_LIMIT))
 				{
@@ -95,70 +91,74 @@ class Cli_App_LateNoticeRun extends Cli
 				}
 			
 				// This query is repeated by the GenerateLatePaymentNotices function. Consider revising.
-				$arrInvoiceRunIds = ListInvoiceRunsForAutomaticInvoiceActionAndDate($intAutomaticInvoiceAction, $arrArgs[self::SWITCH_EFFECTIVE_DATE]);
-				if (!count($arrInvoiceRunIds))
+				$aInvoiceRunIds	= ListInvoiceRunsForAutomaticInvoiceActionAndDate($iAutomaticInvoiceAction, $aArgs[self::SWITCH_EFFECTIVE_DATE]);
+				if (!count($aInvoiceRunIds))
 				{
-					$this->log("No applicable invoice runs found for action type $intAutomaticInvoiceAction.");
+					$this->log("No applicable invoice runs found for action type $iAutomaticInvoiceAction.");
 					continue;
 				}
 
-				$mixResult = GenerateLatePaymentNotices($intAutomaticInvoiceAction, $arrArgs[self::SWITCH_EFFECTIVE_DATE]);
-				$strLetterType = GetConstantDescription($intNoticeType, "DocumentTemplateType");
-
-				$sendEmail = TRUE;
+				$mResult		= GenerateLatePaymentNotices($iAutomaticInvoiceAction, $aArgs[self::SWITCH_EFFECTIVE_DATE]);
+				$sLetterType	= GetConstantDescription($iNoticeType, "DocumentTemplateType");
+				$bSendEmail		= TRUE;
 
 				// Notices were generated iff the results contain an
-				if ($mixResult === FALSE)
+				if ($mResult === FALSE)
 				{
-					$message = "ERROR: Generating " . $strLetterType . "s failed, unexpectedly";
-					$this->log($message, 0);
-					$arrGeneralErrors[] = $message;
-					$errors++;
+					// No notices generated
+					$sMessage	= "ERROR: Generating " . $sLetterType . "s failed, unexpectedly";
+					$this->log($sMessage, 0);
+					$aGeneralErrors[] = $sMessage;
+					$iErrors++;
 				}
 				else
 				{
-					$outputs[$strLetterType]['success'] = $mixResult['Successful'];
-					$outputs[$strLetterType]['failure'] = $mixResult['Failed'];
-					if ($mixResult['Failed'])
+					// Notices generated
+					$aOutputs[$sLetterType]['success'] = $mResult['Successful'];
+					$aOutputs[$sLetterType]['failure'] = $mResult['Failed'];
+					if ($mResult['Failed'])
 					{
-						$errors++;
+						$iErrors++;
 					}
-					$this->log("{$strLetterType}s successfully generated  : {$mixResult['Successful']}");
-					$this->log("{$strLetterType}s that failed to generate : {$mixResult['Failed']}");
+					$this->log("{$sLetterType}s successfully generated  : {$mResult['Successful']}");
+					$this->log("{$sLetterType}s that failed to generate : {$mResult['Failed']}");
 
-					if (!array_key_exists($intAutomaticInvoiceAction, $invoiceRunAutoFields))
+					// Used to record which invoice runs need to have their automatic invoice action 'actioned' 
+					if (!array_key_exists($iAutomaticInvoiceAction, $aInvoiceRunAutoFields))
 					{
-						$invoiceRunAutoFields[$intAutomaticInvoiceAction] = array();
+						$aInvoiceRunAutoFields[$iAutomaticInvoiceAction] = array();
 					}
 
 					// If we're in Test Mode, get samples
-					$arrSampleAccounts	= array(DELIVERY_METHOD_POST=>null, DELIVERY_METHOD_EMAIL=>null);
+					$aSampleAccounts	= array(DELIVERY_METHOD_POST => null, DELIVERY_METHOD_EMAIL => null);
 					if ($this->_bTestRun)
 					{
-						$arrDeliveryMethodAccounts	= array(DELIVERY_METHOD_POST=>array(), DELIVERY_METHOD_EMAIL=>array());
-						$arrCustomerGroups			= array();
-						foreach ($mixResult['Details'] as $mixKey=>$arrDetails)
+						$aDeliveryMethodAccounts	= array(DELIVERY_METHOD_POST => array(), DELIVERY_METHOD_EMAIL => array());
+						foreach ($mResult['Details'] as $mKey => $aDetails)
 						{
-							$arrDeliveryMethodAccounts[$arrDetails['Account']['DeliveryMethod']][$arrDetails['Account']['CustomerGroup']][]	= $mixKey;
+							$iCustomerGroup		= $aDetails['Account']['CustomerGroup'];
+							$iDeliveryMethod	= $aDetails['Account']['DeliveryMethod'];
+							$aDeliveryMethodAccounts[$iDeliveryMethod][$iCustomerGroup][]	= $mKey;
 						}
 
 						// Pick a random sample for each Delivery Method
-						foreach ($arrDeliveryMethodAccounts as $intDeliveryMethod=>$arrCustomerGroups)
+						foreach ($aDeliveryMethodAccounts as $iDeliveryMethod => $aCustomerGroups)
 						{
-							foreach ($arrCustomerGroups as $intCustomerGroupId=>$arrAccounts)
+							$sDeliveryMethod	= GetConstantDescription($iDeliveryMethod, 'delivery_method');
+							foreach ($aCustomerGroups as $iCustomerGroupId => $aAccounts)
 							{
 								$iSamples	= 0;
 								while ($iSamples < self::SAMPLES_PER_CUSTOMER_GROUP)
 								{
-									$mixRandomKey	= array_rand($arrAccounts);
-									$arrAccount		= $mixResult['Details'][$arrAccounts[$mixRandomKey]]['Account'];
-									if (!isset($arrSampleAccounts[$intDeliveryMethod]) || !in_array($arrAccount['AccountId'], $arrSampleAccounts[$intDeliveryMethod]))
+									$mRandomKey		= array_rand($aAccounts);
+									$iRandomAccount	= $aAccounts[$mRandomKey];
+									$aAccount		= $mResult['Details'][$iRandomAccount]['Account'];
+									if (!isset($aSampleAccounts[$iDeliveryMethod]) || !in_array($aAccount['AccountId'], $aSampleAccounts[$iDeliveryMethod]))
 									{
 										// The account id hasn't yet been picked as a sample, use it
-										$arrSampleAccounts[$intDeliveryMethod][$intCustomerGroupId]	= $arrAccount['AccountId'];
+										$aSampleAccounts[$iDeliveryMethod][$iCustomerGroupId]	= $aAccount['AccountId'];
 										$iSamples++;
-										
-										$this->log("{$arrAccount['AccountId']} has been selected as the random sample for {$arrAccount['CustomerGroupName']}:".GetConstantDescription($intDeliveryMethod, 'delivery_method'));
+										$this->log("{$aAccount['AccountId']} has been selected as a random sample for {$aAccount['CustomerGroupName']}:{$sDeliveryMethod}");
 									}
 								}
 							}
@@ -166,59 +166,65 @@ class Cli_App_LateNoticeRun extends Cli
 					}
 
 					// Create array to hold the correspondence for this automatic invoice action (id)
-					$aCorrespondenceToPost[$intAutomaticInvoiceAction]	= array();
+					$aCorrespondenceToPost[$iAutomaticInvoiceAction]	= array();
 
 					// Create a customer and samples queue for the letter type
-					$oCustomerEmailQueue	= Email_Queue::get("CUSTOMER_{$strLetterType}");
-					$oSamplesEmailQueue		= Email_Queue::get("SAMPLES_{$strLetterType}");
-					
-					// Set the debug email address of the customer queue, this address replaces all recipients of emails
-					// within the queue if the queue is sent without being commited
-					//$oCustomerEmailQueue->setDebugAddress(self::EMAIL_BILLING_NOTIFICATIONS);
+					$oCustomerEmailQueue	= Email_Flex_Queue::get("CUSTOMER_{$sLetterType}");
+					$oSamplesEmailQueue		= Email_Flex_Queue::get("SAMPLES_{$sLetterType}");
 					
 					// We now need to email/print each of the notices that have been generated
-					foreach($mixResult['Details'] as $arrDetails)
+					foreach($mResult['Details'] as $aDetails)
 					{
+						// Test Mode Only: Checks if the notice limits have been reached
 						if ($this->_bTestRun && (self::TEST_LIMIT !== null) && ($iTestEmailCount >= self::TEST_LIMIT) && ($iTestPostCount >= self::TEST_LIMIT))
 						{
 							break;
 						}
 						
-						$intCustGrp = $arrDetails['Account']['CustomerGroup'];
-						$strCustGroupName = $arrDetails['Account']['CustomerGroupName'];
-						$intAccountId = $arrDetails['Account']['AccountId'];
-						$xmlFilePath = $arrDetails['XMLFilePath'];
-						$intAutoInvoiceAction = $arrDetails['Account']['automatic_invoice_action'];
+						$iCustGrp 				= $aDetails['Account']['CustomerGroup'];
+						$sCustGroupName			= $aDetails['Account']['CustomerGroupName'];
+						$iAccountId 			= $aDetails['Account']['AccountId'];
+						$sXMLFilePath 			= $aDetails['XMLFilePath'];
+						$iAutoInvoiceAction		= $aDetails['Account']['automatic_invoice_action'];
+						$sLowerCustGroupName	= strtolower(str_replace(' ', '_', $sCustGroupName));
+						$sLowerLetterType		= strtolower(str_replace(' ', '_', $sLetterType));
+
+						// Build summary data
+						if (!array_key_exists($sCustGroupName, $aSummary))
+						{
+							$aSummary[$sCustGroupName]	= array();
+						}
+						
+						// ... more summary setup
+						if (!array_key_exists($sLetterType, $aSummary[$sCustGroupName]))
+						{
+							$aSummary[$sCustGroupName][$sLetterType]['emails']				= array();
+							$aSummary[$sCustGroupName][$sLetterType]['prints']				= array();
+							$aSummary[$sCustGroupName][$sLetterType]['errors'] 				= array();
+							$aSummary[$sCustGroupName][$sLetterType]['output_directory']	= realpath(FILES_BASE_PATH) . '/' . $sLowerLetterType . '/' . 'pdf' . '/' . $sPathDate . '/' . $sLowerCustGroupName;
+						}
+
+						// Record how many accounts are within the invoice run id
+						$iInvoiceRunId	= $aDetails['Account']['invoice_run_id'];
+						if (!array_key_exists($iInvoiceRunId, $aInvoiceRunAutoFields[$iAutomaticInvoiceAction]))
+						{
+							$aInvoiceRunAutoFields[$iAutomaticInvoiceAction][$iInvoiceRunId]	= 0;
+						}
+						$aInvoiceRunAutoFields[$iAutomaticInvoiceAction][$iInvoiceRunId]++;
 
 						// Cache this information for use when reporting on email send status
-						$aAccountsById[$intAccountId]	= $arrDetails['Account'];
-
-						$custGroupName = strtolower(str_replace(' ', '_', $strCustGroupName));
-
-						$letterType = strtolower(str_replace(' ', '_', $strLetterType));
-						if (!array_key_exists($strCustGroupName, $arrSummary))
-						{
-							$arrSummary[$strCustGroupName] = array();
-						}
-
-						if (!array_key_exists($strLetterType, $arrSummary[$strCustGroupName]))
-						{
-							$arrSummary[$strCustGroupName][$strLetterType]['emails'] = array();
-							$arrSummary[$strCustGroupName][$strLetterType]['prints'] = array();
-							$arrSummary[$strCustGroupName][$strLetterType]['errors'] = array();
-							$arrSummary[$strCustGroupName][$strLetterType]['output_directory'] = realpath(FILES_BASE_PATH) . '/' . $letterType . '/' . 'pdf' . '/' . $pathDate . '/' . $custGroupName;
-						}
-
-						$invoiceRunId = $arrDetails['Account']['invoice_run_id'];
-						if (!array_key_exists($invoiceRunId, $invoiceRunAutoFields[$intAutomaticInvoiceAction]))
-						{
-							$invoiceRunAutoFields[$intAutomaticInvoiceAction][$invoiceRunId] = 0;
-						}
-						$invoiceRunAutoFields[$intAutomaticInvoiceAction][$invoiceRunId]++;
-
-						switch ($arrDetails['Account']['DeliveryMethod'])
+						$aAccountsById[$iAccountId]	= $aDetails['Account'];
+						
+						switch ($aDetails['Account']['DeliveryMethod'])
 						{
 							case DELIVERY_METHOD_POST:
+								// TODO: DEV ONLY -- REMOVE THIS BLOCK
+								if (!$aDetails['Account']['FirstName'] || $aDetails['Account']['FirstName'] == '' || !$aDetails['Account']['LastName'] || $aDetails['Account']['LastName'] == '')
+								{
+									break;
+								}
+								
+								// Test Mode Only: Checks the post notice count against the TEST_LIMIT constant, exits if breached
 								if ($this->_bTestRun && (self::TEST_LIMIT !== null) && ($iTestPostCount >= self::TEST_LIMIT))
 								{
 									break;
@@ -227,131 +233,144 @@ class Cli_App_LateNoticeRun extends Cli
 								// We need to generate the pdf for the XML and save it to the
 								// files/type/pdf/date/cust_group/account.pdf storage
 								// Need to add a note of this to the email
-								$this->log("Generating print PDF $strLetterType for account ". $arrDetails['Account']['AccountId']);
-								$pdfContent = $this->getPDFContent($intCustGrp, $arrArgs[self::SWITCH_EFFECTIVE_DATE], $intNoticeType, $xmlFilePath, 'PRINT');
+								$this->log("Generating print PDF $sLetterType for account ". $aDetails['Account']['AccountId']);
+								$sPDFContent = $this->getPDFContent($iCustGrp, $aArgs[self::SWITCH_EFFECTIVE_DATE], $iNoticeType, $sXMLFilePath, 'PRINT');
 
-								// If the PDF generation failed.
-								if (!$pdfContent)
+								// Check the pdf content
+								if (!$sPDFContent)
 								{
-									$error = $this->getCachedError();
-									$message = "Failed to generate PDF $strLetterType for " . $intAccountId . "\n" . $error;
-									$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $message;
-									$errors++;
-									$this->log($message, TRUE);
+									// PDF generation failed.
+									$sError 	= $this->getCachedError();
+									$sMessage 	= "Failed to generate PDF $sLetterType for " . $iAccountId . "\n" . $sError;
+									$aSummary[$sCustGroupName][$sLetterType]['errors'][] = $sMessage;
+									$iErrors++;
+									$this->log($sMessage, TRUE);
 								}
-								// We have a PDF, so we should store it for sending to the printers
 								else
 								{
-									$this->log("Storing PDF $strLetterType for account ". $intAccountId);
+									// We have a PDF, so we should store it for sending to the mail house (as correspondence)
+									$this->log("Storing PDF $sLetterType for account ". $iAccountId);
 
-									$outputDirectory = $arrSummary[$strCustGroupName][$strLetterType]['output_directory'];
-
-									if (!file_exists($outputDirectory))
+									$sOutputDirectory	= $aSummary[$sCustGroupName][$sLetterType]['output_directory'];
+									if (!file_exists($sOutputDirectory))
 									{
-										$outputDirectories = explode('/', str_replace('\\', '/', $outputDirectory));
-										$directory = '';
-										foreach($outputDirectories as $subDirectory)
+										$aOutputDirectories	= explode('/', str_replace('\\', '/', $sOutputDirectory));
+										$sDirectory 			= '';
+										foreach($aOutputDirectories as $sSubDirectory)
 										{
 											// If root directory on linux/unix
-											if (!$subDirectory)
+											if (!$sSubDirectory)
 											{
 												continue;
 											}
-											$xdirectory = $directory . '/' . $subDirectory;
-											if (!file_exists($xdirectory))
+											$sXdirectory	= $sDirectory . '/' . $sSubDirectory;
+											if (!file_exists($sXdirectory))
 											{
-												$ok = @mkdir($xdirectory);
-												if (!$ok)
+												$bOk	= @mkdir($sXdirectory);
+												if (!$bOk)
 												{
-													$this->log("Failed to create directory for PDF output: $xdirectory", TRUE);
+													$this->log("Failed to create directory for PDF output: $sXdirectory", TRUE);
 												}
 											}
-											$directory = $xdirectory . '/';
+											$sDirectory	= $sXdirectory . '/';
 										}
-										$outputDirectory = realpath($directory) . '/';
+										$sOutputDirectory	= realpath($sDirectory) . '/';
 									}
 									else
 									{
-										$outputDirectory = realpath($outputDirectory) . '/';
+										$sOutputDirectory	= realpath($sOutputDirectory) . '/';
 									}
-									$arrSummary[$strCustGroupName][$strLetterType]['output_directory'] = $outputDirectory;
+									
+									$aSummary[$sCustGroupName][$sLetterType]['output_directory']	= $sOutputDirectory;
 
 									// Write the PDF file contents to storage
-									$targetFile = $outputDirectory . $intAccountId . '.pdf';
-
-									$file = @fopen($targetFile, 'w');
-									$ok = FALSE;
-									if ($file)
+									$sTargetFile	= $sOutputDirectory . $iAccountId . '.pdf';
+									$rFile			= @fopen($sTargetFile, 'w');
+									$bOk			= FALSE;
+									if ($rFile)
 									{
-										$ok = @fwrite($file, $pdfContent);
+										$bOk	= @fwrite($rFile, $sPDFContent);
 									}
-									if ($ok === FALSE)
+									
+									if ($bOk === FALSE)
 									{
-										$message = "Failed to write PDF $strLetterType for account $intAccountId to $targetFile.";
-										$this->log($message, TRUE);
-										$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $message;
+										$sMessage	= "Failed to write PDF $sLetterType for account $iAccountId to $sTargetFile.";
+										$this->log($sMessage, TRUE);
+										$aSummary[$sCustGroupName][$sLetterType]['errors'][]	= $sMessage;
 									}
 									else
 									{
-										@fclose($file);
+										@fclose($rFile);
 
-										$arrSummary[$strCustGroupName][$strLetterType]['prints'][] = $intAccountId;
-										$arrSummary[$strCustGroupName][$strLetterType]['pdfs'][] = $targetFile;
+										$aSummary[$sCustGroupName][$sLetterType]['prints'][]	= $iAccountId;
+										$aSummary[$sCustGroupName][$sLetterType]['pdfs'][] 		= $sTargetFile;
 
 										// We need to log the fact that we've created it, by updating the account automatic_invoice_action
 										if ($this->_bTestRun === false)
 										{
-											$outcome = $this->changeAccountAutomaticInvoiceAction($intAccountId, $intAutoInvoiceAction, $intAutomaticInvoiceAction, "$strLetterType stored for printing in $outputDirectory", $invoiceRunId);
-											if ($outcome !== TRUE)
+											$mOutcome	= $this->changeAccountAutomaticInvoiceAction($iAccountId, $iAutoInvoiceAction, $iAutomaticInvoiceAction, "$sLetterType stored for printing in $sOutputDirectory", $iInvoiceRunId);
+											if ($mOutcome !== TRUE)
 											{
-												$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $outcome;
-												$errors++;
+												$aSummary[$sCustGroupName][$sLetterType]['errors'][] = $mOutcome;
+												$iErrors++;
 											}
 										}
 									}
 
-									$this->log("Generating Correspondence Data for account ". $intAccountId);
+									$this->log("Generating Correspondence Data for account ". $iAccountId);
 
 									// Cache the correspondence data for the notice
 									$aCorrespondence	= 	array(
-																'account_id'						=> $intAccountId,
-																'customer_group_id'					=> $intCustGrp,
+																'account_id'						=> $iAccountId,
+																'customer_group_id'					=> $iCustGrp,
 																'correspondence_delivery_method_id'	=> Correspondence_Delivery_Method::getForId(CORRESPONDENCE_DELIVERY_METHOD_POST)->system_name,
-																'account_name'						=> $arrDetails['Account']['BusinessName'],
-																'title'								=> $arrDetails['Account']['Title'],
-																'first_name'						=> $arrDetails['Account']['FirstName'],
-																'last_name'							=> $arrDetails['Account']['LastName'],
-																'address_line_1'					=> $arrDetails['Account']['AddressLine1'],
-																'address_line_2'					=> $arrDetails['Account']['AddressLine2'],
-																'suburb'							=> $arrDetails['Account']['Suburb'],
-																'postcode'							=> $arrDetails['Account']['Postcode'],
-																'state'								=> $arrDetails['Account']['State'],
-																'email'								=> $arrDetails['Account']['Email'],
-																'mobile'							=> $arrDetails['Account']['Mobile'],
-																'landline'							=> $arrDetails['Account']['Landline'],
-																'pdf_file_path'						=> $targetFile
+																'account_name'						=> $aDetails['Account']['BusinessName'],
+																'title'								=> $aDetails['Account']['Title'],
+																'first_name'						=> $aDetails['Account']['FirstName'],
+																'last_name'							=> $aDetails['Account']['LastName'],
+																'address_line_1'					=> $aDetails['Account']['AddressLine1'],
+																'address_line_2'					=> $aDetails['Account']['AddressLine2'],
+																'suburb'							=> $aDetails['Account']['Suburb'],
+																'postcode'							=> $aDetails['Account']['Postcode'],
+																'state'								=> $aDetails['Account']['State'],
+																'email'								=> $aDetails['Account']['Email'],
+																'mobile'							=> $aDetails['Account']['Mobile'],
+																'landline'							=> $aDetails['Account']['Landline'],
+																'pdf_file_path'						=> $sTargetFile
 															);
-									$aCorrespondenceToPost[$intAutomaticInvoiceAction][]	= $aCorrespondence;
+									$aCorrespondenceToPost[$iAutomaticInvoiceAction][]	= $aCorrespondence;
 									
 									// This is the sample Post Notice -- email
-									if ($this->_bTestRun && $arrSampleAccounts[DELIVERY_METHOD_POST][$intCustGrp] === $intAccountId)
+									if ($this->_bTestRun && $aSampleAccounts[DELIVERY_METHOD_POST][$iCustGrp] === $iAccountId)
 									{
-										$subject 		= "[SAMPLE:POST] $strCustGroupName $strLetterType for Account $intAccountId";
-										$to 			= self::EMAIL_BILLING_NOTIFICATIONS;
-					 					$strContent 	= "Please find attached a SAMPLE POST $strCustGroupName $strLetterType for Account $intAccountId.";
-										$attachments 	= array();
-										$attachment 	= array();
-										$attachment[self::EMAIL_ATTACHMENT_NAME] 		= "{$intAccountId}.pdf";
-										$attachment[self::EMAIL_ATTACHMENT_MIME_TYPE] 	= 'application/pdf';
-										$attachment[self::EMAIL_ATTACHMENT_CONTENT] 	= $pdfContent;
-										$attachments[] 	= $attachment;
-
+										$sSubject 		= 	"[SAMPLE:POST] $sCustGroupName $sLetterType for Account $iAccountId";
+										$sTo 			= 	self::EMAIL_BILLING_NOTIFICATIONS;
+					 					$sContent 		= 	"Please find attached a SAMPLE POST $sCustGroupName $sLetterType for Account $iAccountId.";
+										$aAttachment	= 	array(
+																self::EMAIL_ATTACHMENT_NAME			=> "{$iAccountId}.pdf",
+																self::EMAIL_ATTACHMENT_MIME_TYPE	=> 'application/pdf',
+																self::EMAIL_ATTACHMENT_CONTENT		=> $sPDFContent
+															);
+										
 										// Add to the samples queue for this notice type, giving it the account id as an email id
-										$oSamplesEmailQueue->push(Email_Notification::factory(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, self::EMAIL_BILLING_NOTIFICATIONS, $subject, NULL, $strContent, $attachments, TRUE), $intAccountId);
+										$oSamplesEmailQueue->push(
+											Email_Notification::factory(
+												EMAIL_NOTIFICATION_LATE_NOTICE, 	// Type
+												$iCustGrp, 							// Customer group
+												self::EMAIL_BILLING_NOTIFICATIONS, 	// To
+												$sSubject, 							// Subject
+												NULL, 								// Body html
+												$sContent, 							// Body text
+												array($aAttachment), 				// Attachments
+												TRUE								// Fail without an exception being thrown
+											), 
+											$iAccountId
+										);
 									}
 								}
 								
-								if ($this->_bTestRun)
+								// Test Mode Only: Update the post notice count & log it
+								if ($this->_bTestRun && (self::TEST_LIMIT !== null))
 								{
 									$iTestPostCount++;
 									$this->log("\t ** TEST POST COUNT NOW AT: {$iTestPostCount} **");
@@ -360,91 +379,108 @@ class Cli_App_LateNoticeRun extends Cli
 								break;
 								
 							case DELIVERY_METHOD_EMAIL:
+								// Test Mode Only: Checks the email notice count against the TEST_LIMIT constant, exits if breached
 								if ($this->_bTestRun && (self::TEST_LIMIT !== null) && ($iTestEmailCount >= self::TEST_LIMIT))
 								{
 									break;
 								}
 								
 								// We can safely go ahead and generate this pdf.
-								$this->log("Generating email PDF $strLetterType for account ". $intAccountId . ' to ' . $arrDetails['Account']['Email']);
-								$pdfContent = $this->getPDFContent($intCustGrp, $arrArgs[self::SWITCH_EFFECTIVE_DATE], $intNoticeType, $xmlFilePath, 'EMAIL');
+								$this->log("Generating email PDF $sLetterType for account ". $iAccountId . ' to ' . $aDetails['Account']['Email']);
+								$sPDFContent	= $this->getPDFContent($iCustGrp, $aArgs[self::SWITCH_EFFECTIVE_DATE], $iNoticeType, $sXMLFilePath, 'EMAIL');
 								
-								// If the PDF generation failed.
-								if (!$pdfContent)
+								// Check the pdf content
+								if (!$sPDFContent)
 								{
-									$error = $this->getCachedError();
-									$message = "Failed to generate PDF $strLetterType for " . $intAccountId . "\n" . $error;
-									$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $message;
-									$errors++;
-									$this->log($message, TRUE);
+									// PDF generation failed.
+									$sError 	= $this->getCachedError();
+									$sMessage 	= "Failed to generate PDF $sLetterType for " . $iAccountId . "\n" . $sError;
+									$aSummary[$sCustGroupName][$sLetterType]['errors'][]	= $sMessage;
+									$iErrors++;
+									$this->log($sMessage, TRUE);
 								}
-								// We have a PDF, so we should email it
 								else
 								{
-									$this->log("Generating $strLetterType email for account ". $intAccountId . ' to ' . $arrDetails['Account']['Email']);
+									// We have a PDF, so we should email it
+									$this->log("Generating $sLetterType email for account ". $iAccountId . ' to ' . $aDetails['Account']['Email']);
 									if ($this->_bTestRun)
 									{
 										$this->log("... NOT GOING TO SEND IT, IN TEST MODE");
 									}
 									
 									// Email configuration data
-									$fileName 		= str_replace(' ', '_', $strLetterType) . '.pdf';
-									$emailTo 		= $arrDetails['Account']['Email'];
-									$emailFrom 		= $arrDetails['Account']['EmailFrom'];
-									$name 			= trim($arrDetails['Account']['FirstName']);
-									$to 			= $this->_bTestRun ? self::EMAIL_BILLING_NOTIFICATIONS : $emailTo;
+									$sFileName 	= str_replace(' ', '_', $sLetterType) . '.pdf';
+									$sEmailTo 	= $aDetails['Account']['Email'];
+									$sEmailFrom = $aDetails['Account']['EmailFrom'];
+									$sName 		= trim($aDetails['Account']['FirstName']);
+									
+									// Replace the recipient of the email if in Test Mode. Not really necessary now that the email_queue system is being
+									// used (and is not scheduled for delivery when in Test Mode), but a good fail safe when running in test mode.
+									$sTo	= $this->_bTestRun ? self::EMAIL_BILLING_NOTIFICATIONS : $sEmailFrom;
 									
 									// Create email object using Email Template
-									$oEmailTemplate	= 	$aEmailTemplates[$intCustGrp];
+									$oEmailTemplate	= 	$aEmailTemplates[$iCustGrp];
 									$oEmail			= 	$oEmailTemplate->generateEmail(
 															array(
-																'CustomerGroup'	=> array('external_name' => $strCustGroupName),
-																'Contact'		=> array('first_name' => $name),						
-																'Account'		=> array('id' => $intAccountId),
-																'Letter'		=> array('type' => $strLetterType)
+																'CustomerGroup'	=> array('external_name' => $sCustGroupName),
+																'Contact'		=> array('first_name' => $sName),						
+																'Account'		=> array('id' => $iAccountId),
+																'Letter'		=> array('type' => $sLetterType)
 															)
 														);
 									
-									// Finish email object configuration
-									$oEmail->setFrom($emailFrom);
-									$oEmail->addTo($to);
-									$oEmail->createAttachment($pdfContent, 'application/pdf',  Zend_Mime::DISPOSITION_ATTACHMENT, Zend_Mime::ENCODING_BASE64, $fileName);
+									// Set the sender, recipient & attachment of the email
+									$oEmail->setFrom($sEmailFrom);
+									$oEmail->addTo($sTo);
+									$oEmail->createAttachment($sPDFContent, 'application/pdf', Zend_Mime::DISPOSITION_ATTACHMENT, Zend_Mime::ENCODING_BASE64, $sFileName);
 									
-									// Add to customer queue
-									$oCustomerEmailQueue->push($oEmail, $intAccountId);
-									
-									$this->log("Email queued to be sent to: {$to} ".($this->_bTestRun ? " (changed from '{$emailTo}')" : ""));
+									// Add to the customer email queue (for this invoice action), reference it with the account id
+									$oCustomerEmailQueue->push($oEmail, $iAccountId);
+									$this->log("Email queued to be sent to: {$sTo} ".($this->_bTestRun ? " (changed from '{$sEmailTo}')" : ""));
+									$aSummary[$sCustGroupName][$sLetterType]['emails'][]	= $iAccountId;
 									
 									if ($this->_bTestRun === false)
-									{	
+									{
 										// We need to log the fact that we're sending it, by updating the account automatic_invoice_action
-										$outcome = $this->changeAccountAutomaticInvoiceAction($intAccountId, $intAutoInvoiceAction, $intAutomaticInvoiceAction, "$strLetterType emailed to $name ($emailTo)", $invoiceRunId);
-										if ($outcome !== TRUE)
+										$mOutcome	= $this->changeAccountAutomaticInvoiceAction($iAccountId, $iAutoInvoiceAction, $iAutomaticInvoiceAction, "$sLetterType emailed to $sName ($sEmailTo)", $iInvoiceRunId);
+										if ($mOutcome !== TRUE)
 										{
-											$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $outcome;
-											$errors++;
+											$aSummary[$sCustGroupName][$sLetterType]['errors'][]	= $mOutcome;
+											$iErrors++;
 										}
 									}
 									
 									// This is the sample Email Notice -- email
-									if ($this->_bTestRun && $arrSampleAccounts[DELIVERY_METHOD_EMAIL][$intCustGrp] === $intAccountId)
+									if ($this->_bTestRun && $aSampleAccounts[DELIVERY_METHOD_EMAIL][$iCustGrp] === $iAccountId)
 									{
-										$subject 		= "[SAMPLE:EMAIL]".$subject;
-										$to 			= self::EMAIL_BILLING_NOTIFICATIONS;
-					 					$strContent		= "[SAMPLE:EMAIL]\r\n\r\n".$strContent."\r\n\r\n[SAMPLE:EMAIL]";
-										$attachments	= array();
-										$attachment 	= array();
-										$attachment[self::EMAIL_ATTACHMENT_NAME] 		= "{$intAccountId}.pdf";
-										$attachment[self::EMAIL_ATTACHMENT_MIME_TYPE] 	= 'application/pdf';
-										$attachment[self::EMAIL_ATTACHMENT_CONTENT]		= $pdfContent;
-										$attachments[]	= $attachment;
+										$sSubject 		= 	"[SAMPLE:EMAIL] $sCustGroupName $sLetterType for Account $iAccountId";
+										$sTo 			= 	self::EMAIL_BILLING_NOTIFICATIONS;
+					 					$sContent		= 	"[SAMPLE:EMAIL]\r\n\r\nPlease find attached a SAMPLE EMAIL $sCustGroupName $sLetterType for Account $iAccountId.\r\n\r\n[SAMPLE:EMAIL]";
+										$aAttachment	= 	array(
+																self::EMAIL_ATTACHMENT_NAME			=> "{$iAccountId}.pdf",
+																self::EMAIL_ATTACHMENT_MIME_TYPE	=> 'application/pdf',
+																self::EMAIL_ATTACHMENT_CONTENT		=> $sPDFContent
+															);
 										
 										// Add to the samples queue for this notice type, giving it the account id as an email id
-										$oSamplesEmailQueue->push(Email_Notification::factory(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, self::EMAIL_BILLING_NOTIFICATIONS, $subject, NULL, $strContent, $attachments, TRUE), $intAccountId);
+										$oSamplesEmailQueue->push(
+											Email_Notification::factory(
+												EMAIL_NOTIFICATION_LATE_NOTICE, 	// Type
+												$iCustGrp, 							// Customer Group
+												self::EMAIL_BILLING_NOTIFICATIONS, 	// To
+												$sSubject, 							// Subject
+												NULL, 								// Body Html
+												$sContent,							// Body Text
+												array($aAttachment), 				// Attachment
+												TRUE								// Fail without an exception being thrown
+											), 
+											$iAccountId
+										);
 									}
 								}
 								
-								if ($this->_bTestRun)
+								// Test Mode Only: Update the email notice count & log it
+								if ($this->_bTestRun && (self::TEST_LIMIT !== null))
 								{
 									$iTestEmailCount++;
 									$this->log("\t ** TEST EMAIL COUNT NOW AT: {$iTestEmailCount} **");
@@ -457,23 +493,25 @@ class Cli_App_LateNoticeRun extends Cli
 
 			if ($this->_bTestRun === false)
 			{
-				foreach ($invoiceRunAutoFields as $intAutomaticInvoiceAction => $invoiceRunCounts)
+				// Action the automatic invoice run event for each invoice run
+				foreach ($aInvoiceRunAutoFields as $iAutomaticInvoiceAction => $invoiceRunCounts)
 				{
-					foreach ($invoiceRunCounts as $invoiceRunId => $count)
+					foreach ($invoiceRunCounts as $iInvoiceRunId => $count)
 					{
-						$result = $this->changeInvoiceRunAutoActionDateTime($invoiceRunId, $intAutomaticInvoiceAction);
-						if ($result !== TRUE)
+						$mResult	= $this->changeInvoiceRunAutoActionDateTime($iInvoiceRunId, $iAutomaticInvoiceAction);
+						if ($mResult !== TRUE)
 						{
-							$arrGeneralErrors[] = $result;
+							$aGeneralErrors[] = $mResult;
 						}
 					}
 				}
 			}
 
-			// Generate a correspondence run for each notice type and to it correspondence that is to be posted for that notice type
+			// Generate a correspondence run for each automatic invoice action and to it correspondence that is to be posted for that notice type
 			$this->log("START: Creating Correspondence Runs");
 			foreach ($aCorrespondenceToPost as $iAutomaticInvoiceAction => $aCorrespondenceData)
 			{
+				// Check number of correspondence items for the invoice action
 				if (count($aCorrespondenceData) > 0)
 				{
 					// Got correspondence data, create run
@@ -485,11 +523,10 @@ class Cli_App_LateNoticeRun extends Cli
 	
 						// Get the template
 						$oTemplate	= Correspondence_Logic_Template::getForAutomaticInvoiceAction($iAutomaticInvoiceAction);
-	
 						$this->log("Template retrieved, creating Correspondence Run");
-	
+						
+						// Create the correspondence run
 						$oRun	= $oTemplate->createRun(true, $aCorrespondenceData);
-	
 						$this->log("Run created succesfully (id={$oRun->id})");
 					}
 					catch (Correspondence_DataValidation_Exception $oEx)
@@ -507,25 +544,26 @@ class Cli_App_LateNoticeRun extends Cli
 			}
 			$this->log("FINISHED: Creating Correspondence Runs");
 
-			if ($this->_bTestRun === false)
-			{
+			// TODO: DEV ONLY -- UNCOMMENT THIS CONDITION
+			//if ($this->_bTestRun === false)
+			//{
 				// Live run, attempt transaction commit before the emails are sent
-				if (!$dacFlex->TransactionCommit())
+				if (!$oDataAccess->TransactionCommit())
 				{
 					throw new Exception("Transaction Commit Failed");
 				}
-			}
+			//}
 
 			// Attempt to send all emails
 			$this->log("START: Sending all emails that have been queued");
-			foreach($arrNoticeTypes as $iNoticeType => $iAutomaticInvoiceAction)
+			foreach($aNoticeTypes as $iNoticeType => $iAutomaticInvoiceAction)
 			{
 				$sLetterType	= GetConstantDescription($iNoticeType, 'DocumentTemplateType');
 
-				// Send SAMPLES email queue & show status of each email (ONLY IF IN TEST MODE)
 				if ($this->_bTestRun)
 				{
-					$oSamplesQueue	= Email_Queue::get("SAMPLES_{$sLetterType}");
+					// Test Mode Only: Send SAMPLES email queue & show status of each email (ONLY IF IN TEST MODE)
+					$oSamplesQueue	= Email_Flex_Queue::get("SAMPLES_{$sLetterType}");
 					$oSamplesQueue->commit();
 					$oSamplesQueue->send();
 					$aSampleEmails	= $oSamplesQueue->getEmails();
@@ -566,149 +604,118 @@ class Cli_App_LateNoticeRun extends Cli
 					}
 				}
 
-				// Send CUSTOMER email queue
-				$oCustomerQueue	= Email_Queue::get("CUSTOMER_{$sLetterType}");
-				if ($this->_bTestRun === false)
-				{
-					// Only commit the customer email queues when in a live run, NOT FOR TESTING
-					// !!!! THIS WILL ALLOW THE SENDING OF EMAILS TO THE CUSTOMERS UNLESS YOU HAVE PUT OTHER SAFEGUARDS IN PLACE, DON'T RISK IT IF YOU ARE TESTING !!!!
-					$oCustomerQueue->commit(); 
-				}
-				$oCustomerQueue->send();
-				
-				// Show status of each email
-				$aCustomerEmails	= $oCustomerQueue->getEmails();
-				foreach ($aCustomerEmails as $iAccountId => $oEmail)
-				{
-					$aAccountDetails	= $aAccountsById[$iAccountId];
-					$sCustomerGroupName	= $aAccountDetails['CustomerGroupName'];
-					$sToEmail			= $aAccountDetails['Email'];
-					$sRecipients		= implode(', ', $oEmail->getRecipients());
-					$mStatus			= $oEmail->getSendStatus();
-					if ($mStatus === Email_Flex::SEND_STATUS_SENT)
-					{
-						// Email sent
-						$arrSummary[$sCustomerGroupName][$sLetterType]['emails'][]	= $iAccountId;
-						$this->log("Email {$sLetterType} being sent for account {$iAccountId} to '{$sToEmail}' (actual recipients: '{$sRecipients}')");
-					}
-					else if ($mStatus === Email_Flex::SEND_STATUS_FAILED)
-					{
-						// Email sending failed
-						$sMessage	= "Failed to send email $sLetterType PDF for account {$iAccountId} to '{$sToEmail}' (actual recipients: '{$sRecipients}')";
-						$arrSummary[$sCustomerGroupName][$sLetterType]['errors'][]	= $sMessage;
-						$errors++;
-						$this->log($sMessage, TRUE);
-					}
-					else if ($mStatus === Email_Flex::SEND_STATUS_NOT_SENT)
-					{
-						// Not sent
-						$this->log("Email NOT SENT: {$sLetterType} for account {$iAccountId} addressed to '{$sToEmail}' (actual recipients: '{$sRecipients}')");
-					}
-				}
+				// TODO: DEV ONLY -- UNCOMMENT THIS CONDITION
+				//if ($this->_bTestRun === false)
+				//{
+					// Schedule the customer email queue for immediate delivery
+					$oCustomerQueue	= Email_Flex_Queue::get("CUSTOMER_{$sLetterType}");
+					$oCustomerQueue->scheduleForDelivery();
+				//}
 			}
 			$this->log("FINISHED: Sending all emails that have been queued");
 
 			// We now need to build a report detailing actions taken for each of the customer groups
-			if (!$sendEmail)
+			if (!$bSendEmail)
 			{
 				$this->log("No applicable accounts found. Exiting normally.");
 				return 0;
 			}
 
 			$this->log("Building report");
-			$subject = ($errors ? '[FAILURE]' : '[SUCCESS]') . ($this->_bTestRun ? ' [TEST]' : '') . ' Automated late notice generation log for run dated ' . $this->runDateTime;
-			$report = array();
+			$sSubject	= ($iErrors ? '[FAILURE]' : '[SUCCESS]') . ($this->_bTestRun ? ' [TEST]' : '') . ' Automated late notice generation log for run dated ' . $this->_sRunDateTime;
+			$aReport	= array();
 			if ($this->_bTestRun)
 			{
-				$report[] = "***RUN TEST MODE - EMAILS WERE NOT SENT TO ACCOUNT HOLDERS***";
-				$report[] = "";
+				$aReport[]	= "***RUN TEST MODE - EMAILS WERE NOT SENT TO ACCOUNT HOLDERS***";
+				$aReport[]	= "";
 			}
-			if ($errors)
+			if ($iErrors)
 			{
-				$report[] = "***ERRORS WERE DETECTED WHILST GENERATING LATE NOTICES***";
-				$report[] = "";
+				$aReport[]	= "***ERRORS WERE DETECTED WHILST GENERATING LATE NOTICES***";
+				$aReport[]	= "";
 			}
 			else
 			{
-				$report[] = "The late notice generation completed without any errors being detected.";
-				$report[] = "";
+				$aReport[]	= "The late notice generation completed without any errors being detected.";
+				$aReport[]	= "";
 			}
-			if (!empty($arrGeneralErrors))
+			if (!empty($aGeneralErrors))
 			{
-				$report[] = "***GENERAL ERRORS***";
-				$report[] = "The following general errors were encountered: -";
-				$report = array_merge($report, $arrGeneralErrors);
-				$report[] = "";
-				$report[] = "";
+				$aReport[]	= "***GENERAL ERRORS***";
+				$aReport[]	= "The following general errors were encountered: -";
+				$aReport	= array_merge($aReport, $aGeneralErrors);
+				$aReport[]	= "";
+				$aReport[]	= "";
 			}
-			$report[] = "Breakdown of XML generation: -";
-			foreach ($outputs as $letterType => $results)
+			$aReport[]	= "Breakdown of XML generation: -";
+			foreach ($aOutputs as $sLetterType => $aResults)
 			{
-				$report[] = "    $letterType: " . $results['success'] . " XML files Created, " . $results['failure'] . " XML file generations Failed";
+				$aReport[]	= "    $sLetterType: " . $aResults['success'] . " XML files Created, " . $aResults['failure'] . " XML file generations Failed";
 			}
-			$report[] = "";
-			$report[] = "";
-			if (count($arrSummary))
+			$aReport[]	= "";
+			$aReport[]	= "";
+			if (count($aSummary))
 			{
-				$report[] = "Breakdown of late notice generation by customer group (for successfully generated XML files only): -";
-				foreach ($arrSummary as $custGroup => $letterTypeSummarries)
+				$aReport[]	= "Breakdown of late notice generation by customer group (for successfully generated XML files only): -";
+				foreach ($aSummary as $sCustGroup => $aLetterTypeSummarries)
 				{
-					$report[] = "";
-					$report[] = "";
-					$report[] = "Customer Group: $custGroup";
+					$aReport[]	= "";
+					$aReport[]	= "";
+					$aReport[]	= "Customer Group: $sCustGroup";
 
-					foreach ($letterTypeSummarries as $letterType => $letterTypeSummary)
+					foreach ($aLetterTypeSummarries as $sLetterType => $aLetterTypeSummary)
 					{
-						$report[] = "[Start of $letterType breakdown for Customer Group: $custGroup]";
-						if (!empty($letterTypeSummary['errors']))
+						$aReport[]	= "[Start of $sLetterType breakdown for Customer Group: $sCustGroup]";
+						if (!empty($aLetterTypeSummary['errors']))
 						{
-							$report[] = "";
-							$report[] = "***ERRORS ENCOUNTERED***";
-							$report = array_merge($report, $letterTypeSummary['errors']);
-							$report[] = "";
+							$aReport[]	= "";
+							$aReport[]	= "***ERRORS ENCOUNTERED***";
+							$aReport		= array_merge($aReport, $aLetterTypeSummary['errors']);
+							$aReport[]	= "";
 						}
 						else
 						{
-							$report[] = "";
-							$report[] = "No errors were encountered.";
-							$report[] = "";
+							$aReport[]	= "";
+							$aReport[] 	= "No errors were encountered.";
+							$aReport[]	= "";
 						}
-						if (!empty($letterTypeSummary['prints']))
+						if (!empty($aLetterTypeSummary['prints']))
 						{
-							$report[] = "Print: " . count($letterTypeSummary['prints']) . " {$letterType}s were created for printing and stored in " . $letterTypeSummary['output_directory'] . '.';
+							$aReport[] 	= "Print: " . count($aLetterTypeSummary['prints']) . " {$sLetterType}s were created for printing and stored in " . $aLetterTypeSummary['output_directory'] . '.';
 						}
 						else
 						{
-							$report[] = "Print: No documents were created for printing";
+							$aReport[] 	= "Print: No documents were created for printing";
 						}
-						if (!empty($letterTypeSummary['emails']))
+						if (!empty($aLetterTypeSummary['emails']))
 						{
-							$report[] = "Email: " . count($letterTypeSummary['emails']) . " {$letterType}s were created and emailed.";
-							$report[] = "Emails were sent for the following accounts: -";
-							$report[] = implode(', ', $letterTypeSummary['emails']);
+							$aReport[] 	= "Email: " . count($aLetterTypeSummary['emails']) . " {$sLetterType}s were created and emailed.";
+							$aReport[] 	= "Emails were sent for the following accounts: -";
+							$aReport[] 	= implode(', ', $aLetterTypeSummary['emails']);
 						}
 						else
 						{
-							$report[] = "Email: No documents were emailed";
+							$aReport[] 	= "Email: No documents were emailed";
 						}
-						$report[] = "[End of $letterType breakdown for Customer Group: $custGroup]";
-						$report[] = "";
+						$aReport[] 	= "[End of $sLetterType breakdown for Customer Group: $sCustGroup]";
+						$aReport[] 	= "";
 					}
 
-					$report[] = "[End of breakdown for Customer Group: $custGroup]";
-					$report[] = "";
-					$report[] = "";
+					$aReport[] 	= "[End of breakdown for Customer Group: $sCustGroup]";
+					$aReport[] 	= "";
+					$aReport[] 	= "";
 				}
 			}
 			else
 			{
-				$report[] = "No automated late notices were generated.";
+				$aReport[] 	= "No automated late notices were generated.";
 			}
-			$body = implode("\r\n", $report);
+			
+			$sBody	= implode("\r\n", $aReport);
 
 			// Send the report email, not queued
 			$this->log("Sending report");
-			if (Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE_REPORT, NULL, NULL, $subject, NULL, $body, NULL, TRUE))
+			if (Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE_REPORT, NULL, NULL, $sSubject, NULL, $sBody, NULL, TRUE))
 			{
 				$this->log("Report sent");
 			}
@@ -719,16 +726,17 @@ class Cli_App_LateNoticeRun extends Cli
 
 			$this->log("Finished.");
 
-			if ($this->_bTestRun)
+			// TODO: DEV ONLY -- UNCOMMENT THIS
+			/*if ($this->_bTestRun)
 			{
 				throw new Exception("Test Mode!");
-			}
+			}*/
 
-			return $errors;
+			return $iErrors;
 		}
 		catch(Exception $exception)
 		{
-			if (!$dacFlex->TransactionRollback())
+			if (!$oDataAccess->TransactionRollback())
 			{
 				$this->showUsage('Transaction Rollback Failed');
 				return 1;
@@ -740,52 +748,46 @@ class Cli_App_LateNoticeRun extends Cli
 		}
 	}
 
-	private function changeInvoiceRunAutoActionDateTime($invoiceRunId, $intAutomaticInvoiceAction)
+	private function changeInvoiceRunAutoActionDateTime($iInvoiceRunId, $iAutomaticInvoiceAction)
 	{
-		$qryQuery = new Query();
-		$invoiceRunId = $qryQuery->EscapeString($invoiceRunId);
-		$strSQL = "UPDATE automatic_invoice_run_event SET actioned_datetime = '$this->runDateTime' WHERE invoice_run_id IN (SELECT Id FROM InvoiceRun WHERE invoice_run_id = '$invoiceRunId') AND automatic_invoice_action_id = $intAutomaticInvoiceAction";
-
-		$message = TRUE;
-		if (!$qryQuery->Execute($strSQL))
+		$oQuery 		= new Query();
+		$iInvoiceRunId	= $oQuery->EscapeString($iInvoiceRunId);
+		$sSQL			= "UPDATE automatic_invoice_run_event SET actioned_datetime = '$this->_sRunDateTime' WHERE invoice_run_id IN (SELECT Id FROM InvoiceRun WHERE invoice_run_id = '$iInvoiceRunId') AND automatic_invoice_action_id = $iAutomaticInvoiceAction";
+		$sMessage		= TRUE;
+		if (!$oQuery->Execute($sSQL))
 		{
-			$message = ' Failed to update automatic_invoice_run_event for invoice_run ' . $invoiceRunId . ' and action ' . $intAutomaticInvoiceAction . ' to ' . $this->runDateTime . '. '. $qryQuery->Error();
-			$this->log($message, TRUE);
+			$sMessage	= ' Failed to update automatic_invoice_run_event for invoice_run ' . $iInvoiceRunId . ' and action ' . $iAutomaticInvoiceAction . ' to ' . $this->_sRunDateTime . '. '. $oQuery->Error();
+			$this->log($sMessage, TRUE);
 		}
-		return $message;
+		return $sMessage;
 	}
 
-	private function changeAccountAutomaticInvoiceAction($intAccount, $intFrom, $intTo, $strReason, $invoiceRunId)
+	private function changeAccountAutomaticInvoiceAction($iAccount, $iFrom, $iTo, $sReason, $iInvoiceRunId)
 	{
-		$error = ChangeAccountAutomaticInvoiceAction($intAccount, $intFrom, $intTo, $strReason, $this->runDateTime, $invoiceRunId);
-		if ($error !== TRUE)
+		$mError	= ChangeAccountAutomaticInvoiceAction($iAccount, $iFrom, $iTo, $sReason, $this->_sRunDateTime, $iInvoiceRunId);
+		if ($mError !== TRUE)
 		{
-			$this->log($error, TRUE);
+			$this->log($mError, TRUE);
 		}
-		return $error;
+		return $mError;
 	}
 
-	private function getPDFContent($custGroupId, $effectiveDate, $documentTypeId, $pathToXMLFile, $targetMedia)
+	private function getPDFContent($iCustGroupId, $sEffectiveDate, $iDocumentTypeId, $sPathToXMLFile, $sTargetMedia)
 	{
 		$this->startErrorCatching();
-		$fileContents = file_get_contents($pathToXMLFile);
-
-		$pdfTemplate = new Flex_Pdf_Template(
-						$custGroupId,
-						$effectiveDate,
-						$documentTypeId,
-						$fileContents,
-						$targetMedia,
-						TRUE);
-
-		$pdf = $pdfTemplate->createDocument();
-		$pdfTemplate->destroy();
-		$pdf = $pdf->render();
+		
+		$fileContents	= file_get_contents($sPathToXMLFile);
+		$oPDFTemplate	= new Flex_Pdf_Template($iCustGroupId, $sEffectiveDate, $iDocumentTypeId, $fileContents, $sTargetMedia, TRUE);
+		$oPDF			= $oPDFTemplate->createDocument();
+		$oPDFTemplate->destroy();
+		$oPDF			= $oPDF->render();
+		
 		if ($this->getCachedError())
 		{
 			return FALSE;
 		}
-		return $pdf;
+		
+		return $oPDF;
 	}
 
 	function getCommandLineArguments()
