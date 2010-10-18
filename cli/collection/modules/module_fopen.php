@@ -17,7 +17,7 @@
 	const	DIRECTORY_NAME_REGEX_PREFIX	= 'regex:';
 	const	SKIP_IS_DIR_AFTER_REGEX		= true;
 	
-	const	ENABLE_DEBUG_OUTPUT	= true;
+	const	ENABLE_DEBUG_OUTPUT	= false;
 	
 	protected function _cliEcho($sMessage='', $bNewLine=true)
 	{
@@ -100,12 +100,12 @@
 				}
 				else
 				{
-					return "Error saving to local path '{$arrCurrentFile['LocalPath']}': ".print_r(error_get_last(), true);
+					return "Error saving to local path '{$arrCurrentFile['LocalPath']}': ".$php_errormsg;
 				}
 			}
 			else
 			{
-				return "Error downloading from the remote path '{$arrCurrentFile['RemotePath']}': ".print_r(error_get_last(), true);
+				return "Error downloading from the remote path '{$arrCurrentFile['RemotePath']}': ".$php_errormsg;
 			}
 		}
  	}
@@ -190,7 +190,7 @@
 				else
 				{
 					// Error
-					throw new Exception("Error retrieving contents of '{$sWrappedPath}': ".implode('; ', error_get_last()));
+					throw new Exception("Error retrieving contents of '{$sWrappedPath}': ".$php_errormsg);
 				}
 			}
 			else
@@ -235,6 +235,7 @@
 						foreach ($arrDirectoryContents as $strSubItem)
 						{
 							$intProgress++;
+							$strSubItem	= basename($strSubItem);
 							$this->_cliEcho("\033[2K\033[uProcessing File {$intProgress}/{$intFileCount}; Matches: {$intMatches}", false);
 							
 							$strSubItemFullPath	= $strDirectoryFullPath.'/'.$strSubItem;
@@ -266,7 +267,7 @@
 					else
 					{
 						// Error
-						throw new Exception("Error retrieving contents of '{$strCurrentPath}': ".error_get_last());
+						throw new Exception("Error retrieving contents of '{$strCurrentPath}': ".$php_errormsg);
 					}
 				}
 				else

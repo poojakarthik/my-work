@@ -158,7 +158,7 @@ class ApplicationCollection extends ApplicationBaseClass
 							$arrFileDownload['Status']						= FILE_COLLECTED;
 							
 							// I can't see why we'd want to Import Archives or Compressed File Types (instead of just their contents), but allow an override just in case
-							$arrFileDownload['FileType']['DownloadOnly']	= (isset($arrFileDownload['DownloadOnly'])) ? !!$arrFileDownload['FileType']['DownloadOnly'] : ($arrFileDownload['FileType']['Compression'] || $arrFileDownload['FileType']['ArchiveType']);
+							$mixDownloadFile['FileType']['DownloadOnly']	= (isset($mixDownloadFile['FileType']['DownloadOnly'])) ? !!$mixDownloadFile['FileType']['DownloadOnly'] : (isset($mixDownloadFile['FileType']['Compression']) || isset($mixDownloadFile['FileType']['ArchiveType']));
 							
 							if (!defined('COLLECTION_DEBUG_MODE') || !COLLECTION_DEBUG_MODE)
 							{
@@ -187,16 +187,17 @@ class ApplicationCollection extends ApplicationBaseClass
 										$sStreamWrapper	= preg_replace('/\:\/\/\s+$/', '', $arrFile['FileType']['Compression']['StreamWrapper']);
 										
 										// Calculate Output Path
+										$sCompressedFileName	= basename($arrFile['LocalPath']);
 										$sUncompressedFileName	= $sCompressedFileName;
 										if ($arrFile['FileType']['Compression']['FileExtensions'])
 										{
 											foreach ($arrFile['FileType']['Compression']['FileExtensions'] as $sMatch=>$sReplace)
 											{
 												$sMatch					= ($sMatch[0] === '.') ? $sMatch : ".{$sMatch}";
-												$sExtensionlessFileName	= basename($arrFile['FileName'], $sMatch);
+												$sExtensionlessFileName	= basename($sCompressedFileName, $sMatch);
 												
 												// If the extensionless filename is not the same as the original filename, then use it instead
-												if ($arrFile['FileName'] !== $sExtensionlessFileName)
+												if ($sCompressedFileName !== $sExtensionlessFileName)
 												{
 													$sUncompressedFileName	= $sExtensionlessFileName;
 													break;
@@ -205,12 +206,24 @@ class ApplicationCollection extends ApplicationBaseClass
 										}
 										
 										// Uncompress
-										$sUncompressedPath	= "{$arrFile['Location']}_files/{$sUncompressedFileName}";
-										if (false === ($sCompressedData = @file_get_contents("{$sStreamWrapper}://{$arrFile['Location']}")))
+										$sUncompressedDirectory	= rtrim($arrFile['LocalPath'], '/')."_files/";
+										$sUncompressedPath		= "{$sUncompressedDirectory}/{$sUncompressedFileName}";
+										
+										@mkdir($sUncompressedDirectory, 0777, true);
+										
+										if (false === @is_dir($sUncompressedDirectory))
 										{
 											// Error
 											CliEcho("\t\t\t[ FAILED ]");
-											CliEcho("\t\t\t\t\t -- Unable to read compressed file '{$arrFile['Location']}': ".$php_errormsg);
+											CliEcho("\t\t\t\t\t -- Unable to create decompression directory '{$sUncompressedDirectory}': ".$php_errormsg);
+											continue;
+										}
+										
+										if (false === ($sCompressedData = @file_get_contents("{$sStreamWrapper}://{$arrFile['LocalPath']}")))
+										{
+											// Error
+											CliEcho("\t\t\t[ FAILED ]");
+											CliEcho("\t\t\t\t\t -- Unable to read compressed file '{$arrFile['LocalPath']}': ".$php_errormsg);
 											continue;
 										}
 										
@@ -228,6 +241,7 @@ class ApplicationCollection extends ApplicationBaseClass
 											'FileType'		=> $arrFile['FileType'],
 											'file_download'	=> $arrFileDownload['Id']
 										);
+										unset($aUncompressedFile['FileType']['Compression']);
 										
 										$arrDownloadedFiles[]	= $aUncompressedFile;
 									}

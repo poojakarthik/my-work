@@ -66,19 +66,19 @@
 		throw new Exception("TEST");*/
 		
 		// Test if the connection works...
-		/*if ($this->_resConnection = fopen($this->_strWrapper.'/~', 'r'))
-		{*/
+		if ($this->_resConnection = file_exists($this->_strWrapper.'/'))
+		{
 			// Get list of files to download
 			$this->_arrDownloadPaths	= $this->_getDownloadPaths();
 			reset($this->_arrDownloadPaths);
 			
 			return true;
-		/*}
+		}
 		else
 		{
 			// Error
 			return "Unable to connect to host {$strHost}";
-		}*/
+		}
 	}
 }
 ?>
