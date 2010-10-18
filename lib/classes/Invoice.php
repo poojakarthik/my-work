@@ -1300,7 +1300,15 @@ class Invoice extends ORM_Cached
 			$bHasInvoicedOnAnotherPlan	= false;
 			if ($arrPlanDetails['InAdvance'])
 			{
-				$rResult	= $qryQuery->Execute("SELECT * FROM Charge WHERE ChargeType = 'PCAD' AND Account = {$this->Account} AND (Service IN ({$strServiceIds}) OR ({$arrPlanDetails['Shared']} = 1 AND Service IS NULL)) AND Status = ".CHARGE_INVOICED." AND invoice_run_id != {$this->_objInvoiceRun->Id} LIMIT 1");
+				$rResult	= $qryQuery->Execute("	SELECT	* 
+													FROM 	Charge 
+													WHERE 	ChargeType = 'PCAD' 
+													AND 	Account = {$this->Account} 
+													AND 	(Service IN ({$strServiceIds}) OR ({$arrPlanDetails['Shared']} = 1 AND Service IS NULL)) 
+													AND 	Status = ".CHARGE_INVOICED." 
+													AND 	invoice_run_id != {$this->_objInvoiceRun->Id}
+													AND		ChargedOn < '{$this->_objInvoiceRun->BillingDate}' 
+													LIMIT 	1");
 				if ($rResult === false)
 				{
 					throw new Exception("DB ERROR: ".$qryQuery->Error());
@@ -1881,8 +1889,8 @@ class Invoice extends ORM_Cached
 				$oCDR->rate(true);
 				
 				Log::getLog()->log("After rate: ");
-				Log::getLog()->log("\tCharge: {$oCDR->Charge}".	(($oCDR->Charge != $fInitialCharge) ? ", DIFFERENCE: ".($oCDR->Charge - $fInitialCharge) : ''));
-				Log::getLog()->log("\tRate: {$oCDR->Rate}".		(($oCDR->Rate != $iInitialRate) ? ", DIFFERENCE" : ''));
+				Log::getLog()->log("\tCharge: {$oCDR->Charge}".	(($oCDR->Charge != $fInitialCharge) ? ", CHARGE DIFFERENCE: ".($oCDR->Charge - $fInitialCharge) : ''));
+				Log::getLog()->log("\tRate: {$oCDR->Rate}".		(($oCDR->Rate != $iInitialRate) ? ", RATE DIFFERENCE" : ''));
 				
 				Log::getLog()->log("... Complete");
 			}

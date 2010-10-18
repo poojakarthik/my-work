@@ -1,15 +1,15 @@
 
 var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup, 
 {
-	initialize	: function($super, oNewInvoice, oOriginalInvoice, mDebugLog, bAllowAdjustment)
+	initialize	: function($super, oNewInvoice, oOriginalInvoice, mDebugLog, bAllowAdjustmentAndTicket)
 	{
 		$super(85);
 		
-		this._oNewInvoice		= oNewInvoice;
-		this._oOriginalInvoice	= oOriginalInvoice;
-		this._mDebugLog			= mDebugLog;
-		this._hToggleRows		= {};
-		this._bAllowAdjustment	= (typeof bAllowAdjustment == 'undefined') ? true : !!bAllowAdjustment;
+		this._oNewInvoice				= oNewInvoice;
+		this._oOriginalInvoice			= oOriginalInvoice;
+		this._mDebugLog					= mDebugLog;
+		this._hToggleRows				= {};
+		this._bAllowAdjustmentAndTicket	= (typeof bAllowAdjustmentAndTicket == 'undefined') ? true : !!bAllowAdjustmentAndTicket;
 		
 		Popup_Invoice_Rerate_Summary._hInstances[oOriginalInvoice.Id]	= this;
 		
@@ -74,10 +74,11 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 			oLogButton.hide();
 		}
 		
-		if (!this._bAllowAdjustment)
+		if (!this._bAllowAdjustmentAndTicket)
 		{
-			// Hide adjustment button because difference is a debit or there is no difference 
+			// Hide adjustment & ticket buttons 
 			oAdjustmentButton.hide();
+			oTicketButton.hide();
 		}
 		
 		// Hide all service details
@@ -386,6 +387,9 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 	{
 		if ((this._fAdjustmentAmount >= Popup_Invoice_Rerate_Summary.MIN_ADJUSTMENT) && !bForceIfNoDifference)
 		{
+			// Clear the adjustment
+			this._fAdjustmentAmount	= 0;
+			
 			Reflex_Popup.yesNoCancel(
 				'There difference between the original Invoice and the rerated Invoice totals is not a Credit amount. Do you still want to add an adjustment?', 
 				{fnOnYes: this._addAdjustment.bind(this, true)}

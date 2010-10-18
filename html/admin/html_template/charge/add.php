@@ -104,7 +104,7 @@ class HtmlTemplateChargeAdd extends HtmlTemplate
 		$bolCanCreateCreditCharges	= TRUE;
 		
 		// If IsRerateAdjustment & AmountOverride given, it must be an adjustment made post rerating an invoice
-		$bolRerateAdjustment	= !!DBO()->Rerate->IsRerateAdjustment->Value && !!DBO()->AmountOverride->Amount->Value;
+		$bolRerateAdjustment	= !!DBO()->Rerate->IsRerateAdjustment->Value;
 		
 		// Only apply the output mask if the DBO()->Charge is not invalid
 		$bolApplyOutputMask	= !DBO()->Charge->IsInvalid();
