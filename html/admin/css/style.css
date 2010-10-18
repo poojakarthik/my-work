@@ -7113,11 +7113,16 @@ div.popup-email-text-edit
 	margin	: 0.5em;
 }
 
-.popup-email-text-edit .buttons
+.popup-email-text-edit .buttons, .popup-email-test .buttons
 {
 	 text-align: center;
 }
 
+.popup-email-text-edit .buttons .padded
+{
+	padding-left: 5px;
+	padding-right: 5px;
+}
 
 .popup-email-text-edit textarea {	
 	
@@ -7186,6 +7191,11 @@ div.popup-email-text-edit
 {
 
 	margin-left: 8px;
+}
+
+div.popup-email-text-edit table.input tbody tr th
+{
+	min-width:150px;
 }
 
 /************- END - Email Editor Popup - END - **********************************/
@@ -7397,19 +7407,7 @@ text-align: right;
 }
 
 
-.page-email-template-history-container  div.section > div.section-header > div.section-header-options
-{
-	display		: inline-block;
-	height		: 100%;
-	text-align	: right;
 
-	position	: absolute;
-	right		: 0em;
-	bottom		: 0em;
-	padding-right: 15px;
-	/*float			: right;
-	padding-bottom	: 0.25em;*/
-}
 
 .page-email-template-history-container div.control-field
 {
@@ -7561,6 +7559,19 @@ div.popup-email-test div.control-field
 	display: inline;
 	
 
+}
+
+div.page-email-template-history .section-header-options
+{
+	padding-right: 8px;
+	bottom: 0.2em !important;
+
+}
+
+div.page-email-template-history .section-header-options li:last-child
+{
+	padding-left: 10px;
+	top: 0px;
 }
 
 
