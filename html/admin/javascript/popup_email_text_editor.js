@@ -240,7 +240,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	_sendTestMail: function(bTextOnly)
 	{
 		sHTML = bTextOnly?null:this.oHTMLTextArea.value;		
-		oData = {text: this.oTextArea.value, html:sHTML, subject:this._oSubjectTextField.value }
+		oData = {text: this.oTextArea.value, html:sHTML, subject:this._oSubjectTextField.getElementValue() }
 		new Popup_Email_Test_Email(oData);	
 	},
 	
