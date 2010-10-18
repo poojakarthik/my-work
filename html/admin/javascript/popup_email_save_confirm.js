@@ -3,13 +3,21 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 {
 	initialize	: function($super, oData, fnCallback)
 	{
-		$super(50);
-		this._oLoadingPopup	= new Reflex_Popup.Loading();
-		this._bFutureVersionsComboHasValues = false;
-		this._aErrors = [];		
-		this._fnCallback = fnCallback;
-		this._oData = oData;	
-		this._buildUI();		
+		
+		if (oData.Errors.length>0)
+		{
+			this._errorPopup(oData.Errors);	
+		}
+		else
+		{
+			$super(50);
+			this._oLoadingPopup	= new Reflex_Popup.Loading();
+			this._bFutureVersionsComboHasValues = false;
+			this._aErrors = [];		
+			this._fnCallback = fnCallback;
+			this._oData = oData;	
+			this._buildUI();
+		}
 	},
 	
 	
@@ -272,6 +280,25 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 		return aErrors;
 	},
 	
+		
+	
+	
+	_errorPopup: function(aErrors)
+	{
+		var oErrors = document.createElement('ul');
+		for (var i=0;i<aErrors.length;i++)
+		{
+			var li = document.createElement("li");
+			var span = document.createElement("span");
+			span.innerHTML = aErrors[i];
+			li.appendChild(span)
+			oErrors.appendChild(li);					
+		}	
+		
+		Reflex_Popup.alert(oErrors, {sTitle: 'Email Template Save Errors'});	
+	
+	},
+	
 	
 	
 	_save: function()
@@ -286,16 +313,7 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 		var aErrors = this._validate();	
 		if (aErrors.length>0)
 		{
-			var oErrors = document.createElement("ul");
-			for (var i=0;i<aErrors.length;i++)
-			{
-				var li = document.createElement("li");
-				var span = document.createElement("span");
-				span.innerHTML = aErrors[i];
-				li.appendChild(span)
-				oErrors.appendChild(li);					
-			}			
-			Reflex_Popup.alert(oErrors, {sTitle: 'Email Template Save Errors'});		
+			this._errorPopup(aErrors);	
 		}
 		else
 		{
@@ -352,7 +370,7 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 	
 	_close : function ()
 	{
-		this._oLoadingPopup.hide();	
+		//this._oLoadingPopup.hide();	
 		this.hide();	
 	},
 	
@@ -367,12 +385,17 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 		
 		if (typeof this._futureVersions != 'undefined')
 		{
+			
 			this._comboFuture.emptyList();
+			
 			fnCallback(this._createSelectList());
+			
 			this._bFutureVersionsComboHasValues?this._comboFuture.setVisible(true):this._comboFuture.setVisible(false);
 			this._bFutureVersionsComboHasValues?this._comboFutureLabel.style.display = '':this._comboFutureLabel.style.display = 'none';
-			this._bStartDateEqualsFutureStartDate?this._endDateChanged():null;	
-			this._oLoadingPopup.hide();
+			this._bStartDateEqualsFutureStartDate?this._endDateChanged():null;
+			
+			//this._oLoadingPopup.hide();
+			
 		}
 		else if (typeof oResponse == 'undefined')
 		{
@@ -489,7 +512,7 @@ Object.extend(Popup_Email_Save_Confirm,
 	HTML_CHANGES	:
 	{
 		javascript	: 'Javascript tags and code removed',
-		events		: 'Event triggers (eg \'onClick\' removed',
+		events		: 'Event triggers (eg \'onClick\') removed',
 		form		: 'HTML Forms changed to DIVs',
 		input		: 'form input elements removed',
 		link		: 'link tags removed (mainly used for external stylesheets)',
@@ -500,6 +523,7 @@ Object.extend(Popup_Email_Save_Confirm,
 	
 	startDateValidation : function(sDate)
 	{			
+		
 		return sDate<new Date().$format(Popup_Email_Save_Confirm.FIELD_CONFIG.changeDate.oConfig.sDateFormat)?false:true;		
 	}	
 });

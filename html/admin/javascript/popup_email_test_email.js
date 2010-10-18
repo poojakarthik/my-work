@@ -20,8 +20,9 @@ var Popup_Email_Test_Email	= Class.create(Reflex_Popup,
 		oToSpan.innerHTML 						= 'To:';
 		oToSpan.className 						= 'email-address-list';
 		
-		this._oRecipientInput = Control_Field.factory('text', {mAutoTrim: true, sLabel: 'Recipient Email'});		
-		//this._oRecipientInput.addOnChangeCallback(this._RecipientChange.bind(this));
+		this._oRecipientInput = Control_Field.factory('text', {mAutoTrim: true, sLabel: 'Recipient Email', fnValidate: this._validEmail, mEditable	: true, bDisableValidationStyling	: false});		
+		this._oRecipientInput.addOnChangeCallback(this._RecipientChange.bind(this));
+		this._oRecipientInput.setRenderMode(true);
 		
 		this._oTo = $T.div({class: 'popup-email-test-to'});	
 		
@@ -39,11 +40,11 @@ var Popup_Email_Test_Email	= Class.create(Reflex_Popup,
 								)
 						);
 		
-		
-debugger;
+var sEmailType = this._oData.html==null?' Text Only Email':' HTML Email';		
+
 var  button = 	$T.button({class: 'icon-button'},											
-							$T.img({src: Popup_Email_Text_Editor.EMAIL_IMAGE_SOURCE, alt: '', title: 'Send'}),
-							$T.span('Send')																	
+							$T.img({src: Popup_Email_Text_Editor.EMAIL_IMAGE_SOURCE, alt: '', title: 'Send'+ sEmailType}),
+							$T.span('Send'+ sEmailType)																	
 							);
 button.observe('click', this._sendMail.bind(this));
 		
@@ -51,16 +52,13 @@ button.observe('click', this._sendMail.bind(this));
 											
 											$T.div({class: 'recipient'}, oTable.getElement()),
 											$T.div({class: 'footer'},
-													$T.span({class: 'send-button'},
-															button
-															),
-															$T.span({class: 'cancel-button'},
+													$T.div({class: 'buttons'},
+															button, 
 															$T.button({class: 'icon-button'},
 																$T.img({src: Popup_Email_Text_Editor.CANCEL_IMAGE_SOURCE, alt: '', title: 'Cancel'}),
 																$T.span('Cancel')
 																	).observe('click',this._close.bind(this)))
-															)
-													
+															)													
 											);
 
 		
@@ -78,13 +76,14 @@ button.observe('click', this._sendMail.bind(this));
 	
 	_RecipientChange: function ()
 	{
-		debugger;
-		this._oTo.childNodes.length>0?this._oSendButton.disabled = false:this._oSendButton.disabled = true;	
+		
+		this._oRecipientInput.validate();
+		
 	},
 	
 	_sendMail: function(oResponse)
 	{
-		debugger;
+	
 		if (typeof oResponse == 'undefined' || typeof oResponse.Success == 'undefined')
 		{		
 			this._oLoadingPopup.display();
@@ -133,7 +132,7 @@ button.observe('click', this._sendMail.bind(this));
 	
 	_addAddress: function()
 	{
-		debugger;
+		
 		var address = this._oRecipientInput.getElementValue();
 		if (this._validEmail(address))
 		{
@@ -144,8 +143,9 @@ button.observe('click', this._sendMail.bind(this));
 								";"		
 								);
 			img.observe('click',this._removeAddress.bind(this,span));
-			this._oTo.appendChild(span);
-			this._RecipientChange();
+			this._oRecipientInput.clearValue();
+			this._oTo.appendChild(span);			
+			this._oTo.childNodes.length>0?this._oSendButton.disabled = false:this._oSendButton.disabled = true;	
 		
 		}
 		else
@@ -160,7 +160,7 @@ button.observe('click', this._sendMail.bind(this));
 	_removeAddress: function(span)
 	{
 		this._oTo.removeChild(span);
-		this._RecipientChange();	
+		this._oTo.childNodes.length>0?this._oSendButton.disabled = false:this._oSendButton.disabled = true;	
 	},
 	_close : function ()
 	{

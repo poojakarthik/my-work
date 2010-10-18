@@ -42,7 +42,7 @@ var Popup_email_HTML_Preview	= Class.create(Reflex_Popup,
 	
 	_setFrameContent: function()
 	{
-		debugger;
+	
 		ifrm = (this._ifrm.contentWindow) ? this._ifrm.contentWindow : (this._ifrm.contentDocument.document) ? this._ifrm.contentDocument.document : this._ifrm.contentDocument;
 		ifrm.document.open();
 		ifrm.document.write(this._sHTML);
