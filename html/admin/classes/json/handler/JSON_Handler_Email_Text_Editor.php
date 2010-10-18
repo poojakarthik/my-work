@@ -170,8 +170,6 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 		try
 		{
 
-			$oEmail = new Email_HTML_Document($sHTML);
-
 			return	array(
 							'Success'		=> true,
 							'text'		=> implode("",Email_Template_Logic::toText($sHTML))
@@ -191,6 +189,7 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 
 		try
 		{
+
 
 			return	array(
 							'Success'		=> true,
