@@ -58,15 +58,25 @@ var Component_Email_Template_History = Class.create(
 				
 			
 				oDetailsSection.addToHeaderOptions(
-					$T.li('Show Cancelled Versions')			
+					this._oShowCancelled.getElement()			
 				);
 				
-				oDetailsSection.addToHeaderOptions(
-					$T.li(this._oShowCancelled.getElement())			
-				);
 				
 				oDetailsSection.addToHeaderOptions(
-					 $T.li($T.img({src: 'img/template/new.png' , style:'cursor:pointer', title: 'Create a new Version' }).observe('click', this._editPopupNew.bind(this,this._iTemplateId)))
+					'Show Cancelled Versions'			
+				);
+				
+
+				
+				oDetailsSection.addToHeaderOptions(
+					// $T.li($T.img({src: Popup_Email_Text_Editor.ADD_IMAGE_SOURCE , style:'cursor:pointer', title: 'Create a new Version', class:'add-icon' }).observe('click', this._editPopupNew.bind(this,this._iTemplateId)))
+				
+										$T.button({class: 'icon-button',  title: 'Create a New Version'},
+							$T.img({src: Popup_Email_Text_Editor.ADD_IMAGE_SOURCE, alt: '', title: 'Create a New Version'}),
+							$T.span('New Version')
+							
+						).observe('click', this._editPopupNew.bind(this,this._iTemplateId))
+				
 				
 				);
 				
@@ -89,7 +99,7 @@ var Component_Email_Template_History = Class.create(
 					//tr.style.display!='none'?body.appendChild(tr):null;	
 					tr.style.display!='none'?this._oTable.appendRow(tr):null;						
 				}
-				debugger;
+				
 				if (this._oTable.rowCount() == 0)
 				{
 					var tr = document.createElement('tr');
