@@ -231,7 +231,7 @@ Object.extend(Reflex_Popup, {
 				sText
 			), 
 			{
-				sTitle			: 'Debug', 
+				sTitle			: 'Debug',
 				iWidth			: 61, 
 				bOverrideStyles	: false
 			}

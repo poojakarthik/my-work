@@ -77,8 +77,9 @@ var Invoice	= Class.create
 						oResponse.sMessage, 
 						{
 							iWidth		: 40, 
-							sYesLabel	: 'View Log',
-							fnOnYes		: this._showLogPopup.bind(this, oResponse.sDebug)
+							sYesLabel	: 'OK',
+							sNoLabel	: 'View Log',
+							fnOnNo		: this._showLogPopup.bind(this, oResponse.sDebug)
 						}
 					);
 				}

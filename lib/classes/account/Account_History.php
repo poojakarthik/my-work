@@ -389,7 +389,7 @@ class Account_History
 		
 		// Use prepared statment
 		$oStmt	= self::_preparedStatement('selByAccountIdAndEffectiveDatetime');
-		$iRows	= $oStmt->Execute(array('account_id' => $iAccountId, 'effective_datetime' => "'{$sEffectiveDatetime}'"));
+		$iRows	= $oStmt->Execute(array('account_id' => $iAccountId, 'effective_datetime' => $sEffectiveDatetime));
 		if ($iRows === false)
 		{
 			throw new Exception("Failed to get account history for account & effective date time. ".$oStmt->Error());
@@ -397,8 +397,9 @@ class Account_History
 		
 		if ($aRow = $oStmt->Fetch())
 		{
-			return new self($aRow);	
+			return $aRow;	
 		}
+		
 		return null;
 	}
 

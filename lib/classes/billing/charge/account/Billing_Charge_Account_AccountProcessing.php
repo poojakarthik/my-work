@@ -149,29 +149,44 @@
  		}
 		
 		// Do we have a valid CreditCard/DirectDebit entry?
-		$oAccountHistory	= Account_History::getForAccountAndEffectiveDatetime($objAccount->Id, $objInvoice->billing_period_end_datetime);
- 		if ($oAccountHistory->billing_type === BILLING_TYPE_CREDIT_CARD)
+		$aAccountHistory	= Account_History::getForAccountAndEffectiveDatetime($objAccount->Id, $objInvoice->billing_period_end_datetime);
+		if ($aAccountHistory === null)
+		{
+			throw new Exception("Failed to get account history for Account {$objAccount->Id} as of '{$objInvoice->billing_period_end_datetime}'");
+		}
+		
+ 		if ($aAccountHistory['billing_type'] === BILLING_TYPE_CREDIT_CARD)
  		{
  			// Check for Credit Card (use account history credit_card_id, and the invoices billing_period_end_datetime
- 			if ($this->_selCreditCard->Execute(Array('AccountGroup' => $objAccount->AccountGroup, 'expiry_date' => date('Y-m', strtotime($objInvoice->billing_period_end_datetime)), 'Id' => $oAccountHistory->credit_card_id)))
+ 			if ($this->_selCreditCard->Execute(Array('AccountGroup' => $objAccount->AccountGroup, 'expiry_date' => date('Y-m', strtotime($objInvoice->billing_period_end_datetime)), 'Id' => $aAccountHistory['credit_card_id'])))
  			{
  				Log::getLog()->log("Valid Credit card, cancel generate");
  				
  				// Valid Credit Card
  				return TRUE; 
  			}
+ 			else
+ 			{
+ 				Log::getLog()->log("Invalid Credit card");	
+ 			}
  		}
- 		elseif ($oAccountHistory->billing_type == BILLING_TYPE_DIRECT_DEBIT)
+ 		elseif ($aAccountHistory['billing_type'] == BILLING_TYPE_DIRECT_DEBIT)
  		{
  			// Check for DD Details (use account history direct_debit_id)
- 			if ($this->_selDirectDebit->Execute(Array('AccountGroup' => $objAccount->AccountGroup, 'Id' => $oAccountHistory->direct_debit_id)))
+ 			if ($this->_selDirectDebit->Execute(Array('AccountGroup' => $objAccount->AccountGroup, 'Id' => $aAccountHistory['direct_debit_id'])))
  			{
  				Log::getLog()->log("Valid Direct Debit, cancel generate");
  				
  				// Valid DD Details
  				return TRUE;
  			}
+ 			else
+ 			{
+ 				Log::getLog()->log("Invalid Direct debit");
+ 			}
  		}
+ 		
+ 		Log::getLog()->log("Account doesn't use Direct Debit, billing type = {$aAccountHistory['billing_type']}");
  		
  		// Is the Invoice Total > NON_DDR_MINIMUM_CHARGE?
  		if ($objInvoice->Total < $this->_cfgModuleConfig->InvoiceMinimum)
@@ -181,6 +196,10 @@
  			// Yes, return TRUE
  			return TRUE;
  		}
+ 		else
+ 		{
+ 			Log::getLog()->log("Invoice Total ({$objInvoice->Total}) is GREATER OR EQUAL to the module minimum charge ({$this->_cfgModuleConfig->InvoiceMinimum})");
+ 		}
  		
  		// Is this Account tolling?
  		if (!$this->_selTollingAccounts->Execute(Array('Account' => $objAccount->Id, 'invoice_run_id' => $objInvoice->invoice_run_id)))
@@ -189,6 +208,10 @@
  			
  			// No, return TRUE
  			return TRUE;
+ 		}
+ 		else
+ 		{
+ 			Log::getLog()->log("Account is tolling");
  		}
  		
  		Log::getLog()->log("Generating Account Processing Billing Charge");
