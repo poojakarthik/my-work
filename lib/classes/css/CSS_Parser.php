@@ -86,13 +86,13 @@ class CSS_Parser
 
         $stream = new CSS_TokenStream($CSS_Tokenizer->CSS_Tokenize($string), $string);
 
-        try {
+       // try {
             return $this->parseSelectorGroup($stream);
-        } catch (Exception $e) {
-            $class = get_class($e);
+       // } catch (Exception $e) {
+       //     $class = get_class($e);
 
-            throw new $class(sprintf('%s at %s -> %s', $e->getMessage(), implode($stream->getUsed(), ''), $stream->peek()), 0, $e);
-        }
+        //    throw new $class(sprintf('%s at %s -> %s', $e->getMessage(), implode($stream->getUsed(), ''), $stream->peek()), 0, $e);
+       // }
     }
 
     protected function parseSelectorGroup($stream)
