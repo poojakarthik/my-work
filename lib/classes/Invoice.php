@@ -1921,7 +1921,9 @@ class Invoice extends ORM_Cached
 			
 			//
 			//
-			// ALWAYS ROLLBACK THIS PROCESS, NEVER COMMIT A REGENERATED INVOICE
+			// ALWAYS ROLLBACK THIS PROCESS
+			//
+			// NEVER COMMIT A REGENERATED INVOICE
 			//
 			//
 			$oDA->TransactionRollback();

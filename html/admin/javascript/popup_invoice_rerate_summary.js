@@ -11,8 +11,6 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 		this._hToggleRows				= {};
 		this._bAllowAdjustmentAndTicket	= (typeof bAllowAdjustmentAndTicket == 'undefined') ? true : !!bAllowAdjustmentAndTicket;
 		
-		Popup_Invoice_Rerate_Summary._hInstances[oOriginalInvoice.Id]	= this;
-		
 		this._buildUI();
 	},
 	
@@ -21,13 +19,26 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 	hide	: function($super)
 	{
 		$super();
+		
+		// Remove the cached reference to this instance
 		delete Popup_Invoice_Rerate_Summary._hInstances[this._oOriginalInvoice.Id];
+	},
+	
+	display	: function($super)
+	{
+		$super();
+		
+		// Cache a reference to this instance statically.
+		// Used to disable adjustment buttons on completion of an adjustment because the adjustment popup
+		// is framework 2 and thus quite hard to pass a callback to.
+		Popup_Invoice_Rerate_Summary._hInstances[this._oOriginalInvoice.Id]	= this;
 	},
 	
 	// Private
 	
 	_buildUI	: function()
 	{
+		// One main section which contains to invoice summarys, in a horizontal UL
 		var oSection	= new Section(false);
 		oSection.setContent(
 			$T.ul({class: 'reset horizontal'},
@@ -111,7 +122,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 		
 		oData.fInvoiceTotal	= fInvoiceTotal;
 		var oPDFImage		= $T.img({class: 'pdf-link', src: '../admin/img/template/pdf_small.png', title: 'Download Invoice PDF', alt: 'Download Invoice PDF'});
-		oPDFImage.observe('click', this._downloadPDF.bind(this, oInvoice));
+		oPDFImage.observe('click', this._downloadPDF.bind(this, oInvoice, false));
 		
 		oTBody.appendChild(
 			$T.tr(
@@ -178,7 +189,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 			{
 				// Rate plan is different for this service in this invoice summary
 				sRatePlanNameExtraClass	= ' different-rate-plan';
-			}	
+			}
 			var oToggleRow		= 	$T.tr({class: 'toggle-row service-item'},
 										$T.td({class: 'padding-cell'}),
 										$T.td({class: 'padding-cell'}),
@@ -263,6 +274,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 				Popup_Invoice_Rerate_Summary._getDifferenceTD(oInvoice.charge_tax, oCompareTo.fChargeTax)
 			)
 		);
+		
 		oData.fChargeTax	= parseFloat(oInvoice.charge_tax);
 		fNewChargesTotal	+= parseFloat(oInvoice.charge_tax);
 		iNewChargesRows++;
@@ -358,10 +370,16 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 		return 	oTable;
 	},
 	
-	_downloadPDF	: function(oInvoice)
+	_downloadPDF	: function(oInvoice, bRedirectNow)
 	{
-		// Show alert
-		Reflex_Popup.alert('Generating the PDF for Invoice ' + oInvoice.Id + '. This may take a few moments to complete');
+		if (!bRedirectNow)
+		{
+			// Show alert
+			Reflex_Popup.alert('Generating the PDF for Invoice ' + oInvoice.Id + '. This may take a few moments to complete');
+			
+			// Delay 1/4 sec
+			setTimeout(this._downloadPDF.bind(this, oInvoice, true), 250);
+		}
 		
 		// Redirect to the invoice pdf generation application handler
 		var oCreatedOn	= Date.$parseDate(oInvoice.CreatedOn, 'Y-m-d'); 
@@ -387,7 +405,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 	{
 		if ((this._fAdjustmentAmount >= Popup_Invoice_Rerate_Summary.MIN_ADJUSTMENT) && !bForceIfNoDifference)
 		{
-			// Clear the adjustment
+			// Adjustment amount is greater than the minimum allowed (meant to be a credit)
 			this._fAdjustmentAmount	= 0;
 			
 			Reflex_Popup.yesNoCancel(
@@ -416,6 +434,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 							},
 							Rerate	:
 							{
+								// Flag that tells the adjustment popup where we're coming from
 								IsRerateAdjustment	: true
 							}
 						};
@@ -455,7 +474,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 		}
 		this._hToggleRows[sId].aRows.push(oToggleRow);
 		oToggleRow.observe('click', this._toggleRows.bind(this, sId));
-	},	
+	},
 	
 	_toggleRows	: function(sId)
 	{

@@ -6719,7 +6719,7 @@ div.datetime-time
 }
 
 .popup-invoice-rerate-summary .invoice-summary .title,
-.popup-invoice-rerate-summary .invoice-summary .title > span
+.popup-invoice-rerate-summary .invoice-summary .title span
 {
 	font-size	: 1.2em;
 }
