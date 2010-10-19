@@ -159,7 +159,6 @@ class Email_Template_Logic
 		}
 	}
 
-
 	public static  function processHTML($sHTML, $bReport = false, $bForTestEmail=false)
 	{
 
@@ -172,8 +171,8 @@ class Email_Template_Logic
 		if ($sHTML !=null && trim($sHTML)!='')
 		{
 
-
-			$oDOMDocument = @DOMDocument::loadHTML($sHTML);
+			$sEncoding = mb_detect_encoding(sHTML);
+			$oDOMDocument = @DOMDocument::loadHTML(' <meta http-equiv="Content-Type" content="text/html; charset="'.$sEncoding.'">'.$sHTML);
 			$xpath = @new DOMXPath($oDOMDocument);
 
 			$query = '//css';
@@ -335,6 +334,8 @@ class Email_Template_Logic
 		}
 		return $bReport?$aReport:"";
 	}
+
+
 
 	protected function _preProcessHTML($sHTML)
 	{
