@@ -10,11 +10,19 @@ class Email_Flex extends Zend_Mail
 	const SEND_STATUS_NOT_SENT	= null;
 	const SEND_STATUS_SENT		= true;
 	const SEND_STATUS_FAILED	= false;
-	
+
 	private	$_bSuccess			= null;
-	
+
 	public 	$aAttachmentParts	= array();
-	
+
+
+
+    public function __construct($charset='utf-8')
+    {
+        parent::__construct($charset);
+    }
+
+
 	public function clearRecipients()
 	{
 		$this->_to			= array();
@@ -23,7 +31,7 @@ class Email_Flex extends Zend_Mail
 		unset($this->_headers['Cc']);
 		unset($this->_headers['Bcc']);
 	}
-	
+
     public function send($transport = null)
     {
     	try
@@ -39,31 +47,31 @@ class Email_Flex extends Zend_Mail
     		throw $oException;
     	}
     }
-    
+
     public function getSendStatus()
     {
     	return $this->_bSuccess;
     }
-	
+
 	// Override: Cache a reference to each attachment part
 	public function addAttachment(Zend_Mime_Part $attachment)
     {
 		$this->aAttachmentParts[]	= $attachment;
 		return parent::addAttachment($attachment);
     }
-    
+
     // getDecodedBodyText: Returns the body text of the Zend_Mail object, decoded from it's stored (encoded) state
     public function getDecodedBodyText()
     {
     	return self::getDecodedPartContent($this->getBodyText());
     }
-    
+
     // getDecodedBodyHTML: Returns the body html of the Zend_Mail object, decoded from it's stored (encoded) state
     public function getDecodedBodyHTML()
     {
     	return self::getDecodedPartContent($this->getBodyHtml());
     }
-    
+
     // getDecodedPartContent: Returns the content of the Zend_Mime_Part object, decoded from it's stored (encoded) state
     public static function getDecodedPartContent(Zend_Mime_Part $oPart)
     {
