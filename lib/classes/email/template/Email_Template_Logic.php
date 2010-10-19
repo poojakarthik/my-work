@@ -190,7 +190,16 @@ class Email_Template_Logic
 	        	$sSelector = $node->getAttributeNode('selector')->value;
 	        	if ($sSelector!=null)
 	        	{
-		        	$sXpath = CSS_Parser::cssToXpath($sSelector);
+		        	try
+		        	{
+	        			$sXpath = CSS_Parser::cssToXpath($sSelector);
+		        	}
+		        	catch(Exception $e)
+		        	{
+		        		throw new Exception('Error Parsing CSS Selector: "'.$sSelector.'". '.$e->__toString());
+
+
+		        	}
 		        	$sStyle = $node->textContent;
 		        	$nodesToStyle = $xpath->query($sXpath);
 		        	foreach ($nodesToStyle as $nodeToStyle)
