@@ -172,7 +172,7 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 
 			return	array(
 							'Success'		=> true,
-							'text'		=> implode("",Email_Template_Logic::toText($sHTML))
+							'text'		=> Email_Template_Logic::toText($sHTML)
 						);
 		}
 		catch (Exception $e)
@@ -186,6 +186,7 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 
 	 function processHTML($sHTML)
 	{
+
 
 		try
 		{
