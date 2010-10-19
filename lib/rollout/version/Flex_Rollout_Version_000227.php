@@ -84,6 +84,14 @@ class Flex_Rollout_Version_000227 extends Flex_Rollout_Version
 															VALUES ('Invoice Rerate', 'Invoice Rerate', 'INVOICE_RUN_TYPE_RERATE');",
 									'sRollbackSQL'		=> "DELETE FROM invoice_run_type WHERE const_name = 'INVOICE_RUN_TYPE_RERATE';",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=> 'Add data to email template type table',
+									'sAlterSQL'			=> "INSERT INTO email_template_type (name, description, system_name, const_name, class_name) VALUES
+															('Invoice', 'Invoice', 'INVOICE', 'EMAIL_TEMPLATE_TYPE_INVOICE', 'Email_Template_Logic_Invoice'),
+															('Late Notice', 'Late Notice', 'LATE_NOTICE', 'EMAIL_TEMPLATE_TYPE_LATE_NOTICE', 'Email_Template_Logic_LateNotice');",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								)
 							);
 
