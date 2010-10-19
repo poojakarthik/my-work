@@ -159,10 +159,13 @@ class Email_Template_Logic
 		}
 	}
 
+
+
 	public static  function processHTML($sHTML, $bReport = false, $bForTestEmail=false)
 	{
 
 		$aReport = array();
+
 		foreach(self::$_aReport as $sItem)
 		{
 			$aReport[$sItem] = array();
@@ -171,8 +174,12 @@ class Email_Template_Logic
 		if ($sHTML !=null && trim($sHTML)!='')
 		{
 
+			//the loadHTML function will create a header tag when the meta tag is supplied, as below, so we have to first test if there is a user supplied header, for change repoerting purposes
+			$bHeader = self::hasHeader($sHTML);
 			$sEncoding = mb_detect_encoding(sHTML);
+			//supply charset in order to preserve multi byte chars
 			$oDOMDocument = @DOMDocument::loadHTML(' <meta http-equiv="Content-Type" content="text/html; charset="'.$sEncoding.'">'.$sHTML);
+
 			$xpath = @new DOMXPath($oDOMDocument);
 
 			$query = '//css';
@@ -293,7 +300,7 @@ class Email_Template_Logic
 			$oHeader = $oDOMDocument->getElementsByTagName ('head');
 			foreach ($oHeader as $node)
 			{
-			 	$aReport['head'][] = $node->textContent;
+			 	$bHeader?$aReport['head'][] = $node->textContent:null;
 				$node->parentNode->removeChild($node);
 
 			}
@@ -324,44 +331,16 @@ class Email_Template_Logic
 			$oDOMDocument = $x;//*DOMDocument::loadXML(str_replace ( '<?xml version="1.0">' , "" , $x->saveXML()));
 
 
-		/*	//For query debug purpose
+			//For query debug purpose
 		  	$myFile = "html.txt";
 			$fh = fopen($myFile, 'w') or die("can't open file");
 			fwrite($fh, str_replace ( '<?xml version="1.0"?>' , "" , $oDOMDocument->saveXML()));
-			fclose($fh);*/
+			fclose($fh);
 
 			return $bReport?$aReport:str_replace ( '<?xml version="1.0"?>' , "" , $oDOMDocument->saveXML());
 		}
 		return $bReport?$aReport:"";
 	}
-
-
-
-	protected function _preProcessHTML($sHTML)
-	{
-
-		$oDOMDocument = @DOMDocument::loadHTML($sHTML);
-		//$oDOMDocument = @DOMDocument::loadXML(str_replace ( '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">' , "" , $x->saveHTML()));
-		$xpath = new DOMXPath($oDOMDocument);
-		$oRootElement = $oDOMDocument->documentElement;//->firstChild;
-		$oRootElement->firstChild->nextSibling == null&&$oRootElement->tagName =='html'?$oRootElement=$oRootElement->firstChild:null;
-		$sRootName = $oRootElement->tagName =='body'||$oRootElement->tagName =='html'?'div':$oRootElement->tagName;
-	 	$x = DOMDocument::loadXML("<".$sRootName."> </".$sRootName.">");
-
-	 	$oChildren = $oRootElement->childNodes;
-		if ($oChildren!=null)
-		{
-			foreach ($oChildren as $node)
-			{
-				$node = $x->importNode($node, true);
-				$x->documentElement->appendChild($node);
-			}
-
-		}
-
- 		return str_replace ( '<?xml version="1.0"?>' , "" , $x->saveXML());
-	}
-
 
 
 	public static function toText($sHTML)
@@ -442,6 +421,18 @@ class Email_Template_Logic
 		}
 
 		return $aTextArray;
+	}
+
+	private static function hasHeader($sHTML)
+	{
+		$oDOMDocument = @DOMDocument::loadHTML($sHTML);
+		$oHeaders = $oDOMDocument->getElementsByTagName('head');
+
+		foreach ($oHeaders as $node)
+		{
+			return true;
+		}
+		return false;
 	}
 
 	// _getArrayFromData: Return an array representation of the given data (object or array)
