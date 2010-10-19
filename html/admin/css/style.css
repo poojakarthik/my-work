@@ -3005,6 +3005,35 @@ td.recurring-charge-cancel-fee
 
 /************************ END - Recurring Charge Type Manage - END ************************/
 
+/************************ START - Add Charge/Adjustment Popup - START ************************/
+
+div#AddChargeDiv form#VixenForm_AddCharge .DefaultElement,
+div#AddChargeDiv form#VixenForm_AddAdjustment .DefaultElement
+{
+	padding-bottom	: 0.25em;
+}
+
+div#AddChargeDiv form#VixenForm_AddCharge .DefaultLabel,
+div#AddChargeDiv form#VixenForm_AddAdjustment .DefaultLabel
+{
+	font-weight		: bold;
+	padding-bottom	: 0.25em;
+}
+
+div#AddChargeDiv form#VixenForm_AddCharge .DefaultElement .DefaultInputText.Currency,
+div#AddChargeDiv form#VixenForm_AddAdjustment .DefaultElement .DefaultInputText.Currency
+{
+	width	: 17.4em;
+}
+
+div#AddChargeDiv form#VixenForm_AddCharge .DefaultElement .DefaultInputTextArea.Default,
+div#AddChargeDiv form#VixenForm_AddAdjustment .DefaultElement .DefaultInputTextArea.Default
+{
+	width	: 17.85em;
+}
+
+/************************ END - Add Charge Popup - END ************************/
+
 /************************ START - DataReport list - START ************************/
 
 div.datareport
