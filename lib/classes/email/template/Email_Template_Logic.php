@@ -178,7 +178,7 @@ class Email_Template_Logic
 			$bHeader = self::hasHeader($sHTML);
 			$sEncoding = mb_detect_encoding(sHTML);
 			//supply charset in order to preserve multi byte chars
-			$oDOMDocument = @DOMDocument::loadHTML(' <meta http-equiv="Content-Type" content="text/html; charset="'.$sEncoding.'">'.$sHTML);
+			$oDOMDocument = @DOMDocument::loadHTML(' <meta http-equiv="Content-Type" content="text/html; charset="utf-8">'.$sHTML);
 
 			$xpath = @new DOMXPath($oDOMDocument);
 
@@ -346,7 +346,7 @@ class Email_Template_Logic
 	public static function toText($sHTML)
 	{
 
-		return !empty($sHTML) && trim($sHTML)!='' && $sHTML!=null?self::_toText(DOMDocument::loadXML(self::processHTML($sHTML))->documentElement, array()):array();
+		return !empty($sHTML) && trim($sHTML)!='' && $sHTML!=null?implode("",self::_toText(DOMDocument::loadXML(self::processHTML($sHTML))->documentElement, array())):array();
 	}
 
 	protected static function _toText($oNode, $aTextArray, $sParentTagName = null, $iListCount = null)
@@ -371,7 +371,14 @@ class Email_Template_Logic
 				{
 					if (trim($node->wholeText)!=null)
 					{
+
+						//an attempt to remove white spaces before commas
+						$x=null;
+						substr(trim($node->wholeText), -1)=="," && end($aTextArray)==" "?array_pop($aTextArray):null;
+						substr(trim($node->wholeText), -1)=="," && substr(end($aTextArray), -1)==" "?$x = array_pop($aTextArray):null;
+						$x!=null?$aTextArray[] = rtrim($x):null;
 						$aTextArray[]=trim($node->wholeText);
+
 					}
 				}
 				else if ($node->tagName == 'variable')
@@ -383,13 +390,13 @@ class Email_Template_Logic
 					$sPad = null;
 
 					$sBreak;
-					if ($node->nextSibling->parentNode === $node->parentNode )
+					if ($node->nextSibling->parentNode === $node->parentNode || $node->parentNode->tagName =='b')
 					{
 						$sBreak = " ";
 					}
 
 
-					$aTextArray[] = $sPad."{".$oObject->value.".".$oField->value."}$sBreak";
+					$aTextArray[] = $sBreak."{".$oObject->value.".".$oField->value."}$sBreak";
 				}
 				else
 				{
@@ -413,7 +420,7 @@ class Email_Template_Logic
 					{
 						$aTextArray[] = "\t\t";
 					}
-					else if ($oNode->tagName == 'span' || $oNode->tagName == 'a')
+					else if ($oNode->tagName == 'span' || $oNode->tagName == 'a' || $oNode->tagName == 'variable' || $oNode->tagName == 'b')
 					{
 						$aTextArray[] = " ";
 					}
