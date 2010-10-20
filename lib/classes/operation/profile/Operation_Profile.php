@@ -33,8 +33,11 @@ class Operation_Profile extends ORM_Cached
 				
 				if ($oOperationProfile->isActive())
 				{
+					Log::getLog()->log("Operation_Profile({$this->id}): Adding operations from profile {$oOperationProfile->id}");
+					
 					// Get the Operations for this Sub-Profile & merge with current list
-					$this->_arrOperations	= array_merge($this->_arrOperations, self::getForId($arrSubProfileId['child_operation_profile_id'])->getOperations());
+					$aOperations			= self::getForId($arrSubProfileId['child_operation_profile_id'])->getOperations();
+					$this->_arrOperations	= $this->_arrOperations + $aOperations;
 				}
 			}
 			
@@ -53,6 +56,7 @@ class Operation_Profile extends ORM_Cached
 				if ($oOperation->isActive())
 				{
 					// Add this Operation to the list
+					Log::getLog()->log("Operation_Profile({$this->id}): Adding operation {$oOperation->id}");
 					$this->_arrOperations[$arrOperationId['operation_id']]	= Operation::getForId($arrOperationId['operation_id']);
 				}
 			}

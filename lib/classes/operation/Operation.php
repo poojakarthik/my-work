@@ -26,7 +26,8 @@ class Operation extends ORM_Enumerated
 		{
 			Log::getLog()->log("User is MORTAL -- checking permissions...");
 			// Do we have authorisation?
-			return array_key_exists($intOperation, $objEmployee->getPermittedOperations());
+			$aOperations	= $objEmployee->getPermittedOperations();
+			return array_key_exists($intOperation, $aOperations);
 		}
 	}
 	

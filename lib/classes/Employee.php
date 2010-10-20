@@ -326,7 +326,9 @@ class Employee extends ORM_Cached
 				
 				if ($oOperationProfile->isActive())
 				{
-					$this->_arrOperations	= array_merge($this->_arrOperations, $oOperationProfile->getOperations());
+					Log::getLog()->log("Employee({$this->id}): Adding operations from profile {$oOperationProfile->id}");
+					$aOperations			= $oOperationProfile->getOperations();
+					$this->_arrOperations	= $this->_arrOperations + $aOperations;
 				}
 			}
 			
@@ -344,6 +346,7 @@ class Employee extends ORM_Cached
 				if ($oOperation->isActive())
 				{
 					// Add this Operation to the list
+					Log::getLog()->log("Employee({$this->id}): Adding operation {$oOperation->id}");
 					$this->_arrOperations[$arrOperationId['operation_id']]	= $oOperation;
 				}
 			}
