@@ -10,8 +10,9 @@ class Rate extends ORM_Cached
 {
 	const	RATING_PRECISION	= 2;	// Round to the nearest whole cent
 	
-	const	RATE_SEARCH_LOGGING		= true;
-	const	RATE_ALGORITHM_LOGGING	= true;
+	const	RATE_SEARCH_LOGGING				= true;
+	const	RATE_ALGORITHM_LOGGING			= true;
+	const	RATE_ALGORITHM_STAGE_LOGGING	= true;
 	
 	protected 			$_strTableName			= "Rate";
 	protected static	$_strStaticTableName	= "Rate";
@@ -27,6 +28,14 @@ class Rate extends ORM_Cached
 	protected static function _logRateAlgorithm($sMessage, $bNewLine=true)
 	{
 		if (self::RATE_ALGORITHM_LOGGING)
+		{
+			Log::getLog()->log($sMessage, $bNewLine);
+		}
+	}
+	
+	protected static function _logRateAlgorithmStage($sMessage, $bNewLine=true)
+	{
+		if (self::RATE_ALGORITHM_STAGE_LOGGING)
 		{
 			Log::getLog()->log($sMessage, $bNewLine);
 		}
@@ -257,6 +266,9 @@ class Rate extends ORM_Cached
 	
 	protected function _calculateChargeStage($iUnits, $fCost, $aRateDefinition)
 	{
+		
+		self::_logRateAlgorithmStage("RATING STAGE\n{");
+		
 		$fRatePerUnitBlock			= (float)$aRateDefinition['fRatePerUnitBlock'];
 		$fFlagfall					= (float)$aRateDefinition['fFlagfall'];
 		$fMarkupPercentage			= (float)$aRateDefinition['fMarkupPercentage'];
@@ -268,14 +280,24 @@ class Rate extends ORM_Cached
 		// Calculate Unit Blocks to Charge
 		$iUnitBlocks	= ceil($iUnits / $iUnitBlockSize);
 		
+		self::_logRateAlgorithmStage("\t"."{$iUnitBlocks} = ceil({$iUnits} / {$iUnitBlockSize})", false);
+		self::_logRateAlgorithmStage("\t".'[iUnitBlocks = ceil(iUnits / iUnitBlockSize)]');
+		
 		// Base Charge
 		$fCharge	= ($iUnitBlocks * $fRatePerUnitBlock) + $fFlagfall;
+		self::_logRateAlgorithmStage("\t"."{$fCharge} = ({$iUnitBlocks} * {$fRatePerUnitBlock}) + {$fFlagfall}", false);
+		self::_logRateAlgorithmStage("\t".'[fCharge = (iUnitBlocks * fRatePerUnitBlock) + fFlagfall]');
 		
 		// Markup
 		if ($fMarkupPercentage || $fMarkupDollarsPerUnit)
 		{
-			$fCharge	+= $fCost + (($fMarkupPercentage / 100) * $fCost) + ($iUnitBlocks * $fMarkupDollarsPerUnitBlock);
+			$fBaseCharge	= $fCharge;
+			$fCharge		= $fBaseCharge + ($fCost + (($fMarkupPercentage / 100) * $fCost) + ($iUnitBlocks * $fMarkupDollarsPerUnitBlock));
+			self::_logRateAlgorithmStage("\t"."{$fCharge} = {$fBaseCharge} + ({$fCost} + (({$fMarkupPercentage} / 100) * {$fCost}) + ({$iUnitBlocks} * {$fMarkupDollarsPerUnitBlock}))", false);
+			self::_logRateAlgorithmStage("\t".'[fCharge = fCharge + (fCost + ((fMarkupPercentage / 100) * fCost) + (iUnitBlocks * fMarkupDollarsPerUnitBlock))]');
 		}
+		
+		self::_logRateAlgorithmStage('} = '.$fCharge);
 		
 		return $fCharge;
 	}
