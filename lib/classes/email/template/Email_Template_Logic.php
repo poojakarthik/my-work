@@ -159,6 +159,18 @@ class Email_Template_Logic
 		}
 	}
 
+	public static function getLineNo($aLines, $sLinePart)
+	{
+		for($i=0;$i<count($aLines);$i++)
+		{
+			if (strpos ( $aLines[$i] , $sLinePart ))
+				return $i+1;
+		}
+
+		return false;
+
+	}
+
 
 
 	public static  function processHTML($sHTML, $bReport = false, $bForTestEmail=false)
@@ -173,13 +185,13 @@ class Email_Template_Logic
 
 		if ($sHTML !=null && trim($sHTML)!='')
 		{
-
+			$aLines = explode("\n",$sHTML);
 			//the loadHTML function will create a header tag when the meta tag is supplied, as below, so we have to first test if there is a user supplied header, for change repoerting purposes
 			$bHeader = self::hasHeader($sHTML);
-			$sEncoding = mb_detect_encoding(sHTML);
+			$sEncoding = mb_detect_encoding($sHTML);
 			//supply charset in order to preserve multi byte chars
-			$oDOMDocument = @DOMDocument::loadHTML(' <meta http-equiv="Content-Type" content="text/html; charset="utf-8">'.$sHTML);
-
+			//the "__stripme" div is a container for the user supplied html, and will later be used to extract the user supplied html again
+			$oDOMDocument = @DOMDocument::loadHTML('<meta http-equiv="Content-Type" content="text/xml;charset=utf-8" /><div id = "__stripme">'.$sHTML."</div>");//
 			$xpath = @new DOMXPath($oDOMDocument);
 
 			$query = '//css';
@@ -192,23 +204,25 @@ class Email_Template_Logic
 	        	{
 		        	try
 		        	{
-	        			$sXpath = CSS_Parser::cssToXpath($sSelector);
+
+		        		$sXpath = CSS_Parser::cssToXpath($sSelector);
+			        	$sStyle = $node->textContent;
+			        	$nodesToStyle = $xpath->query($sXpath);
+			        	foreach ($nodesToStyle as $nodeToStyle)
+			        	{
+			        		$sInlineStyle = $nodeToStyle->getAttributeNode('style')?$nodeToStyle->getAttributeNode ('style')->value:'';
+			        		$nodeToStyle->setAttribute('style', $sStyle." ".$sInlineStyle);
+			        	}
 		        	}
 		        	catch(Exception $e)
 		        	{
-		        		throw new Exception('Error Parsing CSS Selector: "'.$sSelector.'". '.$e->__toString());
-
-
+		        		$iLineNo = self::getLineNo($aLines, $sSelector);
+		        		//for now we won't actually throw the exception, to make our system consistent with browser response to faulty css, which is to ignore it altogether
+		        		//throw new EmailTemplateEditException('There was an error parsing CSS with selector: '.$sSelector.'.',$iLineNo, $e->__toString());
 		        	}
-		        	$sStyle = $node->textContent;
-		        	$nodesToStyle = $xpath->query($sXpath);
-		        	foreach ($nodesToStyle as $nodeToStyle)
-		        	{
-		        		$sInlineStyle = $nodeToStyle->getAttributeNode('style')?$nodeToStyle->getAttributeNode ('style')->value:'';
-		        		$nodeToStyle->setAttribute('style', $sStyle." ".$sInlineStyle);
-		        	}
+
 	        	}
-				$node->parentNode->removeChild($node);
+				$node = $node->parentNode->removeChild($node);
 	        }
 
 
@@ -314,12 +328,18 @@ class Email_Template_Logic
 
 			}
 
-			$oRootElement = $oDOMDocument->documentElement;//->firstChild;
-			$oRootElement->firstChild->nextSibling == null&&$oRootElement->tagName =='html'?$oRootElement=$oRootElement->firstChild:null;
-			$sRootName = $oRootElement->tagName =='body'||$oRootElement->tagName =='html'?'div':$oRootElement->tagName;
+			$oElements = $xpath->query("//*[@id='__stripme']");
+			$oRootElement = $oElements->item(0);
+			$oRootElement->firstChild->nextSibling == null?$oRootElement=$oRootElement->firstChild:null;
+			$sRootName = $oRootElement==null?'div':$oRootElement->tagName;
 
+			/*$oRootElement = $oDOMDocument->documentElement;//$oDOMDocument->getElementById ('__stripme');//
+			//$oRootElement->firstChild->nextSibling == null?$oRootElement=$oRootElement->firstChild:null;
+			$oRootElement->firstChild->nextSibling == null&&$oRootElement->tagName =='html'?$oRootElement=$oRootElement->firstChild:null;
+			$sRootName = $oRootElement->tagName =='body'||$oRootElement->tagName =='html'||$oRootElement==null?'div':$oRootElement->tagName;
+*/
 			$aError = error_get_last();
-			$x = @DOMDocument::loadXML("<".$sRootName."> </".$sRootName.">");
+			$x = @DOMDocument::loadXML('<?xml version="1.0" encoding="utf-8"?>'."<".$sRootName."> </".$sRootName.">");
 			$aNewError = error_get_last();
 			if ($aNewError!=$aError && $aNewError['message'] != "Non-static method DOMDocument::loadXML() should not be called statically")
 			{
@@ -343,10 +363,10 @@ class Email_Template_Logic
 			//For query debug purpose
 		  	$myFile = "html.txt";
 			$fh = fopen($myFile, 'w') or die("can't open file");
-			fwrite($fh, str_replace ( '<?xml version="1.0"?>' , "" , $oDOMDocument->saveXML()));
+			fwrite($fh, str_replace ( '<?xml version="1.0" encoding="utf-8"?>' , "" , $oDOMDocument->saveXML()));
 			fclose($fh);
 
-			return $bReport?$aReport:str_replace ( '<?xml version="1.0"?>' , "" , $oDOMDocument->saveXML());
+			return $bReport?$aReport:str_replace ( '<?xml version="1.0" encoding="utf-8"?>' , "" , $oDOMDocument->saveXML());
 		}
 		return $bReport?$aReport:"";
 	}
@@ -355,11 +375,66 @@ class Email_Template_Logic
 	public static function toText($sHTML)
 	{
 
-		return !empty($sHTML) && trim($sHTML)!='' && $sHTML!=null?implode("",self::_toText(DOMDocument::loadXML(self::processHTML($sHTML))->documentElement, array())):array();
+		$sHTML = str_replace(array("\r\n", "\r", "\n", "\t"), ' ', $sHTML);
+
+		$sText =  !empty($sHTML) && trim($sHTML)!='' && $sHTML!=null?implode("",self::_toText(DOMDocument::loadXML(self::processHTML($sHTML))->documentElement, array())):"";
+		//$sText = preg_replace('/\s\s+/s', 'bbbbbbbb', $sText);
+
+		$sText = self::trimLines(self::normalizeWhiteSpaces($sText));
+		return trim($sText);
 	}
 
-	protected static function _toText($oNode, $aTextArray, $sParentTagName = null, $iListCount = null)
+	public static function normalizeWhiteSpaces($sString)
 	{
+
+		$sString = str_replace(array("  "), ' ', $sString);
+		if (strpos( $sString ,"  " ))
+		{
+			$sString = self::normalizeWhiteSpaces($sString);
+
+		}
+
+		return $sString;
+
+
+	}
+
+	public static function trimLines($sString)
+	{
+		$aLines = explode("\n", $sString);
+		$aResult = array();
+
+		foreach ($aLines as $sLine)
+		{
+			$aResult[]= ltrim($sLine, " ");
+
+		}
+		return implode("\n", $aResult);
+
+
+	}
+
+protected static function _toText($oNode, $aTextArray, $sParentTagName = null, $iListCount = null)
+	{
+	if ( $oNode->tagName == 'p'  ||$oNode->tagName == 'h1' ||$oNode->tagName == 'h2' ||$oNode->tagName == 'h3'||$oNode->tagName == 'h4'||$oNode->tagName == 'form' ||$oNode->tagName == 'table')
+					{
+						$aTextArray[] = "\n\n";
+					}
+					else if ($oNode->tagName == 'tr' ||$oNode->tagName == 'div' || $oNode->tagName == 'br' )
+					{
+
+						$aTextArray[] = "\n";
+
+					}
+					else if ($oNode->tagName == 'td' || $oNode->tagName == 'th')
+					{
+						$aTextArray[] = "\t\t";
+					}
+					/*else if ($oNode->tagName == 'span' || $oNode->tagName == 'a' || $oNode->tagName == 'variable' || $oNode->tagName == 'b')
+					{
+						$aTextArray[] = " ";
+					}*/
+
 		//$oNode = $oNode ==null?DOMDocument::loadXML($this->getHTML(true))->documentElement:$oNode;
 		$oNode->tagName !='ol' && $sParentTagName!='ol'?$iListCount=0:null;
 		$x = $oNode->childNodes;
@@ -371,7 +446,7 @@ class Email_Template_Logic
 
 				if ($node->tagName == 'li')
 				{
-					$sListChar 	= $oNode->tagName =='ul'?"\t* ":($oNode->tagName=='ol'?"\t".++$iListCount.". ":null);
+					$sListChar 	= $oNode->tagName =='ul'?"\n\t* ":($oNode->tagName=='ol'?"\n\t".++$iListCount.". ":null);
 					$aTextArray[] = $sListChar;
 				}
 
@@ -382,11 +457,10 @@ class Email_Template_Logic
 					{
 
 						//an attempt to remove white spaces before commas
-						$x=null;
-						substr(trim($node->wholeText), -1)=="," && end($aTextArray)==" "?array_pop($aTextArray):null;
-						substr(trim($node->wholeText), -1)=="," && substr(end($aTextArray), -1)==" "?$x = array_pop($aTextArray):null;
-						$x!=null?$aTextArray[] = rtrim($x):null;
-						$aTextArray[]=trim($node->wholeText);
+
+
+						//$aTextArray[]=trim($node->wholeText);
+						$aTextArray[]=$node->wholeText;
 
 					}
 				}
@@ -401,7 +475,7 @@ class Email_Template_Logic
 					$sBreak;
 					if ($node->nextSibling->parentNode === $node->parentNode || $node->parentNode->tagName =='b')
 					{
-						$sBreak = " ";
+						$sBreak = "";
 					}
 
 
@@ -415,7 +489,7 @@ class Email_Template_Logic
 			}
 
 
-					if ($oNode->tagName == 'p' || $oNode->tagName == 'br' ||$oNode->tagName == 'div' ||$oNode->tagName == 'h1' ||$oNode->tagName == 'h2' ||$oNode->tagName == 'h3'||$oNode->tagName == 'h4'||$oNode->tagName == 'form' ||$oNode->tagName == 'table')
+					/*if ($oNode->tagName == 'p' || $oNode->tagName == 'br' ||$oNode->tagName == 'div' ||$oNode->tagName == 'h1' ||$oNode->tagName == 'h2' ||$oNode->tagName == 'h3'||$oNode->tagName == 'h4'||$oNode->tagName == 'form' ||$oNode->tagName == 'table')
 					{
 						$aTextArray[] = "\n\n";
 					}
@@ -432,7 +506,7 @@ class Email_Template_Logic
 					else if ($oNode->tagName == 'span' || $oNode->tagName == 'a' || $oNode->tagName == 'variable' || $oNode->tagName == 'b')
 					{
 						$aTextArray[] = " ";
-					}
+					}*/
 
 		}
 
@@ -518,4 +592,21 @@ class Email_Template_Logic
 		return $sField == "_aVariables"?$this->getVariables():null;
 	}
 
+
+
+}
+
+
+
+class EmailTemplateEditException extends Exception
+{
+	public $sSummaryMessage;
+	public $iLineNumber;
+
+	public function __construct($sSummary, $iLineNumber, $sDetails)
+	{
+		parent::__construct($sDetails);
+		$this->sSummaryMessage = $sSummary;
+		$this->iLineNumber = $iLineNumber;
+	}
 }
