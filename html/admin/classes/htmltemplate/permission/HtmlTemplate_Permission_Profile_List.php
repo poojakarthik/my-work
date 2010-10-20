@@ -21,7 +21,7 @@ class HtmlTemplate_Permission_Profile_List extends FlexHtmlTemplate
 		$this->LoadJavascript('status');
 		$this->LoadJavascript('operation');
 		$this->LoadJavascript('operation_profile');
-		$this->LoadJavascript('page_operation_profile_list');
+		$this->LoadJavascript('component_operation_profile_list');
 		$this->LoadJavascript('popup_operation_profile_edit');
 		
 		BreadCrumb()->Employee_Console();
@@ -36,7 +36,7 @@ class HtmlTemplate_Permission_Profile_List extends FlexHtmlTemplate
 				Event.observe(window, 'load', 
 					function()
 					{
-						var oPage = new Page_Operation_Profile_List(\$ID('PermissionProfileListContainer'));
+						var oPage = new Component_Operation_Profile_List(\$ID('PermissionProfileListContainer'));
 					}, false);
 			</script>\n";
 	}
