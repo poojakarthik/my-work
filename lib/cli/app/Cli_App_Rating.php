@@ -30,7 +30,8 @@ class Cli_App_Rating extends Cli
 	
 	const	COMPARISON_CHARGE_DIFFERENCE_THRESHOLD	= 0.01;
 	
-	const	RATING_EXCEPTION_CONTINUE	= false;
+	const	RATING_EXCEPTION_CONTINUE		= true;
+	const	DELETE_COMPARISON_REPORT_FILE	= false;
 	
 	function run()
 	{
@@ -57,6 +58,9 @@ class Cli_App_Rating extends Cli
 					// Full Comparison Run
 					$aCDRIds	= $this->_getComparisonCDRs();
 				}
+				
+				// Enable Rating Logging
+				Rate::setRateLoggingEnabled(true);
 				
 				// Encase Comparison in a Transaction
 				if (!DataAccess::getDataAccess()->TransactionStart())
@@ -91,18 +95,24 @@ class Cli_App_Rating extends Cli
 					$sComparisonReportContent	= $this->_buildComparisonReport($aCDRChanges);
 					$sComparisonReportFileName	= 'rating-comparison-report-'.date('YmdHis').'.xls';
 					
-					// Email Comparison Report
-					$oEmail	= new Email_Flex();
-					$oEmail->setSubject("Rating Comparison Report from ".date('d/m/y H:i:s')." (".count($aCDRIds)." CDRs)");
-					$oEmail->setBodyText("Rating Comparison Report for ".count($aCDRIds)." CDRs attached.");
-					$oEmail->addTo($this->_arrArgs[self::SWITCH_COMPARISON_EMAIL]);
-					$oEmail->createAttachment($sComparisonReportContent, 'application/vnd.ms-excel', Zend_Mime::DISPOSITION_ATTACHMENT, Zend_Mime::ENCODING_BASE64, $sComparisonReportFileName);
-					$oEmail->send();
+					if ($this->_arrArgs[self::SWITCH_COMPARISON_EMAIL])
+					{
+						Log::getLog()->log("Sending Rating Comparison Report to {$this->_arrArgs[self::SWITCH_COMPARISON_EMAIL]}");
+						
+						// Email Comparison Report
+						$oEmail	= new Email_Flex();
+						$oEmail->setSubject("Rating Comparison Report from ".date('d/m/y H:i:s')." (".count($aCDRIds)." CDRs)");
+						$oEmail->setBodyText("Rating Comparison Report for ".count($aCDRIds)." CDRs attached.");
+						$oEmail->addTo($this->_arrArgs[self::SWITCH_COMPARISON_EMAIL]);
+						$oEmail->createAttachment($sComparisonReportContent, 'application/vnd.ms-excel', Zend_Mime::DISPOSITION_ATTACHMENT, Zend_Mime::ENCODING_BASE64, $sComparisonReportFileName);
+						$oEmail->send();
+					}
 				}
 			}
 			else
 			{
 				Log::getLog()->log('[ Standard Rating Mode ]');
+				//Rate::setRateLoggingEnabled(true);
 				
 				// Standard Rating mode
 				$aCDRIds	= array();
@@ -142,7 +152,7 @@ class Cli_App_Rating extends Cli
 					WHERE		Status IN (".implode(', ', $aCDRStatuses).")
 								AND Charge IS NOT NULL
 					ORDER BY	StartDatetime DESC,
-								Id DESC"/*DEBUG.' LIMIT 50'/**/;
+								Id DESC"/*DEBUG.' LIMIT 1000'/**/;
 		if (($mResult = $oQuery->Execute($sSQL)) === false)
 		{
 			throw new Exception($oQuery->Error());
@@ -169,7 +179,7 @@ class Cli_App_Rating extends Cli
 			$aCDRStatuses['ReRate']	= CDR_RERATE;
 		}
 		
-		Log::getLog()->log("Pulling Comparison CDRs (Limit: ".(($iLimit === null) ? 'No Limit' : $iLimit)."; Statuses: ".implode(', ', array_keys($aCDRStatuses)).")");
+		Log::getLog()->log("Pulling Pending CDRs (Limit: ".(($iLimit === null) ? 'No Limit' : $iLimit)."; Statuses: ".implode(', ', array_keys($aCDRStatuses)).")");
 		
 		$oQuery	= new Query();
 		$sSQL	= "	SELECT		Id
@@ -199,9 +209,14 @@ class Cli_App_Rating extends Cli
 		
 		$aCDRChanges	= array();
 		
-		Log::getLog()->log("Rating ".count($aCDRIds)." CDRs");
+		$iTotalCDRs		= count($aCDRIds);
+		$iBatchProgress	= 0;
+		
+		Log::getLog()->log("Rating {$iTotalCDRs} CDRs");
 		foreach ($aCDRIds as $iCDRId)
 		{
+			$iBatchProgress++;
+			
 			// Clear the cache before each CDR (to lower memory usage)
 			CDR::clearCache();
 			
@@ -214,7 +229,13 @@ class Cli_App_Rating extends Cli
 				
 				try
 				{
-					Log::getLog()->log("[ CDR {$iCDRId} ]", false);
+					Log::getLog()->log("[ CDR {$iCDRId} ({$iBatchProgress}/{$iTotalCDRs}) ]", false);
+					
+					if (Rate::isRateLoggingEnabled())
+					{
+						Log::getLog()->log('');
+						Log::getLog()->log('{');
+					}
 					
 					$oCDR	= CDR::getForId($iCDRId);
 					
@@ -229,8 +250,16 @@ class Cli_App_Rating extends Cli
 					{
 						// Do nothing -- we don't care if this happens
 					}
+					
+					if (Rate::isRateLoggingEnabled())
+					{
+						Log::getLog()->log('');
+						Log::getLog()->log('}', false);
+					}
+					
 					$oCDRPostRate	= $oCDR->toStdClass();
 					
+					$aCDRChanges[$oCDR->Id]			= array();
 					$aCDRChanges[$oCDR->Id]['PRE']	= $oCDRPreRate;
 					$aCDRChanges[$oCDR->Id]['POST']	= $oCDRPostRate;
 					
@@ -258,6 +287,18 @@ class Cli_App_Rating extends Cli
 					if ($oCDRPreRate->Rate)
 					{
 						Log::getLog()->log(" (previously: \$".number_format($oCDRPreRate->Charge, Rate::RATING_PRECISION, '.', '').")", false);
+					}
+					
+					if ($oCDRPreRate->Rate && $oCDRPostRate->Rate)
+					{
+						if ($oCDRPreRate->Rate !== $oCDRPostRate->Rate)
+						{
+							Log::getLog()->log(' [RATE DIFFERENCE]', false);
+						}
+						if (isset($aCDRChanges[$oCDR->Id]['DIFF']->Charge) && round($aCDRChanges[$oCDR->Id]['DIFF']->Charge, 2) != 0.0)
+						{
+							Log::getLog()->log(' [CHARGE DIFFERENCE: $'.number_format($aCDRChanges[$oCDR->Id]['DIFF']->Charge, Rate::RATING_PRECISION, '.', '').']', false);
+						}
 					}
 					
 					// Force line break
@@ -295,7 +336,8 @@ class Cli_App_Rating extends Cli
 			}
 		}
 		
-		Log::getLog()->log("Rated ".count($aCDRIds)." CDRs in ".round($oStopwatch->split(), 2).' seconds');
+		$fTotalTime	= $oStopwatch->split();
+		Log::getLog()->log("Rated {$iTotalCDRs} CDRs in ".round($fTotalTime, 2).' seconds (average '.round(($fTotalTime / $iTotalCDRs), 2).' CDRs/second)');
 		
 		return $aCDRChanges;
 	}
@@ -306,6 +348,8 @@ class Cli_App_Rating extends Cli
 		{
 			throw new Exception("Unable to create a temporary file for the Comparison Report: ".$php_errormsg);
 		}
+		
+		Log::getLog()->log("Writing Comparison Report to '{$sTempFileName}'...");
 		
 		// Create an XLS
 		$oWorkbook	= new Spreadsheet_Excel_Writer($sTempFileName);
@@ -380,7 +424,7 @@ class Cli_App_Rating extends Cli
 				{
 					$aWorksheetDefinition	= &$aWorksheets['NONE'];
 				}
-				elseif (abs($aCDRData['DIFF']->Charge) <= self::COMPARISON_CHARGE_DIFFERENCE_THRESHOLD)
+				elseif (Rate::roundToRatingStandard(abs($aCDRData['DIFF']->Charge)) <= self::COMPARISON_CHARGE_DIFFERENCE_THRESHOLD)
 				{
 					$aWorksheetDefinition	= &$aWorksheets['MINOR'];
 				}
@@ -437,8 +481,11 @@ class Cli_App_Rating extends Cli
 			throw new Exception("Unable to get Comparison Report temp file data from '{$sTempFileName}': ".$php_errormsg);
 		}
 		
-		// Remove the temp file (we don't really care if it fails)
-		@unlink($sTempFileData);
+		if (self::DELETE_COMPARISON_REPORT_FILE)
+		{
+			// Remove the temp file (we don't really care if it fails)
+			@unlink($sTempFileData);
+		}
 		
 		return $sTempFileData;
 	}
@@ -488,7 +535,7 @@ class Cli_App_Rating extends Cli
 				self::ARG_DESCRIPTION	=> "Email address to send the Comparison Report to",
 				self::ARG_DEFAULT		=> "ybs-admin@ybs.net.au",
 				self::ARG_VALIDATION	=> 'Cli::_validString("%1$s")'
-			),
+			)
 		);
 	}
 }

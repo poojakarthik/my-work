@@ -17,9 +17,21 @@ class Rate extends ORM_Cached
 	protected 			$_strTableName			= "Rate";
 	protected static	$_strStaticTableName	= "Rate";
 	
+	protected static	$_bLoggingEnabled	= false;
+	
+	public static function setRateLoggingEnabled($bEnabled)
+	{
+		self::$_bLoggingEnabled	= !!$bEnabled;
+	}
+	
+	public static function isRateLoggingEnabled()
+	{
+		return self::$_bLoggingEnabled;
+	}
+	
 	protected static function _logRateSearch($sMessage, $bNewLine=true)
 	{
-		if (self::RATE_SEARCH_LOGGING)
+		if (self::RATE_SEARCH_LOGGING && self::$_bLoggingEnabled)
 		{
 			Log::getLog()->log($sMessage, $bNewLine);
 		}
@@ -27,7 +39,7 @@ class Rate extends ORM_Cached
 	
 	protected static function _logRateAlgorithm($sMessage, $bNewLine=true)
 	{
-		if (self::RATE_ALGORITHM_LOGGING)
+		if (self::RATE_ALGORITHM_LOGGING && self::$_bLoggingEnabled)
 		{
 			Log::getLog()->log($sMessage, $bNewLine);
 		}
@@ -35,7 +47,7 @@ class Rate extends ORM_Cached
 	
 	protected static function _logRateAlgorithmStage($sMessage, $bNewLine=true)
 	{
-		if (self::RATE_ALGORITHM_STAGE_LOGGING)
+		if (self::RATE_ALGORITHM_STAGE_LOGGING && self::$_bLoggingEnabled)
 		{
 			Log::getLog()->log($sMessage, $bNewLine);
 		}
