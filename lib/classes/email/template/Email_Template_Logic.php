@@ -185,6 +185,7 @@ class Email_Template_Logic
 
 		if ($sHTML !=null && trim($sHTML)!='')
 		{
+			$sHTML = preg_replace ( '/(<variable\s*object\s*=\s*"[a-z _ 0-9 A-Z]+"\s*field\s*=\s*"[a-z _ 0-9 A-Z]+"\s*\/\s*>)\s*(<)/' ,"$1&nbsp;$2" , $sHTML );
 			$aLines = explode("\n",$sHTML);
 			//the loadHTML function will create a header tag when the meta tag is supplied, as below, so we have to first test if there is a user supplied header, for change repoerting purposes
 			$bHeader = self::hasHeader($sHTML);
