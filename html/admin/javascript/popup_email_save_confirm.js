@@ -514,10 +514,10 @@ Object.extend(Popup_Email_Save_Confirm,
 		javascript	: 'Javascript tags and code removed',
 		events		: 'Event triggers (eg \'onClick\') removed',
 		form		: 'HTML Forms changed to DIVs',
-		input		: 'form input elements removed',
-		link		: 'link tags removed (mainly used for external stylesheets)',
-		style		: 'internal css removed',
-		head		: 'header section removed'
+		input		: 'Form input elements removed',
+		link		: 'Link tags removed (mainly used for external stylesheets)',
+		style		: 'Internal CSS removed',
+		head		: 'Header section removed'
 		
 	},
 	
