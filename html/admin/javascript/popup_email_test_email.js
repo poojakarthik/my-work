@@ -140,7 +140,7 @@ button.observe('click', this._sendMail.bind(this));
 			
 			var span = $T.span(	address,
 								img,
-								";"		
+								"; "		
 								);
 			img.observe('click',this._removeAddress.bind(this,span));
 			this._oRecipientInput.clearValue();
@@ -150,7 +150,7 @@ button.observe('click', this._sendMail.bind(this));
 		}
 		else
 		{
-			Reflex_Popup.alert('That\'s not a valid email address', {sTitle: 'email address error'})
+			Reflex_Popup.alert('That\'s not a valid email address', {sTitle: 'Email Address Error'})
 			
 		
 		}
