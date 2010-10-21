@@ -331,7 +331,7 @@ class Email_Template_Logic
 
 			$oElements = $xpath->query("//*[@id='__stripme']");
 			$oRootElement = $oElements->item(0);
-			$oRootElement->firstChild->nextSibling == null?$oRootElement=$oRootElement->firstChild:null;
+			$oRootElement->firstChild->nextSibling == null&&$oRootElement->firstChild->tagName!=null?$oRootElement=$oRootElement->firstChild:null;
 			$sRootName = $oRootElement==null?'div':$oRootElement->tagName;
 
 			/*$oRootElement = $oDOMDocument->documentElement;//$oDOMDocument->getElementById ('__stripme');//
