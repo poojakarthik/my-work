@@ -19,7 +19,7 @@ class Cli_App_LateNoticeRun extends Cli
 	
 	private $_sRunDateTime				= '';
 	private $_bTestRun					= true;
-	
+
 	function run()
 	{
 		$iNow					= time();
@@ -605,7 +605,7 @@ class Cli_App_LateNoticeRun extends Cli
 				if ($this->_bTestRun === false)
 				{
 					// Schedule the customer email queue for immediate delivery
-					$this->log("Scheduling the customer email queue for immediate delivery");
+					$this->log("Schedule the customer email queue for immediate delivery");
 					$oCustomerQueue	= Email_Flex_Queue::get("CUSTOMER_{$sLetterType}");
 					$oCustomerQueue->scheduleForDelivery();
 				}
