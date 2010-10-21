@@ -194,7 +194,7 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 
 			return	array(
 							'Success'		=> true,
-							'html'		=> Email_Template_Logic::processHTML($sHTML)
+							'html'		=> Email_Template_Logic::processHTML($sHTML, false, true)
 						);
 		}
 		catch (EmailTemplateEditException $e)
