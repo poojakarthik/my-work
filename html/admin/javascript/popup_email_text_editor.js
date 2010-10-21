@@ -5,7 +5,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	initialize	: function($super, iTemplateDetailsId, sTemplateName, customerGroupName, fnCallback, iTemplateId)
 	{			
 		
-		$super(70);			
+		$super(80);			
 		this._oLoadingPopup	= new Reflex_Popup.Loading();
 		this._oLoadingPopup.display();
 		
@@ -114,14 +114,10 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		oSpan.innerHTML 						= 'Email Subject';
 		oSpan.className 						= 'email-subject-label';
 		
-		//this._oSubjectTextField 				= document.createElement('input');
-		//this._oSubjectTextField.type 			= 'text';
-		//this._oSubjectTextField.className 		= 'email-subject-input';
-		//this._oSubjectTextField.size 			= 50;				
-		//this._oSubjectTextField.value 			= this._oTemplateDetails.email_subject;
+
 		
 		
-		this._oSubjectTextField = Control_Field.factory('text', {mAutoTrim: true, sLabel: 'Email Subject', fnValidate: this._validText, mEditable	: true, bDisableValidationStyling	: false, mMandatory	: true});		
+		this._oSubjectTextField = Control_Field.factory('text', {mAutoTrim: false, sLabel: 'Email Subject', fnValidate: this._validText, mEditable	: true, bDisableValidationStyling	: false, mMandatory	: true});		
 		this._oSubjectTextField.addOnChangeCallback(this._oSubjectTextField.validate.bind(this._oSubjectTextField));
 		this._oSubjectTextField.setRenderMode(true);
 		this._oSubjectTextField.setElementValue(this._oTemplateDetails.email_subject);
@@ -129,19 +125,15 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		
 		
 			
-//{mAutoTrim: true, sLabel: 'Recipient Email', fnValidate: this._validEmail, mEditable	: true, bDisableValidationStyling	: false}
+
 		var oDescriptionLabel  					= document.createElement('span');
 		oDescriptionLabel.innerHTML 			= 'Description';
 		oDescriptionLabel.className 			= 'email-subject-label';
 		
-		// this._oDescriptionTextField 			= document.createElement('input');
-		// this._oDescriptionTextField.type 		= 'text';
-		// this._oDescriptionTextField.size 		= 30;
-		// this._oDescriptionTextField.className 	= 'email-subject-input';
-		// this._oDescriptionTextField.value 		= this._sTemplateName + " - " + new Date().$format('d/m/Y');
+
 		
 		
-		this._oDescriptionTextField = Control_Field.factory('text', {mAutoTrim: true, sLabel: 'Description', fnValidate: this._validText, mEditable	: true, bDisableValidationStyling	: false, mMandatory	: true});		
+		this._oDescriptionTextField = Control_Field.factory('text', {mAutoTrim: false, sLabel: 'Description', fnValidate: this._validText, mEditable	: true, bDisableValidationStyling	: false, mMandatory	: true});		
 		this._oDescriptionTextField.addOnChangeCallback(this._oDescriptionTextField.validate.bind(this._oDescriptionTextField));
 		this._oDescriptionTextField.setRenderMode(true);
 		this._oDescriptionTextField.setElementValue(this._sTemplateName + " - " + new Date().$format('d/m/Y'));
@@ -178,7 +170,9 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		var oTabContent			=	$T.table({class: 'reflex input'},
 												oTBody = $T.tbody({class: 'popup-email-text-edit-fields'})
 											 );
-		var oControl			= Control_Field.factory('textarea', {sLabel:"", sLabelSeparator:null, mVisible:true, mEditable:true, rows:25, cols:25});
+		
+		var iNumRows				= document.viewport.getHeight()>768?25:18;
+		var oControl			= Control_Field.factory('textarea', {sLabel:"", sLabelSeparator:null, mVisible:true, mEditable:true, rows:iNumRows, cols:25});
 		this.oTextArea 			= oControl.oControlOutput.oEdit;
 		this.oTextArea.value 	= this._oTemplateDetails.email_text;			
 		var oTableRow 			= oControl.generateInputTableRow().oElement;
@@ -204,7 +198,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 											 oTBody = $T.tbody({class: 'popup-email-text-edit-fields'})
 											 );
 			 
-		oControl				= Control_Field.factory('textarea', {sLabel:"", sLabelSeparator:null, mVisible:true, mEditable:true, rows:25, cols:25});
+		oControl				= Control_Field.factory('textarea', {sLabel:"", sLabelSeparator:null, mVisible:true, mEditable:true, rows:iNumRows, cols:25});
 		this.oHTMLTextArea 		= oControl.oControlOutput.oEdit;
 		this.oHTMLTextArea.value= this._oTemplateDetails.email_html;
 		oTableRow 				= oControl.generateInputTableRow().oElement;		
@@ -318,7 +312,8 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 
 	successPreviewCallback: function (oResponse)
 	{
-	    this._oLoadingPopup.hide();	
+		
+	   this._oLoadingPopup.hide();	
 		if (oResponse.Success)
 		{
 			var html = oResponse.html;
@@ -326,7 +321,8 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		}
 		else
 		{
-			Popup_Email_Text_Editor.serverErrorMessage.bind(this,oResponse.message, 'Email Template HTML Preview Error')();				
+			Popup_Email_Text_Editor.processError.bind(this,oResponse)();
+			
 		}	
 	},
 	
@@ -376,7 +372,14 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		if (!oResponse.Success)
 		{
 					
-			Popup_Email_Text_Editor.serverErrorMessage.bind(this,oResponse.message, 'Email Template Save Error')();
+			if (typeof oResponse.LineNo != 'undefined')
+			{
+				Popup_Email_Text_Editor.userErrorMessage.bind(this,oResponse.Summary, oResponse.LineNo, this,oResponse.message,'Email Template Save Error')();
+			}
+			else
+			{
+				Popup_Email_Text_Editor.serverErrorMessage.bind(this,oResponse.message, 'Email Template Save Error')();
+			}
 			this._oLoadingPopup.hide();	
 		}
 		else
@@ -403,6 +406,20 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	
 });
 
+Popup_Email_Text_Editor.processError = function(oResponse)
+{
+	this._oLoadingPopup.hide();
+	if (typeof oResponse.Summary != 'undefined')
+	{
+		Popup_Email_Text_Editor.userErrorMessage.bind(this,oResponse.Summary, oResponse.message,'Email Template Save Error', oResponse.LineNo)();
+	}
+	else
+	{
+		Popup_Email_Text_Editor.serverErrorMessage.bind(this,oResponse.message, 'Email Template HTML Preview Error')();
+	}
+}
+
+
 
 Popup_Email_Text_Editor.serverErrorMessage = function (sMessage,sTitle){
 
@@ -422,9 +439,36 @@ Popup_Email_Text_Editor.serverErrorMessage = function (sMessage,sTitle){
 	containerDiv.appendChild(detailsDiv);
 	containerDiv.className = "email-template-error";
 	
+	
+	Reflex_Popup.alert(containerDiv, {sTitle: sTitle});
+};
+
+Popup_Email_Text_Editor.userErrorMessage = function (sSummary, sMessage,sTitle, iLineNumber){
+
+	
+	//var detailsDiv = document.createElement('div');
+	//detailsDiv.innerHTML = sMessage;
+	//detailsDiv.style.display = 'none';
+	//detailsDiv.className = 'error-details';
+
+	//var div = document.createElement('div');
+
+	//div.observe('click', Popup_Email_Text_Editor._toggleErrorDetails.bind(this,detailsDiv));
+	//div.innerHTML = "Error Details";
+	//div.className = 'details-link';
+	var containerDiv = document.createElement('div');
+	containerDiv.innerHTML = sSummary; 
+	typeof iLineNumber!= 'undefined'?containerDiv.innerHTML =containerDiv.innerHTML + ' Line Number: ' + iLineNumber:null;
+	//containerDiv.appendChild(div);
+	//containerDiv.appendChild(detailsDiv);
+	containerDiv.className = "email-template-error";
+	
 	this._oLoadingPopup.hide();
 	Reflex_Popup.alert(containerDiv, {sTitle: sTitle});
 };
+
+
+
 
 Popup_Email_Text_Editor._toggleErrorDetails = function (oDiv)
 {
