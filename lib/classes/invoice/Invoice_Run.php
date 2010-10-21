@@ -762,12 +762,14 @@ class Invoice_Run
 		$sInvoiceRunPDFBasePath	= PATH_INVOICE_PDFS ."pdf/$this->Id/";
 		$oCustomerGroup			= Customer_Group::getForId($this->customer_group_id);
 		$oDeliveryMethod		= Constant_Group::getConstantGroup('delivery_method');
+		$iBillingDate			= strtotime($this->BillingDate);
+		$sInvoiceDate			= date('dmY', $iBillingDate);
 		
-		// Build billing period string for the EBills
-		$sBillingPeriodEndMonth		= date("F", strtotime("-1 day", strtotime($this->BillingDate)));
-		$sBillingPeriodEndYear		= date("Y", strtotime("-1 day", strtotime($this->BillingDate)));
-		$sBillingPeriodStartMonth	= date("F", strtotime("-1 month", strtotime($this->BillingDate)));
-		$sBillingPeriodStartYear	= date("Y", strtotime("-1 month", strtotime($this->BillingDate)));
+		// Build billing period string for the email subject lines
+		$sBillingPeriodEndMonth		= date("F", strtotime("-1 day", $iBillingDate));
+		$sBillingPeriodEndYear		= date("Y", strtotime("-1 day", $iBillingDate));
+		$sBillingPeriodStartMonth	= date("F", strtotime("-1 month", $iBillingDate));
+		$sBillingPeriodStartYear	= date("Y", strtotime("-1 month", $iBillingDate));
 		$sBillingPeriod				= $sBillingPeriodStartMonth;
 		if ($sBillingPeriodStartYear !== $sBillingPeriodEndYear)
 		{
@@ -782,11 +784,9 @@ class Invoice_Run
 			$sBillingPeriod	.= " {$sBillingPeriodStartYear}";
 		}
 		
-		$sInvoiceDate	= date('dmY', strtotime($this->BillingDate));
-		
 		Log::getLog()->log("Generate PDF's");
 
-		// Generate pdf's
+		// Generate pdf's for each invoice
 		$aInvoices		= Invoice::getForInvoiceRunId($this->Id);
 		$aPDFFilenames	= array();
 		$aPDFContent	= array();
@@ -799,18 +799,18 @@ class Invoice_Run
 			$sContent				= GetPDFContent($oInvoice->Account, $iYear, $iMonth, $iId, $this->Id);
 			$aPDFFilenames[$iId]	= $sInvoiceRunPDFBasePath.GetPdfFilename($oInvoice->Account, $iYear, $iMonth, $oInvoice->Id, $this->Id);
 			$aPDFContent[$iId]		= $sContent;
+			
 			Log::getLog()->log("Generated PDF '".basename($aPDFFilenames[$iId])."' for invoice {$iId}, length=".strlen($sContent));
 		}
 
-		Log::getLog()->log("Generate correspondence data & emails");
-		
 		try
 		{
-			
-			// Generate the correspondence data & build the email queue (for Email_Flex objects)
+			Log::getLog()->log("Generate correspondence data & emails");
+				
+			// Generate the correspondence data & build the email queue (using email templates)
 			$aCorrespondenceData	= array();
 			$oEmailFlexQueue		= new Email_Flex_Queue();
-			$oEmailTemplate			= Email_Template_Logic::getInstance(EMAIL_TEMPLATE_TYPE_EBILL, $this->customer_group_id);
+			$oEmailTemplate			= Email_Template_Logic::getInstance(EMAIL_TEMPLATE_TYPE_INVOICE, $this->customer_group_id);
 			foreach ($aPDFFilenames as $iInvoiceId => $sPDFFilename)
 			{
 				Log::getLog()->log("\nInvoice {$iInvoiceId}");
@@ -860,7 +860,10 @@ class Invoice_Run
 						// Get the contact details for the invoice/account
 						$oStmtAccountEmail	= new StatementSelect(	"Account JOIN Contact USING (AccountGroup)",
 																	"Contact.Account, Email, FirstName",
-																	"Account.Id = <Account> AND Email != '' AND Contact.Archived = 0 AND (Contact.Account = Account.Id OR Contact.CustomerContact = 1 OR Account.PrimaryContact = Contact.Id)");
+																	"Account.Id = <Account> 
+																	AND	Email != '' 
+																	AND	Contact.Archived = 0 
+																	AND	(Contact.Account = Account.Id OR Contact.CustomerContact = 1 OR Account.PrimaryContact = Contact.Id)");
 						if ($oStmtAccountEmail->Execute($oInvoice->toArray()) === FALSE)
 						{
 							throw new Exception("Failed to get contacts for invoice {$iInvoiceId}.");
@@ -868,6 +871,7 @@ class Invoice_Run
 						if (!$aContacts = $oStmtAccountEmail->FetchAll())
 						{
 							// Bad Account Number or Non-Email Account
+							Log::getLog()->log("Bad Account Number or Non-Email Account");
 							continue;
 						}
 						
@@ -878,7 +882,7 @@ class Invoice_Run
 						{
 							Log::getLog()->log("...Contact ".$aContact['Email']." (".$aContact['FirstName'].")");
 							
-							// Generate Email_Flex object from Ebill template
+							// Generate Email_Flex object from Invoice template
 							$oEmail	= 	$oEmailTemplate->generateEmail(
 											array(
 												'CustomerGroup'	=> $oCustomerGroup->toArray(),
@@ -944,7 +948,7 @@ class Invoice_Run
 			throw new Exception("Failed to generated invoice delivery data. ".$oException->getMessage());
 		}
 		
-		Log::getLog()->log("\nSchedule the email queue for immediate delivery (delivery method = $oInvoice->DeliveryMethod)");
+		Log::getLog()->log("\nSchedule the email queue for immediate delivery");
 		$oEmailFlexQueue->scheduleForDelivery();
 
 		if (count($aCorrespondenceData) > 0)
