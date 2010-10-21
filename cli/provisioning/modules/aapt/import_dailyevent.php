@@ -521,7 +521,7 @@
 	//------------------------------------------------------------------------//
 	const	MCP_COMPLETION_CODE_TRANSFER								= 1;
 	
-	protected static	$_aEbillCompletionCodes	= array(
+	protected static	$_aMCPCompletionCodes	= array(
 		self::MCP_COMPLETION_CODE_TRANSFER	=> 'Transfer'
 	);
 	
