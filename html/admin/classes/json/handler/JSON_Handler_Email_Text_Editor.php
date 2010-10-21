@@ -197,11 +197,24 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 							'html'		=> Email_Template_Logic::processHTML($sHTML)
 						);
 		}
-		catch (Exception $e)
+		catch (EmailTemplateEditException $e)
 		{
+
 			return	array(
+								'Summary'			=>$e->sSummaryMessage,
+								'LineNo'			=>$e->iLineNumber,
 								'Success'			=> false,
 								'message'			=> $e->__toString(),
+							);
+
+
+		}
+		catch (Exception $e)
+		{
+
+			return	array(
+								'Success'			=> false,
+								'message'			=> print_r($e, true)
 							);
 		}
 	}
