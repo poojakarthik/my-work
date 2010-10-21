@@ -371,13 +371,25 @@ class Email_Template_Logic
 		return $bReport?$aReport:"";
 	}
 
+	public static function normalizeNewLines($aText)
+	{
+		$sPreviousLine = "";
+		$aResult = array();
+		foreach ($aText as $sLine)
+		{
+			($sPreviousLine == "\n\n"&&($sLine=="\n\n" || $sLine == "\n"))||($sPreviousLine=="\n" && $sLine=="\n\n")?null:$aResult[]=$sLine;
+			$sPreviousLine = $sLine;
+		}
+		return $aResult;
+	}
+
 
 	public static function toText($sHTML)
 	{
 
 		$sHTML = str_replace(array("\r\n", "\r", "\n", "\t"), ' ', $sHTML);
 
-		$sText =  !empty($sHTML) && trim($sHTML)!='' && $sHTML!=null?implode("",self::_toText(DOMDocument::loadXML(self::processHTML($sHTML))->documentElement, array())):"";
+		$sText =  !empty($sHTML) && trim($sHTML)!='' && $sHTML!=null?implode("",self::normalizeNewLines(self::_toText(DOMDocument::loadXML(self::processHTML($sHTML))->documentElement, array()))):"";
 		//$sText = preg_replace('/\s\s+/s', 'bbbbbbbb', $sText);
 
 		$sText = self::trimLines(self::normalizeWhiteSpaces($sText));
@@ -428,7 +440,7 @@ protected static function _toText($oNode, $aTextArray, $sParentTagName = null, $
 					}
 					else if ($oNode->tagName == 'td' || $oNode->tagName == 'th')
 					{
-						$aTextArray[] = "\t\t";
+						$aTextArray[] = "\t\t\t";
 					}
 					/*else if ($oNode->tagName == 'span' || $oNode->tagName == 'a' || $oNode->tagName == 'variable' || $oNode->tagName == 'b')
 					{
@@ -455,11 +467,8 @@ protected static function _toText($oNode, $aTextArray, $sParentTagName = null, $
 				{
 					if (trim($node->wholeText)!=null)
 					{
+						//$node->previousSibling->tagName == 'p'?$aTextArray[]="\n\n":$node->previousSibling->tagName == 'div'?$aTextArray[]="\n":null;
 
-						//an attempt to remove white spaces before commas
-
-
-						//$aTextArray[]=trim($node->wholeText);
 						$aTextArray[]=$node->wholeText;
 
 					}
@@ -489,24 +498,16 @@ protected static function _toText($oNode, $aTextArray, $sParentTagName = null, $
 			}
 
 
-					/*if ($oNode->tagName == 'p' || $oNode->tagName == 'br' ||$oNode->tagName == 'div' ||$oNode->tagName == 'h1' ||$oNode->tagName == 'h2' ||$oNode->tagName == 'h3'||$oNode->tagName == 'h4'||$oNode->tagName == 'form' ||$oNode->tagName == 'table')
+			if ( $oNode->tagName == 'p'  ||$oNode->tagName == 'h1' ||$oNode->tagName == 'h2' ||$oNode->tagName == 'h3'||$oNode->tagName == 'h4'||$oNode->tagName == 'form' ||$oNode->tagName == 'table')
 					{
 						$aTextArray[] = "\n\n";
 					}
-					else if ($oNode->tagName == 'li' ||$oNode->tagName == 'ul' ||$oNode->tagName == 'ol' ||$oNode->tagName == 'tr')
+					else if ($oNode->tagName == 'div')
 					{
 
 						$aTextArray[] = "\n";
 
 					}
-					else if ($oNode->tagName == 'td' || $oNode->tagName == 'th')
-					{
-						$aTextArray[] = "\t\t";
-					}
-					else if ($oNode->tagName == 'span' || $oNode->tagName == 'a' || $oNode->tagName == 'variable' || $oNode->tagName == 'b')
-					{
-						$aTextArray[] = " ";
-					}*/
 
 		}
 
