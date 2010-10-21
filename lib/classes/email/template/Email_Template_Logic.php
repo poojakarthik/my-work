@@ -428,7 +428,7 @@ class Email_Template_Logic
 
 protected static function _toText($oNode, $aTextArray, $sParentTagName = null, $iListCount = null)
 	{
-	if ( $oNode->tagName == 'p'  ||$oNode->tagName == 'h1' ||$oNode->tagName == 'h2' ||$oNode->tagName == 'h3'||$oNode->tagName == 'h4'||$oNode->tagName == 'form' ||$oNode->tagName == 'table')
+	if ( $oNode->tagName == 'p'  ||$oNode->tagName == 'h1' ||$oNode->tagName == 'h2' ||$oNode->tagName == 'h3'||$oNode->tagName == 'h4'||$oNode->tagName == 'form' ||$oNode->tagName == 'table' ||$oNode->tagName == 'ul' ||$oNode->tagName == '0l')
 					{
 						$aTextArray[] = "\n\n";
 					}
@@ -458,18 +458,19 @@ protected static function _toText($oNode, $aTextArray, $sParentTagName = null, $
 
 				if ($node->tagName == 'li')
 				{
-					$sListChar 	= $oNode->tagName =='ul'?"\n\t* ":($oNode->tagName=='ol'?"\n\t".++$iListCount.". ":null);
+					$aTextArray[] ="\n";
+					$sListChar 	= $oNode->tagName =='ul'?"\t* ":($oNode->tagName=='ol'?"\t".++$iListCount.". ":null);
 					$aTextArray[] = $sListChar;
 				}
 
 
 				if (get_class($node) == 'DOMText')
 				{
-					if (trim($node->wholeText)!=null)
+					if ($node->wholeText!=null)
 					{
 						//$node->previousSibling->tagName == 'p'?$aTextArray[]="\n\n":$node->previousSibling->tagName == 'div'?$aTextArray[]="\n":null;
-
-						$aTextArray[]=$node->wholeText;
+						(end($aTextArray)=="\n\n"||end($aTextArray)=="\n")&&self::normalizeWhiteSpaces($node->wholeText)==" "?null:$aTextArray[]=$node->wholeText;
+						//$aTextArray[]=$node->wholeText;//$node->wholeText;
 
 					}
 				}
@@ -498,7 +499,7 @@ protected static function _toText($oNode, $aTextArray, $sParentTagName = null, $
 			}
 
 
-			if ( $oNode->tagName == 'p'  ||$oNode->tagName == 'h1' ||$oNode->tagName == 'h2' ||$oNode->tagName == 'h3'||$oNode->tagName == 'h4'||$oNode->tagName == 'form' ||$oNode->tagName == 'table')
+			if ( $oNode->tagName == 'p'  ||$oNode->tagName == 'h1' ||$oNode->tagName == 'h2' ||$oNode->tagName == 'h3'||$oNode->tagName == 'h4'||$oNode->tagName == 'form' ||$oNode->tagName == 'table' ||$oNode->tagName == 'ul' ||$oNode->tagName == '0l')
 					{
 						$aTextArray[] = "\n\n";
 					}
