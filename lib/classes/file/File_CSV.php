@@ -152,17 +152,12 @@ class File_CSV implements Iterator
 		{
 			throw new Exception("Unable to import from path '{$sPath}': Path is not readable");
 		}
-		if (!$rImportFile = fopen($sPath, 'r'))
+		if (($sDataString = @file_get_contents($sPath)) === false)
 		{
 			throw new Exception("Unable to import from path '{$sPath}': There was an unknown error reading from the path");
 		}
 		
-		if (($sDataString = @file_get_contents()) === false)
-		{
-			throw new Exception("Unable to import from path '{$sPath}': There was an unknown error reading from the path");
-		}
-		
-		return $this->importFileAsString($sDataString);
+		return $this->importFileAsString($sDataString, $bHasHeader, $bImportHeader);
 	}
 	
 	public function importFileAsString($sDataString, $bHasHeader=false, $bImportHeader=false)
