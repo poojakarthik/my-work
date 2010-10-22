@@ -7137,6 +7137,13 @@ span.varobject
 
 }
 
+
+div.email-subject-container .reflex
+{
+-moz-border-radius: 3px 3px 3px 3px;
+
+}
+
 div.popup-email-text-edit
 {
 	margin	: 0.5em;
@@ -7150,7 +7157,13 @@ div.popup-email-text-edit
 .popup-email-text-edit .buttons .padded
 {
 	padding-left: 5px;
-	padding-right: 5px;
+	padding-right: 7px;
+}
+
+.popup-email-text-edit .buttons .padded-image
+{
+	padding-left: 7px;
+	padding-right: 7px;
 }
 
 .popup-email-text-edit textarea {	
@@ -7168,6 +7181,8 @@ div.popup-email-text-edit
 	padding: 0.5em;
 	-moz-border-radius: 4px 4px 4px 4px;
 	border: 1px solid #000000;
+	
+	background-image:url('../img/template/background-blur.png');
 	
 }
 
@@ -7191,6 +7206,18 @@ div.popup-email-text-edit
 	cursor: pointer;
 	font-weight: normal;
 	padding: 2px;
+	margin: 2.2px;
+
+}
+
+
+.popup-email-text-edit .variables ul>li:only-child
+{
+	cursor: pointer;
+	font-weight: normal;
+	padding: 2px;
+	margin: 1.6px;
+	
 
 }
 
@@ -7200,6 +7227,9 @@ div.popup-email-text-edit
 	background-color: rgba(255, 255, 255, 0.8);
 border: 1px solid rgba(0, 0, 0, 0.6);
 font-weight: bold;
+margin: 1.2px;
+
+
 }
 
 .popup-email-text-edit .variables .vars
