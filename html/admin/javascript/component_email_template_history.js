@@ -89,18 +89,14 @@ var Component_Email_Template_History = Class.create(
 				this._oTable.addHeaderField(this._createFieldHeader('Created', false));
 				this._oTable.addHeaderField(this._createFieldHeader(''));
 				
-				//an array of table rows for template versions that were never used, they were cancelled before their effective date			
-				this._aCancelledVersions = [];
-				
+
+				this._aTableRows = [];
 				for (var i=0;i<this._aData.length;i++)
-				{
-					var oRow = this._aData[i];				
-					var tr = this._createTableRow(oRow);
-					//tr.style.display!='none'?body.appendChild(tr):null;	
-					tr.style.display!='none'?this._oTable.appendRow(tr):null;						
+				{								
+					this._aTableRows.push(this._createTableRow(this._aData[i]));
 				}
 				
-				if (this._oTable.rowCount() == 0)
+				if (this._aTableRows.length == 0)
 				{
 					var tr = document.createElement('tr');
 					var td = document.createElement('td');
@@ -108,17 +104,11 @@ var Component_Email_Template_History = Class.create(
 					span.className = 'no-versions';
 					span.innerHTML = this._aCancelledVersions.length==0?'There are no versions for this template':'There are only cancelled versions for this template. Check \'Show Cancelled Versions\' to display them';
 					td.appendChild(span);
-					tr.appendChild(td);
-					//body.appendChild(tr);
-					this._oTable.appendRow(tr);
-				}		
-				
-				
-				for (var i=0;i<this._aCancelledVersions.length;i++)
-				{
-					//body.appendChild(this._aCancelledVersions[i]);	
-					this._oTable.appendRow(this._aCancelledVersions[i]);					
-				}				
+					tr.appendChild(td);					
+					this._aTableRows.push(tr);
+					
+				}
+				this._refreshTable(false);
 
 				oDetailsSection.setContent(this._oTable.getElement());
 			
@@ -136,6 +126,15 @@ var Component_Email_Template_History = Class.create(
 	
 	},
 	
+	_refreshTable: function (bCancelledVersions)
+	{
+		this._oTable.truncate();
+		for(var i=0;i<this._aTableRows.length;i++)
+		{		
+			this._aTableRows[i].cancelled==false||bCancelledVersions?this._oTable.appendRow(this._aTableRows[i]):null;		
+		}	
+	},
+	
 	_createTableRow	: function(oRow)
 	{
 		
@@ -143,24 +142,24 @@ var Component_Email_Template_History = Class.create(
 		var tr = document.createElement('tr');
 		if (oRow.effective_datetime>oRow.end_datetime)
 		{			
-			tr.style.display = 'none';
-			this._aCancelledVersions.push(tr);
+			tr.cancelled = true;
 			tr.title='This template was never used';		
+		}
+		else
+		{
+			tr.cancelled = false;
+		
 		}
 		
 		
 			
-		var bCancelled = tr.style.display == 'none'?true:false;	
-		var td = this._createTableCell(oRow.description, bCancelled);//document.createElement('td');
-		tr.appendChild(this._createTableCell(oRow.description, bCancelled));
-		tr.appendChild(this._createTableCell(this._formatDate(oRow.effective_datetime), bCancelled));
-		//tr.appendChild(this._createTableCell(this._formatDate(oRow.end_datetime), bCancelled));
-		//tr.appendChild(this._createTableCell(this._formatDate(oRow.created_timestamp), bCancelled));
-		
-		//the created cell is special
+		tr.appendChild(this._createTableCell(oRow.description, tr.cancelled));
+		tr.appendChild(this._createTableCell(this._formatDate(oRow.effective_datetime), tr.cancelled));
+				
+		//the 'created' cell is special
 		var td = document.createElement('td');
 		var oContent = document.createElement('span');
-		bCancelled?oContent.className = 'line-through':null;					
+		tr.cancelled?oContent.className = 'line-through':null;					
 		oContent.innerHTML = new Date(Date.$parseDate(oRow.created_timestamp,'Y-m-d H:i:s').getTime()).$format('j F Y');	
 		
 		var oCreatedBy = document.createElement('div');
@@ -196,10 +195,12 @@ var Component_Email_Template_History = Class.create(
 	
 	_showCancelledChanged	: function()
 	{	
-		for (var i=0;i<this._aCancelledVersions.length;i++)
-		{
-			this._oShowCancelled.getElementValue()?this._aCancelledVersions[i].style.display = '':this._aCancelledVersions[i].style.display = 'none';			
-		}
+		// for (var i=0;i<this._aCancelledVersions.length;i++)
+		// {
+			// this._oShowCancelled.getElementValue()?this._aCancelledVersions[i].style.display = '':this._aCancelledVersions[i].style.display = 'none';			
+		// }
+		bShowCancelled = this._oShowCancelled.getElementValue()?true:false;
+		this._refreshTable(bShowCancelled);
 		
 	},
 	
