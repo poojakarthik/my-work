@@ -361,11 +361,11 @@ class Email_Template_Logic
 			$oDOMDocument = $x;//*DOMDocument::loadXML(str_replace ( '<?xml version="1.0">' , "" , $x->saveXML()));
 
 
-			//For query debug purpose
+	/*		//For query debug purpose
 		  	$myFile = "html.txt";
 			$fh = fopen($myFile, 'w') or die("can't open file");
 			fwrite($fh, str_replace ( '<?xml version="1.0" encoding="utf-8"?>' , "" , $oDOMDocument->saveXML()));
-			fclose($fh);
+			fclose($fh);*/
 
 			return $bReport?$aReport:str_replace ( '<?xml version="1.0" encoding="utf-8"?>' , "" , $oDOMDocument->saveXML());
 		}
