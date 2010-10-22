@@ -53,9 +53,9 @@
 	 * Constructor
 	 *
 	 * Constructor
-	 * 
+	 *
 	 * @param	integer	$intCarrier				The Carrier using this Module
-	 * 
+	 *
 	 * @return	ImportBase
 	 *
 	 * @method
@@ -74,8 +74,9 @@
  		
  		// Statements
  		$this->_selRequestByCarrierRef	= new StatementSelect("ProvisioningRequest", "*", "CarrierRef = <CarrierRef> AND Status IN (301, 302, 303)");
- 		$this->_selRequestByFNN			= new StatementSelect(	"ProvisioningRequest", "*", 
-																"Carrier = <Carrier> AND FNN = <FNN> AND Type = <Type> AND RequestedOn < <EffectiveDate> AND Status IN (301, 302, 303)");
+ 		$this->_selRequestByFNN			= new StatementSelect(	"ProvisioningRequest", "*",
+																"Carrier = <Carrier> AND FNN = <FNN> AND Type = <Type> AND RequestedOn < <EffectiveDate> AND Status IN (301, 302, 303, 307)",
+ 																"RequestedOn DESC");
 		$this->_selTranslateCarrierCode	= new StatementSelect("ProvisioningTranslation", "flex_code", "Context = <Context> AND CarrierCode = <CarrierCode>");
 		
 		$this->_selCarrierModule		= new StatementSelect("CarrierModule", "*", "Carrier = <Carrier> AND Module = <Module> AND Type = ".MODULE_TYPE_PROVISIONING_INPUT);
@@ -103,9 +104,9 @@
 	 * Pre-processes a file
 	 *
 	 * Pre-processes a file
-	 * 
+	 *
 	 * @param	array	$arrRawData		File Data to parse
-	 * 
+	 *
 	 * @return	array					Parsed data
 	 *
 	 * @method
@@ -126,9 +127,9 @@
 	 * Normalises a line from a Provisioning File
 	 *
 	 * Normalises a line from a Provisioning File
-	 * 
+	 *
 	 * @param	string	$strLine		Line to parse
-	 * 
+	 *
 	 * @return	array					Parsed data
 	 *
 	 * @method
@@ -149,9 +150,9 @@
 	 * Validates a Normalised Line
 	 *
 	 * Validates a Normalised Line
-	 * 
+	 *
 	 * @param	array	$arrLine		Line to verify
-	 * 
+	 *
 	 * @return	array					['Pass'] : boolean
 	 * 									['Message'] : string
 	 *
@@ -172,10 +173,10 @@
 	 * Split a Line into an array
 	 *
 	 * Split a Line into an array
-	 * 
+	 *
 	 * @param	string		strLine		Line to split
 	 *
-	 * @return	array					Split data					
+	 * @return	array					Split data
 	 *
 	 * @method
 	 */
@@ -221,9 +222,9 @@
 	 * Attempts to link a Response to a Request
 	 *
 	 * Attempts to link a Response to a Request
-	 * 
+	 *
 	 * @param	array	$arrResponse	Response to match against
-	 * 
+	 *
 	 * @return	integer					Request Id
 	 *
 	 * @method
@@ -238,7 +239,7 @@
  			return $arrReturn;
  		}
 	 	
-	 	// Run the default matcher
+	 	// No Match
 	 	return NULL;
 	 }
  	
@@ -252,12 +253,12 @@
 	 * Translates a Carrier Code using the ProvisioningTranslation table
 	 *
 	 * Translates a Carrier Code using the ProvisioningTranslation table
-	 * 
+	 *
 	 * @param	integer	$intContext		Context Group for the Constant (eg. CARRIER_TRANSLATION_CONTEXT_EPID)
 	 * @param	mixed	$mixValue		The Code to Translate
-	 * 
+	 *
 	 * @return	mixed					string	: Description
-	 * 									FALSE	: Failed					
+	 * 									FALSE	: Failed
 	 *
 	 * @method
 	 */
@@ -285,10 +286,10 @@
 	 * Finds the owner of the FNN for this Response
 	 *
 	 * Finds the owner of the FNN for this Response
-	 * 
+	 *
 	 * @param	array	$arrPDR			Provisioning Data Record to find an owner for
-	 * 
-	 * @return	array					Modified $arrPDR with Ownership details or Status set to RESPONSE_STATUS_BAD_OWNER				
+	 *
+	 * @return	array					Modified $arrPDR with Ownership details or Status set to RESPONSE_STATUS_BAD_OWNER
 	 *
 	 * @method
 	 */
@@ -317,10 +318,10 @@
 	 * Checks the Line Status and updates if necessary
 	 *
 	 * Checks the Line Status and updates if necessary
-	 * 
+	 *
 	 * @param	array	$arrResponse			The Response received from the Carrier
-	 * 
-	 * @return	mixed							TRUE: Pass; string: Error Message; FALSE: Redundant				
+	 *
+	 * @return	mixed							TRUE: Pass; string: Error Message; FALSE: Redundant
 	 *
 	 * @method
 	 */

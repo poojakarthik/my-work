@@ -319,9 +319,11 @@
 							// Request Completion
 							// NOTE: MCP Completion Codes are incomplete, and are added to by guessing as unique codes come in
 							// Additionally, it uses the RejectCode field
-							Flex::asset(isset(self::$_aMCPCompletionCodes[$iEbillCodeValue]));
+							$iMCPCompletionCode	= ($iMCPRejectCode === null) ? self::MCP_COMPLETION_CODE_TRANSFER : $iMCPRejectCode;
+							
+							Flex::assert(isset(self::$_aMCPCompletionCodes[$iMCPLossCode]), "AAPT Daily Event File: Unhandled MCP Completion Code '{$iMCPLossCode}' (".self::$_aMCPCodes[$iMCPLossCode].")", print_r(array('PDR'=>$arrPDR,'Raw'=>$arrData), true));
 							$arrPDR['request_status']	= REQUEST_STATUS_COMPLETED;
-							$arrPDR['Description']		= self::$_aMCPCompletionCodes[$iMCPRejectCode];
+							$arrPDR['Description']		= self::$_aMCPCompletionCodes[$iMCPCompletionCode];
 							break;
 							
 						case self::MCP_CODE_REJECTION_RECORD:
