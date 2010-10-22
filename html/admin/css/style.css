@@ -7460,6 +7460,17 @@ div.popup-email-templates table.reflex {
 
 }
 
+.current-version
+{
+	width: 25px;
+	font-weight: bold;
+}
+
+.current-version-text
+{
+	font-weight: bold;
+}
+
 
 .email-template-history-createdby
 {
@@ -7468,10 +7479,7 @@ div.popup-email-templates table.reflex {
 	font-size	: 0.85em;
 	list-style-type: none;
 	margin-left : 1px;
-	 padding-left: 1px;
-	
-	 
-	
+	padding-left: 1px;	
 }
 
 .no-versions
@@ -7482,8 +7490,9 @@ div.popup-email-templates table.reflex {
 	font-weight: bold;
 }
 
-.version-details >div > table.reflex > tbody > tr > td:last-child {
-text-align: right;
+.version-details >div > table.reflex > tbody > tr > td:last-child 
+{
+	text-align: right;
 }
 
 
