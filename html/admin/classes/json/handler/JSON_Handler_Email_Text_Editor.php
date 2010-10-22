@@ -289,6 +289,7 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 
 	function sendTestEmail($oData)
 	{
+
 		try
 		{
 
