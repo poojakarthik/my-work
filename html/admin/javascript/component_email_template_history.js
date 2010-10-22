@@ -26,7 +26,7 @@ var Component_Email_Template_History = Class.create(
 		if (typeof(oResponse) == 'undefined')
 		{
 			//get the data
-			var fnRequest     = jQuery.json.jsonFunction(this._buildGUI.bind(this), this._buildGUI.bind(this), 'Customer_Group', 'getEmailTemplateHistory');
+			var fnRequest     = jQuery.json.jsonFunction(this._buildGUI.bind(this), Popup_Email_Text_Editor.errorCallback.bind(this), 'Customer_Group', 'getEmailTemplateHistory');
 			fnRequest(this._iTemplateId);
 		
 		
