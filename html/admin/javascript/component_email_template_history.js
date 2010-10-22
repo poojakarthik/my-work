@@ -84,12 +84,12 @@ var Component_Email_Template_History = Class.create(
 				
 				//This is the data table that is the main body of the section
 				this._oTable = new Email_Template_Table({class: 'alternating'}, {}, {class: 'reflex highlight-rows'});
+				this._oTable.addHeaderField(this._createFieldHeader(''));
 				this._oTable.addHeaderField(this._createFieldHeader('Description', false));
 				this._oTable.addHeaderField(this._createFieldHeader('Effective Date', false, true));
 				this._oTable.addHeaderField(this._createFieldHeader('Created', false));
 				this._oTable.addHeaderField(this._createFieldHeader(''));
 				
-
 				this._aTableRows = [];
 				for (var i=0;i<this._aData.length;i++)
 				{								
@@ -150,14 +150,18 @@ var Component_Email_Template_History = Class.create(
 			tr.cancelled = false;
 		
 		}
+		var sNow = new Date().$format(Popup_Email_Save_Confirm.FIELD_CONFIG.changeDate.oConfig.sDateFormat);
+		var bCurrentVersion;
+		oRow.effective_datetime<=sNow&&oRow.end_datetime>sNow?bCurrentVersion = true:bCurrentVersion=false;
+		bCurrentVersion?tr.appendChild($T.td({class:'current-version'},$T.img({src: Popup_Email_Text_Editor.SAVE_IMAGE_SOURCE , title: 'This is the Current Version' }))):tr.appendChild($T.td({class:'current-version'}));
 		
-		
-			
-		tr.appendChild(this._createTableCell(oRow.description, tr.cancelled));
-		tr.appendChild(this._createTableCell(this._formatDate(oRow.effective_datetime), tr.cancelled));
+	
+		tr.appendChild(this._createTableCell(oRow.description, tr.cancelled, bCurrentVersion));
+		tr.appendChild(this._createTableCell(this._formatDate(oRow.effective_datetime), tr.cancelled, bCurrentVersion));
 				
 		//the 'created' cell is special
 		var td = document.createElement('td');
+		bCurrentVersion?td.className = 'current-version-text':null;
 		var oContent = document.createElement('span');
 		tr.cancelled?oContent.className = 'line-through':null;					
 		oContent.innerHTML = new Date(Date.$parseDate(oRow.created_timestamp,'Y-m-d H:i:s').getTime()).$format('j F Y');	
@@ -183,11 +187,12 @@ var Component_Email_Template_History = Class.create(
 		return new Date(Date.$parseDate(sDate,'Y-m-d').getTime()).$format('j F Y');	
 	},
 	
-	_createTableCell: function (mCellContent, bCancelled)
+	_createTableCell: function (mCellContent, bCancelled, bCurrent)
 	{
 		var td = document.createElement('td');
 		var oContent = document.createElement('span');
-		bCancelled?oContent.className = 'line-through':null;					
+		bCancelled?oContent.className = 'line-through':null;
+		bCurrent?td.className = 'current-version-text':null;
 		oContent.innerHTML = mCellContent;
 		td.appendChild(oContent);
 		return td;
