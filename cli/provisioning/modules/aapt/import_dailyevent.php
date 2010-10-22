@@ -136,6 +136,11 @@
 									'eBillDate'			=>	array
 															(
 																'Index'	=>	18
+															),
+									/* CUSTOM FIELD -- Timstamp extracted from the filename, not present in raw line data */
+									'FileTimestamp'		=>	array
+															(
+																'Index'	=>	19
 															)
 								);
  	}
@@ -155,15 +160,30 @@
  	{
  		// Preprocess to break lines into separate Full Service Rebill, Preselection, and Whitelist components
  		
+ 		$sStartDatetime	= null;
  		$aRawResponses	= array();
  		foreach ($aRawData as $sLine)
  		{
- 			if ($sLine[0] === 'D')
+ 			$sLine	= rtrim($sLine, "\r\n");
+ 			switch ($sLine[0])
  			{
-	 			// FIXME: We're just going to be cheap, and define 3 new Record Types, and just put all data in each
-	 			$aRawResponses[]	= 'F'.substr($sLine, 1);
-	 			$aRawResponses[]	= 'P'.substr($sLine, 1);
-	 			//$aRawResponses[]	= 'W'.substr($sLine, 1);	// We don't care about Whitelisting just yet, as Flex doesn't support the concept
+ 				// Header
+ 				case 'H':
+ 					$aMatches	= array();
+ 					preg_match('/(D)([a-z0-9]{3})([a-z0-9]{3})(E)(?P<timestamp>\d{14})/i', $sLine, $aMatches);
+ 					$sStartDatetime	= (isset($aMatches['timestamp']) && trim($aMatches['timestamp'])) ? $aMatches['timestamp'] : null;
+ 					break;
+ 				
+ 				// Detail
+ 				case 'D':
+ 					// Append the File timestamp as a last column
+		 			$sLine	.= ",{$sStartDatetime}";
+		 			
+		 			// FIXME: We're just going to be cheap, and define 3 new Record Types, and just put all data in each
+		 			$aRawResponses[]	= 'F'.substr($sLine, 1);
+		 			$aRawResponses[]	= 'P'.substr($sLine, 1);
+		 			//$aRawResponses[]	= 'W'.substr($sLine, 1);	// We don't care about Whitelisting just yet, as Flex doesn't support the concept
+ 					break;
  			}
  		}
  		
@@ -289,7 +309,14 @@
 					}
 					
 					// Effective Date
-					$arrPDR['EffectiveDate']	= self::_convertDate_dMy($arrData['eBillDate']);
+					if (trim($arrData['eBillDate']))
+					{
+						$arrPDR['EffectiveDate']	= self::_convertDate_dMy($arrData['eBillDate']);
+					}
+					elseif (trim($arrData['FileTimestamp']))
+					{
+						$arrPDR['EffectiveDate']	= date('Y-m-d H:i:s', strtotime($arrData['FileTimestamp']));
+					}
 				}
 				else
 				{
@@ -385,7 +412,15 @@
 							break;
 					}
 					
-					$arrPDR['EffectiveDate']	= self::_convertDate_dMy($arrData['MCPDate']);
+					// EffectiveDate
+					if (trim($arrData['MCPDate']))
+					{
+						$arrPDR['EffectiveDate']	= self::_convertDate_dMy($arrData['MCPDate']);
+					}
+					elseif (trim($arrData['FileTimestamp']))
+					{
+						$arrPDR['EffectiveDate']	= date('Y-m-d H:i:s', strtotime($arrData['FileTimestamp']));
+					}
 				}
 				else
 				{
