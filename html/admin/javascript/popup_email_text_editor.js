@@ -6,6 +6,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	{			
 		
 		$super(80);			
+	
 		this._oLoadingPopup	= new Reflex_Popup.Loading();
 		this._oLoadingPopup.display();
 		
@@ -46,7 +47,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	{
 		if (typeof(oResponse)=='undefined')
 		{
-			var fnRequest     = jQuery.json.jsonFunction(this._buildTemplateDetailsObject.bind(this,iTemplateId ), this.errorCallback.bind(this), 'Email_Text_Editor', 'getTemplateVariables');
+			var fnRequest     = jQuery.json.jsonFunction(this._buildTemplateDetailsObject.bind(this,iTemplateId ), Popup_Email_Text_Editor.errorCallback.bind(this), 'Email_Text_Editor', 'getTemplateVariables');
 			fnRequest(iTemplateId);
 		}
 		else
@@ -74,12 +75,41 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		}	
 	},
 	
+	_insertVariable: function(oEvent, oTextarea, oSubjectTextField, oVariable)
+	{
+		
+		var activeElement = oTextarea.isFocused?oTextarea:oSubjectTextField.isFocused?oSubjectTextField:null;
+		if (activeElement!=null)
+		{
+			sVariable = activeElement.variableFormat=='tag'?oVariable.tag:oVariable.text;
+			
+			var pos = activeElement.selectionStart;
+			var iScrollTop 	= activeElement.scrollTop;
+			var front = (activeElement.value).substring(0,pos);  
+			var back = (activeElement.value).substring(pos,activeElement.value.length); 
+			activeElement.value=front+" " + sVariable+ " "+back;
+			
+			activeElement.selectionStart	= pos + sVariable.length+1;
+			activeElement.selectionEnd 		= pos + sVariable.length+1;
+			activeElement.scrollTop 		= iScrollTop;
+			activeElement.focus();
+			activeElement.isFocused = true;
+			oEvent.stop();
+		}
+		else
+		{
+			Reflex_Popup.alert('Please indicate where the variable must be inserted by placing the cursor at that point', {sTitle:'Insert Variable'});
+		
+		}
+		return false;
+		
+	},
 	
 	_getTemplateDetails: function(oResponse)
 	{		
 		if (typeof(oResponse)=='undefined')
 		{
-			var fnRequest     = jQuery.json.jsonFunction(this._getTemplateDetails.bind(this), this.errorCallback.bind(this), 'Email_Text_Editor', 'getTemplateVersionDetails');
+			var fnRequest     = jQuery.json.jsonFunction(this._getTemplateDetails.bind(this), Popup_Email_Text_Editor.errorCallback.bind(this), 'Email_Text_Editor', 'getTemplateVersionDetails');
 			fnRequest(this._iTemplateDetailsId);
 		}
 		else
@@ -121,6 +151,12 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		this._oSubjectTextField.addOnChangeCallback(this._oSubjectTextField.validate.bind(this._oSubjectTextField));
 		this._oSubjectTextField.setRenderMode(true);
 		this._oSubjectTextField.setElementValue(this._oTemplateDetails.email_subject);
+		this._oSubjectTextField.oControlOutput.oEdit.isFocused=false;
+		this._oSubjectTextField.oControlOutput.oEdit.onfocus=function(){this.isFocused=true};
+		this._oSubjectTextField.oControlOutput.oEdit.onblur=function(){this.isFocused=false};
+		this._oSubjectTextField.oControlOutput.oEdit.variableFormat='text';
+		
+		
 		this._oSubjectTextField.validate();
 		
 		
@@ -174,7 +210,14 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		var iNumRows				= document.viewport.getHeight()>768?25:18;
 		var oControl			= Control_Field.factory('textarea', {sLabel:"", sLabelSeparator:null, mVisible:true, mEditable:true, rows:iNumRows, cols:25});
 		this.oTextArea 			= oControl.oControlOutput.oEdit;
-		this.oTextArea.value 	= this._oTemplateDetails.email_text;			
+		this.oTextArea.value 	= this._oTemplateDetails.email_text;
+		this.oTextArea.isFocused=false;
+		this.oTextArea.onfocus=function(){this.isFocused=true};
+		this.oTextArea.onblur=function(){this.isFocused=false};
+		this.oTextArea.variableFormat='text';
+
+
+		
 		var oTableRow 			= oControl.generateInputTableRow().oElement;
 		var th 					= oTableRow.select('th').first();
 		th.appendChild($T.div({class: 'buttons'},
@@ -187,7 +230,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 			);
 		
 		
-		th.appendChild(this.defineVariableList());			
+		th.appendChild(this.defineVariableList(this.oTextArea));			
 		oTBody.appendChild(oTableRow);
 		
 		this._oTextTab 			= new Control_Tab("Text", oTabContent)
@@ -201,6 +244,11 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		oControl				= Control_Field.factory('textarea', {sLabel:"", sLabelSeparator:null, mVisible:true, mEditable:true, rows:iNumRows, cols:25});
 		this.oHTMLTextArea 		= oControl.oControlOutput.oEdit;
 		this.oHTMLTextArea.value= this._oTemplateDetails.email_html;
+		this.oHTMLTextArea.isFocused=false;
+		this.oHTMLTextArea.variableFormat='tag';
+		this.oHTMLTextArea.onfocus=function(){this.isFocused=true};
+		this.oHTMLTextArea.onblur=function(){this.isFocused=false};
+		
 		oTableRow 				= oControl.generateInputTableRow().oElement;		
 		th 						= oTableRow.select('th').first();
 		th.appendChild($T.div({class: 'buttons'},
@@ -220,7 +268,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 						).observe('click', this._sendTestMail.bind(this, false))
 						)					
 					);
-		th.appendChild(this.defineVariableList());	
+		th.appendChild(this.defineVariableList(this.oHTMLTextArea));	
 		oTBody.appendChild(oTableRow);
 		this._oTabGroup.addTab("HTML", new Control_Tab("HTML", oTabContent));		
 		
@@ -255,7 +303,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		this.display();	
 	},
 	
-	defineVariableList: function()
+	defineVariableList: function(oTextArea)
 	{
 		var oVariableList	= 	$T.div({class: 'variables'},
 									$T.label({class: 'varLabel'}
@@ -274,9 +322,10 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		
 		for(var key in this._oVariables)
 		{
-			$T.span
+			
 			oLabel = $T.span({class:'varobject'});
 			oLabel.innerHTML = key;
+			
 			div.appendChild(oLabel);
 			var ul = $T.ul({class:'list'});
 			div.appendChild(ul);
@@ -284,6 +333,12 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 			{
 				var li = document.createElement('li');
 				 li.innerHTML = this._oVariables[key][i];
+				 oVariable = {
+								tag:  "<variable object = \""+key+"\" field = \"" + this._oVariables[key][i] + "\"/>",
+								text: " {" + key +"."+ this._oVariables[key][i]+"} "
+							}
+				 li.observe('mousedown', this._insertVariable.bindAsEventListener(this, oTextArea , this._oSubjectTextField.oControlOutput.oEdit, oVariable));
+				 
 				ul.appendChild(li);				
 			}		
 		}
@@ -306,7 +361,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	_htmlPreviewSelected: function(html)
 	{
 		this._oLoadingPopup.display();
-		var fnRequest     = jQuery.json.jsonFunction(this.successPreviewCallback.bind(this), this.errorCallback.bind(this), 'Email_Text_Editor', 'processHTML');
+		var fnRequest     = jQuery.json.jsonFunction(this.successPreviewCallback.bind(this), Popup_Email_Text_Editor.errorCallback.bind(this), 'Email_Text_Editor', 'processHTML');
 		fnRequest(this.oHTMLTextArea.value);	
 	},
 
@@ -329,7 +384,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	_generateTextButtonClick: function()
 	{
 		this._oLoadingPopup.display();
-		var fnRequest     = jQuery.json.jsonFunction(this.successToTextCallback.bind(this), this.errorCallback.bind(this), 'Email_Text_Editor', 'toText');
+		var fnRequest     = jQuery.json.jsonFunction(this.successToTextCallback.bind(this), Popup_Email_Text_Editor.errorCallback.bind(this), 'Email_Text_Editor', 'toText');
 		fnRequest(this.oHTMLTextArea.value);	
 	},	
 	
@@ -351,7 +406,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	_saveButtonClick: function()
 	{			
 		this._oLoadingPopup.display();
-		var fnRequest     = jQuery.json.jsonFunction(this._saveSuccess.bind(this), this.errorCallback.bind(this), 'Email_Text_Editor', 'save');
+		var fnRequest     = jQuery.json.jsonFunction(this._saveSuccess.bind(this), Popup_Email_Text_Editor.errorCallback.bind(this), 'Email_Text_Editor', 'save');
 		this._oTemplateDetails.email_text = this.oTextArea.value=='undefined'?'':this.oTextArea.value;
 		this._oTemplateDetails.email_html = this.oHTMLTextArea.value == 'undefined'?'':this.oHTMLTextArea.value;
 		this._oTemplateDetails.email_subject = this._oSubjectTextField.getElementValue()== 'undefined'?'':this._oSubjectTextField.getElementValue();
@@ -363,7 +418,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	_save: function (oResponse)
 	{		
 		this._oLoadingPopup.display();
-		var fnRequest     = jQuery.json.jsonFunction(this._saveSuccess.bind(this), this.errorCallback.bind(this), 'Email_Text_Editor', 'save');
+		var fnRequest     = jQuery.json.jsonFunction(this._saveSuccess.bind(this), Popup_Email_Text_Editor.errorCallback.bind(this), 'Email_Text_Editor', 'save');
 		fnRequest(oResponse, true);		
 	},
 	
@@ -399,16 +454,15 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		}	
 	},
 	
-	errorCallback: function()
-	{		  
-		Popup_Email_Text_Editor.serverErrorMessage.bind(this,"Ajax error. No details available", 'Email Template System Error')();
-	},
+	
 	
 });
 
 Popup_Email_Text_Editor.processError = function(oResponse)
 {
+
 	this._oLoadingPopup.hide();
+		
 	if (typeof oResponse.Summary != 'undefined')
 	{
 		Popup_Email_Text_Editor.userErrorMessage.bind(this,oResponse.Summary, oResponse.message,'Email Template Save Error', oResponse.LineNo)();
@@ -421,15 +475,14 @@ Popup_Email_Text_Editor.processError = function(oResponse)
 
 
 
-Popup_Email_Text_Editor.serverErrorMessage = function (sMessage,sTitle){
-
+Popup_Email_Text_Editor.serverErrorMessage = function (sMessage,sTitle)
+{
+	this._oLoadingPopup.hide();
 	var detailsDiv = document.createElement('div');
 	detailsDiv.innerHTML = sMessage;
 	detailsDiv.style.display = 'none';
 	detailsDiv.className = 'error-details';
-
 	var div = document.createElement('div');
-
 	div.observe('click', Popup_Email_Text_Editor._toggleErrorDetails.bind(this,detailsDiv));
 	div.innerHTML = "Error Details";
 	div.className = 'details-link';
@@ -437,37 +490,26 @@ Popup_Email_Text_Editor.serverErrorMessage = function (sMessage,sTitle){
 	containerDiv.innerHTML = "There was a server processing error. Please contact YBS for assistance.";
 	containerDiv.appendChild(div);
 	containerDiv.appendChild(detailsDiv);
-	containerDiv.className = "email-template-error";
-	
-	
+	containerDiv.className = "email-template-error";	
 	Reflex_Popup.alert(containerDiv, {sTitle: sTitle});
 };
 
-Popup_Email_Text_Editor.userErrorMessage = function (sSummary, sMessage,sTitle, iLineNumber){
+Popup_Email_Text_Editor.userErrorMessage = function (sSummary, sMessage,sTitle, iLineNumber)
+{
 
-	
-	//var detailsDiv = document.createElement('div');
-	//detailsDiv.innerHTML = sMessage;
-	//detailsDiv.style.display = 'none';
-	//detailsDiv.className = 'error-details';
 
-	//var div = document.createElement('div');
-
-	//div.observe('click', Popup_Email_Text_Editor._toggleErrorDetails.bind(this,detailsDiv));
-	//div.innerHTML = "Error Details";
-	//div.className = 'details-link';
 	var containerDiv = document.createElement('div');
 	containerDiv.innerHTML = sSummary; 
 	typeof iLineNumber!= 'undefined'?containerDiv.innerHTML =containerDiv.innerHTML + ' Line Number: ' + iLineNumber:null;
-	//containerDiv.appendChild(div);
-	//containerDiv.appendChild(detailsDiv);
 	containerDiv.className = "email-template-error";
-	
 	this._oLoadingPopup.hide();
 	Reflex_Popup.alert(containerDiv, {sTitle: sTitle});
 };
 
-
+Popup_Email_Text_Editor.errorCallback = function()
+{		  
+	Popup_Email_Text_Editor.serverErrorMessage.bind(this,"Ajax error. No details available", 'Email Template System Error')();
+};
 
 
 Popup_Email_Text_Editor._toggleErrorDetails = function (oDiv)
