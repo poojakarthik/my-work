@@ -7164,7 +7164,10 @@ div.popup-email-text-edit
 .popup-email-text-edit .variables
 {
 	text-align: left;
-	margin:10px;
+	margin-top:10px;
+	padding: 0.5em;
+	-moz-border-radius: 4px 4px 4px 4px;
+	border: 1px solid #000000;
 	
 }
 
@@ -7183,9 +7186,26 @@ div.popup-email-text-edit
 	
 }
 
+.popup-email-text-edit .variables ul>li
+{
+	cursor: pointer;
+	font-weight: normal;
+	padding: 2px;
+
+}
+
+.popup-email-text-edit .variables ul>li:hover
+{
+	-moz-border-radius: 4px 4px 4px 4px;
+	background-color: rgba(255, 255, 255, 0.8);
+border: 1px solid rgba(0, 0, 0, 0.6);
+font-weight: bold;
+}
+
 .popup-email-text-edit .variables .vars
 {	
 	text-align: left;
+	margin-top: 0.25em;
 }
 
 .popup-email-text-edit .variables .varLabel
@@ -7194,6 +7214,7 @@ div.popup-email-text-edit
 	margin-bottom: 2px;
 	font-size: 1.1em;
 	left: 0;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.6);
 }
 
 
@@ -7224,7 +7245,7 @@ div.popup-email-text-edit
 
 div.popup-email-text-edit table.input tbody tr th
 {
-	min-width:150px;
+	min-width:160px;
 }
 
 /************- END - Email Editor Popup - END - **********************************/
