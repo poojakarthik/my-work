@@ -343,7 +343,7 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 	_preview: function()
 	{
 		this._oLoadingPopup.display();
-		var fnRequest     = jQuery.json.jsonFunction(this.successPreviewCallback.bind(this), this.errorCallback.bind(this), 'Email_Text_Editor', 'processHTML');
+		var fnRequest     = jQuery.json.jsonFunction(this.successPreviewCallback.bind(this), Popup_Email_Text_Editor.errorCallback.bind(this), 'Email_Text_Editor', 'processHTML');
 		fnRequest(this._oData.oTemplateDetails.email_html);	
 	},
 	
@@ -403,7 +403,7 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 			// Make Request
 			var fnGetTemplates	=	jQuery.json.jsonFunction(
 										this.getFutureVersions.bind(this,fnCallback),
-										Popup_Email_Save_Confirm._ajaxError,
+										Popup_Email_Text_Editor.errorCallback.bind(this),
 										'Email_Text_Editor', 'getFutureVersions'
 									);
 			fnGetTemplates(this._oData.oTemplateDetails.email_template_id);
