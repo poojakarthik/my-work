@@ -180,6 +180,12 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 	
 	_create	: function()
 	{
+		if (!this._oSourceType)
+		{
+			Reflex_Popup.alert("Please choose a Correspondence Template.", {sTitle: 'Error', iWidth: 25});
+			return;
+		}
+		
 		switch (this._oSourceType.system_name)
 		{
 			case 'CSV':

@@ -5,17 +5,28 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 	{
 		$super(85);
 		
+		// Summary of the regenerated invoice
 		this._oNewInvoice				= oNewInvoice;
+		
+		// Summary of the original invoice
 		this._oOriginalInvoice			= oOriginalInvoice;
+		
+		// The debugging log information, optional
 		this._mDebugLog					= mDebugLog;
+		
+		// Stores info about toggleable rows
 		this._hToggleRows				= {};
+		
+		// Can an adjustment/ticket be added from this popup?
 		this._bAllowAdjustmentAndTicket	= (typeof bAllowAdjustmentAndTicket == 'undefined') ? true : !!bAllowAdjustmentAndTicket;
 		
+		// Create the interface
 		this._buildUI();
 	},
 	
 	// Public
 	
+	// Override
 	hide	: function($super)
 	{
 		$super();
@@ -24,6 +35,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 		delete Popup_Invoice_Rerate_Summary._hInstances[this._oOriginalInvoice.Id];
 	},
 	
+	// Override
 	display	: function($super)
 	{
 		$super();
@@ -36,6 +48,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 	
 	// Private
 	
+	// _buildUI: Creates the initial interface
 	_buildUI	: function()
 	{
 		// One main section which contains to invoice summarys, in a horizontal UL
@@ -47,8 +60,10 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 			)
 		);
 		
+		// The amount that the invoice totals differ, used when adding an adjustment
 		this._fAdjustmentAmount	= this._oNewInvoice.oSummaryData.fInvoiceTotal - this._oOriginalInvoice.oSummaryData.fInvoiceTotal;
 		
+		// Buttons, shown depending on the state of the popup
 		var oLogButton			= 	$T.button({class: 'icon-button'},
 										$T.img({src: Popup_Invoice_Rerate_Summary.VIEW_LOG_SRC}),
 										$T.span('View Log')
@@ -76,6 +91,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 										)
 									);
 		
+		// Cache references to these for use elsewhere
 		this.oAdjustmentButton	= oAdjustmentButton;
 		this.oTicketButton		= oTicketButton;
 		
@@ -101,6 +117,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 			}
 		}
 		
+		// Configure popup & display
 		this.setTitle('Rerate Invoice Complete');
 		this.addCloseButton();
 		this.setContent(this._oContent);
@@ -108,19 +125,26 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 		this._hideLoading();
 	},
 	
+	// _buildInvoiceSummary: Creates a table showing the invoice summary data.
 	_buildInvoiceSummary	: function(oInvoice, sTitle, oCompareTo)
 	{
+		// Create an object to store all comparable values, stored against 
+		// oInvoice to be accessible after this function returns
 		var oData	= {aServices: {}};
+		
+		// If given, this is a comparable values object created by the other summary 
 		oCompareTo	= (oCompareTo ? oCompareTo : {});
+		
+		// Create the table and tbody
 		var oTBody	= $T.tbody();
 		var oTable	= 	$T.table({class: 'invoice-summary'},
 							oTBody
 						);
 		
-		// Invoice title
+		// Invoice title row
 		var fInvoiceTotal	= parseFloat(oInvoice.Total) + parseFloat(oInvoice.Tax);
-		
 		oData.fInvoiceTotal	= fInvoiceTotal;
+		
 		var oPDFImage		= $T.img({class: 'pdf-link', src: '../admin/img/template/pdf_small.png', title: 'Download Invoice PDF', alt: 'Download Invoice PDF'});
 		oPDFImage.observe('click', this._downloadPDF.bind(this, oInvoice, false));
 		
@@ -136,7 +160,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 			)
 		);
 		
-		// New Charges
+		// New Charges row
 		var oNewChargesRow	= 	$T.tr({class: 'toggle-row new-charges'},
 									$T.td({class: 'padding-cell'}),
 									$T.td({colspan: 3, class: 'underline'},
@@ -146,7 +170,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 								);
 		oTBody.appendChild(oNewChargesRow);
 		
-		// Service data summary
+		// A set of rows for each service collapsable by the service (first) row
 		var fNewChargesTotal	= 0;
 		var iNewChargesRows		= 0;
 		for (var iId in oInvoice.service_totals)
@@ -190,6 +214,8 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 				// Rate plan is different for this service in this invoice summary
 				sRatePlanNameExtraClass	= ' different-rate-plan';
 			}
+			
+			// Service/Toggle row
 			var oToggleRow		= 	$T.tr({class: 'toggle-row service-item'},
 										$T.td({class: 'padding-cell'}),
 										$T.td({class: 'padding-cell'}),
@@ -207,6 +233,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 			this._registerToggleRow('service_' + iServiceId, oToggleRow, 5);
 			oTBody.appendChild(oToggleRow);
 			
+			// Other rows
 			var oUsageRow			= Popup_Invoice_Rerate_Summary._getServiceSummaryRow('Usage', fUsage, 'highlight subitem', 'highlight');
 			var oPlanChargesRow		= Popup_Invoice_Rerate_Summary._getServiceSummaryRow('Plan Charges', fPlanCharges, 'highlight subitem', 'highlight');
 			var oPlanCreditsRow		= Popup_Invoice_Rerate_Summary._getServiceSummaryRow('Plan Discounts', fPlanCredits, 'highlight subitem', 'highlight');
@@ -215,6 +242,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 			
 			if (oCompareTo && oCompareTo.aServices && oCompareTo.aServices[iServiceId])
 			{
+				// There is service data to compare to, show the differences
 				var oCompareService	= oCompareTo.aServices[iServiceId];
 				oToggleRow.appendChild			(Popup_Invoice_Rerate_Summary._getDifferenceTD(fDBServiceTotal, 			oCompareService.fDBServiceTotal));
 				oUsageRow.appendChild			(Popup_Invoice_Rerate_Summary._getDifferenceTD(fUsage, 						oCompareService.fUsage));
@@ -233,6 +261,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 			fNewChargesTotal	+= fCalcServiceTotal;
 			iNewChargesRows		+= 6;
 			
+			// Cache the comparable data for the service
 			oData.aServices[iServiceId]	=	{
 												fUsage						: fUsage,
 												fPlanCharges				: fPlanCharges,
@@ -244,7 +273,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 											};
 		}
 		
-		// Account level charges
+		// Account level charges row
 		oTBody.appendChild(
 			$T.tr(
 				$T.td({class: 'padding-cell'}),
@@ -261,7 +290,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 		fNewChargesTotal				+= parseFloat(oInvoice.account_charges_and_credits);
 		iNewChargesRows++;
 		
-		// Invoice GST
+		// Invoice GST row
 		oTBody.appendChild(
 			$T.tr(
 				$T.td({class: 'padding-cell'}),
@@ -279,7 +308,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 		fNewChargesTotal	+= parseFloat(oInvoice.charge_tax);
 		iNewChargesRows++;
 		
-		// Shared Plans
+		// Shared Plans rows, collapsable at the top (title) row
 		var fSharedPlans			= parseFloat(oInvoice.shared_plan_charges) + parseFloat(oInvoice.shared_plan_discounts);
 		oData.fSharedPlans			= fSharedPlans;
 		fNewChargesTotal			+= fSharedPlans;
@@ -314,14 +343,14 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 		
 		iNewChargesRows	+= 4;
 		
-		// New Charges amount
+		// New Charges row, collapses the service list, gst, account charges & shared plans
 		oData.fNewChargesTotal	= fNewChargesTotal;
 		oNewChargesRow.appendChild(Popup_Invoice_Rerate_Summary._getAmountTD(fNewChargesTotal, 'underline total'));
 		oNewChargesRow.appendChild(Popup_Invoice_Rerate_Summary._getNatureTD(fNewChargesTotal));
 		oNewChargesRow.appendChild(Popup_Invoice_Rerate_Summary._getDifferenceTD(fNewChargesTotal, oCompareTo.fNewChargesTotal));
 		this._registerToggleRow('new_charges', oNewChargesRow, iNewChargesRows);
 		
-		// Adjustments
+		// Adjustments row, collapsable on the title
 		var fAdjustments			= parseFloat(oInvoice.adjustment_total) + parseFloat(oInvoice.adjustment_tax);
 		oData.fAdjustments			= fAdjustments;
 		var oAdjustmentsToggleRow	= 	$T.tr({class: 'toggle-row'},
@@ -337,6 +366,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 		this._registerToggleRow('adjustments', oAdjustmentsToggleRow, 2);
 		oTBody.appendChild(oAdjustmentsToggleRow);
 		
+		// Adjustment Total row
 		oData.fAdjustmentTotal	= parseFloat(oInvoice.adjustment_total);
 		oTBody.appendChild(
 			$T.tr(
@@ -351,6 +381,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 			)
 		);
 		
+		// Adjustment Tax row
 		oData.fAdjustmentTax	= parseFloat(oInvoice.adjustment_tax);
 		oTBody.appendChild(
 			$T.tr(
@@ -365,11 +396,14 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 			)
 		);
 		
+		// Cache the comparable summary data
 		oInvoice.oSummaryData	= oData;
 		
+		// Return the table (so it can be attached to the dom)
 		return 	oTable;
 	},
 	
+	// _downloadPDF: Redirects to the Invoice/PDF Application handler which outputs the contents of the pdf
 	_downloadPDF	: function(oInvoice, bRedirectNow)
 	{
 		if (!bRedirectNow)
@@ -390,6 +424,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 							'&Month=' + (oCreatedOn.getMonth() + 1);
 	},
 	
+	// _doAddAdjustment: Click event handler for the 'Add Adjustment' button
 	_doAddAdjustment	: function()
 	{
 		if (Popup_Invoice_Rerate_Summary._hAdjustments[this._oNewInvoice.invoice_run_id])
@@ -401,6 +436,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 		this._addAdjustment(false);
 	},
 	
+	// _addAdjustment: 
 	_addAdjustment	: function(bForceIfNoDifference)
 	{
 		if ((this._fAdjustmentAmount >= Popup_Invoice_Rerate_Summary.MIN_ADJUSTMENT) && !bForceIfNoDifference)
@@ -448,6 +484,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 		Vixen.Popup.ShowAjaxPopup('AddAdjustmentPopupId', 'medium', 'Request Adjustment', 'Adjustment', 'Add', oData);
 	},
 	
+	// _showLoading: Shows a loading popup
 	_showLoading	: function()
 	{
 		if (!this._oLoading)
@@ -457,6 +494,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 		this._oLoading.display();
 	},
 	
+	// _showLoading: Hides the loading popup, if visible
 	_hideLoading	: function()
 	{
 		if (this._oLoading)
@@ -466,6 +504,8 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 		}
 	},
 	
+	// _registerToggleRow: 	Sets up the given row element, so that it will toggle the given number of rows below it.
+	//						Registers the row against the given id.
 	_registerToggleRow	: function(sId, oToggleRow, iRowsToToggle)
 	{
 		if (!this._hToggleRows[sId])
@@ -476,6 +516,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 		oToggleRow.observe('click', this._toggleRows.bind(this, sId));
 	},
 	
+	// _toggleRows: Activates the toggle row registered against the given id
 	_toggleRows	: function(sId)
 	{
 		var aRows			= this._hToggleRows[sId].aRows;
@@ -514,11 +555,14 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 		this._hToggleRows[sId].bVisible	= bVisible;
 	},
 	
+	// _toggleRows: Event handler for the 'View Log' buttons, shows a debug (textarea) popup containing the given text.
 	_showDebugLog	: function(sText)
 	{
 		Reflex_Popup.debug(sText);
 	},
 	
+	// _addTicket: 	Event handler for the 'Add Ticket' button, calls the static addTicket function if a ticket
+	//				has not already been added for the rerated invoice run id
 	_addTicket	: function()
 	{
 		var iRerateInvoiceRunId	= this._oNewInvoice.invoice_run_id;
@@ -540,16 +584,24 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 
 Object.extend(Popup_Invoice_Rerate_Summary,
 {
+	// Image sources
 	TOGGLE_CLOSED		: '../admin/img/template/tree_closed.png',
 	TOGGLE_OPEN			: '../admin/img/template/tree_open.png',
 	ADD_TICKET_SRC		: '../admin/img/template/ticket_add.png',
 	ADD_ADJUSTMENT_SRC	: '../admin/img/template/charge_add.png',
 	VIEW_LOG_SRC		: '../admin/img/template/view.png',
 	CLOSE_SRC			: '../admin/img/template/delete.png',
+	
+	// Minimum invoice total difference (credit) required for an adjustment addition to be allowed without warning
 	MIN_ADJUSTMENT		: -1,
 	
+	// Caches Popup_Invoice_Rerate_Summary instances (against the original invoice id tied to the popup)
 	_hInstances		: {},
+	
+	// Caches whether or not an adjustment has been added against an invoice run id (of a rerated invoices)
 	_hAdjustments	: {},
+	
+	// Caches whether or not a ticket has been added against an invoice run id (of a rerated invoices)
 	_hTickets		: {},
 	
 	// Public
@@ -599,6 +651,7 @@ Object.extend(Popup_Invoice_Rerate_Summary,
 	
 	// Private
 	
+	// _getAmountTD: Returns a TD element containing a formatted amount value given the raw amount
 	_getAmountTD	: function(mValue, sExtraClass)
 	{
 		// Parse and round to 2 decimal places
@@ -619,6 +672,7 @@ Object.extend(Popup_Invoice_Rerate_Summary,
 		}
 	},
 	
+	// _getAmountTD: Returns a TD element containing an amount nature value (credit or debit) given the raw amount
 	_getNatureTD	: function(mValue, sExtraClass)
 	{
 		// Parse and round to 2 decimal places
@@ -637,6 +691,7 @@ Object.extend(Popup_Invoice_Rerate_Summary,
 		}
 	},
 	
+	// _getServiceSummaryRow: Returns a service summary/title TR given the service name, amount & extra class names
 	_getServiceSummaryRow	: function(sName, mValue, sExtraClass, sAmountExtraClass)
 	{
 		var fValue	= Popup_Invoice_Rerate_Summary._getCurrency(mValue);
@@ -651,7 +706,7 @@ Object.extend(Popup_Invoice_Rerate_Summary,
 		
 		if (fValue < 0)
 		{
-			// Credit
+			// Service total is a Credit
 			oTR.appendChild(
 				$T.td({class: 'amount' + (sAmountExtraClass ? ' ' + sAmountExtraClass : '')},
 					'$' + Math.abs(fValue).toFixed(2)
@@ -666,7 +721,7 @@ Object.extend(Popup_Invoice_Rerate_Summary,
 		}
 		else
 		{
-			// Debit
+			// Service total is a Debit
 			oTR.appendChild(
 				$T.td({class: 'amount' + (sAmountExtraClass ? ' ' + sAmountExtraClass : '')},
 					'$' + fValue.toFixed(2)
@@ -681,6 +736,7 @@ Object.extend(Popup_Invoice_Rerate_Summary,
 		return oTR;
 	},
 	
+	// _getDifferenceTD: Returns a TD element, with the difference between the two values as a formatted amount
 	_getDifferenceTD	: function(mValue, mCompareTo)
 	{
 		if (typeof mCompareTo !== 'undefined')
@@ -710,6 +766,7 @@ Object.extend(Popup_Invoice_Rerate_Summary,
 		return $T.td();
 	},
 	
+	// _getCurrency: Returns the given value as a float, rounded to 2 decimal places
 	_getCurrency	: function(mValue)
 	{
 		var fValue	= parseFloat(mValue);
@@ -717,6 +774,7 @@ Object.extend(Popup_Invoice_Rerate_Summary,
 		return fValue;
 	},
 	
+	// _limitString: Limit the given string to the given limit, truncate & show '...' if the limit is exceeded
 	_limitString	: function(sValue, iLimit)
 	{
 		sValue		= ((sValue !== null) && (typeof sValue !== 'undefined') ? sValue : ''); 

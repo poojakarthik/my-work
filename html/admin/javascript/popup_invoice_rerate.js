@@ -183,6 +183,7 @@ var Popup_Invoice_Rerate	= Class.create(Reflex_Popup,
 		
 		this._hideLoading();
 		
+		// Configure popup & display
 		this.setTitle('Rerate Invoice: ' + this._iInvoiceId);
 		this.addCloseButton();
 		this.setContent(this._oContent);

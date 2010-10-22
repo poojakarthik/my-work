@@ -64,6 +64,7 @@ var Popup_Rate_Plan_Test	= Class.create(Reflex_Popup,
 								)
 							);
 		
+		// Configure popup & display
 		this.setContent(oContent);
 		this.setTitle('Test Rate Plan');
 		this.addCloseButton();
@@ -79,10 +80,13 @@ var Popup_Rate_Plan_Test	= Class.create(Reflex_Popup,
 	_rerate	: function()
 	{
 		var sInvoice	= this._oInvoicesField.value;
-		if (sInvoice && (sInvoice !== ''))
+		if (!sInvoice || (sInvoice !== ''))
 		{
-			new Popup_Invoice_Rerate(parseInt(sInvoice), this._oRatePlan.Id);
+			Reflex_Popup.alert('Please choose an invoice to rerate.', {iWidth: 25});
+			return;
 		}
+		
+		new Popup_Invoice_Rerate(parseInt(sInvoice), this._oRatePlan.Id);
 	},
 	
 	_doInvoiceSearch	: function(sAccount, oResponse)

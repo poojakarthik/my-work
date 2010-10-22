@@ -41,6 +41,7 @@ var Popup_Invoice_Rerate_Ticket	= Class.create(Reflex_Popup,
 			this.addCloseButton();
 		}
 		
+		// Configure popup & display
 		this.setTitle('Add Rerate Ticket');
 		this.setContent(this._oContent);
 		this.display();

@@ -114,6 +114,7 @@ Object.extend(Reflex_Popup, {
 		
 		oPopup.setContent(mContent);
 		oPopup.display();
+		oCloseButton.focus();
 	},
 	
 	yesNoCancel	: function(mContent, oConfig)

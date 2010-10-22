@@ -5,18 +5,31 @@ var Popup_Interim_First_Invoice_Commit_And_Send	= Class.create(Reflex_Popup,
 	{
 		$super(40);
 		
+		// Will store debug strings for each request made
 		this._aDebugInfo		= [];
+		
+		// Are we currently trying to commit/deliver an invoice run?
 		this._bProcessing		= false;
+		
+		// Maintains the commit status summary of each invoice run, contains:
+		// 	- bCommitAttempted		: have we tried to commit the run yet?
+		// 	- bCommitted			: has the run been commited?
+		// 	- bDeliverAttempted		: have we tried to deliver the run yet?
+		// 	- bDelivered 			: has the run been delivered?
+		// 	- oStatusElement		: status display element which the textual status is put in
 		this._hInvoiceRunStatus	= {};
 		
+		// Create the interface
 		this._buildUI();
 	},
 	
 	// Private
 	
+	// _buildUI: 	Creates the billing date selection field & the table to hold the invoice 
+	//				runs which were billed on that date. 
 	_buildUI	: function()
 	{
-		// Control field
+		// Invoice run billing date control field
 		var oDateSelect	= new Control_Field_Select();
 		oDateSelect.setPopulateFunction(Popup_Interim_First_Invoice_Commit_And_Send._getBillingDates);
 		oDateSelect.setEditable(true);
@@ -26,6 +39,7 @@ var Popup_Interim_First_Invoice_Commit_And_Send	= Class.create(Reflex_Popup,
 		oDateSelect.addOnChangeCallback(this._billingDateChanged.bind(this));
 		this._oDateSelect	= oDateSelect;
 		
+		// Section to contain the billing date select
 		var oBillingSection	= new Section(true);
 		oBillingSection.setTitleText('Billing Date');
 		oBillingSection.setContent(
@@ -37,6 +51,7 @@ var Popup_Interim_First_Invoice_Commit_And_Send	= Class.create(Reflex_Popup,
 			)
 		);
 		
+		// Section to contain the commit/deliver statuses for each invoice run
 		var oCommitSection	= new Section(true);
 		oCommitSection.setTitleText('Invoice Runs');
 		oCommitSection.setContent(
@@ -48,13 +63,18 @@ var Popup_Interim_First_Invoice_Commit_And_Send	= Class.create(Reflex_Popup,
 							$T.th('Status')
 						),
 						$T.tbody(
-							this._createNoRecordsRow()
+							$T.tr(
+								$T.td({class: 'no-rows', colspan: 2},
+									'No Billing Date selected'
+								)
+							)
 						)
 					)
 				)
 			)
 		);
 		
+		// The popup content
 		var oContent	= 	$T.div({class: 'popup-first-interim-invoice-commit-and-send'},
 								oBillingSection.getElement(),
 								oCommitSection.getElement(),
@@ -77,8 +97,10 @@ var Popup_Interim_First_Invoice_Commit_And_Send	= Class.create(Reflex_Popup,
 								)
 							);
 		
+		// Cache reference, for later use
 		this._oInvoiceRunsTBody	= oContent.select('tbody').first();
 		
+		// Cache reference to all of the buttons that need to be toggled
 		var oButtons	= oContent.select('button.icon-button');
 		this._oCommit	= oContent.select('button.icon-button')[0];
 		this._oRetry	= oContent.select('button.icon-button')[1];
@@ -86,74 +108,20 @@ var Popup_Interim_First_Invoice_Commit_And_Send	= Class.create(Reflex_Popup,
 		this._oCancel	= oContent.select('button.icon-button')[3];
 		this._oLog		= oContent.select('button.icon-button')[4];
 		
+		// Initial button states
 		this._oCommit.hide();
 		this._oRetry.hide();
 		this._oClose.hide();
 		this._oLog.hide();
 		
-		// Configure popup
+		// Configure popup & display
 		this.setContent(oContent);
 		this.addCloseButton();
 		this.setTitle('Commit and Send Interim Invoices');
 		this.display();
 	},
 	
-	_createNoRecordsRow	: function()
-	{
-		return	$T.tr(
-					$T.td({class: 'no-rows', colspan: 2},
-						'No Billing Date selected'
-					)
-				);
-	},
-	
-	_invoiceRunsLoaded	: function(oResponse)
-	{
-		this._oInvoiceRunsTBody.innerHTML	= '';
-		
-		// Add invoice runs to table
-		var oInvoiceRun	= null;
-		var oStatusTD	= null;
-		for (var iId in oResponse.aInvoiceRuns)
-		{
-			oInvoiceRun	= oResponse.aInvoiceRuns[iId];
-			oStatusTD	= $T.td(Popup_Interim_First_Invoice_Commit_And_Send.STATUS_UNCOMMITED);
-			this._oInvoiceRunsTBody.appendChild(
-				$T.tr(
-					$T.td(oInvoiceRun.customer_group_name),
-					oStatusTD
-				)
-			);
-			
-			this._hInvoiceRunStatus[iId]	=
-			{
-				bCommitAttempted	: false,
-				bCommitted			: false,
-				bDeliverAttempted	: false,
-				bDelivered			: false, 
-				oStatusElement		: oStatusTD
-			};
-		}
-		
-		this._oCommit.show();
-		
-		this._oLoading.hide();
-		delete this._oLoading;
-	},
-	
-	_getInvoiceRuns	: function(sBillingDate)
-	{
-		var fnGo	=	jQuery.json.jsonFunction(
-							this._invoiceRunsLoaded.bind(this), 
-							Popup_Interim_First_Invoice_Commit_And_Send._ajaxError, 
-							'Invoice_Interim', 
-							'getInvoiceRunsForBillingDate'
-						);
-		this._oLoading	= new Reflex_Popup.Loading('Getting List of Invoice Runs...');
-		this._oLoading.display();
-		fnGo(sBillingDate);
-	},
-	
+	// _billingDateChanged: Value change handler for the billing date field, invokes the fetching of invoice runs
 	_billingDateChanged	: function()
 	{
 		var sBillingDate	= this._oDateSelect.getElementValue();
@@ -165,20 +133,80 @@ var Popup_Interim_First_Invoice_Commit_And_Send	= Class.create(Reflex_Popup,
 		}
 	},
 	
-	_refreshPage	: function()
+	// _getInvoiceRuns:	Gets the invoice runs that were created on the billing date, 
+	//					json function to 'Invoice_Interim' json handler. Calls back to _invoiceRunsLoaded
+	_getInvoiceRuns	: function(sBillingDate)
 	{
-		window.location	= window.location;
+		var fnGo	=	jQuery.json.jsonFunction(
+							this._invoiceRunsLoaded.bind(this), 
+							Popup_Interim_First_Invoice_Commit_And_Send._ajaxError, 
+							'Invoice_Interim', 
+							'getInvoiceRunsForBillingDate'
+						);
+		
+		// Loading popup
+		this._oLoading	= new Reflex_Popup.Loading('Getting List of Invoice Runs...');
+		this._oLoading.display();
+		
+		fnGo(sBillingDate);
 	},
 	
+	// _invoiceRunsLoaded: 	Callback for the _getInvoiceRuns json function, populates the 'Invoice Runs' section
+	//						listing each and showing their status, starts at 'Uncommited' (STATUS_UNCOMMITED)
+	_invoiceRunsLoaded	: function(oResponse)
+	{
+		this._oInvoiceRunsTBody.innerHTML	= '';
+		
+		// Add invoice runs to table
+		var oInvoiceRun	= null;
+		var oStatusTD	= null;
+		for (var iId in oResponse.aInvoiceRuns)
+		{
+			oInvoiceRun	= oResponse.aInvoiceRuns[iId];
+			
+			// Add the row to represent the invoice run
+			oStatusTD	= $T.td(Popup_Interim_First_Invoice_Commit_And_Send.STATUS_UNCOMMITED);
+			this._oInvoiceRunsTBody.appendChild(
+				$T.tr(
+					$T.td(oInvoiceRun.customer_group_name),
+					oStatusTD
+				)
+			);
+			
+			// Cache the runs 'status' default summary
+			this._hInvoiceRunStatus[iId]	=
+			{
+				bCommitAttempted	: false,
+				bCommitted			: false,
+				bDeliverAttempted	: false,
+				bDelivered			: false, 
+				oStatusElement		: oStatusTD
+			};
+		}
+		
+		// Show the commit button
+		this._oCommit.show();
+		
+		// Kill the loading
+		this._oLoading.hide();
+		delete this._oLoading;
+	},
+	
+	// _doProcess: Kicks off commit/delivery of each invoice run
 	_doProcess	: function(oEvent)
 	{
 		if (!this._bProcessing)
 		{
+			// Not alreay processing, GO!
+			// Reset the debug strings array
 			this._aDebugInfo	= [];
 			
+			// Hide the commit & retry buttons
 			this._oCommit.hide();
 			this._oRetry.hide();
 			
+			// Reset the 'attempt' status of each invoice run so that ones that have 
+			// failed previously are tried again
 			for (var iId in this._hInvoiceRunStatus)
 			{
 				this._hInvoiceRunStatus[iId].bCommitAttempted	= false;
@@ -186,10 +214,15 @@ var Popup_Interim_First_Invoice_Commit_And_Send	= Class.create(Reflex_Popup,
 			}
 			
 			this._bProcessing	= true;
+			
+			// Process next available task
 			this._processNext();
 		}
 	},
 	
+	// _processNext: 	Does the next commmit/deliver in the 'queue' (not actually a queue). 
+	//					Commits all the invoice runs first then, if all committed the deliver all of the invoice runs.
+	//					If not all are commited & delivered, allow retry. 
 	_processNext	: function()
 	{
 		var oInvoiceRun		= null;
@@ -200,6 +233,10 @@ var Popup_Interim_First_Invoice_Commit_And_Send	= Class.create(Reflex_Popup,
 		{
 			oInvoiceRun		= this._hInvoiceRunStatus[iId];
 			bAllFinished	&= oInvoiceRun.bCommitted;
+			
+			// Only try and commit if the invoice run: 
+			// 	- has NOT been commit successfully and 
+			// 	- commit has NOT been attempted
 			if (!oInvoiceRun.bCommitted && !oInvoiceRun.bCommitAttempted)
 			{
 				oInvoiceRun.bCommitAttempted	= true;
@@ -213,6 +250,11 @@ var Popup_Interim_First_Invoice_Commit_And_Send	= Class.create(Reflex_Popup,
 		{
 			oInvoiceRun	= this._hInvoiceRunStatus[iId];
 			bAllFinished	&= oInvoiceRun.bDelivered;
+			
+			// Only try and deliver if the invoice run: 
+			// 	- has been commited and
+			// 	- has NOT been delivered successfully and 
+			// 	- deliver has NOT been attempted
 			if (oInvoiceRun.bCommitted && !oInvoiceRun.bDelivered && !oInvoiceRun.bDeliverAttempted)
 			{
 				this._deliver(iId);
@@ -222,69 +264,85 @@ var Popup_Interim_First_Invoice_Commit_And_Send	= Class.create(Reflex_Popup,
 		
 		if (bAllFinished)
 		{
+			// All have been commited & delivered, hide all buttons except the close button
 			this._oRetry.hide();
 			this._oCancel.hide();
 			this._oClose.show();
 		}
 		else
 		{
+			// Not all finished, a commit/delivery has failed. Show retry & cancel
 			this._oRetry.show();
 			this._oCancel.show();
 		}
 		
 		if (this._aDebugInfo.length)
 		{
+			// There is debugging info (should only happen for god users), show the log button 
 			this._oLog.show();
 		}
 		else
 		{
+			// No debugging info, hide the log button
 			this._oLog.hide();
 		}
 		
+		// No longer processing
 		this._bProcessing	= false;
 	},
 	
+	// _commit: Attempts to commit an invoice run. Once complete, updates the commit status of the invoice run
+	//			and calls _processNext
 	_commit	: function(iId, oResponse)
 	{
 		if (typeof oResponse == 'undefined')
 		{
+			// Make the request to commit the invoice run
 			var fnGo	=	jQuery.json.jsonFunction(
 								this._commit.bind(this, iId), 
 								Popup_Interim_First_Invoice_Commit_And_Send._ajaxError, 
 								'Invoice_Run', 
 								'commitInvoiceRun'
 							);
-			
 			fnGo(iId);
 			
+			// Update the commit attempted status and the status display element
 			this._hInvoiceRunStatus[iId].bCommitAttempted			= true;
 			this._hInvoiceRunStatus[iId].oStatusElement.innerHTML	= Popup_Interim_First_Invoice_Commit_And_Send.STATUS_PROCESSING;
 		}
 		else 
 		{
+			// Got a response
 			if (oResponse.bSuccess)
 			{
+				// Successful, update commited status
 				this._hInvoiceRunStatus[iId].bCommitted	= true;
 			}
 			else
 			{
+				// Failed, update commited status and the status display element
 				this._hInvoiceRunStatus[iId].bCommitted	= false;
 				this._hInvoiceRunStatus[iId].oStatusElement.innerHTML	= Popup_Interim_First_Invoice_Commit_And_Send.STATUS_FAILED_COMMIT;
 			}
 			
 			if (oResponse.sDebug)
 			{
+				// Debug info returned (should only be god users), cache it
 				this._aDebugInfo.push(oResponse.sDebug);
 			}
 			
+			// Do next commit/delivery
 			this._processNext();
 		}
 	},
 	
+	// _commit: Attempts to deliver an invoice run. Once complete, updates the delivery status of the invoice run
+	//			and calls _processNext
 	_deliver	: function(iId, oResponse)
 	{
 		if (typeof oResponse == 'undefined')
 		{
+			// Make the request to deliver the invoice run
 			var fnGo	=	jQuery.json.jsonFunction(
 								this._deliver.bind(this, iId), 
 								Popup_Interim_First_Invoice_Commit_And_Send._ajaxError, 
@@ -293,30 +351,37 @@ var Popup_Interim_First_Invoice_Commit_And_Send	= Class.create(Reflex_Popup,
 							);
 			fnGo(iId);
 			
+			// Update the commit attempted status (the status display element should already be STATUS_PROCESSING)
 			this._hInvoiceRunStatus[iId].bDeliverAttempted	= true;
 		}
 		else 
 		{
+			// Response
 			if (oResponse.bSuccess)
 			{
+				// Successful, update delivered status & the status display element (STATUS_SUCCESSFUL)
 				this._hInvoiceRunStatus[iId].bDelivered	= true;
 				this._hInvoiceRunStatus[iId].oStatusElement.innerHTML	= Popup_Interim_First_Invoice_Commit_And_Send.STATUS_SUCCESSFUL;
 			}
 			else
 			{
+				// Failed, update delivered status & the status display element (STATUS_FAILED_DELIVERY)
 				this._hInvoiceRunStatus[iId].bDelivered	= false;
 				this._hInvoiceRunStatus[iId].oStatusElement.innerHTML	= Popup_Interim_First_Invoice_Commit_And_Send.STATUS_FAILED_DELIVERY;
 			}
 			
 			if (oResponse.sDebug)
 			{
+				// Debug info returned (should only be god users), cache it
 				this._aDebugInfo.push(oResponse.sDebug);
 			}
 			
+			// Do next delivery
 			this._processNext();
 		}
 	},
 	
+	// _viewLog: Shows the cached debug log information in a popup (a debug popup which contains a text area)
 	_viewLog	: function()
 	{
 		Reflex_Popup.debug(this._aDebugInfo.join("\n= = = = = = = = = = = = =\n"));
@@ -327,12 +392,14 @@ var Popup_Interim_First_Invoice_Commit_And_Send	= Class.create(Reflex_Popup,
 
 Object.extend(Popup_Interim_First_Invoice_Commit_And_Send, 
 {
+	// Invoice Run Commit/Deliver Statuses, used for display
 	STATUS_UNCOMMITED		: 'Uncommited',
 	STATUS_PROCESSING		: 'Processing...',
 	STATUS_FAILED_COMMIT	: 'Failed to Commit',
 	STATUS_FAILED_DELIVERY	: 'Failed to Deliver',
 	STATUS_SUCCESSFUL		: 'Successful',
 	
+	// _getBillingDates: Gets the billing dates of non-commited INTERIM_FIRST invoice runs
 	_getBillingDates	: function(fnCallback, oResponse)
 	{
 		if (typeof oResponse == 'undefined')
@@ -366,6 +433,8 @@ Object.extend(Popup_Interim_First_Invoice_Commit_And_Send,
 		}
 	},
 
+	// _ajaxError: 	Called in the event that something went wrong with an ajax request, shows an error message
+	//				if returned in the response, failing that, a generic message is shown.
 	_ajaxError	: function(oResponse)
 	{
 		// Hide loading
@@ -379,14 +448,17 @@ Object.extend(Popup_Interim_First_Invoice_Commit_And_Send,
 		var sMessage	= null;
 		if (oResponse.sMessage)
 		{
+			// Error message returned by the json handler
 			sMessage	= oResponse.sMessage;
 		}
 		else if (oResponse.ERROR)
 		{
+			// Lower level ajax error
 			sMessage	= oResponse.ERROR;
 		}
 		else
 		{
+			// No error message returned, use generic one.
 			sMessage	= 'An error occured accessing the database. Please contact YBS for assistance.';
 		}
 		
