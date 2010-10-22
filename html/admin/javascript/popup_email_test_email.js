@@ -46,7 +46,7 @@ var  button = 	$T.button({class: 'icon-button'},
 							$T.img({src: Popup_Email_Text_Editor.EMAIL_IMAGE_SOURCE, alt: '', title: 'Send'+ sEmailType}),
 							$T.span('Send'+ sEmailType)																	
 							);
-button.observe('click', this._sendMail.bind(this));
+button.observe('click', this._sendMail.bind(this,null));
 		
 		var oContent 	= 	$T.div(	{class: 'popup-email-test'},
 											
@@ -84,7 +84,8 @@ button.observe('click', this._sendMail.bind(this));
 	_sendMail: function(oResponse)
 	{
 	
-		if (typeof oResponse == 'undefined' || typeof oResponse.Success == 'undefined')
+		debugger;
+		if (typeof oResponse == 'undefined' || oResponse == null)
 		{		
 			this._oLoadingPopup.display();
 			var aTo = [];
@@ -101,7 +102,7 @@ button.observe('click', this._sendMail.bind(this));
 							subject: sSubject + this._oData.subject,
 							to: aTo							
 						};
-			var fnRequest     = jQuery.json.jsonFunction(this._sendMail.bind(this), this._sendMail.bind(this), 'Email_Text_Editor', 'sendTestEmail');
+			var fnRequest     = jQuery.json.jsonFunction(this._sendMail.bind(this), Popup_Email_Text_Editor.errorCallback.bind(this), 'Email_Text_Editor', 'sendTestEmail');
 			fnRequest(oData);
 		}
 		else
