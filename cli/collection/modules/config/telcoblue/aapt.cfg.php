@@ -1,6 +1,6 @@
 <?php
 
-require_once("../../../../../flex.require.php");
+require_once(dirname(__FILE__)."/../../../../../flex.require.php");
 
 // File Types
 $aFileTypes	= array(
@@ -56,7 +56,7 @@ $aModuleConfig['FileDefine']		['Value']		= $aDirectories;
 $strOutputFile	= basename(__FILE__, '.cfg.php').'.serialised';
 @unlink($strOutputFile);
 
-if (file_put_contents($strOutputFile, serialize($aDirectories)))
+if (file_put_contents(dirname(__FILE__).'/'.$strOutputFile, serialize($aDirectories)))
 {
 	echo "\nSerialised Data successfully dumped to '$strOutputFile'.\n\n";
 }
