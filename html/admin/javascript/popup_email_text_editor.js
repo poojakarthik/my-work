@@ -123,7 +123,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		this._oSubjectTextField.addOnChangeCallback(this._oSubjectTextField.validate.bind(this._oSubjectTextField));
 		this._oSubjectTextField.setRenderMode(true);
 		this._oSubjectTextField.setElementValue(this._oTemplateDetails.email_subject);
-		debugger;
+		
 		this._oSubjectTextField.validate();
 		this._oSubjectTextField.oControlOutput.oEdit.isFocused=false;
 		this._oSubjectTextField.oControlOutput.oEdit.onfocus=function(){this.isFocused=true};

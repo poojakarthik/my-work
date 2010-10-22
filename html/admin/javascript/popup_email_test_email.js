@@ -84,7 +84,7 @@ button.observe('click', this._sendMail.bind(this,null));
 	_sendMail: function(oResponse)
 	{
 	
-		debugger;
+	
 		if (typeof oResponse == 'undefined' || oResponse == null)
 		{		
 			this._oLoadingPopup.display();
