@@ -321,7 +321,7 @@
 							// Additionally, it uses the RejectCode field
 							$iMCPCompletionCode	= ($iMCPRejectCode === null) ? self::MCP_COMPLETION_CODE_TRANSFER : $iMCPRejectCode;
 							
-							Flex::assert(isset(self::$_aMCPCompletionCodes[$iMCPLossCode]), "AAPT Daily Event File: Unhandled MCP Completion Code '{$iMCPLossCode}' (".self::$_aMCPCodes[$iMCPLossCode].")", print_r(array('PDR'=>$arrPDR,'Raw'=>$arrData), true));
+							Flex::assert(isset(self::$_aMCPCompletionCodes[$iMCPCompletionCode]), "AAPT Daily Event File: Unhandled MCP Completion Code '{$iMCPCompletionCode}' (".self::$_aMCPCompletionCodes[$iMCPCompletionCode].")", print_r(array('PDR'=>$arrPDR,'Raw'=>$arrData), true));
 							$arrPDR['request_status']	= REQUEST_STATUS_COMPLETED;
 							$arrPDR['Description']		= self::$_aMCPCompletionCodes[$iMCPCompletionCode];
 							break;
