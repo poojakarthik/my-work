@@ -62,7 +62,7 @@ class Email_Template_Details extends ORM_Cached
 				and ed.email_template_id = et.id
 				and ep.Id = ed.created_employee_id
 				and c.Id = et.customer_group_id
-				order by effective_datetime desc';
+				order by effective_datetime desc, end_datetime desc';
 		$oQuery	= new Query();
 		$mCustomerGroupResult	= $oQuery->Execute($sSql);
 		$aTemplateVersionDetails = array();
