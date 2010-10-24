@@ -499,6 +499,13 @@ class Cli_App_Rating extends Cli
 				self::ARG_DEFAULT		=> false,
 				self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
 			),*/
+		
+			self::SWITCH_INCLUDE_RERATE => array(
+				self::ARG_REQUIRED		=> false,
+				self::ARG_DESCRIPTION	=> "Includes CDRs marked for ReRating in the Rating Run",
+				self::ARG_DEFAULT		=> false,
+				self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
+			),
 			
 			self::SWITCH_COMPARISON_MODE => array(
 				self::ARG_REQUIRED		=> false,
