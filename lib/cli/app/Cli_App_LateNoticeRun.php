@@ -15,7 +15,7 @@ class Cli_App_LateNoticeRun extends Cli
 	
 	// If not null, this limits the number of notices to be generated per delivery method.
 	// i.e. if set to 1 then there will be 1 post & 1 email notice generated, then the process will stop
-	const TEST_LIMIT					= null;
+	const TEST_LIMIT					= 1;
 	
 	private $_sRunDateTime				= '';
 	private $_bTestRun					= true;
@@ -66,6 +66,7 @@ class Cli_App_LateNoticeRun extends Cli
 				catch (Exception $oException)
 				{
 					$this->log("WARNING: No email template for customer group '{$oCustomerGroup->internal_name}'. ".$oException->getMessage());
+					$aEmailTemplates[$oCustomerGroup->Id]	= false;
 				}
 			}
 			
@@ -414,6 +415,11 @@ class Cli_App_LateNoticeRun extends Cli
 									// Replace the recipient of the email if in Test Mode. Not really necessary now that the email_queue system is being
 									// used (and is not scheduled for delivery when in Test Mode), but a good fail safe when running in test mode.
 									$sTo	= $this->_bTestRun ? self::EMAIL_BILLING_NOTIFICATIONS : $sEmailFrom;
+									
+									if ($aEmailTemplates[$iCustGrp] === false)
+									{
+										throw new Exception("Cannot create an email for customer group {$sCustGroupName}, there is no template."); 
+									}
 									
 									// Create email object using Email Template
 									$oEmailTemplate	= 	$aEmailTemplates[$iCustGrp];
