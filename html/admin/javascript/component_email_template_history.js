@@ -99,12 +99,15 @@ var Component_Email_Template_History = Class.create(
 				if (this._aTableRows.length == 0)
 				{
 					var tr = document.createElement('tr');
+					tr.appendChild(document.createElement('td'));
 					var td = document.createElement('td');
 					var span = document.createElement('span');
 					span.className = 'no-versions';
-					span.innerHTML = this._aCancelledVersions.length==0?'There are no versions for this template':'There are only cancelled versions for this template. Check \'Show Cancelled Versions\' to display them';
+					span.innerHTML = 'There are no versions for this template';
 					td.appendChild(span);
-					tr.appendChild(td);					
+					
+					tr.appendChild(td);
+					tr.cancelled = false;					
 					this._aTableRows.push(tr);
 					
 				}
