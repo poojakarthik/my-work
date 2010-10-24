@@ -149,6 +149,37 @@ class Email_Template_Type extends ORM_Cached
 
 	public function getTemplateVersionDetailsForCustomerGroup($iCustomerGroup)
 	{
+
+		$sSql = 'SELECT id
+				 FROM email_template_type e';
+		$oTemplateTypeQuery = new Query();
+		$mResult = $oTemplateTypeQuery->Execute($sSql);
+		while ($aRow = $mResult->fetch_assoc())
+		{
+			try
+			{
+				Email_Template::getForCustomerGroupAndType($iCustomerGroup, $aRow[id]);
+			}
+			catch(Exception $e)
+			{
+				if (strstr($e->getMessage(), 'Failed to get Email_Template for customer group & type.'))
+				{
+					$oTemplate = new Email_Template();
+					$oTemplate->customer_group_id = $iCustomerGroup;
+					$oTemplate->email_template_type_id = $aRow[id];
+					$oTemplate->save();
+
+				}
+				else
+				{
+					throw $e;
+				}
+			}
+		}
+
+
+
+
 		$sSql = 'SELECT et.id,
 					e.name,
 					ed.effective_datetime,
