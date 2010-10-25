@@ -15,7 +15,7 @@ class Cli_App_LateNoticeRun extends Cli
 	
 	// If not null, this limits the number of notices to be generated per delivery method.
 	// i.e. if set to 1 then there will be 1 post & 1 email notice generated, then the process will stop
-	const TEST_LIMIT					= 1;
+	const TEST_LIMIT					= null;
 	
 	private $_sRunDateTime				= '';
 	private $_bTestRun					= true;
