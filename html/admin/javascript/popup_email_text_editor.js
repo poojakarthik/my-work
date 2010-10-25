@@ -309,7 +309,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 				 li.innerHTML = this._oVariables[key][i];
 				 oVariable = {
 								tag:  "<variable object = \""+key+"\" field = \"" + this._oVariables[key][i] + "\"/>",
-								text: " {" + key +"."+ this._oVariables[key][i]+"} "
+								text: "{" + key +"."+ this._oVariables[key][i]+"}"
 							}
 				 li.observe('mousedown', this._insertVariable.bindAsEventListener(this, oTextArea , this._oSubjectTextField.oControlOutput.oEdit, oVariable));
 				
@@ -333,10 +333,10 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 			var iScrollTop 	= activeElement.scrollTop;
 			var front = (activeElement.value).substring(0,pos);  
 			var back = (activeElement.value).substring(pos,activeElement.value.length); 
-			activeElement.value=front+" " + sVariable+ " "+back;
+			activeElement.value=front+sVariable+back;
 			
-			activeElement.selectionStart	= pos + sVariable.length+1;
-			activeElement.selectionEnd 		= pos + sVariable.length+1;
+			activeElement.selectionStart	= pos + sVariable.length;
+			activeElement.selectionEnd 		= pos + sVariable.length;
 			activeElement.scrollTop 		= iScrollTop;
 			activeElement.focus();
 			activeElement.isFocused = true;
