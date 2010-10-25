@@ -29,7 +29,7 @@ $arrConfig['Normalise']				= $arrSubscript;
 // Rating
 $arrSubscript = Array();
 $arrSubscript['Command']			= 'php rating.php';
-$arrSubscript['Directory']			= BACKEND_BASE_PATH.'rating/';
+$arrSubscript['Directory']			= BACKEND_BASE_PATH;
 $arrSubscript['ChildDie']			= TRUE;
 $arrConfig['Rate']					= $arrSubscript;
 
