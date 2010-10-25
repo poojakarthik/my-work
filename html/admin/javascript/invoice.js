@@ -465,6 +465,58 @@ var Invoice	= Class.create
 		document.getElementById('Invoice_Interim_EligibilityUpload_Cancel').addEventListener('click', oPopup.hide.bind(oPopup), false);
 	},
 	
+	// getInterimFirstInvoiceEligibilityReport:	Handles the confirmation, generation and download of the interim first invoice
+	//											eligibility report, ajax style.
+	getInterimFirstInvoiceEligibilityReport	: function(bSure, oResponse)
+	{
+		if (typeof bSure == 'undefined')
+		{
+			// Step 1: Confirm download
+			Reflex_Popup.yesNoCancel(
+				'Are you sure you want to download the Interim Invoice Eligibility Report?', 
+				{fnOnYes: Flex.Invoice.getInterimFirstInvoiceEligibilityReport.curry(true)}
+			);
+		}
+		else if (bSure && typeof oResponse == 'undefined')
+		{
+			// Step 2: Generate the report
+			// Show loading
+			Flex.Invoice._oLoading	= new Reflex_Popup.Loading('Generating the report...');
+			Flex.Invoice._oLoading.display();
+			
+			// Make the request
+			var fnCallback	= Flex.Invoice.getInterimFirstInvoiceEligibilityReport.curry(true);
+			var fnGetReport	= jQuery.json.jsonFunction(fnCallback, fnCallback, 'Invoice_Interim', 'generateEligibilityReport');
+			fnGetReport();
+		}
+		else
+		{
+			// Step 3: Show download link or error message.
+			// Hide loading
+			Flex.Invoice._oLoading.hide();
+			
+			// Finished
+			if (oResponse.bSuccess)
+			{
+				Reflex_Popup.alert(
+					$T.div({class: 'alert-content'},
+						$T.span("The report was generated successfully, click "),
+						$T.a({href: "reflex.php/Invoice/DownloadInterimInvoiceEligibility/" + oResponse.sFileName},
+							'here'
+						),
+						$T.span(" to download the report.")
+					),
+					{sTitle: 'Download Report'}
+				);
+			}
+			else
+			{
+				var sMessage	= (oResponse.sMessage ? oResponse.sMessage : 'An error occured accessing the database, please contact YBS');
+				Reflex_Popup.alert(sMessage, {sTitle: 'Error'});
+			}
+		}
+	},
+	
 	submitInterimInvoiceReport	: function(oPopup)
 	{
 		// Ensure that a File has been selected

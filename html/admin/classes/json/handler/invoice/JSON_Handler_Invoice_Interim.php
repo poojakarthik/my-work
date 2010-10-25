@@ -447,6 +447,42 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 		}
 	}
 	
+	public function generateEligibilityReport()
+	{
+		$bIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		try
+		{
+			$oCSVFile	= Invoice_Interim::generateEligibilityReport();
+			$sContents	= $oCSVFile->save();
+			$sFileName	= "interim-invoice-eligibility-report-".date("YmdHis").".csv";
+			$sFilePath	= FILES_BASE_PATH."temp/{$sFileName}";
+			
+			// Verify existence of temp directory
+			if (!file_exists(FILES_BASE_PATH."temp/"))
+			{
+				mkdir(FILES_BASE_PATH."temp/");
+			}
+			
+			if (@(bool)file_put_contents($sFilePath, $sContents) === false)
+			{
+				throw new Exception("An error occured creating the eligiblity report file.");
+			}
+			return	array(
+						'bSuccess' 	=> true,
+						'sFileName'	=> $sFileName,
+						'sDebug'	=> ($bIsGod ? $this->_JSONDebug : '')
+					);
+		}
+		catch (Exception $e)
+		{
+			return array(
+						'bSuccess'	=> false,
+						'sError'	=> ($bIsGod ? $e->getMessage() : ''),
+						'sDebug'	=> ($bIsGod ? $this->_JSONDebug : '')
+					);
+		}
+	}
+	
 	public function submitAllEligible()
 	{
 		$bIsGod	= Employee::getForId(Flex::getUserId())->isGod();

@@ -245,6 +245,19 @@ class Application_Handler_Invoice extends Application_Handler
 		exit;
 	}
 	
+	public function DownloadInterimInvoiceEligibility($subPath)
+	{
+		$sFileName	= $subPath[0];
+		$sFilePath	= FILES_BASE_PATH."temp/{$sFileName}";
+		if (file_exists($sFilePath))
+		{
+			header("Content-type: text/csv");
+			header("Content-Disposition: attachment; filename=\"{$sFileName}\"");
+			echo file_get_contents($sFilePath);
+			//exit;
+		}
+	}
+	
 	public function ActionInterimInvoicesReport($subPath)
 	{
 		$oResponse			= new stdClass();
