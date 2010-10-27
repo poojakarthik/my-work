@@ -194,7 +194,8 @@ class Application
 			// Payment Download has been moved to 2 data reports 'Payment Download' & 'Cheque Payment Download'
 			//ContextMenu()->Admin->PaymentDownload();
 
-			ContextMenu()->Admin->MoveDelinquentCDRs();
+			ContextMenu()->Admin->Delinquent_CDRs->MoveDelinquentCDRs();
+			ContextMenu()->Admin->Delinquent_CDRs->NewMoveDelinquentCDRs();
 			ContextMenu()->Admin->DataReports();
 
 			ContextMenu()->Admin->Employees->ManageEmployees();
@@ -445,7 +446,8 @@ class Application
 			// Payment Download has been moved to 2 data reports 'Payment Download' & 'Cheque Payment Download''. rmctainsh 20100415
 			//ContextMenu()->Admin->PaymentDownload();
 
-			ContextMenu()->Admin->MoveDelinquentCDRs();
+			ContextMenu()->Admin->Delinquent_CDRs->MoveDelinquentCDRs();
+			ContextMenu()->Admin->Delinquent_CDRs->NewMoveDelinquentCDRs();
 			ContextMenu()->Admin->DataReports();
 
 			ContextMenu()->Admin->Employees->ManageEmployees();
