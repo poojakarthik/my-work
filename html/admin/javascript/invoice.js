@@ -467,7 +467,7 @@ var Invoice	= Class.create
 	
 	// getInterimFirstInvoiceEligibilityReport:	Handles the confirmation, generation and download of the interim first invoice
 	//											eligibility report, ajax style.
-	getInterimFirstInvoiceEligibilityReport	: function(bSure, oResponse)
+	getInterimFirstInvoiceEligibilityReport	: function(bSure, oResponse, bViewLog)
 	{
 		if (typeof bSure == 'undefined')
 		{
@@ -498,16 +498,14 @@ var Invoice	= Class.create
 			// Finished
 			if (oResponse.bSuccess)
 			{
-				Reflex_Popup.alert(
-					$T.div({class: 'alert-content'},
-						$T.span("The report was generated successfully, click "),
-						$T.a({href: "reflex.php/Invoice/DownloadInterimInvoiceEligibility/" + oResponse.sFileName},
-							'here'
-						),
-						$T.span(" to download the report.")
-					),
-					{sTitle: 'Download Report'}
-				);
+				var oContent	= 	$T.div({class: 'alert-content'},
+										$T.span("The report was generated successfully, click "),
+										$T.a({href: "reflex.php/Invoice/DownloadInterimInvoiceEligibility/" + oResponse.sFileName},
+											'here'
+										),
+										$T.span(" to download the report.")
+									);
+				Reflex_Popup.alert(oContent, {sTitle: 'Download Report'});
 			}
 			else
 			{

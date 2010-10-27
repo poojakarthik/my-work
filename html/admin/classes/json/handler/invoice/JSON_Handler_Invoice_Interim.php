@@ -477,7 +477,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 		{
 			return array(
 						'bSuccess'	=> false,
-						'sError'	=> ($bIsGod ? $e->getMessage() : ''),
+						'sMessage'	=> ($bIsGod ? $e->getMessage() : ''),
 						'sDebug'	=> ($bIsGod ? $this->_JSONDebug : '')
 					);
 		}

@@ -254,8 +254,8 @@ class Application_Handler_Invoice extends Application_Handler
 			header("Content-type: text/csv");
 			header("Content-Disposition: attachment; filename=\"{$sFileName}\"");
 			echo file_get_contents($sFilePath);
-			//exit;
 		}
+		exit;
 	}
 	
 	public function ActionInterimInvoicesReport($subPath)

@@ -862,10 +862,66 @@ class Invoice_Interim
 		return $aChanges;
 	}
 	
-	// _getEligibleServices
 	private static function _getEligibleServices()
 	{
-		$qQuery	= new Query();
+		$iStart	= time();
+		$oQuery	= new Query();
+		
+		// part 1
+		$mResult	= $oQuery->Execute("	CREATE TEMPORARY TABLE service_status_count
+											(
+												account_id				BIGINT,
+												services_active			INT,
+												services_pending		INT,
+												shared_services_active	INT
+											)ENGINE=memory;");
+		if ($mResult === false)
+		{
+			throw new Exception("failed part 1. ".$oQuery->Error());
+		}
+		
+		$iPart1	= time();
+		Log::getLog()->log("Temp table created: ".($iPart1 - $iStart));
+		
+		// part 1a
+		$mResult	= $oQuery->Execute("ALTER TABLE service_status_count ADD INDEX (account_id);");
+		if ($mResult === false)
+		{
+			throw new Exception("failed part 1. ".$oQuery->Error());
+		}
+		
+		$iPart1a	= time();
+		Log::getLog()->log("Index added: ".($iPart1a - $iStart));
+		
+		// part 2
+		$mResult	= $oQuery->Execute("	INSERT INTO service_status_count (account_id, services_active, services_pending, shared_services_active)
+											SELECT		Service.Account AS account_id,
+														COUNT(IF(service_status.const_name = 'SERVICE_ACTIVE', Service.Id, NULL)) AS services_active,
+														COUNT(IF(service_status.const_name = 'SERVICE_PENDING', Service.Id, NULL)) AS services_pending,
+														COUNT(IF(RatePlan.Shared = 1 AND service_status.const_name = 'SERVICE_ACTIVE', Service.Id, NULL)) AS shared_services_active
+											FROM		Service
+														JOIN service_status ON (service_status.id = Service.Status)
+														JOIN ServiceRatePlan ON (Service.Id = ServiceRatePlan.Service AND NOW() BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime)
+														JOIN RatePlan ON (ServiceRatePlan.RatePlan = RatePlan.Id)
+											WHERE		ServiceRatePlan.Id =	(
+																					SELECT		Id
+																					FROM		ServiceRatePlan
+																					WHERE		NOW() BETWEEN StartDatetime AND EndDatetime
+																								AND Service = Service.Id
+																					ORDER BY	CreatedOn DESC
+																					LIMIT		1
+																				)
+											GROUP BY	Service.Account
+											HAVING		shared_services_active = 0
+														AND services_active > 0");
+		if ($mResult === false)
+		{
+			throw new Exception("failed part 2. ".$oQuery->Error());
+		}
+		
+		$iPart2	= time();
+		Log::getLog()->log("Temp table populated: ".($iPart2 - $iPart1));
+		
 		$sSQL	= "	SELECT		a.Id																											AS account_id,
 								a.BusinessName																									AS account_name,
 								dm.name																											AS delivery_method,
@@ -890,113 +946,161 @@ class Invoice_Interim
 								END																												AS invoice_from_date,
 								IF((rp.cdr_required = 1) AND (s.EarliestCDR IS NULL), 1, 0)														AS requires_tolling,	/* Has not tolled and requires tolling */
 								IF(service_status_count.services_active = service_status_count.services_pending, 1, 0)							AS has_pending_services,	/* The number of active services doesn't equal the number of active + number of pending services */
-								cg.Id																											AS customer_group
+								cg.Id																											AS customer_group,
+								ir_last.Id																										AS last_invoice_run
 					FROM		Account a
-								JOIN account_status a_s ON (a.Archived = a_s.id)
+								JOIN account_status a_s ON (
+									a.Archived = a_s.id
+									AND	a_s.const_name = 'ACCOUNT_STATUS_ACTIVE'
+								)
 								JOIN delivery_method dm ON (dm.id = a.BillingMethod)
 								JOIN CustomerGroup cg ON (a.CustomerGroup = cg.Id)
 								JOIN payment_terms pt ON (cg.Id = pt.customer_group_id)
-								JOIN
-								(
-									SELECT		Service.Account																						AS account_id,
-												COUNT(IF(service_status.const_name = 'SERVICE_ACTIVE', Service.Id, NULL))							AS services_active,
-												COUNT(IF(service_status.const_name = 'SERVICE_PENDING', Service.Id, NULL))							AS services_pending,
-												COUNT(IF(RatePlan.Shared = 1 AND service_status.const_name = 'SERVICE_ACTIVE', Service.Id, NULL))	AS shared_services_active
-									FROM		Service
-												JOIN service_status ON (service_status.id = Service.Status)
-												JOIN ServiceRatePlan ON (Service.Id = ServiceRatePlan.Service AND NOW() BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime)
-												JOIN RatePlan ON (ServiceRatePlan.RatePlan = RatePlan.Id)
-									WHERE		ServiceRatePlan.Id =	(
-																			SELECT		Id
-																			FROM		ServiceRatePlan
-																			WHERE		NOW() BETWEEN StartDatetime AND EndDatetime
-																						AND Service = Service.Id
-																			ORDER BY	CreatedOn DESC
-																			LIMIT		1
-																		)
-									GROUP BY	Service.Account
-									HAVING		shared_services_active = 0
-												AND services_active > 0
-								) service_status_count ON (a.Id = service_status_count.account_id)
+								JOIN service_status_count ON (a.Id = service_status_count.account_id)
 								JOIN Service s ON (a.Id = s.Account)
-								JOIN service_status ss ON (s.Status = ss.id)
-								JOIN ServiceRatePlan srp ON (srp.Service = s.Id AND NOW() BETWEEN srp.StartDatetime AND srp.EndDatetime)
+								JOIN service_status ss ON (
+									s.Status = ss.id
+									AND	ss.const_name IN ('SERVICE_ACTIVE')
+								)
+								JOIN ServiceRatePlan srp ON (
+									srp.Service = s.Id 
+									AND NOW() BETWEEN srp.StartDatetime AND srp.EndDatetime
+									AND srp.Id = (
+										SELECT		Id
+										FROM		ServiceRatePlan
+										WHERE		Service = s.Id
+													AND NOW() BETWEEN StartDatetime AND EndDatetime
+										ORDER BY	CreatedOn DESC
+										LIMIT		1
+									)
+								)
 								JOIN RatePlan rp ON (srp.RatePlan = rp.Id)
 								LEFT JOIN
 								(
 									Invoice i_last
 									JOIN InvoiceRun ir_last ON (i_last.invoice_run_id = ir_last.Id)
-									JOIN invoice_run_type irt_last ON (irt_last.id = ir_last.invoice_run_type_id AND irt_last.const_name NOT IN ('INVOICE_RUN_TYPE_INTERNAL_SAMPLES', 'INVOICE_RUN_TYPE_SAMPLES'))
-								) ON (a.Id = i_last.Account)
-					
-					WHERE		(
-									ir_last.Id IS NULL
-									OR
+									JOIN invoice_run_type irt_last ON 
 									(
-										ir_last.Id =	(
-															SELECT		InvoiceRun.Id
-															FROM		InvoiceRun
-																		JOIN invoice_run_type ON (invoice_run_type.id = InvoiceRun.invoice_run_type_id)
-																		JOIN Invoice ON (InvoiceRun.Id = Invoice.invoice_run_id)
-															WHERE		Invoice.Account = a.Id
-																		AND invoice_run_type.const_name NOT IN ('INVOICE_RUN_TYPE_INTERNAL_SAMPLES', 'INVOICE_RUN_TYPE_SAMPLES')
-															ORDER BY	Invoice.CreatedOn DESC
-															LIMIT		1
-														)
+										irt_last.id = ir_last.invoice_run_type_id
+										AND irt_last.const_name NOT IN ('INVOICE_RUN_TYPE_INTERNAL_SAMPLES', 'INVOICE_RUN_TYPE_SAMPLES')
 										AND irt_last.const_name NOT IN ('INVOICE_RUN_TYPE_INTERIM', 'INVOICE_RUN_TYPE_FINAL', 'INVOICE_RUN_TYPE_INTERIM_FIRST')
-										AND	(
-												SELECT		COUNT(c.Id)
-												FROM		Charge c
-															JOIN InvoiceRun ir_charge ON (ir_charge.Id = c.invoice_run_id)
-															JOIN invoice_run_type irt_charge ON (ir_charge.invoice_run_type_id = irt_charge.id AND irt_charge.const_name NOT IN ('INVOICE_RUN_TYPE_INTERNAL_SAMPLES', 'INVOICE_RUN_TYPE_SAMPLES'))
-												WHERE		c.Account = a.Id
-															AND c.ChargeType IN ('PCAD', 'PCAR')
-												LIMIT		1
-											) = 0
-										AND	(
-												SELECT		COUNT(stt.Id)
-												FROM		ServiceTypeTotal stt
-															JOIN InvoiceRun ir_cdr ON (ir_cdr.Id = stt.invoice_run_id)
-															JOIN invoice_run_type irt_cdr ON (ir_cdr.invoice_run_type_id = irt_cdr.id AND irt_cdr.const_name NOT IN ('INVOICE_RUN_TYPE_INTERNAL_SAMPLES', 'INVOICE_RUN_TYPE_SAMPLES'))
-															JOIN RecordType rt ON (stt.RecordType = rt.Id)
-												WHERE		stt.Account = a.Id
-															AND rt.Code IN ('S&E')
-															AND stt.Records > 0
-												LIMIT		1
-											) = 0
-										AND (SELECT COUNT(Invoice.Id) FROM Invoice WHERE Invoice.Account = a.Id AND Status NOT IN (100)) <= 3
 									)
-								)
-								AND ss.const_name IN ('SERVICE_ACTIVE')
-								AND a_s.const_name = 'ACCOUNT_STATUS_ACTIVE'
-								AND srp.Id =	(
-													SELECT		Id
-													FROM		ServiceRatePlan
-													WHERE		Service = s.Id
-																AND NOW() BETWEEN StartDatetime AND EndDatetime
-													ORDER BY	CreatedOn DESC
-													LIMIT		1
-												)
-					
+								) ON (a.Id = i_last.Account)
 					HAVING		next_invoice_date >= ADDDATE(CURDATE(), INTERVAL 7 DAY)
-								AND services_active > 0
-								
-					
-					ORDER BY	account_id,
-								service_id";
+								AND services_active > 0";
 		
 		// Run Query
-		$rResult	= $qQuery->Execute($sSQL);
+		$rResult	= $oQuery->Execute($sSQL);
 		if ($rResult === false)
 		{
-			throw new Exception($qQuery->Error());
+			throw new Exception($oQuery->Error());
 		}
 		
+		$iPart3	= time();
+		Log::getLog()->log("Select executed : ".($iPart3 - $iPart2));
+		
 		// Build list of services & accounts
-		$aServices	= array();
-		$aAccounts	= array();
+		$aServices				= array();
+		$aAccounts				= array();
+		$iInvoiceRunCheck		= 0;
+		$iChargeCheck			= 0;
+		$iServiceTypeTotalCheck	= 0;
+		$iInvoiceCheck			= 0;
+		$iNoLastInvoiceRun		= 0;
 		while ($aService = $rResult->fetch_assoc())
 		{
+			if ($aService['last_invoice_run'] !== null)
+			{
+				// Check that the last invoice run is the latest for the account and was not a 'INVOICE_RUN_TYPE_INTERNAL_SAMPLES' or 'INVOICE_RUN_TYPE_SAMPLES'
+				$mResult	= $oQuery->Execute("	SELECT		InvoiceRun.Id
+													FROM		InvoiceRun
+																JOIN invoice_run_type ON (invoice_run_type.id = InvoiceRun.invoice_run_type_id)
+																JOIN Invoice ON (InvoiceRun.Id = Invoice.invoice_run_id)
+													WHERE		Invoice.Account = {$aService['account_id']}
+																AND invoice_run_type.const_name NOT IN ('INVOICE_RUN_TYPE_INTERNAL_SAMPLES', 'INVOICE_RUN_TYPE_SAMPLES')
+													ORDER BY	Invoice.CreatedOn DESC
+													LIMIT		1");
+				if ($mResult === false)
+				{
+					throw new Exception("Failed loop check 0. ".$oQuery->Error());
+				}
+				
+				$aIR	= $mResult->fetch_assoc();
+				if (!$aIR || $aIR['Id'] != $aService['last_invoice_run'])
+				{
+					// Skip this service
+					$iInvoiceRunCheck++;
+					continue;
+				}
+				
+				// Check that the number of (non samples) plan charges for the account is 0
+				$mResult	= $oQuery->Execute("	SELECT		COUNT(c.Id) as count
+													FROM		Charge c
+																JOIN InvoiceRun ir_charge ON (ir_charge.Id = c.invoice_run_id)
+																JOIN invoice_run_type irt_charge ON (ir_charge.invoice_run_type_id = irt_charge.id AND irt_charge.const_name NOT IN ('INVOICE_RUN_TYPE_INTERNAL_SAMPLES', 'INVOICE_RUN_TYPE_SAMPLES'))
+													WHERE		c.Account = {$aService['account_id']}
+																AND c.ChargeType IN ('PCAD', 'PCAR')
+													LIMIT		1");
+				if ($mResult === false)
+				{
+					throw new Exception("Failed loop check 1. ".$oQuery->Error());
+				}
+				
+				$aCount	= $mResult->fetch_assoc();
+				if (!$aCount || $aCount['count'] != 0)
+				{
+					// Skip this service
+					$iChargeCheck++;
+					continue;
+				}
+				
+				// Check that the number of (non samples) S&E (service and equipment) service type total records for the account is 0
+				$mResult	= $oQuery->Execute("	SELECT		COUNT(stt.Id) as count
+													FROM		ServiceTypeTotal stt
+																JOIN InvoiceRun ir_cdr ON (ir_cdr.Id = stt.invoice_run_id)
+																JOIN invoice_run_type irt_cdr ON (ir_cdr.invoice_run_type_id = irt_cdr.id AND irt_cdr.const_name NOT IN ('INVOICE_RUN_TYPE_INTERNAL_SAMPLES', 'INVOICE_RUN_TYPE_SAMPLES'))
+																JOIN RecordType rt ON (stt.RecordType = rt.Id)
+													WHERE		stt.Account = {$aService['account_id']}
+																AND rt.Code IN ('S&E')
+																AND stt.Records > 0
+													LIMIT		1");
+				if ($mResult === false)
+				{
+					throw new Exception("Failed loop check 2. ".$oQuery->Error());
+				}
+				
+				$aCount	= $mResult->fetch_assoc();
+				if (!$aCount || $aCount['count'] != 0)
+				{
+					// Skip this service
+					$iServiceTypeTotalCheck++;
+					continue;
+				}
+				
+				// Check that there is 3 or less past invoices which are NOT temporary
+				$mResult	= $oQuery->Execute("	SELECT 	COUNT(Invoice.Id) 
+													FROM 	Invoice 
+													WHERE 	Invoice.Account = {$aService['account_id']}
+													AND 	Status NOT IN (100)");
+				if ($mResult === false)
+				{
+					throw new Exception("Failed loop check 3. ".$oQuery->Error());
+				}
+				
+				$aCount	= $mResult->fetch_assoc();
+				if (!$aCount || $aCount['count'] > 3)
+				{
+					// Skip this service
+					$iInvoiceCheck++;
+					continue;
+				}
+			}
+			else
+			{
+				// No last invoice run
+				$iNoLastInvoiceRun++;
+			}
+			
 			$aService['aCharges']	= self::_calculateInterimInvoiceCharges($aService);
 			if (!array_key_exists($aService['account_id'], $aAccounts))
 			{
@@ -1020,6 +1124,15 @@ class Invoice_Interim
 			}
 		}
 		
+		$iPart4	= time();
+		Log::getLog()->log("First loop : ".($iPart4 - $iPart3));
+		Log::getLog()->log("Skipped:");
+		Log::getLog()->log("\tInvoice Run: {$iInvoiceRunCheck}");
+		Log::getLog()->log("\tCharge: {$iChargeCheck}");
+		Log::getLog()->log("\tServiceTypeTotal: {$iServiceTypeTotalCheck}");
+		Log::getLog()->log("\tInvoice: {$iInvoiceCheck}");
+		Log::getLog()->log("No last invoice run: {$iNoLastInvoiceRun}");
+		
 		// Check Account-level Eligibility
 		foreach ($aAccounts as $iAccount=>$aAccount)
 		{
@@ -1032,6 +1145,9 @@ class Invoice_Interim
 				}
 			}
 		}
+		
+		$iEnd	= time();
+		Log::getLog()->log("Finished : ".($iEnd - $iStart)." (Total)");
 		
 		return $aServices;
 	}
