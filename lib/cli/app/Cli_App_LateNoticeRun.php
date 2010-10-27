@@ -414,7 +414,7 @@ class Cli_App_LateNoticeRun extends Cli
 									
 									// Replace the recipient of the email if in Test Mode. Not really necessary now that the email_queue system is being
 									// used (and is not scheduled for delivery when in Test Mode), but a good fail safe when running in test mode.
-									$sTo	= $this->_bTestRun ? self::EMAIL_BILLING_NOTIFICATIONS : $sEmailFrom;
+									$sTo	= $this->_bTestRun ? self::EMAIL_BILLING_NOTIFICATIONS : $sEmailTo;
 									
 									if ($aEmailTemplates[$iCustGrp] === false)
 									{
