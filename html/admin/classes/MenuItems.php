@@ -3374,6 +3374,13 @@ class MenuItems {
 		return self :: NEW_FRAMEWORK . "flex.php/Misc/MoveDelinquentCDRs/";
 	}
 
+	function NewMoveDelinquentCDRs()
+	{
+		$this->strContextMenuLabel = "New Delinquent CDRs";
+		$this->strLabel = "New Delinquent CDRs";
+		return self :: NEW_FRAMEWORK . "reflex.php/CDR/MoveDelinquentCDRs/";
+	}
+
 	//------------------------------------------------------------------------//
 	// DataReports
 	//------------------------------------------------------------------------//
