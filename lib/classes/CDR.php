@@ -160,6 +160,32 @@ class CDR extends ORM_Cached
 		}
 	}
 	
+	// writeOff: If delinquent, sets the status of the cdr and creates a cdr_delinquent_writeoff record
+	public function writeOff()
+	{
+		Log::getLog()->log("Writing off CDR {$this->Id}");
+		
+		// Very that we're a delinquent
+		if ($this->Status !== CDR_BAD_OWNER)
+		{
+			$sStatus	= Constant_Group::getConstantGroup('CDR')->getConstantName($this->Status);
+			throw new Exception("Failed to write of CDR ({$this->Id}), not a delinquent. Status is {$sStatus}");
+		}
+		
+		Log::getLog()->log("... is delinquent, updating status");
+		
+		// Update status
+		$this->Status	= CDR_DELINQUENT_WRITTEN_OFF;
+		$this->save();
+		
+		Log::getLog()->log("... status updated, create cdr_delinquent_writeoff record");
+		
+		// Create cdr_delinquent_writeoff record
+		$oLog	= CDR_Delinquent_WriteOff::createForCDR($this);
+		
+		Log::getLog()->log("CDR {$this->Id} written off");
+	}
+	
 	/**
 	 * getForInvoice
 	 *

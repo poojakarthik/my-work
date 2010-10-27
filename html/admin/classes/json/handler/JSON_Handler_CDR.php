@@ -1,6 +1,6 @@
 <?php
 
-class JSON_Handler_FollowUp extends JSON_Handler
+class JSON_Handler_CDR extends JSON_Handler
 {
 	protected	$_JSONDebug	= '';
 
@@ -240,9 +240,43 @@ class JSON_Handler_FollowUp extends JSON_Handler
 		return TRUE;
 	}
 
-
-
-
+	// writeOffDelinquentCDRs: Given id (or array of ids) writes off each, will fail if any aren't delinquent.
+	public function writeOffDelinquentCDRs($mCDRId)
+	{
+		$bIsGod	= Employee::getForId(Flex::getUserId());
+		try
+		{
+			// Create array of ids
+			if (!is_array($mCDRId))
+			{
+				$aCDRIds	= array($mCDRId);
+			}
+			else
+			{
+				$aCDRIds	= $mCDRId;
+			}
+			
+			// Write off each cdr
+			foreach ($aCDRIds as $iId)
+			{
+				$oCDR	= CDR::getForId($iId);
+				$oCDR->writeOff();
+			}
+			
+			return	array(
+						'bSuccess'	=> true,
+						'sDebug'	=> ($bIsGod ? $this->_JSONDebug : '')
+					);
+		}
+		catch (Exception $oException)
+		{
+			return	array(
+						'bSuccess'	=> false,
+						'sMessage'	=> ($bIsGod ? $oException->getMessage() : 'There was an error accessing the database, please contact YBS for assistance'),
+						'sDebug'	=> ($bIsGod ? $this->_JSONDebug : '')
+					);
+		}
+	}
 }
 
 class JSON_Handler_CDR_Exception extends Exception
