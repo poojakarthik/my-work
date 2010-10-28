@@ -977,7 +977,8 @@ class Invoice_Interim
 								IF((rp.cdr_required = 1) AND (s.EarliestCDR IS NULL), 1, 0)														AS requires_tolling,	/* Has not tolled and requires tolling */
 								IF(service_status_count.services_active = service_status_count.services_pending, 1, 0)							AS has_pending_services,	/* The number of active services doesn't equal the number of active + number of pending services */
 								cg.Id																											AS customer_group,
-								ir_last.Id																										AS last_invoice_run
+								ir_last.Id																										AS last_invoice_run,
+								irt_last.const_name																								AS last_invoice_run_type_name
 					FROM		Account a
 								JOIN account_status a_s ON (
 									a.Archived = a_s.id
@@ -1013,7 +1014,6 @@ class Invoice_Interim
 									(
 										irt_last.id = ir_last.invoice_run_type_id
 										AND irt_last.const_name NOT IN ('INVOICE_RUN_TYPE_INTERNAL_SAMPLES', 'INVOICE_RUN_TYPE_SAMPLES')
-										AND irt_last.const_name NOT IN ('INVOICE_RUN_TYPE_INTERIM', 'INVOICE_RUN_TYPE_FINAL', 'INVOICE_RUN_TYPE_INTERIM_FIRST')
 									)
 								) ON (a.Id = i_last.Account)
 					HAVING		next_invoice_date >= ADDDATE(CURDATE(), INTERVAL 7 DAY)
@@ -1033,6 +1033,7 @@ class Invoice_Interim
 		$aServices				= array();
 		$aAccounts				= array();
 		$iInvoiceRunCheck		= 0;
+		$iInvoiceRunTypeCheck	= 0;
 		$iChargeCheck			= 0;
 		$iServiceTypeTotalCheck	= 0;
 		$iInvoiceCheck			= 0;
@@ -1060,6 +1061,14 @@ class Invoice_Interim
 				{
 					// Skip this service
 					$iInvoiceRunCheck++;
+					continue;
+				}
+				
+				// Check that the invoice_run_type of the last invoice run is NOT interim, final or interim first.
+				if (in_array($aService['last_invoice_run_type_name'], array('INVOICE_RUN_TYPE_INTERIM', 'INVOICE_RUN_TYPE_FINAL', 'INVOICE_RUN_TYPE_INTERIM_FIRST')))
+				{
+					// Skip this service
+					$iInvoiceRunTypeCheck++;
 					continue;
 				}
 				
@@ -1157,10 +1166,11 @@ class Invoice_Interim
 		$iPart4	= time();
 		Log::getLog()->log("First loop : ".($iPart4 - $iPart3));
 		Log::getLog()->log("Skipped:");
-		Log::getLog()->log("\tInvoice Run: {$iInvoiceRunCheck}");
-		Log::getLog()->log("\tCharge: {$iChargeCheck}");
-		Log::getLog()->log("\tServiceTypeTotal: {$iServiceTypeTotalCheck}");
-		Log::getLog()->log("\tInvoice: {$iInvoiceCheck}");
+		Log::getLog()->log("\tInvoice Run check: {$iInvoiceRunCheck}");
+		Log::getLog()->log("\tInvoice Run Type check: {$iInvoiceRunTypeCheck}");
+		Log::getLog()->log("\tCharge check: {$iChargeCheck}");
+		Log::getLog()->log("\tS&E ServiceTypeTotal check: {$iServiceTypeTotalCheck}");
+		Log::getLog()->log("\tInvoice Count check: {$iInvoiceCheck}");
 		Log::getLog()->log("No last invoice run: {$iNoLastInvoiceRun}");
 		
 		// Check Account-level Eligibility
