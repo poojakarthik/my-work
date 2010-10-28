@@ -80,7 +80,7 @@ var Popup_Rate_Plan_Test	= Class.create(Reflex_Popup,
 	_rerate	: function()
 	{
 		var sInvoice	= this._oInvoicesField.value;
-		if (!sInvoice || (sInvoice !== ''))
+		if (!sInvoice || (sInvoice == ''))
 		{
 			Reflex_Popup.alert('Please choose an invoice to rerate.', {iWidth: 25});
 			return;
