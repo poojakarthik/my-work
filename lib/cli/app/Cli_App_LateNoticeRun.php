@@ -412,10 +412,6 @@ class Cli_App_LateNoticeRun extends Cli
 									$sEmailFrom = $aDetails['Account']['EmailFrom'];
 									$sName 		= trim($aDetails['Account']['FirstName']);
 									
-									// Replace the recipient of the email if in Test Mode. Not really necessary now that the email_queue system is being
-									// used (and is not scheduled for delivery when in Test Mode), but a good fail safe when running in test mode.
-									$sTo	= $this->_bTestRun ? self::EMAIL_BILLING_NOTIFICATIONS : $sEmailTo;
-									
 									if ($aEmailTemplates[$iCustGrp] === false)
 									{
 										throw new Exception("Cannot create an email for customer group {$sCustGroupName}, there is no template."); 
@@ -434,12 +430,15 @@ class Cli_App_LateNoticeRun extends Cli
 									
 									// Set the sender, recipient & attachment of the email
 									$oEmail->setFrom($sEmailFrom);
-									$oEmail->addTo($sTo);
+									$oEmail->addTo($sEmailTo);
 									$oEmail->createAttachment($sPDFContent, 'application/pdf', Zend_Mime::DISPOSITION_ATTACHMENT, Zend_Mime::ENCODING_BASE64, $sFileName);
 									
 									// Add to the customer email queue (for this invoice action), reference it with the account id
 									$oCustomerEmailQueue->push($oEmail, $iAccountId);
-									$this->log("Email queued to be sent to: {$sTo} ".($this->_bTestRun ? " (changed from '{$sEmailTo}')" : ""));
+									
+									$this->log("Email queued to be sent to: {$sEmailTo}");
+									
+									// Add to summary
 									$aSummary[$sCustGroupName][$sLetterType]['emails'][]	= $iAccountId;
 									
 									if ($this->_bTestRun === false)
@@ -607,13 +606,30 @@ class Cli_App_LateNoticeRun extends Cli
 						}
 					}
 				}
-
+				
 				if ($this->_bTestRun === false)
 				{
 					// Schedule the customer email queue for immediate delivery
-					$this->log("Schedule the customer email queue for immediate delivery");
+					$this->log("Schedule the {$sLetterType} customer email queue for immediate delivery");
 					$oCustomerQueue	= Email_Flex_Queue::get("CUSTOMER_{$sLetterType}");
-					$oCustomerQueue->scheduleForDelivery();
+					$oEmailQueueORM	= $oCustomerQueue->scheduleForDelivery(null, "Late Notices: {$sLetterType}");
+					
+					// Link all created (queued) emails to the account they relate to
+					if ($oEmailQueueORM !== null)
+					{
+						$this->log("Email queue created, link all emails to an account");
+						
+						// Each email was stored using the account id of the recipient as it's 'id', use this
+						// to create a link between the email and the account (email_account table record)
+						$aEmailORMs	= $oCustomerQueue->getEmailORMObjects();
+						foreach ($aEmailORMs as $mId => $oEmailORM)
+						{
+							$oEmailAccount				= new Email_Account();
+							$oEmailAccount->email_id	= $oEmailORM->id;
+							$oEmailAccount->account_id	= $mId;
+							$oEmailAccount->save();
+						}
+					}
 				}
 			}
 			$this->log("FINISHED: Sending all emails that have been queued");

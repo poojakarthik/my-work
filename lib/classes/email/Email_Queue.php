@@ -74,8 +74,10 @@ class Email_Queue extends ORM_Cached
 		}
 		
 		$bCommitQueue	= $bTestMode === false;
+		$sDescription	= ($this->description !== '' ? $this->description : '[no description]');
 		
-		Log::getLog()->log("Delivering queue {$this->id}, committing = ".($bCommitQueue ? 'YES' : 'NO'));
+		Log::getLog()->log("----------------------------");
+		Log::getLog()->log("Delivering queue {$this->id} '{$sDescription}', committing = ".($bCommitQueue ? 'YES' : 'NO'));
 		
 		// Create a queue
 		$oEmailFlexQueue	= new Email_Flex_Queue();

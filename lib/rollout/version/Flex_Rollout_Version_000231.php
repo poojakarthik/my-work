@@ -23,9 +23,32 @@ class Flex_Rollout_Version_000231 extends Flex_Rollout_Version
 																	created_datetime	DATETIME		NOT NULL					COMMENT \"When the write off occured\", 
 																	created_employee_id	BIGINT UNSIGNED	NOT NULL					COMMENT \"(FK) Employee, who executed the write off\", 
 																	PRIMARY KEY	(id),
-																	CONSTRAINT cdr_delinquent_writeoff_created_employee_id	FOREIGN KEY (created_employee_id)	REFERENCES Employee (Id)	ON UPDATE CASCADE	ON DELETE RESTRICT
+																	CONSTRAINT fk_cdr_delinquent_writeoff_created_employee_id	FOREIGN KEY (created_employee_id)	REFERENCES Employee (Id)	ON UPDATE CASCADE	ON DELETE RESTRICT
 																) ENGINE=InnoDB, COMMENT=\"Log for a deliquent CDR record that has been written off.\";",
 									'sRollbackSQL'		=>	"	DROP TABLE IF EXISTS cdr_delinquent_writeoff;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=>	"Add table email_account",
+									'sAlterSQL'			=>	"	CREATE TABLE email_account
+																(
+																	id					BIGINT UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT \"Unique Identifier\", 
+																	email_id			BIGINT UNSIGNED	NOT NULL					COMMENT \"(FK) email, the email\",																	
+																	account_id			BIGINT UNSIGNED	NOT NULL					COMMENT \"(FK) Account, the account that the email is linked to\", 
+																	PRIMARY KEY	(id),
+																	CONSTRAINT fk_email_account_email_id	FOREIGN KEY (email_id)		REFERENCES email (id)	ON UPDATE CASCADE	ON DELETE RESTRICT,
+																	CONSTRAINT fk_email_account_account_id	FOREIGN KEY (account_id)	REFERENCES Account (Id)	ON UPDATE CASCADE	ON DELETE RESTRICT
+																) ENGINE=InnoDB, COMMENT=\"A relationship between an email and an Account.\";",
+									'sRollbackSQL'		=>	"	DROP TABLE IF EXISTS email_account;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=>	"Add description field to the email_queue table",
+									'sAlterSQL'			=>	"	ALTER TABLE email_queue
+																ADD COLUMN description VARCHAR(512) NOT NULL COMMENT \"The description of the Email Queue\";",
+									'sRollbackSQL'		=>	"	ALTER TABLE email_queue DROP COLUMN description;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								)
 							);

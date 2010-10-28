@@ -949,7 +949,32 @@ class Invoice_Run
 		}
 		
 		Log::getLog()->log("\nSchedule the email queue for immediate delivery");
-		$oEmailFlexQueue->scheduleForDelivery();
+		
+		$oEmailQueue	= $oEmailFlexQueue->scheduleForDelivery(null, "Invoice Run Delivery: {$this->Id} ({$oCustomerGroup->internal_name})");
+		if ($oEmailQueue !== null)
+		{
+			// There were emails queued
+			Log::getLog()->log("Email queue created, link all invoice emails to an account");
+			
+			// Each email was stored using the account id of the recipient as it's 'id', use this
+			// to create a link between the email and the account (email_account table record)
+			$aEmailORMs	= $oEmailFlexQueue->getEmailORMObjects();
+			foreach ($aEmailORMs as $sEmailId => $oEmailORM)
+			{
+				// Get account id from email id
+				$aSplit		= split('_', $sEmailId);
+				$sAccountId	= $aSplit[0];
+				$iAccountId	= (int)$sAccountId;
+				
+				Log::getLog()->log("Linking email {$oEmailORM->id} to Account {$iAccountId}");
+				
+				// Create email_account record
+				$oEmailAccount				= new Email_Account();
+				$oEmailAccount->email_id	= $oEmailORM->id;
+				$oEmailAccount->account_id	= $iAccountId;
+				$oEmailAccount->save();
+			}
+		}
 
 		if (count($aCorrespondenceData) > 0)
 		{

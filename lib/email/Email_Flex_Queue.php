@@ -8,6 +8,7 @@ class Email_Flex_Queue
 	
 	private $_bIsSent		= false;
 	private $_aEmails		= array();
+	private $_aEmailORMs	= array();
 	private $_bCommited		= false;
 	private $_sDebugAddress	= null;
 	private	$_iAutoId		= 0;
@@ -81,7 +82,12 @@ class Email_Flex_Queue
 		return $this->_aEmails;
 	}
 	
-	public function scheduleForDelivery($mDatetime=null)
+	public function getEmailORMObjects()
+	{
+		return $this->_aEmailORMs;
+	}	
+	
+	public function scheduleForDelivery($mDatetime=null, $sDescription='')
 	{
 		$oDA	= DataAccess::getDataAccess();
 		if ($oDA->TransactionStart() === false)
@@ -91,6 +97,11 @@ class Email_Flex_Queue
 		
 		try
 		{
+			if ($this->_bScheduled)
+			{
+				throw new Exception("Cannot schedule this email queue, it has already been scheduled for delivery.");
+			}
+		
 			// Validate date time input, convert to utc string
 			$sDatetime	= null;
 			if ($mDatetime === null)
@@ -114,11 +125,12 @@ class Email_Flex_Queue
 			$oEmailQueue->scheduled_datetime	= $sDatetime;
 			$oEmailQueue->created_datetime		= date('Y-m-d H:i:s');
 			$oEmailQueue->created_employee_id	= $iLoggedInEmployee;
+			$oEmailQueue->description			= $sDescription;
 			$oEmailQueue->save();
 			
 			// Create Email records
 			$iCount	= 0;
-			foreach ($this->_aEmails as $oEmailFlex)
+			foreach ($this->_aEmails as $mId => $oEmailFlex)
 			{
 				// Create Email
 				$oEmail				= new Email();
@@ -141,6 +153,9 @@ class Email_Flex_Queue
 				
 				$oEmail->save();
 				$iCount++;
+				
+				// Cache the orm object, against the emails 'id'
+				$this->_aEmailORMs[$mId]	= $oEmail;
 				
 				// Create any attachments that are in the Email
 				foreach ($oEmailFlex->aAttachmentParts as $oPart)
@@ -172,10 +187,12 @@ class Email_Flex_Queue
 			{
 				$oDA->TransactionCommit();
 				$this->_bScheduled	= true;
+				return $oEmailQueue;
 			}
 			else
 			{
 				$oDA->TransactionRollback();
+				return null;
 			}
 		}
 		catch (Exception $oException)
