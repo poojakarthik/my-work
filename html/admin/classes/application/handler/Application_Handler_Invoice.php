@@ -260,6 +260,11 @@ class Application_Handler_Invoice extends Application_Handler
 	
 	public function ActionInterimInvoicesReport($subPath)
 	{
+		// For logging output
+		//$sLog	= '';
+		//Log::registerLog('ActionInterimInvoicesReport_Log', Log::LOG_TYPE_STRING, $sLog);
+		//Log::setDefaultLog('ActionInterimInvoicesReport_Log');
+		
 		$oResponse			= new stdClass();
 		$oFlexDataAccess	= DataAccess::getDataAccess();
 		try
@@ -287,6 +292,9 @@ class Application_Handler_Invoice extends Application_Handler
 			$oResponse->Message	= $eException->getMessage();
 			file_put_contents('/tmp/action-interim-invoices-report-'.date("YmdHis").'.csv', $eException->getMessage());
 		}
+		
+		// Logging output
+		//file_put_contents('/tmp/action-interim-invoices-report-'.date("YmdHis").'.log', $sLog);
 		
 		echo JSON_Services::instance()->encode($oResponse);
 		exit;

@@ -192,10 +192,9 @@ class Invoice_Interim
 			throw new Exception("The submitted File is of the wrong File Type. (Expected: text/csv; Actual: {$sMIMEType})");
 		}
 		
-		// Parse the Report
+		// Parse the Report (header row is assumed to be included and is parsed from the file) 
 		$oCSVImportFile	= new File_CSV();
-		$oCSVImportFile->setColumns(array_values(self::$_aInterimEligibilityColumns));
-		$oCSVImportFile->importFile($sFilePath, true);
+		$oCSVImportFile->importFile($sFilePath, true, true);
 		
 		// Get updated eligibility list
 		$aServices	= self::_getEligibleServices();
@@ -204,7 +203,15 @@ class Invoice_Interim
 		// Verify the details for all of the submitted Services
 		foreach ($oCSVImportFile as $aImportService)
 		{
-			$iAccountId	= (int)$aImportService[self::$_aInterimEligibilityColumns['ACCOUNT_ID']];
+			$sAccountId	= $aImportService[self::$_aInterimEligibilityColumns['ACCOUNT_ID']];
+			if (!is_numeric($sAccountId))
+			{
+				// Invalid account id, skip
+				Log::getLog()->log("Invalid account id '{$sAccountId}', skipped line");
+				continue;
+			}
+			
+			$iAccountId	= (int)$sAccountId;
 			
 			// Dirty hacks to prepend 0s to FNNs which have had them stripped off
 			$sFNN	= $aImportService[self::$_aInterimEligibilityColumns['SERVICE_FNN']];
@@ -213,6 +220,8 @@ class Invoice_Interim
 			{
 				$sFNN	= '0'.$sFNN;
 			}
+			
+			Log::getLog()->log("Verifying account & FNN: {$iAccountId}, {$sFNN}");
 			
 			if (!array_key_exists($iAccountId, $aAccounts))
 			{
@@ -311,15 +320,15 @@ class Invoice_Interim
 					
 					// Excluded Requires Tolling
 					self::_compareInterimEligible(
-						$aImportService[self::$_aInterimEligibilityColumns['EXCLUDED_REQUIRES_TOLLING']],
-						$aService['requires_tolling'],
+						(int)$aImportService[self::$_aInterimEligibilityColumns['EXCLUDED_REQUIRES_TOLLING']],
+						(int)$aService['requires_tolling'],
 						"Excluded Requires Tolling mismatch (Supplied: '".$aImportService[self::$_aInterimEligibilityColumns['EXCLUDED_REQUIRES_TOLLING']]."'; Calculated: '".$aService['requires_tolling']."')"
 					);
 					
 					// Excluded Pending Services
 					self::_compareInterimEligible(
-						$aImportService[self::$_aInterimEligibilityColumns['EXCLUDED_PENDING_SERVICES']],
-						$aService['has_pending_services'],
+						(int)$aImportService[self::$_aInterimEligibilityColumns['EXCLUDED_PENDING_SERVICES']],
+						(int)$aService['has_pending_services'],
 						"Excluded Pending Services mismatch (Supplied: '".$aImportService[self::$_aInterimEligibilityColumns['EXCLUDED_PENDING_SERVICES']]."'; Calculated: '".$aService['has_pending_services']."')"
 					);
 					
@@ -429,6 +438,8 @@ class Invoice_Interim
 				{
 					unset($aAccounts[$iAccountId]);
 				}
+				
+				Log::getLog()->log("Service ineligible: {$sAccountServiceIndex}, service & account removed");
 			}
 			
 			// Cache the customer group against the account id for later
@@ -516,6 +527,9 @@ class Invoice_Interim
 										self::$_aInterimExceptionsColumns['REASON']			=> $sReason
 									)
 								);
+								
+								Log::getLog()->log("BLACK LIST: Account={$iAccountId}, FNN={$sFNN}, Reason={$sReason}");
+								
 								$iServicesFailed++;
 							}
 							
@@ -529,6 +543,9 @@ class Invoice_Interim
 										self::$_aInterimExceptionsColumns['REASON']			=> "Account {$iAccountId} Rejected -- check other Services for details"
 									)
 								);
+								
+								Log::getLog()->log("GREY LIST: Account={$iAccountId}, FNN={$sFNN}, Reason=Implied");
+								
 								$iServicesFailed++;
 							}
 							
@@ -542,6 +559,9 @@ class Invoice_Interim
 										self::$_aInterimExceptionsColumns['REASON']			=> "Account {$iAccountId} Rejected -- check other Services for details"
 									)
 								);
+								
+								Log::getLog()->log("WHITE LIST: Account={$iAccountId}, FNN={$sFNN}, Reason=Implied");
+								
 								$iServicesFailed++;
 							}
 							
@@ -698,7 +718,17 @@ class Invoice_Interim
 				'text/csv'
 			);
 			
-			$sSubmittedEligibilityReportFileName	= "submitted-{$sCSVEligibleFilename}.csv";
+			if (is_null($oOldCSVEligibleReport))
+			{
+				// No 'old' (current) report, new one must be from an auto submit
+				$sSubmittedEligibilityReportFileName	= "auto-submitted-{$sCSVEligibleFilename}.csv";
+			}
+			else
+			{
+				// Have an 'old' (current) report, new one must have been submitted
+				$sSubmittedEligibilityReportFileName	= "submitted-{$sCSVEligibleFilename}.csv";
+			}
+			
 			$oProcessingEmailNotification->addAttachment(
 				$oCSVEligibleReport->save(), 
 				$sSubmittedEligibilityReportFileName, 
@@ -718,7 +748,7 @@ class Invoice_Interim
 				
 				$sCurrentEligibilityReportFileName	= "current-interim-invoice-eligibility-report-".date("YmdHis").".csv";
 				$oProcessingEmailNotification->addAttachment(
-					$oOldCSVEligibleReport->save(), 
+					$oOldCSVEligibleReport->save(false), 
 					$sCurrentEligibilityReportFileName, 
 					'text/csv'
 				);
@@ -1145,6 +1175,13 @@ class Invoice_Interim
 				}
 			}
 		}
+		
+		// Drop the service_status_count table
+		/*$mResult	= $oQuery->Execute("	DROP TEMPORARY TABLE service_status_count;");
+		if ($mResult === false)
+		{
+			throw new Exception("failed part 5. ".$oQuery->Error());
+		}*/
 		
 		$iEnd	= time();
 		Log::getLog()->log("Finished : ".($iEnd - $iStart)." (Total)");

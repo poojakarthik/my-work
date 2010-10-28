@@ -164,22 +164,34 @@ class File_CSV implements Iterator
 	{
 		$aLines	= explode($this->_sNewLine, $sDataString);
 		
+		Log::getLog()->log("Importing file: ".count($aLines)." lines");
+		
 		// Parse the first row as a Header
 		if ($bHasHeader)
 		{
+			Log::getLog()->log("... has header");
+			
 			if ($sHeader = trim(reset($aLines), "\n\r\0\x0B"))
 			{
 				if ($bImportHeader)
 				{
+					Log::getLog()->log("... importing header: {$sHeader}");
 					$aColumns	= self::parseLine($sHeader, $this->_sDelimiter, $this->_sQuote, $this->_sEscape);
 					$this->setColumns($aColumns);
 				}
 			}
+			
+			// Remove the first line
+			array_shift($aLines);
 		}
+		
+		Log::getLog()->log("... importing rows: ".count($aLines)." lines");
 		
 		// Import each row
 		while (($sRow = current($aLines)) !== false)
 		{
+			Log::getLog()->log("... ROW: {$sRow}");
+			
 			$aRow			= self::parseLine($sRow, $this->_sDelimiter, $this->_sQuote, $this->_sEscape);
 			$aFormattedRow	= array();
 			foreach ($aRow as $iIndex=>$mValue)
