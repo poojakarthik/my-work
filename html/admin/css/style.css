@@ -7663,5 +7663,137 @@ div.page-email-template-history .section-header-options li:last-child
 	top: 0px;
 }
 
+//*****************DELINQUENT CDR PAGE*********************************//
+
+ .page-cdr-list .section-header-options 
+{
+	display: inline ;
+
+}
+
+  .page-cdr-list .section-header-options  .date-time-picker-dynamic
+{
+	display: inline ;
+
+}
+
+  .page-cdr-list .section-header-options .control-field
+{
+	display: inline ;
+}
+
+ .page-cdr-list .header-label
+ {
+	padding-right: 3px;
+	padding-left: 5px;
+ 
+ }
+
+div.delinquent-fnn-list table.reflex thead tr:nth-child(2) > th
+{
+	background-color	: #666;
+}
+
+div.delinquent-fnn-list table.reflex thead th > img
+{
+	vertical-align	: middle;
+	cursor			: pointer;
+}
+
+div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter
+{
+	font-style	: italic;
+	font-size	: 0.85em;
+}
+
+div.delinquent-fnn-list table.reflex thead th > span
+{
+	vertical-align	: middle;
+}
+
+div.delinquent-fnn-list table.reflex thead tr:nth-child(2) > th
+{
+	background-color	: #666;
+}
+
+div.delinquent-fnn-list table.reflex thead th > img
+{
+	vertical-align	: middle;
+	cursor			: pointer;
+}
+
+div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter
+{
+	font-style	: italic;
+	font-size	: 0.85em;
+}
+/*
+div.followup-list-all table.reflex thead th.followup-list-all-header
+{
+	vertical-align	: top;
+}
+*/
+div.delinquent-fnn-list table.reflex thead th.followup-list-all-header > span
+{
+	padding-right	: 0.25em;
+}
+
+div.delinquent-fnn-list table.reflex thead th.followup-list-all-header > img.followup-list-all-header-filter
+{
+	float	: right;
+}
+
+div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > img,
+div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span
+{
+	vertical-align	: middle;
+}
+
+div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > span
+{
+	margin-left		: 0.25em;
+	padding-right	: 0.5em;
+}
+
+div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > div
+{
+	display			: inline-block;
+	vertical-align	: middle;
+}
+
+div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > div > img
+{
+	padding-left	: 0.25em;
+	width			: 1.25em;
+	height			: 1.25em;
+	cursor			: pointer;
+}
+
+th.followup-list-all-header > img
+{
+	padding-right	: 0.5em;
+}
+
+span.followup-list-all-header-sort
+{
+	cursor	: pointer;
+}
+
+th.followup-list-all-header-multiline
+{
+	width	: 15%;
+}
 
 
+.followup-list-all-action-icon
+{
+	padding-left: 10px;
+
+}
+
+.followup-list-all-action-icons
+{
+
+	text-align: right;
+
+}
