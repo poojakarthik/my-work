@@ -30,6 +30,8 @@ class HtmlTemplate_Delinquent_CDR extends FlexHtmlTemplate
 		$this->LoadJavascript('control_field_select');
 		$this->LoadJavascript('control_field_date_picker');
 		$this->LoadJavascript('control_field_combo_date');
+		$this->LoadJavascript('control_field_text');
+		$this->LoadJavascript('control_field_checkbox');
 
 		// Pseudo ORM
 		$this->LoadJavascript('employee');
@@ -46,6 +48,8 @@ class HtmlTemplate_Delinquent_CDR extends FlexHtmlTemplate
 		$this->LoadJavascript('popup_followup_reassign');
 		$this->LoadJavascript('popup_followup_due_date');
 		$this->LoadJavascript('popup_followup_view');
+		$this->LoadJavascript('popup_cdr');
+
 
 		$this->LoadJavascript('page_delinquent_cdr_list');
 		$this->LoadJavascript('component_delinquent_cdr_list');
