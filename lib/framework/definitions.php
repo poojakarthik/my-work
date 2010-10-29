@@ -25,8 +25,8 @@
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
- 
- 
+
+
 //----------------------------------------------------------------------------//
 // CONSTANTS
 //----------------------------------------------------------------------------//
@@ -321,6 +321,9 @@ $GLOBALS['*arrConstant']['CDR'][201]['Constant']	= 'CDR_DUPLICATE';
 $GLOBALS['*arrConstant']['CDR'][201]['Description'] = 'Duplicate CDR';
 $GLOBALS['*arrConstant']['CDR'][202]['Constant']	= 'CDR_RECHARGE';
 $GLOBALS['*arrConstant']['CDR'][202]['Description'] = 'Recharged by Carrier';
+
+$GLOBALS['*arrConstant']['CDR'][203]['Constant']	= 'CDR_DELINQUENT_WRITTEN_OFF';
+$GLOBALS['*arrConstant']['CDR'][203]['Description'] = 'Delinquent Usage – Written Off';
 
 
 //TODO!rich! when you have time, update all constant definitons to work like the CDR ones
