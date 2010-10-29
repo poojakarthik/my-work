@@ -10,6 +10,7 @@ var Component_Delinquent_CDR_List = Class.create(
 	 */
 	initialize	: function(oContainerDiv, iEmployeeId, bEditMode, bActive, sStartDate, sEndDate)
 	{
+		this._oLoadingPopup	= new Reflex_Popup.Loading();
 		this._iEmployeeId	= iEmployeeId;
 		this._bEditMode		= bEditMode;
 		this._hFilters		= {};
@@ -20,7 +21,7 @@ var Component_Delinquent_CDR_List = Class.create(
 		
 		// Create DataSet & pagination object
 		this.oDataSet	= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_NO_CACHING, Component_Delinquent_CDR_List.DATA_SET_DEFINITION);
-		this.oDataSet.setSortingFields({due_datetime: 'ASC'});
+		this.oDataSet.setSortingFields({FNN: 'DESC'});
 		
 		this.oPagination	= new Pagination(this._updateTable.bind(this), Component_Delinquent_CDR_List.MAX_RECORDS_PER_PAGE, this.oDataSet);
 		
@@ -28,7 +29,7 @@ var Component_Delinquent_CDR_List = Class.create(
 		this._oFilter	=	new Filter(
 								this.oDataSet, 
 								this.oPagination, 
-								this._filterFieldUpdated.bind(this) 	// On field value change
+								null 	// On field value change
 							);
 		
 		// Add and set a 'now' filter value (used for properly determining overdue-ness based on the clients time)
@@ -37,19 +38,58 @@ var Component_Delinquent_CDR_List = Class.create(
 		// Add all filter fields
 		for (var sFieldName in Component_Delinquent_CDR_List.FILTER_FIELDS)
 		{
+			
 			this._oFilter.addFilter(sFieldName, Component_Delinquent_CDR_List.FILTER_FIELDS[sFieldName]);
 		}
 		
 	
-		this._oFilter.setFilterValue(Component_Delinquent_CDR_List.FILTER_FIELD_EARLIEST_CDR, sStartDate, sEndDate );
+		
 		
 		
 		// Create sort object
 		this._oSort	= new Sort(this.oDataSet, this.oPagination, true);
 		
+		
+		this._earliestStartDatePicker =  Control_Field.factory('date-picker', Component_Delinquent_CDR_List.DATEPICKERCONFIG);
+		this._earliestStartDatePicker.setRenderMode(Control_Field.RENDER_MODE_EDIT);
+		this._latestStartDatePicker = Control_Field.factory('date-picker', Component_Delinquent_CDR_List.DATEPICKERCONFIG);
+		this._latestStartDatePicker.setRenderMode(Control_Field.RENDER_MODE_EDIT);
+		
+		var cancelEarliestDate = $T.img({class:"followup-list-all-filter-delete", src: "../admin/img/template/delete.png", alt: 'Remove Date', title: 'Remove Date'}).observe('click', this._clearDatePickerValue.bind(this, this._earliestStartDatePicker));
+		var cancelLatestDate = $T.img({class:"followup-list-all-filter-delete", src: "../admin/img/template/delete.png", alt: 'Remove Date', title: 'Remove Date'}).observe('click', this._clearDatePickerValue.bind(this, this._latestStartDatePicker));
+
+		var searchButton = $T.button({class: 'icon-button'},
+																$T.img({src: "../admin/img/template/table_refresh.png", alt: '', title: 'Refresh List'}),
+																$T.span('Refresh List')
+																	).observe('click', this._refresh.bind(this));
+		
+		
+		//First, the added header options
+				this._oShowWriteOffs = Control_Field.factory('checkbox', {
+																			sLabel		: 'Show Written Off CDRs',
+																			mMandatory	: true,
+																			mEditable	: true,
+																			mVisible	: true,
+																			bDisableValidationStyling	: true
+																		});
+				
+				this._oShowWriteOffs.addOnChangeCallback(this._showWriteOffsChanged.bind(this));				
+				
+			var CSVButton =$T.button({class: 'icon-button'},
+																$T.img({src: "../admin/img/template/table.png", alt: '', title: 'Refresh List'}),
+																$T.span('Export to CSV')
+																	).observe('click', this._downloadCSV.bind(this, false));
+			
+			
+			
+			
+
+		
+		
+		
 		// Create the page HTML
 		var sButtonPathBase	= '../admin/img/template/resultset_';
-		this._oContentDiv 	= 	$T.div({class: 'followup-list-all'},
+		this._oContentDiv 	= 	$T.div({class: 'delinquent-fnn-list'},
 									// All
 									$T.div({class: 'section'},
 										$T.div({class: 'section-header'},
@@ -60,23 +100,16 @@ var Component_Delinquent_CDR_List = Class.create(
 												)
 											),
 											$T.div({class: 'section-header-options'},
-												$T.div({class: 'followup-list-all-pagination'},
-													$T.span({class: 'pagination-loading'},
-														'Loading...'
-													),
-													$T.button({class: 'followup-list-all-pagination-button'},
-														$T.img({src: sButtonPathBase + 'first.png'})
-													),
-													$T.button({class: 'followup-list-all-pagination-button'},
-														$T.img({src: sButtonPathBase + 'previous.png'})
-													),
-													$T.button({class: 'followup-list-all-pagination-button'},
-														$T.img({src: sButtonPathBase + 'next.png'})
-													),
-													$T.button({class: 'followup-list-all-pagination-button'},
-														$T.img({src: sButtonPathBase + 'last.png'})
-													)
-												)
+												$T.span({class: 'header-label'}, 'Show Written Off CDRs'),
+												$T.span({class: 'header-label'}, this._oShowWriteOffs.getElement()),
+												$T.span({class: 'header-label'},'Earliest CDR'),
+												this._earliestStartDatePicker.getElement(),
+												cancelEarliestDate,
+												$T.span({class: 'header-label'},'Latest CDR'),
+												this._latestStartDatePicker.getElement(),
+												cancelLatestDate,
+												searchButton,
+												CSVButton
 											)
 										),
 									
@@ -102,6 +135,9 @@ var Component_Delinquent_CDR_List = Class.create(
 														this._createFieldHeader(
 															'Latest', 
 															Component_Delinquent_CDR_List.SORT_FIELD_LATEST_CDR	
+														),
+														this._createFieldHeader(
+															''
 														)
 													),
 													// Filter values
@@ -113,12 +149,14 @@ var Component_Delinquent_CDR_List = Class.create(
 													
 													
 													$T.tr(
+														//$T.th(),
 														this._createFilterValueElement(Component_Delinquent_CDR_List.FILTER_FIELD_FNN, 'FNN'),
 														this._createFilterValueElement(Component_Delinquent_CDR_List.FILTER_FIELD_CARRIER, 'Carrier'),
-														this._createFilterValueElement(Component_Delinquent_CDR_List.FILTER_FIELD_COST, 'Cost'),
-														this._createFilterValueElement(Component_Delinquent_CDR_List.FILTER_FIELD_TYPE, 'Count'),
-														this._createFilterValueElement(Component_Delinquent_CDR_List.FILTER_FIELD_EARLIEST_CDR, 'Earliest'),
-														this._createFilterValueElement(Component_Delinquent_CDR_List.FILTER_FIELD_LATEST_CDR, 'Latest')
+														$T.th(),
+														$T.th(),
+														$T.th(),
+														$T.th(),
+														$T.th()
 													)
 												),
 												$T.tbody({class: 'alternating'},
@@ -144,33 +182,33 @@ var Component_Delinquent_CDR_List = Class.create(
 								);
 		
 		// Bind events to the pagination buttons
-		var aTopPageButtons		= this._oContentDiv.select('div.section-header-options button.followup-list-all-pagination-button');
+		//var aTopPageButtons		= this._oContentDiv.select('div.section-header-options button.followup-list-all-pagination-button');
 		var aBottomPageButtons 	= this._oContentDiv.select('div.footer-pagination button');
 		
 		// First
-		aTopPageButtons[0].observe('click', this._changePage.bind(this, 'firstPage'));
+		//aTopPageButtons[0].observe('click', this._changePage.bind(this, 'firstPage'));
 		aBottomPageButtons[0].observe('click', this._changePage.bind(this, 'firstPage'));
 		
 		//Previous		
-		aTopPageButtons[1].observe('click', this._changePage.bind(this, 'previousPage'));
+		//aTopPageButtons[1].observe('click', this._changePage.bind(this, 'previousPage'));
 		aBottomPageButtons[1].observe('click', this._changePage.bind(this, 'previousPage'));
 		
 		// Next
-		aTopPageButtons[2].observe('click', this._changePage.bind(this, 'nextPage'));
+		//aTopPageButtons[2].observe('click', this._changePage.bind(this, 'nextPage'));
 		aBottomPageButtons[2].observe('click', this._changePage.bind(this, 'nextPage'));
 		
 		// Last
-		aTopPageButtons[3].observe('click', this._changePage.bind(this, 'lastPage'));
+		//aTopPageButtons[3].observe('click', this._changePage.bind(this, 'lastPage'));
 		aBottomPageButtons[3].observe('click', this._changePage.bind(this, 'lastPage'));
 		
 		// Setup pagination button object
 		this.oPaginationButtons = {
-			oTop	: {
-				oFirstPage		: aTopPageButtons[0],
-				oPreviousPage	: aTopPageButtons[1],
-				oNextPage		: aTopPageButtons[2],
-				oLastPage		: aTopPageButtons[3]
-			},
+			// oTop	: {
+				// oFirstPage		: aTopPageButtons[0],
+				// oPreviousPage	: aTopPageButtons[1],
+				// oNextPage		: aTopPageButtons[2],
+				// oLastPage		: aTopPageButtons[3]
+			// },
 			oBottom	: {
 				oFirstPage		: aBottomPageButtons[0],
 				oPreviousPage	: aBottomPageButtons[1],
@@ -183,22 +221,35 @@ var Component_Delinquent_CDR_List = Class.create(
 		oContainerDiv.appendChild(this._oContentDiv);
 	
 		// Send the initial sorting parameters to dataset ajax 
-		this._oSort.refreshData(true);
-		this._oFilter.refreshData(true);
-		this.oPagination.getCurrentPage();
+		this._refresh();
+		//this._oSort.refreshData(true);
+		//this._oFilter.refreshData(true);
+		//this.oPagination.getCurrentPage();
+	},
+	
+	_showWriteOffsChanged : function()
+	{
+		
+		this._refresh();		
+	},
+	
+	
+	_clearDatePickerValue: function(oDatePicker)
+	{
+		oDatePicker.clearValue();	
 	},
 	
 	_showLoading	: function(bShow)
 	{
-		var oLoading	= this._oContentDiv.select('span.pagination-loading').first();
-		if (bShow)
-		{
-			oLoading.show();
-		}
-		else
-		{
-			oLoading.hide();
-		}
+		// var oLoading	= this._oContentDiv.select('span.pagination-loading').first();
+		// if (bShow)
+		// {
+			// oLoading.show();
+		// }
+		// else
+		// {
+			// oLoading.hide();
+		// }
 	},
 	
 	_changePage	: function(sFunction)
@@ -234,12 +285,19 @@ var Component_Delinquent_CDR_List = Class.create(
 		}
 		else
 		{
+		
 			// Add the rows
 			var aData	= jQuery.json.arrayAsObject(oResultSet.arrResultSet);
 			var iCount	= 0;
+			this._oData = {};
 			
 			for (var i in aData)
 			{
+				if (typeof this._oData[aData[i].FNN] == 'undefined')
+				{
+					this._oData[aData[i].FNN] = {};
+				}
+				this._oData[aData[i].FNN][aData[i].Status] = aData[i];
 				iCount++;
 				oTBody.appendChild(this._createTableRow(aData[i]));
 			}
@@ -251,9 +309,22 @@ var Component_Delinquent_CDR_List = Class.create(
 		this._updateFilters();
 		
 		// Call manual refresh on the followup link
-		FollowUpLink.refresh();
+		//FollowUpLink.refresh();
 	
 		this._showLoading(false);
+	},
+	
+	_refresh: function()
+	{
+		this._oFilter.setFilterValue(Component_Delinquent_CDR_List.FILTER_FIELD_EARLIEST_CDR, this._earliestStartDatePicker.getElementValue(), this._latestStartDatePicker.getElementValue() );
+		bShowWriteOffs = this._oShowWriteOffs.getElementValue()?true:false;
+		this._oFilter.setFilterValue(Component_Delinquent_CDR_List.FILTER_FIELD_SHOW_WRITEOFFS, bShowWriteOffs);
+		
+		
+		this._oSort.refreshData(true);
+		this._oFilter.refreshData(true);
+		this.oPagination.getCurrentPage();
+	
 	},
 	
 	_createNoRecordsRow	: function(bOnLoad)
@@ -265,9 +336,81 @@ var Component_Delinquent_CDR_List = Class.create(
 		);
 	},
 	
+	_downloadCSV	: function(oResponse)
+	{
+		
+			if (!oResponse)
+			{	
+				
+				this._oSort.refreshData(true);
+				this._oFilter.refreshData(true);
+				
+				this._oLoadingPopup.display();
+				var fnRequest     = jQuery.json.jsonFunction(this._downloadCSV.bind(this), null, 'CDR', 'ExportToCSV');
+				fnRequest(this.oDataSet._hSort, this.oDataSet._hFilter);				
+				//window.location	= 'reflex.php/CDR/ExportToCSV/' + this.oDataSet._hSort + '/' + this.oDataSet._hFilter;
+			}
+			else
+			{
+				sFilename	= oResponse.FileName.replace(/\//g, "\\");
+				window.location	= 'reflex.php/CDR/DownloadCSV/' + encodeURIComponent(sFilename);
+				this._oLoadingPopup.hide();
+			}
+			
+	},
+	
+	_showCDRPopup : function(strStartDate, strEndDate, strFNN	,intCarrier, intServiceType)
+	{
+		new Popup_CDR(strStartDate, strEndDate, strFNN	,intCarrier, intServiceType);
+	
+	
+	
+	},
+	
+	_writeOff : function (sFNN, bConfirm, oResponse)
+	{
+		
+		var oFNN = this._oData[sFNN];
+		if (!oResponse)
+		{
+			if (!bConfirm)
+			{
+						Reflex_Popup.yesNoCancel(
+													"This will set the status for all CDRs with FNN " + sFNN + " to Write Off. Is that what you want to do?",
+													{
+														sNoLabel		: 'No', 
+														sYesLabel		: 'Yes',														
+														bOverrideStyle	: true,
+														iWidth			: 45,
+														sTitle			: 'CDR Writeoff',
+														fnOnYes			: this._writeOff.bind(this,sFNN, true, false)														
+													}
+												);
+			
+			}
+			else
+			{
+			
+				this._oLoadingPopup.display();
+				var fnRequest     = jQuery.json.jsonFunction(this._writeOff.bind(this, sFNN, true), null, 'CDR', 'bulkWriteOffForFNN');
+				fnRequest(oFNN.EarliestStartDatetime, oFNN.LatestStartDatetime, oFNN.FNN, oFNN.Carrier, oFNN.ServiceType);
+			}
+		}
+		else
+		{
+			this._oLoadingPopup.hide();
+			Reflex_Popup.alert('All CDRs for FNN ' + sFNN + ' have been written off succesfully');
+		}
+	
+	},
+	
 	_createTableRow	: function(oCDR)
 	{
 		
+
+		var writeOff = $T.img({class:"followup-list-all-action-icon", src: "../admin/img/template/delete.png", alt: 'Write Off', title: 'Write Off'}).observe('click', this._writeOff.bind(this, oCDR.FNN, false, false));
+		var assign = $T.img({class:"followup-list-all-action-icon", src: "../admin/img/template/telephone_add.png", alt: 'Assign to Service', title: 'Assign to Service'}).observe('click', this._clearDatePickerValue.bind(this, this._earliestStartDatePicker));
+		var viewDetails = $T.img({class:"followup-list-all-action-icon", src: "../admin/img/template/magnifier.png", alt: 'Show Details', title: 'Show Details'}).observe('click', this._showCDRPopup.bind(this, oCDR.EarliestStartDatetime, oCDR.LatestStartDatetime, oCDR.FNN, oCDR.Carrier, oCDR.ServiceType));
 
 			
 			var	oTR	=	$T.tr(
@@ -276,7 +419,8 @@ var Component_Delinquent_CDR_List = Class.create(
 							$T.td(oCDR.TotalCost),
 							$T.td(oCDR.Count),							
 							$T.td(oCDR.EarliestStartDatetime),
-							$T.td(oCDR.LatestStartDatetime)							
+							$T.td(oCDR.LatestStartDatetime),
+							$T.td({class : "followup-list-all-action-icons"},writeOff, assign, viewDetails)
 						);
 			
 
@@ -288,13 +432,13 @@ var Component_Delinquent_CDR_List = Class.create(
 	_updatePagination : function(iPageCount)
 	{
 		// Update the 'disabled' state of each pagination button
-		this.oPaginationButtons.oTop.oFirstPage.disabled 		= true;
+		//this.oPaginationButtons.oTop.oFirstPage.disabled 		= true;
 		this.oPaginationButtons.oBottom.oFirstPage.disabled 	= true;
-		this.oPaginationButtons.oTop.oPreviousPage.disabled		= true;
+		//this.oPaginationButtons.oTop.oPreviousPage.disabled		= true;
 		this.oPaginationButtons.oBottom.oPreviousPage.disabled	= true;
-		this.oPaginationButtons.oTop.oNextPage.disabled 		= true;
+		//this.oPaginationButtons.oTop.oNextPage.disabled 		= true;
 		this.oPaginationButtons.oBottom.oNextPage.disabled 		= true;
-		this.oPaginationButtons.oTop.oLastPage.disabled 		= true;
+		//this.oPaginationButtons.oTop.oLastPage.disabled 		= true;
 		this.oPaginationButtons.oBottom.oLastPage.disabled 		= true;
 		
 		if (iPageCount == undefined)
@@ -311,17 +455,17 @@ var Component_Delinquent_CDR_List = Class.create(
 			if (this.oPagination.intCurrentPage != Pagination.PAGE_FIRST)
 			{
 				// Enable the first and previous buttons
-				this.oPaginationButtons.oTop.oFirstPage.disabled 		= false;
+				//this.oPaginationButtons.oTop.oFirstPage.disabled 		= false;
 				this.oPaginationButtons.oBottom.oFirstPage.disabled		= false;
-				this.oPaginationButtons.oTop.oPreviousPage.disabled 	= false;
+				//this.oPaginationButtons.oTop.oPreviousPage.disabled 	= false;
 				this.oPaginationButtons.oBottom.oPreviousPage.disabled 	= false;
 			}
 			if (this.oPagination.intCurrentPage < (iPageCount - 1) && iPageCount)
 			{
 				// Enable the next and last buttons
-				this.oPaginationButtons.oTop.oNextPage.disabled 	= false;
+				//this.oPaginationButtons.oTop.oNextPage.disabled 	= false;
 				this.oPaginationButtons.oBottom.oNextPage.disabled 	= false;
-				this.oPaginationButtons.oTop.oLastPage.disabled 	= false;
+				//this.oPaginationButtons.oTop.oLastPage.disabled 	= false;
 				this.oPaginationButtons.oBottom.oLastPage.disabled 	= false;
 			}
 		}
@@ -559,35 +703,6 @@ var Component_Delinquent_CDR_List = Class.create(
 		}
 	},
 	
-	_filterFieldUpdated	: function(sField)
-	{
-		// Make sure the from date has 00:00 (start of day) for minutes and the to date has 23:59 (end of day)
-		// so that both days are included in the search
-		if (sField.match(/due_datetime/))
-		{
-			var oValue	= this._oFilter.getFilterValue(sField);
-			if (oValue)
-			{
-				if (oValue.mFrom)
-				{
-					oValue.mFrom	= 	oValue.mFrom.replace(
-											Component_Delinquent_CDR_List.RANGE_FILTER_DATE_REGEX, 
-											'$1 ' + Component_Delinquent_CDR_List.RANGE_FILTER_FROM_MINUTES
-										);
-				}
-				
-				if (oValue.mTo)
-				{
-					oValue.mTo	= 	oValue.mTo.replace(
-										Component_Delinquent_CDR_List.RANGE_FILTER_DATE_REGEX, 
-										'$1 ' + Component_Delinquent_CDR_List.RANGE_FILTER_TO_MINUTES
-									);
-				}
-				
-				this._oFilter.setFilterValue(sField, oValue.mFrom, oValue.mTo, null, true);
-			}
-		}
-	},
 	
 	_formatFilterValueForDisplay	: function(sField, mValue)
 	{
@@ -647,7 +762,7 @@ var Component_Delinquent_CDR_List = Class.create(
 	},
 });
 
-Component_Delinquent_CDR_List.MAX_RECORDS_PER_PAGE		= 10;
+Component_Delinquent_CDR_List.MAX_RECORDS_PER_PAGE		= 3;
 Component_Delinquent_CDR_List.EDIT_IMAGE_SOURCE			= '../admin/img/template/pencil.png';
 Component_Delinquent_CDR_List.FILTER_IMAGE_SOURCE			= '../admin/img/template/table_row_insert.png';
 Component_Delinquent_CDR_List.REMOVE_FILTER_IMAGE_SOURCE	= '../admin/img/template/delete.png';
@@ -679,7 +794,8 @@ Component_Delinquent_CDR_List.FILTER_FIELD_LATEST_CDR = 'EndDatetime';
 Component_Delinquent_CDR_List.FILTER_FIELD_FNN			= 'FNN';
 Component_Delinquent_CDR_List.FILTER_FIELD_COST	= 'TotalCost';
 Component_Delinquent_CDR_List.FILTER_FIELD_COUNT			= 'Count';
-Component_Delinquent_CDR_List.FILTER_FIELD_CARRIER = 'carrier_label';
+Component_Delinquent_CDR_List.FILTER_FIELD_CARRIER = 'Carrier';
+Component_Delinquent_CDR_List.FILTER_FIELD_SHOW_WRITEOFFS = 'bWriteOffs';
 
 Component_Delinquent_CDR_List.SORT_FIELD_EARLIEST_CDR		= 'EarliestStartDatetime';
 Component_Delinquent_CDR_List.SORT_FIELD_LATEST_CDR			= 'LatestStartDatetime';
@@ -873,11 +989,69 @@ Component_Delinquent_CDR_List.getDateTimeElement	= function(sMySQLDate)
 			);
 };
 
+Component_Delinquent_CDR_List.getCarrierList = function(fCallback, oResponse)
+{
+	if (!oResponse)
+	{
+		// Make Request for all active employees sorted by first name then last name 
+		var fn	=	jQuery.json.jsonFunction(
+								Component_Delinquent_CDR_List.getCarrierList.bind(Component_Delinquent_CDR_List.getCarrierList,fCallback ), 
+								null, 
+								'CDR', 
+								'getCarrierList'
+							);
+		fn();
+	}
+	else
+	{
+		// Create an Array of OPTION DOM Elements
+		var oResults	= jQuery.json.arrayAsObject(oResponse.aCarriers);
+		var aOptions	= [];
+		for (i in oResults)
+		{
+			aOptions.push(
+				$T.option({value: oResults[i].Carrier},
+						oResults[i].carrier_label
+				)
+			);		
+		}
+		
+		// Pass to Callback
+		fCallback(aOptions);
+	}
+};
+
 Component_Delinquent_CDR_List.formatDateTimeFilterValue	= function(sDateTime)
 {
 	var oDate	= Date.$parseDate(sDateTime, 'Y-m-d H:i:s');
 	return oDate.$format('j/m/y');
 };
+
+
+	Component_Delinquent_CDR_List.isValidFNN		= function(strFNN)
+	{
+		
+		return true;
+	},
+
+
+
+
+
+
+Component_Delinquent_CDR_List.DATEPICKERCONFIG = 			{
+																sLabel		: 'Change On', 
+																sDateFormat	: 'Y-m-d', 
+																bTimePicker	: false,
+																iYearStart	: 2010,
+																iYearEnd	: new Date().getFullYear() + 1,
+																mMandatory	: false,
+																mEditable	: true,
+																mVisible	: true,
+																bDisableValidationStyling	: false,
+																fnValidate	: null
+															}
+
 
 // Filter Control field definitions
 var oNow										= new Date();
@@ -885,20 +1059,38 @@ Component_Delinquent_CDR_List.YEAR_MINIMUM		= 2010;
 Component_Delinquent_CDR_List.YEAR_MAXIMUM		= Component_Delinquent_CDR_List.YEAR_MINIMUM + 5;
 
 Component_Delinquent_CDR_List.FILTER_FIELDS														= {};
-// Component_Delinquent_CDR_List.FILTER_FIELDS[Component_Delinquent_CDR_List.FILTER_FIELD_OWNER]		= 	{
-																										// iType	: Filter.FILTER_TYPE_VALUE,
-																										// oOption	: 	{
-																														// sType		: 'select',
-																														// mDefault	: null,
-																														// oDefinition	:	{
-																																			// sLabel		: 'Owner',
-																																			// mEditable	: true,
-																																			// mMandatory	: false,
-																																			// fnValidate	: null,
-																																			// fnPopulate	: Employee.getAllAsSelectOptions.bind(Employee)
-																																		// }
-																													// }
-																									// };
+Component_Delinquent_CDR_List.FILTER_FIELDS[Component_Delinquent_CDR_List.FILTER_FIELD_CARRIER]		= 	{
+																										 iType	: Filter.FILTER_TYPE_VALUE,
+																										 oOption	: 	{
+																														 sType		: 'select',
+																														 mDefault	: null,
+																														 oDefinition	:	{
+																																			 sLabel		: 'Carrier',
+																																			 mEditable	: true,
+																																			 mMandatory	: false,
+																																			 fnValidate	: null,
+																																			 fnPopulate	: Component_Delinquent_CDR_List.getCarrierList.bind(Component_Delinquent_CDR_List)
+																																		 }
+																													 }
+																									 };
+																									 
+																								 
+																									 
+Component_Delinquent_CDR_List.FILTER_FIELDS[Component_Delinquent_CDR_List.FILTER_FIELD_FNN]		= 	{
+																							 iType	: Filter.FILTER_TYPE_VALUE,
+																							 oOption	: 	{
+																											 sType		: 'text',
+																											 mDefault	: null,
+																											 oDefinition	:	{
+																																 sLabel		: 'FNN',
+																																mEditable	: true,
+																																 mMandatory	: false,																																 
+																																 fnValidate		:Component_Delinquent_CDR_List.isValidFNN.bind(Component_Delinquent_CDR_List)																														 
+																															 }
+																										 }
+																						};																										 
+																									 
+																									 
 Component_Delinquent_CDR_List.FILTER_FIELDS[Component_Delinquent_CDR_List.FILTER_FIELD_EARLIEST_CDR]	= 	{
 																											iType			: Filter.FILTER_TYPE_RANGE,
 																											bFrom			: true,
@@ -922,21 +1114,9 @@ Component_Delinquent_CDR_List.FILTER_FIELDS[Component_Delinquent_CDR_List.FILTER
 																																					}
 																																}
 																										};
-// Component_Delinquent_CDR_List.FILTER_FIELDS[Component_Delinquent_CDR_List.FILTER_FIELD_TYPE]	= 	{
-																									// iType	: Filter.FILTER_TYPE_VALUE,
-																									// oOption	:	{
-																													// sType		: 'select',
-																													// mDefault	: null,
-																													// oDefinition	:	{
-																																		// sLabel		: 'Status',
-																																		// mEditable	: true,
-																																		// mMandatory	: false,
-																																		// fnValidate	: null,
-																																		// fnPopulate	: Component_Delinquent_CDR_List._getAllTypesAsOptions
-																																	// }
-																												// }
-																									
-																								// };
+ Component_Delinquent_CDR_List.FILTER_FIELDS[Component_Delinquent_CDR_List.FILTER_FIELD_SHOW_WRITEOFFS]	= 	{
+																									 iType	: Filter.FILTER_TYPE_VALUE																									
+																								 };
 // Component_Delinquent_CDR_List.FILTER_FIELDS[Component_Delinquent_CDR_List.FILTER_FIELD_STATUS]	= 	{
 																									// iType	: Filter.FILTER_TYPE_VALUE,
 																									// oOption	: 	{
