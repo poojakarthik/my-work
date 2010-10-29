@@ -12,14 +12,14 @@ var Page_Delinquent_CDR_List = Class.create(
 	{
 		this._iEmployeeId	= iEmployeeId;
 		this._bEditMode		= bEditMode;
-		this._oContentDiv 	= 	$T.div({class: 'page-followup-list'},
-									$T.div({class: 'page-followup-list-all-container'}
+		this._oContentDiv 	= 	$T.div({class: 'page-cdr-list'},
+									$T.div({class: 'page-cdr-list'}
 										// All - placeholder
 									)
 								);
 
 		this._oFollowUpListAll	= 	new Component_Delinquent_CDR_List(
-										this._oContentDiv.select('div.page-followup-list-all-container').first(), 
+										this._oContentDiv.select('div.page-cdr-list').first(), 
 										this._iEmployeeId, 
 										this._bEditMode,
 										true,
