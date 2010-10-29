@@ -11,7 +11,31 @@ class JSON_Handler_CDR extends JSON_Handler
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 
+	public function getCarrierList()
+	{
+		$sSql = "SELECT  Carrier AS Carrier, Carrier.Name AS carrier_label
+				 FROM CDR join Carrier on (CDR.Carrier = Carrier.Id and CDR.status = 107)
+				group by Carrier";
+		$oQuery = new Query();
+		$mResult = $oQuery->Execute($sSql);
+		$aCarriers = array();
+		if ($mResult)
+		{
+			while ($aRow = $mResult->fetch_assoc())
+			{
+				$aCarriers[]= $aRow;
+			}
+		}
 
+
+		return 	array(
+							"Success"		=> true,
+							"aCarriers"		=> $aCarriers
+						);
+
+
+
+	}
 
 	public function getDelinquentDataSet($bCountOnly=false, $iLimit=0, $iOffset=0, $oFieldsToSort=null, $oFilter=null, $iSummaryCharacterLimit=30)
 	{
@@ -31,16 +55,17 @@ class JSON_Handler_CDR extends JSON_Handler
 			if ($bCountOnly)
 			{
 				// Count Only
+				$x=5;
 				return 	array(
 							"Success"		=> true,
-							"iRecordCount"	=> FollowUp::searchFor(null, null, get_object_vars($oFieldsToSort), $aFilter, true)
+							"iRecordCount"	=>  CDR::GetDelinquentFNNs(null, null, get_object_vars($oFieldsToSort), $aFilter, true)
 						);
 			}
 			else
 			{
 				$iLimit		= (max($iLimit, 0) == 0) ? null : (int)$iLimit;
 				$iOffset	= ($iLimit === null) ? null : max((int)$iOffset, 0);
-				$aFollowUps	= $this->GetDelinquentFNNs($iLimit, $iOffset, get_object_vars($oFieldsToSort), $aFilter);
+				$aFollowUps	= CDR::GetDelinquentFNNs($iLimit, $iOffset, get_object_vars($oFieldsToSort), $aFilter);
 				$aResults	= array();
 				$iCount		= 0;
 
@@ -48,7 +73,7 @@ class JSON_Handler_CDR extends JSON_Handler
 				return 	array(
 							"Success"		=> true,
 							"aRecords"		=> $aFollowUps,
-							"iRecordCount"	=>count($aFollowUps)
+							"iRecordCount"	=>CDR::GetDelinquentFNNs(null, null, get_object_vars($oFieldsToSort), $aFilter, true)
 						);
 			}
 		}
@@ -69,33 +94,114 @@ class JSON_Handler_CDR extends JSON_Handler
 	}
 
 
-
-	private function GetDelinquentFNNs($iLimit, $iOffset, $aSortFields, $aFilter, $bCountOnly = false)
+	public function ExportToCSV($oFieldsToSort=null, $oFilter=null)
 	{
-		$aFilter['StartDatetime']->mFrom = ConvertUserDateToMySqlDate($aFilter['StartDatetime']->mFrom);
-		$aFilter['StartDatetime']->mTo = ConvertUserDateToMySqlDate($aFilter['StartDatetime']->mTo);
-		$aFilter['Status'] = CDR_BAD_OWNER;
 
-		$aWhere	= StatementSelect::generateWhere(null, $aFilter);
-		$sOrderByClause	=	StatementSelect::generateOrderBy(array(), $aSortFields);
 
-		$sLimitClause	= StatementSelect::generateLimit($iLimit, $iOffset);
 
-		$arrColumns			= Array("FNN"					=>	"FNN",
-									"ServiceType"			=>	"ServiceType",
-									"Carrier"				=>	"Carrier",
-		 							"carrier_label"			=> "Carrier.Name",
-									"TotalCost"				=>	"SUM(Cost)",
-									"EarliestStartDatetime"	=>	"MIN(StartDatetime)",
-									"LatestStartDatetime"	=>	"MAX(StartDatetime)",
-									"Count"					=>	"Count(CDR.Id)");
 
-		$selDelinquentCDRs	= new StatementSelect("CDR, Carrier", $arrColumns, $aWhere['sClause']." AND CDR.Carrier = Carrier.Id", $sOrderByClause, $sLimitClause, "FNN, ServiceType, Carrier");
-		$mixResult			= $selDelinquentCDRs->Execute($aWhere['aValues']);
-		$arrRecordSet	= $selDelinquentCDRs->FetchAll();
-		return $bCountOnly?count($arrRecordSet):$arrRecordSet;
+		try
+		{
+			// Proper admin required
+			AuthenticatedUser()->PermissionOrDie(array(PERMISSION_PROPER_ADMIN));
+
+
+
+
+			$aColumns			= Array("FNN",
+									"ServiceType"	,
+									"Carrier"	,
+		 							"carrier_label"	,
+									"TotalCost"	,
+									"EarliestStartDatetime"	,
+									"LatestStartDatetime",
+									"Count"		,
+									"Status"
+									);
+
+
+
+			// Create File_CSV to do the file creation
+			$oFile	= new File_CSV();
+			$oFile->setColumns($aColumns);
+
+
+
+			// Build list of lines for the file
+			$aLines	= array();
+			$aData =  CDR::GetDelinquentFNNs(null, null, get_object_vars($oFieldsToSort), get_object_vars($oFilter));
+
+			foreach ($aData as $aRecord)
+			{
+				$oFile->addRow($aRecord);
+			}
+
+
+					$sPath = FILES_BASE_PATH.'temp/';
+		$sTimeStamp = str_replace(array(' ',':','-'), '',Data_Source_Time::currentTimestamp());
+
+
+		$sFilename	= "DelinquentCDRExport"
+		.'.'
+		.$sTimeStamp
+		.'.csv'
+		;
+		 $oFile->saveToFile($sPath.$sFilename);
+
+			return 	array(
+							"Success"		=> true,
+							"FileName"		=>$sFilename
+
+						);
+		}
+		catch (Exception $e)
+		{
+			$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+			echo $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
+		}
+
 
 	}
+
+
+
+
+
+
+	 function GetDelinquentCDRs($strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType)
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+
+/*		$strStartDate	= ConvertUserDateToMySqlDate(DBO()->Delinquents->StartDate->Value);
+		$strEndDate		= ConvertUserDateToMySqlDate(DBO()->Delinquents->EndDate->Value);
+		$strFNN			= DBO()->Delinquents->FNN->Value;
+		$intCarrier		= DBO()->Delinquents->Carrier->Value;
+		$intServiceType	= DBO()->Delinquents->ServiceType->Value;*/
+
+		$arrReturnData = CDR::GetDelinquentCDRs($strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType);
+		//$arrReturnData['ServiceSelectorHtml']	= $strServiceSelectorHtml;
+		return 	array(
+							"Success"		=> true,
+							"aRecords"		=> $arrReturnData
+
+						);
+
+	}
+
+	function bulkWriteOffForFNN($strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType)
+	{
+		$CDRData = CDR::GetDelinquentCDRs($strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType);
+		$aCDRIds = array();
+		foreach ($CDRData['CDRs'] as $aCDR)
+		{
+			$aCDRIds[] = $aCDR['Id'];
+		}
+
+		return $this->writeOffDelinquentCDRs($aCDRIds);
+	}
+
 
 	// writeOffDelinquentCDRs: Given id (or array of ids) writes off each, will fail if any aren't delinquent.
 	public function writeOffDelinquentCDRs($mCDRId)
