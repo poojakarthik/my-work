@@ -355,7 +355,7 @@ Object.extend(Reflex_Popup.prototype, {
 			// Start the drag, if our hotkeys are currently depressed
 			if (this.KEYSTATES.CTRL && this.KEYSTATES.ALT)
 			{
-				//debugger;
+			
 				this.dragStart(oEvent);
 			}
 		}
