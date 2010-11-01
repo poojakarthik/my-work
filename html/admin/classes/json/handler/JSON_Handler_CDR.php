@@ -145,7 +145,7 @@ class JSON_Handler_CDR extends JSON_Handler
 			// Build list of lines for the file
 			$aLines	= array();
 			//$aData =  CDR::GetDelinquentFNNs(null, null, get_object_vars($oFieldsToSort), get_object_vars($oFilter));
-			$aData =CDR::GetCDRsForCSVExport($aCDRIds);
+			$aData =CDR::GetStatusInfoForCDRs($aCDRIds);
 			foreach ($aData as $aRecord)
 			{
 				$oFile->addRow($aRecord);
@@ -248,9 +248,14 @@ class JSON_Handler_CDR extends JSON_Handler
 				$oCDR->writeOff();
 			}
 
+			$aData =CDR::GetStatusInfoForCDRs($aCDRIds);
+
+
+
 			return	array(
 						'bSuccess'	=> true,
-						'sDebug'	=> ($bIsGod ? $this->_JSONDebug : '')
+						'sDebug'	=> ($bIsGod ? $this->_JSONDebug : ''),
+						'aData'		=> $aData
 					);
 		}
 		catch (Exception $oException)
@@ -326,6 +331,7 @@ function BulkAssignCDRsToServices ($strFNN, $intCarrier, $intServiceType,  $strS
 {
 
 	$aCDRs = CDR::GetDelinquentCDRs($strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType);
+	$aCDRIDs = array();
 	try
 	{
 	TransactionStart();
@@ -335,9 +341,10 @@ function BulkAssignCDRsToServices ($strFNN, $intCarrier, $intServiceType,  $strS
 		$oCDR->Id = $aCDR['Id'];
 		$oCDR->Service = $iServiceId;
 		$arrSuccessfulCDRs = CDR::assignCDRsToService($strFNN, $intCarrier, $intServiceType, array($oCDR));
+		$aCDRIDs[] = $aCDR['Id'];
 	}
 
-
+	$aData =CDR::GetStatusInfoForCDRs($aCDRIDs);
 
 	}
 	catch(Exception $e)
@@ -352,7 +359,7 @@ function BulkAssignCDRsToServices ($strFNN, $intCarrier, $intServiceType,  $strS
 			return	array(
 						'bSuccess'	=> true,
 						'sMessage'	=> "",
-						'aData'		=>$arrSuccessfulCDRs
+						'aData'		=>$aData
 					);
 
 }
