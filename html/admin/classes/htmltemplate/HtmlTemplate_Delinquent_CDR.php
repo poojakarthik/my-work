@@ -49,6 +49,8 @@ class HtmlTemplate_Delinquent_CDR extends FlexHtmlTemplate
 		$this->LoadJavascript('popup_followup_due_date');
 		$this->LoadJavascript('popup_followup_view');
 		$this->LoadJavascript('popup_cdr');
+		$this->LoadJavascript('popup_cdr_service_list');
+
 
 
 		$this->LoadJavascript('page_delinquent_cdr_list');
