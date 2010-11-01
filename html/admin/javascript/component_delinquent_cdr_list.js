@@ -42,7 +42,7 @@ var Component_Delinquent_CDR_List = Class.create(
 			this._oFilter.addFilter(sFieldName, Component_Delinquent_CDR_List.FILTER_FIELDS[sFieldName]);
 		}
 		
-	
+	this._oFilter.setFilterValue(Component_Delinquent_CDR_List.FILTER_FIELD_SHOW_WRITEOFFS, 107);
 		
 		
 		
@@ -64,21 +64,18 @@ var Component_Delinquent_CDR_List = Class.create(
 																	).observe('click', this._refresh.bind(this));
 		
 		
-		//First, the added header options
-				this._oShowWriteOffs = Control_Field.factory('checkbox', {
-																			sLabel		: 'Show Written Off CDRs',
-																			mMandatory	: true,
-																			mEditable	: true,
-																			mVisible	: true,
-																			bDisableValidationStyling	: true
-																		});
+		// //First, the added header options
+				// this._oShowWriteOffs = Control_Field.factory('checkbox', {
+																			// sLabel		: 'Show Written Off CDRs',
+																			// mMandatory	: true,
+																			// mEditable	: true,
+																			// mVisible	: true,
+																			// bDisableValidationStyling	: true
+																		// });
 				
-				this._oShowWriteOffs.addOnChangeCallback(this._showWriteOffsChanged.bind(this));				
+				// this._oShowWriteOffs.addOnChangeCallback(this._showWriteOffsChanged.bind(this));				
 				
-			var CSVButton =$T.button({class: 'icon-button'},
-																$T.img({src: "../admin/img/template/table.png", alt: '', title: 'Refresh List'}),
-																$T.span('Export to CSV')
-																	).observe('click', this._downloadCSV.bind(this, false));
+
 			
 			
 			
@@ -100,16 +97,15 @@ var Component_Delinquent_CDR_List = Class.create(
 												)
 											),
 											$T.div({class: 'section-header-options'},
-												$T.span({class: 'header-label'}, 'Show Written Off CDRs'),
-												$T.span({class: 'header-label'}, this._oShowWriteOffs.getElement()),
+												// $T.span({class: 'header-label'}, 'Show Written Off CDRs'),
+												// $T.span({class: 'header-label'}, this._oShowWriteOffs.getElement()),
 												$T.span({class: 'header-label'},'Earliest CDR'),
 												this._earliestStartDatePicker.getElement(),
 												cancelEarliestDate,
 												$T.span({class: 'header-label'},'Latest CDR'),
 												this._latestStartDatePicker.getElement(),
 												cancelLatestDate,
-												searchButton,
-												CSVButton
+												searchButton
 											)
 										),
 									
@@ -137,6 +133,10 @@ var Component_Delinquent_CDR_List = Class.create(
 															Component_Delinquent_CDR_List.SORT_FIELD_LATEST_CDR	
 														),
 														this._createFieldHeader(
+															'Status', 
+															Component_Delinquent_CDR_List.SORT_FIELD_STATUS	
+														),
+														this._createFieldHeader(
 															''
 														)
 													),
@@ -156,6 +156,7 @@ var Component_Delinquent_CDR_List = Class.create(
 														$T.th(),
 														$T.th(),
 														$T.th(),
+														this._createFilterValueElement(Component_Delinquent_CDR_List.FILTER_FIELD_SHOW_WRITEOFFS, 'Include Written Off CDRs'),
 														$T.th()
 													)
 												),
@@ -317,10 +318,6 @@ var Component_Delinquent_CDR_List = Class.create(
 	_refresh: function()
 	{
 		this._oFilter.setFilterValue(Component_Delinquent_CDR_List.FILTER_FIELD_EARLIEST_CDR, this._earliestStartDatePicker.getElementValue(), this._latestStartDatePicker.getElementValue() );
-		bShowWriteOffs = this._oShowWriteOffs.getElementValue()?true:false;
-		this._oFilter.setFilterValue(Component_Delinquent_CDR_List.FILTER_FIELD_SHOW_WRITEOFFS, bShowWriteOffs);
-		
-		
 		this._oSort.refreshData(true);
 		this._oFilter.refreshData(true);
 		this.oPagination.getCurrentPage();
@@ -336,32 +333,13 @@ var Component_Delinquent_CDR_List = Class.create(
 		);
 	},
 	
-	_downloadCSV	: function(oResponse)
-	{
-		
-			if (!oResponse)
-			{	
-				
-				this._oSort.refreshData(true);
-				this._oFilter.refreshData(true);
-				
-				this._oLoadingPopup.display();
-				var fnRequest     = jQuery.json.jsonFunction(this._downloadCSV.bind(this), null, 'CDR', 'ExportToCSV');
-				fnRequest(this.oDataSet._hSort, this.oDataSet._hFilter);				
-				//window.location	= 'reflex.php/CDR/ExportToCSV/' + this.oDataSet._hSort + '/' + this.oDataSet._hFilter;
-			}
-			else
-			{
-				sFilename	= oResponse.FileName.replace(/\//g, "\\");
-				window.location	= 'reflex.php/CDR/DownloadCSV/' + encodeURIComponent(sFilename);
-				this._oLoadingPopup.hide();
-			}
-			
-	},
+
 	
-	_showCDRPopup : function(strStartDate, strEndDate, strFNN	,intCarrier, intServiceType)
+	_showCDRPopup : function(strStartDate, strEndDate, strFNN	,intCarrier, intServiceType, iStatus)
 	{
-		new Popup_CDR(strStartDate, strEndDate, strFNN	,intCarrier, intServiceType);
+	
+		debugger;
+		new Popup_CDR(strStartDate, strEndDate, strFNN	,intCarrier, intServiceType, iStatus);
 	
 	
 	
@@ -370,7 +348,7 @@ var Component_Delinquent_CDR_List = Class.create(
 	_writeOff : function (sFNN, bConfirm, oResponse)
 	{
 		
-		var oFNN = this._oData[sFNN];
+		var oFNN = this._oData[sFNN][107];
 		if (!oResponse)
 		{
 			if (!bConfirm)
@@ -390,7 +368,7 @@ var Component_Delinquent_CDR_List = Class.create(
 			}
 			else
 			{
-			
+				
 				this._oLoadingPopup.display();
 				var fnRequest     = jQuery.json.jsonFunction(this._writeOff.bind(this, sFNN, true), null, 'CDR', 'bulkWriteOffForFNN');
 				fnRequest(oFNN.EarliestStartDatetime, oFNN.LatestStartDatetime, oFNN.FNN, oFNN.Carrier, oFNN.ServiceType);
@@ -404,28 +382,69 @@ var Component_Delinquent_CDR_List = Class.create(
 	
 	},
 	
+	_setService: function (oStatusCell, oResponse, strStartDate, strEndDate, strFNN	,intCarrier, intServiceType, iServiceId)
+	{
+		if (!oResponse)
+		{
+			
+			
+			// AssignCDRsToServices($sFNN, $iCarrier, $iServiceType, $sCDRs)
+			
+			var fnRequest     = jQuery.json.jsonFunction(this._setService.bind(this, oStatusCell), null, 'CDR', 'BulkAssignCDRsToServices');
+			//fnRequest(this.oDataSet._hSort, this.oDataSet._hFilter);
+			fnRequest(strFNN, intCarrier, intServiceType, strStartDate, strEndDate, iServiceId);
+		
+		}
+		else
+		{
+			
+			oStatusCell.innerHTML = 'Assigned to Account: ' + oResponse.aData[iCDRId].account_id + ', Service Id: ' + oResponse.aData[iCDRId].service_id;
+			
+		
+		
+		}
+		
+	
+	
+	},
+	
+	_showServicesPopup: function(oStatusCell, strStartDate, strEndDate, strFNN	,intCarrier, intServiceType)
+	{	
+		
+		
+		new Popup_CDR_Service_List(this._setService.bind(this, oStatusCell, false, strStartDate, strEndDate, strFNN	,intCarrier, intServiceType), null, strStartDate, strEndDate, strFNN	,intCarrier, intServiceType);
+
+	},
+	
+	
 	_createTableRow	: function(oCDR)
 	{
 		
-
-		var writeOff = $T.img({class:"followup-list-all-action-icon", src: "../admin/img/template/delete.png", alt: 'Write Off', title: 'Write Off'}).observe('click', this._writeOff.bind(this, oCDR.FNN, false, false));
-		var assign = $T.img({class:"followup-list-all-action-icon", src: "../admin/img/template/telephone_add.png", alt: 'Assign to Service', title: 'Assign to Service'}).observe('click', this._clearDatePickerValue.bind(this, this._earliestStartDatePicker));
-		var viewDetails = $T.img({class:"followup-list-all-action-icon", src: "../admin/img/template/magnifier.png", alt: 'Show Details', title: 'Show Details'}).observe('click', this._showCDRPopup.bind(this, oCDR.EarliestStartDatetime, oCDR.LatestStartDatetime, oCDR.FNN, oCDR.Carrier, oCDR.ServiceType));
+		var writeOff = "";
+		var assign = "";
+		var viewDetails = viewDetails = $T.img({class:"followup-list-all-action-icon", src: "../admin/img/template/magnifier.png", alt: 'Show Details', title: 'Show Details'}).observe('click', this._showCDRPopup.bind(this, oCDR.EarliestStartDatetime, oCDR.LatestStartDatetime, oCDR.FNN, oCDR.Carrier, oCDR.ServiceType, oCDR.Status));
+		var statusCell = $T.td(oCDR.StatusDescr);
+		
+		if (oCDR.Status == 107)
+		{
+			writeOff = $T.img({class:"followup-list-all-action-icon", src: "../admin/img/template/delete.png", alt: 'Write Off', title: 'Write Off'}).observe('click', this._writeOff.bind(this, oCDR.FNN, false, false));
+			assign = $T.img({class:"followup-list-all-action-icon", src: "../admin/img/template/telephone_add.png", alt: 'Assign to Service', title: 'Assign to Service'}).observe('click', this._showServicesPopup.bind(this, statusCell, oCDR.EarliestStartDatetime, oCDR.LatestStartDatetime, oCDR.FNN, oCDR.Carrier, oCDR.ServiceType, oCDR.Status));
+		}
+			
+		var	oTR	=	$T.tr(
+						$T.td(oCDR.FNN),
+						$T.td(oCDR.carrier_label),
+						$T.td(oCDR.TotalCost),
+						$T.td(oCDR.Count),							
+						$T.td(oCDR.EarliestStartDatetime),
+						$T.td(oCDR.LatestStartDatetime),
+						statusCell,
+						$T.td({class : "followup-list-all-action-icons"},writeOff, assign, viewDetails)
+					);
+			
 
 			
-			var	oTR	=	$T.tr(
-							$T.td(oCDR.FNN),
-							$T.td(oCDR.carrier_label),
-							$T.td(oCDR.TotalCost),
-							$T.td(oCDR.Count),							
-							$T.td(oCDR.EarliestStartDatetime),
-							$T.td(oCDR.LatestStartDatetime),
-							$T.td({class : "followup-list-all-action-icons"},writeOff, assign, viewDetails)
-						);
-			
-
-			
-			return oTR;
+		return oTR;
 		
 	},
 	
@@ -573,135 +592,14 @@ var Component_Delinquent_CDR_List = Class.create(
 		return oTH;
 	},
 	
-	_getFollowUpActions	: function(oFollowUp)
-	{
-		var oUL	= $T.ul({class: 'reset horizontal followup-list-all-actions'});
-		
-		var oClose	= $T.img({src: Component_Delinquent_CDR_List.ACTION_CLOSE_IMAGE_SOURCE, alt: 'Close the Follow-Up', title: 'Close the Follow-Up'});
-		oClose.observe('click', this._closeFollowUp.bind(this, oFollowUp, $CONSTANT.FOLLOWUP_CLOSURE_TYPE_COMPLETED));
-		oUL.appendChild($T.li(oClose));
-		
-		var oDismiss	= $T.img({src: Component_Delinquent_CDR_List.ACTION_DISMISS_IMAGE_SOURCE, alt: 'Dismiss the Follow-Up', title: 'Dismiss the Follow-Up'});
-		oDismiss.observe('click', this._closeFollowUp.bind(this, oFollowUp, $CONSTANT.FOLLOWUP_CLOSURE_TYPE_DISMISSED));
-		oUL.appendChild($T.li(oDismiss));
-		
-		var oEditDueDate	= $T.img({src: Component_Delinquent_CDR_List.ACTION_EDIT_DATE_IMAGE_SOURCE, alt: 'Edit Due Date', title: 'Edit Due Date'});
-		oEditDueDate.observe('click', this._editDueDate.bind(this, oFollowUp));
-		oUL.appendChild($T.li(oEditDueDate));
-		
-		var oReAssign	= $T.img({src: Component_Delinquent_CDR_List.ACTION_REASSIGN_IMAGE_SOURCE, alt: 'Reassign the Follow-Up', title: 'Reassign the Follow-Up'});
-		oReAssign.observe('click', this._reAssignFollowUp.bind(this, oFollowUp));
-		oUL.appendChild($T.li(oReAssign));
-		
-		var oInvAndPay	= 	$T.a({href: 'flex.php/Account/InvoicesAndPayments/?Account.Id=' + oFollowUp.details.account_id},
-								$T.img({src: Component_Delinquent_CDR_List.ACTION_INV_PAYMENTS_IMAGE_SOURCE, alt: 'Invoices & Payments', title: 'Invoices & Payments'})
-							);
-		oUL.appendChild($T.li(oInvAndPay));
-		
-		var oView	= $T.img({src: Component_Delinquent_CDR_List.ACTION_VIEW_IMAGE_SOURCE, alt: 'View More Details', title: 'View More Details'});
-		oView.observe('click', this._viewDetailsPopup.bind(this, oFollowUp));
-		oUL.appendChild($T.li(oView));
-		
-		var oRecurring	= 	$T.a({href: 'reflex.php/FollowUp/ManageRecurring/' + (this._iEmployeeId ? this._iEmployeeId : '')},
-								$T.img({src: Component_Delinquent_CDR_List.ACTION_RECURRING_IMAGE_SOURCE, alt: 'Part of a Recurring Follow-Up', title: 'Part of a Recurring Follow-Up'})
-							);
-		oUL.appendChild($T.li(oRecurring));
-		
-		if (oFollowUp.followup_id && !oFollowUp.followup_closure_id && (this._bEditMode || (oFollowUp.assigned_employee_id == this._iEmployeeId)))
-		{
-			// Leave visible
-		}
-		else
-		{
-			oEditDueDate.toggle();
-		}
-		
-		if (!oFollowUp.followup_closure_id && (this._bEditMode || (oFollowUp.assigned_employee_id == this._iEmployeeId)))
-		{
-			// Leave visible
-		}
-		else
-		{
-			oClose.toggle();
-			oDismiss.toggle();
-		}
-		
-		if (this._bEditMode && !oFollowUp.followup_closure_id)
-		{
-			// Leave visible
-		}
-		else
-		{
-			oReAssign.toggle();
-		}
-		
-		if (oFollowUp.details && oFollowUp.details.account_id)
-		{
-			// Leave visible
-		}
-		else
-		{
-			oInvAndPay.toggle();
-		}
-		
-		if (oFollowUp.followup_recurring_id || !oFollowUp.followup_id)
-		{
-			// Leave visible
-		}
-		else
-		{
-			oRecurring.toggle();
-		}
-		
-		return oUL;
-	},
+
 	
-	_closeFollowUp	: function(oFollowUp, iFollowUpClosureTypeId)
-	{
-		var oPopup	= 	new Popup_FollowUp_Close(
-							iFollowUpClosureTypeId,
-							oFollowUp.followup_id, 
-							oFollowUp.followup_recurring_id,
-							oFollowUp.followup_recurring_iteration,
-							this.oPagination.getCurrentPage.bind(this.oPagination)
-						);
-	},
+
 	
-	_reAssignFollowUp	: function(oFollowUp)
-	{
-		var oPopup	= 	new Popup_FollowUp_Reassign(
-							oFollowUp.followup_id, 
-							oFollowUp.followup_recurring_id,
-							this.oPagination.getCurrentPage.bind(this.oPagination)
-						);
-	},
+
+
 	
-	_editDueDate	: function(oFollowUp)
-	{
-		var oPopup	= 	new Popup_FollowUp_Due_Date(
-							oFollowUp.followup_id, 
-							oFollowUp.due_datetime,
-							this.oPagination.getCurrentPage.bind(this.oPagination)
-						);
-	},
-	
-	_viewDetailsPopup	: function(oFollowUp)
-	{
-		if (oFollowUp.followup_id)
-		{
-			var oPopup	= new Popup_FollowUp_View(oFollowUp.followup_id, false, true);
-		}
-		else
-		{
-			// Show the details for the recurring 'iteration' NOT the recurring fup as a whole
-			var oPopup	=	new Popup_FollowUp_View(
-								oFollowUp.followup_recurring_id, 
-								true, 
-								true, 
-								oFollowUp.followup_recurring_iteration
-							);
-		}
-	},
+
 	
 	
 	_formatFilterValueForDisplay	: function(sField, mValue)
@@ -762,7 +660,7 @@ var Component_Delinquent_CDR_List = Class.create(
 	},
 });
 
-Component_Delinquent_CDR_List.MAX_RECORDS_PER_PAGE		= 3;
+Component_Delinquent_CDR_List.MAX_RECORDS_PER_PAGE		= 10;
 Component_Delinquent_CDR_List.EDIT_IMAGE_SOURCE			= '../admin/img/template/pencil.png';
 Component_Delinquent_CDR_List.FILTER_IMAGE_SOURCE			= '../admin/img/template/table_row_insert.png';
 Component_Delinquent_CDR_List.REMOVE_FILTER_IMAGE_SOURCE	= '../admin/img/template/delete.png';
@@ -795,7 +693,8 @@ Component_Delinquent_CDR_List.FILTER_FIELD_FNN			= 'FNN';
 Component_Delinquent_CDR_List.FILTER_FIELD_COST	= 'TotalCost';
 Component_Delinquent_CDR_List.FILTER_FIELD_COUNT			= 'Count';
 Component_Delinquent_CDR_List.FILTER_FIELD_CARRIER = 'Carrier';
-Component_Delinquent_CDR_List.FILTER_FIELD_SHOW_WRITEOFFS = 'bWriteOffs';
+Component_Delinquent_CDR_List.FILTER_FIELD_SHOW_WRITEOFFS = 'Status';
+
 
 Component_Delinquent_CDR_List.SORT_FIELD_EARLIEST_CDR		= 'EarliestStartDatetime';
 Component_Delinquent_CDR_List.SORT_FIELD_LATEST_CDR			= 'LatestStartDatetime';
@@ -804,6 +703,7 @@ Component_Delinquent_CDR_List.SORT_FIELD_FNN				= 'FNN';
 Component_Delinquent_CDR_List.SORT_FIELD_COUNT				= 'Count';
 Component_Delinquent_CDR_List.SORT_FIELD_CARRIER			= 'carrier_label';
 Component_Delinquent_CDR_List.SORT_FIELD_COST				= 'TotalCost';
+Component_Delinquent_CDR_List.SORT_FIELD_STATUS				= 'StatusDescr';
 
 Component_Delinquent_CDR_List.RANGE_FILTER_DATE_REGEX			= /^(\d{4}-\d{2}-\d{2})(\s\d{2}:\d{2}:\d{2})?$/;
 Component_Delinquent_CDR_List.RANGE_FILTER_FROM_MINUTES		= '00:00:00';
@@ -1021,6 +921,42 @@ Component_Delinquent_CDR_List.getCarrierList = function(fCallback, oResponse)
 	}
 };
 
+Component_Delinquent_CDR_List.getStatusList = function (fCallback, oResponse)
+{
+
+	if (!oResponse)
+	{
+		// Make Request for all active employees sorted by first name then last name 
+		var fn	=	jQuery.json.jsonFunction(
+								Component_Delinquent_CDR_List.getStatusList.bind(Component_Delinquent_CDR_List.getStatusList,fCallback ), 
+								null, 
+								'CDR', 
+								'getStatusList'
+							);
+		fn();
+	}
+	else
+	{
+		
+		// Create an Array of OPTION DOM Elements
+		var oResults	= jQuery.json.arrayAsObject(oResponse.aData);
+		var aOptions	= [];
+		for (i in oResults)
+		{
+			aOptions.push(
+				$T.option({value: i},
+						oResults[i]
+				)
+			);		
+		}
+		
+		// Pass to Callback
+		fCallback(aOptions);
+	}
+
+
+};
+
 Component_Delinquent_CDR_List.formatDateTimeFilterValue	= function(sDateTime)
 {
 	var oDate	= Date.$parseDate(sDateTime, 'Y-m-d H:i:s');
@@ -1074,6 +1010,23 @@ Component_Delinquent_CDR_List.FILTER_FIELDS[Component_Delinquent_CDR_List.FILTER
 																													 }
 																									 };
 																									 
+																									 
+																									 
+Component_Delinquent_CDR_List.FILTER_FIELDS[Component_Delinquent_CDR_List.FILTER_FIELD_SHOW_WRITEOFFS] = 	{
+																							 iType	: Filter.FILTER_TYPE_VALUE,
+																							 oOption	: 	{
+																											 sType		: 'select',
+																											 mDefault	: null,
+																											 oDefinition	:	{
+																																 sLabel		: 'Include Written Off CDRs',
+																																mEditable	: true,
+																																 mMandatory	: false,
+																																 fnPopulate	: Component_Delinquent_CDR_List.getStatusList.bind(Component_Delinquent_CDR_List)
+																																 
+																															 }
+																										 }
+																						};																										 
+																									 
 																								 
 																									 
 Component_Delinquent_CDR_List.FILTER_FIELDS[Component_Delinquent_CDR_List.FILTER_FIELD_FNN]		= 	{
@@ -1114,9 +1067,7 @@ Component_Delinquent_CDR_List.FILTER_FIELDS[Component_Delinquent_CDR_List.FILTER
 																																					}
 																																}
 																										};
- Component_Delinquent_CDR_List.FILTER_FIELDS[Component_Delinquent_CDR_List.FILTER_FIELD_SHOW_WRITEOFFS]	= 	{
-																									 iType	: Filter.FILTER_TYPE_VALUE																									
-																								 };
+
 // Component_Delinquent_CDR_List.FILTER_FIELDS[Component_Delinquent_CDR_List.FILTER_FIELD_STATUS]	= 	{
 																									// iType	: Filter.FILTER_TYPE_VALUE,
 																									// oOption	: 	{
