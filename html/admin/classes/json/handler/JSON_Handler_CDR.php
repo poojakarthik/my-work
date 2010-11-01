@@ -4,6 +4,9 @@ class JSON_Handler_CDR extends JSON_Handler
 {
 	protected	$_JSONDebug	= '';
 
+	const SHOW_BOTH = -1;
+
+
 	public function __construct()
 	{
 		// Send Log output to a debug string
@@ -37,6 +40,23 @@ class JSON_Handler_CDR extends JSON_Handler
 
 	}
 
+	public function getStatusList()
+	{
+
+
+		$aStatusList = array(CDR_BAD_OWNER => GetConstantDescription(CDR_BAD_OWNER, "CDR"),
+							CDR_DELINQUENT_WRITTEN_OFF =>GetConstantDescription(CDR_DELINQUENT_WRITTEN_OFF, "CDR"),
+							self::SHOW_BOTH	=> "Show delinquent and written off CDRs"
+							);
+
+
+		return 	array(
+							"Success"		=> true,
+							"aData"		=> $aStatusList
+						);
+
+	}
+
 	public function getDelinquentDataSet($bCountOnly=false, $iLimit=0, $iOffset=0, $oFieldsToSort=null, $oFilter=null, $iSummaryCharacterLimit=30)
 	{
 		try
@@ -65,14 +85,14 @@ class JSON_Handler_CDR extends JSON_Handler
 			{
 				$iLimit		= (max($iLimit, 0) == 0) ? null : (int)$iLimit;
 				$iOffset	= ($iLimit === null) ? null : max((int)$iOffset, 0);
-				$aFollowUps	= CDR::GetDelinquentFNNs($iLimit, $iOffset, get_object_vars($oFieldsToSort), $aFilter);
+				$aFNN		= CDR::GetDelinquentFNNs($iLimit, $iOffset, get_object_vars($oFieldsToSort), $aFilter);
 				$aResults	= array();
 				$iCount		= 0;
 
 
 				return 	array(
 							"Success"		=> true,
-							"aRecords"		=> $aFollowUps,
+							"aRecords"		=> $aFNN,
 							"iRecordCount"	=>CDR::GetDelinquentFNNs(null, null, get_object_vars($oFieldsToSort), $aFilter, true)
 						);
 			}
@@ -94,7 +114,7 @@ class JSON_Handler_CDR extends JSON_Handler
 	}
 
 
-	public function ExportToCSV($oFieldsToSort=null, $oFilter=null)
+	public function ExportToCSV($aCDRIds)//$strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType,$iStatus)
 	{
 
 
@@ -108,15 +128,10 @@ class JSON_Handler_CDR extends JSON_Handler
 
 
 
-			$aColumns			= Array("FNN",
-									"ServiceType"	,
-									"Carrier"	,
-		 							"carrier_label"	,
-									"TotalCost"	,
-									"EarliestStartDatetime"	,
-									"LatestStartDatetime",
-									"Count"		,
-									"Status"
+			$aColumns			= Array("Id",
+									"Time",
+									"Cost",
+		 							"Status"
 									);
 
 
@@ -129,8 +144,8 @@ class JSON_Handler_CDR extends JSON_Handler
 
 			// Build list of lines for the file
 			$aLines	= array();
-			$aData =  CDR::GetDelinquentFNNs(null, null, get_object_vars($oFieldsToSort), get_object_vars($oFilter));
-
+			//$aData =  CDR::GetDelinquentFNNs(null, null, get_object_vars($oFieldsToSort), get_object_vars($oFilter));
+			$aData =CDR::GetCDRsForCSVExport($aCDRIds);
 			foreach ($aData as $aRecord)
 			{
 				$oFile->addRow($aRecord);
@@ -168,7 +183,7 @@ class JSON_Handler_CDR extends JSON_Handler
 
 
 
-	 function GetDelinquentCDRs($strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType)
+	 function GetDelinquentCDRs($strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType, $iStatus = CDR_BAD_OWNER)
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
@@ -180,7 +195,7 @@ class JSON_Handler_CDR extends JSON_Handler
 		$intCarrier		= DBO()->Delinquents->Carrier->Value;
 		$intServiceType	= DBO()->Delinquents->ServiceType->Value;*/
 
-		$arrReturnData = CDR::GetDelinquentCDRs($strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType);
+		$arrReturnData = CDR::GetDelinquentCDRs($strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType, $iStatus);
 		//$arrReturnData['ServiceSelectorHtml']	= $strServiceSelectorHtml;
 		return 	array(
 							"Success"		=> true,
@@ -200,6 +215,13 @@ class JSON_Handler_CDR extends JSON_Handler
 		}
 
 		return $this->writeOffDelinquentCDRs($aCDRIds);
+	}
+
+	function writeOffCDRs($aCDRs)
+	{
+
+		return $this->writeOffDelinquentCDRs($aCDRs);
+
 	}
 
 
@@ -240,6 +262,102 @@ class JSON_Handler_CDR extends JSON_Handler
 					);
 		}
 	}
+
+
+//------------------------------------------------------------------------//
+	// AssignCDRsToServices
+	//------------------------------------------------------------------------//
+	/**
+	 * AssignCDRsToServices()
+	 *
+	 * Assigns the passed delinquent CDRs to their respective Services
+	 *
+	 * Assigns the passed delinquent CDRs to their respective Services
+	 * It assumes the following data is passed:
+	 * 		DBO()->Delinquents->FNN			The FNN of the Delinquent CDRs
+	 * 		DBO()->Delinquents->Carrier		The Carrier of the Delinquent CDRs
+	 * 		DBO()->Delinquents->ServiceType	The ServiceType of the Delinquent CDRs
+	 * 		DBO()->Delinquents->CDRs		array of objects of the form:
+	 * 											arrCDRs[i]->Id		: CDR's Id
+	 * 											arrCDRs[i]->Service	: Id of the Service to assign the CDR to
+	 * 											arrCDRs[i]->Record	: The record number that the CDR is assigned in the table on the Delinquent CDRs webpage
+	 *
+	 * @return		void
+	 * @method		AssignCDRsToServices
+	 */
+	function AssignCDRsToServices($strFNN	, $intCarrier, $intServiceType, $arrCDRs)
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+
+		/*$strFNN			= DBO()->Delinquents->FNN->Value;
+		$intCarrier		= DBO()->Delinquents->Carrier->Value;
+		$intServiceType	= DBO()->Delinquents->ServiceType->Value;
+		$arrCDRs		= DBO()->Delinquents->CDRs->Value;*/
+		try
+		{
+		TransactionStart();
+		$arrSuccessfulCDRs = CDR::assignCDRsToService($strFNN, $intCarrier, $intServiceType, $arrCDRs);
+		}
+		catch (Exception $e)
+		{
+			TransactionRollback();
+			return	array(
+						'bSuccess'	=> false,
+						'sMessage'	=> 'issues',
+						'aData'		=>$arrSuccessfulCDRs
+					);
+
+		}
+
+			// Everything worked out
+			TransactionCommit();
+			return	array(
+						'bSuccess'	=> true,
+						'sMessage'	=> "",
+						'aData'		=>$arrSuccessfulCDRs
+					);
+
+	}
+
+
+function BulkAssignCDRsToServices ($strFNN, $intCarrier, $intServiceType,  $strStartDate,$strEndDate, $iServiceId)
+{
+
+	$aCDRs = CDR::GetDelinquentCDRs($strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType);
+	try
+	{
+	TransactionStart();
+	foreach ($aCDRs['CDRs'] as $aCDR)
+	{
+		$oCDR = new stdClass();
+		$oCDR->Id = $aCDR['Id'];
+		$oCDR->Service = $iServiceId;
+		$arrSuccessfulCDRs = CDR::assignCDRsToService($strFNN, $intCarrier, $intServiceType, array($oCDR));
+	}
+
+
+
+	}
+	catch(Exception $e)
+	{
+
+		TransactionRollback();
+
+
+	}
+
+	TransactionCommit();
+			return	array(
+						'bSuccess'	=> true,
+						'sMessage'	=> "",
+						'aData'		=>$arrSuccessfulCDRs
+					);
+
+}
+
+
 }
 
 class JSON_Handler_CDR_Exception extends Exception
