@@ -7769,6 +7769,12 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > div > i
 	cursor			: pointer;
 }
 
+div.delinquent-service-content .mouse-pointer
+{
+cursor	: pointer;
+
+}
+
 th.followup-list-all-header > img
 {
 	padding-right	: 0.5em;
@@ -7796,4 +7802,10 @@ th.followup-list-all-header-multiline
 
 	text-align: right;
 
+}
+
+
+div.content-delinquent-cdrs {
+max-height: 30em; 
+overflow: auto;
 }
