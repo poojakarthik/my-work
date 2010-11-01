@@ -133,17 +133,27 @@ class CDR extends ORM_Cached
 	}
 
 
-	public static function GetDelinquentCDRs($strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType)
+	public static function GetDelinquentCDRs($strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType, $iStatus = CDR_BAD_OWNER)
 	{
 		// Retrieve all the CDRs
 		$strWhere			= "Status = <BadOwner> AND FNN = <FNN> AND ServiceType = <ServiceType> AND Carrier = <Carrier> AND StartDatetime BETWEEN <StartDate> AND <EndDate>";
-		$arrWhere			= Array(	"BadOwner"		=> CDR_BAD_OWNER,
+		$arrWhere			= Array(	"BadOwner"		=> $iStatus,
 										"FNN"			=> $strFNN,
 										"ServiceType"	=> $intServiceType,
 										"Carrier"		=> $intCarrier,
 										"StartDate"		=> $strStartDate,
 										"EndDate"		=> $strEndDate);
-		$selDelinquentCDRs	= new StatementSelect("CDR", "Id, Cost, StartDatetime", $strWhere, "StartDatetime DESC, Id ASC");
+		$sDelinquentStatusDescr = GetConstantDescription(CDR_BAD_OWNER, "CDR");
+		$sWriteOffStausDescr = GetConstantDescription(CDR_DELINQUENT_WRITTEN_OFF, "CDR");
+		$arrColumns			= Array("Id"					=>	"Id",
+									"Cost"			=>	"Cost",
+									"StartDatetime"				=>	"StartDatetime",
+		 							"Status"				=>	"Status",
+									"StatusDescr"			=>	"if (Status = ".CDR_BAD_OWNER.", '".$sDelinquentStatusDescr."','".$sWriteOffStausDescr."')"
+									);
+
+
+		$selDelinquentCDRs	= new StatementSelect("CDR", $arrColumns, $strWhere, "StartDatetime DESC, Id ASC");
 
 		$mixResult = $selDelinquentCDRs->Execute($arrWhere);
 
@@ -235,7 +245,10 @@ class CDR extends ORM_Cached
 			$arrCDRs[$arrRecord['Id']] = Array(	"Id"	=> $arrRecord['Id'],
 								"Time"	=> $strStartDatetime,
 								"Cost"	=> $strCost,
-								"Service" =>'unassigned');
+								"Status" =>$arrRecord['StatusDescr'],
+								"StatusId"	=>	$arrRecord['Status']
+								);
+
 		}
 
 		// Build the Html required of the Service Selector popup
@@ -252,36 +265,67 @@ class CDR extends ORM_Cached
 
 	}
 
+
+	public static function GetCDRsForCSVExport ($aCDRIds)
+	{
+		$sDelinquentStatusDescr = GetConstantDescription(CDR_BAD_OWNER, "CDR");
+		$sWriteOffStausDescr = GetConstantDescription(CDR_DELINQUENT_WRITTEN_OFF, "CDR");
+		$sSql = "SELECT
+			      c.Id as Id,
+			      c.StartDatetime as Time,
+			      c.Cost as Cost,
+			      CASE  c.Status WHEN ".CDR_BAD_OWNER." THEN '".$sDelinquentStatusDescr."' WHEN ". CDR_DELINQUENT_WRITTEN_OFF." THEN  '".$sWriteOffStausDescr."' ELSE CONCAT (CONCAT_WS(' ', 'Account ID:', s.Account), CONCAT_WS(' ',' FNN:', s.FNN)) END as Status
+			    FROM CDR c LEFT JOIN Service s ON (c.Service = s.Id ) where c.Id in (".implode(',',$aCDRIds).")";
+
+		$oQuery = new Query();
+		$result = $oQuery->Execute($sSql);
+		$aResultSet = array();
+		if ($result)
+		{
+			while ($aRow = $result->fetch_assoc())
+			{
+				$aResultSet[]= $aRow;//$oOrm->toArray();
+			}
+		}
+
+		return $aResultSet;
+
+
+	}
+
 	public static function GetDelinquentFNNs($iLimit, $iOffset, $aSortFields, $aFilter , $bCountOnly = false)
 	{
 
-		if (array_key_exists( 'bWriteOffs',$aFilter))
+		if (!array_key_exists( 'Status',$aFilter))
 		{
 			$object = new stdClass();
 			$object->aValues = array(CDR_BAD_OWNER, CDR_DELINQUENT_WRITTEN_OFF);
+			$aFilter['Status'] = $object;
 
-			$aFilter['Status'] = $aFilter['bWriteOffs']?$object:CDR_BAD_OWNER;
-			unset($aFilter['bWriteOffs']);
 		}
-		else
+		else if ($aFilter['Status'] == -1)
 		{
-			$aFilter['Status'] = CDR_BAD_OWNER;
+			$object = new stdClass();
+			$object->aValues = array(CDR_BAD_OWNER, CDR_DELINQUENT_WRITTEN_OFF);
+			$aFilter['Status'] = $object;
 		}
 
 		$aWhere	= StatementSelect::generateWhere(null, $aFilter);
 		$sOrderByClause	=	StatementSelect::generateOrderBy(array(), $aSortFields);
-
+$sDelinquentStatusDescr = GetConstantDescription(CDR_BAD_OWNER, "CDR");
+$sWriteOffStausDescr = GetConstantDescription(CDR_DELINQUENT_WRITTEN_OFF, "CDR");
 		$sLimitClause	= StatementSelect::generateLimit($iLimit, $iOffset);
 
 		$arrColumns			= Array("FNN"					=>	"FNN",
 									"ServiceType"			=>	"ServiceType",
 									"Carrier"				=>	"Carrier",
 		 							"carrier_label"			=> "Carrier.Name",
-									"TotalCost"				=>	"SUM(Cost)",
+									"TotalCost"				=>	"ROUND(SUM(Cost),2)",
 									"EarliestStartDatetime"	=>	"MIN(StartDatetime)",
 									"LatestStartDatetime"	=>	"MAX(StartDatetime)",
 									"Count"					=>	"Count(CDR.Id)",
-									"Status"				=>	"Status"
+									"Status"				=>	"Status",
+									"StatusDescr"			=>	"if (Status = ".CDR_BAD_OWNER.", '".$sDelinquentStatusDescr."','".$sWriteOffStausDescr."')"
 									);
 		$sCarrierJoin = $aWhere['sClause']!=""?" AND CDR.Carrier = Carrier.Id":" WHERE CDR.Carrier = Carrier.Id";
 
@@ -301,7 +345,131 @@ class CDR extends ORM_Cached
 
 	}
 
+	public function assignCDRsToService($strFNN	, $intCarrier, $intServiceType, $arrCDRs)
+	{
 
+		$arrSuccessfulCDRs = Array();
+
+		$strNow = GetCurrentISODateTime();
+
+		// Retrieve all possible owners for the CDRs
+		if ($intServiceType == SERVICE_TYPE_ADSL)
+		{
+			// ADSL Services have an "i" appended to their FNNs in the Service table, but don't in the CDR table
+			$strWhere = "FNN = '{$strFNN}i'";
+		}
+		else
+		{
+			$strWhere = "(FNN = <FNN> OR (Indial100 = TRUE AND FNN LIKE <IndialFNN>))";
+		}
+
+		$strIndialFNN	= substr($strFNN, 0, -2) . "__";
+		$selServices	= new StatementSelect("Service", "*", $strWhere);
+		if ($selServices->Execute(Array("FNN"=>$strFNN, "IndialFNN"=>$strIndialFNN)) === FALSE)
+		{
+			$arrReturnObject["Success"]		= FALSE;
+			$arrReturnObject["ErrorMsg"]	= "ERROR: Retrieving the services from the database failed, unexpectedly. Operation aborted.  Please notify your system administrator";
+			AjaxReply($arrReturnObject);
+			return TRUE;
+		}
+		$arrRecordSet	= $selServices->FetchAll();
+		$arrServices	= Array();
+		foreach ($arrRecordSet as $arrRecord)
+		{
+			$arrServices[$arrRecord['Id']] = $arrRecord;
+
+			try
+			{
+				$account = Account::getForId($arrRecord['Account']);
+				if ($account === NULL)
+				{
+					throw new exception("There is no account associated with this service record");
+				}
+				$strStartOfCurrentBillingPeriod = Invoice_Run::getLastInvoiceDateByCustomerGroup($account->customerGroup, $strNow);
+			}
+			catch (Exception $e)
+			{
+				// The start of the current billing period could not be calculated, for the account in question
+				// Just use the current timestamp, because clearly we are in the current billing period
+				$strStartOfCurrentBillingPeriod = $strNow;
+			}
+
+			$arrServices[$arrRecord['Id']]['EarliestAllowableCDRStartDate']	= date("Y-m-d", strtotime("-189 days $strStartOfCurrentBillingPeriod"));
+		}
+
+		// Build the Database objects required
+		$selCDR = new StatementSelect("CDR", "Id, FNN, Service, Account, AccountGroup, Status, StartDatetime", "Id = <Id>");
+
+		$arrUpdateColumns = Array("Service"=>NULL, "Account"=>NULL, "AccountGroup"=>NULL, "Status"=>NULL);
+		$updCDR = new StatementUpdateById("CDR", $arrUpdateColumns);
+
+		// Process the CDRs
+		$strErrorMsg = "";
+
+		foreach ($arrCDRs as $objCDR)
+		{
+			if (!isset($arrServices[$objCDR->Service]))
+			{
+				// The Service to assign the CDR to is not in the list of allowable services (it must have a different FNN)
+				$strErrorMsg = "ERROR: Could not find the assigned service for record {$objCDR->Record}. Operation aborted.";
+				break;
+			}
+			$arrService = $arrServices[$objCDR->Service];
+
+			// Retrieve the CDR record
+			if ($selCDR->Execute(Array("Id" => $objCDR->Id)) != 1)
+			{
+				// Could not retrieve the CDR record
+				$strErrorMsg = "ERROR: Could not retrieve CDR {$objCDR->Record} from the database (CDR Id = {$objCDR->Id}). Operation aborted.  Please notify your system administrator";
+				break;
+			}
+			$arrCDRRecord = $selCDR->Fetch();
+
+			$strStartDate = substr($arrCDRRecord['StartDatetime'], 0, 10);
+
+			// Check that the CDR's StartDatetime is within 189 days of the next bill date of the account that the CDR will be allocated to
+			if ($strStartDate < $arrService['EarliestAllowableCDRStartDate'])
+			{
+				// CDR is too old
+				$strStartTime = date("H:i:s d/m/Y", strtotime($arrCDRRecord['StartDatetime']));
+				$strErrorMsg = "ERROR: CDR {$objCDR->Record} with start time: $strStartTime is considered too old to be billed to this customer.  Operation aborted.";
+				break;
+			}
+
+			// Check the FNNs match
+			if ($strFNN != $arrCDRRecord['FNN'])
+			{
+				$strErrorMsg = "ERROR: CDR {$objCDR->Record} does not have FNN $strFNN. Operation Aborted.";
+				break;
+			}
+
+			// Check the FNN has Status == CDR_BAD_OWNER
+			if ($arrCDRRecord['Status'] != CDR_BAD_OWNER)
+			{
+				$strErrorMsg = "ERROR: CDR {$objCDR->Record} does not have 'Bad Owner' status.  Operation Aborted.";
+				break;
+			}
+
+			// Everything is valid.  Update the FNN
+			$arrUpdateColumns['Id']				= $objCDR->Id;
+			$arrUpdateColumns['Service']		= $arrService['Id'];
+			$arrUpdateColumns['Account']		= $arrService['Account'];
+			$arrUpdateColumns['AccountGroup']	= $arrService['AccountGroup'];
+			$arrUpdateColumns['Status']			= CDR_NORMALISED;
+
+			if ($updCDR->Execute($arrUpdateColumns) === FALSE)
+			{
+				// Updating the CDR failed
+				$strErrorMsg = "ERROR: Updating the CDR {$objCDR->Record} (CDR Id: $objCDR->Id) failed, unexpectedly.  Operation Aborted.  Please notify your system administrator.";
+				break;
+			}
+
+			// Add the CDR to the list of successfully owned CDRs
+			$arrSuccessfulCDRs[$objCDR->Id] = array('account_id'=>$arrService['Account'], 'service_id'=>$arrService['Id'], 'fnn'=>$arrService['FNN']);
+		}
+
+		return $arrSuccessfulCDRs;
+	}
 
 
 
