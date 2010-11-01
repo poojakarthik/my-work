@@ -7805,7 +7805,23 @@ th.followup-list-all-header-multiline
 }
 
 
-div.content-delinquent-cdrs {
+div.content-delinquent-cdrs-table {
 max-height: 30em; 
 overflow: auto;
+}
+
+div.content-delinquent-cdrs .float-right{
+
+padding-right: 30px;
+float: right;
+margin-right: 30px;
+
+}
+
+div.content-delinquent-cdrs .buttons{
+
+padding-top: 5px;
+padding-left: 7px;
+padding-bottom: 5px;
+
 }
