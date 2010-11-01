@@ -43,7 +43,9 @@
  */
  class Invoice_Export_XML
  {
-	//------------------------------------------------------------------------//
+	const	DEFAULT_CUSTOMER_NAME	= 'Customer';
+	
+ 	//------------------------------------------------------------------------//
 	// __construct()
 	//------------------------------------------------------------------------//
 	/**
@@ -153,7 +155,8 @@
 		self::_addElement($xmlAccount, 'Postcode', strtoupper($arrCustomer['Postcode']));
 		self::_addElement($xmlAccount, 'State', strtoupper($arrCustomer['State']));
 		$oPrimaryContact	= Contact::getForId(Account::getForId($arrInvoice['Account'])->PrimaryContact);
-		self::_addElement($xmlAccount, 'ContactPerson', $oPrimaryContact->title." ".$oPrimaryContact->getName());
+		$sContactPerson		= ($oPrimaryContact) ? $oPrimaryContact->title." ".$oPrimaryContact->getName() : self::DEFAULT_CUSTOMER_NAME;
+		self::_addElement($xmlAccount, 'ContactPerson', $sContactPerson);
 		
 		//--------------------------------------------------------------------//
 		// Adjustments
