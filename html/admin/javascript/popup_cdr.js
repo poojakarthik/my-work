@@ -30,6 +30,7 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 		{
 					this._oContentDiv 	=  $T.div({class: 'content'},
 											 $T.div({class: 'content-delinquent-cdrs'},
+											 $T.div( {class: 'content-delinquent-cdrs-table'},
 											 $T.table({class: 'reflex highlight-rows'},
 												$T.thead(
 													// Column headings
@@ -53,14 +54,21 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 													$T.button({class: 'icon-button'},
 																$T.img({src: "../admin/img/template/table.png", alt: '', title: 'Refresh List'}),
 																$T.span('Export to CSV')
-																	).observe('click', this._downloadCSV.bind(this, false)),
-																	
-																	$T.button({class: 'icon-button'},
+																	).observe('click', this._downloadCSV.bind(this, false)),																
+													$T.button({class: 'icon-button'},
+													$T.img({src: '../admin/img/template/telephone_add.png', alt: '', title: 'Close'}),
+													$T.span('Add all to Service')
+													).observe('click', this._bulkAssign.bind(this, false, false)),
+													$T.button({class: 'icon-button'},
+													$T.img({src: '../admin/img/template/delete.png', alt: '', title: 'Close'}),
+													$T.span('Write off all')
+													).observe('click', this._bulkWriteOff.bind(this, false, false)),
+													$T.button({class: 'icon-button float-right'},
 													$T.img({src: '../admin/img/template/delete.png', alt: '', title: 'Close'}),
 													$T.span('Close')
 													).observe('click', this._close.bind(this))
 																	
-												)
+												))
 													
 											
 										);
@@ -90,6 +98,85 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 					
 		
 	},
+	
+	_bulkWriteOff : function (bConfirm, oResponse)
+	{		
+		if (!oResponse)
+		{
+			if (!bConfirm)
+			{
+						Reflex_Popup.yesNoCancel(
+													"This will set the status for all CDRs with FNN " + this.sFNN + " to Write Off. Is that what you want to do?",
+													{
+														sNoLabel		: 'No', 
+														sYesLabel		: 'Yes',														
+														bOverrideStyle	: true,
+														iWidth			: 45,
+														sTitle			: 'CDR Writeoff',
+														fnOnYes			: this._bulkWriteOff.bind(this,true, false)														
+													}
+												);
+			
+			}
+			else
+			{
+				debugger;
+				this._oLoadingPopup.display();
+				var fnRequest     = jQuery.json.jsonFunction(this._bulkWriteOff.bind(this, true), null, 'CDR', 'bulkWriteOffForFNN');
+				fnRequest(this._sStart, this._sEnd, this._sFNN, this._iCarrier, this._iServiceType);		
+				
+			}
+		}
+		else
+		{
+			this._oLoadingPopup.hide();
+			this._refreshDataTable(oResponse.aData);
+			Reflex_Popup.alert('All CDRs for FNN ' + this._sFNN + ' have been written off succesfully');
+		}
+	
+	},
+	
+	_refreshDataTable: function (aData)
+	{
+		
+		while(this._tBody.childElementCount>0)
+		{
+		 this._tBody.deleteRow(this._tBody.childElementCount-1);
+
+		}	
+
+debugger;		
+		//var keys = Object.keys(oData);			
+		for (var i = 0;i<aData.length;i++)
+		{				
+			this._tBody.appendChild(this._createTableRow(aData[i], i+1));
+		}
+	
+	
+	
+	},
+	
+	_bulkAssign: function (iServiceId, oResponse)
+	{
+		if (!oResponse)
+		{
+			if (!iServiceId)
+			{
+				new Popup_CDR_Service_List(this._bulkAssign.bind(this), this._oData.Services);			
+			}
+			else
+			{
+				var fnRequest     = jQuery.json.jsonFunction(this._bulkAssign.bind(this), null, 'CDR', 'BulkAssignCDRsToServices');
+				fnRequest(this._sFNN,this._iCarrier,   this._iServiceType,this._sStart, this._sEnd, iServiceId);
+			}
+		
+		}
+		else
+		{			
+			alert('reset all statusses');		
+		}	
+	},
+	
 	
 	
 	_downloadCSV	: function(oResponse)
