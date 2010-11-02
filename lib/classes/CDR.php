@@ -266,7 +266,7 @@ class CDR extends ORM_Cached
 	}
 
 
-	public static function GetCDRsForCSVExport ($aCDRIds)
+	public static function GetStatusInfoForCDRs ($aCDRIds)
 	{
 		$sDelinquentStatusDescr = GetConstantDescription(CDR_BAD_OWNER, "CDR");
 		$sWriteOffStausDescr = GetConstantDescription(CDR_DELINQUENT_WRITTEN_OFF, "CDR");
@@ -275,7 +275,8 @@ class CDR extends ORM_Cached
 			      c.StartDatetime as Time,
 			      c.Cost as Cost,
 			      CASE  c.Status WHEN ".CDR_BAD_OWNER." THEN '".$sDelinquentStatusDescr."' WHEN ". CDR_DELINQUENT_WRITTEN_OFF." THEN  '".$sWriteOffStausDescr."' ELSE CONCAT (CONCAT_WS(' ', 'Account ID:', s.Account), CONCAT_WS(' ',' FNN:', s.FNN)) END as Status
-			    FROM CDR c LEFT JOIN Service s ON (c.Service = s.Id ) where c.Id in (".implode(',',$aCDRIds).")";
+			    FROM CDR c LEFT JOIN Service s ON (c.Service = s.Id ) where c.Id in (".implode(',',$aCDRIds).")
+			    ORDER by c.StartDatetime DESC, c.Id ASC";
 
 		$oQuery = new Query();
 		$result = $oQuery->Execute($sSql);
