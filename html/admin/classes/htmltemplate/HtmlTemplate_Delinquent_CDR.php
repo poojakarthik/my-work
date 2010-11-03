@@ -55,70 +55,15 @@ class HtmlTemplate_Delinquent_CDR extends FlexHtmlTemplate
 
 		$this->LoadJavascript('page_delinquent_cdr_list');
 		$this->LoadJavascript('component_delinquent_cdr_list');
-		$this->setDates();
-
-	}
-
-	private function setDates()
-	{
-
-		// Work out the start of the most recently started billing period
-		$arrCustomerGroups = Customer_Group::listAll();
-
-		$strNow = GetCurrentISODateTime();
-		$intNow = strtotime($strNow);
-
-		$intMostRecentlyStartedBillingPeriod = 0;
-		foreach ($arrCustomerGroups as $customerGroup)
-		{
-			try
-			{
-				$intStartOfCurrentBillingPeriod = strtotime(Invoice_Run::getLastInvoiceDateByCustomerGroup($customerGroup->id, $strNow));
-				if ($intStartOfCurrentBillingPeriod > $intMostRecentlyStartedBillingPeriod)
-				{
-					$intMostRecentlyStartedBillingPeriod = $intStartOfCurrentBillingPeriod;
-				}
-			}
-			catch (Exception $e)
-			{
-				// Suppress errors at this stage
-			}
-		}
-
-		if ($intMostRecentlyStartedBillingPeriod == 0)
-		{
-			// Invoice_Run::getLastInvoiceDateByCustomerGroup() must have failed for each customer group
-			// Use today's date
-			$intMostRecentlyStartedBillingPeriod = $intNow;
-		}
-
-		$intStartingDate	= strtotime("-189 days", $intMostRecentlyStartedBillingPeriod);
-
-		$strStartingDate	= date("d/m/Y", $intStartingDate);
-		$strEndingDate		= date("d/m/Y", $intNow);
-
-		$this->sStartDate = $strStartingDate;
-		$this->sEndDate = $strEndingDate;
-
-
-		$strYearLowerLimit	= substr($strStartingDate, 6);
-		$strYearUpperLimit	= substr($strEndingDate, 6);
-
-		$intMaxYear			= intval(date("Y", $intNow));
-		$intMinYear			= intval(date("Y", $intStartingDate));
-
-		$intDefaultYear		= $intMaxYear;
-		$intDefaultMonth	= intval(date("m", $intNow));
-		$intDefaultDay		= intval(date("d", $intNow));
 
 
 	}
+
+
 
 
 	public function Render()
 	{
-
-$x=3;
 
 		echo "
 		<div id='DelinquentCDRContainer'></div>
@@ -128,7 +73,7 @@ $x=3;
 				'load',
 				function()
 				{
-					CDRList = new Page_Delinquent_CDR_List(\$ID('DelinquentCDRContainer'),237, true,'". $this->sStartDate."','".$this->sEndDate."');
+					CDRList = new Page_Delinquent_CDR_List(\$ID('DelinquentCDRContainer'));
 
 				}
 			)
