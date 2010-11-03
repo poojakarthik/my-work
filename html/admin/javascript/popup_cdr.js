@@ -27,8 +27,17 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 			fnRequest(this._sStart,this._sEnd, this._sFNN, this._iCarrier, this._iServiceType, this._iStatus);
 		
 		}
+		else if (!oResponse.Success)
+		{
+		
+			this._oLoadingPopup.hide();
+			Component_Delinquent_CDR_List.serverErrorMessage(oResponse.sMessage, 'CDR Retrieval Error');
+		
+		}
 		else
 		{
+					
+						
 					this._oContentDiv 	=  $T.div({class: 'content'},
 											 $T.div({class: 'content-delinquent-cdrs'},
 											 $T.div( {class: 'content-delinquent-cdrs-table'},
@@ -36,8 +45,8 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 												$T.thead(
 													// Column headings
 													$T.tr(
-														$T.th('Record #'),
-														$T.th('Start Time'),
+														$T.th('CDR ID'),
+														$T.th('Start Date/Time'),
 														$T.th('Cost'),
 														$T.th('Status'),
 														$T.th(' ')
@@ -77,13 +86,7 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 		
 		// Add the rows
 			this._oData	= oResponse.aRecords;
-			
-			var keys = Object.keys(oResponse.aRecords.CDRs);
-			
-			for (var i = 0;i<keys.length;i++)
-			{				
-				this._tBody.appendChild(this._createTableRow(oResponse.aRecords.CDRs[keys[i]], i+1));
-			}
+			this._refreshDataTable(oResponse.aRecords.CDRs);
 			
 			
 			this.setTitle('Delinquent CDRs');
@@ -91,6 +94,8 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 			this.addCloseButton(this._close.bind(this));
 			this.setContent(this._oContentDiv);
 			this._oLoadingPopup.hide();
+				
+			
 			this.display();		
 		}
 		
@@ -110,7 +115,7 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 	
 	_getCurrentStatusBreakDown: function ()
 	{
-		debugger;
+		
 		var keys = Object.keys(this._oData.CDRs);
 		var oResult = {'delinquent':0, 'writeoff': 0, 'assigned': 0};
 			for (var i = 0;i<keys.length;i++)
@@ -175,6 +180,12 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 				
 			}
 		}
+		else if (!oResponse.Success)
+		{
+			this._oLoadingPopup.hide();
+			Component_Delinquent_CDR_List.serverErrorMessage(oResponse.sMessage, 'CDR Write Off Error');
+		
+		}
 		else
 		{
 			Reflex_Popup.alert('All CDRs for FNN ' + this._sFNN + ' have been written off succesfully');
@@ -204,6 +215,13 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 			}
 		
 		}
+		else if (!oResponse.Success)
+		{
+			
+			this._oLoadingPopup.hide();
+			Component_Delinquent_CDR_List.serverErrorMessage(oResponse.sMessage, 'CDR Assignment Error');
+		
+		}
 		else
 		{			
 			this._refreshDataSetAndDisplay(false);
@@ -231,9 +249,18 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 		}
 		else
 		{
+			if (!oResponse.Success)
+			{
+				this._oLoadingPopup.hide();
+				Component_Delinquent_CDR_List.serverErrorMessage(oResponse.sMessage, 'CSV Error');
+			
+			}
+			else
+			{
 			sFilename	= oResponse.FileName.replace(/\//g, "\\");
 			window.location	= 'reflex.php/CDR/DownloadCSV/' + encodeURIComponent(sFilename);
 			this._oLoadingPopup.hide();
+			}
 		}
 			
 	},
@@ -259,8 +286,16 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 			fnRequest(this._sFNN, this._iCarrier, this._iServiceType, [{Id: iCDRId, Service: iServiceId}] );
 		
 		}
+		else if (!oResponse.Success)
+		{
+			
+			this._oLoadingPopup.hide();
+			Component_Delinquent_CDR_List.serverErrorMessage(oResponse.sMessage, 'CDR Assignment Error');
+		
+		}
 		else
 		{			
+			Reflex_Popup.alert('CDR ' +  iCDRId + ' has been successfully assigned');
 			this._refreshDataSetAndDisplay(false, false);		
 		}
 		
@@ -288,14 +323,21 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 													}
 												);
 			
-			}
+			}			
 			else
-			{
-				
-				this._oLoadingPopup.display();
-				var fnRequest     = jQuery.json.jsonFunction(this._writeOff.bind(this, td, iId, true), null, 'CDR', 'writeOffCDRs');
-				fnRequest([iId]);
-			}
+				{
+					
+					this._oLoadingPopup.display();
+					var fnRequest     = jQuery.json.jsonFunction(this._writeOff.bind(this, td, iId, true), null, 'CDR', 'writeOffCDRs');
+					fnRequest([iId]);
+				}
+		}
+		else if (!oResponse.Success)
+		{
+			
+			this._oLoadingPopup.hide();
+			Component_Delinquent_CDR_List.serverErrorMessage(oResponse.sMessage, 'CDR Write Off Error');
+		
 		}
 		else
 		{
@@ -309,11 +351,19 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 	
 	_refreshDataSetAndDisplay: function(bShowOnlyDelinquents, oResponse)
 	{
+		
 		if (!oResponse)
 		{
 			this._oLoadingPopup.display();
 			var fnRequest     = jQuery.json.jsonFunction(this._refreshDataSetAndDisplay.bind(this, bShowOnlyDelinquents), this._refreshDataSetAndDisplay.bind(this), 'CDR', 'GetStatusInfoForCDRs');
 			fnRequest(Object.keys(this._oData.CDRs), bShowOnlyDelinquents);
+		
+		}
+		else if (!oResponse.Success)
+		{
+			
+			this._oLoadingPopup.hide();
+			Component_Delinquent_CDR_List.serverErrorMessage(oResponse.sMessage, 'CDR Screen Refresh Error');
 		
 		}
 		else
@@ -372,7 +422,7 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 		var writeOff = "";
 		var assign = "";
 		//var viewDetails = $T.img({class:"followup-list-all-action-icon", src: "../admin/img/template/magnifier.png", alt: 'Show Details', title: 'Show Details'}).observe('click', this._showCDRPopup.bind(this, oCDR.EarliestStartDatetime, oCDR.LatestStartDatetime, oCDR.FNN, oCDR.Carrier, oCDR.ServiceType));
-		var statusCell = $T.td(oCDR.Status);
+		var statusCell = $T.td({class: 'status'}, oCDR.Status);
 		if (oCDR.StatusId ==107)
 		{
 		 writeOff = $T.img({class:"followup-list-all-action-icon", src: "../admin/img/template/delete.png", alt: 'Write Off', title: 'Write Off'}).observe('click', this._writeOff.bind(this, statusCell, oCDR.Id, false, false));
