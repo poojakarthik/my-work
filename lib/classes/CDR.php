@@ -243,8 +243,8 @@ class CDR extends ORM_Cached
 			$strCost			= OutputMask()->MoneyValue($arrRecord['Cost']);
 
 			$arrCDRs[$arrRecord['Id']] = Array(	"Id"	=> $arrRecord['Id'],
-								"Time"	=> $strStartDatetime,
-								"Cost"	=> $strCost,
+								"Time"	=> $arrRecord['StartDatetime'],//;//$strStartDatetime,
+								"Cost"	=> $arrRecord['Cost'],//$strCost,
 								"Status" =>$arrRecord['StatusDescr'],
 								"StatusId"	=>	$arrRecord['Status']
 								);
@@ -274,6 +274,7 @@ class CDR extends ORM_Cached
 			      c.Id as Id,
 			      c.StartDatetime as Time,
 			      c.Cost as Cost,
+				 c.Status as StatusId,
 			      CASE  c.Status WHEN ".CDR_BAD_OWNER." THEN '".$sDelinquentStatusDescr."' WHEN ". CDR_DELINQUENT_WRITTEN_OFF." THEN  '".$sWriteOffStausDescr."' ELSE CONCAT (CONCAT_WS(' ', 'Account ID:', s.Account), CONCAT_WS(' ',' FNN:', s.FNN)) END as Status
 			    FROM CDR c LEFT JOIN Service s ON (c.Service = s.Id ) where c.Id in (".implode(',',$aCDRIds).")
 			    ORDER by c.StartDatetime DESC, c.Id ASC";
@@ -285,7 +286,7 @@ class CDR extends ORM_Cached
 		{
 			while ($aRow = $result->fetch_assoc())
 			{
-				$aResultSet[]= $aRow;//$oOrm->toArray();
+				$aResultSet[$aRow['Id']]= $aRow;//$oOrm->toArray();
 			}
 		}
 
