@@ -317,10 +317,12 @@ var Component_Delinquent_CDR_List = Class.create(
 	
 	_refresh: function()
 	{
+		this._oLoadingPopup.display();
 		this._oFilter.setFilterValue(Component_Delinquent_CDR_List.FILTER_FIELD_EARLIEST_CDR, this._earliestStartDatePicker.getElementValue(), this._latestStartDatePicker.getElementValue() );
 		this._oSort.refreshData(true);
 		this._oFilter.refreshData(true);
 		this.oPagination.getCurrentPage();
+		this._oLoadingPopup.hide();
 	
 	},
 	
@@ -338,14 +340,14 @@ var Component_Delinquent_CDR_List = Class.create(
 	_showCDRPopup : function(strStartDate, strEndDate, strFNN	,intCarrier, intServiceType, iStatus)
 	{
 	
-		debugger;
-		new Popup_CDR(strStartDate, strEndDate, strFNN	,intCarrier, intServiceType, iStatus);
+	
+		new Popup_CDR(strStartDate, strEndDate, strFNN	,intCarrier, intServiceType, iStatus, this._refresh.bind(this));
 	
 	
 	
 	},
 	
-	_writeOff : function (sFNN, bConfirm, oResponse)
+	_writeOff : function (oStatusCell, actionCell, sFNN, bConfirm, oResponse)
 	{
 		
 		var oFNN = this._oData[sFNN][107];
@@ -354,14 +356,14 @@ var Component_Delinquent_CDR_List = Class.create(
 			if (!bConfirm)
 			{
 						Reflex_Popup.yesNoCancel(
-													"This will set the status for all CDRs with FNN " + sFNN + " to Write Off. Is that what you want to do?",
+													"This will set the status for all CDRs with FNN " + sFNN + " to 'Delinquent Usage - Written Off'. Is that what you want to do?",
 													{
 														sNoLabel		: 'No', 
 														sYesLabel		: 'Yes',														
 														bOverrideStyle	: true,
 														iWidth			: 45,
 														sTitle			: 'CDR Writeoff',
-														fnOnYes			: this._writeOff.bind(this,sFNN, true, false)														
+														fnOnYes			: this._writeOff.bind(this,oStatusCell,actionCell, sFNN, true, false)														
 													}
 												);
 			
@@ -370,19 +372,22 @@ var Component_Delinquent_CDR_List = Class.create(
 			{
 				
 				this._oLoadingPopup.display();
-				var fnRequest     = jQuery.json.jsonFunction(this._writeOff.bind(this, sFNN, true), null, 'CDR', 'bulkWriteOffForFNN');
+				var fnRequest     = jQuery.json.jsonFunction(this._writeOff.bind(this, oStatusCell, actionCell,sFNN, true), null, 'CDR', 'bulkWriteOffForFNN');
 				fnRequest(oFNN.EarliestStartDatetime, oFNN.LatestStartDatetime, oFNN.FNN, oFNN.Carrier, oFNN.ServiceType);
 			}
 		}
 		else
 		{
+			var keys = Object.keys(oResponse.aData);
+			oStatusCell.innerHTML =  oResponse.aData[keys[0]].Status;
+			actionCell.innerHTML = "";
 			this._oLoadingPopup.hide();
-			Reflex_Popup.alert('All CDRs for FNN ' + sFNN + ' have been written off succesfully');
+			Reflex_Popup.alert('All CDRs have been written off succesfully');
 		}
 	
 	},
 	
-	_setService: function (oStatusCell, oResponse, strStartDate, strEndDate, strFNN	,intCarrier, intServiceType, iServiceId)
+	_setService: function (oStatusCell, oActionCell, oResponse, strStartDate, strEndDate, strFNN	,intCarrier, intServiceType, iServiceId)
 	{
 		if (!oResponse)
 		{
@@ -390,7 +395,7 @@ var Component_Delinquent_CDR_List = Class.create(
 			
 			// AssignCDRsToServices($sFNN, $iCarrier, $iServiceType, $sCDRs)
 			
-			var fnRequest     = jQuery.json.jsonFunction(this._setService.bind(this, oStatusCell), null, 'CDR', 'BulkAssignCDRsToServices');
+			var fnRequest     = jQuery.json.jsonFunction(this._setService.bind(this, oStatusCell, oActionCell), null, 'CDR', 'BulkAssignCDRsToServices');
 			//fnRequest(this.oDataSet._hSort, this.oDataSet._hFilter);
 			fnRequest(strFNN, intCarrier, intServiceType, strStartDate, strEndDate, iServiceId);
 		
@@ -398,7 +403,10 @@ var Component_Delinquent_CDR_List = Class.create(
 		else
 		{
 			
-			oStatusCell.innerHTML = 'Assigned to Account: ' + oResponse.aData[iCDRId].account_id + ', Service Id: ' + oResponse.aData[iCDRId].service_id;
+			Reflex_Popup.alert('All CDRs have been assigned succesfully');
+			var keys = Object.keys(oResponse.aData);
+			oStatusCell.innerHTML = 'Assigned to : ' + oResponse.aData[keys[0]].Status;
+			oActionCell.innerHTML = "";
 			
 		
 		
@@ -408,12 +416,21 @@ var Component_Delinquent_CDR_List = Class.create(
 	
 	},
 	
-	_showServicesPopup: function(oStatusCell, strStartDate, strEndDate, strFNN	,intCarrier, intServiceType)
+	_showServicesPopup: function(oStatusCell, oActionCell, strStartDate, strEndDate, strFNN	,intCarrier, intServiceType)
 	{	
 		
-		
-		new Popup_CDR_Service_List(this._setService.bind(this, oStatusCell, false, strStartDate, strEndDate, strFNN	,intCarrier, intServiceType), null, strStartDate, strEndDate, strFNN	,intCarrier, intServiceType);
+	
+		new Popup_CDR_Service_List(this._setService.bind(this, oStatusCell, oActionCell, false, strStartDate, strEndDate, strFNN	,intCarrier, intServiceType), null, strStartDate, strEndDate, strFNN	,intCarrier, intServiceType);
 
+	},
+	
+	_setFNNFilter: function(FNN)
+	{
+	
+		this._oFilter.setFilterValue(Component_Delinquent_CDR_List.FILTER_FIELD_FNN, FNN);
+		this._refresh();
+	
+	
 	},
 	
 	
@@ -422,24 +439,28 @@ var Component_Delinquent_CDR_List = Class.create(
 		
 		var writeOff = "";
 		var assign = "";
-		var viewDetails = viewDetails = $T.img({class:"followup-list-all-action-icon", src: "../admin/img/template/magnifier.png", alt: 'Show Details', title: 'Show Details'}).observe('click', this._showCDRPopup.bind(this, oCDR.EarliestStartDatetime, oCDR.LatestStartDatetime, oCDR.FNN, oCDR.Carrier, oCDR.ServiceType, oCDR.Status));
+		//var viewDetails = $T.img({class:"followup-list-all-action-icon", src: "../admin/img/template/magnifier.png", alt: 'Show Details', title: 'Show Details'}).observe('click', this._showCDRPopup.bind(this, oCDR.EarliestStartDatetime, oCDR.LatestStartDatetime, oCDR.FNN, oCDR.Carrier, oCDR.ServiceType, oCDR.Status));
 		var statusCell = $T.td(oCDR.StatusDescr);
+		var actionCell = $T.td({class : "followup-list-all-action-icons"});
 		
 		if (oCDR.Status == 107)
 		{
-			writeOff = $T.img({class:"followup-list-all-action-icon", src: "../admin/img/template/delete.png", alt: 'Write Off', title: 'Write Off'}).observe('click', this._writeOff.bind(this, oCDR.FNN, false, false));
-			assign = $T.img({class:"followup-list-all-action-icon", src: "../admin/img/template/telephone_add.png", alt: 'Assign to Service', title: 'Assign to Service'}).observe('click', this._showServicesPopup.bind(this, statusCell, oCDR.EarliestStartDatetime, oCDR.LatestStartDatetime, oCDR.FNN, oCDR.Carrier, oCDR.ServiceType, oCDR.Status));
-		}
+			actionCell.appendChild($T.img({class:"followup-list-all-action-icon", src: "../admin/img/template/delete.png", alt: 'Write Off', title: 'Write Off'}).observe('click', this._writeOff.bind(this, statusCell, actionCell,oCDR.FNN, false, false)));
+			actionCell.appendChild($T.img({class:"followup-list-all-action-icon", src: "../admin/img/template/telephone_add.png", alt: 'Assign to Service', title: 'Assign to Service'}).observe('click', this._showServicesPopup.bind(this, statusCell, actionCell, oCDR.EarliestStartDatetime, oCDR.LatestStartDatetime, oCDR.FNN, oCDR.Carrier, oCDR.ServiceType, oCDR.Status)));
 			
+			//assign = $T.img({class:"followup-list-all-action-icon", src: "../admin/img/template/telephone_add.png", alt: 'Assign to Service', title: 'Assign to Service'}).observe('click', this._showServicesPopup.bind(this, statusCell, actionCell, oCDR.EarliestStartDatetime, oCDR.LatestStartDatetime, oCDR.FNN, oCDR.Carrier, oCDR.ServiceType, oCDR.Status));
+		}
+		actionCell.appendChild($T.img({class:"followup-list-all-action-icon", src: "../admin/img/template/magnifier.png", alt: 'Show Details', title: 'Show Details'}).observe('click', this._showCDRPopup.bind(this, oCDR.EarliestStartDatetime, oCDR.LatestStartDatetime, oCDR.FNN, oCDR.Carrier, oCDR.ServiceType, oCDR.Status)));	
 		var	oTR	=	$T.tr(
-						$T.td(oCDR.FNN),
+						$T.td({style: 'cursor: pointer'}, oCDR.FNN).observe('click', this._setFNNFilter.bind(this, oCDR.FNN)),
 						$T.td(oCDR.carrier_label),
-						$T.td(oCDR.TotalCost),
+						$T.td(parseFloat(oCDR.TotalCost).toFixed(2)),
 						$T.td(oCDR.Count),							
-						$T.td(oCDR.EarliestStartDatetime),
-						$T.td(oCDR.LatestStartDatetime),
+						$T.td(Component_Delinquent_CDR_List.getDateTimeElement(oCDR.EarliestStartDatetime)),
+						$T.td(Component_Delinquent_CDR_List.getDateTimeElement(oCDR.LatestStartDatetime)),
 						statusCell,
-						$T.td({class : "followup-list-all-action-icons"},writeOff, assign, viewDetails)
+						actionCell
+						//$T.td({class : "followup-list-all-action-icons"},writeOff, assign, viewDetails)
 					);
 			
 
@@ -451,13 +472,10 @@ var Component_Delinquent_CDR_List = Class.create(
 	_updatePagination : function(iPageCount)
 	{
 		// Update the 'disabled' state of each pagination button
-		//this.oPaginationButtons.oTop.oFirstPage.disabled 		= true;
-		this.oPaginationButtons.oBottom.oFirstPage.disabled 	= true;
-		//this.oPaginationButtons.oTop.oPreviousPage.disabled		= true;
-		this.oPaginationButtons.oBottom.oPreviousPage.disabled	= true;
-		//this.oPaginationButtons.oTop.oNextPage.disabled 		= true;
-		this.oPaginationButtons.oBottom.oNextPage.disabled 		= true;
-		//this.oPaginationButtons.oTop.oLastPage.disabled 		= true;
+		
+		this.oPaginationButtons.oBottom.oFirstPage.disabled 	= true;		
+		this.oPaginationButtons.oBottom.oPreviousPage.disabled	= true;		
+		this.oPaginationButtons.oBottom.oNextPage.disabled 		= true;		
 		this.oPaginationButtons.oBottom.oLastPage.disabled 		= true;
 		
 		if (iPageCount == undefined)
@@ -474,17 +492,17 @@ var Component_Delinquent_CDR_List = Class.create(
 			if (this.oPagination.intCurrentPage != Pagination.PAGE_FIRST)
 			{
 				// Enable the first and previous buttons
-				//this.oPaginationButtons.oTop.oFirstPage.disabled 		= false;
+				
 				this.oPaginationButtons.oBottom.oFirstPage.disabled		= false;
-				//this.oPaginationButtons.oTop.oPreviousPage.disabled 	= false;
+				
 				this.oPaginationButtons.oBottom.oPreviousPage.disabled 	= false;
 			}
 			if (this.oPagination.intCurrentPage < (iPageCount - 1) && iPageCount)
 			{
 				// Enable the next and last buttons
-				//this.oPaginationButtons.oTop.oNextPage.disabled 	= false;
+				
 				this.oPaginationButtons.oBottom.oNextPage.disabled 	= false;
-				//this.oPaginationButtons.oTop.oLastPage.disabled 	= false;
+				
 				this.oPaginationButtons.oBottom.oLastPage.disabled 	= false;
 			}
 		}
@@ -880,13 +898,30 @@ Component_Delinquent_CDR_List.getDateTimeElement	= function(sMySQLDate)
 	var oDate	= new Date(Date.parse(sMySQLDate.replace(/-/g, '/')));
 	var sDate	= oDate.$format('d/m/Y');
 	var sTime	= oDate.$format('h:i A');
-	
-	return 	$T.div(
-				$T.div(sDate),
-				$T.div({class: 'followup-list-all-datetime-time'},
-					sTime
-				)
-			);
+	return sDate;
+	// return 	$T.div(
+				// $T.div(sDate),
+				// $T.div({class: 'followup-list-all-datetime-time'},
+					// sTime
+				// )
+			// );
+};
+
+
+Component_Delinquent_CDR_List.getMoneyValue = function(iValue)
+{
+
+
+var newValue = Math.round(iValue*100)/100 + '';
+
+
+var numZeropad = num + '';
+while(newValue.length < count) {
+numZeropad = "0" + numZeropad;
+}
+
+
+
 };
 
 Component_Delinquent_CDR_List.getCarrierList = function(fCallback, oResponse)
