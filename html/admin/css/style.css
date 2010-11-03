@@ -7794,6 +7794,7 @@ th.followup-list-all-header-multiline
 .followup-list-all-action-icon
 {
 	padding-left: 10px;
+	cursor: pointer; 
 
 }
 
