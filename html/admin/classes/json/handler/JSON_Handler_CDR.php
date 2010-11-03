@@ -17,7 +17,7 @@ class JSON_Handler_CDR extends JSON_Handler
 	public function getCarrierList()
 	{
 		$sSql = "SELECT  Carrier AS Carrier, Carrier.Name AS carrier_label
-				 FROM CDR join Carrier on (CDR.Carrier = Carrier.Id and CDR.status = 107)
+				 FROM CDR join Carrier on (CDR.Carrier = Carrier.Id and CDR.status = ".CDR_DELINQUENT_WRITTEN_OFF." || CDR.status = ".CDR_BAD_OWNER.")
 				group by Carrier";
 		$oQuery = new Query();
 		$mResult = $oQuery->Execute($sSql);
@@ -131,7 +131,7 @@ class JSON_Handler_CDR extends JSON_Handler
 			$aColumns			= Array("Id",
 									"Time",
 									"Cost",
-		 							"Status"
+									"Status"
 									);
 
 
@@ -325,6 +325,33 @@ class JSON_Handler_CDR extends JSON_Handler
 					);
 
 	}
+
+function GetStatusInfoForCDRs($aCDRIDs, $bFilterOnlyDelinquents = false)
+{
+
+	$aData =CDR::GetStatusInfoForCDRs($aCDRIDs);
+	$aResult = array();
+	if ($bFilterOnlyDelinquents)
+	{
+		foreach($aData as $aRecord)
+		{
+			$aRecord['Status'] == CDR_BAD_OWNER?$aResult[] = $aRecord:null;
+
+		}
+	}
+	else
+	{
+		$aResult = $aData;
+	}
+
+	return	array(
+						'bSuccess'	=> true,
+						'aData'		=>$aResult
+					);
+
+
+}
+
 
 
 function BulkAssignCDRsToServices ($strFNN, $intCarrier, $intServiceType,  $strStartDate,$strEndDate, $iServiceId)
