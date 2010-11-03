@@ -16,51 +16,70 @@ class JSON_Handler_CDR extends JSON_Handler
 
 	public function getCarrierList()
 	{
-		$sSql = "SELECT  Carrier AS Carrier, Carrier.Name AS carrier_label
-				 FROM CDR join Carrier on (CDR.Carrier = Carrier.Id and CDR.status = ".CDR_DELINQUENT_WRITTEN_OFF." || CDR.status = ".CDR_BAD_OWNER.")
-				group by Carrier";
-		$oQuery = new Query();
-		$mResult = $oQuery->Execute($sSql);
-		$aCarriers = array();
-		if ($mResult)
+		try
 		{
-			while ($aRow = $mResult->fetch_assoc())
+
+			$sSql = "SELECT  Carrier AS Carrier, Carrier.Name AS carrier_label
+					 FROM CDR join Carrier on (CDR.Carrier = Carrier.Id )
+					 WHERE CDR.status = ".CDR_DELINQUENT_WRITTEN_OFF." OR CDR.status = ".CDR_BAD_OWNER."
+					group by Carrier";
+			$oQuery = new Query();
+			$mResult = $oQuery->Execute($sSql);
+			$aCarriers = array();
+			if ($mResult)
 			{
-				$aCarriers[]= $aRow;
+				while ($aRow = $mResult->fetch_assoc())
+				{
+					$aCarriers[]= $aRow;
+				}
 			}
+
+
+			return 	array(
+								"Success"		=> true,
+								"aCarriers"		=> $aCarriers
+							);
 		}
-
-
-		return 	array(
-							"Success"		=> true,
-							"aCarriers"		=> $aCarriers
+		catch (Exception $e)
+		{
+					return 	array(
+							"Success"		=> false,
+							"sMessage"		=> $e->__toString()
 						);
-
+		}
 
 
 	}
 
 	public function getStatusList()
 	{
+		try
+		{
 
+			$aStatusList = array(CDR_BAD_OWNER => GetConstantDescription(CDR_BAD_OWNER, "CDR"),
+								CDR_DELINQUENT_WRITTEN_OFF =>GetConstantDescription(CDR_DELINQUENT_WRITTEN_OFF, "CDR"),
+								self::SHOW_BOTH	=> "delinquent and written off CDRs"
+								);
 
-		$aStatusList = array(CDR_BAD_OWNER => GetConstantDescription(CDR_BAD_OWNER, "CDR"),
-							CDR_DELINQUENT_WRITTEN_OFF =>GetConstantDescription(CDR_DELINQUENT_WRITTEN_OFF, "CDR"),
-							self::SHOW_BOTH	=> "Show delinquent and written off CDRs"
+			return 	array(
+								"Success"		=> true,
+								"aData"		=> $aStatusList
 							);
-
-
-		return 	array(
-							"Success"		=> true,
-							"aData"		=> $aStatusList
+		}
+		catch (Exception $e)
+		{
+					return 	array(
+							"Success"		=> false,
+							"sMessage"		=> $e->__toString()
 						);
-
+		}
 	}
 
 	public function getDelinquentDataSet($bCountOnly=false, $iLimit=0, $iOffset=0, $oFieldsToSort=null, $oFilter=null, $iSummaryCharacterLimit=30)
 	{
 		try
 		{
+
 			// Check permissions
 			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
 			{
@@ -68,9 +87,6 @@ class JSON_Handler_CDR extends JSON_Handler
 			}
 
 			$aFilter		= get_object_vars($oFilter);
-			$iNowSeconds	= time();
-
-
 
 			if ($bCountOnly)
 			{
@@ -114,19 +130,13 @@ class JSON_Handler_CDR extends JSON_Handler
 	}
 
 
-	public function ExportToCSV($aCDRIds)//$strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType,$iStatus)
+	public function ExportToCSV($aCDRIds)
 	{
-
-
-
-
 		try
 		{
+
 			// Proper admin required
 			AuthenticatedUser()->PermissionOrDie(array(PERMISSION_PROPER_ADMIN));
-
-
-
 
 			$aColumns			= Array("Id",
 									"Time",
@@ -134,13 +144,9 @@ class JSON_Handler_CDR extends JSON_Handler
 									"Status"
 									);
 
-
-
 			// Create File_CSV to do the file creation
 			$oFile	= new File_CSV();
 			$oFile->setColumns($aColumns);
-
-
 
 			// Build list of lines for the file
 			$aLines	= array();
@@ -152,16 +158,13 @@ class JSON_Handler_CDR extends JSON_Handler
 			}
 
 
-					$sPath = FILES_BASE_PATH.'temp/';
-		$sTimeStamp = str_replace(array(' ',':','-'), '',Data_Source_Time::currentTimestamp());
+			$sPath = FILES_BASE_PATH.'temp/';
+			$sTimeStamp = str_replace(array(' ',':','-'), '',Data_Source_Time::currentTimestamp());
 
 
-		$sFilename	= "DelinquentCDRExport"
-		.'.'
-		.$sTimeStamp
-		.'.csv'
-		;
-		 $oFile->saveToFile($sPath.$sFilename);
+			$sFilename	= "DelinquentCDRExport".'.'.$sTimeStamp.'.csv';
+
+			$oFile->saveToFile($sPath.$sFilename);
 
 			return 	array(
 							"Success"		=> true,
@@ -171,43 +174,58 @@ class JSON_Handler_CDR extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
-			$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
-			echo $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
+			return 	array(
+					"Success"		=> false,
+					"sMessage"		=> $e->__toString()
+				);
 		}
-
-
 	}
 
 
-
-
-
-
-	 function GetDelinquentCDRs($strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType, $iStatus = CDR_BAD_OWNER)
+	function GetDelinquentCDRs($strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType, $iStatus = CDR_BAD_OWNER)
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 
-/*		$strStartDate	= ConvertUserDateToMySqlDate(DBO()->Delinquents->StartDate->Value);
-		$strEndDate		= ConvertUserDateToMySqlDate(DBO()->Delinquents->EndDate->Value);
-		$strFNN			= DBO()->Delinquents->FNN->Value;
-		$intCarrier		= DBO()->Delinquents->Carrier->Value;
-		$intServiceType	= DBO()->Delinquents->ServiceType->Value;*/
+		try
+		{
 
-		$arrReturnData = CDR::GetDelinquentCDRs($strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType, $iStatus);
-		//$arrReturnData['ServiceSelectorHtml']	= $strServiceSelectorHtml;
-		return 	array(
-							"Success"		=> true,
-							"aRecords"		=> $arrReturnData
+			$arrReturnData = CDR::GetDelinquentCDRs($strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType, $iStatus);
 
+			return 	array(
+								"Success"		=> true,
+								"aRecords"		=> $arrReturnData
+
+							);
+		}
+		catch (Exception $e)
+		{
+					return 	array(
+							"Success"		=> false,
+							"sMessage"		=> $e->__toString()
 						);
+		}
 
 	}
 
 	function bulkWriteOffForFNN($strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType)
 	{
-		$CDRData = CDR::GetDelinquentCDRs($strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType);
+		try
+		{
+
+			$CDRData = CDR::GetDelinquentCDRs($strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType);
+		}
+		catch (Exception $e)
+		{
+					return 	array(
+							"Success"		=> false,
+							"sMessage"		=> $e->__toString()
+						);
+
+
+		}
+
 		$aCDRIds = array();
 		foreach ($CDRData['CDRs'] as $aCDR)
 		{
@@ -231,6 +249,7 @@ class JSON_Handler_CDR extends JSON_Handler
 		$bIsGod	= Employee::getForId(Flex::getUserId());
 		try
 		{
+
 			// Create array of ids
 			if (!is_array($mCDRId))
 			{
@@ -250,58 +269,33 @@ class JSON_Handler_CDR extends JSON_Handler
 
 			$aData =CDR::GetStatusInfoForCDRs($aCDRIds);
 
-
-
 			return	array(
-						'bSuccess'	=> true,
-						'sDebug'	=> ($bIsGod ? $this->_JSONDebug : ''),
+						'Success'	=> true,
 						'aData'		=> $aData
 					);
 		}
 		catch (Exception $oException)
 		{
 			return	array(
-						'bSuccess'	=> false,
-						'sMessage'	=> ($bIsGod ? $oException->getMessage() : 'There was an error accessing the database, please contact YBS for assistance'),
-						'sDebug'	=> ($bIsGod ? $this->_JSONDebug : '')
+						'Success'	=> false,
+						'sMessage'	=> $oException->__toString()
 					);
 		}
 	}
 
 
-//------------------------------------------------------------------------//
-	// AssignCDRsToServices
-	//------------------------------------------------------------------------//
-	/**
-	 * AssignCDRsToServices()
-	 *
-	 * Assigns the passed delinquent CDRs to their respective Services
-	 *
-	 * Assigns the passed delinquent CDRs to their respective Services
-	 * It assumes the following data is passed:
-	 * 		DBO()->Delinquents->FNN			The FNN of the Delinquent CDRs
-	 * 		DBO()->Delinquents->Carrier		The Carrier of the Delinquent CDRs
-	 * 		DBO()->Delinquents->ServiceType	The ServiceType of the Delinquent CDRs
-	 * 		DBO()->Delinquents->CDRs		array of objects of the form:
-	 * 											arrCDRs[i]->Id		: CDR's Id
-	 * 											arrCDRs[i]->Service	: Id of the Service to assign the CDR to
-	 * 											arrCDRs[i]->Record	: The record number that the CDR is assigned in the table on the Delinquent CDRs webpage
-	 *
-	 * @return		void
-	 * @method		AssignCDRsToServices
-	 */
+
+
 	function AssignCDRsToServices($strFNN	, $intCarrier, $intServiceType, $arrCDRs)
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 
-		/*$strFNN			= DBO()->Delinquents->FNN->Value;
-		$intCarrier		= DBO()->Delinquents->Carrier->Value;
-		$intServiceType	= DBO()->Delinquents->ServiceType->Value;
-		$arrCDRs		= DBO()->Delinquents->CDRs->Value;*/
+
 		try
 		{
+
 		TransactionStart();
 		$arrSuccessfulCDRs = CDR::assignCDRsToService($strFNN, $intCarrier, $intServiceType, $arrCDRs);
 		}
@@ -309,9 +303,8 @@ class JSON_Handler_CDR extends JSON_Handler
 		{
 			TransactionRollback();
 			return	array(
-						'bSuccess'	=> false,
-						'sMessage'	=> 'issues',
-						'aData'		=>$arrSuccessfulCDRs
+						'Success'	=> false,
+						'sMessage'	=> $e->__toString()
 					);
 
 		}
@@ -319,8 +312,7 @@ class JSON_Handler_CDR extends JSON_Handler
 			// Everything worked out
 			TransactionCommit();
 			return	array(
-						'bSuccess'	=> true,
-						'sMessage'	=> "",
+						'Success'	=> true,
 						'aData'		=>$arrSuccessfulCDRs
 					);
 
@@ -329,27 +321,39 @@ class JSON_Handler_CDR extends JSON_Handler
 function GetStatusInfoForCDRs($aCDRIDs, $bFilterOnlyDelinquents = false)
 {
 
-	$aData =CDR::GetStatusInfoForCDRs($aCDRIDs);
-	$aResult = array();
-	if ($bFilterOnlyDelinquents)
+	try
 	{
-		foreach($aData as $aRecord)
+
+		$aData =CDR::GetStatusInfoForCDRs($aCDRIDs);
+		$aResult = array();
+		if ($bFilterOnlyDelinquents)
 		{
-			$aRecord['Status'] == CDR_BAD_OWNER?$aResult[] = $aRecord:null;
+			foreach($aData as $aRecord)
+			{
+				$aRecord['Status'] == CDR_BAD_OWNER?$aResult[] = $aRecord:null;
 
+			}
 		}
-	}
-	else
-	{
-		$aResult = $aData;
-	}
+		else
+		{
+			$aResult = $aData;
+		}
 
-	return	array(
-						'bSuccess'	=> true,
-						'aData'		=>$aResult
+		return	array(
+							'Success'	=> true,
+							'aData'		=>$aResult
+						);
+
+	}
+	catch(Exception $e)
+	{
+			return	array(
+						'Success'	=> false,
+						'sMessage'	=>$e->__toString()
 					);
 
 
+	}
 }
 
 
@@ -361,24 +365,28 @@ function BulkAssignCDRsToServices ($strFNN, $intCarrier, $intServiceType,  $strS
 	$aCDRIDs = array();
 	try
 	{
-	TransactionStart();
-	foreach ($aCDRs['CDRs'] as $aCDR)
-	{
-		$oCDR = new stdClass();
-		$oCDR->Id = $aCDR['Id'];
-		$oCDR->Service = $iServiceId;
-		$arrSuccessfulCDRs = CDR::assignCDRsToService($strFNN, $intCarrier, $intServiceType, array($oCDR));
-		$aCDRIDs[] = $aCDR['Id'];
-	}
 
-	$aData =CDR::GetStatusInfoForCDRs($aCDRIDs);
+		TransactionStart();
+		foreach ($aCDRs['CDRs'] as $aCDR)
+		{
+			$oCDR = new stdClass();
+			$oCDR->Id = $aCDR['Id'];
+			$oCDR->Service = $iServiceId;
+			$arrSuccessfulCDRs = CDR::assignCDRsToService($strFNN, $intCarrier, $intServiceType, array($oCDR));
+			$aCDRIDs[] = $aCDR['Id'];
+		}
+
+		$aData =CDR::GetStatusInfoForCDRs($aCDRIDs);
 
 	}
 	catch(Exception $e)
 	{
 
 		TransactionRollback();
-
+		return	array(
+								'Success'	=> false,
+								'sMessage'	=> $e->__toString()
+							);
 
 	}
 
