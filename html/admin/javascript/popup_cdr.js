@@ -202,6 +202,7 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 	
 	_bulkAssign: function (iServiceId, oResponse)
 	{
+		debugger;
 		if (!oResponse)
 		{
 			if (!iServiceId)
