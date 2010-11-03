@@ -1,10 +1,11 @@
 
 var Popup_CDR	= Class.create(Reflex_Popup, 
 {
-	initialize	: function($super, strStartDate, strEndDate, strFNN	,intCarrier, intServiceType, iStatus)
+	initialize	: function($super, strStartDate, strEndDate, strFNN	,intCarrier, intServiceType, iStatus, fCallback)
 	{
-			debugger;
-			$super(80);		
+		
+			$super(80);	
+			this._fCallback = fCallback;
 			this._oLoadingPopup	= new Reflex_Popup.Loading();
 			this._sStart = strStartDate;
 			this._sEnd = strEndDate;
@@ -55,12 +56,12 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 																$T.img({src: "../admin/img/template/table.png", alt: '', title: 'Refresh List'}),
 																$T.span('Export to CSV')
 																	).observe('click', this._downloadCSV.bind(this, false)),																
-													$T.button({class: 'icon-button'},
-													$T.img({src: '../admin/img/template/telephone_add.png', alt: '', title: 'Close'}),
+													this._bulkAddButton = $T.button({class: 'icon-button'},
+													 $T.img({src: '../admin/img/template/telephone_add.png', alt: '', title: 'Close'}),
 													$T.span('Add all to Service')
 													).observe('click', this._bulkAssign.bind(this, false, false)),
-													$T.button({class: 'icon-button'},
-													$T.img({src: '../admin/img/template/delete.png', alt: '', title: 'Close'}),
+													this._bulkWriteOffButton =$T.button({class: 'icon-button'},
+													 $T.img({src: '../admin/img/template/delete.png', alt: '', title: 'Close'}),
 													$T.span('Write off all')
 													).observe('click', this._bulkWriteOff.bind(this, false, false)),
 													$T.button({class: 'icon-button float-right'},
@@ -75,7 +76,6 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 										
 		
 		// Add the rows
-		
 			this._oData	= oResponse.aRecords;
 			
 			var keys = Object.keys(oResponse.aRecords.CDRs);
@@ -87,7 +87,8 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 			
 			
 			this.setTitle('Delinquent CDRs');
-			this.addCloseButton();
+			
+			this.addCloseButton(this._close.bind(this));
 			this.setContent(this._oContentDiv);
 			this._oLoadingPopup.hide();
 			this.display();		
@@ -99,14 +100,61 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 		
 	},
 	
+	_close: function()
+	{
+		this._fCallback();
+		this.hide();
+	
+	
+	},
+	
+	_getCurrentStatusBreakDown: function ()
+	{
+		debugger;
+		var keys = Object.keys(this._oData.CDRs);
+		var oResult = {'delinquent':0, 'writeoff': 0, 'assigned': 0};
+			for (var i = 0;i<keys.length;i++)
+			{				
+				this._oData.CDRs[keys[i]].StatusId ==107?oResult.delinquent++:this._oData.CDRs[keys[i]].StatusId ==203?oResult.writeoff++:oResult.assigned++;
+				
+			}
+	
+		return oResult;
+	
+	},
+	
 	_bulkWriteOff : function (bConfirm, oResponse)
 	{		
 		if (!oResponse)
 		{
 			if (!bConfirm)
 			{
+			
+					var oStatusBreakDown = this._getCurrentStatusBreakDown();
+					var sWriteOffMessage = '';
+					var sAssignedMessage = '';
+					var sDelinquentMessage = oStatusBreakDown.delinquent + " CDRs will be written off";
+					if (oStatusBreakDown.writeoff>0)
+					{
+						sWriteOffMessage = oStatusBreakDown.writeoff + " CDRs were written off already. ";
+					}
+					
+					if (oStatusBreakDown.assigned>0)
+					{
+						sAssignedMessage = oStatusBreakDown.assigned + " CDRs were assigned to a service already. ";
+					
+					}
+					
+					if (sAssignedMessage !='' || sWriteOffMessage!='')
+					{
+					
+					sDelinquentMessage = sDelinquentMessage + " (" + sAssignedMessage + sWriteOffMessage + ").";
+					
+					}
+					sDelinquentMessage = sDelinquentMessage + " Do you wish to continue?";
+			
 						Reflex_Popup.yesNoCancel(
-													"This will set the status for all CDRs with FNN " + this.sFNN + " to Write Off. Is that what you want to do?",
+													sDelinquentMessage,
 													{
 														sNoLabel		: 'No', 
 														sYesLabel		: 'Yes',														
@@ -120,7 +168,7 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 			}
 			else
 			{
-				debugger;
+				
 				this._oLoadingPopup.display();
 				var fnRequest     = jQuery.json.jsonFunction(this._bulkWriteOff.bind(this, true), null, 'CDR', 'bulkWriteOffForFNN');
 				fnRequest(this._sStart, this._sEnd, this._sFNN, this._iCarrier, this._iServiceType);		
@@ -129,32 +177,17 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 		}
 		else
 		{
-			this._oLoadingPopup.hide();
-			this._refreshDataTable(oResponse.aData);
 			Reflex_Popup.alert('All CDRs for FNN ' + this._sFNN + ' have been written off succesfully');
+			this._oLoadingPopup.hide();
+			this._refreshDataSetAndDisplay(false);
+			//this._refreshDataTable(oResponse.aData);
+			
+			
 		}
 	
 	},
 	
-	_refreshDataTable: function (aData)
-	{
-		
-		while(this._tBody.childElementCount>0)
-		{
-		 this._tBody.deleteRow(this._tBody.childElementCount-1);
 
-		}	
-
-debugger;		
-		//var keys = Object.keys(oData);			
-		for (var i = 0;i<aData.length;i++)
-		{				
-			this._tBody.appendChild(this._createTableRow(aData[i], i+1));
-		}
-	
-	
-	
-	},
 	
 	_bulkAssign: function (iServiceId, oResponse)
 	{
@@ -166,14 +199,16 @@ debugger;
 			}
 			else
 			{
-				var fnRequest     = jQuery.json.jsonFunction(this._bulkAssign.bind(this), null, 'CDR', 'BulkAssignCDRsToServices');
+				var fnRequest     = jQuery.json.jsonFunction(this._bulkAssign.bind(this,iServiceId), null, 'CDR', 'BulkAssignCDRsToServices');
 				fnRequest(this._sFNN,this._iCarrier,   this._iServiceType,this._sStart, this._sEnd, iServiceId);
 			}
 		
 		}
 		else
 		{			
-			alert('reset all statusses');		
+			this._refreshDataSetAndDisplay(false);
+			//this._refreshDataTable(oResponse.aData);
+			Reflex_Popup.alert('All CDRs were assigned succesfully');
 		}	
 	},
 	
@@ -225,12 +260,8 @@ debugger;
 		
 		}
 		else
-		{
-			
-			oStatusCell.innerHTML = 'Assigned to Account: ' + oResponse.aData[iCDRId].account_id + ', FNN: ' + oResponse.aData[iCDRId].fnn;
-			
-		
-		
+		{			
+			this._refreshDataSetAndDisplay(false, false);		
 		}
 		
 	
@@ -246,7 +277,7 @@ debugger;
 			if (!bConfirm)
 			{
 						Reflex_Popup.yesNoCancel(
-													"This will set the status for all CDR with ID: " +  iId + " to Write Off. Is that what you want to do?",
+													"This will set the status for CDR with ID: " +  iId + " to 'Delinquent Usage - Written Off'. Is that what you want to do?",
 													{
 														sNoLabel		: 'No', 
 														sYesLabel		: 'Yes',														
@@ -269,9 +300,67 @@ debugger;
 		else
 		{
 			this._oLoadingPopup.hide();
-			Reflex_Popup.alert('CDR with ID: ' +  iId + 'has been written off succesfully');
-			td.innerHTML = 'Delinquent Usage - Written Off';
+			Reflex_Popup.alert('CDR ' +  iId + 'has been written off.');
+			//td.innerHTML = 'Delinquent Usage - Written Off';
+			this._refreshDataSetAndDisplay(false, false);
 		}
+	
+	},
+	
+	_refreshDataSetAndDisplay: function(bShowOnlyDelinquents, oResponse)
+	{
+		if (!oResponse)
+		{
+			this._oLoadingPopup.display();
+			var fnRequest     = jQuery.json.jsonFunction(this._refreshDataSetAndDisplay.bind(this, bShowOnlyDelinquents), this._refreshDataSetAndDisplay.bind(this), 'CDR', 'GetStatusInfoForCDRs');
+			fnRequest(Object.keys(this._oData.CDRs), bShowOnlyDelinquents);
+		
+		}
+		else
+		{
+			this._oLoadingPopup.hide();
+			this._oData.CDRs	= oResponse.aData;
+			this._refreshDataTable(oResponse.aData);
+		
+		
+		}
+	
+	},
+	
+	
+		_refreshDataTable: function (oData)
+	{
+		
+		//this._fCallback();
+		while(this._tBody.childElementCount>0)
+		{
+		 this._tBody.deleteRow(this._tBody.childElementCount-1);
+
+		}	
+
+
+		//var keys = Object.keys(oData);	
+
+		this._bulkAddButton.disabled = true; 
+		this._bulkWriteOffButton.disabled = true;
+		
+		var keys = Object.keys(oData);
+			
+			for (var i = 0;i<keys.length;i++)
+			{				
+				this._tBody.appendChild(this._createTableRow(oData[keys[i]], i+1));
+				if (this._bulkAddButton.disabled && oData[keys[i]].StatusId == 107)
+				{
+					this._bulkAddButton.disabled = false; 
+					this._bulkWriteOffButton.disabled = false;
+				
+				}
+			}
+		
+		
+
+	
+	
 	
 	},
 	
@@ -279,6 +368,7 @@ debugger;
 	{
 		
 
+		
 		var writeOff = "";
 		var assign = "";
 		//var viewDetails = $T.img({class:"followup-list-all-action-icon", src: "../admin/img/template/magnifier.png", alt: 'Show Details', title: 'Show Details'}).observe('click', this._showCDRPopup.bind(this, oCDR.EarliestStartDatetime, oCDR.LatestStartDatetime, oCDR.FNN, oCDR.Carrier, oCDR.ServiceType));
@@ -291,12 +381,12 @@ debugger;
 		
 		}
 		
-	
-			
+
+		
 			var	oTR	=	$T.tr(
 							$T.td(oCDR.Id),
-							$T.td(oCDR.Time),
-							$T.td(oCDR.Cost),
+							$T.td(new Date(Date.parse(oCDR.Time.replace(/-/g, '/'))).$format('d/m/Y h:i:s' )),
+							$T.td(parseFloat(oCDR.Cost).toFixed(2)),
 							statusCell,
 							$T.td({class : "followup-list-all-action-icons"},assign, writeOff)
 							//$T.td({class : "followup-list-all-action-icons"},writeOff, assign, viewDetails)
@@ -305,14 +395,10 @@ debugger;
 
 			
 			return oTR;
+
 		
 	},
 	
 	
-		_close : function ()
-	{
-		this.hide();
-		//this._fnCallback();
 	
-	}
 	});
