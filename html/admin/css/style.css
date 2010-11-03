@@ -7809,6 +7809,7 @@ th.followup-list-all-header-multiline
 div.content-delinquent-cdrs-table {
 max-height: 30em; 
 overflow: auto;
+border: 0.1em solid #333333;
 }
 
 div.content-delinquent-cdrs .float-right{
@@ -7824,5 +7825,18 @@ div.content-delinquent-cdrs .buttons{
 padding-top: 5px;
 padding-left: 7px;
 padding-bottom: 5px;
+
+}
+
+div.delinquent-fnn-list td.carrier, td.status
+{
+	width: 300px;
+
+}
+
+div.content-delinquent-cdrs-table td.status
+{
+
+	width: 300px;
 
 }
