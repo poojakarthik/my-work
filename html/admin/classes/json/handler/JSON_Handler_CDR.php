@@ -130,7 +130,7 @@ class JSON_Handler_CDR extends JSON_Handler
 	}
 
 
-	public function ExportToCSV($aCDRIds)
+	public function ExportToCSV($oFilter)
 	{
 		try
 		{
@@ -151,7 +151,9 @@ class JSON_Handler_CDR extends JSON_Handler
 			// Build list of lines for the file
 			$aLines	= array();
 			//$aData =  CDR::GetDelinquentFNNs(null, null, get_object_vars($oFieldsToSort), get_object_vars($oFilter));
-			$aData =CDR::GetStatusInfoForCDRs($aCDRIds);
+			//$aData =CDR::GetStatusInfoForCDRs($aCDRIds);
+				$aFilter		= get_object_vars($oFilter);
+			$aData = CDR::GetDelinquentCDRsPaginated(null, null, array(), $aFilter, false);
 			foreach ($aData as $aRecord)
 			{
 				$oFile->addRow($aRecord);
@@ -181,7 +183,86 @@ class JSON_Handler_CDR extends JSON_Handler
 		}
 	}
 
+function getPossibleOwnersForFNN($strFNN, $intServiceType)
+{
 
+		try
+		{
+
+			$aServices = CDR::getPossibleOwnersForFNN($strFNN, $intServiceType);
+
+
+			return 	array(
+								"Success"		=> true,
+								"aData"		=> $aServices
+							);
+		}
+		catch (Exception $e)
+		{
+					return 	array(
+							"Success"		=> false,
+							"sMessage"		=> $e->__toString()
+						);
+		}
+
+
+}
+
+function GetDelinquentCDRsPaginated($bCountOnly=false, $iLimit=0, $iOffset=0, $oFieldsToSort=null, $oFilter=null, $iSummaryCharacterLimit=30)
+{
+
+		try
+		{
+
+			// Check permissions
+			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
+			{
+				throw new JSON_Handler_CDR_Exception('You do not have permission to move delinquent CDRs.');
+			}
+
+			$aFilter		= get_object_vars($oFilter);
+
+			if ($bCountOnly)
+			{
+
+				return 	array(
+							"Success"		=> true,
+							"iRecordCount"	=>  CDR::GetDelinquentCDRsPaginated(null, null, get_object_vars($oFieldsToSort), $aFilter, true)
+						);
+			}
+			else
+			{
+				$iLimit		= (max($iLimit, 0) == 0) ? null : (int)$iLimit;
+				$iOffset	= ($iLimit === null) ? null : max((int)$iOffset, 0);
+				$aFNN		= CDR::GetDelinquentCDRsPaginated($iLimit, $iOffset, get_object_vars($oFieldsToSort), $aFilter);
+				$aResults	= array();
+				$iCount		= 0;
+
+
+				return 	array(
+							"Success"		=> true,
+							"aRecords"		=>$aFNN,
+							"iRecordCount"	=>CDR::GetDelinquentCDRsPaginated(null, null, get_object_vars($oFieldsToSort), $aFilter, true)
+						);
+			}
+		}
+		catch (JSON_Handler_CDR_Exception $oException)
+		{
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> $oException->getMessage()
+					);
+		}
+		catch (Exception $e)
+		{
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> Employee::getForId(Flex::getUserId())->isGod() ? $e->getMessage() : 'There was an error getting the dataset'
+					);
+		}
+
+
+}
 	function GetDelinquentCDRs($strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType, $iStatus = CDR_BAD_OWNER)
 	{
 		// Check user authorization and permissions
@@ -214,7 +295,7 @@ class JSON_Handler_CDR extends JSON_Handler
 		try
 		{
 
-			$CDRData = CDR::GetDelinquentCDRs($strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType);
+			$aCDRIDs = CDR::GetDelinquentCDRIDs($strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType);
 		}
 		catch (Exception $e)
 		{
@@ -226,13 +307,7 @@ class JSON_Handler_CDR extends JSON_Handler
 
 		}
 
-		$aCDRIds = array();
-		foreach ($CDRData['CDRs'] as $aCDR)
-		{
-			$aCDRIds[] = $aCDR['Id'];
-		}
-
-		return $this->writeOffDelinquentCDRs($aCDRIds);
+		return $this->writeOffDelinquentCDRs($aCDRIDs);
 	}
 
 	function writeOffCDRs($aCDRs)
@@ -267,11 +342,12 @@ class JSON_Handler_CDR extends JSON_Handler
 				$oCDR->writeOff();
 			}
 
-			$aData =CDR::GetStatusInfoForCDRs($aCDRIds);
+			//$aData =CDR::GetStatusInfoForCDRs($aCDRIds);
 
 			return	array(
 						'Success'	=> true,
-						'aData'		=> $aData
+						'aData'		=> $aCDRIds,
+						'sStatus'	=> GetConstantDescription(CDR_DELINQUENT_WRITTEN_OFF, "CDR")
 					);
 		}
 		catch (Exception $oException)
@@ -298,6 +374,12 @@ class JSON_Handler_CDR extends JSON_Handler
 
 		TransactionStart();
 		$arrSuccessfulCDRs = CDR::assignCDRsToService($strFNN, $intCarrier, $intServiceType, $arrCDRs);
+		// Everything worked out
+			TransactionCommit();
+			return	array(
+						'Success'	=> true,
+						'aData'		=>$arrSuccessfulCDRs
+					);
 		}
 		catch (Exception $e)
 		{
@@ -309,12 +391,7 @@ class JSON_Handler_CDR extends JSON_Handler
 
 		}
 
-			// Everything worked out
-			TransactionCommit();
-			return	array(
-						'Success'	=> true,
-						'aData'		=>$arrSuccessfulCDRs
-					);
+
 
 	}
 
@@ -361,22 +438,30 @@ function GetStatusInfoForCDRs($aCDRIDs, $bFilterOnlyDelinquents = false)
 function BulkAssignCDRsToServices ($strFNN, $intCarrier, $intServiceType,  $strStartDate,$strEndDate, $iServiceId)
 {
 
-	$aCDRs = CDR::GetDelinquentCDRs($strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType);
-	$aCDRIDs = array();
+
+	$aCDRs = CDR::GetDelinquentCDRIDs($strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType);
+$aServiceInfo = array();
 	try
 	{
 
 		TransactionStart();
-		foreach ($aCDRs['CDRs'] as $aCDR)
+		foreach ($aCDRs as $iCDR)
 		{
 			$oCDR = new stdClass();
-			$oCDR->Id = $aCDR['Id'];
+			$oCDR->Id = $iCDR;
 			$oCDR->Service = $iServiceId;
-			$arrSuccessfulCDRs = CDR::assignCDRsToService($strFNN, $intCarrier, $intServiceType, array($oCDR));
-			$aCDRIDs[] = $aCDR['Id'];
+			$aServiceInfo = CDR::assignCDRsToService($strFNN, $intCarrier, $intServiceType, array($oCDR));
+
 		}
 
-		$aData =CDR::GetStatusInfoForCDRs($aCDRIDs);
+
+		TransactionCommit();
+			return	array(
+						'Success'	=> true,
+						'aData'		=>$aCDRs,
+						'aServiceInfo' => $aServiceInfo
+
+					);
 
 	}
 	catch(Exception $e)
@@ -390,12 +475,7 @@ function BulkAssignCDRsToServices ($strFNN, $intCarrier, $intServiceType,  $strS
 
 	}
 
-	TransactionCommit();
-			return	array(
-						'bSuccess'	=> true,
-						'sMessage'	=> "",
-						'aData'		=>$aData
-					);
+
 
 }
 
