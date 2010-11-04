@@ -345,6 +345,7 @@ var Component_Delinquent_CDR_List = Class.create(
 	{
 		if (!oResponse)
 		{			
+			this._oLoadingPopup.display();
 			var fnRequest     = jQuery.json.jsonFunction(this._setService.bind(this, oStatusCell, oActionCell), null, 'CDR', 'BulkAssignCDRsToServices');
 			fnRequest(strFNN, intCarrier, intServiceType, strStartDate, strEndDate, iServiceId);		
 		}
@@ -393,7 +394,7 @@ var Component_Delinquent_CDR_List = Class.create(
 		actionCell.appendChild($T.img({class:"followup-list-all-action-icon", src: "../admin/img/template/magnifier.png", alt: 'Show Details', title: 'Show Details'}).observe('click', this._showCDRPopup.bind(this, oCDR.EarliestStartDatetime, oCDR.LatestStartDatetime, oCDR.FNN, oCDR.Carrier, oCDR.ServiceType, oCDR.Status)));	
 		
 		var	oTR	=	$T.tr(
-						$T.td({style: 'cursor: pointer'}, oCDR.FNN , $T.img({class: 'followup-list-all-header-filter', src: Component_Delinquent_CDR_List.FILTER_IMAGE_SOURCE, alt: 'Filter', title: 'Filter on this FNN'})).observe('click', this._setFNNFilter.bind(this, oCDR.FNN)),
+						$T.td({class: 'fnn', style: 'cursor: pointer'}, oCDR.FNN , $T.img({class: 'followup-list-all-header-filter', src: Component_Delinquent_CDR_List.FILTER_IMAGE_SOURCE, alt: 'Filter', title: 'Filter on this FNN'})).observe('click', this._setFNNFilter.bind(this, oCDR.FNN)),
 						$T.td({class: 'carrier'},oCDR.carrier_label),
 						$T.td(parseFloat(oCDR.TotalCost).toFixed(2)),
 						$T.td(oCDR.Count),							
