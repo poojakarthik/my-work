@@ -7834,10 +7834,16 @@ div.delinquent-fnn-list td.carrier, td.status
 
 }
 
-div.content-delinquent-cdrs-table td.status
+div.delinquent-fnn-list td.carrier, td.status
+{
+	width: 300px;
+
+}
+
+div.delinquent-fnn-list td.fnn .followup-list-all-header-filter
 {
 
-	width: 300px;
+	padding-left: 3px;
 
 }
 
