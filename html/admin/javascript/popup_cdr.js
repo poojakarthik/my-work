@@ -148,7 +148,8 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 													)
 													
 												),
-												this._tBody = $T.tbody({class: 'alternating'}
+												this._tBody = $T.tbody({class: 'alternating'},
+													this._createNoRecordsRow(true)
 													
 												)
 											)),
@@ -258,7 +259,28 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 	
 	_showLoading	: function(bShow)
 	{
-
+		var oLoading	= this._oContentDiv.select('span.loading').first();
+		if (!oLoading)
+		{
+			return;
+		}
+		else if (bShow)
+		{
+			oLoading.show();
+		}
+		else
+		{
+			oLoading.hide();
+		}
+	},
+	
+		_createNoRecordsRow	: function(bOnLoad)
+	{
+		return $T.tr(
+			$T.td({class: 'followup-list-all-norecords', colspan: 0},
+				(bOnLoad ? 'Loading...' : 'There are no records to display')
+			)
+		);
 	},
 	
 		_refresh: function()
@@ -491,7 +513,7 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 					
 				
 					
-			var div = 	$T.div({class: 'cdr-popup-message', style:"text-align: center"},										
+			var div = 	$T.div({class: 'cdr-popup-message', style: 'padding-left: 170px'},										
 											sDelinquentMessage,
 											$T.div(list),
 											sContinueQuestion																	
@@ -502,7 +524,7 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 														sNoLabel		: 'No', 
 														sYesLabel		: 'Yes',														
 														bOverrideStyle	: true,
-														iWidth			: 45,
+														iWidth			: 40,
 														sTitle			: 'CDR Writeoff',
 														fnOnYes			: this._bulkWriteOff.bind(this,true, false)														
 													}
@@ -570,7 +592,7 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 		{			
 			//this._refreshDataSetAndDisplay(false);
 			//this._refreshDataTable(oResponse.aData);
-			Reflex_Popup.alert('All CDRs were assigned succesfully');
+			Reflex_Popup.alert('All CDRs were assigned succesfully.');
 			for (var i = 0;i<oResponse.aData.length;i++)
 			{
 				this._addToIncludeFilter(oResponse.aData[i]);
@@ -644,7 +666,7 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 		}
 		else
 		{			
-			Reflex_Popup.alert('CDR ' +  iCDRId + ' has been successfully assigned');
+			Reflex_Popup.alert('CDR ' +  iCDRId + ' has been successfully assigned.');
 			this._addToIncludeFilter(iCDRId);
 			this._iAssigned++;
 			this._refresh();		
@@ -693,7 +715,7 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 		else
 		{
 			this._oLoadingPopup.hide();
-			Reflex_Popup.alert('CDR ' +  iId + 'has been written off.');
+			Reflex_Popup.alert('CDR ' +  iId + ' has been written off.');
 			this._addToIncludeFilter(iId);
 			this._iWriteOffs++;
 			this._refresh();
