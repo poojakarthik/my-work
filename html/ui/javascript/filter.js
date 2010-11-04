@@ -319,6 +319,14 @@ var Filter	= Class.create
 		return this._hFilters[sField];
 	},
 	
+	getFilters: function()
+	{
+	
+		return this.refreshData(true);
+	
+	
+	},
+	
 	refreshData	: function(bCancelRefresh)
 	{
 		var hFilters	= {};
@@ -384,6 +392,10 @@ var Filter	= Class.create
 		if (!bCancelRefresh && this._oPagination)
 		{
 			this._refreshCurrentPageOfData();
+		}
+		else
+		{
+			return hFilters;
 		}
 	},
 	
