@@ -58,7 +58,7 @@ class JSON_Handler_CDR extends JSON_Handler
 
 			$aStatusList = array(CDR_BAD_OWNER => GetConstantDescription(CDR_BAD_OWNER, "CDR"),
 								CDR_DELINQUENT_WRITTEN_OFF =>GetConstantDescription(CDR_DELINQUENT_WRITTEN_OFF, "CDR"),
-								self::SHOW_BOTH	=> "delinquent and written off CDRs"
+								self::SHOW_BOTH	=> "Both"
 								);
 
 			return 	array(
