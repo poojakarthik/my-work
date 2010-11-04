@@ -1,30 +1,15 @@
 
 var Popup_CDR_Service_List	= Class.create(Reflex_Popup, 
 {
-	initialize	: function($super,  fCallback, aServiceList, strStartDate, strEndDate, strFNN	,intCarrier, intServiceType)
+	initialize	: function($super,  fCallback, strFNN, intServiceType)
 	{
 			$super(50);		
 			this._oLoadingPopup	= new Reflex_Popup.Loading();
 			//this._iCDRId = iCDRId;
 			this._fCallback = fCallback;
-			if (aServiceList)
-			{
-			this._aServiceList = aServiceList;
-			this._buildUI();
-			}
-			else
-			{
-				this._sStart = strStartDate;
-				this._sEnd = strEndDate;
-				this._sFNN = strFNN;
-				this._iCarrier = intCarrier;
-				this._iServiceType = intServiceType;				
-				this._getData();
-			
-			}
-			
-			
-		
+this._sFNN = strFNN;
+this._iServiceType = intServiceType;			
+			this._getData();			
 	},
 	
 	_getData: function(oResponse)
@@ -33,12 +18,12 @@ var Popup_CDR_Service_List	= Class.create(Reflex_Popup,
 		if ( !oResponse)
 		{
 			this._oLoadingPopup.display();
-			var fnRequest     = jQuery.json.jsonFunction(this._getData.bind(this), null, 'CDR', 'GetDelinquentCDRs');
-			fnRequest(this._sStart,this._sEnd, this._sFNN, this._iCarrier, this._iServiceType);
+			var fnRequest     = jQuery.json.jsonFunction(this._getData.bind(this), null, 'CDR', 'getPossibleOwnersForFNN');
+			fnRequest(this._sFNN, this._iServiceType);
 		}
 		else
 		{
-			this._aServiceList = oResponse.aRecords.Services;
+			this._aServiceList = oResponse.aData;
 			this._buildUI();			
 		}	
 	
@@ -53,9 +38,9 @@ var Popup_CDR_Service_List	= Class.create(Reflex_Popup,
 													$T.tr(
 														$T.th('Account'),
 														$T.th('Name'),
-														$T.th('Status'),
-														$T.th('Created'),
-														$T.th('Service ID'),
+														$T.th('FNN'),
+														$T.th('Account Created On'),
+														$T.th('Closed On'),
 														$T.th('')
 													)
 													
@@ -104,14 +89,14 @@ var Popup_CDR_Service_List	= Class.create(Reflex_Popup,
 																
 																$T.span('Select')
 																	).observe('click', this._callBack.bind(this, oService.Id))
-													
+				debugger;									
 			var	oTR	=	$T.tr(
 							
 							$T.td(accountLink),
 							$T.td(oService.AccountName),							
-							$T.td(oService.DateRange),
+							$T.td(oService.FNN),
 							$T.td(oService.CreatedOn),
-							$T.td(oService.Id),
+							$T.td(oService.ClosedOn),
 							$T.td(button)
 							//$T.td({class : "followup-list-all-action-icons"},assign, writeOff)
 							//$T.td({class : "followup-list-all-action-icons"},writeOff, assign, viewDetails)
