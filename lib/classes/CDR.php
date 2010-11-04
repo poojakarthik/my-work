@@ -269,7 +269,7 @@ class CDR extends ORM_Cached
 			}
 			else
 			{
-				$strClosedOn = "[Still Open]";
+				$strClosedOn = "Still Open";
 			}
 			$strClosedOn = str_pad($strClosedOn, 12, " ", STR_PAD_RIGHT);
 
