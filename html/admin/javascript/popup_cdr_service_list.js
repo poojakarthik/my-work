@@ -89,7 +89,7 @@ this._iServiceType = intServiceType;
 																
 																$T.span('Select')
 																	).observe('click', this._callBack.bind(this, oService.Id))
-				debugger;									
+												
 			var	oTR	=	$T.tr(
 							
 							$T.td(accountLink),

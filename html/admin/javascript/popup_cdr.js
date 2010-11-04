@@ -100,7 +100,7 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 		// {
 					
 					var sButtonPathBase	= '../admin/img/template/resultset_';	
-					this._oContentDiv 	=  $T.div({class: 'delinquent-fnn-list'},
+					this._oContentDiv 	=  $T.div({class: 'content-delinquent-cdrs'},
 									// All
 									$T.div({class: 'section'},
 										$T.div({class: 'section-header'},
@@ -110,7 +110,26 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 													''
 												)
 											),
-											$T.div({class: 'section-header-options'}											
+											$T.div({class: 'section-header-options'},
+												$T.button({class: 'icon-button'},
+																$T.img({src: "../admin/img/template/table_refresh.png", alt: '', title: 'Refresh List'}),
+																$T.span('Refresh List')
+																	).observe('click', this._refreshDataSet.bind(this)),
+												$T.div({class: 'followup-list-all-pagination'},
+
+													$T.button({class: 'followup-list-all-pagination-button'},
+														$T.img({src: sButtonPathBase + 'first.png'})
+													),
+													$T.button({class: 'followup-list-all-pagination-button'},
+														$T.img({src: sButtonPathBase + 'previous.png'})
+													),
+													$T.button({class: 'followup-list-all-pagination-button'},
+														$T.img({src: sButtonPathBase + 'next.png'})
+													),
+													$T.button({class: 'followup-list-all-pagination-button'},
+														$T.img({src: sButtonPathBase + 'last.png'})
+													)
+												)
 												
 											)
 										),
@@ -132,20 +151,7 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 													
 												)
 											)),
-																						$T.div({class: 'footer-pagination'},
-												$T.button(
-													$T.img({src: sButtonPathBase + 'first.png'})
-												),
-												$T.button(
-													$T.img({src: sButtonPathBase + 'previous.png'})
-												),
-												$T.button(
-													$T.img({src: sButtonPathBase + 'next.png'})
-												),
-												$T.button(
-													$T.img({src: sButtonPathBase + 'last.png'})
-												)
-											),
+																						
 											$T.div({class: 'buttons'},
 											
 											
@@ -174,7 +180,7 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 		
 	// Bind events to the pagination buttons
 		
-		var aBottomPageButtons 	= this._oContentDiv.select('div.footer-pagination button');
+		var aBottomPageButtons 	= this._oContentDiv.select('div.followup-list-all-pagination button');
 		
 		// First
 		
@@ -267,10 +273,18 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 	
 	},
 	
+	_refreshDataSet: function()
+	{
+		this._oFilter.setFilterValue('also_include', []);
+		this._iWriteOffs = 0;
+		this._iAssigned = 0;
+		this._refresh();	
+	},
+	
 	
 		_updateTable	: function(oResultSet)
 	{
-	debugger;
+	
 		var oTBody = this._oContentDiv.select('table > tbody').first();
 		
 		// Remove all existing rows
@@ -509,7 +523,7 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 	
 	_bulkAssign: function (iServiceId, oResponse)
 	{
-		debugger;
+		
 		if (!oResponse)
 		{
 			if (!iServiceId)
@@ -555,7 +569,7 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 			
 			//this._oSort.refreshData(true);
 			//this._oFilter.refreshData(true);
-			debugger;
+			
 			this._oLoadingPopup.display();
 			var fnRequest     = jQuery.json.jsonFunction(this._downloadCSV.bind(this), null, 'CDR', 'ExportToCSV');
 			//fnRequest(this.oDataSet._hSort, this.oDataSet._hFilter);
