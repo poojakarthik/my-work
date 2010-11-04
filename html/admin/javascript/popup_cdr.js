@@ -9,7 +9,7 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 		//Data Members
 		this._fCallback = fCallback;
 		this._oLoadingPopup	= new Reflex_Popup.Loading();
-		this._oLoadingPopup.display();
+		
 		this._sStart = strStartDate;
 		this._sEnd = strEndDate;
 		this._sFNN = strFNN;
@@ -214,14 +214,14 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 			
 			this.addCloseButton(this._close.bind(this));
 			this.setContent(this._oContentDiv);	
-				this._oLoadingPopup.hide();
+			this.display();		
 			this._refresh();	
 
 
 		
 		
 		
-			this.display();					
+							
 		
 	},
 	
@@ -456,29 +456,48 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 					var oStatusBreakDown = this._getCurrentStatusBreakDown();
 					var sWriteOffMessage = '';
 					var sAssignedMessage = '';
-					var sDelinquentMessage = oStatusBreakDown.delinquent + " CDRs will be written off";
-					if (oStatusBreakDown.writeoff>0)
+					var sAlreadyDoneMessage = 'The following was done already';
+					var sDelinquentMessage = oStatusBreakDown.delinquent + " CDRs will be written off.";
+					var sContinueQuestion = " Do you wish to continue?";
+					var list = '';
+					
+					if (oStatusBreakDown.writeoff==1)
 					{
-						sWriteOffMessage = oStatusBreakDown.writeoff + " written off already";
-						oStatusBreakDown.assigned>0?sWriteOffMessage = sWriteOffMessage + ", and ":null;
+						sWriteOffMessage = oStatusBreakDown.writeoff + " CDR was written off.";						
+					}
+					else if(oStatusBreakDown.writeoff>1)
+					{
+						sWriteOffMessage = oStatusBreakDown.writeoff + " CDRs were written off.";					
 					}
 					
-					if (oStatusBreakDown.assigned>0)
+					if (oStatusBreakDown.assigned==1)
 					{
-						sAssignedMessage = oStatusBreakDown.assigned + " assigned to a service already";
+						sAssignedMessage = oStatusBreakDown.assigned + " CDR was assigned to a service.";
+					
+					}
+					else if (oStatusBreakDown.assigned>1)
+					{
+						sAssignedMessage = oStatusBreakDown.assigned + " CDRs were assigned to a service.";					
+					}
+					
+					if (oStatusBreakDown.assigned>0 || oStatusBreakDown.writeoff>0)
+					{
+						var ul = oStatusBreakDown.assigned>0&&oStatusBreakDown.writeoff>0?$T.ul($T.li(sWriteOffMessage), $T.li(sAssignedMessage)):oStatusBreakDown.assigned>0?$T.ul($T.li(sAssignedMessage)):$T.ul($T.li(sWriteOffMessage));
+						list = 	$T.div( sAlreadyDoneMessage,
+									ul
+								);
 					
 					}
 					
-					if (sAssignedMessage !='' || sWriteOffMessage!='')
-					{
+				
 					
-					sDelinquentMessage = sDelinquentMessage + " (" + sWriteOffMessage + sAssignedMessage + ").";
-					
-					}
-					sDelinquentMessage = sDelinquentMessage + " Do you wish to continue?";
-			
+			var div = 	$T.div({class: 'cdr-popup-message', style:"text-align: center"},										
+											sDelinquentMessage,
+											$T.div(list),
+											sContinueQuestion																	
+												);
 						Reflex_Popup.yesNoCancel(
-													sDelinquentMessage,
+													div,
 													{
 														sNoLabel		: 'No', 
 														sYesLabel		: 'Yes',														

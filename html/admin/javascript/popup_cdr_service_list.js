@@ -3,7 +3,7 @@ var Popup_CDR_Service_List	= Class.create(Reflex_Popup,
 {
 	initialize	: function($super,  fCallback, strFNN, intServiceType)
 	{
-			$super(50);		
+			$super(60);		
 			this._oLoadingPopup	= new Reflex_Popup.Loading();
 			//this._iCDRId = iCDRId;
 			this._fCallback = fCallback;
@@ -39,7 +39,7 @@ this._iServiceType = intServiceType;
 														$T.th('Account'),
 														$T.th('Name'),
 														$T.th('FNN'),
-														$T.th('Account Created On'),
+														$T.th('Created On'),
 														$T.th('Closed On'),
 														$T.th('')
 													)
