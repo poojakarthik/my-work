@@ -236,7 +236,7 @@ var Component_Delinquent_CDR_List = Class.create(
 		}
 		else
 		{
-		
+		debugger;
 			// Add the rows
 			var aData	= jQuery.json.arrayAsObject(oResultSet.arrResultSet);
 			var iCount	= 0;
@@ -333,7 +333,7 @@ var Component_Delinquent_CDR_List = Class.create(
 		else
 		{
 			var keys = Object.keys(oResponse.aData);
-			oStatusCell.innerHTML =  oResponse.aData[keys[0]].Status;
+			oStatusCell.innerHTML =  oResponse.sStatus;
 			actionCell.innerHTML = "";
 			this._oLoadingPopup.hide();
 			Reflex_Popup.alert('All CDRs have been written off succesfully');
@@ -355,17 +355,20 @@ var Component_Delinquent_CDR_List = Class.create(
 		}
 		else
 		{			
+			
 			Reflex_Popup.alert('All CDRs have been assigned succesfully');
-			var keys = Object.keys(oResponse.aData);
-			oStatusCell.innerHTML = 'Assigned to : ' + oResponse.aData[keys[0]].Status;
-			oActionCell.innerHTML = "";	
+	
+			var keys = Object.keys(oResponse.aServiceInfo);
+			oStatusCell.innerHTML = 'Assigned to Account ' + oResponse.aServiceInfo[0].account_id + ', FNN: ' + oResponse.aServiceInfo[0].fnn;
+			oActionCell.innerHTML = "";
+			this._oLoadingPopup.hide();			
 		}	
 	
 	},
 	
 	_showServicesPopup: function(oStatusCell, oActionCell, strStartDate, strEndDate, strFNN	,intCarrier, intServiceType)
 	{
-		new Popup_CDR_Service_List(this._setService.bind(this, oStatusCell, oActionCell, false, strStartDate, strEndDate, strFNN	,intCarrier, intServiceType), null, strStartDate, strEndDate, strFNN	,intCarrier, intServiceType);
+		new Popup_CDR_Service_List(this._setService.bind(this, oStatusCell, oActionCell, false, strStartDate, strEndDate, strFNN	,intCarrier, intServiceType), strFNN ,intServiceType);
 	},
 	
 	_setFNNFilter: function(FNN)
@@ -390,7 +393,7 @@ var Component_Delinquent_CDR_List = Class.create(
 		actionCell.appendChild($T.img({class:"followup-list-all-action-icon", src: "../admin/img/template/magnifier.png", alt: 'Show Details', title: 'Show Details'}).observe('click', this._showCDRPopup.bind(this, oCDR.EarliestStartDatetime, oCDR.LatestStartDatetime, oCDR.FNN, oCDR.Carrier, oCDR.ServiceType, oCDR.Status)));	
 		
 		var	oTR	=	$T.tr(
-						$T.td({style: 'cursor: pointer'}, oCDR.FNN).observe('click', this._setFNNFilter.bind(this, oCDR.FNN)),
+						$T.td({style: 'cursor: pointer'}, oCDR.FNN , $T.img({class: 'followup-list-all-header-filter', src: Component_Delinquent_CDR_List.FILTER_IMAGE_SOURCE, alt: 'Filter', title: 'Filter on this FNN'})).observe('click', this._setFNNFilter.bind(this, oCDR.FNN)),
 						$T.td({class: 'carrier'},oCDR.carrier_label),
 						$T.td(parseFloat(oCDR.TotalCost).toFixed(2)),
 						$T.td(oCDR.Count),							
