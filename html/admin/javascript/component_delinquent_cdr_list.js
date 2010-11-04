@@ -336,7 +336,7 @@ var Component_Delinquent_CDR_List = Class.create(
 			oStatusCell.innerHTML =  oResponse.sStatus;
 			actionCell.innerHTML = "";
 			this._oLoadingPopup.hide();
-			Reflex_Popup.alert('All CDRs have been written off succesfully');
+			Reflex_Popup.alert('All CDRs have been written off succesfully.');
 		}
 	
 	},
@@ -357,7 +357,7 @@ var Component_Delinquent_CDR_List = Class.create(
 		else
 		{			
 			
-			Reflex_Popup.alert('All CDRs have been assigned succesfully');
+			Reflex_Popup.alert('All CDRs have been assigned succesfully.');
 	
 			var keys = Object.keys(oResponse.aServiceInfo);
 			oStatusCell.innerHTML = 'Assigned to Account ' + oResponse.aServiceInfo[0].account_id + ', FNN: ' + oResponse.aServiceInfo[0].fnn;
