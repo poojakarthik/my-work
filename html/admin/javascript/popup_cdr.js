@@ -9,6 +9,7 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 		//Data Members
 		this._fCallback = fCallback;
 		this._oLoadingPopup	= new Reflex_Popup.Loading();
+		this._oLoadingPopup.display();
 		this._sStart = strStartDate;
 		this._sEnd = strEndDate;
 		this._sFNN = strFNN;
@@ -212,7 +213,8 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 			this.setTitle('Delinquent CDRs');
 			
 			this.addCloseButton(this._close.bind(this));
-			this.setContent(this._oContentDiv);			
+			this.setContent(this._oContentDiv);	
+				this._oLoadingPopup.hide();
 			this._refresh();	
 
 
@@ -457,19 +459,20 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 					var sDelinquentMessage = oStatusBreakDown.delinquent + " CDRs will be written off";
 					if (oStatusBreakDown.writeoff>0)
 					{
-						sWriteOffMessage = oStatusBreakDown.writeoff + " CDRs were written off already. ";
+						sWriteOffMessage = oStatusBreakDown.writeoff + " written off already";
+						oStatusBreakDown.assigned>0?sWriteOffMessage = sWriteOffMessage + ", and ":null;
 					}
 					
 					if (oStatusBreakDown.assigned>0)
 					{
-						sAssignedMessage = oStatusBreakDown.assigned + " CDRs were assigned to a service already. ";
+						sAssignedMessage = oStatusBreakDown.assigned + " assigned to a service already";
 					
 					}
 					
 					if (sAssignedMessage !='' || sWriteOffMessage!='')
 					{
 					
-					sDelinquentMessage = sDelinquentMessage + " (" + sAssignedMessage + sWriteOffMessage + ").";
+					sDelinquentMessage = sDelinquentMessage + " (" + sWriteOffMessage + sAssignedMessage + ").";
 					
 					}
 					sDelinquentMessage = sDelinquentMessage + " Do you wish to continue?";
@@ -679,70 +682,70 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 	
 	},
 	
-	_refreshDataSetAndDisplay: function(bShowOnlyDelinquents, oResponse)
-	{
+	// _refreshDataSetAndDisplay: function(bShowOnlyDelinquents, oResponse)
+	// {
 		
-		if (!oResponse)
-		{
-			this._oLoadingPopup.display();
-			var fnRequest     = jQuery.json.jsonFunction(this._refreshDataSetAndDisplay.bind(this, bShowOnlyDelinquents), this._refreshDataSetAndDisplay.bind(this), 'CDR', 'GetStatusInfoForCDRs');
-			fnRequest(Object.keys(this._oData.CDRs), bShowOnlyDelinquents);
+		// if (!oResponse)
+		// {
+			// this._oLoadingPopup.display();
+			// var fnRequest     = jQuery.json.jsonFunction(this._refreshDataSetAndDisplay.bind(this, bShowOnlyDelinquents), this._refreshDataSetAndDisplay.bind(this), 'CDR', 'GetStatusInfoForCDRs');
+			// fnRequest(Object.keys(this._oData.CDRs), bShowOnlyDelinquents);
 		
-		}
-		else if (!oResponse.Success)
-		{
+		// }
+		// else if (!oResponse.Success)
+		// {
 			
-			this._oLoadingPopup.hide();
-			Component_Delinquent_CDR_List.serverErrorMessage(oResponse.sMessage, 'CDR Screen Refresh Error');
+			// this._oLoadingPopup.hide();
+			// Component_Delinquent_CDR_List.serverErrorMessage(oResponse.sMessage, 'CDR Screen Refresh Error');
 		
-		}
-		else
-		{
-			this._oLoadingPopup.hide();
-			this._oData.CDRs	= oResponse.aData;
-			this._refreshDataTable(oResponse.aData);
+		// }
+		// else
+		// {
+			// this._oLoadingPopup.hide();
+			// this._oData.CDRs	= oResponse.aData;
+			// this._refreshDataTable(oResponse.aData);
 		
 		
-		}
+		// }
 	
-	},
+	// },
 	
 	
-		_refreshDataTable: function (oData)
-	{
+		// _refreshDataTable: function (oData)
+	// {
 		
-		//this._fCallback();
-		while(this._tBody.childElementCount>0)
-		{
-		 this._tBody.deleteRow(this._tBody.childElementCount-1);
+		// //this._fCallback();
+		// while(this._tBody.childElementCount>0)
+		// {
+		 // this._tBody.deleteRow(this._tBody.childElementCount-1);
 
-		}	
+		// }	
 
 
-		//var keys = Object.keys(oData);	
+		// //var keys = Object.keys(oData);	
 
-		this._bulkAddButton.disabled = true; 
-		this._bulkWriteOffButton.disabled = true;
+		// this._bulkAddButton.disabled = true; 
+		// this._bulkWriteOffButton.disabled = true;
 		
-		var keys = Object.keys(oData);
+		// var keys = Object.keys(oData);
 			
-			for (var i = 0;i<keys.length;i++)
-			{				
-				this._tBody.appendChild(this._createTableRow(oData[keys[i]], i+1));
-				if (this._bulkAddButton.disabled && oData[keys[i]].StatusId == 107)
-				{
-					this._bulkAddButton.disabled = false; 
-					this._bulkWriteOffButton.disabled = false;
+			// for (var i = 0;i<keys.length;i++)
+			// {				
+				// this._tBody.appendChild(this._createTableRow(oData[keys[i]], i+1));
+				// if (this._bulkAddButton.disabled && oData[keys[i]].StatusId == 107)
+				// {
+					// this._bulkAddButton.disabled = false; 
+					// this._bulkWriteOffButton.disabled = false;
 				
-				}
-			}
+				// }
+			// }
 		
 		
 
 	
 	
 	
-	},
+	// },
 	
 	_createTableRow	: function(oCDR)
 	{
