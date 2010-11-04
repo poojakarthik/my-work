@@ -7840,3 +7840,31 @@ div.content-delinquent-cdrs-table td.status
 	width: 300px;
 
 }
+
+div.content-delinquent-cdrs
+{
+
+	margin: 10px;
+}
+
+div.content-delinquent-cdrs .followup-list-all-pagination
+{
+
+	bottom: -0em !important;
+	display: inline;
+}
+
+div.content-delinquent-cdrs .section > div.section-content.section-content-fitted
+{
+	background-color	: inherit;
+	border-bottom: 1px solid #000000;
+	border-top: 1px solid #000000;
+	padding				: 0em;
+}
+
+div.content-delinquent-cdrs .section-header-options >.icon-button
+{
+
+vertical-align: top;
+
+}
