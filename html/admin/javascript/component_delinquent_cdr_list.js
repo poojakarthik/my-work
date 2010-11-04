@@ -236,7 +236,7 @@ var Component_Delinquent_CDR_List = Class.create(
 		}
 		else
 		{
-		debugger;
+		
 			// Add the rows
 			var aData	= jQuery.json.arrayAsObject(oResultSet.arrResultSet);
 			var iCount	= 0;
