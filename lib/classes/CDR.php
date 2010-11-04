@@ -132,33 +132,97 @@ class CDR extends ORM_Cached
 		}
 	}
 
-
-	public static function GetDelinquentCDRs($strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType, $iStatus = CDR_BAD_OWNER)
+	public static function GetDelinquentCDRsPaginated($iLimit, $iOffset, $aSortFields, $aFilter , $bCountOnly = false)
 	{
-		// Retrieve all the CDRs
-		$strWhere			= "Status = <BadOwner> AND FNN = <FNN> AND ServiceType = <ServiceType> AND Carrier = <Carrier> AND StartDatetime BETWEEN <StartDate> AND <EndDate>";
-		$arrWhere			= Array(	"BadOwner"		=> $iStatus,
-										"FNN"			=> $strFNN,
-										"ServiceType"	=> $intServiceType,
-										"Carrier"		=> $intCarrier,
-										"StartDate"		=> $strStartDate,
-										"EndDate"		=> $strEndDate);
+
 		$sDelinquentStatusDescr = GetConstantDescription(CDR_BAD_OWNER, "CDR");
 		$sWriteOffStausDescr = GetConstantDescription(CDR_DELINQUENT_WRITTEN_OFF, "CDR");
-		$arrColumns			= Array("Id"					=>	"Id",
-									"Cost"			=>	"Cost",
-									"StartDatetime"				=>	"StartDatetime",
-		 							"Status"				=>	"Status",
-									"StatusDescr"			=>	"if (Status = ".CDR_BAD_OWNER.", '".$sDelinquentStatusDescr."','".$sWriteOffStausDescr."')"
+		$sWhere = '';
+		if (isset($aFilter['also_include']))
+		{
+			if (count($aFilter['also_include']->aValues)>0)
+			{
+				$sWhere = " OR c.Id in (".implode(",", $aFilter['also_include']->aValues).")";
+			}
+			unset($aFilter['also_include']);
+
+		}
+
+		$aAliases = array('Status'=>'c.Status' , 'FNN'=>'c.FNN', 'ServiceType'=>'c.ServiceType', 'Carrier'=>'c.Carrier', 'StartDatetime'=>'c.StartDatetime');
+
+		$aWhere	= StatementSelect::generateWhere($aAliases, $aFilter);
+		$sOrderByClause	=	StatementSelect::generateOrderBy(array(), $aSortFields);
+		$sLimitClause	= StatementSelect::generateLimit($iLimit, $iOffset);
+
+
+
+
+		$arrColumns			= Array("Id"					=>	"c.Id",
+									"Cost"			=>	"c.Cost",
+									"StartDatetime"				=>	"c.StartDatetime",
+		 							"Status"				=>	"c.Status",
+									"StatusDescr"			=>	" CASE  c.Status WHEN ".CDR_BAD_OWNER." THEN '".$sDelinquentStatusDescr."' WHEN ". CDR_DELINQUENT_WRITTEN_OFF." THEN  '".$sWriteOffStausDescr."' ELSE CONCAT (CONCAT_WS(' ', 'Account ID:', s.Account), CONCAT_WS(' ',' FNN:', s.FNN)) END"
 									);
 
 
-		$selDelinquentCDRs	= new StatementSelect("CDR", $arrColumns, $strWhere, "StartDatetime DESC, Id ASC");
+		$selDelinquentCDRs	= new StatementSelect("CDR c LEFT JOIN Service s ON (c.Service = s.Id )", $arrColumns, $aWhere['sClause'].$sWhere,  $sOrderByClause, $sLimitClause);
 
-		$mixResult = $selDelinquentCDRs->Execute($arrWhere);
+		$mixResult = $selDelinquentCDRs->Execute($aWhere['aValues']);
 
 
-		// Retrieve all the possible Owners of the CDRs
+
+
+		// Process the retrieved CDRs
+		$arrCDRs = array();
+		$arrRecordSet = $selDelinquentCDRs->FetchAll();
+
+		$iRecordNumber= $iOffset;
+		$aResult = array();
+		foreach($arrRecordSet as $aRecord)
+		{
+			$aResult[$iRecordNumber++]= array(	"Id"	=> $aRecord['Id'],
+								"Time"	=> $aRecord['StartDatetime'],//;//$strStartDatetime,
+								"Cost"	=> $aRecord['Cost'],//$strCost,
+								"Status" =>$aRecord['StatusDescr'],
+								"StatusId"	=>	$aRecord['Status']
+								);;
+
+		}
+
+
+		return $bCountOnly?count($aResult):$aResult;
+
+
+	}
+
+
+	private static function generateWhere($aAliases=array(), $aConstraints=null)
+	{
+		$aWhereParts	= array();
+		$aResult		= array('sClause' => '','aValues' => array());
+
+		if ($aConstraints)
+		{
+			foreach($aConstraints as $sOriginalAlias => $mValue)
+			{
+				$sAlias	= $sOriginalAlias;
+				if (isset($aAliases[$sOriginalAlias]))
+				{
+					$sAlias	= $aAliases[$sOriginalAlias];
+				}
+
+				self::processWhereConstraint($sOriginalAlias, $sAlias, $mValue, $aWhereParts, $aResult);
+			}
+		}
+
+		$aResult['sClause']	= implode(' AND ', $aWhereParts);
+		return $aResult;
+	}
+
+
+	public static function getPossibleOwnersForFNN($strFNN, $intServiceType)
+	{
+
 		$strIndialFNN	= substr($strFNN, 0, -2) . "__";
 		$arrColumns		= Array(	"Id"			=> "S.Id",
 									"CreatedOn"		=> "S.CreatedOn",
@@ -167,6 +231,7 @@ class CDR extends ORM_Cached
 									"Status"		=> "S.Status",
 									"Account"		=> "A.Id",
 									"AccountName"	=> "CASE WHEN A.BusinessName = \"\" THEN A.TradingName ELSE A.BusinessName END",
+									"FNN"			=>"FNN"
 								);
 
 		if ($intServiceType == SERVICE_TYPE_ADSL)
@@ -230,38 +295,43 @@ class CDR extends ORM_Cached
 			$arrRecord['Description']			= htmlspecialchars($strDescription, ENT_QUOTES);
 			$arrRecord['AccountDescription']	= htmlspecialchars($strAccountDescription, ENT_QUOTES);
 			$arrRecord['DateRange']				= "$strCreatedOn - $strClosedOn";
-
+			$arrRecord['CreatedOn']					= $strCreatedOn;
+			$arrRecord['ClosedOn']					= $strClosedOn;
+			//$arrRecord['FNN']					= $strClosedOn;
 			$arrServices[$arrRecord['Id']] = $arrRecord;
 		}
 
+		return $arrServices;
+
+	}
+
+
+	public static function GetDelinquentCDRIDs($strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType, $iStatus = CDR_BAD_OWNER)
+	{
+		// Retrieve all the CDRs
+		$strWhere			= "Status = <BadOwner> AND FNN = <FNN> AND ServiceType = <ServiceType> AND Carrier = <Carrier> AND StartDatetime BETWEEN <StartDate> AND <EndDate>";
+		$arrWhere			= Array(	"BadOwner"		=> $iStatus,
+										"FNN"			=> $strFNN,
+										"ServiceType"	=> $intServiceType,
+										"Carrier"		=> $intCarrier,
+										"StartDate"		=> $strStartDate,
+										"EndDate"		=> $strEndDate);
+		$sDelinquentStatusDescr = GetConstantDescription(CDR_BAD_OWNER, "CDR");
+		$sWriteOffStausDescr = GetConstantDescription(CDR_DELINQUENT_WRITTEN_OFF, "CDR");
+		$arrColumns			= Array("Id"=>	"Id");
+		$selDelinquentCDRs	= new StatementSelect("CDR", $arrColumns, $strWhere, "StartDatetime DESC, Id ASC");
+
+		$mixResult = $selDelinquentCDRs->Execute($arrWhere);
+
 		// Process the retrieved CDRs
 		$arrCDRs = Array();
-		$arrRecordSet = $selDelinquentCDRs->FetchAll();
-		foreach ($arrRecordSet as $arrRecord)
+		$aRecords = $selDelinquentCDRs->FetchAll();
+
+		foreach($aRecords as $aRecord)
 		{
-			$strStartDatetime	= date("H:i:s d/m/Y", strtotime($arrRecord['StartDatetime']));
-			$strCost			= OutputMask()->MoneyValue($arrRecord['Cost']);
-
-			$arrCDRs[$arrRecord['Id']] = Array(	"Id"	=> $arrRecord['Id'],
-								"Time"	=> $arrRecord['StartDatetime'],//;//$strStartDatetime,
-								"Cost"	=> $arrRecord['Cost'],//$strCost,
-								"Status" =>$arrRecord['StatusDescr'],
-								"StatusId"	=>	$arrRecord['Status']
-								);
-
+			$arrCDRs[]= $aRecord['Id'];
 		}
-
-		// Build the Html required of the Service Selector popup
-		//$strServiceSelectorHtml = $this->_RenderDelinquentCDRServiceSelector($arrServices);
-
-		// Return data to the client
-		$arrCDRs = count($arrCDRs)>0?$arrCDRs:new stdClass();
-
-		$arrReturnData['Services']				= $arrServices;
-		$arrReturnData['CDRs']					= $arrCDRs;
-		return $arrReturnData;
-
-
+		return $arrCDRs;
 
 	}
 
@@ -467,7 +537,7 @@ $sWriteOffStausDescr = GetConstantDescription(CDR_DELINQUENT_WRITTEN_OFF, "CDR")
 			}
 
 			// Add the CDR to the list of successfully owned CDRs
-			$arrSuccessfulCDRs[$objCDR->Id] = array('account_id'=>$arrService['Account'], 'service_id'=>$arrService['Id'], 'fnn'=>$arrService['FNN']);
+			$arrSuccessfulCDRs[] = array('account_id'=>$arrService['Account'], 'service_id'=>$arrService['Id'], 'fnn'=>$arrService['FNN']);
 		}
 
 		return $arrSuccessfulCDRs;
@@ -511,7 +581,14 @@ $sWriteOffStausDescr = GetConstantDescription(CDR_DELINQUENT_WRITTEN_OFF, "CDR")
 		// Very that we're a delinquent
 		if ($this->Status !== CDR_BAD_OWNER)
 		{
-			$sStatus	= Constant_Group::getConstantGroup('CDR')->getConstantName($this->Status);
+			try
+			{
+				$sStatus	= Constant_Group::getConstantGroup('CDR')->getConstantName($this->Status);
+			}
+			catch(Exception $e)
+			{
+				throw new Exception("Malformed CDR Data. Non existent status.");
+			}
 			throw new Exception("Failed to write of CDR ({$this->Id}), not a delinquent. Status is {$sStatus}");
 		}
 
