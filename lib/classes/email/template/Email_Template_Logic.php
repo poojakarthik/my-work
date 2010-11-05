@@ -29,7 +29,7 @@ class Email_Template_Logic
 	}
 
 	// getHTMLContent: Return the 'ready-to-send' HTML content for the given array of data
-	public function getHTMLContent($mData)
+/*	public function getHTMLContentOld($mData)
 	{
 		try
 		{
@@ -58,6 +58,66 @@ class Email_Template_Logic
 		{
 			throw new Exception("Failed to get HTML content. ".$oException->getMessage().". Data = ".print_r($mData, true));
 		}
+	}*/
+
+	public function getHTMLContent($mData)
+	{
+		$aData				= self::_getArrayFromData($mData);
+		$oDetails			= Email_Template_Details::getCurrentDetailsForTemplateId($this->_oEmailTemplate->id);
+		$sHTML				= self::processHTML($oDetails->email_html);
+		$oDOMDocument		= DomDocument::loadXML('<?xml version="1.0" encoding="utf-8"?>'.$sHTML);
+		$oXPath 			= new DOMXPath($oDOMDocument);
+		$oTags				=$oXPath->query("//*[@*] | //variable");
+		foreach ($oTags as $node)
+		{
+			if ($node->tagName =='variable')
+			{
+				$sObject;
+				$sField;
+
+				if ($node->hasAttribute('object'))
+				{
+					$oAttributes 	= $node->attributes;
+					$sObject 		= $oAttributes->getNamedItem('object')->value;
+					$sField		= $oAttributes->getNamedItem('field')->value;
+				}
+				else
+				{
+					$aTokens = explode(".",trim($node->nodeValue, "{} "));
+					$sObject = $aTokens[0];
+					$sField = $aTokens[1];
+				}
+
+				if (array_key_exists($sObject, $this->_aVariables) && in_array( $sField ,  $this->_aVariables[$sObject]))
+				{
+					$sValue = isset($aData[$sObject]) && isset($aData[$sObject][$sField])?$aData[$sObject][$sField]:'{'.$sObject.'.'.$sField.'}';
+					$oNewNode = new DOMText($sValue);
+					$node->parentNode->replaceChild($oNewNode, $node);
+				}
+
+			}
+			else
+			{
+				foreach ($node->attributes as $attrName => $attrNode)
+			  	{
+			  		$aMatches = array();
+			  		$iMatches = preg_match_all ( "/{\s*([A-Za-z0-9_]+).([A-Za-z_0-9]+)\s*}/" , $attrNode->value, $aMatches);
+			  		$sValue = $attrNode->value;
+			  		if($iMatches)
+			  		{
+			  			for($i=0;$i<count($aMatches[0]);$i++)
+			  			{
+
+			  				if (array_key_exists($aMatches[1][$i], $this->_aVariables) && in_array( $aMatches[2][$i] , $this->_aVariables[$aMatches[1][$i]]) && (isset($aData[$aMatches[1][$i]]) && isset($aData[$aMatches[1][$i]][$aMatches[2][$i]])))
+								$sValue = str_replace ($aMatches[0][$i] ,$aData[$aMatches[1][$i]][$aMatches[2][$i]] , $sValue);
+			  			}
+			  			$node->setAttribute ($attrName , $sValue);
+			  		}
+			  	}
+			}
+		}
+
+		return str_replace ( '<?xml version="1.0" encoding="utf-8"?>' , "" ,$oDOMDocument->saveXML());
 	}
 
 	// getTextContent: Return the 'ready-to-send' Text content for the given array of data
@@ -311,12 +371,22 @@ class Email_Template_Logic
 			 	$result = $xpath->query("//variable");
 				foreach ($result as $node)
 				{
-					$oAttributes 	= $node->attributes;
-					$oObject 		= $oAttributes->getNamedItem('object');
-					$oField 		= $oAttributes->getNamedItem('field');
-					$sText = "{".$oObject->value.".".$oField->value."}";
-					$oNewNode = new DOMElement('span', $sText);
-					$node->parentNode->replaceChild($oNewNode, $node);
+					if ($node->hasAttribute('object'))
+					{
+						$oAttributes 	= $node->attributes;
+						$oObject 		= $oAttributes->getNamedItem('object');
+						$oField 		= $oAttributes->getNamedItem('field');
+						$sText = "{".$oObject->value.".".$oField->value."}";
+						$oNewNode = new DOMElement('span', $sText);
+						$node->parentNode->replaceChild($oNewNode, $node);
+					}
+					else
+					{
+
+						$oNewNode = new DOMText("{".$node->nodeValue."}");
+						$node->parentNode->replaceChild($oNewNode, $node);
+
+					}
 				}
 			 }
 
@@ -477,20 +547,29 @@ protected static function _toText($oNode, $aTextArray, $sParentTagName = null, $
 				}
 				else if ($node->tagName == 'variable')
 				{
-					$oAttributes 	= $node->attributes;
-					$oObject 		= $oAttributes->getNamedItem('object');
-					$oField 		= $oAttributes->getNamedItem('field');
 
-					$sPad = null;
-
-					$sBreak;
-					if ($node->nextSibling->parentNode === $node->parentNode || $node->parentNode->tagName =='b')
+					if($node->hasAttribute('object'))
 					{
-						$sBreak = "";
+
+						$oAttributes 	= $node->attributes;
+						$oObject 		= $oAttributes->getNamedItem('object');
+						$oField 		= $oAttributes->getNamedItem('field');
+
+
+						//$sBreak;
+						//if ($node->nextSibling->parentNode === $node->parentNode || $node->parentNode->tagName =='b')
+						//{
+						//	$sBreak = "";
+						//}
+
+
+						$aTextArray[] ="{".$oObject->value.".".$oField->value."}";
 					}
+					else
+					{
+						$aTextArray[] = "{".$node->nodeValue."}";
 
-
-					$aTextArray[] = $sBreak."{".$oObject->value.".".$oField->value."}$sBreak";
+					}
 				}
 				else
 				{
