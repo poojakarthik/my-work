@@ -388,8 +388,9 @@ var Component_Delinquent_CDR_List = Class.create(
 		
 		if (oCDR.Status == 107)
 		{
-			actionCell.appendChild($T.img({class:"followup-list-all-action-icon", src: "../admin/img/template/delete.png", alt: 'Write Off', title: 'Write Off'}).observe('click', this._writeOff.bind(this, statusCell, actionCell,oCDR.FNN, false, false)));
 			actionCell.appendChild($T.img({class:"followup-list-all-action-icon", src: "../admin/img/template/telephone_add.png", alt: 'Assign to Service', title: 'Assign to Service'}).observe('click', this._showServicesPopup.bind(this, statusCell, actionCell, oCDR.EarliestStartDatetime, oCDR.LatestStartDatetime, oCDR.FNN, oCDR.Carrier, oCDR.ServiceType, oCDR.Status)));
+			actionCell.appendChild($T.img({class:"followup-list-all-action-icon", src: Popup_CDR.WRITEOFF_IMAGE, alt: 'Write Off', title: 'Write Off'}).observe('click', this._writeOff.bind(this, statusCell, actionCell,oCDR.FNN, false, false)));
+			
 		}
 		actionCell.appendChild($T.img({class:"followup-list-all-action-icon", src: "../admin/img/template/magnifier.png", alt: 'Show Details', title: 'Show Details'}).observe('click', this._showCDRPopup.bind(this, oCDR.EarliestStartDatetime, oCDR.LatestStartDatetime, oCDR.FNN, oCDR.Carrier, oCDR.ServiceType, oCDR.Status)));	
 		

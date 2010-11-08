@@ -180,6 +180,7 @@ var Component_Email_Template_History = Class.create(
 		 var oView =  $T.img({src: Popup_Email_Text_Editor.PREVIEW_IMAGE_SOURCE , style:'cursor:pointer; padding-left: 5px;', title: 'View' }, $T.span('View')).observe('click', this._editPopup.bind(this,oRow.template_version_id,oRow.name, oRow.customergroup, this._iTemplateId, true));
 																																											
 		td = document.createElement('td');
+		
 		td.appendChild(oCreateNewVersion);
 		td.appendChild(oView);
 		tr.appendChild(td);
