@@ -7278,6 +7278,20 @@ div.popup-email-text-edit table.input tbody tr th
 	min-width:160px;
 }
 
+div.popup-email-text-edit div.control-field span
+{
+white-space:pre-wrap;
+height: auto;
+}
+
+
+div.popup-email-text-edit div.control-field .disabled
+{
+	color: black;
+	background-color: #DDDDDD;
+
+}
+
 /************- END - Email Editor Popup - END - **********************************/
 
 /************************ - Popup Email Template Select - *******************************/
@@ -7875,16 +7889,3 @@ vertical-align: top;
 
 }
 
-div.popup-email-text-edit div.control-field span
-{
-white-space:pre-wrap;
-height: auto;
-}
-
-
-div.popup-email-text-edit div.control-field .disabled
-{
-	color: black;
-	background-color: #DDDDDD;
-
-}
