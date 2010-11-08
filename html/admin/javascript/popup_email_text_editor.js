@@ -2,14 +2,14 @@
 var Popup_Email_Text_Editor	= Class.create(Reflex_Popup, 
 {	
 	
-	initialize	: function($super, iTemplateDetailsId, sTemplateName, customerGroupName, fnCallback, iTemplateId)
+	initialize	: function($super, iTemplateDetailsId, sTemplateName, customerGroupName, fnCallback, iTemplateId, bReadOnly)
 	{			
 		
 		$super(80);			
 	
 		this._oLoadingPopup	= new Reflex_Popup.Loading();
 		this._oLoadingPopup.display();
-		
+		this._bReadOnly = typeof bReadOnly!= 'undefined'?bReadOnly:false;
 		this._fnCallback 			= fnCallback;
 		this._sTemplateName 		= sTemplateName;
 		this._sCustomerGroupName 	= customerGroupName;
@@ -105,8 +105,8 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	{
 	
 		// Button events
-		var oButton							= this._oContent.select('div.buttons > button.icon-button').first();
-		oButton.observe('click', this._saveButtonClick.bind(this));
+		this._saveButton							= this._oContent.select('div.buttons > button.icon-button').first();
+		this._saveButton.observe('click', this._saveButtonClick.bind(this));
 		
 		oButton							= this._oContent.select('div.buttons > button.icon-button').last();
 		oButton.observe('click', this._close.bind(this));			
@@ -123,7 +123,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		this._oSubjectTextField.addOnChangeCallback(this._oSubjectTextField.validate.bind(this._oSubjectTextField));
 		this._oSubjectTextField.setRenderMode(true);
 		this._oSubjectTextField.setElementValue(this._oTemplateDetails.email_subject);
-		
+		this._oSubjectTextField.setValue(this._oTemplateDetails.email_subject);
 		this._oSubjectTextField.validate();
 		this._oSubjectTextField.oControlOutput.oEdit.isFocused=false;
 		this._oSubjectTextField.oControlOutput.oEdit.onfocus=function(){this.isFocused=true};
@@ -145,8 +145,8 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		
 		this._oDescriptionTextField = Control_Field.factory('text', {mAutoTrim: false, sLabel: 'Description', fnValidate: this._validText, mEditable	: true, bDisableValidationStyling	: false, mMandatory	: true});		
 		this._oDescriptionTextField.addOnChangeCallback(this._oDescriptionTextField.validate.bind(this._oDescriptionTextField));
-		this._oDescriptionTextField.setRenderMode(true);
 		this._oDescriptionTextField.setElementValue(this._sTemplateName + " - " + new Date().$format('d/m/Y'));
+		this._oDescriptionTextField.setValue(this._sTemplateName + " - " + new Date().$format('d/m/Y'));
 		this._oDescriptionTextField.validate();
 		
 		
@@ -182,17 +182,18 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 											 );
 		
 		var iNumRows				= document.viewport.getHeight()>768?25:18;
-		var oControl			= Control_Field.factory('textarea', {sLabel:"", sLabelSeparator:null, mVisible:true, mEditable:true, rows:iNumRows, cols:25});
-		this.oTextArea 			= oControl.oControlOutput.oEdit;
-		this.oTextArea.value 	= this._oTemplateDetails.email_text;
-		this.oTextArea.isFocused=false;
-		this.oTextArea.onfocus=function(){this.isFocused=true};
-		this.oTextArea.onblur=function(){this.isFocused=false};
-		this.oTextArea.variableFormat='text';
+		this.oTextArea			= Control_Field.factory('textarea', {sLabel:"", sLabelSeparator:null, mVisible:true, mEditable:true, rows:iNumRows, cols:25});
+		//this.oTextArea 			= oControl.oControlOutput.oEdit;
+		this.oTextArea.setElementValue(this._oTemplateDetails.email_text);
+		this.oTextArea.oControlOutput.oEdit.isFocused=false;
+		this.oTextArea.oControlOutput.oEdit.onfocus=function(){this.isFocused=true};
+		this.oTextArea.oControlOutput.oEdit.onblur=function(){this.isFocused=false};
+		this.oTextArea.oControlOutput.oEdit.variableFormat='text';
+		this.oTextArea.disableValidationStyling();
 
 
 		
-		var oTableRow 			= oControl.generateInputTableRow().oElement;
+		var oTableRow 			= this.oTextArea.generateInputTableRow().oElement;
 		var th 					= oTableRow.select('th').first();
 		th.appendChild($T.div({class: 'buttons'},
 
@@ -215,18 +216,18 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 											 oTBody = $T.tbody({class: 'popup-email-text-edit-fields'})
 											 );
 			 
-		oControl				= Control_Field.factory('textarea', {sLabel:"", sLabelSeparator:null, mVisible:true, mEditable:true, rows:iNumRows, cols:25});
-		this.oHTMLTextArea 		= oControl.oControlOutput.oEdit;
-		this.oHTMLTextArea.value= this._oTemplateDetails.email_html;
-		this.oHTMLTextArea.isFocused=false;
-		this.oHTMLTextArea.variableFormat='tag';
-		this.oHTMLTextArea.onfocus=function(){this.isFocused=true};
-		this.oHTMLTextArea.onblur=function(){this.isFocused=false};
+		this.oHTMLTextArea				= Control_Field.factory('textarea', {sLabel:"", sLabelSeparator:null, mVisible:true, mEditable:true, rows:iNumRows, cols:25});
+		//this.oHTMLTextArea 		= oControl.oControlOutput.oEdit;
+		this.oHTMLTextArea.setElementValue(this._oTemplateDetails.email_html);
+		this.oHTMLTextArea.oControlOutput.oEdit.isFocused=false;
+		this.oHTMLTextArea.oControlOutput.oEdit.variableFormat='tag';
+		this.oHTMLTextArea.oControlOutput.oEdit.onfocus=function(){this.isFocused=true};
+		this.oHTMLTextArea.oControlOutput.oEdit.onblur=function(){this.isFocused=false};
 		
-		oTableRow 				= oControl.generateInputTableRow().oElement;		
+		oTableRow 				= this.oHTMLTextArea.generateInputTableRow().oElement;		
 		th 						= oTableRow.select('th').first();
 		th.appendChild($T.div({class: 'buttons'},
-						$T.button({class: 'icon-button', title: 'Generate Text Version Based on HTML'},
+						this._generateTextButton = $T.button({class: 'icon-button', title: 'Generate Text Version Based on HTML'},
 									$T.img({class: 'padded-image', src: Popup_Email_Text_Editor.ICON_IMAGE_SOURCE, alt: '', title: 'Generate Text'}),
 									$T.span({class: 'padded'},'Generate Text')
 									).observe('click', this._generateTextButtonClick.bind(this)),
@@ -250,13 +251,46 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		this.addCloseButton(this._close.bind(this));
 		this.setContent(this._oContent);
 		this._oLoadingPopup.hide();
+		this._setEditable();		
 		this.display();	
 	},
 	
+	 _setEditable: function()
+	 {
+		var bRenderMode = this._bReadOnly?Control_Field.RENDER_MODE_VIEW:Control_Field.RENDER_MODE_EDIT;
+		 
+		  this._oSubjectTextField.save(true);
+		  this._oSubjectTextField.setEditable(bRenderMode);
+		this._oSubjectTextField.setRenderMode(bRenderMode);
+		
+		this._oDescriptionTextField.save(true);
+		  this._oDescriptionTextField.setEditable(bRenderMode);		
+		this._oDescriptionTextField.setRenderMode(bRenderMode);
+		//this.oHTMLTextArea.disabled = true;
+		
+		 this.oTextArea.save(true);
+		 this.oTextArea.setEditable(bRenderMode);
+		 this.oTextArea.setRenderMode(bRenderMode);
+		
+		 //var span = this._oContent.select('.popup-email-text-edit-fields div.control-field span').first();
+		// var height				= document.viewport.getHeight()>768?11400:11300;
+		// span.style.height = this.oHTMLTextArea.oControlOutput.oEdit.height;
+		//span.style.overflow = 'visible';
+		 
+		 //this.oHTMLTextArea.setValue(div);
+		 //this.oHTMLTextArea.setEditable(bRenderMode);	
+		// this.oHTMLTextArea.setRenderMode(bRenderMode);
+		 this.oHTMLTextArea.oControlOutput.oEdit.disabled = true;
+		 this.oHTMLTextArea.oControlOutput.oEdit.className = 'disabled';
+		this._generateTextButton.style.display = bRenderMode?'':'none';
+		this._saveButton.style.display = bRenderMode?'':'none';
+	
+	 },
+	
 	_sendTestMail: function(bTextOnly)
 	{
-		sHTML = bTextOnly?null:this.oHTMLTextArea.value;		
-		oData = {text: this.oTextArea.value, html:sHTML, subject:this._oSubjectTextField.getElementValue() }
+		sHTML = bTextOnly?null:this.oHTMLTextArea.getElementValue();		
+		oData = {text: this.oTextArea.getElementValue(), html:sHTML, subject:this._oSubjectTextField.getElementValue() };
 		new Popup_Email_Test_Email(oData);	
 	},
 	
@@ -311,8 +345,15 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 								tag:  "<variable object = \""+key+"\" field = \"" + this._oVariables[key][i] + "\"/>",
 								text: "{" + key +"."+ this._oVariables[key][i]+"}"
 							}
-				 li.observe('mousedown', this._insertVariable.bindAsEventListener(this, oTextArea , this._oSubjectTextField.oControlOutput.oEdit, oVariable));
-				
+				 if (!this._bReadOnly)
+				 {
+					li.observe('mousedown', this._insertVariable.bindAsEventListener(this, oTextArea.oControlOutput.oEdit , this._oSubjectTextField.oControlOutput.oEdit, oVariable));
+				 }
+				 else
+				 {
+					li.style.cursor = 'default';
+					li.style.hover = '';
+				 }
 				
 				ul.appendChild(li);				
 			}		
@@ -323,6 +364,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	
 	_insertVariable: function(oEvent, oTextarea, oSubjectTextField, oVariable)
 	{
+		
 		
 		var activeElement = oTextarea.isFocused?oTextarea:oSubjectTextField.isFocused?oSubjectTextField:null;
 		if (activeElement!=null)
@@ -360,14 +402,14 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	
 	_htmlPaneChange: function()
 	{
-		this.oHTMLPreviewDiv.innerHTML = this.oHTMLTextArea.value;		
+		this.oHTMLPreviewDiv.innerHTML = this.oHTMLTextArea.getElementValue();		
 	},
 	
 	_htmlPreviewSelected: function(html)
 	{
 		this._oLoadingPopup.display();
 		var fnRequest     = jQuery.json.jsonFunction(this.successPreviewCallback.bind(this), Popup_Email_Text_Editor.errorCallback.bind(this), 'Email_Text_Editor', 'processHTML');
-		fnRequest(this.oHTMLTextArea.value);	
+		fnRequest(this.oHTMLTextArea.getElementValue());	
 	},
 
 	successPreviewCallback: function (oResponse)
@@ -390,7 +432,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	{
 		this._oLoadingPopup.display();
 		var fnRequest     = jQuery.json.jsonFunction(this.successToTextCallback.bind(this), Popup_Email_Text_Editor.errorCallback.bind(this), 'Email_Text_Editor', 'toText');
-		fnRequest(this.oHTMLTextArea.value);	
+		fnRequest(this.oHTMLTextArea.getElementValue());	
 	},	
 	
 	successToTextCallback: function (oResponse)
@@ -399,7 +441,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		{
 			this._oLoadingPopup.hide();		
 			var text = oResponse.text;
-			this.oTextArea.value = text;
+			this.oTextArea.setElementValue(text);
 			this._oTabGroup.switchToTab(this._oTextTab);
 		}
 		else
@@ -412,8 +454,8 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	{			
 		this._oLoadingPopup.display();
 		var fnRequest     = jQuery.json.jsonFunction(this._saveSuccess.bind(this), Popup_Email_Text_Editor.errorCallback.bind(this), 'Email_Text_Editor', 'save');
-		this._oTemplateDetails.email_text = this.oTextArea.value=='undefined'?'':this.oTextArea.value;
-		this._oTemplateDetails.email_html = this.oHTMLTextArea.value == 'undefined'?'':this.oHTMLTextArea.value;
+		this._oTemplateDetails.email_text = this.oTextArea.getElementValue()=='undefined'?'':this.oTextArea.getElementValue();
+		this._oTemplateDetails.email_html = this.oHTMLTextArea.getElementValue() == 'undefined'?'':this.oHTMLTextArea.getElementValue();
 		this._oTemplateDetails.email_subject = this._oSubjectTextField.getElementValue()== 'undefined'?'':this._oSubjectTextField.getElementValue();
 		this._oTemplateDetails.description = this._oDescriptionTextField.getElementValue()== 'undefined'?'':this._oDescriptionTextField.getElementValue();
 		this._oTemplateDetails.id = this._iTemplateDetailsId;
