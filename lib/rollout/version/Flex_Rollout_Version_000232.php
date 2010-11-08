@@ -53,6 +53,35 @@ class Flex_Rollout_Version_000232 extends Flex_Rollout_Version
 									'sRollbackSQL'		=>	"	DROP TABLE IF EXISTS payment_request;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								),
+								array(
+									'sDescription'		=>	"Add table payment_response",
+									'sAlterSQL'			=>	"	CREATE TABLE payment_response
+																(
+																	id					BIGINT UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT \"Unique Identifier\",
+																	account_group_id	BIGINT UNSIGNED	NOT NULL					COMMENT \"(FK) AccountGroup\",
+																	account_id			BIGINT UNSIGNED	NULL						COMMENT \"(FK) Account\",
+																	paid_date			DATE			NULL						COMMENT \"Effective date of the payment\",
+																	carrier_id			BIGINT			NULL						COMMENT \"(FK) Carrier, the carrier that brought the payment data\",
+																	payment_type_id		INT UNSIGNED	NULL						COMMENT \"(FK) payment_type\",
+																	amount				DECIMAL(13,4)	NULL						COMMENT \"Amount in dollars\",
+																	origin_id 			INT UNSIGNED	NULL						COMMENT \"Reference to the origin of the payment, e.g. CreditCard or DirectDebit id\",
+																	payment 			VARCHAR(4096)	NOT NULL					COMMENT \"Raw payment response data\",
+																	file_import_id 		BIGINT UNSIGNED	NULL						COMMENT \"(FK) FileImport. The file that the payment data came from\",
+																	sequence_no 		INT UNSIGNED	NULL						COMMENT \"(FK) The row in the imported payment file that this payment data came from\",
+																	balance				DECIMAL(13,4)	NULL						COMMENT \"The amount of the payment yet to be applied to an invoice\",
+																	payment_status_id	INT UNSIGNED	NOT NULL					COMMENT \"(FK) payment_status\",
+																	created_datetime	DATETIME		NOT NULL					COMMENT \"Timestamp for creation\",
+																	PRIMARY KEY (id),
+																	CONSTRAINT fk_payment_response_account_group_id		FOREIGN KEY	account_group_id	REFERENCES	AccountGroup (Id)	ON UPDATE CASCADE	ON DELETE RESTRICT,
+																	CONSTRAINT fk_payment_response_account_id			FOREIGN KEY	account_id			REFERENCES	Account (Id)		ON UPDATE CASCADE	ON DELETE RESTRICT,
+																	CONSTRAINT fk_payment_response_carrier_id			FOREIGN KEY	carrier_id			REFERENCES	Carrier (Id)		ON UPDATE CASCADE	ON DELETE RESTRICT,
+																	CONSTRAINT fk_payment_response_payment_type_id		FOREIGN KEY	payment_type_id		REFERENCES	payment_type (id)	ON UPDATE CASCADE	ON DELETE RESTRICT,
+																	CONSTRAINT fk_payment_response_file_import_id		FOREIGN KEY	file_import_id		REFERENCES	FileImport (Id)		ON UPDATE CASCADE	ON DELETE RESTRICT,
+																	CONSTRAINT fk_payment_response_payment_status_id	FOREIGN KEY	payment_status_id	REFERENCES	payment_status (id)	ON UPDATE CASCADE	ON DELETE RESTRICT
+																) ENGINE=InnoDB;",
+									'sRollbackSQL'		=>	"	DROP TABLE payment_response;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
 								array
 								(
 									'sDescription'		=>	"Populate the payment_request_status table",
@@ -65,10 +94,11 @@ class Flex_Rollout_Version_000232 extends Flex_Rollout_Version
 								),
 								array
 								(
-									'sDescription'		=>	"Add new payment_type 'EFT One-Shot'",
+									'sDescription'		=>	"Add new payment_types 'Direct Debit via EFT' & 'Direct Debit via Credit Card'",
 									'sAlterSQL'			=>	"	INSERT INTO	payment_type (name, description, const_name)
-																VALUES		('EFT One-Shot', 'EFT One-Shot', 'PAYMENT_TYPE_EFT_ONE_SHOT');",
-									'sRollbackSQL'		=>	"	DELETE FROM payment_type WHERE const_name = 'PAYMENT_TYPE_EFT_ONE_SHOT';",
+																VALUES		('Direct Debit via EFT', 			'Direct Debit via EFT',			'PAYMENT_TYPE_DIRECT_DEBIT_VIA_EFT'),
+																			('Direct Debit via Credit Card', 	'Direct Debit via Credit Card', 'PAYMENT_TYPE_DIRECT_DEBIT_VIA_CREDIT_CARD');",
+									'sRollbackSQL'		=>	"	DELETE FROM payment_type WHERE const_name IN ('PAYMENT_TYPE_DIRECT_DEBIT_VIA_EFT', 'PAYMENT_TYPE_DIRECT_DEBIT_VIA_CREDIT_CARD');",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								),
 								array
