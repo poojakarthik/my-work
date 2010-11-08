@@ -53,7 +53,8 @@ class Flex_Rollout_Version_000232 extends Flex_Rollout_Version
 									'sRollbackSQL'		=>	"	DROP TABLE IF EXISTS payment_request;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								),
-								array(
+								array
+								(
 									'sDescription'		=>	"Add table payment_response",
 									'sAlterSQL'			=>	"	CREATE TABLE payment_response
 																(
@@ -80,6 +81,22 @@ class Flex_Rollout_Version_000232 extends Flex_Rollout_Version
 																	CONSTRAINT fk_payment_response_payment_status_id	FOREIGN KEY	payment_status_id	REFERENCES	payment_status (id)	ON UPDATE CASCADE	ON DELETE RESTRICT
 																) ENGINE=InnoDB;",
 									'sRollbackSQL'		=>	"	DROP TABLE payment_response;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=>	"Add created_datetime to the Payment table",
+									'sAlterSQL'			=>	"	ALTER TABLE Payment	
+																ADD COLUMN	created_datetime	DATETIME	NOT NULL	COMMENT \"Timestamp for creation\";",
+									'sRollbackSQL'		=>	"	ALTER TABLE Payment	
+																DROP COLUMN	created_datetime;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=>	"Update the created_datetime for existing Payment records",
+									'sAlterSQL'			=>	"	UPDATE	Payment
+																SET		created_datetime = PaidOn;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								),
 								array
