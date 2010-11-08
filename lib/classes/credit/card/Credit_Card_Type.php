@@ -192,6 +192,17 @@ class Credit_Card_Type
 		}
 		return $arrInstances;
 	}
+	
+	public function toStdClass()
+	{
+		$aColumns	= self::getColumns();
+		$oStdClass	= new stdClass();
+		foreach ($aColumns as $sColumn)
+		{
+			$oStdClass->{$sColumn}	= $this->{$sColumn};
+		}
+		return $oStdClass;
+	}
 
 	public function __get($strName)
 	{
