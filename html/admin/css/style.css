@@ -7874,3 +7874,17 @@ div.content-delinquent-cdrs .section-header-options >.icon-button
 vertical-align: top;
 
 }
+
+div.popup-email-text-edit div.control-field span
+{
+white-space:pre-wrap;
+height: auto;
+}
+
+
+div.popup-email-text-edit div.control-field .disabled
+{
+	color: black;
+	background-color: #DDDDDD;
+
+}
