@@ -83,22 +83,6 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 	
 	_buildUI	: function(oResponse)
 	{
-		// if (!oResponse)
-		// {
-			// this._oLoadingPopup.display();
-			// var fnRequest     = jQuery.json.jsonFunction(this._buildUI.bind(this), this._buildUI.bind(this), 'CDR', 'GetDelinquentCDRs');
-			// fnRequest(this._sStart,this._sEnd, this._sFNN, this._iCarrier, this._iServiceType, this._iStatus);
-		
-		// }
-		// else if (!oResponse.Success)
-		// {
-		
-			// this._oLoadingPopup.hide();
-			// Component_Delinquent_CDR_List.serverErrorMessage(oResponse.sMessage, 'CDR Retrieval Error');
-		
-		// }
-		// else
-		// {
 					
 					var sButtonPathBase	= '../admin/img/template/resultset_';	
 					this._oContentDiv 	=  $T.div({class: 'content-delinquent-cdrs'},
@@ -166,7 +150,7 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 													$T.span('Add all to Service')
 													).observe('click', this._bulkAssign.bind(this, false, false)),
 													this._bulkWriteOffButton =$T.button({class: 'icon-button'},
-													 $T.img({src: '../admin/img/template/delete.png', alt: '', title: 'Close'}),
+													 $T.img({src: Popup_CDR.WRITEOFF_IMAGE, alt: '', title: 'Close'}),
 													$T.span('Write off all')
 													).observe('click', this._bulkWriteOff.bind(this, false, false)),
 													$T.button({class: 'icon-button float-right'},
@@ -337,19 +321,7 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 
 		this._bulkAddButton.disabled = true; 
 		this._bulkWriteOffButton.disabled = true;
-		// this._oData	= oResultSet.arrResultSet;
-		// var keys = Object.keys(this._oData);
-			
-			// for (var i = 0;i<keys.length;i++)
-			// {				
-				// oTBody.appendChild(this._createTableRow(this._oData[keys[i]]));
-				// if (this._bulkAddButton.disabled && this._oData[keys[i]].StatusId == 107)
-				// {
-					// this._bulkAddButton.disabled = false; 
-					// this._bulkWriteOffButton.disabled = false;
-				
-				// }
-			// }
+		
 		
 		// Add the rows
 			
@@ -723,70 +695,7 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 	
 	},
 	
-	// _refreshDataSetAndDisplay: function(bShowOnlyDelinquents, oResponse)
-	// {
-		
-		// if (!oResponse)
-		// {
-			// this._oLoadingPopup.display();
-			// var fnRequest     = jQuery.json.jsonFunction(this._refreshDataSetAndDisplay.bind(this, bShowOnlyDelinquents), this._refreshDataSetAndDisplay.bind(this), 'CDR', 'GetStatusInfoForCDRs');
-			// fnRequest(Object.keys(this._oData.CDRs), bShowOnlyDelinquents);
-		
-		// }
-		// else if (!oResponse.Success)
-		// {
-			
-			// this._oLoadingPopup.hide();
-			// Component_Delinquent_CDR_List.serverErrorMessage(oResponse.sMessage, 'CDR Screen Refresh Error');
-		
-		// }
-		// else
-		// {
-			// this._oLoadingPopup.hide();
-			// this._oData.CDRs	= oResponse.aData;
-			// this._refreshDataTable(oResponse.aData);
-		
-		
-		// }
-	
-	// },
-	
-	
-		// _refreshDataTable: function (oData)
-	// {
-		
-		// //this._fCallback();
-		// while(this._tBody.childElementCount>0)
-		// {
-		 // this._tBody.deleteRow(this._tBody.childElementCount-1);
 
-		// }	
-
-
-		// //var keys = Object.keys(oData);	
-
-		// this._bulkAddButton.disabled = true; 
-		// this._bulkWriteOffButton.disabled = true;
-		
-		// var keys = Object.keys(oData);
-			
-			// for (var i = 0;i<keys.length;i++)
-			// {				
-				// this._tBody.appendChild(this._createTableRow(oData[keys[i]], i+1));
-				// if (this._bulkAddButton.disabled && oData[keys[i]].StatusId == 107)
-				// {
-					// this._bulkAddButton.disabled = false; 
-					// this._bulkWriteOffButton.disabled = false;
-				
-				// }
-			// }
-		
-		
-
-	
-	
-	
-	// },
 	
 	_createTableRow	: function(oCDR)
 	{
@@ -799,7 +708,7 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 		var statusCell = $T.td({class: 'status'}, oCDR.Status);
 		if (oCDR.StatusId ==107)
 		{
-		 writeOff = $T.img({class:"followup-list-all-action-icon", src: "../admin/img/template/delete.png", alt: 'Write Off', title: 'Write Off'}).observe('click', this._writeOff.bind(this, statusCell, oCDR.Id, false, false));
+		 writeOff = $T.img({class:"followup-list-all-action-icon", src: Popup_CDR.WRITEOFF_IMAGE, alt: 'Write Off', title: 'Write Off'}).observe('click', this._writeOff.bind(this, statusCell, oCDR.Id, false, false));
 		 assign = $T.img({class:"followup-list-all-action-icon", src: "../admin/img/template/telephone_add.png", alt: 'Assign to Service', title: 'Assign to Service'}).observe('click', this._showServicesPopup.bind(this, oCDR.Id, statusCell));
 
 		
@@ -826,3 +735,5 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 	
 	
 	});
+	//dollar-writeoff-blue.png
+	Popup_CDR.WRITEOFF_IMAGE = '../admin/img/template/cash_delete.png';
