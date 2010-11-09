@@ -15,9 +15,9 @@ class Invoice extends ORM_Cached
 {
 	protected			$_strTableName			= "Invoice";
 	protected static	$_strStaticTableName	= "Invoice";
-	
+
 	const	MAXIMUM_LOCK_RETRIES	= 100;
-	
+
 	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
@@ -40,7 +40,7 @@ class Invoice extends ORM_Cached
 		// Parent constructor
 		parent::__construct($arrProperties, $bolLoadById);
 	}
-	
+
 	protected static function getCacheName()
 	{
 		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
@@ -51,12 +51,12 @@ class Invoice extends ORM_Cached
 		}
 		return $strCacheName;
 	}
-	
+
 	protected static function getMaxCacheSize()
 	{
 		return 100;
 	}
-	
+
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
 	//---------------------------------------------------------------------------------------------------------------------------------//
@@ -70,7 +70,7 @@ class Invoice extends ORM_Cached
 	{
 		return parent::getCachedObjects(__CLASS__);
 	}
-	
+
 	protected static function addToCache($mObjects)
 	{
 		parent::addToCache($mObjects, __CLASS__);
@@ -80,21 +80,21 @@ class Invoice extends ORM_Cached
 	{
 		return parent::getForId($iId, $bSilentFail, __CLASS__);
 	}
-	
+
 	public static function getAll($bForceReload=false)
 	{
 		return parent::getAll($bForceReload, __CLASS__);
 	}
-	
+
 	public static function importResult($aResultSet)
 	{
 		return parent::importResult($aResultSet, __CLASS__);
 	}
-		
+
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
-	
+
 	public static function generateForInvoiceRunAndAccount($oInvoiceRun, $oAccount)
 	{
 		$iLocksEncountered	= 0;
@@ -106,7 +106,7 @@ class Invoice extends ORM_Cached
 				{
 					$oInvoice	= new Invoice();
 					$oInvoice->generate($oAccount, $oInvoiceRun);
-					
+
 					return $oInvoice;
 				}
 				catch (Exception $oException)
@@ -128,7 +128,7 @@ class Invoice extends ORM_Cached
 			}
 		}
 	}
-	
+
 	public static function getForInvoiceRunId($iInvoiceRunId)
 	{
 		$oStmt	= self::_preparedStatement('selByInvoiceRunId');
@@ -145,11 +145,29 @@ class Invoice extends ORM_Cached
 			{
 				$aInvoices[$aInvoice['Id']]	= new Invoice($aInvoice);
 			}
-			
+
 			return $aInvoices;
 		}
 	}
-	
+
+	public static function getSampleDataForCustomerGroupId($iCustomerGroup)
+	{
+
+		$sSql = "select a.Id as 'account_id', c.FirstName as 'contact_first_name', c.LastName as 'contact_last_name'
+				from Invoice i join Account a ON (i.Account = a.Id
+				 								 and i.Id = (select max(i2.Id) from Invoice i2 join Account a2 ON (i2.Account = a2.Id and a2.CustomerGroup = $iCustomerGroup))
+								 				 )
+								join Contact c ON (a.PrimaryContact = c.Id)";
+		$oQuery = new Query();
+		$mResult	= $oQuery->Execute($sSql);
+		if ($mResult === false)
+		{
+			return array();
+		}
+		return	$mResult->fetch_assoc();
+
+	}
+
 	//------------------------------------------------------------------------//
 	// generate
 	//------------------------------------------------------------------------//
@@ -175,28 +193,28 @@ class Invoice extends ORM_Cached
 		{
 			$oInvoiceSource	= new Invoice_Source_Uninvoiced();
 		}
-		
+
 		static	$dbaDB;
 		static	$qryQuery;
 		$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
 		$dbaDB		= (isset($dbaDB)) ? $dbaDB : DataAccess::getDataAccess();
-		
+
 		$fStopwatchStart	= microtime(true);
 		Log::getLog()->log("\t* Invoice processing for Account {$objAccount->Id} started at ".date("Y-m-d H:i:s", (int)$fStopwatchStart));
-		
+
 		// Is there already an Invoice for this Account?  If so, revoke it
 		Log::getLog()->log("\t* Revoking any existing Invoices for Account with Id {$objAccount->Id}...");
 		self::revokeByAccount($objAccount);
-		
+
 		$fStopwatchRevoke	= microtime(true);
 		Log::getLog()->log("\t* Revoking took ".($fStopwatchRevoke - $fStopwatchStart)."s...");
-		
+
 		// Generate Invoice
 		try
 		{
 			// Start Transaction
 			$dbaDB->TransactionStart();
-			
+
 			$this->invoice_run_id	= $objInvoiceRun->Id;
 			$this->_objInvoiceRun	= $objInvoiceRun;
 			$this->_objAccount		= $objAccount;
@@ -207,7 +225,7 @@ class Invoice extends ORM_Cached
 			$this->Debits			= 0.0;
 			$this->Credits			= 0.0;
 			$this->Tax				= 0.0;
-			
+
 			// Calculate Billing Period
 			$this->intInvoiceDatetime				= $objInvoiceRun->intInvoiceDatetime;
 			$this->strLastInvoiceDatetime			= $objAccount->getBillingPeriodStart($objInvoiceRun->BillingDate);
@@ -215,7 +233,7 @@ class Invoice extends ORM_Cached
 			$this->strInvoiceDatetime				= date("Y-m-d H:i:s", $this->intInvoiceDatetime);
 			$this->intNextInvoiceDatetime			= strtotime(Invoice_Run::predictNextInvoiceDate($objAccount->CustomerGroup, $objInvoiceRun->strInvoiceDatetime));
 			$this->intLastProductionInvoiceDatetime	= strtotime($objAccount->getBillingPeriodStart($objInvoiceRun->BillingDate, true));
-			
+
 			$iCurrentDay	= (int)date('d', $objInvoiceRun->intInvoiceDatetime);
 			$oPaymentTerms		= Payment_Terms::getCurrentForCustomerGroup($objAccount->CustomerGroup);
 			if ($iCurrentDay <= $oPaymentTerms->invoice_day)
@@ -227,7 +245,7 @@ class Invoice extends ORM_Cached
 				$this->intProratePeriodStart	= strtotime(date("Y-m-".str_pad($oPaymentTerms->invoice_day, 2, '0', STR_PAD_LEFT), $this->intInvoiceDatetime));
 			}
 			$this->intProratePeriodEnd			= strtotime("-1 second", strtotime("+1 month", $this->intProratePeriodStart));
-			
+
 			Log::getLog()->log("\t* {$objAccount->Id} Billing Period Start: {$this->strLastInvoiceDatetime} ($this->intLastInvoiceDatetime)");
 			Log::getLog()->log("\t* {$objAccount->Id} Billing Period End: {$objInvoiceRun->billing_period_end_datetime}");
 			Log::getLog()->log("\t* {$objAccount->Id} Last Invoice Date: ".date("Y-m-d H:i:s", $this->intLastInvoiceDatetime));
@@ -235,10 +253,10 @@ class Invoice extends ORM_Cached
 			Log::getLog()->log("\t* {$objAccount->Id} Last Production Invoice Date: ".date("Y-m-d H:i:s", $this->intLastProductionInvoiceDatetime));
 			Log::getLog()->log("\t* {$objAccount->Id} Prorate Period Start Date: ".date("Y-m-d H:i:s", $this->intProratePeriodStart));
 			Log::getLog()->log("\t* {$objAccount->Id} Prorate Period End Date: ".date("Y-m-d H:i:s", $this->intProratePeriodEnd));
-			
+
 			$this->billing_period_start_datetime	= $this->strLastInvoiceDatetime;
 			$this->billing_period_end_datetime		= $objInvoiceRun->billing_period_end_datetime;
-			
+
 			//----------------- INVOICEABLE SERVICE PREPROCESSING ----------------//
 			// Retrieve a list of Invoiceable FNNs for this Account
 			Log::getLog()->log("\t * Getting list of Invoiceable FNNs...");
@@ -248,13 +266,13 @@ class Invoice extends ORM_Cached
 				// Database Error -- throw Exception
 				throw new Exception("DB ERROR: ".$selInvoiceableFNNs->Error());
 			}
-	
+
 			// Process each Invoiceable FNN
 			$arrServices	= Array();
 			while ($arrFNN = $selInvoiceableFNNs->Fetch())
 			{
 				Log::getLog()->log("\t\t * Getting details for FNN {$arrFNN['FNN']}...");
-	
+
 				// Get the Service Details for the current owner of this FNN (or indial range), on this Account
 				$arrWhere	= Array();
 				$arrWhere['FNN']			= $arrFNN['FNN'];
@@ -272,7 +290,7 @@ class Invoice extends ORM_Cached
 					// Error
 					throw new Exception("WTF -- No Invoiceable Service Id for apparently Invoiceable FNN '{$arrFNN['FNN']}'!");
 				}
-	
+
 				// Add this Service to our Invoicing Array
 				if (!isset($arrServices[$arrCurrentService['Id']]))
 				{
@@ -281,13 +299,13 @@ class Invoice extends ORM_Cached
 				$arrServices[$arrCurrentService['Id']]['Ids'][]	= $arrFNN['Id'];
 			}
 			//--------------------------------------------------------------------//
-	
+
 			//----------------------- GENERATE SERVICE DATA ----------------------//
 			$arrSharedPlans	= Array();
 			foreach ($arrServices as $intServiceId=>&$arrServiceDetails)
 			{
 				Log::getLog()->log("\n\t + Generating Service Total Data for Service with Id {$intServiceId}...", FALSE);
-	
+
 				// Generate Service Total Data
 				$mixServiceTotal	= $this->_generateService($arrServiceDetails, $objAccount, $objInvoiceRun, $oInvoiceSource);
 				if ($mixServiceTotal !== FALSE)
@@ -298,7 +316,7 @@ class Invoice extends ORM_Cached
 					$this->Tax							+= $arrServiceDetails['ServiceTotal']['Tax'];
 					$fltServiceGrandTotal				= $arrServiceDetails['ServiceTotal']['TotalCharge'] + $arrServiceDetails['ServiceTotal']['Debit'] - $arrServiceDetails['ServiceTotal']['Credit'];
 					Log::getLog()->log("\t Total: \${$fltServiceGrandTotal}; Tax: \${$arrServiceDetails['ServiceTotal']['Tax']}");
-	
+
 					// Is this a Shared Plan?
 					if ($arrServiceDetails['ServiceTotal']['Shared'])
 					{
@@ -307,7 +325,7 @@ class Invoice extends ORM_Cached
 						$arrSharedPlans[$arrServiceDetails['ServiceTotal']['RatePlan']]['fltTaxExemptCappedCharge']		+= $arrServiceDetails['ServiceTotal']['fltTaxExemptCappedCharge'];
 						$arrSharedPlans[$arrServiceDetails['ServiceTotal']['RatePlan']]['fltTaxableCappedCharge']		+= $arrServiceDetails['ServiceTotal']['fltTaxableCappedCharge'];
 						$arrSharedPlans[$arrServiceDetails['ServiceTotal']['RatePlan']]['bolDisconnectedAndNoCDRs']		= ($arrSharedPlans[$arrServiceDetails['ServiceTotal']['RatePlan']]['bolDisconnectedAndNoCDRs'] === false) ? false : ($arrServiceDetails['ServiceTotal']['bolDisconnectedAndNoCDRs']);
-						
+
 						$arrSharedPlans[$arrServiceDetails['ServiceTotal']['RatePlan']]['strEarliestPlanStartDatetime']	= ($arrSharedPlans[$arrServiceDetails['ServiceTotal']['RatePlan']]['strEarliestPlanStartDatetime']) ? min($arrSharedPlans[$arrServiceDetails['ServiceTotal']['RatePlan']]['strEarliestPlanStartDatetime'], $arrServiceDetails['ServiceTotal']['PlanStartDatetime']) : $arrServiceDetails['ServiceTotal']['PlanStartDatetime'];
 					}
 				}
@@ -317,7 +335,7 @@ class Invoice extends ORM_Cached
 					Log::getLog()->log("\t Service is not invoicable");
 				}
 			}
-	
+
 			// Calculate and Add in Shared Plan Charges and Credits as Account Charges
 			Log::getLog()->log("\t * Generating Shared Plan Charges...");
 			foreach ($arrSharedPlans as $intRatePlan=>$arrDetails)
@@ -335,35 +353,35 @@ class Invoice extends ORM_Cached
 					throw new Exception("Unable to retrieve details for RatePlan with Id '{$intRatePlan}'!");
 				}
 				$arrPlanDetails['EarliestStartDatetime']	= $arrDetails['strEarliestPlanStartDatetime'];
-				
+
 				if (!$arrDetails['bolDisconnectedAndNoCDRs'])
 				{
 					// Add Plan Charges
 					$arrUsageDetails	= $this->_addPlanCharges($arrPlanDetails, $arrDetails['Services'], NULL, $oInvoiceSource);
-					
+
 					// Determine and add in Shared Plan Usage Discounts
 					$intArrearsPeriodStart	= $arrUsageDetails['ArrearsPeriodStart'];
 					$intArrearsPeriodEnd	= $arrUsageDetails['ArrearsPeriodEnd'];
-					
+
 					// Get a list of Discounts associated with this Plan
 					$aDiscounts	= Rate_Plan::getForId($arrPlanDetails['Id'])->getDiscounts();
 					foreach ($aDiscounts as $iDiscountId=>$oDiscount)
 					{
 						// Calculate this Discount
 						$aDiscountTotals	= $this->_calculateDiscount($oDiscount, $arrPlanDetails, $arrDetails['Services'], $intArrearsPeriodStart, $intArrearsPeriodEnd);
-						
+
 						// Offset the Global Tax that will be added for discounted usage
 						$this->Tax	+= $aDiscountTotals['fDiscountTaxOffset'];
 					}
 				}
 			}
 			//--------------------------------------------------------------------//
-			
+
 			//----------------------- GENERATE INVOICE DATA ----------------------//
 			$fltPreChargeDebitTotal		= $this->Debits;
 			$fltPreChargeCreditTotal	= $this->Credits;
 			$fltPreChargeTaxTotal		= $this->Tax;
-			
+
 			// Mark Account Charges
 			$arrWhere	= Array('Account' => $objAccount->Id, 'BillingPeriodEnd'=>$this->billing_period_end_datetime);
 			$arrData	= Array('Status' => CHARGE_TEMP_INVOICE, 'invoice_run_id' => $this->invoice_run_id);
@@ -373,7 +391,7 @@ class Invoice extends ORM_Cached
 				// Database Error -- throw Exception
 				throw new Exception("DB ERROR: ".$updMarkAccountCharges->Error());
 			}
-			
+
 			// Get Preliminary Charge Totals
 			$selAccountChargeTotals	= self::_preparedStatement('selAccountChargeTotals');
 			if ($selAccountChargeTotals->Execute(Array('Account' => $objAccount->Id, 'invoice_run_id' => $this->invoice_run_id)) === FALSE)
@@ -393,7 +411,7 @@ class Invoice extends ORM_Cached
 			$this->Tax		+= self::calculateGlobalTaxComponent($arrAccountChargeTotals['DR'][0], $this->intInvoiceDatetime) - self::calculateGlobalTaxComponent($arrAccountChargeTotals['CR'][0], $this->intInvoiceDatetime);
 			Log::getLog()->log("Preliminary Account Charges END");
 			Log::getLog()->log($arrAccountChargeTotals);
-			
+
 			// Calculate Preliminary Invoice Values
 			$this->AccountBalance	= $oInvoiceSource->getAccountBalance($this->_objAccount);
 			$this->Total			= ceil(($this->Debits - $this->Credits) * 100) / 100;
@@ -402,22 +420,22 @@ class Invoice extends ORM_Cached
 			$this->DueOn			= date("Y-m-d", strtotime("+ {$objAccount->PaymentTerms} days", $this->intInvoiceDatetime));
 			$this->Disputed			= 0.0;
 			$this->Status			= INVOICE_TEMP;
-	
+
 			// Generate Account Billing Time Charges
 			$arrModules	= Billing_Charge::getModules();
 			foreach ($arrModules[$objAccount->CustomerGroup]['Billing_Charge_Account'] as $chgModule)
 			{
 				Log::getLog()->log("Generating Billing Charge: ".get_class($chgModule));
-				
+
 				// Generate charge
 				$chgModule->Generate($this, $objAccount);
 			}
-	
+
 			// Revert to pre-Preliminary Totals
 			$this->Debits	= $fltPreChargeDebitTotal;
 			$this->Credits	= $fltPreChargeCreditTotal;
 			$this->Tax		= $fltPreChargeTaxTotal;
-	
+
 			// Get Final Charge Totals
 			$selAccountChargeTotals	= self::_preparedStatement('selAccountChargeTotals');
 			if ($selAccountChargeTotals->Execute(Array('Account' => $objAccount->Id, 'invoice_run_id' => $this->invoice_run_id)) === FALSE)
@@ -436,7 +454,7 @@ class Invoice extends ORM_Cached
 			$this->Credits	+= $arrAccountChargeTotals['CR'][0] + $arrAccountChargeTotals['CR'][1];
 			$this->Tax		+= self::calculateGlobalTaxComponent($arrAccountChargeTotals['DR'][0], $this->intInvoiceDatetime) - self::calculateGlobalTaxComponent($arrAccountChargeTotals['CR'][0], $this->intInvoiceDatetime);
 			Log::getLog()->log("Final Account Charges END");
-			
+
 			// Recalculate Final Invoice Values
 			//$this->Total			= ceil(($this->Debits - $this->Credits) * 100) / 100;
 			//$this->Total			= ceil(($this->Debits - $this->Credits) * 100) / 100;
@@ -445,7 +463,7 @@ class Invoice extends ORM_Cached
 			$this->Tax				= Invoice::roundOut($this->Tax, 2);
 			$this->Balance			= $this->Total + $this->Tax;
 			$this->TotalOwing		= $this->Balance + $this->AccountBalance;
-			
+
 			// Get Adjustments
 			$selAdjustmentTotals	= self::_preparedStatement('selAdjustmentTotals');
 			if ($selAdjustmentTotals->Execute(Array('account_id' => $objAccount->Id, 'invoice_run_id' => $this->invoice_run_id)) === FALSE)
@@ -467,12 +485,12 @@ class Invoice extends ORM_Cached
 				$this->adjustment_total	= 0.0;
 				$this->adjustment_tax	= 0.0;
 			}
-			
+
 			// HACKHACKHACK	: Calculate the Charge Total/Tax by subtracting the Adjustment Totals from the overall Totals
 			//				Technically correct, but just... dirty...
 			$this->charge_total	= $this->Total - $this->adjustment_total;
 			$this->charge_tax	= $this->Tax - $this->adjustment_tax;
-			
+
 			// Determine Delivery Method
 			$objAccountStatus	= Account_Status::getForId($objAccount->Archived);
 			$objDeliveryMethod	= Delivery_Method::getForId($objAccount->BillingMethod);
@@ -491,17 +509,17 @@ class Invoice extends ORM_Cached
 			{
 				// Have we met the requirements for this Delivery Method?
 				$objCustomerGroupSettings	= $objDeliveryMethod->getCustomerGroupSettings($objAccount->CustomerGroup);
-				
+
 				$this->DeliveryMethod		= ($objCustomerGroupSettings->minimum_invoice_value <= $this->TotalOwing) ? $objAccount->BillingMethod : DELIVERY_METHOD_DO_NOT_SEND;
 			}
-			
+
 			Log::getLog()->log("Account Status: ".$objAccountStatus->name." ({$objAccount->Archived})");
 			Log::getLog()->log("Account Delivery Method: ".$objDeliveryMethod->name." ({$objAccount->BillingMethod})");
 			Log::getLog()->log("Invoice Delivery Method: ".Delivery_Method::getForId($this->DeliveryMethod)->name." ({$this->DeliveryMethod})");
-			
+
 			// Insert the Invoice Data
 			$this->save();
-			
+
 			// Commit the Transaction
 			$dbaDB->TransactionCommit();
 		}
@@ -510,13 +528,13 @@ class Invoice extends ORM_Cached
 			$dbaDB->TransactionRollback();
 			throw $eException;
 		}
-		
+
 		$fStopwatchGeneration	= microtime(true);
 		Log::getLog()->log("\t* Generation took ".($fStopwatchGeneration - $fStopwatchRevoke)."s...");
-		
+
 		// Export the Invoice
 		$this->export();
-		
+
 		$fStopwatchExport	= microtime(true);
 		Log::getLog()->log("\t* Export to XML took ".($fStopwatchExport - $fStopwatchGeneration)."s...");
 		Log::getLog()->log("\t* Total processing time: ".($fStopwatchExport - $fStopwatchStart)."s...");
@@ -550,12 +568,12 @@ class Invoice extends ORM_Cached
 		$arrServiceTotal['TotalCharge']	= 0.0;
 		$arrServiceTotal['Tax']			= 0.0;
 		$intServiceId					= $arrServiceDetails['Id'];
-		
+
 		// Mark all CDRs for this Service as TEMPORARY_INVOICE
 		$oInvoiceSource->markAllCDRsAsTemporaryInvoice($this->invoice_run_id, $objInvoiceRun->customer_group_id, $arrServiceDetails['Ids'], $this->billing_period_end_datetime);
-		
+
 		Log::getLog()->log("Inserting ServiceTypeTotals");
-		
+
 		// Generate ServiceTypeTotals
 		$strExtensionsQuery  = "INSERT INTO ServiceTypeTotal (FNN, AccountGroup, Account, Service, RecordType, Charge, Units, Records, RateGroup, Cost, invoice_run_id)";
 		$strExtensionsQuery .= " SELECT CDR.FNN, CDR.AccountGroup, CDR.Account, {$intServiceId} AS Service,";
@@ -570,7 +588,7 @@ class Invoice extends ORM_Cached
 		{
 			throw new Exception("DB ERROR: ".$qryQuery->Error());
 		}
-		
+
 		// Get CDR Total Details
 		$strSQL			= "	SELECT SUM(CDR.Cost) AS TotalCost, SUM(CDR.Charge) AS TotalCharge, Rate.Uncapped, CDR.Credit, RecordType.global_tax_exempt, COUNT(CDR.Id) AS CDRCount
 							FROM (CDR JOIN Rate ON CDR.Rate = Rate.Id) JOIN RecordType ON RecordType.Id = CDR.RecordType
@@ -590,10 +608,10 @@ class Invoice extends ORM_Cached
 			$strTax		= ($arrCDRTotal['global_tax_exempt'])	? 'ExTax'		: 'IncTax';
 			$arrCDRTotals['Charge']	[$strCapped][$strCredit][$strTax]	= $arrCDRTotal['TotalCharge'];
 			$arrCDRTotals['Cost']	[$strCapped][$strCredit][$strTax]	= $arrCDRTotal['TotalCost'];
-			
+
 			$intDebitCDRCount	+= (!$arrCDRTotal['Credit']) ? $arrCDRTotal['CDRCount'] : 0;
 		}
-		
+
 		// CDR Count
 		$arrServiceTotal['bolDisconnectedAndNoCDRs']	= (!$intDebitCDRCount && $arrServiceDetails['Status'] === SERVICE_DISCONNECTED);
 
@@ -605,9 +623,9 @@ class Invoice extends ORM_Cached
 			throw new Exception("DB ERROR: ".$selPlanDetails->Error());
 		}
 		$arrPlanDetails	= $selPlanDetails->Fetch();
-		
+
 		//Log::getLog()->log("PLAN DETAILS: ".print_r($arrPlanDetails, true));
-		
+
 		$arrServiceTotal['PlanStartDatetime']	= $arrPlanDetails['EarliestStartDatetime'];
 
 		if (!$arrPlanDetails)
@@ -623,7 +641,7 @@ class Invoice extends ORM_Cached
 		{
 			// This is either a Shared Plan or is Disconnected and has no CDRs -- don't charge any Plan Charges
 			$fltMinimumCharge	= 0.0;
-			
+
 			if ($arrServiceTotal['bolDisconnectedAndNoCDRs'])
 			{
 				Log::getLog()->log("Waiving Plan Charges");
@@ -634,30 +652,30 @@ class Invoice extends ORM_Cached
 			$arrUsageDetails	= $this->_addPlanCharges($arrPlanDetails, array($arrServiceDetails), $intServiceId, $oInvoiceSource);
 			$fltMinimumCharge	= (float)$arrUsageDetails['MinMonthly'];
 		}
-		
+
 		//--------------------------------------------------------------------//
-		
+
 		//--------------------------- SERVICE TOTALS -------------------------//
-		
+
 		$fltTaxExemptCappedCharge	= $arrCDRTotals['Charge']['Capped']['Debit']['ExTax'] - $arrCDRTotals['Charge']['Capped']['Credit']['ExTax'];
 		$fltTaxableCappedCharge		= $arrCDRTotals['Charge']['Capped']['Debit']['IncTax'] - $arrCDRTotals['Charge']['Capped']['Credit']['IncTax'];
 		$fltCDRCappedTotal			= $fltTaxableCappedCharge + $fltTaxExemptCappedCharge;
-		
+
 		$fltTaxExemptUncappedCharge	= $arrCDRTotals['Charge']['Uncapped']['Debit']['ExTax'] - $arrCDRTotals['Charge']['Uncapped']['Credit']['ExTax'];
 		$fltTaxableUncappedCharge	= $arrCDRTotals['Charge']['Uncapped']['Debit']['IncTax'] - $arrCDRTotals['Charge']['Uncapped']['Credit']['IncTax'];
 		$fltCDRUncappedTotal		= $fltTaxableUncappedCharge + $fltTaxExemptUncappedCharge;
-		
+
 		$fltTaxExemptCappedCost		= $arrCDRTotals['Cost']['Capped']['Debit']['ExTax'] - $arrCDRTotals['Cost']['Capped']['Credit']['ExTax'];
 		$fltTaxableCappedCost		= $arrCDRTotals['Cost']['Capped']['Debit']['IncTax'] - $arrCDRTotals['Cost']['Capped']['Credit']['IncTax'];
 		$fltCDRCappedCost			= $fltTaxableCappedCost + $fltTaxExemptCappedCost;
-		
+
 		$fltTaxExemptUncappedCost	= $arrCDRTotals['Cost']['Uncapped']['Debit']['ExTax'] - $arrCDRTotals['Cost']['Uncapped']['Credit']['ExTax'];
 		$fltTaxableUncappedCost		= $arrCDRTotals['Cost']['Uncapped']['Debit']['IncTax'] - $arrCDRTotals['Cost']['Uncapped']['Credit']['IncTax'];
 		$fltCDRUncappedCost			= $fltTaxableUncappedCost + $fltTaxExemptUncappedCost;
-		
+
 		$arrServiceTotal['fltTaxExemptCappedCharge']	= $fltTaxExemptCappedCharge;
 		$arrServiceTotal['fltTaxableCappedCharge']		= $fltTaxableCappedCharge;
-		
+
 		$fltTaxExemptCost	= $fltTaxExemptCappedCost + $fltTaxExemptUncappedCost;
 		$fltTaxExemptCharge	= $fltTaxExemptCappedCharge + $fltTaxExemptUncappedCharge;
 		if ($fltTaxExemptCost || $fltTaxExemptCharge)
@@ -665,34 +683,34 @@ class Invoice extends ORM_Cached
 			Log::getLog()->log("TAX EXEMPT CHARGES!");
 			Log::getLog()->log($arrCDRTotals);
 		}
-		
+
 		// Calculate Service Plan Usage Discounts for non-Shared Services
 		$fltTotalCharge	= 0.0;
 		if (!$arrPlanDetails['Shared'] && !$arrServiceTotal['bolDisconnectedAndNoCDRs'])
 		{
 			$intArrearsPeriodStart	= $arrUsageDetails['ArrearsPeriodStart'];
 			$intArrearsPeriodEnd	= $arrUsageDetails['ArrearsPeriodEnd'];
-			
+
 			// Get a list of Discounts associated with this Plan
 			$aDiscounts	= Rate_Plan::getForId($arrPlanDetails['Id'])->getDiscounts();
 			foreach ($aDiscounts as $iDiscountId=>$oDiscount)
 			{
 				// Calculate this Discount
 				$aDiscountTotals	= $this->_calculateDiscount($oDiscount, $arrPlanDetails, array($arrServiceDetails), $intArrearsPeriodStart, $intArrearsPeriodEnd, $intServiceId);
-				
+
 				// Offset the Global Tax that will be added for discounted usage
 				$arrServiceTotal['Tax']	+= $aDiscountTotals['fDiscountTaxOffset'];
 			}
 		}
-		
+
 		// Add in the Capped Usage
 		$fltTotalCharge			+= $fltCDRCappedTotal;
 		$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($fltTaxableCappedCharge, $this->intInvoiceDatetime);
-		
+
 		// Add in Uncapped Usage
 		$fltTotalCharge			+= $fltCDRUncappedTotal;
 		$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($fltTaxableUncappedCharge, $this->intInvoiceDatetime);
-				
+
 		// Mark all Service Charges as TEMPORARY_INVOICE
 		if ($qryQuery->Execute("UPDATE 	Charge
 								SET		Status = ".CHARGE_TEMP_INVOICE.",
@@ -703,7 +721,7 @@ class Invoice extends ORM_Cached
 		{
 			throw new Exception("DB ERROR: ".$qryQuery->Error());
 		}
-		
+
 		// Add in Service Billing-time Charges
 		$arrModules	= Billing_Charge::getModules();
 		foreach ($arrModules[$objAccount->CustomerGroup]['Billing_Charge_Service'] as $chgModule)
@@ -711,7 +729,7 @@ class Invoice extends ORM_Cached
 			// Generate charge
 			$mixResult = $chgModule->Generate($this, new Service($arrServiceDetails, TRUE));
 		}
-		
+
 		// Retrieve Charge Totals
 		$strServiceChargeTotalSQL	=	"SELECT Charge.Nature, Charge.global_tax_exempt, SUM(Charge.Amount) AS Total " .
 										"FROM Charge " .
@@ -729,14 +747,14 @@ class Invoice extends ORM_Cached
 
 			//$fltTotalCharge	+= ($arrChargeTotal['Nature'] === 'DR') ? $arrChargeTotal['Total'] : -$arrChargeTotal['Total'];
 		}
-		
+
 		$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($arrChargeTotals['DR']['IncTax'], $this->intInvoiceDatetime);
 		//Log::getLog()->log("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
 		$arrServiceTotal['Tax']	-= self::calculateGlobalTaxComponent($arrChargeTotals['CR']['IncTax'], $this->intInvoiceDatetime);
 		//Log::getLog()->log("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
 		$fltServiceCredits		= $arrChargeTotals['CR']['IncTax'] + $arrChargeTotals['CR']['ExTax'];
 		$fltServiceDebits		= $arrChargeTotals['DR']['IncTax'] + $arrChargeTotals['DR']['ExTax'];
-		
+
 		// Finalise and Insert Service Total
 		$arrServiceTotal['FNN']					= $arrServiceDetails['FNN'];
 		$arrServiceTotal['AccountGroup']		= $objAccount->AccountGroup;
@@ -753,15 +771,15 @@ class Invoice extends ORM_Cached
 		$arrServiceTotal['CappedCost']			= $fltCDRCappedCost;
 		$arrServiceTotal['UncappedCost']		= $fltCDRUncappedCost;
 		$arrServiceTotal['PlanCharge']			= 0.0;							// Deprecated
-		
+
 		Log::getLog()->log("Inserting ServiceTotal: \n".print_r($arrServiceTotal, true));
-		
+
 		$insServiceTotal	= self::_preparedStatement('insServiceTotal');
 		if (($arrServiceTotal['Id'] = $insServiceTotal->Execute($arrServiceTotal)) === FALSE)
 		{
 			throw new Exception("DB ERROR: ".$insServiceTotal->Error());
 		}
-		
+
 		// Link each Service to the ServiceTotal
 		$insServiceTotalService	= self::_preparedStatement('insServiceTotalService');
 		foreach ($arrServiceDetails['Ids'] as $intServiceId)
@@ -775,7 +793,7 @@ class Invoice extends ORM_Cached
 				throw new Exception("DB ERROR: ".$insServiceTotalService->Error());
 			}
 		}
-		
+
 		// Return the Service Total details
 		return $arrServiceTotal;
 		//--------------------------------------------------------------------//
@@ -856,27 +874,27 @@ class Invoice extends ORM_Cached
 				return;
 			}
 		}
-		
+
 		Log::getLog()->log("(Revoking {$this->Id})");
-		
+
 		static	$dbaDB;
 		static	$qryQuery;
 		$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
 		$dbaDB		= (isset($dbaDB)) ? $dbaDB : DataAccess::getDataAccess();
-		
+
 		// Revoke Invoice
 		try
 		{
 			// Start Transaction
 			$dbaDB->TransactionStart();
-			
+
 			// Change CDR Statuses back to CDR_RATED
 			$updCDRRevoke	= self::_preparedStatement('updCDRRevoke');
 			if ($updCDRRevoke->Execute(Array('invoice_run_id'=>NULL, 'Status'=>CDR_RATED), $this->toArray()) === FALSE)
 			{
 				throw new Exception("DB ERROR: ".$updCDRRevoke->Error());
 			}
-	
+
 			// Remove Billing-Time Charges
 			$objAccount	= new Account(Array('Id' => $this->Account), TRUE);
 			$arrModules	= Billing_Charge::getModules();
@@ -891,48 +909,48 @@ class Invoice extends ORM_Cached
 					}
 				}
 			}
-	
+
 			// Remove Plan Charges
 			if ($qryQuery->Execute("DELETE FROM Charge WHERE ChargeType IN ('PCAD', 'PCAR', 'PCR', 'PDCR') AND CreatedBy IS NULL AND invoice_run_id = {$this->invoice_run_id} AND Account = {$this->Account}") === FALSE)
 			{
 				throw new Exception("DB ERROR: ".$qryQuery->Error());
 			}
-	
+
 			// Change Charge Statuses back to CHARGE_APPROVED
 			$updChargeRevoke	= self::_preparedStatement('updChargeRevoke');
 			if ($updChargeRevoke->Execute(Array('Status' => CHARGE_APPROVED, 'invoice_run_id' => NULL), $this->toArray()) === FALSE)
 			{
 				throw new Exception("DB ERROR: ".$updChargeRevoke->Error());
 			}
-	
+
 			// Remove service_total_service Records
 			if ($qryQuery->Execute("DELETE FROM service_total_service WHERE service_total_id = (SELECT Id FROM ServiceTotal WHERE invoice_run_id = {$this->invoice_run_id} AND Account = {$this->Account} AND Id = service_total_id)") === FALSE)
 			{
 				throw new Exception("DB ERROR: ".$qryQuery->Error());
 			}
-	
+
 			// Remove ServiceTotal Records
 			if ($qryQuery->Execute("DELETE FROM ServiceTotal WHERE invoice_run_id = {$this->invoice_run_id} AND Account = {$this->Account}") === FALSE)
 			{
 				throw new Exception("DB ERROR: ".$qryQuery->Error());
 			}
-	
+
 			// Remove ServiceTypeTotal Records
 			if ($qryQuery->Execute("DELETE FROM ServiceTypeTotal WHERE invoice_run_id = {$this->invoice_run_id} AND Account = {$this->Account}") === FALSE)
 			{
 				throw new Exception("DB ERROR: ".$qryQuery->Error());
 			}
-	
+
 			// Remove Invoice Record
 			if ($qryQuery->Execute("DELETE FROM Invoice WHERE Id = {$this->Id}") === FALSE)
 			{
 				throw new Exception("DB ERROR: ".$qryQuery->Error());
 			}
-			
+
 			// Update the Totals on the InvoiceRun record
 			$objInvoiceRun	= Invoice_Run::getForId($this->invoice_run_id);
 			$objInvoiceRun->calculateTotals();
-			
+
 			// Commit the Transaction
 			$dbaDB->TransactionCommit();
 		}
@@ -974,31 +992,31 @@ class Invoice extends ORM_Cached
 		{
 			// Start Transaction
 			$dbaDB->TransactionStart();
-			
+
 			// Commit the CDRs
 			$updCDRsByAccount		= self::_preparedStatement('updCDRCommit');
 			if ($updCDRsByAccount->Execute(Array('Status'=>CDR_INVOICED), Array('Account'=>$this->Account, 'invoice_run_id'=>$this->invoice_run_id)) === FALSE)
 			{
 				throw new Exception($updCDRsByAccount->Error());
 			}
-	
+
 			// Commit the Charges
 			$updChargesByAccount	= self::_preparedStatement('updChargeCommit');
 			if ($updChargesByAccount->Execute(Array('Status'=>CHARGE_INVOICED), Array('Account'=>$this->Account, 'invoice_run_id'=>$this->invoice_run_id)) === FALSE)
 			{
 				throw new Exception($updChargesByAccount->Error());
 			}
-	
+
 			//------------------------------ ACCOUNT -----------------------------//
 			$objAccount	= new Account(Array('Id'=>$this->Account), FALSE, TRUE);
-	
+
 			// Update Account.LastBilled to InvoiceRun.BillingDate
 			$objAccount->LastBilled	= $this->CreatedOn;
-	
+
 			// Update Account.Sample
 			$objAccount->Sample		= ($objAccount->Sample < 0) ? $objAccount->Sample++ : $objAccount->Sample;
 			$objAccount->save();
-	
+
 			//------------------------------ SERVICE -----------------------------//
 			// Update Service.discount_start_datetime to NULL
 			$strSQL	= "UPDATE (ServiceTotal JOIN service_total_service ON ServiceTotal.Service = service_total_service.service_total_id) JOIN Service ON Service.Id = service_total_service.service_id " .
@@ -1008,14 +1026,14 @@ class Invoice extends ORM_Cached
 			{
 				throw new Exception($qryQuery->Error());
 			}
-	
+
 			//------------------------------ INVOICE -----------------------------//
 			// Determine Invoice Status
 			$this->Status	= ($this->Balance > 0) ? INVOICE_COMMITTED : INVOICE_SETTLED;
-	
+
 			// Save
 			$this->save();
-			
+
 			// Commit the Transaction
 			$dbaDB->TransactionCommit();
 		}
@@ -1024,7 +1042,7 @@ class Invoice extends ORM_Cached
 			$dbaDB->TransactionRollback();
 			throw $eException;
 		}
-			
+
 	}
 
 	//------------------------------------------------------------------------//
@@ -1046,7 +1064,7 @@ class Invoice extends ORM_Cached
 		$oInvoiceRun	= new Invoice_Run(array('Id'=>$this->invoice_run_id), true);
 		$oInvoiceRun->export(array($this->Account));
 	}
-	
+
 	/**
 	 * roundOut()
 	 *
@@ -1094,7 +1112,7 @@ class Invoice extends ORM_Cached
 	{
 		$intProratePeriod	= Flex_Date::periodLength($intChargeStartDate, $intChargeEndDate, $strSmallestDenomination);
 		$intBillingPeriod	= Flex_Date::periodLength($intPeriodStartDate, $intPeriodEndDate, $strSmallestDenomination);
-		
+
 		$iProratePeriodDays	= floor($intProratePeriod / Flex_Date::SECONDS_IN_DAY);
 		$iBillingPeriodDays	= floor($intBillingPeriod / Flex_Date::SECONDS_IN_DAY);
 		/*
@@ -1111,7 +1129,7 @@ class Invoice extends ORM_Cached
 		{
 			$fltProratedAmount			= ($fltAmount / $iBillingPeriodDays) * $iProratePeriodDays;
 			//Log::getLog()->log("{$fltProratedAmount}\t= ({$fltAmount} / {$iBillingPeriodDays}) * {$iProratePeriodDays}");
-			
+
 			$fltProratedAmount			= ($intDecimalPlaces === null) ? $fltProratedAmount : round($fltProratedAmount, $intDecimalPlaces);
 			return $fltProratedAmount;
 		}
@@ -1192,7 +1210,7 @@ class Invoice extends ORM_Cached
 		static	$qryQuery;
 		$qryQuery		= (isset($qryQuery)) ? $qryQuery : new Query();
 		$strServiceIds	= implode(', ', self::_extractServiceIds($arrServices));
-		
+
 		// If this Plan requires CDRs, get the Earliest CDR Details (ensuring that the earliest date is not after the Invoice date)
 		$strEarliestCDR	= null;
 		if ($arrPlanDetails['cdr_required'])
@@ -1208,7 +1226,7 @@ class Invoice extends ORM_Cached
 		else
 		{
 			Log::getLog()->log("Non-CDR Service");
-			
+
 			// Otherwise use the Service Creation Date
 			$resResult	= $qryQuery->Execute("SELECT MIN(CreatedOn) AS EarliestCreatedOn FROM Service WHERE Id IN ({$strServiceIds})");
 			if ($resResult === FALSE)
@@ -1216,12 +1234,12 @@ class Invoice extends ORM_Cached
 				throw new Exception("DB ERROR: ".$qryQuery->Error());
 			}
 			$arrMinCreatedOn		= $resResult->fetch_assoc();
-			
+
 			$strPlanStartDatetime	= $arrPlanDetails['EarliestStartDatetime'];
 			$strServiceCreatedOn	= $arrMinCreatedOn['EarliestCreatedOn'];
-			
+
 			$strEarliestCDR			= date("Y-m-d", strtotime(max($strPlanStartDatetime, $strServiceCreatedOn)));
-			
+
 			if ($strPlanStartDatetime > $strServiceCreatedOn)
 			{
 				Log::getLog()->log("Earliest CDR comes from Plan Date");
@@ -1247,7 +1265,7 @@ class Invoice extends ORM_Cached
 		if ($strEarliestCDR)
 		{
 			$fltMinimumCharge	= (float)$arrPlanDetails['MinMonthly'];
-			
+
 			// Scalable Plans
 			if ($arrPlanDetails['Shared'])
 			{
@@ -1257,15 +1275,15 @@ class Invoice extends ORM_Cached
 				if ($intScalable && $intMinServices > 0 && $intMaxServices >= $intMinServices)
 				{
 					Log::getLog()->log("Scaling Plan Charges & Usage: {$strEarliestCDR}");
-					
+
 					Log::getLog()->log("Native Plan Charge: {$fltMinimumCharge}");
 					$fltMinimumCharge	= ($fltMinimumCharge	/ $intMaxServices) * max($intMaxServices, count($arrServices));
 					Log::getLog()->log("Scaled Plan Charge: {$fltMinimumCharge}");
 				}
 			}
-			
+
 			$arrPlanChargeSteps	= Array();
-			
+
 			// Yes -- Does this Service have any Invoiced CDRs (or Plan Charges for non-CDR Plans)?
 			if ($arrPlanDetails['cdr_required'])
 			{
@@ -1294,20 +1312,20 @@ class Invoice extends ORM_Cached
 			{
 				$bolFirstInvoice	= false;
 			}
-			
+
 			// If the Plan is charged in Advance, then check if we have charged a PCAD yet
 			$bHasChargedInAdvance		= false;
 			$bHasInvoicedOnAnotherPlan	= false;
 			if ($arrPlanDetails['InAdvance'])
 			{
-				$rResult	= $qryQuery->Execute("	SELECT	* 
-													FROM 	Charge 
-													WHERE 	ChargeType = 'PCAD' 
-													AND 	Account = {$this->Account} 
-													AND 	(Service IN ({$strServiceIds}) OR ({$arrPlanDetails['Shared']} = 1 AND Service IS NULL)) 
-													AND 	Status = ".CHARGE_INVOICED." 
+				$rResult	= $qryQuery->Execute("	SELECT	*
+													FROM 	Charge
+													WHERE 	ChargeType = 'PCAD'
+													AND 	Account = {$this->Account}
+													AND 	(Service IN ({$strServiceIds}) OR ({$arrPlanDetails['Shared']} = 1 AND Service IS NULL))
+													AND 	Status = ".CHARGE_INVOICED."
 													AND 	invoice_run_id != {$this->_objInvoiceRun->Id}
-													AND		ChargedOn < '{$this->_objInvoiceRun->BillingDate}' 
+													AND		ChargedOn < '{$this->_objInvoiceRun->BillingDate}'
 													LIMIT 	1");
 				if ($rResult === false)
 				{
@@ -1333,7 +1351,7 @@ class Invoice extends ORM_Cached
 				Log::getLog()->log("Have ".(($bHasChargedInAdvance) ? '' : 'not ')."charged in advanced before");
 				Log::getLog()->log("Have ".(($bHasInvoicedOnAnotherPlan) ? '' : 'not ')."invoiced on another Plan before");
 			}
-			
+
 			Log::getLog()->log("Arrears period start: ".date("Y-m-d H:i:s", $intArrearsPeriodStart));
 
 			// Charge In Advance (only if this is not an interim Invoice Run)
@@ -1351,10 +1369,10 @@ class Invoice extends ORM_Cached
 			if (!$arrPlanDetails['InAdvance'] || (!$bHasChargedInAdvance && !$bHasInvoicedOnAnotherPlan))
 			{
 				$arrPlanChargeSteps[]	= ($bolFirstInvoice) ? 'FIRST_ARREARS' : 'NORMAL_ARREARS';
-				
+
 				// Prorate the Charges and Usage details in Arrears
 				$fltMinimumCharge	= Invoice::prorate($fltMinimumCharge	, $intArrearsPeriodStart	, $intArrearsPeriodEnd	, $this->intProratePeriodStart, $this->intProratePeriodEnd);
-				
+
 				$strChargeType	= 'PCAR';
 				$intPeriodStart	= $intArrearsPeriodStart;
 				$intPeriodEnd	= $intArrearsPeriodEnd;
@@ -1438,7 +1456,7 @@ class Invoice extends ORM_Cached
 
 		// Charge Description
 		$strDescription	= $arrChargeTypes[$strChargeType]['Description'];
-		
+
 		// Generate Charge
 		$arrPlanCharge						= Array();
 		$arrPlanCharge['AccountGroup']		= $intAccountGroup;
@@ -1457,30 +1475,30 @@ class Invoice extends ORM_Cached
 		{
 			throw new Exception("Unable to create '{$arrPlanCharge['Description']}' for {$intAccount}::{$intService}!");
 		}
-		
+
 		Log::getLog()->log("Added Charge: \n".print_r($arrPlanCharge, true));
-		
+
 		return true;
 	}
-	
+
 	public static function buildPlanChargeDescription($sPlanName, $sChargeDescription, $iStartDatetime, $iEndDatetime)
 	{
 		return "{$sPlanName} {$sChargeDescription} from ".date("d/m/Y", $iStartDatetime)." to ".date("d/m/Y", $iEndDatetime);
 	}
-	
+
 	private function _calculateDiscount($oDiscount, $aPlanDetails, $aServices, $iArrearsPeriodStart, $iArrearsPeriodEnd, $iPrimaryServiceId=NULL)
 	{
 		static	$oQuery, $oChargeTypePCR;
 		$oQuery			= ($oQuery) ? $oQuery : new Query();
 		$oChargeTypePCR	= ($oChargeTypePCR) ? $oChargeTypePCR : Charge_Type::getByCode('PCR');
-		
+
 		$sServices	= implode(', ', self::_extractServiceIds($aServices));
-		
+
 		Log::getLog()->log("\nDiscount: ".$oDiscount->name);
-		
+
 		$fChargeLimit	= max($oDiscount->charge_limit, 0);
 		$iUnitLimit		= max($oDiscount->unit_limit, 0);
-		
+
 		if ($iUnitLimit)
 		{
 			$sDiscountType	= Discount::DISCOUNT_TYPE_UNITS;
@@ -1491,7 +1509,7 @@ class Invoice extends ORM_Cached
 			$sDiscountType	= Discount::DISCOUNT_TYPE_CHARGE;
 			$mDiscountLimit	= $fChargeLimit;
 		}
-		
+
 		// Scalable Shared Discounts
 		$mScaledDiscountLimit	= $mDiscountLimit;
 		if ($aPlanDetails['Shared'])
@@ -1505,14 +1523,14 @@ class Invoice extends ORM_Cached
 				Log::getLog()->log("Scaled! (Full Discount: {$mDiscountLimit}; Scaled Discount: {$mScaledDiscountLimit})");
 			}
 		}
-		
+
 		$mProratedDiscountLimit	= self::prorate($mScaledDiscountLimit, $iArrearsPeriodStart, $iArrearsPeriodEnd, $this->intProratePeriodStart, $this->intProratePeriodEnd, DATE_TRUNCATE_DAY, true);
 		$mProratedDiscountLimit	= ($sDiscountType === Discount::DISCOUNT_TYPE_UNITS) ? round($mProratedDiscountLimit) : $mProratedDiscountLimit;
-		
+
 		Log::getLog()->log("Prorated Discount Limit: {$mProratedDiscountLimit}");
 		Log::getLog()->log("Discount Limit: {$mDiscountLimit}");
 		Log::getLog()->log("Discount Limit Type: ".(($iUnitLimit) ? 'UNITS' : 'CHARGE'));
-		
+
 		// If there is a valid Discount to apply...
 		$fDiscountApplied	= 0.0;
 		$fDiscountTaxOffset	= 0.0;
@@ -1521,7 +1539,7 @@ class Invoice extends ORM_Cached
 			// Get the RecordTypes associated with this Discount
 			$aRecordTypes	= $oDiscount->getRecordTypes();
 			$sRecordTypes	= implode(', ', array_keys($aRecordTypes));
-			
+
 			if ($sRecordTypes)
 			{
 				// Get all CDRs for the eligible RecordTypes which are not excluded from the Cap
@@ -1529,15 +1547,15 @@ class Invoice extends ORM_Cached
 									"FROM CDR cdr JOIN Rate r ON r.Id = cdr.Rate JOIN RecordType rt ON (rt.Id = cdr.RecordType) " .
 									"WHERE cdr.Service IN ({$sServices}) AND cdr.invoice_run_id = {$this->invoice_run_id} AND r.Uncapped = 0 AND cdr.RecordType IN ($sRecordTypes) " .
 									"ORDER BY cdr.StartDatetime ";
-				
+
 				Log::getLog()->log("Included Usage Query: $sIncludedUsage");
-				
+
 				$oResult	= $oQuery->Execute($sIncludedUsage);
 				if ($oResult === FALSE)
 				{
 					throw new Exception("DB ERROR: ".$oQuery->Error());
 				}
-				
+
 				// If there are any CDRs
 				if ($oResult->num_rows)
 				{
@@ -1545,16 +1563,16 @@ class Invoice extends ORM_Cached
 					$fTotalCharge		= 0.0;
 					$fTaxOffset			= 0.0;
 					$fTotalCredit		= 0.0;
-					
+
 					$mRemainingDiscount		= $mProratedDiscountLimit;
 					while ($aDataCDR = $oResult->fetch_assoc())
 					{
 						$iUnits		= ($aDataCDR['Credit']) ? 0 - $aDataCDR['Units'] : $aDataCDR['Units'];
 						$fCharge	= ($aDataCDR['Credit']) ? 0 - $aDataCDR['Charge'] : $aDataCDR['Charge'];
-						
+
 						$iTotalUnits	+= $iUnits;
 						$fTotalCharge	+= $fCharge;
-						
+
 						// If we haven't gone over our limit yet
 						if ($mRemainingDiscount > 0.0)
 						{
@@ -1569,7 +1587,7 @@ class Invoice extends ORM_Cached
 										$fCharge		-= (abs($mRemainingDiscount) * $fRatePerUnit);
 									}
 									break;
-									
+
 								case Discount::DISCOUNT_TYPE_CHARGE:
 									$mRemainingDiscount	-= $fCharge;
 									if ($mRemainingDiscount < 0)
@@ -1579,18 +1597,18 @@ class Invoice extends ORM_Cached
 									}
 									break;
 							}
-							
+
 							// Add a global tax offset against the credited CDR
 							if (!$aDataCDR['global_tax_exempt'])
 							{
 								$fTaxOffset	-= self::calculateGlobalTaxComponent($fCharge, $this->intInvoiceDatetime);
 							}
-							
+
 							$fTotalCredit	+= $fCharge;
 						}
 					}
 					$mTotalUsage	= ($iUnitLimit) ? $iTotalUnits : $fTotalCharge;
-					
+
 					Log::getLog()->log("Total Usage Units: {$iTotalUnits}");
 					Log::getLog()->log("Total Usage Charge: \${$fTotalCharge}");
 					switch ($sDiscountType)
@@ -1600,18 +1618,18 @@ class Invoice extends ORM_Cached
 							Log::getLog()->log("Usage Included in Discount: ".($mProratedDiscountLimit - max(0, $mRemainingDiscount))." Units");
 							Log::getLog()->log("Overusage: ".(max(0, $mTotalUsage - $mProratedDiscountLimit - max(0, $mRemainingDiscount)))." Units");
 							break;
-							
+
 						case Discount::DISCOUNT_TYPE_CHARGE:
 							Log::getLog()->log("Prorated Discount Limit: \${$mProratedDiscountLimit}");
 							Log::getLog()->log("Usage Included in Discount: \$".($mProratedDiscountLimit - max(0, $mRemainingDiscount)));
 							Log::getLog()->log("Overusage: \$".(max(0, $mTotalUsage - $mProratedDiscountLimit - max(0, $mRemainingDiscount))));
 							break;
 					}
-					
+
 					Log::getLog()->log("Creditback: \${$fTotalCredit}");
 					Log::getLog()->log("Tax Offset: \${$fTaxOffset}");
 					Log::getLog()->log("Overusage Charge: \$".($fTotalCharge - $fTotalCredit));
-				
+
 					if ($mTotalUsage > 0)
 					{
 						// Add the Credit
@@ -1631,7 +1649,7 @@ class Invoice extends ORM_Cached
 						$oCharge->invoice_run_id	= $this->invoice_run_id;
 						$oCharge->Status			= CHARGE_TEMP_INVOICE;
 						$oCharge->save();
-						
+
 						$fDiscountApplied	= $fTotalCredit;
 						$fDiscountTaxOffset	= $fTaxOffset;
 					}
@@ -1648,14 +1666,14 @@ class Invoice extends ORM_Cached
 				}
 			}
 		}
-		
+
 		return	array
 				(
 					'fDiscountApplied'		=> $fDiscountApplied,
 					'fDiscountTaxOffset'	=> $fDiscountTaxOffset
 				);
 	}
-	
+
 	private static function _extractServiceIds($arrServices)
 	{
 		$arrServiceIds	= array();
@@ -1668,7 +1686,7 @@ class Invoice extends ORM_Cached
 		}
 		return $arrServiceIds;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// Resolve
 	//------------------------------------------------------------------------//
@@ -1688,19 +1706,19 @@ class Invoice extends ORM_Cached
 	public function resolve($iResolveMethod, $fAmount)
 	{
 		$iUserId = Flex::getUserId();
-		
+
 		// Check that the invoice is currently in dispute
 		if ($this->Status <> INVOICE_DISPUTED)
 		{
 			throw new Exception('Invoice Not Disputed');
 		}
-		
+
 		// The status that will be added to the Note
 		$sStatus 	= "Resolution for Dispute on Invoice #".$this->Id."\n";
-		
+
 		// Used to save a new credit, if necessary
 		$oCharge	= false;
-		
+
 		switch ($iResolveMethod)
 		{
 			case DISPUTE_RESOLVE_FULL_PAYMENT:
@@ -1708,7 +1726,7 @@ class Invoice extends ORM_Cached
 				$sStatus .= "No Credit was applied to this Dispute. ";
 				$sStatus .= "The Customer is required to pay the full Amount.";
 				break;
-				
+
 			case DISPUTE_RESOLVE_PARTIAL_PAYMENT:
 				// If a payment is required for a particular amount of a Dispute
 				// Generate a credit for Invoice.Disputed - $fltAmount
@@ -1726,14 +1744,14 @@ class Invoice extends ORM_Cached
 				$oCharge->Nature			= NATURE_CR;
 				$oCharge->Amount			= $this->Disputed - $fAmount;
 				$oCharge->Status			= CHARGE_APPROVED;
-				
+
 				$sStatus .= "This dispute was resolved by partial payment. ";
 				$sStatus .= "The Customer is required to pay the amount of $".sprintf("%01.4f", $fAmount).". ";
 				$sStatus .= "The Original disputed amount was: $".sprintf("%01.4f", $this->Disputed).". ";
 				$sStatus .= "The remaining amount of $".sprintf("%01.4f", $this->Disputed - $fAmount)." ";
 				$sStatus .= "was Credited towards this Account.";
 				break;
-				
+
 			case DISPUTE_RESOLVE_NO_PAYMENT:
 				// Generate a credit for Invoice.Disputed
 				$oCharge					= new Charge();
@@ -1750,36 +1768,36 @@ class Invoice extends ORM_Cached
 				$oCharge->Nature			= NATURE_CR;
 				$oCharge->Amount			= $this->Disputed;
 				$oCharge->Status			= CHARGE_WAITING;
-				
+
 				$sStatus	.= "The full amount of the the dispute ($".sprintf("%01.4f", $this->Disputed).") ";
 				$sStatus	.= "was Credited towards this Account.";
 				break;
-				
+
 			default:
 				throw new Exception('Invalid Resolution');
 		}
-		
+
 		if ($oCharge)
 		{
 			// Not given, default value applied
 			$oCharge->Notes				= '';
 			$oCharge->global_tax_exempt	= 0;
-			
+
 			// Save the new charge
 			$oCharge->save();
 		}
-		
+
 		// Invoice.Disputed = 0
 		// if Balance > 0	Status = INVOICE_COMMITTED
 		// else				Status = INVOICE_SETTLED
 		$this->Disputed = 0;
 		$this->Status	= ($this->Balance > 0) ? INVOICE_COMMITTED : INVOICE_SETTLED;
 		$this->save();
-		
+
 		// Add a note
 		Note::createNote(SYSTEM_NOTE_TYPE, $sStatus, $iUserId, $this->Account);
 	}
-	
+
 	public static function regenerate($oOriginalInvoice, $oFinishedCallback=null)
 	{
 		$oDA	= DataAccess::getDataAccess();
@@ -1787,29 +1805,29 @@ class Invoice extends ORM_Cached
 		try
 		{
 			Log::getLog()->log("START: Regenerating Invoice - {$oOriginalInvoice->Id}");
-			
+
 			Log::getLog()->log("Fetching Invoice Run - {$oOriginalInvoice->invoice_run_id}");
-			
+
 			// Retrieve the invoice run the original invoice was a part of, used to help create the new invoice run
 			$oOriginalInvoiceRun	= Invoice_Run::getForId($oOriginalInvoice->invoice_run_id);
-			
+
 			Log::getLog()->log("Creating new invoice run (copy of {$oOriginalInvoice->invoice_run_id})");
-			
+
 			// Create a new invoice run to encapsulate the regeneration (notice the empty accounts array so that the run is created with no invoices)
 			$iBillingDate	= strtotime($oOriginalInvoiceRun->BillingDate);
 			$oInvoiceRun	= new Invoice_Run();
 			$oInvoiceRun->calculateBillingPeriodDates(date("Y-m-d", $iBillingDate), $oOriginalInvoice->Account);
 			$oInvoiceRun->generate($oOriginalInvoice->customer_group_id, INVOICE_RUN_TYPE_RERATE, $iBillingDate, array());
-			
+
 			Log::getLog()->log("Setting status of new invoice run to INVOICE_RUN_STATUS_GENERATING");
-			
+
 			$oInvoiceRun->invoice_run_status_id	= INVOICE_RUN_STATUS_GENERATING;
 			$oInvoiceRun->save();
-			
+
 			$oQuery	= new Query();
-			
+
 			Log::getLog()->log("Copying Charge records from the original invoice, setting status to CHARGE_APPROVED (".CHARGE_APPROVED.")");
-			
+
 			// Copy all (NON Billing time charges/discounts) charges from the original invoice and changing the invoice_run_id
 			// Selecting these charges is done by checking that ChargedOn = the billing date of the original invoice run
 			$mChargeResult	= $oQuery->Execute("	INSERT INTO Charge (AccountGroup, Account, Service, invoice_run_id, CreatedBy, CreatedOn, ApprovedBy, ChargeType, charge_type_id, Description, ChargedOn, Nature, Amount, Invoice, Notes, LinkType, LinkId, Status, global_tax_exempt, charge_model_id)
@@ -1825,10 +1843,10 @@ class Invoice extends ORM_Cached
 			{
 				throw new Exception("Failed to copy Charge records. ".$oQuery->Error());
 			}
-			
+
 			Log::getLog()->log("... ".$oQuery->AffectedRows()." records copied");
 			Log::getLog()->log("Copying CDR records from the original invoice, setting status to CDR_RATED (".CDR_RATED.") and changing the invoice_run_id");
-			
+
 			// Copy all CDRs from the original invoice
 			$mCDRResult	= $oQuery->Execute("	INSERT INTO CDR	(FNN, File, Carrier, CarrierRef, Source, Destination, StartDatetime, EndDatetime, Units, AccountGroup, Account, Service, Cost, Status, CDR, Description, DestinationCode, RecordType, ServiceType, Charge, Rate, NormalisedOn, RatedOn, invoice_run_id, SequenceNo, Credit)
 												(
@@ -1842,12 +1860,12 @@ class Invoice extends ORM_Cached
 			{
 				throw new Exception("Failed to copy CDR records. ".$oQuery->Error());
 			}
-			
+
 			Log::getLog()->log("... ".$oQuery->AffectedRows()." records copied");
-			
+
 			// Update service fields to prepare for rerating
 			Log::getLog()->log("Updating services to prepare for rerating");
-			
+
 			$aServiceTotals	= Service_Total::getForInvoiceRunAndAccount($oOriginalInvoiceRun->Id, $oOriginalInvoice->Account);
 			foreach ($aServiceTotals as $oServiceTotal)
 			{
@@ -1862,63 +1880,63 @@ class Invoice extends ORM_Cached
 					$oService->save();
 				}
 			}
-			
+
 			// Rerate CDRs
 			Log::getLog()->log("Selecting the copied CDRs for rerating");
-			
+
 			$oStmt	= new StatementSelect('CDR', 'Id', "Account = <Account> AND invoice_run_id = <invoice_run_id> AND Status = <Status>", "StartDatetime ASC");
 			$iRows	= $oStmt->Execute(array('Account' => $oOriginalInvoice->Account, 'invoice_run_id' => $oInvoiceRun->Id, 'Status' => CDR_RATED));
 			if ($iRows === false)
 			{
 				throw new Exception("Failed to retrieve CDR records after copying them. ".$oStmt->Error());
 			}
-			
+
 			Log::getLog()->log("Rerate CDRs");
-			
+
 			while ($aRow = $oStmt->Fetch())
 			{
 				$oCDR			= CDR::getForId($aRow['Id']);
 				$fInitialCharge	= $oCDR->Charge;
 				$iInitialRate	= $oCDR->Rate;
-				
+
 				Log::getLog()->log("");
 				Log::getLog()->log("Before rate: ");
 				Log::getLog()->log("\tCharge: {$fInitialCharge}");
 				Log::getLog()->log("\tRate : {$iInitialRate}");
-				
+
 				$oCDR->rate(true);
-				
+
 				Log::getLog()->log("After rate: ");
 				Log::getLog()->log("\tCharge: {$oCDR->Charge}".	(($oCDR->Charge != $fInitialCharge) ? ", CHARGE DIFFERENCE: ".($oCDR->Charge - $fInitialCharge) : ''));
 				Log::getLog()->log("\tRate: {$oCDR->Rate}".		(($oCDR->Rate != $iInitialRate) ? ", RATE DIFFERENCE" : ''));
-				
+
 				Log::getLog()->log("... Complete");
 			}
-			
+
 			Log::getLog()->log("Generating the NEW invoice");
-			
+
 			// Generate new invoice
 			$oAccount	= Account::getForId($oOriginalInvoice->Account);
 			$oInvoice	= new Invoice();
 			$oInvoice->generate($oAccount, $oInvoiceRun, new Invoice_Source_Invoiced($oOriginalInvoice));
-			
+
 			Log::getLog()->log("... Complete!");
-			
+
 			Log::getLog()->log("Saving the NEW invoice run with status of INVOICE_RUN_STATUS_TEMPORARY");
-			
+
 			// Update status of the invoice run
 			$oInvoiceRun->invoice_run_status_id	= INVOICE_RUN_STATUS_TEMPORARY;
 			$oInvoiceRun->save();
-			
+
 			Log::getLog()->log("Invoking callback");
-			
+
 			if ($oFinishedCallback !== null)
 			{
 				$oFinishedCallback->invoke($oInvoice);
 			}
-			
+
 			Log::getLog()->log("Rolling back transaction");
-			
+
 			//
 			//
 			// ALWAYS ROLLBACK THIS PROCESS
@@ -1927,9 +1945,9 @@ class Invoice extends ORM_Cached
 			//
 			//
 			$oDA->TransactionRollback();
-			
+
 			Log::getLog()->log("END: Regenerating Invoice - {$oOriginalInvoice->Id}");
-			
+
 			return $oInvoice;
 		}
 		catch (Exception $oException)
@@ -1938,18 +1956,18 @@ class Invoice extends ORM_Cached
 			throw new Exception("Failed to regenerate invoice {$oOriginalInvoice->Id}. ".$oException->getMessage());
 		}
 	}
-	
+
 	public static function redistributeBalances()
 	{
 		$oQuery	= new Query();
-		
+
 		// We want to redistribute Invoice balances so that payments and adjustments affect oldest invoices first
 		$sAccounts	= "	SELECT		ir.*,
 									COUNT(IF(ROUND(i.Balance, 2) != 0, i.Id, NULL))	AS total_imbalanced,
 									COUNT(DISTINCT i.Id)							AS total_affected,
 									MIN(i.Id)										AS earliest_affected,
 									MAX(i.Id)										AS latest_affected
-						
+
 						FROM		Invoice i
 									JOIN
 									(
@@ -1959,7 +1977,7 @@ class Invoice extends ORM_Cached
 													MIN(IF(Status != 106 AND (adjustment_total < 0 OR charge_total < 0 OR Balance < 0 OR Balance < (charge_total + charge_tax)), Id, NULL))	AS earliest_redistributable,
 													MAX(IF(Status != 106 AND (adjustment_total < 0 OR charge_total < 0 OR Balance < 0 OR Balance < (charge_total + charge_tax)), Id, NULL))	AS latest_redistributable,
 													MAX(IF(Status = 106, Id, NULL))																											AS latest_written_off
-													
+
 										FROM		Invoice
 										WHERE		Status NOT IN (100)
 										GROUP BY	Account
@@ -1967,7 +1985,7 @@ class Invoice extends ORM_Cached
 													AND !ISNULL(earliest_redistributable)
 									) /* invoice_redistributable */ ir ON (i.Account = ir.account_id)
 									JOIN Account a ON (a.Id = i.Account AND a.Archived != 1)
-						
+
 						WHERE		i.Status NOT IN (100, 106)
 									AND
 									(
@@ -1977,23 +1995,23 @@ class Invoice extends ORM_Cached
 										AND
 										(i.Id > COALESCE(ir.latest_written_off, 0))
 									)
-						
+
 						GROUP BY	i.Account
-						
+
 						HAVING		total_imbalanced > 0
 									AND total_affected > 1;";
-		
+
 		if (($oAccountsResult = $oQuery->Execute($sAccounts)) === false)
 		{
 			throw new Exception($oQuery->Error());
 		}
-		
+
 		Log::getLog()->log(" * Redistributing {$oAccountsResult->num_rows} Accounts...");
-		
+
 		while ($aAccount = $oAccountsResult->fetch_assoc())
 		{
 			Log::getLog()->log("\t + Redistributing Account {$aAccount['account_id']}...");
-			
+
 			if (DataAccess::getDataAccess()->TransactionStart())
 			{
 				try
@@ -2001,31 +2019,31 @@ class Invoice extends ORM_Cached
 					// Get affected Invoices
 					$sAffectedInvoices	= "	SELECT		i.*,
 														SUM(ip.Amount)	AS invoice_payment_total
-											
+
 											FROM		Invoice i
 														LEFT JOIN InvoicePayment ip ON (i.Account = ip.Account AND ip.invoice_run_id = i.invoice_run_id)
-											
+
 											WHERE		i.Status NOT IN (100, 106)
 														AND i.Id >= {$aAccount['earliest_affected']}
 														AND i.Account = {$aAccount['account_id']}
-											
+
 											GROUP BY	i.Id
-														
+
 											ORDER BY	i.CreatedOn ASC,
 														i.Id ASC;";
-					
+
 					if (($oInvoicesResult = $oQuery->Execute($sAffectedInvoices)) === false)
 					{
 						throw new Exception($oQuery->Error());
 					}
-					
+
 					$aInvoicesAssoc	= array();
 					while ($aInvoice = $oInvoicesResult->fetch_assoc())
 					{
 						$aInvoicesAssoc[$aInvoice['Id']]	= $aInvoice;
 					}
 					$aInvoices	= Invoice::importResult($aInvoicesAssoc);
-					
+
 					// Total Balances for redistribution
 					$fInvoicesGrandTotal	= 0.0;
 					$fBalanceGrandTotal		= 0.0;
@@ -2036,70 +2054,70 @@ class Invoice extends ORM_Cached
 						$fReductions		= Invoice::roundOut(max(0.0, $oInvoice->charge_total + $oInvoice->charge_tax) - $oInvoice->Balance, 4);
 						$fTotalReducable	+= $fReductions;
 						Log::getLog()->log("\t\t + Invoice {$oInvoice->Id} has \${$fReductions} of reductions");
-						
+
 						$fInvoicesGrandTotal	+= $oInvoice->Total + $oInvoice->Tax;
 						$fChargesGrandTotal		+= $oInvoice->charge_total + $oInvoice->charge_tax;
 						$fBalanceGrandTotal		+= $oInvoice->Balance;
 					}
-					
+
 					Log::getLog()->log("\t\t * Invoices Grand Total: \${$fInvoicesGrandTotal}");
 					Log::getLog()->log("\t\t * Charges Grand Total: \${$fChargesGrandTotal}");
 					Log::getLog()->log("\t\t * Balance Grand Total: \${$fBalanceGrandTotal}");
 					Log::getLog()->log("\t\t * Reductions Total: \${$fTotalReducable}");
-					
+
 					// Redistribute Balances
 					$fRedistributedBalanceGrandTotal	= 0.0;
 					foreach ($aInvoices as $oInvoice)
 					{
 						// Pay out Invoice as much as possible
 						//$oInvoice->Balance	= max(0.0, $oInvoice->Total + $oInvoice->Tax);
-						
+
 						// This isn't how Billing calculates it, but it should be equivalent
 						$oInvoice->Balance	= max(0.0, $oInvoice->charge_total + $oInvoice->charge_tax);
 						$fSubsidy			= min($oInvoice->Balance, $fTotalReducable);
-						
+
 						$oInvoice->Balance	-= $fSubsidy;
 						$fTotalReducable	-= $fSubsidy;
-						
+
 						// Save
 						$oInvoice->Balance	= Invoice::roundOut($oInvoice->Balance, 4);
 						$oInvoice->save();
-						
+
 						$fRedistributedBalanceGrandTotal	+= $oInvoice->Balance;
-						
+
 						Log::getLog()->log("\t\t - Invoice {$oInvoice->Id} of \$".($oInvoice->charge_total + $oInvoice->charge_tax)." reduced by \${$fSubsidy} to \${$oInvoice->Balance} (\${$fTotalReducable} remaining to distribute)");
 					}
-					
+
 					// Apply any remaining credits to the most recent Invoice
 					Log::getLog()->log("\t\t ! \${$fTotalReducable} left to distribute overall.");
 					if (Invoice::roundOut($fTotalReducable, 4) != 0)
 					{
 						$oInvoice	= end($aInvoices);
-						
+
 						$oInvoice->Balance	-= $fTotalReducable;
-						
+
 						$fRedistributedBalanceGrandTotal	-= $fTotalReducable;
-						
+
 						// Save
 						$oInvoice->save();
-						
+
 						Log::getLog()->log("\t\t - Invoice {$oInvoice->Id} of \$".($oInvoice->Total + $oInvoice->Tax)." reduced to \${$oInvoice->Balance} with the excess \${$fTotalReducable}");
-						
+
 						$fTotalReducable	= 0.0;
-						
+
 						Log::getLog()->log("\t\t ! \${$fTotalReducable} left to distribute overall.");
 					}
-					
+
 					Log::getLog()->log("\t\t ! \${$fRedistributedBalanceGrandTotal} Balance remaining overall.");
-					
+
 					// Ensure that the pre- and post-redistribution Balance grand totals are equal
 					if (Invoice::roundOut($fBalanceGrandTotal, 4) != Invoice::roundOut($fRedistributedBalanceGrandTotal, 4))
 					{
 						throw new Exception("Pre and Post Redistribution Balance Mismatch! (pre: \${$fBalanceGrandTotal}; post: \${$fRedistributedBalanceGrandTotal})");
 					}
-					
+
 					//throw new Exception("Debugging!");
-					
+
 					// Commit
 					DataAccess::getDataAccess()->TransactionCommit();
 				}
