@@ -88,7 +88,7 @@ class Email_Template extends ORM_Cached
 		return $oTemplate;
 	}
 
-	function getVariablesForTemplate($iTemplateId)
+	public static function getVariablesForTemplate($iTemplateId)
 	{
 			$sSql = "select class_name
 					FROM email_template_type e, email_template et
@@ -107,6 +107,7 @@ class Email_Template extends ORM_Cached
 		return call_user_func( array($sClassName,"getVariables"));
 
 	}
+
 
 
 	/**
