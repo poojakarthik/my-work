@@ -222,7 +222,7 @@ var Component_Email_Template_History = Class.create(
 	
 	_editPopupNew: function (iTemplateId)
 	{
-		new Popup_Email_Text_Editor(null ,  this._sTemplateName , this._sCustomerGroup, this._refresh.bind(this), iTemplateId);	
+		new Popup_Email_Text_Editor(null ,  this._sTemplateName , this._sCustomerGroup, this._refresh.bind(this), iTemplateId, false);	
 	
 	},
 	

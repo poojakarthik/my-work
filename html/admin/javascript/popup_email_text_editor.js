@@ -184,12 +184,14 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		var iNumRows				= document.viewport.getHeight()>768?25:18;
 		this.oTextArea			= Control_Field.factory('textarea', {sLabel:"", sLabelSeparator:null, mVisible:true, mEditable:true, rows:iNumRows, cols:25});
 		//this.oTextArea 			= oControl.oControlOutput.oEdit;
+	
 		this.oTextArea.setElementValue(this._oTemplateDetails.email_text);
+		//this.oTextArea.setValue(this._oTemplateDetails.email_text);
 		this.oTextArea.oControlOutput.oEdit.isFocused=false;
 		this.oTextArea.oControlOutput.oEdit.onfocus=function(){this.isFocused=true};
 		this.oTextArea.oControlOutput.oEdit.onblur=function(){this.isFocused=false};
 		this.oTextArea.oControlOutput.oEdit.variableFormat='text';
-		this.oTextArea.disableValidationStyling();
+		//this.oTextArea.disableValidationStyling();
 
 
 		
@@ -257,23 +259,25 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	
 	 _setEditable: function()
 	 {
+		
 		var bRenderMode = this._bReadOnly?Control_Field.RENDER_MODE_VIEW:Control_Field.RENDER_MODE_EDIT;
 		 
-		  this._oSubjectTextField.save(true);
-		  this._oSubjectTextField.setEditable(bRenderMode);
+		 
+		  this._oSubjectTextField.setEditable(bRenderMode);		  
 		this._oSubjectTextField.setRenderMode(bRenderMode);
+		 bRenderMode==Control_Field.RENDER_MODE_VIEW?this._oSubjectTextField.save(true):null;
+		 
 		
-		this._oDescriptionTextField.save(true);
 		  this._oDescriptionTextField.setEditable(bRenderMode);		
 		this._oDescriptionTextField.setRenderMode(bRenderMode);
-		
-		
-		 this.oTextArea.save(true);
-		 this.oTextArea.setEditable(bRenderMode);
-		 this.oTextArea.setRenderMode(bRenderMode);
+		bRenderMode==Control_Field.RENDER_MODE_VIEW?this._oDescriptionTextField.save(true):null;
+			 
 		
 		if (bRenderMode ==Control_Field.RENDER_MODE_VIEW)
 		{
+			this.oTextArea.oControlOutput.oEdit.disabled = true;
+			this.oTextArea.oControlOutput.oEdit.className = 'disabled';
+			
 			this.oHTMLTextArea.oControlOutput.oEdit.disabled = true;
 			this.oHTMLTextArea.oControlOutput.oEdit.className = 'disabled';
 		 }
@@ -405,7 +409,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	{
 		this._oLoadingPopup.display();
 		var fnRequest     = jQuery.json.jsonFunction(this.successPreviewCallback.bind(this), Popup_Email_Text_Editor.errorCallback.bind(this), 'Email_Text_Editor', 'processHTML');
-		fnRequest(this.oHTMLTextArea.getElementValue());	
+		fnRequest(this.oHTMLTextArea.getElementValue(), this._iTemplateId);	
 	},
 
 	successPreviewCallback: function (oResponse)
