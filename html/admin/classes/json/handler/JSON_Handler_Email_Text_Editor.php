@@ -184,17 +184,25 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 		}
 	}
 
-	 function processHTML($sHTML)
+	 function processHTML($sHTML, $iTemplateId)
 	{
-
-
 		try
 		{
+
+			$oTemplate = Email_Template::getForId($iTemplateId);
+			$oEmailTemplateType	= Email_Template_Type::getForId($oTemplate->email_template_type_id);
+			$oTemplateDetails = new Email_Template_Details(array( 'email_html'=>$sHTML));
+			$oTemplateLogicObject = new $oEmailTemplateType->class_name($oTemplate, $oTemplateDetails);
+
+			$aSampleData = $oTemplateLogicObject->getSampleData($iTemplateId);
+			$sHTML		= $oTemplateLogicObject->getHTMLContent($aSampleData);
+
+
 
 
 			return	array(
 							'Success'		=> true,
-							'html'		=> Email_Template_Logic::processHTML($sHTML, false, true)
+							'html'		=> $oTemplateLogicObject->getHTMLContent($aSampleData)
 						);
 		}
 		catch (EmailTemplateEditException $e)
