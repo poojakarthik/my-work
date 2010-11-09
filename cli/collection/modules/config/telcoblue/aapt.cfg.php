@@ -20,6 +20,15 @@ $aFileTypes	= array(
 			'FileExtensions'	=> array('gz'=>'')	// Remove .gz (if it's the last extension)
 		)
 	),
+	RESOURCE_TYPE_FILE_IMPORT_CDR_AAPT_ESYSTEMS_COCE				=> array(
+		'Regex'					=> '/^COCE\_[a-z0-9]+\_\d+\_\d{14}\.txt\.gz$/i',
+		'Uniqueness'			=> "FileName = <FileName> AND SHA1 = <SHA1>",
+		'DownloadUnique'		=> true,
+		'Compression'			=> array(
+			'StreamWrapper'		=> 'compress.zlib',
+			'FileExtensions'	=> array('gz'=>'')	// Remove .gz (if it's the last extension)
+		)
+	),
 	// Provisioning Responses
 	RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_AAPT_ESYSTEMS_DAILYEVENT	=> array(
 		'Regex'				=> '/^(D)([a-z0-9]{3})([a-z0-9]{3})(E)(\d{14})$/i',
@@ -33,6 +42,7 @@ $aDirectories	=	array(
 	'download'	=>	array(
 		'arrFileTypes'	=>	array(
 			RESOURCE_TYPE_FILE_IMPORT_CDR_AAPT_ESYSTEMS_CTOP				=> &$aFileTypes[RESOURCE_TYPE_FILE_IMPORT_CDR_AAPT_ESYSTEMS_CTOP],
+			RESOURCE_TYPE_FILE_IMPORT_CDR_AAPT_ESYSTEMS_COCE				=> &$aFileTypes[RESOURCE_TYPE_FILE_IMPORT_CDR_AAPT_ESYSTEMS_COCE],
 			RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_AAPT_ESYSTEMS_DAILYEVENT	=> &$aFileTypes[RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_AAPT_ESYSTEMS_DAILYEVENT]
 		)
 	)

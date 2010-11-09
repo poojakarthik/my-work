@@ -1,24 +1,22 @@
 <?php
 /**
- * NormalisationModuleArborCTOP
+ * NormalisationModuleArborCOCE
  *
- * Normalisation module for Arbor CTOP Daily Usage Extract Files
+ * Normalisation module for Arbor COCE Monthly Charges Extract File
  *
- * @class	NormalisationModuleArborCTOP
+ * @class	NormalisationModuleArborCOCE
  */
-class NormalisationModuleArborCTOP extends NormalisationModule
+class NormalisationModuleArborCOCE extends NormalisationModule
 {
 	public $intBaseCarrier	= CARRIER_AAPT;
-	public $intBaseFileType	= RESOURCE_TYPE_FILE_IMPORT_CDR_AAPT_ESYSTEMS_CTOP;
+	public $intBaseFileType	= RESOURCE_TYPE_FILE_IMPORT_CDR_AAPT_ESYSTEMS_COCE;
 	
-	const	UNIT_TYPE_SECONDS			= 100;
-	const	UNIT_TYPE_TENTH_OF_A_SECOND	= 101;
-	const	UNIT_TYPE_MINUTES			= 120;
-	const	UNIT_TYPE_HOURS				= 130;
-	const	UNIT_TYPE_BYTES				= 200;
-	const	UNIT_TYPE_KILOBYTES			= 201;
-	const	UNIT_TYPE_MEGABYTES			= 202;
-	const	UNIT_TYPE_GIGABYTES			= 203;
+	const	TYPE_CODE_RECURRING_CHARGE		= 2;
+	const	TYPE_CODE_NON_RECURRING_CHARGE	= 3;
+	const	TYPE_CODE_ADJUSTMENT			= 4;
+	
+	const	BILLING_LEVEL_ACCOUNT	= 0;
+	const	BILLING_LEVEL_SERVICE	= 1;
 	
 	/**
 	 * __construct()
@@ -94,14 +92,20 @@ class NormalisationModuleArborCTOP extends NormalisationModule
 	// Usage Records
 	private function _normalise()
 	{
+		// Only allow Service-level Charges
+		if ($this->_FetchRawCDR('BillingLevel') != self::BILLING_LEVEL_SERVICE)
+		{
+			return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
+		}
+		
 		// CarrierRef
-		$this->_AppendCDR('CarrierRef', $this->_FetchRawCDR('CTOPRecordId'));
+		$this->_AppendCDR('CarrierRef', $this->_FetchRawCDR('COCERecordId'));
 		
 		// FNN
 		$sFNN	= null;
 		try
 		{
-			$iIdType	= (int)$this->_FetchRawCDR('IdType');
+			$iIdType	= (int)$this->_FetchRawCDR('ExternalIdType');
 			switch ($iIdType)
 			{
 				case self::ID_TYPE_TELEPHONE_NUMBER:
@@ -110,11 +114,11 @@ class NormalisationModuleArborCTOP extends NormalisationModule
 					break;
 					
 				default:
-					Flex::assert(false, "CTOP CDR File: Invalid Id Type '".self::_getIdTypeDescription($iIdType)."' encountered", print_r($this->DebugCDR(), true));
+					Flex::assert(false, "COCE CDR File: Invalid Id Type '".self::_getIdTypeDescription($iIdType)."' encountered", print_r($this->DebugCDR(), true));
 					break;
 			}
 			
-			$sFNN	= self::RemoveAusCode(trim($this->_FetchRawCDR('IdValue')));
+			$sFNN	= self::RemoveAusCode(trim($this->_FetchRawCDR('ExternalId')));
 			$this->_AppendCDR('FNN', $sFNN);
 		}
 		catch (Exception_Assertion $oException)
@@ -123,20 +127,51 @@ class NormalisationModuleArborCTOP extends NormalisationModule
 		}
 		
 		// Source
-		$this->_AppendCDR('Source', self::RemoveAusCode($this->_FetchRawCDR('Origin')));
+		$this->_AppendCDR('Source', $sFNN);
 		
 		// Destination
-		$this->_AppendCDR('Destination', self::RemoveAusCode($this->_FetchRawCDR('Target')));
+		// No Destination
 		
 		// Cost
-		$this->_AppendCDR('Cost', $this->_FetchRawCDR('AmountCharged') / 100);	// Value is in cents
+		$fCost	= $this->_FetchRawCDR('Amount') / 100;	// Value is in cents
+		$this->_AppendCDR('Cost', abs($fCost));	// Value is in cents
 		
 		// ServiceType
 		$iServiceType	= self::_getServiceTypeForFNN($sFNN);
 		$this->_AppendCDR('ServiceType', $iServiceType);
 		
 		// RecordType
-		$sRecordCode	= $this->FindRecordCode(trim($this->_FetchRawCDR('UsageType')));
+		// Build a custom Record Code
+		$sCarrierRecordCode			= trim($this->_FetchRawCDR('TypeCode'));
+		$sRecordCode				= null;
+		$sCarrierDestinationCode	= null;
+		try
+		{
+			switch ((int)$sCarrierRecordCode)
+			{
+				case self::TYPE_CODE_RECURRING_CHARGE:
+				//case self::TYPE_CODE_NON_RECURRING_CHARGE:
+					$sRecordCode				= 'S&E';
+					$sCarrierDestinationCode	= "{$sCarrierRecordCode}:".trim($this->_FetchRawCDR('ElementId'));
+					break;
+					
+				case self::TYPE_CODE_NON_RECURRING_CHARGE:
+					Flex::assert(false, "COCE CDR File: Encountered a non-Recurring Charge", print_r($this->DebugCDR(), true));
+					/*$sRecordCode				= 'S&E';
+					$sCarrierDestinationCode	= "{$sCarrierRecordCode}:".trim($this->_FetchRawCDR('NonRecurringChargeTypeId'));*/
+					break;
+				case self::TYPE_CODE_ADJUSTMENT:
+					Flex::assert(false, "COCE CDR File: Encountered an Adjustment", print_r($this->DebugCDR(), true));
+					/*$sRecordCode				= 'S&E';
+					$sCarrierDestinationCode	= "{$sCarrierRecordCode}:".trim($this->_FetchRawCDR('AdjustmentCode'));*/
+					break;
+			}
+		}
+		catch (Exception_Assertion $oException)
+		{
+			return $this->_ErrorCDR(CDR_CANT_NORMALISE);
+		}
+		
 		$this->_AppendCDR('RecordCode', $sRecordCode);
 		$iRecordType	= $this->FindRecordType($iServiceType, $sRecordCode);
 		$this->_AppendCDR('RecordType', $iRecordType);
@@ -145,99 +180,40 @@ class NormalisationModuleArborCTOP extends NormalisationModule
 		$aDestination	= null;
 		if ($this->_intContext)
 		{
-			$aDestination	= $this->FindDestination(trim($this->_FetchRawCDR('Jurisdiction')));
+			$aDestination	= $this->FindDestination($sCarrierDestinationCode);
 			$this->_AppendCDR('DestinationCode', $aDestination['Code']);
 		}
 		
 		// Description
-		$sDescription	= '';
-		if ($aDestination)
-		{
-			if (!$aDestination['bolUnknownDestination'])
-			{
-				// Destination
-				$sDescription	= $this->_FetchRawCDR('Destination', $aDestination['Description']);
-			}
-		}
+		$sDescription	= trim($this->_FetchRawCDR('Description'));
 		$this->_AppendCDR('Description', $sDescription);
 		
 		// Units
-		$aUnitSets	= array();
-		
-		$aUnitSets[]	= array('iUnits'=>(int)$this->_FetchRawCDR('RawUnits'), 'iUnitType'=>(int)$this->_FetchRawCDR('RawUnitsType'));
-		
-		$aUnits	= $aUnitSets[0];	// FIXME: If there is more than one unit set, we should try to match with Record Type
-		$this->_AppendCDR('Units',abs(self::_normaliseUnits($aUnits['iUnits'], $aUnits['iUnitType'])));
+		// FIXME: Are there any cases where this isn't true?
+		$iUnits	= 1;
+		$this->_AppendCDR('Units', $iUnits);
 		
 		// StartDatetime
-		$sStartDatetime	= date('Y-m-d H:i:s', strtotime(trim($this->_FetchRawCDR('TransactionDatetime'))));
+		if ($sStartDate = trim($this->_FetchRawCDR('FromDate')))
+		{
+			$sStartDatetime	= date('Y-m-d H:i:s', strtotime($sStartDate));
+		}
+		else
+		{
+			$sStartDatetime	= date('Y-m-d H:i:s', strtotime(trim($this->_FetchRawCDR('TransactionDatetime'))));
+		}
 		$this->_AppendCDR('StartDatetime', $sStartDatetime);
 		
 		// EndDatetime
-		$sEndDatetime	= null;
-		try
+		if ($sEndDate = trim($this->_FetchRawCDR('ToDate')))
 		{
-			switch ($aUnits['iUnitType'])
-			{
-				case self::UNIT_TYPE_TENTH_OF_A_SECOND:
-				case self::UNIT_TYPE_SECONDS:
-				case self::UNIT_TYPE_MINUTES:
-				case self::UNIT_TYPE_HOURS:
-					// Units is in seconds and represents the duration of the usage record
-					$sEndDatetime	= date('Y-m-d H:i:s', strtotime("+{$aUnits['iUnits']} seconds", strtotime($sStartDatetime)));
-					break;
-				
-				default:
-					Flex::assert(false, "CTOP CDR File: Unhandled Unit Type '{$aUnits['iUnitType']}'", print_r($this->DebugCDR(), true));
-					break;
-			}
+			$this->_AppendCDR('EndDatetime', date('Y-m-d H:i:s', strtotime($sEndDate)));
 		}
-		catch (Exception_Assertion $oException)
-		{
-			return $this->_ErrorCDR(CDR_CANT_NORMALISE);
-		}
-		$this->_AppendCDR('EndDatetime', $sEndDatetime);
 		
 		// Credit
-		$this->_AppendCDR('Credit', (int)($aUnits['iUnits'] < 0));
+		$this->_AppendCDR('Credit', (int)($fCost < 0));
 		
 		return;
-	}
-	
-	static protected function _normaliseUnits($iUnits, $iUnitType)
-	{
-		switch ($iUnitType)
-		{
-			case self::UNIT_TYPE_SECONDS:
-				$iUnits	= $iUnits;
-				break;
-			case self::UNIT_TYPE_TENTH_OF_A_SECOND:
-				$iUnits	= ceil($iUnits / 10);
-				break;
-			case self::UNIT_TYPE_MINUTES:
-				$iUnits	= ceil($iUnits * 60);
-				break;
-			case self::UNIT_TYPE_HOURS:
-				$iUnits	= ceil($iUnits * 60 * 60);
-				break;
-			case self::UNIT_TYPE_BYTES:
-				$iUnits	= ceil($iUnits / 1024);
-				break;
-			case self::UNIT_TYPE_KILOBYTES:
-				$iUnits	= ceil($iUnits);
-				break;
-			case self::UNIT_TYPE_MEGABYTES:
-				$iUnits	= ceil($iUnits * 1024);
-				break;
-			case self::UNIT_TYPE_GIGABYTES:
-				$iUnits	= ceil($iUnits * 1024 * 1024);
-				break;
-			
-			default:
-				// TODO
-				break;
-		}
-		return $iUnits;
 	}
 	
 	static protected function _getIdTypeDescription($iIdType)
@@ -254,135 +230,115 @@ class NormalisationModuleArborCTOP extends NormalisationModule
 																											'Start'		=> 0,
 																											'Length'	=> 6
 																										),
-																	'TransactionId'					=>	array
+																	'AccountNumber'					=>	array
 																										(
 																											'Start'		=> 6,
-																											'Length'	=> 20
+																											'Length'	=> 10
 																										),
-																	'ProductId'						=>	array
+																	'InvoiceNumber'					=>	array
+																										(
+																											'Start'		=> 16,
+																											'Length'	=> 10
+																										),
+																	'StatementDate'					=>	array
 																										(
 																											'Start'		=> 26,
+																											'Length'	=> 14
+																										),
+																	'TypeCode'						=>	array
+																										(
+																											'Start'		=> 40,
 																											'Length'	=> 6
 																										),
-																	'UsageType'						=>	array
+																	'BillingLevel'					=>	array
 																										(
-																											'Start'		=> 32,
+																											'Start'		=> 46,
 																											'Length'	=> 6
-																										),
-																	'IdType'						=>	array
-																										(
-																											'Start'		=> 38,
-																											'Length'	=> 6
-																										),
-																	'IdValue'						=>	array
-																										(
-																											'Start'		=> 44,
-																											'Length'	=> 48
 																										),
 																	'TransactionDatetime'			=>	array
 																										(
-																											'Start'		=> 92,
+																											'Start'		=> 52,
 																											'Length'	=> 14
 																										),
-																	'SecondaryDatetime'				=>	array
+																	'NonRecurringChargeTypeId'		=>	array
 																										(
-																											'Start'		=> 106,
-																											'Length'	=> 14
+																											'Start'		=> 66,
+																											'Length'	=> 6
 																										),
-																	'Target'						=>	array
+																	'ElementId'						=>	array
 																										(
-																											'Start'		=> 120,
-																											'Length'	=> 24
+																											'Start'		=> 72,
+																											'Length'	=> 6
 																										),
-																	'Origin'						=>	array
+																	'ExternalId'					=>	array
 																										(
-																											'Start'		=> 144,
-																											'Length'	=> 24
+																											'Start'		=> 78,
+																											'Length'	=> 48
 																										),
-																	'RatedUnits'					=>	array
+																	'ExternalIdType'				=>	array
 																										(
-																											'Start'		=> 168,
-																											'Length'	=> 10
+																											'Start'		=> 126,
+																											'Length'	=> 6
 																										),
-																	'AmountCharged'					=>	array
+																	'Amount'						=>	array
 																										(
-																											'Start'		=> 178,
-																											'Length'	=> 18
-																										),
-																	'Jurisdiction'					=>	array
-																										(
-																											'Start'		=> 196,
-																											'Length'	=> 18
-																										),
-																	'FNN'							=>	array
-																										(
-																											'Start'		=> 214,
-																											'Length'	=> 18
-																										),
-																	'ForeignAmount'					=>	array
-																										(
-																											'Start'		=> 232,
+																											'Start'		=> 132,
 																											'Length'	=> 18
 																										),
 																	'Currency'						=>	array
 																										(
-																											'Start'		=> 250,
+																											'Start'		=> 150,
 																											'Length'	=> 6
 																										),
-																	'Recipient'						=>	array
+																	'Tax1'							=>	array
 																										(
-																											'Start'		=> 256,
-																											'Length'	=> 10
-																										),
-																	'CompletionCode'				=>	array
-																										(
-																											'Start'		=> 266,
-																											'Length'	=> 3
-																										),
-																	'CTOPRecordId'					=>	array
-																										(
-																											'Start'		=> 269,
-																											'Length'	=> 22
-																										),
-																	'RawUnits'						=>	array
-																										(
-																											'Start'		=> 291,
-																											'Length'	=> 10
-																										),
-																	'RawUnitsType'					=>	array
-																										(
-																											'Start'		=> 301,
-																											'Length'	=> 6
-																										),
-																	'RatedUnitsType'				=>	array
-																										(
-																											'Start'		=> 307,
-																											'Length'	=> 6
-																										),
-																	'BaseAmount'					=>	array
-																										(
-																											'Start'		=> 313,
+																											'Start'		=> 156,
 																											'Length'	=> 18
 																										),
-																	'SecondUnits'					=>	array
+																	'Tax2'							=>	array
 																										(
-																											'Start'		=> 331,
-																											'Length'	=> 10
+																											'Start'		=> 174,
+																											'Length'	=> 18
 																										),
-																	'ThirdUnits'					=>	array
+																	'Description'					=>	array
 																										(
-																											'Start'		=> 341,
-																											'Length'	=> 10
+																											'Start'		=> 192,
+																											'Length'	=> 50
 																										),
-																	'SpecialPurposeField1'			=>	array
+																	'AdjustmentCode'				=>	array
 																										(
-																											'Start'		=> 351,
-																											'Length'	=> 24
+																											'Start'		=> 242,
+																											'Length'	=> 6
+																										),
+																	'COCERecordId'					=>	array
+																										(
+																											'Start'		=> 248,
+																											'Length'	=> 20
+																										),
+																	'FromDate'						=>	array
+																										(
+																											'Start'		=> 268,
+																											'Length'	=> 14
+																										),
+																	'ToDate'						=>	array
+																										(
+																											'Start'		=> 282,
+																											'Length'	=> 14
+																										),
+																	'RebillReferenceId'				=>	array
+																										(
+																											'Start'		=> 296,
+																											'Length'	=> 16
+																										),
+																	'ProviderId'					=>	array
+																										(
+																											'Start'		=> 312,
+																											'Length'	=> 6
 																										),
 																	'Unused'						=>	array
 																										(
-																											'Start'		=> 375,
-																											'Length'	=> 24
+																											'Start'		=> 318,
+																											'Length'	=> 82
 																										)
 																)
 												);
