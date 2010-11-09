@@ -287,13 +287,13 @@ class JSON_Handler_Email_Text_Editor extends JSON_Handler
 	}
 
 
-	function sendTestEmail($oData)
+	function sendTestEmail($oData, $iTemplateId)
 	{
 
 		try
 		{
 
-			Email_Template_Logic::sendTestEmail((array)$oData);
+			Email_Template_Logic::sendTestEmail((array)$oData, $iTemplateId);
 			return	array(
 							'Success'		=> true,
 						);
