@@ -156,6 +156,10 @@ class JSON_Handler_CDR extends JSON_Handler
 			$aData = CDR::GetDelinquentCDRsPaginated(null, null, array(), $aFilter, false);
 			foreach ($aData as $aRecord)
 			{
+				if ($aRecord['StatusId'] == CDR_DELINQUENT_WRITTEN_OFF)
+				{
+						$aRecord['Status'] = $aRecord['Status']." (by ".$aRecord['WrittenOffBy']." on ".$aRecord['WrittenOffOn'].")";
+				}
 				$oFile->addRow($aRecord);
 			}
 
