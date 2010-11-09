@@ -30,7 +30,7 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 		this.oDataSet	= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_NO_CACHING, {sObject: 'CDR', sMethod: 'GetDelinquentCDRsPaginated'});
 		this.oDataSet.setSortingFields({StartDatetime: 'DESC', Id: 'ASC'});
 		
-		this.oPagination	= new Pagination(this._updateTable.bind(this), Component_Delinquent_CDR_List.MAX_RECORDS_PER_PAGE, this.oDataSet);
+		this.oPagination	= new Pagination(this._updateTable.bind(this), 10, this.oDataSet);
 		
 		// Create filter object
 		this._oFilter	=	new Filter(
@@ -706,6 +706,12 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 		var assign = "";
 		//var viewDetails = $T.img({class:"followup-list-all-action-icon", src: "../admin/img/template/magnifier.png", alt: 'Show Details', title: 'Show Details'}).observe('click', this._showCDRPopup.bind(this, oCDR.EarliestStartDatetime, oCDR.LatestStartDatetime, oCDR.FNN, oCDR.Carrier, oCDR.ServiceType));
 		var statusCell = $T.td({class: 'status'}, oCDR.Status);
+		if (oCDR.StatusId == 203)
+		{
+			var div = $T.div({class: 'writeoff-detail'}, 'by ' + oCDR.WrittenOffBy + ' on ' + new Date(Date.parse(oCDR.WrittenOffOn.replace(/-/g, '/'))).$format('d/m/Y'));
+			statusCell.appendChild(div);
+		}
+		
 		if (oCDR.StatusId ==107)
 		{
 		 writeOff = $T.img({class:"followup-list-all-action-icon", src: Popup_CDR.WRITEOFF_IMAGE, alt: 'Write Off', title: 'Write Off'}).observe('click', this._writeOff.bind(this, statusCell, oCDR.Id, false, false));
