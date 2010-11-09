@@ -653,10 +653,32 @@ protected static function _toText($oNode, $aTextArray, $sParentTagName = null, $
 	{
 		$oCustomerGroup = Customer_Group::getForId($this->_oEmailTemplate->customer_group_id);
 		$aSampleData =  $this->_aVariables;
-		$oEmployee = Employee::getForId(Flex::getUserId());
+		//$oEmployee = Employee::getForId(Flex::getUserId());
+		$aSampleAccountData = Invoice::getSampleDataForCustomerGroupId($this->_oEmailTemplate->customer_group_id);
 		$intInvoiceDatetime				= strtotime(Data_Source_Time::currentDate());
 		$strInvoiceDatetime				= date("d/m/Y", $intInvoiceDatetime);
-		$strMonth 						= date("F", $intInvoiceDatetime);
+
+		$iBillingDate			= strtotime(Data_Source_Time::currentDate());
+		$sInvoiceDate			= date('dmY', $iBillingDate);
+
+		// Build billing period string for the email subject lines
+		$sBillingPeriodEndMonth		= date("F", strtotime("-1 day", $iBillingDate));
+		$sBillingPeriodEndYear		= date("Y", strtotime("-1 day", $iBillingDate));
+		$sBillingPeriodStartMonth	= date("F", strtotime("-1 month", $iBillingDate));
+		$sBillingPeriodStartYear	= date("Y", strtotime("-1 month", $iBillingDate));
+		$sBillingPeriod				= $sBillingPeriodStartMonth;
+		if ($sBillingPeriodStartYear !== $sBillingPeriodEndYear)
+		{
+			$sBillingPeriod	.= " {$sBillingPeriodStartYear} / {$sBillingPeriodEndMonth} {$sBillingPeriodEndYear}";
+		}
+		else if ($sBillingPeriodStartMonth !== $sBillingPeriodEndMonth)
+		{
+			$sBillingPeriod	.= " / {$sBillingPeriodEndMonth} {$sBillingPeriodEndYear}";
+		}
+		else
+		{
+			$sBillingPeriod	.= " {$sBillingPeriodStartYear}";
+		}
 
 
 		switch ($this->_oEmailTemplate->email_template_type_id)
@@ -664,14 +686,18 @@ protected static function _toText($oNode, $aTextArray, $sParentTagName = null, $
 			case(EMAIL_TEMPLATE_TYPE_INVOICE):
 													$aSampleData['CustomerGroup']['external_name']= 	$oCustomerGroup->external_name;
 													$aSampleData['CustomerGroup']['customer_service_phone'] = $oCustomerGroup->customer_service_phone;
+													$aSampleData['CustomerGroup']['email_domain'] = $oCustomerGroup->email_domain;
 													$aSampleData['Invoice']['created_on'] = $strInvoiceDatetime;
-													$aSampleData['Invoice']['billing_period']= $strMonth;
-													$aSampleData['Contact']['first_name'] = $oEmployee->FirstName;
+													$aSampleData['Invoice']['billing_period']= $sBillingPeriod;
+													$aSampleData['Contact']['first_name'] = $aSampleAccountData['contact_first_name'];
+													$aSampleData['Account']['id'] = $aSampleAccountData['account_id'];
 													break;
 			case (EMAIL_TEMPLATE_TYPE_LATE_NOTICE):
 													$aSampleData['CustomerGroup']['external_name']= 	$oCustomerGroup->external_name;
 													$aSampleData['Letter']['type'] = GetConstantDescription(DOCUMENT_TEMPLATE_TYPE_OVERDUE_NOTICE, "DocumentTemplateType");//DocumentTemplateType::getForId(DOCUMENT_TEMPLATE_TYPE_OVERDUE_NOTICE)->description;
-													$aSampleData['Contact']['first_name'] = $oEmployee->FirstName;
+													$aSampleData['Contact']['first_name'] = $aSampleAccountData['contact_first_name'];
+													$aSampleData['Account']['id'] = $aSampleAccountData['account_id'];
+													$aSampleData['CustomerGroup']['email_domain'] = $oCustomerGroup->email_domain;
 													break;
 			default:
 
