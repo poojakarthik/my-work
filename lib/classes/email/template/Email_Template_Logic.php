@@ -148,7 +148,7 @@ class Email_Template_Logic
 	public function generateEmail($aData, Email_Flex $mEmail=null)
 	{
 		$oEmail	= ($mEmail !== null ? $mEmail : new Email_Flex());
-
+		$aData = $this->getData($aData['invoice_id'], $aData['contact_id']);
 		$sSubject	= $this->getSubjectContent($aData);
 		$sHTML		= $this->getHTMLContent($aData);
 		$sText		= $this->getTextContent($aData);
