@@ -651,10 +651,13 @@ protected static function _toText($oNode, $aTextArray, $sParentTagName = null, $
 
 	public function getSampleData()
 	{
+
+
+
 		$oCustomerGroup = Customer_Group::getForId($this->_oEmailTemplate->customer_group_id);
-		$aSampleData =  $this->_aVariables;
+
 		//$oEmployee = Employee::getForId(Flex::getUserId());
-		$aSampleAccountData = Invoice::getSampleDataForCustomerGroupId($this->_oEmailTemplate->customer_group_id);
+
 		$intInvoiceDatetime				= strtotime(Data_Source_Time::currentDate());
 		$strInvoiceDatetime				= date("d/m/Y", $intInvoiceDatetime);
 
@@ -680,29 +683,26 @@ protected static function _toText($oNode, $aTextArray, $sParentTagName = null, $
 			$sBillingPeriod	.= " {$sBillingPeriodStartYear}";
 		}
 
-
+		$aSampleInvoiceData = Invoice::getSampleDataForCustomerGroupId($this->_oEmailTemplate->customer_group_id);
 		switch ($this->_oEmailTemplate->email_template_type_id)
 		{
 			case(EMAIL_TEMPLATE_TYPE_INVOICE):
-													$aSampleData['CustomerGroup']['external_name']= 	$oCustomerGroup->external_name;
-													$aSampleData['CustomerGroup']['customer_service_phone'] = $oCustomerGroup->customer_service_phone;
-													$aSampleData['CustomerGroup']['email_domain'] = $oCustomerGroup->email_domain;
-													$aSampleData['Invoice']['created_on'] = $strInvoiceDatetime;
-													$aSampleData['Invoice']['billing_period']= $sBillingPeriod;
-													$aSampleData['Contact']['first_name'] = $aSampleAccountData['contact_first_name'];
-													$aSampleData['Account']['id'] = $aSampleAccountData['account_id'];
+													return $this->getData($aSampleInvoiceData['invoice_id'], $aSampleInvoiceData['contact_id']);
 													break;
 			case (EMAIL_TEMPLATE_TYPE_LATE_NOTICE):
+													$aSampleData =  $this->_aVariables;
 													$aSampleData['CustomerGroup']['external_name']= 	$oCustomerGroup->external_name;
 													$aSampleData['Letter']['type'] = GetConstantDescription(DOCUMENT_TEMPLATE_TYPE_OVERDUE_NOTICE, "DocumentTemplateType");//DocumentTemplateType::getForId(DOCUMENT_TEMPLATE_TYPE_OVERDUE_NOTICE)->description;
 													$aSampleData['Contact']['first_name'] = $aSampleAccountData['contact_first_name'];
 													$aSampleData['Account']['id'] = $aSampleAccountData['account_id'];
 													$aSampleData['CustomerGroup']['email_domain'] = $oCustomerGroup->email_domain;
+													return $aSampleData;
 													break;
 			default:
+													return $this->_aVariables;
 
 		}
-		return $aSampleData;
+
 	}
 
 
