@@ -30,36 +30,6 @@ class Email_Template_Logic
 	}
 
 	// getHTMLContent: Return the 'ready-to-send' HTML content for the given array of data
-/*	public function getHTMLContentOld($mData)
-	{
-		try
-		{
-			$aData		= self::_getArrayFromData($mData);//(is_array($mData) ? $mData : get_object_vars($mData));
-			$oDetails	= Email_Template_Details::getCurrentDetailsForTemplateId($this->_oEmailTemplate->id);
-			$sHTML		= self::processHTML($oDetails->email_html);
-			foreach ($this->_aVariables as $sObject => $aProperties)
-			{
-				if (isset($aData[$sObject]))
-				{
-					$aDataProperties	= $aData[$sObject];
-					foreach ($aProperties as $sProperty)
-					{
-						$mValue	= $aDataProperties[$sProperty];
-						if (isset($aDataProperties[$sProperty]))
-						{
-							// Replace all references with value
-							$sHTML	= preg_replace("/\<variable(\s+)object=['\"]{$sObject}['\"](\s+)field=['\"]{$sProperty}['\"](\s?)\/\>/", "{$mValue}", $sHTML);
-						}
-					}
-				}
-			}
-			return $sHTML;
-		}
-		catch (Exception $oException)
-		{
-			throw new Exception("Failed to get HTML content. ".$oException->getMessage().". Data = ".print_r($mData, true));
-		}
-	}*/
 
 	public function getHTMLContent($mData)
 	{
@@ -684,8 +654,6 @@ protected static function _toText($oNode, $aTextArray, $sParentTagName = null, $
 		$oCustomerGroup = Customer_Group::getForId($this->_oEmailTemplate->customer_group_id);
 		$aSampleData =  $this->_aVariables;
 		$oEmployee = Employee::getForId(Flex::getUserId());
-
-
 		$intInvoiceDatetime				= strtotime(Data_Source_Time::currentDate());
 		$strInvoiceDatetime				= date("d/m/Y", $intInvoiceDatetime);
 		$strMonth 						= date("F", $intInvoiceDatetime);
