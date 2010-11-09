@@ -1,10 +1,11 @@
 var Popup_Email_Test_Email	= Class.create(Reflex_Popup, 
 {
-	initialize	: function($super, oData)
+	initialize	: function($super, oData, iTemplateId)
 	{
 		$super(35);
 		this._oLoadingPopup	= new Reflex_Popup.Loading();		
-		this._oData = oData;	
+		this._oData = oData;
+		this._iTemplateId = iTemplateId;
 		this._buildUI();		
 	},
 	
@@ -40,13 +41,13 @@ var Popup_Email_Test_Email	= Class.create(Reflex_Popup,
 								)
 						);
 		
-var sEmailType = this._oData.html==null?' Text Only Email':' HTML Email';		
+		var sEmailType = this._oData.html==null?' Text Only Email':' HTML Email';		
 
-var  button = 	$T.button({class: 'icon-button'},											
-							$T.img({src: Popup_Email_Text_Editor.EMAIL_IMAGE_SOURCE, alt: '', title: 'Send'+ sEmailType}),
-							$T.span('Send'+ sEmailType)																	
-							);
-button.observe('click', this._sendMail.bind(this,null));
+		var  button = 	$T.button({class: 'icon-button'},											
+									$T.img({src: Popup_Email_Text_Editor.EMAIL_IMAGE_SOURCE, alt: '', title: 'Send'+ sEmailType}),
+									$T.span('Send'+ sEmailType)																	
+									);
+		button.observe('click', this._sendMail.bind(this,null));
 		
 		var oContent 	= 	$T.div(	{class: 'popup-email-test'},
 											
@@ -103,7 +104,7 @@ button.observe('click', this._sendMail.bind(this,null));
 							to: aTo							
 						};
 			var fnRequest     = jQuery.json.jsonFunction(this._sendMail.bind(this), Popup_Email_Text_Editor.errorCallback.bind(this), 'Email_Text_Editor', 'sendTestEmail');
-			fnRequest(oData);
+			fnRequest(oData, this._iTemplateId);
 		}
 		else
 		{

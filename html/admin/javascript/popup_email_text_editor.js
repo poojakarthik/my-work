@@ -266,22 +266,17 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		this._oDescriptionTextField.save(true);
 		  this._oDescriptionTextField.setEditable(bRenderMode);		
 		this._oDescriptionTextField.setRenderMode(bRenderMode);
-		//this.oHTMLTextArea.disabled = true;
+		
 		
 		 this.oTextArea.save(true);
 		 this.oTextArea.setEditable(bRenderMode);
 		 this.oTextArea.setRenderMode(bRenderMode);
 		
-		 //var span = this._oContent.select('.popup-email-text-edit-fields div.control-field span').first();
-		// var height				= document.viewport.getHeight()>768?11400:11300;
-		// span.style.height = this.oHTMLTextArea.oControlOutput.oEdit.height;
-		//span.style.overflow = 'visible';
-		 
-		 //this.oHTMLTextArea.setValue(div);
-		 //this.oHTMLTextArea.setEditable(bRenderMode);	
-		// this.oHTMLTextArea.setRenderMode(bRenderMode);
-		 this.oHTMLTextArea.oControlOutput.oEdit.disabled = true;
-		 this.oHTMLTextArea.oControlOutput.oEdit.className = 'disabled';
+		if (bRenderMode ==Control_Field.RENDER_MODE_VIEW)
+		{
+			this.oHTMLTextArea.oControlOutput.oEdit.disabled = true;
+			this.oHTMLTextArea.oControlOutput.oEdit.className = 'disabled';
+		 }
 		this._generateTextButton.style.display = bRenderMode?'':'none';
 		this._saveButton.style.display = bRenderMode?'':'none';
 	
@@ -291,7 +286,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 	{
 		sHTML = bTextOnly?null:this.oHTMLTextArea.getElementValue();		
 		oData = {text: this.oTextArea.getElementValue(), html:sHTML, subject:this._oSubjectTextField.getElementValue() };
-		new Popup_Email_Test_Email(oData);	
+		new Popup_Email_Test_Email(oData, this._iTemplateId);	
 	},
 	
 	_close : function ()
@@ -337,13 +332,14 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 			div.appendChild(oLabel);
 			var ul = $T.ul({class:'list'});
 			div.appendChild(ul);
-			for (var i=0;i<this._oVariables[key].length;i++)
+			var fields =  Object.keys(this._oVariables[key]);
+			for (var i=0;i<fields.length;i++)
 			{
 				var li = document.createElement('li');
-				 li.innerHTML = this._oVariables[key][i];
+				 li.innerHTML = fields[i];
 				 oVariable = {
-								tag:  "<variable object = \""+key+"\" field = \"" + this._oVariables[key][i] + "\"/>",
-								text: "{" + key +"."+ this._oVariables[key][i]+"}"
+								tag:  "<variable object = \""+key+"\" field = \"" + fields[i] + "\"/>",
+								text: "{" + key +"."+ fields[i]+"}"
 							}
 				 if (!this._bReadOnly)
 				 {
