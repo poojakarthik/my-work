@@ -764,7 +764,7 @@ class Invoice_Run
 		$oDeliveryMethod		= Constant_Group::getConstantGroup('delivery_method');
 		$iBillingDate			= strtotime($this->BillingDate);
 		$sInvoiceDate			= date('dmY', $iBillingDate);
-		
+
 		// Build billing period string for the email subject lines
 		$sBillingPeriodEndMonth		= date("F", strtotime("-1 day", $iBillingDate));
 		$sBillingPeriodEndYear		= date("Y", strtotime("-1 day", $iBillingDate));
@@ -783,7 +783,7 @@ class Invoice_Run
 		{
 			$sBillingPeriod	.= " {$sBillingPeriodStartYear}";
 		}
-		
+
 		Log::getLog()->log("Generate PDF's");
 
 		// Generate pdf's for each invoice
@@ -799,14 +799,14 @@ class Invoice_Run
 			$sContent				= GetPDFContent($oInvoice->Account, $iYear, $iMonth, $iId, $this->Id);
 			$aPDFFilenames[$iId]	= $sInvoiceRunPDFBasePath.GetPdfFilename($oInvoice->Account, $iYear, $iMonth, $oInvoice->Id, $this->Id);
 			$aPDFContent[$iId]		= $sContent;
-			
+
 			Log::getLog()->log("Generated PDF '".basename($aPDFFilenames[$iId])."' for invoice {$iId}, length=".strlen($sContent));
 		}
 
 		try
 		{
 			Log::getLog()->log("Generate correspondence data & emails");
-				
+
 			// Generate the correspondence data & build the email queue (using email templates)
 			$aCorrespondenceData	= array();
 			$oEmailFlexQueue		= new Email_Flex_Queue();
@@ -815,7 +815,7 @@ class Invoice_Run
 			{
 				Log::getLog()->log("\nInvoice {$iInvoiceId}");
 				Log::getLog()->log("----------------------");
-	
+
 				// Determine the correspondence_delivery_method for the invoice
 				$oInvoice			= $aInvoices[$iInvoiceId];
 				$iDeliveryMethod	= null;
@@ -824,9 +824,9 @@ class Invoice_Run
 					case DELIVERY_METHOD_POST:
 						// Create correspondence data
 						$iDeliveryMethod	= CORRESPONDENCE_DELIVERY_METHOD_POST;
-						
+
 						Log::getLog()->log("Delivery method for invoice {$iInvoiceId} is '".Correspondence_Delivery_Method::getForId($iDeliveryMethod)->system_name."'");
-	
+
 						// Cache the correspondence data for the invoice
 						$oAccount				= Account::getForId($oInvoice->Account);
 						$oContact				= Contact::getForId($oAccount->PrimaryContact);
@@ -849,20 +849,20 @@ class Invoice_Run
 														'pdf_file_path'						=> $sPDFFilename
 													);
 						$aCorrespondenceData[]	= $aInvoice;
-			
+
 						Log::getLog()->log("Created correspondence data for invoice {$iInvoiceId}");
 						Log::getLog()->log(print_r($aInvoice, true));
 						break;
 					case DELIVERY_METHOD_EMAIL:
 						// Create email object using Email Template & add to the queue
 						Log::getLog()->log("Delivery method for invoice {$iInvoiceId} is '".$oDeliveryMethod->getConstantName(DELIVERY_METHOD_EMAIL)."'");
-						
+
 						// Get the contact details for the invoice/account
 						$oStmtAccountEmail	= new StatementSelect(	"Account JOIN Contact USING (AccountGroup)",
 																	"Contact.Account, Email, FirstName",
-																	"Account.Id = <Account> 
-																	AND	Email != '' 
-																	AND	Contact.Archived = 0 
+																	"Account.Id = <Account>
+																	AND	Email != ''
+																	AND	Contact.Archived = 0
 																	AND	(Contact.Account = Account.Id OR Contact.CustomerContact = 1 OR Account.PrimaryContact = Contact.Id)");
 						if ($oStmtAccountEmail->Execute($oInvoice->toArray()) === FALSE)
 						{
@@ -874,43 +874,44 @@ class Invoice_Run
 							Log::getLog()->log("Bad Account Number or Non-Email Account");
 							continue;
 						}
-						
+
 						Log::getLog()->log("Generate emails for each contact");
-						
+
 						// Queue up an email for each contact
 						foreach ($aContacts as $aContact)
 						{
 							Log::getLog()->log("...Contact ".$aContact['Email']." (".$aContact['FirstName'].")");
-							
+
 							// Generate Email_Flex object from Invoice template
-							$oEmail	= 	$oEmailTemplate->generateEmail(
+/*							$oEmail	= 	$oEmailTemplate->generateEmail(
 											array(
 												'CustomerGroup'	=> $oCustomerGroup->toArray(),
 												'Account'		=> array('id' => $aContact['Account']),
 												'Invoice'		=> array('created_on' => date('F jS, Y', strtotime($oInvoice->CreatedOn)), 'billing_period' => $sBillingPeriod),
 												'Contact'		=> array('first_name' => $aContact['FirstName'])
 											)
-										);
-							
+										);*/
+							$oEmail	= 	$oEmailTemplate->generateEmail(	array('invoice_id'=>$oInvoice->Id, 'contact_id'=>$aContact['Id']));
+
 							// Account for , separated email addresses
 							$aEmails	= explode(',', $aContact['Email']);
 							foreach ($aEmails as $sEmail)
 							{
 								$sEmail	= trim($sEmail);
-								
+
 								Log::getLog()->log("\tAddress: '{$sEmail}'");
-								
+
 								// Validate email address
 								if (!preg_match('/^([[:alnum:]]([+-_.]?[[:alnum:]])*)@([[:alnum:]]([.]?[-[:alnum:]])*[[:alnum:]])\.([[:alpha:]]){2,25}$/', $sEmail))
 								{
 									Log::getLog()->log("\tERROR: Email address is invalid.");
 									continue;
 								}
-								
+
 								// Add recipient
 								$oEmail->addTo($sEmail);
 							}
-							
+
 							$oEmail->setFrom($oCustomerGroup->outbound_email);
 							$sAttachment	= "{$oInvoice->Account}_{$sInvoiceDate}.pdf";
 							$oEmail->createAttachment(
@@ -920,14 +921,14 @@ class Invoice_Run
 								Zend_Mime::ENCODING_BASE64, 		// Encoding
 								$sAttachment						// Filename
 							);
-							
+
 							Log::getLog()->log("\tAttachment: '{$sAttachment}'");
-							
+
 							$sEmailId	= $aContact['Account']."_".$aContact['Email'];
 							$oEmailFlexQueue->push($oEmail, $sEmailId);
-							
+
 							Log::getLog()->log("Email queued: '$sEmailId'");
-							
+
 							// Update the invoices delivery method
 							$oInvoice->DeliveryMethod	= DELIVERY_METHOD_EMAIL_SENT;
 							$oInvoice->save();
@@ -947,15 +948,15 @@ class Invoice_Run
 		{
 			throw new Exception("Failed to generated invoice delivery data. ".$oException->getMessage());
 		}
-		
+
 		Log::getLog()->log("\nSchedule the email queue for immediate delivery");
-		
+
 		$oEmailQueue	= $oEmailFlexQueue->scheduleForDelivery(null, "Invoice Run Delivery: {$this->Id} ({$oCustomerGroup->internal_name})");
 		if ($oEmailQueue !== null)
 		{
 			// There were emails queued
 			Log::getLog()->log("Email queue created, link all invoice emails to an account");
-			
+
 			// Each email was stored using the account id of the recipient as it's 'id', use this
 			// to create a link between the email and the account (email_account table record)
 			$aEmailORMs	= $oEmailFlexQueue->getEmailORMObjects();
@@ -965,9 +966,9 @@ class Invoice_Run
 				$aSplit		= split('_', $sEmailId);
 				$sAccountId	= $aSplit[0];
 				$iAccountId	= (int)$sAccountId;
-				
+
 				Log::getLog()->log("Linking email {$oEmailORM->id} to Account {$iAccountId}");
-				
+
 				// Create email_account record
 				$oEmailAccount				= new Email_Account();
 				$oEmailAccount->email_id	= $oEmailORM->id;
@@ -982,13 +983,13 @@ class Invoice_Run
 			try
 			{
 				Log::getLog()->log("\nCreate correspondence run");
-	
+
 				$oTemplate	= $this->getCorrespondenceTemplate();
-	
+
 				Log::getLog()->log("Got template");
-	
+
 				$oRun	= $oTemplate->createRun(true, $aCorrespondenceData);
-	
+
 				Log::getLog()->log("Run created");
 			}
 			catch (Correspondence_DataValidation_Exception $oEx)
@@ -997,7 +998,7 @@ class Invoice_Run
 				$sErrorType	= GetConstantName($oEx->iError, 'correspondence_run_error');
 				Log::getLog()->log("Error Type: $oEx->iError => '{$sErrorType}'");
 				Log::getLog()->log("Error report: ".print_r($oEx->aReport, true));
-	
+
 				throw new Exception("Failed to create the correspondence run. ");
 			}
 			catch (Exception $oEx)
@@ -1502,15 +1503,15 @@ class Invoice_Run
 	//								for the given account id.
 	public function hasUnarchivedCDRsForAccount($iAccountId)
 	{
-		$sQuery	= "SELECT	CASE 
+		$sQuery	= "SELECT	CASE
 								WHEN	(
-											SELECT 	'Still In CDR table' 
-											FROM 	CDR 
-											WHERE 	invoice_run_id = {$this->Id} 
+											SELECT 	'Still In CDR table'
+											FROM 	CDR
+											WHERE 	invoice_run_id = {$this->Id}
 											AND		Account = {$iAccountId} LIMIT 1
-										) = 'Still In CDR table' 
-								THEN '".FLEX_DATABASE_CONNECTION_DEFAULT."' 
-								ELSE '".FLEX_DATABASE_CONNECTION_CDR."' 
+										) = 'Still In CDR table'
+								THEN '".FLEX_DATABASE_CONNECTION_DEFAULT."'
+								ELSE '".FLEX_DATABASE_CONNECTION_CDR."'
 							END AS DataSource";
 		$oDB	= Data_Source::get();
 		$oRes	= $oDB->query($sQuery);
