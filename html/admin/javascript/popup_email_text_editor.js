@@ -275,10 +275,10 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		
 		if (bRenderMode ==Control_Field.RENDER_MODE_VIEW)
 		{
-			this.oTextArea.oControlOutput.oEdit.disabled = true;
+			this.oTextArea.oControlOutput.oEdit.readonly="readonly";
 			this.oTextArea.oControlOutput.oEdit.className = 'disabled';
 			
-			this.oHTMLTextArea.oControlOutput.oEdit.disabled = true;
+			this.oHTMLTextArea.oControlOutput.oEdit.readonly="readonly";
 			this.oHTMLTextArea.oControlOutput.oEdit.className = 'disabled';
 		 }
 		this._generateTextButton.style.display = bRenderMode?'':'none';
