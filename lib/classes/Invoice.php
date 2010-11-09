@@ -153,7 +153,7 @@ class Invoice extends ORM_Cached
 	public static function getSampleDataForCustomerGroupId($iCustomerGroup)
 	{
 
-		$sSql = "select a.Id as 'account_id', c.FirstName as 'contact_first_name', c.LastName as 'contact_last_name'
+		$sSql = "select i.Id as 'invoice_id', c.Id as 'contact_id'
 				from Invoice i join Account a ON (i.Account = a.Id
 				 								 and i.Id = (select max(i2.Id) from Invoice i2 join Account a2 ON (i2.Account = a2.Id and a2.CustomerGroup = $iCustomerGroup))
 								 				 )
