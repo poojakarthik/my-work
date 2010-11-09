@@ -161,11 +161,14 @@ class CDR extends ORM_Cached
 									"Cost"			=>	"c.Cost",
 									"StartDatetime"				=>	"c.StartDatetime",
 		 							"Status"				=>	"c.Status",
-									"StatusDescr"			=>	" CASE  c.Status WHEN ".CDR_BAD_OWNER." THEN '".$sDelinquentStatusDescr."' WHEN ". CDR_DELINQUENT_WRITTEN_OFF." THEN  '".$sWriteOffStausDescr."' ELSE CONCAT (CONCAT_WS(' ', 'Account ID:', s.Account), CONCAT_WS(' ',' FNN:', s.FNN)) END"
-									);
+									"StatusDescr"			=>	" CASE  c.Status WHEN ".CDR_BAD_OWNER." THEN '".$sDelinquentStatusDescr."' WHEN ". CDR_DELINQUENT_WRITTEN_OFF." THEN  '".$sWriteOffStausDescr."' ELSE CONCAT (CONCAT_WS(' ', 'Account ID:', s.Account), CONCAT_WS(' ',' FNN:', s.FNN)) END",
+									"WrittenOffBy"			=> "concat_ws(' ',e.FirstName,e.LastName)",
+									"WrittenOffOn"			=> "w.created_datetime"
+		);
 
 
-		$selDelinquentCDRs	= new StatementSelect("CDR c LEFT JOIN Service s ON (c.Service = s.Id )", $arrColumns, $aWhere['sClause'].$sWhere,  $sOrderByClause, $sLimitClause);
+
+		$selDelinquentCDRs	= new StatementSelect("CDR c LEFT JOIN Service s ON (c.Service = s.Id ) LEFT JOIN cdr_delinquent_writeoff w ON (c.Id= w.cdr_id) LEFT JOIN Employee e ON (w.created_employee_id = e.Id)", $arrColumns, $aWhere['sClause'].$sWhere,  $sOrderByClause, $sLimitClause);
 
 		$mixResult = $selDelinquentCDRs->Execute($aWhere['aValues']);
 
@@ -184,8 +187,10 @@ class CDR extends ORM_Cached
 								"Time"	=> $aRecord['StartDatetime'],//;//$strStartDatetime,
 								"Cost"	=> $aRecord['Cost'],//$strCost,
 								"Status" =>$aRecord['StatusDescr'],
-								"StatusId"	=>	$aRecord['Status']
-								);;
+								"StatusId"	=>	$aRecord['Status'],
+								"WrittenOffBy"=> $aRecord['WrittenOffBy'],
+								"WrittenOffOn"=> $aRecord['WrittenOffOn']
+								);
 
 		}
 
