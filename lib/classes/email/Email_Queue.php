@@ -128,6 +128,13 @@ class Email_Queue extends ORM_Cached
 			
 			// Add the email to the queue
 			$oEmailFlexQueue->push($oEmailFlex, $oEmail->id);
+			
+			if ($bTestMode)
+			{
+				// Break out of the loop, only send a single email from this queue in test mode
+				Log::getLog()->log("Only one email is processed per queue when testing\n");
+				break;
+			}
 		}
 		
 		if ($bCommitQueue)
@@ -171,7 +178,9 @@ class Email_Queue extends ORM_Cached
 				$iEmailStatus	= EMAIL_STATUS_NOT_SENT;
 				Log::getLog()->log("\t{$iEmailId}: Not sent");
 			}
-			$oEmail->setStatus($iEmailStatus);
+			
+			// Only update the status if NOT in test mode
+			$oEmail->setStatus($iEmailStatus);	
 		}
 		
 		Log::getLog()->log("\nUpdating batch reference: {$oEmailQueueBatch->id}");
