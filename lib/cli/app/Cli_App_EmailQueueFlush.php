@@ -22,8 +22,15 @@ class Cli_App_EmailQueueFlush extends Cli
 			$sDebugAddress	= $arrArgs[self::SWITCH_DEBUG_EMAIL_ADDRESS];
 			$sDebugAddress	= !!$sDebugAddress ? $sDebugAddress	: null;
 			
+			$oDataAccess	= DataAccess::getDataAccess();
 			if ($bTestRun)
 			{
+				// Start transaction, in test mode
+				if ($oDataAccess->TransactionStart() === false)
+				{
+					throw Exception("Failed to start database transaction");
+				}
+				
 				Log::getLog()->log("-----");
 				Log::getLog()->log("Test Mode Enabled - None of the email queues will be commited.");
 				if ($sDebugAddress !== null)
@@ -64,6 +71,16 @@ class Cli_App_EmailQueueFlush extends Cli
 				}
 				
 				Log::getLog()->log("All queues delivered");
+			}
+			
+			if ($bTestRun)
+			{
+				// Rollback transaction, in test mode
+				Log::getLog()->log("Test mode, rolling back all database changes");
+				if ($oDataAccess->TransactionRollback() === false)
+				{
+					throw Exception("Failed to rollback database transaction");
+				}
 			}
 			
 			return 0;
