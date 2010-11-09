@@ -23,9 +23,10 @@ class Email_Template_Logic
 
 
 
-	public function __construct($oEmailTemplate)
+	public function __construct($oEmailTemplate, $oEmailTemplateDetails = null )
 	{
 		$this->_oEmailTemplate	= $oEmailTemplate;
+		$this->oDetails	= $oEmailTemplateDetails== null?Email_Template_Details::getCurrentDetailsForTemplateId($this->_oEmailTemplate->id):$oEmailTemplateDetails;
 	}
 
 	// getHTMLContent: Return the 'ready-to-send' HTML content for the given array of data
@@ -63,8 +64,9 @@ class Email_Template_Logic
 	public function getHTMLContent($mData)
 	{
 		$aData				= self::_getArrayFromData($mData);
-		$oDetails			= Email_Template_Details::getCurrentDetailsForTemplateId($this->_oEmailTemplate->id);
-		$sHTML				= self::processHTML($oDetails->email_html);
+		//$oDetails			= Email_Template_Details::getCurrentDetailsForTemplateId($this->_oEmailTemplate->id);
+		$sHTML = $this->oDetails->email_html;
+		$sHTML				= self::processHTML($sHTML);
 		$oDOMDocument		= DomDocument::loadXML('<?xml version="1.0" encoding="utf-8"?>'.$sHTML);
 		$oXPath 			= new DOMXPath($oDOMDocument);
 		$oTags				=$oXPath->query("//*[@*] | //variable");
@@ -88,7 +90,7 @@ class Email_Template_Logic
 					$sField = $aTokens[1];
 				}
 
-				if (array_key_exists($sObject, $this->_aVariables) && in_array( $sField ,  $this->_aVariables[$sObject]))
+				if (array_key_exists($sObject, $this->_aVariables) && array_key_exists( $sField ,  $this->_aVariables[$sObject]))
 				{
 					$sValue = isset($aData[$sObject]) && isset($aData[$sObject][$sField])?$aData[$sObject][$sField]:'{'.$sObject.'.'.$sField.'}';
 					$oNewNode = new DOMText($sValue);
@@ -108,7 +110,7 @@ class Email_Template_Logic
 			  			for($i=0;$i<count($aMatches[0]);$i++)
 			  			{
 
-			  				if (array_key_exists($aMatches[1][$i], $this->_aVariables) && in_array( $aMatches[2][$i] , $this->_aVariables[$aMatches[1][$i]]) && (isset($aData[$aMatches[1][$i]]) && isset($aData[$aMatches[1][$i]][$aMatches[2][$i]])))
+			  				if (array_key_exists($aMatches[1][$i], $this->_aVariables) && array_key_exists( $aMatches[2][$i] , $this->_aVariables[$aMatches[1][$i]]) && (isset($aData[$aMatches[1][$i]]) && isset($aData[$aMatches[1][$i]][$aMatches[2][$i]])))
 								$sValue = str_replace ($aMatches[0][$i] ,$aData[$aMatches[1][$i]][$aMatches[2][$i]] , $sValue);
 			  			}
 			  			$node->setAttribute ($attrName , $sValue);
@@ -126,8 +128,8 @@ class Email_Template_Logic
 		try
 		{
 			$aData		= self::_getArrayFromData($mData);
-			$oDetails	= Email_Template_Details::getCurrentDetailsForTemplateId($this->_oEmailTemplate->id);
-			$sText		= $this->_replaceVariablesInText($oDetails->email_text, $aData);
+			//$oDetails	= Email_Template_Details::getCurrentDetailsForTemplateId($this->_oEmailTemplate->id);
+			$sText		= $this->_replaceVariablesInText($this->oDetails->email_text, $aData);
 			return $sText;
 		}
 		catch (Exception $oException)
@@ -142,8 +144,8 @@ class Email_Template_Logic
 		try
 		{
 			$aData		= self::_getArrayFromData($mData);
-			$oDetails	= Email_Template_Details::getCurrentDetailsForTemplateId($this->_oEmailTemplate->id);
-			$sText		= $this->_replaceVariablesInText($oDetails->email_subject, $aData);
+			//$oDetails	= Email_Template_Details::getCurrentDetailsForTemplateId($this->_oEmailTemplate->id);
+			$sText		= $this->_replaceVariablesInText($this->oDetails->email_subject, $aData);
 			return $sText;
 		}
 		catch (Exception $oException)
@@ -159,7 +161,7 @@ class Email_Template_Logic
 			if (isset($aData[$sObject]))
 			{
 				$aDataProperties	= $aData[$sObject];
-				foreach ($aProperties as $sProperty)
+				foreach ($aProperties as $sProperty => $mSampleValue)
 				{
 					$mValue	= $aDataProperties[$sProperty];
 					if (isset($aDataProperties[$sProperty]))
@@ -639,18 +641,28 @@ protected static function _toText($oNode, $aTextArray, $sParentTagName = null, $
 		return $aErrors;
 	}
 
-	public static function sendTestEmail($aData)
+	public static function sendTestEmail($aData, $iTemplateId)
 	{
-		$oEmail	= new Email_Flex();
+		$oTemplate = Email_Template::getForId($iTemplateId);
+		$oEmailTemplateType	= Email_Template_Type::getForId($oTemplate->email_template_type_id);
+		$oTemplateDetails = new Email_Template_Details(array('email_text'=>$aData['text'], 'email_html'=>$aData['html'], 'email_subject'=>$aData['subject']));
+		$oTemplateLogicObject = new $oEmailTemplateType->class_name($oTemplate, $oTemplateDetails);
 
-		$oEmail->setBodyText($aData['text']);
+		$aSampleData = $oTemplateLogicObject->getSampleData($iTemplateId);
+		$sSubject	= $oTemplateLogicObject->getSubjectContent($aSampleData);
+		$sHTML		= $aData['html']!=null&&trim($aData['html'])!=''?$oTemplateLogicObject->getHTMLContent($aSampleData):null;
+		$sText		= $oTemplateLogicObject->getTextContent($aSampleData);//($aSampleData);
+
+
+		$oEmail	= new Email_Flex();
+		$oEmail->setBodyText($sText);
 
 		if ($aData['html']!=null && trim($aData['html'])!='')
 		{
-			$oEmail->setBodyHtml(self::processHTML($aData['html'], false, true));
+			$oEmail->setBodyHtml($sHTML);
 		}
 
-		$oEmail->setSubject($aData['subject']);
+		$oEmail->setSubject($sSubject);
 
 		foreach ($aData['to'] as $sAddress)
 		{
@@ -665,6 +677,38 @@ protected static function _toText($oNode, $aTextArray, $sParentTagName = null, $
 				throw new Exception ("Email Error: ".$aNewError['message']);
 			}
 		return $oEmail;
+	}
+
+	public function getSampleData()
+	{
+		$oCustomerGroup = Customer_Group::getForId($this->_oEmailTemplate->customer_group_id);
+		$aSampleData =  $this->_aVariables;
+		$oEmployee = Employee::getForId(Flex::getUserId());
+
+
+		$intInvoiceDatetime				= strtotime(Data_Source_Time::currentDate());
+		$strInvoiceDatetime				= date("d/m/Y", $intInvoiceDatetime);
+		$strMonth 						= date("F", $intInvoiceDatetime);
+
+
+		switch ($this->_oEmailTemplate->email_template_type_id)
+		{
+			case(EMAIL_TEMPLATE_TYPE_INVOICE):
+													$aSampleData['CustomerGroup']['external_name']= 	$oCustomerGroup->external_name;
+													$aSampleData['CustomerGroup']['customer_service_phone'] = $oCustomerGroup->customer_service_phone;
+													$aSampleData['Invoice']['created_on'] = $strInvoiceDatetime;
+													$aSampleData['Invoice']['billing_period']= $strMonth;
+													$aSampleData['Contact']['first_name'] = $oEmployee->FirstName;
+													break;
+			case (EMAIL_TEMPLATE_TYPE_LATE_NOTICE):
+													$aSampleData['CustomerGroup']['external_name']= 	$oCustomerGroup->external_name;
+													$aSampleData['Letter']['type'] = GetConstantDescription(DOCUMENT_TEMPLATE_TYPE_OVERDUE_NOTICE, "DocumentTemplateType");//DocumentTemplateType::getForId(DOCUMENT_TEMPLATE_TYPE_OVERDUE_NOTICE)->description;
+													$aSampleData['Contact']['first_name'] = $oEmployee->FirstName;
+													break;
+			default:
+
+		}
+		return $aSampleData;
 	}
 
 
