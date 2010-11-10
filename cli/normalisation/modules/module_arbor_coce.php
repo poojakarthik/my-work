@@ -184,31 +184,41 @@ class NormalisationModuleArborCOCE extends NormalisationModule
 			$this->_AppendCDR('DestinationCode', $aDestination['Code']);
 		}
 		
+		// StartDatetime
+		if ($sStartDate = trim($this->_FetchRawCDR('FromDate')))
+		{
+			$iStartDatetime	= strtotime($sStartDate);
+		}
+		else
+		{
+			$iStartDatetime	= strtotime(trim($this->_FetchRawCDR('TransactionDatetime')));
+		}
+		$this->_AppendCDR('StartDatetime', date('Y-m-d H:i:s', $iStartDatetime));
+		
+		// EndDatetime
+		if ($sEndDate = trim($this->_FetchRawCDR('ToDate')))
+		{
+			$iEndDatetime	= strtotime($sEndDate);
+			$this->_AppendCDR('EndDatetime', date('Y-m-d H:i:s', $iEndDatetime));
+		}
+		
 		// Description
 		$sDescription	= trim($this->_FetchRawCDR('Description'));
+		if ($iStartDatetime)
+		{
+			$strDescription	.= " ".date('d/m/Y', $iStartDatetime);
+			
+			if ($iEndDatetime)
+			{
+				$strDescription	.= " to ".date('d/m/Y', $iEndDatetime);
+			}
+		}
 		$this->_AppendCDR('Description', $sDescription);
 		
 		// Units
 		// FIXME: Are there any cases where this isn't true?
 		$iUnits	= 1;
 		$this->_AppendCDR('Units', $iUnits);
-		
-		// StartDatetime
-		if ($sStartDate = trim($this->_FetchRawCDR('FromDate')))
-		{
-			$sStartDatetime	= date('Y-m-d H:i:s', strtotime($sStartDate));
-		}
-		else
-		{
-			$sStartDatetime	= date('Y-m-d H:i:s', strtotime(trim($this->_FetchRawCDR('TransactionDatetime'))));
-		}
-		$this->_AppendCDR('StartDatetime', $sStartDatetime);
-		
-		// EndDatetime
-		if ($sEndDate = trim($this->_FetchRawCDR('ToDate')))
-		{
-			$this->_AppendCDR('EndDatetime', date('Y-m-d H:i:s', strtotime($sEndDate)));
-		}
 		
 		// Credit
 		$this->_AppendCDR('Credit', (int)($fCost < 0));
