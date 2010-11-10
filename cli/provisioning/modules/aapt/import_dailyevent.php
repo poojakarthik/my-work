@@ -557,10 +557,28 @@
 	// MCP Completion Codes (INCOMPLETE!)
 	//------------------------------------------------------------------------//
 	const	MCP_COMPLETION_CODE_TRANSFER								= 1;
+	const	MCP_COMPLETION_CODE_NEW										= 2;
+	const	MCP_COMPLETION_CODE_CHANGE_OF_ADDRESS_OR_PRODUCT			= 3;
+	const	MCP_COMPLETION_CODE_CHANGE_OF_NUMBER						= 4;
+	const	MCP_COMPLETION_CODE_MOVE_NEW_NUMBER							= 6;
+	const	MCP_COMPLETION_CODE_REVERSAL								= 8;
+	const	MCP_COMPLETION_CODE_MIGRATION								= 12;
+	const	MCP_COMPLETION_CODE_NONEBILL_TO_EBILL_TRANSFER				= 13;
+	const	MCP_COMPLETION_CODE_DEFAULT_GAIN_DUE_TO_TRANSFER_REQUEST	= 14;
+	const	MCP_COMPLETION_CODE_REVERSAL_GAIN_FROM_COL_TRANSFER			= 15;
 	
 	protected static	$_aMCPCompletionCodes	= array(
-		self::MCP_COMPLETION_CODE_TRANSFER	=> 'Transfer'
-	);
+		self::MCP_COMPLETION_CODE_TRANSFER								=> 'Transfer',
+		self::MCP_COMPLETION_CODE_NEW									=> 'New',
+		self::MCP_COMPLETION_CODE_CHANGE_OF_ADDRESS_OR_PRODUCT			=> 'Change of Address or Product',
+		self::MCP_COMPLETION_CODE_CHANGE_OF_NUMBER						=> 'Change of Number',
+		self::MCP_COMPLETION_CODE_MOVE_NEW_NUMBER						=> 'Move - New Number',
+		self::MCP_COMPLETION_CODE_REVERSAL								=> 'Reversal',
+		self::MCP_COMPLETION_CODE_MIGRATION								=> 'Migration',
+		self::MCP_COMPLETION_CODE_NONEBILL_TO_EBILL_TRANSFER			=> 'non-eBill to eBill Transfer',
+		self::MCP_COMPLETION_CODE_DEFAULT_GAIN_DUE_TO_TRANSFER_REQUEST	=> 'Default gain due to Transfer Request (for Wholesale Redirection Group Codes 008 & 010 only)',
+		self::MCP_COMPLETION_CODE_REVERSAL_GAIN_FROM_COL_TRANSFER		=> 'Reversal gain from COL transfer (gain record for a service that has been reversed back to eBill after a COL transfer)'
+		);
 	
 	//------------------------------------------------------------------------//
 	// Whitelist Codes
