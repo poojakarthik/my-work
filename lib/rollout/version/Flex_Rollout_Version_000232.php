@@ -40,6 +40,7 @@ class Flex_Rollout_Version_000232 extends Flex_Rollout_Version
 																	payment_request_status_id	INT				NOT NULL					COMMENT \"(FK) payment_request_status. The status of the request\",
 																	invoice_run_id				BIGINT UNSIGNED	NULL						COMMENT \"(FK) InvoiceRun. An optional Invoice Run that the payment request originated from\",
 																	file_export_id				BIGINT UNSIGNED	NULL						COMMENT \"(FK) FileExport. The file export record that shows details of the request post-export\",
+																	payment_id					BIGINT UNSIGNED	NULL						COMMENT \"(FK) Payment. The (optional) payment that this request is associated with\",
 																	created_datetime			DATETIME		NOT NULL					COMMENT \"When the record was created\",
 																	created_employee_id			BIGINT UNSIGNED NOT NULL					COMMENT \"(FK) Employee. The Employee that created the record\",
 																	PRIMARY KEY (id),
@@ -48,6 +49,7 @@ class Flex_Rollout_Version_000232 extends Flex_Rollout_Version
 																	CONSTRAINT	fk_payment_request_payment_request_status_id	FOREIGN KEY	(payment_request_status_id)	REFERENCES	payment_request_status (id)	ON UPDATE CASCADE	ON DELETE RESTRICT,
 																	CONSTRAINT	fk_payment_request_invoice_run_id				FOREIGN KEY	(invoice_run_id)			REFERENCES	InvoiceRun (Id)				ON UPDATE CASCADE	ON DELETE RESTRICT,
 																	CONSTRAINT	fk_payment_request_file_export_id				FOREIGN KEY	(file_export_id)			REFERENCES	FileExport (Id)				ON UPDATE CASCADE	ON DELETE RESTRICT,
+																	CONSTRAINT	fk_payment_request_payment_id					FOREIGN KEY	(payment_id)				REFERENCES	Payment (Id)				ON UPDATE CASCADE	ON DELETE RESTRICT,
 																	CONSTRAINT	fk_payment_request_created_employee_id			FOREIGN KEY	(created_employee_id)		REFERENCES	Employee (Id)				ON UPDATE CASCADE	ON DELETE RESTRICT
 																) ENGINE=InnoDB, COMMENT=\"A payment request, to be dispatched as soon as possible\";",
 									'sRollbackSQL'		=>	"	DROP TABLE IF EXISTS payment_request;",
