@@ -63,7 +63,7 @@ class Email_Template_Logic_Invoice extends Email_Template_Logic
 			$aData['Invoice']['created_on'] = date("F jS, Y", strtotime($oInvoiceRun->BillingDate));
 			$aData['Invoice']['billing_period']= trim($sBillingPeriod);
 			$aData['Contact']['first_name'] = self::normalizeWhiteSpaces(trim($oContact->FirstName));
-			$aData['Account']['id'] = $oInvoice->Account;
+			$aData['Account']['id'] = trim($oInvoice->Account);
 
 			return $aData;
 		}
