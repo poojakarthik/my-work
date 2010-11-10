@@ -9,14 +9,14 @@ class Cli_App_LateNoticeRun extends Cli
 	const SWITCH_EFFECTIVE_DATE			= "e";
 	const SWITCH_TEST_RUN 				= "t";
 	const SWITCH_SAMPLE 				= "p";
-	
-	const SAMPLES_PER_CUSTOMER_GROUP	= 1;	
+
+	const SAMPLES_PER_CUSTOMER_GROUP	= 1;
 	const EMAIL_BILLING_NOTIFICATIONS	= 'ybs-admin@ybs.net.au';
-	
+
 	// If not null, this limits the number of notices to be generated per delivery method.
 	// i.e. if set to 1 then there will be 1 post & 1 email notice generated, then the process will stop
 	const TEST_LIMIT					= null;
-	
+
 	private $_sRunDateTime				= '';
 	private $_bTestRun					= true;
 
@@ -69,7 +69,7 @@ class Cli_App_LateNoticeRun extends Cli
 					$aEmailTemplates[$oCustomerGroup->Id]	= false;
 				}
 			}
-			
+
 			$aOutputs 				= array();
 			$aSummary 				= array();
 			$aGeneralErrors 		= array();
@@ -79,11 +79,11 @@ class Cli_App_LateNoticeRun extends Cli
 			$iErrors 				= 0;
 			$bSendEmail 			= FALSE;
 			$sCorrespondenceByPost	= Correspondence_Delivery_Method::getForId(CORRESPONDENCE_DELIVERY_METHOD_POST)->system_name;
-			
+
 			// Test Mode Only: Used to keep track of how many notices have been generated
 			$iTestEmailCount	= 0;
 			$iTestPostCount		= 0;
-			
+
 			foreach($aNoticeTypes as $iNoticeType => $iAutomaticInvoiceAction)
 			{
 				if ($this->_bTestRun && (self::TEST_LIMIT !== null) && ($iTestEmailCount >= self::TEST_LIMIT) && ($iTestPostCount >= self::TEST_LIMIT))
@@ -91,7 +91,7 @@ class Cli_App_LateNoticeRun extends Cli
 					// In test mode & the limit has been reached for email & post notices
 					break;
 				}
-			
+
 				// This query is repeated by the GenerateLatePaymentNotices function. Consider revising.
 				$aInvoiceRunIds	= ListInvoiceRunsForAutomaticInvoiceActionAndDate($iAutomaticInvoiceAction, $aArgs[self::SWITCH_EFFECTIVE_DATE]);
 				if (!count($aInvoiceRunIds))
@@ -125,7 +125,7 @@ class Cli_App_LateNoticeRun extends Cli
 					$this->log("{$sLetterType}s successfully generated  : {$mResult['Successful']}");
 					$this->log("{$sLetterType}s that failed to generate : {$mResult['Failed']}");
 
-					// Used to record which invoice runs need to have their automatic invoice action 'actioned' 
+					// Used to record which invoice runs need to have their automatic invoice action 'actioned'
 					if (!array_key_exists($iAutomaticInvoiceAction, $aInvoiceRunAutoFields))
 					{
 						$aInvoiceRunAutoFields[$iAutomaticInvoiceAction] = array();
@@ -173,7 +173,7 @@ class Cli_App_LateNoticeRun extends Cli
 					// Create a customer and samples queue for the letter type
 					$oCustomerEmailQueue	= Email_Flex_Queue::get("CUSTOMER_{$sLetterType}");
 					$oSamplesEmailQueue		= Email_Flex_Queue::get("SAMPLES_{$sLetterType}");
-					
+
 					// We now need to email/print each of the notices that have been generated
 					foreach($mResult['Details'] as $aDetails)
 					{
@@ -182,7 +182,7 @@ class Cli_App_LateNoticeRun extends Cli
 						{
 							break;
 						}
-						
+
 						$iCustGrp 				= $aDetails['Account']['CustomerGroup'];
 						$sCustGroupName			= $aDetails['Account']['CustomerGroupName'];
 						$iAccountId 			= $aDetails['Account']['AccountId'];
@@ -196,7 +196,7 @@ class Cli_App_LateNoticeRun extends Cli
 						{
 							$aSummary[$sCustGroupName]	= array();
 						}
-						
+
 						// ... more summary setup
 						if (!array_key_exists($sLetterType, $aSummary[$sCustGroupName]))
 						{
@@ -216,7 +216,7 @@ class Cli_App_LateNoticeRun extends Cli
 
 						// Cache this information for use when reporting on email send status
 						$aAccountsById[$iAccountId]	= $aDetails['Account'];
-						
+
 						switch ($aDetails['Account']['DeliveryMethod'])
 						{
 							case DELIVERY_METHOD_POST:
@@ -225,7 +225,7 @@ class Cli_App_LateNoticeRun extends Cli
 								{
 									break;
 								}
-								
+
 								// We need to generate the pdf for the XML and save it to the
 								// files/type/pdf/date/cust_group/account.pdf storage
 								// Need to add a note of this to the email
@@ -276,7 +276,7 @@ class Cli_App_LateNoticeRun extends Cli
 									{
 										$sOutputDirectory	= realpath($sOutputDirectory) . '/';
 									}
-									
+
 									$aSummary[$sCustGroupName][$sLetterType]['output_directory']	= $sOutputDirectory;
 
 									// Write the PDF file contents to storage
@@ -287,7 +287,7 @@ class Cli_App_LateNoticeRun extends Cli
 									{
 										$bOk	= @fwrite($rFile, $sPDFContent);
 									}
-									
+
 									if ($bOk === FALSE)
 									{
 										// Failed
@@ -337,7 +337,7 @@ class Cli_App_LateNoticeRun extends Cli
 																'pdf_file_path'						=> $sTargetFile
 															);
 									$aCorrespondenceToPost[$iAutomaticInvoiceAction][]	= $aCorrespondence;
-									
+
 									// This is the sample Post Notice -- email
 									if ($this->_bTestRun && $aSampleAccounts[DELIVERY_METHOD_POST][$iCustGrp] === $iAccountId)
 									{
@@ -349,7 +349,7 @@ class Cli_App_LateNoticeRun extends Cli
 																self::EMAIL_ATTACHMENT_MIME_TYPE	=> 'application/pdf',
 																self::EMAIL_ATTACHMENT_CONTENT		=> $sPDFContent
 															);
-										
+
 										// Add to the samples queue for this notice type, giving it the account id as an email id
 										$oSamplesEmailQueue->push(
 											Email_Notification::factory(
@@ -361,32 +361,32 @@ class Cli_App_LateNoticeRun extends Cli
 												$sContent, 							// Body text
 												array($aAttachment), 				// Attachments
 												TRUE								// Fail without an exception being thrown
-											), 
+											),
 											$iAccountId
 										);
 									}
 								}
-								
+
 								// Test Mode Only: Update the post notice count & log it
 								if ($this->_bTestRun && (self::TEST_LIMIT !== null))
 								{
 									$iTestPostCount++;
 									$this->log("\t ** TEST POST COUNT NOW AT: {$iTestPostCount} **");
 								}
-								
+
 								break;
-								
+
 							case DELIVERY_METHOD_EMAIL:
 								// Test Mode Only: Checks the email notice count against the TEST_LIMIT constant, exits if breached
 								if ($this->_bTestRun && (self::TEST_LIMIT !== null) && ($iTestEmailCount >= self::TEST_LIMIT))
 								{
 									break;
 								}
-								
+
 								// We can safely go ahead and generate this pdf.
 								$this->log("Generating email PDF $sLetterType for account ". $iAccountId . ' to ' . $aDetails['Account']['Email']);
 								$sPDFContent	= $this->getPDFContent($iCustGrp, $aArgs[self::SWITCH_EFFECTIVE_DATE], $iNoticeType, $sXMLFilePath, 'EMAIL');
-								
+
 								// Check the pdf content
 								if (!$sPDFContent)
 								{
@@ -405,42 +405,44 @@ class Cli_App_LateNoticeRun extends Cli
 									{
 										$this->log("... NOT GOING TO SEND IT, IN TEST MODE");
 									}
-									
+
 									// Email configuration data
 									$sFileName 	= str_replace(' ', '_', $sLetterType) . '.pdf';
 									$sEmailTo 	= $aDetails['Account']['Email'];
 									$sEmailFrom = $aDetails['Account']['EmailFrom'];
 									$sName 		= trim($aDetails['Account']['FirstName']);
-									
+
 									if ($aEmailTemplates[$iCustGrp] === false)
 									{
-										throw new Exception("Cannot create an email for customer group {$sCustGroupName}, there is no template."); 
+										throw new Exception("Cannot create an email for customer group {$sCustGroupName}, there is no template.");
 									}
-									
+
 									// Create email object using Email Template
 									$oEmailTemplate	= 	$aEmailTemplates[$iCustGrp];
-									$oEmail			= 	$oEmailTemplate->generateEmail(
+									/*$oEmail			= 	$oEmailTemplate->generateEmail(
 															array(
 																'CustomerGroup'	=> array('external_name' => $sCustGroupName),
-																'Contact'		=> array('first_name' => $sName),						
+																'Contact'		=> array('first_name' => $sName),
 																'Account'		=> array('id' => $iAccountId),
 																'Letter'		=> array('type' => $sLetterType)
 															)
-														);
-									
+														);*/
+
+									$oEmail			= 	$oEmailTemplate->generateEmail(array('account_id'=>$iAccountId, 'letter_type'=>$iNoticeType));
+
 									// Set the sender, recipient & attachment of the email
 									$oEmail->setFrom($sEmailFrom);
 									$oEmail->addTo($sEmailTo);
 									$oEmail->createAttachment($sPDFContent, 'application/pdf', Zend_Mime::DISPOSITION_ATTACHMENT, Zend_Mime::ENCODING_BASE64, $sFileName);
-									
+
 									// Add to the customer email queue (for this invoice action), reference it with the account id
 									$oCustomerEmailQueue->push($oEmail, $iAccountId);
-									
+
 									$this->log("Email queued to be sent to: {$sEmailTo}");
-									
+
 									// Add to summary
 									$aSummary[$sCustGroupName][$sLetterType]['emails'][]	= $iAccountId;
-									
+
 									if ($this->_bTestRun === false)
 									{
 										// We need to log the fact that we're sending it, by updating the account automatic_invoice_action
@@ -451,7 +453,7 @@ class Cli_App_LateNoticeRun extends Cli
 											$iErrors++;
 										}
 									}
-									
+
 									// This is the sample Email Notice -- email
 									if ($this->_bTestRun && $aSampleAccounts[DELIVERY_METHOD_EMAIL][$iCustGrp] === $iAccountId)
 									{
@@ -463,7 +465,7 @@ class Cli_App_LateNoticeRun extends Cli
 																self::EMAIL_ATTACHMENT_MIME_TYPE	=> 'application/pdf',
 																self::EMAIL_ATTACHMENT_CONTENT		=> $sPDFContent
 															);
-										
+
 										// Add to the samples queue for this notice type, giving it the account id as an email id
 										$oSamplesEmailQueue->push(
 											Email_Notification::factory(
@@ -475,12 +477,12 @@ class Cli_App_LateNoticeRun extends Cli
 												$sContent,							// Body Text
 												array($aAttachment), 				// Attachment
 												TRUE								// Fail without an exception being thrown
-											), 
+											),
 											$iAccountId
 										);
 									}
 								}
-								
+
 								// Test Mode Only: Update the email notice count & log it
 								if ($this->_bTestRun && (self::TEST_LIMIT !== null))
 								{
@@ -524,11 +526,11 @@ class Cli_App_LateNoticeRun extends Cli
 						{
 							// Create Correspondence Run using the pre-deterimined (System) Correspondence Template name
 							$this->log("Retrieving Template");
-		
+
 							// Get the template
 							$oTemplate	= Correspondence_Logic_Template::getForAutomaticInvoiceAction($iAutomaticInvoiceAction);
 							$this->log("Template retrieved, creating Correspondence Run");
-							
+
 							// Create the correspondence run
 							$oRun	= $oTemplate->createRun(true, $aCorrespondenceData);
 							$this->log("Run created succesfully (id={$oRun->id})");
@@ -548,7 +550,7 @@ class Cli_App_LateNoticeRun extends Cli
 				}
 				$this->log("FINISHED: Creating Correspondence Runs");
 			}
-			
+
 			if ($this->_bTestRun === false)
 			{
 				// Live run, attempt transaction commit before the emails are sent
@@ -606,19 +608,19 @@ class Cli_App_LateNoticeRun extends Cli
 						}
 					}
 				}
-				
+
 				if ($this->_bTestRun === false)
 				{
 					// Schedule the customer email queue for immediate delivery
 					$this->log("Schedule the {$sLetterType} customer email queue for immediate delivery");
 					$oCustomerQueue	= Email_Flex_Queue::get("CUSTOMER_{$sLetterType}");
 					$oEmailQueueORM	= $oCustomerQueue->scheduleForDelivery(null, "Late Notices: {$sLetterType}");
-					
+
 					// Link all created (queued) emails to the account they relate to
 					if ($oEmailQueueORM !== null)
 					{
 						$this->log("Email queue created, link all emails to an account");
-						
+
 						// Each email was stored using the account id of the recipient as it's 'id', use this
 						// to create a link between the email and the account (email_account table record)
 						$aEmailORMs	= $oCustomerQueue->getEmailORMObjects();
@@ -730,7 +732,7 @@ class Cli_App_LateNoticeRun extends Cli
 			{
 				$aReport[] 	= "No automated late notices were generated.";
 			}
-			
+
 			$sBody	= implode("\r\n", $aReport);
 
 			// Send the report email, not queued
@@ -794,18 +796,18 @@ class Cli_App_LateNoticeRun extends Cli
 	private function getPDFContent($iCustGroupId, $sEffectiveDate, $iDocumentTypeId, $sPathToXMLFile, $sTargetMedia)
 	{
 		$this->startErrorCatching();
-		
+
 		$fileContents	= file_get_contents($sPathToXMLFile);
 		$oPDFTemplate	= new Flex_Pdf_Template($iCustGroupId, $sEffectiveDate, $iDocumentTypeId, $fileContents, $sTargetMedia, TRUE);
 		$oPDF			= $oPDFTemplate->createDocument();
 		$oPDFTemplate->destroy();
 		$oPDF			= $oPDF->render();
-		
+
 		if ($this->getCachedError())
 		{
 			return FALSE;
 		}
-		
+
 		return $oPDF;
 	}
 

@@ -148,7 +148,6 @@ class Email_Template_Logic
 	public function generateEmail($aData, Email_Flex $mEmail=null)
 	{
 		$oEmail	= ($mEmail !== null ? $mEmail : new Email_Flex());
-		$aData = $this->getData($aData['invoice_id'], $aData['contact_id']);
 		$sSubject	= $this->getSubjectContent($aData);
 		$sHTML		= $this->getHTMLContent($aData);
 		$sText		= $this->getTextContent($aData);
@@ -618,7 +617,7 @@ protected static function _toText($oNode, $aTextArray, $sParentTagName = null, $
 		$oTemplateDetails = new Email_Template_Details(array('email_text'=>$aData['text'], 'email_html'=>$aData['html'], 'email_subject'=>$aData['subject']));
 		$oTemplateLogicObject = new $oEmailTemplateType->class_name($oTemplate, $oTemplateDetails);
 
-		$aSampleData = $oTemplateLogicObject->getSampleData($iTemplateId);
+		$aSampleData =  $oTemplateLogicObject->getSampleData($iTemplateId);
 		$sSubject	= $oTemplateLogicObject->getSubjectContent($aSampleData);
 		$sHTML		= $aData['html']!=null&&trim($aData['html'])!=''?$oTemplateLogicObject->getHTMLContent($aSampleData):null;
 		$sText		= $oTemplateLogicObject->getTextContent($aSampleData);//($aSampleData);
@@ -690,13 +689,7 @@ protected static function _toText($oNode, $aTextArray, $sParentTagName = null, $
 													return $this->getData($aSampleInvoiceData['invoice_id'], $aSampleInvoiceData['contact_id']);
 													break;
 			case (EMAIL_TEMPLATE_TYPE_LATE_NOTICE):
-													$aSampleData =  $this->_aVariables;
-													$aSampleData['CustomerGroup']['external_name']= 	$oCustomerGroup->external_name;
-													$aSampleData['Letter']['type'] = GetConstantDescription(DOCUMENT_TEMPLATE_TYPE_OVERDUE_NOTICE, "DocumentTemplateType");//DocumentTemplateType::getForId(DOCUMENT_TEMPLATE_TYPE_OVERDUE_NOTICE)->description;
-													$aSampleData['Contact']['first_name'] = $aSampleAccountData['contact_first_name'];
-													$aSampleData['Account']['id'] = $aSampleAccountData['account_id'];
-													$aSampleData['CustomerGroup']['email_domain'] = $oCustomerGroup->email_domain;
-													return $aSampleData;
+													return $this->getData($aSampleInvoiceData['account_id'],DOCUMENT_TEMPLATE_TYPE_OVERDUE_NOTICE);
 													break;
 			default:
 													return $this->_aVariables;

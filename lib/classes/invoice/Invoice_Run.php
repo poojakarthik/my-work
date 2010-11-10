@@ -765,7 +765,7 @@ class Invoice_Run
 		$iBillingDate			= strtotime($this->BillingDate);
 		$sInvoiceDate			= date('dmY', $iBillingDate);
 
-		// Build billing period string for the email subject lines
+		/*// Build billing period string for the email subject lines
 		$sBillingPeriodEndMonth		= date("F", strtotime("-1 day", $iBillingDate));
 		$sBillingPeriodEndYear		= date("Y", strtotime("-1 day", $iBillingDate));
 		$sBillingPeriodStartMonth	= date("F", strtotime("-1 month", $iBillingDate));
@@ -782,7 +782,7 @@ class Invoice_Run
 		else
 		{
 			$sBillingPeriod	.= " {$sBillingPeriodStartYear}";
-		}
+		}*/
 
 		Log::getLog()->log("Generate PDF's");
 
@@ -819,6 +819,7 @@ class Invoice_Run
 				// Determine the correspondence_delivery_method for the invoice
 				$oInvoice			= $aInvoices[$iInvoiceId];
 				$iDeliveryMethod	= null;
+				$oInvoice->DeliveryMethod = DELIVERY_METHOD_POST;
 				switch ($oInvoice->DeliveryMethod)
 				{
 					case DELIVERY_METHOD_POST:
@@ -859,7 +860,7 @@ class Invoice_Run
 
 						// Get the contact details for the invoice/account
 						$oStmtAccountEmail	= new StatementSelect(	"Account JOIN Contact USING (AccountGroup)",
-																	"Contact.Account, Email, FirstName",
+																	"Contact.Account, Email, FirstName, Contact.Id as Id",
 																	"Account.Id = <Account>
 																	AND	Email != ''
 																	AND	Contact.Archived = 0

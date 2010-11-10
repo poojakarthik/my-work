@@ -15,6 +15,26 @@ class Email_Template_Logic_LateNotice extends Email_Template_Logic
 		return self::$_aVariables;
 	}
 
+	static function getData($iAccountId, $iNoticeType)
+	{
+		$sLetterType	= GetConstantDescription($iNoticeType, "DocumentTemplateType");
+		$oAccount = Account::getForId($iAccountId);
+		$oPrimaryContact = Contact::getForId($oAccount->PrimaryContact);
+		$oCustomerGroup = Customer_Group::getForId($oAccount->CustomerGroup);
+		$aData = self::$_aVariables;
+		$aData['CustomerGroup']['external_name'] = trim($oCustomerGroup->external_name);
+		$aData['CustomerGroup']['email_domain'] = trim($oCustomerGroup->email_domain);
+		$aData['Contact']['first_name'] = trim($oPrimaryContact->FirstName);
+		$aData['Account']['id'] = $iAccountId;
+		$aData['Letter']['type'] =  $sLetterType;
+		return $aData;
+	}
+
+	function generateEmail($aDataParameters, Email_Flex $mEmail=null)
+	{
+		$aData = $this->getData($aDataParameters['account_id'], $aDataParameters['letter_type']);
+		return parent::generateEmail($aData, $mEmail);
+	}
 
 }
 ?>
