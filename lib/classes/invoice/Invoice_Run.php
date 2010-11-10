@@ -819,7 +819,6 @@ class Invoice_Run
 				// Determine the correspondence_delivery_method for the invoice
 				$oInvoice			= $aInvoices[$iInvoiceId];
 				$iDeliveryMethod	= null;
-				$oInvoice->DeliveryMethod = DELIVERY_METHOD_POST;
 				switch ($oInvoice->DeliveryMethod)
 				{
 					case DELIVERY_METHOD_POST:
