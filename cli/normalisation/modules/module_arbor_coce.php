@@ -206,11 +206,11 @@ class NormalisationModuleArborCOCE extends NormalisationModule
 		$sDescription	= trim($this->_FetchRawCDR('Description'));
 		if ($iStartDatetime)
 		{
-			$strDescription	.= " ".date('d/m/Y', $iStartDatetime);
+			$sDescription	.= " ".date('d/m/Y', $iStartDatetime);
 			
 			if ($iEndDatetime)
 			{
-				$strDescription	.= " to ".date('d/m/Y', $iEndDatetime);
+				$sDescription	.= " to ".date('d/m/Y', $iEndDatetime);
 			}
 		}
 		$this->_AppendCDR('Description', $sDescription);
