@@ -21,7 +21,7 @@ class Email_Template_Logic_Invoice extends Email_Template_Logic
 		return self::$_aVariables;
 	}
 
-	function getData($iInvoiceId, $iContactId)
+	static function getData($iInvoiceId, $iContactId)
 	{
 
 		try
@@ -62,7 +62,7 @@ class Email_Template_Logic_Invoice extends Email_Template_Logic
 			$aData['CustomerGroup']['email_domain'] = trim($oCustomerGroup->email_domain);
 			$aData['Invoice']['created_on'] = date("F jS, Y", strtotime($oInvoiceRun->BillingDate));
 			$aData['Invoice']['billing_period']= trim($sBillingPeriod);
-			$aData['Contact']['first_name'] = trim($oContact->FirstName);
+			$aData['Contact']['first_name'] = self::normalizeWhiteSpaces(trim($oContact->FirstName));
 			$aData['Account']['id'] = $oInvoice->Account;
 
 			return $aData;
@@ -74,6 +74,8 @@ class Email_Template_Logic_Invoice extends Email_Template_Logic
 		}
 
 	}
+
+
 
 	public function generateEmail($aDataParameters, Email_Flex $mEmail=null)
 	{

@@ -24,7 +24,7 @@ class Email_Template_Logic_LateNotice extends Email_Template_Logic
 		$aData = self::$_aVariables;
 		$aData['CustomerGroup']['external_name'] = trim($oCustomerGroup->external_name);
 		$aData['CustomerGroup']['email_domain'] = trim($oCustomerGroup->email_domain);
-		$aData['Contact']['first_name'] = trim($oPrimaryContact->FirstName);
+		$aData['Contact']['first_name'] = self::normalizeWhiteSpaces(trim($oPrimaryContact->FirstName));
 		$aData['Account']['id'] = $iAccountId;
 		$aData['Letter']['type'] =  $sLetterType;
 		return $aData;
