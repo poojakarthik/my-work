@@ -459,7 +459,15 @@ Control_Field.factory	= function(sType, oDefinition)
 		case 'checkbox':
 			oControlField	= new Control_Field_Checkbox(oDefinition.sLabel);
 			break;
-			
+		
+		case 'radiobutton':
+			oControlField	= new Control_Field_RadioButton(oDefinition.sLabel);
+			if (oDefinition.sFieldName)
+			{
+				oControlField.setFieldName(oDefinition.sFieldName);
+			}
+			break;
+		
 		case 'date-picker':
 			oControlField	= 	new Control_Field_Date_Picker(
 									oDefinition.sLabel, 
@@ -516,7 +524,7 @@ Control_Field.factory	= function(sType, oDefinition)
 		
 		case 'combo_date':
 		case 'combo-date':
-			oControlField	= new Control_Field_Combo_Date(oDefinition.sLabel, null, oDefinition.iFormat);
+			oControlField	= new Control_Field_Combo_Date(oDefinition.sLabel, null, oDefinition.iFormat, oDefinition.mSeparatorElement);
 			oControlField.setYearRange(oDefinition.iMinYear, oDefinition.iMaxYear);
 			break;
 		

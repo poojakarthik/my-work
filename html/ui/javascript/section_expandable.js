@@ -1,10 +1,13 @@
 
 var Section_Expandable	= Class.create( /* extends */ Section,
 {
-	initialize	: function($super, bFitted, sClassName, bStartExpanded)
+	initialize	: function($super, bFitted, sClassName, bStartExpanded, bUseExpandIcon)
 	{
-		this._bExpanded	= (((typeof bStartExpanded == 'undefined') || bStartExpanded) ? true : false);
+		this._bUseExpandIcon	= ((Object.isUndefined(bUseExpandIcon) || bUseExpandIcon) ? true : false);
+		
 		$super(bFitted, sClassName);
+		
+		this.setExpanded((Object.isUndefined(bStartExpanded) || bStartExpanded) ? true : false);
 	},
 	
 	//
@@ -24,7 +27,6 @@ var Section_Expandable	= Class.create( /* extends */ Section,
 		this._checkForHeaderOptions();
 		
 		var oNewOption 	= $T.li(this._getElementFromContent(mContent));
-		
 		if (this._oExpandLI)
 		{
 			this._oHeaderOptionsUL.insertBefore(oNewOption, this._oExpandLI);
@@ -58,7 +60,15 @@ var Section_Expandable	= Class.create( /* extends */ Section,
 		// Add to the header
 		this._checkForHeaderOptions();
 		this._oHeaderOptions.addClassName('section-expandable-header-options');
-		this._oExpandLI	= this.addToHeaderOptions(this._oExpandDiv);
+		
+		if (this._bUseExpandIcon)
+		{
+			this._oExpandLI	= this.addToHeaderOptions(this._oExpandDiv);
+		}
+		else
+		{
+			this._oExpandLI	= false;
+		}
 	},
 	
 	_toggleExpandedState	: function()

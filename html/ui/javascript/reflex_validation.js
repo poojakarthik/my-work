@@ -174,6 +174,30 @@ var Reflex_Validation	=
 		}
 	},
 	
+	bsb	: function(sBSB)
+	{
+		sBSB	= String(sBSB).replace(/\s/g, '');
+		if (sBSB.match(/^\d{3}[-]?\d{3}$/))
+		{
+			return true;
+		}
+		else
+		{
+			return false
+		}
+	},
+	bankAccountNumber	: function(sNumber)
+	{
+		if (sNumber.match(/^\d{4,11}$/))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	},
+	
 	/*
 	 * These validation functions throw an exception if the given value is invalid.
 	 * They return true if valid and they return false if no value is given.
@@ -288,10 +312,7 @@ var Reflex_Validation	=
 						},
 						bsb	: function(sBSB)
 						{
-							sBSB			= String(sBSB).replace(/\s/g, '');
-							var regexBSB	= /^\d{3}[-]?\d{3}$/;
-							
-							if (regexBSB.test(sBSB))
+							if (Reflex_Validation.bsb(sBSB))
 							{
 								return true;
 							}
@@ -302,9 +323,7 @@ var Reflex_Validation	=
 						},
 						bankAccountNumber	: function(sNumber)
 						{
-							var regexAccountNumber	= /^\d{4,11}$/;
-							
-							if (regexAccountNumber.test(sNumber))
+							if (Reflex_Validation.bankAccountNumber(sNumber))
 							{
 								return true;
 							}

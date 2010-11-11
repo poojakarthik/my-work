@@ -114,6 +114,11 @@ var Section	= Class.create(
 		this._oFooter.appendChild(this._getElementFromContent(mContent));
 	},
 	
+	getContentElement	: function()
+	{
+		return this._oContent;
+	},
+	
 	//
 	// Private methods
 	//

@@ -187,7 +187,6 @@ var Control_Field_Combo_Date	= Class.create(/* extends */ Control_Field,
 	getDayOptions	: function(fnCallback)
 	{
 		var aOptions	= [];
-		
 		for (var iDay = 1; iDay <= 31; iDay++)
 		{
 			aOptions.push(
@@ -203,12 +202,11 @@ var Control_Field_Combo_Date	= Class.create(/* extends */ Control_Field,
 	getMonthOptions	: function(fnCallback)
 	{
 		var aOptions	= [];
-		
 		for (var iMonth = 1; iMonth <= 12; iMonth++)
 		{
 			aOptions.push(
 				$T.option({value: iMonth},
-					iMonth
+					iMonth.toPaddedString(2)
 				)
 			);
 		}
@@ -219,7 +217,6 @@ var Control_Field_Combo_Date	= Class.create(/* extends */ Control_Field,
 	getYearOptions	: function(fnCallback)
 	{
 		var aOptions	= [];
-		
 		for (var iYear = this.iMinYear; iYear <= this.iMaxYear; iYear++)
 		{
 			aOptions.push(
