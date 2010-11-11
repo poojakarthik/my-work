@@ -463,6 +463,13 @@ div.control-field > input.text-ajax-input
 	-webkit-box-sizing	: border-box;
 }
 
+.control-field-radiobutton > input[type="radio"],
+.control-field > input[type="checkbox"]
+{
+	margin	: 0em;
+	padding	: 0em;
+}
+
 /********************* END - Reflex Input Controls - END **********************/
 
 /************************** START - Buttons - START ***************************/
@@ -3551,14 +3558,22 @@ div.section-header-options div.followup-configure-list-pagination
 
 /************************ START - Add Credit Card PopUp - START ************************/
 
-div.popup-add-credit-card
+.popup-add-credit-card table.reflex > tbody > tr > th.label
 {
-	padding	: 0.5em;
+	width	: 11em;
 }
 
-div.popup-add-credit-card > div.buttons
+.popup-add-credit-card-preview
 {
-	text-align	: center;
+	color	: #333333;
+	margin	: 1em 0 0 3em;
+}
+
+.popup-add-credit-card-cvvlabel
+{
+	text-decoration	: underline;
+	color			: #0000ff;
+	cursor			: pointer;
 }
 
 /************************ END - Add Credit Card PopUp - END ************************/
@@ -3573,6 +3588,123 @@ div.popup-add-direct-debit
 div.popup-add-direct-debit > div.buttons
 {
 	text-align	: center;
+}
+
+.popup-add-direct-debit table.reflex.input
+{
+	width	: 100%;
+	margin	: 0em;
+}
+
+.popup-add-direct-debit .section
+{
+	margin-bottom	: 0.5em;
+}
+
+.popup-add-direct-debit-confirmcontent
+{
+	margin	: 0.5em;
+}
+
+.popup-add-direct-debit-highlight
+{
+	font-weight	: bold;
+	color		: #00004D;
+}
+
+.popup-add-direct-debit-preview-label
+{
+	display			: inline-block;
+	width			: 8em;
+	font-weight		: bold;
+	padding-left	: 1em;
+	vertical-align	: top;
+}
+
+.popup-add-direct-debit-preview-value
+{
+	display	: inline-block;
+	color	: #333333;
+}
+
+.popup-add-direct-debit-preview-value-small
+{
+	font-size		: 0.8em;
+	font-variant	: small-caps;
+}
+
+.popup-add-direct-debit-submitpaymentcheckbox .control-field
+{
+	display			: inline-block;
+	vertical-align	: middle;
+	margin-left		: 0.5em;
+}
+
+.popup-add-direct-debit-submitpaymentcheckbox > span
+{
+	vertical-align	: middle;
+	padding-left	: 0.5em;
+	cursor			: pointer;
+}
+
+.popup-add-direct-debit-paymentsection .section-header
+{
+	height	: 1.75em;
+}
+
+.popup-add-direct-debit > .popup-add-direct-debit-paymentsection > .section-header > .section-header-options
+{
+	text-align	: left;
+	right		: auto;
+}
+
+.popup-add-direct-debit-paymentsection .control-field
+{
+	display			: inline-block;
+	vertical-align	: middle;
+}
+
+.popup-add-direct-debit-paymentsection .control-field-radiobutton
+{
+	padding	: 0.25em;
+}
+
+.popup-add-direct-debit-paymentsection li
+{
+	margin-bottom	: 0.25em;
+}
+
+.popup-add-direct-debit-paymentsection li > span
+{
+	vertical-align	: middle;
+}
+
+.popup-add-direct-debit-paymentsection ul
+{
+	margin-left	: 1em;
+}
+
+.popup-add-direct-debit-paymentlabel
+{
+	display		: inline-block;
+	width		: 10em;
+	font-weight	: bold;
+	cursor		: pointer;
+}
+
+.popup-add-direct-debit-paymentamountdisabled
+{
+	color	: #888888;
+}
+
+.popup-add-direct-debit-currencysymbol
+{
+	padding-right	: 0.25em;
+}
+
+.popup-add-direct-debit-preview
+{
+	margin	: 1em 0 0 3em;
 }
 
 /************************ END - Add Direct Debit PopUp - END ************************/
@@ -7895,4 +8027,113 @@ div.writeoff-detail
 	font-style:italic;
 
 }
+
+/******************* START - Credit Card Payment Popup - START ********************/
+
+.credit-card-payment-popup-cardexpiryformat
+{
+	margin-left	: 0.5em;
+}
+
+.credit-card-payment-popup-cardexpiry
+{
+	display	: inline-block;
+}
+
+.credit-card-payment-popup table.reflex.input > tbody > tr > th.label
+{
+	width	: 13em;
+}
+
+.credit-card-payment-popup-amounttopay
+{
+	margin-left	:0.75em;
+	width		:98%;
+	margin-top	: 0.1em;
+}
+
+.credit-card-payment-popup-currencysymbol
+{
+	float		: left;
+	margin-top	: 0.25em;
+}
+
+.credit-card-payment-popup .credit-card-payment-popup-displayonly
+{
+	display	: inline-block;
+	width	: 97%;
+}
+
+.credit-card-payment-popup .credit-card-payment-popup-displayonly > input[disabled]
+{
+	border		: medium none;
+	color		: #000000 !important;
+	font-size	: 1em;
+	margin		: 0.2em;
+	text-align	: right;
+}
+
+.credit-card-payment-popup-cvvlabel
+{
+	text-decoration	: underline;
+	color			: #0000ff;
+	cursor			: pointer;
+}
+
+.credit-card-payment-popup-validationerrors,
+.credit-card-payment-popup,
+.credit-card-payment-popup-confirmation
+{
+	margin	: 0.5em;
+}
+
+.credit-card-payment-popup table.reflex.input
+{
+	width	: 100%;
+	margin	: 0em;
+}
+
+.credit-card-payment-popup .section
+{
+	margin-bottom	: 0.5em;
+}
+
+.credit-card-payment-popup .buttons
+{
+	text-align	: center;
+}
+
+.credit-card-payment-popup-useexistingdetails
+{
+	margin-top	: 0.25em;
+}
+
+.credit-card-payment-popup-useexistingdetails .control-field
+{
+	display			: inline-block;
+	vertical-align	: middle;
+	margin-left		: 0.5em;
+}
+
+.credit-card-payment-popup-useexistingdetails > span
+{
+	vertical-align	: middle;
+	padding-left	: 0.5em;
+	cursor			: pointer;
+}
+
+.credit-card-payment-popup-confirmation-table
+{
+	border				: 0.1em solid #333333;
+	background-color	: #DDDDDD;
+	width				: 100%;
+}
+
+.credit-card-payment-popup-confirmation-table > tbody > tr > td:first-child
+{
+	vertical-align	: top;
+	font-weight		: bold;
+}
+
+/************************** END - Credit Card Payment Popup - END **************************/
 
