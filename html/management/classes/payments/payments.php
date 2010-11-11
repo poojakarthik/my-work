@@ -87,7 +87,8 @@
 				"EnteredBy"				=> $arrDetails ['EnteredBy'],
 				"Payment"				=> "",
 				"Balance"				=> $arrDetails ['Amount'],
-				"Status"				=> PAYMENT_WAITING
+				"Status"				=> PAYMENT_WAITING,
+				"created_datetime"		=> date('Y-m-d H:i:s')
 			);
 			
 			$insService = new StatementInsert ('Payment', $arrData);
