@@ -2736,7 +2736,7 @@ function GetPDFContent($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvo
 		$intInvoiceRunId = intval($intInvoiceRunId);
 	}
 	$mxdInvoicePath = InvoicePDFExists($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvoiceRunId);
-
+	
 	if (!$mxdInvoicePath)
 	{
 		return FALSE;
@@ -2843,28 +2843,23 @@ function generateInvoicePDF($strXML, $intInvoiceId, $intTargetMedia, $iInvoiceRu
 		
 		$pdfDocument	= $pdfTemplate->createDocument();
 		$strPDFContent	= $pdfDocument->render();
+		$intInvoiceId	= (int)$intInvoiceId;
 		
-		// If this is the frontend then cache this PDF, so we aren't thrashing the server every time we view the Invoice
-		//throw new Exception(PHP_SAPI);
-		if (PHP_SAPI !== 'cli')
+		/*$resInvoice		= $qryQuery->Execute("SELECT * FROM Invoice WHERE Id = {$intInvoiceId} LIMIT 1");
+		if ($resInvoice === false)
 		{
-			$intInvoiceId	= (int)$intInvoiceId;
-			/*$resInvoice		= $qryQuery->Execute("SELECT * FROM Invoice WHERE Id = {$intInvoiceId} LIMIT 1");
-			if ($resInvoice === false)
-			{
-				throw new Exception($qryQuery->Error());
-			}
-			elseif (!($arrInvoice = $resInvoice->fetch_assoc()))
-			{
-				throw new Exception("Unable to load Invoice with Id '{$intInvoiceId}'");
-			}*/
-			
-			$strPDFPath	= PATH_INVOICE_PDFS."pdf/{$iInvoiceRunId}/{$iAccountId}.pdf";
-			@mkdir(dirname($strPDFPath), 0777, true);
-			if (!file_exists(dirname($strPDFPath)) || !@file_put_contents($strPDFPath, $strPDFContent))
-			{
-				throw new Exception(print_r(error_get_last(), true));
-			}
+			throw new Exception($qryQuery->Error());
+		}
+		elseif (!($arrInvoice = $resInvoice->fetch_assoc()))
+		{
+			throw new Exception("Unable to load Invoice with Id '{$intInvoiceId}'");
+		}*/
+		
+		$strPDFPath	= PATH_INVOICE_PDFS."pdf/{$iInvoiceRunId}/{$iAccountId}.pdf";
+		@mkdir(dirname($strPDFPath), 0777, true);
+		if (!file_exists(dirname($strPDFPath)) || !@file_put_contents($strPDFPath, $strPDFContent))
+		{
+			throw new Exception(print_r(error_get_last(), true));
 		}
 		
 		return $strPDFContent;
