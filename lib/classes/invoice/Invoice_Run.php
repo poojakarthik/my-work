@@ -753,10 +753,10 @@ class Invoice_Run
 	// correspondence run so that they are delivered to the mail house
 	public function deliver()
 	{
-		// Verify that the invoice run is commited
-		if ($this->invoice_run_status_id !== INVOICE_RUN_STATUS_COMMITTED)
+		// Verify that the invoice run can be commited (is live, final, interim or interim first)
+		if (!in_array($this->invoice_run_type_id, array(INVOICE_RUN_TYPE_INTERIM_FIRST, INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL, INVOICE_RUN_TYPE_LIVE)))
 		{
-			throw new Exception("Cannot deliver invoice run {$this->Id}, it is not commited");
+			throw new Exception("Cannot deliver invoice run {$this->Id}, it can not commited/delivered");
 		}
 
 		$sInvoiceRunPDFBasePath	= PATH_INVOICE_PDFS ."pdf/$this->Id/";
