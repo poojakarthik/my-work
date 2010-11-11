@@ -765,44 +765,33 @@ class Invoice_Run
 		$iBillingDate			= strtotime($this->BillingDate);
 		$sInvoiceDate			= date('dmY', $iBillingDate);
 
-		/*// Build billing period string for the email subject lines
-		$sBillingPeriodEndMonth		= date("F", strtotime("-1 day", $iBillingDate));
-		$sBillingPeriodEndYear		= date("Y", strtotime("-1 day", $iBillingDate));
-		$sBillingPeriodStartMonth	= date("F", strtotime("-1 month", $iBillingDate));
-		$sBillingPeriodStartYear	= date("Y", strtotime("-1 month", $iBillingDate));
-		$sBillingPeriod				= $sBillingPeriodStartMonth;
-		if ($sBillingPeriodStartYear !== $sBillingPeriodEndYear)
-		{
-			$sBillingPeriod	.= " {$sBillingPeriodStartYear} / {$sBillingPeriodEndMonth} {$sBillingPeriodEndYear}";
-		}
-		else if ($sBillingPeriodStartMonth !== $sBillingPeriodEndMonth)
-		{
-			$sBillingPeriod	.= " / {$sBillingPeriodEndMonth} {$sBillingPeriodEndYear}";
-		}
-		else
-		{
-			$sBillingPeriod	.= " {$sBillingPeriodStartYear}";
-		}*/
-
 		Log::getLog()->log("Generate PDF's");
 
-		// Generate pdf's for each invoice
-		$aInvoices		= Invoice::getForInvoiceRunId($this->Id);
-		$aPDFFilenames	= array();
-		$aPDFContent	= array();
-		foreach ($aInvoices as $iId => $oInvoice)
+		try
 		{
-			// Generate the PDF file
-			$iCreatedOn 			= strtotime("-1 month", strtotime($oInvoice->CreatedOn));
-			$iYear 					= (int)date("Y", $iCreatedOn);
-			$iMonth 				= (int)date("m", $iCreatedOn);
-			$sContent				= GetPDFContent($oInvoice->Account, $iYear, $iMonth, $iId, $this->Id);
-			$aPDFFilenames[$iId]	= $sInvoiceRunPDFBasePath.GetPdfFilename($oInvoice->Account, $iYear, $iMonth, $oInvoice->Id, $this->Id);
-			$aPDFContent[$iId]		= $sContent;
-
-			Log::getLog()->log("Generated PDF '".basename($aPDFFilenames[$iId])."' for invoice {$iId}, length=".strlen($sContent)." (Total Memory Usage: ".memory_get_usage(true).")");
+			// Generate pdf's for each invoice
+			$aInvoices		= Invoice::getForInvoiceRunId($this->Id);
+			$aPDFFilenames	= array();
+			foreach ($aInvoices as $iId => $oInvoice)
+			{
+				// Generate the PDF file
+				$iCreatedOn 			= strtotime("-1 month", strtotime($oInvoice->CreatedOn));
+				$iYear 					= (int)date("Y", $iCreatedOn);
+				$iMonth 				= (int)date("m", $iCreatedOn);
+				$aPDFFilenames[$iId]	= $sInvoiceRunPDFBasePath.GetPdfFilename($oInvoice->Account, $iYear, $iMonth, $oInvoice->Id, $this->Id);
+				if (GetPDFContent($oInvoice->Account, $iYear, $iMonth, $iId, $this->Id) === false)
+				{
+					throw new Exception("PDF Generation failed: Account=$oInvoice->Account, Invoice=$iId, Invoice Run=$this->Id");
+				}
+				
+				Log::getLog()->log("Generated PDF '".basename($aPDFFilenames[$iId])."' for invoice {$iId}. (Total Memory Usage: ".memory_get_usage(true).")");
+			}
 		}
-
+		catch (Exception $oException)
+		{
+			throw new Exception("Failed to generate invoice PDFs. ".$oException->getMessage());
+		}
+		
 		try
 		{
 			Log::getLog()->log("Generate correspondence data & emails");
@@ -815,7 +804,7 @@ class Invoice_Run
 			{
 				Log::getLog()->log("\nInvoice {$iInvoiceId}");
 				Log::getLog()->log("----------------------");
-
+				
 				// Determine the correspondence_delivery_method for the invoice
 				$oInvoice			= $aInvoices[$iInvoiceId];
 				$iDeliveryMethod	= null;
@@ -883,14 +872,6 @@ class Invoice_Run
 							Log::getLog()->log("...Contact ".$aContact['Email']." (".$aContact['FirstName'].")");
 
 							// Generate Email_Flex object from Invoice template
-/*							$oEmail	= 	$oEmailTemplate->generateEmail(
-											array(
-												'CustomerGroup'	=> $oCustomerGroup->toArray(),
-												'Account'		=> array('id' => $aContact['Account']),
-												'Invoice'		=> array('created_on' => date('F jS, Y', strtotime($oInvoice->CreatedOn)), 'billing_period' => $sBillingPeriod),
-												'Contact'		=> array('first_name' => $aContact['FirstName'])
-											)
-										);*/
 							$oEmail	= 	$oEmailTemplate->generateEmail(	array('invoice_id'=>$oInvoice->Id, 'contact_id'=>$aContact['Id']));
 
 							// Account for , separated email addresses
@@ -911,11 +892,15 @@ class Invoice_Run
 								// Add recipient
 								$oEmail->addTo($sEmail);
 							}
-
+							
+							// Get PDF Content
+							$sPDFContent	= file_get_contents($sPDFFilename);
+						
+							// Finish setting up the email object
 							$oEmail->setFrom($oCustomerGroup->outbound_email);
 							$sAttachment	= "{$oInvoice->Account}_{$sInvoiceDate}.pdf";
 							$oEmail->createAttachment(
-								$aPDFContent[$iInvoiceId],			// Content
+								$sPDFContent,						// Content
 								'application/pdf',  				// Mime Type
 								Zend_Mime::DISPOSITION_ATTACHMENT, 	// Disposition
 								Zend_Mime::ENCODING_BASE64, 		// Encoding
@@ -946,7 +931,7 @@ class Invoice_Run
 		}
 		catch (Exception $oException)
 		{
-			throw new Exception("Failed to generated invoice delivery data. ".$oException->getMessage());
+			throw new Exception("Failed to generate invoice delivery data. ".$oException->getMessage());
 		}
 
 		Log::getLog()->log("\nSchedule the email queue for immediate delivery");
