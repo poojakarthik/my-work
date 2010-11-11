@@ -800,7 +800,7 @@ class Invoice_Run
 			$aPDFFilenames[$iId]	= $sInvoiceRunPDFBasePath.GetPdfFilename($oInvoice->Account, $iYear, $iMonth, $oInvoice->Id, $this->Id);
 			$aPDFContent[$iId]		= $sContent;
 
-			Log::getLog()->log("Generated PDF '".basename($aPDFFilenames[$iId])."' for invoice {$iId}, length=".strlen($sContent));
+			Log::getLog()->log("Generated PDF '".basename($aPDFFilenames[$iId])."' for invoice {$iId}, length=".strlen($sContent)." (Total Memory Usage: ".memory_get_usage(true).")");
 		}
 
 		try
