@@ -226,6 +226,7 @@ ORDER BY FNN;";
 		$arrCharge['charge_model_id']	= CHARGE_MODEL_CHARGE;
 		$arrPayment['Payment'] = $arrCharge['Notes'] = '';
 		$arrPayment['PaymentType'] = $arrPayment['OriginType'] = $paymentType;
+		$arrPayment['created_datetime']	= date('Y-m-d H:i:s');
 
 		$insPayment = new StatementInsert('Payment');
 		if (($paymentId = $insPayment->Execute($arrPayment)) === FALSE)

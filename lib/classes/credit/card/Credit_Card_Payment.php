@@ -1,7 +1,7 @@
 <?php
 
 // Only define this constant if you are testing CC payments with contacts that have fake email addresses, or your own email address
-//define(SEND_CREDIT_CARD_EMAILS_IN_TEST_MODE, TRUE);
+define(SEND_CREDIT_CARD_EMAILS_IN_TEST_MODE, TRUE);
 
 class Credit_Card_Payment
 {
@@ -189,7 +189,7 @@ class Credit_Card_Payment
 		// Check that the amount + surcharge comes to total and that the surcharge is right for the credit card type.
 		if (abs($cTotal - ($cSurcharge + $cAmount)) > 0)
 		{
-			throw new Exception('The amounts specified do not add up.');
+			throw new Exception("The amounts specified do not add up. [abs($cTotal - ($cSurcharge + $cAmount)) > 0]");
 		}
 
 		// Complain if there is anything other than a truly trivial difference in surcharge from that which is expected
@@ -210,19 +210,27 @@ class Credit_Card_Payment
 		// SecurePayMessage/Payment/TxnList/Txn/purchaseOrderNo
 		$purchaseOrderNo = $account->id . '.' . $time;
 
-		$xmlmessage = self::setPaymentCreditCard($creditCardPaymentConfig->merchantId, $creditCardPaymentConfig->password, $time, $messageId, $fltTotal, $purchaseOrderNo, $strCardNumber, $strCVV, $intMonth, $intYear);
+		$sPassword	= $creditCardPaymentConfig->password;
+		if (self::isTestMode())
+		{
+			//$sPassword	= 'pr0talk1';
+			$sPassword	= '4bn9tv5l';
+		}
 
-		$host = self::getHost();
+		$xmlmessage	= self::setPaymentCreditCard($creditCardPaymentConfig->merchantId, $sPassword, $time, $messageId, $fltTotal, $purchaseOrderNo, $strCardNumber, $strCVV, $intMonth, $intYear);
+		
+		$host 		= self::getHost();
+		$response 	= self::openSocket($host, $xmlmessage);
 
-		$response = self::openSocket($host, $xmlmessage);
-
-		//throw new Exception("\n\n\n\n\n\n\n\n" . $xmlmessage . "\n\n\n\n\n\n\n\n" . $response . "\n\n\n\n\n\n\n");
+		//throw new Exception("{$host}, {$creditCardPaymentConfig->merchantId}, {$sPassword}");
+		//throw new Exception("{$host}, {$xmlmessage}, {$response}");
 		//throw new Exception("<pre>\n\n" . htmlspecialchars($xmlmessage) . "\n\n" . htmlspecialchars(str_replace(">", ">\n", $response)) . "\n\n</pre>");
 		//throw new Exception($xmlmessage . "\n\n" . str_replace(">", ">\n", $response) . "\n\n");
 
 		// Need to check the XML response is valid and that the status code (SecurePayMessage/Status/statusCode) == "000".
 		$matches = array();
 		$statusCode = '999';
+		
 		// Get actual status code of response
 		if (preg_match("/\<statusCode(?:| [^\>]*)\>([^\>]*)\</i", $response, $matches))
 		{
@@ -281,7 +289,7 @@ class Credit_Card_Payment
 		}
 		catch (Exception $e)
 		{
-			// Payment has been processed but we can't log it!?
+			// START: Payment has been processed but we can't log it!?
 			// Try to reverse the payment, and notify the customer, the Collections department and the system administrators
 			TransactionRollback();
 			
@@ -586,6 +594,8 @@ class Credit_Card_Payment
 			}
 			
 			throw new Credit_Card_Payment_Flex_Logging_Exception($strMessage);
+			
+			// END: Payment has been processed but we can't log it!?
 		}
 
 		try
@@ -713,11 +723,12 @@ class Credit_Card_Payment
 			}
 		}
 
+		// Log the 'Payment Made' Action
 		$outputMessage = $creditCardPaymentConfig->confirmationText .
 			($bolDD
 				? ("\n\n\n" . ($bolFailedDD
-								? 'We were unable to store your details for Direct Debit at this time. Please try again later.'
-								: $creditCardPaymentConfig->directDebitText))
+					? 'We were unable to store your details for Direct Debit at this time. Please try again later.'
+					: $creditCardPaymentConfig->directDebitText))
 				: '');
 
 		if (!$bolCanSendEmail)
@@ -729,7 +740,6 @@ class Credit_Card_Payment
 			$outputMessage .= "\n\n\nThe system failed to send " . (($bolDD && !$bolFailedDD) ? '' : 'a ') . "confirmation email" . (($bolDD && !$bolFailedDD) ? 's' : '') . ".";
 		}
 
-		// Log the 'Payment Made' Action
 		try
 		{
 			$strExtraDetails = "";
@@ -1040,13 +1050,135 @@ class Credit_Card_Payment
 		{
 			$disclaimer = str_replace(array('"', "\n", "\r"), array('\\"', '\\n', ''), $params[1]->directDebitDisclaimer);
 		}
-		return $params ? "
-		<script><!--
-			function creditCardPaymentOnLoad()
-			{\n" . (Flex::isCustomerSession() ? ("\t\t\t\tCreditCardPayment.directDebitTermsAndConditions = \"$disclaimer\"") : "") . "
+		
+		if ($params)
+		{
+			return "<input type='button' id='online-credit-card-payment-button' class='online-credit-card-payment-button' value=\"Pay by Credit Card\" onclick=\"new Popup_Credit_Card_Payment(". htmlspecialchars($params[0], ENT_QUOTES) .");return false;\" />";
+			
+			/*
+			// Customer
+			return "<script><!--
+						function creditCardPaymentOnLoad()
+						{\n" . (Flex::isCustomerSession() ? ("\t\t\t\tCreditCardPayment.directDebitTermsAndConditions = \"$disclaimer\"") : "") . "
+						}
+						Event.observe(window, \"load\", creditCardPaymentOnLoad);
+					//--></script><input type='button' id='online-credit-card-payment-button' class='online-credit-card-payment-button' value=\"Pay by Credit Card\" onclick=\"new CreditCardPayment(". htmlspecialchars($params[0], ENT_QUOTES) .");return false;\" />";
+			*/
+		}
+		return false;
+	}
+
+	public static function makeCreditCardPayment($iAccountId, $iContactId, $iEmployeeId, $iCardType, $sCardNumber, $iCVV, $iMonth, $iYear, $sName, $fAmount, $bDirectDebit)
+	{
+		if ($bDirectDebit)
+		{
+			// TODO: CR135 direct debit setup, set payment method
+		}
+		
+		try
+		{
+			self::_makePayment($iAccountId, $iCardType, $sCardNumber, $iCVV, $iMonth, $iYear, $sName, $fAmount);
+		}
+		catch (Exception $oException)
+		{
+			if ($bDirectDebit)
+			{
+				// TODO: CR135 archive the direct debit, reinstate the previous payment method
 			}
-			Event.observe(window, \"load\", creditCardPaymentOnLoad);
-		//--></script><input type='button' id='online-credit-card-payment-button' class='online-credit-card-payment-button' value=\"Pay by Credit Card\" onclick=\"new CreditCardPayment(". htmlspecialchars($params[0], ENT_QUOTES) .");return false;\" />" : FALSE;
+			
+			throw $oException;
+		}
+		
+		// TODO: CR135 send the payment confirmation email
+		
+		// TODO: CR135 log payment made action (email notification on failure)
+	}
+
+	private static function _makePayment($iAccountId, $iCardType, $sCardNumber, $iCVV, $iMonth, $iYear, $sName, $fAmount)
+	{
+		$bTestMode	= Credit_Card_Payment::isTestMode();
+		
+		// TODO: CR135 check module is active
+		
+		// TODO: CR135 validate all parameters
+		
+		try
+		{
+			// TODO: CR135 get account details
+			
+			// TODO: CR135 verify that the customer group allows credit card payments	
+			
+			// TODO: CR135 create payment_request
+			$removeme	= true;
+		}
+		catch (Exception $oException)
+		{
+			throw new Credit_Card_Payment_Exception("Failed credit card payment preparation.".($bTestMode ? " ".$oException->getMessage() : ''));
+		}
+		
+		// TODO: CR135 determine total amount & surcharge from whether on direct debit or not
+		$fTotal	= null;
+		
+		try
+		{
+			// TODO: CR135 start transaction
+			
+			// TODO: CR135 get the credit card payment config for the accounts customer group
+			
+			// TODO: CR135 get secure pay password & merchant id
+			$sMerchantId	= null;
+			$sPassword		= null;
+			
+			// TODO: CR135 generate message id
+			$iTime		= null;
+			$sMessageId	= null;
+			
+			// TODO: CR135 generate purchase order number
+			$sPurchaseOrderNo	= null;
+			
+			// TODO: CR135 create payment
+			
+			// TODO: CR135 link payment_request to payment
+			
+			$sTransactionId	= self::_securePayRequest($sMerchantId, $sPassword, $iTime, $sMessageId, $fTotal, $sPurchaseOrderNo, $sCardNumber, $iCVV, $iMonth, $iYear);
+			
+			// TODO: CR135 set payment transaction reference
+			
+			// TODO: CR135 commit transaction
+		}
+		catch (Credit_Card_Payment_SecurePay_Exception $oException)
+		{
+			// TODO: CR135 rollback transaction
+			
+			throw new Credit_Card_Payment_Exception("Failed to make credit card payment. ".($bTestMode ? $oException->getDebugMessage() : $oException->getMessage()));
+		}
+		catch (Exception $oException)
+		{
+			// TODO: CR135 rollback transaction
+			
+			throw new Credit_Card_Payment_Exception("Failed to make credit card payment.".($bTestMode ? " ".$oException->getMessage() : ''));
+		}
+		
+		self::_createPaymentResponse();
+	}
+
+	private static function _securePayRequest($sMerchantId, $sPassword, $iTime, $sMessageId, $fTotal, $sPurchaseOrderNo, $sCardNumber, $iCVV, $iMonth, $iYear)
+	{
+		// Send request
+		$sXmlmessage	= self::setPaymentCreditCard($sMerchantId, $sPassword, $iTime, $sMessageId, $fTotal, $sPurchaseOrderNo, $sCardNumber, $iCVV, $iMonth, $iYear);
+		$sHost 			= self::getHost();
+		$sResponse 		= self::openSocket($sHost, $sXmlmessage);
+		
+		// TODO: CR135 check/parse the response (exception if not approved, pass the response, response code & reason into the exception)
+		
+		// TODO: CR135 return the transaction id
+	}
+
+	private static function _createPaymentResponse()
+	{
+		// TODO: CR135 try ? times, return on success
+		
+		// TODO: CR135 if no success, assert with full payment_response details to allow manual insertion
 	}
 
 	// Should probably detect this automatically and use the primary contact details
@@ -1261,5 +1393,6 @@ class Credit_Card_Payment_Validation_Exception extends Exception
 	function getStatusCode()
 	{
 		return $this->statusCode;
-	}}
+	}
+}
 ?>

@@ -178,7 +178,8 @@ class AppTemplatePayment extends ApplicationTemplate
 			
 			DBO()->Payment->Balance = DBO()->Payment->Amount->Value;
 			
-			DBO()->Payment->Status = PAYMENT_WAITING;
+			DBO()->Payment->Status 				= PAYMENT_WAITING;
+			DBO()->Payment->created_datetime	= date('Y-m-d H:i:s');
 			
 			// Start the transaction
 			TransactionStart();

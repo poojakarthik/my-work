@@ -73,12 +73,13 @@
 		$this->_ubiPaymentFile		= new StatementUpdateById("FileImport", $arrColumns);
 		
 		$arrColumns = Array();
-		$arrColumns['carrier']		= NULL;
-		$arrColumns['Payment']		= NULL;
-		$arrColumns['SequenceNo']	= NULL;
-		$arrColumns['File']			= NULL;
-		$arrColumns['Status']		= NULL;
-		$this->_insPayment			= new StatementInsert("Payment", $arrColumns);
+		$arrColumns['carrier']			= NULL;
+		$arrColumns['Payment']			= NULL;
+		$arrColumns['SequenceNo']		= NULL;
+		$arrColumns['File']				= NULL;
+		$arrColumns['Status']			= NULL;
+		$arrColumns['created_datetime']	= NULL;
+		$this->_insPayment				= new StatementInsert("Payment", $arrColumns);
 
 		$arrColumns = Array();
 		$arrColumns['Id']			= "Payment.Id";
@@ -289,11 +290,12 @@
 			while (!feof($ptrFile))
 			{
 				// Read line
-				$arrData['carrier']		= $arrFile['Carrier'];
-				$arrData['Payment']		= fgets($ptrFile);
-				$arrData['SequenceNo']	= $intSequence;
-				$arrData['File']		= $arrFile['Id'];
-				$arrData['Status']		= PAYMENT_IMPORTED;
+				$arrData['carrier']				= $arrFile['Carrier'];
+				$arrData['Payment']				= fgets($ptrFile);
+				$arrData['SequenceNo']			= $intSequence;
+				$arrData['File']				= $arrFile['Id'];
+				$arrData['Status']				= PAYMENT_IMPORTED;
+				$arrData['created_datetime']	= date('Y-m-d H:i:s');
 				if ($this->_insPayment->Execute($arrData) === FALSE)
 				{
 					echo "Error Inserting Payment! -> ".Debug($this->_insPayment);

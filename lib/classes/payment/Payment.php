@@ -107,6 +107,17 @@ class Payment extends ORM_Cached
 		}
 	}
 	
+	// Override
+	public function save()
+	{
+		if ($this->id !== NULL)
+		{
+			// New payment, set the created_datetime value
+			$this->created_datetime	= date('Y-m-d H:i:s');
+		}
+		parent::save();
+	}
+	
 	/**
 	 * _preparedStatement()
 	 *
