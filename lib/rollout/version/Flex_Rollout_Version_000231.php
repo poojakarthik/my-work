@@ -45,12 +45,60 @@ class Flex_Rollout_Version_000231 extends Flex_Rollout_Version
 								),
 								array
 								(
+									'sDescription'		=>	"Add email_queue_status table",
+									'sAlterSQL'			=>	"	CREATE TABLE email_queue_status
+																(
+																	id			INT 			NOT NULL	AUTO_INCREMENT	COMMENT \"Unique Identifier\",
+																	name		VARCHAR(128)	NOT NULL					COMMENT \"Name of the status\",
+																	description	VARCHAR(128)	NOT NULL					COMMENT \"Description of the status\",
+																	const_name	VARCHAR(128)	NOT NULL					COMMENT \"Constant alias for the status\",
+																	system_name	VARCHAR(128)	NOT NULL					COMMENT \"System name for the status\",
+																	PRIMARY KEY (id)
+																) ENGINE=InnoDB;",
+									'sRollbackSQL'		=>	"	DROP TABLE IF EXISTS email_queue_status;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=>	"Populate email_queue_status table",
+									'sAlterSQL'			=>	"	INSERT INTO email_queue_status (name, description, const_name, system_name)
+																VALUES		('Scheduled', 'Scheduled for delivery', 'EMAIL_QUEUE_STATUS_SCHEDULED', 'SCHEDULED'),
+																			('Delivered', 'Successfully delivered', 'EMAIL_QUEUE_STATUS_DELIVERED', 'DELIVERED'),
+																			('Cancelled', 'Delivered cancelled', 	'EMAIL_QUEUE_STATUS_CANCELLED', 'CANCELLED');",
+									'sRollbackSQL'		=>	"	TRUNCATE email_queue_status;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=>	"Add email_queue_status_id field to the email_queue table",
+									'sAlterSQL'			=>	"	ALTER TABLE email_queue
+																ADD COLUMN email_queue_status_id INT NOT NULL COMMENT \"(FK) email_queue_status. The status of the queue\";",
+									'sRollbackSQL'		=>	"	ALTER TABLE email_queue DROP COLUMN email_queue_status_id;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=>	"Set the default email_queue_status_id field values in the email_queue table",
+									'sAlterSQL'			=>	"	UPDATE	email_queue eq
+																SET		eq.email_queue_status_id = IF(
+																			email_queue_batch_id IS NULL,
+																			(SELECT	id
+																			FROM	email_queue_status
+																			WHERE	system_name = 'SCHEDULED'),
+																			(SELECT	id
+																			FROM	email_queue_status
+																			WHERE	system_name = 'DELIVERED')
+																		);",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
 									'sDescription'		=>	"Add description field to the email_queue table",
 									'sAlterSQL'			=>	"	ALTER TABLE email_queue
 																ADD COLUMN description VARCHAR(512) NOT NULL COMMENT \"The description of the Email Queue\";",
 									'sRollbackSQL'		=>	"	ALTER TABLE email_queue DROP COLUMN description;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
-								)
+								),
 							);
 		
 		// Perform Batch Rollout
