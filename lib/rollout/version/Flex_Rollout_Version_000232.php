@@ -115,17 +115,18 @@ class Flex_Rollout_Version_000232 extends Flex_Rollout_Version
 				'sDescription'		=>	"Add table payment_response",
 				'sAlterSQL'			=>	"	CREATE TABLE payment_response
 											(
-												id					BIGINT UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT \"Unique Identifier\",
-												account_group_id	BIGINT UNSIGNED	NULL						COMMENT \"(FK) AccountGroup\",
-												account_id			BIGINT UNSIGNED	NULL						COMMENT \"(FK) Account\",
-												paid_date			DATE			NULL						COMMENT \"Effective date of the payment\",
-												payment_type_id		BIGINT UNSIGNED	NULL						COMMENT \"(FK) payment_type\",
-												amount				DECIMAL(13,4)	NULL						COMMENT \"Amount in dollars\",
-												origin_id 			INT UNSIGNED	NULL						COMMENT \"Reference to the origin of the payment, e.g. CreditCard or DirectDebit id\",
-												file_import_data_id	BIGINT UNSIGNED	NULL						COMMENT \"(FK) file_import_data, (optional) Raw payment data\",
-												payment_id			BIGINT UNSIGNED	NULL						COMMENT \"(FK) Payment. The (optional) payment that this response is associated with\",
-												payment_status_id	BIGINT UNSIGNED	NOT NULL					COMMENT \"(FK) payment_status\",
-												created_datetime	DATETIME		NOT NULL					COMMENT \"Timestamp for creation\",
+												id						BIGINT UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT \"Unique Identifier\",
+												account_group_id		BIGINT UNSIGNED	NULL						COMMENT \"(FK) AccountGroup\",
+												account_id				BIGINT UNSIGNED	NULL						COMMENT \"(FK) Account\",
+												paid_date				DATE			NULL						COMMENT \"Effective date of the payment\",
+												payment_type_id			BIGINT UNSIGNED	NULL						COMMENT \"(FK) payment_type\",
+												amount					DECIMAL(13,4)	NULL						COMMENT \"Amount in dollars\",
+												origin_id 				INT UNSIGNED	NULL						COMMENT \"Reference to the origin of the payment, e.g. CreditCard or DirectDebit id\",
+												file_import_data_id		BIGINT UNSIGNED	NULL						COMMENT \"(FK) file_import_data, (optional) Raw payment data\",
+												transaction_reference	VARCHAR(256)	NULL						COMMENT \"Transaction reference for the payment\",
+												payment_id				BIGINT UNSIGNED	NULL						COMMENT \"(FK) Payment. The (optional) payment that this response is associated with\",
+												payment_status_id		BIGINT UNSIGNED	NOT NULL					COMMENT \"(FK) payment_status\",
+												created_datetime		DATETIME		NOT NULL					COMMENT \"Timestamp for creation\",
 												PRIMARY KEY (id),
 												CONSTRAINT fk_payment_response_account_group_id		FOREIGN KEY	(account_group_id)		REFERENCES	AccountGroup (Id)		ON UPDATE CASCADE	ON DELETE RESTRICT,
 												CONSTRAINT fk_payment_response_account_id			FOREIGN KEY	(account_id)			REFERENCES	Account (Id)			ON UPDATE CASCADE	ON DELETE RESTRICT,
@@ -220,7 +221,7 @@ class Flex_Rollout_Version_000232 extends Flex_Rollout_Version
 			array
 			(
 				'sDescription'		=>	"Initial payment_response records. Create a payment_response for each Payment record",
-				'sAlterSQL'			=>	"	INSERT INTO	payment_response(account_group_id, account_id, paid_date, payment_type_id, amount, origin_id, file_import_data_id, payment_id, payment_status_id, created_datetime)
+				'sAlterSQL'			=>	"	INSERT INTO	payment_response(account_group_id, account_id, paid_date, payment_type_id, amount, origin_id, file_import_data_id, transaction_reference, payment_id, payment_status_id, created_datetime)
 											(
 												SELECT		IF(p.AccountGroup <> 0, p.AccountGroup, NULL), 
 															IF(a.Id IS NOT NULL, p.Account, NULL), 
@@ -229,6 +230,7 @@ class Flex_Rollout_Version_000232 extends Flex_Rollout_Version
 															p.Amount, 
 															p.OriginId, 
 															fid.id, 
+															p.TXNReference,
 															p.Id, 
 															p.Status, 
 															p.created_datetime
@@ -262,7 +264,7 @@ class Flex_Rollout_Version_000232 extends Flex_Rollout_Version
 											ADD COLUMN	payment_id BIGINT UNSIGNED NULL;",
 				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 			),
-			/*array
+			array
 			(
 				'sDescription'		=>	"Remove the Payment, File & SequenceNo fields from the Payment table",
 				'sAlterSQL'			=>	"	ALTER TABLE	Payment
@@ -270,7 +272,7 @@ class Flex_Rollout_Version_000232 extends Flex_Rollout_Version
 											DROP COLUMN	File,
 											DROP COLUMN	SequenceNo;",
 				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
-			)*/
+			)
 		);
 		
 		// Perform Batch Rollout
