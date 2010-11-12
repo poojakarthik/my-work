@@ -2843,6 +2843,9 @@ function generateInvoicePDF($strXML, $intInvoiceId, $intTargetMedia, $iInvoiceRu
 		
 		$pdfDocument	= $pdfTemplate->createDocument();
 		$strPDFContent	= $pdfDocument->render();
+		
+		$pdfTemplate->destroy();
+		
 		$intInvoiceId	= (int)$intInvoiceId;
 		
 		/*$resInvoice		= $qryQuery->Execute("SELECT * FROM Invoice WHERE Id = {$intInvoiceId} LIMIT 1");
