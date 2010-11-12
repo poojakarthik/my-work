@@ -73,7 +73,17 @@ class Flex_Rollout_Version_000231 extends Flex_Rollout_Version
 									'sDescription'		=>	"Add email_queue_status_id field to the email_queue table",
 									'sAlterSQL'			=>	"	ALTER TABLE email_queue
 																ADD COLUMN email_queue_status_id INT NOT NULL COMMENT \"(FK) email_queue_status. The status of the queue\";",
-									'sRollbackSQL'		=>	"	ALTER TABLE email_queue DROP COLUMN email_queue_status_id;",
+									'sRollbackSQL'		=>	"	ALTER TABLE email_queue 
+																DROP COLUMN email_queue_status_id;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=>	"Add FOREIGN KEY to email_queue_status_id field in the email_queue table",
+									'sAlterSQL'			=>	"	ALTER TABLE email_queue
+																ADD CONSTRAINT fk_email_queue_email_queue_status_id FOREIGN KEY (email_queue_status_id) REFERENCES email_queue_status (id) ON UPDATE CASCADE ON DELETE RESTRICT;",
+									'sRollbackSQL'		=>	"	ALTER TABLE 		email_queue 
+																DROP FOREIGN KEY 	fk_email_queue_email_queue_status_id;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								),
 								array

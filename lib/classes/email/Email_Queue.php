@@ -186,8 +186,15 @@ class Email_Queue extends ORM_Cached
 		Log::getLog()->log("\nUpdating batch reference: {$oEmailQueueBatch->id}");
 		
 		// Update the queues delivery datetime and batch reference
-		$this->delivered_datetime	= date('Y-m-d H:i:s');
-		$this->email_queue_batch_id	= $oEmailQueueBatch->id;
+		$this->delivered_datetime		= date('Y-m-d H:i:s');
+		$this->email_queue_batch_id		= $oEmailQueueBatch->id;
+		$this->email_queue_status_id	= EMAIL_QUEUE_STATUS_DELIVERED;
+		$this->save();
+	}
+	
+	public function cancel()
+	{
+		$this->email_queue_status_id	= EMAIL_QUEUE_STATUS_CANCELLED;
 		$this->save();
 	}
 	
@@ -236,9 +243,10 @@ class Email_Queue extends ORM_Cached
 					$arrPreparedStatements[$strStatement]	= 	new StatementSelect(
 																	self::$_strStaticTableName, 
 																	"*", 
-																	"	email_queue_batch_id IS NULL 
+																	"email_queue_batch_id IS NULL 
 																	AND	delivered_datetime IS NULL 
-																	AND	scheduled_datetime <= NOW()", 
+																	AND	scheduled_datetime <= NOW()
+																	AND email_queue_status_id = ".EMAIL_QUEUE_STATUS_SCHEDULED, 
 																	"created_datetime ASC"
 																);
 					break;

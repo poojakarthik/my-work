@@ -126,6 +126,7 @@ class Email_Flex_Queue
 			$oEmailQueue->created_datetime		= date('Y-m-d H:i:s');
 			$oEmailQueue->created_employee_id	= $iLoggedInEmployee;
 			$oEmailQueue->description			= $sDescription;
+			$oEmailQueue->email_queue_status_id	= EMAIL_QUEUE_STATUS_SCHEDULED;
 			$oEmailQueue->save();
 			
 			// Create Email records
