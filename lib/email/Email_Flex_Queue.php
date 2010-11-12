@@ -85,7 +85,7 @@ class Email_Flex_Queue
 	public function getEmailORMObjects()
 	{
 		return $this->_aEmailORMs;
-	}	
+	}
 	
 	public function scheduleForDelivery($mDatetime=null, $sDescription='')
 	{

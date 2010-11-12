@@ -28,23 +28,29 @@ class Flex_Rollout_Incremental
 		{
 			throw new Exception("Failed to find latest database version: " . $res->getMessage());
 		}
-
-		$currentVersion = intval($res->fetchOne());
-
-		$arrVersions = self::_getVersionsAfter($currentVersion);
-
+		
+		$currentVersion	= intval($res->fetchOne());
+		
+		Log::getLog()->log("Got latest version {$currentVersion}");
+		
+		$arrVersions	= self::_getVersionsAfter($currentVersion);
+		
+		Log::getLog()->log("Number of versions to rollout = ".count($arrVersions));
+		
 		foreach ($arrVersions as $intVersion => $objRollout)
 		{
+			Log::getLog()->log("Version {$intVersion}");
+			
 			// Don't run old style rollouts with the new script
 			if ($intVersion < Flex_Rollout_Version::NEW_SYSTEM_CUTOVER)
 			{
 				throw new NonIncrementalRolloutException("Rollouts for the old rollout system remain unapplied ($intVersion). Apply those before running this newer rollout system.");
 			}
-
-
-
+			
 			try
 			{
+				Log::getLog()->log("Generating database constants file");
+				
 				// Try to generate the constants file so that there is always one for the rollout scripts
 				self::GenerateDatabaseConstantsFile();
 			}
@@ -53,10 +59,10 @@ class Flex_Rollout_Incremental
 				throw new Exception("Failed to build constants file prior to attempting rollout $intVersion. Current version is $currentVersion.". $e->getMessage());
 			}
 
-
-
 			try
 			{
+				Log::getLog()->log("Beginning transactions");
+				
 				// Begin transactions for each of the configurred data sources
 				self::beginTransactions();
 			}
@@ -65,8 +71,6 @@ class Flex_Rollout_Incremental
 				@self::RollbackDatabaseConstantsFile();
 				throw new Exception("Failed to begin database transactions prior to attempting rollout $intVersion. Current version is $currentVersion.");
 			}
-
-
 
 			try
 			{
@@ -233,7 +237,9 @@ class Flex_Rollout_Incremental
 			$arrConnectionNames = array_keys($GLOBALS['**arrDatabase']);
 			foreach ($arrConnectionNames as $strConnectionName)
 			{
+				Log::getLog()->log("Getting data source '{$strConnectionName}'");
 				$dataSources[$strConnectionName] = Data_Source::get($strConnectionName);
+				Log::getLog()->log("...done");
 			}
 		}
 		return $dataSources;
@@ -245,6 +251,8 @@ class Flex_Rollout_Incremental
 		$errors = array();
 		foreach ($dataSources as $name => $dataSource)
 		{
+			Log::getLog()->log("Starting transaction for data source '{$name}'");
+			
 			$res = $dataSource->beginTransaction();
 			if (PEAR::isError($res))
 			{

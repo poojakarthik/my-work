@@ -63,6 +63,26 @@ class Payment_Request extends ORM_Cached
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 
+	public static function generateNew($iAccount, $iPaymentType, $fAmount, $iInvoiceRun=null)
+	{
+		$iEmployee	= Flex::getUserId();
+		$iEmployee	= ($iEmployee === NULL ? Employee::SYSTEM_EMPLOYEE_ID : $iEmployee);
+		
+		// Create new payment_request
+		$oPaymentRequest							= new Payment_Request();
+		$oPaymentRequest->account_id				= $iAccount;
+		$oPaymentRequest->amount					= $fAmount;
+		$oPaymentRequest->payment_type_id			= $iPaymentType;
+		$oPaymentRequest->payment_request_status_id	= PAYMENT_REQUEST_STATUS_PENDING;
+		$oPaymentRequest->invoice_run_id			= $iInvoiceRun;
+		$oPaymentRequest->file_export_id			= null;
+		$oPaymentRequest->created_datetime			= date('Y-m-d H:i:s');
+		$oPaymentRequest->created_employee_id		= $iEmployee;
+		$oPaymentRequest->save();
+		
+		return $oPaymentRequest;
+	}
+
 	public static function getForStatus($iStatus)
 	{
 		// Get data
