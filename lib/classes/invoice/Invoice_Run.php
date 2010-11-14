@@ -925,7 +925,7 @@ class Invoice_Run
 						break;
 					default:
 						// Skip delivering the invoice
-						Log::getLog()->log("No appropriate delivery method for invoice {$iInvoiceId}");
+						Log::getLog()->log("No appropriate delivery method for invoice {$iInvoiceId}. The delivery method is '".$oDeliveryMethod->getConstantName($oInvoice->DeliveryMethod)."'");
 				}
 			}
 		}
