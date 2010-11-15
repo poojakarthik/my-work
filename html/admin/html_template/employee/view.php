@@ -54,6 +54,10 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		$this->LoadJavascript("table_sort");
 		$this->LoadJavascript("employee_view");
 		$this->LoadJavascript("reflex_anchor");
+		
+		$this->LoadJavascript("permissions");
+		$this->LoadJavascript("employee_edit");
+		$this->LoadJavascript("date_time_picker_xy");
 	}
 	
 	//------------------------------------------------------------------------//
