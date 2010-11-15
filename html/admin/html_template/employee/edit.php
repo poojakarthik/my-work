@@ -37,9 +37,10 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 		$this->_intContext = $intContext;
 		$this->_strId = $strId;
 
-		$this->LoadJavascript("permissions");
+		// This has been commented because it was not being loaded properly within ff4 & chrome
+		/*$this->LoadJavascript("permissions");
 		$this->LoadJavascript("employee_edit");
-		$this->LoadJavascript("date_time_picker_xy");
+		$this->LoadJavascript("date_time_picker_xy");*/
 
 		if (DBO()->Employee->EditSelf->Value)
 		{
