@@ -466,6 +466,17 @@ function VixenAjaxClass()
 	{
 			if (objObject.HtmlMode)
 			{
+				//debugger;
+				
+				// HACK: HTML5 dictates that <script> tags inserted using innerHTML (which these methods use) should not
+				//		 be parsed, though we kind of depend on it.  So we're going to be tricky and extract the JS, and execute
+				//		 it after the innerHTML has been set.  It has only worked to date, because Firefox < 4.0b6 didn't care
+				var	oTempDIV		= document.createElement('div');
+				oTempDIV.innerHTML	= strReply;
+				var	aScripts		= $A(oTempDIV.select('script'));
+				aScripts.each(Element.remove);
+				strReply			= oTempDIV.innerHTML;
+				
 				switch (objObject.TargetType)
 				{
 					case "Popup":
@@ -506,6 +517,27 @@ function VixenAjaxClass()
 						break;
 					default:
 						ajaxError(null, strReply);
+				}
+				
+				// HACK: (continued) Execute any scripts (by attaching them to the head)
+				//debugger;
+				if (aScripts.length)
+				{
+					var	oHead	= $$('head').first();
+					for (var i = 0, j = aScripts.length; i < j; i++)
+					{
+						var	oNewScript		= document.createElement('script');
+						oNewScript.async	= false;
+						if (aScripts[i].innerText)
+						{
+							oNewScript.innerText	= aScripts[i].innerText;
+						}
+						if (aScripts[i].src)
+						{
+							oNewScript.src	= aScripts[i].src;
+						}
+						oHead.appendChild(oNewScript);
+					}
 				}
 			}
 	}
