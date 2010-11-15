@@ -78,7 +78,6 @@ var Control_Field_RadioButton	= Class.create(/* extends */ Control_Field,
 	
 	_valueChanged	: function()
 	{
-		debugger;
 		this.validate();
 		for (var i = 0; i < this._aOnChangeCallbacks.length; i++)
 		{
