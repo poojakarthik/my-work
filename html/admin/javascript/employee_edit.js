@@ -77,7 +77,7 @@ var EmployeeEdit = {
 			 	'javascript/employee.js',
 			 	'javascript/ticketing_user.js',
 			 	'javascript/followup_reassign_reason.js',
-			 	'javascript/popup_employee_reassign_tasks.js',
+			 	'javascript/popup_employee_reassign_tasks.js'
 			],
 			fnShowPopup.curry(iId)
 		);
