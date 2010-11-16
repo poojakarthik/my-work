@@ -177,6 +177,18 @@ var JsAutoLoader = {
 	getFileNameOnly	: function(sSrc)
 	{
 		return sSrc.replace(/^(.*)(javascript(\/)(.*))$/, '$4');
+	},
+	
+	extractScripts	: function(sURI)
+	{
+		// getJavascriptPHPScript() actually does what we need
+		return JsAutoLoader.getJavascriptPHPScripts(sURI);
+	},
+	
+	getJavascriptPHPScripts	: function(sURI)
+	{
+		//debugger;
+		return (String(sURI).toQueryParams()["File[]"] || [sURI]);
 	}
 }
 

@@ -523,21 +523,36 @@ function VixenAjaxClass()
 				//debugger;
 				if (aScripts.length)
 				{
-					var	oHead	= $$('head').first();
-					for (var i = 0, j = aScripts.length; i < j; i++)
+					var	aScriptActions	= [];
+					for (var i = aScripts.length - 1; i >= 0; i--)
 					{
-						var	oNewScript		= document.createElement('script');
-						oNewScript.async	= false;
-						if (aScripts[i].innerHTML)
-						{
-							oNewScript.innerHTML	= aScripts[i].innerHTML;
-						}
 						if (aScripts[i].src)
 						{
-							oNewScript.src	= aScripts[i].src;
+							// External Script
+							aScriptActions.unshift(
+								JsAutoLoader.loadScript.bind(
+									JsAutoLoader,
+									JsAutoLoader.getJavascriptPHPScripts(aScripts[i].src),
+									aScriptActions.length ? aScriptActions.first() : null,
+									!!(aScripts[i].src.match(/javascript\.php/i))
+								)
+							);
 						}
-						oHead.appendChild(oNewScript);
+						else if (aScripts[i].innerHTML)
+						{
+							// Inline Script
+							aScriptActions.unshift((function(sJavascript, fnCallback){
+								eval(sJavascript);
+								if (Object.isFunction(fnCallback))
+								{
+									fnCallback();
+								}
+							}).curry('/*debugger;/**/'+aScripts[i].innerHTML, aScriptActions.first()));
+						}
 					}
+					
+					// Invoke the first Script
+					aScriptActions.first()();
 				}
 			}
 	}
