@@ -164,7 +164,7 @@ var Reflex_Validation	=
 	
 	float	: function(mValue)
 	{
-		if (mValue.toString().match(/^\d+(\.\d+)?$/))
+		if (mValue.toString().match(/^-?\d+(\.\d+)?$/))
 		{
 			return true;
 		}
