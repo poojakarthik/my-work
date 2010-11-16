@@ -528,9 +528,9 @@ function VixenAjaxClass()
 					{
 						var	oNewScript		= document.createElement('script');
 						oNewScript.async	= false;
-						if (aScripts[i].innerText)
+						if (aScripts[i].innerHTML)
 						{
-							oNewScript.innerText	= aScripts[i].innerText;
+							oNewScript.innerHTML	= aScripts[i].innerHTML;
 						}
 						if (aScripts[i].src)
 						{
