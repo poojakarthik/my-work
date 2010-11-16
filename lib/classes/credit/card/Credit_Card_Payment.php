@@ -1,5 +1,6 @@
 <?php
 
+// TODO: CR135 -- make this FALSE
 // Only define this constant if you are testing CC payments with contacts that have fake email addresses, or your own email address
 define(SEND_CREDIT_CARD_EMAILS_IN_TEST_MODE, TRUE);
 
@@ -44,6 +45,7 @@ class Credit_Card_Payment
 		return (!defined('CREDIT_CARD_PAYMENT_TEST_MODE') || CREDIT_CARD_PAYMENT_TEST_MODE !== FALSE);
 	}
 
+	// TODO: CR135 -- DEPRECATE THIS FUNCTION (once new function, makeCreditCardPayment and it's subsidiaries are completed)
 	public static function makePayment($intAccountId, $strEmail, $intCardType, $strCardNumber, $intCVV, $intMonth, $intYear, $strName, $fltAmount, $fltSurcharge, $fltTotal, $bolDD, $strPassword, &$resultProperties)
 	{
 		// Check that the module is enabled
@@ -777,12 +779,19 @@ class Credit_Card_Payment
 		{
 			$neg = $strAmountInDollars < 0 ? '-' : '';
 			$strAmountInCents = ''.round(abs($strAmountInDollars)*100);
-			if (strlen($strAmountInCents) <= 2)
+			if (strlen($strAmountInCents) <= 1)
 			{
+				// Under 0 - 9 cents
+				$strAmountInDollars = '0.0'.$strAmountInCents;
+			}
+			else if (strlen($strAmountInCents) <= 2)
+			{
+				// 10 - 99 cents
 				$strAmountInDollars = '0.'.$strAmountInCents;
 			}
 			else
 			{
+				// Over a dollar
 				$strAmountInDollars = substr($strAmountInCents, 0, -2) . '.' . substr($strAmountInCents, - 2);
 			}
 			$strAmountInDollars = $neg.$strAmountInDollars;
@@ -975,8 +984,77 @@ class Credit_Card_Payment
 		// Return the body of the response
 		return $body;
 	}
+	
+	public static function buildMessageTokens($oTransactionDetails, $sContactName, $sEmail)
+	{
+		$aTokens	= array();
+		$oAccount	= Account::getForId($oTransactionDetails->iAccountId);
+		
+		// Balance before transaction string
+		$sBalanceBefore	= self::amount2dp($oTransactionDetails->fBalanceBefore);
+		if ($sBalanceBefore[0] == '-') 
+		{
+			$sBalanceBefore	= substr($sBalanceBefore, 1).' CR';
+		}
+		
+		// Balance after transaction string
+		$sBalanceAfter	= self::amount2dp($oAccount->getBalance());
+		if ($sBalanceAfter[0] == '-') 
+		{
+			$sBalanceAfter	= substr($sBalanceAfter, 1).' CR';
+		}
 
-	private static function replaceMessageTokens($message, $tokens)
+		$aTokenList	= self::listMessageTokens();
+		foreach ($aTokenList as $sToken => $sDescription)
+		{
+			switch ($sToken)
+			{
+				case self::TOKEN_START.'DATE_TIME'.self::TOKEN_END:
+					$aTokens[$sToken] 	= date('g:i:sA, jS M Y', $oTransactionDetails->iTime);
+					break;
+				case self::TOKEN_START.'PAYMENT_REFERENCE'.self::TOKEN_END:
+					$aTokens[$sToken] 	= $oTransactionDetails->sPurchaseOrderNumber;
+					break;
+				case self::TOKEN_START.'AMOUNT_APPLIED'.self::TOKEN_END:
+					$aTokens[$sToken] 	= '$' . $oTransactionDetails->fAmount;
+					break;
+				case self::TOKEN_START.'AMOUNT_SURCHARGE'.self::TOKEN_END:
+					$aTokens[$sToken] 	= '$' . $oTransactionDetails->fSurcharge;
+					break;
+				case self::TOKEN_START.'AMOUNT_TOTAL'.self::TOKEN_END:
+					$aTokens[$sToken] 	= '$' . $oTransactionDetails->fTotal;
+					break;
+				case self::TOKEN_START.'BALANCE_BEFORE'.self::TOKEN_END:
+					$aTokens[$sToken] 	= '$' . $sBalanceBefore;
+					break;
+				case self::TOKEN_START.'BALANCE_AFTER'.self::TOKEN_END:
+					$aTokens[$sToken]	= '$' . $sBalanceAfter;
+					break;
+				case self::TOKEN_START.'ACCOUNT_NUMBER'.self::TOKEN_END:
+					$aTokens[$sToken] 	= $oTransactionDetails->iAccountId;
+					break;
+				case self::TOKEN_START.'CONTACT_NAME'.self::TOKEN_END:
+					$aTokens[$sToken] 	= $sContactName;
+					break;
+				case self::TOKEN_START.'CONTACT_EMAIL'.self::TOKEN_END:
+					$aTokens[$sToken] 	= $sEmail;
+					break;
+				case self::TOKEN_START.'COMPANY_ABN'.self::TOKEN_END:
+					$aTokens[$sToken] 	= $oAccount->abn;
+					break;
+				case self::TOKEN_START.'COMPANY_NAME'.self::TOKEN_END:
+					$aTokens[$sToken]	= $oAccount->businessName ? $oAccount->businessName : $oAccount->tradingName;
+					break;
+				case self::TOKEN_START.'CARD_NUMBER'.self::TOKEN_END:
+					$aTokens[$sToken] 	= (substr($oTransactionDetails->sCardNumber, 0, 4).str_repeat('.', strlen($oTransactionDetails->sCardNumber) - 8).substr($oTransactionDetails->sCardNumber, -4));
+					break;
+			}
+		}
+		
+		return $aTokens;
+	}
+
+	public static function replaceMessageTokens($message, $tokens)
 	{
 		foreach ($tokens as $token => $value)
 		{
@@ -1068,117 +1146,428 @@ class Credit_Card_Payment
 		return false;
 	}
 
-	public static function makeCreditCardPayment($iAccountId, $iContactId, $iEmployeeId, $iCardType, $sCardNumber, $iCVV, $iMonth, $iYear, $sName, $fAmount, $bDirectDebit)
+	public static function makeCreditCardPayment($iAccountId, $iContactId, $iEmployeeId, $iCardType, $sCardNumber, $iCVV, $iMonth, $iYear, $sName, $fAmount, $sEmail, $bDirectDebit)
 	{
+		$oAccount	= Account::getForId($iAccountId);
+		$oContact	= Contact::getForId($iContactId);
+		
 		if ($bDirectDebit)
 		{
-			// TODO: CR135 direct debit setup, set payment method
+			// Direct debit to be setup for the account using the credit card
+			// Cache the accounts previous payment method information (just in case the payment fails)
+			$iPreviousCreditCard	= $oAccount->CreditCard;
+			$iPreviousDirectDebit	= $oAccount->DirectDebit;
+			$iPreviousBillingType	= $oAccount->BillingType;
+			
+			// Create a new credit card
+			$oCreditCard				= new Credit_Card();
+			$oCreditCard->AccountGroup	= $oAccount->AccountGroup;
+			$oCreditCard->CardType		= $iCardType;
+			$oCreditCard->Name			= $sName;
+			$oCreditCard->CardNumber	= Encrypt($sCardNumber);
+			$oCreditCard->ExpMonth		= str_pad($iMonth, 2, '0', STR_PAD_LEFT);
+			$oCreditCard->ExpYear		= $iYear;
+			$oCreditCard->CVV			= Encrypt($iCVV);
+			$oCreditCard->Archived		= 0;
+			$oCreditCard->created_on	= date('Y-m-d H:i:s');
+			$oCreditCard->employee_id	= $iEmployeeId;
+			$oCreditCard->save();
+			
+			// Set the new credit card as the payment method
+			$oAccount->DirectDebit	= null;
+			$oAccount->CreditCard 	= $oCreditCard->Id;
+			$oAccount->BillingType 	= BILLING_TYPE_CREDIT_CARD;
+			$oAccount->save($iEmployeeId);
+			
+			Log::getLog()->log("Created credit card {$oCreditCard->id}, saved as payment method");
+		}
+		
+		// Validate the email address
+		if (!EmailAddressValid($sEmail))
+		{
+			throw new Credit_Card_Payment_Exception('The email address provided is invalid.');
 		}
 		
 		try
 		{
-			self::_makePayment($iAccountId, $iCardType, $sCardNumber, $iCVV, $iMonth, $iYear, $sName, $fAmount);
+			// Attempt payment
+			$oTransactionDetails	= self::_makePayment($iAccountId, $iCardType, $sCardNumber, $iCVV, $iMonth, $iYear, $sName, $fAmount, $iEmployeeId, $iContactId);
 		}
 		catch (Exception $oException)
 		{
+			// Payment failed
 			if ($bDirectDebit)
 			{
-				// TODO: CR135 archive the direct debit, reinstate the previous payment method
+				// Archive the credit card, reinstate the previous payment method
+				$oCreditCard->Archived	= 1;
+				$oCreditCard->save();
+				
+				$oAccount->DirectDebit	= $iPreviousDirectDebit;
+				$oAccount->CreditCard 	= $iPreviousCreditCard;
+				$oAccount->BillingType 	= $iPreviousBillingType;
+				$oAccount->save($iEmployeeId);
+				
+				Log::getLog()->log("Reverted payment method");
 			}
 			
 			throw $oException;
 		}
 		
-		// TODO: CR135 send the payment confirmation email
+		// Send the payment confirmation email
+		$bSentConfirmationEmail	= true;
+		$bCanSendEmail			= EmailAddressValid($sEmail);
+		if ($bCanSendEmail && (!self::isTestMode() || (defined('SEND_CREDIT_CARD_EMAILS_IN_TEST_MODE') && SEND_CREDIT_CARD_EMAILS_IN_TEST_MODE === TRUE)))
+		{
+			$oCustomerGroup 			= Customer_Group::getForId($oAccount->customerGroup);
+			$oCreditCardPaymentConfig 	= Credit_Card_Payment_Config::getForCustomerGroup($oAccount->customerGroup);
+			try
+			{
+				$aMessageTokens		= self::buildMessageTokens($oTransactionDetails, $oContact->getName(), $sEmail);
+				$oEmail 			= new Email_Notification(EMAIL_NOTIFICATION_PAYMENT_CONFIRMATION, $oAccount->CustomerGroup);
+				$oEmail->subject	= (self::isTestMode() ? '[TEST EMAIL] ' : '')."{$oCustomerGroup->name} Credit Card Payment Confirmation (Ref: {$oTransactionDetails->sPurchaseOrderNumber} / {$oTransactionDetails->sTransactionId})";
+				$oEmail->text 		= self::replaceMessageTokens($oCreditCardPaymentConfig->confirmationEmail, $aMessageTokens);
+				$oEmail->to 		= (self::isTestMode() ? 'ybs-admin@ybs.net.au' : $sEmail);
+				$oEmail->send();
+			}
+			catch (Exception $oException)
+			{
+				// Ignore this case
+			}
+		}
 		
-		// TODO: CR135 log payment made action (email notification on failure)
+		// Log the 'Payment Made' Action
+		try
+		{
+			$sExtraDetails	= "";
+			if (Flex::isAdminSession())
+			{
+				$sExtraDetails	.= "SecurePay credit card transaction via Flex\n Receipt No: {$oTransactionDetails->sTransactionId}";
+			}
+			else
+			{
+				$sExtraDetails	.= "SecurePay credit card transaction via Customer Portal, made by customer: ".$oContact->getName()."\n Receipt No: {$oTransactionDetails->sTransactionId}";
+			}
+			Action::createAction('Payment Made', $sExtraDetails, $oAccount->id, NULL, NULL, $iEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
+		}
+		catch (Exception $oException)
+		{
+			// Fail silently, but notify system administrators
+			Flex::sendEmailNotificationAlert(
+				"Failed to record Payment Action", 
+				"Account: {$oAccount->id}\nContact: ".$oContact->getName()."\nEmployee Id: {$iEmployeeId}\n\nException Message:".$oException->getMessage(), 
+				FALSE, 
+				TRUE, 
+				TRUE
+			);
+		}
+		
+		return $oTransactionDetails;
 	}
 
-	private static function _makePayment($iAccountId, $iCardType, $sCardNumber, $iCVV, $iMonth, $iYear, $sName, $fAmount)
+	private static function _makePayment($iAccountId, $iCardType, $sCardNumber, $iCVV, $iMonth, $iYear, $sName, $fAmount, $iEmployeeId, $iContactId)
 	{
-		$bTestMode	= Credit_Card_Payment::isTestMode();
+		$iTime					= 	time();
+		$bTestMode				= 	Credit_Card_Payment::isTestMode();
+		$oTransactionDetails	= 	new Credit_Card_Payment_TransactionDetails(
+										array(
+											'iTime'			=> $iTime,
+											'iAccountId'	=> $iAccountId,
+											'sCardNumber'	=> $sCardNumber
+										)
+									);
 		
-		// TODO: CR135 check module is active
+		$oAccount			= Account::getForId($iAccountId);
+		$bWaiveSurcharge	= ($oAccount->BillingType == BILLING_TYPE_CREDIT_CARD);
 		
-		// TODO: CR135 validate all parameters
+		// Check that the module is enabled
+		if (!Flex_Module::isActive(FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS))
+		{
+			// This should never happen
+			throw new Exception_Assertion("Credit Card Payments are not enabled in Flex", "Flex Module FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS is inactive, but its functionality has been called", "Inactive Flex Module has been accessed");
+		}
+		
+		// Validate the expiry date
+		$iMonth		= intval($iMonth);
+		$iMonthNow 	= intval(date("m"));
+		if ($iMonth <= 0 || $iMonth > 12)
+		{
+			throw new Credit_Card_Payment_Exception('Invalid expiry month specified.');
+		}
+		
+		$iYear 		= intval($iYear);
+		$iYearNow 	= intval(date("Y"));
+		if ($iYear > ($iYearNow + 10))
+		{
+			throw new Credit_Card_Payment_Exception('Invalid expiry year specified.');
+		}
+		
+		if (($iYear == $iYearNow && $iMonth < $iMonthNow) || $iYear < $iYearNow)
+		{
+			throw new Credit_Card_Payment_Exception('The expiry date has already passed.');
+		}
+
+		// $iCardType
+		$oCardType	= Credit_Card_Type::getForId(intval($iCardType));
+		if (!$oCardType)
+		{
+			throw new Credit_Card_Payment_Exception('The selected credit card type is not supported.');
+		}
+
+		// $sCardNumber - Need to check that the type matches that specified and that the number is valid.
+		$sCardNumber	= preg_replace("/[^0-9]+/", "", $sCardNumber);
+		if (!$oCardType->cardNumberIsValid($sCardNumber))
+		{
+			throw new Credit_Card_Payment_Exception('The specified card number is invalid for the credit card type.');
+		}
+
+		// Need to check that the cvv is valid for the card type.
+		$sCVV	= preg_replace("/[^0-9]+/", "", $iCVV);
+		if (!$oCardType->cvvIsValid($sCVV))
+		{
+			throw new Credit_Card_Payment_Exception("CVV should be " . $oCardType->cvvLength . " digits long.");
+		}
+
+		// Check that the name has been specified.
+		$sName	= trim($sName);
+		if (!$sName)
+		{
+			throw new Credit_Card_Payment_Exception('No credit card holder name specified.');
+		}
+
+		// Check that the amount has been specified and that it is a positive amount between the min and max permitted for the card type.
+		$sAmount	= preg_replace(array("/^0+/", "/[^0-9\.\-]+/"), "", '0'.$fAmount);
+		if ($sAmount[0] == '.') 
+		{
+			$sAmount = '0' . $sAmount;
+		}
+		
+		if (!$sAmount || strpos($sAmount, '-') !== FALSE || !preg_match("/^(0|[1-9]+[0-9]*)(|\.[0-9]*)$/", $sAmount))
+		{
+			throw new Credit_Card_Payment_Exception('Invalid amount specified.');
+		}
+		
+		$sAmount	= self::amount2dp($sAmount);
+		
+		// Calculate the surcharge
+		$fSurcharge	= $bWaiveSurcharge ? 0 : $oCardType->calculateSurcharge($fAmount);
+		
+		// Calculate the total
+		$fTotal	= $fAmount + $fSurcharge;
+		
+		// Check that the Total amount is between the min and max permitted for the card type.
+		if ($fTotal < $oCardType->minimumAmount)
+		{
+			throw new Credit_Card_Payment_Exception('Invalid amount specified. It is too small for the given card type.');
+		}
+		else if ($fTotal > $oCardType->maximumAmount)
+		{
+			throw new Credit_Card_Payment_Exception('Invalid amount specified. It is too large for the given card type.');
+		}
+	
+		// Convert amount to cents
+		$iAmount 	= intval(self::amountInCents($fAmount));
+		$iSurcharge	= intval(self::amountInCents($fSurcharge));
+		$iTotal 	= intval(self::amountInCents($fTotal));
+
+		Log::getLog()->log("F: amt={$fAmount}, sur={$fSurcharge}, tot={$fTotal}");
+		Log::getLog()->log("I: amt={$iAmount}, sur={$iSurcharge}, tot={$iTotal}");
+
+		// Check that the amount + surcharge comes to total and that the surcharge is right for the credit card type.
+		if (abs($iTotal - ($iSurcharge + $iAmount)) > 0)
+		{
+			throw new Credit_Card_Payment_Exception("The amounts specified do not add up. [abs($iTotal - ($iSurcharge + $iAmount)) > 0]");
+		}
+		
+		// Everything is valid, store in the transaction details
+		$oTransactionDetails->fAmount		= $fAmount;
+		$oTransactionDetails->iAmount		= $iAmount;
+		$oTransactionDetails->fSurcharge	= $fSurcharge;
+		$oTransactionDetails->iSurcharge	= $iSurcharge;
+		$oTransactionDetails->fTotal		= $fTotal;
+		$oTransactionDetails->iTotal		= $iTotal;
 		
 		try
 		{
-			// TODO: CR135 get account details
+			// We should now check to see if the customer group for the account allows credit card payments (it requires a config)
+			$oCreditCardPaymentConfig = Credit_Card_Payment_Config::getForCustomerGroup($oAccount->customerGroup);
+			if (!$oCreditCardPaymentConfig)
+			{
+				throw new Exception_Assertion("Credit Card Payments have not been configurred in Flex Admin.", "Credit_Card_Payment_Config::getForCustomerGroup({$oAccount->customerGroup}) didn't return anything");
+			}
 			
-			// TODO: CR135 verify that the customer group allows credit card payments	
-			
-			// TODO: CR135 create payment_request
-			$removeme	= true;
+			// Create payment_request
+			$oPaymentRequest	= Payment_Request::generatePending($iAccountId, PAYMENT_TYPE_CREDIT_CARD, $fTotal, null, $iEmployeeId);
 		}
 		catch (Exception $oException)
 		{
 			throw new Credit_Card_Payment_Exception("Failed credit card payment preparation.".($bTestMode ? " ".$oException->getMessage() : ''));
 		}
 		
-		// TODO: CR135 determine total amount & surcharge from whether on direct debit or not
-		$fTotal	= null;
-		
 		try
 		{
-			// TODO: CR135 start transaction
+			// Start Transaction
+			$oDataAccess	= DataAccess::getDataAccess();
+			$oDataAccess->TransactionStart();
 			
-			// TODO: CR135 get the credit card payment config for the accounts customer group
+			// Get secure pay password & merchant id
+			$sMerchantId	= $oCreditCardPaymentConfig->merchantId;
+			$sPassword		= $oCreditCardPaymentConfig->password;
 			
-			// TODO: CR135 get secure pay password & merchant id
-			$sMerchantId	= null;
-			$sPassword		= null;
+			// SecurePayMessage/MessageInfo/MessageID
+			$sMessageId	= substr($oAccount->id.'.'.base64_encode($iTime), 0, 30);
+	
+			// SecurePayMessage/Payment/TxnList/Txn/purchaseOrderNo
+			$sPurchaseOrderNo							= $oAccount->id.'.'.$iTime;
+			$oTransactionDetails->sPurchaseOrderNumber	= $sPurchaseOrderNo;
+	
+			$sPassword	= $creditCardPaymentConfig->password;
+			if (self::isTestMode())
+			{
+				//$sPassword	= 'pr0talk1';
+				$sPassword	= '4bn9tv5l';
+			}
 			
-			// TODO: CR135 generate message id
-			$iTime		= null;
-			$sMessageId	= null;
+			// Date string used by multiple records that are created below
+			$sNowDate	= date('Y-m-d', $iTime);
+				
+			// Create a Payment
+			$oPayment				= new Payment();
+			$oPayment->AccountGroup	= $oAccount->AccountGroup;
+			$oPayment->Account		= $iAccountId;
+			$oPayment->EnteredBy	= $iEmployeeId;
+			$oPayment->Amount		= $fTotal;
+			$oPayment->Balance		= $fTotal;
+			$oPayment->PaidOn		= $sNowDate;
+			$oPayment->OriginId		= substr($sCardNumber, 0, 6).'...'.substr($sCardNumber, -3);
+			$oPayment->OriginType	= PAYMENT_TYPE_CREDIT_CARD;
+			$oPayment->Status		= PAYMENT_WAITING;
+			$oPayment->PaymentType	= PAYMENT_TYPE_CREDIT_CARD;
+			$oPayment->Payment		= '';	// TODO: CR135 -- remove this before release (after the changes have been made to the dev db)
+			$oPayment->save();
 			
-			// TODO: CR135 generate purchase order number
-			$sPurchaseOrderNo	= null;
+			if ($fSurcharge != 0)
+			{
+				// Create a charge for the transaction surcharge
+				$oCharge					= new Charge();
+				$oCharge->AccountGroup		= $oAccount->AccountGroup;
+				$oCharge->Account			= $iAccountId;
+				$oCharge->CreatedBy			= $iEmployeeId;
+				$oCharge->Amount			= RemoveGST($fSurcharge);
+				$oCharge->CreatedOn			= $sNowDate;
+				$oCharge->ChargedOn			= $sNowDate;
+				$oCharge->Status			= CHARGE_APPROVED;
+				$oCharge->LinkType			= CHARGE_LINK_PAYMENT;
+				$oCharge->LinkId			= $oPayment->Id;
+				$oCharge->ChargeType		= 'CCS';
+				$oCharge->Nature			= 'DR';
+				$oCharge->global_tax_exempt	= 0;
+				$oCharge->Description		= ($oCreditCardType->name.' Surcharge for Payment on '.date('d/m/Y', $iTime).' ('.$fTotal.') @ '.(round(floatval($oCreditCardType->surcharge) * 100, 2)).'%');
+				$oCharge->charge_model_id	= CHARGE_MODEL_CHARGE;
+				$oCharge->Notes				= '';
+				$oCharge->save();
+			}
 			
-			// TODO: CR135 create payment
+			// Create a credit_card_payment_history record
+			$oCreditCardPaymentHistory						= new Credit_Card_Payment_History();
+			$oCreditCardPaymentHistory->account_id 			= $iAccountId;
+			$oCreditCardPaymentHistory->employee_id 		= $iEmployeeId;
+			$oCreditCardPaymentHistory->contact_id 			= $iContactId;
+			$oCreditCardPaymentHistory->receipt_number 		= $sPurchaseOrderNo;
+			$oCreditCardPaymentHistory->amount 				= $fTotal;
+			$oCreditCardPaymentHistory->payment_datetime 	= date('Y-m-d H:i:s', $iTime);
+			$oCreditCardPaymentHistory->payment_id			= $oPayment->Id;
+			$oCreditCardPaymentHistory->save();
 			
-			// TODO: CR135 link payment_request to payment
+			// Link payment_request to payment
+			$oPaymentRequest->payment_request_status_id	= PAYMENT_REQUEST_STATUS_DISPATCHED;
+			$oPaymentRequest->payment_id				= $oPayment->Id;
+			$oPaymentRequest->save();
 			
+			// Make the secure pay request
 			$sTransactionId	= self::_securePayRequest($sMerchantId, $sPassword, $iTime, $sMessageId, $fTotal, $sPurchaseOrderNo, $sCardNumber, $iCVV, $iMonth, $iYear);
 			
-			// TODO: CR135 set payment transaction reference
+			// Set the Payments transaction reference
+			$oPayment->TXNReference	= $sTransactionId;
+			$oPayment->save();
 			
-			// TODO: CR135 commit transaction
-		}
-		catch (Credit_Card_Payment_SecurePay_Exception $oException)
-		{
-			// TODO: CR135 rollback transaction
+			// Set the credit card payment history transaction reference
+			$oCreditCardPaymentHistory->txn_id	= $sTransactionId;
+			$oCreditCardPaymentHistory->save();
 			
-			throw new Credit_Card_Payment_Exception("Failed to make credit card payment. ".($bTestMode ? $oException->getDebugMessage() : $oException->getMessage()));
+			// Cache transaction id in details
+			$oTransactionDetails->sTransactionId	= $sTransactionId;
+			
+			// Commit transaction
+			$oDataAccess->TransactionCommit();
 		}
 		catch (Exception $oException)
 		{
-			// TODO: CR135 rollback transaction
+			// Rollback transaction
+			$oDataAccess->TransactionRollback();
 			
-			throw new Credit_Card_Payment_Exception("Failed to make credit card payment.".($bTestMode ? " ".$oException->getMessage() : ''));
+			throw $oException;
 		}
 		
-		self::_createPaymentResponse();
+		return $oTransactionDetails;
 	}
 
 	private static function _securePayRequest($sMerchantId, $sPassword, $iTime, $sMessageId, $fTotal, $sPurchaseOrderNo, $sCardNumber, $iCVV, $iMonth, $iYear)
 	{
+		// TODO: CR135 -- remove this bypass (in place while no valid securepay testing password is known)
+		return '{**TXNID**}';
+		
 		// Send request
 		$sXmlmessage	= self::setPaymentCreditCard($sMerchantId, $sPassword, $iTime, $sMessageId, $fTotal, $sPurchaseOrderNo, $sCardNumber, $iCVV, $iMonth, $iYear);
 		$sHost 			= self::getHost();
 		$sResponse 		= self::openSocket($sHost, $sXmlmessage);
 		
-		// TODO: CR135 check/parse the response (exception if not approved, pass the response, response code & reason into the exception)
+		// Need to check the XML response is valid and that the status code (SecurePayMessage/Status/statusCode) == "000".
+		$aMatches 		= array();
+		$sStatusCode 	= '999';
 		
-		// TODO: CR135 return the transaction id
-	}
+		// Get actual status code of response
+		if (preg_match("/\<statusCode(?:| [^\>]*)\>([^\>]*)\</i", $sResponse, $aMatches))
+		{
+			$sStatusCode	= $aMatches[1];
+		}
+		// If not, we should throw a Credit_Card_Payment_Remote_Processing_Error exception
+		if ($sStatusCode !== '000')
+		{
+			throw new Credit_Card_Payment_Remote_Processing_Error($sStatusCode);
+		}
 
-	private static function _createPaymentResponse()
-	{
-		// TODO: CR135 try ? times, return on success
-		
-		// TODO: CR135 if no success, assert with full payment_response details to allow manual insertion
+		// Need to check the XML payment response is ok and that the response code (SecurePayMessage/Payment/TxnList/Txn/responseCode) == "00".
+		$sResponseCode	= 'xx';
+		$sResponseText	= '';
+
+		// Get the actual response code from the response
+		if (preg_match("/\<responseCode(?:| [^\>]*)\>([^\>]*)\</i", $sResponse, $aMatches))
+		{
+			$sResponseCode	= $aMatches[1];
+		}
+		// Get the actual response text from the response
+		if (preg_match("/\<responseText(?:| [^\>]*)\>([^\>]*)\</i", $sResponse, $aMatches))
+		{
+			$sResponseText	= $aMatches[1];
+		}
+
+		// Check to see if the transaction was approved
+		// This should be determined from the SecurePayMessage/Payment/TxnList/Txn/approved element in the XML (always 'Yes' or 'No'))
+		$sApproved	= preg_match("/\<approved(?:| [^\>]*)\>Yes\</i", $sResponse);
+		// If not approved, we should return a message containing the response text (SecurePayMessage/Payment/TxnList/Txn/responseText)
+		if (!$sApproved)
+		{
+			throw new Credit_Card_Payment_Validation_Exception($sResponseCode, $sResponseText);
+		}
+
+		// Find the TXN Id for the payment
+		$sTxnId	= '';
+		if (preg_match("/\<txnID(?:| [^\>]*)\>([0-9]+)\<\/txnID\>/i", $sResponse, $aMatches))
+		{
+			$sTxnId	= $aMatches[1];
+		}
+				
+		return $sTxnId;
 	}
 
 	// Should probably detect this automatically and use the primary contact details
@@ -1256,6 +1645,8 @@ class Credit_Card_Payment
 	}
 
 }
+
+class Credit_Card_Payment_Exception extends Exception {};
 
 class Credit_Card_Payment_Incorrect_Password_Exception extends Exception
 {

@@ -5,19 +5,60 @@ class JSON_Handler_Credit_Card_Payment extends JSON_Handler
 
 	public function makePayment($intAccountNumber, $strEmail, $intCardType, $strCardNumber, $intCVV, $intMonth, $intYear, $strName, $fltAmount, $fltSurcharge, $fltTotal, $bolDD, $strPassword)
 	{
-		$response = array();
-		
+		$response 	= array();
+		$bTestMode	= Credit_Card_Payment::isTestMode();
 		try 
 		{
-			$response['OUTCOME'] = 'FAILED';
-			$response['MESSAGE'] = 'Unknown';
-			if (Credit_Card_Payment::makePayment($intAccountNumber, $strEmail, $intCardType, $strCardNumber, $intCVV, $intMonth, $intYear, $strName, $fltAmount, $fltSurcharge, $fltTotal, $bolDD, $strPassword, $response))
+			$response['OUTCOME']	= 'FAILED';
+			$response['MESSAGE']	= 'Unknown';
+			
+			// Check that the requested account is in the authenticated customers account group
+			$oAccount		= Account::getForId($intAccountNumber);
+			$oContact		= Contact::getForId(Flex::getUserId());
+			$iEmployeeId	= Employee::SYSTEM_EMPLOYEE_ID;
+			
+			if (!$oContact || !$oContact->canAccessAccount($oAccount))
 			{
-				$response['OUTCOME'] = 'SUCCESS';
+				throw new Exception("Invalid user account selected for credit card payment.");
 			}
-			else
+
+			// Check that the customer provided a valid password
+			if ($bolDD && !$oContact->passwordIsValid($strPassword))
 			{
-				$response['OUTCOME'] = 'INVALID';
+				throw new Credit_Card_Payment_Incorrect_Password_Exception();
+			}
+			
+			$oTransactionDetails	=	Credit_Card_Payment::makeCreditCardPayment(
+											$intAccountNumber, 
+											$oContact->id, 
+											$iEmployeeId, 
+											$intCardType, 
+											$strCardNumber, 
+											$intCVV, 
+											$intMonth, 
+											$intYear, 
+											$strName, 
+											$fltAmount, 
+											$strEmail,
+											$bolDD
+										);
+			
+			$response['OUTCOME']	= 'SUCCESS';
+			$response['MESSAGE']	= 'Thank you for your payment.';
+			
+			if ($bolDD && Flex::isCustomerSession())
+			{
+				// Send the direct debit confirmation email
+				$oAccount					= Account::getForId($oTransactionDetails->iAccountId);
+				$oCustomerGroup				= Customer_Group::getForId($oAccount->CustomerGroup);
+				$oCreditCardPaymentConfig 	= Credit_Card_Payment_Config::getForCustomerGroup($oAccount->CustomerGroup);
+				
+				$aMessageTokens		= Credit_Card_Payment::buildMessageTokens($oTransactionDetails, $oContact->getName(), $strEmail);
+				$oEmail 			= new Email_Notification(EMAIL_NOTIFICATION_PAYMENT_CONFIRMATION, $oAccount->customerGroup);
+				$oEmail->subject	= "{$oCustomerGroup->name} Direct Debit Setup Confirmation";
+				$oEmail->text 		= Credit_Card_Payment::replaceMessageTokens($oCreditCardPaymentConfig->directDebitEmail, $aMessageTokens);
+				$oEmail->to 		= ($bTestMode ? 'ybs-admin@ybs.net.au' : $strEmail);
+				$oEmail->send();
 			}
 		}
 		catch (Credit_Card_Payment_Incorrect_Password_Exception $e)
@@ -30,7 +71,7 @@ class JSON_Handler_Credit_Card_Payment extends JSON_Handler
 			// Maybe only do this when running in test mode?
 			$response['OUTCOME'] = 'UNAVAILABLE';
 			$response['MESSAGE'] = 'We were unable to read the response from SecurePay so we do not know whether the payment succeeded or failed. Please do not retry payment at this time.';
-			if (Credit_Card_Payment::isTestMode())
+			if ($bTestMode)
 			{
 				$response['MESSAGE'] = $e->getMessage();
 			}
@@ -41,7 +82,7 @@ class JSON_Handler_Credit_Card_Payment extends JSON_Handler
 			// Maybe only do this when running in test mode?
 			$response['OUTCOME'] = 'UNAVAILABLE';
 			$response['MESSAGE'] = 'We were unable to connect to SecurePay to process the payment.';
-			if (Credit_Card_Payment::isTestMode())
+			if ($bTestMode)
 			{
 				$response['MESSAGE'] = $e->getMessage();
 			}
@@ -51,7 +92,7 @@ class JSON_Handler_Credit_Card_Payment extends JSON_Handler
 			// Should probably send an email to alert us to the fact that payments are failing!
 			$response['OUTCOME'] = 'FAILED';
 			$response['MESSAGE'] = 'SecurePay was unable to process the payment request.';
-			if (Credit_Card_Payment::isTestMode()) 
+			if ($bTestMode) 
 			{
 				$response['MESSAGE'] = $e->getMessage();
 			}
@@ -81,14 +122,15 @@ class JSON_Handler_Credit_Card_Payment extends JSON_Handler
 		// If an exception was thrown and caught, email the details to ybs
 		if (isset($e))
 		{
-			$arrCustomerDetails = array("AccountId"			=> $intAccountNumber,
+			$arrCustomerDetails =	array(
+										"AccountId"			=> $intAccountNumber,
 										"Email"				=> $strEmail,
 										"CreditCardNumber"	=> substr($strCardNumber, 0, 3) ."***". substr($strCardNumber, -5),
 										"Name"				=> $strName,
 										"Amount"			=> $fltAmount,
 										"Surcharge"			=> $fltSurcharge,
 										"TotalCharged"		=> $fltTotal
-										);
+									);
 			$strCustomerDetails		= print_r($arrCustomerDetails, TRUE);
 			$strMessageSentToUser	= $response['MESSAGE'];
 			$strExceptionMessage	= $e->getMessage();

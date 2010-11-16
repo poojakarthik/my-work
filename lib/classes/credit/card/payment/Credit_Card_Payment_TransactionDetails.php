@@ -3,10 +3,15 @@
 class Credit_Card_Payment_TransactionDetails
 {
 	public $iTime					= null;
-	public $fAmount					= null;
-	public $fSurcharge				= null;
 	public $iAccountId				= null;
+	
+	public $fAmount					= null;
+	public $iAmount					= null;
+	public $fSurcharge				= null;
+	public $iSurcharge				= null;
 	public $fTotal					= null;
+	public $iTotal					= null;
+	
 	public $fBalanceBefore			= null;
 	public $sCardNumber				= null;
 	public $sTransactionId			= null;

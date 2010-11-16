@@ -69,6 +69,16 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		$this->LoadJavascript("reflex_popup");
 		$this->LoadJavascript("credit_card_type");
 		$this->LoadJavascript("credit_card_payment");
+		
+		$this->LoadJavascript("section");
+		$this->LoadJavascript("reflex_validation");
+		$this->LoadJavascript("control_field");
+		$this->LoadJavascript("control_field_text");
+		$this->LoadJavascript("control_field_select");
+		$this->LoadJavascript("control_field_checkbox");
+		$this->LoadJavascript("control_field_radiobutton");
+		$this->LoadJavascript("control_field_combo_date");
+		$this->LoadJavascript("popup_credit_card_payment");
 	}
 	
 	//------------------------------------------------------------------------//

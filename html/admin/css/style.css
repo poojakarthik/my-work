@@ -3580,12 +3580,14 @@ div.section-header-options div.followup-configure-list-pagination
 
 /************************ START - Add Direct Debit PopUp - START ************************/
 
-div.popup-add-direct-debit
+div.popup-add-direct-debit,
+.popup-account-direct-debit-receipt-email
 {
 	padding	: 0.5em;
 }
 
-div.popup-add-direct-debit > div.buttons
+div.popup-add-direct-debit > div.buttons,
+.popup-account-direct-debit-receipt-email > div.buttons
 {
 	text-align	: center;
 }
@@ -3633,18 +3635,24 @@ div.popup-add-direct-debit > div.buttons
 	font-variant	: small-caps;
 }
 
-.popup-add-direct-debit-submitpaymentcheckbox .control-field
+.popup-add-direct-debit-submitpaymentcheckbox .control-field,
+.popup-add-direct-debit-nopaymentcheckbox .control-field
 {
 	display			: inline-block;
 	vertical-align	: middle;
 	margin-left		: 0.5em;
 }
 
-.popup-add-direct-debit-submitpaymentcheckbox > span
+.popup-add-direct-debit-submitpaymentcheckbox > span,
+.popup-add-direct-debit-nopaymentcheckbox > span
 {
 	vertical-align	: middle;
 	padding-left	: 0.5em;
-	cursor			: pointer;
+}
+
+.popup-add-direct-debit-submitpaymentcheckbox > span
+{
+	cursor	: pointer;
 }
 
 .popup-add-direct-debit-paymentsection .section-header
@@ -3705,6 +3713,83 @@ div.popup-add-direct-debit > div.buttons
 .popup-add-direct-debit-preview
 {
 	margin	: 1em 0 0 3em;
+}
+
+.popup-account-direct-debit-receipt-email ul.reset
+{
+	margin	: 0em;
+}
+
+.popup-account-direct-debit-receipt-email .section,
+.popup-account-direct-debit-receipt-email-description
+{
+	margin-bottom	: 0.5em;
+}
+
+.popup-account-direct-debit-receipt-email-contact
+{
+	margin-bottom	: 0.25em;
+}
+
+.popup-account-direct-debit-receipt-email-contact > .control-field
+{
+	vertical-align	: middle;
+	margin			: 0em 0em 0em 0.5em;
+	display			: inline-block;
+}
+
+.popup-account-direct-debit-receipt-email-contact > span
+{
+	vertical-align	: middle;
+	padding-left	: 0.5em;
+	cursor			: pointer;
+}
+
+.popup-account-direct-debit-receipt-email-otheremail > .control-field
+{
+	display			: inline-block;
+	width			: 91%;
+	vertical-align	: middle;
+	padding-left	: 0.5em;
+}
+
+.popup-account-direct-debit-receipt-email-otheremail > .control-field > input
+{
+	width	: 100%;
+}
+
+.popup-account-direct-debit-receipt-email-otheremail > img
+{
+	vertical-align	: text-top;
+	cursor			: pointer;
+	margin-left		: 0.5em;
+}
+
+.popup-account-direct-debit-receipt-email-otheremail-item > span
+{
+	margin-left	: 0.5em;
+}
+
+.popup-account-direct-debit-receipt-email-otheremail-item > img
+{
+	float		: right;
+	margin-top	: 0.1em;
+}
+
+.popup-account-direct-debit-receipt-email-otheremail-item-remove
+{
+	cursor	: pointer;
+}
+
+.popup-account-direct-debit-receipt-email-norecipients
+{
+	font-style	: italic;
+	opacity		: 0.75;
+}
+
+.popup-account-direct-debit-receipt-email-receipt
+{
+	margin-left	: 0.5em;
 }
 
 /************************ END - Add Direct Debit PopUp - END ************************/

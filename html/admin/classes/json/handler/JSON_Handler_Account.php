@@ -662,9 +662,10 @@ class JSON_Handler_Account extends JSON_Handler
 
 	public function addCreditCard($iAccountId, $oDetails)
 	{
+		$bGod	= Employee::getForId(Flex::getUserId())->isGod();
+		
 		// Start a new database transaction
 		$oDataAccess	= DataAccess::getDataAccess();
-
 		if (!$oDataAccess->TransactionStart())
 		{
 			// Failure!
@@ -681,17 +682,6 @@ class JSON_Handler_Account extends JSON_Handler
 			{
 				throw new JSON_Handler_Account_Exception('You do not have permission to add a credit card');
 			}
-
-			// Create orm object
-			$oCreditCard	= new Credit_Card();
-
-			// Set the account group
-			$oAccountGroup				= Account_Group::getForAccountId($iAccountId);
-			$oCreditCard->AccountGroup	= $oAccountGroup->Id;
-
-			// Default values, that aren't supplied by interface
-			$oCreditCard->Archived		= 0;
-			$oCreditCard->employee_id	= Flex::getUserId();
 
 			// Validate input
 			$aErrors	= array();
@@ -754,6 +744,17 @@ class JSON_Handler_Account extends JSON_Handler
 			}
 			else
 			{
+				// Create orm object
+				$oCreditCard	= new Credit_Card();
+	
+				// Set the account group
+				$oAccountGroup				= Account_Group::getForAccountId($iAccountId);
+				$oCreditCard->AccountGroup	= $oAccountGroup->Id;
+	
+				// Default values, that aren't supplied by interface
+				$oCreditCard->Archived		= 0;
+				$oCreditCard->employee_id	= Flex::getUserId();
+				
 				// Update object & save
 				$oCreditCard->CardType		= $oDetails->iCardType;
 				$oCreditCard->Name			= $oDetails->sCardHolderName;
@@ -766,6 +767,65 @@ class JSON_Handler_Account extends JSON_Handler
 
 				// Everything looks OK -- Commit!
 				$oDataAccess->TransactionCommit();
+
+				// Modify the payment method for the account
+				if ($oDetails->bSetPaymentMethod)
+				{
+					$aResult	= $this->setPaymentMethod($iAccountId, PAYMENT_METHOD_DIRECT_DEBIT, DIRECT_DEBIT_TYPE_CREDIT_CARD, $oCreditCard->Id);
+					if ($aResult['Success'] === false)
+					{
+						// Failed
+						throw new Exception("Failed to modify the payment method for the Account. ".$aResult['Message']);
+					}
+				}
+				
+				// Make credit card payment if necessary 
+				$oTransactionDetails	= null;
+				if ($oDetails->bSubmitPayment)
+				{
+					// Payment to be made
+					$oAccount	= Account::getForId($iAccountId);
+					$fAmount	= null;
+					if ($oDetails->bPaymentAmountBalance)
+					{
+						$fAmount	= $oAccount->getBalance();
+					}
+					else if ($oDetails->bPaymentAmountOverdueBalance)
+					{
+						$fAmount	= $oAccount->getOverdueBalance();
+					}
+					else if ($oDetails->bPaymentAmountOther)
+					{
+						$fAmount	= (float)$oDetails->sPaymentAmount;
+					}
+					
+					if ($fAmount === null)
+					{
+						throw new Exception("Invalid amount supplied");
+					}
+					
+					// Make the credit card transaction
+					$oContact	= Contact::getForId($oAccount->PrimaryContact);
+					if (!$oContact)
+					{
+						throw new Exception("Failed to load primary contact details for the account.");
+					}
+					
+					$oTransactionDetails	=	Credit_Card_Payment::makeCreditCardPayment(
+													$iAccountId, 
+													$oContact->Id, 
+													Flex::getUserId(), 
+													$oDetails->iCardType, 
+													$oDetails->iCardNumber,
+													$oDetails->iCVV, 
+													$oDetails->iExpiryMonth, 
+													$oDetails->iExpiryYear, 
+													$oDetails->sCardHolderName, 
+													$fAmount, 
+													$oContact->Email, 
+													false	// Use details for direct debit
+												);
+				}
 
 				// Get the card type name
 				$oStdClassCreditCard					= $oCreditCard->toStdClass();
@@ -788,9 +848,10 @@ class JSON_Handler_Account extends JSON_Handler
 
 				// All good
 				return 	array(
-							"Success"		=> true,
-							"oCreditCard"	=> $oStdClassCreditCard,
-							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+							"Success"				=> true,
+							"oCreditCard"			=> $oStdClassCreditCard,
+							'oTransactionDetails'	=> $oTransactionDetails,
+							"strDebug"				=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 						);
 			}
 		}
@@ -804,6 +865,93 @@ class JSON_Handler_Account extends JSON_Handler
 						"Message"	=> $oException->getMessage(),
 						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 					);
+		}
+		catch (Credit_Card_Payment_Communication_Response_Exception $oException)
+		{
+			// Credit card payment error
+			$sMessage	= 'We were unable to read the response from SecurePay so we do not know whether the payment succeeded or failed. Please do not retry payment at this time.';
+			if (Credit_Card_Payment::isTestMode())
+			{
+				$sMessage	.= ' '.$oException->getMessage();
+			}
+			
+			self::_sendCreditCardPaymentErrorEmail(
+				$iAccountId, 
+				$oContact->Email, 
+				$oDetails->iCardNumber, 
+				$oDetails->sCardHolderName, 
+				$fAmount, 
+				$sMessage
+			);
+			
+			return 	array(
+						"Success"		=> false,
+						"Message"		=> $sMessage,
+						'bPaymentError'	=> true,
+						"strDebug"		=> ($bGod ? $this->_JSONDebug : '')
+					);
+		}
+		catch (Credit_Card_Payment_Communication_Exception $oException)
+		{
+			// Credit card payment error
+			$sMessage	= 'We were unable to connect to SecurePay to process the payment.';
+			if (Credit_Card_Payment::isTestMode())
+			{
+				$sMessage	.= ' '.$oException->getMessage();
+			}
+			
+			self::_sendCreditCardPaymentErrorEmail(
+				$iAccountId, 
+				$oContact->Email, 
+				$oDetails->iCardNumber, 
+				$oDetails->sCardHolderName, 
+				$fAmount, 
+				$sMessage
+			);
+			
+			return 	array(
+						"Success"		=> false,
+						"Message"		=> $sMessage,
+						'bPaymentError'	=> true,
+						"strDebug"		=> ($bGod ? $this->_JSONDebug : '')
+					);
+		}
+		catch (Credit_Card_Payment_Remote_Processing_Error $oException)
+		{
+			// Credit card payment error
+			$sMessage	= 'SecurePay was unable to process the payment request.';
+			if (Credit_Card_Payment::isTestMode())
+			{
+				$sMessage	.= ' '.$oException->getMessage();
+			}
+			
+			return 	array(
+						"Success"		=> false,
+						"Message"		=> $sMessage,
+						'bPaymentError'	=> true,
+						"strDebug"		=> ($bGod ? $this->_JSONDebug : '')
+					);
+		}
+		catch (Credit_Card_Payment_Validation_Exception $oException)
+		{
+			// Credit card payment error
+			$sMessage	= $oException->getMessage();
+			if (Credit_Card_Payment::isTestMode())
+			{
+				$sMessage	.= ' '.$oException->getMessage();
+			}
+			
+			return 	array(
+						"Success"		=> false,
+						"Message"		=> $sMessage,
+						'bPaymentError'	=> true,
+						"strDebug"		=> ($bGod ? $this->_JSONDebug : '')
+					);
+		}
+		catch (Exception_Assertion $oException)
+		{
+			// Assertions should be handled at a much higher level than this
+			throw $oException;
 		}
 		catch (Exception $e)
 		{
@@ -840,17 +988,6 @@ class JSON_Handler_Account extends JSON_Handler
 				throw new JSON_Handler_Account_Exception('You do not have permission to add a direct debit');
 			}
 
-			// Create orm object
-			$oDirectDebit	= new DirectDebit();
-
-			// Set the account group
-			$oAccountGroup				= Account_Group::getForAccountId($iAccountId);
-			$oDirectDebit->AccountGroup	= $oAccountGroup->Id;
-
-			// Default values, that aren't supplied by interface
-			$oDirectDebit->Archived		= 0;
-			$oDirectDebit->employee_id	= Flex::getUserId();
-
 			// Validate input
 			$aErrors	= array();
 
@@ -884,6 +1021,8 @@ class JSON_Handler_Account extends JSON_Handler
 				$aErrors[]	= 'Account Name missing';
 			}
 
+			$aPaymentReceipt	= null;
+
 			if (count($aErrors) > 0)
 			{
 				// Validation errors found, rollback transaction and return the errors
@@ -897,6 +1036,17 @@ class JSON_Handler_Account extends JSON_Handler
 			}
 			else
 			{
+				// Create orm object
+				$oDirectDebit	= new DirectDebit();
+	
+				// Set the account group
+				$oAccountGroup				= Account_Group::getForAccountId($iAccountId);
+				$oDirectDebit->AccountGroup	= $oAccountGroup->Id;
+	
+				// Default values, that aren't supplied by interface
+				$oDirectDebit->Archived		= 0;
+				$oDirectDebit->employee_id	= Flex::getUserId();
+				
 				// Update object & save
 				$oDirectDebit->BankName			= $oDetails->sBankName;
 				$oDirectDebit->BSB				= $oDetails->sBSB;
@@ -904,15 +1054,97 @@ class JSON_Handler_Account extends JSON_Handler
 				$oDirectDebit->AccountName		= $oDetails->sAccountName;
 				$oDirectDebit->created_on		= date('Y-m-d H:i:s');
 				$oDirectDebit->save();
-
+				
+				// Modify the payment method for the account
+				if ($oDetails->bSetPaymentMethod)
+				{
+					$aResult	= $this->setPaymentMethod($iAccountId, PAYMENT_METHOD_DIRECT_DEBIT, DIRECT_DEBIT_TYPE_BANK_ACCOUNT, $oDirectDebit->Id);
+					if ($aResult['Success'] === false)
+					{
+						// Failed
+						throw new Exception("Failed to modify the payment method for the Account. ".$aResult['Message']);
+					}
+				}
+				
+				if ($oDetails->bSubmitPayment)
+				{
+					// Payment to be submitted
+					// Determine the amount
+					$fAmount	= null;
+					if ($oDetails->bPaymentAmountBalance)
+					{
+						$fAmount	= Account::getForId($iAccountId)->getBalance();
+					}
+					else if ($oDetails->bPaymentAmountOverdueBalance)
+					{
+						$fAmount	= Account::getForId($iAccountId)->getOverdueBalance();
+					}
+					else if ($oDetails->bPaymentAmountOther)
+					{
+						$fAmount	= (float)$oDetails->sPaymentAmount;
+					}
+					
+					if ($fAmount === null)
+					{
+						throw new Exception("Invalid amount supplied");
+					}
+					
+					$iEmployeeId	= Flex::getUserId();
+					
+					// Create payment
+					$oPayment				= new Payment();
+					$oPayment->AccountGroup	= $oAccountGroup->Id;
+					$oPayment->Account		= $iAccountId;
+					$oPayment->EnteredBy	= $iEmployeeId;
+					$oPayment->Amount		= $fAmount;
+					$oPayment->Balance		= $fAmount;
+					$oPayment->PaidOn		= date('Y-m-d');
+					$oPayment->OriginId		= $oDirectDebit->AccountNumber;
+					$oPayment->OriginType	= PAYMENT_TYPE_DIRECT_DEBIT_VIA_EFT;
+					$oPayment->TXNReference	= $iAccountId.'.'.time();
+					$oPayment->Status		= PAYMENT_WAITING;
+					$oPayment->PaymentType	= PAYMENT_TYPE_DIRECT_DEBIT_VIA_EFT;
+					$oPayment->Payment		= '';	// TODO: CR135 -- remove this before release (after the changes have been made to the dev db which remove this field)
+					$oPayment->save();
+					
+					// Create payment_request
+					$oPaymentRequest	= 	Payment_Request::generatePending(
+												$iAccountId, 						// Account id
+												PAYMENT_TYPE_DIRECT_DEBIT_VIA_EFT, 	// Payment type
+												round($fAmount, 2), 				// Amount
+												null, 								// Invoice run id
+												$iEmployeeId,						// Employee id
+												$oPayment->Id						// Payment id
+											);
+					$aPaymentReceipt	= 	array(
+												'sTransactionId'	=> $oPayment->TXNReference,
+												'iAccount'			=> $iAccountId,
+												'sPaidOn'			=> $oPaymentRequest->created_datetime,
+												'fAmount'			=> $oPaymentRequest->amount
+											);
+					
+					// Create 'EFT One Time Payment' action
+					$sAmount	= number_format($fAmount, 2);
+					Action::createAction(
+						'EFT One Time Payment', 
+						"Amount: \${$sAmount}\n Receipt Number: {$oPayment->TXNReference}", 
+						$iAccountId, 
+						NULL, 
+						NULL, 
+						$iEmployeeId, 
+						Employee::SYSTEM_EMPLOYEE_ID
+					);
+				}
+				
 				// Everything looks OK -- Commit!
 				$oDataAccess->TransactionCommit();
-
+				
 				// All good
 				return 	array(
-							"Success"		=> true,
-							"oDirectDebit"	=> $oDirectDebit->toStdClass(),
-							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+							"Success"			=> true,
+							"oDirectDebit"		=> $oDirectDebit->toStdClass(),
+							'oPaymentReceipt'	=> $aPaymentReceipt,
+							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 						);
 			}
 		}
@@ -1057,6 +1289,37 @@ class JSON_Handler_Account extends JSON_Handler
 						"Success"	=> false,
 						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database',
 						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+					);
+		}
+	}
+
+	public function getContactEmailAddresses($iAccountId)
+	{
+		$bGod	= Employee::getForId(Flex::getUserId())->isGod();
+		try
+		{
+			$oAccount	= Account::getForId($iAccountId);
+			$aContacts	= $oAccount->getContacts(true);
+			$aResults	= array();
+			foreach ($aContacts as $oContact)
+			{
+				$aResults[$oContact->Id]	=	array(
+													'sName'			=> $oContact->getName(), 
+													'sEmail' 		=> $oContact->Email,
+													'bIsPrimary'	=> ($oContact->Id == $oAccount->PrimaryContact)
+												);
+			}
+
+			return  array(
+						'bSuccess'	=> true,
+						'aContacts'	=> $aResults
+					);
+		}
+		catch (Exception $e)
+		{
+			return 	array(
+						'bSuccess'	=> false,
+						'sMessage'	=> $bGod ? $e->getMessage() : 'There was an error accessing the database. Please contact YBS for assistance.'
 					);
 		}
 	}
@@ -1255,6 +1518,85 @@ class JSON_Handler_Account extends JSON_Handler
 		}
 	}
 	
+	public function getPaymentInfo($iAccountId)
+	{
+		$bGod	= Employee::getForId(Flex::getUserId())->isGod();
+		try
+		{
+			$oAccount		= Account::getForId($iAccountId);
+			$oContact		= Contact::getForId($oAccount->PrimaryContact);
+			$aPaymentMethod	= $this->getCurrentPaymentMethod($iAccountId);
+			$oPaymentMethod	= $aPaymentMethod['oPaymentMethod'];
+			
+			$aInfo	= 	array(
+							'sABN'					=> $oAccount->ABN,
+							'sBusinessName'			=> $oAccount->BusinessName,
+							'sContactName'			=> $oContact->getName(),
+							'sContactEmail'			=> $oContact->Email,
+							'fBalance'				=> $oAccount->getBalance(),
+							'fOverdueBalance'		=> $oAccount->getOverdueBalance(),
+							'iPaymentMethod'		=> $aPaymentMethod['iPaymentMethod'],
+							'iPaymentMethodSubType'	=> $aPaymentMethod['iPaymentMethodSubType'],
+							'oPaymentMethod'		=> $oPaymentMethod
+						);
+				
+			return	array(
+						'bSuccess'	=> true,
+						'aInfo'		=> $aInfo
+					);
+		}
+		catch (Exception $oException)
+		{
+			return 	array(
+						'bSuccess'	=> false,
+						'sMessage'	=> $bGod ? $oException->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'
+					);
+		}
+	}
+	
+	public function sendDirectDebitReceiptEmail($oPaymentReceipt, $aEmails)
+	{
+		$bGod	= Employee::getForId(Flex::getUserId())->isGod();
+		try
+		{
+			$oAccount		= Account::getForId($oPaymentReceipt->iAccount);
+			$oCustomerGroup	= Customer_Group::getForId($oAccount->CustomerGroup);
+			$sPaidOn		= date('d/m/Y', strtotime($oPaymentReceipt->sPaidOn));
+			$sAmount		= number_format($oPaymentReceipt->fAmount, 2);
+			
+			$oEmail	= new Email_Flex();
+			$oEmail->setSubject("Direct Debit Payment Receipt for {$oCustomerGroup->external_name} Account #{$oPaymentReceipt->iAccount}");
+			$oEmail->setBodyText(
+				"Dear Customer,\n\n".
+				"A payment has been lodged for the {$oCustomerGroup->external_name} Account #{$oPaymentReceipt->iAccount} with the following details:\n\n".
+				"\tReciept #:\t{$oPaymentReceipt->sTransactionId}\n".
+				"\tAmount:\t\${$sAmount}\n".
+				"\tPaid On:\t{$sPaidOn}\n\n".
+				"Regards,\n".
+				"The {$oCustomerGroup->external_name} Team"
+			);
+			$oEmail->setFrom("contact@{$oCustomerGroup->email_domain}");
+			foreach ($aEmails as $sEmail)
+			{
+				$sEmail	= 'ybs-admin@ybs.net.au';	// TODO: CR135 -- remove this so that actual recipients receive emails
+				$oEmail->addTo($sEmail);
+			}
+			$oEmail->send();
+			
+			return	array(
+						'bSuccess'		=> true,
+						'sRecipients'	=> implode(', ', $oEmail->getRecipients())
+					);
+		}
+		catch (Exception $oException)
+		{
+			return	array(
+						'bSuccess' 	=> false,
+						'sMessage'	=> $bGod ? $oException->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'
+					);
+		}
+	}
+	
 	private function _getRebill($iAccountId)
 	{
 		$oRebill	= Rebill::getForAccountId($iAccountId);
@@ -1265,6 +1607,36 @@ class JSON_Handler_Account extends JSON_Handler
 			$mResult->oDetails	= $oRebill->getDetails()->toStdClass();
 		}
 		return $mResult;
+	}
+	
+	private static function _sendCreditCardPaymentErrorEmail($iAccountId, $sEmail, $sCardNumber, $sName, $fAmount, $sMessage)
+	{
+			$aCustomerDetails = array(
+									"AccountId"			=> $iAccountId,
+									"Email"				=> $sEmail,
+									"CreditCardNumber"	=> substr($sCardNumber, 0, 3) ."***". substr($sCardNumber, -5),
+									"Name"				=> $sName,
+									"Amount"			=> $fAmount
+								);
+			$sCustomerDetails	= print_r($aCustomerDetails, TRUE);
+			$sMessageSentToUser	= $sMessage;
+			$sExceptionMessage	= $oException->getMessage();
+			
+			$sDetails	= "SecurePay Credit Card transaction failed via the Flex Customer Management System";
+			$sDetails 	.= "Exception Message:\n";
+			$sDetails 	.= "\t$sExceptionMessage\n\n";
+			$sDetails 	.= "Message sent to User:\n";
+			$sDetails 	.= "\t$sMessageSentToUser\n\n";
+			$sDetails 	.= "CustomerDetails:\n";
+			$sDetails 	.= "\t$sCustomerDetails\n\n";
+			
+			Flex::sendEmailNotificationAlert(
+				(Credit_Card_Payment::isTestMode() ? '[TEST MODE] ' : '')."SecurePay Transaction Failure", 
+				$sDetails, 
+				FALSE, 
+				TRUE, 
+				TRUE
+			);
 	}
 }
 

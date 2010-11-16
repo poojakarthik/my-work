@@ -1,13 +1,13 @@
 <?php
 /**
- * Payment_Request
+ * Credit_Card_Payment_History
  *
- * @class	Payment_Request
+ * @class	Credit_Card_Payment_History
  */
-class Payment_Request extends ORM_Cached
+class Credit_Card_Payment_History extends ORM_Cached
 {
-	protected 			$_strTableName			= "payment_request";
-	protected static	$_strStaticTableName	= "payment_request";
+	protected 			$_strTableName			= "credit_card_payment_history";
+	protected static	$_strStaticTableName	= "credit_card_payment_history";
 	
 	protected static function getCacheName()
 	{
@@ -63,50 +63,6 @@ class Payment_Request extends ORM_Cached
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 
-	public static function generatePending($iAccount, $iPaymentType, $fAmount, $iInvoiceRun=null, $iEmployeeId=null, $iPaymentId=null)
-	{
-		if ($iEmployeeId === null)
-		{
-			$iEmployeeId	= Flex::getUserId();
-			$iEmployeeId	= ($iEmployeeId === NULL ? Employee::SYSTEM_EMPLOYEE_ID : $iEmployeeId);
-		}
-		
-		// Create new payment_request
-		$oPaymentRequest							= new Payment_Request();
-		$oPaymentRequest->account_id				= $iAccount;
-		$oPaymentRequest->amount					= $fAmount;
-		$oPaymentRequest->payment_type_id			= $iPaymentType;
-		$oPaymentRequest->payment_request_status_id	= PAYMENT_REQUEST_STATUS_PENDING;
-		$oPaymentRequest->invoice_run_id			= $iInvoiceRun;
-		$oPaymentRequest->file_export_id			= null;
-		$oPaymentRequest->payment_id				= $iPaymentId;
-		$oPaymentRequest->created_datetime			= date('Y-m-d H:i:s');
-		$oPaymentRequest->created_employee_id		= $iEmployeeId;
-		$oPaymentRequest->save();
-		
-		return $oPaymentRequest;
-	}
-
-	public static function getForStatus($iStatus)
-	{
-		// Get data
-		$oStmt		= self::_preparedStatment('selByStatus');
-		$mResult	= $oStmt->Execute(array('payment_request_status_id' => $iStatus));
-		if ($mResult === false)
-		{
-			throw new Exception("Failed to get Payment Requests for status '{$iStatus}'. ".$oStmt->Error());
-		}
-		
-		// Convert to ORM objects (Direct_Debit_Request)
-		$aResults	= array();
-		while ($aRow = $oStmt->Fetch())
-		{
-			$oORM					= new self($aRow);
-			$aResults[$oORM->id]	= $oORM;
-		}
-		return $aResults;
-	}
-
 	/**
 	 * _preparedStatement()
 	 *
@@ -135,9 +91,6 @@ class Payment_Request extends ORM_Cached
 					break;
 				case 'selAll':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
-					break;
-				case 'selByStatus':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "payment_request_status_id = <payment_request_status_id>", "id ASC");
 					break;
 				
 				// INSERTS

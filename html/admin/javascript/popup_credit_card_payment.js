@@ -589,20 +589,16 @@ var Popup_Credit_Card_Payment	= Class.create(Reflex_Popup,
 		// Gather the validated values and submit to the server
 		var oExpiryDate	= Date.$parseDate(this._oCardExpiry.getValue(), 'Y-m');
 		fnSubmit(
-			this._iAccountId,
-			this._oEmail.getValue(),
-			this._oCardType.getValue(),
-			this._oCardNumber.getValue(),
-			this._oCardCVV.getValue(),
-			oExpiryDate.getMonth() + 1,
-			oExpiryDate.getFullYear(),
-			this._oCardName.getValue(),
-			this._oCardAmount.getValue(),
-			this._fSurcharge,
-			this._fTotalPayment,
-			this._oDirectDebit.getValue(),
-			null,
-			this._bPaymentMethodCreditCard && this._oUseExistingCardDetails.getValue()
+			this._iAccountId,				// iAccountId
+			this._oCardType.getValue(),		// iCardType
+			this._oCardNumber.getValue(),	// sCardNumber
+			this._oCardCVV.getValue(),		// iCVV
+			oExpiryDate.getMonth() + 1,		// iMonth
+			oExpiryDate.getFullYear(),		// iYear
+			this._oCardName.getValue(),		// sName
+			this._oCardAmount.getValue(),	// fAmount
+			this._oEmail.getValue(),		// sEmail
+			this._oDirectDebit.getValue()	// bDirectDebit
 		);
 	},
 	
@@ -658,6 +654,40 @@ var Popup_Credit_Card_Payment	= Class.create(Reflex_Popup,
 	{
 		this._showLoading(false);
 		
+		if (oResponse.sDebug)
+		{
+			Reflex_Popup.debug(oResponse.sDebug);
+		}
+		
+		if (!oResponse.bSuccess)
+		{
+			// Check for specific exception, determine action from type
+			var sTitle		= 'Server Error';
+			var sMessage	= oResponse.sMessage;
+			if (oResponse.bInformativeError)
+			{
+				sTitle		= 'Payment Failed';
+				sMessage	= 'Your credit card payment could not be processed. ' + oResponse.sMessage;
+			}
+			
+			// Show popup
+			Reflex_Popup.alert(oResponse.sMessage, {sTitle: sTitle});
+			return;
+		}
+		
+		Reflex_Popup.alert('Your credit card payment was processed successfully!');
+		
+		// A "Payment Made" action will have been created.  Fire the event, if the ActionsAndNotes package is loaded
+		if (window.ActionsAndNotes)
+		{
+			ActionsAndNotes.fireEvent('NewAction');
+		}
+		
+		this.hide();
+		
+		return;
+		
+		/*
 		// Check the 'OUTCOME' property of the response
 		var sOutcome	= oResponse['OUTCOME'];
 		switch (sOutcome)
@@ -717,6 +747,7 @@ var Popup_Credit_Card_Payment	= Class.create(Reflex_Popup,
 				// Something failed, this shouldn't happen but is here as a fail safe
 				Reflex_Popup.alert('There was an error accessing the database, please contact YBS for assistance.', {sTitle: 'Error'});
 		}
+		*/
 	},
 	
 	_validateCVV	: function(mValue)
@@ -877,6 +908,7 @@ Object.extend(Popup_Credit_Card_Payment,
 	CARD_EXPIRY			: 'card_expiry',
 	CARD_AMOUNT			: 'card_amount',
 	CARD_DISPLAY_ONLY	: 'display_only',
+	CARD_DD_UPDATE		: 'dd_update',
 	FIELDS				: {},
 	_aCardTypes			: {},
 	

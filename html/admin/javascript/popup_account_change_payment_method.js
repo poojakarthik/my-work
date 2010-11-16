@@ -361,7 +361,7 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 										),
 										$T.div(
 											$T.span({class: 'label dd'},
-												'BSB #'
+												'BSB #:'
 											),
 											$T.span({class: 'value'},
 												oMethod.BSB
@@ -369,7 +369,7 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 										),
 										$T.div(
 											$T.span({class: 'label dd'},
-												'Account #'
+												'Account #:'
 											),
 											$T.span({class: 'value'},
 												oMethod.AccountNumber
@@ -581,7 +581,7 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 	{
 		if (oResponse.Success)
 		{
-			window.location	= window.location;
+			this._refreshAfterSave();
 		}
 		else
 		{
@@ -589,6 +589,11 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 		}
 	},
 
+	_refreshAfterSave	: function()
+	{
+		window.location	= window.location;
+	},
+	
 	_showPaymentMethodChangePopup	: function(iMethod, iSubType, iMethodToSelect, iSubTypeToSelect)
 	{
 		iMethodToSelect		= (typeof iMethodToSelect != 'undefined' ? iMethodToSelect : iMethod);
@@ -681,12 +686,13 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 									iSubType,
 									iMethodToSelect,
 									iSubTypeToSelect
-								)
+								),
+								this._paymentMethodChanged.bind(this, iMethod, iSubType)
 							);
 						}
 
 						JsAutoLoader.loadScript(
-							'javascript/popup_account_add_creditcard.js',
+							['javascript/popup_account_add_creditcard.js', '../ui/javascript/credit_card_type.js'],
 							fnShowCC.bind(this, iMethod, iSubType, $CONSTANT.PAYMENT_METHOD_ACCOUNT, null)
 						);
 
@@ -704,7 +710,8 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 									iSubType,
 									iMethodToSelect,
 									iSubTypeToSelect
-								)
+								),
+								this._paymentMethodChanged.bind(this, iMethod, iSubType)
 							);
 						}
 
@@ -782,6 +789,12 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 		}
 	},
 
+	_paymentMethodChanged	: function(iMethod, iSubType, oMethod)
+	{
+		this._paymentMethodSelected(iMethod, iSubType, oMethod)
+		this._refreshAfterSave();
+	},
+	
 	_changePaymentMethodForBillingType	: function()
 	{
 		// Check if there are any payment methods to change to, if not show add popup.

@@ -164,6 +164,18 @@ class Flex_Rollout_Version_000232 extends Flex_Rollout_Version
 			),
 			array
 			(
+				'sDescription'		=>	"Add new action_type_action_association_type for 'EFT One Time Payment' and ACTION_ASSOCIATION_TYPE_ACCOUNT",
+				'sAlterSQL'			=>	"	INSERT INTO	action_type_action_association_type (action_type_id, action_association_type_id)
+											VALUES		(
+															(SELECT id FROM action_type WHERE name = 'EFT One Time Payment'),
+															(SELECT id FROM action_association_type WHERE const_name = 'ACTION_ASSOCIATION_TYPE_ACCOUNT')
+														);",
+				'sRollbackSQL'		=>	"	DELETE FROM	action_type_action_association_type 
+											WHERE 		action_type_id = (SELECT id FROM action_type WHERE name = 'EFT One Time Payment');",
+				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+			),
+			array
+			(
 				'sDescription'		=>	"Add created_datetime & latest_payment_response_id to the Payment table",
 				'sAlterSQL'			=>	"	ALTER TABLE 	Payment	
 											ADD COLUMN 		latest_payment_response_id 	BIGINT UNSIGNED NULL 		COMMENT \"(FK) payment_response\",

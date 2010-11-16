@@ -298,7 +298,7 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 		if (iBillingDetail !== null && this.hPaymentMethods[iBillingDetail])
 		{
 			// Selection callback
-			if (typeof this.fnOnSelection !== 'undefined')
+			if (!Object.isUndefined(this.fnOnSelection))
 			{
 				this.fnOnSelection(this.hPaymentMethods[iBillingDetail]);
 			}
@@ -340,7 +340,9 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 		{
 			new Popup_Account_Add_DirectDebit(
 				this.iAccountId, 
-				this._refresh.bind(this)
+				this._refresh.bind(this),
+				null,
+				this._paymentMethodChanged.bind(this)
 			);
 		}
 		
@@ -348,7 +350,9 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 		{
 			new Popup_Account_Add_CreditCard(
 				this.iAccountId, 
-				this._refresh.bind(this)
+				this._refresh.bind(this),
+				null,
+				this._paymentMethodChanged.bind(this)
 			);
 		}
 		
@@ -362,11 +366,23 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 				break;
 			case $CONSTANT.DIRECT_DEBIT_TYPE_CREDIT_CARD:
 				JsAutoLoader.loadScript(
-					'javascript/popup_account_add_creditcard.js', 
+					['javascript/popup_account_add_creditcard.js', '../ui/javascript/credit_card_type.js'],
 					fnShowCC.bind(this)
 				);
 				break;
 		}
+	},
+	
+	_paymentMethodChanged	: function(oMethod)
+	{
+		// Selection callback
+		if (!Object.isUndefined(this.fnOnSelection))
+		{
+			this.fnOnSelection(oMethod);
+		}
+		
+		this.hide();
+		window.location	= window.location;
 	},
 	
 	_refresh	: function()

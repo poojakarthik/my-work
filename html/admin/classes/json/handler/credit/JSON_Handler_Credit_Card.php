@@ -42,6 +42,33 @@ class JSON_Handler_Credit_Card extends JSON_Handler
 		}
 	}
 	
+	public function getAllTypes()
+	{
+		$bGod	= Employee::getForId(Flex::getUserId());
+		try
+		{
+			$aTypes		= Credit_Card_Type::listAll();
+			$aResults	= array();
+			foreach ($aTypes as $oType)
+			{
+				$aResults[$oType->id]	= $oType->toStdClass();
+			}
+			
+			return	array(
+						'bSuccess'			=> true, 
+						'aCreditCardTypes'	=> $aResults,
+						'sDebug'			=> ($bGod ? $this->_JSONDebug : '')
+					);
+		}
+		catch(Exception $oException) 
+		{
+			return	array(
+						'bSuccess'	=> false, 
+						'sMessage'	=> ($bGod ? $oException->getMessage() : 'There was an error accessing the server'),
+						'sDebug'	=> ($bGod ? $this->_JSONDebug : '')
+					);
+		}
+	}
 }
 
 class JSON_Handler_Credit_Card_Exception extends Exception
