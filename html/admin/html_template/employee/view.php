@@ -54,10 +54,6 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		$this->LoadJavascript("table_sort");
 		$this->LoadJavascript("employee_view");
 		$this->LoadJavascript("reflex_anchor");
-		
-		$this->LoadJavascript("permissions");
-		$this->LoadJavascript("employee_edit");
-		$this->LoadJavascript("date_time_picker_xy");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -148,7 +144,7 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 				}
 			}, false);
 		</script>
-		";	
+		";
 	}
 	
 	
@@ -183,7 +179,7 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 			}
 			
 			Table()->EmployeeTable->AddRow(	$dboEmployee->FirstName->AsValue(),
-											$dboEmployee->LastName->AsValue(), 
+											$dboEmployee->LastName->AsValue(),
 											$dboEmployee->UserName->AsValue(),
 											$sArchivedLabel,
 											$sActions);
@@ -198,13 +194,13 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 	//------------------------------------------------------------------------//
 	/**
 	 * _RenderButtonBar()
-	 * 
+	 *
 	 * Render the button bar
-	 * 
+	 *
 	 * Only renders one form per page. Other checkboxes invoke submit on the one form
-	 * 
-	 * @param	str	$strArchivedValue "1" if list includes archived employees, "0" otherwise  
-	 * 
+	 *
+	 * @param	str	$strArchivedValue "1" if list includes archived employees, "0" otherwise
+	 *
 	 * @method
 	 */
 	private function _RenderButtonBar($strArchivedValue)

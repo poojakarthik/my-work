@@ -36,11 +36,10 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 	{
 		$this->_intContext = $intContext;
 		$this->_strId = $strId;
-
-		// This has been commented because it was not being loaded properly within ff4 & chrome
-		/*$this->LoadJavascript("permissions");
+		
+		$this->LoadJavascript("permissions");
 		$this->LoadJavascript("employee_edit");
-		$this->LoadJavascript("date_time_picker_xy");*/
+		$this->LoadJavascript("date_time_picker_xy");
 
 		if (DBO()->Employee->EditSelf->Value)
 		{
@@ -295,9 +294,8 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 		asort($GLOBALS['Permissions']);
 		foreach ($GLOBALS['Permissions'] as $intKey => $strValue)
 		{
-			// Don't allow super admin permissions to be set
-			//if (PermCheck(PERMISSION_SUPER_ADMIN, $intKey))
-			if (PERMISSION_SUPER_ADMIN == $intKey)
+			// Only Super Admins can assign Super Admin
+			if (PERMISSION_SUPER_ADMIN == $intKey && !AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
 			{
 				continue;
 			}
@@ -348,7 +346,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 							</tr>
 							<tr>
 								<td>
-									<select id='AvailablePermissions' name='AvailablePermissions[]' size='8' class='SmallSelection' style='width: 180px;' multiple='multiple'>$strAvailPerms</select> 
+									<select id='AvailablePermissions' name='AvailablePermissions[]' size='8' class='SmallSelection' style='width: 180px;' multiple='multiple'>$strAvailPerms</select>
 								</td>
 								<td>
 									<div>
