@@ -69,6 +69,21 @@ var Control_Field_Checkbox	= Class.create(/* extends */ Control_Field,
 		this.oControlOutput.oEdit.removeEventListener('keyup'	, this.aEventHandlers.fnOnChange, false);
 	},
 	
+	disableInput	: function()
+	{
+		this.oControlOutput.oEdit.setAttribute('disabled', true);
+	},
+	
+	enableInput	: function()
+	{
+		this.oControlOutput.oEdit.removeAttribute('disabled');
+	},
+	
+	isDisabled	: function()
+	{
+		return this.oControlOutput.oEdit.hasAttribute('disabled');
+	},
+	
 	_valueChanged	: function()
 	{
 		this.validate();
