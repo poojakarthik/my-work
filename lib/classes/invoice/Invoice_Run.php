@@ -784,7 +784,7 @@ class Invoice_Run
 					throw new Exception("PDF Generation failed: Account=$oInvoice->Account, Invoice=$iId, Invoice Run=$this->Id");
 				}
 				
-				Log::getLog()->log("Generated PDF '".basename($aPDFFilenames[$iId])."' for invoice {$iId}. (Total Memory Usage: ".memory_get_usage(true).")");
+				Log::getLog()->log("Generated PDF '".basename($aPDFFilenames[$iId])."' for invoice {$iId}. (Total Memory Usage: ".memory_get_usage().")");
 			}
 		}
 		catch (Exception $oException)

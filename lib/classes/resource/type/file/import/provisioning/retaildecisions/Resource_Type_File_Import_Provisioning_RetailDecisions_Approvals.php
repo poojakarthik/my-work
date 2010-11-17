@@ -18,12 +18,14 @@ class Resource_Type_File_Import_Provisioning_RetailDecisions_Approvals extends R
 	const	RECORD_TYPE_TRANSACTION	= 'TRANSCATION';
 	const	RECORD_TYPE_TRAILER		= 'TRAILER';
 	
-	public function process()
+	public function getRecords()
 	{
+		$aRecords	= array();
 		while (($sRecord = $this->_oFileImporter->fetch()) !== false)
 		{
-			$this->processRecord($sRecord);
+			$aRecords[]	= $sRecord;
 		}
+		return $aRecords;
 	}
 	
 	public function processRecord($sRecord)
@@ -126,7 +128,7 @@ class Resource_Type_File_Import_Provisioning_RetailDecisions_Approvals extends R
 	{
 		$this->_oFileImporter	= new File_Importer_CSV();
 		
-		$this->_oFileImporter->setDataFile($sData)
+		$this->_oFileImporter->setDataFile($this->_oFileImport->Location)
 							->setNewLine(self::NEW_LINE_DELIMITER)
 							->setDelimiter(self::FIELD_DELIMITER)
 							->setQuote(self::FIELD_ENCAPSULATOR)

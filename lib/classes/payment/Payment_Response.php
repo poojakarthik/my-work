@@ -1,15 +1,13 @@
 <?php
 /**
- * Payment
+ * Payment_Response
  *
- * Represents a Record in the Payment table
- *
- * @class	Payment
+ * @class	Payment_Response
  */
-class Payment extends ORM_Cached
+class Payment_Response extends ORM_Cached
 {
-	protected 			$_strTableName			= "Payment";
-	protected static	$_strStaticTableName	= "Payment";
+	protected 			$_strTableName			= "payment_response";
+	protected static	$_strStaticTableName	= "payment_response";
 	
 	protected static function getCacheName()
 	{
@@ -56,84 +54,40 @@ class Payment extends ORM_Cached
 		return parent::getAll($bolForceReload, __CLASS__);
 	}
 	
+	public static function importResult($aResultSet)
+	{
+		return parent::importResult($aResultSet, __CLASS__);
+	}
+	
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
-	
-	public function applySurcharges()
+
+	public static function getForStatus($iStatus)
 	{
-		// Get Payment Merchant details
-		if ($oCarrierPaymentType = Carrier_Payment_Type::getForCarrierAndPaymentType($this->carrier, $this->PaymentType))
+		// Get data
+		$oStmt		= self::_preparedStatment('selByStatus');
+		$mResult	= $oStmt->Execute(array('payment_response_status_id' => $iStatus));
+		if ($mResult === false)
 		{
-			// Calculate Surcharge
-			$fSurcharge	= $oCarrierPaymentType->calculateSurcharge($this->Amount);
-			
-			// Apply Charge
-			$oCharge	= null;
-			if ($fSurcharge > 0.0)
-			{
-				$oChargeType	= Charge_Type::getByCode('PMF');
-				
-				$oCharge					= new Charge();
-				
-				$oCharge->AccountGroup		= $this->AccountGroup;
-				$oCharge->Account			= $this->Account;
-				$oCharge->CreatedBy			= Employee::SYSTEM_EMPLOYEE_ID;
-				$oCharge->CreatedOn			= date('Y-m-d');
-				$oCharge->ApprovedBy		= Employee::SYSTEM_EMPLOYEE_ID;
-				$oCharge->ChargeType		= $oChargeType->ChargeType;
-				$oCharge->charge_type_id	= $oChargeType->Id;
-				$oCharge->Description		= $oCarrierPaymentType->description
-											.' Surcharge for Payment on '.date('d/m/Y', strtotime($this->PaidOn))
-											.' of $'.(number_format($this->Amount, 2, '.', ''))
-											.' @ '.round($oCarrierPaymentType->surcharge_percent * 100, 2).'%';
-				$oCharge->ChargedOn			= $this->PaidOn;
-				$oCharge->Nature			= 'DR';
-				$oCharge->Amount			= round($fSurcharge, 2);
-				$oCharge->LinkType			= CHARGE_LINK_PAYMENT;
-				$oCharge->LinkId			= $this->Id;
-				$oCharge->Status			= CHARGE_APPROVED;
-				$oCharge->Notes				= '';
-				$oCharge->global_tax_exempt	= 0;
-				
-				$oCharge->save();
-			}
-			
-			return $oCharge;
+			throw new Exception("Failed to get Payment Responses for status '{$iStatus}'. ".$oStmt->Error());
 		}
-		else
+		
+		// Convert to ORM objects
+		$aResults	= array();
+		while ($aRow = $oStmt->Fetch())
 		{
-			return null;
+			$oORM					= new self($aRow);
+			$aResults[$oORM->id]	= $oORM;
 		}
+		return $aResults;
 	}
 	
-	public function process()
+	public static function normaliseAll()
 	{
 		
 	}
-	
-	public static function processAll()
-	{
-		
-	}
-	
-	// Override
-	public function save()
-	{
-		if ($this->id == NULL)
-		{
-			// New payment, set the created_datetime value
-			$this->created_datetime	= date('Y-m-d H:i:s');
-			
-			// New payment, auto-set Origin Type
-			if (!$this->OriginType && $this->OriginId)
-			{
-				$this->OriginType	= $this->PaymentType;
-			}
-		}
-		parent::save();
-	}
-	
+
 	/**
 	 * _preparedStatement()
 	 *
@@ -161,7 +115,10 @@ class Payment extends ORM_Cached
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
 					break;
 				case 'selAll':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1");
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
+					break;
+				case 'selByStatus':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "payment_request_status_id = <payment_request_status_id>", "id ASC");
 					break;
 				
 				// INSERTS

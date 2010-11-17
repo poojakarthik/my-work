@@ -17,12 +17,20 @@ abstract class Resource_Type_File_Import extends Resource_Type_Base
 		{
 			throw new Exception("File Importer has not been configured");
 		}
-		$this->_oFileImporter->setDataFile($this->_oFileImport->Location);
 	}
 	
-	abstract public function process();
+	abstract public function getRecords();
 	
 	abstract public function processRecord($sRecord);
+	
+	public function process()
+	{
+		$aRecords	= $this->getRecords();
+		foreach ($aRecords as $sRecord)
+		{
+			$this->processRecord($sRecord);
+		}
+	}
 	
 	public function getFileImport()
 	{

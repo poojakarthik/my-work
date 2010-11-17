@@ -14,11 +14,13 @@ class File_Importer_Field
 	public function setStartIndex($iStartIndex)
 	{
 		$this->_iStartIndex	= ($iColumn) ? (int)$iColumn: 0;
+		return $this;
 	}
 	
 	public function setLength($iLength)
 	{
 		$this->_iLength	= (int)$iLength;
+		return $this;
 	}
 	
 	public function extract($mData)
