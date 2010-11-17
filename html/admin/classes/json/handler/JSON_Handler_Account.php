@@ -1101,7 +1101,6 @@ class JSON_Handler_Account extends JSON_Handler
 					$oPayment->PaidOn		= date('Y-m-d');
 					$oPayment->OriginId		= $oDirectDebit->AccountNumber;
 					$oPayment->OriginType	= PAYMENT_TYPE_DIRECT_DEBIT_VIA_EFT;
-					$oPayment->TXNReference	= $iAccountId.'.'.time();
 					$oPayment->Status		= PAYMENT_WAITING;
 					$oPayment->PaymentType	= PAYMENT_TYPE_DIRECT_DEBIT_VIA_EFT;
 					$oPayment->Payment		= '';	// TODO: CR135 -- remove this before release (after the changes have been made to the dev db which remove this field)
@@ -1116,6 +1115,11 @@ class JSON_Handler_Account extends JSON_Handler
 												$iEmployeeId,						// Employee id
 												$oPayment->Id						// Payment id
 											);
+					
+					// Update the payments transaction reference
+					$oPayment->TXNReference	= Payment_Request::generateTransactionReference($oPaymentRequest);
+					$oPayment->save();
+											
 					$aPaymentReceipt	= 	array(
 												'sTransactionId'	=> $oPayment->TXNReference,
 												'iAccount'			=> $iAccountId,

@@ -1505,6 +1505,10 @@ class Credit_Card_Payment
 			// Rollback transaction
 			$oDataAccess->TransactionRollback();
 			
+			// Cancel the payment request
+			$oPaymentRequest->payment_request_status_id	= PAYMENT_REQUEST_STATUS_CANCELLED;
+			$oPaymentRequest->save();
+			
 			throw $oException;
 		}
 		

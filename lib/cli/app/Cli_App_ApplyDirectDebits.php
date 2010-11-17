@@ -27,7 +27,7 @@ class Cli_App_ApplyDirectDebits extends Cli
 			}
 			
 			// Prepared Statement for listing direct debit eligible accounts within a customer group 
-			$this->_oStmtAccountDebts	= 	new StatementSelect(
+			$oStmtAccountDebts	= 	new StatementSelect(
 												"	Account a
 													JOIN payment_terms pt ON pt.customer_group_id = a.CustomerGroup
 													JOIN billing_type bt ON bt.id = a.BillingType",
@@ -41,7 +41,7 @@ class Cli_App_ApplyDirectDebits extends Cli
 												"	a.Id"
 											);
 			
-			// Build list of customer groups
+			// Build list of customer groups & the invoice runs for each
 			$aInvoiceRunIds		= ListInvoiceRunsForAutomaticInvoiceActionAndDate(AUTOMATIC_INVOICE_ACTION_DIRECT_DEBIT, time());
 			$aCustomerGroups	= array();
 			foreach ($aInvoiceRunIds as $iInvoiceRunId)
@@ -54,13 +54,14 @@ class Cli_App_ApplyDirectDebits extends Cli
 				$aCustomerGroups[$oInvoiceRun->customer_group_id][]	= $oInvoiceRun->Id;
 			}
 			
-			$this->_sRunDateTime	= date('Y-m-d H:i:s');
-			$this->_sPaidOn			= date('Y-m-d');
-			$iAppliedCount			= 0;
-			$iErrorCount			= 0;
-			$iIgnoredCount			= 0;
-			$iDoubleUpsCount		= 0;
-			$aAccountsApplied		= array();
+			// Loop through the customer groups
+			$sDatetime			= date('Y-m-d H:i:s');
+			$sPaidOn			= date('Y-m-d');
+			$iAppliedCount		= 0;
+			$iErrorCount		= 0;
+			$iIneligibleCount	= 0;
+			$iDoubleUpsCount	= 0;
+			$aAccountsApplied	= array();
 			foreach ($aCustomerGroups as $iCustomerGroupId => $aInvoiceRunIds)
 			{
 				Log::getLog()->log("Customer Group {$iCustomerGroupId}");
@@ -90,14 +91,14 @@ class Cli_App_ApplyDirectDebits extends Cli
 				Log::getLog()->log("Latest invoice run is {$iLatestInvoiceRunId} (of ".count($aInvoiceRunIds).")");
 				
 				// Get the accounts to apply direct debits to
-				if ($this->_oStmtAccountDebts->Execute(array('CustomerGroup' => $iCustomerGroupId)) === false)
+				if ($oStmtAccountDebts->Execute(array('CustomerGroup' => $iCustomerGroupId)) === false)
 				{
 					throw new Exception("Failed to get accounts for customer group {$iCustomerGroupId}");
 				}
 				
-				while($aRow = $this->_oStmtAccountDebts->Fetch())
+				while($aRow = $oStmtAccountDebts->Fetch())
 				{
-					// TODO: CR135 -- remove this one certain that accounts won't get doubled up
+					// TODO: CR135 -- consider removing this fail safe check
 					$iAccountId	= $aRow['account_id'];
 					if ($aAccountsApplied[$iAccountId])
 					{
@@ -154,12 +155,9 @@ class Cli_App_ApplyDirectDebits extends Cli
 						if ($fAmount < $aRow['direct_debit_minimum'])
 						{
 							// Not enough of a balance to be worthy
-							//Log::getLog()->log("Overdue Balance too small {$fAmount}");
-							$iIgnoredCount++;
+							$iIneligibleCount++;
 							continue;
 						}
-						
-						//Log::getLog()->log("Creating payment request for account...");
 						
 						// Create Payment
 						$oPayment				= new Payment();
@@ -168,10 +166,9 @@ class Cli_App_ApplyDirectDebits extends Cli
 						$oPayment->EnteredBy	= Employee::SYSTEM_EMPLOYEE_ID;
 						$oPayment->Amount		= $fAmount;
 						$oPayment->Balance		= $fAmount;
-						$oPayment->PaidOn		= $this->_sPaidOn;
+						$oPayment->PaidOn		= $sPaidOn;
 						$oPayment->OriginId		= $mOriginId;
 						$oPayment->OriginType	= $iPaymentType;
-						$oPayment->TXNReference	= $oAccount->Id.'.'.time();
 						$oPayment->Status		= PAYMENT_WAITING;
 						$oPayment->PaymentType	= $iPaymentType;
 						$oPayment->Payment		= '';	// TODO: CR135 -- remove this before release (after the changes have been made to the dev db which remove this field)
@@ -187,6 +184,10 @@ class Cli_App_ApplyDirectDebits extends Cli
 													$oPayment->Id					// Payment id
 												);
 						
+						// Update the payments transaction reference
+						$oPayment->TXNReference	= Payment_Request::generateTransactionReference($oPaymentRequest);
+						$oPayment->save();
+						
 						Log::getLog()->log("Account: {$oAccount->Id}, Payment: {$oPayment->Id}, payment_request: {$oPaymentRequest->id}, Amount: {$fAmount}");
 						
 						$iAppliedCount++;
@@ -199,7 +200,7 @@ class Cli_App_ApplyDirectDebits extends Cli
 											null, 
 											AUTOMATIC_INVOICE_ACTION_DIRECT_DEBIT, 
 											$aRow['billing_type_description']." applied for account {$oAccount->Id}", 
-											$this->_sRunDateTime, 
+											$sDatetime, 
 											$iInvoiceRunId
 										);
 							if ($mError !== TRUE)
@@ -211,14 +212,15 @@ class Cli_App_ApplyDirectDebits extends Cli
 					}
 					else
 					{
-						$iIgnoredCount++;
+						// Not properly eligible for direct debit
+						$iIneligibleCount++;
 					}
 				}
 				
 				foreach ($aInvoiceRunIds as $iInvoiceRunId)
 				{
 					// Update the automatic_invoice_run_event for the invoice run
-					if ($this->changeInvoiceRunAutoActionDateTime($iInvoiceRunId) === false)
+					if ($this->_changeInvoiceRunAutoActionDateTime($iInvoiceRunId, $sDatetime) === false)
 					{
 						$iErrorCount++;
 					}
@@ -226,7 +228,7 @@ class Cli_App_ApplyDirectDebits extends Cli
 			}
 			
 			Log::getLog()->log("APPLIED: {$iAppliedCount}");
-			Log::getLog()->log("IGNORED: {$iIgnoredCount}");
+			Log::getLog()->log("INELIGIBLE: {$iIneligibleCount}");
 			Log::getLog()->log("ERRORS: {$iErrorCount}");
 			Log::getLog()->log("DOUBLE-UPS: {$iDoubleUpsCount}");
 			
@@ -250,12 +252,12 @@ class Cli_App_ApplyDirectDebits extends Cli
 		}
 	}
 	
-	private function changeInvoiceRunAutoActionDateTime($iInvoiceRunId)
+	private function _changeInvoiceRunAutoActionDateTime($iInvoiceRunId, $sDatetime)
 	{
 		$oQuery 		= new Query();
 		$iInvoiceRunId	= $oQuery->EscapeString($iInvoiceRunId);
 		$sSQL			= "	UPDATE	automatic_invoice_run_event 
-							SET 	actioned_datetime = '{$this->_sDatetime}' 
+							SET 	actioned_datetime = '{$sDatetime}' 
 							WHERE 	invoice_run_id IN (
 										SELECT 	Id 
 										FROM 	InvoiceRun 
@@ -264,7 +266,7 @@ class Cli_App_ApplyDirectDebits extends Cli
 							AND 	automatic_invoice_action_id = ".AUTOMATIC_INVOICE_ACTION_DIRECT_DEBIT;
 		if (!$oQuery->Execute($sSQL))
 		{
-			Log::getLog()->log("ERROR: Failed to update automatic_invoice_run_event for invoice_run {$iInvoiceRunId} to {$this->_sDateTime}.".$oQuery->Error());
+			Log::getLog()->log("ERROR: Failed to update automatic_invoice_run_event for invoice_run {$iInvoiceRunId} to {$sDatetime}.".$oQuery->Error());
 			return false;
 		}
 		return true;

@@ -106,6 +106,11 @@ class Payment_Request extends ORM_Cached
 		return $aResults;
 	}
 
+	public static function generateTransactionReference($oPaymentRequest)
+	{
+		return "{$oPaymentRequest->account_id}.{$oPaymentRequest->id}";
+	}
+
 	/**
 	 * _preparedStatement()
 	 *
