@@ -470,6 +470,12 @@ ORDER BY FNN;";
 		return $oCustomerGroup->getPaymentMethods();
 	}
 	
+	public function getPaymentMethod()
+	{
+		$oBillingType	= Billing_Type::getForId($this->BillingType);
+		return Payment_Method::getForId($oBillingType->payment_method_id);
+	}
+	
 	public function getPaymentMethodDetails()
 	{
 		$oBillingType	= Billing_Type::getForId($this->BillingType);
