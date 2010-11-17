@@ -7,9 +7,13 @@ class Cli_App_ApplyDirectDebits extends Cli
 {
 	const SWITCH_TEST_RUN	= "t";
 	
-	private $_oStmtAccountDebts	= null;
-	private $_sRunDateTime		= null;
-	private $_sPaidOn			= null;
+	const ERROR_ACTIONING_EVENT			= 'Action invoice run event';
+	const ERROR_ACCOUNT_INVOICE_ACTION	= 'Update account invoice action';
+	
+	const INELIGIBLE_BANK_ACCOUNT		= 'Invalid Bank Account reference';
+	const INELIGIBLE_CREDIT_CARD		= 'Invalid Credit Card reference';
+	const INELIGIBLE_CREDIT_CARD_EXPIRY	= 'Credit card has expired';
+	const INELIGIBLE_AMOUNT				= 'Overdue balance is too small';
 	
 	function run()
 	{
@@ -58,8 +62,8 @@ class Cli_App_ApplyDirectDebits extends Cli
 			$sDatetime			= date('Y-m-d H:i:s');
 			$sPaidOn			= date('Y-m-d');
 			$iAppliedCount		= 0;
-			$iErrorCount		= 0;
-			$iIneligibleCount	= 0;
+			$aErrors			= array(self::ERROR_ACCOUNT_INVOICE_ACTION => 0, self::ERROR_ACTIONING_EVENT => 0);
+			$aIneligible		= array(self::INELIGIBLE_BANK_ACCOUNT => 0, self::INELIGIBLE_CREDIT_CARD => 0, self::INELIGIBLE_CREDIT_CARD_EXPIRY => 0, self::INELIGIBLE_AMOUNT => 0);
 			$iDoubleUpsCount	= 0;
 			$aAccountsApplied	= array();
 			foreach ($aCustomerGroups as $iCustomerGroupId => $aInvoiceRunIds)
@@ -123,11 +127,10 @@ class Cli_App_ApplyDirectDebits extends Cli
 							{
 								$bDirectDebitable	= true;
 								$mOriginId			= $oPaymentMethodDetail->AccountNumber;
-								//Log::getLog()->log("Valid bank account: account number = {$mOriginId}");
 							}
 							else
 							{
-								//Log::getLog()->log("INVALID bank account: id = {$oAccount->DirectDebit}");
+								$aIneligible[self::INELIGIBLE_BANK_ACCOUNT]++;
 							}
 							break;
 						case BILLING_TYPE_CREDIT_CARD:
@@ -140,11 +143,14 @@ class Cli_App_ApplyDirectDebits extends Cli
 								$bDirectDebitable	= true;
 								$sCardNumber		= Decrypt($oPaymentMethodDetail->CardNumber);
 								$mOriginId			= substr($sCardNumber, 0, 6).'...'.substr($sCardNumber, -3);
-								//Log::getLog()->log("Valid credit card: card number = {$mOriginId}");
+							}
+							else if ($iNow >= $iExpiry)
+							{
+								$aIneligible[self::INELIGIBLE_CREDIT_CARD_EXPIRY]++;
 							}
 							else
 							{
-								//Log::getLog()->log("INVALID credit card: id = {$oAccount->CreditCard}, expiry = '{$oCreditCard->ExpYear}-{$oCreditCard->ExpMonth}'");
+								$aIneligible[self::INELIGIBLE_CREDIT_CARD]++;
 							}
 							break;
 					}
@@ -155,7 +161,7 @@ class Cli_App_ApplyDirectDebits extends Cli
 						if ($fAmount < $aRow['direct_debit_minimum'])
 						{
 							// Not enough of a balance to be worthy
-							$iIneligibleCount++;
+							$aIneligible[self::INELIGIBLE_AMOUNT]++;
 							continue;
 						}
 						
@@ -206,14 +212,9 @@ class Cli_App_ApplyDirectDebits extends Cli
 							if ($mError !== TRUE)
 							{
 								Log::getLog()->log("ERROR: {$mError}");
-								$iErrorCount++;
+								$aErrors[self::ERROR_ACCOUNT_INVOICE_ACTION]++;
 							}
 						}
-					}
-					else
-					{
-						// Not properly eligible for direct debit
-						$iIneligibleCount++;
 					}
 				}
 				
@@ -222,14 +223,14 @@ class Cli_App_ApplyDirectDebits extends Cli
 					// Update the automatic_invoice_run_event for the invoice run
 					if ($this->_changeInvoiceRunAutoActionDateTime($iInvoiceRunId, $sDatetime) === false)
 					{
-						$iErrorCount++;
+						$aErrors[self::ERROR_ACTIONING_EVENT]++;
 					}
 				}
 			}
 			
 			Log::getLog()->log("APPLIED: {$iAppliedCount}");
-			Log::getLog()->log("INELIGIBLE: {$iIneligibleCount}");
-			Log::getLog()->log("ERRORS: {$iErrorCount}");
+			Log::getLog()->log("INELIGIBLE: ".print_r($aIneligible, true));
+			Log::getLog()->log("ERRORS: ".print_r($aErrors, true));
 			Log::getLog()->log("DOUBLE-UPS: {$iDoubleUpsCount}");
 			
 			if ($bTestRun)
