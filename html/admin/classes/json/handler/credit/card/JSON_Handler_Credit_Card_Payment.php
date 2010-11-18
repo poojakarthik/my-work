@@ -11,7 +11,7 @@ class JSON_Handler_Credit_Card_Payment extends JSON_Handler
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 	
-	function makePayment($iAccountId, $iCardType, $sCardNumber, $iCVV, $iMonth, $iYear, $sName, $fAmount, $sEmail, $bDirectDebit)
+	function makePayment($iAccountId, $iCardType, $sCardNumber, $iCVV, $iMonth, $iYear, $sName, $fAmount, $sEmail, $bDirectDebit, $bUseCurrentPaymentMethod)
 	{
 		$aResponse				= array();
 		$bSuccess				= false;
@@ -26,6 +26,18 @@ class JSON_Handler_Credit_Card_Payment extends JSON_Handler
 			if (!$oContact)
 			{
 				throw new Exception("Failed to load primary contact details for the account.");
+			}
+			
+			if ($bUseCurrentPaymentMethod)
+			{
+				// Get the credit card details
+				$oCreditCard	= $oAccount->getPaymentMethodDetails();
+				$iCardType		= $oCreditCard->CardType;
+				$sName			= $oCreditCard->Name;
+				$sCardNumber	= Decrypt($oCreditCard->CardNumber);
+				$iCVV			= Decrypt($oCreditCard->CVV);
+				$iMonth			= $oCreditCard->ExpMonth;
+				$iYear			= $oCreditCard->ExpYear;
 			}
 			
 			// Attempt payment & direct debit setup (if flagged)

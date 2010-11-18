@@ -244,7 +244,6 @@ var Popup_Credit_Card_Payment	= Class.create(Reflex_Popup,
 			)		
 		);
 		
-		// Default state of the 'use existing credit card details' elements
 		if (this._bPaymentMethodCreditCard)
 		{
 			this._oUseExistingCardDetailsDiv.show();
@@ -589,16 +588,17 @@ var Popup_Credit_Card_Payment	= Class.create(Reflex_Popup,
 		// Gather the validated values and submit to the server
 		var oExpiryDate	= Date.$parseDate(this._oCardExpiry.getValue(), 'Y-m');
 		fnSubmit(
-			this._iAccountId,				// iAccountId
-			this._oCardType.getValue(),		// iCardType
-			this._oCardNumber.getValue(),	// sCardNumber
-			this._oCardCVV.getValue(),		// iCVV
-			oExpiryDate.getMonth() + 1,		// iMonth
-			oExpiryDate.getFullYear(),		// iYear
-			this._oCardName.getValue(),		// sName
-			this._oCardAmount.getValue(),	// fAmount
-			this._oEmail.getValue(),		// sEmail
-			this._oDirectDebit.getValue()	// bDirectDebit
+			this._iAccountId,								// iAccountId
+			this._oCardType.getValue(),						// iCardType
+			this._oCardNumber.getValue(),					// sCardNumber
+			this._oCardCVV.getValue(),						// iCVV
+			oExpiryDate.getMonth() + 1,						// iMonth
+			oExpiryDate.getFullYear(),						// iYear
+			this._oCardName.getValue(),						// sName
+			this._oCardAmount.getValue(),					// fAmount
+			this._oEmail.getValue(),						// sEmail
+			this._oDirectDebit.getValue(),					// bDirectDebit
+			this._oUseExistingCardDetails.getElementValue()	// Use current payment method
 		);
 	},
 	
