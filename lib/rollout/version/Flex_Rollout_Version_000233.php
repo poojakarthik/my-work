@@ -89,6 +89,14 @@ class Flex_Rollout_Version_000233 extends Flex_Rollout_Version
 				'sRollbackSQL'		=>	"	DELETE FROM	action_type_action_association_type 
 											WHERE 		action_type_id = (SELECT id FROM action_type WHERE name = 'EFT One Time Payment');",
 				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+			),
+			array
+			(
+				'sDescription'		=> "Add a new resource_type 'Email' = FILE_DELIVERER_EMAIL",	
+				'sAlterSQL'			=> "INSERT INTO	resource_type (name, description, const_name, resource_type_nature)
+										VALUES		('Email', 'Email', 'RESOURCE_TYPE_FILE_DELIVERER_EMAIL', (SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_FILE_DELIVERER'));",
+				'sRollbackSQL'		=> "DELETE FROM resource_type WHERE const_name = 'RESOURCE_TYPE_FILE_DELIVERER_EMAIL';",
+				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 			)
 		);
 		
