@@ -1,12 +1,12 @@
 <?php
 /**
- * Resource_Type_File_Export_Provisioning_AustralianDirectEntry
+ * Resource_Type_File_Export_Payment_AustralianDirectEntry
  *
  * Models a record of the resource_type table
  *
- * @class	Resource_Type_File_Export_Provisioning_AustralianDirectEntry
+ * @class	Resource_Type_File_Export_Payment_AustralianDirectEntry
  */
-class Resource_Type_File_Export_Provisioning_AustralianDirectEntry extends Resource_Type_File_Export_Payment
+class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_Type_File_Export_Payment
 {
 	const	RESOURCE_TYPE			= RESOURCE_TYPE_FILE_EXPORT_DIRECT_DEBIT_AUSTRALIAN_DIRECT_ENTRY_FILE;
 	
@@ -389,7 +389,7 @@ class Resource_Type_File_Export_Provisioning_AustralianDirectEntry extends Resou
 			'BankAbbreviation'		=>	array('Description' => '3-Character Approved Financial Institution Abbreviation (eg. WBC for Westpac)'),
 			'SupplierUserName'		=>	array('Description' => 'User Name (as per User Preferred Specification)'),
 			'SupplierUserNumber'	=>	array('Description' => '6-Digit User Idenitification Number allocated by the Australian Payments Clearing Association (APCA)', 'Type' => DATA_TYPE_INTEGER),
-			'FileDescription'		=>	array('Description' => 'File Description (eg. \'DDBANK\'), limited to 12-characters', 'Default' => 'DDBANK'),
+			'FileDescription'		=>	array('Description' => 'File Description (eg. \'DDBANK\'), limited to 12-characters', 'Value' => 'DDBANK'),
 			'TraceBSB'				=>	array('Description' => 'The BSB for the Account number to trace back to on payment rejection (XXX-XXX)'),
 			'TraceAccount'			=>	array('Description' => 'The Account number to trace back to on payment rejection')
 		));

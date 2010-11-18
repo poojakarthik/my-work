@@ -20,7 +20,8 @@ abstract class Resource_Type_File_Export_Payment extends Resource_Type_File_Expo
 			}
 			
 			// Create the file export resource type
-			$oResourceTypeHandler	= new {$oCarrierModule->Module}($oCarrierModule);
+			$sModuleClassName		= $oCarrierModule->Module;
+			$oResourceTypeHandler	= new $sModuleClassName($oCarrierModule);
 			
 			// Get all pending payment requests for the customer group & payment type associated 
 			// with the carrier module
