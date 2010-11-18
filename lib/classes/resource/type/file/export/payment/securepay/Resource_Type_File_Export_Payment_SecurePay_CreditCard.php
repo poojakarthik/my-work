@@ -113,6 +113,11 @@ class Resource_Type_File_Export_Provisioning_SecurePay_CreditCard extends Resour
 		);
 	}
 	
+	public static function getAssociatedPaymentType()
+	{
+		return PAYMENT_TYPE_DIRECT_DEBIT_VIA_CREDIT_CARD;
+	}
+	
 	/***************************************************************************
 	 * COMMON METHODS FOR ALL Resource_Type_Base CHILDREN
 	 **************************************************************************/
