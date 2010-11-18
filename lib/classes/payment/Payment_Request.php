@@ -86,6 +86,32 @@ class Payment_Request extends ORM_Cached
 		return $oPaymentRequest;
 	}
 
+	public static function getForStatusAndCustomerGroupAndPaymentType($iStatus, $iCustomerGroup, $iPaymentType)
+	{
+		// Get data
+		$oStmt		= 	self::_preparedStatment('selByStatusAndCustomerGroupAndPaymentType');
+		$mResult	= 	$oStmt->Execute(
+							array(
+								'customer_group_id'			=> $iCustomerGroup, 
+								'payment_request_status_id' => $iStatus,
+								'payment_type_id'			=> $iPaymentType
+							)
+						);
+		if ($mResult === false)
+		{
+			throw new Exception("Failed to get Payment Requests for customer group '{$iCustomerGroup}, status '{$iStatus}' & payment type '{$iPaymentType}'. ".$oStmt->Error());
+		}
+		
+		// Convert to ORM objects (Payment_Request)
+		$aResults	= array();
+		while ($aRow = $oStmt->Fetch())
+		{
+			$oORM					= new self($aRow);
+			$aResults[$oORM->id]	= $oORM;
+		}
+		return $aResults;
+	}
+
 	public static function getForStatus($iStatus)
 	{
 		// Get data
@@ -96,7 +122,7 @@ class Payment_Request extends ORM_Cached
 			throw new Exception("Failed to get Payment Requests for status '{$iStatus}'. ".$oStmt->Error());
 		}
 		
-		// Convert to ORM objects (Direct_Debit_Request)
+		// Convert to ORM objects (Payment_Request)
 		$aResults	= array();
 		while ($aRow = $oStmt->Fetch())
 		{
@@ -142,6 +168,17 @@ class Payment_Request extends ORM_Cached
 					break;
 				case 'selByStatus':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "payment_request_status_id = <payment_request_status_id>", "id ASC");
+					break;
+				case 'selByStatusAndCustomerGroupAndPaymentType':
+					$arrPreparedStatements[$strStatement]	= 	new StatementSelect(
+																	'	payment_request pr
+																		JOIN Account a ON a.Id = pr.account_id', 
+																	'	pr.*', 
+																	'	a.CustomerGroup = <customer_group_id>
+																		AND pr.payment_request_status_id = <payment_request_status_id>
+																		AND pr.payment_type_id = <payment_type_id>',
+																	'	pr.id ASC'
+																);
 					break;
 				
 				// INSERTS

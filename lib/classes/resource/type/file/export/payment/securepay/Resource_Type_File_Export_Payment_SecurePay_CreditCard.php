@@ -36,11 +36,15 @@ class Resource_Type_File_Export_Provisioning_SecurePay_CreditCard extends Resour
 		$oRecord	= $this->_oFileExporter->getRecordType(self::RECORD_TYPE_TRANSACTION)->newRecord();
 		
 		$oPaymentRequest	= Payment_Request::getForId(ORM::extractId($mPaymentRequest));
-		$oAccount			=
+		$oPayment			= Payment::getForId($oPaymentRequest->payment_id);
 		$oAccountHistory	= Account_History::getForAccountAndEffectiveDatetime($oPaymentRequest->account_id, $oPaymentRequest->created_datetime);
 		$oCreditCard		= Credit_Card::getForId($oAccountHistory->credit_card_id);
 		
+		// Verify that the payment type is correct
 		Flex::assert($oPaymentRequest->payment_type_id === PAYMENT_TYPE_DIRECT_DEBIT_VIA_CREDIT_CARD, "Non Credit Card Payment Request sent to SecurePay Direct Debit via Credit Card Export File", print_r($oPaymentRequest->toStdClass(), true));
+		
+		// Verify that the payment hasn't been reversed
+		Flex::assert($oPayment->Status !== PAYMENT_STATUS_REVERSED, "A Payment Request that is tied to a reversed payment was sent to SecurePay Direct Debit via Credit Card Export File", print_r($oPaymentRequest->toStdClass(), true));
 		
 		$iExpiryMonth	= (int)$oCreditCard->ExpMonth;
 		$iExpiryYear	= (int)$oCreditCard->ExpYear;

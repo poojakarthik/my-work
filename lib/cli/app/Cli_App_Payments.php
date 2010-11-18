@@ -104,7 +104,15 @@ class Cli_App_Payments extends Cli
 	
 	protected function _export()
 	{
-		
+		try
+		{
+			// TODO: CR135 -- determine whether or not to deliver the exported files
+			Resource_Type_File_Export_Payment::exportDirectDebits();
+		}
+		catch (Exception $oException)
+		{
+			throw new Exception("Failed to export. ".$oException->getMessage());
+		}
 	}
 	
 	function getCommandLineArguments()

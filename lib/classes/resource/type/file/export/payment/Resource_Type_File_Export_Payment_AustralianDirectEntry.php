@@ -46,9 +46,17 @@ class Resource_Type_File_Export_Provisioning_AustralianDirectEntry extends Resou
 		$oAccountHistory	= Account_History::getForAccountAndEffectiveDatetime($oPaymentRequest->account_id, $oPaymentRequest->created_datetime);
 		$oBankAccount		= DirectDebit::getForId($oAccountHistory->direct_debit_id);
 		
+		// Verify that the payment type is correct
 		Flex::assert(
 			$oPaymentRequest->payment_type_id === PAYMENT_TYPE_DIRECT_DEBIT_VIA_EFT, 
 			"Non EFT Payment Request sent to Australian Direct Entry Export File", 
+			print_r($oPaymentRequest->toStdClass(), true)
+		);
+		
+		// Verify that the payment hasn't been reversed
+		Flex::assert(
+			$oPayment->Status !== PAYMENT_STATUS_REVERSED,
+			"A Payment Request that is tied to a reversed payment was sent to Australian Direct Entry Export File",
 			print_r($oPaymentRequest->toStdClass(), true)
 		);
 		
@@ -359,6 +367,11 @@ class Resource_Type_File_Export_Provisioning_AustralianDirectEntry extends Resou
 						->setPaddingString(' ')
 				)
 		);
+	}
+	
+	public static function getAssociatedPaymentType()
+	{
+		return PAYMENT_TYPE_DIRECT_DEBIT_VIA_EFT;
 	}
 	
 	/***************************************************************************
