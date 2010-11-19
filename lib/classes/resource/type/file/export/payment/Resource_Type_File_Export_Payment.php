@@ -28,23 +28,27 @@ abstract class Resource_Type_File_Export_Payment extends Resource_Type_File_Expo
 			
 			// Get all pending payment requests for the customer group & payment type associated 
 			// with the carrier module
-			$aPaymentRequests	=	Payment_Request::getForStatusAndCustomerGroupAndPaymentType(
-										PAYMENT_REQUEST_STATUS_PENDING, 
-										$oCarrierModule->customer_group,
-										$oResourceTypeHandler->getAssociatedPaymentType()
-									);
 			$iExportedPaymentRequests	= 0;
+			$aPaymentRequests			=	Payment_Request::getForStatusAndCustomerGroupAndPaymentType(
+												PAYMENT_REQUEST_STATUS_PENDING, 
+												$oCarrierModule->customer_group,
+												$oResourceTypeHandler->getAssociatedPaymentType()
+											);
 			foreach ($aPaymentRequests as $oPaymentRequest)
 			{
 				try
 				{
 					Log::getLog()->log("Payment request {$oPaymentRequest->id}");
+					
+					// Add to the output
 					$oResourceTypeHandler->addRecord($oPaymentRequest);
-					$iExportedPaymentRequests++;
-					continue;	// TODO: CR135 -- REMOVE THIS
+					
 					// Update the status of the payment request
 					$oPaymentRequest->payment_request_status_id	= PAYMENT_REQUEST_STATUS_DISPATCHED;
 					$oPaymentRequest->save();
+					
+					// Increment export counter
+					$iExportedPaymentRequests++;
 				}
 				catch (Exception $oException)
 				{

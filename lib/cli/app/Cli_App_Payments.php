@@ -106,9 +106,31 @@ class Cli_App_Payments extends Cli
 	{
 		try
 		{
-			// TODO: CR135 -- determine whether or not to deliver the exported files
-			$bDeliver	= false;
+			$bTestRun	= $this->_aArgs[self::SWITCH_TEST_RUN];
+			if ($bTestRun)
+			{
+				Log::getLog()->log("** TEST MODE **");
+				Log::getLog()->log("The exported files will NOT be delivered");
+				$oDataAccess	= DataAccess::getDataAccess();
+				if ($oDataAccess->TransactionStart() === false)
+				{
+					throw new Exception("Failed to START db transaction");
+				}
+				Log::getLog()->log("Transaction started");
+			}
+			
+			// Only deliver if doing a LIVE export run
+			$bDeliver	= $bTestRun === false;
 			Resource_Type_File_Export_Payment::exportDirectDebits($bDeliver);
+			
+			if ($bTestRun)
+			{
+				if ($oDataAccess->TransactionRollback() === false)
+				{
+					throw new Exception("Failed to ROLLBACK db transaction");
+				}
+				Log::getLog()->log("Transaction rolled back");
+			}
 		}
 		catch (Exception $oException)
 		{
