@@ -89,7 +89,7 @@ class Payment_Request extends ORM_Cached
 	public static function getForStatusAndCustomerGroupAndPaymentType($iStatus, $iCustomerGroup, $iPaymentType)
 	{
 		// Get data
-		$oStmt		= 	self::_preparedStatment('selByStatusAndCustomerGroupAndPaymentType');
+		$oStmt		= 	self::_preparedStatement('selByStatusAndCustomerGroupAndPaymentType');
 		$mResult	= 	$oStmt->Execute(
 							array(
 								'customer_group_id'			=> $iCustomerGroup, 
