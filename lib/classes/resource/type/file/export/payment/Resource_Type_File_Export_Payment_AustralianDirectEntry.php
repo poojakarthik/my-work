@@ -55,7 +55,7 @@ class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_T
 		
 		// Verify that the payment hasn't been reversed
 		Flex::assert(
-			$oPayment->Status !== PAYMENT_STATUS_REVERSED,
+			$oPayment->Status !== PAYMENT_REVERSED,
 			"A Payment Request that is tied to a reversed payment was sent to Australian Direct Entry Export File",
 			print_r($oPaymentRequest->toStdClass(), true)
 		);

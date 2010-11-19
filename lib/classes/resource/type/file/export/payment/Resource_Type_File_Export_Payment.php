@@ -33,24 +33,14 @@ abstract class Resource_Type_File_Export_Payment extends Resource_Type_File_Expo
 										$oCarrierModule->customer_group,
 										$oResourceTypeHandler->getAssociatedPaymentType()
 									);
-			
-			if (count($aPaymentRequests) == 0)
-			{
-				if ($oDataAccess->TransactionRollback() === false)
-				{
-					throw new Exception("Failed to ROLLBACK db transaction for customer group {$oCarrierModule->customer_group}");
-				}
-				Log::getLog()->log("No payment requests, transaction rolled back");
-				
-				continue;
-			}
-			
+			$iExportedPaymentRequests	= 0;
 			foreach ($aPaymentRequests as $oPaymentRequest)
 			{
 				try
 				{
 					Log::getLog()->log("Payment request {$oPaymentRequest->id}");
 					$oResourceTypeHandler->addRecord($oPaymentRequest);
+					$iExportedPaymentRequests++;
 					continue;	// TODO: CR135 -- REMOVE THIS
 					// Update the status of the payment request
 					$oPaymentRequest->payment_request_status_id	= PAYMENT_REQUEST_STATUS_DISPATCHED;
@@ -61,6 +51,17 @@ abstract class Resource_Type_File_Export_Payment extends Resource_Type_File_Expo
 					// Continue processing other requests
 					Log::getLog()->log("Failed to export payment request, id={$oPaymentRequest->id}. ".$oException->getMessage());
 				}
+			}
+			
+			if ($iExportedPaymentRequests == 0)
+			{
+				Log::getLog()->log("No payment requests exported");
+				if ($oDataAccess->TransactionRollback() === false)
+				{
+					throw new Exception("Failed to ROLLBACK db transaction for customer group {$oCarrierModule->customer_group}");
+				}
+				Log::getLog()->log("Transaction rolled back");
+				continue;
 			}
 			
 			try
