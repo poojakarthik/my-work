@@ -51,7 +51,7 @@ abstract class Resource_Type_File_Export_Payment extends Resource_Type_File_Expo
 				{
 					Log::getLog()->log("Payment request {$oPaymentRequest->id}");
 					$oResourceTypeHandler->addRecord($oPaymentRequest);
-					continue;	
+					continue;	// TODO: CR135 -- REMOVE THIS
 					// Update the status of the payment request
 					$oPaymentRequest->payment_request_status_id	= PAYMENT_REQUEST_STATUS_DISPATCHED;
 					$oPaymentRequest->save();
