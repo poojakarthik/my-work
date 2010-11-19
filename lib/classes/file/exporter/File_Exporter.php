@@ -1,12 +1,16 @@
 <?php
-abstract class File_Exporter
+class File_Exporter
 {
 	const	RECORD_GROUP_BODY	= 'body';
 	
 	protected	$_aRecordTypes	= array();
 	protected	$_aRecords		= array();
+	private		$_sNewLine		= null;
 	
-	public function __construct(){}
+	public function __construct()
+	{
+		$this->_sNewLine	= chr(13);
+	}
 	
 	public function addRecord(File_Exporter_Record $oRecord, $sRecordGroup=self::RECORD_GROUP_BODY)
 	{
@@ -43,7 +47,19 @@ abstract class File_Exporter
 		}
 	}
 	
-	abstract public function render();
+	public function render()
+	{
+		$aLines	= array();
+		
+		// Body
+		foreach ($this->_aRecords[self::RECORD_GROUP_BODY] as $oRecord)
+		{
+			$sLine		= implode('', $oRecord->getProcessedRecord());
+			$aLines[]	= $sLine;
+		}
+		
+		return implode($this->_sNewLine, $aLines);
+	}
 	
 	public function renderToFile($sPath)
 	{
