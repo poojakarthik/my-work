@@ -40,7 +40,7 @@ class Resource_Type_File_Deliver_FTP extends Resource_Type_File_Deliver
 		return $this;
 	}
 	
-	public function deliver($sLocalPath)
+	protected function _deliver($sLocalPath)
 	{
 		$sDeliveryPath	= $this->_getDeliveryPath($sLocalPath);
 		

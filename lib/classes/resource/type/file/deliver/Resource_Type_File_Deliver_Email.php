@@ -10,7 +10,7 @@ class Resource_Type_File_Deliver_Email extends Resource_Type_File_Deliver
 		return $this;
 	}
 
-	public function deliver($sLocalPath)
+	protected function _deliver($sLocalPath)
 	{
 		$oEmailFlex	= new Email_Flex();
 		
@@ -42,6 +42,11 @@ class Resource_Type_File_Deliver_Email extends Resource_Type_File_Deliver
 		$oEmailFlex->send();
 		
 		return $this;
+	}
+	
+	public function getDebugEmailContent($sLocalPath)
+	{
+		return $this->getConfig()->EmailBody;
 	}
 
 	public function disconnect()

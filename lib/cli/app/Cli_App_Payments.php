@@ -111,6 +111,10 @@ class Cli_App_Payments extends Cli
 			{
 				Log::getLog()->log("** TEST MODE **");
 				Log::getLog()->log("The exported files will NOT be delivered");
+				
+				// Enable file delivery testing (this will force emailling of all files to ybs-admin@ybs.net.au)
+				Resource_Type_File_Deliver::enableTestMode();
+				
 				$oDataAccess	= DataAccess::getDataAccess();
 				if ($oDataAccess->TransactionStart() === false)
 				{
@@ -119,9 +123,7 @@ class Cli_App_Payments extends Cli
 				Log::getLog()->log("Transaction started");
 			}
 			
-			// Only deliver if doing a LIVE export run
-			$bDeliver	= $bTestRun === false;
-			Resource_Type_File_Export_Payment::exportDirectDebits($bDeliver);
+			Resource_Type_File_Export_Payment::exportDirectDebits();
 			
 			if ($bTestRun)
 			{

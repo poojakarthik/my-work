@@ -8,12 +8,13 @@ abstract class Resource_Type_File_Export_Payment extends Resource_Type_File_Expo
 {
 	const	CARRIER_MODULE_TYPE	= MODULE_TYPE_PAYMENT_DIRECT_DEBIT;
 	
-	public static function exportDirectDebits($bDeliver=false)
+	public static function exportDirectDebits()
 	{
 		$aDirectDebitCarrierModules	= Carrier_Module::getForCarrierModuleType(self::CARRIER_MODULE_TYPE);
 		foreach ($aDirectDebitCarrierModules as $oCarrierModule)
 		{
-			Log::getLog()->log("\nResource type handler {$oCarrierModule->Module}, customer group {$oCarrierModule->customer_group}");
+			Log::getLog()->log("\nResource type handler {$oCarrierModule->Module}");
+			Log::getLog()->log("Customer Group: ".Customer_Group::getForId($oCarrierModule->customer_group)->internal_name);
 			
 			$oDataAccess	= DataAccess::getDataAccess();
 			if ($oDataAccess->TransactionStart() === false)
@@ -73,11 +74,8 @@ abstract class Resource_Type_File_Export_Payment extends Resource_Type_File_Expo
 				Log::getLog()->log("Rendering to file...");
 				$oResourceTypeHandler->render()->save();
 				
-				if ($bDeliver)
-				{
-					Log::getLog()->log("Delivering...");
-					$oResourceTypeHandler->deliver();
-				}
+				Log::getLog()->log("Delivering...");
+				$oResourceTypeHandler->deliver();
 				
 				if ($oDataAccess->TransactionCommit() === false)
 				{
