@@ -145,7 +145,7 @@ class Carrier_Module extends ORM_Cached
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1");
 					break;
 				case 'selForCarrierModuleTypeAndCustomerGroup':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "Type = <carrier_module_type_id> AND (ISNULL(<customer_group_id>) OR ISNULL(customer_group) OR <customer_group_id> = customer_group) AND (<include_inactive> = 0 OR Active = 1)");
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "Type = <carrier_module_type_id> AND (ISNULL(<customer_group_id>) OR ISNULL(customer_group) OR <customer_group_id> = customer_group) AND (<include_inactive> = 1 OR Active = 1)");
 					break;
 				case 'selForDefinition':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	self::$_strStaticTableName,

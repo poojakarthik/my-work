@@ -26,7 +26,7 @@ class Cli_App_Payments extends Cli
 			// The arguments are present and in a valid format if we get past this point.
 			$this->_aArgs = $this->getValidatedArguments();
 			
-			$sMode	= '_'.strtolower($this->_aArgs[SWITCH_MODE]);
+			$sMode	= '_'.strtolower($this->_aArgs[self::SWITCH_MODE]);
 			if (!method_exists($this, $sMode))
 			{
 				throw new Exception("Invalid Mode '{$sMode}'");
