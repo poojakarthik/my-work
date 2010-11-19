@@ -130,6 +130,7 @@ class Cli_App_ApplyDirectDebits extends Cli
 							}
 							else
 							{
+								// Ineligible due to invalid bank account
 								$aIneligible[self::INELIGIBLE_BANK_ACCOUNT]++;
 							}
 							break;
@@ -146,10 +147,12 @@ class Cli_App_ApplyDirectDebits extends Cli
 							}
 							else if ($iNow >= $iExpiry)
 							{
+								// Ineligible because credit card has expired
 								$aIneligible[self::INELIGIBLE_CREDIT_CARD_EXPIRY]++;
 							}
 							else
 							{
+								// Ineligible due to invalid credit card
 								$aIneligible[self::INELIGIBLE_CREDIT_CARD]++;
 							}
 							break;
@@ -160,7 +163,7 @@ class Cli_App_ApplyDirectDebits extends Cli
 						$fAmount	= round($oAccount->getOverdueBalance(), 2);
 						if ($fAmount < $aRow['direct_debit_minimum'])
 						{
-							// Not enough of a balance to be worthy
+							// Not enough of a balance to be eligible
 							$aIneligible[self::INELIGIBLE_AMOUNT]++;
 							continue;
 						}
