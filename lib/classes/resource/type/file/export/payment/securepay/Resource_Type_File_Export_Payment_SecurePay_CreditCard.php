@@ -2,8 +2,6 @@
 /**
  * Resource_Type_File_Export_Payment_SecurePay_CreditCard
  *
- * Models a record of the resource_type table
- *
  * @class	Resource_Type_File_Export_Payment_SecurePay_CreditCard
  */
 class Resource_Type_File_Export_Payment_SecurePay_CreditCard extends Resource_Type_File_Export_Payment
@@ -36,6 +34,8 @@ class Resource_Type_File_Export_Payment_SecurePay_CreditCard extends Resource_Ty
 		$oRecord	= $this->_oFileExporter->getRecordType(self::RECORD_TYPE_TRANSACTION)->newRecord();
 		
 		$oPaymentRequest	= Payment_Request::getForId(ORM::extractId($mPaymentRequest));
+		$oAccount			= Account::getForId($oPaymentRequest->account_id);
+		//$oAccountHistory	= Account_History::getForAccountAndEffectiveDatetime($oAccount->Id, $oPaymentRequest->created_datetime);
 		$oPayment			= Payment::getForId($oPaymentRequest->payment_id);
 		$aAccountHistory	= Account_History::getForAccountAndEffectiveDatetime($oPaymentRequest->account_id, $oPaymentRequest->created_datetime);
 		$oCreditCard		= Credit_Card::getForId($aAccountHistory['credit_card_id']);
@@ -65,8 +65,11 @@ class Resource_Type_File_Export_Payment_SecurePay_CreditCard extends Resource_Ty
 		$oRecord->CCNumber		= preg_replace('/[^\d]+/', '', Decrypt($oCreditCard->CardNumber));
 		$oRecord->ExpiryDate	= "{$sExpiryMonth}/{$sExpiryYear}";
 		$oRecord->AmountCharged	= $oPaymentRequest->amount;
-		$oRecord->FlexAccount	= $oPaymentRequest->account_id;
-		$oRecord->CustomerName	= date('my', strtotime($oMotorpassAccount->business_commencement_date));
+		$oRecord->FlexAccount	= $oPaymentRequest->account_id/*.'R'.$oPaymentRequest->id/**/;
+		$oRecord->CustomerName	= $oAccount->BusinessName;
+		
+		// TODO: Perhaps use the FlexAccount field as a Reference?
+		Flex::assert(false, "DEBUG: [Account.Id]R[payment_request.id] Transaction Reference not implemented yet!");
 		
 		// Add to the file
 		$this->_oFileExporter->addRecord($oRecord, File_Exporter_CSV::RECORD_GROUP_BODY);

@@ -13,6 +13,7 @@ class Cli_App_Payments extends Cli
 	const	SWITCH_PAYMENT_RESPONSE_ID	= 'r';
 	const	SWITCH_FILE_IMPORT_ID		= 'f';
 	const	SWITCH_FILE_IMPORT_DATA_ID	= 'd';
+	const	SWITCH_LIMIT				= 'x';
 	
 	const	MODE_PROCESS	= 'PROCESS';
 	const	MODE_NORMALISE	= 'NORMALISE';
@@ -58,14 +59,17 @@ class Cli_App_Payments extends Cli
 			Carrier_Module::getForDefinition(MODULE_TYPE_NORMALISATION_PAYMENT, $oFileImport->FileType, $oFileImport->Carrier);
 		}
 		
+		// Optional Limit Parameter
+		$iLimit	= (isset($this->_aArgs[self::SWITCH_LIMIT]) ? (int)$this->_aArgs[self::SWITCH_LIMIT] : null);
+		
 		// Process the Files
 		try
 		{
-			Resource_Type_File_Import_Payment::preProcessFiles($iFileImportId);
+			Resource_Type_File_Import_Payment::preProcessFiles($iFileImportId, $iLimit);
 		}
 		catch (Exception $oException)
 		{
-			// TODO
+			// TODO: Transaction if testing
 			throw $oException;
 		}
 	}
@@ -73,26 +77,29 @@ class Cli_App_Payments extends Cli
 	protected function _normalise()
 	{
 		// Optional file_import_data.id parameter
-		$iFileImportId	= $this->_aArgs[self::SWITCH_FILE_IMPORT_DATA_ID];
-		if ($iFileImportId && ($oFileImport = File_Import::getForId()))
+		$iFileImportDataId	= $this->_aArgs[self::SWITCH_FILE_IMPORT_DATA_ID];
+		if ($iFileImportDataId && ($oFileImportData = File_Import_Data::getForId($iFileImportDataId)))
 		{
-			if ($oFileImport->Status !== FILE_IMPORTED)
+			if ($oFileImportData->Status !== FILE_IMPORT_DATA_STATUS_IMPORTED)
 			{
-				throw new Exception("Only Files with Status FILE_IMPORTED (".FILE_IMPORTED.") can be Processed");
+				throw new Exception("Only File Data with Status FILE_IMPORT_DATA (".FILE_IMPORT_DATA_STATUS_IMPORTED.") can be Normalised");
 			}
 			
 			// Make sure that we have a Carrier Module defined to process this File
 			Carrier_Module::getForDefinition(MODULE_TYPE_NORMALISATION_PAYMENT, $oFileImport->FileType, $oFileImport->Carrier);
 		}
 		
+		// Optional Limit Parameter
+		$iLimit	= (isset($this->_aArgs[self::SWITCH_LIMIT]) ? (int)$this->_aArgs[self::SWITCH_LIMIT] : null);
+		
 		// Process the Records
 		try
 		{
-			Resource_Type_File_Import_Payment::processRecords($mRecord);
+			Resource_Type_File_Import_Payment::processRecords($iFileImportDataId, $iLimit);
 		}
 		catch (Exception $oException)
 		{
-			// TODO
+			// TODO: Transaction if testing
 			throw $oException;
 		}
 	}
@@ -175,6 +182,13 @@ class Cli_App_Payments extends Cli
 				self::ARG_REQUIRED		=> false,
 				self::ARG_LABEL			=> "FILE_IMPORT_ID",
 				self::ARG_DESCRIPTION	=> "File Import Id (".self::MODE_PROCESS.", ".self::MODE_NORMALISE.", ".self::MODE_APPLY." Modes only)",
+				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
+			),
+			
+			self::SWITCH_LIMIT => array(
+				self::ARG_REQUIRED		=> false,
+				self::ARG_LABEL			=> "LIMIT",
+				self::ARG_DESCRIPTION	=> "Limit/Maximum Items to Process (".self::MODE_PROCESS.", ".self::MODE_NORMALISE." Modes only)",
 				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
 			)
 		);
