@@ -421,188 +421,12 @@ class JSON_Handler_Account extends JSON_Handler
 
 	public function setPaymentMethod($iAccountId, $iPaymentMethodType, $iPaymentMethodSubType, $iBillingDetail)
 	{
-		// Start a new database transaction
-		$oDataAccess	= DataAccess::getDataAccess();
-
-		if (!$oDataAccess->TransactionStart())
-		{
-			// Failure!
-			return 	array(
-						"Success"	=> false,
-						"Message"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? 'There was an error accessing the database' : '',
-						"strDebug"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $this->_JSONDebug : ''
-					);
-		}
-
+		$bGod	= Employee::getForId(Flex::getUserId())->isGod();
 		try
 		{
-			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
-			{
-				throw new JSON_Handler_Account_Exception('You do not have permission to set the payment method');
-			}
-
-			// Update billing type
-			$oAccount	= Account::getForId($iAccountId);
-
-			/**
-			 * ----------------------------------------------------------------------------------------
-			 * VERY IMPORTANT!!!!
-			 * ----------------------------------------------------------------------------------------
-			 * IF YOU CHANGE THE CONTENTS OF THE NOTE THAT IS ADDED DURING THIS PROCESS, MAKE SURE THAT
-			 * YOU UPDATE THE Motorpass Sales Portal IMPLEMENTATION OF IT AS WELL.
-			 * 
-			 * THE CODE TO DO SO IS LOCATED IN Cli_App_FlexSync.php WITHIN THE SPMP APPLICATION.			 * 
-			 * ----------------------------------------------------------------------------------------
-			 */
-			 
-			// Get the old billing type description
-			$sOldBillingType	= '';
-
-			switch ($oAccount->BillingType)
-			{
-				case BILLING_TYPE_DIRECT_DEBIT:
-					$sAccountName	= 'Unknown';
-					$sAccountNumber	= 'Unknown';
-
-					try
-					{
-						$oDirectDebit	= DirectDebit::getForId($oAccount->DirectDebit);
-						$sAccountName	= $oDirectDebit->AccountName;
-						$sAccountNumber	= $oDirectDebit->AccountNumber;
-					}
-					catch (Exception $e)
-					{
-						// No direct debit exists
-					}
-
-					$sOldBillingType	= 	"Direct Debit via Bank Account\n".
-											"Account Name: {$sAccountName}\n".
-											"Account Number: {$sAccountNumber}";
-					break;
-				case BILLING_TYPE_CREDIT_CARD:
-					$sCardName		= 'Unknown';
-					$sCardNumber	= 'Unknown';
-
-					try
-					{
-						$oCreditCard	= Credit_Card::getForId($oAccount->CreditCard);
-						$sCardName		= $oCreditCard->Name;
-						$sCardNumber	= "XXXXXXXXXXXX".substr(Decrypt($oCreditCard->CardNumber), -4);
-					}
-					catch (Exception $e)
-					{
-						// No credit card exists
-					}
-
-					$sOldBillingType	= 	"Direct Debit via Credit Card\n".
-											"Card Name: {$sCardName}\n".
-											"Card Number: {$sCardNumber}";
-					break;
-				case BILLING_TYPE_ACCOUNT:	// Invoice
-					$sOldBillingType	= 'Invoice';
-					break;
-
-				case BILLING_TYPE_REBILL:
-					$oOldRebill			= Rebill::getForAccountId($oAccount->Id, true);
-
-					if ($oOldRebill)
-					{
-						$oOldRebillDetails	= $oOldRebill->getDetails();
-						switch ($oOldRebill->rebill_type_id)
-						{
-							case REBILL_TYPE_MOTORPASS:
-								$sAccountNumber		= ($oOldRebillDetails->account_number 	? $oOldRebillDetails->account_number 	: 'Not supplied');
-								$sAccountName		= ($oOldRebillDetails->account_name 	? $oOldRebillDetails->account_name 		: 'Not supplied');
-								$sCCExpiry			= ($oOldRebillDetails->card_expiry_date	? $oOldRebillDetails->card_expiry_date 	: 'Not supplied');
-								$sOldBillingType	= 	"Rebill via Motorpass\n" .
-														"Account Number: {$sAccountNumber}\n" .
-														"Account Name: {$sAccountName}\n" .
-														"Card Expiry: {$sCCExpiry}";
-								break;
-						}
-					}
-					else
-					{
-						// This will only happen if the old rebill doesn't exist, so it shouldn't happen
-						$sOldBillingType	= 	"Rebill (unknown)";
-					}
-					break;
-			}
-
-			// Determin the billing type (legacy concept) from the payment method and sub type
-			$iBillingType	= BILLING_TYPE_ACCOUNT;
-
-			switch ($iPaymentMethodType)
-			{
-				case PAYMENT_METHOD_ACCOUNT:
-					$iBillingType	= BILLING_TYPE_ACCOUNT;
-					break;
-				case PAYMENT_METHOD_DIRECT_DEBIT:
-					switch ($iPaymentMethodSubType)
-					{
-						case DIRECT_DEBIT_TYPE_CREDIT_CARD:
-							$iBillingType	= BILLING_TYPE_CREDIT_CARD;
-							break;
-						case DIRECT_DEBIT_TYPE_BANK_ACCOUNT:
-							$iBillingType	= BILLING_TYPE_DIRECT_DEBIT;
-							break;
-					}
-					break;
-				case PAYMENT_METHOD_REBILL:
-					$iBillingType	= BILLING_TYPE_REBILL;
-					break;
-			}
-
-			$oAccount->BillingType	= $iBillingType;
-
-			// Reset detail values first
-			$oAccount->DirectDebit	= ($iBillingType == BILLING_TYPE_DIRECT_DEBIT ? $iBillingDetail : null);
-			$oAccount->CreditCard	= ($iBillingType == BILLING_TYPE_CREDIT_CARD ? $iBillingDetail : null);
-
-			// Update proper detail field
-			$oDetails			= $oAccount->getPaymentMethodDetails();
-			$sNewBillingType	= '';
-			switch ($iBillingType)
-			{
-				case BILLING_TYPE_DIRECT_DEBIT:
-					$sNewBillingType	= 	"Direct Debit via Bank Account\n".
-											"Account Name: {$oDetails->AccountName}\n".
-											"Account Number: {$oDetails->AccountNumber}";
-					break;
-				case BILLING_TYPE_CREDIT_CARD:
-					$sNewBillingType	= 	"Direct Debit via Credit Card\n".
-											"Card Name: {$oDetails->Name}\n".
-											"Card Number: XXXXXXXXXXXX".substr(Decrypt($oDetails->CardNumber), -4);
-					break;
-				case BILLING_TYPE_ACCOUNT:
-					$sNewBillingType	= 'Invoice';
-					break;
-
-				case BILLING_TYPE_REBILL:
-					$oRebillTypeDetails	= $oDetails->getDetails();
-
-					switch ($oDetails->rebill_type_id)
-					{
-						case REBILL_TYPE_MOTORPASS:
-							$sNewBillingType	= 	"Rebill via Motorpass\n" .
-													"Account Number: {$oRebillTypeDetails->account_number}\n" .
-													"Account Name: {$oRebillTypeDetails->account_name}\n" .
-													"Card Expiry: {$oRebillTypeDetails->card_expiry_date}";
-							break;
-					}
-					break;
-			}
-
-			$oAccount->save();
-
-			// Add a note
-			$sNote = "Payment method changed from:\n $sOldBillingType\n to $sNewBillingType";
-			Note::createNote(SYSTEM_NOTE_TYPE, $sNote, Flex::getUserId(), $iAccountId);
-
-			// All good
-			$oDataAccess->TransactionCommit();
-
-			return array("Success" => true);
+			self::_setPaymentMethod($iAccountId, $iPaymentMethodType, $iPaymentMethodSubType, $iBillingDetail);
+			
+			return array('Success' => true);
 		}
 		catch (JSON_Handler_Account_Exception $oException)
 		{
@@ -611,17 +435,16 @@ class JSON_Handler_Account extends JSON_Handler
 			return 	array(
 						"Success"	=> false,
 						"Message"	=> $oException->getMessage(),
-						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+						"strDebug"	=> ($bGod ? $this->_JSONDebug : '')
 					);
 		}
-		catch (Exception $e)
+		catch (Exception $oException)
 		{
 			$oDataAccess->TransactionRollback();
-
 			return 	array(
 						"Success"	=> false,
-						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database',
-						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+						"Message"	=> ($bGod ? $oException->getMessage() : 'There was an error accessing the database. Please contact YBS for assistance.'),
+						"strDebug"	=> ($bGod ? $this->_JSONDebug : '')
 					);
 		}
 	}
@@ -771,11 +594,14 @@ class JSON_Handler_Account extends JSON_Handler
 				// Modify the payment method for the account
 				if ($oDetails->bSetPaymentMethod)
 				{
-					$aResult	= $this->setPaymentMethod($iAccountId, PAYMENT_METHOD_DIRECT_DEBIT, DIRECT_DEBIT_TYPE_CREDIT_CARD, $oCreditCard->Id);
-					if ($aResult['Success'] === false)
+					try
 					{
-						// Failed
-						throw new Exception("Failed to modify the payment method for the Account. ".$aResult['Message']);
+						self::_setPaymentMethod($iAccountId, PAYMENT_METHOD_DIRECT_DEBIT, DIRECT_DEBIT_TYPE_CREDIT_CARD, $oCreditCard->Id);
+					}
+					catch (JSON_Handler_Account_Exception $oException)
+					{
+						// Add more detail to the exception message
+						throw new JSON_Handler_Account_Exception("Failed to modify the payment method for the Account. ".$oException->getMessage());
 					}
 				}
 				
@@ -1058,11 +884,14 @@ class JSON_Handler_Account extends JSON_Handler
 				// Modify the payment method for the account
 				if ($oDetails->bSetPaymentMethod)
 				{
-					$aResult	= $this->setPaymentMethod($iAccountId, PAYMENT_METHOD_DIRECT_DEBIT, DIRECT_DEBIT_TYPE_BANK_ACCOUNT, $oDirectDebit->Id);
-					if ($aResult['Success'] === false)
+					try
 					{
-						// Failed
-						throw new Exception("Failed to modify the payment method for the Account. ".$aResult['Message']);
+						self::_setPaymentMethod($iAccountId, PAYMENT_METHOD_DIRECT_DEBIT, DIRECT_DEBIT_TYPE_BANK_ACCOUNT, $oDirectDebit->Id);
+					}
+					catch (JSON_Handler_Account_Exception $oException)
+					{
+						// Add more detail to the exception message
+						throw new JSON_Handler_Account_Exception("Failed to modify the payment method for the Account. ".$oException->getMessage());
 					}
 				}
 				
@@ -1615,32 +1444,217 @@ class JSON_Handler_Account extends JSON_Handler
 	
 	private static function _sendCreditCardPaymentErrorEmail($iAccountId, $sEmail, $sCardNumber, $sName, $fAmount, $sMessage)
 	{
-			$aCustomerDetails = array(
-									"AccountId"			=> $iAccountId,
-									"Email"				=> $sEmail,
-									"CreditCardNumber"	=> substr($sCardNumber, 0, 3) ."***". substr($sCardNumber, -5),
-									"Name"				=> $sName,
-									"Amount"			=> $fAmount
-								);
-			$sCustomerDetails	= print_r($aCustomerDetails, TRUE);
-			$sMessageSentToUser	= $sMessage;
-			$sExceptionMessage	= $oException->getMessage();
-			
-			$sDetails	= "SecurePay Credit Card transaction failed via the Flex Customer Management System";
-			$sDetails 	.= "Exception Message:\n";
-			$sDetails 	.= "\t$sExceptionMessage\n\n";
-			$sDetails 	.= "Message sent to User:\n";
-			$sDetails 	.= "\t$sMessageSentToUser\n\n";
-			$sDetails 	.= "CustomerDetails:\n";
-			$sDetails 	.= "\t$sCustomerDetails\n\n";
-			
-			Flex::sendEmailNotificationAlert(
-				(Credit_Card_Payment::isTestMode() ? '[TEST MODE] ' : '')."SecurePay Transaction Failure", 
-				$sDetails, 
-				FALSE, 
-				TRUE, 
-				TRUE
-			);
+		$aCustomerDetails = array(
+								"AccountId"			=> $iAccountId,
+								"Email"				=> $sEmail,
+								"CreditCardNumber"	=> substr($sCardNumber, 0, 3) ."***". substr($sCardNumber, -5),
+								"Name"				=> $sName,
+								"Amount"			=> $fAmount
+							);
+		$sCustomerDetails	= print_r($aCustomerDetails, TRUE);
+		$sMessageSentToUser	= $sMessage;
+		$sExceptionMessage	= $oException->getMessage();
+		
+		$sDetails	= "SecurePay Credit Card transaction failed via the Flex Customer Management System";
+		$sDetails 	.= "Exception Message:\n";
+		$sDetails 	.= "\t$sExceptionMessage\n\n";
+		$sDetails 	.= "Message sent to User:\n";
+		$sDetails 	.= "\t$sMessageSentToUser\n\n";
+		$sDetails 	.= "CustomerDetails:\n";
+		$sDetails 	.= "\t$sCustomerDetails\n\n";
+		
+		Flex::sendEmailNotificationAlert(
+			(Credit_Card_Payment::isTestMode() ? '[TEST MODE] ' : '')."SecurePay Transaction Failure", 
+			$sDetails, 
+			FALSE, 
+			TRUE, 
+			TRUE
+		);
+	}
+	
+	private static function _setPaymentMethod($iAccountId, $iPaymentMethodType, $iPaymentMethodSubType, $iBillingDetail)
+	{
+		// Start a new database transaction
+		$oDataAccess	= DataAccess::getDataAccess();
+		if (!$oDataAccess->TransactionStart())
+		{
+			// Failure!
+			throw new Exception('Failed to start transaction');
+		}
+
+		try
+		{
+			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
+			{
+				throw new JSON_Handler_Account_Exception('You do not have permission to set the payment method');
+			}
+
+			// Update billing type
+			$oAccount	= Account::getForId($iAccountId);
+
+			/**
+			 * ----------------------------------------------------------------------------------------
+			 * VERY IMPORTANT!!!!
+			 * ----------------------------------------------------------------------------------------
+			 * IF YOU CHANGE THE CONTENTS OF THE NOTE THAT IS ADDED DURING THIS PROCESS, MAKE SURE THAT
+			 * YOU UPDATE THE Motorpass Sales Portal IMPLEMENTATION OF IT AS WELL.
+			 * 
+			 * THE CODE TO DO SO IS LOCATED IN Cli_App_FlexSync.php WITHIN THE SPMP APPLICATION.			 * 
+			 * ----------------------------------------------------------------------------------------
+			 */
+			 
+			// Get the old billing type description
+			$sOldBillingType	= '';
+
+			switch ($oAccount->BillingType)
+			{
+				case BILLING_TYPE_DIRECT_DEBIT:
+					$sAccountName	= 'Unknown';
+					$sAccountNumber	= 'Unknown';
+
+					try
+					{
+						$oDirectDebit	= DirectDebit::getForId($oAccount->DirectDebit);
+						$sAccountName	= $oDirectDebit->AccountName;
+						$sAccountNumber	= $oDirectDebit->AccountNumber;
+					}
+					catch (Exception $e)
+					{
+						// No direct debit exists
+					}
+
+					$sOldBillingType	= 	"Direct Debit via Bank Account\n".
+											"Account Name: {$sAccountName}\n".
+											"Account Number: {$sAccountNumber}";
+					break;
+				case BILLING_TYPE_CREDIT_CARD:
+					$sCardName		= 'Unknown';
+					$sCardNumber	= 'Unknown';
+
+					try
+					{
+						$oCreditCard	= Credit_Card::getForId($oAccount->CreditCard);
+						$sCardName		= $oCreditCard->Name;
+						$sCardNumber	= "XXXXXXXXXXXX".substr(Decrypt($oCreditCard->CardNumber), -4);
+					}
+					catch (Exception $e)
+					{
+						// No credit card exists
+					}
+
+					$sOldBillingType	= 	"Direct Debit via Credit Card\n".
+											"Card Name: {$sCardName}\n".
+											"Card Number: {$sCardNumber}";
+					break;
+				case BILLING_TYPE_ACCOUNT:	// Invoice
+					$sOldBillingType	= 'Invoice';
+					break;
+
+				case BILLING_TYPE_REBILL:
+					$oOldRebill			= Rebill::getForAccountId($oAccount->Id, true);
+
+					if ($oOldRebill)
+					{
+						$oOldRebillDetails	= $oOldRebill->getDetails();
+						switch ($oOldRebill->rebill_type_id)
+						{
+							case REBILL_TYPE_MOTORPASS:
+								$sAccountNumber		= ($oOldRebillDetails->account_number 	? $oOldRebillDetails->account_number 	: 'Not supplied');
+								$sAccountName		= ($oOldRebillDetails->account_name 	? $oOldRebillDetails->account_name 		: 'Not supplied');
+								$sCCExpiry			= ($oOldRebillDetails->card_expiry_date	? $oOldRebillDetails->card_expiry_date 	: 'Not supplied');
+								$sOldBillingType	= 	"Rebill via Motorpass\n" .
+														"Account Number: {$sAccountNumber}\n" .
+														"Account Name: {$sAccountName}\n" .
+														"Card Expiry: {$sCCExpiry}";
+								break;
+						}
+					}
+					else
+					{
+						// This will only happen if the old rebill doesn't exist, so it shouldn't happen
+						$sOldBillingType	= 	"Rebill (unknown)";
+					}
+					break;
+			}
+
+			// Determin the billing type (legacy concept) from the payment method and sub type
+			$iBillingType	= BILLING_TYPE_ACCOUNT;
+
+			switch ($iPaymentMethodType)
+			{
+				case PAYMENT_METHOD_ACCOUNT:
+					$iBillingType	= BILLING_TYPE_ACCOUNT;
+					break;
+				case PAYMENT_METHOD_DIRECT_DEBIT:
+					switch ($iPaymentMethodSubType)
+					{
+						case DIRECT_DEBIT_TYPE_CREDIT_CARD:
+							$iBillingType	= BILLING_TYPE_CREDIT_CARD;
+							break;
+						case DIRECT_DEBIT_TYPE_BANK_ACCOUNT:
+							$iBillingType	= BILLING_TYPE_DIRECT_DEBIT;
+							break;
+					}
+					break;
+				case PAYMENT_METHOD_REBILL:
+					$iBillingType	= BILLING_TYPE_REBILL;
+					break;
+			}
+
+			$oAccount->BillingType	= $iBillingType;
+
+			// Reset detail values first
+			$oAccount->DirectDebit	= ($iBillingType == BILLING_TYPE_DIRECT_DEBIT ? $iBillingDetail : null);
+			$oAccount->CreditCard	= ($iBillingType == BILLING_TYPE_CREDIT_CARD ? $iBillingDetail : null);
+
+			// Update proper detail field
+			$oDetails			= $oAccount->getPaymentMethodDetails();
+			$sNewBillingType	= '';
+			switch ($iBillingType)
+			{
+				case BILLING_TYPE_DIRECT_DEBIT:
+					$sNewBillingType	= 	"Direct Debit via Bank Account\n".
+											"Account Name: {$oDetails->AccountName}\n".
+											"Account Number: {$oDetails->AccountNumber}";
+					break;
+				case BILLING_TYPE_CREDIT_CARD:
+					$sNewBillingType	= 	"Direct Debit via Credit Card\n".
+											"Card Name: {$oDetails->Name}\n".
+											"Card Number: XXXXXXXXXXXX".substr(Decrypt($oDetails->CardNumber), -4);
+					break;
+				case BILLING_TYPE_ACCOUNT:
+					$sNewBillingType	= 'Invoice';
+					break;
+
+				case BILLING_TYPE_REBILL:
+					$oRebillTypeDetails	= $oDetails->getDetails();
+
+					switch ($oDetails->rebill_type_id)
+					{
+						case REBILL_TYPE_MOTORPASS:
+							$sNewBillingType	= 	"Rebill via Motorpass\n" .
+													"Account Number: {$oRebillTypeDetails->account_number}\n" .
+													"Account Name: {$oRebillTypeDetails->account_name}\n" .
+													"Card Expiry: {$oRebillTypeDetails->card_expiry_date}";
+							break;
+					}
+					break;
+			}
+
+			$oAccount->save();
+
+			// Add a note
+			$sNote = "Payment method changed from:\n $sOldBillingType\n to $sNewBillingType";
+			Note::createNote(SYSTEM_NOTE_TYPE, $sNote, Flex::getUserId(), $iAccountId);
+
+			// All good
+			$oDataAccess->TransactionCommit();
+		}
+		catch (Exception $oException)
+		{
+			$oDataAccess->TransactionRollback();
+			throw $oException;
+		}
 	}
 }
 

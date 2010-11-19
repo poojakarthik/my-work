@@ -1421,6 +1421,8 @@ class Credit_Card_Payment
 			$oTransactionDetails->sPurchaseOrderNumber	= $sPurchaseOrderNo;
 	
 			$sPassword	= $creditCardPaymentConfig->password;
+			
+			// TODO: CR135 -- Handle password in test mode???
 			if (self::isTestMode())
 			{
 				//$sPassword	= 'pr0talk1';
