@@ -43,8 +43,8 @@ class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_T
 		
 		$oPaymentRequest	= Payment_Request::getForId(ORM::extractId($mPaymentRequest));
 		$oPayment			= Payment::getForId($oPaymentRequest->payment_id);
-		$oAccountHistory	= Account_History::getForAccountAndEffectiveDatetime($oPaymentRequest->account_id, $oPaymentRequest->created_datetime);
-		$oBankAccount		= DirectDebit::getForId($oAccountHistory->direct_debit_id);
+		$aAccountHistory	= Account_History::getForAccountAndEffectiveDatetime($oPaymentRequest->account_id, $oPaymentRequest->created_datetime);
+		$oBankAccount		= DirectDebit::getForId($aAccountHistory['direct_debit_id']);
 		
 		// Verify that the payment type is correct
 		Flex::assert(
@@ -71,8 +71,8 @@ class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_T
 		$sBSB						= str_pad((int)$oBankAccount->BSB, 6, '0', STR_PAD_LEFT);
  		$oRecord->BSB				= substr($sBSB, 0, 3).'-'.substr($sBSB, -3);
 		$oRecord->AccountNumber		= $oBankAccount->AccountNumber;
-		$oRecord->Amount			= ceil($mPaymentRequest->amount * 100);
-		$oRecord->AccountName		= strtoupper(substr(preg_replace("/[^\w\ ]+/misU", '', trim($oDirectDebit->AccountName)), 0, 32));
+		$oRecord->Amount			= ceil($oPaymentRequest->amount * 100);
+		$oRecord->AccountName		= strtoupper(substr(preg_replace("/[^\w\ ]+/misU", '', trim($oBankAccount->AccountName)), 0, 32));
 		$oRecord->TransactionRef	= $oPayment->TXNReference;
 		
 		// Add to the file
@@ -82,7 +82,6 @@ class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_T
 		$this->_fDebitTotalCents	+=	$oRecord->Amount;
 		$this->_iRecordCount++;
 		
-		// TODO: Do we need to return anything special?
 		return;
 	}
 	
@@ -177,6 +176,7 @@ class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_T
 						->setMinimumLength(3)
 						->setMaximumLength(3)
 						->setValidationRegex('/\w+/')
+						->setDefaultValue($this->getConfig()->BankAbbreviation)
 				)->addField('Blank2',
 					File_Exporter_Field::factory()
 						->setMinimumLength(7)
@@ -190,12 +190,14 @@ class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_T
 						->setPaddingStyle(STR_PAD_RIGHT)
 						->setPaddingString(' ')
 						->setValidationRegex('/[\w\ ]+/')
+						->setDefaultValue($this->getConfig()->SupplierUserName)
 				)->addField('SupplierUserNumber',
 					File_Exporter_Field::factory()
 						->setMinimumLength(6)
 						->setMaximumLength(6)
 						->setPaddingStyle(STR_PAD_LEFT)
 						->setPaddingString('0')
+						->setDefaultValue($this->getConfig()->SupplierUserNumber)
 				)->addField('FileDescription',
 					File_Exporter_Field::factory()
 						->setMinimumLength(12)
@@ -203,8 +205,9 @@ class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_T
 						->setPaddingStyle(STR_PAD_RIGHT)
 						->setPaddingString(' ')
 						->setValidationRegex('/[\w\ ]+/')
+						->setDefaultValue($this->getConfig()->FileDescription)
 				)->addField('TransactionDate',
-					File_Exporter_Field::factor()
+					File_Exporter_Field::factory()
 						->setMinimumLength(6)
 						->setMaximumLength(6)
 						->setValidationRegex('/\d+/')
@@ -242,7 +245,7 @@ class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_T
 					File_Exporter_Field::factory()
 						->setMinimumLength(1)
 						->setMaximumLength(1)
-						->setValidationRegex('/[NTWXY]/')
+						->setValidationRegex('/[\ NTWXY]/')
 						->setDefaultValue(' ')
 				)->addField('TransactionCode',
 					File_Exporter_Field::factory()
@@ -262,7 +265,7 @@ class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_T
 						->setMaximumLength(32)
 						->setPaddingStyle(STR_PAD_RIGHT)
 						->setPaddingString(' ')
-						->setValidationRegex('/\w+,[\w\ ]+/')
+						->setValidationRegex('/\w+(,[\w\ ]+)?/')
 				)->addField('TransactionRef',
 					File_Exporter_Field::factory()
 						->setMinimumLength(18)
@@ -288,7 +291,7 @@ class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_T
 				)->addField('Remitter',
 					File_Exporter_Field::factory()
 						->setMinimumLength(16)
-						->setMaximumLength(16)
+						->setMaximumLength(16, true)
 						->setPaddingStyle(STR_PAD_RIGHT)
 						->setPaddingString(' ')
 						->setValidationRegex('/[\w\ ]+/')
@@ -386,12 +389,13 @@ class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_T
 	static public function defineCarrierModuleConfig()
 	{
 		return array_merge(parent::defineCarrierModuleConfig(), array(
-			'BankAbbreviation'		=>	array('Description' => '3-Character Approved Financial Institution Abbreviation (eg. WBC for Westpac)'),
-			'SupplierUserName'		=>	array('Description' => 'User Name (as per User Preferred Specification)'),
-			'SupplierUserNumber'	=>	array('Description' => '6-Digit User Idenitification Number allocated by the Australian Payments Clearing Association (APCA)', 'Type' => DATA_TYPE_INTEGER),
-			'FileDescription'		=>	array('Description' => 'File Description (eg. \'DDBANK\'), limited to 12-characters', 'Value' => 'DDBANK'),
-			'TraceBSB'				=>	array('Description' => 'The BSB for the Account number to trace back to on payment rejection (XXX-XXX)'),
-			'TraceAccount'			=>	array('Description' => 'The Account number to trace back to on payment rejection')
+			'FileNamePrefix'		=> array('Description' => '3-Character CustomerGroup Prefix for the FileName (eg. SAE, VOI)'),
+			'BankAbbreviation'		=> array('Description' => '3-Character Approved Financial Institution Abbreviation (eg. WBC for Westpac)'),
+			'SupplierUserName'		=> array('Description' => 'User Name (as per User Preferred Specification)'),
+			'SupplierUserNumber'	=> array('Description' => '6-Digit User Idenitification Number allocated by the Australian Payments Clearing Association (APCA)', 'Type' => DATA_TYPE_INTEGER),
+			'FileDescription'		=> array('Description' => 'File Description (eg. \'DDBANK\'), limited to 12-characters', 'Value' => 'DDBANK'),
+			'TraceBSB'				=> array('Description' => 'The BSB for the Account number to trace back to on payment rejection (XXX-XXX)'),
+			'TraceAccount'			=> array('Description' => 'The Account number to trace back to on payment rejection')
 		));
 	}
 }

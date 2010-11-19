@@ -107,7 +107,8 @@ class Cli_App_Payments extends Cli
 		try
 		{
 			// TODO: CR135 -- determine whether or not to deliver the exported files
-			Resource_Type_File_Export_Payment::exportDirectDebits();
+			$bDeliver	= false;
+			Resource_Type_File_Export_Payment::exportDirectDebits($bDeliver);
 		}
 		catch (Exception $oException)
 		{

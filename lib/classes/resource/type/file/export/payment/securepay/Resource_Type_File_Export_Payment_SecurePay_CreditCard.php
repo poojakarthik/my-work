@@ -1,12 +1,12 @@
 <?php
 /**
- * Resource_Type_File_Export_Provisioning_SecurePay_CreditCard
+ * Resource_Type_File_Export_Payment_SecurePay_CreditCard
  *
  * Models a record of the resource_type table
  *
- * @class	Resource_Type_File_Export_Provisioning_SecurePay_CreditCard
+ * @class	Resource_Type_File_Export_Payment_SecurePay_CreditCard
  */
-class Resource_Type_File_Export_Provisioning_SecurePay_CreditCard extends Resource_Type_File_Export_Payment
+class Resource_Type_File_Export_Payment_SecurePay_CreditCard extends Resource_Type_File_Export_Payment
 {
 	const	RESOURCE_TYPE		= RESOURCE_TYPE_FILE_EXPORT_SECUREPAY_CREDIT_CARD_FILE;
 	
@@ -37,8 +37,8 @@ class Resource_Type_File_Export_Provisioning_SecurePay_CreditCard extends Resour
 		
 		$oPaymentRequest	= Payment_Request::getForId(ORM::extractId($mPaymentRequest));
 		$oPayment			= Payment::getForId($oPaymentRequest->payment_id);
-		$oAccountHistory	= Account_History::getForAccountAndEffectiveDatetime($oPaymentRequest->account_id, $oPaymentRequest->created_datetime);
-		$oCreditCard		= Credit_Card::getForId($oAccountHistory->credit_card_id);
+		$aAccountHistory	= Account_History::getForAccountAndEffectiveDatetime($oPaymentRequest->account_id, $oPaymentRequest->created_datetime);
+		$oCreditCard		= Credit_Card::getForId($aAccountHistory['credit_card_id']);
 		
 		// Verify that the payment type is correct
 		Flex::assert($oPaymentRequest->payment_type_id === PAYMENT_TYPE_DIRECT_DEBIT_VIA_CREDIT_CARD, "Non Credit Card Payment Request sent to SecurePay Direct Debit via Credit Card Export File", print_r($oPaymentRequest->toStdClass(), true));
@@ -57,12 +57,12 @@ class Resource_Type_File_Export_Provisioning_SecurePay_CreditCard extends Resour
 		$sExpiryMonth	= str_pad($iExpiryMonth, 2, '0', STR_PAD_LEFT);
 		$sExpiryYear	= substr($iExpiryYear, -2);
 		
-		if ((int)date('Ym', $this->_iTimestamp) > (int)("{$iExpiryYear}{$sExpiryMonth}"))
+		if ((int)date('ym', $this->_iTimestamp) > (int)("{$sExpiryYear}{$sExpiryMonth}"))
 		{
-			throw new Exception("Credit Card Expired");
+			throw new Exception("Credit Card Expired: '{$sExpiryYear}/{$sExpiryMonth}'");
 		}
 		
-		$oRecord->CCNumber		= Decrypt(preg_replace('/[^\d]+/', '', $oCreditCard->CardNumber));
+		$oRecord->CCNumber		= preg_replace('/[^\d]+/', '', Decrypt($oCreditCard->CardNumber));
 		$oRecord->ExpiryDate	= "{$sExpiryMonth}/{$sExpiryYear}";
 		$oRecord->AmountCharged	= $oPaymentRequest->amount;
 		$oRecord->FlexAccount	= $oPaymentRequest->account_id;
@@ -78,9 +78,7 @@ class Resource_Type_File_Export_Provisioning_SecurePay_CreditCard extends Resour
 	public function render()
 	{
 		// Filename
-		$sFilename	= $this->getConfig()->FileNamePrefix
-					.'0009'
-					.'.txt';
+		$sFilename			= $this->getConfig()->FileNamePrefix.'0009'.'.csv';
 		$this->_sFilePath	= self::getExportPath($this->getCarrierModule()->Carrier, __CLASS__).$sFilename;
 		
 		// Render and write to disk
@@ -128,13 +126,13 @@ class Resource_Type_File_Export_Provisioning_SecurePay_CreditCard extends Resour
 	
 	static public function createCarrierModule($iCarrier, $sClass=__CLASS__)
 	{
-		parent::createCarrierModule($iCarrier, $sClass, self::RESOURCE_TYPE, self::RESOURCE_TYPE_FILE_EXPORT_PROVISIONING_RETAILDECISIONS_APPLICATIONS);
+		parent::createCarrierModule($iCarrier, $sClass, self::RESOURCE_TYPE);
 	}
 	
 	static public function defineCarrierModuleConfig()
 	{
 		return array_merge(parent::defineCarrierModuleConfig(), array(
-			'FileNamePrefix'		=>	array('Description'=>'3-Character CustomerGroup Prefix for the FileName (eg. SAE, VOI)')
+			'FileNamePrefix'	=>	array('Description'=>'3-Character CustomerGroup Prefix for the FileName (eg. SAE, VOI)')
 		));
 	}
 }
