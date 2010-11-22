@@ -1117,7 +1117,7 @@ class Invoice_Interim
 				}
 				
 				// Check that there is 3 or less past invoices which are NOT temporary
-				$mResult	= $oQuery->Execute("	SELECT 	COUNT(Invoice.Id) 
+				$mResult	= $oQuery->Execute("	SELECT 	COUNT(Invoice.Id) AS count
 													FROM 	Invoice 
 													WHERE 	Invoice.Account = {$aService['account_id']}
 													AND 	Status NOT IN (100)");
