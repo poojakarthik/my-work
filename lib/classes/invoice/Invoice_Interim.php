@@ -1144,9 +1144,11 @@ class Invoice_Interim
 			else
 			{
 				// No last invoice run
-				Log::getLog()->log("SKIPPED: No last invoice run");
+				Log::getLog()->log("No last invoice run");
 				$iNoLastInvoiceRun++;
 			}
+			
+			Log::getLog()->log("Passed all checks");
 			
 			$aService['aCharges']	= self::_calculateInterimInvoiceCharges($aService);
 			if (!array_key_exists($aService['account_id'], $aAccounts))
@@ -1164,9 +1166,15 @@ class Invoice_Interim
 			// 1st Interim Invoicing
 			if (!$aAccounts[$aService['account_id']]['bChargeEligible'])
 			{
-				if	($aService['aCharges']['plan_charge'])
+				Log::getLog()->log("Check plan_charge before setting bChargeEligible for account {$aService['account_id']}");
+				if ($aService['aCharges']['plan_charge'])
 				{
+					Log::getLog()->log("... have plan_charge ".$aService['aCharges']['plan_charge'].", setting bChargeEligible to true");
 					$aAccounts[$aService['account_id']]['bChargeEligible']	= true;
+				}
+				else
+				{
+					Log::getLog()->log("... NO plan_charge, bChargeEligible is false");
 				}
 			}
 		}
@@ -1187,10 +1195,16 @@ class Invoice_Interim
 			// Add Services if at least one of the Account's Services will receive an Interim Charge
 			if ($aAccount['bChargeEligible'])
 			{
+				Log::getLog()->log("Account IS charge eligible: {$iAccount}");
 				foreach ($aAccount['aServices'] as $sFNN=>$aService)
 				{
+					Log::getLog()->log("... adding service {$aService['fnn']}");
 					$aServices["{$aService['account_id']}.{$aService['fnn']}"]	= $aService;
 				}
+			}
+			else
+			{
+				Log::getLog()->log("Account not charge eligible: {$iAccount}");
 			}
 		}
 		
