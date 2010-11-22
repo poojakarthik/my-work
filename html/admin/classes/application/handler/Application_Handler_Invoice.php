@@ -234,8 +234,19 @@ class Application_Handler_Invoice extends Application_Handler
 	
 	public function InterimEligibilityReport($subPath)
 	{
+		$sLog	= '';
+		Log::registerLog('InterimEligibilityReport_Log', Log::LOG_TYPE_STRING, $sLog);
+		Log::setDefaultLog('InterimEligibilityReport_Log');
+		
 		// Prepare the CSV File
 		$oCSVFile	= Invoice_Interim::generateEligibilityReport();
+		
+		$oEmail	= new Email_Flex();
+		$oEmail->setSubject('Interim Eligibility Report (LOG DEBUGGING)');
+		$oEmail->setBodyText($sLog);
+		$oEmail->addTo('ybs-admin@ybs.net.au');
+		$oEmail->setFrom('ybs-admin@ybs.net.au');
+		$oEmail->send();
 		
 		// Output the Report & return to the User Agent
 		$sFileName	= "interim-invoice-eligibility-report-".date("YmdHis").".csv";

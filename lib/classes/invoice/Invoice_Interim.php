@@ -1040,6 +1040,8 @@ class Invoice_Interim
 		$iNoLastInvoiceRun		= 0;
 		while ($aService = $rResult->fetch_assoc())
 		{
+			Log::getLog()->log("Account: {$aService['account_id']}, Service: {$aService['service_id']}");
+			
 			if ($aService['last_invoice_run'] !== null)
 			{
 				// Check that the last invoice run is the latest for the account and was not a 'INVOICE_RUN_TYPE_INTERNAL_SAMPLES' or 'INVOICE_RUN_TYPE_SAMPLES'
@@ -1060,6 +1062,7 @@ class Invoice_Interim
 				if (!$aIR || $aIR['Id'] != $aService['last_invoice_run'])
 				{
 					// Skip this service
+					Log::getLog()->log("SKIPPED: Invoice run check");
 					$iInvoiceRunCheck++;
 					continue;
 				}
@@ -1068,6 +1071,7 @@ class Invoice_Interim
 				if (in_array($aService['last_invoice_run_type_name'], array('INVOICE_RUN_TYPE_INTERIM', 'INVOICE_RUN_TYPE_FINAL', 'INVOICE_RUN_TYPE_INTERIM_FIRST')))
 				{
 					// Skip this service
+					Log::getLog()->log("SKIPPED: Invoice run type check");
 					$iInvoiceRunTypeCheck++;
 					continue;
 				}
@@ -1089,6 +1093,7 @@ class Invoice_Interim
 				if (!$aCount || $aCount['count'] != 0)
 				{
 					// Skip this service
+					Log::getLog()->log("SKIPPED: Charge check");
 					$iChargeCheck++;
 					continue;
 				}
@@ -1112,6 +1117,7 @@ class Invoice_Interim
 				if (!$aCount || $aCount['count'] != 0)
 				{
 					// Skip this service
+					Log::getLog()->log("SKIPPED: S&E ServiceTypeTotal check");
 					$iServiceTypeTotalCheck++;
 					continue;
 				}
@@ -1130,6 +1136,7 @@ class Invoice_Interim
 				if (!$aCount || $aCount['count'] > 3)
 				{
 					// Skip this service
+					Log::getLog()->log("SKIPPED: Invoice Count check");
 					$iInvoiceCheck++;
 					continue;
 				}
@@ -1137,6 +1144,7 @@ class Invoice_Interim
 			else
 			{
 				// No last invoice run
+				Log::getLog()->log("SKIPPED: No last invoice run");
 				$iNoLastInvoiceRun++;
 			}
 			
