@@ -241,12 +241,14 @@ class Application_Handler_Invoice extends Application_Handler
 		// Prepare the CSV File
 		$oCSVFile	= Invoice_Interim::generateEligibilityReport();
 		
-		$oEmail	= new Email_Flex();
+		/*$oEmail	= new Email_Flex();
 		$oEmail->setSubject('Interim Eligibility Report (LOG DEBUGGING)');
 		$oEmail->setBodyText($sLog);
 		$oEmail->addTo('ybs-admin@ybs.net.au');
 		$oEmail->setFrom('ybs-admin@ybs.net.au');
-		$oEmail->send();
+		$oEmail->send();*/
+		
+		file_put_contents('/home/rmctainsh/interim-invoice-log.txt', $sLog);
 		
 		// Output the Report & return to the User Agent
 		$sFileName	= "interim-invoice-eligibility-report-".date("YmdHis").".csv";
