@@ -21,6 +21,12 @@ class CDR extends ORM_Cached
 
 		if (in_array($this->Status, array(CDR_NORMALISED, CDR_RERATE, CDR_RATE_NOT_FOUND)) || ($bForceReRate && $this->Rate))
 		{
+			// Update Earliest/Latest CDR
+			$oService					= Service::getForId($this->Service);
+			$oService->EarliestCDR		= ($oService->EarliestCDR) ? min($oService->EarliestCDR, $this->StartDatetime) : $this->StartDatetime;
+			$oService->LatestCDR		= ($oService->LatestCDR) ? max($oService->LatestCDR, $this->StartDatetime) : $this->StartDatetime;
+			$oService->save();
+			
 			$oRate	= ($bUseExistingRate && $this->Rate) ? Rate::getForId($this->Rate) : Rate::getForCDR($this);
 
 			// Did we find a Rate?
@@ -39,7 +45,6 @@ class CDR extends ORM_Cached
 			$bDiscount	= false;
 
 			// Does the Rate Plan have discounting enabled?
-			$oService					= Service::getForId($this->Service);
 			$sRatePlanEffectiveDatetime	= min(max($this->StartDatetime, $oService->CreatedOn), ($oService->ClosedOn === null) ? Data_Source_Time::END_OF_TIME : $oService->ClosedOn);
 			$oRatePlan					= $oService->getCurrentPlan($sRatePlanEffectiveDatetime, false);
 			if ($oRatePlan->discount_cap !== null && (float)$oRatePlan->discount_cap >= 0.01)
