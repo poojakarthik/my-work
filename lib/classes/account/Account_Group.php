@@ -15,7 +15,7 @@ class Account_Group extends ORM
 		$selAccountGroup = new StatementSelect("AccountGroup", self::getColumns(), $strWhere);
 		if (($outcome = $selAccountGroup->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception("Failed to retrieve AccountGroup: ". $selAccountGroup->Error());
+			throw new Exception_Database("Failed to retrieve AccountGroup: ". $selAccountGroup->Error());
 		}
 		if (!$outcome)
 		{
@@ -77,7 +77,7 @@ class Account_Group extends ORM
 		$objRecordSet = $qryQuery->Execute($strQuery);
 		if (!$objRecordSet)
 		{
-			throw new Exception("Failed to retrieve accounts for AccountGroup: {$this->id} - " . $qryQuery->Error());
+			throw new Exception_Database("Failed to retrieve accounts for AccountGroup: {$this->id} - " . $qryQuery->Error());
 		}
 
 		$arrAccounts = array();
@@ -104,7 +104,7 @@ class Account_Group extends ORM
 		$objRecordSet = $qryQuery->Execute($strQuery);
 		if (!$objRecordSet)
 		{
-			throw new Exception("Failed to retrieve contacts for AccountGroup: {$this->id} - " . $qryQuery->Error());
+			throw new Exception_Database("Failed to retrieve contacts for AccountGroup: {$this->id} - " . $qryQuery->Error());
 		}
 
 		$arrContacts = array();

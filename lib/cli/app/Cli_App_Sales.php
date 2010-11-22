@@ -169,7 +169,7 @@ class Cli_App_Sales extends Cli
 			$resRatePlans	= $qryQuery->Execute("SELECT * FROM RatePlan WHERE Archived IN (0, 1);");
 			if ($resRatePlans === FALSE)
 			{
-				throw new Exception($qryQuery->Error());
+				throw new Exception_Database($qryQuery->Error());
 			}
 			else
 			{
@@ -256,7 +256,7 @@ class Cli_App_Sales extends Cli
 			$resFlexDealers	= $qryQuery->Execute("SELECT * FROM dealer ORDER BY ISNULL(up_line_id) DESC, (id < up_line_id) DESC, id ASC;");
 			if ($resFlexDealers === FALSE)
 			{
-				throw new Exception($qryQuery->Error());
+				throw new Exception_Database($qryQuery->Error());
 			}
 			while ($arrFlexDealer = $resFlexDealers->fetch_assoc())
 			{
@@ -396,7 +396,7 @@ class Cli_App_Sales extends Cli
 			$resDealerRatePlan	= $qryQuery->Execute("SELECT * FROM dealer_rate_plan");
 			if ($resDealerRatePlan === FALSE)
 			{
-				throw new Exception($resDealerRatePlan->Error());
+				throw new Exception_Database($resDealerRatePlan->Error());
 			}
 			while ($arrDealerRatePlan = $resDealerRatePlan->fetch_assoc())
 			{
@@ -423,7 +423,7 @@ class Cli_App_Sales extends Cli
 			$resDealerSaleType	= $qryQuery->Execute("SELECT * FROM dealer_sale_type");
 			if ($resDealerSaleType === FALSE)
 			{
-				throw new Exception($resDealerSaleType->Error());
+				throw new Exception_Database($resDealerSaleType->Error());
 			}
 			while ($arrDealerSaleType = $resDealerSaleType->fetch_assoc())
 			{
@@ -450,7 +450,7 @@ class Cli_App_Sales extends Cli
 			$resDealerCustomerGroup	= $qryQuery->Execute("SELECT * FROM dealer_customer_group");
 			if ($resDealerCustomerGroup === FALSE)
 			{
-				throw new Exception($resDealerCustomerGroup->Error());
+				throw new Exception_Database($resDealerCustomerGroup->Error());
 			}
 			while ($arrDealerCustomerGroup = $resDealerCustomerGroup->fetch_assoc())
 			{
@@ -527,7 +527,7 @@ class Cli_App_Sales extends Cli
 				$strSaleSavePoint	= "Flex_SP_Pull_Sale_{$arrSPSale['id']}";
 				if ($qryQuery->Execute("SAVEPOINT {$strSaleSavePoint}") === FALSE)
 				{
-					throw new Exception($qryQuery->Error());
+					throw new Exception_Database($qryQuery->Error());
 				}
 				$resCreateSavepoint	= $dsSalesPortal->query("SAVEPOINT {$strSaleSavePoint}");
 				if (PEAR::isError($resCreateSavepoint))
@@ -587,7 +587,7 @@ class Cli_App_Sales extends Cli
 						$resPaymentTerms	= $qryQuery->Execute("SELECT * FROM payment_terms WHERE customer_group_id = {$objAccount->CustomerGroup} ORDER BY id DESC LIMIT 1");
 						if ($resPaymentTerms === FALSE)
 						{
-							throw new Exception($resPaymentTerms->Error());
+							throw new Exception_Database($resPaymentTerms->Error());
 						}
 						elseif ($arrPaymentTerms = $resPaymentTerms->fetch_assoc())
 						{
@@ -659,7 +659,7 @@ class Cli_App_Sales extends Cli
 									$resBankAccountInsert	= $insBankAccount->Execute($arrBankAccount);
 									if ($resBankAccountInsert === FALSE)
 									{
-										throw new Exception($insBankAccount->Error());
+										throw new Exception_Database($insBankAccount->Error());
 									}
 									
 									$objAccount->DirectDebit	= $insBankAccount->intInsertId;
@@ -694,7 +694,7 @@ class Cli_App_Sales extends Cli
 									$resCreditCardInsert	= $insCreditCard->Execute($arrCreditCard);
 									if ($resCreditCardInsert === FALSE)
 									{
-										throw new Exception($insCreditCard->Error());
+										throw new Exception_Database($insCreditCard->Error());
 									}
 									
 									$objAccount->CreditCard	= $insCreditCard->intInsertId;
@@ -842,7 +842,7 @@ class Cli_App_Sales extends Cli
 							// Rollback to the savepoint for this Sale
 							if ($qryQuery->Execute("ROLLBACK TO {$strSaleSavePoint}") === FALSE)
 							{
-								throw new Exception($qryQuery->Error());
+								throw new Exception_Database($qryQuery->Error());
 							}
 							$resRollbackSavepoint	= $dsSalesPortal->query("ROLLBACK TO {$strSaleSavePoint}");
 							if (PEAR::isError($resRollbackSavepoint))
@@ -895,7 +895,7 @@ class Cli_App_Sales extends Cli
 						$strSaleItemSavePoint	= "Flex_SP_Pull_Sale_Item_{$arrSPSaleItem['id']}";
 						if ($qryQuery->Execute("SAVEPOINT {$strSaleItemSavePoint}") === FALSE)
 						{
-							throw new Exception($qryQuery->Error());
+							throw new Exception_Database($qryQuery->Error());
 						}
 						$resCreateSavepoint	= $dsSalesPortal->query("SAVEPOINT {$strSaleItemSavePoint}");
 						if (PEAR::isError($resCreateSavepoint))
@@ -1157,7 +1157,7 @@ class Cli_App_Sales extends Cli
 										$arrAdditionalDetails['Service']	= $objService->Id;
 										if ($insAdditionalDetails->Execute($arrAdditionalDetails) === FALSE)
 										{
-											throw new Exception($insAdditionalDetails->Error());
+											throw new Exception_Database($insAdditionalDetails->Error());
 										}
 									}
 									
@@ -1222,7 +1222,7 @@ class Cli_App_Sales extends Cli
 							// All seems to have worked, release the Sale Item savepoints
 							if ($qryQuery->Execute("RELEASE SAVEPOINT {$strSaleItemSavePoint}") === FALSE)
 							{
-								throw new Exception($qryQuery->Error());
+								throw new Exception_Database($qryQuery->Error());
 							}
 							$resReleaseSavepoint	= $dsSalesPortal->query("RELEASE SAVEPOINT {$strSaleItemSavePoint}");
 							if (PEAR::isError($resReleaseSavepoint))
@@ -1237,7 +1237,7 @@ class Cli_App_Sales extends Cli
 							// Rollback to the savepoint for this Sale
 							if ($qryQuery->Execute("ROLLBACK TO {$strSaleSavePoint}") === FALSE)
 							{
-								throw new Exception($qryQuery->Error());
+								throw new Exception_Database($qryQuery->Error());
 							}
 							$resRollbackSavepoint	= $dsSalesPortal->query("ROLLBACK TO {$strSaleSavePoint}");
 							if (PEAR::isError($resRollbackSavepoint))
@@ -1318,7 +1318,7 @@ class Cli_App_Sales extends Cli
 					// All seems to have worked, release the Sale savepoints
 					if ($qryQuery->Execute("RELEASE SAVEPOINT {$strSaleSavePoint}") === FALSE)
 					{
-						throw new Exception($qryQuery->Error());
+						throw new Exception_Database($qryQuery->Error());
 					}
 					$resReleaseSavepoint	= $dsSalesPortal->query("RELEASE SAVEPOINT {$strSaleSavePoint}");
 					if (PEAR::isError($resReleaseSavepoint))

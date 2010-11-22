@@ -20,7 +20,7 @@ class Flex_Rollout_Version_000026 extends Flex_Rollout_Version
 		$strSQL = "ALTER TABLE CreditCard ADD employee_id BIGINT(20) UNSIGNED NULL COMMENT 'FK into Employee table. Id of the employee who entered the CreditCard details' AFTER created_on";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add employee_id field to the CreditCard table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add employee_id field to the CreditCard table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE CreditCard DROP employee_id";
 		
@@ -28,7 +28,7 @@ class Flex_Rollout_Version_000026 extends Flex_Rollout_Version
 		$strSQL = "ALTER TABLE DirectDebit ADD employee_id BIGINT(20) UNSIGNED NULL COMMENT 'FK into Employee table. Id of the employee who entered the DirectDebit details' AFTER created_on";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add employee_id field to the DirectDebit table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add employee_id field to the DirectDebit table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE DirectDebit DROP employee_id";
 	}
@@ -42,7 +42,7 @@ class Flex_Rollout_Version_000026 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

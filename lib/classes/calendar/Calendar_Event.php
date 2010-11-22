@@ -137,7 +137,7 @@ class Calendar_Event extends ORM
 		$mixResult			= $selEventsForDate->Execute(array('date'=>$strDate, 'include_cancelled'=>(int)$bolIncludeCancelled));
 		if ($mixResult === false)
 		{
-			throw new Exception($selEventsForDate->Error());
+			throw new Exception_Database($selEventsForDate->Error());
 		}
 		
 		// Create and Return resultset of Calendar_Events

@@ -241,7 +241,7 @@ class DataAccessUI extends DatabaseAccess
 		/*
 		if ($mixResult === false)
 		{
-			throw new Exception($insInsert->Error());
+			throw new Exception_Database($insInsert->Error());
 		}
 		elseif ($mixResult > 0)
 		{

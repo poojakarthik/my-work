@@ -93,7 +93,7 @@ class Credit_Card_Payment_Config
 		}
 		if (($outcome = $statement->Execute($arrValues)) === FALSE)
 		{
-			throw new Exception('Failed to save ' . (str_replace('_', ' ', $this->getTableName())) . ' details: ' . $statement->Error());
+			throw new Exception_Database('Failed to save ' . (str_replace('_', ' ', $this->getTableName())) . ' details: ' . $statement->Error());
 		}
 		if (!$this->id)
 		{
@@ -111,7 +111,7 @@ class Credit_Card_Payment_Config
 		$strSQL = "DELETE FROM " . strtolower(__CLASS__) . " WHERE id = " . $this->id;
 		if (($outcome = $delInstance->Execute($strSQL)) === FALSE)
 		{
-			throw new Exception('Failed to delete credit card configuration ' . $this->id . ' from credit_card_payment_config: ' . $delInstance->Error());
+			throw new Exception_Database('Failed to delete credit card configuration ' . $this->id . ' from credit_card_payment_config: ' . $delInstance->Error());
 		}
 		$this->id = NULL;
 		$this->_saved = FALSE;
@@ -153,7 +153,7 @@ class Credit_Card_Payment_Config
 			$strLimit);
 		if (($outcome = $selMatches->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception("Failed to load " . (str_replace('_', ' ', $this->getTableName())) . ": " . $selMatches->Error());
+			throw new Exception_Database("Failed to load " . (str_replace('_', ' ', $this->getTableName())) . ": " . $selMatches->Error());
 		}
 		if (!$outcome)
 		{

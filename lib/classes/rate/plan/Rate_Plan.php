@@ -521,7 +521,7 @@ class Rate_Plan extends ORM_Cached
 		$resAdminManagers	= $qryQuery->Execute("SELECT * FROM Employee WHERE user_role_id = ".USER_ROLE_ADMIN_MANAGER);
 		if ($resAdminManagers === false)
 		{
-			throw new Exception($qryQuery->Error());
+			throw new Exception_Database($qryQuery->Error());
 		}
 		elseif ($resAdminManagers->num_rows)
 		{

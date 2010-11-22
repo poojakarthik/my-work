@@ -102,7 +102,7 @@ class JSON_Handler_Employee extends JSON_Handler
 				
 				if ($rEmployees === false)
 				{
-					throw new Exception($oQuery->Error());
+					throw new Exception_Database($oQuery->Error());
 				}
 				$aEmployees	= array();
 				$iCount		= 0;
@@ -150,7 +150,7 @@ class JSON_Handler_Employee extends JSON_Handler
 		
 		if ($rCount === false)
 		{
-			throw new Exception($oQuery->Error());
+			throw new Exception_Database($oQuery->Error());
 		}
 		if ($aCount = $rCount->fetch_assoc())
 		{

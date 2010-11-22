@@ -32,7 +32,7 @@ if ($resInputFile && $resOutputFile)
 			$strFNN	= trim($strFNN);
 			if ($selLastChargedOn->Execute(Array('FNN'=>$strFNN)) === FALSE)
 			{
-				throw new Exception($selLastChargedOn->Error());
+				throw new Exception_Database($selLastChargedOn->Error());
 			}
 			
 			if (!($arrLastChargedOn = $selLastChargedOn->Fetch()))

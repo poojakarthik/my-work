@@ -55,7 +55,7 @@ class File_Type extends ORM
 			$resPreferredMimeType	= $selPreferredMimeType->Execute($this->toArray());
 			if ($resPreferredMimeType === false)
 			{
-				throw new Exception($selPreferredMimeType->Error());
+				throw new Exception_Database($selPreferredMimeType->Error());
 			}
 			elseif ($arrMimeType = $selPreferredMimeType->Fetch())
 			{
@@ -91,7 +91,7 @@ class File_Type extends ORM
 		
 		if ($mixResult === false)
 		{
-			throw new Exception($selByExtensionMimeType->Error());
+			throw new Exception_Database($selByExtensionMimeType->Error());
 		}
 		elseif (!$mixResult)
 		{
@@ -149,7 +149,7 @@ class File_Type extends ORM
 		$resHasIcon	= $qryQuery->Execute("SELECT {$strColumn} FROM file_type WHERE id = {$intFileTypeId} LIMIT 1");
 		if ($resHasIcon === false)
 		{
-			throw new Exception($qryQuery->Error());
+			throw new Exception_Database($qryQuery->Error());
 		}
 		elseif ($arrHasIcon = $resHasIcon->fetch_assoc())
 		{

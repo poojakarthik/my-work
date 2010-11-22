@@ -42,7 +42,7 @@ class JSON_Handler_Ticketing_User_Permission extends JSON_Handler
 				
 				if ($oEmployees === false)
 				{
-					throw new Exception($oQuery->Error());
+					throw new Exception_Database($oQuery->Error());
 				}
 				
 				$aResultSet	= array();
@@ -84,7 +84,7 @@ class JSON_Handler_Ticketing_User_Permission extends JSON_Handler
 			$oCount		= $oQuery->Execute($sCountSQL);
 			if ($oCount === false)
 			{
-				throw new Exception($oQuery->Error());
+				throw new Exception_Database($oQuery->Error());
 			}
 			if ($aCount = $oCount->fetch_assoc())
 			{

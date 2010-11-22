@@ -174,7 +174,7 @@ class Employee extends ORM_Cached
 		
 		if (($intRecCount = $selEmployeeAccountAudit->Execute(array("EmployeeId" => $this->id))) === FALSE)
 		{
-			throw new Exception("Failed to retrieve employee_account_log records with Employee Id {$this->id}: ". $selEmployeeAccountAudit->Error());
+			throw new Exception_Database("Failed to retrieve employee_account_log records with Employee Id {$this->id}: ". $selEmployeeAccountAudit->Error());
 		}
 		if ($intRecCount == 0)
 		{
@@ -218,7 +218,7 @@ class Employee extends ORM_Cached
 		
 		if ($insEmployeeAccountAudit->Execute($arrData) === FALSE)
 		{
-			throw new Exception("Could not insert record into employee_account_log table - ". $insEmployeeAccountAudit->Error());
+			throw new Exception_Database("Could not insert record into employee_account_log table - ". $insEmployeeAccountAudit->Error());
 		}
 	}
 	
@@ -263,7 +263,7 @@ class Employee extends ORM_Cached
 		}
 		if (($intRecCount = $selEmployee->Execute(array("EmployeeId" => $intId))) === FALSE)
 		{
-			throw new Exception("Failed to retrieve Employee with id $intId: ". $selEmployee->Error());
+			throw new Exception_Database("Failed to retrieve Employee with id $intId: ". $selEmployee->Error());
 		}
 		if ($intRecCount == 0)
 		{
@@ -291,7 +291,7 @@ class Employee extends ORM_Cached
 		
 		if ($selEmployee->Execute() === FALSE)
 		{
-			throw new Exception("Failed to retrieve Employees with permissions: $intPermissions - ". $selEmployee->Error());
+			throw new Exception_Database("Failed to retrieve Employees with permissions: $intPermissions - ". $selEmployee->Error());
 		}
 		
 		$arrRecordSet	= $selEmployee->FetchAll();
@@ -316,7 +316,7 @@ class Employee extends ORM_Cached
 			$selOperationProfileIds	= new StatementSelect("employee_operation_profile", "operation_profile_id", "'{$strEffectiveDatetime}' BETWEEN start_datetime AND end_datetime AND employee_id = <Id>");
 			if ($selOperationProfileIds->Execute($this->toArray()) === false)
 			{
-				throw new Exception($selOperationProfileIds->Error());
+				throw new Exception_Database($selOperationProfileIds->Error());
 			}
 			
 			while ($arrOperationProfileId = $selOperationProfileIds->Fetch())
@@ -336,7 +336,7 @@ class Employee extends ORM_Cached
 			$selOperationIds	= new StatementSelect("employee_operation", "operation_id", "'{$strEffectiveDatetime}' BETWEEN start_datetime AND end_datetime AND employee_id = <Id>");
 			if ($selOperationIds->Execute($this->toArray()) === false)
 			{
-				throw new Exception($selOperationIds->Error());
+				throw new Exception_Database($selOperationIds->Error());
 			}
 			
 			while ($arrOperationId = $selOperationIds->Fetch())
@@ -364,7 +364,7 @@ class Employee extends ORM_Cached
 		$oOperationIds	= new StatementSelect("employee_operation", "operation_id", "'{$sEffectiveDatetime}' BETWEEN start_datetime AND end_datetime AND employee_id = {$this->id}");
 		if ($oOperationIds->Execute($this->toArray()) === false)
 		{
-			throw new Exception($oOperationIds->Error());
+			throw new Exception_Database($oOperationIds->Error());
 		}
 		while ($aOperationId = $oOperationIds->Fetch())
 		{
@@ -390,7 +390,7 @@ class Employee extends ORM_Cached
 		$oOperationProfileIds	= new StatementSelect("employee_operation_profile", "operation_profile_id", "'{$sEffectiveDatetime}' BETWEEN start_datetime AND end_datetime AND employee_id = {$this->id}");
 		if ($oOperationProfileIds->Execute($this->toArray()) === false)
 		{
-			throw new Exception($oOperationProfileIds->Error());
+			throw new Exception_Database($oOperationProfileIds->Error());
 		}
 		while ($aOperationProfileId = $oOperationProfileIds->Fetch())
 		{

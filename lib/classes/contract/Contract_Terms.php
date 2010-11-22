@@ -52,7 +52,7 @@ class Contract_Terms extends ORM
 			$resCurrent	= $selCurrent->Execute();
 			if ($resCurrent === false)
 			{
-				throw new Exception($selCurrent->Error());
+				throw new Exception_Database($selCurrent->Error());
 			}
 			elseif ($arrCurrent = $selCurrent->Fetch())
 			{

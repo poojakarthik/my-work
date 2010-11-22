@@ -24,7 +24,7 @@ class Flex_Rollout_Version_000005 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed while modifying the RatePlan table (drop default_discount_percentage property. Add customer_group property. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed while modifying the RatePlan table (drop default_discount_percentage property. Add customer_group property. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE RatePlan ADD default_discount_percentage FLOAT NULL DEFAULT NULL COMMENT 'A percentage to autofill when creating new rates', DROP customer_group";
 
@@ -37,7 +37,7 @@ class Flex_Rollout_Version_000005 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add records to the UIAppDocumentation table for the RatePlan.discount_cap and Rate.discount_percentage propterties. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add records to the UIAppDocumentation table for the RatePlan.discount_cap and Rate.discount_percentage propterties. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DELETE FROM UIAppDocumentation WHERE Object='RatePlan' AND Property='discount_cap' AND Context='0'";
 		$this->rollbackSQL[] = "DELETE FROM UIAppDocumentation WHERE Object='Rate' AND Property='discount_percentage' AND Context='0'";
@@ -52,7 +52,7 @@ class Flex_Rollout_Version_000005 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

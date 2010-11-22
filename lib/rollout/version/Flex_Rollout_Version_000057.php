@@ -26,7 +26,7 @@ class Flex_Rollout_Version_000057 extends Flex_Rollout_Version
 
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . " Failed to drop RecordType KEY from ServiceTotal table. " . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . " Failed to drop RecordType KEY from ServiceTotal table. " . $qryQuery->Error());
 		}
 
 		$this->rollbackSQL[] = "ALTER TABLE ServiceTotal ADD UNIQUE KEY RecordType (Service, InvoiceRun)";
@@ -41,7 +41,7 @@ class Flex_Rollout_Version_000057 extends Flex_Rollout_Version
 
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . " Failed to drop RecordType KEY from ServiceTypeTotal table. " . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . " Failed to drop RecordType KEY from ServiceTypeTotal table. " . $qryQuery->Error());
 		}
 
 		$this->rollbackSQL[] = "ALTER TABLE ServiceTypeTotal ADD UNIQUE KEY RecordType (Service, InvoiceRun, RecordType, FNN)";
@@ -56,7 +56,7 @@ class Flex_Rollout_Version_000057 extends Flex_Rollout_Version
 
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . " Failed to drop Service_3 INDEX from CDR table. " . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . " Failed to drop Service_3 INDEX from CDR table. " . $qryQuery->Error());
 		}
 
 		$this->rollbackSQL[] = "ALTER TABLE CDR ADD INDEX Service_3 (Service, InvoiceRun, RecordType)";
@@ -87,7 +87,7 @@ class Flex_Rollout_Version_000057 extends Flex_Rollout_Version
 	
 			if (!$qryQuery->Execute($strSQL))
 			{
-				throw new Exception(__CLASS__ . " Failed to add columns to $strTable table. " . $qryQuery->Error());
+				throw new Exception_Database(__CLASS__ . " Failed to add columns to $strTable table. " . $qryQuery->Error());
 			}
 			$this->rollbackSQL[] = "ALTER TABLE $strTable DROP invoice_run_id;"; 
 
@@ -103,7 +103,7 @@ class Flex_Rollout_Version_000057 extends Flex_Rollout_Version
 
 			if (!$qryQuery->Execute($strSQL))
 			{
-				throw new Exception(__CLASS__ . " Failed to populate invoice_run_id column of $strTable table. " . $qryQuery->Error());
+				throw new Exception_Database(__CLASS__ . " Failed to populate invoice_run_id column of $strTable table. " . $qryQuery->Error());
 			}
 
 			self::outputMessage(" done.\n");
@@ -119,7 +119,7 @@ class Flex_Rollout_Version_000057 extends Flex_Rollout_Version
 
 			if (!$qryQuery->Execute($strSQL))
 			{
-				throw new Exception(__CLASS__ . " Failed to drop InvoiceRun INDEX from $strTable table. " . $qryQuery->Error());
+				throw new Exception_Database(__CLASS__ . " Failed to drop InvoiceRun INDEX from $strTable table. " . $qryQuery->Error());
 			}
 
 			$this->rollbackSQL[] = "ALTER TABLE $strTable ADD INDEX InvoiceRun (InvoiceRun)";
@@ -136,7 +136,7 @@ class Flex_Rollout_Version_000057 extends Flex_Rollout_Version
 	
 			if (!$qryQuery->Execute($strSQL))
 			{
-				throw new Exception(__CLASS__ . " Failed to drop InvoiceRun column from $strTable table. " . $qryQuery->Error());
+				throw new Exception_Database(__CLASS__ . " Failed to drop InvoiceRun column from $strTable table. " . $qryQuery->Error());
 			}
 
 			$this->rollbackSQL[] = "UPDATE $strTable SET InvoiceRun = (SELECT InvoiceRun FROM InvoiceRun WHERE InvoiceRun.Id = $strTable.invoice_run_id);"; 
@@ -154,7 +154,7 @@ class Flex_Rollout_Version_000057 extends Flex_Rollout_Version
 
 			if (!$qryQuery->Execute($strSQL))
 			{
-				throw new Exception(__CLASS__ . " Failed to add invoice_run_id INDEX to $strTable table. " . $qryQuery->Error());
+				throw new Exception_Database(__CLASS__ . " Failed to add invoice_run_id INDEX to $strTable table. " . $qryQuery->Error());
 			}
 
 			$this->rollbackSQL[] = "ALTER TABLE $strTable DROP INDEX invoice_run_id";
@@ -171,7 +171,7 @@ class Flex_Rollout_Version_000057 extends Flex_Rollout_Version
 
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . " Failed to add RecordType KEY to ServiceTypeTotal table. " . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . " Failed to add RecordType KEY to ServiceTypeTotal table. " . $qryQuery->Error());
 		}
 
 		$this->rollbackSQL[] = "ALTER TABLE ServiceTypeTotal DROP KEY RecordType";
@@ -186,7 +186,7 @@ class Flex_Rollout_Version_000057 extends Flex_Rollout_Version
 
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . " Failed to add RecordType KEY to ServiceTotal table. " . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . " Failed to add RecordType KEY to ServiceTotal table. " . $qryQuery->Error());
 		}
 
 		$this->rollbackSQL[] = "ALTER TABLE ServiceTotal DROP KEY RecordType";
@@ -201,7 +201,7 @@ class Flex_Rollout_Version_000057 extends Flex_Rollout_Version
 
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . " Failed to add Service_3 INDEX to CDR table. " . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . " Failed to add Service_3 INDEX to CDR table. " . $qryQuery->Error());
 		}
 
 		$this->rollbackSQL[] = "ALTER TABLE CDR DROP INDEX Service_3";
@@ -221,7 +221,7 @@ class Flex_Rollout_Version_000057 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

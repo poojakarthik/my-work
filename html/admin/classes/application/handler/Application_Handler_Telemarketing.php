@@ -67,12 +67,12 @@ class Application_Handler_Telemarketing extends Application_Handler
 			$resResult	= $qryQuery->Execute($strSQL);
 			if ($resResult === false)
 			{
-				throw new Exception("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error()."\n\n{$strSQL}" : '');
+				throw new Exception_Database("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error()."\n\n{$strSQL}" : '');
 			}
 			if (!($arrCarrierModule = $resResult->fetch_assoc()))
 			{
 				$strDealerName	= $objDealer->firstName . (($objDealer->lastName) ? ' '.$objDealer->lastName : '');
-				throw new Exception("Flex does not support Proposed Dialling Lists from {$strDealerName}." . (($bolVerboseErrors) ? "\n\n".$qryQuery->Error() : ''));
+				throw new Exception_Database("Flex does not support Proposed Dialling Lists from {$strDealerName}." . (($bolVerboseErrors) ? "\n\n".$qryQuery->Error() : ''));
 			}
 			
 			// Check the File Name format
@@ -270,7 +270,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 				$resResult	= $qryQuery->Execute("UPDATE telemarketing_fnn_proposed SET do_not_call_file_import_id = {$objFileImport->Id} WHERE do_not_call_file_export_id = ".$intFileExportId);
 				if ($resResult === false)
 				{
-					throw new Exception("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error() : '');
+					throw new Exception_Database("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error() : '');
 				}
 				
 				$arrDetailsToRender['Success']			= true;
@@ -331,12 +331,12 @@ class Application_Handler_Telemarketing extends Application_Handler
 			$resResult	= $qryQuery->Execute($strSQL);
 			if ($resResult === false)
 			{
-				throw new Exception("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error()."\n\n{$strSQL}" : '');
+				throw new Exception_Database("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error()."\n\n{$strSQL}" : '');
 			}
 			if (!($arrCarrierModule = $resResult->fetch_assoc()))
 			{
 				$strDealerName	= $objDealer->firstName . (($objDealer->lastName) ? ' '.$objDealer->lastName : '');
-				throw new Exception("Flex does not support Permitted Dialling Lists for this Dealer." . (($bolVerboseErrors) ? "\n\n".$qryQuery->Error() : ''));
+				throw new Exception_Database("Flex does not support Permitted Dialling Lists for this Dealer." . (($bolVerboseErrors) ? "\n\n".$qryQuery->Error() : ''));
 			}			
 			
 			// Create Permitted Dialling List
@@ -388,7 +388,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 		$arrDNCR	= array();
 		if ($resResult === false)
 		{
-			throw new Exception("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error()."\n\n{$strSQL}" : '');
+			throw new Exception_Database("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error()."\n\n{$strSQL}" : '');
 		}
 		while ($arrBlacklist = $resResult->fetch_assoc())
 		{
@@ -414,7 +414,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 		$arrServiceCache	= array();
 		if ($resResult === false)
 		{
-			throw new Exception("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error()."\n\n{$strSQL}" : '');
+			throw new Exception_Database("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error()."\n\n{$strSQL}" : '');
 		}
 		while ($arrService = $resResult->fetch_assoc())
 		{
@@ -438,7 +438,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 		$arrContactCache	= array();
 		if ($resResult === false)
 		{
-			throw new Exception("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error()."\n\n{$strSQL}" : '');
+			throw new Exception_Database("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error()."\n\n{$strSQL}" : '');
 		}
 		while ($arrContact = $resResult->fetch_assoc())
 		{
@@ -560,12 +560,12 @@ class Application_Handler_Telemarketing extends Application_Handler
 			$resResult	= $qryQuery->Execute($strSQL);
 			if ($resResult === false)
 			{
-				throw new Exception("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error()."\n\n{$strSQL}" : '');
+				throw new Exception_Database("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error()."\n\n{$strSQL}" : '');
 			}
 			if (!($arrCarrierModule = $resResult->fetch_assoc()))
 			{
 				$strDealerName	= $objDealer->firstName . (($objDealer->lastName) ? ' '.$objDealer->lastName : '');
-				throw new Exception("Flex does not support Dialler Reports from {$strDealerName}." . (($bolVerboseErrors) ? "\n\n".$qryQuery->Error() : ''));
+				throw new Exception_Database("Flex does not support Dialler Reports from {$strDealerName}." . (($bolVerboseErrors) ? "\n\n".$qryQuery->Error() : ''));
 			}
 			
 			// Check the File Name format
@@ -687,7 +687,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 																)");
 			if ($oFNNsResult === false)
 			{
-				throw new Exception($oQuery->Error());
+				throw new Exception_Database($oQuery->Error());
 			}
 			$aFNNs	= array();
 			while ($aFNN = $oFNNsResult->fetch_assoc())

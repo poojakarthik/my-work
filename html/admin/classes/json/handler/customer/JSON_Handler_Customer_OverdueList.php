@@ -86,7 +86,7 @@ LEFT JOIN
 		$selOverdue = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy, $sLimit, $strGroupBy);
 		if (($intRecCount = $selOverdue->Execute()) === FALSE)
 		{
-			throw new Exception("Failed to retrieve overdue accounts - ". $selOverdue->Error());
+			throw new Exception_Database("Failed to retrieve overdue accounts - ". $selOverdue->Error());
 		}
 		
 		$arrAccounts = array();

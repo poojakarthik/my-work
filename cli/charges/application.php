@@ -225,7 +225,7 @@
 
 				if ($this->_insAddToChargesTable->Execute($arrData) === FALSE)
 				{
-					throw new Exception($this->_insAddToChargesTable->Error());
+					throw new Exception_Database($this->_insAddToChargesTable->Error());
 				}
 				
 				// update RecuringCharge Table
@@ -236,7 +236,7 @@
 				$arrColumns['TotalCharged']		= new MySQLFunction("TotalCharged + <Charge>", Array('Charge' => $arrCharge['RecursionCharge']));
 				if ($this->_ubiRecurringCharge->Execute($arrColumns) === FALSE)
 				{
-					throw new Exception($this->_ubiRecurringCharge->Error());
+					throw new Exception_Database($this->_ubiRecurringCharge->Error());
 				}
 				
 				// add to report

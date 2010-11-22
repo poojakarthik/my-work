@@ -68,7 +68,7 @@ class User_Role
 			$selUserRoles = new StatementSelect("user_role", $arrColumns, "", "name ASC");
 			if (($outcome = $selUserRoles->Execute()) === FALSE)
 			{
-				throw new Exception("Failed to retrieve all User Roles: ". $selUserRoles->Error());
+				throw new Exception_Database("Failed to retrieve all User Roles: ". $selUserRoles->Error());
 			}
 	
 			while ($arrUserRole = $selUserRoles->Fetch())

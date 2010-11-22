@@ -73,7 +73,7 @@ class Carrier_Payment_Type extends ORM_Cached
 		$oStatement	= self::_preparedStatement('selForCarrierAndPaymentType');
 		if ($oStatement->Execute(array('carrier_id'=>$iCarrierId, 'payment_type_id'=>$iPaymentTypeId)) === false)
 		{
-			throw new Exception($oStatement->Error());
+			throw new Exception_Database($oStatement->Error());
 		}
 		elseif ($aCarrierPaymentType = $oStatement->Fetch())
 		{

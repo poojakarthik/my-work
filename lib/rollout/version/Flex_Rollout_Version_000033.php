@@ -27,13 +27,13 @@ class Flex_Rollout_Version_000033 extends Flex_Rollout_Version
 							"VALUES ('OneThree', 'Mobile to 1300', 'Mobile to 13/1300', 101, 0, 1, 1, 0, 3)";
 			if (!$qryQuery->Execute($strSQL))
 			{
-				throw new Exception(__CLASS__ . ' Failed to add Mobile to 13/1300 in '.$strUpdateDB.'. ' . $qryQuery->Error());
+				throw new Exception_Database(__CLASS__ . ' Failed to add Mobile to 13/1300 in '.$strUpdateDB.'. ' . $qryQuery->Error());
 			}
 			$strSQL 		= " UPDATE {$strUpdateDB}.RecordType
 								SET GroupId = Id WHERE Code = 'OneThree' AND ServiceType = 101";
 			if (!($intInsertId = $qryQuery->Execute($strSQL)))
 			{
-				throw new Exception(__CLASS__ . ' Failed to Set Mobile to 13/1300\'s GroupId in '.$strUpdateDB.'. ' . $qryQuery->Error());
+				throw new Exception_Database(__CLASS__ . ' Failed to Set Mobile to 13/1300\'s GroupId in '.$strUpdateDB.'. ' . $qryQuery->Error());
 			}
 			$this->rollbackSQL[] = "DELETE FROM {$strUpdateDB}.RecordType WHERE Code = 'OneThree' AND ServiceType = 101;";
 			
@@ -43,13 +43,13 @@ class Flex_Rollout_Version_000033 extends Flex_Rollout_Version
 							"VALUES ('OC&C', 'Other Charges & Credits', 'Other Charges & Credits', 101, 3, 1, 1, 0, 2)";
 			if (!$qryQuery->Execute($strSQL))
 			{
-				throw new Exception(__CLASS__ . ' Failed to add Mobile Other Charges & Credits in '.$strUpdateDB.'. ' . $qryQuery->Error());
+				throw new Exception_Database(__CLASS__ . ' Failed to add Mobile Other Charges & Credits in '.$strUpdateDB.'. ' . $qryQuery->Error());
 			}
 			$strSQL 		= " UPDATE {$strUpdateDB}.RecordType
 								SET GroupId = Id WHERE Code = 'OC&C' AND ServiceType = 101";
 			if (!($intInsertId = $qryQuery->Execute($strSQL)))
 			{
-				throw new Exception(__CLASS__ . ' Failed to Set Mobile Other Charges & Credits\' GroupId in '.$strUpdateDB.'. ' . $qryQuery->Error());
+				throw new Exception_Database(__CLASS__ . ' Failed to Set Mobile Other Charges & Credits\' GroupId in '.$strUpdateDB.'. ' . $qryQuery->Error());
 			}
 			$this->rollbackSQL[] = "DELETE FROM {$strUpdateDB}.RecordType WHERE Code = 'OC&C' AND ServiceType = 101;";
 		}
@@ -65,7 +65,7 @@ class Flex_Rollout_Version_000033 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

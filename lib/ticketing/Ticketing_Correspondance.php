@@ -435,7 +435,7 @@ class Ticketing_Correspondance
 		$objRecordSet = $qryQuery->Execute($strQuery);
 		if (!$objRecordSet)
 		{
-			throw new Exception("Failed to retrieve most recently actioned user-created correspondence for ticket id $intTicketId : '$strQuery' - ". $qryQuery->Error());
+			throw new Exception_Database("Failed to retrieve most recently actioned user-created correspondence for ticket id $intTicketId : '$strQuery' - ". $qryQuery->Error());
 		}
 		
 		$objCorrespondence = null;
@@ -463,7 +463,7 @@ class Ticketing_Correspondance
 			$strLimit);
 		if (($outcome = $selMatches->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception("Failed to load correspondences: " . $selMatches->Error());
+			throw new Exception_Database("Failed to load correspondences: " . $selMatches->Error());
 		}
 		if (!$outcome)
 		{
@@ -622,13 +622,13 @@ class Ticketing_Correspondance
 		$strSQL = "DELETE FROM ticketing_attachment WHERE correspondance_id = " . $this->id;
 		if (($outcome = $delInstance->Execute($strSQL)) === FALSE)
 		{
-			throw new Exception('Failed to delete attachments for correspondence ' . $this->id . ' from ticket ' . $this->ticketId . ': ' . $delInstance->Error());
+			throw new Exception_Database('Failed to delete attachments for correspondence ' . $this->id . ' from ticket ' . $this->ticketId . ': ' . $delInstance->Error());
 		}
 
 		$strSQL = "DELETE FROM " . strtolower(__CLASS__) . " WHERE id = " . $this->id;
 		if (($outcome = $delInstance->Execute($strSQL)) === FALSE)
 		{
-			throw new Exception('Failed to delete correspondence ' . $this->id . ' from ticket ' . $this->ticketId . ': ' . $delInstance->Error());
+			throw new Exception_Database('Failed to delete correspondence ' . $this->id . ' from ticket ' . $this->ticketId . ': ' . $delInstance->Error());
 		}
 		$this->id = NULL;
 		$this->_saved = FALSE;
@@ -659,7 +659,7 @@ class Ticketing_Correspondance
 		}
 		if (($outcome = $statement->Execute($arrValues)) === FALSE)
 		{
-			throw new Exception('Failed to save correspondence details: ' . $statement->Error());
+			throw new Exception_Database('Failed to save correspondence details: ' . $statement->Error());
 		}
 		if (!$this->id)
 		{

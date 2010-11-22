@@ -29,7 +29,7 @@ class Invoice_Source_Uninvoiced extends Invoice_Source
 		$oResult	= $oQuery->Execute($sSQL);
 		if ($oResult === FALSE)
 		{
-			throw new Exception("Failed to mark all cdrs as temporary invoice, DB ERROR: ".$oQuery->Error());
+			throw new Exception_Database("Failed to mark all cdrs as temporary invoice, DB ERROR: ".$oQuery->Error());
 		}
 		return true;
 	}

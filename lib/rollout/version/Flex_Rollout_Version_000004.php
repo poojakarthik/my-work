@@ -28,7 +28,7 @@ class Flex_Rollout_Version_000004 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create payment_terms table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create payment_terms table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE payment_terms";
 
@@ -49,7 +49,7 @@ class Flex_Rollout_Version_000004 extends Flex_Rollout_Version
 
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate payment_terms table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate payment_terms table. ' . $qryQuery->Error());
 		}
 	}
 
@@ -62,7 +62,7 @@ class Flex_Rollout_Version_000004 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

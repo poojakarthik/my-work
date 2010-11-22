@@ -49,7 +49,7 @@ class Flex_Config extends ORM
 			$mixResult			= $selCurrentConfig->Execute();
 			if ($mixResult === false)
 			{
-				throw new Exception($selCurrentConfig->Error());
+				throw new Exception_Database($selCurrentConfig->Error());
 			}
 			elseif (!$mixResult)
 			{

@@ -65,7 +65,7 @@ class Cost_Centre extends ORM_Cached
 		$oSelectForAccountId = self::_preparedStatement('selForAccountId');
 		if ($oSelectForAccountId->Execute(array('Account' => $iAccountId)) === false)
 		{
-			throw new Exception($oSelectForAccountId->Error());
+			throw new Exception_Database($oSelectForAccountId->Error());
 		}
 		
 		$aCostCentres = array();

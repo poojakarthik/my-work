@@ -74,7 +74,7 @@ class JSON_Handler_Developer_Permissions extends JSON_Handler
 			$resEmployees		= $qryQuery->Execute($strEmployeesSQL);
 			if ($resEmployees === false)
 			{
-				throw new Exception($qryQuery->Error());
+				throw new Exception_Database($qryQuery->Error());
 			}
 			else
 			{

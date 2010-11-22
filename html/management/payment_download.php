@@ -80,7 +80,7 @@
 					
 					if ($oCustomerGroupResult === false)
 					{
-						throw new Exception($qryQuery->Error());
+						throw new Exception_Database($qryQuery->Error());
 					}
 					elseif ($aCustomerGroup = $oCustomerGroupResult->fetch_assoc())
 					{
@@ -116,7 +116,7 @@
 						
 						if ($oPaymentsResult === false)
 						{
-							throw new Exception($qryQuery->Error());
+							throw new Exception_Database($qryQuery->Error());
 						}
 						else
 						{
@@ -168,7 +168,7 @@
 				
 				if ($resPayments === false)
 				{
-					//throw new Exception($qryQuery->Error());
+					//throw new Exception_Database($qryQuery->Error());
 				}
 				$arrPayments		= array();
 				while ($arrPayment = $resPayments->fetch_assoc())

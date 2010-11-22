@@ -1460,7 +1460,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			$resPreviousCCHistory	= $qryQuery->Execute("SELECT * FROM credit_control_status_history WHERE account = ".DBO()->Account->Id->Value." ORDER BY id DESC LIMIT 1 OFFSET 1");
 			if ($resPreviousCCHistory === false)
 			{
-				throw new Exception($qryQuery->Error());
+				throw new Exception_Database($qryQuery->Error());
 			}
 			
 			$arrPreviousCCHistory	= $resPreviousCCHistory->fetch_assoc();

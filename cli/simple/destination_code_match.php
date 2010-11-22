@@ -18,7 +18,7 @@ if (!$resOutputFile)
 $resDestinations	= $qryQuery->Execute("SELECT * FROM Destination WHERE Context = 1");
 if ($resDestinations === false)
 {
-	throw new Exception($qryQuery->Error());
+	throw new Exception_Database($qryQuery->Error());
 }
 $arrDestinations	= array();
 while ($arrDestination = $resDestinations->fetch_assoc())
@@ -30,7 +30,7 @@ while ($arrDestination = $resDestinations->fetch_assoc())
 $resDestinationTranslation	= $qryQuery->Execute("SELECT * FROM DestinationTranslation WHERE Code = 0");
 if ($resDestinationTranslation === false)
 {
-	throw new Exception($qryQuery->Error());
+	throw new Exception_Database($qryQuery->Error());
 }
 
 while ($arrDestinationTranslation = $resDestinationTranslation->fetch_assoc())

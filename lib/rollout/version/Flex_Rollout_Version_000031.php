@@ -19,7 +19,7 @@ class Flex_Rollout_Version_000031 extends Flex_Rollout_Version
 		$strSQL = "DELETE FROM ticketing_category WHERE id = 13";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to remove existing entry from ticketing_category table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to remove existing entry from ticketing_category table. ' . $qryQuery->Error());
 		}
 
 		// 1:	Increase size of fields used for storing paths in the ticketing_config table
@@ -27,7 +27,7 @@ class Flex_Rollout_Version_000031 extends Flex_Rollout_Version
 						(13, 'Payment Query', 'Payment query', 'TICKETING_CATEGORY_PAYMENT_QUERY')";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to insert into ticketing_category table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to insert into ticketing_category table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DELETE FROM ticketing_category WHERE id = 13";
 	}
@@ -41,7 +41,7 @@ class Flex_Rollout_Version_000031 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

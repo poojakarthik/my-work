@@ -128,7 +128,7 @@ class Rate extends ORM_Cached
 		$selForServiceAndDefinition	= self::_preparedStatement('selForServiceAndDefinition');
 		if ($selForServiceAndDefinition->Execute($aWhere) === false)
 		{
-			throw new Exception($selForServiceAndDefinition->Error());
+			throw new Exception_Database($selForServiceAndDefinition->Error());
 		}
 		
 		// NOTE: This query isn't limited to one result, though it is ordered so that the first result is the best match

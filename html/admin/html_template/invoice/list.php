@@ -154,7 +154,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 				$resInvoiceRun	= $qryQuery->Execute("SELECT * FROM InvoiceRun WHERE Id = {$dboInvoice->invoice_run_id->Value}");
 				if ($resInvoiceRun === false)
 				{
-					throw new Exception($resInvoiceRun->Error());
+					throw new Exception_Database($resInvoiceRun->Error());
 				}
 				$arrInvoiceRun	= $resInvoiceRun->fetch_assoc();
 	

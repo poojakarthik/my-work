@@ -104,7 +104,7 @@ if ($intServiceCount = $selServices->Execute())
 			
 			if ($selLineStatus->Execute($arrService) === FALSE)
 			{
-				throw new Exception($selLineStatus->Error());
+				throw new Exception_Database($selLineStatus->Error());
 			}
 			$arrNewStatus	= $selLineStatus->Fetch();
 			CliEcho("; New: {$arrNewStatus['LineStatus']}::{$arrNewStatus['LineStatusDate']}");
@@ -114,13 +114,13 @@ if ($intServiceCount = $selServices->Execute())
 			{
 				if ($updFNNLineStatus->Execute($arrNewStatus, $arrNewStatus) === FALSE)
 				{
-					throw new Exception($updFNNLineStatus->Error());
+					throw new Exception_Database($updFNNLineStatus->Error());
 				}
 			}
 		}
 		else
 		{
-			throw new Exception($selResponses->Error());
+			throw new Exception_Database($selResponses->Error());
 		}
 		/*
 		// DETERMINE CURRENT PRESELECTION LINE STATUS

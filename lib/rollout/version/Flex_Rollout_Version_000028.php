@@ -21,7 +21,7 @@ class Flex_Rollout_Version_000028 extends Flex_Rollout_Version
 						(12, 'Winbacks', 'Winbacks', 'TICKETING_CATEGORY_WINBACKS')";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to insert into ticketing_category table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to insert into ticketing_category table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DELETE FROM ticketing_category WHERE id in (11, 12)";
 	}
@@ -35,7 +35,7 @@ class Flex_Rollout_Version_000028 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

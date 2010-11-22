@@ -341,7 +341,7 @@ class Customer_Search
 		$objRecordSet = $qryQuery->Execute($strQuery);
 		if (!$objRecordSet)
 		{
-			throw new Exception("Failed to execute query: $strQuery - " . $qryQuery->Error());
+			throw new Exception_Database("Failed to execute query: $strQuery - " . $qryQuery->Error());
 		}
 
 		$arrRecordSet = array();

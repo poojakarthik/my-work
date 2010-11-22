@@ -142,7 +142,7 @@
  		}
  		elseif ($selModuleExists->Error())
  		{
- 			throw new Exception("DB ERROR: ".$selModuleExists->Error());
+ 			throw new Exception_Database("DB ERROR: ".$selModuleExists->Error());
  		}
  		else
  		{
@@ -156,7 +156,7 @@
 			$arrModule['id']				= $insChargeModule->Execute($arrModule);
 			if (!$arrModule['id'])
 			{
-				throw new Exception("DB ERROR: ".$insChargeModule->Error());
+				throw new Exception_Database("DB ERROR: ".$insChargeModule->Error());
 			}
 			
 			// Create Module Configuration using Default Values
@@ -197,7 +197,7 @@
 	 		$selCustomerGroups	= new StatementSelect("CustomerGroup", "Id", "1");
 	 		if ($selCustomerGroups->Execute() === FALSE)
 	 		{
-	 			throw new Exception("DB Error: ".$selCustomerGroups->Error());
+	 			throw new Exception_Database("DB Error: ".$selCustomerGroups->Error());
 	 		}
 	 		else
 	 		{
@@ -231,7 +231,7 @@
 	 		}
 	 		else
 	 		{
-	 			throw new Exception("DB ERROR: ".$selModules->Error());
+	 			throw new Exception_Database("DB ERROR: ".$selModules->Error());
 	 		}
  		}
 	 	

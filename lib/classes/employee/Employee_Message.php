@@ -56,7 +56,7 @@ class Employee_Message
 		
 		if (($intId = $insMessage->Execute($arrData)) === FALSE)
 		{
-			throw new Exception("Failed to save employee message: $strMessage - ". $insMessage->Error());
+			throw new Exception_Database("Failed to save employee message: $strMessage - ". $insMessage->Error());
 		}
 		
 		return ($bolGetAsObject)? self::getForId($intId) : $intId;
@@ -87,7 +87,7 @@ class Employee_Message
 		
 		if (($intRecCount = $selMessage->Execute(array("Id"=>$intId))) === FALSE)
 		{
-			throw new Exception("Failed to retrieve Employee Message with id: $intId - ". $selEmployee->Error());
+			throw new Exception_Database("Failed to retrieve Employee Message with id: $intId - ". $selEmployee->Error());
 		}
 		if ($intRecCount == 0)
 		{
@@ -118,7 +118,7 @@ class Employee_Message
 		$objRecordSet = $qryQuery->Execute($strQuery);
 		if (!$objRecordSet)
 		{
-			throw new Exception("Failed to retrieve employee_message records - " . $qryQuery->Error());
+			throw new Exception_Database("Failed to retrieve employee_message records - " . $qryQuery->Error());
 		}
 
 		$arrRecordSet = array();
@@ -168,7 +168,7 @@ class Employee_Message
 		$objRecordSet = $qryQuery->Execute($strQuery);
 		if (!$objRecordSet)
 		{
-			throw new Exception("Failed to retrieve employee_message records in effective since $strTime - " . $qryQuery->Error());
+			throw new Exception_Database("Failed to retrieve employee_message records in effective since $strTime - " . $qryQuery->Error());
 		}
 
 		$arrRecordSet = array();
@@ -204,7 +204,7 @@ class Employee_Message
 		$objRecordSet = $qryQuery->Execute($strQuery);
 		if (!$objRecordSet)
 		{
-			throw new Exception("Failed to retrieve Employee Message for time $strTime - " . $qryQuery->Error());
+			throw new Exception_Database("Failed to retrieve Employee Message for time $strTime - " . $qryQuery->Error());
 		}
 
 		while ($arrRecord = $objRecordSet->fetch_assoc())

@@ -21,7 +21,7 @@ try
 	$selPaymentsByFile	 = new StatementSelect("Payment", "*", "File = <File> AND Status IN (101, 103, 150)");
 	if ($selPaymentsByFile->Execute(Array('File'=>$intFileImportId)) === FALSE)
 	{
-		throw new Exception($selPaymentsByFile->Error());
+		throw new Exception_Database($selPaymentsByFile->Error());
 	}
 	
 	// Reverse each payment

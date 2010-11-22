@@ -65,7 +65,7 @@ class Service_Total extends ORM_Cached
 		$oStmt	= self::_preparedStatement('selServiceIds');
 		if ($oStmt->Execute(array('service_total_id' => $this->Id)) === false)
 		{
-			throw new Exception("Failed to get services for service total {$this->Id}. ".$oStmt->Error());
+			throw new Exception_Database("Failed to get services for service total {$this->Id}. ".$oStmt->Error());
 		}
 		
 		$aRows		= $oStmt->FetchAll();
@@ -86,7 +86,7 @@ class Service_Total extends ORM_Cached
 		
 		if ($oStatement->Execute(array('invoice_run_id' => $iInvoiceRunId, 'Account' => $iAccountId)) === false)
 		{
-			throw new Exception(__METHOD__ ." - Failed to retrieve all ServiceTotal objects from the data source: ". $oStatement->Error());
+			throw new Exception_Database(__METHOD__ ." - Failed to retrieve all ServiceTotal objects from the data source: ". $oStatement->Error());
 		}
 	
 		$aServiceTotals 	= array();

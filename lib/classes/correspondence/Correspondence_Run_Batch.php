@@ -91,7 +91,7 @@ class Correspondence_Run_Batch extends ORM_Cached
 			if ($mResult === false)
 			{
 				// Most likely a sql or connectivity error
-				throw new Exception("Unable to count correspondence_run_batch records, SQL Error. ".$oQuery->Error());
+				throw new Exception_Database("Unable to count correspondence_run_batch records, SQL Error. ".$oQuery->Error());
 			}
 			$aRow	= $mResult->fetch_assoc();
 			return $aRow['batch_count'];
@@ -110,7 +110,7 @@ class Correspondence_Run_Batch extends ORM_Cached
 			if ($mResult === false)
 			{
 				// Most likely a sql or connectivity error
-				throw new Exception("Unable to retrieve correspondence_run_batch records, SQL Error. ".$oQuery->Error());
+				throw new Exception_Database("Unable to retrieve correspondence_run_batch records, SQL Error. ".$oQuery->Error());
 			}
 			
 			// Create ORM objects and return

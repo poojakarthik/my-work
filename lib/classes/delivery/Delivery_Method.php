@@ -94,7 +94,7 @@ class Delivery_Method extends ORM_Enumerated
 			$selCustomerGroupDeliveryMethod	= self::_preparedStatement('selCustomerGroupDeliveryMethod');
 			if ($selCustomerGroupDeliveryMethod->Execute($this->toArray()) === false)
 			{
-				throw new Exception($selCustomerGroupDeliveryMethod->Error());
+				throw new Exception_Database($selCustomerGroupDeliveryMethod->Error());
 			}
 			while ($arrCustomerGroupDeliveryMethod = $selCustomerGroupDeliveryMethod->Fetch())
 			{
@@ -135,7 +135,7 @@ class Delivery_Method extends ORM_Enumerated
 			$oAccountSettingOptions	= self::_preparedStatement('selAccountSettingOptions');
 			if ($oAccountSettingOptions->Execute() === false)
 			{
-				throw new Exception($oAccountSettingOptions->Error());
+				throw new Exception_Database($oAccountSettingOptions->Error());
 			}
 			while ($aDeliveryMethod = $oAccountSettingOptions->Fetch())
 			{

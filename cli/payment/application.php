@@ -507,7 +507,7 @@
 				{
 					//Debug($selOutstandingInvoices->Error());
 					//continue;
-					throw new Exception($selOutstandingInvoices->Error());
+					throw new Exception_Database($selOutstandingInvoices->Error());
 				}
 				
 				// set default status
@@ -538,7 +538,7 @@
 					{
 						//Debug($this->_ubiPayment->Error());
 						//continue;
-						throw new Exception($this->_ubiPayment->Error());
+						throw new Exception_Database($this->_ubiPayment->Error());
 					}
 					
 					$this->_rptPaymentReport->AddMessageVariables(MSG_INVOICE_LINE.MSG_OK, Array('<Id>' => $arrInvoice['Id']), TRUE, FALSE);
@@ -554,7 +554,7 @@
 					{
 						//Debug($this->_ubiPayment->Error());
 						//continue;
-						throw new Exception($this->_ubiPayment->Error());
+						throw new Exception_Database($this->_ubiPayment->Error());
 					}
 				}
 				
@@ -626,14 +626,14 @@
 		if ($this->_insInvoicePayment->Execute($arrInvoicePayment) === FALSE)
 		{
 			//Debug($this->_insInvoicePayment->Error());
-			throw new Exception($this->_insInvoicePayment->Error());
+			throw new Exception_Database($this->_insInvoicePayment->Error());
 		}
 		
 		// update the invoice
 		if ($this->_ubiInvoice->Execute($this->_arrCurrentInvoice) === FALSE)
 		{
 			//Debug($this->_ubiInvoice->Error());
-			throw new Exception($this->_ubiInvoice->Error());
+			throw new Exception_Database($this->_ubiInvoice->Error());
 		}
 		
 		// save the balance

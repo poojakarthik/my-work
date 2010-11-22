@@ -94,7 +94,7 @@ class FollowUp_Category extends ORM_Cached
 						);
 		if ($oSelect->Execute($aWhereInfo['aValues']) === FALSE)
 		{
-			throw new Exception("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oSelect->Error());
+			throw new Exception_Database("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oSelect->Error());
 		}
 		
 		if ($bCountOnly)

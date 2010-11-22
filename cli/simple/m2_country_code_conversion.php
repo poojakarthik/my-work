@@ -30,7 +30,7 @@ while ($arrLine = fgetcsv($resInputFile))
 	elseif ($selDestination->Error())
 	{
 		// DB Error
-		throw new Exception($selDestination->Error());
+		throw new Exception_Database($selDestination->Error());
 	}
 	else
 	{
@@ -46,7 +46,7 @@ while ($arrLine = fgetcsv($resInputFile))
 		elseif ($selDestination->Error())
 		{
 			// DB Error
-			throw new Exception($selDestination->Error());
+			throw new Exception_Database($selDestination->Error());
 		}
 		else
 		{

@@ -72,7 +72,7 @@ class Cli_App_Calculate_Customer_Statuses extends Cli
 			
 			if (($outcome = $selInvoiceRuns->Execute()) === FALSE)
 			{
-				throw new Exception("Failed to retrieve Invoice Run information: ". $selInvoiceRuns->Error());
+				throw new Exception_Database("Failed to retrieve Invoice Run information: ". $selInvoiceRuns->Error());
 			}
 			if ($outcome === 0)
 			{

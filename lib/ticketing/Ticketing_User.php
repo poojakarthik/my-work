@@ -48,7 +48,7 @@ class Ticketing_User
 			"Employee.FirstName ASC");
 		if (($outcome = $selUsers->Execute()) === FALSE)
 		{
-			throw new Exception("Failed to check for existing active users: " . $selUsers->Error());
+			throw new Exception_Database("Failed to check for existing active users: " . $selUsers->Error());
 		}
 
 		$records = array();
@@ -78,7 +78,7 @@ class Ticketing_User
 			"Employee.FirstName ASC");
 		if (($outcome = $selUsers->Execute()) === FALSE)
 		{
-			throw new Exception("Failed to check for users with tickets: " . $selUsers->Error());
+			throw new Exception_Database("Failed to check for users with tickets: " . $selUsers->Error());
 		}
 
 		$records = array();
@@ -108,7 +108,7 @@ class Ticketing_User
 			"Employee.FirstName ASC");
 		if (($outcome = $selUsers->Execute()) === FALSE)
 		{
-			throw new Exception("Failed to check for active users with tickets: " . $selUsers->Error());
+			throw new Exception_Database("Failed to check for active users with tickets: " . $selUsers->Error());
 		}
 
 		$records = array();
@@ -193,7 +193,7 @@ class Ticketing_User
 				$arrWhere);
 			if (($outcome = $selEmployee->Execute($arrWhere)) === FALSE)
 			{
-				throw new Exception("Failed to check for existing user: " . $selEmployee->Error());
+				throw new Exception_Database("Failed to check for existing user: " . $selEmployee->Error());
 			}
 			if (!$outcome)
 			{
@@ -272,7 +272,7 @@ class Ticketing_User
 			$where);
 		if (($outcome = $selUsers->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception("Failed to check for existing user: " . $selUsers->Error());
+			throw new Exception_Database("Failed to check for existing user: " . $selUsers->Error());
 		}
 
 		if (!$bolAsArray && $outcome == 0)
@@ -358,7 +358,7 @@ class Ticketing_User
 		}
 		if (($outcome = $statement->Execute($arrValues)) === FALSE)
 		{
-			throw new Exception('Failed to save user details: ' . $statement->Error());
+			throw new Exception_Database('Failed to save user details: ' . $statement->Error());
 		}
 		if (!$this->id)
 		{

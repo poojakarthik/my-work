@@ -135,7 +135,7 @@ class Invoice extends ORM_Cached
 		if ($oStmt->Execute(array('invoice_run_id' => $iInvoiceRunId)) === false)
 		{
 			// Database Error -- throw Exception
-			throw new Exception("Failed to get invoices for invoice run id {$iInvoiceRunId}. ".$oStmt->Error());
+			throw new Exception_Database("Failed to get invoices for invoice run id {$iInvoiceRunId}. ".$oStmt->Error());
 		}
 		else
 		{
@@ -264,7 +264,7 @@ class Invoice extends ORM_Cached
 			if ($selInvoiceableFNNs->Execute(Array('InvoiceDatetime'=>$this->strInvoiceDatetime, 'Account'=>$objAccount->Id)) === FALSE)
 			{
 				// Database Error -- throw Exception
-				throw new Exception("DB ERROR: ".$selInvoiceableFNNs->Error());
+				throw new Exception_Database("DB ERROR: ".$selInvoiceableFNNs->Error());
 			}
 
 			// Process each Invoiceable FNN
@@ -283,7 +283,7 @@ class Invoice extends ORM_Cached
 				if ($selCurrentService->Execute($arrWhere) === FALSE)
 				{
 					// Database Error -- throw Exception
-					throw new Exception("DB ERROR: ".$selCurrentService->Error());
+					throw new Exception_Database("DB ERROR: ".$selCurrentService->Error());
 				}
 				if (!($arrCurrentService = $selCurrentService->Fetch()))
 				{
@@ -346,7 +346,7 @@ class Invoice extends ORM_Cached
 				if ($selPlanDetailsById->Execute(Array('RatePlan' => $intRatePlan)) === FALSE)
 				{
 					// Database Error -- throw Exception
-					throw new Exception("DB ERROR: ".$selPlanDetailsById->Error());
+					throw new Exception_Database("DB ERROR: ".$selPlanDetailsById->Error());
 				}
 				elseif (!($arrPlanDetails = $selPlanDetailsById->Fetch()))
 				{
@@ -389,7 +389,7 @@ class Invoice extends ORM_Cached
 			if ($updMarkAccountCharges->Execute($arrData, $arrWhere) === FALSE)
 			{
 				// Database Error -- throw Exception
-				throw new Exception("DB ERROR: ".$updMarkAccountCharges->Error());
+				throw new Exception_Database("DB ERROR: ".$updMarkAccountCharges->Error());
 			}
 
 			// Get Preliminary Charge Totals
@@ -397,7 +397,7 @@ class Invoice extends ORM_Cached
 			if ($selAccountChargeTotals->Execute(Array('Account' => $objAccount->Id, 'invoice_run_id' => $this->invoice_run_id)) === FALSE)
 			{
 				// Database Error -- throw Exception
-				throw new Exception("DB ERROR: ".$selAccountChargeTotals->Error());
+				throw new Exception_Database("DB ERROR: ".$selAccountChargeTotals->Error());
 			}
 			$arrAccountChargeTotals	= Array();
 			while ($arrAccountChargeTotal = $selAccountChargeTotals->Fetch())
@@ -441,7 +441,7 @@ class Invoice extends ORM_Cached
 			if ($selAccountChargeTotals->Execute(Array('Account' => $objAccount->Id, 'invoice_run_id' => $this->invoice_run_id)) === FALSE)
 			{
 				// Database Error -- throw Exception
-				throw new Exception("DB ERROR: ".$selAccountChargeTotals->Error());
+				throw new Exception_Database("DB ERROR: ".$selAccountChargeTotals->Error());
 			}
 			$arrAccountChargeTotals	= Array();
 			while ($arrAccountChargeTotal = $selAccountChargeTotals->Fetch())
@@ -469,7 +469,7 @@ class Invoice extends ORM_Cached
 			if ($selAdjustmentTotals->Execute(Array('account_id' => $objAccount->Id, 'invoice_run_id' => $this->invoice_run_id)) === FALSE)
 			{
 				// Database Error -- throw Exception
-				throw new Exception("DB ERROR: ".$selAdjustmentTotals->Error());
+				throw new Exception_Database("DB ERROR: ".$selAdjustmentTotals->Error());
 			}
 			$aAdjustmentTotals	= Array();
 			if ($aAdjustmentTotals = $selAdjustmentTotals->Fetch())
@@ -586,7 +586,7 @@ class Invoice extends ORM_Cached
 		$strExtensionsQuery .= " GROUP BY CDR.FNN, CDR.RecordType";
 		if ($qryQuery->Execute($strExtensionsQuery) === FALSE)
 		{
-			throw new Exception("DB ERROR: ".$qryQuery->Error());
+			throw new Exception_Database("DB ERROR: ".$qryQuery->Error());
 		}
 
 		// Get CDR Total Details
@@ -597,7 +597,7 @@ class Invoice extends ORM_Cached
 		$resCDRTotals	= $qryQuery->Execute($strSQL);
 		if ($resCDRTotals === FALSE)
 		{
-			throw new Exception("DB ERROR: ".$qryQuery->Error());
+			throw new Exception_Database("DB ERROR: ".$qryQuery->Error());
 		}
 		$intDebitCDRCount	= 0;
 		$arrCDRTotals		= Array();
@@ -620,7 +620,7 @@ class Invoice extends ORM_Cached
 		$selPlanDetails	= $this->_preparedStatement('selPlanDetails');
 		if ($selPlanDetails->Execute(Array('Service' => $intServiceId, 'EffectiveDate' => $this->billing_period_end_datetime)) === FALSE)
 		{
-			throw new Exception("DB ERROR: ".$selPlanDetails->Error());
+			throw new Exception_Database("DB ERROR: ".$selPlanDetails->Error());
 		}
 		$arrPlanDetails	= $selPlanDetails->Fetch();
 
@@ -719,7 +719,7 @@ class Invoice extends ORM_Cached
 								AND 	Service IN (".implode(', ', $arrServiceDetails['Ids']).")
 								AND 	ChargedOn <= '{$this->billing_period_end_datetime}'") === FALSE)
 		{
-			throw new Exception("DB ERROR: ".$qryQuery->Error());
+			throw new Exception_Database("DB ERROR: ".$qryQuery->Error());
 		}
 
 		// Add in Service Billing-time Charges
@@ -738,7 +738,7 @@ class Invoice extends ORM_Cached
 		$resResult	= $qryQuery->Execute($strServiceChargeTotalSQL);
 		if ($resResult === FALSE)
 		{
-			throw new Exception("DB ERROR: ".$resResult->Error());
+			throw new Exception_Database("DB ERROR: ".$resResult->Error());
 		}
 		$arrChargeTotals	= Array();
 		while ($arrChargeTotal = $resResult->fetch_assoc())
@@ -777,7 +777,7 @@ class Invoice extends ORM_Cached
 		$insServiceTotal	= self::_preparedStatement('insServiceTotal');
 		if (($arrServiceTotal['Id'] = $insServiceTotal->Execute($arrServiceTotal)) === FALSE)
 		{
-			throw new Exception("DB ERROR: ".$insServiceTotal->Error());
+			throw new Exception_Database("DB ERROR: ".$insServiceTotal->Error());
 		}
 
 		// Link each Service to the ServiceTotal
@@ -790,7 +790,7 @@ class Invoice extends ORM_Cached
 							);
 			if ($insServiceTotalService->Execute($arrData) === FALSE)
 			{
-				throw new Exception("DB ERROR: ".$insServiceTotalService->Error());
+				throw new Exception_Database("DB ERROR: ".$insServiceTotalService->Error());
 			}
 		}
 
@@ -820,7 +820,7 @@ class Invoice extends ORM_Cached
 		$selTemporaryInvoicesByAccount	= self::_preparedStatement('selTemporaryInvoicesByAccount');
 		if ($selTemporaryInvoicesByAccount->Execute(Array('Account' => $objAccount->Id)) === FALSE)
 		{
-			throw new Exception("DB ERROR: ".$selTemporaryInvoicesByAccount->Error());
+			throw new Exception_Database("DB ERROR: ".$selTemporaryInvoicesByAccount->Error());
 		}
 
 		while ($arrInvoice = $selTemporaryInvoicesByAccount->Fetch())
@@ -864,7 +864,7 @@ class Invoice extends ORM_Cached
 			if ($oStmt->Execute(Array('invoice_run_id' => $this->invoice_run_id)) === FALSE)
 			{
 				// Database Error -- throw Exception
-				throw new Exception("DB ERROR: ".$oStmt->Error());
+				throw new Exception_Database("DB ERROR: ".$oStmt->Error());
 			}
 			else if ($oStmt->Count() == 1)
 			{
@@ -892,7 +892,7 @@ class Invoice extends ORM_Cached
 			$updCDRRevoke	= self::_preparedStatement('updCDRRevoke');
 			if ($updCDRRevoke->Execute(Array('invoice_run_id'=>NULL, 'Status'=>CDR_RATED), $this->toArray()) === FALSE)
 			{
-				throw new Exception("DB ERROR: ".$updCDRRevoke->Error());
+				throw new Exception_Database("DB ERROR: ".$updCDRRevoke->Error());
 			}
 
 			// Remove Billing-Time Charges
@@ -913,38 +913,38 @@ class Invoice extends ORM_Cached
 			// Remove Plan Charges
 			if ($qryQuery->Execute("DELETE FROM Charge WHERE ChargeType IN ('PCAD', 'PCAR', 'PCR', 'PDCR') AND CreatedBy IS NULL AND invoice_run_id = {$this->invoice_run_id} AND Account = {$this->Account}") === FALSE)
 			{
-				throw new Exception("DB ERROR: ".$qryQuery->Error());
+				throw new Exception_Database("DB ERROR: ".$qryQuery->Error());
 			}
 
 			// Change Charge Statuses back to CHARGE_APPROVED
 			$updChargeRevoke	= self::_preparedStatement('updChargeRevoke');
 			if ($updChargeRevoke->Execute(Array('Status' => CHARGE_APPROVED, 'invoice_run_id' => NULL), $this->toArray()) === FALSE)
 			{
-				throw new Exception("DB ERROR: ".$updChargeRevoke->Error());
+				throw new Exception_Database("DB ERROR: ".$updChargeRevoke->Error());
 			}
 
 			// Remove service_total_service Records
 			if ($qryQuery->Execute("DELETE FROM service_total_service WHERE service_total_id = (SELECT Id FROM ServiceTotal WHERE invoice_run_id = {$this->invoice_run_id} AND Account = {$this->Account} AND Id = service_total_id)") === FALSE)
 			{
-				throw new Exception("DB ERROR: ".$qryQuery->Error());
+				throw new Exception_Database("DB ERROR: ".$qryQuery->Error());
 			}
 
 			// Remove ServiceTotal Records
 			if ($qryQuery->Execute("DELETE FROM ServiceTotal WHERE invoice_run_id = {$this->invoice_run_id} AND Account = {$this->Account}") === FALSE)
 			{
-				throw new Exception("DB ERROR: ".$qryQuery->Error());
+				throw new Exception_Database("DB ERROR: ".$qryQuery->Error());
 			}
 
 			// Remove ServiceTypeTotal Records
 			if ($qryQuery->Execute("DELETE FROM ServiceTypeTotal WHERE invoice_run_id = {$this->invoice_run_id} AND Account = {$this->Account}") === FALSE)
 			{
-				throw new Exception("DB ERROR: ".$qryQuery->Error());
+				throw new Exception_Database("DB ERROR: ".$qryQuery->Error());
 			}
 
 			// Remove Invoice Record
 			if ($qryQuery->Execute("DELETE FROM Invoice WHERE Id = {$this->Id}") === FALSE)
 			{
-				throw new Exception("DB ERROR: ".$qryQuery->Error());
+				throw new Exception_Database("DB ERROR: ".$qryQuery->Error());
 			}
 
 			// Update the Totals on the InvoiceRun record
@@ -997,14 +997,14 @@ class Invoice extends ORM_Cached
 			$updCDRsByAccount		= self::_preparedStatement('updCDRCommit');
 			if ($updCDRsByAccount->Execute(Array('Status'=>CDR_INVOICED), Array('Account'=>$this->Account, 'invoice_run_id'=>$this->invoice_run_id)) === FALSE)
 			{
-				throw new Exception($updCDRsByAccount->Error());
+				throw new Exception_Database($updCDRsByAccount->Error());
 			}
 
 			// Commit the Charges
 			$updChargesByAccount	= self::_preparedStatement('updChargeCommit');
 			if ($updChargesByAccount->Execute(Array('Status'=>CHARGE_INVOICED), Array('Account'=>$this->Account, 'invoice_run_id'=>$this->invoice_run_id)) === FALSE)
 			{
-				throw new Exception($updChargesByAccount->Error());
+				throw new Exception_Database($updChargesByAccount->Error());
 			}
 
 			//------------------------------ ACCOUNT -----------------------------//
@@ -1024,7 +1024,7 @@ class Invoice extends ORM_Cached
 						" WHERE ServiceTotal.Account = {$this->Account} AND invoice_run_id = {$this->invoice_run_id}";
 			if ($qryQuery->Execute($strSQL) === FALSE)
 			{
-				throw new Exception($qryQuery->Error());
+				throw new Exception_Database($qryQuery->Error());
 			}
 
 			//------------------------------ INVOICE -----------------------------//
@@ -1169,7 +1169,7 @@ class Invoice extends ORM_Cached
 			}
 			elseif ($qryQuery->Error())
 			{
-				throw new Exception("DB ERROR: ".$qryQuery->Error());
+				throw new Exception_Database("DB ERROR: ".$qryQuery->Error());
 			}
 			else
 			{
@@ -1218,7 +1218,7 @@ class Invoice extends ORM_Cached
 			$resResult	= $qryQuery->Execute("SELECT MIN(EarliestCDR) AS EarliestCDR FROM Service WHERE Id IN ({$strServiceIds})");
 			if ($resResult === FALSE)
 			{
-				throw new Exception("DB ERROR: ".$qryQuery->Error());
+				throw new Exception_Database("DB ERROR: ".$qryQuery->Error());
 			}
 			$arrMinEarliestCDR	= $resResult->fetch_assoc();
 			$strEarliestCDR		= ($arrMinEarliestCDR['EarliestCDR'] !== NULL && strtotime($arrMinEarliestCDR['EarliestCDR']) < $this->intInvoiceDatetime) ? $arrMinEarliestCDR['EarliestCDR'] : NULL;
@@ -1231,7 +1231,7 @@ class Invoice extends ORM_Cached
 			$resResult	= $qryQuery->Execute("SELECT MIN(CreatedOn) AS EarliestCreatedOn FROM Service WHERE Id IN ({$strServiceIds})");
 			if ($resResult === FALSE)
 			{
-				throw new Exception("DB ERROR: ".$qryQuery->Error());
+				throw new Exception_Database("DB ERROR: ".$qryQuery->Error());
 			}
 			$arrMinCreatedOn		= $resResult->fetch_assoc();
 
@@ -1298,7 +1298,7 @@ class Invoice extends ORM_Cached
 			$resResult	= $qryQuery->Execute($strSQL);
 			if ($resResult === FALSE)
 			{
-				throw new Exception("DB ERROR: ".$qryQuery->Error());
+				throw new Exception_Database("DB ERROR: ".$qryQuery->Error());
 			}
 			elseif (!$resResult->num_rows)
 			{
@@ -1329,7 +1329,7 @@ class Invoice extends ORM_Cached
 													LIMIT 	1");
 				if ($rResult === false)
 				{
-					throw new Exception("DB ERROR: ".$qryQuery->Error());
+					throw new Exception_Database("DB ERROR: ".$qryQuery->Error());
 				}
 				elseif ($rResult->num_rows)
 				{
@@ -1341,7 +1341,7 @@ class Invoice extends ORM_Cached
 					$oResult	= $qryQuery->Execute("SELECT st.RatePlan FROM ServiceTotal st JOIN InvoiceRun ir ON (ir.Id = st.invoice_run_id) WHERE st.Service IN ({$strServiceIds}) AND ir.BillingDate < '{$this->_objInvoiceRun->BillingDate}' AND st.RatePlan != {$arrPlanDetails['Id']} LIMIT 1");
 					if ($oResult === false)
 					{
-						throw new Exception("DB ERROR: ".$qryQuery->Error());
+						throw new Exception_Database("DB ERROR: ".$qryQuery->Error());
 					}
 					elseif ($oResult->num_rows)
 					{
@@ -1446,7 +1446,7 @@ class Invoice extends ORM_Cached
 			}
 			elseif ($selChargeType->Error())
 			{
-				throw new Exception("DB ERROR: ".$selChargeType->Error());
+				throw new Exception_Database("DB ERROR: ".$selChargeType->Error());
 			}
 			else
 			{
@@ -1553,7 +1553,7 @@ class Invoice extends ORM_Cached
 				$oResult	= $oQuery->Execute($sIncludedUsage);
 				if ($oResult === FALSE)
 				{
-					throw new Exception("DB ERROR: ".$oQuery->Error());
+					throw new Exception_Database("DB ERROR: ".$oQuery->Error());
 				}
 
 				// If there are any CDRs
@@ -1841,7 +1841,7 @@ class Invoice extends ORM_Cached
 													)");
 			if ($mChargeResult === false)
 			{
-				throw new Exception("Failed to copy Charge records. ".$oQuery->Error());
+				throw new Exception_Database("Failed to copy Charge records. ".$oQuery->Error());
 			}
 
 			Log::getLog()->log("... ".$oQuery->AffectedRows()." records copied");
@@ -1858,7 +1858,7 @@ class Invoice extends ORM_Cached
 												)");
 			if ($mCDRResult === false)
 			{
-				throw new Exception("Failed to copy CDR records. ".$oQuery->Error());
+				throw new Exception_Database("Failed to copy CDR records. ".$oQuery->Error());
 			}
 
 			Log::getLog()->log("... ".$oQuery->AffectedRows()." records copied");
@@ -1888,7 +1888,7 @@ class Invoice extends ORM_Cached
 			$iRows	= $oStmt->Execute(array('Account' => $oOriginalInvoice->Account, 'invoice_run_id' => $oInvoiceRun->Id, 'Status' => CDR_RATED));
 			if ($iRows === false)
 			{
-				throw new Exception("Failed to retrieve CDR records after copying them. ".$oStmt->Error());
+				throw new Exception_Database("Failed to retrieve CDR records after copying them. ".$oStmt->Error());
 			}
 
 			Log::getLog()->log("Rerate CDRs");
@@ -2003,7 +2003,7 @@ class Invoice extends ORM_Cached
 
 		if (($oAccountsResult = $oQuery->Execute($sAccounts)) === false)
 		{
-			throw new Exception($oQuery->Error());
+			throw new Exception_Database($oQuery->Error());
 		}
 
 		Log::getLog()->log(" * Redistributing {$oAccountsResult->num_rows} Accounts...");
@@ -2034,7 +2034,7 @@ class Invoice extends ORM_Cached
 
 					if (($oInvoicesResult = $oQuery->Execute($sAffectedInvoices)) === false)
 					{
-						throw new Exception($oQuery->Error());
+						throw new Exception_Database($oQuery->Error());
 					}
 
 					$aInvoicesAssoc	= array();

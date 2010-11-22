@@ -30,7 +30,7 @@ class Flex_Rollout_Version_000014 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create email_notification table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create email_notification table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE email_notification";
 
@@ -48,7 +48,7 @@ class Flex_Rollout_Version_000014 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate email_notification table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate email_notification table. ' . $qryQuery->Error());
 		}
 
 		// Create email_address_usage Table
@@ -63,7 +63,7 @@ class Flex_Rollout_Version_000014 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create email_address_usage table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create email_address_usage table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE email_address_usage";
 
@@ -76,7 +76,7 @@ class Flex_Rollout_Version_000014 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate email_address_usage table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate email_address_usage table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "TRUNCATE TABLE email_address_usage";
 
@@ -92,7 +92,7 @@ class Flex_Rollout_Version_000014 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create email_notification_address table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create email_notification_address table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE email_notification_address ";
 
@@ -102,7 +102,7 @@ class Flex_Rollout_Version_000014 extends Flex_Rollout_Version
 					ADD const_name VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'Constant name in code';";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to alter DocumentTemplateType table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to alter DocumentTemplateType table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE DocumentTemplateType DROP description, DROP const_name ";
 
@@ -110,14 +110,14 @@ class Flex_Rollout_Version_000014 extends Flex_Rollout_Version
 		$strSQL = "UPDATE DocumentTemplateType SET description = Name, const_name = UCASE(CONCAT('document_template_type_', REPLACE(Name, ' ', '_')))";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate name and const_name columns to active_status table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate name and const_name columns to active_status table. ' . $qryQuery->Error());
 		}
 
 		// Add row for friendly reminder
 		$strSQL = "INSERT INTO DocumentTemplateType (Name, description, const_name)VALUES ('Friendly Reminder', 'Friendly Reminder', 'DOCUMENT_TEMPLATE_TYPE_FRIENDLY_REMINDER')";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate name and const_name columns to active_status table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate name and const_name columns to active_status table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DELETE FROM DocumentTemplateType WHERE const_name = 'DOCUMENT_TEMPLATE_TYPE_FRIENDLY_REMINDER'";
 
@@ -125,7 +125,7 @@ class Flex_Rollout_Version_000014 extends Flex_Rollout_Version
 		$strSQL = "UPDATE DocumentTemplateType SET const_name = 'DOCUMENT_TEMPLATE_TYPE_FINAL_DEMAND' WHERE const_name = 'DOCUMENT_TEMPLATE_TYPE_FINAL_DEMAND_NOTICE'";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate name and const_name columns to active_status table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate name and const_name columns to active_status table. ' . $qryQuery->Error());
 		}
 
 		// Add a default schema for the document
@@ -134,7 +134,7 @@ class Flex_Rollout_Version_000014 extends Flex_Rollout_Version
 		';
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add default DocumentTemplateSchema record for friendly reminders. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add default DocumentTemplateSchema record for friendly reminders. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DELETE FROM DocumentTemplateSchema WHERE TemplateType = (SELECT Id FROM DocumentTemplateType WHERE const_name = 'DOCUMENT_TEMPLATE_TYPE_FRIENDLY_REMINDER')";
 
@@ -145,7 +145,7 @@ class Flex_Rollout_Version_000014 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add credit card entry to DocumentResourceType. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add credit card entry to DocumentResourceType. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DELETE FROM DocumentResourceType WHERE PlaceHolder = 'Credit Card'";
 
@@ -162,7 +162,7 @@ class Flex_Rollout_Version_000014 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add credit card entry to DocumentResourceType. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add credit card entry to DocumentResourceType. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DELETE FROM DocumentResourceTypeFileType WHERE ResourceType = (SELECT Id FROM DocumentResourceType WHERE PlaceHolder = 'Credit Card')";
 	}
@@ -176,7 +176,7 @@ class Flex_Rollout_Version_000014 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

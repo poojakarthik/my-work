@@ -28,7 +28,7 @@ try
 	$mixResult	= $selFuckedServiceTotals->Execute();
 	if ($mixResult === FALSE)
 	{
-		throw new Exception($selFuckedServiceTotals->Error());
+		throw new Exception_Database($selFuckedServiceTotals->Error());
 	}
 	else
 	{
@@ -40,7 +40,7 @@ try
 			// Find the Best ServiceRatePlan match
 			if ($selBestServiceRatePlan->Execute($arrServiceTotal) === FALSE)
 			{
-				throw new Exception($selBestServiceRatePlan->Error());
+				throw new Exception_Database($selBestServiceRatePlan->Error());
 			}
 			elseif ($arrBestServiceRatePlan = $selBestServiceRatePlan->Fetch())
 			{
@@ -48,7 +48,7 @@ try
 				$arrServiceTotal['service_rate_plan']	= $arrBestServiceRatePlan['Id'];
 				if ($ubiServiceTotal->Execute($arrServiceTotal) === FALSE)
 				{
-					throw new Exception($ubiServiceTotal->Error());
+					throw new Exception_Database($ubiServiceTotal->Error());
 				}
 				else
 				{

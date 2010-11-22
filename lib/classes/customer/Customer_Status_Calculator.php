@@ -28,7 +28,7 @@ OR
 		
 		if (($outcome = $selEligibleAccounts->Execute()) === FALSE)
 		{
-			throw new Exception("Failed to retrieve ids of accounts that are eligible for a customer status: ". $selEligibleAccounts->Error());
+			throw new Exception_Database("Failed to retrieve ids of accounts that are eligible for a customer status: ". $selEligibleAccounts->Error());
 		}
 
 		$arrAccountIds = array();

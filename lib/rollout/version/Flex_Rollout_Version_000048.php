@@ -21,7 +21,7 @@ class Flex_Rollout_Version_000048 extends Flex_Rollout_Version
 					" ADD archive_location VARCHAR(1024) NULL COMMENT 'The Archive in which this file has been stored' AFTER Location;";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add FileImport.archived_on and archive_location Fields. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add FileImport.archived_on and archive_location Fields. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE FileImport DROP archived_on, DROP archive_location;";
 		
@@ -36,7 +36,7 @@ class Flex_Rollout_Version_000048 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

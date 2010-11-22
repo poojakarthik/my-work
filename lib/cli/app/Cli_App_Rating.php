@@ -155,7 +155,7 @@ class Cli_App_Rating extends Cli
 								Id DESC"/*DEBUG.' LIMIT 1000'/**/;
 		if (($mResult = $oQuery->Execute($sSQL)) === false)
 		{
-			throw new Exception($oQuery->Error());
+			throw new Exception_Database($oQuery->Error());
 		}
 		
 		$aCDRIds	= array();
@@ -190,7 +190,7 @@ class Cli_App_Rating extends Cli
 					{$sLimit}";
 		if (($mResult = $oQuery->Execute($sSQL)) === false)
 		{
-			throw new Exception($oQuery->Error());
+			throw new Exception_Database($oQuery->Error());
 		}
 		
 		$aCDRIds	= array();

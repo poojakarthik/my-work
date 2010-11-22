@@ -645,7 +645,7 @@ class Invoice_Interim
 														);
 								if ($oPlanChargeDebit === false)
 								{
-									throw new Exception($oQuery->Error());
+									throw new Exception_Database($oQuery->Error());
 								}
 								$aPlanChargeDebitRow	= $oPlanChargeDebit->fetch_assoc();
 								
@@ -907,7 +907,7 @@ class Invoice_Interim
 											)ENGINE=memory;");
 		if ($mResult === false)
 		{
-			throw new Exception("failed part 1. ".$oQuery->Error());
+			throw new Exception_Database("failed part 1. ".$oQuery->Error());
 		}
 		
 		$iPart1	= time();
@@ -917,7 +917,7 @@ class Invoice_Interim
 		$mResult	= $oQuery->Execute("ALTER TABLE service_status_count ADD INDEX (account_id);");
 		if ($mResult === false)
 		{
-			throw new Exception("failed part 1. ".$oQuery->Error());
+			throw new Exception_Database("failed part 1. ".$oQuery->Error());
 		}
 		
 		$iPart1a	= time();
@@ -946,7 +946,7 @@ class Invoice_Interim
 														AND services_active > 0");
 		if ($mResult === false)
 		{
-			throw new Exception("failed part 2. ".$oQuery->Error());
+			throw new Exception_Database("failed part 2. ".$oQuery->Error());
 		}
 		
 		$iPart2	= time();
@@ -1023,7 +1023,7 @@ class Invoice_Interim
 		$rResult	= $oQuery->Execute($sSQL);
 		if ($rResult === false)
 		{
-			throw new Exception($oQuery->Error());
+			throw new Exception_Database($oQuery->Error());
 		}
 		
 		$iPart3	= time();
@@ -1053,7 +1053,7 @@ class Invoice_Interim
 													LIMIT		1");
 				if ($mResult === false)
 				{
-					throw new Exception("Failed loop check 0. ".$oQuery->Error());
+					throw new Exception_Database("Failed loop check 0. ".$oQuery->Error());
 				}
 				
 				$aIR	= $mResult->fetch_assoc();
@@ -1082,7 +1082,7 @@ class Invoice_Interim
 													LIMIT		1");
 				if ($mResult === false)
 				{
-					throw new Exception("Failed loop check 1. ".$oQuery->Error());
+					throw new Exception_Database("Failed loop check 1. ".$oQuery->Error());
 				}
 				
 				$aCount	= $mResult->fetch_assoc();
@@ -1105,7 +1105,7 @@ class Invoice_Interim
 													LIMIT		1");
 				if ($mResult === false)
 				{
-					throw new Exception("Failed loop check 2. ".$oQuery->Error());
+					throw new Exception_Database("Failed loop check 2. ".$oQuery->Error());
 				}
 				
 				$aCount	= $mResult->fetch_assoc();
@@ -1123,7 +1123,7 @@ class Invoice_Interim
 													AND 	Status NOT IN (100)");
 				if ($mResult === false)
 				{
-					throw new Exception("Failed loop check 3. ".$oQuery->Error());
+					throw new Exception_Database("Failed loop check 3. ".$oQuery->Error());
 				}
 				
 				$aCount	= $mResult->fetch_assoc();
@@ -1190,7 +1190,7 @@ class Invoice_Interim
 		/*$mResult	= $oQuery->Execute("	DROP TEMPORARY TABLE service_status_count;");
 		if ($mResult === false)
 		{
-			throw new Exception("failed part 5. ".$oQuery->Error());
+			throw new Exception_Database("failed part 5. ".$oQuery->Error());
 		}*/
 		
 		$iEnd	= time();

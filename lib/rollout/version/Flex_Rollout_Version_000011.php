@@ -19,7 +19,7 @@ class Flex_Rollout_Version_000011 extends Flex_Rollout_Version
 		$strSQL = " ALTER TABLE carrier_provisioning_support CHANGE carrier_module_id carrier_id BIGINT( 20 ) UNSIGNED NOT NULL COMMENT 'FK to Carrier table';";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to rename carrier_provisioning_support.carrier_module_id to carrier_id. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to rename carrier_provisioning_support.carrier_module_id to carrier_id. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE carrier_provisioning_support CHANGE carrier_id carrier_module_id BIGINT( 20 ) UNSIGNED NOT NULL COMMENT 'FK to CarrierModule table';";
 
@@ -37,7 +37,7 @@ class Flex_Rollout_Version_000011 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to alter carrier_provisioning_support table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to alter carrier_provisioning_support table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "TRUNCATE TABLE carrier_provisioning_support;";
 	}
@@ -51,7 +51,7 @@ class Flex_Rollout_Version_000011 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

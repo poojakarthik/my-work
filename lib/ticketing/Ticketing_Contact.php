@@ -111,7 +111,7 @@ class Ticketing_Contact
 
 		if (($outcome = $selContacts->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception('Failed to list contacts for account ' . $accountId . ': ' . $selContacts->Error());
+			throw new Exception_Database('Failed to list contacts for account ' . $accountId . ': ' . $selContacts->Error());
 		}
 
 		$arrContacts = array();
@@ -130,7 +130,7 @@ class Ticketing_Contact
 		$arrWhere = array('ContactId' => $this->id);
 		if (($outcome = $selAccounts->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception('Fialed to list accounts for contact: ' . $selAccounts->Error());
+			throw new Exception_Database('Fialed to list accounts for contact: ' . $selAccounts->Error());
 		}
 		$accountIds = array();
 		while($accId = $selAccounts->Fetch())
@@ -149,7 +149,7 @@ class Ticketing_Contact
 			$where);
 		if (($outcome = $selContacts->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception("Failed to check for existing contact: " . $selContacts->Error());
+			throw new Exception_Database("Failed to check for existing contact: " . $selContacts->Error());
 		}
 		if (!$outcome)
 		{
@@ -276,7 +276,7 @@ class Ticketing_Contact
 		}
 		if (($outcome = $statement->Execute($arrValues)) === FALSE)
 		{
-			throw new Exception('Failed to save contact details: ' . $statement->Error());
+			throw new Exception_Database('Failed to save contact details: ' . $statement->Error());
 		}
 		if (!$this->id)
 		{

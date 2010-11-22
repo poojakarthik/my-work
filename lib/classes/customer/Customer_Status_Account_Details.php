@@ -96,7 +96,7 @@ class Customer_Status_Account_Details
 		// Fetch account details
 		if (($intRecCount = $this->_selAccountDetails->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception("Failed to retrieve details from Account table for account: $intAccountId - ". $this->_selAccountDetails->Error());
+			throw new Exception_Database("Failed to retrieve details from Account table for account: $intAccountId - ". $this->_selAccountDetails->Error());
 		}
 		if ($intRecCount != 1)
 		{
@@ -113,7 +113,7 @@ class Customer_Status_Account_Details
 		// Fetch invoice details
 		if (($intRecCount = $this->_selInvoice->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception("Failed to retrieve details from Invoice table for account: $intAccountId, and InvoiceRunId: $intInvoiceRunId - ". $this->_selInvoice->Error());
+			throw new Exception_Database("Failed to retrieve details from Invoice table for account: $intAccountId, and InvoiceRunId: $intInvoiceRunId - ". $this->_selInvoice->Error());
 		}
 		if ($intRecCount == 1)
 		{
@@ -128,7 +128,7 @@ class Customer_Status_Account_Details
 		// Fetch Invoice Action History
 		if (($intRecCount = $this->_selInvoiceActionHistory->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception("Failed to retrieve details from automatic_invoice_action_history table for account: $intAccountId, and InvoiceRunId: $intInvoiceRunId - ". $this->_selInvoiceActionHistory->Error());
+			throw new Exception_Database("Failed to retrieve details from automatic_invoice_action_history table for account: $intAccountId, and InvoiceRunId: $intInvoiceRunId - ". $this->_selInvoiceActionHistory->Error());
 		}
 		if ($intRecCount > 0)
 		{
@@ -143,7 +143,7 @@ class Customer_Status_Account_Details
 		// Fetch Service Plan details
 		if (($intRecCount = $selServiceRatePlans->Execute()) === FALSE)
 		{
-			throw new Exception("Failed to retrieve Service Plan details for account: $intAccountId - ". $selServiceRatePlans->Error());
+			throw new Exception_Database("Failed to retrieve Service Plan details for account: $intAccountId - ". $selServiceRatePlans->Error());
 		}
 		
 		if ($intRecCount > 0)

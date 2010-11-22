@@ -54,7 +54,7 @@ class Action_AssociationType extends ORM
 			
 			if (($arrRecordSet = $selAction_AssociationTypes->Execute()) === FALSE)
 			{
-				throw new Exception("Failed to retrieve all Action_AssociationTypes from the data source: ". $selAction_AssociationTypes->Error());
+				throw new Exception_Database("Failed to retrieve all Action_AssociationTypes from the data source: ". $selAction_AssociationTypes->Error());
 			}
 	
 			while ($arrRecord = $selAction_AssociationTypes->Fetch())

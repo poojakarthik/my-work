@@ -81,7 +81,7 @@ if ($resOutputFile)
 					CliEcho("D", FALSE);
 					if ($selService->Execute($arrServiceOwner) === FALSE)
 					{
-						throw new Exception($selService->Error());
+						throw new Exception_Database($selService->Error());
 					}
 					if (!($arrServiceDetails = $selService->Fetch()))
 					{
@@ -90,13 +90,13 @@ if ($resOutputFile)
 					CliEcho("C", FALSE);
 					if ($selServiceDetails->Execute(Array('FNN' => $arrService['FNN'], 'FNNIndial' => substr($arrService['FNN'], 0, -2).'__')) === FALSE)
 					{
-						throw new Exception($selServiceDetails->Error());
+						throw new Exception_Database($selServiceDetails->Error());
 					}
 					$arrServiceDetails	= array_merge($arrServiceDetails, $selServiceDetails->Fetch());
 					CliEcho("I", FALSE);
 					if ($selIdsForFNN->Execute(Array('FNN' => $arrService['FNN'], 'FNNIndial' => substr($arrService['FNN'], 0, -2).'__')) === FALSE)
 					{
-						throw new Exception($selIdsForFNN->Error());
+						throw new Exception_Database($selIdsForFNN->Error());
 					}
 					$arrServiceIds	= Array();
 					while ($arrServiceId = $selIdsForFNN->Fetch())
@@ -111,7 +111,7 @@ if ($resOutputFile)
 						$resResult	= $qryQuery->Execute($strSQL);
 						if ($resResult === FALSE)
 						{
-							throw new Exception($qryQuery->Error());
+							throw new Exception_Database($qryQuery->Error());
 						}
 						if ($arrLastResponse = $resResult->fetch_assoc())
 						{

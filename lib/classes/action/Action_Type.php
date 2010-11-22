@@ -55,7 +55,7 @@ class Action_Type extends ORM
 			$selAssociations = self::_preparedStatement('selAllowedActionAssociationTypes');
 			if ($selAssociations->Execute(array('ActionTypeId'=>$this->id)) === false)
 			{
-				throw new Exception("Failed to retrieve allowable ActionAssociationTypes, from the data source, for the ActionType: {$this->name} ({$this->id}) - ". $selAssociations->Error());
+				throw new Exception_Database("Failed to retrieve allowable ActionAssociationTypes, from the data source, for the ActionType: {$this->name} ({$this->id}) - ". $selAssociations->Error());
 			}
 	
 			// Build list
@@ -143,7 +143,7 @@ class Action_Type extends ORM
 			$strRemovalQuery = "DELETE FROM action_type_action_association_type WHERE action_type_id = {$this->id} AND action_association_type_id IN (". implode(", ", $arrAATypeIdsToRemove) .");";
 			if ($qryQuery->Execute($strRemovalQuery) === false)
 			{
-				throw new Exception("Failed to remove action_type_action_association_type records - ". $qryQuery->Error() ." - Query: $strRemovalQuery");
+				throw new Exception_Database("Failed to remove action_type_action_association_type records - ". $qryQuery->Error() ." - Query: $strRemovalQuery");
 			}
 		}
 		
@@ -160,7 +160,7 @@ class Action_Type extends ORM
 				
 				if ($insAssociations->Execute($arrRecordToInsert) === false)
 				{
-					throw new Exception("Failed to add record to action_type_action_association_type table - ". $insAssociations->Error());
+					throw new Exception_Database("Failed to add record to action_type_action_association_type table - ". $insAssociations->Error());
 				}
 			}
 		}
@@ -217,7 +217,7 @@ class Action_Type extends ORM
 		$result = $qryQuery->Execute($strQuery);
 		if ($result === false)
 		{
-			throw new Exception("Error checking if the {$this->name} (id: {$this->id}) action type has any actions - ". $qryQuery->Error() ." - Query: $strQuery");
+			throw new Exception_Database("Error checking if the {$this->name} (id: {$this->id}) action type has any actions - ". $qryQuery->Error() ." - Query: $strQuery");
 		}
 		
 		return ($result->num_rows)? true : false;
@@ -324,7 +324,7 @@ class Action_Type extends ORM
 		
 		if ($selActionTypes->Execute($arrWhere) === false)
 		{
-			throw new Exception("Failed to retrieve Action_Types, associated with ActionAssociationType $intActionAssociationTypeId, from the data source: ". $selActionTypes->Error());
+			throw new Exception_Database("Failed to retrieve Action_Types, associated with ActionAssociationType $intActionAssociationTypeId, from the data source: ". $selActionTypes->Error());
 		}
 
 		// Load each Action_Type object (and also cache it)
@@ -360,7 +360,7 @@ class Action_Type extends ORM
 		
 		if ($selActionTypes->Execute() === false)
 		{
-			throw new Exception("Failed to retrieve all Action_Types from the data source: ". $selActionTypes->Error());
+			throw new Exception_Database("Failed to retrieve all Action_Types from the data source: ". $selActionTypes->Error());
 		}
 
 		while ($arrRecord = $selActionTypes->Fetch())
@@ -447,7 +447,7 @@ class Action_Type extends ORM
 		$resByName	= $selByName->Execute(array('name'=>$strName));
 		if ($resByName === false)
 		{
-			throw new Exception($selByName->Error());
+			throw new Exception_Database($selByName->Error());
 		}
 		elseif ($arrActionType = $selByName->Fetch())
 		{

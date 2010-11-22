@@ -18,7 +18,7 @@ class Flex_Rollout_Version_000045 extends Flex_Rollout_Version
 		$strSQL = "ALTER TABLE `Contact` CHANGE `Title` `Title` VARCHAR( 255 );";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to ALTER TABLE ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to ALTER TABLE ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE `Contact` CHANGE `Title` `Title` CHAR( 4 );";
 		
@@ -33,7 +33,7 @@ class Flex_Rollout_Version_000045 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

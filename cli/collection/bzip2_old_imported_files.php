@@ -11,7 +11,7 @@ $mixTotal	= $selFileImport->Execute();
 $intCount	= 0;
 if ($mixTotal === FALSE)
 {
-	throw new Exception($selFileImport->Error());
+	throw new Exception_Database($selFileImport->Error());
 }
 else
 {
@@ -35,7 +35,7 @@ else
 				// Save back to the DB
 				if ($ubiFileImport->Execute($arrFileImport) === FALSE)
 				{
-					throw new Exception($ubiFileImport->Error());
+					throw new Exception_Database($ubiFileImport->Error());
 				}
 				CliEcho(" SUCCESS");
 			}

@@ -221,7 +221,7 @@ class Cli_App_Billing extends Cli
 																							) IS NOT NULL;");
 					if ($oUnarchivedInvoiceRunsResult === false)
 					{
-						throw new Exception($oQuery->Error());
+						throw new Exception_Database($oQuery->Error());
 					}
 					while ($aInvoiceRun = $oQuery->fetch_assoc)
 					{
@@ -332,7 +332,7 @@ class Cli_App_Billing extends Cli
 		{
 			if ($selPaymentTerms->Error())
 			{
-				throw new Exception("DB ERROR: ".$selPaymentTerms->Error());
+				throw new Exception_Database("DB ERROR: ".$selPaymentTerms->Error());
 			}
 			else
 			{
@@ -384,7 +384,7 @@ class Cli_App_Billing extends Cli
 				}
 				elseif ($selInvoiceRunSchedule->Error())
 				{
-					throw new Exception("DB ERROR: ".$selInvoiceRunSchedule->Error());
+					throw new Exception_Database("DB ERROR: ".$selInvoiceRunSchedule->Error());
 				}
 				else
 				{
@@ -548,7 +548,7 @@ class Cli_App_Billing extends Cli
 		$rVerifyMySQLResult	= $oQuery->Execute("SELECT COUNT(Id) AS cdr_count FROM CDR WHERE invoice_run_id = {$iInvoiceRunId}");
 		if ($rVerifyMySQLResult === false)
 		{
-			throw new Exception($oQuery->Error());
+			throw new Exception_Database($oQuery->Error());
 		}
 		$aVerifyMySQL	= $rVerifyMySQLResult->fetch_assoc();
 		
@@ -578,7 +578,7 @@ class Cli_App_Billing extends Cli
 		$oDeleteResult	= $oQuery->Execute("DELETE FROM CDR WHERE invoice_run_id = {$iInvoiceRunId}");
 		if ($oDeleteResult === false)
 		{
-			throw new Exception($oQuery->Error());
+			throw new Exception_Database($oQuery->Error());
 		}
 		
 		// File Cleanup -- BZ2 them for now, manual cleanup later

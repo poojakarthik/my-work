@@ -47,7 +47,7 @@ try
 			/*
 			if ($ubiRecurringCharge->Execute() === FALSE)
 			{
-				throw new Exception($ubiRecurringCharge->Error());
+				throw new Exception_Database($ubiRecurringCharge->Error());
 			}*/
 		}
 	}

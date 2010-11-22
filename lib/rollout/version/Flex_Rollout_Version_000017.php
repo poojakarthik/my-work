@@ -25,7 +25,7 @@ class Flex_Rollout_Version_000017 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate email_notification table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate email_notification table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DELETE FROM email_notification WHERE const_name IN ('EMAIL_NOTIFICATION_TICKETING_SYSTEM', 'EMAIL_NOTIFICATION_TICKETING_SYSTEM_ADMIN_MESSAGE')";
 
@@ -266,7 +266,7 @@ class Flex_Rollout_Version_000017 extends Flex_Rollout_Version
 		{
 			if (!$qryQuery->Execute($strSQL))
 			{
-				throw new Exception(__CLASS__ . " Failed to create $strTable table. " . $qryQuery->Error());
+				throw new Exception_Database(__CLASS__ . " Failed to create $strTable table. " . $qryQuery->Error());
 			}
 			$this->rollbackSQL[] = "DROP TABLE $strTable";
 		}
@@ -335,7 +335,7 @@ class Flex_Rollout_Version_000017 extends Flex_Rollout_Version
 		{
 			if (!$qryQuery->Execute($strSQL))
 			{
-				throw new Exception(__CLASS__ . " Failed to populate $strTable table. " . $qryQuery->Error());
+				throw new Exception_Database(__CLASS__ . " Failed to populate $strTable table. " . $qryQuery->Error());
 			}
 		}
 
@@ -355,7 +355,7 @@ class Flex_Rollout_Version_000017 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . " Failed to create current_service_account view. " . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . " Failed to create current_service_account view. " . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP VIEW current_service_account";
 
@@ -372,7 +372,7 @@ class Flex_Rollout_Version_000017 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . " Failed to create account_services view. " . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . " Failed to create account_services view. " . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP VIEW account_services";
 
@@ -383,7 +383,7 @@ class Flex_Rollout_Version_000017 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . " Failed to alter CustomerGroup table. " . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . " Failed to alter CustomerGroup table. " . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE CustomerGroup DROP flex_url, DROP email_domain";
 
@@ -394,7 +394,7 @@ class Flex_Rollout_Version_000017 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . " Failed to default email_domain in CustomerGroup table. " . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . " Failed to default email_domain in CustomerGroup table. " . $qryQuery->Error());
 		}
 	}
 
@@ -407,7 +407,7 @@ class Flex_Rollout_Version_000017 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

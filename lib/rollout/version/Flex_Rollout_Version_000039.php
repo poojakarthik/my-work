@@ -28,7 +28,7 @@ class Flex_Rollout_Version_000039 extends Flex_Rollout_Version
 					") ENGINE = innodb;";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add data_type Table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add data_type Table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE IF EXISTS data_type;";
 		
@@ -42,7 +42,7 @@ class Flex_Rollout_Version_000039 extends Flex_Rollout_Version
 						(6, 'Array'			, 'String'		, 'DATA_TYPE_ARRAY');";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate data_type Table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate data_type Table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "TRUNCATE TABLE data_type;";
 		
@@ -56,7 +56,7 @@ class Flex_Rollout_Version_000039 extends Flex_Rollout_Version
 					") ENGINE = innodb;";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create billing_charge_module Table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create billing_charge_module Table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE IF EXISTS billing_charge_module;";
 		
@@ -72,7 +72,7 @@ class Flex_Rollout_Version_000039 extends Flex_Rollout_Version
 					") ENGINE = innodb;";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create billing_charge_module_config Table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create billing_charge_module_config Table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE IF EXISTS billing_charge_module_config;";
 	}
@@ -86,7 +86,7 @@ class Flex_Rollout_Version_000039 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

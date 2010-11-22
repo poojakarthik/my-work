@@ -32,7 +32,7 @@ class Flex_Rollout_Version_000032 extends Flex_Rollout_Version
 				) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT = 'Details of credit card payment config for customer groups' ";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create credit_card_payment_config table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create credit_card_payment_config table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE credit_card_payment_config";
 
@@ -51,7 +51,7 @@ class Flex_Rollout_Version_000032 extends Flex_Rollout_Version
 				) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT = 'Details of credit card payments made' ";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create credit_card_payment_history table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create credit_card_payment_history table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE credit_card_payment_history";
 
@@ -74,7 +74,7 @@ class Flex_Rollout_Version_000032 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create credit_card_type table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create credit_card_type table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE credit_card_type";
 
@@ -89,7 +89,7 @@ class Flex_Rollout_Version_000032 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate credit_card_type table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate credit_card_type table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "TRUNCATE TABLE credit_card_type";
 	}
@@ -103,7 +103,7 @@ class Flex_Rollout_Version_000032 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

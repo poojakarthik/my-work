@@ -24,7 +24,7 @@ class Operation_Profile extends ORM_Cached
 			$selSubProfileIds	= self::_preparedStatement('selSubProfileIds');
 			if ($selSubProfileIds->Execute($this->toArray()) === false)
 			{
-				throw new Exception($selSubProfileIds->Error());
+				throw new Exception_Database($selSubProfileIds->Error());
 			}
 			while ($arrSubProfileId = $selSubProfileIds->Fetch())
 			{
@@ -45,7 +45,7 @@ class Operation_Profile extends ORM_Cached
 			$selOperationIds	= self::_preparedStatement('selOperationIds');
 			if ($selOperationIds->Execute($this->toArray()) === false)
 			{
-				throw new Exception($selOperationIds->Error());
+				throw new Exception_Database($selOperationIds->Error());
 			}
 			
 			while ($arrOperationId = $selOperationIds->Fetch())
@@ -73,7 +73,7 @@ class Operation_Profile extends ORM_Cached
 		$selOperationIds	= self::_preparedStatement('selOperationIds');
 		if ($selOperationIds->Execute($this->toArray()) === false)
 		{
-			throw new Exception($selOperationIds->Error());
+			throw new Exception_Database($selOperationIds->Error());
 		}
 		while ($arrOperationId = $selOperationIds->Fetch())
 		{
@@ -99,7 +99,7 @@ class Operation_Profile extends ORM_Cached
 		$selSubProfileIds	= self::_preparedStatement('selSubProfileIds');
 		if ($selSubProfileIds->Execute($this->toArray()) === false)
 		{
-			throw new Exception($selSubProfileIds->Error());
+			throw new Exception_Database($selSubProfileIds->Error());
 		}
 		while ($arrSubProfileId = $selSubProfileIds->Fetch())
 		{

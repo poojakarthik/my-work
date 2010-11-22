@@ -2851,7 +2851,7 @@ function generateInvoicePDF($strXML, $intInvoiceId, $intTargetMedia, $iInvoiceRu
 		/*$resInvoice		= $qryQuery->Execute("SELECT * FROM Invoice WHERE Id = {$intInvoiceId} LIMIT 1");
 		if ($resInvoice === false)
 		{
-			throw new Exception($qryQuery->Error());
+			throw new Exception_Database($qryQuery->Error());
 		}
 		elseif (!($arrInvoice = $resInvoice->fetch_assoc()))
 		{
@@ -3432,7 +3432,7 @@ function EnsureLatestInvoiceRunEventsAreDefined()
 	$mxdReturn = $selInvoiceRun->Execute();
 	if ($mxdReturn === FALSE)
 	{
-		throw new Exception("Failed to find latest invoice run: " . $selInvoiceRun->Error());
+		throw new Exception_Database("Failed to find latest invoice run: " . $selInvoiceRun->Error());
 	}
 
 	$invoiceRuns = $selInvoiceRun->FetchAll();
@@ -3459,7 +3459,7 @@ function EnsureLatestInvoiceRunEventsAreDefined()
 		$mxdReturn = $selInvoiceActions->Execute();
 		if ($mxdReturn === FALSE)
 		{
-			throw new Exception("Failed to load the automatic invoice actions: " . $selInvoiceActions->Error());
+			throw new Exception_Database("Failed to load the automatic invoice actions: " . $selInvoiceActions->Error());
 		}
 		$arrColumns = array('automatic_invoice_action_id' => 0, 'invoice_run_id' => $invoiceRunId);
 		$insEvent  = new StatementInsert('automatic_invoice_run_event', $arrColumns);
@@ -3469,7 +3469,7 @@ function EnsureLatestInvoiceRunEventsAreDefined()
 			$mxdReturn = $insEvent->Execute($arrColumns);
 			if ($mxdReturn === FALSE)
 			{
-				throw new Exception("Failed to create invoice run ($invoiceRunId) event ($invoiceAction): " . $insEvent->Error());
+				throw new Exception_Database("Failed to create invoice run ($invoiceRunId) event ($invoiceAction): " . $insEvent->Error());
 			}
 		}
 	}
@@ -3968,7 +3968,7 @@ function ListInvoiceRunsForAutomaticInvoiceActionAndDate($intAutomaticInvoiceAct
 	$mxdReturn = $selInvoiceRuns->Execute();
 	if ($mxdReturn === FALSE)
 	{
-		throw new Exception('Failed to find relevant invoice runs: ' . $selInvoiceRuns->Error());
+		throw new Exception_Database('Failed to find relevant invoice runs: ' . $selInvoiceRuns->Error());
 	}
 	$arrInvoiceRuns = $selInvoiceRuns->FetchAll();
 	foreach($arrInvoiceRuns as $i => $invoiceRun)
@@ -4212,7 +4212,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	if (($id = $insPaymentTerms->Execute($arrPaymentTerms)) === FALSE)
 	{
 		TransactionRollback();
-		throw new Exception('Failed to create default payment terms for customer group ' . $customerGroupId . ': ' . $insPaymentTerms->Error());
+		throw new Exception_Database('Failed to create default payment terms for customer group ' . $customerGroupId . ': ' . $insPaymentTerms->Error());
 	}
 
 	// Create the default automatic_invoice_action_config entries
@@ -4224,7 +4224,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	if (($result = $selAutoInvActions->Execute()) === FALSE)
 	{
 		TransactionRollback();
-		throw new Exception('Failed to load default automatic invoice action configurations: ' . $selAutoInvActions->Error());
+		throw new Exception_Database('Failed to load default automatic invoice action configurations: ' . $selAutoInvActions->Error());
 	}
 	$automaticInvoiceActions = $selAutoInvActions->FetchAll();
 
@@ -4239,7 +4239,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 		if (($result = $insAutoInvAction->Execute($automaticInvoiceAction)) === FALSE)
 		{
 			TransactionRollback();
-			throw new Exception('Failed to create default automatic invoice action configuration ' . $automaticInvoiceAction['automatic_invoice_action_id'] . ' for customer group ' . $customerGroupId . ': ' . $selAutoInvActions->Error());
+			throw new Exception_Database('Failed to create default automatic invoice action configuration ' . $automaticInvoiceAction['automatic_invoice_action_id'] . ' for customer group ' . $customerGroupId . ': ' . $selAutoInvActions->Error());
 		}
 	}
 
@@ -5352,7 +5352,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 				$mxdResult = $insProvisioningRequest->Execute($arrColumns);
 				if ($mxdResult === FALSE)
 				{
-					throw new Exception('Failed to create provisioning request for barring service ' . $arrDetails['FNN'] . '(' . $intServiceId . '): ' . $insProvisioningRequest->Error());
+					throw new Exception_Database('Failed to create provisioning request for barring service ' . $arrDetails['FNN'] . '(' . $intServiceId . '): ' . $insProvisioningRequest->Error());
 				}
 
 				// Add a note to the service
@@ -5423,7 +5423,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 				$mxdResult = $insProvisioningRequest->Execute($arrColumns);
 				if ($mxdResult === FALSE)
 				{
-					throw new Exception('Failed to create provisioning request for unbarring service ' . $arrDetails['FNN'] . '(' . $intServiceId . '): ' . $insProvisioningRequest->Error());
+					throw new Exception_Database('Failed to create provisioning request for unbarring service ' . $arrDetails['FNN'] . '(' . $intServiceId . '): ' . $insProvisioningRequest->Error());
 				}
 
 				// Add a note to the service
@@ -5465,7 +5465,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 		$selQuery = new StatementSelect('Account', array('automatic_barring_status' => 'automatic_barring_status'), 'Id=<Id>');
 		if (!$outcome = $selQuery->Execute(array('Id' => $intAccount)))
 		{
-			throw new Exception('Failed to retreive current automatic barring status for account $intAccount. ' .  $qryQuery->Error());
+			throw new Exception_Database('Failed to retreive current automatic barring status for account $intAccount. ' .  $qryQuery->Error());
 		}
 		$arrFrom =  $selQuery->Fetch();
 		$intFrom = intval($arrFrom['automatic_barring_status']);
@@ -5600,7 +5600,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	$mxdReturn = $selServices->Execute();
 	if ($mxdReturn === FALSE)
 	{
-		throw new Exception("Failed to list services for account $accountId: " . $qryQuery->Error());
+		throw new Exception_Database("Failed to list services for account $accountId: " . $qryQuery->Error());
 	}
 	return $selServices->FetchAll();
 	}
@@ -5648,7 +5648,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 		$mxdReturn = $selCarriers->Execute();
 		if ($mxdReturn === FALSE)
 		{
-			throw new Exception("Failed to list carriers for services $strServiceIds: " . $qryQuery->Error());
+			throw new Exception_Database("Failed to list carriers for services $strServiceIds: " . $qryQuery->Error());
 		}
 		$arrCarriers = $selCarriers->FetchAll();
 		foreach($arrCarriers as $carrier)
@@ -5698,7 +5698,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 			$mxdResult = $selCarriers->Execute();
 			if ($mxdResult === FALSE)
 			{
-				throw new Exception("Failed to load automatable carriers for provisioning type $intProvisioningTypeConstant (inbound: $bolInbound, outbound: $bolOutbound): " . $qryQuery->Error());
+				throw new Exception_Database("Failed to load automatable carriers for provisioning type $intProvisioningTypeConstant (inbound: $bolInbound, outbound: $bolOutbound): " . $qryQuery->Error());
 			}
 			$arrResults = $selCarriers->FetchAll();
 			foreach($arrResults as $arrCarrier)
@@ -5738,7 +5738,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 		if ($selFlexModule->Execute(Array('Name' => $strModuleName)) === FALSE)
 		{
 			// DB Error
-			throw new Exception("DB ERROR: ".$selFlexModule->Error());
+			throw new Exception_Database("DB ERROR: ".$selFlexModule->Error());
 		}
 		elseif ($arrModule = $selFlexModule->Fetch())
 		{

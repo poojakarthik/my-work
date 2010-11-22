@@ -32,7 +32,7 @@ class Flex_Rollout_Version_000002 extends Flex_Rollout_Version
 
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to alter Service table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to alter Service table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE Service DROP NatureOfCreation, DROP NatureOfClosure, DROP LastOwner, DROP NextOwner";
 
@@ -45,7 +45,7 @@ class Flex_Rollout_Version_000002 extends Flex_Rollout_Version
 		
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . " Failed to update the ClosedOn value of the Service table, for services with time component of ClosedOn == \"00:00:00\". " . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . " Failed to update the ClosedOn value of the Service table, for services with time component of ClosedOn == \"00:00:00\". " . $qryQuery->Error());
 		}
 
 		// Add the default_rate_plan table
@@ -60,7 +60,7 @@ class Flex_Rollout_Version_000002 extends Flex_Rollout_Version
 		
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create the default_rate_plan table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create the default_rate_plan table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE default_rate_plan";
 		
@@ -75,7 +75,7 @@ class Flex_Rollout_Version_000002 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

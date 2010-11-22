@@ -22,7 +22,7 @@ foreach ($arrConvertStatus as $intNewStatus=>$arrOldStatuses)
 	{
 		if ($updFileImportStatus->Execute(Array('NewStatus' => $intNewStatus), Array('OldStatus' => $intOldStatus)) === FALSE)
 		{
-			throw new Exception($updFileImportStatus->Error());
+			throw new Exception_Database($updFileImportStatus->Error());
 		}
 		else
 		{

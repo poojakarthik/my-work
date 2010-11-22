@@ -33,7 +33,7 @@ class Resource_Type extends ORM_Cached
 		$resResult	= $qryQuery->Execute($strSQL);
 		if ($resResult === false)
 		{
-			throw new Exception($qryQuery->Error());
+			throw new Exception_Database($qryQuery->Error());
 		}
 		else
 		{

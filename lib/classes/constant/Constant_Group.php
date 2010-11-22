@@ -228,7 +228,7 @@ class Constant_Group
 				$result	= $ds->Execute($strLoadSQL);
 				if ($result === false)
 				{
-					throw new Exception($ds->Error());
+					throw new Exception_Database($ds->Error());
 				}
 				$mixRecordSet = array();
 				

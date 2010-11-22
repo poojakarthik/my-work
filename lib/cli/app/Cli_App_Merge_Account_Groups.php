@@ -70,7 +70,7 @@ class Cli_App_Merge_Account_Groups extends Cli
 			// Check that both AccountGroups exist
 			if (($objRecordSet = $qryQuery->Execute("SELECT COUNT(Id) AS NumOfAccountGroups FROM AccountGroup WHERE Id IN ($intReceivingAccountGroup, $intDeprecatedAccountGroup)")) === FALSE)
 			{
-				throw new Exception("Could not verify that both AccountGroups exist. ". $qryQuery->Error());
+				throw new Exception_Database("Could not verify that both AccountGroups exist. ". $qryQuery->Error());
 			}
 			$arrResult = $objRecordSet->fetch_assoc();
 			if ($arrResult['NumOfAccountGroups'] != 2)
@@ -81,7 +81,7 @@ class Cli_App_Merge_Account_Groups extends Cli
 			// Check that all the accounts belonging to the deprecatedAccountGroup are of the same CustomerGroup as all the Accounts belonging to the RecievingAccountGroup
 			if (($objRecordSet = $qryQuery->Execute("SELECT COUNT(DISTINCT CustomerGroup) AS NumOfCustomerGroups FROM Account WHERE AccountGroup IN ($intReceivingAccountGroup, $intDeprecatedAccountGroup)")) === FALSE)
 			{
-				throw new Exception("Could not verify that all Accounts, belonging to the deprecated AccountGroup, are in the same CustomerGroup as the receiving AccountGroup. ". $qryQuery->Error());
+				throw new Exception_Database("Could not verify that all Accounts, belonging to the deprecated AccountGroup, are in the same CustomerGroup as the receiving AccountGroup. ". $qryQuery->Error());
 			}
 			$arrResult = $objRecordSet->fetch_assoc();
 			if ($arrResult['NumOfCustomerGroups'] > 1)
@@ -139,7 +139,7 @@ class Cli_App_Merge_Account_Groups extends Cli
 				if (($objRecordSet = $qryQuery->Execute($strRecordsToUpdateQuery)) === FALSE)
 				{
 					// Something broke
-					throw new Exception("Error occurred when executing query: $strRecordsToUpdateQuery - " . $qryQuery->Error());
+					throw new Exception_Database("Error occurred when executing query: $strRecordsToUpdateQuery - " . $qryQuery->Error());
 				}
 				
 				while ($arrRecord = $objRecordSet->fetch_assoc())
@@ -158,7 +158,7 @@ class Cli_App_Merge_Account_Groups extends Cli
 					if ($qryQuery->Execute($strUpdateQuery) === FALSE)
 					{
 						// Something broke
-						throw new Exception("Error occurred when executing query: $strUpdateQuery - " . $qryQuery->Error());
+						throw new Exception_Database("Error occurred when executing query: $strUpdateQuery - " . $qryQuery->Error());
 					}
 					$intActualAffectedRowCount = $qryQuery->AffectedRows();
 				}

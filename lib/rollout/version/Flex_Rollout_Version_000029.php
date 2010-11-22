@@ -33,7 +33,7 @@ class Flex_Rollout_Version_000029 extends Flex_Rollout_Version
 					"ADD direct_debit_minimum DECIMAL(4, 2) NOT NULL COMMENT 'Minimum Debt in order to be Direct Debited';";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add payment_terms.direct_debit_days and direct_debit_minimum Fields. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add payment_terms.direct_debit_days and direct_debit_minimum Fields. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE payment_terms DROP direct_debit_days, DROP direct_debit_minimum;";
 		
@@ -43,7 +43,7 @@ class Flex_Rollout_Version_000029 extends Flex_Rollout_Version
 					"direct_debit_minimum	= 5.00;";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate payment_terms.direct_debit_days and direct_debit_minimum Fields. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate payment_terms.direct_debit_days and direct_debit_minimum Fields. ' . $qryQuery->Error());
 		}
 		
 		//	3:	Add Direct Debit record to automatic_invoice_action
@@ -51,7 +51,7 @@ class Flex_Rollout_Version_000029 extends Flex_Rollout_Version
 					"(NULL, 'Direct Debit', 'Direct Debit applied', 'AUTOMATIC_INVOICE_ACTION_DIRECT_DEBIT', 16, 1, 0);";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add Direct Debit record to automatic_invoice_action. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add Direct Debit record to automatic_invoice_action. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DELETE FROM automatic_invoice_action WHERE const_name = 'AUTOMATIC_INVOICE_ACTION_DIRECT_DEBIT';";
 		
@@ -65,7 +65,7 @@ class Flex_Rollout_Version_000029 extends Flex_Rollout_Version
 					") ENGINE = innodb;";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create resource_type_nature Table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create resource_type_nature Table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE resource_type_nature;";
 		
@@ -77,7 +77,7 @@ class Flex_Rollout_Version_000029 extends Flex_Rollout_Version
 					"(NULL, 'SOAP'				, 'SOAP Interface'	, 'RESOURCE_TYPE_NATURE_SOAP'); ";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate resource_type_nature Table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate resource_type_nature Table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "TRUNCATE TABLE resource_type_nature;";
 		
@@ -92,7 +92,7 @@ class Flex_Rollout_Version_000029 extends Flex_Rollout_Version
 					") ENGINE = innodb;";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create resource_type Table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create resource_type Table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE resource_type;";
 		
@@ -151,7 +151,7 @@ class Flex_Rollout_Version_000029 extends Flex_Rollout_Version
 					(10004	, 'Local Path'							, 'Local Path'							, 'RESOURCE_TYPE_FILE_RESOURCE_LOCAL'									, (SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_FILE_REPOSITORY'));";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate resource_type Table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate resource_type Table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "TRUNCATE TABLE resource_type;";
 		
@@ -165,7 +165,7 @@ class Flex_Rollout_Version_000029 extends Flex_Rollout_Version
 					") ENGINE = innodb;";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create carrier_module_type Table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create carrier_module_type Table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE carrier_module_type;";
 		
@@ -179,7 +179,7 @@ class Flex_Rollout_Version_000029 extends Flex_Rollout_Version
 					(505, 'Direct Debit Requests'	, 'Direct Debit Requests'	, 'MODULE_TYPE_PAYMENT_DIRECT_DEBIT');";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate carrier_module_type Table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate carrier_module_type Table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "TRUNCATE TABLE carrier_module_type;";
 		
@@ -187,7 +187,7 @@ class Flex_Rollout_Version_000029 extends Flex_Rollout_Version
 		$strSQL = "DELETE FROM ConfigConstant WHERE ConstantGroup = (SELECT Id FROM ConfigConstantGroup WHERE Name = 'ModuleType');";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to remove the ModuleType ConfigConstantGroup. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to remove the ModuleType ConfigConstantGroup. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "INSERT INTO `ConfigConstant` (`Id`, `ConstantGroup`, `Name`, `Description`, `Value`, `Type`, `Editable`, `Deletable`) VALUES
 								(NULL, (SELECT Id FROM ConfigConstantGroup WHERE Name = 'ModuleType'), 'MODULE_TYPE_PROVISIONING_INPUT', 'Provisioning (Incoming)', '500', 2, 0, 0),
@@ -200,7 +200,7 @@ class Flex_Rollout_Version_000029 extends Flex_Rollout_Version
 		$strSQL = "DELETE FROM ConfigConstantGroup WHERE Name = 'ModuleType';";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to remove the ModuleType ConfigConstantGroup. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to remove the ModuleType ConfigConstantGroup. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "INSERT INTO ConfigConstantGroup (Id, Name, Description, Type, Special, Extendable) VALUES (NULL, 'ModuleType', 'The various types of modules for Flex (eg. Provisioning Input/Output, Normalisation, Collection)', 2, 1, 1);";
 		
@@ -209,7 +209,7 @@ class Flex_Rollout_Version_000029 extends Flex_Rollout_Version
 					"ADD customer_group BIGINT(20) NULL COMMENT 'The Customer Group that this Module is associated with.  NULL: All CustomerGroups' AFTER Carrier;";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add CarrierModule.customer_group and Field. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add CarrierModule.customer_group and Field. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE CarrierModule DROP customer_group;";
 		
@@ -218,7 +218,7 @@ class Flex_Rollout_Version_000029 extends Flex_Rollout_Version
 					"(NULL, 'Direct Debit Report', 'Email listing Accounts that are being Direct Debited with output files attached', 'EMAIL_NOTIFICATION_DIRECT_DEBIT_REPORT', 0);";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add Direct Debit Report details to email_notification. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add Direct Debit Report details to email_notification. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DELETE FROM email_notification WHERE const_name = 'EMAIL_NOTIFICATION_DIRECT_DEBIT_REPORT';";
 		
@@ -233,7 +233,7 @@ class Flex_Rollout_Version_000029 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

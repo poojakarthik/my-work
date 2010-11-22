@@ -64,7 +64,7 @@ class Action_TypeDetailRequirement extends ORM
 			
 			if (($arrRecordSet = $selAction_TypeDetailRequirements->Execute()) === FALSE)
 			{
-				throw new Exception("Failed to retrieve all Action_TypeDetailRequirements from the data source: ". $selAction_TypeDetailRequirements->Error());
+				throw new Exception_Database("Failed to retrieve all Action_TypeDetailRequirements from the data source: ". $selAction_TypeDetailRequirements->Error());
 			}
 	
 			while ($arrRecord = $selAction_TypeDetailRequirements->Fetch())

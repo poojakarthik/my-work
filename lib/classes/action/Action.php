@@ -123,7 +123,7 @@ class Action extends ORM
 		$arrWhere	= array('action_id' => $this->id);
 		if ($selAssoc->Execute($arrWhere) === false)
 		{
-			throw new Exception("Failed to retrieve ". GetConstantDescription($intActionAssociationType, "action_association_type") ." objects associated with action: {$this->id}, from the data source: ". $selAssoc->Error());
+			throw new Exception_Database("Failed to retrieve ". GetConstantDescription($intActionAssociationType, "action_association_type") ." objects associated with action: {$this->id}, from the data source: ". $selAssoc->Error());
 		}
 
 		// Convert the retrieved recordset into an indexed array of ids relating to the objects requested
@@ -190,7 +190,7 @@ class Action extends ORM
 									);
 		if ($insAssoc->Execute($arrRecordToInsert) === false)
 		{
-			throw new Exception("Failed to associate action (id: {$this->id}) with ". GetConstantDescription($intActionAssociationType, "action_association_type") ." (id: $intObjectId) - ". $insAssoc->Error());
+			throw new Exception_Database("Failed to associate action (id: {$this->id}) with ". GetConstantDescription($intActionAssociationType, "action_association_type") ." (id: $intObjectId) - ". $insAssoc->Error());
 		}
 	}
 

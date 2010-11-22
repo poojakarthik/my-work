@@ -30,7 +30,7 @@ class Account
 			}
 			elseif ($selById->Error())
 			{
-				throw new Exception("DB ERROR: ".$selById->Error());
+				throw new Exception_Database("DB ERROR: ".$selById->Error());
 			}
 			else
 			{
@@ -112,7 +112,7 @@ ORDER BY FNN;";
 		$objRecordSet = $qryQuery->Execute($strQuery);
 		if (!$objRecordSet)
 		{
-			throw new Exception("Failed to retrieve services for Account: {$this->id} - " . $qryQuery->Error() ." - Query: $strQuery");
+			throw new Exception_Database("Failed to retrieve services for Account: {$this->id} - " . $qryQuery->Error() ." - Query: $strQuery");
 		}
 
 		$arrServices = array();
@@ -139,7 +139,7 @@ ORDER BY FNN;";
 		$objRecordSet = $qryQuery->Execute($strQuery);
 		if (!$objRecordSet)
 		{
-			throw new Exception("Failed to retrieve services for Account: {$this->id} - " . $qryQuery->Error() ." - Query: $strQuery");
+			throw new Exception_Database("Failed to retrieve services for Account: {$this->id} - " . $qryQuery->Error() ." - Query: $strQuery");
 		}
 
 		$arrServices = array();
@@ -177,7 +177,7 @@ ORDER BY FNN;";
 		$objRecordSet = $qryQuery->Execute($strQuery);
 		if (!$objRecordSet)
 		{
-			throw new Exception("Failed to retrieve contacts for account: {$this->id} - " . $qryQuery->Error());
+			throw new Exception_Database("Failed to retrieve contacts for account: {$this->id} - " . $qryQuery->Error());
 		}
 
 		$arrContacts = array();
@@ -232,7 +232,7 @@ ORDER BY FNN;";
 		if (($paymentId = $insPayment->Execute($arrPayment)) === FALSE)
 		{
 			// Eak!!
-			throw new Exception('Failed to create payment record: ' . $insPayment->Error());
+			throw new Exception_Database('Failed to create payment record: ' . $insPayment->Error());
 		}
 
 		if ($paymentType == PAYMENT_TYPE_CREDIT_CARD)
@@ -243,14 +243,14 @@ ORDER BY FNN;";
 			if (($id = $insCharge->Execute($arrCharge)) === FALSE)
 			{
 				// Eak!!
-				throw new Exception('Failed to create payment charge: ' . $insCharge->Error());
+				throw new Exception_Database('Failed to create payment charge: ' . $insCharge->Error());
 			}
 
 			$insCreditCardHistory = new StatementInsert('credit_card_payment_history');
 			if (($id = $insCreditCardHistory->Execute($arrCCH)) === FALSE)
 			{
 				// Eak!!
-				throw new Exception('Failed to create credit card payment history: ' . $insCreditCardHistory->Error());
+				throw new Exception_Database('Failed to create credit card payment history: ' . $insCreditCardHistory->Error());
 			}
 		}
 	}
@@ -323,7 +323,7 @@ ORDER BY FNN;";
 		}
 		elseif ($selInvoiceRun->Error())
 		{
-			throw new Exception("DB ERROR: ".$selInvoiceRun->Error());
+			throw new Exception_Database("DB ERROR: ".$selInvoiceRun->Error());
 		}
 		elseif ($selPaymentTerms->Execute(Array('customer_group_id' => $this->CustomerGroup)))
 		{
@@ -340,7 +340,7 @@ ORDER BY FNN;";
 		}
 		elseif ($selPaymentTerms->Error())
 		{
-			throw new Exception("DB ERROR: ".$selPaymentTerms->Error());
+			throw new Exception_Database("DB ERROR: ".$selPaymentTerms->Error());
 		}
 		else
 		{
@@ -356,7 +356,7 @@ ORDER BY FNN;";
 			$where);
 		if (($outcome = $selUsers->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception("Failed to check for existing account: " . $selUsers->Error());
+			throw new Exception_Database("Failed to check for existing account: " . $selUsers->Error());
 		}
 		if (!$outcome && !$bolAsArray)
 		{
@@ -425,7 +425,7 @@ ORDER BY FNN;";
 			$ubiSelf	= self::_preparedStatement("ubiSelf");
 			if ($ubiSelf->Execute($this->toArray()) === FALSE)
 			{
-				throw new Exception("DB ERROR: ".$ubiSelf->Error());
+				throw new Exception_Database("DB ERROR: ".$ubiSelf->Error());
 			}
 		}
 		else
@@ -435,7 +435,7 @@ ORDER BY FNN;";
 			$mixResult	= $insSelf->Execute($this->toArray());
 			if ($mixResult === FALSE)
 			{
-				throw new Exception("DB ERROR: ".$insSelf->Error());
+				throw new Exception_Database("DB ERROR: ".$insSelf->Error());
 			}
 			if (is_int($mixResult))
 			{
@@ -443,7 +443,7 @@ ORDER BY FNN;";
 			}
 			else
 			{
-				throw new Exception('Failed to save account details: ' . $statement->Error());
+				throw new Exception_Database('Failed to save account details: ' . $statement->Error());
 			}
 		}
 		
@@ -552,7 +552,7 @@ ORDER BY FNN;";
 														)");
 		if ($mResult === false)
 		{
-			throw new Exception($oQuery->Error());
+			throw new Exception_Database($oQuery->Error());
 		}
 		else
 		{
@@ -645,7 +645,7 @@ ORDER BY FNN;";
 														);");
 		if ($mResult === false)
 		{
-			throw new Exception($oQuery->Error());
+			throw new Exception_Database($oQuery->Error());
 		}
 		else
 		{

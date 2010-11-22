@@ -24,7 +24,7 @@ class Flex_Rollout_Version_000009 extends Flex_Rollout_Version
 
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to insert the "Pending Activation" record into the account_status table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to insert the "Pending Activation" record into the account_status table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DELETE FROM account_status WHERE id = 5";
 
@@ -35,7 +35,7 @@ class Flex_Rollout_Version_000009 extends Flex_Rollout_Version
 		
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add the const_name field to the account_status table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add the const_name field to the account_status table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE `account_status` DROP `const_name`";
 
@@ -46,7 +46,7 @@ class Flex_Rollout_Version_000009 extends Flex_Rollout_Version
 		
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add the const_name field to the provisioning_type table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add the const_name field to the provisioning_type table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE `provisioning_type` DROP `const_name`";
 
@@ -65,7 +65,7 @@ class Flex_Rollout_Version_000009 extends Flex_Rollout_Version
 			$strUpdate = "UPDATE account_status SET const_name = '{$arrConstant['const_name']}', description = '{$arrConstant['description']}' WHERE id = $intId;";
 			if (!$qryQuery->Execute($strUpdate))
 			{
-				throw new Exception(__CLASS__ . " Failed to set the const_name ({$arrConstant['const_name']}) and the description '{$arrConstant['description']}' for the account_status record with id = $intId. " . $qryQuery->Error());
+				throw new Exception_Database(__CLASS__ . " Failed to set the const_name ({$arrConstant['const_name']}) and the description '{$arrConstant['description']}' for the account_status record with id = $intId. " . $qryQuery->Error());
 			}
 		}
 	}
@@ -79,7 +79,7 @@ class Flex_Rollout_Version_000009 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

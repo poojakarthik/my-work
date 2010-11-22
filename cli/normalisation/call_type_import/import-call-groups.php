@@ -59,7 +59,7 @@ try
 			// Verify that there isn't already a translation for this Carrier/CarrierCode pair
 			if ($oMatchTranslation->Execute($aInsertColumns) === false)
 			{
-				throw new Exception("Unable to check [".implode('.', $aInsertColumns)."]! (".$oMatchTranslation->Error().")");
+				throw new Exception_Database("Unable to check [".implode('.', $aInsertColumns)."]! (".$oMatchTranslation->Error().")");
 			}
 			elseif ($aMatchedTranslation = $oMatchTranslation->Fetch())
 			{
@@ -78,7 +78,7 @@ try
 			// Insert Translation
 			if ($oInsertTranslation->Execute($aInsertColumns) === false)
 			{
-				throw new Exception("Unable to insert [".implode('.', $aInsertColumns)."]! (".$oInsertTranslation->Error().")");
+				throw new Exception_Database("Unable to insert [".implode('.', $aInsertColumns)."]! (".$oInsertTranslation->Error().")");
 			}
 			$iImported++;
 		}

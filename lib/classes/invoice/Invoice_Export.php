@@ -42,7 +42,7 @@ class Invoice_Export
 		$selOldInvoice	= new StatementSelect("Invoice", "*", "Account = <Account> AND CreatedOn < <CreatedOn>", "CreatedOn DESC", "$intPeriodsAgo, 1");
 		if ($selOldInvoice->Execute($arrInvoice) === FALSE)
 		{
-			throw new Exception($selOldInvoice->Error());
+			throw new Exception_Database($selOldInvoice->Error());
 		}
 		
 		// Return data or empty array
@@ -78,7 +78,7 @@ class Invoice_Export
 		$selCustomerData	= self::_preparedStatement('selCustomerData');
 		if ($selCustomerData->Execute($arrInvoice) === FALSE)
 		{
-			throw new Exception($selCustomerData->Error());
+			throw new Exception_Database($selCustomerData->Error());
 		}
 		
 		// Return data or empty array
@@ -114,7 +114,7 @@ class Invoice_Export
 		$selAccountFNNs	= self::_preparedStatement('selAccountFNNs');
 		if ($selAccountFNNs->Execute($arrInvoice) === FALSE)
 		{
-			throw new Exception($selAccountFNNs->Error());
+			throw new Exception_Database($selAccountFNNs->Error());
 		}
 		$arrAccountFNNs	= $selAccountFNNs->FetchAll();
 		
@@ -130,7 +130,7 @@ class Invoice_Export
 			$arrService['invoice_run_id']	= $arrInvoice['invoice_run_id'];
 			if ($selServiceDetails->Execute($arrService) === FALSE)
 			{
-				throw new Exception($selServiceDetails->Error());
+				throw new Exception_Database($selServiceDetails->Error());
 			}
 			else
 			{
@@ -146,7 +146,7 @@ class Invoice_Export
 				$arrWhere = Array();
 				if ($selServiceInstances->Execute($arrService) === FALSE)
 				{
-					throw new Exception($selServiceInstances->Error());
+					throw new Exception_Database($selServiceInstances->Error());
 				}
 				else
 				{
@@ -350,7 +350,7 @@ class Invoice_Export
 		$aAdjustmentItemisation		= array();
 		if ($selAccountAdjustments->Execute($aInvoice) === FALSE)
 		{
-			throw new Exception($selAccountAdjustments->Error());
+			throw new Exception_Database($selAccountAdjustments->Error());
 		}
 		else
 		{
@@ -403,7 +403,7 @@ class Invoice_Export
 		$aChargeItemisation	= array();
 		if ($selAccountCharges->Execute($arrInvoice) === FALSE)
 		{
-			throw new Exception($selAccountCharges->Error());
+			throw new Exception_Database($selAccountCharges->Error());
 		}
 		else
 		{
@@ -460,7 +460,7 @@ class Invoice_Export
 		$selAccountSummary	= self::_preparedStatement('selAccountSummary');
 		if ($selAccountSummary->Execute($arrInvoice) === FALSE)
 		{
-			throw new Exception($selAccountSummary->Error());
+			throw new Exception_Database($selAccountSummary->Error());
 		}
 		else
 		{
@@ -477,7 +477,7 @@ class Invoice_Export
 			$selAccountSummaryCharges	= self::_preparedStatement('selAccountSummaryCharges');
 			if (($mixResult = $selAccountSummaryCharges->Execute($arrInvoice)) === FALSE)
 			{
-				throw new Exception($selAccountSummaryCharges->Error());
+				throw new Exception_Database($selAccountSummaryCharges->Error());
 			}
 			elseif ($mixResult)
 			{
@@ -498,7 +498,7 @@ class Invoice_Export
 			$selPlanChargeSummary	= self::_preparedStatement('selPlanChargeSummary');
 			if ($selPlanChargeSummary->Execute($arrInvoice) === FALSE)
 			{
-				throw new Exception($selPlanChargeSummary->Error());
+				throw new Exception_Database($selPlanChargeSummary->Error());
 			}
 			$arrAccountSummary['Plan Charges']['Itemisation']	= array();
 			while ($arrPlanChargeSummary = $selPlanChargeSummary->Fetch())
@@ -526,7 +526,7 @@ class Invoice_Export
 			$selPlanChargeSummary	= self::_preparedStatement('selPlanUsageSummary');
 			if ($selPlanChargeSummary->Execute($arrInvoice) === FALSE)
 			{
-				throw new Exception($selPlanChargeSummary->Error());
+				throw new Exception_Database($selPlanChargeSummary->Error());
 			}
 			$arrAccountSummary['Plan Usage']['Itemisation']	= array();
 			while ($arrPlanChargeSummary = $selPlanChargeSummary->Fetch())
@@ -967,7 +967,7 @@ class Invoice_Export
  		// Execute and return data
  		if ($arrPreparedStatements[$strStatement][$intCount]->Execute($arrParams) === FALSE)
  		{
- 			throw new Exception($arrPreparedStatements[$strStatement][$intCount]->Error());
+ 			throw new Exception_Database($arrPreparedStatements[$strStatement][$intCount]->Error());
  		}
  		else
  		{

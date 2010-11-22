@@ -74,7 +74,7 @@ class Document_Content extends ORM
 			$resLookup		= $qryQuery->Execute($strLookupSQL);
 			if ($resLookup === false)
 			{
-				throw new Exception($qryQuery->Error());
+				throw new Exception_Database($qryQuery->Error());
 			}
 			elseif ($arrLookup = $resLookup->fetch_assoc())
 			{

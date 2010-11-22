@@ -622,7 +622,7 @@ class Credit_Card_Payment
 				);
 				if (($intCreditCardId = $insCreditCard->Execute($arrValues)) === FALSE)
 				{
-					throw new Exception('Failed to store details for direct debit: ' . $insCreditCard->Error());
+					throw new Exception_Database('Failed to store details for direct debit: ' . $insCreditCard->Error());
 				}
 				$account->creditCard = $intCreditCardId;
 				$account->billingType = BILLING_TYPE_CREDIT_CARD;

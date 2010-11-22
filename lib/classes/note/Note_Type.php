@@ -54,7 +54,7 @@ class Note_Type extends ORM
 			
 			if (($arrRecordSet = $selNote_Types->Execute()) === FALSE)
 			{
-				throw new Exception("Failed to retrieve all Note_Types from the data source: ". $selNote_Types->Error());
+				throw new Exception_Database("Failed to retrieve all Note_Types from the data source: ". $selNote_Types->Error());
 			}
 	
 			while ($arrRecord = $selNote_Types->Fetch())

@@ -43,7 +43,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				$rLastInvoiceType	= $qryQuery->Execute("SELECT ir.Id, ir.BillingDate, ir.invoice_run_type_id FROM Invoice i JOIN InvoiceRun ir ON (i.invoice_run_id = ir.Id) WHERE i.Account = {$objAccount->Id} AND i.Status != ".INVOICE_TEMP." ORDER BY BillingDate DESC");
 				if ($rLastInvoiceType === false)
 				{
-					throw new Exception($qryQuery->Error());
+					throw new Exception_Database($qryQuery->Error());
 				}
 				$aLastInvoiceType	= $rLastInvoiceType->fetch_assoc();
 				if ($aLastInvoiceType && in_array($aLastInvoiceType['invoice_run_type_id'], array(INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL, INVOICE_RUN_TYPE_INTERIM_FIRST)))
@@ -74,7 +74,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 																"LIMIT 1");
 				if ($resInterimInvoiceRuns === false)
 				{
-					throw new Exception($qryQuery->Error());
+					throw new Exception_Database($qryQuery->Error());
 				}
 				if ($arrInterimInvoiceRun = $resInterimInvoiceRuns->fetch_assoc())
 				{
@@ -98,7 +98,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 																"GROUP BY Charge.Nature");
 				if ($resChargeTotals === false)
 				{
-					throw new Exception($qryQuery->Error());
+					throw new Exception_Database($qryQuery->Error());
 				}
 				while ($arrChargeTotal = $resChargeTotals->fetch_assoc())
 				{
@@ -123,7 +123,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 														"GROUP BY Credit");
 				if ($resCDRTotals === false)
 				{
-					throw new Exception($qryQuery->Error());
+					throw new Exception_Database($qryQuery->Error());
 				}
 				while ($arrCDRTotal = $resCDRTotals->fetch_assoc())
 				{
@@ -135,7 +135,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				$resInvoiceCDRCredits	= $qryQuery->Execute("SELECT invoice_cdr_credits FROM CustomerGroup WHERE Id = {$objAccount->CustomerGroup}");
 				if ($resInvoiceCDRCredits === false)
 				{
-					throw new Exception($qryQuery->Error());
+					throw new Exception_Database($qryQuery->Error());
 				}
 				$arrInvoiceCDRCredits	= $resInvoiceCDRCredits->fetch_assoc();
 				
@@ -240,7 +240,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				$resInvoice	= $qryQuery->Execute("SELECT * FROM Invoice WHERE Account = {$objAccount->Id} AND invoice_run_id = {$objInvoiceRun->Id} LIMIT 1");
 				if ($resInvoice === false)
 				{
-					throw new Exception($qryQuery->Error());
+					throw new Exception_Database($qryQuery->Error());
 				}
 				$objInvoice	= new Invoice($resInvoice->fetch_assoc());
 				$objInvoice->DeliveryMethod	= DELIVERY_METHOD_EMAIL;
@@ -256,7 +256,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				$resLastInvoice	= $qryQuery->Execute("SELECT * FROM Invoice WHERE Account = {$objAccount->Id} AND Id < {$objInvoice->Id} ORDER BY Id DESC LIMIT 1");
 				if ($resLastInvoice === false)
 				{
-					throw new Exception($qryQuery->Error());
+					throw new Exception_Database($qryQuery->Error());
 				}
 				$arrLastInvoice	= $resLastInvoice->fetch_assoc();
 				$fltPayments	= ($arrLastInvoice) ? max(0.0, (float)$arrLastInvoice['TotalOwing'] - $objInvoice->AccountBalance) : 0.0;

@@ -25,7 +25,7 @@ $arrColumns	= array($strField=>$strFileContents);
 $updUpdateBinary	= new StatementUpdate($strTable, $strConstraint, $arrColumns, 1);
 if ($updUpdateBinary->Execute($arrColumns, array()) === false)
 {
-	throw new Exception($updUpdateBinary->Error());
+	throw new Exception_Database($updUpdateBinary->Error());
 }
 
 CliEcho("Successfully updated {$strTable}.{$strField} where {$strConstraint} with {$strFilePath}");

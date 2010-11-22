@@ -76,7 +76,7 @@ class Customer_Status
 			$selCustomerStatuses = new StatementSelect("customer_status", $arrColumns, "TRUE", "precedence ASC");
 			if (($outcome = $selCustomerStatuses->Execute()) === FALSE)
 			{
-				throw new Exception("Failed to retrieve all Customer Statuses: ". $selCustomerStatuses->Error());
+				throw new Exception_Database("Failed to retrieve all Customer Statuses: ". $selCustomerStatuses->Error());
 			}
 	
 			while ($arrCustomerStatus = $selCustomerStatuses->Fetch())
@@ -219,7 +219,7 @@ class Customer_Status
 		
 		if (($intRecCount = $selAction->Execute(array("CustomerStatusId" => $this->id, "UserRoleId" => $intUserRole))) === FALSE)
 		{
-			throw new Exception("Failed to retrieve User Action for Customer Status {$this->name}, User Role Id: $intUserRole - ". $selAction->Error());
+			throw new Exception_Database("Failed to retrieve User Action for Customer Status {$this->name}, User Role Id: $intUserRole - ". $selAction->Error());
 		}
 		if ($intRecCount > 1)
 		{
@@ -266,7 +266,7 @@ class Customer_Status
 			if (($intRecordsAffected = $updDefaultAction->Execute($arrFields)) === FALSE)
 			{
 				// Update failed
-				throw new Exception("Failed to update customer_status.default_action_description for where customer_status.id = {$this->id} - ". $updDefaultAction->Error());
+				throw new Exception_Database("Failed to update customer_status.default_action_description for where customer_status.id = {$this->id} - ". $updDefaultAction->Error());
 			}
 			
 			// Update the object
@@ -293,7 +293,7 @@ class Customer_Status
 			// Make the insert
 			if (($intNewId = $insAction->Execute($arrFields)) === FALSE)
 			{
-				throw new Exception("Failed to insert record into customer_status_action table for customer status id: {$this->id}, user role id: $intUserRole - ". $insAction->Error());
+				throw new Exception_Database("Failed to insert record into customer_status_action table for customer status id: {$this->id}, user role id: $intUserRole - ". $insAction->Error());
 			}
 		}
 		else
@@ -312,7 +312,7 @@ class Customer_Status
 			if (($intRecordsAffected = $updAction->Execute($arrFields)) === FALSE)
 			{
 				// Update failed
-				throw new Exception("Failed to update record in customer_status_action table for customer status id: {$this->id}, user role id: $intUserRole - ". $updAction->Error());
+				throw new Exception_Database("Failed to update record in customer_status_action table for customer status id: {$this->id}, user role id: $intUserRole - ". $updAction->Error());
 			}
 		}
 		
@@ -361,7 +361,7 @@ class Customer_Status
 			// Load the actions in from the database
 			if (($outcome = $selActions->Execute(array("CustomerStatusId" => $this->id))) === FALSE)
 			{
-				throw new Exception("Failed to retrieve User Actions for Customer Status {$this->name} : ". $selActions->Error());
+				throw new Exception_Database("Failed to retrieve User Actions for Customer Status {$this->name} : ". $selActions->Error());
 			}
 			$this->_arrActionDescriptions = array();
 			while ($arrAction = $selActions->Fetch())
@@ -385,7 +385,7 @@ class Customer_Status
 		if ($qryDeleteAction->Execute($strDeleteQuery) === FALSE)
 		{
 			// Delete Failed
-			throw new Exception("Failed to delete record in customer_status_action table for customer status id: {$this->id}, user role id: $intUserRole - ". $qryDeleteAction->Error());
+			throw new Exception_Database("Failed to delete record in customer_status_action table for customer status id: {$this->id}, user role id: $intUserRole - ". $qryDeleteAction->Error());
 		}
 		
 		// The delete worked, now remove it from $this->_arrActionDescriptions if it exists

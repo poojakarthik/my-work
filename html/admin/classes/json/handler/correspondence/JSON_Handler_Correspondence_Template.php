@@ -66,7 +66,7 @@ class JSON_Handler_Correspondence_Template extends JSON_Handler
 											WHERE	cst.system_name <> 'SYSTEM';");
 			if ($mResult === false)
 			{
-				throw new Exception("Failed to get correspondence templates. ".$oQuery->Error());
+				throw new Exception_Database("Failed to get correspondence templates. ".$oQuery->Error());
 			}
 			
 			while ($aRow = $mResult->fetch_assoc())
@@ -119,7 +119,7 @@ class JSON_Handler_Correspondence_Template extends JSON_Handler
 											WHERE	id = {$oSource->correspondence_source_type_id}");
 			if ($mResult === false)
 			{
-				throw new Exception("Failed to get correspondence source type for id '{$oSource->correspondence_source_type_id}'. ".$oQuery->Error());
+				throw new Exception_Database("Failed to get correspondence source type for id '{$oSource->correspondence_source_type_id}'. ".$oQuery->Error());
 			}
 			$aSourceType	= $mResult->fetch_assoc();
 			

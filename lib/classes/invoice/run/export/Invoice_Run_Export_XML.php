@@ -9,7 +9,7 @@ class Invoice_Run_Export_XML extends Invoice_Run_Export
 		$oStatement	= new StatementSelect("Invoice", "*", "invoice_run_id = <invoice_run_id>");
 		if ($oStatement->Execute(array('invoice_run_id'=>$this->_oInvoiceRun->Id)) === false)
 		{
-			throw new Exception($oStatement->Error());
+			throw new Exception_Database($oStatement->Error());
 		}
 		
 		// Generate each XML document

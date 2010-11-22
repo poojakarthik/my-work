@@ -83,7 +83,7 @@ class Email_Template extends ORM_Cached
 		}
 		else
 		{
-			throw new Exception("Failed to get Email_Template for customer group & type. ".$oStmt->Error());
+			throw new Exception_Database("Failed to get Email_Template for customer group & type. ".$oStmt->Error());
 		}
 		return $oTemplate;
 	}

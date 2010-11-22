@@ -66,7 +66,7 @@ class ActionsAndNotes
 		$result = $qryQuery->Execute($strSearchQuery);
 		if ($result === false)
 		{
-			throw new Exception("Error retrieving actions and notes - ". $qryQuery->Error() ." - Query: $strSearchQuery");
+			throw new Exception_Database("Error retrieving actions and notes - ". $qryQuery->Error() ." - Query: $strSearchQuery");
 		}
 		
 		$arrActionsAndNotes = array();
@@ -96,7 +96,7 @@ class ActionsAndNotes
 			$result = $qryQuery->Execute($strCountQuery);
 			if ($result === false)
 			{
-				throw new Exception("Error retrieving pagination details for the last actions and notes search - ". $qryQuery->Error() ." - Query: $strCountQuery");
+				throw new Exception_Database("Error retrieving pagination details for the last actions and notes search - ". $qryQuery->Error() ." - Query: $strCountQuery");
 			}
 			
 			// This query can potentially return 2 records which must be added because one will be the total_record_count of notes, and the other will be the total_record_count of actions

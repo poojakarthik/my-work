@@ -28,7 +28,7 @@ class Flex_Rollout_Version_000060 extends Flex_Rollout_Version
 					") ENGINE = innodb;";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add invoice_run_status Table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add invoice_run_status Table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE IF EXISTS invoice_run_status;";
 		
@@ -42,7 +42,7 @@ class Flex_Rollout_Version_000060 extends Flex_Rollout_Version
 					(NULL, 'Committed'	, 'Committed'			, 'INVOICE_RUN_STATUS_COMMITTED');";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate invoice_run_status Table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate invoice_run_status Table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "TRUNCATE TABLE invoice_run_status;";
 		
@@ -50,7 +50,7 @@ class Flex_Rollout_Version_000060 extends Flex_Rollout_Version
 		$strSQL = "ALTER TABLE InvoiceRun ADD invoice_run_status_id BIGINT(20) NOT NULL COMMENT '(FK) Status of the Invoice Run';";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to alter InvoiceRun table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to alter InvoiceRun table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE InvoiceRun DROP invoice_run_status_id;";
 		
@@ -58,7 +58,7 @@ class Flex_Rollout_Version_000060 extends Flex_Rollout_Version
 		$strSQL	= "UPDATE InvoiceRun SET invoice_run_status_id = (SELECT id FROM invoice_run_status WHERE const_name = 'INVOICE_RUN_STATUS_COMMITTED');";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate InvoiceRun.invoice_run_status_id. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate InvoiceRun.invoice_run_status_id. ' . $qryQuery->Error());
 		}
 	}
 	
@@ -71,7 +71,7 @@ class Flex_Rollout_Version_000060 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

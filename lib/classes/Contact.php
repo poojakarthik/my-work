@@ -28,7 +28,7 @@ class Contact extends ORM
 			$where);
 		if (($outcome = $selContacts->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception("Failed to check for existing contact: " . $selContacts->Error());
+			throw new Exception_Database("Failed to check for existing contact: " . $selContacts->Error());
 		}
 		if (!$outcome)
 		{
@@ -93,7 +93,7 @@ class Contact extends ORM
 		$objRecordSet = $qryQuery->Execute($strQuery);
 		if (!$objRecordSet)
 		{
-			throw new Exception("Failed to retrieve accounts for contact: {$this->id} - " . $qryQuery->Error());
+			throw new Exception_Database("Failed to retrieve accounts for contact: {$this->id} - " . $qryQuery->Error());
 		}
 
 		$arrAccounts = array();
@@ -132,7 +132,7 @@ class Contact extends ORM
 		$selContactByEmail	= self::_preparedStatement('selContactByEmail');
 		if (false === $selContactByEmail->Execute(Array('Email' => trim($strEmailAddress), 'IncludeArchived' => 0)))
 		{
-			throw new Exception($selContactByEmail->Error());
+			throw new Exception_Database($selContactByEmail->Error());
 		}
 		
 		$aContacts	= array();

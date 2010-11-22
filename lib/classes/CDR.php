@@ -66,7 +66,7 @@ class CDR extends ORM_Cached
 				$oGetUnbilledCDRTotal	= self::_preparedStatement('selUnbilledCDRTotal');
 				if ($oGetUnbilledCDRTotal->Execute(array('service_id'=>$this->Service,'invoice_run_id'=>$this->invoice_run_id)) === false)
 				{
-					throw new Exception($oGetUnbilledCDRTotal->Error());
+					throw new Exception_Database($oGetUnbilledCDRTotal->Error());
 				}
 				$aUnbilledCDRTotal	= $oGetUnbilledCDRTotal->Fetch();
 

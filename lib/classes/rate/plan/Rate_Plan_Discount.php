@@ -27,7 +27,7 @@ class Rate_Plan_Discount extends ORM_Cached
 		$iResult					= $oSelectRatePlanDiscounts->Execute(array('rate_plan_id'=>$iRatePlanId));
 		if ($iResult === false)
 		{
-			throw new Exception($oSelectRatePlanDiscounts->Error());
+			throw new Exception_Database($oSelectRatePlanDiscounts->Error());
 		}
 		while ($aRatePlanDiscount = $oSelectRatePlanDiscounts->Fetch())
 		{

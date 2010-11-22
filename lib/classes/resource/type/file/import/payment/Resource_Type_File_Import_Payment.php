@@ -39,7 +39,7 @@ abstract class Resource_Type_File_Import_Payment extends Resource_Type_File_Impo
 			$oFullListQuery	= new Query();
 			if (false === ($mFullListResult = $oFullListQuery->Execute($sFullListSQL)))
 			{
-				throw new Exception($oFullListQuery->Error());
+				throw new Exception_Database($oFullListQuery->Error());
 			}
 			while ($aFileImport = $mFullListResult->fetch_assoc())
 			{
@@ -136,7 +136,7 @@ abstract class Resource_Type_File_Import_Payment extends Resource_Type_File_Impo
 			$oFullListQuery	= new Query();
 			if (false === ($mFullListResult = $oFullListQuery->Execute($sFullListSQL)))
 			{
-				throw new Exception($oFullListQuery->Error());
+				throw new Exception_Database($oFullListQuery->Error());
 			}
 			while ($aFileImportData = $mFullListResult->fetch_assoc())
 			{

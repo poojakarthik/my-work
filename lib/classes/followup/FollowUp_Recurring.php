@@ -144,7 +144,7 @@ class FollowUp_Recurring extends ORM_Cached
 		$iCount	= $oSelect->Execute($aWhereInfo['aValues']);
 		if ($iCount === FALSE)
 		{
-			throw new Exception("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oSelect->Error());
+			throw new Exception_Database("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oSelect->Error());
 		}
 		
 		if ($bCountOnly)

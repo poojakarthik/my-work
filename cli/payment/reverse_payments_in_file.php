@@ -61,7 +61,7 @@ try
 		$mixResult	= $selPayments->Execute(Array('Account'=>$intAccount, 'Amount'=>$fltAmount));
 		if ($mixResult === FALSE)
 		{
-			throw new Exception($selPayments->Error());
+			throw new Exception_Database($selPayments->Error());
 		}
 		else
 		{

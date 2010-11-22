@@ -38,7 +38,7 @@ class Dealer_Rate_Plan
 		
 		if ($selDealerRatePlan->Execute(Array("DealerId"=>$intDealerId)) === FALSE)
 		{
-			throw new Exception("Failed to retrieve records from the Dealer_Rate_Plan table for dealer with id: $intDealerId - ". $selDealerRatePlan->Error());
+			throw new Exception_Database("Failed to retrieve records from the Dealer_Rate_Plan table for dealer with id: $intDealerId - ". $selDealerRatePlan->Error());
 		}
 		
 		$arrRecordSet = $selDealerRatePlan->FetchAll();
@@ -75,7 +75,7 @@ class Dealer_Rate_Plan
 		
 		if (!$qryQuery->Execute("DELETE FROM dealer_rate_plan WHERE dealer_id = $intDealerId;"))
 		{
-			throw new Exception("Failed to set RatePlans for Dealer: $intDealerId.  (Removal of old dealer - RatePlan associations failed) - " . $qryQuery->Error());
+			throw new Exception_Database("Failed to set RatePlans for Dealer: $intDealerId.  (Removal of old dealer - RatePlan associations failed) - " . $qryQuery->Error());
 		}
 		
 		// Reset the auto incrementing counter for the dealer_rate_plan table
@@ -91,7 +91,7 @@ class Dealer_Rate_Plan
 			$arrData['rate_plan_id'] = $intRatePlanId;
 			if ($insDealerRatePlan->Execute($arrData) === FALSE)
 			{
-				throw new Exception("Failed to set RatePlans for Dealer: $intDealerId. (inserting record into dealer_rate_plan table failed) - ". $insDealerRatePlan->Error());
+				throw new Exception_Database("Failed to set RatePlans for Dealer: $intDealerId. (inserting record into dealer_rate_plan table failed) - ". $insDealerRatePlan->Error());
 			}
 		}
 	}

@@ -19,7 +19,7 @@ class Flex_Rollout_Version_000010 extends Flex_Rollout_Version
 		$strSQL = "RENAME TABLE carrier_module_provisioning_support TO carrier_provisioning_support;";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to rename carrier_module_provisioning_support table to carrier_provisioning_support. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to rename carrier_module_provisioning_support table to carrier_provisioning_support. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "RENAME TABLE carrier_provisioning_support TO carrier_module_provisioning_support;";
 
@@ -41,7 +41,7 @@ class Flex_Rollout_Version_000010 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to alter provisioning_type table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to alter provisioning_type table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "TRUNCATE TABLE provisioning_type;";
 	}
@@ -55,7 +55,7 @@ class Flex_Rollout_Version_000010 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

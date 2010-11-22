@@ -88,7 +88,7 @@ class JSON_Handler_Account extends JSON_Handler
 			$mResult	= $oQuery->Execute($sQuery);
 			if ($mResult === false)
 			{
-				throw new Exception("Failed account customer group search. ".$oQuery->Error());
+				throw new Exception_Database("Failed account customer group search. ".$oQuery->Error());
 			}
 			
 			// Create array of results
@@ -130,7 +130,7 @@ class JSON_Handler_Account extends JSON_Handler
 			$resReferees	= $qryQuery->Execute("SELECT * FROM Employee WHERE user_role_id = ".USER_ROLE_CREDIT_CONTROL_MANAGER." AND Archived = 0");
 			if ($resReferees === false)
 			{
-				throw new Exception($qryQuery->Error());
+				throw new Exception_Database($qryQuery->Error());
 			}
 			while ($arrReferee = $resReferees->fetch_assoc())
 			{

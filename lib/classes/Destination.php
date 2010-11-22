@@ -44,7 +44,7 @@ class Destination extends ORM_Cached
 		//throw new Exception($sQuery);
 		if (($mResult = $oQuery->Execute($sQuery)) === false)
 		{
-			throw new Exception($oQuery->Error());
+			throw new Exception_Database($oQuery->Error());
 		}
 		$aResults	= array();
 		while ($aResult = $mResult->fetch_assoc())

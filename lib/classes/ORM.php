@@ -54,7 +54,7 @@ abstract class ORM
 		
 		if ($arrProperties instanceof ORM)
 		{
-			throw new Exception("\$arrProperties is an ORM object!");
+			throw new Exception_ORM("\$arrProperties is an ORM object!");
 		}
 		
 		// Automatically load the Record using the passed Id
@@ -64,7 +64,7 @@ abstract class ORM
 			$selById	= $this->_preparedStatement('selById');
 			if ($selById->Execute(Array('Id' => $intId)) === false)
 			{
-				throw new Exception("DB ERROR: ".$selById->Error());
+				throw new Exception_Database("DB ERROR: ".$selById->Error());
 			}
 			elseif (!($arrProperties = $selById->Fetch()))
 			{
@@ -141,7 +141,7 @@ abstract class ORM
 			$ubiSelf	= $this->_preparedStatement("ubiSelf");
 			if ($ubiSelf->Execute($this->toArray()) === FALSE)
 			{
-				throw new Exception("DB ERROR: ".$ubiSelf->Error());
+				throw new Exception_Database("DB ERROR: ".$ubiSelf->Error());
 			}
 			return TRUE;
 		}
@@ -154,7 +154,7 @@ abstract class ORM
 		$mixResult	= $insSelf->Execute($this->toArray());
 		if ($mixResult === FALSE)
 		{
-			throw new Exception("DB ERROR: ".$insSelf->Error());
+			throw new Exception_Database("DB ERROR: ".$insSelf->Error());
 		}
 		if (is_int($mixResult))
 		{
@@ -182,7 +182,7 @@ abstract class ORM
 			
 			if ($oQuery->Execute($sDeleteSQL) === false)
 			{
-				throw new Exception("Unable to delete {$this->_strTableName} record where {$this->_strIdField} is '{$this->_arrProperties[$this->_strIdField]}'");
+				throw new Exception_Database("Unable to delete {$this->_strTableName} record where {$this->_strIdField} is '{$this->_arrProperties[$this->_strIdField]}'");
 			}
 			
 			$this->setId(null);
@@ -430,7 +430,7 @@ abstract class ORM
 	{
 		if (!is_subclass_of($sORMClass, 'ORM'))
 		{
-			throw new Exception("Supplied Class '{$sORMClass}' does not inherit from ORM");
+			throw new Exception_Database("Supplied Class '{$sORMClass}' does not inherit from ORM");
 		}
 		
 		// If it is a single-dimensional array, wrap it in another array

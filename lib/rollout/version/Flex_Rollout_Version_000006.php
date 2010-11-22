@@ -37,7 +37,7 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to account_status table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to account_status table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] ='DROP TABLE account_status;';
 
@@ -51,7 +51,7 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate account_status table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate account_status table. ' . $qryQuery->Error());
 		}
 
 		$strSQL = "
@@ -67,7 +67,7 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create credit_control_status table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create credit_control_status table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] ='DROP TABLE credit_control_status;';
 
@@ -80,20 +80,20 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate credit_control_status table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate credit_control_status table. ' . $qryQuery->Error());
 		}
 
 		$strSQL = "ALTER TABLE Account ADD credit_control_status BIGINT UNSIGNED NOT NULL DEFAULT '1' COMMENT 'FK to credit_control_status.id' AFTER Archived";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to alter Account table (2). ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to alter Account table (2). ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] ='ALTER TABLE Account DROP credit_control_status ;';
 
 		$strSQL = "ALTER TABLE Account ADD INDEX ( credit_control_status )";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add index to Account table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add index to Account table. ' . $qryQuery->Error());
 		}
 
 		$strSQL = " ALTER TABLE payment_terms 
@@ -104,7 +104,7 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to alter "payment_terms" table (1). ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to alter "payment_terms" table (1). ' . $qryQuery->Error());
 		}
 		// Don't need to worry about restoring the automatic_barring_days column as it has never been used!
 		$this->rollbackSQL[] ='ALTER TABLE payment_terms DROP minimum_balance_to_pursue, DROP employee, DROP created, ADD automatic_barring_days SMALLINT UNSIGNED NOT NULL COMMENT \'Number of days after invoicing when the account should be automatically barred\';';
@@ -113,7 +113,7 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		$strSQL = "UPDATE payment_terms SET minimum_balance_to_pursue = $minimum_balance_to_pursue, created = NOW()";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to update "payment_terms" table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to update "payment_terms" table. ' . $qryQuery->Error());
 		}
 
 		$strSQL = " ALTER TABLE payment_terms 
@@ -121,7 +121,7 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to alter "payment_terms" table (2). ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to alter "payment_terms" table (2). ' . $qryQuery->Error());
 		}
 
 		$strSQL = "
@@ -135,7 +135,7 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create automatic_invoice_action table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create automatic_invoice_action table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] ='DROP TABLE automatic_invoice_action;';
 
@@ -148,7 +148,7 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to insert into automatic_invoice_action table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to insert into automatic_invoice_action table. ' . $qryQuery->Error());
 		}
 
 		$strSQL = "
@@ -162,7 +162,7 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create automatic_barring_status table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create automatic_barring_status table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] ='DROP TABLE automatic_barring_status;';
 
@@ -174,7 +174,7 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to insert into automatic_barring_status table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to insert into automatic_barring_status table. ' . $qryQuery->Error());
 		}
 
 		$strSQL = "
@@ -186,7 +186,7 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to alter Account table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to alter Account table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] ='ALTER TABLE Account DROP last_automatic_invoice_action, DROP last_automatic_invoice_action_datetime, DROP automatic_barring_status, DROP automatic_barring_datetime;';
 
@@ -203,7 +203,7 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create automatic_invoice_action_history table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create automatic_invoice_action_history table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] ='DROP TABLE automatic_invoice_action_history;';
 
@@ -220,7 +220,7 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create automatic_barring_status_history table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create automatic_barring_status_history table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] ='DROP TABLE automatic_barring_status_history;';
 
@@ -237,7 +237,7 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create credit_control_status_history table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create credit_control_status_history table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] ='DROP TABLE credit_control_status_history;';
 
@@ -254,7 +254,7 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create account_status_history table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create account_status_history table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] ='DROP TABLE account_status_history;';
 
@@ -268,7 +268,7 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to alter InvoiceRun table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to alter InvoiceRun table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] ='ALTER TABLE InvoiceRun DROP automatic_overdue_datetime, DROP automatic_suspension_datetime, DROP automatic_final_demand_datetime, DROP scheduled_automatic_bar_datetime, DROP automatic_bar_datetime;';
 
@@ -277,7 +277,7 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		$result = $qryQuery->Execute($strSQL);
 		if (!$result)
 		{
-			throw new Exception(__CLASS__ . ' Failed to update InvoiceRun table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to update InvoiceRun table. ' . $qryQuery->Error());
 		}
 		$row = mysqli_fetch_row($result);
 		mysqli_free_result($result);
@@ -298,7 +298,7 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 			";
 			if (!$qryQuery->Execute($strSQL))
 			{
-				throw new Exception(__CLASS__ . ' Failed to update InvoiceRun table. ' . $qryQuery->Error());
+				throw new Exception_Database(__CLASS__ . ' Failed to update InvoiceRun table. ' . $qryQuery->Error());
 			}
 		}
 	}
@@ -312,7 +312,7 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

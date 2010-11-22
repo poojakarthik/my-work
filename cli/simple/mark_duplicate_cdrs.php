@@ -68,7 +68,7 @@ try
 			$mixResult	= $qryQuery->Execute($strFindDuplicateSQL);
 			if (!$mixResult)
 			{
-				throw new Exception($qryQuery->Error());
+				throw new Exception_Database($qryQuery->Error());
 			}
 			if ($arrDuplicateCDR = $mixResult->fetch_assoc())
 			{

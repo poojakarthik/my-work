@@ -24,7 +24,7 @@ class Operation_Prerequisite extends ORM_Cached
 		$rGetForOperation	= $qQuery->Execute($sGetForOperationSQL);
 		if ($rGetForOperation === false)
 		{
-			throw new Exception($qQuery->Error());
+			throw new Exception_Database($qQuery->Error());
 		}
 		
 		$aPrerequisites	= array();
@@ -49,7 +49,7 @@ class Operation_Prerequisite extends ORM_Cached
 		$rGetOperationDependants	= $qQuery->Execute($sOperationDependantsSQL);
 		if ($rGetOperationDependants === false)
 		{
-			throw new Exception($qQuery->Error());
+			throw new Exception_Database($qQuery->Error());
 		}
 		
 		$aDependants	= array();

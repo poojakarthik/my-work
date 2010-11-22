@@ -36,7 +36,7 @@ class Flex_Rollout_Version_000050 extends Flex_Rollout_Version
 					) ENGINE = innodb COMMENT = 'Defines the Customer Statuses and how they are tested';";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create customer_status table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create customer_status table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE IF EXISTS customer_status;";
 		
@@ -56,7 +56,7 @@ class Flex_Rollout_Version_000050 extends Flex_Rollout_Version
 					(12, 'AAA', 'Contracted customer (has at least one service with an outstanding 24 month contract) AND pays by Direct Debit AND emailed their bill', 'VIP treatment every time', 'Payment must be taken before being assisted with any other enquiry. VIP treatment every time.', 12, 'In24MonthContractAndDirectDebitAndEmailedInvoice');";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate the customer_status table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate the customer_status table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DELETE FROM customer_status WHERE id IN (1,2,3,4,5,6,7,8,9,10,11,12);";
 
@@ -71,7 +71,7 @@ class Flex_Rollout_Version_000050 extends Flex_Rollout_Version
 					) ENGINE = innodb COMMENT = 'Action to be taken, for a given customer status';";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create customer_status_action table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create customer_status_action table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE IF EXISTS customer_status_action;";
 
@@ -86,7 +86,7 @@ class Flex_Rollout_Version_000050 extends Flex_Rollout_Version
 					) ENGINE = innodb COMMENT = 'Customer status for a given invoice run/account';";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create customer_status_history table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create customer_status_history table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE IF EXISTS customer_status_history;";
 
@@ -100,7 +100,7 @@ class Flex_Rollout_Version_000050 extends Flex_Rollout_Version
 					) ENGINE = innodb COMMENT = 'Defines the various User Roles';";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create user_role table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create user_role table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE IF EXISTS user_role;";
 
@@ -121,7 +121,7 @@ class Flex_Rollout_Version_000050 extends Flex_Rollout_Version
 					(13, 'Wholesale Manager', 'Wholesale Manager', 'USER_ROLE_WHOLESALE_MANAGER');";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate the user_role table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate the user_role table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DELETE FROM user_role WHERE id IN (1,2,3,4,5,6,7,8,9);";
 
@@ -129,7 +129,7 @@ class Flex_Rollout_Version_000050 extends Flex_Rollout_Version
 		$strSQL = "ALTER TABLE Employee ADD user_role_id BIGINT(20) UNSIGNED NOT NULL COMMENT 'FK into user_role table, defining the role of the employee' AFTER Archived;";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add Employee.user_role_id field. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add Employee.user_role_id field. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE Employee DROP user_role_id;";
 
@@ -137,7 +137,7 @@ class Flex_Rollout_Version_000050 extends Flex_Rollout_Version
 		$strSQL = "ALTER TABLE `customer_status_history` ADD INDEX `account_id_invoice_run_id` (`account_id`,`invoice_run_id`);";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add index (account_id/invoice_run_id) to customer_status_history table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add index (account_id/invoice_run_id) to customer_status_history table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE `customer_status_history` DROP INDEX `account_id_invoice_run_id`;";
 		
@@ -145,7 +145,7 @@ class Flex_Rollout_Version_000050 extends Flex_Rollout_Version
 		$strSQL = "ALTER TABLE `automatic_invoice_action_history` ADD INDEX `invoice_run_id_account` (`invoice_run_id`, `account`);";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add index (account_id/invoice_run_id) to customer_status_history table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add index (account_id/invoice_run_id) to customer_status_history table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE `automatic_invoice_action_history` DROP INDEX `invoice_run_id_account`;";
 		
@@ -160,7 +160,7 @@ class Flex_Rollout_Version_000050 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

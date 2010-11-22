@@ -47,7 +47,7 @@ class Payment_Terms extends ORM
 		$mixResult = $selCurrentPT->Execute(array("CustomerGroupId"=>$intCustomerGroupId));
 		if ($mixResult === FALSE)
 		{
-			throw new Exception("Failed to retrieve current Payment Terms record for customer group: $intCustomerGroupId - ". $selCurrentPT->Error());
+			throw new Exception_Database("Failed to retrieve current Payment Terms record for customer group: $intCustomerGroupId - ". $selCurrentPT->Error());
 		}
 		if ($mixResult === 0)
 		{
@@ -69,7 +69,7 @@ class Payment_Terms extends ORM
 		
 		if ($selRatePlan->Execute() === FALSE)
 		{
-			throw new Exception("Failed to retrieve all RatePlans - ". $selRatePlan->Error());
+			throw new Exception_Database("Failed to retrieve all RatePlans - ". $selRatePlan->Error());
 		}
 		
 		$arrRatePlans = array();

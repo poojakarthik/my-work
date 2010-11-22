@@ -19,7 +19,7 @@ class Flex_Rollout_Version_000047 extends Flex_Rollout_Version
 		// 1:	Create the flex_module table
 		if (!$qryQuery->Execute("DROP TABLE IF EXISTS flex_module;"))
 		{
-			throw new Exception(__CLASS__ . ' Failed to drop the flex_module table (if exists). ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to drop the flex_module table (if exists). ' . $qryQuery->Error());
 		}
 		$strSQL = " CREATE TABLE flex_module
 					(
@@ -31,7 +31,7 @@ class Flex_Rollout_Version_000047 extends Flex_Rollout_Version
 					) ENGINE = innodb COMMENT = 'Defines flex modules and whether they are to be used by flex';";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create the flex_module table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create the flex_module table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE IF EXISTS flex_module";
 		
@@ -42,7 +42,7 @@ class Flex_Rollout_Version_000047 extends Flex_Rollout_Version
 					(2, 'Customer Status', 'Customer Status', 'FLEX_MODULE_CUSTOMER_STATUS', 1);";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate flex_module table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate flex_module table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DELETE FROM flex_module WHERE id IN(1,2)";
 		
@@ -57,7 +57,7 @@ class Flex_Rollout_Version_000047 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

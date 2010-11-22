@@ -66,7 +66,7 @@ class Account_History
 		}
 		if (($intRecCount = $selAccount->Execute(array("account_id"=>$intAccountId))) === FALSE)
 		{
-			throw new Exception("Failed to retrieve Account record with id: $intAccountId - ". $selAccount->Error());
+			throw new Exception_Database("Failed to retrieve Account record with id: $intAccountId - ". $selAccount->Error());
 		}
 		if ($intRecCount == 0)
 		{
@@ -82,7 +82,7 @@ class Account_History
 		
 		if (($intRecCount = $selAccountHistory->Execute(array("AccountId"=>$intAccountId))) === FALSE)
 		{
-			throw new Exception("Failed to retrieve current account_history record for account id: $intAccountId - ". $selAccountHistory->Error());
+			throw new Exception_Database("Failed to retrieve current account_history record for account id: $intAccountId - ". $selAccountHistory->Error());
 		}
 		
 		$bolHistoryNeedsUpdating	= FALSE;
@@ -137,7 +137,7 @@ class Account_History
 			// Make the insert
 			if (($intNewId = $insAccountHistory->Execute($arrData)) === FALSE)
 			{
-				throw new Exception("Failed to insert record into account_history table for account: $intAccountId - ". $insAccountHistory->Error());
+				throw new Exception_Database("Failed to insert record into account_history table for account: $intAccountId - ". $insAccountHistory->Error());
 			}
 			
 			return TRUE;
@@ -178,7 +178,7 @@ class Account_History
 		
 		if (($intRecCount = $selAccountHistory->Execute(array("account_id"=>$intAccountId))) === FALSE)
 		{
-			throw new Exception("Failed to retrieve current account_history record for account id: $intAccountId - ". $selAccountHistory->Error());
+			throw new Exception_Database("Failed to retrieve current account_history record for account id: $intAccountId - ". $selAccountHistory->Error());
 		}
 		
 		$bolHistoryNeedsUpdating	= FALSE;
@@ -232,7 +232,7 @@ class Account_History
 			// Make the insert
 			if (($intNewId = $insAccountHistory->Execute($arrData)) === FALSE)
 			{
-				throw new Exception("Failed to insert record into account_history table for account: $intAccountId - ". $insAccountHistory->Error());
+				throw new Exception_Database("Failed to insert record into account_history table for account: $intAccountId - ". $insAccountHistory->Error());
 			}
 			
 			return TRUE;
@@ -281,7 +281,7 @@ class Account_History
 		$selCheckTimestamp = new StatementSelect("account_history", array("id"), "change_timestamp >= <Timestamp>", NULL, 1);
 		if (($intRecCount = $selCheckTimestamp->Execute(array("Timestamp"=>$strTimestamp))) === FALSE)
 		{
-			throw new Exception("Failed during check for account_history records with timestamp >= $strTimestamp - ". $selCheckTimestamp->Error());
+			throw new Exception_Database("Failed during check for account_history records with timestamp >= $strTimestamp - ". $selCheckTimestamp->Error());
 		}
 		if ($intRecCount != 0)
 		{
@@ -335,7 +335,7 @@ class Account_History
 		$objRecordSet = $qryQuery->Execute($strInsertQuery);
 		if (!$objRecordSet)
 		{
-			throw new Exception("Updating the account_history table failed. Query: $strInsertQuery Error: " . $qryQuery->Error());
+			throw new Exception_Database("Updating the account_history table failed. Query: $strInsertQuery Error: " . $qryQuery->Error());
 		}
 	}
 	
@@ -392,7 +392,7 @@ class Account_History
 		$iRows	= $oStmt->Execute(array('account_id' => $iAccountId, 'effective_datetime' => $sEffectiveDatetime));
 		if ($iRows === false)
 		{
-			throw new Exception("Failed to get account history for account & effective date time. ".$oStmt->Error());
+			throw new Exception_Database("Failed to get account history for account & effective date time. ".$oStmt->Error());
 		}
 		
 		if ($aRow = $oStmt->Fetch())

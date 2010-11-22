@@ -23,7 +23,7 @@ if (!$selInvoiceRuns->Execute())
 {
 	if ($selInvoiceRuns->Error())
 	{
-		throw new Exception($selInvoiceRuns->Error());
+		throw new Exception_Database($selInvoiceRuns->Error());
 	}
 	else
 	{

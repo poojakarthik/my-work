@@ -13,7 +13,7 @@ class Ticketing_Config
 		$selConfig = new StatementSelect('ticketing_config', $arrColumns, NULL, 'id DESC', '0,1');
 		if (!($outcome = $selConfig->Execute()))
 		{
-			throw new Exception("Failed to load ticketing configuration. " . ($outcome === FALSE ? $qryQuery->Error() : 'Configuration not defined.'));
+			throw new Exception_Database("Failed to load ticketing configuration. " . ($outcome === FALSE ? $qryQuery->Error() : 'Configuration not defined.'));
 		}
 		if ($outcome)
 		{
@@ -153,7 +153,7 @@ class Ticketing_Config
 		}
 		if (($outcome = $statement->Execute($arrValues)) === FALSE)
 		{
-			throw new Exception('Failed to save ticketing config details: ' . $statement->Error());
+			throw new Exception_Database('Failed to save ticketing config details: ' . $statement->Error());
 		}
 		if (!$this->id)
 		{

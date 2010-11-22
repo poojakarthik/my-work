@@ -1942,7 +1942,7 @@
 		{
 			if ($selAccount->Error())
 			{
-				throw new Exception("DB ERROR: ".$selAccount->Error());
+				throw new Exception_Database("DB ERROR: ".$selAccount->Error());
 			}
 			else
 			{

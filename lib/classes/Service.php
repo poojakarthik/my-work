@@ -59,7 +59,7 @@ class Service extends ORM
 		
 		if ($selCurrentServiceRatePlan->Execute($arrWhere) === FALSE)
 		{
-			throw new Exception($selCurrentServiceRatePlan->Error());
+			throw new Exception_Database($selCurrentServiceRatePlan->Error());
 		}
 		elseif (($arrCurrentServiceRatePlan = $selCurrentServiceRatePlan->Fetch()) !== FALSE)
 		{
@@ -211,7 +211,7 @@ class Service extends ORM
 			$updCDRs				= new StatementUpdate("CDR", "Service = <Service> AND Status IN ({$strCDRStatusesToRerate})", $arrUpdate);
 			if ($updCDRs->Execute($arrUpdate, Array("Service"=>$this->Id)) === FALSE)
 			{
-				throw new Exception($updCDRs->Error());
+				throw new Exception_Database($updCDRs->Error());
 			}
 			
 			// Only update the Carrier and CarrierPreselect fields of the Service record,
@@ -222,7 +222,7 @@ class Service extends ORM
 			$updService = new StatementUpdate("Service", "Id = <Service>", $arrUpdate);
 			if ($updService->Execute($arrUpdate, Array("Service" => $this->Id)) === FALSE)
 			{
-				throw new Exception($updService->Error());
+				throw new Exception_Database($updService->Error());
 			}
 		}
 		
@@ -257,7 +257,7 @@ class Service extends ORM
 		$oServiceRateGroup	= new StatementUpdate("ServiceRateGroup", "Service = <Service> AND EndDatetime >= <StartDatetime>", $aUpdate);
 		if ($oServiceRateGroup->Execute($aUpdate, Array("Service" => $this->Id, "StartDatetime" => $sStartDatetime)) === FALSE)
 		{
-			throw new Exception("Failed to update existing ServiceRateGroup records. ".$oServiceRateGroup->Error());
+			throw new Exception_Database("Failed to update existing ServiceRateGroup records. ".$oServiceRateGroup->Error());
 		}
 		
 		// Update existing ServiceRatePlan records
@@ -265,7 +265,7 @@ class Service extends ORM
 		if ($oServiceRatePlan->Execute($aUpdate, Array("Service" => $this->Id, "StartDatetime" => $sStartDatetime)) === FALSE)
 		{
 			// Could not update records in ServiceRatePlan table. Exit gracefully
-			throw new Exception("Failed to update existing ServiceRatePlan records. ".$oServiceRatePlan->Error());
+			throw new Exception_Database("Failed to update existing ServiceRatePlan records. ".$oServiceRatePlan->Error());
 		}
 		
 		// Get the current User
@@ -301,7 +301,7 @@ class Service extends ORM
 		if ($oInsertServiceRateGroup->Execute($sInsertRateGroupsIntoServiceRateGroup) === FALSE)
 		{
 			// Inserting the records into the ServiceRateGroup table failed.  Exit gracefully
-			throw new Exception("Failed to insert ServiceRateGroup records. ".$oInsertServiceRateGroup->Error());
+			throw new Exception_Database("Failed to insert ServiceRateGroup records. ".$oInsertServiceRateGroup->Error());
 		}
 		
 		return $oServiceRatePlan;
@@ -354,7 +354,7 @@ class Service extends ORM
 		
 		if (($mixResult = $objQuery->Execute($strQuery)) === FALSE)
 		{
-			throw new Exception(__METHOD__ ." Failed to retrieve Service record using query - $strQuery - ". $objQuery->Error());
+			throw new Exception_Database(__METHOD__ ." Failed to retrieve Service record using query - $strQuery - ". $objQuery->Error());
 		}
 		
 		$mixRecord = $mixResult->fetch_assoc();
@@ -438,7 +438,7 @@ class Service extends ORM
 		$selFNNInstances	= self::_preparedStatement('selFNNInstances');
 		if ($selFNNInstances->Execute(array('FNN'=>$strFNN, 'AccountId'=>$intAccountId)) === false)
 		{
-			throw new Exception($selFNNInstances->Error());
+			throw new Exception_Database($selFNNInstances->Error());
 		}
 		
 		if ($bolAsArray)
@@ -463,7 +463,7 @@ class Service extends ORM
 		$selCurrentForFNN	= self::_preparedStatement('selCurrentForFNN');
 		if ($selCurrentForFNN->Execute(array('fnn'=>$sFNN, 'effective_datetime'=>$sEffectiveDatetime)) === false)
 		{
-			throw new Exception($selFNNInstances->Error());
+			throw new Exception_Database($selFNNInstances->Error());
 		}
 		return ($aService = $selCurrentForFNN->Fetch()) ? new Service($aService) : null;
 	}
@@ -483,7 +483,7 @@ class Service extends ORM
 		$mixResult			= $selServiceAddress->Execute($this->toArray());
 		if ($mixResult === false)
 		{
-			throw new Exception($selServiceAddress->Error());
+			throw new Exception_Database($selServiceAddress->Error());
 		}
 		elseif ($arrServiceAddress = $selServiceAddress->Fetch())
 		{
@@ -544,7 +544,7 @@ class Service extends ORM
 				
 				if (!$oResultCount)
 				{
-					throw new Exception('Failed to count CDRs (invoiced, default db). '.$oCountQuery->Error());
+					throw new Exception_Database('Failed to count CDRs (invoiced, default db). '.$oCountQuery->Error());
 				}
 				
 				$oCDRsQuery		= new Query();
@@ -552,7 +552,7 @@ class Service extends ORM
 				
 				if (!$oResultCDRs)
 				{
-					throw new Exception('Failed to retrieve CDRs (invoiced, default db). '.$oCDRsQuery->Error());
+					throw new Exception_Database('Failed to retrieve CDRs (invoiced, default db). '.$oCDRsQuery->Error());
 				}
 				
 				$oCountResult			= $oResultCount->fetch_row();
@@ -631,7 +631,7 @@ class Service extends ORM
 			
 			if (!$oResultCount)
 			{
-				throw new Exception('Failed to count CDRs (NOT invoiced, default db). '.$oCountQuery->Error());
+				throw new Exception_Database('Failed to count CDRs (NOT invoiced, default db). '.$oCountQuery->Error());
 			}
 			
 			$oCDRsQuery		= new Query();
@@ -639,7 +639,7 @@ class Service extends ORM
 			
 			if (!$oResultCDRs)
 			{
-				throw new Exception('Failed to retrieve CDRs (NOT invoiced, default db). '.$oCDRsQuery->Error());
+				throw new Exception_Database('Failed to retrieve CDRs (NOT invoiced, default db). '.$oCDRsQuery->Error());
 			}
 			
 			$oCountResult			= $oResultCount->fetch_row();
@@ -689,7 +689,7 @@ class Service extends ORM
 		
 		if (!$oResult)
 		{
-			throw new Exception('Could not retrieve the charges for the service:: Error Message='.$oQuery->Error());
+			throw new Exception_Database('Could not retrieve the charges for the service:: Error Message='.$oQuery->Error());
 		}
 		
 		// Add result into an array

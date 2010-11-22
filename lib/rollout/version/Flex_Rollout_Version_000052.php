@@ -35,7 +35,7 @@ class Flex_Rollout_Version_000052 extends Flex_Rollout_Version
 					";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add columns to CustomerGroup table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add columns to CustomerGroup table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE CustomerGroup 
 					DROP external_name_possessive,
@@ -59,7 +59,7 @@ class Flex_Rollout_Version_000052 extends Flex_Rollout_Version
 		$strSQL = "DELETE FROM credit_card_type WHERE const_name = 'CREDIT_CARD_TYPE_BANKCARD'";
 		if (($outcome = $qryQuery->Execute($strSQL)) === FALSE)
 		{
-			throw new Exception(__CLASS__ . ' Failed to delete Bankcard from crdit_card_type table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to delete Bankcard from crdit_card_type table. ' . $qryQuery->Error());
 		}
 	}
 	
@@ -72,7 +72,7 @@ class Flex_Rollout_Version_000052 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

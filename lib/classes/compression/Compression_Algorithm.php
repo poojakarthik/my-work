@@ -60,7 +60,7 @@ class Compression_Algorithm extends ORM
 			$selAll	= self::_preparedStatement('selAll');
 			if ($selAll->Execute() === false)
 			{
-				throw new Exception($selAll->Error());
+				throw new Exception_Database($selAll->Error());
 			}
 			
 			while ($arrCompressionAlgorithm = $selAll->Fetch())

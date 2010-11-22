@@ -24,7 +24,7 @@ class CDR_Call_Type_Translation extends ORM_Cached
 		$oGetForCarrierCode	= self::_preparedStatement('selForCarrierCode');
 		if ($oGetForCarrierCode->Execute(array('carrier_id'=>$iCarrier,'carrier_code'=>$mCarrierCode)) === false)
 		{
-			throw new Exception($oGetForCarrierCode->Error());
+			throw new Exception_Database($oGetForCarrierCode->Error());
 		}
 		if ($aRecord = $oGetForCarrierCode->Fetch())
 		{

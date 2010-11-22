@@ -78,7 +78,7 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 												"ORDER BY file_imported_on DESC, file_name ASC");
 			if ($resResult === false)
 			{
-				throw new Exception("There was an error retrieving the required data for this page.  If this problem continues to occur, please notify YBS." . (($bolVerboseErrors) ? "\n".$qryQuery->Error() : ''));
+				throw new Exception_Database("There was an error retrieving the required data for this page.  If this problem continues to occur, please notify YBS." . (($bolVerboseErrors) ? "\n".$qryQuery->Error() : ''));
 			}
 			$arrImportedFiles	= array();
 			while ($arrImportedFile = $resResult->fetch_assoc())
@@ -130,7 +130,7 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 												"ORDER BY file_exported_on DESC, file_name ASC");
 			if ($resResult === false)
 			{
-				throw new Exception("There was an error retrieving the required data for this page.  If this problem continues to occur, please notify YBS." . (($bolVerboseErrors) ? "\n".$qryQuery->Error() : ''));
+				throw new Exception_Database("There was an error retrieving the required data for this page.  If this problem continues to occur, please notify YBS." . (($bolVerboseErrors) ? "\n".$qryQuery->Error() : ''));
 			}
 			$arrExportedFiles	= array();
 			while ($arrExportedFile = $resResult->fetch_assoc())
@@ -182,7 +182,7 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 												"ORDER BY file_imported_on DESC, file_name ASC");
 			if ($resResult === false)
 			{
-				throw new Exception("There was an error retrieving the required data for this page.  If this problem continues to occur, please notify YBS." . (($bolVerboseErrors) ? "\n".$qryQuery->Error() : ''));
+				throw new Exception_Database("There was an error retrieving the required data for this page.  If this problem continues to occur, please notify YBS." . (($bolVerboseErrors) ? "\n".$qryQuery->Error() : ''));
 			}
 			$arrImportedFiles	= array();
 			while ($arrImportedFile = $resResult->fetch_assoc())
@@ -234,7 +234,7 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 												"ORDER BY file_imported_on DESC, file_name ASC");
 			if ($resResult === false)
 			{
-				throw new Exception("There was an error retrieving the required data for this page.  If this problem continues to occur, please notify YBS." . (($bolVerboseErrors) ? "\n".$qryQuery->Error() : ''));
+				throw new Exception_Database("There was an error retrieving the required data for this page.  If this problem continues to occur, please notify YBS." . (($bolVerboseErrors) ? "\n".$qryQuery->Error() : ''));
 			}
 			$arrImportedFiles	= array();
 			while ($arrImportedFile = $resResult->fetch_assoc())

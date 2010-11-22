@@ -99,7 +99,7 @@ class Payment_Request extends ORM_Cached
 						);
 		if ($mResult === false)
 		{
-			throw new Exception("Failed to get Payment Requests for customer group '{$iCustomerGroup}, status '{$iStatus}' & payment type '{$iPaymentType}'. ".$oStmt->Error());
+			throw new Exception_Database("Failed to get Payment Requests for customer group '{$iCustomerGroup}, status '{$iStatus}' & payment type '{$iPaymentType}'. ".$oStmt->Error());
 		}
 		
 		// Convert to ORM objects (Payment_Request)
@@ -119,7 +119,7 @@ class Payment_Request extends ORM_Cached
 		$mResult	= $oStmt->Execute(array('payment_request_status_id' => $iStatus));
 		if ($mResult === false)
 		{
-			throw new Exception("Failed to get Payment Requests for status '{$iStatus}'. ".$oStmt->Error());
+			throw new Exception_Database("Failed to get Payment Requests for status '{$iStatus}'. ".$oStmt->Error());
 		}
 		
 		// Convert to ORM objects (Payment_Request)

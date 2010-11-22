@@ -26,7 +26,7 @@ Log::getLog()->log("Getting list of Flex IDD Destinations...");
 $resDestinations	= $qryQuery->Execute("SELECT * FROM Destination WHERE Context = 1");
 if ($resDestinations === false)
 {
-	throw new Exception($qryQuery->Error());
+	throw new Exception_Database($qryQuery->Error());
 }
 $arrDestinations	= array();
 while ($arrDestination = $resDestinations->fetch_assoc())

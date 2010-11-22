@@ -974,7 +974,7 @@ abstract class NormalisationModule extends CarrierModule
 																											"destination_context.id = <Context>");
 		if ($selUnknownDestination->Execute(array('Context'=>$this->_intContext)) === false)
 		{
-			throw new Exception($selUnknownDestination->Error());
+			throw new Exception_Database($selUnknownDestination->Error());
 		}
 		if ($arrUnknownDestination = $selUnknownDestination->Fetch())
 		{
@@ -1002,7 +1002,7 @@ abstract class NormalisationModule extends CarrierModule
 		// Check for exact match destination
 		if ($this->_selFindDestination->Execute(array("Carrier"=>$this->intBaseCarrier, "CarrierCode"=>(string)$mCarrierCode, "Context"=>$this->_intContext)) === false)
 		{
-			throw new Exception($this->_selFindDestination->Error());
+			throw new Exception_Database($this->_selFindDestination->Error());
 		}
 		if ($aDestination = $this->_selFindDestination->Fetch())
 		{
@@ -1017,7 +1017,7 @@ abstract class NormalisationModule extends CarrierModule
 																													"destination_context.id = <Context>");
 			if ($oGetUnknownDestination->Execute(array('Context'=>$this->_intContext)) === false)
 			{
-				throw new Exception($oGetUnknownDestination->Error());
+				throw new Exception_Database($oGetUnknownDestination->Error());
 			}
 			if ($aUnknownDestination = $oGetUnknownDestination->Fetch())
 			{
@@ -1206,7 +1206,7 @@ abstract class NormalisationModule extends CarrierModule
 			$resFileImport	= $qryQuery->Execute("SELECT * FROM FileImport WHERE Id = {$intFileImportId} LIMIT 1");
 			if ($resFileImport === false)
 			{
-				throw new Exception($qryQuery->Error());
+				throw new Exception_Database($qryQuery->Error());
 			}
 			elseif ($arrFileImport = $resFileImport->fetch_assoc())
 			{

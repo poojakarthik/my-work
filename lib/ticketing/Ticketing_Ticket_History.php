@@ -50,7 +50,7 @@ class Ticketing_Ticket_History extends Ticketing_Ticket
 			$strLimit);
 		if (($outcome = $selMatches->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception("Failed to load Ticketing_Ticket_History objects: " . $selMatches->Error());
+			throw new Exception_Database("Failed to load Ticketing_Ticket_History objects: " . $selMatches->Error());
 		}
 		if (!$outcome)
 		{

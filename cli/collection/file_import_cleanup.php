@@ -17,7 +17,7 @@ $strArchivePath		= $strArchiveDir.date("Ymdhis").".tar.bz2";
 // Retrieve files to be Archived (which are files that are completely imported, duplicates, or older than 30 days)
 if ($selCompletedFiles->Execute() === FALSE)
 {
-	throw new Exception($selCompletedFiles->Error());
+	throw new Exception_Database($selCompletedFiles->Error());
 }
 else
 {
@@ -51,7 +51,7 @@ else
 			$arrFileImport['archive_location']	= $strArchivePath;
 			if ($ubiCompletedFile->Execute($arrFileImport) === FALSE)
 			{
-				throw new Exception($ubiCompletedFile->Error());
+				throw new Exception_Database($ubiCompletedFile->Error());
 			}
 		}
 	}

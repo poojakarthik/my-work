@@ -1,1 +1,1 @@
-<?php class Exception_Database_Deadlock extends Exception {} ?>
+<?php class Exception_Database_Deadlock extends Exception_Database {} ?>

@@ -87,7 +87,7 @@ class Email_Template_Type extends ORM_Cached
 			if ($mResult === false)
 			{
 				// Most likely a sql or connectivity error
-				throw new Exception("Unable to count email template type records, SQL Error. ".$oQuery->Error());
+				throw new Exception_Database("Unable to count email template type records, SQL Error. ".$oQuery->Error());
 			}
 			$aRow	= $mResult->fetch_assoc();
 			return $aRow['template_count'];
@@ -106,7 +106,7 @@ class Email_Template_Type extends ORM_Cached
 			if ($mResult === false)
 			{
 				// Most likely a sql or connectivity error
-				throw new Exception("Unable to retrieve correspondence_run_batch records, SQL Error. ".$oQuery->Error());
+				throw new Exception_Database("Unable to retrieve correspondence_run_batch records, SQL Error. ".$oQuery->Error());
 			}
 
 			// Create ORM objects and return
@@ -129,7 +129,7 @@ class Email_Template_Type extends ORM_Cached
 				if ($mCustomerGroupResult === false)
 				{
 					// Most likely a sql or connectivity error
-					throw new Exception("Unable to retrieve correspondence_run_batch records, SQL Error. ".$oQuery->Error());
+					throw new Exception_Database("Unable to retrieve correspondence_run_batch records, SQL Error. ".$oQuery->Error());
 				}
 				while ($aNestedRow = $mCustomerGroupResult->fetch_assoc())
 				{

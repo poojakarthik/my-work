@@ -111,7 +111,7 @@ class Ticketing_Customer_Group_Email
 		}
 		if (($outcome = $statement->Execute($arrValues)) === FALSE)
 		{
-			throw new Exception('Failed to save customer group email details: ' . $statement->Error());
+			throw new Exception_Database('Failed to save customer group email details: ' . $statement->Error());
 		}
 		if (!$this->id)
 		{
@@ -128,7 +128,7 @@ class Ticketing_Customer_Group_Email
 		
 		if (($outcome = $selMatches->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception("Failed to retrieve customer group email: " . $selMatches->Error());
+			throw new Exception_Database("Failed to retrieve customer group email: " . $selMatches->Error());
 		}
 		if (!$outcome)
 		{

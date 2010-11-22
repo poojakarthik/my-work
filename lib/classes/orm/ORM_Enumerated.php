@@ -196,7 +196,7 @@ abstract class ORM_Enumerated extends ORM_Cached
 			$selAll = call_user_func(array($strClass, '_preparedStatement'), 'selAll');
 			if ($selAll->Execute() === false)
 			{
-				throw new Exception(__METHOD__ ." - Failed to retrieve all $strClass objects from the data source: ". $selAll->Error());
+				throw new Exception_Database(__METHOD__ ." - Failed to retrieve all $strClass objects from the data source: ". $selAll->Error());
 			}
 		
 			$arrObjects = array();
@@ -335,7 +335,7 @@ abstract class ORM_Enumerated extends ORM_Cached
 		// Don't allow saving of objects that don't currently have an id, but do have a system_name set
 		if ($this->id === null && $this->systemName !== null)
 		{
-			throw new Exception("Cannot save an object with a system_name, but no id");
+			throw new Exception_ORM("Cannot save an object with a system_name, but no id");
 		}
 		
 		parent::save();
@@ -374,7 +374,7 @@ abstract class ORM_Enumerated extends ORM_Cached
 		{
 			if ($this->bolSystemNameAlreadySet || $this->id === null)
 			{
-				throw new Exception("The ". get_class($this) ." object with id: {$this->id} cannot have its system_name changed from '{$this->systemName}'.");
+				throw new Exception_ORM("The ". get_class($this) ." object with id: {$this->id} cannot have its system_name changed from '{$this->systemName}'.");
 			}
 			
 			parent::__set($strName, $mxdValue);

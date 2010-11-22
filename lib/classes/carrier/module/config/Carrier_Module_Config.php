@@ -66,7 +66,7 @@ class Carrier_Module_Config extends ORM_Cached
 		
 		if (false === $oStatement->Execute(array('carrier_module_id'=>ORM::extractId($mCarrierModule))))
 		{
-			throw new Exception($oStatement->Error());
+			throw new Exception_Database($oStatement->Error());
 		}
 		
 		$aRecords	= array();

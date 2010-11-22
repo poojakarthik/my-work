@@ -38,7 +38,7 @@ class Dealer_Sale_Type
 		
 		if ($selDealerSaleType->Execute(Array("DealerId"=>$intDealerId)) === FALSE)
 		{
-			throw new Exception("Failed to retrieve records from the Dealer_Sale_Type table for dealer with id: $intDealerId - ". $selDealerSaleType->Error());
+			throw new Exception_Database("Failed to retrieve records from the Dealer_Sale_Type table for dealer with id: $intDealerId - ". $selDealerSaleType->Error());
 		}
 		
 		$arrRecordSet = $selDealerSaleType->FetchAll();
@@ -75,7 +75,7 @@ class Dealer_Sale_Type
 		
 		if (!$qryQuery->Execute("DELETE FROM dealer_sale_type WHERE dealer_id = $intDealerId;"))
 		{
-			throw new Exception("Failed to set SaleTypes for Dealer: $intDealerId.  (Removal of old dealer - SaleType associations failed) - " . $qryQuery->Error());
+			throw new Exception_Database("Failed to set SaleTypes for Dealer: $intDealerId.  (Removal of old dealer - SaleType associations failed) - " . $qryQuery->Error());
 		}
 		
 		// Reset the auto incrementing counter for the dealer_sale_type table
@@ -91,7 +91,7 @@ class Dealer_Sale_Type
 			$arrData['sale_type_id'] = $intSaleTypeId;
 			if ($insDealerSaleType->Execute($arrData) === FALSE)
 			{
-				throw new Exception("Failed to set SaleTypes for Dealer: $intDealerId. (inserting record into dealer_sale_type table failed) - ". $insDealerSaleType->Error());
+				throw new Exception_Database("Failed to set SaleTypes for Dealer: $intDealerId. (inserting record into dealer_sale_type table failed) - ". $insDealerSaleType->Error());
 			}
 		}
 	}

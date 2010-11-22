@@ -59,7 +59,7 @@ class Sales_Sale extends DO_Sales_Sale
 		$objQuery = new Query(FLEX_DATABASE_CONNECTION_DEFAULT);
 		if ($objQuery->Execute("SAVEPOINT {$strTransactionName}") === FALSE)
 		{
-			throw new Exception("Failed to create the transaction savepoint '$strTransactionName' on the flex database - ". print_r($objQuery->Error(), TRUE));
+			throw new Exception_Database("Failed to create the transaction savepoint '$strTransactionName' on the flex database - ". print_r($objQuery->Error(), TRUE));
 		}
 		
 		try
@@ -131,7 +131,7 @@ class Sales_Sale extends DO_Sales_Sale
 			$dataSource->commit($strTransactionName);
 			if ($objQuery->Execute("RELEASE SAVEPOINT {$strTransactionName}") === FALSE)
 			{
-				throw new Exception("Failed to release the transaction savepoint '$strTransactionName' on the flex database - ". $objQuery->Error());
+				throw new Exception_Database("Failed to release the transaction savepoint '$strTransactionName' on the flex database - ". $objQuery->Error());
 			}
 		}
 		catch (Exception $e)
@@ -139,7 +139,7 @@ class Sales_Sale extends DO_Sales_Sale
 			$dataSource->rollback($strTransactionName);
 			if ($objQuery->Execute("ROLLBACK TO SAVEPOINT {$strTransactionName}") === FALSE)
 			{
-				throw new Exception($e->getMessage() . "\n- Also: Failed to rollback the transaction savepoint '$strTransactionName' on the flex database - ". $objQuery->Error());
+				throw new Exception_Database($e->getMessage() . "\n- Also: Failed to rollback the transaction savepoint '$strTransactionName' on the flex database - ". $objQuery->Error());
 			}
 			throw $e;
 		}

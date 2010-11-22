@@ -84,7 +84,7 @@ class Invoice_Run_Export_Motorpass extends Invoice_Run_Export
 		
 		if (($mInvoicesResult = $oQuery->Execute($sInvoicesSQL)) === false)
 		{
-			throw new Exception($oQuery->Error());
+			throw new Exception_Database($oQuery->Error());
 		}
 		$iInvoiceCount	= 0;
 		while ($aInvoice = $mInvoicesResult->fetch_assoc())

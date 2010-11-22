@@ -90,7 +90,7 @@ class Cli_App_Motorpass extends Cli
 						WHERE		motorpass_account_status_id = ".MOTORPASS_ACCOUNT_STATUS_AWAITING_DISPATCH;
 			if (($mResult = $oQuery->Execute($sSQL)) === false)
 			{
-				throw new Exception($oQuery->Error());
+				throw new Exception_Database($oQuery->Error());
 			}
 			$aRecords	= array();
 			while ($aRebillMotorpass = $mResult->fetch_assoc())

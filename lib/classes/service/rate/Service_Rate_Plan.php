@@ -117,7 +117,7 @@ class Service_Rate_Plan extends ORM
 		$selInvoiceCount	= self::_preparedStatement('selInvoiceCount');
 		if ($selInvoiceCount->Execute($this->toArray()) === false)
 		{
-			throw new Exception($selInvoiceCount->Error());
+			throw new Exception_Database($selInvoiceCount->Error());
 		}
 		else
 		{

@@ -245,7 +245,7 @@ abstract class ORM_Cached extends ORM
 				break;
 			
 			default:
-				throw new Exception("Unknown Cache Cleanup Rule '{$iCacheCleanupRule}'");
+				throw new Exception_ORM("Unknown Cache Cleanup Rule '{$iCacheCleanupRule}'");
 				break;
 		}
 	}
@@ -396,7 +396,7 @@ abstract class ORM_Cached extends ORM
 			$selAll = call_user_func(array($strClass, '_preparedStatement'), 'selAll');
 			if ($selAll->Execute() === false)
 			{
-				throw new Exception(__METHOD__ ." - Failed to retrieve all $strClass objects from the data source: ". $selAll->Error());
+				throw new Exception_Database(__METHOD__ ." - Failed to retrieve all $strClass objects from the data source: ". $selAll->Error());
 			}
 		
 			$arrObjects = array();

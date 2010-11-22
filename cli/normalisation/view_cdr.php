@@ -78,7 +78,7 @@ if ($intCDR)
 		$mixResult = $qryQuery->Execute($strFindDuplicateSQL);
 		if ($mixResult === FALSE)
 		{
-			throw new Exception($qryQuery->Error()."\n\n{$strFindDuplicateSQL}");
+			throw new Exception_Database($qryQuery->Error()."\n\n{$strFindDuplicateSQL}");
 		}
 		elseif ($arrDuplicateCDR = $mixResult->fetch_assoc())
 		{

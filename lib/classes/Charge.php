@@ -176,7 +176,7 @@ class Charge extends ORM_Cached
 		$mixResult = $objQuery->Execute($strRowCountQuery);
 		if ($mixResult === FALSE)
 		{
-			throw new Exception("Failed to retrieve total record count for 'Charge Search' query - ". $objQuery->Error());
+			throw new Exception_Database("Failed to retrieve total record count for 'Charge Search' query - ". $objQuery->Error());
 		}
 		
 		$intTotalRecordCount = intval(current($mixResult->fetch_assoc()));
@@ -195,7 +195,7 @@ class Charge extends ORM_Cached
 		
 		if ($selCharges->Execute() === FALSE)
 		{
-			throw new Exception("Failed to retrieve records for 'Charge Search' query - ". $selCharges->Error());
+			throw new Exception_Database("Failed to retrieve records for 'Charge Search' query - ". $selCharges->Error());
 		}
 
 		// Create the Charge objects (these objects will also include the fields accountName and serviceFNN)

@@ -133,7 +133,7 @@ class Cli_App_Merge_Contacts extends Cli
 				if (($objRecordSet = $qryQuery->Execute($strRecordsToUpdateQuery)) === FALSE)
 				{
 					// Something broke
-					throw new Exception("Error occurred when executing query: $strRecordsToUpdateQuery - " . $qryQuery->Error());
+					throw new Exception_Database("Error occurred when executing query: $strRecordsToUpdateQuery - " . $qryQuery->Error());
 				}
 
 				while ($arrRecord = $objRecordSet->fetch_assoc())
@@ -152,7 +152,7 @@ class Cli_App_Merge_Contacts extends Cli
 					if ($qryQuery->Execute($strUpdateQuery) === FALSE)
 					{
 						// Something broke
-						throw new Exception("Error occurred when executing query: $strUpdateQuery - " . $qryQuery->Error());
+						throw new Exception_Database("Error occurred when executing query: $strUpdateQuery - " . $qryQuery->Error());
 					}
 					$intActualAffectedRowCount = $qryQuery->AffectedRows();
 				}

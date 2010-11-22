@@ -125,7 +125,7 @@ class Dealer
 		$objRecordSet = $qryQuery->Execute($strQuery);
 		if (!$objRecordSet)
 		{
-			throw new Exception("Failed to retrieve dealer records using query: '$strQuery' - ". $qryQuery->Error());
+			throw new Exception_Database("Failed to retrieve dealer records using query: '$strQuery' - ". $qryQuery->Error());
 		}
 		
 		$arrDealers = array();
@@ -152,7 +152,7 @@ class Dealer
 			$objRecordSet = $qryQuery->Execute("SELECT FOUND_ROWS() AS RowCount;");
 			if (!$objRecordSet)
 			{
-				throw new Exception("Failed to retrieve pagination details for query: '$strQuery' - ". $qryQuery->Error());
+				throw new Exception_Database("Failed to retrieve pagination details for query: '$strQuery' - ". $qryQuery->Error());
 			}
 			
 			$arrRecord = $objRecordSet->fetch_assoc();
@@ -473,7 +473,7 @@ class Dealer
 		$objRecordSet = $qryQuery->Execute($strQuery);
 		if (!$objRecordSet)
 		{
-			throw new Exception("Failed to retrieve employees who are eligible to become new dealers, using query: '$strQuery' - " . $qryQuery->Error());
+			throw new Exception_Database("Failed to retrieve employees who are eligible to become new dealers, using query: '$strQuery' - " . $qryQuery->Error());
 		}
 		
 		$arrEmployeeIds = array();
@@ -687,7 +687,7 @@ class Dealer
 			
 			if ($updDealer->Execute($arrUpdate) === FALSE)
 			{
-				throw new Exception("Failed to update dealer record with id: {$this->id} - ". $updDealer->Error());
+				throw new Exception_Database("Failed to update dealer record with id: {$this->id} - ". $updDealer->Error());
 			}
 		}
 		else
@@ -706,7 +706,7 @@ class Dealer
 			$mixResult = $insDealer->Execute($arrInsert);
 			if ($mixResult === FALSE)
 			{
-				throw new Exception("Failed to create new dealer record - ". $insDealer->Error());
+				throw new Exception_Database("Failed to create new dealer record - ". $insDealer->Error());
 			}
 			
 			$this->id = $mixResult;

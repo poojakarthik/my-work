@@ -90,7 +90,7 @@ class Customer_Group
 			$selCustomerGroups = new StatementSelect("CustomerGroup", self::getColumns(), "", "internal_name ASC");
 			if (($outcome = $selCustomerGroups->Execute()) === FALSE)
 			{
-				throw new Exception("Failed to retrieve all Customer Groups: ". $selCustomerGroups->Error());
+				throw new Exception_Database("Failed to retrieve all Customer Groups: ". $selCustomerGroups->Error());
 			}
 	
 			while ($arrCustomerGroup = $selCustomerGroups->Fetch())

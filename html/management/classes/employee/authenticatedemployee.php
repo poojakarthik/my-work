@@ -107,7 +107,7 @@
 			$resEmployee	= $selEmployee->Execute(Array('Id' => $_SESSION['User']['Id']));
 			if ($resEmployee === false)
 			{
-				throw new Exception($selEmployee->Error());
+				throw new Exception_Database($selEmployee->Error());
 			}
 			
 			// If the session is invalid - then throw an exception

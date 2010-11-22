@@ -18,7 +18,7 @@ class Flex_Rollout_Version_000019 extends Flex_Rollout_Version
 				(0, 'None', 'Not a ticketing system user', 'TICKETING_USER_PERMISSION_NONE')";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . " Failed to populate ticketing_user_permission table. " . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . " Failed to populate ticketing_user_permission table. " . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DELETE FROM ticketing_user_permission WHERE id = 0;";
 	}
@@ -32,7 +32,7 @@ class Flex_Rollout_Version_000019 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

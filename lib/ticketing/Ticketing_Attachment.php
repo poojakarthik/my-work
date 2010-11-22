@@ -92,7 +92,7 @@ class Ticketing_Attachment
 		}
 		if (($outcome = $statement->Execute($arrValues)) === FALSE)
 		{
-			throw new Exception('Failed to save attachment details: ' . $statement->Error());
+			throw new Exception_Database('Failed to save attachment details: ' . $statement->Error());
 		}
 		if (!$this->id)
 		{
@@ -168,7 +168,7 @@ class Ticketing_Attachment
 			$strLimit);
 		if (($outcome = $selMatches->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception("Failed to load attachment: " . $selMatches->Error());
+			throw new Exception_Database("Failed to load attachment: " . $selMatches->Error());
 		}
 		if (!$outcome)
 		{
@@ -193,7 +193,7 @@ class Ticketing_Attachment
 		$selAttachments = new StatementSelect('ticketing_attachment', self::getColumns(), 'id = <RecordId>');
 		if (($outcome = $selAttachments->Execute()) === FALSE)
 		{
-			throw new Exception("Failed to load attachments for record '{$id}': " . $selAttachments->Error());
+			throw new Exception_Database("Failed to load attachments for record '{$id}': " . $selAttachments->Error());
 		}
 		if (!$outcome)
 		{
@@ -222,7 +222,7 @@ class Ticketing_Attachment
 		$selAttachments = new StatementSelect('ticketing_attachment', self::getColumns(), 'correspondance_id = <CorrespondenceId>');
 		if (($outcome = $selAttachments->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception("Failed to load attachments for correspondence '{$correspondence->id}': " . $selAttachments->Error());
+			throw new Exception_Database("Failed to load attachments for correspondence '{$correspondence->id}': " . $selAttachments->Error());
 		}
 		$arrAttchments = array();
 		while ($attachment = $selAttachments->Fetch())
@@ -255,7 +255,7 @@ class Ticketing_Attachment
 		$selAttachment = new StatementSelect('ticketing_attachment', array('file_content'), 'id = <RecordId>');
 		if (($outcome = $selAttachment->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception("Failed to load attachment file content for attachment '{$this->id}': " . $selAttachments->Error());
+			throw new Exception_Database("Failed to load attachment file content for attachment '{$this->id}': " . $selAttachments->Error());
 		}
 		$strFileContent = NULL;
 		if($attachment = $selAttachment->Fetch())

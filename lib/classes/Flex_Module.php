@@ -70,7 +70,7 @@ class Flex_Module
 			
 			if (($outcome = $selFlexModules->Execute()) === FALSE)
 			{
-				throw new Exception("Failed to retrieve all flex module declarations: ". $selFlexModules->Error());
+				throw new Exception_Database("Failed to retrieve all flex module declarations: ". $selFlexModules->Error());
 			}
 	
 			while ($arrModule = $selFlexModules->Fetch())

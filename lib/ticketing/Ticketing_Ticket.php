@@ -229,7 +229,7 @@ class Ticketing_Ticket
 
 		if (($outcome = $statement->Execute($arrValues)) === FALSE)
 		{
-			throw new Exception('Failed to save ' . (str_replace('_', ' ', $this->getTableName())) . ' details: ' . $statement->Error());
+			throw new Exception_Database('Failed to save ' . (str_replace('_', ' ', $this->getTableName())) . ' details: ' . $statement->Error());
 		}
 		if (!$this->id)
 		{
@@ -272,7 +272,7 @@ class Ticketing_Ticket
 		$arrWhere = array('Id' => $intTicketNumber);
 		if (($outcome = $selProperties->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception('Failed to check for existance of ticket: ' . $selProperties->Error());
+			throw new Exception_Database('Failed to check for existance of ticket: ' . $selProperties->Error());
 		}
 		if (!$outcome)
 		{
@@ -319,7 +319,7 @@ class Ticketing_Ticket
 			$where);
 		if (($outcome = $selMatches->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception("Failed to count tickets: " . $selMatches->Error());
+			throw new Exception_Database("Failed to count tickets: " . $selMatches->Error());
 		}
 		if (!$outcome)
 		{
@@ -388,7 +388,7 @@ GROUP BY ticket_id
 		$selMatches = new StatementSelect($strTables, self::getColumns(), $where, $strSort, $strLimit);
 		if (($outcome = $selMatches->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception("Failed to load tickets: " . $selMatches->Error());
+			throw new Exception_Database("Failed to load tickets: " . $selMatches->Error());
 		}
 
 		$arrInstances = array();
@@ -503,7 +503,7 @@ GROUP BY ticket_id
 			$strLimit);
 		if (($outcome = $selMatches->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception("Failed to load tickets: " . $selMatches->Error());
+			throw new Exception_Database("Failed to load tickets: " . $selMatches->Error());
 		}
 		if (!$outcome)
 		{

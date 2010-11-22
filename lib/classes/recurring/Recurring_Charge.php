@@ -174,7 +174,7 @@ class Recurring_Charge extends ORM_Cached
 		$mixResult = $objQuery->Execute($strRowCountQuery);
 		if ($mixResult === FALSE)
 		{
-			throw new Exception("Failed to retrieve total record count for 'RecurringCharge Search' query - ". $objQuery->Error());
+			throw new Exception_Database("Failed to retrieve total record count for 'RecurringCharge Search' query - ". $objQuery->Error());
 		}
 		
 		$intTotalRecordCount = intval(current($mixResult->fetch_assoc()));
@@ -190,7 +190,7 @@ class Recurring_Charge extends ORM_Cached
 		
 		if ($selRecurringCharges->Execute() === FALSE)
 		{
-			throw new Exception("Failed to retrieve records for 'RecurringCharge Search' query - ". $selRecurringCharges->Error());
+			throw new Exception_Database("Failed to retrieve records for 'RecurringCharge Search' query - ". $selRecurringCharges->Error());
 		}
 
 		// Create the Recurring_Charge objects (these objects will also include the fields accountName and serviceFNN)
@@ -1049,7 +1049,7 @@ class Recurring_Charge extends ORM_Cached
 		
 		if ($intRecordCount === false)
 		{
-			throw new Exception('Failed to try and retrieve the charge relating to this recurring charge, with ChargedOn: '. $strChargedOn .'. Msg - '. $selCharge->Error());
+			throw new Exception_Database('Failed to try and retrieve the charge relating to this recurring charge, with ChargedOn: '. $strChargedOn .'. Msg - '. $selCharge->Error());
 		}
 		
 		return ($intRecordCount)? true : false;

@@ -60,7 +60,7 @@ class Billing
 		if ($insInvoiceRun->Execute($arrInvoiceRun) === FALSE)
 		{
 			// Database Error -- throw Exception
-			throw new Exception("DB ERROR: ".$insInvoiceRun->Error());
+			throw new Exception_Database("DB ERROR: ".$insInvoiceRun->Error());
 		}
 		
 		// Retrieve the Bill Date of the last Invoice Run...
@@ -73,7 +73,7 @@ class Billing
 		}
 		elseif ($selInvoiceRun->Error())
 		{
-			throw new Exception("DB ERROR: ".$selInvoiceRun->Error());
+			throw new Exception_Database("DB ERROR: ".$selInvoiceRun->Error());
 		}
 		else
 		{
@@ -87,7 +87,7 @@ class Billing
 		if ($selInvoiceableAccounts->Execute() === FALSE)
 		{
 			// Database Error -- throw Exception
-			throw new Exception("DB ERROR: ".$selInvoiceableAccounts->Error());
+			throw new Exception_Database("DB ERROR: ".$selInvoiceableAccounts->Error());
 		}
 		
 		// Generate an Invoice for each Account
@@ -142,7 +142,7 @@ class Billing
 		if ($selInvoiceableFNNs->Execute($arrAccount) === FALSE)
 		{
 			// Database Error -- throw Exception
-			throw new Exception("DB ERROR: ".$selInvoiceableFNNs->Error());
+			throw new Exception_Database("DB ERROR: ".$selInvoiceableFNNs->Error());
 		}
 		
 		// Process each Invoiceable FNN
@@ -156,7 +156,7 @@ class Billing
 			if ($selCurrentService->Execute($arrFNN) === FALSE)
 			{
 				// Database Error -- throw Exception
-				throw new Exception("DB ERROR: ".$selCurrentService->Error());
+				throw new Exception_Database("DB ERROR: ".$selCurrentService->Error());
 			}
 			if (!($arrCurrentService = $selCurrentService->Fetch()))
 			{
@@ -253,7 +253,7 @@ class Billing
 																						"1");
 		if ($selPlanDetails->Execute(Array('Service' => $intServiceId, 'EffectiveDate' => $arrInvoiceRun['intInvoiceDatetime'])) === FALSE)
 		{
-			throw new Exception("DB ERROR: ".$selPlanDetails->Error());
+			throw new Exception_Database("DB ERROR: ".$selPlanDetails->Error());
 		}
 		$arrPlanDetails	= $selPlanDetails->Fetch();
 		
@@ -276,7 +276,7 @@ class Billing
 			}
 			elseif ($selEarliestCDR->Error())
 			{
-				throw new Exception("DB ERROR: ".$selEarliestCDR->Error());
+				throw new Exception_Database("DB ERROR: ".$selEarliestCDR->Error());
 			}
 			else
 			{
@@ -295,7 +295,7 @@ class Billing
 				$mixResult			= $selHasInvoicedCDRs->Execute(Array('Service' => $intServiceId));
 				if ($mixResult === FALSE)
 				{
-					throw new Exception("DB ERROR: ".$selHasInvoicedCDRs->Error());
+					throw new Exception_Database("DB ERROR: ".$selHasInvoicedCDRs->Error());
 				}
 				elseif (!$mixResult)
 				{
@@ -316,7 +316,7 @@ class Billing
 						}
 						else
 						{
-							throw new Exception("DB ERROR: ".$selLastPlanInvoiced->Error());
+							throw new Exception_Database("DB ERROR: ".$selLastPlanInvoiced->Error());
 						}
 					}
 					
@@ -369,7 +369,7 @@ class Billing
 		$resResult	= $qryQuery->Execute($strSQL);
 		if ($resResult === FALSE)
 		{
-			throw new Exception("DB ERROR: ".$qryQuery->Error());
+			throw new Exception_Database("DB ERROR: ".$qryQuery->Error());
 		}
 		
 		// Generate ServiceTypeTotals

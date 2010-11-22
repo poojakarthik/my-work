@@ -159,7 +159,7 @@ class Charge_Type extends ORM_Cached
 		$mResult = $oQuery->Execute($sRowCountQuery);
 		if ($mResult === FALSE)
 		{
-			throw new Exception("Failed to retrieve total record count for 'Charge Search' query - ". $objQuery->Error());
+			throw new Exception_Database("Failed to retrieve total record count for 'Charge Search' query - ". $objQuery->Error());
 		}
 		
 		$iTotalRecordCount = intval(current($mResult->fetch_assoc()));
@@ -175,7 +175,7 @@ class Charge_Type extends ORM_Cached
 				
 		if ($oRecords->Execute() === FALSE)
 		{
-			throw new Exception("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oRecords->Error());
+			throw new Exception_Database("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oRecords->Error());
 		}
 		
 		// Create the ChargeType objects
@@ -251,7 +251,7 @@ class Charge_Type extends ORM_Cached
 		}
 		elseif ($oByCode->Error())
 		{
-			throw new Exception($oByCode->Error());
+			throw new Exception_Database($oByCode->Error());
 		}
 		else
 		{
@@ -282,7 +282,7 @@ class Charge_Type extends ORM_Cached
 		}
 		elseif ($oContractExitFee->Error())
 		{
-			throw new Exception($oContractExitFee->Error());
+			throw new Exception_Database($oContractExitFee->Error());
 		}
 		else
 		{
@@ -313,7 +313,7 @@ class Charge_Type extends ORM_Cached
 		}
 		elseif ($oContractPayoutFee->Error())
 		{
-			throw new Exception($oContractPayoutFee->Error());
+			throw new Exception_Database($oContractPayoutFee->Error());
 		}
 		else
 		{

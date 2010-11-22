@@ -39,7 +39,7 @@ while ($arrLine = fgetcsv($resInputFile))
 	else
 	{
 		// DB Error
-		throw new Exception($insRecordTypeTranslation->Error());
+		throw new Exception_Database($insRecordTypeTranslation->Error());
 	}
 }
 

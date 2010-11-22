@@ -180,7 +180,7 @@ class DataReport extends ORM_Cached
 		{
 			if ($oResult->Execute($aValues) === false)
 			{
-				throw new Exception($oResult->Error()."\n\n\n".$oResult->_strQuery);
+				throw new Exception_Database($oResult->Error()."\n\n\n".$oResult->_strQuery);
 			}
 		}
 		catch (Exception $oException)

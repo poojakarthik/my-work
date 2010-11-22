@@ -23,7 +23,7 @@ ADD `customer_breadcrumb_menu_color` CHAR( 7 ) NULL COMMENT 'Secondary colour di
 ADD `customer_exit_url` VARCHAR( 255 ) NULL COMMENT 'When customer logs out this is the url they will be redirected to.';";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to alter table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to alter table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE `CustomerGroup`
   DROP `customer_primary_color`,
@@ -43,7 +43,7 @@ ADD `customer_exit_url` VARCHAR( 255 ) NULL COMMENT 'When customer logs out this
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

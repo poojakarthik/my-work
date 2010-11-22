@@ -96,7 +96,7 @@ class Credit_Card_Type
 		}
 		if (($outcome = $statement->Execute($arrValues)) === FALSE)
 		{
-			throw new Exception('Failed to save ' . (str_replace('_', ' ', $this->getTableName())) . ' details: ' . $statement->Error());
+			throw new Exception_Database('Failed to save ' . (str_replace('_', ' ', $this->getTableName())) . ' details: ' . $statement->Error());
 		}
 		if (!$this->id)
 		{
@@ -175,7 +175,7 @@ class Credit_Card_Type
 			$strLimit);
 		if (($outcome = $selMatches->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception("Failed to load " . (str_replace('_', ' ', $this->getTableName())) . ": " . $selMatches->Error());
+			throw new Exception_Database("Failed to load " . (str_replace('_', ' ', $this->getTableName())) . ": " . $selMatches->Error());
 		}
 		if (!$outcome)
 		{

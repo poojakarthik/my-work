@@ -135,7 +135,7 @@
 			{
 				if ($selResult->Execute($arrValues) === false)
 				{
-					throw new Exception($selResult->Error()."\n\n\n".$selResult->_strQuery);
+					throw new Exception_Database($selResult->Error()."\n\n\n".$selResult->_strQuery);
 				}
 			}
 			catch (Exception $oException)
@@ -252,7 +252,7 @@
 							
 							if ($objRecordSet === false)
 							{
-								throw new Exception("Failed to retrieve values for DataReport constraint field: $strName. Error: ". $objQuery->Error());
+								throw new Exception_Database("Failed to retrieve values for DataReport constraint field: $strName. Error: ". $objQuery->Error());
 							}
 							
 							while ($arrRecord = $objRecordSet->fetch_assoc())

@@ -44,7 +44,7 @@ class Application_Handler_Contract extends Application_Handler
 			$selContractTerms	= new StatementSelect("contract_terms", "*", "1", "id DESC", "1");
 			if ($selContractTerms->Execute() === FALSE)
 			{
-				throw new Exception($selContractTerms->Error());
+				throw new Exception_Database($selContractTerms->Error());
 			}
 			$arrContractTerms	= $selContractTerms->Fetch();
 			
@@ -100,13 +100,13 @@ class Application_Handler_Contract extends Application_Handler
 			$intTotal	= $selBreachedContractsCount->Execute();
 			if ($intTotal === FALSE)
 			{
-				throw new Exception($selBreachedContractsCount->Error());
+				throw new Exception_Database($selBreachedContractsCount->Error());
 			}
 			
 			$intShown	= $selBreachedContracts->Execute();
 			if ($intShown === FALSE)
 			{
-				throw new Exception($selBreachedContracts->Error());
+				throw new Exception_Database($selBreachedContracts->Error());
 			}
 			$arrDetailsToRender['Contracts']	= $selBreachedContracts->FetchAll();
 			

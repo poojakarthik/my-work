@@ -36,7 +36,7 @@ class FlexSaleItem extends ORM
 
 		if (($intCount = $selSaleItem->Execute(array('Id'=>$intId))) === FALSE)
 		{
-			throw new Exception("Failed to retrieve sale_item record with id: $intId. - ". $selSaleItem->Error());
+			throw new Exception_Database("Failed to retrieve sale_item record with id: $intId. - ". $selSaleItem->Error());
 		}
 		
 		if ($intCount)
@@ -88,7 +88,7 @@ class FlexSaleItem extends ORM
 		
 		if (($mixResult = $objQuery->Execute($strQuery)) === FALSE)
 		{
-			throw new Exception(__METHOD__ ." Failed to retrieve sale_item record using query - $strQuery - ". $objQuery->Error());
+			throw new Exception_Database(__METHOD__ ." Failed to retrieve sale_item record using query - $strQuery - ". $objQuery->Error());
 		}
 		
 		$mixRecord = $mixResult->fetch_assoc();
@@ -114,7 +114,7 @@ class FlexSaleItem extends ORM
 		
 		if (($mixResult = $objQuery->Execute($strQuery)) === FALSE)
 		{
-			throw new Exception(__METHOD__ ." Failed to retrieve sale_item record using query - $strQuery - ". $objQuery->Error());
+			throw new Exception_Database(__METHOD__ ." Failed to retrieve sale_item record using query - $strQuery - ". $objQuery->Error());
 		}
 		
 		$mixRecord = $mixResult->fetch_assoc();

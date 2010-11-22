@@ -83,13 +83,13 @@ class Charge_Type_System_Config extends ORM_Cached
 		$oStmt	= self::_preparedStatement('selForSystemChargeTypeAndEffectiveDatetime');
 		if ($oStmt->Execute(array('charge_type_system_id' => $iSystemChargeType, 'effective_datetime' => $sEffectiveDatetime)) === false)
 		{
-			throw new Exception("Failed to find System Charge Type config. ".$oStmt->Error());
+			throw new Exception_Database("Failed to find System Charge Type config. ".$oStmt->Error());
 		}
 		
 		$aResult	= $oStmt->Fetch();
 		if (!$aResult || !isset($aResult['charge_type_id']))
 		{
-			throw new Exception("Cannot find config for given System Charge Type, effective '{$sEffectiveDatetime}'. ".$oStmt->Error());
+			throw new Exception_Database("Cannot find config for given System Charge Type, effective '{$sEffectiveDatetime}'. ".$oStmt->Error());
 		}
 		
 		return Charge_Type::getForId($aResult['charge_type_id']);

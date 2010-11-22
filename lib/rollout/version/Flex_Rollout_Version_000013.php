@@ -27,7 +27,7 @@ class Flex_Rollout_Version_000013 extends Flex_Rollout_Version
 		$strSQL = "ALTER TABLE FileImport CHANGE FileType FileType INT(10) NULL";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to change FileImport.FileType to allow NULLs. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to change FileImport.FileType to allow NULLs. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE FileImport CHANGE FileType FileType INT(10) NOT NULL";
 		
@@ -36,7 +36,7 @@ class Flex_Rollout_Version_000013 extends Flex_Rollout_Version
 						ADD file_download BIGINT(20) NULL COMMENT '(FK) FileDownload record from which this File was Imported from'";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add FileImport.file_download. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add FileImport.file_download. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE FileImport DROP file_download";
 		
@@ -45,7 +45,7 @@ class Flex_Rollout_Version_000013 extends Flex_Rollout_Version
 						ADD description VARCHAR(512) NULL COMMENT 'Description for this instance of the specific Module' AFTER FileType";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add CarrierModule.description. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add CarrierModule.description. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE CarrierModule DROP description";
 		
@@ -55,13 +55,13 @@ class Flex_Rollout_Version_000013 extends Flex_Rollout_Version
 						"VALUES ('3G', '3G', '3G Data', 101, 0, 0, 1, 0, 3)";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add 3G RecordType. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add 3G RecordType. ' . $qryQuery->Error());
 		}
 		$strSQL 		= " UPDATE RecordType
 							SET GroupId = Id WHERE Code = '3G' AND ServiceType = 101;";
 		if (!($intInsertId = $qryQuery->Execute($strSQL)))
 		{
-			throw new Exception(__CLASS__ . ' Failed to Set 3G RecordType\'s GroupId. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to Set 3G RecordType\'s GroupId. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DELETE FROM RecordType WHERE Code = '3G' AND ServiceType = 101;";
 		
@@ -70,7 +70,7 @@ class Flex_Rollout_Version_000013 extends Flex_Rollout_Version
 						ADD carrier BIGINT(20) NULL COMMENT '(FK) Carrier from which this payment came from' AFTER PaidOn";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add Payment.carrier. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add Payment.carrier. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE Payment DROP carrier";
 		
@@ -84,7 +84,7 @@ class Flex_Rollout_Version_000013 extends Flex_Rollout_Version
 						) ENGINE = InnoDB COMMENT = 'Different Types of Carrier that Flex Supports'";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create carrier_type table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create carrier_type table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE IF EXISTS carrier_type";
 		
@@ -98,7 +98,7 @@ class Flex_Rollout_Version_000013 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate carrier_type table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate carrier_type table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "TRUNCATE TABLE carrier_type;";
 		
@@ -110,14 +110,14 @@ class Flex_Rollout_Version_000013 extends Flex_Rollout_Version
 						MODIFY Id BIGINT(20) NOT NULL AUTO_INCREMENT";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add new Carrier fields. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add new Carrier fields. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE Carrier DROP carrier_type, DROP description, DROP const_name, MODIFY Id BIGINT(20) NOT NULL";
 		$strSQL 		= " UPDATE Carrier
 							SET carrier_type = (SELECT id FROM carrier_type WHERE name = 'Telecom'), description = Name, const_name = IF(Name = 'Unitel (VoiceTalk)', 'CARRIER_UNITEL_VOICETALK', UCASE(CONCAT('carrier_', Name)))";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to set new Carrier fields. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to set new Carrier fields. ' . $qryQuery->Error());
 		}
 		
  		// Adds M2, Westpac BPAY, BillExpress and SecurePay Carriers
@@ -132,19 +132,19 @@ class Flex_Rollout_Version_000013 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add new Carriers. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add new Carriers. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DELETE FROM Carrier WHERE Name IN ('M2', 'BPAY Westpac', 'BillExpress', 'SecurePay');";
 
 		$strSQL = "DELETE FROM ConfigConstant WHERE ConstantGroup IN (SELECT id FROM ConfigConstantGroup WHERE Name = 'Carrier')";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to delete Carrier config constants. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to delete Carrier config constants. ' . $qryQuery->Error());
 		}
 		$strSQL = "DELETE FROM ConfigConstantGroup WHERE Name = 'Carrier'";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to delete Carrier config constant group. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to delete Carrier config constant group. ' . $qryQuery->Error());
 		}
 	}
 	
@@ -157,7 +157,7 @@ class Flex_Rollout_Version_000013 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

@@ -126,7 +126,7 @@ while ($sLine = fgets($rImportFile))
 				$rResult	= $oQuery->Execute("SELECT Id FROM InvoiceRun WHERE customer_group_id = {$oAccount->CustomerGroup} AND BillingDate = '{$sInvoiceRunDate}' AND invoice_run_type_id = ".INVOICE_RUN_TYPE_LIVE." ORDER BY BillingDate DESC LIMIT 1");
 				if ($rResult === false)
 				{
-					throw new Exception($oQuery->Error());
+					throw new Exception_Database($oQuery->Error());
 				}
 				elseif ($aInvoiceRun = $rResult->fetch_assoc())
 				{

@@ -200,7 +200,7 @@ class Application_Handler_CustomerStatus extends Application_Handler
 			if (($intRecCount = $selInvoiceRuns->Execute()) === FALSE)
 			{
 				// Error occurred when trying to retrieve the invoice runs
-				throw new Exception("Failed to retrieve data of eligible Invoice Runs: ". $selInvoiceRuns->Error());
+				throw new Exception_Database("Failed to retrieve data of eligible Invoice Runs: ". $selInvoiceRuns->Error());
 			}
 			
 			if ($intRecCount > 0)
@@ -399,7 +399,7 @@ class Application_Handler_CustomerStatus extends Application_Handler
 			if (($intRecCount = $selInvoiceRuns->Execute()) === FALSE)
 			{
 				// Error occurred when trying to retrieve the invoice runs
-				throw new Exception("Failed to retrieve data of eligible Invoice Runs: ". $selInvoiceRuns->Error());
+				throw new Exception_Database("Failed to retrieve data of eligible Invoice Runs: ". $selInvoiceRuns->Error());
 			}
 			
 			if ($intRecCount > 0)

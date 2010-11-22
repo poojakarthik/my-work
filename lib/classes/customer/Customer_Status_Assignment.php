@@ -111,7 +111,7 @@ class Customer_Status_Assignment
 			// Make the insert
 			if (($intNewId = $insCustomerStatusHistory->Execute($arrFields)) === FALSE)
 			{
-				throw new Exception("Failed to insert record into customer_status_history table for account: {$this->accountId}, invoice run: {$this->invoiceRunId} - ". $insCustomerStatusHistory->Error());
+				throw new Exception_Database("Failed to insert record into customer_status_history table for account: {$this->accountId}, invoice run: {$this->invoiceRunId} - ". $insCustomerStatusHistory->Error());
 			}
 			
 			// Store the new id
@@ -130,7 +130,7 @@ class Customer_Status_Assignment
 			if (($intRecordsAffected = $updCustomerStatusHistory->Execute($arrFields)) === FALSE)
 			{
 				// Update failed
-				throw new Exception("Failed to update record in customer_status_history table for account: {$this->accountId}, invoice run: {$this->invoiceRunId} (id: {$this->id})- ". $updCustomerStatusHistory->Error());
+				throw new Exception_Database("Failed to update record in customer_status_history table for account: {$this->accountId}, invoice run: {$this->invoiceRunId} (id: {$this->id})- ". $updCustomerStatusHistory->Error());
 			}
 			if ($intRecordsAffected === 0)
 			{
@@ -199,7 +199,7 @@ class Customer_Status_Assignment
 		
 		if (($intNumRec = $selCustomerStatusHistory->Execute(array("AccountId"=>$intAccountId, "InvoiceRunId"=>$intInvoiceRunId))) === FALSE)
 		{
-			throw new Exception("Failed to retrieve Customer Status Asssignment details for account: $intAccountId - ". $selCustomerStatusHistory->Error());
+			throw new Exception_Database("Failed to retrieve Customer Status Asssignment details for account: $intAccountId - ". $selCustomerStatusHistory->Error());
 		}
 		if ($intNumRec > 1)
 		{
@@ -256,7 +256,7 @@ class Customer_Status_Assignment
 
 		if (($outcome = $selCustomerStatusHistory->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception("Failed to retrieve Customer Status Asssignment details for account: $intAccountId - ". $selCustomerStatusHistory->Error());
+			throw new Exception_Database("Failed to retrieve Customer Status Asssignment details for account: $intAccountId - ". $selCustomerStatusHistory->Error());
 		}
 
 		while ($arrRecord = $selCustomerStatusHistory->Fetch())
@@ -384,7 +384,7 @@ class Customer_Status_Assignment
 		if (($intRecCount = $selCustomerStatusAssignment->Execute($arrWhere)) === FALSE)
 		{
 			// An error occurred
-			throw new Exception("Failed to refresh Customer Status Asssignment details for account: {$this->accountId}, invoice run: {$this->invoiceRunId}, customer_status_history.id: {$this->id} - ". $selCustomerStatusAssignment->Error());
+			throw new Exception_Database("Failed to refresh Customer Status Asssignment details for account: {$this->accountId}, invoice run: {$this->invoiceRunId}, customer_status_history.id: {$this->id} - ". $selCustomerStatusAssignment->Error());
 		}
 		if ($intRecCount == 0)
 		{

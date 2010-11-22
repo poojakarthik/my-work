@@ -73,7 +73,7 @@ class Carrier_Module extends ORM_Cached
 		
 		if (false === $oStatement->Execute(array('carrier_module_type_id'=>ORM::extractId($mCarrierModuleType), 'customer_group_id'=>$iCustomerGroupId, 'include_inactive'=>(($bIncludeInactive) ? 1 : 0))))
 		{
-			throw new Exception($oStatement->Error());
+			throw new Exception_Database($oStatement->Error());
 		}
 		
 		$aRecords	= array();
@@ -93,7 +93,7 @@ class Carrier_Module extends ORM_Cached
 		$iRows	= $oStatement->Execute(array('carrier_module_type_id'=>ORM::extractId($mCarrierModuleType), 'resource_type_id'=>ORM::extractId($mResourceType), 'carrier_id'=>ORM::extractId($mCarrier), 'customer_group_id'=>ORM::extractId($mCustomerGroup)));
 		if ($iRows === false)
 		{
-			throw new Exception($oStatement->Error());
+			throw new Exception_Database($oStatement->Error());
 		}
 		
 		$aRecords	= array();

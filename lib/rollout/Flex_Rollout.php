@@ -334,7 +334,7 @@ class Flex_Rollout
 		$objTables	= $qryQuery->Execute("SHOW TABLES");
 		if (!$objTables)
 		{
-			throw new Exception("Failed to retrieve tables of the '$strDataSource' database: " . $qryQuery->Error());
+			throw new Exception_Database("Failed to retrieve tables of the '$strDataSource' database: " . $qryQuery->Error());
 		}
 		
 		// For each table of the database, check if constants should be built for it
@@ -347,7 +347,7 @@ class Flex_Rollout
 			
 			if (!$objColumns)
 			{
-				throw new Exception("Failed to retrieve column listing for the '$strTable' table of the '$strDataSource' database: " . $qryQuery->Error());
+				throw new Exception_Database("Failed to retrieve column listing for the '$strTable' table of the '$strDataSource' database: " . $qryQuery->Error());
 			}
 			
 			// Check if it has id AND const_name AND description
@@ -405,7 +405,7 @@ class Flex_Rollout
 			
 			if (!$objRecordSet)
 			{
-				throw new Exception("Failed to retrieve the contents of the '$strTable' table of the '$strDataSource' database: " . $qryQuery->Error());
+				throw new Exception_Database("Failed to retrieve the contents of the '$strTable' table of the '$strDataSource' database: " . $qryQuery->Error());
 			}
 			
 			// Build the constant group
@@ -551,7 +551,7 @@ class Flex_Rollout
 		$nrCreditCards	= $qryQuery->Execute();
 		if ($nrCreditCards === FALSE)
 		{
-			throw new Exception("Failed to retrieve credit card type details from database: " . $qryQuery->Error());
+			throw new Exception_Database("Failed to retrieve credit card type details from database: " . $qryQuery->Error());
 		}
 		$ccDetails = $qryQuery->FetchAll();
 		$js = "

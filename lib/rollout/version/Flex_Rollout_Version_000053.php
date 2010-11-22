@@ -22,7 +22,7 @@ class Flex_Rollout_Version_000053 extends Flex_Rollout_Version
 					ADD maximum_services INT(11) UNSIGNED NULL DEFAULT NULL COMMENT 'The maximum number of Services before Scaling is introduced';";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add scalable, minimum_services and maximum_services fields to RatePlan table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add scalable, minimum_services and maximum_services fields to RatePlan table. ' . $qryQuery->Error());
 		}
 		
 		$this->rollbackSQL[] = "ALTER TABLE `RatePlan`
@@ -40,7 +40,7 @@ class Flex_Rollout_Version_000053 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

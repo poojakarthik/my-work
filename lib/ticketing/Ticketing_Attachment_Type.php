@@ -106,7 +106,7 @@ class Ticketing_Attachment_Type
 		}
 		if (($outcome = $statement->Execute($arrValues)) === FALSE)
 		{
-			throw new Exception('Failed to save attachment type details: ' . $statement->Error());
+			throw new Exception_Database('Failed to save attachment type details: ' . $statement->Error());
 		}
 		if (!$this->id)
 		{
@@ -167,7 +167,7 @@ class Ticketing_Attachment_Type
 			$strLimit);
 		if (($outcome = $selMatches->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception("Failed to load attachment type: " . $selMatches->Error());
+			throw new Exception_Database("Failed to load attachment type: " . $selMatches->Error());
 		}
 		if (!$outcome)
 		{

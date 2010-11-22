@@ -20,7 +20,7 @@ class Flex_Rollout_Version_000024 extends Flex_Rollout_Version
 														 MODIFY account_id bigint(20) NOT NULL COMMENT 'FK to Account table'";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to modify ticketing_contact_account. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to modify ticketing_contact_account. ' . $qryQuery->Error());
 		}
 	}
 
@@ -33,7 +33,7 @@ class Flex_Rollout_Version_000024 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

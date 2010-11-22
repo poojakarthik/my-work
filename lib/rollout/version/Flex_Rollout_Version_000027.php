@@ -21,7 +21,7 @@ class Flex_Rollout_Version_000027 extends Flex_Rollout_Version
 						MODIFY password varchar(255) DEFAULT NULL COMMENT 'Password (encrypted) to use when retrieving emails (or dir for junk XML files)'";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to alter ticketing_config table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to alter ticketing_config table. ' . $qryQuery->Error());
 		}
 	}
 
@@ -34,7 +34,7 @@ class Flex_Rollout_Version_000027 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

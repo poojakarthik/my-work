@@ -67,7 +67,7 @@ try
 		// Update the LastChargedOn
 		if ($ubiRecurringCharge->Execute($arrRecurringCharge) === FALSE)
 		{
-			throw new Exception($ubiRecurringCharge->Error());
+			throw new Exception_Database($ubiRecurringCharge->Error());
 		}
 		
 		CliEcho("[   OK   ]");

@@ -18,13 +18,13 @@ $strCreateTableSQL	= "	CREATE TABLE	IF NOT EXISTS	transaction_test
 						ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 if ($qryQuery->Execute($strCreateTableSQL) === false)
 {
-	throw new Exception($qryQuery->Error());
+	throw new Exception_Database($qryQuery->Error());
 }
 // Truncate 'transaction_test' Table
 $strCreateTableSQL	= "	TRUNCATE TABLE	transaction_test;";
 if ($qryQuery->Execute($strCreateTableSQL) === false)
 {
-	throw new Exception($qryQuery->Error());
+	throw new Exception_Database($qryQuery->Error());
 }
 
 // Rollback non-existent Transaction
@@ -50,7 +50,7 @@ $rResult	= $qryQuery->Execute("INSERT INTO transaction_test (name) VALUES ('UK')
 Log::getLog()->log("\t[+] Return value: ".print_r($rResult, true));
 if ($rResult === false)
 {
-	throw new Exception($qryQuery->Error());
+	throw new Exception_Database($qryQuery->Error());
 }
 
 // Start Transaction #2			DEPTH++	= 1
@@ -68,7 +68,7 @@ $rResult	= $qryQuery->Execute("INSERT INTO transaction_test (name) VALUES ('USA'
 Log::getLog()->log("\t[+] Return value: ".print_r($rResult, true));
 if ($rResult === false)
 {
-	throw new Exception($qryQuery->Error());
+	throw new Exception_Database($qryQuery->Error());
 }
 
 // Start Transaction #3			DEPTH++	= 2
@@ -86,7 +86,7 @@ $rResult	= $qryQuery->Execute("INSERT INTO transaction_test (name) VALUES ('NZ')
 Log::getLog()->log("\t[+] Return value: ".print_r($rResult, true));
 if ($rResult === false)
 {
-	throw new Exception($qryQuery->Error());
+	throw new Exception_Database($qryQuery->Error());
 }
 
 // Commit Transaction #3
@@ -113,7 +113,7 @@ $rResult	= $qryQuery->Execute("SELECT * FROM transaction_test;");
 Log::getLog()->log("\t[+] Return value: ".print_r(($rResult === false), true));
 if ($rResult === false)
 {
-	throw new Exception($qryQuery->Error());
+	throw new Exception_Database($qryQuery->Error());
 }
 else
 {
@@ -150,7 +150,7 @@ $rResult	= $qryQuery->Execute("SELECT * FROM transaction_test;");
 Log::getLog()->log("\t[+] Return value: ".print_r(($rResult === false), true));
 if ($rResult === false)
 {
-	throw new Exception($qryQuery->Error());
+	throw new Exception_Database($qryQuery->Error());
 }
 else
 {
@@ -187,7 +187,7 @@ $rResult	= $qryQuery->Execute("DELETE FROM transaction_test WHERE name = 'UK';")
 Log::getLog()->log("\t[+] Return value: ".print_r($rResult, true));
 if ($rResult === false)
 {
-	throw new Exception($qryQuery->Error());
+	throw new Exception_Database($qryQuery->Error());
 }
 
 // Add AUS to 'transaction_test' Table
@@ -196,7 +196,7 @@ $rResult	= $qryQuery->Execute("INSERT INTO transaction_test (name) VALUES ('AUS'
 Log::getLog()->log("\t[+] Return value: ".print_r($rResult, true));
 if ($rResult === false)
 {
-	throw new Exception($qryQuery->Error());
+	throw new Exception_Database($qryQuery->Error());
 }
 
 // Start Transaction #5			DEPTH	= 1
@@ -214,7 +214,7 @@ $rResult	= $qryQuery->Execute("INSERT INTO transaction_test (name) VALUES ('PNG'
 Log::getLog()->log("\t[+] Return value: ".print_r($rResult, true));
 if ($rResult === false)
 {
-	throw new Exception($qryQuery->Error());
+	throw new Exception_Database($qryQuery->Error());
 }
 
 // Rollback Transaction #6
@@ -232,7 +232,7 @@ $rResult	= $qryQuery->Execute("SELECT * FROM transaction_test;");
 Log::getLog()->log("\t[+] Return value: ".print_r(($rResult === false), true));
 if ($rResult === false)
 {
-	throw new Exception($qryQuery->Error());
+	throw new Exception_Database($qryQuery->Error());
 }
 else
 {
@@ -269,7 +269,7 @@ $rResult	= $qryQuery->Execute("SELECT * FROM transaction_test;");
 Log::getLog()->log("\t[+] Return value: ".print_r(($rResult === false), true));
 if ($rResult === false)
 {
-	throw new Exception($qryQuery->Error());
+	throw new Exception_Database($qryQuery->Error());
 }
 else
 {

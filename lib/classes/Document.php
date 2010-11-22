@@ -146,7 +146,7 @@ class Document extends ORM
 		$resRevision	= $qryQuery->Execute($strQuery);
 		if ($resRevision === false)
 		{
-			throw new Exception($qryQuery->Error());
+			throw new Exception_Database($qryQuery->Error());
 		}
 		
 		if ($resRevision->num_rows)
@@ -192,7 +192,7 @@ class Document extends ORM
 					$intLastActiveRevision	= $selLastActiveRevision->Execute($this->toArray());
 					if ($intLastActiveRevision === false)
 					{
-						throw new Exception($selLastActiveRevision->Error());
+						throw new Exception_Database($selLastActiveRevision->Error());
 					}
 					elseif ($arrDocumentContent = $selLastActiveRevision->Fetch())
 					{
@@ -279,7 +279,7 @@ class Document extends ORM
 		$selChildren	= self::_preparedStatement('selChildren');
 		if ($selChildren->Execute(array('id'=>$intDocumentId)) === false)
 		{
-			throw new Exception($selChildren->Error());
+			throw new Exception_Database($selChildren->Error());
 		}
 		else
 		{
@@ -317,7 +317,7 @@ class Document extends ORM
 				$mixResult			= $selByNameAndParent->Execute(array('name'=>$strNode, 'parent_document_id'=>$intParentId));
 				if ($mixResult === false)
 				{
-					throw new Exception($selByNameAndParent->Error());
+					throw new Exception_Database($selByNameAndParent->Error());
 				}
 				elseif (!$mixResult)
 				{

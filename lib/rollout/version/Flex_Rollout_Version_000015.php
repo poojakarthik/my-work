@@ -34,7 +34,7 @@ class Flex_Rollout_Version_000015 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create automatic_invoice_action_dependency table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create automatic_invoice_action_dependency table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE automatic_invoice_action_dependency";
 
@@ -53,14 +53,14 @@ class Flex_Rollout_Version_000015 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create automatic_invoice_run_event table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create automatic_invoice_run_event table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE automatic_invoice_run_event";
 
 		$strSQL = " ALTER TABLE automatic_invoice_action_history ADD invoice_run_id bigint(20) unsigned NOT NULL COMMENT 'Id of the invoice run for the event'";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to alter automatic_invoice_action_history table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to alter automatic_invoice_action_history table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE automatic_invoice_action_history DROP invoice_run_id";
 
@@ -69,7 +69,7 @@ class Flex_Rollout_Version_000015 extends Flex_Rollout_Version
 					ADD response_days smallint(5) default '7' COMMENT 'Number of days from event that an external response must be made in'";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to alter automatic_invoice_action table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to alter automatic_invoice_action table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE automatic_invoice_action DROP days_from_invoice, DROP can_schedule, DROP response_days";
 
@@ -89,7 +89,7 @@ class Flex_Rollout_Version_000015 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to insert automatic invoice actions. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to insert automatic invoice actions. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DELETE FROM automatic_invoice_action WHERE const_name IN ('AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE_LIST',
 								'AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE_LIST'	, 'AUTOMATIC_INVOICE_ACTION_FINAL_DEMAND_LIST', 
@@ -102,34 +102,34 @@ class Flex_Rollout_Version_000015 extends Flex_Rollout_Version
 		$strSQL = " UPDATE automatic_invoice_action SET can_schedule = 1 WHERE const_name NOT IN ('AUTOMATIC_INVOICE_ACTION_NONE', 'AUTOMATIC_INVOICE_ACTION_UNBARRING') ";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to copy overdue_notice_days value from payment_terms table to automatic_invoice_action table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to copy overdue_notice_days value from payment_terms table to automatic_invoice_action table. ' . $qryQuery->Error());
 		}
 
 		// Need to move the data over from payment_terms table
 		$strSQL = " UPDATE automatic_invoice_action SET days_from_invoice = (SELECT overdue_notice_days FROM payment_terms ORDER BY id DESC LIMIT 0,1) WHERE const_name IN ('AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE', 'AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE_LIST') ";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to copy overdue_notice_days value from payment_terms table to automatic_invoice_action table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to copy overdue_notice_days value from payment_terms table to automatic_invoice_action table. ' . $qryQuery->Error());
 		}
 		$strSQL = " UPDATE automatic_invoice_action SET days_from_invoice = (SELECT suspension_notice_days FROM payment_terms ORDER BY id DESC LIMIT 0,1) WHERE const_name IN ('AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE', 'AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE_LIST', 'AUTOMATIC_INVOICE_ACTION_BARRING_LIST', 'AUTOMATIC_INVOICE_ACTION_BARRING') ";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to copy suspension_notice_days value from payment_terms table to automatic_invoice_action table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to copy suspension_notice_days value from payment_terms table to automatic_invoice_action table. ' . $qryQuery->Error());
 		}
 		$strSQL = " UPDATE automatic_invoice_action SET days_from_invoice = (SELECT final_demand_notice_days FROM payment_terms ORDER BY id DESC LIMIT 0,1) WHERE const_name IN ('AUTOMATIC_INVOICE_ACTION_FINAL_DEMAND', 'AUTOMATIC_INVOICE_ACTION_FINAL_DEMAND_LIST')";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to copy final_demand_notice_days value from payment_terms table to automatic_invoice_action table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to copy final_demand_notice_days value from payment_terms table to automatic_invoice_action table. ' . $qryQuery->Error());
 		}
 		$strSQL = " UPDATE automatic_invoice_action SET days_from_invoice = (SELECT (overdue_notice_days - 2) FROM payment_terms ORDER BY id DESC LIMIT 0,1) WHERE const_name IN ('AUTOMATIC_INVOICE_ACTION_LATE_FEES', 'AUTOMATIC_INVOICE_ACTION_LATE_FEES_LIST') ";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to copy overdue_notice_days value from payment_terms table to automatic_invoice_action table for late fees. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to copy overdue_notice_days value from payment_terms table to automatic_invoice_action table for late fees. ' . $qryQuery->Error());
 		}
 		$strSQL = " UPDATE automatic_invoice_action SET days_from_invoice = (SELECT (overdue_notice_days - 5) FROM payment_terms ORDER BY id DESC LIMIT 0,1) WHERE const_name IN ('AUTOMATIC_INVOICE_ACTION_FRIENDLY_REMINDER', 'AUTOMATIC_INVOICE_ACTION_FRIENDLY_REMINDER_LIST') ";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to copy overdue_notice_days value from payment_terms table to automatic_invoice_action table for friendly notices. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to copy overdue_notice_days value from payment_terms table to automatic_invoice_action table for friendly notices. ' . $qryQuery->Error());
 		}
 
 		// Need to populate the automatic_invoice_action_dependency table
@@ -149,14 +149,14 @@ class Flex_Rollout_Version_000015 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate automatic_invoice_action_dependency table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate automatic_invoice_action_dependency table. ' . $qryQuery->Error());
 		}
 
 		// Fix descriptions in automatic_barring_status table
 		$strSQL = "UPDATE automatic_barring_status SET description = name";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to update automatic_barring_status table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to update automatic_barring_status table. ' . $qryQuery->Error());
 		}
 
 		// Move the data currently recorded in the InvoiceRun table automatic_xxx fields to the new automatic_invoice_run_event table
@@ -169,7 +169,7 @@ class Flex_Rollout_Version_000015 extends Flex_Rollout_Version
 		$fetch = new QueryFetch($strSQL, 100);
 		if (($invoiceRun = $fetch->Execute($strSQL)) === FALSE)
 		{
-			throw new Exception(__CLASS__ . ' Failed to select existing automatic invoice action data from InvoiceRun table. ' . $fetch->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to select existing automatic invoice action data from InvoiceRun table. ' . $fetch->Error());
 		}
 		$strSQLStart = "INSERT INTO automatic_invoice_run_event (automatic_invoice_action_id, invoice_run_id, scheduled_datetime, actioned_datetime) VALUES ";
 		if ($invoiceRun)
@@ -183,7 +183,7 @@ class Flex_Rollout_Version_000015 extends Flex_Rollout_Version
 					$strSQL = $strSQLStart . "((SELECT id FROM automatic_invoice_action WHERE const_name = 'AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE'), $invoiceRunId, '$date', '$date')";
 					if (!$qryQuery->Execute($strSQL))
 					{
-						throw new Exception(__CLASS__ . " Failed to transfer automatic_overdue_datetime from InvoiceRun $invoiceRunId to automatic_invoice_run_event table. " . $qryQuery->Error());
+						throw new Exception_Database(__CLASS__ . " Failed to transfer automatic_overdue_datetime from InvoiceRun $invoiceRunId to automatic_invoice_run_event table. " . $qryQuery->Error());
 					}
 				}
 				if ($invoiceRun['automatic_suspension_datetime'])
@@ -192,7 +192,7 @@ class Flex_Rollout_Version_000015 extends Flex_Rollout_Version
 					$strSQL = $strSQLStart . "((SELECT id FROM automatic_invoice_action WHERE const_name = 'AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE'), $invoiceRunId, '$date', '$date')";
 					if (!$qryQuery->Execute($strSQL))
 					{
-						throw new Exception(__CLASS__ . " Failed to transfer automatic_suspension_datetime from InvoiceRun $invoiceRunId to automatic_invoice_run_event table. " . $qryQuery->Error());
+						throw new Exception_Database(__CLASS__ . " Failed to transfer automatic_suspension_datetime from InvoiceRun $invoiceRunId to automatic_invoice_run_event table. " . $qryQuery->Error());
 					}
 				}
 				else 
@@ -200,7 +200,7 @@ class Flex_Rollout_Version_000015 extends Flex_Rollout_Version
 					$strSQL = "INSERT INTO automatic_invoice_run_event (automatic_invoice_action_id, invoice_run_id) VALUES ((SELECT id FROM automatic_invoice_action WHERE const_name = 'AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE'), $invoiceRunId)";
 					if (!$qryQuery->Execute($strSQL))
 					{
-						throw new Exception(__CLASS__ . " Failed to create suspension notice automatic_invoice_run_event record for InvoiceRun $invoiceRunId. " . $qryQuery->Error());
+						throw new Exception_Database(__CLASS__ . " Failed to create suspension notice automatic_invoice_run_event record for InvoiceRun $invoiceRunId. " . $qryQuery->Error());
 					}
 				}
 				if ($invoiceRun['automatic_final_demand_datetime'])
@@ -209,7 +209,7 @@ class Flex_Rollout_Version_000015 extends Flex_Rollout_Version
 					$strSQL = $strSQLStart . "((SELECT id FROM automatic_invoice_action WHERE const_name = 'AUTOMATIC_INVOICE_ACTION_FINAL_DEMAND'), $invoiceRunId, '$date', '$date')";
 					if (!$qryQuery->Execute($strSQL))
 					{
-						throw new Exception(__CLASS__ . " Failed to transfer automatic_final_demand_datetime from InvoiceRun $invoiceRunId to automatic_invoice_run_event table. " . $qryQuery->Error());
+						throw new Exception_Database(__CLASS__ . " Failed to transfer automatic_final_demand_datetime from InvoiceRun $invoiceRunId to automatic_invoice_run_event table. " . $qryQuery->Error());
 					}
 				}
 				else 
@@ -217,7 +217,7 @@ class Flex_Rollout_Version_000015 extends Flex_Rollout_Version
 					$strSQL = "INSERT INTO automatic_invoice_run_event (automatic_invoice_action_id, invoice_run_id) VALUES ((SELECT id FROM automatic_invoice_action WHERE const_name = 'AUTOMATIC_INVOICE_ACTION_FINAL_DEMAND'), $invoiceRunId)";
 					if (!$qryQuery->Execute($strSQL))
 					{
-						throw new Exception(__CLASS__ . " Failed to create final demand automatic_invoice_run_event record for InvoiceRun $invoiceRunId. " . $qryQuery->Error());
+						throw new Exception_Database(__CLASS__ . " Failed to create final demand automatic_invoice_run_event record for InvoiceRun $invoiceRunId. " . $qryQuery->Error());
 					}
 				}
 				if ($invoiceRun['scheduled_automatic_bar_datetime'])
@@ -227,7 +227,7 @@ class Flex_Rollout_Version_000015 extends Flex_Rollout_Version
 					$strSQL = $strSQLStart . "((SELECT id FROM automatic_invoice_action WHERE const_name = 'AUTOMATIC_INVOICE_ACTION_BARRING'), $invoiceRunId, '$scheduledDate', $date)";
 					if (!$qryQuery->Execute($strSQL))
 					{
-						throw new Exception(__CLASS__ . " Failed to transfer scheduled_automatic_bar_datetime from InvoiceRun $invoiceRunId to automatic_invoice_run_event table. " . $qryQuery->Error());
+						throw new Exception_Database(__CLASS__ . " Failed to transfer scheduled_automatic_bar_datetime from InvoiceRun $invoiceRunId to automatic_invoice_run_event table. " . $qryQuery->Error());
 					}
 				}
 				else 
@@ -235,7 +235,7 @@ class Flex_Rollout_Version_000015 extends Flex_Rollout_Version
 					$strSQL = "INSERT INTO automatic_invoice_run_event (automatic_invoice_action_id, invoice_run_id) VALUES ((SELECT id FROM automatic_invoice_action WHERE const_name = 'AUTOMATIC_INVOICE_ACTION_BARRING'), $invoiceRunId)";
 					if (!$qryQuery->Execute($strSQL))
 					{
-						throw new Exception(__CLASS__ . " Failed to create barring automatic_invoice_run_event record for InvoiceRun $invoiceRunId. " . $qryQuery->Error());
+						throw new Exception_Database(__CLASS__ . " Failed to create barring automatic_invoice_run_event record for InvoiceRun $invoiceRunId. " . $qryQuery->Error());
 					}
 				}
 			}
@@ -246,7 +246,7 @@ class Flex_Rollout_Version_000015 extends Flex_Rollout_Version
 		$strSQL = "ALTER TABLE InvoiceRun DROP automatic_overdue_datetime, DROP automatic_suspension_datetime, DROP automatic_final_demand_datetime, DROP scheduled_automatic_bar_datetime, DROP automatic_bar_datetime";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . " Failed to drop disused columns from InvoiceRun table. " . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . " Failed to drop disused columns from InvoiceRun table. " . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "
 			ALTER TABLE InvoiceRun 
@@ -261,7 +261,7 @@ class Flex_Rollout_Version_000015 extends Flex_Rollout_Version
 		$strSQL = " ALTER TABLE payment_terms DROP overdue_notice_days, DROP suspension_notice_days, DROP final_demand_notice_days";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to drop columns from payment_terms table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to drop columns from payment_terms table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE payment_terms 
 			ADD overdue_notice_days smallint(5) unsigned default 21 NOT NULL COMMENT 'Number of days after invoicing when an overdue notice should be sent',
@@ -280,7 +280,7 @@ class Flex_Rollout_Version_000015 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

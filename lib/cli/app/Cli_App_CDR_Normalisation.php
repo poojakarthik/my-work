@@ -115,7 +115,7 @@ class Cli_App_CDR_Normalisation extends Cli
 		// Get list of Services/Contracts to update
 		if ($selContractServices->Execute(Array('EffectiveDate' => $strEffectiveDate)) === FALSE)
 		{
-			throw new Exception($selContractServices->Error());
+			throw new Exception_Database($selContractServices->Error());
 		}
 		else
 		{
@@ -181,7 +181,7 @@ class Cli_App_CDR_Normalisation extends Cli
 				// Update the ServiceRatePlan record
 				if ($ubiServiceRatePlan->Execute($arrServiceRatePlan) === FALSE)
 				{
-					throw new Exception($ubiServiceRatePlan->Error());
+					throw new Exception_Database($ubiServiceRatePlan->Error());
 				}
 				
 				$this->log("{$arrServiceRatePlan['contract_breach_reason_description']} @ {$arrServiceRatePlan['contract_effective_end_datetime']}");
@@ -204,7 +204,7 @@ class Cli_App_CDR_Normalisation extends Cli
 		// Get list of Contracted ServiceRatePlans that are either current, or are scheduled to continue until the end of time
 		if ($selServiceRatePlans->Execute() === FALSE)
 		{
-			throw new Exception($selServiceRatePlans->Error());
+			throw new Exception_Database($selServiceRatePlans->Error());
 		}
 		else
 		{
@@ -218,7 +218,7 @@ class Cli_App_CDR_Normalisation extends Cli
 				$this->log("Started: {$arrServiceRatePlan['StartDatetime']}; Contract End: {$arrServiceRatePlan['contract_scheduled_end_datetime']}");
 				if ($ubiServiceRatePlan->Execute($arrServiceRatePlan) === FALSE)
 				{
-					throw new Exception($ubiServiceRatePlan->Error());
+					throw new Exception_Database($ubiServiceRatePlan->Error());
 				}
 			}
 		}

@@ -39,7 +39,7 @@ class Ticketing_Contact_Account
 		$arrWhere = array('TCID' => $contactId, 'ACID' => $accountId);
 		if (($outcome=$selAssociation->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception('Failed to check for association between account ' . $accountId . ' and contact ' . $contactId . ': ' . $selAssociation->Error());
+			throw new Exception_Database('Failed to check for association between account ' . $accountId . ' and contact ' . $contactId . ': ' . $selAssociation->Error());
 		}
 
 		// If there isn't already an association between them... 
@@ -49,7 +49,7 @@ class Ticketing_Contact_Account
 			$insAssociation = new StatementInsert('ticketing_contact_account', $arrValues);
 			if (($outcome = $insAssociation->Execute($arrValues)) === FALSE)
 			{
-				throw new Exception('Failed to associate contact ' . $contactId . ' with account ' . $accountId . ': ' . $insAssociation->Error());
+				throw new Exception_Database('Failed to associate contact ' . $contactId . ' with account ' . $accountId . ': ' . $insAssociation->Error());
 			}
 		}
 
@@ -70,7 +70,7 @@ class Ticketing_Contact_Account
 			$selUnassociated = new StatementSelect($strTable, $arrColumns, $strWhere);
 			if (($mixReturn = $selUnassociated->Execute($arrWhere)) === FALSE)
 			{
-				throw new Exception('Failed to check for contacts unassociated with accounts: ' . $selUnassociated->Error());
+				throw new Exception_Database('Failed to check for contacts unassociated with accounts: ' . $selUnassociated->Error());
 			}
 			while ($row = $selUnassociated->Fetch())
 			{

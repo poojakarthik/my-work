@@ -77,7 +77,7 @@ class Ticketing_Customer_Group_Config
 		}
 		if (($outcome = $statement->Execute($arrValues)) === FALSE)
 		{
-			throw new Exception('Failed to save customer group email details: ' . $statement->Error());
+			throw new Exception_Database('Failed to save customer group email details: ' . $statement->Error());
 		}
 		if (!$this->id)
 		{
@@ -113,7 +113,7 @@ class Ticketing_Customer_Group_Config
 			$where);
 		if (($outcome = $selMatches->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception("Failed to check for existing customer group configuration: " . $selMatches->Error());
+			throw new Exception_Database("Failed to check for existing customer group configuration: " . $selMatches->Error());
 		}
 		if (!$outcome)
 		{

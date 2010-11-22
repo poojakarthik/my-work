@@ -35,7 +35,7 @@ $resOutputFile	= fopen($strOutputFile, 'w');
 CliEcho("Writing to '{$strOutputFile}'...\n");
 if ($selAccounts->Execute() === FALSE)
 {
-	throw new Exception($selAccounts->Error());
+	throw new Exception_Database($selAccounts->Error());
 }
 else
 {
@@ -44,7 +44,7 @@ else
 		// Get the last non-zero Invoice details
 		if ($selLastNonZeroInvoice->Execute($arrAccount) === FALSE)
 		{
-			throw new Exception($selLastNonZeroInvoice->Error());
+			throw new Exception_Database($selLastNonZeroInvoice->Error());
 		}
 		if ($arrLastInvoice = $selLastNonZeroInvoice->Fetch())
 		{
@@ -80,7 +80,7 @@ else
 			}
 			elseif ($selLostServices->Error())
 			{
-				throw new Exception($selLostServices->Error());
+				throw new Exception_Database($selLostServices->Error());
 			}
 			else
 			{

@@ -40,7 +40,7 @@ $qryQuery	= new Query();
 $resResult	= $qryQuery->Execute("SELECT CDR.*, FileImport.FileType FROM CDR JOIN FileImport ON CDR.File = FileImport.Id WHERE CDR.Status IN ({$strStatuses})");
 if ($resResult === false)
 {
-	throw new Exception($qryQuery->Error());
+	throw new Exception_Database($qryQuery->Error());
 }
 else
 {

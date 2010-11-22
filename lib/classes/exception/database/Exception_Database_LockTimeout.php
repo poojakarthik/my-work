@@ -1,1 +1,1 @@
-<?php class Exception_Database_LockTimeout extends Exception {} ?>
+<?php class Exception_Database_LockTimeout extends Exception_Database {} ?>

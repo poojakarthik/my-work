@@ -39,7 +39,7 @@ class Flex_Rollout_Version_000058 extends Flex_Rollout_Version
 					") ENGINE = innodb;";
 		if (!$qryAdminQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add invoice_run_type Table. ' . $qryAdminQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add invoice_run_type Table. ' . $qryAdminQuery->Error());
 		}
 		$this->rollbackSQL[] = array(	"Database"	=> FLEX_DATABASE_CONNECTION_ADMIN,
 										"SQL"		=> "DROP TABLE IF EXISTS invoice_run_type;");
@@ -51,7 +51,7 @@ class Flex_Rollout_Version_000058 extends Flex_Rollout_Version
 					(NULL, 'Samples'			, 'Samples'				, 'INVOICE_RUN_TYPE_SAMPLES');";
 		if (!$qryAdminQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate invoice_run_type Table. ' . $qryAdminQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate invoice_run_type Table. ' . $qryAdminQuery->Error());
 		}
 		$this->rollbackSQL[] = array(	"Database"	=> FLEX_DATABASE_CONNECTION_ADMIN,
 										"SQL"		=> "TRUNCATE TABLE invoice_run_type;");
@@ -68,7 +68,7 @@ class Flex_Rollout_Version_000058 extends Flex_Rollout_Version
 					"ADD customer_group_id BIGINT(20) UNSIGNED NULL COMMENT '(FK) CustomerGroup this InvoiceRun applies to' AFTER Id;";
 		if (!$qryAdminQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to alter InvoiceRun table. ' . $qryAdminQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to alter InvoiceRun table. ' . $qryAdminQuery->Error());
 		}
 		$this->rollbackSQL[] = array(	"Database"	=> FLEX_DATABASE_CONNECTION_ADMIN,
 										"SQL"		=> "ALTER TABLE InvoiceRun " .
@@ -86,14 +86,14 @@ class Flex_Rollout_Version_000058 extends Flex_Rollout_Version
 		$strSQL = "UPDATE InvoiceRun SET invoice_run_type = (SELECT id FROM invoice_run_type WHERE const_name = 'INVOICE_RUN_TYPE_LIVE')";
 		if (!$qryAdminQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to update provisioning_type.provisioning_type_nature Field. ' . $qryAdminQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to update provisioning_type.provisioning_type_nature Field. ' . $qryAdminQuery->Error());
 		}
 		
 		// 5:	Remove the InvoiceTemp Table (Temp Invoices will now be in the Invoice table)
 		$strSQL = "DROP TABLE InvoiceTemp;";
 		if (!$qryAdminQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to update provisioning_type.provisioning_type_nature Field. ' . $qryAdminQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to update provisioning_type.provisioning_type_nature Field. ' . $qryAdminQuery->Error());
 		}
 		$this->rollbackSQL[] = array(	"Database"	=> FLEX_DATABASE_CONNECTION_ADMIN,
 										"SQL"		=> "CREATE TABLE IF NOT EXISTS `InvoiceTemp` (
@@ -133,7 +133,7 @@ class Flex_Rollout_Version_000058 extends Flex_Rollout_Version
 					") ENGINE = innodb;";
 		if (!$qryAdminQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add invoice_run_schedule Table. ' . $qryAdminQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add invoice_run_schedule Table. ' . $qryAdminQuery->Error());
 		}
 		$this->rollbackSQL[] = array(	"Database"	=> FLEX_DATABASE_CONNECTION_ADMIN,
 										"SQL"		=> "DROP TABLE IF EXISTS invoice_run_schedule;"
@@ -147,7 +147,7 @@ class Flex_Rollout_Version_000058 extends Flex_Rollout_Version
 					"DROP samples_silver_days;";
 		if (!$qryAdminQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to remove Sample Invoice Run details from the payment_terms table. ' . $qryAdminQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to remove Sample Invoice Run details from the payment_terms table. ' . $qryAdminQuery->Error());
 		}
 		$this->rollbackSQL[] = array(	"Database"	=> FLEX_DATABASE_CONNECTION_ADMIN,
 										"SQL"		=> "ALTER TABLE payment_terms 
@@ -161,7 +161,7 @@ class Flex_Rollout_Version_000058 extends Flex_Rollout_Version
 		$strSQL = "ALTER TABLE ChargeType ADD automatic_only SMALLINT(1) NOT NULL DEFAULT 0 COMMENT '1: This can only be automatically added by Flex; 0: This can be manually added by an Employee' AFTER Fixed;";
 		if (!$qryAdminQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add automatic_only to the ChargeType table. ' . $qryAdminQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add automatic_only to the ChargeType table. ' . $qryAdminQuery->Error());
 		}
 		$this->rollbackSQL[] = array(	"Database"	=> FLEX_DATABASE_CONNECTION_ADMIN,
 										"SQL"		=> "ALTER TABLE ChargeType DROP automatic_only;"
@@ -174,7 +174,7 @@ class Flex_Rollout_Version_000058 extends Flex_Rollout_Version
 					"('PCR', 'Plan Credit in Arrears', 'CR', 0, 1, 0.0, 0);";
 		if (!$qryAdminQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add \'PCAD\', \'PCAR\', \'PCR\' ChargeTypes ' . $qryAdminQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add \'PCAD\', \'PCAR\', \'PCR\' ChargeTypes ' . $qryAdminQuery->Error());
 		}
 		$this->rollbackSQL[] = array(	"Database"	=> FLEX_DATABASE_CONNECTION_ADMIN,
 										"SQL"		=> "DELETE FROM ChargeType WHERE ChargeType IN ('PCAD', 'PCAR', 'PCR');"
@@ -184,7 +184,7 @@ class Flex_Rollout_Version_000058 extends Flex_Rollout_Version
 		$strSQL = "ALTER TABLE Charge ADD charge_type_id BIGINT(20) NULL COMMENT '(FK) The ChargeType.Id that this implements' AFTER ChargeType;";
 		if (!$qryAdminQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add charge_type_id to the Charge table. ' . $qryAdminQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add charge_type_id to the Charge table. ' . $qryAdminQuery->Error());
 		}
 		$this->rollbackSQL[] = array(	"Database"	=> FLEX_DATABASE_CONNECTION_ADMIN,
 										"SQL"		=> "ALTER TABLE Charge DROP charge_type_id;"
@@ -203,7 +203,7 @@ class Flex_Rollout_Version_000058 extends Flex_Rollout_Version
 					") ENGINE = innodb;";
 		if (!$qryAdminQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add tax_type Table. ' . $qryAdminQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add tax_type Table. ' . $qryAdminQuery->Error());
 		}
 		$this->rollbackSQL[] = array(	"Database"	=> FLEX_DATABASE_CONNECTION_ADMIN,
 										"SQL"		=> "DROP TABLE IF EXISTS tax_type;"
@@ -221,7 +221,7 @@ class Flex_Rollout_Version_000058 extends Flex_Rollout_Version
 						"('{$strTaxName}', '{$strTaxDescription}', {$fltTaxRatePercent}, 1, '0000-00-00 00:00:00', '9999-12-31 23:59:59');";
 			if (!$qryAdminQuery->Execute($strSQL))
 			{
-				throw new Exception(__CLASS__ . ' Failed to add Global Tax Rate ' . $qryAdminQuery->Error());
+				throw new Exception_Database(__CLASS__ . ' Failed to add Global Tax Rate ' . $qryAdminQuery->Error());
 			}
 			$this->rollbackSQL[] = array(	"Database"	=> FLEX_DATABASE_CONNECTION_ADMIN,
 											"SQL"		=> "TRUNCATE TABLE tax_type;"
@@ -232,7 +232,7 @@ class Flex_Rollout_Version_000058 extends Flex_Rollout_Version
 		$strSQL = "ALTER TABLE RecordType ADD global_tax_exempt TINYINT(1) NOT NULL DEFAULT 0 COMMENT '1: This RecordType WILL NOT have the Global Tax Rate applied; 0: This RecordType WILL have the Global Tax Rate applied';";
 		if (!$qryAdminQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add global_tax_exempt to the RecordType table. ' . $qryAdminQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add global_tax_exempt to the RecordType table. ' . $qryAdminQuery->Error());
 		}
 		$this->rollbackSQL[] = array(	"Database"	=> FLEX_DATABASE_CONNECTION_ADMIN,
 										"SQL"		=> "ALTER TABLE RecordType DROP global_tax_exempt;"
@@ -241,13 +241,13 @@ class Flex_Rollout_Version_000058 extends Flex_Rollout_Version
 		$strSQL = "UPDATE RecordType SET global_tax_exempt = 1 WHERE Code IN ('Roaming', 'OSNetworkAirtime');";
 		if (!$qryAdminQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate global_tax_exempt to the RecordType table. ' . $qryAdminQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate global_tax_exempt to the RecordType table. ' . $qryAdminQuery->Error());
 		}
 
 		$strSQL = "ALTER TABLE RecordType ADD global_tax_exempt TINYINT(1) NOT NULL DEFAULT 0 COMMENT '1: This RecordType WILL NOT have the Global Tax Rate applied; 0: This RecordType WILL have the Global Tax Rate applied';";
 		if (!$qryCDRQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add global_tax_exempt to the RecordType table. ' . $qryCDRQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add global_tax_exempt to the RecordType table. ' . $qryCDRQuery->Error());
 		}
 		$this->rollbackSQL[] = array(	"Database"	=> FLEX_DATABASE_CONNECTION_CDR,
 										"SQL"		=> "ALTER TABLE RecordType DROP global_tax_exempt;"
@@ -256,14 +256,14 @@ class Flex_Rollout_Version_000058 extends Flex_Rollout_Version
 		$strSQL = "UPDATE RecordType SET global_tax_exempt = 1 WHERE Code IN ('Roaming', 'OSNetworkAirtime');";
 		if (!$qryCDRQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate global_tax_exempt to the RecordType table. ' . $qryCDRQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate global_tax_exempt to the RecordType table. ' . $qryCDRQuery->Error());
 		}
 		
 		//	14:	Add Charge.global_tax_exempt
 		$strSQL = "ALTER TABLE Charge ADD global_tax_exempt TINYINT(1) NOT NULL DEFAULT 0 COMMENT '1: This Charge WILL NOT have the Global Tax Rate applied; 0: This Charge WILL have the Global Tax Rate applied';";
 		if (!$qryAdminQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add global_tax_exempt to the Charge table. ' . $qryAdminQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add global_tax_exempt to the Charge table. ' . $qryAdminQuery->Error());
 		}
 		$this->rollbackSQL[] = array(	"Database"	=> FLEX_DATABASE_CONNECTION_ADMIN,
 										"SQL"		=> "ALTER TABLE Charge DROP global_tax_exempt;"
@@ -296,7 +296,7 @@ class Flex_Rollout_Version_000058 extends Flex_Rollout_Version
 				
 				if (!$ptrQuery->Execute($this->rollbackSQL[$l]['SQL']))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l]['SQL'] . '. ' . $ptrQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l]['SQL'] . '. ' . $ptrQuery->Error());
 				}
 			}
 		}

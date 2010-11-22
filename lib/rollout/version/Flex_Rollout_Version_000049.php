@@ -26,7 +26,7 @@ class Flex_Rollout_Version_000049 extends Flex_Rollout_Version
 			$strSQL = "UPDATE {$strUpdateDB}.RecordType SET DisplayType = 1 WHERE Code = 'OneThree' AND ServiceType = 101;";
 			if (!$qryQuery->Execute($strSQL))
 			{
-				throw new Exception(__CLASS__ . ' Failed to Set the DisplayType of Mobile to 13/1300 Numbers to Call in '.$strUpdateDB.'. ' . $qryQuery->Error());
+				throw new Exception_Database(__CLASS__ . ' Failed to Set the DisplayType of Mobile to 13/1300 Numbers to Call in '.$strUpdateDB.'. ' . $qryQuery->Error());
 			}
 			$this->rollbackSQL[]	= "UPDATE {$strUpdateDB}.RecordType SET DisplayType = 3 WHERE Code = 'OneThree' AND ServiceType = 101;";
 			
@@ -34,7 +34,7 @@ class Flex_Rollout_Version_000049 extends Flex_Rollout_Version
 			$strSQL = "UPDATE {$strUpdateDB}.RecordType SET Required = 0 WHERE Code = 'OC&C' AND ServiceType = 101;";
 			if (!$qryQuery->Execute($strSQL))
 			{
-				throw new Exception(__CLASS__ . ' Failed to Make the Mobile OC&C RecordType non-compulsory in '.$strUpdateDB.'. ' . $qryQuery->Error());
+				throw new Exception_Database(__CLASS__ . ' Failed to Make the Mobile OC&C RecordType non-compulsory in '.$strUpdateDB.'. ' . $qryQuery->Error());
 			}
 			$this->rollbackSQL[]	= "UPDATE {$strUpdateDB}.RecordType SET Required = 1 WHERE Code = 'OC&C' AND ServiceType = 101;";
 		}
@@ -50,7 +50,7 @@ class Flex_Rollout_Version_000049 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

@@ -386,7 +386,7 @@ class FollowUp extends ORM_Cached
 								);
 		if ($oFollowUpSelect->Execute($aWhereInfoFollowUp['aValues']) === FALSE)
 		{
-			throw new Exception("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oFollowUpSelect->Error());
+			throw new Exception_Database("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oFollowUpSelect->Error());
 		}
 		
 		// Search for recurring followups, first remove followup specific fields from the filter
@@ -422,7 +422,7 @@ class FollowUp extends ORM_Cached
 							);
 			if ($mResult === false)
 			{
-				throw new Exception("Error creating temporary table. Database Error = ".$oQuery->Error());
+				throw new Exception_Database("Error creating temporary table. Database Error = ".$oQuery->Error());
 			}
 		}
 		else
@@ -469,7 +469,7 @@ class FollowUp extends ORM_Cached
 			$mResult	= $oQuery->Execute($sInsert);
 			if ($mResult === false)
 			{
-				throw new Exception("Error inserting followup into temporary table. Database Error = ".$oQuery->Error().". Query = {$sInsert}");
+				throw new Exception_Database("Error inserting followup into temporary table. Database Error = ".$oQuery->Error().". Query = {$sInsert}");
 			}
 		}
 		
@@ -527,7 +527,7 @@ class FollowUp extends ORM_Cached
 					$mInsertResult	= $oQuery->Execute($sInsert);
 					if ($mInsertResult === false)
 					{
-						throw new Exception("Error inserting recurring followup into temporary table. Database Error = ".$oQuery->Error().". Query = {$sInsert}");
+						throw new Exception_Database("Error inserting recurring followup into temporary table. Database Error = ".$oQuery->Error().". Query = {$sInsert}");
 					}
 				}
 				else
@@ -544,7 +544,7 @@ class FollowUp extends ORM_Cached
 					$mCheckResult	= $oQuery->Execute($sCheck);
 					if ($mCheckResult === false)
 					{
-						throw new Exception("Error looking for recurring followup iteration in temporary table. Database Error = ".$oQuery->Error().". Query = {$sCheck}");
+						throw new Exception_Database("Error looking for recurring followup iteration in temporary table. Database Error = ".$oQuery->Error().". Query = {$sCheck}");
 					}
 					
 					if ($mCheckResult->num_rows == 0)
@@ -587,7 +587,7 @@ class FollowUp extends ORM_Cached
 						$mInsertResult	= $oQuery->Execute($sInsert);
 						if ($mInsertResult === false)
 						{
-							throw new Exception("Error inserting followup into temporary table (second attempt). Database Error = ".$oQuery->Error().". Query = {$sInsert}");
+							throw new Exception_Database("Error inserting followup into temporary table (second attempt). Database Error = ".$oQuery->Error().". Query = {$sInsert}");
 						}
 					}
 					else
@@ -608,7 +608,7 @@ class FollowUp extends ORM_Cached
 						$mUpdateResult	= $oQuery->Execute($sUpdate);
 						if ($mUpdateResult === false)
 						{
-							throw new Exception("Error inserting recurring followup into temporary table. Database Error = ".$oQuery->Error().". Query = {$sInsert}");
+							throw new Exception_Database("Error inserting recurring followup into temporary table. Database Error = ".$oQuery->Error().". Query = {$sInsert}");
 						}
 					}
 				}
@@ -652,7 +652,7 @@ class FollowUp extends ORM_Cached
 									);
 		if ($oFollowUpSearchSelect->Execute($aWhereInfoSearch['aValues']) === FALSE)
 		{
-			throw new Exception("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oFollowUpSelect->Error());
+			throw new Exception_Database("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oFollowUpSelect->Error());
 		}
 		
 		if ($bCountOnly)

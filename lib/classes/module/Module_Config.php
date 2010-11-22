@@ -60,7 +60,7 @@ class Module_Config
 		}
 		elseif ($selModuleConfig->Error())
 		{
-			throw new Exception("DB ERROR: ".$selModuleConfig->Error());
+			throw new Exception_Database("DB ERROR: ".$selModuleConfig->Error());
 		}
 	}
 	
@@ -164,7 +164,7 @@ class Module_Config
 			if ($mixResult === FALSE)
 			{
 				// DB Error
-				throw new Exception("DB ERROR: ".$ubiModuleConfig->Error());
+				throw new Exception_Database("DB ERROR: ".$ubiModuleConfig->Error());
 			}
 		}
 	}
@@ -306,7 +306,7 @@ class Module_Config
 			$intId	= $intModuleConfig->Execute($arrModuleConfig);
 			if (!$intId)
 			{
-				throw new Exception("DB ERROR: ".$intModuleConfig->Error());
+				throw new Exception_Database("DB ERROR: ".$intModuleConfig->Error());
 			}
 		}
 		

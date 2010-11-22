@@ -49,7 +49,7 @@ $resOutputFile	= fopen("/home/rdavis/telcoblue_lost_customers_report.csv", 'w');
 // Get the List of Services which were Lost at some stage in our period
 if (($intTotal = $selLostServices->Execute(Array('Start'=>$strPeriodStart, 'End'=>$strPeriodEnd))) === FALSE)
 {
-	throw new Exception($selLostServices->Error());
+	throw new Exception_Database($selLostServices->Error());
 }
 $intStartTime	= time();
 $intCount		= 0;
@@ -72,7 +72,7 @@ while ($arrService = $selLostServices->Fetch())
 		// Get the Latest Loss/Winback details for the period
 		if ($selPeriodResponses->Execute(Array('FNN'=>$arrService['FNN'], 'Start'=>$arrDates['Start'], 'End'=>$arrDates['End'])) === FALSE)
 		{
-			throw new Exception($selPeriodResponses->Error());
+			throw new Exception_Database($selPeriodResponses->Error());
 		}
 		$arrPeriodResponses			= $selPeriodResponses->Fetch();
 		$arrOutput['Lost Date']		= $arrPeriodResponses['LostDate'];
@@ -95,7 +95,7 @@ while ($arrService = $selLostServices->Fetch())
 		// Get CDR Details
 		if ($selCDRDetails->Execute($arrService) === FALSE)
 		{
-			throw new Exception($selCDRDetails->Error());
+			throw new Exception_Database($selCDRDetails->Error());
 		}
 		$arrCDRDetails				= $selCDRDetails->Fetch();
 		$arrOutput['Latest CDR']	= $arrCDRDetails['LatestCDR'];

@@ -118,7 +118,7 @@
 			$this->Trace("Error: ".$this->Error());
 			Debug($this->Error());
 			
-			//throw new Exception($this->Error());
+			//throw new Exception_Database($this->Error());
 	 	}
 		
 		$this->aProfiling['fPreparationTime']	= microtime(true) - $this->aProfiling['fPreparationStart'];

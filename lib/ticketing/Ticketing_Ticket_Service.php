@@ -51,7 +51,7 @@ class Ticketing_Ticket_Service
 				$arrWhere);
 			if (($outcome = $selService->Execute($arrWhere)) === FALSE)
 			{
-				throw new Exception("Failed to check for existing service: " . $selService->Error());
+				throw new Exception_Database("Failed to check for existing service: " . $selService->Error());
 			}
 			if (!$outcome)
 			{
@@ -82,7 +82,7 @@ class Ticketing_Ticket_Service
 		$strSQL = "DELETE FROM " . strtolower(__CLASS__) . " WHERE id = " . $this->id;
 		if (($option = $delService->Execute($strSQL)) === FALSE)
 		{
-			throw new Exception('Failed to disassociate service ' . $this->id . ' from ticket ' . $this->ticketId . ': ' . $delService->Error());
+			throw new Exception_Database('Failed to disassociate service ' . $this->id . ' from ticket ' . $this->ticketId . ': ' . $delService->Error());
 		}
 		$this->id = NULL;
 		$this->_saved = FALSE;
@@ -96,7 +96,7 @@ class Ticketing_Ticket_Service
 			$where);
 		if (($outcome = $selUsers->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception("Failed to check for existing ticketing ticket service: " . $selUsers->Error());
+			throw new Exception_Database("Failed to check for existing ticketing ticket service: " . $selUsers->Error());
 		}
 		if (!$outcome && !$bolAsArray)
 		{
@@ -174,7 +174,7 @@ class Ticketing_Ticket_Service
 		}
 		if (($outcome = $statement->Execute($arrValues)) === FALSE)
 		{
-			throw new Exception('Failed to save ticketing ticket service details: ' . $statement->Error());
+			throw new Exception_Database('Failed to save ticketing ticket service details: ' . $statement->Error());
 		}
 		if (!$this->id)
 		{

@@ -70,7 +70,7 @@ class Payment_Response extends ORM_Cached
 		$mResult	= $oStmt->Execute(array('payment_response_status_id' => $iStatus));
 		if ($mResult === false)
 		{
-			throw new Exception("Failed to get Payment Responses for status '{$iStatus}'. ".$oStmt->Error());
+			throw new Exception_Database("Failed to get Payment Responses for status '{$iStatus}'. ".$oStmt->Error());
 		}
 		
 		// Convert to ORM objects

@@ -31,7 +31,7 @@ class Flex_Rollout_Version_000025 extends Flex_Rollout_Version
 
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create the ticketing_status_type table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create the ticketing_status_type table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE IF EXISTS ticketing_status_type;";
 
@@ -45,7 +45,7 @@ class Flex_Rollout_Version_000025 extends Flex_Rollout_Version
 
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add records to the ticketing_status_type table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add records to the ticketing_status_type table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DELETE FROM ticketing_status_type;";
 		
@@ -53,7 +53,7 @@ class Flex_Rollout_Version_000025 extends Flex_Rollout_Version
 		$strSQL = "ALTER TABLE ticketing_status ADD status_type_id BIGINT(20) UNSIGNED NOT NULL COMMENT 'FK into ticketing_status_type table' AFTER const_name";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add status_type_id field to the ticketing_status table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add status_type_id field to the ticketing_status table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE ticketing_status DROP status_type_id";
 		
@@ -70,7 +70,7 @@ class Flex_Rollout_Version_000025 extends Flex_Rollout_Version
 						";
 			if (!$qryQuery->Execute($strSQL))
 			{
-				throw new Exception(__CLASS__ . ' Failed to update the status_type_id field for the records currently in the ticketing_status table. ' . $qryQuery->Error());
+				throw new Exception_Database(__CLASS__ . ' Failed to update the status_type_id field for the records currently in the ticketing_status table. ' . $qryQuery->Error());
 			}
 		}
 		$this->rollbackSQL[] = "UPDATE ticketing_status SET status_type_id = 0";
@@ -82,7 +82,7 @@ class Flex_Rollout_Version_000025 extends Flex_Rollout_Version
 
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add TICKETING_STATUS_WITH_CUSTOMER record to the ticketing_status table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add TICKETING_STATUS_WITH_CUSTOMER record to the ticketing_status table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DELETE FROM ticketing_status WHERE id = 8 AND const_name = \"TICKETING_STATUS_WITH_INTERNAL\"";
 		
@@ -91,7 +91,7 @@ class Flex_Rollout_Version_000025 extends Flex_Rollout_Version
 
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to fix spelling mistake in ticketing_correspondance_delivery_status.description field. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to fix spelling mistake in ticketing_correspondance_delivery_status.description field. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "UPDATE ticketing_correspondance_delivery_status SET description = 'Recieved' WHERE description = 'Received';";
 		
@@ -107,7 +107,7 @@ class Flex_Rollout_Version_000025 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

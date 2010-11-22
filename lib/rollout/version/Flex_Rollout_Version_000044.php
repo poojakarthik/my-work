@@ -19,7 +19,7 @@ class Flex_Rollout_Version_000044 extends Flex_Rollout_Version
 		$strSQL = "ALTER TABLE `Account` ADD `tio_reference_number` VARCHAR(150) NULL COMMENT 'reference number when dealing with the T.I.O.' AFTER `automatic_barring_datetime`;";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add Account.tio_reference_number field. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add Account.tio_reference_number field. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE Account DROP tio_reference_number;";
 		
@@ -34,7 +34,7 @@ class Flex_Rollout_Version_000044 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

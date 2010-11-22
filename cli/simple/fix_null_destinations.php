@@ -86,7 +86,7 @@ try
 			{
 				if ($selDestination->Error())
 				{
-					throw new Exception($selDestination->Error());
+					throw new Exception_Database($selDestination->Error());
 				}
 				else
 				{
@@ -98,13 +98,13 @@ try
 				// Everything appears to be valid, update!
 				if ($ubiDestinationTranslation->Execute($arrDestinationTranslation) === false)
 				{
-					throw new Exception($ubiDestinationTranslation->Error());
+					throw new Exception_Database($ubiDestinationTranslation->Error());
 				}
 			}
 		}
 		elseif ($selDestinationTranslation->Error())
 		{
-			throw new Exception($selDestinationTranslation->Error());
+			throw new Exception_Database($selDestinationTranslation->Error());
 		}
 		else
 		{

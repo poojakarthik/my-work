@@ -32,7 +32,7 @@ class Motorpass_Account extends ORM_Cached
 		$oForAccount	= self::_preparedStatement('selForAccount');
 		if ($oForAccount->Execute(array('account_id'=>ORM::extractId($mAccount))) === false)
 		{
-			throw new Exception($oForAccount->Error());
+			throw new Exception_Database($oForAccount->Error());
 		}
 		$aResults	= array();
 		while ($aResult = $oWaitingForAccount->Fetch())
@@ -47,7 +47,7 @@ class Motorpass_Account extends ORM_Cached
 		$oForAccount	= self::_preparedStatement('selCurrentForAccount');
 		if ($oForAccount->Execute(array('account_id'=>ORM::extractId($mAccount))) === false)
 		{
-			throw new Exception($oForAccount->Error());
+			throw new Exception_Database($oForAccount->Error());
 		}
 		return new self($aResult);
 	}

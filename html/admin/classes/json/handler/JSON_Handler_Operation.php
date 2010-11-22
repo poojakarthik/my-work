@@ -123,7 +123,7 @@ class JSON_Handler_Operation extends JSON_Handler
 		$rCount		= $qQuery->Execute($sCountSQL);
 		if ($rCount === false)
 		{
-			throw new Exception($qQuery->Error());
+			throw new Exception_Database($qQuery->Error());
 		}
 		if ($aCount = $rCount->fetch_assoc())
 		{

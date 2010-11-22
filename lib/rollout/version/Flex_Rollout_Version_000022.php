@@ -35,7 +35,7 @@ class Flex_Rollout_Version_000022 extends Flex_Rollout_Version
 					") ENGINE = innodb;";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create provisioning_request_status Table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create provisioning_request_status Table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE provisioning_request_status;";
 		
@@ -53,7 +53,7 @@ class Flex_Rollout_Version_000022 extends Flex_Rollout_Version
 					(309, 'Rejected by Flex'		, 'Rejected by Flex'				, 'REQUEST_STATUS_REJECTED_FLEX');";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate provisioning_request_status Table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate provisioning_request_status Table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "TRUNCATE TABLE provisioning_request_status;";
 		
@@ -61,7 +61,7 @@ class Flex_Rollout_Version_000022 extends Flex_Rollout_Version
 		$strSQL = "ALTER TABLE service_line_status_update MODIFY current_line_status BIGINT(20) NULL ;";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to make service_line_status_update.current_line_status NULLable. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to make service_line_status_update.current_line_status NULLable. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE service_line_status_update MODIFY current_line_status BIGINT(20) NOT NULL ;";
 		
@@ -69,7 +69,7 @@ class Flex_Rollout_Version_000022 extends Flex_Rollout_Version
 		$strSQL = "ALTER TABLE service_line_status_update ADD provisioning_request_status BIGINT(20) NULL ;";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add service_line_status_update.provisioning_request_status Field. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add service_line_status_update.provisioning_request_status Field. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE service_line_status_update DROP provisioning_request_status;";
 		
@@ -106,7 +106,7 @@ class Flex_Rollout_Version_000022 extends Flex_Rollout_Version
 					(NULL,	501,	917,	303,	501);";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate service_line_status_update Table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate service_line_status_update Table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "TRUNCATE TABLE service_line_status_update;";
 		
@@ -120,7 +120,7 @@ class Flex_Rollout_Version_000022 extends Flex_Rollout_Version
 					") ENGINE = innodb;";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create provisioning_response_status Table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create provisioning_response_status Table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE provisioning_response_status;";
 		
@@ -133,7 +133,7 @@ class Flex_Rollout_Version_000022 extends Flex_Rollout_Version
 					(404, 'Duplicate'				, 'Duplicate'						, 'RESPONSE_STATUS_DUPLICATE');";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate provisioning_response_status Table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate provisioning_response_status Table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "TRUNCATE TABLE provisioning_response_status;";
 		
@@ -141,7 +141,7 @@ class Flex_Rollout_Version_000022 extends Flex_Rollout_Version
 		$strSQL = "ALTER TABLE ProvisioningResponse ADD request_status BIGINT(20) NULL ;";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add ProvisioningResponse.request_status Field. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add ProvisioningResponse.request_status Field. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE ProvisioningResponse DROP request_status;";
 		
@@ -149,7 +149,7 @@ class Flex_Rollout_Version_000022 extends Flex_Rollout_Version
 		$strSQL = "ALTER TABLE ProvisioningTranslation CHANGE Description flex_code VARCHAR(1024) NOT NULL COMMENT 'Flex Internal Code';";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to rename ProvisioningTranslation.Description to flex_code. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to rename ProvisioningTranslation.Description to flex_code. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE ProvisioningTranslation CHANGE flex_code Description VARCHAR(1024) NOT NULL COMMENT 'Text Description';";
 		
@@ -163,7 +163,7 @@ class Flex_Rollout_Version_000022 extends Flex_Rollout_Version
 					") ENGINE = innodb;";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create service_status Table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to create service_status Table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE service_status;";
 		
@@ -175,7 +175,7 @@ class Flex_Rollout_Version_000022 extends Flex_Rollout_Version
 					(404, 'Pending'			, 'Pending Activation'	, 'SERVICE_PENDING');";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate service_status Table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate service_status Table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "TRUNCATE TABLE service_status;";
 	}
@@ -189,7 +189,7 @@ class Flex_Rollout_Version_000022 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

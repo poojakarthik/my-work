@@ -27,7 +27,7 @@ class Discount_Record_Type extends ORM_Cached
 		$iResult					= $oSelectDiscountRecordTypes->Execute(array('discount_id'=>$iDiscountId));
 		if ($iResult === false)
 		{
-			throw new Exception($oSelectDiscountRecordTypes->Error());
+			throw new Exception_Database($oSelectDiscountRecordTypes->Error());
 		}
 		while ($aDiscountRecordType = $oSelectDiscountRecordTypes->Fetch())
 		{

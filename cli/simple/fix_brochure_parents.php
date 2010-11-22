@@ -18,7 +18,7 @@ try
 	$resPlansWithBrochures	= $qryQuery->Execute("SELECT DISTINCT RatePlan.* FROM RatePlan JOIN document_content ON RatePlan.brochure_document_id = document_content.document_id WHERE parent_document_id IS NULL");
 	if (!$resPlansWithBrochures)
 	{
-		throw new Exception($qryQuery->Error());
+		throw new Exception_Database($qryQuery->Error());
 	}
 	while ($arrPlan = $resPlansWithBrochures->fetch_assoc())
 	{

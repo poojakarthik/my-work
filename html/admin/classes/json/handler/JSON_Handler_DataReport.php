@@ -184,7 +184,7 @@ class JSON_Handler_DataReport extends JSON_Handler
 						
 						if ($oRecordSet === false)
 						{
-							throw new Exception("Failed to retrieve values for DataReport constraint field: $sName. Error: ". $oQuery->Error());
+							throw new Exception_Database("Failed to retrieve values for DataReport constraint field: $sName. Error: ". $oQuery->Error());
 						}
 						
 						// Check for ALL/IGNORE option

@@ -18,7 +18,7 @@ try
 	$resPayments	= $qryQuery->Execute($strSQL);
 	if ($resPayments === false)
 	{
-		throw new Exception($qryQuery->Error());
+		throw new Exception_Database($qryQuery->Error());
 	}
 	while ($arrPayment = $resPayments->fetch_assoc())
 	{
@@ -30,7 +30,7 @@ try
 		$resDelete	= $qryQuery->Execute($strDeleteSQL);
 		if ($resDelete === false)
 		{
-			throw new Exception($qryQuery->Error());
+			throw new Exception_Database($qryQuery->Error());
 		}
 	}
 	

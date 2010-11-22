@@ -25,7 +25,7 @@ class Flex_Rollout_Version_000046 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to alter credit_card_payment_history table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to alter credit_card_payment_history table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE credit_card_payment_history DROP txn_id, DROP payment_id";
 
@@ -35,7 +35,7 @@ class Flex_Rollout_Version_000046 extends Flex_Rollout_Version
 					"(NULL, 'Support Form', 'Support form', 'EMAIL_NOTIFICATION_SUPPORT_FORM', 1);";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add email_notification for payment confimations and direct debit setup. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add email_notification for payment confimations and direct debit setup. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DELETE FROM email_notification WHERE const_name = 'EMAIL_NOTIFICATION_PAYMENT_CONFIRMATION' OR const_name = 'EMAIL_NOTIFICATION_SUPPORT_FORM';";
 	}
@@ -49,7 +49,7 @@ class Flex_Rollout_Version_000046 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

@@ -29,7 +29,7 @@ class Flex_Rollout_Version_000020 extends Flex_Rollout_Version
 		$strSQL = "ALTER TABLE ServiceTotal ADD service_rate_plan BIGINT(20) UNSIGNED NULL AFTER RatePlan";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add ServiceTotal.service_rate_plan. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add ServiceTotal.service_rate_plan. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE ServiceTotal DROP service_rate_plan";
 		
@@ -43,7 +43,7 @@ class Flex_Rollout_Version_000020 extends Flex_Rollout_Version
 					") ENGINE = innodb;";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add service_type Table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add service_type Table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE IF EXISTS service_type;";
 		
@@ -56,7 +56,7 @@ class Flex_Rollout_Version_000020 extends Flex_Rollout_Version
 					(104, 'Dialup'		, 'Dialup Internet'			, 'SERVICE_TYPE_DIALUP');";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate service_type Table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate service_type Table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "TRUNCATE TABLE service_type;";
 		
@@ -71,7 +71,7 @@ class Flex_Rollout_Version_000020 extends Flex_Rollout_Version
 					") ENGINE = innodb;";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add provisioning_type_nature Table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add provisioning_type_nature Table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE IF EXISTS provisioning_type_nature;";
 		
@@ -84,7 +84,7 @@ class Flex_Rollout_Version_000020 extends Flex_Rollout_Version
 					"('ADSL', 'ADSL', 'REQUEST_TYPE_NATURE_ADSL', (SELECT id FROM service_type WHERE const_name = 'SERVICE_TYPE_ADSL'));";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add provisioning_type_nature Table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add provisioning_type_nature Table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "TRUNCATE TABLE provisioning_type_nature;";
 		
@@ -92,7 +92,7 @@ class Flex_Rollout_Version_000020 extends Flex_Rollout_Version
 		$strSQL = "ALTER TABLE provisioning_type ADD provisioning_type_nature BIGINT(20) UNSIGNED NULL AFTER outbound";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add provisioning_type.provisioning_type_nature. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add provisioning_type.provisioning_type_nature. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE provisioning_type DROP provisioning_type_nature";
 		
@@ -105,7 +105,7 @@ class Flex_Rollout_Version_000020 extends Flex_Rollout_Version
 					"END);";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to update provisioning_type.provisioning_type_nature Field. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to update provisioning_type.provisioning_type_nature Field. ' . $qryQuery->Error());
 		}
 		
 		// 8:	Finishes populating provisioning_type Table
@@ -120,7 +120,7 @@ class Flex_Rollout_Version_000020 extends Flex_Rollout_Version
 					(917, 'Preselection Lost (Diconnected)'		, 1, 0, 'Preselection Lost (Diconnected)'	, 'PROVISIONING_TYPE_DISCONNECT_PRESELECT'			, (SELECT id FROM provisioning_type_nature WHERE name = 'Preselection'));";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate provisioning_type Table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate provisioning_type Table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DELETE FROM provisioning_type WHERE id IN (908, 909, 910, 911, 912, 915, 916, 917);";
 		
@@ -134,7 +134,7 @@ class Flex_Rollout_Version_000020 extends Flex_Rollout_Version
 					") ENGINE = innodb;";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add service_line_status Table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add service_line_status Table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE IF EXISTS service_line_status;";
 		
@@ -150,7 +150,7 @@ class Flex_Rollout_Version_000020 extends Flex_Rollout_Version
 					(507, 'Reversed'					, 'Churn Reversed'				, 'SERVICE_LINE_REVERSED');";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate service_line_status Table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to populate service_line_status Table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "TRUNCATE TABLE service_line_status;";
 		
@@ -164,7 +164,7 @@ class Flex_Rollout_Version_000020 extends Flex_Rollout_Version
 					") ENGINE = innodb;";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add service_line_status_update Table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to add service_line_status_update Table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE IF EXISTS service_line_status_update;";
 		
@@ -179,7 +179,7 @@ class Flex_Rollout_Version_000020 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

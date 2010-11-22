@@ -38,7 +38,7 @@ class JSON_Handler_Invoice extends JSON_Handler
 													LIMIT 1");
 				if ($mResult === false)
 				{
-					throw new Exception("Failed to find ServiceRatePlan record, query failed. ".$oQuery->Error());
+					throw new Exception_Database("Failed to find ServiceRatePlan record, query failed. ".$oQuery->Error());
 				}
 				$aRow	= $mResult->fetch_assoc();
 				if (!isset($aRow['RatePlan']))
@@ -181,7 +181,7 @@ class JSON_Handler_Invoice extends JSON_Handler
 			$mResult	= $oQuery->Execute($sQuery);
 			if ($mResult === false)
 			{
-				throw new Exception("Failed to get reratable invoices for account {$iAccountId}. ".$oQuery->Error());
+				throw new Exception_Database("Failed to get reratable invoices for account {$iAccountId}. ".$oQuery->Error());
 			}
 			
 			$aResults	= array();
@@ -413,7 +413,7 @@ class JSON_Handler_Invoice extends JSON_Handler
 			$mResult	= $oQuery->Execute($sCDRQuery);
 			if ($mResult === false)
 			{
-				throw new Exception("Failed to retrieve CDR usage totals per service. ".$oQuery->Error());
+				throw new Exception_Database("Failed to retrieve CDR usage totals per service. ".$oQuery->Error());
 			}
 			
 			$aCDRUsage	= array();

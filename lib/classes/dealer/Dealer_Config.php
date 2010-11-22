@@ -20,7 +20,7 @@ class Dealer_Config extends ORM
 		
 		if (($intCount = $selDealerConfig->Execute()) === FALSE)
 		{
-			throw new Exception("Failed to retrieve the dealer_config record. - ". $selDealerConfig->Error());
+			throw new Exception_Database("Failed to retrieve the dealer_config record. - ". $selDealerConfig->Error());
 		}
 		
 		if ($intCount == 0)

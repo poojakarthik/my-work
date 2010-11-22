@@ -42,7 +42,7 @@ class JSON_Handler_User_Role extends JSON_Handler
 				$resEmployees	= $qryQuery->Execute($strSelectSQL);
 				if ($resEmployees === false)
 				{
-					throw new Exception($qryQuery->Error());
+					throw new Exception_Database($qryQuery->Error());
 				}
 				$arrResultSet	= array();
 				$intCount		= 0;
@@ -83,7 +83,7 @@ class JSON_Handler_User_Role extends JSON_Handler
 		$resCount		= $qryQuery->Execute($strCountSQL);
 		if ($resCount === false)
 		{
-			throw new Exception($qryQuery->Error());
+			throw new Exception_Database($qryQuery->Error());
 		}
 		if ($arrCount = $resCount->fetch_assoc())
 		{

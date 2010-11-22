@@ -19,7 +19,7 @@ class Flex_Rollout_Version_000003 extends Flex_Rollout_Version
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to alter CreditCard table. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to alter CreditCard table. ' . $qryQuery->Error());
 		}
 	}
 }

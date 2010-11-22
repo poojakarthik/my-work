@@ -61,7 +61,7 @@ class Invoice_Run
 			}
 			elseif ($selById->Error())
 			{
-				throw new Exception("DB ERROR: ".$selById->Error());
+				throw new Exception_Database("DB ERROR: ".$selById->Error());
 			}
 			else
 			{
@@ -105,7 +105,7 @@ class Invoice_Run
 
 		if (($mixRecCount = $selInvoiceRun->Execute(array("InvoiceRunId"=>$intId))) === FALSE)
 		{
-			throw new Exception("Failed to retrieve InvoiceRun details for id: $intId - ". $selInvoiceRun->Error());
+			throw new Exception_Database("Failed to retrieve InvoiceRun details for id: $intId - ". $selInvoiceRun->Error());
 		}
 
 		if ($mixRecCount === 0)
@@ -230,7 +230,7 @@ class Invoice_Run
 		$resAccount	= $qryQuery->Execute("SELECT * FROM Account WHERE Id = {$intAccount}");
 		if ($resAccount === false)
 		{
-			throw new Exception($qryQuery->Error());
+			throw new Exception_Database($qryQuery->Error());
 		}
 		if ($arrAccount = $resAccount->fetch_assoc())
 		{
@@ -240,7 +240,7 @@ class Invoice_Run
 														"WHERE Invoice.Account = {$intAccount} AND InvoiceRun.invoice_run_type_id IN (".INVOICE_RUN_TYPE_INTERIM.", ".INVOICE_RUN_TYPE_FINAL.", ".INVOICE_RUN_TYPE_INTERIM_FIRST.") AND InvoiceRun.invoice_run_status_id = ".INVOICE_RUN_STATUS_TEMPORARY);
 			if ($resSoloInvoiceRuns === false)
 			{
-				throw new Exception($qryQuery->Error());
+				throw new Exception_Database($qryQuery->Error());
 			}
 			while ($arrSoloInvoiceRun = $resSoloInvoiceRuns->fetch_assoc())
 			{
@@ -299,7 +299,7 @@ class Invoice_Run
 		if ($selInvoiceableAccounts->Execute($this->toArray()) === FALSE)
 		{
 			// Database Error -- throw Exception
-			throw new Exception("DB ERROR: ".$selInvoiceableAccounts->Error());
+			throw new Exception_Database("DB ERROR: ".$selInvoiceableAccounts->Error());
 		}
 
 		// If there are any Temporary InvoiceRuns for this Customer Group, then Revoke them
@@ -409,7 +409,7 @@ class Invoice_Run
 			if ($intRecordCount === FALSE)
 			{
 				// Database Error -- throw Exception
-				throw new Exception("DB ERROR: ".$selInvoiceBalanceHistory->Error());
+				throw new Exception_Database("DB ERROR: ".$selInvoiceBalanceHistory->Error());
 			}
 			elseif ($intRecordCount == 0)
 			{
@@ -495,7 +495,7 @@ class Invoice_Run
 			if ($selInvoiceTotals->Execute(Array('invoice_run_id'=>$this->Id)) === FALSE)
 			{
 				// Database Error -- throw Exception
-				throw new Exception("DB ERROR: ".$selInvoiceTotals->Error());
+				throw new Exception_Database("DB ERROR: ".$selInvoiceTotals->Error());
 			}
 			$arrInvoiceTotals	= $selInvoiceTotals->Fetch();
 
@@ -503,7 +503,7 @@ class Invoice_Run
 			if ($selInvoiceCDRTotals->Execute(Array('invoice_run_id'=>$this->Id)) === FALSE)
 			{
 				// Database Error -- throw Exception
-				throw new Exception("DB ERROR: ".$selInvoiceCDRTotals->Error());
+				throw new Exception_Database("DB ERROR: ".$selInvoiceCDRTotals->Error());
 			}
 			$arrInvoiceCDRTotals	= $selInvoiceCDRTotals->Fetch();
 
@@ -543,7 +543,7 @@ class Invoice_Run
 		$selTemporaryInvoiceRuns	= self::_preparedStatement('selTemporaryInvoiceRuns');
 		if ($selTemporaryInvoiceRuns->Execute() === FALSE)
 		{
-			throw new Exception("DB ERROR: ".$selTemporaryInvoiceRuns->Error());
+			throw new Exception_Database("DB ERROR: ".$selTemporaryInvoiceRuns->Error());
 		}
 		while ($arrInvoiceRun = $selTemporaryInvoiceRuns->Fetch())
 		{
@@ -578,7 +578,7 @@ class Invoice_Run
 		$selTemporaryInvoiceRunsByCustomerGroup	= self::_preparedStatement('selTemporaryInvoiceRunsByCustomerGroup');
 		if ($selTemporaryInvoiceRunsByCustomerGroup->Execute(Array('customer_group_id' => $intCustomerGroup)) === FALSE)
 		{
-			throw new Exception("DB ERROR: ".$selTemporaryInvoiceRunsByCustomerGroup->Error());
+			throw new Exception_Database("DB ERROR: ".$selTemporaryInvoiceRunsByCustomerGroup->Error());
 		}
 		while ($arrInvoiceRun =$selTemporaryInvoiceRunsByCustomerGroup->Fetch())
 		{
@@ -641,7 +641,7 @@ class Invoice_Run
 		$updCDRRevoke	= self::_preparedStatement('updCDRRevoke');
 		if ($updCDRRevoke->Execute(Array('invoice_run_id'=>NULL, 'Status'=>CDR_RATED), $this->toArray()) === FALSE)
 		{
-			throw new Exception($updCDRRevoke->Error());
+			throw new Exception_Database($updCDRRevoke->Error());
 		}
 
 		// Remove Billing-Time Charges
@@ -661,45 +661,45 @@ class Invoice_Run
 		// Remove Plan Charges
 		if ($qryQuery->Execute("DELETE FROM Charge WHERE ChargeType IN ('PCAD', 'PCAR', 'PCR', 'PDCR') AND CreatedBy IS NULL AND invoice_run_id = {$this->Id}") === FALSE)
 		{
-			throw new Exception($qryQuery->Error());
+			throw new Exception_Database($qryQuery->Error());
 		}
 
 		// Change Charge Statuses back to CHARGE_APPROVED
 		$updChargeRevoke	= self::_preparedStatement('updChargeRevoke');
 		if ($updChargeRevoke->Execute(Array('Status' => CHARGE_APPROVED, 'invoice_run_id' => NULL), $this->toArray()) === FALSE)
 		{
-			throw new Exception($updChargeRevoke->Error());
+			throw new Exception_Database($updChargeRevoke->Error());
 		}
 
 		// Remove service_total_service Records
 		if ($qryQuery->Execute("DELETE FROM service_total_service WHERE service_total_id = (SELECT Id FROM ServiceTotal WHERE invoice_run_id = {$this->Id} AND Id = service_total_id)") === FALSE)
 		{
-			throw new Exception("DB ERROR: ".$qryQuery->Error());
+			throw new Exception_Database("DB ERROR: ".$qryQuery->Error());
 		}
 
 		// Remove ServiceTotal Records
 		if ($qryQuery->Execute("DELETE FROM ServiceTotal WHERE invoice_run_id = {$this->Id}") === FALSE)
 		{
-			throw new Exception("DB ERROR: ".$qryQuery->Error());
+			throw new Exception_Database("DB ERROR: ".$qryQuery->Error());
 		}
 
 		// Remove ServiceTypeTotal Records
 		if ($qryQuery->Execute("DELETE FROM ServiceTypeTotal WHERE invoice_run_id = {$this->Id}") === FALSE)
 		{
-			throw new Exception("DB ERROR: ".$qryQuery->Error());
+			throw new Exception_Database("DB ERROR: ".$qryQuery->Error());
 		}
 
 		// Remove Invoice Record
 		if ($qryQuery->Execute("DELETE FROM Invoice WHERE invoice_run_id = {$this->Id}") === FALSE)
 		{
-			throw new Exception("DB ERROR: ".$qryQuery->Error());
+			throw new Exception_Database("DB ERROR: ".$qryQuery->Error());
 		}
 
 		// Remove entry from the InvoiceRun table
 		Log::getLog()->log(" * Removing Invoice Run with Id {$this->Id}");
 		if ($qryQuery->Execute("DELETE FROM InvoiceRun WHERE Id = {$this->Id}") === FALSE)
 		{
-			throw new Exception("DB ERROR: ".$qryQuery->Error());
+			throw new Exception_Database("DB ERROR: ".$qryQuery->Error());
 		}
 	}
 
@@ -1007,7 +1007,7 @@ class Invoice_Run
 		$resCommitCDRs	= $qryQuery->Execute("UPDATE CDR SET Status = ".CDR_INVOICED." WHERE Status = ".CDR_TEMP_INVOICE." AND invoice_run_id = {$this->Id}");
 		if ($resCommitCDRs === FALSE)
 		{
-			throw new Exception($qryQuery->Error());
+			throw new Exception_Database($qryQuery->Error());
 		}
 
 		// Commit the Charges
@@ -1015,7 +1015,7 @@ class Invoice_Run
 		$resCommitCharges	= $qryQuery->Execute("UPDATE Charge SET Status = ".CHARGE_INVOICED." WHERE Status = ".CHARGE_TEMP_INVOICE." AND invoice_run_id = {$this->Id}");
 		if ($resCommitCharges === FALSE)
 		{
-			throw new Exception($qryQuery->Error());
+			throw new Exception_Database($qryQuery->Error());
 		}
 
 		//------------------------------ ACCOUNT -----------------------------//
@@ -1025,7 +1025,7 @@ class Invoice_Run
 													"WHERE Invoice.invoice_run_id = {$this->Id}");
 		if ($resUpdateAccounts === FALSE)
 		{
-			throw new Exception($qryQuery->Error());
+			throw new Exception_Database($qryQuery->Error());
 		}
 
 		//------------------------------ SERVICE -----------------------------//
@@ -1035,7 +1035,7 @@ class Invoice_Run
 													" WHERE invoice_run_id = {$this->Id}");
 		if ($resUpdateInvoices === FALSE)
 		{
-			throw new Exception($qryQuery->Error());
+			throw new Exception_Database($qryQuery->Error());
 		}
 
 		//------------------------------ INVOICE -----------------------------//
@@ -1045,7 +1045,7 @@ class Invoice_Run
 													"WHERE invoice_run_id = {$this->Id}");
 		if ($resUpdateInvoices === FALSE)
 		{
-			throw new Exception($qryQuery->Error());
+			throw new Exception_Database($qryQuery->Error());
 		}
 
 		// Finalise entry in the InvoiceRun table
@@ -1113,7 +1113,7 @@ class Invoice_Run
 		$mixResult						= $selCheckTemporaryInvoiceRun->Execute(Array('CustomerGroup'=>$intCustomerGroupId, 'Account'=>$intAccountId));
 		if ($mixResult === FALSE)
 		{
-			throw new Exception($selCheckTemporaryInvoiceRun->Error());
+			throw new Exception_Database($selCheckTemporaryInvoiceRun->Error());
 		}
 		else
 		{
@@ -1188,7 +1188,7 @@ class Invoice_Run
 		}
 		elseif ($selInvoiceRun->Error())
 		{
-			throw new Exception("DB ERROR: ".$selInvoiceRun->Error());
+			throw new Exception_Database("DB ERROR: ".$selInvoiceRun->Error());
 		}
 		elseif ($selPaymentTerms->Execute(Array('customer_group_id' => $intCustomerGroup)))
 		{
@@ -1210,7 +1210,7 @@ class Invoice_Run
 		}
 		elseif ($selPaymentTerms->Error())
 		{
-			throw new Exception("DB ERROR: ".$selPaymentTerms->Error());
+			throw new Exception_Database("DB ERROR: ".$selPaymentTerms->Error());
 		}
 		else
 		{
@@ -1242,7 +1242,7 @@ class Invoice_Run
 		}
 		elseif ($selPaymentTerms->Error())
 		{
-			throw new Exception("DB ERROR: ".$selPaymentTerms->Error());
+			throw new Exception_Database("DB ERROR: ".$selPaymentTerms->Error());
 		}
 		else
 		{
@@ -1407,7 +1407,7 @@ class Invoice_Run
 		// Delete the CDRs from the CDR table
 		if ($qryQuery->Execute("DELETE FROM CDR WHERE invoice_run_id = {$this->Id}") === false)
 		{
-			throw new Exception($qryQuery->Error());
+			throw new Exception_Database($qryQuery->Error());
 		}
 
 		return true;
@@ -1425,7 +1425,7 @@ class Invoice_Run
 		$selInvoiceRunSchedule	= self::_preparedStatement('selInvoiceRunSchedule');
 		if ($selInvoiceRunSchedule->Execute($this->toArray()) === false)
 		{
-			throw new Exception($selInvoiceRunSchedule->Error());
+			throw new Exception_Database($selInvoiceRunSchedule->Error());
 		}
 		$arrInvoiceRunSchedule	= $selInvoiceRunSchedule->Fetch();
 		$strSampleType			= (isset($arrInvoiceRunSchedule['description'])) ? $arrInvoiceRunSchedule['description'] : '';
@@ -1442,7 +1442,7 @@ class Invoice_Run
 		$mixResult		= $selSampleList->Execute($this->toArray());
 		if ($mixResult === false)
 		{
-			throw new Exception($selSampleList->Error());
+			throw new Exception_Database($selSampleList->Error());
 		}
 		elseif ($mixResult)
 		{
@@ -1532,7 +1532,7 @@ class Invoice_Run
 			$ubiSelf	= self::_preparedStatement("ubiSelf");
 			if ($ubiSelf->Execute($this->toArray()) === FALSE)
 			{
-				throw new Exception("DB ERROR: ".$ubiSelf->Error());
+				throw new Exception_Database("DB ERROR: ".$ubiSelf->Error());
 			}
 			return TRUE;
 		}
@@ -1544,7 +1544,7 @@ class Invoice_Run
 			$mixResult	= $insSelf->Execute($this->toArray());
 			if ($mixResult === FALSE)
 			{
-				throw new Exception("DB ERROR: ".$insSelf->Error());
+				throw new Exception_Database("DB ERROR: ".$insSelf->Error());
 			}
 			if (is_int($mixResult))
 			{

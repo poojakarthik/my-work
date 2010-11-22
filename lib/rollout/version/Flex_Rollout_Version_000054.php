@@ -20,7 +20,7 @@ class Flex_Rollout_Version_000054 extends Flex_Rollout_Version
 		$strSQL = "ALTER TABLE `Contact` DROP `UserName`;";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to run query. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to run query. ' . $qryQuery->Error());
 		}
 		
 		$this->rollbackSQL[] = "ALTER TABLE `Contact` ADD `UserName` VARCHAR( 31 ) NOT NULL;";
@@ -29,7 +29,7 @@ class Flex_Rollout_Version_000054 extends Flex_Rollout_Version
 		$strSQL = "ALTER TABLE `Contact` CHANGE `Email` `Email` VARCHAR( 255 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL;";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to run query. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to run query. ' . $qryQuery->Error());
 		}
 		
 		$this->rollbackSQL[] = "ALTER TABLE `Contact` CHANGE `Email` `Email` VARCHAR( 255 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;";
@@ -38,7 +38,7 @@ class Flex_Rollout_Version_000054 extends Flex_Rollout_Version
 		$strSQL = "UPDATE `Contact` SET Email='' WHERE Email='noemail@telcoblue.com.au';";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to run query. ' . $qryQuery->Error());
+			throw new Exception_Database(__CLASS__ . ' Failed to run query. ' . $qryQuery->Error());
 		}
 		
 		$this->rollbackSQL[] = ""; // ?
@@ -53,7 +53,7 @@ class Flex_Rollout_Version_000054 extends Flex_Rollout_Version
 				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
 				{
-					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
+					throw new Exception_Database(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $qryQuery->Error());
 				}
 			}
 		}

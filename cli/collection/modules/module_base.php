@@ -180,7 +180,7 @@
 		$mixResult	= $selFileDownloadUnique->Execute(array('carrier_id'=>$this->_oCarrierModule->Carrier, 'filename'=>$strFilename));
 		if ($mixResult === false)
 		{
-			throw new Exception($selFileDownloadUnique->Error());
+			throw new Exception_Database($selFileDownloadUnique->Error());
 		}
 		elseif ($mixResult)
 		{

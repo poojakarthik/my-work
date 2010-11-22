@@ -175,7 +175,7 @@ class Correspondence extends ORM_Cached
 
 		if ($oStmt->Execute($aWhere['aValues']) === false)
 		{
-			throw new Exception("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ".$oStmt->Error());
+			throw new Exception_Database("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ".$oStmt->Error());
 		}
 
 		if ($bCountOnly)

@@ -42,7 +42,7 @@ class JSON_Handler_Status extends JSON_Handler
 				
 				if ($oStatuses === false)
 				{
-					throw new Exception($oQuery->Error());
+					throw new Exception_Database($oQuery->Error());
 				}
 				
 				$aResultSet	= array();
@@ -85,7 +85,7 @@ class JSON_Handler_Status extends JSON_Handler
 			
 			if ($oCount === false)
 			{
-				throw new Exception($oQuery->Error());
+				throw new Exception_Database($oQuery->Error());
 			}
 			
 			if ($aCount = $oCount->fetch_assoc())

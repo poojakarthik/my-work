@@ -74,7 +74,7 @@ class Documentation extends ORM_Cached
 		}
 		elseif ($oByEntity->Error())
 		{
-			throw new Exception($oByEntity->Error());
+			throw new Exception_Database($oByEntity->Error());
 		}
 		else
 		{

@@ -103,7 +103,7 @@ class FollowUp_Recurring_History_Reassign_Reason extends ORM_Cached
 		$oSelect	= new StatementSelect($sFromClause, $sSelectClause, $aWhereInfo['sClause'], $sOrderByClause, $sLimitClause);
 		if ($oSelect->Execute($aWhereInfo['aValues']) === FALSE)
 		{
-			throw new Exception("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oSelect->Error());
+			throw new Exception_Database("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oSelect->Error());
 		}
 		
 		if ($bCountOnly)

@@ -38,7 +38,7 @@ class Dealer_Customer_Group
 		
 		if ($selDealerCustomerGroup->Execute(Array("DealerId"=>$intDealerId)) === FALSE)
 		{
-			throw new Exception("Failed to retrieve records from the dealer_customer_group table for dealer with id: $intDealerId - ". $selDealerCustomerGroup->Error());
+			throw new Exception_Database("Failed to retrieve records from the dealer_customer_group table for dealer with id: $intDealerId - ". $selDealerCustomerGroup->Error());
 		}
 		
 		$arrRecordSet = $selDealerCustomerGroup->FetchAll();
@@ -75,7 +75,7 @@ class Dealer_Customer_Group
 		
 		if (!$qryQuery->Execute("DELETE FROM dealer_customer_group WHERE dealer_id = $intDealerId;"))
 		{
-			throw new Exception("Failed to set CustomerGroups for Dealer: $intDealerId.  (Removal of old dealer - customer group associations failed) - " . $qryQuery->Error());
+			throw new Exception_Database("Failed to set CustomerGroups for Dealer: $intDealerId.  (Removal of old dealer - customer group associations failed) - " . $qryQuery->Error());
 		}
 		
 		// Reset the auto incrementing counter for the dealer_customer_group table
@@ -91,7 +91,7 @@ class Dealer_Customer_Group
 			$arrData['customer_group_id'] = $intCustomerGroupId;
 			if ($insDealerCustomerGroup->Execute($arrData) === FALSE)
 			{
-				throw new Exception("Failed to set CustomerGroups for Dealer: $intDealerId. (inserting record into dealer_customer_group table failed) - ". $insDealerCustomerGroup->Error());
+				throw new Exception_Database("Failed to set CustomerGroups for Dealer: $intDealerId. (inserting record into dealer_customer_group table failed) - ". $insDealerCustomerGroup->Error());
 			}
 		}
 	}
