@@ -17,9 +17,10 @@ class Cli_App_RawDeflate extends Cli
 			$this->log("Setting the include path for Zend.");
 			set_include_path(get_include_path() . PATH_SEPARATOR . realpath(dirname(__FILE__) . '/' . ".." . '/' . ".." . '/') . '/');
 
-			// Include the Zend library... 
+			// Include the Zend library...
 			$this->log("Including the Zend PDF library");
 			require_once "Zend/Pdf.php";
+			require_once "Zend/Pdf/Filter/Compression/Flate.php";
 
 			// The arguments are present and in a valid format if we get past this point.
 			$arrArgs = $this->getValidatedArguments();
@@ -92,7 +93,7 @@ class Cli_App_RawDeflate extends Cli
 		{
 			$this->showUsage("ERROR: " . $exception->getMessage());
 		}
-	} 
+	}
 
 	function getCommandLineArguments()
 	{
