@@ -937,7 +937,7 @@ class Invoice_Run
 		Log::getLog()->log("\nSchedule the email queue for immediate delivery");
 
 		$oEmailQueue	= $oEmailFlexQueue->scheduleForDelivery(null, "Invoice Run Delivery: {$this->Id} ({$oCustomerGroup->internal_name})");
-		/*if ($oEmailQueue !== null)
+		if ($oEmailQueue !== null)
 		{
 			// There were emails queued
 			Log::getLog()->log("Email queue created, link all invoice emails to an account");
@@ -960,7 +960,7 @@ class Invoice_Run
 				$oEmailAccount->account_id	= $iAccountId;
 				$oEmailAccount->save();
 			}
-		}*/
+		}
 
 		if (count($aCorrespondenceData) > 0)
 		{

@@ -617,7 +617,7 @@ class Cli_App_LateNoticeRun extends Cli
 					$oEmailQueueORM	= $oCustomerQueue->scheduleForDelivery(null, "Late Notices: {$sLetterType}");
 
 					// Link all created (queued) emails to the account they relate to
-					/*if ($oEmailQueueORM !== null)
+					if ($oEmailQueueORM !== null)
 					{
 						$this->log("Email queue created, link all emails to an account");
 
@@ -631,7 +631,7 @@ class Cli_App_LateNoticeRun extends Cli
 							$oEmailAccount->account_id	= $mId;
 							$oEmailAccount->save();
 						}
-					}*/
+					}
 				}
 			}
 			$this->log("FINISHED: Sending all emails that have been queued");
