@@ -430,10 +430,10 @@ textarea.valid,
 	background-color	: #fff;
 	border				: solid 1px black;
 	z-index				: 45;
-	
+
 	-moz-box-sizing		: border-box;
 	-moz-border-radius	: 0.25em;
-	
+
 	-webkit-box-sizing		: border-box;
 	-webkit-border-radius	: 0.25em;
 }
@@ -692,7 +692,7 @@ div.reflex-popup .popup-debug-text
 
 .reflex-popup .alert-content
 {
-	margin		: 0.5em; 
+	margin		: 0.5em;
 	text-align	: center;
 }
 
@@ -6966,7 +6966,7 @@ div.datetime-time
 	text-align	: center;
 }
 
-.popup-invoice-rerate-summary .pdf-link 
+.popup-invoice-rerate-summary .pdf-link
 {
 	cursor			: pointer;
 	padding-left	: 1em;
@@ -7125,7 +7125,7 @@ div.popup-rate-plan-test > table.reflex
 	position:			relative;
 	left:				200px;
 	top:				0px;
-	overflow:			hidden;	
+	overflow:			hidden;
 }
 
 .DefaultInputCheckBox2
@@ -7138,7 +7138,7 @@ div.popup-rate-plan-test > table.reflex
 	overflow:			hidden;
 }
 
-.DefaultInputRadioButtons extends 
+.DefaultInputRadioButtons extends
 
 .DefaultInputComboBox
 {
@@ -7330,7 +7330,7 @@ div.popup-rate-plan-test > table.reflex
 .destination-import-manual label
 {
 	font-weight	: bold;
-	
+
 }
 
 .destination-import-manual .destination-import-manual-results td
@@ -7383,12 +7383,12 @@ div.popup-email-text-edit
 	padding-right: 7px;
 }
 
-.popup-email-text-edit textarea {	
-	
+.popup-email-text-edit textarea {
+
 	border: 3px solid #cccccc;
 	padding: 5px;
 	font-family: Monospace;
-	font-size: 1.3em;	
+	font-size: 1.3em;
 }
 
 .popup-email-text-edit .variables
@@ -7398,15 +7398,15 @@ div.popup-email-text-edit
 	padding: 0.5em;
 	-moz-border-radius: 4px 4px 4px 4px;
 	border: 1px solid #000000;
-	
+
 	background-color: rgba(255, 255, 255, 0.6);
-	
+
 }
 
 .popup-email-text-edit .variables ul
 {
 	text-align: left;
-	
+
 	font-size	: 0.80em;
 	list-style-type: none;
 	margin-left : 3px;
@@ -7415,7 +7415,7 @@ div.popup-email-text-edit
 	 padding-top:1px;
 	 margin-bottom: 2px;
 	 padding-bottom:2px;
-	
+
 }
 
 .popup-email-text-edit .variables ul>li
@@ -7434,7 +7434,7 @@ div.popup-email-text-edit
 	font-weight: normal;
 	padding: 2px;
 	margin: 1.6px;
-	
+
 
 }
 
@@ -7450,13 +7450,13 @@ margin: 1.2px;
 }
 
 .popup-email-text-edit .variables .vars
-{	
+{
 	text-align: left;
 	margin-top: 0.25em;
 }
 
 .popup-email-text-edit .variables .varLabel
-{	
+{
 	text-align: left;
 	margin-bottom: 2px;
 	font-size: 1.1em;
@@ -7466,14 +7466,14 @@ margin: 1.2px;
 
 
 .email-subject-container >table.reflex th
-{	
-	
+{
+
 	width: 13em;
 }
 
 .email-subject-container
 {
-	
+
 	padding-bottom: 10px;
 }
 
@@ -7663,11 +7663,11 @@ div.popup-email-templates table.reflex {
 	border-style:solid;
 	border-width:1px;
 	font-family:sans-serif;
-	max-height: 50em; 
+	max-height: 50em;
 	overflow: auto;
 	width: 100%;
 	height: 90%;
-	
+
 
 
 }
@@ -7710,7 +7710,7 @@ div.popup-email-templates table.reflex {
 	font-size	: 0.85em;
 	list-style-type: none;
 	margin-left : 1px;
-	padding-left: 1px;	
+	padding-left: 1px;
 }
 
 .no-versions
@@ -7721,7 +7721,7 @@ div.popup-email-templates table.reflex {
 	font-weight: bold;
 }
 
-.version-details >div > table.reflex > tbody > tr > td:last-child 
+.version-details >div > table.reflex > tbody > tr > td:last-child
 {
 	text-align: right;
 }
@@ -7792,7 +7792,7 @@ div.popup-email-test .recipient input
 	border-width: 1px;
     border-style: solid;
     border-color: #999999;
-   
+
     font-family: sans-serif;
     font-size: 12px;
     color: #333333;
@@ -7803,7 +7803,7 @@ div.popup-email-test .recipient input
 
 .add-icon
 {
- cursor:pointer; 
+ cursor:pointer;
  vertical-align: text-top;
 
  padding-top: 4px;
@@ -7813,7 +7813,7 @@ div.popup-email-test .recipient input
 
 .remove-icon
 {
- cursor:pointer; 
+ cursor:pointer;
  vertical-align: text-top;
 
  padding-top: 1px;
@@ -7857,7 +7857,7 @@ div.email-template-error>div.details-link
 	padding: 3px;
 	color: blue;
 	text-decoration:underline;
-	
+
 
 }
 
@@ -7870,14 +7870,14 @@ div.email-template-error>div.error-details
 .popup-email-html-save
 {
 	padding: 15px;
-	
+
 
 }
 
 div.popup-email-test div.control-field
 {
 	display: inline;
-	
+
 
 }
 
@@ -7896,7 +7896,7 @@ div.page-email-template-history .section-header-options li:last-child
 
 //*****************DELINQUENT CDR PAGE*********************************//
 
- .page-cdr-list .section-header-options 
+ .page-cdr-list .section-header-options
 {
 	display: inline ;
 
@@ -7917,7 +7917,7 @@ div.page-email-template-history .section-header-options li:last-child
  {
 	padding-right: 3px;
 	padding-left: 5px;
- 
+
  }
 
 div.delinquent-fnn-list table.reflex thead tr:nth-child(2) > th
@@ -8000,6 +8000,12 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > div > i
 	cursor			: pointer;
 }
 
+.delinquent-service-content
+{
+	max-height: 500px;
+	overflow:auto;
+}
+
 div.delinquent-service-content .mouse-pointer
 {
 cursor	: pointer;
@@ -8025,7 +8031,7 @@ th.followup-list-all-header-multiline
 .followup-list-all-action-icon
 {
 	padding-left: 10px;
-	cursor: pointer; 
+	cursor: pointer;
 
 }
 
@@ -8038,7 +8044,7 @@ th.followup-list-all-header-multiline
 
 
 div.content-delinquent-cdrs-table {
-max-height: 30em; 
+max-height: 30em;
 overflow: auto;
 border: 0.1em solid #333333;
 }
