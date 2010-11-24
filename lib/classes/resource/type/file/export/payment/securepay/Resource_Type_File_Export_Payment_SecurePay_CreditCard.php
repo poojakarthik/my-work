@@ -44,7 +44,7 @@ class Resource_Type_File_Export_Payment_SecurePay_CreditCard extends Resource_Ty
 		Flex::assert($oPaymentRequest->payment_type_id === PAYMENT_TYPE_DIRECT_DEBIT_VIA_CREDIT_CARD, "Non Credit Card Payment Request sent to SecurePay Direct Debit via Credit Card Export File", print_r($oPaymentRequest->toStdClass(), true));
 		
 		// Verify that the payment hasn't been reversed
-		Flex::assert($oPayment->Status !== PAYMENT_REVERSED, "A Payment Request that is tied to a reversed payment was sent to SecurePay Direct Debit via Credit Card Export File", print_r($oPaymentRequest->toStdClass(), true));
+		Flex::assert($oPayment->Status !== PAYMENT_REVERSED, "A Payment Request that is tied to a reversed payment was added to a 'SecurePay Direct Debit via Credit Card' Export File", print_r($oPaymentRequest->toStdClass(), true));
 		
 		$iExpiryMonth	= (int)$oCreditCard->ExpMonth;
 		$iExpiryYear	= (int)$oCreditCard->ExpYear;

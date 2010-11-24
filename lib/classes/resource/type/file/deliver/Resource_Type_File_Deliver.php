@@ -25,7 +25,7 @@ abstract class Resource_Type_File_Deliver extends Resource_Type_Base
 	
 	public function getDebugEmailContent($sLocalPath)
 	{
-		return 'The delivered file is attached.';
+		return 'File Delivery is in Test Mode. The delivered file is attached.';
 	}
 	
 	abstract protected function _deliver($sLocalPath);

@@ -117,7 +117,7 @@ class Cli_App_Payments extends Cli
 			if ($bTestRun)
 			{
 				Log::getLog()->log("** TEST MODE **");
-				Log::getLog()->log("The exported files will NOT be delivered");
+				Log::getLog()->log("The exported files will NOT be delivered, instead will be emailed to ybs-admin@ybs.net.au");
 				
 				// Enable file delivery testing (this will force emailling of all files to ybs-admin@ybs.net.au)
 				Resource_Type_File_Deliver::enableTestMode();

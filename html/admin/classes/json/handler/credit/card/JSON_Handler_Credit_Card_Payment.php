@@ -91,11 +91,7 @@ class JSON_Handler_Credit_Card_Payment extends JSON_Handler
 		}
 		catch (Credit_Card_Payment_Validation_Exception $oException)
 		{
-			$aResponse['sMessage']	= $oException->getMessage();
-			if (Credit_Card_Payment::isTestMode())
-			{
-				$aResponse['sMessage']	.= ' '.$oException->getMessage();
-			}
+			$aResponse['sMessage']			= $oException->getMessage();
 			$aResponse['bInformativeError']	= true;
 		}
 		catch (Exception_Assertion $oException)

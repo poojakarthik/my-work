@@ -50,7 +50,8 @@ class Cli_App_ApplyDirectDebits extends Cli
 			$aCustomerGroups	= array();
 			foreach ($aInvoiceRunIds as $iInvoiceRunId)
 			{
-				$oInvoiceRun	= Invoice_Run::getForId($iInvoiceRunId);				
+				$oInvoiceRun	= Invoice_Run::getForId($iInvoiceRunId);
+				Log::getLog()->log("Invoice Run to process: {$iInvoiceRunId} for customer group {$oInvoiceRun->customer_group_id}");			
 				if (!isset($aCustomerGroups[$oInvoiceRun->customer_group_id]))
 				{
 					$aCustomerGroups[$oInvoiceRun->customer_group_id]	= array();
@@ -62,10 +63,21 @@ class Cli_App_ApplyDirectDebits extends Cli
 			$sDatetime			= date('Y-m-d H:i:s');
 			$sPaidOn			= date('Y-m-d');
 			$iAppliedCount		= 0;
-			$aErrors			= array(self::ERROR_ACCOUNT_INVOICE_ACTION => 0, self::ERROR_ACTIONING_EVENT => 0);
-			$aIneligible		= array(self::INELIGIBLE_BANK_ACCOUNT => 0, self::INELIGIBLE_CREDIT_CARD => 0, self::INELIGIBLE_CREDIT_CARD_EXPIRY => 0, self::INELIGIBLE_AMOUNT => 0);
 			$iDoubleUpsCount	= 0;
 			$aAccountsApplied	= array();
+			
+			$aErrors	= array(
+				self::ERROR_ACCOUNT_INVOICE_ACTION 	=> 0, 
+				self::ERROR_ACTIONING_EVENT 		=> 0
+			);
+			
+			$aIneligible	= array(
+				self::INELIGIBLE_BANK_ACCOUNT 		=> 0, 
+				self::INELIGIBLE_CREDIT_CARD 		=> 0,
+				self::INELIGIBLE_CREDIT_CARD_EXPIRY	=> 0, 
+				self::INELIGIBLE_AMOUNT 			=> 0
+			);
+			
 			foreach ($aCustomerGroups as $iCustomerGroupId => $aInvoiceRunIds)
 			{
 				Log::getLog()->log("Customer Group {$iCustomerGroupId}");
@@ -92,7 +104,7 @@ class Cli_App_ApplyDirectDebits extends Cli
 					}
 				}
 				
-				Log::getLog()->log("Latest invoice run is {$iLatestInvoiceRunId} (of ".count($aInvoiceRunIds).")");
+				Log::getLog()->log("Latest invoice run is {$iLatestInvoiceRunId} (of ".count($aInvoiceRunIds)." invoice runs)");
 				
 				// Get the accounts to apply direct debits to
 				if ($oStmtAccountDebts->Execute(array('CustomerGroup' => $iCustomerGroupId)) === false)
@@ -102,7 +114,8 @@ class Cli_App_ApplyDirectDebits extends Cli
 				
 				while($aRow = $oStmtAccountDebts->Fetch())
 				{
-					// TODO: CR135 -- consider removing this fail safe check
+					// Check if the account has already been processed, potentially useless 
+					// but is here just to be sure that accounts aren't charged more than once
 					$iAccountId	= $aRow['account_id'];
 					if ($aAccountsApplied[$iAccountId])
 					{
@@ -112,7 +125,7 @@ class Cli_App_ApplyDirectDebits extends Cli
 					}
 					$aAccountsApplied[$iAccountId]	= true;
 					
-					// Determine if the direct debit details are valid
+					// Determine if the direct debit details are valid & the origin id (cc or bank account number) & payment type (for the payment)
 					$oAccount				= Account::getForId($aRow['account_id']);
 					$oPaymentMethodDetail	= $oAccount->getPaymentMethodDetails();
 					$bDirectDebitable		= false;
@@ -168,7 +181,7 @@ class Cli_App_ApplyDirectDebits extends Cli
 							continue;
 						}
 						
-						// Create Payment
+						// Create Payment (using origin id, payment type, account & amount)
 						$oPayment				= new Payment();
 						$oPayment->AccountGroup	= $oAccount->AccountGroup;
 						$oPayment->Account		= $oAccount->Id;
@@ -183,7 +196,7 @@ class Cli_App_ApplyDirectDebits extends Cli
 						$oPayment->Payment		= '';	// TODO: CR135 -- remove this before release (after the changes have been made to the dev db which remove this field)
 						$oPayment->save();
 						
-						// Create payment_request
+						// Create payment_request (linked to the payment & invoice run id)
 						$oPaymentRequest	= 	Payment_Request::generatePending(
 													$oAccount->Id, 					// Account id
 													$iPaymentType,					// Payment type
@@ -193,7 +206,8 @@ class Cli_App_ApplyDirectDebits extends Cli
 													$oPayment->Id					// Payment id
 												);
 						
-						// Update the payments transaction reference
+						// Update the payments transaction reference (this done separately because the transaction reference 
+						// is derived from the payment request)
 						$oPayment->TXNReference	= Payment_Request::generateTransactionReference($oPaymentRequest);
 						$oPayment->save();
 						
@@ -221,9 +235,9 @@ class Cli_App_ApplyDirectDebits extends Cli
 					}
 				}
 				
+				// Update the automatic_invoice_run_event for each invoice run linked to this customer group
 				foreach ($aInvoiceRunIds as $iInvoiceRunId)
 				{
-					// Update the automatic_invoice_run_event for the invoice run
 					if ($this->_changeInvoiceRunAutoActionDateTime($iInvoiceRunId, $sDatetime) === false)
 					{
 						$aErrors[self::ERROR_ACTIONING_EVENT]++;
@@ -234,7 +248,7 @@ class Cli_App_ApplyDirectDebits extends Cli
 			Log::getLog()->log("APPLIED: {$iAppliedCount}");
 			Log::getLog()->log("INELIGIBLE: ".print_r($aIneligible, true));
 			Log::getLog()->log("ERRORS: ".print_r($aErrors, true));
-			Log::getLog()->log("DOUBLE-UPS: {$iDoubleUpsCount}");
+			Log::getLog()->log("DOUBLE-UPS: {$iDoubleUpsCount} (This should always be zero)");
 			
 			if ($bTestRun)
 			{
