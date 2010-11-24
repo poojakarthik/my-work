@@ -207,7 +207,7 @@ class CDR extends ORM_Cached
 	}
 
 
-	private static function generateWhere($aAliases=array(), $aConstraints=null)
+/*	private static function generateWhere($aAliases=array(), $aConstraints=null)
 	{
 		$aWhereParts	= array();
 		$aResult		= array('sClause' => '','aValues' => array());
@@ -228,7 +228,7 @@ class CDR extends ORM_Cached
 
 		$aResult['sClause']	= implode(' AND ', $aWhereParts);
 		return $aResult;
-	}
+	}*/
 
 
 	public static function getPossibleOwnersForFNN($strFNN, $intServiceType)
@@ -392,8 +392,8 @@ class CDR extends ORM_Cached
 			$object->aValues = array(CDR_BAD_OWNER, CDR_DELINQUENT_WRITTEN_OFF);
 			$aFilter['Status'] = $object;
 		}
-
-		$aWhere	= StatementSelect::generateWhere(null, $aFilter);
+		$aAliases = array('StartDatetime'=>'date(StartDatetime)', 'EndDateTime'=>'date(EndDateTime)');
+		$aWhere	= StatementSelect::generateWhere($aAliases, $aFilter);
 		$sOrderByClause	=	StatementSelect::generateOrderBy(array(), $aSortFields);
 $sDelinquentStatusDescr = GetConstantDescription(CDR_BAD_OWNER, "CDR");
 $sWriteOffStausDescr = GetConstantDescription(CDR_DELINQUENT_WRITTEN_OFF, "CDR");
