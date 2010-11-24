@@ -32,18 +32,18 @@ class Cli_App_ApplyDirectDebits extends Cli
 			
 			// Prepared Statement for listing direct debit eligible accounts within a customer group 
 			$oStmtAccountDebts	= 	new StatementSelect(
-												"	Account a
-													JOIN payment_terms pt ON pt.customer_group_id = a.CustomerGroup
-													JOIN billing_type bt ON bt.id = a.BillingType",
-												"	a.Id AS account_id,
-													pt.direct_debit_minimum,
-													bt.description AS billing_type_description",
-												"	a.CustomerGroup = <CustomerGroup>
- 													AND a.Archived IN (".ACCOUNT_STATUS_ACTIVE.", ".ACCOUNT_STATUS_CLOSED.")
-													AND pt.id IN (SELECT MAX(id) FROM payment_terms WHERE customer_group_id = a.CustomerGroup)
-													AND bt.id IN (".BILLING_TYPE_CREDIT_CARD.", ".BILLING_TYPE_DIRECT_DEBIT.")",
-												"	a.Id"
-											);
+										"	Account a
+											JOIN payment_terms pt ON pt.customer_group_id = a.CustomerGroup
+											JOIN billing_type bt ON bt.id = a.BillingType",
+										"	a.Id AS account_id,
+											pt.direct_debit_minimum,
+											bt.description AS billing_type_description",
+										"	a.CustomerGroup = <CustomerGroup>
+											AND a.Archived IN (".ACCOUNT_STATUS_ACTIVE.", ".ACCOUNT_STATUS_CLOSED.")
+											AND pt.id IN (SELECT MAX(id) FROM payment_terms WHERE customer_group_id = a.CustomerGroup)
+											AND bt.id IN (".BILLING_TYPE_CREDIT_CARD.", ".BILLING_TYPE_DIRECT_DEBIT.")",
+										"	a.Id"
+									);
 			
 			// Build list of customer groups & the invoice runs for each
 			$aInvoiceRunIds		= ListInvoiceRunsForAutomaticInvoiceActionAndDate(AUTOMATIC_INVOICE_ACTION_DIRECT_DEBIT, time());
