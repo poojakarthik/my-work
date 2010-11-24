@@ -138,7 +138,9 @@ class JSON_Handler_CDR extends JSON_Handler
 			// Proper admin required
 			AuthenticatedUser()->PermissionOrDie(array(PERMISSION_PROPER_ADMIN));
 
-			$aColumns			= Array("Id",
+			$aColumns			= Array(
+									"FNN",
+									"Id",
 									"Time",
 									"Cost",
 									"Status"
@@ -150,9 +152,8 @@ class JSON_Handler_CDR extends JSON_Handler
 
 			// Build list of lines for the file
 			$aLines	= array();
-			//$aData =  CDR::GetDelinquentFNNs(null, null, get_object_vars($oFieldsToSort), get_object_vars($oFilter));
-			//$aData =CDR::GetStatusInfoForCDRs($aCDRIds);
-				$aFilter		= get_object_vars($oFilter);
+
+			$aFilter		= get_object_vars($oFilter);
 			$aData = CDR::GetDelinquentCDRsPaginated(null, null, array(), $aFilter, false);
 			foreach ($aData as $aRecord)
 			{
@@ -160,6 +161,7 @@ class JSON_Handler_CDR extends JSON_Handler
 				{
 						$aRecord['Status'] = $aRecord['Status']." (by ".$aRecord['WrittenOffBy']." on ".$aRecord['WrittenOffOn'].")";
 				}
+				$aRecord['FNN'] = $aFilter['FNN'];
 				$oFile->addRow($aRecord);
 			}
 
