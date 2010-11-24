@@ -15,6 +15,7 @@ this._iServiceType = intServiceType;
 	_getData: function(oResponse)
 	{
 
+
 		if ( !oResponse)
 		{
 			this._oLoadingPopup.display();
@@ -24,7 +25,7 @@ this._iServiceType = intServiceType;
 		else
 		{
 
-			if (oResponse.aData.length>0)
+			if (typeof oResponse.aData.length == 'undefined')
 			{
 				this._aServiceList = oResponse.aData;
 				this._buildUI();
