@@ -5,8 +5,10 @@ class Flex_Process
 	const	PROCESS_COLLECTION				= 'collection';
 	
 	const	PROCESS_PAYMENTS_IMPORT			= 'payments-import';
+	const	PROCESS_PAYMENTS_NORMALISATION	= 'payments-normalisation';
 	const	PROCESS_PAYMENTS_PROCESSING		= 'payments-processing';
 	const	PROCESS_PAYMENTS_DIRECTDEBIT	= 'payments-direct-debit';
+	const	PROCESS_PAYMENTS_EXPORT			= 'payments-export';
 	
 	const	PROCESS_CDR_IMPORT				= 'cdr-import';
 	const	PROCESS_CDR_NORMALISATION		= 'cdr-normalisation';

@@ -1507,7 +1507,12 @@ class Invoice_Run
 		$sDataSourceName	= $oRes->fetchOne();
 		return ($sDataSourceName == FLEX_DATABASE_CONNECTION_DEFAULT);
 	}
-
+	
+	public function isProductionRun()
+	{
+		return in_array($this->invoice_run_id, array(INVOICE_RUN_TYPE_LIVE, INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL, INVOICE_RUN_TYPE_INTERIM_FIRST));
+	}
+	
 	//------------------------------------------------------------------------//
 	// save
 	//------------------------------------------------------------------------//

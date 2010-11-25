@@ -94,7 +94,27 @@ class Invoice extends ORM_Cached
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
-
+	
+	public static function getForInvoiceRunAndAccount($mInvoiceRun, $mAccount)
+	{
+		$iInvoiceRunId	= ORM::extractId($mInvoiceRun);
+		$iAccountId		= ORM::extractId($mAccount);
+		
+		$oGetForInvoiceRunAndAccount	= self::_preparedStatement('selForInvoiceRunAndAccount');
+		if (false === $oGetForInvoiceRunAndAccount->Execute(array('invoice_run_id'=>$iInvoiceRunId,'account_id'=>$iAccountId)))
+		{
+			throw new Exception_Database($oGetForInvoiceRunAndAccount->Error());
+		}
+		if ($aResult = $oGetForInvoiceRunAndAccount->Fetch())
+		{
+			return new self($aResult);
+		}
+		else
+		{
+			throw new Exception("No Invoice for Account #{$iAccountId} and Invoice Run #{$iInvoiceRunId}");
+		}
+	}
+	
 	public static function generateForInvoiceRunAndAccount($oInvoiceRun, $oAccount)
 	{
 		$iLocksEncountered	= 0;
@@ -2293,6 +2313,10 @@ class Invoice extends ORM_Cached
 				case 'selByInvoiceRunId':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Invoice", "*", "invoice_run_id = <invoice_run_id>");
 					break;
+				case 'selForInvoiceRunAndAccount':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Invoice", "*", "invoice_run_id = <invoice_run_id> AND Account = <account_id>");
+					break;
+					
 
 				// INSERTS
 				case 'insServiceTotal':

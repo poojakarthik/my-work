@@ -107,14 +107,267 @@ class Payment extends ORM_Cached
 		}
 	}
 	
+	public function getSurcharges()
+	{
+		$oGetSurcharges	= self::_preparedStatement('selSurcharges');
+		if (false === $oGetSurcharges->Execute(array('payment_id'=>$this->Id)))
+		{
+			throw new Exception_Database($oGetSurcharges->Error());
+		}
+		$aRecords	= array();
+		while ($aRecord = $oGetSurcharges->Fetch())
+		{
+			$aRecords[$aRecord['Id']]	= new Charge($aRecord);
+		}
+		return $aRecords;
+	}
+	
+	public function reverse($iReversedBy=null)
+	{
+		// Find all InvoicePayment Records
+		$aInvoicePayments	= Invoice_Payment::getForPayment($this);
+		foreach ($aInvoicePayments as $oInvoicePayment)
+		{
+			// Add back to Invoice Balance
+			$oInvoice			= $oInvoicePayment->getInvoice();
+			$oInvoice->Balance	+= $oInvoicePayment->Amount;
+			$oInvoice->save();
+			
+			// Remove the Invoice Payment Record
+			$oInvoicePayment->delete();
+		}
+		unset($aInvoicePayments);
+		
+		// Set Payment.Balance to Payment.Amount and Payment.Status to PAYMENT_REVERSED
+		$this->Balance	= $this->Amount;
+		$this->Status	= PAYMENT_REVERSED;
+		
+		// Remove or Credit any Surcharges
+		$aSurchargeActions	= array();
+		$aSurcharges		= $this->getSurcharges();
+		foreach ($aSurcharges as $oCharge)
+		{
+			switch ($oCharge->Status)
+			{
+				case CHARGE_INVOICED:
+				case CHARGE_TEMP_INVOICE:
+					if (Invoice_Run::getForId($oCharge->invoice_run_id)->isProductionRun())
+					{
+						// Production Invoices
+						// Add a negating Credit
+						$oSurchargeCredit	= clone $oCharge;
+						
+						$oSurchargeCredit->CreatedOn		= date("Y-m-d");
+						$oSurchargeCredit->ChargedOn		= date("Y-m-d");
+						$oSurchargeCredit->CreatedBy		= $iReversedBy;
+						$oSurchargeCredit->ApprovedBy		= null;
+						$oSurchargeCredit->Nature			= 'CR';
+						$oSurchargeCredit->Description		= "Payment Reversal: ".$oCharge->Description;
+						$oSurchargeCredit->Status			= CHARGE_APPROVED;
+						$oSurchargeCredit->invoice_run_id	= null;
+						$oSurchargeCredit->charge_model_id	= CHARGE_MODEL_CHARGE;
+						
+						$oSurchargeCredit->save();
+						
+						$aSurchargeActions[$oCharge->Id] = "A new charge has been created to credit the Account: {$oCharge->Account} for the invoiced payment surcharge of \$". number_format(AddGST($oCharge->Amount), 2, ".", "");
+						break;
+					}
+					// If we're a non-Production Invoice Run, then fall through to CHARGE_APPROVED clause
+					
+				case CHARGE_APPROVED:
+					// Mark as Deleted
+					$oCharge->Status	= CHARGE_DELETED;
+					$oCharge->save();
+					
+					$aSurchargeActions[$oCharge->Id]	= "The yet-to-be-invoiced surcharge charge of \$". number_format(AddGST($oCharge->Amount), 2, ".", "") ." has been deleted from Account: {$oCharge->Account}";
+					break;
+			}
+		}
+		
+		// Add a Note
+		// Do we have an employee?
+		if ($iReversedBy)
+		{
+			$oEmployee		= Employee::getForId($iReversedBy);
+			$sEmployeeName	= "{$oEmployee->FirstName} {$oEmployee->LastName}";
+		}
+		else
+		{
+			$sEmployeeName	= "Administrators";
+		}
+		
+		$sDate = date("d/m/Y", strtotime($this->PaidOn));
+		
+		// Work out if the payment was applied to an AccountGroup, or a specific Account
+		if ($this->Account != NULL)
+		{
+			// The payment has been made to a specific account
+			$sAccountClause	= "a Payment";
+		}
+		else
+		{
+			// The payment has been applied to an AccountGroup
+			$sAccountClause	= "an AccountGroup Payment";
+		}
+		
+		// Build the Reversed Charges clause
+		$sReversedChargesClause	= (!count($aSurchargeActions)) ? '' : "\nThe following associated actions have also taken place:\n" . implode("\n", $aSurchargeActions);
+		
+		// Add the note
+		$oNote	= new Note();
+		$oNote->Note			= "{$sEmployeeName} Reversed {$sAccountClause} made on {$sDate} for \$". number_format($this->Amount, 2, ".", "") . $sReversedChargesClause;
+		$oNote->AccountGroup	= $this->AccountGroup;
+		$oNote->Account			= $this->Account;
+		$oNote->Datetime		= Data_Source_Time::currentTimestamp();
+		$oNote->NoteType		= Note::SYSTEM_NOTE_TYPE_ID;
+		$oNote->save();
+	}
+	
+	public function applyPaymentResponses()
+	{
+		/*	There are essentially only two results from this:
+			
+				1: No changes to Payment
+				2: Reverse Payment
+				
+			Reversed Payments can't be unreversed (or reversed again), so just return out
+		*/
+		if (!in_array($this->Status, PAYMENT_WAITING, PAYMENT_PAYING, PAYMENT_FINISHED))
+		{
+			return;
+		}
+		elseif ($oLatestPaymentResponse	= Payment_Response::getLatestForPayment($this))
+		{
+			switch ($oLatestPaymentResponse->payment_response_type_id)
+			{
+				case PAYMENT_RESPONSE_TYPE_CONFIRMATION:
+					// Nothing really to do, as you can't un-reverse a payment
+					break;
+					
+				case PAYMENT_RESPONSE_TYPE_REJECTION:
+					// Reverse the Payment
+					$this->reverse();
+					break;
+			}
+		}
+	}
+	
 	public function process()
 	{
+		if (!in_array($this->Status, array(PAYMENT_WAITING, PAYMENT_PAYING)))
+		{
+			throw new Exception("Only WAITING or PAYING Payments can be processed");
+		}
 		
+		$oStopwatch	= new Stopwatch();
+		$oStopwatch->start();
+		
+		// Mark as Paying
+		$this->Status	= PAYMENT_PAYING;
+		
+		// Get all related Invoices with Balances
+		Log::getLog()->log("Getting payable Invoices");
+		$oGetPayableInvoices	= self::_preparedStatement('selPayableInvoices');
+		if (false === $oGetPayableInvoices->Execute(array('account_id'=>$this->Account,'accoun_group_id'=>$this->AccountGroup)))
+		{
+			throw new Exception_Database($oGetPayableInvoices->Error());
+		}
+		$iTotalInvoices	= $oGetPayableInvoices->Count();
+		$iCount			= 0;
+		while ($aInvoice = $oGetPayableInvoices->Fetch())
+		{
+			$iCount++;
+			Log::getLog()->log("({$iCount}/{$iTotalInvoices}) Invoice #{$aInvoice['Id']}");
+			if ($this->Balance > 0)
+			{
+				// Pay out the Invoice as much as possible
+				$oInvoice	= new Invoice($aInvoice);
+				
+				// Determine Payable Amount
+				$fInvoicePreBalance		= (float)$oInvoice->Balance;
+				$fInvoicePostBalance	= max(0, $fInvoicePreBalance - $this->Balance);
+				$fPayableAmount			= ($fInvoicePreBalance - $fInvoicePostBalance);
+				
+				Log::getLog()->log("[+] Paying \${$fInvoicePreBalance} with \${$this->Balance}, leaving \${$fInvoicePostBalance} remaining");
+				
+				// Add an InvoicePayment Record
+				$oInvoicePayment	= new Invoice_Payment();
+				$oInvoicePayment->invoice_run_id	= $oInvoice->invoice_run_id;
+				$oInvoicePayment->Account			= $oInvoice->Account;
+				$oInvoicePayment->AccountGroup		= $oInvoice->AccountGroup;
+				$oInvoicePayment->Payment			= $this->Id;
+				$oInvoicePayment->Amount			= $fPayableAmount;
+				$oInvoicePayment->save();
+				
+				// Save the Invoice
+				$oInvoice->Balance	-= $fPayableAmount;
+				$oInvoice->Status	= ($oInvoice->Balance > 0) ? $oInvoice->Statue : INVOICE_SETTLED;
+				$oInvoice->save();
+				
+				// Update our Balance
+				$this->Balance	-= $fPayableAmount;
+			}
+			else
+			{
+				// Skip this Invoice -- no Balance to distribute
+				Log::getLog()->log("[~] Skipping \${$fInvoicePreBalance} as there is no Payment Balance remaining");
+			}
+		}
+		
+		// Assign appropriate Status
+		if ($this->Balance > 0)
+		{
+			Log::getLog()->log("[+] Marking Payment as Finished");
+			$this->Status	= PAYMENT_FINISHED;
+		}
+		
+		$this->save();
+		
+		Log::getLog()->log("Paid {$iTotalInvoices} Invoice in ".round($oStopwatch->lap(), 1).'s');
 	}
 	
 	public static function processAll()
 	{
+		$oStopwatch	= new Stopwatch();
+		$oStopwatch->start();
 		
+		Log::getLog()->log("Getting a list of payable Payments");
+		$oGetPayablePayments	= self::_preparedStatement('selPayablePayments');
+		if (false === $oGetPayablePayments->Execute())
+		{
+			throw new Exception_Database($oGetPayablePayments->Error());
+		}
+		$iTotalPayments	= $oGetPayablePayments->Count();
+		$iCount			= 0;
+		while ($aPayment = $oGetPayablePayments->Fetch())
+		{
+			$iCount++;
+			Log::getLog()->log("({$iCount}/{$iTotalPayments}) Payment #{$aPayment['Id']}");
+			$oPayment	= new Payment($aPayment);
+			
+			// Encase each Payment in a Transaction
+			if (!DataAccess::getDataAccess()->TransactionStart())
+			{
+				throw new Exception_Database(DataAccess::getDataAccess()->Error());
+			}
+			
+			try
+			{
+				// Process the Payment
+				$aPayment->process();
+			}
+			catch (Exception $oException)
+			{
+				// Rollback and pass through
+				DataAccess::getDataAccess()->TransactionRollback();
+				throw $oException;
+			}
+			
+			// Commit
+			DataAccess::getDataAccess()->TransactionCommit();
+		}
+		
+		Log::getLog()->log("Processed {$iTotalPayments} Payments in ".round($oStopwatch->lap(), 1).'s');
 	}
 	
 	// Override
@@ -162,6 +415,21 @@ class Payment extends ORM_Cached
 					break;
 				case 'selAll':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1");
+					break;
+				case 'selSurcharges':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	'Charge',
+																					'*',
+																					"Nature = 'DR' AND LinkType = ".CHARGE_LINK_PAYMENT." AND LinkId = <payment_id>"
+																				);
+					break;
+				case 'selPayableInvoices':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	'Invoice',
+																					'*',
+																					"Status = ".INVOICE_COMMITTED." AND (AccountGroup = <account_group_id> OR Account = <account_id> AND Balance > 0",
+																					'DueOn ASC, CreatedOn ASC, Id ASC'
+																				);
+				case 'selPayablePayments':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "Status IN (".PAYMENT_WAITING.", ".PAYMENT_PAYING.")");
 					break;
 				
 				// INSERTS

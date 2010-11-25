@@ -83,9 +83,67 @@ class Payment_Response extends ORM_Cached
 		return $aResults;
 	}
 	
-	public static function normaliseAll()
+	public static function getLatestForPayment()
 	{
+		$oGetLatestForPayment	= self::_preparedStatement('selLatestForPayment');
+		if ($oGetLatestForPayment->Execute() === false)
+		{
+			throw new Exception_Database($oGetLatestForPayment->Error());
+		}
+		if ($aLatestForPayment = $oGetLatestForPayment->Fetch())
+		{
+			return new self($aLatestForPayment);
+		}
+		else
+		{
+			return null;
+		}
+	}
+	
+	public function action()
+	{
+		if ($this->payment_response_status_id !== PAYMENT_RESPONSE_STATUS_PROCESSED)
+		{
+			throw new Exception('Only Processed Payment Requests can be actioned');
+		}
+		elseif (!$this->payment_id)
+		{
+			// Create a Payment if we haven't been associated with one
+			// Any linking to existing Payments should be done at Normalisation, prior to this step
+			$oPayment					= new Payment();
+			
+			$oPayment->AccountGroup		= $this->account_group_id;
+			$oPayment->Account			= $this->account_id;
+			$oPayment->PaidOn			= $this->effective_date;
+			$oPayment->PaymentType		= $this->payment_type_id;
+			$oPayment->Amount			= $this->amount;
+			$oPayment->TXNReference		= $this->transaction_reference;
+			$oPayment->OriginId			= $this->origin_id;
+			$oPayment->EnteredBy		= Employee::SYSTEM_EMPLOYEE_ID;
+			$oPayment->Balance			= $this->amount;
+			$oPayment->Status			= PAYMENT_WAITING;
+			$oPayment->created_datetime	= null;
+			
+			// FIXME: These will probably be removed sometime soon
+			$oPayment->carrier			= (!$this->file_import_data_id) ? null : File_Import::getForId(File_Import_Data::getForId($this->file_import_data_id)->file_import_id)->Carrier;
+			$oPayment->OriginType		= ($this->origin_id) ? $this->payment_type_id : $this->payment_type_id;
+			$oPayment->Payment			= (!$this->file_import_data_id) ? null : File_Import_Data::getForId($this->file_import_data_id)->data;
+			$oPayment->File				= (!$this->file_import_data_id) ? null : File_Import_Data::getForId($this->file_import_data_id)->file_import_id;
+			$oPayment->SequenceNo		= (!$this->file_import_data_id) ? null : File_Import_Data::getForId($this->file_import_data_id)->sequence;
+			
+			$oPayment->save();
+			
+			$this->payment_id	= $oPayment->Id;
+			$this->save();
+		}
+		else
+		{
+			// Already associated with a Payment
+			$oPayment	= Payment::getForId($this->payment_id);
+		}
 		
+		// Make sure that the Payment is up-to-date
+		$oPayment->applyPaymentResponses();
 	}
 
 	/**
@@ -119,6 +177,15 @@ class Payment_Response extends ORM_Cached
 					break;
 				case 'selByStatus':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "payment_request_status_id = <payment_request_status_id>", "id ASC");
+					break;
+				case 'selLatestForPayment':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(
+																					self::$_strStaticTableName,
+																					"*",
+																					"payment_id = <payment_id>",
+																					"(payment_reponse_type_id = ".PAYMENT_RESPONSE_TYPE_REJECTION.") DESC, effective_date DESC",
+																					1
+																				);
 					break;
 				
 				// INSERTS

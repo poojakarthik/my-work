@@ -49,7 +49,6 @@ abstract class Resource_Type_File_Import_Payment extends Resource_Type_File_Impo
 		}
 		
 		// Pre-Process each File
-		// TODO: Encase each File in a Transaction for DB failure
 		$iProgress		= 0;
 		$oStopwatch		= new Stopwatch();
 		$oStopwatch->start();
@@ -59,6 +58,12 @@ abstract class Resource_Type_File_Import_Payment extends Resource_Type_File_Impo
 			$iProgress++;
 			Log::getLog()->log("({$iProgress}/".count($aFileImports).") Importing {$oFileImport->Id}");
 			Log::getLog()->log("\t[ ] Resource Type: ".GetConstantDescription($oFileImport->FileType, 'resource_type'));
+			
+			// Encase each File in a Transaction for DB failure
+			if (!DataAccess::getDataAccess()->TransactionStart())
+			{
+				throw new Exception_Database_Transaction("Unable to start a Transaction");
+			}
 			
 			try
 			{
@@ -89,9 +94,15 @@ abstract class Resource_Type_File_Import_Payment extends Resource_Type_File_Impo
 				$oFileImport->Status		= FILE_NORMALISED;	// Not REALLY "normalised", but it doesn't really matter
 				$oFileImport->NormalisedOn	= date('Y-m-d H:i:s');
 			}
+			catch (Exception_Database $oException)
+			{
+				// Database Error -- Transaction Rollback
+				DataAccess::getDataAccess()->TransactionRollback();
+				throw $oException;
+			}
 			catch (Exception $oException)
 			{
-				// Mark the File as Normalisation Failed
+				// Import Error -- Mark the File as Normalisation Failed
 				Log::getLog()->log("\t[!] Import Error: ".$oException->getMessage());
 				
 				$oFileImport->Status	= FILE_NORMALISE_FAILED;
@@ -100,6 +111,12 @@ abstract class Resource_Type_File_Import_Payment extends Resource_Type_File_Impo
 			// Save back to the Database
 			$oFileImport->save();
 			Log::getLog()->log("\t[~] {$oFileImport->Id} saved with Status ".GetConstantDescription($oFileImport->Status, 'FileStatus')." in ".round($oStopwatch->lap(), 2)."s");
+			
+			// Commit
+			if (!DataAccess::getDataAccess()->TransactionCommit())
+			{
+				throw new Exception_Database_Transaction("Unable to commit the Transaction");
+			}
 		}
 		
 		// TODO: Report?  Probably no need
@@ -176,28 +193,42 @@ abstract class Resource_Type_File_Import_Payment extends Resource_Type_File_Impo
 			
 			Log::getLog()->log("\t[ ] Module: {$aFileImports[$oFileImportData->file_import_id]['oCarrierModule']['Module']}");
 			
+			
+			// Encase each Record in a Transaction for DB failure
+			if (!DataAccess::getDataAccess()->TransactionStart())
+			{
+				throw new Exception_Database_Transaction("Unable to start a Transaction");
+			}
+			
 			// Normalise
 			try
 			{
-				$aORMObjects	= $oImporter->processRecord($oFileImportData->data);
-				if (is_array($aORMObjects))
+				$oORMObject	= $oImporter->processRecord($oFileImportData->data);
+				if ($oORMObject instanceof Payment_Response)
 				{
-					// ORM Objects returned -- save them to the DB
-					foreach ($aORMObjects as $oORMObject)
-					{
-						if ($oORMObject instanceof ORM)
-						{
-							$oORMObject->save();
-							Log::getLog()->log("\t[+] Saved ".get_class($oORMObject)." #{$oORMObject->id}");
-						}
-					}
+					// Save the Payment_Response
+					$oORMObject->save();
+					Log::getLog()->log("\t[+] Saved Payment_Response #{$oORMObject->id}");
+					
+					// Mark the Data as Processed
 					$oFileImportData->file_import_data_status_id	= FILE_IMPORT_DATA_STATUS_PROCESSED;
+					
+					// Action the Payment Response
+					$sPaymentLink	= ($oORMObject->payment_id) ? 'pre-existing' : 'new';
+					$oORMObject->action();
+					Log::getLog()->log("\t[+] Actioned Payment_Response #{$oORMObject->id} against {$sPaymentLink} Payment #{$oORMObject->payment_id}");
 				}
 				else
 				{
 					// No Data -- Mark as Ignored
 					$oFileImportData->file_import_data_status_id	= FILE_IMPORT_DATA_STATUS_IGNORED;
 				}
+			}
+			catch (Exception_Database $oException)
+			{
+				// Database Error -- Transaction Rollback
+				DataAccess::getDataAccess()->TransactionRollback();
+				throw $oException;
 			}
 			catch (Exception $oException)
 			{
@@ -210,6 +241,12 @@ abstract class Resource_Type_File_Import_Payment extends Resource_Type_File_Impo
 			// Update the Data Record
 			$oFileImportData->save();
 			Log::getLog()->log("\t[~] {$oFileImportData->file_import_id}:{$iFileImportDataId} saved with Status ".GetConstantDescription($oFileImportData->file_import_data_status_id, 'file_import_data_status')." in ".round($oStopwatch->lap(), 2)."s");
+			
+			// Commit
+			if (!DataAccess::getDataAccess()->TransactionCommit())
+			{
+				throw new Exception_Database_Transaction("Unable to commit the Transaction");
+			}
 		}
 		
 		// TODO: Report?  Probably no need

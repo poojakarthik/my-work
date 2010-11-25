@@ -46,6 +46,9 @@ class Cli_App_Payments extends Cli
 	
 	protected function _process()
 	{
+		// Ensure that Payment Import isn't already running, then identify that it is now running
+		Flex_Process::factory(Flex_Process::PROCESS_PAYMENTS_IMPORT)->lock();
+		
 		// Optional FileImport.Id parameter
 		$iFileImportId	= $this->_aArgs[self::SWITCH_FILE_IMPORT_ID];
 		if ($iFileImportId && ($oFileImport = File_Import::getForId()))
@@ -76,6 +79,9 @@ class Cli_App_Payments extends Cli
 	
 	protected function _normalise()
 	{
+		// Ensure that Payment Normalisation isn't already running, then identify that it is now running
+		Flex_Process::factory(Flex_Process::PROCESS_PAYMENTS_NORMALISATION)->lock();
+		
 		// Optional file_import_data.id parameter
 		$iFileImportDataId	= $this->_aArgs[self::SWITCH_FILE_IMPORT_DATA_ID];
 		if ($iFileImportDataId && ($oFileImportData = File_Import_Data::getForId($iFileImportDataId)))
@@ -106,11 +112,35 @@ class Cli_App_Payments extends Cli
 	
 	protected function _apply()
 	{
+		// Ensure that Payment Processing isn't already running, then identify that it is now running
+		Flex_Process::factory(Flex_Process::PROCESS_PAYMENTS_PROCESSING)->lock();
 		
+		// Optional Payment.Id parameter
+		$iPaymentId	= $this->_aArgs[self::SWITCH_PAYMENT_ID];
+		if ($iPaymentId && ($oPayment = Payment::getForId($iPaymentId)))
+		{
+			Log::getLog()->log("Applying Payment #{$iPaymentId}");
+			$oPayment->process();
+			return;
+		}
+		
+		// Apply the Payments
+		try
+		{
+			Payment::processAll();
+		}
+		catch (Exception $oException)
+		{
+			// TODO: Transaction if testing
+			throw $oException;
+		}
 	}
 	
 	protected function _export()
 	{
+		// Ensure that Payment Export isn't already running, then identify that it is now running
+		Flex_Process::factory(Flex_Process::PROCESS_PAYMENTS_EXPORT)->lock();
+		
 		try
 		{
 			$bTestRun	= $this->_aArgs[self::SWITCH_TEST_RUN];

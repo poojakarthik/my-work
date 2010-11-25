@@ -114,6 +114,9 @@ class Cli_App_Rating extends Cli
 				Log::getLog()->log('[ Standard Rating Mode ]');
 				//Rate::setRateLoggingEnabled(true);
 				
+				// Ensure that Rating isn't already running, then identify that it is now running
+				Flex_Process::factory(Flex_Process::PROCESS_CDR_RATING)->lock();
+				
 				// Standard Rating mode
 				$aCDRIds	= array();
 				if ($iCDRId > 0)

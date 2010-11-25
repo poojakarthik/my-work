@@ -1036,148 +1036,17 @@
 	 */
 	 function ReversePayment($intPayment, $intReversedBy = NULL)
 	 {
-	 	// Check validity
-	 	if (!is_int($intPayment) || !$intPayment)
+	 	try
 	 	{
-			return FALSE;
+	 		$oPayment	= Payment::getForId($intPayment);
+	 		$oPayment->reverse($intReversedBy);
 	 	}
-	 	
-	 	// Find all InvoicePayments
-	 	$arrCols = Array();
-	 	$arrCols['Amount']	= 'InvoicePayment.Amount';
-	 	$arrCols['Status']	= 'Invoice.Status';
-	 	$arrCols['Balance']	= 'Invoice.Balance';
-	 	$arrCols['Invoice']	= 'Invoice.Id';
-	 	$arrCols['Id']		= 'InvoicePayment.Id';
-	 	$selInvoicePayments = new StatementSelect("(Payment JOIN InvoicePayment ON Payment.Id = InvoicePayment.Payment) JOIN Invoice ON (InvoicePayment.invoice_run_id = Invoice.invoice_run_id AND InvoicePayment.Account = Invoice.Account)", $arrCols, "Payment.Id = $intPayment AND Payment.Account = InvoicePayment.Account AND Payment.Account = Invoice.Account");
-	 	$selInvoicePayments->Execute();
-	 	$arrInvoicePayments = $selInvoicePayments->FetchAll();
-	 	$qryDelete = new Query();
-	 	foreach ($arrInvoicePayments as $arrInvoicePayment)
+	 	catch (Exception $oException)
 	 	{
-			// Add to Invoice Balance & set new Status
-			$arrData = Array();
-			$arrData['Id']	= $arrInvoicePayment['Invoice'];
-			$arrData['Balance']	= new MySQLFunction("Balance + <Payment>", Array('Payment' => $arrInvoicePayment['Amount']));
-			$arrData['Status']	= INVOICE_COMMITTED;
-			$ubiInvoice = new StatementUpdateById("Invoice", $arrData);
-			$ubiInvoice->Execute($arrData);
-			
-			// Remove InvoicePayment
-			$qryDelete->Execute("DELETE FROM InvoicePayment WHERE Id = {$arrInvoicePayment['Id']}");
+	 		return false;
 	 	}
-	 	
-	 	// Set Payment Balance to Amount and set status to Reversed
-		$arrData = Array();
-		$arrData['Id']		= $intPayment;
-		$arrData['Balance']	= 0.0;
-		$arrData['Status']	= PAYMENT_REVERSED;
-		$ubiPayment = new StatementUpdateById("Payment", $arrData);
-		$ubiPayment->Execute($arrData);
 		
-		// Remove or Credit any associated Surcharges
-		$arrReversedCharges = Array();
-		$bolChargesReversed = FALSE;
-		$arrCols = Array();
-		$arrCols['Status']			= CHARGE_DELETED;
-		$arrCols['invoice_run_id']	= NULL;
-		$ubiSurcharge	= new StatementUpdateById("Charge", $arrCols);
-		$insCredit		= new StatementInsert("Charge");
-		$selSurcharges	= new StatementSelect("Charge", "*", "Nature = 'DR' AND LinkId = <Payment> AND LinkType = ".CHARGE_LINK_PAYMENT);
-		$selSurcharges->Execute(Array('Payment' => $intPayment));
-		while ($arrSurcharge = $selSurcharges->Fetch())
-		{
-			// Is it Invoiced?
-			switch ($arrSurcharge['Status'])
-			{
-				case CHARGE_INVOICED:
-					// Add a credit to negate the charge
-					$arrCredit						= $arrSurcharge;
-					$arrCredit['CreatedOn']			= date("Y-m-d");
-					$arrCredit['ChargedOn']			= date("Y-m-d");
-					$arrCredit['CreatedBy']			= $intReversedBy;
-					$arrCredit['ApprovedBy']		= NULL;
-					$arrCredit['Nature']			= 'CR';
-					$arrCredit['Description']		= "Payment Reversal: ". $arrCredit['Description'];
-					$arrCredit['Status']			= CHARGE_APPROVED;
-					$arrCredit['invoice_run_id']	= NULL;
-					$arrCredit['charge_model_id']	= CHARGE_MODEL_CHARGE;
-					unset($arrCredit['Id']);
-					$insCredit->Execute($arrCredit);
-					
-					// Append appriate message to the list of messages for the system note
-					$arrReversedCharges[] = "A new charge has been created to credit the Account: {$arrCredit['Account']} for the invoiced payment surcharge of \$". number_format(AddGST($arrCredit['Amount']), 2, ".", "");
-					$bolChargesReversed = TRUE;
-					
-					break;
-				
-				case CHARGE_APPROVED:
-				case CHARGE_TEMP_INVOICE:
-					// Set the charge status to Deleted, set invoice_run_id to NULL
-					$arrSurcharge['Status']			= CHARGE_DELETED;
-					$arrSurcharge['invoice_run_id']	= NULL;
-					
-					$ubiSurcharge->Execute($arrSurcharge);
-					
-					// Append appriate message to the list of messages for the system note
-					$arrReversedCharges[] = "The yet-to-be-invoiced surcharge charge of \$". number_format(AddGST($arrSurcharge['Amount']), 2, ".", "") ." has been deleted from Account: {$arrSurcharge['Account']}";
-					$bolChargesReversed = TRUE;
-					break;
-			}
-		}
-		
-		// Add a note if we have an Account
-		$selPayment = new StatementSelect("Payment", "AccountGroup, Account, Amount, PaidOn", "Id = <Id>");
-		if ($selPayment->Execute($arrData))
-		{
-			$arrPayment = $selPayment->Fetch();
-			
-			// Do we have an employee?
-			if ($intReversedBy)
-			{
-				$selEmployee = new StatementSelect("Employee", "CONCAT(FirstName, ' ', LastName) AS FullName", "Id = $intReversedBy");
-				$selEmployee->Execute();
-				$arrEmployee = $selEmployee->Fetch();
-				$strEmployee = $arrEmployee['FullName'];
-			}
-			else
-			{
-				$strEmployee = "Administrators";
-			}
-			
-			$strDate = date("d/m/Y", strtotime($arrPayment['PaidOn']));
-			
-			// Work out if the payment was applied to an AccountGroup, or a specific Account
-			if ($arrPayment['Account'] != NULL)
-			{
-				// The payment has been made to a specific account
-				$strAccountClause = "a Payment";
-			}
-			else
-			{
-				// The payment has been applied to an AccountGroup
-				$strAccountClause = "an AccountGroup Payment";
-			}
-			
-			// Build the Reversed Charges clause
-			if ($bolChargesReversed)
-			{
-				$strReversedChargesClause = "\nThe following associated actions have also taken place:\n" . implode("\n", $arrReversedCharges);
-			}
-			
-			
-			// Add the note
-			$arrNote = Array();
-			$arrNote['Note']			= "$strEmployee Reversed $strAccountClause made on $strDate for \$". number_format($arrPayment['Amount'], 2, ".", "") . $strReversedChargesClause;
-			$arrNote['AccountGroup']	= $arrPayment['AccountGroup'];
-			$arrNote['Account']			= $arrPayment['Account'];
-			$arrNote['Datetime']		= new MySQLFunction("NOW()");
-			$arrNote['NoteType']		= 7;
-			$insNote = new StatementInsert("Note", $arrNote);
-			$insNote->Execute($arrNote);
-		}
-		
-		return TRUE;
+		return true;
 	 }
 	 
 	 
