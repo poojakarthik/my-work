@@ -703,6 +703,8 @@ class Credit_Card_Payment
 			
 			if (self::isTestMode())
 			{
+				// These are testing passwords for securepay
+				// Taken from an email received on Wed 24/11/2010 1:23 PM (by Rod McTainsh, subject = 'FW: Secure Pay Details for TB VT PT' from Rich Davis)
 				$oCustomerGroup	= Customer_Group::getForId($oAccount->CustomerGroup);
 				switch ($oCustomerGroup->getConstantName())
 				{
@@ -752,7 +754,7 @@ class Credit_Card_Payment
 				$oCharge->ChargeType		= 'CCS';
 				$oCharge->Nature			= 'DR';
 				$oCharge->global_tax_exempt	= 0;
-				$oCharge->Description		= ($oCreditCardType->name.' Surcharge for Payment on '.date('d/m/Y', $iTime).' ('.$fTotal.') @ '.(round(floatval($oCreditCardType->surcharge) * 100, 2)).'%');
+				$oCharge->Description		= ($oCardType->name.' Surcharge for Payment on '.date('d/m/Y', $iTime).' ('.$fTotal.') @ '.(round(floatval($oCardType->surcharge) * 100, 2)).'%');
 				$oCharge->charge_model_id	= CHARGE_MODEL_CHARGE;
 				$oCharge->Notes				= '';
 				$oCharge->save();
