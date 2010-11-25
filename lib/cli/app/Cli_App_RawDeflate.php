@@ -70,6 +70,10 @@ class Cli_App_RawDeflate extends Cli
 				}
 				$this->log("Stripping graphics state commands.");
 				$deflate = preg_replace("/\/a[0-9]+ gs/", "", $deflate);
+				$deflate = preg_replace("/q \/s[0-9]+ gs \/x[0-9]+ Do Q/", null, $deflate);
+
+				$this->log("Stripping extra white spaces/return characters.");
+				$deflate = preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", $deflate);
 
 				$this->log("Writing deflated content to $strDestination.");
 				$f = @fopen($strDestination, "w+b");
