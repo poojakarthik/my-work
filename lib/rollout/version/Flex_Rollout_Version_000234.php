@@ -119,6 +119,7 @@ class Flex_Rollout_Version_000234 extends Flex_Rollout_Version
 											ADD COLUMN	payment_id BIGINT UNSIGNED NULL;",
 				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 			),
+			// TODO: CR135 -- Uncomment this prior to release
 			/*array
 			(
 				'sDescription'		=>	"Remove the Payment, File & SequenceNo fields from the Payment table",
