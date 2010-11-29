@@ -163,7 +163,6 @@ abstract class Resource_Type_File_Import_Payment extends Resource_Type_File_Impo
 		}
 		
 		// Process each Record
-		// TODO: Encase each Record in a Transaction for DB failure
 		$iProgress		= 0;
 		$oStopwatch		= new Stopwatch();
 		$oStopwatch->start();
