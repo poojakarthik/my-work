@@ -34,7 +34,40 @@ class Cli_App_Payments extends Cli
 			}
 			else
 			{
-				$this->$sMode();
+				$oDataAccess	= DataAccess::getDataAccess();
+				
+				// TEST MODE: Start Transaction
+				if ($this->_aArgs[self::SWITCH_TEST_RUN] && !$oDataAccess->TransactionStart())
+				{
+					throw new Exception_Database($oDataAccess->Error());
+				}
+				
+				try
+				{
+					// Call the approrite MODE method
+					$this->$sMode();
+					
+					// TEST MODE: Force Rollback
+					if ($this->_aArgs[self::SWITCH_TEST_RUN])
+					{
+						throw new Exception("TEST MODE");
+					}
+				}
+				catch (Exception $oException)
+				{
+					// TEST MODE: Rollback
+					if ($this->_aArgs[self::SWITCH_TEST_RUN])
+					{
+						$oDataAccess->TransactionRollback();
+					}
+					throw $oException;
+				}
+				
+				// TEST MODE: Commit
+				if ($this->_aArgs[self::SWITCH_TEST_RUN])
+				{
+					$oDataAccess->TransactionCommit();
+				}
 			}
 		}
 		catch (Exception $oException)
