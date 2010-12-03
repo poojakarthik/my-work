@@ -118,17 +118,7 @@ class Flex_Rollout_Version_000234 extends Flex_Rollout_Version
 				'sRollbackSQL'		=>	"	ALTER TABLE	file_import_data
 											ADD COLUMN	payment_id BIGINT UNSIGNED NULL;",
 				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
-			),
-			// TODO: CR135 -- Uncomment this prior to release
-			/*array
-			(
-				'sDescription'		=>	"Remove the Payment, File & SequenceNo fields from the Payment table",
-				'sAlterSQL'			=>	"	ALTER TABLE	Payment
-											DROP COLUMN	Payment,
-											DROP COLUMN	File,
-											DROP COLUMN	SequenceNo;",
-				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
-			)*/
+			)
 		);
 		
 		// Perform Batch Rollout
