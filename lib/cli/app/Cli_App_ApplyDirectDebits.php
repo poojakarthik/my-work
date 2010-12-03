@@ -144,13 +144,16 @@ class Cli_App_ApplyDirectDebits extends Cli
 							else
 							{
 								// Ineligible due to invalid bank account
+								Log::getLog()->log("ERROR: {$iAccountId} has an invalid bank account, id = {$oAccount->DirectDebit}");
 								$aIneligible[self::INELIGIBLE_BANK_ACCOUNT]++;
 							}
 							break;
 						case BILLING_TYPE_CREDIT_CARD:
 							$iPaymentType	= PAYMENT_TYPE_DIRECT_DEBIT_VIA_CREDIT_CARD;
 							$oCreditCard	= Credit_Card::getForId($oAccount->CreditCard);
-							$iExpiry		= strtotime("{$oCreditCard->ExpYear}-".($oCreditCard->ExpMonth + 1)."-01");
+							$sExpiry		= "{$oCreditCard->ExpYear}-{$oCreditCard->ExpMonth}-01";
+							$sCompareExpiry	= "{$oCreditCard->ExpYear}-{$oCreditCard->ExpMonth}-01 + 1 month";
+							$iExpiry		= strtotime($sCompareExpiry);
 							$iNow			= time();
 							if ($oCreditCard && ($iNow < $iExpiry))
 							{
@@ -161,11 +164,13 @@ class Cli_App_ApplyDirectDebits extends Cli
 							else if ($iNow >= $iExpiry)
 							{
 								// Ineligible because credit card has expired
+								Log::getLog()->log("ERROR: {$iAccountId} has an expired credit card: {$sExpiry} (".date('Y-m-d', strtotime($sCompareExpiry)).")");
 								$aIneligible[self::INELIGIBLE_CREDIT_CARD_EXPIRY]++;
 							}
 							else
 							{
 								// Ineligible due to invalid credit card
+								Log::getLog()->log("ERROR: {$iAccountId} has an invalid credit card, id = {$oAccount->CreditCard}");
 								$aIneligible[self::INELIGIBLE_CREDIT_CARD]++;
 							}
 							break;
@@ -177,6 +182,7 @@ class Cli_App_ApplyDirectDebits extends Cli
 						if ($fAmount < $aRow['direct_debit_minimum'])
 						{
 							// Not enough of a balance to be eligible
+							Log::getLog()->log("ERROR: {$iAccountId} doesn't owe enough, ineligible amount: {$fAmount} (less than minimum, which is {$aRow['direct_debit_minimum']})");
 							$aIneligible[self::INELIGIBLE_AMOUNT]++;
 							continue;
 						}
@@ -193,7 +199,7 @@ class Cli_App_ApplyDirectDebits extends Cli
 						$oPayment->OriginType	= $iPaymentType;
 						$oPayment->Status		= PAYMENT_WAITING;
 						$oPayment->PaymentType	= $iPaymentType;
-						$oPayment->Payment		= '';	// TODO: CR135 -- remove this before release (after the changes have been made to the dev db which remove this field)
+						$oPayment->Payment		= '';
 						$oPayment->save();
 						
 						// Create payment_request (linked to the payment & invoice run id)
@@ -240,6 +246,7 @@ class Cli_App_ApplyDirectDebits extends Cli
 				{
 					if ($this->_changeInvoiceRunAutoActionDateTime($iInvoiceRunId, $sDatetime) === false)
 					{
+						Log::getLog()->log("ERROR: Couldn't action invoice run event for invoice run '{$iInvoiceRunId}' @ '{$sDatetime}' (date & time)");
 						$aErrors[self::ERROR_ACTIONING_EVENT]++;
 					}
 				}
@@ -263,9 +270,10 @@ class Cli_App_ApplyDirectDebits extends Cli
 			if ($bTestRun)
 			{
 				$oDataAccess->TransactionRollback();
+				Log::getLog()->log("Transaction rolled back");
 			}
 			
-			$this->showUsage('Error: '.$oException->getMessage());
+			$this->showUsage($oException->getMessage());
 			return 1;
 		}
 	}
@@ -295,7 +303,7 @@ class Cli_App_ApplyDirectDebits extends Cli
 		return array(
 			self::SWITCH_TEST_RUN => array(
 				self::ARG_REQUIRED		=> FALSE,
-				self::ARG_DESCRIPTION	=> "for testing script outcome [fully functional EXCEPT only one direct debit is applied and then all database changes are rolled back]",
+				self::ARG_DESCRIPTION	=> "for testing script outcome [fully functional EXCEPT that all database changes are rolled back (i.e. NO direct debits will actually be applied)]",
 				self::ARG_DEFAULT		=> FALSE,
 				self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
 			)

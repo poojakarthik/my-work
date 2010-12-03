@@ -178,7 +178,7 @@ var Popup_Account_Add_CreditCard	= Class.create(Reflex_Popup,
 									$T.button({class: 'icon-button'},
 										$T.img({src: Popup_Account_Add_CreditCard.SAVE_IMAGE_SOURCE, alt: '', title: 'Save'}),
 										$T.span('Save')
-									).observe('click', this._save.bind(this)),
+									).observe('click', this._save.bind(this, false)),
 									$T.button({class: 'icon-button'},
 										$T.img({src: Popup_Account_Add_CreditCard.CANCEL_IMAGE_SOURCE, alt: '', title: 'Cancel'}),
 										$T.span('Cancel')
@@ -277,8 +277,48 @@ var Popup_Account_Add_CreditCard	= Class.create(Reflex_Popup,
 		return aErrors;
 	},
 	
-	_save	: function()
+	_checkPrimaryContactHasEmail	: function(oResponse)
 	{
+		if (Object.isUndefined(oResponse))
+		{
+			var fnResp	= this._checkPrimaryContactHasEmail.bind(this);
+			var oReq	= jQuery.json.jsonFunction(fnResp, fnResp, 'Account', 'doesPrimaryContactHaveEmail');
+			oReq(this._iAccountId);
+			return;
+		}
+		
+		if (!oResponse.bSuccess)
+		{
+			if (oResponse.sMessage)
+			{
+				// Error
+				Reflex_Popup.alert(oResponse.sMessage, {sTitle: 'Error'});
+			}
+			else
+			{
+				// Confirm continuance
+				Reflex_Popup.yesNoCancel(
+					'The Primary Contact for this Account does not have an email address. This means that they will not receive a confirmation email for the Credit Card payment you are about to make.',
+					{
+						sYesLabel	: 'Continue',
+						sNoLabel	: 'Cancel',
+						fnOnYes		: this._save.bind(this, true)
+					}
+				);
+			}
+			return;
+		}
+	},
+	
+	_save	: function(bIgnorePrimaryContactEmailCheck)
+	{
+		// If a payment is to be submitted, then we check that the accounts primary contact has an email address
+		if (this._hFields[Popup_Account_Add_CreditCard.FIELD_SUBMIT_PAYMENT].getElementValue() && !bIgnorePrimaryContactEmailCheck)
+		{
+			this._checkPrimaryContactHasEmail();
+			return;
+		}
+		
 		var aErrors	= this._validate(true);
 		if (aErrors.length)
 		{

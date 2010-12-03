@@ -31,8 +31,10 @@ class Email_Notification extends Email_Flex
 				break;
 			case 'to':
 				$this->addTo($value);
+				break;
 			case 'cc':
 				$this->addCc($value);
+				break;
 			case 'bcc':
 				$this->addBcc($value);
 				break;
@@ -138,15 +140,18 @@ class Email_Notification extends Email_Flex
 	{
 		if (!count($this->_to))
 		{
+			Log::getLog()->log("Email_Notification::send - Added ybs admin as 'to'");
 			$this->addTo('ybs-admin@ybs.net.au', 'Yellow Billing Services');
 		}
 		else
 		{
-			$this->addCc('ybs-admin@ybs.net.au', 'Yellow Billing Services');
+			Log::getLog()->log("Email_Notification::send - Added ybs admin as 'bcc'");
+			$this->addBcc('ybs-admin@ybs.net.au', 'Yellow Billing Services');
 		}
 		
 		if (!$this->_from)
 		{
+			Log::getLog()->log("Email_Notification::send - Added ybs admin as 'from'");
 			$this->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
 		}
 		parent::send($transport);

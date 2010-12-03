@@ -461,12 +461,6 @@ class Credit_Card_Payment
 			Log::getLog()->log("Created credit card {$oCreditCard->id}, saved as payment method");
 		}
 		
-		// Validate the email address
-		if (!EmailAddressValid($sEmail))
-		{
-			throw new Credit_Card_Payment_Exception('The email address provided is invalid.');
-		}
-		
 		try
 		{
 			// Attempt payment
@@ -493,24 +487,33 @@ class Credit_Card_Payment
 		}
 		
 		// Send the payment confirmation email
-		$bSentConfirmationEmail	= true;
-		$bCanSendEmail			= EmailAddressValid($sEmail);
-		if ($bCanSendEmail && (!self::isTestMode() || (defined('SEND_CREDIT_CARD_EMAILS_IN_TEST_MODE') && SEND_CREDIT_CARD_EMAILS_IN_TEST_MODE === TRUE)))
+		if (!self::isTestMode() || (defined('SEND_CREDIT_CARD_EMAILS_IN_TEST_MODE') && SEND_CREDIT_CARD_EMAILS_IN_TEST_MODE === TRUE))
 		{
-			$oCustomerGroup 			= Customer_Group::getForId($oAccount->customerGroup);
-			$oCreditCardPaymentConfig 	= Credit_Card_Payment_Config::getForCustomerGroup($oAccount->customerGroup);
-			try
+			// Validate email address
+			if (EmailAddressValid($sEmail))
 			{
-				$aMessageTokens		= self::buildMessageTokens($oTransactionDetails, $oContact->getName(), $sEmail);
-				$oEmail 			= new Email_Notification(EMAIL_NOTIFICATION_PAYMENT_CONFIRMATION, $oAccount->CustomerGroup);
-				$oEmail->subject	= (self::isTestMode() ? '[TEST EMAIL] ' : '')."{$oCustomerGroup->name} Credit Card Payment Confirmation (Ref: {$oTransactionDetails->sPurchaseOrderNumber} / {$oTransactionDetails->sTransactionId})";
-				$oEmail->text 		= self::replaceMessageTokens($oCreditCardPaymentConfig->confirmationEmail, $aMessageTokens);
-				$oEmail->to 		= (self::isTestMode() ? 'ybs-admin@ybs.net.au' : $sEmail);
-				$oEmail->send();
+				// Valid, send confirmation email
+				$oCustomerGroup 			= Customer_Group::getForId($oAccount->customerGroup);
+				$oCreditCardPaymentConfig 	= Credit_Card_Payment_Config::getForCustomerGroup($oAccount->customerGroup);
+				try
+				{
+					$aMessageTokens		= self::buildMessageTokens($oTransactionDetails, $oContact->getName(), $sEmail);
+					$oEmail 			= new Email_Notification(EMAIL_NOTIFICATION_PAYMENT_CONFIRMATION, $oAccount->CustomerGroup);
+					$oEmail->subject	= (self::isTestMode() ? '[TEST EMAIL] ' : '')."{$oCustomerGroup->name} Credit Card Payment Confirmation (Ref: {$oTransactionDetails->sPurchaseOrderNumber} / {$oTransactionDetails->sTransactionId})";
+					$oEmail->text 		= self::replaceMessageTokens($oCreditCardPaymentConfig->confirmationEmail, $aMessageTokens);
+					$oEmail->to 		= (self::isTestMode() ? 'ybs-admin@ybs.net.au' : $sEmail);
+					$oEmail->send();
+					Log::getLog()->log("Email sent to '".implode(', ', $oEmail->getRecipients())."'".(self::isTestMode() ? " instead of '{$sEmail}'" : ''));
+				}
+				catch (Exception $oException)
+				{
+					// Ignore this case
+				}
 			}
-			catch (Exception $oException)
+			else
 			{
-				// Ignore this case
+				// Invalid email address
+				Log::getLog()->log("Invalid email address, confirmation email not sent");
 			}
 		}
 		
@@ -735,7 +738,7 @@ class Credit_Card_Payment
 			$oPayment->OriginType	= PAYMENT_TYPE_CREDIT_CARD;
 			$oPayment->Status		= PAYMENT_WAITING;
 			$oPayment->PaymentType	= PAYMENT_TYPE_CREDIT_CARD;
-			$oPayment->Payment		= '';	// TODO: CR135 -- remove this before release (after the changes have been made to the dev db)
+			$oPayment->Payment		= '';
 			$oPayment->save();
 			
 			if ($fSurcharge != 0)

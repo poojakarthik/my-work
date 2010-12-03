@@ -932,7 +932,7 @@ class JSON_Handler_Account extends JSON_Handler
 					$oPayment->OriginType	= PAYMENT_TYPE_DIRECT_DEBIT_VIA_EFT;
 					$oPayment->Status		= PAYMENT_WAITING;
 					$oPayment->PaymentType	= PAYMENT_TYPE_DIRECT_DEBIT_VIA_EFT;
-					$oPayment->Payment		= '';	// TODO: CR135 -- remove this before release (after the changes have been made to the dev db which remove this field)
+					$oPayment->Payment		= '';
 					$oPayment->save();
 					
 					// Create payment_request
@@ -1423,6 +1423,24 @@ class JSON_Handler_Account extends JSON_Handler
 		}
 		catch (Exception $oException)
 		{
+			return	array(
+						'bSuccess' 	=> false,
+						'sMessage'	=> $bGod ? $oException->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'
+					);
+		}
+	}
+	
+	public function doesPrimaryContactHaveEmail($iAccountId)
+	{
+		try
+		{
+			$oAccount	= Account::getForId($iAccountId);
+			$oContact	= Contact::getForId($oAccount->PrimaryContact);
+			return array('bSuccess' => EmailAddressValid($oContact->Email));
+		}
+		catch (Exception $oException)
+		{
+			$bGod	= Employee::getForId(Flex::getUserId())->isGod();
 			return	array(
 						'bSuccess' 	=> false,
 						'sMessage'	=> $bGod ? $oException->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'
