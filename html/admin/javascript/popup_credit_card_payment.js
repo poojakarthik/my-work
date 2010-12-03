@@ -654,11 +654,6 @@ var Popup_Credit_Card_Payment	= Class.create(Reflex_Popup,
 	{
 		this._showLoading(false);
 		
-		if (oResponse.sDebug)
-		{
-			Reflex_Popup.debug(oResponse.sDebug);
-		}
-		
 		if (!oResponse.bSuccess)
 		{
 			// Check for specific exception, determine action from type
@@ -670,8 +665,17 @@ var Popup_Credit_Card_Payment	= Class.create(Reflex_Popup,
 				sMessage	= 'Your credit card payment could not be processed. ' + oResponse.sMessage;
 			}
 			
+			var bHaveDebugText	= (oResponse.sDebug && (oResponse.sDebug != ''));
+			
 			// Show popup
-			Reflex_Popup.alert(oResponse.sMessage, {sTitle: sTitle});
+			Reflex_Popup.alert(
+				oResponse.sMessage, 
+				{
+					sTitle			: sTitle, 
+					fnClose			: (bHaveDebugText ? Reflex_Popup.debug.bind(Reflex_Popup, oResponse.sDebug) : null),
+					sButtonLabel	: (bHaveDebugText ? 'OK (View Log)' : null)
+				}
+			);
 			return;
 		}
 		
