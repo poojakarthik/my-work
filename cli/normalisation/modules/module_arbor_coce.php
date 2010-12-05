@@ -143,6 +143,9 @@ class NormalisationModuleArborCOCE extends NormalisationModule
 		// RecordType
 		// Build a custom Record Code
 		$sCarrierRecordCode			= trim($this->_FetchRawCDR('TypeCode'));
+		$sToDate					= trim($this->_FetchRawCDR('ToDate'));
+		$sElementId					= trim($this->_FetchRawCDR('ElementId'));
+		$sNonRecurringChargeTypeId	= trim($this->_FetchRawCDR('NonRecurringChargeTypeId'));
 		$sRecordCode				= null;
 		$sCarrierDestinationCode	= null;
 		try
@@ -156,14 +159,32 @@ class NormalisationModuleArborCOCE extends NormalisationModule
 					break;
 					
 				case self::TYPE_CODE_NON_RECURRING_CHARGE:
-					Flex::assert(false, "COCE CDR File: Encountered a non-Recurring Charge", print_r($this->DebugCDR(), true));
-					/*$sRecordCode				= 'S&E';
-					$sCarrierDestinationCode	= "{$sCarrierRecordCode}:".trim($this->_FetchRawCDR('NonRecurringChargeTypeId'));*/
+					//Flex::assert(false, "COCE CDR File: Encountered a non-Recurring Charge", print_r($this->DebugCDR(), true));
+					$sRecordCode				= 'S&E';
+					$sCarrierDestinationCode	= "{$sCarrierRecordCode}:".trim($this->_FetchRawCDR('NonRecurringChargeTypeId'));
 					break;
+					
 				case self::TYPE_CODE_ADJUSTMENT:
-					Flex::assert(false, "COCE CDR File: Encountered an Adjustment", print_r($this->DebugCDR(), true));
-					/*$sRecordCode				= 'S&E';
-					$sCarrierDestinationCode	= "{$sCarrierRecordCode}:".trim($this->_FetchRawCDR('AdjustmentCode'));*/
+					//Flex::assert(false, "COCE CDR File: Encountered an Adjustment", print_r($this->DebugCDR(), true));
+					
+					// We only want to accept certain Adjustments
+					if ($sToDate && $sElementId)
+					{
+						// This is most likely a Recurring Charge "Disconnect Credit" -- Accept
+						$sRecordCode				= 'S&E';
+						$sCarrierDestinationCode	= self::TYPE_CODE_RECURRING_CHARGE.":{$sElementId}";
+					}
+					elseif (!$sToDate && $sNonRecurringChargeTypeId)
+					{
+						// This is most likely a Non-Recurring Charge -- Accept
+						$sRecordCode				= 'S&E';
+						$sCarrierDestinationCode	= self::TYPE_CODE_NON_RECURRING_CHARGE.":{$sNonRecurringChargeTypeId}";
+					}
+					else
+					{
+						// Usage Credit, or some other kind of unwanted Adjustment
+						return $this->_ErrorCDR(CDR_CANT_NORMALISE);
+					}
 					break;
 			}
 		}

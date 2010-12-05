@@ -156,7 +156,7 @@ class NormalisationModuleArborCTOP extends NormalisationModule
 			if (!$aDestination['bolUnknownDestination'])
 			{
 				// Destination
-				$sDescription	= $this->_FetchRawCDR('Destination', $aDestination['Description']);
+				$sDescription	= $aDestination['Description'];
 			}
 		}
 		$this->_AppendCDR('Description', $sDescription);
