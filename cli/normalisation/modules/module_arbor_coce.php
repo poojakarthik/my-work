@@ -153,7 +153,6 @@ class NormalisationModuleArborCOCE extends NormalisationModule
 			switch ((int)$sCarrierRecordCode)
 			{
 				case self::TYPE_CODE_RECURRING_CHARGE:
-				//case self::TYPE_CODE_NON_RECURRING_CHARGE:
 					$sRecordCode				= 'S&E';
 					$sCarrierDestinationCode	= "{$sCarrierRecordCode}:".trim($this->_FetchRawCDR('ElementId'));
 					break;
