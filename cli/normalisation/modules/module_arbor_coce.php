@@ -173,7 +173,7 @@ class NormalisationModuleArborCOCE extends NormalisationModule
 						$sRecordCode				= 'S&E';
 						$sCarrierDestinationCode	= self::TYPE_CODE_RECURRING_CHARGE.":{$sElementId}";
 					}
-					elseif (!$sToDate && $sNonRecurringChargeTypeId)
+					elseif ($sToDate && $sNonRecurringChargeTypeId)
 					{
 						// This is most likely a Non-Recurring Charge -- Accept
 						$sRecordCode				= 'S&E';
@@ -205,9 +205,16 @@ class NormalisationModuleArborCOCE extends NormalisationModule
 		}
 		
 		// StartDatetime
-		if ($sStartDate = trim($this->_FetchRawCDR('FromDate')))
+		$sFromDate	= trim($this->_FetchRawCDR('FromDate'));
+		$sToDate	= trim($this->_FetchRawCDR('ToDate'));
+		if ($sFromDate)
 		{
-			$iStartDatetime	= strtotime($sStartDate);
+			$iStartDatetime	= strtotime($sFromDate);
+		}
+		elseif ($sToDate)
+		{
+			// Only has a "To" Date -- use it as the StartDatetime
+			$iStartDatetime	= strtotime($sToDate);
 		}
 		else
 		{
@@ -216,10 +223,14 @@ class NormalisationModuleArborCOCE extends NormalisationModule
 		$this->_AppendCDR('StartDatetime', date('Y-m-d H:i:s', $iStartDatetime));
 		
 		// EndDatetime
-		if ($sEndDate = trim($this->_FetchRawCDR('ToDate')))
+		if ($sToDate)
 		{
-			$iEndDatetime	= strtotime($sEndDate);
-			$this->_AppendCDR('EndDatetime', date('Y-m-d H:i:s', $iEndDatetime));
+			// We can received a To-Date without a From-Date, in this case, pretend there is not To-Date
+			if ($sFromDate)
+			{
+				$iEndDatetime	= strtotime($sToDate);
+				$this->_AppendCDR('EndDatetime', date('Y-m-d H:i:s', $iEndDatetime));
+			}
 		}
 		
 		// Description
