@@ -228,7 +228,8 @@ class NormalisationModuleArborCOCE extends NormalisationModule
 			// We can received a To-Date without a From-Date, in this case, pretend there is not To-Date
 			if ($sFromDate)
 			{
-				$iEndDatetime	= strtotime($sToDate);
+				// If there is a From Date and To Date, then the To Date is not inclusive, so we need to take 1 second off to make it inclusive
+				$iEndDatetime	= strtotime($sToDate) - 1;
 				$this->_AppendCDR('EndDatetime', date('Y-m-d H:i:s', $iEndDatetime));
 			}
 		}
