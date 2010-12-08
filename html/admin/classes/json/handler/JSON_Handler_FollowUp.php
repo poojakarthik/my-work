@@ -101,7 +101,8 @@ class JSON_Handler_FollowUp extends JSON_Handler
 			{
 				$iLimit		= (max($iLimit, 0) == 0) ? null : (int)$iLimit;
 				$iOffset	= ($iLimit === null) ? null : max((int)$iOffset, 0);
-				$aFollowUps	= FollowUp::searchFor($iLimit, $iOffset, get_object_vars($oFieldsToSort), $aFilter);
+				$oResult	= FollowUp::searchFor($iLimit, $iOffset, get_object_vars($oFieldsToSort), $aFilter);
+				$aFollowUps	= $oResult['aData'];
 				$aResults	= array();
 				$iCount		= 0;
 				
@@ -145,7 +146,9 @@ class JSON_Handler_FollowUp extends JSON_Handler
 				return 	array(
 							"Success"		=> true,
 							"aRecords"		=> $aResults,
-							"iRecordCount"	=> FollowUp::searchFor(null, null, get_object_vars($oFieldsToSort), $aFilter, true)
+							"iRecordCount"	=> $oResult['iCount'],
+							//"iRecordCount"	=> FollowUp::searchFor(null, null, get_object_vars($oFieldsToSort), $aFilter, true),
+							"sDebug"		=> (Employee::getForId(Flex::getUserId())->isGod() ? $this->_JSONDebug : '')
 						);
 			}
 		}
