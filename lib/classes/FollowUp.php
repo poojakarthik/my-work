@@ -343,15 +343,175 @@ class FollowUp extends ORM_Cached
 		}
 	}
 
+	public static function countFor($aFilter=null)
+	{
+		// Generate search table (temporary) and where clause data
+		$aWhereInfoSearch	= self::_buildSearchTable($aFilter);
+		
+		// Query the temp table 'followup_search'
+		$sSearchFrom	= '	followup_search fs
+							JOIN	followup_category fcat
+										ON fs.followup_category_id = fcat.id
+							JOIN	followup_type ft
+										ON fs.followup_type_id = ft.id
+							JOIN	Employee e
+										ON fs.assigned_employee_id = e.Id';
+		
+		// Get the count of the unlimited results
+		$oFollowUpSearchCountSelect	=	new StatementSelect(
+										$sSearchFrom, 
+										'COUNT(COALESCE(fs.followup_id, fs.followup_recurring_id)) AS count', 
+										$aWhereInfoSearch['sClause'], 
+										'', 
+										''
+									);
+		if ($oFollowUpSearchCountSelect->Execute($aWhereInfoSearch['aValues']) === FALSE)
+		{
+			throw new Exception_Database("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oFollowUpSelect->Error());
+		}
+		
+		$aCount	= $oFollowUpSearchCountSelect->Fetch();
+		return $aCount['count'];
+	}
+
+	public static function searchAndCountFor($iLimit=null, $iOffset=null, $aSort=null, $aFilter=null, $bCountOnly=false)
+	{
+		// ORDER BY clause (with field alias' for category and type)
+		$sOrderByClause	=	StatementSelect::generateOrderBy(
+								array(
+									'followup_category_id'	=> 'fcat.name',
+									'followup_type_id'		=> 'ft.name',
+									'assigned_employee_id'	=> "CONCAT(e.FirstName, ' ', e.LastName)"
+								), 
+								$aSort
+							);
+		
+		// LIMIT clause
+		$sLimitClause	= StatementSelect::generateLimit($iLimit, $iOffset);
+		
+		// Generate search table (temporary) and where clause data
+		$aWhereInfoSearch	= self::_buildSearchTable($aFilter);
+		
+		// Query the temp table 'followup_search'
+		$sSearchFrom	= '	followup_search fs
+							JOIN	followup_category fcat
+										ON fs.followup_category_id = fcat.id
+							JOIN	followup_type ft
+										ON fs.followup_type_id = ft.id
+							JOIN	Employee e
+										ON fs.assigned_employee_id = e.Id';
+		
+		// Get the count of the unlimited results
+		$oFollowUpSearchCountSelect	=	new StatementSelect(
+										$sSearchFrom, 
+										'COUNT(COALESCE(fs.followup_id, fs.followup_recurring_id)) AS count', 
+										$aWhereInfoSearch['sClause'], 
+										'', 
+										''
+									);
+		if ($oFollowUpSearchCountSelect->Execute($aWhereInfoSearch['aValues']) === FALSE)
+		{
+			throw new Exception_Database("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oFollowUpSelect->Error());
+		}
+		
+		$aCount	= $oFollowUpSearchCountSelect->Fetch();
+		if ($bCountOnly)
+		{
+			// Only want the count, return it
+			return $aCount['count'];
+		}
+		
+		// Get the limited + offset results 
+		$oFollowUpSearchSelect	=	new StatementSelect(
+										$sSearchFrom, 
+										'fs.*', 
+										$aWhereInfoSearch['sClause'], 
+										$sOrderByClause, 
+										$sLimitClause
+									);
+		if ($oFollowUpSearchSelect->Execute($aWhereInfoSearch['aValues']) === FALSE)
+		{
+			throw new Exception_Database("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oFollowUpSelect->Error());
+		}
+		
+		// Return the results as well as the count
+		return array('aData' => $oFollowUpSearchSelect->FetchAll(), 'iCount' => $aCount['count']);
+	}
+
 	public static function searchFor($iLimit=null, $iOffset=null, $aSort=null, $aFilter=null, $bCountOnly=false)
+	{
+		// ORDER BY clause (with field alias' for category and type)
+		$sOrderByClause	=	StatementSelect::generateOrderBy(
+								array(
+									'followup_category_id'	=> 'fcat.name',
+									'followup_type_id'		=> 'ft.name',
+									'assigned_employee_id'	=> "CONCAT(e.FirstName, ' ', e.LastName)"
+								), 
+								$aSort
+							);
+		
+		// LIMIT clause
+		$sLimitClause	= StatementSelect::generateLimit($iLimit, $iOffset);
+		
+		// Generate search table (temporary) and where clause data
+		$aWhereInfoSearch	= self::_buildSearchTable($aFilter);
+		
+		// Query the temp table 'followup_search'
+		$sSearchFrom	= '	followup_search fs
+							JOIN	followup_category fcat
+										ON fs.followup_category_id = fcat.id
+							JOIN	followup_type ft
+										ON fs.followup_type_id = ft.id
+							JOIN	Employee e
+										ON fs.assigned_employee_id = e.Id';
+		
+		// Get the limited + offset results 
+		$oFollowUpSearchSelect	=	new StatementSelect(
+										$sSearchFrom, 
+										'fs.*', 
+										$aWhereInfoSearch['sClause'], 
+										$sOrderByClause, 
+										$sLimitClause
+									);
+		if ($oFollowUpSearchSelect->Execute($aWhereInfoSearch['aValues']) === FALSE)
+		{
+			throw new Exception_Database("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oFollowUpSelect->Error());
+		}
+		
+		$mFollowUps	= $oFollowUpSearchSelect->FetchAll();
+		return ($mFollowUps === null ? array() : $mFollowUps);
+	}
+
+	public static function getStatus($iFollowUpClosureId, $sDueDateTime)
+	{
+		if ($iFollowUpClosureId)
+		{
+			// The followup has been closed, return the name of the followup_closure
+			return FollowUp_Closure::getForId($iFollowUpClosureId)->name;
+		}
+		else
+		{
+			// Active, check the date to see if overdue or current
+			$iDueDate	= strtotime($sDueDateTime);
+			$iNow		= time();
+			
+			if ($iDueDate >= $iNow)
+			{
+				// Current
+				return 'Current';
+			}
+			else
+			{
+				// Overdue
+				return 'Overdue';
+			}
+		}
+	}
+	
+	private static function _buildSearchTable($aFilter=null)
 	{
 		$iStart	= time();
 		$iLast	= $iStart;
-		
-		if ($bCountOnly)
-		{
-			Log::getLog()->log("Count only:: ");
-		}
 		
 		// Build query parts based on the limit, offset, sort and filter parameters
 		$sSelectClause	= '	f.*, fc.followup_closure_type_id';
@@ -370,19 +530,6 @@ class FollowUp extends ORM_Cached
 		unset($aFilter['followup_closure_id']);
 		unset($aFilter['followup_closure_type_id']);
 		$aWhereInfoFollowUp	= StatementSelect::generateWhere(null, $aFilter);
-		
-		// ORDER BY clause (with field alias' for category and type)
-		$sOrderByClause	=	StatementSelect::generateOrderBy(
-								array(
-									'followup_category_id'	=> 'fcat.name',
-									'followup_type_id'		=> 'ft.name',
-									'assigned_employee_id'	=> "CONCAT(e.FirstName, ' ', e.LastName)"
-								), 
-								$aSort
-							);
-		
-		// LIMIT clause
-		$sLimitClause	= StatementSelect::generateLimit($iLimit, $iOffset);
 			
 		// Get followups (ignore orderby and limit for this query, will be done on the temporary table)
 		$oFollowUpSelect	=	new StatementSelect(
@@ -767,76 +914,7 @@ class FollowUp extends ORM_Cached
 		Log::getLog()->log("Recurring insert: ".(time() - $iStart)." (".(time() - $iLast).")");
 		$iLast	= time();
 		
-		// Query the temp table 'followup_search'
-		$sSearchFrom	= '	followup_search fs
-							JOIN	followup_category fcat
-										ON fs.followup_category_id = fcat.id
-							JOIN	followup_type ft
-										ON fs.followup_type_id = ft.id
-							JOIN	Employee e
-										ON fs.assigned_employee_id = e.Id';
-		
-		// Get the count of the unlimited results
-		$oFollowUpSearchSelect	=	new StatementSelect(
-										$sSearchFrom, 
-										'COUNT(COALESCE(fs.followup_id, fs.followup_recurring_id)) AS count', 
-										$aWhereInfoSearch['sClause'], 
-										'', 
-										''
-									);
-		if ($oFollowUpSearchSelect->Execute($aWhereInfoSearch['aValues']) === FALSE)
-		{
-			throw new Exception_Database("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oFollowUpSelect->Error());
-		}
-		
-		$aCount	= $oFollowUpSearchSelect->Fetch();
-		if ($bCountOnly)
-		{
-			// Only want the count, return it
-			return $aCount['count'];
-		}
-		
-		// Get the limited + offset results 
-		$oFollowUpSearchSelect	=	new StatementSelect(
-										$sSearchFrom, 
-										'fs.*', 
-										$aWhereInfoSearch['sClause'], 
-										$sOrderByClause, 
-										$sLimitClause
-									);
-		if ($oFollowUpSearchSelect->Execute($aWhereInfoSearch['aValues']) === FALSE)
-		{
-			throw new Exception_Database("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oFollowUpSelect->Error());
-		}
-		
-		// Return the results as well as the count
-		return array('aData' => $oFollowUpSearchSelect->FetchAll(), 'iCount' => $aCount['count']);
-	}
-
-	public static function getStatus($iFollowUpClosureId, $sDueDateTime)
-	{
-		if ($iFollowUpClosureId)
-		{
-			// The followup has been closed, return the name of the followup_closure
-			return FollowUp_Closure::getForId($iFollowUpClosureId)->name;
-		}
-		else
-		{
-			// Active, check the date to see if overdue or current
-			$iDueDate	= strtotime($sDueDateTime);
-			$iNow		= time();
-			
-			if ($iDueDate >= $iNow)
-			{
-				// Current
-				return 'Current';
-			}
-			else
-			{
-				// Overdue
-				return 'Overdue';
-			}
-		}
+		return $aWhereInfoSearch;
 	}
 	
 	public function isClosed()

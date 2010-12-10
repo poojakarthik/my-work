@@ -429,16 +429,12 @@ class Employee extends ORM_Cached
 		$iNow							= time();
 		$oDueDateTimeConstraint->mTo	= date('Y-m-d H:i:s', $iNow);
 		
-		return 	FollowUp::searchFor(
-					null, 
-					null, 
-					null, 
+		return 	FollowUp::countFor(
 					array(
 						'assigned_employee_id'	=> $this->Id,				// Owner is the employee
 						'followup_closure_id'	=> 'NULL',					// Not closed
 						'due_datetime'			=> $oDueDateTimeConstraint	// Due date before now (overdue)
-					), 
-					true
+					)
 				);
 	}
 	
