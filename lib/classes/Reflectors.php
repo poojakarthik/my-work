@@ -5,7 +5,7 @@ class Reflectors
 	
 	public static function getClass($sClass)
 	{
-		if (!isset(self::$_aClasses))
+		if (!isset(self::$_aClasses[$sClass]))
 		{
 			self::$_aClasses[$sClass]	= new ReflectionClass($sClass);
 		}

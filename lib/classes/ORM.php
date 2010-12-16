@@ -448,6 +448,78 @@ abstract class ORM
 		return $aInstances;
 	}
 	
+	public static function getORMSelect($sORMClass, $sAlias=null)
+	{
+		$sORMClass	= trim($sORMClass);
+		$sAlias		= trim($sAlias);
+		
+		if (!class_exists($sORMClass) || !is_subclass_of($sORMClass, 'ORM'))
+		{
+			throw new Exception("{$sORMClass} is not an ORM Class (or doesn't exist)");
+		}
+		
+		$aReflectedStaticProperties	= Reflectors::getClass($sORMClass)->getStaticProperties();
+		$sTableName		= $aReflectedStaticProperties['_strStaticTableName'];
+		
+		$sAlias			= ($sAlias) ? $sAlias : $sTableName;
+		$sColumnPrefix	= "[{$sORMClass}]{$sAlias}";
+		
+		// Get Variables
+		$aExpandedColumns	= array();
+		$aTableDefinition	= DataAccess::getDataAccess()->FetchTableDefine($sTableName);
+		foreach ($aTableDefinition['Column'] as $sColumnName=>$aColumnDefinition)
+		{
+			$aExpandedColumns[]	= "{$sAlias}.{$sColumnName} AS '{$sColumnPrefix}.{$sColumnName}'";
+		}
+		$aExpandedColumns[]	= "{$sAlias}.{$aTableDefinition['Id']} AS '{$sColumnPrefix}.{$aTableDefinition['Id']}'";
+		
+		// Return as a String
+		return implode(', ', $aExpandedColumns);
+	}
+	
+	public static function parseORMResult($aResultRow)
+	{
+		// Parse the Result Row
+		$aORMInstanceData	= array();
+		$aExtraData			= array();
+		foreach ($aResultRow as $sField=>$mData)
+		{
+			// Extract data from the column name
+			$aTokens	= array();
+			preg_match('/^(\[(?P<ORMClass>\w+)\])(?P<Alias>\w+)\.(?P<Column>\w+)$/i', $sField, $aTokens);
+			
+			CliEcho(print_r($aTokens, true));
+			
+			$sORMClass	= $aTokens['ORMClass'];
+			$sAlias		= $aTokens['Alias'];
+			$sColumn	= $aTokens['Column'];
+			
+			if ($sORMClass && $sAlias && $sColumn && is_subclass_of($sORMClass, 'ORM'))
+			{
+				// ORM Select
+				$aORMInstanceData[$sORMClass][$sAlias][$sColumn]	= $mData;
+			}
+			else
+			{
+				// Other Data
+				$aExtraData[$sField]	= $mData;
+			}
+		}
+		
+		// Build ORM Instances
+		$aORMInstances	= array();
+		foreach ($aORMInstanceData as $sORMClass=>$aAliases)
+		{
+			foreach ($aAliases as $sAlias=>$aColumns)
+			{
+				$aImportedORMs			= Callback::create('importResult', $sORMClass)->invoke($aColumns, $sORMClass);
+				$aORMInstances[$sAlias]	= reset($aImportedORMs);
+			}
+		}
+		
+		return array_merge($aORMInstances, array($aExtraData));
+	}
+	
 	//------------------------------------------------------------------------//
 	// _preparedStatement
 	//------------------------------------------------------------------------//
