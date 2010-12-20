@@ -110,7 +110,7 @@ class Invoice_Interim
 			$aServices, 
 			$aCustomerGroups, 
 			$oCSVFile, 
-			"auto-interim-invoice-eligibility-report-".date('Ymd')
+			"auto-interim-invoice-eligibility-report-".date('Ymd').".csv"
 		);
 		
 		Log::getLog()->log("All eligible interim first invoices submitted");
@@ -375,7 +375,7 @@ class Invoice_Interim
 		self::_processEligibleAccounts(
 			$aServices, 
 			$aCustomerGroups, 
-			$oCSVImportFile, 
+			$sFilePath, 
 			basename($sFilePath), 
 			self::generateEligibilityReport($aServices)
 		);
@@ -462,7 +462,7 @@ class Invoice_Interim
 	}
 	
 	// _processEligibleAccounts
-	private static function _processEligibleAccounts($aServices, $aCustomerGroups, $oCSVEligibleReport, $sCSVEligibleFilename, $oOldCSVEligibleReport=null)
+	private static function _processEligibleAccounts($aServices, $aCustomerGroups, $mCSVEligibleReport, $sCSVEligibleFilename, $oOldCSVEligibleReport=null)
 	{
 		// Start the outer transaction
 		$oFlexDataAccess	= DataAccess::getDataAccess();
@@ -721,16 +721,29 @@ class Invoice_Interim
 			if (is_null($oOldCSVEligibleReport))
 			{
 				// No 'old' (current) report, new one must be from an auto submit
-				$sSubmittedEligibilityReportFileName	= "auto-submitted-{$sCSVEligibleFilename}.csv";
+				$sSubmittedEligibilityReportFileName	= "auto-submitted-{$sCSVEligibleFilename}";
 			}
 			else
 			{
 				// Have an 'old' (current) report, new one must have been submitted
-				$sSubmittedEligibilityReportFileName	= "submitted-{$sCSVEligibleFilename}.csv";
+				$sSubmittedEligibilityReportFileName	= "submitted-{$sCSVEligibleFilename}";
 			}
 			
+			// Get file contents of the submitted eligibility report
+			if ($mCSVEligibleReport instanceof File_CSV)
+			{
+				// Must be a File_CSV object
+				$sCSVEligibleReportContents	= $mCSVEligibleReport->save();
+			}
+			else
+			{
+				// Must be a file path
+				$sCSVEligibleReportContents	= file_get_contents($mCSVEligibleReport);
+			}
+			
+			// Add the submitted report to the email
 			$oProcessingEmailNotification->addAttachment(
-				$oCSVEligibleReport->save(), 
+				$sCSVEligibleReportContents, 
 				$sSubmittedEligibilityReportFileName, 
 				'text/csv'
 			);

@@ -47,7 +47,7 @@ class File_CSV implements Iterator
 	
 	protected function _getSpecialCharacters()
 	{
-		return array($this->_sNewLine, $this->_sDelimiter, $this->_sEscape, $this->_sQuote);
+		return array($this->_sNewLine, $this->_sDelimiter, $this->_sQuote);
 	}
 	
 	protected function _getQuotableCharacters()
@@ -355,7 +355,7 @@ class File_CSV implements Iterator
 	{
 		// Escape the escape character
 		$mValue	= str_replace($sEscape, $sEscape.$sEscape, $mValue);
-		
+			
 		// Escape all other special characters
 		foreach ($aSpecicalCharacters as $sSpecialCharacter)
 		{
