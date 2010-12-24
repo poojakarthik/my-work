@@ -70,21 +70,6 @@ class Flex_Rollout_Version_000235 extends Flex_Rollout_Version
 								);
 		}
 		
-		// Define operations
-		$aOperations	=	array
-							(
-								array
-								(
-									'sDescription'		=>	"Add the Acenet CDR CDR File Format Resource Type",
-									'sAlterSQL'			=>	"	INSERT INTO	resource_type
-																	(name						, description					, const_name								, resource_type_nature)
-																VALUES
-																	('Acenet CDR File'			, 'Acenet CDR File'				, 'RESOURCE_TYPE_FILE_IMPORT_CDR_ACENET'	, (SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_IMPORT_FILE' LIMIT 1));",
-									'sRollbackSQL'		=>	"	DELETE FROM	resource_type	WHERE const_name IN ('RESOURCE_TYPE_FILE_IMPORT_CDR_ACENET');",
-									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
-								)
-							);
-		
 		//--------------------------------------------------------------------//
 		// Perform Batch Rollout
 		//--------------------------------------------------------------------//
