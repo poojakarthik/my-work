@@ -51,7 +51,7 @@ class Resource_Type_File_Deliver_FTP extends Resource_Type_File_Deliver
 							'aCarrierModuleConfig'	=> $this->getConfig()->toArray()
 						);
 		
-		Flex::assert(!$this->getConfig()->AllowOverwrite && (@ftp_mdtm($this->_rConnection, $sDeliveryPath) === -1),
+		Flex::assert($this->getConfig()->AllowOverwrite || (@ftp_mdtm($this->_rConnection, $sDeliveryPath) === -1),
 			"File Delivery Path '{$sDeliveryPath}' already exists",
 			print_r(array_merge($aErrorData, array('PHP Warning'=>$php_errormsg)), true),
 			'File Delivery Path already exists'
@@ -92,8 +92,8 @@ class Resource_Type_File_Deliver_FTP extends Resource_Type_File_Deliver
 			'Host'				=>	array('Description'=>'FTP Host'),
 			'Username'			=>	array('Description'=>'Username'),
 			'Password'			=>	array('Description'=>'Password'),
-			'Port'				=>	array('Description'=>'Password','Default'=>21,'Type'=>DATA_TYPE_INTEGER),
-			'PassiveMode'		=>	array('Description'=>'0: Active Mode; 1: Passive Mode','Default'=>false,'Type'=>DATA_TYPE_BOOLEAN)
+			'Port'				=>	array('Description'=>'Port','Value'=>21,'Type'=>DATA_TYPE_INTEGER),
+			'PassiveMode'		=>	array('Description'=>'0: Active Mode; 1: Passive Mode','Value'=>false,'Type'=>DATA_TYPE_BOOLEAN)
 		));
 	}
 }
