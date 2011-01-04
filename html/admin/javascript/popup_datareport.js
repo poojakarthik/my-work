@@ -450,7 +450,7 @@ Popup_DataReport._createDateTimeSelect	= function(oInputInfo)
 						'/',
 						Popup_DataReport._createNumberSelect(1, 12, oDate.getMonth() + 1),
 						'/',
-						Popup_DataReport._createNumberSelect(2000, 2010, oDate.getFullYear()),
+						Popup_DataReport._createNumberSelect(2000, Date().getFullYear(), oDate.getFullYear()),
 						' '
 					);
 	
