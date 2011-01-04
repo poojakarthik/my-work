@@ -419,6 +419,14 @@ abstract class NormalisationModule extends CarrierModule
 		{
 			return '0'.substr($strFNN, 2);
 		}
+		elseif (strpos($strFNN, '001161') === 0)
+		{
+			return '0'.substr($strFNN, 6);
+		}
+		elseif (strpos($strFNN, '1161') === 0)
+		{
+			return '0'.substr($strFNN, 4);
+		}
 		return $strFNN;
 	}
 	
