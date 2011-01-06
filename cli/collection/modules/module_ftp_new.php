@@ -24,7 +24,7 @@
 	{
 		if (self::ENABLE_DEBUG_OUTPUT)
 		{
-			$this->_cliEcho($sMessage, $bNewLine);
+			CliEcho($sMessage, $bNewLine);
 		}
 	}
 	

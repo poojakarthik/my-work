@@ -5,8 +5,8 @@ require_once(dirname(__FILE__)."/../../../../../flex.require.php");
 // File Types
 $aFileTypes	= array(
 	// CDRs
-	RESOURCE_TYPE_FILE_IMPORT_CDR_AAPT_ESYSTEMS_CTOP				=> array(
-		'Regex'				=> '/\-cdrs\-\.csv$/i',
+	RESOURCE_TYPE_FILE_IMPORT_CDR_ACENET				=> array(
+		'Regex'				=> '/\-cdrs\-\d+\.csv$/i',
 		'Uniqueness'		=> "FileName = <FileName> AND SHA1 = <SHA1>",
 		'DownloadUnique'	=> true
 	)
