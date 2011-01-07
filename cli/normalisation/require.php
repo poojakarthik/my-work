@@ -42,4 +42,5 @@ VixenRequire($strApplicationDir."module_linx_dailyeventfile.php");
 VixenRequire($strApplicationDir."module_linx_monthlyinvoicefile.php");
 VixenRequire($strApplicationDir."module_arbor_ctop.php");
 VixenRequire($strApplicationDir."module_arbor_coce.php");
+VixenRequire($strApplicationDir."module_acenet.php");
  ?>

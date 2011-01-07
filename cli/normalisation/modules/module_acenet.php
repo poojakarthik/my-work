@@ -1,10 +1,10 @@
 <?php
 /**
- * NormalisationModuleArborCTOP
+ * NormalisationModuleAcenet
  *
- * Normalisation module for Arbor CTOP Daily Usage Extract Files
+ * Normalisation module for Acenet CDR Files
  *
- * @class	NormalisationModuleArborCTOP
+ * @class	NormalisationModuleAcenet
  */
 class NormalisationModuleAcenet extends NormalisationModule
 {
@@ -123,6 +123,13 @@ class NormalisationModuleAcenet extends NormalisationModule
 		{
 			case self::RECORD_TYPE_USAGE:
 				$sRecordCode	= $this->FindRecordCode($sClassCode);
+
+				// Debug: Throw a caught Assertion to notify YBS of missing Class Codes
+				try
+				{
+					Flex::assert($sRecordCode !== false, "Acenet CDR File: Unrecognised Class Code '{$sClassCode}' encountered", print_r($this->DebugCDR(), true));
+				}
+				catch (Exception_Assertion $oException)	{}
 				break;
 			
 			case self::RECORD_TYPE_SERVICE_AND_EQUIPMENT:
@@ -171,7 +178,7 @@ class NormalisationModuleAcenet extends NormalisationModule
 		
 		// Credit
 		// FIXME: Is this how it's done?  Or negative Price?
-		$this->_AppendCDR('Credit', ($iDuration < 0 || $fPrice < 0));
+		$this->_AppendCDR('Credit', (int)($iDuration < 0 || $fPrice < 0));
 		
 		return;
 	}
