@@ -531,6 +531,12 @@ class Ticketing_Correspondance
 		// and to get the message for the email
 		$customerGroupId = $this->getTicket()->customerGroupId;
 		$custGroupConfig = Ticketing_Customer_Group_Config::getForCustomerGroupId($customerGroupId);
+
+		if (!$custGroupConfig)
+		{
+			throw new Exception("No Customer Group Config for Customer Group {$customerGroupId}");
+		}
+
 		if (!$custGroupConfig->acknowledgeEmailReceipts())
 		{
 			return;
