@@ -534,7 +534,7 @@ class Ticketing_Correspondance
 
 		if (!$custGroupConfig)
 		{
-			throw new Exception("No Customer Group Config for Customer Group {$customerGroupId}");
+			throw new Exception("No Customer Group Config for Customer Group {$customerGroupId}\n".print_r($this, true));
 		}
 
 		if (!$custGroupConfig->acknowledgeEmailReceipts())
