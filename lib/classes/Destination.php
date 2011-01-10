@@ -62,7 +62,7 @@ class Destination extends ORM_Cached
 		$aDestinationORMs	= ($aDestinationORMs) ? $aDestinationORMs : Destination::getAll();
 		
 		// Filter out any useless words that will just give us junk matches
-		$aDescription			= array_unique(preg_split('/\s+/', $sDescription));
+		$aDescription			= array_unique(preg_split('/\s+/', trim($sDescription)));
 		$aDescriptionFull		= array();
 		$aDescriptionMinified	= array();
 		foreach ($aDescription as $sWord)
@@ -88,7 +88,7 @@ class Destination extends ORM_Cached
 			$aMinifiedMatches	= array();
 			
 			// Get words in the Flex Destination
-			$aFlexDescription		= array_unique(preg_split('/\s+/', $oDestination->Description));
+			$aFlexDescription		= array_unique(preg_split('/\s+/', trim($oDestination->Description)));
 			$aFlexDescriptionClean	= array();
 			foreach ($aFlexDescription as $mIndex=>$sWord)
 			{
