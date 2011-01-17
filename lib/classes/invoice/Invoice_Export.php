@@ -196,7 +196,7 @@ class Invoice_Export
 					}
 				}
 				//Cli_App_Billing::debug("CDR Total for {$arrService['FNN']}: \${$fltCDRTotal}");
-				$arrRecordType['UnitsTotal']	= $fUnitsTotal;
+				$arrRecordType['UnitsTotal']	= round($fUnitsTotal, 2);
 				
 				// Add Record Type to Service Array
 				$arrCategories[$arrRecordType['RecordGroup']]	= $arrRecordType;
