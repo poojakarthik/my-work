@@ -1548,3 +1548,94 @@ Merge Contact 33190 into contact 30873
 php merge_contacts.php -d 30873 -o 33190 -t						<<-- the t is for test mode.  It will rollback all changes
 -----------------------------------------------
 
+
+Accounts: Envisage Systems Pty ltd & Envisage Systems Pty Ltd
+-----------------------------------------------
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE Id IN (1000176301 , 1000175925) ORDER BY Id;
+
+	Account Groups are 1000175839 AND 1000176206
+
+Checking if there are any other accounts in these groups:
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE AccountGroup IN (1000175839, 1000176206) ORDER BY Id;
+
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000175839, 1000176206) ORDER BY Id;
+
+Merge AccountGroup 1000176206 into 1000175839
+php merge_account_groups.php -d 1000175839 -o 1000176206 -t		<<-- the t is for test mode.  It will rollback all changes
+
+Merge Contact 29731 into contact 29271
+php merge_contacts.php -d 29271 -o 29731 -t						<<-- the t is for test mode.  It will rollback all changes
+
+Merge Contact 29732 into contact 28776
+php merge_contacts.php -d 28776 -o 29732 -t						<<-- the t is for test mode.  It will rollback all changes
+-----------------------------------------------
+
+Accounts: Mobile Welding Services Pty Ltd & Mobile Welding Services Pty Ltd
+-----------------------------------------------
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE Id IN (1000180808 , 1000181443) ORDER BY Id;
+
+	Account Groups are 1000180556 AND 1000181151
+
+Checking if there are any other accounts in these groups:
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE AccountGroup IN (1000180556, 1000181151) ORDER BY Id;
+
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000180556, 1000181151) ORDER BY Id;
+
+There are 2 modelling 1
+
+SELECT * from Contact WHERE Id IN (35945, 37038) ORDER BY Id;
+
+Merge AccountGroup 1000181151 into 1000180556
+php merge_account_groups.php -d 1000180556 -o 1000181151 -t	<<-- the t is for test mode.  It will rollback all changes
+
+Merge Contact 37038 into contact 35945
+php merge_contacts.php -d 35945 -o 37038 -t						<<-- the t is for test mode.  It will rollback all changes
+-----------------------------------------------
+
+Accounts: The Pot Man Pty Ltd & DPM Wholesale Pty Ltd
+-----------------------------------------------
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE Id IN (1000157626 , 1000155161) ORDER BY Id;
+
+	Account Groups are 1000155161 AND 1000157626
+
+Checking if there are any other accounts in these groups:
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE AccountGroup IN (1000155161, 1000157626) ORDER BY Id;
+
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000155161, 1000157626) ORDER BY Id;
+
+There are 6 modelling 3
+
+SELECT * from Contact WHERE Id IN (6590, 30630) ORDER BY Id;
+
+SELECT * from Contact WHERE Id IN (23285, 23288) ORDER BY Id;
+
+SELECT * from Contact WHERE Id IN (23286, 23287) ORDER BY Id;
+
+Merge AccountGroup 1000157626 into 1000155161
+php merge_account_groups.php -d 1000155161 -o 1000157626 -t	<<-- the t is for test mode.  It will rollback all changes
+
+Merge Contact 30630 into contact 6590
+php merge_contacts.php -d 6590 -o 30630 -t						<<-- the t is for test mode.  It will rollback all changes
+
+Merge Contact 23288 into contact 23285
+php merge_contacts.php -d 23285 -o 23288 -t						<<-- the t is for test mode.  It will rollback all changes
+
+Merge Contact 23287 into contact 23286
+php merge_contacts.php -d 23286 -o 23287 -t						<<-- the t is for test mode.  It will rollback all changes
+-----------------------------------------------
+
