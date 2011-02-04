@@ -18,6 +18,7 @@ var EmployeePermissions = {
 
 	init: function() 
 	{
+		//debugger;
 		EmployeePermissions._findElements();
 
 		if (EmployeePermissions.availableList == null) return;
@@ -46,6 +47,7 @@ var EmployeePermissions = {
 
 	_findElements: function()
 	{
+		//debugger;
 		EmployeePermissions.availableList = document.getElementById("AvailablePermissions");
 		EmployeePermissions.selectedList  = document.getElementById("SelectedPermissions");
 	},
@@ -57,6 +59,7 @@ var EmployeePermissions = {
 
 	_moveOptions: function(isPick)
 	{
+		//debugger;
 		EmployeePermissions._ensureInitialized();
 		var fromList = isPick ? EmployeePermissions.availableList : EmployeePermissions.selectedList;
 		var toList   = isPick ? EmployeePermissions.selectedList  : EmployeePermissions.availableList;

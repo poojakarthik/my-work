@@ -5,7 +5,8 @@ var JsAutoLoader = {
 	// Dynamically loads a javascript file into the head of the dom
 	// strScriptName should include the ".js" extension, and can include a path
 	// funcOnLoadEventHandler will be executed as soon as the javascript file finishes loading
-	loadScript : function(mixScripts, funcOnLoadEventHandler, bolUseJavascriptPhp, bShowLoading)
+	// bForceReload show almost always be non-boolean-true (default value). Enabling this is a necessity for some older single-state scripts which need to be re-parsed to overwrite old/existing state
+	loadScript : function(mixScripts, funcOnLoadEventHandler, bolUseJavascriptPhp, bShowLoading, bForceReload)
 	{
 		//debugger;
 		
@@ -36,7 +37,8 @@ var JsAutoLoader = {
 									funcOnLoadEventHandler
 								), 
 								bolUseJavascriptPhp, 
-								bShowLoading
+								bShowLoading,
+								bForceReload
 							);
 		}
 		
@@ -66,32 +68,35 @@ var JsAutoLoader = {
 			strSource	= strScriptName +"?v="+ sessionTimestamp;
 		}
 		
-		// Check if the script has already been requested
-		var scripts					= head.getElementsByTagName('script');
 		var sRegisteredScriptName	= JsAutoLoader.getFileNameOnly(strScriptName);
-		for (var i = 0, j = scripts.length; i < j; i++)
+		if (bForceReload !== true)
 		{
-			var sRegex	= new RegExp("(^|/|=)" + sRegisteredScriptName);
-			if (scripts[i].hasAttribute('src') && scripts[i].getAttribute('src').match(sRegex) != null)
+			// Check if the script has already been requested
+			var scripts					= head.getElementsByTagName('script');
+			for (var i = 0, j = scripts.length; i < j; i++)
 			{
-				// The script has been requested -- Was an onLoad handler provided?
-				if (fncCallback != undefined)
+				var sRegex	= new RegExp("(^|/|=)" + sRegisteredScriptName);
+				if (scripts[i].hasAttribute('src') && scripts[i].getAttribute('src').match(sRegex) != null)
 				{
-					if (this.loadedScripts[sRegisteredScriptName] != undefined)
+					// The script has been requested -- Was an onLoad handler provided?
+					if (fncCallback != undefined)
 					{
-						// This script should be loaded, so run the funcOnLoadEventHandler function, in global scope
-						// wrapping it in a timeout will give it global scope
-						setTimeout(fncCallback, 1);
+						if (this.loadedScripts[sRegisteredScriptName] != undefined)
+						{
+							// This script should be loaded, so run the funcOnLoadEventHandler function, in global scope
+							// wrapping it in a timeout will give it global scope
+							setTimeout(fncCallback, 1);
+						}
+						else
+						{
+							// The script element has been included in the header, but has not finished loading yet
+							// add the funcOnLoadEventHandler to it as an event listener
+							Event.startObserving(scripts[i], "load", fncCallback, true);
+						}
 					}
-					else
-					{
-						// The script element has been included in the header, but has not finished loading yet
-						// add the funcOnLoadEventHandler to it as an event listener
-						Event.startObserving(scripts[i], "load", fncCallback, true);
-					}
+
+					return;
 				}
-				
-				return;
 			}
 		}
 		
@@ -100,7 +105,6 @@ var JsAutoLoader = {
 		script.setAttribute('type', 'text/javascript');
 		script.setAttribute('src', strSource);
 		
-		var sRegisteredScriptName	= JsAutoLoader.getFileNameOnly(strScriptName);
 		Event.observe(script, "load", this.registerLoadedScript.bind(this, sRegisteredScriptName), true);
 		
 		// Was an onLoad handler provided?
