@@ -521,36 +521,48 @@ function VixenAjaxClass()
 				
 				// HACK: (continued) Execute any scripts (by attaching them to the head)
 				//debugger;
+
 				if (aScripts.length)
 				{
-					var	aScriptActions	= [];
+					var	oLoadingPopup	= new Reflex_Popup.Loading(),
+						aScriptActions	= [oLoadingPopup.hide.bind(oLoadingPopup)],
+						aScript;
 					for (var i = aScripts.length - 1; i >= 0; i--)
 					{
-						if (aScripts[i].src)
+						aScript	= aScripts[i];
+						if (aScript.src)
 						{
 							// External Script
+							//alert("External Script: " + aScript.src);
 							aScriptActions.unshift(
 								JsAutoLoader.loadScript.bind(
 									JsAutoLoader,
-									JsAutoLoader.getJavascriptPHPScripts(aScripts[i].src),
+									JsAutoLoader.getJavascriptPHPScripts(aScript.src),
 									aScriptActions.length ? aScriptActions.first() : null,
-									!!(aScripts[i].src.match(/javascript\.php/i))
+									!!(aScript.src.match(/javascript\.php/i)),
+									false,
+									true	// Force reload (this should simulate the previous behaviour)
 								)
 							);
 						}
-						else if (aScripts[i].innerHTML)
+						else if (aScript.innerHTML)
 						{
 							// Inline Script
+							//alert("Inline Script: " + aScript.innerHTML);
 							aScriptActions.unshift((function(sJavascript, fnCallback){
+								//alert("Executing Inline Script: " + aScript.innerHTML);
+								//debugger;
 								eval(sJavascript);
 								if (Object.isFunction(fnCallback))
 								{
 									fnCallback();
 								}
-							}).curry('/*debugger;/**/'+aScripts[i].innerHTML, aScriptActions.first()));
+							}).curry('/*debugger;/**/'+aScript.innerHTML, aScriptActions.first()));
 						}
 					}
-					
+
+					oLoadingPopup.display();
+
 					// Invoke the first Script
 					aScriptActions.first()();
 				}
