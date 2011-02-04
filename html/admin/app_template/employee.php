@@ -647,7 +647,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 
 		// Don't allow super admin, god or debug privileges to be changed
 		//$proposed = $this->_PreservePrivileges($originalPrivileges, $proposedPrivileges, PERMISSION_SUPER_ADMIN | PERMISSION_DEBUG);
-		$proposed = $this->_PreservePrivileges($originalPrivileges, $proposedPrivileges, Array(PERMISSION_SUPER_ADMIN, PERMISSION_DEBUG, USER_PERMISSION_GOD));
+		$proposed = $this->_PreservePrivileges($originalPrivileges, $proposedPrivileges, Array(PERMISSION_DEBUG, USER_PERMISSION_GOD));
 
 		if (!AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
 		{
