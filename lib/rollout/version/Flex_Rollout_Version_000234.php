@@ -79,15 +79,21 @@ class Flex_Rollout_Version_000234 extends Flex_Rollout_Version
 															p.TXNReference,
 															p.Id, 
 															(SELECT id FROM payment_response_type WHERE system_name = 'CONFIRMATION'),
-															IF(
-																p.Status IN (
-																	SELECT	id 
-																	FROM 	payment_status 
-																	WHERE 	const_name IN ('PAYMENT_IMPORTED', 'PAYMENT_WAITING', 'PAYMENT_PAYING', 'PAYMENT_FINISHED', 'PAYMENT_REVERSED')
-																),
-																(SELECT id FROM payment_response_status WHERE system_name = 'PROCESSED'),
-																(SELECT id FROM payment_response_status WHERE system_name = 'PROCESSING_FAILED')
-															), 
+															(CASE
+																WHEN	p.Status IN (
+																			SELECT	id 
+																			FROM 	payment_status 
+																			WHERE 	const_name IN ('PAYMENT_WAITING', 'PAYMENT_PAYING', 'PAYMENT_FINISHED', 'PAYMENT_REVERSED')
+																		)
+																THEN	(SELECT id FROM payment_response_status WHERE system_name = 'PROCESSED')
+																WHEN	p.Status IN (
+																			SELECT	id 
+																			FROM 	payment_status 
+																			WHERE 	const_name = 'PAYMENT_IMPORTED'
+																		)
+																THEN	(SELECT id FROM payment_response_status WHERE system_name = 'IMPORTED')
+																ELSE	(SELECT id FROM payment_response_status WHERE system_name = 'PROCESSING_FAILED')
+															END), 
 															p.created_datetime
 												FROM		Payment p
 												JOIN		file_import_data fid ON fid.payment_id = p.Id
