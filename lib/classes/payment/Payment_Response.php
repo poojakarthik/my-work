@@ -133,6 +133,14 @@ class Payment_Response extends ORM_Cached
 			
 			$oPayment->save();
 			
+			// Surcharges
+			$oPayment->applySurcharges();
+			
+			// HACK: Old-style Credit Card Surcharges
+			// This function can return FALSE for both critical and acceptable failures, so
+			// we can't really handle it.
+			AddCreditCardSurcharge($oPayment->Id);
+			
 			$this->payment_id	= $oPayment->Id;
 			$this->save();
 		}
