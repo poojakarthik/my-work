@@ -426,6 +426,7 @@ class Flex_Pdf_Template
 			}
 			$fontResources[strtoupper($font->getAttribute("name"))] = $path;
 		}
+		//throw new Exception(print_r($fontResources, true));
 
 		$this->_objStyle = new Flex_Pdf_Style();
 		$this->_objStyle->setFontResources($fontResources);

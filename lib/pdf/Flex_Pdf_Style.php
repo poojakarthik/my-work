@@ -338,7 +338,10 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 	{
 		if ($this->lineHeight) return $this->lineHeight;
 		$font = $this->getFont();
+
+		//throw new Exception("Font Height: ".$font->getLineHeight()."; Units per EM: ".$font->getUnitsPerEm()."; Font Size: ".$this->getFontSize()."; Calculated: ".($font->getLineHeight() / $font->getUnitsPerEm()) * $this->getFontSize());
 		return ($font->getLineHeight() / $font->getUnitsPerEm()) * $this->getFontSize();
+		//return $font->getLineHeight();
 	}
 
 	function setFontResources($fontResources)

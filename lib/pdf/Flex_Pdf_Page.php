@@ -565,7 +565,9 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 	public function getCalculatedTextLineHeight()
 	{
 		$font = $this->getFont();
+		//throw new Exception("Font Height: ".$font->getLineHeight()."; Units per EM: ".$font->getUnitsPerEm()."; Font Size: ".$this->getFontSize()."; Calculated: ".($font->getLineHeight() / $font->getUnitsPerEm()) * $this->getFontSize());
 		return ($font->getLineHeight() / $font->getUnitsPerEm()) * $this->getFontSize();
+		//return $font->getLineHeight();
 	}
 
 	/**

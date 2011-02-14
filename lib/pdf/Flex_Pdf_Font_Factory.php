@@ -55,12 +55,14 @@ class Flex_Pdf_Font_Factory
 					$font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_ZAPFDINGBATS);
 					break;
 				default:
+					//throw new Exception("Looking for '{$fontName}'...");
 					if (file_exists($fontName))
 					{
 						// Try to load the file as a font file
 						try
 						{
-							$font = Zend_Pdf_Font::fontWithPath($fontName);
+							// WARNING: We are forcing font embedding for fonts we possibly don't have a licence to
+							$font = Zend_Pdf_Font::fontWithPath($fontName/*, Zend_Pdf_Font::EMBED_SUPPRESS_EMBED_EXCEPTION*/);
 							if (!($font instanceof Zend_Pdf_Resource_Font))
 							{
 								throw new Exception("Failed to create font resource for font name '$fontName'. The font file may be invalid.");

@@ -409,16 +409,18 @@ class Flex_Database_Protocol
 	*/
 	public function stream_stat()
 	{
+		//throw new Exception("stream_stat");
 		$size = strlen($this->strFileContents);
 
 		$mode = 0;
 		if ($this->isFile)
 		{
-			$mode = 0100000 | ($this->isOpenForReading ? 0400 : 0) | ($this->isOpenForWriting ? 0200 : 0);
+			//$mode = 0100000 | ($this->isOpenForReading ? 0400 : 0) | ($this->isOpenForWriting ? 0200 : 0);
+			$mode = 0100000 | 0444 | ($this->isOpenForWriting ? 0200 : 0);
 		}
 		if ($this->isDir)
 		{
-			$mode = 040000 | 0400 | 0200 | 0100;
+			$mode = 040000 | 0444 | 0200 | 0100;
 		}
 
 
@@ -445,14 +447,23 @@ class Flex_Database_Protocol
 			// number of links
 			3		=> 0,
 			"nlink"	=> 0,
-
+/*			Seemed to cause errors with is_readable (uses real user and group ids against psuedos)
 			// userid of owner
-			4		=> $this->urlParts[self::FDBP_URL_RESOURCE_ID],
-			"uid"	=> $this->urlParts[self::FDBP_URL_RESOURCE_ID],
+			4		=> $urlParts[self::FDBP_URL_RESOURCE_ID],
+			"uid"	=> $urlParts[self::FDBP_URL_RESOURCE_ID],
 
 			// groupid of owner
-			5		=> $this->urlParts[self::FDBP_URL_CUSTOMER_GROUP_ID],
-			"gid"	=> $this->urlParts[self::FDBP_URL_CUSTOMER_GROUP_ID],
+			5		=> $urlParts[self::FDBP_URL_CUSTOMER_GROUP_ID],
+			"gid"	=> $urlParts[self::FDBP_URL_CUSTOMER_GROUP_ID],
+*/
+
+			// userid of owner
+			4		=> 0,
+			"uid"	=> 0,
+
+			// groupid of owner
+			5		=> 0,
+			"gid"	=> 0,
 
 			// device type, if inode device *
 			6		=> -1,
@@ -499,6 +510,7 @@ class Flex_Database_Protocol
 	*/
 	public function url_stat($path, $flags)
 	{
+		//throw new Exception("url_stat");
 
 		$logErrors = !($flags & STREAM_URL_STAT_QUIET);
 
@@ -546,11 +558,11 @@ class Flex_Database_Protocol
 		$mode = 0;
 		if ($isFile)
 		{
-			$mode = 0100000 | 0400 | ($isWritable ? 0200 : 0);
+			$mode = 0100000 | 0444 | ($isWritable ? 0200 : 0);
 		}
 		if ($isDir)
 		{
-			$mode = 040000 | 0400 | 0200 | 0100;
+			$mode = 040000 | 0444 | 0200 | 0100;
 		}
 
 		$return = array
@@ -576,7 +588,7 @@ class Flex_Database_Protocol
 			// number of links
 			3		=> 0,
 			"nlink"	=> 0,
-
+/*			Seemed to cause errors with is_readable (uses real user and group ids against psuedos)
 			// userid of owner
 			4		=> $urlParts[self::FDBP_URL_RESOURCE_ID],
 			"uid"	=> $urlParts[self::FDBP_URL_RESOURCE_ID],
@@ -584,6 +596,14 @@ class Flex_Database_Protocol
 			// groupid of owner
 			5		=> $urlParts[self::FDBP_URL_CUSTOMER_GROUP_ID],
 			"gid"	=> $urlParts[self::FDBP_URL_CUSTOMER_GROUP_ID],
+*/
+			// userid of owner
+			4		=> 0,
+			"uid"	=> 0,
+
+			// groupid of owner
+			5		=> 0,
+			"gid"	=> 0,
 
 			// device type, if inode device *
 			6		=> -1,
@@ -1073,7 +1093,7 @@ class Flex_Database_Protocol
 	}
 }
 
-if (!stream_wrapper_register("fdbp", "Flex_Database_Protocol"))
+if (!stream_wrapper_register("fdbp", "Flex_Database_Protocol", STREAM_IS_URL))
 {
 	trigger_error("Attempt to register 'Flex_Database_Protocol' as 'fdbp://' stream wrapper.", E_USER_ERROR);
 }
