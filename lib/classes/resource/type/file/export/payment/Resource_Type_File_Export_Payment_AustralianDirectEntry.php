@@ -121,7 +121,7 @@ class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_T
 		$oRecord->TransactionDate	= date("dmy");
 		
 		// Add to the file
-		$this->_oFileExporter->addRecord($oRecord, File_Exporter::RECORD_GROUP_BODY);
+		$this->_oFileExporter->addRecord($oRecord, File_Exporter::RECORD_GROUP_HEADER);
 		
 		return;
 	}
@@ -139,7 +139,7 @@ class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_T
 		$oRecord->RecordCount		= $this->_iRecordCount;
 		
 		// Add to the file
-		$this->_oFileExporter->addRecord($oRecord, File_Exporter::RECORD_GROUP_BODY);
+		$this->_oFileExporter->addRecord($oRecord, File_Exporter::RECORD_GROUP_FOOTER);
 		
 		return;
 	}

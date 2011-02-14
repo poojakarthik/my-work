@@ -129,7 +129,7 @@ class Resource_Type_File_Import_Payment_AustralianDirectEntry extends Resource_T
  		switch ($oRecord->StatusIndicator)
  		{
  			case self::STATUS_INDICATOR_RELEASED:
- 				$oPaymentResponse->payment_response_type_id	= PAYMENT_RESPONSE_TYPE_SETTLEMENT;
+ 				$oPaymentResponse->payment_response_type_id	= PAYMENT_RESPONSE_TYPE_CONFIRMATION;
  				break;
  			case self::STATUS_INDICATOR_RECALL:
  				$oPaymentResponse->payment_response_type_id	= PAYMENT_RESPONSE_TYPE_REJECTION;

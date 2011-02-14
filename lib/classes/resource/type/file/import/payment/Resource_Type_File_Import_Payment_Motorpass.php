@@ -101,7 +101,7 @@ class Resource_Type_File_Import_Payment_Motorpass extends Resource_Type_File_Imp
  		$oPaymentResponse->transaction_reference	= $sReference;
  		
  		// Payment Response Type
- 		$oPaymentResponse->payment_response_type_id	= PAYMENT_RESPONSE_TYPE_SETTLEMENT;
+ 		$oPaymentResponse->payment_response_type_id	= PAYMENT_RESPONSE_TYPE_CONFIRMATION;
 		
 		// Return an Array of Records added/modified
 		//--------------------------------------------------------------------//
