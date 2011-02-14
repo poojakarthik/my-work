@@ -26,5 +26,11 @@
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Exception extends Exception
-{}
+{
+	// FIXED BY RICH: Hack to suppress the $previous Exception from the native Exception
+	// This is needed because Zend is actually using PHP 5.3, where Flex is deployed to 5.2
+	function __construct($message='', $code = 0, Exception $previous=null) {
+		parent::__construct($message, $code);
+	}
+}
 
