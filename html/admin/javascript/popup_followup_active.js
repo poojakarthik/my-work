@@ -618,7 +618,7 @@ Popup_FollowUp_Active.getFollowUpDetailsElement	= function(oFollowUp)
 					oDiv.appendChild(Popup_FollowUp_Active.getAccountLink(oDetails.account_id, oDetails.account_name));
 				}
 				
-				if (oDetails.account_id && oDetails.ticket_id && oDetails.ticket_contact_name)
+				if (oDetails.ticket_id)
 				{
 					oDiv.appendChild(Popup_FollowUp_Active.getTicketLink(oDetails.ticket_id, oDetails.account_id, oDetails.ticket_contact_name));
 				}
@@ -676,8 +676,8 @@ Popup_FollowUp_Active.getTicketLink	= function(iTicketId, iAccountId, sContact)
 {
 	return 	$T.div({class: 'popup-followup-detail-subdetail'},
 				$T.img({src: Popup_FollowUp_Active.DETAILS_TICKET_IMAGE_SOURCE}),
-				$T.a({href: 'reflex.php/Ticketing/Ticket/' + iTicketId + '/View/?Account=' + iAccountId},
-					'Ticket ' + iTicketId + ' (' + sContact + ')'
+				$T.a({href: 'reflex.php/Ticketing/Ticket/' + iTicketId + '/View/?' + (iAccountId ? 'Account=' + iAccountId : '')},
+					'Ticket ' + iTicketId + (sContact ? ' (' + sContact + ')' : '')
 				)
 			);
 };

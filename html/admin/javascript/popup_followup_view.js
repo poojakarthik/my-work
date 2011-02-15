@@ -507,7 +507,7 @@ var Popup_FollowUp_View	= Class.create(Reflex_Popup,
 						oDiv.appendChild(Popup_FollowUp_View.getAccountLink(this._oDetails.account_id, this._oDetails.account_name));
 					}
 					
-					if (this._oDetails.account_id && this._oDetails.ticket_id && this._oDetails.ticket_contact_name)
+					if (this._oDetails.ticket_id)
 					{
 						oDiv.appendChild(Popup_FollowUp_View.getTicketLink(this._oDetails.ticket_id, this._oDetails.account_id, this._oDetails.ticket_contact_name));
 					}
@@ -907,8 +907,8 @@ Popup_FollowUp_View.getTicketLink	= function(iTicketId, iAccountId, sContact)
 {
 	return 	$T.div({class: 'popup-followup-detail-subdetail'},
 				$T.img({src: Popup_FollowUp_View.DETAILS_TICKET_IMAGE_SOURCE}),
-				$T.a({href: 'reflex.php/Ticketing/Ticket/' + iTicketId + '/View/?Account=' + iAccountId},
-					'Ticket ' + iTicketId + ' (' + sContact + ')'
+				$T.a({href: 'reflex.php/Ticketing/Ticket/' + iTicketId + '/View/?' + (iAccountId ? 'Account=' + iAccountId : '')},
+					'Ticket ' + iTicketId + (sContact ? ' (' + sContact + ')' : '')
 				)
 			);
 };
