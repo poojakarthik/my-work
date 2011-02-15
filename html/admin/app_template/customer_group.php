@@ -1467,7 +1467,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 
 		VixenRequire("lib/pdf/Flex_Pdf_Template.php");
 
-		set_time_limit(120);
+		//set_time_limit(120);
 
 		try
 		{
@@ -1603,7 +1603,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 
 		VixenRequire("lib/pdf/Flex_Pdf_Template.php");
 
-		set_time_limit(120);
+		//set_time_limit(120);
 
 		try
 		{
@@ -1741,7 +1741,8 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		if (!$bolFoundFileType)
 		{
 			// The file is not of an appropriate type
-			return "ERROR: The file is not of an appropriate type, for the '{$arrResourceType['PlaceHolder']}' Resource";
+			return "ERROR: The file is not of an appropriate type, for the '{$arrResourceType['PlaceHolder']}' Resource"
+					. (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? "(Extension: '{$strExtension}'; MIME: '{$strFileType}')" : '');
 		}
 
 		// Validate the Start time and End time
