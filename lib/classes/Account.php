@@ -5,9 +5,9 @@ class Account
 	const BALANCE_REDISTRIBUTION_REGULAR = 0;
 	const BALANCE_REDISTRIBUTION_FORCED = 1;
 	const BALANCE_REDISTRIBUTION_FORCED_INCLUDING_ARCHIVED = 2;
-	
+
 	protected static $cache = array();
-	
+
 	private	$_arrTidyNames	= array();
 	private	$_arrProperties	= array();
 
@@ -22,7 +22,7 @@ class Account
 		}
 		$this->_arrProperties[$arrTableDefine['Id']]				= NULL;
 		$this->_arrTidyNames[self::tidyName($arrTableDefine['Id'])]	= $arrTableDefine['Id'];
-		
+
 		// Automatically load the Invoice using the passed Id
 		$intId	= ($arrProperties['Id']) ? $arrProperties['Id'] : (($arrProperties['id']) ? $arrProperties['id'] : NULL);
 		if ($bolLoadById && $intId)
@@ -41,7 +41,7 @@ class Account
 				throw new Exception(__CLASS__." with Id {$intId} does not exist!");
 			}
 		}
-		
+
 		// Set Properties
 		if (is_array($arrProperties))
 		{
@@ -96,7 +96,7 @@ class Account
 		{
 			$strStatusConstraint = "";
 		}
-		
+
 		$qryQuery = new Query();
 		$strQuery = "
 				SELECT *
@@ -112,7 +112,7 @@ class Account
 				AND (ClosedOn IS NULL OR ClosedOn >= CreatedOn)
 				$strStatusConstraint
 				ORDER BY FNN;";
-		
+
 		$objRecordSet = $qryQuery->Execute($strQuery);
 		if (!$objRecordSet)
 		{
@@ -134,12 +134,12 @@ class Account
 	public function getAllServiceRecords($bolAsObjects=FALSE)
 	{
 		$qryQuery = new Query();
-		
+
 		// The only records we don't want to retrieve are those where ClosedOn < CreatedOn
 		$strColumns = ($bolAsObjects)? "*" : "Id";
-		
+
 		$strQuery = "SELECT $strColumns FROM Service WHERE Account = {$this->id} AND (ClosedOn IS NULL OR ClosedOn >= CreatedOn);";
-		
+
 		$objRecordSet = $qryQuery->Execute($strQuery);
 		if (!$objRecordSet)
 		{
@@ -155,7 +155,7 @@ class Account
 
 		return $arrServices;
 	}
-	
+
 
 
 	public function getName()
@@ -167,7 +167,7 @@ class Account
 	{
 		return Customer_Group::getForId($this->customerGroup);
 	}
-	
+
 	// Returns a list of ContactIds or Contact objects, defining the contacts that can be associated with this account
 	// In both cases, the key to the array will be the id of the contact
 	// This will return an empty array if there are no Contacts for this account
@@ -177,7 +177,7 @@ class Account
 						FROM Account AS a INNER JOIN Contact AS c ON (c.CustomerContact = 1 AND a.AccountGroup = c.AccountGroup) OR (c.Account = a.Id) OR (c.Id = a.PrimaryContact)
 						WHERE a.Id = {$this->id}";
 		$qryQuery = new Query();
-		
+
 		$objRecordSet = $qryQuery->Execute($strQuery);
 		if (!$objRecordSet)
 		{
@@ -258,7 +258,7 @@ class Account
 			}
 		}
 	}
-	
+
 	public function getInterimInvoiceType()
 	{
 		switch ($this->Archived)
@@ -266,7 +266,7 @@ class Account
 			case ACCOUNT_STATUS_ACTIVE:
 				return INVOICE_RUN_TYPE_INTERIM;
 				break;
-				
+
 			case ACCOUNT_STATUS_CLOSED:
 			case ACCOUNT_STATUS_DEBT_COLLECTION:
 				return INVOICE_RUN_TYPE_FINAL;
@@ -289,18 +289,18 @@ class Account
 	public function getBillingPeriodStart($strEffectiveDate=null, $bolProductionInvoiceRunsOnly=false)
 	{
 		$strEffectiveDate	= (strtotime($strEffectiveDate)) ? date("Y-m-d", strtotime($strEffectiveDate)) : date("Y-m-d");
-		
+
 		// Get the Account's last Invoice date
 		$strAccountLastInvoiceDate			= $this->getLastInvoiceDate($strEffectiveDate, $bolProductionInvoiceRunsOnly);
 		$intAccountLastInvoiceDate			= strtotime($strAccountLastInvoiceDate);
-		
+
 		// Get the CustomerGroup's last Invoice date (or predicted last Invoice date)
 		$strCustomerGroupLastInvoiceDate	= Invoice_Run::getLastInvoiceDateByCustomerGroup($this->CustomerGroup, $strEffectiveDate);
 		$intCustomerGroupLastInvoiceDate	= strtotime($strCustomerGroupLastInvoiceDate);
-		
+
 		return date("Y-m-d", max($intAccountLastInvoiceDate, $intCustomerGroupLastInvoiceDate));
 	}
-	
+
 	public function getLastInvoiceRun($sEffectiveDate=null)
 	{
 		$oSelectInvoiceRun	= self::_preparedStatement('selLastInvoiceRun');
@@ -329,7 +329,7 @@ class Account
 	public function getLastInvoiceDate($strEffectiveDate=null, $bolProductionInvoiceRunsOnly=false)
 	{
 		$strEffectiveDate	= strtotime($strEffectiveDate) ? date("Y-m-d", strtotime($strEffectiveDate)) : date("Y-m-d");
-		
+
 		$selPaymentTerms	= self::_preparedStatement('selPaymentTerms');
 
 		$selInvoiceRun	= self::_preparedStatement('selLastInvoiceRun');
@@ -392,7 +392,7 @@ class Account
                                                                               )
                                 JOIN collection_event ce ON (ce.id = ach.collection_event_id)
                                 JOIN collection_event_type cet ON (cet.id = ce.collection_event_type_id and cet.system_name <> 'EXIT_COLLECTIONS')
-                                 
+
                                 UNION
 
                                 /*retrieve accounts with a non-promise balance > 0 */
@@ -409,7 +409,7 @@ class Account
 
                         ) accounts LIMIT 2000
             ";
-                     
+
             $oQuery = new Query();
             $mResult = $oQuery->Execute($sSql);
             $aResult = array();
@@ -439,7 +439,7 @@ class Account
                                         collection_promise_id BIGINT(20) UNSIGNED,
                                         invoice_id BIGINT(20) UNSIGNED,
                                         created_employee_id BIGINT(20) UNSIGNED,
-                                        modified_datetime DATETIME, 
+                                        modified_datetime DATETIME,
                                         modified_employee_id BIGINT(20) UNSIGNED,
                                         status_id BIGINT(20),
                                         INDEX in_account_payable_due_date (due_date)
@@ -480,7 +480,7 @@ class Account
                                 unset ($aRecord['account_id']);
                                 unset ($aRecord['balance']);
                                 $oORM = new Collection_Promise_Instalment($aRecord );
-                                $aResult[] = new Logic_Collection_Promise_Instalment($oORM); 
+                                $aResult[] = new Logic_Collection_Promise_Instalment($oORM);
                             }
                             else
                             {
@@ -494,7 +494,7 @@ class Account
 
                         }
                     }
-                    mysqli_free_result($mResult); 
+                    mysqli_free_result($mResult);
                     return $aResult;
 
         }
@@ -560,7 +560,7 @@ class Account
                             }
                         }
 
-                       
+
                     }
 
 
@@ -609,7 +609,7 @@ class Account
                    $sSQL = "    SELECT DISTINCT a.*
                                 FROM Account a
                                 JOIN account_status ast ON (a.Archived = ast.id AND ast.send_late_notice = 1)
-                                WHERE a.Id = 1000005195
+
                                ";
 
                     $oQuery = new Query();
@@ -639,11 +639,11 @@ class Account
                             $aAccountsForRedistribution[] = new self($aRow);
                         }
                     }
-               default:                   
+               default:
                        //try to resolve it to an account id
                        $mResult = self::getForId($iRedistributionType);
                        if ($mResult != null)
-                           $aAccountsForRedistribution[] = $mResult;                   
+                           $aAccountsForRedistribution[] = $mResult;
 
             }
 
@@ -689,7 +689,7 @@ class Account
                                 JOIN CustomerGroup cg ON (a.CustomerGroup = cg.Id)";
             $strWhere	= "a.Id in ($sAccountIds)";
             $strOrderBy	= "a.Id ASC";
-            
+
             $oAccounts = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy, "");
             $mxdReturn =  $oAccounts->Execute();
             if ($mxdReturn !== FALSE)
@@ -769,7 +769,7 @@ class Account
 			// Nothing to save
 			return TRUE;
 		}
-		
+
 		// Do we have an Id for this instance?
 		if ($this->Id !== NULL)
 		{
@@ -798,47 +798,47 @@ class Account
 				throw new Exception_Database('Failed to save account details: ' . $statement->Error());
 			}
 		}
-		
+
 		if ($bRecordInHistory)
 		{
 			// Record the new state of the account
 			Account_History::recordCurrentState($this->Id, $intEmployeeId);
 		}
-		
+
 		$this->_saved = TRUE;
 		return TRUE;
 	}
-	
+
 	// Gets the latest rebill for the account (if any)
 	public function getRebill()
 	{
 		return Rebill::getForAccountId($this->Id);
 	}
-	
+
 	// Gets the available payment methods for this accounts customer group
 	public function getPaymentMethods()
 	{
 		$oCustomerGroup	= Customer_Group::getForId($this->CustomerGroup);
 		return $oCustomerGroup->getPaymentMethods();
 	}
-	
+
 	public function getPaymentMethod()
 	{
 		$oBillingType	= Billing_Type::getForId($this->BillingType);
 		return Payment_Method::getForId($oBillingType->payment_method_id);
 	}
-	
+
 	public function getPaymentMethodDetails()
 	{
 		$oBillingType	= Billing_Type::getForId($this->BillingType);
 		$mPaymentMethod	= null;
-		
+
 		switch ($oBillingType->payment_method_id)
 		{
 			case PAYMENT_METHOD_ACCOUNT:
 				$mPaymentMethod	= PAYMENT_METHOD_ACCOUNT;
 				break;
-				
+
 			case PAYMENT_METHOD_DIRECT_DEBIT:
 				if ($this->CreditCard)
 				{
@@ -849,23 +849,47 @@ class Account
 					$mPaymentMethod	= DirectDebit::getForId($this->DirectDebit);
 				}
 				break;
-				
+
 			case PAYMENT_METHOD_REBILL:
 				$mPaymentMethod	= Rebill::getForAccountId($this->Id);
 				break;
-				
+
 			default:
 				$mPaymentMethod	= PAYMENT_METHOD_ACCOUNT;
 		}
-		
+
 		return $mPaymentMethod;
 	}
-	
-	public function getUnbilledAdjustments($bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=true)
+
+	public function getUnbilledAdjustments()
+	{
+	    $sSQL = "	Select COALESCE (SUM(adj.balance*an.value_multiplier*tn.value_multiplier), 0) balance
+			FROM adjustment adj
+			JOIN adjustment_type at ON (at.id = adj.adjustment_type_id and adj.account_id = {$this->Id} AND adj.invoice_run_id IS NULL)
+			JOIN transaction_nature tn ON (tn.id = at.transaction_nature_id)
+			JOIN adjustment_nature an ON (an.id = adj.adjustment_nature_id)
+			JOIN adjustment_status ast ON (adj.adjustment_status_id = ast.id and ast.const_name = 'ADJUSTMENT_STATUS_APPROVED')";
+
+
+			$oQuery = new Query();
+			$mResult = $oQuery->Execute($sSQL);
+			if ($mResult)
+			{
+			    $aResult	= $mResult->fetch_assoc();
+			    return (float)$aResult['balance'];
+			}
+			else
+			{
+			    throw new Exception_Database($oQuery->Error());
+			}
+
+	}
+
+	public function oldGetUnbilledAdjustments($bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=true)
 	{
 		$iIncludeCreditAdjustments	= ($bIncludeCreditAdjustments) ? 1 : 0;
 		$iIncludeDebitAdjustments	= ($bIncludeDebitAdjustments) ? 1 : 0;
-		
+
 		// This query uses a logarithm workaround to simulate a PRODUCT() aggregate function
 		// Defined at: http://codeidol.com/sql/sql-hack/Number-Crunching/Multiply-Across-a-Result-Set/
 		// Essentially says that to replicate a PRODUCT() aggregate function, use EXP(SUM(LN(rate))) to get the compound rate
@@ -918,6 +942,7 @@ class Account
 	    $oAccountBarringLevel = new  Account_Barring_Level();
 	    $sNow = Data_Source_Time::currentTimestamp();
 	    $oAccountBarringLevel->account_id = $this->Id;
+	    $iUserId = Flex::getUserId()!=null?Flex::getUserId():Employee::SYSTEM_EMPLOYEE_ID;
 	    if ($iAuthorisedEmployeeId != null)
 	    {
 		$sAuthorisedDateTime = $sAuthorisedDateTime === null ? Data_Source_Time::currentTimestamp() : $sAuthorisedDateTime;
@@ -925,21 +950,63 @@ class Account
 		$oAccountBarringLevel->authorised_employee_id = $iAuthorisedEmployeeId;
 	    }
 	    $oAccountBarringLevel->created_datetime = $sNow;
-	    $oAccountBarringLevel->created_employee_id = Flex::getUserId()!=null?Flex::getUserId():Employee::SYSTEM_EMPLOYEE_ID;
+	    $oAccountBarringLevel->created_employee_id =  $iUserId;
 	    $oAccountBarringLevel->barring_level_id = $iBarringLevel;
 	    $oAccountBarringLevel->save();
 
 	    //TODO: process the barring level for each service on the account
 	    //create a record for each service in the service_barring_level table (retrieve the services as follows.......)
+	    $aServices = $this->getServicesForBarring();
 
-	    //if $iAuthorisedEmployeeId
+	    foreach ($aServices as $oService)
+	    {
+		$oServiceBarringLevel                           = new Service_Barring_Level();
+		$oServiceBarringLevel->service_id               = $oService->id;
+		$oServiceBarringLevel->barring_level_id         = $iBarringLevel;
+		$oServiceBarringLevel->created_datetime         = date('Y-m-d H:i:s');
+		$oServiceBarringLevel->created_employee_id      =  $iUserId;
+
+		$oServiceBarringLevel->account_barring_level_id = $oAccountBarringLevel->id;
+
+
+		if ($iAuthorisedEmployeeId != null)
+		{
+		    $oServiceBarringLevel-> authorised_datetime = $sAuthorisedDateTime;
+		    $oServiceBarringLevel->authorised_employee_id = $iAuthorisedEmployeeId;
+		}
+
+		$oServiceBarringLevel->save();
+
+		if ($iAuthorisedEmployeeId != null)
+		{
+		    if (Logic_Service::canServiceBeAutomaticallyBarred($oServiceBarringLevel->service_id, $oServiceBarringLevel->barring_level_id))
+		    {
+			  // ... it is possible action & create provisioning request
+			  $oServiceBarringLevel->action();
+			  switch ($oServiceBarringLevel->barring_level_id)
+			  {
+				case BARRING_LEVEL_UNRESTRICTED:
+				      $iProvisioningTypeId = PROVISIONING_TYPE_UNBAR;
+				      break;
+				case BARRING_LEVEL_BARRED:
+				      $iProvisioningTypeId = PROVISIONING_TYPE_BAR;
+				      break;
+				case BARRING_LEVEL_TEMPORARY_DISCONNECTION:
+				      $iProvisioningTypeId = PROVISIONING_TYPE_DISCONNECT_TEMPORARY;
+				      break;
+			  }
+
+			  Logic_Service::createProvisioningRequest($oServiceBarringLevel->service_id, $iProvisioningTypeId);
+		    }
+		}
+	    }
 	}
 
 	public function getServicesForBarring()
 	{
 	    // Get all barrable services for the account
 	    $oQuery = new Query();
-	    $mResult = $oQuery->Execute(" SELECT Id, FNN
+	    $sSQL = " SELECT *
 					  FROM   Service
 					  INNER JOIN  (
 								SELECT MAX(Service.Id) serviceId
@@ -950,19 +1017,26 @@ class Account
 										OR NOW() < Service.ClosedOn
 								)
 								AND Service.CreatedOn < NOW()
-								AND Service.FNN IN (SELECT FNN FROM Service WHERE Account = $iAccountId)
+								AND Service.FNN IN (SELECT FNN FROM Service WHERE Account = {$this->Id})
 								GROUP BY Service.FNN
 						    ) CurrentService ON (
-											Service.Account = $iAccountId
+											Service.Account = {$this->Id}
 											AND Service.Id = CurrentService.serviceId
 											AND Service.Status IN (".SERVICE_ACTIVE.", ".SERVICE_DISCONNECTED.", ".SERVICE_ARCHIVED.")
 									)
-					  ORDER BY            Service.FNN ASC;");
+					  ORDER BY            Service.FNN ASC;";
+	    $mResult = $oQuery->Execute( $sSQL);
 	    if ($mResult === false)
 	    {
 			    throw new Exception("Failed to get barrable services for account.".$oQuery->Error());
 	    }
-	    foreach ()
+	    $aResult = array();
+	    while ( $aRecord = $mResult->fetch_assoc())
+	    {
+		$aResult[] = new Service($aRecord);
+	    }
+
+	    return $aResult;
 
 	}
 
@@ -1012,17 +1086,16 @@ class Account
 			}
 		    }
 		}
-
 	    }
 	}
-	
 
-	
+
+
 	public function getAccountBalance()
 	{
 	    return $this->_getBalance(Data_Source_Time::END_OF_TIME, TRUE);
 	}
-	
+
 	public function getOverdueBalance($sDueDate= NULL)
 	{
 	    $sDueDate	= (is_int($iDueDate = strtotime($sDueDate))) ? date("Y-m-d", $iDueDate) : date('Y-m-d');
@@ -1078,13 +1151,13 @@ class Account
 	{
 		return $this->_getBalance(Data_Source_Time::END_OF_TIME, $bIncludeCreditAdjustments, $bIncludeDebitAdjustments, $bIncludePayments);
 	}
-	
+
 	protected function _oldGetBalance($sDueDate, $bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false, $bIncludePayments=true)
 	{
 		$iIncludeCreditAdjustments	= ($bIncludeCreditAdjustments)	? 1 : 0;
 		$iIncludeDebitAdjustments	= ($bIncludeDebitAdjustments)	? 1 : 0;
 		$iIncludePayments			= ($bIncludePayments)			? 1 : 0;
-		
+
 		// This query uses a logarithm workaround to simulate a PRODUCT() aggregate function
 		// Defined at: http://codeidol.com/sql/sql-hack/Number-Crunching/Multiply-Across-a-Result-Set/
 		// Essentially says that to replicate a PRODUCT() aggregate function, use EXP(SUM(LN(rate))) to get the compound rate
@@ -1133,7 +1206,7 @@ class Account
 																									AND p.Account = a.Id
 																						), 0)
 																					)																															AS balance
-											
+
 											FROM		Account a
 														LEFT JOIN Invoice i ON	(
 																					a.Id = i.Account
@@ -1143,7 +1216,7 @@ class Account
 														LEFT JOIN InvoiceRun ir ON	(
 																						i.invoice_run_id = ir.Id
 																					)
-											
+
 											WHERE		a.Id = {$this->Id}
 														AND
 														(
@@ -1168,7 +1241,7 @@ class Account
 	public function getActiveSuspension() {
 		return Collection_Suspension::getActiveForAccount($this->Id);
 	}
-	
+
 	// Empties the cache
 	public static function emptyCache()
 	{
@@ -1230,12 +1303,12 @@ class Account
 	protected function __set($strName, $mxdValue)
 	{
 		$strName	= array_key_exists($strName, $this->_arrTidyNames) ? $this->_arrTidyNames[$strName] : $strName;
-		
+
 		if (array_key_exists($strName, $this->_arrProperties))
 		{
 			$mixOldValue					= $this->_arrProperties[$strName];
 			$this->_arrProperties[$strName]	= $mxdValue;
-			
+
 			if ($mixOldValue !== $mxdValue)
 			{
 				$this->_saved = FALSE;
@@ -1254,7 +1327,7 @@ class Account
 		$tidy[0] = strtolower($tidy[0]);
 		return $tidy;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// toArray()
 	//------------------------------------------------------------------------//
@@ -1273,7 +1346,7 @@ class Account
 	{
 		return $this->_arrProperties;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// _preparedStatement
 	//------------------------------------------------------------------------//
@@ -1314,19 +1387,19 @@ class Account
 				case 'selByAccountGroup':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("Account", "*", "AccountGroup = <AccountGroup> AND Archived = <Archived>");
 					break;
-					
+
 				// INSERTS
 				case 'insSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementInsert("Account");
 					break;
-				
+
 				// UPDATE BY IDS
 				case 'ubiSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementUpdateById("Account");
 					break;
-				
+
 				// UPDATES
-				
+
 				default:
 					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
 			}
