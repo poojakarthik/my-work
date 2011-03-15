@@ -937,16 +937,16 @@ class Account
 		}
 	}
 
-	public function setBarringLevel($iBarringLevel, $iAuthorisedEmployeeId = null, $sAuthorisedDateTime = null)
+	public function setBarringLevel($iBarringLevel, $iAuthorisedEmployeeId = null)
 	{
 	    $oAccountBarringLevel = new  Account_Barring_Level();
 	    $sNow = Data_Source_Time::currentTimestamp();
 	    $oAccountBarringLevel->account_id = $this->Id;
-	    $iUserId = Flex::getUserId()!=null?Flex::getUserId():Employee::SYSTEM_EMPLOYEE_ID;
-	    if ($iAuthorisedEmployeeId != null)
+	    $iUserId = Flex::getUserId()!==null?Flex::getUserId():Employee::SYSTEM_EMPLOYEE_ID;
+	    if ($iAuthorisedEmployeeId !== null)
 	    {
-		$sAuthorisedDateTime = $sAuthorisedDateTime === null ? Data_Source_Time::currentTimestamp() : $sAuthorisedDateTime;
-		$oAccountBarringLevel-> authorised_datetime = $sAuthorisedDateTime;
+
+		$oAccountBarringLevel-> authorised_datetime = $sNow;
 		$oAccountBarringLevel->authorised_employee_id = $iAuthorisedEmployeeId;
 	    }
 	    $oAccountBarringLevel->created_datetime = $sNow;
@@ -969,15 +969,15 @@ class Account
 		$oServiceBarringLevel->account_barring_level_id = $oAccountBarringLevel->id;
 
 
-		if ($iAuthorisedEmployeeId != null)
+		if ($iAuthorisedEmployeeId !== null)
 		{
-		    $oServiceBarringLevel-> authorised_datetime = $sAuthorisedDateTime;
+		    $oServiceBarringLevel-> authorised_datetime = $sNow;
 		    $oServiceBarringLevel->authorised_employee_id = $iAuthorisedEmployeeId;
 		}
 
 		$oServiceBarringLevel->save();
 
-		if ($iAuthorisedEmployeeId != null)
+		if ($iAuthorisedEmployeeId !== null)
 		{
 		    if (Logic_Service::canServiceBeAutomaticallyBarred($oServiceBarringLevel->service_id, $oServiceBarringLevel->barring_level_id))
 		    {
@@ -996,7 +996,7 @@ class Account
 				      break;
 			  }
 
-			  Logic_Service::createProvisioningRequest($oServiceBarringLevel->service_id, $iProvisioningTypeId);
+			  Logic_Service::createProvisioningRequest($oServiceBarringLevel->service_id, $iProvisioningTypeId, $sNow, $iAuthorisedEmployeeId);
 		    }
 		}
 	    }
