@@ -564,6 +564,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 				$sAccount					= (($iValidAccountId == null)						? 'NULL' 	: $iValidAccountId);
 				$sEnteredBy					= (($aRow['EnteredBy'] == null)						? USER_ID 	: $aRow['EnteredBy']);
 				$sAmount					= (($aRow['Amount'] == null)						? '0' 		: $aRow['Amount']);
+				$sTransactionReference		= $oDB->escape($aRow['TXNReference']); 
 				
 				// Payment type, if NULL or 0 insert NULL
 				$mPaymentType 	= $aRow['PaymentType'];
@@ -587,7 +588,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 														{$sEnteredBy},
 														{$sPaidOn},
 														{$sPaymentType},
-														'{$aRow['TXNReference']}',
+														'{$sTransactionReference}',
 														(SELECT id FROM payment_nature WHERE system_name = 'PAYMENT'),
 														{$sAmount},
 														{$sAmount},
@@ -611,7 +612,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 																{$sEnteredBy},
 																{$sPaidOn},
 																{$sPaymentType},
-																'{$aRow['TXNReference']}',
+																'{$sTransactionReference}',
 																(SELECT id FROM payment_nature WHERE system_name = 'REVERSAL'),
 																{$sAmount},
 																{$sAmount},
@@ -655,7 +656,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 			if (PEAR::isError($mInsertResult))
 			{
 				// Failed
-				throw new Exception(__CLASS__." Failed to insert copied payment records. Query number {$i}");
+				throw new Exception(__CLASS__." Failed to insert copied payment records. Query number {$i}. ".$mInsertResult->getMessage()." (DB Error: ".$mInsertResult->getUserInfo().")");
 			}
 		}
 		

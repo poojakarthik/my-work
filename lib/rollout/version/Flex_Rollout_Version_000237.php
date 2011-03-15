@@ -237,8 +237,8 @@ class Flex_Rollout_Version_000237 extends Flex_Rollout_Version
 			(
 				'sDescription'		=>	"Add data to resource_type table",
 				'sAlterSQL'			=>	"INSERT INTO resource_type  (name, description, const_name, resource_type_nature ) VALUES
-										('FLex Correspondence API', 'Flex Correspondence API', 'RESOURCE_TYPE_FLEX_CORRESPONDENCE_API', (SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_API'));															;",
-				'sRollbackSQL'		=>	"	DELETE FROM resource_type WHERE name = 'FLex Correspondence API';",
+										('Flex Correspondence API', 'Flex Correspondence API', 'RESOURCE_TYPE_FLEX_CORRESPONDENCE_API', (SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_API'));															;",
+				'sRollbackSQL'		=>	"	DELETE FROM resource_type WHERE const_name = 'RESOURCE_TYPE_FLEX_CORRESPONDENCE_API';",
 				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 			)
 		);

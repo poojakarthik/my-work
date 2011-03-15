@@ -343,7 +343,7 @@ class Flex_Rollout_Version_000239 extends Flex_Rollout_Version
 														('OCA', 				'OCA', 				'OCA', 				'COLLECTION_EVENT_TYPE_IMPLEMENTATION_OCA', 				'Logic_Collection_Event_OCA', 				1, NULL),
 														('TDC', 				'TDC', 				'TDC', 				'COLLECTION_EVENT_TYPE_IMPLEMENTATION_TDC', 				'Logic_Collection_Event_TDC', 				1, NULL),
 														('Charge', 				'Charge', 			'CHARGE', 			'COLLECTION_EVENT_TYPE_IMPLEMENTATION_CHARGE', 				'Logic_Collection_Event_Charge', 			1, NULL),
-														('Exit Collections', 	'Exit Collections',	'EXIT_COLLECTIONS', 'COLLECTION_EVENT_TYPE_IMPLEMENTATION_EXIT_COLLECTIONS', 	'Logic_Collection_Event_ExitCollections', 	0, (SELECT id FROM collection_event_invocation WHERE system_name = 'AUTOMATIC'),
+														('Exit Collections', 	'Exit Collections',	'EXIT_COLLECTIONS', 'COLLECTION_EVENT_TYPE_IMPLEMENTATION_EXIT_COLLECTIONS', 	'Logic_Collection_Event_ExitCollections', 	0, (SELECT id FROM collection_event_invocation WHERE system_name = 'AUTOMATIC')),
 														('Milestone', 			'Milestone',		'MILESTONE', 		'COLLECTION_EVENT_TYPE_IMPLEMENTATION_MILESTONE', 			'Logic_Collection_Event_Milestone', 		1, NULL);",
 				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 			),
@@ -594,7 +594,7 @@ class Flex_Rollout_Version_000239 extends Flex_Rollout_Version
 												name VARCHAR(256) NULL,
 												description VARCHAR(256) NULL,
 												day_offset INT UNSIGNED NOT NULL DEFAULT 0,
-												working_status_id BIGINT UNSIGNED NOT NULL,
+												working_status_id INT UNSIGNED NOT NULL,
 												threshold_percentage INT NOT NULL,
 												threshold_amount DECIMAL(13,4) NOT NULL,
 												initial_collection_severity_id INT UNSIGNED NULL,
@@ -1219,7 +1219,7 @@ class Flex_Rollout_Version_000239 extends Flex_Rollout_Version
 												CONSTRAINT fk_adjustment_reversal_reason_status_id FOREIGN KEY (status_id)  REFERENCES status (id) ON DELETE RESTRICT ON UPDATE CASCADE
 											)
 											ENGINE = InnoDB;",
-				'sRollbackSQL'		=>	"	DROP TABLE adjustment_review_outcome;",
+				'sRollbackSQL'		=>	"	DROP TABLE adjustment_reversal_reason;",
 				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 			),
 			array
@@ -1423,8 +1423,8 @@ class Flex_Rollout_Version_000239 extends Flex_Rollout_Version
 			array
 			(
 				'sDescription'		=>	"Data for table 'collection_scenario'",
-				'sAlterSQL'			=>	"	INSERT INTO collection_scenario (name, description, day_offset, status_id, threshold_percentage, threshold_amount) 
-											VALUES 		('Default', 'Default Scenario', NULL, ".STATUS_ACTIVE.", 0.25, 27.01);",
+				'sAlterSQL'			=>	"	INSERT INTO collection_scenario (name, description, day_offset, working_status_id, threshold_percentage, threshold_amount) 
+											VALUES 		('Default', 'Default Scenario', 0, (SELECT id FROM working_status WHERE system_name='ACTIVE'), 0.25, 27.01);",
 				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 			),
 			array
@@ -1439,7 +1439,7 @@ class Flex_Rollout_Version_000239 extends Flex_Rollout_Version
 				'sDescription'		=>	"Data for table 'collection_suspension_reason'",
 				'sAlterSQL'			=>	"	INSERT INTO collection_suspension_reason (name, description, system_name, status_id) 
 											VALUES 		('Suspension', 					'Suspension', 					'SUSPENSION', 					".STATUS_ACTIVE."),
-														('TIO Complaint',				'TIO Complaint',				'TIO_COMPLAINT'					".STATUS_INACTIVE."),
+														('TIO Complaint',				'TIO Complaint',				'TIO_COMPLAINT',				".STATUS_INACTIVE."),
 														('Extension', 					'Extension', 					'EXTENSION',					".STATUS_INACTIVE."),
 														('Sending to Debt Collection', 	'Sending to Debt Collection', 	'SENDING_TO_DEBT_COLLECTION',	".STATUS_INACTIVE."),
 														('With Debt Collection', 		'With Debt Collection', 		'WITH_DEBT_COLLECTION',			".STATUS_INACTIVE."),
@@ -1475,8 +1475,8 @@ class Flex_Rollout_Version_000239 extends Flex_Rollout_Version
 			array
 			(
 				'sDescription'		=>	"Data for table 'collection_severity'",
-				'sAlterSQL'			=>	"	INSERT INTO collection_severity (name, description, system_name, status_id) 
-											VALUES 		('Zero', 'Unrestricted', 'UNRESTRICTED', ".STATUS_ACTIVE.");",
+				'sAlterSQL'			=>	"	INSERT INTO collection_severity (name, description, system_name, working_status_id) 
+											VALUES 		('Zero', 'Unrestricted', 'UNRESTRICTED', (SELECT id FROM working_status WHERE system_name='ACTIVE'));",
 				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 			),
 			array

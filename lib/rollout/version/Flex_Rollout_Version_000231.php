@@ -70,6 +70,13 @@ class Flex_Rollout_Version_000231 extends Flex_Rollout_Version
 								),
 								array
 								(
+									'sDescription'		=> "Turn OFF foreign key checks",
+									'sAlterSQL'			=> "SET foreign_key_checks = 0;",
+									'sRollbackSQL'		=> "SET foreign_key_checks = 1;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
 									'sDescription'		=>	"Add email_queue_status_id field to the email_queue table",
 									'sAlterSQL'			=>	"	ALTER TABLE email_queue
 																ADD COLUMN email_queue_status_id INT NOT NULL COMMENT \"(FK) email_queue_status. The status of the queue\";",
@@ -99,6 +106,12 @@ class Flex_Rollout_Version_000231 extends Flex_Rollout_Version
 																			FROM	email_queue_status
 																			WHERE	system_name = 'DELIVERED')
 																		);",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=> "Turn ON foreign key checks",
+									'sAlterSQL'			=> "SET foreign_key_checks = 1;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								),
 								array
