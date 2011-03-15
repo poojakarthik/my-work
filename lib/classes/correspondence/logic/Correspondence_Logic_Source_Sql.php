@@ -17,8 +17,8 @@ class Correspondence_Logic_Source_Sql extends Correspondence_Logic_Source
 
 	public function _getCorrespondence()
 	{
-		$this->db = DataAccess::getDataAccess();
-		$result = $this->db->refMysqliConnection->query($this->sql_syntax);
+		$this->db 	= DataAccess::getDataAccess();
+		$result 	= $this->db->refMysqliConnection->query($this->sql_syntax);
 		if (!$result)
 		{
 			throw new Correspondence_DataValidation_Exception(Correspondence_DataValidation_Exception::SQLERROR);
@@ -34,16 +34,15 @@ class Correspondence_Logic_Source_Sql extends Correspondence_Logic_Source
 			$iFieldIndex = 0;
  			foreach ($row as $sField => $mValue)
 			{
-				if ($iFieldIndex<count($this->_aColumns))
+				if ($iFieldIndex < count($this->_aColumns))
 				{
-					$sFieldName = $iFieldIndex<count($this->_aInputColumns)?$this->_aInputColumns[$iFieldIndex]:$aFieldNames[$iFieldIndex];
-
-					$aRecord['standard_fields'][$sFieldName]= $mValue;
+					$sFieldName	= ($iFieldIndex < count($this->_aInputColumns) ? $this->_aInputColumns[$iFieldIndex] : $iFieldIndex);
+					$aRecord['standard_fields'][$sFieldName]	= $mValue;
 				}
 				else
 				{
-					$sFieldName = $iFieldIndex<$this->getColumnCount()?$this->_aAdditionalColumns[$iFieldIndex]:$iFieldIndex;
-					$aRecord['additional_fields'][$sFieldName] = $mValue;
+					$sFieldName	= ($iFieldIndex < $this->getColumnCount() ? $this->_aAdditionalColumns[$iFieldIndex] : $iFieldIndex);
+					$aRecord['additional_fields'][$sFieldName]	= $mValue;
 				}
 				$iFieldIndex++;
 			}
@@ -55,23 +54,11 @@ class Correspondence_Logic_Source_Sql extends Correspondence_Logic_Source
 		{
 			$this->processValidationErrors();
 		}
-
-
 	}
-
-
-
-/*	public static function getForCorrespondenceSourceId($iId)
-	{
-		$oORM = Correspondence_Source_Sql::getForCorrespondenceSourceId($iId);
-		return new self ($oORM);
-	}*/
 
 	public function __get($sField)
 	{
 		return $this->_oDO->$sField!=null?$this->_oDO->$sField:parent::__get($sField);
 	}
-
-
 }
-
+?>

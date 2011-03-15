@@ -14,6 +14,37 @@ class JSON_Handler_Charge_Type extends JSON_Handler
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 	
+	public function getAll($bActiveOnly=false)
+	{
+		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		try
+		{
+			$aChargeTypes 	= Charge_Type::getAll();
+			$aResults		= array();
+			foreach ($aChargeTypes as $oChargeType)
+			{
+				if (!$bActiveOnly || !$oChargeType->Archived)
+				{
+					$aResults[$oChargeType->id] = $oChargeType->toStdClass();
+				}
+			}
+			
+			return	array(
+						'bSuccess'	=> true,
+						'aResults'	=> $aResults,
+						'sDebug'	=> ($bUserIsGod ? $this->_JSONDebug : '')
+					);
+		}
+		catch (Exception $e)
+		{
+			$sMessage = $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
+			return 	array(
+						'bSuccess'	=> false,
+						'sMessage'	=> $sMessage
+					);
+		}
+	}
+	
 	// This function wraps around getTypes and supplies CHARGE_MODEL_CHARGE as the charge_model_id
 	public function getChargeTypes($bCountOnly=false, $iLimit=0, $iOffset=0, $oFieldsToSort=null, $oFilter=null)
 	{

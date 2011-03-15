@@ -3,6 +3,12 @@ var Correspondence_Delivery_Method	= Class.create({});
 
 Object.extend(Correspondence_Delivery_Method, 
 {
+	hIcons	:
+	{
+		'EMAIL'	: 'correspondence_email.png',
+		'POST'	: 'lorry.png'
+	},
+	
 	getAll	: function(fnCallback, oResponse)
 	{
 		if (!oResponse)
@@ -40,5 +46,14 @@ Object.extend(Correspondence_Delivery_Method,
 			}
 			fnCallback(aOptions);
 		}
+	},
+	
+	getIconForSystemName	: function(sName)
+	{
+		if (!Correspondence_Delivery_Method.hIcons[sName])
+		{
+			return null;
+		}
+		return '../admin/img/template/' + Correspondence_Delivery_Method.hIcons[sName];
 	}
 });

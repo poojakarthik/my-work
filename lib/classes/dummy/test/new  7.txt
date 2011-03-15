@@ -1,0 +1,83 @@
+'account_collection_event_history_id'
+
+ 
+
+'account_id'
+
+                sort
+
+                filter
+
+ 
+
+'account_name'
+
+                sort
+
+ 
+
+'customer_group_internal_name'
+
+ 
+
+'collection_scenario_id'
+
+                filter
+
+ 
+
+'collection_scenario_name'
+
+                sort
+
+ 
+
+'collection_event_id'
+
+                filter
+
+ 
+
+'collection_event_type_id'
+
+                filter
+
+ 
+
+'collection_event_type_name'
+
+                sort
+
+ 
+
+'collection_event_name'
+
+                sort
+
+ 
+
+'scheduled_datetime'
+
+                sort
+
+ 
+
+'completed_datetime'
+
+                sort
+
+ 
+
+'account_collection_event_status_id'
+
+                filter
+
+ 
+
+'account_collection_event_status_name'
+
+                sort
+
+ 
+
+'collection_event_invocation_id'

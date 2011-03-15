@@ -7,36 +7,26 @@ class Correspondence_Logic_Template
 	protected $_aRuns = array();
 	protected $_aExtraColumns = array();
 	public static $aNonSuppliedFields = array('created_employee_id', 'created_timestamp', 'status_id', 'correspondence_source_id');
-	protected $_oCarrierModule;
+	protected $aDeliveryMethodCarrierConfig = array();
 
 	private function __construct($mDefinition, $aColumns = array())
 	{
-		is_numeric($mDefinition)?$this->_oDO = Correspondence_Template::getForId($mDefinition):$this->_oDO = $mDefinition;
+		if (is_numeric($mDefinition))
+		{
+			$this->_oDO = Correspondence_Template::getForId($mDefinition);
+		}
+		else
+		{
+			$this->_oDO = $mDefinition;
+		}
 
-		$this->_aExtraColumns = Correspondence_Logic_Template_Column::getForTemplate($this);
-
-		$this->_oCorrespondenceSource = Correspondence_Logic_Source::factory($this);
+		$this->aDeliveryMethodCarrierConfig = Correspondence_Logic_Template_Carrier_Module::getForTemplateId($this->id);
+		$this->_aExtraColumns 				= Correspondence_Logic_Template_Column::getForTemplate($this);
+		$this->_oCorrespondenceSource 		= Correspondence_Logic_Source::factory($this);
 
 		$this->_oDO->setSaved();
 	}
 
-	public function getCarrierModule()
-	{
-		if ($this->_oCarrierModule !=null)
-			return $this->_oCarrierModule;
-
-		$aCarrierModules = Carrier_Module::getForCarrierModuleType(MODULE_TYPE_CORRESPONDENCE_EXPORT);
-		foreach($aCarrierModules as $oCarrierModule)
-		{
-			if ($oCarrierModule->Carrier = $this->carrier_id)
-			{
-				$sClassName = $oCarrierModule->Module;
-				$this->_oCarrierModule = new $sClassName($oCarrierModule);
-				return $this->_oCarrierModule;
-			}
-		}
-		return false;
-	}
 
 	public function save()
 	{
@@ -73,7 +63,37 @@ class Correspondence_Logic_Template
 
 	}
 
-
+	public function getCarrierModules()
+	{
+		$aModules	= array();
+		foreach($this->aDeliveryMethodCarrierConfig as $oConfig)
+		{
+			$oModule	= $oConfig->getCarrierModule();
+			if (count($aModules) > 0)
+			{
+				// There are existing modules found, see if 
+				foreach ($aModules as $oCurrentModule)
+				{
+					if (get_class($oModule) == get_class($oCurrentModule))
+					{
+						$oCurrentModule->assignDeliveryMethods(array_merge($oModule->getDeliveryMethods(), $oCurrentModule->getDeliveryMethods()));
+						break;
+					}
+					else
+					{
+						$aModules[]	= $oModule;
+						break;
+					}
+				}
+			}
+			else
+			{
+				$aModules[] = $oModule;
+			}
+		}
+		
+		return $aModules;
+	}
 
 	public function _save()
 	{
@@ -161,20 +181,34 @@ class Correspondence_Logic_Template
 		return $this->_oCorrespondenceSource->import();
 	}
 
+	public function getCorrespondenceCodeForCarrierModule($iCarrierModuleId)
+	{
+		foreach ($this->aDeliveryMethodCarrierConfig as $oConfig)
+		{
+			if ($oConfig->carrier_module_id == $iCarrierModuleId)
+			{
+				return $oConfig->template_code;
+			}
+		}
+		throw new Exception('Template Configuration Error: No Letter Code for for carrier module id: '.$iCarrierModuleId);
+	}
+
+	public function getTemplateCarrierForDeliveryMethod($iDeliveryMethod)
+	{
+		return isset($this->aDeliveryMethodCarrierConfig[$iDeliveryMethod]) ? $this->aDeliveryMethodCarrierConfig[$iDeliveryMethod] : null;
+	}
 
 	// getForInvoiceRunType: Uses the Invoice_Run_Type_Correspondence_Template linking class/table to retrieve the template for the given invoice run type
 	public static function getForInvoiceRunType($iInvoiceRunTypeId)
 	{
-		$oDO 		= Invoice_Run_Type_Correspondence_Template::getTemplateForInvoiceRunType($iInvoiceRunTypeId);
-		//$oSource	= new Correspondence_Logic_Source_System($oDO->id,$aData);
+		$oDO	= Invoice_Run_Type_Correspondence_Template::getTemplateForInvoiceRunType($iInvoiceRunTypeId);
 		return new self($oDO);
 	}
 
 	// getForInvoiceRunType: Uses the Automatic_Invoice_Action_Correspondence_Template linking class/table to retrieve the template for the given automatic invoice action
 	public static function getForAutomaticInvoiceAction($iAutomaticInvoiceActionId)
 	{
-		$oDO 		= Automatic_Invoice_Action_Correspondence_Template::getTemplateForAutomaticInvoiceAction($iAutomaticInvoiceActionId);
-		//$oSource	= new Correspondence_Logic_Source_System($oDO->id, $aData);
+		$oDO	= Automatic_Invoice_Action_Correspondence_Template::getTemplateForAutomaticInvoiceAction($iAutomaticInvoiceActionId);
 		return new self($oDO);
 	}
 
@@ -182,13 +216,6 @@ class Correspondence_Logic_Template
 	{
 		return new self ($iId);
 	}
-
-	/*public static function create($sTemplateCode, $sName, $sDescription, $iCarrierId, $oSource, $aColumns)
-	{
-		$aDefinition = array('template_code'=>$sTemplateCode, 'name'=>$sName, 'description'=>$sDescription, 'carrier_id'=>$iCarrierId);
-		return new self ($aDefinition, $oSource, $aColumns);
-	}*/
-
 
 	public function __get($sField)
 	{
@@ -202,12 +229,8 @@ class Correspondence_Logic_Template
 
 	public function toArray()
 	{
-		$aTemplate = $this->_oDO->toArray();
-		//add column data whenever needed
+		$aTemplate	= $this->_oDO->toArray();
 		return $aTemplate;
 	}
 }
-
-
-
 ?>

@@ -45,7 +45,10 @@ $this->Page->AddObject('InvoiceList', COLUMN_ONE, HTML_CONTEXT_LEDGER_DETAIL);
 //$this->Page->AddObject('NoteList', COLUMN_ONE, HTML_CONTEXT_PAGE, "NoteListDiv");
 
 $this->Page->AddObject('ActionsAndNotesList', COLUMN_ONE, HTML_CONTEXT_PAGE, "ActionsAndNotesListDiv");
-$this->Page->AddObject('AccountPaymentList', COLUMN_TWO, HTML_CONTEXT_LEDGER_DETAIL);
+$this->Page->AddObject('_Account_Collections_Summary', COLUMN_TWO, HTML_CONTEXT_LEDGER_DETAIL);
+//$this->Page->AddObject('AccountPaymentList', COLUMN_TWO, HTML_CONTEXT_LEDGER_DETAIL);
+$this->Page->AddObject('_Account_Payment_List', COLUMN_TWO, HTML_CONTEXT_LEDGER_DETAIL);
+$this->Page->AddObject('_Account_Adjustment_List', COLUMN_TWO, HTML_CONTEXT_LEDGER_DETAIL);
 $this->Page->AddObject('ChargeList', COLUMN_TWO, HTML_CONTEXT_LEDGER_DETAIL);
 $this->Page->AddObject('RecurringChargeList', COLUMN_TWO, HTML_CONTEXT_LEDGER_DETAIL);
 

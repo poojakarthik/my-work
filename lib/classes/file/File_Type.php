@@ -31,9 +31,31 @@ class File_Type extends ORM
 	{
 		// Parent constructor
 		parent::__construct($arrProperties, $bolLoadById);
-		
-		
 	}
+	
+	public function getAll()
+	{
+		$oSelect = self::_preparedStatement('selAll');
+		if ($oSelect->Execute() === false)
+		{
+			throw new Exception("Failed to get all file_type records. ".$oSelect->Error());
+		}
+		
+		return ORM::importResult($oSelect->FetchAll(), 'File_Type');
+	}
+
+    public function getForId($iId)
+    {
+        $sSql = "select * from file_type where id = $iId";
+        $oQuery = new Query();
+        $mResult = $oQuery->Execute($sSql);
+        if ($mResult)
+        {
+          return new self($mResult->fetch_assoc());
+
+        }
+        return null;
+    }
 	
 	/**
 	 * getPreferredMIMEType()
@@ -51,7 +73,7 @@ class File_Type extends ORM
 	{
 		if (!isset($this->_objPreferredMIMEType) || $bolForceRefresh)
 		{
-			$selPreferredMimeType	= $this->_preparedStatement('selPreferredMimeType');
+			$selPreferredMimeType	=  self::_preparedStatement('selPreferredMimeType');
 			$resPreferredMimeType	= $selPreferredMimeType->Execute($this->toArray());
 			if ($resPreferredMimeType === false)
 			{
@@ -184,6 +206,9 @@ class File_Type extends ORM
 			switch ($strStatement)
 			{
 				// SELECTS
+				case 'selAll':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1");
+					break;
 				case 'selById':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
 					break;

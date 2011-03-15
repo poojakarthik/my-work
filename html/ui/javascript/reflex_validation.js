@@ -186,6 +186,7 @@ var Reflex_Validation	=
 			return false
 		}
 	},
+	
 	bankAccountNumber	: function(sNumber)
 	{
 		if (sNumber.match(/^\d{4,11}$/))
@@ -196,6 +197,11 @@ var Reflex_Validation	=
 		{
 			return false;
 		}
+	},
+	
+	tioReferenceNumber : function(mValue)
+	{
+		return mValue.toString().match(/^\d{2}\/\d{6,7}$/);
 	},
 	
 	/*
@@ -331,6 +337,29 @@ var Reflex_Validation	=
 							{
 								throw ('Invalid Account Number');
 							}
-						}
+						},
+						tioReferenceNumber : function(mValue)
+						{
+							if (Reflex_Validation.tioReferenceNumber(mValue))
+							{
+								return true;
+							}
+							else
+							{
+								throw ('Invalid TIO Reference Number');
+							}
+						},
+						
+						stringOfLength	: function(iMinLength, iMaxLength, sValue)
+						{
+							if (Reflex_Validation.stringOfLength(iMinLength, iMaxLength, sValue))
+							{
+								return true;
+							}
+							else
+							{
+								throw ('Invalid length, must be ' + iMinLength + ' to ' + iMaxLength + ' characters long');
+							}
+						},
 					}
 };

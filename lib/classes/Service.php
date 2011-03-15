@@ -100,6 +100,30 @@ class Service extends ORM
 			throw new Exception("No current Rate Plan for Service {$this->Id} at {$strEffectiveDatetime}");
 		}
 	}
+
+        public function getDefaultRatePlan()
+        {
+            $oRatePlan = $this->getCurrentRatePlan();
+            if ($oRatePlan->override_default_rate_plan_id != null)
+            {
+                return Rate_Plan::getForId($oRatePlan->override_default_rate_plan_id);
+            }
+            else
+            {
+                $mDefaultRateplan = Default_Rate_Plan::getForServiceTypeAndCustomerGroup($this->ServiceType, Account::getForId($this->Account)->CustomerGroup);
+                return $mDefaultRateplan == null ? null : Rate_Plan::getForId($mDefaultRateplan->rate_plan);
+            }
+        }
+
+        public function getCurrentRatePlan($sDateTime = null)
+        {
+           return Rate_Plan::getCurrentForService($this->Id, $sDateTime);
+        }
+
+        public function getCDRsForStatus($aStatus)
+        {
+            return CDR::getForServiceAndStatus($this->Id,$aStatus);
+        }
 	
 	/**
 	 * changePlan()
@@ -237,6 +261,8 @@ class Service extends ORM
 		
 		return TRUE;
 	}
+
+       
 	
 	// setPlanFromStartDatetime
 	public function setPlanFromStartDatetime($oNewRatePlan, $iActive, $sStartDatetime)
@@ -305,6 +331,21 @@ class Service extends ORM
 		}
 		
 		return $oServiceRatePlan;
+	}
+	
+	// isCurrentlyActive: Returns TRUE if the service is currently active, or is not scheduled for closure until a future date
+	function isCurrentlyActive()
+	{
+		if ($this->ClosedOn != NULL)
+		{
+			// The service is active if the ClosedOn date is in the future
+			return (bool)($this->ClosedOn > GetCurrentISODateTime());
+		}
+		
+		// The most recently added service record does not have a ClosedOn set
+		// It will either be active or pending activation
+		
+		return (bool)($this->Status == SERVICE_ACTIVE);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -707,6 +748,8 @@ class Service extends ORM
 	{
 		
 	}
+
+        
 	
 	//------------------------------------------------------------------------//
 	// _preparedStatement

@@ -408,73 +408,16 @@ var Popup_Credit_Card_Payment	= Class.create(Reflex_Popup,
 	
 	_validateCardNumber	: function(mValue)
 	{
-		var iCardType			= this._oCardType.getElementValue();
-		var oCardType			= Popup_Credit_Card_Payment._getCardType(iCardType);
+		var sValidationReason 	= '';
 		var bCardNumberIsValid	= true;
-		var sValidationReason	= '';
-		if (Object.isUndefined(oCardType))
+		try
 		{
-			bCardNumberIsValid	= false;
-			sValidationReason	= 'The Card Number is invalid without a Card Type.';
+			Reflex_Validation_Credit_Card.validateCardNumber(mValue, this._oCardType.getElementValue());
 		}
-		
-		if (bCardNumberIsValid)
+		catch (oException)
 		{
-			// Check that the card number is a valid card number. If not, highlight as invalid.
-			var sRubbish 			= mValue.replace(/[0-9 ]+/g, '');
-			var sCardNumber 		= mValue.replace(/[^0-9]+/g, '');
-			var bCardNumberIsValid	= (sRubbish == '') && (sCardNumber.length >= CreditCardType.minCardNumberLength && sCardNumber.length <= CreditCardType.maxCardNumberLength);
-			if (bCardNumberIsValid)
-			{
-				oValidateType = Popup_Credit_Card_Payment._getCCType(sCardNumber);
-				if (!oValidateType)
-				{
-					bCardNumberIsValid = false;
-					sValidationReason	= 'The Card Number entered does not match any of the accepted credit card types.';
-				}
-				else
-				{
-					if (oCardType && oValidateType['id'] != oCardType['id'])
-					{
-						bCardNumberIsValid	= false;
-						sValidationReason	= 'The selected Credit Card Type does not match the Card Number entered.';
-					}
-					else
-					{
-						bCardNumberIsValid 	= Popup_Credit_Card_Payment._checkCardNumber(sCardNumber, oValidateType['id']);
-						if (!bCardNumberIsValid)
-						{
-							sValidationReason 	= 'The Card Number entered is invalid.';
-						}
-					}
-				}
-			}
-			else
-			{
-				oValidateType	= (sRubbish == '') && Popup_Credit_Card_Payment._getCCType(sCardNumber);
-				if (oValidateType)
-				{
-					bCardTypeEntered	= bCardTypeIsValid = true;
-					var sLens			= '';
-					for (var i = 0, l = oValidateType['valid_lengths'].length; i < l; i++)
-					{
-						sLens	+= ((i == 0) ? '' : (i == (l-1) ? ' or ' : ', ')) + oValidateType['valid_lengths'][i];
-					}
-					sValidationReason	= 'Card numbers for the selected Credit Card Type are ' + sLens + ' digits long.';
-				}
-				else if (sRubbish != '')
-				{
-					sValidationReason	= 'The Card Number can only contain numbers and spaces.';
-				}
-				else if (sCardNumber.length >= CreditCardType.minCardNumberLength)
-				{
-					sValidationReason	= 'The Card Number entered does not match any of the accepted credit card types.';
-				}
-				else
-				{
-					sValidationReason	= 'The Card Number entered is not long enough.';
-				}
-			}
+			sValidationReason	= oException;
+			bCardNumberIsValid	= false;
 		}
 		
 		this._oCardNumber.setValidationReason(sValidationReason);
@@ -756,39 +699,16 @@ var Popup_Credit_Card_Payment	= Class.create(Reflex_Popup,
 	
 	_validateCVV	: function(mValue)
 	{
-		var oCardType 			= Popup_Credit_Card_Payment._getCardType(this._oCardType.getElementValue());
 		var sValidationReason 	= '';
-		var sCleansed 			= mValue.replace(/[^0-9]+/g, '');
-		var bCVVIsValid 		= mValue.match(/^ *[0-9]+[ 0-9]*$/) && !isNaN(parseInt(sCleansed));
-		if (bCVVIsValid)
+		var bCVVIsValid			= true;
+		try
 		{
-			if (oCardType) 
-			{
-				bCVVIsValid 		= sCleansed.length == oCardType['cvv_length'];
-				sValidationReason 	= 'The CVV for the selected Credit Card Type must be ' + oCardType['cvv_length'] + ' digits long.';
-			}
-			else 
-			{
-				bCVVIsValid 		= 	sCleansed.length >= CreditCardType.minCvvLength && sCleansed.length <= CreditCardType.maxCvvLength;
-				var iDiff 			= 	CreditCardType.maxCvvLength - CreditCardType.minCvvLength;
-				sValidationReason 	= 	(iDiff == 0) ? 'Valid CVVs are between ' + CreditCardType.minCvvLength + ' digits long.'
-									 		: ((iDiff == 1) ? 'Valid CVVs are ' + CreditCardType.minCvvLength + ' or ' + CreditCardType.maxCvvLength + ' digits long.'
-											  	: 'Valid CVVs are between ' + CreditCardType.minCvvLength + ' and ' + CreditCardType.maxCvvLength + ' digits long.');
-			}
+			Reflex_Validation_Credit_Card.validateCVV(mValue, this._oCardType.getElementValue());
 		}
-		else
+		catch (oException)
 		{
-			if (oCardType) 
-			{
-				sValidationReason	= 'The CVV enetered is invalid. It must must be a ' + oCardType['cvv_length'] + ' digit number for the selected Credit Card Type.';
-			}
-			else
-			{
-				var iDiff 			= 	CreditCardType.maxCvvLength - CreditCardType.minCvvLength;
-				sValidationReason	= 	(iDiff == 0) ? 'The CVV enetered is invalid. It must must be a ' + CreditCardType.minCvvLength + ' digit number.'
-											: ((iDiff == 1) ? 'The CVV enetered is invalid. It must must be a ' + CreditCardType.minCvvLength + ' or ' + CreditCardType.maxCvvLength + ' digit number.'
-												: 'The CVV enetered is invalid. It must must be a number between ' + CreditCardType.minCvvLength + ' and ' + CreditCardType.maxCvvLength + ' digits long.');
-			}
+			sValidationReason	= oException;
+			bCVVIsValid			= false;
 		}
 		
 		this._oCardCVV.setValidationReason(sValidationReason);
@@ -991,63 +911,6 @@ Object.extend(Popup_Credit_Card_Payment,
 		var iCurrentMonth 	= oNow.getMonth() + 1;
 		var iCurrentYear 	= oNow.getFullYear();
 		return iYear > iCurrentYear || (iYear == iCurrentYear && iMonth >= iCurrentMonth);
-	},
-	
-	_checkCardNumber	: function(mNumber)
-	{
-		// Strip the string of all non-digits
-		var sNumber = mNumber.replace(/[^0-9]+/g, '');
-
-		// Get the CC type for the number (this matches on prefixe)
-		var aCcType = CreditCardType.cardTypeForNumber(sNumber);
-		if (!aCcType)
-		{
-			return false;
-		}
-
-		// Check the Length is ok for the type
-		bLengthFound = false;
-		for (var i = 0, l = aCcType['valid_lengths'].length; i < l; i++)
-		{
-			if (sNumber.length == aCcType['valid_lengths'][i])
-			{
-				bLengthFound = true;
-				break;
-			}
-		}
-		if (!bLengthFound)
-		{
-			return false;
-		}
-
-		// Check the LUHN of the Credit Card
-		return Popup_Credit_Card_Payment._checkLuhn(sNumber);
-	},
-	
-	_checkLuhn	: function(sNumber)
-	{
-		var iDigits	= sNumber.length;
-		var sDigits	= ("00" + sNumber).split("").reverse();
-		var iTotal	= 0;
-		for (var i = 0; i < iDigits; i += 2)
-		{
-			var d1	= parseInt(sDigits[i]);
-			var d2	= 2 * parseInt(sDigits[i + 1]);
-			d2 = d2 > 9 ? (d2 - 9) : d2;
-			iTotal	+= d1 + d2;
-			iTotal	-= iTotal >= 20 ? 20 :(iTotal >= 10 ? 10 : 0);
-		}
-		// Check that the total is 0
-		return iTotal == 0;
-	},
-	
-	_getCCType: function(mNumber)
-	{
-		if (mNumber.length < CreditCardType.minPrefixLength)
-		{
-			return false;
-		}
-		return CreditCardType.cardTypeForNumber(mNumber);
 	}
 });
 

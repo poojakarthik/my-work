@@ -7,7 +7,7 @@ class Email_Template_Logic
 	const CREATE = 3;
 
 
-	private		$_oEmailTemplate	= null;
+	protected		$_oEmailTemplate	= null;
 	//protected	$_aVariables		= array();
 
 
@@ -23,30 +23,40 @@ class Email_Template_Logic
 
 
 
-	public function __construct($oEmailTemplate, $oEmailTemplateDetails = null )
+	public function __construct($oEmailTemplate, $oEmailTemplateDetails=null)
 	{
 		$this->_oEmailTemplate	= $oEmailTemplate;
-		$this->oDetails	= $oEmailTemplateDetails== null?Email_Template_Details::getCurrentDetailsForTemplateId($this->_oEmailTemplate->id):$oEmailTemplateDetails;
+		
+		if ($oEmailTemplateDetails === null)
+		{
+			$oEmailTemplateDetails	= Email_Template_Details::getCurrentDetailsForTemplateId($this->_oEmailTemplate->id);
+		}
+		
+		$this->oDetails	= $oEmailTemplateDetails;
 	}
 
 	// getHTMLContent: Return the 'ready-to-send' HTML content for the given array of data
 
 	public function getHTMLContent($mData)
 	{
-		$aData				= self::_getArrayFromData($mData);
-		//$oDetails			= Email_Template_Details::getCurrentDetailsForTemplateId($this->_oEmailTemplate->id);
-		$sHTML = $this->oDetails->email_html;
-		$sHTML				= self::processHTML($sHTML);
-		$oDOMDocument		= DomDocument::loadXML('<?xml version="1.0" encoding="utf-8"?>'.$sHTML);
-		$oXPath 			= new DOMXPath($oDOMDocument);
-		$oTags				=$oXPath->query("//*[@*] | //variable");
+		$aData			= self::_getArrayFromData($mData);
+		$sHTML 			= $this->oDetails->email_html;
+		$sHTML			= self::processHTML($sHTML);
+		
+		if ($sHTML === null || $sHTML === '')
+		{
+			return '';
+		}
+		
+		$oDOMDocument	= DomDocument::loadXML('<?xml version="1.0" encoding="utf-8"?>'.$sHTML);
+		$oXPath 		= new DOMXPath($oDOMDocument);
+		$oTags			= $oXPath->query("//*[@*] | //variable");
 		foreach ($oTags as $node)
 		{
 			if ($node->tagName =='variable')
 			{
-				$sObject;
-				$sField;
-
+				$sObject	= null;
+				$sField		= null;
 				if ($node->hasAttribute('object'))
 				{
 					$oAttributes 	= $node->attributes;
@@ -124,6 +134,45 @@ class Email_Template_Logic
 		}
 	}
 
+	public function generateEmail($aData, Email_Flex $mEmail=null)
+	{
+		// By default, just pass the raw data through as variable data
+		return $this->generateEmailFromVariableData($aData, $mEmail);
+	}
+
+	public function generateEmailFromVariableData($aData, Email_Flex $mEmail=null)
+	{
+		$oEmail	= ($mEmail !== null ? $mEmail : new Email_Flex());
+		
+		// Text
+		$sText	= $this->getTextContent($aData);
+		$oEmail->setBodyText($sText);
+		
+		// HTML
+		$sHTML	= $this->getHTMLContent($aData);
+		if ($sHTML && $sHTML !== '')
+		{
+			$oEmail->setBodyHtml($sHTML);
+		}
+		
+		// Subject
+		$sSubject	= $this->getSubjectContent($aData);
+		$oEmail->setSubject($sSubject);
+		
+		// From (Sender)
+		$sFrom	= $this->oDetails->email_from;
+		if ($sFrom !== '')
+		{
+			if (!EmailAddressValid($sFrom))
+			{
+				throw new Exception("Failed to generate email, invalid from address supplied: '{$sFrom}'.");
+			}
+			$oEmail->setFrom($sFrom);
+		}
+		
+		return $oEmail;
+	}
+
 	protected function _replaceVariablesInText($sText, $aData)
 	{
 		foreach ($this->_aVariables as $sObject => $aProperties)
@@ -145,44 +194,39 @@ class Email_Template_Logic
 		return $sText;
 	}
 
-	public function generateEmail($aData, Email_Flex $mEmail=null)
-	{
-		$oEmail	= ($mEmail !== null ? $mEmail : new Email_Flex());
-		$sSubject	= $this->getSubjectContent($aData);
-		$sHTML		= $this->getHTMLContent($aData);
-		$sText		= $this->getTextContent($aData);
-
-		$oEmail->setBodyText($sText);
-		if ($sHTML && $sHTML !== '')
-		{
-			$oEmail->setBodyHtml($sHTML);
-		}
-		$oEmail->setSubject($sSubject);
-
-		return $oEmail;
-	}
-
 	// getInstance: Returns the appropriate sub class for the email template type given
 	public static function getInstance($iEmailTemplateType, $iCustomerGroup)
 	{
 		try
 		{
-			$oEmailTemplateType	= Email_Template_Type::getForId($iEmailTemplateType);
+			$oEmailTemplateType	= Email_Template::getForId($iEmailTemplateType);
 			if (!$oEmailTemplateType)
 			{
 				// Couldn't find the template
 				throw new Exception("Invalid email template type id supplied.");
 			}
 
-			if (!class_exists($oEmailTemplateType->class_name))
-			{
-				// Bad class name in database
-				throw new Exception("Invalid class_name value in email_template_type {$iEmailTemplateType}, class_name='{$oEmailTemplateType->class_name}'");
-			}
+			$oEmailTemplateCustomerGroup	= Email_Template_Customer_Group::getForCustomerGroupAndType($iCustomerGroup, $iEmailTemplateType);
 
 			// All good, return the instance
-			$oEmailTemplate	= Email_Template::getForCustomerGroupAndType($iCustomerGroup, $iEmailTemplateType);
-			return new $oEmailTemplateType->class_name($oEmailTemplate);
+			$oEmailTemplate	= null;
+			if (($oEmailTemplateType->class_name !== null) && ($oEmailTemplateType->class_name !== ''))
+			{
+				if (!class_exists($oEmailTemplateType->class_name))
+				{
+					// Bad class name in database
+					throw new Exception("Invalid class_name value in email_template {$iEmailTemplateType}, class_name='{$oEmailTemplateType->class_name}'");
+				}
+				
+				// A system template
+				$oEmailTemplate 	= new $oEmailTemplateType->class_name($oEmailTemplateCustomerGroup);
+			}
+			else if (Email_Template_Correspondence::getForEmailTemplateId($iEmailTemplateType))
+			{
+				// A correspondence template
+				$oEmailTemplate 	= new Email_Template_Logic_Correspondence($oEmailTemplateCustomerGroup);	
+			}
+			return $oEmailTemplate;
 		}
 		catch (Exception $oException)
 		{
@@ -201,8 +245,6 @@ class Email_Template_Logic
 		return false;
 
 	}
-
-
 
 	public static  function processHTML($sHTML, $bReport = false, $bForTestEmail=false)
 	{
@@ -604,112 +646,66 @@ protected static function _toText($oNode, $aTextArray, $sParentTagName = null, $
 	public static function validateTemplateDetails($aTemplateDetails)
 	{
 		$aErrors = array();
-		trim($aTemplateDetails['email_text']) == ''?$aErrors[]= "Your template must have a text version.":null;
-		trim($aTemplateDetails['email_subject']) == ''?$aErrors[]= "Your template must have a subject.":null;
-		trim($aTemplateDetails['description']) == ''?$aErrors[]= "Your template must have a description.":null;
+		
+		trim($aTemplateDetails['email_text']) == '' 		? 	$aErrors[]	= "Your template must have a text version." 	: null;
+		trim($aTemplateDetails['email_subject']) == '' 		? 	$aErrors[] 	= "Your template must have a subject." 			: null;
+		trim($aTemplateDetails['description']) == '' 		? 	$aErrors[] 	= "Your template must have a description." 		: null;
+		!EmailAddressValid($aTemplateDetails['email_from']) ? 	$aErrors[]	= "Invalid email address supplied for sender."	: null;
+		
 		return $aErrors;
 	}
 
 	public static function sendTestEmail($aData, $iTemplateId)
 	{
-		$oTemplate = Email_Template::getForId($iTemplateId);
-		$oEmailTemplateType	= Email_Template_Type::getForId($oTemplate->email_template_type_id);
-		$oTemplateDetails = new Email_Template_Details(array('email_text'=>$aData['text'], 'email_html'=>$aData['html'], 'email_subject'=>$aData['subject']));
-		$oTemplateLogicObject = new $oEmailTemplateType->class_name($oTemplate, $oTemplateDetails);
-
-		$aSampleData =  $oTemplateLogicObject->getSampleData($iTemplateId);
-		$sSubject	= $oTemplateLogicObject->getSubjectContent($aSampleData);
-		$sHTML		= $aData['html']!=null&&trim($aData['html'])!=''?$oTemplateLogicObject->getHTMLContent($aSampleData):null;
-		$sText		= $oTemplateLogicObject->getTextContent($aSampleData);//($aSampleData);
-
-
-		$oEmail	= new Email_Flex();
-		$oEmail->setBodyText($sText);
-
-		if ($aData['html']!=null && trim($aData['html'])!='')
+		$oTemplate 			= Email_Template_Customer_Group::getForId($iTemplateId);
+		$oEmailTemplateType	= Email_Template::getForId($oTemplate->email_template_id);
+		$oTemplateDetails 	= 	new Email_Template_Details(
+									array(
+										'email_text'	=> $aData['text'] ? $aData['text'] : '', 
+										'email_html'	=> $aData['html'] ? $aData['html'] : '', 
+										'email_subject'	=> $aData['subject'] ? $aData['subject'] : '',
+										'email_from'	=> $aData['from'] ? $aData['from'] : 'ybs-admin@ybs.net.au'
+									)
+								);
+		
+		// Create Email_Template_Logic instance
+		if (($oEmailTemplateType->class_name !== null) && ($oEmailTemplateType->class_name !== ''))
 		{
-			$oEmail->setBodyHtml($sHTML);
+			$oTemplateLogicObject 	= new $oEmailTemplateType->class_name($oTemplate, $oTemplateDetails);
 		}
-
-		$oEmail->setSubject($sSubject);
-
+		else if (Email_Template_Correspondence::getForEmailTemplateId($oEmailTemplateType->id))
+		{
+			$oTemplateLogicObject 	= new Email_Template_Logic_Correspondence($oTemplate, $oTemplateDetails);	
+		}
+		
+		$oEmail	= $oTemplateLogicObject->generateEmailFromVariableData($oTemplateLogicObject->getSampleData());
 		foreach ($aData['to'] as $sAddress)
 		{
 			$oEmail->addTo($sAddress);
 		}
-		$oEmail->setFrom('ybs-admin@ybs.net.au', $name = 'Yellow Billing Services');
-		$aError = error_get_last();
+		
+		$aError	= error_get_last();
 		@$oEmail->send();
-		$aNewError = error_get_last();
-			if ($aNewError!=$aError && $aNewError['type']!=2048)
-			{
-				throw new Exception ("Email Error: ".$aNewError['message']);
-			}
+		$aNewError	= error_get_last();
+		if ($aNewError != $aError && $aNewError['type'] != 2048)
+		{
+			throw new Exception ("Email Error: ".$aNewError['message']);
+		}
 		return $oEmail;
 	}
 
 	public function getSampleData()
 	{
-
-
-
-		$oCustomerGroup = Customer_Group::getForId($this->_oEmailTemplate->customer_group_id);
-
-		//$oEmployee = Employee::getForId(Flex::getUserId());
-
-		$intInvoiceDatetime				= strtotime(Data_Source_Time::currentDate());
-		$strInvoiceDatetime				= date("d/m/Y", $intInvoiceDatetime);
-
-		$iBillingDate			= strtotime(Data_Source_Time::currentDate());
-		$sInvoiceDate			= date('dmY', $iBillingDate);
-
-		// Build billing period string for the email subject lines
-		$sBillingPeriodEndMonth		= date("F", strtotime("-1 day", $iBillingDate));
-		$sBillingPeriodEndYear		= date("Y", strtotime("-1 day", $iBillingDate));
-		$sBillingPeriodStartMonth	= date("F", strtotime("-1 month", $iBillingDate));
-		$sBillingPeriodStartYear	= date("Y", strtotime("-1 month", $iBillingDate));
-		$sBillingPeriod				= $sBillingPeriodStartMonth;
-		if ($sBillingPeriodStartYear !== $sBillingPeriodEndYear)
-		{
-			$sBillingPeriod	.= " {$sBillingPeriodStartYear} / {$sBillingPeriodEndMonth} {$sBillingPeriodEndYear}";
-		}
-		else if ($sBillingPeriodStartMonth !== $sBillingPeriodEndMonth)
-		{
-			$sBillingPeriod	.= " / {$sBillingPeriodEndMonth} {$sBillingPeriodEndYear}";
-		}
-		else
-		{
-			$sBillingPeriod	.= " {$sBillingPeriodStartYear}";
-		}
-
-		$aSampleInvoiceData = Invoice::getSampleDataForCustomerGroupId($this->_oEmailTemplate->customer_group_id);
-		switch ($this->_oEmailTemplate->email_template_type_id)
-		{
-			case(EMAIL_TEMPLATE_TYPE_INVOICE):
-													return $this->getData($aSampleInvoiceData['invoice_id'], $aSampleInvoiceData['contact_id']);
-													break;
-			case (EMAIL_TEMPLATE_TYPE_LATE_NOTICE):
-													return $this->getData($aSampleInvoiceData['account_id'],DOCUMENT_TEMPLATE_TYPE_OVERDUE_NOTICE);
-													break;
-			default:
-													return $this->_aVariables;
-
-		}
-
+		return $this->_aVariables;
 	}
-
-
 
 	public function __get($sField)
 	{
 		return $sField == "_aVariables"?$this->getVariables():null;
 	}
-
-
-
 }
 
-
+// Custom Exception classes
 
 class EmailTemplateEditException extends Exception
 {

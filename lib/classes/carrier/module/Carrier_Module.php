@@ -106,6 +106,21 @@ class Carrier_Module extends ORM_Cached
 		return $aRecords;
 	}
 	
+	public static function getLatestActiveForCarrierModuleType($iCarrierModuleType)
+	{
+		$oStatement	= self::_preparedStatement('selLatestActiveForCarrierModuleType');
+		if ($oStatement->Execute(array('carrier_module_type_id' => $iCarrierModuleType)) === false)
+		{
+			throw new Exception_Database($oStatement->Error());
+		}
+		
+		if ($aRow = $oStatement->Fetch())
+		{
+			return new self($aRow);
+		}
+		return null;
+	}
+	
 	public function getConfig()
 	{
 		if (!isset($this->_oCarrierModuleConfigSet))
@@ -154,6 +169,9 @@ class Carrier_Module extends ORM_Cached
 																						AND FileType = <resource_type_id>
 																						AND Carrier = <carrier_id>
 																						AND <customer_group_id> <=> customer_group");
+					break;
+				case 'selLatestActiveForCarrierModuleType':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "Type = <carrier_module_type_id> AND Active = 1", "Id DESC", 1);
 					break;
 				
 				// INSERTS

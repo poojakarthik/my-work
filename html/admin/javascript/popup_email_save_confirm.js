@@ -3,7 +3,6 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 {
 	initialize	: function($super, oData, fnCallback)
 	{
-		
 		if (oData.Errors.length>0)
 		{
 			this._errorPopup(oData.Errors);	
@@ -343,13 +342,17 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 	_preview: function()
 	{
 		this._oLoadingPopup.display();
-		var fnRequest     = jQuery.json.jsonFunction(this.successPreviewCallback.bind(this), Popup_Email_Text_Editor.errorCallback.bind(this), 'Email_Text_Editor', 'processHTML');
-		fnRequest(this._oData.oTemplateDetails.email_html);	
+		var fnRequest    		= jQuery.json.jsonFunction(this.successPreviewCallback.bind(this), Popup_Email_Text_Editor.errorCallback.bind(this), 'Email_Text_Editor', 'processHTML');
+		var oTemplateDetails	= this._oData.oTemplateDetails;
+		fnRequest(oTemplateDetails.email_html, oTemplateDetails.email_template_customer_group_id);	
 	},
 	
-	errorCallback: function()
+	errorCallback: function(oResponse)
 	{
-		alert('error');
+		if (oResponse.message)
+		{
+			Reflex_Popup.alert(oResponse.message, {sTitle: 'Error'});
+		}
 	},	
 	
 	successPreviewCallback: function (oResponse)
@@ -406,7 +409,7 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 										Popup_Email_Text_Editor.errorCallback.bind(this),
 										'Email_Text_Editor', 'getFutureVersions'
 									);
-			fnGetTemplates(this._oData.oTemplateDetails.email_template_id);
+			fnGetTemplates(this._oData.oTemplateDetails.email_template_customer_group_id);
 		}
 		else
 		{

@@ -129,10 +129,10 @@ class Cli_App_ApplyLateFeesToAccounts extends Cli
 			$body = implode("\r\n", $report);
 
 			$this->log("Sending report");
-			$intNotification = $arrArgs[self::SWITCH_LIST_RUN] ? EMAIL_NOTIFICATION_LATE_FEE_LIST : EMAIL_NOTIFICATION_LATE_FEE_REPORT;
+			$sNotification = $arrArgs[self::SWITCH_LIST_RUN] ? 'LATE_FEE_LIST' : 'LATE_FEE_REPORT';
 			try
 			{
-				Email_Notification::sendEmailNotification($intNotification, NULL, NULL, $subject, NULL, $body, $attachments);
+				Email_Notification::sendEmailNotification($sNotification, NULL, NULL, $subject, NULL, $body, $attachments);
 				$this->log("Report sent");
 			}
 			catch (Exception $e)
@@ -172,8 +172,8 @@ class Cli_App_ApplyLateFeesToAccounts extends Cli
 			}
 			$body = implode("\r\n", $body);
 
-			$intNotification = $arrArgs[self::SWITCH_LIST_RUN] ? EMAIL_NOTIFICATION_LATE_FEE_LIST : EMAIL_NOTIFICATION_LATE_FEE_REPORT;
-			Email_Notification::sendEmailNotification($intNotification, NULL, NULL, $subject, NULL, $body, NULL, TRUE);
+			$sNotification = $arrArgs[self::SWITCH_LIST_RUN] ? 'LATE_FEE_LIST' : 'LATE_FEE_REPORT';
+			Email_Notification::sendEmailNotification($sNotification, NULL, NULL, $subject, NULL, $body, NULL, TRUE);
 			$this->showUsage('ERROR: ' . $exception->getMessage());
 			return 1;
 		}

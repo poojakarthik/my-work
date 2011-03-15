@@ -46,6 +46,27 @@ var Flex_Constant	= Class.create
 		}
 	},
 	
+	getConstantGroupOptions : function(sConstantGroup, fnCallback)
+	{
+		var aConstantGroup = Flex.Constant.arrConstantGroups[sConstantGroup];
+		if (!aConstantGroup)
+		{
+			Flex.Constant.loadConstantGroup(sConstantGroup, Flex.Constant.getConstantGroupOptions.curry(sConstantGroup, fnCallback));
+			return;
+		}
+		
+		var aOptions = [];
+		for (var iId in aConstantGroup)
+		{
+			aOptions.push(
+				$T.option({value: iId},
+					aConstantGroup[iId].Name
+				)
+			);
+		}
+		fnCallback(aOptions);
+	},
+	
 	_loadConstantGroupResponse	: function (fncCallback, objResponse)
 	{
 		if (objResponse)

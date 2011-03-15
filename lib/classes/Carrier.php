@@ -84,6 +84,17 @@ class Carrier extends ORM_Cached
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 
+	public static function getAllAssociatedWithRatePlan()
+	{
+		$oSelect = self::_preparedStatement('selAllRatePlanCarriers');
+		if ($oSelect->Execute() === false)
+		{
+			throw new Exception("Failed to get rate plan carriers.".$oSelect->Error());
+		}
+		
+		return ORM::importResult($oSelect->FetchAll(), 'Carrier');
+	}
+
 	/**
 	 * _preparedStatement()
 	 *
@@ -113,7 +124,19 @@ class Carrier extends ORM_Cached
 				case 'selAll':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
 					break;
-				
+				case 'selAllRatePlanCarriers':
+					$arrPreparedStatements[$strStatement]	=	new StatementSelect(
+																	"	Carrier c
+																		JOIN    RatePlan rp ON (
+																		            rp.CarrierFullService = c.Id 
+																		            OR rp.CarrierPreselection = c.Id 
+																		        )", 
+																	"c.*", 
+																	"1 GROUP BY c.Id", 
+																	"Name ASC"
+																);
+					break;
+					
 				// INSERTS
 				case 'insSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);

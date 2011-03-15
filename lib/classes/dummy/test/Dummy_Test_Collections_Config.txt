@@ -1,0 +1,112 @@
+// account_class
+[Account_Class]
+Standard,	Standard,	2
+VIP,	 	VIP, 		1
+
+// collection_event
+[Collection_Event]
+Friendly Reminder,	Friendly Reminder,	1,	2
+Overdue Notice,		Overdue Notice,		1,	2
+Late Fees List,		Late Fees List,		5,	2
+Call,				Call,				2,	1
+TDC,				TDC,				3,	2
+OCA,				OCA,				4,	1
+Exit Collections,	Exit Collections,	6, 2
+Medium Severity, Medium Severity, 7,2 
+
+//collection_event_type
+[Collection_Event_Type]
+Correspondence, Correspondence, NULL, 1
+Call, Call, NULL, 3
+TDC, TDC, NULL,6
+OCA, OCA, NULL, 8
+Late Fees List, Late Fees List, NULL, 2
+Exit Collections, Exit Collections,EXIT_COLLECTIONS, 7
+Severity, Severity, NULL, 4
+
+//collection_event_severity
+[Collection_Event_Severity]
+8,2
+
+
+// collection_severity
+[Collection_Severity]
+Low,	Not severe
+Medium,	Mildly severe
+High,	Very severe
+
+//collection_suspension_reason
+[Collection_Suspension_Reason]
+Regular, Regular, REGULAR
+
+//collection_suspension_end_reason
+[Collection_Suspension_End_Reason]
+expiry, expiry, COLLECTION_SUSPENSION__EXPIRED
+
+//collection_event_report
+[Collection_Event_Report]
+3, 'select * FROM whatever', 4
+
+//collection_event_action
+[Collection_Event_Action]
+//collection event: call, action type: 1 
+4, 5
+
+// collection_scenario
+[Collection_Scenario]
+Relaxed,		Relaxed scenario,		0, 	1, 10, 50,10,50
+Standard, 		Standard scenario, 		0, 	1, 5, 19, 5, 19
+Strict,			Strict scenario,		-5, 1, 2, 5, 2,5
+Promise Unmet,	Promise Unmet scenario,	0, 	1, 3, 19, 3, 19
+
+// collection_scenario_collection_event
+[Collection_Scenario_Collection_Event]
+// Relaxed, Friendly Reminder, Automatic, 10 day offset, No prereq
+1,	1,	2,	10
+// Relaxed, Overdue Notice, Automatic, 10 day offset, 1 (Relaxed:Friendly Reminder)
+1,	2,	2,	10,	1
+// Relaxed, Late Fees List, Automatic, 10 day offset, 2 (Relaxed:Overdue Notice)
+1,	3,	2,	10,	2
+
+// Standard, Friendly Reminder, Automatic, 5 day offset, No prereq
+2,	1,	2,	5
+// Standard, Overdue Notice, Automatic, 5 day offset, 4 (Standard:Friendly Reminder)
+2,	2,	2,	5,	4
+// Standard, Late Fees List, Automatic, 5 day offset, 5 (Standard:Overdue Notice)
+2,	3,	2,	5,	5
+// Standard, Call, Automatic, 5 day offset, 6 (Standard:Late Fees List)
+2,	3,	2,	5,	6
+
+// Promise Unmet, Medium Severity, Automatic, 2 day offset, No prereq
+4,	3,	2,	2
+// Promise Unmet, TDC, Automatic, 2 day offset, 7 (Promise Unmet:Medium Severity)
+4,	5,	2,	0,	8
+// Promise Unmet, OCA, Automatic, 2 day offset, 8 (Promise Unmet:TDC)
+4,	6,	2,	2,	9 
+
+
+
+// collection_suspension_end_reason
+[Collection_Suspension_End_Reason]
+Positive,	Ended well, POSITIVE
+Negative,	Ended badly, NEGATIVE
+
+// collection_suspension_type
+[Collection_Suspension_Type]
+Extension,	Extension,		EXTENSION
+TIO,		TIO Complaint,	TIO
+
+// CustomerGroup
+[Customer_Group]
+TelcoBlue,		1
+VoiceTalk,		1
+Protalk,		1
+Associations,	2
+
+// customer_group_collection_scenario
+[Customer_Group_Collection_Scenario]
+1,	2
+2,	2
+3,	2
+4,	1
+

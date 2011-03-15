@@ -58,8 +58,8 @@ abstract class ORM
 		}
 		
 		// Automatically load the Record using the passed Id
-		$intId	= ($arrProperties['Id']) ? $arrProperties['Id'] : (($arrProperties['id']) ? $arrProperties['id'] : NULL);
-		if ($bolLoadById && $intId)
+		$intId	= isset($arrProperties['Id']) ? $arrProperties['Id'] : (isset($arrProperties['id']) ? $arrProperties['id'] : NULL);
+		if ($bolLoadById && $intId !== NULL)
 		{
 			$selById	= $this->_preparedStatement('selById');
 			if ($selById->Execute(Array('Id' => $intId)) === false)

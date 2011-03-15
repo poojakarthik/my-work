@@ -74,12 +74,15 @@ Object.extend(Reflex_Popup, {
 	alert	: function(mContent, oConfig)
 	{
 		// Config Defaults
-		oConfig	 				= (typeof oConfig !== 'undefined') 		? oConfig 					: {};
-		oConfig.sTitle 			= oConfig.sTitle 						? oConfig.sTitle 			: Reflex_Popup.DEFAULT_ALERT_TITLE;
-		oConfig.iWidth 			= (parseInt(oConfig.iWidth)) 			? oConfig.iWidth			: Reflex_Popup.DEFAULT_ALERT_WIDTH;
-		oConfig.sButtonLabel 	= oConfig.sButtonLabel 					? oConfig.sButtonLabel		: Reflex_Popup.DEFAULT_ALERT_BUTTON_LABEL;
-		oConfig.fnOnClose 		= typeof oConfig.fnClose === 'function' ? oConfig.fnClose 			: null;
-		oConfig.sIconSource 	= oConfig.sIconSource 					? oConfig.sIconSource 		: Reflex_Popup.DEFAULT_ALERT_ICON_SOURCE;
+		oConfig	 				= (typeof oConfig !== 'undefined')			? oConfig 					: {};
+		oConfig.sTitle 			= oConfig.sTitle							? oConfig.sTitle 			: Reflex_Popup.DEFAULT_ALERT_TITLE;
+		oConfig.iWidth 			= (parseInt(oConfig.iWidth))				? oConfig.iWidth			: Reflex_Popup.DEFAULT_ALERT_WIDTH;
+		oConfig.sButtonLabel 	= oConfig.sButtonLabel						? oConfig.sButtonLabel		: Reflex_Popup.DEFAULT_ALERT_BUTTON_LABEL;
+		oConfig.fnOnClose 		= typeof oConfig.fnOnClose === 'function'	? oConfig.fnOnClose			: null;
+		oConfig.fnOnClose 		= typeof oConfig.fnClose === 'function'		? oConfig.fnClose 			: oConfig.fnOnClose;
+		oConfig.sIconSource 	= oConfig.sIconSource						? oConfig.sIconSource 		: Reflex_Popup.DEFAULT_ALERT_ICON_SOURCE;
+
+		oConfig.sDebugContent	= typeof oConfig.sDebugContent === 'string' && oConfig.sDebugContent.length ? oConfig.sDebugContent : null;
 		
 		var oPopup	= new Reflex_Popup(oConfig.iWidth);
 		
@@ -95,7 +98,7 @@ Object.extend(Reflex_Popup, {
 		{
 			oPopup.hide();
 			
-			if( typeof oConfig.fnClose === 'function')
+			if(typeof fnCallback === 'function')
 			{
 				fnCallback();
 			}
@@ -113,6 +116,14 @@ Object.extend(Reflex_Popup, {
 		}
 		
 		oPopup.setContent(mContent);
+
+		// Optional Debug section
+		if (oConfig.sDebugContent) {
+			oPopup.contentPane.appendChild($T.div({'class':'alert-debug'},
+				oConfig.sDebugContent
+			));
+		}
+
 		oPopup.display();
 		oCloseButton.focus();
 	},
@@ -524,7 +535,7 @@ Object.extend(Reflex_Popup.Loading.prototype, {
 	
 	loading: null,
 	
-	initialize: function(sMessage)
+	initialize: function(sMessage, bShowImmediately)
 	{
 		this.parentInitialize(20);
 		
@@ -543,6 +554,10 @@ Object.extend(Reflex_Popup.Loading.prototype, {
 		this.setContent(this.loading);
 		this.setHeaderButtons(new Array());
 		this.setFooterButtons(new Array());
+
+		if (bShowImmediately === true) {
+			this.display();
+		}
 	},
 	
 	_hideOverride	: function(oEvent)

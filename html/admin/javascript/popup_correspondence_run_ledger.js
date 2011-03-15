@@ -7,7 +7,7 @@ var Popup_Correspondence_Run_Ledger = Class.create(Reflex_Popup,
 		var sClass		= 'popup-correspondence-run-ledger-normal';
 		if (document.viewport.getWidth() > 1024)
 		{
-			iEmWidth	= 95;
+			iEmWidth	= 100;
 			sClass		= 'popup-correspondence-run-ledger-large';
 		}
 	

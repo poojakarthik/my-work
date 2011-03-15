@@ -17,23 +17,17 @@ class Correspondence_Data extends ORM_Cached
 		return array_keys($arrTableDefine['Column']);
 	}
 
-	/*public function toArray()
-	{
-		return $this->_aProperties;
-	}*/
-
 	public static function getForCorrespondenceId($iCorrespondenceId)
 	{
-
-	$oSelect	= self::_preparedStatement('selByCorrespondenceId');
+		$oSelect	= self::_preparedStatement('selByCorrespondenceId');
 		$oSelect->Execute(array('correspondence_id' => $iCorrespondenceId));
-		$aResults = $oSelect->FetchAll();
-		$aObjects = array();
+		$aResults 	= $oSelect->FetchAll();
+		$aObjects 	= array();
 		foreach ($aResults as $aResult)
 		{
-			$x =new self($aResult);
-			$x->setSaved();
-			$aObjects[]= $x;
+			$oData	= new self($aResult);
+			$oData->setSaved();
+			$aObjects[]	= $oData;
 		}
 		return $aObjects;
 

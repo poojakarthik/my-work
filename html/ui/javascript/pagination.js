@@ -1,13 +1,23 @@
 var Pagination	= Class.create
 ({
-	initialize	: function(fncUpdateCallback, intPageSize, objDataset)
+	initialize	: function(fncUpdateCallback, intPageSize, objDataset, bolRefreshPageCountBeforeChangingPage)
 	{
-		this.intCurrentPage		= 0;
-		this._intPageSize		= intPageSize;
+		this.intCurrentPage = 0;
 		
-		this._objDataset		= objDataset;
+		this._fncCallback	= fncUpdateCallback;
+		this._intPageSize	= intPageSize;
+		this._objDataset	= objDataset;
 		
-		this._fncCallback		= fncUpdateCallback;
+		this._bolRefreshPageCountBeforeChangingPage = true;
+		if (!Object.isUndefined(bolRefreshPageCountBeforeChangingPage) && (bolRefreshPageCountBeforeChangingPage === false))
+		{
+			this._bolRefreshPageCountBeforeChangingPage	= false;
+		}
+	},
+	
+	getPageSize : function()
+	{
+		return this._intPageSize;
 	},
 	
 	// getCurrentPage()
@@ -73,7 +83,7 @@ var Pagination	= Class.create
 	// jumpToPage()
 	jumpToPage		: function(intPageNumber, bolForceRefresh)
 	{
-		bolForceRefresh	= (bolForceRefresh == undefined) ? false : bolForceRefresh;
+		bolForceRefresh	= ((bolForceRefresh == undefined) ? false : bolForceRefresh) || this._bolRefreshPageCountBeforeChangingPage;
 		this.getPageCount(this._jumpToPage.bind(this, intPageNumber), bolForceRefresh);
 	},
 	

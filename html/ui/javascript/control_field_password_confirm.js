@@ -30,7 +30,7 @@ var Control_Field_Password_Confirm	= Class.create(/* extends */ Control_Field_Pa
 	
 	updateElementValue	: function()
 	{
-		mValue	= this.getValue();
+		var	mValue	= this.getValue();
 		
 		this.setElementValue(mValue);
 		this.oControlOutput.oView.innerHTML	= (mValue) ? '[ Password specified ]' : '[ No password specified ]';

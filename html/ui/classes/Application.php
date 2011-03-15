@@ -270,7 +270,20 @@ class Application
 				ContextMenu()->Admin->Correspondence->Ledger->ViewCorrespondenceRunLedger();
 			}
 
-
+			ContextMenu()->Admin->Collections->Collections_Configuration->ConfigureAllCollections();
+			ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsScenario();
+			ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsEvent();
+			ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsEventType();
+			ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsSeverity();
+			ContextMenu()->Admin->Collections->CollectionsPrototype();
+			ContextMenu()->Admin->Collections->CollectionsAccountManagement();
+			ContextMenu()->Admin->Collections->CollectionsEventManagement();
+			ContextMenu()->Admin->Collections->OCAReferralLedger();
+			
+			ContextMenu()->Admin->Barring->BarringAuthorisationLedger();
+			ContextMenu()->Admin->Barring->BarringActionLedger();
+			
+			ContextMenu()->Admin->ManageAccountClasses();
 		}
 
 		// Document Management
@@ -521,9 +534,22 @@ class Application
 				ContextMenu()->Admin->Correspondence->Ledger->ViewCorrespondenceBatchLedger();
 				ContextMenu()->Admin->Correspondence->Ledger->ViewCorrespondenceRunLedger();
 			}
+			
+			ContextMenu()->Admin->Collections->Collections_Configuration->ConfigureAllCollections();
+			ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsScenario();
+			ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsEvent();
+			ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsEventType();
+			ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsSeverity();
+			ContextMenu()->Admin->Collections->CollectionsPrototype();
+			ContextMenu()->Admin->Collections->CollectionsAccountManagement();
+			ContextMenu()->Admin->Collections->CollectionsEventManagement();
+			ContextMenu()->Admin->Collections->OCAReferralLedger();
+			
+			ContextMenu()->Admin->Barring->BarringAuthorisationLedger();
+			ContextMenu()->Admin->Barring->BarringActionLedger();
+			
+			ContextMenu()->Admin->ManageAccountClasses();
 		}
-
-
 
 		// Document Management
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW) && Flex_Module::isActive(FLEX_MODULE_DOCUMENT_MANAGEMENT))

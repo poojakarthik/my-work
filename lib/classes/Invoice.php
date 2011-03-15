@@ -172,12 +172,20 @@ class Invoice extends ORM_Cached
 
 	public static function getSampleDataForCustomerGroupId($iCustomerGroup)
 	{
-
-		$sSql = "select i.Id as 'invoice_id', c.Id as 'contact_id', a.Id as 'account_id'
-				from Invoice i join Account a ON (i.Account = a.Id
-				 								 and i.Id = (select max(i2.Id) from Invoice i2 join Account a2 ON (i2.Account = a2.Id and a2.CustomerGroup = $iCustomerGroup))
-								 				 )
-								join Contact c ON (a.PrimaryContact = c.Id)";
+		$sSql	= "	SELECT 	i.Id as 'invoice_id', c.Id as 'contact_id', a.Id as 'account_id'
+					FROM 	Invoice i 
+					JOIN	Account a ON (
+								i.Account = a.Id 
+								AND i.Id = (
+									SELECT 	max(i2.Id) 
+									FROM 	Invoice i2 
+									JOIN 	Account a2 ON (
+										i2.Account = a2.Id 
+										AND a2.CustomerGroup = {$iCustomerGroup}
+									)
+								)
+							)
+					JOIN Contact c ON (a.PrimaryContact = c.Id)";
 		$oQuery = new Query();
 		$mResult	= $oQuery->Execute($sSql);
 		if ($mResult === false)
@@ -1050,6 +1058,19 @@ class Invoice extends ORM_Cached
 			//------------------------------ INVOICE -----------------------------//
 			// Determine Invoice Status
 			$this->Status	= ($this->Balance > 0) ? INVOICE_COMMITTED : INVOICE_SETTLED;
+
+			// Create the Collectable
+			$oCollectable	= new Collectable();
+			$oCollectable->account_id		= $this->Account;
+			$oCollectable->amount			= $this->Total + $this->Tax;
+			$oCollectable->balance			= $this->amount;
+			$oCollectable->created_datetime	= Data_Source_Time::currentTimestamp();
+			$oCollectable->due_date			= $this->DueOn;
+			$oCollectable->invoice_id		= $this->Id;
+			$oCollectable->save();
+
+			// Link the Collectable
+			$this->collectable_id	= $oCollectable->id;
 
 			// Save
 			$this->save();
@@ -2192,6 +2213,26 @@ class Invoice extends ORM_Cached
 		}
 	}
 
+	public static function getForAccount($mAccount, $bCommittedOnly=true) {
+		$oSelectForAccount	= self::_preparedStatement('selForAccount');
+		if ($oSelectForAccount->Execute(array('account_id'=>ORM::extractId($mAccount),'committed_only'=>(int)$bCommittedOnly)) === false) {
+			throw new Exception_Database($oSelectForAccount->Error());
+		}
+		return self::importResult($oSelectForAccount->FetchAll());
+	}
+
+	public function getPrimaryCollectable() {
+		if (isset($this->collectable_id)) {
+			return Collectable::getForId($this->collectable_id);
+		} else {
+			throw new Exception("Invoice {$this->Id} does not have a Collectable.  Only committed Invoices have Collectables.");
+		}
+	}
+
+	public function getCollectables($bIncludePromised=false) {
+		return Collectable::getForInvoice($this, $bIncludePromised);
+	}
+
 	//------------------------------------------------------------------------//
 	// _preparedStatement
 	//------------------------------------------------------------------------//
@@ -2315,6 +2356,9 @@ class Invoice extends ORM_Cached
 					break;
 				case 'selForInvoiceRunAndAccount':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Invoice", "*", "invoice_run_id = <invoice_run_id> AND Account = <account_id>");
+					break;
+				case 'selForAccount':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Invoice", "*", "Account = <account_id> AND (<committed_only> = 0 OR Invoice.Status != ".INVOICE_TEMP.")", "CreatedOn ASC, Id ASC");
 					break;
 					
 

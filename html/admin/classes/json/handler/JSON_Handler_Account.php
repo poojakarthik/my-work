@@ -1448,6 +1448,25 @@ class JSON_Handler_Account extends JSON_Handler
 		}
 	}
 	
+	public function changeCollectionScenario($iAccountId, $iScenarioId, $bEndCurrentScenario=true)
+	{
+		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		try
+		{
+			$oAccount = Logic_Account::getInstance($iAccountId);
+			$oAccount->setCurrentScenario($iScenarioId, $bEndCurrentScenario);
+			return array('bSuccess' => true);
+		}
+		catch (Exception $e)
+		{
+			$sMessage = $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
+			return 	array(
+						'bSuccess'	=> false,
+						'sMessage'	=> $sMessage
+					);
+		}
+	}
+	
 	private function _getRebill($iAccountId)
 	{
 		$oRebill	= Rebill::getForAccountId($iAccountId);

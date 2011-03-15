@@ -189,37 +189,7 @@ class Employee extends ORM_Cached
 	// throws exception on failure
 	public function recordCustomerInAccountHistory($intAccountId, $intContactId)
 	{
-		if ($intAccountId === NULL && $intContactId === NULL)
-		{
-			throw new Exception("Cannot log Customer in employee_account_log when both account_id and contact_id are NULL");
-		}
-		
-		$arrData = array(	"employee_id"		=> $this->id,
-							"account_id"		=> NULL,
-							"contact_id"		=> NULL,
-							"viewed_on"			=> new MySQLFunction("NOW()")
-						);
-		$insEmployeeAccountAudit = new StatementInsert("employee_account_log", $arrData);
-		
-		if ($intContactId !== NULL && $intAccountId === NULL)
-		{
-			// We have a contact, but don't have an account, use the contact's default account
-			if (($objContact = Contact::getForId($intContactId)) === NULL)
-			{
-				// The contact cannot be found
-				throw new Exception("Contact with id: $intContactId could not be found");
-			}
-			
-			$intAccountId = $objContact->account;
-		}
-		
-		$arrData['account_id'] = $intAccountId;
-		$arrData['contact_id'] = $intContactId;
-		
-		if ($insEmployeeAccountAudit->Execute($arrData) === FALSE)
-		{
-			throw new Exception_Database("Could not insert record into employee_account_log table - ". $insEmployeeAccountAudit->Error());
-		}
+		Employee_Account_Log::createIfNotExistsForToday($this->id, $intAccountId, $intContactId);
 	}
 	
 	// Will return their username, if they don't have a first and a last name

@@ -390,10 +390,9 @@ var Component_Correspondence_Ledger_For_Run = Class.create(
 						break;
 					case $CONSTANT.CORRESPONDENCE_DELIVERY_METHOD_EMAIL:
 						// Add email
-						var sEmail	= ((oItem.email && oItem.email) !== '' ? oItem.email : 'Not Supplied');
 						oDeliveryMethodTD.appendChild(
 							$T.div({class: 'subscript'},
-								sEmail
+								((oItem.email && oItem.email) !== '' ? oItem.email : 'Not Supplied')
 							)
 						);
 						break;

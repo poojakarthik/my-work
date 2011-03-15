@@ -1,0 +1,46 @@
+// account_collection_event_status
+[Account_Collection_Event_Status]
+Scheduled,	Scheduled,	ACCOUNT_COLLECTION_EVENT_STATUS_SCHEDULED,	SCHEDULED
+Completed,	Completed,	ACCOUNT_COLLECTION_EVENT_STATUS_COMPLETED,	COMPLETED
+Cancelled,	Cancelled,	ACCOUNT_COLLECTION_EVENT_STATUS_CANCELLED,	CANCELLED
+
+// adjustment_type_system
+[Adjustment_Type_System]
+
+// collectable_transfer_type
+[Collectable_Transfer_Type]
+Amount,		Amount transferred only,				COLLECTABLE_TRANSFER_TYPE_AMOUNT,	AMOUNT
+Balance,	Balance transferred only,				COLLECTABLE_TRANSFER_TYPE_BALANCE,	BALANCE
+Both,		Both amount and balance transferred,	COLLECTABLE_TRANSFER_TYPE_BOTH,		BOTH
+
+// collectable_type
+[Collectable_Type]
+Invoice,	Linked to an invoice,	COLLECTABLE_TYPE_INVOICE,	INVOICE
+Promise,	Linked to a promise,	COLLECTABLE_TYPE_PROMISE,	PROMISE
+
+// collection_event_invocation
+[Collection_Event_Invocation]
+Manual,		Manually invoked,		COLLECTION_EVENT_INVOCATION_MANUAL,		MANUAL
+Automatic,	Automatically invoked,	COLLECTION_EVENT_INVOCATION_AUTOMATIC,	AUTOMATIC
+
+// status
+[Status]
+Active, 	Active, 	STATUS_ACTIVE, 		ACTIVE
+Inactive, 	Inactive, 	STATUS_INACTIVE, 	INACTIVE
+
+//collection_promise_completion
+[Collection_Promise_Completion]
+Broken, Broken, COLLECTION_PROMISE_COMPLETION_BROKEN, BROKEN
+Kept, Kept, COLLECTION_PROMISE_COMPLETION_KEPT, KEPT
+Cancelled, Cancelled, COLLECTION_PROMISE_COMPLETION_CANCELLED, CANCELLED
+
+//collection_event_type_implementation
+[Collection_Event_Type_Implementation]
+Correspondence,           Correspondence,          COLLECTION_EVENT_TYPE_IMPLEMENTATION_CORRESPONDENCE, CORRESPONDENCE,                       Logic_Collection_Event_Correspondence, 1
+Report,                               Report,                 COLLECTION_EVENT_TYPE_IMPLEMENTATION_REPORT,               REPORT,                                                                Logic_Collection_Event_Report, 1
+Action,                                Action,           COLLECTION_EVENT_TYPE_IMPLEMENTATION_ACTION,                      ACTION,                                                               Logic_Collection_Event_Action, 1
+Severity,                            Severity,            COLLECTION_EVENT_TYPE_IMPLEMENTATION_SEVERITY,                SEVERITY,                                                            Logic_Collection_Event_Severity, 1
+Barring,                              Barring,                 COLLECTION_EVENT_TYPE_IMPLEMENTATION_BARRING,                BARRING,                                                                        Logic_Collection_Event_Barring,1
+TDC,                                     TDC,                COLLECTION_EVENT_TYPE_IMPLEMENTATION_TDC,                      TDC,                                                                                Logic_Collection_Event_TDC,1
+Exit Collections,              Exit Collections,            COLLECTION_EVENT_TYPE_EXIT_IMPLEMENTATION_COLLECTIONS,    EXIT_COLLECTIONS,                     Logic_Collection_Event_ExitCollections, 0
+OCA, OCA, COLLECTION_EVENT_TYPE_OCA, OCA, Logic_Collection_IMPLEMENTATION_OCA, 1

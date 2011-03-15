@@ -20,9 +20,15 @@ var Section	= Class.create(
 	/*
 	 * Dom element to override title contents
 	 */
-	setTitleContent	: function(mContent)
+	setTitleContent	: function(mContent, bClearTitleStyling)
 	{
 		this._checkForTitle();
+		
+		if (bClearTitleStyling)
+		{
+			this._oTitle.removeClassName('section-header-title');
+		}
+		
 		this._clearElement(this._oTitle);
 		this._oTitle.appendChild(this._getElementFromContent(mContent));
 	},

@@ -51,7 +51,7 @@ class Cli_App_Voice_Message extends Cli
 			
 			if ($arrArgs[self::SWITCH_SEND_EMAIL])
 			{
-				$emailNotification = new Email_Notification(EMAIL_NOTIFICATION_VOICE_MAIL);
+				$emailNotification	= Email_Notification::getForSystemName('VOICE_MAIL');
 				$emailNotification->setSubject("[SUCCESS] Voice message files for accounts in file: " . basename($arrArgs[self::SWITCH_ACCOUNT_ID_FILE]));
 				$emailNotification->setBodyText("The attached file, '" . basename($arrArgs[self::SWITCH_OUTPUT_FILE_PATH_AND_NAME]) . "', contains voice messages." 
 					. "\n\nAccount numbers were extracted from column " . $arrArgs[self::SWITCH_ACCOUNT_ID_INDEX] . " of file '" . basename($arrArgs[self::SWITCH_ACCOUNT_ID_FILE]) . "'." 

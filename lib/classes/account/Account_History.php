@@ -355,7 +355,8 @@ class Account_History
 						"billing_method"		=> "BillingMethod",
 						"disable_ddr"			=> "DisableDDR",
 						"late_payment_amnesty"	=> "LatePaymentAmnesty",
-						"tio_reference_number"	=> "tio_reference_number"
+						"tio_reference_number"	=> "tio_reference_number",
+						"account_class_id"		=> "account_class_id"
 					);
 	}
 	
@@ -372,7 +373,8 @@ class Account_History
 						"billing_method"		=> "billing_method",
 						"disable_ddr"			=> "disable_ddr",
 						"late_payment_amnesty"	=> "late_payment_amnesty",
-						"tio_reference_number"	=> "tio_reference_number"
+						"tio_reference_number"	=> "tio_reference_number",
+						"account_class_id"		=> "account_class_id"
 					);
 	}
 

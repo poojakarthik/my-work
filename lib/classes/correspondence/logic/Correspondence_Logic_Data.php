@@ -46,9 +46,5 @@ class Correspondence_Logic_Data
 		}
 		return $aCorrespondenceData;
 	}
-
-
-
-
-
 }
+?>

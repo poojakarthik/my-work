@@ -1,6 +1,5 @@
 <?php
 
-// TODO: CR135 -- make this FALSE
 // If this is set to TRUE then, if in test mode, confirmation emails will be sent to ybs-admin@ybs.net.au
 define(SEND_CREDIT_CARD_EMAILS_IN_TEST_MODE, TRUE);
 
@@ -464,7 +463,7 @@ class Credit_Card_Payment
 		try
 		{
 			// Attempt payment
-			$oTransactionDetails	= self::_makePayment($iAccountId, $iCardType, $sCardNumber, $iCVV, $iMonth, $iYear, $sName, $fAmount, $iEmployeeId, $iContactId);
+			$oTransactionDetails = self::_makePayment($iAccountId, $iCardType, $sCardNumber, $iCVV, $iMonth, $iYear, $sName, $fAmount, $iEmployeeId, $iContactId);
 		}
 		catch (Exception $oException)
 		{
@@ -498,7 +497,7 @@ class Credit_Card_Payment
 				try
 				{
 					$aMessageTokens		= self::buildMessageTokens($oTransactionDetails, $oContact->getName(), $sEmail);
-					$oEmail 			= new Email_Notification(EMAIL_NOTIFICATION_PAYMENT_CONFIRMATION, $oAccount->CustomerGroup);
+					$oEmail 			= Email_Notification::getForSystemName('PAYMENT_CONFIRMATION', $oAccount->CustomerGroup);
 					$oEmail->subject	= (self::isTestMode() ? '[TEST EMAIL] ' : '')."{$oCustomerGroup->name} Credit Card Payment Confirmation (Ref: {$oTransactionDetails->sPurchaseOrderNumber} / {$oTransactionDetails->sTransactionId})";
 					$oEmail->text 		= self::replaceMessageTokens($oCreditCardPaymentConfig->confirmationEmail, $aMessageTokens);
 					$oEmail->to 		= (self::isTestMode() ? 'ybs-admin@ybs.net.au' : $sEmail);
@@ -678,7 +677,7 @@ class Credit_Card_Payment
 			}
 			
 			// Create payment_request
-			$oPaymentRequest	= Payment_Request::generatePending($iAccountId, PAYMENT_TYPE_CREDIT_CARD, $fTotal, null, $iEmployeeId);
+			$oPaymentRequest = Payment_Request::generatePending($iAccountId, PAYMENT_TYPE_CREDIT_CARD, $fTotal, null, $iEmployeeId);
 		}
 		catch (Exception $oException)
 		{
@@ -724,44 +723,21 @@ class Credit_Card_Payment
 			}
 			
 			// Date string used by multiple records that are created below
-			$sNowDate	= date('Y-m-d', $iTime);
-				
-			// Create a Payment
-			$oPayment				= new Payment();
-			$oPayment->AccountGroup	= $oAccount->AccountGroup;
-			$oPayment->Account		= $iAccountId;
-			$oPayment->EnteredBy	= $iEmployeeId;
-			$oPayment->Amount		= $fTotal;
-			$oPayment->Balance		= $fTotal;
-			$oPayment->PaidOn		= $sNowDate;
-			$oPayment->OriginId		= substr($sCardNumber, 0, 6).'...'.substr($sCardNumber, -3);
-			$oPayment->OriginType	= PAYMENT_TYPE_CREDIT_CARD;
-			$oPayment->Status		= PAYMENT_WAITING;
-			$oPayment->PaymentType	= PAYMENT_TYPE_CREDIT_CARD;
-			$oPayment->Payment		= '';
-			$oPayment->save();
-			
-			if ($fSurcharge != 0)
-			{
-				// Create a charge for the transaction surcharge
-				$oCharge					= new Charge();
-				$oCharge->AccountGroup		= $oAccount->AccountGroup;
-				$oCharge->Account			= $iAccountId;
-				$oCharge->CreatedBy			= $iEmployeeId;
-				$oCharge->Amount			= RemoveGST($fSurcharge);
-				$oCharge->CreatedOn			= $sNowDate;
-				$oCharge->ChargedOn			= $sNowDate;
-				$oCharge->Status			= CHARGE_APPROVED;
-				$oCharge->LinkType			= CHARGE_LINK_PAYMENT;
-				$oCharge->LinkId			= $oPayment->Id;
-				$oCharge->ChargeType		= 'CCS';
-				$oCharge->Nature			= 'DR';
-				$oCharge->global_tax_exempt	= 0;
-				$oCharge->Description		= ($oCardType->name.' Surcharge for Payment on '.date('d/m/Y', $iTime).' ('.$fTotal.') @ '.(round(floatval($oCardType->surcharge) * 100, 2)).'%');
-				$oCharge->charge_model_id	= CHARGE_MODEL_CHARGE;
-				$oCharge->Notes				= '';
-				$oCharge->save();
-			}
+			$sNowDate = date('Y-m-d', $iTime);
+			$oPayment =	Logic_Payment::factory(
+							$iAccountId, 
+							PAYMENT_TYPE_CREDIT_CARD, 
+							$fTotal, 
+							PAYMENT_NATURE_PAYMENT,
+							'', 
+							$sNowDate, 
+							array
+							(
+								'charge_credit_card_surcharge' 	=> $fSurcharge != 0,
+								'credit_card_type_id'			=> $oCardType->id,
+								'credit_card_number'			=> $sCardNumber
+							)
+						);
 			
 			// Create a credit_card_payment_history record
 			$oCreditCardPaymentHistory						= new Credit_Card_Payment_History();
@@ -771,19 +747,19 @@ class Credit_Card_Payment
 			$oCreditCardPaymentHistory->receipt_number 		= $sPurchaseOrderNo;
 			$oCreditCardPaymentHistory->amount 				= $fTotal;
 			$oCreditCardPaymentHistory->payment_datetime 	= date('Y-m-d H:i:s', $iTime);
-			$oCreditCardPaymentHistory->payment_id			= $oPayment->Id;
+			$oCreditCardPaymentHistory->payment_id			= $oPayment->id;
 			$oCreditCardPaymentHistory->save();
 			
 			// Link payment_request to payment
 			$oPaymentRequest->payment_request_status_id	= PAYMENT_REQUEST_STATUS_DISPATCHED;
-			$oPaymentRequest->payment_id				= $oPayment->Id;
+			$oPaymentRequest->payment_id				= $oPayment->id;
 			$oPaymentRequest->save();
 			
 			// Make the secure pay request
 			$sTransactionId	= self::_securePayRequest($sMerchantId, $sPassword, $iTime, $sMessageId, $fTotal, $sPurchaseOrderNo, $sCardNumber, $iCVV, $iMonth, $iYear);
 			
 			// Set the Payments transaction reference
-			$oPayment->TXNReference	= $sTransactionId;
+			$oPayment->transaction_reference = $sTransactionId;
 			$oPayment->save();
 			
 			// Set the credit card payment history transaction reference

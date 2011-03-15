@@ -123,6 +123,22 @@ class Correspondence_Run_Batch extends ORM_Cached
 		}
 	}
 
+	public function hasDispatchRecords()
+	{
+		$oQuery	= new Query();
+		$sQuery	= "	SELECT	count(crd.id) as dispatch_count
+					FROM	correspondence_run_batch crb
+					JOIN	correspondence_run_dispatch crd ON (crd.correspondence_run_batch_id = crb.id)
+					WHERE	crb.id = {$this->id}";
+		$mResult	= $oQuery->Execute($sQuery);
+		if ($mResult === false)
+		{
+			throw new Exception("Failed to count dispatch records for batch {$this->id}. ".$oQuery->Error());
+		}
+		$aRow	= $mResult->fetch_assoc();
+		return $aRow ? $aRow['dispatch_count'] > 0 : false;
+	}
+
 	/**
 	 * _preparedStatement()
 	 *

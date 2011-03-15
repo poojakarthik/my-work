@@ -3,7 +3,7 @@ var Popup_Correspondence_Run_Batch_Ledger	= Class.create(Reflex_Popup,
 {
 	initialize	: function($super)
 	{
-		$super(53);
+		$super(60);
 		
 		this.oDataSet		= 	new Dataset_Ajax(
 									Dataset_Ajax.CACHE_MODE_NO_CACHING, 
@@ -14,8 +14,7 @@ var Popup_Correspondence_Run_Batch_Ledger	= Class.create(Reflex_Popup,
 									Popup_Correspondence_Run_Batch_Ledger.MAX_RECORDS_PER_PAGE, 
 									this.oDataSet
 								);
-
-		this._hBatchState	= {};
+		this._hBatchState	= 	{};
 		
 		// Create filter object
 		this._oFilter	= new Filter(this.oDataSet, this.oPagination);
@@ -203,30 +202,48 @@ var Popup_Correspondence_Run_Batch_Ledger	= Class.create(Reflex_Popup,
 		if (oBatch.id != null)
 		{
 			// Create a tbody with rows listing the correspondence_run(s) in the batch
-			var oRunsTBody	= $T.tbody({class: 'alternating'});
-			var oRun		= null;
-			if (oBatch.aCorrespondenceRuns.length)
+			var oDispatchTBody	= $T.tbody({class: 'alternating'});
+			var oDispatchData	= null;
+			if (oBatch.dispatch_data.length)
 			{
-				// There are runs
-				for (var i = 0; i < oBatch.aCorrespondenceRuns.length; i++)
+				for (var i = 0; i < oBatch.dispatch_data.length; i++)
 				{
-					oRun	= oBatch.aCorrespondenceRuns[i];
-					oRunsTBody.appendChild(
+					oDispatchData	= oBatch.dispatch_data[i];
+					
+					// Special handling of correspondence counts
+					var oCountTD	= $T.td();
+					if (oDispatchData.correspondence_totals.length == 0)
+					{
+						oCountTD.appendChild($T.span('None'));
+					}
+					else
+					{
+						for (var sMethod in oDispatchData.correspondence_totals)
+						{
+							var sIcon	= Correspondence_Delivery_Method.getIconForSystemName(sMethod);
+							if (sIcon === null)
+							{
+								break;
+							}
+							oCountTD.appendChild(
+								$T.span({class: 'popup-correspondence-run-batch-ledger-items'},
+									$T.img({src: sIcon, alt: sMethod, title: sMethod}),
+									$T.span(oDispatchData.correspondence_totals[sMethod])
+								)
+							);
+						}
+					}
+					
+					// Create row
+					oDispatchTBody.appendChild(
 						$T.tr(
-							$T.td(oRun.id),
-							$T.td(Date.$parseDate(oRun.created, 'Y-m-d H:i:s').$format('d/m/y g:i A')),
-							$T.td({class: 'item-count'},
-								$T.img({src: '../admin/img/template/correspondence_email.png', alt: 'Email', title: 'Email'}),
-								$T.span(oRun.correspondence_count.email),
-								$T.img({src: '../admin/img/template/lorry.png', alt: 'Post', title: 'Post'}),
-								$T.span(oRun.correspondence_count.post),
-								$T.img({src: '../admin/img/template/sum.png', alt: 'Total', title: 'Total'}),
-								$T.span(oRun.correspondence_count.total)
+							$T.td(
+								$T.a(oDispatchData.correspondence_run_id).observe('click', this._showRunDetails.bind(this, oDispatchData.correspondence_run_id))
 							),
-							$T.td({class: 'actions'},
-								$T.img({src: '../admin/img/template/magnifier.png', alt: 'View Run Details', title: 'View Run Details'}
-								).observe('click', this._showRunDetails.bind(this, oRun.id))
-							)
+							$T.td(Date.$parseDate(oDispatchData.dispatch_date, 'Y-m-d H:i:s').$format('d/m/y g:i A')),
+							$T.td(oDispatchData.carrier),
+							oCountTD,
+							$T.td(oDispatchData.status)
 						)
 					);
 				}
@@ -234,10 +251,10 @@ var Popup_Correspondence_Run_Batch_Ledger	= Class.create(Reflex_Popup,
 			else
 			{
 				// There are no runs
-				oRunsTBody.appendChild(
+				oDispatchTBody.appendChild(
 					$T.tr(
 						$T.td({class: 'no-rows', colspan: 3},
-							'There are no Correspondence Runs in this batch.'
+							'There are no dispatched files in this batch.'
 						)
 					)
 				);
@@ -245,10 +262,11 @@ var Popup_Correspondence_Run_Batch_Ledger	= Class.create(Reflex_Popup,
 			
 			// THead for run table
 			var oTHead	= 	$T.thead(
-								$T.th('ID'),
-								$T.th('Created'),
-								$T.th('Correspondence'),
-								$T.th('')
+								$T.th('Run'),
+								$T.th('Dispatch Date'),
+								$T.th('Carrier'),
+								$T.th('Items'),
+								$T.th('Status')								
 							);
 			
 			// Format batch date time
@@ -259,7 +277,7 @@ var Popup_Correspondence_Run_Batch_Ledger	= Class.create(Reflex_Popup,
 									$T.img({src: '../admin/img/template/menu_open_right.png'}),
 									$T.span('Batch ' + oBatch.id + ' sent on ' + sFormattedDateTime),
 									$T.span({class: 'run-count'},
-										oBatch.aCorrespondenceRuns.length + ' Correspondence Runs'
+										oBatch.dispatch_data.length + ' File(s) Dispatched'
 									)
 								);
 			oCaption.observe('click', this._toggleBatch.bind(this, oBatch.id));
@@ -273,15 +291,15 @@ var Popup_Correspondence_Run_Batch_Ledger	= Class.create(Reflex_Popup,
 								),
 								$T.div({class: 'batch-table-container'},
 									$T.table({class: 'reflex highlight-rows'},
-										oRunsTBody
+										oDispatchTBody
 									)
 								)
 							)
 						);
 			
-			this._hBatchState[oBatch.id]	= {oTHead: oTHead, oTBody: oRunsTBody, oCaption: oCaption, bVisible: false};
+			this._hBatchState[oBatch.id]	= {oTHead: oTHead, oTBody: oDispatchTBody, oCaption: oCaption, bVisible: false};
 			oTHead.hide();
-			oRunsTBody.hide();
+			oDispatchTBody.hide();
 			
 			return oTR;
 		}
@@ -372,7 +390,7 @@ var Popup_Correspondence_Run_Batch_Ledger	= Class.create(Reflex_Popup,
 Object.extend(Popup_Correspondence_Run_Batch_Ledger, 
 {
 	MAX_RECORDS_PER_PAGE	: 10,
-	DATA_SET_DEFINITION		: {sObject: 'Correspondence_Run', sMethod: 'getAllBatches'},
+	DATA_SET_DEFINITION		: {sObject: 'Correspondence_Run_Batch', sMethod: 'getAll'},
 	FIELD_CONFIG	:
 	{
 		batch_datetime	:

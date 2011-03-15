@@ -177,8 +177,9 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 				}
 				
 				// Build Approve/Reject Buttons for Samples
-				$iInvoiceRunTypeId	= $arrInvoiceRun['invoice_run_type_id'];
-				if ($bolIsSample && $bolUserHasInterimPerm && ($iInvoiceRunTypeId == INVOICE_RUN_TYPE_INTERIM || $iInvoiceRunTypeId == INVOICE_RUN_TYPE_FINAL || $iInvoiceRunTypeId == INVOICE_RUN_TYPE_INTERIM_FIRST))
+				$bAccountHasOCAReferral	= Account_OCA_Referral::accountExists($dboInvoice->Account->Value);
+				$iInvoiceRunTypeId		= $arrInvoiceRun['invoice_run_type_id'];
+				if (!$bAccountHasOCAReferral && $bolIsSample && $bolUserHasInterimPerm && ($iInvoiceRunTypeId == INVOICE_RUN_TYPE_INTERIM || $iInvoiceRunTypeId == INVOICE_RUN_TYPE_FINAL || $iInvoiceRunTypeId == INVOICE_RUN_TYPE_INTERIM_FIRST))
 				{
 					switch ($arrInvoiceRun['invoice_run_type_id'])
 					{

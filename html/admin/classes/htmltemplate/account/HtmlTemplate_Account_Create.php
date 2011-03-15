@@ -133,13 +133,45 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			<tr>
 				<th><div class='Required'>*</div>Customer Group:</th>
 				<td>
-					<select name='Account[CustomerGroup]' class='input-string'>
+					<select name='Account[CustomerGroup]' class='input-string' onchange='oAccountCreate.customerGroupChange()'>
 						<option value=''></option>";
 					
 					// Generate a dropdown menu of available customer groups
 					foreach ($this->mxdDataToRender['arrCustomerGroups'] as $oCustomerGroup)
 					{
-						echo "<option value='{$oCustomerGroup->id}'>{$oCustomerGroup->name}</option>\n";
+						echo "<option value='{$oCustomerGroup->id}' data-default-account-class-id='{$oCustomerGroup->default_account_class_id}'>{$oCustomerGroup->name}</option>\n";
+					}
+					
+					echo "
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<th><div class='Required'>*</div>Account Class:</th>
+				<td>
+					<select name='Account[account_class_id]' class='input-string' onchange='oAccountCreate.accountClassChange()'>
+						<option value=''></option>";
+					
+					// Generate a dropdown menu of account classes
+					foreach ($this->mxdDataToRender['arrAccountClasses'] as $oAccountClass)
+					{
+						echo "<option value='{$oAccountClass->id}' data-collection-scenario-id='{$oAccountClass->collection_scenario_id}'>{$oAccountClass->name} ({$oAccountClass->description})</option>\n";
+					}
+					
+					echo "
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<th><div class='Required'>*</div>Collection Scenario:</th>
+				<td>
+					<select name='Account[collection_scenario_id]' class='input-string' onchange='oAccountCreate.scenarioChange()'>
+						<option value=''></option>";
+					
+					// Generate a dropdown menu of collection scenarios
+					foreach ($this->mxdDataToRender['arrScenarios'] as $oScenario)
+					{
+						echo "<option value='{$oScenario->id}'>{$oScenario->name} ({$oScenario->description})</option>\n";
 					}
 					
 					echo "

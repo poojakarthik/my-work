@@ -16,10 +16,6 @@ class Application_Handler_Adjustment extends Application_Handler
 		
 		try
 		{
-			$iDefaultLimit 						= self::MAX_RECORDS_PER_PAGE;
-			$aDetailsToRender['Limit']			= $iDefaultLimit;
-			$aDetailsToRender['iChargeModel']	= CHARGE_MODEL_ADJUSTMENT;
-			
 			$this->LoadPage('adjustment_management', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
 		}
 		catch (Exception $e)
@@ -38,11 +34,10 @@ class Application_Handler_Adjustment extends Application_Handler
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->SetCurrentPage("Manage Adjustment Types");
 		
-		$aDetailsToRender	= array();
+		$aDetailsToRender = array();
 		
 		try
 		{
-			$aDetailsToRender['iChargeModel']	= CHARGE_MODEL_ADJUSTMENT;
 			$this->LoadPage('adjustment_type_list', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
 		}
 		catch (Exception $e)

@@ -11,122 +11,111 @@ var Component_Correspondence_Run_Details	= Class.create(
 		this._hDeliveryMethods	= null;
 		Correspondence_Delivery_Method.getAll(this._deliveryMethodsLoaded.bind(this));
 		
+		// Create a section to hold the UI
 		this._oSection	= new Section_Expandable(true, 'component-correspondence-run-details');
 		this._oSection.setTitleText('Details');
+		
+		// Main content -- A table (template) to hold the details
 		this._oSection.setContent(
-			$T.table({class: 'reflex input'},
-				$T.tbody(
-					$T.tr(
-						$T.th('Id'),
-						$T.td({class: 'id'},
-							'-'
-							//oRun.id
+			$T.div({class: 'component-correspondence-run-details-tables'},
+				$T.table({class: 'reflex input'},
+					$T.tbody(
+						$T.tr(
+							$T.th('Id'),
+							$T.td({class: 'id'},
+								'-'
+							)
 						),
-						$T.th('Status'),
-						$T.td({class: 'status'},
-							'-'
-							//oStatusElement
-						)
-					),
-					$T.tr(
-						$T.th('Template'),
-						$T.td({class: 'template'},
-							'-'
-							/*$T.div(oRun.template.name),
-							$T.div({class: 'subscript'},
-								oRun.template.template_code
-							)*/
+						$T.tr(
+							$T.th('Template'),
+							$T.td({class: 'template'},
+								'-'
+							)
 						),
-						$T.th('Source'),
-						$T.td({class: 'source'},
-							/*$T.div(oRun.source ? oRun.source : ''),
-							$T.div({class:'subscript'},
-								oRun.import_file_name ? oRun.import_file_name : ''
-							)*/
-							'-'
-						)
-					),
-					$T.tr(
-						$T.th('Created By'),
-						$T.td({class: 'created-by'},
-							'-'
-							//oRun.created_employee_name
+						$T.tr(
+							$T.th('Created By'),
+							$T.td({class: 'created-by'},
+								'-'
+							)
 						),
-						$T.th('Number of Items'),
-						$T.td({class: 'number-of-items'},
-							'-'
-							//oRun.correspondence.length
-						)
-					),
-					$T.tr(
-						$T.th('Created'),
-						$T.td({class: 'created'},
-							//Component_Correspondence_Run_Details._formatDateTime(oRun.created)
-							'-'
+						$T.tr(
+							$T.th('Created'),
+							$T.td({class: 'created'},
+								'-'
+							)
 						),
-						$T.th('Emailed Items'),
-						$T.td({class: 'emailed-items'},
-							//iEmail
-							'-'
-						)
-					),
-					$T.tr(
-						$T.th('Processed'),
-						$T.td({class: 'processed'},
-							'-'
-							//Component_Correspondence_Run_Details._formatDateTime(oRun.processed_datetime, 'Not Yet Processed')
-						),						
-						$T.th('Posted Items'),
-						$T.td({class: 'posted-items'},
-							'-'
-							//iPost
-						)
-					),
-					$T.tr(
-						$T.th('Scheduled for Dispatch'),
-						$T.td({class: 'scheduled-for-dispatch'},
-							'-'
-							//Component_Correspondence_Run_Details._formatDateTime(oRun.scheduled_datetime)
+						$T.tr(
+							$T.th('Processed'),
+							$T.td({class: 'processed'},
+								'-'
+							)
 						),
-						$T.th('Data File'),
-						$T.td({class: 'data-file'},
-							'-'
-							//oRun.export_file_name ? oRun.export_file_name : 'N/A'
-						)
-					),
-					$T.tr(
-						$T.th('Dispatched'),
-						$T.td({class: 'dispatched'},
-							'-'
-							//Component_Correspondence_Run_Details._formatDateTime(oRun.delivered_datetime, 'Awaiting Dispatch')
+						$T.tr(
+							$T.th('Scheduled for Dispatch'),
+							$T.td({class: 'scheduled-for-dispatch'},
+								'-'
+							)
 						),
-						$T.th('Pre-Printed'),
-						$T.td({class: 'pre-printed'},
-							'-'
-							//oRun.preprinted ? 'Yes' : 'No'
+						$T.tr(
+							$T.th('Status'),
+							$T.td({class: 'status'},
+								'-'
+							)
+						),
+						$T.tr(
+							$T.th('Pre-Printed'),
+							$T.td({class: 'pre-printed'},
+								'-'
+							)
+						)
+					)
+				),
+				$T.table({class: 'reflex input'},
+					$T.tbody(
+						$T.tr(
+							$T.th('Source'),
+							$T.td({class: 'source'},
+								'-'
+							)
+						),
+						$T.tr(
+							$T.th('Items'),
+							$T.td({class: 'items'},
+								'-'
+							)
+						),
+						$T.tr(
+							$T.th('Data File(s)'),
+							$T.td({class: 'data-file'},
+								'-'
+							)
 						)
 					)
 				)
 			)
 		);
+		
 		this._oSection.setExpanded(true);
 		this._oContainer.appendChild(this._oSection.getElement());
 	},
 	
+	// _deliveryMethodsLoaded: Callback for correspondence delivery methods request. Makes request for correspondence run error types.
 	_deliveryMethodsLoaded	: function(hMethods)
 	{
 		this._hDeliveryMethods	= hMethods;
 		Flex.Constant.loadConstantGroup('correspondence_run_error', this._errorTypesLoaded.bind(this));
 	},
 	
+	// _errorTypesLoaded: Callback for correspondence run error types request. Makes request for correspondence run details. 
 	_errorTypesLoaded	: function(hErrorTypes)
 	{
 		Correspondence_Run.getForId(this._iId, this._detailsLoaded.bind(this));
 	},
 	
+	// _detailsLoaded: Callback for correspondence run details request. Fills out the table with the details. 
 	_detailsLoaded	: function(oRun)
 	{
-		// Count items
+		// Count email & post items
 		var iEmail	= 0;
 		var iPost	= 0;
 		var iTotal	= oRun.correspondence.length;
@@ -144,19 +133,29 @@ var Component_Correspondence_Run_Details	= Class.create(
 			}
 		}
 		
-		// Status
+		// Create status representation
 		var oStatus			= Correspondence_Run_Status.getStatusFromCorrespondenceRun(oRun);
 		var oStatusElement	= $T.div($T.div(oStatus.name));
-		if (oStatus.id == Correspondence_Run_Status.PROCESSING_FAILED)
+		switch (oStatus.id)
 		{
-			var oError	= Flex.Constant.arrConstantGroups.correspondence_run_error[oRun.correspondence_run_error_id];
-			oStatusElement.appendChild(
-				$T.div({class: 'subscript'},
-					oError.Name
-				)
-			);
+			case Correspondence_Run_Status.PROCESSING_FAILED:
+				var oError	= Flex.Constant.arrConstantGroups.correspondence_run_error[oRun.correspondence_run_error_id];
+				oStatusElement.appendChild(
+					$T.div({class: 'subscript'},
+						oError.Name
+					)
+				);
+				break;
+			case Correspondence_Run_Status.DISPATCHED:
+				oStatusElement.appendChild(
+					$T.div({class: 'subscript'},
+						Component_Correspondence_Run_Details._formatDateTime(oRun.delivered_datetime)
+					)
+				);
+				break;
 		}
 		
+		// Fill each cell (using the classname to determine it's purpose)
 		var aTDs		= this._oContainer.select('td');
 		var oTD			= null;
 		for (var i = 0; i < aTDs.length; i++)
@@ -190,26 +189,38 @@ var Component_Correspondence_Run_Details	= Class.create(
 				case 'created-by':
 					oTD.appendChild($T.span(oRun.created_employee_name));
 					break;
-				case 'number-of-items':
-					oTD.appendChild($T.span(oRun.correspondence.length));
-					break;
-				case 'emailed-items':
-					oTD.appendChild($T.span(iEmail));
-					break;
-				case 'posted-items':
-					oTD.appendChild($T.span(iPost));
+				case 'items':
+					oTD.appendChild(
+						$T.ul({class: 'reset horizontal component-correspondence-run-details-items'},
+							$T.li(
+								$T.img({class: 'component-correspondence-run-details-item-icon', src: Correspondence_Delivery_Method.getIconForSystemName('EMAIL'), alt: 'Email', title: 'Email'}),
+								$T.span({class: 'component-correspondence-run-details-item-count'}, 
+									iEmail
+								)
+							),
+							$T.li(
+								$T.img({class: 'component-correspondence-run-details-item-icon', src: Correspondence_Delivery_Method.getIconForSystemName('POST'), alt: 'Post', title: 'Post'}),
+								$T.span({class: 'component-correspondence-run-details-item-count'}, 
+									iPost
+								)
+							),
+							$T.li(
+								$T.img({class: 'component-correspondence-run-details-item-icon', src: '../admin/img/template/sum.png', alt: 'Total', title: 'Total'}),
+								$T.span({class: 'component-correspondence-run-details-item-count component-correspondence-run-details-item-count-total'}, 
+									oRun.correspondence.length
+								)
+							)
+						)
+					);
 					break;
 				case 'scheduled-for-dispatch':
 					oTD.appendChild($T.span(Component_Correspondence_Run_Details._formatDateTime(oRun.scheduled_datetime)));
 					break;
 				case 'data-file':
-					oTD.appendChild($T.span(oRun.export_file_name ? oRun.export_file_name : 'N/A'));
+					oTD.appendChild(Component_Correspondence_Run_Details._getDispatchSummary(oRun));
 					break;
 				case 'created':
 					oTD.appendChild($T.span(Component_Correspondence_Run_Details._formatDateTime(oRun.created)));
-					break;
-				case 'dispatched':
-					oTD.appendChild($T.span(Component_Correspondence_Run_Details._formatDateTime(oRun.delivered_datetime, 'Awaiting Dispatch')));
 					break;
 				case 'pre-printed':
 					oTD.appendChild($T.span(oRun.preprinted ? 'Yes' : 'No'));
@@ -236,11 +247,73 @@ Object.extend(Component_Correspondence_Run_Details,
 	{
 		if (sValue)
 		{
-			return Date.$parseDate(sValue, 'Y-m-d H:i:s').$format('d/m/Y g:i A');
+			return Date.$parseDate(sValue, 'Y-m-d H:i:s').$format('jS M, Y g:ia');
 		}
 		else
 		{
 			return (sNotSet ? sNotSet : '');
 		}
+	},
+	
+	// _getDispatchSummary: Generates a DOM representation of 
+	_getDispatchSummary	: function(oRun)
+	{
+		if (!oRun.dispatch_data || (oRun.dispatch_data.length == 0))
+		{
+			return $T.span('N/A');
+		}
+	
+		var oDiv	= $T.div();
+		for (var i in oRun.dispatch_data)
+		{
+			if (isNaN(i))
+			{
+				break;
+			}
+			
+			var oFileInfo			= oRun.dispatch_data[i];
+			var oDeliveryMethods	= $T.span({class: 'component-correspondence-run-details-dispatchsummary-file-carrier-method'});
+			for (var sMethod in oFileInfo.delivery_methods)
+			{
+				if (isNaN(oFileInfo.delivery_methods[sMethod]))
+				{
+					break;
+				}
+				
+				oDeliveryMethods.appendChild(
+					$T.img({src: Correspondence_Delivery_Method.getIconForSystemName(sMethod), alt: sMethod, title: sMethod})
+				);
+			}
+			
+			var oFileDiv	= 	$T.div({class: 'component-correspondence-run-details-dispatchsummary-file'},
+									$T.div({class: 'component-correspondence-run-details-dispatchsummary-file-carrier'},
+										$T.span({class: 'component-correspondence-run-details-dispatchsummary-file-carrier-name'},
+											oFileInfo.carrier
+										),
+										oDeliveryMethods
+									),
+									$T.div({class: 'component-correspondence-run-details-dispatchsummary-file-file'},
+										oFileInfo.file
+									)
+								);
+			var oStatusDiv	= 	$T.div({class: 'component-correspondence-run-details-dispatchsummary-file-status'},
+									$T.span({class: 'component-correspondence-run-details-dispatchsummary-file-status-desc'},
+										oFileInfo.status
+									)
+								);
+			if (oFileInfo.batch !== null)
+			{
+				// Has been dispatched
+				oStatusDiv.appendChild(
+					$T.span({class: 'component-correspondence-run-details-dispatchsummary-file-status-dispatchdate'},
+						'(' + Date.$parseDate(oFileInfo.dispatch_date, 'Y-m-d H:i:s').$format('j M Y g:ia') + ')'
+					)
+				);
+			}
+			oFileDiv.appendChild(oStatusDiv);
+			oDiv.appendChild(oFileDiv);
+		}
+		
+		return oDiv;
 	}
 });

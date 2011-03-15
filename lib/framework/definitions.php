@@ -424,6 +424,10 @@ $GLOBALS['*arrConstant']	['ChargeStatus']	[104]	['Constant']	= 'CHARGE_DECLINED'
 $GLOBALS['*arrConstant']	['ChargeStatus']	[104]	['Description']	= 'Declined';
 $GLOBALS['*arrConstant']	['ChargeStatus']	[105]	['Constant']	= 'CHARGE_DELETED';
 $GLOBALS['*arrConstant']	['ChargeStatus']	[105]	['Description']	= 'Deleted';
+$GLOBALS['*arrConstant']	['ChargeStatus']	[106]	['Constant']	= 'CHARGE_UNINVOICED_PENDING_ADJUSTMENT_MIGRATED';
+$GLOBALS['*arrConstant']	['ChargeStatus']	[106]	['Description']	= 'Uninvoiced Pending Adjustment Migrated';
+$GLOBALS['*arrConstant']	['ChargeStatus']	[107]	['Constant']	= 'CHARGE_UNINVOICED_APPROVED_ADJUSTMENT_MIGRATED';
+$GLOBALS['*arrConstant']	['ChargeStatus']	[107]	['Description']	= 'Uninvoiced Approved Adjustment Migrated';
 
 
 // Charge Link Types

@@ -29,11 +29,10 @@ class Correspondence_Run extends ORM_Cached
 
 	public static function getForScheduledDateTime($sScheduledDateTime)
 	{
-
 		$oSelect	= self::_preparedStatement('selByScheduleDateTime');
 		$oSelect->Execute(array('scheduled_datetime' => $sScheduledDateTime));
-		$aResults = $oSelect->FetchAll();
-		$aObjects = array();
+		$aResults	= $oSelect->FetchAll();
+		$aObjects 	= array();
 		foreach ($aResults as $aResult)
 		{
 			$aObjects[]= new self($aResult);
@@ -45,8 +44,8 @@ class Correspondence_Run extends ORM_Cached
 	{
 		$oSelect	= self::_preparedStatement('selByBatchId');
 		$oSelect->Execute(array('correspondence_run_batch_id' => $iBatchId));
-		$aResults = $oSelect->FetchAll();
-		$aObjects = array();
+		$aResults 	= $oSelect->FetchAll();
+		$aObjects 	= array();
 		foreach ($aResults as $aResult)
 		{
 			$aObjects[]= new self($aResult);
@@ -56,22 +55,24 @@ class Correspondence_Run extends ORM_Cached
 
 	public static function getLedgerInformation($bCountOnly=false, $iLimit=0, $iOffset=0, $aFilter=null, $aSort=null)
 	{
+		$sFrom		= "	correspondence_run cr
+						JOIN Employee e ON cr.created_employee_id = e.id
+						JOIN correspondence_template ct ON ct.id = cr.correspondence_template_id
+						LEFT JOIN correspondence c ON (c.correspondence_run_id = cr.id)
+						LEFT JOIN FileImport fi ON fi.id = cr.file_import_id";
+		
 		if ($bCountOnly)
 		{
-			$sSelect	= "count(cr.id) AS record_count";
-			$sFrom		= "	correspondence_run cr
-							JOIN Employee e ON cr.created_employee_id = e.id
-							JOIN correspondence_template ct ON ct.id = cr.correspondence_template_id";
+			$sSelect	= "	cr.id,
+							count(c.id) as count_correspondence,
+							(
+								SELECT	count(*)
+								FROM	correspondence_run_dispatch
+								WHERE	correspondence_run_id = cr.id
+							) as dispatch_count";
 		}
 		else
 		{
-			$sFrom		= "	correspondence_run cr
-							JOIN Employee e ON cr.created_employee_id = e.id
-							JOIN correspondence_template ct ON ct.id = cr.correspondence_template_id
-							LEFT JOIN correspondence c ON c.correspondence_run_id = cr.id
-							LEFT JOIN FileExport fe ON fe.id = cr.data_file_export_id
-							LEFT JOIN FileImport fi ON fi.id = cr.file_import_id ";
-
 			$sSelect	= "	cr.id,
 							cr.correspondence_template_id,
 							cr.processed_datetime,
@@ -79,21 +80,25 @@ class Correspondence_Run extends ORM_Cached
 							COALESCE(cr.delivered_datetime, '".Data_Source_Time::END_OF_TIME."') AS delivered_datetime,
 							cr.created_employee_id,
 							cr.created,
-							cr.data_file_export_id,
 							cr.preprinted,
-							cr.pdf_file_export_id,
-							cr.correspondence_run_batch_id,
 							CONCAT(e.FirstName,' ',e.LastName) AS created_employee_name,
 							ct.name AS correspondence_template_name,
-							ct.template_code AS correspondence_template_code,
 							ct.correspondence_source_id AS correspondence_template_source_id,
 							cr.correspondence_run_error_id,
-							COALESCE(fe.FileName, NULL) AS data_file_name,
-							COALESCE(COUNT(c.id), 0) AS count_correspondence,
 							fi.FileName as import_file_name,
-							COALESCE(COUNT(IF(c.correspondence_delivery_method_id = ".CORRESPONDENCE_DELIVERY_METHOD_EMAIL.", c.id, NULL)), 0) AS count_email,
-							COALESCE(COUNT(IF(c.correspondence_delivery_method_id = ".CORRESPONDENCE_DELIVERY_METHOD_POST.", c.id, NULL)), 0) AS count_post
-							";
+							count(c.id) as count_correspondence,
+							(
+								SELECT	count(*)
+								FROM	correspondence_run_dispatch
+								WHERE	correspondence_run_id = cr.id
+							) as dispatch_count";
+		}
+		
+		$aHavingFilter	= null;
+		if (isset($aFilter['dispatch_count']))
+		{
+			$aHavingFilter	= array('dispatch_count' => $aFilter['dispatch_count']);
+			unset($aFilter['dispatch_count']);
 		}
 
 		$aWhereAlias	=	array(
@@ -102,7 +107,6 @@ class Correspondence_Run extends ORM_Cached
 								'created' 						=> 'cr.created',
 								'created_employee_id'			=> 'cr.created_employee_id',
 								'preprinted'					=> 'cr.preprinted',
-								'data_file_name'				=> 'COALESCE(fe.FileName, NULL)',
 								'correspondence_run_error_id'	=> 'cr.correspondence_run_error_id'
 							);
 		$aWhere			= 	StatementSelect::generateWhere($aWhereAlias, $aFilter);
@@ -112,54 +116,59 @@ class Correspondence_Run extends ORM_Cached
 								'created' 						=> 'cr.created',
 								'created_employee_name'			=> 'created_employee_name',
 								'preprinted'					=> 'cr.preprinted',
-								'data_file_name'				=> 'COALESCE(fe.FileName, NULL)',
 								'correspondence_run_error_id'	=> 'cr.correspondence_run_error_id'
 							);
 		$sOrderByClause	= 	StatementSelect::generateOrderBy($aSortAlias, $aSort);
 		$sLimitClause	= 	StatementSelect::generateLimit($iLimit, $iOffset);
 		$sWhereClause	= 	$aWhere['sClause'];
-
-		if (!$bCountOnly)
+		
+		if ($sWhereClause == "")
 		{
-			if ($sWhereClause == "")
-			{
-				$sWhereClause	.= " 1";
-			}
-			$sWhereClause	.= " GROUP BY cr.id";
+			$sWhereClause	.= " 1";
 		}
-
-		$oStmt			=	new StatementSelect(
-								$sFrom,
-								$sSelect,
-								$sWhereClause,
-								($bCountOnly ? '' : $sOrderByClause),
-								($bCountOnly ? '' : $sLimitClause)
-							);
-
+		
+		$sWhereClause	.= " GROUP BY cr.id";
+		
+		if ($aHavingFilter)
+		{
+			$aHaving			= StatementSelect::generateWhere(null, $aHavingFilter);
+			$sWhereClause		.= " HAVING ".$aHaving['sClause'];
+			$aWhere['aValues']	= array_merge($aWhere['aValues'], $aHaving['aValues']);
+		}
+		
+		$oStmt	= new StatementSelect($sFrom, $sSelect, $sWhereClause, ($bCountOnly ? '' : $sOrderByClause), ($bCountOnly ? '' : $sLimitClause));
+		//Log::getLog()->log($oStmt->_strQuery);
 		if ($oStmt->Execute($aWhere['aValues']) === false)
 		{
 			throw new Exception_Database("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ".$oStmt->Error());
 		}
-
+		
 		if ($bCountOnly)
 		{
-			//throw new Exception($oStmt->_strQuery);
-
 			// Count only
-			$aRow	= $oStmt->Fetch();
-			return $aRow['record_count'];
+			$aRows	= $oStmt->FetchAll();
+			return count($aRows);
 		}
 		else
 		{
-			//throw new Exception($oStmt->_strQuery);
-
 			// Results required
 			$aResults	= array();
 			while ($aRow = $oStmt->Fetch())
 			{
 				$aResults[$aRow['id']]	= $aRow;
 			}
-			return $aResults;
+
+			$aRunInfo	= array();
+			foreach ($aResults as $iId => $aRow)
+			{
+				// Using the logic class is easy, but not the most efficient, as more data than needed is loaded into memory
+				$oTmpRun							= new Correspondence_Logic_Run(self::getForId($iId), true);
+				$aRow['status']		 				= $oTmpRun->generateDispatchStatusForReport();
+				$aRow['file_export_breakdown'] 		= $oTmpRun->generateFileDeliveryReport(false);
+				$aRow['delivery_method_breakdown'] 	= $oTmpRun->generateDeliveryMethodReport(false);
+				$aRunInfo[$iId] 					= $aRow;
+			}
+			return $aRunInfo;
 		}
 	}
 
@@ -220,7 +229,12 @@ class Correspondence_Run extends ORM_Cached
 			{
 				// SELECTS
 				case 'selByBatchId':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "correspondence_run_batch_id =  <correspondence_run_batch_id> ");
+					$arrPreparedStatements[$strStatement]	= 	new StatementSelect(
+																	self::$_strStaticTableName." cr
+																	JOIN correspondence_run_dispatch crd ON (crd.correspondence_run_id = cr.id)", 
+																	"cr.*", 
+																	"crd.correspondence_run_batch_id = <correspondence_run_batch_id>"
+																);
 					break;
 				case 'selByScheduleDateTime':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "scheduled_datetime <= <scheduled_datetime> AND correspondence_run_error_id IS NULL AND delivered_datetime IS NULL");

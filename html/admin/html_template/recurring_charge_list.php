@@ -273,14 +273,7 @@ class HtmlTemplateRecurringChargeList extends HtmlTemplate
 			// There are no charges to stick in this table
 			Table()->RecurringChargeTable->AddRow("<span>No recurring charges to display</span>");
 			Table()->RecurringChargeTable->SetRowAlignment("left");
-			if ($bolHasAdminPerm)
-			{
-				Table()->RecurringChargeTable->SetRowColumnSpan(3);
-			}
-			else
-			{
-				Table()->RecurringChargeTable->SetRowColumnSpan(2);
-			}
+			Table()->RecurringChargeTable->SetRowColumnSpan(0);
 		}
 		else
 		{

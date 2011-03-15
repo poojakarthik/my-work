@@ -85,9 +85,14 @@
  		$this->_strFileContents	= '';
  		
  		// Statements
-		$this->_selEmailNotification	= new StatementSelect(	"email_notification_address",
-																"*",
-																"(customer_group_id = <CustomerGroup> OR customer_group_id IS NULL) AND email_address_usage_id = <Usage> AND email_notification_id = ".EMAIL_NOTIFICATION_DIRECT_DEBIT_REPORT);
+		$this->_selEmailNotification	= 	new StatementSelect(
+												"	email_notification_address ena 
+													JOIN email_notification en ON (en.id = ena.email_notification_id)",
+												"	ena.*",
+												"	(ena.customer_group_id = <CustomerGroup> OR ena.customer_group_id IS NULL) 
+													AND ena.email_address_usage_id = <Usage> 
+													AND en.system_name = 'DIRECT_DEBIT_REPORT'"
+											);
  	}
  	
  	

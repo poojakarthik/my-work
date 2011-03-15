@@ -153,7 +153,7 @@ class Cli_App_EmailQueueFlush extends Cli
 
 			self::SWITCH_TEST_RUN => array(
 				self::ARG_REQUIRED		=> FALSE,
-				self::ARG_DESCRIPTION	=> "for testing script outcome [fully functional EXCEPT emails will not be sent]",
+				self::ARG_DESCRIPTION	=> "for testing script outcome [fully functional EXCEPT only 1 email from each queue will be sent and all database changes rolled back]",
 				self::ARG_DEFAULT		=> FALSE,
 				self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
 			),

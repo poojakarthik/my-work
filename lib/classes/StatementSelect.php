@@ -384,7 +384,9 @@
 		// Update profiling info
 	 	$aExecutionProfile['fDuration']		= microtime(true) - $aExecutionProfile['fStartTime'];
 	 	$aExecutionProfile['iResults']		= $this->_stmtSqlStatment->num_rows;
-	 	$this->aProfiling['aExecutions'][]	= $aExecutionProfile;
+		if ($this->db->getProfilingEnabled()) {
+			$this->aProfiling['aExecutions'][]	= $aExecutionProfile;
+		}
 		
 		return $this->_stmtSqlStatment->num_rows;
 	}

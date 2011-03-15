@@ -3,7 +3,7 @@ class Application_Handler_Developer extends Application_Handler
 {
 	const	URL_TYPE_JS		= 'onclick';
 	const	URL_TYPE_HREF	= 'href';
-	
+
 	// View the Developer Page
 	public function ViewList($subPath)
 	{
@@ -101,7 +101,7 @@ class Application_Handler_Developer extends Application_Handler
 													);
 			
 			$arrDetailsToRender = array();
-			$arrDetailsToRender['arrFunctions']		= $arrFunctions;
+			$arrDetailsToRender['arrFunctions']	= $arrFunctions;
 			
 			$this->LoadPage('developer_console', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
 		}
@@ -169,6 +169,536 @@ class Application_Handler_Developer extends Application_Handler
 		
 		return $objStdClass;
 	}
+	
+	// 
+	// COLLECTIONS LOGIC TESTING
+	//
+	public function logMessage($sMessage, $bolAddNewLine=true)
+	{
+		echo "{$sMessage}<br/>";
+	}
+
+        public function phpExcelRead()
+        {
+            require_once $_SERVER['DOCUMENT_ROOT'].'/../lib/PHPExcel/Classes/PHPExcel.php';
+            $objReader = new PHPExcel_Reader_Excel2007();
+            
+            $objReader->setReadDataOnly(true);
+            $objPHPExcel = $objReader->load( FILES_BASE_PATH.'temp/CollectionsReport-5.xlsx');
+            $rowIterator = $objPHPExcel->getActiveSheet()->getRowIterator();
+            $sheet = $objPHPExcel->getActiveSheet();
+            $sStyle = $sheet->getStyleByColumnAndRow("A", 2);
+            $oStyle3 =  $sheet->getStyleByColumnAndRow("A", 3);
+            foreach($rowIterator as $row)
+            {
+
+                $rowIndex = $row->getRowIndex ();
+                $array_data[$rowIndex] = array('A'=>'', 'B'=>'','C'=>'','D'=>'');
+
+                $cell = $sheet->getCell('A' . $rowIndex);
+                $array_data[$rowIndex]['A'] = $cell->getCalculatedValue();
+                $cell = $sheet->getCell('B' . $rowIndex);
+                $array_data[$rowIndex]['B'] = $cell->getCalculatedValue();
+                $cell = $sheet->getCell('C' . $rowIndex);
+                $array_data[$rowIndex]['C'] = PHPExcel_Style_NumberFormat::toFormattedString($cell->getCalculatedValue(), 'YYYY-MM-DD');
+                $cell = $sheet->getCell('D' . $rowIndex);
+                $array_data[$rowIndex]['D'] = $cell->getCalculatedValue();
+            }
+        }
+
+        public function testAccountsQuery()
+        {
+            Account::getForBalanceRedistribution();
+            die;
+        }
+
+        public function balanceRedistribution()
+        {
+            
+            Log::registerFunctionLog('Developer_Balance_Redistribute', 'logMessage', 'Application_Handler_Developer');
+            Log::setDefaultLog('Developer_Balance_Redistribute');
+            $oDataAccess	= DataAccess::getDataAccess();
+            
+            //if (!$oDataAccess->TransactionStart())
+           // {
+           //     throw new Exception("transcaction failed to start.");
+          //  }
+            try
+            {
+                 $aAccounts = Account::getForBalanceRedistribution(Account::BALANCE_REDISTRIBUTION_FORCED);
+                Logic_Account::batchProcessBalanceRedistribution($aAccounts);
+              // $oDataAccess->TransactionRollback();
+            }
+            catch(Exception $e)
+            {
+                throw $e;
+              //  $oDataAccess->TransactionRollback();
+            }
+            die;
+        }
+
+        public function getPayablesTest()
+        {
+            $oAccount = Account::getForId(1000005195);
+            $aPayables = $oAccount->getPayables();
+            die;
+        }
+
+	public function getMostRecentEventTest()
+	{
+	    $oAccount = Account::getForId(1000160104);
+	    $oEvent = Logic_Collection_Event_Instance::getMostRecentForAccount($oAccount, ACCOUNT_COLLECTION_EVENT_STATUS_COMPLETED);
+	    echo $oEvent->getEventName();
+	    $oEvent = Logic_Collection_Event_Instance::getMostRecentForAccount($oAccount);
+	    echo $oEvent->getEventName();
+	    die;
+	}
+
+	public function getScenariosTest() 
+	{
+	    $aScenarios =  Logic_Collection_Scenario_Instance::getForAccount(Logic_Account::getInstance(1000005195), FALSE);
+	    $x=5;
+	    die;
+	}
+
+    
+	public function OCATest()
+	{
+	    Log::registerFunctionLog('Developer_OCATest', 'logMessage', 'Application_Handler_Developer');
+		    Log::setDefaultLog('Developer_OCATest');
+	    $aAccountOCAReferrals = Account_OCA_Referral::getAll();
+	    $oResourceType = Resource_Type_File_Export_OCA_Referral::exportOCAReferrals(array_keys($aAccountOCAReferrals));
+	    die;
+	}
+
+    // TODO: CR137 - DELETE ME
+    public function EventTest()
+    {
+    	$aAccounts =	array(
+    						1000181423,
+							1000181422,
+							1000181421,
+							1000181420,
+							1000181419,
+							1000181418,
+							1000181417,
+							1000181416,
+							1000181415
+						);
+		
+		$aScenarioEventsByScenarioId = array();
+		
+		foreach ($aAccounts as $i => $iId)
+		{
+			$oAccount = Logic_Account::getInstance(Account::getForId($iId));
+			$oScenario = $oAccount->getCurrentScenarioInstance();
+			if (!$aScenarioEventsByScenarioId[$oScenario->scenario->id])
+			{
+				$aScenarioEventsById = $oScenario->scenario->getEvents();
+				$aScenarioEvents = array();
+				foreach ($aScenarioEventsById as $oScenarioEvent)
+				{
+					$aScenarioEvents[] = $oScenarioEvent;
+				}
+				$aScenarioEventsByScenarioId[$oScenario->scenario->id] = $aScenarioEvents;  
+			}
+			
+			$oScenarioEvent = $aScenarioEventsByScenarioId[$oScenario->scenario->id][$i];
+			
+			// Get the first collectable (doesn't really matter for this test)
+			$aCollectables = Collectable::getForAccount($oAccount->Id, true);
+			foreach ($aCollectables as $oCollectable)
+			{
+				break;
+			}
+			
+			$oEventInstance = new Account_Collection_Event_History();
+			$oEventInstance->account_id = $oAccount->Id;
+			$oEventInstance->collectable_id = $oCollectable->id;
+			$oEventInstance->collection_event_id = $oScenarioEvent->collection_event_id;
+			$oEventInstance->collection_scenario_collection_event_id = $oScenarioEvent->id;
+			$oEventInstance->scheduled_datetime = date('Y-m-d H:i:s');
+			$oEventInstance->account_collection_event_status_id = ACCOUNT_COLLECTION_EVENT_STATUS_SCHEDULED;
+			
+			$oEventInstance->save();
+		}
+		
+		echo 'Done';
+		
+		die;
+    }
+
+	
+	public function CollectionsLogic()
+	{
+		Log::registerFunctionLog('Developer_CollectionsLogic', 'logMessage', 'Application_Handler_Developer');
+		Log::setDefaultLog('Developer_CollectionsLogic');
+                try
+			{
+                            $oDataAccess = DataAccess::getDataAccess();
+                            $oDataAccess->TransactionStart();
+
+
+                            $iAccountsBatchProcessIteration = 1;                           
+                           
+                            try
+                            {
+                                $aPromises =  Logic_Collection_Promise::getActivePromises();
+                                Logic_Collection_Promise::batchProcess($aPromises);
+                            }
+                            catch (Exception $e)
+                            {
+                                 Logic_Collection_BatchProcess_Report::addException($e);
+                                if ($e instanceof Exception_Database)
+                                {
+                                    throw $e;
+                                }
+                            }
+
+                            try
+                            {
+                                $aActiveSuspensions = Collection_Suspension::getActive();
+                                Logic_Collection_Suspension::batchProcess($aActiveSuspensions);
+                            }
+                            catch(Exception $e)
+                            {
+                                if ($e instanceof Exception_Database)
+                                {
+                                    throw $e;
+                                }
+                                else
+                                {
+                                    Logic_Collection_BatchProcess_Report::addException($e);
+                                }
+                            }
+
+                            try
+                            {
+                                 //Log::getLog()->log('&&&&&&&&& Accounts Batch Process Iteration '.$iAccountsBatchProcessIteration++.'  &&&&&&&&&&&&&');
+                                $aExcludedAccounts = Logic_Collection_BatchProcess_Report::getAccountsWithExceptions();
+                                $aAccounts = array(Logic_Account::getInstance(1000008713));//Logic_Account::getForBatchCollectionProcess($aExcludedAccounts);
+                                $iCompletedInstances = Logic_Account::batchProcessCollections($aAccounts);
+
+                                while ($iCompletedInstances > 0)
+                                {
+                                    //Log::getLog()->log('&&&&&&&&& Accounts Batch Process Iteration '.$iAccountsBatchProcessIteration++.'  &&&&&&&&&&&&&');
+                                    $iCompletedInstances = Logic_Account::batchProcessCollections( $aAccounts);
+
+                                }
+                            }
+                            catch (Exception $e)
+                            {
+                                Logic_Collection_BatchProcess_Report::addException($e);
+                            }
+
+                            throw new Exception("force rollback");
+                                $oDataAccess->TransactionCommit();
+                            
+			}
+			catch (Exception $e)
+			{
+                             $oDataAccess->TransactionRollback();
+                             Log::getLog()->log($e->__toString());
+
+			}
+
+                try
+                {
+              
+
+
+               
+               $sPath = FILES_BASE_PATH.'temp/';
+
+            $sTimeStamp = str_replace(array(' ',':','-'), '',Data_Source_Time::currentTimestamp());
+            $sFilename	= "Collections_BatchProcess_Report_$sTimeStamp.$sFileExtension.csv";
+            Logic_Collection_BatchProcess_Report::generateReport($sPath.$sFilename, "CSV");
+           
+            //send the email
+            $sFile = file_get_contents($sPath.$sFilename);
+            $oEmail	=  new Email_Notification(1);
+            $oEmail->addAttachment($sFile, $sFilename, 'text/csv');
+            //$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
+            $oEmail->setSubject('Collections Batch Process Report');
+            $oEmail->setBodyText("Report Testing");
+            $oEmployee = Employee::getForId(Flex::getUserId());
+		if ($oEmployee!= null && $oEmployee->email!=null)
+			$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
+            $oEmail->send();
+
+                }
+                catch(Exception $e)
+                {
+                     $sPath = FILES_BASE_PATH.'temp/';
+
+                    $sTimeStamp = str_replace(array(' ',':','-'), '',Data_Source_Time::currentTimestamp());
+                    $sFilename	= "Collections_BatchProcess_Report_$sTimeStamp.$sFileExtension.csv";
+                    Logic_Collection_BatchProcess_Report::generateReport($sPath.$sFilename, "CSV");
+
+                    //send the email
+                    $sFile = file_get_contents($sPath.$sFilename);
+                    $oEmail	=  new Email_Notification(1);
+                    $oEmail->addAttachment($sFile, $sFilename, 'text/csv');
+                    //$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
+                    $oEmail->setSubject('Collections Batch Process Report');
+                    $oEmail->setBodyText("Report Testing");
+                    $oEmployee = Employee::getForId(Flex::getUserId());
+                        if ($oEmployee!= null && $oEmployee->email!=null)
+                                $oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
+                    $oEmail->send();
+                    throw $e;
+                }
+            
+		exit;
+	}
+
+        public function excelTest()
+        {
+
+         
+        require_once $_SERVER['DOCUMENT_ROOT'].'/../lib/PHPExcel/Classes/PHPExcel.php';
+      
+
+                $aResult = array(
+                                    array(
+                                        'Account|int'=>'1000008822',
+                                        'FNN|fnn'   =>'0405768976',
+                                        'Amount|currency'=>234.44,
+                                        'Account|url#https://collections-reengineer.jvanderbreggen.ybs.net.au/admin/flex.php/Account/Overview/?Account.Id={Account}'=>'1000008822'
+                                    ),
+                                    array(
+                                        'Account|int'=>'1000008751',
+                                        'FNN|fnn'   =>'0405768976',
+                                        'Amount|currency'=>234.44,
+                                        'Account|url#https://collections-reengineer.jvanderbreggen.ybs.net.au/admin/flex.php/Account/Overview/?Account.Id={Account}'=>'1000008751'
+                                    )
+                            );
+
+                $iNumRecs = count($aResult);
+        if ($iNumRecs>0)
+        {
+            // Create new PHPExcel object
+            $objPHPExcel = new PHPExcel();
+            $sheet = $objPHPExcel->getActiveSheet();
+            $aRawColumns = array_keys($aResult[0]);
+            $aColumns = array();
+            $aColumnFormatting = array();
+
+            foreach ($aRawColumns as $sColumn)
+            {
+                $aColumnParts = explode('|', $sColumn);
+                $aColumns[] = $aColumnParts[0];
+                if (count($aColumnParts)>1)
+                {
+                    $aFormat = explode('#', $aColumnParts[1]);
+                    $aColumnFormatting[] = $aFormat[0];
+
+                }
+                else
+                {
+                    $aColumnFormatting[] = null;
+                }
+                 
+            }
+            $starting_pos = ord('A');
+            $index_pos = 0;
+            foreach($aColumns as $sColumn)
+            {
+                $mStyle = $aColumnFormatting[$index_pos];
+                $iCol = chr($starting_pos+$index_pos);
+                $iNumRows = $iNumRecs+1;
+                $sRange = $iCol.'2:'."$iCol$iNumRows";
+                $oStyle = $sheet->getStyle($sRange);
+                
+                switch ($mStyle) {
+                    case 'int':
+                        $oNumberFormat = $oStyle->getNumberFormat();
+                         $oNumberFormat->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER);
+                       break;
+                    case 'fnn':
+                        $oNumberFormat = $oStyle->getNumberFormat();
+                         $oNumberFormat->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+                       break;
+                   case 'currency':
+                        $oNumberFormat = $oStyle->getNumberFormat();
+                        $oNumberFormat->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                       break;
+                   case 'url':
+                       $oColor = new PHPExcel_Style_Color(PHPExcel_Style_Color::COLOR_BLUE);
+                       $oFontFormat = $oStyle->getFont();
+                       $oFontFormat->setColor($oColor);
+                       $oFontFormat->setUnderline( PHPExcel_Style_Font::UNDERLINE_SINGLE);
+                      
+                            //$oFontFormat->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                    default:
+                        break;
+                }     
+
+
+                $sheet->setCellValue(chr($starting_pos+$index_pos) . '1',$sColumn);
+                $index_pos++;
+            }
+
+
+            $iRow = 2;
+            foreach ($aResult as $aRecord)
+            {
+                $starting_pos = ord('A');
+                $index_pos = 0;
+                foreach ($aRecord as $sCol=>$mValue)
+                {
+                    $mStyle = $aColumnFormatting[$index_pos];
+                    switch ($mStyle) {
+
+                    case 'fnn':
+                        $sheet->setCellValueExplicit(chr($starting_pos+$index_pos). $iRow, $mValue, PHPExcel_Cell_DataType::TYPE_STRING);
+                       break;
+                   case 'url':
+                       $aColumnParts = explode("#", $sCol);
+                       $sURL = str_replace ( "{".$aColumns[$index_pos]."}" , $mValue , $aColumnParts[1] );
+
+                       $sheet->   setCellValue(chr($starting_pos+$index_pos) . $iRow,$mValue);
+                       $sheet->getCell(chr($starting_pos+$index_pos) . $iRow)->getHyperlink()->setUrl( $sURL);
+                     //  $sheet->getCell(chr($starting_pos+$index_pos) . $iRow)->getHyperlink()->setTooltip('View Account in Flex');
+
+                    default:
+                        $sheet->   setCellValue(chr($starting_pos+$index_pos) . $iRow,$mValue);
+                        break;
+                }
+
+                    $index_pos++;
+                    
+                }
+                $iRow++;
+            }
+
+//            $starting_pos = ord('A');
+//            $index_pos = 0;
+//            foreach($aColumns as $sColumn)
+//            {
+//                $iCol = chr($starting_pos+$index_pos);
+//                $oStyle = $sheet->getStyle($iCol);
+//                $oNumberFormat = $oStyle->getNumberFormat();
+//                  $oNumberFormat->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD);
+//                $index_pos++;
+//            }
+
+
+
+
+            // Redirect output to a client’s web browser (Excel2007)
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename="CollectionsReport.xlsx"');
+            header('Cache-Control: max-age=0');
+
+            $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+            $objWriter->save('php://output');
+            exit;
+
+        }
+
+
+
+
+
+	
+	// 
+	// END: COLLECTIONS LOGIC TESTING
+	//	
+}
+
+        public function excelClassTest()
+        {
+            $aResult = array(
+                            array(
+                                'Account|int'=>'1000008822',
+                                'FNN|fnn'   =>'0405768976',
+                                'Amount|currency'=>234.44,
+                                'Account|url#https://collections-reengineer.jvanderbreggen.ybs.net.au/admin/flex.php/Account/Overview/?Account.Id={Account}'=>'1000008822',
+                                'Whatever'=>'blah'
+                            ),
+                            array(
+                                'Account|int'=>'1000008751',
+                                'FNN|fnn'   =>'0405768976',
+                                'Amount|currency'=>234.44,
+                                'Account|url#https://collections-reengineer.jvanderbreggen.ybs.net.au/admin/flex.php/Account/Overview/?Account.Id={Account}'=>'1000008751',
+                                'Whatever'=>'blah'
+                            )
+                        );
+
+
+
+            $iNumRecs = count($aResult);
+            if ($iNumRecs>0)
+            {          
+             
+                $oSpreadsheet = new Logic_Spreadsheet(array_keys($aResult[0]), $aResult);
+                // Redirect output to a client’s web browser (Excel2007)
+                header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                header('Content-Disposition: attachment;filename="CollectionsReport.xlsx"');
+                header('Cache-Control: max-age=0');
+                $oSpreadsheet->save('php://output');
+
+            }
+            exit;
+
+        }
+
+         public function excelClassTestSaveAs()
+        {
+            $aResult = array(
+                            array(
+                                'Account|int'=>'1000008822',
+                                'FNN|fnn'   =>'0405768976',
+                                'Amount|currency'=>234.44,
+                                'Account|url#https://collections-reengineer.jvanderbreggen.ybs.net.au/admin/flex.php/Account/Overview/?Account.Id={Account}'=>'1000008822'
+                            ),
+                            array(
+                                'Account|int'=>'1000008751',
+                                'FNN|fnn'   =>'0405768976',
+                                'Amount|currency'=>234.44,
+                                'Account|url#https://collections-reengineer.jvanderbreggen.ybs.net.au/admin/flex.php/Account/Overview/?Account.Id={Account}'=>'1000008751'
+                            )
+                        );
+
+
+
+            $iNumRecs = count($aResult);
+            if ($iNumRecs>0)
+            {
+
+                $oSpreadsheet = new Logic_Spreadsheet(array_keys($aResult[0]), $aResult);
+                // Redirect output to a client’s web browser (Excel2007)
+                header('Content-Type: application/csv');
+                header('Content-Disposition: attachment;filename="CollectionsReport.csv"');
+                header('Cache-Control: max-age=0');
+                $oSpreadsheet->saveAs('php://output', 'CSV');
+
+            }
+            exit;
+
+        }
+
+        public function testGetFor()
+        {
+            $x = Collection_Event::getForType(1);
+            foreach($x as $object)
+            {
+                print_r($object->toArray());
+            }
+
+            exit;
+        }
+
+
+
+
+
+
+	//
+	// END: COLLECTIONS LOGIC TESTING
+	//
+
 }
 
 ?>

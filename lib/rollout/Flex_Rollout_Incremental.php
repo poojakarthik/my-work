@@ -1,6 +1,6 @@
 <?php
 
-// Note: Suppress errors whilst loading application as there may well be some if the 
+// Note: Suppress errors whilst loading application as there may well be some if the
 // database model files have not yet been generated.
 $_SESSION = array();
 // Load Flex.php
@@ -14,6 +14,7 @@ class Flex_Rollout_Incremental
 {
 	public function updateToLatestVersion($nextVersionOnly=FALSE, $bolTestOnly=FALSE)
 	{
+
 		// Find the available updates
 		$db = Data_Source::get();
 		if (PEAR::isError($db))
@@ -23,34 +24,34 @@ class Flex_Rollout_Incremental
 
 		$sql = "SELECT MAX(version) FROM database_version";
 		$res = $db->query($sql);
-		
+
 		if (PEAR::isError($res))
 		{
 			throw new Exception("Failed to find latest database version: " . $res->getMessage());
 		}
-		
+
 		$currentVersion	= intval($res->fetchOne());
-		
+
 		Log::getLog()->log("Got latest version {$currentVersion}");
-		
+
 		$arrVersions	= self::_getVersionsAfter($currentVersion);
-		
+
 		Log::getLog()->log("Number of versions to rollout = ".count($arrVersions));
-		
+
 		foreach ($arrVersions as $intVersion => $objRollout)
 		{
 			Log::getLog()->log("Version {$intVersion}");
-			
+
 			// Don't run old style rollouts with the new script
 			if ($intVersion < Flex_Rollout_Version::NEW_SYSTEM_CUTOVER)
 			{
 				throw new NonIncrementalRolloutException("Rollouts for the old rollout system remain unapplied ($intVersion). Apply those before running this newer rollout system.");
 			}
-			
+
 			try
 			{
 				Log::getLog()->log("Generating database constants file");
-				
+
 				// Try to generate the constants file so that there is always one for the rollout scripts
 				self::GenerateDatabaseConstantsFile();
 			}
@@ -62,7 +63,7 @@ class Flex_Rollout_Incremental
 			try
 			{
 				Log::getLog()->log("Beginning transactions");
-				
+
 				// Begin transactions for each of the configurred data sources
 				self::beginTransactions();
 			}
@@ -76,7 +77,7 @@ class Flex_Rollout_Incremental
 			{
 				// Try to rollout the script (if this fails, we must roll-back script & db changes)
 				self::outputMessage("Performing Rollout v{$intVersion}...\n");
-				
+
 				$objRollout->rollout();
 
 				// Update the database_version table with the latest version number (insert a new record)
@@ -96,9 +97,9 @@ class Flex_Rollout_Incremental
 			catch (Exception $e)
 			{
 				$arrRollbackErrors = array();
-				
+
 				self::outputMessage("Rolling back Rollout v{$intVersion}...\n");
-				
+
 				try
 				{
 					// Rollback the database changes
@@ -140,8 +141,8 @@ class Flex_Rollout_Incremental
 			}
 			catch (Exception $e)
 			{
-				throw new Exception("Rollout $intVersion worked but ran into problems when running the tidy-up 'commit' function. \n" . 
-									"Make any necessary changes manually and then re-run rollout. \n" . 
+				throw new Exception("Rollout $intVersion worked but ran into problems when running the tidy-up 'commit' function. \n" .
+									"Make any necessary changes manually and then re-run rollout. \n" .
 									"The 'commit' function reported the following message: \n" .
 									$e->getMessage());
 			}
@@ -171,17 +172,17 @@ class Flex_Rollout_Incremental
 				}
 
 				@self::RollbackDatabaseConstantsFile();
-				
+
 				if ($strRollbackFailMessage)
 				{
 					throw new Exception($strRollbackFailMessage);
 				}
-				
+
 				break;
 			}
-			
+
 			$currentVersion = $intVersion;
-			
+
 			if ($nextVersionOnly)
 			{
 				break;
@@ -244,7 +245,7 @@ class Flex_Rollout_Incremental
 		}
 		return $dataSources;
 	}
-	
+
 	private static function beginTransactions()
 	{
 		$dataSources = self::getDataSources();
@@ -252,7 +253,7 @@ class Flex_Rollout_Incremental
 		foreach ($dataSources as $name => $dataSource)
 		{
 			Log::getLog()->log("Starting transaction for data source '{$name}'");
-			
+
 			$res = $dataSource->beginTransaction();
 			if (PEAR::isError($res))
 			{
@@ -327,7 +328,7 @@ class Flex_Rollout_Incremental
 			}
 
 			$className = "Flex_Rollout_Version_$strVersion";
-			
+
 			$arrNewVersions[$intVersion] = Flex_Rollout_Version::getInstance($className);
 		}
 
@@ -349,50 +350,50 @@ class Flex_Rollout_Incremental
 	 *
 	 * Builds the database_constants.php file
 	 * throws an exception on error
-	 * 
+	 *
 	 * @return	void
 	 *
 	 * @method
 	 */
 	public static function GenerateDatabaseConstantsFile()
 	{
-		try 
+		try
 		{
 			$dataSource = Data_Source::get();
 			$dataSource->loadModule('Manager');
-	
+
 			$tables = $dataSource->manager->listTables();
-			
+
 			if (PEAR::isError($tables))
 			{
 				throw new Exception("Failed to list tables when building DB constants: " . $tables->getMessage());
 			}
-	
+
 			foreach ($tables as $strTable)
 			{
 				$arrColumns = $dataSource->manager->listTableFields($strTable);
-	
+
 				if (PEAR::isError($arrColumns))
 				{
 					throw new Exception("Failed to retrieve column listing for the '$strTable' table: " . $arrColumns->getMessage());
 				}
-				
+
 				// Check if it has id AND const_name AND description
 				$intRequiredColumns	= 0;
 				$strId				= NULL;
 				$strConstName		= NULL;
 				$strDescription		= NULL;
 				$strName			= NULL;
-				
+
 				foreach ($arrColumns as $strColumn)
 				{
-					if (strtolower($strColumn) == "id") 
+					if (strtolower($strColumn) == "id")
 					{
 						// Save the case sensitive id field
 						$strId = $strColumn;
 						$intRequiredColumns++;
 					}
-					if (strtolower($strColumn) == "description") 
+					if (strtolower($strColumn) == "description")
 					{
 						// Save the case sensitive description field
 						$strDescription = $strColumn;
@@ -410,31 +411,31 @@ class Flex_Rollout_Incremental
 						$strName = $strColumn;
 					}
 				}
-				
+
 				if ($intRequiredColumns != 3)
 				{
 					// This table does not have all three of the id, name and description columns
 					// Don't build constant declarations for it
 					continue;
 				}
-				
+
 				// If there was no acceptable "name" column, then use the description column
 				if ($strName === NULL)
 				{
 					$strName = $strDescription;
 				}
-				
+
 				// The table has all 3 columns, which means we should convert it to constant declarations
 				// Retrieve the values and create a constant group
 				$strQuery		= "SELECT $strId as 'id', $strConstName as 'const_name', $strDescription as 'description', $strName as 'name' FROM $strTable WHERE $strConstName IS NOT NULL AND const_name != '' ORDER BY $strId ASC";
-	
+
 				$mxdResult	= $dataSource->query($strQuery);
-				
+
 				if (PEAR::isError($mxdResult))
 				{
 					throw new Exception("Failed to retrieve the contents of the '$strTable' table: " . $mxdResult->getMessage());
 				}
-				
+
 				// Build the constant group
 				$arrResults = $mxdResult->fetchAll(MDB2_FETCHMODE_ASSOC);
 				$arrConstantGroup		= array();
@@ -447,13 +448,13 @@ class Flex_Rollout_Incremental
 						// This 'constant' value has already been used by another constant in this group
 						throw new Exception("Redefinition of constant value {$arrRecord['id']} for ConstantGroup $strTable.");
 					}
-					
+
 					// Check that the constant's name is not already being used within the constant group
 					if (in_array($arrRecord['const_name'], $arrUsedConstantNames))
 					{
 						throw new Exception("Redeclaration of constant name {$arrRecord['const_name']} for ConstantGroup $strTable.");
 					}
-					
+
 					// Check that the constant's name is not already being used by any other constant defined
 					// in $GLOBALS['*arrConstant'] omitting the current constant group
 					foreach ($GLOBALS['*arrConstant'] as $strConstGroup=>$arrConstGroup)
@@ -470,28 +471,28 @@ class Flex_Rollout_Incremental
 							}
 						}
 					}
-					
+
 					// Add the constant to the ConstantGroup
 					$arrConstantGroup[$arrRecord['id']] = array(	'Constant'		=> $arrRecord['const_name'],
 																	'Description'	=> addslashes($arrRecord['description']),
 																	'Name'			=> addslashes($arrRecord['name'])
 																);
-					
+
 					// Add the constant name to the list of constant names already used by this ConstantGroup
 					$arrUsedConstantNames[] = $arrRecord['const_name'];
 				}
-				
+
 				if (count($arrConstantGroup) != 0)
 				{
 					// Add the ConstantGroup to the array of ConstantGroups
 					$arrConstantGroups[$strTable] = $arrConstantGroup;
 				}
 			}
-			
+
 			// Build the database_constants.php file
 			$strTimeStamp	= date("H:i:s d/m/Y");
 			$strFilePath	= GetVixenBase() . 'lib' . '/' ."framework". '/' ."database_constants.php";
-			
+
 			// Make a backup of the current database_constants.php file
 			if (file_exists($strFilePath))
 			{
@@ -501,29 +502,29 @@ class Flex_Rollout_Incremental
 					throw new Exception("Could not create backup file: $strFilePath.bak");
 				}
 			}
-				
+
 			$fileConstFile	= @fopen($strFilePath, 'w');
 			if ($fileConstFile === FALSE)
 			{
 				throw new Exception("Failed to open '$strFilePath' for writing.");
 			}
-			
-			$strFileContents = 
+
+			$strFileContents =
 	"<?php
-	/* 
+	/*
 	 * Database Constant definitions
 	 * File created: $strTimeStamp
 	 */
-	
+
 	";
-	
+
 			foreach ($arrConstantGroups as $strConstantGroupName=>$arrConstantGroup)
 			{
 				$strFileContents .= "\n// Constant Group: $strConstantGroupName\n";
-		
+
 				foreach ($arrConstantGroup as $mixValue=>$arrConstant)
 				{
-					$strFileContents .= 
+					$strFileContents .=
 	"\$GLOBALS['*arrConstant']\t['$strConstantGroupName']\t[$mixValue]\t['Constant']\t= '{$arrConstant['Constant']}';
 	\$GLOBALS['*arrConstant']\t['$strConstantGroupName']\t[$mixValue]\t['Description']\t= '{$arrConstant['Description']}';
 	\$GLOBALS['*arrConstant']\t['$strConstantGroupName']\t[$mixValue]\t['Name']\t\t= '{$arrConstant['Name']}';
@@ -531,7 +532,7 @@ class Flex_Rollout_Incremental
 				}
 			}
 			$strFileContents .= "\n?>";
-			
+
 			if (!@fwrite($fileConstFile, $strFileContents))
 			{
 				copy("$strFilePath.bak", $strFilePath);
@@ -559,7 +560,7 @@ class Flex_Rollout_Incremental
 	 * Reverts back to the backup of database_constants.php if it exists
 	 *
 	 * Reverts back to the backup of database_constants.php if it exists
-	 * 
+	 *
 	 * @return	void
 	 *
 	 * @method
@@ -567,7 +568,7 @@ class Flex_Rollout_Incremental
 	public static function RollbackDatabaseConstantsFile()
 	{
 		$strFilePath	= GetVixenBase() . 'lib' . '/' ."framework". '/' ."database_constants.php";
-		
+
 		// Check if there is a backup
 		if (file_exists("$strFilePath.bak"))
 		{
@@ -579,7 +580,7 @@ class Flex_Rollout_Incremental
 	public static function GenerateCreditCardDetailsJS()
 	{
 		$db = Data_Source::get();
-		
+
 		// Retrieve a list of all tables in the database
 		$sql = "SELECT id, name, description, const_name, surcharge, valid_lengths, valid_prefixes, cvv_length, minimum_amount, maximum_amount FROM credit_card_type";
 		$creditCards = $db->query($sql);
@@ -593,7 +594,7 @@ class Flex_Rollout_Incremental
 
 		$js = "
 CreditCardType = Class.create();
-Object.extend(CreditCardType, 
+Object.extend(CreditCardType,
 {
 	types: [\n";
 		$prefixTypes = "";
@@ -610,9 +611,9 @@ Object.extend(CreditCardType,
 			$js .= $i ? ",\n" : '';
 			$prefixes = explode(',', $ccDetails[$i]['valid_prefixes']);
 			$lengths = explode(',', $ccDetails[$i]['valid_lengths']);
-			$js .= "		{ id: " . $d['id'] . ", name: '" . $d['name'] . "', description: '" . $d['description'] . "'" 
-						. ", const_name: '" . $d['const_name'] . "', surcharge: " . $d['surcharge'] . ", valid_prefixes: ['" . implode("','", $prefixes) . "']" 
-						. ", valid_lengths: [" . $d['valid_lengths'] . "], cvv_length: " . $d['cvv_length'] 
+			$js .= "		{ id: " . $d['id'] . ", name: '" . $d['name'] . "', description: '" . $d['description'] . "'"
+						. ", const_name: '" . $d['const_name'] . "', surcharge: " . $d['surcharge'] . ", valid_prefixes: ['" . implode("','", $prefixes) . "']"
+						. ", valid_lengths: [" . $d['valid_lengths'] . "], cvv_length: " . $d['cvv_length']
 						. ", minimum_amount: " . $d['minimum_amount'] . ", maximum_amount: " . $d['maximum_amount'] . "}";
 
 			$idTypes .= ($idTypes ? ",\n\t\t\t  " : '') . 'ID_' . $d['id'] . ": $i";

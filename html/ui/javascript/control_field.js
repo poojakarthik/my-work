@@ -11,10 +11,18 @@ var Control_Field	= Class.create
 		
 		this.sValidationReason			= null;
 		this.bValidationStylingEnabled	= true;
+		this.bValidateField			= false;
 		
 		// Create DOM Objects
-		this.oControlOutput				= {};
-		this.oControlOutput.oElement	= $T.div({class: 'control-field'});
+		this.oControlOutput							= {};
+		this.oControlOutput.oElement				= $T.div({'class':'control-field'});
+		this.oControlOutput.oElement.oControlField	= this;
+		this.oControlOutput.oValidationError		= {
+			oElement	: $T.div({'class':'control-field-validation-error'})
+		}
+		this.oControlOutput.oElement.appendChild(this.oControlOutput.oValidationError.oElement);
+
+		this.oControlOutput.oElement.observe('mousemove', this._positionValidationError.bind(this));
 		
 		this.bInit	= false;
 	},
@@ -22,11 +30,6 @@ var Control_Field	= Class.create
 	getElement	: function()
 	{
 		return this.oControlOutput.oElement;
-	},
-	
-	getElementValue	: function()
-	{
-		throw "OO Error: Control_Field::getElementValue() is an unimplemented Virtual Method!";
 	},
 	
 	updateElementValue	: function(bolUseInternalValue)
@@ -245,18 +248,27 @@ var Control_Field	= Class.create
 	},
 	
 	// Validation
-	setValidateFunction	: function(fnValidate)
+	setValidateFunction	: function(fnValidate, bValidateField)
 	{
-		this.fnValidate	= fnValidate;
+		this.bValidateField	= (bValidateField === true) ? true : false;
+		this.fnValidate			= fnValidate;
 		this.validate();
 	},
 	
-	isValid	: function()
+	isValid	: function(bSuppressException)
 	{
 		if (typeof this.fnValidate == 'function')
 		{
 			// Callback
-			return (this.fnValidate(this.getElementValue())) ? true : false;
+			try {
+				return !!this.fnValidate(this.bValidateField ? this : this.getElementValue());
+			} catch (mException) {
+				if (bSuppressException === false) {
+					throw mException;
+				} else {
+					return false;
+				}
+			}
 		}
 		else
 		{
@@ -271,7 +283,8 @@ var Control_Field	= Class.create
 		{
 			bSilentFail	= true;
 		}
-		
+
+		this.setValidationReason('');
 		if (this.isEditable())
 		{
 			// Preprocess (trim)
@@ -285,7 +298,21 @@ var Control_Field	= Class.create
 			
 			if (mElementValue)
 			{
-				if (this.isValid())
+				var	bValid,
+					sValidationReason;
+				try {
+					bValid	= this.isValid(false);
+				} catch (mException) {
+					bValid	= false;
+
+					if (typeof mException === 'string') {
+						sValidationReason	= mException;
+					} else {
+						sValidationReason	= mException.toString();
+					}
+				}
+
+				if (bValid)
 				{
 					if (this.bValidationStylingEnabled)
 					{
@@ -298,14 +325,17 @@ var Control_Field	= Class.create
 					{
 						this.oControlOutput.oElement.addClassName('invalid');
 					}
-					
+
+					sValidationReason	= sValidationReason ? sValidationReason : this.getValidationReason();
+					this.setValidationReason(sValidationReason);
+					var	sValidationMessage	= "'" + mElementValue + "' is not a valid " + this.getLabel() + "." + sValidationReason;
 					if (bSilentFail)
 					{
 						return false;
 					}
 					else
 					{
-						throw "'" + mElementValue + "' is not a valid " + this.getLabel() + "." + this.getValidationReason();
+						throw sValidationMessage;
 					}
 				}
 			}
@@ -315,7 +345,8 @@ var Control_Field	= Class.create
 				{
 					this.oControlOutput.oElement.addClassName('mandatory');
 				}
-				
+
+				this.setValidationReason("No value supplied for mandatory field");
 				if (bSilentFail)
 				{
 					return false;
@@ -326,7 +357,6 @@ var Control_Field	= Class.create
 				}
 			}
 		}
-		
 		return true;
 	},
 	
@@ -397,7 +427,8 @@ var Control_Field	= Class.create
 	
 	setValidationReason	: function(sReason)
 	{
-		this.sValidationReason	= sReason;
+		this.sValidationReason	= String(sReason);
+		this.oControlOutput.oValidationError.oElement.innerHTML	= this.sValidationReason.escapeHTML();
 	},
 	
 	getValidationReason	: function()
@@ -408,6 +439,17 @@ var Control_Field	= Class.create
 		}
 		
 		return '';
+	},
+
+	_positionValidationError	: function (oEvent) {
+		//debugger;
+		if (this.sValidationReason && this.sValidationReason.length/* && oEvent.findElement() === this.oControlOutput.oElement*/) {
+			//debugger;
+			this.oControlOutput.oValidationError.oElement.setStyle({
+				top		: oEvent.clientY+(Object.isNumber(Control_Field.VALIDATION_TOOLTIP_OFFSET_Y) ? Control_Field.VALIDATION_TOOLTIP_OFFSET_Y : 0)+'px',
+				left	: oEvent.clientX+(Object.isNumber(Control_Field.VALIDATION_TOOLTIP_OFFSET_X) ? Control_Field.VALIDATION_TOOLTIP_OFFSET_X : 0)+'px'
+			});
+		}
 	},
 	
 	disableValidationStyling	: function()
@@ -430,6 +472,9 @@ var Control_Field	= Class.create
 // Class Constants
 Control_Field.RENDER_MODE_VIEW	= false;
 Control_Field.RENDER_MODE_EDIT	= true;
+
+Control_Field.VALIDATION_TOOLTIP_OFFSET_X	= 12;
+Control_Field.VALIDATION_TOOLTIP_OFFSET_Y	= 4;
 
 Control_Field.getError	= function(oControl)
 {
@@ -459,7 +504,8 @@ Control_Field.factory	= function(sType, oDefinition)
 		case 'checkbox':
 			oControlField	= new Control_Field_Checkbox(oDefinition.sLabel);
 			break;
-		
+
+		case 'radio':
 		case 'radiobutton':
 			oControlField	= new Control_Field_RadioButton(oDefinition.sLabel);
 			if (oDefinition.sFieldName)
@@ -536,6 +582,14 @@ Control_Field.factory	= function(sType, oDefinition)
 		case 'text_ajax':
 			oControlField	= new Control_Field_Text_AJAX(oDefinition.sLabel, null, oDefinition.oDatasetAjax, oDefinition.sDisplayValueProperty, oDefinition.oColumnProperties, oDefinition.iResultLimit, oDefinition.sResultPaneClass);
 			break;
+
+		case 'number':
+			oControlField	= new Control_Field_Number(oDefinition.sLabel);
+			oControlField.setMinimumValue(oDefinition.fMinimumValue);
+			oControlField.setMaximumValue(oDefinition.fMaximumValue);
+			oControlField.setDecimalPlaces(oDefinition.iDecimalPlaces);
+			oControlField.setAutoTrim(oDefinition.mAutoTrim ? oDefinition.mAutoTrim : false);
+			break;
 			
 		default:
 			throw "'" + sType + "' is not a valid Control_Field type!";
@@ -543,7 +597,7 @@ Control_Field.factory	= function(sType, oDefinition)
 	}
 	
 	// Set common properties
-	oControlField.setVisible(oDefinition.mVisible ? oDefinition.mVisible : true);
+	oControlField.setVisible((oDefinition.mVisible === false || oDefinition.mVisible) ? oDefinition.mVisible : true);
 	oControlField.setEditable(oDefinition.mEditable ? oDefinition.mEditable : false);
 	oControlField.setMandatory(oDefinition.mMandatory ? oDefinition.mMandatory : false);
 	
@@ -554,12 +608,20 @@ Control_Field.factory	= function(sType, oDefinition)
 	
 	if (oDefinition.fnValidate)
 	{
-		oControlField.setValidateFunction(oDefinition.fnValidate);
+		oControlField.setValidateFunction(oDefinition.fnValidate, !!oDefinition.bValidateField);
 	}
 	
 	if (oDefinition.sValidationReason)
 	{
 		oControlField.setValidationReason(oDefinition.sValidationReason);
+	}
+
+	if (typeof oDefinition.mValue !== 'undefined') {
+		oControlField.setValue(oDefinition.mValue);
+	}
+
+	if (oDefinition.sExtraClass) {
+		oControlField.getElement().addClassName(oDefinition.sExtraClass);
 	}
 	
 	return oControlField;

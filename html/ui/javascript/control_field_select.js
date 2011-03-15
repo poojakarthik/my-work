@@ -48,7 +48,7 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 	
 	updateElementValue	: function()
 	{
-		mValue	= this.getValue();
+		var	mValue	= this.getValue();
 		
 		this.setElementValue(mValue);
 		this.oControlOutput.oView.innerHTML	= (this.oControlOutput.oEdit.selectedIndex >= 0) ? this.oControlOutput.oEdit.options[this.oControlOutput.oEdit.selectedIndex].innerHTML : '[ None ]';

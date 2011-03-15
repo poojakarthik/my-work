@@ -218,6 +218,119 @@ class Charge extends ORM_Cached
 		
 		return $arrChargeObjects;
 	}
+	
+	public static function getDatasetForAccountList($bCountOnly=false, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null)
+	{
+		// Build the list of charge type visibilities to allow
+		$bUserIsGod					= Employee::getForId(Flex::getUserId())->isGod();
+		$bUserIsCreditManagement	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
+		$bUserCanDeleteCharges		= (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN) || $bUserIsCreditManagement);
+		$aVisibleChargeTypes 		= array(CHARGE_TYPE_VISIBILITY_VISIBLE);
+		if ($bUserIsCreditManagement)
+		{
+			$aVisibleChargeTypes[] = CHARGE_TYPE_VISIBILITY_CREDIT_CONTROL;
+		}
+		
+		if ($bUserIsGod)
+		{
+			$aVisibleChargeTypes[] = CHARGE_TYPE_VISIBILITY_HIDDEN;
+		}
+		
+		$aAliases = array(
+						'id' 					=> "c.Id",
+						'charge_type_code' 		=> "c.ChargeType",
+						'charge_model_id' 		=> "c.charge_model_id",
+						'charge_status' 		=> "c.Status",
+						'charged_on' 			=> "c.ChargedOn",
+						'amount_inc_gst' 		=> "c.Amount + (
+													c.Amount * (
+														SELECT	tt.rate_percentage
+														FROM	tax_type tt
+														WHERE	tt.global = 1
+														AND		NOW() BETWEEN tt.start_datetime AND tt.end_datetime
+														LIMIT	1
+													)
+												)",
+						'nature' 			=> "c.Nature",
+						'created_by' 		=> "c.CreatedBy",
+						'created_by_name' 	=> "IF(c.CreatedBy, CONCAT(e_created_by.FirstName, ' ', e_created_by.LastName), NULL)",
+						'approved_by' 		=> "c.ApprovedBy",
+						'approved_by_name' 	=> "IF(c.ApprovedBy, CONCAT(e_approved_by.FirstName, ' ', e_approved_by.LastName), NULL)",
+						'service_id' 		=> "c.Service",
+						'service_fnn' 		=> "s.FNN",
+						'description' 		=> "c.Description",
+						'invoice_run_id' 	=> "c.invoice_run_id",
+						'link_type' 		=> "c.LinkType",
+						'link_id' 			=> "c.LinkId",
+						'account_id'		=> "c.Account"
+					);
+		
+		$sFrom = "				Charge c 
+					LEFT JOIN	Employee e_created_by ON (e_created_by.Id = c.CreatedBy)
+					LEFT JOIN	Employee e_approved_by ON (e_approved_by.Id = c.ApprovedBy)
+					LEFT JOIN	Service s ON (s.Id = c.Service)
+					LEFT JOIN 	ChargeType ct ON (
+						            (ct.Id = c.charge_type_id OR ct.ChargeType = c.ChargeType)
+						            AND ct.charge_type_visibility_id IN (".implode(',', $aVisibleChargeTypes).")
+						        )";
+		
+		if ($bCountOnly)
+		{
+			$sSelect	= "COUNT(c.Id) AS count";
+			$sOrderBy	= "";
+			$sLimit		= "";
+		}
+		else
+		{
+			$aSelectLines = array();
+			foreach ($aAliases as $sAlias => $sClause)
+			{
+				$aSelectLines[] = "{$sClause} AS {$sAlias}";
+			}
+			$sSelect	= implode(', ', $aSelectLines);
+			$sOrderBy	= Statement::generateOrderBy($aAliases, get_object_vars($oSort));
+			$sLimit		= Statement::generateLimit($iLimit, $iOffset);
+		}
+		
+		$aWhere 	= Statement::generateWhere($aAliases, get_object_vars($oFilter));
+		$oSelect 	= new StatementSelect($sFrom, $sSelect, $aWhere['sClause'], $sOrderBy, $sLimit);
+		//throw new Exception($oSelect->_strQuery);
+		$mRows 		= $oSelect->Execute($aWhere['aValues']);
+		if ($mRows === false)
+		{
+			throw new Exception_Database("Failed to get Charge search results. ".$oSelect->Error());
+		}
+		
+		if ($bCountOnly)
+		{
+			$aRow = $oSelect->Fetch();
+			return $aRow['count'];
+		}
+		
+		return $oSelect->FetchAll();
+	}
+	
+
+	public static function getUnbilledForAccountAndType($iAccountId, $iChargeTypeId)
+    {
+        $sSql = "   SELECT *
+                    FROM Charge
+                    WHERE Account = $iAccountId
+                    AND charge_type_id = $iChargeTypeId
+                    AND Status in (".CHARGE_APPROVED.",".CHARGE_TEMP_INVOICE.")";
+        $oQuery = new Query();
+        $mResult = $oQuery->Execute($sSql);
+        $aResult = array();
+        if ($mResult)
+        {
+            while ($aRow = $mResult->fetch_assoc())
+            {
+                    $aResult[]= new self($aRow);
+            }
+        }
+
+        return count($aResult) > 0 ? $aResult : null;
+    }
 
 	protected static function getCacheName()
 	{
@@ -354,6 +467,12 @@ class Charge extends ORM_Cached
 		if (!isset($this->charge_model_id))
 		{
 			$this->charge_model_id	= CHARGE_MODEL_CHARGE;
+		}
+		else if ($this->charge_model_id == CHARGE_MODEL_ADJUSTMENT)
+		{
+			// Assert that no adjustment charges can be created any more
+			$mId = ORM::extractId($this);
+			Flex::assert($mId !== null, "Adjustment Charge (charge with charge model of adjustment) being created, instead of using the Adjustment class (& table).", print_r($this->toArray(), true));
 		}
 		
 		parent::save();

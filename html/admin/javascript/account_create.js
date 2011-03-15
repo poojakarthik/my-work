@@ -154,6 +154,30 @@ Account_Create = Class.create({
 			this.className = "valid";
 			return true;
 		}
+		
+		// Validate Account Class
+		this.oForm.select('select[name="Account[account_class_id]"]').first().validate = function ()
+		{
+			if (!/\S/.test(this.value))
+			{
+				this.className = "invalid";
+				return "Invalid Account Class";	
+			}
+			this.className = "valid";
+			return true;
+		}
+		
+		// Validate Collection Scenario
+		this.oForm.select('select[name="Account[collection_scenario_id]"]').first().validate = function ()
+		{
+			if (!/\S/.test(this.value))
+			{
+				this.className = "invalid";
+				return "Invalid Collection Scenario";	
+			}
+			this.className = "valid";
+			return true;
+		}
 
 		this.oForm.select('select[name="Account[DeliveryMethod]"]').first().validate = function ()
 		{
@@ -668,6 +692,58 @@ Account_Create = Class.create({
 
 		return true;
 	
+	},
+
+	customerGroupChange : function()
+	{
+		var oCustomerGroupSelect 	= this.oForm.select('select[name="Account[CustomerGroup]"]').first();
+		var oAccountClassSelect		= this.oForm.select('select[name="Account[account_class_id]"]').first();
+		var oSelectedCustomerGroup 	= oCustomerGroupSelect.options[oCustomerGroupSelect.selectedIndex];
+		if (oSelectedCustomerGroup)
+		{
+			var sDefaultAccountClassId = oSelectedCustomerGroup.getAttribute('data-default-account-class-id');
+			if (sDefaultAccountClassId)
+			{
+				if (!oAccountClassSelect.bUserHasChosen)
+				{
+					oAccountClassSelect.value = sDefaultAccountClassId;
+					this.accountClassChange(true);
+				}
+			}
+		}
+	},
+	
+	accountClassChange : function(bAutoChange)
+	{
+		var oAccountClassSelect = this.oForm.select('select[name="Account[account_class_id]"]').first();
+		if (!bAutoChange)
+		{
+			oAccountClassSelect.bUserHasChosen = true;
+		}
+		
+		var oScenarioSelect			= this.oForm.select('select[name="Account[collection_scenario_id]"]').first();
+		var oSelectedAccountClass 	= oAccountClassSelect.options[oAccountClassSelect.selectedIndex];
+		if (oSelectedAccountClass)
+		{
+			var sDefaultScenarioId = oSelectedAccountClass.getAttribute('data-collection-scenario-id');
+			if (sDefaultScenarioId)
+			{
+				if (!oScenarioSelect.bUserHasChosen)
+				{
+					oScenarioSelect.value = sDefaultScenarioId;
+					this.scenarioChange(true);
+				}
+			}
+		}
+	},
+	
+	scenarioChange : function(bAutoChange)
+	{
+		var oScenarioSelect = this.oForm.select('select[name="Account[collection_scenario_id]"]').first();
+		if (!bAutoChange)
+		{
+			oScenarioSelect.bUserHasChosen = true;
+		}
 	},
 	
 	_onConstantLoad : function ()

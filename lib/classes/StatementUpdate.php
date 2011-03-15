@@ -311,7 +311,9 @@
 			// Update profiling info
 		 	$aExecutionProfile['fDuration']		= microtime(true) - $aExecutionProfile['fStartTime'];
 		 	$aExecutionProfile['iAffectedRows']	= $this->intAffectedRows;
-		 	$this->aProfiling['aExecutions'][]	= $aExecutionProfile;
+			if ($this->db->getProfilingEnabled()) {
+				$this->aProfiling['aExecutions'][]	= $aExecutionProfile;
+			}
 		 	
 			return $this->intAffectedRows;
 		}

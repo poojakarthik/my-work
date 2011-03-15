@@ -1,10 +1,10 @@
 <?php
 /**
- * Correspondence_Template
+ * Email_Template
  *
  * This is an example of a class that extends ORM_Cached
  *
- * @class	Correspondence_Template
+ * @class	Email_Template
  */
 class Email_Template extends ORM_Cached
 {
@@ -72,43 +72,130 @@ class Email_Template extends ORM_Cached
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 
-	public static function getForCustomerGroupAndType($iCustomerGroup, $iEmailTemplateType)
+
+	public static function getForAllCustomerGroups($bCountOnly=false, $iLimit=null, $iOffset=null, $sSortDirection='DESC')
 	{
-		$oStmt	= self::_preparedStatement('selByCustomerGroupAndType');
-		$oStmt->Execute(array('customer_group_id' => $iCustomerGroup, 'email_template_type_id' => $iEmailTemplateType));
-		$oTemplate	= null;
-		if ($aTemplate = $oStmt->Fetch())
+
+		if ($bCountOnly)
 		{
-			$oTemplate	= new self($aTemplate);
+			// Count records only
+			$oQuery	= new Query();
+			$sQuery	= "	SELECT	count(*) as template_count
+						FROM	email_template
+						";
+			$mResult	= $oQuery->Execute($sQuery);
+			if ($mResult === false)
+			{
+				// Most likely a sql or connectivity error
+				throw new Exception_Database("Unable to count email template records, SQL Error. ".$oQuery->Error());
+			}
+			$aRow	= $mResult->fetch_assoc();
+			return $aRow['template_count'];
 		}
 		else
 		{
-			throw new Exception_Database("Failed to get Email_Template for customer group & type. ".$oStmt->Error());
+
+			// Return all records
+			$sLimit	= StatementSelect::generateLimit($iLimit, $iOffset);
+			$oQuery	= new Query();
+			$sQuery	= "	SELECT	*
+						FROM	email_template
+						ORDER BY name {$sSortDirection}
+						LIMIT {$sLimit}";
+			$mResult	= $oQuery->Execute($sQuery);
+			if ($mResult === false)
+			{
+				// Most likely a sql or connectivity error
+				throw new Exception_Database("Unable to retrieve email_template records, SQL Error. ".$oQuery->Error());
+			}
+
+			// Create ORM objects and return
+			$aTeamplates	= array();
+			while ($aRow = $mResult->fetch_assoc())
+			{
+				$oTemplate = new stdClass();
+				$oTemplate->id = $aRow['id'];
+				$oTemplate->name = $aRow['name'];
+				$oTemplate->description = $aRow['description'];
+				$oTemplate->customerGroupInstances = array();
+
+
+				$oCustmerGroupQuery	= new Query();
+				$sCustomerGroupQuery	= "	SELECT	e.id, c.external_name
+											FROM	email_template_customer_group e , CustomerGroup c
+											where e.customer_group_id = c.Id
+											AND email_template_id = ".$aRow['id'];
+				$mCustomerGroupResult	= $oCustmerGroupQuery->Execute($sCustomerGroupQuery);
+				if ($mCustomerGroupResult === false)
+				{
+					// Most likely a sql or connectivity error
+					throw new Exception_Database("Unable to retrieve email_template records, SQL Error. ".$oQuery->Error());
+				}
+				while ($aNestedRow = $mCustomerGroupResult->fetch_assoc())
+				{
+					//$oOrm = Email_Template_Customer_Group::getForId($aNestedRow['id']);
+					$oTemplate->customerGroupInstances[]= $aNestedRow;//$oOrm->toArray();
+				}
+
+				$aTeamplates[]	= $oTemplate;
+			}
+			return $aTeamplates;
 		}
-		return $oTemplate;
 	}
 
-	public static function getVariablesForTemplate($iTemplateId)
+	public function getTemplateVersionDetailsForCustomerGroup($iCustomerGroup)
 	{
-			$sSql = "select class_name
-					FROM email_template_type e, email_template et
-					WHERE e.id = et.email_template_type_id
 
-					and et.id = $iTemplateId";
-		$oQuery	= new Query();
-		$mResult	= $oQuery->Execute($sSql);
-		$sClassName = '';
+		$sSql = 'SELECT id
+				 FROM email_template e';
+		$oTemplateTypeQuery = new Query();
+		$mResult = $oTemplateTypeQuery->Execute($sSql);
 		while ($aRow = $mResult->fetch_assoc())
 		{
-			$sClassName =  $aRow['class_name'];
+			try
+			{
+				Email_Template_Customer_Group::getForCustomerGroupAndType($iCustomerGroup, $aRow['id']);
+			}
+			catch (Exception_Database $oEx)
+			{
+				$oTemplateCustomerGroup 					= new Email_Template_Customer_Group();
+				$oTemplateCustomerGroup->customer_group_id 	= $iCustomerGroup;
+				$oTemplateCustomerGroup->email_template_id 	= $aRow['id'];
+				$oTemplateCustomerGroup->save();
+			}
 		}
 
+		$sSql = 'SELECT et.id,
+					e.name,
+					ed.effective_datetime,
+					COALESCE(ed.description, "There is No Current Version for this Template") as description
+					FROM email_template e
+					JOIN email_template_customer_group et ON (et.email_template_id = e.id)
+					LEFT JOIN email_template_details ed ON (ed.email_template_customer_group_id = et.id AND ed.effective_datetime<NOW() AND ed.end_datetime>NOW())
+					WHERE et.customer_group_id ='.$iCustomerGroup;
+		$oCustmerGroupQuery	= new Query();
+		$mCustomerGroupResult	= $oCustmerGroupQuery->Execute($sSql);
+		$aTemplateVersionDetails = array();
+		while ($aRow = $mCustomerGroupResult->fetch_assoc())
+		{
+			$aTemplateVersionDetails[]= $aRow;//$oOrm->toArray();
+		}
 
-		return call_user_func( array($sClassName,"getVariables"));
+		return $aTemplateVersionDetails;
 
 	}
 
-
+	public static function getForSystemName($sSystemName)
+	{
+		$oStmt	= self::_preparedStatement('selBySysName');
+		$oStmt->Execute(array('system_name' => $sSystemName));
+		$aRow	= $oStmt->Fetch();
+		if ($aRow)
+		{
+			return new self($aRow);
+		}
+		return null;
+	}
 
 	/**
 	 * _preparedStatement()
@@ -133,11 +220,8 @@ class Email_Template extends ORM_Cached
 			switch ($strStatement)
 			{
 				// SELECTS
-				case 'selByCustomerGroupAndType':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "customer_group_id = <customer_group_id> AND email_template_type_id = <email_template_type_id>", null, 1);
-					break;
 				case 'selBySysName':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "system_name = <system_name> AND status_id = 1", NULL, 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "system_name = <system_name>", NULL, 1);
 					break;
 				case 'selById':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);

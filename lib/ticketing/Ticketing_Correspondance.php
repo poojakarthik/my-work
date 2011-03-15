@@ -551,14 +551,14 @@ class Ticketing_Correspondance
 			return;
 		}
 
-		$email = new Email_Notification(EMAIL_NOTIFICATION_TICKETING_SYSTEM, $customerGroupId);
-		$email->to = $emailAddress;
-		$email->from = $custGroupEmail->email;
-		$email->subject = $this->summary . " [T" . $this->ticketId . "Z]";
-		$emailText = $custGroupConfig->emailReceiptAcknowledgement;
-		$emailText = str_replace('[TICKET_ID]', 'T'.$this->ticketId.'Z', $emailText);
-		$emailText = str_replace('[CUSTOMER_GROUP_NAME]', $customerGroupName, $emailText);
-		$email->text = $emailText;
+		$email 			= Email_Notification::getForSystemName('TICKETING_SYSTEM', $customerGroupId);
+		$email->to 		= $emailAddress;
+		$email->from 	= $custGroupEmail->email;
+		$email->subject	= $this->summary . " [T" . $this->ticketId . "Z]";
+		$emailText 		= $custGroupConfig->emailReceiptAcknowledgement;
+		$emailText 		= str_replace('[TICKET_ID]', 'T'.$this->ticketId.'Z', $emailText);
+		$emailText 		= str_replace('[CUSTOMER_GROUP_NAME]', $customerGroupName, $emailText);
+		$email->text 	= $emailText;
 		$email->send();
 	}
 
@@ -604,7 +604,7 @@ class Ticketing_Correspondance
 			$customerGroupEmail			= $objActiveCGEmail;
 		}
 
-		$email = new Email_Notification(EMAIL_NOTIFICATION_TICKETING_SYSTEM);
+		$email	= Email_Notification::getForSystemName('TICKETING_SYSTEM');
 
 		$email->addTo($contact->email, $contact->getName()); // The contact from the ticket (contact_id)
 

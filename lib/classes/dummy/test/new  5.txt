@@ -1,0 +1,99 @@
+
+TABLE: Dummy_Account
+
+ID: 1
+[name]: TB1[account_class_id]: 1[Id]: 1
+ID: 2
+[name]: VT1[account_class_id]: 1[Id]: 2
+ID: 3
+[name]: PT1[account_class_id]: 1[Id]: 3
+ID: 4
+[name]: A1[account_class_id]: 2[Id]: 4
+
+
+TABLE: Dummy_Account_Collection_Scenario
+
+ID: 1
+[account_id]: 1[collection_scenario_id]: 2[created_datetime]: 2010-12-01 00:00:00[start_datetime]: 2010-12-01 00:00:00[end_datetime]: [id]: 1
+ID: 2
+[account_id]: 2[collection_scenario_id]: 2[created_datetime]: 2010-12-01 00:00:00[start_datetime]: 2010-12-01 00:00:00[end_datetime]: [id]: 2
+ID: 3
+[account_id]: 3[collection_scenario_id]: 2[created_datetime]: 2010-12-01 00:00:00[start_datetime]: 2010-12-01 00:00:00[end_datetime]: [id]: 3
+ID: 4
+[account_id]: 4[collection_scenario_id]: 1[created_datetime]: 2010-12-01 00:00:00[start_datetime]: 2010-12-01 00:00:00[end_datetime]: [id]: 4
+
+
+TABLE: Dummy_Employee
+
+ID: 0
+[FirstName]: System[LastName]: User[UserName]: System[Id]: 0
+ID: 1
+[FirstName]: Rod[LastName]: McTainsh[UserName]: rmctainsh[Id]: 1
+ID: 2
+[FirstName]: Rich[LastName]: Davis[UserName]: rdavis[Id]: 2
+ID: 3
+[FirstName]: Jan[LastName]: van der Breggen[UserName]: jvanderbreggen[Id]: 3
+
+
+TABLE: Dummy_Collection_Promise
+
+ID: 1
+[account_id]: 1[collection_scenario_id]: 4[created_datetime]: 2011-01-01 00:00:00[created_employee_id]: 0[completed_datetime]: [collection_promise_completion_id]: [completed_employee_id]: [id]: 1
+ID: 2
+[account_id]: 2[collection_scenario_id]: 4[created_datetime]: 2011-01-01 00:00:00[created_employee_id]: 0[completed_datetime]: 2011-01-02 00:00:00[collection_promise_completion_id]: 3[completed_employee_id]: [id]: 2
+ID: 3
+[account_id]: 2[collection_scenario_id]: 4[created_datetime]: 2011-01-01 00:00:00[created_employee_id]: 0[completed_datetime]: 2011-01-02 00:00:00[collection_promise_completion_id]: 3[completed_employee_id]: [id]: 3
+ID: 4
+[account_id]: 3[collection_scenario_id]: 4[created_datetime]: 2011-01-01 00:00:00[created_employee_id]: 0[completed_datetime]: [collection_promise_completion_id]: [completed_employee_id]: [id]: 4
+
+
+TABLE: Dummy_Collection_Promise_Instalment
+
+ID: 1
+[collection_promise_id]: 1[due_date]: 2011-01-05[amount]: 25[id]: 1
+ID: 2
+[collection_promise_id]: 1[due_date]: 2011-01-10[amount]: 25[id]: 2
+ID: 3
+[collection_promise_id]: 4[due_date]: 2011-01-10[amount]: 100[id]: 3
+ID: 4
+[collection_promise_id]: 4[due_date]: 2011-01-20[amount]: 100[id]: 4
+ID: 5
+[collection_promise_id]: 4[due_date]: 2011-01-31[amount]: 100[id]: 5
+
+
+TABLE: Dummy_Collection_Suspension
+
+ID: 1
+[account_id]: 2[start_datetime]: 2010-12-31[proposed_end_datetime]: 2011-01-01[start_employee_id]: 237[collection_suspension_type_id]: 1[effective_end_datetime]: [end_employee_id]: [collection_suspension_end_reason_id]: [id]: 1
+ID: 2
+[account_id]: 1[start_datetime]: 2010-12-31[proposed_end_datetime]: 2011-01-20[start_employee_id]: 237[collection_suspension_type_id]: 1[effective_end_datetime]: 2011-01-20[end_employee_id]: 237[collection_suspension_end_reason_id]: 1[id]: 2
+ID: 3
+[account_id]: 1[start_datetime]: 2011-01-21[proposed_end_datetime]: 2011-01-31[start_employee_id]: 237[collection_suspension_type_id]: 1[effective_end_datetime]: [end_employee_id]: [collection_suspension_end_reason_id]: [id]: 3
+ID: 4
+[account_id]: 3[start_datetime]: 2011-01-01[proposed_end_datetime]: 2011-01-08[start_employee_id]: 237[collection_suspension_type_id]: 1[effective_end_datetime]: 2011-01-08[end_employee_id]: 237[collection_suspension_end_reason_id]: 1[id]: 4
+
+
+TABLE: Dummy_Invoice
+
+ID: 1
+[collectable_id]: 1[Id]: 1
+
+
+TABLE: Dummy_Collectable
+
+ID: 1
+[account_id]: 1[amount]: 50[balance]: 25[created_datetime]: 2010-12-11 00:00:00[due_date]: 2010-12-25[collectable_type_id]: 1[collection_promise_id]: [id]: 1
+ID: 2
+[account_id]: 1[amount]: 50[balance]: 0[created_datetime]: 2010-12-11 00:00:00[due_date]: 2010-12-25[collectable_type_id]: 1[collection_promise_id]: 1[id]: 2
+ID: 3
+[account_id]: 3[amount]: 300[balance]: 300[created_datetime]: 2010-12-11 00:00:00[due_date]: 2010-12-25[collectable_type_id]: 1[collection_promise_id]: 4[id]: 3
+
+
+TABLE: Dummy_Account_Collection_Event_History
+
+ID: 1
+[account_id]: 1[collectable_id]: 1[collection_event_id]: 1[collection_scenario_collection_event_id]: 4[scheduled_datetime]: 2011-01-01 11:55:38[completed_datetime]: 2011-01-01 11:55:38[completed_employee_id]: 229[account_collection_event_status_id]: 2[id]: 1
+ID: 2
+[account_id]: 1[collectable_id]: 1[collection_event_id]: 2[collection_scenario_collection_event_id]: 5[scheduled_datetime]: 2011-01-06 11:55:38[completed_datetime]: 2011-01-06 11:55:38[completed_employee_id]: 229[account_collection_event_status_id]: 2[id]: 2
+ID: 3
+[account_id]: 1[collectable_id]: 1[collection_event_id]: 3[collection_scenario_collection_event_id]: 6[scheduled_datetime]: 2011-01-11 11:55:38[completed_datetime]: 2011-01-11 11:55:38[completed_employee_id]: 229[account_collection_event_status_id]: 2[id]: 3

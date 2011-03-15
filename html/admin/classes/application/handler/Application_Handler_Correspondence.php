@@ -26,6 +26,10 @@ class Application_Handler_Correspondence extends Application_Handler
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_PROPER_ADMIN));
 
+		$sLog	= '';
+		//Log::registerLog('CorrespondenceCreateLog', Log::LOG_TYPE_STRING, $sLog);
+		//Log::setDefaultLog('CorrespondenceCreateLog');
+
 		$aOutput	= array();
 		try
 		{
@@ -133,7 +137,12 @@ class Application_Handler_Correspondence extends Application_Handler
 			$aOutput['bSuccess']	= false;
 			$aOutput['sMessage']	= ($bUserIsGod ? $e->getMessage() : 'An error occured trying to schedule the correspondence, please contact YBS for assitance.');
 		}
-
+		
+		if ($bUserIsGod)
+		{
+			$aOutput['sDebug']	= $sLog;
+		}
+		
 		echo JSON_Services::instance()->encode($aOutput);
 		die;
 	}

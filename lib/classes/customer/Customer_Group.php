@@ -131,6 +131,20 @@ class Customer_Group
 		return Customer_Group_Payment_Method::getForCustomerGroup($this->Id);
 	}
 	
+	public function setDefaultAccountClassId($iAccountClassId)
+	{
+		$oQuery 	= new Query();
+		$mResult	= $oQuery->Execute("	UPDATE	CustomerGroup
+											SET		default_account_class_id = {$iAccountClassId}
+											WHERE	Id = {$this->Id}");
+		if ($mResult === false)
+		{
+			throw new Exception_Database("Failed to update customer group default account class. ".$oQuery->Error());
+		}
+		
+		return true;
+	}
+	
 	public function toArray()
 	{
 		$aMe		= array();
@@ -140,6 +154,45 @@ class Customer_Group
 			$aMe[$sColumn]	= $this->{self::tidyName($sColumn)};
 		}
 		return $aMe;
+	}
+	
+	public static function getDefaultAccountClassForCustomerGroup($iCustomerGroupId)
+	{
+		$oQuery 	= new Query();
+		$mResult	= $oQuery->Execute("SELECT	default_account_class_id
+										FROM	CustomerGroup
+										WHERE	Id = {$iCustomerGroupId}");
+		if ($mResult === false)
+		{
+			throw new Exception_Database("Failed to get Customer Group default Account Class. ".$oQuery->Error());
+		}
+		
+		$aRow = $mResult->fetch_assoc();
+		if (!$aRow)
+		{
+			throw new Exception("Failed to get Customer Group default Account Class. Invalid Customer Group Id supplied '{$iCustomerGroupId}'");
+		}
+		
+		return Account_Class::getForId($aRow['default_account_class_id']);
+	}
+	
+	public static function getForDefaultAccountClassId($iAccountClassId)
+	{
+		$oQuery 	= new Query();
+		$mResult	= $oQuery->Execute("SELECT	*
+										FROM	CustomerGroup
+										WHERE	default_account_class_id = {$iAccountClassId}");
+		if ($mResult === false)
+		{
+			throw new Exception_Database("Failed to get Customer Group default Account Class. ".$oQuery->Error());
+		}
+		
+		$aCustomerGroups = array();
+		while ($aRow = $mResult->fetch_assoc())
+		{
+			$aCustomerGroups[$aRow['Id']] = new Customer_Group($aRow);
+		}
+		return $aCustomerGroups;
 	}
 	
 	private static function _makeConstantName($sInternalName)
@@ -192,7 +245,8 @@ class Customer_Group
 						"faults_phone",
 						"cooling_off_period",
 						"invoice_cdr_credits",
-						"interim_invoice_delivery_method_id"
+						"interim_invoice_delivery_method_id",
+						"default_account_class_id"
 					);
 	}
 

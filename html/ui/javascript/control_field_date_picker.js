@@ -71,7 +71,8 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 	
 	updateElementValue	: function()
 	{
-		mValue	= this.getValue();
+		//debugger;
+		var	mValue	= this.getValue();
 		
 		this.setElementValue(mValue);
 		this.oControlOutput.oView.innerHTML	= this._getFormattedDate();

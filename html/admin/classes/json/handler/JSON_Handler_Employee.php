@@ -898,6 +898,92 @@ class JSON_Handler_Employee extends JSON_Handler
 		}
 	}
 	
+	public function getSeverityWarnings($iAccountId)
+	{
+		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		try
+		{
+			// Check the latest employee account log record
+			$oEmployeeAccountLog 	= Employee_Account_Log::createIfNotExistsForToday(Flex::getUserId(), $iAccountId);
+			$oSeverity				= null;
+			$aWarnings				= null;
+			
+			if ($oEmployeeAccountLog->accepted_severity_warnings !== Employee_Account_Log::SEVERITY_WARNINGS_ACCEPTED)
+			{
+				// Warnings haven't been accepted, see if there are any
+				$oLogicAccount	= Logic_Account::getInstance($iAccountId);
+				$oLogicSeverity	= $oLogicAccount->getSeverity();
+				$aORMWarnings	= $oLogicSeverity->getWarnings();
+				
+				// JSON Friendly output
+				$aWarnings = array();
+				foreach ($aORMWarnings as $oWarning)
+				{
+					$aWarnings[$oWarning->id] = $oWarning->toArray();
+				}
+				$oSeverity = $oLogicSeverity->toArray();
+			}
+			
+			return array('bSuccess' => true, 'oSeverity' => $oSeverity, 'aWarnings' => $aWarnings);
+		}
+		catch (Exception $e)
+		{
+			$sMessage = $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
+			return 	array(
+						'bSuccess'	=> false,
+						'sMessage'	=> $sMessage
+					);
+		}
+	}
+		
+	public function acceptSeverityWarnings($iAccountId)
+	{
+		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		try
+		{
+			// Get/Create the latest employee account log record
+			$oEmployeeAccountLog = Employee_Account_Log::createIfNotExistsForToday(Flex::getUserId(), $iAccountId);
+			if ($oEmployeeAccountLog->accepted_severity_warnings !== Employee_Account_Log::SEVERITY_WARNINGS_ACCEPTED)
+			{
+				// Update the employee account log record (updates or creates a new record if previously declined)
+				$oEmployeeAccountLog->acceptSeverityWarnings();
+			}			
+			return array('bSuccess' => true);
+		}
+		catch (Exception $e)
+		{
+			$sMessage = $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
+			return 	array(
+						'bSuccess'	=> false,
+						'sMessage'	=> $sMessage
+					);
+		}
+	}
+	
+	public function declineSeverityWarnings($iAccountId)
+	{
+		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		try
+		{
+			// Get/Create the latest employee account log record
+			$oEmployeeAccountLog = Employee_Account_Log::createIfNotExistsForToday(Flex::getUserId(), $iAccountId);
+			if ($oEmployeeAccountLog->accepted_severity_warnings !== Employee_Account_Log::SEVERITY_WARNINGS_ACCEPTED)
+			{
+				// Update the employee account log record
+				$oEmployeeAccountLog->declineSeverityWarnings();
+			}
+			return array('bSuccess' => true);
+		}
+		catch (Exception $e)
+		{
+			$sMessage = $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
+			return 	array(
+						'bSuccess'	=> false,
+						'sMessage'	=> $sMessage
+					);
+		}
+	}
+	
 	private static function _getActiveTicketsForEmployee($iEmployeeId)
 	{
 		//

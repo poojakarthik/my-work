@@ -138,6 +138,26 @@ class CDR extends ORM_Cached
 		}
 	}
 
+        public static function getForServiceAndStatus($iServiceId, $aStatus)
+        {
+            $oQuery = new Query();
+            $sStatus = implode(",", $aStatus);
+            $mResult = $oQuery->Execute("SELECT *
+                                         FROM CDR
+                                         WHERE Service =  $iServiceId
+                                         AND Status IN ($sStatus)");
+
+            $aResult = array();
+            if ($mResult)
+            {
+                while ($aRow = $mResult->fetch_assoc())
+			{
+				$aResult[] = new self($aRow);
+			}
+            }
+            return $aResult;
+        }
+
 	public static function GetDelinquentCDRsPaginated($iLimit, $iOffset, $aSortFields, $aFilter , $bCountOnly = false)
 	{
 

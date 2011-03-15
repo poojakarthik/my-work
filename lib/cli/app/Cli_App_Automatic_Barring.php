@@ -376,10 +376,10 @@ class Cli_App_Automatic_Barring extends Cli
 			}
 
 			$this->log("Sending report");
-			$intNotification = $arrArgs[self::SWITCH_LIST_RUN] ? EMAIL_NOTIFICATION_AUTOMATIC_BARRING_LIST : EMAIL_NOTIFICATION_AUTOMATIC_BARRING_REPORT;
+			$sNotification = $arrArgs[self::SWITCH_LIST_RUN] ? 'AUTOMATIC_BARRING_LIST' : 'AUTOMATIC_BARRING_REPORT';
 			try
 			{
-				Email_Notification::sendEmailNotification($intNotification, NULL, NULL, $subject, NULL, $body, $attachments);
+				Email_Notification::sendEmailNotification($sNotification, NULL, NULL, $subject, NULL, $body, $attachments);
 				$this->log("Report sent");
 			}
 			catch (Exception $e)
@@ -420,8 +420,8 @@ class Cli_App_Automatic_Barring extends Cli
 			}
 			$body = implode("\r\n", $body);
 
-			$intNotification = $arrArgs[self::SWITCH_LIST_RUN] ? EMAIL_NOTIFICATION_AUTOMATIC_BARRING_LIST : EMAIL_NOTIFICATION_AUTOMATIC_BARRING_REPORT;
-			Email_Notification::sendEmailNotification($intNotification, NULL, NULL, $subject, NULL, $body, NULL, TRUE);
+			$sNotification	= ($arrArgs[self::SWITCH_LIST_RUN] ? 'AUTOMATIC_BARRING_LIST' : 'AUTOMATIC_BARRING_REPORT');
+			Email_Notification::sendEmailNotification($sNotification, NULL, NULL, $subject, NULL, $body, NULL, TRUE);
 			$this->showUsage('ERROR: ' . $exception->getMessage());
 			return 1;
 		}

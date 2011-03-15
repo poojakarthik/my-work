@@ -98,7 +98,9 @@
 	 	
 	 	$aExecutionProfile['fDuration']	= microtime(true) - $aExecutionProfile['fStartTime'];
 	 	$aExecutionProfile['iResults']	= $this->_stmtSqlStatment->num_rows;
-	 	$aProfiling['aExecutions'][]	= $aExecutionProfile;
+		if ($this->db->getProfilingEnabled()) {
+			$aProfiling['aExecutions'][]	= $aExecutionProfile;
+		}
 	 	
 	 	$this->Debug($mixResult);
 		return $mixResult;

@@ -2,7 +2,6 @@
 
 class Correspondence_Logic_Template_Column
 {
-
 	protected $_oDO;
 	protected $_oTemplate;
 
@@ -10,17 +9,13 @@ class Correspondence_Logic_Template_Column
 	{
 		$this->_oTemplate = $oTemplate;
 		$this->_oDO =is_array($mDefinition)?new Correspondence_Template_Column($mDefinition):$mDefinition;
-
 	}
 
 	public function save()
 	{
 		$this->correspondence_template_id = $this->_oTemplate->id;
 		$this->_oDO->save();
-
 	}
-
-
 
 	public function __get($sField)
 	{
@@ -48,10 +43,5 @@ class Correspondence_Logic_Template_Column
 
 		return $aColumns;
 	}
-
-
 }
-
-
-
 ?>

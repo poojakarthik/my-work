@@ -43,6 +43,8 @@
  */
 class HtmlTemplateAccountDetails extends HtmlTemplate
 {
+	//const SEVERITY_WARNING_DISPLAY_LOG_SESSION_KEY = 'severity_warning_display_log';
+
 	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
@@ -72,13 +74,26 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		
 		$this->LoadJavascript("section");
 		$this->LoadJavascript("reflex_validation");
+		$this->LoadJavascript("reflex_validation_credit_card");
 		$this->LoadJavascript("control_field");
 		$this->LoadJavascript("control_field_text");
 		$this->LoadJavascript("control_field_select");
 		$this->LoadJavascript("control_field_checkbox");
 		$this->LoadJavascript("control_field_radiobutton");
 		$this->LoadJavascript("control_field_combo_date");
+		$this->LoadJavascript("control_field_number");
+		$this->LoadJavascript("control_field_date_picker");
+		$this->LoadJavascript("component_date_picker");
 		$this->LoadJavascript("popup_credit_card_payment");
+		$this->LoadJavascript("popup_account_tio_complaint");
+		$this->LoadJavascript("popup_account_tio_complaint_view");
+		$this->LoadJavascript("popup_account_tio_complaint_close");
+		$this->LoadJavascript("popup_account_promise_new");
+		$this->LoadJavascript("component_collections_suspension");
+		$this->LoadJavascript("popup_account_suspend_from_collections");
+		$this->LoadJavascript("popup_account_collection_scenario");
+		$this->LoadJavascript("popup_account_severity_warning");
+		$this->LoadJavascript("account");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -99,6 +114,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		{
 			case HTML_CONTEXT_VIEW:
 				$this->_RenderForViewing();
+				$this->_RenderSeverityWarnings();
 				break;
 			case HTML_CONTEXT_EDIT:
 				$this->_RenderForEditing();
@@ -135,6 +151,8 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "<h2 class='Account'>Account Details</h2>\n";
 		echo "<div class='GroupedContent'>\n";
 
+		$oLogicAccount = Logic_Account::getInstance(DBO()->Account->Id->Value);
+
 		// Check if there are any sales associated with the account, that were made in the last 2 months
 		$arrSales = FlexSale::listForAccountId(DBO()->Account->Id->Value, "verified_on DESC, id DESC");
 		if (count($arrSales))
@@ -143,12 +161,11 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			$strAccountSalesLink = Href()->ViewSalesForAccount(DBO()->Account->Id->Value);
 			if ($objSale->verifiedOn > date("Y-m-d H:i:s", strtotime("- 2 months")))
 			{
-				echo "
-<div class='MsgNotice'>
-	This account has had recent sales associated with it.  To view them click <a onclick=\"$strAccountSalesLink\">here</a>.
-	<br />Sales associated with the account can always be accessed through the menu, Account &gt; Sales &gt; View Sales.
-</div>
-";
+				echo "	<div class='MsgNotice'>
+							This account has had recent sales associated with it.  To view them click <a onclick=\"$strAccountSalesLink\">here</a>.
+							<br />Sales associated with the account can always be accessed through the menu, Account &gt; Sales &gt; View Sales.
+						</div>
+						";
 			}
 		}
 
@@ -280,32 +297,69 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			
 			DBO()->Account->Delivery_Method	= DBO()->Account->BillingMethod->Value;
 			DBO()->Account->Delivery_Method->RenderCallback("GetConstantDescription", Array("delivery_method"), RENDER_OUTPUT);
-		}
-		
-?>
-<div class="DefaultElement">
-	<div id="Account.Balance.Output" name="Account.Balance" class="DefaultOutput Currency">
-	<?php
-		DBO()->Account->Balance->Render('Currency2DecWithNegAsCR');
-		
-		if (Credit_Card_Payment::availableForCustomerGroup(DBO()->Account->CustomerGroup->Value) && AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
-		{
-			// Rebill Customers cannot Pay by Credit Card, unless the Account Balance is over $0 and the user is a Credit Management employee
-			if (DBO()->Account->BillingType->Value !== BILLING_TYPE_REBILL || (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT) && DBO()->Account->Balance->Value > 0.0))
-			{
-				echo Credit_Card_Payment::getPopupActionButton(DBO()->Account->Id->Value);
-			}
-		}
-	?></div>
-	<div id="Account.Balance.Label" class="DefaultLabel">
-		<span> &nbsp;</span>
-		<span id="Account.Balance.Label.Text">Balance : </span>
-	</div>
-</div>
-<?php
+															}
+															
+		?>
+		<div class="DefaultElement">
+			<div id="Account.Balance.Output" name="Account.Balance" class="DefaultOutput Currency">
+			<?php
+				DBO()->Account->Balance->Render('Currency2DecWithNegAsCR');
+				
+				if (Credit_Card_Payment::availableForCustomerGroup(DBO()->Account->CustomerGroup->Value) && AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
+				{
+					// Rebill Customers cannot Pay by Credit Card, unless the Account Balance is over $0 and the user is a Credit Management employee
+					if (DBO()->Account->BillingType->Value !== BILLING_TYPE_REBILL || (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT) && DBO()->Account->Balance->Value > 0.0))
+					{
+						echo Credit_Card_Payment::getPopupActionButton(DBO()->Account->Id->Value);
+					}
+				}
+			?></div>
+			<div id="Account.Balance.Label" class="DefaultLabel">
+				<span> &nbsp;</span>
+				<span id="Account.Balance.Label.Text">Balance : </span>
+			</div>
+		</div>
+		<?php
 
 		DBO()->Account->Overdue->RenderOutput();
 		DBO()->Account->TotalUnbilledAdjustments->RenderOutput();
+		
+		// Promised amount
+		$oActivePromise	= $oLogicAccount->getActivePromise();
+		$fTotalPromised	= 0;
+		if ($oActivePromise !== null)
+		{
+			$fTotalPromised	= $oActivePromise->getAmount();
+		}
+		$fTotalPromised = Rate::roundToRatingStandard($fTotalPromised, 2);
+		
+		echo "	<div class='DefaultElement'>
+					<div id='Account.promised_amount.Output' name='Account.promised_amount' class='DefaultOutput'>\${$fTotalPromised}</div>
+					<div id='Account.promised_amount.Label' class='DefaultLabel'>
+						<span> &nbsp;</span>
+						<span id='Account.promised_amount.Label.Text'>Promised Amount : </span>
+					</div>
+				</div>";
+		
+		// Most Recent Collection Event
+		$oEventInstance	= Logic_Collection_Event_Instance::getMostRecentForAccount($oLogicAccount, ACCOUNT_COLLECTION_EVENT_STATUS_COMPLETED);
+		$sLastEvent		= 'None';
+		if ($oEventInstance !== null)
+		{
+			if (!$oEventInstance->isExitEvent())
+			{
+				$sEventName	= $oEventInstance->getEventName();
+				$sLastEvent	= "{$sEventName} on ".date('l, M j, Y g:i:s A', strtotime($oEventInstance->completed_datetime));
+			}
+		}
+		
+		echo "	<div class='DefaultElement'>
+					<div id='Account.most_recent_collection_event.Output' name='Account.most_recent_collection_event' class='DefaultOutput'>{$sLastEvent}</div>
+					<div id='Account.most_recent_collection_event.Label' class='DefaultLabel'>
+						<span> &nbsp;</span>
+						<span id='Account.most_recent_collection_event.Label.Text'>Last Collections Event: </span>
+					</div>
+				</div>";
 		
 		if (DBO()->Account->Sample->Value === NULL)
 		{
@@ -317,7 +371,8 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		// This property is DEPRECATED
 		//DBO()->Account->DisableLateNotices->RenderOutput();
 		
-		if (DBO()->Account->LatePaymentAmnesty->Value == substr(END_OF_TIME, 0, 10))
+		// NOTE: CR137 - Removed, deprecated collections concept (late notices)
+		/*if (DBO()->Account->LatePaymentAmnesty->Value == substr(END_OF_TIME, 0, 10))
 		{
 			DBO()->Account->LatePaymentAmnesty = "Never send late notices";
 		}
@@ -329,11 +384,10 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		{
 			DBO()->Account->LatePaymentAmnesty = "Exempt until after ". date("jS F, Y", strtotime(DBO()->Account->LatePaymentAmnesty->Value));
 		}
-		DBO()->Account->LatePaymentAmnesty->RenderOutput();
+		DBO()->Account->LatePaymentAmnesty->RenderOutput();*/
 
-
-		// Load the credit control statuses
-		DBO()->credit_control_status->Id = DBO()->Account->credit_control_status->Value;
+		// NOTE: CR137 - Removed, deprecated collections concept (late payment fee & credit control status)
+		/*DBO()->credit_control_status->Id = DBO()->Account->credit_control_status->Value;
 		DBO()->credit_control_status->Load();
 		DBO()->Account->credit_control_status = DBO()->credit_control_status->name->Value;
 		DBO()->Account->credit_control_status->RenderOutput();
@@ -347,25 +401,27 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		{
 			DBO()->Account->DisableLatePayment->Value = abs(DBO()->Account->DisableLatePayment->Value);
 		}
-		DBO()->Account->DisableLatePayment->RenderOutput();
+		DBO()->Account->DisableLatePayment->RenderOutput();*/
 		
 		// To avoid a double negative display ChargeAdminFee instead of DisableDDR
 		DBO()->Account->ChargeAdminFee = !(DBO()->Account->DisableDDR->Value);
 		DBO()->Account->ChargeAdminFee->RenderOutput();
-	
-?>
-<div class="DefaultElement">
-	<div id="Account.vip.Output" name="Account.vip" class="DefaultOutput"><?php echo (DBO()->Account->vip->Value ? 'VIP' : 'Non-VIP (Normal)'); ?></div>
-	<div id="Account.vip.Label" class="DefaultLabel">
-		<span> &nbsp;</span>
-		<span id="Account.Balance.Label.Text">VIP Status : </span>
-	</div>
-</div>
-<?php
-
-		// Details of last automated actions
-		// ... automatic notices sent
-		DBO()->automatic_invoice_action->Id = DBO()->Account->last_automatic_invoice_action->Value;
+		
+		// NOTE: CR137 - Removed, deprecated collections concept (vip status)
+		/*
+		?>
+		<div class="DefaultElement">
+			<div id="Account.vip.Output" name="Account.vip" class="DefaultOutput"><?php echo (DBO()->Account->vip->Value ? 'VIP' : 'Non-VIP (Normal)'); ?></div>
+			<div id="Account.vip.Label" class="DefaultLabel">
+				<span> &nbsp;</span>
+				<span id="Account.Balance.Label.Text">VIP Status : </span>
+			</div>
+		</div>
+		<?php
+		*/
+		
+		// NOTE: CR137 - Removed, deprecated collections concept (last automatic invoice action)
+		/*DBO()->automatic_invoice_action->Id = DBO()->Account->last_automatic_invoice_action->Value;
 		DBO()->automatic_invoice_action->Load();
 		if (DBO()->Account->last_automatic_invoice_action->Value != AUTOMATIC_INVOICE_ACTION_NONE)
 		{
@@ -377,7 +433,8 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		{
 			DBO()->Account->last_automatic_invoice_action = DBO()->automatic_invoice_action->name->Value;
 		}
-		DBO()->Account->last_automatic_invoice_action->RenderOutput();
+		DBO()->Account->last_automatic_invoice_action->RenderOutput();*/
+		
 		// ... automatic account barring
 		DBO()->automatic_barring_status->Id = DBO()->Account->automatic_barring_status->Value;
 		DBO()->automatic_barring_status->Load();
@@ -397,15 +454,46 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		{
 			// This account has a TIO reference number.  Display it
 			$strTIORefNum = htmlspecialchars(DBO()->Account->tio_reference_number->Value, ENT_QUOTES);
-			echo "
-<div class='DefaultElement'>
-	<div class='DefaultOutput'>$strTIORefNum</div>
-	<div class='DefaultLabel'>
-		<span> &nbsp;</span>
-		<span>T.I.O. Reference Number :</span>
-	</div>
-</div>";
+			echo "	<div class='DefaultElement'>
+						<div class='DefaultOutput'>$strTIORefNum <button onclick='javascript: new Popup_Account_TIO_Complaint_View(".DBO()->Account->Id->Value.", Vixen.AccountDetails.CancelEdit.bind(Vixen.AccountDetails));'>View Complaint Details</button></div>
+						<div class='DefaultLabel'>
+							<span> &nbsp;</span>
+							<span>T.I.O. Reference Number :</span>
+						</div>
+					</div>";
 		}
+		else
+		{
+			// This Account has no tio_reference_number, allow creation of a complaint
+			echo "	<div class='DefaultElement'>
+						<div class='DefaultOutput'>None <button onclick='javascript: new Popup_Account_TIO_Complaint(".DBO()->Account->Id->Value.", Vixen.AccountDetails.CancelEdit.bind(Vixen.AccountDetails));'>Create a TIO Complaint</button></div>
+						<div class='DefaultLabel'>
+							<span> &nbsp;</span>
+							<span>T.I.O. Reference Number :</span>
+						</div>
+					</div>";
+		}
+		
+		// Account class
+		$oAccountClass = Account_Class::getForId(DBO()->Account->account_class_id->Value);
+		echo "	<div class='DefaultElement'>
+					<div class='DefaultOutput'>{$oAccountClass->name}</div>
+					<div class='DefaultLabel'>
+						<span> &nbsp;</span>
+						<span>Account Class :</span>
+					</div>
+				</div>";
+		
+		// Collection Scenario
+		$oScenario 		= Logic_Account::getInstance(DBO()->Account->Id->Value)->getCurrentScenarioInstance()->getScenario();
+		$sEditButton	= "<button onclick='javascript: new Popup_Account_Collection_Scenario(".DBO()->Account->Id->Value.", {$oScenario->id}, Vixen.AccountDetails.CancelEdit.bind(Vixen.AccountDetails));'>Change</button>";
+		echo "	<div class='DefaultElement'>
+					<div class='DefaultOutput'>{$oScenario->name} {$sEditButton}</div>
+					<div class='DefaultLabel'>
+						<span> &nbsp;</span>
+						<span>Collection Scenario :</span>
+					</div>
+				</div>";
 		
 		echo "</div>\n"; // GroupedContent
 		
@@ -602,12 +690,14 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		// This property is DEPRICATED
 		//DBO()->Account->DisableLateNotices->RenderInput();
 		
+		// NOTE: CR137 - Removed, deprecated collections concept (late notices)
+		/*$strEndOfTime				= substr(END_OF_TIME, 0, 10);
+		$arrOptions					= Array();
+		$arrOptions[NULL]			= "Send late notices";
+		
 		// Build the Array of options for the Late Notices combobox
 		// The key to this array will be the amnesty date as a string, so that it can be sorted, and any previous
 		// value for LatePaymentAmnesty can safely override any new ones set up
-		$strEndOfTime				= substr(END_OF_TIME, 0, 10);
-		$arrOptions					= Array();
-		$arrOptions[NULL]			= "Send late notices";
 		
 		$sLastInvoiceRunDate	= Invoice_Run::getLastInvoiceDateByCustomerGroup(DBO()->Account->CustomerGroup->Value);
 		
@@ -649,11 +739,10 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		}
 		echo "      </select>\n";
 		echo "   </div>\n";
-		echo "</div>\n";
+		echo "</div>\n";*/
 		
-
-		// Load the credit control statuses
-		DBL()->credit_control_status->Load();
+		// NOTE: CR137 - Removed, deprecated collections concept (Credit control status & late payment fee)
+		/*DBL()->credit_control_status->Load();
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Credit Control Status :</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
@@ -670,7 +759,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "   </div>\n";
 		echo "</div>\n";
 
-		DBO()->Account->DisableLatePayment->RenderInput(1);
+		DBO()->Account->DisableLatePayment->RenderInput(1);*/
 		
 		// To avoid a double negative, display ChargeAdminFee instead of DisableDDR
 		//DBO()->Account->DisableDDR->RenderInput(1);
@@ -682,9 +771,9 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		DBO()->Account->ChargeAdminFee->RenderInput();
 
 
-
-	if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
-	{
+		// NOTE: CR137 - Removed, deprecated collections concept (vip status)
+		/*if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
+		{
 ?>
 <div class="DefaultElement">
 	<div class="DefaultLabel">&nbsp;&nbsp;VIP Status : </div>
@@ -696,9 +785,9 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	</div>
 </div>
 <?php
-	}
-	else
-	{
+		}
+		else
+		{
 ?>
 <div class="DefaultElement">
 	<div id="Account.vip.Output" name="Account.vip" class="DefaultOutput"><?php echo (DBO()->Account->vip->Value ? 'VIP' : 'Non-VIP (Normal)'); ?></div>
@@ -708,36 +797,38 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	</div>
 </div>
 <?php
-
-	}
-
+		}*/
 		
-		// TIO reference number and checkbox
-		if ((DBO()->Account->tio_reference_number->Value !== NULL && trim(DBO()->Account->tio_reference_number->Value) != "") || (DBO()->Account->WithTIO->Value))
+		// Account Class
+		echo "	<div class='DefaultElement'>
+					<div class='DefaultLabel'>&nbsp;&nbsp;Account Class : </div>
+					<div class='DefaultOutput'>
+						<select id='Account.account_class_id' name='Account.account_class_id' style='width:330px'>";
+		
+		// Get all available account classes
+		$aAccountClasses 	= Account_Class::getForStatus(STATUS_ACTIVE);
+		$iAccountClassId	= DBO()->Account->account_class_id->Value;
+		
+		// Add the current account class even if it is inactive
+		if (!isset($aAccountClasses[$iAccountClassId]))
 		{
-			$strTIOChecked		= "checked='checked'";
-			$strTIODisplayStyle	= "visibility:visible;display:inline;";
-			$strTIOLabel		= "T.I.O Reference Number";
+			$aAccountClasses[$iAccountClassId] = Account_Class::getForId($iAccountClassId);
 		}
-		else
+		
+		// Add options
+		foreach ($aAccountClasses as $oAccountClass)
 		{
-			$strTIOChecked		= "";
-			$strTIODisplayStyle	= "visibility:hidden;display:none;";
-			$strTIOLabel		= "With T.I.O.";
+			$sSelected = ($iAccountClassId == $oAccountClass->id ? " selected='selected'" : '');
+			echo "			<option value='{$oAccountClass->id}'{$sSelected}>{$oAccountClass->name}</option>";
 		}
-		$strTIORefNum 		= htmlspecialchars(DBO()->Account->tio_reference_number->Value, ENT_QUOTES);
-		$strTIOTextboxClass	= (DBO()->Account->tio_reference_number->IsInvalid())? "DefaultInvalidInputText" : "DefaultInputText";
-
-		echo "
-<div style='top:2px;position:relative;height:25px;'>
-	<span>&nbsp;&nbsp;</span><span id='TIOLabel'>$strTIOLabel</span>
-	<input type='checkbox' id='Account.WithTIO' name='Account.WithTIO' $strTIOChecked style='position:absolute;left:197px'/>
-	<input type='text' id='Account.tio_reference_number' name='Account.tio_reference_number' value='$strTIORefNum' class='$strTIOTextboxClass' style='{$strTIODisplayStyle}position:absolute;left:223px;width:305px;'/>
-</div>
-";
+		
+		echo "			</select>
+					</div>
+				</div>";
+		// END: Account Class
 		
 		echo "</div>\n"; // GroupedContent
-		
+
 		// Render buttons
 		echo "
 <div class='ButtonContainer'>
@@ -761,17 +852,40 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		
 		$this->FormEnd();
 		
-		// If the user doesn't have Admin privileges they cannot select the "Never charge a late payment fee" option
-		if (!$bolIsAdminUser)
+		// NOTE: CR137 - Removed, deprecated collections concept (late payment fee)
+		/*if (!$bolIsAdminUser)
 		{
+			// If the user doesn't have Admin privileges they cannot select the "Never charge a late payment fee" option
 			// The user doesn't have admin privileges
 			$strJsCode .=	"document.getElementById('Account.DisableLatePayment_1').disabled = true;\n".
 							"document.getElementById('Account.DisableLatePayment_1.Label').style.color = '#4C4C4C';\n";
-		}
+		}*/
 		
 		echo "<script type='text/javascript'>$strJsCode</script>";
 	}
-
+	
+	private function _RenderSeverityWarnings()
+	{
+		$iAccountId	= DBO()->Account->Id->Value;
+		$aWarnings	= DBO()->SeverityWarnings;
+		if (($aWarnings !== null) && (count($aWarnings) > 0))
+		{
+			echo "	<script type='text/javascript'>
+						window.onload = 
+							function()
+							{
+								JsAutoLoader.loadScript(
+									'popup_account_severity_warning.js', 
+									function()
+									{
+										new Popup_Account_Severity_Warning({$iAccountId});
+									},
+									true
+								);
+							};
+					</script>";
+		}
+	}
 }
 
 ?>

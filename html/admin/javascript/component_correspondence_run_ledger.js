@@ -8,19 +8,19 @@ var Component_Correspondence_Run_Ledger = Class.create(
 		this._bFirstLoadComplete		= false;
 		this._hControlOnChangeCallbacks	= {};
 		this._oLoadingPopup				= oLoadingPopup;
-		
-		// Create DataSet & pagination object
+
+		// Create Dataset & pagination object
 		this.oDataSet	= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_NO_CACHING, Component_Correspondence_Run_Ledger.DATA_SET_DEFINITION);
-		
+
 		this.oPagination	= new Pagination(this._updateTable.bind(this), Component_Correspondence_Run_Ledger.MAX_RECORDS_PER_PAGE, this.oDataSet);
-		
-		// Create filter object
+
+		// Create Dataset filter object
 		this._oFilter	=	new Filter(
-								this.oDataSet, 
-								this.oPagination, 
+								this.oDataSet,
+								this.oPagination,
 								this._showLoading.bind(this, true) 	// On field value change
 							);
-		
+
 		// Add all filter fields
 		for (var sFieldName in Component_Correspondence_Run_Ledger.FILTER_FIELDS)
 		{
@@ -29,18 +29,18 @@ var Component_Correspondence_Run_Ledger = Class.create(
 				this._oFilter.addFilter(sFieldName, Component_Correspondence_Run_Ledger.FILTER_FIELDS[sFieldName]);
 			}
 		}
-		
-		// Create sort object
+
+		// Create Dataset sort object
 		this._oSort	= new Sort(this.oDataSet, this.oPagination, true, this._showLoading.bind(this, true));
-		
+
 		// Create the page HTML
 		var sButtonPathBase	= '../admin/img/template/resultset_';
 		var oSection		= new Section(true);
-		
 		this._oContentDiv 	= 	$T.div({class: 'correspondence-run-ledger'},
 									oSection.getElement()
 								);
 		
+		// Title
 		oSection.setTitleContent(
 			$T.span(
 				$T.span('Correspondence Runs'),
@@ -50,6 +50,7 @@ var Component_Correspondence_Run_Ledger = Class.create(
 			)
 		);
 		
+		// Main content -- table
 		oSection.setContent(
 			$T.table({class: 'reflex highlight-rows'},
 				$T.thead(
@@ -60,8 +61,8 @@ var Component_Correspondence_Run_Ledger = Class.create(
 						this._createFieldHeader('Template', 'correspondence_template_name'),
 						this._createFieldHeader('Created By', 'created_employee_name'),
 						this._createFieldHeader('Items', 'count_correspondence'),
+						this._createFieldHeader('Data File(s)'),
 						this._createFieldHeader('Dispatched', 'delivered_datetime'),
-						this._createFieldHeader('Data File', 'data_file_name'),
 						this._createFieldHeader('Status'),
 						this._createFieldHeader('')	// Actions
 					),
@@ -72,8 +73,8 @@ var Component_Correspondence_Run_Ledger = Class.create(
 						this._createFilterValueElement('correspondence_template_id', 'Template'),
 						this._createFilterValueElement('created_employee_id', 'Created By'),
 						$T.th(),
-						this._createFilterValueElement('delivered_datetime', 'Dispatched'),
 						$T.th(),
+						this._createFilterValueElement('delivered_datetime', 'Dispatched'),
 						this._createFilterValueElement('status', 'Status'),
 						$T.th()
 					)
@@ -84,6 +85,7 @@ var Component_Correspondence_Run_Ledger = Class.create(
 			)
 		);
 		
+		// Footer -- loading msg & pagination
 		oSection.setFooterContent(
 			$T.div(
 				$T.span({class: 'loading'},
@@ -105,22 +107,14 @@ var Component_Correspondence_Run_Ledger = Class.create(
 				)
 			)
 		);
-		
+
 		// Bind events to the pagination buttons
 		var aBottomPageButtons 	= this._oContentDiv.select('div.section-footer button');
-		
-		// First
 		aBottomPageButtons[0].observe('click', this._changePage.bind(this, 'firstPage'));
-		
-		//Previous		
 		aBottomPageButtons[1].observe('click', this._changePage.bind(this, 'previousPage'));
-		
-		// Next
 		aBottomPageButtons[2].observe('click', this._changePage.bind(this, 'nextPage'));
-		
-		// Last
 		aBottomPageButtons[3].observe('click', this._changePage.bind(this, 'lastPage'));
-		
+
 		// Setup pagination button object
 		this.oPaginationButtons = {
 			oBottom	: {
@@ -130,16 +124,16 @@ var Component_Correspondence_Run_Ledger = Class.create(
 				oLastPage		: aBottomPageButtons[3]
 			}
 		};
-		
+
 		// Attach content and get data
 		oContainerDiv.appendChild(this._oContentDiv);
-		
-		// Send the initial sorting parameters to dataset ajax 
+
+		// Load the initial dataset
 		this._oSort.refreshData(true);
 		this._oFilter.refreshData(true);
 		this.oPagination.getCurrentPage();
 	},
-	
+
 	_showLoading	: function(bShow)
 	{
 		var oLoading	= this._oContentDiv.select('span.loading').first();
@@ -156,28 +150,30 @@ var Component_Correspondence_Run_Ledger = Class.create(
 			oLoading.hide();
 		}
 	},
-	
+
+	// _changePage: Executes the given function (name) on the dataset pagination object.
 	_changePage	: function(sFunction)
 	{
 		this._showLoading(true);
 		this.oPagination[sFunction]();
 	},
-	
+
+	// _updateTable: Page load callback from the dataset pagination object.
 	_updateTable	: function(oResultSet)
 	{
 		var oTBody = this._oContentDiv.select('table > tbody').first();
-		
+
 		// Remove all existing rows
 		while (oTBody.firstChild)
 		{
 			// Remove event handlers from the action buttons
 			var oEditButton = oTBody.firstChild.select('img').first();
-			
+
 			if (oEditButton)
 			{
 				oEditButton.stopObserving();
 			}
-			
+
 			// Remove the row
 			oTBody.firstChild.remove();
 		}
@@ -192,19 +188,19 @@ var Component_Correspondence_Run_Ledger = Class.create(
 			// Add the rows
 			var aData	= jQuery.json.arrayAsObject(oResultSet.arrResultSet);
 			var iCount	= 0;
-			
+
 			for (var i in aData)
 			{
 				iCount++;
 				oTBody.appendChild(this._createTableRow(aData[i]));
 			}
 		}
-		
+
 		this._bFirstLoadComplete	= true;
 		this._updatePagination();
 		this._updateSorting();
 		this._updateFilters();
-		
+
 		this._showLoading(false);
 		if (this._oLoadingPopup)
 		{
@@ -212,7 +208,7 @@ var Component_Correspondence_Run_Ledger = Class.create(
 			delete this._oLoadingPopup;
 		}
 	},
-	
+
 	_createNoRecordsRow	: function(bOnLoad)
 	{
 		return $T.tr(
@@ -221,7 +217,7 @@ var Component_Correspondence_Run_Ledger = Class.create(
 			)
 		);
 	},
-	
+
 	_createTableRow	: function(oRun)
 	{
 		if (oRun.id !== null)
@@ -235,16 +231,22 @@ var Component_Correspondence_Run_Ledger = Class.create(
 					)
 				)
 			}
+
+			// Build delivery (file export) summary
+			var oDataFileTD	= Component_Correspondence_Run_Ledger._buildDataFileSummary(oRun);
+
+			// Build items by delivery method cell
+			var oEmailSummary	= oRun.delivery_method_breakdown.EMAIL;
+			var oPostSummary	= oRun.delivery_method_breakdown.POST;
 			
-			var oDataFileTD	= $T.td({class: 'data-file-name'});
-			if (oRun.data_file_name)
-			{
-				var aSplit	= oRun.data_file_name.split('.');
-				for (var i = 0; i < aSplit.length; i++)
-				{
-					oDataFileTD.appendChild($T.span(aSplit[i] + (i == (aSplit.length - 1) ? '' : '.')));
-				}
-			}
+			var oItemsTD	=	$T.td({class: 'correspondence-items'},
+									Component_Correspondence_Run_Ledger._buildDeliveryMethodSummary(oEmailSummary, 'Email', 'correspondence_email'),
+									Component_Correspondence_Run_Ledger._buildDeliveryMethodSummary(oPostSummary, 'Post', 'lorry'),
+									$T.div({class: 'correspondence-item-total'},
+										$T.img({src: '../admin/img/template/sum.png', alt: 'Total', title: 'Total'}),
+										$T.span(oRun.delivery_method_breakdown.TOTAL.count)
+									)
+								);
 			
 			var	oTR	=	$T.tr(
 							$T.td(Component_Correspondence_Run_Ledger.getDateTimeElement(oRun.processed_datetime)),
@@ -258,26 +260,13 @@ var Component_Correspondence_Run_Ledger = Class.create(
 								)
 							),
 							$T.td(oRun.created_employee_name),
-							$T.td({class: 'correspondence-items'},
-								$T.div(
-									$T.img({src: '../admin/img/template/correspondence_email.png', alt: 'Email', title: 'Email'}),
-									$T.span(oRun.count_email)
-								),
-								$T.div(
-									$T.img({src: '../admin/img/template/lorry.png', alt: 'Post', title: 'Post'}),
-									$T.span(oRun.count_post)
-								),
-								$T.div({class: 'correspondence-item-total'},
-									$T.img({src: '../admin/img/template/sum.png', alt: 'Total', title: 'Total'}),
-									$T.span(oRun.count_correspondence)
-								)
-							),
-							$T.td(Component_Correspondence_Run_Ledger.getDateTimeElement(oRun.delivered_datetime)),
+							oItemsTD,
 							oDataFileTD,
+							$T.td(Component_Correspondence_Run_Ledger.getDateTimeElement(oRun.delivered_datetime)),
 							$T.td(Correspondence_Run_Status.getStatusFromCorrespondenceRun(oRun).name),
 							$T.td(this._getRunActions(oRun))
 						);
-			
+
 			return oTR;
 		}
 		else
@@ -286,7 +275,7 @@ var Component_Correspondence_Run_Ledger = Class.create(
 			return $T.tr();
 		}
 	},
-	
+
 	_updatePagination : function(iPageCount)
 	{
 		// Update the 'disabled' state of each pagination button
@@ -294,7 +283,7 @@ var Component_Correspondence_Run_Ledger = Class.create(
 		this.oPaginationButtons.oBottom.oPreviousPage.disabled	= true;
 		this.oPaginationButtons.oBottom.oNextPage.disabled 		= true;
 		this.oPaginationButtons.oBottom.oLastPage.disabled 		= true;
-		
+
 		if (iPageCount == undefined)
 		{
 			// Get the page count
@@ -305,7 +294,7 @@ var Component_Correspondence_Run_Ledger = Class.create(
 			// Update Page ? of ?, show 1 for page count if it is 0 because there is technically still a page even though it's empty
 			var oPageInfo		= this._oContentDiv.select('span.pagination-info').first();
 			oPageInfo.innerHTML	= '(Page '+ (this.oPagination.intCurrentPage + 1) +' of ' + (iPageCount == 0 ? 1 : iPageCount) + ')';
-			
+
 			if (this.oPagination.intCurrentPage != Pagination.PAGE_FIRST)
 			{
 				// Enable the first and previous buttons
@@ -320,7 +309,7 @@ var Component_Correspondence_Run_Ledger = Class.create(
 			}
 		}
 	},
-	
+
 	_updateSorting	: function()
 	{
 		for (var sField in Component_Correspondence_Run_Ledger.SORT_FIELDS)
@@ -334,7 +323,7 @@ var Component_Correspondence_Run_Ledger = Class.create(
 			}
 		}
 	},
-	
+
 	_updateFilters	: function()
 	{
 		for (var sField in Component_Correspondence_Run_Ledger.FILTER_FIELDS)
@@ -345,7 +334,7 @@ var Component_Correspondence_Run_Ledger = Class.create(
 			}
 		}
 	},
-	
+
 	_updateFilterDisplayValue	: function(sField)
 	{
 		if (this._oFilter.isRegistered(sField))
@@ -370,16 +359,16 @@ var Component_Correspondence_Run_Ledger = Class.create(
 			}
 		}
 	},
-	
+
 	_createFilterValueElement	: function(sField, sLabel)
 	{
 		var oDeleteImage				= $T.img({class: 'filter-delete', src: Component_Correspondence_Run_Ledger.REMOVE_FILTER_IMAGE_SOURCE, alt: 'Remove Filter', title: 'Remove Filter'});
 		oDeleteImage.style.visibility	= 'hidden';
 		oDeleteImage.observe('click', this._clearFilterValue.bind(this, sField));
-		
+
 		var oFiterImage	= $T.img({class: 'header-filter', src: Component_Correspondence_Run_Ledger.FILTER_IMAGE_SOURCE, alt: 'Filter by ' + sLabel, title: 'Filter by ' + sLabel});
 		this._oFilter.registerFilterIcon(sField, oFiterImage, sLabel, this._oContentDiv, 0, 10);
-		
+
 		return	$T.th({class: 'filter-heading'},
 					$T.span({class: 'filter-' + sField},
 						'All'
@@ -390,13 +379,13 @@ var Component_Correspondence_Run_Ledger = Class.create(
 					)
 				);
 	},
-		
+
 	_clearFilterValue	: function(sField)
 	{
 		this._oFilter.clearFilterValue(sField);
 		this._oFilter.refreshData();
 	},
-	
+
 	_createFieldHeader	: function(sLabel, sSortField, bMultiLine)
 	{
 		var oSortImg	= $T.img({class: 'sort-' + (sSortField ? sSortField : '')});
@@ -405,20 +394,20 @@ var Component_Correspondence_Run_Ledger = Class.create(
 								$T.span(sLabel)
 							);
 		oSortImg.hide();
-		
+
 		// Optional sort field
 		if (sSortField)
 		{
 			var oSpan	= oTH.select('span').first();
 			oSpan.addClassName('header-sort');
-			
+
 			this._oSort.registerToggleElement(oSpan, sSortField, Component_Correspondence_Run_Ledger.SORT_FIELDS[sSortField]);
 			this._oSort.registerToggleElement(oSortImg, sSortField, Component_Correspondence_Run_Ledger.SORT_FIELDS[sSortField]);
 		}
-		
+
 		return oTH;
 	},
-	
+
 	_getRunActions	: function(oRun)
 	{
 		var oUL		= $T.ul({class: 'reset horizontal actions'});
@@ -427,12 +416,12 @@ var Component_Correspondence_Run_Ledger = Class.create(
 		oUL.appendChild($T.li(oView));
 		return oUL;
 	},
-	
+
 	_viewDetailsPopup	: function(oRun)
 	{
 		new Popup_Correspondence_Run(oRun.id);
 	},
-	
+
 	_formatFilterValueForDisplay	: function(sField, mValue)
 	{
 		var oDefinition	= Component_Correspondence_Run_Ledger.FILTER_FIELDS[sField];
@@ -468,7 +457,7 @@ var Component_Correspondence_Run_Ledger = Class.create(
 				if (oControl.bPopulated)
 				{
 					sValue	= oControl.getElementText();
-					
+
 					// Remove the onchange callback, if it was used to update this filter value
 					if (typeof this._hControlOnChangeCallbacks[sField] != 'undefined')
 					{
@@ -487,26 +476,23 @@ var Component_Correspondence_Run_Ledger = Class.create(
 				}
 				break;
 		}
-		
+
 		return sValue;
 	},
 });
 
 // Static
 
-Object.extend(Component_Correspondence_Run_Ledger, 
+Object.extend(Component_Correspondence_Run_Ledger,
 {
 	MAX_RECORDS_PER_PAGE		: 5,
 	EDIT_IMAGE_SOURCE			: '../admin/img/template/pencil.png',
 	FILTER_IMAGE_SOURCE			: '../admin/img/template/table_row_insert.png',
 	REMOVE_FILTER_IMAGE_SOURCE	: '../admin/img/template/delete.png',
-
 	ACTION_VIEW_IMAGE_SOURCE	: '../admin/img/template/magnifier.png',
-
 	RANGE_FILTER_DATE_REGEX		: /^(\d{4}-\d{2}-\d{2})(\s\d{2}:\d{2}:\d{2})?$/,
 	RANGE_FILTER_FROM_MINUTES	: '00:00:00',
 	RANGE_FILTER_TO_MINUTES		: '23:59:59',
-
 	DATA_SET_DEFINITION			: {sObject: 'Correspondence_Run', sMethod: 'getDataSet'},
 
 	// Helper functions
@@ -528,11 +514,11 @@ Object.extend(Component_Correspondence_Run_Ledger,
 		{
 			return $T.div('');
 		}
-		
+
 		var oDate	= new Date(Date.parse(sMySQLDate.replace(/-/g, '/')));
 		var sDate	= oDate.$format('d/m/Y');
 		var sTime	= oDate.$format('h:i A');
-		
+
 		return 	$T.div(
 					$T.div(sDate),
 					$T.div({class: 'datetime-time'},
@@ -547,32 +533,82 @@ Object.extend(Component_Correspondence_Run_Ledger,
 		return oDate.$format('j/m/y');
 	},
 
-
 	getPrePrintedOptions	: function(fnCallback)
 	{
 		fnCallback(
 			[
-	      	 	$T.option({value: 0}, 
+	      	 	$T.option({value: 0},
 	      	 		'No'
 	      	 	),
-	      	 	$T.option({value: 1}, 
+	      	 	$T.option({value: 1},
 	      	 		'Yes'
 	      	 	)
 	      	]
 	    );
 	},
+
+	_buildDeliveryMethodSummary	: function(oSummary, sLabel)
+	{
+		var sIcon	= Correspondence_Delivery_Method.getIconForSystemName(sLabel.toUpperCase());
+		return 	$T.div(
+					$T.img({src: sIcon, alt: sLabel, title: sLabel}),
+					$T.span(oSummary.count)
+				);
+	},
+	
+	_buildDataFileSummary	: function(oRun)
+	{
+		var oTD	= $T.td({class: 'data-file-name'});
+		if (oRun.file_export_breakdown)
+		{
+			var oFileInfo	= null;
+			for (var i = 0; i < oRun.file_export_breakdown.length; i++)
+			{
+				oFileInfo					= oRun.file_export_breakdown[i];
+				var oDeliveryMethodsSpan	= $T.span({class: 'component-correspondence-run-ledger-dispatchsummary-file-carrier-method'});
+				var sMethod					= null;
+				for (var j in oFileInfo.delivery_methods)
+				{
+					if (isNaN(j))
+					{
+						break;
+					}
+					
+					sMethod	= oFileInfo.delivery_methods[j];
+					oDeliveryMethodsSpan.appendChild(
+						$T.img({src: Correspondence_Delivery_Method.getIconForSystemName(sMethod), alt: sMethod, title: sMethod})
+					);
+				}
+				
+				oTD.appendChild(
+					$T.div(
+						$T.div({class: 'component-correspondence-run-ledger-carrier'},
+							$T.span(oFileInfo.carrier),
+							oDeliveryMethodsSpan
+						),
+						$T.div({class: 'subscript component-correspondence-run-ledger-carrier-summary'},
+							$T.div(
+								(oFileInfo.file !== null ? oFileInfo.file : 'No File Dispatched')
+							)
+						)
+					)
+				);
+			}
+		}
+		return oTD;
+	},
 	
 	//Sorting definitions
-	SORT_FIELDS	:	{
-						processed_datetime				: Sort.DIRECTION_DESC,
-						correspondence_template_name	: Sort.DIRECTION_OFF,
-						created_employee_name			: Sort.DIRECTION_OFF,
-						count_correspondence			: Sort.DIRECTION_OFF,
-						count_email						: Sort.DIRECTION_OFF,
-						count_post						: Sort.DIRECTION_OFF,
-						delivered_datetime				: Sort.DIRECTION_OFF,
-						data_file_name					: Sort.DIRECTION_OFF
-					},
+	SORT_FIELDS	:	
+	{
+		processed_datetime				: Sort.DIRECTION_DESC,
+		correspondence_template_name	: Sort.DIRECTION_OFF,
+		created_employee_name			: Sort.DIRECTION_OFF,
+		count_correspondence			: Sort.DIRECTION_OFF,
+		count_email						: Sort.DIRECTION_OFF,
+		count_post						: Sort.DIRECTION_OFF,
+		delivered_datetime				: Sort.DIRECTION_OFF
+	},
 });
 
 Component_Correspondence_Run_Ledger.SORT_IMAGE_SOURCE						= {};
@@ -585,16 +621,16 @@ Component_Correspondence_Run_Ledger.YEAR_MINIMUM	= 2010;
 Component_Correspondence_Run_Ledger.YEAR_MAXIMUM	= Component_Correspondence_Run_Ledger.YEAR_MINIMUM + 5;
 
 var oNow	= new Date();
-Component_Correspondence_Run_Ledger.FILTER_FIELDS	= 
+Component_Correspondence_Run_Ledger.FILTER_FIELDS	=
 {
-	correspondence_template_id	: 
+	correspondence_template_id	:
 	{
 		iType	: Filter.FILTER_TYPE_VALUE,
-		oOption	: 	
+		oOption	:
 		{
 			sType		: 'select',
 			mDefault	: null,
-			oDefinition	:	
+			oDefinition	:
 			{
 				sLabel		: 'Template',
 				mEditable	: true,
@@ -614,11 +650,11 @@ Component_Correspondence_Run_Ledger.FILTER_FIELDS	=
 		sFromOption		: 'On Or After',
 		sToOption		: 'On Or Before',
 		sBetweenOption	: 'Between',
-		oOption			: 	
+		oOption			:
 		{
 			sType		: 	'date-picker',
 			mDefault	:	null,
-			oDefinition	:	
+			oDefinition	:
 			{
 				sLabel		: 'Date',
 				mEditable	: true,
@@ -641,11 +677,11 @@ Component_Correspondence_Run_Ledger.FILTER_FIELDS	=
 		sFromOption		: 'On Or After',
 		sToOption		: 'On Or Before',
 		sBetweenOption	: 'Between',
-		oOption			: 	
+		oOption			:
 		{
 			sType		: 	'date-picker',
 			mDefault	:	null,
-			oDefinition	:	
+			oDefinition	:
 			{
 				sLabel		: 'Date',
 				mEditable	: true,
@@ -661,11 +697,11 @@ Component_Correspondence_Run_Ledger.FILTER_FIELDS	=
 	created_employee_id	:
 	{
 		iType	: Filter.FILTER_TYPE_VALUE,
-		oOption	: 	
+		oOption	:
 		{
 			sType		: 'select',
 			mDefault	: null,
-			oDefinition	:	
+			oDefinition	:
 			{
 				sLabel		: 'Created By',
 				mEditable	: true,
@@ -678,11 +714,11 @@ Component_Correspondence_Run_Ledger.FILTER_FIELDS	=
 	status	:
 	{
 		iType	: Filter.FILTER_TYPE_VALUE,
-		oOption	: 	
+		oOption	:
 		{
 			sType		: 'select',
 			mDefault	: null,
-			oDefinition	:	
+			oDefinition	:
 			{
 				sLabel		: 'Status',
 				mEditable	: true,

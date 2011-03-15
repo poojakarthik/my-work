@@ -32,7 +32,7 @@ var Control_Field_Checkbox	= Class.create(/* extends */ Control_Field,
 	
 	updateElementValue	: function()
 	{
-		mValue	= this.getValue();
+		var	mValue	= this.getValue();
 		
 		this.setElementValue(mValue);
 		this.oControlOutput.oView.innerHTML	= (Number(mValue)) ? 'Yes' : 'No';

@@ -6,44 +6,25 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 		$super(85);
 		
 		// Summary of the regenerated invoice
-		this._oNewInvoice				= oNewInvoice;
+		this._oNewInvoice = oNewInvoice;
 		
 		// Summary of the original invoice
-		this._oOriginalInvoice			= oOriginalInvoice;
+		this._oOriginalInvoice = oOriginalInvoice;
 		
 		// The debugging log information, optional
-		this._mDebugLog					= mDebugLog;
+		this._mDebugLog = mDebugLog;
 		
 		// Stores info about toggleable rows
-		this._hToggleRows				= {};
+		this._hToggleRows = {};
 		
 		// Can an adjustment/ticket be added from this popup?
 		this._bAllowAdjustmentAndTicket	= (typeof bAllowAdjustmentAndTicket == 'undefined') ? true : !!bAllowAdjustmentAndTicket;
 		
-		// Create the interface
-		this._buildUI();
-	},
-	
-	// Public
-	
-	// Override
-	hide	: function($super)
-	{
-		$super();
+		// Flags for completion of post rerate actions
+		this._bAdjustmentAdded 	= false;
+		this._bTicketAdded		= false;
 		
-		// Remove the cached reference to this instance
-		delete Popup_Invoice_Rerate_Summary._hInstances[this._oOriginalInvoice.Id];
-	},
-	
-	// Override
-	display	: function($super)
-	{
-		$super();
-		
-		// Cache a reference to this instance statically.
-		// Used to disable adjustment buttons on completion of an adjustment because the adjustment popup
-		// is framework 2 and thus quite hard to pass a callback to.
-		Popup_Invoice_Rerate_Summary._hInstances[this._oOriginalInvoice.Id]	= this;
+		Flex.Constant.loadConstantGroup(Popup_Invoice_Rerate_Summary.REQUIRED_CONSTANT_GROUPS, this._buildUI.bind(this));
 	},
 	
 	// Private
@@ -75,7 +56,7 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 		var oTicketButton		= 	$T.button({class: 'icon-button'},
 										$T.img({src: Popup_Invoice_Rerate_Summary.ADD_TICKET_SRC}),
 										$T.span('Add Ticket')
-									).observe('click', this._addTicket.bind(this));
+									).observe('click', this._doAddTicket.bind(this));
 		this._oContent			=	$T.div({class: 'popup-invoice-rerate-summary'},
 										oSection.getElement(),
 										$T.div({class: 'buttons-left'},
@@ -427,61 +408,13 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 	// _doAddAdjustment: Click event handler for the 'Add Adjustment' button
 	_doAddAdjustment	: function()
 	{
-		if (Popup_Invoice_Rerate_Summary._hAdjustments[this._oNewInvoice.invoice_run_id])
+		if (this._bAdjustmentAdded)
 		{
 			Reflex_Popup.alert('You have already added an adjustment for this Invoice');
 			return;
 		}
 		
 		this._addAdjustment(false);
-	},
-	
-	// _addAdjustment: 
-	_addAdjustment	: function(bForceIfNoDifference)
-	{
-		if ((this._fAdjustmentAmount >= Popup_Invoice_Rerate_Summary.MIN_ADJUSTMENT) && !bForceIfNoDifference)
-		{
-			// Adjustment amount is greater than the minimum allowed (meant to be a credit)
-			this._fAdjustmentAmount	= 0;
-			
-			Reflex_Popup.yesNoCancel(
-				'There difference between the original Invoice and the rerated Invoice totals is not a Credit amount. Do you still want to add an adjustment?', 
-				{fnOnYes: this._addAdjustment.bind(this, true)}
-			);
-			return;
-		}
-		
-		// Build Vixen popup request data
-		var oData	= 	{
-							Account	:
-							{
-								// Account id to apply the adjustment to
-								Id	: this._oNewInvoice.Account
-							},
-							AmountOverride	:
-							{
-								// Amount override for the adjustment
-								Amount	: Math.abs(this._fAdjustmentAmount)
-							},
-							Charge	:
-							{
-								// Invoice the adjustment is related to
-								Invoice	: this._oOriginalInvoice.Id
-							},
-							Rerate	:
-							{
-								// Flag that tells the adjustment popup where we're coming from
-								IsRerateAdjustment	: true
-							}
-						};
-		
-		if (!Popup_Invoice_Rerate_Summary._hTickets[this._oNewInvoice.invoice_run_id])
-		{
-			// Haven't already added a ticket, send through the rerated invoice id so that one is added on adjustment request completion
-			oData.RerateInvoiceRun	= {Id: this._oNewInvoice.invoice_run_id};
-		}
-		
-		Vixen.Popup.ShowAjaxPopup('AddAdjustmentPopupId', 'medium', 'Request Adjustment', 'Adjustment', 'Add', oData);
 	},
 	
 	// _showLoading: Shows a loading popup
@@ -554,36 +487,94 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 		}
 		this._hToggleRows[sId].bVisible	= bVisible;
 	},
+
+	// _addAdjustment: 
+	_addAdjustment	: function(bForceIfNoDifference, oRerateAdjustmentType)
+	{
+		if ((this._fAdjustmentAmount >= Popup_Invoice_Rerate_Summary.MIN_ADJUSTMENT) && !bForceIfNoDifference)
+		{
+			// Adjustment amount is greater than the minimum allowed (meant to be a credit)
+			this._fAdjustmentAmount	= 0;
+			
+			Reflex_Popup.yesNoCancel(
+				'There difference between the original Invoice and the rerated Invoice totals is not a Credit amount. Do you still want to add an adjustment?', 
+				{fnOnYes: this._addAdjustment.bind(this, true)}
+			);
+			return;
+		}
+		
+		if (Object.isUndefined(oRerateAdjustmentType))
+		{
+			Popup_Invoice_Rerate_Summary._getRerateAdjustmentType(this._addAdjustment.bind(this, true));
+			return;
+		}
+		
+		new Popup_Adjustment_Request(
+			this._oNewInvoice.Account, 
+			null, 
+			Math.abs(this._fAdjustmentAmount), 
+			this._oOriginalInvoice.Id, 
+			(oRerateAdjustmentType ? oRerateAdjustmentType.id : null), 
+			this._adjustmentAdded.bind(this)
+		);
+	},
+	
+	_adjustmentAdded : function(iAdjustmentId)
+	{
+		// Record that an adjustment has been added for the rerated invoice
+		this._bAdjustmentAdded = true;
+		
+		// Disable the 'add adjustment' button on the instance that the adjustment was added from
+		this.oAdjustmentButton.disabled = true;
+		
+		// Create the ticket
+		this._addTicket(iAdjustmentId);
+	},
+	
+	_doAddTicket	: function()
+	{
+		var iRerateInvoiceRunId	= this._oNewInvoice.invoice_run_id;
+		if (this._bTicketAdded)
+		{
+			Reflex_Popup.alert('You have already added a ticket for this Invoice');
+			return;
+		}
+		
+		// Create the ticket
+		this._addTicket(null);
+	},
+	
+	_addTicket	: function(iAdjustmentId)
+	{
+		if (!this._bTicketAdded)
+		{
+			// Show the 'add ticket' popups
+			new Popup_Invoice_Rerate_Ticket(this._oOriginalInvoice.Id, this._oNewInvoice.invoice_run_id, iAdjustmentId, this._ticketAdded.bind(this));
+		}
+	},
+	
+	_ticketAdded	: function(iTicketId)
+	{
+		// Record that a ticket has been (is to be) added for the rerated invoice
+		this._bTicketAdded = true;
+		
+		// Disable the 'add ticket' button on the instance that the ticket is being added from
+		this.oTicketButton.disabled = true;
+	},
 	
 	// _toggleRows: Event handler for the 'View Log' buttons, shows a debug (textarea) popup containing the given text.
 	_showDebugLog	: function(sText)
 	{
 		Reflex_Popup.debug(sText);
 	},
-	
-	// _addTicket: 	Event handler for the 'Add Ticket' button, calls the static addTicket function if a ticket
-	//				has not already been added for the rerated invoice run id
-	_addTicket	: function()
-	{
-		var iRerateInvoiceRunId	= this._oNewInvoice.invoice_run_id;
-		if (Popup_Invoice_Rerate_Summary._hTickets[iRerateInvoiceRunId])
-		{
-			Reflex_Popup.alert('You have already added a ticket for this Invoice');
-			return;
-		}
-		
-		// Record that a ticket has been (is to be) added for the rerated invoice
-		Popup_Invoice_Rerate_Summary._hTickets[iRerateInvoiceRunId]	= true;
-		
-		// Create the ticket
-		Popup_Invoice_Rerate_Summary.addTicket(this._oOriginalInvoice.Id, iRerateInvoiceRunId, null);
-	}
 });
 
 // Static members
 
 Object.extend(Popup_Invoice_Rerate_Summary,
 {
+	REQUIRED_CONSTANT_GROUPS : ['adjustment_type_system'],
+	
 	// Image sources
 	TOGGLE_CLOSED		: '../admin/img/template/tree_closed.png',
 	TOGGLE_OPEN			: '../admin/img/template/tree_open.png',
@@ -595,61 +586,16 @@ Object.extend(Popup_Invoice_Rerate_Summary,
 	// Minimum invoice total difference (credit) required for an adjustment addition to be allowed without warning
 	MIN_ADJUSTMENT		: -1,
 	
-	// Caches Popup_Invoice_Rerate_Summary instances (against the original invoice id tied to the popup)
-	_hInstances		: {},
-	
-	// Caches whether or not an adjustment has been added against an invoice run id (of a rerated invoices)
-	_hAdjustments	: {},
-	
-	// Caches whether or not a ticket has been added against an invoice run id (of a rerated invoices)
-	_hTickets		: {},
-	
-	// Public
-	
-	// adjustmentAdded:	Static callback for use when an adjustment request has been made for the rerate.  
-	//					Once this has been called, the 'Add Adjustment' button is disabled
-	adjustmentAdded	: function(sPopupMessage, iOriginalInvoiceId, iRerateInvoiceRunId, iAdjustmentId, bAddTicket, bShowTicketPopup)
-	{
-		// Record that an adjustment has been added for the rerated invoice
-		Popup_Invoice_Rerate_Summary._hAdjustments[iRerateInvoiceRunId]	= true;
-		
-		// Disable the 'add adjustment' button on the instance that the adjustment was added from
-		Popup_Invoice_Rerate_Summary._hInstances[iOriginalInvoiceId].oAdjustmentButton.disabled	= true;
-		
-		if (!bShowTicketPopup)
-		{
-			// Show an alert with given message, on close comes back to this function with 'bShowTicketPopup' set to true, (if ticket to be added)
-			Reflex_Popup.alert(
-				sPopupMessage, 
-				{fnClose: (bAddTicket ? Popup_Invoice_Rerate_Summary.addTicket.curry(iOriginalInvoiceId, iRerateInvoiceRunId, iAdjustmentId) : null)}
-			);
-		}
-		else if (bShowTicketPopup)
-		{
-			// Create the ticket
-			Popup_Invoice_Rerate_Summary.addTicket(iOriginalInvoiceId, iRerateInvoiceRunId, iAdjustmentId);
-		}
-	},
-	
-	// addTicket: Allows creation of a ticket which will be tied to the rerating of an invoice
-	addTicket	: function(iOriginalInvoiceId, iRerateInvoiceRunId, iAdjustmentId)
-	{	
-		// Show the 'add ticket' popup
-		new Popup_Invoice_Rerate_Ticket(iOriginalInvoiceId, iRerateInvoiceRunId, iAdjustmentId, Popup_Invoice_Rerate_Summary.ticketAdded.curry(iOriginalInvoiceId, iRerateInvoiceRunId));
-	},
-	
-	// ticketAdded: This is used as a callback for the Invoice Rerate Ticket popup, is only called on successful ticket creation.
-	//				Disallows anymore ticket creation for the popup (as well after any adjustments that are added for the invoice)
-	ticketAdded	: function(iOriginalInvoiceId, iRerateInvoiceRunId, iTicketId)
-	{
-		// Record that a ticket has been (is to be) added for the rerated invoice
-		Popup_Invoice_Rerate_Summary._hTickets[iRerateInvoiceRunId]	= true;
-		
-		// Disable the 'add ticket' button on the instance that the ticket is being added from
-		Popup_Invoice_Rerate_Summary._hInstances[iOriginalInvoiceId].oTicketButton.disabled	= true;
-	},
-	
 	// Private
+	
+	_ajaxError : function(oResponse, sMessage)
+	{
+		// Exception
+		Reflex_Popup.alert(
+			(sMessage ? sMessage + '. ' : '') + oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.', 
+			{sTitle: 'Error'}
+		);
+	},
 	
 	// _getAmountTD: Returns a TD element containing a formatted amount value given the raw amount
 	_getAmountTD	: function(mValue, sExtraClass)
@@ -784,6 +730,24 @@ Object.extend(Popup_Invoice_Rerate_Summary,
 			sResult += '...';
 		}
 		return sResult;
+	},
+	
+	_getRerateAdjustmentType : function(fnCallback, oResponse)
+	{
+		if (!oResponse)
+		{
+			var fnResp	= Popup_Invoice_Rerate_Summary._getRerateAdjustmentType.curry(fnCallback);
+			var fnReq	= jQuery.json.jsonFunction(fnResp, fnResp, 'Adjustment_Type', 'getSystemAdjustmentType');
+			fnReq($CONSTANT.ADJUSTMENT_TYPE_SYSTEM_RERATE);
+			return;
+		}
+		
+		if (!oResponse.bSuccess)
+		{
+			Popup_Invoice_Rerate_Summary._ajaxError(oResponse, 'Failed to retrieve the Rerate Adjustment type');
+			return;
+		}
+		
+		fnCallback(oResponse.oAdjustmentType);
 	}
 });
-

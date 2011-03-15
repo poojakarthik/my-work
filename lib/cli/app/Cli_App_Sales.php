@@ -579,6 +579,7 @@ class Cli_App_Sales extends Cli
 						$objAccount->State				= $arrSPSaleAccount['state_name'];
 						$objAccount->Country			= 'AU';
 						$objAccount->CustomerGroup		= $arrSPSaleAccount['vendor_id'];
+						
 						$objAccount->AccountGroup		= $objAccountGroup->Id;
 						$objAccount->BillingFreq		= BILLING_DEFAULT_FREQ;
 						$objAccount->BillingFreqType	= BILLING_DEFAULT_FREQ_TYPE;
@@ -622,6 +623,16 @@ class Cli_App_Sales extends Cli
 						$objAccount->last_automatic_invoice_action	= AUTOMATIC_INVOICE_ACTION_NONE;
 						$objAccount->automatic_barring_status		= AUTOMATIC_BARRING_STATUS_NONE;
 						$objAccount->vip							= 0;
+												
+						// Default account class from Customer Group
+						$oAccountClass 					= CustomerGroup::getDefaultAccountClassForCustomerGroup($objAccount->CustomerGroup);
+						$objAccount->account_class_id	= $oAccountClass->id;
+						
+						// Default collection scenario from the Account Class
+						Account_Collection_Scenario::factory($objAccount->Id, $oAccountClass->collection_scenario_id);
+						
+						// Default collection severity
+						$objAccount->collection_severity_id = Collection_Severity::getForSystemName('UNRESTRICTED')->id;
 						
 						// Save the Account
 						$objAccount->save();
@@ -1401,7 +1412,7 @@ class Cli_App_Sales extends Cli
 			$arrReport[]	= "Flexor";
 			$strEmailBody	= "<div style='font-family: Calibri,sans-serif;'>\n" . implode("\n<br />", $arrReport) . "</div>";
 
-			$objEmailNotification = new Email_Notification(EMAIL_NOTIFICATION_SALE_IMPORT_REPORT);
+			$objEmailNotification = Email_Notification::getForSystemName('SALE_IMPORT_REPORT');
 			
 			$objEmailNotification->setSubject($strEmailSubject);
 			$objEmailNotification->setBodyHtml($strEmailBody);
@@ -1839,7 +1850,7 @@ class Cli_App_Sales extends Cli
 			
 			$strEmailBody = implode("\r\n", $arrReport);
 			
-			$objEmailNotification = new Email_Notification(EMAIL_NOTIFICATION_SALE_AUTOMATIC_PROVISIONING_REPORT);
+			$objEmailNotification = Email_Notification::getForSystemName('SALE_AUTOMATIC_PROVISIONING_REPORT');
 			$objEmailNotification->setSubject($strEmailSubject);
 			$objEmailNotification->setBodyText($strEmailBody);
 			$objEmailNotification->send();
@@ -1976,7 +1987,7 @@ $strOddCases
 		$arrReport[]	= "Flexor";
 		
 		$strEmailBody	= "<div style='font-family: Calibri,sans-serif;'>\n" . implode("\n<br />", $arrReport) . "</div>";
-		$objEmailNotification = new Email_Notification(EMAIL_NOTIFICATION_SALE_AUTOMATIC_PROVISIONING_REPORT);
+		$objEmailNotification = Email_Notification::getForSystemName('SALE_AUTOMATIC_PROVISIONING_REPORT');
 		$objEmailNotification->setSubject($strEmailSubject);
 		$objEmailNotification->setBodyHtml($strEmailBody);
 		$objEmailNotification->send();

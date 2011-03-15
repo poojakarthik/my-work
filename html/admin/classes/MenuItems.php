@@ -1155,7 +1155,8 @@ class MenuItems {
 									'section.js',
 									'popup_invoice_rerate.js',
 									'popup_invoice_rerate_summary.js',
-									'popup_invoice_rerate_ticket.js'
+									'popup_invoice_rerate_ticket.js',
+									'popup_adjustment_request.js'
 								],
 								function()
 								{
@@ -1259,6 +1260,7 @@ class MenuItems {
 								[
 									'javascript/popup_account_change_payment_method.js',
 									'../ui/javascript/reflex_validation.js',
+									'../ui/javascript/reflex_validation_credit_card.js',
 									'../ui/javascript/control_field.js',
 									'../ui/javascript/control_field_text.js',
 									'../ui/javascript/control_field_checkbox.js',
@@ -2814,19 +2816,22 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function AddAdjustment($intAccountId, $intServiceId = NULL) {
-		$this->strContextMenuLabel = "Request Adjustment";
-
-		$this->strLabel = "Request Adjustment";
-
-		// Setup data to send
-		$arrData['Account']['Id'] = $intAccountId;
-		$arrData['Service']['Id'] = $intServiceId;
-
-		// Convert to JSON notation
-		$strJsonCode = Json()->encode($arrData);
-
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddAdjustmentPopupId\", \"medium\", \"Request Adjustment\", \"Adjustment\", \"Add\", $strJsonCode)";
+	function AddAdjustment($iAccountId, $iServiceId = NULL) {
+		$this->strContextMenuLabel 	= "Request Adjustment";
+		$this->strLabel 			= "Request Adjustment";
+		
+		$sServiceId = ($iServiceId !== null ? (string)$iServiceId : 'null');
+		return "javascript:	JsAutoLoader.loadScript(
+								['control_field.js',
+								'control_field_text.js',
+								'control_field_select.js',
+								'control_field_textarea.js',
+								'popup_adjustment_request.js'],
+								function() {
+									var oPopup = new Popup_Adjustment_Request({$iAccountId}, {$sServiceId});
+								},
+								true
+							);";
 	}
 
 	//------------------------------------------------------------------------//
@@ -2846,18 +2851,27 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function MakePayment($intId) {
-		$this->strContextMenuLabel = "";
-
-		$this->strLabel = "make payment";
-
-		// Setup data to send
-		$arrData['Account']['Id'] = $intId;
-
-		// Convert to JSON notation
-		$strJsonCode = Json()->encode($arrData);
-
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"MakePaymentPopupId\", \"mediumlarge\", \"Payment\", \"Payment\", \"Add\", $strJsonCode)";
+	function MakePayment($iAccountId) 
+	{
+		$this->strContextMenuLabel 	= "";
+		$this->strLabel 			= "Make payment";
+		
+		return "javascript:	JsAutoLoader.loadScript(
+								['control_field.js',
+								'control_field_text.js',
+								'control_field_select.js',
+								'control_field_number.js',
+								'reflex_validation.js',
+								'account.js',
+								'reflex_validation_credit_card.js',
+								'component_account_payment_create.js',
+								'popup_account_payment_create.js'],
+								function() 
+								{
+									new Popup_Account_Payment_Create({$iAccountId});
+								},
+								true
+							);";
 	}
 
 	//------------------------------------------------------------------------//
@@ -3330,8 +3344,8 @@ class MenuItems {
 	 * @method
 	 */
 	function ManageAdjustmentTypes() {
-		$this->strContextMenuLabel = "Manage Adjustment Types";
-		$this->strLabel = "Manage Adjustment Types";
+		$this->strContextMenuLabel = "Manage Adjustment Types & Outcomes";
+		$this->strLabel = "Manage Adjustment Types & Outcomes";
 		return self::NEW_FRAMEWORK . "reflex.php/Adjustment/ManageTypes/";
 	}
 
@@ -4051,6 +4065,212 @@ else
 ";
 	}
 
+	public function CollectionsPrototype()
+	{
+		$this->strContextMenuLabel 	= "Collections Prototype";
+		$this->strLabel 			= "Collections Prototype";
+
+		return	"javascript:	JsAutoLoader.loadScript(
+									'developer_collections.js', 
+									function()
+									{
+										var oPopup = new Developer_Collections();
+									}, 
+									true
+								);";
+	}
+	
+	public function ConfigureAllCollections()
+	{
+		$this->strContextMenuLabel 	= "Configure All";
+		$this->strLabel 			= "Configure All";
+		return self::NEW_FRAMEWORK."reflex.php/Collections/Configure/";
+	}
+	
+	public function ViewCollectionsScenario($iScenarioId)
+	{
+		$this->strContextMenuLabel 	= "Add Scenario";
+		$this->strLabel 			= "Add Scenario";
+
+		return self::NEW_FRAMEWORK."reflex.php/Collections/Scenario/View/{$iScenarioId}";
+	}
+	
+	public function AddCollectionsScenario($iScenarioId=null)
+	{
+		$this->strContextMenuLabel 	= "Add Scenario";
+		$this->strLabel 			= "Add Scenario";
+
+		return self::NEW_FRAMEWORK."reflex.php/Collections/Scenario/Create".($iScenarioId !== null ? "From/{$iScenarioId}" : "/");
+	}
+	
+	public function AddCollectionsEvent()
+	{
+		$this->strContextMenuLabel 	= "Add Event";
+		$this->strLabel 			= "Add Event";
+
+		return	"javascript:	JsAutoLoader.loadScript(
+									['reflex_validation.js',
+									'control_field.js',
+									'control_field_text.js',
+									'control_field_select.js',
+									'control_field_textarea.js',
+									'control_field_checkbox.js',
+									'component_collections_event_type.js',
+									'component_collections_severity.js',
+									'component_collections_event.js',
+									'popup_collections_event_type.js',
+									'popup_collections_severity.js',
+									'popup_collections_event.js'], 
+									function()
+									{
+										var oPopup = new Popup_Collections_Event();
+									}, 
+									true
+								);";
+	}
+	
+	public function AddCollectionsEventType()
+	{
+		$this->strContextMenuLabel 	= "Add Event Type";
+		$this->strLabel 			= "Add Event Type";
+
+		return	"javascript:	JsAutoLoader.loadScript(
+									['reflex_validation.js',
+									'control_field.js',
+									'control_field_text.js',
+									'control_field_select.js',
+									'control_field_textarea.js',
+									'control_field_checkbox.js',
+									'component_collections_event_type.js',
+									'popup_collections_event_type.js'], 
+									function()
+									{
+										var oPopup = new Popup_Collections_Event_Type();
+									}, 
+									true
+								);";
+	}
+	
+	public function AddCollectionsSeverity()
+	{
+		$this->strContextMenuLabel 	= "Add Severity";
+		$this->strLabel 			= "Add Severity";
+
+		return	"javascript:	JsAutoLoader.loadScript(
+									['reflex_validation.js',
+									'control_field.js',
+									'control_field_text.js',
+									'component_collections_severity.js',
+									'popup_collections_severity.js',
+									'popup_collections_warning.js'], 
+									function()
+									{
+										var oPopup = new Popup_Collections_Severity();
+									}, 
+									true
+								);";
+	}
+
+	public function CollectionsAccountManagement()
+	{
+		$this->strContextMenuLabel 	= "Account Management";
+		$this->strLabel 			= "Account Management";
+		return self::NEW_FRAMEWORK."reflex.php/Collections/Accounts/";
+	}
+	
+	public function CollectionsEventManagement()
+	{
+		$this->strContextMenuLabel 	= "Event Management";
+		$this->strLabel 			= "Event Management";
+		return self::NEW_FRAMEWORK."reflex.php/Collections/Events/";
+	}
+
+	public function AccountNewPromise($iAccountId)
+	{
+		$this->strContextMenuLabel 	= "New Promise to Pay";
+		$this->strLabel 			= "New Promise to Pay";
+
+		return	"javascript:	JsAutoLoader.loadScript(
+									['control_field.js',
+									'control_field_text.js',
+									'control_field_number.js',
+									'control_field_select.js',
+									'control_field_date_picker.js',
+									'component_date_picker.js',
+									'popup_account_promise_edit.js',
+									'popup_account_promise_edit_schedule.js'],
+									function() {
+										var oPopup = new Popup_Account_Promise_Edit({$iAccountId});
+									},
+									true
+								);";
+	}
+
+	public function BarringAuthorisationLedger()
+	{
+		$this->strContextMenuLabel 	= "Barring Authorisation Ledger";
+		$this->strLabel 			= "Barring Authorisation Ledger";
+		return self::NEW_FRAMEWORK."reflex.php/Barring/Ledger/Authorisation/";
+	}
+	
+	public function BarringActionLedger()
+	{
+		$this->strContextMenuLabel 	= "Barring Action Ledger";
+		$this->strLabel 			= "Barring Action Ledger";
+		return self::NEW_FRAMEWORK."reflex.php/Barring/Ledger/Action/";
+	}
+	
+	public function OCAReferralLedger()
+	{
+		$this->strContextMenuLabel 	= "OCA Referral Ledger";
+		$this->strLabel 			= "OCA Referral Ledger";
+		return self::NEW_FRAMEWORK."reflex.php/Collections/OCAReferrals/";
+	}
+	
+	public function NewCollectionSuspension($iAccountId)
+	{
+		$this->strContextMenuLabel 	= "Suspend from Collections";
+		$this->strLabel 			= "Suspend from Collections";
+
+		return	"javascript:	JsAutoLoader.loadScript(
+									['control_field.js',
+									'control_field_text.js',
+									'control_field_select.js',
+									'component_date_picker.js',
+									'control_field_date_picker.js',
+									'account.js',
+									'component_collections_suspension.js',
+									'popup_account_suspend_from_collections.js'],
+									function() {
+										var oPopup = new Popup_Account_Suspend_From_Collections({$iAccountId});
+									},
+									true
+								);";
+	}
+	
+	public function EndCollectionSuspension($iAccountId)
+	{
+		$this->strContextMenuLabel 	= "End Collections Suspension";
+		$this->strLabel 			= "End Collections Suspension";
+
+		return	"javascript:	JsAutoLoader.loadScript(
+									['control_field.js',
+									'control_field_text.js',
+									'control_field_select.js',
+									'popup_account_end_collections_suspension.js'],
+									function() {
+										var oPopup = new Popup_Account_End_Collections_Suspension({$iAccountId});
+									},
+									true
+								);";
+	}
+	
+	public function ManageAccountClasses()
+	{
+		$this->strContextMenuLabel 	= "Manage Account Classes";
+		$this->strLabel 			= "Manage Account Classes";
+		return self::NEW_FRAMEWORK."reflex.php/Account/ManageClasses/";
+	}
 
 	//------------------------------------------------------------------------//
 	// BreadCrumb

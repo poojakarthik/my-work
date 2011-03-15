@@ -69,7 +69,9 @@ class HtmlTemplateChargeList extends HtmlTemplate
 		$this->LoadJavascript("tooltip");
 		$this->LoadJavascript("control_tab");
 		$this->LoadJavascript("control_tab_group");
+		$this->LoadJavascript("component_account_charges");
 		$this->LoadJavascript("component_account_charge_list");
+		$this->LoadJavascript("component_account_recurring_charge_list");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -101,7 +103,7 @@ class HtmlTemplateChargeList extends HtmlTemplate
 						['charge_model', 'ChargeStatus', 'ChargeLink'], 
 						function()
 						{
-							objChargeType = new Component_Account_Charge_List(\$ID('ChargeListContainer'), ".DBO()->Account->Id->Value.");
+							new Component_Account_Charges(\$ID('ChargeListContainer'), ".DBO()->Account->Id->Value.");
 						}, false
 					)
 				}

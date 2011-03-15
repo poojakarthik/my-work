@@ -1,10 +1,8 @@
 
 var Component_Email_Template_History = Class.create(
 {
-
 	initialize	: function(oContainerDiv, iTemplateId, sTemplateName, sCustomerGroup)
-	{
-		
+	{		
 		this._oLoadingPopup	= new Reflex_Popup.Loading();
 		this._iTemplateId 		= iTemplateId;
 		this._sTemplateName 	= sTemplateName;
@@ -16,73 +14,64 @@ var Component_Email_Template_History = Class.create(
 	_refresh: function()
 	{
 		this._buildGUI();
-	
 	},
 	
-	
-	_buildGUI		: function(oResponse)
+	_buildGUI	: function(oResponse)
 	{
 		
 		if (typeof(oResponse) == 'undefined')
 		{
 			//get the data
-			var fnRequest     = jQuery.json.jsonFunction(this._buildGUI.bind(this), Popup_Email_Text_Editor.errorCallback.bind(this), 'Customer_Group', 'getEmailTemplateHistory');
+			var fnRequest	= jQuery.json.jsonFunction(this._buildGUI.bind(this), Popup_Email_Text_Editor.errorCallback.bind(this), 'Customer_Group', 'getEmailTemplateHistory');
 			fnRequest(this._iTemplateId);
-		
-		
 		}
 		else
 		{
-			
 			if (!oResponse.Success)
 			{
 				Popup_Email_Text_Editor.serverErrorMessage.bind(this,oResponse.message, 'Email Template History Error')();				
 			}
 			else
 			{
-			
-				this._aData = oResponse.aResults;				
+				this._aData	= oResponse.aResults;				
 				
-				//the section represents the actual gui elements of the component
-				var oDetailsSection	= new Section(true, 'version-details');
-				//First, the added header options
-				this._oShowCancelled = Control_Field.factory('checkbox', {
-																			sLabel		: 'Show Cancelled Versions',
-																			mMandatory	: true,
-																			mEditable	: true,
-																			mVisible	: true,
-																			bDisableValidationStyling	: true
-																		});
+				// The section represents the actual gui elements of the component
+				var oDetailsSection	= new Section(true, 'component-email-template-history');
 				
+				// First, the added header options
+				this._oShowCancelled	= 	Control_Field.factory(
+												'checkbox', 
+												{
+													sLabel						: 'Show Cancelled Versions',
+													mMandatory					: true,
+													mEditable					: true,
+													mVisible					: true,
+													bDisableValidationStyling	: true
+												}
+											);
+				this._oShowCancelled.setRenderMode(Control_Field.RENDER_MODE_EDIT);
 				this._oShowCancelled.addOnChangeCallback(this._showCancelledChanged.bind(this));				
-				
-			
+						
 				oDetailsSection.addToHeaderOptions(
 					this._oShowCancelled.getElement()			
 				);
-				
-				
+								
 				oDetailsSection.addToHeaderOptions(
-					'Show Cancelled Versions'			
+					$T.span({class: 'pointer'},
+						'Show Cancelled Versions'
+					).observe('click', this._toggleCancelledCheckbox.bind(this))
 				);
-				
-
-				
+								
 				oDetailsSection.addToHeaderOptions(
-					// $T.li($T.img({src: Popup_Email_Text_Editor.ADD_IMAGE_SOURCE , style:'cursor:pointer', title: 'Create a new Version', class:'add-icon' }).observe('click', this._editPopupNew.bind(this,this._iTemplateId)))
-				
-										$T.button({class: 'icon-button',  title: 'Create a New Version'},
-							$T.img({src: Popup_Email_Text_Editor.ADD_IMAGE_SOURCE, alt: '', title: 'Create a New Version'}),
-							$T.span('New Version')
-							
-						).observe('click', this._editPopupNew.bind(this,this._iTemplateId))
-				
-				
+					$T.button({class: 'icon-button',  title: 'Create a New Version'},
+						$T.img({src: Popup_Email_Text_Editor.ADD_IMAGE_SOURCE, alt: '', title: 'Create a New Version'}),
+						$T.span('New Version')	
+					).observe('click', this._editPopupNew.bind(this,this._iTemplateId))
 				);
 				
 				oDetailsSection.setTitleText('Email Template History - ' + this._sTemplateName);
 				
-				//This is the data table that is the main body of the section
+				// This is the data table that is the main body of the section
 				this._oTable = new Email_Template_Table({class: 'alternating'}, {}, {class: 'reflex highlight-rows'});
 				this._oTable.addHeaderField(this._createFieldHeader(''));
 				this._oTable.addHeaderField(this._createFieldHeader('Description', false));
@@ -123,7 +112,6 @@ var Component_Email_Template_History = Class.create(
 				{
 					this._oContainerDiv.appendChild(oDetailsSection.getElement());
 				}
-				
 			}		
 		}
 	
@@ -205,14 +193,16 @@ var Component_Email_Template_History = Class.create(
 	},
 	
 	_showCancelledChanged	: function()
-	{	
-		// for (var i=0;i<this._aCancelledVersions.length;i++)
-		// {
-			// this._oShowCancelled.getElementValue()?this._aCancelledVersions[i].style.display = '':this._aCancelledVersions[i].style.display = 'none';			
-		// }
-		bShowCancelled = this._oShowCancelled.getElementValue()?true:false;
-		this._refreshTable(bShowCancelled);
-		
+	{
+		bShowCancelled	= this._oShowCancelled.getElementValue() ? true : false;
+		this._refreshTable(bShowCancelled);	
+	},
+	
+	_toggleCancelledCheckbox	: function()
+	{
+		var bChecked	= !!this._oShowCancelled.getElementValue();
+		this._oShowCancelled.setValue(!bChecked);
+		this._showCancelledChanged();
 	},
 	
 	_editPopup		: function(template_version_id, name, customergroup, iTemplateId, bReadOnly)

@@ -64,7 +64,7 @@ class HtmlTemplateCustomerGroupEmailTemplates extends HtmlTemplate
 		Table()->EmailTemplate->SetHeader("Type", "Current Version Description", "Effective From");
 		Table()->EmailTemplate->SetWidth("20%", "65%", "15%");
 		Table()->EmailTemplate->SetAlignment("Left", "Left", "Left");
-		$aTemplateDetails = Email_Template_Type::getTemplateVersionDetailsForCustomerGroup(DBO()->CustomerGroup->Id->value);
+		$aTemplateDetails = Email_Template::getTemplateVersionDetailsForCustomerGroup(DBO()->CustomerGroup->Id->value);
 		foreach ($aTemplateDetails as $aTemplate)
 		{
 			$strTemplateType = $aTemplate['name'];

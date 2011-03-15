@@ -14,6 +14,7 @@
 class Service_Rate_Plan extends ORM
 {	
 	protected	$_strTableName	= "ServiceRatePlan";
+        protected static $_strStaticTableName = "ServiceRatePlan";
 	
 	//------------------------------------------------------------------------//
 	// __construct
@@ -125,6 +126,20 @@ class Service_Rate_Plan extends ORM
 			return $arrInvoiceCount['invoice_count'];
 		}
 	}
+
+        public static function getActiveForService($iServiceId, $sDateTime = null)
+        {
+            if ($sDateTime === null)
+                $sDateTime = Data_Source_Time::currentTimestamp ();
+            $oStatement = self::_preparedStatement('selActiveForServiceId');
+            if ($oStatement->Execute(array('iServiceId'=>$iServiceId, 'sDateTime'=>$sDateTime)) === false)
+            {
+                    throw new Exception_Database($selFNNInstances->Error());
+            }
+
+            $aRecords = $oStatement->FetchAll();
+            return count($aRecords) > 0 ? new self($aRecords[0]) : null;
+        }
 	
 	//------------------------------------------------------------------------//
 	// _preparedStatement
@@ -154,6 +169,9 @@ class Service_Rate_Plan extends ORM
 			switch ($strStatement)
 			{
 				// SELECTS
+                                case 'selActiveForServiceId':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "Service = <iServiceId> AND <sDateTime> BETWEEN StartDateTime AND EndDatetime", 'CreatedOn DESC, Id DESC', 1);
+					break;
 				case 'selById':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ServiceRatePlan", "*", "Id = <Id>", NULL, 1);
 					break;

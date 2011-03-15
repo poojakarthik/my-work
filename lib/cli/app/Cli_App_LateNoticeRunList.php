@@ -141,7 +141,7 @@ class Cli_App_LateNoticeRunList extends Cli
 
 			// We now need to build a report detailing actions taken for each of the customer groups
 			$this->log("Building report");
-			$email = new Email_Notification(EMAIL_NOTIFICATION_LATE_NOTICE_LIST);
+			$email = Email_Notification::getForSystemName('LATE_NOTICE_LIST');
 			$email->setSubject('[Success] Automated late notice list log for run dated ' . $this->runDateTime);
 			$body = new Flex_Dom_Document();
 			$body->html->body->h2()->setValue('Automated late notice list log for run dated ' . $this->runDateTime);

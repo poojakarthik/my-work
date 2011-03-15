@@ -45,6 +45,7 @@ class JSON_Handler_Customer_Group extends JSON_Handler
 
 			return	array(
 						'Success'	=> true,
+						'bSuccess'	=> true,
 						'aResults'	=> $aResults
 					);
 		}
@@ -52,6 +53,7 @@ class JSON_Handler_Customer_Group extends JSON_Handler
 		{
 			return 	array(
 						'Success'	=> false,
+						'bSuccess'	=> false,
 						'sMessage'	=> $oException->getMessage()
 					);
 		}
@@ -61,6 +63,26 @@ class JSON_Handler_Customer_Group extends JSON_Handler
 			return 	array(
 						'bSuccess'	=> false,
 						'sMessage'	=> $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'
+					);
+		}
+	}
+	
+	public function setDefaultAccountClasses($hCustomerGroupDefaultAccountClassIds)
+	{
+		$bUserIsGod = Employee::getForId(Flex::getUserId())->isGod();
+		try
+		{
+			foreach ($hCustomerGroupDefaultAccountClassIds as $iCustomerGroupId => $iDefaultAccountClassId)
+			{
+				Customer_Group::getForId($iCustomerGroupId)->setDefaultAccountClassId($iDefaultAccountClassId);
+			}
+			return array('bSuccess' => true);
+		}
+		catch (Exception $oEx)
+		{
+			return 	array(
+						'bSuccess'	=> false,
+						'sMessage'	=> ($bUserIsGod ? $oEx->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.')
 					);
 		}
 	}

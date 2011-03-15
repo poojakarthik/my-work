@@ -2,16 +2,22 @@
 
 class Email_Notification extends Email_Flex
 {
-	private $intEmailNotification = NULL;
-	private $intCustomerGroupId = NULL;
-	private $strSubject = NULL;
-	private $strTextMessage = NULL;
-	private $strHTMLMessage = NULL;
-	private $arrAttachments = array();
-	private $arrTo = array();
-	private $arrAddresses = array();
-	private $_cc = array();
-	private $_bcc = array();
+	// This is for use by the Cli applications only!
+	// Why only Cli apps?
+	const EMAIL_ATTACHMENT_NAME 		= 'content_type';
+	const EMAIL_ATTACHMENT_MIME_TYPE 	= 'dfilename';
+	const EMAIL_ATTACHMENT_CONTENT 		= 'CONTENT';
+	
+	private $intEmailNotification 	= NULL;
+	private $intCustomerGroupId 	= NULL;
+	private $strSubject 			= NULL;
+	private $strTextMessage 		= NULL;
+	private $strHTMLMessage 		= NULL;
+	private $arrAttachments 		= array();
+	private $arrTo 					= array();
+	private $arrAddresses 			= array();
+	private $_cc 					= array();
+	private $_bcc 					= array();
 
 	public function __set($property, $value)
 	{
@@ -224,79 +230,87 @@ class Email_Notification extends Email_Flex
 		return $addresses;
 	}
 
-	// This is for use by the Cli applications only!
-	// Why only Cli apps?
-	const EMAIL_ATTACHMENT_NAME = 'content_type';
-	const EMAIL_ATTACHMENT_MIME_TYPE = 'dfilename';
-	const EMAIL_ATTACHMENT_CONTENT = 'CONTENT';
-
 	// factory: Create and return an email notitifcation from the given parameters
-	public static function factory($intEmailNotificationId, $intCustomerGroupId, $mixToEmail, $strSubject, $strBodyHTML, $strBodyText=NULL, $arrAttachments=NULL, $bolSilentFail=FALSE)
+	public static function factory($mEmailNotification, $iCustomerGroupId, $mToEmail, $sSubject, $sBodyHTML, $sBodyText=NULL, $aAttachments=NULL, $bSilentFail=FALSE)
 	{
-		$email	= null;
+		$oEmail	= null;
 		try
 		{
-			if (!$intEmailNotificationId)
+			if (!$mEmailNotification)
 			{
-				$intEmailNotificationId = 0;
+				$mEmailNotification	= 0;
 			}
-			$email = new Email_Notification($intEmailNotificationId, $intCustomerGroupId);
 			
-			$arrToEmails = array();
-			switch (gettype($mixToEmail))
+			if (is_numeric($mEmailNotification))
+			{
+				// Numeric = email_notification.id
+				$oEmail	= new Email_Notification($mEmailNotification, $iCustomerGroupId);
+			}
+			else if (is_string($mEmailNotification))
+			{
+				// String = email_notification.system_name
+				$oEmail	= self::getForSystemName($mEmailNotification, $iCustomerGroupId);
+			}
+			
+			if ($oEmail === null)
+			{
+				// Invalid notification identifier, create generic instance
+				$oEmail	= new Email_Notification();
+			}
+			
+			$aToEmails	= array();
+			switch (gettype($mToEmail))
 			{
 				case 'string':
-					$arrToEmails[] = $mixToEmail;
+					$aToEmails[]	= $mToEmail;
 					break;
 					
 				case 'array':
-					$arrToEmails = $mixToEmail;
-					break;
-					
-				default:
+					$aToEmails		= $mToEmail;
 					break;
 			}
 			
-			foreach ($arrToEmails as $strEmailAdress)
+			foreach ($aToEmails as $sEmailAdress)
 			{
-				$email->addTo($strEmailAdress);
+				$oEmail->addTo($sEmailAdress);
 			}
 			
-			$email->setSubject($strSubject);
-			if ($strBodyHTML !== NULL)
+			$oEmail->setSubject($sSubject);
+			
+			if ($sBodyHTML !== NULL)
 			{
-				$email->setBodyHtml($strBodyHTML);
+				$oEmail->setBodyHtml($sBodyHTML);
 			}
-			elseif ($strBodyText !== NULL)
+			elseif ($sBodyText !== NULL)
 			{
-				$email->setBodyText($strBodyText);
+				$oEmail->setBodyText($sBodyText);
 			}
 			else
 			{
-				$email->setBodyText("[ No content ]");
+				$oEmail->setBodyText("[ No content ]");
 			}
 			
-			if ($arrAttachments)
+			if ($aAttachments)
 			{
-				foreach($arrAttachments as $attchment)
+				foreach($aAttachments as $aAttachment)
 				{
-					$email->addAttachment($attchment[self::EMAIL_ATTACHMENT_CONTENT], $attchment[self::EMAIL_ATTACHMENT_NAME], $attchment[self::EMAIL_ATTACHMENT_MIME_TYPE]);
+					$oEmail->addAttachment($aAttachment[self::EMAIL_ATTACHMENT_CONTENT], $aAttachment[self::EMAIL_ATTACHMENT_NAME], $aAttachment[self::EMAIL_ATTACHMENT_MIME_TYPE]);
 				}
 			}
 		}
-		catch (Exception $e)
+		catch (Exception $oException)
 		{
-			if ($bolSilentFail)
+			if ($bSilentFail)
 			{
 				return null;
 			}
 			else
 			{
-				throw $e;
+				throw $oException;
 			}
 		}
 		
-		return $email;
+		return $oEmail;
 	}
 
 	/**
@@ -306,7 +320,7 @@ class Email_Notification extends Email_Flex
 	 *
 	 * Wrapper function for sending an email notification
 	 *
-	 * @param	int		$intEmailNotificationId		Email Notification constant, defining the type of notification to send.  This can be set to NULL to send an email with no
+	 * @param	int		$mEmailNotification			Email Notification system name or id, defining the type of notification to send.  This can be set to NULL to send an email with no
 	 * 												predefined to's, cc's, bcc's or from addresses. Although it will use ybs-admin@ybs.net.au as the from address
 	 * @param	int		$intCustomerGroupId			if specified, it will use the address from email_notification_address specific to this customer group.  Only really useful for
 	 * 												chosing a CustomerGroup specific 'from' address
@@ -330,11 +344,11 @@ class Email_Notification extends Email_Flex
 	 * @static
 	 * @method
 	 */
-	public static function sendEmailNotification($intEmailNotificationId, $intCustomerGroupId, $mixToEmail, $strSubject, $strBodyHTML, $strBodyText=NULL, $arrAttachments=NULL, $bolSilentFail=FALSE)
+	public static function sendEmailNotification($mEmailNotification, $iCustomerGroupId, $mToEmail, $strSubject, $sBodyHTML, $sBodyText=NULL, $aAttachments=NULL, $bSilentFail=FALSE)
 	{
 		try
 		{
-			$oEmailNotification	= self::factory($intEmailNotificationId, $intCustomerGroupId, $mixToEmail, $strSubject, $strBodyHTML, $strBodyText, $arrAttachments, $bolSilentFail);
+			$oEmailNotification	= self::factory($mEmailNotification, $iCustomerGroupId, $mToEmail, $strSubject, $sBodyHTML, $sBodyText, $aAttachments, $bSilentFail);
 			if ($oEmailNotification === null)
 			{
 				return false;
@@ -343,7 +357,7 @@ class Email_Notification extends Email_Flex
 		}
 		catch (Exception $e)
 		{
-			if ($bolSilentFail)
+			if ($bSilentFail)
 			{
 				return FALSE;
 			}
@@ -353,6 +367,51 @@ class Email_Notification extends Email_Flex
 			}
 		}
 		return true;
+	}
+	
+	public static function getIdForSystemName($sSystemName)
+	{
+		$oStmt	= new StatementSelect('email_notification', 'id', 'system_name = <system_name>', null, 1);
+		if ($oStmt->Execute(array('system_name' => $sSystemName)) === false)
+		{
+			throw new Exception("Failed to get email notification for system name. ".$oStmt->Error());
+		}
+		$aRow	= $oStmt->Fetch();
+		return ($aRow ? $aRow['id'] : null);
+	}
+	
+	public static function getForSystemName($sSystemName, $iCustomerGroupId=null, $sCharset='iso-8859-1')
+	{
+		$iId	= self::getIdForSystemName($sSystemName);
+		if ($iId !== null)
+		{
+			// Found it, return instance for the notification type
+			return new Email_Notification($iId, $iCustomerGroupId, $sCharset);
+		}
+		
+		// Not found, return generic instance
+		return new Email_Notification();
+	}
+	
+	public static function getAll()
+	{
+		// Make query
+		$oQuery = new Query();
+		$mResult = $oQuery->Execute('	SELECT 	*
+										FROM 	email_notification');
+		if ($mResult === false)
+		{
+			throw new Exception("Failed to get all email_notification records. ".$oQuery->Error());
+		}
+		
+		// Add to assoc. array
+		$aEmailNotifications = array();
+		while ($aRow = $mResult->fetch_assoc())
+		{
+			$aEmailNotifications[$aRow['id']] = $aRow;
+		}
+		
+		return $aEmailNotifications;
 	}
 }
 

@@ -77,12 +77,18 @@ class AppTemplateAccount extends ApplicationTemplate
 				ContextMenu()->Account->Payments->Make_Payment($intAccountId);
 			}
 			
+			ContextMenu()->Account->Payments->AccountNewPromise($intAccountId);
+			
 			// Charges
 			ContextMenu()->Account->Charges_and_Adjustments->Charges->Add_Charge($intAccountId);
 			ContextMenu()->Account->Charges_and_Adjustments->Charges->Add_Recurring_Charge($intAccountId);
 			
 			// Adjustments
 			ContextMenu()->Account->Charges_and_Adjustments->Adjustments->Add_Adjustment($intAccountId);
+			
+			// Collections Suspension
+			ContextMenu()->Account->Collections->NewCollectionSuspension($intAccountId);
+			ContextMenu()->Account->Collections->EndCollectionSuspension($intAccountId);
 		}
 		if ($bolUserHasOperatorPerm || $bolUserHasExternalPerm)
 		{
@@ -401,7 +407,6 @@ class AppTemplateAccount extends ApplicationTemplate
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->SetCurrentPage("Account");
 		
-		
 		// Setup all DBO and DBL objects required for the page
 		// The account should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
 		if (!DBO()->Account->Load())
@@ -471,6 +476,20 @@ class AppTemplateAccount extends ApplicationTemplate
 		{
 			// Use billing type name
 			DBO()->Account->BillingType->BillingTypeName	= Constant_Group::getConstantGroup('billing_type')->getConstantDescription(DBO()->Account->BillingType->Value);
+		}
+		
+		// Fetch/Create the employee account log record
+		$oEmployeeAccountLog = Employee_Account_Log::createIfNotExistsForToday(Flex::getUserId(), $intAccountId);
+		
+		// Build list of warnings to show
+		DBO()->SeverityWarnings = null;
+		if ($oEmployeeAccountLog->accepted_severity_warnings !== Employee_Account_Log::SEVERITY_WARNINGS_ACCEPTED)
+		{
+			// Warnings haven't been accepted, see if there are any
+			$oLogicAccount			= Logic_Account::getInstance($intAccountId);
+			$oSeverity				= $oLogicAccount->getSeverity();
+			$aWarnings				= $oSeverity->getWarnings();
+			DBO()->SeverityWarnings = $aWarnings;
 		}
 		
 		// All required data has been retrieved from the database so now load the page template
@@ -942,22 +961,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			Ajax()->AddCommand("Alert", "This action is temporarily unavailable because a related, live invoice run is currently outstanding");
 			return TRUE;
 		}
-
-		if (DBO()->Account->WithTIO->Value == TRUE)
-		{
-			// Validate the tio reference number
-			DBO()->Account->tio_reference_number = str_replace(" ", "", DBO()->Account->tio_reference_number->Value);
-			
-			if (!IsValidTIOReferenceNumber(DBO()->Account->tio_reference_number->Value))
-			{
-				DBO()->Account->tio_reference_number->SetToInvalid();
-			}
-		}
-		else
-		{
-			DBO()->Account->tio_reference_number = NULL;
-		}
-
+				
 		// If the validation has failed display the invalid fields
 		if (DBO()->Account->IsInvalid())
 		{
@@ -1022,10 +1026,13 @@ class AppTemplateAccount extends ApplicationTemplate
 		{
 			$strChangesNote .= "State was changed from ". DBO()->CurrentAccount->State->Value ." to " . DBO()->Account->State->Value . "\n";
 		}
-		if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT) && DBO()->Account->vip->Value != DBO()->CurrentAccount->vip->Value)
+		
+		// NOTE: CR137 - Removed, deprecated collections concept (vip status)
+		/*if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT) && DBO()->Account->vip->Value != DBO()->CurrentAccount->vip->Value)
 		{
 			$strChangesNote .= "VIP status was changed from ". (DBO()->CurrentAccount->vip->Value ? '' :  'in') ."active to " . (DBO()->Account->vip->Value ? '' :  'in') . "active\n";
-		}
+		}*/
+		
 		if (DBO()->Account->BillingMethod->Value != DBO()->CurrentAccount->BillingMethod->Value)
 		{
 			$strChangesNote .= "Billing Method was changed from ". GetConstantDescription(DBO()->CurrentAccount->BillingMethod->Value, 'delivery_method') ." to " . GetConstantDescription(DBO()->Account->BillingMethod->Value, 'delivery_method') . "\n";
@@ -1059,8 +1066,9 @@ class AppTemplateAccount extends ApplicationTemplate
 			$strChangesNote .= "This account is ". ((DBO()->Account->DisableDDR->Value == 1) ? "no longer" : "now") ." charged an admin fee\n";
 		}
 		
+		// NOTE: CR137 - Removed, deprecated collections concept (late payment fee)
 		// if DisableLatePayment === NULL, then, in this context, it logically equals 0
-		if (DBO()->CurrentAccount->DisableLatePayment->Value === NULL)
+		/*if (DBO()->CurrentAccount->DisableLatePayment->Value === NULL)
 		{
 			DBO()->CurrentAccount->DisableLatePayment = 0;
 		}
@@ -1078,7 +1086,8 @@ class AppTemplateAccount extends ApplicationTemplate
 			$strChangesNote .= "Charging of Late Payment Fee was changed from '".
 								DBO()->Account->DisableLatePayment->FormattedValue(CONTEXT_DEFAULT, $intCurrentValue) .
 								"' to '" . DBO()->Account->DisableLatePayment->FormattedValue() . "'\n";
-		}
+		}*/
+		
 		if (DBO()->Account->Sample->Value != DBO()->CurrentAccount->Sample->Value)
 		{
 			$intCurrentValue = DBO()->CurrentAccount->Sample->Value;
@@ -1086,12 +1095,9 @@ class AppTemplateAccount extends ApplicationTemplate
 								DBO()->Account->Sample->FormattedValue(CONTEXT_DEFAULT, $intCurrentValue) .
 								"' to '" . DBO()->Account->Sample->FormattedValue() . "'\n";
 		}
-		if (DBO()->Account->tio_reference_number->Value != DBO()->CurrentAccount->tio_reference_number->Value)
-		{
-			$strChangesNote .= "T.I.O Reference Number was changed from '". DBO()->CurrentAccount->tio_reference_number->Value ."' to '". DBO()->Account->tio_reference_number->Value ."'\n";
-		}
 		
-		if (DBO()->Account->LatePaymentAmnesty->Value != DBO()->CurrentAccount->LatePaymentAmnesty->Value)
+		// NOTE: CR137 - Removed, deprecated collections concept (late notices)
+		/*if (DBO()->Account->LatePaymentAmnesty->Value != DBO()->CurrentAccount->LatePaymentAmnesty->Value)
 		{
 			// When refering to END_OF_TIME, we just want the date part, not the time part
 			$strEndOfTime = substr(END_OF_TIME, 0, 10);
@@ -1156,11 +1162,20 @@ class AppTemplateAccount extends ApplicationTemplate
 		{
 			DBO()->Account->LatePaymentAmnesty = NULL;
 		}
+		*/
+		
+		if (DBO()->Account->account_class_id->Value != DBO()->CurrentAccount->account_class_id->Value)
+		{
+			$sOldAccountClass 	= Account_Class::getForId(DBO()->CurrentAccount->account_class_id->Value)->name;
+			$sNewAccountClass 	= Account_Class::getForId(DBO()->Account->account_class_id->Value)->name;
+			$strChangesNote 	.= "Account Class was changed from '{$sOldAccountClass}' to '{$sNewAccountClass}'.\n";
+		}
 
 		// Start the transaction
 		TransactionStart();
 
-		if (DBO()->Account->credit_control_status->Value != DBO()->CurrentAccount->credit_control_status->Value)
+		// NOTE: CR137 - Removed, deprecated collections concept (Credit control status)
+		/*if (DBO()->Account->credit_control_status->Value != DBO()->CurrentAccount->credit_control_status->Value)
 		{
 			DBO()->credit_control_status_original->SetTable('credit_control_status');
 			DBO()->credit_control_status_original->Id = DBO()->CurrentAccount->credit_control_status->Value;
@@ -1183,10 +1198,10 @@ class AppTemplateAccount extends ApplicationTemplate
 				Ajax()->AddCommand("Alert", "ERROR: Recording credit control status change history failed");
 				return TRUE;
 			}
-		}
+		}*/
 		
 		// Set the columns to save
-		DBO()->Account->SetColumns("BusinessName, TradingName, ABN, ACN, Address1, Address2, Suburb, Postcode, State, BillingMethod, CustomerGroup, DisableLatePayment, Archived, DisableDDR, Sample, credit_control_status, LatePaymentAmnesty, tio_reference_number" . (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT) ? ", vip" : ""));
+		DBO()->Account->SetColumns("BusinessName, TradingName, ABN, ACN, Address1, Address2, Suburb, Postcode, State, BillingMethod, CustomerGroup, Archived, DisableDDR, Sample, account_class_id");
 														
 		if (!DBO()->Account->Save())
 		{
@@ -1444,10 +1459,11 @@ class AppTemplateAccount extends ApplicationTemplate
 		// All Database interactions were successfull
 		TransactionCommit();
 		
+		// NOTE: CR137 - Removed, deprecated collections concept (credit control status)
 		// Email the Credit Control Manager about any Credit Control Status Changes
-		if (DBO()->Account->credit_control_status->Value != DBO()->CurrentAccount->credit_control_status->Value)
+		/*if (DBO()->Account->credit_control_status->Value != DBO()->CurrentAccount->credit_control_status->Value)
 		{
-			$objEmailNotification	= new Email_Notification(EMAIL_NOTIFICATION_CREDIT_CONTROL_STATUS_CHANGE, DBO()->Account->CustomerGroup);
+			$objEmailNotification	= Email_Notification::getForSystemName('CREDIT_CONTROL_STATUS_CHANGE', DBO()->Account->CustomerGroup);
 			
 			$objCCStatuses	= Constant_Group::getConstantGroup('credit_control_status');
 			
@@ -1529,7 +1545,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			
 			$objEmailNotification->setSubject("[NOTICE] Flex Account #".DBO()->Account->Id->Value." Credit Control Status changed from {$strPreviousCCStatus} to {$strNewCCStatus}");
 			$objEmailNotification->send();
-		}
+		}*/
 
 		// Handle cascading for values that can cascade
 		if (count($arrCascadingFields) > 0)

@@ -11,6 +11,68 @@ class JSON_Handler_ActionType extends JSON_Handler
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 	
+	public function getAll($bActiveOnly=false)
+	{
+		$bGod = Employee::getForId(Flex::getUserId())->isGod();
+		try
+		{
+			$aActionTypes = Action_Type::getAll();
+			foreach ($aActionTypes as $oActionType)
+			{
+				if (!$bActiveOnly || ($oActionType->active_status_id == ACTIVE_STATUS_ACTIVE))
+				{
+					$aActionTypes[$oActionType->id] = $oActionType->toStdClass();
+				}
+			}
+			
+			// If no exceptions were thrown, then everything worked
+			return array(
+							'bSuccess'		=> true,
+							'aActionTypes'	=> $aActionTypes,
+							'sDebug'		=> ($bGod ? $this->_JSONDebug : '')
+						);
+		}
+		catch (Exception $e)
+		{
+			return array(
+							'bSuccess'	=> false,
+							'sMessage'	=> ($bGod ? $e->getMessage() : 'There was an error accessing the database, please contact YBS for assistance.'),
+							'sDebug'	=> ($bGod ? $this->_JSONDebug : '')
+						);
+		}
+	}
+	
+	public function getForIds($aActionTypeIds)
+	{
+		$bGod = Employee::getForId(Flex::getUserId())->isGod();
+		try
+		{
+			$aActionTypes = array();
+			foreach ($aActionTypeIds as $iId)
+			{
+				$oActionType					= new Action_Type(array('id' => $iId), true);
+				$oStdClass						= $oActionType->toStdClass();
+				$oStdClass->aAssociationTypes	= array_keys($oActionType->getAllowableActionAssociationTypes());
+				$aActionTypes[$iId] 			= $oStdClass;
+			}
+			
+			// If no exceptions were thrown, then everything worked
+			return array(
+							'bSuccess'		=> true,
+							'aActionTypes'	=> $aActionTypes,
+							'sDebug'		=> ($bGod ? $this->_JSONDebug : '')
+						);
+		}
+		catch (Exception $e)
+		{
+			return array(
+							'bSuccess'	=> false,
+							'sMessage'	=> ($bGod ? $e->getMessage() : 'There was an error accessing the database, please contact YBS for assistance.'),
+							'sDebug'	=> ($bGod ? $this->_JSONDebug : '')
+						);
+		}
+	}
+	
 	public function getForId($intActionTypeId)
 	{
 		try

@@ -598,8 +598,8 @@ final class Flex
 			
 			$strSignature = "\n\nRegards\nFlexor";
 			
-			$strBody .= ($bolAsHtml)? nl2br($strSignature) : $strSignature;
-			$email = new Email_Notification(EMAIL_NOTIFICATION_ALERT);
+			$strBody 	.= ($bolAsHtml)? nl2br($strSignature) : $strSignature;
+			$email 		= Email_Notification::getForSystemName('ALERT');
 			
 			if ($bolAsHtml)
 			{

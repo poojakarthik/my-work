@@ -41,6 +41,11 @@ var Control_Tab_Group	= Class.create
 		this.objContainer.domElement.appendChild(this.objContainer.objPageContainer.domElement);
 	},
 	
+	getSelectedTab : function()
+	{
+		return this.oSelectedTab;
+	},
+	
 	addTab		: function(strAlias, objControlTab)
 	{
 		var bolFirstTab	= (this._aTabOrder.length == 0) ? true : false;

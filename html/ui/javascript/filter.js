@@ -10,13 +10,19 @@
 */
 var Filter	= Class.create
 ({
-	initialize	: function(oDataSetAjax, oPagination, fnFilterUpdateCallback)
+	initialize	: function(oDataSetAjax, oPagination, fnFilterUpdateCallback, bForcePageCountRefreshOnFilterChange)
 	{
 		this._oDataSetAjax				= oDataSetAjax;
 		this._oPagination				= oPagination;
 		this._fnFilterUpdateCallback	= fnFilterUpdateCallback;
 		this._hFilters					= {};
 		this._hControls					= {};
+		
+		this._bForcePageCountRefreshOnFilterChange = true;
+		if (!Object.isUndefined(bForcePageCountRefreshOnFilterChange) && (bForcePageCountRefreshOnFilterChange === false))
+		{
+			this._bForcePageCountRefreshOnFilterChange = false;
+		}
 	},
 	
 	// 
@@ -321,13 +327,10 @@ var Filter	= Class.create
 	
 	getFilters: function()
 	{
-	
 		return this.refreshData(true);
-	
-	
 	},
 	
-	refreshData	: function(bCancelRefresh)
+	getFilterData : function()
 	{
 		var hFilters	= {};
 		var oFilter		= null;
@@ -387,6 +390,12 @@ var Filter	= Class.create
 			}
 		}
 		
+		return hFilters;
+	},
+	
+	refreshData	: function(bCancelRefresh)
+	{
+		var hFilters = this.getFilterData();		
 		this._oDataSetAjax.setFilter(hFilters);
 		
 		if (!bCancelRefresh && this._oPagination)
@@ -437,7 +446,7 @@ var Filter	= Class.create
 		else
 		{
 			// Get the page count to see if the current page is still within the page limits
-			this._oPagination.getPageCount(this._refreshCurrentPageOfData.bind(this), true);
+			this._oPagination.getPageCount(this._refreshCurrentPageOfData.bind(this), this._bForcePageCountRefreshOnFilterChange);
 		}
 	},
 	
@@ -470,6 +479,7 @@ var Filter	= Class.create
 		var oContent		= this._oFilterOptionsElement.select('div.filter-overlay-options-content').first();
 		oContent.innerHTML	= '';
 		
+		var oScrollOffsets = document.viewport.getScrollOffsets();
 		if (oParentElement)
 		{
 			// Attach and position relative to the given element
@@ -484,15 +494,15 @@ var Filter	= Class.create
 			} 
 			while (oElement);
 			
-			this._oFilterOptionsElement.style.left	= (oEvent.clientX - iValueL + iDisplayOffsetX) + 'px';
-			this._oFilterOptionsElement.style.top	= (oEvent.clientY - iValueT + iDisplayOffsetY) + 'px';
+			this._oFilterOptionsElement.style.left	= (oEvent.clientX - iValueL + iDisplayOffsetX + oScrollOffsets.left) + 'px';
+			this._oFilterOptionsElement.style.top	= (oEvent.clientY - iValueT + iDisplayOffsetY + oScrollOffsets.top) + 'px';
 			oParentElement.appendChild(this._oFilterOptionsElement);
 		}
 		else
 		{
 			// Attach and position relative to the document
-			this._oFilterOptionsElement.style.left	= (oEvent.clientX + iDisplayOffsetX) + 'px';
-			this._oFilterOptionsElement.style.top	= (oEvent.clientY + iDisplayOffsetY) + 'px';
+			this._oFilterOptionsElement.style.left	= (oEvent.clientX + iDisplayOffsetX + oScrollOffsets.left) + 'px';
+			this._oFilterOptionsElement.style.top	= (oEvent.clientY + iDisplayOffsetY + oScrollOffsets.top) + 'px';
 			document.body.appendChild(this._oFilterOptionsElement);
 		}
 		

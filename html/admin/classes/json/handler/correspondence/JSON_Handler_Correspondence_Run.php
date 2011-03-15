@@ -123,6 +123,11 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 	{
 		try
 		{
+			// Logging, testing only
+			/*$rLog	= fopen('/home/rmctainsh/corresp_out.txt', 'w');
+			Log::registerLog('correspondence_run_ledger', Log::LOG_TYPE_FILE, $rLog);
+			Log::setDefaultLog('correspondence_run_ledger');*/
+			
 			$aFilter	= get_object_vars($oFilter);
 			$aSort		= get_object_vars($oSort);
 
@@ -140,6 +145,7 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 						$aFilter['processed_datetime']			= 'NOT NULL';
 						$aFilter['delivered_datetime']			= 'NULL';
 						$aFilter['correspondence_run_error_id']	= 'NULL';
+						$aFilter['dispatch_count']				= 0;
 						break;
 					case 'PROCESSING_FAILED':
 						// a.k.a Having an error
@@ -148,6 +154,12 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 					case 'DISPATCHED':
 						// a.k.a Having been delivered
 						$aFilter['delivered_datetime']	= 'NOT NULL';
+						break;
+					case 'PARTLY_DISPATCHED':
+						// a.k.a Some file deliveries are still outstanding
+						$aFilter['delivered_datetime']		= 'NULL';
+						$aFilter['dispatch_count']			= new StdClass();
+						$aFilter['dispatch_count']->mFrom	= 1;
 						break;
 				}
 				unset($aFilter['status']);
@@ -233,7 +245,6 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 			{
 				throw new JSON_Handler_Correspondence_Run_Exception('You do not have permission to view Correspdondence Runs.');
 			}
-
 
 			$iMinDate		= ($oFilter->batch_datetime->mFrom ? strtotime($oFilter->batch_datetime->mFrom) : null);
 			$iMaxDate		= ($oFilter->batch_datetime->mTo ? strtotime($oFilter->batch_datetime->mTo) : null);
@@ -329,14 +340,16 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler
 			{
 				$aRun['import_file_name']	= $oFileImport->FileName;
 			}
-			$oFileExport	= File_Export::getForId($oRun->data_file_export_id);
-			if ($oFileExport)
-			{
-				$aRun['export_file_name']	= $oFileExport->FileName;
-			}
-
+			
 			// Employee name
-			$aRun['created_employee_name']	= Employee::getForId($aRun['created_employee_id'])->getName();
+			$sCreatedEmployee				= "'".$aRun['created_employee_id']."'";
+			$aRun['created_employee_name']	= Employee::getForId($sCreatedEmployee)->getName();
+
+			// Status string
+			$aRun['status']	= $oRun->generateDispatchStatusForReport();
+
+			// Dispatch (file export) info
+			$aRun['dispatch_data']	= $oRun->getDataFileInfo();
 
 			return	array(
 						'bSuccess' 				=> true,

@@ -35,22 +35,23 @@ abstract class Correspondence_Logic_Source
 										'correspondence_delivery_method_id'
 									);
 	protected $_aReport = array (
-									'success'						=>array(),
-									'customer_group_account_id'		=>array(),
-									'account_name'					=>array(),
-									'first_name'					=>array(),
-									'last_name'						=>array(),
-									'address_line_1'				=>array(),
-									'suburb'						=>array(),
-									'postcode'						=>array(),
-									'state'							=>array(),
-									'customer_group_conflict'		=>array(),
-									'email'							=>array(),
-									'delivery_method_account_id'	=>array(),
-									'invalid account id'			=>array(),
-									'column_count'					=>array(),
-									'delivery_method'				=>array(),
+									'success'						=> array(),
+									'customer_group_account_id'		=> array(),
+									'account_name'					=> array(),
+									'first_name'					=> array(),
+									'last_name'						=> array(),
+									'address_line_1'				=> array(),
+									'suburb'						=> array(),
+									'postcode'						=> array(),
+									'state'							=> array(),
+									'customer_group_conflict'		=> array(),
+									'email'							=> array(),
+									'delivery_method_account_id'	=> array(),
+									'invalid account id'			=> array(),
+									'column_count'					=> array(),
+									'delivery_method'				=> array(),
 								);
+	
 	protected $_aNullableFields = array (
 											'account_id',
 											'title',
@@ -74,7 +75,6 @@ abstract class Correspondence_Logic_Source
 		$this->_errorReport->setEscape(Correspondence_Dispatcher_YellowBillingCSV::ESCAPE_CHARACTER);
 		$this->_errorReport->setNewLine(Correspondence_Dispatcher_YellowBillingCSV::NEW_LINE_DELIMITER);
 	}
-
 
 	final public function getCorrespondence($bPreprinted, $oRun)
 	{
@@ -149,9 +149,9 @@ abstract class Correspondence_Logic_Source
 			if ($aData['suburb']== null)
 				$aErrors['suburb'] ='Mandatory field Suburb was not provided.';
 			if ($aData['postcode']== null)
-				$aErrors['postcode'] ='Mandatory field Postcode was notprovided.';
+				$aErrors['postcode'] ='Mandatory field Postcode was not provided.';
 			if ($aData['state']== null)
-				$aErrors['state'] ='Mandatory field State was notprovided.';
+				$aErrors['state'] ='Mandatory field State was not provided.';
 		}
 
 		if (!$bAccountNull)
@@ -287,19 +287,22 @@ abstract class Correspondence_Logic_Source
 		return (count($this->_aColumns) + count($this->_aAdditionalColumns));
 	}
 
-
 	protected function processCorrespondenceRecord($aRecord)
 	{
+		$aRecord = $this->_sanitize($aRecord);
 		$bValid = $this->validateDataRecord($aRecord);
 		if (!$bValid)
 			$this->_bValidationFailed = true;
 
-		$aRecord = $this->_sanitize($aRecord);
+		
 		if (!$this->_bValidationFailed)
 		{
 			$oCorrespondence = new Correspondence_Logic($aRecord);
 			$oCorrespondence->_oCorrespondenceRun = $this->_oRun;
-			$this->_aCorrespondence[] = $oCorrespondence;
+			if (!array_key_exists($oCorrespondence->correspondence_delivery_method_id,$this->_aCorrespondence ))
+				$this->_aCorrespondence[$oCorrespondence->correspondence_delivery_method_id] = array();
+			$this->_aCorrespondence[$oCorrespondence->correspondence_delivery_method_id][] = $oCorrespondence;
+
 		}
 
 		$this->_aLines[]= $aRecord;
@@ -309,6 +312,8 @@ abstract class Correspondence_Logic_Source
 		}
 		if (count($aRecord['validation_errors'])==0)
 			$this->_aReport['success'][]= $this->iLineNumber;
+
+		Log::getLog()->log("Processed Record In: ".Logic_Stopwatch::getInstance()->lap());
 	}
 
 	protected function _sanitize($aRecord)
@@ -316,7 +321,7 @@ abstract class Correspondence_Logic_Source
 		foreach ($this->_aNullableFields as $sField)
 		{
 			if (isset($aRecord['standard_fields'][$sField]))
-				$aRecord['standard_fields'][$sField] = $aRecord['standard_fields'][$sField]==""?null:$aRecord['standard_fields'][$sField];
+				$aRecord['standard_fields'][$sField] = $aRecord['standard_fields'][$sField]==""?null:trim($aRecord['standard_fields'][$sField]);
 		}
 		return $aRecord;
 	}
@@ -364,7 +369,8 @@ abstract class Correspondence_Logic_Source
 	{
 		$aAdditionalColumns = $this->_aAdditionalColumns;
 		$iMaxColCount = count($this->_aAdditionalColumns);
-		//find the line with the most number of columns
+		
+		// Find the line with the most number of columns
 		foreach ($this->_aLines as $aLine)
 		{
 			$iColumnCount = count($aLine['additional_fields']);
@@ -373,9 +379,9 @@ abstract class Correspondence_Logic_Source
 				$aAdditionalColumns = array_keys($aLine['additional_fields']);
 				$iMaxColCount = $iColumnCount;
 			}
-
 		}
-		$aStandardColumns = $this->_bPreprinted?array_merge($this->_aInputColumns , array('pdf_file_path')):$this->_aInputColumns;
+		
+		$aStandardColumns = ($this->_bPreprinted ? array_merge($this->_aInputColumns, array('pdf_file_path')) : $this->_aInputColumns);
 
 		return array_merge(array('validation_errors'),$aStandardColumns, $aAdditionalColumns);
 	}
@@ -425,6 +431,9 @@ abstract class Correspondence_Logic_Source
 				case (CORRESPONDENCE_SOURCE_TYPE_SYSTEM):
 										return new Correspondence_Logic_Source_System($oTemplate);
 										break;
+                                case(CORRESPONDENCE_SOURCE_TYPE_SQL_ACCOUNTS) :
+                                                                                return new Correspondence_Logic_Source_SQLAccounts($oTemplate);
+                                                                                break;
 				default:
 										return null;
 			}
@@ -448,6 +457,7 @@ class Correspondence_DataValidation_Exception extends Exception
 	const NODATA = CORRESPONDENCE_RUN_ERROR_NO_DATA;
 	const SQLERROR = CORRESPONDENCE_RUN_ERROR_SQL_SYNTAX;
 	const DATAERROR = CORRESPONDENCE_RUN_ERROR_MALFORMED_INPUT;
+        const DATAMISMATCH = CORRESPONDENCE_RUN_ERROR_DATASET_MISMATCH;
 	const DUPLICATE_FILE = 4;
 
 
@@ -457,18 +467,14 @@ class Correspondence_DataValidation_Exception extends Exception
 		$this->aReport 		= $aReport	;
 		$this->sFileName 	= $sFileName;
 		$this->iError		= $iError;
+                $this->message = $this->failureReasonToString();
 	}
 
 	public function failureReasonToString()
 	{
-
-		return $this->iError==null?null:($this->iError==CORRESPONDENCE_RUN_ERROR_NO_DATA?"No Data":($this->iError==CORRESPONDENCE_RUN_ERROR_MALFORMED_INPUT?"Invalid Data":($this->iError==CORRESPONDENCE_RUN_ERROR_SQL_SYNTAX?"Invalid SQL":null)));
-
+		return $this->iError==null?null:($this->iError==CORRESPONDENCE_RUN_ERROR_NO_DATA?"No Data":($this->iError==CORRESPONDENCE_RUN_ERROR_MALFORMED_INPUT?"Invalid Data":($this->iError==CORRESPONDENCE_RUN_ERROR_SQL_SYNTAX?"Invalid SQL":($this->iError==CORRESPONDENCE_RUN_ERROR_DATASET_MISMATCH?"Data Set Mismatch":null))));
 	}
 
-
+      
 }
-
-
-
 ?>

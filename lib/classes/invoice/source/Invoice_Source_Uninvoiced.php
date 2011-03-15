@@ -6,7 +6,7 @@ class Invoice_Source_Uninvoiced extends Invoice_Source
 	// getAccountBalance: For a new invoice, the balance is calculated by using the Account ORM object 
 	public function getAccountBalance($oAccount)
 	{
-		$fAccountBalance	= $oAccount->getAccountBalance(false, false, true);	// We don't want to include Adjustments as they are handled elsewhere, but we do want outstanding Payments
+		$fAccountBalance	= $oAccount->getAccountBalance();	// We don't want to include Adjustments as they are handled elsewhere, but we do want outstanding Payments
 		if ($fAccountBalance === FALSE)
 		{
 			throw new Exception("Unable to calculate Account Balance for {$oAccount->Id}");

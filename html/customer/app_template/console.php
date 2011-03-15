@@ -1295,7 +1295,7 @@ class AppTemplateConsole extends ApplicationTemplate
 				$message .= "Customer Service Group\n";
 				
 				
-				$email = new Email_Notification(EMAIL_NOTIFICATION_SUPPORT_FORM, DBO()->Account->CustomerGroup->Value);
+				$email = Email_Notification::getForSystemName('SUPPORT_FORM', DBO()->Account->CustomerGroup->Value);
 				$email->setFrom("$_POST[mixContact_Email]", "$_POST[mixContact_FirstName] $_POST[mixContact_LastName]");
 				$email->setSubject("Account Support Request - " . DBO()->Contact->Account->Value);
 				$email->setBodyText("$message");

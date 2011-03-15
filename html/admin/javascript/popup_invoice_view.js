@@ -237,7 +237,15 @@ var Popup_Invoice_View	= Class.create(Reflex_Popup,
 	
 	hide	: function($super)
 	{
-		Reflex_Anchor.getInstance().setHash('');
+		try
+		{
+			Reflex_Anchor.getInstance().setHash('');
+		}
+		catch (oException)
+		{
+			// Ignore, Reflex_Anchor must be undefined
+		}
+		
 		$super();
 	}
 });

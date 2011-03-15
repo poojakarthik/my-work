@@ -250,6 +250,12 @@ class Rate_Plan extends ORM_Cached
 		
 		return true;
 	}
+
+        public static function getCurrentForService($iServiceId, $sDateTime = null)
+        {
+            $mServiceRatePlan = Service_Rate_Plan::getActiveForService($iServiceId, $sDateTime);
+            return $mServiceRatePlan!= null ? self::getForId($mServiceRatePlan->RatePlan) : null;
+        }
 	
 	/**
 	 * generateEmailButtonOnClick()
@@ -626,7 +632,7 @@ class Rate_Plan extends ORM_Cached
 		{
 			switch ($strStatement)
 			{
-				// SELECTS
+				
 				case 'selById':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
 					break;

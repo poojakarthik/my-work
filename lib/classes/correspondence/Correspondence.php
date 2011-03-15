@@ -85,6 +85,21 @@ class Correspondence extends ORM_Cached
 		}
 		return $aObjects;
 	}
+	
+	public static function getForDeliveryMethodAndRunId($iDeliveryMethodId, $iRunId)
+	{
+		$oSelect	= self::_preparedStatement('selByDeliveryMethodAndRunId');
+		$oSelect->Execute(array('correspondence_delivery_method_id' => $iDeliveryMethodId, 'correspondence_run_id' => $iRunId));
+		$aResults 	= $oSelect->FetchAll();
+		$aObjects 	= array();
+		foreach ($aResults as $aResult)
+		{
+			$oCorrespondence	= new self($aResult);
+			$oCorrespondence->setSaved();
+			$aObjects[]	= $oCorrespondence;
+		}
+		return $aObjects;
+	}
 
 	public static function getForAccountId($iAccountId)
 	{
@@ -133,7 +148,6 @@ class Correspondence extends ORM_Cached
 							cg.internal_name AS customer_group_name,
 							cdm.name AS correspondence_delivery_method_name,
 							ct.name AS correspondence_template_name,
-							ct.template_code AS correspondence_template_code,
 							cr.delivered_datetime AS correspondence_run_delivered_datetime";
 		}
 
@@ -156,7 +170,6 @@ class Correspondence extends ORM_Cached
 								'postcode'								=> 'c.postcode',
 								'state'									=> 'c.state',
 								'correspondence_delivery_method_name'	=> 'cdm.name',
-								'correspondence_template_name'			=> "ct.template_code",
 								"correspondence_run_delivered_datetime"	=> "cr.delivered_datetime"
 							);
 		$aWhere			= StatementSelect::generateWhere($aWhereAlias, $aFilter);
@@ -225,7 +238,10 @@ class Correspondence extends ORM_Cached
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "account_id = <account_id>");
 					break;
 				case 'selByRunId':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "correspondence_run_id = <correspondence_run_id>");
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "correspondence_run_id = <correspondence_run_id>", 'correspondence_delivery_method_id ASC');
+					break;
+				case 'selByDeliveryMethodAndRunId':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "correspondence_run_id = <correspondence_run_id> AND correspondence_delivery_method_id = <correspondence_delivery_method_id>", 'id ASC');
 					break;
 				case 'selById':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);

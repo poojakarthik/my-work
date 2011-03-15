@@ -1,6 +1,7 @@
 
 // Extends the JS Date Object
 Date.DATE_INTERVAL_DAY		= 'days';
+Date.DATE_INTERVAL_WEEK		= 'weeks';
 Date.DATE_INTERVAL_MONTH	= 'months';
 Date.DATE_INTERVAL_YEAR		= 'years';
 Date.DATE_INTERVAL_HOUR		= 'hours';
@@ -21,6 +22,56 @@ Date.DAYS_IN_MONTH	=	{
 							10	: 30,
 							11	: 31
 						};
+
+// Convenience conversion numbers
+Date.MILLISECONDS_IN_SECOND	= 1000;
+Date.SECONDS_IN_MINUTE		= 60;
+Date.MINUTES_IN_HOUR		= 60;
+Date.HOURS_IN_DAY			= 24;
+
+Date.MILLISECONDS_IN_MINUTE	= Date.MILLISECONDS_IN_SECOND * Date.SECONDS_IN_MINUTE;
+Date.MILLISECONDS_IN_HOUR	= Date.MILLISECONDS_IN_MINUTE * Date.MINUTES_IN_HOUR;
+Date.MILLISECONDS_IN_DAY	= Date.MILLISECONDS_IN_HOUR * Date.HOURS_IN_DAY;
+
+/**
+ *	truncate()
+ */
+Date.prototype.truncate	= function(sPrecision) {
+	sPrecision	= String(sPrecision).strip().toLowerCase();
+
+	// Truncate up to the DAY precision
+	switch (sPrecision) {
+		// Truncating for SECOND to DAY can be implemented using a fallthrough
+		case Date.DATE_INTERVAL_DAY:
+		case Date.DATE_INTERVAL_WEEK:
+		case Date.DATE_INTERVAL_MONTH:
+		case Date.DATE_INTERVAL_YEAR:
+			this.setHours(0);
+		case Date.DATE_INTERVAL_HOUR:
+			this.setMinutes(0);
+		case Date.DATE_INTERVAL_MINUTE:
+			this.setSeconds(0);
+		case Date.DATE_INTERVAL_SECOND:
+			this.setMilliseconds(0);
+			break;
+	}
+
+	// Truncate to any precision higher than DAY
+	switch (sPrecision) {
+		case Date.DATE_INTERVAL_WEEK:
+			this.setDate(this.getDate() - this.getDay());	// Day 0 is the start of the week
+			break;
+
+		// Truncating for MONTH to YEAR can be implemented using a fallthrough
+		case Date.DATE_INTERVAL_YEAR:
+			this.setMonth(0);	// Month 0 is the start of the year
+		case Date.DATE_INTERVAL_MONTH:
+			this.setDate(1);
+			break;
+	}
+
+	return this;
+};
 
 // getDaySeconds(): Gets the number of seconds that have passed on the day
 Date.prototype.getDaySeconds	= function()
@@ -65,6 +116,10 @@ Date.prototype.shift	= function(iInterval, sIntervalType)
 		case Date.DATE_INTERVAL_DAY:
 			this.setDate(this.getDate() + iInterval);
 			break;
+
+		case Date.DATE_INTERVAL_WEEK:
+			this.setDate(this.getDate() + (iInterval * 7));
+			break;
 		
 		case Date.DATE_INTERVAL_MONTH:
 			var iCurrentDate	= this.getDate();
@@ -84,6 +139,8 @@ Date.prototype.shift	= function(iInterval, sIntervalType)
 			this.setDate(Math.min(iCurrentDate, this.getDaysInMonth()));
 			break;
 	}
+
+	return this;
 };
 
 // Unit-ish Testing
@@ -846,3 +903,19 @@ String.leftPad	= function(val, size, ch)
 	
 	return result;
 }
+
+
+/*
+// DEBUG: Unit tests for Date.prototype.truncate()
+debugger;
+(function (oDate) {
+	console.log('As provided: '	+oDate.$format('Y-m-d H:i:s.u')										+' ('+oDate.getTime()+')');
+	console.log('Second: '		+oDate.truncate(Date.DATE_INTERVAL_SECOND).$format('Y-m-d H:i:s.u')	+' ('+oDate.getTime()+')');
+	console.log('Minute: '		+oDate.truncate(Date.DATE_INTERVAL_MINUTE).$format('Y-m-d H:i:s.u')	+' ('+oDate.getTime()+')');
+	console.log('Hour: '		+oDate.truncate(Date.DATE_INTERVAL_HOUR).$format('Y-m-d H:i:s.u')	+' ('+oDate.getTime()+')');
+	console.log('Day: '			+oDate.truncate(Date.DATE_INTERVAL_DAY).$format('Y-m-d H:i:s.u')	+' ('+oDate.getTime()+')');
+	console.log('Week: '		+oDate.truncate(Date.DATE_INTERVAL_WEEK).$format('Y-m-d H:i:s.u')	+' ('+oDate.getTime()+')');
+	console.log('Month: '		+oDate.truncate(Date.DATE_INTERVAL_MONTH).$format('Y-m-d H:i:s.u')	+' ('+oDate.getTime()+')');
+	console.log('Year: '		+oDate.truncate(Date.DATE_INTERVAL_YEAR).$format('Y-m-d H:i:s.u')	+' ('+oDate.getTime()+')');
+})(new Date());
+*/

@@ -75,6 +75,7 @@ abstract class ORM_Cached extends ORM
 			self::$_arrCache[$strCacheName] = array();
 		}
 		return self::$_arrCache[$strCacheName];
+
 	}
 
 	/**

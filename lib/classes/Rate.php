@@ -143,13 +143,29 @@ class Rate extends ORM_Cached
 	}
 	
 	// Round up to the specified precision
-	public static function roundToRatingStandard($fAmountInDollars, $iDecimalPlaces=self::RATING_PRECISION)
-	{
+	public static function roundToRatingStandard($fAmountInDollars, $iDecimalPlaces=self::RATING_PRECISION) {
+		// Current implementation is to ceil to the nearest whole precision
+		return Rate::ceilToPrecision($fAmountInDollars, $iDecimalPlaces);
+	}
+
+	public static function floorToPrecision($fAmountInDollars, $iDecimalPlaces=self::RATING_PRECISION) {
+		// We need to round the original multiplication, to ensure something like 0.08 doesn't become 8.00000000001 or 7.99999999999
+		// Then we floor the resulting integer
+		// Then we round the division for the same reason as the multiplication
+		// We also want to perform all actions on absolute values, so credit and debit counterparts will have the same (well, opposite) result
+		$iFraction	= pow(10, (int)$iDecimalPlaces);
+		$fRounded	= round(floor(round(abs($fAmountInDollars) * $iFraction, 8)) / $iFraction, $iDecimalPlaces);
+		return ($fAmountInDollars < 0) ? 0 - $fRounded : $fRounded;
+	}
+
+	public static function ceilToPrecision($fAmountInDollars, $iDecimalPlaces=self::RATING_PRECISION) {
 		// We need to round the original multiplication, to ensure something like 0.08 doesn't become 8.00000000001 or 7.99999999999
 		// Then we ceil the resulting integer
 		// Then we round the division for the same reason as the multiplication
-		$iFraction		= pow(10, (int)$iDecimalPlaces);
-		return round(ceil(round($fAmountInDollars * $iFraction, 6)) / $iFraction, $iDecimalPlaces);
+		// We also want to perform all actions on absolute values, so credit and debit counterparts will have the same (well, opposite) result
+		$iFraction	= pow(10, (int)$iDecimalPlaces);
+		$fRounded	= round(ceil(round(abs($fAmountInDollars) * $iFraction, 8)) / $iFraction, $iDecimalPlaces);
+		return ($fAmountInDollars < 0) ? 0 - $fRounded : $fRounded;
 	}
 	
 	public function calculateChargeForCDR($mCDR)

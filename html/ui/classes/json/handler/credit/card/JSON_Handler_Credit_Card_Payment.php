@@ -54,7 +54,7 @@ class JSON_Handler_Credit_Card_Payment extends JSON_Handler
 				$oCreditCardPaymentConfig 	= Credit_Card_Payment_Config::getForCustomerGroup($oAccount->CustomerGroup);
 				
 				$aMessageTokens		= Credit_Card_Payment::buildMessageTokens($oTransactionDetails, $oContact->getName(), $strEmail);
-				$oEmail 			= new Email_Notification(EMAIL_NOTIFICATION_PAYMENT_CONFIRMATION, $oAccount->customerGroup);
+				$oEmail 			= Email_Notification::getForSystemName('PAYMENT_CONFIRMATION', $oAccount->customerGroup);
 				$oEmail->subject	= "{$oCustomerGroup->name} Direct Debit Setup Confirmation";
 				$oEmail->text 		= Credit_Card_Payment::replaceMessageTokens($oCreditCardPaymentConfig->directDebitEmail, $aMessageTokens);
 				$oEmail->to 		= ($bTestMode ? 'ybs-admin@ybs.net.au' : $strEmail);

@@ -261,10 +261,7 @@ var Component_Correspondence_Ledger_For_Account = Class.create(
 							$T.td(oItem.id),
 							$T.td(
 								$T.div(
-									$T.div(oItem.correspondence_template_name),
-									$T.div({class: 'subscript'},
-										oItem.correspondence_template_code
-									)
+									$T.div(oItem.correspondence_template_name)
 								)
 							),
 							oDeliveryMethodTD,

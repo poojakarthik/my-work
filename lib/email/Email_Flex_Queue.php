@@ -89,6 +89,12 @@ class Email_Flex_Queue
 	
 	public function scheduleForDelivery($mDatetime=null, $sDescription='')
 	{
+		// Verify that there are emails to send
+		if (count($this->_aEmails) == 0)
+		{
+			return null;
+		}
+		
 		$oDA	= DataAccess::getDataAccess();
 		if ($oDA->TransactionStart() === false)
 		{

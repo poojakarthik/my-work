@@ -146,17 +146,42 @@ table.reflex > tbody > tr > td:last-child {
 /*    border-right: 1px solid #1C1C1C; I don't know why this is used, instead of using a table border? */
 }
 
+table.reflex caption {
+	text-align	: left;
+}
 
 table.reflex caption div.caption_bar
 {
-	width: 100%;
-	clear: both;
+	width		: 100%;
+	clear		: both;
+
+	box-sizing			: border-box;
+	-moz-box-sizing		: border-box;
+	-webkit-box-sizing	: border-box;
+
+	padding-left	: 8px;
+
+	display	: box;
+	display	: -moz-box;
+	display	: -webkit-box;
+
+	box-align			: end;
+	-moz-box-align		: end;
+	-webkit-box-align	: end;
+
+	box-pack			: start;
+	-moz-box-pack		: start;
+	-webkit-box-pack	: start;
+
+	box-orient			: horizontal;
+	-moz-box-orient		: horizontal;
+	-webkit-box-orient	: horizontal;
 }
 
 table.reflex caption div.caption_title
 {
 	float: left;
-	width: 25%;
+	width: 20%;
 	height: 100%;
 	color: #eee;
 	background-color: #1C1C1C;
@@ -167,16 +192,64 @@ table.reflex caption div.caption_title
 	padding-top: .4em;
 	padding-bottom: .4em;
     margin-left: 8px;
+
+	border-radius	: 6px 6px 0 0;
     -moz-border-radius: 6px 6px 0 0;
 	-webkit-border-radius: 6px 6px 0 0;
 }
 
-table.reflex caption div.caption_options{
+table.reflex caption div.caption_options {
 	float: right;
-	width: 70%;
+	width: 75%;
 	text-align: right;
 	font-weight: bold;
 	padding: .1em .5em;
+}
+
+table.reflex caption div.caption_bar div.caption_options {
+	float	: none;
+
+	width	: auto;
+
+	box-flex			: 1;
+	-moz-box-flex		: 1;
+	-webkit-box-flex	: 1;
+
+	box-sizing			: border-box;
+	-moz-box-sizing		: border-box;
+	-webkit-box-sizing	: border-box;
+}
+
+table.reflex caption div.caption_bar div.caption_title {
+	float	: none;
+	margin	: 0;
+
+	white-space	: nowrap;
+
+	padding-left	: 0.5em;
+	padding-right	: 0.5em;
+
+	width		: auto;
+	min-width	: 20%;
+
+	/*
+	box-flex			: 1;
+	-moz-box-flex		: 1;
+	-webkit-box-flex	: 1;
+	*/
+	box-sizing			: border-box;
+	-moz-box-sizing		: border-box;
+	-webkit-box-sizing	: border-box;
+
+	text-shadow	: 0 1px 0 rgba(0, 0, 0, 1);
+}
+
+table.reflex caption div.caption_bar div.caption_title > * {
+	vertical-align	: middle;
+}
+
+table.reflex caption div.caption_bar div.caption_title .icon {
+	margin-right	: 0.25em;
 }
 
 table.reflex thead,
@@ -269,6 +342,8 @@ table.reflex tbody tr td.input
 }
 
 table.reflex tbody tr td.input input[type="text"],
+table.reflex tbody tr td.input input[type="number"],
+table.reflex tbody tr td.input input[type="date"],
 table.reflex tbody tr td.input input[type="password"],
 table.reflex tbody tr td.input textarea,
 table.reflex tbody tr td.input select
@@ -348,7 +423,8 @@ tr.highlight-row:hover td
 	background-color: #fcc;
 }
 
-tbody.alternating > tr:nth-child(odd) > td
+tbody.alternating > tr:nth-child(odd) > td,
+tbody.alternating > tr.reflex-alternate-row > td
 {
 	background-color	: #fff;
 }
@@ -373,12 +449,18 @@ input[type='text'][disabled],
 select[disabled],
 textarea[disabled],
 .control-field.mandatory input[type='text'][disabled],
+.control-field.mandatory input[type='number'][disabled],
+.control-field.mandatory input[type='date'][disabled],
 .control-field.mandatory select[disabled],
 .control-field.mandatory textarea[disabled],
 .control-field.invalid input[type='text'][disabled],
+.control-field.invalid input[type='number'][disabled],
+.control-field.invalid input[type='date'][disabled],
 .control-field.invalid select[disabled],
 .control-field.invalid textarea[disabled],
 .control-field.valid input[type='text'][disabled],
+.control-field.valid input[type='number'][disabled],
+.control-field.valid input[type='date'][disabled],
 .control-field.valid select[disabled],
 .control-field.valid textarea[disabled]
 {
@@ -421,6 +503,24 @@ textarea.valid,
 	color: #111;
 	/* border: .1em solid #3d0; */
 	border-color:   #33DD00;
+}
+.control-field-validation-error {
+	position			: fixed;
+	display				: none !important;
+	max-width			: 20em;
+	height				: auto;
+	background			: rgba(255, 236, 240, 0.9);
+	color				: #111;
+	border				: .1em solid #d30;
+	border-radius		: 4px;
+	-moz-border-radius	: 4px;
+	padding				: 0.25em;
+	z-index				: 1;
+	white-space			: normal;
+}
+
+.control-field.invalid:hover > .control-field-validation-error:not(:empty) {
+	display		: block	!important;
 }
 
 .control-field-text-ajax-overlay
@@ -470,6 +570,10 @@ div.control-field > input.text-ajax-input
 	padding	: 0em;
 }
 
+.control-field .hide {
+	display	: none	!important;
+}
+
 /********************* END - Reflex Input Controls - END **********************/
 
 /************************** START - Buttons - START ***************************/
@@ -495,7 +599,7 @@ input[type='button'], input.normal-button[type='submit'], a.button, button
 	-webkit-user-select	: none;
 
 	/* This is experimental -- remove if it looks shit */
-	text-shadow	: 0px 1px 2px #fff;
+	text-shadow	: 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 button[disabled]
@@ -508,7 +612,7 @@ button[disabled]
 	cursor				: default !important;
 
 	/* This is experimental -- remove if it looks shit */
-	text-shadow	: 0px 1px 2px #ddd;
+	text-shadow	: 0px -1px 0px rgba(0, 0, 0, .4);
 }
 
 button[disabled] img
@@ -521,6 +625,7 @@ button img.icon
 	vertical-align	: text-bottom;
 	margin-right	: 0.25em;
 }
+
 /**************************** END - Buttons - END *****************************/
 
 /********************** START - Reflex Popup - START **************************/
@@ -694,6 +799,19 @@ div.reflex-popup .popup-debug-text
 {
 	margin		: 0.5em;
 	text-align	: center;
+}
+
+.reflex-popup .alert-debug {
+	margin				: 0.5em;
+	padding-left		: 0.25em;
+	padding-right		: 0.25em;
+	white-space			: pre;
+	font-family			: monospace;
+	border				: 1px solid black;
+	height				: 20em;
+	background-color	: #fff;
+	overflow-x			: auto;
+	overflow-y			: scroll;
 }
 
 /************************ END - Reflex Popup - END ****************************/
@@ -1830,6 +1948,7 @@ table.input tfoot
 }
 
 table.input tbody tr td input[type="text"],
+table.input tbody tr td input[type="number"],
 table.input tbody tr td input[type="password"],
 table.input tbody tr td textarea,
 table.input tbody tr td select
@@ -4696,75 +4815,149 @@ div.recurring-charge-type > div.section
 
 /************************ END - Recurring Charge Type Popup - END ************************/
 
-/************************ START - Component Account Charge List - START ************************/
 
-div#ChargeListContainer
+/************************ START - Component Account Charges - START ************************/
+
+.component-account-charges
 {
-	/*padding-bottom	: 2em;*/
+	position	: relative
 }
 
-div.component-account-charge-list > table.Listing th,
-div.component-account-charge-list > table.Listing td
+.component-account-charges > .section .section-header .icon-button
 {
-	vertical-align   : top;
+	margin	: 0em !important;
 }
 
-div.component-account-charge-list > table.Listing th
+.component-account-charges > .section .section-footer > ul.reset
 {
-	text-align	: left;
+	margin	: 0em;
 }
 
-div.component-account-charge-list > table.Listing th.amount,
-div.component-account-charge-list > table.Listing td.delete
+.component-account-charges-title
 {
-	text-align	: right;
+	margin-bottom	: 0.5em;
 }
 
-div.component-account-charge-list > table.Listing
-{
-	width	: 100%;
-}
-
-div.component-account-charge-list-title
-{
-	margin-bottom	: 0.25em;
-}
-
-div.component-account-charge-list-title > img
+.component-account-charges-title > img
 {
 	vertical-align	: middle;
 	padding-right	: 0.4em;
 }
 
-div.component-account-charge-list-title > span
+.component-account-charges-title > span
 {
 	vertical-align	: middle;
 	font-size		: 12pt;
 	font-weight		: bold;
 }
 
-div#ChargeListContainer div.tab-row
+/************************ END - Component Account Charges - END ************************/
+
+/************************ START - Component Account Charge List - START ************************/
+
+.component-account-charge-list
 {
-	background-color	: #FFFFFF;
+	position	: relative
 }
 
-td.component-account-charge-list-loading
+.component-account-charge-list > .section table.reflex
 {
-	font-style	: italic;
+	margin	: 0em;
+	width	: 100%;
 }
 
-td.component-account-charge-list-nodata,
-td.component-account-charge-list-loading
+.component-account-charge-list table.reflex > tbody > tr > td
 {
-	color	: rgba(50, 50, 50, 0.8)
+	vertical-align	: middle;
 }
 
-div#ChargeListContainer > div.component-account-charge-list div.tab-page
+.component-account-charge-list-amount,
+.component-account-charge-list-delete
 {
-	padding	: 0.25em;
+	text-align	: right;
+}
+
+.component-account-charge-list table > thead > tr > th:nth-child(1)
+{
+	width	: 6em;
+}
+
+.component-account-charge-list table > thead > tr > th:nth-child(2)
+{
+	width	: 21.5em;
+}
+
+.component-account-charge-list table > thead > tr > th:nth-child(3)
+{
+	width	: 6em;
+}
+
+.component-account-charge-list-legacy-adjustment
+{
+	vertical-align	: middle;
+	cursor			: pointer;
+}
+
+.test-tooltip
+{
+	position			: absolute;
+	padding				: 0.25em;
+	background-color	: #fff;
+	border				: solid 1px #000;
 }
 
 /************************ END - Component Account Charge List - END ************************/
+
+/************************ START - Component Account Recurring Charge List - START ************************/
+
+.component-account-recurring-charge-list
+{
+	position	: relative
+}
+
+.component-account-recurring-charge-list > .section table.reflex
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.component-account-recurring-charge-list > .section .section-header .icon-button
+{
+	margin	: 0em !important;
+}
+
+.component-account-recurring-charge-list table.reflex > tbody > tr > td
+{
+	vertical-align	: middle;
+}
+
+.component-account-recurring-charge-list-delete
+{
+	text-align	: right;
+}
+
+.component-account-recurring-charge-list table > thead > tr > th:nth-child(1)
+{
+	width	: 5em;
+}
+
+.component-account-recurring-charge-list table > thead > tr > th:nth-child(2)
+{
+	width	: 25em;
+}
+
+.component-account-recurring-charge-list table > thead > tr > th:nth-child(3)
+{
+	width	: 3.5em;
+}
+
+.component-account-recurring-charge-list-legacy-adjustment
+{
+	vertical-align	: middle;
+	cursor			: pointer;
+}
+
+/************************ END - Component Account Recurring Charge List - END ************************/
 
 /************************ START - Follow-Up Management Page - START ************************/
 
@@ -6430,8 +6623,7 @@ div.popup-correspondence-ledger table.reflex thead th > img
 
 div.popup-correspondence-ledger div.section-content > table.reflex,
 div.correspondence-run-ledger div.section-content > table.reflex,
-.correspondence-ledger-for-run div.section-content > table.reflex,
-.component-correspondence-run-details > div.section-content table.reflex
+.correspondence-ledger-for-run div.section-content > table.reflex
 {
 	margin-left		: 0em;
 	margin-right	: 0em;
@@ -6479,10 +6671,39 @@ div.datetime-time
 	cursor		: pointer;
 }
 
-.popup-correspondence-ledger .batch-table th,
-.popup-correspondence-ledger .batch-table td
+.popup-correspondence-ledger .batch-table th
 {
-	width	: 30%;
+	padding	: 0.25em 0em 0.25em 0.25em;
+}
+
+.popup-correspondence-ledger .batch-table th:nth-child(1),
+.popup-correspondence-ledger .batch-table td:nth-child(1)
+{
+	width	: 5%;
+}
+
+.popup-correspondence-ledger .batch-table th:nth-child(2),
+.popup-correspondence-ledger .batch-table td:nth-child(2)
+{
+	width	: 15%;
+}
+
+.popup-correspondence-ledger .batch-table th:nth-child(3),
+.popup-correspondence-ledger .batch-table td:nth-child(3)
+{
+	width	: 27%
+}
+
+.popup-correspondence-ledger .batch-table th:nth-child(4),
+.popup-correspondence-ledger .batch-table td:nth-child(4)
+{
+	width	: 20%;
+}
+
+.popup-correspondence-ledger .batch-table th:nth-child(5),
+.popup-correspondence-ledger .batch-table td:nth-child(5)
+{
+	width	: 23%;
 }
 
 .popup-correspondence-ledger .batch-table-container
@@ -6526,6 +6747,13 @@ div.datetime-time
 .popup-correspondence-ledger .run-count
 {
 	float	: right;
+}
+
+.popup-correspondence-run-batch-ledger-items > img,
+.popup-correspondence-run-batch-ledger-items > span
+{
+	margin-right	: 0.25em;
+	vertical-align	: middle;
 }
 
 .popup-correspondence-ledger td.no-rows,
@@ -6678,11 +6906,6 @@ div.datetime-time
 	margin-bottom	: 1em;
 }
 
-.component-correspondence-run-details table.reflex th
-{
-	width	: 13em;
-}
-
 .popup-correspondence-ledger-columns .columns > li
 {
 	vertical-align	: top;
@@ -6747,60 +6970,174 @@ div.datetime-time
 	display: inline-block;
 }
 
-.popup-correspondence-run-ledger-normal .correspondence-run-ledger tbody tr td:nth-child(1)
+.popup-correspondence-run-ledger-normal .correspondence-run-ledger table.reflex > tbody tr td:nth-child(1),
+.popup-correspondence-run-ledger-normal .correspondence-run-ledger table.reflex > tbody tr td:nth-child(2),
+.popup-correspondence-run-ledger-normal .correspondence-run-ledger table.reflex > tbody tr td:nth-child(3),
 {
 	width	: 7em;
 }
 
-.popup-correspondence-run-ledger-normal .correspondence-run-ledger tbody tr td:nth-child(6)
+.popup-correspondence-run-ledger-normal .correspondence-run-ledger table.reflex > tbody tr td:nth-child(4)
 {
 	width	: 8em;
 }
 
-.popup-correspondence-run-ledger-normal .correspondence-run-ledger tbody tr td:nth-child(5),
-.popup-correspondence-run-ledger-normal .correspondence-run-ledger tbody tr td:nth-child(8)
+.popup-correspondence-run-ledger-normal .correspondence-run-ledger table.reflex > tbody tr td:nth-child(6)
+{
+	width	: 10em;
+}
+
+.popup-correspondence-run-ledger-normal .correspondence-run-ledger table.reflex > tbody tr td:nth-child(7)
+{
+	width	: 9em;
+}
+
+.popup-correspondence-run-ledger-normal .correspondence-run-ledger table.reflex > tbody tr td:nth-child(5),
+.popup-correspondence-run-ledger-normal .correspondence-run-ledger table.reflex > tbody tr td:nth-child(8)
 {
 	width	: 6em;
 }
 
-.popup-correspondence-run-ledger-normal .correspondence-run-ledger tbody tr td:nth-child(2)
+.popup-correspondence-run-ledger-normal .correspondence-run-ledger table.reflex > tbody tr td:nth-child(2)
 {
 	width	: 8em;
 }
 
-.popup-correspondence-run-ledger-large .correspondence-run-ledger tbody tr td:nth-child(3),
-.popup-correspondence-run-ledger-large .correspondence-run-ledger tbody tr td:nth-child(4),
-.popup-correspondence-run-ledger-large .correspondence-run-ledger tbody tr td:nth-child(7)
+.popup-correspondence-run-ledger-large .correspondence-run-ledger table.reflex > tbody tr td:nth-child(6),
+.popup-correspondence-run-ledger-large .correspondence-run-ledger table.reflex > thead tr th:nth-child(6)
 {
-	width	: 18em;
+	width	: 21.5em;
 }
 
-.popup-correspondence-run-ledger-large .correspondence-run-ledger tbody tr td:nth-child(1)
+.popup-correspondence-run-ledger-large .correspondence-run-ledger table.reflex > tbody tr td:nth-child(1)
+{
+	width	: 6.5em;
+}
+
+.popup-correspondence-run-ledger-large .correspondence-run-ledger table.reflex > tbody tr td:nth-child(5)
+{
+	width	: 6em;
+}
+
+.popup-correspondence-run-ledger-large .correspondence-run-ledger table.reflex > tbody tr td:nth-child(8)
+{
+	width	: 13em;
+}
+
+.popup-correspondence-run-ledger-large .correspondence-run-ledger table.reflex > tbody tr td:nth-child(2)
+{
+	width	: 12em;
+}
+
+.popup-correspondence-run-ledger-large .correspondence-run-ledger table.reflex > tbody tr td:nth-child(3)
+{
+	width	: 8.5em;
+}
+
+.popup-correspondence-run-ledger-large .correspondence-run-ledger table.reflex > tbody tr td:nth-child(4)
+{
+	width	: 10em;
+}
+
+.popup-correspondence-run-ledger-large .correspondence-run-ledger table.reflex > tbody tr td:nth-child(7)
 {
 	width	: 7em;
 }
 
-.popup-correspondence-run-ledger-large .correspondence-run-ledger tbody tr td:nth-child(6)
+.popup-correspondence-run-ledger-large .correspondence-run-ledger table.reflex > tbody tr td:last-child
 {
-	width	: 8em;
+	width	: 0.5em;
 }
 
-.popup-correspondence-run-ledger-large .correspondence-run-ledger tbody tr td:nth-child(5),
-.popup-correspondence-run-ledger-large .correspondence-run-ledger tbody tr td:nth-child(8)
+.component-correspondence-run-ledger-carrier > span:first-child
 {
-	width	: 6em;
+	margin-right	: 0.25em;
 }
 
-.popup-correspondence-run-ledger-large .correspondence-run-ledger tbody tr td:nth-child(2)
+.component-correspondence-run-ledger-carrier > span:last-child > img
 {
-	width	: 15em;
+	vertical-align	: top;
 }
 
-.popup-correspondence-run-ledger-large .correspondence-run-ledger tbody tr td:nth-child(3),
-.popup-correspondence-run-ledger-large .correspondence-run-ledger tbody tr td:nth-child(4),
-.popup-correspondence-run-ledger-large .correspondence-run-ledger tbody tr td:nth-child(7)
+.component-correspondence-run-ledger-carrier-summary,
+.component-correspondence-run-ledger-deliverymethodsummary-details
 {
-	width	: 18em;
+	margin-left	: 1em;
+}
+
+.component-correspondence-run-details-tables
+{
+	border	: solid 1px #333333;
+	width	: 100%;
+}
+
+.component-correspondence-run-details-tables > table.reflex.input
+{
+	vertical-align	: top;
+	border			: none;
+	display			: inline-block;
+	margin			: 0em;
+	width			: 50%;
+}
+
+.component-correspondence-run-details-tables > table.reflex th
+{
+	width	: 20%;
+}
+
+.component-correspondence-run-details-tables > table.reflex td
+{
+	width	: 30%;
+}
+
+.component-correspondence-run-details-items
+{
+	margin	: 0em;
+}
+
+.component-correspondence-run-details-item-count
+{
+	vertical-align	: top;
+	margin			: 0em 0.25em;
+}
+
+.component-correspondence-run-details-item-count-total
+{
+	font-weight	: bold;
+}
+
+.component-correspondence-run-details-dispatchsummary-file-carrier
+{
+	font-weight	: bold;
+}
+
+.component-correspondence-run-details-dispatchsummary-file-carrier-method,
+.component-correspondence-run-ledger-dispatchsummary-file-carrier-method
+{
+	margin-left		: 0.5em;
+	vertical-align	: middle;
+}
+
+.component-correspondence-run-details-dispatchsummary-file-carrier-method > img,
+.component-correspondence-run-ledger-dispatchsummary-file-carrier-method > img
+{
+	margin-left	: 0.25em;
+}
+
+.component-correspondence-run-details-dispatchsummary-file-file,
+.component-correspondence-run-details-dispatchsummary-file-status
+{
+	margin-left	: 1em;
+}
+
+.component-correspondence-run-details-dispatchsummary-file-status-desc
+{
+	font-style	: italic;
+}
+
+.component-correspondence-run-details-dispatchsummary-file-status-dispatchdate
+{
+	margin-left	: 0.25em;
 }
 
 /***************** END - Correspondence Ledger Popup(s) - END *****************/
@@ -7342,23 +7679,17 @@ div.popup-rate-plan-test > table.reflex
 
 /************************* - Email Editor Popup -  *******************************/
 
-
-
 span.varobject
 {
 	font-size	: 0.90em;
-	text-align:left;
+	text-align	: left;
 	font-weight	: bold;
-
-   left: 0;
-
+   	left		: 0;
 }
 
-
-div.email-subject-container .reflex
+.email-subject-container .reflex
 {
--moz-border-radius: 3px 3px 3px 3px;
-
+	-moz-border-radius	: 3px 3px 3px 3px;
 }
 
 div.popup-email-text-edit
@@ -7368,144 +7699,148 @@ div.popup-email-text-edit
 
 .popup-email-text-edit .buttons, .popup-email-test .buttons
 {
-	 text-align: center;
+	 text-align	: center;
 }
 
 .popup-email-text-edit .buttons .padded
 {
-	padding-left: 5px;
-	padding-right: 7px;
+	padding-left	: 5px;
+	padding-right	: 7px;
 }
 
 .popup-email-text-edit .buttons .padded-image
 {
-	padding-left: 7px;
-	padding-right: 7px;
+	padding-left	: 7px;
+	padding-right	: 7px;
 }
 
-.popup-email-text-edit textarea {
-
-	border: 3px solid #cccccc;
-	padding: 5px;
-	font-family: Monospace;
-	font-size: 1.3em;
+.popup-email-text-edit textarea 
+{
+	border		: 3px solid #cccccc;
+	padding		: 5px;
+	font-family	: Monospace;
+	font-size	: 1.3em;
 }
 
 .popup-email-text-edit .variables
 {
-	text-align: left;
-	margin-top:10px;
-	padding: 0.5em;
-	-moz-border-radius: 4px 4px 4px 4px;
-	border: 1px solid #000000;
-
-	background-color: rgba(255, 255, 255, 0.6);
-
+	text-align			: left;
+	margin-top			:10px;
+	padding				: 0.5em;
+	-moz-border-radius	: 4px 4px 4px 4px;
+	border				: 1px solid #000000;
+	background-color	: rgba(255, 255, 255, 0.6);
 }
 
 .popup-email-text-edit .variables ul
 {
-	text-align: left;
-
-	font-size	: 0.80em;
-	list-style-type: none;
-	margin-left : 3px;
-	 padding-left: 3px;
-	 margin-top: 1px;
-	 padding-top:1px;
-	 margin-bottom: 2px;
-	 padding-bottom:2px;
-
+	text-align		: left;
+	font-size		: 0.80em;
+	list-style-type	: none;
+	margin-left 	: 3px;
+	padding-left	: 3px;
+	margin-top		: 1px;
+	padding-top		:1px;
+	margin-bottom	: 2px;
+	padding-bottom	:2px;
 }
 
-.popup-email-text-edit .variables ul>li
+.popup-email-text-edit .variables ul > li
 {
-	cursor: pointer;
-	font-weight: normal;
-	padding: 2px;
-	margin: 2.2px;
-
+	cursor					: pointer;
+	font-weight				: normal;
+	padding					: 2px;
+	margin					: 2.2px;
+	border					: solid 1px transparent;
+	-moz-border-radius		: 4px 4px 4px 4px;
+	-webkit-border-radius	: 4px 4px 4px 4px;
 }
 
-
-.popup-email-text-edit .variables ul>li:only-child
+.popup-email-text-edit .variables ul > li:hover
 {
-	cursor: pointer;
-	font-weight: normal;
-	padding: 2px;
-	margin: 1.6px;
-
-
+	background-color	: rgba(255, 255, 255, 0.8);
+	border				: 1px solid rgba(0, 0, 0, 0.6);
 }
 
-.popup-email-text-edit .variables ul>li:hover
+.popup-email-text-edit .variables ul > li:only-child
 {
-	-moz-border-radius: 4px 4px 4px 4px;
-	background-color: rgba(255, 255, 255, 0.8);
-border: 1px solid rgba(0, 0, 0, 0.6);
-font-weight: bold;
-margin: 1.2px;
-
-
+	cursor		: pointer;
+	font-weight	: normal;
+	padding		: 2px;
+	margin		: 1.6px;
 }
 
 .popup-email-text-edit .variables .vars
 {
-	text-align: left;
-	margin-top: 0.25em;
+	text-align	: left;
+	margin-top	: 0.25em;
 }
 
 .popup-email-text-edit .variables .varLabel
 {
-	text-align: left;
-	margin-bottom: 2px;
-	font-size: 1.1em;
-	left: 0;
-	border-bottom: 1px solid rgba(0, 0, 0, 0.6);
+	text-align		: left;
+	margin-bottom	: 2px;
+	font-size		: 1.1em;
+	left			: 0;
+	border-bottom	: 1px solid rgba(0, 0, 0, 0.6);
 }
 
-
-.email-subject-container >table.reflex th
+.email-subject-container,
+.popup-email-text-edit > .tab-group
 {
-
-	width: 13em;
+	margin-bottom	: 0.5em;
 }
 
-.email-subject-container
+.popup-email-text-edit .email-subject-container > table.reflex,
+.popup-email-text-edit > .tab-group .tab-page table.reflex
 {
+	margin	: 0em;
+	width	: 100%;
+}
 
-	padding-bottom: 10px;
+.popup-email-text-edit > .tab-group div.tab
+{
+	padding	: 0.25em 0.5em;
+}
+
+.email-subject-container > table.reflex th
+{
+	width	: 13em;
+}
+
+.email-subject-container > table.reflex td > .control-field input
+{
+	width	: 100%;
 }
 
 .email-subject-label
 {
-	padding-left: 50px;
-	font-size	: 1.0em;
-	font-weight	: bold;
+	padding-left	: 50px;
+	font-size		: 1.0em;
+	font-weight		: bold;
 }
 
 .email-subject-input
 {
 
-	margin-left: 8px;
+	margin-left	: 8px;
 }
 
-div.popup-email-text-edit table.input tbody tr th
+.popup-email-text-edit table.input tbody tr th
 {
-	min-width:160px;
+	min-width	: 160px;
 }
 
-div.popup-email-text-edit div.control-field span
+.popup-email-text-edit div.control-field span
 {
-white-space:pre-wrap;
-height: auto;
+	white-space	: pre-wrap;
+	height		: auto;
 }
 
-
-div.popup-email-text-edit div.control-field .disabled
+.popup-email-text-edit div.control-field .disabled
 {
-	color: black;
-	background-color: #DDDDDD;
+	color				: black;
+	background-color	: #DDDDDD;
 
 }
 
@@ -7688,54 +8023,51 @@ div.popup-email-templates table.reflex {
 {
 	text-decoration:line-through;
 	color: red;
-
 }
 
 .current-version
 {
-	width: 25px;
-	font-weight: bold;
+	width		: 25px;
+	font-weight	: bold;
 }
 
 .current-version-text
 {
-	font-weight: bold;
+	font-weight	: bold;
 }
-
 
 .email-template-history-createdby
 {
-	text-align: left;
-	font-style	: italic;
-	font-size	: 0.85em;
-	list-style-type: none;
-	margin-left : 1px;
-	padding-left: 1px;
+	text-align		: left;
+	font-style		: italic;
+	font-size		: 0.85em;
+	list-style-type	: none;
+	margin-left 	: 1px;
+	padding-left	: 1px;
 }
 
 .no-versions
 {
-	margin-right: 160px;
-	padding-right: 160px;
-	font-style	: italic;
-	font-weight: bold;
+	margin-right	: 160px;
+	padding-right	: 160px;
+	font-style		: italic;
+	font-weight		: bold;
 }
 
-.version-details >div > table.reflex > tbody > tr > td:last-child
+.component-email-template-history > div > table.reflex > tbody > tr > td:last-child
 {
-	text-align: right;
+	text-align	: right;
 }
 
-
-
+.component-email-template-history .section-header .section-header-options li
+{
+	vertical-align	: middle;
+}
 
 .page-email-template-history-container div.control-field
 {
-
-padding-right: 5px;
-
+	padding-right	: 5px;
 }
-
 
 /****************************END******************************************/
 
@@ -7749,34 +8081,27 @@ padding-right: 5px;
 {
 	padding-top: 1px;
 	margin-top: 1px;
-
 }
 
 span.save-button
 {
-
 	padding-left: 360px;
-
 }
 
 div.email-template-effective-date-select div.control-field, div.email-template-effective-date-select div.date-time-picker-dynamic
 {
-
 	display:inline;
 }
 
 div.email-template-enddate-message span
 {
 	font-weight: bold;
-
 }
 
 .email-confirm-report-header
 {
 	font-size: 1.2em;
 	font-weight: bold;
-
-
 }
 
 div.popup-email-test .recipient
@@ -7786,112 +8111,89 @@ div.popup-email-test .recipient
 	--padding-bottom: 5px;
 }
 
-
 div.popup-email-test .recipient input
 {
-	border-width: 1px;
-    border-style: solid;
-    border-color: #999999;
-
-    font-family: sans-serif;
-    font-size: 12px;
-    color: #333333;
-    width: 80% !important;
-    height: 17px;
-
+	border-width	: 1px;
+    border-style	: solid;
+    border-color	: #999999;
+    font-family		: sans-serif;
+    font-size		: 12px;
+    color			: #333333;
+    width			: 80% !important;
+    height			: 17px;
 }
 
 .add-icon
 {
- cursor:pointer;
- vertical-align: text-top;
-
- padding-top: 4px;
- padding-left: 1px;
-
+	 cursor			:pointer;
+	 vertical-align	: text-top;
+	 padding-top	: 4px;
+	 padding-left	: 1px;
 }
 
 .remove-icon
 {
- cursor:pointer;
- vertical-align: text-top;
-
- padding-top: 1px;
- padding-left: 1px;
-
+	cursor			: pointer;
+	vertical-align	: text-top;
+	padding-top		: 1px;
+	padding-left	: 1px;
 }
-
-
-
 
 div.popup-email-test
 {
-	padding: 5px;
-
+	padding	: 5px;
 }
 
 div.popup-email-test .cancel-button
 {
-
-	padding-left: 250px;
-
+	padding-left	: 250px;
 }
 
 div.popup-email-test .send-button
 {
-
-	padding-left: 3px;
-
+	padding-left	: 3px;
 }
 
 div.email-template-error
 {
-	padding: 15px;
-	text-align: center;
-
+	padding		: 15px;
+	text-align	: center;
 }
 
 div.email-template-error>div.details-link
 {
-	cursor: pointer;
-	padding: 3px;
-	color: blue;
-	text-decoration:underline;
-
-
+	cursor			: pointer;
+	padding			: 3px;
+	color			: blue;
+	text-decoration	:underline;
 }
 
 div.email-template-error>div.error-details
 {
-	background : white;
-	border:1px solid black;
+	background 	: white;
+	border		:1px solid black;
 }
 
 .popup-email-html-save
 {
-	padding: 15px;
-
-
+	padding	: 15px;
 }
 
 div.popup-email-test div.control-field
 {
-	display: inline;
-
-
+	display	: inline;
 }
 
 div.page-email-template-history .section-header-options
 {
-	padding-right: 8px;
-	bottom: 0.2em !important;
-
+	padding-right	: 8px;
+	bottom			: 0.2em !important;
 }
 
 div.page-email-template-history .section-header-options li:last-child
 {
-	padding-left: 10px;
-	top: 0px;
+	padding-left	: 0.5em;
+	top				: 0px;
 }
 
 //*****************DELINQUENT CDR PAGE*********************************//
@@ -8223,8 +8525,2465 @@ div.writeoff-detail
 .credit-card-payment-popup-confirmation-table > tbody > tr > td:first-child
 {
 	vertical-align	: top;
+	text-align		: right;
 	font-weight		: bold;
+	width			: 13em;
+	padding-right	: 1em;
+}
+
+.credit-card-payment-popup-confirmation-table > tbody > tr > td:last-child
+{
+	text-align	: left;
 }
 
 /************************** END - Credit Card Payment Popup - END **************************/
 
+/************************** START - Developer Collections - START **************************/
+
+.developer-collections,
+.developer-collections-scenario-popup
+{
+	margin	: 0.5em;
+}
+
+.developer-collections-detail
+{
+	display	: inline-block;
+	width	: 53%;
+	border	: solid 1px #666;
+	margin	: 0em 1% 0.5em 0em;
+}
+
+.developer-collections-buttons
+{
+	margin-bottom	: 0.5em;
+}
+
+.developer-collections-detail > tbody > tr > td:first-child
+{
+	background-color	: #aaa;
+	width				: 7em;
+	border				: solid 1px #888;
+}
+
+.developer-collections-detail > tfoot > tr > td:first-child
+{
+	background-color	: #ddd;
+	border				: solid 1px #888;
+}
+
+.developer-collections-log
+{
+	display				: inline-block;
+	margin				: 0em;
+	width				: 45.75%;
+	vertical-align		: top;
+	min-height			: 15.5em;
+	overflow			: auto;
+	border				: solid 1px #666;
+	background-color	: white;
+}
+
+.developer-collections-log
+{
+	font-family	: monospace;
+	font-size	: 1.1em;
+}
+
+.developer-collections-timeline
+{
+	width	: 100%;
+	border	: solid 1px #666;
+}
+
+.developer-collections-months td,
+.developer-collections-days td
+{
+	border	: solid 1px #888;
+}
+
+.developer-collections-currentday,
+.developer-collections-currentmonth
+{
+	background-color	: #FFC21A;
+}
+
+.developer-collections-latestday,
+.developer-collections-latestmonth
+{
+	background-color	: #FF4F1A;
+}
+
+.developer-collections-timeline td
+{
+	margin-bottom		: 0.25em;
+	-moz-box-sizing		: border-box;
+	-webkit-box-sizing	: border-box;
+}
+
+.developer-collections-timeline td:first-child
+{
+	background-color	: #EBFFA8;
+	border				: solid 1px #888;
+}
+
+.developer-collections-timeline-item
+{
+	width			: 100%;
+	height			: 16px;
+	margin-bottom	: 0.25em;
+}
+
+.developer-collections-timeline-item-invoice
+{
+	background-color	: #ff0;
+}
+
+.developer-collections-timeline-item-collectable
+{
+	background-color	: #0f0;
+}
+
+.developer-collections-timeline-item-promise
+{
+	background-color	: #3a0;
+}
+
+.developer-collections-timeline-item-promise-paid
+{
+	background-color	: #1C5C00;
+}
+
+.developer-collections-timeline-item-payment
+{
+	background-color	: #0fa;
+}
+
+.developer-collections-timeline-item-payment-reversed
+{
+	background-color	: #666;
+}
+
+.developer-collections-timeline-item-transfer
+{
+	background-color	: #af0;
+}
+
+.developer-collections-timeline-item-event
+{
+	background-color	: #0ff;
+}
+
+.developer-collections-timeline-item-eventprediction
+{
+	background-color	: #00f;
+}
+
+.developer-collections-timeline-item-suspension
+{
+	background-color	: #333;
+}
+
+.developer-collections-prompt
+{
+	margin	: 0.5em;
+}
+
+.developer-collections-prompt th
+{
+	text-align		: left;
+	padding-right	: 0.25em;
+}
+
+.developer-collections-timeline-data td:first-child
+{
+	font-variant	: small-caps; 
+}
+
+.developer-collections-prompt .buttons
+{
+	margin-top	: 0.5em;
+	text-align	: center;
+}
+
+.developer-collections-timeline-data
+{
+	position				: absolute;
+	padding					: 0.5em;
+	background-color		: #fff;
+	border					: solid 1px black;
+	-moz-box-sizing			: border-box;
+	-moz-border-radius		: 0.25em;
+	-moz-box-shadow			: 0 0 20px;
+	-webkit-box-shadow		: 0 0 20px #000;
+	-webkit-box-sizing		: border-box;
+	-webkit-border-radius	: 0.25em;
+	z-index					: 50;
+}
+
+.developer-collections-timeline-item-title
+{
+	font-weight	: bold;
+}
+
+.developer-collections-scenario-popup-buttons
+{
+	text-align	: center;
+}
+
+.developer-collections-scenario-popup-events-table > thead > tr > td
+{
+	font-weight	: bold;
+}
+
+.developer-collections-scenario-popup-event-count-container > div
+{
+	display	: inline-block;
+	margin	: 0.25em 0.5em 0em 0em;
+}
+
+.developer-collections-scenario-popup-event-count
+{
+	width	: 3em;
+}
+
+/************************** END - Developer Collections - END **************************/
+
+/************************** START - Component Collections Account Management - START **************************/
+
+.component-collections-account-management
+{
+	margin		: 0.5em;
+	position	: relative;
+}
+
+.component-collections-account-management-balance-columns
+{
+	margin	: 0em;
+	width	: 13em;
+}
+
+.component-collections-account-management-balance-columns > li
+{
+	width	: 50%;
+}
+
+.component-collections-account-management-overdue-columns
+{
+	margin	: 0em;
+	width	: 23em;
+}
+
+.component-collections-account-management-overdue-columns > li
+{
+	width	: 25%;
+}
+
+.component-collections-account-management-promise-columns
+{
+	margin	: 0em;
+	width	: 14em;
+}
+
+.component-collections-account-management-promise-columns > li
+{
+	width	: 50%;
+}
+
+.component-collections-account-management-currency-credit
+{
+	margin-left	: 0.25em;
+	color		: green;
+}
+
+.component-collections-account-management-account
+{
+	width	: 13em;
+}
+
+.component-collections-account-management-headerrow > th
+{
+	vertical-align	: top;
+}
+
+.component-collections-account-management table.reflex > thead > .component-collections-account-management-extracolumns > th
+{
+	padding	: 0em 0em 0em 0.5em;
+}
+
+.component-collections-account-management-extracolumns .component-collections-account-management-balance-columns,
+.component-collections-account-management-extracolumns .component-collections-account-management-promise-columns,
+.component-collections-account-management-extracolumns .component-collections-account-management-overdue-columns
+{
+	font-variant	: small-caps;
+	color			: #bbb;
+}
+
+.component-collections-account-management-header-sort img
+{
+	margin-right	: 0.25em;
+}
+
+.component-collections-account-management .section-content table.reflex
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.component-collections-account-management-filter-heading > span
+{
+	margin-right	: 0.5em;
+	vertical-align	: middle;
+	font-style		: italic;
+	font-size		: 0.85em;
+}
+
+.component-collections-account-management-filter-heading > div
+{
+	display			: inline-block;
+	vertical-align	: middle;
+}
+
+.component-collections-account-management-no-rows
+{
+	height			: 7em;
+	vertical-align	: middle;
+}
+
+.component-collections-account-management .section-header-options button
+{
+	margin	: 0em !important;
+}
+
+/************************** END - Component Collection Account Management - END **************************/
+
+
+/************************** START - Component Collections Event Management - START **************************/
+
+.component-collections-event-management
+{
+	margin	: 0.5em;
+}
+
+.component-collections-event-management-table
+{
+	width	: 100%;
+}
+
+.component-collections-event-management-header-sort img
+{
+	margin-right	: 0.25em;
+}
+
+.component-collections-event-management .section-header-options > ul.reset > li
+{
+	vertical-align	: middle;
+}
+
+.component-collections-event-management .section-header-options > ul.reset > li:last-child
+{
+	margin-left	: 1em;
+}
+
+.component-collections-event-management .section-footer ul.reset > li > button
+{
+	
+}
+
+.component-collections-event-management .section-footer .loading
+{
+	float		: left;
+	margin-left	: 1em;
+}
+
+.component-collections-event-management .section-content table.reflex
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.component-collections-event-management-filter-heading > span
+{
+	margin-right	: 0.5em;
+	vertical-align	: middle;
+	font-style		: italic;
+	font-size		: 0.85em;
+}
+
+.component-collections-event-management-filter-heading > div
+{
+	display			: inline-block;
+	vertical-align	: middle;
+}
+
+.component-collections-event-management-options
+{
+	margin	: 0em;
+	height	: 2em;
+}
+
+.component-collections-event-management-options > li
+{
+	height			: 100%;
+	vertical-align	: top;
+}
+
+.component-collections-event-management-selectoptions,
+.component-collections-event-management-selectactions
+{
+	margin-right	: 2em;
+}
+
+.component-collections-event-management-selectoptions
+{
+	padding-top		: 0.4em;
+}
+
+.popup-collections-event-management-select-events
+{
+	margin	: 0.5em;
+}
+
+.popup-collections-event-management-select-events-buttons
+{
+	margin-top	: 0.25em;
+	text-align	: center;
+}
+
+.component-collections-event-management tbody > tr > td
+{
+	vertical-align	: middle;
+}
+
+.component-collections-event-management-status-completed
+{
+	margin-top	: 0.25em;
+}
+
+/************************** END - Component Collection Event Management - END **************************/
+
+/************************** START - Reflex Breadcrumb Select - START **************************/
+
+.reflex-breadcrumb-select > ul
+{
+	display	: inline-block;
+}
+
+.reflex-breadcrumb-select-crumb-separator
+{
+	padding			: 0em 0.5em;
+	vertical-align	: middle;
+}
+
+.reflex-breadcrumb-select-crumb-value-container
+{
+	display				: inline-block;
+	cursor				: pointer;
+	padding				: 0.25em;
+	border				: solid 1px #333;
+	background-color	: #eee;
+}
+
+.reflex-breadcrumb-select-crumb-value-remove
+{
+	cursor			: pointer;
+	vertical-align	: middle;
+	margin-left		: 0.25em;
+}
+
+.reflex-breadcrumb-select-crumb-value
+{
+	vertical-align	: middle;
+}
+
+.reflex-breadcrumb-select-list
+{
+	position			: absolute;
+	z-index				: 55;
+	border				: solid 1px #333;
+	background-color	: white;
+	padding				: 0.25em;
+}
+
+.reflex-breadcrumb-select-list-option
+{
+	cursor	: pointer;
+}
+
+.reflex-breadcrumb-select-list-option:hover
+{
+	background-color	: #777;
+}
+
+/************************** END - Reflex Breadcrumb Select - END **************************/
+
+/************************** START - Popup Collection Event Action - START **************************/
+
+.popup-collection-event-action
+{
+	margin : 0.5em;
+}
+
+.popup-collection-event-action-buttons
+{
+	text-align	: center;
+	margin-top	: 0.25em;
+	position	: relative;
+}
+
+.popup-collection-event-action-textarea-container > textarea
+{
+	width	: 100%;
+	margin	: 0.25em 0em 0em 0em;
+}
+
+.popup-collection-event-action-eventsummary > div:first-child
+{
+	margin-top	: 0.25em;
+}
+
+.popup-collection-event-action-eventsummary > div > span:first-child
+{
+	display		: inline-block;
+	margin-left	: 0.5em;
+	width		: 5em;
+}
+
+.popup-collection-event-action-counter
+{
+	position	: absolute;
+	left		: 0.5em;
+	top			: 0.5em;
+}
+
+/************************** END - Popup Collection Event Action - END **************************/
+
+/************************** START - Popup Collection Event Barring/TDC - START **************************/
+
+.popup-collection-event-barring,
+.popup-collection-event-tdc
+{
+	margin : 0.5em;
+}
+
+.popup-collection-event-barring-help,
+.popup-collection-event-tdc-help
+{
+	margin-bottom	: 0.25em;
+}
+
+.popup-collection-event-barring-day-info,
+.popup-collection-event-tdc-day-info
+{
+	margin-top	: 0.25em;
+}
+
+.popup-collection-event-barring-buttons,
+.popup-collection-event-tdc-buttons
+{
+	text-align	: center;
+	margin-top	: 0.25em;
+}
+
+.popup-collection-event-barring-field > label,
+.popup-collection-event-tdc-field > label
+{
+	font-weight	: bold;
+}
+
+.popup-collection-event-barring-field > .control-field,
+.popup-collection-event-tdc-field > .control-field
+{
+	display	: inline-block;
+}
+
+/************************** END - Popup Collection Event Barring/TDC - END **************************/
+
+
+/************************** START - Component Collections Scenario - START **************************/
+
+.component-collections-scenario
+{
+	margin	: 0.5em;
+}
+
+div.component-collections-scenario > table.reflex
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.component-collections-scenario > table.reflex > tbody > tr > th
+{
+	width	: 12em;
+}
+
+.component-collections-scenario-threshold > ul.reset
+{
+	margin	: 0em;
+}
+
+.component-collections-scenario-threshold > ul.reset > li
+{
+	vertical-align	: middle;
+}
+
+.component-collections-scenario-threshold-symbol
+{
+	margin	: 0em 0.25em;
+}
+
+.component-collections-scenario-threshold-info
+{
+	margin-left	: 0.25em;
+}
+
+.component-collections-scenario-threshold-percentage > .control-field
+{
+	margin-left	: 1em;
+}
+
+.component-collections-scenario-start-early > ul.reset
+{
+	margin	: 0em;
+}
+
+.component-collections-scenario-day-offset
+{
+	margin	: 0em 0.5em;
+}
+
+.component-collections-scenario-day-offset .control-field input
+{
+	width	: 3em !important;
+}
+
+/************************** END - Component Collections Scenario - END **************************/
+
+/************************** START - Component Collections Scenario Event Timeline - START **************************/
+
+.component-collections-scenario-event-timeline
+{
+	overflow	: auto;
+	min-heigh	: 10em;
+}
+
+.component-collections-scenario-event-timeline-emptynode,
+.component-collections-scenario-event-timeline-node
+{
+	width	: 8em;
+	height	: 4em;
+}
+
+.component-collections-scenario-event-timeline-emptynode-view,
+.component-collections-scenario-event-timeline-node-view
+{
+	width	: 8em;
+	height	: 2em;
+}
+
+.component-collections-scenario-event-timeline-node,
+.component-collections-scenario-event-timeline-node-view
+{
+	border					: solid 1px #000;
+	-border-radius			: 4px 4px 4px 4px;
+	-moz-border-radius		: 4px 4px 4px 4px;
+	-webkit-border-radius	: 4px 4px 4px 4px;
+}
+
+.component-collections-scenario-event-timeline-node-icons
+{
+	cursor	: pointer;
+}
+
+.component-collections-scenario-event-timeline-node-scenario-start,
+.component-collections-scenario-event-timeline-node-scenario-start-view
+{
+	text-align	: center;
+}
+
+.component-collections-scenario-event-timeline-node-scenario-start,
+.component-collections-scenario-event-timeline-node-event
+{
+	border-bottom	: solid 1px #000;
+	padding			: 0.25em;
+	white-space		: nowrap;
+	overflow		: hidden;
+}
+
+.component-collections-scenario-event-timeline-node-event
+{
+	-user-select		: none;
+	-moz-user-select	: none;
+	-webkit-user-select	: none;
+	cursor				: pointer;
+}
+
+.component-collections-scenario-event-timeline-node-event-indrag
+{
+	opacity	: 0.75;
+}
+
+.component-collections-scenario-event-timeline-node-scenario-start-view,
+.component-collections-scenario-event-timeline-node-event-view
+{
+	padding			: 0.25em;
+	white-space		: nowrap;
+	overflow		: hidden;
+	vertical-align	: middle;
+}
+
+.component-collections-scenario-event-timeline-node-icons
+{
+	text-align	: center;
+}
+
+.component-collections-scenario-event-timeline-node-icons-view
+{
+	display	: none;
+}
+
+.component-collections-scenario-event-timeline-node-icons > img
+{
+	padding	: 0.3em 0.5em;
+}
+
+.component-collections-scenario-event-timeline-event-name
+{
+	margin-left		: 0.25em;
+	vertical-align	: top;
+	white-space		: nowrap;
+}
+
+.drag-node
+{
+	position	: absolute;
+	z-index		: 99;
+}
+
+.component-collectons-scenario-event-timeline-drag-target
+{
+	background-color	: #333;
+}
+
+.component-collectons-scenario-event-timeline-drag-target-before
+{
+	border-top	: solid 1px #333;
+}
+
+.component-collectons-scenario-event-timeline-drag-target-after
+{
+	border-bottom	: solid 1px #333;
+}
+
+.popup-collections-scenario-event-timeline-event-eventlist
+{
+	margin	: 0em;
+	width	: 98%;
+}
+
+.popup-collections-scenario-event-timeline-event-eventlist > li
+{
+	vertical-align	: top;
+}
+
+.popup-collections-scenario-event-timeline-event-eventlist > li:first-child
+{
+	width	: 70%;
+}
+
+.popup-collections-scenario-event-timeline-event-eventlist > li > .icon-button
+{
+	margin	: 0em 0em 0em 0.25em !important;
+}
+
+/************************** END - Component Collections Scenario Event Timeline - END **************************/
+
+/************************** START - Component Collections Event Type - START **************************/
+
+.component-collections-event-type
+{
+	margin : 0.5em;
+}
+
+.component-collections-event-type > table.reflex.input,
+.component-collections-event-type-implementation-details > td > table
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.component-collections-event-type-implementation-details > td > table > tbody > tr > th
+{
+	text-align	: left;
+}
+
+/************************** END - Component Collections Event Type - END **************************/
+
+/************************** START - Component Collections Severity - START **************************/
+
+.component-collections-severity,
+.popup-collections-severity
+{
+	margin : 0.5em;
+}
+
+.component-collections-severity-buttons,
+.popup-collections-severity-buttons
+{
+	text-align	: center;
+	margin-top	: 0.5em;
+}
+
+.component-collections-severity > table.reflex.input,
+.popup-collections-severity > table.reflex.input
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.component-collections-severity-transfer > ul.reset.horizontal
+{
+	margin	: 0em;
+}
+
+.component-collections-severity-transfer > ul.reset > li
+{
+	vertical-align	: middle;
+}
+
+.component-collections-severity-transfer > ul.reset > li:first-child,
+.component-collections-severity-transfer > ul.reset > li:last-child
+{
+	width	: 45%;
+}
+
+.component-collections-severity-transfer-buttons
+{
+	margin-right	: 0.5em;
+}
+
+.component-collections-severity-warning-message
+{
+	position				: absolute;
+	border					: solid 1px #666;
+	background-color		: #eee;
+	padding					: 0.25em;
+	z-index					: 999;
+	border-radius			: 4px 4px 4px 4px;
+	-moz-border-radius		: 4px 4px 4px 4px;
+	-webkit-border-radius	: 4px 4px 4px 4px;
+}
+
+.component-collections-severity-warning-message-icon
+{
+	vertical-align	: middle;
+	margin-right	: 0.5em;
+}
+
+.component-collections-severity-transfer-select-title
+{
+ 	font-weight		: bold;
+    margin-bottom	: 0.25em;
+    text-align		: center;
+}
+
+/************************** END - Component Collections Severity - END **************************/
+
+/************************** START - Component Collections Event - START **************************/
+
+.component-collections-event-charge-amount .control-field
+{
+	display			: inline-block;
+	vertical-align	: middle;
+	width			: 6em;
+}
+
+.component-collections-event-charge-amount-tax-component
+{
+	margin-left	: 1em;
+}
+
+.component-collections-event-charge-amount ul.reset
+{
+	margin	: 0em 0em 0.25em 0em;
+}
+
+.component-collections-event-charge-amount ul.reset > li:first-child
+{
+	padding-right	: 0.25em;
+	vertical-align	: top;
+}
+
+.component-collections-event-charge-amount-symbol
+{
+	margin			: 0em 0.35em;
+	vertical-align	: middle;
+}
+
+.component-collections-event-charge-amount-percentage-debt .control-field
+{
+	margin-left	: 1.25em;
+}
+
+.component-collections-event-charge-amount-option-2 > ul.reset > li div
+{
+	margin-top	: 0.25em;
+}
+
+.component-collections-event > table.reflex > tbody > tr > th
+{
+	width	: 14em;
+}
+
+.component-collections-event-typelist,
+.component-collections-event-severitylist
+{
+	margin	: 0em;
+	width	: 98%;
+}
+
+.component-collections-event-typelist > li,
+.component-collections-event-severitylist > li
+{
+	vertical-align	: top;
+}
+
+.component-collections-event-typelist > li:first-child,
+.component-collections-event-severitylist > li:first-child
+{
+	width	: 74%;
+}
+
+.component-collections-event-typelist > li > .icon-button,
+.component-collections-event-severitylist > li > .icon-button
+{
+	margin	: 0em 0em 0em 0.25em !important;
+}
+
+/************************** END - Component Collections Event - END **************************/
+
+/************************** START - Component Collections Lists - START **************************/
+
+.component-collections-event-type-list,
+.component-collections-event-list,
+.component-collections-scenario-list,
+.component-collections-severity-list
+{
+	position	: relative
+}
+
+.component-collections-event-type-list > .section table.reflex,
+.component-collections-event-list > .section table.reflex,
+.component-collections-scenario-list > .section table.reflex,
+.component-collections-severity-list > .section table.reflex
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.component-collections-event-type-list > .section .section-header .icon-button,
+.component-collections-event-list > .section .section-header .icon-button,
+.component-collections-scenario-list > .section .section-header .icon-button,
+.component-collections-severity-list > .section .section-header .icon-button
+{
+	margin	: 0em !important;
+}
+
+.component-collections-event-type-list > .section .section-footer > ul.reset,
+.component-collections-event-list > .section .section-footer > ul.reset,
+.component-collections-scenario-list > .section .section-footer > ul.reset,
+.component-collections-severity-list > .section .section-footer > ul.reset
+{
+	margin	: 0em;
+}
+
+.component-collections-event-type-list-filter-heading > span,
+.component-collections-event-list-filter-heading > span,
+.component-collections-scenario-list-filter-heading > span,
+.component-collections-severity-list-filter-heading > span
+{
+	margin-right	: 0.5em;
+	vertical-align	: middle;
+	font-style		: italic;
+	font-size		: 0.85em;
+}
+
+.component-collections-event-type-list-filter-heading > div,
+.component-collections-event-list-filter-heading > div,
+.component-collections-scenario-list-filter-heading > div,
+.component-collections-severity-list-filter-heading > div
+{
+	display			: inline-block;
+	vertical-align	: middle;
+}
+
+.component-collections-event-type-list-header-sort img,
+.component-collections-event-list-header-sort img,
+.component-collections-scenario-list-header-sort img,
+.component-collections-severity-list-header-sort img
+{
+	margin-right	: 0.25em;
+}
+
+.component-collections-event-type-list table.reflex > tbody > tr > td,
+.component-collections-event-list table.reflex > tbody > tr > td,
+.component-collections-scenario-list table.reflex > tbody > tr > td,
+.component-collections-severity-list table.reflex > tbody > tr > td
+{
+	vertical-align	: middle;
+}
+
+.popup-collections-event-list-event-details > table > tbody > tr > th
+{
+	width	: 45%;
+}
+
+/************************** END - Component Collections Lists - END **************************/
+
+/************************** START - Page Collections Configure - START **************************/
+
+.page-collections-configure > div
+{
+	margin-bottom	: 1em;
+}
+
+/************************** END - Page Collections Configure - END **************************/
+
+/************************** START - Account: Edit Promise Popup - START **************************/
+
+.popup-account-promise-edit,
+.popup-account-promise-edit * {
+	box-sizing			: border-box;
+	-moz-box-sizing		: border-box;
+	-webkit-box-sizing	: border-box;
+}
+
+.popup-account-promise-edit table th,
+.popup-account-promise-edit table td {
+	vertical-align	: top;
+}
+
+.popup-account-promise-edit .popup-account-promise-edit-invoices-empty {
+	font-style	: italic;
+}
+
+.popup-account-promise-edit .popup-account-promise-edit-invoices-promisedvalue,
+.popup-account-promise-edit .popup-account-promise-edit-instalments-instalment-amount{
+	white-space	: nowrap;
+}
+
+.popup-account-promise-edit .popup-account-promise-edit-invoices-promisedvalue > .control-field,
+.popup-account-promise-edit .popup-account-promise-edit-instalments-instalment-amount > .control-field,
+.popup-account-promise-edit .popup-account-promise-edit-instalments-details-totalpromised > .control-field {
+	display		: inline-block;
+	margin-left	: 0.25em;
+}
+
+.popup-account-promise-edit .popup-account-promise-edit-instalments-empty {
+	font-style	: italic;
+}
+
+.popup-account-promise-edit .popup-account-promise-edit-subtext {
+	font-style	: italic;
+}
+
+.popup-account-promise-edit .popup-account-promise-edit-details tbody th {
+	width		: 12em;
+	max-width	: 40%;
+}
+
+.popup-account-promise-edit input[type='checkbox'] {
+	display	: inline-block;
+}
+
+.popup-account-promise-edit table tbody tr th.label,
+.popup-account-promise-edit table tbody tr td.input {
+	vertical-align	: top;
+}
+
+.popup-account-promise-edit table tbody tr td.input .control-field {
+	display	: inline-block;
+}
+
+.popup-account-promise-edit table tbody tr td.input label {
+	display			: block;
+}
+
+.popup-account-promise-edit table tbody tr td.input label * {
+	vertical-align	: middle;
+}
+
+/************************** END - Account: Edit Promise Popup - END **************************/
+
+/************************** START - Account: New Promise Popup - START **************************/
+
+.popup-account-promise-edit-schedule,
+.popup-account-promise-edit-schedule * {
+	box-sizing			: border-box;
+	-moz-box-sizing		: border-box;
+	-webkit-box-sizing	: border-box;
+}
+
+.popup-account-promise-edit-schedule table th,
+.popup-account-promise-edit-schedule table td {
+	vertical-align	: top;
+}
+
+.popup-account-promise-edit-schedule tbody th {
+	width		: 8em;
+	max-width	: 40%;
+}
+
+.popup-account-promise-edit-schedule label *,
+.popup-account-promise-edit-schedule .control-field {
+	display			: inline-block;
+	vertical-align	: middle;
+}
+
+.popup-account-promise-edit-schedule .control-field:not(first-child):not(last-child) {
+	margin-left		: 0.25em;
+	margin-right	: 0.25em;
+}
+
+.popup-account-promise-edit-schedule .popup-account-promise-edit-schedule-startingdate input.date-formatted,
+.popup-account-promise-edit-schedule .popup-account-promise-edit-schedule-endingdate input.date-formatted {
+	width	: 10em	!important;
+}
+
+.popup-account-promise-edit-schedule .popup-account-promise-edit-schedule-frequency-multiplier,
+.popup-account-promise-edit-schedule .popup-account-promise-edit-schedule-occurrences {
+	width	: 2em;
+}
+
+.popup-account-promise-edit-schedule .popup-account-promise-edit-schedule-frequency-type {
+	width	: 7em;
+}
+
+/************************** END - Account: New Promise Popup - END **************************/
+
+/************************** START - Component Barring Authorisation/Action Ledger(s) - START **************************/
+
+.component-barring-authorisation-ledger > .section table.reflex,
+.component-barring-action-ledger > .section table.reflex
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.component-barring-authorisation-ledger > .section .section-header .icon-button,
+.component-barring-action-ledger > .section .section-header .icon-button
+{
+	margin	: 0em !important;
+}
+
+.component-barring-authorisation-ledger > .section .section-footer > ul.reset,
+.component-barring-action-ledger > .section .section-footer > ul.reset
+{
+	margin	: 0em;
+}
+
+.component-barring-authorisation-ledger-filter-heading > span,
+.component-barring-action-ledger-filter-heading > span
+{
+	margin-right	: 0.5em;
+	vertical-align	: middle;
+	font-style		: italic;
+	font-size		: 0.85em;
+}
+
+.component-barring-authorisation-ledger-filter-heading > div,
+.component-barring-action-ledger-filter-heading > div
+{
+	display			: inline-block;
+	vertical-align	: middle;
+}
+
+.component-barring-authorisation-ledger-header-sort img,
+.component-barring-action-ledger-header-sort img
+{
+	margin-right	: 0.25em;
+}
+
+.component-barring-authorisation-ledger-subdetail,
+.component-barring-action-ledger-subdetail
+{
+	font-size	: 0.9em;
+}
+
+.component-barring-authorisation-ledger-subdetail img,
+.component-barring-action-ledger-subdetail img
+{
+	padding-right	: 0.25em;
+}
+
+.component-barring-authorisation-ledger-subdetail img,
+.component-barring-authorisation-ledger-subdetail a,
+.component-barring-action-ledger-subdetail img,
+.component-barring-action-ledger-subdetail a
+{
+	vertical-align	: middle;
+}
+
+.component-barring-authorisation-ledger-subdetail,
+.component-barring-authorisation-ledger-subdetail.account > div,
+.component-barring-action-ledger-subdetail,
+.component-barring-action-ledger-subdetail.account > div
+{
+	margin-bottom	: 0.25em;
+}
+
+.component-barring-authorisation-ledger-subdetail.account > div.account-id,
+.component-barring-action-ledger-subdetail.account > div.account-id
+{
+	white-space		: nowrap;
+	display			: inline-block;
+	padding-right	: 0.25em;
+}
+
+.component-barring-action-ledger-selectoptions,
+.component-barring-action-ledger-selectactions
+{
+	margin-right	: 2em;
+}
+
+.component-barring-action-ledger-selectoptions
+{
+	padding-top		: 0.4em;
+}
+
+.component-barring-action-ledger-select-events
+{
+	margin	: 0.5em;
+}
+
+.component-barring-action-ledger-select-events-buttons
+{
+	margin-top	: 0.25em;
+	text-align	: center;
+}
+
+.component-barring-action-ledger .section-header-options button
+{
+	margin	: 0em !important;
+}
+
+.component-barring-authorisation-ledger table.reflex > tbody > tr > td,
+.component-barring-action-ledger table.reflex > tbody > tr > td
+{
+	vertical-align	: middle;
+}
+
+/************************** END - Component Barring Authorisation/Action Ledger(s) - END **************************/
+
+/************************** START - Popup Barring Authorisation Ledger Authorise Account - START **************************/
+
+.popup-barring-authorisation-ledger-authorise-account
+{
+	margin	: 0.5em;
+}
+
+.popup-barring-authorisation-ledger-authorise-account-buttons
+{
+	text-align	: center;
+}
+
+.popup-barring-authorisation-ledger-authorise-account-list
+{
+	max-height	: 20em;
+	overflow	: auto;
+}
+
+.popup-barring-authorisation-ledger-authorise-account-list ul.reset li
+{
+	vertical-align	: middle;
+}
+
+.popup-barring-authorisation-ledger-authorise-account-list ul.reset li:first-child
+{
+	margin-right	: 1em;
+}
+
+.popup-barring-authorisation-ledger-authorise-account > div:first-child,
+.popup-barring-authorisation-ledger-authorise-account > div:nth-child(2)
+{
+	margin-bottom	: 0.5em;
+}
+
+/************************** END - Popup Barring Authorisation Ledger Authorise Account - END **************************/
+
+/************************** START - Popup Select File Type - START **********************/
+
+.popup-select-file-type
+{
+	margin : 0.5em;
+}
+
+.popup-select-file-type-message
+{
+	margin-bottom	: 0.5em;
+}
+
+.popup-select-file-type .control-field > select
+{
+	width	: 100%;
+}
+
+.popup-select-file-type-buttons
+{
+	margin-top	: 0.5em;
+	text-align	: center;
+}
+
+/************************** END - Popup Select File Type - END **************************/
+
+/************************** START - Component Collections OCA Referral (Ledger) - START **************************/
+
+.component-collections-oca-referral > .section table.reflex
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.component-collections-oca-referral > .section .section-header .icon-button
+{
+	margin	: 0em !important;
+}
+
+.component-collections-oca-referral > .section .section-footer > ul.reset
+{
+	margin	: 0em;
+}
+
+.component-collections-oca-referral-filter-heading > span
+{
+	margin-right	: 0.5em;
+	vertical-align	: middle;
+	font-style		: italic;
+	font-size		: 0.85em;
+}
+
+.component-collections-oca-referral-filter-heading > div
+{
+	display			: inline-block;
+	vertical-align	: middle;
+}
+
+.component-collections-oca-referral-header-sort img
+{
+	margin-right	: 0.25em;
+}
+
+.component-collections-oca-referral table.reflex > tbody > tr > td
+{
+	vertical-align	: middle;
+}
+
+.component-collections-oca-referral-selectoptions,
+.component-collections-oca-referral-selectactions
+{
+	margin-right	: 2em;
+}
+
+.component-collections-oca-referral-selectoptions
+{
+	padding-top		: 0.4em;
+}
+
+.component-collections-oca-referral-select-events
+{
+	margin	: 0.5em;
+}
+
+.component-collections-oca-referral-select-events-buttons
+{
+	margin-top	: 0.25em;
+	text-align	: center;
+}
+
+.component-collections-oca-referral .section-header-options button
+{
+	margin	: 0em !important;
+}
+
+.component-collections-oca-referral-actions img
+{
+	margin-right	: 0.25em;
+}
+
+/************************** END - Component Collections OCA Referral (Ledger) - END **************************/
+
+/************************** START - Collection Event Type Completion Summary - START **************************/
+
+.collection-event-type-summary-item
+{
+	padding					: 0.25em;
+	border-radius			: 4px 4px 4px 4px;
+	-moz-border-radius		: 4px 4px 4px 4px;
+	-webkit-border-radius	: 4px 4px 4px 4px;
+	border					: solid 1px #333333;
+	background-color		: #eee;
+	margin-bottom			: 0.25em;
+}
+
+.collection-event-type-summary-item-exception
+{
+	background-color	: #fdd;
+}
+
+.collection-event-type-summary-item-label
+{
+	display	: inline-block;
+	width	: 6em;
+}
+
+.collection-event-type-summary-item-exception-more-detail
+{
+	margin-left	: 0.5em;
+}
+
+.collection-event-type-summary-container
+{
+	max-height	: 15em;
+	overflow	: auto;
+}
+
+/************************** END - Collection Event Type Completion Summary - END **************************/
+
+/************************** START - Component Collections Suspension - START **************************/
+
+.component-collections-suspension
+{
+	margin : 0.5em;
+}
+
+.component-collections-suspension > table.reflex.input
+{
+	width	: 100%;
+	margin	: 0em;
+}
+
+.component-collections-suspension-buttons
+{
+	margin-top	: 0.5em;
+	text-align	: center;
+}
+
+.component-collections-suspension-has-suspension-end-date
+{
+	margin-top	: 0.5em;
+	font-weight	: bold;
+}
+
+.component-collections-suspension-proposed-end-date > ul.reset
+{
+	margin	: 0em;
+}
+
+.component-collections-suspension-proposed-end-date > ul.reset > li
+{
+	vertical-align	: middle;
+}
+
+.component-collections-suspension-proposed-end-date > ul.reset > li:last-child
+{
+	margin-left	: 0.5em;
+}
+
+/************************** END - Component Collections Suspension - END **************************/
+
+/************************** START - Popup Account End Collections Suspension - START **************************/
+
+.popup-account-end-collections-suspension
+{
+	margin : 0.5em;
+}
+
+.popup-account-end-collections-suspension > div
+{
+	margin	: 0.25em 0em;
+}
+
+.popup-account-end-collections-suspension > .control-field > select
+{
+	width	: 100%;
+}
+
+.popup-account-end-collections-suspension-buttons
+{
+	margin-top	: 0.5em;
+	text-align	: center;
+}
+
+/************************** END - Popup Account End Collections Suspension - END **************************/
+
+/************************** START - Component Account Collections - START **************************/
+
+.component-account-collections
+{
+	margin-bottom	: 1em;
+}
+
+.component-account-collections > h2
+{
+	background-image	: url('../img/template/payment.png');
+	background-position	: left center;
+    background-repeat	: no-repeat;
+    height				: 21px;
+    margin-bottom		: 5px;
+    padding-left		: 22px;
+}
+
+.component-account-collections-promise
+{
+	min-height	: 10em;
+}
+
+.component-account-collections-events
+{
+	min-height	: 10em;
+	max-height	: 20em;
+	overflow	: auto;
+}
+
+.component-account-collections-events > table
+{
+	width	: 100%;
+}
+
+.component-account-collections-events > table > tbody > tr > td:first-child
+{
+	width	: 4.5em;
+}
+
+.component-account-collections-events > table > tbody > tr > td:nth-child(2)
+{
+	width	: 2em;
+}
+
+.component-account-collections-events-current-date
+{
+	font-weight	: bold;
+}
+
+.component-account-collections-footer-buttons
+{
+	text-align	: right;
+}
+
+.component-account-collections-promise table.reflex.highlight-rows > thead > tr > th
+{
+	text-align	: left;
+}
+
+.component-account-collections-promise > table
+{
+	border-color	: #aaa !important;
+}
+
+.component-account-collections-promise-instalmentstable
+{
+	font-size		: inherit;
+	border-spacing	: 0;
+}
+
+.component-account-collections-promise-instalmentstable > tbody > tr > td
+{
+	padding	: 0.25em 1em 0.25em 0em !important;
+}
+
+.component-account-collections-promise-instalment-unpaid
+{
+	opacity	: 0.5;
+}
+
+/************************** END - Component Account Collections - END **************************/
+
+/************************** END - Component Account Collections Popups - END **************************/
+
+.popup-collections-suspension-view,
+.popup-collections-promise-instalment-view,
+.popup-collections-event-instance-view
+{
+	margin	: 0.5em;
+}
+
+.popup-collections-suspension-view > table.reflex.input,
+.popup-collections-promise-instalment-view > table.reflex.input,
+.popup-collections-event-instance-view > table.reflex.input
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.popup-collections-suspension-view-buttons,
+.popup-collections-promise-instalment-view-buttons,
+.popup-collections-event-instance-view-buttons
+{
+	text-align	: center;
+	margin-top	: 0.5em;
+}
+
+.popup-collections-promise-instalment-view > table.reflex.input > tbody > tr > th
+{
+	width	: 12em;
+}
+
+/************************** END - Component Account Collections Popups - END **************************/
+
+/************************** END - Account TIO Complaint Popups - END **************************/
+
+.popup-account-tio-complaint,
+.popup-account-tio-complaint-view,
+.popup-account-tio-complaint-close
+{
+	margin	: 0.5em;
+}
+
+.popup-account-tio-complaint > table.reflex.input,
+.popup-account-tio-complaint-view > table.reflex.input
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.popup-account-tio-complaint-buttons,
+.popup-account-tio-complaint-view-buttons,
+.popup-account-tio-complaint-close
+{
+	text-align	: center;
+	margin-top	: 0.5em;
+}
+
+.popup-account-tio-complaint-reference-number-label,
+.popup-account-tio-complaint-view-reference-number-label
+{
+	width	: 12em !important;
+}
+
+.popup-account-tio-complaint-close > div
+{
+	margin	: 0.25em 0em;
+}
+
+.popup-account-tio-complaint-close > .control-field > select
+{
+	width	: 100%;
+}
+
+/************************** END - Component Account Collections Popups - END **************************/
+
+/************************** END - Reflex Loading Overlay - END **************************/
+
+.reflex-loading-overlay-parent
+{
+	overflow	: hidden !important;
+}
+
+.reflex-loading-overlay
+{
+	position	: absolute;
+}
+
+.reflex-loading-overlay-overlay
+{
+	background-color	: #aaa;
+	opacity				: 0.5;
+	width				: 100%;
+	height				: 100%;
+}
+
+.reflex-loading-overlay-message
+{
+	border-radius			: 4px 4px 4px 4px;
+	-moz-border-radius		: 4px 4px 4px 4px;
+	-webkit-border-radius	: 4px 4px 4px 4px;
+	background-color		: #BBBBBB;
+	border-color			: #fff;
+	border-width			: 3px;
+	border-style			: solid;
+	left					: 0.25em;
+	bottom					: 0.25em;
+	padding					: 0.25em;
+	position				: absolute;
+}
+
+.reflex-loading-overlay-message-text
+{
+	display			: inline-block;
+	font-size		: 1.1em;
+	vertical-align	: top;
+	margin-top		: 0.2em;
+}
+
+.reflex-loading-overlay-message-flower
+{
+	width		: 20px;
+	height		: 20px;
+	margin-left	: 0.25em;
+}
+
+/************************** END - Reflex Loading Overlay - END **************************/
+
+/************************** END - Component Account Adjustment List - END **************************/
+
+.component-account-adjustment-list-pagination
+{
+	display		: inline-block;
+	text-align	: right;
+	width		: 100%;
+}
+
+.component-account-adjustment-list-pagination > ul.reset
+{
+	margin-top	: 0.25em;
+}
+
+.component-account-adjustment-list-title
+{
+	margin-bottom	: 0.5em;
+}
+
+.component-account-adjustment-list-title > img
+{
+	vertical-align	: middle;
+	padding-right	: 0.4em;
+}
+
+.component-account-adjustment-list-title > span
+{
+	vertical-align	: middle;
+	font-size		: 12pt;
+	font-weight		: bold;
+}
+
+.component-account-adjustment-list-amount
+{
+	text-align	: right;
+}
+
+/************************** END - Component Account Adjustment List - END **************************/
+
+/************************** END - Component Account Payment List - END **************************/
+
+.component-account-payment-list-pagination
+{
+	display		: inline-block;
+	text-align	: right;
+	width		: 100%;
+}
+
+.component-account-payment-list-pagination > ul.reset
+{
+	margin-top	: 0.25em;
+}
+
+.component-account-payment-list-title
+{
+	margin-bottom	: 0.5em;
+}
+
+.component-account-payment-list-title > img
+{
+	vertical-align	: middle;
+	padding-right	: 0.4em;
+}
+
+.component-account-payment-list-title > span
+{
+	vertical-align	: middle;
+	font-size		: 12pt;
+	font-weight		: bold;
+}
+
+.component-account-payment-list table > thead > tr > th:nth-child(1)
+{
+	width	: 6em;
+}
+
+.component-account-payment-list table > thead > tr > th:nth-child(2)
+{
+	width	: 23em;
+}
+
+.component-account-payment-list table > thead > tr > th:nth-child(3)
+{
+	width	: 6em;
+}
+
+.component-account-payment-list-amount
+{
+	text-align	: right;
+}
+
+/************************** END - Component Account Payment List - END **************************/
+
+/************************** END - Popup Account Adjustment Reverse - END **************************/
+
+.popup-account-adjustment-reverse
+{
+	margin	: 0.5em;
+}
+
+.popup-account-adjustment-reverse > table.reflex.input
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.popup-account-adjustment-reverse-buttons
+{
+	text-align	: center;
+	margin-top	: 0.5em;
+}
+
+.popup-account-adjustment-reverse > div
+{
+	margin	: 0.25em 0em;
+}
+
+.popup-account-adjustment-reverse > .control-field > select
+{
+	width	: 100%;
+}
+
+/************************** END - Popup Account Adjustment Reverse - END **************************/
+
+/************************** END - Popup Account Payment Reverse - END **************************/
+
+.popup-account-payment-reverse
+{
+	margin	: 0.5em;
+}
+
+.popup-account-payment-reverse > table.reflex.input
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.popup-account-payment-reverse-buttons
+{
+	text-align	: center;
+	margin-top	: 0.5em;
+}
+
+.popup-account-payment-reverse > div:first-child
+{
+	margin	: 0.25em 0em;
+}
+
+.popup-account-payment-reverse > .control-field > select
+{
+	width	: 100%;
+}
+
+.popup-account-payment-reverse-replacement-payment-container
+{
+	margin-top	: 0.5em;
+}
+
+.popup-account-payment-reverse-replacement-payment
+{
+	display			: inline-block;
+	margin-right	: 0.5em;
+	vertical-align	: middle;
+}
+
+.popup-account-payment-reverse-replacement-payment > span
+{
+	vertical-align	: middle;
+}
+
+.popup-account-payment-reverse .component-account-payment-create
+{
+	margin-top	: 0.5em;
+}
+
+/************************** END - Popup Account Payment Reverse - END **************************/
+
+/************************** END - Adjustment Type - END **************************/
+
+.page-adjustment-type-code
+{
+	width	: 20em;
+}
+
+.page-adjustment-type-actions
+{
+	width	: 2em;
+}
+
+.page-adjustment-type-description
+{
+	width	: 45em;
+}
+
+.page-adjustment-type-amount
+{
+	width	: 5em;
+}
+
+.page-adjustment-type-header-sort img
+{
+	cursor			: pointer;
+	margin-right	: 0.25em;
+}
+
+.page-adjustment-type > .section table.reflex
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.page-adjustment-type > .section .section-header .icon-button
+{
+	margin	: 0em !important;
+}
+
+.page-adjustment-type > .section .section-footer > ul.reset
+{
+	margin	: 0em;
+}
+
+.page-adjustment-type-filter-heading > span
+{
+	margin-right	: 0.5em;
+	vertical-align	: middle;
+	font-style		: italic;
+	font-size		: 0.85em;
+}
+
+.page-adjustment-type-filter-heading > div
+{
+	display			: inline-block;
+	vertical-align	: middle;
+}
+
+.page-adjustment-type-header-sort img
+{
+	margin-right	: 0.25em;
+}
+
+.page-adjustment-type table.reflex > tbody > tr > td
+{
+	vertical-align	: middle;
+}
+
+.page-adjustment-type .section-header-options button
+{
+	margin	: 0em !important;
+}
+
+.page-adjustment-type-actions img
+{
+	margin-right	: 0.25em;
+}
+
+.popup-adjustment-type
+{
+	margin	: 0.5em;
+}
+
+.popup-adjustment-type > table.reflex.input
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.popup-adjustment-type-buttons
+{
+	text-align	: center;
+	margin-top	: 0.5em;
+}
+
+/************************** END - Adjustment Type - END **************************/
+
+/************************** END - Popup Adjustment Request - END **************************/
+
+.popup-adjustment-request
+{
+	margin	: 0.5em;
+}
+
+.popup-adjustment-request > table.reflex.input
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.popup-adjustment-request-buttons
+{
+	text-align	: center;
+	margin-top	: 0.5em;
+}
+
+/************************** END - Popup Adjustment Request - END **************************/
+
+/************************** START - Page Adjustment Management - START **************************/
+
+.page-adjustment-management > .section table.reflex
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.page-adjustment-management > .section .section-header .icon-button
+{
+	margin	: 0em !important;
+}
+
+.page-adjustment-management > .section .section-footer > ul.reset
+{
+	margin	: 0em;
+}
+
+.page-adjustment-management-filter-heading > span
+{
+	margin-right	: 0.5em;
+	vertical-align	: middle;
+	font-style		: italic;
+	font-size		: 0.85em;
+}
+
+.page-adjustment-management-filter-heading > div
+{
+	display			: inline-block;
+	vertical-align	: middle;
+}
+
+.page-adjustment-management-header-sort img
+{
+	margin-right	: 0.25em;
+}
+
+.page-adjustment-management table.reflex > tbody > tr > td
+{
+	vertical-align	: middle;
+}
+
+.page-adjustment-management-selectoptions,
+.page-adjustment-management-selectactions
+{
+	margin-right	: 2em;
+}
+
+.page-adjustment-management-selectoptions
+{
+	padding-top		: 0.4em;
+}
+
+.page-adjustment-management-select-events
+{
+	margin	: 0.5em;
+}
+
+.page-adjustment-management-select-events-buttons
+{
+	margin-top	: 0.25em;
+	text-align	: center;
+}
+
+.page-adjustment-management .section-header-options button
+{
+	margin	: 0em !important;
+}
+
+.page-adjustment-management-actions img
+{
+	margin-right	: 0.25em;
+}
+
+.page-adjustment-management-amount
+{
+	text-align	: right;
+	width		: 10.5em;
+}
+
+.popup-adjustment-management-action-adjustment
+{
+	margin	: 0.5em;
+}
+
+.popup-adjustment-management-action-adjustment > table.reflex.input
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.popup-adjustment-management-action-adjustment-buttons
+{
+	text-align	: center;
+	margin-top	: 0.5em;
+}
+
+.popup-adjustment-management-action-adjustment-paragraph
+{
+	margin	: 0.5em 0em;
+}
+
+.popup-adjustment-management-action-adjustment .control-field > select
+{
+	width	: 100%;
+}
+
+.popup-adjustment-management-action-adjustment > table.reflex > tbody > tr > th
+{
+	width	: 13em;
+}
+
+/************************** END - Page Adjustment Management - END **************************/
+
+/************************** START - Popup Account Payment Create - START **************************/
+
+.popup-account-payment-create
+{
+	margin	: 0.5em;
+}
+
+.component-account-payment-create > table.reflex.input
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.component-account-payment-create > table.reflex > tbody > tr > th
+{
+	width	: 11.5em;
+}
+
+.popup-account-payment-create-buttons
+{
+	text-align	: center;
+	margin-top	: 0.5em;
+}
+
+.component-account-payment-create-creditcard-element
+{
+	display	: none;
+}
+
+.component-account-payment-create-show-credit-card .component-account-payment-create-creditcard-element
+{
+	display	: table-row;
+}
+
+.component-account-payment-create-creditcard-amount,
+.component-account-payment-create-creditcard-surcharge,
+.component-account-payment-create-creditcard-total
+{
+	text-align	: right;
+}
+
+.component-account-payment-create-creditcard-surcharge
+{
+	border-bottom	: solid 2px #666;
+}
+
+.component-account-payment-create-creditcard-summary-table
+{
+	margin-left		: 5em;
+	border-spacing	: 0em;
+}
+
+.component-account-payment-create-creditcard-summary-table td:first-child
+{
+	width		: 18em !important;
+	font-style	: italic;
+	color		: #666;
+	font-size	: 0.9em;
+}
+
+.component-account-payment-create-creditcard-summary-table tr td:nth-child(2)
+{
+	width	: 4.5em;
+}
+
+.component-account-payment-create-creditcard-instructions
+{
+	text-align	: center;
+	margin		: 1em 0.5em 0.5em;
+}
+
+/************************** END - Popup Account Payment Create - END **************************/
+
+/************************** START - Adjustment Review Outcome List - START **************************/
+
+.component-adjustment-review-outcome-list
+{
+	position	: relative
+}
+
+.component-adjustment-review-outcome-list > .section table.reflex
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.component-adjustment-review-outcome-list > .section .section-header .icon-button
+{
+	margin	: 0em !important;
+}
+
+.component-adjustment-review-outcome-list > .section .section-footer > ul.reset
+{
+	margin	: 0em;
+}
+
+.component-adjustment-review-outcome-list-filter-heading > span
+{
+	margin-right	: 0.5em;
+	vertical-align	: middle;
+	font-style		: italic;
+	font-size		: 0.85em;
+}
+
+.component-adjustment-review-outcome-list-filter-heading > div
+{
+	display			: inline-block;
+	vertical-align	: middle;
+}
+
+.component-adjustment-review-outcome-list-header-sort img
+{
+	margin-right	: 0.25em;
+}
+
+.component-adjustment-review-outcome-list table.reflex > tbody > tr > td
+{
+	vertical-align	: middle;
+}
+
+/************************** END - Adjustment Review Outcome List - END **************************/
+
+/************************** START - Popup Adjustment Review Outcome - START **************************/
+
+.popup-adjustment-review-outcome
+{
+	margin	: 0.5em;
+}
+
+.popup-adjustment-review-outcome > table.reflex.input
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.popup-adjustment-review-outcome-buttons
+{
+	text-align	: center;
+	margin-top	: 0.5em;
+}
+
+/************************** END - Popup Adjustment Review Outcome - END **************************/
+
+/************************** START - Popup Account Class - START **************************/
+
+.popup-account-class
+{
+	margin	: 0.5em;
+}
+
+.popup-account-class > table.reflex.input
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.popup-account-class-buttons
+{
+	text-align	: center;
+	margin-top	: 0.5em;
+}
+
+.popup-account-class > table.reflex > tbody > tr > th
+{
+	white-space	: nowrap;
+}
+
+/************************** END - Popup Account Class - END **************************/
+
+/************************** START - Account Class List - START **************************/
+
+.component-account-class-list
+{
+	position	: relative
+}
+
+.component-account-class-list > .section table.reflex
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.component-account-class-list > .section .section-header .icon-button
+{
+	margin	: 0em !important;
+}
+
+.component-account-class-list > .section .section-footer > ul.reset
+{
+	margin	: 0em;
+}
+
+.component-account-class-list-filter-heading > span
+{
+	margin-right	: 0.5em;
+	vertical-align	: middle;
+	font-style		: italic;
+	font-size		: 0.85em;
+}
+
+.component-account-class-list-filter-heading > div
+{
+	display			: inline-block;
+	vertical-align	: middle;
+}
+
+.component-account-class-list-header-sort img
+{
+	margin-right	: 0.25em;
+}
+
+.component-account-class-list table.reflex > tbody > tr > td
+{
+	vertical-align	: middle;
+}
+
+/************************** END - Account Class List - END **************************/
+
+/************************** START - Customer Group Account Class Configuration - START **************************/
+
+.component-customer-group-account-class-configuration
+{
+	position	: relative
+}
+
+.component-customer-group-account-class-configuration > .section table.reflex
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.component-customer-group-account-class-configuration table.reflex > tbody > tr > td
+{
+	vertical-align	: middle;
+}
+
+.component-customer-group-account-class-configuration-account-class-select > select
+{
+	width	: 98%;
+}
+
+/************************** END - Customer Group Account Class Configuration - END **************************/
+
+/************************** START - Popup Account Class Replace Default For Customer Groups - START **************************/
+
+.popup-account-class-replace-default-for-customer-groups
+{
+	margin	: 0.5em;
+}
+
+.popup-account-class-replace-default-for-customer-groups-account-class-name
+{
+	font-weight	: bold;
+}
+
+.popup-account-class-replace-default-for-customer-groups .control-field
+{
+	margin-top	: 0.5em;
+}
+
+.popup-account-class-replace-default-for-customer-groups .control-field > select
+{
+	width	: 100%;
+}
+
+.popup-account-class-replace-default-for-customer-groups-buttons
+{
+	text-align	: center;
+	margin-top	: 0.5em;
+}
+
+/************************** END - Popup Account Class Replace Default For Customer Groups - END **************************/
+
+/************************** START - Popup Account Collection Scenario - START **************************/
+
+.popup-account-collection-scenario
+{
+	margin	: 0.5em;
+}
+
+.popup-account-collection-scenario-buttons
+{
+	text-align	: center;
+	margin-top	: 0.5em;
+}
+
+.popup-account-collection-scenario-activity-title
+{
+	font-size		: 1.1em;
+	margin-bottom	: 0.5em;
+}
+
+.popup-account-collection-scenario-activity-subtitle
+{
+	margin		: 0em 0em 0.25em 0.5em; 
+	font-weight	: bold;
+}
+
+.popup-account-collection-scenario-activity-sub-subtitle
+{
+	font-size	: 0.9em;
+	font-style	: italic;
+	margin-left	: 0.5em;
+	font-weight	: normal;
+}
+
+.popup-account-collection-scenario-activity-event
+{
+	margin-left	: 1em;
+}
+
+.popup-account-collection-scenario-scenario-select > select
+{
+	width	: 100%;
+}
+
+.popup-account-collection-scenario-scenario-section
+{
+	margin-top	: 0.5em;
+}
+
+.popup-account-collection-scenario-activity-list
+{
+	margin	: 0.25em 0em 0.5em 0em;
+}
+
+.popup-account-collection-scenario-scenario-event-activity
+{
+	max-height	: 15em;
+	overflow	: auto;
+}
+
+/************************** END - Popup Account Collection Scenario - END **************************/
+
+/************************** END - Account Details Severity Warnings - END **************************/
+
+.popup-account-severity-warning
+{
+	margin	: 0.5em;
+}
+
+.popup-account-severity-warning > div:first-child
+{
+	margin-bottom	: 0.25em;
+}
+
+.popup-account-severity-warning-severity-level
+{
+	font-weight	: bold;
+	margin		: 0em 0em 1em 2em;
+}
+
+/************************** END - Account Details Severity Warnings - END **************************/

@@ -50,10 +50,5 @@ class Correspondence_Logic_Source_System extends Correspondence_Logic_Source
 	{
 		return $this->_oDO->$sField!=null?$this->_oDO->$sField:parent::__get($sField);
 	}
-
-
 }
-
-
-
 ?>

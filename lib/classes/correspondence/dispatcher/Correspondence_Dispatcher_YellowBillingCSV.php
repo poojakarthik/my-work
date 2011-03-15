@@ -1,7 +1,6 @@
 <?php
-class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatcher
+class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatcher_File
 {
-
 	const	RESOURCE_TYPE		= RESOURCE_TYPE_FILE_EXPORT_CORRESPONDENCE_YELLOWBILLING_CSV;
 	const	RECORD_TYPE_DETAIL	= 'detail';
 	const	RECORD_TYPE_HEADER	= 'header';
@@ -10,7 +9,6 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 	const RECORD_TYPE_FOOTER_CODE = 'F';
 	const RECORD_TYPE_DETAIL_CODE = 'D';
 	const RECORD_TYPE_HEADER_CODE = 'H';
-
 
 	const	NEW_LINE_DELIMITER	= "\n";
 	const	FIELD_DELIMITER		= ',';
@@ -60,8 +58,6 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 	protected $_sFileDirectoryPath;
 	protected $_sTimeStamp;
 
-
-
 	public function __construct($mCarrierModule)
 	{
 		parent::__construct($mCarrierModule);
@@ -74,8 +70,6 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 		$this->_oFileExporterCSV->setQuoteMode(File_Exporter_CSV::QUOTE_MODE_ALWAYS);
 		$this->_oFileExporterCSV->setEscape(self::ESCAPE_CHARACTER);
 		$this->_oFileExporterCSV->setNewLine(self::NEW_LINE_DELIMITER);
-
-
 	}
 
 	public function render()
@@ -111,7 +105,6 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 			}
 		}
 
-
 		return $this;
 	}
 
@@ -119,6 +112,7 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 	{
 		try
 		{
+
 			$this->_oFileDeliver->connect()->deliver($this->_sFilePath)->disconnect();
 		}
 		catch(Exception $e)
@@ -137,8 +131,6 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 		}
 		return $this;
 	}
-
-
 
 	public function addRecord($mRecord)
 	{
@@ -160,11 +152,12 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 
 	public function export()
 	{
+		$iRecordsExported = 0;
 		$this->_sTimeStamp = str_replace(array(' ',':','-'), '',Data_Source_Time::currentTimestamp());
 
 		$this->_sFileDirectoryPath	= self::getExportPath($this->getCarrierModule()->Carrier, __CLASS__);
 
-		$this->_sFilename	= $this->_oRun->getCorrespondenceCode()
+		$this->_sFilename	= $this->_oRun->getCorrespondenceCodeForCarrierModule($this->getCarrierModule()->Id)
 				.'.'
 				.$this->_sTimeStamp
 				.'.'
@@ -190,33 +183,43 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 
 		$this->setHeaderAndFooter();
 
-		foreach ($this->_oRun->getCorrespondence() as $oCorrespondence)
+		foreach ($this->_oRun->getCorrespondence() as $iDeliveryMethod =>$aCorrespondence)
 		{
-			try
+			if (in_array($iDeliveryMethod, $this->_aDeliveryMethods))
 			{
-				$this->addRecord($oCorrespondence->toArray(true));
-			}
-			catch (Exception $e)
-			{
-				throw new Correspondence_Dispatch_Exception(Correspondence_Dispatch_Exception::DATAFILEBUILD, $e);
-			}
-
-			if ($this->_bPreprinted)
-			{
-				if ($this->_sInvoiceRunPDFBasePath == null)
-					$this->_sInvoiceRunPDFBasePath = substr ($oCorrespondence->pdf_file_path , 0 , strrpos ( $oCorrespondence->pdf_file_path, "/" )+1 );
-
-				$sTempPdfName = $this->_sInvoiceRunPDFBasePath.str_pad($oCorrespondence->id, 10, "0", STR_PAD_LEFT).'.pdf';
-				$aLastError = error_get_last();
-				@copy ( $oCorrespondence->pdf_file_path , $sTempPdfName );
-				$aError = error_get_last();
-				if ($aLastError!=$aError)
+				$this->_aDeliveryMethodsIncludedInDispatch[] = $iDeliveryMethod;
+				foreach ($aCorrespondence as $oCorrespondence)
 				{
-					throw new Correspondence_Dispatch_Exception(Correspondence_Dispatch_Exception::PDF_FILE_COPY, "Message: ".$aError['message']." File: ".$aError['file']." Line: ".$aError['line'] );
+					try
+					{
+						$this->addRecord($oCorrespondence->toArray(true));
+						$iRecordsExported++;
+					}
+					catch (Exception $e)
+					{
+						throw new Correspondence_Dispatch_Exception(Correspondence_Dispatch_Exception::DATAFILEBUILD, $e);
+					}
+
+					if ($this->_bPreprinted)
+					{
+						if ($this->_sInvoiceRunPDFBasePath == null)
+							$this->_sInvoiceRunPDFBasePath = substr ($oCorrespondence->pdf_file_path , 0 , strrpos ( $oCorrespondence->pdf_file_path, "/" )+1 );
+
+						$sTempPdfName = $this->_sInvoiceRunPDFBasePath.str_pad($oCorrespondence->id, 10, "0", STR_PAD_LEFT).'.pdf';
+						$aLastError = error_get_last();
+						@copy ( $oCorrespondence->pdf_file_path , $sTempPdfName );
+						$aError = error_get_last();
+						if ($aLastError!=$aError)
+						{
+							throw new Correspondence_Dispatch_Exception(Correspondence_Dispatch_Exception::PDF_FILE_COPY, "Message: ".$aError['message']." File: ".$aError['file']." Line: ".$aError['line'] );
+						}
+						$this->_aPDFFilenames[]=$sTempPdfName;
+					}
 				}
-				$this->_aPDFFilenames[]=$sTempPdfName;
 			}
 		}
+
+		return $iRecordsExported;
 	}
 
 	public function setHeaderAndFooter()
@@ -224,13 +227,20 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 		$oHeaderRecord								= 	$this->_oFileExporterCSV->getRecordType(self::RECORD_TYPE_HEADER)->newRecord();
 		$oFooterRecord								= 	$this->_oFileExporterCSV->getRecordType(self::RECORD_TYPE_FOOTER)->newRecord();
 
-		$oHeaderRecord->letter_code 				= 	$this->_oRun->getCorrespondenceCode();
+		$oHeaderRecord->letter_code 				= 	$this->_oRun->getCorrespondenceCodeForCarrierModule($this->getCarrierModule()->Id);
 		$oHeaderRecord->correspondence_run_id 		= 	$this->_oRun->id;
 		$oHeaderRecord->created_timestamp			= 	$this->_sTimeStamp;
 		$oHeaderRecord->data_file_name 				= 	$this->_sFilename.'.csv';
 		$oHeaderRecord->tar_file_name 				= 	$this->_bPreprinted?$this->_sFilename.'.tar':null;
 
-		$oFooterRecord->correspondence_item_count 	= 	$this->_oRun->count();
+		$aCount = $this->_oRun->getCorrespondenceCount();
+		$iItemCount = 0;
+
+		foreach($this->_aDeliveryMethods as $iDeliveryMethod)
+		{
+			$iItemCount += $iDeliveryMethod == CORRESPONDENCE_DELIVERY_METHOD_POST ? $aCount['post'] : $aCount['post'];
+		}
+		$oFooterRecord->correspondence_item_count 	= 	$iItemCount;
 
 		$this->_oFileExporterCSV->addRecord($oHeaderRecord, File_Exporter_CSV::RECORD_GROUP_HEADER);
 		$this->_oFileExporterCSV->addRecord($oFooterRecord, File_Exporter_CSV::RECORD_GROUP_FOOTER);
@@ -290,6 +300,5 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 
 		$this->_oFileExporterCSV->registerRecordType(self::RECORD_TYPE_FOOTER, $oRecordType);
 	}
-
-
 }
+?>

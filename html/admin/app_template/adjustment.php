@@ -61,13 +61,20 @@ class AppTemplateAdjustment extends ApplicationTemplate
 	 */
 	function Add()
 	{
-		if (AppTemplateCharge::addCharge($this->_objAjax, CHARGE_MODEL_ADJUSTMENT))
+		Flex::assert(
+			false, 
+			'Flex is trying to add an adjustment using the application handler, this is deprecated.', 
+			"Employee = ".Employee::getForId(Flex::getUserId())->getName()." (".Flex::getUserId().")",
+			'Deprecated Adjustment Addition Method Used'
+		);
+		
+		/*if (AppTemplateCharge::addCharge($this->_objAjax, CHARGE_MODEL_ADJUSTMENT))
 		{
 			// All required data has been retrieved from the database so now load the page template
 			$this->LoadPage('charge_add');
 			
 			return true;
-		}
+		}*/
 	}
 }
 ?>

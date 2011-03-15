@@ -260,6 +260,51 @@ class JSON_Handler_Charge extends JSON_Handler
 		}
 	}
 	
+	public function getAccountListDataset($bCountOnly=false, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null)
+	{
+		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		try
+		{
+			// Get record count
+			$iRecordCount = Charge::getDatasetForAccountList(true, $iLimit, $iOffset, $oSort, $oFilter);
+			if ($bCountOnly)
+			{
+				return array('bSuccess' => true, 'iRecordCount' => $iRecordCount);
+			}
+			
+			// Get records
+			$iLimit		= ($iLimit === null ? 0 : $iLimit);
+			$iOffset	= ($iOffset === null ? 0 : $iOffset);
+			$aData	 	= Charge::getDatasetForAccountList(false, $iLimit, $iOffset, $oSort, $oFilter);
+			$aResults	= array();
+			$i			= $iOffset;
+			
+			$bUserCanDeleteCharges = AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN) || AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
+			
+			foreach ($aData as $aRecord)
+			{
+				$aRecord['delete_enabled']			= $bUserCanDeleteCharges;
+				$aRecord['extra_detail_enabled']	= $bUserIsGod;
+				$aResults[$i] 						= $aRecord;
+				$i++;
+			}
+			
+			return	array(
+						'bSuccess'		=> true,
+						'aRecords'		=> $aResults,
+						'iRecordCount'	=> $iRecordCount
+					);
+		}
+		catch (Exception $e)
+		{
+			$sMessage	= $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
+			return 	array(
+						'bSuccess'	=> false,
+						'sMessage'	=> $sMessage
+					);
+		}
+	}
+	
 	public function getForAccount($iAccountId)
 	{
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();

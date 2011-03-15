@@ -397,7 +397,7 @@ class Cli_App_Recurring_Charges extends Cli
 			// Send email report
 			$this->log("");
 			$this->log("Emailing Recurring Charges Report...");
-			$objEmailNotification = new Email_Notification(EMAIL_NOTIFICATION_RECURRING_CHARGE_REPORT);
+			$objEmailNotification = Email_Notification::getForSystemName('RECURRING_CHARGE_REPORT');
 			$objEmailNotification->setSubject($strEmailSubject);
 			$objEmailNotification->setBodyHtml($strEmailBody);
 			$objEmailNotification->addAttachment($this->_strLog, 'recurring_charge_installment_generation_log'. date('Ymd_His', strtotime($strNow)) .'.txt', 'text/plain');
@@ -412,7 +412,7 @@ class Cli_App_Recurring_Charges extends Cli
 		catch(Exception $exception)
 		{
 			// SEND EMAIL!!!
-			$objEmailNotification = new Email_Notification(EMAIL_NOTIFICATION_RECURRING_CHARGE_REPORT);
+			$objEmailNotification = Email_Notification::getForSystemName('RECURRING_CHARGE_REPORT');
 			$objEmailNotification->setSubject("[FAILURE] Recurring Charge Installment Generation - ". date('d-m-Y H:i:s'));
 			
 			$strEmailBody = "The Recurring Charge Installment Generation program failed!!!\n\n".

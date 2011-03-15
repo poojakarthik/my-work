@@ -18,7 +18,7 @@ class Correspondence_Logic_Source_CSV extends Correspondence_Logic_Source
 	{
 		$this->_sTmpPath =$aFileInfo['tmp_name'];
 		$this->_sFileName = $aFileInfo['name'];
-		$aFileImport = File_Import::getForFileName($this->_sFileName);
+		/*$aFileImport = File_Import::getForFileName($this->_sFileName);
 		foreach ($aFileImport as $oFileImport)
 		{
 			if ($oFileImport->FileName == $this->_sFileName &&
@@ -26,7 +26,7 @@ class Correspondence_Logic_Source_CSV extends Correspondence_Logic_Source
 			{
 				throw new Correspondence_DataValidation_Exception(Correspondence_DataValidation_Exception::DUPLICATE_FILE);
 			}
-		}
+		}*/
 		$sCsv = file_get_contents($this->_sTmpPath);
 		$this->_aCsv = trim($sCsv)==null?null:explode("\n",trim($sCsv));
 		return $this->import();
@@ -156,7 +156,7 @@ class Correspondence_Logic_Source_CSV extends Correspondence_Logic_Source
 
 	public function import()
 	{
-		$oFileImport = File_Import::import($this->_sTmpPath, RESOURCE_TYPE_FILE_IMPORT_CORRESPONDENCE_YELLOWBILLING_CSV,CARRIER_YELLOW_BILLING, $this->_sFileName);
+		$oFileImport = File_Import::import($this->_sTmpPath, RESOURCE_TYPE_FILE_IMPORT_CORRESPONDENCE_YELLOWBILLING_CSV, CARRIER_YELLOW_BILLING, $this->_sFileName);
 		return $oFileImport->id;
 	}
 
@@ -171,9 +171,5 @@ class Correspondence_Logic_Source_CSV extends Correspondence_Logic_Source
 
 		return FILES_BASE_PATH."import/".$intCarrier.'/'.GetConstantName(RESOURCE_TYPE_FILE_IMPORT_CORRESPONDENCE_YELLOWBILLING_CSV, 'resource_type').'/';
 	}
-
-
-
-
-
 }
+?>

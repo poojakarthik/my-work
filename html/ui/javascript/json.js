@@ -324,12 +324,9 @@ jQuery.json = {
 	{
 		var objIframeDocument	= (elmIframe.contentDocument) ? elmIframe.contentDocument : (elmIframe.contentWindow) ? elmIframe.contentWindow.document : window.frames[elmIframe.id].document;
 		
-		//debugger;
-		
 		try
 		{
 			// Parse Iframe contents for response data (JSON'd PHP Array)
-			//alert("Raw Response: " + objIframeDocument.body.innerHTML);
 			var sIframeContent		= objIframeDocument.body.innerHTML,
 				objResponse;
 		}
@@ -337,8 +334,6 @@ jQuery.json = {
 		{
 			Reflex_Popup.alert(mError);
 		}
-		
-		//debugger;
 		
 		try
 		{
@@ -384,7 +379,7 @@ jQuery.json = {
 		//alert(fncCallback);
 		if (objResponse)
 		{
-			if (objResponse.Success)
+			if (objResponse.Success || objResponse.bSuccess)
 			{
 				//alert("Invoking Callback");
 				fncCallback(objResponse);

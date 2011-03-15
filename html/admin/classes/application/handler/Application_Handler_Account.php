@@ -33,6 +33,8 @@ class Application_Handler_Account extends Application_Handler
 			$arrDetailsToRender['arrCreditCardTypes']		= Credit_Card_Type::listAll();
 			$arrDetailsToRender['arrContactTitles']			= Contact_Title::getAll();
 			$arrDetailsToRender['strCancelURI']				= (array_key_exists("Associated", $_GET)) ? MenuItems::AccountOverview(htmlspecialchars($_GET['Associated'])) : MenuItems::NEW_FRAMEWORK;
+			$arrDetailsToRender['arrAccountClasses']		= Account_Class::getForStatus(STATUS_ACTIVE);
+			$arrDetailsToRender['arrScenarios']				= Collection_Scenario::getForWorkingStatus(WORKING_STATUS_ACTIVE);
 			//----------------------------------------------------------------//
 			// Retrieve Associated Accounts
 			//----------------------------------------------------------------//
@@ -142,7 +144,14 @@ class Application_Handler_Account extends Application_Handler
 			{
 				throw new Exception('Invalid Customer Group');
 			}
-			
+			if(!Validation::IsValidInteger($_POST['Account']['account_class_id']))
+			{
+				throw new Exception('Invalid Account Class');
+			}
+			if(!Validation::IsValidInteger($_POST['Account']['collection_scenario_id']))
+			{
+				throw new Exception('Invalid Collection Scenario');
+			}
 			
 			//----------------------------------------------------------------//
 			// Validate Proposed Billing Details
@@ -337,8 +346,14 @@ class Application_Handler_Account extends Application_Handler
 			$oAccount->automatic_barring_datetime				= null;
 			$oAccount->tio_reference_number						= null;
 			$oAccount->vip										= self::DEFAULT_VIP_STATUS;
+			$oAccount->account_class_id							= $_POST['Account']['account_class_id'];
+			$oAccount->collection_severity_id					= Collection_Severity::getForSystemName('UNRESTRICTED')->id;
 			$oAccount->save(AuthenticatedUser()->getUserId(), false);
 
+			//----------------------------------------------------------------//
+			// 3a. Create collection scenario link
+			//----------------------------------------------------------------//
+			Account_Collection_Scenario::factory($oAccount->Id, $_POST['Account']['collection_scenario_id']);
 			
 			//----------------------------------------------------------------//
 			// 4. Assign properties of new Contact
@@ -434,5 +449,23 @@ class Application_Handler_Account extends Application_Handler
 			
 	}
 	
+	public function ManageClasses($aSubPath)
+	{
+		$aDetailsToRender = array();
+		try
+		{
+			BreadCrumb()->Employee_Console();
+			BreadCrumb()->SetCurrentPage("Account Class Management");
+			
+			// Merge the PHP with the HTML template
+			$this->LoadPage('account_class_management', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
+		}
+		catch (Exception $oException)
+		{
+			$aDetailsToRender['Message']		= "An error occured";
+			$aDetailsToRender['ErrorMessage']	= $oException->getMessage();
+			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
+		}
+	}
 }
 ?>

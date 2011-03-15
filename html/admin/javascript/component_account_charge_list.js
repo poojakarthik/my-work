@@ -1,216 +1,231 @@
 
-var	Component_Account_Charge_List	= Class.create(
+var Component_Account_Charge_List = Class.create(
 {
-	initialize	: function(oContainerDiv, iAccountId)
+	initialize	: function(oContainerDiv, iAccountId, fnUpdatePagination)
 	{
 		this._oContainerDiv			= oContainerDiv;
 		this._iAccountId			= iAccountId;
-		this._sTableId				= 'ChargeTable';
-		this._iVisibleChargeModel	= null;
-		this._sVisibleChargeModel	= '';
-		this._bInitialLoadComplete	= false;
-		this._hCharges				= [];
-		this._bCanDelete			= false;
-		this._bUserIsGod			= false;
-		this._buildUI();
+		this._fnUpdatePagination	= fnUpdatePagination;
+		
+		this._hFilters	= {};
+		this._oOverlay 	= new Reflex_Loading_Overlay();
+		this._oElement	= $T.div({class: 'component-account-charge-list'});
+		
+		// Load constants then create UI
+		Flex.Constant.loadConstantGroup(Component_Account_Charge_List.REQUIRED_CONSTANT_GROUPS, this._buildUI.bind(this));
+	},
+
+	// Public
+	
+	getElement : function()
+	{
+		return this._oElement;
 	},
 	
-	_buildUI	: function(oResponse)
+	getSection : function()
 	{
-		if (typeof oResponse == 'undefined')
-		{
-			// Create the interface, empty table
-			this._oAddRequestButton	= 	$T.button({class: 'icon-button'},
-											$T.span('Request '),
-											$T.span('')
-										);
-			this._oAddRequestButton.observe('click', this._addRequest.bind(this));
-			
-			// Got Charge data, create list
-			this._oContent	= 	$T.div({class: 'component-account-charge-list'},
-									$T.div({class: 'component-account-charge-list-title'},
-										$T.img({src: Component_Account_Charge_List.ICON_IMAGE_SOURCE, alt: 'Charges', title: 'Charges'}),
-										$T.span('Charges')
-									),
-									$T.div({class: 'component-account-charge-list-tabs'}),
-									$T.table({id: this._sTableId, class: 'Listing', cellspacing: '0', cellpadding: '3', border: '0'},
-										$T.tbody(
-											$T.tr({class: 'First'},
-												$T.th('Date'),
-												$T.th('Code'),
-												$T.th({class: 'amount'},
-													'Amount'
-												),
-												$T.th('')
-											),
-											$T.tr(
-												$T.td({class: 'component-account-charge-list-loading', colspan: '4'},
-													'Loading the Charge list...'
-												)
-											)
-										)
-									),
-									$T.div({class: 'ButtonContainer'},
-										$T.div({class: 'Right'},
-											this._oAddRequestButton
-										)
-									)
+		return this._oSection;
+	},
+	
+	changePage : function(sFunction)
+	{
+		this._changePage(sFunction);
+	},
+	
+	updatePagination : function()
+	{
+		this._updatePagination();
+	},
+
+	refresh : function()
+	{
+		// Load the initial dataset
+		this._oSort.refreshData(true);
+		this._oFilter.refreshData(true);
+		this.oPagination.getCurrentPage();
+		this._showLoading(true);
+	},
+	
+	// Protected
+	
+	_buildUI : function()
+	{
+		// Create Dataset & pagination object
+		this.oDataSet		= 	new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_NO_CACHING, Component_Account_Charge_List.DATA_SET_DEFINITION);
+		this.oPagination 	= 	new Pagination(
+									this._updateTable.bind(this), 
+									Component_Account_Charge_List.MAX_RECORDS_PER_PAGE, 
+									this.oDataSet
 								);
-			
-			// Add &nbsp; to nature column to fix display problem
-			this._oContent.select('tr.First > th').last().innerHTML = '&nbsp;';
-			this._oContainerDiv.appendChild(this._oContent);
-			this._oTBody	= this._oContent.select('table.Listing > tbody').first();
-			
-			// Add the table as a vixen table
-			Component_Account_Charge_List.addVixenTable(
-				this._sTableId, 
-				true, 
-				{
-					InvoiceTable		: ['invoice_run_id'],
-					RecurringChargeTable: ['RecurringChargeId']
-				}
-			);
-			
-			// Create tab group
-			var oTabContainer		= this._oContent.select('div.component-account-charge-list-tabs').first(); 
-			this.oControlTabGroup	= new Control_Tab_Group(oTabContainer, false, this._tabChange.bind(this));
-			this.oControlTabGroup.addTab(
-				Component_Account_Charge_List.TAB_CHARGES, 
-				new Control_Tab(
-					Component_Account_Charge_List.TAB_CHARGES, 
-					null, 
-					Component_Account_Charge_List.CHARGES_IMAGE_SOURCE
+		
+		// Create Dataset filter object
+		this._oFilter	=	new Filter(
+								this.oDataSet,
+								this.oPagination
+							);
+		this._oFilter.addFilter('account_id', {iType: Filter.FILTER_TYPE_VALUE});
+		this._oFilter.addFilter('charge_status', {iType: Filter.FILTER_TYPE_SET});
+		
+		// Create Dataset sort object
+		this._oSort	= new Sort(this.oDataSet, this.oPagination);
+		
+		// Create the page HTML
+		var sButtonPathBase	= '../admin/img/template/resultset_';
+		var oSection		= new Section(true);
+		this._oSection 		= oSection;
+		this._oElement.appendChild(oSection.getElement());
+		
+		// Main content -- table
+		oSection.setContent(
+			$T.table({class: 'component-account-charge-list-table reflex highlight-rows listing-fw3'},
+				$T.thead(
+					// Column headings
+					$T.tr({class: 'component-account-charge-list-headerrow'},
+						$T.th('Date'),
+						$T.th('Code'),
+						$T.th({class: 'component-account-charge-list-amount'},
+							'Amount ($)'
+						),
+						$T.th(''),	// Nature
+						$T.th('') 	// Delete/Cancel
+					)
+				),
+				$T.tbody({class: 'alternating'},
+					this._createNoRecordsRow(true)
 				)
-			);
-			
-			this.oControlTabGroup.addTab(
-				Component_Account_Charge_List.TAB_ADJUSTMENTS, 
-				new Control_Tab(
-					Component_Account_Charge_List.TAB_ADJUSTMENTS, 
-					null, 
-					Component_Account_Charge_List.ADJUSTMENTS_IMAGE_SOURCE
-				)
-			);
-			
-			// Get Charge data
-			var fnGetCharges	= 	jQuery.json.jsonFunction(
-										this._buildUI.bind(this), 
-										this._buildUI.bind(this), 
-										'Charge', 
-										'getForAccount'
-									);
-			fnGetCharges(this._iAccountId);
+			)
+		);
+		
+		// Default sorting & filtering
+		this._oFilter.setFilterValue('account_id', this._iAccountId);
+		this._oFilter.setFilterValue('charge_status', [$CONSTANT.CHARGE_WAITING, $CONSTANT.CHARGE_APPROVED, $CONSTANT.CHARGE_TEMP_INVOICE, $CONSTANT.CHARGE_INVOICED]);
+		this._oSort.registerField('charged_on', Sort.DIRECTION_DESC);
+		this._oSort.registerField('id', Sort.DIRECTION_DESC);
+
+		if (this._oContainerDiv)
+		{
+			this._oContainerDiv.appendChild(this._oElement);
+		}
+	},
+
+	_showLoading	: function(bShow)
+	{
+		if (bShow)
+		{
+			this._oOverlay.attachTo(this._oElement.select('table > tbody').first());
 		}
 		else
 		{
-			this._bInitialLoadComplete	= true;
-			
-			if (oResponse.Success)
+			this._oOverlay.detach();
+		}
+	},
+
+	// _changePage: Executes the given function (name) on the dataset pagination object.
+	_changePage	: function(sFunction)
+	{
+		this._showLoading(true);
+		this.oPagination[sFunction]();
+	},
+
+	// _updateTable: Page load callback from the dataset pagination object.
+	_updateTable	: function(oResultSet)
+	{
+		var oTBody = this._oElement.select('table > tbody').first();
+		
+		// Remove all existing rows
+		var oChild = oTBody.firstChild;
+		while (oChild)
+		{
+			if (oTBody.firstChild.nodeName.match(/tr/i))
 			{
-				// Cache the charges by their charge model id
-				this._hCharges										= {};
-				this._hCharges[$CONSTANT.CHARGE_MODEL_CHARGE]		= [];
-				this._hCharges[$CONSTANT.CHARGE_MODEL_ADJUSTMENT]	= [];
-				
-				var oCharge	= null;
-				for (var i = 0; i < oResponse.aCharges.length; i++)
+				// Remove event handlers from the action buttons
+				var oEditButton = oTBody.firstChild.select('img').first();
+	
+				if (oEditButton)
 				{
-					oCharge	= oResponse.aCharges[i];
-					this._hCharges[oCharge.charge_model_id].push(oCharge);
+					oEditButton.stopObserving();
 				}
-				
-				// Process other response content
-				this._bCanDelete	= oResponse.bCanDelete;
-				this._bUserIsGod	= oResponse.bUserIsGod;
-				
-				// Add the delete column if the user has permission
-				if (this._bCanDelete)
-				{
-					var oTHDelete		= $T.th('');
-					oTHDelete.innerHTML = '&nbsp;';
-					this._oContent.select('tr.First').first().appendChild(oTHDelete);
-				}
-				
-				// Show the charges first
-				this.oControlTabGroup.switchToTab(0);
+	
+				// Remove the row
+				oTBody.firstChild.remove();
+				oChild = oTBody.firstChild;
 			}
 			else
 			{
-				// Ajax error
-				this._ajaxError(oResponse);
-				this._showNoDataRow();
+				oChild = oChild.nextSibling;
 			}
 		}
-	},
-	
-	_clearRows	: function()
-	{
-		// Clear all existing rows (except the first)
-		var aExistingTRs	= this._oTBody.select('tr');
 		
-		for (var i = 1; i < aExistingTRs.length; i++)
+		// Check if any results came back
+		if (!oResultSet || oResultSet.intTotalResults == 0 || oResultSet.arrResultSet.length == 0)
 		{
-			aExistingTRs[i].stopObserving();
-			aExistingTRs[i].remove();
+			oTBody.appendChild(this._createNoRecordsRow());
 		}
-	},
-	
-	_addRows	: function()
-	{
-		// Timing
-		//var iStart	= new Date().getTime();
-		
-		this._clearRows();
-		
-		// Add new rows, for the current charge model
-		var oTBody			= this._oTBody;
-		var oCharge			= null;
-		var sRowId			= null;
-		var iRowIdIndex		= 0;
-		var bWaiting		= null;
-		var bApproved		= null;
-		var aCharges		= this._hCharges[this._iVisibleChargeModel];
-		var sChargeModelId	= this._sVisibleChargeModel + ' Id :';
-		var oRow			= null;
-		var iNumCharges		= aCharges.length;
-		var bModelIsCharge	= this._iVisibleChargeModel == $CONSTANT.CHARGE_MODEL_CHARGE;
-		
-		var iRowsStart	= new Date().getTime();
-		var iTotal		= 0;
-		
-		for (var i = 0; i < iNumCharges; i++)
+		else
 		{
-			// Timing
-			//var iInnerStart	= new Date().getTime();
+			// Add the rows
+			var aData	= jQuery.json.arrayAsObject(oResultSet.arrResultSet);
+			var iCount	= 0;
+			for (var i in aData)
+			{
+				iCount++;
+				oTBody.appendChild(this._createTableRow(aData[i], parseInt(i), oResultSet.intTotalResults));
+			}
+		}
+
+		this._updatePagination();
+		
+		this._showLoading(false);
+	},
+
+	_createNoRecordsRow	: function(bOnLoad)
+	{
+		return $T.tr(
+			$T.td({class: 'no-rows', colspan: 9},
+				(bOnLoad ? 'Loading...' : 'There are no Charges to display')
+			)
+		);
+	},
+
+	_createTableRow	: function(oData, iPosition, iTotalResults)
+	{
+		if (oData.id)
+		{
+			var bWaiting		= 	oData.charge_status == $CONSTANT.CHARGE_WAITING;
+			var bApproved		= 	oData.charge_status == $CONSTANT.CHARGE_APPROVED;
+			var oChargedOnDate	= 	(oData.charged_on ? Date.$parseDate(oData.charged_on, 'Y-m-d') : null);
+			var oTR				= 	$T.tr(
+										$T.td(oChargedOnDate ? oChargedOnDate.$format('d/m/Y') : 'N/A'),
+										$T.td(
+											oData.charge_type_code, 
+											(bWaiting ? $T.div('(Awaiting Approval)') : '')
+										),
+										$T.td({class: 'component-account-charge-list-amount Currency'},
+											new Number(oData.amount_inc_gst).toFixed(2)
+										),
+										$T.td(oData.nature == 'CR' ? oData.nature : '')
+									);
 			
-			oCharge		= aCharges[i];
-			bWaiting	= oCharge.Status == $CONSTANT.CHARGE_WAITING;
-			bApproved	= oCharge.Status == $CONSTANT.CHARGE_APPROVED;
-			sRowId		= this._sTableId + '_' + iRowIdIndex;
-			oTR			= 	$T.tr({id: sRowId, class: ((iRowIdIndex % 2) ? 'Odd' : 'Even')},
-								$T.td(oCharge.charge_on_label),
-								$T.td(
-									oCharge.ChargeType, 
-									(bWaiting ? $T.div('(Awaiting Approval)') : '')
-								),
-								$T.td({class: 'amount Currency'},
-									oCharge.amount_inc_gst
-								),
-								$T.td(oCharge.Nature == 'CR' ? oCharge.Nature : '')
-							);
-			
-			if (this._bCanDelete)
+			if (oData.delete_enabled)
 			{
 				if (bWaiting)
 				{
 					// Build the "Cancel Charge Request" 
-					this._addDeleteButtonToCharge(oCharge.Id, oTR, true);
+					oTR.appendChild(this._createDeleteButton(oData.id, true));
 				}
-				else if (bModelIsCharge && (bApproved || (oCharge.Status == $CONSTANT.CHARGE_TEMP_INVOICE)))
+				else if ((oData.charge_model_id == $CONSTANT.CHARGE_MODEL_CHARGE) && (bApproved || (oData.charge_status == $CONSTANT.CHARGE_TEMP_INVOICE)))
 				{
 					// Build the "Delete Charge" button
-					this._addDeleteButtonToCharge(oCharge.Id, oTR, false);
+					oTR.appendChild(this._createDeleteButton(oData.id, false));
+				}
+				else if (oData.charge_model_id == $CONSTANT.CHARGE_MODEL_ADJUSTMENT)
+				{
+					// Old adjustments
+					oTR.appendChild(
+						$T.td(
+							$T.img({class: 'component-account-charge-list-legacy-adjustment', src: Component_Account_Charge_List.OLD_ADJUSTMENT_IMAGE_SOURCE, alt: 'Legacy Adjustment', title: 'Legacy Adjustment'})
+						)
+					);
 				}
 				else
 				{
@@ -220,259 +235,196 @@ var	Component_Account_Charge_List	= Class.create(
 				}
 			}
 			
-			oTBody.appendChild(oTR);
-			
 			// Vixen tooltip content
-			var oTooltipContent	= {};
+			var hTooltipContent	= {};
 			
-			if (this._bUserIsGod)
+			if (oData.extra_detail_enabled)
 			{
-				oTooltipContent[this._sVisibleChargeModel + ' Id :']	= oCharge.Id;
+				hTooltipContent['Charge Id :']	= oData.id;
 			}
 			
-			if (oCharge.CreatedBy)
+			if (oData.created_by)
 			{
-				oTooltipContent['Requested By :']	= oCharge.created_by_label;
+				hTooltipContent['Requested By :'] = oData.created_by_label;
 			}
 			
-			if (oCharge.ApprovedBy && bApproved)
+			if (oData.approved_by && bApproved)
 			{
-				oTooltipContent['Approved By :']	= oCharge.approved_by_label;
+				hTooltipContent['Approved By :'] = oData.approved_by_label;
 			}
 			
-			if (oCharge.Service)
+			if (oData.service_id)
 			{
-				if (this._bUserIsGod)
+				if (oData.extra_detail_enabled)
 				{
-					oTooltipContent['Service :']	= oCharge.Service;
+					hTooltipContent['Service :'] = oData.service_id;
 				}
 				
-				oTooltipContent['Service FNN :']	= oCharge.serviceFNN;
+				hTooltipContent['Service FNN :'] = oData.service_fnn;
 			}
 			
-			oTooltipContent['Status :']			= oCharge.status_label;
-			oTooltipContent['Description :']	= oCharge.Description;
+			hTooltipContent['Status :']			= Flex.Constant.arrConstantGroups.ChargeStatus[oData.charge_status].Description;
+			hTooltipContent['Description :']	= oData.description;
 			
-			if (oCharge.Notes)
+			if (oData.notes)
 			{
-				oTooltipContent['Notes :']	= oCharge.Notes;
+				hTooltipContent['Notes :']	= oData.notes;
 			}
 			
-			oTBody.appendChild(Component_Account_Charge_List.createVixenTooltipContent(sRowId, oTooltipContent));
-			
+			/*
 			// Vixen table stuff
 			oRow	= Component_Account_Charge_List.createVixenTableRow();
-			Component_Account_Charge_List.addVixenTableIndex(oRow, 'invoice_run_id', oCharge.invoice_run_id);
+			Component_Account_Charge_List.addVixenTableIndex(oRow, 'invoice_run_id', oData.invoice_run_id);
 			
-			if (oCharge.LinkType == $CONSTANT.CHARGE_LINK_PAYMENT)
+			if (oData.LinkType == $CONSTANT.CHARGE_LINK_PAYMENT)
 			{
 				// This charge relates directly to a payment
-				Component_Account_Charge_List.addVixenTableIndex(oRow, 'PaymentId', oCharge.LinkId);
+				Component_Account_Charge_List.addVixenTableIndex(oRow, 'PaymentId', oData.LinkId);
 			} 
-			else if (oCharge.LinkType == $CONSTANT.CHARGE_LINK_RECURRING)
+			else if (oData.LinkType == $CONSTANT.CHARGE_LINK_RECURRING)
 			{
 				// This charge relates directly to a recurring charge
-				Component_Account_Charge_List.addVixenTableIndex(oRow, 'RecurringChargeId', oCharge.LinkId);
+				Component_Account_Charge_List.addVixenTableIndex(oRow, 'RecurringChargeId', oData.LinkId);
 			}
 			
-			Vixen.table[this._sTableId].row.push(oRow);
-			iRowIdIndex++;
+			Vixen.table[this._sTableId].row.push(oRow);*/
 			
-			// Timing
-			//iTotal	+= (new Date().getTime() - iInnerStart);
+			//this._createTooltip(oTR, hTooltipContent);
+			
+			return oTR;
 		}
-		
-		// Vixen table stuff
-		Vixen.table[this._sTableId].totalRows	= iRowIdIndex;
-		
-		if (Vixen.table[this._sTableId].totalRows == 0)
+		else
 		{
-			this._showNoDataRow();
+			// Invalid, return empty row
+			return $T.tr();
 		}
-		
-		// Timing
-		//var iNow	= new Date().getTime();
-		//alert('Num Rows: ' + iRowIdIndex + ', Total: ' + (iNow - iStart) + ', Rows Total: ' + (iNow - iRowsStart) + ', Average Single Row: ' + (iTotal / iRowIdIndex).toFixed(2));
 	},
 	
-	_addDeleteButtonToCharge	: function(iChargeId, oTR, bCancel)
+	// TODO: CR137 - Attempted table tooltip re-implenetaiton, worked ok but slow, needs imporvement
+	_createTooltip : function(oTR, hContent)
 	{
-		var sAlt	= (bCancel ? 'Cancel ' + this._sVisibleChargeModel + ' Request' : 'Delete ' + this._sVisibleChargeModel);
+		function showTT(hContent)
+		{
+			if (!this._oTooltip)
+			{
+				this._oTooltip = $T.div({class: 'test-tooltip'});
+			}
+			
+			this._oTooltip.innerHTML = '';
+			
+			for (var sLabel in hContent)
+			{
+				this._oTooltip.appendChild($T.div(sLabel + ': ' + hContent[sLabel]));
+			}
+			
+			document.body.appendChild(this._oTooltip);
+			//this._oTooltip.toggle();
+			
+			var oPositionedOffset 		= oTR.viewportOffset();
+			this._oTooltip.style.left	= (oPositionedOffset.left - this._oTooltip.getWidth()) + 'px';
+			this._oTooltip.style.top 	= (oPositionedOffset.top + window.scrollY) + 'px';
+			
+			//this._oTooltip.toggle();
+		}
+		
+		function hideTT()
+		{
+			//this._oTooltip.remove();
+		}
+		
+		oTR.observe('mouseover', showTT.bind(this, hContent));
+		oTR.observe('mouseout', hideTT.bind(this));
+	},
+	
+	_createDeleteButton : function(iChargeId, bCancel)
+	{
+		var sAlt	= (bCancel ? 'Cancel Charge Request' : 'Delete Charge');
 		var oButton	= $T.img({src: Component_Account_Charge_List.DELETE_IMAGE_SOURCE, alt: sAlt, title: sAlt}); 
-		oButton.observe('click', this._deleteCharge.bind(this, iChargeId, bCancel));
-		oTR.appendChild(
-			$T.td({class: 'delete'},
-				oButton
-			)
-		);
+		oButton.observe('click', this._deleteCharge.bind(this, iChargeId));
+		return	$T.td({class: 'component-account-charge-list-delete'},
+					oButton
+				);
 	},
 	
-	_deleteCharge	: function(iChargeId, bCancel)
+	_updatePagination : function(iPageCount)
 	{
-		var sModel	= this._sVisibleChargeModel;
-		Vixen.Popup.ShowAjaxPopup(
-			"DeleteChargePopupId", 
-			"medium", 
-			sModel, 
-			"Account", 
-			"DeleteRecord", 
+		if (iPageCount == undefined)
+		{
+			// Get the page count
+			this.oPagination.getPageCount(this._updatePagination.bind(this));
+		}
+		else
+		{
+			if (this._fnUpdatePagination)
 			{
-				"DeleteRecord"	: {"RecordType": sModel},
-				"Charge"		: {"Id": iChargeId}
+				this._fnUpdatePagination(this.oPagination.intCurrentPage, iPageCount);
+			}
+		}
+	},
+	
+	_deleteCharge	: function(iChargeId)
+	{
+		Vixen.Popup.ShowAjaxPopup(
+			'DeleteChargePopupId', 
+			'medium', 
+			'Charge', 
+			'Account', 
+			'DeleteRecord', 
+			{
+				'DeleteRecord'	: {'RecordType': 'Charge'},
+				'Charge'		: {'Id': iChargeId}
 			}
 		);
 	},
 	
-	_addRequest	: function()
+	_requestCharge : function()
 	{
-		var sModel	= this._sVisibleChargeModel;
 		Vixen.Popup.ShowAjaxPopup(
-			"Add" + sModel + "PopupId",
-			"medium", 
-			"Request " + sModel, 
-			sModel,
-			"Add",
+			'AddChargePopupId',
+			'medium', 
+			'Request Charge', 
+			'Charge',
+			'Add',
 			{
-				"Account": {"Id": this._iAccountId}
+				'Account': {'Id': this._iAccountId}
 			}
-		);
-	},
-	
-	_ajaxError	: function(oResponse)
-	{
-		if (oResponse.Message)
-		{
-			Reflex_Popup.alert(oResponse.Message);
-		}
-		else if (oResponse.ERROR)
-		{
-			Reflex_Popup.alert(oResponse.ERROR);
-		}
-		else if (oResponse.errorMessage)
-		{
-			Reflex_Popup.alert(oResponse.errorMessage);
-		}
-	},
-	
-	_tabChange	: function(oControlTab)
-	{
-		// Determine charge model to show
-		var iChargeModel	= null;
-		
-		switch (oControlTab.strName)
-		{
-			case Component_Account_Charge_List.TAB_CHARGES:
-				iChargeModel	= $CONSTANT.CHARGE_MODEL_CHARGE;
-				break;
-			case Component_Account_Charge_List.TAB_ADJUSTMENTS:
-				iChargeModel	= $CONSTANT.CHARGE_MODEL_ADJUSTMENT;
-				break;
-		}
-		
-		this._sVisibleChargeModel	= Flex.Constant.arrConstantGroups.charge_model[iChargeModel].Name;
-		
-		// Update the add request button text
-		this._oAddRequestButton.select('span').last().innerHTML	= this._sVisibleChargeModel;
-		
-		if (this._bInitialLoadComplete && (iChargeModel != this._iVisibleChargeModel))
-		{
-			// Record new charge model
-			this._iVisibleChargeModel	= iChargeModel;
-			
-			// Update the add request button text
-			this._oAddRequestButton.select('span').last().innerHTML	= this._sVisibleChargeModel;
-			
-			// Clear vixen table 'row' & 'totalRows'
-			Vixen.table[this._sTableId].totalRows	= 0;
-			Vixen.table[this._sTableId].row			= [];
-			
-			// Re-add rows given new charge model
-			this._addRows();
-			
-			// Vixen table stuff
-			Vixen.Tooltip.Attach(this._sTableId);
-			Vixen.Highlight.Attach(this._sTableId);
-		}
-	},
-	
-	_showNoDataRow	: function()
-	{
-		// Clear existing rows
-		this._clearRows();
-		
-		// Show 'no data' row
-		this._oTBody.appendChild(
-			$T.tr(
-				$T.td({class: 'component-account-charge-list-nodata', colspan: '4'},
-					'There are no ' + this._sVisibleChargeModel + 's to display'
-				)
-			)
 		);
 	}
 });
 
-Component_Account_Charge_List.DELETE_IMAGE_SOURCE		= '../admin/img/template/delete.png';
-Component_Account_Charge_List.ICON_IMAGE_SOURCE			= '../admin/img/template/payment.png';
-Component_Account_Charge_List.CHARGES_IMAGE_SOURCE		= Component_Account_Charge_List.ICON_IMAGE_SOURCE;
-Component_Account_Charge_List.ADJUSTMENTS_IMAGE_SOURCE	= '../admin/img/template/charge_in_advance.png';
+// Static
 
-Component_Account_Charge_List.TAB_CHARGES		= 'Charges';
-Component_Account_Charge_List.TAB_ADJUSTMENTS	= 'Adjustments';
-
-// Vixen table helper functions, maybe move these somewhere else so they can be used again
-Component_Account_Charge_List.createVixenElement	= function(sLabel, sValue)
+Object.extend(Component_Account_Charge_List,
 {
-	var oNBSP		= $T.span();
-	oNBSP.innerHTML	= '&nbsp;';
+	DATA_SET_DEFINITION			: {sObject: 'Charge', sMethod: 'getAccountListDataset'},
+	MAX_RECORDS_PER_PAGE		: 15,
 	
-	return 	$T.div({class: 'DefaultElement'},
-				$T.div({class: 'DefaultOutput Default'},
-					sValue
-				),
-				$T.div({class: 'DefaultLabel'},
-					oNBSP,	
-					$T.span(sLabel)
-				)
-			);
-};
-
-Component_Account_Charge_List.addVixenTableIndex	= function(oRow, sName, mValue)
-{
-	if (!oRow.index[sName])
+	FILTER_IMAGE_SOURCE			: '../admin/img/template/table_row_insert.png',
+	REMOVE_FILTER_IMAGE_SOURCE	: '../admin/img/template/delete.png',
+	DELETE_IMAGE_SOURCE			: '../admin/img/template/delete.png',
+	OLD_ADJUSTMENT_IMAGE_SOURCE	: '../admin/img/template/information.png',
+	ICON_IMAGE_SOURCE			: '../admin/img/template/payment.png',
+	
+	REQUIRED_CONSTANT_GROUPS	: ['ChargeStatus', 'charge_model'],
+	
+	// Sorting definitions
+	SORT_FIELDS	:	
 	{
-		oRow.index[sName]	= [];
-	}
+		id 				: Sort.DIRECTION_ASC,
+		name			: Sort.DIRECTION_OFF,
+		description		: Sort.DIRECTION_OFF,
+		scenario_name	: Sort.DIRECTION_OFF,
+		status_name		: Sort.DIRECTION_OFF
+	},
 	
-	oRow.index[sName].push(mValue);
-};
-
-Component_Account_Charge_List.addVixenTable	= function(sTableId, bCollapseAll, oLinkedTables)
-{
-	Vixen.table[sTableId] 				= {};
-	Vixen.table[sTableId].collapseAll	= bCollapseAll;
-	Vixen.table[sTableId].linked		= ((oLinkedTables && oLinkedTables != {}) ? true : false);
-	Vixen.table[sTableId].link			= oLinkedTables;
-};
-
-Component_Account_Charge_List.createVixenTooltipContent	= function(sRowId, oContent)
-{
-	var oTooltipTR	= $T.tr({id: sRowId + 'DIV-TOOLTIP', style: "display: none;"});
-	
-	for (var sLabel in oContent)
+	_ajaxError : function(oResponse)
 	{
-		oTooltipTR.appendChild(
-			Component_Account_Charge_List.createVixenElement(sLabel, oContent[sLabel])
-		);
+		var sMessage = (oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.');
+		Reflex_Popup.alert(sMessage, {sTitle: 'Error'});
 	}
-	
-	return oTooltipTR;
-};
+});
 
-Component_Account_Charge_List.createVixenTableRow = function()
-{
-	return	{
-		up			: true,
-		selected	: false,
-		index		: {}
-	};
-};
+Component_Account_Charge_List.SORT_IMAGE_SOURCE							= {};
+Component_Account_Charge_List.SORT_IMAGE_SOURCE[Sort.DIRECTION_OFF]		= '../admin/img/template/order_neither.png';
+Component_Account_Charge_List.SORT_IMAGE_SOURCE[Sort.DIRECTION_ASC]		= '../admin/img/template/order_asc.png';
+Component_Account_Charge_List.SORT_IMAGE_SOURCE[Sort.DIRECTION_DESC]	= '../admin/img/template/order_desc.png';

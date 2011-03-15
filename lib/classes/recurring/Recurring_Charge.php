@@ -1070,6 +1070,108 @@ class Recurring_Charge extends ORM_Cached
 		return self::searchFor($arrFilter, $arrSort);
 	}
 	
+	public static function getDatasetForAccountList($bCountOnly=false, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null)
+	{
+		// Build the list of charge type visibilities to allow
+		$bUserIsGod					= Employee::getForId(Flex::getUserId())->isGod();
+		$bUserIsCreditManagement	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
+		$bUserCanDeleteCharges		= (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN) || $bUserIsCreditManagement);
+		$aVisibleChargeTypes 		= array(CHARGE_TYPE_VISIBILITY_VISIBLE);
+		if ($bUserIsCreditManagement)
+		{
+			$aVisibleChargeTypes[] = CHARGE_TYPE_VISIBILITY_CREDIT_CONTROL;
+		}
+		
+		if ($bUserIsGod)
+		{
+			$aVisibleChargeTypes[] = CHARGE_TYPE_VISIBILITY_HIDDEN;
+		}
+		
+		$aAliases = array(
+						'id' 							=> 'rc.Id',
+						'account_group_id'				=> 'rc.AccountGroup',
+						'account_id'					=> 'rc.Account',
+						'service_id'					=> 'rc.Service',
+						'created_by'					=> 'rc.CreatedBy',
+						'approved_by'					=> 'rc.ApprovedBy',
+						'charge_type'					=> 'rc.ChargeType',
+						'description'					=> 'rc.Description',
+						'nature'						=> 'rc.Nature',
+						'created_on'					=> 'rc.CreatedOn',
+						'started_on'					=> 'rc.StartedOn',
+						'last_charged_on'				=> 'rc.LastChargedOn',
+						'recurring_freq_type'			=> 'rc.RecurringFreqType',
+						'recurring_freq'				=> 'rc.RecurringFreq',
+						'min_charge'					=> 'rc.MinCharge',
+						'recursion_charge'				=> 'rc.RecursionCharge',
+						'cancellation_fee'				=> 'rc.CancellationFee',
+						'continuable'					=> 'rc.Continuable', 
+						'plan_charge'					=> 'rc.PlanCharge',
+						'unique_charge'					=> 'rc.UniqueCharge', 
+						'total_charge'					=> 'rc.TotalCharged', 
+						'total_recursions'				=> 'rc.TotalRecursions',
+						'recurring_charge_status_id'	=> 'rc.recurring_charge_status_id', 
+						'in_advance'					=> 'rc.in_advance', 
+						'service_fnn'					=> 's.FNN',
+						'charge_type_description'		=> "CONCAT(rc.ChargeType,IF(rc.ChargeType <> '', ' - ', ''),rc.Description)",
+						'recurring_charge_status_name'	=> "rcs.name"
+					);
+		
+		$sFrom = "				RecurringCharge rc
+					JOIN		recurring_charge_status rcs ON (rcs.id = rc.recurring_charge_status_id) 
+					LEFT JOIN 	Service s ON (rc.Service = s.Id)";
+		
+		if ($bCountOnly)
+		{
+			$sSelect	= "COUNT(rc.Id) AS count";
+			$sOrderBy	= "";
+			$sLimit		= "";
+		}
+		else
+		{
+			$aSelectLines = array();
+			foreach ($aAliases as $sAlias => $sClause)
+			{
+				$aSelectLines[] = "{$sClause} AS {$sAlias}";
+			}
+			$sSelect	= implode(', ', $aSelectLines);
+			$sOrderBy	= Statement::generateOrderBy($aAliases, get_object_vars($oSort));
+			$sLimit		= Statement::generateLimit($iLimit, $iOffset);
+		}
+		
+		$aWhere = Statement::generateWhere($aAliases, get_object_vars($oFilter));
+		$sWhere	= ($sWhere != '' ? $sWhere." AND " : '');
+		
+		// Add default constraints
+		$iRecChargeStatusAwaitingApproval	= Recurring_Charge_Status::getIdForSystemName('AWAITING_APPROVAL');
+		$iRecChargeStatusDeclined			= Recurring_Charge_Status::getIdForSystemName('DECLINED');
+		$iRecChargeStatusCancelled			= Recurring_Charge_Status::getIdForSystemName('CANCELLED');
+		$iRecChargeStatusActive				= Recurring_Charge_Status::getIdForSystemName('ACTIVE');
+		$iRecChargeStatusCompleted			= Recurring_Charge_Status::getIdForSystemName('COMPLETED');
+		$sWhere	.= "(
+						(rc.recurring_charge_status_id IN ($iRecChargeStatusAwaitingApproval, $iRecChargeStatusActive, $iRecChargeStatusCompleted))
+						OR 
+						(rc.recurring_charge_status_id = $iRecChargeStatusCancelled AND rc.ApprovedBy IS NOT NULL)
+					)";
+		
+		// Fetch result
+		$oSelect	= new StatementSelect($sFrom, $sSelect, $aWhere['sClause'], $sOrderBy, $sLimit);
+		$mRows		= $oSelect->Execute($aWhere['aValues']);
+		if ($mRows === false)
+		{
+			throw new Exception_Database("Failed to get Recurring Charge search results. ".$oSelect->Error());
+		}
+		
+		if ($bCountOnly)
+		{
+			$aRow = $oSelect->Fetch();
+			return $aRow['count'];
+		}
+		
+		return $oSelect->FetchAll();
+	}
+	
+	
 	
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START

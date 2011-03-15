@@ -269,6 +269,50 @@ class JSON_Handler_Recurring_Charge extends JSON_Handler
 							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 						);
 		}
-	}	
+	}
+	
+	public function getAccountListDataset($bCountOnly=false, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null)
+	{
+		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		try
+		{
+			// Get record count
+			$iRecordCount = Recurring_Charge::getDatasetForAccountList(true, $iLimit, $iOffset, $oSort, $oFilter);
+			if ($bCountOnly)
+			{
+				return array('bSuccess' => true, 'iRecordCount' => $iRecordCount);
+			}
+			
+			// Get records
+			$iLimit		= ($iLimit === null ? 0 : $iLimit);
+			$iOffset	= ($iOffset === null ? 0 : $iOffset);
+			$aData	 	= Recurring_Charge::getDatasetForAccountList(false, $iLimit, $iOffset, $oSort, $oFilter);
+			$aResults	= array();
+			$i			= $iOffset;
+			
+			$bUserCanDeleteCharges = AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN) || AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
+			
+			foreach ($aData as $aRecord)
+			{
+				$aRecord['delete_enabled']	= $bUserCanDeleteCharges;
+				$aResults[$i] 				= $aRecord;
+				$i++;
+			}
+			
+			return	array(
+						'bSuccess'		=> true,
+						'aRecords'		=> $aResults,
+						'iRecordCount'	=> $iRecordCount
+					);
+		}
+		catch (Exception $e)
+		{
+			$sMessage	= $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
+			return 	array(
+						'bSuccess'	=> false,
+						'sMessage'	=> $sMessage
+					);
+		}
+	}
 }
 ?>

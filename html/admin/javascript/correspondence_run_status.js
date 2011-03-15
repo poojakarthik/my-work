@@ -7,6 +7,8 @@ Object.extend(Correspondence_Run_Status,
 	PROCESSED			: 'PROCESSED',
 	PROCESSING_FAILED	: 'PROCESSING_FAILED',
 	DISPATCHED			: 'DISPATCHED',
+	PARTLY_DISPATCHED	: 'PARTLY_DISPATCHED',
+	
 	
 	_hStatuses	: {}
 });
@@ -30,6 +32,12 @@ Correspondence_Run_Status._hStatuses[Correspondence_Run_Status.DISPATCHED]	=
 {
 	id		: Correspondence_Run_Status.DISPATCHED, 
 	name	: 'Dispatched'
+};
+
+Correspondence_Run_Status._hStatuses[Correspondence_Run_Status.PARTLY_DISPATCHED]	= 
+{
+	id		: Correspondence_Run_Status.PARTLY_DISPATCHED, 
+	name	: 'Partially Dispatched'
 };
 
 Object.extend(Correspondence_Run_Status,
@@ -63,6 +71,10 @@ Object.extend(Correspondence_Run_Status,
 		else if (oRun.correspondence_run_error_id !== null)
 		{
 			iStatusId	= Correspondence_Run_Status.PROCESSING_FAILED;
+		}
+		else if (oRun.status == "Partially Dispatched")
+		{
+			iStatusId	= Correspondence_Run_Status.PARTLY_DISPATCHED;
 		}
 		else if (oRun.processed_datetime !== null)
 		{

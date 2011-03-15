@@ -195,7 +195,7 @@ class Ticketing_Attachment_Type
 		require_once dirname(__FILE__) . '/' . '..' . '/' . 'email' . '/' . 'Email_Notification.php';
 		require_once dirname(__FILE__) . '/' . '..' . '/' . 'dom' . '/' . 'Flex_Dom_Document.php';
 
-		$email = new Email_Notification(EMAIL_NOTIFICATION_TICKETING_SYSTEM_ADMIN_MESSAGE);
+		$email = Email_Notification::getForSystemName('TICKETING_SYSTEM_ADMIN_MESSAGE');
 
 		$email->addHeader("X-Priority", "1 (Highest)");
 		$email->addHeader("X-MSMail-Priority", "High");
