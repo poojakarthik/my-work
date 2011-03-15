@@ -10,7 +10,7 @@ class Service_Barring_Level extends ORM_Cached
 {
 	protected 			$_strTableName			= "service_barring_level";
 	protected static	$_strStaticTableName	= "service_barring_level";
-	
+
 	protected static function getCacheName()
 	{
 		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
@@ -21,12 +21,12 @@ class Service_Barring_Level extends ORM_Cached
 		}
 		return $strCacheName;
 	}
-	
+
 	protected static function getMaxCacheSize()
 	{
 		return 100;
 	}
-	
+
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
 	//---------------------------------------------------------------------------------------------------------------------------------//
@@ -40,7 +40,7 @@ class Service_Barring_Level extends ORM_Cached
 	{
 		return parent::getCachedObjects(__CLASS__);
 	}
-	
+
 	protected static function addToCache($mixObjects)
 	{
 		parent::addToCache($mixObjects, __CLASS__);
@@ -50,17 +50,17 @@ class Service_Barring_Level extends ORM_Cached
 	{
 		return parent::getForId($intId, $bolSilentFail, __CLASS__);
 	}
-	
+
 	public static function getAll($bolForceReload=false)
 	{
 		return parent::getAll($bolForceReload, __CLASS__);
 	}
-	
+
 	public static function importResult($aResultSet)
 	{
 		return parent::importResult($aResultSet, __CLASS__);
 	}
-	
+
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
@@ -68,14 +68,14 @@ class Service_Barring_Level extends ORM_Cached
 	public function authorise()
 	{
 		$this->authorised_datetime 		= date('Y-m-d H:i:s');
-		$this->authorised_employee_id	= Flex::getUserId();
+		$this->authorised_employee_id	= Flex::getUserId()!==null?Flex::getUserId():Employee::SYSTEM_EMPLOYEE_ID;
 		$this->save();
 	}
 
 	public function action()
 	{
 		$this->actioned_datetime 	= date('Y-m-d H:i:s');
-		$this->actioned_employee_id	= Flex::getUserId();
+		$this->actioned_employee_id	= Flex::getUserId()!==null?Flex::getUserId():Employee::SYSTEM_EMPLOYEE_ID;
 		$this->save();
 	}
 
@@ -85,14 +85,14 @@ class Service_Barring_Level extends ORM_Cached
 		{
 			$sDate = date('Y-m-d');
 		}
-		
+
 		$oSelect 	= self::_preparedStatement('selScheduleOnDateForBarringLevel');
 		$mResult	= $oSelect->Execute(array('effective_date' => $sDate, 'barring_level_id' => $iBarringLevelId));
 		if ($mResult === false)
 		{
 			throw new Exception("Failed to get count of scheduled barrings on '{$sDate}', for barring level '{$iBarringLevel}'.".$oSelect->Error());
 		}
-		
+
 		return $oSelect->Count();
 	}
 
@@ -100,7 +100,7 @@ class Service_Barring_Level extends ORM_Cached
 	{
 		// Build where clause using filter object
 		$aWhereLines = array();
-		
+
 		if ($oFilter)
 		{
 			// account_id
@@ -108,25 +108,25 @@ class Service_Barring_Level extends ORM_Cached
 			{
 				$aWhereLines[] = "barring_level_union.account_id = {$oFilter->account_id}";
 			}
-			
+
 			// barring_level_id
 			if ($oFilter->barring_level_id)
 			{
 				$aWhereLines[] = "barring_level_union.barring_level_id = {$oFilter->barring_level_id}";
 			}
-			
+
 			// current_barring_level_id
 			if ($oFilter->current_barring_level_id)
 			{
 				$aWhereLines[] = "barring_level_union.current_barring_level_id = {$oFilter->current_barring_level_id}";
 			}
-			
+
 			// created_employee_id
 			if ($oFilter->created_employee_id)
 			{
 				$aWhereLines[] = "barring_level_union.created_employee_id = {$oFilter->created_employee_id}";
 			}
-			
+
 			// created_datetime
 			if ($oFilter->created_datetime)
 			{
@@ -143,17 +143,17 @@ class Service_Barring_Level extends ORM_Cached
 					$aWhereLines[] = "barring_level_union.created_datetime <= '{$oFilter->created_datetime->mTo}'";
 				}
 			}
-			
+
 			// collection_scenario_id
 			if ($oFilter->collection_scenario_id)
 			{
 				$aWhereLines[] = "barring_level_union.collection_scenario_id = {$oFilter->collection_scenario_id}";
 			}
 		}
-		
+
 		// Finalise where clause
 		$sWhere	= (count($aWhereLines) > 0 ? "WHERE ".implode(" AND ", $aWhereLines) : '');
-		
+
 		// Build other clauses depending on bCountOnly
 		if ($bCountOnly)
 		{
@@ -163,13 +163,13 @@ class Service_Barring_Level extends ORM_Cached
 		}
 		else
 		{
-			$sSelect	= "	account_id, 
+			$sSelect	= "	account_id,
 					        account_name,
 					        customer_group_id,
 					        customer_group_name,
-					        COUNT(service_barring_level_id) AS service_barring_level_id_count, 
+					        COUNT(service_barring_level_id) AS service_barring_level_id_count,
 					        account_barring_level_id,
-					        barring_level_id, 
+					        barring_level_id,
 					        barring_level_name,
 					        current_barring_level_id,
 					        current_barring_level_name,
@@ -183,9 +183,9 @@ class Service_Barring_Level extends ORM_Cached
 			$sLimit		= Statement::generateLimit($iLimit, $iOffset);
 			$sLimit 	= ($sLimit != '' ? "LIMIT {$sLimit}" : '');
 		}
-		
+
 		$sBarringUnrestricted = Constant_Group::getConstantGroup('barring_level')->getConstantName(BARRING_LEVEL_UNRESTRICTED);
-		
+
 		// Build query using all clauses
 		$sQuery	= "	SELECT  {$sSelect}
 					FROM    (
@@ -242,7 +242,7 @@ class Service_Barring_Level extends ORM_Cached
 													JOIN	barring_level bl ON (bl.id = abl.barring_level_id)
 													GROUP BY abl.account_id
 												) current_barring_level ON (current_barring_level.account_id = a.Id)
-									WHERE       sbl.authorised_datetime IS NULL 
+									WHERE       sbl.authorised_datetime IS NULL
 					                AND         sbl.authorised_employee_id IS NULL
 					            )
 					            UNION
@@ -298,7 +298,7 @@ class Service_Barring_Level extends ORM_Cached
 													JOIN	barring_level bl ON (bl.id = abl.barring_level_id)
 													GROUP BY abl.account_id
 												) current_barring_level ON (current_barring_level.account_id = a.Id)
-									WHERE       abl.authorised_datetime IS NULL 
+									WHERE       abl.authorised_datetime IS NULL
 					                AND         abl.authorised_employee_id IS NULL
 					            )
 					        ) barring_level_union
@@ -306,7 +306,7 @@ class Service_Barring_Level extends ORM_Cached
 					GROUP BY account_id, barring_level_id
 					{$sOrderBy}
 					{$sLimit};";
-		
+
 		// Execute the query
 		$oQuery 	= new Query();
 		$mResult	= $oQuery->Execute($sQuery);
@@ -314,24 +314,24 @@ class Service_Barring_Level extends ORM_Cached
 		{
 			throw new Exception("Failed to get barring authorise ledger dataset. ".$oQuery->Error());
 		}
-		
+
 		if ($bCountOnly)
 		{
 			// Return the record count only
 			$aCountRow = $mResult->fetch_assoc();
 			return $aCountRow['count'];
 		}
-		
+
 		// Group results by account_id
 		$aResults = array();
 		while ($aRow = $mResult->fetch_assoc())
 		{
 			$aResults[] = $aRow;
 		}
-		
+
 		return $aResults;
 	}
-	
+
 	public static function getActionLedger($bCountOnly=false, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null)
 	{
 		$aAliases = array(
@@ -371,9 +371,9 @@ class Service_Barring_Level extends ORM_Cached
 												                ),
 												                c_full.Name
 												            )
-												        )" 
+												        )"
 					);
-		
+
 		$sFrom	= "	service_barring_level sbl
 					JOIN		Service s ON (s.Id = sbl.service_id)
 					JOIN		Account a ON (a.Id = s.Account)
@@ -399,53 +399,53 @@ class Service_Barring_Level extends ORM_Cached
 		{
 			$sSelect = "{$aAliases['id']} AS service_barring_level_id,
 						{$aAliases['account_id']} AS account_id,
-						{$aAliases['account_name']} AS account_name, 
-						{$aAliases['customer_group_name']} AS customer_group_name, 
-						{$aAliases['service_fnn']} AS service_fnn, 
-						{$aAliases['authorised_datetime']} AS authorised_datetime, 
+						{$aAliases['account_name']} AS account_name,
+						{$aAliases['customer_group_name']} AS customer_group_name,
+						{$aAliases['service_fnn']} AS service_fnn,
+						{$aAliases['authorised_datetime']} AS authorised_datetime,
 						{$aAliases['authorised_employee_id']} AS authorised_employee_id,
 						{$aAliases['authorised_employee_name']} AS authorised_employee_name,
-						{$aAliases['created_datetime']} AS created_datetime, 
+						{$aAliases['created_datetime']} AS created_datetime,
 						{$aAliases['created_employee_id']} AS created_employee_id,
-						{$aAliases['created_employee_name']} AS created_employee_name, 
+						{$aAliases['created_employee_name']} AS created_employee_name,
 						{$aAliases['barring_level_id']} AS barring_level_id,
-						{$aAliases['barring_level_name']} AS barring_level_name, 
+						{$aAliases['barring_level_name']} AS barring_level_name,
 						{$aAliases['service_type_id']} AS service_type_id,
-						{$aAliases['service_type_name']} AS service_type_name, 
+						{$aAliases['service_type_name']} AS service_type_name,
 						{$aAliases['carrier_id']} AS carrier_id,
 						{$aAliases['carrier_name']} AS carrier_name";
 			$sOrderBy	= Statement::generateOrderBy($aAliases, get_object_vars($oSort));
 			$sLimit		= Statement::generateLimit($iLimit, $iOffset);
 		}
-		
+
 		$aWhere 	= Statement::generateWhere($aAliases, get_object_vars($oFilter));
 		$sWhere		= $aWhere['sClause'];
 		$sWhere		.= ($sWhere != '' ? " AND " : '')."sbl.actioned_datetime IS NULL AND sbl.actioned_employee_id IS NULL";
 		$oSelect	=	new StatementSelect(
-							$sFrom, 
-							$sSelect, 
-							$sWhere, 
-							$sOrderBy, 
+							$sFrom,
+							$sSelect,
+							$sWhere,
+							$sOrderBy,
 							$sLimit
 						);
-		
+
 		if ($oSelect->Execute($aWhere['aValues']) === FALSE)
 		{
 			throw new Exception_Database("Failed to get Service Barring Level items. ". $oSelect->Error());
 		}
-		
+
 		if ($bCountOnly)
 		{
 			$aRow = $oSelect->Fetch();
 			return $aRow['count'];
 		}
-		
+
 		$aResults = array();
 		while ($aRow = $oSelect->Fetch())
 		{
 			$aResults[$aRow['service_barring_level_id']] = $aRow;
 		}
-		
+
 		return $aResults;
 	}
 
@@ -481,19 +481,19 @@ class Service_Barring_Level extends ORM_Cached
 				case 'selScheduleOnDateForBarringLevel':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "(<effective_date> BETWEEN authorised_datetime AND actioned_datetime) AND barring_level_id = <barring_level_id>", "id ASC");
 					break;
-				
+
 				// INSERTS
 				case 'insSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);
 					break;
-				
+
 				// UPDATE BY IDS
 				case 'ubiSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementUpdateById(self::$_strStaticTableName);
 					break;
-				
+
 				// UPDATES
-				
+
 				default:
 					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
 			}
