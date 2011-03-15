@@ -4,7 +4,7 @@
  *
  * @author JanVanDerBreggen
  */
-class Logic_Collection_Event_Instance 
+class Logic_Collection_Event_Instance
 {
     // account_collection_event_history ORM
     protected $oDO;
@@ -14,7 +14,7 @@ class Logic_Collection_Event_Instance
 
    protected $oEvent;
 
-   protected $oException; 
+   protected $oException;
 
     protected static $aEventInstancesWaitingForCompletion = array();
 
@@ -144,7 +144,7 @@ class Logic_Collection_Event_Instance
      */
     public function invoke($aParameters = null)
     {
-    	
+
             $oDataAccess	= DataAccess::getDataAccess();
             $oDataAccess->TransactionStart();
             try
@@ -157,13 +157,12 @@ class Logic_Collection_Event_Instance
             }
             catch(Exception $e)
             {
-               $oDataAccess->TransactionRollback();
-
-                throw $e;
+		$oDataAccess->TransactionRollback();
+		throw $e;
             }
-           
-       
-        
+
+
+
     }
 
     public function setException($e)
@@ -179,7 +178,7 @@ class Logic_Collection_Event_Instance
     /**
      * Logic_Collection_Event_Instance::_registerWithArray
      * adds $this to self::$aEventInstancesWaitingForCompletion, an associative array with key == collection_event_id value = Logic_Collection_Event_Instance object
-     * 
+     *
      */
     public function _registerWithArray() {
 
@@ -213,12 +212,11 @@ class Logic_Collection_Event_Instance
 	$iCompletedEvents = 0;
         foreach(self::$aEventInstancesWaitingForCompletion as $iEventId => $aCollectionEvents)
         {
-            Logic_Stopwatch::getInstance()->lap();
+            $oDataAccess	= DataAccess::getDataAccess();
+	    $oDataAccess->TransactionStart();
+	    Logic_Stopwatch::getInstance()->lap();
 	    try
             {
-
-		$oDataAccess	= DataAccess::getDataAccess();
-                $oDataAccess->TransactionStart();
 		$sEventName;
                 $aSuccesfullyInvokedInstances = array();
                 foreach ($aCollectionEvents as $oEventInstance)
@@ -245,7 +243,7 @@ class Logic_Collection_Event_Instance
 
                     }
                 }
-                
+
                 //now complete all succesfully invoked instances
                 $sClassName = Logic_Collection_Event::getClassNameForId($iEventId);
                 call_user_func(array( $sClassName, 'complete'), $aSuccesfullyInvokedInstances);
@@ -261,7 +259,7 @@ class Logic_Collection_Event_Instance
                 $oDataAccess->TransactionRollback();
                 if ($e instanceof Exception_Database)
                 {
-                	Logic_Collection_BatchProcess_Report::addException($e);
+		    Logic_Collection_BatchProcess_Report::addException($e);
                     throw $e;
                 }
                 else
@@ -285,7 +283,7 @@ class Logic_Collection_Event_Instance
      * @param <type> $aParameters - associative array with key == account_collection_event_history.id and value == array of parameters to pass into the invoke method
      */
     public static function completeScheduledInstancesFromUI($aParameters)
-    {       
+    {
         foreach (array_keys($aParameters) as $iInstanceId)
         {
             $oInstance = new self($iInstanceId);
@@ -321,10 +319,10 @@ class Logic_Collection_Event_Instance
         {
             throw new exception("Trying to cancel a scenario event that does not have a 'scheduled' status");
         }
-    } 
+    }
 
     public function getEvent()
-    {      
+    {
        	return Logic_Collection_Event::getForEventInstance($this);
     }
 
@@ -358,12 +356,12 @@ class Logic_Collection_Event_Instance
     {
         return Account_Collection_Event_History::getForLedger($bCountOnly, $iLimit, $iOffset, get_object_vars($oSort), get_object_vars($oFilter));
     }
-    
+
     public function save()
     {
             return $this->oDO->save();
     }
-	
+
     public function toArray()
     {
         $aArray = $this->oDO->toArray();

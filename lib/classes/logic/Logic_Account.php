@@ -12,7 +12,7 @@ class Logic_Account implements DataLogic
 
     protected	    $oDO;
     protected	    $aActiveScenarioInstances;
-    
+
     protected	    $aCollectables;
     protected	    $aPayments;
     protected	    $aAdjustments;
@@ -61,13 +61,13 @@ class Logic_Account implements DataLogic
     {
 	self::$aInstances = $aInstances;
     }
-    
+
     private function __construct($mDefinition)
     {
         $this->oDO = is_numeric($mDefinition) ? Account::getForId($mDefinition) : (get_class($mDefinition) == 'Account' ? $mDefinition : null);
     }
 
-    
+
 
     /**
      * Returns the sum of all collectable balance for this account
@@ -107,7 +107,7 @@ class Logic_Account implements DataLogic
         $aResult = array();
         foreach ($aServices as $oService)
         {
-            $aServicesForFNN = Service::getFNNInstances($oService->FNN, $this->id, false);          
+            $aServicesForFNN = Service::getFNNInstances($oService->FNN, $this->id, false);
             $oResult = array_pop($aServicesForFNN);
             if($oResult->Status != SERVICE_ARCHIVED)
                    $aResult[] = $oResult;
@@ -132,10 +132,10 @@ class Logic_Account implements DataLogic
         $fTotal = 0;
         foreach($aCollectables as $oCollectable)
         {
-            
+
             if ($oCollectable->isOverDue($sNow))
             {
-            	
+
             	$fTotal += $oCollectable->amount;
             }
         }
@@ -152,7 +152,7 @@ class Logic_Account implements DataLogic
             {
                 $oInstance->cancel();
             }
-    }   
+    }
 
 
 
@@ -160,7 +160,7 @@ class Logic_Account implements DataLogic
      *
      * @return <type> Logic_Collection_Event_Instance
      */
-    public function getMostRecentCollectionEventInstance() 
+    public function getMostRecentCollectionEventInstance()
     {
         return Logic_Collection_Event_Instance::getMostRecentForAccount($this);
     }
@@ -182,8 +182,8 @@ class Logic_Account implements DataLogic
     	$oLastEventInstance = $this->getMostRecentCollectionEventInstance();
 
 	if ($oLastEventInstance === null || $oLastEventInstance->isExitEvent())
-	    return false;    
-       
+	    return false;
+
         return true;
     }
 
@@ -248,7 +248,7 @@ class Logic_Account implements DataLogic
     {
 	if ($this->isInSuspension())
 	    return false;
-	
+
 	 $oScenario  = $this->getCurrentScenarioInstance()->getScenario();
 
 	 //if they are not in collections
@@ -258,7 +258,7 @@ class Logic_Account implements DataLogic
 	     return $oScenario->evaluateThresholdCriterion($this->getOverDueCollectableAmount($mNow),$this->getOverdueCollectableBalance($mNow));
 	 }
 	 //if they are in collections
-	 else 
+	 else
 	 {
 	     //first we're going to determine whether the collectable(s) that triggered the account into collections continue to warrant them being in collections
 	     //this step will cover the situation where there is a scenario offset,
@@ -267,12 +267,12 @@ class Logic_Account implements DataLogic
 	     $iNow = strtotime("+$oScenario->day_offset days",$iCollectionsStart );
 	     $sNow = date('Y-m-d', $iNow );
 	     if ($oScenario->evaluateThresholdCriterion($this->getOverDueCollectableAmount($sNow),$this->getOverdueCollectableBalance($sNow)))
-	         return true;	     
+	         return true;
 
 	     //If this is not the case, we will now check if there are any other collectables that are overdue, which taken into account will keep the account in collections
 	     $mNow = self::SCENARIO_OFFSET_USED_TO_DETERMINE_EXIT_COLLECTIONS ? date('Y-m-d', strtotime("+$oScenario->day_offset days", time())) : Data_Source_Time::currentDate();
 	     return $oScenario->evaluateThresholdCriterion($this->getOverDueCollectableAmount($mNow),$this->getOverdueCollectableBalance($mNow));
-	 }	
+	 }
     }
 
     public function shouldCurrentlyBeInCollectionsOldAndIncorrect()
@@ -322,7 +322,7 @@ class Logic_Account implements DataLogic
      *
      * - if it is a manually invoked event, it is only scheduled
      * - if it is a fully automated event, it is scheduled and invoked and completed
-     * 
+     *
      * It is the responsibility of the caller of this method to ensure that any pending changes of scenario
      * have been completed before calling this method, eg if there is a broken promise on the account, this should
      * have been dealt with before calling this method.
@@ -331,12 +331,12 @@ class Logic_Account implements DataLogic
      *
      */
     public function scheduleNextScenarioEvent()
-    {    	
+    {
 	$bShouldBeInCollections = $this->shouldCurrentlyBeInCollections();
 	$bIsCurrentlyInCollections = $this->isCurrentlyInCollections();
 
         if ($bIsCurrentlyInCollections && !$bShouldBeInCollections)
-        {                            
+        {
 		$oEventInstance = Logic_Collection_Event_Instance::schedule($this, COLLECTION_EVENT_TYPE_IMPLEMENTATION_EXIT_COLLECTIONS);
 		$oEventInstance->_registerWithArray();
 	}
@@ -368,8 +368,8 @@ class Logic_Account implements DataLogic
 	    }
 
 	}
-       
-        
+
+
     }
 
     public function processActivePromise()
@@ -386,7 +386,7 @@ class Logic_Account implements DataLogic
     public function getCollectables($iType = Logic_Collectable::DEBIT)
     {
         if ($this->aCollectables === null)
-        {           
+        {
             $this->aCollectables[Logic_Collectable::DEBIT] = Logic_Collectable::getForAccount($this, true, Logic_Collectable::DEBIT);
             $this->aCollectables[Logic_Collectable::CREDIT] = Logic_Collectable::getForAccount($this, true,Logic_Collectable::CREDIT );
         }
@@ -450,7 +450,7 @@ class Logic_Account implements DataLogic
 
 	return  $fTotalAmount;
     }
-    
+
     /**
      * @return array of all payable items for the account, comprising objects of the following classes:
      *  - Logic_Collectable with amount > 0
@@ -471,16 +471,16 @@ class Logic_Account implements DataLogic
      * @return total a amount payable as the sum of the balance of all payables
      */
     public function getPayableBalance()
-    {       
+    {
        $fTotalBalance = 0;
         foreach ($this->getPayables() as $oPayable)
         {
             $fTotalBalance += $oPayable->getBalance();
         }
-       
+
         return $fTotalBalance;
     }
-    
+
     /**
      *
      * @return sum of the amount of all payables retrieved through getPayables()
@@ -501,7 +501,7 @@ class Logic_Account implements DataLogic
         $bDistributableIsCredit = $mDistributable->isCredit();
        //Log::getLog()->log("Before processing distributable $mDistributable->id ,".memory_get_usage(true));
         $aPayables = $bDistributableIsCredit ? $this->getPayables() : array_reverse($this->getPayables());
-       
+
 	for ($i=0;$i<count($aPayables);$i++)
 	{
 	    $oPayable = $aPayables[$i];
@@ -581,9 +581,9 @@ class Logic_Account implements DataLogic
 
         return false;
 
-    }   
+    }
 
-    
+
 
     public function redistributeBalances()
     {
@@ -591,7 +591,7 @@ class Logic_Account implements DataLogic
         Collectable_Adjustment::deleteForAccount($this->id);
         Collectable_Payment::deleteForAccount($this->id);
         Collectable_Transfer_Balance::deleteForAccount($this->id);
-     
+
         //2. for each of the following tables, for records belonging to this account, set .balance = .amount: adjustment; payment; collectable
         Adjustment::resetBalanceForAccount($this->id);
         Payment::resetBalanceForAccount($this->id);
@@ -611,7 +611,7 @@ class Logic_Account implements DataLogic
 
             ////Log::getLog()->log("&&&CREDIT BALANCE REDISTRIBUTION &&&");
             //3. process all credit balances for this account in the tables mentioned in step 2. see below for the rules
-           
+
            $aCreditCollectable = $this->getCollectables(Logic_Collectable::CREDIT);
             //Log::getLog()->log("after get credit collectables,".memory_get_usage(true));
             foreach ($aCreditCollectable as $oCollectable)
@@ -641,7 +641,7 @@ class Logic_Account implements DataLogic
                 $this->processDistributable($oAdjustment);
             }
            // self::$aMemory['after_processing_debits'] = memory_get_usage (TRUE );
-        } 
+        }
 
 //        $aCollectables = $this->getCollectables(Logic_Collectable::DEBIT);
 //       $oReport = new Logic_Spreadsheet(array( 'account_id', 'amount', 'balance', 'created', 'due_date', 'promise_id', 'invoice_id', 'id'));
@@ -679,8 +679,8 @@ class Logic_Account implements DataLogic
     public function getActiveScenarios($bRefreshFromDatabase = false)
     {
         if ($this->aActiveScenarioInstances === null || $bRefreshFromDatabase)
-	    $this->aActiveScenarioInstances = Logic_Collection_Scenario_Instance::getForAccount($this);       
-        
+	    $this->aActiveScenarioInstances = Logic_Collection_Scenario_Instance::getForAccount($this);
+
         if (count($this->aActiveScenarioInstances)== 0)
             throw new Logic_Collection_Exception("Configuration Error: no active Scenario for Account $this->id .");
 
@@ -745,7 +745,7 @@ class Logic_Account implements DataLogic
        {
 	   $this->collection_severity_id = $oScenario->initial_collection_severity_id;
 	   $this->save();
-       }      
+       }
     }
 
     /**
@@ -843,12 +843,12 @@ class Logic_Account implements DataLogic
     /**
      *	This method returns a date based on the source collectable due date and scenario day offset.
      *	This function does not evaluate the source collectable amount and balance against the scenario threshold criteron, so in itself is not sufficient to determine whether collections should start.
-     * @return <type> 
+     * @return <type>
      */
     public function getCollectionsStartDate()
     {
 	$iOffset = $this->getCurrentScenarioInstance()->getScenario()->day_offset;
-	$sDueDate = $this->getCurrentDueDate();	
+	$sDueDate = $this->getCurrentDueDate();
 	$iDueDate = strtotime($sDueDate);
 	$iOverDueDate = strtotime("+1 day", $iDueDate);
 	$iStartDate = strtotime("-$iOffset day", $iOverDueDate);
@@ -902,25 +902,25 @@ class Logic_Account implements DataLogic
         memory_get_usage (TRUE );
     }
 
-    public static function batchProcessBalanceRedistribution($aAccounts)
-    {        
+    public static function batchRedistributeBalances($aAccounts)
+    {
         self::$aMemory['before_looping'] = memory_get_usage (TRUE );
        // //Log::getLog()->log(count($aAccounts)." Accounts");
-       
+
         foreach ($aAccounts as $iIndex => $oAccountORM)
         {
-
+	    $oDataAccess = DataAccess::getDataAccess();
+            $oDataAccess->TransactionStart();
             try
             {
-             $oDataAccess = DataAccess::getDataAccess();
-            $oDataAccess->TransactionStart();
+
             //Log::getLog()->log("Before processing account $oAccountORM->Id,".  memory_get_usage(true));
             $oAccount = self::getInstance($oAccountORM);
             $iId = $oAccount->Id;
             $oStopwatch = Logic_Stopwatch::getInstance(true);
             $oStopwatch->start();
              //Log::getLog()->log("Instantiated logic account $oAccountORM->Id,".  memory_get_usage(true));
-            
+
             $aResult = $oAccount->redistributeBalances();
             $time = $oStopwatch->split();
             self::$aMemory['after_before_cache_clear'] = memory_get_usage (TRUE );
@@ -937,7 +937,7 @@ class Logic_Account implements DataLogic
            // {
            //     //Log::getLog()->log("$key, $value");
            // }
-            
+
             //Log::getLog()->log("After processing account $oAccountORM->Id,".  memory_get_usage(true));
             //Log::getLog()->log(" ");
              $oDataAccess->TransactionCommit();
@@ -967,27 +967,24 @@ class Logic_Account implements DataLogic
 
     public static function batchProcessCollections(&$aAccounts)
     {
-        
+
         Log::getLog()->log("-------Starting Account Batch Collections Process-------------------------");
-           
+
             foreach ($aAccounts as $oAccount)
             {
                 if (!$oAccount->noNextEventFound())
 		{
+		    $oDataAccess	= DataAccess::getDataAccess();
+		    $oDataAccess->TransactionStart();
 		    try
 		    {
-
-			$oDataAccess	= DataAccess::getDataAccess();
-			$oDataAccess->TransactionStart();
-			 //first complete any automated events that were scheduled and invoked previously, but for some reason failed to complete
-
 			Log::getLog()->log("Trying to schedule next event for account $oAccount->Id ");
 			Logic_Stopwatch::getInstance()->lap();
 			$oAccount->scheduleNextScenarioEvent();
+			//if no event was scheduled, no need to include this account in the next batch process iteration
 			if ($oAccount->noNextEventFound())
-			{
 			    unset($aAccounts[$oAccount->id]);
-			}
+
 			Log::getlog()->log("Processed account $oAccount->Id in : ".Logic_Stopwatch::getInstance()->lap());
 			$oDataAccess->TransactionCommit();
 		    }
@@ -1009,11 +1006,11 @@ class Logic_Account implements DataLogic
 
 		    }
 		}
-		
+
             }
-	   
+
            return  Logic_Collection_Event_Instance::completeWaitingInstances();
-        
+
 
     }
 
@@ -1021,8 +1018,8 @@ class Logic_Account implements DataLogic
     {
         return self::getInstance($iId);
     }
-    
-    public function __get($sField) 
+
+    public function __get($sField)
     {
     	if ($sField == 'id')
             $sField = 'Id';
@@ -1033,19 +1030,19 @@ class Logic_Account implements DataLogic
     {
         return call_user_func_array(array($this->oDO, $function),$args);
     }
-   
 
-    public function __set($sField, $mValue) 
+
+    public function __set($sField, $mValue)
     {
 		$this->oDO->{$sField} = $mValue;
     }
 
-    public function save() 
+    public function save()
     {
 		return $this->oDO->save();
     }
 
-    public function toArray() 
+    public function toArray()
     {
 		return $this->oDO->toArray();
     }
@@ -1073,7 +1070,7 @@ class Logic_Account implements DataLogic
         }
         ////Log::getLog()->log('%%%%%%%%%%%%%%%%%%%%%%%End Details for Account '.$this->id.'%%%%%%%%%%%%%%%%%');
     }
-    
+
 
 
     /**
@@ -1082,7 +1079,7 @@ class Logic_Account implements DataLogic
      * These accounts are not currently suspended from collections, and either:
      * 1 are currently in collections, defined by most recent account_collection_event_history record not being for the 'exit collections' event
      * 2 OR are not in collections (as defined under 1) but have collectables with a balance > 0 that are not part of an active promise
-     * 
+     *
      */
     public static function getForBatchCollectionProcess($aExcludedAccounts = null)
     {
@@ -1095,34 +1092,34 @@ class Logic_Account implements DataLogic
         if ($aAccountORMs != null)
         {
             foreach($aAccountORMs as $oORM)
-            {                
+            {
 		$aAccounts[$oORM->Id] =self::getInstance($oORM, TRUE);
             }
         }
 	self::setCache($aAccounts);
 	Log::getLog()->log("Number of accounts: ".count($aAccounts));
-	Log::getLog()->log("finished instantiating logic in ".Logic_Stopwatch::getInstance()->lap());	
+	Log::getLog()->log("finished instantiating logic in ".Logic_Stopwatch::getInstance()->lap());
         return $aAccounts;
     }
-    
+
 	public static function countForCollectionsLedger($aFilter=null)
 	{
 		// Generate search table (temporary) and where clause data
 		self::_buildSearchTableForCollectionsLedger($aFilter);
-		
+
 		// Get the count of the unlimited results
 		$oSearchCountSelect	=	new StatementSelect(
-										'account_collection_ledger', 
+										'account_collection_ledger',
 										'COUNT(DISTINCT account_id) AS count',
-										'', 
-										'', 
+										'',
+										'',
 										''
 									);
 		if ($oSearchCountSelect->Execute() === FALSE)
 		{
 			throw new Exception_Database("Failed to retrieve record count, query - ". $oSearchCountSelect->Error());
 		}
-		
+
 		$aCount	= $oSearchCountSelect->Fetch();
 		return $aCount['count'];
 	}
@@ -1131,41 +1128,41 @@ class Logic_Account implements DataLogic
 	{
 		// ORDER BY clause (with field alias' for category and type)
 		$sOrderByClause = StatementSelect::generateOrderBy(null, $aSort);
-		
+
 		// LIMIT clause
 		$sLimitClause = StatementSelect::generateLimit($iLimit, $iOffset);
-		
+
 		// Generate search table (temporary) and where clause data
 		self::_buildSearchTableForCollectionsLedger($aFilter);
-		
+
 		// Get the count of the unlimited results
 		$oSearchCountSelect	=	new StatementSelect(
-											'account_collection_ledger', 
-											'COUNT(DISTINCT account_id) AS count', 
-											'1', 
-											'', 
+											'account_collection_ledger',
+											'COUNT(DISTINCT account_id) AS count',
+											'1',
+											'',
 											''
 										);
 		if ($oSearchCountSelect->Execute() === FALSE)
 		{
 			throw new Exception_Database("Failed to retrieve record count, query - ". $oSearchCountSelect->Error());
 		}
-		
+
 		$aCount = $oSearchCountSelect->Fetch();
-		
-		// Get the limited + offset results 
+
+		// Get the limited + offset results
 		$oSearchSelect =	new StatementSelect(
-										'account_collection_ledger', 
-										'*', 
-										'1', 
-										$sOrderByClause, 
+										'account_collection_ledger',
+										'*',
+										'1',
+										$sOrderByClause,
 										$sLimitClause
 									);
 		if ($oSearchSelect->Execute() === FALSE)
 		{
 			throw new Exception_Database("Failed to retrieve records, query - ". $oSearchSelect->Error());
 		}
-		
+
 		// Return the results as well as the count
 		return array('aData' => $oSearchSelect->FetchAll(), 'iCount' => $aCount['count']);
 	}
@@ -1174,35 +1171,35 @@ class Logic_Account implements DataLogic
 	{
 		// ORDER BY clause (with field alias' for category and type)
 		$sOrderByClause	= StatementSelect::generateOrderBy(null, $aSort);
-		
+
 		// LIMIT clause
 		$sLimitClause = StatementSelect::generateLimit($iLimit, $iOffset);
-		
+
 		// Generate search table (temporary) and where clause data
 		self::_buildSearchTableForCollectionsLedger($aFilter);
-		
-		// Get the limited + offset results 
+
+		// Get the limited + offset results
 		$oSearchSelect	=	new StatementSelect(
-								'account_collection_ledger', 
-								'*', 
-								'1', 
-								$sOrderByClause, 
+								'account_collection_ledger',
+								'*',
+								'1',
+								$sOrderByClause,
 								$sLimitClause
 							);
 		if ($oSearchSelect->Execute() === FALSE)
 		{
 			throw new Exception_Database("Failed to retrieve records, query - ". $oSearchSelect->Error());
 		}
-		
+
 		$mRecords	= $oSearchSelect->FetchAll();
 		return ($mRecords === null ? array() : $mRecords);
 	}
-	
+
 	private static function _buildSearchTableForCollectionsLedger($aFilter=null)
 	{
 		// Create temporary table 'account_collection_ledger'
 		$oQuery					= new Query();
-		$mTempTableCheckResult	= $oQuery->Execute("SELECT	count(*) 
+		$mTempTableCheckResult	= $oQuery->Execute("SELECT	count(*)
 													FROM 	account_collection_ledger");
 		if ($mTempTableCheckResult === false)
 		{
@@ -1281,11 +1278,11 @@ class Logic_Account implements DataLogic
 			$oQuery->Execute("	DELETE FROM account_collection_ledger
 								WHERE 		1");
 		}
-		
+
 		$sSelectQuery 	= self::_buildAccountLedgerQuery($aFilter);
-		
+
 		file_put_contents('/home/rmctainsh/log.txt', $sSelectQuery);
-		
+
 		$sInsert 		= "	INSERT INTO account_collection_ledger(
 											account_id,
 											account_collection_event_history_id,
@@ -1326,7 +1323,7 @@ class Logic_Account implements DataLogic
 			throw new Exception_Database("Error inserting data into temporary table. Database Error = ".$oQuery->Error());
 		}
 	}
-	
+
 	private static function _buildAccountLedgerQueryWhereClause($aFilter)
 	{
 		$aWherePieces = array("a.Archived = 0");
@@ -1339,15 +1336,15 @@ class Logic_Account implements DataLogic
 				case 'account_id':
 					$sField = "a.Id";
 					break;
-				
+
 				case 'customer_group_id':
 					$sField = "a.CustomerGroup";
 					break;
-					
+
 				case 'collection_scenario_id':
 					$sField = "cs.id";
 					break;
-				
+
 				case 'collection_status':
 					$sField	= "	(
 									CASE
@@ -1364,12 +1361,12 @@ class Logic_Account implements DataLogic
 					$sValue	= "'{$mValue}'";
 					break;
 			}
-			
+
 			$aWherePieces[] = "{$sField} = {$sValue}";
 		}
 		return "WHERE ".implode(' AND ', $aWherePieces);
 	}
-	
+
 	private static function _buildAccountLedgerQuery($aFilter)
 	{
 		$sWhereClause = self::_buildAccountLedgerQueryWhereClause($aFilter);

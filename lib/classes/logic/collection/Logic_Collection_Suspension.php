@@ -4,12 +4,12 @@
  *
  * @author JanVanDerBreggen
  */
-class Logic_Collection_Suspension implements DataLogic 
+class Logic_Collection_Suspension implements DataLogic
 {
     protected $oDO;
-    
+
     protected $oType;
-    
+
     protected $oAccount;
 
     protected $oException;
@@ -32,21 +32,21 @@ class Logic_Collection_Suspension implements DataLogic
 
     public static function batchProcess($aActiveSuspensions)
     {
-        Log::getLog()->log('------Starting Suspensions Batch Process--------');    
-           
+        Log::getLog()->log('------Starting Suspensions Batch Process--------');
+
         foreach ($aActiveSuspensions as $oORM)
         {
-            try
+            $oDataAccess = DataAccess::getDataAccess();
+	    $oDataAccess->TransactionStart();
+	    try
             {
                 Log::getLog()->log("Processing Suspension with id: $oORM->id");
-		$oDataAccess = DataAccess::getDataAccess();
-		$oDataAccess->TransactionStart();
 		$oCurrentSuspension = new self($oORM);
                 if ( $oCurrentSuspension->isPastEffectiveEndDateTime())
                 {
                     Log::getLog()->log("Suspension $oCurrentSuspension->id is past its effective enddate time and will be ended.");
                     $oCurrentSuspension->end();
-                    
+
                 }
 		else
 		{
@@ -54,14 +54,12 @@ class Logic_Collection_Suspension implements DataLogic
 		}
 		Logic_Collection_BatchProcess_Report::addSuspension($oCurrentSuspension);
 		$oDataAccess->TransactionCommit();
-
-                
             }
             catch(Exception $e)
             {
 		$oDataAccess->TransactionRollback();
 		if ($e instanceof Exception_Database)
-                {                   
+                {
                     throw $e;
                 }
                 else
@@ -88,7 +86,7 @@ class Logic_Collection_Suspension implements DataLogic
 
     public function isPastEffectiveEndDateTime()
     {
-        
+
         if (strtotime(Data_Source_Time::currentDate())>= Flex_Date::truncate($this->proposed_end_datetime, "d", false))
                 return true;
         return false;
@@ -100,13 +98,13 @@ class Logic_Collection_Suspension implements DataLogic
         if ($oActiveSuspension !== null)
         {
             $oObject = new self( $oActiveSuspension);
-          
+
 
             if ($oObject->isPastEffectiveEndDateTime())
             {
                 $oObject->end();
             }
-          
+
         }
     }
 
@@ -121,7 +119,7 @@ class Logic_Collection_Suspension implements DataLogic
         $this->end_employee_id = Flex::getUserId();
         $this->collection_suspension_end_reason_id = Collection_Suspension_End_Reason::getForSystemName('EXPIRED')->id;
         $this->save();
-        
+
     }
 
     public function getAccount() {
@@ -142,22 +140,22 @@ class Logic_Collection_Suspension implements DataLogic
         return $this->oReason;
     }
 
-    public function __get($sField) 
+    public function __get($sField)
     {
         return $this->oDO->$sField;
     }
 
-    public function __set($sField, $mValue) 
+    public function __set($sField, $mValue)
     {
         $this->oDO->$sField = $mValue;
     }
-    
-    public function save() 
+
+    public function save()
     {
         $this->oDO->save();
     }
-    
-    public function toArray() 
+
+    public function toArray()
     {
 
     }
@@ -178,7 +176,7 @@ class Logic_Collection_Suspension implements DataLogic
         ////Log::getLog()->log('Scenario Triggered when ended: '.$mScenario);
 
     }
-    
+
     public static function getNumberOfSuspensionsInCurrentCollectionsPeriod($iAccountId, $sEffectiveDate=null)
     {
     	$aSuspensions = Collection_Suspension::getSuspensionsForCurrentCollectionsPeriod($iAccountId, $sEffectiveDate);

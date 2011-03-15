@@ -7,7 +7,7 @@
  *
  * @author JanVanDerBreggen
  */
-class Logic_Collection_Promise implements DataLogic 
+class Logic_Collection_Promise implements DataLogic
 {
     // Put your code here
     protected $oDO;
@@ -16,7 +16,7 @@ class Logic_Collection_Promise implements DataLogic
     protected $oAccount;
 
     protected $oException;
-    
+
     public function __construct($mDefinition)
     {
     	if (is_numeric($mDefinition))
@@ -44,7 +44,7 @@ class Logic_Collection_Promise implements DataLogic
 
         return $fBalance;
     }
-    
+
     public function getAmount()
     {
         $aCollectables	= $this->getCollectables();
@@ -55,7 +55,7 @@ class Logic_Collection_Promise implements DataLogic
     	}
         return $fAmount;
     }
-    
+
     public function getCollectables()
     {
     	if ($this->aCollectables === null)
@@ -179,7 +179,7 @@ class Logic_Collection_Promise implements DataLogic
         $oNextDue = $this->getNextDueInstalment();
         if ($oNextDue !== null && $oNextDue->getBalance()< $oNextDue->amount)
         {
-           
+
             $mResult =  $oNextDue;
         }
         else if ($oNextDue === null)
@@ -227,13 +227,13 @@ class Logic_Collection_Promise implements DataLogic
     	{
     		$fPaid += $oCollectable->amount - $oCollectable->balance;
     	}
-    	
+
     	// Calculate how much of the instalments should have been paid by now
         $aInstalments		= $this->getInstalments();
         $fTotalDueAmount	= 0;
         $iNow			= time();
         foreach ($aInstalments as $oInstalment)
-        {           
+        {
             $iDue = strtotime("+$iLeniencyWindow day", strtotime("$oInstalment->due_date 23:59:59"));
             if ($iDue < $iNow)
             {
@@ -294,29 +294,29 @@ class Logic_Collection_Promise implements DataLogic
     public function complete($iCompletionId)
     {
         $this->collection_promise_completion_id = $iCompletionId;
-        
+
         // For cli apps we use the system user id (0)
         $iEmployeeId					= Flex::getUserId();
         $this->completed_employee_id 	= ($iEmployeeId != null ? $iEmployeeId : Employee::SYSTEM_EMPLOYEE_ID);
         $this->completed_datetime 		= Data_Source_Time::currentTimestamp();
 
-       
+
         if ($iCompletionId == COLLECTION_PROMISE_COMPLETION_BROKEN)
         {
             $oAccount = $this->getAccount();
             $iScenario = $this->getScenarioId();
             $oAccount->setCurrentScenario($iScenario, false);
-            
+
         }
         $this->save();
         if ($iCompletionId == COLLECTION_PROMISE_COMPLETION_BROKEN || $iCompletionId == COLLECTION_PROMISE_COMPLETION_CANCELLED)
         {
             $oAccount = $this->getAccount();
             $oAccount->redistributeBalances();
-        }        
-        
+        }
+
         return $this->id;
-       
+
     }
 
     /**
@@ -335,12 +335,12 @@ class Logic_Collection_Promise implements DataLogic
             $this->complete(COLLECTION_PROMISE_COMPLETION_KEPT);
         }
         else
-        {            
+        {
             Log::getLog()->log("... promise is ongoing");
         }
 	Logic_Collection_BatchProcess_Report::addPromise($this);
     }
-    
+
     public function getScenarioId()
     {
         $oORM = Collection_Scenario_System_Config::getForSystemScenario(COLLECTION_SCENARIO_SYSTEM_BROKEN_PROMISE_TO_PAY);
@@ -368,7 +368,7 @@ class Logic_Collection_Promise implements DataLogic
     }
 
 
-    public static function getForCollectable($oCollectable) 
+    public static function getForCollectable($oCollectable)
     {
 	$oDO = Collection_Promise::getForId($oCollectable->collection_promise_id);
 	if ($oDO)
@@ -402,15 +402,15 @@ class Logic_Collection_Promise implements DataLogic
      */
     public static function batchProcess($aPromises)
     {
-        Log::getLog()->log("--------Promises Batch Process Start -------------");          
-           
+        Log::getLog()->log("--------Promises Batch Process Start -------------");
+
 	foreach ($aPromises as $oPromise)
 	{
+	    $oDataAccess = DataAccess::getDataAccess();
+	    $oDataAccess->TransactionStart();
 	    try
 	    {
 		Log::getLog()->log("Processing promise with ID: .$oPromise->id. ");
-		$oDataAccess = DataAccess::getDataAccess();
-		$oDataAccess->TransactionStart();
 		$oPromise->process();
 		$oDataAccess->TransactionCommit();
 
@@ -430,7 +430,7 @@ class Logic_Collection_Promise implements DataLogic
 		}
 	    }
 	}
-        
+
         Log::getLog()->log("-------Promises Batch Process End--------------");
     }
 
@@ -441,17 +441,17 @@ class Logic_Collection_Promise implements DataLogic
     	return $this->oDO->{$sField};
     }
 
-    public function __set($sField, $mValue) 
+    public function __set($sField, $mValue)
     {
 		$this->oDO->{$sField} = $mValue;
     }
 
-    public function save() 
+    public function save()
     {
 		return $this->oDO->save();
     }
 
-    public function toArray() 
+    public function toArray()
     {
         $aArray = $this->oDO->toArray();
 
