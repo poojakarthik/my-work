@@ -1291,7 +1291,7 @@ class Logic_Account implements DataLogic
 
 		$sSelectQuery 	= self::_buildAccountLedgerQuery($aFilter);
 
-		file_put_contents('/home/rmctainsh/log.txt', $sSelectQuery);
+		//file_put_contents('/home/rmctainsh/log.txt', $sSelectQuery);
 
 		$sInsert 		= "	INSERT INTO account_collection_ledger(
 											account_id,
