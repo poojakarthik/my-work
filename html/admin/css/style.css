@@ -11011,7 +11011,8 @@ div.component-collections-scenario > table.reflex
 
 .component-account-invoice-list
 {
-	position	: relative
+	position	: relative;
+	margin-top	: 1em;
 }
 
 .component-account-invoice-list > .section table.reflex
@@ -11049,9 +11050,21 @@ div.component-collections-scenario > table.reflex
 	margin-right	: 0.25em;
 }
 
-.component-account-invoice-list table.reflex > tbody > tr > td
+.component-account-invoice-list table.reflex > tbody > tr > td,
+.component-account-invoice-list-icon-cell > img,
+.component-account-invoice-list-icon-cell-double > img
 {
 	vertical-align	: middle;
+}
+
+.component-account-invoice-list-icon-cell
+{
+	width	: 1em;
+}
+
+.component-account-invoice-list-icon-cell-double
+{
+	width	: 2.5em;
 }
 
 .component-account-invoice-list-title

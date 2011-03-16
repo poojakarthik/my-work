@@ -25,14 +25,14 @@ class Data_Source
 			'portability' => ((MDB2_PORTABILITY_ALL | $unwantedPortabilityOptions) ^ $unwantedPortabilityOptions),
 			'use_transactions' => TRUE,
 		);
-
+		
 		if ($bolNewConnection)
 		{
 			// Don't specify the name of the data source.  It will be anonomous
 			$objMDB2 = MDB2::connect(self::dsnForName($strDataSourceName), $options);
 			if (PEAR::isError($objMDB2) || MDB2::isError($objMDB2))
 			{
-				throw new Exception("Failed to connect to data source $strDataSourceName: " . $objMDB2->getMessage());
+				throw new Exception_Database("Failed to connect to data source $strDataSourceName: " . $objMDB2->getMessage());
 			}
 			return new Data_Source_MDB2_Wrapper($objMDB2, NULL);
 		}
@@ -44,10 +44,15 @@ class Data_Source
 			// with the privileges of whichever connected first.
 			if (!array_key_exists($strDataSourceName, $arrRequestedDSNs))
 			{
-				$arrRequestedDSNs[$strDataSourceName] = new Data_Source_MDB2_Wrapper(MDB2::connect(self::dsnForName($strDataSourceName), $options), $strDataSourceName);
+				$objMDB2 = MDB2::connect(self::dsnForName($strDataSourceName), $options);
+				if (PEAR::isError($objMDB2) || MDB2::isError($objMDB2))
+				{
+					throw new Exception_Database("Failed to connect to data source $strDataSourceName: " . $objMDB2->getMessage());
+				}
+				$arrRequestedDSNs[$strDataSourceName] = new Data_Source_MDB2_Wrapper($objMDB2, $strDataSourceName);
 				if (PEAR::isError($arrRequestedDSNs[$strDataSourceName]))
 				{
-					throw new Exception("Failed to connect to data source $strDataSourceName: " . $arrRequestedDSNs[$strDataSourceName]->getMessage());
+					throw new Exception_Database("Failed to connect to data source $strDataSourceName: " . $arrRequestedDSNs[$strDataSourceName]->getMessage());
 				}
 			}
 			return $arrRequestedDSNs[$strDataSourceName];

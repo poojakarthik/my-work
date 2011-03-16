@@ -33,7 +33,6 @@ class HtmlTemplate_Collections_Events extends FlexHtmlTemplate
 		$this->LoadJavascript('component_collections_event_management');
 		$this->LoadJavascript('popup_custom_row_selection');
 		$this->LoadJavascript('popup_collection_event_action');
-		$this->LoadJavascript('popup_collection_event_barring');
 		$this->LoadJavascript('popup_collection_event_tdc');
 		$this->LoadJavascript('page_collections_events');
 		$this->LoadJavascript('popup_select_spreadsheet_file_type');

@@ -30,7 +30,7 @@ var Component_Account_Invoice_List = Class.create(
 	
 	// Protected
 	
-	_buildUI : function(oPermissions, bAccountHasOCAReferral)
+	_buildUI : function(oPermissions, bAccountHasOCAReferral, iInterimInvoiceType)
 	{
 		if (!oPermissions)
 		{
@@ -40,12 +40,19 @@ var Component_Account_Invoice_List = Class.create(
 		
 		if (Object.isUndefined(bAccountHasOCAReferral))
 		{
-			Component_Account_Invoice_List._hasAccountGotOCAReferral(this._buildUI.bind(this, oPermissions));
+			Component_Account_Invoice_List._hasAccountGotOCAReferral(this._iAccountId, this._buildUI.bind(this, oPermissions));
+			return;
+		}
+		
+		if (Object.isUndefined(iInterimInvoiceType))
+		{
+			Component_Account_Invoice_List._getAllowedInterimInvoiceType(this._iAccountId, this._buildUI.bind(this, oPermissions, bAccountHasOCAReferral));
 			return;
 		}
 		
 		this._oPermissions 				= oPermissions;
 		this._bAccountHasOCAReferral	= bAccountHasOCAReferral;
+		this._iInterimInvoiceType		= iInterimInvoiceType;
 		
 		// Create Dataset & pagination object
 		this.oDataSet		= 	new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_NO_CACHING, Component_Account_Invoice_List.DATA_SET_DEFINITION);
@@ -92,13 +99,16 @@ var Component_Account_Invoice_List = Class.create(
 			true
 		);
 		
-		// Header options
-		oSection.addToHeaderOptions(
-			$T.button({class: 'icon-button'},
-				$T.img({src: '../admin/img/template/new.png'}),
-				$T.span('Generate Interim Invoice')	
-			).observe('click', this._generateInterimInvoice.bind(this))
-		);
+		// Add in button to Generate a Final/Interim Invoice
+		if (this._iInterimInvoiceType && this._oPermissions.bUserHasInterimPerm)
+		{
+			oSection.addToHeaderOptions(
+				$T.button({class: 'icon-button'},
+					$T.img({src: '../admin/img/template/new.png'}),
+					$T.span('Generate ' + $CONSTANT_GROUP.invoice_run_type[this._iInterimInvoiceType].Description)	
+				).observe('click', this._generateInterimInvoice.bind(this))
+			);
+		}
 		
 		// Main content -- table
 		oSection.setContent(
@@ -176,18 +186,18 @@ var Component_Account_Invoice_List = Class.create(
 
 		this._oFilter.addFilter('account_id', {iType: Filter.FILTER_TYPE_VALUE});
 		this._oFilter.setFilterValue('account_id', this._iAccountId);
-		
 		this._oSort.registerField('created_on', Sort.DIRECTION_DESC);
-		
-		// Load the initial dataset
-		this._oSort.refreshData(true);
-		this._oFilter.refreshData(true);
-		this.oPagination.getCurrentPage();
 		
 		if (this._oContainerDiv)
 		{
 			this._oContainerDiv.appendChild(this._oElement);
 		}
+		
+		// Load the initial dataset
+		this._oSort.refreshData(true);
+		this._oFilter.refreshData(true);
+		this.oPagination.getCurrentPage();
+		this._showLoading(true);
 	},
 
 	_showLoading	: function(bShow)
@@ -260,7 +270,7 @@ var Component_Account_Invoice_List = Class.create(
 
 	_createTableRow	: function(oData, iPosition, iTotalResults)
 	{
-		var bIsSample 				= isNaN(oData.invoice_status);
+		var bIsSample 				= (oData.invoice_run_status_id == $CONSTANT.INVOICE_RUN_STATUS_TEMPORARY && oData.invoice_status == $CONSTANT.INVOICE_TEMP);
 		var bUserHasViewPerm 		= this._oPermissions.bUserHasViewPerm;
 		var bUserHasExternalPerm 	= this._oPermissions.bUserHasExternalPerm;
 		var bUserHasOperatorPerm 	= this._oPermissions.bUserHasOperatorPerm;
@@ -270,22 +280,22 @@ var Component_Account_Invoice_List = Class.create(
 		{
 			var oTypeIcon			= Component_Account_Invoice_List._getInvoiceRunTypeIcon(oData.invoice_run_type_id);
 			var oStatusIcon			= $T.img({src: Component_Account_Invoice_List.TEMP_INVOICE_IMAGE_SOURCE, alt: 'Temporary Invoice', title: 'Temporary Invoice'});
-			var oStatusAndTypeTD 	= 	$T.td(
+			var oStatusAndTypeTD 	= 	$T.td({class: 'component-account-invoice-list-icon-cell-double'},
 											oTypeIcon,
 											oStatusIcon
 										);
 			
 			// Hide temp status icon if invoice isn't temp 
-			if (oData.Status !== $CONSTANT.INVOICE_TEMP)
+			if (oData.invoice_status !== $CONSTANT.INVOICE_TEMP)
 			{
 				oStatusIcon.toggle();
 			}
 			
-			var oPdfTD 			= $T.td();
-			var oEmailTD		= $T.td();
-			var oViewInvoiceTD	= $T.td();
-			var oExportCSVTD	= $T.td();
-			var oRerateTD		= $T.td();
+			var oPdfTD 			= $T.td({class: 'component-account-invoice-list-icon-cell'});
+			var oEmailTD		= $T.td({class: 'component-account-invoice-list-icon-cell'});
+			var oViewInvoiceTD	= $T.td({class: 'component-account-invoice-list-icon-cell'});
+			var oExportCSVTD	= $T.td({class: 'component-account-invoice-list-icon-cell'});
+			var oRerateTD		= $T.td({class: 'component-account-invoice-list-icon-cell'});
 			
 			var oDate 	= Date.$parseDate(oData.created_on, 'Y-m-d').shift(-1, 'months');
 			var iYear 	= oDate.getFullYear();
@@ -295,7 +305,7 @@ var Component_Account_Invoice_List = Class.create(
 			{
 				oPdfTD.appendChild(
 					$T.a({href: 'reflex.php/Invoice/PDF/' + oData.id + '/?Account=' + oData.account_id + '&Invoice_Run_Id=' + oData.invoice_run_id + '&Year=' + iYear + '&Month=' + iMonth},
-						$T.img({src: '../admin/img/template/pdf_small.png', title: 'View PDF Invoice', alt: 'View PDF Invoice'})
+						$T.img({src: Component_Account_Invoice_List.PDF_IMAGE_SOURCE, title: 'View PDF Invoice', alt: 'View PDF Invoice'})
 					)
 				);
 				
@@ -305,14 +315,15 @@ var Component_Account_Invoice_List = Class.create(
 					if (bUserHasOperatorPerm || bUserHasExternalPerm)
 					{
 						oEmailTD.appendChild(
-							$T.img({src: '../adming/img/template/email.png', title: 'Email PDF Invoice', alt: 'Email PDF Invoice'}).observe('click', this._emailInvoicePDF.bind(this, oData, iYear, iMonth))
+							$T.img({class: 'pointer', src: Component_Account_Invoice_List.EMAIL_IMAGE_SOURCE, title: 'Email PDF Invoice', alt: 'Email PDF Invoice'}).observe('click', this._emailInvoicePDF.bind(this, oData, iYear, iMonth))
 						);
 					}
 				}
 			}
-
+			
 			if (!this._bAccountHasOCAReferral && bIsSample && bUserHasInterimPerm && (oData.invoice_run_type_id == $CONSTANT.INVOICE_RUN_TYPE_INTERIM || oData.invoice_run_type_id == $CONSTANT.INVOICE_RUN_TYPE_FINAL || oData.invoice_run_type_id == $CONSTANT.INVOICE_RUN_TYPE_INTERIM_FIRST))
 			{
+				// If this is an Temporary Interim/Final Invoice and has sufficient privileges, replace the Email button with a Commit button
 				var sCommitType = '';
 				switch (oData.invoice_run_type_id)
 				{
@@ -327,33 +338,39 @@ var Component_Account_Invoice_List = Class.create(
 						break;
 				}
 				
-				/*oEmailTD.appendChild(
-					$T.img({src: '../admin/img/template/invoice_commit.png', title: 'Approve ' + sCommitType + ' Invoice', alt: 'Approve ' + sCommitType + ' Invoice'})	
-				);*/
+				var oCommitIcon = $T.img({class: 'pointer', src: Component_Account_Invoice_List.COMMIT_IMAGE_SOURCE, title: 'Approve ' + sCommitType + ' Invoice', alt: 'Approve ' + sCommitType + ' Invoice'});
+				oCommitIcon.observe('click', this._commitInvoice.bind(this, oData));
 				
-				// If this is an Temporary Interim/Final Invoice and has sufficient privileges, replace the Email button with a Commit button
-				//$strCommitHref	= Href()->CommitInterimInvoice($dboInvoice->Id->Value, $arrInvoiceRun['invoice_run_type_id']);
-				//$strRevokeHref	= Href()->RevokeInterimInvoice($dboInvoice->Id->Value);
-				//$strEmailLabel	= "<img src='img/template/invoice_commit.png' title='Approve {$strCommitType} Invoice' onclick='{$strCommitHref}' />";
-				//$strEmailLabel	.= "<img src='img/template/invoice_revoke.png' title='Reject {$strCommitType} Invoice' onclick='{$strRevokeHref}' />";
+				var oRejectIcon = $T.img({class: 'pointer', src: Component_Account_Invoice_List.REVOKE_IMAGE_SOURCE, title: 'Reject ' + sCommitType + ' Invoice', alt: 'Reject ' + sCommitType + ' Invoice'});
+				oRejectIcon.observe('click', this._rejectInvoice.bind(this, oData));
+				
+				oEmailTD =	$T.td({class: 'component-account-invoice-list-icon-cell-double'},
+								oCommitIcon,
+								oRejectIcon
+							);
 			}
 			
 			if (bUserHasViewPerm && oData.has_unarchived_cdrs)
 			{
 				// Build the "View Invoice Details" link
-				//$strViewInvoiceHref		= "window.location.hash = '#Invoice/{$dboInvoice->Id->Value}/View/'";
-				//$strViewInvoiceLabel	= "<a onclick=\"$strViewInvoiceHref\"><img src='img/template/invoice.png' title='View Invoice Details' /></a>";
+				var oViewInvoiceIcon = $T.img({class: 'pointer', src: Component_Account_Invoice_List.ICON_IMAGE_SOURCE, alt: 'View Invoice Details', title: 'View Invoice Details'});
+				oViewInvoiceIcon.observe('click', this._viewInvoice.bind(this, oData.id));
+				oViewInvoiceTD.appendChild(oViewInvoiceIcon);
 				
 				// Build the "Export Invoice as CSV" link
-				//$strExportCSV = Href()->ExportInvoiceAsCSV($dboInvoice->Id->Value);
-				//$strExportCSV = "<a name='test' href='$strExportCSV'><img src='img/template/export.png' title='Export as CSV' /></a>";
+				oExportCSVTD.appendChild(
+					$T.a({href: 'flex.php/Invoice/ExportAsCSV/?Invoice.Id=' + oData.id},
+						$T.img({src: Component_Account_Invoice_List.EXPORT_IMAGE_SOURCE, alt: 'Export as CSV', title: 'Export as CSV'})
+					)
+				);
 			}
 			
 			// Rerating link
 			if (oData.has_unarchived_cdrs)
 			{
-				//$sDoRerate	= Href()->RerateInvoice($dboInvoice->Id->Value);
-				//$sRerate	= "<a href=\"$sDoRerate\"><img src='img/template/rerate.png' title='Rerate Invoice' alt='Rerate Invoice'/>";
+				var oRerateIcon = $T.img({class: 'pointer', src: Component_Account_Invoice_List.RERATE_IMAGE_SOURCE, alt: 'Rerate Invoice', title: 'Rerate Invoice'});
+				oRerateIcon.observe('click', this._rerateInvoice.bind(this, oData));
+				oRerateTD.appendChild(oRerateIcon);
 			}
 			
 			var	oTR	=	$T.tr(
@@ -398,10 +415,6 @@ var Component_Account_Invoice_List = Class.create(
 		}
 		else
 		{
-			// Update Page ? of ?, show 1 for page count if it is 0 because there is technically still a page even though it's empty
-			//var oPageInfo		= this._oElement.select('span.pagination-info').first();
-			//oPageInfo.innerHTML	= '(Page '+ (this.oPagination.intCurrentPage + 1) +' of ' + (iPageCount == 0 ? 1 : iPageCount) + ')';
-
 			if (this.oPagination.intCurrentPage != Pagination.PAGE_FIRST)
 			{
 				// Enable the first and previous buttons
@@ -419,7 +432,7 @@ var Component_Account_Invoice_List = Class.create(
 	
 	_generateInterimInvoice : function()
 	{
-		
+		Flex.Invoice.getPreGenerateValues(this._iAccountId);
 	},
 	
 	_emailInvoicePDF : function(oData, iYear, iMonth)
@@ -444,6 +457,35 @@ var Component_Account_Invoice_List = Class.create(
 				}
 			}
 		)
+	},
+	
+	_commitInvoice : function(oData)
+	{
+		Flex.Invoice.commitInterimInvoiceConfirm(
+			oData.id, 
+			(oData.invoice_run_type_id == $CONSTANT.INVOICE_RUN_TYPE_INTERIM_FIRST)
+		);
+	},
+	
+	_rejectInvoice : function(oData)
+	{
+		Flex.Invoice.revokeInterimInvoiceConfirm(oData.id);
+	},
+	
+	_rerateInvoice : function(oData)
+	{
+		JsAutoLoader.loadScript(
+			'javascript/plan.js',
+			function()
+			{
+				new Popup_Invoice_Rerate(oData.id);
+			}
+		);
+	},
+	
+	_viewInvoice : function(iInvoiceId)
+	{
+		new Popup_Invoice_View(iInvoiceId);
 	}
 });
 
@@ -454,8 +496,14 @@ Object.extend(Component_Account_Invoice_List,
 	DATA_SET_DEFINITION			: {sObject: 'Invoice', sMethod: 'getDatasetForAccount'},
 	MAX_RECORDS_PER_PAGE		: 10,
 	ICON_IMAGE_SOURCE			: '../admin/img/template/invoice.png',
-	TEMP_INVOICE_IMAGE_SOURCE	: '../admin/img/template/delete.png',
-	REQUIRED_CONSTANT_GROUPS	: ['InvoiceStatus', 'invoice_run_type'],
+	TEMP_INVOICE_IMAGE_SOURCE	: '../admin/img/template/temp_invoice.png',
+	PDF_IMAGE_SOURCE			: '../admin/img/template/pdf_small.png',
+	EMAIL_IMAGE_SOURCE			: '../admin/img/template/email.png',
+	COMMIT_IMAGE_SOURCE			: '../admin/img/template/invoice_commit.png',
+	REVOKE_IMAGE_SOURCE			: '../admin/img/template/invoice_revoke.png',
+	EXPORT_IMAGE_SOURCE			: '../admin/img/template/export.png',
+	RERATE_IMAGE_SOURCE			: '../admin/img/template/rerate.png',
+	REQUIRED_CONSTANT_GROUPS	: ['InvoiceStatus', 'invoice_run_type', 'invoice_run_status'],
 	
 	_ajaxError : function(oResponse, sMessage)
 	{
@@ -516,7 +564,7 @@ Object.extend(Component_Account_Invoice_List,
 			return;
 		}
 		
-		return oResponse.oPermissions;
+		fnCallback(oResponse.oPermissions);
 	},
 	
 	_hasAccountGotOCAReferral : function(iAccountId, fnCallback, oResponse)
@@ -537,7 +585,28 @@ Object.extend(Component_Account_Invoice_List,
 			return;
 		}
 		
-		return oResponse.bAccountHasOCAReferral;
+		fnCallback(oResponse.bAccountHasOCAReferral);
+	},
+	
+	_getAllowedInterimInvoiceType : function(iAccountId, fnCallback, oResponse)
+	{
+		if (!oResponse)
+		{
+			// Request
+			var fnResp	= Component_Account_Invoice_List._getAllowedInterimInvoiceType.curry(iAccountId, fnCallback);
+			var fnReq	= jQuery.json.jsonFunction(fnResp, fnResp, 'Account', 'getAllowedInterimInvoiceType');
+			fnReq(iAccountId);
+			return;
+		}
+		
+		if (!oResponse.bSuccess)
+		{
+			// Error
+			Component_Account_Invoice_List._ajaxError(oResponse, 'Unable to determine the allowable Interim Invoice type for the Account');
+			return;
+		}
+		
+		fnCallback(oResponse.iInterimInvoiceRunType);
 	}
 });
 

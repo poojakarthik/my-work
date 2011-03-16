@@ -557,7 +557,6 @@ class Service extends ORM
 		{
 			// Get the data source for the service CDR data
 			$sDataSource	= CDR::getDataSourceForInvoiceRunCDRs($iInvoiceRunId);
-			$cdrDb 			= Data_Source::get($sDataSource);
 			
 			if ($sDataSource == FLEX_DATABASE_CONNECTION_DEFAULT)
 			{
@@ -608,43 +607,53 @@ class Service extends ORM
 			else
 			{
 				// PostgreSQL Database,
-				$sSelect		= "SELECT c.id as \"Id\", c.record_type as \"RecordTypeId\", c.description as \"Description\", c.source as \"Source\", c.destination as \"Destination\", c.start_date_time as \"StartDatetime\", c.units as \"Units\", c.charge as \"Charge\", c.credit as \"Credit\" ";
-				$sCountSelect	= "SELECT	COUNT(*)";
-				/*
-				$sCdrs			= 	"FROM 	cdr_invoiced_$iInvoiceRunId c " .
-									"WHERE 	account = $iAccountId " .
-									"AND 	c.service = $iServiceId";
-									*/
-				$sCdrs			= 	"FROM 	cdr_invoiced c " .
-									"WHERE 	c.invoice_run_id = {$iInvoiceRunId} " .
-									"AND	account = {$iAccountId} " .
-									"AND	c.service in ({$sWhereServiceEquals}) ";
-	
-				if ($iRecordType)
+				try
 				{
-					$sCdrs		.= " AND c.record_type = " . $iRecordType . " ";
-				}
-	
-				$sCountCdrs		= "$sCountSelect $sCdrs";
-				$sCdrs			.= 	"ORDER BY c.start_date_time ASC " .
-								"LIMIT ".$iLimit." OFFSET ".$iOffset." ";
-				$sCdrs			= "$sSelect $sCdrs";
-				$oResultCount	= $cdrDb->query($sCountCdrs);
-				
-				if (PEAR::isError($oResultCount))
-				{
-					throw new Exception("Failed to count CDRs ($sCountCdrs): " . $oResultCount->getMessage());
-				}
-				
-				$oResultCDRs	= $cdrDb->query($sCdrs);
-				
-				if (PEAR::isError($oResultCDRs))
-				{
-					throw new Exception("Failed to load CDRs: " . $oResultCDRs->getMessage());
-				}
+					$cdrDb = Data_Source::get($sDataSource, false, true);
+					$sSelect		= "SELECT c.id as \"Id\", c.record_type as \"RecordTypeId\", c.description as \"Description\", c.source as \"Source\", c.destination as \"Destination\", c.start_date_time as \"StartDatetime\", c.units as \"Units\", c.charge as \"Charge\", c.credit as \"Credit\" ";
+					$sCountSelect	= "SELECT	COUNT(*)";
+					/*
+					$sCdrs			= 	"FROM 	cdr_invoiced_$iInvoiceRunId c " .
+										"WHERE 	account = $iAccountId " .
+										"AND 	c.service = $iServiceId";
+										*/
+					$sCdrs			= 	"FROM 	cdr_invoiced c " .
+										"WHERE 	c.invoice_run_id = {$iInvoiceRunId} " .
+										"AND	account = {$iAccountId} " .
+										"AND	c.service in ({$sWhereServiceEquals}) ";
 		
-				$aResult['recordCount']	= $oResultCount->fetchOne();
-				$aResult['CDRs'] 		= $oResultCDRs->fetchAll(MDB2_FETCHMODE_ASSOC);
+					if ($iRecordType)
+					{
+						$sCdrs		.= " AND c.record_type = " . $iRecordType . " ";
+					}
+		
+					$sCountCdrs		= "$sCountSelect $sCdrs";
+					$sCdrs			.= 	"ORDER BY c.start_date_time ASC " .
+										"LIMIT ".$iLimit." OFFSET ".$iOffset." ";
+					$sCdrs			= "$sSelect $sCdrs";
+					$oResultCount	= $cdrDb->query($sCountCdrs);
+					
+					if (PEAR::isError($oResultCount))
+					{
+						throw new Exception_Database("Failed to count CDRs ($sCountCdrs): " . $oResultCount->getMessage());
+					}
+					
+					$oResultCDRs	= $cdrDb->query($sCdrs);
+					
+					if (PEAR::isError($oResultCDRs))
+					{
+						throw new Exception_Database("Failed to load CDRs: " . $oResultCDRs->getMessage());
+					}
+			
+					$aResult['recordCount']	= ($oResultCount ? $oResultCount->fetchOne() : 0);
+					$aResult['CDRs'] 		= ($oResultCDRs ? $oResultCDRs->fetchAll(MDB2_FETCHMODE_ASSOC) : array());
+				}
+				catch (Exception_Database $oEx)
+				{
+					// Suppress exception and return empty set, the cdr database may be unreachable
+					$aResult['recordCount']	= 0;
+					$aResult['CDRs'] 		= array();
+				}
 			}
 		}
 		else

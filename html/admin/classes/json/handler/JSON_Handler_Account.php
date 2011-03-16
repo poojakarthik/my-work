@@ -1488,6 +1488,49 @@ class JSON_Handler_Account extends JSON_Handler
 		}
 	}
 	
+	public function getAllowedInterimInvoiceType($iAccountId)
+	{
+		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		try
+		{
+			// Get the allowed next interim invoice (run) type
+			$oAccount 			= Account::getForId($iAccountId);
+			$iInvoiceRunTypeId 	= $oAccount->getInterimInvoiceType();
+			
+			// Determine if the appropriate flex module is active
+			$bInterimAllowed	= false;
+			switch ($iInvoiceRunTypeId)
+			{
+				case INVOICE_RUN_TYPE_FINAL:
+					$bInterimAllowed = Flex_Module::isActive(FLEX_MODULE_INVOICE_FINAL);
+					break;
+				case INVOICE_RUN_TYPE_INTERIM:
+				case INVOICE_RUN_TYPE_INTERIM_FIRST:
+					$bInterimAllowed = Flex_Module::isActive(FLEX_MODULE_INVOICE_INTERIM);
+					break;
+			}
+			
+			if (!$bInterimAllowed)
+			{
+				// Module is inactive, clear the result
+				$iInvoiceRunTypeId = null;
+			}
+			
+			return	array(
+						'bSuccess'	 				=> true, 
+						'iInterimInvoiceRunType'	=> $iInvoiceRunTypeId
+					);
+		}
+		catch (Exception $e)
+		{
+			return 	array(
+						'bSuccess'	=> false,
+						'sMessage'	=> ($bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'),
+						'sDebug'	=> ($bUserIsGod ? $this->_JSONDebug : '')
+					);
+		}
+	}
+	
 	private function _getRebill($iAccountId)
 	{
 		$oRebill	= Rebill::getForAccountId($iAccountId);

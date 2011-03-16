@@ -119,16 +119,14 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 		try
 		{		
-                    $aParameters = array();
-                    foreach ($aEventInstanceDetails as $iEventInstanceId => $sActionDetail)
-                    {
-                        $aParameters[$iEventInstanceId] = array('extra_details' => $sActionDetail);
-                    }
-            
-                     Logic_Collection_Event_Instance::completeScheduledInstancesFromUI($aParameters);
-            
-           
-		}
+            $aParameters = array();
+            foreach ($aEventInstanceDetails as $iEventInstanceId => $sActionDetail)
+            {
+                $aParameters[$iEventInstanceId] = array('extra_details' => $sActionDetail);
+            }
+    
+            Logic_Collection_Event_Instance::completeScheduledInstancesFromUI($aParameters);
+        }
 		catch (Exception $e)
 		{
 			// Do nothing
@@ -148,12 +146,12 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		try
 		{
 			$aParameters = array();
-                        foreach ($aEventInstanceIds as $iEventInstanceId)
-                        {
-                            $aParameters[$iEventInstanceId] = array();
-                        }
-            
-                         Logic_Collection_Event_Instance::completeScheduledInstancesFromUI($aParameters);
+            foreach ($aEventInstanceIds as $iEventInstanceId)
+            {
+                $aParameters[$iEventInstanceId] = array();
+            }
+
+            Logic_Collection_Event_Instance::completeScheduledInstancesFromUI($aParameters);
 		}
 		catch (Exception $e)
 		{
@@ -174,12 +172,12 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		try
 		{
 			$aParameters = array();
-                        foreach ($aEventInstanceIds as $iEventInstanceId)
-                        {
-                            $aParameters[$iEventInstanceId] = array();
-                        }
-            
-                         Logic_Collection_Event_Instance::completeScheduledInstancesFromUI($aParameters);
+            foreach ($aEventInstanceIds as $iEventInstanceId)
+            {
+                $aParameters[$iEventInstanceId] = array();
+            }
+
+            Logic_Collection_Event_Instance::completeScheduledInstancesFromUI($aParameters);
 		}
 		catch (Exception $e)
 		{
@@ -200,12 +198,12 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		try
 		{
 			$aParameters = array();
-                        foreach ($aEventInstanceIds as $iEventInstanceId)
-                        {
-                            $aParameters[$iEventInstanceId] = array();
-                        }
+            foreach ($aEventInstanceIds as $iEventInstanceId)
+            {
+                $aParameters[$iEventInstanceId] = array();
+            }
 
-                        Logic_Collection_Event_Instance::completeScheduledInstancesFromUI($aParameters);
+            Logic_Collection_Event_Instance::completeScheduledInstancesFromUI($aParameters);
 		}
 		catch (Exception $e)
 		{
@@ -226,12 +224,12 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		try
 		{
 			$aParameters = array();
-                        foreach ($aEventInstanceIds as $iEventInstanceId)
-                        {
-                            $aParameters[$iEventInstanceId] = array();
-                        }
+            foreach ($aEventInstanceIds as $iEventInstanceId)
+            {
+                $aParameters[$iEventInstanceId] = array();
+            }
 
-                        Logic_Collection_Event_Instance::completeScheduledInstancesFromUI($aParameters);
+            Logic_Collection_Event_Instance::completeScheduledInstancesFromUI($aParameters);
 		}
 		catch (Exception $e)
 		{
@@ -251,17 +249,13 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 		try
 		{
-			
-			
 			$aParameters = array();
-                        foreach ($aEventInstanceIds as $iEventInstanceId)
-                        {
-                             $aParameters[$iEventInstanceId] = array();
-                        }
+            foreach ($aEventInstanceIds as $iEventInstanceId)
+            {
+                 $aParameters[$iEventInstanceId] = array();
+            }
 
-                        Logic_Collection_Event_Instance::completeScheduledInstancesFromUI($aParameters);
-            
-           
+            Logic_Collection_Event_Instance::completeScheduledInstancesFromUI($aParameters);
 		}
 		catch (Exception $e)
 		{
@@ -276,18 +270,18 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 				);
 	}
 	
-	public function invokeBarringEvent($aEventInstanceIds, $sScheduledDate)
+	public function invokeBarringEvent($aEventInstanceIds)
 	{
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 		try
 		{
 			$aParameters = array();
-                        foreach ($aEventInstanceIds as $iEventInstanceId)
-                                    {
-                            $aParameters[$iEventInstanceId] = array('authorised_datetime' => $sScheduledDate);
-                        }
-
-                        Logic_Collection_Event_Instance::completeScheduledInstancesFromUI($aParameters);
+	        foreach ($aEventInstanceIds as $iEventInstanceId)
+	        {
+	            $aParameters[$iEventInstanceId] = array();
+	        }
+	
+	        Logic_Collection_Event_Instance::completeScheduledInstancesFromUI($aParameters);
 		}
 		catch (Exception $e)
 		{
@@ -308,12 +302,12 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		try
 		{
 			$aParameters = array();
-                        foreach ($aEventInstanceIds as $iEventInstanceId)
-                        {
-                            $aParameters[$iEventInstanceId] = array('authorised_datetime' => $sScheduledDate);
-                        }
+            foreach ($aEventInstanceIds as $iEventInstanceId)
+            {
+                $aParameters[$iEventInstanceId] = array('authorised_datetime' => $sScheduledDate);
+            }
 
-                        Logic_Collection_Event_Instance::completeScheduledInstancesFromUI($aParameters);
+            Logic_Collection_Event_Instance::completeScheduledInstancesFromUI($aParameters);
 		}
 		catch (Exception $e)
 		{
@@ -334,12 +328,12 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		try
 		{
 			$aParameters = array();
-                        foreach ($aEventInstanceIds as $iEventInstanceId)
-                                    {
-                            $aParameters[$iEventInstanceId] = array();
-                        }
+            foreach ($aEventInstanceIds as $iEventInstanceId)
+            {
+                $aParameters[$iEventInstanceId] = array();
+            }
 
-                        Logic_Collection_Event_Instance::completeScheduledInstancesFromUI($aParameters);
+            Logic_Collection_Event_Instance::completeScheduledInstancesFromUI($aParameters);
 		}
 		catch (Exception $e)
 		{
@@ -618,7 +612,7 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		}
 	}
 	
-	public function getAll($bActiveOnly=false)
+	public function getAll($bActiveOnly=false, $bScenarioEventsOnly=false)
 	{
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 		try
@@ -627,9 +621,16 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 			$aResults 	= array();
 			foreach ($aEvents as $oEvent)
 			{
+				// Check if active
 				if (!$bActiveOnly || ($oEvent->isActive()))
 				{
-					$aResults[$oEvent->id] = self::_getStdClassEvent($oEvent);
+					// Check if the implementation is a scenario event implementation
+					$oStdEvent 			= self::_getStdClassEvent($oEvent);
+					$oImplementation	= $oStdEvent->collection_event_type->collection_event_type_implementation;
+					if (!$bScenarioEventsOnly || $oImplementation->is_scenario_event)
+					{
+						$aResults[$oEvent->id] = $oStdEvent;
+					}
 				}
 			}
 			

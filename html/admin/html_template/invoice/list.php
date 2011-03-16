@@ -75,8 +75,19 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		$this->LoadJavascript("filter");
 		$this->LoadJavascript("section");
 		$this->LoadJavascript("reflex_loading_overlay");
+		$this->LoadJavascript("control_field");
+		$this->LoadJavascript("control_field_select");
+		$this->LoadJavascript("control_field_textarea");
+		
+		$this->LoadJavascript("account");
+		$this->LoadJavascript("invoice");
 		
 		$this->LoadJavascript("component_account_invoice_list");
+		$this->LoadJavascript("popup_invoice_rerate");
+		$this->LoadJavascript("popup_invoice_rerate_summary");
+		$this->LoadJavascript("popup_invoice_rerate_ticket");
+		$this->LoadJavascript("popup_adjustment_request");
+		$this->LoadJavascript("popup_invoice_view");
 	}
 	
 	public function Render()
