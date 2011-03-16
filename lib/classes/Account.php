@@ -457,8 +457,8 @@ class Account
 
                     $oQuery->Execute($sSQL);
 
-                    $sSQL = "INSERT INTO account_payable (id, collection_promise_id, due_date, amount, created_datetime,created_employee_id, modified_datetime,modified_employee_id, status_id)
-                                SELECT cpi.*
+                    $sSQL = "INSERT INTO account_payable (id, collection_promise_id, due_date, amount, created_datetime,created_employee_id,  account_id)
+                                SELECT cpi.*, cp.account_id
                                 FROM collection_promise_instalment cpi
                                 JOIN collection_promise cp ON ( cp.id = cpi.collection_promise_id
                                                                 AND cp.completed_datetime IS NULL AND cp.account_id = $this->Id)";
@@ -466,7 +466,7 @@ class Account
 
                     $sSQL = "SELECT *
                               FROM account_payable
-                              ORDER BY due_date, balance asc";
+                              ORDER BY due_date, balance asc"; //ordering by balance will ensure that promise instalments come first as their balance is NULL in the temp table
 
                     $mResult = $oQuery->Execute($sSQL);
                     $aResult = array();
@@ -489,7 +489,7 @@ class Account
                                 unset($aRecord['modified_employee_id']);
                                 unset($aRecord['status_id']);
                                 $oORM = new Collectable($aRecord);
-                                $aResult[] = Logic_Collectable::getInstance($oORM);
+                                $aResult[] = Logic_Collectable::getInstance($oORM, TRUE);
                             }
 
                         }
@@ -609,7 +609,7 @@ class Account
                    $sSQL = "    SELECT DISTINCT a.*
                                 FROM Account a
                                 JOIN account_status ast ON (a.Archived = ast.id AND ast.send_late_notice = 1)
-
+				LIMIT 500 
                                ";
 
                     $oQuery = new Query();
