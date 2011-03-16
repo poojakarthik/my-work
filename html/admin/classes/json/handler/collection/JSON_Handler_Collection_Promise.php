@@ -260,7 +260,7 @@ class JSON_Handler_Collection_Promise extends JSON_Handler
 				}
 
 				Log::getLog()->log("Promise Created");
-				throw new Exception("Test Mode");
+				//throw new Exception("Test Mode");
 
 			} catch (Exception $oException) {
 				// Rollback & re-Throw
