@@ -29,7 +29,7 @@ class Logic_Account implements DataLogic
     protected static $aInstances = array();
 
 
-    public static function getInstance($mDefinition, $bBypassCache = false)
+    public static function getInstance($mDefinition, $bRefreshCache = false)
     {
 	$oDO = null;
 	if (is_numeric($mDefinition))
@@ -50,17 +50,23 @@ class Logic_Account implements DataLogic
 	if ($bBypassCache)
 	    return new self($oDO);
 
-	if (!in_array($oDO->Id, array_keys(self::$aInstances)))
-	    self::$aInstances[$oDO->Id]	= new self($oDO);
+	if (!$bRefreshCache && in_array($oDO->Id, array_keys(self::$aInstances)))
+	{
+		return self::$aInstances[$oDO->Id];
+	}
+	else
+	{
+	    $oInstance = new self($oDO);
+	    self::$aInstances[$oDO->Id]	= $oInstance;
+	    return $oInstance;
 
-	return self::$aInstances[$oDO->Id];
+	}
+
+	
 
     }
 
-    public static function setCache($aInstances)
-    {
-	self::$aInstances = $aInstances;
-    }
+
 
     private function __construct($mDefinition)
     {
@@ -457,10 +463,10 @@ class Logic_Account implements DataLogic
      *  - Logic_Collection_Promise_Instalment that belong to a currently active promise
      * @return array of all payable items for the account (objects of the following classes: Logic_Collectable with amount > 0  and Logic_Collection_Promise_Instalment that belong to a currently active promise)
      */
-    public function getPayables()
+    public function getPayables($bRefreshFromDatabase = false)
     {
         //return $this->oDO->getPayables();
-        if ($this->_aPayables === null)
+        if ($this->_aPayables === null || $bRefreshFromDatabase)
                 $this->_aPayables = $this->oDO->getPayables();
 
         return $this->_aPayables;
@@ -470,10 +476,11 @@ class Logic_Account implements DataLogic
      * equivalent to getCollectableBalance()
      * @return total a amount payable as the sum of the balance of all payables
      */
-    public function getPayableBalance()
+    public function getPayableBalance($bRefreshFromDatabase = false)
     {
        $fTotalBalance = 0;
-        foreach ($this->getPayables() as $oPayable)
+       $aPayables = $this->getPayables($bRefreshFromDatabase);
+        foreach ($aPayables as $oPayable)
         {
             $fTotalBalance += $oPayable->getBalance();
         }
@@ -600,7 +607,7 @@ class Logic_Account implements DataLogic
 
         $iIterations = 0;
 
-        while ($iIterations<1 && (($this->getPayableBalance() > 0 && $this->getDistributableCreditBalance() > 0)
+        while ($iIterations<1 && (($this->getPayableBalance(TRUE) > 0 && $this->getDistributableCreditBalance() > 0)
                 || ($this->hasPayablesWithBalanceBelowAmount() && $this->getDistributableDebitBalance() > 0)))
         {
             $iIterations++;
@@ -669,7 +676,7 @@ class Logic_Account implements DataLogic
 //       //Log::getLog()->log("Account Collectable Balance: ".$this->getCollectableBalance(Logic_Collectable::DEBIT));
 //       //Log::getLog()->log("Distributable Credit Balance: ".$this->getDistributableCreditBalance() );
 //       //Log::getLog()->log("Distributable Debit Balance: ".$this->getDistributableDebitBalance());
-        return array('iterations'=>$iIterations, 'Debit Collectables' =>count($this->getCollectables()), 'Credit Collectables'=> count($aCreditCollectable) , 'Credit Payments' =>count($aPayments) , 'Credit Adjustments'=> count($aAdjustments), 'Debit Payments' => count($aReversedPayments) , 'Debit Adjustments' =>count($aDebitAdjustments) );
+        return array('iterations'=>$iIterations, 'Debit Collectables' =>count($this->getCollectables()), 'Credit Collectables'=> count($aCreditCollectable) , 'Credit Payments' =>count($aPayments) , 'Credit Adjustments'=> count($aAdjustments), 'Debit Payments' => count($aReversedPayments) , 'Debit Adjustments' =>count($aDebitAdjustments), 'Balance'=>$this->getPayableBalance() );
     }
 
     /**
@@ -920,10 +927,13 @@ class Logic_Account implements DataLogic
             $oStopwatch = Logic_Stopwatch::getInstance(true);
             $oStopwatch->start();
              //Log::getLog()->log("Instantiated logic account $oAccountORM->Id,".  memory_get_usage(true));
-
+	     $fStartCollectableBalance = $oAccount->getPayableBalance();
+	     $fAccountBalance = $oAccount->getAccountBalance();
             $aResult = $oAccount->redistributeBalances();
             $time = $oStopwatch->split();
+	     $fOverdueBalance = $oAccount->getOverdueCollectableBalance($mNow);
             self::$aMemory['after_before_cache_clear'] = memory_get_usage (TRUE );
+	   
             $oAccount->reset();
             unset($oAccount);
             unset($oStopwatch);
@@ -932,7 +942,7 @@ class Logic_Account implements DataLogic
             $iMemory = (memory_get_usage (TRUE ));
 
             self::$aMemory['after_after_cache_clear'] = $iMemory;
-          Log::getLog()->log("$iId, $time,  $iMemory , ".self::$_aTime['delete_linking_data'].",".self::$_aTime['reset_balances'].",".$aResult['iterations'].",".$aResult['Debit Collectables'].",".$aResult['Credit Collectables'].",".$aResult['Credit Payments'].",".$aResult['Credit Adjustments'].",".$aResult['Debit Payments'].",".$aResult['Debit Adjustments']);
+          Log::getLog()->log("$iId, $time,  $iMemory , ".self::$_aTime['delete_linking_data'].",".self::$_aTime['reset_balances'].",".$aResult['iterations'].",".$aResult['Debit Collectables'].",".$aResult['Credit Collectables'].",".$aResult['Credit Payments'].",".$aResult['Credit Adjustments'].",".$aResult['Debit Payments'].",".$aResult['Debit Adjustments'].",".$fAccountBalance.",".$fStartCollectableBalance.",".$aResult['Balance'].",".$fOverdueBalance);
            // foreach(self::$aMemory as $key => $value)
            // {
            //     //Log::getLog()->log("$key, $value");
@@ -1096,7 +1106,7 @@ class Logic_Account implements DataLogic
 		$aAccounts[$oORM->Id] =self::getInstance($oORM, TRUE);
             }
         }
-	self::setCache($aAccounts);
+	
 	Log::getLog()->log("Number of accounts: ".count($aAccounts));
 	Log::getLog()->log("finished instantiating logic in ".Logic_Stopwatch::getInstance()->lap());
         return $aAccounts;

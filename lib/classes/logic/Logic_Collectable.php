@@ -28,28 +28,28 @@ class Logic_Collectable implements DataLogic , Logic_Distributable,  Logic_Payab
 
 
 
-   public static function getInstance($mDefinition)
+    public static function getInstance($mDefinition, $bRefreshCache = FALSE)
+    {
+	$oDO = null;
+	if (is_numeric($mDefinition))
 	{
-		$oDO = null;
-		if (is_numeric($mDefinition))
-		{
-			$oDO = Collectable::getForId($mDefinition);
-		}
-		else if (get_class($mDefinition) == 'Collectable')
-		{
-			$oDO = $mDefinition;
-		}
+		$oDO = Collectable::getForId($mDefinition);
+	}
+	else if (get_class($mDefinition) == 'Collectable')
+	{
+		$oDO = $mDefinition;
+	}
 
-     	if ($oDO !== null && $oDO->id !== null && in_array($oDO->id, array_keys(self::$aInstances)))
- 		{
- 			return self::$aInstances[$oDO->id];
-     	}
- 		else
-     	{
-     		$oLogic						= new self($oDO);
-            self::$aInstances[$oDO->id]	= $oLogic;
-            return $oLogic;
-     	}
+	if (!$bRefreshCache && $oDO !== null && $oDO->id !== null && in_array($oDO->id, array_keys(self::$aInstances)))
+	{
+	    return self::$aInstances[$oDO->id];
+	}
+	else
+	{
+	    $oLogic = new self($oDO);
+	    self::$aInstances[$oDO->id]	= $oLogic;
+	    return $oLogic;
+	}
     }
 
 
