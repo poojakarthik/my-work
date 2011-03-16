@@ -81,22 +81,30 @@ var Popup_Account_TIO_Complaint_Close = Class.create(Reflex_Popup,
 			}
 			catch (oEx)
 			{
-				Reflex_Popup.alert('Please choose an Reason before continuing.', {sTitle: 'Error'});
+				Reflex_Popup.alert('Please choose a Reason before continuing.', {sTitle: 'Error'});
 				return;
 			}
 			
 			// Check if the request needs to be bundled up with another task
-			var oComplaintDetails = {iTIOComplaintId: this._oComplaint.id, iEndReasonId: iReasonId};
 			switch (iCloseAction)
 			{
 				case Popup_Account_TIO_Complaint_Close.CLOSE_ACTION_CREATE_PROMISE:
-					new Popup_Account_Promise_Edit(this._iAccountId, oComplaintDetails);
+					new Popup_Account_Promise_Edit(
+						this._iAccountId,
+						{
+							oSuspension: 
+							{
+								id                                  : this._oComplaint.collection_suspension_id,
+								collection_suspension_end_reason_id	: iReasonId
+							}
+						}
+					);
 					return;
 				case Popup_Account_TIO_Complaint_Close.CLOSE_ACTION_CREATE_SUSPENSION:
 					new Popup_Account_Suspend_From_Collections(
 						this._iAccountId, 
 						this._complete.bind(this), 
-						oComplaintDetails
+						{iTIOComplaintId: this._oComplaint.id, iEndReasonId: iReasonId}
 					);
 					return;
 			}
