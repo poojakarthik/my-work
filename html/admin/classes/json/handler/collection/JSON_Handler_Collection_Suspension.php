@@ -108,7 +108,7 @@ class JSON_Handler_Collection_Suspension extends JSON_Handler
 		}
 	}
 	
-	public function createSuspension($oDetails, $iEffectiveSeconds)
+	public function createSuspension($oDetails, $iEffectiveSeconds, $oTIOComplaintDetails=null)
 	{
 		$bUserIsGod = Employee::getForId(Flex::getUserId())->isGod();
 		try
@@ -141,13 +141,44 @@ class JSON_Handler_Collection_Suspension extends JSON_Handler
 						);
 			}
 			
-			$oSuspension 									= new Collection_Suspension();
-			$oSuspension->account_id 						= $oDetails->account_id;
-			$oSuspension->proposed_end_datetime 			= $oDetails->proposed_end_datetime;
-			$oSuspension->start_employee_id 				= Flex::getUserId();
-			$oSuspension->collection_suspension_reason_id	= $oDetails->collection_suspension_reason_id;
-			$oSuspension->calculateStartDatetime(date('Y-m-d H:i:s', $iEffectiveSeconds));
-			$oSuspension->save();
+			// Start transaction
+			$oDataAccess = DataAccess::getDataAccess();
+			if ($oDataAccess->TransactionStart() === false)
+			{
+				throw new Exception_Database("Failed to start db transaction.");
+			}
+			
+			try
+			{
+				if ($oTIOComplaintDetails !== null)
+				{
+					// Close the tio complaint using the given details (id and reason)
+					Account_TIO_Complaint::getForId($oTIOComplaintDetails->iTIOComplaintId)->end($oTIOComplaintDetails->iEndReasonId);
+				}
+				
+				$oSuspension 									= new Collection_Suspension();
+				$oSuspension->account_id 						= $oDetails->account_id;
+				$oSuspension->proposed_end_datetime 			= $oDetails->proposed_end_datetime;
+				$oSuspension->start_employee_id 				= Flex::getUserId();
+				$oSuspension->collection_suspension_reason_id	= $oDetails->collection_suspension_reason_id;
+				$oSuspension->calculateStartDatetime(date('Y-m-d H:i:s', $iEffectiveSeconds));
+				$oSuspension->save();
+			}
+			catch (Exception $oEx)
+			{
+				// Rollback transaction
+				if ($oDataAccess->TransactionRollback() === false)
+				{
+					throw new Exception_Database("Failed to rollback db transaction.");
+				}
+				throw $oEx;
+			}
+			
+			// Commit transaction
+			if ($oDataAccess->TransactionCommit() === false)
+			{
+				throw new Exception_Database("Failed to commit db transaction.");
+			}
 			
 			return	array(
 						'bSuccess' 		=> true,

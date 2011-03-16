@@ -60,7 +60,7 @@ var Popup_Account_TIO_Complaint_View = Class.create(Reflex_Popup,
 								)
 							);
 		
-		this.setTitle('TIO Complaint Details for Account ' + this._iAccountId);
+		this.setTitle(this._iAccountId + ': TIO Complaint Details');
 		this.addCloseButton();
 		this.setContent(oContentDiv);
 		this.display();

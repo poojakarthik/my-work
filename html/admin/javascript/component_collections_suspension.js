@@ -1,13 +1,14 @@
 
 var Component_Collections_Suspension = Class.create( 
 {
-	initialize : function(iAccountId, oContainerDiv, fnOnComplete, fnOnCancel, oLoadingPopup)
+	initialize : function(iAccountId, oContainerDiv, fnOnComplete, fnOnCancel, oLoadingPopup, oTIOComplaintDetails)
 	{
-		this._iAccountId	= iAccountId;
-		this._oContainerDiv = oContainerDiv;
-		this._fnOnComplete	= fnOnComplete;
-		this._fnOnCancel	= fnOnCancel;
-		this._oLoadingPopup	= oLoadingPopup;
+		this._iAccountId			= iAccountId;
+		this._oContainerDiv 		= oContainerDiv;
+		this._fnOnComplete			= fnOnComplete;
+		this._fnOnCancel			= fnOnCancel;
+		this._oLoadingPopup			= oLoadingPopup;
+		this._oTIOComplaintDetails	= (oTIOComplaintDetails ? oTIOComplaintDetails : null);
 		
 		this._aControls	= [];
 		
@@ -154,7 +155,7 @@ var Component_Collections_Suspension = Class.create(
 			// Make request (sending the details object)
 			var fnResp 	= this._save.bind(this);
 			var fnReq	= jQuery.json.jsonFunction(fnResp, fnResp, 'Collection_Suspension', 'createSuspension');
-			fnReq(oDetails, Math.floor(this._iStartTime / 1000));
+			fnReq(oDetails, Math.floor(this._iStartTime / 1000), this._oTIOComplaintDetails);
 			return;
 		}
 		

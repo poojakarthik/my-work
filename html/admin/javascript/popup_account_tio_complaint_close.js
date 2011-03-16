@@ -43,18 +43,33 @@ var Popup_Account_TIO_Complaint_Close = Class.create(Reflex_Popup,
 								$T.div('Please choose a reason why the TIO Complaint is being closed.'),
 								oReasonControl.getElement(),
 								$T.div({class: 'popup-account-tio-complaint-close-buttons'},
-									$T.button('Close Complaint').observe('click', this._endComplaint.bind(this, null)),
+									$T.button('Close Complaint').observe('click', this._doEndComplaint.bind(this)),
 									$T.button('Cancel').observe('click', this.hide.bind(this))
 								)
 							);
 		
-		this.setTitle('Closing TIO Complaint for Account ' + this._oComplaint.account_id);
+		this.setTitle(this._oComplaint.account_id + ': Close TIO Complaint');
 		this.addCloseButton();
 		this.setContent(oContentDiv);
 		this.display();
 	},
 	
-	_endComplaint : function(oResponse, oEvent)
+	_doEndComplaint : function()
+	{
+		Reflex_Popup.yesNoCancel(
+			'After the complaint has been closed. What would you like to do?', 
+			{
+				sYesLabel		: 'Create a Promise to Pay', 
+				sNoLabel		: 'Suspend Account from Collections', 
+				sCancelLabel	: 'Nothing',
+				fnOnYes			: this._endComplaint.bind(this, Popup_Account_TIO_Complaint_Close.CLOSE_ACTION_CREATE_PROMISE),
+				fnOnNo			: this._endComplaint.bind(this, Popup_Account_TIO_Complaint_Close.CLOSE_ACTION_CREATE_SUSPENSION),
+				fnOnCancel		: this._endComplaint.bind(this, Popup_Account_TIO_Complaint_Close.CLOSE_ACTION_NOTHING)
+			}
+		);
+	},
+	
+	_endComplaint : function(iCloseAction, oResponse)
 	{
 		if (!oResponse)
 		{
@@ -70,11 +85,27 @@ var Popup_Account_TIO_Complaint_Close = Class.create(Reflex_Popup,
 				return;
 			}
 			
+			// Check if the request needs to be bundled up with another task
+			var oComplaintDetails = {iTIOComplaintId: this._oComplaint.id, iEndReasonId: iReasonId};
+			switch (iCloseAction)
+			{
+				case Popup_Account_TIO_Complaint_Close.CLOSE_ACTION_CREATE_PROMISE:
+					new Popup_Account_Promise_Edit(this._iAccountId, oComplaintDetails);
+					return;
+				case Popup_Account_TIO_Complaint_Close.CLOSE_ACTION_CREATE_SUSPENSION:
+					new Popup_Account_Suspend_From_Collections(
+						this._iAccountId, 
+						this._complete.bind(this), 
+						oComplaintDetails
+					);
+					return;
+			}
+			
 			this._oLoading = new Reflex_Popup.Loading('Closing TIO Complaint...');
 			this._oLoading.display();
 			
 			// Request
-			var fnResp	= this._endComplaint.bind(this);
+			var fnResp	= this._endComplaint.bind(this, iCloseAction);
 			var fnReq	= jQuery.json.jsonFunction(fnResp, fnResp, 'Account_TIO_Complaint', 'endComplaint');
 			fnReq(this._oComplaint.id, iReasonId);
 			return;
@@ -90,36 +121,25 @@ var Popup_Account_TIO_Complaint_Close = Class.create(Reflex_Popup,
 			return;
 		}
 		
-		Reflex_Popup.yesNoCancel(
-			'TIO Complaint closed. What would you like to do now?', 
-			{
-				sYesLabel	: 'Create a Promise to Pay', 
-				sNoLabel	: 'Suspend Account from Collections', 
-				fnOnYes		: this._createPromise.bind(this),
-				fnOnNo		: this._createSuspension.bind(this)
-			}
-		);
-		
+		this._complete();
+	},
+	
+	_complete : function()
+	{
 		this.hide();
 		if (this._fnOnComplete)
 		{
 			this._fnOnComplete();
 		}
-	},
-	
-	_createPromise : function()
-	{
-		new Popup_Account_Promise_Edit(this._iAccountId);
-	},
-	
-	_createSuspension : function()
-	{
-		new Popup_Account_Suspend_From_Collections(this._iAccountId);
 	}
 });
 
 Object.extend(Popup_Account_TIO_Complaint_Close, 
 {
+	CLOSE_ACTION_CREATE_PROMISE 	: 1,
+	CLOSE_ACTION_CREATE_SUSPENSION 	: 2,
+	CLOSE_ACTION_NOTHING			: 3,
+	
 	_getComplaintDetails : function(iAccountId, fnCallback, oResponse)
 	{
 		if (!oResponse)

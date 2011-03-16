@@ -1,12 +1,13 @@
 
 var Popup_Account_Suspend_From_Collections = Class.create(Reflex_Popup, 
 {
-	initialize : function($super, iAccountId, fnOnComplete)
+	initialize : function($super, iAccountId, fnOnComplete, oTIOComplaintDetails)
 	{
 		$super(40);
 		
-		this._iAccountId	= iAccountId;
-		this._fnOnComplete 	= fnOnComplete;
+		this._iAccountId			= iAccountId;
+		this._fnOnComplete			= fnOnComplete;
+		this._oTIOComplaintDetails	= (oTIOComplaintDetails ? oTIOComplaintDetails : null);
 		
 		this._getSuspensionAvailabilityInfo(iAccountId);
 	},
@@ -17,7 +18,14 @@ var Popup_Account_Suspend_From_Collections = Class.create(Reflex_Popup,
 		this.setTitle('Suspend Account ' + this._iAccountId + ' from Collections');
 		this.setContent(oContentDiv);
 		this.addCloseButton();
-		new Component_Collections_Suspension(this._iAccountId, oContentDiv, this._createComplete.bind(this), this._createCancelled.bind(this));
+		new Component_Collections_Suspension(
+			this._iAccountId, 
+			oContentDiv, 
+			this._createComplete.bind(this), 
+			this._createCancelled.bind(this),
+			null, 
+			this._oTIOComplaintDetails
+		);
 		this.display();
 	},
 	
@@ -59,7 +67,7 @@ var Popup_Account_Suspend_From_Collections = Class.create(Reflex_Popup,
 			return;
 		}
 		
-		if (oResponse.oSuspension)
+		if (oResponse.oSuspension && !this._oTIOComplaintDetails)
 		{
 			// Account is already suspended from collections
 			var sEndDate = Date.$parseDate(oResponse.oSuspension.proposed_end_datetime, 'Y-m-d H:i:s').$format('l jS M Y, g:i A');
