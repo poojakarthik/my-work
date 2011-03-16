@@ -304,7 +304,7 @@ class Cli_App_Collections extends Cli
 		    $oDataAccess->TransactionStart();
 		    try
 		    {
-			Log::getLog()->log("Account, Time, Memory Usage, delete linking data, reset balances, iterations, Debit Collectables, Credit Collectables, Credit Payments, Credit Adjustments, Debit Payments,Debit Adjustments");
+			Log::getLog()->log("Account, Time, Memory Usage, delete linking data, reset balances, iterations, Debit Collectables, Credit Collectables, Credit Payments, Credit Adjustments, Debit Payments,Debit Adjustments, Account Balance Prior, Payable Balance Prior, Payable Balance After, Overdue Balance");
 
 			$aAccounts = Account::getForBalanceRedistribution($iMode);
 			Logic_Account::batchRedistributeBalances($aAccounts);
