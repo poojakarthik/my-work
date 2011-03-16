@@ -23,8 +23,9 @@ class JSON_Handler_Invoice_View extends JSON_Handler
 			}
 			
 			// Get the orm object
-			$oInvoice			= Invoice::getForId($iId);
-			$oStdClassInvoice	= $oInvoice->toStdClass();
+			$oInvoice								= Invoice::getForId($iId);
+			$oStdClassInvoice						= $oInvoice->toStdClass();
+			$oStdClassInvoice->collectable_balance	= $oInvoice->getCollectableBalance();
 			
 			// Get account info
 			$oAccount							= Account::getForId($oInvoice->Account);

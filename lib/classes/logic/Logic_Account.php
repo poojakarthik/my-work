@@ -1434,7 +1434,17 @@ class Logic_Account implements DataLogic
 								, 0)
 							) AS balance,
 							(
-								COALESCE(SUM(IF(c.due_date < NOW(), c.amount, 0)), 0)
+								COALESCE(
+									SUM(
+										IF(
+											c.due_date < NOW() 
+											AND (c.collection_promise_id IS NULL OR c_cp.completed_datetime IS NOT NULL), 
+											c.amount, 
+											0
+										)
+									), 
+									0
+								)
 								+
 								COALESCE(total_payments.total_amount, 0)
 								+
@@ -1474,6 +1484,7 @@ class Logic_Account implements DataLogic
 			                    LEFT JOIN   payment_nature pn ON (pn.id = p.payment_nature_id)
 			                    GROUP BY    a.Id
 			                ) total_payments ON (total_payments.account_id = a.Id)
+				LEFT JOIN 	collection_promise c_cp ON (c.collection_promise_id = c_cp.id)
 				LEFT JOIN	account_collection_scenario acs ON (
 								acs.id = (
 									SELECT	id

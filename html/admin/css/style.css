@@ -3267,7 +3267,17 @@ tbody.invoice-view-details button > img
 
 div.invoice-view .invoice-view-details th
 {
-	width	: 30%;
+	width	: 15%;
+}
+
+.invoice-view-services-table tr > th
+{
+	width	: 24.5%;
+}
+
+.invoice-view-services tr > td
+{
+	width	: 25%;
 }
 
 div.invoice-view-services

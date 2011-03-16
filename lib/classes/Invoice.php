@@ -1108,7 +1108,6 @@ class Invoice extends ORM_Cached
 
 	public function getCollectableAmount()
 	{
-		// TODO: CR137 - Exclude promise collectables
 		$aCollectables 	= Collectable::getForInvoice($this->Id);
 		$fAmount		= 0;
 		foreach ($aCollectables as $oCollectable)
@@ -1120,7 +1119,6 @@ class Invoice extends ORM_Cached
 
 	public function getCollectableBalance()
 	{
-		// TODO: CR137 - Exclude promise collectables
 		$aCollectables 	= Collectable::getForInvoice($this->Id);
 		$fBalance		= 0;
 		foreach ($aCollectables as $oCollectable)

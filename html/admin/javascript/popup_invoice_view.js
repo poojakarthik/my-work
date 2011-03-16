@@ -74,31 +74,31 @@ var Popup_Invoice_View	= Class.create(Reflex_Popup,
 													$T.th({class: 'label'},
 														'Credits :'
 													),
-													$T.td('$' + oInvoice.Credits)
+													$T.td('$' + new Number(oInvoice.Credits).toFixed(2))
 												),
 												$T.tr(
 													$T.th({class: 'label'},
 														'Debits :'
 													),
-													$T.td('$' + oInvoice.Debits)
+													$T.td('$' + new Number(oInvoice.Debits).toFixed(2))
 												),
 												$T.tr(
 													$T.th({class: 'label'},
 														'Amount :'
 													),
-													$T.td('$' + oInvoice.Total)
+													$T.td('$' + new Number(oInvoice.Total).toFixed(2))
 												),
 												$T.tr(
 													$T.th({class: 'label'},
 														'Tax :'
 													),
-													$T.td('$' + oInvoice.Tax)
+													$T.td('$' + new Number(oInvoice.Tax).toFixed(2))
 												),
 												$T.tr(
 													$T.th({class: 'label'},
 														'Balance :'
 													),
-													$T.td('$' + oInvoice.TotalOwing)
+													$T.td('$' + new Number(oInvoice.collectable_balance).toFixed(2))
 												)
 											)
 										),
@@ -202,9 +202,9 @@ var Popup_Invoice_View	= Class.create(Reflex_Popup,
 							oServiceTotal.FNN
 						)
 					),
-					$T.td(oServiceTotal.TotalCharge),
-					$T.td(oServiceTotal.Credit),
-					$T.td(oServiceTotal.Debit)
+					$T.td(new Number(oServiceTotal.TotalCharge).toFixed(2)),
+					$T.td(new Number(oServiceTotal.Credit).toFixed(2)),
+					$T.td(new Number(oServiceTotal.Debit).toFixed(2))
 				);
 	},
 	

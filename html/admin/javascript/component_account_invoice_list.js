@@ -350,7 +350,7 @@ var Component_Account_Invoice_List = Class.create(
 							);
 			}
 			
-			if (bUserHasViewPerm && oData.has_unarchived_cdrs)
+			if (bUserHasViewPerm)//&& oData.has_unarchived_cdrs)
 			{
 				// Build the "View Invoice Details" link
 				var oViewInvoiceIcon = $T.img({class: 'pointer', src: Component_Account_Invoice_List.ICON_IMAGE_SOURCE, alt: 'View Invoice Details', title: 'View Invoice Details'});
