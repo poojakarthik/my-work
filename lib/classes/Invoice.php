@@ -1106,6 +1106,30 @@ class Invoice extends ORM_Cached
 		$oInvoiceRun->export(array($this->Account));
 	}
 
+	public function getCollectableAmount()
+	{
+		// TODO: CR137 - Exclude promise collectables
+		$aCollectables 	= Collectable::getForInvoice($this->Id);
+		$fAmount		= 0;
+		foreach ($aCollectables as $oCollectable)
+		{
+			$fAmount += $oCollectable->amount;
+		}
+		return $fAmount;
+	}
+
+	public function getCollectableBalance()
+	{
+		// TODO: CR137 - Exclude promise collectables
+		$aCollectables 	= Collectable::getForInvoice($this->Id);
+		$fBalance		= 0;
+		foreach ($aCollectables as $oCollectable)
+		{
+			$fBalance += $oCollectable->balance;
+		}
+		return $fBalance;
+	}
+
 	/**
 	 * roundOut()
 	 *
@@ -1119,6 +1143,72 @@ class Invoice extends ORM_Cached
 	{
 		$fRoundOut	= round(abs($mValue), $iPrecision);
 		return ($mValue < 0.0) ? 0.0 - $fRoundOut : $fRoundOut;
+	}
+	
+	public static function getDatasetForAccount($bCountOnly, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null)
+	{
+		$aAliases =	array(
+						'id' 					=> "i.Id",
+						'created_on' 			=> "i.CreatedOn",
+						'due_on'				=> "i.DueOn",
+						'new_charges'			=> "(i.charge_total + i.charge_tax)",
+						'amount_owing'			=> "COALESCE(SUM(c.balance), 0)",
+						'invoice_run_type_id'	=> "ir.invoice_run_type_id",
+						'invoice_status'		=> "i.Status",
+						'account_id'			=> "i.Account",
+						'invoice_run_id'		=> "i.invoice_run_id",
+						'has_unarchived_cdrs'	=> "COALESCE(COUNT(cdr.id), 0)"
+					);
+		
+		if ($bCountOnly)
+		{
+			$sSelect 	= "COUNT(i.Id) AS count";
+			$sFrom		= "			Invoice i
+							JOIN	InvoiceRun ir ON (ir.Id = i.invoice_run_id)";
+			$sOrderBy	= "";
+			$sLimit		= "";
+		}
+		else
+		{
+			$sFrom = "				Invoice i
+						JOIN		InvoiceRun ir ON (ir.Id = i.invoice_run_id)
+						LEFT JOIN	collectable c ON (c.invoice_id = i.Id)
+						LEFT JOIN	CDR cdr ON (
+										cdr.invoice_run_id = ir.Id
+										AND cdr.Account = ir.Account
+									)";
+			$aSelectLines = array();
+			foreach ($aAliases as $sAlias => $sClause)
+			{
+				$aSelectLines[] = "{$sClause} AS {$sAlias}";
+			}
+			$sSelect	= implode(', ', $aSelectLines);
+			$sOrderBy	= Statement::generateOrderBy($aAliases, get_object_vars($oSort));
+			$sLimit		= Statement::generateLimit($iLimit, $iOffset);
+		}
+		
+		$aWhere	= Statement::generateWhere($aAliases, get_object_vars($oFilter));
+		$sWhere	= $aWhere['sClause'];
+		$sWhere	.= ($sWhere != '' ? '' : '1');
+		
+		if (!$bCountOnly)
+		{
+			$sWhere	.= " GROUP BY i.Id";
+		}
+		
+		$oSelect = new StatementSelect($sFrom, $sSelect, $sWhere, $sOrderBy, $sLimit);
+		if ($oSelect->Execute($aWhere['aValues']) === false)
+		{
+			throw new Exception_Database("Failed to get invoice dataset results. ".$oSelect->Error());
+		}
+		
+		if ($bCountOnly)
+		{
+			$aRow = $oSelect->Fetch();
+			return $aRow['count'];
+		}
+		
+		return $oSelect->FetchAll();
 	}
 
 	public function hasUnarchivedCDRs()

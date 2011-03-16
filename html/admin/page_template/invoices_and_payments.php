@@ -50,6 +50,6 @@ $this->Page->AddObject('_Account_Collections_Summary', COLUMN_TWO, HTML_CONTEXT_
 $this->Page->AddObject('_Account_Payment_List', COLUMN_TWO, HTML_CONTEXT_LEDGER_DETAIL);
 $this->Page->AddObject('_Account_Adjustment_List', COLUMN_TWO, HTML_CONTEXT_LEDGER_DETAIL);
 $this->Page->AddObject('ChargeList', COLUMN_TWO, HTML_CONTEXT_LEDGER_DETAIL);
-$this->Page->AddObject('RecurringChargeList', COLUMN_TWO, HTML_CONTEXT_LEDGER_DETAIL);
+//$this->Page->AddObject('RecurringChargeList', COLUMN_TWO, HTML_CONTEXT_LEDGER_DETAIL);
 
 ?>

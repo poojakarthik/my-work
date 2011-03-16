@@ -762,6 +762,10 @@ class Credit_Card_Payment
 			$oPayment->transaction_reference = $sTransactionId;
 			$oPayment->save();
 			
+			// Process the payment
+			$oLogicAccount = Logic_Account::getInstance($iAccountId);
+			$oLogicAccount->processDistributable(new Logic_Payment($oPayment));
+			
 			// Set the credit card payment history transaction reference
 			$oCreditCardPaymentHistory->txn_id	= $sTransactionId;
 			$oCreditCardPaymentHistory->save();

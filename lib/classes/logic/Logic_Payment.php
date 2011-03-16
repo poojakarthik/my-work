@@ -203,12 +203,17 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 				$oTransactionData->save();
 			}
 			
+			// Process the payment
+			$oNewLogic 		= new self($oPayment);
+			$oLogicAccount 	= Logic_Account::getInstance($iAccountId);
+			$oLogicAccount->processDistributable($oNewLogic);
+			
 			if ($oDataAccess->TransactionCommit() === false)
 			{
 				throw new Exception_Database("Failed to commit db transaction.");
 			}
 			
-			return new self($oPayment);
+			return $oNewLogic;
 		}
 		catch (Exception $oException)
 		{

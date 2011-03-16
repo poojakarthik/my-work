@@ -87,7 +87,7 @@ var Popup_Account_TIO_Complaint = Class.create(Reflex_Popup,
 												sLabel		: 'TIO Reference Number',
 												mMandatory	: true,
 												mEditable	: true,
-												fnValidate	: Reflex_Validation.tioReferenceNumber
+												fnValidate	: Reflex_Validation.Exception.tioReferenceNumber
 											}
 										);
 		oReferenceNumberControl.setRenderMode(Control_Field.RENDER_MODE_EDIT);

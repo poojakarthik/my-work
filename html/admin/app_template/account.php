@@ -270,9 +270,13 @@ class AppTemplateAccount extends ApplicationTemplate
 		// context menu
 		self::BuildContextMenu($intAccountId);
 		
+		/*
 		// the DBList storing the invoices should be ordered so that the most recent is first
 		// same with the payments list
 		$this->loadInvoices();
+		*/
+		
+		DBO()->InvoicesToLoad = null;
 		
 		// Retrieve the Payments
 		//"WHERE ((Account = <accId>) OR (AccountGroup = <accGrpId> AND Account IS NULL)) AND (Status conditions)"
@@ -341,13 +345,14 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->RecurringCharge->Load();
 		
 		// Calculate the Account Balance
-		DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);
-
+		$oAccount = Account::getForId($intAccountId);
+		DBO()->Account->Balance = $oAccount->getBalance();
+		
 		// Calculate the Account Overdue Amount
-		DBO()->Account->Overdue = $this->Framework->GetOverdueBalance(DBO()->Account->Id->Value);
+		DBO()->Account->Overdue = $oAccount->getOverdueBalance();
 		
 		// Calculate the Account's total unbilled charges
-		DBO()->Account->TotalUnbilledAdjustments = $this->Framework->GetUnbilledAdjustments(DBO()->Account->Id->Value);
+		DBO()->Account->TotalUnbilledAdjustments = $oAccount->getUnbilledAdjustments();
 		
 		// Load all contacts, with the primary being listed first, and then those belonging to this account specifically, then those belonging to the account group who can access this account
 		if (DBO()->Account->PrimaryContact->Value)
@@ -366,6 +371,9 @@ class AppTemplateAccount extends ApplicationTemplate
 		//Load the notes
 		//LoadNotes(DBO()->Account->Id->Value);
 
+		// Build list of warnings to show
+		DBO()->SeverityWarnings = self::_getSeverityWarnings($intAccountId);
+		
 		// Flag the Account as being shown in the InvoicesAndPayments Page
 		DBO()->Account->InvoicesAndPaymentsPage = 1;
 		
@@ -420,16 +428,18 @@ class AppTemplateAccount extends ApplicationTemplate
 		// context menu
 		self::BuildContextMenu($intAccountId);
 
-		$this->loadInvoices(3);
+		//$this->loadInvoices(3);
+		DBO()->InvoicesToLoad = 3;
 
 		// Calculate the Account Balance
-		DBO()->Account->Balance = $this->Framework->GetAccountBalance($intAccountId);
+		$oAccount = Account::getForId($intAccountId);
+		DBO()->Account->Balance = $oAccount->getBalance();
 
 		// Calculate the Account Overdue Amount
-		DBO()->Account->Overdue = $this->Framework->GetOverdueBalance($intAccountId);
+		DBO()->Account->Overdue = $oAccount->getOverdueBalance();
 		
 		// Calculate the Account's total unbilled charges
-		DBO()->Account->TotalUnbilledAdjustments = $this->Framework->GetUnbilledAdjustments($intAccountId);
+		DBO()->Account->TotalUnbilledAdjustments = $oAccount->getUnbilledAdjustments();
 		
 		// Make sure the contact specified belongs to the AccountGroup
 		$intPrimaryContactId		= DBO()->Account->PrimaryContact->Value;
@@ -478,24 +488,28 @@ class AppTemplateAccount extends ApplicationTemplate
 			DBO()->Account->BillingType->BillingTypeName	= Constant_Group::getConstantGroup('billing_type')->getConstantDescription(DBO()->Account->BillingType->Value);
 		}
 		
-		// Fetch/Create the employee account log record
-		$oEmployeeAccountLog = Employee_Account_Log::createIfNotExistsForToday(Flex::getUserId(), $intAccountId);
-		
 		// Build list of warnings to show
-		DBO()->SeverityWarnings = null;
-		if ($oEmployeeAccountLog->accepted_severity_warnings !== Employee_Account_Log::SEVERITY_WARNINGS_ACCEPTED)
-		{
-			// Warnings haven't been accepted, see if there are any
-			$oLogicAccount			= Logic_Account::getInstance($intAccountId);
-			$oSeverity				= $oLogicAccount->getSeverity();
-			$aWarnings				= $oSeverity->getWarnings();
-			DBO()->SeverityWarnings = $aWarnings;
-		}
+		DBO()->SeverityWarnings = self::_getSeverityWarnings($intAccountId);
 		
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('account_overview');
 
 		return TRUE;
+	}
+	
+	private static function _getSeverityWarnings($iAccountId)
+	{
+		// Fetch/Create the employee account log record
+		$oEmployeeAccountLog = Employee_Account_Log::createIfNotExistsForToday(Flex::getUserId(), $iAccountId);
+		if ($oEmployeeAccountLog->accepted_severity_warnings !== Employee_Account_Log::SEVERITY_WARNINGS_ACCEPTED)
+		{
+			// Warnings haven't been accepted, see if there are any
+			$oLogicAccount	= Logic_Account::getInstance($iAccountId);
+			$oSeverity		= $oLogicAccount->getSeverity();
+			$aWarnings		= $oSeverity->getWarnings();
+			return $aWarnings;
+		}
+		return null;
 	}
 	
 	function loadInvoices($limit=FALSE)
@@ -880,9 +894,10 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBO()->Account->LoadMerge();
 		
 		// Calculate the Balance, Amount Overdue, and the Total Un-billed charges
-		DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);
-		DBO()->Account->Overdue = $this->Framework->GetOverdueBalance(DBO()->Account->Id->Value);
-		DBO()->Account->TotalUnbilledAdjustments = $this->Framework->GetUnbilledAdjustments(DBO()->Account->Id->Value);
+		$oAccount = Account::getForId(DBO()->Account->Id->Value);
+		DBO()->Account->Balance = $oAccount->getBalance();
+		DBO()->Account->Overdue = $oAccount->getOverdueBalance();
+		DBO()->Account->TotalUnbilledAdjustments = $oAccount->getUnbilledAdjustments();
 		
 		// Render the AccountDetails HtmlTemplate for Viewing
 		Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_VIEW, DBO()->Container->Id->Value);

@@ -278,7 +278,7 @@ var Component_Collections_Account_Management = Class.create(
 	{
 		return $T.tr(
 			$T.td({class: 'component-collections-account-management-no-rows', colspan: 0},
-				(bOnLoad ? '' : 'There are no accounts to display')
+				'There are no accounts to display'
 			)
 		);
 	},

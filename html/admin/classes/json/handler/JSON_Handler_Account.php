@@ -1462,7 +1462,28 @@ class JSON_Handler_Account extends JSON_Handler
 			$sMessage = $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
 			return 	array(
 						'bSuccess'	=> false,
-						'sMessage'	=> $sMessage
+						'sMessage'	=> $sMessage,
+						'sDebug'	=> ($bUserIsGod ? $this->_JSONDebug : '')
+					);
+		}
+	}
+	
+	public function hasAccountGotOCAReferral($iAccountId)
+	{
+		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		try
+		{
+			return	array(
+						'bSuccess' 					=> true, 
+						'bAccountHasOCAReferral' 	=> Account_OCA_Referral::accountExists($iAccountId)
+					);
+		}
+		catch (Exception $e)
+		{
+			return 	array(
+						'bSuccess'	=> false,
+						'sMessage'	=> ($bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'),
+						'sDebug'	=> ($bUserIsGod ? $this->_JSONDebug : '')
 					);
 		}
 	}

@@ -287,7 +287,7 @@ class JSON_Handler_Adjustment extends JSON_Handler
 	
 	public function approveAdjustmentRequests($aAdjustmentIds)
 	{
-		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		$bUserIsGod		= Employee::getForId(Flex::getUserId())->isGod();
 		$oDataAccess	= DataAccess::getDataAccess();
 		try
 		{
@@ -298,7 +298,13 @@ class JSON_Handler_Adjustment extends JSON_Handler
 			
 			foreach ($aAdjustmentIds as $iAdjustmentId)
 			{
-				Adjustment::getForId($iAdjustmentId)->approve();
+				// Approve the adjustment
+				$oAdjustment = Adjustment::getForId($iAdjustmentId);
+				$oAdjustment->approve();
+				
+				// Process the adjustment
+				$oLogicAccount = Logic_Account::getInstance($oAdjustment->account_id);
+				$oLogicAccount->processDistributable(new Logic_Adjustment($oAdjustment));
 			}
 			
 			if (!$oDataAccess->TransactionCommit())

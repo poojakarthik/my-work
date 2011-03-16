@@ -309,6 +309,77 @@ class JSON_Handler_Invoice extends JSON_Handler
 		}
 	}
 	
+	public function getDatasetForAccount($bCountOnly=false, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null)
+	{
+		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		try
+		{
+			$iRecordCount = Invoice::getDatasetForAccount(true, $iLimit, $iOffset, $oSort, $oFilter);
+			if ($bCountOnly)
+			{
+				return array('bSuccess' => true, 'iRecordCount' => $iRecordCount);
+			}
+			
+			$iLimit		= ($iLimit === null ? 0 : $iLimit);
+			$iOffset	= ($iOffset === null ? 0 : $iOffset);
+			$aData	 	= Invoice::getDatasetForAccount(false, $iLimit, $iOffset, $oSort, $oFilter);
+			$aResults	= array();
+			$i			= $iOffset;
+			
+			foreach ($aData as $aRecord)
+			{
+				$iDate 					= strtotime("-1 month", strtotime($aRecord['created_on']));
+				$iYear 					= (int)date("Y", $iDate);
+				$iMonth 				= (int)date("m", $iDate);
+				$aRecord['pdf_exists'] 	= InvoicePDFExists($aRecord['account_id'], $iYear, $iMonth, $aRecord['id'], $aRecord['invoice_run_id']);
+				$aResults[$i] 			= $aRecord;
+				$i++;
+			}
+			
+			return	array(
+						'bSuccess'		=> true,
+						'aRecords'		=> $aResults,
+						'iRecordCount'	=> $iRecordCount
+					);
+		}
+		catch (Exception $e)
+		{
+			return 	array(
+						'bSuccess'	=> false,
+						'sMessage'	=> ($bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.')
+					);
+		}
+	}
+	
+	public function getInvoiceListPermissions()
+	{
+		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		try
+		{
+			$bUserHasOperatorPerm 	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
+			$bUserHasViewPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW);
+			$bUserHasExternalPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_EXTERNAL);
+			$bUserHasInterimPerm	= (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT) || AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN));
+			return	array(
+						'bSuccess' 		=> true,
+						'oPermissions'	=> 	array(
+												'bUserHasOperatorPerm' 	=> $bUserHasOperatorPerm,
+												'bUserHasViewPerm' 		=> $bUserHasViewPerm,
+												'bUserHasExternalPerm' 	=> $bUserHasExternalPerm,
+												'bUserHasInterimPerm'	=> $bUserHasInterimPerm
+											)
+					);
+		}
+		catch (Exception $e)
+		{
+			return 	array(
+						'bSuccess'	=> false,
+						'sMessage'	=> ($bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'),
+						'sDebug'	=> ($bUserIsGod ? $this->_sJSONDebug : '')
+					);
+		}
+	}
+	
 	private function _generateInvoiceSummary($oInvoice)
 	{
 		try

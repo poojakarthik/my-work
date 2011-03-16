@@ -3265,7 +3265,7 @@ tbody.invoice-view-details button > img
 	margin-right	: 0.25em;
 }
 
-div.invoice-view th
+div.invoice-view .invoice-view-details th
 {
 	width	: 30%;
 }
@@ -8846,7 +8846,6 @@ div.writeoff-detail
 
 .component-collections-account-management-no-rows
 {
-	height			: 7em;
 	vertical-align	: middle;
 }
 
@@ -10987,3 +10986,95 @@ div.component-collections-scenario > table.reflex
 }
 
 /************************** END - Account Details Severity Warnings - END **************************/
+
+/************************** START - Popup Account Promise Cancel - START **************************/
+
+.popup-account-promise-cancel
+{
+	margin	: 0.5em;
+}
+
+.popup-account-promise-cancel-buttons
+{
+	text-align	: center;
+	margin-top	: 0.5em;
+}
+
+.popup-account-promise-cancel-scenario-label
+{
+	font-weight	: bold;
+}
+
+/************************** END - Popup Account Promise Cancel - END **************************/
+
+/************************** START - Component Account Invoice List - START **************************/
+
+.component-account-invoice-list
+{
+	position	: relative
+}
+
+.component-account-invoice-list > .section table.reflex
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.component-account-invoice-list > .section .section-header .icon-button
+{
+	margin	: 0em !important;
+}
+
+.component-account-invoice-list > .section .section-footer > ul.reset
+{
+	margin	: 0em;
+}
+
+.component-account-invoice-list-filter-heading > span
+{
+	margin-right	: 0.5em;
+	vertical-align	: middle;
+	font-style		: italic;
+	font-size		: 0.85em;
+}
+
+.component-account-invoice-list-filter-heading > div
+{
+	display			: inline-block;
+	vertical-align	: middle;
+}
+
+.component-account-invoice-list-header-sort img
+{
+	margin-right	: 0.25em;
+}
+
+.component-account-invoice-list table.reflex > tbody > tr > td
+{
+	vertical-align	: middle;
+}
+
+.component-account-invoice-list-title
+{
+	margin-bottom	: 0.5em;
+}
+
+.component-account-invoice-list-title > img
+{
+	vertical-align	: middle;
+	padding-right	: 0.4em;
+}
+
+.component-account-invoice-list-title > span
+{
+	vertical-align	: middle;
+	font-size		: 12pt;
+	font-weight		: bold;
+}
+
+.component-account-invoice-list-currency
+{
+	text-align	: right;
+}
+
+/************************** END - Component Account Invoice List - END **************************/

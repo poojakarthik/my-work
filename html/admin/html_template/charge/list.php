@@ -67,6 +67,14 @@ class HtmlTemplateChargeList extends HtmlTemplate
 		// Load all javascript specific to the page here
 		$this->LoadJavascript("highlight");
 		$this->LoadJavascript("tooltip");
+		
+		$this->LoadJavascript("dataset_ajax");
+		$this->LoadJavascript("pagination");
+		$this->LoadJavascript("sort");
+		$this->LoadJavascript("filter");
+		$this->LoadJavascript("section");
+		$this->LoadJavascript("reflex_loading_overlay");
+		
 		$this->LoadJavascript("control_tab");
 		$this->LoadJavascript("control_tab_group");
 		$this->LoadJavascript("component_account_charges");

@@ -346,7 +346,7 @@ var Reflex_Validation	=
 							}
 							else
 							{
-								throw ('Invalid TIO Reference Number');
+								throw ('Invalid TIO Reference Number, must be {2 digits}/{6/7 digits}');
 							}
 						},
 						

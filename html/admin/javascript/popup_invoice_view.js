@@ -102,7 +102,7 @@ var Popup_Invoice_View	= Class.create(Reflex_Popup,
 												)
 											)
 										),
-										$T.table({class: 'reflex'},
+										$T.table({class: 'reflex invoice-view-services-table'},
 											$T.caption(
 												$T.div({class: 'caption_bar'},						
 													$T.div({class: 'caption_title'},

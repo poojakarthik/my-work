@@ -93,6 +93,9 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		$this->LoadJavascript("popup_account_suspend_from_collections");
 		$this->LoadJavascript("popup_account_collection_scenario");
 		$this->LoadJavascript("popup_account_severity_warning");
+		$this->LoadJavascript("popup_account_promise_edit");
+		$this->LoadJavascript("popup_account_promise_edit_schedule");
+		$this->LoadJavascript("popup_account_promise_cancel");
 		$this->LoadJavascript("account");
 	}
 	
@@ -297,8 +300,11 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			
 			DBO()->Account->Delivery_Method	= DBO()->Account->BillingMethod->Value;
 			DBO()->Account->Delivery_Method->RenderCallback("GetConstantDescription", Array("delivery_method"), RENDER_OUTPUT);
-															}
-															
+		}
+			
+		// Get the accounts active promise to pay
+		$oActivePromise	= $oLogicAccount->getActivePromise();
+			
 		?>
 		<div class="DefaultElement">
 			<div id="Account.Balance.Output" name="Account.Balance" class="DefaultOutput Currency">
@@ -310,8 +316,14 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 					// Rebill Customers cannot Pay by Credit Card, unless the Account Balance is over $0 and the user is a Credit Management employee
 					if (DBO()->Account->BillingType->Value !== BILLING_TYPE_REBILL || (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT) && DBO()->Account->Balance->Value > 0.0))
 					{
-						echo Credit_Card_Payment::getPopupActionButton(DBO()->Account->Id->Value);
+						echo " ".Credit_Card_Payment::getPopupActionButton(DBO()->Account->Id->Value);
 					}
+				}
+				
+				// Button for creating a promise if there isn' already one
+				if ($oActivePromise === null)
+				{
+					echo "<button onclick='javascript: new Popup_Account_Promise_Edit(".DBO()->Account->Id->Value.");'>Create Promise to Pay</button>";
 				}
 			?></div>
 			<div id="Account.Balance.Label" class="DefaultLabel">
@@ -325,7 +337,6 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		DBO()->Account->TotalUnbilledAdjustments->RenderOutput();
 		
 		// Promised amount
-		$oActivePromise	= $oLogicAccount->getActivePromise();
 		$fTotalPromised	= 0;
 		if ($oActivePromise !== null)
 		{
@@ -353,8 +364,13 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			}
 		}
 		
+		$sSuspendFromCollectionsButton = '';
+		if (!$oLogicAccount->isInSuspension())
+		{
+			$sSuspendFromCollectionsButton = " <button onclick='javascript: new Popup_Account_Suspend_From_Collections(".DBO()->Account->Id->Value.");'>Suspend From Collections</button>";
+		}
 		echo "	<div class='DefaultElement'>
-					<div id='Account.most_recent_collection_event.Output' name='Account.most_recent_collection_event' class='DefaultOutput'>{$sLastEvent}</div>
+					<div id='Account.most_recent_collection_event.Output' name='Account.most_recent_collection_event' class='DefaultOutput'>{$sLastEvent}{$sSuspendFromCollectionsButton}</div>
 					<div id='Account.most_recent_collection_event.Label' class='DefaultLabel'>
 						<span> &nbsp;</span>
 						<span id='Account.most_recent_collection_event.Label.Text'>Last Collections Event: </span>

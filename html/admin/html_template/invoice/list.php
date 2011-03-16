@@ -68,21 +68,42 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		$this->LoadJavascript("highlight");
 		$this->LoadJavascript("retractable");
 		$this->LoadJavascript("reflex_anchor");
+		
+		$this->LoadJavascript("dataset_ajax");
+		$this->LoadJavascript("pagination");
+		$this->LoadJavascript("sort");
+		$this->LoadJavascript("filter");
+		$this->LoadJavascript("section");
+		$this->LoadJavascript("reflex_loading_overlay");
+		
+		$this->LoadJavascript("component_account_invoice_list");
 	}
 	
-	//------------------------------------------------------------------------//
-	// Render
-	//------------------------------------------------------------------------//
-	/**
-	 * Render()
-	 *
-	 * Render this HTML Template
-	 *
-	 * Render this HTML Template
-	 *
-	 * @method
-	 */
-	function Render()
+	public function Render()
+	{
+		//$this->_renderOld();
+		$this->_renderNew();
+	}
+	
+	private function _renderNew()
+	{
+		$sInvoicesToLoad = (DBO()->InvoicesToLoad !== null ? DBO()->InvoicesToLoad : 'null');
+		echo "
+		<div id='AccountInvoiceListContainer'></div>
+		<script type='text/javascript'>
+			Event.observe(
+				window, 
+				'load',
+				function()
+				{
+					new Component_Account_Invoice_List(\$ID('AccountInvoiceListContainer'), ".DBO()->Account->Id->Value.", {$sInvoicesToLoad});
+				}
+			)
+		</script>\n";
+	}
+	
+	// NOTE: CR137 - DEPRECATED, but kept in case of emergency
+	private function _renderOld()
 	{
 		$bolUserHasOperatorPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 		$bolUserHasViewPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW);
@@ -101,7 +122,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		// Invoices that are older than 1 year will not have CDR records stored in the database
 		$strCDRCutoffDate = date("Y-m-01", strtotime("-1 year"));
 
-//*
+
 		if ($bolUserHasViewPerm)
 		{
 			$arrSampleInvoices = ListPDFSamples(DBO()->Account->Id->Value);
@@ -128,7 +149,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 												"&nbsp;");
 			}
 		}
-//*/
+
 		
 		$qryQuery		= new Query();
 		$aInvoiceIds	= array();

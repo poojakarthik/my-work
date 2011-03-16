@@ -109,7 +109,7 @@ var Popup_Account_TIO_Complaint_Close = Class.create(Reflex_Popup,
 	
 	_createPromise : function()
 	{
-		new Popup_Account_Promise_New(this._iAccountId);
+		new Popup_Account_Promise_Edit(this._iAccountId);
 	},
 	
 	_createSuspension : function()

@@ -57,7 +57,8 @@ var Component_Account_Collections = Class.create(
 													)
 												)
 											)	
-										)
+										),
+										$T.span('There is no active Promise to Pay for this Account.')
 									);
 		this._oPromiseContainer.select('table').first().hide();
 		
@@ -112,6 +113,9 @@ var Component_Account_Collections = Class.create(
 			return;
 		}
 		
+		// Clear the table
+		this._oEventsTBody.innerHTML = '';
+		
 		// Success
 		if (Object.isArray(oResponse.aEvents))
 		{
@@ -125,9 +129,6 @@ var Component_Account_Collections = Class.create(
 			);
 			return;
 		}
-		
-		// Clear the table
-		this._oEventsTBody.innerHTML = '';
 		
 		// Add a row for each day, show any events that occured/are to occur
 		var iTime 	= this._iTimelineEnd;
@@ -228,15 +229,13 @@ var Component_Account_Collections = Class.create(
 			return;
 		}
 		
+		this._oPromiseContainer.select('table').first().hide();
+		this._oPromiseContainer.select('span').first().hide();
+		
 		if (!oResponse.oPromise)
 		{
-			// Hide table
-			this._oPromiseContainer.select('table').first().hide();
-			
-			// Add empty message
-			this._oPromiseContainer.appendChild(
-				$T.span('There is no active Promise to Pay for this Account.')
-			);
+			// Show 'empty' message
+			this._oPromiseContainer.select('span').first().show();
 			return;
 		}
 		
@@ -305,6 +304,7 @@ var Component_Account_Collections = Class.create(
 			return;
 		}
 		
+		// Suspension button
 		if (oResponse.oSuspension)
 		{
 			// End Suspension
@@ -317,6 +317,22 @@ var Component_Account_Collections = Class.create(
 			// Start Suspension
 			this._oButtonContainer.appendChild(
 				$T.button('Suspend From Collections').observe('click', this._startSuspension.bind(this))	
+			);
+		}
+		
+		// Promise button
+		if (oResponse.oPromise)
+		{
+			// Cancel Promise
+			this._oButtonContainer.appendChild(
+				$T.button('Cancel Promise to Pay').observe('click', this._cancelPromise.bind(this, false))	
+			);
+		}
+		else
+		{
+			// Create Promise
+			this._oButtonContainer.appendChild(
+				$T.button('Create Promise to Pay').observe('click', this._createPromise.bind(this))	
 			);
 		}
 	},
@@ -449,6 +465,16 @@ var Component_Account_Collections = Class.create(
 	_endSuspension : function()
 	{
 		new Popup_Account_End_Collections_Suspension(this._iAccountId, this._refresh.bind(this));
+	},
+	
+	_cancelPromise : function()
+	{
+		new Popup_Account_Promise_Cancel(this._iAccountId, this._refresh.bind(this));
+	},
+	
+	_createPromise : function()
+	{
+		new Popup_Account_Promise_Edit(this._iAccountId);
 	},
 	
 	_refresh : function()

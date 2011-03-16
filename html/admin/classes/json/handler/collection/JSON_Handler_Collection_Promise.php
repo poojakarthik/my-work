@@ -122,6 +122,63 @@ class JSON_Handler_Collection_Promise extends JSON_Handler
 		}
 	}
 
+	public function cancelPromiseForAccount($iAccountId, $bChangeScenario=false) {
+		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		try {
+			$oDataAccess = DataAccess::getDataAccess();
+			if ($oDataAccess->TransactionStart() === false) {
+				throw new Exception_Database("Unable to start a Transaction");
+			}
+			
+			try {
+				// Cancel the existing promise to pay
+				$oExistingPromise = Collection_Promise::getCurrentForAccountId($iAccountId);
+				if ($oExistingPromise === null) {
+					throw new Exception("Failed to cancel Promise to Pay for Account {$iAccountId}. There is no active promise.");
+				}
+				
+				// Complete the promise
+				$oLogicPromise = new Logic_Collection_Promise($oExistingPromise);
+				$oLogicPromise->complete(COLLECTION_PROMISE_COMPLETION_CANCELLED);
+				
+				// Change scenario if necessary
+				if ($bChangeScenario) {
+					try {
+						$oLogicAccount 				= $oLogicPromise->getAccount();
+			            $iBrokenPromiseScenarioId	= $oLogicPromise->getScenarioId();
+			            $oLogicAccount->setCurrentScenario($iBrokenPromiseScenarioId, false);
+					} catch (Logic_Collection_Exception $oEx) {
+						// Failed, most likely non configured broken promise scenario, pass out the error
+						throw new JSON_Handler_Collection_Promise_Exception($oEx->getMessage());
+					}
+				}
+			} catch (Exception $oEx) {
+				if ($oDataAccess->TransactionRollback() === false) {
+					throw new Exception_Database("Unable to rollback db Transaction");
+				}
+				throw $oEx;
+			}
+			
+			if ($oDataAccess->TransactionCommit() === false) {
+				throw new Exception_Database("Unable to commit db Transaction");
+			}
+			
+			return array('bSuccess' => true, 'sDebug' => $this->_JSONDebug);
+		} catch (JSON_Handler_Collection_Promise_Exception $oEx) {
+			// Custom exception
+			return 	array(
+						'bSuccess'	=> false,
+						'sMessage'	=> $oEx->getMessage()
+					);
+		} catch (Exception $oEx) {
+			// Standard exception
+			return 	array(
+						'bSuccess'	=> false,
+						'sMessage'	=> ($bUserIsGod ? $oException->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.')
+					);
+		}
+	}
+
 	public function save($oData) {
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 		
