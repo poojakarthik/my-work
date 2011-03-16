@@ -58,6 +58,9 @@ var Component_Collections_Scenario_Event_Timeline = Class.create(
 	
 	setStartDayOffset : function(iDayOffset)
 	{
+		// Invert that...
+		iDayOffset = -1 * iDayOffset;
+		
 		if (!isNaN(iDayOffset) && this._iStartDay != iDayOffset)
 		{
 			if (this._oScenario)

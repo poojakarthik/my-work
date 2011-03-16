@@ -314,7 +314,7 @@ Object.extend(Popup_Collections_Scenario_Event_Timeline_Event,
 			// Make request
 			var fnResp 	= Popup_Collections_Scenario_Event_Timeline_Event._getEventOptions.curry(iRequiredEventId, fnCallback);
 			var fnReq	= jQuery.json.jsonFunction(fnResp, fnResp, 'Collection_Event', 'getAll');
-			fnReq(true);
+			fnReq(true, true);
 			return;
 		}
 		

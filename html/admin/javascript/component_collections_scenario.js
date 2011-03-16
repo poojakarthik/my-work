@@ -270,6 +270,7 @@ var Component_Collections_Scenario = Class.create(
 		this._validateControls();
 		
 		this._oEventTimeline.setRenderMode(this._bRenderMode);
+		this._oEventTimeline.setStartDayOffset(oScenario.day_offset);
 		this._oEventTimeline.refresh(oScenario.id);
 		
 		// Can edit AND (Creating a new one OR The one we're edit is a draft)
