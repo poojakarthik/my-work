@@ -97,6 +97,18 @@ class Flex_Rollout_Version_000236 extends Flex_Rollout_Version
 											DROP FOREIGN KEY fk_email_template_details_email_template_customer_group_id;",
 				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 			),
+			array(
+				'sDescription'		=>	"Set default email_from values for email_template_details",
+				'sAlterSQL'			=>	"	UPDATE  email_template_details etd
+											JOIN    (
+											            select etd.id AS etd_id, cg.email_domain AS email_domain
+											            from CustomerGroup cg
+											            join email_template_customer_group etcg on (etcg.customer_group_id = cg.Id)
+											            join email_template_details etd on (etd.email_template_customer_group_id = etcg.id)
+											        ) etd_email_domain ON etd_email_domain.etd_id = etd.id
+											SET     etd.email_from = CONCAT('contact@', etd_email_domain.email_domain);",
+				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+			),
 			array
 			(
 				'sDescription'		=>	"Create email_template_correspondence table",
