@@ -115,21 +115,28 @@
 	 }
 
 	 public static function run($sQuery, array $aData=null, $sConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT) {
+		//Log::getLog()->log("Running Query: {\n{$sQuery}\n}");
+
 		$oQuery	= new Query($sConnectionType);
 
 		// Prepare Query with data
+		//Log::getLog()->log("Performing variable replacement on ".count($aData)." possible aliases");
 		$aData			= is_array($aData) ? $aData : array();
 		$aReplaceData	= array();
 		foreach ($aData as $sKey=>$mValue) {
 			$sKey	= (string)$sKey;
 			if (preg_match("/^[\w]+$/i", $sKey)) {
-				$mValue							= self::prepareByPHPType($mValue, $sConnectionType);
-				$aReplaceData["/\<{$sKey}\>/"]	= (is_string($mValue)) ? addcslashes($mValue, '$\\') : $mValue;
+				$mValue						= self::prepareByPHPType($mValue, $sConnectionType);
+				$sRegexKey					= "/\<{$sKey}\>/";
+				$aReplaceData[$sRegexKey]	= (is_string($mValue)) ? addcslashes($mValue, '$\\') : $mValue;
+				//Log::getLog()->log("Match pair '{$sRegexKey}':{$mValue} registered");
 			}
 		}
 		$sQuery	= preg_replace(array_keys($aReplaceData), array_values($aReplaceData), (string)$sQuery);
+		//Log::getLog()->log("Final Query form: {\n{$sQuery}\n}");
 
 		// Run Query
+		//Log::getLog()->log("Executing Query");
 		if (false === ($mResult = $oQuery->Execute($sQuery)) && !$bSilentFail) {
 			throw new Exception_Database($oQuery->Error());
 		}
@@ -137,31 +144,42 @@
 	 }
 
 	 public static function prepareByPHPType($mValue, $sConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT) {
+		//Log::getLog()->log("Preparing ".gettype($mValue)." '{$mValue}'");
+
 		// If the value is a callback, then use its result
 		$iNesting	= 0;
 		while (is_object($mValue) && $mValue instanceof Callback) {
 			$iNesting++;
+			//Log::getLog()->log("Invoking Callback at nesting {$iNesting}...");
 			if ($iNesting > self::PREPARE_CALLBACK_NESTING_MAX) {
 				throw new Exception_Database("Exceeded Query::prepareByPHPType() maximum nesting depth of ".self::PREPARE_CALLBACK_NESTING_MAX);
 			}
 			$mValue	= $mValue->invoke();
 		}
 
+		// Escape/Cast/Convert value
 		if (is_int($mValue)) {
 			// Integers are fine as they are
+			//Log::getLog()->log("Integer {$mValue} returned unmodified");
 			return $mValue;
 		} elseif (is_float($mValue)) {
 			// Floats are fine as they are
+			//Log::getLog()->log("Float {$mValue} returned unmodified");
 			return $mValue;
 		} elseif (is_bool($mValue)) {
-			// Booleans are fine as they are
-			return $mValue;
+			// Booleans need to be integerified
+			$iValue	= (int)$mValue;
+			//Log::getLog()->log("Boolean {$mValue} converted to {$iValue}");
+			return $iValue;
 		} elseif (is_null($mValue)) {
 			// Nulls become the unescaped string NULL
+			//Log::getLog()->log("Null returned as unescaped string NULL");
 			return 'NULL';
 		} else {
-			// Assume everything else is a string (or can be toString()'d), enclosed by double-quotes
-			return DataAccess::getDataAccess($sConnectionType)->refMysqliConnection->escape_string((string)$mValue);
+			// Assume everything else is a string (or can be toString()'d), enclosed by single-quotes
+			$sValue	= "'".DataAccess::getDataAccess($sConnectionType)->refMysqliConnection->escape_string((string)$mValue)."'";
+			//Log::getLog()->log("String/other {$mValue} returned as {$sValue}");
+			return $sValue;
 		}
 	 }
 }
