@@ -62,7 +62,7 @@ class Logic_Adjustment implements DataLogic, Logic_Distributable{
 			
 			$oReversal	= $this->oDO->reverse($iReversalReasonId);
 			$oAccount	= Logic_Account::getInstance($this->oDO->account_id);
-			$oAccount->processDistributable($oReversal);
+			$oAccount->processDistributable(new Logic_Adjustment($oReversal));
 			
 			if ($oDataAccess->TransactionCommit() === false)
 			{

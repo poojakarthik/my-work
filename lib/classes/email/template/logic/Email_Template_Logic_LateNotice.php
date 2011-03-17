@@ -6,8 +6,7 @@ class Email_Template_Logic_LateNotice extends Email_Template_Logic
 								'CustomerGroup'	=> array('external_name'=>"",
 														  'email_domain'=> ""),
 								'Contact'		=> array('first_name'=>'Bob'),
-								'Account'		=> array('id'=>'1234567890'),
-								'Letter'		=> array('type'=>'')
+								'Account'		=> array('id'=>'1234567890')
 							);
 
 	static function getVariables()
@@ -15,9 +14,8 @@ class Email_Template_Logic_LateNotice extends Email_Template_Logic
 		return self::$_aVariables;
 	}
 
-	static function getData($iAccountId, $iNoticeType)
+	static function getData($iAccountId)
 	{
-		$sLetterType	= GetConstantDescription($iNoticeType, "DocumentTemplateType");
 		$oAccount = Account::getForId($iAccountId);
 		$oPrimaryContact = Contact::getForId($oAccount->PrimaryContact);
 		$oCustomerGroup = Customer_Group::getForId($oAccount->CustomerGroup);
@@ -26,13 +24,12 @@ class Email_Template_Logic_LateNotice extends Email_Template_Logic
 		$aData['CustomerGroup']['email_domain'] = trim($oCustomerGroup->email_domain);
 		$aData['Contact']['first_name'] = self::normalizeWhiteSpaces(trim($oPrimaryContact->FirstName));
 		$aData['Account']['id'] = trim($iAccountId);
-		$aData['Letter']['type'] =  trim($sLetterType);
 		return $aData;
 	}
 
 	function generateEmail($aDataParameters, Email_Flex $mEmail=null)
 	{
-		$aData = $this->getData($aDataParameters['account_id'], $aDataParameters['letter_type']);
+		$aData = $this->getData($aDataParameters['account_id']);
 		return parent::generateEmail($aData, $mEmail);
 	}
 
