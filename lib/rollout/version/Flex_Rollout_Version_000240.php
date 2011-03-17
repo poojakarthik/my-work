@@ -822,16 +822,15 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 			throw new Exception(__CLASS__." Failed to insert payment_response payment_transaction_data records. ".$mPaymentTransactionDataResult->getMessage()." (DB Error: ".$mPaymentTransactionDataResult->getUserInfo().")");
 		}
 		
-		// TODO: CR137 - UNCOMMENT THIS FOR RELEASE
 		// Drop payment_response.origin_id
-		/*$this->outputMessage("Drop payment_response.origin_id...\n");
+		$this->outputMessage("Drop payment_response.origin_id...\n");
 		$mPaymentResponseDropOriginIdResult = $oDB->query("	ALTER TABLE	payment_response
 															DROP COLUMN	origin_id;");
 		if (PEAR::isError($mPaymentResponseDropOriginIdResult))
 		{
 			// Failed
 			throw new Exception(__CLASS__." Failed to drop payment_response.origin_id. ".$mPaymentResponseDropOriginIdResult->getMessage()." (DB Error: ".$mPaymentResponseDropOriginIdResult->getUserInfo().")");
-		}*/
+		}
 		
 		// Update all payment_response.payment_reversal_reason_id & payment_response.payment_reversal_type_id
 		$this->outputMessage("Update all payment_response.payment_reversal_reason_id & payment_response.payment_reversal_type_id...\n");

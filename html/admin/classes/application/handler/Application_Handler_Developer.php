@@ -271,65 +271,7 @@ class Application_Handler_Developer extends Application_Handler
 	    die;
 	}
 
-    // TODO: CR137 - DELETE ME
-    public function EventTest()
-    {
-    	$aAccounts =	array(
-    						1000181423,
-							1000181422,
-							1000181421,
-							1000181420,
-							1000181419,
-							1000181418,
-							1000181417,
-							1000181416,
-							1000181415
-						);
-		
-		$aScenarioEventsByScenarioId = array();
-		
-		foreach ($aAccounts as $i => $iId)
-		{
-			$oAccount = Logic_Account::getInstance(Account::getForId($iId));
-			$oScenario = $oAccount->getCurrentScenarioInstance();
-			if (!$aScenarioEventsByScenarioId[$oScenario->scenario->id])
-			{
-				$aScenarioEventsById = $oScenario->scenario->getEvents();
-				$aScenarioEvents = array();
-				foreach ($aScenarioEventsById as $oScenarioEvent)
-				{
-					$aScenarioEvents[] = $oScenarioEvent;
-				}
-				$aScenarioEventsByScenarioId[$oScenario->scenario->id] = $aScenarioEvents;  
-			}
-			
-			$oScenarioEvent = $aScenarioEventsByScenarioId[$oScenario->scenario->id][$i];
-			
-			// Get the first collectable (doesn't really matter for this test)
-			$aCollectables = Collectable::getForAccount($oAccount->Id, true);
-			foreach ($aCollectables as $oCollectable)
-			{
-				break;
-			}
-			
-			$oEventInstance = new Account_Collection_Event_History();
-			$oEventInstance->account_id = $oAccount->Id;
-			$oEventInstance->collectable_id = $oCollectable->id;
-			$oEventInstance->collection_event_id = $oScenarioEvent->collection_event_id;
-			$oEventInstance->collection_scenario_collection_event_id = $oScenarioEvent->id;
-			$oEventInstance->scheduled_datetime = date('Y-m-d H:i:s');
-			$oEventInstance->account_collection_event_status_id = ACCOUNT_COLLECTION_EVENT_STATUS_SCHEDULED;
-			
-			$oEventInstance->save();
-		}
-		
-		echo 'Done';
-		
-		die;
-    }
-
-	
-	public function CollectionsLogic()
+    public function CollectionsLogic()
 	{
 		Log::registerFunctionLog('Developer_CollectionsLogic', 'logMessage', 'Application_Handler_Developer');
 		Log::setDefaultLog('Developer_CollectionsLogic');

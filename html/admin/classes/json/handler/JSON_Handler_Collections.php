@@ -231,7 +231,7 @@ class JSON_Handler_Collections extends JSON_Handler
 					$oInvoiceRun->generateForAccounts($iCustomerGroupId, $aAccounts, INVOICE_RUN_TYPE_FINAL);
 					
 					// Commit & deliver the invoice run
-					// TODO: CR137 - Uncomment
+					// TODO: CR137 - Uncomment so that final invoices are commited & delivered
 					//$oInvoiceRun->commit();
 					//$oInvoiceRun->deliver();
 					

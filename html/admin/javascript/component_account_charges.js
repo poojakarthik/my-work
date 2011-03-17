@@ -177,9 +177,6 @@ var Component_Account_Charges = Class.create(
 	
 	_requestCharge : function()
 	{
-		// TODO: CR137 - for recurring charges
-		//"AddRecurringChargePopupId\", \"medium\", \"Request Recurring Charge\", \"Charge\", \"AddRecurring\", $strJsonCode"
-		
 		var sExtraName = '';
 		switch (this._sSelectedTabName)
 		{

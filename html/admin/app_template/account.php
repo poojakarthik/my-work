@@ -270,10 +270,10 @@ class AppTemplateAccount extends ApplicationTemplate
 		// context menu
 		self::BuildContextMenu($intAccountId);
 		
-		// TODO: CR137 - Disable this, not used anymore
+		// NOTE: CR137 - DEPRECATED
 		// the DBList storing the invoices should be ordered so that the most recent is first
 		// same with the payments list
-		$this->loadInvoices();
+		//$this->loadInvoices();
 		
 		// Sets the page size of the invoice table
 		DBO()->InvoicesToLoad = 10;
@@ -428,8 +428,8 @@ class AppTemplateAccount extends ApplicationTemplate
 		// context menu
 		self::BuildContextMenu($intAccountId);
 
-		// TODO: CR137 -- Disable this
-		$this->loadInvoices(3);
+		// NOTE: CR137 -- DEPRECATED
+		//$this->loadInvoices(3);
 		
 		// Sets the page size of the invoice table
 		DBO()->InvoicesToLoad = 3;
