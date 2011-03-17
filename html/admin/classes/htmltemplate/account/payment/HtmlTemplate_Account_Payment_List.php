@@ -19,6 +19,7 @@ class HtmlTemplate_Account_Payment_List extends FlexHtmlTemplate
 		$this->LoadJavascript('popup_account_payment_reverse');
 		$this->LoadJavascript('component_account_payment_create');
 		$this->LoadJavascript('popup_account_payment_create');
+		$this->LoadJavascript('component_list_tooltip');
 	}
 
 	public function Render()

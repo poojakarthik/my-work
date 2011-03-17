@@ -4918,6 +4918,34 @@ div.recurring-charge-type > div.section
 
 /************************ END - Component Account Charge List - END ************************/
 
+/************************ START - Component List Tooltip - START ************************/
+
+.component-list-tooltip
+{
+	position				: absolute;
+	padding					: 0.25em;
+	background-color		: #fff;
+	border					: solid 1px #000;
+	border-radius			: 4px 4px 4px 4px;
+	-moz-border-radius		: 4px 4px 4px 4px;
+	-webkit-border-radius	: 4px 4px 4px 4px;
+}
+
+.component-list-tooltip > table > tbody > tr > th
+{
+	text-align		: right;
+	vertical-align	: top;
+	white-space		: nowrap;
+}
+
+.component-list-tooltip > table > tbody > tr > td
+{
+	vertical-align	: top;
+	padding-left	: 0.5em;
+}
+
+/************************ END - Component List Tooltip  - END ************************/
+
 /************************ START - Component Account Recurring Charge List - START ************************/
 
 .component-account-recurring-charge-list

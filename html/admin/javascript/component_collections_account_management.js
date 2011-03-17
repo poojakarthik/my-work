@@ -306,13 +306,13 @@ var Component_Collections_Account_Management = Class.create(
 				);
 			}
 			
-			// Balance
-			var oBalanceElement =	$T.td(
-										$T.ul({class: 'component-collections-account-management-balance-columns reset horizontal'},
-											$T.li(Component_Collections_Account_Management._getCurrencyElement(oData.balance)),
-											$T.li(Component_Collections_Account_Management._getCurrencyElement(oData.overdue_balance))
-										)
-									);
+			// Balance (max the overdue balance at 0)
+			var oBalanceElement 	=	$T.td(
+											$T.ul({class: 'component-collections-account-management-balance-columns reset horizontal'},
+												$T.li(Component_Collections_Account_Management._getCurrencyElement(oData.balance)),
+												$T.li(Component_Collections_Account_Management._getCurrencyElement(oData.overdue_balance, true))
+											)
+										);
 			
 			// Overdue
 			var oOverdueElement = $T.td();
@@ -320,10 +320,10 @@ var Component_Collections_Account_Management = Class.create(
 			{
 				oOverdueElement = 	$T.td(
 										$T.ul({class: 'component-collections-account-management-overdue-columns reset horizontal'},
-											$T.li(Component_Collections_Account_Management._getCurrencyElement(oData.overdue_amount_from_1_30)),
-											$T.li(Component_Collections_Account_Management._getCurrencyElement(oData.overdue_amount_from_30_60)),
-											$T.li(Component_Collections_Account_Management._getCurrencyElement(oData.overdue_amount_from_60_90)),
-											$T.li(Component_Collections_Account_Management._getCurrencyElement(oData.overdue_amount_from_90_on))
+											$T.li(Component_Collections_Account_Management._getCurrencyElement(oData.overdue_amount_from_1_30, true)),
+											$T.li(Component_Collections_Account_Management._getCurrencyElement(oData.overdue_amount_from_30_60, true)),
+											$T.li(Component_Collections_Account_Management._getCurrencyElement(oData.overdue_amount_from_60_90, true)),
+											$T.li(Component_Collections_Account_Management._getCurrencyElement(oData.overdue_amount_from_90_on, true))
 										)
 									);
 			}
@@ -685,15 +685,23 @@ Object.extend(Component_Collections_Account_Management,
 		return $T.span(Component_Collections_Account_Management.collection_status[sStatus]);
 	},
 	
-	_getCurrencyElement	: function(fAmount)
+	_getCurrencyElement	: function(fAmount, bOverdue)
 	{
 		var fAbsAmount 		= Math.abs(fAmount);
 		var oTypeElement	= null;
+		
 		if (fAmount < 0)
 		{
-			oTypeElement = 	$T.span({class: 'component-collections-account-management-currency-credit'},
-								'CR'
-							);
+			if (bOverdue)
+			{
+				fAbsAmount = 0;
+			}
+			else
+			{
+				oTypeElement = 	$T.span({class: 'component-collections-account-management-currency-credit'},
+									'CR'
+								);
+			}
 		}
 		
 		return 	$T.span({class: 'component-collections-account-management-currency'},

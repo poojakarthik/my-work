@@ -334,7 +334,28 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		<?php
 
 		DBO()->Account->Overdue->RenderOutput();
-		DBO()->Account->TotalUnbilledAdjustments->RenderOutput();
+		
+		// Total unbilled adjustments
+		$fTotalUnbilledAdjustments 		= DBO()->Account->TotalUnbilledAdjustments->Value;
+		$sAbsTotalUnbilledAdjustments	= number_format(abs(Rate::roundToRatingStandard($fTotalUnbilledAdjustments, 2)), 2);
+		if ($fTotalUnbilledAdjustments < 0)
+		{
+			// Credit amount
+			$sTotalUnbilledAdjustments = $sAbsTotalUnbilledAdjustments." CR";
+		}
+		else
+		{
+			// Debit amount
+			$sTotalUnbilledAdjustments = $sAbsTotalUnbilledAdjustments;
+		}
+		
+		echo "	<div class='DefaultElement'>
+					<div id='Account.TotalUnbilledAdjustments.Output' name='Account.TotalUnbilledAdjustments' class='DefaultOutput'>\${$sTotalUnbilledAdjustments}</div>
+					<div id='Account.TotalUnbilledAdjustments.Label' class='DefaultLabel'>
+						<span> &nbsp;</span>
+						<span id='Account.TotalUnbilledAdjustments.Label.Text'>Total Unbilled Adjustments : </span>
+					</div>
+				</div>";
 		
 		// Promised amount
 		$fTotalPromised	= 0;
@@ -343,9 +364,10 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			$fTotalPromised	= $oActivePromise->getAmount();
 		}
 		$fTotalPromised = Rate::roundToRatingStandard($fTotalPromised, 2);
+		$sTotalPromised	= number_format($fTotalPromised, 2);
 		
 		echo "	<div class='DefaultElement'>
-					<div id='Account.promised_amount.Output' name='Account.promised_amount' class='DefaultOutput'>\${$fTotalPromised}</div>
+					<div id='Account.promised_amount.Output' name='Account.promised_amount' class='DefaultOutput'>\${$sTotalPromised}</div>
 					<div id='Account.promised_amount.Label' class='DefaultLabel'>
 						<span> &nbsp;</span>
 						<span id='Account.promised_amount.Label.Text'>Promised Amount : </span>

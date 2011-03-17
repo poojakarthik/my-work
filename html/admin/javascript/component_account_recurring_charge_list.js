@@ -7,10 +7,11 @@ var Component_Account_Recurring_Charge_List = Class.create(
 		this._oContainerDiv			= oContainerDiv;
 		this._iAccountId			= iAccountId;
 		this._fnUpdatePagination	= fnUpdatePagination;
-			
+		
 		this._hFilters	= {};
 		this._oOverlay 	= new Reflex_Loading_Overlay();
 		this._oElement	= $T.div({class: 'component-account-recurring-charge-list'});
+		this._oTooltip	= new Component_List_Tooltip(30);
 		
 		// Load constants then create UI
 		Flex.Constant.loadConstantGroup(Component_Account_Recurring_Charge_List.REQUIRED_CONSTANT_GROUPS, this._buildUI.bind(this));
@@ -126,6 +127,7 @@ var Component_Account_Recurring_Charge_List = Class.create(
 	// _updateTable: Page load callback from the dataset pagination object.
 	_updateTable	: function(oResultSet)
 	{
+		this._oTooltip.clearRegisteredRows();
 		var oTBody = this._oElement.select('table > tbody').first();
 		
 		// Remove all existing rows
@@ -207,93 +209,36 @@ var Component_Account_Recurring_Charge_List = Class.create(
 				}
 			}
 			
-			// NOTE: This vixen table linking has been disabled until called upon, the code commented here is a mixture of charge & recurring
-			// charge related code because concepts from both will be needed to re-add the linking/tooltip
-			/*
-			// Vixen tooltip content
-			var oTooltipContent	= {};
+			// Tooltip content
+			var hTooltipContent = {};
 			
-			if (this._bUserIsGod)
-			{
-				oTooltipContent[this._sVisibleChargeModel + ' Id :']	= oData.id;
-			}
-			
-			if (oData.CreatedBy)
-			{
-				oTooltipContent['Requested By :']	= oData.created_by_label;
-			}
-			
-			if (oData.ApprovedBy && bApproved)
-			{
-				oTooltipContent['Approved By :']	= oData.approved_by_label;
-			}
-			
-			if (oData.Service)
-			{
-				if (this._bUserIsGod)
-				{
-					oTooltipContent['Service :']	= oData.Service;
-				}
-				
-				oTooltipContent['Service FNN :']	= oData.serviceFNN;
-			}
-			
-			oTooltipContent['Status :']			= oData.status_label;
-			oTooltipContent['Description :']	= oData.Description;
-			
-			if (oData.Notes)
-			{
-				oTooltipContent['Notes :']	= oData.Notes;
-			}
-			
-			oTBody.appendChild(Component_Account_Recurring_Charge_List.createVixenTooltipContent(sRowId, oTooltipContent));
-			
-			// Vixen table stuff
-			oRow	= Component_Account_Recurring_Charge_List.createVixenTableRow();
-			Component_Account_Recurring_Charge_List.addVixenTableIndex(oRow, 'invoice_run_id', oData.invoice_run_id);
-			
-			if (oData.LinkType == $CONSTANT.CHARGE_LINK_PAYMENT)
-			{
-				// This charge relates directly to a payment
-				Component_Account_Recurring_Charge_List.addVixenTableIndex(oRow, 'PaymentId', oData.LinkId);
-			} 
-			else if (oData.LinkType == $CONSTANT.CHARGE_LINK_RECURRING)
-			{
-				// This charge relates directly to a recurring charge
-				Component_Account_Recurring_Charge_List.addVixenTableIndex(oRow, 'RecurringChargeId', oData.LinkId);
-			}
-			
-			Vixen.table[this._sTableId].row.push(oRow);
-			
-			// Add tooltip
-			var sToolTipHtml = "";
-			if (bUserIsGod)
+			if (oData.extra_detail_enabled)
 			{
 				// Display the associated RecurringCharge Id if the user is GOD
-				sToolTipHtml .= oData.Id;
+				hTooltipContent['Recurring Charge Id'] = oData.id;
 			}
 			if (oData.service_id)
 			{
-				if (bUserIsGod)
+				if (oData.extra_detail_enabled)
 				{
 					// Display the associated service Id if the user is GOD
-					sToolTipHtml .= oData.service_id;
+					hTooltipContent['Service'] = oData.service_id;
 				}
 				// The Recurring Charge is a Service Recurring Charge.  Display the FNN of the Service
-				sToolTipHtml .= oData.service_fnn;
+				hTooltipContent['Service FNN'] = oData.service_fnn;
 			}
 			
 			// Add GST to the MinCharge and RecursionCharge
 			oData.min_charge		= this._applyGlobalTax(oData.min_charge);
-			oData.recursion_charge	= AddGST(oData.recursion_charge);
+			oData.recursion_charge	= this._applyGlobalTax(oData.recursion_charge);
 			
-			// TimesToCharge requires the Recursion Charge to not equal 0
+			// iTimesToCharge requires the Recursion Charge to not equal 0
 			if (oData.recursion_charge != 0)
 			{
 				// Calculate the required number of recursions
 				var fMinCharge 			= parseFloat(new Number(oData.min_charge).toFixed(2));
 				var fRecursionCharge 	= parseFloat(new Number(oData.recursion_charge).toFixed(2));
-				oData.times_to_charge 	= ceil(abs((fMinCharge / fRecursionCharge) - 0.01));
+				oData.times_to_charge 	= Math.ceil(Math.abs((fMinCharge / fRecursionCharge) - 0.01));
 			}
 			else
 			{
@@ -316,72 +261,98 @@ var Component_Account_Recurring_Charge_List = Class.create(
 				}
 				oData.charged = "In Arrears";
 			}
-			sToolTipHtml .= oData.charged;
-			if (oData.total_charged > 0.0)
+			
+			hTooltipContent['Charged'] = oData.charged;
+			
+			if (oData.total_charge > 0.0)
 			{
-				sToolTipHtml .= oData.last_charged_on;
-				sToolTipHtml .= this._applyGlobalTax(oData.total_charged);
+				hTooltipContent['Last Charged On'] 				= Date.$parseDate(oData.last_charged_on, 'Y-m-d').$format('d/m/Y');
+				hTooltipContent['Already Charged (inc GST)']	= '$' + new Number(this._applyGlobalTax(oData.total_charge)).toFixed(2);
 			}
 			
-			sToolTipHtml .= oData.nature;
+			hTooltipContent['Nature'] = oData.nature;
 			
-			var sRecurringFreq = oData.recurring_freq ." ". oData.recurring_freq_type;
+			var sRecurringFreq 		= oData.recurring_freq + ' ' + oData.recurring_freq_type;
+			var sRecurringFreqType 	= '';
+			switch (oData.recurring_freq_type)
+			{
+				case Component_Account_Recurring_Charge_List.BILLING_FREQ_DAY:	// Day
+					sRecurringFreqType = "day";
+					break;
+					
+				case Component_Account_Recurring_Charge_List.BILLING_FREQ_MONTH:	// Month
+					sRecurringFreqType = "month";
+					break;
+					
+				case Component_Account_Recurring_Charge_List.BILLING_FREQ_HALF_MONTH:	// Half-Month
+					sRecurringFreqType = "half-month";
+					break;
+			}
 			
-			sToolTipHtml .= sRecurringFreq;
-			sToolTipHtml .= oData.times_to_charge;
-			sToolTipHtml .= oData.total_recursions;
-			sToolTipHtml .= this._applyGlobalTax(oData.cancellation_fee);
-			sToolTipHtml .= oData.min_charge;
-			sToolTipHtml .= oData.recursion_charge;
-			sToolTipHtml .= oData.continuable;
-			sToolTipHtml .= oData.unique_charge;
+			var sFreqTypePluraliserSuffix = '';
+			if (oData.recurring_freq != 1)
+			{
+				sFreqTypePluraliserSuffix = 's';
+			}
 			
-			var TimesToCharge = oData.times_to_charge;
+			hTooltipContent['Recurring Frequency'] = oData.recurring_freq + ' ' + sRecurringFreqType + sFreqTypePluraliserSuffix;
+			
+			hTooltipContent['Times To Charge'] 				= oData.times_to_charge;
+			hTooltipContent['Times Charged'] 				= oData.total_recursions;
+			hTooltipContent['Cancellation Fee (inc GST)'] 	= '$' + new Number(this._applyGlobalTax(oData.cancellation_fee)).toFixed(2);
+			hTooltipContent['Minimum Charge (inc GST)'] 	= '$' + new Number(oData.min_charge).toFixed(2);
+			hTooltipContent['Recurring Charge (inc GST)'] 	= '$' + new Number(oData.recursion_charge).toFixed(2);
+			hTooltipContent['Continuable'] 					= (oData.continuable ? 'Yes' : 'No');
+			hTooltipContent['Unique Charge'] 				= (oData.unique_charge ? 'Yes' : 'No');
+			
+			var iTimesToCharge = oData.times_to_charge;
 			
 			// Work out the end date
-			if (is_numeric(iTimesToCharge))
+			var oStartDate = Date.$parseDate(oData.started_on, 'Y-m-d');
+			if (!isNaN(iTimesToCharge))
 			{
 				// The end date depends on the Recurring Frequency type, the recurring frequency and the times to charge
-				switch (oData.RecurringFreqType)
+				switch (oData.recurring_freq_type)
 				{
-					case BILLING_FREQ_DAY:
+					case Component_Account_Recurring_Charge_List.BILLING_FREQ_DAY:
 						var iTotalNumOfDays	= iTimesToCharge * oData.recurring_freq;
-						var iEndTime		= strtotime("+{iTotalNumOfDays} days", strtotime(oData.started_on));
+						var iEndTime		= oStartDate.shift(iTotalNumOfDays, 'days').getTime();
 						break;
 						
-					case BILLING_FREQ_MONTH:
+					case Component_Account_Recurring_Charge_List.BILLING_FREQ_MONTH:
 						var iTotalNumOfMonths	= iTimesToCharge * oData.recurring_freq;
-						var iEndTime			= strtotime("+{iTotalNumOfMonths} months", strtotime(oData.started_on));
+						var iEndTime			= oStartDate.shift(iTotalNumOfMonths, 'months').getTime();
 						break;
 						
-					case BILLING_FREQ_HALF_MONTH:
+					case Component_Account_Recurring_Charge_List.BILLING_FREQ_HALF_MONTH:
 						// If there is an even number of half months, then you can just work out how many whole months to add to the CreatedOn date
 						// If there is an odd number of half months, then add the even number of months on to the CreatedOn date; find out
 						// what 1 month beyond this date would be and then find the middle of these 2 dates expressed in seconds
 						var iTotalNumOfHalfMonths	= iTimesToCharge * oData.recurring_freq;
 						var iTotalNumOfMonths		= (int)(iTotalNumOfHalfMonths / 2);
 						var bExtraHalfMonth			= iTotalNumOfHalfMonths % 2;
-						var iEndTime				= strtotime("+{iTotalNumOfMonths} months", strtotime(oData.started_on));
+						var iEndTime				= oStartDate.shift(iTotalNumOfMonths, 'months').getTime();
 						
 						if (bExtraHalfMonth)
 						{
-							var iOneMonthBeyondEndTime	= strtotime("+1 months", iEndTime);
-							var iEndTime				= iEndTime + ((int)((iOneMonthBeyondEndTime - iEndTime) / 2));
+							var iOneMonthBeyondEndTime	= new Date(iEndTime).shift(1, 'months').getTime();
+							var iEndTime				= iEndTime + (parseInt((iOneMonthBeyondEndTime - iEndTime) / 2));
 						}
 						break;
 				}
-				var sEndTime = date("d/m/Y", iEndTime);
+				
+				var sEndTime = new Date(iEndTime).$format('d/m/Y');
 			}
 			else
 			{
-				// TimesToCharge is not a number.  It must equal Infinity
+				// iTimesToCharge is not a number.  It must equal Infinity
 				var sEndTime = "Infinity";
 			}
 			
-			sToolTipHtml 	.= oData.started_on;
-			oData.end_date	= sEndTime;
-			sToolTipHtml 	.= oData.end_date;
-			*/
+			hTooltipContent['Started On'] 	= oStartDate.$format('d/m/Y');
+			hTooltipContent['End Date']		= sEndTime;
+			
+			this._oTooltip.registerRow(oTR, hTooltipContent);
 			
 			return oTR;
 		}
@@ -431,6 +402,12 @@ var Component_Account_Recurring_Charge_List = Class.create(
 				RecurringCharge 	: {Id: iChargeId}
 			}
 		)
+	},
+	
+	_applyGlobalTax : function(fValue)
+	{
+		// TODO: CR137 -- Add on global tax here
+		return fValue;
 	}
 });
 
@@ -449,6 +426,10 @@ Object.extend(Component_Account_Recurring_Charge_List,
 	
 	REQUIRED_CONSTANT_GROUPS	: ['recurring_charge_status'],
 	
+	BILLING_FREQ_DAY 		: 1,
+	BILLING_FREQ_MONTH 		: 2,
+	BILLING_FREQ_HALF_MONTH : 3,
+	
 	// Sorting definitions
 	SORT_FIELDS	:	
 	{
@@ -465,6 +446,11 @@ Object.extend(Component_Account_Recurring_Charge_List,
 	{
 		var sMessage = (oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.');
 		Reflex_Popup.alert(sMessage, {sTitle: 'Error', sDebugContent: oResponse.sDebug});
+	},
+	
+	_getCurrency : function(mValue)
+	{
+		return new Number(mValue).toFixed(2);
 	}
 });
 

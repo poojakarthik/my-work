@@ -30,7 +30,8 @@ class JSON_Handler_Payment extends JSON_Handler
 			
 			foreach ($aData as $aRecord)
 			{
-				$aResults[$i] = $aRecord;
+				$aRecord['extra_detail_enabled']	= $bUserIsGod;
+				$aResults[$i] 						= $aRecord;
 				$i++;
 			}
 			

@@ -79,6 +79,7 @@ class HtmlTemplateChargeList extends HtmlTemplate
 		$this->LoadJavascript("control_tab_group");
 		$this->LoadJavascript("component_account_charges");
 		$this->LoadJavascript("component_account_charge_list");
+		$this->LoadJavascript("component_list_tooltip");
 		$this->LoadJavascript("component_account_recurring_charge_list");
 	}
 	

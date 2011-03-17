@@ -10,6 +10,8 @@ var Component_Account_Payment_List = Class.create(
 		oNow.shift(-1, 'years');
 		this._iOneYearAgo = oNow.getTime();
 		
+		this._oTooltip = new Component_List_Tooltip(20);
+		
 		// Load constants then create UI
 		Flex.Constant.loadConstantGroup(Component_Account_Payment_List.REQUIRED_CONSTANT_GROUPS, this._buildUI.bind(this));
 	},
@@ -154,6 +156,7 @@ var Component_Account_Payment_List = Class.create(
 	// _updateTable: Page load callback from the dataset pagination object.
 	_updateTable	: function(oResultSet)
 	{
+		this._oTooltip.clearRegisteredRows();
 		var oTBody = this._oElement.select('table > tbody').first();
 		
 		// Remove all existing rows
@@ -240,6 +243,38 @@ var Component_Account_Payment_List = Class.create(
 							),
 							$T.td(oActionIcon)
 						);
+			
+			// Tooltip content
+			var hTooltipContent = {};
+			
+			if (oData.extra_detail_enabled)
+			{
+				hTooltipContent['Payment Id'] = oData.payment_id;
+			}
+			
+			// Payment Type
+			hTooltipContent['Payment Type'] = oData.payment_type_name;
+			
+			// If there is a file import date associated with the payment, then include this too 
+			if (oData.imported_datetime !== null)
+			{
+				hTooltipContent['Imported On'] = Date.$parseDate(oData.imported_datetime, 'Y-m-d H:i:s').$format('d/m/Y');
+			}
+			
+			// EnteredBy (created_employee_name)
+			if (oData.created_employee_name !== null)
+			{
+				hTooltipContent['Entered By'] = oData.created_employee_name;
+			}
+						
+			// Amount applied
+			hTooltipContent['Amount Applied ($)'] = new Number(oData.is_reversed ? 0 : (oData.amount - oData.balance)).toFixed(2);
+			
+			// Balance
+			hTooltipContent['Balance ($)'] = new Number(oData.balance).toFixed(2);
+			
+			this._oTooltip.registerRow(oTR, hTooltipContent);
+			
 			return oTR;
 		}
 		else

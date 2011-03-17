@@ -11,6 +11,7 @@ class HtmlTemplate_Account_Adjustment_List extends FlexHtmlTemplate
 		$this->LoadJavascript('dataset_ajax');
 		$this->LoadJavascript('pagination');
 		$this->LoadJavascript('component_account_adjustment_list');
+		$this->LoadJavascript('component_list_tooltip');
 		$this->LoadJavascript('popup_account_adjustment_reverse');
 	}
 

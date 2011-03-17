@@ -5,6 +5,7 @@ var Component_Account_Adjustment_List = Class.create(
 	{
 		this._iAccountId	= iAccountId;
 		this._oContainerDiv	= oContainerDiv;
+		this._oTooltip 		= new Component_List_Tooltip(20);
 		
 		// Load constants then create UI
 		Flex.Constant.loadConstantGroup(Component_Account_Adjustment_List.REQUIRED_CONSTANT_GROUPS, this._buildUI.bind(this));
@@ -148,6 +149,7 @@ var Component_Account_Adjustment_List = Class.create(
 	// _updateTable: Page load callback from the dataset pagination object.
 	_updateTable	: function(oResultSet)
 	{
+		this._oTooltip.clearRegisteredRows();
 		var oTBody = this._oElement.select('table > tbody').first();
 		
 		// Remove all existing rows
@@ -226,6 +228,32 @@ var Component_Account_Adjustment_List = Class.create(
 							$T.td(oData.transaction_nature_code),
 							$T.td(oActionIcon)
 						);
+	
+			// Tooltip content
+			var hTooltipContent = {};
+			
+			if (oData.extra_detail_enabled)
+			{
+				hTooltipContent['Adjustment Id'] = oData.adjustment_id;
+			}
+			
+			hTooltipContent['Requested By'] = oData.created_employee_name;
+			hTooltipContent['Approved By'] = oData.reviewed_employee_name;
+			
+			if (oData.service_id)
+			{
+				if (oData.extra_detail_enabled)
+				{
+					hTooltipContent['Service'] = oData.service_id;
+				}
+				
+				hTooltipContent['Service FNN'] = oData.service_fnn;
+			}
+			
+			hTooltipContent['Status'] = oData.adjustment_status_description;
+			
+			this._oTooltip.registerRow(oTR, hTooltipContent);
+			
 			return oTR;
 		}
 		else

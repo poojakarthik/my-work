@@ -345,8 +345,8 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->RecurringCharge->Load();
 		
 		// Calculate the Account Balance
-		$oAccount = Account::getForId($intAccountId);
-		DBO()->Account->Balance = $oAccount->getBalance();
+		$oAccount 				= Account::getForId($intAccountId);
+		DBO()->Account->Balance	= $oAccount->getBalance();
 		
 		// Calculate the Account Overdue Amount
 		DBO()->Account->Overdue = $oAccount->getOverdueBalance();

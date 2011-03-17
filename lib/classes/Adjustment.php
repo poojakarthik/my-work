@@ -194,19 +194,24 @@ class Adjustment extends ORM_Cached
 	public static function searchForApproved($bCountOnly, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null)
 	{
 		$aAliases =	array(
-						'adjustment_id' 			=> "a.id",
-						'adjustment_type_code' 		=> "at.code",
-						'effective_date'			=> "a.effective_date",
-						'amount'					=> "a.amount",
-						'account_id'				=> "a.account_id",
-						'is_reversed'				=> "IF(
-															a_reversed.id IS NOT NULL
-															AND a_s_reversed.system_name = 'APPROVED'
-															AND arot_reversed.system_name = 'APPROVED', 
-															1, 
-															0
-														)",
-						'transaction_nature_code'	=> "tn.code"
+						'adjustment_id' 				=> "a.id",
+						'adjustment_type_code' 			=> "at.code",
+						'effective_date'				=> "a.effective_date",
+						'amount'						=> "a.amount",
+						'account_id'					=> "a.account_id",
+						'service_id'					=> "a.service_id",
+						'service_fnn'					=> "s.FNN",
+						'adjustment_status_description'	=> "a_s.description",
+						'is_reversed'					=> "IF(
+																a_reversed.id IS NOT NULL
+																AND a_s_reversed.system_name = 'APPROVED'
+																AND arot_reversed.system_name = 'APPROVED', 
+																1, 
+																0
+															)",
+						'transaction_nature_code'		=> "tn.code",
+						'created_employee_name' 		=> "IF(e_created.Id <> ".Employee::SYSTEM_EMPLOYEE_ID.", CONCAT(e_created.FirstName, ' ', e_created.LastName), NULL)",
+						'reviewed_employee_name' 		=> "IF(e_reviewed.Id <> ".Employee::SYSTEM_EMPLOYEE_ID.", CONCAT(e_reviewed.FirstName, ' ', e_reviewed.LastName), NULL)"
 					);
 		
 		$sFrom		= "				adjustment a
@@ -221,6 +226,8 @@ class Adjustment extends ORM_Cached
 									)
 						JOIN		adjustment_type at ON (at.id = a.adjustment_type_id)
 						JOIN		transaction_nature tn ON (tn.id = at.transaction_nature_id)
+						JOIN		Employee e_created ON (e_created.id = a.created_employee_id)
+						LEFT JOIN	Employee e_reviewed ON (e_reviewed.id = a.reviewed_employee_id)
 						LEFT JOIN	adjustment a_reversed ON (a_reversed.reversed_adjustment_id = a.id)
 						LEFT JOIN	adjustment_status a_s_reversed ON (
 										a_s_reversed.id = a_reversed.adjustment_status_id
@@ -230,7 +237,8 @@ class Adjustment extends ORM_Cached
 						LEFT JOIN  	adjustment_review_outcome_type arot_reversed ON (
 										arot_reversed.id = aro_reversed.adjustment_review_outcome_type_id AND 
 										arot_reversed.system_name = 'APPROVED'
-									)";
+									)
+						LEFT JOIN	Service s ON (s.Id = a.service_id)";
 		
 		if ($bCountOnly)
 		{

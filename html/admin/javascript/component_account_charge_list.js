@@ -10,6 +10,7 @@ var Component_Account_Charge_List = Class.create(
 		this._hFilters	= {};
 		this._oOverlay 	= new Reflex_Loading_Overlay();
 		this._oElement	= $T.div({class: 'component-account-charge-list'});
+		this._oTooltip	= new Component_List_Tooltip(30);
 		
 		// Load constants then create UI
 		Flex.Constant.loadConstantGroup(Component_Account_Charge_List.REQUIRED_CONSTANT_GROUPS, this._buildUI.bind(this));
@@ -130,6 +131,7 @@ var Component_Account_Charge_List = Class.create(
 	// _updateTable: Page load callback from the dataset pagination object.
 	_updateTable	: function(oResultSet)
 	{
+		this._oTooltip.clearRegisteredRows();
 		var oTBody = this._oElement.select('table > tbody').first();
 		
 		// Remove all existing rows
@@ -235,61 +237,43 @@ var Component_Account_Charge_List = Class.create(
 				}
 			}
 			
-			// Vixen tooltip content
+			// Tooltip content
 			var hTooltipContent	= {};
 			
 			if (oData.extra_detail_enabled)
 			{
-				hTooltipContent['Charge Id :']	= oData.id;
+				hTooltipContent['Charge Id'] = oData.id;
 			}
 			
 			if (oData.created_by)
 			{
-				hTooltipContent['Requested By :'] = oData.created_by_label;
+				hTooltipContent['Requested By'] = oData.created_by_name;
 			}
 			
 			if (oData.approved_by && bApproved)
 			{
-				hTooltipContent['Approved By :'] = oData.approved_by_label;
+				hTooltipContent['Approved By'] = oData.approved_by_name;
 			}
 			
 			if (oData.service_id)
 			{
 				if (oData.extra_detail_enabled)
 				{
-					hTooltipContent['Service :'] = oData.service_id;
+					hTooltipContent['Service'] = oData.service_id;
 				}
 				
-				hTooltipContent['Service FNN :'] = oData.service_fnn;
+				hTooltipContent['Service FNN'] = oData.service_fnn;
 			}
 			
-			hTooltipContent['Status :']			= Flex.Constant.arrConstantGroups.ChargeStatus[oData.charge_status].Description;
-			hTooltipContent['Description :']	= oData.description;
+			hTooltipContent['Status']		= Flex.Constant.arrConstantGroups.ChargeStatus[oData.charge_status].Description;
+			hTooltipContent['Description']	= oData.description;
 			
 			if (oData.notes)
 			{
-				hTooltipContent['Notes :']	= oData.notes;
+				hTooltipContent['Notes'] = oData.notes;
 			}
 			
-			/*
-			// Vixen table stuff
-			oRow	= Component_Account_Charge_List.createVixenTableRow();
-			Component_Account_Charge_List.addVixenTableIndex(oRow, 'invoice_run_id', oData.invoice_run_id);
-			
-			if (oData.LinkType == $CONSTANT.CHARGE_LINK_PAYMENT)
-			{
-				// This charge relates directly to a payment
-				Component_Account_Charge_List.addVixenTableIndex(oRow, 'PaymentId', oData.LinkId);
-			} 
-			else if (oData.LinkType == $CONSTANT.CHARGE_LINK_RECURRING)
-			{
-				// This charge relates directly to a recurring charge
-				Component_Account_Charge_List.addVixenTableIndex(oRow, 'RecurringChargeId', oData.LinkId);
-			}
-			
-			Vixen.table[this._sTableId].row.push(oRow);*/
-			
-			//this._createTooltip(oTR, hTooltipContent);
+			this._oTooltip.registerRow(oTR, hTooltipContent);
 			
 			return oTR;
 		}
@@ -298,42 +282,6 @@ var Component_Account_Charge_List = Class.create(
 			// Invalid, return empty row
 			return $T.tr();
 		}
-	},
-	
-	// TODO: CR137 - Attempted table tooltip re-implenetaiton, worked ok but slow, needs imporvement
-	_createTooltip : function(oTR, hContent)
-	{
-		function showTT(hContent)
-		{
-			if (!this._oTooltip)
-			{
-				this._oTooltip = $T.div({class: 'test-tooltip'});
-			}
-			
-			this._oTooltip.innerHTML = '';
-			
-			for (var sLabel in hContent)
-			{
-				this._oTooltip.appendChild($T.div(sLabel + ': ' + hContent[sLabel]));
-			}
-			
-			document.body.appendChild(this._oTooltip);
-			//this._oTooltip.toggle();
-			
-			var oPositionedOffset 		= oTR.viewportOffset();
-			this._oTooltip.style.left	= (oPositionedOffset.left - this._oTooltip.getWidth()) + 'px';
-			this._oTooltip.style.top 	= (oPositionedOffset.top + window.scrollY) + 'px';
-			
-			//this._oTooltip.toggle();
-		}
-		
-		function hideTT()
-		{
-			//this._oTooltip.remove();
-		}
-		
-		oTR.observe('mouseover', showTT.bind(this, hContent));
-		oTR.observe('mouseout', hideTT.bind(this));
 	},
 	
 	_createDeleteButton : function(iChargeId, bCancel)

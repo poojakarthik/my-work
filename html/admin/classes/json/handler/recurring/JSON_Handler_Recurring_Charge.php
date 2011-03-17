@@ -294,8 +294,9 @@ class JSON_Handler_Recurring_Charge extends JSON_Handler
 			
 			foreach ($aData as $aRecord)
 			{
-				$aRecord['delete_enabled']	= $bUserCanDeleteCharges;
-				$aResults[$i] 				= $aRecord;
+				$aRecord['delete_enabled']			= $bUserCanDeleteCharges;
+				$aRecord['extra_detail_enabled']	= $bUserIsGod;
+				$aResults[$i] 						= $aRecord;
 				$i++;
 			}
 			

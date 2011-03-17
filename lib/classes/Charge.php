@@ -262,7 +262,8 @@ class Charge extends ORM_Cached
 						'invoice_run_id' 	=> "c.invoice_run_id",
 						'link_type' 		=> "c.LinkType",
 						'link_id' 			=> "c.LinkId",
-						'account_id'		=> "c.Account"
+						'account_id'		=> "c.Account",
+						'notes'				=> "c.Notes"
 					);
 		
 		$sFrom = "				Charge c 

@@ -27,43 +27,38 @@ class Payment extends ORM_Cached
 		return 100;
 	}
 
+    public static function resetBalanceForAccount($iAccountId)
+    {
+        $oQuery = new Query();
+        $sSql = "   UPDATE payment p
+                    LEFT JOIN payment p2 ON ( p2.reversed_payment_id = p.id)
+                    SET p.balance = IF (p2.id is not null || p.payment_nature_id = ".PAYMENT_NATURE_REVERSAL." , 0, p.amount)
+                    WHERE p.account_id = $iAccountId";
 
-        public static function resetBalanceForAccount($iAccountId)
-        {
-            $oQuery = new Query();
-            $sSql = "   UPDATE payment p
-                        LEFT JOIN payment p2 ON ( p2.reversed_payment_id = p.id)
-                        SET p.balance = IF (p2.id is not null || p.payment_nature_id = ".PAYMENT_NATURE_REVERSAL." , 0, p.amount)
-                        WHERE p.account_id = $iAccountId";
+        $oQuery->Execute($sSql);
+    }
 
-            $oQuery->Execute($sSql);
+    public static function getForAccountId($iAccountId, $iPaymentNature = null, $bWithDistributableBalance = true)
+	{
+
+
+        $sWhereClause = $iPaymentNature != null ? "AND pn.id = $iPaymentNature" : "";
+        $sWhereClause = $bWithDistributableBalance ?  $sWhereClause." AND p.balance > 0" : $sWhereClause;
+        $sSQL = "   SELECT p.*
+                    FROM payment p
+                    JOIN payment_nature pn ON (p.payment_nature_id = pn.id)
+                    WHERE p.account_id = $iAccountId
+                     $sWhereClause
+                    ";
+        $oQuery = new Query();
+        $mResult = $oQuery->Execute($sSQL);
+        $aResult = array();
+        if ($mResult)
+
+        while ($aRecord = $mResult->fetch_assoc())
+		{
+            $aResult[] = new self($aRecord);
         }
-
-
-
-        public static function getForAccountId($iAccountId, $iPaymentNature = null, $bWithDistributableBalance = true)
-
-        {
-
-
-            $sWhereClause = $iPaymentNature != null ? "AND pn.id = $iPaymentNature" : "";
-            $sWhereClause = $bWithDistributableBalance ?  $sWhereClause." AND p.balance > 0" : $sWhereClause;
-            $sSQL = "   SELECT p.*
-                        FROM payment p
-                        JOIN payment_nature pn ON (p.payment_nature_id = pn.id)
-                        WHERE p.account_id = $iAccountId
-                         $sWhereClause
-                        ";
-            $oQuery = new Query();
-            $mResult = $oQuery->Execute($sSQL);
-            $aResult = array();
-            if ($mResult)
-
-            while ($aRecord = $mResult->fetch_assoc())
-
-            {
-                $aResult[] = new self($aRecord);
-            }
 
         mysqli_free_result($mResult);
 
@@ -195,18 +190,28 @@ class Payment extends ORM_Cached
 	public static function searchFor($bCountOnly, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null)
 	{
 		$aAliases =	array(
-						'payment_id' 		=> "p.id",
-						'payment_type_name' => "pt.name",
-						'paid_date'			=> "p.paid_date",
-						'amount'			=> "p.amount",
-						'account_id'		=> "p.account_id",
-						'is_reversed'		=> "IF(p_reversed.id IS NULL, 0, 1)",
-						'created_datetime'	=> "p.created_datetime"
+						'payment_id' 			=> "p.id",
+						'payment_type_name' 	=> "COALESCE(pt.name, 'N/A')",
+						'paid_date'				=> "p.paid_date",
+						'amount'				=> "p.amount",
+						'balance'				=> "p.balance",
+						'account_id'			=> "p.account_id",
+						'is_reversed'			=> "IF(p_reversed.id IS NULL, 0, 1)",
+						'created_datetime'		=> "p.created_datetime",
+						'created_employee_name' => "IF(e_created.Id <> ".Employee::SYSTEM_EMPLOYEE_ID.", CONCAT(e_created.FirstName, ' ', e_created.LastName), NULL)",
+						'imported_datetime'		=> "IF(pr_import.id IS NOT NULL, fi.ImportedOn, NULL)"
 					);
 		
 		$sFrom		= "				payment p
-						JOIN		payment_type pt ON (pt.id = p.payment_type_id)
-						LEFT JOIN	payment p_reversed ON (p_reversed.reversed_payment_id = p.id)";
+						JOIN		Employee e_created ON (e_created.id = p.created_employee_id)
+						LEFT JOIN	payment_type pt ON (pt.id = p.payment_type_id)
+						LEFT JOIN	payment p_reversed ON (p_reversed.reversed_payment_id = p.id)
+						LEFT JOIN	payment_response pr_import ON (
+										pr_import.id = p.latest_payment_response_id
+										AND pr_import.file_import_data_id IS NOT NULL
+									)
+						LEFT JOIN	file_import_data fid ON (fid.id = pr_import.file_import_data_id)
+						LEFT JOIN	FileImport fi ON (fi.Id = fid.file_import_id)";
 		
 		if ($bCountOnly)
 		{
