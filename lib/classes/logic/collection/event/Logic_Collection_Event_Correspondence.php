@@ -251,7 +251,7 @@ class Logic_Collection_Event_Correspondence extends Logic_Collection_Event
                         $aItem	= 	array(
                                                         'account_id'						=> $iAccountId,
                                                         'customer_group_id'					=> $iCustGrp,
-                                                        'correspondence_delivery_method_id'	=> $sCorrespondenceDeliveryMethod,
+                                                        'correspondence_delivery_method_id'	=> NULL,
                                                         'account_name'						=> $aDetails['Account']['BusinessName'],
                                                         'title'								=> $aDetails['Account']['Title'],
                                                         'first_name'						=> $aDetails['Account']['FirstName'],
@@ -264,9 +264,8 @@ class Logic_Collection_Event_Correspondence extends Logic_Collection_Event
                                                         'email'								=> $aDetails['Account']['Email'],
                                                         'mobile'							=> $aDetails['Account']['Mobile'],
                                                         'landline'							=> $aDetails['Account']['Landline'],
-                                                        'pdf_file_path'						=> $sTargetFile,
-                                                        'letter_type'						=> $iDocumentTemplateId
-                                                );
+                                                        'pdf_file_path'						=> $sTargetFile
+						    );
                         $aCorrespondence[]	= $aItem;
 
                         // Update the summary information for the delivery method
