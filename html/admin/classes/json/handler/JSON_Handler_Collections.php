@@ -206,14 +206,19 @@ class JSON_Handler_Collections extends JSON_Handler
 				$oAccount															= Account::getForId($oAccountOCAReferral->account_id);
 				
 				// Check last invoice run for the account, is it committed and interim? if so this account fails referral, otherwise
-				$oLastInvoiceRun 			= $oAccount->getLastInvoiceRun();
-				$aInterimInvoiceRunTypes 	= array(INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL, INVOICE_RUN_TYPE_INTERIM_FIRST);
-				if ($oLastInvoiceRun && ($oLastInvoiceRun->invoice_run_status_id == INVOICE_RUN_STATUS_COMMITTED) && in_array($oLastInvoiceRun->invoice_run_type_id, $aInterimInvoiceRunTypes))
+				$aInvoice = Invoice::getForAccount($oAccount->Id);
+				if (count($aInvoice) > 0)
 				{
-					$sInvoiceRunType = Constant_Group::getConstantGroup('invoice_run_type')->getConstantName($oLastInvoiceRun->invoice_run_type_id);
-					throw new JSON_Handler_Collections_Exception("Failed to commit Final Invoice for Account {$oAccountOCAReferral->account_id} it already has a commited Invoice of type: '{$sInvoiceRunType}'.");
+				    $oLastInvoice 				= array_pop($aInvoice);
+				    $oLastInvoiceRun 			= Invoice_Run::getForId($oLastInvoice->invoice_run_id);
+				    $aInterimInvoiceRunTypes 	= array(INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL, INVOICE_RUN_TYPE_INTERIM_FIRST);
+					if ($oLastInvoiceRun && ($oLastInvoiceRun->invoice_run_status_id == INVOICE_RUN_STATUS_COMMITTED) && in_array($oLastInvoiceRun->invoice_run_type_id, $aInterimInvoiceRunTypes))
+					{
+						$sInvoiceRunType = Constant_Group::getConstantGroup('invoice_run_type')->getConstantName($oLastInvoiceRun->invoice_run_type_id);
+						throw new JSON_Handler_Collections_Exception("Failed to commit Final Invoice for Account {$oAccountOCAReferral->account_id} it already has a commited Invoice of type: '{$sInvoiceRunType}'.");
+					}
 				}
-				
+								
 				$iCustomerGroupId = $oAccount->CustomerGroup;
 				if (!$aAccountsByCustomerGroupId[$iCustomerGroupId])
 				{

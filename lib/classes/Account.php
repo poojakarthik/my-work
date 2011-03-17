@@ -301,20 +301,6 @@ class Account
 		return date("Y-m-d", max($intAccountLastInvoiceDate, $intCustomerGroupLastInvoiceDate));
 	}
 
-	public function getLastInvoiceRun($sEffectiveDate=null)
-	{
-		$oSelectInvoiceRun	= self::_preparedStatement('selLastInvoiceRun');
-		$sEffectiveDate		= ($sEffectiveDate === null ? date('Y-m-d H:i:s') : $sEffectiveDate);
-		if ($oSelectInvoiceRun->Execute(array('Account' => $this->Id, 'EffectiveDate' => $sEffectiveDate, 'ProductionOnly' => 0)))
-		{
-			// We have an old invoice run
-			$aLastInvoiceRun = $oSelectInvoiceRun->Fetch();
-			return Invoice_Run::getForId($aLastInvoiceRun['InvoiceRunId']);
-		}
-		// No old invoice run
-		return null;
-	}
-
 	/**
 	 * getLastInvoiceDate()
 	 *
