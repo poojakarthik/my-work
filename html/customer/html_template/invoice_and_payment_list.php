@@ -117,8 +117,10 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 		$arrInvoicesAndPayments = Array();
 		foreach (DBL()->Invoice as $dboInvoice)
 		{
-			$arrRecord['invoice_run_id']				= $dboInvoice->invoice_run_id->Value;
-			$arrRecord['InvoiceId'] 					= $dboInvoice->Id->Value;
+			$arrRecord = array();
+			$arrRecord['Visible']			= true;
+			$arrRecord['invoice_run_id']	= $dboInvoice->invoice_run_id->Value;
+			$arrRecord['InvoiceId'] 		= $dboInvoice->Id->Value;
 
 			$arrRecord['Type'] 					= "Invoice";  // This may not be required, but if it is, it should probably be changed to a constant.  Although it's only ever going to be used in this function
 			$arrRecord['DateCreatedTimeStamp'] 	= strtotime($dboInvoice->CreatedOn->Value);
@@ -150,30 +152,100 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 			$arrInvoicesAndPayments[] 		= $arrRecord;
 		}
 		
-		// Add all the payments to the array to sort
-		foreach (DBL()->Payment as $dboPayment)
+		// Add all the payments to the array to sort (Only show non-reversed and those that have been reversed due to dishonour)
+		foreach (DBO()->Payments as $aPayment)
 		{
-			$arrRecord['Type'] 					= "Payment";  // This may not be required, but if it is, it should probably be changed to a constant.  Although it's only ever going to be used in this function
-			$arrRecord['DateCreatedTimeStamp'] 	= strtotime($dboPayment->PaidOn->Value);
-			$arrRecord['Id'] 					= $dboPayment->TXNReference->AsValue();
-			$arrRecord['Date'] 					= $dboPayment->PaidOn->AsValue();
-			$arrRecord['PaymentType'] 					= $dboPayment->PaymentType->Value;
-			
-			// Work out what will be displayed in the Debit and Credit columns of the table
-			$arrRecord['CreditValue']			= $dboPayment->Amount->Value;
-			$arrRecord['Debit']					= "&nbsp;";
-			$arrRecord['DebitValue']			= 0;
-			
-			// If the Payment is applied to an AccountGroup then flag it as such;
-			if ($dboPayment->Account->Value === NULL)
+			$arrRecord = array();
+			if ($aPayment['payment_reversal_type_id'] == PAYMENT_REVERSAL_TYPE_AGENT || $aPayment['reversed_by_payment_reversal_type_id'] == PAYMENT_REVERSAL_TYPE_AGENT)
 			{
-				// Payment has been applied to the account group that this account belongs to
-				$arrRecord['Credit'] = "<span style='float:left;'>(Group Payment)</span><span style='float:right;'>" . $dboPayment->Amount->AsValue() . "</span>";
+				// Ignore reversed payments or reversals that are agent reversals
+				$arrRecord['Visible'] = false;
 			}
 			else
 			{
-				// Payment is applied directly to the account
-				$arrRecord['Credit'] = $dboPayment->Amount->AsValue();
+				$arrRecord['Visible'] = true;
+			}
+			
+			$arrRecord['Type'] 					= "Payment";
+			$arrRecord['DateCreatedTimeStamp'] 	= strtotime($aPayment['paid_date']);
+			$arrRecord['Id'] 					= "<span>{$aPayment['transaction_reference']}</span>";
+			$arrRecord['Date'] 					= "<span>".date('d/m/Y', $arrRecord['DateCreatedTimeStamp'])."</span>";
+			$arrRecord['PaymentType'] 			= $aPayment['payment_type_name'];
+			
+			// Determine if a reversal reason needs to be shown
+			if ($aPayment['payment_reversal_type_id'] !== null)
+			{
+				$arrRecord['ReversalReason'] = "<span>({$aPayment['payment_reversal_reason_name']})</span>";
+			}
+			else
+			{
+				$arrRecord['ReversalReason'] = null;
+			}
+			
+			// Work out what will be displayed in the Debit and Credit columns of the table
+			$fAmount 	= Rate::roundToRatingStandard($aPayment['amount'], 2);
+			$fAbsAmount	= abs($fAmount);
+			$sAbsAmount	= number_format($fAbsAmount, 2);
+			if ($fAmount < 0)
+			{
+				// Credit
+				$arrRecord['Credit'] 		= "<span class='Currency'>{$sAbsAmount}</span>";
+				$arrRecord['CreditValue']	= $fAbsAmount;
+				$arrRecord['Debit'] 		= "&nbsp;";
+				$arrRecord['DebitValue']	= 0;
+			}
+			else
+			{
+				// Debit
+				$arrRecord['Debit'] 		= "<span class='Currency'>{$sAbsAmount}</span>";
+				$arrRecord['DebitValue']	= $fAbsAmount;
+				$arrRecord['Credit'] 		= "&nbsp;";
+				$arrRecord['CreditValue']	= 0;
+			}
+			
+			// Append the record to the array to sort
+			$arrInvoicesAndPayments[] = $arrRecord;
+		}
+		
+		// Add all the adjustments to the array to sort (Only show non-reversed and those that have been reversed due to dishonour)
+		foreach (DBO()->Adjustments as $aAdjustment)
+		{
+			$arrRecord = array();
+			if ($aAdjustment['reversed_adjustment_id'] !== null || $aAdjustment['reversed_by_adjustment_id'] !== null || $aAdjustment['visible_on_invoice'] == 0)
+			{
+				// Ignore reversed adjustments, or ones not visible on invoice
+				$arrRecord['Visible'] = false;
+			}
+			else
+			{
+				$arrRecord['Visible'] = true;
+			}
+			
+			$arrRecord['Type'] 					= "Adjustment";
+			$arrRecord['DateCreatedTimeStamp'] 	= strtotime($aAdjustment['effective_date']);
+			$arrRecord['Id'] 					= "&nbsp;";
+			$arrRecord['Date'] 					= "<span>".date('d/m/Y', $arrRecord['DateCreatedTimeStamp'])."</span>";
+			$arrRecord['PaymentType'] 			= $aAdjustment['adjustment_type_name'];
+			
+			// Work out what will be displayed in the Debit and Credit columns of the table
+			$fAmount 	= Rate::roundToRatingStandard($aAdjustment['amount'], 2);
+			$fAbsAmount	= abs($fAmount);
+			$sAbsAmount	= number_format($fAbsAmount, 2);
+			if ($fAmount < 0)
+			{
+				// Credit
+				$arrRecord['Credit'] 		= "<span class='Currency'>{$sAbsAmount}</span>";
+				$arrRecord['CreditValue']	= $fAbsAmount;
+				$arrRecord['Debit'] 		= "&nbsp;";
+				$arrRecord['DebitValue']	= 0;
+			}
+			else
+			{
+				// Debit
+				$arrRecord['Debit'] 		= "<span class='Currency'>{$sAbsAmount}</span>";
+				$arrRecord['DebitValue']	= $fAbsAmount;
+				$arrRecord['Credit'] 		= "&nbsp;";
+				$arrRecord['CreditValue']	= 0;
 			}
 			
 			// Append the record to the array to sort
@@ -195,45 +267,50 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 		// add the rows
 		foreach ($arrInvoicesAndPayments as $arrRecord)
 		{
-			// build values for the columns of the table
-			$strRecordType 	= "<span class='DefaultOutputSpan'>{$arrRecord['Type']}</span>";
-			$strRefNum		= $arrRecord['Id'];
-			$strPaymentType	= $arrRecord['PaymentType'];
-			$strDate		= $arrRecord['Date'];
-			$strCredit		= $arrRecord['Credit'];
-			$strDebit		= $arrRecord['Debit'];
-			
-			if ($arrRecord['Type'] == 'Invoice')
-			{	
-				$intInvoiceRunId = $arrRecord['invoice_run_id'];
-				$strInvoiceId = $arrRecord['InvoiceId'];
-				// Find out if there is a pdf for this invoice
-				$intInvoiceDate 	= strtotime("-1 month", $arrRecord['DateCreatedTimeStamp']);
-				$intInvoiceYear 	= (int)date("Y", $intInvoiceDate);
-				$intInvoiceMonth 	= (int)date("m", $intInvoiceDate);
-				if (InvoicePDFExists(DBO()->Account->Id->Value, $intInvoiceYear, $intInvoiceMonth, $strInvoiceId, intval($intInvoiceRunId)))
-				{
-					// The pdf exists
-					// Build "download invoice pdf" link
-					$strInvoicePdfHref 	= Href()->DownloadInvoicePDF(DBO()->Account->Id->Value, $intInvoiceYear, $intInvoiceMonth, $strInvoiceId, $intInvoiceRunId);
-					$strInvoicePdfLabel	= "<span><a href='$strInvoicePdfHref'><img src='img/template/pdf.gif' title='Download PDF Invoice' /></a> <a href='$strInvoicePdfHref'>View my bill</a></span>";
+			if ($arrRecord['Visible'])
+			{
+				// build values for the columns of the table
+				$strRecordType 	= "<span class='DefaultOutputSpan'>{$arrRecord['Type']}</span>";
+				$strRefNum		= $arrRecord['Id'];
+				$strPaymentType	= $arrRecord['PaymentType'];
+				$strDate		= $arrRecord['Date'];
+				$strCredit		= $arrRecord['Credit'];
+				$strDebit		= $arrRecord['Debit'];
+				
+				if ($arrRecord['Type'] == 'Invoice')
+				{	
+					$intInvoiceRunId = $arrRecord['invoice_run_id'];
+					$strInvoiceId = $arrRecord['InvoiceId'];
+					// Find out if there is a pdf for this invoice
+					$intInvoiceDate 	= strtotime("-1 month", $arrRecord['DateCreatedTimeStamp']);
+					$intInvoiceYear 	= (int)date("Y", $intInvoiceDate);
+					$intInvoiceMonth 	= (int)date("m", $intInvoiceDate);
+					if (InvoicePDFExists(DBO()->Account->Id->Value, $intInvoiceYear, $intInvoiceMonth, $strInvoiceId, intval($intInvoiceRunId)))
+					{
+						// The pdf exists
+						// Build "download invoice pdf" link
+						$strInvoicePdfHref 	= Href()->DownloadInvoicePDF(DBO()->Account->Id->Value, $intInvoiceYear, $intInvoiceMonth, $strInvoiceId, $intInvoiceRunId);
+						$strInvoicePdfLabel	= "<span><a href='$strInvoicePdfHref'><img src='img/template/pdf.gif' title='Download PDF Invoice' /></a> <a href='$strInvoicePdfHref'>View my bill</a></span>";
+					}
+					else
+					{
+						// don't allow the user to view the pdf for this invoice because it doesn't exist
+						$strInvoicePdfLabel	= "&nbsp;";
+					}
 				}
 				else
 				{
-					// don't allow the user to view the pdf for this invoice because it doesn't exist
-					$strInvoicePdfLabel	= "&nbsp;";
+					// Values specific to Payments
+					$strInvoicePdfLabel = "&nbsp;";
+					if ($arrRecord['ReversalReason'] !== null)
+					{
+						$strInvoicePdfLabel = $arrRecord['ReversalReason'];
+					}
 				}
+				
+				$mixRefAndType = "<span>".($strRefNum !== '&nbsp;' ? "$strRefNum  - " : '')."{$strPaymentType}</span>";
+				Table()->InvoicesAndPayments->AddRow($strRecordType, $strDate, $mixRefAndType, $strCredit, $strDebit, $strInvoicePdfLabel);
 			}
-			else
-			{
-				// Values specific to Payments
-				$strInvoicePdfLabel = "&nbsp;";
-			}
-
-			// Display the payment type, e.g. Credit Card, BillExpress, etc, etc
-			$mixPaymentType = $GLOBALS['*arrConstant']['payment_type']["$strPaymentType"]['Description'];
-			$mixRefAndType = "$strRefNum - $mixPaymentType";
-			Table()->InvoicesAndPayments->AddRow($strRecordType, $strDate, $mixRefAndType, $strCredit, $strDebit, $strInvoicePdfLabel);
 			
 			$fltCreditTotal	+= $arrRecord['CreditValue'];
 			$fltDebitTotal	+= $arrRecord['DebitValue'];

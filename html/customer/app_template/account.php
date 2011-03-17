@@ -223,15 +223,19 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->Invoice->OrderBy("I.CreatedOn DESC");
 		DBL()->Invoice->Load();
 		
-		$strWhere = "(Account = <Account> OR (AccountGroup = <AccountGroup> AND Account IS NULL)) AND (Status = <PaymentPaying> OR Status = <PaymentFinished> OR Status = <PaymentWaiting>)";
-		DBL()->Payment->Account				= DBO()->Account->Id->Value;
-		DBL()->Payment->AccountGroup		= DBO()->Account->AccountGroup->Value;
-		DBL()->Payment->PaymentPaying		= PAYMENT_PAYING;
-		DBL()->Payment->PaymentFinished		= PAYMENT_FINISHED;
-		DBL()->Payment->PaymentWaiting		= PAYMENT_WAITING;
-		DBL()->Payment->Where->SetString($strWhere);
-		DBL()->Payment->OrderBy("PaidOn DESC");
-		DBL()->Payment->Load();
+		try
+		{
+			DBO()->Payments 	= $this->_loadPayments();
+			DBO()->Adjustments 	= $this->_loadAdjustments();
+		}
+		catch (Exception $oEx)
+		{
+			BreadCrumb()->Console();
+			BreadCrumb()->SetCurrentPage("Error");
+			DBO()->Error->Message = "ERROR: We were unable to display the Invoices and Payments for your Account (# ". DBO()->Account->Id->Value."). ".$oEx->getMessage();
+			$this->LoadPage('Error');
+			return false;
+		}
 		
 		// Breadcrumb menu
 		BreadCrumb()->LoadAccountInConsole(DBO()->Account->Id->Value);
@@ -344,4 +348,69 @@ class AppTemplateAccount extends ApplicationTemplate
 	
 	//----- DO NOT REMOVE -----//
 	
+	private function _loadPayments()
+	{
+		// Get all payment records for the account
+		$oQuery 	= new Query();
+		$mResult	= $oQuery->Execute("SELECT		p.id AS payment_id, 
+										        	p.paid_date AS paid_date, 
+										       		pt.name AS payment_type_name, 
+										        	(p.amount * pn.value_multiplier) AS amount,
+													p.transaction_reference AS transaction_reference,
+  													prr.payment_reversal_type_id AS payment_reversal_type_id,
+					        						prr_reversed.payment_reversal_type_id AS reversed_by_payment_reversal_type_id,
+													prr.name AS payment_reversal_reason_name
+										FROM		payment p
+										JOIN    	payment_nature pn ON (pn.id = p.payment_nature_id)
+										LEFT JOIN	payment_type pt ON (pt.id = p.payment_type_id)
+										LEFT JOIN   payment_reversal_reason prr ON (prr.id = p.payment_reversal_reason_id)
+										LEFT JOIN	payment p_reversed ON (p_reversed.reversed_payment_id = p.id)
+										LEFT JOIN   payment_reversal_reason prr_reversed ON (prr_reversed.id = p_reversed.payment_reversal_reason_id)
+										WHERE		p.account_id = ".DBO()->Account->Id->Value.";");
+		if ($mResult === false)
+		{
+			throw new Exception("Failed to get payments. ".$oQuery->Error());
+		}
+		
+		$aPayments = array();
+		while ($aRow = $mResult->fetch_assoc())
+		{
+			$aPayments[] = $aRow;
+		}
+		return $aPayments;
+	}
+	
+	private function _loadAdjustments()
+	{
+		// Get all adjustment records for the account (with a type that has an invoice visibility of visible)
+		$oQuery 	= new Query();
+		$mResult	= $oQuery->Execute("SELECT 		adj.id AS adjustment_id,
+											        (adj.amount * tn.value_multiplier * adjn.value_multiplier) AS amount,
+											        adjt.description AS adjustment_type_name,
+										        	adj_reversed.id as reversed_by_adjustment_id,
+										        	adj.reversed_adjustment_id as reversed_adjustment_id,
+													adj.effective_date AS effective_date,
+													IF(adjustment_type_invoice_visibility_id = ".ADJUSTMENT_TYPE_INVOICE_VISIBILITY_VISIBLE.", 1, 0) AS visible_on_invoice
+										FROM		adjustment adj
+										JOIN		adjustment_type adjt ON (adjt.id = adj.adjustment_type_id)
+										JOIN		transaction_nature tn ON (tn.id = adjt.transaction_nature_id)
+										JOIN  		adjustment_review_outcome aro ON (aro.id = adj.adjustment_review_outcome_id)
+										JOIN  		adjustment_review_outcome_type arot ON (arot.id = aro.adjustment_review_outcome_type_id AND arot.system_name = 'APPROVED')
+										JOIN		adjustment_nature adjn ON (adjn.id = adj.adjustment_nature_id)
+										JOIN		adjustment_status adjs ON (adjs.id = adj.adjustment_status_id AND adjs.system_name = 'APPROVED')
+										LEFT JOIN	adjustment adj_reversed ON (adj_reversed.reversed_adjustment_id = adj.id)
+										WHERE		adj.account_id = ".DBO()->Account->Id->Value.";");
+		if ($mResult === false)
+		{
+			throw new Exception("Failed to get adjustments. ".$oQuery->Error());
+		}
+		
+		$aAdjustments = array();
+		while ($aRow = $mResult->fetch_assoc())
+		{
+			$aAdjustments[] = $aRow;
+		}
+		
+		return $aAdjustments;
+	}
 }
