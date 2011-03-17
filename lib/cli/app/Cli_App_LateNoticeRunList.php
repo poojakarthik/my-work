@@ -11,12 +11,15 @@ class Cli_App_LateNoticeRunList extends Cli
 	private $runDateTime = '';
 
 	function run()
-	{
+	{	
 		$now = time();
 		$this->runDateTime = date('Y-m-d H:i:s', $now);
 
 		try
 		{
+			// NOTE: This class is deprecated
+			Flex::assert(false, "Cli_App_LateNoticeRunList has been deprecated, late notice lists are now generated using a collection event of type 'Report'.");
+			
 			$this->log('Beginning database transaction.');
 			$conConnection = DataAccess::getDataAccess();
 			$conConnection->TransactionStart();

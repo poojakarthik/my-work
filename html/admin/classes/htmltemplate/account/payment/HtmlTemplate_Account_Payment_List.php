@@ -33,7 +33,8 @@ class HtmlTemplate_Account_Payment_List extends FlexHtmlTemplate
 				'load',
 				function()
 				{
-					new Component_Account_Payment_List({$iAccountId}, \$ID('AccountPaymentList'));
+					var oList = new Component_Account_Payment_List({$iAccountId}, \$ID('AccountPaymentList'));
+					oList.refresh();
 				}
 			)
 		</script>\n";

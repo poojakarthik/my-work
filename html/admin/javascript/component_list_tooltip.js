@@ -1,7 +1,7 @@
 
 var Component_List_Tooltip = Class.create(
 {
-	initialize : function(iWidth, bPositionInside, iPositionLeftOrRight)
+	initialize : function(iWidth, iPositionLeftOrRight)
 	{
 		this._oElement =	$T.div({class: 'component-list-tooltip'},
 								$T.table(
@@ -16,8 +16,7 @@ var Component_List_Tooltip = Class.create(
 		}
 		
 		this._bRemove				= false;
-		this._bPositionInside 		= !!bPositionInside;
-		this._iPositionLeftOrRight	= iPositionLeftOrRight;
+		this._iPositionLeftOrRight	= (iPositionLeftOrRight ? iPositionLeftOrRight : Component_List_Tooltip.POSITION_LEFT);
 		this._aRows					= [];
 	},
 	
@@ -62,9 +61,20 @@ var Component_List_Tooltip = Class.create(
 			document.body.appendChild(this._oElement);
 		}
 		
-		var oPositionedOffset 		= oTR.viewportOffset();
-		this._oElement.style.left	= (oPositionedOffset.left - this._oElement.getWidth()) + 'px';
-		this._oElement.style.top 	= (oPositionedOffset.top + window.scrollY) + 'px';
+		// Left/Right postition
+		var oPositionedOffset = oTR.viewportOffset();
+		switch(this._iPositionLeftOrRight)
+		{
+			case Component_List_Tooltip.POSITION_LEFT:
+				this._oElement.style.left = (oPositionedOffset.left - this._oElement.getWidth()) + 'px';
+				break;
+			case Component_List_Tooltip.POSITION_RIGHT:
+				this._oElement.style.left = (oPositionedOffset.left + oTR.getWidth()) + 'px';
+				break;
+		}
+		
+		
+		this._oElement.style.top = (oPositionedOffset.top + window.scrollY) + 'px';
 	},
 	
 	_hide : function()

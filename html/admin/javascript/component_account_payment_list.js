@@ -28,6 +28,15 @@ var Component_Account_Payment_List = Class.create(
 		return this._oSection;
 	},
 	
+	refresh : function()
+	{
+		// Load the initial dataset
+		this._oSort.refreshData(true);
+		this._oFilter.refreshData(true);
+		this.oPagination.getCurrentPage();
+		this._showLoading(true);
+	},
+	
 	// Protected
 	
 	_buildUI : function()
@@ -127,11 +136,6 @@ var Component_Account_Payment_List = Class.create(
 		// Default sort
 		this._oSort.registerField('paid_date', Sort.DIRECTION_DESC);
 		this._oSort.registerField('created_datetime', Sort.DIRECTION_DESC);
-		
-		// Load the initial dataset
-		this._oSort.refreshData(true);
-		this._oFilter.refreshData(true);
-		this.oPagination.getCurrentPage();
 	},
 
 	_showLoading	: function(bShow)

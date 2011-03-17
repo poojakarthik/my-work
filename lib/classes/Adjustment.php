@@ -29,67 +29,66 @@ class Adjustment extends ORM_Cached
 		return 100;
 	}
 
-        public static function resetBalanceForAccount($iAccountId)
-        {
-            $oQuery = new Query();
-            $sSql = "   UPDATE adjustment a
-                        LEFT JOIN adjustment a2 ON ( a2.reversed_adjustment_id = a.id)
-                        SET a.balance = IF (a2.id is not null || a.adjustment_nature_id = ".ADJUSTMENT_NATURE_REVERSAL." , 0, a.amount)
-                        WHERE a.account_id = $iAccountId";
-            $oQuery->Execute($sSql);
+    public static function resetBalanceForAccount($iAccountId)
+    {
+        $oQuery = new Query();
+        $sSql = "   UPDATE adjustment a
+                    LEFT JOIN adjustment a2 ON ( a2.reversed_adjustment_id = a.id)
+                    SET a.balance = IF (a2.id is not null || a.adjustment_nature_id = ".ADJUSTMENT_NATURE_REVERSAL." , 0, a.amount)
+                    WHERE a.account_id = $iAccountId";
+        $oQuery->Execute($sSql);
 
+
+    }
+
+    public function getSignType()
+    {
+         $sSQL = "   SELECT IF(an.value_multiplier * tn.value_multiplier = -1 ,".Logic_Adjustment::CREDIT.",".Logic_Adjustment::DEBIT.")  as 'sign',
+                                an.value_multiplier * tn.value_multiplier as 'multiplier'
+                    FROM adjustment a
+                    JOIN adjustment_nature an ON (a.adjustment_nature_id = an.id)
+                    JOIN adjustment_type at ON (a.adjustment_type_id = at.id)
+                    JOIN transaction_nature tn ON (at.transaction_nature_id = tn.id)
+                    WHERE a.Id = $this->id
+                    ";
+        $oQuery = new Query();
+        $mResult = $oQuery->Execute($sSQL);
+         if ($mResult)
+        {
+           return $mResult->fetch_assoc();
 
         }
 
-        public function getSignType()
+        return null;
+    }
+
+    public static function getForAccountId($iAccountId, $iSignType = null, $iStatus = null, $bWithDistributableBalanceOnly = true )
+    {
+        $iValueMultiplier = $iSignType == Logic_Adjustment::CREDIT ? -1 : 1;
+        $sSignTypeWhereClause = $iSignType !== null ? "AND an.value_multiplier * tn.value_multiplier = $iValueMultiplier" : "";
+        $sStatusWhereClause = $iStatus !== null ? "AND a.status_id = $iStatus" : "";
+        $sBalanceWhereClause = $bWithDistributableBalanceOnly ? " AND a.balance > 0" : "";
+        $sSQL = "   SELECT a.*
+                    FROM adjustment a
+                    JOIN adjustment_nature an ON (a.adjustment_nature_id = an.id)
+                    JOIN adjustment_type at ON (a.adjustment_type_id = at.id)
+                    JOIN transaction_nature tn ON (at.transaction_nature_id = tn.id)
+                    WHERE a.account_id = $iAccountId
+                    $sSignTypeWhereClause $sStatusWhereClause $sBalanceWhereClause
+                    ";
+        $oQuery = new Query();
+        $mResult = $oQuery->Execute($sSQL);
+        $aResult = array();
+        if ($mResult)
         {
-             $sSQL = "   SELECT IF(an.value_multiplier * tn.value_multiplier = -1 ,".Logic_Adjustment::CREDIT.",".Logic_Adjustment::DEBIT.")  as 'sign',
-                                    an.value_multiplier * tn.value_multiplier as 'multiplier'
-                        FROM adjustment a
-                        JOIN adjustment_nature an ON (a.adjustment_nature_id = an.id)
-                        JOIN adjustment_type at ON (a.adjustment_type_id = at.id)
-                        JOIN transaction_nature tn ON (at.transaction_nature_id = tn.id)
-                        WHERE a.Id = $this->id
-                        ";
-            $oQuery = new Query();
-            $mResult = $oQuery->Execute($sSQL);
-             if ($mResult)
+            while ($aRecord = $mResult->fetch_assoc())
             {
-               return $mResult->fetch_assoc();
-
+                $aResult[] = new self($aRecord);
             }
-
-            return null;
         }
 
-        public static function getForAccountId($iAccountId, $iSignType = null, $iStatus = null, $bWithDistributableBalanceOnly = true )
-        {
-            $iValueMultiplier = $iSignType == Logic_Adjustment::CREDIT ? -1 : 1;
-            $sSignTypeWhereClause = $iSignType !== null ? "AND an.value_multiplier * tn.value_multiplier = $iValueMultiplier" : "";
-            $sStatusWhereClause = $iStatus !== null ? "AND a.status_id = $iStatus" : "";
-            $sBalanceWhereClause = $bWithDistributableBalanceOnly ? " AND a.balance > 0" : "";
-            $sSQL = "   SELECT a.*
-                        FROM adjustment a
-                        JOIN adjustment_nature an ON (a.adjustment_nature_id = an.id)
-                        JOIN adjustment_type at ON (a.adjustment_type_id = at.id)
-                        JOIN transaction_nature tn ON (at.transaction_nature_id = tn.id)
-                        WHERE a.account_id = $iAccountId
-                        $sSignTypeWhereClause $sStatusWhereClause $sBalanceWhereClause
-                        ";
-            $oQuery = new Query();
-            $mResult = $oQuery->Execute($sSQL);
-            $aResult = array();
-            if ($mResult)
-            {
-                while ($aRecord = $mResult->fetch_assoc())
-                {
-                    $aResult[] = new self($aRecord);
-                }
-            }
-
-            return $aResult;
-        }
-
+        return $aResult;
+    }
 
 
 	//---------------------------------------------------------------------------------------------------------------------------------//
@@ -210,8 +209,8 @@ class Adjustment extends ORM_Cached
 																0
 															)",
 						'transaction_nature_code'		=> "tn.code",
-						'created_employee_name' 		=> "IF(e_created.Id <> ".Employee::SYSTEM_EMPLOYEE_ID.", CONCAT(e_created.FirstName, ' ', e_created.LastName), NULL)",
-						'reviewed_employee_name' 		=> "IF(e_reviewed.Id <> ".Employee::SYSTEM_EMPLOYEE_ID.", CONCAT(e_reviewed.FirstName, ' ', e_reviewed.LastName), NULL)"
+						'created_employee_name' 		=> "CONCAT(e_created.FirstName, ' ', e_created.LastName)",
+						'reviewed_employee_name' 		=> "IF(e_reviewed.Id IS NOT NULL, CONCAT(e_reviewed.FirstName, ' ', e_reviewed.LastName), NULL)"
 					);
 		
 		$sFrom		= "				adjustment a

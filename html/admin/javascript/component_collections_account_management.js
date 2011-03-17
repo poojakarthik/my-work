@@ -1,16 +1,30 @@
 
 var Component_Collections_Account_Management = Class.create(
 {
-	initialize	: function(oContainerDiv, oLoadingPopup)
+	initialize	: function(oContainerDiv, oLoadingPopup, fnReadyToGo)
 	{
 		this._hFilters					= {};
 		this._oContainerDiv				= oContainerDiv;
 		this._bFirstLoadComplete		= false;
 		this._hControlOnChangeCallbacks	= {};
 		this._oLoadingPopup				= oLoadingPopup;
+		this._fnReadyToGo				= fnReadyToGo;
 		
 		Flex.Constant.loadConstantGroup(Component_Collections_Account_Management.REQUIRED_CONSTANT_GROUPS, this._buildUI.bind(this));
 	},
+	
+	// Public 
+	
+	refresh : function()
+	{
+		// Load the initial dataset
+		this._oSort.refreshData(true);
+		this._oFilter.refreshData(true);
+		this.oPagination.getCurrentPage();
+		this._showLoading(true);
+	},
+	
+	// Protected
 	
 	_buildUI : function()
 	{
@@ -202,11 +216,6 @@ var Component_Collections_Account_Management = Class.create(
 		// Default collection_status
 		this._oFilter.setFilterValue('collection_status', 'IN_COLLECTIONS');
 		
-		// Load the initial dataset
-		this._oSort.refreshData(true);
-		this._oFilter.refreshData(true);
-		this.oPagination.getCurrentPage();
-		
 		// Load the event types (for when an event needs to be actioned)
 		Component_Collections_Account_Management._cacheAllEventTypes();
 		
@@ -214,6 +223,11 @@ var Component_Collections_Account_Management = Class.create(
 		{
 			this._oLoadingPopup.hide();
 			delete this._oLoadingPopup;
+		}
+		
+		if (this._fnReadyToGo)
+		{
+			this._fnReadyToGo();
 		}
 	},
 

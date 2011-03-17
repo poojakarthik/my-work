@@ -50,8 +50,16 @@ var Component_Account_Recurring_Charge_List = Class.create(
 	
 	// Protected
 	
-	_buildUI : function()
+	_buildUI : function(oTaxType)
 	{
+		if (!oTaxType)
+		{
+			Component_Account_Recurring_Charge_List._getGlobalTaxType(this._buildUI.bind(this));
+			return;
+		}
+		
+		this._oTaxType = oTaxType;
+		
 		// Create Dataset & pagination object
 		this.oDataSet		= 	new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_NO_CACHING, Component_Account_Recurring_Charge_List.DATA_SET_DEFINITION);
 		this.oPagination 	= 	new Pagination(
@@ -404,10 +412,10 @@ var Component_Account_Recurring_Charge_List = Class.create(
 		)
 	},
 	
-	_applyGlobalTax : function(fValue)
+	_applyGlobalTax : function(mValue)
 	{
-		// TODO: CR137 -- Add on global tax here
-		return fValue;
+		var fValue = parseFloat(mValue);
+		return fValue + ((this._oTaxType ? parseFloat(this._oTaxType.rate_percentage) : 1) * fValue);
 	}
 });
 
@@ -448,9 +456,28 @@ Object.extend(Component_Account_Recurring_Charge_List,
 		Reflex_Popup.alert(sMessage, {sTitle: 'Error', sDebugContent: oResponse.sDebug});
 	},
 	
-	_getCurrency : function(mValue)
+	_getGlobalTaxType : function(fnCallback, oResponse)
 	{
-		return new Number(mValue).toFixed(2);
+		if (!oResponse)
+		{
+			// Make request
+			var fnResp 	= Component_Account_Recurring_Charge_List._getGlobalTaxType.curry(fnCallback);
+			var fnReq	= jQuery.json.jsonFunction(fnResp, fnResp, 'Tax_Type', 'getGlobalTaxType');
+			fnReq();
+			return;
+		}
+		
+		if (!oResponse.bSuccess)
+		{
+			// Error
+			Popup_Adjustment_Request._ajaxError(oResponse);
+			return;
+		}
+		
+		if (fnCallback)
+		{
+			fnCallback(oResponse.oTaxType);
+		}
 	}
 });
 
