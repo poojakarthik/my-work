@@ -111,6 +111,14 @@
 	 {
 	 	return mysqli_affected_rows($this->db->refMysqliConnection);
 	 }
+
+	 public static function run($sQuery, $bSilentFail=false, $sConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT) {
+		$oQuery	= new Query($sConnectionType);
+		if (false === ($mResult = $oQuery->Execute($sQuery)) && !$bSilentFail) {
+			throw new Exception_Database($oQuery->Error());
+		}
+		return $mResult;
+	 }
 }
 
 ?>
