@@ -319,7 +319,7 @@ class Service_Barring_Level extends ORM_Cached
 		{
 			// Return the record count only
 			$aCountRow = $mResult->fetch_assoc();
-			return $aCountRow['count'];
+			return ($aCountRow['count'] !== null ? $aCountRow['count'] : 0);
 		}
 
 		// Group results by account_id
