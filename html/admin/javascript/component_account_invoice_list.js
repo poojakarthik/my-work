@@ -519,7 +519,7 @@ Object.extend(Component_Account_Invoice_List,
 		{
 			case $CONSTANT.INVOICE_RUN_TYPE_LIVE:
 				sFilename 	= 'invoice_run_production_run';
-				sAlt		= 'Live';
+				sAlt		= 'Production';
 				break;
 			case $CONSTANT.INVOICE_RUN_TYPE_SAMPLES:
 				sFilename 	= 'invoice_run_sample';
