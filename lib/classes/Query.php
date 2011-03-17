@@ -18,7 +18,9 @@
  */
  class Query extends DatabaseAccess
  {
- 	//------------------------------------------------------------------------//
+ 	const	PREPARE_CALLBACK_NESTING_MAX	= 5000;
+
+	//------------------------------------------------------------------------//
 	// Query() - Constructor
 	//------------------------------------------------------------------------//
 	/**
@@ -112,12 +114,55 @@
 	 	return mysqli_affected_rows($this->db->refMysqliConnection);
 	 }
 
-	 public static function run($sQuery, $bSilentFail=false, $sConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT) {
+	 public static function run($sQuery, array $aData=null, $sConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT) {
 		$oQuery	= new Query($sConnectionType);
+
+		// Prepare Query with data
+		$aData			= is_array($aData) ? $aData : array();
+		$aReplaceData	= array();
+		foreach ($aData as $sKey=>$mValue) {
+			$sKey	= (string)$sKey;
+			if (preg_match("/^[\w]+$/i", $sKey)) {
+				$mValue							= self::prepareByPHPType($mValue, $sConnectionType);
+				$aReplaceData["/\<{$sKey}\>/"]	= (is_string($mValue)) ? addcslashes($mValue, '$\\') : $mValue;
+			}
+		}
+		$sQuery	= preg_replace(array_keys($aReplaceData), array_values($aReplaceData), (string)$sQuery);
+
+		// Run Query
 		if (false === ($mResult = $oQuery->Execute($sQuery)) && !$bSilentFail) {
 			throw new Exception_Database($oQuery->Error());
 		}
 		return $mResult;
+	 }
+
+	 public static function prepareByPHPType($mValue, $sConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT) {
+		// If the value is a callback, then use its result
+		$iNesting	= 0;
+		while (is_object($mValue) && $mValue instanceof Callback) {
+			$iNesting++;
+			if ($iNesting > self::PREPARE_CALLBACK_NESTING_MAX) {
+				throw new Exception_Database("Exceeded Query::prepareByPHPType() maximum nesting depth of ".self::PREPARE_CALLBACK_NESTING_MAX);
+			}
+			$mValue	= $mValue->invoke();
+		}
+
+		if (is_int($mValue)) {
+			// Integers are fine as they are
+			return $mValue;
+		} elseif (is_float($mValue)) {
+			// Floats are fine as they are
+			return $mValue;
+		} elseif (is_bool($mValue)) {
+			// Booleans are fine as they are
+			return $mValue;
+		} elseif (is_null($mValue)) {
+			// Nulls become the unescaped string NULL
+			return 'NULL';
+		} else {
+			// Assume everything else is a string (or can be toString()'d), enclosed by double-quotes
+			return DataAccess::getDataAccess($sConnectionType)->refMysqliConnection->escape_string((string)$mValue);
+		}
 	 }
 }
 
