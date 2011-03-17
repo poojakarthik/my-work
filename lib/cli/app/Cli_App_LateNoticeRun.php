@@ -33,8 +33,13 @@ class Cli_App_LateNoticeRun extends Cli
 		}
 		try
 		{
-			// NOTE: This class is deprecated
-			Flex::assert(false, "Cli_App_LateNoticeRun has been deprecated, late notices are sent using a collection event of type 'Correspondence'.");
+			// NOTE: This functionality is deprecated
+			Flex::assert(
+				false,
+				"Cli_App_LateNoticeRun has been deprecated, late notices are sent using a collection event of type 'Correspondence'.",
+				null,
+				"Deprecated Cli App Accessed: Cli_App_LateNoticeRun"
+			);
 			
 			// Validate and examine arguments
 			$aArgs				= $this->getValidatedArguments();

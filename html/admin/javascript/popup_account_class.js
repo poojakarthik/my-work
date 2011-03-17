@@ -181,7 +181,7 @@ Object.extend(Popup_Account_Class,
 		}
 		
 		Reflex_Popup.alert(
-			$T.div(
+			$T.div({class: 'alert-validation-error'},
 				$T.div('There were errors in the form:'),
 				oErrorElement
 			),

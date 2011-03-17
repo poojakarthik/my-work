@@ -9336,15 +9336,17 @@ div.component-collections-scenario > table.reflex
 
 /************************** END - Component Collections Scenario Event Timeline - END **************************/
 
-/************************** START - Component Collections Event Type - START **************************/
+/************************** START - Component Collections Event (& Event Type) - START **************************/
 
-.component-collections-event-type
+.component-collections-event-type,
+.component-collections-event
 {
 	margin : 0.5em;
 }
 
 .component-collections-event-type > table.reflex.input,
-.component-collections-event-type-implementation-details > td > table
+.component-collections-event-type-implementation-details > td > table,
+.component-collections-event > table.reflex.input
 {
 	margin	: 0em;
 	width	: 100%;
@@ -9355,7 +9357,14 @@ div.component-collections-scenario > table.reflex
 	text-align	: left;
 }
 
-/************************** END - Component Collections Event Type - END **************************/
+.component-collections-event-type-buttons,
+.component-collections-event-buttons
+{
+	margin-top	: 0.5em;
+	text-align	: center;
+}
+
+/************************** END - Component Collections Event (& Event Type) - END **************************/
 
 /************************** START - Component Collections Severity - START **************************/
 
@@ -11129,3 +11138,8 @@ div.component-collections-scenario > table.reflex
 }
 
 /************************** END - Component Account Invoice List - END **************************/
+
+.alert-validation-error
+{
+	margin	: 0.5em;
+}

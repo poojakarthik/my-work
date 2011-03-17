@@ -117,7 +117,7 @@ var Component_Collections_Event = Class.create(
 										)
 									)
 								),
-								$T.div({class: 'component-collections-event-type-buttons'},
+								$T.div({class: 'component-collections-event-buttons'},
 									$T.button('Save').observe('click', this._doSave.bind(this)),
 									$T.button('Cancel').observe('click', this._cancel.bind(this))
 								)
@@ -817,7 +817,7 @@ Object.extend(Component_Collections_Event,
    		}
    		
    		Reflex_Popup.alert(
-   			$T.div(
+   			$T.div({class: 'alert-validation-error'},
    				$T.div('There were errors in the form:'),
    				oErrorElement
    			),

@@ -24,9 +24,9 @@ var Popup_Account_Suspend_From_Collections = Class.create(Reflex_Popup,
 			this._createComplete.bind(this), 
 			this._createCancelled.bind(this),
 			null, 
-			this._oTIOComplaintDetails
+			this._oTIOComplaintDetails,
+			this.display.bind(this)
 		);
-		this.display();
 	},
 	
 	_createComplete : function(iId)

@@ -46,6 +46,14 @@ class AppTemplateInvoiceRunEvents extends ApplicationTemplate
 {
 	public function Manage()
 	{
+		// Create an assertion
+		Flex::assert(
+			false,
+			"AppTemplateInvoiceRunEvents is no longer used, collection events are used now.",
+			"Employee: Id=".Flex::getUserId(),
+			"Deprecated Page (Framework 1) Accessed: MenuItems.php - {$sFunctionName}"
+		);
+		
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);

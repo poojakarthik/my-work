@@ -1,7 +1,7 @@
 
 var Component_Collections_Suspension = Class.create( 
 {
-	initialize : function(iAccountId, oContainerDiv, fnOnComplete, fnOnCancel, oLoadingPopup, oTIOComplaintDetails)
+	initialize : function(iAccountId, oContainerDiv, fnOnComplete, fnOnCancel, oLoadingPopup, oTIOComplaintDetails, fnReadyToShow)
 	{
 		this._iAccountId			= iAccountId;
 		this._oContainerDiv 		= oContainerDiv;
@@ -9,6 +9,7 @@ var Component_Collections_Suspension = Class.create(
 		this._fnOnCancel			= fnOnCancel;
 		this._oLoadingPopup			= oLoadingPopup;
 		this._oTIOComplaintDetails	= (oTIOComplaintDetails ? oTIOComplaintDetails : null);
+		this._fnReadyToShow			= fnReadyToShow;
 		
 		this._aControls	= [];
 		
@@ -108,6 +109,11 @@ var Component_Collections_Suspension = Class.create(
 		
 		// Attach content
 		this._oContainerDiv.appendChild(this._oContentDiv);
+		
+		if (this._fnReadyToShow)
+		{
+			this._fnReadyToShow();
+		}
 		
 		if (this._oLoadingPopup)
 		{
@@ -232,7 +238,7 @@ Object.extend(Component_Collections_Suspension,
    		}
    		
    		Reflex_Popup.alert(
-   			$T.div(
+   			$T.div({class: 'alert-validation-error'},
    				$T.div('There were errors in the form:'),
    				oErrorElement
    			),

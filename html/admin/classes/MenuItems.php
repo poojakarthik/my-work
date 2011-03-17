@@ -3153,10 +3153,10 @@ class MenuItems {
 	 * @method
 	 */
 	function ManageInvoiceRunEvents() {
-		$this->strContextMenuLabel = "Manage Invoice Run Events";
-
+		self::deprecatedMenuItem('ManageInvoiceRunEvents', self::NEW_FRAMEWORK."flex.php/InvoiceRunEvents/Manage");
+		/*$this->strContextMenuLabel = "Manage Invoice Run Events";
 		$this->strLabel = "Invoice Run Events";
-		return self :: NEW_FRAMEWORK . "flex.php/InvoiceRunEvents/Manage";
+		return self :: NEW_FRAMEWORK . "flex.php/InvoiceRunEvents/Manage";*/
 	}
 
 	//------------------------------------------------------------------------//

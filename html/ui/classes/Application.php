@@ -199,8 +199,7 @@ class Application
 			ContextMenu()->Admin->DataReports();
 
 			ContextMenu()->Admin->Employees->ManageEmployees();
-			ContextMenu()->Admin->ManageInvoiceRunEvents();
-
+			
 			if (Flex_Module::isActive(FLEX_MODULE_CUSTOMER_STATUS) && AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
 				ContextMenu()->Admin->System_Settings->ManageCustomerStatuses();
@@ -464,7 +463,6 @@ class Application
 			ContextMenu()->Admin->DataReports();
 
 			ContextMenu()->Admin->Employees->ManageEmployees();
-			ContextMenu()->Admin->ManageInvoiceRunEvents();
 
 			if (Flex_Module::isActive(FLEX_MODULE_CUSTOMER_STATUS) && AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{

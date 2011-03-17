@@ -17,9 +17,13 @@ class Cli_App_LateNoticeRunList extends Cli
 
 		try
 		{
-			// NOTE: This class is deprecated
-			Flex::assert(false, "Cli_App_LateNoticeRunList has been deprecated, late notice lists are now generated using a collection event of type 'Report'.");
-			
+			// NOTE: This functionality is deprecated
+			Flex::assert(
+				false,
+				"Cli_App_LateNoticeRunList has been deprecated, late notice lists are now generated using a collection event of type 'Report'.",
+				null,
+				"Deprecated Cli App Accessed: Cli_App_LateNoticeRunList"
+			);
 			$this->log('Beginning database transaction.');
 			$conConnection = DataAccess::getDataAccess();
 			$conConnection->TransactionStart();
