@@ -411,6 +411,7 @@ class Invoice extends ORM_Cached
 			$fltPreChargeTaxTotal		= $this->Tax;
 
 			// Mark Account Charges
+			//----------------------------------------------------------------//
 			$arrWhere	= Array('Account' => $objAccount->Id, 'BillingPeriodEnd'=>$this->billing_period_end_datetime);
 			$arrData	= Array('Status' => CHARGE_TEMP_INVOICE, 'invoice_run_id' => $this->invoice_run_id);
 			$updMarkAccountCharges	= self::_preparedStatement('updMarkAccountCharges');
@@ -420,7 +421,15 @@ class Invoice extends ORM_Cached
 				throw new Exception_Database("DB ERROR: ".$updMarkAccountCharges->Error());
 			}
 
+			// Mark Adjustments (Payment-like)
+			//----------------------------------------------------------------//
+			$oMarkAdjustments	= self::_preparedStatement('updMarkAdjustments');
+			if (false === $oMarkAdjustments->Execute(array('invoice_run_id'=>$this->invoice_run_id), array('account_id'=>$this->Account,'billing_period_end_datetime'=>$this->billing_period_end_datetime))) {
+				throw new Exception_Database($oMarkAdjustments->Error());
+			}
+
 			// Get Preliminary Charge Totals
+			//----------------------------------------------------------------//
 			$selAccountChargeTotals	= self::_preparedStatement('selAccountChargeTotals');
 			if ($selAccountChargeTotals->Execute(Array('Account' => $objAccount->Id, 'invoice_run_id' => $this->invoice_run_id)) === FALSE)
 			{
@@ -441,6 +450,7 @@ class Invoice extends ORM_Cached
 			Log::getLog()->log($arrAccountChargeTotals);
 
 			// Calculate Preliminary Invoice Values
+			//----------------------------------------------------------------//
 			$this->AccountBalance	= $oInvoiceSource->getAccountBalance($this->_objAccount);
 			$this->Total			= ceil(($this->Debits - $this->Credits) * 100) / 100;
 			$this->Balance			= $this->Total + $this->Tax;
@@ -450,6 +460,7 @@ class Invoice extends ORM_Cached
 			$this->Status			= INVOICE_TEMP;
 
 			// Generate Account Billing Time Charges
+			//----------------------------------------------------------------//
 			$arrModules	= Billing_Charge::getModules();
 			foreach ($arrModules[$objAccount->CustomerGroup]['Billing_Charge_Account'] as $chgModule)
 			{
@@ -460,11 +471,13 @@ class Invoice extends ORM_Cached
 			}
 
 			// Revert to pre-Preliminary Totals
+			//----------------------------------------------------------------//
 			$this->Debits	= $fltPreChargeDebitTotal;
 			$this->Credits	= $fltPreChargeCreditTotal;
 			$this->Tax		= $fltPreChargeTaxTotal;
 
 			// Get Final Charge Totals
+			//----------------------------------------------------------------//
 			$selAccountChargeTotals	= self::_preparedStatement('selAccountChargeTotals');
 			if ($selAccountChargeTotals->Execute(Array('Account' => $objAccount->Id, 'invoice_run_id' => $this->invoice_run_id)) === FALSE)
 			{
@@ -484,6 +497,7 @@ class Invoice extends ORM_Cached
 			Log::getLog()->log("Final Account Charges END");
 
 			// Recalculate Final Invoice Values
+			//----------------------------------------------------------------//
 			//$this->Total			= ceil(($this->Debits - $this->Credits) * 100) / 100;
 			//$this->Total			= ceil(($this->Debits - $this->Credits) * 100) / 100;
 			//$this->Tax				= ceil($this->Tax * 100) / 100;
@@ -492,7 +506,10 @@ class Invoice extends ORM_Cached
 			$this->Balance			= $this->Total + $this->Tax;
 			$this->TotalOwing		= $this->Balance + $this->AccountBalance;
 
-			// Get Adjustments
+			// Get Adjustment Totals (Charge-based)
+			//----------------------------------------------------------------//
+			// NOTE: This has been deprecated.  It only exists to support re-rating old Invoices
+			//		adjustment_total and adjustment_tax should both be 0 on all new Invoices
 			$selAdjustmentTotals	= self::_preparedStatement('selAdjustmentTotals');
 			if ($selAdjustmentTotals->Execute(Array('account_id' => $objAccount->Id, 'invoice_run_id' => $this->invoice_run_id)) === FALSE)
 			{
@@ -520,6 +537,7 @@ class Invoice extends ORM_Cached
 			$this->charge_tax	= $this->Tax - $this->adjustment_tax;
 
 			// Determine Delivery Method
+			//----------------------------------------------------------------//
 			$objAccountStatus	= Account_Status::getForId($objAccount->Archived);
 			$objDeliveryMethod	= Delivery_Method::getForId($objAccount->BillingMethod);
 			$objCustomerGroup	= Customer_Group::getForId($objAccount->CustomerGroup);
@@ -546,9 +564,11 @@ class Invoice extends ORM_Cached
 			Log::getLog()->log("Invoice Delivery Method: ".Delivery_Method::getForId($this->DeliveryMethod)->name." ({$this->DeliveryMethod})");
 
 			// Insert the Invoice Data
+			//----------------------------------------------------------------//
 			$this->save();
 
 			// Commit the Transaction
+			//----------------------------------------------------------------//
 			$dbaDB->TransactionCommit();
 		}
 		catch (Exception $eException)
@@ -949,6 +969,12 @@ class Invoice extends ORM_Cached
 			if ($updChargeRevoke->Execute(Array('Status' => CHARGE_APPROVED, 'invoice_run_id' => NULL), $this->toArray()) === FALSE)
 			{
 				throw new Exception_Database("DB ERROR: ".$updChargeRevoke->Error());
+			}
+
+			// Remove Invoice Run reference for Adjustments
+			$oRevokeAdjustments	= self::_preparedStatement('updRevokeAdjustments');
+			if (false === $oRevokeAdjustments->Execute(array('invoice_run_id'=>null), array('account_id'=>$this->Account,'invoice_run_id'=>$this->invoice_run_id))) {
+				throw new Exception_Database($oRevokeAdjustments->Error());
 			}
 
 			// Remove service_total_service Records
@@ -2089,6 +2115,13 @@ class Invoice extends ORM_Cached
 
 	public static function redistributeBalances()
 	{
+		// DEPRECATED
+		throw new Exception_Assertion(
+			"Invoice::redistributeBalances() is deprecated in favour of Logic_Account::batchRedistributeBalances()",
+			null,
+			"Invoice::redistributeBalances() is deprecated"
+		);
+
 		$oQuery	= new Query();
 
 		// We want to redistribute Invoice balances so that payments and adjustments affect oldest invoices first
@@ -2485,6 +2518,19 @@ class Invoice extends ORM_Cached
 					break;
 				case 'updChargeCommit':
 					$arrPreparedStatements[$strStatement]	= new StatementUpdate("Charge", "Account = <Account> AND invoice_run_id = <invoice_run_id>", Array('Status'=>CHARGE_INVOICED));
+					break;
+				case 'updMarkAdjustments':
+					$arrPreparedStatements[$strStatement]	= new StatementUpdate(
+																'adjustment',
+																'account_id = <account_id> AND invoice_run_id IS NULL AND effective_datetime <= <billing_period_end_datetime>',
+																array('invoice_run_id'=>null)
+															);
+				case 'updRevokeAdjustments':
+					$arrPreparedStatements[$strStatement]	= new StatementUpdate(
+																'adjustment',
+																'account_id = <account_id> AND invoice_run_id = <invoice_run_id>',
+																array('invoice_run_id'=>null)
+															);
 					break;
 
 				default:

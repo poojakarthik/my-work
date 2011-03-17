@@ -331,6 +331,12 @@ abstract class ORM_Cached extends ORM
 	 */
 	public static function getForId($intId, $bolSilentFail=false, $strClass=NULL)
 	{
+		// Allow an ORM instance to be passed and return straight back out, bypassing the cache.
+		// If you want to cache, use __CLASS__::importResult()
+		if (is_object($intId) && $intId instanceof $strClass) {
+			return $intId;
+		}
+
 		// For when PHP 5.3 is used
 		// $strClass = get_called_class();  And remove $strClass from the parameters
 

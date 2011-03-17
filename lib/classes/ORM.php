@@ -13,6 +13,11 @@
  */
 abstract class ORM
 {
+	const	DATASET_TYPE_ID			= 1;
+	const	DATASET_TYPE_ORM		= 2;
+	const	DATASET_TYPE_ARRAY		= 3;
+	const	DATASET_TYPE_STDCLASS	= 4;
+
 	protected	$_arrTidyNames	= array();
 	protected	$_arrProperties	= array();
 	
@@ -518,6 +523,35 @@ abstract class ORM
 		}
 		
 		return array_merge($aORMInstances, array($aExtraData));
+	}
+
+	public function toDatasetType($mDatasetType) {
+		if (is_object($mDatasetType) && $mDatasetType instanceof Callback) {
+			// If the DatasetType is actually a Callback instance, then invoke it with $this as the only parameter
+			return $mDatasetType->invoke($this);
+		} elseif (is_string($mDatasetType) && class_exists($mDatasetType)) {
+			// If the DatasetType is actuall a Class name, then return a new instance of it with $this as the only parameter
+			return new $mDatasetType($this);
+		}
+
+		// Standard DatasetTypes
+		switch ((int)$mDatasetType) {
+			case self::DATASET_TYPE_ID:
+				return $this->id;
+				break;
+			case self::DATASET_TYPE_ORM:
+				return $this;
+				break;
+			case self::DATASET_TYPE_ARRAY:
+				return $this->toArray();
+				break;
+			case self::DATASET_TYPE_STDCLASS:
+				return $this->toStdClass();
+				break;
+
+			default:
+				throw new Exception_ORM("Unknown ORM Dataset Type: '{$mDatasetType}'");
+		}
 	}
 	
 	//------------------------------------------------------------------------//

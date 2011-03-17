@@ -124,6 +124,75 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
     public function isDebit() {
         return $this->payment_nature_id == PAYMENT_NATURE_REVERSAL;
     }
+
+	public static function getAllDistributable($mDatasetType=__CLASS__) {
+		$mResult	= Query::run("
+			SELECT		*
+			FROM		payment
+			WHERE		balance > 0
+		");
+		$aResults	= array();
+		while ($aPayment = $mResult->fetch_assoc()) {
+			$aResults[$aPayment['id']]	= reset(Payment::importResult($aPayment))->toDatasetType($mDatasetType);
+		}
+		return $aResults;
+	}
+
+	public function distribute() {
+		Logic_Account::getInstance($this->account_id)->processDistributable($this);
+	}
+
+	// Optionally accepts an array of Payments (array values can be Logic_Payment, Payment, or a Payment Id)
+	public static function distributeAll(array $aPayments=null) {
+		$oStopwatch	= new Stopwatch();
+		$oStopwatch->start();
+
+		// Get Dataset
+		if (!$aPayments && !is_array($aPayments)) {
+			// Get all distributable Payments as Logic_Payment instances
+			Log::getLog()->log("Getting a list of payable Payments");
+			$aPayments	= self::getAllDistributable();
+		} else {
+			Log::getLog()->log("Set of ".count($aPayments)." Payments supplied");
+		}
+
+		// Distribute!
+		$iTotalPayments	= count($aPayments);
+		$iProgress		= 0;
+		foreach ($aPayments as $mPayment) {
+			// Allow $mPayment to be a Logic_Payment, Payment, or Payment Id
+			$oPayment	= ($mPayment instanceof self) ? $mPayment : new self(Payment::getForId($mPayment));
+
+			$iProgress++;
+			Log::getLog()->log("({$iProgress}/{$iTotalPayments}) Payment #{$$oPayment->id}");
+
+			// Encase each Payment in a Transaction
+			if (false === DataAccess::getDataAccess()->TransactionStart()) {
+				throw new Exception_Database(DataAccess::getDataAccess()->Error());
+			}
+
+			try {
+				// Distribute the Payment
+				$oPayment->distribute();
+
+				// FIXME: Do we need to save here?
+				$oPayment->save();
+			} catch (Exception $oException) {
+				// Rollback and rethrow
+				if (false === DataAccess::getDataAccess()->TransactionRollback()) {
+					throw new Exception_Database(DataAccess::getDataAccess()->Error());
+				}
+				throw $oException;
+			}
+
+			// Commit
+			if (false === DataAccess::getDataAccess()->TransactionCommit()) {
+				throw new Exception_Database(DataAccess::getDataAccess()->Error());
+			}
+		}
+
+		Log::getLog()->log("Processed {$iTotalPayments} Payments in ".round($oStopwatch->lap(), 1).'s');
+	}
     
     // factory: Creates a Logic_Payment object, as well as surcharge if credit card payment (and flagged to be created).
     // 			aConfig is an array of values that will be used if passed correctly
@@ -220,6 +289,11 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 			$oDataAccess->TransactionRollback();
 			throw $oException;
 		}
+	}
+
+	public static function create() {
+		$aArguments	= func_get_args();
+		return Reflectors::getClass(__CLASS__)->newInstanceArgs($aArguments);
 	}
 }
 ?>
