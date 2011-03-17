@@ -110,10 +110,8 @@ class Cli_App_Collections extends Cli
 		{
 		    Log::getLog()->log("Processing Collections in batch for all accounts");
 		}
-		$oDataAccess = DataAccess::getDataAccess();
-		$oDataAccess->TransactionStart();
-		try
-		{
+		
+		
 		    $iAccountsBatchProcessIteration = 1;
 
 		    if ($iAccountId !== null)
@@ -133,35 +131,33 @@ class Cli_App_Collections extends Cli
 		    }
 
 
-		    $oDataAccess	= DataAccess::getDataAccess();
-		    $oDataAccess->TransactionStart();
+		   
 		    try
 		    {
 			Logic_Collection_Promise::batchProcess($aPromises);
-			$oDataAccess->TransactionCommit();
+			
 		    }
 		    catch (Exception $e)
 		    {
 			 Logic_Collection_BatchProcess_Report::addException($e);
 			 Log::getLog($e->__toString());
-			 $oDataAccess->TransactionRollback();
+			
 			if ($e instanceof Exception_Database)
 			{
 			    throw $e;
 			}
-			Log::getLog()->log($e->__toString());
+			
 		    }
 
-		    $oDataAccess = DataAccess::getDataAccess();
-		    $oDataAccess->TransactionStart();
+		   
 		    try
 		    {
 			Logic_Collection_Suspension::batchProcess($aActiveSuspensions);
-			$oDataAccess->TransactionCommit();
+			
 		    }
 		    catch(Exception $e)
 		    {
-			$oDataAccess->TransactionRollback();
+			
 			Logic_Collection_BatchProcess_Report::addException($e);
 
 			if ($e instanceof Exception_Database)
@@ -171,8 +167,7 @@ class Cli_App_Collections extends Cli
 			Log::getLog()->log($e->__toString());
 		    }
 
-		    $oDataAccess	= DataAccess::getDataAccess();
-		    $oDataAccess->TransactionStart();
+		    
 		    try
 		    {
 			if ($iAccountId === null)
@@ -201,12 +196,12 @@ class Cli_App_Collections extends Cli
 			}
 			while ($iCompletedInstances > 0);
 
-			$oDataAccess->TransactionCommit();
+			
 			Log::getLog()->log("Total Time: ".Logic_Stopwatch::getInstance()->split());
 		    }
 		    catch (Exception $e)
 		    {
-			$oDataAccess->TransactionRollback();
+			
 			if ($e instanceof Exception_Database)
 			{
 			    Logic_Collection_BatchProcess_Report::addException($e);
@@ -218,14 +213,7 @@ class Cli_App_Collections extends Cli
 
 
 
-		    if ($arrArgs[self::SWITCH_TEST_RUN])
-		    {
-			$oDataAccess->TransactionRollback();
-		    }
-		    else
-		    {
-			$oDataAccess->TransactionCommit();
-		    }
+		    
 
 		    $sPath = FILES_BASE_PATH.'temp/';
 		    $bPathExists = file_exists ($sPath);
@@ -235,13 +223,7 @@ class Cli_App_Collections extends Cli
 		    }
 
 		    Logic_Collection_BatchProcess_Report::emailReport();
-		}
-		catch (Exception $e)
-		{
-		     $oDataAccess->TransactionRollback();
-		     Log::getLog()->log($e->__toString());
-		     Logic_Collection_BatchProcess_Report::addException($e);
-		}
+		
 
 
 
@@ -253,6 +235,7 @@ class Cli_App_Collections extends Cli
 	    {
 		    // We can now show the error message
 		    $this->showUsage($exception->getMessage());
+		     Logic_Collection_BatchProcess_Report::addException($e);
 		    return 1;
 	    }
 
@@ -300,8 +283,13 @@ class Cli_App_Collections extends Cli
 			$this->log("Doing redistribution on accounts that need it only.", TRUE);
 			$iMode = Account::BALANCE_REDISTRIBUTION_REGULAR;
 		    }
-		    $oDataAccess = DataAccess::getDataAccess();
-		    $oDataAccess->TransactionStart();
+
+		    if ($arrArgs[self::SWITCH_TEST_RUN])
+		    {
+			$oDataAccess = DataAccess::getDataAccess();
+			$oDataAccess->TransactionStart();
+		    }
+
 		    try
 		    {
 			Log::getLog()->log("Account, Time, Memory Usage, delete linking data, reset balances, iterations, Debit Collectables, Credit Collectables, Credit Payments, Credit Adjustments, Debit Payments,Debit Adjustments, Account Balance Prior, Payable Balance Prior, Payable Balance After, Overdue Balance");
@@ -309,20 +297,19 @@ class Cli_App_Collections extends Cli
 			$aAccounts = Account::getForBalanceRedistribution($iMode);
 			Logic_Account::batchRedistributeBalances($aAccounts);
 			Log::getLog()->log("After, ".memory_get_usage (TRUE ));//self::$aMemory['after_before_cache_clear'] = memory_get_usage (TRUE );
-			if ($arrArgs[self::SWITCH_TEST_RUN])
-			{
-			    $oDataAccess->TransactionRollback();
-			}
-			else
-			{
-			    $oDataAccess->TransactionCommit();
-			}
+			
+			
 		    }
 		    catch (Exception $e)
 		    {
-			 $oDataAccess->TransactionRollback();
+			
 			 Log::getLog()->log($e->__toString());
 
+		    }
+
+		    if ($arrArgs[self::SWITCH_TEST_RUN])
+		    {
+			$oDataAccess->TransactionRollback();
 		    }
 
 		    $this->log("Finished.");
