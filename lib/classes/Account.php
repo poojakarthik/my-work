@@ -1078,16 +1078,16 @@ class Account
 
 	public function getAccountBalance()
 	{
-	    return $this->_getBalance(Data_Source_Time::END_OF_TIME, TRUE);
+	    return $this->_getBalance(Data_Source_Time::END_OF_TIME, true);
 	}
 
-	public function getOverdueBalance($sDueDate= NULL)
+	public function getOverdueBalance($sEffectiveDate=null)
 	{
-	    $sDueDate	= (is_int($iDueDate = strtotime($sDueDate))) ? date("Y-m-d", $iDueDate) : date('Y-m-d');
-	    return max(0.0, $this->_getBalance($sDueDate, FALSE));
+	    $sEffectiveDate	= (is_int($iEffectiveDate = strtotime($sEffectiveDate))) ? date("Y-m-d", $iEffectiveDate) : date('Y-m-d');
+	    return max(0.0, $this->_getBalance($sEffectiveDate, FALSE));
 	}
 
-	protected function _getBalance($sDueDate, $bIncludeActivePromises)
+	protected function _getBalance($sEffectiveDate, $bIncludeActivePromises)
 	{
 	    $sActivePromiseJoinClause = $bIncludeActivePromises ? "" : " LEFT JOIN collection_promise cp ON (c.collection_promise_id = cp.id) WHERE (c.collection_promise_id IS NULL OR cp.completed_datetime IS NOT NULL)";
 	    $oQuery = new Query();
@@ -1110,8 +1110,8 @@ class Account
 						  JOIN adjustment_status ast ON (adj.adjustment_status_id = ast.id and ast.const_name = 'ADJUSTMENT_STATUS_APPROVED')
 						) balance
 						FROM Account a
-						JOIN collectable c ON (a.Id = c.account_id AND a.Id = {$this->Id} AND c.due_date < '$sDueDate')
-						$sActivePromiseJoinClause"
+						LEFT JOIN collectable c ON (a.Id = c.account_id AND a.Id = {$this->Id} AND c.due_date < '{$sEffectiveDate}')
+						{$sActivePromiseJoinClause}"
 					);
 
 	    if ($mResult === false)

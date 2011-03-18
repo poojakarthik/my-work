@@ -1,22 +1,28 @@
 
 var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 
-	initialize	: function ($super, iAccountId) {
+	initialize	: function ($super, iAccountId, oConfig) {
 		$super(50);
 		this.setTitle('' + iAccountId + ': New Promise to Pay');
 		this.addCloseButton();
 
+		// Account Id
 		this._iAccountId	= iAccountId;
+		this._oConfig		= oConfig || {};
+
+		// Suspension to Replace
+		this._bReplaceSuspension	= !!this._oConfig.oSuspension;
+		this._bReplacePromise		= !!this._oConfig.oPromise;
 
 		this._getData(this._buildUI.bind(this));
 	},
 
 	_getData	: function (fnCallback, oResponse) {
-		
-		/* DEBUG 
+
+		/* DEBUG
 		fnCallback(Popup_Account_Promise_Edit.DUMMY_DATA);
 		/* DEBUG */
-		
+
 		if (typeof oResponse === 'undefined') {
 			// AJAX!
 			jQuery.json.jsonFunction(
@@ -41,7 +47,7 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 	_submit	: function (oResponse) {
 		//debugger;
 		if (!oResponse || typeof oResponse.target !== 'undefined') {
-			
+
 			// Validate
 			//----------------------------------------------------------------//
 			var	aControls	= [];
@@ -78,7 +84,7 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 			if (!aInstalmentControls.length) {
 				aValidationErrors.push("There are no instalments defined");
 			}
-			
+
 			// Show Validation Error Messages
 			if (aValidationErrors.length) {
 				// Errors found
@@ -109,14 +115,14 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 				aInvoices					: [],
 				aInstalments				: []
 			};
-			
+
 			for (iInvoiceId in this.CONTROLS.oInvoices) {
 				oData.aInvoices.push({
 					iInvoiceId		: iInvoiceId,
 					fPromisedAmount	: parseFloat(this.CONTROLS.oInvoices[iInvoiceId].oPromisedBalance.getElementValue())
 				});
 			}
-			
+
 			var	aInstalments	= $A(this.contentPane.select('.popup-account-promise-edit-instalments-instalment'));
 			for (var x = 0, y = aInstalments.length; x < y; x++) {
 				oData.aInstalments.push({
@@ -125,10 +131,23 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 				});
 			}
 
+			// Replace Promise
+			if (this._bReplacePromise) {
+				oData.oExistingPromise	= (this._oConfig.oPromise) ? this._oConfig.oPromise : {
+					id	: this._oData.existing_promise.id
+				};
+			}
+			// Replace Suspension
+			if (this._bReplaceSuspension) {
+				oData.oExistingSuspension	= (this._oConfig.oSuspension) ? this._oConfig.oSuspension : {
+					id	: this._oData.existing_suspension.id
+				};
+			}
+
 			//debugger;
-			
+
 			this._oLoadingPopup	= new Reflex_Popup.Loading('Saving...', true);
-			
+
 			// Perform AJAX Request
 			jQuery.json.jsonFunction(
 				this._submit.bind(this),
@@ -136,7 +155,7 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 				'Collection_Promise',
 				'save'
 			)(oData);
-			
+
 			return true;
 		} else if (!oResponse.bSuccess) {
 			// Error!
@@ -194,10 +213,14 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 		var	fTotalPromised	= 0.0,
 			fInvoicePromised;
 
-		for (var iInvoiceId in this.CONTROLS.oInvoices) {
-			fInvoicePromised	= parseFloat(this.CONTROLS.oInvoices[iInvoiceId].oPromisedBalance.getElementValue());
-			if (fInvoicePromised) {
-				fTotalPromised	+= fInvoicePromised;
+		if (this.CONTROLS.oSpecifyTotalPromised.getElementValue()) {
+			fTotalPromised	= parseFloat(this.CONTROLS.oTotalPromised.getElementValue()) || 0.0;
+		} else {
+			for (var iInvoiceId in this.CONTROLS.oInvoices) {
+				fInvoicePromised	= parseFloat(this.CONTROLS.oInvoices[iInvoiceId].oPromisedBalance.getElementValue()) || 0.0;
+				if (fInvoicePromised) {
+					fTotalPromised	+= fInvoicePromised;
+				}
 			}
 		}
 
@@ -208,10 +231,10 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 		var	fTotalPromised	= this._getTotalPromised(),
 			fTotalBalance	= this._getTotalBalance();
 
-		if (bForceControlValue === true || !this.CONTROLS.oSpecifyTotalPromised.getElementValue()) {
+		if (!this.CONTROLS.oSpecifyTotalPromised.getElementValue()) {
 			this.CONTROLS.oTotalPromised.setValue(fTotalPromised);
 		}
-		
+
 		this.contentPane.select('.popup-account-promise-edit-invoices-totalpromised').first().innerHTML	= fTotalPromised.toFixed(2);
 		this.contentPane.select('.popup-account-promise-edit-invoices-totalbalance').first().innerHTML	= (fTotalBalance - fTotalPromised.toFixed(2)).toFixed(2);
 
@@ -229,7 +252,7 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 				fPromisedRemaining	-= fInstalmentAmount;
 			}
 		}
-		
+
 		this.contentPane.select('.popup-account-promise-edit-instalments-remaining').first().innerHTML	= fPromisedRemaining.toFixed(2);
 	},
 
@@ -239,7 +262,7 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 			fEvenDistribution	= (Math.ceil((fBalanceRemaining / aInstalments.length) * 100) / 100),
 			fOldBalanceRemaining,
 			fInstalmentAmount;
-		
+
 		for (var i = 0, j = aInstalments.length; i < j; i++) {
 			fOldBalanceRemaining	= parseFloat(fBalanceRemaining.toFixed(2));
 			fBalanceRemaining		-= (i == j-1) ? fOldBalanceRemaining : Math.max(0, fEvenDistribution);
@@ -247,12 +270,12 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 
 			aInstalments[i].oControlField.setValue(fInstalmentAmount);
 		}
-		
+
 		this._updatePromisedAmountRemaining();
 	},
 
 	_distributeTotalPromisedOverInvoices	: function () {
-		var	fPromisedRemaining	= parseFloat(this.CONTROLS.oTotalPromised.getElementValue()),
+		var	fPromisedRemaining	= this._getTotalPromised(),
 			fOldPromisedRemaining,
 			fInvoiceAmount;
 
@@ -287,12 +310,15 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 
 	_scheduleInstalments	: function (aInstalments) {
 		if (!aInstalments || typeof aInstalments.target !== 'undefined') {
-			new Popup_Account_Promise_Edit_Schedule({
-				/* CONFIG */
-				permissions			: this._oData.permissions,
-				oEarliestDueDate	: this._getEarliestInvoiceDueDate(true) || this._getEarliestInvoiceDueDate(),
-				fnCallback			: this._scheduleInstalments.bind(this)
-			});
+			// Load/Show the Schedule Popup
+			JsAutoLoader.loadScript('popup_account_promise_edit_schedule.js', (function () {
+				new Popup_Account_Promise_Edit_Schedule({
+					/* CONFIG */
+					permissions			: this._oData.permissions,
+					oEarliestDueDate	: this._getEarliestInvoiceDueDate(true) || this._getEarliestInvoiceDueDate(),
+					fnCallback			: this._scheduleInstalments.bind(this)
+				});
+			}).bind(this), true, true);
 		} else {
 			//debugger;
 			// Remove existing Instalments
@@ -331,20 +357,20 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 						oInstalmentDueDate,
 						sInstalmentDueDate,
 						oPreviousInstalmentDueDate;
-					
+
 					if (oCurrentDate.getTime() >= oOwnDate.getTime()) {
 						throw "Instalment is earlier than tomorrow";
 					}
-					
+
 					for (var i = 0, j = aInstalments.length; i < j; i++) {
 						sInstalmentDueDate	= aInstalments[i].oControlField.getElementValue();
 						oInstalmentDueDate	= (new Date(sInstalmentDueDate)).truncate(Date.DATE_INTERVAL_DAY);
-						
+
 						// Check for copies of the same date
 						if (oInstalmentDueDate.getTime() == oOwnDate.getTime()) {
 							iOwnDateInstances++;
 						}
-						
+
 						// We've found ourselves!
 						if (aInstalments[i].oControlField === oControlField) {
 							bFoundSelf	= true;
@@ -352,12 +378,12 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 							if (i == 0 && (new Date(oCurrentDate)).shift(this._oData.permissions.promise_start_delay_maximum_days, Date.DATE_INTERVAL_DAY).getTime() < oOwnDate.getTime()) {
 								throw "First instalment is later than "+this._oData.permissions.promise_start_delay_maximum_days+" day(s) after today";
 							}
-							
+
 							// If we're the last, check against promise_maximum_days_between_due_and_end permission
 							if (i == j-1 && oEarliestPromisedInvoiceDueDate && (new Date(oEarliestPromisedInvoiceDueDate)).shift(this._oData.permissions.promise_maximum_days_between_due_and_end, Date.DATE_INTERVAL_DAY).getTime() < oOwnDate.getTime()) {
 								throw "Final instalment is later than "+this._oData.permissions.promise_maximum_days_between_due_and_end+" day(s) after the earliest promised due invoice";
 							}
-							
+
 							// If we're not first, check against previous instalment date
 							if (i > 0 && oPreviousInstalmentDueDate) {
 								if ((oPreviousInstalmentDueDate.getTime() - oOwnDate.getTime()) / Date.MILLISECONDS_IN_DAY > this._oData.permissions.promise_instalment_maximum_interval_days) {
@@ -383,14 +409,14 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 								}
 							}
 						}
-						
+
 						oPreviousInstalmentDueDate	= (sInstalmentDueDate && !isNaN(oInstalmentDueDate.valueOf())) ? oInstalmentDueDate : null;
 					}
-					
+
 					if (iOwnDateInstances > 1) {
 						throw "There are "+iOwnDateInstances+" instalments with the date " + oOwnDate.$format('d/m/Y');
 					}
-					
+
 					return true;
 				}).bind(this)
 			}),
@@ -454,77 +480,31 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 		oTBody.appendChild(oTR);
 	},
 
-	_buildUI	: function (oData, bReplaceExistingPromise, bReplaceExistingSuspension) {
+	_buildUI	: function (oData) {
 		//debugger;
 		if (typeof oData === 'undefined') {
 			// Need to retrieve the data
 			this._getData(this._buildUI.bind(this));
-		} else if (oData.existing_promise && bReplaceExistingPromise !== true) {
-			var	sExistingPromiseSummary	= 'This Account already has an active Promise to Pay arrangement scheduled to end on '+(new Date(oData.existing_promise.aInstalments.last().due_date)).$format('j M Y')+'.';
-			// We have an existing Promise
-			if (oData.permissions.promise_can_replace) {
-				// We are allowed to replace Promises
-				return new Reflex_Popup.yesNoCancel(
-					$T.div(
-						$T.p(sExistingPromiseSummary),
-						$T.p("Would you like to replace the existing Promise to Pay with a new arrangement?")
-					), {
-						sTitle	: 'Existing Promise to Pay',
-						iWidth	: 40,
-						fnOnYes	: this._buildUI.bind(this, oData, true, !!bReplaceExistingSuspension),
-						fnOnNo	: this.hide.bind(this)
-					}
-				);
-			} else {
-				// We are not allowed to replace Promises
-				return new Reflex_Popup.alert(
-					$T.div({'class':'alert-content'},
-						$T.p(sExistingPromiseSummary),
-						$T.p('You do not have the ability to replace this Promise to Pay.  If the Promise needs to be replaced, please escalate this to your Manager.')
-					), {
-						sTitle		: 'Existing Promise to Pay',
-						iWidth		: 40,
-						fnOnClose	: this.hide.bind(this)
-					}
-				);
-			}
-		} else if (oData.existing_promise && bReplaceExistingSuspension !== true) {
-			var	sExistingSuspensionSummary	= 'This Account already has an active Promise to Pay arrangement scheduled to end on '+(new Date(oData.existing_promise.aInstalments.last().due_date)).$format('j M Y')+'.';
-			// We have an existing Suspension
-			if (oData.permissions.suspension_can_replace) {
-				// We are allowed to replace Suspensions
-				return new Reflex_Popup.yesNoCancel(
-					$T.div(
-						$T.p(sExistingSuspensionSummary),
-						$T.p("Would you like to replace the existing Suspension with a Promise to Pay arrangement?")
-					), {
-						sTitle	: 'Existing Suspension',
-						iWidth	: 40,
-						fnOnYes	: this._buildUI.bind(this, oData, !!bReplaceExistingPromise, true),
-						fnOnNo	: this.hide.bind(this)
-					}
-				);
-			} else {
-				// We are not allowed to replace Suspensions
-				return new Reflex_Popup.alert(
-					$T.div({'class':'alert-content'},
-						$T.p(sExistingSuspensionSummary),
-						$T.p('You do not have the ability to replace this Suspension.  If you need to replace this Suspension with a Promise to Pay arrangement, please escalate this to your Manager.')
-					), {
-						sTitle		: 'Existing Suspension',
-						iWidth		: 40,
-						fnOnClose	: this.hide.bind(this)
-					}
-				);
-			}
 		} else {
 			//debugger;
-			// Build our UI!
 			this._oData	= oData;
 
+			// Check if we're replacing anything
+			if (this._bReplacePromise !== true && this._oData.existing_promise) {
+				// Promise
+				this._replaceExistingPromise();
+				return;
+			}
+			if (this._bReplaceSuspension !== true && this._oData.existing_suspension) {
+				// Suspension
+				this._replaceExistingSuspension();
+				return;
+			}
+
+			// Build our UI!
 			var	oDirectDebitInstalments	= Control_Field.factory('checkbox', {
 											sLabel			: 'Direct Debit Instalments',
-											mEditable		: !!(oData.payment_method_system === 'DIRECT_DEBIT'),
+											mEditable		: !!(oData.payment_method_constant === 'PAYMENT_METHOD_DIRECT_DEBIT'),
 											mMandatory		: true
 										}),
 				oPromiseReason			= Control_Field.factory('select', {
@@ -673,6 +653,10 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 																$T.div({'class':'popup-account-promise-edit-details-customergroup'}, oData.customer_group_name)
 															)
 														),
+														$T.tr({'class':'popup-account-promise-edit-details-replacing'},
+															$T.th({'class':'label'}, 'Replacing'),
+															$T.td({'class':'input'}, 'Nothing')
+														),
 														$T.tr(
 															$T.th({'class':'label'}, 'Reason for Promise'),
 															$T.td({'class':'input'}, oPromiseReason.getElement())
@@ -680,7 +664,7 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 														$T.tr(
 															$T.th({'class':'label'}, 'Direct Debit Instalments'),
 															$T.td({'class':'input'},
-																(oData.payment_method_system === 'DIRECT_DEBIT') ? oDirectDebitInstalments.getElement() : $T.span('Instalments must be paid manually')
+																(oData.payment_method_constant === 'PAYMENT_METHOD_DIRECT_DEBIT') ? oDirectDebitInstalments.getElement() : $T.span('Instalments must be paid manually')
 															)
 														),
 														$T.tr(
@@ -712,6 +696,13 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 				oInvoices				: {}
 			};
 
+			// Replacing
+			if (true) {
+				// Replacing a Suspension
+			} else if (true) {
+				// Replacing a Promise
+			}
+
 			// Invoices
 			var	oInvoicesDetails	= oInvoices.select('tbody').first();
 			if (!Object.keys(oData.outstanding_invoices).length) {
@@ -733,7 +724,7 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 							mEditable	: true,
 							mMandatory	: false
 						});
-					oPromisedBalance.addOnChangeCallback(this._updateTotalPromised.bind(this, oPromisedBalance));
+					oPromisedBalance.addOnChangeCallback(this._updateTotalPromised.bind(this));
 					oPromisedBalance.setRenderMode(Control_Field.RENDER_MODE_EDIT);
 					oInvoicesDetails.appendChild(
 						$T.tr(
@@ -798,6 +789,81 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 			this.display();
 		}
 
+	},
+
+	_replaceExistingPromise	: function () {
+		var	sExistingPromiseSummary	= 'This Account already has an active Promise to Pay arrangement scheduled to end on '+(new Date(this._oData.existing_promise.aInstalments.last().due_date)).$format('j M Y')+'.';
+		// We have an existing Promise
+		if (this._oData.permissions.promise_can_replace) {
+			// We are allowed to replace Promises
+			return new Reflex_Popup.yesNoCancel(
+				$T.div(
+					$T.p(sExistingPromiseSummary),
+					$T.p("Would you like to replace the existing Promise to Pay with a new arrangement?")
+				), {
+					sTitle	: 'Existing Promise to Pay',
+					iWidth	: 40,
+					fnOnYes	: (function(){this._bReplacePromise = true; this._buildUI(this._oData);}).bind(this),
+					fnOnNo	: this.hide.bind(this)
+				}
+			);
+		} else {
+			// We are not allowed to replace Promises
+			return new Reflex_Popup.alert(
+				$T.div({'class':'alert-content'},
+					$T.p(sExistingPromiseSummary),
+					$T.p('You do not have the ability to replace this Promise to Pay.  If the Promise needs to be replaced, please escalate this to your Manager.')
+				), {
+					sTitle		: 'Existing Promise to Pay',
+					iWidth		: 40,
+					fnOnClose	: this.hide.bind(this)
+				}
+			);
+		}
+	},
+
+	_replaceExistingSuspension	: function () {
+		//debugger;
+		var	sExistingSuspensionSummary	= 'This Account is currently Suspended from Collections, scheduled to end on '+(new Date(Date.$parseDate(this._oData.existing_suspension.proposed_end_datetime, 'Y-m-d H:i:s'))).$format('j M Y')+'.';
+		// We have an existing Suspension
+		if (this._oData.existing_suspension.collection_suspension_reason_system === 'TIO') {
+			// We are not allowed to replace TIO suspensions indirectly
+			return new Reflex_Popup.alert(
+				$T.div({'class':'alert-content'},
+					$T.p(sExistingSuspensionSummary),
+					$T.p('As this is related to a TIO complaint, it must be explicitly closed through the Resolve TIO Complaint interface.  From there, you will have the option to create a Promise to Pay as a result of the TIO resolution.')
+				), {
+					sTitle		: 'Existing TIO Suspension',
+					iWidth		: 40,
+					fnOnClose	: this.hide.bind(this)
+				}
+			);
+		} else if (this._oData.permissions.suspension_can_replace) {
+			// We are allowed to replace Suspensions
+			return new Reflex_Popup.yesNoCancel(
+				$T.div(
+					$T.p(sExistingSuspensionSummary),
+					$T.p("Would you like to replace the existing Suspension with a Promise to Pay arrangement?")
+				), {
+					sTitle	: 'Existing Suspension',
+					iWidth	: 40,
+					fnOnYes	: (function(){this._bReplaceSuspension = true; this._buildUI(this._oData);}).bind(this),
+					fnOnNo	: this.hide.bind(this)
+				}
+			);
+		} else {
+			// We are not allowed to replace Suspensions
+			return new Reflex_Popup.alert(
+				$T.div({'class':'alert-content'},
+					$T.p(sExistingSuspensionSummary),
+					$T.p('You do not have the ability to replace this Suspension.  If you need to replace this Suspension with a Promise to Pay arrangement, please escalate this to your Manager.')
+				), {
+					sTitle		: 'Existing Suspension',
+					iWidth		: 40,
+					fnOnClose	: this.hide.bind(this)
+				}
+			);
+		}
 	}
 
 });

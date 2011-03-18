@@ -98,7 +98,7 @@ class JSON_Handler_Collection_Promise extends JSON_Handler
 				'customer_group_id'				=> $oCustomerGroup->Id,
 				'customer_group_name'			=> $oCustomerGroup->internal_name,
 				'payment_method_id'				=> $oPaymentMethod->id,
-				'payment_method_system_name'	=> $oPaymentMethod->system_name,
+				'payment_method_constant'		=> $oPaymentMethod->const_name,
 				'billing_type_system_name'		=> $oBillingType->system_name,
 				'permissions'					=> $aPermissions,
 				'collection_promise_reason'		=> (object)$aCollectionPromiseReasons,	// Cast to object to force non-Array serialisation
@@ -111,9 +111,7 @@ class JSON_Handler_Collection_Promise extends JSON_Handler
 						'bSuccess'		=> true,
 						'oData'			=> $aData
 					);
-		}
-		catch (Exception $oException)
-		{
+		} catch (Exception $oException) {
 			$sMessage	= $bUserIsGod ? $oException->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
 			return 	array(
 						'bSuccess'	=> false,
@@ -186,7 +184,7 @@ class JSON_Handler_Collection_Promise extends JSON_Handler
 			// VALIDATE & SANITISE
 			//----------------------------------------------------------------//
 			Log::getLog()->log('Validate & Sanitise');
-			$this->_saveValidateAndSanitise($oData);
+			$oData	= $this->_saveValidateAndSanitise($oData);
 
 			// PERMISSIONS
 			//----------------------------------------------------------------//
@@ -217,10 +215,15 @@ class JSON_Handler_Collection_Promise extends JSON_Handler
 
 				// Existing Suspension
 				if ($oActiveSuspension = $oAccount->getActiveSuspension()) {
+					$oCollectionSuspensionEndReason	= Collection_Suspension_End_Reason::getForSystemName('CANCELLED');
+					if ($oData->oExistingSuspension && $oData->oExistingSuspension->collection_suspension_end_reason_id) {
+						$oCollectionSuspensionEndReason	= Collection_Suspension_End_Reason::getForId($oData->oExistingSuspension->collection_suspension_end_reason_id);
+					}
+
 					// Need to discontinue it
 					Log::getLog()->log("Discontinuing Active Suspension #{$oActiveSuspension->id}");
 					$oActiveSuspension->effective_end_datetime				= $this->_sDatetime;
-					$oActiveSuspension->collection_suspension_end_reason_id	= Collection_Suspension_End_Reason::getForSystemName('CANCELLED');
+					$oActiveSuspension->collection_suspension_end_reason_id	= $oCollectionSuspensionEndReason->id;
 					$oActiveSuspension->end_employee_id						= Flex::getUserId();
 					$oActiveSuspension->save();
 					Log::getLog()->log(print_r($oActiveSuspension->toStdClass(), true));
@@ -339,7 +342,7 @@ class JSON_Handler_Collection_Promise extends JSON_Handler
 					);
 
 		} catch (Exception $oException) {
-			$sMessage	= $bUserIsGod ? $oException->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
+			$sMessage	= $bUserIsGod || $oException instanceof Exception_Validation ? $oException->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
 			return 	array(
 						'bSuccess'	=> false,
 						'sMessage'	=> $sMessage,
@@ -355,7 +358,7 @@ class JSON_Handler_Collection_Promise extends JSON_Handler
 		// $oData->bUseDirectDebit
 		if ($oData->bUseDirectDebit && Billing_Type::getForId($oAccount->BillingType)->payment_method_id !== PAYMENT_METHOD_DIRECT_DEBIT) {
 			// Account isn't on Direct Debit
-			throw new Exception("{$oData->iAccountId} is not on Direct Debit");
+			throw new Exception_Validation("{$oData->iAccountId} is not on Direct Debit");
 		}
 
 		// $oData->iCollectionPromiseReasonId
@@ -378,7 +381,7 @@ class JSON_Handler_Collection_Promise extends JSON_Handler
 				$fTotalBalance	= Rate::roundToRatingStandard($fTotalAmount + (float)$oCollectable->balance, 2);
 			}
 			if ($fTotalBalance < $oInvoice->fPromisedAmount) {
-				throw new Exception("Invoice {$oInvoice->iInvoiceId} has been promised {$oInvoice->fPromisedAmount} when there is only {$fTotalBalance} available");
+				throw new Exception_Validation("Invoice {$oInvoice->iInvoiceId} has been promised {$oInvoice->fPromisedAmount} when there is only {$fTotalBalance} available");
 			}
 
 			$fTotalBalanceAvailable	= Rate::roundToRatingStandard($fTotalBalanceAvailable + max(0, $fTotalBalance));
@@ -393,35 +396,56 @@ class JSON_Handler_Collection_Promise extends JSON_Handler
 			// $oData->aInstalments[]->sDueDate
 			$iDueDatetime	= strtotime($oInstalment->sDueDate);
 			if ($iDueDatetime === false) {
-				throw new Exception("'{$oInstalment->sDueDate}' is not a valid Instalment Due Date");
+				throw new Exception_Validation("'{$oInstalment->sDueDate}' is not a valid Instalment Due Date");
 			}
 			$iDueDate	= strtotime(date('Y-m-d', $iDueDatetime));
 			if ($iDueDate <= $iEarliestInstalmentDate) {
-				throw new Exception("'{$oInstalment->sDueDate}' is earlier than tomorrow");
+				throw new Exception_Validation("'{$oInstalment->sDueDate}' is earlier than tomorrow");
 			}
 			if ($iLatestInstalmentDate !== null && $iDueDate <= $iLatestInstalmentDate) {
-				throw new Exception("'{$oInstalment->sDueDate}' is earlier than or the same as a previous instalment");
+				throw new Exception_Validation("'{$oInstalment->sDueDate}' is earlier than or the same as a previous instalment");
 			}
 			$oInstalment->sDueDate	= date('Y-m-d', $iDueDate);
 
 			$oInstalment->fAmount	= Rate::roundToRatingStandard($oInstalment->fAmount, 2);
 			if ($oInstalment->fAmount <= 0) {
-				throw new Exception("Instalment from {$oInstalment->sDueDate} does not have a promised amount");
+				throw new Exception_Validation("Instalment from {$oInstalment->sDueDate} does not have a promised amount");
 			}
 
 			$iLatestInstalmentDate	= $iDueDate;
 			$fTotalInstalmentAmount	= Rate::roundToRatingStandard($fTotalInstalmentAmount + $oInstalment->fAmount, 2);
 		}
 
+		// $oData->oExistingPromise
+		$oExistingPromise	= $oAccount->getActivePromise();
+		if ($oExistingPromise && !$oData->oExistingPromise) {
+			throw new Exception_Validation("There is already an active Promise to Pay.  Please try recreating your new Promise to Pay.");
+		}
+		if ($oExistingPromise->id !== $oData->oExistingPromise->id) {
+			throw new Exception_Validation("The Promise to Pay you agreed to replace is no longer the current arrangement.  Please try recreating your new Promise to Pay.");
+		}
+
+		// $oData->oExistingSuspension
+		$oExistingSuspension	= $oAccount->getActiveSuspension();
+		if ($oExistingSuspension && !$oData->oExistingSuspension) {
+			throw new Exception_Validation("There is already an active Suspension.  Please try recreating your new Promise to Pay.");
+		}
+		if ($oExistingSuspension->id !== $oData->oExistingSuspension->id) {
+			throw new Exception_Validation("The Suspension you agreed to replace is no longer the current arrangement.  Please try recreating your new Promise to Pay.");
+		}
+		if (isset($oData->oExistingSuspension->collection_suspension_end_reason_id)) {
+			$oData->oExistingSuspension->collection_suspension_end_reason_id	= Collection_Suspension_End_Reason::getForId($oData->oExistingSuspension->collection_suspension_end_reason_id)->id;
+		}
+
 		// Data Integrity
 		if ($fTotalInstalmentAmount !== $fTotalPromised) {
-			throw new Exception("Total Instalment Amount ({$fTotalInstalmentAmount}) is different to the Total Promised ({$fTotalPromised})");
+			throw new Exception_Validation("Total Instalment Amount ({$fTotalInstalmentAmount}) is different to the Total Promised ({$fTotalPromised})");
 		}
 		if ($fTotalInstalmentAmount <= 0) {
-			throw new Exception("No Instalments have been scheduled");
+			throw new Exception_Validation("No Instalments have been scheduled");
 		}
 		if ($fTotalPromised <= 0) {
-			throw new Exception("No Invoices have been promised");
+			throw new Exception_Validation("No Invoices have been promised");
 		}
 
 		return $oData;
@@ -441,7 +465,7 @@ class JSON_Handler_Collection_Promise extends JSON_Handler
 		// promise_start_delay_maximum_days
 		$oFirstInstalment	= reset($oData->aInstalments);
 		if ($oFirstInstalment->due_date > strtotime("+ {$aUserPermissions['promise_start_delay_maximum_days']} days", $this->_iDate)) {
-			throw new Exception("First instalment ({$oFirstInstalment->due_date}) is more than {$aUserPermissions['promise_start_delay_maximum_days']} days after today ({$this->_sDate})");
+			throw new Exception_Validation("First instalment ({$oFirstInstalment->due_date}) is more than {$aUserPermissions['promise_start_delay_maximum_days']} days after today ({$this->_sDate})");
 		}
 		
 		// promise_maximum_days_between_due_and_end
@@ -455,14 +479,14 @@ class JSON_Handler_Collection_Promise extends JSON_Handler
 			}
 		}
 		if ($oLastInstalment->due_date > strtotime("+ {$aUserPermissions['promise_maximum_days_between_due_and_end']} days", $iEarliestInvoiceDueDate)) {
-			throw new Exception("Last instalment ({$oLastInstalment->due_date}) is more than {$aUserPermissions['promise_start_delay_maximum_days']} days after the earliest promised Invoice (".date('Y-m-d', $iEarliestInvoiceDueDate).")");
+			throw new Exception_Validation("Last instalment ({$oLastInstalment->due_date}) is more than {$aUserPermissions['promise_start_delay_maximum_days']} days after the earliest promised Invoice (".date('Y-m-d', $iEarliestInvoiceDueDate).")");
 		}
 
 		// promise_instalment_maximum_interval_days
 		$oPreviousInstalment	= null;
 		foreach ($oData->aInstalments as $oInstalment) {
 			if ($oPreviousInstalment && Flex_Date::difference($oPreviousInstalment->sDueDate, $oInstalment->sDueDate, 'd') > $aUserPermissions['promise_instalment_maximum_interval_days']) {
-				throw new Exception("Instalment from {$oInstalment->sDueDate} is more than {$aUserPermissions['promise_instalment_maximum_interval_days']} days after {$oPreviousInstalment->sDueDate}");
+				throw new Exception_Validation("Instalment from {$oInstalment->sDueDate} is more than {$aUserPermissions['promise_instalment_maximum_interval_days']} days after {$oPreviousInstalment->sDueDate}");
 			}
 			$oPreviousInstalment	= $oInstalment;
 		}
@@ -473,29 +497,29 @@ class JSON_Handler_Collection_Promise extends JSON_Handler
 		foreach ($oData->aInstalments as $oInstalment) {
 			$fPercentageOfTotalPromised	= ($oInstalment->fAmount / $fTotalPromised) * 100;
 			if ($oLastInstalment !== $oInstalment && $fPercentageOfTotalPromised < $fPromiseInstalmentMinimumPromisedPercentage) {
-				throw new Exception("Instalment from {$oInstalment->sDueDate} (\${$oInstalment->fAmount} : {$fPercentageOfTotalPromised}%) is less than {$fPromiseInstalmentMinimumPromisedPercentage}% of Total Promised ({$fTotalPromised})");
+				throw new Exception_Validation("Instalment from {$oInstalment->sDueDate} (\${$oInstalment->fAmount} : {$fPercentageOfTotalPromised}%) is less than {$fPromiseInstalmentMinimumPromisedPercentage}% of Total Promised ({$fTotalPromised})");
 			}
 		}
 
 		// promise_can_replace
 		if ($oAccount->getActivePromise() !== null && !$aUserPermissions['promise_can_replace']) {
-			throw new Exception("You do not have the ability to replace existing Promise to Pay arrangements");
+			throw new Exception_Validation("You do not have the ability to replace existing Promise to Pay arrangements");
 		}
 
 		// suspension_can_replace
 		if ($oAccount->getActiveSuspension() !== null && !$this->_getSuspensionCanReplace()) {
-			throw new Exception("You do not have the ability to replace existing Suspensions with Promise to Pay arrangements");
+			throw new Exception_Validation("You do not have the ability to replace existing Suspensions with Promise to Pay arrangements");
 		}
 
 		// promise_create_maximum_severity_level
 		$oSeverity	= Collection_Severity::getForId($oAccount->collection_severity_id);
 		if ($oSeverity->severity_level > $aUserPermissions['promise_create_maximum_severity_level']) {
-			throw new Exception("Account's Severity Level ({$oSeverity->name}) is greater than the highest allowed for creating Promises");
+			throw new Exception_Validation("Account's Severity Level ({$oSeverity->name}) is greater than the highest allowed for creating Promises");
 		}
 
 		// promise_amount_maximum
 		if ($fTotalPromised > (float)$aUserPermissions['promise_amount_maximum']) {
-			throw new Exception("Total Promised ({$fTotalPromised}) exceeds maximum of {$aUserPermissions['promise_amount_maximum']}");
+			throw new Exception_Validation("Total Promised ({$fTotalPromised}) exceeds maximum of {$aUserPermissions['promise_amount_maximum']}");
 		}
 	}
 	

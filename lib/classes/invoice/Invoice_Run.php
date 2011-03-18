@@ -671,6 +671,12 @@ class Invoice_Run
 			throw new Exception_Database($updChargeRevoke->Error());
 		}
 
+		// Remove Adjustment references to Invoice Run
+		$oRevokeAdjustments	= self::_preparedStatement('updRevokeAdjustments');
+		if (false === $oRevokeAdjustments->Execute(array('invoice_run_id'=>null), array('invoice_run_id'=>$this->invoice_run_id))) {
+			throw new Exception_Database($oRevokeAdjustments->Error());
+		}
+
 		// Remove service_total_service Records
 		if ($qryQuery->Execute("DELETE FROM service_total_service WHERE service_total_id = (SELECT Id FROM ServiceTotal WHERE invoice_run_id = {$this->Id} AND Id = service_total_id)") === FALSE)
 		{
@@ -1623,6 +1629,13 @@ class Invoice_Run
 					break;
 				case 'updChargeRevoke':
 					$arrPreparedStatements[$strStatement]	= new StatementUpdate("Charge", "invoice_run_id = <Id> AND Status = ".CHARGE_TEMP_INVOICE, Array('invoice_run_id'=>NULL, 'Status'=>CHARGE_APPROVED));
+					break;
+				case 'updRevokeAdjustments':
+					$arrPreparedStatements[$strStatement]	= new StatementUpdate(
+																'adjustment',
+																'invoice_run_id = <invoice_run_id>',
+																array('invoice_run_id'=>null)
+															);
 					break;
 
 				default:

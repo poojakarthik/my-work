@@ -180,7 +180,7 @@
 		
 		$xmlAdjustmentTax	= self::_addElement($xmlAdjustments, 'Item');
 		self::_addElement($xmlAdjustmentTax, 'Description', 'GST Total');
-		self::_addElement($xmlAdjustmentTax, 'Charge', number_format($arrInvoice['adjustment_tax'], 2, '.', ''));
+		self::_addElement($xmlAdjustmentTax, 'Charge', number_format($aAdjustments['TaxComponent'], 2, '.', ''));
 		
 		//--------------------------------------------------------------------//
 		// Account Summary & Itemisation

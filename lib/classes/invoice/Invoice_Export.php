@@ -344,27 +344,52 @@ class Invoice_Export
 	 */
 	public static function getAccountAdjustments($aInvoice)
 	{
+		// Get Adjustments
+		//--------------------------------------------------------------------//
 		$aAdjustments				= array();
 		$fAccountAdjustmentTotal	= 0.0;
-		$selAccountAdjustments		= self::_preparedStatement('selAccountAdjustments');
+		$fAccountAdjustmentTax		= (float)$aInvoice['adjustment_tax'];
+
+		$mResult	= Query::run("
+					SELECT		CONCAT(a_t.code, ' - ', a_t.description, IF(an.system_name = 'REVERSAL', ' Reversal', ''))	AS Description,
+								1																							AS Units,
+								(a.amount - a.tax_component) * an.value_multiplier * an.value_multiplier					AS Charge,
+								IF(a.tax_component > 0.0, 0, 1)																AS TaxExempt,
+								a.effective_date																			AS ChargedDate,
+								CONCAT('ADJ:', a.id)																		AS UniqueId,
+								CONCAT('ADJ:', a.reversed_adjustment_id)													AS ReversedUniqueId
+								a.tax_component																				AS TaxComponent
+					FROM		adjustment a
+								JOIN adjustment_type a_t ON (a_t.id = a.adjustment_type_id)
+								JOIN adjustment_nature an ON (an.id = a.adjustment_nature_id)
+								JOIN transaction_nature tn ON (tn.id = a_t.transaction_nature_id)
+					WHERE		a.account_id = <account_id>
+								a.invoice_run_id = <invoice_run_id>
+								a.adjustment_type_invoice_visibility_id = ".ADJUSTMENT_TYPE_INVOICE_VISIBILITY_VISIBLE."
+				UNION
+					SELECT		CONCAT(IF(c.ChargeType, CONCAT(c.ChargeType, ' - '), ''), c.Description)	AS Description,
+								1																			AS Units,
+								IF(c.Nature = 'DR', c.Amount, c.Amount * -1)								AS Charge,
+								c.global_tax_exempt															AS TaxExempt,
+								c.ChargedOn																	AS ChargedDate,
+								CONCAT('CHG:', c.Id)														AS UniqueId,
+								NULL																		AS ReversedUniqueId,
+								0.0																			AS TaxComponent			/* Handled by Invoice.adjustment_tax */
+					FROM		Charge c
+					WHERE		a.Account = <account_id>
+								AND invoice_run_id = <invoice_run_id>
+								AND c.charge_model_id = ".CHARGE_TYPE_ADJUSTMENT."
+				ORDER BY	ChargedDate ASC
+			", array(
+				'account_id'		=> (int)$aInvoice['Account'],
+				'invoice_run_id'	=> (int)$aInvoice['invoice_run_id']
+			)
+		);
 		$aAdjustmentItemisation		= array();
-		if ($selAccountAdjustments->Execute($aInvoice) === FALSE)
-		{
-			throw new Exception_Database($selAccountAdjustments->Error());
-		}
-		else
-		{
-			while ($aAdjustment = $selAccountAdjustments->Fetch())
-			{
-				$aCDR						= array();
-				$aCDR['Description']		= ($aAdjustment['ChargeType']) ? ($aAdjustment['ChargeType']." - ".$aAdjustment['Description']) : $aAdjustment['Description'];
-				$aCDR['Units']				= 1;
-				$aCDR['Charge']				= $aAdjustment['Amount'];
-				$aCDR['TaxExempt']			= $aAdjustment['TaxExempt'];
-				$aAdjustmentItemisation[]		= $aCDR;
-				
-				$fAccountAdjustmentTotal	+= $aCDR['Charge'];
-			}
+		while ($aAdjustment = $mResult->fetch_assoc()) {
+			$aAdjustmentItemisation[]	= $aAdjustment;
+			$fAccountAdjustmentTotal	+= $aAdjustment['Charge'];
+			$fAccountAdjustmentTax		+= $aAdjustment['TaxComponent'];
 		}
 		
 		// Perform "Roll-Ups"
@@ -374,6 +399,7 @@ class Invoice_Export
 		$aAdjustments['Itemisation']	= $aAdjustmentItemisation;
 		$aAdjustments['DisplayType']	= RECORD_DISPLAY_S_AND_E;
 		$aAdjustments['TotalCharge']	= $fAccountAdjustmentTotal;
+		$aAdjustments['TaxComponent']	= $fAccountAdjustmentTax;
 		$aAdjustments['Records']		= count($aAdjustments['Itemisation']);
 		
 		return $aAdjustments;
@@ -747,7 +773,7 @@ class Invoice_Export
 																					"ChargeType, Service, (CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Amount, Description, global_tax_exempt AS TaxExempt",
 																					"invoice_run_id = <invoice_run_id> AND Account = <Account> AND ChargeType IN ('PCR', 'PDCR') AND charge_model_id = ".CHARGE_MODEL_CHARGE);
 					break;
-				case 'selAccountAdjustments':
+				case 'selAccountAdjustments':	// Legacy
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Charge",
 																					"ChargeType, (CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Amount, Description, global_tax_exempt AS TaxExempt",
 																					"invoice_run_id = <invoice_run_id> AND Account = <Account> AND charge_model_id = ".CHARGE_MODEL_ADJUSTMENT);
