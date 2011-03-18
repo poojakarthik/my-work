@@ -402,9 +402,10 @@ class Flex_Rollout_Version_000239 extends Flex_Rollout_Version
 			(
 				'sDescription'		=>	"Data for table 'adjustment_type_system'",
 				'sAlterSQL'			=>	"	INSERT INTO adjustment_type_system (name, description, system_name, const_name) 
-											VALUES		('Write-off', 	'Write-off Adjustment',		'WRITE_OFF', 	'ADJUSTMENT_TYPE_SYSTEM_WRITE_OFF'),
-														('Write-back',	'Write-back Adjustment',	'WRITE_BACK', 	'ADJUSTMENT_TYPE_SYSTEM_WRITE_BACK'),
-														('Rerate', 		'Rerate Adjustment',		'RERATE', 		'ADJUSTMENT_TYPE_SYSTEM_RERATE');",
+											VALUES		('Write-off', 					'Write-off Adjustment',			'WRITE_OFF', 					'ADJUSTMENT_TYPE_SYSTEM_WRITE_OFF'),
+														('Write-back',					'Write-back Adjustment',		'WRITE_BACK', 					'ADJUSTMENT_TYPE_SYSTEM_WRITE_BACK'),
+														('Rerate', 						'Rerate Adjustment',			'RERATE', 						'ADJUSTMENT_TYPE_SYSTEM_RERATE'),
+														('Payment Surcharge Reversal', 	'Payment Surcharge Reversal', 	'PAYMENT_SURCHARGE_REVERSAL',	'ADJUSTMENT_TYPE_SYSTEM_PAYMENT_SURCHARGE_REVERSAL');",
 				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 			),
 			array
@@ -1443,6 +1444,21 @@ class Flex_Rollout_Version_000239 extends Flex_Rollout_Version
 										  CONSTRAINT fk_collections_schedule_collection_event_id    FOREIGN KEY (collection_event_id)   REFERENCES collection_event (id)	ON DELETE RESTRICT    ON UPDATE CASCADE
 										) ENGINE = InnoDB;",
 				'sRollbackSQL'		=> "DROP TABLE collections_schedule;",
+				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+			),
+			array
+			(
+				'sDescription'		=> "Table adjustment_charge",
+				'sAlterSQL'			=> "CREATE TABLE adjustment_charge
+										(
+										  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+										  adjustment_id BIGINT UNSIGNED NOT NULL,
+										  charge_id BIGINT UNSIGNED NOT NULL,
+										  PRIMARY KEY (id),
+										  CONSTRAINT fk_adjustment_charge_adjustment_id	FOREIGN KEY (adjustment_id)	REFERENCES adjustment (id)	ON DELETE RESTRICT	ON UPDATE CASCADE,
+										  CONSTRAINT fk_adjustment_charge_charge_id    	FOREIGN KEY (charge_id)		REFERENCES Charge (Id)		ON DELETE RESTRICT	ON UPDATE CASCADE
+										) ENGINE = InnoDB;",
+				'sRollbackSQL'		=> "DROP TABLE adjustment_charge;",
 				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 			),
 			

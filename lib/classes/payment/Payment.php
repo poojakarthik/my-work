@@ -126,38 +126,69 @@ class Payment extends ORM_Cached
 		$oReversal->payment_reversal_type_id 	= $oReason->payment_reversal_type_id;
 		$oReversal->payment_reversal_reason_id 	= $iReasonId;
 		
+		// Save the reversal
 		$oReversal->save();
 		
 		// Deal with any surcharge related to the payment
-		$mSurchargeAction = null;
-		if ($this->surcharge_charge_id !== null)
+		$aSurchargeActions	= array();
+		$aCharges			= $this->getSurcharges();
+		foreach ($aCharges as $oCharge)
 		{
-			$oCharge = Charge::getForId($this->surcharge_charge_id);
+			if ($oCharge->Id === null)
+			{
+				continue;
+			}
+			
 			switch ($oCharge->Status)
 			{
 				case CHARGE_INVOICED:
 				case CHARGE_TEMP_INVOICE:
 					if (Invoice_Run::getForId($oCharge->invoice_run_id)->isProductionRun())
 					{
-						// TODO: CR137 -- Charge or adjustment here?
-						/*
-						// Production Invoices
-						// Add a negating Credit
-						$oSurchargeCredit = clone $oCharge;
+						// Invoiced, add a negating adjustment
+						$fAmount	= $oCharge->Amount;
+						$fTax		= 0;
+						if ($oCharge->global_tax_exempt == 0)
+						{
+							// This charge is NOT excemp from the global tax. Calculate tax component and add to amount.
+							$oGlobalTaxType = Tax_Type::getGlobalTaxType();
+							$fTax			= Rate::roundToRatingStandard(((float)$oGlobalTaxType->rate_percentage * $fAmount), 4);
+							$fAmount		= $fAmount + $fTax;
+						}
 						
-						$oSurchargeCredit->CreatedOn		= date("Y-m-d");
-						$oSurchargeCredit->ChargedOn		= date("Y-m-d");
-						$oSurchargeCredit->CreatedBy		= $oReversal->created_employee_id;
-						$oSurchargeCredit->ApprovedBy		= null;
-						$oSurchargeCredit->Nature			= 'CR';
-						$oSurchargeCredit->Description		= "Payment Reversal: ".$oCharge->Description;
-						$oSurchargeCredit->Status			= CHARGE_APPROVED;
-						$oSurchargeCredit->invoice_run_id	= null;
-						$oSurchargeCredit->charge_model_id	= CHARGE_MODEL_CHARGE;
-						$oSurchargeCredit->save();
+						$oAdjustment 								= new Adjustment();
+						$oAdjustment->adjustment_type_id			= Adjustment_Type_System_Config::getAdjustmentTypeForSystemAdjustmentType(ADJUSTMENT_TYPE_SYSTEM_PAYMENT_SURCHARGE_REVERSAL)->id;
+						$oAdjustment->amount						= Rate::roundToRatingStandard($fAmount, 4);
+						$oAdjustment->tax_component					= $fTax;
+						$oAdjustment->balance						= $oAdjustment->amount;
+						$oAdjustment->effective_date				= date('Y-m-d');
+						$oAdjustment->created_employee_id			= Employee::SYSTEM_EMPLOYEE_ID;
+						$oAdjustment->created_datetime				= date('Y-m-d H:i:s');
+						$oAdjustment->reviewed_employee_id			= Employee::SYSTEM_EMPLOYEE_ID;
+						$oAdjustment->reviewed_datetime				= date('Y-m-d H:i:s');
+						$oAdjustment->adjustment_nature_id			= ADJUSTMENT_NATURE_ADJUSTMENT;
+						$oAdjustment->adjustment_review_outcome_id	= Adjustment_Review_Outcome::getForSystemName('APPROVED')->id;
+						$oAdjustment->adjustment_status_id			= ADJUSTMENT_STATUS_APPROVED;
+						$oAdjustment->account_id					= $oCharge->Account;
+						$oAdjustment->service_id					= $oCharge->Service;
+						$oAdjustment->invoice_run_id				= $oCharge->invoice_run_id;
+						$oAdjustment->invoice_id 					= Invoice::getForInvoiceRunAndAccount($oCharge->invoice_run_id, $oCharge->Account)->Id;
+						$oAdjustment->save();
 						
-						$mSurchargeAction = "A new charge has been created to credit the Account: {$oCharge->Account} for the invoiced payment surcharge of \$". number_format(AddGST($oCharge->Amount), 2, ".", "");
-						*/
+						// Process the adjustment
+						$oAccount = Logic_Account::getInstance($oAdjustment->account_id);
+						$oAccount->processDistributable(new Logic_Adjustment($oAdjustment));
+						
+						// Link the adjustment to the charge
+						$oAdjustmentCharge 					= new Adjustment_Charge();
+						$oAdjustmentCharge->adjustment_id 	= $oAdjustment->id;
+						$oAdjustmentCharge->charge_id 		= $oCharge->Id;
+						$oAdjustmentCharge->save();
+						
+						// TODO: CR137 - remove
+						//Log::getLog()->log("... adjustment = $oAdjustment->id (\${$oAdjustment->amount}), adjustment_charge = $oAdjustmentCharge->id");
+						
+						$aSurchargeActions[] = "An adjustment has been created to credit the Account: {$oCharge->Account} for the invoiced payment surcharge of \$". number_format($oAdjustment->amount, 2).".";
 						break;
 					}
 					// If we're a non-Production Invoice Run, then fall through to CHARGE_APPROVED clause
@@ -166,14 +197,14 @@ class Payment extends ORM_Cached
 					// Mark as Deleted
 					$oCharge->Status = CHARGE_DELETED;
 					$oCharge->save();
-	
-					$mSurchargeAction = "The yet-to-be-invoiced surcharge charge of \$". number_format(AddGST($oCharge->Amount), 2, ".", "") ." has been deleted from Account: {$oCharge->Account}";
+					
+					$aSurchargeActions[] = "The yet-to-be-invoiced surcharge charge of \$". number_format(AddGST($oCharge->Amount), 2, ".", "") ." has been deleted from Account: {$oCharge->Account}";
 					break;
 			}
 		}
 		
 		// Add a Note
-		$sReversedChargesClause	= ($mSurchargeAction ? "{$mSurchargeAction}" : '');
+		$sReversedChargesClause	= (count($aSurchargeActions) > 0 ? implode("\n", $aSurchargeActions) : '');
 		$sEmployeeName 			= ($oReversal->created_employee_id ? Employee::getForId($oReversal->created_employee_id)->getName() : 'Administrators');
 		$sDate 					= date("d/m/Y", strtotime($this->paid_date));
 		$oNote					= new Note();
@@ -185,6 +216,30 @@ class Payment extends ORM_Cached
 		$oNote->save();
 		
 		return $oReversal;		
+	}
+	
+	public function getSurcharges()
+	{
+		// Get them
+		$oGetSurcharges	= self::_preparedStatement('selSurcharges');
+		if (false === $oGetSurcharges->Execute(array('payment_id'=>$this->id)))
+		{
+			throw new Exception_Database($oGetSurcharges->Error());
+		}
+		
+		$aCharges = array();
+		while ($aRow = $oGetSurcharges->Fetch())
+		{
+			$aCharges[$aRow['Id']] = new Charge($aRow);
+		}
+		
+		$oSurcharge	= Charge::getForId($this->surcharge_charge_id);
+		if (!isset($aCharges[$oSurcharge->Id]))
+		{
+			$aCharges[$oSurcharge->Id] = $oSurcharge;
+		}
+		
+		return $aCharges;
 	}
 	
 	public static function searchFor($bCountOnly, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null)
@@ -279,7 +334,14 @@ class Payment extends ORM_Cached
 				case 'selAll':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1");
 					break;
-				
+				case 'selSurcharges':
+					$arrPreparedStatements[$strStatement]	= 	new StatementSelect(
+																	"Charge",
+																	"*",
+																	"Nature = 'DR' AND LinkType = ".CHARGE_LINK_PAYMENT." AND LinkId = <payment_id>"
+																);
+					break;
+					
 				// INSERTS
 				case 'insSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);

@@ -1433,7 +1433,7 @@ class Invoice_Run
 	
 	public function isProductionRun()
 	{
-		return in_array($this->invoice_run_id, array(INVOICE_RUN_TYPE_LIVE, INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL, INVOICE_RUN_TYPE_INTERIM_FIRST));
+		return in_array($this->invoice_run_type_id, array(INVOICE_RUN_TYPE_LIVE, INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL, INVOICE_RUN_TYPE_INTERIM_FIRST));
 	}
 	
 	//------------------------------------------------------------------------//
