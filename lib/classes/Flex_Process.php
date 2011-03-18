@@ -4,8 +4,8 @@ class Flex_Process
 	// Registered Processes
 	const	PROCESS_COLLECTION				= 'collection';
 
-        const   PROCESS_BALANCE_REDISTRIBUTION        = 'collections-balance-redistribution';
-        const   PROCESS_COLLECTIONS_PROCESS   = 'collections-batch-process';
+	const   PROCESS_BALANCE_REDISTRIBUTION	= 'collections-balance-redistribution';
+	const   PROCESS_COLLECTIONS_PROCESS		= 'collections-process';
 	
 	const	PROCESS_PAYMENTS_IMPORT			= 'payments-import';
 	const	PROCESS_PAYMENTS_NORMALISATION	= 'payments-normalisation';
