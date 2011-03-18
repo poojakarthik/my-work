@@ -34,7 +34,6 @@ class HtmlTemplate_Collections_Accounts extends FlexHtmlTemplate
 		$this->LoadJavascript('component_collections_account_management');
 		$this->LoadJavascript('popup_collections_event_management_select_events');
 		$this->LoadJavascript('popup_collection_event_action');
-		$this->LoadJavascript('popup_collection_event_tdc');
 		$this->LoadJavascript('page_collections_accounts');
 		$this->LoadJavascript('popup_select_spreadsheet_file_type');
 	}

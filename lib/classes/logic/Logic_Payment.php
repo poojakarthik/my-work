@@ -84,18 +84,89 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 		}
 	}
 
-   public function __get($sField) {
-       
-       switch($sField)
-       {
-           case 'balance':
-           case 'amount':
-               return Rate::roundToRatingStandard($this->oDO->$sField, 4);
-            default:
-                return $this->oDO->$sField;
-       }
+	public function applyPaymentResponses() {
+		/*	There are essentially only two results from this:
+			
+				1: No changes to Payment
+				2: Reverse Payment
+				
+			Reversed Payments can't be unreversed (or reversed again), so just return out
+		*/
+		if ($oLatestPaymentResponse = Payment_Response::getForId($this->oDO->latest_payment_response_id)) {
+			Log::getLog()->log($this->oDO->latest_payment_response_id." - ".$oLatestPaymentResponse->payment_response_type_id);
+			switch ($oLatestPaymentResponse->payment_response_type_id) {
+				case PAYMENT_RESPONSE_TYPE_CONFIRMATION:
+					// Nothing really to do, as you can't un-reverse a payment
+					Log::getLog()->log("Nothing really to do, as you can't un-reverse a payment");
+					break;
+					
+				case PAYMENT_RESPONSE_TYPE_REJECTION:
+					if ($this->oDO->getReversal() === null) {
+						// Not yet reversed, Reverse the Payment
+						$this->reverse(Payment_Reversal_Reason::getForSystemName('DISHONOUR_REVERSAL')->id);
+						Log::getLog()->log("Payment Reversed");
+					}
+					break;
+			}
+		}
+	}
+	
+	public function applySurcharges() {
+		// Get Payment Merchant details
+		if ($oCarrierPaymentType = Carrier_Payment_Type::getForCarrierAndPaymentType($this->oDO->carrier_id, $this->oDO->payment_type_id)) {
+			// Calculate Surcharge
+			$fSurcharge	= $oCarrierPaymentType->calculateSurcharge($this->oDO->amount);
+			
+			// Apply Charge
+			$oCharge = null;
+			if ($fSurcharge > 0.0)
+			{
+				$oChargeType = Charge_Type::getByCode('PMF');
+				
+				$oCharge					= new Charge();
+				$oCharge->AccountGroup		= Account::getForId($this->oDO->account_id)->AccountGroup;
+				$oCharge->Account			= $this->oDO->account_id;
+				$oCharge->CreatedBy			= Employee::SYSTEM_EMPLOYEE_ID;
+				$oCharge->CreatedOn			= date('Y-m-d');
+				$oCharge->ApprovedBy		= Employee::SYSTEM_EMPLOYEE_ID;
+				$oCharge->ChargeType		= $oChargeType->ChargeType;
+				$oCharge->charge_type_id	= $oChargeType->Id;
+				$oCharge->Description		= $oCarrierPaymentType->description
+											.' Surcharge for Payment on '.date('d/m/Y', strtotime($this->PaidOn))
+											.' of $'.(number_format($this->Amount, 2, '.', ''))
+											.' @ '.round($oCarrierPaymentType->surcharge_percent * 100, 2).'%';
+				$oCharge->ChargedOn			= $this->PaidOn;
+				$oCharge->Nature			= 'DR';
+				$oCharge->Amount			= round($fSurcharge, 2);
+				$oCharge->LinkType			= CHARGE_LINK_PAYMENT;
+				$oCharge->LinkId			= $this->oDO->id;
+				$oCharge->Status			= CHARGE_APPROVED;
+				$oCharge->Notes				= '';
+				$oCharge->global_tax_exempt	= 0;
+				
+				$oCharge->save();
+				
+				Log::getLog()->log("Surcharge applied {$oCharge->Id}");
+			}
+			
+			return $oCharge;
+		} else {
+			return null;
+		}
+	}
 
-    }
+	public function __get($sField) {
+	   
+	   switch($sField)
+	   {
+	       case 'balance':
+	       case 'amount':
+	           return Rate::roundToRatingStandard($this->oDO->$sField, 4);
+	        default:
+	            return $this->oDO->$sField;
+	   }
+	
+	}
 
     public function __set($sField, $mValue) {
 

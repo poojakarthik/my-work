@@ -27,6 +27,18 @@ class Payment_Reversal_Reason extends ORM_Cached
 		return 100;
 	}
 	
+	public static function getForSystemName($sSystemName)
+	{
+		$oSelect = self::_preparedStatement('selBySystemName');
+		if ($oSelect->Execute(array('system_name' => $sSystemName)) === false)
+		{
+			throw new Exception_Database("Failed to get reversal reason for system name {$sSystemName}. ".$oSelect->Error());
+		}
+		
+		$oRecord = reset(self::importResult($oSelect->Fetch()));
+		return ($oRecord->id !== null ? $oRecord : null);
+	}
+	
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
 	//---------------------------------------------------------------------------------------------------------------------------------//
@@ -93,6 +105,9 @@ class Payment_Reversal_Reason extends ORM_Cached
 					break;
 				case 'selAll':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
+					break;
+				case 'selBySystemName':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "system_name = <system_name>", NULL, 1);
 					break;
 				
 				// INSERTS

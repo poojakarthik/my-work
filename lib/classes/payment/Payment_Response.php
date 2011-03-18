@@ -133,27 +133,38 @@ class Payment_Response extends ORM_Cached
 			
 			$oPayment->save();
 			
+			// Get logic object for payment
+			$oLogicPayment = new Logic_Payment($oPayment);
+			
 			// Surcharges
-			$oPayment->applySurcharges();
+			$oLogicPayment->applySurcharges();
 			
 			// HACK: Old-style Credit Card Surcharges
 			// This function can return FALSE for both critical and acceptable failures, so
 			// we can't really handle it.
-			AddCreditCardSurcharge($oPayment->Id);
+			AddCreditCardSurcharge($oPayment->id);
 			
-			$this->payment_id	= $oPayment->Id;
+			$this->payment_id = $oPayment->id;
 			$this->save();
+			
+			// Process the payment
+			$oLogicPayment->distribute();
 		}
 		else
 		{
 			// Already associated with a Payment
-			$oPayment	= Payment::getForId($this->payment_id);
+			$oPayment		= Payment::getForId($this->payment_id);
+			$oLogicPayment 	= new Logic_Payment($oPayment);
 		}
 		
+		// Update the latest payment response of the payment
+		$oLogicPayment->latest_payment_response_id = $this->id;
+		$oLogicPayment->save();
+		
 		// Make sure that the Payment is up-to-date
-		$oPayment->applyPaymentResponses();
+		$oLogicPayment->applyPaymentResponses();
 	}
-
+	
 	/**
 	 * _preparedStatement()
 	 *

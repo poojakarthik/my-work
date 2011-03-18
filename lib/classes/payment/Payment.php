@@ -110,8 +110,6 @@ class Payment extends ORM_Cached
 		$oReversal->transaction_reference 	= $this->transaction_reference;
 		$oReversal->amount 					= $this->amount;
 		$oReversal->balance 				= $this->balance;
-		$oReversal->invoice_id 				= $this->invoice_id;
-		$oReversal->invoice_run_id 			= $this->invoice_run_id;
 		
 		// Different fields
 		$oReversal->paid_date 					= date('Y-m-d');
@@ -242,6 +240,22 @@ class Payment extends ORM_Cached
 		return $aCharges;
 	}
 	
+	public function getReversal()
+	{
+		$oSelect = self::_preparedStatement('selReversal');
+		if ($oSelect->Execute(array('payment_id' => $this->id)) === false)
+		{
+			throw new Exception_Database("Failed to get reversal for payment {$this->id}. ".$oSelect->Error());
+		}
+		
+		$aRow = $oSelect->Fetch();
+		if($aRow)
+		{
+			return new self($aRow);
+		}
+		return null;
+	}
+	
 	public static function searchFor($bCountOnly, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null)
 	{
 		$aAliases =	array(
@@ -340,6 +354,9 @@ class Payment extends ORM_Cached
 																	"*",
 																	"Nature = 'DR' AND LinkType = ".CHARGE_LINK_PAYMENT." AND LinkId = <payment_id>"
 																);
+					break;
+				case 'selReversal':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "reversed_payment_id = <payment_id>", null, 1);
 					break;
 					
 				// INSERTS
