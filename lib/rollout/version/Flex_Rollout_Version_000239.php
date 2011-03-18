@@ -1415,6 +1415,34 @@ class Flex_Rollout_Version_000239 extends Flex_Rollout_Version
 				'sRollbackSQL'		=> "DROP TABLE collections_config;",
 				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 			),
+			array
+			(
+				'sDescription'		=> "Table collections_schedule",
+				'sAlterSQL'			=> "CREATE TABLE collections_schedule 
+										(
+										  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+										  day INT UNSIGNED NULL 						COMMENT \"Day of Month\",
+										  month INT UNSIGNED NULL 						COMMENT \"Month of Year\",
+										  year INT UNSIGNED NULL 						COMMENT \"Full Year (e.g. 2011)\",
+										  monday TINYINT UNSIGNED NULL 					COMMENT \"Every Monday\",
+										  tuesday TINYINT UNSIGNED NULL 				COMMENT \"Every Tuesday\",
+										  wednesday TINYINT UNSIGNED NULL 				COMMENT \"Every Wednesday\",
+										  thursday TINYINT UNSIGNED NULL 				COMMENT \"Every Thursday\",
+										  friday TINYINT UNSIGNED NULL 					COMMENT \"Every Friday\",
+										  saturday TINYINT UNSIGNED NULL 				COMMENT \"Every Saturday\",
+										  sunday TINYINT UNSIGNED NULL 					COMMENT \"Every Sunday\",
+										  collection_event_id BIGINT UNSIGNED NULL	 	COMMENT \"(Optional) Event to apply to exclusively\",
+										  is_direct_debit TINYINT UNSIGNED NULL	 		COMMENT \"(Optional) If given apply direct debiting exclusively\",
+										  eligibility TINYINT UNSIGNED NOT NULL 		COMMENT \"1: Collections/Event is eligible, 0: Collections/Event is NOT eligible\",
+										  precedence INT UNSIGNED NOT NULL DEFAULT 0 	COMMENT \"Represents the importance of this schedule rule over any conflicting rules, can be any positive number\",
+										  status_id BIGINT UNSIGNED NOT NULL 			COMMENT \"(FK) status, if inactive will be ignored\",
+										  PRIMARY KEY (id),
+										  CONSTRAINT fk_collections_schedule_status_id    			FOREIGN KEY (status_id)   			REFERENCES status (id)   			ON DELETE RESTRICT    ON UPDATE CASCADE,
+										  CONSTRAINT fk_collections_schedule_collection_event_id    FOREIGN KEY (collection_event_id)   REFERENCES collection_event (id)	ON DELETE RESTRICT    ON UPDATE CASCADE
+										) ENGINE = InnoDB;",
+				'sRollbackSQL'		=> "DROP TABLE collections_schedule;",
+				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+			),
 			
 			//
 			// DEFAULT CONFIGURATION DATA
