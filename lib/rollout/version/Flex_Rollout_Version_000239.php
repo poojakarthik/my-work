@@ -1403,10 +1403,12 @@ class Flex_Rollout_Version_000239 extends Flex_Rollout_Version
 				'sDescription'		=> "Table collections_config",
 				'sAlterSQL'			=> "CREATE TABLE collections_config
 										(
-											id									BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-											created_datetime					DATETIME		NOT NULL,
-											created_employee_id					BIGINT UNSIGNED	NOT NULL,
-											promise_instalment_leniency_days 	INT UNSIGNED 	NOT NULL DEFAULT 0,
+											id										BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+											created_datetime						DATETIME		NOT NULL,
+											created_employee_id						BIGINT UNSIGNED	NOT NULL,
+											promise_instalment_leniency_days 		INT UNSIGNED 	NOT NULL DEFAULT 0,
+											direct_debit_due_date_offset			INT 			NOT NULL DEFAULT 0,
+											promise_direct_debit_due_date_offset	INT 			NOT NULL DEFAULT 0,
 											PRIMARY KEY (id),
 											INDEX in_collections_config_created_datetime (created_datetime),
 											CONSTRAINT fk_collections_config_created_employee_id FOREIGN KEY (created_employee_id) REFERENCES Employee(Id) ON UPDATE CASCADE ON DELETE RESTRICT
