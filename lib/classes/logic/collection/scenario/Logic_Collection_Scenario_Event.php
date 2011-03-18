@@ -22,19 +22,54 @@ class Logic_Collection_Scenario_Event implements DataLogic
         }
     }
 
-    public function getCollectionEvent()
-    {
-        if ($this->oCollectionEvent === null)
-        {
-        	$this->oCollectionEvent = Logic_Collection_Event::getForId($this->oDO->collection_event_id);
-        }
-        return $this->oCollectionEvent;
-    }    
-    
+   public function getEventName()
+   {
+		return $this->getCollectionEvent()->name;
+   }
+
+	/**
+	 * this one returns the invocation ID that is set on the collection_scenario_collection_event level.
+	 * This might not be the actual invocation id, as this is determined in dependence on other factors, as encoded in the getInvocationId method below.
+	 * @return <type>
+	 */
     public function getScenarioEventInvocationId()
     {
         return $this->collection_event_invocation_id;
     }
+
+	        /**
+     *  Here's the hierarchy, each earlier level overrides the later ones:
+     * 1 Collection_Event_Type_Implementation
+     * 2 Collection_Event_Type
+     * 3 Collection_Scenario_Collection_Event
+     * 4 Collection_Event
+     *
+     * If the invocation is not defined on any of these levels we throw a configuration exception
+     *
+     */
+    public function getInvocationId()
+    {
+
+        $oEvent =  $this->getCollectionEvent();
+        if ($oEvent->getInvocationId(true)!==null)
+                return $oEvent->getInvocationId(true);
+
+		$iInvocation = $this->getScenarioEventInvocationId();
+		if ($iInvocation !== null)
+			return $iInvocation;
+
+       if ($oEvent->getInvocationId(false)!==null)
+                return $oEvent->getInvocationId();
+        throw new Exception('Configuration Error: no invocation method defined scenario event with id '.$this->id);
+
+    }
+
+	public function getCollectionEvent()
+	{
+		if ($this->oCollectionEvent === NULL)
+				$this->oCollectionEvent = Logic_Collection_Event::getForId ($this->collection_event_id);
+		return $this->oCollectionEvent;
+	}
 
     public static function getForId($iId)
     {

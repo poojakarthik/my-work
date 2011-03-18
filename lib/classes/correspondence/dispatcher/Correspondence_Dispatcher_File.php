@@ -41,7 +41,8 @@ abstract class Correspondence_Dispatcher_File extends Resource_Type_File_Export 
 			$this->_oRun 				= $oRun;
 			$this->_iBatchId 			= $iBatchId;
 			$this->iCorrespondenceCount	= $this->export();
-			$this->render();
+			if ($this->iCorrespondenceCount > 0)
+			    $this->render();
 		}
 	}
 

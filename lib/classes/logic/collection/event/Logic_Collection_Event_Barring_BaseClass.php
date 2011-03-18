@@ -14,13 +14,16 @@ abstract class Logic_Collection_Event_Barring_BaseClass extends Logic_Collection
 
         if ($mDefinition instanceof Logic_Collection_Event_Instance)
         {
-           $this->oCollectionEventInstance = $mDefinition;
-           $this->oParentDO = Collection_Event::getForId($mDefinition->collection_event_id);
-
+			$this->oCollectionEventInstance = $mDefinition;
+			$this->oParentDO = Collection_Event::getForId($mDefinition->collection_event_id);
         }
+		else if (is_numeric($mDefinition))
+		{
+			$this->oParentDO = Collection_Event::getForId($mDefinition);
+		}
         else
         {
-           throw new Exception ('Bad definition of Logic_Collection_Event_Action');
+           throw new Exception ('Bad definition of Logic_Collection_Event_Barring');
         }
     }
 

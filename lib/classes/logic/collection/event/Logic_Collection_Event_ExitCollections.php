@@ -6,7 +6,7 @@
  */
 class Logic_Collection_Event_ExitCollections extends Logic_Collection_Event 
 {
-    public function __construct($oEventInstance)
+    public function __construct($oEventInstance = null)
     {
         $iExitEventTypeId = Collection_Event_Type::getForSystmName('EXIT_COLLECTIONS')->id;
 
@@ -53,6 +53,13 @@ class Logic_Collection_Event_ExitCollections extends Logic_Collection_Event
         {
             $oInstance->complete();
         }
+    }
+
+	 public function __get($sField)
+    {
+
+		return $this->oParentDO->$sField;
+
     }
 }
 ?>

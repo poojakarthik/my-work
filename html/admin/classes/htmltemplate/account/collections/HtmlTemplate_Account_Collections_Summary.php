@@ -29,6 +29,7 @@ class HtmlTemplate_Account_Collections_Summary extends FlexHtmlTemplate
 		$this->LoadJavascript('popup_account_promise_edit');
 		$this->LoadJavascript('popup_account_promise_edit_schedule');
 		$this->LoadJavascript('popup_account_promise_cancel');
+		$this->LoadJavascript('popup_collections_scenario_event_view');
 	}
 
 	public function Render()

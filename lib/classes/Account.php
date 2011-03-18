@@ -387,13 +387,13 @@ class Account
                                 JOIN account_status ast ON (a.Archived = ast.id AND ast.send_late_notice = 1
                                                             AND a.Id  NOT in(select account_id from collection_suspension cs where cs.start_datetime< now() AND cs.effective_end_datetime is null)
                                                             )
-                                JOIN collectable c ON (a.Id = c.account_id AND c.balance>0 )
+                                JOIN collectable c ON (a.Id = c.account_id AND c.balance>0 AND c.due_date < NOW())
                                 LEFT JOIN collection_promise cp ON (c.collection_promise_id = cp.id )
                                 WHERE  (c.collection_promise_id is null OR cp.completed_datetime is not null)
                                  $sExcludeSql
 
 
-                        ) accounts LIMIT 2000
+                        ) accounts 
             ";
 
             $oQuery = new Query();
@@ -499,7 +499,7 @@ class Account
                     //1 create the temporary table, and populate it with all collectables that are not part of a promise
                     $oQuery = new Query();
                     $sSQL = "   CREATE  TEMPORARY TABLE tmp_payable
-                                SELECT due_date, amount, c.account_id, balance
+                                SELECT  due_date, amount, c.account_id, balance
                                 FROM collectable c
                                 LEFT JOIN collection_promise cp ON ( c.collection_promise_id = cp.id)
                                 WHERE ( c.collection_promise_id IS NULL OR cp.completed_datetime is NOT NULL )";
@@ -560,7 +560,7 @@ class Account
                                 MAX(IF(p.balance > 0 AND p.balance < p.amount, p.due_date, NULL))  AS max_partially_paid,
                                 MAX(IF(p.balance = p.amount, p.due_date, NULL))                    AS max_fully_unpaid
                                 FROM     	tmp_payable p
-                                WHERE p.amount <> 0
+                                WHERE p.amount > 0
                                 GROUP BY 	p.account_id
                                 HAVING  	min_partially_paid 	!= max_partially_paid
                                                 OR max_fully_paid 	> min_partially_paid
@@ -580,7 +580,7 @@ class Account
                     $sSQL = "   SELECT DISTINCT c.account_id as account_id
                                 FROM collectable c
                                 JOIN collectable c2 ON (c2.account_id = c.account_id  AND c2.balance > 0 AND c.balance < 0)
-                                LIMIT 5";
+                                ";
                     $mResult = $oQuery->Execute($sSQL);
                     if ($mResult)
                     {
@@ -594,9 +594,8 @@ class Account
               case Account::BALANCE_REDISTRIBUTION_FORCED:
                    $sSQL = "    SELECT DISTINCT a.*
                                 FROM Account a
-                                JOIN account_status ast ON (a.Archived = ast.id AND ast.send_late_notice = 1)
-				LIMIT 500 
-                               ";
+                                WHERE a.Archived <> ".ACCOUNT_STATUS_ARCHIVED;
+                              
 
                     $oQuery = new Query();
 

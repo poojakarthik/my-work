@@ -41,10 +41,10 @@ class Logic_Collection_Scenario_Instance
 	return $aInstances;
     }
 
-    public function getNextScheduledEvent($oMostRecentCollectionEvent, $sDueDate)
+    public function getNextScheduledEvent($oMostRecentCollectionEvent, $sDueDate, $bIgnoreDayOffsetRules = FALSE)
     {
     	//$iDayOffset = Flex_Date::difference($sDueDate,  Data_Source_Time::currentDate(), 'd');
-    	return $this->oScenario->getEventToTrigger( $oMostRecentCollectionEvent,  $sDueDate);
+    	return $this->oScenario->getEventToTrigger( $oMostRecentCollectionEvent,  $sDueDate, $bIgnoreDayOffsetRules);
     }
     
     public function __get($sField)

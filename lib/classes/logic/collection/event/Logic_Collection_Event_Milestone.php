@@ -18,6 +18,11 @@ class Logic_Collection_Event_Milestone extends Logic_Collection_Event
            $this->oParentDO = Collection_Event::getForId($mDefinition->collection_event_id);
 
         }
+		else if (is_numeric($mDefinition))
+		{
+			$this->oParentDO = Collection_Event::getForId($mDefinition);
+			
+		}
     }    
 
 

@@ -766,6 +766,8 @@ class Correspondence_Logic_Run
 					try
 					{
 						$aDispatchers = $oRun->getCarrierModules();
+
+
 						foreach ($aDispatchers as $oDispatcher)
 						{
 							$oDispatcher->exportRun($oRun, $oBatch->id);

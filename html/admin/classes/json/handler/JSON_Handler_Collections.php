@@ -502,33 +502,33 @@ class JSON_Handler_Collections extends JSON_Handler
 		$bUserIsGod = Employee::getForId(Flex::getUserId())->isGod;
 		try
 		{
-			$sStartDate			= date('Y-m-d H:i:s', floor($iStartMilliseconds / 1000));
-			$sEndDate			= date('Y-m-d H:i:s', floor($iEndMilliseconds / 1000));
-			$sBetween			= "'{$sStartDate}' AND '{$sEndDate}'";
-			$oQuery 			= new Query();
-			$aUnsortedEvents	= array();
-			
-			// Promise Instalments
-			$mPromiseInstalmentResult = $oQuery->Execute("	SELECT 	cpi.* 
+		    $sStartDate			= date('Y-m-d H:i:s', floor($iStartMilliseconds / 1000));
+		    $sEndDate			= date('Y-m-d H:i:s', floor($iEndMilliseconds / 1000));
+		    $sBetween			= "'{$sStartDate}' AND '{$sEndDate}'";
+		    $oQuery 			= new Query();
+		    $aUnsortedEvents	= array();
+
+		    // Promise Instalments
+		    $mPromiseInstalmentResult = $oQuery->Execute("	SELECT 	cpi.*
 															FROM 	collection_promise_instalment cpi
 															JOIN 	collection_promise cp ON (cp.id = cpi.collection_promise_id)
 															WHERE 	cpi.due_date BETWEEN {$sBetween}
 															AND 	cp.account_id = {$iAccountId}
-															AND		(cp.collection_promise_completion_id IS NULL 
+															AND		(cp.collection_promise_completion_id IS NULL
 																	OR cp.collection_promise_completion_id = ".COLLECTION_PROMISE_COMPLETION_KEPT.");");
-			if ($mPromiseInstalmentResult === false)
-			{
-				throw new Exception("Failed to get promise instalment summary. ".$oQuery->Error());
-			}
-			
-			// Create unsorted event items for each row
-			while ($aRow = $mPromiseInstalmentResult->fetch_assoc())
-			{
-				self::_createAccountEventSummaryItems($aRow, 'collection_promise_instalment', $aUnsortedEvents);
-			}
-			
-			// Event instances
-			$mEventInstanceResult = $oQuery->Execute("	SELECT 	aceh.*, ce.name AS collection_event_name
+		    if ($mPromiseInstalmentResult === false)
+		    {
+			    throw new Exception("Failed to get promise instalment summary. ".$oQuery->Error());
+		    }
+
+		    // Create unsorted event items for each row
+		    while ($aRow = $mPromiseInstalmentResult->fetch_assoc())
+		    {
+			    self::_createAccountEventSummaryItems($aRow, 'collection_promise_instalment', $aUnsortedEvents);
+		    }
+
+		    // Event instances
+		    $mEventInstanceResult = $oQuery->Execute("	SELECT 	aceh.*, ce.name AS collection_event_name
 														FROM 	account_collection_event_history aceh
 														JOIN	collection_event ce ON (ce.id = aceh.collection_event_id)
 														WHERE 	(
@@ -536,52 +536,80 @@ class JSON_Handler_Collections extends JSON_Handler
 																	OR aceh.completed_datetime BETWEEN {$sBetween}
 																)
 														AND 	aceh.account_id = {$iAccountId};");
-			if ($mEventInstanceResult === false)
+		    if ($mEventInstanceResult === false)
+		    {
+			    throw new Exception("Failed to get completed event instance summary. ".$oQuery->Error());
+		    }
+
+		    // Create unsorted event items for each row (one for completed_datetime, one for scheduled_datetime if different)
+		    while ($aRow = $mEventInstanceResult->fetch_assoc())
+		    {
+			    self::_createAccountEventSummaryItems($aRow, 'account_collection_event_history', $aUnsortedEvents);
+		    }
+			$oAccount = Logic_Account::getInstance($iAccountId);
+			$oScenario  = $oAccount->getCurrentScenarioInstance()->getScenario();
+			$oLastScheduledEvent = $oAccount->getMostRecentCollectionEventInstance();
+			$bIsIncollections = $oAccount->isCurrentlyInCollections();
+			$oEvent = $oAccount->getNextCollectionScenarioEvent(TRUE);
+
+			if ($bIsIncollections && $oScenario->id == $oLastScheduledEvent->getScenario()->id)
 			{
-				throw new Exception("Failed to get completed event instance summary. ".$oQuery->Error());
+				$sDateToOffset = $oLastScheduledEvent->completed_datetime != NULL ? $oLastScheduledEvent->completed_datetime : Data_Source_Time::currentTimestamp();
 			}
-			
-			// Create unsorted event items for each row (one for completed_datetime, one for scheduled_datetime if different)
-			while ($aRow = $mEventInstanceResult->fetch_assoc())
+			else
 			{
-				self::_createAccountEventSummaryItems($aRow, 'account_collection_event_history', $aUnsortedEvents);
+				$sDateToOffset = $oAccount->getCollectionsStartDate();
 			}
+
+			$iDateToOffset = strtotime($sDateToOffset);
+			$iNextEventDate = max (strtotime("+$oEvent->day_offset day", $iDateToOffset), time());
+			$sNextEventDate = date ("Y-m-d", $iNextEventDate);
+			$bOverdueOnNextEventDate = $oScenario->evaluateThresholdCriterion($oAccount->getOverDueCollectableAmount($sNextEventDate),$oAccount->getOverdueCollectableBalance($sNextEventDate));
 			
-			// Suspensions
-			$mSuspensionResult = $oQuery->Execute("	SELECT 	cs.* 
-													FROM 	collection_suspension cs
-													WHERE 	(
-																cs.proposed_end_datetime BETWEEN {$sBetween}
-																OR cs.start_datetime BETWEEN {$sBetween}
-													 			OR cs.effective_end_datetime BETWEEN {$sBetween}
-															)
-													AND 	cs.account_id = {$iAccountId};");
-			if ($mSuspensionResult === false)
+			if ($bOverdueOnNextEventDate)
 			{
-				throw new Exception("Failed to get suspension summary. ".$oQuery->Error());
+				$aScenarioEvent = array();
+				$aScenarioEvent['collection_event_invocation_id'] = $oEvent->getInvocationId();
+				$aScenarioEvent['collection_event_name'] = "Next Collections Event: ".$oEvent->getEventName();
+				$aScenarioEvent['id'] = $oEvent->id;
+				$aUnsortedEvents[$sNextEventDate] = array('collection_scenario_collection_event' => array($aScenarioEvent));
 			}
-			
-			// Create unsorted event items for each row (one for start_datetime, one for proposed_datetime if not finished, otherwise effective_end_datetime)
-			while ($aRow = $mSuspensionResult->fetch_assoc())
-			{
-				self::_createAccountEventSummaryItems($aRow, 'collection_suspension', $aUnsortedEvents);
-			}
-			
-			// Sort the dates
-			$aDates = array_keys($aUnsortedEvents);
-			sort($aDates);
-			
-			// Create new sorted event hash
-			$aSortedEvents = array();
-			foreach ($aDates as $sDate)
-			{
-				$aSortedEvents[$sDate] = $aUnsortedEvents[$sDate];
-			}
-			
-			return	array(
-						'bSuccess' 	=> true, 
-						'aEvents'	=> $aSortedEvents
-					);
+
+		    // Suspensions
+		    $mSuspensionResult = $oQuery->Execute("	SELECT 	cs.*
+												    FROM 	collection_suspension cs
+												    WHERE 	(
+															    cs.proposed_end_datetime BETWEEN {$sBetween}
+															    OR cs.start_datetime BETWEEN {$sBetween}
+															    OR cs.effective_end_datetime BETWEEN {$sBetween}
+														    )
+												    AND 	cs.account_id = {$iAccountId};");
+		    if ($mSuspensionResult === false)
+		    {
+			    throw new Exception("Failed to get suspension summary. ".$oQuery->Error());
+		    }
+
+		    // Create unsorted event items for each row (one for start_datetime, one for proposed_datetime if not finished, otherwise effective_end_datetime)
+		    while ($aRow = $mSuspensionResult->fetch_assoc())
+		    {
+			    self::_createAccountEventSummaryItems($aRow, 'collection_suspension', $aUnsortedEvents);
+		    }
+
+		    // Sort the dates
+		    $aDates = array_keys($aUnsortedEvents);
+		    sort($aDates);
+
+		    // Create new sorted event hash
+		    $aSortedEvents = array();
+		    foreach ($aDates as $sDate)
+		    {
+			    $aSortedEvents[$sDate] = $aUnsortedEvents[$sDate];
+		    }
+
+		    return	array(
+					    'bSuccess' 	=> true,
+					    'aEvents'	=> $aSortedEvents
+				    );
 		}
 		catch (Exception $oException)
 		{

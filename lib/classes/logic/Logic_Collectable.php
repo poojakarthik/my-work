@@ -68,13 +68,13 @@ class Logic_Collectable implements DataLogic , Logic_Distributable,  Logic_Payab
     }
 
 
-    public static function getForAccount($oAccount, $bOnlyWithBalanceOwing = true, $iBalanceType = self::DEBIT)
+    public static function getForAccount($oAccount, $bOnlyWithBalanceOwing = true, $iBalanceType = self::DEBIT, $bBypassCache = false)
     {
 	$aORMs = Collectable::getForAccount($oAccount->Id, $bOnlyWithBalanceOwing, $iBalanceType);
         $aResult = array();
         foreach ($aORMs as $oORM)
         {
-            $aResult[] = self::getInstance($oORM);
+            $aResult[] = self::getInstance($oORM, $bBypassCache);
         }
 
         return $aResult;

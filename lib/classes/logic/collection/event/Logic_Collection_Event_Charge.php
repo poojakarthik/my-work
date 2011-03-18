@@ -18,6 +18,11 @@ class Logic_Collection_Event_Charge extends Logic_Collection_Event
            $this->oParentDO = Collection_Event::getForId($mDefinition->collection_event_id);
            $this->oDO = Collection_Event_Charge::getForCollectionEventId($this->oParentDO->id);
         }
+		else if (is_numeric($mDefinition))
+		{
+			$this->oParentDO = Collection_Event::getForId($mDefinition);
+			$this->oDO = Collection_Event_Charge::getForCollectionEventId($this->oParentDO->id);
+		}
 
         else
         {
@@ -73,9 +78,16 @@ class Logic_Collection_Event_Charge extends Logic_Collection_Event
         }
     }
 
-    public function __get($sField)
+     public function __get($sField)
     {
-        return $this->oDO->$sField;
+        switch ($sField)
+		{
+			case 'name':
+			case 'collection_event_type_id':
+				return $this->oParentDO->$sField;
+			default:
+				return $this->oDO->$sField;
+		}
     }
 }
 ?>

@@ -166,6 +166,19 @@ var Component_Account_Collections = Class.create(
 						iRowCount++;
 					}
 				}
+
+				// Event instances
+				var aEvents = oResponse.aEvents[sDate].collection_scenario_collection_event;
+				if (aEvents)
+				{
+					for (var i = 0; i < aEvents.length; i++)
+					{
+						
+						this._oEventsTBody.appendChild(this._createScenarioEventItem(sDate, aEvents[i]));
+						iRowCount++;
+					}
+				}
+
 				
 				// Suspensions
 				var aSuspensions = oResponse.aEvents[sDate].collection_suspension;
@@ -347,9 +360,37 @@ var Component_Account_Collections = Class.create(
 					[{sIconSrc: Component_Account_Collections.VIEW_IMAGE_SOURCE, sAlt: 'View Instalment Details', fnOnClick: this._viewPromiseInstalmentDetails.bind(this, oData)}]
 				);
 	},
+
+	_createScenarioEventItem : function (sDate, oData)
+	{
+
+		
+		// Different completion icon, depending on the event invocation
+		if (oData.collection_event_invocation_id == $CONSTANT.COLLECTION_EVENT_INVOCATION_MANUAL)
+		{
+			sIcon 		= Component_Account_Collections.EVENT_COMPLETED_MANUAL_IMAGE_SOURCE;
+			sIconAlt	= 'Completed Manually';
+		}
+		else
+		{
+			sIcon 		= Component_Account_Collections.EVENT_COMPLETED_AUTO_IMAGE_SOURCE;
+			sIconAlt	= 'Completed Automatically';
+		}
+
+		sDetails = oData.collection_event_name;
+
+		return	this._createEventItem(
+					sDate,
+					sIcon,
+					sIconAlt,
+					sDetails,
+					[{sIconSrc: Component_Account_Collections.VIEW_IMAGE_SOURCE, sAlt: 'View Event Details', fnOnClick: this._viewScenarioEventDetails.bind(this, oData)}]
+				);
+	},
 	
 	_createEventInstanceEventItem : function(sDate, oData)
 	{
+		
 		var sDetails 	= '';
 		var sIcon		= null;
 		var sIconAlt	= null;
@@ -488,9 +529,15 @@ var Component_Account_Collections = Class.create(
 	{
 		new Popup_Collections_Promise_Instalment_View(oData.id);
 	},
+
+	_viewScenarioEventDetails : function (oData)
+	{
+		new Popup_Collections_Scenario_Event_View(oData.id);
+	},
 	
 	_viewEventDetails : function(oData)
 	{
+		debugger;
 		new Popup_Collections_Event_Instance_View(oData.id);
 	},
 	

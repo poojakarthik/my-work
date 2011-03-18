@@ -17,16 +17,11 @@ class Logic_Collection_Event_Correspondence extends Logic_Collection_Event
            $this->oParentDO = Collection_Event::getForId($mDefinition->collection_event_id);
            $this->oDO = Collection_Event_Correspondence::getForCollectionEventId($this->oParentDO->id);
         }
-//        else if (get_class($mDefinition) == 'Collection_Event_Correspondence')
-//        {
-//           $this->oDO = $mDefinition;
-//           // TODO: Implement further
-//        }
-//        else if (get_class($mDefinition) == 'Collection_Event')
-//        {
-//           $this->oParentDO	= $mDefinition;
-//           $this->oDO 		= Collection_Event_Correspondence::getForCollectionEventId($this->oParentDO->id);
-//        }
+       else if (is_numeric($mDefinition))
+		{
+			$this->oParentDO = Collection_Event::getForId($mDefinition);
+			$this->oDO = Collection_Event_Correspondence::getForCollectionEventId($this->oParentDO->id);
+		}
         else
         {
            throw new Exception('bad parameter passed into Collection_Logic_Event_Correspondence constructor');
@@ -40,7 +35,14 @@ class Logic_Collection_Event_Correspondence extends Logic_Collection_Event
 
     public function __get($sField)
     {
-        return $this->oDO->$sField;
+        switch ($sField)
+		{
+			case 'name':
+			case 'collection_event_type_id':
+				return $this->oParentDO->$sField;
+			default:
+				return $this->oDO->$sField;
+		}
     }
 
     private static function buildXML($iDocumentTemplateId, $aEventInstances)

@@ -10,6 +10,43 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		Log::registerLog('JSON_Handler_Debug', Log::LOG_TYPE_STRING, $this->_JSONDebug);
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
+
+	public function getScenarioEventForId($iId)
+	{
+		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		try
+		{
+			$aInstances = array();
+
+			// Determine action_type_id
+			$oEventInstance	= new Logic_Collection_Scenario_Event($iId);
+			//$oEvent 		= Collection_Event::getForId($oEventInstance->collection_event_id);
+			$oEvent = $oEventInstance->getCollectionEvent();
+			$oEventType 	= Collection_Event_Type::getForId($oEvent->collection_event_type_id);
+
+
+			$aInstance = $oEventInstance->toArray();
+			$aInstance['collection_event']							= $oEventInstance->toArray();
+			$aInstance['collection_event']['detail']				= $oEvent->toArray();
+			$aInstance['collection_event']['collection_event_type']	= $oEventType->toArray();
+			$aInstance['collection_event_invocation_id']	= $oEventInstance->getInvocationId();
+			$aInstances[$iId] = $aInstance;
+
+
+			return	array(
+						'bSuccess'	=> true,
+						'aResults'	=> $aInstances
+					);
+		}
+		catch (Exception $e)
+		{
+			$sMessage	= $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
+			return 	array(
+						'bSuccess'	=> false,
+						'sMessage'	=> $sMessage
+					);
+		}
+	}
 	
 	public function getDataset($bCountOnly=false, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null)
 	{

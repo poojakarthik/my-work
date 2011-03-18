@@ -225,8 +225,13 @@ class Application_Handler_Developer extends Application_Handler
           //  }
             try
             {
-                 $aAccounts = Account::getForBalanceRedistribution(Account::BALANCE_REDISTRIBUTION_FORCED);
-                Logic_Account::batchProcessBalanceRedistribution($aAccounts);
+                $aAccounts = Account::getForBalanceRedistribution(1000155701);
+		foreach ($aAccounts as $oAccount)
+		{
+		    Log::getLog()->log($oAccount->Id);
+		}
+		
+		Logic_Account::batchRedistributeBalances($aAccounts);
               // $oDataAccess->TransactionRollback();
             }
             catch(Exception $e)
@@ -236,6 +241,12 @@ class Application_Handler_Developer extends Application_Handler
             }
             die;
         }
+
+	public function dispatcherLoadTest()
+	{
+	    Correspondence_Logic_Run::sendWaitingRuns();
+	    die;
+	}
 
         public function getPayablesTest()
         {
@@ -286,7 +297,7 @@ class Application_Handler_Developer extends Application_Handler
                             try
                             {
                                 $aPromises =  Logic_Collection_Promise::getActivePromises();
-                                Logic_Collection_Promise::batchProcess($aPromises);
+                               // Logic_Collection_Promise::batchProcess($aPromises);
                             }
                             catch (Exception $e)
                             {
@@ -300,7 +311,7 @@ class Application_Handler_Developer extends Application_Handler
                             try
                             {
                                 $aActiveSuspensions = Collection_Suspension::getActive();
-                                Logic_Collection_Suspension::batchProcess($aActiveSuspensions);
+                              //  Logic_Collection_Suspension::batchProcess($aActiveSuspensions);
                             }
                             catch(Exception $e)
                             {
@@ -318,7 +329,7 @@ class Application_Handler_Developer extends Application_Handler
                             {
                                  //Log::getLog()->log('&&&&&&&&& Accounts Batch Process Iteration '.$iAccountsBatchProcessIteration++.'  &&&&&&&&&&&&&');
                                 $aExcludedAccounts = Logic_Collection_BatchProcess_Report::getAccountsWithExceptions();
-                                $aAccounts = array(Logic_Account::getInstance(1000008713));//Logic_Account::getForBatchCollectionProcess($aExcludedAccounts);
+                                $aAccounts = array(Logic_Account::getInstance(1000165623));//Logic_Account::getForBatchCollectionProcess($aExcludedAccounts);
                                 $iCompletedInstances = Logic_Account::batchProcessCollections($aAccounts);
 
                                 while ($iCompletedInstances > 0)

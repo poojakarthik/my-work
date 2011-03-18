@@ -14,7 +14,8 @@ abstract class Logic_Collection_Event implements DataLogic
 
     final public function invoke($aParameters = null)
     {
-    	// TODO: Put all the common logic in this function
+    	if ($this->oCollectionEventInstance === NULL)
+				throw new Exception("Cannot invoke an event unless there is an actual Collection Event Instance (account_collection_event_history).");
        
         $this->_invoke($aParameters);
     	////Log::getLog()->log("Event being invoked: ".get_class($this));
@@ -200,7 +201,7 @@ abstract class Logic_Collection_Event implements DataLogic
     {    	
         $oEventORM	= Collection_Event::getForId($iEventId);
         $sClassName	= self::getClassNameForId($iEventId);
-        return new $sClassName($oEventORM);
+        return new $sClassName($iEventId);
     }
     
     public function save()
@@ -210,7 +211,7 @@ abstract class Logic_Collection_Event implements DataLogic
 
 	public function toArray()
 	{
-		// Not sure if this is needed
+		return $this->oParentDO->toArray();
 	}
 
 	public function __get($sField)

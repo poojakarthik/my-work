@@ -83,10 +83,10 @@ class Logic_Account implements DataLogic
      * instead of $iOffset the function parameter should be '$sNow = null'.
      * This will be much cleaner, and a way in which the due date can be calculated against any point in time.
      */
-    public function getOverdueCollectableBalance($sNow = null)
+    public function getOverdueCollectableBalance($sNow = null, $bBypassCache = false)
     {
 
-       $aCollectables = $this->getCollectables(Logic_Collectable::DEBIT);
+       $aCollectables = $this->getCollectables(Logic_Collectable::DEBIT, $bBypassCache);
 
 	$fTotal = 0;
 	foreach($aCollectables as $oCollectable)
@@ -201,25 +201,24 @@ class Logic_Account implements DataLogic
      * @return Scenario Event object or NULL if none qualifies
      */
 
-    private function getNextCollectionScenarioEvent()
+    public function getNextCollectionScenarioEvent($bIgnoreDayOffsetRules = FALSE)
     {
-            $oMostRecentEventInstance 		= $this->getMostRecentCollectionEventInstance();
-           if ($oMostRecentEventInstance!== null && $oMostRecentEventInstance->completed_datetime === null)
-           {
-               $this->bPreviousEventNotCompleted = true;
-               return null;
-           }
-           else
-           {
-               $this->bPreviousEventNotCompleted = false;
-           }
-            $oScenario	= $this->getCurrentScenarioInstance();
-            $oNextEvent = $oScenario->getNextScheduledEvent($oMostRecentEventInstance,  $this->getCollectionsStartDate());
+		$oMostRecentEventInstance 		= $this->getMostRecentCollectionEventInstance();
+		if ($oMostRecentEventInstance!== null && $oMostRecentEventInstance->completed_datetime === null)
+		{
+		   $this->bPreviousEventNotCompleted = true;
+		   return null;
+		}
+		else
+		{
+		   $this->bPreviousEventNotCompleted = false;
+		}
+		$oScenario	= $this->getCurrentScenarioInstance();
+		$oNextEvent = $oScenario->getNextScheduledEvent($oMostRecentEventInstance,  $this->getCollectionsStartDate(), $bIgnoreDayOffsetRules);
 
-            $this->bNoNextEventFound = $oNextEvent === null ? true : false;
+		$this->bNoNextEventFound = $oNextEvent === null ? true : false;
 
-            return $oNextEvent;
-
+		return $oNextEvent;
 
     }
 
@@ -252,33 +251,33 @@ class Logic_Account implements DataLogic
 
     public function shouldCurrentlyBeInCollections()
     {
-	if ($this->isInSuspension())
-	    return false;
+		if ($this->isInSuspension())
+			return false;
 
-	 $oScenario  = $this->getCurrentScenarioInstance()->getScenario();
+		 $oScenario  = $this->getCurrentScenarioInstance()->getScenario();
 
-	 //if they are not in collections
-	 if (!$this->isCurrentlyInCollections())
-	 {
-	     $mNow = date('Y-m-d', strtotime("+$oScenario->day_offset days", time()));
-	     return $oScenario->evaluateThresholdCriterion($this->getOverDueCollectableAmount($mNow),$this->getOverdueCollectableBalance($mNow));
-	 }
-	 //if they are in collections
-	 else
-	 {
-	     //first we're going to determine whether the collectable(s) that triggered the account into collections continue to warrant them being in collections
-	     //this step will cover the situation where there is a scenario offset,
-	     //and the current date is after the start of the collections process but before the due date of the collectable(s) that triggered the start of the collections process
-	     $iCollectionsStart = strtotime($this->getStartOfCollectionsEventInstance()->scheduled_datetime);
-	     $iNow = strtotime("+$oScenario->day_offset days",$iCollectionsStart );
-	     $sNow = date('Y-m-d', $iNow );
-	     if ($oScenario->evaluateThresholdCriterion($this->getOverDueCollectableAmount($sNow),$this->getOverdueCollectableBalance($sNow)))
-	         return true;
+		 //if they are not in collections
+		 if (!$this->isCurrentlyInCollections())
+		 {
+			 $mNow = date('Y-m-d', strtotime("+$oScenario->day_offset days", time()));
+			 return $oScenario->evaluateThresholdCriterion($this->getOverDueCollectableAmount($mNow),$this->getOverdueCollectableBalance($mNow));
+		 }
+		 //if they are in collections
+		 else
+		 {
+			 //first we're going to determine whether the collectable(s) that triggered the account into collections continue to warrant them being in collections
+			 //this step will cover the situation where there is a scenario offset,
+			 //and the current date is after the start of the collections process but before the due date of the collectable(s) that triggered the start of the collections process
+			 $iCollectionsStart = strtotime($this->getStartOfCollectionsEventInstance()->scheduled_datetime);
+			 $iNow = strtotime("+$oScenario->day_offset days",$iCollectionsStart );
+			 $sNow = date('Y-m-d', $iNow );
+			 if ($oScenario->evaluateThresholdCriterion($this->getOverDueCollectableAmount($sNow),$this->getOverdueCollectableBalance($sNow)))
+				 return true;
 
-	     //If this is not the case, we will now check if there are any other collectables that are overdue, which taken into account will keep the account in collections
-	     $mNow = self::SCENARIO_OFFSET_USED_TO_DETERMINE_EXIT_COLLECTIONS ? date('Y-m-d', strtotime("+$oScenario->day_offset days", time())) : Data_Source_Time::currentDate();
-	     return $oScenario->evaluateThresholdCriterion($this->getOverDueCollectableAmount($mNow),$this->getOverdueCollectableBalance($mNow));
-	 }
+			 //If this is not the case, we will now check if there are any other collectables that are overdue, which taken into account will keep the account in collections
+			 $mNow = self::SCENARIO_OFFSET_USED_TO_DETERMINE_EXIT_COLLECTIONS ? date('Y-m-d', strtotime("+$oScenario->day_offset days", time())) : Data_Source_Time::currentDate();
+			 return $oScenario->evaluateThresholdCriterion($this->getOverDueCollectableAmount($mNow),$this->getOverdueCollectableBalance($mNow));
+		 }
     }
 
     public function shouldCurrentlyBeInCollectionsOldAndIncorrect()
@@ -389,12 +388,12 @@ class Logic_Account implements DataLogic
      * @param <type> to specify either debit or credit collectables
      * @return all collectables of the specified type with balance > 0
      */
-    public function getCollectables($iType = Logic_Collectable::DEBIT)
+    public function getCollectables($iType = Logic_Collectable::DEBIT, $bBypassCache = false)
     {
-        if ($this->aCollectables === null)
+        if ($this->aCollectables === null || $bBypassCache)
         {
-            $this->aCollectables[Logic_Collectable::DEBIT] = Logic_Collectable::getForAccount($this, true, Logic_Collectable::DEBIT);
-            $this->aCollectables[Logic_Collectable::CREDIT] = Logic_Collectable::getForAccount($this, true,Logic_Collectable::CREDIT );
+            $this->aCollectables[Logic_Collectable::DEBIT] = Logic_Collectable::getForAccount($this, true, Logic_Collectable::DEBIT, $bBypassCache);
+            $this->aCollectables[Logic_Collectable::CREDIT] = Logic_Collectable::getForAccount($this, true,Logic_Collectable::CREDIT, $bBypassCache );
         }
         return $iType === null ? $this->aCollectables : $this->aCollectables [$iType];
     }
@@ -511,7 +510,14 @@ class Logic_Account implements DataLogic
 
 	for ($i=0;$i<count($aPayables);$i++)
 	{
+	    if ($mDistributable->balance == 0)
+		    break;
 	    $oPayable = $aPayables[$i];
+
+	    if ($oPayable->id == 733779)
+	    {
+		$x=5;
+	    }
 
 	    if ($bDistributableIsCredit && $oPayable->getBalance() > 0)
 	    {
@@ -523,8 +529,7 @@ class Logic_Account implements DataLogic
 		$oPayable->processDistributable($mDistributable);
 	    }
 
-	    if ($mDistributable->balance == 0)
-		    break;
+	    
 	}
 	unset($aPayables);
           //Log::getLog()->log("After processing distributable $mDistributable->id,".memory_get_usage(true));
@@ -607,8 +612,8 @@ class Logic_Account implements DataLogic
 
         $iIterations = 0;
 
-        while ($iIterations<1 && (($this->getPayableBalance(TRUE) > 0 && $this->getDistributableCreditBalance() > 0)
-                || ($this->hasPayablesWithBalanceBelowAmount() && $this->getDistributableDebitBalance() > 0)))
+        while ((($this->getPayableBalance(TRUE) > 0 && $this->getDistributableCreditBalance() > 0)
+                || ($this->hasPayablesWithBalanceBelowAmount() && $this->getDistributableDebitBalance() > 0))) 
         {
             $iIterations++;
 //            //Log::getLog()->log("Pre Iteration $iIterations");
@@ -631,7 +636,7 @@ class Logic_Account implements DataLogic
             foreach ($aPayments as $oPayment)
             {
 
-                $this->processDistributable($oPayment);
+                $this->processDistributable($oPayment); 
             }
 
             $aAdjustments = $this->getAdjustments(Logic_Adjustment::CREDIT);
@@ -931,7 +936,7 @@ class Logic_Account implements DataLogic
 	     $fAccountBalance = $oAccount->getAccountBalance();
             $aResult = $oAccount->redistributeBalances();
             $time = $oStopwatch->split();
-	     $fOverdueBalance = $oAccount->getOverdueCollectableBalance($mNow);
+	     $fOverdueBalance = $oAccount->getOverdueCollectableBalance($mNow, TRUE);
             self::$aMemory['after_before_cache_clear'] = memory_get_usage (TRUE );
 	   
             $oAccount->reset();

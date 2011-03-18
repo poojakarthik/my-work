@@ -31,7 +31,7 @@ class Logic_Collection_Promise_Instalment implements DataLogic, Logic_Payable {
     		$fPaid += $oCollectable->amount - $oCollectable->balance;
     	}
 
-    	// Calculate how many instalments are covered by what has been paid, and return the first instalment that is not fully covered by the total amount paid
+    	
         $aInstalments		= $oPromise->getInstalments();
         foreach ($aInstalments as $oInstalment)
         {            

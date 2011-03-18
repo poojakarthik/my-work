@@ -72,9 +72,9 @@ class Logic_Collection_Scenario implements DataLogic
      * @param <type> $sDueDate - duedate of the oldest collectable on the account, used to calculate the day offset if there was no previous event, or if the previous event belonged to a different scenario
      * @return <type> scenario event or null
      */
-    public function getEventToTrigger($oMostRecentEventInstance, $sStartDate)
+    public function getEventToTrigger($oMostRecentEventInstance, $sStartDate, $bIgnoreDayOffsetRules = FALSE)
     {
-       if ($oMostRecentEventInstance!== null && $oMostRecentEventInstance->completed_datetime === null)
+       if ($oMostRecentEventInstance!== null && $oMostRecentEventInstance->completed_datetime === null && !$bIgnoreDayOffsetRules)
        {
            ////Log::getLog()->log("No event should be triggered, the previous event is still in a scheduled (not completed) state");
            
@@ -95,7 +95,7 @@ class Logic_Collection_Scenario implements DataLogic
         foreach($aScenarioEvents as $oEvent)
         {
             ////Log::getLog()->log("Checking event {$oEvent->id} ({$iDayOffset} against {$oEvent->day_offset}), ({$oEvent->prerequisite_collection_scenario_collection_event_id} against {$oMostRecentScenarioEvent->id})");
-            if (($oEvent->prerequisite_collection_scenario_collection_event_id == $oMostRecentScenarioEvent->id) && $iDayOffset >= $oEvent->day_offset)
+            if (($oEvent->prerequisite_collection_scenario_collection_event_id == $oMostRecentScenarioEvent->id) && ($iDayOffset >= $oEvent->day_offset || $bIgnoreDayOffsetRules))
             {
             	////Log::getLog()->log("Found next event");
             	return $oEvent;

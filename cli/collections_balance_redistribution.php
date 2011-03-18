@@ -1,4 +1,0 @@
-<?php
-require_once dirname(__FILE__) . "/../lib/cli/Cli.php";	
-Cli::execute("Cli_App_Collections_Balance_Redistribution");
-?>
