@@ -198,7 +198,8 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
     // 			aConfig is an array of values that will be used if passed correctly
     //				- credit_card_type_id			: If the payment is a credit card payment, used when creating a surcharge (if flagged to do so)
     //				- charge_credit_card_surcharge	: If true, and the payment is a credit card payment, charge the surcharge determined by the credit card type			
-	//				- credit_card_number			: If the payment is a credit card payment, used to store in the payment_transaction_data
+	//				- credit_card_number			: Used to store in the payment_transaction_data
+	//				- bank_account_number			: Used to store in the payment_transaction_data
     public static function factory($iAccountId, $iPaymentTypeId, $fAmount, $iPaymentNature=PAYMENT_NATURE_PAYMENT, $sTransactionReference='', $sPaidDate=null, $aConfig=array())
 	{
 		try
@@ -222,11 +223,13 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 				$fAmount 				= $fAmount + $fCreditCardSurcharge;
 			}
 			
+			$iEmployeeId = Flex::getUserId();
+			
 			// Create payment
 			$oPayment 							= new Payment();
 			$oPayment->account_id 				= $iAccountId;
 			$oPayment->created_datetime			= date('Y-m-d H:i:s');
-			$oPayment->created_employee_id		= Flex::getUserId();
+			$oPayment->created_employee_id		= ($iEmployeeId === null ? Employee::SYSTEM_EMPLOYEE_ID : $iEmployeeId);
 			$oPayment->paid_date				= $sPaidDate;
 			$oPayment->payment_type_id			= $iPaymentTypeId;
 			$oPayment->transaction_reference	= $sTransactionReference;
@@ -262,12 +265,26 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 					$oPayment->surcharge_charge_id = $oCharge->Id;
 					$oPayment->save();
 				}
-				
+			}
+			
+			if (isset($aConfig['credit_card_number']))
+			{
 				// Create payment_transaction_data record
 				$oTransactionData 				= new Payment_Transaction_Data();
 				$oTransactionData->name			= Payment_Transaction_Data::CREDIT_CARD_NUMBER;
 				$oTransactionData->value		= Credit_Card::getMaskedCardNumber($aConfig['credit_card_number']);
 				$oTransactionData->data_type_id	= DATA_TYPE_STRING; 
+				$oTransactionData->payment_id	= $oPayment->id;
+				$oTransactionData->save();
+			}
+			
+			if (isset($aConfig['bank_account_number']))
+			{
+				// Create payment_transaction_data record
+				$oTransactionData 				= new Payment_Transaction_Data();
+				$oTransactionData->name			= Payment_Transaction_Data::BANK_ACCOUNT_NUMBER;
+				$oTransactionData->value		= $aConfig['bank_account_number'];
+				$oTransactionData->data_type_id	= DATA_TYPE_INTEGER; 
 				$oTransactionData->payment_id	= $oPayment->id;
 				$oTransactionData->save();
 			}

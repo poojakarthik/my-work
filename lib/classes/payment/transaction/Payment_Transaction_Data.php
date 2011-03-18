@@ -9,6 +9,7 @@
 class Payment_Transaction_Data extends ORM_Cached
 {
 	const				CREDIT_CARD_NUMBER		= 'credit_card_number';
+	const				BANK_ACCOUNT_NUMBER		= 'bank_account_number';
 	const				ORIGINAL_PAYMENT_TYPE	= 'original_payment_type_id';
 	
 	protected 			$_strTableName			= "payment_transaction_data";

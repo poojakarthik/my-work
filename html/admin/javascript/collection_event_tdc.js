@@ -8,23 +8,28 @@ var Collection_Event_TDC = Class.create(Collection_Event_Type,
 	
 	_startInvoke : function()
 	{
-		// Show a popup to allow scheduling of barring requests
-		new Popup_Collection_Event_TDC(this._hEventInstances, this._complete.bind(this), this._cancelled.bind(this));
-	}, 
-	
-	_cancelled : function()
-	{
-		if (this._fnComplete)
-		{
-			this._fnComplete();
-		}
+		this._completeInvoke();
 	},
-	
-	_complete : function()
+
+	_completeInvoke : function(oResponse)
 	{
-		if (this._fnComplete)
+		if (!oResponse)
 		{
-			this._fnComplete();
+			this._loading('');
+			
+			var fnResp 	= this._completeInvoke.bind(this);
+			var fnReq	= jQuery.json.jsonFunction(fnResp, fnResp, 'Collection_Event', 'invokeTDCEvent');
+			fnReq(this._aEventInstanceIds);
+			return;
 		}
+		
+		this._hideLoading();
+		
+		if (!oResponse.bSuccess)
+		{
+			Collection_Event_Type.ajaxError(oResponse);
+		}
+		
+		Collection_Event_Type._displayInvokeInformation(oResponse, this._fnComplete);
 	}
 });

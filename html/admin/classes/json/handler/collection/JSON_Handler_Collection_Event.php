@@ -339,12 +339,12 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		try
 		{
 			$aParameters = array();
-            foreach ($aEventInstanceIds as $iEventInstanceId)
-            {
-                $aParameters[$iEventInstanceId] = array('authorised_datetime' => $sScheduledDate);
-            }
-
-            Logic_Collection_Event_Instance::completeScheduledInstancesFromUI($aParameters);
+	        foreach ($aEventInstanceIds as $iEventInstanceId)
+	        {
+	            $aParameters[$iEventInstanceId] = array();
+	        }
+	
+	        Logic_Collection_Event_Instance::completeScheduledInstancesFromUI($aParameters);
 		}
 		catch (Exception $e)
 		{
