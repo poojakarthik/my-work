@@ -155,6 +155,18 @@ var Component_Account_Collections = Class.create(
 						iRowCount++;
 					}
 				}
+
+				// Scenario Event instances (unscheduled events, this will only be the next future event)
+				var aEvents = oResponse.aEvents[sDate].collection_scenario_collection_event;
+				if (aEvents)
+				{
+					for (var i = 0; i < aEvents.length; i++)
+					{
+
+						this._oEventsTBody.appendChild(this._createScenarioEventItem(sDate, aEvents[i]));
+						iRowCount++;
+					}
+				}
 				
 				// Event instances
 				var aEvents = oResponse.aEvents[sDate].account_collection_event_history;
@@ -167,17 +179,7 @@ var Component_Account_Collections = Class.create(
 					}
 				}
 
-				// Event instances
-				var aEvents = oResponse.aEvents[sDate].collection_scenario_collection_event;
-				if (aEvents)
-				{
-					for (var i = 0; i < aEvents.length; i++)
-					{
-						
-						this._oEventsTBody.appendChild(this._createScenarioEventItem(sDate, aEvents[i]));
-						iRowCount++;
-					}
-				}
+				
 
 				
 				// Suspensions
@@ -536,8 +538,7 @@ var Component_Account_Collections = Class.create(
 	},
 	
 	_viewEventDetails : function(oData)
-	{
-		debugger;
+	{		
 		new Popup_Collections_Event_Instance_View(oData.id);
 	},
 	

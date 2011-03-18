@@ -25,7 +25,7 @@ class Logic_Collection_Scenario implements DataLogic
                 }
 	}
 
-    public function getInitialScenarioEvent($iDayOffset) 
+    public function getInitialScenarioEvent($iDayOffset, $bIgnoreDayOffsetRules)
     {
     	
     	$iDayOffset += $this->oDO->day_offset;
@@ -35,7 +35,7 @@ class Logic_Collection_Scenario implements DataLogic
 		$oFirst				= array_shift($aScenarioEvents);
 		////Log::getLog()->log("Day offset = {$iDayOffset}, needs to be atleast {$oFirst->day_offset}");
 		
-		if ($iDayOffset >= $oFirst->day_offset)
+		if ($iDayOffset >= $oFirst->day_offset || $bIgnoreDayOffsetRules)
 		{
 			////Log::getLog()->log("Found initial event ($oFirst->id).");
 			return $oFirst;
@@ -84,12 +84,13 @@ class Logic_Collection_Scenario implements DataLogic
        $aScenarioEvents = $this->getEvents();
        $iMostRecentEventScenario    = $oMostRecentEventInstance!= null && $oMostRecentEventInstance->getScenario()!=null ? $oMostRecentEventInstance->getScenario()->id : null;
        $oMostRecentScenarioEvent    = $oMostRecentEventInstance!= null ? $oMostRecentEventInstance->getScenarioEvent() : null;
-       $sPointOfReference           = $oMostRecentEventInstance!= null ?date('Y-m-d', Flex_Date::truncate($oMostRecentEventInstance->completed_datetime, 'd', false)) : $sStartDate;
+	   $sCompletionDate				= $oMostRecentEventInstance!= null && $oMostRecentEventInstance->completed_datetime!= NULL ? date('Y-m-d', Flex_Date::truncate($oMostRecentEventInstance->completed_datetime, 'd', false)) : ($bIgnoreDayOffsetRules ? Data_Source_Time::currentTimestamp() : NULL);
+       $sPointOfReference           =  $sCompletionDate != NULL ?$sCompletionDate : $sStartDate;
        $iDayOffset = Flex_Date::difference( $sPointOfReference,  Data_Source_Time::currentDate(), 'd');
         if ($iMostRecentEventScenario != $this->id)
         {
             ////Log::getLog()->log("No prerequisite, getting initial event");
-            return $this->getInitialScenarioEvent($iDayOffset);
+            return $this->getInitialScenarioEvent($iDayOffset, $bIgnoreDayOffsetRules);
         }
         
         foreach($aScenarioEvents as $oEvent)

@@ -333,7 +333,7 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 				);
 	}
 	
-	public function invokeTDCEvent($aEventInstanceIds, $sScheduledDate)
+	public function invokeTDCEvent($aEventInstanceIds)
 	{
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 		try

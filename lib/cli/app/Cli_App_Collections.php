@@ -160,34 +160,42 @@ class Cli_App_Collections extends Cli
 
 			try
 			{
-				if ($iAccountId === null)
+				if (Collections_Schedule::getEligibility())
 				{
-					$aExcludedAccounts = Logic_Collection_BatchProcess_Report::getAccountsWithExceptions();
-					$aAccounts = Logic_Account::getForBatchCollectionProcess($aExcludedAccounts);
+					if ($iAccountId === null)
+					{
+						$aExcludedAccounts = Logic_Collection_BatchProcess_Report::getAccountsWithExceptions();
+						$aAccounts = Logic_Account::getForBatchCollectionProcess($aExcludedAccounts);
+					}
+					else
+					{
+
+						$oAccount = Logic_Account::getInstance($iAccountId);
+						$aAccounts = array($oAccount);
+					}
+
+					$iCompletedInstances = 0;
+					Logic_Collection_Event_Instance::completeWaitingInstances(true);
+					Logic_Stopwatch::getInstance()->start();
+					$iIteration = 1;
+					do
+					{
+						Log::getLog()->log("About to process ".count($aAccounts)." In Batch.");
+						$iCompletedInstances = Logic_Account::batchProcessCollections($aAccounts);
+						Log::getlog()->log("Completed Scheduled Events In : ".Logic_Stopwatch::getInstance()->lap());
+						Log::getLog()->log("-------End Account Batch Collections Process Iteration $iIteration -------------------------");
+						$iIteration++;
+					}
+					while ($iCompletedInstances > 0);
+
+
+					Log::getLog()->log("Total Time: ".Logic_Stopwatch::getInstance()->split());
+
 				}
 				else
 				{
-
-					$oAccount = Logic_Account::getInstance($iAccountId);
-					$aAccounts = array($oAccount);
+					throw new Exception("The Collections Batch Process is not eligible to run today.");
 				}
-
-				$iCompletedInstances = 0;
-				Logic_Collection_Event_Instance::completeWaitingInstances(true);
-				Logic_Stopwatch::getInstance()->start();
-				$iIteration = 1;
-				do
-				{
-					Log::getLog()->log("About to process ".count($aAccounts)." In Batch.");
-					$iCompletedInstances = Logic_Account::batchProcessCollections($aAccounts);
-					Log::getlog()->log("Completed Scheduled Events In : ".Logic_Stopwatch::getInstance()->lap());
-					Log::getLog()->log("-------End Account Batch Collections Process Iteration $iIteration -------------------------");
-					$iIteration++;
-				}
-				while ($iCompletedInstances > 0);
-
-
-				Log::getLog()->log("Total Time: ".Logic_Stopwatch::getInstance()->split());
 			}
 			catch (Exception $e)
 			{

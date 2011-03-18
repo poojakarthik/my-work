@@ -33,7 +33,7 @@ var Popup_Collections_Scenario_Event_View = Class.create(Reflex_Popup,
 		
 		var oEventType	= oEventInstance.collection_event.collection_event_type;
 		var sEventType	= oEventType.description == oEventType.name ? oEventType.name : oEventType.name + ' (' + oEventType.description + ')';
-		debugger;
+		
 		var oContentDiv = 	$T.div({class: 'popup-collections-event-instance-view'},
 								$T.table({class: 'reflex input'},
 									$T.tbody(

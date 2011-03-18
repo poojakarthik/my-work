@@ -551,30 +551,33 @@ class JSON_Handler_Collections extends JSON_Handler
 			$oLastScheduledEvent = $oAccount->getMostRecentCollectionEventInstance();
 			$bIsIncollections = $oAccount->isCurrentlyInCollections();
 			$oEvent = $oAccount->getNextCollectionScenarioEvent(TRUE);
-
-			if ($bIsIncollections && $oScenario->id == $oLastScheduledEvent->getScenario()->id)
+			if ($oEvent !== NULL)
 			{
-				$sDateToOffset = $oLastScheduledEvent->completed_datetime != NULL ? $oLastScheduledEvent->completed_datetime : Data_Source_Time::currentTimestamp();
-			}
-			else
-			{
-				$sDateToOffset = $oAccount->getCollectionsStartDate();
-			}
+				if ($bIsIncollections && $oScenario->id == $oLastScheduledEvent->getScenario()->id)
+				{
+					$sDateToOffset = $oLastScheduledEvent->completed_datetime != NULL ? $oLastScheduledEvent->completed_datetime : Data_Source_Time::currentTimestamp();
+				}
+				else
+				{
+					$sDateToOffset = $oAccount->getCollectionsStartDate();
+				}
 
-			$iDateToOffset = strtotime($sDateToOffset);
-			$iNextEventDate = max (strtotime("+$oEvent->day_offset day", $iDateToOffset), time());
-			$sNextEventDate = date ("Y-m-d", $iNextEventDate);
-			$bOverdueOnNextEventDate = $oScenario->evaluateThresholdCriterion($oAccount->getOverDueCollectableAmount($sNextEventDate),$oAccount->getOverdueCollectableBalance($sNextEventDate));
-			
-			if ($bOverdueOnNextEventDate)
-			{
-				$aScenarioEvent = array();
-				$aScenarioEvent['collection_event_invocation_id'] = $oEvent->getInvocationId();
-				$aScenarioEvent['collection_event_name'] = "Next Collections Event: ".$oEvent->getEventName();
-				$aScenarioEvent['id'] = $oEvent->id;
-				$aUnsortedEvents[$sNextEventDate] = array('collection_scenario_collection_event' => array($aScenarioEvent));
-			}
+				$iDateToOffset = strtotime($sDateToOffset);
+				$iNextEventDate = max (strtotime("+$oEvent->day_offset day", $iDateToOffset), time());
+				$sNextEventDate = date ("Y-m-d", $iNextEventDate);
+				$bOverdueOnNextEventDate = $oScenario->evaluateThresholdCriterion($oAccount->getOverDueCollectableAmount($sNextEventDate),$oAccount->getOverdueCollectableBalance($sNextEventDate));
 
+				if ($bOverdueOnNextEventDate)
+				{
+					$aScenarioEvent = array();
+					$aScenarioEvent['collection_event_invocation_id'] = $oEvent->getInvocationId();
+					$aScenarioEvent['collection_event_name'] = "Next Collections Event: ".$oEvent->getEventName();
+					$aScenarioEvent['id'] = $oEvent->id;
+					if (!isset($aUnsortedEvents[$sNextEventDate]))
+						$aUnsortedEvents[$sNextEventDate] = array(); 
+					$aUnsortedEvents[$sNextEventDate]['collection_scenario_collection_event'][] = $aScenarioEvent;
+				}
+			}
 		    // Suspensions
 		    $mSuspensionResult = $oQuery->Execute("	SELECT 	cs.*
 												    FROM 	collection_suspension cs

@@ -209,29 +209,32 @@ class Logic_Collection_Event_Instance
             }
         }
 
-	$iCompletedEvents = 0;
+		$iCompletedEvents = 0;
         foreach(self::$aEventInstancesWaitingForCompletion as $iEventId => $aCollectionEvents)
         {
-            $oDataAccess	= DataAccess::getDataAccess();
-	    $oDataAccess->TransactionStart();
-	    Logic_Stopwatch::getInstance()->lap();
-	    try
+
+			$oDataAccess	= DataAccess::getDataAccess();
+			$oDataAccess->TransactionStart();
+			Logic_Stopwatch::getInstance()->lap();
+			try
             {
-		$sEventName;
+				if (Collections_Schedule::getEligibility($iEventId))
+				{
+				$sEventName;
                 $aSuccesfullyInvokedInstances = array();
                 foreach ($aCollectionEvents as $oEventInstance)
                 {
                     try
                     {
                         $sEventName = $sEventName === null ? $oEventInstance->getEventName() : $sEventName;
-			$invocationParameters = $aParameters !== null ? $aParameters[$oEventInstance->id] : null;
+						$invocationParameters = $aParameters !== null ? $aParameters[$oEventInstance->id] : null;
                         $oEventInstance->invoke($invocationParameters);
                         $aSuccesfullyInvokedInstances[] = $oEventInstance;
                     }
                     catch(Exception $e)
                     {
                         Log::getLog()->log("Exception occurred during '$sEventName' event invocation. Only this event instance will be rolled back.");
-			if ($e instanceof Exception_Database)
+						if ($e instanceof Exception_Database)
                         {
                             throw $e;
                         }
@@ -249,17 +252,24 @@ class Logic_Collection_Event_Instance
                 call_user_func(array( $sClassName, 'complete'), $aSuccesfullyInvokedInstances);
                 $iCompletedEvents += count($aSuccesfullyInvokedInstances);
                 $oDataAccess->TransactionCommit();
-		Log::getlog()->log("Invoked and completed ".count($aSuccesfullyInvokedInstances)." '$sEventName' events in : ".Logic_Stopwatch::getInstance()->lap()." seconds.");
-
+				Log::getlog()->log("Invoked and completed ".count($aSuccesfullyInvokedInstances)." '$sEventName' events in : ".Logic_Stopwatch::getInstance()->lap()." seconds.");
+				/////////////////////////
+				}
+				else
+				{
+					throw new Exception("This event is not eligible to be invoked today.");
+				}
             }
             catch (Exception $e)
             {
                 Log::getLog()->log("Exception occurred during '$sEventName' event completion. All ".count($aSuccesfullyInvokedInstances)." invoked instances will be rolled back.");
-		// Exception caught, rollback db transaction
+				Log::getLog()->log("Exception Details: ");
+				Log::getLog()->log($e->__toString());
+				// Exception caught, rollback db transaction
                 $oDataAccess->TransactionRollback();
                 if ($e instanceof Exception_Database)
                 {
-		    Logic_Collection_BatchProcess_Report::addException($e);
+					 Logic_Collection_BatchProcess_Report::addException($e);
                     throw $e;
                 }
                 else

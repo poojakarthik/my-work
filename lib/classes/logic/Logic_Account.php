@@ -204,7 +204,7 @@ class Logic_Account implements DataLogic
     public function getNextCollectionScenarioEvent($bIgnoreDayOffsetRules = FALSE)
     {
 		$oMostRecentEventInstance 		= $this->getMostRecentCollectionEventInstance();
-		if ($oMostRecentEventInstance!== null && $oMostRecentEventInstance->completed_datetime === null)
+		if (!$bIgnoreDayOffsetRules && ($oMostRecentEventInstance!== null && $oMostRecentEventInstance->completed_datetime === null) )
 		{
 		   $this->bPreviousEventNotCompleted = true;
 		   return null;

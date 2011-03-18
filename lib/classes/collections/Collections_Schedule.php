@@ -50,19 +50,19 @@ class Collections_Schedule extends ORM_Cached
 					AND		(month IS NULL OR month = {$iMonth})
 					AND		(year IS NULL OR year = {$iYear})
 					AND		(
-								(monday <> 1 OR {$iDayOfWeek} = 1)
+								(monday = 1 AND {$iDayOfWeek} = 1)
 								OR
-								(tuesday <> 1 OR {$iDayOfWeek} = 2)
+								(tuesday = 1 AND {$iDayOfWeek} = 2)
 								OR
-								(wednesday <> 1 OR {$iDayOfWeek} = 3)
+								(wednesday = 1 AND {$iDayOfWeek} = 3)
 								OR
-								(thursday <> 1 OR {$iDayOfWeek} = 4)
+								(thursday = 1 AND {$iDayOfWeek} = 4)
 								OR
-								(friday <> 1 OR {$iDayOfWeek} = 5)
+								(friday = 1 AND {$iDayOfWeek} = 5)
 								OR
-								(saturday <> 1 OR {$iDayOfWeek} = 6)
+								(saturday = 1 AND {$iDayOfWeek} = 6)
 								OR
-								(sunday <> 1 OR {$iDayOfWeek} = 7)
+								(sunday = 1 AND {$iDayOfWeek} = 7)
 							)
 					AND		status_id = ".STATUS_ACTIVE."
 					AND		(
