@@ -90,7 +90,11 @@ class Collections_Schedule extends ORM_Cached
 		$iMaxPrecedence	= null;
 		while ($aRow = $mResult->fetch_assoc())
 		{
-			if (($iMaxPrecedence === null) || ($aRow['precedence'] > $iMaxPrecedence))
+			// Overwrite (final) eligibility if
+			//	- there is no max precedence
+			//	- the rows precedence is greater than the max precedence
+			//	- the rows precedence is equal to the max precedence and it's eligibility is 0 (ineligible has priority over eligibility)
+			if (($iMaxPrecedence === null) || ($aRow['precedence'] > $iMaxPrecedence) || (($aRow['precedence'] == $iMaxPrecedence) && ($aRow['eligibility'] == 0)))
 			{
 				$iEligibility = $aRow['eligibility'];
 			}
