@@ -1099,6 +1099,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 			$aBalanceDifferences		= array();
 			$bGreaterThanMarginOfError	= false;
 			while ($aBalanceDifference = $mBalanceCheckResult->fetchRow(MDB2_FETCHMODE_ASSOC)) {
+				$aBalanceDifferences[]	= $aBalanceDifferences;
 				if (abs($aBalanceDifference['balance'] - $aBalanceDifference['old_balance']) > self::FLOAT_MARGIN_OF_ERROR) {
 					$bGreaterThanMarginOfError	= true;
 				}
@@ -1127,7 +1128,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 				{
 					// Write all account balances differences to the given log file
 					$aLogLines = array("Account\t\tBalance\t\tOld Balance");
-					while ($aCheckRow = $mBalanceCheckResult->fetchRow(MDB2_FETCHMODE_ASSOC))
+					foreach ($aBalanceDifferences as $aCheckRow)
 					{
 						$aLogLines[] = "{$aCheckRow['account_id']},\t\t{$aCheckRow['balance']},\t\t{$aCheckRow['old_balance']}";
 					}
