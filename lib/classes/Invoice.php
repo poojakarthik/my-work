@@ -1197,7 +1197,7 @@ class Invoice extends ORM_Cached
 		{
 			$sFrom = "				Invoice i
 						JOIN		InvoiceRun ir ON (ir.Id = i.invoice_run_id)
-						LEFT JOIN	collectable c ON (c.invoice_id = i.Id))";
+						LEFT JOIN	collectable c ON (c.invoice_id = i.Id)";
 			$aSelectLines = array();
 			foreach ($aAliases as $sAlias => $sClause)
 			{
