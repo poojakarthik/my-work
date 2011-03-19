@@ -225,7 +225,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 			
 			$iAdjustmentTypeId 	= $this->_aChargeTypeIdToAdjustmentTypeId[$aRow['charge_type_id']];
 			$fAmount			= $aRow['Amount'];
-			$fTax 				= (($aRow['global_tax_exempt'] == 1) 				? 0			: ($fAmount * $fGlobalTaxRatePercentage));
+			$fTax 				= (($aRow['global_tax_exempt'] == 1) 				? 0			: round(($fAmount * $fGlobalTaxRatePercentage), 4));
 			$sApprovedBy		= (($aRow['ApprovedBy'] == null) 					? USER_ID	: $aRow['ApprovedBy']);
 			$sReviewOutcome		= (($sAdjustmentReviewOutcomeSystemName == null) 	? 'NULL' 	: "(SELECT id FROM adjustment_review_outcome WHERE system_name = '{$sAdjustmentReviewOutcomeSystemName}')");
 			$sService			= (($aRow['Service'] == null) 						? 'NULL' 	: $aRow['Service']);
