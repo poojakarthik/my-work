@@ -926,7 +926,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 		$aAdjustmentInsertData = array();
 		while ($aRow = $mResult->fetchRow(MDB2_FETCHMODE_ASSOC))
 		{
-			$fAmount = Rate::roundToRatingStandard(Rate::roundToRatingStandard($aRow['balance'], 4) - Rate::roundToRatingStandard($aRow['old_balance'], 4), 4);
+			$fAmount = $aRow['balance'] - $aRow['old_balance'];
 			if ($fAmount < 0)
 			{
 				// Debit
