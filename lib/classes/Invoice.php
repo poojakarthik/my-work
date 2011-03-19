@@ -1181,7 +1181,7 @@ class Invoice extends ORM_Cached
 						'invoice_status'		=> "i.Status",
 						'account_id'			=> "i.Account",
 						'invoice_run_id'		=> "i.invoice_run_id",
-						'has_unarchived_cdrs'	=> "COALESCE(COUNT(cdr.id), 0)",
+						'has_unarchived_cdrs'	=> "COALESCE((SELECT COUNT(Id) FROM CDR WHERE invoice_run_id = ir.Id AND Accout = i.Account), 0)",
 						'invoice_run_status_id'	=> "ir.invoice_run_status_id"
 					);
 		
@@ -1197,11 +1197,7 @@ class Invoice extends ORM_Cached
 		{
 			$sFrom = "				Invoice i
 						JOIN		InvoiceRun ir ON (ir.Id = i.invoice_run_id)
-						LEFT JOIN	collectable c ON (c.invoice_id = i.Id)
-						LEFT JOIN	CDR cdr ON (
-										cdr.invoice_run_id = ir.Id
-										AND cdr.Account = i.Account
-									)";
+						LEFT JOIN	collectable c ON (c.invoice_id = i.Id))";
 			$aSelectLines = array();
 			foreach ($aAliases as $sAlias => $sClause)
 			{
