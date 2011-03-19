@@ -13,6 +13,8 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 	private $_aChargeTypeIdToAdjustmentTypeId	= array();
 	private $_bCancelLogging					= false;
 	
+	const	FLOAT_MARGIN_OF_ERROR	= 0.0001;
+	
 	public function rollout()
 	{
 		$oDB = Data_Source::get(FLEX_DATABASE_CONNECTION_ADMIN);
@@ -1094,7 +1096,26 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 			// There are still differences, log them
 			$this->outputMessage("There are still ".$mBalanceCheckResult->numRows()." balance differences.\n");
 			
-			if (!$this->_bCancelLogging)
+			$aBalanceDifferences		= array();
+			$bGreaterThanMarginOfError	= false;
+			while ($aBalanceDifference = $mBalanceCheckResult->fetchRow(MDB2_FETCHMODE_ASSOC)) {
+				if (abs($aBalanceDifference['balance'] - $aBalanceDifference['old_balance']) > self::FLOAT_MARGIN_OF_ERROR) {
+					$bGreaterThanMarginOfError	= true;
+				}
+			}
+			
+			if (!$bGreaterThanMarginOfError) {
+				$this->outputMessage('All balance differences are <= the margin of error ('.self::FLOAT_MARGIN_OF_ERROR.")\n");
+				$sIgnoreErrors	= trim(strtolower($this->getUserResponse('Would you like to continue, ignoring these errors (y/N)?: ')));
+				if ($sIgnoreErrors !== 'y') {
+					$this->outputMessage('Errors not ignored');
+					$bGreaterThanMarginOfError	= true;
+				} else {
+					$this->outputMessage('Errors ignored');
+				}
+			}
+			
+			if (!$this->_bCancelLogging || !$bGreaterThanMarginOfError)
 			{
 				$sLogPath = null;
 				while (($sLogPath === null) || ($sLogPath != '') && !file_exists($sLogPath))
@@ -1116,7 +1137,11 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 				}
 			}
 			
-			throw new Exception(__CLASS__." ".$mBalanceCheckResult->numRows()." Account balances do not match expected values.");
+			if ($bGreaterThanMarginOfError) {
+				throw new Exception(__CLASS__." ".$mBalanceCheckResult->numRows()." Account balances do not match expected values.");
+			} else {
+				$this->outputMessage("All account balances differences have been adjusted, ignoring ".$mBalanceCheckResult->numRows()." differences <= the margin of error.\n");
+			}
 		}
 		else
 		{
