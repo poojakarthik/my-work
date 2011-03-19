@@ -121,7 +121,7 @@ class Collection_Permissions_Config extends ORM_Cached
 																		MAX(promise_create_maximum_severity_level) 					AS promise_create_maximum_severity_level,
 																		MAX(promise_amount_maximum) 								AS promise_amount_maximum,
 																		MAX(suspension_maximum_suspensions_per_collections_period)	AS suspension_maximum_suspensions_per_collections_period", 
-																	"permissions & <permissions> = <permissions>"
+																	"permissions & <permissions> = permissions"
 																);
 					break;
 					
