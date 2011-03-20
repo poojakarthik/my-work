@@ -692,7 +692,7 @@ class Credit_Card_Payment
 			
 			// Get secure pay password & merchant id
 			$sMerchantId	= $oCreditCardPaymentConfig->merchantId;
-			$sPassword		= base64_decode($oCreditCardPaymentConfig->password);
+			$sPassword		= $oCreditCardPaymentConfig->password;
 			
 			// SecurePayMessage/MessageInfo/MessageID
 			$sMessageId	= substr($oAccount->id.'.'.base64_encode($iTime), 0, 30);
@@ -701,12 +701,10 @@ class Credit_Card_Payment
 			$sPurchaseOrderNo							= $oAccount->id.'.'.$iTime;
 			$oTransactionDetails->sPurchaseOrderNumber	= $sPurchaseOrderNo;
 	
-			$sPassword	= $creditCardPaymentConfig->password;
-			
 			if (self::isTestMode())
 			{
 				// These are testing passwords for securepay
-				// Taken from an email received on Wed 24/11/2010 1:23 PM (by Rod McTainsh, subject = 'FW: Secure Pay Details for TB VT PT' from Rich Davis)
+				// Taken from an email received on Wed 24/11/2010 1:23 PM (to Rod McTainsh, subject = 'FW: Secure Pay Details for TB VT PT' from Rich Davis)
 				$oCustomerGroup	= Customer_Group::getForId($oAccount->CustomerGroup);
 				switch ($oCustomerGroup->getConstantName())
 				{
