@@ -672,6 +672,7 @@ abstract class Cli
 	public static function _validClassName($sClassName)
 	{
 		require_once(dirname(__FILE__).'/../classes/Flex.php');
+		Flex::load();
 		try
 		{
 			// Check if the Class exists (will autoload automagically)
