@@ -308,6 +308,10 @@ var Popup_Account_Add_CreditCard	= Class.create(Reflex_Popup,
 			}
 			return;
 		}
+		else
+		{
+			this._save(true);
+		}
 	},
 	
 	_save	: function(bIgnorePrimaryContactEmailCheck)

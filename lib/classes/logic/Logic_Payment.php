@@ -286,7 +286,7 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 			
 			$oCreditCardType		= null;
 			$fCreditCardSurcharge 	= null;
-			if (($iPaymentTypeId == PAYMENT_TYPE_CREDIT_CARD) && isset($aConfig['credit_card_type_id']))
+			if (($iPaymentTypeId == PAYMENT_TYPE_CREDIT_CARD) && isset($aConfig['charge_credit_card_surcharge']) && $aConfig['charge_credit_card_surcharge'] && isset($aConfig['credit_card_type_id']))
 			{
 				// Calculate amount and surcharge (only applied if credit card payment)
 				$oCreditCardType 		= Credit_Card_Type::getForId($aConfig['credit_card_type_id']);
@@ -294,13 +294,13 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 				$fAmount 				= $fAmount + $fCreditCardSurcharge;
 			}
 			
-			$iEmployeeId = Flex::getUserId();
+			$oUser = Flex::getUser();
 			
 			// Create payment
 			$oPayment 							= new Payment();
 			$oPayment->account_id 				= $iAccountId;
 			$oPayment->created_datetime			= date('Y-m-d H:i:s');
-			$oPayment->created_employee_id		= ($iEmployeeId === null ? Employee::SYSTEM_EMPLOYEE_ID : $iEmployeeId);
+			$oPayment->created_employee_id		= ($oUser instanceof Employee ? $oUser->Id : Employee::SYSTEM_EMPLOYEE_ID);
 			$oPayment->paid_date				= $sPaidDate;
 			$oPayment->payment_type_id			= $iPaymentTypeId;
 			$oPayment->transaction_reference	= $sTransactionReference;

@@ -221,9 +221,6 @@ class Payment extends ORM_Cached
 						$oAdjustmentCharge->charge_id 		= $oCharge->Id;
 						$oAdjustmentCharge->save();
 						
-						// TODO: CR137 - remove
-						//Log::getLog()->log("... adjustment = $oAdjustment->id (\${$oAdjustment->amount}), adjustment_charge = $oAdjustmentCharge->id");
-						
 						$aSurchargeActions[] = "An adjustment has been created to credit the Account: {$oCharge->Account} for the invoiced payment surcharge of \$". number_format($oAdjustment->amount, 2).".";
 						break;
 					}

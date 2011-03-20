@@ -61,6 +61,34 @@ final class Flex
 		}
 		return NULL;
 	}
+	
+	public static function getUser()
+	{
+		$iUserId = self::getUserId();
+		
+		try
+		{
+			$oEmployee = Employee::getForId($iUserId);
+			if ($oEmployee->Id !== null)
+			{
+				return $oEmployee;
+			}
+		}
+		catch (Exception $oEx)
+		{
+			// Ignore, try contact instead
+		}
+		
+		if ($oContact = Contact::getForId($iUserId))
+		{
+			if ($oContact->Id !== null)
+			{
+				return $oContact;
+			}
+		}
+		
+		return Employee::getForId(Employee::SYSTEM_EMPLOYEE_ID);
+	}
 
 	public static function getDisplayName()
 	{

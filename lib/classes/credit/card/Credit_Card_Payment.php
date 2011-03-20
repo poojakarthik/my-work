@@ -727,13 +727,13 @@ class Credit_Card_Payment
 			$oPayment =	Logic_Payment::factory(
 							$iAccountId, 
 							PAYMENT_TYPE_CREDIT_CARD, 
-							$fTotal, 
+							$fAmount, 
 							PAYMENT_NATURE_PAYMENT,
 							'', 
 							$sNowDate, 
 							array
 							(
-								'charge_credit_card_surcharge' 	=> $fSurcharge != 0,
+								'charge_credit_card_surcharge' 	=> ($bWaiveSurcharge === false),
 								'credit_card_type_id'			=> $oCardType->id,
 								'credit_card_number'			=> $sCardNumber
 							)
