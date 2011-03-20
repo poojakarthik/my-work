@@ -692,7 +692,7 @@ class Credit_Card_Payment
 			
 			// Get secure pay password & merchant id
 			$sMerchantId	= $oCreditCardPaymentConfig->merchantId;
-			$sPassword		= $oCreditCardPaymentConfig->password;
+			$sPassword		= base64_decode($oCreditCardPaymentConfig->password);
 			
 			// SecurePayMessage/MessageInfo/MessageID
 			$sMessageId	= substr($oAccount->id.'.'.base64_encode($iTime), 0, 30);
