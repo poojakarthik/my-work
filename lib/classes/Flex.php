@@ -407,17 +407,17 @@ final class Flex
 		 */		
 	
 		// Retrieve the class name and its associated directory
-		if (substr($strClassName, 0, 6) == "Module")
+		if (substr($strClassName, 0, 6) == "Module" && defined('MODULE_BASE_DIR'))
 		{
 			$strClassPath = MODULE_BASE_DIR . "module";
 			$strClassName = substr($strClassName, 6);
 		}
-		else
+		elseif (defined('TEMPLATE_BASE_DIR'))
 		{
 			$arrClassName = explode("Template", $strClassName, 2);
 			$strClassPath = TEMPLATE_BASE_DIR . strtolower($arrClassName[0]) . "_template";
 			$strClassName = $arrClassName[1];
-		}		
+		}
 	
 		// If $strClassName couldn't be exploded on "template" or "module" then die
 		if (!$strClassName)
