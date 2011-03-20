@@ -418,6 +418,11 @@ final class Flex
 			$strClassPath = TEMPLATE_BASE_DIR . strtolower($arrClassName[0]) . "_template";
 			$strClassName = $arrClassName[1];
 		}
+		else
+		{
+			// Not run from the UI
+			return false;
+		}
 	
 		// If $strClassName couldn't be exploded on "template" or "module" then die
 		if (!$strClassName)
