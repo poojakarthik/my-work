@@ -1092,29 +1092,28 @@ class Account
 	    $sCollectableFilterClause = $bIncludeActivePromises ? "WHERE c.account_id = {$this->Id}" : " LEFT JOIN collection_promise cp ON (c.collection_promise_id = cp.id) WHERE (c.collection_promise_id IS NULL OR cp.completed_datetime IS NOT NULL) AND c.account_id = {$this->Id}";
 	    $oQuery = new Query();
 	    $mResult = $oQuery->Execute ("	
-									  SELECT (
-													SELECT COALESCE (SUM(p.amount * pn.value_multiplier), 0)
-													FROM payment p
-													JOIN payment_nature pn ON (pn.id = p.payment_nature_id AND p.account_id = {$this->Id})
-												  )
-												+
-												(
-													Select COALESCE (SUM(adj.amount*an.value_multiplier*tn.value_multiplier), 0)
-													FROM adjustment adj
-													JOIN adjustment_type at ON (at.id = adj.adjustment_type_id and adj.account_id = {$this->Id})
-													JOIN transaction_nature tn ON (tn.id = at.transaction_nature_id)
-													JOIN adjustment_nature an ON (an.id = adj.adjustment_nature_id)
-													JOIN adjustment_status ast ON (adj.adjustment_status_id = ast.id and ast.const_name = 'ADJUSTMENT_STATUS_APPROVED')
-												)
-
-												+
-												(
-													SELECT COALESCE (SUM(c.amount ), 0)
-													FROM collectable c
-													$sCollectableFilterClause
-												)
-												  balance
-											
+										SELECT
+											COALESCE((
+												SELECT SUM(p.amount * pn.value_multiplier)
+												FROM payment p
+												JOIN payment_nature pn ON (pn.id = p.payment_nature_id AND p.account_id = {$this->Id})
+											), 0)
+											+
+											COALESCE((
+												SELECT SUM(adj.amount*an.value_multiplier*tn.value_multiplier)
+												FROM adjustment adj
+												JOIN adjustment_type at ON (at.id = adj.adjustment_type_id and adj.account_id = {$this->Id})
+												JOIN transaction_nature tn ON (tn.id = at.transaction_nature_id)
+												JOIN adjustment_nature an ON (an.id = adj.adjustment_nature_id)
+												JOIN adjustment_status ast ON (adj.adjustment_status_id = ast.id and ast.const_name = 'ADJUSTMENT_STATUS_APPROVED')
+											), 0)
+											+
+											COALESCE((
+												SELECT SUM(c.amount)
+												FROM collectable c
+												{$bIncludeActivePromises}
+											), 0)
+											AS			balance
 									");
 
 	    if ($mResult === false)
