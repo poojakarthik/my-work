@@ -54,8 +54,10 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 			// Create the reversal payment
 			$oReversal	= $this->oDO->reverse($iReversalReasonId);
 			$oAccount	= Logic_Account::getInstance($this->oDO->account_id);
-			$oAccount->processDistributable(new Logic_Payment($oReversal));
 			
+			//rather than merely distributing the reversed payment, we need to do a full redistribution of balances at this point.
+			//The reaon for this is that if the original payment had any distributable balance left, this would need to be applied after distributing the reversed payment's balance in full, or else the collectable balance will be wrong.
+			$oAccount->redistributeBalances();
 			// Check the reason type
 			$oReason = Payment_Reversal_reason::getForId($iReversalReasonId);
 			if ($oReason->payment_reversal_type_id == PAYMENT_REVERSAL_TYPE_DISHONOUR)

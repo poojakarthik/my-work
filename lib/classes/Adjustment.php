@@ -145,7 +145,7 @@ class Adjustment extends ORM_Cached
 		$oReversal->adjustment_type_id	= $this->adjustment_type_id;
 		$oReversal->amount 				= $this->amount;
 		$oReversal->tax_component 		= $this->tax_component;
-		$oReversal->balance 			= $this->balance;
+		$oReversal->balance 			= $this->amount;
 		$oReversal->account_id 			= $this->account_id;
 		$oReversal->service_id 			= $this->service_id;
 		$oReversal->invoice_id 			= $this->invoice_id;

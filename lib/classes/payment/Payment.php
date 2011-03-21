@@ -147,7 +147,7 @@ class Payment extends ORM_Cached
 		$oReversal->payment_type_id 		= $this->payment_type_id;
 		$oReversal->transaction_reference 	= $this->transaction_reference;
 		$oReversal->amount 					= $this->amount;
-		$oReversal->balance 				= $this->balance;
+		$oReversal->balance 				= $this->amount;
 		
 		// Different fields
 		$oReversal->paid_date 					= date('Y-m-d');

@@ -514,11 +514,6 @@ class Logic_Account implements DataLogic
 		    break;
 	    $oPayable = $aPayables[$i];
 
-	    if ($oPayable->id == 733779)
-	    {
-		$x=5;
-	    }
-
 	    if ($bDistributableIsCredit && $oPayable->getBalance() > 0)
 	    {
 		$oPayable->processDistributable($mDistributable);

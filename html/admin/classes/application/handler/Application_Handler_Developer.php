@@ -225,7 +225,7 @@ class Application_Handler_Developer extends Application_Handler
           //  }
             try
             {
-                $aAccounts = Account::getForBalanceRedistribution(1000155701);
+                $aAccounts = Account::getForBalanceRedistribution(1000005012);
 		foreach ($aAccounts as $oAccount)
 		{
 		    Log::getLog()->log($oAccount->Id);
