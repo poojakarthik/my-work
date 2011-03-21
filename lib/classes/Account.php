@@ -1089,30 +1089,34 @@ class Account
 
 	protected function _getBalance($sEffectiveDate, $bIncludeActivePromises)
 	{
-	    $sActivePromiseJoinClause = $bIncludeActivePromises ? "" : " LEFT JOIN collection_promise cp ON (c.collection_promise_id = cp.id) WHERE (c.collection_promise_id IS NULL OR cp.completed_datetime IS NOT NULL)";
+	    $sCollectableFilterClause = $bIncludeActivePromises ? "WHERE c.account_id = {$this->Id}" : " LEFT JOIN collection_promise cp ON (c.collection_promise_id = cp.id) WHERE (c.collection_promise_id IS NULL OR cp.completed_datetime IS NOT NULL) AND c.account_id = {$this->Id}";
 	    $oQuery = new Query();
-	    $mResult = $oQuery->Execute (
-					    "	SELECT  COALESCE (SUM(c.balance),0)
-						+
-						(
-						  SELECT COALESCE (SUM(p.balance * pn.value_multiplier), 0)
-						  FROM payment p
-						  JOIN payment_nature pn ON (pn.id = p.payment_nature_id AND p.account_id = {$this->Id})
+	    $mResult = $oQuery->Execute ("	
+									  SELECT balance
+									  FROM (SELECT (
+													SELECT COALESCE (SUM(p.amount * pn.value_multiplier), 0)
+													FROM payment p
+													JOIN payment_nature pn ON (pn.id = p.payment_nature_id AND p.account_id = 1000005012)
+												  )
+												+
+												(
+													Select COALESCE (SUM(adj.amount*an.value_multiplier*tn.value_multiplier), 0)
+													FROM adjustment adj
+													JOIN adjustment_type at ON (at.id = adj.adjustment_type_id and adj.account_id = 1000005012)
+													JOIN transaction_nature tn ON (tn.id = at.transaction_nature_id)
+													JOIN adjustment_nature an ON (an.id = adj.adjustment_nature_id)
+													JOIN adjustment_status ast ON (adj.adjustment_status_id = ast.id and ast.const_name = 'ADJUSTMENT_STATUS_APPROVED')
+												)
 
-						)
-						+
-						(
-						  Select COALESCE (SUM(adj.balance*an.value_multiplier*tn.value_multiplier), 0)
-						  FROM adjustment adj
-						  JOIN adjustment_type at ON (at.id = adj.adjustment_type_id and adj.account_id = {$this->Id})
-						  JOIN transaction_nature tn ON (tn.id = at.transaction_nature_id)
-						  JOIN adjustment_nature an ON (an.id = adj.adjustment_nature_id)
-						  JOIN adjustment_status ast ON (adj.adjustment_status_id = ast.id and ast.const_name = 'ADJUSTMENT_STATUS_APPROVED')
-						) balance
-						FROM Account a
-						LEFT JOIN collectable c ON (a.Id = c.account_id AND a.Id = {$this->Id} AND c.due_date < '{$sEffectiveDate}')
-						{$sActivePromiseJoinClause}"
-					);
+												+
+												(
+													SELECT COALESCE (SUM(c.amount ), 0)
+													FROM collectable c
+													$sCollectableFilterClause
+												)
+												  balance
+											) account_balance
+									");
 
 	    if ($mResult === false)
 	    {
