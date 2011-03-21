@@ -6,9 +6,8 @@
  */
 class Resource_Type_File_Export_Payment_SecurePay_CreditCard_BatchVersion2 extends Resource_Type_File_Export_Payment
 {
-	const	RESOURCE_TYPE		= RESOURCE_TYPE_FILE_EXPORT_SECUREPAY_CREDIT_CARD_FILE;
+	const	RESOURCE_TYPE = RESOURCE_TYPE_FILE_EXPORT_SECUREPAY_CREDIT_CARD_FILE;
 
-	const	RECORD_TYPE_HEADER		= 'HEADER';
 	const	RECORD_TYPE_TRANSACTION	= 'TRANSACTION';
 
 	const	NEW_LINE_DELIMITER	= "\n";
@@ -35,7 +34,6 @@ class Resource_Type_File_Export_Payment_SecurePay_CreditCard_BatchVersion2 exten
 
 		$this->_oFileExporter	= new File_Exporter_CSV();
 		$this->_configureFileExporter();
-		$this->_addHeaderRecord();
 	}
 
 	public function addRecord($mPaymentRequest)
@@ -53,7 +51,7 @@ class Resource_Type_File_Export_Payment_SecurePay_CreditCard_BatchVersion2 exten
 		Flex::assert($oPaymentRequest->payment_type_id === PAYMENT_TYPE_DIRECT_DEBIT_VIA_CREDIT_CARD, "Non Credit Card Payment Request sent to SecurePay Direct Debit via Credit Card Export File", print_r($oPaymentRequest->toStdClass(), true));
 
 		// Verify that the payment hasn't been reversed
-		Flex::assert($oPayment->Status !== PAYMENT_REVERSED, "A Payment Request that is tied to a reversed payment was added to a 'SecurePay Direct Debit via Credit Card' Export File", print_r($oPaymentRequest->toStdClass(), true));
+		Flex::assert($oPayment->getReversal() === null, "A Payment Request that is tied to a reversed payment was added to a 'SecurePay Direct Debit via Credit Card' Export File", print_r($oPaymentRequest->toStdClass(), true));
 
 		$iExpiryMonth	= (int)$oCreditCard->ExpMonth;
 		$iExpiryYear	= (int)$oCreditCard->ExpYear;
@@ -76,22 +74,10 @@ class Resource_Type_File_Export_Payment_SecurePay_CreditCard_BatchVersion2 exten
 		$oRecord->AmountCents	= round($oPaymentRequest->amount * 100);
 		$oRecord->Reference		= $oPaymentRequest->account_id.'R'.$oPaymentRequest->id;
 
-		// TODO: Perhaps use the FlexAccount field as a Reference?
-		Flex::assert(false, "DEBUG: [Account.Id]R[payment_request.id] Transaction Reference not implemented yet!");
-
 		// Add to the file
 		$this->_oFileExporter->addRecord($oRecord, File_Exporter_CSV::RECORD_GROUP_BODY);
 
 		// TODO: Do we need to return anything special?
-		return;
-	}
-
-	protected function _addHeaderRecord()
-	{
-		// // Add to the file
-		// NOTE: The header is completely static.  Just pass it through!
-		$this->_oFileExporter->addRecord($this->_oFileExporter->getRecordType(self::RECORD_TYPE_HEADER)->newRecord(), File_Exporter::RECORD_GROUP_BODY);
-
 		return;
 	}
 

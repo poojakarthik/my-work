@@ -29,7 +29,7 @@ abstract class Resource_Type_File_Export_Payment extends Resource_Type_File_Expo
 			
 			// Get all pending payment requests for the customer group & payment type associated 
 			// with the carrier module
-			$iExportedPaymentRequests	= 0;
+			$iExportedPaymentRequests	= 	0;
 			$aPaymentRequests			=	Payment_Request::getForStatusAndCustomerGroupAndPaymentType(
 												PAYMENT_REQUEST_STATUS_PENDING, 
 												$oCarrierModule->customer_group,

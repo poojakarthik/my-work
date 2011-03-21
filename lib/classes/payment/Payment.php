@@ -278,7 +278,7 @@ class Payment extends ORM_Cached
 	public function getReversal()
 	{
 		$oSelect = self::_preparedStatement('selReversal');
-		if ($oSelect->Execute(array('payment_id' => $this->id)) === false)
+		if ($oSelect->Execute(array('reversed_payment_id' => $this->id)) === false)
 		{
 			throw new Exception_Database("Failed to get reversal for payment {$this->id}. ".$oSelect->Error());
 		}
@@ -391,7 +391,7 @@ class Payment extends ORM_Cached
 																);
 					break;
 				case 'selReversal':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "reversed_payment_id = <payment_id>", null, 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "reversed_payment_id = <reversed_payment_id>", null, 1);
 					break;
 					
 				// INSERTS

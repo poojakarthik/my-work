@@ -246,6 +246,8 @@ class Cli_App_Payments extends Cli
 				Log::getLog()->log("Direct debits cannot be processed today, check collections_schedule for more info.");
 			}
 			
+			Log::getLog()->log(ceil(288.85 * 100));
+			
 			if ($bTestRun)
 			{
 				// In test mode, rollback all changes
@@ -510,7 +512,7 @@ class Cli_App_Payments extends Cli
 					else
 					{
 						// Ineligible due to invalid bank account
-						Log::getLog()->log("ERROR: {$iAccountId} has an invalid bank account, id = {$oAccount->DirectDebit}");
+						Log::getLog()->log("ERROR: {$oAccount->Id} has an invalid bank account, id = {$oAccount->DirectDebit}");
 						$aIneligible[self::DIRECT_DEBIT_INELIGIBLE_BANK_ACCOUNT]++;
 					}
 					break;
@@ -530,13 +532,13 @@ class Cli_App_Payments extends Cli
 					else if ($iNow >= $iExpiry)
 					{
 						// Ineligible because credit card has expired
-						Log::getLog()->log("ERROR: {$iAccountId} has an expired credit card: {$sExpiry} (".date('Y-m-d', strtotime($sCompareExpiry)).")");
+						Log::getLog()->log("ERROR: {$oAccount->Id} has an expired credit card: {$sExpiry} (".date('Y-m-d', strtotime($sCompareExpiry)).")");
 						$aIneligible[self::DIRECT_DEBIT_INELIGIBLE_CREDIT_CARD_EXPIRY]++;
 					}
 					else
 					{
 						// Ineligible due to invalid credit card
-						Log::getLog()->log("ERROR: {$iAccountId} has an invalid credit card, id = {$oAccount->CreditCard}");
+						Log::getLog()->log("ERROR: {$oAccount->Id} has an invalid credit card, id = {$oAccount->CreditCard}");
 						$aIneligible[self::DIRECT_DEBIT_INELIGIBLE_CREDIT_CARD]++;
 					}
 					break;

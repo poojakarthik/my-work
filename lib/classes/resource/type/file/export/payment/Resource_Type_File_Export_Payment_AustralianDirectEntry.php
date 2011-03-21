@@ -55,7 +55,7 @@ class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_T
 		
 		// Verify that the payment hasn't been reversed
 		Flex::assert(
-			$oPayment->Status !== PAYMENT_REVERSED,
+			$oPayment->getReversal() === null,
 			"A Payment Request that is tied to a reversed payment was added to an 'Australian Direct Entry' Export File",
 			print_r($oPaymentRequest->toStdClass(), true)
 		);
@@ -71,9 +71,9 @@ class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_T
 		$sBSB						= str_pad((int)$oBankAccount->BSB, 6, '0', STR_PAD_LEFT);
  		$oRecord->BSB				= substr($sBSB, 0, 3).'-'.substr($sBSB, -3);
 		$oRecord->AccountNumber		= $oBankAccount->AccountNumber;
-		$oRecord->Amount			= ceil($oPaymentRequest->amount * 100);
+		$oRecord->Amount			= Rate::ceilToPrecision($oPaymentRequest->amount * 100, 2);
 		$oRecord->AccountName		= strtoupper(substr(preg_replace("/[^\w\ ]+/misU", '', trim($oBankAccount->AccountName)), 0, 32));
-		$oRecord->TransactionRef	= $oPayment->TXNReference;
+		$oRecord->TransactionRef	= $oPayment->transaction_reference;
 		
 		// Add to the file
 		$this->_oFileExporter->addRecord($oRecord, File_Exporter::RECORD_GROUP_BODY);
@@ -121,7 +121,7 @@ class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_T
 		$oRecord->TransactionDate	= date("dmy");
 		
 		// Add to the file
-		$this->_oFileExporter->addRecord($oRecord, File_Exporter::RECORD_GROUP_HEADER);
+		$this->_oFileExporter->addRecord($oRecord, File_Exporter::RECORD_GROUP_BODY);
 		
 		return;
 	}
@@ -139,7 +139,7 @@ class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_T
 		$oRecord->RecordCount		= $this->_iRecordCount;
 		
 		// Add to the file
-		$this->_oFileExporter->addRecord($oRecord, File_Exporter::RECORD_GROUP_FOOTER);
+		$this->_oFileExporter->addRecord($oRecord, File_Exporter::RECORD_GROUP_BODY);
 		
 		return;
 	}
