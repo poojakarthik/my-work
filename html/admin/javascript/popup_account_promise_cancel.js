@@ -49,6 +49,7 @@ var Popup_Account_Promise_Cancel = Class.create(Reflex_Popup,
 	_doReplace : function()
 	{
 		this.hide();
+		this._refreshRelatedComponents();
 		new Popup_Account_Promise_Edit(this._iAccountId);
 	},
 	
@@ -79,6 +80,20 @@ var Popup_Account_Promise_Cancel = Class.create(Reflex_Popup,
 		if (this._fnOnComplete)
 		{
 			this._fnOnComplete(oResponse.iRecordId);
+		}
+		this._refreshRelatedComponents();
+	},
+	
+	_refreshRelatedComponents : function()
+	{
+		if (Component_Account_Collections)
+		{
+			Component_Account_Collections.refreshInstances();
+		}
+		
+		if (Vixen && Vixen.AccountDetails)
+		{
+			Vixen.AccountDetails.CancelEdit();
 		}
 	}
 });
