@@ -1111,7 +1111,7 @@ class Account
 											COALESCE((
 												SELECT SUM(c.amount)
 												FROM collectable c
-												{$bIncludeActivePromises}
+												{$sCollectableFilterClause}
 											), 0)
 											AS			balance
 									");
