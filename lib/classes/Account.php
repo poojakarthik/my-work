@@ -572,7 +572,7 @@ class Account
                     {
                         while ($aRow = $mResult->fetch_assoc())
                         {
-                                   $aAccountsForRedistribution[] = self::getForId($aRow['account_id']);
+                                   $aAccountsForRedistribution[] = $aRow['account_id'];
                         }
                     }
 
@@ -586,10 +586,58 @@ class Account
                     {
                         while ($aRow = $mResult->fetch_assoc())
                         {
-                                   $aAccountsForRedistribution[] = self::getForId($aRow['account_id']);
+							$aAccountsForRedistribution[] = $aRow['account_id'];
                         }
                     }
 
+					//6 retrieve accounts that have both distributable payments and collectables these can be distributed to
+                    $sSQL = "   SELECT DISTINCT c.account_id
+								FROM collectable c
+								JOIN payment p ON (	c.account_id = p.account_id
+													AND c.amount > 0
+													AND (
+														  (c.balance > 0 AND p.balance > 0 AND p.payment_nature_id = 1)
+														  OR (c.balance <> c.amount AND  p.balance > 0 AND p.payment_nature_id = 2)
+														)
+												  )
+                                ";
+                    $mResult = $oQuery->Execute($sSQL);
+                    if ($mResult)
+                    {
+                        while ($aRow = $mResult->fetch_assoc())
+                        {
+							$aAccountsForRedistribution[] = $aRow['account_id'];
+                        }
+                    }
+
+					//7 retrieve accounts that have both distributable payments and collectables these can be distributed to
+                    $sSQL = "   SELECT DISTINCT c.account_id
+								FROM collectable c
+								JOIN adjustment a ON (c.account_id = a.account_id AND a.balance > 0 and c.amount > 0)
+								JOIN adjustment_type at ON (at.id = a.adjustment_type_id )
+								JOIN transaction_nature tn ON (tn.id = at.transaction_nature_id)
+								JOIN adjustment_nature an ON (an.id = a.adjustment_nature_id)
+								JOIN adjustment_status ast ON (a.adjustment_status_id = ast.id and ast.const_name = 'ADJUSTMENT_STATUS_APPROVED')
+								WHERE  ((c.balance > 0 AND an.value_multiplier*tn.value_multiplier = -1   ) OR (c.balance = c.amount AND an.value_multiplier*tn.value_multiplier = 1))
+                                ";
+                    $mResult = $oQuery->Execute($sSQL);
+                    if ($mResult)
+                    {
+                        while ($aRow = $mResult->fetch_assoc())
+                        {
+							$aAccountsForRedistribution[] = $aRow['account_id'];
+                        }
+                    }
+
+
+					$aAccountsForRedistribution = array_unique($aAccountsForRedistribution);
+					$aResult = array();
+					foreach ($aAccountsForRedistribution as $iAccountId)
+					{
+						$aResult[] = self::getForId($iAccountId);
+					}
+
+					$aAccountsForRedistribution = $aResult;
                     break;
               case Account::BALANCE_REDISTRIBUTION_FORCED:
                    $sSQL = "    SELECT DISTINCT a.*
