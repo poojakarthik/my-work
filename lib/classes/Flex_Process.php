@@ -7,9 +7,9 @@ class Flex_Process
 	const   PROCESS_BALANCE_REDISTRIBUTION	= 'collections-balance-redistribution';
 	const   PROCESS_COLLECTIONS_PROCESS		= 'collections-process';
 	
-	const	PROCESS_PAYMENTS_IMPORT			= 'payments-import';
-	const	PROCESS_PAYMENTS_NORMALISATION	= 'payments-normalisation';
-	const	PROCESS_PAYMENTS_PROCESSING		= 'payments-processing';
+	const	PROCESS_PAYMENTS_PREPROCESS		= 'payments-preprocess';
+	const	PROCESS_PAYMENTS_PROCESS		= 'payments-process';
+	const	PROCESS_PAYMENTS_DISTRIBUTE		= 'payments-distribute';
 	const	PROCESS_PAYMENTS_DIRECTDEBIT	= 'payments-direct-debit';
 	const	PROCESS_PAYMENTS_EXPORT			= 'payments-export';
 	

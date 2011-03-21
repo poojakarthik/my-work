@@ -17,7 +17,7 @@ class Cli_App_Payments extends Cli
 
 	const	MODE_PREPROCESS		= 'PREPROCESS';
 	const	MODE_PROCESS		= 'PROCESS';
-	const	MODE_APPLY			= 'APPLY';
+	const	MODE_DISTRIBUTE		= 'DISTRIBUTE';
 	const	MODE_EXPORT			= 'EXPORT';
 	const	MODE_DIRECT_DEBIT	= 'DIRECTDEBIT';
 	
@@ -86,7 +86,7 @@ class Cli_App_Payments extends Cli
 	protected function _preprocess()
 	{
 		// Ensure that Payment Import isn't already running, then identify that it is now running
-		Flex_Process::factory(Flex_Process::PROCESS_PAYMENTS_IMPORT)->lock();
+		Flex_Process::factory(Flex_Process::PROCESS_PAYMENTS_PREPROCESS)->lock();
 		
 		// Optional FileImport.Id parameter
 		$iFileImportId	= $this->_aArgs[self::SWITCH_FILE_IMPORT_ID];
@@ -119,7 +119,7 @@ class Cli_App_Payments extends Cli
 	protected function _process()
 	{
 		// Ensure that Payment Normalisation isn't already running, then identify that it is now running
-		Flex_Process::factory(Flex_Process::PROCESS_PAYMENTS_NORMALISATION)->lock();
+		Flex_Process::factory(Flex_Process::PROCESS_PAYMENTS_PROCESS)->lock();
 		
 		// Optional file_import_data.id parameter
 		$iFileImportDataId	= $this->_aArgs[self::SWITCH_FILE_IMPORT_DATA_ID];
@@ -149,30 +149,22 @@ class Cli_App_Payments extends Cli
 		}
 	}
 	
-	protected function _apply()
+	protected function _distribute()
 	{
 		// Ensure that Payment Processing isn't already running, then identify that it is now running
-		Flex_Process::factory(Flex_Process::PROCESS_PAYMENTS_PROCESSING)->lock();
+		Flex_Process::factory(Flex_Process::PROCESS_PAYMENTS_DISTRIBUTE)->lock();
 		
 		// Optional Payment.Id parameter
 		$iPaymentId	= $this->_aArgs[self::SWITCH_PAYMENT_ID];
 		if ($iPaymentId && ($oPayment = Payment::getForId($iPaymentId)))
 		{
 			Log::getLog()->log("Applying Payment #{$iPaymentId}");
-			$oPayment->process();
+			Logic_Payment::distributeAll(array((int)$iPaymentId));
 			return;
 		}
 		
 		// Apply the Payments
-		try
-		{
-			Payment::processAll();
-		}
-		catch (Exception $oException)
-		{
-			// TODO: Transaction if testing
-			throw $oException;
-		}
+		Logic_Payment::distributeAll();
 	}
 	
 	protected function _export()
@@ -609,14 +601,14 @@ class Cli_App_Payments extends Cli
 			self::SWITCH_MODE => array(
 				self::ARG_LABEL			=> "MODE",
 				self::ARG_REQUIRED		=> TRUE,
-				self::ARG_DESCRIPTION	=> "Payment operation to perform [".self::MODE_PREPROCESS."|".self::MODE_PROCESS."|".self::MODE_APPLY."|".self::MODE_EXPORT."|".self::MODE_DIRECT_DEBIT."]",
-				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("'.self::MODE_PREPROCESS.'","'.self::MODE_PROCESS.'","'.self::MODE_APPLY.'","'.self::MODE_EXPORT.'","'.self::MODE_DIRECT_DEBIT.'"))'
+				self::ARG_DESCRIPTION	=> "Payment operation to perform [".self::MODE_PREPROCESS."|".self::MODE_PROCESS."|".self::MODE_DISTRIBUTE."|".self::MODE_EXPORT."|".self::MODE_DIRECT_DEBIT."]",
+				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("'.self::MODE_PREPROCESS.'","'.self::MODE_PROCESS.'","'.self::MODE_DISTRIBUTE.'","'.self::MODE_EXPORT.'","'.self::MODE_DIRECT_DEBIT.'"))'
 			),
 			
 			self::SWITCH_PAYMENT_ID => array(
 				self::ARG_REQUIRED		=> false,
 				self::ARG_LABEL			=> "PAYMENT_ID",
-				self::ARG_DESCRIPTION	=> "Payment Id (".self::MODE_APPLY." Mode only)",
+				self::ARG_DESCRIPTION	=> "Payment Id (".self::MODE_DISTRIBUTE." Mode only)",
 				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
 			),
 			
@@ -630,7 +622,7 @@ class Cli_App_Payments extends Cli
 			self::SWITCH_FILE_IMPORT_ID => array(
 				self::ARG_REQUIRED		=> false,
 				self::ARG_LABEL			=> "FILE_IMPORT_ID",
-				self::ARG_DESCRIPTION	=> "File Import Id (".self::MODE_PREPROCESS.", ".self::MODE_PROCESS.", ".self::MODE_APPLY." Modes only)",
+				self::ARG_DESCRIPTION	=> "File Import Id (".self::MODE_PREPROCESS.", ".self::MODE_PROCESS.", ".self::MODE_DISTRIBUTE." Modes only)",
 				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
 			),
 			

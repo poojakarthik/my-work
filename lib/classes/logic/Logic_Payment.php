@@ -240,9 +240,7 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 			Log::getLog()->log("({$iProgress}/{$iTotalPayments}) Payment #{$$oPayment->id}");
 
 			// Encase each Payment in a Transaction
-			if (false === DataAccess::getDataAccess()->TransactionStart()) {
-				throw new Exception_Database(DataAccess::getDataAccess()->Error());
-			}
+			DataAccess::getDataAccess()->TransactionStart(false);
 
 			try {
 				// Distribute the Payment
@@ -252,16 +250,12 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 				$oPayment->save();
 			} catch (Exception $oException) {
 				// Rollback and rethrow
-				if (false === DataAccess::getDataAccess()->TransactionRollback()) {
-					throw new Exception_Database(DataAccess::getDataAccess()->Error());
-				}
+				DataAccess::getDataAccess()->TransactionRollback(false);
 				throw $oException;
 			}
 
 			// Commit
-			if (false === DataAccess::getDataAccess()->TransactionCommit()) {
-				throw new Exception_Database(DataAccess::getDataAccess()->Error());
-			}
+			DataAccess::getDataAccess()->TransactionCommit(false);
 		}
 
 		Log::getLog()->log("Processed {$iTotalPayments} Payments in ".round($oStopwatch->lap(), 1).'s');
