@@ -11,52 +11,43 @@ class Logic_Collectable implements DataLogic , Logic_Distributable,  Logic_Payab
     const CREDIT = 1;
 
 
-    protected $oDO;
-    protected $oAccount;
-    protected $aFromTransfers;
-    protected $aToTransfers;
-    protected $aPayments;
-    protected $aAdjustments;
+    protected $oDO;      
     protected $oPromise;
 
-        protected static $aInstances = array();
-
-
-
-
-
-
+	protected static $aInstances = array();
 
 
     public static function getInstance($mDefinition, $bRefreshCache = FALSE)
     {
-	$oDO = null;
-	if (is_numeric($mDefinition))
-	{
-		$oDO = Collectable::getForId($mDefinition);
-	}
-	else if (get_class($mDefinition) == 'Collectable')
-	{
-		$oDO = $mDefinition;
-	}
+		$oDO = null;
+		if (is_numeric($mDefinition))
+		{
+			$oDO = Collectable::getForId($mDefinition);
+		}
+		else if (get_class($mDefinition) == 'Collectable')
+		{
+			$oDO = $mDefinition;
+		}
 
-	if (!$bRefreshCache && $oDO !== null && $oDO->id !== null && in_array($oDO->id, array_keys(self::$aInstances)))
-	{
-	    return self::$aInstances[$oDO->id];
-	}
-	else
-	{
-	    $oLogic = new self($oDO);
-	    self::$aInstances[$oDO->id]	= $oLogic;
-	    return $oLogic;
-	}
+		if ($oDO !== null && $oDO->id !== null && in_array($oDO->id, array_keys(self::$aInstances)))
+		{
+			if ($bRefreshCache)
+				self::$aInstances[$oDO->id]->refreshData($oDO);
+			return self::$aInstances[$oDO->id];
+		}
+		else
+		{
+			$oLogic = new self($oDO);
+			self::$aInstances[$oDO->id]	= $oLogic;
+			return $oLogic;
+		}
     }
 
 
-   private function __construct($mDefinition)
-    {
-        $this->oDO = is_numeric($mDefinition) ? Collectable::getForId($mDefinition) : (get_class($mDefinition) == 'Collectable' ? $mDefinition : null);
-    }
+	private function __construct($mDefinition)
+	{
+		$this->oDO = is_numeric($mDefinition) ? Collectable::getForId($mDefinition) : (get_class($mDefinition) == 'Collectable' ? $mDefinition : null);
+	}
 
     public function getBalance()
     {
@@ -70,7 +61,7 @@ class Logic_Collectable implements DataLogic , Logic_Distributable,  Logic_Payab
 
     public static function getForAccount($oAccount, $bOnlyWithBalanceOwing = true, $iBalanceType = self::DEBIT, $bBypassCache = false)
     {
-	$aORMs = Collectable::getForAccount($oAccount->Id, $bOnlyWithBalanceOwing, $iBalanceType);
+		$aORMs = Collectable::getForAccount($oAccount->Id, $bOnlyWithBalanceOwing, $iBalanceType);
         $aResult = array();
         foreach ($aORMs as $oORM)
         {
@@ -80,13 +71,10 @@ class Logic_Collectable implements DataLogic , Logic_Distributable,  Logic_Payab
         return $aResult;
     }
     
-   public function getAccount()
-   {
-	return Logic_Account::getInstance($this->account_id);
-   }
-
-
-
+	public function getAccount()
+	{
+		return Logic_Account::getInstance($this->account_id);
+	}
 
     /**
      * If the due date is in the past and the balance > 0 and this is not part of an active promise to pay: return true
@@ -101,10 +89,8 @@ class Logic_Collectable implements DataLogic , Logic_Distributable,  Logic_Payab
           return false;
 
         $bNoPromise		= !($this->belongsToPromise() && $this->getPromise()->isActive());
-
-
         $iDueDateTime          =   strtotime($this->oDO->due_date." 23:59:59");
-	$iNow = $sNow === null ? time() : strtotime($sNow);
+		$iNow = $sNow === null ? time() : strtotime($sNow);
         $bOverdue		= ($iDueDateTime < $iNow);
     	return ($bNoPromise && $bOverdue);
     }
@@ -147,24 +133,7 @@ class Logic_Collectable implements DataLogic , Logic_Distributable,  Logic_Payab
     public function belongsToPromise()
     {
     	return ($this->oDO->collection_promise_id !== null);
-    }
-
-    public static function getCollectablesForBatchProcess()
-    {
-       $aORMs 			= Collectable::getCollectablesForBatchProcess();
-       $aCollectables 	= array();
-       $aPromises 		= array();
-       foreach($aORMs as $oORM)
-       {
-	    $oCollectable = new self($oORM);
-	    if (!in_array($oORM->account_id, array_keys($aCollectables)))
-	    {
-		$aCollectables[$oORM->account_id] = array();
-	    }
-	    $aCollectables[$oORM->account_id][] = $oCollectable;
-       }
-       return $aCollectables;
-    }
+    }   
 
     public function save()
     {
@@ -175,11 +144,10 @@ class Logic_Collectable implements DataLogic , Logic_Distributable,  Logic_Payab
     {
 	    $aArray =  $this->oDO->toArray();
 	    return $aArray;
-
-
     }
 	
-   public function __get($sField) {
+	public function __get($sField)
+	{
 
        switch($sField)
        {
@@ -204,15 +172,10 @@ class Logic_Collectable implements DataLogic , Logic_Distributable,  Logic_Payab
        }
     }
 
-        public function display()
-        {
-             ////Log::getLog()->log('Details of Collectable '.$this->id);
-             ////Log::getLog()->log('Account: '.$this->account_id);
-             ////Log::getLog()->log('Amount: '.$this->amount);
-             ////Log::getLog()->log('Balance: '.$this->balance);
-             ////Log::getLog()->log('Due Date: '.$this->due_date);
-             ////Log::getLog()->log('Promise: '.$this->promise_id);
-        }
+	public function display()
+	{
+
+	}
 
     public function isCredit() {
         return $this->amount < 0;
@@ -222,9 +185,17 @@ class Logic_Collectable implements DataLogic , Logic_Distributable,  Logic_Payab
         return $this->amount > 0;
     }
 
+	private function refreshData(Collectable $oFreshDataObject)
+	{
+		$this->oDO = $oFreshDataObject;
+		$this->oPromise = NULL;
+	}
+
     public static function clearCache() {
         self::$aInstances = array();
         Collectable::clearCache();
     }
+
+	
 }
 ?>
