@@ -311,7 +311,7 @@ class DataAccess
 	 *
 	 * @method
 	 */
-	function TransactionStart()
+	function TransactionStart($bSilentFail=true)
 	{
 		if ($this->_bolHasTransaction)
 		{
@@ -333,7 +333,10 @@ class DataAccess
 				// Failure
 				// TODO: Throw an Exception
 				//throw new Exception("Unable to create Savepoint with UID '{$strSavepointUID}'}: ".$this->refMysqliConnection->error);
-				return false;
+				if ($bSilentFail !== false) {
+					return false;
+				}
+				throw new Exception_Database_Transaction("Unable to create Savepoint with UID '{$strSavepointUID}'}: ".$this->refMysqliConnection->error);
 			}
 			
 			array_push($this->_arrSavepoints, $strSavepointUID);
@@ -353,7 +356,13 @@ class DataAccess
 			register_shutdown_function(Array($this, "__shutdown"));
 			
 			// Disable Auto-Commit
-			return $this->refMysqliConnection->autocommit(false);
+			if (!$this->refMysqliConnection->autocommit(false)) {
+				if ($bSilentFail !== false) {
+					return false;
+				}
+				throw new Exception_Database_Transaction("Unable to start a Transaction: ".$this->refMysqliConnection->error);
+			}
+			return true;
 		}
 	}
 	
@@ -372,7 +381,7 @@ class DataAccess
 	 *
 	 * @method
 	 */
-	function TransactionRollback()
+	function TransactionRollback($bSilentFail=true)
 	{
 		if (!$this->_bolHasTransaction)
 		{
@@ -382,7 +391,10 @@ class DataAccess
 			}
 			
 			// No transaction to roll back
-			return false;
+			if ($bSilentFail !== false) {
+				return false;
+			}
+			throw new Exception_Database_Transaction("No Transaction to rollback");
 		}
 		elseif (count($this->_arrSavepoints))
 		{
@@ -403,7 +415,10 @@ class DataAccess
 				
 				// Failure
 				// TODO: Throw an Exception
-				return false;
+				if ($bSilentFail !== false) {
+					return false;
+				}
+				throw new Exception_Database_Transaction("Unable to rollback to Savepoint with UID '{$strSavepointUID}'}: ".$this->refMysqliConnection->error);
 			}
 		}
 		else
@@ -415,7 +430,13 @@ class DataAccess
 			
 			// Roll back, then disable transactioning
 			$this->_bolHasTransaction	= false;
-			return ($this->refMysqliConnection->rollback() && $this->refMysqliConnection->autocommit(true));
+			if (!($this->refMysqliConnection->rollback() && $this->refMysqliConnection->autocommit(true))) {
+				if ($bSilentFail !== false) {
+					return false;
+				}
+				throw new Exception_Database_Transaction("Unable to rollback the Transaction: ".$this->refMysqliConnection->error);
+			}
+			return true;
 		}
 	}
 	
@@ -434,7 +455,7 @@ class DataAccess
 	 *
 	 * @method
 	 */
-	function TransactionCommit()
+	function TransactionCommit($bSilentFail=true)
 	{
 		if (!$this->_bolHasTransaction)
 		{
@@ -444,7 +465,10 @@ class DataAccess
 			}
 			
 			// No transaction to commit
-			return false;
+			if ($bSilentFail !== false) {
+				return false;
+			}
+			throw new Exception_Database_Transaction("No Transaction to commit");
 		}
 		elseif (count($this->_arrSavepoints))
 		{
@@ -465,7 +489,10 @@ class DataAccess
 				
 				// Failure
 				// TODO: Throw an Exception
-				return false;
+				if ($bSilentFail !== false) {
+					return false;
+				}
+				throw new Exception_Database_Transaction("Unable to commit/release Savepoint with UID '{$strSavepointUID}'}: ".$this->refMysqliConnection->error);
 			}
 			else
 			{
@@ -502,7 +529,13 @@ class DataAccess
 				}
 			}
 			
-			return ($bCommitted && $bAutoCommit);
+			if (!$bCommitted || !$bAutoCommit) {
+				if ($bSilentFail !== false) {
+					return false;
+				}
+				throw new Exception_Database_Transaction("Unable to commit the Transaction: ".$this->refMysqliConnection->error);
+			}
+			return true;
 		}
 	}
 	

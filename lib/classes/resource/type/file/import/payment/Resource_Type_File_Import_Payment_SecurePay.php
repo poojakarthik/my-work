@@ -109,13 +109,14 @@ class Resource_Type_File_Import_Payment_SecurePay extends Resource_Type_File_Imp
  		}
  		
  		// Transaction Data
+		$aTransactionData	= array();
 		$iTransactionType	= (int)$oRecord->TransactionType;
  		switch ($iTransactionType)
  		{
  			case self::TRANSACION_TYPE_CREDIT_CARD:
  			case self::TRANSACION_TYPE_IVR_CREDIT_CARD:
  			case self::TRANSACION_TYPE_BATCH_PAYMENT:
-		 		$oPaymentResponse->origin_id	= $oRecord->AbbreviatedCreditCardNumber;
+		 		$aTransactionData[]	= Payment_Transaction_Data::factory(Payment_Transaction_Data::CREDIT_CARD_NUMBER, $oRecord->AbbreviatedCreditCardNumber);
  				break;
  			
  			default:
@@ -136,7 +137,9 @@ class Resource_Type_File_Import_Payment_SecurePay extends Resource_Type_File_Imp
 		elseif (array_key_exists($iResponseCode, self::$_aResponseCodes['aDeclined']))
 		{
 			// Rejection/Dishonour
-			$oPaymentResponse->payment_response_type_id	= PAYMENT_RESPONSE_TYPE_REJECTION;
+			$oPaymentResponse->payment_response_type_id		= PAYMENT_RESPONSE_TYPE_REJECTION;
+			$oPaymentResponse->payment_reversal_type_id		= PAYMENT_REVERSAL_TYPE_DISHONOUR;
+			$oPaymentResponse->payment_reversal_reason_id	= Payment_Reversal_Reason::getForSystemName('DISHONOUR_REVERSAL');
 		}
 		else
 		{
@@ -145,7 +148,10 @@ class Resource_Type_File_Import_Payment_SecurePay extends Resource_Type_File_Imp
 		
 		// Return an Array of Records added/modified
 		//--------------------------------------------------------------------//
-		return array($oPaymentResponse);
+		return array(
+			'oPaymentResponse'	=> $oPaymentResponse,
+			'aTransactionData'	=> $aTransactionData
+		);
 	}
 	
 	public static function calculateRecordType($sLine)

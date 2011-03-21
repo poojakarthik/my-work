@@ -14,9 +14,9 @@ class Cli_App_Payments extends Cli
 	const	SWITCH_FILE_IMPORT_ID		= 'f';
 	const	SWITCH_FILE_IMPORT_DATA_ID	= 'd';
 	const	SWITCH_LIMIT				= 'x';
-	
+
+	const	MODE_PREPROCESS		= 'PREPROCESS';
 	const	MODE_PROCESS		= 'PROCESS';
-	const	MODE_NORMALISE		= 'NORMALISE';
 	const	MODE_APPLY			= 'APPLY';
 	const	MODE_EXPORT			= 'EXPORT';
 	const	MODE_DIRECT_DEBIT	= 'DIRECTDEBIT';
@@ -83,7 +83,7 @@ class Cli_App_Payments extends Cli
 		}
 	}
 	
-	protected function _process()
+	protected function _preprocess()
 	{
 		// Ensure that Payment Import isn't already running, then identify that it is now running
 		Flex_Process::factory(Flex_Process::PROCESS_PAYMENTS_IMPORT)->lock();
@@ -116,7 +116,7 @@ class Cli_App_Payments extends Cli
 		}
 	}
 	
-	protected function _normalise()
+	protected function _process()
 	{
 		// Ensure that Payment Normalisation isn't already running, then identify that it is now running
 		Flex_Process::factory(Flex_Process::PROCESS_PAYMENTS_NORMALISATION)->lock();
@@ -609,8 +609,8 @@ class Cli_App_Payments extends Cli
 			self::SWITCH_MODE => array(
 				self::ARG_LABEL			=> "MODE",
 				self::ARG_REQUIRED		=> TRUE,
-				self::ARG_DESCRIPTION	=> "Payment operation to perform [".self::MODE_PROCESS."|".self::MODE_NORMALISE."|".self::MODE_APPLY."|".self::MODE_EXPORT."|".self::MODE_DIRECT_DEBIT."]",
-				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("'.self::MODE_PROCESS.'","'.self::MODE_NORMALISE.'","'.self::MODE_APPLY.'","'.self::MODE_EXPORT.'","'.self::MODE_DIRECT_DEBIT.'"))'
+				self::ARG_DESCRIPTION	=> "Payment operation to perform [".self::MODE_PREPROCESS."|".self::MODE_PROCESS."|".self::MODE_APPLY."|".self::MODE_EXPORT."|".self::MODE_DIRECT_DEBIT."]",
+				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("'.self::MODE_PREPROCESS.'","'.self::MODE_PROCESS.'","'.self::MODE_APPLY.'","'.self::MODE_EXPORT.'","'.self::MODE_DIRECT_DEBIT.'"))'
 			),
 			
 			self::SWITCH_PAYMENT_ID => array(
@@ -623,21 +623,21 @@ class Cli_App_Payments extends Cli
 			self::SWITCH_PAYMENT_RESPONSE_ID => array(
 				self::ARG_REQUIRED		=> false,
 				self::ARG_LABEL			=> "PAYMENT_RESPONSE_ID",
-				self::ARG_DESCRIPTION	=> "Payment Response Id (".self::MODE_NORMALISE." Mode only)",
+				self::ARG_DESCRIPTION	=> "Payment Response Id (".self::MODE_PROCESS." Mode only)",
 				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
 			),
 			
 			self::SWITCH_FILE_IMPORT_ID => array(
 				self::ARG_REQUIRED		=> false,
 				self::ARG_LABEL			=> "FILE_IMPORT_ID",
-				self::ARG_DESCRIPTION	=> "File Import Id (".self::MODE_PROCESS.", ".self::MODE_NORMALISE.", ".self::MODE_APPLY." Modes only)",
+				self::ARG_DESCRIPTION	=> "File Import Id (".self::MODE_PREPROCESS.", ".self::MODE_PROCESS.", ".self::MODE_APPLY." Modes only)",
 				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
 			),
 			
 			self::SWITCH_LIMIT => array(
 				self::ARG_REQUIRED		=> false,
 				self::ARG_LABEL			=> "LIMIT",
-				self::ARG_DESCRIPTION	=> "Limit/Maximum Items to Process (".self::MODE_PROCESS.", ".self::MODE_NORMALISE." Modes only)",
+				self::ARG_DESCRIPTION	=> "Limit/Maximum Items to Process (".self::MODE_PREPROCESS.", ".self::MODE_PROCESS." Modes only)",
 				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
 			)
 		);

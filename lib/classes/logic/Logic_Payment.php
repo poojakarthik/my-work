@@ -105,7 +105,7 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 				case PAYMENT_RESPONSE_TYPE_REJECTION:
 					if ($this->oDO->getReversal() === null) {
 						// Not yet reversed, Reverse the Payment
-						$this->reverse(Payment_Reversal_Reason::getForSystemName('DISHONOUR_REVERSAL')->id);
+						$this->reverse(isset($oLatestPaymentResponse->payment_reversal_reason_id) ? $oLatestPaymentResponse->payment_reversal_reason_id : Payment_Reversal_Reason::getForSystemName('DISHONOUR_REVERSAL')->id);
 						Log::getLog()->log("Payment Reversed");
 					}
 					break;

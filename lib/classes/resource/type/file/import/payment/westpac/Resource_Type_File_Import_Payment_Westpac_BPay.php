@@ -63,8 +63,7 @@ class Resource_Type_File_Import_Payment_Westpac_BPay extends Resource_Type_File_
 		$iClientReferenceCheckDigit		= (int)substr($sClientReference, -1);
  		$oPaymentResponse->account_id	= (int)substr($sClientReference, 0, -1);
 		$iCalculatedAccountCheckDigit	= (int)MakeLuhn($oPaymentResponse->account_id);
-		if ($iCalculatedAccountCheckDigit !== $iClientReferenceCheckDigit)
-		{
+		if ($iCalculatedAccountCheckDigit !== $iClientReferenceCheckDigit) {
 			throw new Exception("Client Reference Check Digit '{$iClientReferenceCheckDigit}' doesn't match calculated value of '{$iCalculatedAccountCheckDigit}' for Account '{$oPaymentResponse->account_id}'");
 		}
  		
@@ -74,8 +73,8 @@ class Resource_Type_File_Import_Payment_Westpac_BPay extends Resource_Type_File_
  		// Payment Type
 		$oPaymentResponse->payment_type_id	= PAYMENT_TYPE_BPAY;
  		
- 		// Origin Id
- 		// No Origin
+ 		// Transaction Data
+ 		// No additional transaction data
  		
  		// Transaction Reference
  		$oPaymentResponse->transaction_reference	= $oRecord->ReceiptNumber;
@@ -85,7 +84,9 @@ class Resource_Type_File_Import_Payment_Westpac_BPay extends Resource_Type_File_
 		
 		// Return an Array of Records added/modified
 		//--------------------------------------------------------------------//
-		return array($oPaymentResponse);
+		return array(
+			'oPaymentResponse'	=> $oPaymentResponse
+		);
 	}
 	
 	public static function calculateRecordType($sLine)

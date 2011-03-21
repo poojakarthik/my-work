@@ -119,8 +119,10 @@ class Resource_Type_File_Import_Payment_AustralianDirectEntry extends Resource_T
  				break;
  		}
  		
- 		// Origin Id
- 		$oPaymentResponse->origin_id	= $oRecord->AccountNumber;
+ 		// Transaction Data
+		$aTransactionData	= array(
+			Payment_Transaction_Data::factory(Payment_Transaction_Data::BANK_ACCOUNT_NUMBER, $oRecord->AccountNumber)
+		);
  		
  		// Transaction Reference
  		$oPaymentResponse->transaction_reference	= $sLodgementReference;
@@ -132,7 +134,9 @@ class Resource_Type_File_Import_Payment_AustralianDirectEntry extends Resource_T
  				$oPaymentResponse->payment_response_type_id	= PAYMENT_RESPONSE_TYPE_CONFIRMATION;
  				break;
  			case self::STATUS_INDICATOR_RECALL:
- 				$oPaymentResponse->payment_response_type_id	= PAYMENT_RESPONSE_TYPE_REJECTION;
+ 				$oPaymentResponse->payment_response_type_id		= PAYMENT_RESPONSE_TYPE_REJECTION;
+				$oPaymentResponse->payment_reversal_type_id		= PAYMENT_REVERSAL_TYPE_DISHONOUR;
+				$oPaymentResponse->payment_reversal_reason_id	= Payment_Reversal_Reason::getForSystemName('DISHONOUR_REVERSAL');
  				break;
  			default:
  				throw new Exception("Unhandled Status Indicator '{$oRecord->StatusIndicator}'");
@@ -141,7 +145,10 @@ class Resource_Type_File_Import_Payment_AustralianDirectEntry extends Resource_T
 		
 		// Return an Array of Records added/modified
 		//--------------------------------------------------------------------//
-		return array($oPaymentResponse);
+		return array(
+			'oPaymentResponse'	=> $oPaymentResponse,
+			'aTransactionData'	=> $aTransactionData
+		);
 	}
 	
 	public static function calculateRecordType($sLine)

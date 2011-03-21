@@ -94,8 +94,8 @@ class Resource_Type_File_Import_Payment_Motorpass extends Resource_Type_File_Imp
  		// Payment Type
 		$oPaymentResponse->payment_type_id	= PAYMENT_TYPE_REBILL_PAYOUT;
  		
- 		// Origin Id
- 		// No Origin
+ 		// Transaction Data
+ 		// No Transaction Data
  		
  		// Transaction Reference
  		$oPaymentResponse->transaction_reference	= $sReference;
@@ -105,7 +105,9 @@ class Resource_Type_File_Import_Payment_Motorpass extends Resource_Type_File_Imp
 		
 		// Return an Array of Records added/modified
 		//--------------------------------------------------------------------//
-		return array($oPaymentResponse);
+		return array(
+			'oPaymentResponse'	=> $oPaymentResponse
+		);
 	}
 	
 	public static function calculateRecordType($sLine)
