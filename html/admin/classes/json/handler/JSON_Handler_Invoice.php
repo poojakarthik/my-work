@@ -366,7 +366,8 @@ class JSON_Handler_Invoice extends JSON_Handler
 												'bUserHasOperatorPerm' 	=> $bUserHasOperatorPerm,
 												'bUserHasViewPerm' 		=> $bUserHasViewPerm,
 												'bUserHasExternalPerm' 	=> $bUserHasExternalPerm,
-												'bUserHasInterimPerm'	=> $bUserHasInterimPerm
+												'bUserHasInterimPerm'	=> $bUserHasInterimPerm,
+												'bUserIsGod'			=> $bUserIsGod
 											)
 					);
 		}

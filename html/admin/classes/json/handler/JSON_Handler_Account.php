@@ -1527,6 +1527,24 @@ class JSON_Handler_Account extends JSON_Handler
 		}
 	}
 	
+	public function redistributeBalance($iAccountId)
+	{
+		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		try
+		{
+			Logic_Account::getInstance($iAccountId)->redistributeBalances();
+			return array('bSuccess' => true);
+		}
+		catch (Exception $e)
+		{
+			return 	array(
+						'bSuccess'	=> false,
+						'sMessage'	=> ($bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'),
+						'sDebug'	=> ($bUserIsGod ? $this->_JSONDebug : '')
+					);
+		}
+	}
+	
 	private function _getRebill($iAccountId)
 	{
 		$oRebill	= Rebill::getForAccountId($iAccountId);

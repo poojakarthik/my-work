@@ -99,6 +99,16 @@ var Component_Account_Invoice_List = Class.create(
 			true
 		);
 		
+		// Redistribute balances button (god users only)
+		if (this._oPermissions.bUserIsGod)
+		{
+			oSection.addToHeaderOptions(
+				$T.button({class: 'icon-button'},
+					$T.span('Redistribute Account Balance')	
+				).observe('click', this._redistributeAccountBalance.bind(this, null))
+			);
+		}
+		
 		// Add in button to Generate a Final/Interim Invoice
 		if (this._iInterimInvoiceType && this._oPermissions.bUserHasInterimPerm)
 		{
@@ -350,7 +360,7 @@ var Component_Account_Invoice_List = Class.create(
 							);
 			}
 			
-			if (bUserHasViewPerm)//&& oData.has_unarchived_cdrs)
+			if (bUserHasViewPerm && oData.has_unarchived_cdrs)
 			{
 				// Build the "View Invoice Details" link
 				var oViewInvoiceIcon = $T.img({class: 'pointer', src: Component_Account_Invoice_List.ICON_IMAGE_SOURCE, alt: 'View Invoice Details', title: 'View Invoice Details'});
@@ -486,6 +496,29 @@ var Component_Account_Invoice_List = Class.create(
 	_viewInvoice : function(iInvoiceId)
 	{
 		new Popup_Invoice_View(iInvoiceId);
+	},
+	
+	_redistributeAccountBalance : function(oResponse, oEvent)
+	{
+		if (!oResponse)
+		{
+			this._oLoading = new Reflex_Popup.Loading();
+			this._oLoading.display();
+			
+			var fnResp	= this._redistributeAccountBalance.bind(this);
+			var fnReq	= jQuery.json.jsonFunction(fnResp, fnResp, 'Account', 'redistributeBalance');
+			fnReq(this._iAccountId);
+			return;
+		}
+		
+		if (!oResponse.bSuccess)
+		{
+			Component_Account_Invoice_List._ajaxError(oResponse);
+			return;
+		}
+		
+		this._oLoading.hide();
+		delete this._oLoading;
 	}
 });
 

@@ -11070,7 +11070,7 @@ div.component-collections-scenario > table.reflex
 
 .component-account-invoice-list > .section .section-header .icon-button
 {
-	margin	: 0em !important;
+	margin	: 0em 0em 0em 0.5em !important;
 }
 
 .component-account-invoice-list > .section .section-footer > ul.reset
