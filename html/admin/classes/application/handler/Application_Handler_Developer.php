@@ -225,7 +225,8 @@ class Application_Handler_Developer extends Application_Handler
           //  }
             try
             {
-                $aAccounts = Account::getForBalanceRedistribution(1000005012);
+                $aAccounts = Account::getForBalanceRedistribution(1000154811);
+				
 		foreach ($aAccounts as $oAccount)
 		{
 		    Log::getLog()->log($oAccount->Id);
@@ -297,7 +298,7 @@ class Application_Handler_Developer extends Application_Handler
                             try
                             {
                                 $aPromises =  Logic_Collection_Promise::getActivePromises();
-                               // Logic_Collection_Promise::batchProcess($aPromises);
+                                //Logic_Collection_Promise::batchProcess($aPromises);
                             }
                             catch (Exception $e)
                             {
@@ -329,7 +330,8 @@ class Application_Handler_Developer extends Application_Handler
                             {
                                  //Log::getLog()->log('&&&&&&&&& Accounts Batch Process Iteration '.$iAccountsBatchProcessIteration++.'  &&&&&&&&&&&&&');
                                 $aExcludedAccounts = Logic_Collection_BatchProcess_Report::getAccountsWithExceptions();
-                                $aAccounts = array(Logic_Account::getInstance(1000165623));//Logic_Account::getForBatchCollectionProcess($aExcludedAccounts);
+                               // $aAccounts = Logic_Account::getForBatchCollectionProcess($aExcludedAccounts);
+								$aAccounts = array(Logic_Account::getInstance(1000164275));//Logic_Account::getForBatchCollectionProcess($aExcludedAccounts);
                                 $iCompletedInstances = Logic_Account::batchProcessCollections($aAccounts);
 
                                 while ($iCompletedInstances > 0)
