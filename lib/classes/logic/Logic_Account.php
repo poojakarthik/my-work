@@ -8,7 +8,9 @@
 class Logic_Account implements DataLogic
 {
 
-    const	    SCENARIO_OFFSET_USED_TO_DETERMINE_EXIT_COLLECTIONS = FALSE;
+    const			SCENARIO_OFFSET_USED_TO_DETERMINE_EXIT_COLLECTIONS = FALSE;
+	const			CACHE_MODE_BYPASS = 'bypass';
+	const			CACHE_MODE_REFRESH = 'refresh';
 
     protected	    $oDO;
     protected	    $aActiveScenarioInstances;
@@ -29,44 +31,60 @@ class Logic_Account implements DataLogic
     protected static $aInstances = array();
 
 
-    public static function getInstance($mDefinition, $bRefreshCache = false)
+    public static function getInstance($mDefinition, $sCacheMode = NULL)
     {
-	$oDO = null;
-	if (is_numeric($mDefinition))
-	{
-	    $oDO = Account::getForId($mDefinition);
-	    if ($oDO === null)
-		throw new Exception("Invalid Account Id.....");
-	}
-	else if (get_class($mDefinition) == 'Account' && $mDefinition->Id != null )
-	{
-	    $oDO = $mDefinition;
-	}
-	else
-	{
-	    throw new Exception("Bad definition passed to Logic_Account::getInstance(): parameter should be a valid acount id or an instance of class 'Account' representing an already exisiting account.");
-	}
+		$oDO = null;
+		if (is_numeric($mDefinition))
+		{
+			$oDO = Account::getForId($mDefinition);
+			if ($oDO === null)
+			throw new Exception("Invalid Account Id.....");
+		}
+		else if (get_class($mDefinition) == 'Account' && $mDefinition->Id != null )
+		{
+			$oDO = $mDefinition;
+		}
+		else
+		{
+			throw new Exception("Bad definition passed to Logic_Account::getInstance(): parameter should be a valid acount id or an instance of class 'Account' representing an already exisiting account.");
+		}
 
-	if ($bBypassCache)
-	    return new self($oDO);
+		if ( $sCacheMode === self::CACHE_MODE_BYPASS)
+			return new self($oDO);
 
-	if (!$bRefreshCache && in_array($oDO->Id, array_keys(self::$aInstances)))
-	{
-		return self::$aInstances[$oDO->Id];
-	}
-	else
-	{
-	    $oInstance = new self($oDO);
-	    self::$aInstances[$oDO->Id]	= $oInstance;
-	    return $oInstance;
-
-	}
-
-	
+		if  (in_array($oDO->Id, array_keys(self::$aInstances)))
+		{
+			if ($sCacheMode === self::CACHE_MODE_REFRESH)
+				self::$aInstances[$oDO->Id]->refreshData($oDO);
+			return self::$aInstances[$oDO->Id];
+		}
+		else
+		{
+			$oInstance = new self($oDO);
+			self::$aInstances[$oDO->Id]	= $oInstance;
+			return $oInstance;
+		}
 
     }
 
+	private static function importCache($aCache)
+	{
+		self::$aInstances = $aCache;
+	}
 
+	private function refreshData(Account $oDO)
+	{
+		$this->oDO = $oDO;
+		$this->aActiveScenarioInstances = NULL;
+		$this->aCollectables = NULL;
+		$this->aPayments  = NULL;
+		$this->aAdjustments = NULL;
+		$this->_aPayables = NULL;
+		$this->oActivePromise = NULL;
+		$this->bPreviousEventNotCompleted = NULL;
+		$this->bNoNextEventFound = false;
+		$this->oException = NULL;
+	}
 
     private function __construct($mDefinition)
     {
@@ -337,42 +355,42 @@ class Logic_Account implements DataLogic
      */
     public function scheduleNextScenarioEvent()
     {
-	$bShouldBeInCollections = $this->shouldCurrentlyBeInCollections();
-	$bIsCurrentlyInCollections = $this->isCurrentlyInCollections();
+		$bShouldBeInCollections = $this->shouldCurrentlyBeInCollections();
+		$bIsCurrentlyInCollections = $this->isCurrentlyInCollections();
 
-        if ($bIsCurrentlyInCollections && !$bShouldBeInCollections)
-        {
-		$oEventInstance = Logic_Collection_Event_Instance::schedule($this, COLLECTION_EVENT_TYPE_IMPLEMENTATION_EXIT_COLLECTIONS);
-		$oEventInstance->_registerWithArray();
-	}
-	else if ($bShouldBeInCollections)
-	{
-	    // Schedule the next scheduled event. Get the Logic_Collection_Scenario_Event object that should be scheduled
-	    $oNextScenarioEvent = $this->getNextCollectionScenarioEvent();
-	    if ($oNextScenarioEvent !== null)
-	    {
-		$oEventInstance = Logic_Collection_Event_Instance::schedule($this, $oNextScenarioEvent);
-		if ($oEventInstance->getInvocationId() != COLLECTION_EVENT_INVOCATION_MANUAL)
+		if ($bIsCurrentlyInCollections && !$bShouldBeInCollections)
 		{
-		    Log::getLog()->log("The event will be invoked and completed automatically");
-		    $oEventInstance->_registerWithArray();
+			$oEventInstance = Logic_Collection_Event_Instance::schedule($this, COLLECTION_EVENT_TYPE_IMPLEMENTATION_EXIT_COLLECTIONS);
+			$oEventInstance->_registerWithArray();
 		}
-		else
+		else if ($bShouldBeInCollections)
 		{
-		    Log::getLog()->log("The event will require manual completion through Flex");
-		    Logic_Collection_BatchProcess_Report::addEvent($oEventInstance);
-		}
-	    }
-	    else
-	    {
-		if ($this->previousEventNotCompleted())
-		    Log::getLog()->log("No next event was scheduled because a previous event is still awaiting manual completion.");
-		else
-		    Log::getLog()->log("Day offset since last event did not result in next event");
-		Logic_Collection_BatchProcess_Report::addAccount($this);
-	    }
+			// Schedule the next scheduled event. Get the Logic_Collection_Scenario_Event object that should be scheduled
+			$oNextScenarioEvent = $this->getNextCollectionScenarioEvent();
+			if ($oNextScenarioEvent !== null)
+			{
+				$oEventInstance = Logic_Collection_Event_Instance::schedule($this, $oNextScenarioEvent);
+				if ($oEventInstance->getInvocationId() != COLLECTION_EVENT_INVOCATION_MANUAL)
+				{
+					Log::getLog()->log("The event will be invoked and completed automatically");
+					$oEventInstance->_registerWithArray();
+				}
+				else
+				{
+					Log::getLog()->log("The event will require manual completion through Flex");
+					Logic_Collection_BatchProcess_Report::addEvent($oEventInstance);
+				}
+			}
+			else
+			{
+				if ($this->previousEventNotCompleted())
+					Log::getLog()->log("No next event was scheduled because a previous event is still awaiting manual completion.");
+				else
+					Log::getLog()->log("Day offset since last event did not result in next event");
+				Logic_Collection_BatchProcess_Report::addAccount($this);
+			}
 
-	}
+		}
 
 
     }
@@ -388,12 +406,12 @@ class Logic_Account implements DataLogic
      * @param <type> to specify either debit or credit collectables
      * @return all collectables of the specified type with balance > 0
      */
-    public function getCollectables($iType = Logic_Collectable::DEBIT, $bBypassCache = false)
+    public function getCollectables($iType = Logic_Collectable::DEBIT, $bRefreshCache = false)
     {
-        if ($this->aCollectables === null || $bBypassCache)
+        if ($this->aCollectables === null || $bRefreshCache)
         {
-            $this->aCollectables[Logic_Collectable::DEBIT] = Logic_Collectable::getForAccount($this, true, Logic_Collectable::DEBIT, $bBypassCache);
-            $this->aCollectables[Logic_Collectable::CREDIT] = Logic_Collectable::getForAccount($this, true,Logic_Collectable::CREDIT, $bBypassCache );
+            $this->aCollectables[Logic_Collectable::DEBIT] = Logic_Collectable::getForAccount($this, true, Logic_Collectable::DEBIT, $bRefreshCache);
+            $this->aCollectables[Logic_Collectable::CREDIT] = Logic_Collectable::getForAccount($this, true,Logic_Collectable::CREDIT, $bRefreshCache);
         }
         return $iType === null ? $this->aCollectables : $this->aCollectables [$iType];
     }
@@ -594,31 +612,26 @@ class Logic_Account implements DataLogic
 
     public function redistributeBalances()
     {
-        //1. delete all records for this account in the following tables: collectable_adjustment; collectable_payment; collectable_transfer where collectable_transfer_type == COLLECTABLE_TRANSFER_TYPE_BALANCE
+        // delete all records for this account in the following tables: collectable_adjustment; collectable_payment; collectable_transfer where collectable_transfer_type == COLLECTABLE_TRANSFER_TYPE_BALANCE
         Collectable_Adjustment::deleteForAccount($this->id);
         Collectable_Payment::deleteForAccount($this->id);
         Collectable_Transfer_Balance::deleteForAccount($this->id);
 
-        //2. for each of the following tables, for records belonging to this account, set .balance = .amount: adjustment; payment; collectable
+        //set .balance = .amount for adjustment; payment; collectable
         Adjustment::resetBalanceForAccount($this->id);
-        Payment::resetBalanceForAccount($this->id);
-        Collectable::resetBalanceForAccount($this->id);
-
+        Payment::resetBalanceForAccount($this->id);        
+		//The following statement will directly access the database and modify collectable balances, so we need to subsequently force a cahce refresh on the Logic_Collectable class.
+		Collectable::resetBalanceForAccount($this->id);
+		Logic_Collectable::clearCache();
+		$this->getPayables(TRUE);
+		$this->getCollectables(Logic_Collectable::CREDIT, TRUE);
 
         $iIterations = 0;
 
-        while ((($this->getPayableBalance(TRUE) > 0 && $this->getDistributableCreditBalance() > 0)
+        while ((($this->getPayableBalance() > 0 && $this->getDistributableCreditBalance() > 0)
                 || ($this->hasPayablesWithBalanceBelowAmount() && $this->getDistributableDebitBalance() > 0))) 
         {
             $iIterations++;
-//            //Log::getLog()->log("Pre Iteration $iIterations");
-//            //Log::getLog()->log("@@@@@ Account $this->id Collectable Balance: ".$this->getCollectableBalance(Logic_Collectable::DEBIT));
-//            //Log::getLog()->log("Distributable Credit Balance: ".$this->getDistributableCreditBalance() );
-//            //Log::getLog()->log("Distributable Debit Balance: ".$this->getDistributableDebitBalance());
-
-            ////Log::getLog()->log("&&&CREDIT BALANCE REDISTRIBUTION &&&");
-            //3. process all credit balances for this account in the tables mentioned in step 2. see below for the rules
-
            $aCreditCollectable = $this->getCollectables(Logic_Collectable::CREDIT);
             //Log::getLog()->log("after get credit collectables,".memory_get_usage(true));
             foreach ($aCreditCollectable as $oCollectable)
@@ -650,32 +663,7 @@ class Logic_Account implements DataLogic
            // self::$aMemory['after_processing_debits'] = memory_get_usage (TRUE );
         }
 
-//        $aCollectables = $this->getCollectables(Logic_Collectable::DEBIT);
-//       $oReport = new Logic_Spreadsheet(array( 'account_id', 'amount', 'balance', 'created', 'due_date', 'promise_id', 'invoice_id', 'id'));
-//        foreach ($aCollectables as $oCollectable)
-//       {
-//            $oReport->addRecord($oCollectable->toArray());
-//        }
-//
-//       $sPath = FILES_BASE_PATH.'temp/';
-//
-//           $sTimeStamp = str_replace(array(' ',':','-'), '',Data_Source_Time::currentTimestamp());
-//           $sFilename	= "$this->id"."_Collections_Balance_Redistribution_Report_$sTimeStamp.csv";
-//          $oReport->saveAs( $sPath.$sFilename, "CSV");
-//
-//            //send the email
-//            $sFile = file_get_contents($sPath.$sFilename);
-//            $oEmail	=  new Email_Notification(1);
-//            $oEmail->addAttachment($sFile, $sFilename, 'text/csv');
-//            //$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
-//            $oEmail->setSubject('Collections Balance Redistribution Report');
-//           $oEmail->setBodyText("Report Testing");
-//
-//            $oEmail->send();
-//       //Log::getLog()->log("Post:");
-//       //Log::getLog()->log("Account Collectable Balance: ".$this->getCollectableBalance(Logic_Collectable::DEBIT));
-//       //Log::getLog()->log("Distributable Credit Balance: ".$this->getDistributableCreditBalance() );
-//       //Log::getLog()->log("Distributable Debit Balance: ".$this->getDistributableDebitBalance());
+
         return array('iterations'=>$iIterations, 'Debit Collectables' =>count($this->getCollectables()), 'Credit Collectables'=> count($aCreditCollectable) , 'Credit Payments' =>count($aPayments) , 'Credit Adjustments'=> count($aAdjustments), 'Debit Payments' => count($aReversedPayments) , 'Debit Adjustments' =>count($aDebitAdjustments), 'Balance'=>$this->getPayableBalance() );
     }
 
@@ -916,41 +904,42 @@ class Logic_Account implements DataLogic
 
         foreach ($aAccounts as $iIndex => $oAccountORM)
         {
-	    $oDataAccess = DataAccess::getDataAccess();
+			$oDataAccess = DataAccess::getDataAccess();
             $oDataAccess->TransactionStart();
             try
             {
+				//get the Logic_Account object
+				$oAccount = self::getInstance($oAccountORM);
+				
+				//the following is for process reporting purposes
+				$iId = $oAccount->Id;
+				$oStopwatch = Logic_Stopwatch::getInstance(true);
+				$oStopwatch->start();
+				 //Log::getLog()->log("Instantiated logic account $oAccountORM->Id,".  memory_get_usage(true));
+				$fStartCollectableBalance = $oAccount->getPayableBalance();
+				$fAccountBalance = $oAccount->getAccountBalance();
 
-            //Log::getLog()->log("Before processing account $oAccountORM->Id,".  memory_get_usage(true));
-            $oAccount = self::getInstance($oAccountORM);
-            $iId = $oAccount->Id;
-            $oStopwatch = Logic_Stopwatch::getInstance(true);
-            $oStopwatch->start();
-             //Log::getLog()->log("Instantiated logic account $oAccountORM->Id,".  memory_get_usage(true));
-	     $fStartCollectableBalance = $oAccount->getPayableBalance();
-	     $fAccountBalance = $oAccount->getAccountBalance();
-            $aResult = $oAccount->redistributeBalances();
-            $time = $oStopwatch->split();
-	     $fOverdueBalance = $oAccount->getOverdueCollectableBalance($mNow, TRUE);
-            self::$aMemory['after_before_cache_clear'] = memory_get_usage (TRUE );
-	   
-            $oAccount->reset();
-            unset($oAccount);
-            unset($oStopwatch);
-            unset ($aAccounts[$iIndex]);
-            self::clearCache();
-            $iMemory = (memory_get_usage (TRUE ));
+				//this is the actual balance redistribution
+				$aResult = $oAccount->redistributeBalances();
 
-            self::$aMemory['after_after_cache_clear'] = $iMemory;
-          Log::getLog()->log("$iId, $time,  $iMemory , ".self::$_aTime['delete_linking_data'].",".self::$_aTime['reset_balances'].",".$aResult['iterations'].",".$aResult['Debit Collectables'].",".$aResult['Credit Collectables'].",".$aResult['Credit Payments'].",".$aResult['Credit Adjustments'].",".$aResult['Debit Payments'].",".$aResult['Debit Adjustments'].",".$fAccountBalance.",".$fStartCollectableBalance.",".$aResult['Balance'].",".$fOverdueBalance);
-           // foreach(self::$aMemory as $key => $value)
-           // {
-           //     //Log::getLog()->log("$key, $value");
-           // }
+				//further process reporting
+				$time = $oStopwatch->split();
+				$fOverdueBalance = $oAccount->getOverdueCollectableBalance();
+				self::$aMemory['after_before_cache_clear'] = memory_get_usage (TRUE );
 
-            //Log::getLog()->log("After processing account $oAccountORM->Id,".  memory_get_usage(true));
-            //Log::getLog()->log(" ");
-             $oDataAccess->TransactionCommit();
+				//memory management
+				$oAccount->reset();
+				unset($oAccount);
+				unset($oStopwatch);
+				unset ($aAccounts[$iIndex]);
+				self::clearCache();
+
+				//output the process report to the commandline
+				$iMemory = (memory_get_usage (TRUE ));
+				self::$aMemory['after_after_cache_clear'] = $iMemory;
+				Log::getLog()->log("$iId, $time,  $iMemory , ".self::$_aTime['delete_linking_data'].",".self::$_aTime['reset_balances'].",".$aResult['iterations'].",".$aResult['Debit Collectables'].",".$aResult['Credit Collectables'].",".$aResult['Credit Payments'].",".$aResult['Credit Adjustments'].",".$aResult['Debit Payments'].",".$aResult['Debit Adjustments'].",".$fAccountBalance.",".$fStartCollectableBalance.",".$aResult['Balance'].",".$fOverdueBalance);
+
+				$oDataAccess->TransactionCommit();
             }
             catch(Exception $e)
             {
@@ -1094,22 +1083,24 @@ class Logic_Account implements DataLogic
     public static function getForBatchCollectionProcess($aExcludedAccounts = null)
     {
 
-        $aAccounts = array();
-	Logic_Stopwatch::getInstance()->start();
-	Log::getLog()->log("about to retrieve orms");
-        $aAccountORMs = Account::getForBatchCollectionsProcess($aExcludedAccounts);
-	Log::getLog()->log("retrieved accounts in ".Logic_Stopwatch::getInstance()->lap());
-        if ($aAccountORMs != null)
-        {
-            foreach($aAccountORMs as $oORM)
-            {
-		$aAccounts[$oORM->Id] =self::getInstance($oORM, TRUE);
-            }
-        }
-	
-	Log::getLog()->log("Number of accounts: ".count($aAccounts));
-	Log::getLog()->log("finished instantiating logic in ".Logic_Stopwatch::getInstance()->lap());
-        return $aAccounts;
+		$aAccounts = array();
+		Logic_Stopwatch::getInstance()->start();
+		Log::getLog()->log("about to retrieve orms");
+		$aAccountORMs = Account::getForBatchCollectionsProcess($aExcludedAccounts);
+		Log::getLog()->log("retrieved accounts in ".Logic_Stopwatch::getInstance()->lap());
+		if ($aAccountORMs != null)
+		{
+			foreach($aAccountORMs as $oORM)
+			{
+				$aAccounts[$oORM->Id] =self::getInstance($oORM, self::CACHE_MODE_BYPASS);
+			}
+		}
+
+		self::importCache($aAccounts);
+
+		Log::getLog()->log("Number of accounts: ".count($aAccounts));
+		Log::getLog()->log("finished instantiating logic in ".Logic_Stopwatch::getInstance()->lap());
+		return $aAccounts;
     }
 
 	public static function countForCollectionsLedger($aFilter=null)
