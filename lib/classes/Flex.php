@@ -284,7 +284,7 @@ final class Flex
 			if (self::applicationBase() && file_exists(self::applicationBase().'classes'.$accumulatedPath.$strClassName.'.php'))
 			{
 				require_once self::applicationBase().'classes'.$accumulatedPath.$strClassName.'.php';
-				if (class_exists($strClassName, FALSE))
+				if (class_exists($strClassName, FALSE) || interface_exists($strClassName, FALSE))
 				{
 					return TRUE;
 				}
@@ -295,7 +295,7 @@ final class Flex
 			if (self::frameworkBase() && file_exists(self::frameworkBase().'classes'.$accumulatedPath.$strClassName.'.php'))
 			{
 				require_once self::frameworkBase().'classes'.$accumulatedPath.$strClassName.'.php';
-				if (class_exists($strClassName, FALSE))
+				if (class_exists($strClassName, FALSE) || interface_exists($strClassName, FALSE))
 				{
 					return TRUE;
 				}
@@ -306,7 +306,7 @@ final class Flex
 			if (file_exists(self::getBase().'lib/classes'.$accumulatedPath.$strClassName.'.php'))
 			{
 				require_once self::getBase().'lib/classes'.$accumulatedPath.$strClassName.'.php';
-				if (class_exists($strClassName, FALSE))
+				if (class_exists($strClassName, FALSE) || interface_exists($strClassName, FALSE))
 				{
 					return TRUE;
 				}
@@ -318,7 +318,7 @@ final class Flex
 			if (file_exists(self::getBase().'lib'.$accumulatedPath.$strClassName.'.php'))
 			{
 				require_once self::getBase().'lib'.$accumulatedPath.$strClassName.'.php';
-				if (class_exists($strClassName, FALSE))
+				if (class_exists($strClassName, FALSE) || interface_exists($strClassName, FALSE))
 				{
 					return TRUE;
 				}
@@ -327,21 +327,21 @@ final class Flex
 
 		// Try to load the class using the old method (taken from html/ui/application.php)
 		self::oldAutoload($strClassName);
-		if (class_exists($strClassName, FALSE))
+		if (class_exists($strClassName, FALSE) || interface_exists($strClassName, FALSE))
 		{
 			return TRUE;
 		}
 
 		// Last ditch attempt, see if the file exists in the include path
 		@include_once($strClassName.'.php');
-		if (class_exists($strClassName, FALSE))
+		if (class_exists($strClassName, FALSE) || interface_exists($strClassName, FALSE))
 		{
 			return TRUE;
 		}
 
 		// ... and again, but in lowercase ...
 		@include_once(strtolower($strClassName).'.php');
-		if (class_exists($strClassName, FALSE))
+		if (class_exists($strClassName, FALSE) || interface_exists($strClassName, FALSE))
 		{
 			return TRUE;
 		}
