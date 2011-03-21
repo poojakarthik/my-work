@@ -3,6 +3,8 @@ var Component_Account_Payment_List = Class.create(
 {
 	initialize	: function(iAccountId, oContainerDiv, iPageSize)
 	{
+		this._register();
+		
 		this._iAccountId	= iAccountId;
 		this._oContainerDiv	= oContainerDiv;
 		
@@ -37,7 +39,18 @@ var Component_Account_Payment_List = Class.create(
 		this._showLoading(true);
 	},
 	
+	deregister : function()
+	{
+		var iIndex = Component_Account_Payment_List._aInstances.indexOf(this);
+		Component_Account_Payment_List._aInstances.splice(iIndex, 1);
+	},
+	
 	// Protected
+	
+	_register : function()
+	{
+		Component_Account_Payment_List._aInstances.push(this);
+	},
 	
 	_buildUI : function()
 	{
@@ -334,6 +347,24 @@ var Component_Account_Payment_List = Class.create(
 	_reverseComplete : function()
 	{
 		this.oPagination.getCurrentPage();
+		
+		// Refresh account details, if defined
+		if (Vixen.AccountDetails)
+		{
+			Vixen.AccountDetails.CancelEdit();
+		}
+		
+		// Refresh account collections summary, if defined
+		if (Component_Account_Collections)
+		{
+			Component_Account_Collections.refreshInstances();
+		}
+		
+		// Refresh account invoice list, if defined
+		if (Component_Account_Invoice_List)
+		{
+			Component_Account_Invoice_List.refreshInstances();
+		}
 	}
 });
 
@@ -349,9 +380,22 @@ Object.extend(Component_Account_Payment_List,
 	REVERSE_IMAGE_SOURCE		: '../admin/img/template/delete.png',
 	OLD_IMAGE_SOURCE			: '../admin/img/template/etech_payment_notice.png',
 	
+	_aInstances					: [],
+	
 	_ajaxError : function(oResponse)
 	{
 		var sMessage = (oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.');
 		Reflex_Popup.alert(sMessage, {sTitle: 'Error'});
+	},
+	
+	refreshInstances : function()
+	{
+		for (var i = 0; i < Component_Account_Payment_List._aInstances.length; i++)
+		{
+			if (Component_Account_Payment_List._aInstances[i] instanceof Component_Account_Payment_List)
+			{
+				Component_Account_Payment_List._aInstances[i].refresh();
+			}
+		}
 	}
 });

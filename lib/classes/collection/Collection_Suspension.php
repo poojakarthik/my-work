@@ -113,11 +113,16 @@ class Collection_Suspension extends ORM_Cached
 
 	public function calculateStartDatetime($sEffectiveDatetime=null)
 	{
-		// Get the due date of the account
-		$oAccount 	= Logic_Account::getInstance($this->account_id);
-		$sDueDate 	= $oAccount->getCurrentDueDate();
-		$iNow 		= strtotime($sEffectiveDatetime);
-		$iDue 		= strtotime($sDueDate);
+		$this->start_datetime = self::getEarliestStartDatetimeForAccount($this->account_id, $sEffectiveDatetime);
+	}
+	
+	public static function getEarliestStartDatetimeForAccount($iAccountId, $sEffectiveDatetime=null)
+	{
+		$oAccount 			= Logic_Account::getInstance($iAccountId);
+		$sDueDate 			= date('Y-m-d H:i:s', strtotime($oAccount->getCurrentDueDate()));
+		$sEffectiveDatetime	= ($sEffectiveDatetime === null ? date('Y-m-d H:i:s') : $sEffectiveDatetime);
+		$iNow 				= strtotime($sEffectiveDatetime);
+		$iDue 				= strtotime($sDueDate);
 		
 		if ($iNow < $iDue)
 		{
@@ -130,7 +135,17 @@ class Collection_Suspension extends ORM_Cached
 			$sStartDate = $sEffectiveDatetime;
 		}
 		
-		$this->start_datetime = $sStartDate;
+		return $sStartDate;
+	}
+	
+	public function save()
+	{
+		if (strtotime($this->proposed_end_datetime) <= strtotime($this->start_datetime))
+		{
+			throw new Exception('Cannot end a suspension before it starts.');
+		}
+		
+		parent::save();
 	}
 
 	public static function getSuspensionsForCurrentCollectionsPeriod($iAccountId, $sEffectiveDatetime=null)

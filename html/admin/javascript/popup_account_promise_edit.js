@@ -179,6 +179,22 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 				}).bind(this),
 				sDebugContent	: oResponse.sDebug
 			});
+			
+			// Notify/update other account components (if defined)
+			if (Component_Account_Collections)
+			{
+				Component_Account_Collections.refreshInstances();
+			}
+			
+			if (Vixen && Vixen.AccountDetails)
+			{
+				Vixen.AccountDetails.CancelEdit();
+			}
+			
+			if (Component_Account_Invoice_List)
+			{
+				Component_Account_Invoice_List.refreshInstances();
+			}
 		}
 	},
 

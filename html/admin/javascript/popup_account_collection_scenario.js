@@ -198,6 +198,17 @@ var Popup_Account_Collection_Scenario = Class.create(Reflex_Popup,
 		{
 			this._fnOnComplete(oResponse.iRecordId);
 		}
+		
+		// Notify/update other account components (if defined)
+		if (Component_Account_Collections)
+		{
+			Component_Account_Collections.refreshInstances();
+		}
+		
+		if (Vixen && Vixen.AccountDetails)
+		{
+			Vixen.AccountDetails.CancelEdit();
+		}
 	}
 });
 

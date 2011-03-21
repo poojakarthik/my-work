@@ -3,6 +3,8 @@ var Component_Account_Invoice_List = Class.create(
 {
 	initialize	: function(oContainerDiv, iAccountId, iPageSize)
 	{
+		this._register();
+		
 		this._oContainerDiv	= oContainerDiv;
 		this._iAccountId	= iAccountId;
 		
@@ -28,7 +30,27 @@ var Component_Account_Invoice_List = Class.create(
 		return this._oSection;
 	},
 	
+	refresh : function()
+	{
+		// Load the initial dataset
+		this._oSort.refreshData(true);
+		this._oFilter.refreshData(true);
+		this.oPagination.getCurrentPage();
+		this._showLoading(true);
+	},
+	
+	deregister : function()
+	{
+		var iIndex = Component_Account_Invoice_List._aInstances.indexOf(this);
+		Component_Account_Invoice_List._aInstances.splice(iIndex, 1);
+	},
+	
 	// Protected
+	
+	_register : function()
+	{
+		Component_Account_Invoice_List._aInstances.push(this);
+	},
 	
 	_buildUI : function(oPermissions, bAccountHasOCAReferral, iInterimInvoiceType)
 	{
@@ -203,11 +225,7 @@ var Component_Account_Invoice_List = Class.create(
 			this._oContainerDiv.appendChild(this._oElement);
 		}
 		
-		// Load the initial dataset
-		this._oSort.refreshData(true);
-		this._oFilter.refreshData(true);
-		this.oPagination.getCurrentPage();
-		this._showLoading(true);
+		this.refresh();
 	},
 
 	_showLoading	: function(bShow)
@@ -519,6 +537,32 @@ var Component_Account_Invoice_List = Class.create(
 		
 		this._oLoading.hide();
 		delete this._oLoading;
+		
+		// Update various components
+		if (Component_Account_Payment_List)
+		{
+			Component_Account_Payment_List.refreshInstances();
+		}
+		
+		if (Component_Account_Adjustment_List)
+		{
+			Component_Account_Adjustment_List.refreshInstances();
+		}
+		
+		if (Component_Account_Collections)
+		{
+			Component_Account_Collections.refreshInstances();
+		}
+		
+		if (Component_Account_Invoice_List)
+		{
+			Component_Account_Invoice_List.refreshInstances();
+		}
+		
+		if (Vixen.AccountDetails)
+		{
+			Vixen.AccountDetails.CancelEdit();
+		}
 	}
 });
 
@@ -537,6 +581,19 @@ Object.extend(Component_Account_Invoice_List,
 	EXPORT_IMAGE_SOURCE			: '../admin/img/template/export.png',
 	RERATE_IMAGE_SOURCE			: '../admin/img/template/rerate.png',
 	REQUIRED_CONSTANT_GROUPS	: ['InvoiceStatus', 'invoice_run_type', 'invoice_run_status'],
+
+	_aInstances	: [],
+	
+	refreshInstances : function()
+	{
+		for (var i = 0; i < Component_Account_Invoice_List._aInstances.length; i++)
+		{
+			if (Component_Account_Invoice_List._aInstances[i] instanceof Component_Account_Invoice_List)
+			{
+				Component_Account_Invoice_List._aInstances[i].refresh();
+			}
+		}
+	},
 	
 	_ajaxError : function(oResponse, sMessage)
 	{

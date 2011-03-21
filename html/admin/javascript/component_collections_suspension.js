@@ -13,14 +13,10 @@ var Component_Collections_Suspension = Class.create(
 		
 		this._aControls	= [];
 		
-		var oDate = new Date();
-		oDate.truncate('days');
-		this._iStartTime = oDate.getTime();
-		
 		this._buildUI();
 	},
 	
-	_buildUI : function(oAccount, oConfig)
+	_buildUI : function(oAccount, sStartDate, oConfig)
 	{
 		if (!oAccount)
 		{
@@ -28,9 +24,15 @@ var Component_Collections_Suspension = Class.create(
 			return;
 		}
 		
+		if (!sStartDate)
+		{
+			Component_Collections_Suspension._getEarliestSuspensionStartDate(this._iAccountId, this._buildUI.bind(this, oAccount));
+			return;
+		}
+		
 		if (!oConfig)
 		{
-			Component_Collections_Suspension._getSuspensionConfig(this._buildUI.bind(this, oAccount));
+			Component_Collections_Suspension._getSuspensionConfig(this._buildUI.bind(this, oAccount, sStartDate));
 			return;
 		}
 		
@@ -40,7 +42,8 @@ var Component_Collections_Suspension = Class.create(
 			return;
 		}
 		
-		this._iMaximumDays = oConfig.suspension_maximum_days; 
+		this._iMaximumDays	= oConfig.suspension_maximum_days;
+		this._iStartTime 	= Date.$parseDate(sStartDate, 'Y-m-d H:i:s').getTime();
 		
 		// Create control fields
 		var oEndDateControl =	Control_Field.factory(
@@ -82,6 +85,12 @@ var Component_Collections_Suspension = Class.create(
 													oAccount.Id
 												),
 												$T.span(': ' + oAccount.BusinessName)
+											)
+										),
+										$T.tr(
+											$T.th('Start Date'),
+											$T.td(
+												Date.$parseDate(sStartDate, 'Y-m-d H:i:s').$format('d/m/Y')
 											)
 										),
 										$T.tr(
@@ -173,9 +182,16 @@ var Component_Collections_Suspension = Class.create(
 		
 		Reflex_Popup.alert('Suspension has been created');
 		
+		// Callback
 		if (this._fnOnComplete)
 		{
 			this._fnOnComplete(oResponse.iSuspensionId);
+		}
+		
+		// Update collections component, if defined
+		if (Component_Account_Collections)
+		{
+			Component_Account_Collections.refreshInstances();
 		}
 	},
 	
@@ -194,7 +210,7 @@ var Component_Collections_Suspension = Class.create(
 		
 		if (iEnd <= this._iStartTime)
 		{
-			throw 'Must end after today';
+			throw 'Must end after the start of the suspension';
 		}
 		else if (iEnd > (this._iStartTime + (Component_Collections_Suspension.MS_IN_DAY * this._iMaximumDays)))
 		{
@@ -299,6 +315,30 @@ Object.extend(Component_Collections_Suspension,
    		if (fnCallback)
    		{
    			fnCallback(oResponse.aConfig);
+   		}
+	},
+	
+	_getEarliestSuspensionStartDate : function(iAccountId, fnCallback, oResponse)
+	{
+		if (!oResponse)
+   		{
+   			// Request
+   			var fnResp	= Component_Collections_Suspension._getEarliestSuspensionStartDate.curry(iAccountId, fnCallback);
+   			var fnReq	= jQuery.json.jsonFunction(fnResp, fnResp, 'Collection_Suspension', 'getEarliestSuspensionStartDate');
+   			fnReq(iAccountId);
+   			return;
+   		}
+   		
+   		if (!oResponse.bSuccess)
+   		{
+   			// Error
+   			Component_Collections_Suspension._ajaxError(oResponse);
+   			return;
+   		}
+   		
+   		if (fnCallback)
+   		{
+   			fnCallback(oResponse.sDate);
    		}
 	}
 });

@@ -184,10 +184,18 @@ var Popup_Account_TIO_Complaint = Class.create(Reflex_Popup,
 		
 		Reflex_Popup.alert('Complaint has been created');
 		
+		// Callback
 		if (this._fnOnComplete)
 		{
 			this._fnOnComplete(oResponse.iComplaintId);
 		}
+		
+		// Update collections components, if defined
+		if (typeof Component_Account_Collections != 'undefined')
+		{
+			Component_Account_Collections.refreshInstances();
+		}
+		
 		this.hide();
 	},
 	

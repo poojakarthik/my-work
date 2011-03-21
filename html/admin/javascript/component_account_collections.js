@@ -3,6 +3,8 @@ var Component_Account_Collections = Class.create(
 {
 	initialize : function(iAccountId, oContainerDiv, iDaysBefore, iDaysAfter)
 	{
+		this._register();
+		
 		this._iAccountId 	= iAccountId;
 		this._oContainerDiv	= oContainerDiv;
 		iDaysBefore 		= iDaysBefore ? iDaysBefore : Component_Account_Collections.DEFAULT_TIMELINE_DAYS_BEFORE;
@@ -25,6 +27,26 @@ var Component_Account_Collections = Class.create(
 		Flex.Constant.loadConstantGroup(Component_Account_Collections.REQUIRED_CONSTANT_GROUPS, this._buildUI.bind(this));
 	},
 	
+	// Public
+	
+	deregister : function()
+	{
+		var iIndex = Component_Account_Collections._aInstances.indexOf(this);
+		Component_Account_Collections._aInstances.splice(iIndex, 1);
+	},
+	
+	refresh : function()
+	{
+		this._refresh();
+	},
+	
+	// Protected
+	
+	_register : function()
+	{
+		Component_Account_Collections._aInstances.push(this);
+	},
+		
 	_buildUI : function()
 	{
 		this._oEventsContainer =	$T.div({class: 'component-account-collections-events'},
@@ -365,8 +387,6 @@ var Component_Account_Collections = Class.create(
 
 	_createScenarioEventItem : function (sDate, oData)
 	{
-
-		
 		// Different completion icon, depending on the event invocation
 		if (oData.collection_event_invocation_id == $CONSTANT.COLLECTION_EVENT_INVOCATION_MANUAL)
 		{
@@ -567,6 +587,19 @@ Object.extend(Component_Account_Collections,
 	PROMISE_INSTALMENT_PAID_IMAGE_SOURCE			: '../admin/img/template/collection_promise_instalment_paid.png',
 	PROMISE_INSTALMENT_UNPAID_IMAGE_SOURCE			: '../admin/img/template/collection_promise_instalment.png',
 	PROMISE_INSTALMENT_PARTIALLY_PAID_IMAGE_SOURCE	: '../admin/img/template/collection_promise_instalment_partially_paid.png',
+	
+	_aInstances	: [],
+	
+	refreshInstances : function()
+	{
+		for (var i = 0; i < Component_Account_Collections._aInstances.length; i++)
+		{
+			if (Component_Account_Collections._aInstances[i] instanceof Component_Account_Collections)
+			{
+				Component_Account_Collections._aInstances[i].refresh();
+			}
+		}
+	},
 	
 	_ajaxError : function(oResponse)
 	{

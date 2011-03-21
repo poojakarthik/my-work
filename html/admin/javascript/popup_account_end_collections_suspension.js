@@ -108,6 +108,16 @@ var Popup_Account_End_Collections_Suspension = Class.create(Reflex_Popup,
 		{
 			this._fnOnComplete();
 		}
+		
+		if (Vixen && Vixen.AccountDetails)
+		{
+			Vixen.AccountDetails.CancelEdit();
+		}
+		
+		if (Component_Account_Collections)
+		{
+			Component_Account_Collections.refreshInstances();
+		}
 	},
 	
 	_showTIOComplaint : function()

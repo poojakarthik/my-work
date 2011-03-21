@@ -108,6 +108,26 @@ class JSON_Handler_Collection_Suspension extends JSON_Handler
 		}
 	}
 	
+	public function getEarliestSuspensionStartDate($iAccountId, $iEffectiveSeconds=null)
+	{
+		$bUserIsGod = Employee::getForId(Flex::getUserId())->isGod();
+		try
+		{
+			$iEffectiveSeconds = ($iEffectiveSeconds === null ? time() : $iEffectiveSeconds);
+			return	array(
+						'bSuccess' 	=> true, 
+						'sDate' 	=> Collection_Suspension::getEarliestStartDatetimeForAccount($iAccountId, date('Y-m-d H:i:s', $iEffectiveSeconds))
+					);
+		}
+		catch (Exception $oEx)
+		{
+			return	array(
+						'bSuccess' 	=> false,
+						'sMessage'	=> ($bUserIsGod ? $oEx->getMessage() : 'There was an error accessing the database. Please contact YBS for assistance.')
+					);
+		}
+	}
+	
 	public function createSuspension($oDetails, $iEffectiveSeconds, $oTIOComplaintDetails=null)
 	{
 		$bUserIsGod = Employee::getForId(Flex::getUserId())->isGod();
