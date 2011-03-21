@@ -1089,7 +1089,7 @@ class Account
 
 	protected function _getBalance($sEffectiveDate, $bIncludeActivePromises)
 	{
-	    $sCollectableFilterClause = $bIncludeActivePromises ? "WHERE c.account_id = {$this->Id}" : " LEFT JOIN collection_promise cp ON (c.collection_promise_id = cp.id) WHERE (c.collection_promise_id IS NULL OR cp.completed_datetime IS NOT NULL) AND c.account_id = {$this->Id}";
+	    $sCollectableFilterClause = $bIncludeActivePromises ? "WHERE c.account_id = {$this->Id} AND c.due_date < '{$sEffectiveDate}'" : " LEFT JOIN collection_promise cp ON (c.collection_promise_id = cp.id) WHERE (c.collection_promise_id IS NULL OR cp.completed_datetime IS NOT NULL) AND c.account_id = {$this->Id} AND c.due_date < '{$sEffectiveDate}'";
 	    $oQuery = new Query();
 	    $mResult = $oQuery->Execute ("	
 										SELECT
