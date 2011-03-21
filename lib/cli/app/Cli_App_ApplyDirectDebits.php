@@ -7,9 +7,6 @@ class Cli_App_ApplyDirectDebits extends Cli
 {
 	const SWITCH_TEST_RUN	= "t";
 	
-	const ERROR_ACTIONING_EVENT			= 'Action invoice run event';
-	const ERROR_ACCOUNT_INVOICE_ACTION	= 'Update account invoice action';
-	
 	const INELIGIBLE_BANK_ACCOUNT		= 'Invalid Bank Account reference';
 	const INELIGIBLE_CREDIT_CARD		= 'Invalid Credit Card reference';
 	const INELIGIBLE_CREDIT_CARD_EXPIRY	= 'Credit card has expired';
