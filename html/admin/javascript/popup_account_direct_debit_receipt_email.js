@@ -156,7 +156,6 @@ var Popup_Account_Direct_Debit_Receipt_Email	= Class.create(Reflex_Popup,
 	{
 		try
 		{
-			debugger;
 			sEmail	= sEmail ? sEmail : this._oOtherEmail.getValue(true);
 			if ((sEmail != '') && (this._aEmails.indexOf(sEmail) == -1))
 			{

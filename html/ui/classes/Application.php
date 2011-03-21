@@ -274,7 +274,12 @@ class Application
 			ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsEvent();
 			ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsEventType();
 			ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsSeverity();
-			ContextMenu()->Admin->Collections->CollectionsPrototype();
+			
+			if (Employee::getForId(Flex::getUserId())->isGod())
+			{
+				ContextMenu()->Admin->Collections->CollectionsPrototype();
+			}
+			
 			ContextMenu()->Admin->Collections->CollectionsAccountManagement();
 			ContextMenu()->Admin->Collections->CollectionsEventManagement();
 			ContextMenu()->Admin->Collections->OCAReferralLedger();
@@ -538,7 +543,12 @@ class Application
 			ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsEvent();
 			ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsEventType();
 			ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsSeverity();
-			ContextMenu()->Admin->Collections->CollectionsPrototype();
+			
+			if (Employee::getForId(Flex::getUserId())->isGod())
+			{
+				ContextMenu()->Admin->Collections->CollectionsPrototype();
+			}
+			
 			ContextMenu()->Admin->Collections->CollectionsAccountManagement();
 			ContextMenu()->Admin->Collections->CollectionsEventManagement();
 			ContextMenu()->Admin->Collections->OCAReferralLedger();

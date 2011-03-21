@@ -921,19 +921,15 @@ class JSON_Handler_Account extends JSON_Handler
 					$iEmployeeId	= Flex::getUserId();
 					
 					// Create payment
-					$oPayment				= new Payment();
-					$oPayment->AccountGroup	= $oAccountGroup->Id;
-					$oPayment->Account		= $iAccountId;
-					$oPayment->EnteredBy	= $iEmployeeId;
-					$oPayment->Amount		= $fAmount;
-					$oPayment->Balance		= $fAmount;
-					$oPayment->PaidOn		= date('Y-m-d');
-					$oPayment->OriginId		= $oDirectDebit->AccountNumber;
-					$oPayment->OriginType	= PAYMENT_TYPE_DIRECT_DEBIT_VIA_EFT;
-					$oPayment->Status		= PAYMENT_WAITING;
-					$oPayment->PaymentType	= PAYMENT_TYPE_DIRECT_DEBIT_VIA_EFT;
-					$oPayment->Payment		= '';
-					$oPayment->save();
+					$oPayment =	Logic_Payment::factory(
+									$iAccountId, 
+									PAYMENT_TYPE_DIRECT_DEBIT_VIA_EFT, 
+									$fAmount, 
+									$iPaymentNature=PAYMENT_NATURE_PAYMENT, 
+									'',
+									date('Y-m-d'), 
+									array(Payment_Transaction_Data::BANK_ACCOUNT_NUMBER => $oDirectDebit->AccountNumber)
+								);
 					
 					// Create payment_request
 					$oPaymentRequest	= 	Payment_Request::generatePending(
@@ -942,15 +938,15 @@ class JSON_Handler_Account extends JSON_Handler
 												round($fAmount, 2), 				// Amount
 												null, 								// Invoice run id
 												$iEmployeeId,						// Employee id
-												$oPayment->Id						// Payment id
+												$oPayment->id						// Payment id
 											);
 					
 					// Update the payments transaction reference
-					$oPayment->TXNReference	= Payment_Request::generateTransactionReference($oPaymentRequest);
+					$oPayment->transaction_reference = Payment_Request::generateTransactionReference($oPaymentRequest);
 					$oPayment->save();
 											
 					$aPaymentReceipt	= 	array(
-												'sTransactionId'	=> $oPayment->TXNReference,
+												'sTransactionId'	=> $oPayment->transaction_reference,
 												'iAccount'			=> $iAccountId,
 												'sPaidOn'			=> $oPaymentRequest->created_datetime,
 												'fAmount'			=> $oPaymentRequest->amount
@@ -960,7 +956,7 @@ class JSON_Handler_Account extends JSON_Handler
 					$sAmount	= number_format($fAmount, 2);
 					Action::createAction(
 						'EFT One Time Payment', 
-						"Amount: \${$sAmount}\n Receipt Number: {$oPayment->TXNReference}", 
+						"Amount: \${$sAmount}\n Receipt Number: {$oPayment->transaction_reference}", 
 						$iAccountId, 
 						NULL, 
 						NULL, 

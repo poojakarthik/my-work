@@ -338,23 +338,23 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 				}
 			}
 			
-			if (isset($aConfig['credit_card_number']))
+			if (isset($aConfig[Payment_Transaction_Data::CREDIT_CARD_NUMBER]))
 			{
 				// Create payment_transaction_data record
 				$oTransactionData 				= new Payment_Transaction_Data();
 				$oTransactionData->name			= Payment_Transaction_Data::CREDIT_CARD_NUMBER;
-				$oTransactionData->value		= Credit_Card::getMaskedCardNumber($aConfig['credit_card_number']);
+				$oTransactionData->value		= Credit_Card::getMaskedCardNumber($aConfig[Payment_Transaction_Data::CREDIT_CARD_NUMBER]);
 				$oTransactionData->data_type_id	= DATA_TYPE_STRING; 
 				$oTransactionData->payment_id	= $oPayment->id;
 				$oTransactionData->save();
 			}
 			
-			if (isset($aConfig['bank_account_number']))
+			if (isset($aConfig[Payment_Transaction_Data::BANK_ACCOUNT_NUMBER]))
 			{
 				// Create payment_transaction_data record
 				$oTransactionData 				= new Payment_Transaction_Data();
 				$oTransactionData->name			= Payment_Transaction_Data::BANK_ACCOUNT_NUMBER;
-				$oTransactionData->value		= $aConfig['bank_account_number'];
+				$oTransactionData->value		= $aConfig[Payment_Transaction_Data::BANK_ACCOUNT_NUMBER];
 				$oTransactionData->data_type_id	= DATA_TYPE_INTEGER; 
 				$oTransactionData->payment_id	= $oPayment->id;
 				$oTransactionData->save();
