@@ -234,43 +234,43 @@ var Popup_Contact_Edit	= Class.create(Reflex_Popup,
 		aInputs[0].sFieldName	= 'Title';
 		aInputs[0].bRequired	= false;
 				
-		aInputs[1].sFieldName	= 'Day of Birth';
+		aInputs[4].sFieldName	= 'Day of Birth';
+		aInputs[4].bRequired	= true;
+				
+		aInputs[5].sFieldName	= 'Month of Birth';
+		aInputs[5].bRequired	= true;
+		
+		aInputs[6].sFieldName	= 'Year of Birth';
+		aInputs[6].bRequired	= true;
+		
+		aInputs[16].sFieldName	= 'Status';
+		aInputs[16].bRequired	= false;
+		
+		aInputs[1].sFieldName	= 'First Name';
 		aInputs[1].bRequired	= true;
 				
-		aInputs[2].sFieldName	= 'Month of Birth';
+		aInputs[2].sFieldName	= 'Last Name';
 		aInputs[2].bRequired	= true;
-		
-		aInputs[3].sFieldName	= 'Year of Birth';
-		aInputs[3].bRequired	= true;
-		
-		aInputs[4].sFieldName	= 'Status';
-		aInputs[4].bRequired	= false;
-		
-		aInputs[5].sFieldName	= 'First Name';
-		aInputs[5].bRequired	= true;
 				
-		aInputs[6].sFieldName	= 'Last Name';
-		aInputs[6].bRequired	= true;
+		aInputs[3].sFieldName	= 'Job Title';
 				
-		aInputs[7].sFieldName	= 'Job Title';
+		aInputs[7].sFieldName	= 'Email Address';
+		aInputs[7].bRequired	= true;
 				
-		aInputs[8].sFieldName	= 'Email Address';
-		aInputs[8].bRequired	= true;
+		aInputs[8].sFieldName	= 'Phone Number';
+		aInputs[8].bRequired	= false;
 				
-		aInputs[9].sFieldName	= 'Phone Number';
+		aInputs[9].sFieldName	= 'Mobile Number';
 		aInputs[9].bRequired	= false;
 				
-		aInputs[10].sFieldName	= 'Mobile Number';
+		aInputs[10].sFieldName	= 'Fax Number';
 		aInputs[10].bRequired	= false;
-				
-		aInputs[11].sFieldName	= 'Fax Number';
-		aInputs[11].bRequired	= false;
 		
-		aInputs[12].sFieldName	= 'Change Password';
-		aInputs[13].sFieldName	= 'Password';
-		aInputs[14].sFieldName	= 'Confirm Password';
-		aInputs[15].sFieldName	= 'AccountAccess-0';
-		aInputs[16].sFieldName	= 'AccountAccess-1';
+		aInputs[11].sFieldName	= 'Change Password';
+		aInputs[12].sFieldName	= 'Password';
+		aInputs[13].sFieldName	= 'Confirm Password';
+		aInputs[14].sFieldName	= 'AccountAccess-0';
+		aInputs[15].sFieldName	= 'AccountAccess-1';
 		
 		for (var i = 0; i < aInputs.length; i++)
 		{
@@ -341,7 +341,6 @@ var Popup_Contact_Edit	= Class.create(Reflex_Popup,
 		{
 			// Must be editing
 			this.oContact	= oResponse.oContact;
-			
 			this.hInputs['Title'].value				= this.oContact.Title;
 			this.hInputs['Day of Birth'].value		= this.oContact.dob_day;
 			this.hInputs['Month of Birth'].value	= this.oContact.dob_month;
