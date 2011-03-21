@@ -1,5 +1,5 @@
 
-/*  Prototype JavaScript framework, version 1.6.1
+/*  Prototype JavaScript framework, version 1.7
  *  (c) 2005-2009 Sam Stephenson
  *
  *  Prototype is freely distributable under the terms of an MIT-style license.
