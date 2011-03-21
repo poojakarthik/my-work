@@ -212,7 +212,9 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 	}
 
 	public function distribute() {
-		Logic_Account::getInstance($this->account_id)->processDistributable($this);
+		// We're temporarily always redistributing
+		//Logic_Account::getInstance($this->account_id)->processDistributable($this);
+		Logic_Account::getInstance($this->account_id)->redistributeBalances();
 	}
 
 	// Optionally accepts an array of Payments (array values can be Logic_Payment, Payment, or a Payment Id)
@@ -243,11 +245,8 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 			DataAccess::getDataAccess()->TransactionStart(false);
 
 			try {
-				// Distribute the Payment
+				// Distribute the Payment (auto-saved)
 				$oPayment->distribute();
-
-				// FIXME: Do we need to save here?
-				$oPayment->save();
 			} catch (Exception $oException) {
 				// Rollback and rethrow
 				DataAccess::getDataAccess()->TransactionRollback(false);
@@ -258,7 +257,7 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 			DataAccess::getDataAccess()->TransactionCommit(false);
 		}
 
-		Log::getLog()->log("Processed {$iTotalPayments} Payments in ".round($oStopwatch->lap(), 1).'s');
+		Log::getLog()->log("Processed {$iTotalPayments} Payments in ".round($oStopwatch->split(), 4).'s');
 	}
     
     // factory: Creates a Logic_Payment object, as well as surcharge if credit card payment (and flagged to be created).
