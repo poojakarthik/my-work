@@ -365,7 +365,14 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 			// Process the payment
 			$oNewLogic 		= new self($oPayment);
 			$oLogicAccount 	= Logic_Account::getInstance($iAccountId);
-			$oLogicAccount->processDistributable($oNewLogic);
+			//$oLogicAccount->processDistributable($oNewLogic);
+			//$oLogicAccount->processDistributable(new Logic_Adjustment($oAdjustment));
+			//simply distributing the balance of the new adjustment is not enough
+			//because there might be other distributables that could previously not distribute their balance
+			//which after distributing this one can distribute theirs.
+			//Example: if this adjustemtn is a debit adjustment, and before distributing it the sum(collectable.balance) === 0, and there is a payment with remaining balance, that payment's balance must be distributed after distributing the current adjustment's balance.
+			//@TODO: in order to optimise this, implement functionality that allows for just distributing balances of any distributables that currently have a balance remaining, instead of a full redistribution.
+			$oLogicAccount->redistributeBalances();
 			
 			if ($oDataAccess->TransactionCommit() === false)
 			{
