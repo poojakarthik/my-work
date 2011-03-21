@@ -286,7 +286,7 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 			
 			$oCreditCardType		= null;
 			$fCreditCardSurcharge 	= null;
-			if (($iPaymentTypeId == PAYMENT_TYPE_CREDIT_CARD) && isset($aConfig['charge_credit_card_surcharge']) && $aConfig['charge_credit_card_surcharge'] && isset($aConfig['credit_card_type_id']))
+			if (($iPaymentTypeId == PAYMENT_TYPE_CREDIT_CARD) && isset($aConfig['charge_credit_card_surcharge']) && $aConfig['charge_credit_card_surcharge'] && isset($aConfig['credit_card_type_id']) && $aConfig['credit_card_type_id'])
 			{
 				// Calculate amount and surcharge (only applied if credit card payment)
 				$oCreditCardType 		= Credit_Card_Type::getForId($aConfig['credit_card_type_id']);
@@ -338,7 +338,7 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 				}
 			}
 			
-			if (isset($aConfig[Payment_Transaction_Data::CREDIT_CARD_NUMBER]))
+			if (isset($aConfig[Payment_Transaction_Data::CREDIT_CARD_NUMBER]) && $aConfig[Payment_Transaction_Data::CREDIT_CARD_NUMBER])
 			{
 				// Create payment_transaction_data record
 				$oTransactionData 				= new Payment_Transaction_Data();
@@ -349,7 +349,7 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 				$oTransactionData->save();
 			}
 			
-			if (isset($aConfig[Payment_Transaction_Data::BANK_ACCOUNT_NUMBER]))
+			if (isset($aConfig[Payment_Transaction_Data::BANK_ACCOUNT_NUMBER]) && $aConfig[Payment_Transaction_Data::BANK_ACCOUNT_NUMBER])
 			{
 				// Create payment_transaction_data record
 				$oTransactionData 				= new Payment_Transaction_Data();
