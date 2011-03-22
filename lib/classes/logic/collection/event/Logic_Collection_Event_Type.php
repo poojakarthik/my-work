@@ -3,46 +3,46 @@
 class Logic_Collection_Event_Type
 {
 	protected $oDO;
-    public function __construct($mDefinition)
-    {
-        if (is_numeric($mDefinition))
-    	{
-            $this->oDO = Collection_Event_Type::getForId($mDefinition);
-    	}
-    	else if ($mDefinition instanceof Collection_Event_Type)
-    	{
-            $this->oDO = $mDefinition;
-    	}
-    	else
-    	{
-            throw new Exception("Invalid definition passed to ".get_class($this));
-    	}
-    }
+	public function __construct($mDefinition)
+	{
+		if (is_numeric($mDefinition))
+		{
+			$this->oDO = Collection_Event_Type::getForId($mDefinition);
+		}
+		else if ($mDefinition instanceof Collection_Event_Type)
+		{
+			$this->oDO = $mDefinition;
+		}
+		else
+		{
+			throw new Exception("Invalid definition passed to ".get_class($this));
+		}
+	}
 	
 	public function __get($sField) 
-    {
-    	switch ($sField)
-    	{
-    		default:
-    			return $this->oDO->$sField;
-    	}
-        
-    }
+	{
+		switch ($sField)
+		{
+			default:
+				return $this->oDO->$sField;
+		}
+		
+	}
 
-    public function __set($sField, $mValue) 
-    {
-        $this->oDO->$sField = $mValue;
-    }
-    
-    public function save() 
-    {
-        $this->oDO->save();
-    }
-    
-    public function toArray() 
-    {
+	public function __set($sField, $mValue) 
+	{
+		$this->oDO->$sField = $mValue;
+	}
+	
+	public function save() 
+	{
+		$this->oDO->save();
+	}
+	
+	public function toArray() 
+	{
 		return $this->oDO->toArray();
-    }
+	}
 	
 	public static function searchFor($bCountOnly=false, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null)
 	{

@@ -8,38 +8,38 @@ abstract class Logic_Collection_Event_Barring_BaseClass extends Logic_Collection
 {
    protected $iBarringLevel;
 
-    public function __construct($mDefinition, $aInvocationParameters = null)
-    {
-        $this->aInvocationParameters = $aInvocationParameters;
+	public function __construct($mDefinition, $aInvocationParameters = null)
+	{
+		$this->aInvocationParameters = $aInvocationParameters;
 
-        if ($mDefinition instanceof Logic_Collection_Event_Instance)
-        {
+		if ($mDefinition instanceof Logic_Collection_Event_Instance)
+		{
 			$this->oCollectionEventInstance = $mDefinition;
 			$this->oParentDO = Collection_Event::getForId($mDefinition->collection_event_id);
-        }
+		}
 		else if (is_numeric($mDefinition))
 		{
 			$this->oParentDO = Collection_Event::getForId($mDefinition);
 		}
-        else
-        {
-           throw new Exception ('Bad definition of Logic_Collection_Event_Barring');
-        }
-    }
+		else
+		{
+		   throw new Exception ('Bad definition of Logic_Collection_Event_Barring');
+		}
+	}
 
-    protected function _invoke($aParameters = null)
-    {
-        $iEmployeeId = Flex::getUserId()!=null?Flex::getUserId():Employee::SYSTEM_EMPLOYEE_ID;
-        $this->getAccount()->setBarringLevel( $this->iBarringLevel, $iEmployeeId);
+	protected function _invoke($aParameters = null)
+	{
+		$iEmployeeId = Flex::getUserId()!=null?Flex::getUserId():Employee::SYSTEM_EMPLOYEE_ID;
+		$this->getAccount()->setBarringLevel( $this->iBarringLevel, $iEmployeeId);
 
-    }
+	}
 
-    public static function complete($aEventInstances)
-    {
-        foreach ($aEventInstances as $oInstance)
-        {
-            $oInstance->complete();
-        }
-    }
+	public static function complete($aEventInstances)
+	{
+		foreach ($aEventInstances as $oInstance)
+		{
+			$oInstance->complete();
+		}
+	}
 }
 ?>

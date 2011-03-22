@@ -7,42 +7,39 @@
 class Logic_Collection_Event_Milestone extends Logic_Collection_Event
 {
    
-    
+	
 
-    public function __construct($mDefinition)
-    {
-       
-        if ($mDefinition instanceof Logic_Collection_Event_Instance)
-        {
-           $this->oCollectionEventInstance = $mDefinition;
-           $this->oParentDO = Collection_Event::getForId($mDefinition->collection_event_id);
-
-        }
+	public function __construct($mDefinition)
+	{
+	   
+		if ($mDefinition instanceof Logic_Collection_Event_Instance)
+		{
+		   $this->oCollectionEventInstance = $mDefinition;
+		   $this->oParentDO = Collection_Event::getForId($mDefinition->collection_event_id);
+		}
 		else if (is_numeric($mDefinition))
 		{
-			$this->oParentDO = Collection_Event::getForId($mDefinition);
-			
+			$this->oParentDO = Collection_Event::getForId($mDefinition);			
 		}
-    }    
+	}	
 
 
-    protected function _invoke($aParameters = null)
-    {
+	protected function _invoke($aParameters = null)
+	{
 
-    }
+	}
 
-    public function __get($sField)
-    {
-        return $this->oParentDO->$sField;
-    }
-    
-    public static function complete($aEventInstances)
-    {
-            foreach ($aEventInstances as $oInstance)
-            {
-                $oInstance->complete();
-            }
-        
-    }
+	public function __get($sField)
+	{
+		return $this->oParentDO->$sField;
+	}
+	
+	public static function complete($aEventInstances)
+	{
+		foreach ($aEventInstances as $oInstance)
+		{
+			$oInstance->complete();
+		}
+	}
 }
 ?>
