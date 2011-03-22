@@ -188,7 +188,7 @@ class Payment extends ORM_Cached
 						{
 							// This charge is NOT excemp from the global tax. Calculate tax component and add to amount.
 							$oGlobalTaxType = Tax_Type::getGlobalTaxType();
-							$fTax			= Rate::roundToRatingStandard(((float)$oGlobalTaxType->rate_percentage * $fAmount), 4);
+							$fTax			= Rate::roundToCurrencyStandard(((float)$oGlobalTaxType->rate_percentage * $fAmount), 4);
 							$fAmount		= $fAmount + $fTax;
 						}
 						

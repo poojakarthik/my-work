@@ -385,7 +385,7 @@ class Cli_App_Payments extends Cli
 			
 			if ($bDirectDebitable)
 			{
-				$fAmount	= Rate::roundToRatingStandard($oAccount->getOverdueBalance(), 2);
+				$fAmount	= Rate::roundToCurrencyStandard($oAccount->getOverdueBalance(), 2);
 				if ($fAmount < $aRow['direct_debit_minimum'])
 				{
 					// Not enough of a balance to be eligible
@@ -542,7 +542,7 @@ class Cli_App_Payments extends Cli
 			{
 				$oInstalment	= Collection_Promise_Instalment::getForId($aRow['collection_promise_instalment_id']);
 				$oPayable		= new Logic_Collection_Promise_Instalment($oInstalment);
-				$fAmount 		= Rate::roundToRatingStandard($oPayable->getBalance(), 2);
+				$fAmount 		= Rate::roundToCurrencyStandard($oPayable->getBalance(), 2);
 				if ($fAmount < $aRow['direct_debit_minimum'])
 				{
 					// Not enough of a balance to be eligible

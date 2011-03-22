@@ -118,7 +118,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 			
 			$iStatus 				= ($aRow['Archived'] == 1 ? STATUS_INACTIVE : STATUS_ACTIVE);
 			$sVisibilitySystemName 	= (($aRow['charge_type_visibility_id'] == CHARGE_TYPE_VISIBILITY_VISIBLE) ? 'VISIBLE' : 'HIDDEN');
-			$fAmount				= Rate::roundToRatingStandard($aRow['Amount'] * (1 + $fGlobalTaxRatePercentage), 2);
+			$fAmount				= Rate::roundToCurrencyStandard($aRow['Amount'] * (1 + $fGlobalTaxRatePercentage), 2);
 			
 			$mInsertResult = $oDB->query("	INSERT INTO adjustment_type (code, description, amount, is_amount_fixed, transaction_nature_id, status_id, adjustment_type_invoice_visibility_id)
 											VALUES		('{$aRow['ChargeType']}',

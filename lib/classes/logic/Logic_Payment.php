@@ -183,15 +183,24 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 			throw new Exception("Cannot create credit card surcharge, could not determine credit card type.");
 		}
 		
+		$oAccount = Account::getForId($this->oDO->account_id);
+		
+		// Calculate surcharge, also remove global tax component
 		$fSurcharge = $oCreditCardType->calculateSurcharge($this->oDO->amount);
-		$oAccount	= Account::getForId($this->oDO->account_id);
+		$oTaxType	= Tax_Type::getGlobalTaxType();
+		if ($oTaxType !== null)
+		{
+			// Remove global tax component
+			$fSurcharge	= $fSurcharge / (1 + $oTaxType->rate_percentage);
+			Log::getLog()->log("Removed global tax: {$fSurcharge}");
+		}
 		
 		// Create a charge for the transaction surcharge
 		$oCharge					= new Charge();
 		$oCharge->AccountGroup		= $oAccount->AccountGroup;
 		$oCharge->Account			= $oAccount->Id;
 		$oCharge->CreatedBy			= Employee::SYSTEM_EMPLOYEE_ID;
-		$oCharge->Amount			= Rate::roundToRatingStandard($fSurcharge, 2);
+		$oCharge->Amount			= Rate::roundToCurrencyStandard($fSurcharge, 2);
 		$oCharge->CreatedOn			= date('Y-m-d H:i:s');
 		$oCharge->ChargedOn			= date('Y-m-d H:i:s');
 		$oCharge->Status			= CHARGE_APPROVED;

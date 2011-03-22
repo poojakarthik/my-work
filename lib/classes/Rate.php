@@ -142,6 +142,17 @@ class Rate extends ORM_Cached
 		}
 	}
 	
+	public static function roundToCurrencyStandard($fAmountInDollars, $iDecimalPlaces=self::RATING_PRECISION)
+	{
+		return Rate::roundToPrecision($fAmountInDollars, $iDecimalPlaces);
+	}
+	
+	public static function roundToPrecision($fAmountInDollars, $iDecimalPlaces=self::RATING_PRECISION)
+	{
+		$fRounded = round(abs($fAmountInDollars), $iDecimalPlaces);
+		return ($fAmountInDollars < 0) ? 0 - $fRounded : $fRounded;
+	}
+	
 	// Round up to the specified precision
 	public static function roundToRatingStandard($fAmountInDollars, $iDecimalPlaces=self::RATING_PRECISION) {
 		// Current implementation is to ceil to the nearest whole precision

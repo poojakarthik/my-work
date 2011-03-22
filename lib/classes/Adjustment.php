@@ -134,7 +134,7 @@ class Adjustment extends ORM_Cached
 		$oTaxType 				= Tax_Type::getGlobalTaxType();
 		$fModifiedTaxRate		= 1 + $oTaxType->rate_percentage;
 		$fTaxComponent			= $this->amount - ($this->amount / $fModifiedTaxRate);
-		$this->tax_component 	= Rate::roundToRatingStandard($fTaxComponent, 2);
+		$this->tax_component 	= Rate::roundToCurrencyStandard($fTaxComponent, 2);
 	}
 
 	public function reverse($iReasonId)
