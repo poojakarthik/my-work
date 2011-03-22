@@ -62,8 +62,8 @@ abstract class Logic_Collection_Event implements DataLogic
     public function getInvocationId($bEnforcedInvocationOnly = false)
     {
         $oImplementation = $this->getImplementation();
-        if ($oImplementation->collection_event_invocation_id !== null)
-                return $oImplementation->collection_event_invocation_id;
+        if ($oImplementation->enforced_collection_event_invocation_id !== null)
+    		return $oImplementation->enforced_collection_event_invocation_id;
         if ($this->getEventType()->collection_event_invocation_id !== null)
                 $this->getEventType()->collection_event_invocation_id;
         return $bEnforcedInvocationOnly ? null : $this->oParentDO->collection_event_invocation_id;

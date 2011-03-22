@@ -545,11 +545,12 @@ class JSON_Handler_Collections extends JSON_Handler
 		    {
 			    self::_createAccountEventSummaryItems($aRow, 'account_collection_event_history', $aUnsortedEvents);
 		    }
-			$oAccount = Logic_Account::getInstance($iAccountId);
-			$oScenario  = $oAccount->getCurrentScenarioInstance()->getScenario();
-			$oLastScheduledEvent = $oAccount->getMostRecentCollectionEventInstance();
-			$bIsIncollections = $oAccount->isCurrentlyInCollections();
-			$oEvent = $oAccount->getNextCollectionScenarioEvent(TRUE);
+		    
+			$oAccount 				= Logic_Account::getInstance($iAccountId);
+			$oScenario  			= $oAccount->getCurrentScenarioInstance()->getScenario();
+			$oLastScheduledEvent 	= $oAccount->getMostRecentCollectionEventInstance();
+			$bIsIncollections 		= $oAccount->isCurrentlyInCollections();
+			$oEvent 				= $oAccount->getNextCollectionScenarioEvent(TRUE);
 			if ($oEvent !== NULL)
 			{
 				if ($bIsIncollections && $oScenario->id == $oLastScheduledEvent->getScenario()->id)
@@ -561,22 +562,25 @@ class JSON_Handler_Collections extends JSON_Handler
 					$sDateToOffset = $oAccount->getCollectionsStartDate();
 				}
 
-				$iDateToOffset = strtotime($sDateToOffset);
-				$iNextEventDate = max (strtotime("+$oEvent->day_offset day", $iDateToOffset), time());
-				$sNextEventDate = date ("Y-m-d", $iNextEventDate);
-				$bOverdueOnNextEventDate = $oScenario->evaluateThresholdCriterion($oAccount->getOverDueCollectableAmount($sNextEventDate),$oAccount->getOverdueCollectableBalance($sNextEventDate));
+				$iDateToOffset 				= strtotime($sDateToOffset);
+				$iNextEventDate 			= max (strtotime("+$oEvent->day_offset day", $iDateToOffset), time());
+				$sNextEventDate 			= date ("Y-m-d", $iNextEventDate);
+				$bOverdueOnNextEventDate	= $oScenario->evaluateThresholdCriterion($oAccount->getOverDueCollectableAmount($sNextEventDate),$oAccount->getOverdueCollectableBalance($sNextEventDate));
 
 				if ($bOverdueOnNextEventDate)
 				{
-					$aScenarioEvent = array();
-					$aScenarioEvent['collection_event_invocation_id'] = $oEvent->getInvocationId();
-					$aScenarioEvent['collection_event_name'] = "Next Collections Event: ".$oEvent->getEventName();
-					$aScenarioEvent['id'] = $oEvent->id;
+					$aScenarioEvent 									= array();
+					$aScenarioEvent['collection_event_invocation_id']	= $oEvent->getInvocationId();
+					$aScenarioEvent['collection_event_name'] 			= "Next Collections Event: ".$oEvent->getEventName();
+					$aScenarioEvent['id'] 								= $oEvent->id;
 					if (!isset($aUnsortedEvents[$sNextEventDate]))
-						$aUnsortedEvents[$sNextEventDate] = array(); 
+					{
+						$aUnsortedEvents[$sNextEventDate] = array();
+					}
 					$aUnsortedEvents[$sNextEventDate]['collection_scenario_collection_event'][] = $aScenarioEvent;
 				}
 			}
+			
 		    // Suspensions
 		    $mSuspensionResult = $oQuery->Execute("	SELECT 	cs.*
 												    FROM 	collection_suspension cs
@@ -610,14 +614,16 @@ class JSON_Handler_Collections extends JSON_Handler
 
 		    return	array(
 					    'bSuccess' 	=> true,
-					    'aEvents'	=> $aSortedEvents
+					    'aEvents'	=> $aSortedEvents,
+					    'sDebug'	=> ($bUserIsGod ? $this->_JSONDebug : '')
 				    );
 		}
 		catch (Exception $oException)
 		{
 			return	array(
 						'bSuccess' 	=> false,
-						'sMessage'	=> ($bUserIsGod ? $oException->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.')
+						'sMessage'	=> ($bUserIsGod ? $oException->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'),
+						'sDebug'	=> ($bUserIsGod ? $this->_JSONDebug : '')
 					);
 		}
 	}
