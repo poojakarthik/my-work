@@ -10,15 +10,15 @@
  * @author JanVanDerBreggen
  */
 class Logic_Stopwatch extends Stopwatch{
-    protected static $instance;
+	protected static $instance;
 
-    public static function getInstance($bReset = false)
-    {
-        
-        if (self::$instance === null)
-            self::$instance = new self();
+	public static function getInstance($bReset = false)
+	{
+		
+		if (self::$instance === null)
+			self::$instance = new self();
 
-        return self::$instance;
-    }
+		return self::$instance;
+	}
 }
 ?>

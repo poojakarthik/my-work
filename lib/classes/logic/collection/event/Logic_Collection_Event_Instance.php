@@ -77,7 +77,7 @@ class Logic_Collection_Event_Instance
 		}
 	   if ($oEvent->getInvocationId(false)!==null)
 				return $oEvent->getInvocationId();
-		throw new Exception('Configuration Error: no invocation method defined scenario event with id '.$this->id);
+		throw new Exception('Configuration Error: no invocation method defined for Event Instance with id '.$this->id);
 
 	}
 

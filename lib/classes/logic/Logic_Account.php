@@ -8,37 +8,37 @@
 class Logic_Account implements DataLogic
 {
 
-    const			SCENARIO_OFFSET_USED_TO_DETERMINE_EXIT_COLLECTIONS = FALSE;
+	const			SCENARIO_OFFSET_USED_TO_DETERMINE_EXIT_COLLECTIONS = FALSE;
 	const			CACHE_MODE_BYPASS = 'bypass';
 	const			CACHE_MODE_REFRESH = 'refresh';
 
-    protected	    $oDO;
-    protected	    $aActiveScenarioInstances;
+	protected		$oDO;
+	protected		$aActiveScenarioInstances;
 
-    protected	    $aCollectables;
-    protected	    $aPayments;
-    protected	    $aAdjustments;
-    protected	    $_aPayables;
-    protected	    $oActivePromise;
+	protected		$aCollectables;
+	protected		$aPayments;
+	protected		$aAdjustments;
+	protected		$_aPayables;
+	protected		$oActivePromise;
 
-    public static   $_aTime = array();
-    public static   $aMemory = array();
+	public static   $_aTime = array();
+	public static   $aMemory = array();
 
-    protected	    $bPreviousEventNotCompleted;
-    protected	    $bNoNextEventFound = false;
-    protected	    $oException;
+	protected		$bPreviousEventNotCompleted;
+	protected		$bNoNextEventFound = false;
+	protected		$oException;
 
-    protected static $aInstances = array();
+	protected static $aInstances = array();
 
 
-    public static function getInstance($mDefinition, $sCacheMode = NULL)
-    {
+	public static function getInstance($mDefinition, $sCacheMode = NULL)
+	{
 		$oDO = null;
 		if (is_numeric($mDefinition))
 		{
 			$oDO = Account::getForId($mDefinition);
 			if ($oDO === null)
-			throw new Exception("Invalid Account Id.....");
+				throw new Exception("Invalid Account Id.....");
 		}
 		else if (get_class($mDefinition) == 'Account' && $mDefinition->Id != null )
 		{
@@ -49,10 +49,10 @@ class Logic_Account implements DataLogic
 			throw new Exception("Bad definition passed to Logic_Account::getInstance(): parameter should be a valid acount id or an instance of class 'Account' representing an already exisiting account.");
 		}
 
-		if ( $sCacheMode === self::CACHE_MODE_BYPASS)
+		if ($sCacheMode === self::CACHE_MODE_BYPASS)
 			return new self($oDO);
 
-		if  (in_array($oDO->Id, array_keys(self::$aInstances)))
+		if (in_array($oDO->Id, array_keys(self::$aInstances)))
 		{
 			if ($sCacheMode === self::CACHE_MODE_REFRESH)
 				self::$aInstances[$oDO->Id]->refreshData($oDO);
@@ -65,7 +65,7 @@ class Logic_Account implements DataLogic
 			return $oInstance;
 		}
 
-    }
+	}
 
 	private static function importCache($aCache)
 	{
@@ -82,145 +82,141 @@ class Logic_Account implements DataLogic
 		$this->_aPayables = NULL;
 		$this->oActivePromise = NULL;
 		$this->bPreviousEventNotCompleted = NULL;
-		$this->bNoNextEventFound = false;
+		$this->bNoNextEventFound = FALSE;
 		$this->oException = NULL;
 	}
 
-    private function __construct($mDefinition)
-    {
-        $this->oDO = is_numeric($mDefinition) ? Account::getForId($mDefinition) : (get_class($mDefinition) == 'Account' ? $mDefinition : null);
-    }
-
-
-
-    /**
-     * Returns the sum of all collectable balance for this account
-     * only collectables that are currently due are taken into account
-     * collectables that are part of an active promise are excluded
-     * @todo: $iOffset is currently the way to calculate the due date against a point in time later than today.
-     * instead of $iOffset the function parameter should be '$sNow = null'.
-     * This will be much cleaner, and a way in which the due date can be calculated against any point in time.
-     */
-    public function getOverdueCollectableBalance($sNow = null, $bBypassCache = false)
-    {
-
-       $aCollectables = $this->getCollectables(Logic_Collectable::DEBIT, $bBypassCache);
-
-	$fTotal = 0;
-	foreach($aCollectables as $oCollectable)
+	private function __construct($mDefinition)
 	{
-	    if ($oCollectable->isOverDue($sNow))
-	    {
-		$fTotal += $oCollectable->balance;
-	    }
+		$this->oDO = is_numeric($mDefinition) ? Account::getForId($mDefinition) : (get_class($mDefinition) == 'Account' ? $mDefinition : null);
 	}
 
-	//////Log::getLog()->log("Account overdue balance: {$fTotal}");
-	return $fTotal;
-    }
-
-    public function close($bSetDefaultRateplanOnServices)
-    {
-        $this->oDO->close($bSetDefaultRateplanOnServices);
-    }
 
 
-    public function getServicesForOCAReferral()
-    {
-        $aServices = $this->oDO->getAllServiceRecords(true);
-        $aResult = array();
-        foreach ($aServices as $oService)
-        {
-            $aServicesForFNN = Service::getFNNInstances($oService->FNN, $this->id, false);
-            $oResult = array_pop($aServicesForFNN);
-            if($oResult->Status != SERVICE_ARCHIVED)
-                   $aResult[] = $oResult;
-        }
-        return $aResult;
-    }
+	/**
+	 * Returns the sum of all collectable balance for this account
+	 * only collectables that are currently due are taken into account
+	 * collectables that are part of an active promise are excluded
+	 * @todo: $iOffset is currently the way to calculate the due date against a point in time later than today.
+	 * instead of $iOffset the function parameter should be '$sNow = null'.
+	 * This will be much cleaner, and a way in which the due date can be calculated against any point in time.
+	 */
+	public function getOverdueCollectableBalance($sNow = null, $bBypassCache = false)
+	{
 
-    /**
-     * Returns the sum of all collectables amount for this account
-     * only collectables that are currently due are taken into account
-     * collectables that are part of an active promise are excluded
-     *  @todo: $iOffset is currently the way to calculate the due date against a point in time later than today.
-     * instead of $iOffset the function parameter should be '$sNow = null'.
-     * This will be much cleaner, and a way in which the due date can be calculated against any point in time.
-     * @todo: possibly implement this method in such a way that it determines the amount by means of an sql query rather than iterating over collectables.
-     *
-     */
-    public function getOverDueCollectableAmount($sNow = null)
-    {
-        $aCollectables = $this->getCollectables(Logic_Collectable::DEBIT);
+	   $aCollectables = $this->getCollectables(Logic_Collectable::DEBIT, $bBypassCache);
 
-        $fTotal = 0;
-        foreach($aCollectables as $oCollectable)
-        {
+		$fTotal = 0;
+		foreach($aCollectables as $oCollectable)
+		{
+			if ($oCollectable->isOverDue($sNow))
+			{
+				$fTotal += $oCollectable->balance;
+			}
+		}
 
-            if ($oCollectable->isOverDue($sNow))
-            {
+		//////Log::getLog()->log("Account overdue balance: {$fTotal}");
+		return $fTotal;
+	}
 
-            	$fTotal += $oCollectable->amount;
-            }
-        }
-
-        //////Log::getLog()->log("Account collectable amount: {$fTotal}");
-        return $fTotal;
-
-    }
-
-    public function cancelScheduledScenarioEvents()
-    {
-        $aInstances = Logic_Collection_Event_Instance::getWaitingEvents($this->id);
-            foreach ($aInstances as $oInstance)
-            {
-                $oInstance->cancel();
-            }
-    }
+	public function close($bSetDefaultRateplanOnServices)
+	{
+		$this->oDO->close($bSetDefaultRateplanOnServices);
+	}
 
 
+	public function getServicesForOCAReferral()
+	{
+		$aServices = $this->oDO->getAllServiceRecords(true);
+		$aResult = array();
+		foreach ($aServices as $oService)
+		{
+			$aServicesForFNN = Service::getFNNInstances($oService->FNN, $this->id, false);
+			$oResult = array_pop($aServicesForFNN);
+			if($oResult->Status != SERVICE_ARCHIVED)
+			   $aResult[] = $oResult;
+		}
+		return $aResult;
+	}
 
-    /**
-     *
-     * @return <type> Logic_Collection_Event_Instance
-     */
-    public function getMostRecentCollectionEventInstance()
-    {
-        return Logic_Collection_Event_Instance::getMostRecentForAccount($this);
-    }
+	/**
+	 * Returns the sum of all collectables amount for this account
+	 * only collectables that are currently due are taken into account
+	 * collectables that are part of an active promise are excluded
+	 *  @todo: $iOffset is currently the way to calculate the due date against a point in time later than today.
+	 * instead of $iOffset the function parameter should be '$sNow = null'.
+	 * This will be much cleaner, and a way in which the due date can be calculated against any point in time.
+	 * @todo: possibly implement this method in such a way that it determines the amount by means of an sql query rather than iterating over collectables.
+	 *
+	 */
+	public function getOverDueCollectableAmount($sNow = null)
+	{
+		$aCollectables = $this->getCollectables(Logic_Collectable::DEBIT);
 
-    public function getStartOfCollectionsEventInstance()
-    {
-	return Logic_Collection_Event_Instance::getFirstForAccount($this);
-    }
+		$fTotal = 0;
+		foreach($aCollectables as $oCollectable)
+		{
+			if ($oCollectable->isOverDue($sNow))
+			{
+				$fTotal += $oCollectable->amount;
+			}
+		}
+
+		//////Log::getLog()->log("Account collectable amount: {$fTotal}");
+		return $fTotal;
+
+	}
+
+	public function cancelScheduledScenarioEvents()
+	{
+		$aInstances = Logic_Collection_Event_Instance::getWaitingEvents($this->id);
+		foreach ($aInstances as $oInstance)
+		{
+			$oInstance->cancel();
+		}
+	}
+
+	/**
+	 *
+	 * @return <type> Logic_Collection_Event_Instance
+	 */
+	public function getMostRecentCollectionEventInstance()
+	{
+		return Logic_Collection_Event_Instance::getMostRecentForAccount($this);
+	}
+
+	public function getStartOfCollectionsEventInstance()
+	{
+		return Logic_Collection_Event_Instance::getFirstForAccount($this);
+	}
 
    /**
-    * @method Account_Logic::isCurrentlyInCollections
-    * Determines if an account is currently in collections as follows:
-    * - if most recent Logic_Collection_Event_Instance (account_collection_event_history) is the 'exit
-    *  event or does not exist - return false
-    * - else: return true
-    */
-    public function isCurrentlyInCollections()
-    {
-    	$oLastEventInstance = $this->getMostRecentCollectionEventInstance();
+	* @method Account_Logic::isCurrentlyInCollections
+	* Determines if an account is currently in collections as follows:
+	* - if most recent Logic_Collection_Event_Instance (account_collection_event_history) is the 'exit
+	*  event or does not exist - return false
+	* - else: return true
+	*/
+	public function isCurrentlyInCollections()
+	{
+		$oLastEventInstance = $this->getMostRecentCollectionEventInstance();
+		if ($oLastEventInstance === null || $oLastEventInstance->isExitEvent())
+			return false;
 
-	if ($oLastEventInstance === null || $oLastEventInstance->isExitEvent())
-	    return false;
-
-        return true;
-    }
-
+		return true;
+	}
 
 
-    /**
-     * Logic_Account::getNextScheduledEvent
-     * based on the current scenario, the next scheduled event is returned
-     * @return Scenario Event object or NULL if none qualifies
-     */
 
-    public function getNextCollectionScenarioEvent($bIgnoreDayOffsetRules = FALSE)
-    {
+	/**
+	 * Logic_Account::getNextScheduledEvent
+	 * based on the current scenario, the next scheduled event is returned
+	 * @return Scenario Event object or NULL if none qualifies
+	 * $bIgnoreDayOffsetRules should be set to TRUE if you just want to see which event is 'next in line', whether or not is qualifies to run today or not
+	 */
+
+	public function getNextCollectionScenarioEvent($bIgnoreDayOffsetRules = FALSE)
+	{
 		$oMostRecentEventInstance 		= $this->getMostRecentCollectionEventInstance();
 		if (!$bIgnoreDayOffsetRules && ($oMostRecentEventInstance!== null && $oMostRecentEventInstance->completed_datetime === null) )
 		{
@@ -238,37 +234,37 @@ class Logic_Account implements DataLogic
 
 		return $oNextEvent;
 
-    }
+	}
 
-    public function previousEventNotCompleted()
-    {
-        return $this->bPreviousEventNotCompleted;
-    }
+	public function previousEventNotCompleted()
+	{
+		return $this->bPreviousEventNotCompleted;
+	}
 
-    public function noNextEventFound()
-    {
-        return $this->bNoNextEventFound;
-    }
+	public function noNextEventFound()
+	{
+		return $this->bNoNextEventFound;
+	}
 
-    public function getSeverity()
-    {
-        return Logic_Collection_Severity::getForAccount($this);
-    }
+	public function getSeverity()
+	{
+		return Logic_Collection_Severity::getForAccount($this);
+	}
 
-    public function resetSeverity()
-    {
-       $this->collection_severity_id = Collection_Severity::getForSystemName('UNRESTRICTED')->id;
-       $this->save();
-    }
+	public function resetSeverity()
+	{
+	   $this->collection_severity_id = Collection_Severity::getForSystemName('UNRESTRICTED')->id;
+	   $this->save();
+	}
 
-    public function isBarred()
-    {
-        $oBarringLevel = Account_Barring_Level::getMostRecentForAccount($this->id);
-        return $oBarringLevel == null ? false : $oBarringLevel->barring_level_id != BARRING_LEVEL_UNRESTRICTED;
-    }
+	public function isBarred()
+	{
+		$oBarringLevel = Account_Barring_Level::getMostRecentForAccount($this->id);
+		return $oBarringLevel == null ? false : $oBarringLevel->barring_level_id != BARRING_LEVEL_UNRESTRICTED;
+	}
 
-    public function shouldCurrentlyBeInCollections()
-    {
+	public function shouldCurrentlyBeInCollections()
+	{
 		if ($this->isInSuspension())
 			return false;
 
@@ -296,10 +292,10 @@ class Logic_Account implements DataLogic
 			 $mNow = self::SCENARIO_OFFSET_USED_TO_DETERMINE_EXIT_COLLECTIONS ? date('Y-m-d', strtotime("+$oScenario->day_offset days", time())) : Data_Source_Time::currentDate();
 			 return $oScenario->evaluateThresholdCriterion($this->getOverDueCollectableAmount($mNow),$this->getOverdueCollectableBalance($mNow));
 		 }
-    }
+	}
 
-    public function shouldCurrentlyBeInCollectionsOldAndIncorrect()
-    {
+	public function shouldCurrentlyBeInCollectionsOldAndIncorrect()
+	{
 	if ($this->isInSuspension())
 	{
 		return false;
@@ -310,51 +306,51 @@ class Logic_Account implements DataLogic
 
 	if (!$this->isCurrentlyInCollections())
 	{
-	    return $this->getCollectionsStartDate () <= Data_Source_Time::currentDate () && $oScenario->evaluateThresholdCriterion($oSourceCollectable->amount, $oSourceCollectable->balance);
+		return $this->getCollectionsStartDate () <= Data_Source_Time::currentDate () && $oScenario->evaluateThresholdCriterion($oSourceCollectable->amount, $oSourceCollectable->balance);
 	}
 	//if they are in collectons:
 	else
 	{
 
-	    if ( $oScenario->evaluateThresholdCriterion($oSourceCollectable->amount, $oSourceCollectable->balance))
-	    {
+		if ( $oScenario->evaluateThresholdCriterion($oSourceCollectable->amount, $oSourceCollectable->balance))
+		{
 		//if the  source collectable has not been paid off, stay in collections
 		return true;
-	    }
-	    else
-	    {
+		}
+		else
+		{
 		$oScenario  = $this->getCurrentScenarioInstance()->getScenario();
 		$mNow = self::SCENARIO_OFFSET_USED_TO_DETERMINE_EXIT_COLLECTIONS ? date('Y-m-d', strtotime("+$oScenario->day_offset days", time())) : null;
 		$fBalance   = $this->getOverdueCollectableBalance($mNow);
-		$fAmount    = $this->getOverDueCollectableAmount($mNow);
+		$fAmount	= $this->getOverDueCollectableAmount($mNow);
 		return  $oScenario->evaluateThresholdCriterion($fAmount, $fBalance);
-	    }
+		}
 	}
 
 
-    }
+	}
 
 
-    /**
-     * @method Account_Logic::scheduleNextScheduledScenarioEvent
-     * If the account is currently in collections or should be in collections, the next scenario event is triggered,
-     * based on the following rules:
-     * - An event will be scheduled for accounts that are not in suspension AND are either currently in collections or have a due balance above the entry threshold
-     * - If such an account is below the scenario exit threshold, the ExitCollections event is triggered
-     * - Else: the next event is triggered, based on the collections start date of the account (if no previous event exists for the current scenario) OR on the most recent event of the current scenario
-     *
-     * - if it is a manually invoked event, it is only scheduled
-     * - if it is a fully automated event, it is scheduled and invoked and completed
-     *
-     * It is the responsibility of the caller of this method to ensure that any pending changes of scenario
-     * have been completed before calling this method, eg if there is a broken promise on the account, this should
-     * have been dealt with before calling this method.
-     *
-     * Also, this method assumes that all distribution of balances from payments, adjustments, and credit collectables has been done. It only looks at collectable balances
-     *
-     */
-    public function scheduleNextScenarioEvent()
-    {
+	/**
+	 * @method Account_Logic::scheduleNextScheduledScenarioEvent
+	 * If the account is currently in collections or should be in collections, the next scenario event is triggered,
+	 * based on the following rules:
+	 * - An event will be scheduled for accounts that are not in suspension AND are either currently in collections or have a due balance above the entry threshold
+	 * - If such an account is below the scenario exit threshold, the ExitCollections event is triggered
+	 * - Else: the next event is triggered, based on the collections start date of the account (if no previous event exists for the current scenario) OR on the most recent event of the current scenario
+	 *
+	 * - if it is a manually invoked event, it is only scheduled
+	 * - if it is a fully automated event, it is scheduled and invoked and completed
+	 *
+	 * It is the responsibility of the caller of this method to ensure that any pending changes of scenario
+	 * have been completed before calling this method, eg if there is a broken promise on the account, this should
+	 * have been dealt with before calling this method.
+	 *
+	 * Also, this method assumes that all distribution of balances from payments, adjustments, and credit collectables has been done. It only looks at collectable balances
+	 *
+	 */
+	public function scheduleNextScenarioEvent()
+	{
 		$bShouldBeInCollections = $this->shouldCurrentlyBeInCollections();
 		$bIsCurrentlyInCollections = $this->isCurrentlyInCollections();
 
@@ -393,521 +389,520 @@ class Logic_Account implements DataLogic
 		}
 
 
-    }
+	}
 
-    public function processActivePromise()
-    {
+	public function processActivePromise()
+	{
 	$oPromise = $this->getActivePromise();
 	if ($oPromise)
-	    $oPromise->process();
-    }
+		$oPromise->process();
+	}
 
-    /**
-     * @param <type> to specify either debit or credit collectables
-     * @return all collectables of the specified type with balance > 0
-     */
-    public function getCollectables($iType = Logic_Collectable::DEBIT, $bRefreshCache = false)
-    {
-        if ($this->aCollectables === null || $bRefreshCache)
-        {
-            $this->aCollectables[Logic_Collectable::DEBIT] = Logic_Collectable::getForAccount($this, true, Logic_Collectable::DEBIT, $bRefreshCache);
-            $this->aCollectables[Logic_Collectable::CREDIT] = Logic_Collectable::getForAccount($this, true,Logic_Collectable::CREDIT, $bRefreshCache);
-        }
-        return $iType === null ? $this->aCollectables : $this->aCollectables [$iType];
-    }
+	/**
+	 * @param <type> to specify either debit or credit collectables
+	 * @return all collectables of the specified type with balance > 0
+	 */
+	public function getCollectables($iType = Logic_Collectable::DEBIT, $bRefreshCache = false)
+	{
+		if ($this->aCollectables === null || $bRefreshCache)
+		{
+			$this->aCollectables[Logic_Collectable::DEBIT] = Logic_Collectable::getForAccount($this, true, Logic_Collectable::DEBIT, $bRefreshCache);
+			$this->aCollectables[Logic_Collectable::CREDIT] = Logic_Collectable::getForAccount($this, true,Logic_Collectable::CREDIT, $bRefreshCache);
+		}
+		return $iType === null ? $this->aCollectables : $this->aCollectables [$iType];
+	}
 
-    public function getPayments($iPaymentNature = null, $bRefreshFromDatabase = false)
-    {
-        if ($this->aPayments === null)
-        {
-            $this->aPayments[PAYMENT_NATURE_PAYMENT] = Logic_Payment::getForAccount($this,PAYMENT_NATURE_PAYMENT);
-            $this->aPayments[PAYMENT_NATURE_REVERSAL] = Logic_Payment::getForAccount($this,PAYMENT_NATURE_REVERSAL);
-        }
+	public function getPayments($iPaymentNature = null, $bRefreshFromDatabase = false)
+	{
+		if ($this->aPayments === null)
+		{
+			$this->aPayments[PAYMENT_NATURE_PAYMENT] = Logic_Payment::getForAccount($this,PAYMENT_NATURE_PAYMENT);
+			$this->aPayments[PAYMENT_NATURE_REVERSAL] = Logic_Payment::getForAccount($this,PAYMENT_NATURE_REVERSAL);
+		}
 
-        return $iPaymentNature=== null ? $this->aPayments : $this->aPayments[$iPaymentNature];
-    }
+		return $iPaymentNature=== null ? $this->aPayments : $this->aPayments[$iPaymentNature];
+	}
 
-    public function getAdjustments($iSignType = null, $bRefreshFromDatabase = false)
-    {
-        if ($this->aAdjustments === null)
-        {
-            $this->aAdjustments[Logic_Adjustment::DEBIT] = Logic_Adjustment::getForAccount($this,  Logic_Adjustment::DEBIT);
-            $this->aAdjustments[Logic_Adjustment::CREDIT] = Logic_Adjustment::getForAccount($this, Logic_Adjustment::CREDIT);
-        }
-        return $iSignType === null ? $this->aAdjustments : $this->aAdjustments [$iSignType];
-    }
+	public function getAdjustments($iSignType = null, $bRefreshFromDatabase = false)
+	{
+		if ($this->aAdjustments === null)
+		{
+			$this->aAdjustments[Logic_Adjustment::DEBIT] = Logic_Adjustment::getForAccount($this,  Logic_Adjustment::DEBIT);
+			$this->aAdjustments[Logic_Adjustment::CREDIT] = Logic_Adjustment::getForAccount($this, Logic_Adjustment::CREDIT);
+		}
+		return $iSignType === null ? $this->aAdjustments : $this->aAdjustments [$iSignType];
+	}
 
-    /**
-     *
-     * @param <type> debit or credit
-     * @return <type> the balance of the collectables of the specified type
-     */
-    public function getCollectableBalance($iType = Logic_Collectable::DEBIT)
-    {
-        $aCollectable = $this->getCollectables($iType);
-        $fTotalBalance = 0;
-        foreach ($aCollectable as $oCollectable)
-        {
-            $fTotalBalance += $oCollectable->balance;
-        }
+	/**
+	 *
+	 * @param <type> debit or credit
+	 * @return <type> the balance of the collectables of the specified type
+	 */
+	public function getCollectableBalance($iType = Logic_Collectable::DEBIT)
+	{
+		$aCollectable = $this->getCollectables($iType);
+		$fTotalBalance = 0;
+		foreach ($aCollectable as $oCollectable)
+		{
+			$fTotalBalance += $oCollectable->balance;
+		}
 
-        return $fTotalBalance;
-    }
+		return $fTotalBalance;
+	}
 
 
 
-    /**
-     *
-     * @param <type> debit or credit
-     * @return <type> the sum of amounts of the collectables of the specified type
-     * NOTE: this will only include collectables that currently have balance!=o
-     */
-    public function getCollectableAmount($iType)
-    {
+	/**
+	 *
+	 * @param <type> debit or credit
+	 * @return <type> the sum of amounts of the collectables of the specified type
+	 * NOTE: this will only include collectables that currently have balance!=o
+	 */
+	public function getCollectableAmount($iType)
+	{
 	$aCollectable = $this->getCollectables($iType);
 	$fTotalAmount = 0;
 	foreach ($aCollectable as $oCollectable)
 	{
-	    $fTotalAmount += $oCollectable->amount;
+		$fTotalAmount += $oCollectable->amount;
 	}
 
 	return  $fTotalAmount;
-    }
+	}
 
-    /**
-     * @return array of all payable items for the account, comprising objects of the following classes:
-     *  - Logic_Collectable with amount > 0
-     *  - Logic_Collection_Promise_Instalment that belong to a currently active promise
-     * @return array of all payable items for the account (objects of the following classes: Logic_Collectable with amount > 0  and Logic_Collection_Promise_Instalment that belong to a currently active promise)
-     */
-    public function getPayables($bRefreshFromDatabase = false)
-    {
-        //return $this->oDO->getPayables();
-        if ($this->_aPayables === null || $bRefreshFromDatabase)
-                $this->_aPayables = $this->oDO->getPayables();
+	/**
+	 * @return array of all payable items for the account, comprising objects of the following classes:
+	 *  - Logic_Collectable with amount > 0
+	 *  - Logic_Collection_Promise_Instalment that belong to a currently active promise
+	 * @return array of all payable items for the account (objects of the following classes: Logic_Collectable with amount > 0  and Logic_Collection_Promise_Instalment that belong to a currently active promise)
+	 */
+	public function getPayables($bRefreshFromDatabase = false)
+	{
+		//return $this->oDO->getPayables();
+		if ($this->_aPayables === null || $bRefreshFromDatabase)
+				$this->_aPayables = $this->oDO->getPayables();
 
-        return $this->_aPayables;
-    }
+		return $this->_aPayables;
+	}
 
-    /**
-     * equivalent to getCollectableBalance()
-     * @return total a amount payable as the sum of the balance of all payables
-     */
-    public function getPayableBalance($bRefreshFromDatabase = false)
-    {
-       $fTotalBalance = 0;
-       $aPayables = $this->getPayables($bRefreshFromDatabase);
-        foreach ($aPayables as $oPayable)
-        {
-            $fTotalBalance += $oPayable->getBalance();
-        }
+	/**
+	 * equivalent to getCollectableBalance()
+	 * @return total a amount payable as the sum of the balance of all payables
+	 */
+	public function getPayableBalance($bRefreshFromDatabase = false)
+	{
+	   $fTotalBalance = 0;
+	   $aPayables = $this->getPayables($bRefreshFromDatabase);
+		foreach ($aPayables as $oPayable)
+		{
+			$fTotalBalance += $oPayable->getBalance();
+		}
 
-        return $fTotalBalance;
-    }
+		return $fTotalBalance;
+	}
 
-    /**
-     *
-     * @return sum of the amount of all payables retrieved through getPayables()
-     */
-    public function getPayableAmount()
-    {
-        $fTotalAmount = 0;
-        foreach ($this->getPayables() as $oPayable)
-        {
-             $fTotalAmount += $oPayable->getAmount();
-        }
+	/**
+	 *
+	 * @return sum of the amount of all payables retrieved through getPayables()
+	 */
+	public function getPayableAmount()
+	{
+		$fTotalAmount = 0;
+		foreach ($this->getPayables() as $oPayable)
+		{
+			 $fTotalAmount += $oPayable->getAmount();
+		}
 
-        return  $fTotalAmount;
-    }
+		return  $fTotalAmount;
+	}
 
-    public function processDistributable($mDistributable)
-    {
-        $bDistributableIsCredit = $mDistributable->isCredit();
-       //Log::getLog()->log("Before processing distributable $mDistributable->id ,".memory_get_usage(true));
-        $aPayables = $bDistributableIsCredit ? $this->getPayables() : array_reverse($this->getPayables());
+	public function processDistributable($mDistributable)
+	{
+		$bDistributableIsCredit = $mDistributable->isCredit();
+	   //Log::getLog()->log("Before processing distributable $mDistributable->id ,".memory_get_usage(true));
+		$aPayables = $bDistributableIsCredit ? $this->getPayables() : array_reverse($this->getPayables());
 
 	for ($i=0;$i<count($aPayables);$i++)
 	{
-	    if ($mDistributable->balance == 0)
-		    break;
-	    $oPayable = $aPayables[$i];
+		if ($mDistributable->balance == 0)
+			break;
+		$oPayable = $aPayables[$i];
 
-	    if ($bDistributableIsCredit && $oPayable->getBalance() > 0)
-	    {
+		if ($bDistributableIsCredit && $oPayable->getBalance() > 0)
+		{
 		$oPayable->processDistributable($mDistributable);
 
-	    }
-	    else if (!$bDistributableIsCredit && $oPayable->getBalance() < $oPayable->getAmount())
-	    {
+		}
+		else if (!$bDistributableIsCredit && $oPayable->getBalance() < $oPayable->getAmount())
+		{
 		$oPayable->processDistributable($mDistributable);
-	    }
+		}
 
-	    
+
 	}
 	unset($aPayables);
-          //Log::getLog()->log("After processing distributable $mDistributable->id,".memory_get_usage(true));
-    }
+		  //Log::getLog()->log("After processing distributable $mDistributable->id,".memory_get_usage(true));
+	}
 
 
 
-    public function getDistributableDebitBalance()
-    {
-        $fDebitBalance = 0;
-        $aDebitAdjustments = $this->getAdjustments(Logic_Adjustment::DEBIT);
-        $aReversedPayments = $this->getPayments(PAYMENT_NATURE_REVERSAL);
-        foreach ($aDebitAdjustments as $oAdjustment)
-        {
-            $fDebitBalance += $oAdjustment->balance;
-        }
+	public function getDistributableDebitBalance()
+	{
+		$fDebitBalance = 0;
+		$aDebitAdjustments = $this->getAdjustments(Logic_Adjustment::DEBIT);
+		$aReversedPayments = $this->getPayments(PAYMENT_NATURE_REVERSAL);
+		foreach ($aDebitAdjustments as $oAdjustment)
+		{
+			$fDebitBalance += $oAdjustment->balance;
+		}
 
-        foreach ($aReversedPayments as $oPayment)
-        {
-            $fDebitBalance += $oPayment->balance;
-        }
+		foreach ($aReversedPayments as $oPayment)
+		{
+			$fDebitBalance += $oPayment->balance;
+		}
 
-        return $fDebitBalance;
-    }
+		return $fDebitBalance;
+	}
 
-    public function getDistributableCreditBalance()
-    {
-        $fCreditBalance = 0;
-        $aCreditAdjustments = $this->getAdjustments(Logic_Adjustment::CREDIT);
-        $aPayments = $this->getPayments(PAYMENT_NATURE_PAYMENT);
-        $aCollectables = $this->getCollectables(Logic_Collectable::CREDIT);
+	public function getDistributableCreditBalance()
+	{
+		$fCreditBalance = 0;
+		$aCreditAdjustments = $this->getAdjustments(Logic_Adjustment::CREDIT);
+		$aPayments = $this->getPayments(PAYMENT_NATURE_PAYMENT);
+		$aCollectables = $this->getCollectables(Logic_Collectable::CREDIT);
 
-        foreach ($aCollectables as $oCollectable)
-        {
-            $fCreditBalance -= $oCollectable->balance;
-        }
-
-
-        foreach ($aCreditAdjustments as $oAdjustment)
-        {
-            $fCreditBalance += $oAdjustment->balance;
-        }
-
-        foreach ($aPayments as $oPayment)
-        {
-            $fCreditBalance += $oPayment->balance;
-        }
-
-        return $fCreditBalance;
-
-    }
-
-    public function hasPayablesWithBalanceBelowAmount()
-    {
-        $aCollectables = $this->getPayables();
-        foreach ($aCollectables as $oCollectable)
-        {
-            if ($oCollectable->amount > 0 && ($oCollectable->amount - $oCollectable->balance >0))
-                    return true;
-        }
-
-        return false;
-
-    }
+		foreach ($aCollectables as $oCollectable)
+		{
+			$fCreditBalance -= $oCollectable->balance;
+		}
 
 
+		foreach ($aCreditAdjustments as $oAdjustment)
+		{
+			$fCreditBalance += $oAdjustment->balance;
+		}
 
-    public function redistributeBalances()
-    {
-        // delete all records for this account in the following tables: collectable_adjustment; collectable_payment; collectable_transfer where collectable_transfer_type == COLLECTABLE_TRANSFER_TYPE_BALANCE
-        Collectable_Adjustment::deleteForAccount($this->id);
-        Collectable_Payment::deleteForAccount($this->id);
-        Collectable_Transfer_Balance::deleteForAccount($this->id);
+		foreach ($aPayments as $oPayment)
+		{
+			$fCreditBalance += $oPayment->balance;
+		}
 
-        //set .balance = .amount for adjustment; payment; collectable
-        Adjustment::resetBalanceForAccount($this->id);
-        Payment::resetBalanceForAccount($this->id);        
-		//The following statement will directly access the database and modify collectable balances, so we need to subsequently force a cahce refresh on the Logic_Collectable class.
+		return $fCreditBalance;
+
+	}
+
+	public function hasPayablesWithBalanceBelowAmount()
+	{
+		$aCollectables = $this->getPayables();
+		foreach ($aCollectables as $oCollectable)
+		{
+			if ($oCollectable->amount > 0 && ($oCollectable->amount - $oCollectable->balance >0))
+					return true;
+		}
+
+		return false;
+
+	}
+
+
+
+	public function redistributeBalances()
+	{
+		// delete all records for this account in the following tables: collectable_adjustment; collectable_payment; collectable_transfer where collectable_transfer_type == COLLECTABLE_TRANSFER_TYPE_BALANCE
+		Collectable_Adjustment::deleteForAccount($this->id);
+		Collectable_Payment::deleteForAccount($this->id);
+		Collectable_Transfer_Balance::deleteForAccount($this->id);
+
+		//set .balance = .amount for adjustment; payment; collectable
+		Adjustment::resetBalanceForAccount($this->id);
+		Payment::resetBalanceForAccount($this->id);
+		//The following statement will directly access the database and modify collectable balances, so we need to subsequently force a cache refresh on the Logic_Collectable class.
 		Collectable::resetBalanceForAccount($this->id);
 		Logic_Collectable::clearCache();
 		$this->getPayables(TRUE);
 		$this->getCollectables(Logic_Collectable::CREDIT, TRUE);
 
-        $iIterations = 0;
+		$iIterations = 0;
 
-        while ((($this->getPayableBalance() > 0 && $this->getDistributableCreditBalance() > 0)
-                || ($this->hasPayablesWithBalanceBelowAmount() && $this->getDistributableDebitBalance() > 0))) 
-        {
-            $iIterations++;
-           $aCreditCollectable = $this->getCollectables(Logic_Collectable::CREDIT);
-            //Log::getLog()->log("after get credit collectables,".memory_get_usage(true));
-            foreach ($aCreditCollectable as $oCollectable)
-            {
-                $this->processDistributable($oCollectable);
-            }
-
-           $aPayments = $this->getPayments(PAYMENT_NATURE_PAYMENT);
-          //Log::getLog()->log("after get payments,".memory_get_usage(true));
-            foreach ($aPayments as $oPayment)
-            {
-
-                $this->processDistributable($oPayment); 
-            }
-
-            $aAdjustments = $this->getAdjustments(Logic_Adjustment::CREDIT);
-            foreach ($aAdjustments as $oAdjustment)
-            {
-                $this->processDistributable($oAdjustment);
-            }
-            // self::$aMemory['after_processing_credits'] = memory_get_usage (TRUE );
-            //4. process all debit balances for this account in the tables mentioned in step 2. see below for the rules
-             ////Log::getLog()->log("&&&DEBIT BALANCE REDISTRIBUTION &&&");
-            $aDebitAdjustments = $this->getAdjustments(Logic_Adjustment::DEBIT);
-            foreach ( $aDebitAdjustments as $oAdjustment)
-            {
-                $this->processDistributable($oAdjustment);
-            }
-           // self::$aMemory['after_processing_debits'] = memory_get_usage (TRUE );
-        }
-
-
-        return array('iterations'=>$iIterations, 'Debit Collectables' =>count($this->getCollectables()), 'Credit Collectables'=> count($aCreditCollectable) , 'Credit Payments' =>count($aPayments) , 'Credit Adjustments'=> count($aAdjustments), 'Debit Payments' => count($aReversedPayments) , 'Debit Adjustments' =>count($aDebitAdjustments), 'Balance'=>$this->getPayableBalance() );
-    }
-
-    /**
-     * @return array of scenarios that are current for the account, this can be more than one
-     * use getCurrentScenarioInstance to determine which one should apply to the account.
-     */
-    public function getActiveScenarios($bRefreshFromDatabase = false)
-    {
-        if ($this->aActiveScenarioInstances === null || $bRefreshFromDatabase)
-	    $this->aActiveScenarioInstances = Logic_Collection_Scenario_Instance::getForAccount($this);
-
-        if (count($this->aActiveScenarioInstances)== 0)
-            throw new Logic_Collection_Exception("Configuration Error: no active Scenario for Account $this->id .");
-
-	return $this->aActiveScenarioInstances;
-    }
-
-    /**
-     *
-     * @return Logic Scenario Instance object representing the scenario that currently applies
-     * if more than one active scenarios are found, the scenario instance that was started most recently is selected
-     */
-    public function getCurrentScenarioInstance()
-    {
-       return end($this->getActiveScenarios());
-    }
-
-     /**
-     *
-     * @return Logic Scenario Instance object representing the scenario that would currently apply if there were no overrides
-     * if more than one active scenarios are found, the scenario instance with the earliest created datetime is returned
-     */
-    public function getBaseScenarioInstance()
-    {
-        return reset($this->getActiveScenarios());
-    }
-
-   /**
-    * Sets end date on the current Logic_Collection_Scenario_Instance (account_collection_scenario record)
-    * and creates a new  Logic_Collection_Scenario_Instance to be the current one
-    * saves changes to the database
-    * @param <type> $iCollectionScenarioId
-    *
-    */
-    public function setCurrentScenario($iCollectionScenarioId, $bEndCurrentScenario = true)
-    {
-	$this->resetScenario();
-	$this->cancelScheduledScenarioEvents();
-
-	if ($bEndCurrentScenario)
-	{
-	    $oCurrentScenario = $this->getBaseScenarioInstance();
-	    $oCurrentScenario->end_datetime = date('Y-m-d H:i:s');
-	    $oCurrentScenario->save();
-	    $this->aActiveScenarioInstances = array();
-	}
-
-
-	$sNow = date('Y-m-d H:i:s');
-	$oNewInstance 				= new Account_Collection_Scenario();
-	$oNewInstance->account_id 			= $this->oDO->Id;
-	$oNewInstance->collection_scenario_id 	= $iCollectionScenarioId;
-	$oNewInstance->created_datetime		= $sNow;
-	$oNewInstance->start_datetime		= $sNow;
-	$oNewInstance->end_datetime                 = Data_Source_Time::END_OF_TIME;
-	$oNewInstance->save();
-
-	// Clear the cached list of instances, next time they are retrieved the new instance will be included
-	$this->aActiveScenarioInstances[] = new Logic_Collection_Scenario_Instance($oNewInstance);
-
-       $oScenario = Collection_Scenario::getForId($iCollectionScenarioId);
-       if ($oScenario->initial_collection_severity_id !== null)
-       {
-	   $this->collection_severity_id = $oScenario->initial_collection_severity_id;
-	   $this->save();
-       }
-    }
-
-    /**
-     * ends all scenario overrides that are current, resets the scenario that currently applies to be the oldest active scenario
-     */
-    public function resetScenario()
-    {
-         // End the current account_collection_scenario record
-            $aScenarioInstances = $this->getActiveScenarios();
-            $oBaseScenario = $this->getBaseScenarioInstance();
-            foreach($aScenarioInstances as $oScenarioInstance)
-            {
-                if ($oScenarioInstance->id != $oBaseScenario->id)
-                {
-                    $oScenarioInstance->end_datetime = date('Y-m-d H:i:s');
-                    $oScenarioInstance->save();
-                }
-            }
-	    //this will refresh the $this->aActiveScenarios data member
-	    $this->getActiveScenarios(TRUE);
-    }
-
-   /**
-    * Simply checks for an effective end_datetime on suspensions
-    * This method is only guaranteed to reflect reality if first either Logic_Suspension::processForAccount($iAccountId) or Logic_Suspension::batchProcess is invoked
-    */
-    public function isInSuspension()
-    {
-	$oSuspension =  Collection_Suspension::getActiveForAccount($this->id);
-	$bInsuspension =  ($oSuspension!== null);
-	return $bInsuspension;
-    }
-
-    /**
-     * Returns a Logic_Collection_Promise object representing the active promise to pay on this account, or null if there is none
-     */
-    public function getActivePromise()
-    {
-	if ($this->oActivePromise === NULL)
-		$this->oActivePromise = Logic_Collection_Promise::getForAccount($this);
-	return $this->oActivePromise;
-    }
-
-    /**
-     * Logic_Account::getSourceCollectable
-     * @return Logic_Collectable -  If the account is currently in collections, return the collecatble that triggered it into collections
-     *				    Else - the collectable with the oldest due date that has a balance > 0 and is not part of an active promise
-     */
-    public function getSourceCollectable()
-    {
-	$oCurrentScenario = $this->getCurrentScenarioInstance()->getScenario();
-	$oMostRecentEventInstance = $this->getMostRecentCollectionEventInstance();
-	$iMostRecentEventScenario    = $oMostRecentEventInstance!= null && $oMostRecentEventInstance->getScenario()!=null ? $oMostRecentEventInstance->getScenario()->id : null;
-
-	if ($iMostRecentEventScenario === $oCurrentScenario->id)
-	{
-	    return Logic_Collectable::getInstance($this->getMostRecentCollectionEventInstance()->collectable_id);
-	}
-	else
-	{
-	    $aCollectables	= $this->getCollectables();
-	    $oOldest	= null;
-	    $iOldestDueDate = null;
-	    foreach ($aCollectables as $oCollectable)
-	    {
-		if (!$oCollectable->belongsToActivePromise() && $oCollectable->balance > 0)
+		while ((($this->getPayableBalance() > 0 && $this->getDistributableCreditBalance() > 0)
+				|| ($this->hasPayablesWithBalanceBelowAmount() && $this->getDistributableDebitBalance() > 0)))
 		{
-		    $iDueDate		= strtotime($oCollectable->due_date." 23:59:59");
-		    if (($oOldest == null) || ($iDueDate < $iOldestDueDate))
-		    {
-			$oOldest = $oCollectable;
-			$iOldestDueDate = $iDueDate;
-		    }
+			$iIterations++;
+		   $aCreditCollectable = $this->getCollectables(Logic_Collectable::CREDIT);
+			//Log::getLog()->log("after get credit collectables,".memory_get_usage(true));
+			foreach ($aCreditCollectable as $oCollectable)
+			{
+				$this->processDistributable($oCollectable);
+			}
+
+		   $aPayments = $this->getPayments(PAYMENT_NATURE_PAYMENT);
+		  //Log::getLog()->log("after get payments,".memory_get_usage(true));
+			foreach ($aPayments as $oPayment)
+			{
+				$this->processDistributable($oPayment);
+			}
+
+			$aAdjustments = $this->getAdjustments(Logic_Adjustment::CREDIT);
+			foreach ($aAdjustments as $oAdjustment)
+			{
+				$this->processDistributable($oAdjustment);
+			}
+			// self::$aMemory['after_processing_credits'] = memory_get_usage (TRUE );
+			//4. process all debit balances for this account in the tables mentioned in step 2. see below for the rules
+			 ////Log::getLog()->log("&&&DEBIT BALANCE REDISTRIBUTION &&&");
+			$aDebitAdjustments = $this->getAdjustments(Logic_Adjustment::DEBIT);
+			foreach ( $aDebitAdjustments as $oAdjustment)
+			{
+				$this->processDistributable($oAdjustment);
+			}
+		   // self::$aMemory['after_processing_debits'] = memory_get_usage (TRUE );
 		}
-	    }
-	    return $oOldest;
+
+
+		return array('iterations'=>$iIterations, 'Debit Collectables' =>count($this->getCollectables()), 'Credit Collectables'=> count($aCreditCollectable) , 'Credit Payments' =>count($aPayments) , 'Credit Adjustments'=> count($aAdjustments), 'Debit Payments' => count($aReversedPayments) , 'Debit Adjustments' =>count($aDebitAdjustments), 'Balance'=>$this->getPayableBalance() );
 	}
-    }
 
-    /**
-     * @method Account_Logic::getCurrentDueDate
-     * Returns the due date that will be the point of reference to work out which event should be triggered.
-     * the date returned will be either:
-     *  - the due date of the collectable that triggered most recent Logic_Collection_Event_Instance (account_collection_event_history record) IF that event instance was not the 'exit collections' event
-     *  - the due date of the oldest currently open collectable that is not part of an active promise to pay
-     * This function does not check whether a promise is in a 'broken' state but has not been processed as such. It is the caller's responsibility to first process the promises that are active on the account
-     * This function does not evaluate the source collectable amount and balance against the scenario threshold criteron
-     */
-    public function getCurrentDueDate()
-    {
-        $mSourceCollectable =  $this->getSourceCollectable();
-	return $mSourceCollectable === null ? Data_Source_Time::END_OF_TIME : $mSourceCollectable->due_date;
-    }
+	/**
+	 * @return array of scenarios that are current for the account, this can be more than one
+	 * use getCurrentScenarioInstance to determine which one should apply to the account.
+	 */
+	public function getActiveScenarios($bRefreshFromDatabase = false)
+	{
+		if ($this->aActiveScenarioInstances === null || $bRefreshFromDatabase)
+			$this->aActiveScenarioInstances = Logic_Collection_Scenario_Instance::getForAccount($this);
 
-    /**
-     *	This method returns a date based on the source collectable due date and scenario day offset.
-     *	This function does not evaluate the source collectable amount and balance against the scenario threshold criteron, so in itself is not sufficient to determine whether collections should start.
-     * @return <type>
-     */
-    public function getCollectionsStartDate()
-    {
-	$iOffset = $this->getCurrentScenarioInstance()->getScenario()->day_offset;
-	$sDueDate = $this->getCurrentDueDate();
-	$iDueDate = strtotime($sDueDate);
-	$iOverDueDate = strtotime("+1 day", $iDueDate);
-	$iStartDate = strtotime("-$iOffset day", $iOverDueDate);
-	$sStartDate = date ("Y-m-d", $iStartDate);
-	Log::getLog()->log("Scenario day offset: $iOffset");
-	Log::getLog()->log("account due date: ".$sDueDate."; collections date: $sStartDate");
-	return $sStartDate;
-    }
+		if (count($this->aActiveScenarioInstances)== 0)
+			throw new Logic_Collection_Exception("Configuration Error: no active Scenario for Account $this->id .");
 
-    public function setException($e)
-    {
-        $this->oException = $e;
-    }
+		return $this->aActiveScenarioInstances;
+	}
 
-    public function getException()
-    {
-        return $this->oException;
-    }
+	/**
+	 *
+	 * @return Logic Scenario Instance object representing the scenario that currently applies
+	 * if more than one active scenarios are found, the scenario instance that was started most recently is selected
+	 */
+	public function getCurrentScenarioInstance()
+	{
+	   return end($this->getActiveScenarios());
+	}
 
-    public function hasPendingOCAReferral()
-    {
-        $mReferral = Account_OCA_Referral::getForAccountId($this->Id, ACCOUNT_OCA_REFERRAL_STATUS_PENDING);
-        return $mReferral!== null ? $mReferral[0]->account_oca_referral_status_id === ACCOUNT_OCA_REFERRAL_STATUS_PENDING : FALSE;
-    }
+	 /**
+	 *
+	 * @return Logic Scenario Instance object representing the scenario that would currently apply if there were no overrides
+	 * if more than one active scenarios are found, the scenario instance with the earliest created datetime is returned
+	 */
+	public function getBaseScenarioInstance()
+	{
+		return reset($this->getActiveScenarios());
+	}
 
-    public function cancelPendingOCAReferral()
-    {
-        $mReferral = Account_OCA_Referral::getForAccountId($this->Id, ACCOUNT_OCA_REFERRAL_STATUS_PENDING);
-        if ($mReferral!== NULL)
-        {
-            $mReferral[0]->cancel();
-        }
-    }
+   /**
+	* Sets end date on the current Logic_Collection_Scenario_Instance (account_collection_scenario record)
+	* and creates a new  Logic_Collection_Scenario_Instance to be the current one
+	* saves changes to the database
+	* @param <type> $iCollectionScenarioId
+	*
+	*/
+	public function setCurrentScenario($iCollectionScenarioId, $bEndCurrentScenario = true)
+	{
+		$this->resetScenario();
+		$this->cancelScheduledScenarioEvents();
 
-    public static function clearCache($bClearRelatedCaches = true)
-    {
-        self::$aInstances = array();
-        Account::emptyCache();
-        if ($bClearRelatedCaches)
-        {
-            Logic_Collectable::clearCache();
-            Payment::clearCache();
-            Adjustment::clearCache();
-            Collection_Promise::clearCache();
-            Collection_Promise_Instalment::clearCache();
-            Collectable_Payment::clearCache();
-            Collectable_Adjustment::clearCache();
-            Collectable_Transfer_Balance::clearCache();
-            Payment_Nature::clearCache();
-        }
-        memory_get_usage (TRUE );
-    }
+		if ($bEndCurrentScenario)
+		{
+			$oCurrentScenario = $this->getBaseScenarioInstance();
+			$oCurrentScenario->end_datetime = date('Y-m-d H:i:s');
+			$oCurrentScenario->save();
+			$this->aActiveScenarioInstances = array();
+		}
 
-    public static function batchRedistributeBalances($aAccounts)
-    {
-        self::$aMemory['before_looping'] = memory_get_usage (TRUE );
-       // //Log::getLog()->log(count($aAccounts)." Accounts");
 
-        foreach ($aAccounts as $iIndex => $oAccountORM)
-        {
+		$sNow = date('Y-m-d H:i:s');
+		$oNewInstance 				= new Account_Collection_Scenario();
+		$oNewInstance->account_id 			= $this->oDO->Id;
+		$oNewInstance->collection_scenario_id 	= $iCollectionScenarioId;
+		$oNewInstance->created_datetime		= $sNow;
+		$oNewInstance->start_datetime		= $sNow;
+		$oNewInstance->end_datetime				 = Data_Source_Time::END_OF_TIME;
+		$oNewInstance->save();
+
+		// Clear the cached list of instances, next time they are retrieved the new instance will be included
+		$this->aActiveScenarioInstances[] = new Logic_Collection_Scenario_Instance($oNewInstance);
+
+		$oScenario = Collection_Scenario::getForId($iCollectionScenarioId);
+		if ($oScenario->initial_collection_severity_id !== null)
+		{
+			$this->collection_severity_id = $oScenario->initial_collection_severity_id;
+			$this->save();
+		}
+	}
+
+	/**
+	 * ends all scenario overrides that are current, resets the scenario that currently applies to be the oldest active scenario
+	 */
+	public function resetScenario()
+	{
+	 // End the current account_collection_scenario record
+		$aScenarioInstances = $this->getActiveScenarios();
+		$oBaseScenario = $this->getBaseScenarioInstance();
+		foreach($aScenarioInstances as $oScenarioInstance)
+		{
+			if ($oScenarioInstance->id != $oBaseScenario->id)
+			{
+				$oScenarioInstance->end_datetime = date('Y-m-d H:i:s');
+				$oScenarioInstance->save();
+			}
+		}
+		//this will refresh the $this->aActiveScenarios data member
+		$this->getActiveScenarios(TRUE);
+	}
+
+   /**
+	* Simply checks for an effective end_datetime on suspensions
+	* This method is only guaranteed to reflect reality if first either Logic_Suspension::processForAccount($iAccountId) or Logic_Suspension::batchProcess is invoked
+	*/
+	public function isInSuspension()
+	{
+		$oSuspension =  Collection_Suspension::getActiveForAccount($this->id);
+		$bInsuspension =  ($oSuspension!== null);
+		return $bInsuspension;
+	}
+
+	/**
+	 * Returns a Logic_Collection_Promise object representing the active promise to pay on this account, or null if there is none
+	 */
+	public function getActivePromise()
+	{
+		if ($this->oActivePromise === NULL)
+			$this->oActivePromise = Logic_Collection_Promise::getForAccount($this);
+		return $this->oActivePromise;
+	}
+
+	/**
+	 * Logic_Account::getSourceCollectable
+	 * @return Logic_Collectable -  If the account is currently in collections, return the collecatble that triggered it into collections
+	 *					Else - the collectable with the oldest due date that has a balance > 0 and is not part of an active promise
+	 */
+	public function getSourceCollectable()
+	{
+		$oCurrentScenario = $this->getCurrentScenarioInstance()->getScenario();
+		$oMostRecentEventInstance = $this->getMostRecentCollectionEventInstance();
+		$iMostRecentEventScenario	= $oMostRecentEventInstance!= null && $oMostRecentEventInstance->getScenario()!=null ? $oMostRecentEventInstance->getScenario()->id : null;
+
+		if ($iMostRecentEventScenario === $oCurrentScenario->id)
+		{
+			return Logic_Collectable::getInstance($this->getMostRecentCollectionEventInstance()->collectable_id);
+		}
+		else
+		{
+			$aCollectables	= $this->getCollectables();
+			$oOldest	= null;
+			$iOldestDueDate = null;
+			foreach ($aCollectables as $oCollectable)
+			{
+				if (!$oCollectable->belongsToActivePromise() && $oCollectable->balance > 0)
+				{
+					$iDueDate		= strtotime($oCollectable->due_date." 23:59:59");
+					if (($oOldest == null) || ($iDueDate < $iOldestDueDate))
+					{
+						$oOldest = $oCollectable;
+						$iOldestDueDate = $iDueDate;
+					}
+				}
+			}
+			return $oOldest;
+		}
+	}
+
+	/**
+	 * @method Account_Logic::getCurrentDueDate
+	 * Returns the due date that will be the point of reference to work out which event should be triggered.
+	 * the date returned will be either:
+	 *  - the due date of the collectable that triggered most recent Logic_Collection_Event_Instance (account_collection_event_history record) IF that event instance was not the 'exit collections' event
+	 *  - the due date of the oldest currently open collectable that is not part of an active promise to pay
+	 * This function does not check whether a promise is in a 'broken' state but has not been processed as such. It is the caller's responsibility to first process the promises that are active on the account
+	 * This function does not evaluate the source collectable amount and balance against the scenario threshold criteron
+	 */
+	public function getCurrentDueDate()
+	{
+		$mSourceCollectable =  $this->getSourceCollectable();
+		return $mSourceCollectable === null ? Data_Source_Time::END_OF_TIME : $mSourceCollectable->due_date;
+	}
+
+	/**
+	 *	This method returns a date based on the source collectable due date and scenario day offset.
+	 *	This function does not evaluate the source collectable amount and balance against the scenario threshold criteron, so in itself is not sufficient to determine whether collections should start.
+	 * @return <type>
+	 */
+	public function getCollectionsStartDate()
+	{
+		$iOffset = $this->getCurrentScenarioInstance()->getScenario()->day_offset;
+		$sDueDate = $this->getCurrentDueDate();
+		$iDueDate = strtotime($sDueDate);
+		$iOverDueDate = strtotime("+1 day", $iDueDate);
+		$iStartDate = strtotime("-$iOffset day", $iOverDueDate);
+		$sStartDate = date ("Y-m-d", $iStartDate);
+		Log::getLog()->log("Scenario day offset: $iOffset");
+		Log::getLog()->log("account due date: ".$sDueDate."; collections date: $sStartDate");
+		return $sStartDate;
+	}
+
+	public function setException($e)
+	{
+		$this->oException = $e;
+	}
+
+	public function getException()
+	{
+		return $this->oException;
+	}
+
+	public function hasPendingOCAReferral()
+	{
+		$mReferral = Account_OCA_Referral::getForAccountId($this->Id, ACCOUNT_OCA_REFERRAL_STATUS_PENDING);
+		return $mReferral!== null ? $mReferral[0]->account_oca_referral_status_id === ACCOUNT_OCA_REFERRAL_STATUS_PENDING : FALSE;
+	}
+
+	public function cancelPendingOCAReferral()
+	{
+		$mReferral = Account_OCA_Referral::getForAccountId($this->Id, ACCOUNT_OCA_REFERRAL_STATUS_PENDING);
+		if ($mReferral!== NULL)
+		{
+			$mReferral[0]->cancel();
+		}
+	}
+
+	public static function clearCache($bClearRelatedCaches = true)
+	{
+		self::$aInstances = array();
+		Account::emptyCache();
+		if ($bClearRelatedCaches)
+		{
+			Logic_Collectable::clearCache();
+			Payment::clearCache();
+			Adjustment::clearCache();
+			Collection_Promise::clearCache();
+			Collection_Promise_Instalment::clearCache();
+			Collectable_Payment::clearCache();
+			Collectable_Adjustment::clearCache();
+			Collectable_Transfer_Balance::clearCache();
+			Payment_Nature::clearCache();
+		}
+		memory_get_usage (TRUE );
+	}
+
+	public static function batchRedistributeBalances($aAccounts)
+	{
+		self::$aMemory['before_looping'] = memory_get_usage (TRUE );
+	   // //Log::getLog()->log(count($aAccounts)." Accounts");
+
+		foreach ($aAccounts as $iIndex => $oAccountORM)
+		{
 			$oDataAccess = DataAccess::getDataAccess();
-            $oDataAccess->TransactionStart();
-            try
-            {
+			$oDataAccess->TransactionStart();
+			try
+			{
 				//get the Logic_Account object
 				$oAccount = self::getInstance($oAccountORM);
 				
@@ -940,148 +935,138 @@ class Logic_Account implements DataLogic
 				Log::getLog()->log("$iId, $time,  $iMemory , ".self::$_aTime['delete_linking_data'].",".self::$_aTime['reset_balances'].",".$aResult['iterations'].",".$aResult['Debit Collectables'].",".$aResult['Credit Collectables'].",".$aResult['Credit Payments'].",".$aResult['Credit Adjustments'].",".$aResult['Debit Payments'].",".$aResult['Debit Adjustments'].",".$fAccountBalance.",".$fStartCollectableBalance.",".$aResult['Balance'].",".$fOverdueBalance);
 
 				$oDataAccess->TransactionCommit();
-            }
-            catch(Exception $e)
-            {
-                $oDataAccess->TransactionRollback();
-                if ($e instanceof Exception_Database)
-                    throw $e;
-
-
-            }
-
-        }
-    }
-
-    public function reset()
-    {
-        unset($this->oDO);
-        unset($this->aActiveScenarioInstances);
-        unset($this->aCollectables);
-        unset($this->aPayments);
-        unset($this->aAdjustments);
-        unset($this->oActivePromise);
-        unset($this->_aPayables);
-    }
-
-    public static function batchProcessCollections(&$aAccounts)
-    {
-
-        Log::getLog()->log("-------Starting Account Batch Collections Process-------------------------");
-
-            foreach ($aAccounts as $oAccount)
-            {
-                if (!$oAccount->noNextEventFound())
-		{
-		    $oDataAccess	= DataAccess::getDataAccess();
-		    $oDataAccess->TransactionStart();
-		    try
-		    {
-			Log::getLog()->log("Trying to schedule next event for account $oAccount->Id ");
-			Logic_Stopwatch::getInstance()->lap();
-			$oAccount->scheduleNextScenarioEvent();
-			//if no event was scheduled, no need to include this account in the next batch process iteration
-			if ($oAccount->noNextEventFound())
-			    unset($aAccounts[$oAccount->id]);
-
-			Log::getlog()->log("Processed account $oAccount->Id in : ".Logic_Stopwatch::getInstance()->lap());
-			$oDataAccess->TransactionCommit();
-		    }
-
-		    catch (Exception $e)
-		    {
-			    // Exception caught, rollback db transaction
-		       $oDataAccess->TransactionRollback();
-
-			if ($e instanceof Exception_Database)
-			{
-			    throw $e;
 			}
-			else
+			catch(Exception $e)
 			{
-			    $oAccount->setException($e);
-			    Logic_Collection_BatchProcess_Report::addAccount($oAccount);
+				$oDataAccess->TransactionRollback();
+				if ($e instanceof Exception_Database)
+					throw $e;
+
+
 			}
 
-		    }
 		}
+	}
 
-            }
+	public function reset()
+	{
+		unset($this->oDO);
+		unset($this->aActiveScenarioInstances);
+		unset($this->aCollectables);
+		unset($this->aPayments);
+		unset($this->aAdjustments);
+		unset($this->oActivePromise);
+		unset($this->_aPayables);
+	}
 
-           return  Logic_Collection_Event_Instance::completeWaitingInstances();
+	public static function batchProcessCollections(&$aAccounts)
+	{
+
+		Log::getLog()->log("-------Starting Account Batch Collections Process-------------------------");
+
+		foreach ($aAccounts as $oAccount)
+		{
+			$oDataAccess	= DataAccess::getDataAccess();
+			$oDataAccess->TransactionStart();
+			try
+			{
+				Log::getLog()->log("Trying to schedule next event for account $oAccount->Id ");
+				Logic_Stopwatch::getInstance()->lap();
+				$oAccount->scheduleNextScenarioEvent();
+				//if no event was scheduled, no need to include this account in the next batch process iteration
+				if ($oAccount->noNextEventFound())
+					unset($aAccounts[$oAccount->id]);
+
+				Log::getlog()->log("Processed account $oAccount->Id in : ".Logic_Stopwatch::getInstance()->lap());
+				$oDataAccess->TransactionCommit();
+			}
+			catch (Exception $e)
+			{
+				// Exception caught, rollback db transaction
+				$oDataAccess->TransactionRollback();
+				if ($e instanceof Exception_Database)
+				{
+					throw $e;
+				}
+				else
+				{
+					$oAccount->setException($e);
+					Logic_Collection_BatchProcess_Report::addAccount($oAccount);
+				}
+			}
+		}
+		return  Logic_Collection_Event_Instance::completeWaitingInstances();
+	}
+
+	public static function getForId($iId)
+	{
+		return self::getInstance($iId);
+	}
+
+	public function __get($sField)
+	{
+		if ($sField == 'id')
+			$sField = 'Id';
+		return $this->oDO->{$sField};
+	}
+
+	 private function __call($function, $args)
+	{
+		return call_user_func_array(array($this->oDO, $function),$args);
+	}
 
 
-    }
-
-    public static function getForId($iId)
-    {
-        return self::getInstance($iId);
-    }
-
-    public function __get($sField)
-    {
-    	if ($sField == 'id')
-            $sField = 'Id';
-        return $this->oDO->{$sField};
-    }
-
-     private function __call($function, $args)
-    {
-        return call_user_func_array(array($this->oDO, $function),$args);
-    }
-
-
-    public function __set($sField, $mValue)
-    {
+	public function __set($sField, $mValue)
+	{
 		$this->oDO->{$sField} = $mValue;
-    }
+	}
 
-    public function save()
-    {
+	public function save()
+	{
 		return $this->oDO->save();
-    }
+	}
 
-    public function toArray()
-    {
+	public function toArray()
+	{
 		return $this->oDO->toArray();
-    }
+	}
 
-    public function display()
-    {
+	public function display()
+	{
 
-        ////Log::getLog()->log('%%%%%%%%%%%%%%%%%%%%%%%Details for Account '.$this->id.'%%%%%%%%%%%%%%%%%');
-       $this->getOverdueCollectableBalance();
-       $this->getOverDueCollectableAmount();
-        $this->isCurrentlyInCollections();
-        $this->isInSuspension();
-        ////Log::getLog()->Log('Severity Level: '.$this->collection_severity_id);
-        ////Log::getLog()->log('////////Active Scenario Instances:');
-        $aScenarioInstances = $this->getActiveScenarios();
-        foreach ($aScenarioInstances as $oInstance)
-        {
-            $oCurrentInstance = $this->getCurrentScenarioInstance();
-            ////Log::getLog()->log('Scenario Instance id '.$oInstance->id.'(Scenario id: '.$oInstance->collection_scenario_id.')');
-            if ($oCurrentInstance->id == $oInstance->id)
-            {
-                    ////Log::getLog()->log('THIS IS THE CURRENT SCENARIO ON ACCOUNT '.$this->id);
-                    $oInstance->display();
-            }
-        }
-        ////Log::getLog()->log('%%%%%%%%%%%%%%%%%%%%%%%End Details for Account '.$this->id.'%%%%%%%%%%%%%%%%%');
-    }
+		////Log::getLog()->log('%%%%%%%%%%%%%%%%%%%%%%%Details for Account '.$this->id.'%%%%%%%%%%%%%%%%%');
+		$this->getOverdueCollectableBalance();
+		$this->getOverDueCollectableAmount();
+		$this->isCurrentlyInCollections();
+		$this->isInSuspension();
+		////Log::getLog()->Log('Severity Level: '.$this->collection_severity_id);
+		////Log::getLog()->log('////////Active Scenario Instances:');
+		$aScenarioInstances = $this->getActiveScenarios();
+		foreach ($aScenarioInstances as $oInstance)
+		{
+			$oCurrentInstance = $this->getCurrentScenarioInstance();
+			////Log::getLog()->log('Scenario Instance id '.$oInstance->id.'(Scenario id: '.$oInstance->collection_scenario_id.')');
+			if ($oCurrentInstance->id == $oInstance->id)
+			{
+					////Log::getLog()->log('THIS IS THE CURRENT SCENARIO ON ACCOUNT '.$this->id);
+					$oInstance->display();
+			}
+		}
+		////Log::getLog()->log('%%%%%%%%%%%%%%%%%%%%%%%End Details for Account '.$this->id.'%%%%%%%%%%%%%%%%%');
+	}
 
 
 
-    /**
-     * getAccountsForBatchCollectionProcess
-     * @return array of Account_Logic objects that should be processed
-     * These accounts are not currently suspended from collections, and either:
-     * 1 are currently in collections, defined by most recent account_collection_event_history record not being for the 'exit collections' event
-     * 2 OR are not in collections (as defined under 1) but have collectables with a balance > 0 that are not part of an active promise
-     *
-     */
-    public static function getForBatchCollectionProcess($aExcludedAccounts = null)
-    {
+	/**
+	 * getAccountsForBatchCollectionProcess
+	 * @return array of Account_Logic objects that should be processed
+	 * These accounts are not currently suspended from collections, and either:
+	 * 1 are currently in collections, defined by most recent account_collection_event_history record not being for the 'exit collections' event
+	 * 2 OR are not in collections (as defined under 1) but have collectables with a balance > 0 that are not part of an active promise
+	 *
+	 */
+	public static function getForBatchCollectionProcess($aExcludedAccounts = null)
+	{
 
 		$aAccounts = array();
 		Logic_Stopwatch::getInstance()->start();
@@ -1101,7 +1086,7 @@ class Logic_Account implements DataLogic
 		Log::getLog()->log("Number of accounts: ".count($aAccounts));
 		Log::getLog()->log("finished instantiating logic in ".Logic_Stopwatch::getInstance()->lap());
 		return $aAccounts;
-    }
+	}
 
 	public static function countForCollectionsLedger($aFilter=null)
 	{
@@ -1468,13 +1453,13 @@ class Logic_Account implements DataLogic
 				FROM		Account	a
 				JOIN		CustomerGroup cg ON (cg.Id = a.CustomerGroup)
 				JOIN		collectable c ON (c.account_id = a.Id)
-				JOIN        (
-			                    SELECT      a.Id AS account_id, COALESCE(SUM(p.amount * pn.value_multiplier), 0) AS total_amount
-			                    FROM        Account a
-			                    LEFT JOIN   payment p ON (p.account_id = a.Id)
-			                    LEFT JOIN   payment_nature pn ON (pn.id = p.payment_nature_id)
-			                    GROUP BY    a.Id
-			                ) total_payments ON (total_payments.account_id = a.Id)
+				JOIN		(
+								SELECT	  a.Id AS account_id, COALESCE(SUM(p.amount * pn.value_multiplier), 0) AS total_amount
+								FROM		Account a
+								LEFT JOIN   payment p ON (p.account_id = a.Id)
+								LEFT JOIN   payment_nature pn ON (pn.id = p.payment_nature_id)
+								GROUP BY	a.Id
+							) total_payments ON (total_payments.account_id = a.Id)
 				LEFT JOIN 	collection_promise c_cp ON (c.collection_promise_id = c_cp.id)
 				LEFT JOIN	account_collection_scenario acs ON (
 								acs.id = (
@@ -1503,10 +1488,10 @@ class Logic_Account implements DataLogic
 				LEFT JOIN	collection_event_type_implementation latest_event_type_implementation ON (latest_event_type_implementation.id = latest_event_type.collection_event_type_implementation_id)
 				LEFT JOIN	payment last_payment ON (
 								last_payment.id = (
-									SELECT	    id
-									FROM        payment USE INDEX (fk_payment_tbl_account_id)
-									WHERE       account_id = a.Id
-									ORDER BY    paid_date DESC
+									SELECT		id
+									FROM		payment USE INDEX (fk_payment_tbl_account_id)
+									WHERE	   account_id = a.Id
+									ORDER BY	paid_date DESC
 									LIMIT	1
 								)
 							)

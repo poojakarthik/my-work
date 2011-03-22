@@ -11,44 +11,44 @@
  */
 class Logic_Adjustment implements DataLogic, Logic_Distributable{
 
-    const DEBIT = 0;
-    const CREDIT = 1;
-    
-     protected $oDO;
-     protected $iSignType;
-      public $iMultiplier;
+	const DEBIT = 0;
+	const CREDIT = 1;
 
-    public function __construct($mDefinition)
-    {
-        $this->oDO = $mDefinition;
+	protected $oDO;
+	protected $iSignType;
+	public $iMultiplier;
 
-       $aSignType = $this->oDO->getSignType();
-       $this->iSignType = $aSignType['sign'];
-       $this->iMultiplier = $aSignType['multiplier'];
+	public function __construct($mDefinition)
+	{
+		$this->oDO = $mDefinition;
 
-    }
+	   $aSignType = $this->oDO->getSignType();
+	   $this->iSignType = $aSignType['sign'];
+	   $this->iMultiplier = $aSignType['multiplier'];
 
-    public static function getForId($iId)
-    {
-        $oAdjustment = Adjustment::getForId($iId);
-        return $oAdjustment!== null ? new self($oAdjustment) : null;
-    }
+	}
 
-    public static function getForAccount($oAccount, $iSignType)
-    {
-        $aORM = Adjustment::getForAccountId($oAccount->id, $iSignType);
-        $aResult = array();
-        foreach ($aORM as $oORM)
-        {
-            $aResult[] = new self($oORM);
-        }
-        return $aResult;
-    }
+	public static function getForId($iId)
+	{
+		$oAdjustment = Adjustment::getForId($iId);
+		return $oAdjustment!== null ? new self($oAdjustment) : null;
+	}
 
-    public function getMultiplier()
-    {
-        return $this->iMultiplier;
-    }
+	public static function getForAccount($oAccount, $iSignType)
+	{
+		$aORM = Adjustment::getForAccountId($oAccount->id, $iSignType);
+		$aResult = array();
+		foreach ($aORM as $oORM)
+		{
+			$aResult[] = new self($oORM);
+		}
+		return $aResult;
+	}
+
+	public function getMultiplier()
+	{
+		return $this->iMultiplier;
+	}
 	
 	public function reverse($iReversalReasonId)
 	{
@@ -80,44 +80,44 @@ class Logic_Adjustment implements DataLogic, Logic_Distributable{
 
    public function __get($sField) {
 
-       switch($sField)
-       {
-           case 'balance':
-           case 'amount':
-               return Rate::roundToRatingStandard($this->oDO->$sField, 4);
-            default:
-                return $this->oDO->$sField;
-       }
+	   switch($sField)
+	   {
+		   case 'balance':
+		   case 'amount':
+			   return Rate::roundToRatingStandard($this->oDO->$sField, 4);
+			default:
+				return $this->oDO->$sField;
+	   }
 
-    }
+	}
 
-    public function __set($sField, $mValue) {
+	public function __set($sField, $mValue) {
 
-        switch($sField)
-       {
-           case 'balance':
-           case 'amount':
-               $this->oDO->$sField = Rate::roundToRatingStandard($mValue, 4);
-            default:
-               $this->oDO->$sField = $mValue;
-       }
-    }
+		switch($sField)
+	   {
+		   case 'balance':
+		   case 'amount':
+			   $this->oDO->$sField = Rate::roundToRatingStandard($mValue, 4);
+			default:
+			   $this->oDO->$sField = $mValue;
+	   }
+	}
 
-    public function save() {
-        $this->oDO->save();
-    }
+	public function save() {
+		$this->oDO->save();
+	}
 
-    public function toArray() {
+	public function toArray() {
 
-    }
+	}
 
-    public function isCredit() {
-        return $this->iSignType == self::CREDIT;
-    }
+	public function isCredit() {
+		return $this->iSignType == self::CREDIT;
+	}
 
-    public function isDebit() {
-        return $this->iSignType == self::DEBIT;
-    }
-    //put your code here
+	public function isDebit() {
+		return $this->iSignType == self::DEBIT;
+	}
+	//put your code here
 }
 ?>

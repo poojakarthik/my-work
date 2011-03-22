@@ -331,7 +331,7 @@ class Application_Handler_Developer extends Application_Handler
                                  //Log::getLog()->log('&&&&&&&&& Accounts Batch Process Iteration '.$iAccountsBatchProcessIteration++.'  &&&&&&&&&&&&&');
                                 $aExcludedAccounts = Logic_Collection_BatchProcess_Report::getAccountsWithExceptions();
                                // $aAccounts = Logic_Account::getForBatchCollectionProcess($aExcludedAccounts);
-								$aAccounts = array(Logic_Account::getInstance(1000164275));//Logic_Account::getForBatchCollectionProcess($aExcludedAccounts);
+								$aAccounts = array(Logic_Account::getInstance(1000154797));//Logic_Account::getForBatchCollectionProcess($aExcludedAccounts);
                                 $iCompletedInstances = Logic_Account::batchProcessCollections($aAccounts);
 
                                 while ($iCompletedInstances > 0)

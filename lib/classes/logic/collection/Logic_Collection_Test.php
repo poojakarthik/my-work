@@ -7,33 +7,33 @@
 class Logic_Collection_Test
 {
 
-    public static function promiseBatchProcessDataLayerTest()
-    {
+	public static function promiseBatchProcessDataLayerTest()
+	{
 
-    }
+	}
 
-    public static function promiseGetActivePromises()
-    {
+	public static function promiseGetActivePromises()
+	{
 
-    }
+	}
 
-    public static function collectableGetForPromiseId()
-    {
+	public static function collectableGetForPromiseId()
+	{
 
-    }
+	}
 
-    public static function PromiseInstalmentGetForPromiseId()
-    {
+	public static function PromiseInstalmentGetForPromiseId()
+	{
 
-    }
+	}
 
-    public static function promiseBatchProcessTest()
-    {
-        $bPassed = Logic_Collection_Test_Collection_Promise::testGetActivePromises();
+	public static function promiseBatchProcessTest()
+	{
+		$bPassed = Logic_Collection_Test_Collection_Promise::testGetActivePromises();
 
-        $bPassed = Logic_Collection_Test_Collection_Promise::testProcess();
+		$bPassed = Logic_Collection_Test_Collection_Promise::testProcess();
 
-    }
+	}
 
 
 }

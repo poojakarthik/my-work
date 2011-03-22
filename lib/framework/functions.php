@@ -4276,6 +4276,13 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	 */
 	function GenerateLatePaymentNotices($intAutomaticInvoiceActionType, $intEffectiveDate=0, $strBasePath=FILES_BASE_PATH)
 	{
+		// NOTE: This functionality is deprecated
+			Flex::assert(
+				false,
+				"GenerateLatePaymentNotices has been deprecated, late notices are sent using a collection event of type 'Correspondence'.",
+				null,
+				"Deprecated function accessed: GenerateLatePaymentNotices."
+			);
 		$selPriorNotices = new StatementSelect("account_letter_log", "id", "invoice_id = <InvoiceId> AND document_template_type_id = <NoticeType>", "", 1);
 
 		// Append a backslash to the path, if it doesn't already end in one

@@ -1,8 +1,4 @@
 <?php
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /**
  * Description of Logic_Payment
@@ -11,36 +7,36 @@
  */
 class Logic_Payment implements DataLogic, Logic_Distributable{
 
-     protected $oDO;
+	 protected $oDO;
 
-    public function __construct($mDefinition)
-    {
-        $this->oDO = $mDefinition;
+	public function __construct($mDefinition)
+	{
+		$this->oDO = $mDefinition;
 
-    }
-       public function getPaymentNature()
-    {
-       return Payment_Nature::getForId($this->payment_nature_id);
-    }
+	}
+	   public function getPaymentNature()
+	{
+	   return Payment_Nature::getForId($this->payment_nature_id);
+	}
 
-    public static function getForId($iId)
-    {
-        $oPayment = Payment::getForId($iId);
-        return $oPayment!== null ? new self($oPayment) : null;
-    }
+	public static function getForId($iId)
+	{
+		$oPayment = Payment::getForId($iId);
+		return $oPayment!== null ? new self($oPayment) : null;
+	}
 
-    public static function getForAccount($oAccount, $iSignType, $bWithDistributableBalance = true)
-    {
-        $aORM = Payment::getForAccountId($oAccount->id, $iSignType, $bWithDistributableBalance);
-        $aResult = array();
-        foreach ($aORM as $oORM)
-        {
-            $aResult[] = new self($oORM);
-        }
-        return $aResult;
+	public static function getForAccount($oAccount, $iSignType, $bWithDistributableBalance = true)
+	{
+		$aORM = Payment::getForAccountId($oAccount->id, $iSignType, $bWithDistributableBalance);
+		$aResult = array();
+		foreach ($aORM as $oORM)
+		{
+			$aResult[] = new self($oORM);
+		}
+		return $aResult;
 
-    }
-    
+	}
+	
 	public function reverse($iReversalReasonId)
 	{
 		$oDataAccess = DataAccess::getDataAccess();
@@ -227,42 +223,42 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 	   
 	   switch($sField)
 	   {
-	       case 'balance':
-	       case 'amount':
-	           return Rate::roundToRatingStandard($this->oDO->$sField, 4);
-	        default:
-	            return $this->oDO->$sField;
+		   case 'balance':
+		   case 'amount':
+			   return Rate::roundToRatingStandard($this->oDO->$sField, 4);
+			default:
+				return $this->oDO->$sField;
 	   }
 	
 	}
 
-    public function __set($sField, $mValue) {
+	public function __set($sField, $mValue) {
 
-        switch($sField)
-       {
-           case 'balance':
-           case 'amount':
-               $this->oDO->$sField = Rate::roundToRatingStandard($mValue, 4);
-            default:
-               $this->oDO->$sField = $mValue;
-       }
-    }
+		switch($sField)
+	   {
+		   case 'balance':
+		   case 'amount':
+			   $this->oDO->$sField = Rate::roundToRatingStandard($mValue, 4);
+			default:
+			   $this->oDO->$sField = $mValue;
+	   }
+	}
 
-    public function save() {
-        $this->oDO->save();
-    }
+	public function save() {
+		$this->oDO->save();
+	}
 
-    public function toArray() {
+	public function toArray() {
 
-    }
+	}
 
-    public function isCredit() {
-        return $this->payment_nature_id == PAYMENT_NATURE_PAYMENT;
-    }
+	public function isCredit() {
+		return $this->payment_nature_id == PAYMENT_NATURE_PAYMENT;
+	}
 
-    public function isDebit() {
-        return $this->payment_nature_id == PAYMENT_NATURE_REVERSAL;
-    }
+	public function isDebit() {
+		return $this->payment_nature_id == PAYMENT_NATURE_REVERSAL;
+	}
 
 	public static function getAllDistributable($mDatasetType=__CLASS__) {
 		$mResult	= Query::run("
@@ -325,13 +321,15 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 
 		Log::getLog()->log("Processed {$iTotalPayments} Payments in ".round($oStopwatch->split(), 4).'s');
 	}
+
     
     // factory: Creates a Logic_Payment object, as well as surcharge if credit card payment (and flagged to be created).
     // 			aConfig is an array of values that will be used if passed:
     //				- aTransactionData 		: array of key => value items which will create payment_transaction_data records linked to the payment
     //				- iPaymentResponseId	: the payment response, responsible for the payment
     //				- iCarrierId			: the carrier_id of the record
-    public static function factory($iAccountId, $iPaymentTypeId, $fAmount, $iPaymentNature=PAYMENT_NATURE_PAYMENT, $sTransactionReference='', $sPaidDate=null, $aConfig=array())
+
+	public static function factory($iAccountId, $iPaymentTypeId, $fAmount, $iPaymentNature=PAYMENT_NATURE_PAYMENT, $sTransactionReference='', $sPaidDate=null, $aConfig=array())
 	{
 		try
 		{

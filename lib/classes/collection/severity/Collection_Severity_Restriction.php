@@ -27,7 +27,7 @@ class Collection_Severity_Restriction extends ORM_Cached
 	    {
 	    	throw new Exception_Database("Failed to get for severity id {$iSeverityId}. ".$oSelect->Error());
 	    }		
-	    return ORM::importResult($oStatement->FetchAll(), 'Collection_Severity_Warning');
+	    return ORM::importResult($oStatement->FetchAll(), 'Collection_Severity_Restriction');
     }
     
     protected static function getCacheName()
