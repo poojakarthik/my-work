@@ -709,16 +709,21 @@ class Logic_Account implements DataLogic
 		$this->resetScenario();
 		$this->cancelScheduledScenarioEvents();
 
+		$sNow = DataAccess::getNow();
 		if ($bEndCurrentScenario)
 		{
+
+			$iNow = strtotime($sNow);
+			$iEndDateTime = strtotime("-1 second", $iNow);
+			$sEndDateTime = date ('Y-m-d H:i:s', $iEndDateTime);
 			$oCurrentScenario = $this->getBaseScenarioInstance();
-			$oCurrentScenario->end_datetime = date('Y-m-d H:i:s');
+			$oCurrentScenario->end_datetime = $sEndDateTime;
 			$oCurrentScenario->save();
 			$this->aActiveScenarioInstances = array();
 		}
 
 
-		$sNow = date('Y-m-d H:i:s');
+		
 		$oNewInstance 				= new Account_Collection_Scenario();
 		$oNewInstance->account_id 			= $this->oDO->Id;
 		$oNewInstance->collection_scenario_id 	= $iCollectionScenarioId;
@@ -743,17 +748,18 @@ class Logic_Account implements DataLogic
 	 */
 	public function resetScenario()
 	{
-	 // End the current account_collection_scenario record
-		$aScenarioInstances = $this->getActiveScenarios();
-		$oBaseScenario = $this->getBaseScenarioInstance();
-		foreach($aScenarioInstances as $oScenarioInstance)
-		{
-			if ($oScenarioInstance->id != $oBaseScenario->id)
-			{
-				$oScenarioInstance->end_datetime = date('Y-m-d H:i:s');
-				$oScenarioInstance->save();
-			}
-		}
+	 Account_Collection_Scenario::resetScenarioForAccountId($this->id);
+//		// End the current account_collection_scenario record
+//		$aScenarioInstances = $this->getActiveScenarios();
+//		$oBaseScenario = $this->getBaseScenarioInstance();
+//		foreach($aScenarioInstances as $oScenarioInstance)
+//		{
+//			if ($oScenarioInstance->id != $oBaseScenario->id)
+//			{
+//				$oScenarioInstance->end_datetime = date('Y-m-d H:i:s');
+//				$oScenarioInstance->save();
+//			}
+//		}
 		//this will refresh the $this->aActiveScenarios data member
 		$this->getActiveScenarios(TRUE);
 	}
