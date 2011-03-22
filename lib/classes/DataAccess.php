@@ -55,6 +55,16 @@ class DataAccess
 		return self::$arrDataAccessCache[$strConnectionType];
 	}
 
+	public static function getNow()
+	{
+		$mResult = mysqli_query(self::getDataAccess()->refMysqliConnection, "SELECT NOW() AS now");
+		if ($mResult)
+		{
+			$aRow = $mResult->fetch_assoc();
+            return $aRow['now'];
+		}
+	}
+
 
 	/**
 	 * connected()
