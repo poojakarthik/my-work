@@ -5956,6 +5956,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 				return $mArgument;
 			}
 		}
+		return null;
 	}
 
 ?>
