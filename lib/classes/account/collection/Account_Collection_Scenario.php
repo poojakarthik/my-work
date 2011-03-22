@@ -27,39 +27,56 @@ class Account_Collection_Scenario extends ORM_Cached
 		return 100;
 	}
 
+	public static function resetScenarioForAccountId($iAccountId)
+	{
+		$iNow = strtotime(DataAccess::getNow());
+		$iEndDateTime = strtotime("-1 second", $iNow);
+		$sEndDateTime = date ('Y-m-d H:i:s', $iEndDateTime);
+		$sEndOfTime = Data_Source_Time::END_OF_TIME;
+		$sSQL = "UPDATE account_collection_scenario
+				SET end_datetime = '$sEndDateTime'
+				WHERE account_id = $iAccountId
+				AND end_datetime = '$sEndOfTime'
+				AND id <> (SELECT min_id FROM (SELECT MIN(id) min_id  FROM account_collection_scenario WHERE account_id  = $iAccountId AND end_datetime = '$sEndOfTime') x)";
+		$oQuery = new Query();
+		$mResult = $oQuery->Execute($sSQL);
+		if (!$mResult)
+			throw new Exception_Database ("Could not update table account_collection_scenario");
+	}
+
     public static function getForAccountId($iAccountId, $bActiveOnly = true)
     {
 
-	$oQuery = new Query();
-	$sSQL =	"   SELECT *
-		    FROM account_collection_scenario
-		    WHERE account_id = $iAccountId ";
-	$sOrderBy = " ORDER BY start_datetime ASC";
-	 $mResult;
-	 $aResult= array();
+		$oQuery = new Query();
+		$sSQL =	"   SELECT *
+				FROM account_collection_scenario
+				WHERE account_id = $iAccountId ";
+		$sOrderBy = " ORDER BY start_datetime ASC";
+		$mResult;
+		$aResult= array();
 
-	if ($bActiveOnly)
-	{
-	    $mResult = $oQuery->Execute($sSQL." AND  start_datetime <= NOW() AND end_datetime > NOW() ".$sOrderBy);
-	}
-	else
-	{
-	    $mResult = $oQuery->Execute($sSQL.$sOrderBy);
-	}
+		if ($bActiveOnly)
+		{
+			$mResult = $oQuery->Execute($sSQL." AND  start_datetime <= NOW() AND end_datetime > NOW() ".$sOrderBy);
+		}
+		else
+		{
+			$mResult = $oQuery->Execute($sSQL.$sOrderBy);
+		}
 
-	if ($mResult)
-	{
-	    while ($aRecord = $mResult->fetch_assoc())
-	    {
-		$aResult[] = new self($aRecord);
-	    }
-	}
-	else
-	{
-	    throw new Exception_Database($oQuery->Error());
-	}
+		if ($mResult)
+		{
+			while ($aRecord = $mResult->fetch_assoc())
+			{
+			$aResult[] = new self($aRecord);
+			}
+		}
+		else
+		{
+			throw new Exception_Database($oQuery->Error());
+		}
 
-	return $aResult;
+		return $aResult;
 
     }
 
