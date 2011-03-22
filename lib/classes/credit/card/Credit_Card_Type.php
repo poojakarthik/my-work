@@ -160,6 +160,60 @@ class Credit_Card_Type
 		return $instances[intval($id)];
 	}
 
+	function getForCardNumber($mNumber)
+	{
+		// Find Card Type
+		$iDigits = (int)substr(trim($mNumber), 0, 2);
+		switch ($iDigits)
+		{
+			// VISA
+			case 40:
+			case 41:
+			case 42:
+			case 43:
+			case 44:
+			case 45:
+			case 46:
+			case 47:
+			case 48:
+			case 49:
+				$iTypeId = CREDIT_CARD_TYPE_VISA;
+				break;
+		
+				// Mastercard
+			case 51:
+			case 52:
+			case 53:
+			case 54:
+			case 55:
+				$iTypeId = CREDIT_CARD_TYPE_MASTERCARD;
+				break;
+			
+			/*	// Bankcard
+			case 56:
+				$iTypeId = CREDIT_CARD_TYPE_BANKCARD;
+				break;*/
+		
+				// AMEX
+			case 34:
+			case 37:
+				$iTypeId = CREDIT_CARD_TYPE_AMEX;
+				break;
+		
+				// Diners
+			case 30:
+			case 36:
+			case 38:
+				$iTypeId = CREDIT_CARD_TYPE_DINERS;
+				break;
+		
+			default:
+				return null;
+		}
+	
+		return self::getForId($iTypeId);
+	}
+
 	private static function getFor($strWhere, $arrWhere, $multiple=FALSE, $strSort=NULL, $strLimit=NULL)
 	{
 		if (!$strSort)

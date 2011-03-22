@@ -121,8 +121,7 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 			
 			// Apply Charge
 			$oCharge = null;
-			if ($fSurcharge > 0.0)
-			{
+			if ($fSurcharge > 0.0) {
 				$oChargeType = Charge_Type::getByCode('PMF');
 				
 				$oCharge					= new Charge();
@@ -156,7 +155,65 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 			return null;
 		}
 	}
-
+	
+	public function applyCreditCardSurcharge($iCreditCardType=null) {
+		if ($this->oDO->payment_type_id != PAYMENT_TYPE_CREDIT_CARD) {
+			// Payment doesn't qualify, no error, just don't do it.
+			Log::getLog()->log("Payment is not a credit card payment, no surcharge (payment type id = {$this->oDO->payment_type_id}).");
+			return null;
+		}
+		
+		// Get the credit card type
+		$oCreditCardType = null;
+		if ($iCreditCardType === null) {
+			// Get the credit card type from the number in the transaction data
+			$aPaymentTransactionData = getForPayment($this->oDO->id, $this->oDO->latest_payment_response_id);
+			foreach ($aPaymentTransactionData as $oData) {
+				if ($oData->name == Payment_Transaction_Data::CREDIT_CARD_NUMBER) {
+					$oCreditCardType = Credit_Card_Type::getForCardNumber($oData->value);
+					break;
+				}
+			}
+		} else {
+			// Use the supplied credit card type id
+			$oCreditCardType = Credit_Card_Type::getForId($iCreditCardType);
+		}
+		
+		if ($oCreditCardType === null) {
+			throw new Exception("Cannot create credit card surcharge, could not determine credit card type.");
+		}
+		
+		$fSurcharge = $oCreditCardType->calculateSurcharge($this->oDO->amount);
+		$oAccount	= Account::getForId($this->oDO->account_id);
+		
+		// Create a charge for the transaction surcharge
+		$oCharge					= new Charge();
+		$oCharge->AccountGroup		= $oAccount->AccountGroup;
+		$oCharge->Account			= $oAccount->Id;
+		$oCharge->CreatedBy			= Employee::SYSTEM_EMPLOYEE_ID;
+		$oCharge->Amount			= Rate::roundToRatingStandard($fSurcharge, 2);
+		$oCharge->CreatedOn			= date('Y-m-d H:i:s');
+		$oCharge->ChargedOn			= date('Y-m-d H:i:s');
+		$oCharge->Status			= CHARGE_APPROVED;
+		$oCharge->LinkType			= CHARGE_LINK_PAYMENT;
+		$oCharge->LinkId			= $this->oDO->id;
+		$oCharge->ChargeType		= 'CCS';
+		$oCharge->Nature			= 'DR';
+		$oCharge->global_tax_exempt	= 0;
+		$oCharge->Description		= "{$oCreditCardType->name} Surcharge for Payment on ".date('d/m/Y')." ({$this->oDO->amount}) @ ".(round(floatval($oCreditCardType->surcharge) * 100, 2))."%";
+		$oCharge->charge_model_id	= CHARGE_MODEL_CHARGE;
+		$oCharge->Notes				= '';
+		$oCharge->save();
+		
+		Log::getLog()->log("Credit Card surcharge created '{$oCharge->Description}'.");
+		
+		// Update the payments surcharge charge link
+		$this->oDO->surcharge_charge_id = $oCharge->Id;
+		$this->oDO->save();
+		
+		return $oCharge;
+	}
+	
 	public function __get($sField) {
 	   
 	   switch($sField)
@@ -261,11 +318,10 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 	}
     
     // factory: Creates a Logic_Payment object, as well as surcharge if credit card payment (and flagged to be created).
-    // 			aConfig is an array of values that will be used if passed correctly
-    //				- credit_card_type_id			: If the payment is a credit card payment, used when creating a surcharge (if flagged to do so)
-    //				- charge_credit_card_surcharge	: If true, and the payment is a credit card payment, charge the surcharge determined by the credit card type			
-	//				- credit_card_number			: Used to store in the payment_transaction_data
-	//				- bank_account_number			: Used to store in the payment_transaction_data
+    // 			aConfig is an array of values that will be used if passed:
+    //				- aTransactionData 		: array of key => value items which will create payment_transaction_data records linked to the payment
+    //				- iPaymentResponseId	: the payment response, responsible for the payment
+    //				- iCarrierId			: the carrier_id of the record
     public static function factory($iAccountId, $iPaymentTypeId, $fAmount, $iPaymentNature=PAYMENT_NATURE_PAYMENT, $sTransactionReference='', $sPaidDate=null, $aConfig=array())
 	{
 		try
@@ -278,18 +334,7 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 			
 			$sPaidDate 	= ($sPaidDate === null ? date('Y-m-d') : $sPaidDate);
 			$oAccount	= Account::getForId($iAccountId);
-			
-			$oCreditCardType		= null;
-			$fCreditCardSurcharge 	= null;
-			if (($iPaymentTypeId == PAYMENT_TYPE_CREDIT_CARD) && isset($aConfig['charge_credit_card_surcharge']) && $aConfig['charge_credit_card_surcharge'] && isset($aConfig['credit_card_type_id']) && $aConfig['credit_card_type_id'])
-			{
-				// Calculate amount and surcharge (only applied if credit card payment)
-				$oCreditCardType 		= Credit_Card_Type::getForId($aConfig['credit_card_type_id']);
-				$fCreditCardSurcharge	= $fAmount * $oCreditCardType->surcharge;
-				$fAmount 				= $fAmount + $fCreditCardSurcharge;
-			}
-			
-			$oUser = Flex::getUser();
+			$oUser 		= Flex::getUser();
 			
 			// Create payment
 			$oPayment 							= new Payment();
@@ -302,69 +347,44 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 			$oPayment->payment_nature_id		= $iPaymentNature;
 			$oPayment->amount 					= Rate::roundToRatingStandard($fAmount, 2);
 			$oPayment->balance 					= $oPayment->amount;
+			
+			if (isset($aConfig['iPaymentResponseId']) && $aConfig['iPaymentResponseId'] !== null)
+			{
+				$oPayment->latest_payment_response_id = $aConfig['iPaymentResponseId'];
+			}
+			
+			if (isset($aConfig['iCarrierId']) && $aConfig['iCarrierId'] !== null)
+			{
+				$oPayment->carrier_id = $aConfig['iCarrierId'];
+			}
+			
 			$oPayment->save();
 			
-			if ($iPaymentTypeId == PAYMENT_TYPE_CREDIT_CARD)
+			if (isset($aConfig['aTransactionData']) && $aConfig['aTransactionData'] !== null)
 			{
-				if ($aConfig['charge_credit_card_surcharge'])
+				foreach ($aConfig['aTransactionData'] as $sName => $mValue)
 				{
-					// Create a charge for the transaction surcharge
-					$oCharge					= new Charge();
-					$oCharge->AccountGroup		= $oAccount->AccountGroup;
-					$oCharge->Account			= $oAccount->Id;
-					$oCharge->CreatedBy			= Employee::SYSTEM_EMPLOYEE_ID;
-					$oCharge->Amount			= Rate::roundToRatingStandard(RemoveGST($fCreditCardSurcharge), 2);
-					$oCharge->CreatedOn			= date('Y-m-d H:i:s');
-					$oCharge->ChargedOn			= date('Y-m-d H:i:s');
-					$oCharge->Status			= CHARGE_APPROVED;
-					$oCharge->LinkType			= CHARGE_LINK_PAYMENT;
-					$oCharge->LinkId			= $oPayment->id;
-					$oCharge->ChargeType		= 'CCS';
-					$oCharge->Nature			= 'DR';
-					$oCharge->global_tax_exempt	= 0;
-					$oCharge->Description		= "{$oCreditCardType->name} Surcharge for Payment on ".date('d/m/Y')." ({$oPament->amount}) @ ".(round(floatval($oCreditCardType->surcharge) * 100, 2))."%";
-					$oCharge->charge_model_id	= CHARGE_MODEL_CHARGE;
-					$oCharge->Notes				= '';
-					$oCharge->save();
-					
-					// Update the payments surcharge charge link
-					$oPayment->surcharge_charge_id = $oCharge->Id;
-					$oPayment->save();
+					$mReferences = $oPayment;
+					if (isset($aConfig['iPaymentResponseId']) && $aConfig['iPaymentResponseId'] !== null)
+					{
+						$mReferences = array('payment_id' => $oPayment->id, 'payment_response_id' => $aConfig['iPaymentResponseId']);
+					}
+					Log::getLog()->log("Adding payment_transaction_data: $sName => $mValue");
+					$oTransactionData = Payment_Transaction_Data::factory($sName, $mValue, $mReferences);
+					$oTransactionData->save();
 				}
-			}
-			
-			if (isset($aConfig[Payment_Transaction_Data::CREDIT_CARD_NUMBER]) && $aConfig[Payment_Transaction_Data::CREDIT_CARD_NUMBER])
-			{
-				// Create payment_transaction_data record
-				$oTransactionData 				= new Payment_Transaction_Data();
-				$oTransactionData->name			= Payment_Transaction_Data::CREDIT_CARD_NUMBER;
-				$oTransactionData->value		= Credit_Card::getMaskedCardNumber($aConfig[Payment_Transaction_Data::CREDIT_CARD_NUMBER]);
-				$oTransactionData->data_type_id	= DATA_TYPE_STRING; 
-				$oTransactionData->payment_id	= $oPayment->id;
-				$oTransactionData->save();
-			}
-			
-			if (isset($aConfig[Payment_Transaction_Data::BANK_ACCOUNT_NUMBER]) && $aConfig[Payment_Transaction_Data::BANK_ACCOUNT_NUMBER])
-			{
-				// Create payment_transaction_data record
-				$oTransactionData 				= new Payment_Transaction_Data();
-				$oTransactionData->name			= Payment_Transaction_Data::BANK_ACCOUNT_NUMBER;
-				$oTransactionData->value		= $aConfig[Payment_Transaction_Data::BANK_ACCOUNT_NUMBER];
-				$oTransactionData->data_type_id	= DATA_TYPE_INTEGER; 
-				$oTransactionData->payment_id	= $oPayment->id;
-				$oTransactionData->save();
 			}
 			
 			// Process the payment
 			$oNewLogic 		= new self($oPayment);
 			$oLogicAccount 	= Logic_Account::getInstance($iAccountId);
-			//$oLogicAccount->processDistributable($oNewLogic);
-			//$oLogicAccount->processDistributable(new Logic_Adjustment($oAdjustment));
-			//simply distributing the balance of the new adjustment is not enough
-			//because there might be other distributables that could previously not distribute their balance
-			//which after distributing this one can distribute theirs.
-			//Example: if this adjustemtn is a debit adjustment, and before distributing it the sum(collectable.balance) === 0, and there is a payment with remaining balance, that payment's balance must be distributed after distributing the current adjustment's balance.
-			//@TODO: in order to optimise this, implement functionality that allows for just distributing balances of any distributables that currently have a balance remaining, instead of a full redistribution.
+			
+			// Simply distributing the balance of the new adjustment is not enough
+			// because there might be other distributables that could previously not distribute their balance
+			// which after distributing this one can distribute theirs.
+			// 
+			// Example	: if this adjustment is a debit adjustment, and before distributing it the sum(collectable.balance) === 0, and there is a payment with remaining balance, that payment's balance must be distributed after distributing the current adjustment's balance.
+			// @TODO	: in order to optimise this, implement functionality that allows for just distributing balances of any distributables that currently have a balance remaining, instead of a full redistribution.
 			$oLogicAccount->redistributeBalances();
 			
 			if ($oDataAccess->TransactionCommit() === false)

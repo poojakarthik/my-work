@@ -107,30 +107,23 @@ class Payment_Response extends ORM_Cached
 		} elseif (!$this->payment_id) {
 			// Create a Payment if we haven't been associated with one
 			// Any linking to existing Payments should be done at Normalisation, prior to this step
-			$oPayment					= new Payment();
-			
-			$oPayment->account_id				= $this->account_id;
-			$oPayment->carrier_id				= $this->carrier_id;
-			$oPayment->created_datetime			= date('Y-m-d H:i:s');
-			$oPayment->paid_date				= $this->paid_date;
-			$oPayment->payment_type_id			= $this->payment_type_id;
-			$oPayment->transaction_reference	= $this->transaction_reference;
-			$oPayment->payment_nature_id		= PAYMENT_NATURE_PAYMENT;	// Reversal will be done later if need be
-			$oPayment->amount					= $this->amount;
-			$oPayment->balance					= $this->amount;
-			
-			$oPayment->save();
-			
-			// Get logic object for payment
-			$oLogicPayment = new Logic_Payment($oPayment);
+			$oLogicPayment =	Logic_Payment::factory(
+									$this->account_id, 
+									$this->payment_type_id, 
+									$this->amount, 
+									PAYMENT_NATURE_PAYMENT,
+									$this->transaction_reference,
+									$this->paid_date, 
+									array
+									(
+										'iPaymentResponseId'	=> $this->id,
+										'iCarrierId'			=> $this->carrier_id
+									)
+								);
 			
 			// Surcharges
 			$oLogicPayment->applySurcharges();
-			
-			// HACK: Old-style Credit Card Surcharges
-			// This function can return FALSE for both critical and acceptable failures, so
-			// we can't really handle it.
-			AddCreditCardSurcharge($oPayment->id);
+			$oLogicPayment->applyCreditCardSurcharge();
 			
 			$this->payment_id = $oPayment->id;
 			$this->save();

@@ -96,20 +96,41 @@ class JSON_Handler_Payment extends JSON_Handler
 						return array('bSuccess' => false, 'aErrors' => $aErrors);
 					}
 					
+					// Add credit card surcharge if need be
+					$fAmount			= $oReplacementPaymentDetails->amount;
+					$bChargeSurcharge	= ($oReplacementPaymentDetails->credit_card_type_id !== null);
+					$aTransactionData	= array();
+					if ($bChargeSurcharge)
+					{
+						Log::getLog()->log("Surcharge to be applied");
+						$oCardType 	= Credit_Card_Type::getForId($oReplacementPaymentDetails->credit_card_type_id);
+						$fAmount	= $fAmount + $oCardType->calculateSurcharge($fAmount);
+						
+						// Add transaction data for the card number
+						$aTransactionData[Payment_Transaction_Data::CREDIT_CARD_NUMBER] = Credit_Card::getMaskedCardNumber($oReplacementPaymentDetails->credit_card_number);
+						
+						Log::getLog()->log("New amount {$fAmount}");
+					}
+					
 					$oPayment =	Logic_Payment::factory(
 									$oReplacementPaymentDetails->account_id, 
 									$oReplacementPaymentDetails->payment_type_id, 
-									$oReplacementPaymentDetails->amount, 
+									$fAmount, 
 									PAYMENT_NATURE_PAYMENT, 
 									$oReplacementPaymentDetails->transaction_reference, 
-									date('Y-m-d'), 
-									array
-									(
-										'charge_credit_card_surcharge' 	=> true,
-										'credit_card_type_id'			=> $oReplacementPaymentDetails->credit_card_type_id,
-										'credit_card_number'			=> $oReplacementPaymentDetails->credit_card_number
+									date('Y-m-d'),
+									array(
+										'aTransactionData' => $aTransactionData
 									)
 								);
+					
+					if ($bChargeSurcharge)
+					{
+						// Apply credit card surcharge
+						Log::getLog()->log("Applying surcharge");
+						$oPayment->applyCreditCardSurcharge($oReplacementPaymentDetails->credit_card_type_id);
+					}
+					
 					$mPaymentId = $oPayment->id;
 				}
 			}
@@ -127,13 +148,14 @@ class JSON_Handler_Payment extends JSON_Handler
 				throw new Exception_Database("Failed to commit db transaction");
 			}
 			
-			return array('bSuccess' => true, 'iPaymentId' => $mPaymentId);
+			return array('bSuccess' => true, 'iPaymentId' => $mPaymentId, 'sDebug' => ($bUserIsGod ? $this->_JSONDebug : ''));
 		}
 		catch (Exception $e)
 		{
 			return 	array(
 						'bSuccess'	=> false,
-						'sMessage'	=> ($bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.')
+						'sMessage'	=> ($bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'),
+						'sDebug' 	=> ($bUserIsGod ? $this->_JSONDebug : '')
 					);
 		}
 	}
@@ -149,20 +171,38 @@ class JSON_Handler_Payment extends JSON_Handler
 				return array('bSuccess' => false, 'aErrors' => $aErrors);
 			}
 			
+			$fAmount			= $oDetails->amount;
+			$bChargeSurcharge	= ($oDetails->credit_card_type_id !== null);
+			$aTransactionData	= array();
+			if ($bChargeSurcharge)
+			{
+				Log::getLog()->log("Credit card surcharge to be applied");
+				$oCardType 	= Credit_Card_Type::getForId($oDetails->credit_card_type_id);
+				$fAmount	= $fAmount + $oCardType->calculateSurcharge($fAmount);
+				
+				// Add transaction data for the card number
+				$aTransactionData[Payment_Transaction_Data::CREDIT_CARD_NUMBER] = Credit_Card::getMaskedCardNumber($oDetails->credit_card_number);
+				
+				Log::getLog()->log("New amount {$fAmount}");
+			}
+			
 			$oPayment =	Logic_Payment::factory(
 							$oDetails->account_id, 
 							$oDetails->payment_type_id, 
-							$oDetails->amount, 
+							$fAmount, 
 							PAYMENT_NATURE_PAYMENT, 
 							$oDetails->transaction_reference, 
-							date('Y-m-d'), 
-							array
-							(
-								'charge_credit_card_surcharge' 	=> true,
-								'credit_card_type_id'			=> $oDetails->credit_card_type_id,
-								'credit_card_number'			=> $oDetails->credit_card_number
+							date('Y-m-d'),
+							array(
+								'aTransactionData' => $aTransactionData
 							)
 						);
+			
+			if ($bChargeSurcharge)
+			{
+				// Apply credit card surcharge
+				$oPayment->applyCreditCardSurcharge($oDetails->credit_card_type_id);
+			}
 			
 			return array('bSuccess' => true, 'iPaymentId' => $oPayment->id);
 		}

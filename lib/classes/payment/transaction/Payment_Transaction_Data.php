@@ -76,23 +76,42 @@ class Payment_Transaction_Data extends ORM_Cached
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 
+	public static function getForPayment($iPaymentId, $iPaymentResponseId=null) {
+		$oSelect = self::_preparedStatement('selByPaymentOrPaymentResponse');
+		if ($oSelect->Execute(array('payment_id' => $iPaymentId, 'payment_response_id' => $iPaymentResponseId)) === false)
+		{
+			throw new Exception_Database("Failed to get for payment {$iPaymentId}. ".$oSelect->Error());
+		}
+		
+		$aData = array();
+		while ($aRow = $oSelect->Fetch())
+		{
+			$aData[$aRow['id']] = new self($aRow);
+		}
+		
+		return $aData;
+	}
+
 	public static function factory($sName, $mValue, $mReferences=null, $aSchema=null) {
 		if (!$aSchema) {
 			if (!isset(self::$aSchema[$sName])) {
 				throw new Exception("No schema defined or provided for data field '{$sName}'");
 			}
-			$aSchema	= self::$aSchema[$sName];
+			$aSchema	= self::$aSchema;
 		}
-
+		
 		if (!isset($aSchema[$sName]['iDataType'])) {
-			throw new Exception("Schema does not define a Data Type (iDataType)");
+			throw new Exception("Schema for '{$sName}' does not define a Data Type (iDataType)");
 		}
-
+		
+		$iDataTypeId = $aSchema[$sName]['iDataType'];
+		
 		// Data
-		$oTransactionData			= new self();
-		$oTransactionData->name		= $sName;
-		$oTransactionData->value	= Data_Type::encode($mValue, $aSchema[$sName]['iDataType']);
-
+		$oTransactionData				= new self();
+		$oTransactionData->name			= $sName;
+		$oTransactionData->value		= Data_Type::encode($mValue, $iDataTypeId);
+		$oTransactionData->data_type_id	= $iDataTypeId;
+		
 		// References
 		// Payment, Logic_Payment, Payment_Response
 		$aReferences	= array();
@@ -108,20 +127,20 @@ class Payment_Transaction_Data extends ORM_Cached
 			foreach ($aReferences as $sType=>$mReference) {
 				switch ((string)$sType) {
 					case 'payment_id':
-						$this->payment_id	= (int)$mReference;
+						$oTransactionData->payment_id = (int)$mReference;
 						break;
 					case 'payment_response_id':
-						$this->payment_response_id	= (int)$mReference;
+						$oTransactionData->payment_response_id = (int)$mReference;
 						break;
 					case 'Payment':
 					case 'Logic_Payment':
 						if ($mReference instanceof $sType) {
-							$this->payment_id	= (int)$mReference->id;
+							$oTransactionData->payment_id = (int)$mReference->id;
 						}
 						break;
 					case 'Payment_Response':
 						if ($mReference instanceof $sType) {
-							$this->payment_response_id	= (int)$mReference->id;
+							$oTransactionData->payment_response_id = (int)$mReference->id;
 						}
 						break;
 
@@ -164,7 +183,10 @@ class Payment_Transaction_Data extends ORM_Cached
 				case 'selAll':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1");
 					break;
-				
+				case 'selByPaymentOrPaymentResponse':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "payment_id = <payment_id> OR payment_response_id = <payment_response_id>");
+					break;
+					
 				// INSERTS
 				case 'insSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);

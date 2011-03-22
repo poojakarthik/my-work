@@ -11,6 +11,17 @@ class Invoice_Payment extends ORM_Cached
 	protected 			$_strTableName			= "InvoicePayment";
 	protected static	$_strStaticTableName	= "InvoicePayment";
 	
+	public function __construct($arrProperties=array(), $bolLoadById=false)
+	{
+		// Deprecated as of 21/03/11 (Collections Reengineer Release)
+		Flex::assert(
+			false,
+			"Invoice_Payment ORM Class has been deprecated, Payments are now linked to Invoices via the collectable & collectable_payment tables.",
+			null,
+			"Deprecated Functionality: Invoice_Payment ORM"
+		);
+	}
+	
 	protected static function getCacheName()
 	{
 		// It's safest to keep the cache name the same as the class name, to ensure uniqueness

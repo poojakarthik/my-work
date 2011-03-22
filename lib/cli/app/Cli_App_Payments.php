@@ -238,8 +238,6 @@ class Cli_App_Payments extends Cli
 				Log::getLog()->log("Direct debits cannot be processed today, check collections_schedule for more info.");
 			}
 			
-			Log::getLog()->log(ceil(288.85 * 100));
-			
 			if ($bTestRun)
 			{
 				// In test mode, rollback all changes
@@ -347,7 +345,7 @@ class Cli_App_Payments extends Cli
 					if ($oDirectDebit)
 					{
 						$bDirectDebitable	= true;
-						$sOriginIdType		= 'bank_account_number';
+						$sOriginIdType		= Payment_Transaction_Data::BANK_ACCOUNT_NUMBER;
 						$mOriginId			= $oPaymentMethodDetail->AccountNumber;
 					}
 					else
@@ -367,8 +365,8 @@ class Cli_App_Payments extends Cli
 					if ($oCreditCard && ($iNow < $iExpiry))
 					{
 						$bDirectDebitable	= true;
-						$sOriginIdType		= 'credit_card_number';
-						$mOriginId			= $oPaymentMethodDetail->CardNumber;
+						$sOriginIdType		= Payment_Transaction_Data::CREDIT_CARD_NUMBER;
+						$mOriginId			= Credit_Card::getMaskedCardNumber(Decrypt($oPaymentMethodDetail->CardNumber));
 					}
 					else if ($iNow >= $iExpiry)
 					{
@@ -404,7 +402,11 @@ class Cli_App_Payments extends Cli
 								PAYMENT_NATURE_PAYMENT, 
 								'', 
 								$sPaidOn,
-								array($sOriginIdType => $mOriginId)	// Payment_Transaction_Data details
+								array(
+									'aTransactionData' =>	array(
+																$sOriginIdType => $mOriginId
+															)
+								)
 							);
 				
 				// Create payment_request (linked to the payment & invoice run id)
@@ -498,7 +500,7 @@ class Cli_App_Payments extends Cli
 					if ($oDirectDebit)
 					{
 						$bDirectDebitable	= true;
-						$sOriginIdType		= 'bank_account_number';
+						$sOriginIdType		= Payment_Transaction_Data::BANK_ACCOUNT_NUMBER;
 						$mOriginId			= $oPaymentMethodDetail->AccountNumber;
 					}
 					else
@@ -518,8 +520,8 @@ class Cli_App_Payments extends Cli
 					if ($oCreditCard && ($iNow < $iExpiry))
 					{
 						$bDirectDebitable	= true;
-						$sOriginIdType		= 'credit_card_number';
-						$mOriginId			= $oPaymentMethodDetail->CardNumber;
+						$sOriginIdType		= Payment_Transaction_Data::CREDIT_CARD_NUMBER;
+						$mOriginId			= Credit_Card::getMaskedCardNumber(Decrypt($oPaymentMethodDetail->CardNumber));
 					}
 					else if ($iNow >= $iExpiry)
 					{
@@ -544,7 +546,7 @@ class Cli_App_Payments extends Cli
 				if ($fAmount < $aRow['direct_debit_minimum'])
 				{
 					// Not enough of a balance to be eligible
-					Log::getLog()->log("ERROR: {$iAccountId}, instalment {$oInstalment->id} doesn't have enough balance, ineligible amount: {$fAmount} (less than minimum, which is {$aRow['direct_debit_minimum']})");
+					Log::getLog()->log("ERROR: {$oAccount->Id}, instalment {$oInstalment->id} doesn't have enough balance, ineligible amount: {$fAmount} (less than minimum, which is {$aRow['direct_debit_minimum']})");
 					$aIneligible[self::DIRECT_DEBIT_INELIGIBLE_AMOUNT]++;
 					continue;
 				}
@@ -557,7 +559,11 @@ class Cli_App_Payments extends Cli
 								PAYMENT_NATURE_PAYMENT, 
 								'', 
 								$sPaidOn,
-								array($sOriginIdType => $mOriginId)	// Payment_Transaction_Data details
+								array(
+									'aTransactionData' => 	array(
+																$sOriginIdType => $mOriginId
+															)
+								)
 							);
 				
 				// Create payment_request (linked to the payment & invoice run id)

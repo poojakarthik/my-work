@@ -216,7 +216,11 @@ class Cli_App_ApplyDirectDebits extends Cli
 								PAYMENT_NATURE_PAYMENT, 
 								'', 
 								$sPaidOn,
-								array($sOriginIdType => $mOriginId)	// Payment_Transaction_Data details
+								array(
+									'aTransactionData' => 	array(
+																$sOriginIdType => $mOriginId
+															)
+								)
 							);
 				
 				// Create payment_request (linked to the payment & invoice run id)
@@ -369,7 +373,11 @@ class Cli_App_ApplyDirectDebits extends Cli
 								PAYMENT_NATURE_PAYMENT, 
 								'', 
 								$sPaidOn,
-								array($sOriginIdType => $mOriginId)	// Payment_Transaction_Data details
+								array(
+									'aTransactionData' =>	array(
+																$sOriginIdType => $mOriginId
+															)
+								)
 							);
 				
 				// Create payment_request (linked to the payment & invoice run id)

@@ -19,8 +19,21 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 	{
 		$oDB = Data_Source::get(FLEX_DATABASE_CONNECTION_ADMIN);
 		
+		// Get the global tax rate_percentage
+		$mTaxTypeResult = $oDB->query("	SELECT 	rate_percentage
+										FROM	tax_type
+										WHERE	global = 1;");
+		if (PEAR::isError($mTaxTypeResult))
+		{
+			// Failed
+			throw new Exception(__CLASS__." Failed to get the global tax rate_percentage. ".$mTaxTypeResult->getMessage()." (DB Error: ".$mTaxTypeResult->getUserInfo().")");
+		}
+		
+		$aGlobalTax 				= $mTaxTypeResult->fetchRow(MDB2_FETCHMODE_ASSOC);
+		$fGlobalTaxRatePercentage	= $aGlobalTax['rate_percentage'];
+		
 		$this->rollbackSQL[] = "TRUNCATE adjustment_type;";
-		$this->_copyAdjustmentTypes($oDB);
+		$this->_copyAdjustmentTypes($oDB, $fGlobalTaxRatePercentage);
 		
 		$this->_bCancelLogging = $this->getUserResponseYesNo('Would you like to disable all extra logging for this version (do so, for example, if you would like it to complete unattended)?');
 		
@@ -71,26 +84,13 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 			throw new Exception(__CLASS__." Failed to create adjustment_type for ChargeType {$aRow['Id']}. ".$mInsertResult->getMessage()." (DB Error: ".$mInsertResult->getUserInfo().")");
 		}
 		
-		// Get the global tax rate_percentage
-		$mTaxTypeResult = $oDB->query("	SELECT 	rate_percentage
-										FROM	tax_type
-										WHERE	global = 1;");
-		if (PEAR::isError($mTaxTypeResult))
-		{
-			// Failed
-			throw new Exception(__CLASS__." Failed to get the global tax rate_percentage. ".$mTaxTypeResult->getMessage()." (DB Error: ".$mTaxTypeResult->getUserInfo().")");
-		}
-		
-		$aGlobalTax 				= $mTaxTypeResult->fetchRow(MDB2_FETCHMODE_ASSOC);
-		$fGlobalTaxRatePercentage	= $aGlobalTax['rate_percentage'];
-		
 		$this->_copyAdjustments($oDB, $fGlobalTaxRatePercentage);
 		$this->_createInvoiceWriteOffAdjustments($oDB);
 		$this->_copyPayments($oDB);
 		$this->_applyBalanceDifferenceAdjustment($oDB, $fGlobalTaxRatePercentage);
 	}
 
-	protected function _copyAdjustmentTypes($oDB)
+	protected function _copyAdjustmentTypes($oDB, $fGlobalTaxRatePercentage)
 	{
 		//
 		// Copy adjustment types (from ChargeType)
@@ -118,11 +118,12 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 			
 			$iStatus 				= ($aRow['Archived'] == 1 ? STATUS_INACTIVE : STATUS_ACTIVE);
 			$sVisibilitySystemName 	= (($aRow['charge_type_visibility_id'] == CHARGE_TYPE_VISIBILITY_VISIBLE) ? 'VISIBLE' : 'HIDDEN');
+			$fAmount				= Rate::roundToRatingStandard($aRow['Amount'] * (1 + $fGlobalTaxRatePercentage), 2);
 			
 			$mInsertResult = $oDB->query("	INSERT INTO adjustment_type (code, description, amount, is_amount_fixed, transaction_nature_id, status_id, adjustment_type_invoice_visibility_id)
 											VALUES		('{$aRow['ChargeType']}',
 														'{$aRow['Description']}', 
-														{$aRow['Amount']}, 
+														{$fAmount}, 
 														{$aRow['Fixed']}, 
 														(SELECT id FROM transaction_nature WHERE code = '{$aRow['Nature']}'), 
 														{$iStatus},

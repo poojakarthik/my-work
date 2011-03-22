@@ -3166,6 +3166,14 @@ function GetCCType($mixNumber, $bolAsString = FALSE)
  */
 function AddCreditCardSurcharge($intPayment)
 {
+	// Deprecated as of 21/03/11 (Collections Reengineer Release)
+	Flex::assert(
+		false,
+		"Framework 2 App Handler Payment::Add has been deprecated, Payments can be added using JSON_Handler_Payment::createPayment().",
+		null,
+		"Deprecated Functionality: Framework 2 App Handler Payment::Add"
+	);
+	
 	// Statements
 	$selAccount	= new StatementSelect("Account", "Id AS Account", "AccountGroup = <AccountGroup>", "(Archived != 1) DESC, Archived ASC, Account DESC", "1");
 	$selPayment	= new StatementSelect("Payment", "*", "Id = <Payment>");

@@ -925,10 +925,14 @@ class JSON_Handler_Account extends JSON_Handler
 									$iAccountId, 
 									PAYMENT_TYPE_DIRECT_DEBIT_VIA_EFT, 
 									$fAmount, 
-									$iPaymentNature=PAYMENT_NATURE_PAYMENT, 
+									PAYMENT_NATURE_PAYMENT, 
 									'',
 									date('Y-m-d'), 
-									array(Payment_Transaction_Data::BANK_ACCOUNT_NUMBER => $oDirectDebit->AccountNumber)
+									array(
+										'aPaymentTransactionData' =>	array(
+																			Payment_Transaction_Data::BANK_ACCOUNT_NUMBER => $oDirectDebit->AccountNumber
+																		)
+									)
 								);
 					
 					// Create payment_request

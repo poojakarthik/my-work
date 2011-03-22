@@ -63,6 +63,14 @@ class AppTemplatePayment extends ApplicationTemplate
 	 */
 	function Add()
 	{
+		// Deprecated as of 21/03/11 (Collections Reengineer Release)
+		Flex::assert(
+			false,
+			"Framework 2 App Handler Payment::Add has been deprecated, Payments can be added using JSON_Handler_Payment::createPayment().",
+			null,
+			"Deprecated Functionality: Framework 2 App Handler Payment::Add"
+		);
+				
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
@@ -305,6 +313,14 @@ class AppTemplatePayment extends ApplicationTemplate
 	 */
 	function Delete()
 	{
+		// Deprecated as of 21/03/11 (Collections Reengineer)
+		Flex::assert(
+			false,
+			"Framework 2 App Handler Payment::Delete has been deprecated, Payments can be reversed using JSON_Handler_Payment::reversePayment().",
+			null,
+			"Deprecated Functionality: Framework 2 App Handler Payment::Delete"
+		);
+		
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);

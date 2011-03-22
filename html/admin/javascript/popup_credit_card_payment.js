@@ -312,15 +312,15 @@ var Popup_Credit_Card_Payment	= Class.create(Reflex_Popup,
 	
 	_amountChanged	: function()
 	{
-		this._updateBalances();
 		this._updateSurcharges();
+		this._updateBalances();
 	},
 	
 	_updateBalances: function()
 	{
-		var fAmount		= parseFloat(this._oCardAmount.getElementValue().replace(/[^0-9\.]+/g, ''));
-		fAmount 		= isNaN(fAmount) ? 0.00 : fAmount;
-		var sBalance	= this._tidyAmount(this._oAccountInfo.fBalance - fAmount);
+		//var fAmount		= parseFloat(this._oCardAmount.getElementValue().replace(/[^0-9\.]+/g, ''));
+		//fAmount 		= isNaN(fAmount) ? 0.00 : fAmount;
+		var sBalance	= this._tidyAmount(this._oAccountInfo.fBalance - (isNaN(this._fTotalPayment) ? 0 : this._fTotalPayment));
 		var fBal 		= parseFloat(sBalance);
 		if (fBal < 0)
 		{

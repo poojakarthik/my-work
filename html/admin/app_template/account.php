@@ -1623,7 +1623,15 @@ class AppTemplateAccount extends ApplicationTemplate
 		switch (DBO()->DeleteRecord->RecordType->Value)
 		{
 			case "Payment":
-				if (!$bolCanReversePayments)
+				// Deprecated as of 21/03/11 (Collections Reengineer)
+				Flex::assert(
+					false,
+					"DeleteRecord of record type 'Payment' has been deprecated, Payments can be reversed using JSON_Handler_Payment::reversePayment().",
+					null,
+					"Deprecated Functionality DeleteRecord (RecordType = 'Payment')"
+				);
+				 
+				/*if (!$bolCanReversePayments)
 				{
 					Ajax()->AddCommand("Alert", "You do not have the required permissions to reverse payments");
 					return TRUE;
@@ -1631,7 +1639,7 @@ class AppTemplateAccount extends ApplicationTemplate
 				DBO()->DeleteRecord->Application = "Payment";
 				DBO()->DeleteRecord->Method = "Delete";
 				DBO()->Payment->Load();
-				DBO()->Account->Id = DBO()->Payment->Account->Value;
+				DBO()->Account->Id = DBO()->Payment->Account->Value;*/
 				break;
 			case "Charge":
 				if (!$bolCanDeleteCharges)
@@ -1645,6 +1653,14 @@ class AppTemplateAccount extends ApplicationTemplate
 				DBO()->Account->Id = DBO()->Charge->Account->Value;
 				break;
 			case "Adjustment":
+				// Deprecated as of 21/03/11 (Collections Reengineer)
+				Flex::assert(
+					false,
+					"DeleteRecord of record type 'Adjustment' has been deprecated, Adjustments can be reversed using JSON_Handler_Adjustment::reverseAdjustment().",
+					null,
+					"Deprecated Functionality DeleteRecord (RecordType = 'Adjustment')"
+				);
+				
 				if (!$bolCanDeleteCharges)
 				{
 					Ajax()->AddCommand("Alert", "You do not have the required permissions to delete an adjustment");

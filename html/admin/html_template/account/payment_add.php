@@ -82,7 +82,15 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 	 * @method
 	 */
 	function Render()
-	{	
+	{
+		// Deprecated as of 21/03/11 (Collections Reengineer Release)
+		Flex::assert(
+			false,
+			"Framework 2 Html Template PaymentAdd has been deprecated, Payments can be added using JS Class Popup_Account_Payment_Create().",
+			null,
+			"Deprecated Functionality: Framework 2 Html Template PaymentAdd"
+		);
+		
 		// Only apply the output mask if the DBO()->Payment is not invalid
 		$bolApplyOutputMask = !DBO()->Payment->IsInvalid();
 	

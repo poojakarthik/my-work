@@ -725,17 +725,23 @@ class Credit_Card_Payment
 			$oPayment =	Logic_Payment::factory(
 							$iAccountId, 
 							PAYMENT_TYPE_CREDIT_CARD, 
-							$fAmount, 
+							$fTotal, 
 							PAYMENT_NATURE_PAYMENT,
 							'', 
 							$sNowDate, 
 							array
 							(
-								'charge_credit_card_surcharge' 	=> ($bWaiveSurcharge === false),
-								'credit_card_type_id'			=> $oCardType->id,
-								'credit_card_number'			=> $sCardNumber
+								'aTransactionData' =>	array
+														(
+															Payment_Transaction_Data::CREDIT_CARD_NUMBER => Credit_Card::getMaskedCardNumber($sCardNumber)
+														)
 							)
 						);
+			
+			if ($bWaiveSurcharge === false)
+			{
+				$oPayment->applyCreditCardSurcharge($oCardType->id);
+			}
 			
 			// Create a credit_card_payment_history record
 			$oCreditCardPaymentHistory						= new Credit_Card_Payment_History();

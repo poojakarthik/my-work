@@ -11,7 +11,7 @@ class Data_Type extends ORM_Enumerated
 	protected 			$_strTableName			= "data_type";
 	protected static	$_strStaticTableName	= "data_type";
 
-	public static function cast($mData, $iDataTypeId) {
+	public static function cast($mValue, $iDataTypeId) {
 		switch ((int)$iDataTypeId)
 		{
 			case DATA_TYPE_INTEGER:
@@ -39,7 +39,7 @@ class Data_Type extends ORM_Enumerated
 		return $mValue;
 	}
 
-	public static function encode($mData, $iDataTypeId) {
+	public static function encode($mValue, $iDataTypeId) {
 		switch ((int)$iDataTypeId)
 		{
 			case DATA_TYPE_INTEGER:
@@ -67,7 +67,7 @@ class Data_Type extends ORM_Enumerated
 		return (string)$mValue;
 	}
 
-	public static function decode($mData, $iDataTypeId) {
+	public static function decode($mValue, $iDataTypeId) {
 		switch ((int)$iDataTypeId)
 		{
 			case DATA_TYPE_INTEGER:

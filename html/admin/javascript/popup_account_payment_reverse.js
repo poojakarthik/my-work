@@ -234,7 +234,7 @@ Object.extend(Popup_Account_Payment_Reverse,
 	{
 		Reflex_Popup.alert(
 			oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.', 
-			{sTitle: 'Error'}
+			{sTitle: 'Error', sDebugContent: oResponse.sDebug}
 		);
 	}
 });

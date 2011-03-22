@@ -84,6 +84,14 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 	 */
 	function Render()
 	{
+		// Deprecated as of 21/03/11 (Collections Reengineer Release)
+		Flex::assert(
+			false,
+			"Framework 2 Html Template PaymentList has been deprecated, Payments can be viewed using JS Class Component_Account_Payment_List().",
+			null,
+			"Deprecated Functionality: Framework 2 Html Template PaymentList"
+		);
+		
 		echo "<h2 class='Payment'>Payments</h2>\n";
 		
 		// Check if the user has admin privileges
