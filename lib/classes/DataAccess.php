@@ -55,9 +55,10 @@ class DataAccess
 		return self::$arrDataAccessCache[$strConnectionType];
 	}
 
-	public function getNow() {
+	public function getNow($bAsTimestamp=false) {
 		// TODO: Caching
-		return array_value(Query::run('SELECT NOW() AS now')->fetch_assoc(), 'now');
+		$sDatetime	= array_value(Query::run('SELECT NOW() AS now')->fetch_assoc(), 'now');
+		return $bAsTimestamp ? strtotime($sDatetime) : $sDatetime;
 	}
 
 
