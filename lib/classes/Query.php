@@ -125,7 +125,7 @@
 		$aReplaceData	= array();
 		foreach ($aData as $sKey=>$mValue) {
 			$sKey	= (string)$sKey;
-			if (preg_match("/^[\w]+$/i", $sKey)) {
+			if (preg_match("/^[\w\-]+$/i", $sKey)) {
 				$mValue						= self::prepareByPHPType($mValue, $sConnectionType);
 				$sRegexKey					= "/\<{$sKey}\>/";
 				$aReplaceData[$sRegexKey]	= (is_string($mValue)) ? addcslashes($mValue, '$\\') : $mValue;

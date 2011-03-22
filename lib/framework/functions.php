@@ -5946,4 +5946,16 @@ function CreateDefaultPaymentTerms($customerGroupId)
 		return (strtolower($strVariableName) !== 'this' && preg_match("/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/", $strVariableName));
 	}
 
+	function array_value($aArray, $mKey) {
+		return $aArray[$mKey];
+	}
+
+	function coalesce() {
+		foreach (func_get_args() as $mArgument) {
+			if ($mArgument !== null) {
+				return $mArgument;
+			}
+		}
+	}
+
 ?>
