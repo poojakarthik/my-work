@@ -20,7 +20,14 @@ class JSON_Handler_Charge extends JSON_Handler
 	
 	public function getAdjustmentsAwaitingApproval($bCountOnly=false, $iLimit=0, $iOffset=0, $oFieldsToSort=null, $oFilter=null)
 	{
-		return self::getRecords($bCountOnly, $iLimit, $iOffset, $oFieldsToSort, CHARGE_MODEL_ADJUSTMENT);
+		Flex::assert(
+			false,
+			"JSON_Handler_Charge::getAdjustmentsAwaitingApproval is deprecated. Use JSON_Handler_Adjustment::getPendingDataset instead.",
+			null,
+			"Deprecated Functionality Accessed: JSON_Handler_Charge::getAdjustmentsAwaitingApproval"
+		);
+		
+		//return self::getRecords($bCountOnly, $iLimit, $iOffset, $oFieldsToSort, CHARGE_MODEL_ADJUSTMENT);
 	}
 	
 	public function getAllAwaitingApproval($bCountOnly=false, $iLimit=0, $iOffset=0, $oFieldsToSort=null, $oFilter=null)

@@ -15,6 +15,8 @@ var Charge_Management = Class.create
 				sChargeModel	= 'Charge';
 				break;
 			case $CONSTANT.CHARGE_MODEL_ADJUSTMENT:
+				Reflex_Popup.alert('Deprecated Functionality, please inform YBS.', {sTitle: 'Error'});
+				
 				sMethod			= 'getAdjustmentsAwaitingApproval';
 				sChargeModel	= 'Adjustment';
 				break;

@@ -112,6 +112,8 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 				oNatureSpan.hide();
 				break;
 			case $CONSTANT.CHARGE_MODEL_ADJUSTMENT:
+				Reflex_Popup.alert('Deprecated Functionality, please inform YBS.', {sTitle: 'Error'});
+				
 				oNatureSelect.hide();
 				oNatureSpan.show();
 				

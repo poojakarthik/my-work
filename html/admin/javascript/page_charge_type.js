@@ -14,6 +14,8 @@ var Page_Charge_Type = Class.create(
 				sChargeModel	= 'Charge';
 				break;
 			case $CONSTANT.CHARGE_MODEL_ADJUSTMENT:
+				Reflex_Popup.alert('Deprecated Functionality, please inform YBS.', {sTitle: 'Error'});
+				
 				sMethod			= 'getAdjustmentTypes';
 				sChargeModel	= 'Adjustment';
 				break;

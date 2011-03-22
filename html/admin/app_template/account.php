@@ -278,9 +278,10 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Sets the page size of the invoice table
 		DBO()->InvoicesToLoad = 10;
 		
+		// NOTE: Deprecated, payments are now listed use JS class Component_Account_Payment_List
 		// Retrieve the Payments
 		//"WHERE ((Account = <accId>) OR (AccountGroup = <accGrpId> AND Account IS NULL)) AND (Status conditions)"
-		$strWhere  = "((Payment.Account = ". DBO()->Account->Id->Value .")";
+		/*$strWhere  = "((Payment.Account = ". DBO()->Account->Id->Value .")";
 		$strWhere .= " OR (Payment.AccountGroup = ". DBO()->Account->AccountGroup->Value ." AND Payment.Account IS NULL))";
 		$strWhere .= " AND Payment.Status IN (". PAYMENT_WAITING .", ". PAYMENT_PAYING .", ". PAYMENT_FINISHED .", ". PAYMENT_REVERSED .")";
 		DBL()->Payment->Where->SetString($strWhere);
@@ -303,7 +304,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		DBL()->InvoicePayment->Account = DBO()->Account->Id->Value;
 		DBL()->InvoicePayment->OrderBy("Id DESC");
-		DBL()->InvoicePayment->Load();
+		DBL()->InvoicePayment->Load();*/
 		
 		// Build the list of columns to use for the Charge DBL (as it is pulling this information from 2 tables)
 		$aVisibleChargeTypes	= array(CHARGE_TYPE_VISIBILITY_VISIBLE);
@@ -316,9 +317,10 @@ class AppTemplateAccount extends ApplicationTemplate
 		{
 			$aVisibleChargeTypes[]	= CHARGE_TYPE_VISIBILITY_HIDDEN;
 		}
-			
+		
+		// NOTE: Deprecated, recurring charges are now listed use JS class Component_Account_Recurring_Charge_List
 		// Build the list of columns to use for the RecurringCharge DBL (as it is pulling this information from 2 tables)
-		$arrColumns = Array(	'Id' => 'RC.Id',	'AccountGroup'=>'RC.AccountGroup',	'Account'=>'RC.Account',	'Service'=>'RC.Service',
+		/*$arrColumns = Array(	'Id' => 'RC.Id',	'AccountGroup'=>'RC.AccountGroup',	'Account'=>'RC.Account',	'Service'=>'RC.Service',
 								'CreatedBy'=>'RC.CreatedBy', 'ApprovedBy'=>'RC.ApprovedBy', 'ChargeType'=>'RC.ChargeType',
 								'Description'=>'RC.Description', 'Nature'=>'RC.Nature', 'CreatedOn'=>'RC.CreatedOn',
 								'StartedOn'=>'RC.StartedOn', 'LastChargedOn'=>'RC.LastChargedOn', 'RecurringFreqType'=>'RC.RecurringFreqType',
@@ -342,7 +344,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		// On account of how the Property token works
 		DBL()->RecurringCharge->Where->Set($strRecChargeWhere, Array("Account"=>$intAccountId));
 		DBL()->RecurringCharge->OrderBy("StartedOn DESC, Id DESC");
-		DBL()->RecurringCharge->Load();
+		DBL()->RecurringCharge->Load();*/
 		
 		// Calculate the Account Balance
 		$oAccount 				= Account::getForId($intAccountId);

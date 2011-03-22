@@ -54,6 +54,13 @@ class JSON_Handler_Charge_Type extends JSON_Handler
 	// This function wraps around getTypes and supplies CHARGE_MODEL_ADJUSTMENT as the charge_model_id
 	public function getAdjustmentTypes($bCountOnly=false, $iLimit=0, $iOffset=0, $oFieldsToSort=null, $oFilter=null)
 	{
+		Flex::assert(
+			false,
+			"JSON_Handler_Charge_Type:: getAdjustmentTypes is deprecated. Use JSON_Handler_Adjustment_Type::getDataset instead.",
+			null,
+			"Deprecated Functionality Accessed: JSON_Handler_Charge_Type:: getAdjustmentTypes"
+		);
+		
 		return self::getTypes($bCountOnly, $iLimit, $iOffset, $oFieldsToSort, CHARGE_MODEL_ADJUSTMENT);
 	}
 	

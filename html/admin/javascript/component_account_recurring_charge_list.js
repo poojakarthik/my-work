@@ -265,7 +265,7 @@ var Component_Account_Recurring_Charge_List = Class.create(
 				{
 					// The last_charged_on does not truely represent the last time the account was charged
 					// Set it to NULL
-					oData.last_charged_on = NULL;
+					oData.last_charged_on = null;
 				}
 				oData.charged = "In Arrears";
 			}
