@@ -608,6 +608,7 @@ class Logic_Account implements DataLogic
 
 	public function redistributeBalances()
 	{
+		//Log::getLog()->log("Redistributing Account #{$this->Id}");
 		// delete all records for this account in the following tables: collectable_adjustment; collectable_payment; collectable_transfer where collectable_transfer_type == COLLECTABLE_TRANSFER_TYPE_BALANCE
 		Collectable_Adjustment::deleteForAccount($this->id);
 		Collectable_Payment::deleteForAccount($this->id);
