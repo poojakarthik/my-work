@@ -172,7 +172,7 @@ class Service_Barring_Level extends ORM_Cached
 					        barring_level_id,
 					        barring_level_name,
 					        current_barring_level_id,
-					        current_barring_level_name,
+					        IF (barring_level_id = current_barring_level_id, concat(current_barring_level_name, ' (With Pending Barring Request)'), current_barring_level_name) AS current_barring_level_name,
 					        created_datetime,
 					        created_employee_id,
 					        created_employee_name,
@@ -244,6 +244,7 @@ class Service_Barring_Level extends ORM_Cached
 												) current_barring_level ON (current_barring_level.account_id = a.Id)
 									WHERE       sbl.authorised_datetime IS NULL
 					                AND         sbl.authorised_employee_id IS NULL
+									AND sbl.created_datetime = (SELECT MAX(created_datetime) FROM service_barring_level WHERE service_barring_level.service_id = sbl.service_id)
 					            )
 					            UNION
 					            (
@@ -300,6 +301,7 @@ class Service_Barring_Level extends ORM_Cached
 												) current_barring_level ON (current_barring_level.account_id = a.Id)
 									WHERE       abl.authorised_datetime IS NULL
 					                AND         abl.authorised_employee_id IS NULL
+									AND abl.created_datetime = (SELECT max(created_datetime) FROM account_barring_level WHERE account_id = abl.account_id )
 					            )
 					        ) barring_level_union
 					{$sWhere}
@@ -420,7 +422,7 @@ class Service_Barring_Level extends ORM_Cached
 
 		$aWhere 	= Statement::generateWhere($aAliases, get_object_vars($oFilter));
 		$sWhere		= $aWhere['sClause'];
-		$sWhere		.= ($sWhere != '' ? " AND " : '')."sbl.actioned_datetime IS NULL AND sbl.actioned_employee_id IS NULL";
+		$sWhere		.= ($sWhere != '' ? " AND " : '')."sbl.created_datetime = (SELECT MAX(created_datetime) FROM service_barring_level WHERE service_barring_level.service_id = sbl.service_id AND service_barring_level.authorised_datetime IS NOT NULL) AND sbl.actioned_datetime IS NULL AND sbl.actioned_employee_id IS NULL";
 		$oSelect	=	new StatementSelect(
 							$sFrom,
 							$sSelect,
