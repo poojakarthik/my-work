@@ -625,7 +625,7 @@ class Cli_App_Sales extends Cli
 						$objAccount->vip							= 0;
 												
 						// Default account class from Customer Group
-						$oAccountClass 					= CustomerGroup::getDefaultAccountClassForCustomerGroup($objAccount->CustomerGroup);
+						$oAccountClass 					= Customer_Group::getDefaultAccountClassForCustomerGroup($objAccount->CustomerGroup);
 						$objAccount->account_class_id	= $oAccountClass->id;
 						
 						// Default collection scenario from the Account Class
