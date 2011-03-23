@@ -628,13 +628,16 @@ class Cli_App_Sales extends Cli
 						$oAccountClass 					= Customer_Group::getDefaultAccountClassForCustomerGroup($objAccount->CustomerGroup);
 						$objAccount->account_class_id	= $oAccountClass->id;
 						
-						// Default collection scenario from the Account Class
-						Account_Collection_Scenario::factory($objAccount->Id, $oAccountClass->collection_scenario_id);
-						
 						// Default collection severity
 						$objAccount->collection_severity_id = Collection_Severity::getForSystemName('UNRESTRICTED')->id;
 						
 						// Save the Account
+						$objAccount->save();
+
+						// Default collection scenario from the Account Class
+						Account_Collection_Scenario::factory($objAccount->Id, $oAccountClass->collection_scenario_id);
+
+						// Save the Account... again
 						$objAccount->save();
 						//--------------------------------------------------------//
 						
