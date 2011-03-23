@@ -71,6 +71,15 @@ abstract class Resource_Type_File_Import_Payment extends Resource_Type_File_Impo
 				// Initialise the Importer Class
 				$sImporterClass	= $oCarrierModule->Module;
 				Log::getLog()->log("\t[ ] Module: {$sImporterClass}");
+				Flex::assert(
+					is_subclass_of($sImporterClass, __CLASS__),
+					"Carrier Module #{$oCarrierModule->Id}'s Class '{$sImporterClass}' does not inherit from ".__CLASS__,
+					array(
+						'oFileImport'		=> $oFileImport->toArray(),
+						'oCarrierModule'	=> $oCarrierModule->toArray()
+					),
+					"Payment pre-Processing: Carrier Module with Invalid Class"
+				);
 				$oImporter		= new $sImporterClass($oCarrierModule, $oFileImport);
 
 				// Get Records (optionally pre-processed) and insert them into the Database
@@ -175,6 +184,15 @@ abstract class Resource_Type_File_Import_Payment extends Resource_Type_File_Impo
 				
 				// Initialise the Importer Class
 				$sImporterClass	= $oCarrierModule->Module;
+				Flex::assert(
+					is_subclass_of($sImporterClass, __CLASS__),
+					"Carrier Module #{$oCarrierModule->Id}'s Class '{$sImporterClass}' does not inherit from ".__CLASS__,
+					array(
+						'oFileImportData'	=> $oFileImportData->toArray(),
+						'oCarrierModule'	=> $oCarrierModule->toArray()
+					),
+					"Payment Processing: Carrier Module with Invalid Class"
+				);
 				$oImporter		= new $sImporterClass($oCarrierModule, $oFileImport);
 				
 				$aFileImports[$oFileImportData->file_import_id]	= array(
