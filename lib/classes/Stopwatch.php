@@ -23,5 +23,10 @@ class Stopwatch
 		$this->_fLastLapTimestamp	= $fLapTimestamp;
 		return $fLapTime;
 	}
+
+	// Number of seconds since the last Lap (without starting a new lap)
+	public function lapSplit() {
+		return microtime(true) - $this->_fLastLapTimestamp;
+	}
 }
 ?>
