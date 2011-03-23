@@ -26,7 +26,7 @@ class Resource_Type_File_Import_Payment_AustralianDirectEntry extends Resource_T
 	
 	public function getRecords()
 	{
-		$this->_oFileImporter->setDataFile($this->_oFileImport->Location);
+		$this->_oFileImporter->setDataFile($this->_oFileImport->getWrappedLocation());
 		
 		$aRecords	= array();
 		$sFileDate	= null;
@@ -87,11 +87,11 @@ class Resource_Type_File_Import_Payment_AustralianDirectEntry extends Resource_T
 		switch (true)
 		{
 			// Payment Request
-			case (!!preg_match('/^(?P<Account.Id>\d+)(R)(?P<payment_request.id>\d+)$/i', $sLodgementReference, $aLodgementReferenceMatches)):
-				$oPaymentResponse->account_id			= (int)$aLodgementReferenceMatches['Account.Id'];
+			case (!!preg_match('/^(?P<account_id>\d+)(R)(?P<payment_request_id>\d+)$/i', $sLodgementReference, $aLodgementReferenceMatches)):
+				$oPaymentResponse->account_id			= (int)$aLodgementReferenceMatches['account_id'];
 				
 				// Payment Request
-				$oPaymentResponse->payment_request_id	= (int)$aLodgementReferenceMatches['payment_request.id'];
+				$oPaymentResponse->payment_request_id	= (int)$aLodgementReferenceMatches['payment_request_id'];
 				break;
 				
 			// Legacy Direct Debit
@@ -169,54 +169,55 @@ class Resource_Type_File_Import_Payment_AustralianDirectEntry extends Resource_T
 	
 	protected function _configureFileImporter()
 	{
+		// File Importer
 		$this->_oFileImporter	= new File_Importer();
-		
-		$this->_oFileImporter->registerRecordType(self::RECORD_TYPE_TRANSACTION,
-			File_Importer_CSV_RecordType::factory()
-				->addField('RecordType', File_Importer_Field::factory()
-					->setStartIndex(0)
-					->setLength(1)
-				)->addField('BSB', File_Importer_Field::factory()
-					->setStartIndex(1)
-					->setLength(7)
-				)->addField('AccountNumber', File_Importer_Field::factory()
-					->setStartIndex(8)
-					->setLength(9)
-				)->addField('Indicator', File_Importer_Field::factory()
-					->setStartIndex(17)
-					->setLength(1)
-				)->addField('TransactionCode', File_Importer_Field::factory()
-					->setStartIndex(18)
-					->setLength(2)
-				)->addField('Amount', File_Importer_Field::factory()
-					->setStartIndex(20)
-					->setLength(10)
-				)->addField('AccountName', File_Importer_Field::factory()
-					->setStartIndex(30)
-					->setLength(32)
-				)->addField('LodgementReference', File_Importer_Field::factory()
-					->setStartIndex(62)
-					->setLength(18)
-				)->addField('TraceBSB', File_Importer_Field::factory()
-					->setStartIndex(80)
-					->setLength(7)
-				)->addField('TraceAccount', File_Importer_Field::factory()
-					->setStartIndex(87)
-					->setLength(9)
-				)->addField('RemitterName', File_Importer_Field::factory()
-					->setStartIndex(96)
-					->setLength(16)
-				)->addField('WithholdingTax', File_Importer_Field::factory()
-					->setStartIndex(112)
-					->setLength(8)
-				)->addField('StatusIndicator', File_Importer_Field::factory()
-					->setStartIndex(120)
-					->setLength(1)
-				)->addField('EffectiveDate', File_Importer_Field::factory()
-					->setStartIndex(121)
-					->setLength(10)
-				)
-		);
+
+		// Record Types
+		$oRecordTypeTransaction	= $this->_oFileImporter->createRecordType(self::RECORD_TYPE_TRANSACTION);
+
+		// Fields
+		$oRecordTypeTransaction->createField('RecordType')
+			->setStartIndex(0)
+			->setLength(1);
+		$oRecordTypeTransaction->createField('BSB')
+			->setStartIndex(1)
+			->setLength(7);
+		$oRecordTypeTransaction->createField('AccountNumber')
+			->setStartIndex(8)
+			->setLength(9);
+		$oRecordTypeTransaction->createField('Indicator')
+			->setStartIndex(17)
+			->setLength(1);
+		$oRecordTypeTransaction->createField('TransactionCode')
+			->setStartIndex(18)
+			->setLength(2);
+		$oRecordTypeTransaction->createField('Amount')
+			->setStartIndex(20)
+			->setLength(10);
+		$oRecordTypeTransaction->createField('AccountName')
+			->setStartIndex(30)
+			->setLength(32);
+		$oRecordTypeTransaction->createField('LodgementReference')
+			->setStartIndex(62)
+			->setLength(18);
+		$oRecordTypeTransaction->createField('TraceBSB')
+			->setStartIndex(80)
+			->setLength(7);
+		$oRecordTypeTransaction->createField('TraceAccount')
+			->setStartIndex(87)
+			->setLength(9);
+		$oRecordTypeTransaction->createField('RemitterName')
+			->setStartIndex(96)
+			->setLength(16);
+		$oRecordTypeTransaction->createField('WithholdingTax')
+			->setStartIndex(112)
+			->setLength(8);
+		$oRecordTypeTransaction->createField('StatusIndicator')
+			->setStartIndex(120)
+			->setLength(1);
+		$oRecordTypeTransaction->createField('EffectiveDate')
+			->setStartIndex(121)
+			->setLength(10);
 	}
 	
 	/***************************************************************************

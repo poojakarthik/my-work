@@ -103,6 +103,12 @@ abstract class File_Importer
 		$this->_oRecordTypeCallback	= $oCallback;
 		return $this;
 	}
+
+	public function createRecordType($mIdentifier, $sClass='File_Importer_RecordType') {
+		$oRecordType	= new $sClass($this);
+		$this->registerRecordType($mIdentifier, $oRecordType);
+		return $oRecordType;
+	}
 	
 	public function registerRecordType($mIdentifier, File_Importer_RecordType $oRecordType)
 	{

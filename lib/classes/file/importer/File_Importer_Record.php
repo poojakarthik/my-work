@@ -5,7 +5,7 @@ class File_Importer_Record
 	protected	$_mData;
 	protected	$_aRecord;
 	
-	public function __construct($oRecordType, $mData)
+	public function __construct(File_Importer_RecordType $oRecordType, $mData)
 	{
 		$this->_oRecordType	= $oRecordType;
 		
@@ -46,7 +46,7 @@ class File_Importer_Record
 	{
 		try
 		{
-			$this->_oRecordType->getField($this);
+			$this->_oRecordType->getField($sProperty);
 		}
 		catch (Exception $oException)
 		{

@@ -10,7 +10,6 @@ class Cli_App_Payments extends Cli
 	const	SWITCH_TEST_RUN				= 't';
 	const	SWITCH_MODE					= 'm';
 	const	SWITCH_PAYMENT_ID			= 'p';
-	const	SWITCH_PAYMENT_RESPONSE_ID	= 'r';
 	const	SWITCH_FILE_IMPORT_ID		= 'f';
 	const	SWITCH_FILE_IMPORT_DATA_ID	= 'd';
 	const	SWITCH_LIMIT				= 'x';
@@ -20,6 +19,7 @@ class Cli_App_Payments extends Cli
 	const	MODE_DISTRIBUTE		= 'DISTRIBUTE';
 	const	MODE_EXPORT			= 'EXPORT';
 	const	MODE_DIRECT_DEBIT	= 'DIRECTDEBIT';
+	const	MODE_DEBUG			= 'DEBUG';
 	
 	const 	DIRECT_DEBIT_INELIGIBLE_BANK_ACCOUNT		= 'Invalid Bank Account reference';
 	const 	DIRECT_DEBIT_INELIGIBLE_CREDIT_CARD			= 'Invalid Credit Card reference';
@@ -125,9 +125,9 @@ class Cli_App_Payments extends Cli
 		$iFileImportDataId	= $this->_aArgs[self::SWITCH_FILE_IMPORT_DATA_ID];
 		if ($iFileImportDataId && ($oFileImportData = File_Import_Data::getForId($iFileImportDataId)))
 		{
-			if ($oFileImportData->Status !== FILE_IMPORT_DATA_STATUS_IMPORTED)
+			if ($oFileImportData->file_import_data_status_id !== FILE_IMPORT_DATA_STATUS_IMPORTED)
 			{
-				throw new Exception("Only File Data with Status FILE_IMPORT_DATA (".FILE_IMPORT_DATA_STATUS_IMPORTED.") can be Normalised");
+				throw new Exception("Only File Data with Status FILE_IMPORT_DATA_STATUS_IMPORTED (".FILE_IMPORT_DATA_STATUS_IMPORTED.") can be Normalised");
 			}
 			
 			// Make sure that we have a Carrier Module defined to process this File
@@ -147,6 +147,10 @@ class Cli_App_Payments extends Cli
 			// TODO: Transaction if testing
 			throw $oException;
 		}
+	}
+
+	protected function _debug() {
+		
 	}
 	
 	protected function _distribute()
@@ -607,8 +611,8 @@ class Cli_App_Payments extends Cli
 			self::SWITCH_MODE => array(
 				self::ARG_LABEL			=> "MODE",
 				self::ARG_REQUIRED		=> TRUE,
-				self::ARG_DESCRIPTION	=> "Payment operation to perform [".self::MODE_PREPROCESS."|".self::MODE_PROCESS."|".self::MODE_DISTRIBUTE."|".self::MODE_EXPORT."|".self::MODE_DIRECT_DEBIT."]",
-				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("'.self::MODE_PREPROCESS.'","'.self::MODE_PROCESS.'","'.self::MODE_DISTRIBUTE.'","'.self::MODE_EXPORT.'","'.self::MODE_DIRECT_DEBIT.'"))'
+				self::ARG_DESCRIPTION	=> "Payment operation to perform [".self::MODE_PREPROCESS."|".self::MODE_PROCESS."|".self::MODE_DISTRIBUTE."|".self::MODE_EXPORT."|".self::MODE_DIRECT_DEBIT."|".self::MODE_DEBUG."]",
+				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("'.self::MODE_PREPROCESS.'","'.self::MODE_PROCESS.'","'.self::MODE_DISTRIBUTE.'","'.self::MODE_EXPORT.'","'.self::MODE_DIRECT_DEBIT.'","'.self::MODE_DEBUG.'"))'
 			),
 			
 			self::SWITCH_PAYMENT_ID => array(
@@ -618,17 +622,17 @@ class Cli_App_Payments extends Cli
 				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
 			),
 			
-			self::SWITCH_PAYMENT_RESPONSE_ID => array(
-				self::ARG_REQUIRED		=> false,
-				self::ARG_LABEL			=> "PAYMENT_RESPONSE_ID",
-				self::ARG_DESCRIPTION	=> "Payment Response Id (".self::MODE_PROCESS." Mode only)",
-				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
-			),
-			
 			self::SWITCH_FILE_IMPORT_ID => array(
 				self::ARG_REQUIRED		=> false,
 				self::ARG_LABEL			=> "FILE_IMPORT_ID",
 				self::ARG_DESCRIPTION	=> "File Import Id (".self::MODE_PREPROCESS.", ".self::MODE_PROCESS.", ".self::MODE_DISTRIBUTE." Modes only)",
+				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
+			),
+
+			self::SWITCH_FILE_IMPORT_DATA_ID => array(
+				self::ARG_REQUIRED		=> false,
+				self::ARG_LABEL			=> "FILE_IMPORT_DATA_ID",
+				self::ARG_DESCRIPTION	=> "File Import Data Id (".self::MODE_PROCESS." Mode only)",
 				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
 			),
 			

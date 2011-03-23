@@ -18,7 +18,7 @@ class Resource_Type_File_Import_Payment_Westpac_BPay extends Resource_Type_File_
 	
 	public function getRecords()
 	{
-		$this->_oFileImporter->setDataFile($this->_oFileImport->Location);
+		$this->_oFileImporter->setDataFile($this->_oFileImport->getWrappedLocation());
 		
 		$aRecords	= array();
 		while (($sRecord = $this->_oFileImporter->fetch()) !== false)
@@ -67,9 +67,6 @@ class Resource_Type_File_Import_Payment_Westpac_BPay extends Resource_Type_File_
 			throw new Exception("Client Reference Check Digit '{$iClientReferenceCheckDigit}' doesn't match calculated value of '{$iCalculatedAccountCheckDigit}' for Account '{$oPaymentResponse->account_id}'");
 		}
  		
- 		// AccountGroup
- 		$oPaymentResponse->account_group_id	= Account::getForId($oPaymentResponse->account_id)->AccountGroup;
- 		
  		// Payment Type
 		$oPaymentResponse->payment_type_id	= PAYMENT_TYPE_BPAY;
  		
@@ -80,7 +77,7 @@ class Resource_Type_File_Import_Payment_Westpac_BPay extends Resource_Type_File_
  		$oPaymentResponse->transaction_reference	= $oRecord->ReceiptNumber;
  		
  		// Payment Response Type
- 		$oPaymentResponse->payment_response_type_id	= PAYMENT_RESPONSE_TYPE_SETTLEMENT;
+ 		$oPaymentResponse->payment_response_type_id	= PAYMENT_RESPONSE_TYPE_CONFIRMATION;
 		
 		// Return an Array of Records added/modified
 		//--------------------------------------------------------------------//
@@ -91,11 +88,11 @@ class Resource_Type_File_Import_Payment_Westpac_BPay extends Resource_Type_File_
 	
 	public static function calculateRecordType($sLine)
 	{
-		if (stripos($strPaymentRecord, 'Amount,Client') !== false)
+		if (stripos($sLine, 'Amount,Client') !== false)
 		{
 			return self::RECORD_TYPE_HEADER;
 		}
-		elseif (!trim($strPaymentRecord))
+		elseif (!trim($sLine))
 		{
 			return null;
 		}
@@ -107,35 +104,36 @@ class Resource_Type_File_Import_Payment_Westpac_BPay extends Resource_Type_File_
 	
 	protected function _configureFileImporter()
 	{
+		// File Importer
 		$this->_oFileImporter	= new File_Importer_CSV();
 		
-		$this->_oFileImporter->setNewLine(self::NEW_LINE_DELIMITER)
-							->setDelimiter(self::FIELD_DELIMITER)
-							->setQuote(self::FIELD_ENCAPSULATOR)
-							->setEscape(self::ESCAPE_CHARACTER);
-		
-		$this->_oFileImporter->registerRecordType(self::RECORD_TYPE_TRANSACTION,
-			File_Importer_CSV_RecordType::factory()
-				->addField('Amount', File_Importer_CSV_Field::factory()
-					->setColumn(0)
-				)->addField('ClientReference', File_Importer_CSV_Field::factory()
-					->setColumn(1)
-				)->addField('Date', File_Importer_CSV_Field::factory()
-					->setColumn(2)
-				)->addField('FileId', File_Importer_CSV_Field::factory()
-					->setColumn(3)
-				)->addField('OriginatingSystem', File_Importer_CSV_Field::factory()
-					->setColumn(4)
-				)->addField('ReceiptNumber', File_Importer_CSV_Field::factory()
-					->setColumn(5)
-				)->addField('ServiceId', File_Importer_CSV_Field::factory()
-					->setColumn(6)
-				)->addField('ServiceName', File_Importer_CSV_Field::factory()
-					->setColumn(7)
-				)->addField('TransactionCode', File_Importer_CSV_Field::factory()
-					->setColumn(8)
-				)
-		);
+		$this->_oFileImporter->setNewLine(self::NEW_LINE_DELIMITER);
+
+		// Record Types
+		$oRecordTypeTransaction	= $this->_oFileImporter->createRecordType(self::RECORD_TYPE_TRANSACTION, 'File_Importer_CSV_RecordType')
+			->setDelimiter(self::FIELD_DELIMITER)
+			->setQuote(self::FIELD_ENCAPSULATOR)
+			->setEscape(self::ESCAPE_CHARACTER);;
+
+		// Fields
+		$oRecordTypeTransaction->createField('Amount', 'File_Importer_CSV_Field')
+			->setColumn(0);
+		$oRecordTypeTransaction->createField('ClientReference', 'File_Importer_CSV_Field')
+			->setColumn(1);
+		$oRecordTypeTransaction->createField('Date', 'File_Importer_CSV_Field')
+			->setColumn(2);
+		$oRecordTypeTransaction->createField('FileId', 'File_Importer_CSV_Field')
+			->setColumn(3);
+		$oRecordTypeTransaction->createField('OriginatingSystem', 'File_Importer_CSV_Field')
+			->setColumn(4);
+		$oRecordTypeTransaction->createField('ReceiptNumber', 'File_Importer_CSV_Field')
+			->setColumn(5);
+		$oRecordTypeTransaction->createField('ServiceId', 'File_Importer_CSV_Field')
+			->setColumn(6);
+		$oRecordTypeTransaction->createField('ServiceName', 'File_Importer_CSV_Field')
+			->setColumn(7);
+		$oRecordTypeTransaction->createField('TransactionCode', 'File_Importer_CSV_Field')
+			->setColumn(8);
 	}
 	
 	/***************************************************************************

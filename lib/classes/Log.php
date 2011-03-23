@@ -91,6 +91,12 @@ class Log
 				throw new Exception("'{$this->_strLogType}' is not a valid Log Type");
 		}
 	}
+
+	public function logIf($mExpression, $strMessage, $bolAddNewLine=true) {
+		if ($mExpression) {
+			$this->log($strMessage, $bolAddNewLine);
+		}
+	}
 	
 	/**
 	 * getReference()

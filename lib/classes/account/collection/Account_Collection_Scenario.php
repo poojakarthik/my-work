@@ -29,7 +29,7 @@ class Account_Collection_Scenario extends ORM_Cached
 
 	public static function resetScenarioForAccountId($iAccountId)
 	{
-		$iNow = strtotime(DataAccess::getNow());
+		$iNow = strtotime(DataAccess::getDataAccess()->getNow());
 		$iEndDateTime = strtotime("-1 second", $iNow);
 		$sEndDateTime = date ('Y-m-d H:i:s', $iEndDateTime);
 		$sEndOfTime = Data_Source_Time::END_OF_TIME;

@@ -99,9 +99,14 @@ class Payment_Response extends ORM_Cached
 			return null;
 		}
 	}
+
+	public function getFileImportData() {
+		return File_Import_Data::getForId($this->file_import_data_id);
+	}
 	
 	public function action()
 	{
+
 		if ($this->payment_response_status_id !== PAYMENT_RESPONSE_STATUS_PROCESSED) {
 			throw new Exception('Only Processed Payment Requests can be actioned');
 		} elseif (!$this->payment_id) {
@@ -117,19 +122,17 @@ class Payment_Response extends ORM_Cached
 									array
 									(
 										'iPaymentResponseId'	=> $this->id,
-										'iCarrierId'			=> $this->carrier_id
-									)
+										'iCarrierId'			=> $this->getFileImportData()->getFileImport()->Carrier
+									),
+									false // We will distribute later as an optimisation
 								);
 			
 			// Surcharges
 			$oLogicPayment->applySurcharges();
 			$oLogicPayment->applyCreditCardSurcharge();
 			
-			$this->payment_id = $oPayment->id;
+			$this->payment_id = $oLogicPayment->id;
 			$this->save();
-			
-			// Process the payment
-			$oLogicPayment->distribute();
 		}
 		else
 		{
@@ -143,7 +146,12 @@ class Payment_Response extends ORM_Cached
 		$oLogicPayment->save();
 		
 		// Make sure that the Payment is up-to-date
-		$oLogicPayment->applyPaymentResponses();
+		$oLogicPayment->applyPaymentResponses(false);
+
+		// Perform a redistribution after all operations are done
+		$oRedistributionStopwatch	= new Stopwatch(true);
+		$oLogicPayment->getAccount()->redistributeBalances();
+		Log::getLog()->log("Redistributed Account #{$oLogicPayment->account_id} in ".$oRedistributionStopwatch->split(4).'s');
 	}
 	
 	/**

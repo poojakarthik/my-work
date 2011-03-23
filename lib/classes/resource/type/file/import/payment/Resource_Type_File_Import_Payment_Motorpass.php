@@ -19,7 +19,7 @@ class Resource_Type_File_Import_Payment_Motorpass extends Resource_Type_File_Imp
 	
 	public function getRecords()
 	{
-		$this->_oFileImporter->setDataFile($this->_oFileImport->Location);
+		$this->_oFileImporter->setDataFile($this->_oFileImport->getWrappedLocation());
 		
 		$aRecords	= array();
 		$sFileDate	= null;
@@ -131,27 +131,28 @@ class Resource_Type_File_Import_Payment_Motorpass extends Resource_Type_File_Imp
 	
 	protected function _configureFileImporter()
 	{
+		// File Importer
 		$this->_oFileImporter	= new File_Importer_CSV();
 		
-		$this->_oFileImporter->setNewLine(self::NEW_LINE_DELIMITER)
-							->setDelimiter(self::FIELD_DELIMITER)
-							->setQuote(self::FIELD_ENCAPSULATOR)
-							->setEscape(self::ESCAPE_CHARACTER);
+		$this->_oFileImporter->setNewLine(self::NEW_LINE_DELIMITER);
 		
-		$this->_oFileImporter->registerRecordType(self::RECORD_TYPE_TRANSACTION,
-			File_Importer_CSV_RecordType::factory()
-				->addField('ClientReferenceNo', File_Importer_CSV_Field::factory()
-					->setColumn(0)
-				)->addField('AccountNumber', File_Importer_CSV_Field::factory()
-					->setColumn(1)
-				)->addField('BillingAmount', File_Importer_CSV_Field::factory()
-					->setColumn(2)
-				)->addField('Fee', File_Importer_CSV_Field::factory()
-					->setColumn(3)
-				)->addField('EffectiveDate', File_Importer_CSV_Field::factory()
-					->setColumn(4)
-				)
-		);
+		// Record Types
+		$oRecordTypeTransaction	= $this->_oFileImporter->createRecordType(self::RECORD_TYPE_TRANSACTION, 'File_Importer_CSV_RecordType')
+			->setDelimiter(self::FIELD_DELIMITER)
+			->setQuote(self::FIELD_ENCAPSULATOR)
+			->setEscape(self::ESCAPE_CHARACTER);
+
+		// Fields
+		$oRecordTypeTransaction->createField('ClientReferenceNo', 'File_Importer_CSV_Field')
+			->setColumn(0);
+		$oRecordTypeTransaction->createField('AccountNumber', 'File_Importer_CSV_Field')
+			->setColumn(1);
+		$oRecordTypeTransaction->createField('BillingAmount', 'File_Importer_CSV_Field')
+			->setColumn(2);
+		$oRecordTypeTransaction->createField('Fee', 'File_Importer_CSV_Field')
+			->setColumn(3);
+		$oRecordTypeTransaction->createField('EffectiveDate', 'File_Importer_CSV_Field')
+			->setColumn(4);
 	}
 	
 	/***************************************************************************

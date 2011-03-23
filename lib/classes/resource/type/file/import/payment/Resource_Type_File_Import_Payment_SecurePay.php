@@ -18,7 +18,7 @@ class Resource_Type_File_Import_Payment_SecurePay extends Resource_Type_File_Imp
 
 	public function getRecords()
 	{
-		$this->_oFileImporter->setDataFile($this->_oFileImport->Location);
+		$this->_oFileImporter->setDataFile($this->_oFileImport->getWrappedLocation());
 		
 		$aRecords	= array();
 		while (($sRecord = $this->_oFileImporter->fetch()) !== false)
@@ -44,9 +44,12 @@ class Resource_Type_File_Import_Payment_SecurePay extends Resource_Type_File_Imp
 	
 	protected function _processTransaction($sRecord)
 	{
+		//Log::getLog()->log($sRecord);
+
 		// Process the Record
 		//--------------------------------------------------------------------//
 		$oRecord			= $this->_oFileImporter->getRecordType(self::RECORD_TYPE_TRANSACTION)->newRecord($sRecord);
+		//Log::getLog()->log(print_r($oRecord, true));
 		
 		// Create a new Payment_Response Record
 		//--------------------------------------------------------------------//
@@ -60,11 +63,11 @@ class Resource_Type_File_Import_Payment_SecurePay extends Resource_Type_File_Imp
 		
 		// Account
 		$sReference	= trim($oRecord->Reference);
-		if (!!preg_match('/^(?P<Account.Id>\d+)(R)(?P<payment_request.id>\d+)$/i', $sLodgementReference, $aLodgementReferenceMatches))
+		if (!!preg_match('/^(?P<account_id>\d+)(R)(?P<payment_request_id>\d+)$/i', $sLodgementReference, $aLodgementReferenceMatches))
 		{
 			// Payment Request
-			$oPaymentResponse->account_id			= (int)$aLodgementReferenceMatches['Account.Id'];
-			$oPaymentResponse->payment_request_id	= (int)$aLodgementReferenceMatches['payment_request.id'];
+			$oPaymentResponse->account_id			= (int)$aLodgementReferenceMatches['account_id'];
+			$oPaymentResponse->payment_request_id	= (int)$aLodgementReferenceMatches['payment_request_id'];
 			break;
 		}
  		elseif (strlen($sReference) == 10)
@@ -78,33 +81,36 @@ class Resource_Type_File_Import_Payment_SecurePay extends Resource_Type_File_Imp
 			$oPaymentResponse->account_id	= (int)substr($sReference, 6);
  		}
  		
- 		// AccountGroup
- 		$oPaymentResponse->account_group_id	= Account::getForId($oPaymentResponse->account_id)->AccountGroup;
- 		
  		// Payment Type
  		switch ((int)$oRecord->TransactionType)
  		{
- 			case self::TRANSACION_TYPE_ONLINE_PAYMENT:
- 			case self::TRANSACION_TYPE_IVR_PAYMENT:
+ 			// Handled Types
+			case self::TRANSACTION_TYPE_ONLINE_PAYMENT:
+ 			case self::TRANSACTION_TYPE_IVR_PAYMENT:
 		 		$oPaymentResponse->payment_type_id	= PAYMENT_TYPE_CREDIT_CARD;
  				break;
  			
- 			case self::TRANSACION_TYPE_BATCH_PAYMENT:
+ 			case self::TRANSACTION_TYPE_BATCH_PAYMENT:
  				// Only so far as I understand
 		 		$oPaymentResponse->payment_type_id	= PAYMENT_TYPE_DIRECT_DEBIT_VIA_CREDIT_CARD;
  				break;
- 			
- 			case self::TRANSACION_TYPE_DIRECT_DEBIT_BANK_TRANSFER:
-		 		$oPaymentResponse->payment_type_id	= PAYMENT_TYPE_DIRECT_DEBIT_VIA_EFT;
- 				break;
- 			
- 			case self::TRANSACION_TYPE_DIRECT_DEBIT_REJECT:
- 				// Unknown??
-		 		$oPaymentResponse->payment_type_id	= PAYMENT_TYPE_DIRECT_DEBIT_VIA_EFT;
- 				break;
- 			
+
+			// Ignored Types
+			// As Unhandled Types come in and get identified as irrelevant, add them here
+			case TRANSACTION_TYPE_DIRECT_ENTRY_DEBIT:
+				return null;
+				break;
+
+			// Unhandled Types
  			default:
- 				// TODO
+				throw new Exception_Assertion(
+					"Unhandled SecurePay Transaction Type '{$oRecord->TransactionType}'",
+					array(
+						'sRecord'	=> $sRecord,
+						'oRecord'	=> $oRecord->toArray()
+					),
+					"Payment Processing: Unhandled SecurePay Transaction Type '{$oRecord->TransactionType}'"
+				);
  				break;
  		}
  		
@@ -113,14 +119,10 @@ class Resource_Type_File_Import_Payment_SecurePay extends Resource_Type_File_Imp
 		$iTransactionType	= (int)$oRecord->TransactionType;
  		switch ($iTransactionType)
  		{
- 			case self::TRANSACION_TYPE_CREDIT_CARD:
- 			case self::TRANSACION_TYPE_IVR_CREDIT_CARD:
- 			case self::TRANSACION_TYPE_BATCH_PAYMENT:
+ 			case self::TRANSACTION_TYPE_ONLINE_PAYMENT:
+ 			case self::TRANSACTION_TYPE_IVR_PAYMENT:
+ 			case self::TRANSACTION_TYPE_BATCH_PAYMENT:
 		 		$aTransactionData[]	= Payment_Transaction_Data::factory(Payment_Transaction_Data::CREDIT_CARD_NUMBER, $oRecord->AbbreviatedCreditCardNumber);
- 				break;
- 			
- 			default:
-				Flex::assert(false, "Unhandled SecurePay Transaction Type: '{$iTransactionType}'", print_r(array('oRecord'=>$oRecord, 'oPaymentResponse'=>$oPaymentResponse), true), "Unhandled SecurePay Transaction Type: '{$iTransactionType}'");
  				break;
  		}
  		
@@ -136,9 +138,8 @@ class Resource_Type_File_Import_Payment_SecurePay extends Resource_Type_File_Imp
 		}
 		elseif (array_key_exists($iResponseCode, self::$_aResponseCodes['aDeclined']))
 		{
-			// Rejection/Dishonour
+			// Rejection/Dishonour (payment_reversal_type_id is handled elsewhere)
 			$oPaymentResponse->payment_response_type_id		= PAYMENT_RESPONSE_TYPE_REJECTION;
-			$oPaymentResponse->payment_reversal_type_id		= PAYMENT_REVERSAL_TYPE_DISHONOUR;
 			$oPaymentResponse->payment_reversal_reason_id	= Payment_Reversal_Reason::getForSystemName('DISHONOUR_REVERSAL');
 		}
 		else
@@ -161,54 +162,55 @@ class Resource_Type_File_Import_Payment_SecurePay extends Resource_Type_File_Imp
 	
 	protected function _configureFileImporter()
 	{
+		// File Importer
 		$this->_oFileImporter	= new File_Importer_CSV();
 		
-		$this->_oFileImporter->setNewLine(self::NEW_LINE_DELIMITER)
-							->setDelimiter(self::FIELD_DELIMITER)
-							->setQuote(self::FIELD_ENCAPSULATOR)
-							->setEscape(self::ESCAPE_CHARACTER);
-		
-		$this->_oFileImporter->registerRecordType(self::RECORD_TYPE_TRANSACTION,
-			File_Importer_CSV_RecordType::factory()
-				->addField('Reference', File_Importer_CSV_Field::factory()
-					->setColumn(0)
-				)->addField('TransactionDate', File_Importer_CSV_Field::factory()
-					->setColumn(1)
-				)->addField('TransactionTime', File_Importer_CSV_Field::factory()
-					->setColumn(2)
-				)->addField('TransactionType', File_Importer_CSV_Field::factory()
-					->setColumn(3)
-				)->addField('ReturnsTransactionSource', File_Importer_CSV_Field::factory()
-					->setColumn(4)
-				)->addField('AmountCents', File_Importer_CSV_Field::factory()
-					->setColumn(5)
-				)->addField('BankTransactionId', File_Importer_CSV_Field::factory()
-					->setColumn(6)
-				)->addField('ResponseCode', File_Importer_CSV_Field::factory()
-					->setColumn(7)
-				)->addField('AbbreviatedCreditCardNumber', File_Importer_CSV_Field::factory()
-					->setColumn(8)
-				)->addField('SettlementDate', File_Importer_CSV_Field::factory()
-					->setColumn(9)
-				)
-		);
+		$this->_oFileImporter->setNewLine(self::NEW_LINE_DELIMITER);
+
+		// Record Types
+		$oRecordTypeTransaction	= $this->_oFileImporter->createRecordType(self::RECORD_TYPE_TRANSACTION, 'File_Importer_CSV_RecordType')
+			->setDelimiter(self::FIELD_DELIMITER)
+			->setQuote(self::FIELD_ENCAPSULATOR)
+			->setEscape(self::ESCAPE_CHARACTER);
+
+		// Fields
+		$oRecordTypeTransaction->createField('Reference', 'File_Importer_CSV_Field')
+			->setColumn(0);
+		$oRecordTypeTransaction->createField('TransactionDate', 'File_Importer_CSV_Field')
+			->setColumn(1);
+		$oRecordTypeTransaction->createField('TransactionTime', 'File_Importer_CSV_Field')
+			->setColumn(2);
+		$oRecordTypeTransaction->createField('TransactionType', 'File_Importer_CSV_Field')
+			->setColumn(3);
+		$oRecordTypeTransaction->createField('ReturnsTransactionSource', 'File_Importer_CSV_Field')
+			->setColumn(4);
+		$oRecordTypeTransaction->createField('AmountCents', 'File_Importer_CSV_Field')
+			->setColumn(5);
+		$oRecordTypeTransaction->createField('BankTransactionId', 'File_Importer_CSV_Field')
+			->setColumn(6);
+		$oRecordTypeTransaction->createField('ResponseCode', 'File_Importer_CSV_Field')
+			->setColumn(7);
+		$oRecordTypeTransaction->createField('AbbreviatedCreditCardNumber', 'File_Importer_CSV_Field')
+			->setColumn(8);
+		$oRecordTypeTransaction->createField('SettlementDate', 'File_Importer_CSV_Field')
+			->setColumn(9);
 	}
 
 	// Transaction Types
- 	const	TRANSACION_TYPE_ONLINE_PAYMENT				= 0;
- 	const	TRANSACION_TYPE_MOBILE_PAYMENT				= 1;
- 	const	TRANSACION_TYPE_BATCH_PAYMENT				= 2;
- 	const	TRANSACION_TYPE_PERIODIC_PAYMENT			= 3;
- 	const	TRANSACION_TYPE_REFUND_RETURN				= 4;
- 	const	TRANSACION_TYPE_ERROR_REVERSAL				= 5;	// Void
- 	const	TRANSACION_TYPE_CLIENT_REVERSAL				= 6;	// Void
- 	const	TRANSACION_TYPE_PREAUTHORISE				= 10;
- 	const	TRANSACION_TYPE_PREAUTH_COMPLETE			= 11;	// Advice
- 	const	TRANSACION_TYPE_RECURRING_PAYMENT			= 14;
- 	const	TRANSACION_TYPE_DIRECT_ENTRY_DEBIT			= 15;
- 	const	TRANSACION_TYPE_DIRECT_ENTRY_CREDIT			= 17;
- 	const	TRANSACION_TYPE_CARD_PRESENT_PAYMENT		= 19;
- 	const	TRANSACION_TYPE_IVR_PAYMENT					= 20;
+ 	const	TRANSACTION_TYPE_ONLINE_PAYMENT				= 0;
+ 	const	TRANSACTION_TYPE_MOBILE_PAYMENT				= 1;
+ 	const	TRANSACTION_TYPE_BATCH_PAYMENT				= 2;
+ 	const	TRANSACTION_TYPE_PERIODIC_PAYMENT			= 3;
+ 	const	TRANSACTION_TYPE_REFUND_RETURN				= 4;
+ 	const	TRANSACTION_TYPE_ERROR_REVERSAL				= 5;	// Void
+ 	const	TRANSACTION_TYPE_CLIENT_REVERSAL			= 6;	// Void
+ 	const	TRANSACTION_TYPE_PREAUTHORISE				= 10;
+ 	const	TRANSACTION_TYPE_PREAUTH_COMPLETE			= 11;	// Advice
+ 	const	TRANSACTION_TYPE_RECURRING_PAYMENT			= 14;
+ 	const	TRANSACTION_TYPE_DIRECT_ENTRY_DEBIT			= 15;
+ 	const	TRANSACTION_TYPE_DIRECT_ENTRY_CREDIT		= 17;
+ 	const	TRANSACTION_TYPE_CARD_PRESENT_PAYMENT		= 19;
+ 	const	TRANSACTION_TYPE_IVR_PAYMENT				= 20;
 
 	// Transaction Sources
 	const	TRANSACTION_SOURCE_UNKNOWN						= 0;
@@ -237,7 +239,7 @@ class Resource_Type_File_Import_Payment_SecurePay extends Resource_Type_File_Imp
 	// 90: Reserved
 
 	// Response Codes
-	protected	$_aResponseCodes	= array(
+	static protected	$_aResponseCodes	= array(
 		'aApproved'	=> array(
 			0	=> 'Approved',
 			8	=> 'Honour with ID ',

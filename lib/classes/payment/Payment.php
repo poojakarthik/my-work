@@ -64,44 +64,6 @@ class Payment extends ORM_Cached
 
         return $aResult;
     }
-
-	public static function distributeAll()
-	{
-		$oStopwatch	= new Stopwatch();
-		$oStopwatch->start();
-
-		Log::getLog()->log("Getting a list of distributable Payments");
-		$oGetDistributablePayments	= self::_preparedStatement('selDistributablePayments');
-		if (false === $oGetDistributablePayments->Execute()) {
-			throw new Exception_Database($oGetDistributablePayments->Error());
-		}
-		$iTotalPayments	= $oGetDistributablePayments->Count();
-		$iCount			= 0;
-		while ($aPayment = $oGetDistributablePayments->Fetch()) {
-			$iCount++;
-			Log::getLog()->log("({$iCount}/{$iTotalPayments}) Payment #{$aPayment['id']}");
-			$oPayment	= new Payment($aPayment);
-
-			// Encase each Payment in a Transaction
-			if (!DataAccess::getDataAccess()->TransactionStart()) {
-				throw new Exception_Database(DataAccess::getDataAccess()->Error());
-			}
-
-			try {
-				// Process the Payment
-				$aPayment->distribute();
-			} catch (Exception $oException) {
-				// Rollback and pass through
-				DataAccess::getDataAccess()->TransactionRollback();
-				throw $oException;
-			}
-
-			// Commit
-			DataAccess::getDataAccess()->TransactionCommit();
-		}
-
-		Log::getLog()->log("Processed {$iTotalPayments} Payments in ".round($oStopwatch->lap(), 1).'s');
-	}
 		
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
@@ -136,7 +98,7 @@ class Payment extends ORM_Cached
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	
-	public function reverse($iReasonId)
+	public function reverse($iReasonId, $bDistribute=true)
 	{
 		$oReason	= Payment_Reversal_Reason::getForId($iReasonId);
 		$oReversal	= new Payment();
@@ -212,8 +174,10 @@ class Payment extends ORM_Cached
 						$oAdjustment->save();
 						
 						// Process the adjustment
-						$oAccount = Logic_Account::getInstance($oAdjustment->account_id);
-						$oAccount->processDistributable(new Logic_Adjustment($oAdjustment));
+						if ($bDistribute) {
+							$oAccount = Logic_Account::getInstance($oAdjustment->account_id);
+							$oAccount->processDistributable(new Logic_Adjustment($oAdjustment));
+						}
 						
 						// Link the adjustment to the charge
 						$oAdjustmentCharge 					= new Adjustment_Charge();
@@ -248,7 +212,7 @@ class Payment extends ORM_Cached
 		$oNote->NoteType		= Note::SYSTEM_NOTE_TYPE_ID;
 		$oNote->save();
 		
-		return $oReversal;		
+		return $oReversal;
 	}
 	
 	public function getSurcharges()

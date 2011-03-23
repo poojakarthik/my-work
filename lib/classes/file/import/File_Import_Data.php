@@ -16,6 +16,10 @@ class File_Import_Data extends ORM_Cached
 		return Reflectors::getClass(__CLASS__)->newInstanceArgs($aArguments);
 	}
 
+	public function getFileImport() {
+		return File_Import::getForId($this->file_import_id);
+	}
+
 	protected static function getCacheName()
 	{
 		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
@@ -95,7 +99,7 @@ class File_Import_Data extends ORM_Cached
 			{
 				// SELECTS
 				case 'selById':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"FileImport", "*", "Id = <Id>", NULL, 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "Id = <Id>", NULL, 1);
 					break;
 				case 'selAll':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "name ASC");
@@ -103,12 +107,12 @@ class File_Import_Data extends ORM_Cached
 
 				// INSERTS
 				case 'insSelf':
-					$arrPreparedStatements[$strStatement]	= new StatementInsert("FileImport");
+					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);
 					break;
 
 				// UPDATE BY IDS
 				case 'ubiSelf':
-					$arrPreparedStatements[$strStatement]	= new StatementUpdateById("FileImport");
+					$arrPreparedStatements[$strStatement]	= new StatementUpdateById(self::$_strStaticTableName);
 					break;
 
 				// UPDATES

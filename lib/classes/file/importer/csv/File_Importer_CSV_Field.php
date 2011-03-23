@@ -25,6 +25,8 @@ class File_Importer_CSV_Field extends File_Importer_Field
 		{
 			throw new Exception("Data provided doesn't have a column with index {$this->_iColumn}");
 		}
+		//Log::getLog()->log($aData[$this->_iColumn]);
+		//Log::getLog()->log(parent::extract($aData[$this->_iColumn]));
 		return parent::extract($aData[$this->_iColumn]);
 	}
 	

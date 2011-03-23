@@ -37,7 +37,7 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 
 	}
 	
-	public function reverse($iReversalReasonId)
+	public function reverse($iReversalReasonId, $bDistribute=true)
 	{
 		$oDataAccess = DataAccess::getDataAccess();
 		if ($oDataAccess->TransactionStart() === false)
@@ -48,12 +48,14 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 		try
 		{
 			// Create the reversal payment
-			$oReversal	= $this->oDO->reverse($iReversalReasonId);
+			$oReversal	= $this->oDO->reverse($iReversalReasonId, $bDistribute);
 			$oAccount	= Logic_Account::getInstance($this->oDO->account_id);
 			
 			//rather than merely distributing the reversed payment, we need to do a full redistribution of balances at this point.
 			//The reaon for this is that if the original payment had any distributable balance left, this would need to be applied after distributing the reversed payment's balance in full, or else the collectable balance will be wrong.
-			$oAccount->redistributeBalances();
+			if ($bDistribute) {
+				$oAccount->redistributeBalances();
+			}
 			// Check the reason type
 			$oReason = Payment_Reversal_reason::getForId($iReversalReasonId);
 			if ($oReason->payment_reversal_type_id == PAYMENT_REVERSAL_TYPE_DISHONOUR)
@@ -82,7 +84,12 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 		}
 	}
 
-	public function applyPaymentResponses() {
+	public function getReversal() {
+		$oReversingPayment	= $this->oDO->getReversal();
+		return $oReversingPayment ? new self($oReversingPayment) : null;
+	}
+
+	public function applyPaymentResponses($bDistribute=true) {
 		/*	There are essentially only two results from this:
 			
 				1: No changes to Payment
@@ -90,20 +97,25 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 				
 			Reversed Payments can't be unreversed (or reversed again), so just return out
 		*/
-		if ($oLatestPaymentResponse = Payment_Response::getForId($this->oDO->latest_payment_response_id)) {
+		if ($this->getReversal() instanceof self) {
+			// Already reversed
+			Log::getLog()->log("Payment is reversed and no longer mutable by Payment Responses");
+			return;
+		} elseif ($oLatestPaymentResponse = Payment_Response::getForId($this->oDO->latest_payment_response_id)) {
 			Log::getLog()->log($this->oDO->latest_payment_response_id." - ".$oLatestPaymentResponse->payment_response_type_id);
 			switch ($oLatestPaymentResponse->payment_response_type_id) {
 				case PAYMENT_RESPONSE_TYPE_CONFIRMATION:
 					// Nothing really to do, as you can't un-reverse a payment
-					Log::getLog()->log("Nothing really to do, as you can't un-reverse a payment");
+					Log::getLog()->log("Payment Confirmed");
 					break;
 					
 				case PAYMENT_RESPONSE_TYPE_REJECTION:
-					if ($this->oDO->getReversal() === null) {
-						// Not yet reversed, Reverse the Payment
-						$this->reverse(isset($oLatestPaymentResponse->payment_reversal_reason_id) ? $oLatestPaymentResponse->payment_reversal_reason_id : Payment_Reversal_Reason::getForSystemName('DISHONOUR_REVERSAL')->id);
-						Log::getLog()->log("Payment Reversed");
-					}
+					// Not yet reversed, Reverse the Payment
+					$this->reverse(
+						isset($oLatestPaymentResponse->payment_reversal_reason_id) ? $oLatestPaymentResponse->payment_reversal_reason_id : Payment_Reversal_Reason::getForSystemName('DISHONOUR_REVERSAL')->id,
+						$bDistribute
+					);
+					Log::getLog()->log("Payment Reversed");
 					break;
 			}
 		}
@@ -129,10 +141,10 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 				$oCharge->ChargeType		= $oChargeType->ChargeType;
 				$oCharge->charge_type_id	= $oChargeType->Id;
 				$oCharge->Description		= $oCarrierPaymentType->description
-											.' Surcharge for Payment on '.date('d/m/Y', strtotime($this->PaidOn))
-											.' of $'.(number_format($this->Amount, 2, '.', ''))
+											.' Surcharge for Payment on '.date('d/m/Y', strtotime($this->paid_date))
+											.' of $'.(number_format($this->amount, 2, '.', ''))
 											.' @ '.round($oCarrierPaymentType->surcharge_percent * 100, 2).'%';
-				$oCharge->ChargedOn			= $this->PaidOn;
+				$oCharge->ChargedOn			= $this->paid_date;
 				$oCharge->Nature			= 'DR';
 				$oCharge->Amount			= round($fSurcharge, 2);
 				$oCharge->LinkType			= CHARGE_LINK_PAYMENT;
@@ -163,7 +175,7 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 		$oCreditCardType = null;
 		if ($iCreditCardType === null) {
 			// Get the credit card type from the number in the transaction data
-			$aPaymentTransactionData = getForPayment($this->oDO->id, $this->oDO->latest_payment_response_id);
+			$aPaymentTransactionData = Payment_Transaction_Data::getForPayment($this->oDO->id, $this->oDO->latest_payment_response_id);
 			foreach ($aPaymentTransactionData as $oData) {
 				if ($oData->name == Payment_Transaction_Data::CREDIT_CARD_NUMBER) {
 					$oCreditCardType = Credit_Card_Type::getForCardNumber($oData->value);
@@ -331,7 +343,7 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
     //				- iPaymentResponseId	: the payment response, responsible for the payment
     //				- iCarrierId			: the carrier_id of the record
 
-	public static function factory($iAccountId, $iPaymentTypeId, $fAmount, $iPaymentNature=PAYMENT_NATURE_PAYMENT, $sTransactionReference='', $sPaidDate=null, $aConfig=array())
+	public static function factory($iAccountId, $iPaymentTypeId, $fAmount, $iPaymentNature=PAYMENT_NATURE_PAYMENT, $sTransactionReference='', $sPaidDate=null, $aConfig=array(), $bDistribute=true)
 	{
 		try
 		{
@@ -395,7 +407,10 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 			// 
 			// Example	: if this adjustment is a debit adjustment, and before distributing it the sum(collectable.balance) === 0, and there is a payment with remaining balance, that payment's balance must be distributed after distributing the current adjustment's balance.
 			// @TODO	: in order to optimise this, implement functionality that allows for just distributing balances of any distributables that currently have a balance remaining, instead of a full redistribution.
-			$oLogicAccount->redistributeBalances();
+			//$oLogicAccount->redistributeBalances();
+			if ($bDistribute) {
+				$oNewLogic->distribute();
+			}
 			
 			if ($oDataAccess->TransactionCommit() === false)
 			{
@@ -409,6 +424,10 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 			$oDataAccess->TransactionRollback();
 			throw $oException;
 		}
+	}
+
+	public function getAccount() {
+		return Logic_Account::getInstance($this->account_id);
 	}
 
 	public static function create() {

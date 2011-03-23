@@ -153,6 +153,10 @@ class File_Import extends ORM_Cached
 		return $strStreamWrapper;
 	}
 
+	public function getWrappedLocation() {
+		return $this->getPHPStreamWrapper().$this->Location;
+	}
+
 	/**
 	 * save()
 	 *

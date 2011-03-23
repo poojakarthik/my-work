@@ -1,26 +1,3 @@
 <?php
-class File_Importer_CSV extends File_Importer
-{
-	protected	$_sEscape		= '\\';
-	protected	$_sQuote		= '"';
-	protected	$_sDelimiter	= ",";
-	
-	public function setDelimiter($sDelimiter)
-	{
-		$this->_sDelimiter	= (string)$sDelimiter;
-		return $this;
-	}
-	
-	public function setQuote($sQuote)
-	{
-		$this->_sQuote	= (string)$sQuote;
-		return $this;
-	}
-	
-	public function setEscape($sEscape)
-	{
-		$this->_sEscape	= (string)$sEscape;
-		return $this;
-	}
-}
+class File_Importer_CSV extends File_Importer {}
 ?>

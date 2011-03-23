@@ -119,5 +119,11 @@ class Logic_Adjustment implements DataLogic, Logic_Distributable{
 		return $this->iSignType == self::DEBIT;
 	}
 	//put your code here
+
+	public function distribute() {
+		// We're temporarily always redistributing
+		//Logic_Account::getInstance($this->account_id)->processDistributable($this);
+		Logic_Account::getInstance($this->account_id)->redistributeBalances();
+	}
 }
 ?>

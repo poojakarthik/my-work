@@ -39,9 +39,10 @@ class Exception_Assertion extends Exception
 		}
 		
 		$strDetails = $strMessage;
-		if (strlen($strExtraDetails))
+		if ($strExtraDetails)
 		{
-			$strDetails .= "\n\nFurther Details:\n$strExtraDetails";
+			$strDetails .= "\n\nFurther Details:\n"
+						. (is_string($strExtraDetails) ? $strExtraDetails : print_r($strExtraDetails, true));
 		}
 		
 		$strEmailSubject = "Assertion Failed";

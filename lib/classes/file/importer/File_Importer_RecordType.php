@@ -10,6 +10,12 @@ class File_Importer_RecordType
 	{
 		$this->_oFileImporter	= $oFileImporter;
 	}
+
+	public function createField($sAlias, $sClass='File_Importer_Field', $mBeforeField=null) {
+		$oFieldInstance	= new $sClass($this);
+		$this->addField($sAlias, $oFieldInstance, $mBeforeField);
+		return $oFieldInstance;
+	}
 	
 	public function addField($sAlias, File_Importer_Field $oField, $mBeforeField=null)
 	{
@@ -84,15 +90,16 @@ class File_Importer_RecordType
 	
 	public function newRecord($mData)
 	{
-		$oRecord	= new $this->_sRecordClass($this, $mData);
-		
+		return new $this->_sRecordClass($this, $mData);
+	}
+
+	public function parseData($mData) {
 		// Process the data
-		foreach ($this->_aFields as $sAlias=>$oField)
-		{
-			$oRecord->$sAlias	= $oField->extract($mData);
+		$aData	= array();
+		foreach ($this->_aFields as $sAlias=>$oField) {
+			$aData[$sAlias]	= $oField->extract($mData);
 		}
-		
-		return $oRecord;
+		return $aData;
 	}
 	
 	public static function factory()

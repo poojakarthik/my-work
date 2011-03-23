@@ -86,11 +86,11 @@ class Carrier_Module extends ORM_Cached
 		return $aRecords;
 	}
 	
-	public static function getForDefinition($mCarrierModuleType, $mResourceType, $mCarrier, $mCustomerGroup=null)
+	public static function getForDefinition($mCarrierModuleType, $mResourceType, $mCarrier, $mCustomerGroup=null, $bIncludeInactive=false)
 	{
 		$oStatement	= self::_preparedStatement('selForDefinition');
 		
-		$iRows	= $oStatement->Execute(array('carrier_module_type_id'=>ORM::extractId($mCarrierModuleType), 'resource_type_id'=>ORM::extractId($mResourceType), 'carrier_id'=>ORM::extractId($mCarrier), 'customer_group_id'=>ORM::extractId($mCustomerGroup)));
+		$iRows	= $oStatement->Execute(array('carrier_module_type_id'=>ORM::extractId($mCarrierModuleType), 'resource_type_id'=>ORM::extractId($mResourceType), 'carrier_id'=>ORM::extractId($mCarrier), 'customer_group_id'=>ORM::extractId($mCustomerGroup), 'include_inactive'=>(int)!!$bIncludeInactive));
 		if ($iRows === false)
 		{
 			throw new Exception_Database($oStatement->Error());
@@ -168,7 +168,8 @@ class Carrier_Module extends ORM_Cached
 																					"	Type = <carrier_module_type_id>
 																						AND FileType = <resource_type_id>
 																						AND Carrier = <carrier_id>
-																						AND <customer_group_id> <=> customer_group");
+																						AND <customer_group_id> <=> customer_group
+																						AND (<include_inactive> = 1 OR Active = 1)");
 					break;
 				case 'selLatestActiveForCarrierModuleType':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "Type = <carrier_module_type_id> AND Active = 1", "Id DESC", 1);
