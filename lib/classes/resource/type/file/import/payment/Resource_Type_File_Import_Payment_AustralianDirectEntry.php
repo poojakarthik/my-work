@@ -23,6 +23,16 @@ class Resource_Type_File_Import_Payment_AustralianDirectEntry extends Resource_T
 	
 	const	STATUS_INDICATOR_RELEASED	= 'G';
 	const	STATUS_INDICATOR_RECALL		= 'R';
+
+	public function __construct() {
+		throw new Exception_Assertion(
+			"Australian Direct Entry File Format Encountered",
+			null,
+			"Payment Processing: Australian Direct Entry File Format Encountered"
+		);
+		$aArguments	= func_get_args();
+		call_user_func_array(array('parent', '__construct'), $aArguments);
+	}
 	
 	public function getRecords()
 	{
@@ -134,8 +144,15 @@ class Resource_Type_File_Import_Payment_AustralianDirectEntry extends Resource_T
  				$oPaymentResponse->payment_response_type_id	= PAYMENT_RESPONSE_TYPE_CONFIRMATION;
  				break;
  			case self::STATUS_INDICATOR_RECALL:
+				throw new Exception_Assertion(
+					"Reversal Encountered in Australian Direct Entry File",
+					array(
+						'sRecord'	=> $sRecord,
+						'oRecord'	=> $oRecord->toArray()
+					),
+					"Payment Processing: Australian Direct Entry Reversal Encountered"
+				);
  				$oPaymentResponse->payment_response_type_id		= PAYMENT_RESPONSE_TYPE_REJECTION;
-				$oPaymentResponse->payment_reversal_type_id		= PAYMENT_REVERSAL_TYPE_DISHONOUR;
 				$oPaymentResponse->payment_reversal_reason_id	= Payment_Reversal_Reason::getForSystemName('DISHONOUR_REVERSAL');
  				break;
  			default:

@@ -138,6 +138,14 @@ class Resource_Type_File_Import_Payment_SecurePay extends Resource_Type_File_Imp
 		}
 		elseif (array_key_exists($iResponseCode, self::$_aResponseCodes['aDeclined']))
 		{
+			throw new Exception_Assertion(
+				"Reversal Encountered in SecurePay File",
+				array(
+					'sRecord'	=> $sRecord,
+					'oRecord'	=> $oRecord->toArray()
+				),
+				"Payment Processing: SecurePay Reversal Encountered"
+			);
 			// Rejection/Dishonour (payment_reversal_type_id is handled elsewhere)
 			$oPaymentResponse->payment_response_type_id		= PAYMENT_RESPONSE_TYPE_REJECTION;
 			$oPaymentResponse->payment_reversal_reason_id	= Payment_Reversal_Reason::getForSystemName('DISHONOUR_REVERSAL');
