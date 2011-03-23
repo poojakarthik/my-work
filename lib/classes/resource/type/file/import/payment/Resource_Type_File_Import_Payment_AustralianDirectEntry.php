@@ -6,7 +6,7 @@
  */
 class Resource_Type_File_Import_Payment_AustralianDirectEntry extends Resource_Type_File_Import_Payment
 {
-	const	RESOURCE_TYPE		= RESOURCE_TYPE_FILE_IMPORT_PAYMENT_BPAY_WESTPAC;
+	const	RESOURCE_TYPE		= RESOURCE_TYPE_FILE_IMPORT_PAYMENT_AUSTRALIAN_DIRECT_ENTRY_REPORT;
 	
 	const	RECORD_TYPE_HEADER		= 'HEADER';
 	const	RECORD_TYPE_TRANSACTION	= 'TRANSCATION';
