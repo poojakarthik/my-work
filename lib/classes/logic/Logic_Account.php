@@ -748,19 +748,8 @@ class Logic_Account implements DataLogic
 	 */
 	public function resetScenario()
 	{
-	 Account_Collection_Scenario::resetScenarioForAccountId($this->id);
-//		// End the current account_collection_scenario record
-//		$aScenarioInstances = $this->getActiveScenarios();
-//		$oBaseScenario = $this->getBaseScenarioInstance();
-//		foreach($aScenarioInstances as $oScenarioInstance)
-//		{
-//			if ($oScenarioInstance->id != $oBaseScenario->id)
-//			{
-//				$oScenarioInstance->end_datetime = DataAccess::getDataAccess()->getNow();
-//				$oScenarioInstance->save();
-//			}
-//		}
-		//this will refresh the $this->aActiveScenarios data member
+		Account_Collection_Scenario::resetScenarioForAccountId($this->id);
+		//this will reset the scenarios that are cached on the account object
 		$this->getActiveScenarios(TRUE);
 	}
 
