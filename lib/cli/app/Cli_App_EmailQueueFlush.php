@@ -115,7 +115,7 @@ class Cli_App_EmailQueueFlush extends Cli
 				{
 					// Create and save an Email_Queue_Batch
 					$oEmailQueueBatch					= new Email_Queue_Batch();
-					$oEmailQueueBatch->created_datetime	= date('Y-m-d H:i:s');
+					$oEmailQueueBatch->created_datetime	= DataAccess::getDataAccess()->getNow();
 					$oEmailQueueBatch->save();
 					
 					foreach ($aEmailQueues as $oEmailQueue)

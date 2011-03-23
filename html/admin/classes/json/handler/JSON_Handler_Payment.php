@@ -118,7 +118,7 @@ class JSON_Handler_Payment extends JSON_Handler
 									$fAmount, 
 									PAYMENT_NATURE_PAYMENT, 
 									$oReplacementPaymentDetails->transaction_reference, 
-									date('Y-m-d'),
+									date('Y-m-d', DataAccess::getDataAccess()->getNow(true)),
 									array(
 										'aTransactionData' => $aTransactionData
 									)
@@ -192,7 +192,7 @@ class JSON_Handler_Payment extends JSON_Handler
 							$fAmount, 
 							PAYMENT_NATURE_PAYMENT, 
 							$oDetails->transaction_reference, 
-							date('Y-m-d'),
+							date('Y-m-d', DataAccess::getDataAccess()->getNow(true)),
 							array(
 								'aTransactionData' => $aTransactionData
 							)

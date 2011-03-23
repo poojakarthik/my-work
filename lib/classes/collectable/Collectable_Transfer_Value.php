@@ -74,7 +74,7 @@ class Collectable_Transfer_Value extends ORM_Cached
 
 		$oTransfer->from_collectable_id	= $oSourceCollectable->id;
 		$oTransfer->to_collectable_id	= $oDestinationCollectable->id;
-		$oTransfer->created_datetime	= date('Y-m-d H:i:s');	// Simply a default
+		$oTransfer->created_datetime	= DataAccess::getDataAccess()->getNow();	// Simply a default
 		$oTransfer->amount				= $fValue;
 		$oTransfer->balance				= $fBalanceToTransfer;
 

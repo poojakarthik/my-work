@@ -33,22 +33,22 @@ var Popup_Account_Payment_Create = Class.create(Reflex_Popup,
 	_saveComplete : function(iPaymentId)
 	{
 		// Update various components
-		if (!Object.isUndefined(Component_Account_Payment_List))
+		if (typeof Component_Account_Payment_List != 'undefined')
 		{
 			Component_Account_Payment_List.refreshInstances();
 		}
 		
-		if (!Object.isUndefined(Component_Account_Collections))
+		if (typeof Component_Account_Collections != 'undefined')
 		{
 			Component_Account_Collections.refreshInstances();
 		}
 		
-		if (!Object.isUndefined(Component_Account_Invoice_List))
+		if (typeof Component_Account_Invoice_List != 'undefined')
 		{
 			Component_Account_Invoice_List.refreshInstances();
 		}
 		
-		if (!Object.isUndefined(Vixen.AccountDetails))
+		if (typeof Vixen.AccountDetails != 'undefined')
 		{
 			Vixen.AccountDetails.CancelEdit();
 		}

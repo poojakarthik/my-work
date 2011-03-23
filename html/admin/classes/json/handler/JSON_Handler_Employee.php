@@ -263,8 +263,10 @@ class JSON_Handler_Employee extends JSON_Handler
 			// Get current data
 			$aOperationProfiles	= Employee_Operation_Profile::getForEmployeeId($iEmployeeId);
 			$aOperations		= Employee_Operation::getForEmployeeId($iEmployeeId);
-			$sNowDate			= date('Y-m-d H:i:s');
-			$sNowDateForInsert	= date('Y-m-d H:i:s', time() + 1);
+			
+			$iNow 				= DataAccess::getDataAccess()->getNow(true);
+			$sNowDate			= date('Y-m-d H:i:s', $iNow);
+			$sNowDateForInsert	= date('Y-m-d H:i:s', $iNow + 1);
 			
 			// Terminate the existing operation profiles
 			foreach ($aOperationProfiles as $iId => $oOperationProfile)

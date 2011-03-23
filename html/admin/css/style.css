@@ -8922,11 +8922,6 @@ div.writeoff-detail
 	margin-left	: 1em;
 }
 
-.component-collections-event-management .section-footer ul.reset > li > button
-{
-	
-}
-
 .component-collections-event-management .section-footer .loading
 {
 	float		: left;
@@ -8995,6 +8990,29 @@ div.writeoff-detail
 .component-collections-event-management-status-completed
 {
 	margin-top	: 0.25em;
+}
+
+.component-collections-event-management thead > tr > th:nth-child(1)
+{
+	width	: 1em;
+}
+
+.component-collections-event-management thead > tr > th:nth-child(2)
+{
+	width	: 28em;
+}
+
+.component-collections-event-management thead > tr > th:nth-child(3),
+.component-collections-event-management thead > tr > th:nth-child(4),
+.component-collections-event-management thead > tr > th:nth-child(5)
+{
+	width	: 20em;
+}
+
+.component-collections-event-management thead > tr > th:nth-child(6),
+.component-collections-event-management thead > tr > th:nth-child(7)
+{
+	width	: 9em;
 }
 
 /************************** END - Component Collection Event Management - END **************************/

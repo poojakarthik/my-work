@@ -124,7 +124,7 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 				$oCharge->AccountGroup		= Account::getForId($this->oDO->account_id)->AccountGroup;
 				$oCharge->Account			= $this->oDO->account_id;
 				$oCharge->CreatedBy			= Employee::SYSTEM_EMPLOYEE_ID;
-				$oCharge->CreatedOn			= date('Y-m-d');
+				$oCharge->CreatedOn			= date('Y-m-d', DataAccess::getDataAccess()->getNow(true));
 				$oCharge->ApprovedBy		= Employee::SYSTEM_EMPLOYEE_ID;
 				$oCharge->ChargeType		= $oChargeType->ChargeType;
 				$oCharge->charge_type_id	= $oChargeType->Id;
@@ -191,21 +191,23 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 			Log::getLog()->log("Removed global tax: {$fSurcharge}");
 		}
 		
+		$sNow = DataAccess::getDataAccess()->getNow();
+		
 		// Create a charge for the transaction surcharge
 		$oCharge					= new Charge();
 		$oCharge->AccountGroup		= $oAccount->AccountGroup;
 		$oCharge->Account			= $oAccount->Id;
 		$oCharge->CreatedBy			= Employee::SYSTEM_EMPLOYEE_ID;
 		$oCharge->Amount			= Rate::roundToCurrencyStandard($fSurcharge, 2);
-		$oCharge->CreatedOn			= date('Y-m-d H:i:s');
-		$oCharge->ChargedOn			= date('Y-m-d H:i:s');
+		$oCharge->CreatedOn			= $sNow;
+		$oCharge->ChargedOn			= $sNow;
 		$oCharge->Status			= CHARGE_APPROVED;
 		$oCharge->LinkType			= CHARGE_LINK_PAYMENT;
 		$oCharge->LinkId			= $this->oDO->id;
 		$oCharge->ChargeType		= 'CCS';
 		$oCharge->Nature			= 'DR';
 		$oCharge->global_tax_exempt	= 0;
-		$oCharge->Description		= "{$oCreditCardType->name} Surcharge for Payment on ".date('d/m/Y')." ({$this->oDO->amount}) @ ".(round(floatval($oCreditCardType->surcharge) * 100, 2))."%";
+		$oCharge->Description		= "{$oCreditCardType->name} Surcharge for Payment on ".date('d/m/Y', strtotime($this->oDO->paid_date))." ({$this->oDO->amount}) @ ".(round(floatval($oCreditCardType->surcharge) * 100, 2))."%";
 		$oCharge->charge_model_id	= CHARGE_MODEL_CHARGE;
 		$oCharge->Notes				= '';
 		$oCharge->save();
@@ -339,14 +341,15 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 				throw new Exception_Database("Failed to start db transaction.");
 			}
 			
-			$sPaidDate 	= ($sPaidDate === null ? date('Y-m-d') : $sPaidDate);
+			$iNow		= DataAccess::getDataAccess()->getNow(true);
+			$sPaidDate 	= ($sPaidDate === null ? date('Y-m-d', $iNow) : $sPaidDate);
 			$oAccount	= Account::getForId($iAccountId);
 			$oUser 		= Flex::getUser();
 			
 			// Create payment
 			$oPayment 							= new Payment();
 			$oPayment->account_id 				= $iAccountId;
-			$oPayment->created_datetime			= date('Y-m-d H:i:s');
+			$oPayment->created_datetime			= date('Y-m-d H:i:s', $iNow);
 			$oPayment->created_employee_id		= ($oUser instanceof Employee ? $oUser->Id : Employee::SYSTEM_EMPLOYEE_ID);
 			$oPayment->paid_date				= $sPaidDate;
 			$oPayment->payment_type_id			= $iPaymentTypeId;

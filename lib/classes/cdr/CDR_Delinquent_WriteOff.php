@@ -75,7 +75,7 @@ class CDR_Delinquent_WriteOff extends ORM_Cached
 		
 		$oCDRDelinquentWriteOff							= new self();
 		$oCDRDelinquentWriteOff->cdr_id					= $oCDR->Id;
-		$oCDRDelinquentWriteOff->created_datetime		= date('Y-m-d H:i:s');
+		$oCDRDelinquentWriteOff->created_datetime		= DataAccess::getDataAccess()->getNow();
 		$oCDRDelinquentWriteOff->created_employee_id	= $iEmployeeId;
 		$oCDRDelinquentWriteOff->save();
 		

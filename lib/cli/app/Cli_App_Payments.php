@@ -306,8 +306,8 @@ class Cli_App_Payments extends Cli
 		$iAppliedCount		= 0;
 		$iDoubleUpsCount	= 0;
 		$aAccountsApplied	= array();
-		$sDatetime			= date('Y-m-d H:i:s');
-		$sPaidOn			= date('Y-m-d');
+		$sDatetime			= DataAccess::getDataAccess()->getNow();
+		$sPaidOn			= date('Y-m-d', DataAccess::getDataAccess()->getNow(true));
 		
 		// Arrays for recording error information
 		$aIneligible = 	array(
@@ -472,8 +472,8 @@ class Cli_App_Payments extends Cli
 		
 		// Process each instalment
 		$iAppliedCount 	= 0;
-		$sDatetime		= date('Y-m-d H:i:s');
-		$sPaidOn		= date('Y-m-d');
+		$sDatetime		= DataAccess::getDataAccess()->getNow();
+		$sPaidOn		= date('Y-m-d', DataAccess::getDataAccess()->getNow(true));
 		
 		// Arrays for recording error information
 		$aIneligible = 	array(

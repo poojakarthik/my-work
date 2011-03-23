@@ -96,11 +96,13 @@ class Account_Collection_Scenario extends ORM_Cached
 	
 	public static function factory($iAccountId, $iScenarioId, $sStartDatetime=null)
 	{
+		$sNow = DataAccess::getDataAccess()->getNow();
+		
 		$oRecord							= new self();
 		$oRecord->account_id				= $iAccountId;
 		$oRecord->collection_scenario_id	= $iScenarioId;
-		$oRecord->created_datetime			= date('Y-m-d H:i:s');
-		$oRecord->start_datetime			= ($sStartDatetime === null ? date('Y-m-d H:i:s') : $sStartDatetime);
+		$oRecord->created_datetime			= $sNow;
+		$oRecord->start_datetime			= ($sStartDatetime === null ? $sNow : $sStartDatetime);
 		$oRecord->end_datetime				= Data_Source_Time::END_OF_TIME;
 		$oRecord->save();
 	}

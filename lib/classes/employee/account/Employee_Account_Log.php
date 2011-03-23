@@ -32,7 +32,7 @@ class Employee_Account_Log extends ORM_Cached
 			$oClone->employee_id				= $this->employee_id;
 			$oClone->account_id					= $this->account_id;
 			$oClone->contact_id					= $this->contact_id;
-			$oClose->viewed_on					= date('Y-m-d H:i:s');
+			$oClose->viewed_on					= DataAccess::getDataAccess()->getNow();
 			$oClone->accepted_severity_warnings = self::SEVERITY_WARNINGS_ACCEPTED;
 			$oClone->save();
 		}
@@ -88,7 +88,7 @@ class Employee_Account_Log extends ORM_Cached
 			$oNew 				= new self();
 			$oNew->employee_id 	= $iEmployeeId;
 			$oNew->account_id	= $iAccountId;
-			$oNew->viewed_on	= date('Y-m-d H:i:s');
+			$oNew->viewed_on	= DataAccess::getDataAccess()->getNow();
 			$oNew->save();
 		}
 		else

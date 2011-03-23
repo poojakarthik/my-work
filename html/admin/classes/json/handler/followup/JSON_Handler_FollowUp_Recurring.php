@@ -123,7 +123,7 @@ class JSON_Handler_FollowUp_Recurring extends JSON_Handler
 			}
 			
 			$oFollowUpRecurring					= FollowUp_Recurring::getForId($iFollowUpRecurringId);
-			$oFollowUpRecurring->end_datetime	= date('Y-m-d H:i:s');
+			$oFollowUpRecurring->end_datetime	= DataAccess::getDataAccess()->getNow();
 			$oFollowUpRecurring->save($iModifyReasonId);
 			
 			// Commit db transaction

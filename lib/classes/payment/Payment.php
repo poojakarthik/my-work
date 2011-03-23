@@ -150,9 +150,9 @@ class Payment extends ORM_Cached
 		$oReversal->balance 				= $this->amount;
 		
 		// Different fields
-		$oReversal->paid_date 					= date('Y-m-d');
+		$oReversal->paid_date 					= date('Y-m-d', DataAccess::getDataAccess()->getNow(true));
 		$oReversal->created_employee_id 		= Flex::getUserId();
-		$oReversal->created_datetime 			= date('Y-m-d H:i:s');
+		$oReversal->created_datetime 			= DataAccess::getDataAccess()->getNow();
 		$oReversal->surcharge_charge_id			= null;
 		$oReversal->latest_payment_response_id	= null;
 		
@@ -197,11 +197,11 @@ class Payment extends ORM_Cached
 						$oAdjustment->amount						= Rate::roundToRatingStandard($fAmount, 4);
 						$oAdjustment->tax_component					= $fTax;
 						$oAdjustment->balance						= $oAdjustment->amount;
-						$oAdjustment->effective_date				= date('Y-m-d');
+						$oAdjustment->effective_date				= date('Y-m-d', DataAccess::getDataAccess()->getNow(true));
 						$oAdjustment->created_employee_id			= Employee::SYSTEM_EMPLOYEE_ID;
-						$oAdjustment->created_datetime				= date('Y-m-d H:i:s');
+						$oAdjustment->created_datetime				= DataAccess::getDataAccess()->getNow();
 						$oAdjustment->reviewed_employee_id			= Employee::SYSTEM_EMPLOYEE_ID;
-						$oAdjustment->reviewed_datetime				= date('Y-m-d H:i:s');
+						$oAdjustment->reviewed_datetime				= DataAccess::getDataAccess()->getNow();
 						$oAdjustment->adjustment_nature_id			= ADJUSTMENT_NATURE_ADJUSTMENT;
 						$oAdjustment->adjustment_review_outcome_id	= Adjustment_Review_Outcome::getForSystemName('APPROVED')->id;
 						$oAdjustment->adjustment_status_id			= ADJUSTMENT_STATUS_APPROVED;
@@ -244,7 +244,7 @@ class Payment extends ORM_Cached
 		$oNote->Note			= "{$sEmployeeName} Reversed a Payment made on {$sDate} for \$". number_format($this->amount, 2, ".", "")."\nThe reason was '{$oReason->name} ({$oReason->description})'.\n$sReversedChargesClause";
 		$oNote->AccountGroup	= Account::getForId($this->account_id)->AccountGroup;
 		$oNote->Account			= $this->account_id;
-		$oNote->Datetime		= date('Y-m-d H:i:s');
+		$oNote->Datetime		= DataAccess::getDataAccess()->getNow();
 		$oNote->NoteType		= Note::SYSTEM_NOTE_TYPE_ID;
 		$oNote->save();
 		

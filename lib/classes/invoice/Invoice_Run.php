@@ -1101,7 +1101,7 @@ class Invoice_Run
 	 */
 	public static function getLastInvoiceDateByCustomerGroup($intCustomerGroup, $strEffectiveDate=null)
 	{
-		$strEffectiveDate	= ($strEffectiveDate) ? $strEffectiveDate : date('Y-m-d');
+		$strEffectiveDate	= ($strEffectiveDate) ? $strEffectiveDate : date('Y-m-d', DataAccess::getDataAccess()->getNow(true));
 
 		//Debug('CustomerGroup: '.$intCustomerGroup);
 		//Debug('EffectiveDate: '.$strEffectiveDate);

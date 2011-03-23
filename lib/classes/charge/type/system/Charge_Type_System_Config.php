@@ -69,7 +69,7 @@ class Charge_Type_System_Config extends ORM_Cached
 	{
 		if ($mEffectiveDatetime === null)
 		{
-			$sEffectiveDatetime	= date('Y-m-d H:i:s');
+			$sEffectiveDatetime	= DataAccess::getDataAccess()->getNow();
 		}
 		else if (is_numeric($mEffectiveDatetime))
 		{

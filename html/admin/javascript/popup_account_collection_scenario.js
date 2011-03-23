@@ -200,12 +200,12 @@ var Popup_Account_Collection_Scenario = Class.create(Reflex_Popup,
 		}
 		
 		// Notify/update other account components (if defined)
-		if (Component_Account_Collections)
+		if (typeof Component_Account_Collections != 'undefined')
 		{
 			Component_Account_Collections.refreshInstances();
 		}
 		
-		if (Vixen && Vixen.AccountDetails)
+		if ((typeof Vixen != 'undefined') && (typeof Vixen.AccountDetails != 'undefined'))
 		{
 			Vixen.AccountDetails.CancelEdit();
 		}

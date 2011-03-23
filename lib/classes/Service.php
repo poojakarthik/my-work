@@ -499,7 +499,7 @@ class Service extends ORM
 	
 	public static function getCurrentForFNN($sFNN, $sEffectiveDatetime=null)
 	{
-		$sEffectiveDatetime	= ($sEffectiveDatetime === null) ? $sEffectiveDatetime : date('Y-m-d H:i:s');
+		$sEffectiveDatetime	= ($sEffectiveDatetime === null) ? $sEffectiveDatetime : DataAccess::getDataAccess()->getNow();
 		
 		$selCurrentForFNN	= self::_preparedStatement('selCurrentForFNN');
 		if ($selCurrentForFNN->Execute(array('fnn'=>$sFNN, 'effective_datetime'=>$sEffectiveDatetime)) === false)

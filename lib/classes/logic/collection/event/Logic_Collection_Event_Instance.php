@@ -117,7 +117,7 @@ class Logic_Collection_Event_Instance
 		$oEventInstance->collection_event_id = $oEvent->id;
 		}
 
-		$oEventInstance->scheduled_datetime					= date('Y-m-d H:i:s');
+		$oEventInstance->scheduled_datetime					= DataAccess::getDataAccess()->getNow();
 		$oEventInstance->account_collection_event_status_id = ACCOUNT_COLLECTION_EVENT_STATUS_SCHEDULED;
 		$oEventInstance->save();
 	Log::getLog()->log('Scheduled event \''.$oEventInstance->getEventName().'\' for account Id '.$oAccount->Id);
@@ -307,7 +307,7 @@ class Logic_Collection_Event_Instance
 		$iUserId	= Flex::getUserId();
 		$iUserId	= ($iUserId === null ? Employee::SYSTEM_EMPLOYEE_ID : $iUserId);
 
-		$this->oDO->completed_datetime 					= date('Y-m-d H:i:s');
+		$this->oDO->completed_datetime 					= DataAccess::getDataAccess()->getNow();
 		$this->oDO->completed_employee_id				= $iUserId;
 		$this->oDO->account_collection_event_status_id	= ACCOUNT_COLLECTION_EVENT_STATUS_COMPLETED;
 		$this->oDO->save();

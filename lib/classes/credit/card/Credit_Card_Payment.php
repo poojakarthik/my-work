@@ -447,7 +447,7 @@ class Credit_Card_Payment
 			$oCreditCard->ExpYear		= $iYear;
 			$oCreditCard->CVV			= Encrypt($iCVV);
 			$oCreditCard->Archived		= 0;
-			$oCreditCard->created_on	= date('Y-m-d H:i:s');
+			$oCreditCard->created_on	= DataAccess::getDataAccess()->getNow();
 			$oCreditCard->employee_id	= $iEmployeeId;
 			$oCreditCard->save();
 			

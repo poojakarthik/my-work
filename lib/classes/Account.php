@@ -230,7 +230,7 @@ class Account
 		$arrCharge['charge_model_id']	= CHARGE_MODEL_CHARGE;
 		$arrPayment['Payment'] = $arrCharge['Notes'] = '';
 		$arrPayment['PaymentType'] = $arrPayment['OriginType'] = $paymentType;
-		$arrPayment['created_datetime']	= date('Y-m-d H:i:s');
+		$arrPayment['created_datetime']	= DataAccess::getDataAccess()->getNow();
 
 		$insPayment = new StatementInsert('Payment');
 		if (($paymentId = $insPayment->Execute($arrPayment)) === FALSE)
@@ -996,7 +996,7 @@ class Account
 		$oServiceBarringLevel                           = new Service_Barring_Level();
 		$oServiceBarringLevel->service_id               = $oService->id;
 		$oServiceBarringLevel->barring_level_id         = $iBarringLevel;
-		$oServiceBarringLevel->created_datetime         = date('Y-m-d H:i:s');
+		$oServiceBarringLevel->created_datetime         = DataAccess::getDataAccess()->getNow();
 		$oServiceBarringLevel->created_employee_id      =  $iUserId;
 
 		$oServiceBarringLevel->account_barring_level_id = $oAccountBarringLevel->id;
@@ -1131,7 +1131,7 @@ class Account
 
 	public function getOverdueBalance($sEffectiveDate=null)
 	{
-	    $sEffectiveDate	= (is_int($iEffectiveDate = strtotime($sEffectiveDate))) ? date("Y-m-d", $iEffectiveDate) : date('Y-m-d');
+	    $sEffectiveDate	= (is_int($iEffectiveDate = strtotime($sEffectiveDate))) ? date('Y-m-d', $iEffectiveDate) : date('Y-m-d', DataAccess::getDataAccess()->getNow(true));
 	    return max(0.0, $this->_getBalance($sEffectiveDate, FALSE));
 	}
 
@@ -1178,7 +1178,7 @@ class Account
 
 	public function oldGetOverdueBalance($sDueDate=null, $bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false, $bIncludePayments=true)
 	{
-		$sDueDate	= (is_int($iDueDate = strtotime($sDueDate))) ? date("Y-m-d", $iDueDate) : date('Y-m-d');
+		$sDueDate	= (is_int($iDueDate = strtotime($sDueDate))) ? date('Y-m-d', $iDueDate) : date('Y-m-d', DataAccess::getDataAccess()->getNow(true));
 		return max(0.0, $this->_getBalance($sDueDate, $bIncludeCreditAdjustments, $bIncludeDebitAdjustments, $bIncludePayments));
 	}
 

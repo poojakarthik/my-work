@@ -191,13 +191,15 @@ class JSON_Handler_Adjustment extends JSON_Handler
 				$oDetails->invoice_id = null;
 			}
 			
+			$iNow = DataAccess::getDataAccess()->getNow(true);
+			
 			// Create adjustment
 			$oAdjustment 						= new Adjustment(get_object_vars($oDetails));
 			$oAdjustment->balance				= $oAdjustment->amount;
 			$oAdjustment->adjustment_nature_id 	= ADJUSTMENT_NATURE_ADJUSTMENT;
 			$oAdjustment->adjustment_status_id 	= ADJUSTMENT_STATUS_PENDING;
-			$oAdjustment->effective_date		= date('Y-m-d');
-			$oAdjustment->created_datetime		= date('Y-m-d H:i:s');
+			$oAdjustment->effective_date		= date('Y-m-d', $iNow);
+			$oAdjustment->created_datetime		= date('Y-m-d H:i:s', $iNow);
 			$oAdjustment->created_employee_id	= Flex::getUserId();
 			if ($oAdjustment->invoice_id !== null)
 			{

@@ -105,7 +105,7 @@ class Collection_Suspension extends ORM_Cached
 
 	public function end($iEndReasonId)
 	{
-		$this->effective_end_datetime				= date('Y-m-d H:i:s');
+		$this->effective_end_datetime				= DataAccess::getDataAccess()->getNow();
 		$this->end_employee_id						= Flex::getUserId();
 		$this->collection_suspension_end_reason_id 	= $iEndReasonId;
 		$this->save();
@@ -120,7 +120,7 @@ class Collection_Suspension extends ORM_Cached
 	{
 		$oAccount 			= Logic_Account::getInstance($iAccountId);
 		$sDueDate 			= date('Y-m-d H:i:s', strtotime($oAccount->getCurrentDueDate()));
-		$sEffectiveDatetime	= ($sEffectiveDatetime === null ? date('Y-m-d H:i:s') : $sEffectiveDatetime);
+		$sEffectiveDatetime	= ($sEffectiveDatetime === null ? DataAccess::getDataAccess()->getNow() : $sEffectiveDatetime);
 		$iNow 				= strtotime($sEffectiveDatetime);
 		$iDue 				= strtotime($sDueDate);
 		
@@ -151,7 +151,7 @@ class Collection_Suspension extends ORM_Cached
 	public static function getSuspensionsForCurrentCollectionsPeriod($iAccountId, $sEffectiveDatetime=null)
 	{
 		$oSelect 			= self::_preparedStatement('selAllForCurrentSuspensionPeriod');
-		$sEffectiveDatetime	= ($sEffectiveDatetime === null ? date('Y-m-d H:i:s') : $sEffectiveDatetime);
+		$sEffectiveDatetime	= ($sEffectiveDatetime === null ? DataAccess::getDataAccess()->getNow() : $sEffectiveDatetime);
 		if ($oSelect->Execute(array('account_id' => $iAccountId, 'effective_datetime' => $sEffectiveDatetime)) === false)
 		{
 			throw new Exception_Database("Failed to get suspensions for current collections period. ".$oSelect->Error());

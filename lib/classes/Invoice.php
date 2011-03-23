@@ -1888,11 +1888,11 @@ class Invoice extends ORM_Cached
 				$oCharge->Service			= NULL;
 				$oCharge->invoice_run_id	= NULL;
 				$oCharge->CreatedBy			= $iUserId;
-				$oCharge->CreatedOn			= date('Y-m-d');
+				$oCharge->CreatedOn			= date('Y-m-d', DataAccess::getDataAccess()->getNow(true));
 				$oCharge->ApprovedBy		= $iUserId;
 				$oCharge->ChargeType		= '';
 				$oCharge->Description		= 'Invoice Dispute (Invoice: #'.$this->Id.')';
-				$oCharge->ChargedOn			= date('Y-m-d');
+				$oCharge->ChargedOn			= date('Y-m-d', DataAccess::getDataAccess()->getNow(true));
 				$oCharge->Nature			= NATURE_CR;
 				$oCharge->Amount			= $this->Disputed - $fAmount;
 				$oCharge->Status			= CHARGE_APPROVED;
@@ -1912,11 +1912,11 @@ class Invoice extends ORM_Cached
 				$oCharge->Service			= NULL;
 				$oCharge->invoice_run_id	= NULL;
 				$oCharge->CreatedBy			= $iUserId;
-				$oCharge->CreatedOn			= date('Y-m-d');
+				$oCharge->CreatedOn			= date('Y-m-d', DataAccess::getDataAccess()->getNow(true));
 				$oCharge->ApprovedBy		= $iUserId;
 				$oCharge->ChargeType		= '';
 				$oCharge->Description		= 'Invoice Dispute (Invoice: #'.$this->Id.')';
-				$oCharge->ChargedOn			= date('Y-m-d');
+				$oCharge->ChargedOn			= date('Y-m-d', DataAccess::getDataAccess()->getNow(true));
 				$oCharge->Nature			= NATURE_CR;
 				$oCharge->Amount			= $this->Disputed;
 				$oCharge->Status			= CHARGE_WAITING;

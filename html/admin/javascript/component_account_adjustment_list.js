@@ -328,13 +328,13 @@ var Component_Account_Adjustment_List = Class.create(
 		}
 
 		// Refresh account collections summary, if defined
-		if (Component_Account_Collections)
+		if (typeof Component_Account_Collections != 'undefined')
 		{
 			Component_Account_Collections.refreshInstances();
 		}
 		
 		// Refresh account invoice list, if defined
-		if (Component_Account_Invoice_List)
+		if (typeof Component_Account_Invoice_List != 'undefined')
 		{
 			Component_Account_Invoice_List.refreshInstances();
 		}

@@ -585,7 +585,7 @@ class JSON_Handler_Account extends JSON_Handler
 				$oCreditCard->ExpMonth		= $oDetails->iExpiryMonth;
 				$oCreditCard->ExpYear		= $oDetails->iExpiryYear;
 				$oCreditCard->CVV			= Encrypt($oDetails->iCVV);
-				$oCreditCard->created_on	= date('Y-m-d H:i:s');
+				$oCreditCard->created_on	= DataAccess::getDataAccess()->getNow();
 				$oCreditCard->save();
 
 				// Everything looks OK -- Commit!
@@ -878,7 +878,7 @@ class JSON_Handler_Account extends JSON_Handler
 				$oDirectDebit->BSB				= $oDetails->sBSB;
 				$oDirectDebit->AccountNumber	= $oDetails->sAccountNumber;
 				$oDirectDebit->AccountName		= $oDetails->sAccountName;
-				$oDirectDebit->created_on		= date('Y-m-d H:i:s');
+				$oDirectDebit->created_on		= DataAccess::getDataAccess()->getNow();
 				$oDirectDebit->save();
 				
 				// Modify the payment method for the account
@@ -927,7 +927,7 @@ class JSON_Handler_Account extends JSON_Handler
 									$fAmount, 
 									PAYMENT_NATURE_PAYMENT, 
 									'',
-									date('Y-m-d'), 
+									date('Y-m-d', DataAccess::getDataAccess()->getNow(true)), 
 									array(
 										'aPaymentTransactionData' =>	array(
 																			Payment_Transaction_Data::BANK_ACCOUNT_NUMBER => $oDirectDebit->AccountNumber
@@ -1247,7 +1247,7 @@ class JSON_Handler_Account extends JSON_Handler
 					$oRebill->account_id			= $iAccountId;
 					$oRebill->rebill_type_id		= $iRebillTypeId;
 					$oRebill->created_employee_id	= Flex::getUserId();
-					$oRebill->created_timestamp		= date('Y-m-d H:i:s');
+					$oRebill->created_timestamp		= DataAccess::getDataAccess()->getNow();
 					$oRebill->save();
 					
 					$oRebillMotorpass					= new Rebill_Motorpass();

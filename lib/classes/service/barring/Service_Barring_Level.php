@@ -67,14 +67,14 @@ class Service_Barring_Level extends ORM_Cached
 
 	public function authorise()
 	{
-		$this->authorised_datetime 		= date('Y-m-d H:i:s');
+		$this->authorised_datetime 		= DataAccess::getDataAccess()->getNow();
 		$this->authorised_employee_id	= Flex::getUserId()!==null?Flex::getUserId():Employee::SYSTEM_EMPLOYEE_ID;
 		$this->save();
 	}
 
 	public function action()
 	{
-		$this->actioned_datetime 	= date('Y-m-d H:i:s');
+		$this->actioned_datetime 	= DataAccess::getDataAccess()->getNow();
 		$this->actioned_employee_id	= Flex::getUserId()!==null?Flex::getUserId():Employee::SYSTEM_EMPLOYEE_ID;
 		$this->save();
 	}
@@ -83,7 +83,7 @@ class Service_Barring_Level extends ORM_Cached
 	{
 		if ($sDate === null)
 		{
-			$sDate = date('Y-m-d');
+			$sDate = date('Y-m-d', DataAccess::getDataAccess()->getNow(true));
 		}
 
 		$oSelect 	= self::_preparedStatement('selScheduleOnDateForBarringLevel');

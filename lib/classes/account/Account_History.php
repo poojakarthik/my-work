@@ -386,7 +386,7 @@ class Account_History
 		// Default effective datetime is now
 		if ($sEffectiveDatetime === null)
 		{
-			$sEffectiveDatetime	= date('Y-m-d H:i:s');
+			$sEffectiveDatetime	= DataAccess::getDataAccess()->getNow();
 		}
 		
 		// Use prepared statment

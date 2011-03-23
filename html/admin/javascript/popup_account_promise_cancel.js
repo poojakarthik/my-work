@@ -86,12 +86,12 @@ var Popup_Account_Promise_Cancel = Class.create(Reflex_Popup,
 	
 	_refreshRelatedComponents : function()
 	{
-		if (Component_Account_Collections)
+		if (typeof Component_Account_Collections != 'undefined')
 		{
 			Component_Account_Collections.refreshInstances();
 		}
 		
-		if (Vixen && Vixen.AccountDetails)
+		if (typeof Vixen.AccountDetails != 'undefined')
 		{
 			Vixen.AccountDetails.CancelEdit();
 		}

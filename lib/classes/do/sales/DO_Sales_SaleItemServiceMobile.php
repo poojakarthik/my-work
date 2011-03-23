@@ -50,7 +50,7 @@ class DO_Sales_SaleItemServiceMobile extends DO_Sales_Base_SaleItemServiceMobile
 		{
 			case 'dob':
 				// Make sure the date of birth is in the past (or today)
-				return ($value <= date('Y-m-d'));
+				return ($value <= date('Y-m-d', DataAccess::getDataAccess()->getNow(true)));
 				break;
 			
 			case 'fnn':

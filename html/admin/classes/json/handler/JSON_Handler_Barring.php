@@ -209,7 +209,7 @@ class JSON_Handler_Barring extends JSON_Handler
 					$oServiceBarringLevel 						= new Service_Barring_Level();
 					$oServiceBarringLevel->service_id 			= $iServiceId;
 					$oServiceBarringLevel->barring_level_id		= $iBarringLevelId;
-					$oServiceBarringLevel->created_datetime		= date('Y-m-d H:i:s');
+					$oServiceBarringLevel->created_datetime		= DataAccess::getDataAccess()->getNow();
 					$oServiceBarringLevel->created_employee_id	= Flex::getUserId();
 					if ($iAccountBarringLevelId !== null)
 					{

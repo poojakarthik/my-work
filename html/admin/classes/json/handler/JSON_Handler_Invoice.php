@@ -269,7 +269,7 @@ class JSON_Handler_Invoice extends JSON_Handler
 														),
 								'delivery_status'	=> 	TICKETING_CORRESPONDANCE_DELIVERY_STATUS_RECEIVED,
 								'source_id'			=> 	TICKETING_CORRESPONDANCE_SOURCE_WEB,
-								'creation_datetime'	=> 	date('Y-m-d H:i:s'),
+								'creation_datetime'	=> 	DataAccess::getDataAccess()->getNow(),
 								'subject'			=> 	"Rerated Invoice for ".date('jS M Y', strtotime($oInvoice->CreatedOn)),
 								'message'			=> 	$sMessage,
 								'attachments'		=>	array(

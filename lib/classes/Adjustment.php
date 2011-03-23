@@ -151,10 +151,12 @@ class Adjustment extends ORM_Cached
 		$oReversal->invoice_id 			= $this->invoice_id;
 		$oReversal->invoice_run_id 		= $this->invoice_run_id;
 		
+		$iNow = DataAccess::getDataAccess()->getNow(true);
+		
 		// Different fields
-		$oReversal->effective_date 		= date('Y-m-d');
+		$oReversal->effective_date 		= date('Y-m-d', $iNow);
 		$oReversal->created_employee_id = Flex::getUserId();
-		$oReversal->created_datetime 	= date('Y-m-d H:i:s');
+		$oReversal->created_datetime 	= date('Y-m-d H:i:s', $iNow);
 		
 		// Reversal specific fields
 		$oReversal->adjustment_nature_id 			= ADJUSTMENT_NATURE_REVERSAL;
@@ -163,7 +165,7 @@ class Adjustment extends ORM_Cached
 		
 		// Review/approval related fields
 		$oReversal->reviewed_employee_id 			= Employee::SYSTEM_EMPLOYEE_ID;
-		$oReversal->reviewed_datetime 				= date('Y-m-d H:i:s');
+		$oReversal->reviewed_datetime 				= date('Y-m-d H:i:s', $iNow);
 		$oReversal->adjustment_review_outcome_id	= Adjustment_Review_Outcome::getForSystemName('APPROVED')->id;
 		$oReversal->adjustment_status_id			= ADJUSTMENT_STATUS_APPROVED;
 		
@@ -175,7 +177,7 @@ class Adjustment extends ORM_Cached
 	public function approve()
 	{
 		$this->reviewed_employee_id 		= Flex::getUserId();
-		$this->reviewed_datetime 			= date('Y-m-d H:i:s');
+		$this->reviewed_datetime 			= DataAccess::getDataAccess()->getNow();
 		$this->adjustment_review_outcome_id	= Adjustment_Review_Outcome::getForSystemName('APPROVED')->id;
 		$this->adjustment_status_id			= ADJUSTMENT_STATUS_APPROVED;
 		$this->save();
@@ -184,7 +186,7 @@ class Adjustment extends ORM_Cached
 	public function decline($iAdjustmentReviewOutcomeId)
 	{
 		$this->reviewed_employee_id 		= Flex::getUserId();
-		$this->reviewed_datetime 			= date('Y-m-d H:i:s');
+		$this->reviewed_datetime 			= DataAccess::getDataAccess()->getNow();
 		$this->adjustment_review_outcome_id	= $iAdjustmentReviewOutcomeId;
 		$this->adjustment_status_id			= ADJUSTMENT_STATUS_DECLINED;
 		$this->save();

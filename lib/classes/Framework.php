@@ -520,7 +520,7 @@
 	 */
 	 function GetOverdueBalance($intAccount, $bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false, $bIncludePayments=true)
 	 {
-	 	return Account::getForId($intAccount)->getOverdueBalance(date('Y-m-d'), $bIncludeCreditAdjustments, $bIncludeDebitAdjustments, $bIncludePayments);
+	 	return Account::getForId($intAccount)->getOverdueBalance(date('Y-m-d', DataAccess::getDataAccess()->getNow(true)), $bIncludeCreditAdjustments, $bIncludeDebitAdjustments, $bIncludePayments);
 	 }
 	
 	//------------------------------------------------------------------------//
@@ -1007,7 +1007,7 @@
 		$aCharge 								= array_merge($aDefaultCharge, $aCharge);
 		
 		// Set date
-		$aCharge ['CreatedOn']	= date('Y-m-d');
+		$aCharge ['CreatedOn']	= date('Y-m-d', DataAccess::getDataAccess()->getNow(true));
 		
 		// Insert into DB
 		$oCharge	= new Charge($aCharge);

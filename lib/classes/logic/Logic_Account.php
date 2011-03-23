@@ -756,7 +756,7 @@ class Logic_Account implements DataLogic
 //		{
 //			if ($oScenarioInstance->id != $oBaseScenario->id)
 //			{
-//				$oScenarioInstance->end_datetime = date('Y-m-d H:i:s');
+//				$oScenarioInstance->end_datetime = DataAccess::getDataAccess()->getNow();
 //				$oScenarioInstance->save();
 //			}
 //		}

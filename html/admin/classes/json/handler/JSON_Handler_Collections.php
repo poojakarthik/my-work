@@ -633,7 +633,7 @@ class JSON_Handler_Collections extends JSON_Handler
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 		try
 		{
-			$sToday			= date('Y-m-d');
+			$sToday			= date('Y-m-d', DataAccess::getDataAccess()->getNow(true));
 			$sStartToday	= "{$sToday} 00:00:00";
 			$sEndToday		= "{$sToday} 23:59:59";
 			
@@ -709,7 +709,7 @@ class JSON_Handler_Collections extends JSON_Handler
 				switch ($aRow['account_collection_event_status_id'])
 				{
 					case ACCOUNT_COLLECTION_EVENT_STATUS_SCHEDULED:
-						$aItemDates['scheduled_datetime'] = date('Y-m-d');;
+						$aItemDates['scheduled_datetime'] = date('Y-m-d', DataAccess::getDataAccess()->getNow(true));
 						break;
 					case ACCOUNT_COLLECTION_EVENT_STATUS_COMPLETED:
 						$aItemDates['completed_datetime'] = $aRow['completed_datetime'];

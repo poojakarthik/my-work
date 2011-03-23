@@ -112,7 +112,7 @@ class Email_Flex_Queue
 			$sDatetime	= null;
 			if ($mDatetime === null)
 			{
-				$sDatetime	= date('Y-m-d H:i:s');
+				$sDatetime	= DataAccess::getDataAccess()->getNow();
 			}
 			else if (is_numeric($mDatetime))
 			{
@@ -129,7 +129,7 @@ class Email_Flex_Queue
 			// Create a new Email_Queue
 			$oEmailQueue						= new Email_Queue();
 			$oEmailQueue->scheduled_datetime	= $sDatetime;
-			$oEmailQueue->created_datetime		= date('Y-m-d H:i:s');
+			$oEmailQueue->created_datetime		= DataAccess::getDataAccess()->getNow();
 			$oEmailQueue->created_employee_id	= $iLoggedInEmployee;
 			$oEmailQueue->description			= $sDescription;
 			$oEmailQueue->email_queue_status_id	= EMAIL_QUEUE_STATUS_SCHEDULED;
@@ -152,7 +152,7 @@ class Email_Flex_Queue
 				}
 				
 				$oEmail->email_status_id		= EMAIL_STATUS_AWAITING_SEND;
-				$oEmail->created_datetime		= date('Y-m-d H:i:s');
+				$oEmail->created_datetime		= DataAccess::getDataAccess()->getNow();
 				$oEmail->created_employee_id	= $iLoggedInEmployee;
 				
 				// Link the email to the queue
@@ -173,7 +173,7 @@ class Email_Flex_Queue
 					$oEmailAttachment->disposition			= $oPart->disposition;
 					$oEmailAttachment->encoding				= $oPart->encoding;
 					$oEmailAttachment->filename				= $oPart->filename;
-					$oEmailAttachment->created_datetime		= date('Y-m-d H:i:s');
+					$oEmailAttachment->created_datetime		= DataAccess::getDataAccess()->getNow();
 					$oEmailAttachment->created_employee_id	= $iLoggedInEmployee;
 					
 					// Check the size/length of the attachment

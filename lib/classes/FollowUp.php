@@ -284,7 +284,7 @@ class FollowUp extends ORM_Cached
 	public function save($mModifyReasonId=null, $iReassignReasonId=null)
 	{
 		// Update modified fields
-		$this->modified_datetime	= date('Y-m-d H:i:s');
+		$this->modified_datetime	= DataAccess::getDataAccess()->getNow();
 		$this->modified_employee_id	= Flex::getUserId();
 		
 		parent::save();

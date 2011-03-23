@@ -539,27 +539,27 @@ var Component_Account_Invoice_List = Class.create(
 		delete this._oLoading;
 		
 		// Update various components
-		if (Component_Account_Payment_List)
+		if (typeof Component_Account_Payment_List != 'undefined')
 		{
 			Component_Account_Payment_List.refreshInstances();
 		}
 		
-		if (Component_Account_Adjustment_List)
+		if (typeof Component_Account_Adjustment_List != 'undefined')
 		{
 			Component_Account_Adjustment_List.refreshInstances();
 		}
 		
-		if (Component_Account_Collections)
+		if (typeof Component_Account_Collections != 'undefined')
 		{
 			Component_Account_Collections.refreshInstances();
 		}
 		
-		if (Component_Account_Invoice_List)
+		if (typeof Component_Account_Invoice_List != 'undefined')
 		{
 			Component_Account_Invoice_List.refreshInstances();
 		}
 		
-		if (Vixen.AccountDetails)
+		if (typeof Vixen.AccountDetails != 'undefined')
 		{
 			Vixen.AccountDetails.CancelEdit();
 		}

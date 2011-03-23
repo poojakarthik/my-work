@@ -709,7 +709,7 @@ class Invoice_Interim
 			$bHasExceptions	= (bool)$oCSVExceptionsReport->count();
 			
 			$oProcessingEmailNotification	= Email_Notification::getForSystemName('FIRST_INTERIM_INVOICE_REPORT');
-			$oProcessingEmailNotification->setSubject("First Interim Invoice Processing/Exceptions Report - ".date('Y-m-d H:i:s'));
+			$oProcessingEmailNotification->setSubject("First Interim Invoice Processing/Exceptions Report - ".DataAccess::getDataAccess()->getNow());
 			
 			$sProcessingReportFileName	= "processing-report-".date("YmdHis").".csv";
 			$oProcessingEmailNotification->addAttachment(

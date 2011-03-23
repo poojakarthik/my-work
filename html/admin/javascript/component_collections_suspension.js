@@ -189,7 +189,7 @@ var Component_Collections_Suspension = Class.create(
 		}
 		
 		// Update collections component, if defined
-		if (Component_Account_Collections)
+		if (typeof Component_Account_Collections != 'undefined')
 		{
 			Component_Account_Collections.refreshInstances();
 		}

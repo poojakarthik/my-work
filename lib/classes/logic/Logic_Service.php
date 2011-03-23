@@ -105,7 +105,7 @@ abstract class Logic_Service implements DataLogic
 
 	public static function canServiceBeAutomaticallyBarred($iServiceId, $iBarringLevelId, $sEffectiveDateTime=null)
 	{
-		$sEffectiveDate	= ($sEffectiveDate === null ? date('Y-m-d H:i:s') : $sEffectiveDate);
+		$sEffectiveDate	= ($sEffectiveDate === null ? DataAccess::getDataAccess()->getNow() : $sEffectiveDate);
 		
 		$oQuery	= new Query();
 		$sQuery = "	SELECT      CASE
@@ -195,8 +195,8 @@ abstract class Logic_Service implements DataLogic
 		$oProvisioningRequest->Employee 			= ($iEmployeeId === null ? Employee::SYSTEM_EMPLOYEE_ID : $iEmployeeId);
 		$oProvisioningRequest->Carrier 				= $aDetailsRow['service_carrier_id'];
 		$oProvisioningRequest->Type 				= $iProvisioningTypeId;
-		$oProvisioningRequest->RequestedOn 			= date('Y-m-d H:i:s');
-		$oProvisioningRequest->AuthorisationDate	= ($sAuthorisationDate === null ? date('Y-m-d') : $sAuthorisationDate);
+		$oProvisioningRequest->RequestedOn 			= DataAccess::getDataAccess()->getNow();
+		$oProvisioningRequest->AuthorisationDate	= ($sAuthorisationDate === null ? date('Y-m-d', DataAccess::getDataAccess()->getNow(true)) : $sAuthorisationDate);
 		$oProvisioningRequest->Status 				= REQUEST_STATUS_WAITING;
 		$oProvisioningRequest->customer_group_id 	= $aDetailsRow['account_customer_group_id'];
 		$oProvisioningRequest->save();

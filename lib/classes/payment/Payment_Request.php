@@ -79,7 +79,7 @@ class Payment_Request extends ORM_Cached
 		$oPaymentRequest->payment_request_status_id	= PAYMENT_REQUEST_STATUS_PENDING;
 		$oPaymentRequest->invoice_run_id			= $iInvoiceRun;
 		$oPaymentRequest->payment_id				= $iPaymentId;
-		$oPaymentRequest->created_datetime			= date('Y-m-d H:i:s');
+		$oPaymentRequest->created_datetime			= DataAccess::getDataAccess()->getNow();
 		$oPaymentRequest->created_employee_id		= $iEmployeeId;
 		$oPaymentRequest->save();
 		

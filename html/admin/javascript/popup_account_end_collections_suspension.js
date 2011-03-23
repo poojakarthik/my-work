@@ -114,7 +114,7 @@ var Popup_Account_End_Collections_Suspension = Class.create(Reflex_Popup,
 			Vixen.AccountDetails.CancelEdit();
 		}
 		
-		if (Component_Account_Collections)
+		if (typeof Component_Account_Collections != 'undefined')
 		{
 			Component_Account_Collections.refreshInstances();
 		}

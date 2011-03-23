@@ -120,7 +120,7 @@ class Account_OCA_Referral extends ORM_Cached
 
 	public function action()
 	{
-		$this->actioned_datetime 				= date('Y-m-d H:i:s');
+		$this->actioned_datetime 				= DataAccess::getDataAccess()->getNow();
 		$this->actioned_employee_id				= Flex::getUserId();
 		$this->account_oca_referral_status_id	= ACCOUNT_OCA_REFERRAL_STATUS_COMPLETE;
 		$this->save();

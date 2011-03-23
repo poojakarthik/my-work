@@ -200,9 +200,6 @@ var Component_Account_Collections = Class.create(
 						iRowCount++;
 					}
 				}
-
-				
-
 				
 				// Suspensions
 				var aSuspensions = oResponse.aEvents[sDate].collection_suspension;
@@ -391,12 +388,12 @@ var Component_Account_Collections = Class.create(
 		if (oData.collection_event_invocation_id == $CONSTANT.COLLECTION_EVENT_INVOCATION_MANUAL)
 		{
 			sIcon 		= Component_Account_Collections.EVENT_COMPLETED_MANUAL_IMAGE_SOURCE;
-			sIconAlt	= 'Completed Manually';
+			sIconAlt	= 'To Be Completed Manually';
 		}
 		else
 		{
 			sIcon 		= Component_Account_Collections.EVENT_COMPLETED_AUTO_IMAGE_SOURCE;
-			sIconAlt	= 'Completed Automatically';
+			sIconAlt	= 'To Be Completed Automatically';
 		}
 
 		sDetails = oData.collection_event_name;

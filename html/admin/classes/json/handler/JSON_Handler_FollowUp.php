@@ -187,7 +187,7 @@ class JSON_Handler_FollowUp extends JSON_Handler
 			{
 				$oFollowUp						= FollowUp::getForId($iFollowUpId);
 				$oFollowUp->followup_closure_id	= $iFollowUpClosureId;
-				$oFollowUp->closed_datetime		= date('Y-m-d H:i:s');
+				$oFollowUp->closed_datetime		= DataAccess::getDataAccess()->getNow();
 				$oFollowUp->save();
 			}
 			else
@@ -253,7 +253,7 @@ class JSON_Handler_FollowUp extends JSON_Handler
 				$oFollowUp	= new FollowUp();
 				
 				// Default values
-				$sNowDateTime						= date('Y-m-d H:i:s');
+				$sNowDateTime						= DataAccess::getDataAccess()->getNow();
 				
 				// Inherit fields from the recurring followup
 				$oFollowUp->assigned_employee_id	= $oFollowUpRecurring->assigned_employee_id;
@@ -791,7 +791,7 @@ class JSON_Handler_FollowUp extends JSON_Handler
 					// Once off/single follow-up
 					$oFollowUp							= new FollowUp();
 					$oFollowUp->assigned_employee_id	= Flex::getUserId();
-					$oFollowUp->created_datetime		= date('Y-m-d H:i:s');
+					$oFollowUp->created_datetime		= DataAccess::getDataAccess()->getNow();
 					$oFollowUp->due_datetime			= $oDetails->sDueDateTime;
 					$oFollowUp->followup_type_id		= $iType;
 					$oFollowUp->followup_category_id	= $oDetails->iCategory;
@@ -825,7 +825,7 @@ class JSON_Handler_FollowUp extends JSON_Handler
 					// Recurring followup
 					$oFollowUpRecurring									= new FollowUp_Recurring();
 					$oFollowUpRecurring->assigned_employee_id			= Flex::getUserId();
-					$oFollowUpRecurring->created_datetime				= date('Y-m-d H:i:s');
+					$oFollowUpRecurring->created_datetime				= DataAccess::getDataAccess()->getNow();
 					$oFollowUpRecurring->start_datetime					= $oDetails->sStartDateTime;
 					
 					if (is_null($oDetails->sEndDateTime))
