@@ -1181,7 +1181,7 @@ class Invoice extends ORM_Cached
 						'invoice_status'		=> "i.Status",
 						'account_id'			=> "i.Account",
 						'invoice_run_id'		=> "i.invoice_run_id",
-						'has_unarchived_cdrs'	=> "COALESCE((SELECT COUNT(Id) FROM CDR WHERE invoice_run_id = ir.Id AND Account = i.Account), 0)",
+						'has_unarchived_cdrs'	=> "COALESCE((SELECT Id FROM CDR WHERE invoice_run_id = ir.Id AND Account = i.Account LIMIT 1), 0)",
 						'invoice_run_status_id'	=> "ir.invoice_run_status_id"
 					);
 		
