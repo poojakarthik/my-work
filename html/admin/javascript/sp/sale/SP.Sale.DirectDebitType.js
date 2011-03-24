@@ -1,5 +1,5 @@
 //79-86
-FW.Package.create('SP.Sale.DirectDebitType');
+FW.Package.create('SP.Sale.DirectDebitType', {});
 Object.extend(SP.Sale.DirectDebitType, {
 
 	//DIRECT_DEBIT_TYPE_CHARGE_CARD:	3,

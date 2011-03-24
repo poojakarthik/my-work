@@ -118,7 +118,7 @@ FW.Package.create('SP.Sale.ProductTypeModule.Service_ADSL', {
 
 });
 
-
+;
 FW.Package.extend(SP.Sale.ProductTypeModule.Service_ADSL, SP.Sale.ProductTypeModule);
 //SP.Sale.ProductTypeModule.Service_ADSL.prototype = {};
 

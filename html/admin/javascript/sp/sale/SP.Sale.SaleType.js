@@ -1,5 +1,5 @@
 //96-102
-FW.Package.create('SP.Sale.SaleType');
+FW.Package.create('SP.Sale.SaleType', {});
 Object.extend(SP.Sale.SaleType, {
 
 	SALE_TYPE_NEW		:	1,
