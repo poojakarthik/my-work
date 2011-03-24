@@ -4,6 +4,120 @@ class Application_Handler_Developer extends Application_Handler
 	const	URL_TYPE_JS		= 'onclick';
 	const	URL_TYPE_HREF	= 'href';
 	
+	public function rod($aSubPath)
+	{
+		//Log::registerFunctionLog('rod', 'logMessage', 'Application_Handler_Developer');
+		//Log::setDefaultLog('rod');
+       	
+		$sQuery = 
+"SELECT		COALESCE((
+				SELECT	SUM(c.amount)
+				FROM	collectable c
+				JOIN	Invoice i ON (i.Id = c.invoice_id)
+				WHERE	c.account_id = a.Id
+						AND i.CreatedOn < <billing_period_start_datetime>
+			), 0)
+			+
+			COALESCE((
+				SELECT	SUM(p.amount * pn.value_multiplier)
+				FROM	payment p
+						JOIN payment_nature pn ON (pn.id = p.payment_nature_id)
+						LEFT JOIN payment p_reversed ON (p_reversed.id = p.reversed_payment_id)
+				WHERE	p.account_id = a.Id
+						AND (
+							/* Payment was created prior to the Billing Period Start, or is reversing a Payment prior to the Billing Period Start */
+							p.created_datetime < <billing_period_start_datetime>
+							OR (
+								p_reversed.id IS NOT NULL
+								AND p_reversed.created_datetime < <billing_period_start_datetime>
+							)
+						)
+			), 0)
+			+
+			COALESCE((
+				SELECT	SUM(adj.amount * adjn.value_multiplier * tn.value_multiplier)
+				FROM	adjustment adj
+						JOIN adjustment_type adjt ON (adjt.id = adj.adjustment_type_id)
+						JOIN adjustment_type_invoice_visibility adjtiv ON (adjtiv.id = adjt.adjustment_type_invoice_visibility_id)
+						JOIN adjustment_nature adjn ON (adjn.id = adj.adjustment_nature_id)
+						JOIN transaction_nature tn ON (tn.id = adjt.transaction_nature_id)
+						JOIN adjustment_status adjs ON (adjs.id = adj.adjustment_status_id)
+						LEFT JOIN adjustment adj_reversed ON (adj_reversed.id = adj.reversed_adjustment_id)
+						LEFT JOIN adjustment_status adjs_reversed ON (adjs_reversed.id = adj_reversed.adjustment_status_id)
+				WHERE	adjs.system_name = 'APPROVED'
+						AND adj.account_id = a.id
+						AND (
+							/* Adjustment was charged and approved prior to the Billing Period Start, or is reversing an Adjustment charged and approved prior to the Billing Period Start */
+							(
+								adj.created_datetime < <billing_period_start_datetime>
+								AND adj.reviewed_datetime < <billing_period_start_datetime>
+							)
+							OR (
+								adj_reversed.id IS NOT NULL
+								AND adjs_reversed.system_name = 'APPROVED'
+								AND adj_reversed.created_datetime < <billing_period_start_datetime>
+								AND adj_reversed.reviewed_datetime < <billing_period_start_datetime>
+							)
+							/* We also want to include any Adjustments intentionally hidden between the Billing Period Start and End */
+							OR (
+								adjtiv.system_name = 'HIDDEN'
+								AND adj.created_datetime BETWEEN <billing_period_start_datetime> AND <billing_period_end_datetime>
+								AND adj.reviewed_datetime BETWEEN <billing_period_start_datetime> AND <billing_period_end_datetime>
+							)
+						)
+			), 0) AS balance
+FROM		Account a
+WHERE		a.Id = <account_id>";
+
+		$iDay 	= $aSubPath[1];
+		$iMonth	= $aSubPath[2];
+		$iYear	= $aSubPath[3];
+
+		echo "<p>Date: {$iDay}/{$iMonth}/{$iYear}<br/>";
+		echo "Account: ".Account::getForId($aSubPath[0])->BusinessName."</p>";
+		echo "<pre>";
+		
+		$mResult = 	Query::run(
+						$sQuery, 
+						array(
+							'account_id' => $aSubPath[0], 
+							'billing_period_start_datetime' => $aSubPath[3].'-'.$aSubPath[2].'-'.$aSubPath[1].' 00:00:00',
+							'billing_period_end_datetime' => '9999-12-31 23:59:59'
+						)
+					);
+		echo "</pre>";
+		
+		echo "<textarea cols=100 rows=20>";
+		while ($aResult = $mResult->fetch_assoc())
+		{
+			if ($aResult['balance'])
+			{
+				print_r($aResult);
+			}
+		}
+		echo "</textarea>";
+		
+		$iPreviousDay 	= strtotime("$iYear-$iMonth-$iDay -1 day");
+		$iPreviousMonth	= strtotime("$iYear-$iMonth-$iDay -1 month");
+		$iPreviousYear	= strtotime("$iYear-$iMonth-$iDay -1 year");
+		
+		$iNextDay 	= strtotime("$iYear-$iMonth-$iDay +1 days");
+		$iNextMonth	= strtotime("$iYear-$iMonth-$iDay +1 months");
+		$iNextYear	= strtotime("$iYear-$iMonth-$iDay +1 years");
+		
+		echo "<p>";
+		echo "<a href='/admin/reflex.php/Developer/rod/".$aSubPath[0]."/".date('d', $iPreviousDay)."/".date('m', $iPreviousDay)."/".date('Y', $iPreviousDay)."'>Prev Day</a> - ";
+		echo "<a href='/admin/reflex.php/Developer/rod/".$aSubPath[0]."/".date('d', $iNextDay)."/".date('m', $iNextDay)."/".date('Y', $iNextDay)."'>Next Day</a> <br/>";
+		
+		echo "<a href='/admin/reflex.php/Developer/rod/".$aSubPath[0]."/".date('d', $iPreviousMonth)."/".date('m', $iPreviousMonth)."/".date('Y', $iPreviousMonth)."'>Prev Month</a> - ";
+		echo "<a href='/admin/reflex.php/Developer/rod/".$aSubPath[0]."/".date('d', $iNextMonth)."/".date('m', $iNextMonth)."/".date('Y', $iNextMonth)."'>Next Month</a> <br/>";
+		
+		echo "<a href='/admin/reflex.php/Developer/rod/".$aSubPath[0]."/".date('d', $iPreviousYear)."/".date('m', $iPreviousYear)."/".date('Y', $iPreviousYear)."'>Prev Year</a> - ";
+		echo "<a href='/admin/reflex.php/Developer/rod/".$aSubPath[0]."/".date('d', $iNextYear)."/".date('m', $iNextYear)."/".date('Y', $iNextYear)."'>Next Year</a> ";
+		echo "</p>";
+		die;
+	}
+	
 	// View the Developer Page
 	public function ViewList($subPath)
 	{

@@ -473,8 +473,9 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		}
 		DBO()->Account->last_automatic_invoice_action->RenderOutput();*/
 		
+		// NOTE: CR137 - Removed, deprecated concept automatic barring status (replaced by Current Barring Level below)
 		// ... automatic account barring
-		DBO()->automatic_barring_status->Id = DBO()->Account->automatic_barring_status->Value;
+		/*DBO()->automatic_barring_status->Id = DBO()->Account->automatic_barring_status->Value;
 		DBO()->automatic_barring_status->Load();
 		if (DBO()->Account->automatic_barring_status->Value != AUTOMATIC_BARRING_STATUS_NONE)
 		{
@@ -486,8 +487,37 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		{
 			DBO()->Account->automatic_barring_status = DBO()->automatic_barring_status->name->Value;
 		}
-		DBO()->Account->automatic_barring_status->RenderOutput();
-
+		DBO()->Account->automatic_barring_status->RenderOutput();*/
+		
+		// Current Barring Level
+		$aBarringDetails = Logic_Account::getInstance(DBO()->Account->Id->Value)->getLatestActionedBarringLevel();
+		if ($aBarringDetails !== null)
+		{
+			// Latest Barring Level change
+			$sBarringLevelName 			= Constant_Group::getConstantGroup('barring_level')->getConstantName($aBarringDetails['barring_level_id']);
+			$sActionedOn				= date('l, M d, Y g:i:s A', strtotime($aBarringDetails['actioned_datetime']));
+			$sBarringLevelDescription 	= "{$sBarringLevelName} on {$sActionedOn}";
+			if (isset($aBarringDetails['service_count']))
+			{
+				$iServiceCount 				= $aBarringDetails['service_count'];
+				$sBarringLevelDescription	.= " ({$iServiceCount} Service".($iServiceCount == 1 ? '' : 's').")";
+			}
+		}
+		else
+		{
+			// Unrestricted
+			$sBarringLevelName 			= Constant_Group::getConstantGroup('barring_level')->getConstantName(BARRING_LEVEL_UNRESTRICTED);
+			$sBarringLevelDescription 	= $sBarringLevelName;
+		}
+		
+		echo "	<div class='DefaultElement'>
+						<div class='DefaultOutput'>{$sBarringLevelDescription}</div>
+						<div class='DefaultLabel'>
+							<span> &nbsp;</span>
+							<span>Current Barring Level :</span>
+						</div>
+					</div>";
+		
 		if (DBO()->Account->tio_reference_number->Value !== NULL)
 		{
 			// This account has a TIO reference number.  Display it

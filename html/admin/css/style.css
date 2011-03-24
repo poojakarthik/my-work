@@ -11161,3 +11161,12 @@ div.component-collections-scenario > table.reflex
 {
 	margin	: 0.5em;
 }
+
+/************************** START - Rate Plan List - START **************************/
+
+.plan-list-brochure-icons
+{
+	white-space	: nowrap;
+}
+
+/************************** END - Rate Plan List - END **************************/

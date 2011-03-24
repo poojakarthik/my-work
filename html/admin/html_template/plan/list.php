@@ -314,7 +314,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 				$strSharedCell, 
 				$strCDRHiding, 
 				$strStatusCell, 
-				$strBrochureCell, 
+				"<div class='plan-list-brochure-icons'>{$strBrochureCell}</div>", 
 				$strVoiceAuthCell,
 				$strTestCell, 
 				$strEditCell, 

@@ -27,20 +27,44 @@ class Account_Barring_Level extends ORM_Cached
 		return 100;
 	}
 
-        public static function getMostRecentForAccount($iAccountId)
+    public static function getMostRecentForAccount($iAccountId)
+    {
+        $oQuery = new Query();
+        $sSql = "SELECT *
+                    FROM account_barring_level
+                    WHERE account_id = $iAccountId
+                    AND id = (SELECT MAX(id) FROM account_barring_level WHERE account_id = $iAccountId)";
+        $mResult = $oQuery->Execute($sSql);
+        if ($mResult)
         {
-            $oQuery = new Query();
-            $sSql = "SELECT *
-                        FROM account_barring_level
-                        WHERE account_id = $iAccountId
-                        AND id = (SELECT MAX(id) FROM account_barring_level WHERE account_id = $iAccountId)";
-            $mResult = $oQuery->Execute($sSql);
-            if ($mResult)
-            {
-                $aRecord = $mResult->fetch_assoc();
-                return $aRecord != null ? new self($aRecord) : null;
-            }
+            $aRecord = $mResult->fetch_assoc();
+            return $aRecord != null ? new self($aRecord) : null;
         }
+    }
+    
+    public static function getLastActionedBarringLevelForAccount($iAccountId)
+    {
+    	$aResult = Query::run("	SELECT  abl.account_id AS account_id, 
+										abl.barring_level_id AS barring_level_id,
+										sbl.actioned_datetime AS actioned_datetime
+								FROM    account_barring_level abl
+								JOIN    service_barring_level sbl ON (
+								            sbl.account_barring_level_id = abl.id
+								            AND sbl.actioned_datetime  = (
+								                SELECT	MAX(sbl_2.actioned_datetime)
+												FROM	service_barring_level sbl_2
+												JOIN	Service s_2 ON (s_2.Id = sbl_2.service_id)
+												JOIN	Account a_2 ON (a_2.Id = s_2.Account)
+												WHERE	a_2.Id = abl.account_id
+												AND		sbl_2.actioned_datetime IS NOT NULL
+								            )
+								        )
+								WHERE	abl.account_id = <account_id>
+								GROUP BY abl.account_id;",
+								array('account_id' => $iAccountId))->fetch_assoc();
+		
+		return ($aResult ? $aResult : null);
+    }
 	
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START

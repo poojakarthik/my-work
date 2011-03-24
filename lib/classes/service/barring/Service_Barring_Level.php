@@ -27,6 +27,29 @@ class Service_Barring_Level extends ORM_Cached
 		return 100;
 	}
 
+	public static function getLastActionedBarringLevelForAccount($iAccountId)
+    {
+    	$aResult = Query::run("	SELECT	a.Id AS account_id,
+										sbl.barring_level_id AS barring_level_id,
+										COUNT(DISTINCT sbl.service_id) AS service_count,
+										sbl.actioned_datetime AS actioned_datetime
+								FROM	service_barring_level sbl
+								JOIN	Service s ON (s.Id = sbl.service_id)
+								JOIN	Account a ON (a.Id = s.Account)
+								WHERE	sbl.actioned_datetime = (
+											SELECT	MAX(sbl_2.actioned_datetime)
+											FROM	service_barring_level sbl_2
+											JOIN	Service s_2 ON (s_2.Id = sbl_2.service_id)
+											JOIN	Account a_2 ON (a_2.Id = s_2.Account)
+											WHERE	a_2.Id = a.Id
+											AND		sbl_2.actioned_datetime IS NOT NULL
+										)
+								AND		a.Id = <account_id>;",
+								array('account_id' => $iAccountId))->fetch_assoc();
+		
+		return (($aResult['barring_level_id'] !== null) ? $aResult : null);
+    }
+
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
 	//---------------------------------------------------------------------------------------------------------------------------------//

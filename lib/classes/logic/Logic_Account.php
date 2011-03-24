@@ -868,6 +868,17 @@ class Logic_Account implements DataLogic
 			$mReferral[0]->cancel();
 		}
 	}
+	
+	public function getLatestActionedBarringLevel()
+	{
+		$aBarringDetails = Account_Barring_Level::getLastActionedBarringLevelForAccount($this->oDO->Id);
+		if ($aBarringDetails === null)
+		{
+			// Details will include a service_count field
+			$aBarringDetails = Service_Barring_Level::getLastActionedBarringLevelForAccount($this->oDO->Id);
+		}
+		return ($aBarringDetails ? $aBarringDetails : null); 
+	}
 
 	public static function clearCache($bClearRelatedCaches = true)
 	{
