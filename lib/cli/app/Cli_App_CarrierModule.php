@@ -52,7 +52,7 @@ class Cli_App_CarrierModule extends Cli
 			throw new Exception("Class '{$sClassName}' does not extends Resource_Type_Base");
 		}
 		
-		Log::getLog()->log("Creating Carrier Module for Carrier '{$iCarrierId}' with Class '{$sClassName}'");
+		Log::getLog()->log("Creating Carrier Module for Carrier '{$iCarrierId}' with Class '{$sClassName}'".(($iCustomerGroupId !== null) ? " and Customer Group '{$iCustomerGroupId}'" : ''));
 		Callback::create('createCarrierModule', $sClassName)->invoke($iCarrierId, $iCustomerGroupId);
 	}
 	
