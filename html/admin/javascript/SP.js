@@ -1,1 +1,1 @@
-FW.Package.create('SP');
+FW.Package.create('SP', {});
