@@ -1422,7 +1422,10 @@ class Logic_Account implements DataLogic
 								COALESCE(
 									SUM(
 										IF(
-											c.due_date < NOW() 
+											(
+									            c.due_date < NOW() 
+									            OR c.amount < 0
+									        )
 											AND (c.collection_promise_id IS NULL OR c_cp.completed_datetime IS NOT NULL), 
 											c.amount, 
 											0

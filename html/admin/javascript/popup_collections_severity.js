@@ -12,6 +12,7 @@ var Popup_Collections_Severity = Class.create(Reflex_Popup,
 		var oContentDiv = $T.div();
 		new Component_Collections_Severity(oContentDiv, iSeverityId, bRenderMode, this._committed.bind(this), this._createCancelled.bind(this));
 		
+		// Title and icon vary depending on purpose
 		if (bRenderMode)
 		{
 			this.setTitle((iSeverityId ? 'Edit ' : 'Create ') + 'Severity');
@@ -22,6 +23,7 @@ var Popup_Collections_Severity = Class.create(Reflex_Popup,
 			this.setTitle('View Severity');
 			this.setIcon('../admin/img/template/magnifier.png');
 		}
+		
 		this.setContent(oContentDiv);
 		this.addCloseButton();
 		this.display();

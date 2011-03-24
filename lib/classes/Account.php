@@ -1137,32 +1137,50 @@ class Account
 
 	protected function _getBalance($sEffectiveDate, $bIncludeActivePromises)
 	{
-	    $sCollectableFilterClause = $bIncludeActivePromises ? "WHERE c.account_id = {$this->Id} AND c.due_date < '{$sEffectiveDate}'" : " LEFT JOIN collection_promise cp ON (c.collection_promise_id = cp.id) WHERE (c.collection_promise_id IS NULL OR cp.completed_datetime IS NOT NULL) AND c.account_id = {$this->Id} AND c.due_date < '{$sEffectiveDate}'";
+	    if ($bIncludeActivePromises)
+	    {
+	    	// Don't exclude promise collectables
+	    	$sCollectableFilterClause = "	WHERE 	c.account_id = {$this->Id} 
+											AND 	(
+												    	c.due_date < '{$sEffectiveDate}' 
+												    	OR c.amount < 0
+												    )";
+	    }
+	    else
+	    {
+	    	// Exclude promise collectables
+	    	$sCollectableFilterClause = "	LEFT JOIN 	collection_promise cp ON (c.collection_promise_id = cp.id) 
+											WHERE 		(c.collection_promise_id IS NULL OR cp.completed_datetime IS NOT NULL) 
+											AND 		c.account_id = {$this->Id} 
+											AND 		(
+												            c.due_date < '{$sEffectiveDate}' 
+												            OR c.amount < 0
+												        )";
+	    }
+	    
 	    $oQuery = new Query();
-	    $mResult = $oQuery->Execute ("	
-										SELECT
-											COALESCE((
-												SELECT SUM(p.amount * pn.value_multiplier)
-												FROM payment p
-												JOIN payment_nature pn ON (pn.id = p.payment_nature_id AND p.account_id = {$this->Id})
-											), 0)
-											+
-											COALESCE((
-												SELECT SUM(adj.amount*an.value_multiplier*tn.value_multiplier)
-												FROM adjustment adj
-												JOIN adjustment_type at ON (at.id = adj.adjustment_type_id and adj.account_id = {$this->Id})
-												JOIN transaction_nature tn ON (tn.id = at.transaction_nature_id)
-												JOIN adjustment_nature an ON (an.id = adj.adjustment_nature_id)
-												JOIN adjustment_status ast ON (adj.adjustment_status_id = ast.id and ast.const_name = 'ADJUSTMENT_STATUS_APPROVED')
-											), 0)
-											+
-											COALESCE((
-												SELECT SUM(c.amount)
-												FROM collectable c
-												{$sCollectableFilterClause}
-											), 0)
-											AS			balance
-									");
+	    $sQuery = "	SELECT	COALESCE((
+								SELECT 	SUM(p.amount * pn.value_multiplier)
+								FROM 	payment p
+								JOIN 	payment_nature pn ON (pn.id = p.payment_nature_id AND p.account_id = {$this->Id})
+							), 0)
+							+
+							COALESCE((
+								SELECT 	SUM(adj.amount*an.value_multiplier*tn.value_multiplier)
+								FROM 	adjustment adj
+								JOIN 	adjustment_type at ON (at.id = adj.adjustment_type_id and adj.account_id = {$this->Id})
+								JOIN 	transaction_nature tn ON (tn.id = at.transaction_nature_id)
+								JOIN 	adjustment_nature an ON (an.id = adj.adjustment_nature_id)
+								JOIN 	adjustment_status ast ON (adj.adjustment_status_id = ast.id and ast.const_name = 'ADJUSTMENT_STATUS_APPROVED')
+							), 0)
+							+
+							COALESCE((
+								SELECT 	SUM(c.amount)
+								FROM 	collectable c
+								{$sCollectableFilterClause}
+							), 0)
+							AS balance";
+	    $mResult = $oQuery->Execute ($sQuery);
 
 	    if ($mResult === false)
 	    {
