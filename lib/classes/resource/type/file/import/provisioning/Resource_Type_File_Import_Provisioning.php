@@ -12,7 +12,7 @@ abstract class Resource_Type_File_Import_Provisioning extends Resource_Type_File
 	
 	static public function createCarrierModule($iCarrier, $sClassName, $iResourceType, $iCarrierModuleType=self::CARRIER_MODULE_TYPE)
 	{
-		parent::createCarrierModule($iCarrier, $sClassName, $iResourceType, $iCarrierModuleType);
+		parent::createCarrierModule($iCarrier, null, $sClassName, $iResourceType, $iCarrierModuleType);
 	}
 }
 ?>

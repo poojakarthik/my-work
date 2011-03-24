@@ -288,7 +288,7 @@ abstract class Resource_Type_File_Import_Payment extends Resource_Type_File_Impo
 	
 	static public function createCarrierModule($iCarrier, $sClassName, $iResourceType, $iCarrierModuleType=self::CARRIER_MODULE_TYPE)
 	{
-		parent::createCarrierModule($iCarrier, $sClassName, $iResourceType, $iCarrierModuleType);
+		parent::createCarrierModule($iCarrier, null, $sClassName, $iResourceType, $iCarrierModuleType);
 	}
 }
 ?>
