@@ -1194,6 +1194,107 @@ class Account
 
 	}
 
+	public function getHistoricalBalance($sEffectiveDate) {
+		$sEffectiveDate	= ($sEffectiveDate === null) ? date('Y-m-d', DataAccess::getDataAccess()->getNow(true)) : $sEffectiveDate;
+
+		$mResult	= Query::run("
+			SELECT		COALESCE(
+							/* Oldest Invoice or  */
+							(
+								SELECT		*
+								FROM		Invoice i
+											JOIN InvoiceRun ir ON (
+												ir.Id = i.invoice_run_id
+												AND i.Account = a.Id
+											)
+								ORDER BY	ir.billing_period_start_datetime ASC
+								LIMIT		1
+							),
+							'9999-12-31'
+						)	AS effective_end_date
+						COALESCE((
+							SELECT	SUM(c.amount)
+							FROM	collectable c
+							JOIN	Invoice i ON (i.Id = c.invoice_id)
+							WHERE	c.account_id = a.Id
+									AND i.CreatedOn < <effective_date>
+						), 0)
+						+
+						COALESCE((
+							SELECT	SUM(p.amount * pn.value_multiplier)
+							FROM	payment p
+									JOIN payment_nature pn ON (pn.id = p.payment_nature_id)
+									LEFT JOIN payment p_reversed ON (p_reversed.id = p.reversed_payment_id)
+							WHERE	p.account_id = a.Id
+									AND (
+										/* Payment was created prior to the Billing Period Start, or is reversing a Payment prior to the Billing Period Start */
+										p.created_datetime < <effective_date>
+										OR (
+											p_reversed.id IS NOT NULL
+											AND p_reversed.created_datetime < <effective_date>
+										)
+									)
+						), 0)
+						+
+						COALESCE((
+							SELECT	SUM(adj.amount * adjn.value_multiplier * tn.value_multiplier)
+							FROM	adjustment adj
+									JOIN adjustment_type adjt ON (adjt.id = adj.adjustment_type_id)
+									JOIN adjustment_type_invoice_visibility adjtiv ON (adjtiv.id = adjt.adjustment_type_invoice_visibility_id)
+									JOIN adjustment_nature adjn ON (adjn.id = adj.adjustment_nature_id)
+									JOIN transaction_nature tn ON (tn.id = adjt.transaction_nature_id)
+									JOIN adjustment_status adjs ON (adjs.id = adj.adjustment_status_id)
+									LEFT JOIN adjustment adj_reversed ON (adj_reversed.id = adj.reversed_adjustment_id)
+									LEFT JOIN adjustment_status adjs_reversed ON (adjs_reversed.id = adj_reversed.adjustment_status_id)
+							WHERE	adjs.system_name = 'APPROVED'
+									AND adj.account_id = a.id
+									AND (
+										/* Adjustment was charged and approved prior to the Billing Period Start, or is reversing an Adjustment charged and approved prior to the Billing Period Start */
+										(
+											adj.created_datetime < <effective_date>
+											AND adj.reviewed_datetime < <effective_date>
+										)
+										OR (
+											adj_reversed.id IS NOT NULL
+											AND adjs_reversed.system_name = 'APPROVED'
+											AND adj_reversed.created_datetime < <effective_date>
+											AND adj_reversed.reviewed_datetime < <effective_date>
+										)
+										/* We also want to include any Adjustments intentionally hidden between the Billing Period Start and End */
+										OR (
+											adjtiv.system_name = 'HIDDEN'
+											AND adj.created_datetime >= <effective_date>
+											AND adj.reviewed_datetime >= <effective_date>
+											AND (
+												adj.created_datetime <= COALESCE()
+												AND adj.reviewed_datetime <= COALESCE()
+											)
+										)
+									)
+						), 0) AS balance
+			FROM		Account a
+						LEFT JOIN Invoice i ON (i.Account = a.Id)
+						LEFT JOIN InvoiceRun ir ON (
+							ir.Id = i.invoice_run_id
+							AND <effective_date> <= ir.billing_period_end_datetime
+							AND ir.Id = (
+								SELECT		Id
+								FROM		InvoiceRun
+								WHERE
+							ir.Id = i.invoice_run_id
+							AND <effective_date> <= ir.billing_period_end_datetime
+							)
+						)
+			WHERE		a.Id = <account_id>
+		", array(
+			'account_id'			=> (int)$this->Id,
+			'effective_date'		=> $sEffectiveDate,
+			'effective_end_date'	=> $sEffectiveEndDate
+		));
+
+		return ($mResult) ? array_value($mResult->fetch_assoc(), 'balance') : 0.0;
+	}
+
 	public function oldGetOverdueBalance($sDueDate=null, $bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false, $bIncludePayments=true)
 	{
 		$sDueDate	= (is_int($iDueDate = strtotime($sDueDate))) ? date('Y-m-d', $iDueDate) : date('Y-m-d', DataAccess::getDataAccess()->getNow(true));

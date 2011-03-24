@@ -10,6 +10,9 @@ class Flex_Date
 {
 	const	TIMESTAMP_START_OF_TIME	= '1970-01-01 00:00:01';
 	const	TIMESTAMP_END_OF_TIME	= '2038-01-09 03:14:07';
+
+	const	START_OF_TIME	= '0000-00-00 00:00:00';
+	const	END_OF_TIME		= '9999-12-31 23:59:59';
 	
 	const	SECONDS_IN_MINUTE	= 60;
 	const	SECONDS_IN_HOUR		= 3600;

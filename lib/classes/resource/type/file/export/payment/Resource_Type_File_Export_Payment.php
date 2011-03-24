@@ -29,7 +29,7 @@ abstract class Resource_Type_File_Export_Payment extends Resource_Type_File_Expo
 			
 			// Get all pending payment requests for the customer group & payment type associated 
 			// with the carrier module
-			$iExportedPaymentRequests	= 	0;
+			$aExportedPaymentRequests	= array();
 			$aPaymentRequests			=	Payment_Request::getForStatusAndCustomerGroupAndPaymentType(
 												PAYMENT_REQUEST_STATUS_PENDING, 
 												$oCarrierModule->customer_group,
@@ -48,8 +48,8 @@ abstract class Resource_Type_File_Export_Payment extends Resource_Type_File_Expo
 					$oPaymentRequest->payment_request_status_id	= PAYMENT_REQUEST_STATUS_DISPATCHED;
 					$oPaymentRequest->save();
 					
-					// Increment export counter
-					$iExportedPaymentRequests++;
+					// Add to set of successful exports
+					$aExportedPaymentRequests[]	= $oPaymentRequest;
 				}
 				catch (Exception $oException)
 				{
@@ -58,7 +58,7 @@ abstract class Resource_Type_File_Export_Payment extends Resource_Type_File_Expo
 				}
 			}
 			
-			if ($iExportedPaymentRequests == 0)
+			if (count($aExportedPaymentRequests) == 0)
 			{
 				Log::getLog()->log("No payment requests exported");
 				if ($oDataAccess->TransactionRollback() === false)
@@ -73,6 +73,11 @@ abstract class Resource_Type_File_Export_Payment extends Resource_Type_File_Expo
 			{
 				Log::getLog()->log("Rendering to file...");
 				$oResourceTypeHandler->render()->save();
+
+				foreach ($aExportedPaymentRequests as $oPaymentRequest) {
+					$oPaymentRequest->file_export_id	= $oResourceTypeHandler->getFileExport()->Id;
+					$oPaymentRequest->save();
+				}
 				
 				Log::getLog()->log("Delivering...");
 				$oResourceTypeHandler->deliver();

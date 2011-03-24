@@ -132,9 +132,21 @@ class Payment_Request extends ORM_Cached
 		return $aResults;
 	}
 
-	public static function generateTransactionReference($oPaymentRequest)
-	{
-		return "{$oPaymentRequest->account_id}.{$oPaymentRequest->id}";
+	public function generateTransactionReference() {
+		return "{$this->account_id}R{$this->id}";
+	}
+
+	public static function getForAccountAndInvoiceRun($mAccount, $mInvoiceRun) {
+		$mResult	= Query::run("
+			SELECT	*
+			FROM	payment_request
+			WHERE	account_id = <account_id>
+					AND invoice_run_id = <invoice_run_id>
+		", array(
+			'account_id'		=> (int)ORM::extractId($mAccount),
+			'invoice_run_id'	=> (int)ORM::extractId($mInvoiceRun)
+		));
+		return ($mResult === false) ? null : new self($mResult->fetch_assoc());
 	}
 
 	/**

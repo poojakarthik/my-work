@@ -25,6 +25,7 @@ class Cli_App_Payments extends Cli
 	const 	DIRECT_DEBIT_INELIGIBLE_CREDIT_CARD			= 'Invalid Credit Card reference';
 	const 	DIRECT_DEBIT_INELIGIBLE_CREDIT_CARD_EXPIRY	= 'Credit card has expired';
 	const 	DIRECT_DEBIT_INELIGIBLE_AMOUNT				= 'Overdue balance is too small';
+	const 	DIRECT_DEBIT_INELIGIBLE_RETRY				= 'Invoice Run has already been Direct Debited';
 	
 	function run()
 	{
@@ -294,15 +295,15 @@ class Cli_App_Payments extends Cli
 								                SELECT  MAX(CreatedOn)
 								                FROM    Invoice
 								                WHERE   Account = a.Id
-								                AND     NOW() > DATE_ADD(DueOn, INTERVAL {$oCollectionsConfig->direct_debit_due_date_offset} DAY)
+								                AND     NOW() >= DATE_ADD(DueOn, INTERVAL {$oCollectionsConfig->direct_debit_due_date_offset} DAY)
 								            )
 								        )
 								JOIN 	payment_terms pt ON (pt.customer_group_id = a.CustomerGroup)
 								JOIN 	billing_type bt ON (bt.id = a.BillingType)
-								WHERE	NOW() > DATE_ADD(DueOn, INTERVAL {$oCollectionsConfig->direct_debit_due_date_offset} DAY)
-								AND 	a.Archived IN (".ACCOUNT_STATUS_ACTIVE.", ".ACCOUNT_STATUS_CLOSED.")
-								AND 	pt.id IN (SELECT MAX(id) FROM payment_terms WHERE customer_group_id = a.CustomerGroup)
-								AND 	bt.id IN (".BILLING_TYPE_CREDIT_CARD.", ".BILLING_TYPE_DIRECT_DEBIT.");");
+								WHERE	NOW() >= DATE_ADD(DueOn, INTERVAL {$oCollectionsConfig->direct_debit_due_date_offset} DAY)
+										AND a.Archived IN (".ACCOUNT_STATUS_ACTIVE.", ".ACCOUNT_STATUS_CLOSED.")
+										AND pt.id IN (SELECT MAX(id) FROM payment_terms WHERE customer_group_id = a.CustomerGroup)
+										AND bt.id IN (".BILLING_TYPE_CREDIT_CARD.", ".BILLING_TYPE_DIRECT_DEBIT.");");
 		
 		Log::getLog()->log("Got accounts");
 		
@@ -318,7 +319,8 @@ class Cli_App_Payments extends Cli
 							self::DIRECT_DEBIT_INELIGIBLE_BANK_ACCOUNT 			=> 0, 
 							self::DIRECT_DEBIT_INELIGIBLE_CREDIT_CARD 			=> 0,
 							self::DIRECT_DEBIT_INELIGIBLE_CREDIT_CARD_EXPIRY	=> 0, 
-							self::DIRECT_DEBIT_INELIGIBLE_AMOUNT 				=> 0
+							self::DIRECT_DEBIT_INELIGIBLE_AMOUNT 				=> 0,
+							self::DIRECT_DEBIT_INELIGIBLE_RETRY					=> 0
 						);
 		
 		while ($aRow = $mResult->fetch_assoc())
@@ -333,6 +335,13 @@ class Cli_App_Payments extends Cli
 				continue;
 			}
 			$aAccountsApplied[$iAccountId]	= true;
+
+			// Check if this Invoice Run has been Direct Debited previously
+			// This prevents us from constantly re-attempting to Direct Debit dishonoured payments
+			if (Payment_Request::getForAccountAndInvoiceRun($iAccountId, $aRow['latest_invoice_run_id'])) {
+				Log::getLog()->log("ERROR: {$iAccountId} has already been Direct Debited for Invoice Run {$aRow['latest_invoice_run_id']}");
+				$aIneligible[self::DIRECT_DEBIT_INELIGIBLE_RETRY]++;
+			}
 			
 			// Determine if the direct debit details are valid & the origin id (cc or bank account number) & payment type (for the payment)
 			$oAccount				= Account::getForId($aRow['account_id']);
@@ -393,7 +402,7 @@ class Cli_App_Payments extends Cli
 				if ($fAmount < $aRow['direct_debit_minimum'])
 				{
 					// Not enough of a balance to be eligible
-					Log::getLog()->log("ERROR: {$iAccountId} doesn't owe enough, ineligible amount: {$fAmount} (less than minimum, which is {$aRow['direct_debit_minimum']})");
+					//Log::getLog()->log("ERROR: {$iAccountId} doesn't owe enough, ineligible amount: {$fAmount} (less than minimum, which is {$aRow['direct_debit_minimum']})");
 					$aIneligible[self::DIRECT_DEBIT_INELIGIBLE_AMOUNT]++;
 					continue;
 				}
@@ -425,7 +434,7 @@ class Cli_App_Payments extends Cli
 				
 				// Update the payments transaction reference (this done separately because the transaction reference 
 				// is derived from the payment request)
-				$oPayment->transaction_reference = Payment_Request::generateTransactionReference($oPaymentRequest);
+				$oPayment->transaction_reference = $oPaymentRequest->generateTransactionReference();
 				$oPayment->save();
 				
 				// Distribute the payment
@@ -582,7 +591,7 @@ class Cli_App_Payments extends Cli
 				
 				// Update the payments transaction reference (this done separately because the transaction reference 
 				// is derived from the payment request)
-				$oPayment->transaction_reference = Payment_Request::generateTransactionReference($oPaymentRequest);
+				$oPayment->transaction_reference = $oPaymentRequest->generateTransactionReference();
 				$oPayment->save();
 				
 				// Distribute the payment

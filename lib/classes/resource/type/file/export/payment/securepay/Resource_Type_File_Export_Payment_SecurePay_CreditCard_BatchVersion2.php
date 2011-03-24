@@ -8,6 +8,7 @@ class Resource_Type_File_Export_Payment_SecurePay_CreditCard_BatchVersion2 exten
 {
 	const	RESOURCE_TYPE = RESOURCE_TYPE_FILE_EXPORT_SECUREPAY_CREDIT_CARD_FILE;
 
+	const	RECORD_TYPE_HEADER		= 'HEADER';
 	const	RECORD_TYPE_TRANSACTION	= 'TRANSACTION';
 
 	const	NEW_LINE_DELIMITER	= "\n";
@@ -34,6 +35,7 @@ class Resource_Type_File_Export_Payment_SecurePay_CreditCard_BatchVersion2 exten
 
 		$this->_oFileExporter	= new File_Exporter_CSV();
 		$this->_configureFileExporter();
+		$this->_addHeaderRecord();
 	}
 
 	public function addRecord($mPaymentRequest)
@@ -81,6 +83,17 @@ class Resource_Type_File_Export_Payment_SecurePay_CreditCard_BatchVersion2 exten
 		return;
 	}
 
+	protected function _addHeaderRecord()
+	{
+		// Add to the file: The header is entirely static
+		$this->_oFileExporter->addRecord(
+			$this->_oFileExporter->getRecordType(self::RECORD_TYPE_HEADER)->newRecord(),
+			File_Exporter::RECORD_GROUP_BODY
+		);
+
+		return;
+	}
+
 	public function render()
 	{
 		// Filename
@@ -103,6 +116,14 @@ class Resource_Type_File_Export_Payment_SecurePay_CreditCard_BatchVersion2 exten
 	protected function _configureFileExporter()
 	{
 		$this->_iTimestamp	= time();
+
+		// Header
+		$this->_oFileExporter->registerRecordType(self::RECORD_TYPE_HEADER,
+			File_Exporter_RecordType::factory()
+				->addField('BatchVersion',
+					File_Exporter_Field::factory()->setDefaultValue('BATCHVERSION=2')
+				)
+		);
 
 		// Detail Record
 		$this->_oFileExporter->registerRecordType(self::RECORD_TYPE_TRANSACTION,

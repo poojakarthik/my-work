@@ -946,7 +946,7 @@ class JSON_Handler_Account extends JSON_Handler
 											);
 					
 					// Update the payments transaction reference
-					$oPayment->transaction_reference = Payment_Request::generateTransactionReference($oPaymentRequest);
+					$oPayment->transaction_reference = $oPaymentRequest->generateTransactionReference();
 					$oPayment->save();
 											
 					$aPaymentReceipt	= 	array(
