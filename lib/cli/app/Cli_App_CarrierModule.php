@@ -9,10 +9,11 @@
  */
 class Cli_App_CarrierModule extends Cli
 {
-	const	SWITCH_TEST_RUN		= 't';
-	const	SWITCH_MODE			= 'm';
-	const	SWITCH_CARRIER_ID	= 'c';
-	const	SWITCH_CLASS_NAME	= 'n';
+	const	SWITCH_TEST_RUN				= 't';
+	const	SWITCH_MODE					= 'm';
+	const	SWITCH_CARRIER_ID			= 'c';
+	const	SWITCH_CLASS_NAME			= 'n';
+	const	SWITCH_CUSTOMER_GROUP_ID	= 'g';
 	
 	function run()
 	{
@@ -42,8 +43,9 @@ class Cli_App_CarrierModule extends Cli
 	
 	protected function _createCarrierModule()
 	{
-		$iCarrierId	= $this->_arrArgs[self::SWITCH_CARRIER_ID];
-		$sClassName	= $this->_arrArgs[self::SWITCH_CLASS_NAME];
+		$iCarrierId			= $this->_arrArgs[self::SWITCH_CARRIER_ID];
+		$iCustomerGroupId	= $this->_arrArgs[self::SWITCH_CUSTOMER_GROUP_ID];
+		$sClassName			= $this->_arrArgs[self::SWITCH_CLASS_NAME];
 		
 		if (!is_subclass_of($sClassName, 'Resource_Type_Base'))
 		{
@@ -51,7 +53,7 @@ class Cli_App_CarrierModule extends Cli
 		}
 		
 		Log::getLog()->log("Creating Carrier Module for Carrier '{$iCarrierId}' with Class '{$sClassName}'");
-		Callback::create('createCarrierModule', $sClassName)->invoke($iCarrierId);
+		Callback::create('createCarrierModule', $sClassName)->invoke($iCarrierId, $iCustomerGroupId);
 	}
 	
 	function getCommandLineArguments()
@@ -83,6 +85,14 @@ class Cli_App_CarrierModule extends Cli
 				self::ARG_LABEL			=> "MODULE_CLASS_NAME",
 				self::ARG_DESCRIPTION	=> "Carrier Id",
 				self::ARG_VALIDATION	=> 'Cli::_validClassName("%1$s")'
+			),
+
+			self::SWITCH_CUSTOMER_GROUP_ID => array(
+				self::ARG_REQUIRED		=> false,
+				self::ARG_DEFAULT		=> null,
+				self::ARG_LABEL			=> "CUSTOMER_GROUP_ID",
+				self::ARG_DESCRIPTION	=> "Customer Group Id",
+				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
 			)
 		);
 	}
