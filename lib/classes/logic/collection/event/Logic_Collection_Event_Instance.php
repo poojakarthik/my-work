@@ -183,7 +183,7 @@ class Logic_Collection_Event_Instance
 	public function _registerWithArray() {
 
 		if (!array_key_exists($this->oDO->collection_event_id, self::$aEventInstancesWaitingForCompletion))
-			   self::$aEventInstancesWaitingForCompletion[$this->oDO->collection_event_id] = array();
+		   self::$aEventInstancesWaitingForCompletion[$this->oDO->collection_event_id] = array();
 		self::$aEventInstancesWaitingForCompletion[$this->oDO->collection_event_id][] = $this;
 	}
 
@@ -193,26 +193,31 @@ class Logic_Collection_Event_Instance
 	   * @return the number of event instances that were completed
 	 */
 
-	public static function completeWaitingInstances($bRefreshArray = false, $aParameters = null, $iAccountId = null)
+	public static function completeWaitingInstances($bBypassChachedEvents = false, $aParameters = null, $iAccountId = null)
 	{
+		$aEventInstances = array();
 
-		if ($bRefreshArray)
-		{
-			self::$aEventInstancesWaitingForCompletion = array();
+		if ($bBypassChachedEvents)
+		{			
 			$aInstances =self::getWaitingEvents($iAccountId);
 			foreach ($aInstances as $oInstance)
 			{
 				if ($oInstance->getInvocationId() == COLLECTION_EVENT_INVOCATION_AUTOMATIC)
 				{
-					$oInstance->_registerWithArray();
+					if (!array_key_exists($oInstance->collection_event_id, $aEventInstances))
+						$aEventInstances[$oInstance->collection_event_id] = array();
+					$aEventInstances[$oInstance->collection_event_id][] = $oInstance;
 				}
 			}
 		}
+		else
+		{
+			$aEventInstances = self::$aEventInstancesWaitingForCompletion;
+		}
 
 		$iCompletedEvents = 0;
-		foreach(self::$aEventInstancesWaitingForCompletion as $iEventId => $aCollectionEvents)
+		foreach($aEventInstances as $iEventId => $aCollectionEvents)
 		{
-
 			$oDataAccess	= DataAccess::getDataAccess();
 			$oDataAccess->TransactionStart();
 			Logic_Stopwatch::getInstance()->lap();
@@ -224,26 +229,29 @@ class Logic_Collection_Event_Instance
 					$aSuccesfullyInvokedInstances = array();
 					foreach ($aCollectionEvents as $oEventInstance)
 					{
-						try
+						if (!Logic_Collection_BatchProcess_Report::isFailedEventInstance($oEventInstance))
 						{
-							$sEventName = $sEventName === null ? $oEventInstance->getEventName() : $sEventName;
-							$invocationParameters = $aParameters !== null ? $aParameters[$oEventInstance->id] : null;
-							$oEventInstance->invoke($invocationParameters);
-							$aSuccesfullyInvokedInstances[] = $oEventInstance;
-						}
-						catch(Exception $e)
-						{
-							Log::getLog()->log("Exception occurred during '$sEventName' event invocation. Only this event instance will be rolled back.");
-							if ($e instanceof Exception_Database)
+							try
 							{
-								throw $e;
+								$sEventName = $sEventName === null ? $oEventInstance->getEventName() : $sEventName;
+								$invocationParameters = $aParameters !== null ? $aParameters[$oEventInstance->id] : null;
+								$oEventInstance->invoke($invocationParameters);
+								$aSuccesfullyInvokedInstances[] = $oEventInstance;
 							}
-							else
+							catch(Exception $e)
 							{
-								$oEventInstance->setException($e);
-								Logic_Collection_BatchProcess_Report::addEvent($oEventInstance);
-							}
+								Log::getLog()->log("Exception occurred during '$sEventName' event invocation. Only this event instance will be rolled back.");
+								if ($e instanceof Exception_Database)
+								{
+									throw $e;
+								}
+								else
+								{
+									$oEventInstance->setException($e);
+									Logic_Collection_BatchProcess_Report::addEvent($oEventInstance);
+								}
 
+							}
 						}
 					}
 
@@ -282,7 +290,8 @@ class Logic_Collection_Event_Instance
 			}
 
 		}
-		self::$aEventInstancesWaitingForCompletion = array();
+		if (!$bBypassChachedEvents)
+			self::$aEventInstancesWaitingForCompletion = array();
 		return $iCompletedEvents;
 	}
 
