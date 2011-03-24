@@ -88,7 +88,7 @@ class Cli_App_Collections extends Cli
 				$this->log("Running in test mode. All changes will be rolled back.", TRUE);
 			}
 
-			$iAccountId;
+			$iAccountId = NULL;
 			$aPromises;
 			$aActiveSuspensions;
 			$aAccounts;
@@ -175,7 +175,7 @@ class Cli_App_Collections extends Cli
 					}
 
 					$iCompletedInstances = 0;
-					Logic_Collection_Event_Instance::completeWaitingInstances(true);
+					
 					Logic_Stopwatch::getInstance()->start();
 					$iIteration = 1;
 					do
