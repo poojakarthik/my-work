@@ -55,7 +55,8 @@ var Component_Account_Payment_Create = Class.create(
 										sLabel			: 'Amount',
 										mMandatory		: true, 
 										mEditable		: true,
-										iDecimalPlaces	: 2
+										iDecimalPlaces	: 2,
+										fnValidate		: Component_Account_Payment_Create._validateAmount
 									}
 								);
 		oAmountControl.setRenderMode(Control_Field.RENDER_MODE_EDIT);
@@ -389,5 +390,17 @@ Object.extend(Component_Account_Payment_Create,
 		}
 		
 		fnCallback(aOptions);
+	},
+	
+	_validateAmount : function(mValue)
+	{
+		if (Reflex_Validation.Exception.float(mValue))
+		{
+			if (parseInt(mValue) > 0)
+			{
+				return true;
+			}
+			throw 'Amount must be greater than zero';
+		}
 	}
 });

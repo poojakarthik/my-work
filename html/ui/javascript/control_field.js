@@ -328,7 +328,7 @@ var Control_Field	= Class.create
 
 					sValidationReason	= sValidationReason ? sValidationReason : this.getValidationReason();
 					this.setValidationReason(sValidationReason);
-					var	sValidationMessage	= "'" + mElementValue + "' is not a valid " + this.getLabel() + "." + sValidationReason;
+					var	sValidationMessage	= "'" + mElementValue + "' is not a valid " + this.getLabel() + ". " + sValidationReason;
 					if (bSilentFail)
 					{
 						return false;

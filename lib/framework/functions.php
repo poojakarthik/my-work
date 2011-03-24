@@ -3287,12 +3287,7 @@ function IsInvoicing($intCustomerGroupId=null, $intAccountId=null)
  */
 function GetCurrentDateAndTimeForMySQL()
 {
-	// StatementSelect doesn't work unless you specify a table name
-	$selDatetime = new StatementSelect("Account", Array("CurrentTime" => "NOW()"));
-	$selDatetime->Execute();
-	$arrDatetime = $selDatetime->Fetch();
-
-	return $arrDatetime['CurrentTime'];
+	return DataAccess::getDataAccess()->getNow();
 }
 
 //------------------------------------------------------------------------//

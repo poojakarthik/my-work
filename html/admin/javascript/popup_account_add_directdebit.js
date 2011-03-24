@@ -581,6 +581,18 @@ Object.extend(Popup_Account_Add_DirectDebit,
 		
 		fnCallback(oResponse.aInfo);
 	},
+	
+	_validatePaymentAmount : function(mValue)
+	{
+		if (Reflex_Validation.Exception.float(mValue))
+		{
+			if (parseInt(mValue) > 0)
+			{
+				return true;
+			}
+			throw 'Amount must be greater than zero';
+		}
+	}
 });
 
 //
@@ -651,7 +663,7 @@ Popup_Account_Add_DirectDebit.FIELDS[Popup_Account_Add_DirectDebit.FIELD_PAYMENT
 		sLabel		: 'Amount To Pay',
 		mEditable	: true,
 		mVisible	: true,
-		fnValidate	: Reflex_Validation.float
+		fnValidate	: Popup_Account_Add_DirectDebit._validatePaymentAmount
 	}
 };
 Popup_Account_Add_DirectDebit.FIELDS[Popup_Account_Add_DirectDebit.FIELD_PAYMENT_AMOUNT_BALANCE]	=
