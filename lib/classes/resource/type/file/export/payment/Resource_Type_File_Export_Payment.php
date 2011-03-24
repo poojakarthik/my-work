@@ -101,9 +101,9 @@ abstract class Resource_Type_File_Export_Payment extends Resource_Type_File_Expo
 		return parent::getExportPath()."payment/{$iCarrier}/{$sClass}/";
 	}
 	
-	static public function createCarrierModule($iCarrier, $sClassName, $iResourceType, $iCarrierModuleType=self::CARRIER_MODULE_TYPE)
+	static public function createCarrierModule($iCarrier, $iCustomerGroup, $sClassName, $iResourceType, $iCarrierModuleType=self::CARRIER_MODULE_TYPE)
 	{
-		parent::createCarrierModule($iCarrier, $sClassName, $iResourceType, $iCarrierModuleType);
+		parent::createCarrierModule($iCarrier, $iCustomerGroup, $sClassName, $iResourceType, $iCarrierModuleType);
 	}
 }
 ?>

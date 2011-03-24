@@ -62,7 +62,7 @@ abstract class Resource_Type_File_Deliver extends Resource_Type_Base
 	
 	static public function createCarrierModule($iCarrier, $sClassName, $iResourceType)
 	{
-		parent::createCarrierModule($iCarrier, $sClassName, $iResourceType, self::CARRIER_MODULE_TYPE);
+		parent::createCarrierModule($iCarrier, null, $sClassName, $iResourceType, self::CARRIER_MODULE_TYPE);
 	}
 	
 	public static function enableTestMode()

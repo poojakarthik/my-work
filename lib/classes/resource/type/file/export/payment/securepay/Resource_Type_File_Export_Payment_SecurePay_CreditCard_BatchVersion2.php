@@ -132,9 +132,9 @@ class Resource_Type_File_Export_Payment_SecurePay_CreditCard_BatchVersion2 exten
 	 * COMMON METHODS FOR ALL Resource_Type_Base CHILDREN
 	 **************************************************************************/
 
-	static public function createCarrierModule($iCarrier, $sClass=__CLASS__)
+	static public function createCarrierModule($iCarrier, $iCustomerGroup, $sClass=__CLASS__)
 	{
-		parent::createCarrierModule($iCarrier, $sClass, self::RESOURCE_TYPE);
+		parent::createCarrierModule($iCarrier, $iCustomerGroup, $sClass, self::RESOURCE_TYPE);
 	}
 
 	static public function defineCarrierModuleConfig()

@@ -29,7 +29,7 @@ abstract class Resource_Type_Base
 		return $this->_oCarrierModule->FileType;
 	}
 	
-	static public function createCarrierModule($iCarrier, $sClassName, $iResourceType, $iCarrierModuleType)
+	static public function createCarrierModule($iCarrier, $iCustomerGroup, $sClassName, $iResourceType, $iCarrierModuleType)
 	{
 		if (!is_subclass_of($sClassName, __CLASS__))
 		{
@@ -47,10 +47,14 @@ abstract class Resource_Type_Base
 		{
 			throw new Exception("Carrier Module Type '{$iCarrierModuleType}' can not be found");
 		}
+		if ($iCustomerGroup !== null && !Customer_Group::getForId($iCustomerGroup)) {
+			throw new Exception("Customer Group '{$iCustomerGroup}' can not be found");
+		}
 		
 		// Carrier Module
 		$oCarrierModule	= new Carrier_Module();
 		$oCarrierModule->Carrier			= $iCarrier;
+		$oCarrierModule->customer_group		= $iCustomerGroup;
 		$oCarrierModule->Type				= $iCarrierModuleType;
 		$oCarrierModule->Module				= $sClassName;
 		$oCarrierModule->FileType			= $iResourceType;
