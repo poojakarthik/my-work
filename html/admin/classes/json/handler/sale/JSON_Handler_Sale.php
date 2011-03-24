@@ -666,7 +666,7 @@ class JSON_Handler_Sale extends JSON_Handler
 			return $response;
 		}
 		$responseHTML = $response['PopupContent'];
-		$responseHTML = str_replace("<input type='button' value='Close' onclick='Vixen.Popup.Close(this)'></input>", "<input type='button' value='Close' onclick='Sale.hideHistory()'></input>", $responseHTML);
+		$responseHTML = str_replace("<input type='button' value='Close' onclick='Vixen.Popup.Close(this)'></input>", "<input type='button' value='Close' onclick='SP.Sale.hideHistory()'></input>", $responseHTML);
 		return $responseHTML;
 	}
 	
