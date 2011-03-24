@@ -26,7 +26,7 @@ class Flex_Rollout_Version_000241 extends Flex_Rollout_Version
 								array
 								(
 									'sDescription'		=>	"Setup YBS as recipient of the new email notification",
-									'sAlterSQL'			=>	"INSERT INTO email_notification_address  VALUES (NULL, (SELECT id FROM email_notification WHERE system_name = 'COLLECTIONS_BATCH_PROCESS_REPORT'), (SELECT id FROM email_address_usage WHERE const_name = 'EMAIL_ADDRESS_USAGE_TO'), NULL );",
+									'sAlterSQL'			=>	"INSERT INTO email_notification_address  VALUES (NULL, (SELECT id FROM email_notification WHERE system_name = 'COLLECTIONS_BATCH_PROCESS_REPORT'), (SELECT id FROM email_address_usage WHERE const_name = 'EMAIL_ADDRESS_USAGE_TO'), 'ybs-admin@ybs.net.au', NULL );",
 									'sRollbackSQL'		=>	"DELETE FROM email_notification_address WHERE email_notification_id = (select id from email_notification_address WHERE system_name = 'COLLECTIONS_BATCH_PROCESS_REPORT');",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								)
