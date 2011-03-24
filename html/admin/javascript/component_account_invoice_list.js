@@ -121,8 +121,8 @@ var Component_Account_Invoice_List = Class.create(
 			true
 		);
 		
-		// Redistribute balances button (god users only)
-		if (this._oPermissions.bUserIsGod)
+		// Redistribute balances button (Super Admin users only)
+		if (this._oPermissions.bUserHasRedistributePerm)
 		{
 			oSection.addToHeaderOptions(
 				$T.button({class: 'icon-button'},

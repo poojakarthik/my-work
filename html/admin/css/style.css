@@ -9678,6 +9678,19 @@ div.component-collections-scenario > table.reflex
 	vertical-align	: middle;
 }
 
+.popup-account-promise-edit p {
+	margin	: 0;
+}
+/*
+.popup-account-promise-edit p:not(:first-child) {
+	margin-top	: 0.25em;
+}
+*/
+.popup-account-promise-edit p small {
+	font-style	: italic;
+	font-size	: 0.8em;
+}
+
 /************************** END - Account: Edit Promise Popup - END **************************/
 
 /************************** START - Account: New Promise Popup - START **************************/

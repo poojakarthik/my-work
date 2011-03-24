@@ -356,18 +356,20 @@ class JSON_Handler_Invoice extends JSON_Handler
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 		try
 		{
-			$bUserHasOperatorPerm 	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
-			$bUserHasViewPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW);
-			$bUserHasExternalPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_EXTERNAL);
-			$bUserHasInterimPerm	= (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT) || AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN));
+			$bUserHasOperatorPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
+			$bUserHasViewPerm			= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW);
+			$bUserHasExternalPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_EXTERNAL);
+			$bUserHasInterimPerm		= (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT) || AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN));
+			$bUserHasRedistributePerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN);
 			return	array(
 						'bSuccess' 		=> true,
 						'oPermissions'	=> 	array(
-												'bUserHasOperatorPerm' 	=> $bUserHasOperatorPerm,
-												'bUserHasViewPerm' 		=> $bUserHasViewPerm,
-												'bUserHasExternalPerm' 	=> $bUserHasExternalPerm,
-												'bUserHasInterimPerm'	=> $bUserHasInterimPerm,
-												'bUserIsGod'			=> $bUserIsGod
+												'bUserHasOperatorPerm'		=> $bUserHasOperatorPerm,
+												'bUserHasViewPerm'			=> $bUserHasViewPerm,
+												'bUserHasExternalPerm'	 	=> $bUserHasExternalPerm,
+												'bUserHasInterimPerm'		=> $bUserHasInterimPerm,
+												'bUserHasRedistributePerm'	=> $bUserHasRedistributePerm,
+												'bUserIsGod'				=> $bUserIsGod
 											)
 					);
 		}

@@ -68,6 +68,10 @@ class Collection_Promise extends ORM_Cached
 	public function getInstalments() {
 		return Collection_Promise_Instalment::getForPromiseId($this->id);
 	}
+
+	public function getReason() {
+		return Collection_Promise_Reason::getForId($this->collection_promise_reason_id);
+	}
 	
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START

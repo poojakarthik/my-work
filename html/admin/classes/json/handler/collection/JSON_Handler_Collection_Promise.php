@@ -78,6 +78,8 @@ class JSON_Handler_Collection_Promise extends JSON_Handler
 				foreach ($aExistingPromiseInstalments as $oExistingPromiseInstalmentORM) {
 					$oExistingPromise->aInstalments[]	= $oExistingPromiseInstalmentORM->toStdClass();
 				}
+				
+				$oExistingPromise->collection_promise_reason_name	= $oExistingPromiseORM->getReason()->name;
 			}
 
 			// Existing Suspension
@@ -85,6 +87,7 @@ class JSON_Handler_Collection_Promise extends JSON_Handler
 				$oExistingSuspension	= $oExistingSuspensionORM->toStdClass();
 				
 				$oExistingSuspension->collection_suspension_reason_system	= $oExistingSuspensionORM->getReason()->system_name;
+				$oExistingSuspension->collection_suspension_reason_name		= $oExistingSuspensionORM->getReason()->name;
 			}
 
 			// Permissions

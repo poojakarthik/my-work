@@ -243,10 +243,11 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 		return fTotalPromised;
 	},
 
-	_updateTotalPromised	: function (bForceControlValue) {
+	_updateTotalPromised	: function () {
 		var	fTotalPromised	= this._getTotalPromised(),
 			fTotalBalance	= this._getTotalBalance();
-
+		
+		// If we're not specifying the Total Promised directly, then update the Total Promised field
 		if (!this.CONTROLS.oSpecifyTotalPromised.getElementValue()) {
 			this.CONTROLS.oTotalPromised.setValue(fTotalPromised);
 		}
@@ -293,9 +294,13 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 	_distributeTotalPromisedOverInvoices	: function () {
 		var	fPromisedRemaining	= this._getTotalPromised(),
 			fOldPromisedRemaining,
-			fInvoiceAmount;
+			fInvoiceAmount,
+			aInvoiceIds	= Object.keys(this.CONTROLS.oInvoices).reverse(),
+			iInvoiceId;
 
-		for (var iInvoiceId in this.CONTROLS.oInvoices) {
+		//for (var iInvoiceId in this.CONTROLS.oInvoices) {
+		for (var i = 0, j = aInvoiceIds.length; i < j; i++) {
+			iInvoiceId				= aInvoiceIds[i];
 			fOldPromisedRemaining	= parseFloat(fPromisedRemaining.toFixed(2));
 			fPromisedRemaining		-= Math.max(0, Math.min(fOldPromisedRemaining, this._oData.outstanding_invoices[iInvoiceId].balance));
 			fInvoiceAmount			= (fOldPromisedRemaining - fPromisedRemaining).toFixed(2);
@@ -543,7 +548,7 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 				oSpecifyTotalPromised	= Control_Field.factory('checkbox', {
 											sLabel			: 'Specify Total Promise',
 											mEditable		: true,
-											mMandatory		: true,
+											mMandatory		: false,
 											mValue			: false
 										}),
 				oTotalPromised			= Control_Field.factory('number', {
@@ -567,6 +572,7 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 											),
 											$T.thead(
 												$T.tr(
+													$T.th(''),
 													$T.th('Invoice Date'),
 													$T.th('Due Date'),
 													$T.th('New Charges'),
@@ -577,7 +583,7 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 											$T.tbody({'class':'popup-account-promise-edit-invoices-detail alternating'}),
 											$T.tfoot(
 												$T.tr(
-													$T.th({colspan:4},
+													$T.th({colspan:5},
 														'Total Promised:'
 													),
 													$T.th(
@@ -586,7 +592,7 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 													)
 												),
 												$T.tr(
-													$T.th({colspan:4},
+													$T.th({colspan:5},
 														'Total Balance Remaining:'
 													),
 													$T.th(
@@ -671,7 +677,7 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 														),
 														$T.tr({'class':'popup-account-promise-edit-details-replacing'},
 															$T.th({'class':'label'}, 'Replacing'),
-															$T.td({'class':'input'}, 'Nothing')
+															$T.td({'class':'input'})
 														),
 														$T.tr(
 															$T.th({'class':'label'}, 'Reason for Promise'),
@@ -713,10 +719,40 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 			};
 
 			// Replacing
-			if (true) {
+			var	oReplacing		= oDOM.select('.popup-account-promise-edit-details-replacing').first(),
+				oReplacingData	= oReplacing.select('.input').first();
+			if (this._oData.existing_suspension) {
 				// Replacing a Suspension
-			} else if (true) {
+				oReplacingData.appendChild(
+					$T.div(
+						$T.p(this._oData.existing_suspension.collection_suspension_reason_name + ' Suspension'),
+						$T.p(
+							$T.small(
+								'Effective from ' + Date.$parseDate(this._oData.existing_suspension.start_datetime, 'Y-m-d H:i:s').$format('j M Y H:i:s') +
+								' to ' + Date.$parseDate(this._oData.existing_suspension.proposed_end_datetime, 'Y-m-d H:i:s').$format('j M Y H:i:s')
+							)
+						)
+					)
+				);
+			} else if (this._oData.existing_promise) {
 				// Replacing a Promise
+				oReplacingData.appendChild(
+					$T.div(
+						$T.p('Promise to Pay: ' + this._oData.existing_promise.collection_promise_reason_name),
+						$T.p(
+							$T.small(
+								'Ending on ' + Date.$parseDate(this._oData.existing_promise.aInstalments.last().due_date, 'Y-m-d').$format('j M Y') +
+								' with ' + this._oData.existing_promise.aInstalments.findAll(
+									function(oInstalment) {
+										return ((new Date(oInstalment.due_date)) >= (new Date()).truncate(Date.DATE_INTERVAL_DAY));
+									}
+								).length + ' instalments remaining'
+							)
+						)
+					)
+				);
+			} else {
+				oReplacing.hide();
 			}
 
 			// Invoices
@@ -744,6 +780,11 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 					oPromisedBalance.setRenderMode(Control_Field.RENDER_MODE_EDIT);
 					oInvoicesDetails.appendChild(
 						$T.tr(
+							$T.td($T.img({
+								'src'	: '../admin/img/template/invoice_run_type/'+oData.outstanding_invoices[iInvoiceId].invoice_run_type_constant.toLowerCase()+'.png',
+								'alt'	: oData.outstanding_invoices[iInvoiceId].invoice_run_type_name,
+								'title'	: oData.outstanding_invoices[iInvoiceId].invoice_run_type_name
+							})),
 							$T.td((new Date(oData.outstanding_invoices[iInvoiceId].invoice_date)).$format('j M Y')),
 							$T.td((new Date(oData.outstanding_invoices[iInvoiceId].due_date)).$format('j M Y')),
 							$T.td('$' + oData.outstanding_invoices[iInvoiceId].grand_total.toFixed(2)),
