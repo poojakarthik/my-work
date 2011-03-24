@@ -88,7 +88,7 @@ class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_T
 	public function render()
 	{
 		// Filename
-		$sFilename			= $this->getConfig()->FileNamePrefix.'0009'.'.txt';
+		$sFilename			= $this->getConfig()->SupplierUserName.'_'.$this->getConfig()->FileDescription.'_'.date('Ymd').'.txt';
 		$this->_sFilePath	= self::getExportPath($this->getCarrierModule()->Carrier, __CLASS__).$sFilename;
 		
 		// Add footer record
@@ -388,7 +388,6 @@ class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_T
 	static public function defineCarrierModuleConfig()
 	{
 		return array_merge(parent::defineCarrierModuleConfig(), array(
-			'FileNamePrefix'		=> array('Description' => '3-Character CustomerGroup Prefix for the FileName (eg. SAE, VOI)'),
 			'BankAbbreviation'		=> array('Description' => '3-Character Approved Financial Institution Abbreviation (eg. WBC for Westpac)'),
 			'SupplierUserName'		=> array('Description' => 'User Name (as per User Preferred Specification)'),
 			'SupplierUserNumber'	=> array('Description' => '6-Digit User Idenitification Number allocated by the Australian Payments Clearing Association (APCA)', 'Type' => DATA_TYPE_INTEGER),

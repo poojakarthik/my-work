@@ -27,12 +27,9 @@ class Resource_Type_File_Deliver_Email extends Resource_Type_File_Deliver
 		$oEmailFlex->setBodyText($this->getConfig()->EmailBody);
 		
 		// Attachment (file to deliver)
-		$rFInfo		= finfo_open(FILEINFO_MIME);
-		$sMimeType	= finfo_file($rFInfo, $sLocalPath);
-		finfo_close($rFInfo);
 		$oEmailFlex->createAttachment(
 			file_get_contents($sLocalPath), 
-			$sMimeType, 
+			@mime_content_type($sLocalPath),
 			Zend_Mime::DISPOSITION_ATTACHMENT, 
 			Zend_Mime::ENCODING_BASE64, 
 			basename($sLocalPath)
