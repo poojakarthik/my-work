@@ -409,7 +409,10 @@ class Credit_Card_Payment
 		
 		if ($params)
 		{
-			return "<input type='button' id='online-credit-card-payment-button' class='online-credit-card-payment-button' value=\"Pay by Credit Card\" onclick=\"new Popup_Credit_Card_Payment(". htmlspecialchars($params[0], ENT_QUOTES) .");return false;\" />";
+			return "	<button id='online-credit-card-payment-button' class='online-credit-card-payment-button icon-button' onclick=\"new Popup_Credit_Card_Payment(". htmlspecialchars($params[0], ENT_QUOTES) .");return false;\">
+							<img src='../admin/img/template/payment.png'/>	
+							<span>Pay by Credit Card</span>
+						</button>";
 			
 			/*
 			// Customer

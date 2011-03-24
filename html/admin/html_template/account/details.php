@@ -323,7 +323,10 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 				// Button for creating a promise if there isn' already one
 				if ($oActivePromise === null)
 				{
-					echo "<button onclick='javascript: new Popup_Account_Promise_Edit(".DBO()->Account->Id->Value.");'>Create Promise to Pay</button>";
+					echo "	<button class='icon-button' onclick='javascript: new Popup_Account_Promise_Edit(".DBO()->Account->Id->Value.");'>
+								<img src='../admin/img/template/payment.png'/>
+								<span>Create Promise to Pay</span>
+							</button>";
 				}
 			?></div>
 			<div id="Account.Balance.Label" class="DefaultLabel">
@@ -389,7 +392,10 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		$sSuspendFromCollectionsButton = '';
 		if (!$oLogicAccount->isInSuspension())
 		{
-			$sSuspendFromCollectionsButton = " <button onclick='javascript: new Popup_Account_Suspend_From_Collections(".DBO()->Account->Id->Value.");'>Suspend From Collections</button>";
+			$sSuspendFromCollectionsButton = "	<button class='icon-button' onclick='javascript: new Popup_Account_Suspend_From_Collections(".DBO()->Account->Id->Value.");'>
+													<img src='../admin/img/template/collection_suspension.png'/>
+													<span>Suspend From Collections</span>
+												</button>";
 		}
 		echo "	<div class='DefaultElement'>
 					<div id='Account.most_recent_collection_event.Output' name='Account.most_recent_collection_event' class='DefaultOutput'>{$sLastEvent}{$sSuspendFromCollectionsButton}</div>
@@ -523,7 +529,13 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			// This account has a TIO reference number.  Display it
 			$strTIORefNum = htmlspecialchars(DBO()->Account->tio_reference_number->Value, ENT_QUOTES);
 			echo "	<div class='DefaultElement'>
-						<div class='DefaultOutput'>$strTIORefNum <button onclick='javascript: new Popup_Account_TIO_Complaint_View(".DBO()->Account->Id->Value.", Vixen.AccountDetails.CancelEdit.bind(Vixen.AccountDetails));'>View Complaint Details</button></div>
+						<div class='DefaultOutput'>
+							$strTIORefNum 
+							<button class='icon-button' onclick='javascript: new Popup_Account_TIO_Complaint_View(".DBO()->Account->Id->Value.", Vixen.AccountDetails.CancelEdit.bind(Vixen.AccountDetails));'>
+								<img src='../admin/img/template/magnifier.png'/>
+								<span>View Complaint Details</span>
+							</button>
+						</div>
 						<div class='DefaultLabel'>
 							<span> &nbsp;</span>
 							<span>T.I.O. Reference Number :</span>
@@ -534,7 +546,13 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		{
 			// This Account has no tio_reference_number, allow creation of a complaint
 			echo "	<div class='DefaultElement'>
-						<div class='DefaultOutput'>None <button onclick='javascript: new Popup_Account_TIO_Complaint(".DBO()->Account->Id->Value.", Vixen.AccountDetails.CancelEdit.bind(Vixen.AccountDetails));'>Create a TIO Complaint</button></div>
+						<div class='DefaultOutput'>
+							None
+							<button class='icon-button' onclick='javascript: new Popup_Account_TIO_Complaint(".DBO()->Account->Id->Value.", Vixen.AccountDetails.CancelEdit.bind(Vixen.AccountDetails));'>
+								<img src='../admin/img/template/collection_suspension.png'/>
+								<span>Create a TIO Complaint</span>
+							</button>
+						</div>
 						<div class='DefaultLabel'>
 							<span> &nbsp;</span>
 							<span>T.I.O. Reference Number :</span>
@@ -554,7 +572,10 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		
 		// Collection Scenario
 		$oScenario 		= Logic_Account::getInstance(DBO()->Account->Id->Value)->getCurrentScenarioInstance()->getScenario();
-		$sEditButton	= "<button onclick='javascript: new Popup_Account_Collection_Scenario(".DBO()->Account->Id->Value.", {$oScenario->id}, Vixen.AccountDetails.CancelEdit.bind(Vixen.AccountDetails));'>Change</button>";
+		$sEditButton	= "	<button class='icon-button' onclick='javascript: new Popup_Account_Collection_Scenario(".DBO()->Account->Id->Value.", {$oScenario->id}, Vixen.AccountDetails.CancelEdit.bind(Vixen.AccountDetails));'>
+								<img src='../admin/img/template/pencil.png'/>
+								<span>Change</span>
+							</button>";
 		echo "	<div class='DefaultElement'>
 					<div class='DefaultOutput'>{$oScenario->name} {$sEditButton}</div>
 					<div class='DefaultLabel'>

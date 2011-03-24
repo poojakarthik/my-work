@@ -343,14 +343,20 @@ var Component_Account_Collections = Class.create(
 		{
 			// End Suspension
 			this._oButtonContainer.appendChild(
-				$T.button('End Collections Suspension').observe('click', this._endSuspension.bind(this))	
+				$T.button({class: 'icon-button'},
+					$T.img({src: '../admin/img/template/collection_suspension_end.png'}),
+					$T.span('End Collections Suspension')
+				).observe('click', this._endSuspension.bind(this))	
 			);
 		}
 		else if (!oResponse.oPromise)
 		{
 			// Start Suspension
 			this._oButtonContainer.appendChild(
-				$T.button('Suspend From Collections').observe('click', this._startSuspension.bind(this))	
+				$T.button({class: 'icon-button'},
+					$T.img({src: '../admin/img/template/collection_suspension_start.png'}),
+					$T.span('Suspend From Collections')
+				).observe('click', this._startSuspension.bind(this))	
 			);
 		}
 		
@@ -359,14 +365,20 @@ var Component_Account_Collections = Class.create(
 		{
 			// Cancel Promise
 			this._oButtonContainer.appendChild(
-				$T.button('Cancel Promise to Pay').observe('click', this._cancelPromise.bind(this, false))	
+				$T.button({class: 'icon-button'},
+					$T.img({src: '../admin/img/template/delete.png'}),
+					$T.span('Cancel Promise to Pay')
+				).observe('click', this._cancelPromise.bind(this, false))	
 			);
 		}
 		else
 		{
 			// Create Promise
 			this._oButtonContainer.appendChild(
-				$T.button('Create Promise to Pay').observe('click', this._createPromise.bind(this))	
+				$T.button({class: 'icon-button'},
+					$T.img({src: '../admin/img/template/payment.png'}),
+					$T.span('Create Promise to Pay')
+				).observe('click', this._createPromise.bind(this))	
 			);
 		}
 	},

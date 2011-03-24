@@ -8,6 +8,7 @@ var Popup_Collections_Event_Type = Class.create(Reflex_Popup,
 		this._fnOnComplete = fnOnComplete;
 		
 		var oContentDiv = $T.div();
+		this.setIcon('../admin/img/template/pencil.png');
 		this.setTitle('Create Event Type');
 		this.setContent(oContentDiv);
 		this.addCloseButton();

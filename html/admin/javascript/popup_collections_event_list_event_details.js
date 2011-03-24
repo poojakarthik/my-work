@@ -33,6 +33,7 @@ var Popup_Collections_Event_List_Details = Class.create(Reflex_Popup,
 							);
 		this._oTBody = oContentDiv.select('tbody').first();
 		
+		this.setIcon('../admin/img/template/magnifier.png');
 		this.setTitle('Event Details');
 		this.addCloseButton();
 		this.setContent(oContentDiv);
@@ -54,7 +55,7 @@ var Popup_Collections_Event_List_Details = Class.create(Reflex_Popup,
 				aRows.push(
 					$T.tr(
 						$T.th('Document Template Type'),
-						$T.td(this._oEventDetails.correspondence_template.name)
+						$T.td(this._oEventDetails.document_template_type ? this._oEventDetails.document_template_type.name : 'None')
 					)
 				);
 				break;

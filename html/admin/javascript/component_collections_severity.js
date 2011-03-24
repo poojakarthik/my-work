@@ -99,9 +99,18 @@ var Component_Collections_Severity = Class.create(
 									)
 								),
 								$T.div({class: 'component-collections-severity-buttons'},
-									$T.button('Save as Draft').observe('click', this._saveAsDraft.bind(this)),
-									$T.button('Save and Commit').observe('click', this._saveAndCommit.bind(this)),
-									(this._fnOnCancel ? $T.button('Cancel').observe('click', this._cancel.bind(this)) : null)
+									$T.button({class: 'icon-button'},
+										$T.img({src: '../admin/img/template/page_white_add.png'}),
+										$T.span('Save as Draft')
+									).observe('click', this._saveAsDraft.bind(this)),
+									$T.button({class: 'icon-button'},
+										$T.img({src: '../admin/img/template/new.png'}),
+										$T.span('Save and Commit')
+									).observe('click', this._saveAndCommit.bind(this)),
+									(this._fnOnCancel ?	$T.button({class: 'icon-button'},
+															$T.img({src: '../admin/img/template/delete.png'}),
+															$T.span('Cancel')
+														).observe('click', this._cancel.bind(this)) : null)
 								)
 							);
 		
@@ -294,8 +303,12 @@ var Component_Collections_Severity = Class.create(
 		var oContainer			= $T.div({class: 'component-collections-severity-transfer'});
 		var oFromSelect 		= $T.select({size: iSize, multiple: true});
 		var oToSelect			= $T.select({size: iSize, multiple: true});
-		var oTransferToButton	= $T.button('>>').observe('click', this._transferTo.bind(this, oContainer, null));
-		var oTransferFromButton	= $T.button('<<').observe('click', this._transferFrom.bind(this, oContainer, null));
+		var oTransferToButton	=	$T.button({class: 'icon-button'},
+										$T.img({src: '../admin/img/template/icon_moveright.png'})
+									).observe('click', this._transferTo.bind(this, oContainer, null));
+		var oTransferFromButton	= 	$T.button({class: 'icon-button'},
+										$T.img({src: '../admin/img/template/icon_moveleft.png'})
+									).observe('click', this._transferFrom.bind(this, oContainer, null));
 		var oViewModeDiv		= $T.div({class: 'component-collections-severity-transfer-view'});
 		
 		oContainer.appendChild(

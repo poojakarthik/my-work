@@ -815,16 +815,18 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 					$oDetails->correspondence_template = Correspondence_Template::getForId($oDetails->correspondence_template_id)->toStdClass();
 					
 					// document_template_type_id
-					$oQuery		= new Query();
-					$mResult	= $oQuery->Execute("SELECT 	*
-													FROM 	DocumentTemplateType
-													WHERE	Id = {$oDetails->document_template_type_id}");
-					if ($mResult === false)
+					if ($oDetails->document_template_type_id !== null)
 					{
-						throw new Exception("Failed to get DocumentTemplateType record for event {$iEventId}. ".$oQuery->Error());
+						$oQuery		= new Query();
+						$mResult	= $oQuery->Execute("SELECT 	*
+														FROM 	DocumentTemplateType
+														WHERE	Id = {$oDetails->document_template_type_id}");
+						if ($mResult === false)
+						{
+							throw new Exception("Failed to get DocumentTemplateType record for event {$iEventId}. ".$oQuery->Error());
+						}
+						$oDetails->document_template_type = $mResult->fetch_assoc();
 					}
-					$oDetails->document_template_type = $mResult->fetch_assoc();
-					
 					break;
 					
 				case COLLECTION_EVENT_TYPE_IMPLEMENTATION_REPORT:
@@ -876,7 +878,7 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		}
 		catch (Exception $oException)
 		{
-			$sMessage = $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
+			$sMessage = $bUserIsGod ? $oException->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
 			return 	array(
 						'bSuccess'	=> false,
 						'sMessage'	=> $sMessage
