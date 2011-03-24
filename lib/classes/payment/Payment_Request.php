@@ -136,15 +136,20 @@ class Payment_Request extends ORM_Cached
 		return "{$this->account_id}R{$this->id}";
 	}
 
-	public static function getForAccountAndInvoiceRun($mAccount, $mInvoiceRun) {
+	public static function getForAccountAndInvoiceRun($mAccount, $mInvoiceRun, $bIncludeCancelled=false) {
 		$mResult	= Query::run("
 			SELECT	*
 			FROM	payment_request
 			WHERE	account_id = <account_id>
 					AND invoice_run_id = <invoice_run_id>
+					AND (
+						<include_cancelled> = 1
+						OR payment_request_status_id != ".PAYMENT_REQUEST_STATUS_CANCELLED."
+					)
 		", array(
 			'account_id'		=> (int)ORM::extractId($mAccount),
-			'invoice_run_id'	=> (int)ORM::extractId($mInvoiceRun)
+			'invoice_run_id'	=> (int)ORM::extractId($mInvoiceRun),
+			'include_cancelled'	=> !!$bIncludeCancelled
 		));
 		return ($mResult === false) ? null : new self($mResult->fetch_assoc());
 	}
