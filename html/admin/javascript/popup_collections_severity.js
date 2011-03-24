@@ -13,7 +13,6 @@ var Popup_Collections_Severity = Class.create(Reflex_Popup,
 		new Component_Collections_Severity(oContentDiv, iSeverityId, bRenderMode, this._committed.bind(this), this._createCancelled.bind(this));
 		
 		this.setTitle('Create Severity');
-		this.setIcon('../admin/img/template/pencil.png');
 		this.setContent(oContentDiv);
 		this.addCloseButton();
 		this.display();

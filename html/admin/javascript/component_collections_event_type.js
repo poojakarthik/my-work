@@ -104,8 +104,14 @@ var Component_Collections_Event_Type = Class.create(
 									)
 								),
 								$T.div({class: 'component-collections-event-type-buttons'},
-									$T.button('Save').observe('click', this._doSave.bind(this)),
-									$T.button('Cancel').observe('click', this._cancel.bind(this))
+									$T.button({class: 'icon-button'},
+										$T.img({src: '../admin/img/template/new.png'}),
+										$T.span('Save')
+									).observe('click', this._doSave.bind(this)),
+									$T.button({class: 'icon-button'},
+										$T.img({src: '../admin/img/template/delete.png'}),
+										$T.span('Cancel')
+									).observe('click', this._cancel.bind(this))
 								)
 							);
 		
