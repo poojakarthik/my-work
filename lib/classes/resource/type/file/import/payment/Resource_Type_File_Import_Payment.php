@@ -285,10 +285,12 @@ abstract class Resource_Type_File_Import_Payment extends Resource_Type_File_Impo
 		// TODO: Report?  Probably no need
 		Log::getLog()->log("Processed ".count($aFileImportDataRecords)." Payment Import Records in ".round($oStopwatch->split(), 2)."s");
 	}
-	
-	static public function createCarrierModule($iCarrier, $sClassName, $iResourceType, $iCarrierModuleType=self::CARRIER_MODULE_TYPE)
-	{
-		parent::createCarrierModule($iCarrier, null, $sClassName, $iResourceType, $iCarrierModuleType);
+
+	static public function createCarrierModule($iCarrier, $iCustomerGroup, $sClassName, $iResourceType) {
+		if ($iCustomerGroup !== null) {
+			throw new Exception(GetConstantName(self::CARRIER_MODULE_TYPE, 'carrier_module_type')." Carrier Modules cannot be Customer Group specific");
+		}
+		parent::createCarrierModule($iCarrier, null, $sClassName, $iResourceType, self::CARRIER_MODULE_TYPE);
 	}
 }
 ?>

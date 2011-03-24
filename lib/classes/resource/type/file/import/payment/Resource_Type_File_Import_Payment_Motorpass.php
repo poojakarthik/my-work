@@ -168,10 +168,9 @@ class Resource_Type_File_Import_Payment_Motorpass extends Resource_Type_File_Imp
 	/***************************************************************************
 	 * COMMON METHODS FOR ALL Resource_Type_Base CHILDREN
 	 **************************************************************************/
-	
-	static public function createCarrierModule($iCarrier, $sClass=__CLASS__)
-	{
-		parent::createCarrierModule($iCarrier, $sClass, self::RESOURCE_TYPE);
+
+	static public function createCarrierModule($iCarrier, $iCustomerGroup, $sClass=__CLASS__) {
+		parent::createCarrierModule($iCarrier, $iCustomerGroup, $sClass, self::RESOURCE_TYPE);
 	}
 	
 	static public function defineCarrierModuleConfig()

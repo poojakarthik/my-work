@@ -59,9 +59,8 @@ class Resource_Type_File_Deliver_FileSystem extends Resource_Type_File_Deliver
 		return true;
 	}
 
-	static public function createCarrierModule($iCarrier, $sClass=__CLASS__)
-	{
-		parent::createCarrierModule($iCarrier, $sClass, self::RESOURCE_TYPE);
+	static public function createCarrierModule($iCarrier, $iCustomerGroup, $sClass=__CLASS__) {
+		parent::createCarrierModule($iCarrier, $iCustomerGroup, $sClass, self::RESOURCE_TYPE);
 	}
 
 	static public function defineCarrierModuleConfig()

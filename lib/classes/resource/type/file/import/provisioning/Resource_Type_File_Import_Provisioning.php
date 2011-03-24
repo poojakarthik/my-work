@@ -10,9 +10,9 @@ abstract class Resource_Type_File_Import_Provisioning extends Resource_Type_File
 {
 	const	CARRIER_MODULE_TYPE	= MODULE_TYPE_PROVISIONING_INPUT;
 	
-	static public function createCarrierModule($iCarrier, $sClassName, $iResourceType, $iCarrierModuleType=self::CARRIER_MODULE_TYPE)
+	static public function createCarrierModule($iCarrier, $iCustomerGroup, $sClassName, $iResourceType, $iCarrierModuleType=self::CARRIER_MODULE_TYPE)
 	{
-		parent::createCarrierModule($iCarrier, null, $sClassName, $iResourceType, $iCarrierModuleType);
+		parent::createCarrierModule($iCarrier, $iCustomerGroup, $sClassName, $iResourceType, $iCarrierModuleType);
 	}
 }
 ?>

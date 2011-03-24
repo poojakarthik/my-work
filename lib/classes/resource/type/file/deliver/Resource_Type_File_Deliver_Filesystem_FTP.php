@@ -19,10 +19,9 @@ class Resource_Type_File_Deliver_Filesystem_FTP extends Resource_Type_File_Deliv
 	{
 		return false;
 	}
-	
-	static public function createCarrierModule($iCarrier, $sClass=__CLASS__)
-	{
-		parent::createCarrierModule($iCarrier, $sClass, self::RESOURCE_TYPE);
+
+	static public function createCarrierModule($iCarrier, $iCustomerGroup, $sClass=__CLASS__) {
+		parent::createCarrierModule($iCarrier, $iCustomerGroup, $sClass, self::RESOURCE_TYPE);
 	}
 	
 	static public function defineCarrierModuleConfig()

@@ -78,10 +78,9 @@ class Resource_Type_File_Deliver_FTP extends Resource_Type_File_Deliver
 	{
 		return rtrim($this->getConfig()->RemotePath, '/\\').'/'.basename($sFilePath);
 	}
-	
-	static public function createCarrierModule($iCarrier, $sClass=__CLASS__)
-	{
-		parent::createCarrierModule($iCarrier, $sClass, self::RESOURCE_TYPE);
+
+	static public function createCarrierModule($iCarrier, $iCustomerGroup, $sClass=__CLASS__) {
+		parent::createCarrierModule($iCarrier, $iCustomerGroup, $sClass, self::RESOURCE_TYPE);
 	}
 	
 	static public function defineCarrierModuleConfig()

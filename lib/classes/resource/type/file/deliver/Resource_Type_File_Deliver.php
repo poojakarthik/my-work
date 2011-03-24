@@ -60,9 +60,11 @@ abstract class Resource_Type_File_Deliver extends Resource_Type_Base
 		$oEmailFlex->send();
 	}
 	
-	static public function createCarrierModule($iCarrier, $sClassName, $iResourceType)
-	{
-		parent::createCarrierModule($iCarrier, null, $sClassName, $iResourceType, self::CARRIER_MODULE_TYPE);
+	static public function createCarrierModule($iCarrier, $iCustomerGroup, $sClassName, $iResourceType) {
+		if ($iCustomerGroup !== null) {
+			throw new Exception(GetConstantName(self::CARRIER_MODULE_TYPE, 'carrier_module_type')." Carrier Modules cannot be Customer Group specific");
+		}
+		parent::createCarrierModule($iCarrier, $iCustomerGroup, $sClassName, $iResourceType, self::CARRIER_MODULE_TYPE);
 	}
 	
 	public static function enableTestMode()

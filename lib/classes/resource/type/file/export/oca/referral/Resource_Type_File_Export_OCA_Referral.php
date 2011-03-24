@@ -103,9 +103,11 @@ abstract class Resource_Type_File_Export_OCA_Referral extends Resource_Type_File
 		return parent::getExportPath()."oca_referral/{$iCarrier}/{$sClass}/";
 	}
 	
-	static public function createCarrierModule($iCarrier, $sClassName, $iResourceType, $iCarrierModuleType=self::CARRIER_MODULE_TYPE)
-	{
-		parent::createCarrierModule($iCarrier, null, $sClassName, $iResourceType, $iCarrierModuleType);
+	static public function createCarrierModule($iCarrier, $iCustomerGroup, $sClassName, $iResourceType) {
+		if ($iCustomerGroup !== null) {
+			throw new Exception(GetConstantName(self::CARRIER_MODULE_TYPE, 'carrier_module_type')." Carrier Modules cannot be Customer Group specific");
+		}
+		parent::createCarrierModule($iCarrier, null, $sClassName, $iResourceType, self::CARRIER_MODULE_TYPE);
 	}
 }
 ?>

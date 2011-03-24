@@ -261,8 +261,10 @@ class Resource_Type_File_Export_Provisioning_RetailDecisions_Applications extend
 	 * COMMON METHODS FOR ALL Resource_Type_Base CHILDREN
 	 **************************************************************************/
 	
-	static public function createCarrierModule($iCarrier, $sClass=__CLASS__)
-	{
+	static public function createCarrierModule($iCarrier, $iCustomerGroup, $sClass=__CLASS__) {
+		if ($iCustomerGroup !== null) {
+			throw new Exception(GetConstantName(self::CARRIER_MODULE_TYPE, 'carrier_module_type')." Carrier Modules cannot be Customer Group specific");
+		}
 		parent::createCarrierModule($iCarrier, $sClass, self::RESOURCE_TYPE, self::RESOURCE_TYPE_FILE_EXPORT_PROVISIONING_RETAILDECISIONS_APPLICATIONS);
 	}
 	
