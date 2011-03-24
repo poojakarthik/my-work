@@ -100,11 +100,11 @@ var Component_Collections_Severity = Class.create(
 								),
 								$T.div({class: 'component-collections-severity-buttons'},
 									$T.button({class: 'icon-button'},
-										$T.img({src: '../admin/img/template/page_white_add.png'}),
+										$T.img({src: '../admin/img/template/page_white_edit.png'}),
 										$T.span('Save as Draft')
 									).observe('click', this._saveAsDraft.bind(this)),
 									$T.button({class: 'icon-button'},
-										$T.img({src: '../admin/img/template/new.png'}),
+										$T.img({src: '../admin/img/template/approve.png'}),
 										$T.span('Save and Commit')
 									).observe('click', this._saveAndCommit.bind(this)),
 									(this._fnOnCancel ?	$T.button({class: 'icon-button'},

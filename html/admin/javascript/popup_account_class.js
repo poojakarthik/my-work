@@ -74,11 +74,13 @@ var Popup_Account_Class = Class.create(Reflex_Popup,
 										$T.span('Save')
 									).observe('click', this._doSave.bind(this)),
 									$T.button({class: 'icon-button'},
+										$T.img({src: '../admin/img/template/decline.png'}),
 										$T.span('Cancel')
 									).observe('click', this.hide.bind(this))
 								)
 							);
 		
+		this.setIcon('../admin/img/template/new.png');
 		this.setTitle('New Account Class');
 		this.addCloseButton();
 		this.setContent(oContentDiv);

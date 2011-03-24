@@ -119,7 +119,7 @@ var Component_Collections_Event = Class.create(
 								),
 								$T.div({class: 'component-collections-event-buttons'},
 									$T.button({class: 'icon-button'},
-										$T.img({src: '../admin/img/template/new.png'}),
+										$T.img({src: '../admin/img/template/approve.png'}),
 										$T.span('Save')
 									).observe('click', this._doSave.bind(this)),
 									$T.button({class: 'icon-button'},
