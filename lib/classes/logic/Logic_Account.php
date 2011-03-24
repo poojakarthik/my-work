@@ -361,6 +361,8 @@ class Logic_Account implements DataLogic
 		}
 		else if ($bShouldBeInCollections)
 		{
+			//check if any events that should have been completed, failed to complete during the last batch process, and if so, complete them now
+			Logic_Collection_Event_Instance::completeWaitingInstances(TRUE, FALSE, $this->id);
 			// Schedule the next scheduled event. Get the Logic_Collection_Scenario_Event object that should be scheduled
 			$oNextScenarioEvent = $this->getNextCollectionScenarioEvent();
 			if ($oNextScenarioEvent !== null)
