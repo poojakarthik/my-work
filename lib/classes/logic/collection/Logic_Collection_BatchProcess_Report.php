@@ -144,6 +144,17 @@ class Logic_Collection_BatchProcess_Report
 		return $aEvents;
 	}
 
+	public static function isFailedEventInstance($oEventInstance)
+	{
+		foreach (self::$aFailedEventInstances as $oInstance)
+		{
+			if ($oInstance->id === $oEventInstance->id)
+				return TRUE;
+		}
+
+		return FALSE;
+	}
+
 	public static function addEvent($oEventInstance)
 	{
 		if ($oEventInstance->getException() !== null)
