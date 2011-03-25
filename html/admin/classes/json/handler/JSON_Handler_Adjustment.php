@@ -201,10 +201,6 @@ class JSON_Handler_Adjustment extends JSON_Handler
 			$oAdjustment->effective_date		= date('Y-m-d', $iNow);
 			$oAdjustment->created_datetime		= date('Y-m-d H:i:s', $iNow);
 			$oAdjustment->created_employee_id	= Flex::getUserId();
-			if ($oAdjustment->invoice_id !== null)
-			{
-				$oAdjustment->invoice_run_id = Invoice::getForId($oAdjustment->invoice_id)->invoice_run_id;
-			}
 			$oAdjustment->calculateTaxComponent();
 			$oAdjustment->save();
 			
