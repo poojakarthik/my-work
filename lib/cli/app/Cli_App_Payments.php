@@ -386,6 +386,17 @@ class Cli_App_Payments extends Cli
 				$aIneligible[self::DIRECT_DEBIT_INELIGIBLE_RETRY]++;
 			}
 			
+			// Offset Effective Date is today's date MINUS the Direct Debit Offset (as this offset is usually applied to the Due Date)
+			$sOffsetEffectiveDate	= date('Y-m-d', strtotime("-{$oCollectionsConfig->direct_debit_due_date_offset} days", $iTimestamp));
+
+			$fAmount	= Rate::roundToCurrencyStandard($oAccount->getOverdueBalance($sOffsetEffectiveDate), 2);
+			if ($fAmount < $aRow['direct_debit_minimum'] || $fAmount <= 0.0) {
+				// Not enough of a balance to be eligible
+				//Log::getLog()->log("ERROR: {$iAccountId} doesn't owe enough, ineligible amount: {$fAmount} (less than minimum, which is {$aRow['direct_debit_minimum']})");
+				$aIneligible[self::DIRECT_DEBIT_INELIGIBLE_AMOUNT]++;
+				continue;
+			}
+			
 			// Determine if the direct debit details are valid & the origin id (cc or bank account number) & payment type (for the payment)
 			$oAccount				= Account::getForId($aRow['account_id']);
 			$oPaymentMethodDetail	= $oAccount->getPaymentMethodDetails();
@@ -441,17 +452,6 @@ class Cli_App_Payments extends Cli
 			
 			if ($bDirectDebitable)
 			{
-				// Offset Effective Date is today's date MINUS the Direct Debit Offset (as this offset is usually applied to the Due Date)
-				$sOffsetEffectiveDate	= date('Y-m-d', strtotime("-{$oCollectionsConfig->direct_debit_due_date_offset} days", $iTimestamp));
-				
-				$fAmount	= Rate::roundToCurrencyStandard($oAccount->getOverdueBalance($sOffsetEffectiveDate), 2);
-				if ($fAmount < $aRow['direct_debit_minimum'] || $fAmount <= 0.0) {
-					// Not enough of a balance to be eligible
-					//Log::getLog()->log("ERROR: {$iAccountId} doesn't owe enough, ineligible amount: {$fAmount} (less than minimum, which is {$aRow['direct_debit_minimum']})");
-					$aIneligible[self::DIRECT_DEBIT_INELIGIBLE_AMOUNT]++;
-					continue;
-				}
-				
 				// Create Payment (using origin id, payment type, account & amount)
 				$oPayment =	Logic_Payment::factory(
 								$iAccountId, 
@@ -541,7 +541,7 @@ class Cli_App_Payments extends Cli
 						AND ISNULL((
 							SELECT		prcpi.collection_promise_instalment_id
 							FROM		payment_request_collection_promise_instalment prcpi
-										JOIN payment_request pr ON (pr.id = pri.payment_request_id)
+										JOIN payment_request pr ON (pr.id = prcpi.payment_request_id)
 							WHERE		prcpi.collection_promise_instalment_id = cpi.id
 										AND pr.payment_request_status_id != ".PAYMENT_REQUEST_STATUS_CANCELLED."
 							LIMIT		1
@@ -566,6 +566,19 @@ class Cli_App_Payments extends Cli
 		
 		while ($aRow = $mResult->fetch_assoc())
 		{
+			$oInstalment	= Collection_Promise_Instalment::getForId($aRow['collection_promise_instalment_id']);
+			$oPayable		= new Logic_Collection_Promise_Instalment($oInstalment);
+			$fAmount 		= Rate::roundToCurrencyStandard($oPayable->getBalance(), 2);
+
+			// Promise Instalment Direct Debits are not subject to the direct_debit_minimum
+			// But they must be > $0.00
+			if ($fAmount <= 0.0) {
+				// Not enough of a balance to be eligible
+				//Log::getLog()->log("ERROR: {$iAccountId} doesn't owe enough, ineligible amount: {$fAmount} (less than minimum, which is {$aRow['direct_debit_minimum']})");
+				$aIneligible[self::DIRECT_DEBIT_INELIGIBLE_AMOUNT]++;
+				continue;
+			}
+
 			// Determine if the direct debit details are valid & the origin id (cc or bank account number) & payment type (for the payment)
 			$oAccount				= Account::getForId($aRow['account_id']);
 			$oPaymentMethodDetail	= $oAccount->getPaymentMethodDetails();
@@ -621,19 +634,6 @@ class Cli_App_Payments extends Cli
 			
 			if ($bDirectDebitable)
 			{
-				$oInstalment	= Collection_Promise_Instalment::getForId($aRow['collection_promise_instalment_id']);
-				$oPayable		= new Logic_Collection_Promise_Instalment($oInstalment);
-				$fAmount 		= Rate::roundToCurrencyStandard($oPayable->getBalance(), 2);
-
-				// Promise Instalment Direct Debits are not subject to the direct_debit_minimum
-				// But they must be > $0.00
-				if ($fAmount <= 0.0) {
-					// Not enough of a balance to be eligible
-					//Log::getLog()->log("ERROR: {$iAccountId} doesn't owe enough, ineligible amount: {$fAmount} (less than minimum, which is {$aRow['direct_debit_minimum']})");
-					$aIneligible[self::DIRECT_DEBIT_INELIGIBLE_AMOUNT]++;
-					continue;
-				}
-				
 				// Create Payment (using origin id, payment type, account & amount)
 				$oPayment =	Logic_Payment::factory(
 								$oAccount->Id, 
