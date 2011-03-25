@@ -74,7 +74,7 @@ class Resource_Type_File_Export_Payment_SecurePay_CreditCard_BatchVersion2 exten
 		$oRecord->CardNumber	= preg_replace('/[^\d]+/', '', Decrypt($oCreditCard->CardNumber));
 		$oRecord->ExpiryDate	= "{$sExpiryMonth}/{$sExpiryYear}";
 		$oRecord->AmountCents	= round($oPaymentRequest->amount * 100);
-		$oRecord->Reference		= $oPaymentRequest->account_id.'R'.$oPaymentRequest->id;
+		$oRecord->Reference		= $oPayment->transaction_reference;
 
 		// Add to the file
 		$this->_oFileExporter->addRecord($oRecord, File_Exporter_CSV::RECORD_GROUP_BODY);
