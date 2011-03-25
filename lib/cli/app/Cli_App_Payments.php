@@ -492,7 +492,7 @@ class Cli_App_Payments extends Cli
 				// Distribute the payment
 				$oPayment->distribute();
 				
-				Log::getLog()->log("Account: {$oAccount->Id}, Payment: {$oPayment->id}, payment_request: {$oPaymentRequest->id}, Amount: {$fAmount}");
+				Log::getLog()->log("Account: {$oAccount->Id}, Payment: {$oPayment->id}, payment_request: {$oPaymentRequest->id}, Amount: {$fAmount}; Due: {$oInvoice->DueOn}");
 				
 				$iAppliedCount++;
 			}
@@ -674,7 +674,7 @@ class Cli_App_Payments extends Cli
 				// Distribute the payment
 				$oPayment->distribute();
 				
-				Log::getLog()->log("Account: {$oAccount->Id}, Payment: {$oPayment->id}, payment_request: {$oPaymentRequest->id}, Amount: {$fAmount}");
+				Log::getLog()->log("Account: {$oAccount->Id}, Payment: {$oPayment->id}, payment_request: {$oPaymentRequest->id}, Amount: {$fAmount}; Due: {$oInstalment->due_date}");
 				
 				$iAppliedCount++;
 			}
