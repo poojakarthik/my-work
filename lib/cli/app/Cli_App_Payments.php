@@ -20,6 +20,7 @@ class Cli_App_Payments extends Cli
 	const	MODE_EXPORT			= 'EXPORT';
 	const	MODE_DIRECT_DEBIT	= 'DIRECTDEBIT';
 	const	MODE_DEBUG			= 'DEBUG';
+	const	MODE_REVERSE		= 'REVERSE';
 	
 	const 	DIRECT_DEBIT_INELIGIBLE_BANK_ACCOUNT		= 'Invalid Bank Account reference';
 	const 	DIRECT_DEBIT_INELIGIBLE_CREDIT_CARD			= 'Invalid Credit Card reference';
@@ -212,6 +213,18 @@ class Cli_App_Payments extends Cli
 			throw new Exception("Failed to export. ".$oException->getMessage());
 		}
 	}
+
+	protected function _reverse() {
+		$oPayment	= Payment::getForId($this->_aArgs[self::SWITCH_PAYMENT_ID]);
+
+		if ($oPayment->getReversal()) {
+			throw new Exception("Payment #{$oPayment->id} has already been reversed");
+		} else {
+			Log::getLog()->log("Reversing Payment #{$oPayment->id}...");
+			$oPayment->reverse(Payment_Reversal_Reason::getForSystemName('AGENT_REVERSAL'));
+			Log::getLog()->log("Successful!");
+		}
+	}
 	
 	protected function _directdebit()
 	{
@@ -280,30 +293,58 @@ class Cli_App_Payments extends Cli
 		{
 			throw new Exception("There is no direct debit due date offset configured in collections_config.");
 		}
+
+		$iTimestamp	= DataAccess::getDataAccess()->getNow(true);
 		
 		// Get Account records
 		Log::getLog()->log("Getting accounts that are eligible");
-		$mResult = Query::run("	SELECT	i.Id,
-								        a.Id 					AS account_id,
-								        pt.direct_debit_minimum	AS direct_debit_minimum,
-								        bt.description 			AS billing_type_description,
-								        i.invoice_run_id 		AS latest_invoice_run_id
-								FROM	Account a
-								JOIN	Invoice i ON (
-								            i.Account = a.Id
-								            AND i.CreatedOn = (
-								                SELECT  MAX(CreatedOn)
-								                FROM    Invoice
-								                WHERE   Account = a.Id
-								                AND     NOW() >= DATE_ADD(DueOn, INTERVAL {$oCollectionsConfig->direct_debit_due_date_offset} DAY)
-								            )
-								        )
-								JOIN 	payment_terms pt ON (pt.customer_group_id = a.CustomerGroup)
-								JOIN 	billing_type bt ON (bt.id = a.BillingType)
-								WHERE	NOW() >= DATE_ADD(DueOn, INTERVAL {$oCollectionsConfig->direct_debit_due_date_offset} DAY)
-										AND a.Archived IN (".ACCOUNT_STATUS_ACTIVE.", ".ACCOUNT_STATUS_CLOSED.")
-										AND pt.id IN (SELECT MAX(id) FROM payment_terms WHERE customer_group_id = a.CustomerGroup)
-										AND bt.id IN (".BILLING_TYPE_CREDIT_CARD.", ".BILLING_TYPE_DIRECT_DEBIT.");");
+		$mResult	= Query::run("
+			SELECT		i.Id						AS invoice_id,
+						a.Id						AS account_id,
+						pt.direct_debit_minimum		AS direct_debit_minimum,
+						bt.description				AS billing_type_description
+
+			FROM		Account a
+						JOIN Invoice i ON (
+							i.Account = a.Id
+							/* Must be the latest non-Temporary Invoice */
+							AND i.Id = (
+								SELECT		Id
+								FROM		Invoice
+								WHERE		Account = a.Id
+											AND Status != ".INVOICE_TEMP."
+											AND <effective_date> >= DueOn + INTERVAL <direct_debit_due_date_offset> DAY
+								ORDER BY	Id DESC
+								LIMIT		1
+							)
+							/* Can't have been Direct Debited previously */
+							AND ISNULL((
+								SELECT		invoice_id
+								FROM		payment_request_invoice pri
+											JOIN payment_request pr ON (pr.id = pri.payment_request_id)
+								WHERE		invoice_id = i.Id
+											AND pr.payment_request_status_id != ".PAYMENT_REQUEST_STATUS_CANCELLED."
+								LIMIT		1
+							))
+						)
+						JOIN payment_terms pt ON (
+							pt.customer_group_id = a.CustomerGroup
+							AND pt.id = (
+								SELECT		MAX(id)
+								FROM		payment_terms
+								WHERE		customer_group_id = a.CustomerGroup
+							)
+						)
+						JOIN billing_type bt ON (
+							bt.id = a.BillingType
+							AND bt.id IN (".BILLING_TYPE_CREDIT_CARD.", ".BILLING_TYPE_DIRECT_DEBIT.")
+						)
+
+			WHERE		a.Archived IN (".ACCOUNT_STATUS_ACTIVE.", ".ACCOUNT_STATUS_CLOSED.")
+		", array(
+			'effective_date'				=> date('Y-m-d', $iTimestamp),
+			'direct_debit_due_date_offset'	=> (int)$oCollectionsConfig->direct_debit_due_date_offset
+		));
 		
 		Log::getLog()->log("Got accounts");
 		
@@ -311,8 +352,8 @@ class Cli_App_Payments extends Cli
 		$iAppliedCount		= 0;
 		$iDoubleUpsCount	= 0;
 		$aAccountsApplied	= array();
-		$sDatetime			= DataAccess::getDataAccess()->getNow();
-		$sPaidOn			= date('Y-m-d', DataAccess::getDataAccess()->getNow(true));
+		$sDatetime			= date('Y-m-d H:i:s', $iTimestamp);
+		$sPaidOn			= date('Y-m-d', $iTimestamp);
 		
 		// Arrays for recording error information
 		$aIneligible = 	array(
@@ -338,7 +379,9 @@ class Cli_App_Payments extends Cli
 
 			// Check if this Invoice Run has been Direct Debited previously
 			// This prevents us from constantly re-attempting to Direct Debit dishonoured payments
-			if (Payment_Request::getForAccountAndInvoiceRun($iAccountId, $aRow['latest_invoice_run_id'])) {
+			// This *should* be handled by the SELECT query, but we'll leave it here just in case
+			$oInvoice	= Invoice::getForInvoiceRunAndAccount($aRow['latest_invoice_run_id'], $iAccountId);
+			if (Payment_Request::getForInvoice($oInvoice->id)) {
 				Log::getLog()->log("ERROR: {$iAccountId} has already been Direct Debited for Invoice Run {$aRow['latest_invoice_run_id']}");
 				$aIneligible[self::DIRECT_DEBIT_INELIGIBLE_RETRY]++;
 			}
@@ -398,9 +441,11 @@ class Cli_App_Payments extends Cli
 			
 			if ($bDirectDebitable)
 			{
-				$fAmount	= Rate::roundToCurrencyStandard($oAccount->getOverdueBalance(), 2);
-				if ($fAmount < $aRow['direct_debit_minimum'])
-				{
+				// Offset Effective Date is today's date MINUS the Direct Debit Offset (as this offset is usually applied to the Due Date)
+				$sOffsetEffectiveDate	= date('Y-m-d', strtotime("-{$oCollectionsConfig->direct_debit_due_date_offset} days", $iTimestamp));
+				
+				$fAmount	= Rate::roundToCurrencyStandard($oAccount->getOverdueBalance($sOffsetEffectiveDate), 2);
+				if ($fAmount < $aRow['direct_debit_minimum'] || $fAmount <= 0.0) {
 					// Not enough of a balance to be eligible
 					//Log::getLog()->log("ERROR: {$iAccountId} doesn't owe enough, ineligible amount: {$fAmount} (less than minimum, which is {$aRow['direct_debit_minimum']})");
 					$aIneligible[self::DIRECT_DEBIT_INELIGIBLE_AMOUNT]++;
@@ -431,6 +476,12 @@ class Cli_App_Payments extends Cli
 											Employee::SYSTEM_EMPLOYEE_ID,	// Employee id
 											$oPayment->id					// Payment id
 										);
+
+				// Create payment_request_invoice
+				$oPaymentRequestInvoice	= new Payment_Request_Invoice();
+				$oPaymentRequestInvoice->payment_request_id					= $oPaymentRequest->id;
+				$oPaymentRequestInvoice->collection_promise_instalment_id	= $oInvoice->Id;
+				$oPaymentRequestInvoice->save();
 				
 				// Update the payments transaction reference (this done separately because the transaction reference 
 				// is derived from the payment request)
@@ -457,6 +508,8 @@ class Cli_App_Payments extends Cli
 		Log::getLog()->log("");
 		Log::getLog()->log("Promise Instalment Direct Debits");
 		Log::getLog()->log("");
+
+		$iTimestamp	= DataAccess::getDataAccess()->getNow(true);
 		
 		// Eligible for direct debits today, list the instalments that are eligible
 		$oCollectionsConfig = Collections_Config::get();
@@ -465,28 +518,43 @@ class Cli_App_Payments extends Cli
 			throw new Exception("There is no promise direct debit due date offset configured in collections_config.");
 		}
 		
-		$mResult = Query::run("	SELECT  cpi.id					AS collection_promise_instalment_id,
-								        cp.account_id			AS account_id,
-								        pt.direct_debit_minimum	AS direct_debit_minimum,
-								        bt.description 			AS billing_type_description
-								FROM    collection_promise_instalment cpi
-								JOIN    collection_promise cp ON (
-								            cp.id = cpi.collection_promise_id
-								            AND cp.completed_datetime IS NULL
-								            AND cp.use_direct_debit = 1
-								        )
-								JOIN    Account a ON (a.Id = cp.account_id)
-								JOIN    payment_terms pt ON (pt.customer_group_id = a.CustomerGroup)
-								JOIN    billing_type bt ON (bt.id = a.BillingType)
-								WHERE   NOW() > DATE_ADD(cpi.due_date, INTERVAL {$oCollectionsConfig->promise_direct_debit_due_date_offset} DAY)
-								AND 	a.Archived IN (".ACCOUNT_STATUS_ACTIVE.", ".ACCOUNT_STATUS_CLOSED.")
-								AND 	pt.id IN (SELECT MAX(id) FROM payment_terms WHERE customer_group_id = a.CustomerGroup)
-								AND 	bt.id IN (".BILLING_TYPE_CREDIT_CARD.", ".BILLING_TYPE_DIRECT_DEBIT.")");
+		$mResult	= Query::run("
+			SELECT		cpi.id						AS collection_promise_instalment_id,
+						cp.account_id				AS account_id,
+						bt.description				AS billing_type_description
+
+			FROM		collection_promise_instalment cpi
+						JOIN collection_promise cp ON (
+							cp.id = cpi.collection_promise_id
+							AND cp.completed_datetime IS NULL
+							AND cp.use_direct_debit = 1
+						)
+						JOIN Account a ON (a.Id = cp.account_id)
+						JOIN billing_type bt ON (
+							bt.id = a.BillingType
+							AND bt.id IN (BILLING_TYPE_CREDIT_CARD, BILLING_TYPE_DIRECT_DEBIT)
+						)
+
+			WHERE		a.Archived IN (".ACCOUNT_STATUS_ACTIVE.", ".ACCOUNT_STATUS_CLOSED.")
+						AND <effective_date> >= cpi.due_date + INTERVAL <promise_direct_debit_due_date_offset> DAY
+						/* Instalment can't have been Direct Debited previously */
+						AND ISNULL((
+							SELECT		prcpi.collection_promise_instalment_id
+							FROM		payment_request_collection_promise_instalment prcpi
+										JOIN payment_request pr ON (pr.id = pri.payment_request_id)
+							WHERE		prcpi.collection_promise_instalment_id = cpi.id
+										AND pr.payment_request_status_id != ".PAYMENT_REQUEST_STATUS_CANCELLED."
+							LIMIT		1
+						))
+		", array(
+			'effective_date'						=> date('Y-m-d', $iTimestamp),
+			'promise_direct_debit_due_date_offset'	=> (int)$oCollectionsConfig->promise_direct_debit_due_date_offset
+		));
 		
 		// Process each instalment
 		$iAppliedCount 	= 0;
-		$sDatetime		= DataAccess::getDataAccess()->getNow();
-		$sPaidOn		= date('Y-m-d', DataAccess::getDataAccess()->getNow(true));
+		$sDatetime		= date('Y-m-d H:i:s', $iTimestamp);
+		$sPaidOn		= date('Y-m-d', $iTimestamp);
 		
 		// Arrays for recording error information
 		$aIneligible = 	array(
@@ -556,10 +624,12 @@ class Cli_App_Payments extends Cli
 				$oInstalment	= Collection_Promise_Instalment::getForId($aRow['collection_promise_instalment_id']);
 				$oPayable		= new Logic_Collection_Promise_Instalment($oInstalment);
 				$fAmount 		= Rate::roundToCurrencyStandard($oPayable->getBalance(), 2);
-				if ($fAmount < $aRow['direct_debit_minimum'])
-				{
+
+				// Promise Instalment Direct Debits are not subject to the direct_debit_minimum
+				// But they must be > $0.00
+				if ($fAmount <= 0.0) {
 					// Not enough of a balance to be eligible
-					Log::getLog()->log("ERROR: {$oAccount->Id}, instalment {$oInstalment->id} doesn't have enough balance, ineligible amount: {$fAmount} (less than minimum, which is {$aRow['direct_debit_minimum']})");
+					//Log::getLog()->log("ERROR: {$iAccountId} doesn't owe enough, ineligible amount: {$fAmount} (less than minimum, which is {$aRow['direct_debit_minimum']})");
 					$aIneligible[self::DIRECT_DEBIT_INELIGIBLE_AMOUNT]++;
 					continue;
 				}
@@ -588,7 +658,13 @@ class Cli_App_Payments extends Cli
 											Employee::SYSTEM_EMPLOYEE_ID,	// Employee id
 											$oPayment->id					// Payment id
 										);
-				
+
+				// Create payment_request_collection_promise_instalment
+				$oPaymentRequestCollectionPromiseInstalment	= new Payment_Request_Collection_Promise_Instalment();
+				$oPaymentRequestCollectionPromiseInstalment->payment_request_id					= $oPaymentRequest->id;
+				$oPaymentRequestCollectionPromiseInstalment->collection_promise_instalment_id	= $oInstalment->id;
+				$oPaymentRequestCollectionPromiseInstalment->save();
+
 				// Update the payments transaction reference (this done separately because the transaction reference 
 				// is derived from the payment request)
 				$oPayment->transaction_reference = $oPaymentRequest->generateTransactionReference();
@@ -620,14 +696,14 @@ class Cli_App_Payments extends Cli
 			self::SWITCH_MODE => array(
 				self::ARG_LABEL			=> "MODE",
 				self::ARG_REQUIRED		=> TRUE,
-				self::ARG_DESCRIPTION	=> "Payment operation to perform [".self::MODE_PREPROCESS."|".self::MODE_PROCESS."|".self::MODE_DISTRIBUTE."|".self::MODE_EXPORT."|".self::MODE_DIRECT_DEBIT."|".self::MODE_DEBUG."]",
-				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("'.self::MODE_PREPROCESS.'","'.self::MODE_PROCESS.'","'.self::MODE_DISTRIBUTE.'","'.self::MODE_EXPORT.'","'.self::MODE_DIRECT_DEBIT.'","'.self::MODE_DEBUG.'"))'
+				self::ARG_DESCRIPTION	=> "Payment operation to perform [".self::MODE_PREPROCESS."|".self::MODE_PROCESS."|".self::MODE_DISTRIBUTE."|".self::MODE_EXPORT."|".self::MODE_DIRECT_DEBIT."|".self::MODE_DEBUG."|".self::MODE_REVERSE."]",
+				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("'.self::MODE_PREPROCESS.'","'.self::MODE_PROCESS.'","'.self::MODE_DISTRIBUTE.'","'.self::MODE_EXPORT.'","'.self::MODE_DIRECT_DEBIT.'","'.self::MODE_DEBUG.'","'.self::MODE_REVERSE.'"))'
 			),
 			
 			self::SWITCH_PAYMENT_ID => array(
 				self::ARG_REQUIRED		=> false,
 				self::ARG_LABEL			=> "PAYMENT_ID",
-				self::ARG_DESCRIPTION	=> "Payment Id (".self::MODE_DISTRIBUTE." Mode only)",
+				self::ARG_DESCRIPTION	=> "Payment Id (".self::MODE_DISTRIBUTE.", ".self::MODE_REVERSE." Modes only)",
 				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
 			),
 			
