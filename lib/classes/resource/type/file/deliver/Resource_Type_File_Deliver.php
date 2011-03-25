@@ -45,8 +45,7 @@ abstract class Resource_Type_File_Deliver extends Resource_Type_Base
 		$oEmailFlex->setBodyText($this->getDebugEmailContent($sLocalPath));
 		
 		// Attachment (file to deliver)
-		$rFInfo		= finfo_open(FILEINFO_MIME);
-		$sMimeType	= finfo_file($rFInfo, $sLocalPath);
+		$sMimeType	= mime_content_type($sLocalPath);
 		finfo_close($rFInfo);
 		$oEmailFlex->createAttachment(
 			file_get_contents($sLocalPath), 
