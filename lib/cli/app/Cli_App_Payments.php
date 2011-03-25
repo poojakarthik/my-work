@@ -499,9 +499,6 @@ class Cli_App_Payments extends Cli
 				$oPayment->transaction_reference = $oPaymentRequest->generateTransactionReference();
 				$oPayment->save();
 				
-				// Distribute the payment
-				$oPayment->distribute();
-				
 				Log::getLog()->log("Account: {$oAccount->Id}, Payment: {$oPayment->id}, payment_request: {$oPaymentRequest->id}, Amount: {$fAmount}; Due: {$oInvoice->DueOn}");
 				
 				$iAppliedCount++;
@@ -680,9 +677,6 @@ class Cli_App_Payments extends Cli
 				// is derived from the payment request)
 				$oPayment->transaction_reference = $oPaymentRequest->generateTransactionReference();
 				$oPayment->save();
-				
-				// Distribute the payment
-				$oPayment->distribute();
 				
 				Log::getLog()->log("Account: {$oAccount->Id}, Payment: {$oPayment->id}, payment_request: {$oPaymentRequest->id}, Amount: {$fAmount}; Due: {$oInstalment->due_date}");
 				
