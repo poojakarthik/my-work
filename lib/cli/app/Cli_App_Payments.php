@@ -475,7 +475,8 @@ class Cli_App_Payments extends Cli
 									'aTransactionData' =>	array(
 																$sOriginIdType => $mOriginId
 															)
-								)
+								),
+								false
 							);
 				
 				// Create payment_request (linked to the payment & invoice run id)
@@ -498,6 +499,9 @@ class Cli_App_Payments extends Cli
 				// is derived from the payment request)
 				$oPayment->transaction_reference = $oPaymentRequest->generateTransactionReference();
 				$oPayment->save();
+
+				// Now that the Payment is finalised, distribute!
+				$oPayment->distribute();
 				
 				Log::getLog()->log("Account: {$oAccount->Id}, Payment: {$oPayment->id}, payment_request: {$oPaymentRequest->id}, Amount: {$fAmount}; Due: {$oInvoice->DueOn}");
 				
@@ -654,7 +658,8 @@ class Cli_App_Payments extends Cli
 									'aTransactionData' => 	array(
 																$sOriginIdType => $mOriginId
 															)
-								)
+								),
+								false
 							);
 				
 				// Create payment_request (linked to the payment & invoice run id)
@@ -677,6 +682,9 @@ class Cli_App_Payments extends Cli
 				// is derived from the payment request)
 				$oPayment->transaction_reference = $oPaymentRequest->generateTransactionReference();
 				$oPayment->save();
+
+				// Now that the Payment is finalised, distribute!
+				$oPayment->distribute();
 				
 				Log::getLog()->log("Account: {$oAccount->Id}, Payment: {$oPayment->id}, payment_request: {$oPaymentRequest->id}, Amount: {$fAmount}; Due: {$oInstalment->due_date}");
 				
