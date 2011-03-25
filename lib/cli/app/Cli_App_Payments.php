@@ -389,7 +389,17 @@ class Cli_App_Payments extends Cli
 			}
 			
 			// Offset Effective Date is today's date MINUS the Direct Debit Offset (as this offset is usually applied to the Due Date)
-			$sOffsetEffectiveDate	= date('Y-m-d', strtotime("-{$oCollectionsConfig->direct_debit_due_date_offset} days", $iTimestamp));
+			// We then need to ADD 1 day, because we want people that are *Due* (but will not be overdue until tomorrow)
+			$sOffsetEffectiveDate	= date(
+				'Y-m-d',
+				strtotime(
+					'+1 day',															// We want due, not overdue
+					strtotime(
+						"-{$oCollectionsConfig->direct_debit_due_date_offset} days",	// Apply offset
+						$iTimestamp														// Today
+					)
+				)
+			);
 
 			$fAmount	= Rate::roundToCurrencyStandard($oAccount->getOverdueBalance($sOffsetEffectiveDate), 2);
 			if ($fAmount < $aRow['direct_debit_minimum'] || $fAmount <= 0.0) {
