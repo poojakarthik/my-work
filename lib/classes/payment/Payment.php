@@ -113,7 +113,7 @@ class Payment extends ORM_Cached
 		
 		// Different fields
 		$oReversal->paid_date 					= date('Y-m-d', DataAccess::getDataAccess()->getNow(true));
-		$oReversal->created_employee_id 		= Flex::getUserId();
+		$oReversal->created_employee_id 		= coalesce(Flex::getUserId(), Employee::SYSTEM_EMPLOYEE_ID);
 		$oReversal->created_datetime 			= DataAccess::getDataAccess()->getNow();
 		$oReversal->surcharge_charge_id			= null;
 		$oReversal->latest_payment_response_id	= null;
