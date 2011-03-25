@@ -72,7 +72,7 @@ class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_T
  		$oRecord->BSB				= substr($sBSB, 0, 3).'-'.substr($sBSB, -3);
 		$oRecord->AccountNumber		= $oBankAccount->AccountNumber;
 		$oRecord->Amount			= Rate::ceilToPrecision($oPaymentRequest->amount * 100, 2);
-		$oRecord->AccountName		= strtoupper(substr(preg_replace("/[^\w\ ]+/misU", '', trim($oBankAccount->AccountName)), 0, 32));
+		$oRecord->AccountName		= strtoupper(substr(preg_replace("/[^\ \-[a-z]]+/i", '', trim($oBankAccount->AccountName)), 0, 32));
 		$oRecord->TransactionRef	= $oPayment->transaction_reference;
 		
 		// Add to the file
@@ -265,7 +265,7 @@ class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_T
 						->setMaximumLength(32)
 						->setPaddingStyle(STR_PAD_RIGHT)
 						->setPaddingString(' ')
-						->setValidationRegex('/\w+(,[\w\ ]+)?/')
+						->setValidationRegex('/^[a-z\-\ ]+$/i')
 				)->addField('TransactionRef',
 					File_Exporter_Field::factory()
 						->setMinimumLength(18)
