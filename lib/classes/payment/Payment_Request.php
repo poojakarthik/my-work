@@ -152,7 +152,7 @@ class Payment_Request extends ORM_Cached
 			'invoice_id'		=> (int)ORM::extractId($mInvoice),
 			'include_cancelled'	=> !!$bIncludeCancelled
 		));
-		return ($mResult === false) ? null : new self($mResult->fetch_assoc());
+		return ($mResult->num_rows) ? new self($mResult->fetch_assoc()) : null;
 	}
 
 	/**
