@@ -309,7 +309,9 @@ class JSON_Handler_Adjustment extends JSON_Handler
 				//which after distributing this one can distribute theirs. 
 				//Example: if this adjustemtn is a debit adjustment, and before distributing it the sum(collectable.balance) === 0, and there is a payment with remaining balance, that payment's balance must be distributed after distributing the current adjustment's balance.
 				//@TODO: in order to optimise this, implement functionality that allows for just distributing balances of any distributables that currently have a balance remaining, instead of a full redistribution.
-				$oLogicAccount->redistributeBalances();
+				//$oLogicAccount->redistributeBalances();
+				$oLogicAdjustment	= new Logic_Adjustment($oAdjustment);
+				$oLogicAdjustment->distribute();
 			}
 			
 			if (!$oDataAccess->TransactionCommit())

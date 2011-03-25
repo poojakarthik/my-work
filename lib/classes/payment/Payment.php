@@ -175,8 +175,8 @@ class Payment extends ORM_Cached
 						
 						// Process the adjustment
 						if ($bDistribute) {
-							$oAccount = Logic_Account::getInstance($oAdjustment->account_id);
-							$oAccount->processDistributable(new Logic_Adjustment($oAdjustment));
+							$oLogicAdjustment	= new Logic_Adjustment($oAdjustment);
+							$oLogicAdjustment->distribute();
 						}
 						
 						// Link the adjustment to the charge

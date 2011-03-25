@@ -380,9 +380,9 @@ class Cli_App_Payments extends Cli
 			// Check if this Invoice Run has been Direct Debited previously
 			// This prevents us from constantly re-attempting to Direct Debit dishonoured payments
 			// This *should* be handled by the SELECT query, but we'll leave it here just in case
-			$oInvoice	= Invoice::getForInvoiceRunAndAccount($aRow['latest_invoice_run_id'], $iAccountId);
+			$oInvoice	= Invoice::getForId($aRow['invoice_id']);
 			if (Payment_Request::getForInvoice($oInvoice->id)) {
-				Log::getLog()->log("ERROR: {$iAccountId} has already been Direct Debited for Invoice Run {$aRow['latest_invoice_run_id']}");
+				Log::getLog()->log("ERROR: {$iAccountId} has already been Direct Debited for Invoice Run {$oInvoice->invoice_run_id}");
 				$aIneligible[self::DIRECT_DEBIT_INELIGIBLE_RETRY]++;
 			}
 			
@@ -472,7 +472,7 @@ class Cli_App_Payments extends Cli
 											$oAccount->Id, 					// Account id
 											$iPaymentType,					// Payment type
 											$fAmount,						// Amount
-											$aRow['latest_invoice_run_id'],	// Invoice run id
+											$oInvoice->invoice_run_id,		// Invoice run id
 											Employee::SYSTEM_EMPLOYEE_ID,	// Employee id
 											$oPayment->id					// Payment id
 										);
