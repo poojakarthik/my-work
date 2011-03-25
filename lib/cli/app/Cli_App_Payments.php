@@ -479,8 +479,8 @@ class Cli_App_Payments extends Cli
 
 				// Create payment_request_invoice
 				$oPaymentRequestInvoice	= new Payment_Request_Invoice();
-				$oPaymentRequestInvoice->payment_request_id					= $oPaymentRequest->id;
-				$oPaymentRequestInvoice->collection_promise_instalment_id	= $oInvoice->Id;
+				$oPaymentRequestInvoice->payment_request_id		= $oPaymentRequest->id;
+				$oPaymentRequestInvoice->invoice_id				= $oInvoice->Id;
 				$oPaymentRequestInvoice->save();
 				
 				// Update the payments transaction reference (this done separately because the transaction reference 
