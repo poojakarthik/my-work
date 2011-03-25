@@ -386,6 +386,7 @@ class Cli_App_Payments extends Cli
 			if (Payment_Request::getForInvoice($oInvoice->id)) {
 				Log::getLog()->log("ERROR: {$iAccountId} has already been Direct Debited for Invoice Run {$oInvoice->invoice_run_id}");
 				$aIneligible[self::DIRECT_DEBIT_INELIGIBLE_RETRY]++;
+				continue;
 			}
 			
 			// Offset Effective Date is today's date MINUS the Direct Debit Offset (as this offset is usually applied to the Due Date)
