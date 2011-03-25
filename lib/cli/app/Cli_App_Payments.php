@@ -533,7 +533,7 @@ class Cli_App_Payments extends Cli
 						JOIN Account a ON (a.Id = cp.account_id)
 						JOIN billing_type bt ON (
 							bt.id = a.BillingType
-							AND bt.id IN (BILLING_TYPE_CREDIT_CARD, BILLING_TYPE_DIRECT_DEBIT)
+							AND bt.id IN (".BILLING_TYPE_CREDIT_CARD.", ".BILLING_TYPE_DIRECT_DEBIT.")
 						)
 
 			WHERE		a.Archived IN (".ACCOUNT_STATUS_ACTIVE.", ".ACCOUNT_STATUS_CLOSED.")
