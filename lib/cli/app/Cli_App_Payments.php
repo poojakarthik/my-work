@@ -376,6 +376,8 @@ class Cli_App_Payments extends Cli
 				continue;
 			}
 			$aAccountsApplied[$iAccountId]	= true;
+			
+			$oAccount	= Account::getForId($aRow['account_id']);
 
 			// Check if this Invoice Run has been Direct Debited previously
 			// This prevents us from constantly re-attempting to Direct Debit dishonoured payments
@@ -398,7 +400,6 @@ class Cli_App_Payments extends Cli
 			}
 			
 			// Determine if the direct debit details are valid & the origin id (cc or bank account number) & payment type (for the payment)
-			$oAccount				= Account::getForId($aRow['account_id']);
 			$oPaymentMethodDetail	= $oAccount->getPaymentMethodDetails();
 			$bDirectDebitable		= false;
 			$iPaymentType			= null;
