@@ -464,45 +464,53 @@ class Cli_App_Payments extends Cli
 			
 			if ($bDirectDebitable)
 			{
-				// Create Payment (using origin id, payment type, account & amount)
-				$oPayment =	Logic_Payment::factory(
-								$iAccountId, 
-								$iPaymentType, 
-								$fAmount, 
-								PAYMENT_NATURE_PAYMENT, 
-								'', 
-								$sPaidOn,
-								array(
-									'aTransactionData' =>	array(
-																$sOriginIdType => $mOriginId
-															)
-								),
-								false
-							);
-				
-				// Create payment_request (linked to the payment & invoice run id)
-				$oPaymentRequest	= 	Payment_Request::generatePending(
-											$oAccount->Id, 					// Account id
-											$iPaymentType,					// Payment type
-											$fAmount,						// Amount
-											$oInvoice->invoice_run_id,		// Invoice run id
-											Employee::SYSTEM_EMPLOYEE_ID,	// Employee id
-											$oPayment->id					// Payment id
-										);
+				DataAccess::getDataAccess()->TransactionStart(false);
+				try {
+					// Create Payment (using origin id, payment type, account & amount)
+					$oPayment =	Logic_Payment::factory(
+									$iAccountId,
+									$iPaymentType,
+									$fAmount,
+									PAYMENT_NATURE_PAYMENT,
+									'',
+									$sPaidOn,
+									array(
+										'aTransactionData' =>	array(
+																	$sOriginIdType => $mOriginId
+																)
+									),
+									false
+								);
 
-				// Create payment_request_invoice
-				$oPaymentRequestInvoice	= new Payment_Request_Invoice();
-				$oPaymentRequestInvoice->payment_request_id		= $oPaymentRequest->id;
-				$oPaymentRequestInvoice->invoice_id				= $oInvoice->Id;
-				$oPaymentRequestInvoice->save();
-				
-				// Update the payments transaction reference (this done separately because the transaction reference 
-				// is derived from the payment request)
-				$oPayment->transaction_reference = $oPaymentRequest->generateTransactionReference();
-				$oPayment->save();
+					// Create payment_request (linked to the payment & invoice run id)
+					$oPaymentRequest	= 	Payment_Request::generatePending(
+												$oAccount->Id, 					// Account id
+												$iPaymentType,					// Payment type
+												$fAmount,						// Amount
+												$oInvoice->invoice_run_id,		// Invoice run id
+												Employee::SYSTEM_EMPLOYEE_ID,	// Employee id
+												$oPayment->id					// Payment id
+											);
 
-				// Now that the Payment is finalised, distribute!
-				$oPayment->distribute();
+					// Create payment_request_invoice
+					$oPaymentRequestInvoice	= new Payment_Request_Invoice();
+					$oPaymentRequestInvoice->payment_request_id		= $oPaymentRequest->id;
+					$oPaymentRequestInvoice->invoice_id				= $oInvoice->Id;
+					$oPaymentRequestInvoice->save();
+
+					// Update the payments transaction reference (this done separately because the transaction reference
+					// is derived from the payment request)
+					$oPayment->transaction_reference = $oPaymentRequest->generateTransactionReference();
+					$oPayment->save();
+
+					// Now that the Payment is finalised, distribute!
+					$oPayment->distribute();
+				} catch (Exception $oException) {
+					DataAccess::getDataAccess()->TransactionRollback(false);
+					throw $oException;
+				}
+
+				DataAccess::getDataAccess()->TransactionCommit(false);
 				
 				Log::getLog()->log("Account: {$oAccount->Id}, Payment: {$oPayment->id}, payment_request: {$oPaymentRequest->id}, Amount: {$fAmount}; Due: {$oInvoice->DueOn}");
 				
@@ -647,46 +655,53 @@ class Cli_App_Payments extends Cli
 			
 			if ($bDirectDebitable)
 			{
-				// Create Payment (using origin id, payment type, account & amount)
-				$oPayment =	Logic_Payment::factory(
-								$oAccount->Id, 
-								$iPaymentType, 
-								$fAmount, 
-								PAYMENT_NATURE_PAYMENT, 
-								'', 
-								$sPaidOn,
-								array(
-									'aTransactionData' => 	array(
-																$sOriginIdType => $mOriginId
-															)
-								),
-								false
-							);
-				
-				// Create payment_request (linked to the payment & invoice run id)
-				$oPaymentRequest	= 	Payment_Request::generatePending(
-											$oAccount->Id, 					// Account id
-											$iPaymentType,					// Payment type
-											$fAmount,						// Amount
-											null,							// Invoice run id
-											Employee::SYSTEM_EMPLOYEE_ID,	// Employee id
-											$oPayment->id					// Payment id
-										);
+				DataAccess::getDataAccess()->TransactionStart(false);
+				try {
+					// Create Payment (using origin id, payment type, account & amount)
+					$oPayment =	Logic_Payment::factory(
+									$oAccount->Id,
+									$iPaymentType,
+									$fAmount,
+									PAYMENT_NATURE_PAYMENT,
+									'',
+									$sPaidOn,
+									array(
+										'aTransactionData' => 	array(
+																	$sOriginIdType => $mOriginId
+																)
+									),
+									false
+								);
 
-				// Create payment_request_collection_promise_instalment
-				$oPaymentRequestCollectionPromiseInstalment	= new Payment_Request_Collection_Promise_Instalment();
-				$oPaymentRequestCollectionPromiseInstalment->payment_request_id					= $oPaymentRequest->id;
-				$oPaymentRequestCollectionPromiseInstalment->collection_promise_instalment_id	= $oInstalment->id;
-				$oPaymentRequestCollectionPromiseInstalment->save();
+					// Create payment_request (linked to the payment & invoice run id)
+					$oPaymentRequest	= 	Payment_Request::generatePending(
+												$oAccount->Id, 					// Account id
+												$iPaymentType,					// Payment type
+												$fAmount,						// Amount
+												null,							// Invoice run id
+												Employee::SYSTEM_EMPLOYEE_ID,	// Employee id
+												$oPayment->id					// Payment id
+											);
 
-				// Update the payments transaction reference (this done separately because the transaction reference 
-				// is derived from the payment request)
-				$oPayment->transaction_reference = $oPaymentRequest->generateTransactionReference();
-				$oPayment->save();
+					// Create payment_request_collection_promise_instalment
+					$oPaymentRequestCollectionPromiseInstalment	= new Payment_Request_Collection_Promise_Instalment();
+					$oPaymentRequestCollectionPromiseInstalment->payment_request_id					= $oPaymentRequest->id;
+					$oPaymentRequestCollectionPromiseInstalment->collection_promise_instalment_id	= $oInstalment->id;
+					$oPaymentRequestCollectionPromiseInstalment->save();
 
-				// Now that the Payment is finalised, distribute!
-				$oPayment->distribute();
-				
+					// Update the payments transaction reference (this done separately because the transaction reference
+					// is derived from the payment request)
+					$oPayment->transaction_reference = $oPaymentRequest->generateTransactionReference();
+					$oPayment->save();
+
+					// Now that the Payment is finalised, distribute!
+					$oPayment->distribute();
+				} catch (Exception $oException) {
+					DataAccess::getDataAccess()->TransactionRollback(false);
+					throw $oException;
+				}
+				DataAccess::getDataAccess()->TransactionCommit(false);
+
 				Log::getLog()->log("Account: {$oAccount->Id}, Payment: {$oPayment->id}, payment_request: {$oPaymentRequest->id}, Amount: {$fAmount}; Due: {$oInstalment->due_date}");
 				
 				$iAppliedCount++;
