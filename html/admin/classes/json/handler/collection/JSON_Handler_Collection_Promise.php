@@ -153,6 +153,10 @@ class JSON_Handler_Collection_Promise extends JSON_Handler
 						throw new JSON_Handler_Collection_Promise_Exception($oEx->getMessage());
 					}
 				}
+
+				// Re-distribute the Account
+				$oLogicAccount	= new Logic_Account($iAccountId);
+				$oLogicAccount->redistributeBalances();
 			} catch (Exception $oEx) {
 				if ($oDataAccess->TransactionRollback() === false) {
 					throw new Exception_Database("Unable to rollback db Transaction");
@@ -324,6 +328,10 @@ class JSON_Handler_Collection_Promise extends JSON_Handler
 
 				Log::getLog()->log("Promise Created");
 				//throw new Exception("Test Mode");
+
+				// Re-distribute the Account
+				$oLogicAccount	= new Logic_Account($oAccount);
+				$oLogicAccount->redistributeBalances();
 
 			} catch (Exception $oException) {
 				// Rollback & re-Throw
