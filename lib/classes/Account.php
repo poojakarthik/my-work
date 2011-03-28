@@ -610,7 +610,7 @@ class Account
                         }
                     }
 
-					//7 retrieve accounts that have both distributable payments and collectables these can be distributed to
+					//7 retrieve accounts that have both distributable adjustments and collectables these can be distributed to
                     $sSQL = "   SELECT DISTINCT c.account_id
 								FROM collectable c
 								JOIN adjustment a ON (c.account_id = a.account_id AND a.balance > 0 and c.amount > 0)
@@ -642,9 +642,9 @@ class Account
               case Account::BALANCE_REDISTRIBUTION_FORCED:
                    $sSQL = "    SELECT DISTINCT a.*
                                 FROM Account a
-                                WHERE a.Archived <> ".ACCOUNT_STATUS_ARCHIVED;
+                                WHERE a.Archived <> ".ACCOUNT_STATUS_ARCHIVED." LIMIT 200 ";
                               
-
+					Log::getLog()->log($sSQL);
                     $oQuery = new Query();
 
                     $mResult = $oQuery->Execute($sSQL);
@@ -661,7 +661,7 @@ class Account
                    $sSQL = "    SELECT DISTINCT a.*
                                 FROM Account a
                                 ";
-
+					Log::getLog()->log($sSQL);
                     $oQuery = new Query();
 
                     $mResult = $oQuery->Execute($sSQL);

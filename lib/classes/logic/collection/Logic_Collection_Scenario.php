@@ -110,16 +110,16 @@ class Logic_Collection_Scenario implements DataLogic
 
 	public function evaluateThresholdCriterion($fAmount, $fBalance)
 	{
-	$iPercentage = $fAmount > 0 ? ($fBalance/$fAmount) * 100 : 0;
+		$iPercentage = $fAmount > 0 ? ($fBalance/$fAmount) * 100 : 0;
 
-	if ( $iPercentage >= $this->threshold_percentage && $fBalance >= $this->threshold_amount)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+		if ( $iPercentage >= $this->threshold_percentage && $fBalance >= $this->threshold_amount)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	public function save()

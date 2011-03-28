@@ -5,69 +5,44 @@
  *
  * @author JanVanDerBreggen
  */
-class Logic_Collectable_Payment extends Logic_Transfer_Balance
+class Logic_Collectable_Payment
 {
-	
-	public function getSource()
-	{
-		if ($this->oSource === null)
-			Logic_Payment::getForId($this->from_collectable_id);
-		return $this->oSource;
-	}
-
-	public function getTarget()
-	{
-		if ($this->oTarget === null)
-			Logic_Collectable::getInstance($this->to_collectable_id);
-		return $this->oTarget;
-	}
-
-	public function getPaymentNature()
-	{
-		Payment_Nature::getForId($this->payment_nature_id);
-	}
-
+	protected static $aInsertRecords = array();
 
 	public static function create($oPayment, $oCollectable, $fMaxAmount = null)
 	{
-
 		$iValueMultiplier = $oPayment->getPaymentNature()->value_multiplier;
-		$oDO = new Collectable_Payment();
-		$oDO->payment_id = $oPayment->id;
-		$oDO->collectable_id = $oCollectable->id;
-		
+		//$oDO = new Collectable_Payment();
+		$iPayment_id = $oPayment->id;
+		$iCollectable_id = $oCollectable->id;
 
 		if ($oPayment->isCredit())
 		{
-			 $oDO->balance = $oCollectable->balance <= $oPayment->balance ? $oCollectable->balance*$iValueMultiplier : $oPayment->balance*$iValueMultiplier;
+			 $fBalance = $oCollectable->balance <= $oPayment->balance ? $oCollectable->balance*$iValueMultiplier : $oPayment->balance*$iValueMultiplier;
 		}
 		else
 		{
-			 $oDO->balance = ($oCollectable->amount - $oCollectable->balance) >= $oPayment->balance ? $oPayment->balance *$iValueMultiplier : ($oCollectable->amount - $oCollectable->balance) * $iValueMultiplier;
-
+			$fBalance = ($oCollectable->amount - $oCollectable->balance) >= $oPayment->balance ? $oPayment->balance *$iValueMultiplier : ($oCollectable->amount - $oCollectable->balance) * $iValueMultiplier;
 		}
 
-		if ($fMaxAmount !== null && abs($oDO->balance)> $fMaxAmount)
-			$oDO->balance = $fMaxAmount*$iValueMultiplier;
+		if ($fMaxAmount !== null && abs($fBalance)> $fMaxAmount)
+			$fBalance = $fMaxAmount*$iValueMultiplier;
 
-		$oDO->created_datetime = Data_Source_Time::currentTimestamp();
-		return new self ($oDO, $oPayment, $oCollectable );
+		//$sCreated_datetime = DataAccess::getDataAccess()->getNow();
+
+		self::$aInsertRecords[] = "(NULL,$iPayment_id, $iCollectable_id, $fBalance, NOW() )";
+
+		//Query::run("INSERT INTO collectable_payment values (NULL,$iPayment_id, $iCollectable_id, $fBalance, NOW() )");
+		return $fBalance;
 	}
 
-	public function __get($sField)
+	public static function createRecords()
 	{
-		return $this->oDO->{$sField};
+		Collectable_Payment::batchInsert(self::$aInsertRecords);
+		self::$aInsertRecords = array();
 	}
 
-	public function __set($sField, $mValue)
-	{
-		$this->oDO->{$sField} = $mValue;
-	}
-	
-	public function save()
-	{
-		$this->oDO->save();
-	}	
+
 	
 }
 ?>

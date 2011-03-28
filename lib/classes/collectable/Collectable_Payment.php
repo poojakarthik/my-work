@@ -27,22 +27,24 @@ class Collectable_Payment extends ORM_Cached
 		return 100;
 	}
 
-        public static function deleteForAccount($iAccountId)
-        {
-            $oQuery = new Query();
-           // $sSql = "DELETE FROM ".self::$_strStaticTableName."
-            //        WHERE payment_id in (SELECT id
-             //                               FROM payment p
-              //                              WHERE p.account_id = $iAccountId)";
+	public static function deleteForAccount($iAccountId, $bQuick = FALSE)
+	{
+		$sQuick = $bQuick ? "QUICK" : NULL;
+		Query::run (
+					"DELETE {$sQuick} collectable_payment
+					FROM collectable_payment
+					JOIN payment ON (payment.id = collectable_payment.payment_id AND payment.account_id =  $iAccountId)"
+					);
+	}
 
-            $sSql = "DELETE collectable_payment
-                    FROM collectable_payment
-                    JOIN payment ON (payment.id = collectable_payment.payment_id AND payment.account_id =  $iAccountId)";
-
-
-
-            $oQuery->Execute($sSql);
-        }
+	public static function batchInsert($aRows)
+	{
+		if (count($aRows) > 0)
+		{
+			$sSQL = "INSERT INTO ".self::$_strStaticTableName." VALUES ";			
+			Query::run($sSQL.implode(",", $aRows));
+		}
+	}
 	
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START

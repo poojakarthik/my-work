@@ -10145,6 +10145,11 @@ div.component-collections-scenario > table.reflex
 	font-weight	: bold;
 }
 
+.component-account-collections-events-next-event
+{	
+	font-style	: italic;
+}
+
 .component-account-collections-footer-buttons
 {
 	text-align	: right;

@@ -100,6 +100,7 @@ class Logic_Collection_Promise_Instalment implements DataLogic, Logic_Payable {
 		return $this->oDO->amount;
 	}
 
+
 	public function processDistributable($mDistributable)
 	{
 		$oPromise = Logic_Collection_Promise::getForId($this->collection_promise_id);

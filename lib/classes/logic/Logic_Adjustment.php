@@ -9,7 +9,7 @@
  *
  * @author JanVanDerBreggen
  */
-class Logic_Adjustment implements DataLogic, Logic_Distributable{
+class Logic_Adjustment extends Logic_Distributable implements DataLogic{
 
 	const DEBIT = 0;
 	const CREDIT = 1;

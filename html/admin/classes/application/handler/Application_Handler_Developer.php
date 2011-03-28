@@ -326,6 +326,185 @@ WHERE		a.Id = <account_id>";
             die;
         }
 
+		public function directDebit()
+		{
+			Log::registerFunctionLog('Developer_CollectionsLogic', 'logMessage', 'Application_Handler_Developer');
+			Log::setDefaultLog('Developer_CollectionsLogic');
+
+			//$oDataAccess = DataAccess::getDataAccess();
+			//$oDataAccess->TransactionStart();
+
+			try
+			{
+				Log::getLog()->log("");
+				Log::getLog()->log("Overdue Balance Direct Debits");
+				Log::getLog()->log("");
+
+				// Eligible for direct debits today, list the invoices that are eligible
+				$oCollectionsConfig = Collections_Config::get();
+				if (!$oCollectionsConfig || $oCollectionsConfig->direct_debit_due_date_offset === null)
+				{
+					throw new Exception("There is no direct debit due date offset configured in collections_config.");
+				}
+
+				// Get Account records
+				Log::getLog()->log("Getting accounts that are eligible");
+				$mResult = Query::run("	SELECT	i.Id,
+												a.Id 					AS account_id,
+												pt.direct_debit_minimum	AS direct_debit_minimum,
+												bt.description 			AS billing_type_description,
+												i.invoice_run_id 		AS latest_invoice_run_id
+										FROM	Account a
+										JOIN	Invoice i ON (
+													i.Account = a.Id
+													AND i.CreatedOn = (
+														SELECT  MAX(CreatedOn)
+														FROM    Invoice
+														WHERE   Account = a.Id
+														AND     NOW() > DATE_ADD(DueOn, INTERVAL {$oCollectionsConfig->direct_debit_due_date_offset} DAY)
+													)
+												)
+										JOIN 	payment_terms pt ON (pt.customer_group_id = a.CustomerGroup)
+										JOIN 	billing_type bt ON (bt.id = a.BillingType)
+										WHERE	NOW() > DATE_ADD(DueOn, INTERVAL {$oCollectionsConfig->direct_debit_due_date_offset} DAY)
+										AND 	a.Archived IN (".ACCOUNT_STATUS_ACTIVE.", ".ACCOUNT_STATUS_CLOSED.")
+										AND 	pt.id IN (SELECT MAX(id) FROM payment_terms WHERE customer_group_id = a.CustomerGroup)
+										AND 	bt.id IN (".BILLING_TYPE_CREDIT_CARD.", ".BILLING_TYPE_DIRECT_DEBIT.") LIMIT 1;");
+
+				Log::getLog()->log("Got accounts");
+				while ($aRow = $mResult->fetch_assoc())
+				{
+
+					// Check if the account has already been processed, potentially useless
+			// but is here just to be sure that accounts aren't charged more than once
+			$iAccountId	= $aRow['account_id'];
+			if ($aAccountsApplied[$iAccountId])
+			{
+				$iDoubleUpsCount++;
+				Log::getLog()->log("Already applied to account {$iAccountId}");
+				continue;
+			}
+			$aAccountsApplied[$iAccountId]	= true;
+
+			// Determine if the direct debit details are valid & the origin id (cc or bank account number) & payment type (for the payment)
+			$oAccount				= Account::getForId($aRow['account_id']);
+			$oPaymentMethodDetail	= $oAccount->getPaymentMethodDetails();
+			$bDirectDebitable		= false;
+			$iPaymentType			= null;
+			$sOriginIdType			= null;
+			$mOriginId				= null;
+			switch($oAccount->BillingType)
+			{
+				case BILLING_TYPE_DIRECT_DEBIT:
+					$iPaymentType	= PAYMENT_TYPE_DIRECT_DEBIT_VIA_EFT;
+					$oDirectDebit	= DirectDebit::getForId($oAccount->DirectDebit);
+					if ($oDirectDebit)
+					{
+						$bDirectDebitable	= true;
+						$sOriginIdType		= Payment_Transaction_Data::BANK_ACCOUNT_NUMBER;
+						$mOriginId			= $oPaymentMethodDetail->AccountNumber;
+					}
+					else
+					{
+						// Ineligible due to invalid bank account
+						Log::getLog()->log("ERROR: {$iAccountId} has an invalid bank account, id = {$oAccount->DirectDebit}");
+						$aIneligible[self::DIRECT_DEBIT_INELIGIBLE_BANK_ACCOUNT]++;
+					}
+					break;
+				case BILLING_TYPE_CREDIT_CARD:
+					$iPaymentType	= PAYMENT_TYPE_DIRECT_DEBIT_VIA_CREDIT_CARD;
+					$oCreditCard	= Credit_Card::getForId($oAccount->CreditCard);
+					$sExpiry		= "{$oCreditCard->ExpYear}-{$oCreditCard->ExpMonth}-01";
+					$sCompareExpiry	= "{$oCreditCard->ExpYear}-{$oCreditCard->ExpMonth}-01 + 1 month";
+					$iExpiry		= strtotime($sCompareExpiry);
+					$iNow			= time();
+					if ($oCreditCard && ($iNow < $iExpiry))
+					{
+						$bDirectDebitable	= true;
+						$sOriginIdType		= Payment_Transaction_Data::CREDIT_CARD_NUMBER;
+						$mOriginId			= Credit_Card::getMaskedCardNumber(Decrypt($oPaymentMethodDetail->CardNumber));
+					}
+					else if ($iNow >= $iExpiry)
+					{
+						// Ineligible because credit card has expired
+						Log::getLog()->log("ERROR: {$iAccountId} has an expired credit card: {$sExpiry} (".date('Y-m-d', strtotime($sCompareExpiry)).")");
+						$aIneligible[self::DIRECT_DEBIT_INELIGIBLE_CREDIT_CARD_EXPIRY]++;
+					}
+					else
+					{
+						// Ineligible due to invalid credit card
+						Log::getLog()->log("ERROR: {$iAccountId} has an invalid credit card, id = {$oAccount->CreditCard}");
+						$aIneligible[self::DIRECT_DEBIT_INELIGIBLE_CREDIT_CARD]++;
+					}
+					break;
+			}
+
+
+
+					Log::getLog()->log("Account {$aRow['account_id']}");
+						$fAmount	= 5555;
+						//if ($fAmount < $aRow['direct_debit_minimum'])
+						//{
+							// Not enough of a balance to be eligible
+						//	Log::getLog()->log("ERROR: {$iAccountId} doesn't owe enough, ineligible amount: {$fAmount} (less than minimum, which is {$aRow['direct_debit_minimum']})");
+					//		$aIneligible[Cli_App_Payments::DIRECT_DEBIT_INELIGIBLE_AMOUNT]++;
+					///		continue;
+					//	}
+
+						// Create Payment (using origin id, payment type, account & amount)
+						$oPayment =	Logic_Payment::factory(
+										$iAccountId,
+										$iPaymentType,
+										$fAmount,
+										PAYMENT_NATURE_PAYMENT,
+										'',
+										$sPaidOn,
+										array(
+											'aTransactionData' =>	array(
+																		$sOriginIdType => $mOriginId
+																	)
+										)
+									);
+
+						// Create payment_request (linked to the payment & invoice run id)
+						$oPaymentRequest	= 	Payment_Request::generatePending(
+													$oAccount->Id, 					// Account id
+													$iPaymentType,					// Payment type
+													$fAmount,						// Amount
+													$aRow['latest_invoice_run_id'],	// Invoice run id
+													Employee::SYSTEM_EMPLOYEE_ID,	// Employee id
+													$oPayment->id					// Payment id
+												);
+
+						// Update the payments transaction reference (this done separately because the transaction reference
+						// is derived from the payment request)
+						$oPayment->transaction_reference = Payment_Request::generateTransactionReference($oPaymentRequest);
+						$oPayment->save();
+
+						// Distribute the payment
+						$oPayment->distribute();
+
+						Log::getLog()->log("Account: {$oAccount->Id}, Payment: {$oPayment->id}, payment_request: {$oPaymentRequest->id}, Amount: {$fAmount}");
+
+						$iAppliedCount++;
+					}
+					Log::getLog()->log("APPLIED: {$iAppliedCount}");
+				Log::getLog()->log("INELIGIBLE: ".print_r($aIneligible, true));
+				Log::getLog()->log("DOUBLE-UPS: {$iDoubleUpsCount} (This should always be zero)");
+				
+
+				
+
+			}
+			catch(Exception $e)
+			{
+				//$oDataAccess->TransactionRollback();
+			}
+
+			//$oDataAccess->TransactionRollback();
+			die;
+		}
+
         public function balanceRedistribution()
         {
             
@@ -333,28 +512,28 @@ WHERE		a.Id = <account_id>";
             Log::setDefaultLog('Developer_Balance_Redistribute');
             $oDataAccess	= DataAccess::getDataAccess();
             
-            //if (!$oDataAccess->TransactionStart())
-           // {
-           //     throw new Exception("transcaction failed to start.");
-          //  }
-            try
-            {
-                $aAccounts = Account::getForBalanceRedistribution(1000154811);
-				
-		foreach ($aAccounts as $oAccount)
-		{
-		    Log::getLog()->log($oAccount->Id);
-		}
-		
-		Logic_Account::batchRedistributeBalances($aAccounts);
-              // $oDataAccess->TransactionRollback();
-            }
-            catch(Exception $e)
-            {
-                throw $e;
-              //  $oDataAccess->TransactionRollback();
-            }
-            die;
+			//if (!$oDataAccess->TransactionStart())
+			// {
+			//     throw new Exception("transcaction failed to start.");
+			//  }
+			try
+			{
+				$aAccounts = Account::getForBalanceRedistribution(1000154797);
+
+			foreach ($aAccounts as $oAccount)
+			{
+			Log::getLog()->log($oAccount->Id);
+			}
+
+			Logic_Account::batchRedistributeBalances($aAccounts);
+			//$oDataAccess->TransactionRollback();
+			}
+			catch(Exception $e)
+			{
+				throw $e;
+			   // $oDataAccess->TransactionRollback();
+			}
+			die;
         }
 
 	public function dispatcherLoadTest()
@@ -395,6 +574,45 @@ WHERE		a.Id = <account_id>";
 	    $aAccountOCAReferrals = Account_OCA_Referral::getAll();
 	    $oResourceType = Resource_Type_File_Export_OCA_Referral::exportOCAReferrals(array_keys($aAccountOCAReferrals));
 	    die;
+	}
+
+	public function deleteTest($aParams)
+	{
+
+		Log::registerFunctionLog('Developer_CollectionsLogic', 'logMessage', 'Application_Handler_Developer');
+		Log::setDefaultLog('Developer_CollectionsLogic');
+		$aAccounts = Account::getForBalanceRedistribution(Account::BALANCE_REDISTRIBUTION_FORCED);
+		$oDataAccess = DataAccess::getDataAccess();
+		$oDataAccess->TransactionStart();
+		$iCount = 0;
+		$bQuick = $aParams[0] > 0 ? TRUE : FALSE;
+		$sQuick = $bQuick ? NULL : "NOT";
+		$fTotalTime = 0.0;
+		Log::getLog()->log("Deleting {$sQuick} using QUICK");
+		try
+		{
+			
+			foreach ($aAccounts as $oAccount)
+			{				
+				Logic_Stopwatch::getInstance()->start();
+				Collectable_Adjustment::deleteForAccount($oAccount->id, $bQuick);
+				Collectable_Payment::deleteForAccount($oAccount->id, $bQuick);
+				Collectable_Transfer_Balance::deleteForAccount($oAccount->id, $bQuick);
+				$fTime = Logic_Stopwatch::getInstance()->split();
+				$fTotalTime += $fTime;
+				//Log::getLog()->log("Account {$oAccount->id} (".++$iCount."),".$fTime);
+			}
+			Log::getlog()->log("Processed ".count($aAccounts)." accounts");
+			Log::getLog()->log("Total Time: {$fTotalTime}");
+			Log::getLog()->log("Average Time: ".$fTotalTime/count($aAccounts));
+		}
+		catch(Exception $e)
+		{
+			 $oDataAccess->TransactionRollback();
+		}
+
+		$oDataAccess->TransactionRollback();
+		die;
 	}
 
     public function CollectionsLogic()
@@ -445,15 +663,20 @@ WHERE		a.Id = <account_id>";
                                  //Log::getLog()->log('&&&&&&&&& Accounts Batch Process Iteration '.$iAccountsBatchProcessIteration++.'  &&&&&&&&&&&&&');
                                 $aExcludedAccounts = Logic_Collection_BatchProcess_Report::getAccountsWithExceptions();
                                // $aAccounts = Logic_Account::getForBatchCollectionProcess($aExcludedAccounts);
-								$aAccounts = array(Logic_Account::getInstance(1000154797));//Logic_Account::getForBatchCollectionProcess($aExcludedAccounts);
-                                $iCompletedInstances = Logic_Account::batchProcessCollections($aAccounts);
+								$aAccounts = array(Logic_Account::getInstance(1000166344));//Logic_Account::getForBatchCollectionProcess($aExcludedAccounts);
+                                $iCompletedInstances = 0;
 
-                                while ($iCompletedInstances > 0)
-                                {
-                                    //Log::getLog()->log('&&&&&&&&& Accounts Batch Process Iteration '.$iAccountsBatchProcessIteration++.'  &&&&&&&&&&&&&');
-                                    $iCompletedInstances = Logic_Account::batchProcessCollections( $aAccounts);
-
-                                }
+								Logic_Stopwatch::getInstance()->start();
+								$iIteration = 1;
+								do
+								{
+									Log::getLog()->log("About to process ".count($aAccounts)." In Batch.");
+									$iCompletedInstances = Logic_Account::batchProcessCollections($aAccounts);
+									Log::getlog()->log("Completed Scheduled Events In : ".Logic_Stopwatch::getInstance()->lap());
+									Log::getLog()->log("-------End Account Batch Collections Process Iteration $iIteration -------------------------");
+									$iIteration++;
+								}
+								while ($iCompletedInstances > 0);
                             }
                             catch (Exception $e)
                             {

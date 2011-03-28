@@ -27,6 +27,8 @@ class Payment extends ORM_Cached
 		return 100;
 	}
 
+
+
     public static function resetBalanceForAccount($iAccountId)
     {
         $oQuery = new Query();
@@ -38,7 +40,7 @@ class Payment extends ORM_Cached
         $oQuery->Execute($sSql);
     }
 
-    public static function getForAccountId($iAccountId, $iPaymentNature = null, $bWithDistributableBalance = true)
+	public static function getForAccountId($iAccountId, $iPaymentNature = null, $bWithDistributableBalance = true)
 	{
 
 

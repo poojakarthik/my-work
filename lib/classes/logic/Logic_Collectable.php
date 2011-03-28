@@ -5,7 +5,7 @@
  *
  * @author JanVanDerBreggen
  */
-class Logic_Collectable implements DataLogic , Logic_Distributable,  Logic_Payable
+class Logic_Collectable extends Logic_Distributable implements DataLogic, Logic_Payable
 {
 	const DEBIT = 0;
 	const CREDIT = 1;
@@ -94,28 +94,36 @@ class Logic_Collectable implements DataLogic , Logic_Distributable,  Logic_Payab
 		$bOverdue		= ($iDueDateTime < $iNow);
 		return ($bNoPromise && $bOverdue);
 	}
-	
-	
 
 	public function processDistributable($mBalanceTransferItem, $fMaxAmount = null)
 	{
 		//Log::getLog()->log('before_create_transfer for '.$mBalanceTransferItem->id.", ".memory_get_usage(true));
 		if ($mBalanceTransferItem instanceof Logic_Collectable)
 		{
-			$oTransfer = Logic_Collectable_Transfer_Balance::create($mBalanceTransferItem, $this, $fMaxAmount);
+			$fBalance = Logic_Collectable_Transfer_Balance::create($mBalanceTransferItem, $this, $fMaxAmount);
 		}
 		else if ($mBalanceTransferItem instanceof Logic_Adjustment)
 		{
-			$oTransfer = Logic_Collectable_Adjustment::create($mBalanceTransferItem, $this, $fMaxAmount);
+			$fBalance = Logic_Collectable_Adjustment::create($mBalanceTransferItem, $this, $fMaxAmount);
 		}
 		else
 		{
-			$oTransfer = Logic_Collectable_Payment::create($mBalanceTransferItem, $this, $fMaxAmount);
+			$fBalance = Logic_Collectable_Payment::create($mBalanceTransferItem, $this, $fMaxAmount);
+		}		
+
+		$this->balance += $fBalance ;
+		if ($mBalanceTransferItem->isDebit() || $mBalanceTransferItem instanceof Logic_Collectable)
+		{
+			$mBalanceTransferItem->balance -= $fBalance;
 		}
-		 //Log::getLog()->log('after_create_transfer for '.$mBalanceTransferItem->id.", ".memory_get_usage(true));
-		$oTransfer->apply();
-		 //Log::getLog()->log('after_applying_transfer for '.$mBalanceTransferItem->id.", ".memory_get_usage(true));
-		return $oTransfer->balance;
+		else
+		{
+			$mBalanceTransferItem->balance += $fBalance;
+		}
+
+		$mBalanceTransferItem->save();
+		$this->save();
+		return $fBalance;
 	}
 
 	public function belongsToActivePromise()

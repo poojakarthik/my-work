@@ -5,7 +5,7 @@
  *
  * @author JanVanDerBreggen
  */
-class Logic_Payment implements DataLogic, Logic_Distributable{
+class Logic_Payment extends Logic_Distributable implements DataLogic{
 
 	 protected $oDO;
 
@@ -287,6 +287,8 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 		return $aResults;
 	}
 
+
+
 	public function distribute() {
 		// We're temporarily always redistributing
 		//Logic_Account::getInstance($this->account_id)->processDistributable($this);
@@ -392,8 +394,8 @@ class Logic_Payment implements DataLogic, Logic_Distributable{
 						$mReferences = array('payment_id' => $oPayment->id, 'payment_response_id' => $aConfig['iPaymentResponseId']);
 					}
 					Log::getLog()->log("Adding payment_transaction_data: $sName => $mValue");
-					$oTransactionData = Payment_Transaction_Data::factory($sName, $mValue, $mReferences);
-					$oTransactionData->save();
+					//$oTransactionData = Payment_Transaction_Data::factory($sName, $mValue, $mReferences);
+					//$oTransactionData->save();
 				}
 			}
 			

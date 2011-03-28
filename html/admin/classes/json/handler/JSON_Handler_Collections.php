@@ -550,8 +550,26 @@ class JSON_Handler_Collections extends JSON_Handler
 			$oScenario  			= $oAccount->getCurrentScenarioInstance()->getScenario();
 			$oLastScheduledEvent 	= $oAccount->getMostRecentCollectionEventInstance();
 			$bIsIncollections 		= $oAccount->isCurrentlyInCollections();
-			$oEvent 				= $oAccount->getNextCollectionScenarioEvent(TRUE);
-			if ($oEvent !== NULL)
+			$bShouldBeInCollections = $oAccount->shouldCurrentlyBeInCollections();
+			
+			$oEvent = $bIsIncollections && ! $bShouldBeInCollections ? new Logic_Collection_Event_ExitCollections() :$oAccount->getNextCollectionScenarioEvent(TRUE);
+
+			$iInvocationId;
+			$sEventName;
+			$iEventId;
+			$sNextEventDate;
+			$bIsExit;
+
+
+			if ($oEvent instanceof Logic_Collection_Event_ExitCollections)
+			{
+				$iInvocationId	= COLLECTION_EVENT_INVOCATION_AUTOMATIC;
+				$sEventName		= $oEvent->name;
+				$iEventId		= $oEvent->id;
+				$sNextEventDate = date("Y-m-d", DataAccess::getDataAccess()->getNow(TRUE));
+				$bIsExit		= TRUE;
+			}
+			else if ($oEvent !== NULL)
 			{
 				if ($bIsIncollections && $oScenario->id == $oLastScheduledEvent->getScenario()->id)
 				{
@@ -569,16 +587,26 @@ class JSON_Handler_Collections extends JSON_Handler
 
 				if ($bOverdueOnNextEventDate)
 				{
-					$aScenarioEvent 									= array();
-					$aScenarioEvent['collection_event_invocation_id']	= $oEvent->getInvocationId();
-					$aScenarioEvent['collection_event_name'] 			= "Next Collections Event: ".$oEvent->getEventName();
-					$aScenarioEvent['id'] 								= $oEvent->id;
-					if (!isset($aUnsortedEvents[$sNextEventDate]))
-					{
-						$aUnsortedEvents[$sNextEventDate] = array();
-					}
-					$aUnsortedEvents[$sNextEventDate]['collection_scenario_collection_event'][] = $aScenarioEvent;
+					$iInvocationId	= $oEvent->getInvocationId();
+					$sEventName		= $oEvent->getEventName();
+					$iEventId		= $oEvent->collection_event_id;
+					$bIsExit		= FALSE;
 				}
+			}
+
+			if ($iInvocationId !== NULL && $sEventName!== NULL && $iEventId !== NULL && $sNextEventDate !== NULL && $bIsExit !== NULL)
+			{
+				$aScenarioEvent 									= array();
+				$aScenarioEvent['collection_event_invocation_id']	= $iInvocationId;
+				$aScenarioEvent['collection_event_name'] 			= "Next Collections Event: ".$sEventName;
+				$aScenarioEvent['id'] 								= $iEventId;
+				$aScenarioEvent['isExit']							= $bIsExit;
+				$aScenarioEvent['isNextEvent']						= TRUE;
+				if (!isset($aUnsortedEvents[$sNextEventDate]))
+				{
+					$aUnsortedEvents[$sNextEventDate] = array();
+				}
+				$aUnsortedEvents[$sNextEventDate]['collection_scenario_collection_event'][] = $aScenarioEvent;
 			}
 			
 		    // Suspensions

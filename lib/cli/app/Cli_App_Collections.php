@@ -289,11 +289,10 @@ class Cli_App_Collections extends Cli
 
 			try
 			{
-				Log::getLog()->log("Account, Time, Memory Usage, delete linking data, reset balances, iterations, Debit Collectables, Credit Collectables, Credit Payments, Credit Adjustments, Debit Payments,Debit Adjustments, Account Balance Prior, Payable Balance Prior, Payable Balance After, Overdue Balance");
-
+				Log::getLog()->log("Account, Time, Memory Usage, iterations, Debit Collectables, Credit Collectables, Credit Payments, Credit Adjustments, Debit Payments,Debit Adjustments, Account Balance (based on amounts) , Payable Balance (based on balances) ");
 				$aAccounts = Account::getForBalanceRedistribution($iMode);
-				Logic_Account::batchRedistributeBalances($aAccounts);
-				Log::getLog()->log("After, ".memory_get_usage (TRUE ));//self::$aMemory['after_before_cache_clear'] = memory_get_usage (TRUE );
+				Logic_Account::batchRedistributeBalances($aAccounts);				
+				
 			}
 			catch (Exception $e)
 			{

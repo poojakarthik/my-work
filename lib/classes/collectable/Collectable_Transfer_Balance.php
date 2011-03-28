@@ -27,20 +27,25 @@ class Collectable_Transfer_Balance extends ORM_Cached
 		return 100;
 	}
 
-        public static function deleteForAccount($iAccountId)
-        {
-            $oQuery = new Query();
-           // $sSql = "DELETE FROM ".self::$_strStaticTableName."
-            //        WHERE from_collectable_id in (  SELECT id
-            //                                        FROM collectable c
-           //                                         WHERE c.account_id = $iAccountId)";
+	public static function deleteForAccount($iAccountId, $bQuick =FALSE)
+	{
+		$sQuick = $bQuick ? "QUICK" : NULL;
+		Query::run (
+					"DELETE {$sQuick} collectable_transfer_balance
+					FROM collectable_transfer_balance
+					JOIN collectable ON (collectable.id = collectable_transfer_balance.to_collectable_id AND collectable.account_id =  $iAccountId)"
+					);
+	}
 
-             $sSql = "DELETE collectable_transfer_balance
-                    FROM collectable_transfer_balance
-                    JOIN collectable ON (collectable.id = collectable_transfer_balance.to_collectable_id AND collectable.account_id =  $iAccountId)";
-                   
-            $oQuery->Execute($sSql);
-        }
+	public static function batchInsert($aRows) {
+
+		if (count($aRows) > 0)
+		{
+			$sSQL = "INSERT INTO ".self::$_strStaticTableName." VALUES ";
+			Query::run($sSQL.implode(",", $aRows));
+		}
+
+	}
 	
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START

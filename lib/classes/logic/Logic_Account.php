@@ -523,26 +523,25 @@ class Logic_Account implements DataLogic
 		$bDistributableIsCredit = $mDistributable->isCredit();
 	   //Log::getLog()->log("Before processing distributable $mDistributable->id ,".memory_get_usage(true));
 		$aPayables = $bDistributableIsCredit ? $this->getPayables() : array_reverse($this->getPayables());
-
-	for ($i=0;$i<count($aPayables);$i++)
-	{
-		if ($mDistributable->balance == 0)
-			break;
-		$oPayable = $aPayables[$i];
-
-		if ($bDistributableIsCredit && $oPayable->getBalance() > 0)
+		
+		foreach ($aPayables as $oPayable)
+		//for ($i=0;$i<count($aPayables);$i++)
 		{
-		$oPayable->processDistributable($mDistributable);
+			if ($mDistributable->balance == 0)
+				break;
+			//$oPayable = $aPayables[$i];
+
+			if ($bDistributableIsCredit && $oPayable->getBalance() > 0)
+			{
+				$oPayable->processDistributable($mDistributable);
+			}
+			else if (!$bDistributableIsCredit && $oPayable->getBalance() < $oPayable->getAmount())
+			{
+				$oPayable->processDistributable($mDistributable);
+			}	
 
 		}
-		else if (!$bDistributableIsCredit && $oPayable->getBalance() < $oPayable->getAmount())
-		{
-		$oPayable->processDistributable($mDistributable);
-		}
-
-
-	}
-	unset($aPayables);
+		unset($aPayables);
 		  //Log::getLog()->log("After processing distributable $mDistributable->id,".memory_get_usage(true));
 	}
 
@@ -606,63 +605,80 @@ class Logic_Account implements DataLogic
 
 	}
 
+	public function processDistributables()
+	{
+		$iIterations = 0;		
+
+		while ((($this->getPayableBalance(TRUE) > 0 && $this->getDistributableCreditBalance() > 0)
+				|| ($this->hasPayablesWithBalanceBelowAmount() && $this->getDistributableDebitBalance() > 0)))
+		{
+			$iIterations++;
+			$aCreditCollectable = $this->getCollectables(Logic_Collectable::CREDIT);
+			$aPayables = $this->getPayables();
+			foreach ($aCreditCollectable as $oCollectable)
+			{
+				$oCollectable->distributeToPayables($aPayables);				
+			}
+
+			$aPayments = $this->getPayments(PAYMENT_NATURE_PAYMENT);
+			foreach ($aPayments as $oPayment)
+			{
+				$oPayment->distributeToPayables($aPayables);				
+			}			
+
+			$aAdjustments = $this->getAdjustments(Logic_Adjustment::CREDIT);
+			foreach ($aAdjustments as $oAdjustment)
+			{
+				$oAdjustment->distributeToPayables($aPayables);				
+			}
+			$aPayables = array_reverse($this->getPayables());
+			$aReversedPayments = $this->getPayments(PAYMENT_NATURE_REVERSAL);
+			foreach($aReversedPayments as $oPayment)
+			{
+				$oPayment->distributeToPayables($aPayables);				
+			}
+
+			$aDebitAdjustments = $this->getAdjustments(Logic_Adjustment::DEBIT);
+			foreach ( $aDebitAdjustments as $oAdjustment)
+			{
+				$oAdjustment->distributeToPayables($aPayables);				
+			}
+
+		}
+
+		Logic_Collectable_Payment::createRecords();
+		Logic_Collectable_Adjustment::createRecords();
+		Logic_Collectable_Transfer_Balance::createRecords();
+
+		return array('iterations'=>$iIterations, 'Debit Collectables' =>count($this->getCollectables()), 'Credit Collectables'=> count($aCreditCollectable) , 'Credit Payments' =>count($aPayments) , 'Credit Adjustments'=> count($aAdjustments), 'Debit Payments' => count($aReversedPayments) , 'Debit Adjustments' =>count($aDebitAdjustments), 'Balance'=>$this->getPayableBalance() );
+
+	}
+
 
 
 	public function redistributeBalances()
 	{
 		//Log::getLog()->log("Redistributing Account #{$this->Id}");
 		// delete all records for this account in the following tables: collectable_adjustment; collectable_payment; collectable_transfer where collectable_transfer_type == COLLECTABLE_TRANSFER_TYPE_BALANCE
+
 		Collectable_Adjustment::deleteForAccount($this->id);
 		Collectable_Payment::deleteForAccount($this->id);
 		Collectable_Transfer_Balance::deleteForAccount($this->id);
-
+		//$time = Logic_Stopwatch::getInstance()->lap();
+		//Log::getlog()->log("Query Deletion for {$this->id},$time");
 		//set .balance = .amount for adjustment; payment; collectable
 		Adjustment::resetBalanceForAccount($this->id);
 		Payment::resetBalanceForAccount($this->id);
 		//The following statement will directly access the database and modify collectable balances, so we need to subsequently force a cache refresh on the Logic_Collectable class.
 		Collectable::resetBalanceForAccount($this->id);
-		Logic_Collectable::clearCache();
-		$this->getPayables(TRUE);
+		Logic_Collectable::clearCache();		
 		$this->getCollectables(Logic_Collectable::CREDIT, TRUE);
+		
+		//$time = Logic_Stopwatch::getInstance()->lap();
+		//Log::getlog()->log("Resetting balances for Account {$this->id},$time");
 
-		$iIterations = 0;
-
-		while ((($this->getPayableBalance() > 0 && $this->getDistributableCreditBalance() > 0)
-				|| ($this->hasPayablesWithBalanceBelowAmount() && $this->getDistributableDebitBalance() > 0)))
-		{
-			$iIterations++;
-		   $aCreditCollectable = $this->getCollectables(Logic_Collectable::CREDIT);
-			//Log::getLog()->log("after get credit collectables,".memory_get_usage(true));
-			foreach ($aCreditCollectable as $oCollectable)
-			{
-				$this->processDistributable($oCollectable);
-			}
-
-		   $aPayments = $this->getPayments(PAYMENT_NATURE_PAYMENT);
-		  //Log::getLog()->log("after get payments,".memory_get_usage(true));
-			foreach ($aPayments as $oPayment)
-			{
-				$this->processDistributable($oPayment);
-			}
-
-			$aAdjustments = $this->getAdjustments(Logic_Adjustment::CREDIT);
-			foreach ($aAdjustments as $oAdjustment)
-			{
-				$this->processDistributable($oAdjustment);
-			}
-			// self::$aMemory['after_processing_credits'] = memory_get_usage (TRUE );
-			//4. process all debit balances for this account in the tables mentioned in step 2. see below for the rules
-			 ////Log::getLog()->log("&&&DEBIT BALANCE REDISTRIBUTION &&&");
-			$aDebitAdjustments = $this->getAdjustments(Logic_Adjustment::DEBIT);
-			foreach ( $aDebitAdjustments as $oAdjustment)
-			{
-				$this->processDistributable($oAdjustment);
-			}
-		   // self::$aMemory['after_processing_debits'] = memory_get_usage (TRUE );
-		}
-
-
-		return array('iterations'=>$iIterations, 'Debit Collectables' =>count($this->getCollectables()), 'Credit Collectables'=> count($aCreditCollectable) , 'Credit Payments' =>count($aPayments) , 'Credit Adjustments'=> count($aAdjustments), 'Debit Payments' => count($aReversedPayments) , 'Debit Adjustments' =>count($aDebitAdjustments), 'Balance'=>$this->getPayableBalance() );
+		return $this->processDistributables();
+		
 	}
 
 	/**
@@ -920,17 +936,18 @@ class Logic_Account implements DataLogic
 				$oStopwatch = Logic_Stopwatch::getInstance(true);
 				$oStopwatch->start();
 				 //Log::getLog()->log("Instantiated logic account $oAccountORM->Id,".  memory_get_usage(true));
-				$fStartCollectableBalance = $oAccount->getPayableBalance();
+				
 				$fAccountBalance = $oAccount->getAccountBalance();
 
 				//this is the actual balance redistribution
 				$aResult = $oAccount->redistributeBalances();
-
+				//$time = Logic_Stopwatch::getInstance()->lap();
+			//	Log::getlog()->log("Processing Distributables for Account {$oAccount->id},$time");
 				//further process reporting
 				$time = $oStopwatch->split();
 				$fOverdueBalance = $oAccount->getOverdueCollectableBalance();
-				self::$aMemory['after_before_cache_clear'] = memory_get_usage (TRUE );
-
+				//self::$aMemory['after_before_cache_clear'] = memory_get_usage (TRUE );
+				//Log::getlog()->log("Total Time for {$oAccount->id},$time");
 				//memory management
 				$oAccount->reset();
 				unset($oAccount);
@@ -940,8 +957,7 @@ class Logic_Account implements DataLogic
 
 				//output the process report to the commandline
 				$iMemory = (memory_get_usage (TRUE ));
-				self::$aMemory['after_after_cache_clear'] = $iMemory;
-				Log::getLog()->log("$iId, $time,  $iMemory , ".self::$_aTime['delete_linking_data'].",".self::$_aTime['reset_balances'].",".$aResult['iterations'].",".$aResult['Debit Collectables'].",".$aResult['Credit Collectables'].",".$aResult['Credit Payments'].",".$aResult['Credit Adjustments'].",".$aResult['Debit Payments'].",".$aResult['Debit Adjustments'].",".$fAccountBalance.",".$fStartCollectableBalance.",".$aResult['Balance'].",".$fOverdueBalance);
+				Log::getLog()->log("$iId, $time,  $iMemory ,".$aResult['iterations'].",".$aResult['Debit Collectables'].",".$aResult['Credit Collectables'].",".$aResult['Credit Payments'].",".$aResult['Credit Adjustments'].",".$aResult['Debit Payments'].",".$aResult['Debit Adjustments'].",".$fAccountBalance.",".$aResult['Balance']);
 
 				$oDataAccess->TransactionCommit();
 			}

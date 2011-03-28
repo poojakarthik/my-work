@@ -5,44 +5,28 @@
  *
  * @author JanVanDerBreggen
  */
-class Logic_Collectable_Transfer_Balance extends Logic_Transfer_Balance
+class Logic_Collectable_Transfer_Balance
 {
-	public function getSource()
+
+	static $aInsertRecords = array();
+
+
+	public static function create ($oSource, $oTarget, $fMaxAmount = null)
 	{
-		if ($this->oSource === null)
-			Logic_Collectable::getInstance($this->to_collectable_id);
-		return $this->oSource;
+		$iFrom_collectable_id			= $oSource->id;
+		$iTo_collectable_id				= $oTarget->id;
+		$iCollectable_transfer_type_id	= $iType;
+		$fBalance = $oTarget->balance	>= abs($oSource->balance) ? $oSource->balance : -$oTarget->balance;
+		if ($fMaxAmount!== null && abs($iBalance ) > $fMaxAmount )
+			$fBalance					= - $fMaxAmount;
+
+		self::$aInsertRecords[] = "(NULL,$iFrom_collectable_id, $iTo_collectable_id,  NOW(), $fBalance )";
+		return $fBalance;
 	}
 
-	public function getTarget()
-	{
-		if ($this->oTarget === null)
-			Logic_Collectable::getInstance($this->to_collectable_id);
-		return $this->oTarget;
+	public static function createRecords() {
+		Collectable_Transfer_Balance::batchInsert(self::$aInsertRecords);
+		self::$aInsertRecords = array();
 	}
-
-	public static function create($oSource, $oTarget, $fMaxAmount = null)
-	{ 
-		$oTransfer = new Collectable_Transfer_Balance();
-		$oTransfer->from_collectable_id = $oSource->id;
-		$oTransfer->to_collectable_id = $oTarget->id;
-		$oTransfer->collectable_transfer_type_id = $iType;
-		$oTransfer->balance = $oTarget->balance >= abs($oSource->balance) ? $oSource->balance : -$oTarget->balance;
-		if ($fMaxAmount!== null && abs($oTransfer->balance) > $fMaxAmount )
-			$oTransfer->balance = - $fMaxAmount;
-		$oTransfer->created_datetime = Data_Source_Time::currentTimestamp();
-		return new self($oTransfer, $oSource, $oTarget);
-	}
-	
-
-	public function __get($sField) 
-	{
-		return $this->oDO->$sField;
-	}
-	
-	public function __set($sField, $mValue) 
-	{
-		$this->oDO->sField = $mValue;
-	}	
 }
 ?>

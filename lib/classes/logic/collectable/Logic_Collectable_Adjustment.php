@@ -9,22 +9,11 @@
  *
  * @author JanVanDerBreggen
  */
-class Logic_Collectable_Adjustment extends Logic_Transfer_Balance
+class Logic_Collectable_Adjustment 
 {
 
-	public function getSource()
-	{
-		if ($this->oSource === null)
-			Logic_Adjustment::getForId($this->from_collectable_id);
-		return $this->oSource;
-	}
+	static $aInsertRecords = array();
 
-	public function getTarget()
-	{
-		if ($this->oTarget === null)
-			Logic_Collectable::getInstance($this->to_collectable_id);
-		return $this->oTarget;
-	}
 
 
 	public static function create($oAdjustment, $oCollectable, $fMaxAmount = null)
@@ -32,30 +21,29 @@ class Logic_Collectable_Adjustment extends Logic_Transfer_Balance
 		$iValueMultiplier = $oAdjustment->getMultiplier();
 		$oDO = new Collectable_Adjustment();
 		$oCollectableAdjustment = new self ($oDO, $oAdjustment, $oCollectable );
-		$oDO->adjustment_id = $oAdjustment->id;
-		$oDO->collectable_id = $oCollectable->id;
+		$iAdjustment_id = $oAdjustment->id;
+		$iCollectable_id  = $oCollectable->id;
 		if ($oAdjustment->isCredit())
 		{
-			 $oCollectableAdjustment->balance = $oCollectable->balance >= $oAdjustment->balance ? $oAdjustment->balance *$iValueMultiplier : $oCollectable->balance * Rate::roundToRatingStandard($iValueMultiplier, 4);
+			 $fBalance = $oCollectable->balance >= $oAdjustment->balance ? $oAdjustment->balance *$iValueMultiplier : $oCollectable->balance * Rate::roundToRatingStandard($iValueMultiplier, 4);
 		}
 		else
 		{
-			$oCollectableAdjustment->balance = ($oCollectable->amount - $oCollectable->balance) >= $oAdjustment->balance ? $oAdjustment->balance *$iValueMultiplier : ($oCollectable->amount - $oCollectable->balance) * $iValueMultiplier;
+			 $fBalance = ($oCollectable->amount - $oCollectable->balance) >= $oAdjustment->balance ? $oAdjustment->balance *$iValueMultiplier : ($oCollectable->amount - $oCollectable->balance) * $iValueMultiplier;
 
 		}
 
 		 if ($fMaxAmount !== null && abs($oDO->balance)> $fMaxAmount)
-				$oCollectableAdjustment->balance = $fMaxAmount*$iValueMultiplier;
+				 $fBalance = $fMaxAmount*$iValueMultiplier;
 
-		$oCollectableAdjustment->created_datetime = Data_Source_Time::currentTimestamp();
-		return $oCollectableAdjustment;
-
+		 self::$aInsertRecords[] = "(NULL,$iAdjustment_id, $iCollectable_id, $fBalance, NOW() )";
+		 
+		return $fBalance;
 	}
 
-	
-	public function save()
-	{
-		$this->oDO->save();
-	}	
+	public static function createRecords() {
+		Collectable_Adjustment::batchInsert(self::$aInsertRecords);
+		self::$aInsertRecords = array();
+	}
 }
 ?>

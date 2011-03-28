@@ -410,12 +410,15 @@ var Component_Account_Collections = Class.create(
 
 		sDetails = oData.collection_event_name;
 
+		aIcon = !oData.isExit ? [{sIconSrc: Component_Account_Collections.VIEW_IMAGE_SOURCE, sAlt: 'View Event Details', fnOnClick: this._viewScenarioEventDetails.bind(this, oData)}] : [];
+
 		return	this._createEventItem(
 					sDate,
 					sIcon,
 					sIconAlt,
 					sDetails,
-					[{sIconSrc: Component_Account_Collections.VIEW_IMAGE_SOURCE, sAlt: 'View Event Details', fnOnClick: this._viewScenarioEventDetails.bind(this, oData)}]
+					aIcon,
+					oData.isNextEvent
 				);
 	},
 	
@@ -492,7 +495,7 @@ var Component_Account_Collections = Class.create(
 				);
 	},
 	
-	_createEventItem : function(sDate, sIconSrc, sIconAlt, sDetails, aActions)
+	_createEventItem : function(sDate, sIconSrc, sIconAlt, sDetails, aActions, bIsNextEvent)
 	{
 		var oActionTD = $T.td();
 		if (aActions)
@@ -512,6 +515,12 @@ var Component_Account_Collections = Class.create(
 			// Present date
 			sDateTDClass = 'component-account-collections-events-current-date';
 		}
+
+		var sNextEventClass = null;
+		if (bIsNextEvent)
+		{
+			sNextEventClass = 'component-account-collections-events-next-event';
+		}
 		
 		sIconAlt = (sIconAlt ? sIconAlt : null);
 		
@@ -522,7 +531,7 @@ var Component_Account_Collections = Class.create(
 						$T.td(
 							sIconSrc ? $T.img({src: sIconSrc, alt: sIconAlt, title: sIconAlt}) : null	
 						),
-						$T.td(sDetails ? sDetails : null),
+						$T.td({class: sNextEventClass}, sDetails ? sDetails : null),
 						oActionTD
 					);
 		this._bPutDateInNextRow = false;

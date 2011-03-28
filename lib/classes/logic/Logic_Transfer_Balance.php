@@ -42,13 +42,14 @@ abstract class Logic_Transfer_Balance {
 		////Log::getLog()->log("	Appying Balance Transfer to Collectable ID: $oTarget->id (Due Date: $oTarget->due_date, Amount: $oTarget->amount). ");
 		////Log::getLog()->log("Collectable Balance prior to transfer: $oTarget->balance");
 		$oTarget->balance += $this->balance;
-		if ($oSource->isCredit() and !($oSource instanceof Logic_Collectable))
+		if ($oSource->isDebit() || $oSource instanceof Logic_Collectable)
 		{
-			$oSource->balance += $this->balance;
+			$oSource->balance -= $this->balance;
 		}
 		else
 		{
-			$oSource->balance -= $this->balance;
+			$oSource->balance += $this->balance;
+			
 		}
 	   // $oSource->balance   = Rate::roundToRatingStandard($oSource->balance, 4);
 	   // $oTarget->balance   = Rate::roundToRatingStandard( $oTarget->balance, 4);

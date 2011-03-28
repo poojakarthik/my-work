@@ -10,6 +10,8 @@ class Collectable_Adjustment extends ORM_Cached
 {
 	protected 			$_strTableName			= "collectable_adjustment";
 	protected static	$_strStaticTableName	= "collectable_adjustment";
+
+
 	
 	protected static function getCacheName()
 	{
@@ -27,20 +29,24 @@ class Collectable_Adjustment extends ORM_Cached
 		return 100;
 	}
 
-        public static function deleteForAccount($iAccountId)
-        {
-            $oQuery = new Query();
-            //$sSql = "DELETE FROM ".self::$_strStaticTableName."
-           //         WHERE adjustment_id in (SELECT id
-           //                                 FROM adjustment a
-            //                                WHERE a.account_id = $iAccountId)";
+	public static function deleteForAccount($iAccountId, $bQuick = FALSE)
+	{
+		$sQuick = $bQuick ? "QUICK" : NULL;
+		Query::run(
+					"DELETE {$sQuick} collectable_adjustment
+					FROM collectable_adjustment
+					JOIN adjustment ON (adjustment.id = collectable_adjustment.adjustment_id AND adjustment.account_id =  $iAccountId)"
+					);
+	}
 
-            $sSql = "DELETE collectable_adjustment
-                    FROM collectable_adjustment
-                    JOIN adjustment ON (adjustment.id = collectable_adjustment.adjustment_id AND adjustment.account_id =  $iAccountId)";
-                                           
-            $oQuery->Execute($sSql);
-        }
+	public static function batchInsert($aRows) {
+		if (count($aRows) > 0)
+		{
+			$sSQL = "INSERT INTO ".self::$_strStaticTableName." VALUES ";
+			Query::run($sSQL.implode(",", $aRows));
+		}
+	}
+
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
 	//---------------------------------------------------------------------------------------------------------------------------------//
