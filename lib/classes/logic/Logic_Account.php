@@ -841,7 +841,7 @@ class Logic_Account implements DataLogic
 	public function getCurrentDueDate()
 	{
 		$mSourceCollectable =  $this->getSourceCollectable();
-		return $mSourceCollectable === null ? Data_Source_Time::END_OF_TIME : $mSourceCollectable->due_date;
+		return $mSourceCollectable === null ? null : $mSourceCollectable->due_date;
 	}
 
 	/**
@@ -852,7 +852,7 @@ class Logic_Account implements DataLogic
 	public function getCollectionsStartDate()
 	{
 		$iOffset = $this->getCurrentScenarioInstance()->getScenario()->day_offset;
-		$sDueDate = $this->getCurrentDueDate();
+		$sDueDate = coalesce($this->getCurrentDueDate(), Data_Source_Time::END_OF_TIME);
 		$iDueDate = strtotime($sDueDate);
 		$iOverDueDate = strtotime("+1 day", $iDueDate);
 		$iStartDate = strtotime("-$iOffset day", $iOverDueDate);
