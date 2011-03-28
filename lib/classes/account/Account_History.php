@@ -421,7 +421,7 @@ class Account_History
 					$arrPreparedStatements[$sStatement]	= new StatementSelect(self::$_sStaticTableName, "*", "id = <id>", NULL, 1);
 					break;
 				case 'selByAccountIdAndEffectiveDatetime':
-					$arrPreparedStatements[$sStatement]	= new StatementSelect(self::$_sStaticTableName, "*", "account_id = <account_id> AND change_timestamp <= <effective_datetime>", "change_timestamp DESC", 1);
+					$arrPreparedStatements[$sStatement]	= new StatementSelect(self::$_sStaticTableName, "*", "account_id = <account_id> AND change_timestamp <= <effective_datetime>", "change_timestamp DESC, id DESC", 1);
 					break;
 				
 				// INSERTS
