@@ -37,7 +37,7 @@ class Logic_Collection_Event_Charge extends Logic_Collection_Event
 		{
 			//calculate the charge:
 			//apply the percentage of outstanding debt, and 'clamp' this to the min/max amounts
-			$fAmount					= max($oAccount->getOverdueCollectableBalance()*$this->percentage_outstanding_debt, $this->minimum_amount);
+			$fAmount					= max($oAccount->getOverdueBalance()*$this->percentage_outstanding_debt, $this->minimum_amount);
 			$fChargeAmount				= $this->maximum_amount === null ? $fAmount :  min($fAmount, $this->maximum_amount);
 			$oChargeType				= Charge_Type::getForId($this->charge_type_id);
 			$oCharge					= new Charge();

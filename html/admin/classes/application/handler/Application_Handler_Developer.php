@@ -663,7 +663,7 @@ WHERE		a.Id = <account_id>";
                                  //Log::getLog()->log('&&&&&&&&& Accounts Batch Process Iteration '.$iAccountsBatchProcessIteration++.'  &&&&&&&&&&&&&');
                                 $aExcludedAccounts = Logic_Collection_BatchProcess_Report::getAccountsWithExceptions();
                                // $aAccounts = Logic_Account::getForBatchCollectionProcess($aExcludedAccounts);
-								$aAccounts = array(Logic_Account::getInstance(1000166344));//Logic_Account::getForBatchCollectionProcess($aExcludedAccounts);
+								$aAccounts = array(Logic_Account::getInstance(1000154797));//Logic_Account::getForBatchCollectionProcess($aExcludedAccounts);
                                 $iCompletedInstances = 0;
 
 								Logic_Stopwatch::getInstance()->start();

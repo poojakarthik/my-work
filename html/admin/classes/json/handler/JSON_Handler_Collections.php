@@ -583,7 +583,7 @@ class JSON_Handler_Collections extends JSON_Handler
 				$iDateToOffset 				= strtotime($sDateToOffset);
 				$iNextEventDate 			= max (strtotime("+$oEvent->day_offset day", $iDateToOffset), time());
 				$sNextEventDate 			= date ("Y-m-d", $iNextEventDate);
-				$bOverdueOnNextEventDate	= $oScenario->evaluateThresholdCriterion($oAccount->getOverDueCollectableAmount($sNextEventDate),$oAccount->getOverdueCollectableBalance($sNextEventDate));
+				$bOverdueOnNextEventDate	= $oScenario->evaluateThresholdCriterion($oAccount->getOverDueCollectableAmount($sNextEventDate),$oAccount->getOverdueBalance($sNextEventDate));
 
 				if ($bOverdueOnNextEventDate)
 				{

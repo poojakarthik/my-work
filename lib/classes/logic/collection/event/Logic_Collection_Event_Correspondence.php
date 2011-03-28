@@ -76,8 +76,8 @@ class Logic_Collection_Event_Correspondence extends Logic_Collection_Event
 			$oAccount = Logic_Account::getForId($aAccount['AccountId']);
 			//first set the following data members on $aAccount:  'InvoiceId', 'OutstandingNotOverdue', 'Overdue',  'TotalOutstanding'
 			$aAccount['InvoiceId'] = $oAccount->getSourceCollectable()->invoice_id;
-			$aAccount['Overdue'] = $oAccount->getOverdueCollectableBalance();
-			$aAccount['TotalOutstanding'] = $oAccount->getCollectableBalance();
+			$aAccount['Overdue'] = $oAccount->getOverdueBalance();
+			$aAccount['TotalOutstanding'] = $oAccount->getAccountBalance();
 			$aAccount['OutstandingNotOverdue'] = $aAccount['TotalOutstanding'] -  $aAccount['Overdue'];
 
 			$mxdSuccess = BuildLatePaymentNotice($iDocumentTemplateId, $aAccount, $strBasePath, $intEffectiveDate, $iActionType);

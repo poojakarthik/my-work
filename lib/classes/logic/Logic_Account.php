@@ -274,7 +274,7 @@ class Logic_Account implements DataLogic
 		 if (!$this->isCurrentlyInCollections())
 		 {
 			 $mNow = date('Y-m-d', strtotime("+$oScenario->day_offset days", time()));
-			 return $oScenario->evaluateThresholdCriterion($this->getOverDueCollectableAmount($mNow),$this->getOverdueCollectableBalance($mNow));
+			 return $oScenario->evaluateThresholdCriterion($this->getOverDueCollectableAmount($mNow),$this->getOverdueBalance($mNow));
 		 }
 		 //if they are in collections
 		 else
@@ -285,49 +285,13 @@ class Logic_Account implements DataLogic
 			 $iCollectionsStart = strtotime($this->getStartOfCollectionsEventInstance()->scheduled_datetime);
 			 $iNow = strtotime("+$oScenario->day_offset days",$iCollectionsStart );
 			 $sNow = date('Y-m-d', $iNow );
-			 if ($oScenario->evaluateThresholdCriterion($this->getOverDueCollectableAmount($sNow),$this->getOverdueCollectableBalance($sNow)))
+			 if ($oScenario->evaluateThresholdCriterion($this->getOverDueCollectableAmount($sNow),$this->getOverdueBalance($sNow)))
 				 return true;
 
 			 //If this is not the case, we will now check if there are any other collectables that are overdue, which taken into account will keep the account in collections
 			 $mNow = self::SCENARIO_OFFSET_USED_TO_DETERMINE_EXIT_COLLECTIONS ? date('Y-m-d', strtotime("+$oScenario->day_offset days", time())) : Data_Source_Time::currentDate();
-			 return $oScenario->evaluateThresholdCriterion($this->getOverDueCollectableAmount($mNow),$this->getOverdueCollectableBalance($mNow));
+			 return $oScenario->evaluateThresholdCriterion($this->getOverDueCollectableAmount($mNow),$this->getOverdueBalance($mNow));
 		 }
-	}
-
-	public function shouldCurrentlyBeInCollectionsOldAndIncorrect()
-	{
-	if ($this->isInSuspension())
-	{
-		return false;
-	}
-	//if they are not in collections: call 'getCollectionsStartDate'. If <= now, start collections
-	 $oScenario  = $this->getCurrentScenarioInstance()->getScenario();
-	 $oSourceCollectable = $this->getSourceCollectable();
-
-	if (!$this->isCurrentlyInCollections())
-	{
-		return $this->getCollectionsStartDate () <= Data_Source_Time::currentDate () && $oScenario->evaluateThresholdCriterion($oSourceCollectable->amount, $oSourceCollectable->balance);
-	}
-	//if they are in collectons:
-	else
-	{
-
-		if ( $oScenario->evaluateThresholdCriterion($oSourceCollectable->amount, $oSourceCollectable->balance))
-		{
-		//if the  source collectable has not been paid off, stay in collections
-		return true;
-		}
-		else
-		{
-		$oScenario  = $this->getCurrentScenarioInstance()->getScenario();
-		$mNow = self::SCENARIO_OFFSET_USED_TO_DETERMINE_EXIT_COLLECTIONS ? date('Y-m-d', strtotime("+$oScenario->day_offset days", time())) : null;
-		$fBalance   = $this->getOverdueCollectableBalance($mNow);
-		$fAmount	= $this->getOverDueCollectableAmount($mNow);
-		return  $oScenario->evaluateThresholdCriterion($fAmount, $fBalance);
-		}
-	}
-
-
 	}
 
 
@@ -390,14 +354,13 @@ class Logic_Account implements DataLogic
 
 		}
 
-
 	}
 
 	public function processActivePromise()
 	{
-	$oPromise = $this->getActivePromise();
-	if ($oPromise)
-		$oPromise->process();
+		$oPromise = $this->getActivePromise();
+		if ($oPromise)
+			$oPromise->process();
 	}
 
 	/**
@@ -523,7 +486,7 @@ class Logic_Account implements DataLogic
 		$bDistributableIsCredit = $mDistributable->isCredit();
 	   //Log::getLog()->log("Before processing distributable $mDistributable->id ,".memory_get_usage(true));
 		$aPayables = $bDistributableIsCredit ? $this->getPayables() : array_reverse($this->getPayables());
-		
+
 		foreach ($aPayables as $oPayable)
 		//for ($i=0;$i<count($aPayables);$i++)
 		{
@@ -538,7 +501,7 @@ class Logic_Account implements DataLogic
 			else if (!$bDistributableIsCredit && $oPayable->getBalance() < $oPayable->getAmount())
 			{
 				$oPayable->processDistributable($mDistributable);
-			}	
+			}
 
 		}
 		unset($aPayables);
@@ -607,7 +570,7 @@ class Logic_Account implements DataLogic
 
 	public function processDistributables()
 	{
-		$iIterations = 0;		
+		$iIterations = 0;
 
 		while ((($this->getPayableBalance(TRUE) > 0 && $this->getDistributableCreditBalance() > 0)
 				|| ($this->hasPayablesWithBalanceBelowAmount() && $this->getDistributableDebitBalance() > 0)))
@@ -617,31 +580,31 @@ class Logic_Account implements DataLogic
 			$aPayables = $this->getPayables();
 			foreach ($aCreditCollectable as $oCollectable)
 			{
-				$oCollectable->distributeToPayables($aPayables);				
+				$oCollectable->distributeToPayables($aPayables);
 			}
 
 			$aPayments = $this->getPayments(PAYMENT_NATURE_PAYMENT);
 			foreach ($aPayments as $oPayment)
 			{
-				$oPayment->distributeToPayables($aPayables);				
-			}			
+				$oPayment->distributeToPayables($aPayables);
+			}
 
 			$aAdjustments = $this->getAdjustments(Logic_Adjustment::CREDIT);
 			foreach ($aAdjustments as $oAdjustment)
 			{
-				$oAdjustment->distributeToPayables($aPayables);				
+				$oAdjustment->distributeToPayables($aPayables);
 			}
 			$aPayables = array_reverse($this->getPayables());
 			$aReversedPayments = $this->getPayments(PAYMENT_NATURE_REVERSAL);
 			foreach($aReversedPayments as $oPayment)
 			{
-				$oPayment->distributeToPayables($aPayables);				
+				$oPayment->distributeToPayables($aPayables);
 			}
 
 			$aDebitAdjustments = $this->getAdjustments(Logic_Adjustment::DEBIT);
 			foreach ( $aDebitAdjustments as $oAdjustment)
 			{
-				$oAdjustment->distributeToPayables($aPayables);				
+				$oAdjustment->distributeToPayables($aPayables);
 			}
 
 		}
@@ -663,22 +626,20 @@ class Logic_Account implements DataLogic
 
 		Collectable_Adjustment::deleteForAccount($this->id);
 		Collectable_Payment::deleteForAccount($this->id);
-		Collectable_Transfer_Balance::deleteForAccount($this->id);
-		//$time = Logic_Stopwatch::getInstance()->lap();
-		//Log::getlog()->log("Query Deletion for {$this->id},$time");
-		//set .balance = .amount for adjustment; payment; collectable
+		Collectable_Transfer_Balance::deleteForAccount($this->id);		
+		Collectable::resetBalanceForAccount($this->id);		
+
+		//The preceding statements directly accessed the database and modified data, so we need to force a cache refresh on the following data members
 		Adjustment::resetBalanceForAccount($this->id);
 		Payment::resetBalanceForAccount($this->id);
-		//The following statement will directly access the database and modify collectable balances, so we need to subsequently force a cache refresh on the Logic_Collectable class.
-		Collectable::resetBalanceForAccount($this->id);
+		$this->aPayments		= NULL;
+		$this->aAdjustments		= NULL;
+		$this->_aPayables		= NULL;
+		$this->aCollectables	= NULL;
 		Logic_Collectable::clearCache();		
-		$this->getCollectables(Logic_Collectable::CREDIT, TRUE);
-		
-		//$time = Logic_Stopwatch::getInstance()->lap();
-		//Log::getlog()->log("Resetting balances for Account {$this->id},$time");
 
 		return $this->processDistributables();
-		
+
 	}
 
 	/**
@@ -742,7 +703,7 @@ class Logic_Account implements DataLogic
 		}
 
 
-		
+
 		$oNewInstance 				= new Account_Collection_Scenario();
 		$oNewInstance->account_id 			= $this->oDO->Id;
 		$oNewInstance->collection_scenario_id 	= $iCollectionScenarioId;
@@ -886,7 +847,7 @@ class Logic_Account implements DataLogic
 			$mReferral[0]->cancel();
 		}
 	}
-	
+
 	public function getLatestActionedBarringLevel()
 	{
 		$aBarringDetails = Account_Barring_Level::getLastActionedBarringLevelForAccount($this->oDO->Id);
@@ -895,7 +856,7 @@ class Logic_Account implements DataLogic
 			// Details will include a service_count field
 			$aBarringDetails = Service_Barring_Level::getLastActionedBarringLevelForAccount($this->oDO->Id);
 		}
-		return ($aBarringDetails ? $aBarringDetails : null); 
+		return ($aBarringDetails ? $aBarringDetails : null);
 	}
 
 	public static function clearCache($bClearRelatedCaches = true)
@@ -930,13 +891,13 @@ class Logic_Account implements DataLogic
 			{
 				//get the Logic_Account object
 				$oAccount = self::getInstance($oAccountORM);
-				
+
 				//the following is for process reporting purposes
 				$iId = $oAccount->Id;
 				$oStopwatch = Logic_Stopwatch::getInstance(true);
 				$oStopwatch->start();
 				 //Log::getLog()->log("Instantiated logic account $oAccountORM->Id,".  memory_get_usage(true));
-				
+
 				$fAccountBalance = $oAccount->getAccountBalance();
 
 				//this is the actual balance redistribution
@@ -1059,28 +1020,7 @@ class Logic_Account implements DataLogic
 	public function display()
 	{
 
-		////Log::getLog()->log('%%%%%%%%%%%%%%%%%%%%%%%Details for Account '.$this->id.'%%%%%%%%%%%%%%%%%');
-		$this->getOverdueCollectableBalance();
-		$this->getOverDueCollectableAmount();
-		$this->isCurrentlyInCollections();
-		$this->isInSuspension();
-		////Log::getLog()->Log('Severity Level: '.$this->collection_severity_id);
-		////Log::getLog()->log('////////Active Scenario Instances:');
-		$aScenarioInstances = $this->getActiveScenarios();
-		foreach ($aScenarioInstances as $oInstance)
-		{
-			$oCurrentInstance = $this->getCurrentScenarioInstance();
-			////Log::getLog()->log('Scenario Instance id '.$oInstance->id.'(Scenario id: '.$oInstance->collection_scenario_id.')');
-			if ($oCurrentInstance->id == $oInstance->id)
-			{
-					////Log::getLog()->log('THIS IS THE CURRENT SCENARIO ON ACCOUNT '.$this->id);
-					$oInstance->display();
-			}
-		}
-		////Log::getLog()->log('%%%%%%%%%%%%%%%%%%%%%%%End Details for Account '.$this->id.'%%%%%%%%%%%%%%%%%');
 	}
-
-
 
 	/**
 	 * getAccountsForBatchCollectionProcess
@@ -1439,14 +1379,14 @@ class Logic_Account implements DataLogic
 									SUM(
 										IF(
 											(
-									            c.due_date < NOW() 
+									            c.due_date < NOW()
 									            OR c.amount < 0
 									        )
-											AND (c.collection_promise_id IS NULL OR c_cp.completed_datetime IS NOT NULL), 
-											c.amount, 
+											AND (c.collection_promise_id IS NULL OR c_cp.completed_datetime IS NOT NULL),
+											c.amount,
 											0
 										)
-									), 
+									),
 									0
 								)
 								+
@@ -1565,3 +1505,4 @@ class Logic_Account implements DataLogic
 
 
 ?>
+  

@@ -220,7 +220,6 @@ class Logic_Collection_Promise implements DataLogic
     	$fPaid			= 0;
 
 
-
         $iLeniencyWindow = Collections_Config::get()->promise_instalment_leniency_days;
 
     	foreach ($aCollectables as $oCollectable)
@@ -293,25 +292,23 @@ class Logic_Collection_Promise implements DataLogic
 
     public function complete($iCompletionId)
     {
-        $this->collection_promise_completion_id = $iCompletionId;
-
-        // For cli apps we use the system user id (0)
+        $this->collection_promise_completion_id = $iCompletionId;       
         $iEmployeeId					= Flex::getUserId();
         $this->completed_employee_id 	= ($iEmployeeId != null ? $iEmployeeId : Employee::SYSTEM_EMPLOYEE_ID);
         $this->completed_datetime 		= Data_Source_Time::currentTimestamp();
-
 
         if ($iCompletionId == COLLECTION_PROMISE_COMPLETION_BROKEN)
         {
             $oAccount = $this->getAccount();
             $iScenario = $this->getScenarioId();
             $oAccount->setCurrentScenario($iScenario, false);
-
         }
+
         $this->save();
+
         if ($iCompletionId == COLLECTION_PROMISE_COMPLETION_BROKEN || $iCompletionId == COLLECTION_PROMISE_COMPLETION_CANCELLED)
         {
-            $oAccount = $this->getAccount();
+            $oAccount = $this->getAccount();			
             $oAccount->redistributeBalances();
         }
 
@@ -338,7 +335,7 @@ class Logic_Collection_Promise implements DataLogic
         {
             Log::getLog()->log("... promise is ongoing");
         }
-	Logic_Collection_BatchProcess_Report::addPromise($this);
+		Logic_Collection_BatchProcess_Report::addPromise($this);
     }
 
     public function getScenarioId()
