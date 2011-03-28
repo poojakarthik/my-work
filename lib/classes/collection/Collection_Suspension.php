@@ -118,9 +118,10 @@ class Collection_Suspension extends ORM_Cached
 	
 	public static function getEarliestStartDatetimeForAccount($iAccountId, $sEffectiveDatetime=null)
 	{
-		$oAccount 			= Logic_Account::getInstance($iAccountId);
-		$sDueDate 			= date('Y-m-d H:i:s', strtotime($oAccount->getCurrentDueDate()));
 		$sEffectiveDatetime	= ($sEffectiveDatetime === null ? DataAccess::getDataAccess()->getNow() : $sEffectiveDatetime);
+		$oAccount 			= Logic_Account::getInstance($iAccountId);
+		$sDueDate 			= coalesce($oAccount->getCurrentDueDate(), $sEffectiveDatetime);
+		$sDueDate 			= date('Y-m-d H:i:s', strtotime($sDueDate));
 		$iNow 				= strtotime($sEffectiveDatetime);
 		$iDue 				= strtotime($sDueDate);
 		
