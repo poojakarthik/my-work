@@ -155,7 +155,7 @@ class JSON_Handler_Collection_Promise extends JSON_Handler
 				}
 
 				// Re-distribute the Account
-				$oLogicAccount	= new Logic_Account($iAccountId);
+				$oLogicAccount	= Logic_Account::getInstance($iAccountId);
 				$oLogicAccount->redistributeBalances();
 			} catch (Exception $oEx) {
 				if ($oDataAccess->TransactionRollback() === false) {
@@ -330,7 +330,7 @@ class JSON_Handler_Collection_Promise extends JSON_Handler
 				//throw new Exception("Test Mode");
 
 				// Re-distribute the Account
-				$oLogicAccount	= new Logic_Account($oAccount);
+				$oLogicAccount	= Logic_Account::getInstance($oAccount);
 				$oLogicAccount->redistributeBalances();
 
 			} catch (Exception $oException) {
