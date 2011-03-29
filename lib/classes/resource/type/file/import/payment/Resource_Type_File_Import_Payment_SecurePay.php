@@ -69,7 +69,6 @@ class Resource_Type_File_Import_Payment_SecurePay extends Resource_Type_File_Imp
 			// Payment Request
 			$oPaymentResponse->account_id	= (int)$aLodgementReferenceMatches['account_id'];
 			$oPaymentResponse->payment_id	= Payment_Request::getForId((int)$aLodgementReferenceMatches['payment_request_id'])->payment_id;
-			break;
 		}
  		elseif (strlen($sReference) == 10)
  		{
