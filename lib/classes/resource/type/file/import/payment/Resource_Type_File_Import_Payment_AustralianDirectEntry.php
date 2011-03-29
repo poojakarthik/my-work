@@ -7,6 +7,8 @@
 class Resource_Type_File_Import_Payment_AustralianDirectEntry extends Resource_Type_File_Import_Payment
 {
 	const	RESOURCE_TYPE		= RESOURCE_TYPE_FILE_IMPORT_PAYMENT_AUSTRALIAN_DIRECT_ENTRY_REPORT;
+
+	const	NEW_LINE_CHARACTER	= "\r\n";
 	
 	const	RECORD_TYPE_HEADER		= 'HEADER';
 	const	RECORD_TYPE_TRANSACTION	= 'TRANSCATION';
@@ -196,6 +198,7 @@ class Resource_Type_File_Import_Payment_AustralianDirectEntry extends Resource_T
 	{
 		// File Importer
 		$this->_oFileImporter	= new File_Importer();
+		$this->_oFileImporter->setNewLine(self::NEW_LINE_CHARACTER);
 
 		// Record Types
 		$oRecordTypeTransaction	= $this->_oFileImporter->createRecordType(self::RECORD_TYPE_TRANSACTION);
