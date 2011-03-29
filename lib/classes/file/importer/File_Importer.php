@@ -70,6 +70,10 @@ class File_Importer
 		$this->_sNewLine	= (string)$sNewLine;
 		return $this;
 	}
+
+	public function getNewLine() {
+		return $this->_sNewLine;
+	}
 	
 	public function setData($sData)
 	{
