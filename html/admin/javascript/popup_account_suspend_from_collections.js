@@ -94,7 +94,7 @@ var Popup_Account_Suspend_From_Collections = Class.create(Reflex_Popup,
 		else if (oResponse.bSuspensionLimitExceeded)
 		{
 			// Number of suspensions this collections period has reached the limit for this employee
-			Reflex_Popup.alert("You are no permitted to suspend this Account. It has reached it's suspension limit since entering Collections.", {iWidth: 45, sTitle: 'Cannot Suspend Account'});
+			Reflex_Popup.alert("You are not permitted to suspend this Account. It has reached it's suspension limit since entering Collections.", {iWidth: 45, sTitle: 'Cannot Suspend Account'});
 			return;
 		}
 		
