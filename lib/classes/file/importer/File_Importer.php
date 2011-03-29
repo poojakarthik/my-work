@@ -1,5 +1,5 @@
 <?php
-abstract class File_Importer
+class File_Importer
 {
 	protected	$_aRecordTypes	= array();
 	protected	$_aRecords		= array();
