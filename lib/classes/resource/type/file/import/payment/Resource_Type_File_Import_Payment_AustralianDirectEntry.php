@@ -242,7 +242,7 @@ class Resource_Type_File_Import_Payment_AustralianDirectEntry extends Resource_T
 			->setLength(1);
 		$oRecordTypeTransaction->createField('EffectiveDate')
 			->setStartIndex(121)
-			->setLength(8);
+			->setLength(10);
 	}
 	
 	/***************************************************************************
