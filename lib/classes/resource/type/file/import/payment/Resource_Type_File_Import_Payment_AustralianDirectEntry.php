@@ -162,13 +162,13 @@ class Resource_Type_File_Import_Payment_AustralianDirectEntry extends Resource_T
  				break;
  		}
 
-		Log::getLog()->log("Converted to: ".print_r(array(
+		/*Log::getLog()->log("Converted to: ".print_r(array(
 			'sRecord'			=> $sRecord,
 			'oRecord'			=> $oRecord->toArray(),
 			'oPaymentResponse'	=> $oPaymentResponse->toArray(),
 			'aTransactionData'	=> $aTransactionData
 		), true));
-		throw new Exception("Verification of data");
+		throw new Exception("Verification of data");*/
 		
 		// Return an Array of Records added/modified
 		//--------------------------------------------------------------------//
