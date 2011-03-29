@@ -120,7 +120,7 @@ class Logic_Collection_Event_Instance
 		$oEventInstance->scheduled_datetime					= DataAccess::getDataAccess()->getNow();
 		$oEventInstance->account_collection_event_status_id = ACCOUNT_COLLECTION_EVENT_STATUS_SCHEDULED;
 		$oEventInstance->save();
-	Log::getLog()->log('Scheduled event \''.$oEventInstance->getEventName().'\' for account Id '.$oAccount->Id);
+		Log::getLog()->log('Scheduled event \''.$oEventInstance->getEventName().'\' for account Id '.$oAccount->Id);
 		return $oEventInstance;
 	}
 
@@ -221,12 +221,13 @@ class Logic_Collection_Event_Instance
 			$oDataAccess	= DataAccess::getDataAccess();
 			$oDataAccess->TransactionStart();
 			Logic_Stopwatch::getInstance()->lap();
+			$sEventName;
+			$aSuccesfullyInvokedInstances = array();
 			try
 			{
 				if (Collections_Schedule::getEligibility($iEventId))
 				{
-					$sEventName;
-					$aSuccesfullyInvokedInstances = array();
+					
 					foreach ($aCollectionEvents as $oEventInstance)
 					{
 						if (!Logic_Collection_BatchProcess_Report::isFailedEventInstance($oEventInstance))
@@ -308,6 +309,28 @@ class Logic_Collection_Event_Instance
 		}
 
 		return self::completeWaitingInstances(false , $aParameters);
+	}
+
+	public static function completeScheduledInstancesForAccounts($aAccounts)
+	{
+		$aEventInstances = array();
+		foreach ($aAccounts as $oAccount)
+		{
+			$aEvent = self::getWaitingEvents($oAccount->id);
+			if (count($aEvent) > 0 && $oAccount->shouldCurrentlyBeInCollections())
+			{				
+				$oInstance = reset($aEvent);
+				if ($oInstance->getInvocationId() == COLLECTION_EVENT_INVOCATION_AUTOMATIC)
+				{
+					if (!array_key_exists($oInstance->collection_event_id, $aEventInstances))
+						$aEventInstances[$oInstance->collection_event_id] = array();
+					$aEventInstances[$oInstance->collection_event_id][] = $oInstance;
+				}
+				
+			}
+		}
+		self::$aEventInstancesWaitingForCompletion = $aEventInstances;
+		self::completeWaitingInstances();
 	}
 
 	public function complete()

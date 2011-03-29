@@ -13,8 +13,9 @@ class Cli_App_Collections extends Cli
 	const	SWITCH_REDISTRIBUTE_FULL					= 'f';
 	const	SWITCH_REDISTRIBUTE_FULL_INCLUDE_ARCHIVED	= 'r';
 
-	const	MODE_BALANCE_DISTRIBUTION	= 'BALANCE_DISTRIBUTION';
-	const	MODE_PROCESS				= 'PROCESS';
+
+	const	MODE_BALANCE_DISTRIBUTION					= 'BALANCE_DISTRIBUTION';
+	const	MODE_PROCESS								= 'PROCESS';
 
 	function run()
 	{
@@ -96,11 +97,14 @@ class Cli_App_Collections extends Cli
 			if ($arrArgs[self::SWITCH_ACCOUNT_ID])
 			{
 				$iAccountId = $arrArgs[self::SWITCH_ACCOUNT_ID];
-				Log::getLog()->log("Processing Collections for Account $iAccountId");
+				Log::getLog()->log("Processing Collections for Account $iAccountId, starting with balance redistribution for this account only.");
+				Logic_Account::getInstance($iAccountId)->redistributeBalances();
 			}
 			else
 			{
-				Log::getLog()->log("Processing Collections in batch for all accounts");
+				Log::getLog()->log("Processing Collections in batch for all accounts, starting with balance redistribution for all accounts that need it.");
+				$aAccountsForRedistribution = Account::getForBalanceRedistribution();
+				Logic_Account::batchRedistributeBalances($aAccountsForRedistribution);
 			}
 
 
@@ -113,7 +117,6 @@ class Cli_App_Collections extends Cli
 				$oSuspension =	Collection_Suspension::getActiveForAccount($iAccountId);
 				$aActiveSuspensions = $oSuspension === null ? array() : array($oSuspension);
 				Logic_Collection_BatchProcess_Report::setProcessInvocationType(Logic_Collection_BatchProcess_Report::INVOCATION_TYPE_ACCOUNT);
-
 			}
 			else
 			{
@@ -177,6 +180,8 @@ class Cli_App_Collections extends Cli
 					$iCompletedInstances = 0;
 					
 					Logic_Stopwatch::getInstance()->start();
+					//Check if there are any uncompleted automated events left over from last time......
+					Logic_Collection_Event_Instance::completeScheduledInstancesForAccounts($aAccounts);
 					$iIteration = 1;
 					do
 					{
@@ -256,9 +261,11 @@ class Cli_App_Collections extends Cli
 			}
 
 			$iMode;
+			$iAccountId;
 
 			if ($arrArgs[self::SWITCH_REDISTRIBUTE_FULL])
 			{
+				$iAccountId = NULL;
 				if($arrArgs[self::SWITCH_REDISTRIBUTE_FULL_INCLUDE_ARCHIVED])
 				{
 					$this->log("Doing redistribution on all accounts, including archived accounts.", TRUE);
@@ -272,13 +279,15 @@ class Cli_App_Collections extends Cli
 			}
 			else if ($arrArgs[self::SWITCH_ACCOUNT_ID])
 			{
-				$iMode = $arrArgs[self::SWITCH_ACCOUNT_ID];
-				Log::getLog()->log("Doing redistribution for Account $iMode");
+				$iAccountId		= $arrArgs[self::SWITCH_ACCOUNT_ID];
+				$iMode			= NULL;
+				Log::getLog()->log("Doing redistribution for Account $iAccountId");
 			}
 			else
 			{
 				$this->log("Doing redistribution on accounts that need it only.", TRUE);
 				$iMode = Account::BALANCE_REDISTRIBUTION_REGULAR;
+				$iAccountId = NULL;
 			}
 
 			if ($arrArgs[self::SWITCH_TEST_RUN])
@@ -290,9 +299,8 @@ class Cli_App_Collections extends Cli
 			try
 			{
 				Log::getLog()->log("Account, Time, Memory Usage, iterations, Debit Collectables, Credit Collectables, Credit Payments, Credit Adjustments, Debit Payments,Debit Adjustments, Account Balance (based on amounts) , Payable Balance (based on balances) ");
-				$aAccounts = Account::getForBalanceRedistribution($iMode);
+				$aAccounts = Account::getForBalanceRedistribution($iMode, $iAccountId);
 				Logic_Account::batchRedistributeBalances($aAccounts);				
-				
 			}
 			catch (Exception $e)
 			{
