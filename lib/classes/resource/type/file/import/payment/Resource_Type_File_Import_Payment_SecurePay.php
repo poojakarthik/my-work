@@ -62,8 +62,9 @@ class Resource_Type_File_Import_Payment_SecurePay extends Resource_Type_File_Imp
 		$oPaymentResponse->amount		= round($oRecord->AmountCents / 100, 2);
 		
 		// Account
-		$sReference	= trim($oRecord->Reference);
-		if (!!preg_match('/^(?P<account_id>\d+)(R)(?P<payment_request_id>\d+)$/i', $sLodgementReference, $aLodgementReferenceMatches))
+		$sReference					= trim($oRecord->Reference);
+		$aLodgementReferenceMatches	= array();
+		if (!!preg_match('/^(?P<account_id>\d+)(R)(?P<payment_request_id>\d+)$/i', $sReference, $aLodgementReferenceMatches))
 		{
 			// Payment Request
 			$oPaymentResponse->account_id	= (int)$aLodgementReferenceMatches['account_id'];
