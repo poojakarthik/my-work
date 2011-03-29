@@ -107,8 +107,8 @@ class Resource_Type_File_Import_Payment_AustralianDirectEntry extends Resource_T
 				break;
 				
 			// Legacy Direct Debit
-			case (!!preg_match('/^(?P<Account.Id>\d+)(\_)(?P<month_year>\d+)$/i', $sLodgementReference, $aLodgementReferenceMatches)):
-				$oPaymentResponse->account_id			= (int)$aLodgementReferenceMatches['Account.Id'];
+			case (!!preg_match('/^(?P<account_id>\d+)(\_)(?P<month_year>\d+)$/i', $sLodgementReference, $aLodgementReferenceMatches)):
+				$oPaymentResponse->account_id			= (int)$aLodgementReferenceMatches['account_id'];
 				break;
 				
 			default:
