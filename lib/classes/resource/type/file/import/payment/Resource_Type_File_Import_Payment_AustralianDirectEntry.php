@@ -161,6 +161,7 @@ class Resource_Type_File_Import_Payment_AustralianDirectEntry extends Resource_T
  		}
 
 		Log::getLog()->log("Converted to: ".print_r(array(
+			'sRecord'			=> $sRecord,
 			'oRecord'			=> $oRecord->toArray(),
 			'oPaymentResponse'	=> $oPaymentResponse->toArray(),
 			'aTransactionData'	=> $aTransactionData
