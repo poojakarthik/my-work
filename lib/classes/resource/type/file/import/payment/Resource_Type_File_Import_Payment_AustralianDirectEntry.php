@@ -25,11 +25,11 @@ class Resource_Type_File_Import_Payment_AustralianDirectEntry extends Resource_T
 	const	STATUS_INDICATOR_RECALL		= 'R';
 
 	public function __construct() {
-		throw new Exception_Assertion(
+		/*throw new Exception_Assertion(
 			"Australian Direct Entry File Format Encountered",
 			null,
 			"Payment Processing: Australian Direct Entry File Format Encountered"
-		);
+		);*/
 		$aArguments	= func_get_args();
 		call_user_func_array(array('parent', '__construct'), $aArguments);
 	}
@@ -159,6 +159,12 @@ class Resource_Type_File_Import_Payment_AustralianDirectEntry extends Resource_T
  				throw new Exception("Unhandled Status Indicator '{$oRecord->StatusIndicator}'");
  				break;
  		}
+
+		Log::getLog()->log("Converted to: ".print_r(array(
+			'oPaymentResponse'	=> $oPaymentResponse,
+			'aTransactionData'	=> $aTransactionData
+		), true));
+		throw new Exception("Verification of data");
 		
 		// Return an Array of Records added/modified
 		//--------------------------------------------------------------------//
