@@ -79,7 +79,7 @@ class Resource_Type_File_Import_Payment_AustralianDirectEntry extends Resource_T
 	{
 		// Process the Record
 		//--------------------------------------------------------------------//
-		$oRecord			= $this->_oFileImporter->getRecordType(self::RECORD_TYPE_TRANSACTION)->newRecord($sRecord);
+		$oRecord			= $this->_oFileImporter->getRecordType(self::RECORD_TYPE_TRANSACTION)->newRecord(rtrim($sRecord));
 		
 		// Create a new Payment_Response Record
 		//--------------------------------------------------------------------//
