@@ -103,7 +103,7 @@ class Resource_Type_File_Import_Payment_AustralianDirectEntry extends Resource_T
 				$oPaymentResponse->account_id			= (int)$aLodgementReferenceMatches['account_id'];
 				
 				// Payment Request
-				$oPaymentResponse->payment_request_id	= (int)$aLodgementReferenceMatches['payment_request_id'];
+				$oPaymentResponse->payment_id	= Payment_Request::getForId((int)$aLodgementReferenceMatches['payment_request_id'])->payment_id;
 				break;
 				
 			// Legacy Direct Debit
