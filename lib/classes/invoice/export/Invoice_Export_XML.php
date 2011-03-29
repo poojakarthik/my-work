@@ -276,6 +276,29 @@
 		self::_addElement($xmlInvoiceRecord, 'LastTotalOwing', $arrLastInvoice['TotalOwing']);
 		self::_addElement($xmlInvoiceRounded, 'LastTotalOwing', Invoice::roundOut($arrLastInvoice['TotalOwing'], 2));
 		*/
+		
+		//--------------------------------------------------------------------//
+		// Calculated Statement Info
+		//--------------------------------------------------------------------//
+		
+		$oAccount			= Account::getForId($arrInvoice['Account']);
+		$fOpeningBalance	= Rate::roundToCurrencyStandard($oAccount->getHistoricalBalance(date('Y-m-d H:i:s', strtotime($arrInvoice['billing_period_start_datetime']) - 1)));
+		$fPaymentTotal		= Rate::roundToCurrencyStandard(Invoice_Export::getPaymentTotal($arrInvoice));
+		$fAdjustmentTotal	= Rate::roundToCurrencyStandard(Invoice_Export::getAdjustmentTotal($arrInvoice));
+		$fNewCharges		= Rate::roundToCurrencyStandard($arrInvoice['charge_total'] + $arrInvoice['charge_tax']);
+		$fTotalOwing		= Rate::roundToCurrencyStandard($fOpeningBalance + $fPaymentTotal + $fAdjustmentTotal + $fNewCharges);
+		$fTotalOverdue		= Rate::roundToCurrencyStandard($oAccount->getHistoricalBalance(date('Y-m-d H:i:s', strtotime($arrInvoice['billing_period_end_datetime'])), true));
+		$fTotalOutstanding	= Rate::roundToCurrencyStandard($oAccount->getHistoricalBalance(date('Y-m-d H:i:s', strtotime($arrInvoice['billing_period_end_datetime']))));
+		
+		$xmlCalculatedStatement = self::_addElement($xmlInvoice, 'CalculatedStatement');
+		self::_addElement($xmlCalculatedStatement, 'OpeningBalance', 	number_format($fOpeningBalance, 2, '.', ''));
+		self::_addElement($xmlCalculatedStatement, 'Payments', 			number_format($fPaymentTotal, 2, '.', ''));
+		self::_addElement($xmlCalculatedStatement, 'Adjustments', 		number_format($fAdjustmentTotal, 2, '.', ''));
+		self::_addElement($xmlCalculatedStatement, 'NewCharges', 		number_format($fNewCharges, 2, '.', ''));
+		self::_addElement($xmlCalculatedStatement, 'TotalOwing', 		number_format($fTotalOwing, 2, '.', ''));
+		self::_addElement($xmlCalculatedStatement, 'TotalOverdue', 		number_format($fTotalOverdue, 2, '.', ''));
+		self::_addElement($xmlCalculatedStatement, 'TotalOutstanding', 	number_format($fTotalOverdue, 2, '.', ''));
+		
 		//--------------------------------------------------------------------//
 		// Cost Centre Summary
 		//--------------------------------------------------------------------//

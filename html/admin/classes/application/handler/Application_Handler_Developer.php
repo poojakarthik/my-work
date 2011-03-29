@@ -6,115 +6,111 @@ class Application_Handler_Developer extends Application_Handler
 	
 	public function rod($aSubPath)
 	{
-		//Log::registerFunctionLog('rod', 'logMessage', 'Application_Handler_Developer');
-		//Log::setDefaultLog('rod');
-       	
-		$sQuery = 
-"SELECT		COALESCE((
-				SELECT	SUM(c.amount)
-				FROM	collectable c
-				JOIN	Invoice i ON (i.Id = c.invoice_id)
-				WHERE	c.account_id = a.Id
-						AND i.CreatedOn < <billing_period_start_datetime>
-			), 0)
-			+
-			COALESCE((
-				SELECT	SUM(p.amount * pn.value_multiplier)
-				FROM	payment p
-						JOIN payment_nature pn ON (pn.id = p.payment_nature_id)
-						LEFT JOIN payment p_reversed ON (p_reversed.id = p.reversed_payment_id)
-				WHERE	p.account_id = a.Id
-						AND (
-							/* Payment was created prior to the Billing Period Start, or is reversing a Payment prior to the Billing Period Start */
-							p.created_datetime < <billing_period_start_datetime>
-							OR (
-								p_reversed.id IS NOT NULL
-								AND p_reversed.created_datetime < <billing_period_start_datetime>
-							)
-						)
-			), 0)
-			+
-			COALESCE((
-				SELECT	SUM(adj.amount * adjn.value_multiplier * tn.value_multiplier)
-				FROM	adjustment adj
-						JOIN adjustment_type adjt ON (adjt.id = adj.adjustment_type_id)
-						JOIN adjustment_type_invoice_visibility adjtiv ON (adjtiv.id = adjt.adjustment_type_invoice_visibility_id)
-						JOIN adjustment_nature adjn ON (adjn.id = adj.adjustment_nature_id)
-						JOIN transaction_nature tn ON (tn.id = adjt.transaction_nature_id)
-						JOIN adjustment_status adjs ON (adjs.id = adj.adjustment_status_id)
-						LEFT JOIN adjustment adj_reversed ON (adj_reversed.id = adj.reversed_adjustment_id)
-						LEFT JOIN adjustment_status adjs_reversed ON (adjs_reversed.id = adj_reversed.adjustment_status_id)
-				WHERE	adjs.system_name = 'APPROVED'
-						AND adj.account_id = a.id
-						AND (
-							/* Adjustment was charged and approved prior to the Billing Period Start, or is reversing an Adjustment charged and approved prior to the Billing Period Start */
-							(
-								adj.created_datetime < <billing_period_start_datetime>
-								AND adj.reviewed_datetime < <billing_period_start_datetime>
-							)
-							OR (
-								adj_reversed.id IS NOT NULL
-								AND adjs_reversed.system_name = 'APPROVED'
-								AND adj_reversed.created_datetime < <billing_period_start_datetime>
-								AND adj_reversed.reviewed_datetime < <billing_period_start_datetime>
-							)
-							/* We also want to include any Adjustments intentionally hidden between the Billing Period Start and End */
-							OR (
-								adjtiv.system_name = 'HIDDEN'
-								AND adj.created_datetime BETWEEN <billing_period_start_datetime> AND <billing_period_end_datetime>
-								AND adj.reviewed_datetime BETWEEN <billing_period_start_datetime> AND <billing_period_end_datetime>
-							)
-						)
-			), 0) AS balance
-FROM		Account a
-WHERE		a.Id = <account_id>";
-
-		$iDay 	= $aSubPath[1];
-		$iMonth	= $aSubPath[2];
-		$iYear	= $aSubPath[3];
-
-		echo "<p>Date: {$iDay}/{$iMonth}/{$iYear}<br/>";
-		echo "Account: ".Account::getForId($aSubPath[0])->BusinessName."</p>";
-		echo "<pre>";
-		
-		$mResult = 	Query::run(
-						$sQuery, 
-						array(
-							'account_id' => $aSubPath[0], 
-							'billing_period_start_datetime' => $aSubPath[3].'-'.$aSubPath[2].'-'.$aSubPath[1].' 00:00:00',
-							'billing_period_end_datetime' => '9999-12-31 23:59:59'
-						)
-					);
-		echo "</pre>";
-		
-		echo "<textarea cols=100 rows=20>";
-		while ($aResult = $mResult->fetch_assoc())
+		if ($aSubPath[0])
 		{
-			if ($aResult['balance'])
+			$iId = (int)$aSubPath[0];
+		}
+		else
+		{
+			$iMin 	= 3000165031;
+			$iMax 	= 3003281750;
+			$iStart = rand($iMin, $iMax - 100);
+			$iId	= $iStart;
+		}
+		
+		try
+		{
+			$oInvoice = Invoice::getForId($iId);
+			if ($oInvoice->TotalOwing == 0)
 			{
-				print_r($aResult);
+				throw new Exception('No total owing');
 			}
 		}
-		echo "</textarea>";
+		catch (Exception $oEx)
+		{
+			echo "No invoice {$iId}. ".$oEx->getMessage();
+			die;
+		}
 		
-		$iPreviousDay 	= strtotime("$iYear-$iMonth-$iDay -1 day");
-		$iPreviousMonth	= strtotime("$iYear-$iMonth-$iDay -1 month");
-		$iPreviousYear	= strtotime("$iYear-$iMonth-$iDay -1 year");
+		$arrInvoice 	= $oInvoice->toArray();
+		$arrCustomer	= Invoice_Export::getCustomerData($arrInvoice);
 		
-		$iNextDay 	= strtotime("$iYear-$iMonth-$iDay +1 days");
-		$iNextMonth	= strtotime("$iYear-$iMonth-$iDay +1 months");
-		$iNextYear	= strtotime("$iYear-$iMonth-$iDay +1 years");
+		$arrLastInvoice			= Invoice_Export::getOldInvoice($arrInvoice, 1);
+		$fOpeningBalance1		= number_format(Invoice::roundOut($arrLastInvoice['TotalOwing'], 2), 2, '.', '');
+		$fPayments1				= number_format(max(Invoice::roundOut($arrLastInvoice['TotalOwing'], 2) - Invoice::roundOut($arrInvoice['AccountBalance'], 2), 0.0), 2, '.', '');
+		$fAdjustments1 			= number_format($arrInvoice['adjustment_total'] + $arrInvoice['adjustment_tax'], 2, '.', '');
+		$fOutstandingBalance1	= number_format($arrInvoice['AccountBalance'] + $arrInvoice['adjustment_total'] + $arrInvoice['adjustment_tax'], 2, '.', '');
+		$fOverdueBalance1 		= number_format($arrCustomer['OverdueBalance'] + $arrInvoice['adjustment_total'] + $arrInvoice['adjustment_tax'], 2, '.', '');
+		$fNewCharges1 			= number_format($arrInvoice['charge_total'] + $arrInvoice['charge_tax'], 2, '.', '');
+		$fTotalOwing1			= number_format(Invoice::roundOut($arrInvoice['TotalOwing'], 2), 2, '.', '');
 		
-		echo "<p>";
-		echo "<a href='/admin/reflex.php/Developer/rod/".$aSubPath[0]."/".date('d', $iPreviousDay)."/".date('m', $iPreviousDay)."/".date('Y', $iPreviousDay)."'>Prev Day</a> - ";
-		echo "<a href='/admin/reflex.php/Developer/rod/".$aSubPath[0]."/".date('d', $iNextDay)."/".date('m', $iNextDay)."/".date('Y', $iNextDay)."'>Next Day</a> <br/>";
+		$oAccount			= Account::getForId($arrInvoice['Account']);
+		//Log::registerFunctionLog('rod', 'logMessage', 'Application_Handler_Developer');
+		//Log::setDefaultLog('rod');
+		//echo "<pre>";
+		$fOpeningBalance2	= Rate::roundToCurrencyStandard($oAccount->getHistoricalBalance(date('Y-m-d H:i:s', strtotime($arrInvoice['billing_period_start_datetime']) - 1)));
+		//echo "</pre>";
+		$fPaymentTotal2		= Rate::roundToCurrencyStandard(Invoice_Export::getPaymentTotal($arrInvoice));
+		$fAdjustmentTotal2	= Rate::roundToCurrencyStandard(Invoice_Export::getAdjustmentTotal($arrInvoice));
+		$fNewCharges2		= Rate::roundToCurrencyStandard($arrInvoice['charge_total'] + $arrInvoice['charge_tax']);
+		$fTotalOwing2		= Rate::roundToCurrencyStandard($fOpeningBalance2 + $fPaymentTotal2 + $fAdjustmentTotal2 + $fNewCharges2);
+		$fTotalOverdue2		= Rate::roundToCurrencyStandard($oAccount->getHistoricalBalance(date('Y-m-d H:i:s', strtotime($arrInvoice['billing_period_end_datetime'])), true));
 		
-		echo "<a href='/admin/reflex.php/Developer/rod/".$aSubPath[0]."/".date('d', $iPreviousMonth)."/".date('m', $iPreviousMonth)."/".date('Y', $iPreviousMonth)."'>Prev Month</a> - ";
-		echo "<a href='/admin/reflex.php/Developer/rod/".$aSubPath[0]."/".date('d', $iNextMonth)."/".date('m', $iNextMonth)."/".date('Y', $iNextMonth)."'>Next Month</a> <br/>";
+		$sOpeningBalance = (($fOpeningBalance1 - $fOpeningBalance2) != 0 ? "X" : '');
 		
-		echo "<a href='/admin/reflex.php/Developer/rod/".$aSubPath[0]."/".date('d', $iPreviousYear)."/".date('m', $iPreviousYear)."/".date('Y', $iPreviousYear)."'>Prev Year</a> - ";
-		echo "<a href='/admin/reflex.php/Developer/rod/".$aSubPath[0]."/".date('d', $iNextYear)."/".date('m', $iNextYear)."/".date('Y', $iNextYear)."'>Next Year</a> ";
-		echo "</p>";
+		echo "	<table border='1'>
+					<caption>
+						Invoice {$iId} ({$oInvoice->Account})
+						".date('d/m/y', strtotime($oInvoice->billing_period_start_datetime))." to ".date('d/m/y', strtotime($oInvoice->billing_period_end_datetime))."
+					</caption>
+					<thead>
+						<tr>
+							<td/>
+							<td>Old</td>
+							<td>New</td>
+							<td></td>
+						</tr>
+					</thead>
+					<tbody>
+					<tr>
+						<td>opening balance</td>
+						<td>{$fOpeningBalance1}</td>
+						<td>{$fOpeningBalance2}</td>
+						<td>".(($fOpeningBalance1 - $fOpeningBalance2) != 0 ? ($fOpeningBalance1 - $fOpeningBalance2) : '')."</td>
+					</tr>
+					<tr>
+						<td>payment total</td>
+						<td>{$fPayments1}</td>
+						<td>{$fPaymentTotal2}</td>
+						<td>".(($fPayments1 - abs($fPaymentTotal2)) != 0 ? ($fPayments1 - abs($fPaymentTotal2)) : '')."</td>
+					</tr>
+					<tr>
+						<td>adjustment total</td>
+						<td>{$fAdjustments1}</td>
+						<td>{$fAdjustmentTotal2}</td>
+						<td>".(($fAdjustments1 - $fAdjustmentTotal2) != 0 ? ($fAdjustments1 - $fAdjustmentTotal2) : '')."</td>
+					</tr>
+					<tr>
+						<td>new charges</td>
+						<td>{$fNewCharges1}</td>
+						<td>{$fNewCharges2}</td>
+						<td>".(($fNewCharges1 - $fNewCharges2) != 0 ? ($fNewCharges1 - $fNewCharges2) : '')."</td>
+					</tr>
+					<tr>
+						<td>total owing</td>
+						<td>{$fTotalOwing1}</td>
+						<td>{$fTotalOwing2}</td>
+						<td>".(($fTotalOwing1 - $fTotalOwing2) != 0 ? ($fTotalOwing1 - $fTotalOwing2) : '')."</td>
+					</tr>
+					<tr>
+						<td>total overdue</td>
+						<td>{$fOverdueBalance1}</td>
+						<td>{$fTotalOverdue2}</td>
+						<td>".(($fOverdueBalance1 - $fTotalOverdue2) != 0 ? ($fOverdueBalance1 - $fTotalOverdue2) : '')."</td>
+					</tr>
+				</tbody>
+			</table>";
+		
 		die;
 	}
 	

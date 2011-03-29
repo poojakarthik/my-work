@@ -672,10 +672,10 @@ class Invoice_Run
 		}
 
 		// Remove Adjustment references to Invoice Run
-		$oRevokeAdjustments	= self::_preparedStatement('updRevokeAdjustments');
-		if (false === $oRevokeAdjustments->Execute(array('invoice_run_id'=>null), array('invoice_run_id'=>$this->invoice_run_id))) {
-			throw new Exception_Database($oRevokeAdjustments->Error());
-		}
+		$mResult = Query::run("	UPDATE 	adjustment
+								SET 	invoice_run_id = NULL
+								WHERE	invoice_run_id = {$this->Id}");
+		Log::getLog()->log("Un-marked {$mResult} Adjustments");
 
 		// Remove service_total_service Records
 		if ($qryQuery->Execute("DELETE FROM service_total_service WHERE service_total_id = (SELECT Id FROM ServiceTotal WHERE invoice_run_id = {$this->Id} AND Id = service_total_id)") === FALSE)

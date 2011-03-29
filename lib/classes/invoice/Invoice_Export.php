@@ -353,19 +353,19 @@ class Invoice_Export
 		$mResult	= Query::run("
 					SELECT		CONCAT(a_t.code, ' - ', a_t.description, IF(an.system_name = 'REVERSAL', ' Reversal', ''))	AS Description,
 								1																							AS Units,
-								(a.amount - a.tax_component) * an.value_multiplier * an.value_multiplier					AS Charge,
+								(a.amount - a.tax_component) * an.value_multiplier											AS Charge,
 								IF(a.tax_component > 0.0, 0, 1)																AS TaxExempt,
 								a.effective_date																			AS ChargedDate,
 								CONCAT('ADJ:', a.id)																		AS UniqueId,
-								CONCAT('ADJ:', a.reversed_adjustment_id)													AS ReversedUniqueId
+								CONCAT('ADJ:', a.reversed_adjustment_id)													AS ReversedUniqueId,
 								a.tax_component																				AS TaxComponent
 					FROM		adjustment a
 								JOIN adjustment_type a_t ON (a_t.id = a.adjustment_type_id)
 								JOIN adjustment_nature an ON (an.id = a.adjustment_nature_id)
 								JOIN transaction_nature tn ON (tn.id = a_t.transaction_nature_id)
 					WHERE		a.account_id = <account_id>
-								a.invoice_run_id = <invoice_run_id>
-								a.adjustment_type_invoice_visibility_id = ".ADJUSTMENT_TYPE_INVOICE_VISIBILITY_VISIBLE."
+								AND a.invoice_run_id = <invoice_run_id>
+								AND a_t.adjustment_type_invoice_visibility_id = ".ADJUSTMENT_TYPE_INVOICE_VISIBILITY_VISIBLE."
 				UNION
 					SELECT		CONCAT(IF(c.ChargeType, CONCAT(c.ChargeType, ' - '), ''), c.Description)	AS Description,
 								1																			AS Units,
@@ -376,9 +376,9 @@ class Invoice_Export
 								NULL																		AS ReversedUniqueId,
 								0.0																			AS TaxComponent			/* Handled by Invoice.adjustment_tax */
 					FROM		Charge c
-					WHERE		a.Account = <account_id>
+					WHERE		c.Account = <account_id>
 								AND invoice_run_id = <invoice_run_id>
-								AND c.charge_model_id = ".CHARGE_TYPE_ADJUSTMENT."
+								AND c.charge_model_id = ".CHARGE_MODEL_ADJUSTMENT."
 				ORDER BY	ChargedDate ASC
 			", array(
 				'account_id'		=> (int)$aInvoice['Account'],
@@ -594,6 +594,81 @@ class Invoice_Export
 		return Rate_Class::getAll();
 	}
 	
+	public static function getPaymentTotal($aInvoice)
+	{
+		$aTotal =	Query::run(
+						"	SELECT	COALESCE(SUM(p.amount * pn.value_multiplier), 0) AS payment_total
+							FROM	payment p
+									JOIN payment_nature pn ON (pn.id = p.payment_nature_id)
+									LEFT JOIN payment p_reversed ON (p_reversed.id = p.reversed_payment_id)
+							WHERE	p.account_id = <account_id>
+									AND p.created_datetime BETWEEN <billing_period_start_datetime> AND <billing_period_end_datetime>",
+						array(
+							'account_id'					=> $aInvoice['Account'],
+							'billing_period_start_datetime'	=> $aInvoice['billing_period_start_datetime'],
+							'billing_period_end_datetime' 	=> $aInvoice['billing_period_end_datetime']
+						)
+					)->fetch_assoc();
+		return $aTotal['payment_total'];
+	}
+	
+	public static function getAdjustmentTotal($aInvoice)
+	{
+		$aTotal =	Query::run(
+						"	SELECT	(
+										SELECT	COALESCE(SUM(adj.amount * adjn.value_multiplier * tn.value_multiplier), 0)
+										FROM	adjustment adj
+												JOIN adjustment_type adjt ON (adjt.id = adj.adjustment_type_id)
+												JOIN adjustment_type_invoice_visibility adjtiv ON (
+													adjtiv.id = adjt.adjustment_type_invoice_visibility_id
+													AND adjtiv.system_name = 'VISIBLE'
+												)
+												JOIN adjustment_nature adjn ON (adjn.id = adj.adjustment_nature_id)
+												JOIN transaction_nature tn ON (tn.id = adjt.transaction_nature_id)
+												JOIN adjustment_status adjs ON (adjs.id = adj.adjustment_status_id)
+												LEFT JOIN adjustment adj_reversed ON (adj_reversed.id = adj.reversed_adjustment_id)
+												LEFT JOIN adjustment_status adjs_reversed ON (adjs_reversed.id = adj_reversed.adjustment_status_id)
+										WHERE	adjs.system_name = 'APPROVED'
+												AND adj.account_id = <account_id>
+												AND adj.reviewed_datetime BETWEEN <billing_period_start_datetime> AND <billing_period_end_datetime>
+									)
+									+
+									(
+										SELECT	SUM(
+													COALESCE(
+														IF(
+															c.Nature = 'CR',
+															0 - c.Amount,
+															c.Amount
+														), 0
+													)
+													*
+													IF(
+														c.global_tax_exempt = 1,
+														1,
+														(
+															SELECT	COALESCE(EXP(SUM(LN(1 + tt.rate_percentage))), 1)
+															FROM	tax_type tt
+															WHERE	c.ChargedOn BETWEEN tt.start_datetime AND tt.end_datetime
+																	AND tt.global = 1
+														)
+													)
+												)
+										FROM	Charge c
+										WHERE	c.Account = <account_id>
+												AND c.ChargedOn BETWEEN <billing_period_start_datetime> AND <billing_period_end_datetime>
+												AND c.Status NOT IN (".CHARGE_DELETED.", ".CHARGE_DECLINED.")
+												AND c.charge_model_id = ".CHARGE_MODEL_ADJUSTMENT."
+									) AS adjustment_total",
+						array(
+							'account_id'					=> $aInvoice['Account'],
+							'billing_period_start_datetime'	=> $aInvoice['billing_period_start_datetime'],
+							'billing_period_end_datetime' 	=> $aInvoice['billing_period_end_datetime']
+						)
+					)->fetch_assoc();
+		return $aTotal['adjustment_total'];
+	}
+	
 	/**
 	 * _chargeRollup()
 	 *
@@ -642,8 +717,12 @@ class Invoice_Export
 					*/
 					// Check if Description is the same (which includes ChargeType) && that the Amounts negate eachother
 					// Additionally, we cannot have already matched against this Charge
-					if (!array_key_exists('Matched', $aPairCharge) && ($aCharge['Description'] === $aPairCharge['Description']) && (round((float)$aCharge['Charge'] + (float)$aPairCharge['Charge'], 4) == 0.0))
+					if (!array_key_exists('Matched', $aPairCharge) && 
+						(($aCharge['Description'] === $aPairCharge['Description']) || ($aCharge['UniqueId'] == $aPairCharge['ReversedUniqueId']))&& 
+						(round((float)$aCharge['Charge'] + (float)$aPairCharge['Charge'], 4) == 0.0))
 					{
+						Log::getLog()->log("Charge being rolled up: {$aCharge['UniqueId']} - {$aCharge['Description']}");
+						
 						// Perfect Pair -- Mark as matched
 						$aCharge['Matched']		= $mPairChargeIndex;
 						$aPairCharge['Matched']	= $mChargeIndex;

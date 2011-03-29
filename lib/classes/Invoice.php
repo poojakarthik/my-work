@@ -423,11 +423,13 @@ class Invoice extends ORM_Cached
 
 			// Mark Adjustments (Payment-like)
 			//----------------------------------------------------------------//
-			$oMarkAdjustments	= self::_preparedStatement('updMarkAdjustments');
-			if (false === $oMarkAdjustments->Execute(array('invoice_run_id'=>$this->invoice_run_id), array('account_id'=>$this->Account,'billing_period_end_datetime'=>$this->billing_period_end_datetime))) {
-				throw new Exception_Database($oMarkAdjustments->Error());
-			}
-
+			$mResult = Query::run("	UPDATE 	adjustment 
+									SET 	invoice_run_id = {$this->invoice_run_id} 
+									WHERE	account_id = {$this->Account} 
+									AND 	invoice_run_id IS NULL 
+									AND 	effective_date <= '{$this->billing_period_end_datetime}'");
+			Log::getLog()->log("Updated {$mResult} Adjustments");
+			
 			// Get Preliminary Charge Totals
 			//----------------------------------------------------------------//
 			$selAccountChargeTotals	= self::_preparedStatement('selAccountChargeTotals');
@@ -972,10 +974,11 @@ class Invoice extends ORM_Cached
 			}
 
 			// Remove Invoice Run reference for Adjustments
-			$oRevokeAdjustments	= self::_preparedStatement('updRevokeAdjustments');
-			if (false === $oRevokeAdjustments->Execute(array('invoice_run_id'=>null), array('account_id'=>$this->Account,'invoice_run_id'=>$this->invoice_run_id))) {
-				throw new Exception_Database($oRevokeAdjustments->Error());
-			}
+			$mResult = Query::run("	UPDATE 	adjustment 
+									SET 	invoice_run_id = NULL
+									WHERE	account_id = {$this->Account} 
+									AND 	invoice_run_id = {$this->invoice_run_id}");
+			Log::getLog()->log("Un-marked {$mResult} Adjustments");
 
 			// Remove service_total_service Records
 			if ($qryQuery->Execute("DELETE FROM service_total_service WHERE service_total_id = (SELECT Id FROM ServiceTotal WHERE invoice_run_id = {$this->invoice_run_id} AND Account = {$this->Account} AND Id = service_total_id)") === FALSE)
@@ -2517,8 +2520,8 @@ class Invoice extends ORM_Cached
 					break;
 				case 'updMarkAdjustments':
 					$arrPreparedStatements[$strStatement]	= new StatementUpdate(
-																'adjustment',
-																'account_id = <account_id> AND invoice_run_id IS NULL AND effective_datetime <= <billing_period_end_datetime>',
+																"adjustment",
+																"account_id = <account_id> AND invoice_run_id IS NULL AND effective_date <= <billing_period_end_datetime>",
 																array('invoice_run_id'=>null)
 															);
 				case 'updRevokeAdjustments':

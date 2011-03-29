@@ -1193,31 +1193,31 @@ class Account
 	    }
 
 	}
-
-	public function getHistoricalBalance($sEffectiveDate) {
-		$sEffectiveDate	= ($sEffectiveDate === null) ? date('Y-m-d', DataAccess::getDataAccess()->getNow(true)) : $sEffectiveDate;
-
+	
+	public function getHistoricalBalance($mEffectiveDate=null, $bOverdueBalance=false) {
+		// Defaults to the now if not given
+		$sEffectiveDate 	= ($mEffectiveDate === null) ? DataAccess::getDataAccess()->getNow() : $mEffectiveDate;
+		$sEffectiveEndDate 	= self::getNextBillingPeriodEndDatetime($sEffectiveDate);
+		
+		// Add overdue clause if needed
+		$sOverdueClause = '';
+		if ($bOverdueBalance)
+		{
+			$sOverdueClause	= "	AND (
+						            c.due_date < <effective_date> 
+						            OR c.amount < 0
+						        )";
+		}
+		
+		// Got effective end date, get the balance
 		$mResult	= Query::run("
-			SELECT		COALESCE(
-							/* Oldest Invoice or  */
-							(
-								SELECT		*
-								FROM		Invoice i
-											JOIN InvoiceRun ir ON (
-												ir.Id = i.invoice_run_id
-												AND i.Account = a.Id
-											)
-								ORDER BY	ir.billing_period_start_datetime ASC
-								LIMIT		1
-							),
-							'9999-12-31'
-						)	AS effective_end_date
-						COALESCE((
+			SELECT		COALESCE((
 							SELECT	SUM(c.amount)
 							FROM	collectable c
 							JOIN	Invoice i ON (i.Id = c.invoice_id)
 							WHERE	c.account_id = a.Id
-									AND i.CreatedOn < <effective_date>
+									AND i.billing_period_end_datetime <= <effective_date>
+									{$sOverdueClause}
 						), 0)
 						+
 						COALESCE((
@@ -1263,35 +1263,18 @@ class Account
 										/* We also want to include any Adjustments intentionally hidden between the Billing Period Start and End */
 										OR (
 											adjtiv.system_name = 'HIDDEN'
-											AND adj.created_datetime >= <effective_date>
-											AND adj.reviewed_datetime >= <effective_date>
-											AND (
-												adj.created_datetime <= COALESCE()
-												AND adj.reviewed_datetime <= COALESCE()
-											)
+											AND adj.reviewed_datetime BETWEEN <effective_date> AND <effective_end_date>
 										)
 									)
 						), 0) AS balance
 			FROM		Account a
-						LEFT JOIN Invoice i ON (i.Account = a.Id)
-						LEFT JOIN InvoiceRun ir ON (
-							ir.Id = i.invoice_run_id
-							AND <effective_date> <= ir.billing_period_end_datetime
-							AND ir.Id = (
-								SELECT		Id
-								FROM		InvoiceRun
-								WHERE
-							ir.Id = i.invoice_run_id
-							AND <effective_date> <= ir.billing_period_end_datetime
-							)
-						)
 			WHERE		a.Id = <account_id>
 		", array(
 			'account_id'			=> (int)$this->Id,
 			'effective_date'		=> $sEffectiveDate,
 			'effective_end_date'	=> $sEffectiveEndDate
 		));
-
+		
 		return ($mResult) ? array_value($mResult->fetch_assoc(), 'balance') : 0.0;
 	}
 
@@ -1394,6 +1377,47 @@ class Account
 
 	public function getActiveSuspension() {
 		return Collection_Suspension::getActiveForAccount($this->Id);
+	}
+
+	public function getNextBillingPeriodEndDatetime($sEffectiveDate=null)
+	{
+		$sEffectiveDate = ($sEffectiveDate === null ? DataAccess::getDataAccess()->getNow() : $sEffectiveDate);
+		
+		// Look for an invoice with a billing period end datetime after (or on) the effective date
+		$aRow = Query::run("SELECT	*
+							FROM	Invoice
+							WHERE	billing_period_end_datetime >= <effective_datetime>
+							AND		Account = <account_id>
+							ORDER BY CreatedOn DESC
+							LIMIT 	1",
+							array('effective_datetime' => $sEffectiveDate, 'account_id' => $this->Id))->fetch_assoc();
+		if ($aRow)
+		{
+			return $aRow['billing_period_end_datetime'];
+		}
+		
+		// Calculate the effective end date
+		$aPaymentTerms = Query::run("	SELECT	*
+										FROM	payment_terms
+										WHERE	customer_group_id = <customer_group_id>
+										ORDER BY id DESC
+										LIMIT 1",
+									array('customer_group_id' => $this->CustomerGroup))->fetch_assoc();
+		if (!$aPaymentTerms)
+		{
+			throw new Exception("No Payment Terms specified for Customer Group {$this->CustomerGroup}");
+		}
+		
+		// See if the effective date is after (or at) the end of next billing period, if so move to the end of the next one (+1 month)
+		$sEndDay		= str_pad(($aPaymentTerms['invoice_day'] - 1), 2, '0', STR_PAD_LEFT);
+		$iEndDatetime	= strtotime(date("Y-m-{$sEndDay} 23:59:59", strtotime($sEffectiveDate)));
+		if (strtotime($sEffectiveDate) > $iEndDatetime)
+		{
+			// End Date is next Month
+			$iInvoiceDatetime = strtotime("+1 month", $iInvoiceDatetime);
+		}
+		
+		return date("Y-m-d H:i:s", $iEndDatetime);
 	}
 
 	// Empties the cache
