@@ -141,6 +141,22 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 			)
 		);
 		
+		/*
+		// DEBUG: Opening balance
+		oTBody.appendChild(
+			$T.tr({class: 'toggle-row new-charges'},
+				$T.td({class: 'padding-cell'}),
+				$T.td({colspan: 3, class: 'underline'},
+					'Opening Balance'
+				),
+				Popup_Invoice_Rerate_Summary._getAmountTD(oInvoice.opening_balance, 'underline total'),
+				Popup_Invoice_Rerate_Summary._getNatureTD(oInvoice.opening_balance),
+				Popup_Invoice_Rerate_Summary._getDifferenceTD(oInvoice.opening_balance, oCompareTo.fOpeningBalance)
+			)
+		);
+		oData.fOpeningBalance = oInvoice.opening_balance;
+		*/
+		
 		// New Charges row
 		var oNewChargesRow	= 	$T.tr({class: 'toggle-row new-charges'},
 									$T.td({class: 'padding-cell'}),
@@ -376,6 +392,36 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 				Popup_Invoice_Rerate_Summary._getDifferenceTD(oInvoice.adjustment_tax, oCompareTo.fAdjustmentTax)
 			)
 		);
+		
+		/*
+		// DEBUG: Payments
+		oTBody.appendChild(
+			$T.tr({class: 'toggle-row new-charges'},
+				$T.td({class: 'padding-cell'}),
+				$T.td({colspan: 3, class: 'underline'},
+					'Payments'
+				),
+				Popup_Invoice_Rerate_Summary._getAmountTD(oInvoice.payment_total, 'underline total'),
+				Popup_Invoice_Rerate_Summary._getNatureTD(oInvoice.payment_total),
+				Popup_Invoice_Rerate_Summary._getDifferenceTD(oInvoice.payment_total, oCompareTo.fPaymentTotal)
+			)
+		);
+		oData.fPaymentTotal = oInvoice.payment_total;
+		
+		// DEBUG: Closing balance
+		oTBody.appendChild(
+			$T.tr({class: 'toggle-row new-charges'},
+				$T.td({class: 'padding-cell'}),
+				$T.td({colspan: 3, class: 'underline'},
+					'Closing Balance'
+				),
+				Popup_Invoice_Rerate_Summary._getAmountTD(oInvoice.closing_balance, 'underline total'),
+				Popup_Invoice_Rerate_Summary._getNatureTD(oInvoice.closing_balance),
+				Popup_Invoice_Rerate_Summary._getDifferenceTD(oInvoice.closing_balance, oCompareTo.fClosingBalance)
+			)
+		);
+		oData.fClosingBalance = oInvoice.closing_balance;
+		*/
 		
 		// Cache the comparable summary data
 		oInvoice.oSummaryData	= oData;

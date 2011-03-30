@@ -614,59 +614,7 @@ class Invoice_Export
 	
 	public static function getAdjustmentTotal($aInvoice)
 	{
-		$aTotal =	Query::run(
-						"	SELECT	(
-										SELECT	COALESCE(SUM(adj.amount * adjn.value_multiplier * tn.value_multiplier), 0)
-										FROM	adjustment adj
-												JOIN adjustment_type adjt ON (adjt.id = adj.adjustment_type_id)
-												JOIN adjustment_type_invoice_visibility adjtiv ON (
-													adjtiv.id = adjt.adjustment_type_invoice_visibility_id
-													AND adjtiv.system_name = 'VISIBLE'
-												)
-												JOIN adjustment_nature adjn ON (adjn.id = adj.adjustment_nature_id)
-												JOIN transaction_nature tn ON (tn.id = adjt.transaction_nature_id)
-												JOIN adjustment_status adjs ON (adjs.id = adj.adjustment_status_id)
-												LEFT JOIN adjustment adj_reversed ON (adj_reversed.id = adj.reversed_adjustment_id)
-												LEFT JOIN adjustment_status adjs_reversed ON (adjs_reversed.id = adj_reversed.adjustment_status_id)
-										WHERE	adjs.system_name = 'APPROVED'
-												AND adj.account_id = <account_id>
-												AND adj.reviewed_datetime BETWEEN <billing_period_start_datetime> AND <billing_period_end_datetime>
-									)
-									+
-									(
-										SELECT	SUM(
-													COALESCE(
-														IF(
-															c.Nature = 'CR',
-															0 - c.Amount,
-															c.Amount
-														), 0
-													)
-													*
-													IF(
-														c.global_tax_exempt = 1,
-														1,
-														(
-															SELECT	COALESCE(EXP(SUM(LN(1 + tt.rate_percentage))), 1)
-															FROM	tax_type tt
-															WHERE	c.ChargedOn BETWEEN tt.start_datetime AND tt.end_datetime
-																	AND tt.global = 1
-														)
-													)
-												)
-										FROM	Charge c
-										WHERE	c.Account = <account_id>
-												AND c.ChargedOn BETWEEN <billing_period_start_datetime> AND <billing_period_end_datetime>
-												AND c.Status NOT IN (".CHARGE_DELETED.", ".CHARGE_DECLINED.")
-												AND c.charge_model_id = ".CHARGE_MODEL_ADJUSTMENT."
-									) AS adjustment_total",
-						array(
-							'account_id'					=> $aInvoice['Account'],
-							'billing_period_start_datetime'	=> $aInvoice['billing_period_start_datetime'],
-							'billing_period_end_datetime' 	=> $aInvoice['billing_period_end_datetime']
-						)
-					)->fetch_assoc();
-		return $aTotal['adjustment_total'];
+		return Invoice::getForId($aInvoice['Id'])->getAdjustmentTotal();
 	}
 	
 	/**

@@ -1252,17 +1252,20 @@ class Account
 										/* Adjustment was charged and approved prior to the Billing Period Start, or is reversing an Adjustment charged and approved prior to the Billing Period Start */
 										(
 											adj.created_datetime < <effective_date>
+											AND adj.effective_date < <effective_date>
 											AND adj.reviewed_datetime < <effective_date>
 										)
 										OR (
 											adj_reversed.id IS NOT NULL
 											AND adjs_reversed.system_name = 'APPROVED'
 											AND adj_reversed.created_datetime < <effective_date>
+											AND adj_reversed.effective_date < <effective_date>
 											AND adj_reversed.reviewed_datetime < <effective_date>
 										)
 										/* We also want to include any Adjustments intentionally hidden between the Billing Period Start and End */
 										OR (
 											adjtiv.system_name = 'HIDDEN'
+											AND adj.effective_date BETWEEN <effective_date> AND <effective_end_date>
 											AND adj.reviewed_datetime BETWEEN <effective_date> AND <effective_end_date>
 										)
 									)

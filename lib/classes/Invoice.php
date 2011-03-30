@@ -420,14 +420,15 @@ class Invoice extends ORM_Cached
 				// Database Error -- throw Exception
 				throw new Exception_Database("DB ERROR: ".$updMarkAccountCharges->Error());
 			}
-
+			
 			// Mark Adjustments (Payment-like)
 			//----------------------------------------------------------------//
 			$mResult = Query::run("	UPDATE 	adjustment 
 									SET 	invoice_run_id = {$this->invoice_run_id} 
 									WHERE	account_id = {$this->Account} 
-									AND 	invoice_run_id IS NULL 
-									AND 	effective_date <= '{$this->billing_period_end_datetime}'");
+									AND 	invoice_run_id IS NULL
+									AND 	effective_date <= '{$this->billing_period_end_datetime}'
+									AND 	reviewed_datetime <= '{$this->billing_period_end_datetime}'");
 			Log::getLog()->log("Updated {$mResult} Adjustments");
 			
 			// Get Preliminary Charge Totals
@@ -1998,8 +1999,19 @@ class Invoice extends ORM_Cached
 			{
 				throw new Exception_Database("Failed to copy Charge records. ".$oQuery->Error());
 			}
-
+			
 			Log::getLog()->log("... ".$oQuery->AffectedRows()." records copied");
+			Log::getLog()->log("Copying adjustment records from the original invoice, ");
+
+			// Copy all adjustments from the invoice_run for the account
+			$iAdjustmentRows = Query::run("	UPDATE 	adjustment
+											SET 	invoice_run_id = NULL
+											WHERE	account_id = {$oOriginalInvoice->Account}
+													AND invoice_run_id = {$oOriginalInvoiceRun->Id}
+													AND	effective_date <= '{$oOriginalInvoiceRun->BillingDate}'
+													AND reviewed_datetime <= '{$oOriginalInvoiceRun->BillingDate}'");
+			
+			Log::getLog()->log("... {$iAdjustmentRows} records copied");
 			Log::getLog()->log("Copying CDR records from the original invoice, setting status to CDR_RATED (".CDR_RATED.") and changing the invoice_run_id");
 
 			// Copy all CDRs from the original invoice
@@ -2352,6 +2364,63 @@ class Invoice extends ORM_Cached
 
 	public function getCollectables($bIncludePromised=false) {
 		return Collectable::getForInvoice($this, $bIncludePromised);
+	}
+	
+	public function getAdjustmentTotal()
+	{
+		$aTotal =	Query::run(
+						"	SELECT	(
+										SELECT	COALESCE(SUM(adj.amount * adjn.value_multiplier * tn.value_multiplier), 0)
+										FROM	adjustment adj
+												JOIN adjustment_type adjt ON (adjt.id = adj.adjustment_type_id)
+												JOIN adjustment_type_invoice_visibility adjtiv ON (
+													adjtiv.id = adjt.adjustment_type_invoice_visibility_id
+													AND adjtiv.system_name = 'VISIBLE'
+												)
+												JOIN adjustment_nature adjn ON (adjn.id = adj.adjustment_nature_id)
+												JOIN transaction_nature tn ON (tn.id = adjt.transaction_nature_id)
+												JOIN adjustment_status adjs ON (adjs.id = adj.adjustment_status_id)
+												LEFT JOIN adjustment adj_reversed ON (adj_reversed.id = adj.reversed_adjustment_id)
+												LEFT JOIN adjustment_status adjs_reversed ON (adjs_reversed.id = adj_reversed.adjustment_status_id)
+										WHERE	adjs.system_name = 'APPROVED'
+												AND adj.account_id = <account_id>
+												AND adj.invoice_run_id = <invoice_run_id>
+									)
+									+
+									(
+										SELECT	COALESCE(
+													SUM(
+														COALESCE(
+															IF(
+																c.Nature = 'CR',
+																0 - c.Amount,
+																c.Amount
+															), 0
+														)
+														*
+														IF(
+															c.global_tax_exempt = 1,
+															1,
+															(
+																SELECT	COALESCE(EXP(SUM(LN(1 + tt.rate_percentage))), 1)
+																FROM	tax_type tt
+																WHERE	c.ChargedOn BETWEEN tt.start_datetime AND tt.end_datetime
+																		AND tt.global = 1
+															)
+														)
+													), 0
+												)
+										FROM	Charge c
+										WHERE	c.Account = <account_id>
+												AND c.invoice_run_id = <invoice_run_id>
+												AND c.charge_model_id = ".CHARGE_MODEL_ADJUSTMENT."
+									) AS adjustment_total",
+						array(
+							'account_id'		=> $this->Account,
+							'invoice_run_id'	=> $this->invoice_run_id
+						)
+					)->fetch_assoc();
+		return $aTotal['adjustment_total'];
 	}
 
 	//------------------------------------------------------------------------//

@@ -676,7 +676,7 @@ class Invoice_Run
 								SET 	invoice_run_id = NULL
 								WHERE	invoice_run_id = {$this->Id}");
 		Log::getLog()->log("Un-marked {$mResult} Adjustments");
-
+		
 		// Remove service_total_service Records
 		if ($qryQuery->Execute("DELETE FROM service_total_service WHERE service_total_id = (SELECT Id FROM ServiceTotal WHERE invoice_run_id = {$this->Id} AND Id = service_total_id)") === FALSE)
 		{
@@ -969,9 +969,9 @@ class Invoice_Run
 		Log::getLog()->log(" * Updating Invoices...");
 		$resUpdateInvoices	= $qryQuery->Execute("	UPDATE	Invoice i
 															JOIN collectable c ON (i.id = c.invoice_id)
-													SET		i.Status			= (CASE WHEN Balance > 0 THEN ".INVOICE_COMMITTED." ELSE ".INVOICE_SETTLED." END),
+													SET		i.Status			= ".INVOICE_COMMITTED.",
 															i.collectable_id	= c.id
-													WHERE	i.invoice_run_id = {$this->Id}");
+													WHERE	i.invoice_run_id	= {$this->Id}");
 		if ($resUpdateInvoices === FALSE)
 		{
 			throw new Exception_Database($qryQuery->Error());
