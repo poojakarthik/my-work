@@ -133,7 +133,7 @@ class Cli_App_EmailQueueFlush extends Cli
 					Log::getLog()->log("Test mode, rolling back all database changes");
 					if ($oDataAccess->TransactionRollback() === false)
 					{
-						throw Exception("Failed to rollback database transaction");
+						throw new Exception("Failed to rollback database transaction");
 					}
 				}
 			}
