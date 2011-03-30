@@ -123,7 +123,7 @@ class Correspondence_Logic_Run
 		$this->_oDO->save();
 
 		foreach($this->_aFileDeliveries as $oDeliveryDetails)
-		{
+		{			
 			$oDeliveryDetails->save();
 		}
 
@@ -614,36 +614,50 @@ class Correspondence_Logic_Run
 		if ($aCount['post'] > 0)
 		{
 			$sStatusInfo	= null;
-			if ($aFilesByDeliveryMethod['post']['status_code'] == Correspondence_Logic_Run_Dispatch::DELIVERY_FAILED)
+			if ($aFilesByDeliveryMethod['post'] === NULL)
 			{
-				$sStatusInfo	= ", ".$aFilesByDeliveryMethod['post']['status'];
-			}
-			
-			if (($aFilesByDeliveryMethod['post']['batch'] != null))
-			{
-				$sPostDeliveryDetails 	= $aFilesByDeliveryMethod['post']['carrier'].", at ".$this->formatDatTime($aFilesByDeliveryMethod['post']['dispatch_date'])." , Batch ".$aFilesByDeliveryMethod['post']['batch'];
+				$sPostDeliveryDetails	= "Delivery was not done.";
 			}
 			else
 			{
-				$sPostDeliveryDetails	= $aFilesByDeliveryMethod['post']['carrier'].$sStatusInfo;
+				if ($aFilesByDeliveryMethod['post']['status_code'] == Correspondence_Logic_Run_Dispatch::DELIVERY_FAILED)
+				{
+					$sStatusInfo	= ", ".$aFilesByDeliveryMethod['post']['status'];
+				}
+
+				if (($aFilesByDeliveryMethod['post']['batch'] != null))
+				{
+					$sPostDeliveryDetails 	= $aFilesByDeliveryMethod['post']['carrier'].", at ".$this->formatDatTime($aFilesByDeliveryMethod['post']['dispatch_date'])." , Batch ".$aFilesByDeliveryMethod['post']['batch'];
+				}
+				else
+				{
+					$sPostDeliveryDetails	= $aFilesByDeliveryMethod['post']['carrier'].$sStatusInfo;
+				}
 			}
 		}
 		
 		if ($aCount['email'] > 0)
 		{
 			$sStatusInfo	= null;
-			if ($aFilesByDeliveryMethod['email']['status_code'] == Correspondence_Logic_Run_Dispatch::DELIVERY_FAILED)
+			if ($aFilesByDeliveryMethod['email'] === NULL)
 			{
-				$sStatusInfo	= ", ".$aFilesByDeliveryMethod['email']['status'];
-			}
-			
-			if (($aFilesByDeliveryMethod['email']['batch'] != null))
-			{
-				$sEmailDeliveryDetails	= $aFilesByDeliveryMethod['email']['carrier']." at ".$this->formatDatTime($aFilesByDeliveryMethod['email']['dispatch_date'])." ,Batch ".$aFilesByDeliveryMethod['email']['batch'];
+				$sEmailDeliveryDetails	= "Delivery was not done."; 
 			}
 			else
 			{
-				$sEmailDeliveryDetails	= $aFilesByDeliveryMethod['email']['carrier'].$sStatusInfo;
+				if ($aFilesByDeliveryMethod['email']['status_code'] == Correspondence_Logic_Run_Dispatch::DELIVERY_FAILED)
+				{
+					$sStatusInfo	= ", ".$aFilesByDeliveryMethod['email']['status'];
+				}
+
+				if (($aFilesByDeliveryMethod['email']['batch'] != null))
+				{
+					$sEmailDeliveryDetails	= $aFilesByDeliveryMethod['email']['carrier']." at ".$this->formatDatTime($aFilesByDeliveryMethod['email']['dispatch_date'])." ,Batch ".$aFilesByDeliveryMethod['email']['batch'];
+				}
+				else
+				{
+					$sEmailDeliveryDetails	= $aFilesByDeliveryMethod['email']['carrier'].$sStatusInfo;
+				}
 			}
 		}
 
@@ -791,11 +805,12 @@ class Correspondence_Logic_Run
 						{
 							throw new Correspondence_Dispatch_Exception(Correspondence_Dispatch_Exception::SYSTEM_CONFIG, new Exception("Not every delivery method in the Run has a carrier module associated with it."));
 						}
+						
 						$aDispatchers = $oRun->getCarrierModules();
 
 						foreach ($aDispatchers as $oDispatcher)
-						{
-							$oDispatcher->exportRun($oRun, $oBatch->id);
+						{							
+							$oDispatcher->exportRun($oRun, $oBatch->id);							
 						}
 					}
 					catch(Exception $e)
@@ -814,7 +829,7 @@ class Correspondence_Logic_Run
 					{
 						$oDispatcher->deliverRun();
 					}
-
+					
 					$oRun->setDeliveryDetails(Data_Source_Time::currentTimestamp());
 					$oRun->save();
 					$oRun->sendDispatchEmail($oBatch->id);
