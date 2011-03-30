@@ -549,9 +549,11 @@ class Correspondence_Logic_Run
 		}
 		else
 		{
-			$oEx		= $this->_oDataValidationException;
-			$sReason	= (($oEx instanceof Correspondence_Dispatcher_Exception) ? $oEx->failureReasonToString() : '');
-			$oEmail->addPivotTableRow( 'Status', "Dispatch Failed. Reason: '{$sReason}'");
+			$oEx			= $this->_oDataValidationException;
+			$sReason		= (($oEx instanceof Correspondence_Dispatch_Exception) ? $oEx->failureReasonToString() : 'Failure');
+			$sMessage		= $oEx->getMessage();
+			$sErrorMessage	= $sMessage!= NULL ? "Error Description: {$sMessage}" : NULL;
+			$oEmail->addPivotTableRow( 'Status', "Dispatch Failed. Reason: '{$sReason}'. {$sErrorMessage}");
 		}
 		$oEmail->appendSignature();
 		$oEmail->setBodyHTML();
@@ -740,6 +742,26 @@ class Correspondence_Logic_Run
 		return ($oDO == null ? null : $oDO->correspondence_run_batch_id);
 	}
 
+	public function getDeliveryMethods()
+	{
+		return array_keys($this->_aCorrespondence);
+	}
+
+	public function validateCarrierModuleConfiguration()
+	{
+		$aDispatchers = $this->getCarrierModules();
+		$aRunDeliveryMethods = $this->getDeliveryMethods();
+		$aDispatcherDeliveryMethods = array();
+		foreach($aDispatchers as $oDispatcher)
+		{
+			$aDispatcherDeliveryMethods = array_merge( $oDispatcher->getDeliveryMethods(), $aDispatcherDeliveryMethods );
+		}
+
+		$aDiff = array_diff($aRunDeliveryMethods, $aDispatcherDeliveryMethods );
+
+		return count($aDiff) === 0;
+	}
+
 	// sendWaitingRuns: Dispatches all correspondence runs that are processed and scheduled for delivery.
 	public static function sendWaitingRuns()
 	{
@@ -765,8 +787,11 @@ class Correspondence_Logic_Run
 					Log::getLog()->log('Dispatching Run '.$oRun->id);
 					try
 					{
+						if (!$oRun->validateCarrierModuleConfiguration())
+						{
+							throw new Correspondence_Dispatch_Exception(Correspondence_Dispatch_Exception::SYSTEM_CONFIG, new Exception("Not every delivery method in the Run has a carrier module associated with it."));
+						}
 						$aDispatchers = $oRun->getCarrierModules();
-
 
 						foreach ($aDispatchers as $oDispatcher)
 						{
@@ -779,7 +804,7 @@ class Correspondence_Logic_Run
 						$oRun->save();
 						
 						$sReason	= (($e instanceof Correspondence_Dispatch_Exception) ? $e->failureReasonToString() : '');
-						Log::getLog()->log($oRun->id." could not be dispatched. Reason: '{$sReason}' (message: ".$e->getMessage().")");
+						Log::getLog()->log($oRun->id." could not be dispatched. Reason: '{$sReason}' (message: ".$e->getMessage()."). Full Exception Details: ".$e->__toString());
 						
 						$oRun->sendDispatchEmail($oBatch->id);
 						continue;
