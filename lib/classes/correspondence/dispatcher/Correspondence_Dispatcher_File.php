@@ -134,9 +134,12 @@ abstract class Correspondence_Dispatcher_File extends Resource_Type_File_Export 
 		$this->oTemplateCarrierModuleObject = $oTemplateCarrierModuleObject;
 	}
 
-	static public function createCarrierModule($iCarrier, $sClassName, $iResourceType)
+	static public function createCarrierModule($iCarrier, $iCustomerGroup, $sClass=__CLASS__)
 	{
-		parent::createCarrierModule($iCarrier, $sClassName, $iResourceType, self::CARRIER_MODULE_TYPE);
+		if ($iCustomerGroup !== null) {
+			throw new Exception(GetConstantName(self::CARRIER_MODULE_TYPE, 'carrier_module_type')." Carrier Modules cannot be Customer Group specific");
+		}
+		parent::createCarrierModule($iCarrier, null, $sClass, self::RESOURCE_TYPE, self::CARRIER_MODULE_TYPE);
 	}
 
 	static public function defineCarrierModuleConfig()

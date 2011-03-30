@@ -252,10 +252,9 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 		return parent::getExportPath()."$iCarrier/$sClass/";
 	}
 
-
-	static public function createCarrierModule($iCarrier, $sClass=__CLASS__)
+	static public function createCarrierModule($iCarrier, $iCustomerGroup, $sClass=__CLASS__)
 	{
-		parent::createCarrierModule($iCarrier, $sClass, self::RESOURCE_TYPE);
+		parent::createCarrierModule($iCarrier, $iCustomerGroup, $sClass, self::RESOURCE_TYPE, self::CARRIER_MODULE_TYPE);
 	}
 
 	public static function create()

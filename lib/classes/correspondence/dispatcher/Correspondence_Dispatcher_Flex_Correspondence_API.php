@@ -164,9 +164,12 @@
 		$this->oTemplateCarrierModuleObject = $oTemplateCarrierModuleObject;
 	}
 
-	static public function createCarrierModule($iCarrier, $sClass=__CLASS__)
+	static public function createCarrierModule($iCarrier, $iCustomerGroup, $sClass=__CLASS__)
 	{
-		parent::createCarrierModule($iCarrier, $sClass, self::RESOURCE_TYPE, self::CARRIER_MODULE_TYPE);
+		if ($iCustomerGroup !== null) {
+			throw new Exception(GetConstantName(self::CARRIER_MODULE_TYPE, 'carrier_module_type')." Carrier Modules cannot be Customer Group specific");
+		}
+		parent::createCarrierModule($iCarrier, null, $sClass, self::RESOURCE_TYPE, self::CARRIER_MODULE_TYPE);
 	}
 
 	static public function defineCarrierModuleConfig()
