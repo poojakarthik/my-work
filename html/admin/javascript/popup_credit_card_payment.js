@@ -529,7 +529,7 @@ var Popup_Credit_Card_Payment	= Class.create(Reflex_Popup,
 						);
 
 		// Gather the validated values and submit to the server
-		var oExpiryDate	= Date.$parseDate(this._oCardExpiry.getValue(), 'Y-m');
+		var oExpiryDate	= Date.$parseDate(this._oCardExpiry.getValue() + '-01', 'Y-m-d');
 		fnSubmit(
 			this._iAccountId,								// iAccountId
 			this._oCardType.getValue(),						// iCardType
@@ -565,7 +565,7 @@ var Popup_Credit_Card_Payment	= Class.create(Reflex_Popup,
 									$T.div(Popup_Credit_Card_Payment._getCardType(this._oCardType.getElementValue()).name),
 									$T.div(this._oCardNumber.getElementValue() + ' (' + this._oCardCVV.getElementValue() + ')'),
 									$T.div(this._oCardName.getElementValue()),
-									$T.div(Date.$parseDate(this._oCardExpiry.getElementValue(), 'Y-m').$format('m/Y'))
+									$T.div(Date.$parseDate(this._oCardExpiry.getElementValue() + '-01', 'Y-m-d').$format('m/Y'))
 								)
 							),
 							$T.tr(
@@ -904,7 +904,7 @@ Object.extend(Popup_Credit_Card_Payment,
 	
 	_validateExpiry	: function(mValue)
 	{
-		var oDate			= Date.$parseDate(mValue, 'Y-m');
+		var oDate			= Date.$parseDate(mValue + '-01', 'Y-m-d');
 		var iMonth 			= oDate.getMonth() + 1;
 		var iYear			= oDate.getFullYear();
 		var oNow 			= new Date();

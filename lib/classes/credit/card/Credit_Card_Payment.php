@@ -723,15 +723,13 @@ class Credit_Card_Payment
 				}
 			}
 			
-			// Date string used by multiple records that are created below
-			$sNowDate = date('Y-m-d', $iTime);
 			$oPayment =	Logic_Payment::factory(
 							$iAccountId, 
 							PAYMENT_TYPE_CREDIT_CARD, 
 							$fTotal, 
 							PAYMENT_NATURE_PAYMENT,
 							'', 
-							$sNowDate, 
+							date('Y-m-d H:i:s', $iTime), 
 							array
 							(
 								'aTransactionData' =>	array
