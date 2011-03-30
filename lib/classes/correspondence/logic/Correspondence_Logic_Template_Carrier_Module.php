@@ -1,13 +1,20 @@
 <?php
+/**
+ * This class represents, for a correspondence template,  a carrier module configuration for a single delivery method.
+ * This class does not straightforwardly represent a record in a database table:
+ * it combines data from 'correspondence_template_correspondence_template_carrier_module' and 'correspondence_template_carrier_module'
+ */
 class Correspondence_Logic_Template_Carrier_Module
 {
 	protected $_oDO;
 	protected $_oCarrierModule;
 	protected $_iDeliveryMethod;
+	protected $_iCorrespondenceTemplate;
 
-	public function __construct($mDefinition, $iDeliveryMethod)
+	public function __construct($mDefinition, $iDeliveryMethod, $iCorrespondenceTemplate)
 	{
 		$this->_iDeliveryMethod	= $iDeliveryMethod;
+		$this->_iCorrespondenceTemplate = $iCorrespondenceTemplate;
 		if (is_numeric($mDefinition))
 		{
 			$this->_oDO	= Correspondence_Template_Carrier_Module::getForId($mDefinition);
@@ -48,7 +55,7 @@ class Correspondence_Logic_Template_Carrier_Module
 		{
 			$aResult[]	= 	new self(
 								Correspondence_Template_Carrier_Module::getForId($oORM->correspondence_template_carrier_module_id),
-								$oORM->correspondence_delivery_method_id
+								$oORM->correspondence_delivery_method_id, $oORM->correspondence_template_id
 							);
 		}
 		return $aResult;
@@ -56,7 +63,16 @@ class Correspondence_Logic_Template_Carrier_Module
 
 	public function __get($sField)
 	{
-		return $this->_oDO->$sField;
+		switch ($sField)
+		{
+			case '_iDeliveryMethod':
+				return $this->_iDeliveryMethod;
+			case '_iCorrespondenceTemplate':
+				return $this->_iCorrespondenceTemplate;
+			default:
+				return $this->_oDO->$sField;
+		}
+		
 	}
 
 	public function __set($sField, $mValue)
