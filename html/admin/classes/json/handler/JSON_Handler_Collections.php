@@ -245,6 +245,9 @@ class JSON_Handler_Collections extends JSON_Handler
 							$oInvoice->DeliveryMethod = $iDeliveryMethodIdOverride;
 							$oInvoice->save();
 						}
+						
+						// Re-export the invoices
+						$oInvoiceRun->export();
 					}
 					
 					// Commit & deliver the invoice run
