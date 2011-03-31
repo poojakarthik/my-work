@@ -240,22 +240,22 @@ class Invoice_Interim
 					
 					// Monthly Plan Fee
 					self::_compareInterimEligible(	
-						(float)$aImportService[self::$_aInterimEligibilityColumns['MONTHLY_PLAN_FEE']],
-						(float)$aService['plan_charge'],
+						Rate::roundToRatingStandard((float)$aImportService[self::$_aInterimEligibilityColumns['MONTHLY_PLAN_FEE']]),
+						Rate::roundToRatingStandard((float)$aService['plan_charge']),
 						"Monthly Plan Fee mismatch (Supplied: '".(float)$aImportService[self::$_aInterimEligibilityColumns['MONTHLY_PLAN_FEE']]."'; Calculated: '".(float)$aService['plan_charge']."')"
 					);
 					
 					// Daily Rate
 					self::_compareInterimEligible(
-						(float)$aImportService[self::$_aInterimEligibilityColumns['DAILY_RATE']],
-						(float)$aService['aCharges']['daily_rate'],
+						Rate::roundToRatingStandard((float)$aImportService[self::$_aInterimEligibilityColumns['DAILY_RATE']]),
+						Rate::roundToRatingStandard((float)$aService['aCharges']['daily_rate']),
 						"Daily Rate mismatch (Supplied: '".(float)$aImportService[self::$_aInterimEligibilityColumns['DAILY_RATE']]."'; Calculated: '".(float)$aService['aCharges']['daily_rate']."')"
 					);
 					
 					// Plan Charge
 					self::_compareInterimEligible(
-						(float)$aImportService[self::$_aInterimEligibilityColumns['PLAN_CHARGE']],
-						(float)$aService['aCharges']['plan_charge'],
+						Rate::roundToRatingStandard((float)$aImportService[self::$_aInterimEligibilityColumns['PLAN_CHARGE']]),
+						Rate::roundToRatingStandard((float)$aService['aCharges']['plan_charge']),
 						"Plan Charge mismatch (Supplied: '".(float)$aImportService[self::$_aInterimEligibilityColumns['PLAN_CHARGE']]."'; Calculated: '".(float)$aService['aCharges']['plan_charge']."')"
 					);
 					
@@ -276,8 +276,8 @@ class Invoice_Interim
 					
 					// Interim Plan Credit
 					self::_compareInterimEligible(
-						(float)$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT']],
-						(float)$aService['aCharges']['interim_plan_credit'],
+						Rate::roundToRatingStandard((float)$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT']]),
+						Rate::roundToRatingStandard((float)$aService['aCharges']['interim_plan_credit']),
 						"Interim Plan Credit mismatch (Supplied: '".(float)$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT']]."'; Calculated: '".(float)$aService['aCharges']['interim_plan_credit']."')"
 					);
 					
@@ -298,8 +298,8 @@ class Invoice_Interim
 					
 					// Production Plan Credit
 					self::_compareInterimEligible(
-						(float)$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT']],
-						(float)$aService['aCharges']['production_plan_credit'],
+						Rate::roundToRatingStandard((float)$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT']]),
+						Rate::roundToRatingStandard((float)$aService['aCharges']['production_plan_credit']),
 						"Production Plan Credit mismatch (Supplied: '".(float)$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT']]."'; Calculated: '".(float)$aService['aCharges']['production_plan_credit']."')"
 					);
 					
