@@ -227,6 +227,7 @@ class JSON_Handler_Collections extends JSON_Handler
 				$aAccountsByCustomerGroupId[$iCustomerGroupId][] = $oAccount;
 			}
 			
+			$iDeliveryMethodIdOverride = Collections_Config::get()->oca_final_invoice_delivery_method_id;
 			foreach ($aAccountsByCustomerGroupId as $iCustomerGroupId => $aAccounts)
 			{
 				try
@@ -234,6 +235,17 @@ class JSON_Handler_Collections extends JSON_Handler
 					// Try to generate the invoice run for the accounts
 					$oInvoiceRun = new Invoice_Run();
 					$oInvoiceRun->generateForAccounts($iCustomerGroupId, $aAccounts, INVOICE_RUN_TYPE_FINAL);
+					
+					// Override delivery method of each invoice, if set in collections_config
+					if ($iDeliveryMethodIdOverride !== null)
+					{
+						$aInvoices = Invoice::getForInvoiceRunId($oInvoiceRun->Id);
+						foreach ($aInvoices as $oInvoice)
+						{
+							$oInvoice->DeliveryMethod = $iDeliveryMethodIdOverride;
+							$oInvoice->save();
+						}
+					}
 					
 					// Commit & deliver the invoice run
 					$oInvoiceRun->commit();
