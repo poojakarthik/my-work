@@ -475,11 +475,10 @@ class JSON_Handler_Invoice extends JSON_Handler
 			$oStdInvoice->shared_plan_charges			= $fSharedPlanCharges;
 			$oStdInvoice->shared_plan_discounts			= $fSharedPlanDiscounts;
 			
-			$oStdInvoice->payment_total		= Invoice_Export::getPaymentTotal($oInvoice->toArray());
-			$oStdInvoice->opening_balance 	= Account::getForId($oInvoice->Account)->getHistoricalBalance(date('Y-m-d H:i:s', strtotime($oInvoice->billing_period_start_datetime) - 1));
-			$oStdInvoice->closing_balance 	= Account::getForId($oInvoice->Account)->getHistoricalBalance(date('Y-m-d H:i:s', strtotime($oInvoice->billing_period_end_datetime)));
-			
-			// Adjustment total & tax
+			// NOTE: Extra debugging info, hidden in the interface by default
+			$oStdInvoice->payment_total		= $oInvoice->getPaymentTotal(true);
+			$oStdInvoice->opening_balance 	= $oInvoice->getOpeningBalance(true);
+			$oStdInvoice->closing_balance 	= $oInvoice->getTotalOverdue(true);
 			$oTaxType 						= Tax_Type::getGlobalTaxType();
 			$fAdjustments					= Rate::roundToCurrencyStandard($oInvoice->getAdjustmentTotal());
 			$oStdInvoice->adjustment_total	= Rate::roundToCurrencyStandard($fAdjustments / (1 + ($oTaxType ? $oTaxType->rate_percentage : 0)));

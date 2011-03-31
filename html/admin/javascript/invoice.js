@@ -296,11 +296,15 @@ var Invoice	= Class.create
 		"			</tr>\n" + 
 		"			<tr>\n" + 
 		"				<td style='vertical-align:top;text-align:left;'>Opening Balance</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>$"+(new Number(objResponse.objInvoice.AccountBalance)).toFixed(2)+"</td>\n" + 
+		"				<td style='vertical-align:top;text-align:right;'>$"+(new Number(objResponse.fOpeningBalance)).toFixed(2)+"</td>\n" + 
 		"			</tr>\n" + 
 		"			<tr>\n" + 
 		"				<td style='vertical-align:top;text-align:left;'>Payments</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>$"+(new Number(objResponse.fltPayments)).toFixed(2)+"</td>\n" + 
+		"				<td style='vertical-align:top;text-align:right;'>$"+(new Number(Math.abs(objResponse.fPaymentTotal))).toFixed(2)+"</td>\n" + 
+		"			</tr>\n" + 
+		"			<tr>\n" + 
+		"				<td style='vertical-align:top;text-align:left;'>Adjustments</td>\n" + 
+		"				<td style='vertical-align:top;text-align:right;'>$"+(new Number(Math.abs(objResponse.fAdjustmentTotal))).toFixed(2)+"</td>\n" + 
 		"			</tr>\n" + 
 		"			<tr>\n" + 
 		"				<td style='vertical-align:top;text-align:left;'>This Invoice</td>\n" + 

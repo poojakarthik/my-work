@@ -1194,7 +1194,10 @@ class Account
 
 	}
 	
-	public function getHistoricalBalance($mEffectiveDate=null, $bOverdueBalance=false) {
+	// getHistoricalBalance: 	Retrieves the balance as at the given effective date. Can optionally return the overdue balance.
+	// 							Can optionally return the 'revised' balance, which means that payment reversals that affect payments 
+	//							before the effective date are included. Simply put the balance needs to include 'new' reversals if revised.
+	public function getHistoricalBalance($mEffectiveDate=null, $bOverdueBalance=false, $bRevisedBalance=false) {
 		// Defaults to the now if not given
 		$sEffectiveDate 	= ($mEffectiveDate === null) ? DataAccess::getDataAccess()->getNow() : $mEffectiveDate;
 		$sEffectiveEndDate 	= self::getNextBillingPeriodEndDatetime($sEffectiveDate);
@@ -1207,6 +1210,21 @@ class Account
 						            c.due_date < <effective_date> 
 						            OR c.amount < 0
 						        )";
+		}
+		
+		// Payments are selected differently depending on bRevised
+		$sPaymentBalanceClause = "AND p.created_datetime < <effective_date>";
+		if ($bRevisedBalance)
+		{
+			//throw new Exception('test');
+			$sPaymentBalanceClause = "	AND (
+											/* Payment was created prior to the Billing Period Start, or is reversing a Payment prior to the Billing Period Start */
+											p.created_datetime < <effective_date>
+											OR (
+												p_reversed.id IS NOT NULL
+												AND p_reversed.created_datetime < <effective_date>
+											)
+										)";
 		}
 		
 		// Got effective end date, get the balance
@@ -1226,14 +1244,7 @@ class Account
 									JOIN payment_nature pn ON (pn.id = p.payment_nature_id)
 									LEFT JOIN payment p_reversed ON (p_reversed.id = p.reversed_payment_id)
 							WHERE	p.account_id = a.Id
-									AND (
-										/* Payment was created prior to the Billing Period Start, or is reversing a Payment prior to the Billing Period Start */
-										p.created_datetime < <effective_date>
-										OR (
-											p_reversed.id IS NOT NULL
-											AND p_reversed.created_datetime < <effective_date>
-										)
-									)
+									{$sPaymentBalanceClause}
 						), 0)
 						+
 						COALESCE((

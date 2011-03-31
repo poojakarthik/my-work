@@ -353,12 +353,12 @@ class Invoice_Export
 		$mResult	= Query::run("
 					SELECT		CONCAT(a_t.code, ' - ', a_t.description, IF(an.system_name = 'REVERSAL', ' Reversal', ''))	AS Description,
 								1																							AS Units,
-								(a.amount - a.tax_component) * an.value_multiplier											AS Charge,
+								(a.amount - a.tax_component) * an.value_multiplier * tn.value_multiplier					AS Charge,
 								IF(a.tax_component > 0.0, 0, 1)																AS TaxExempt,
 								a.effective_date																			AS ChargedDate,
 								CONCAT('ADJ:', a.id)																		AS UniqueId,
 								CONCAT('ADJ:', a.reversed_adjustment_id)													AS ReversedUniqueId,
-								a.tax_component																				AS TaxComponent
+								a.tax_component * an.value_multiplier * tn.value_multiplier									AS TaxComponent
 					FROM		adjustment a
 								JOIN adjustment_type a_t ON (a_t.id = a.adjustment_type_id)
 								JOIN adjustment_nature an ON (an.id = a.adjustment_nature_id)
@@ -596,25 +596,17 @@ class Invoice_Export
 	
 	public static function getPaymentTotal($aInvoice)
 	{
-		$aTotal =	Query::run(
-						"	SELECT	COALESCE(SUM(p.amount * pn.value_multiplier), 0) AS payment_total
-							FROM	payment p
-									JOIN payment_nature pn ON (pn.id = p.payment_nature_id)
-									LEFT JOIN payment p_reversed ON (p_reversed.id = p.reversed_payment_id)
-							WHERE	p.account_id = <account_id>
-									AND p.created_datetime BETWEEN <billing_period_start_datetime> AND <billing_period_end_datetime>",
-						array(
-							'account_id'					=> $aInvoice['Account'],
-							'billing_period_start_datetime'	=> $aInvoice['billing_period_start_datetime'],
-							'billing_period_end_datetime' 	=> $aInvoice['billing_period_end_datetime']
-						)
-					)->fetch_assoc();
-		return $aTotal['payment_total'];
+		return Invoice::getForId($aInvoice['Id'])->getPaymentTotal(true);
 	}
 	
-	public static function getAdjustmentTotal($aInvoice)
+	public static function getOpeningBalance($aInvoice)
 	{
-		return Invoice::getForId($aInvoice['Id'])->getAdjustmentTotal();
+		return Invoice::getForId($aInvoice['Id'])->getOpeningBalance(true);
+	}
+	
+	public static function getTotalOverdue($aInvoice)
+	{
+		return Invoice::getForId($aInvoice['Id'])->getTotalOverdue(true);
 	}
 	
 	/**

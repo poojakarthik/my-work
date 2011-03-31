@@ -260,7 +260,7 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 	<div class='GroupedContent' style='height:70px;margin-bottom:5px'>
 		<div style='position:relative;margin-bottom:8px'>
 			<span style='top:2px'>Schema Version</span>
-			<span style='top:2px;position:absolute;left:$intPropertyValueLeft;'>$strSchemaVersion</span>
+			<span style='top:2px;position:absolute;left:{$intPropertyValueLeft}px;'>$strSchemaVersion</span>
 		</div>
 		<div style='position:relative;margin-bottom:8px'>
 			<span style='top:2px'>Description</span>
@@ -320,7 +320,7 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 		<div style='float:left;position:relative;width:750px;height:70px'>
 			<div style='margin-bottom:8px'>
 				<span style='top:2px'>Schema Version</span>
-				<span style='top:2px;position:absolute;left:$intPropertyValueLeft;'>$strSchemaVersion</span>
+				<span style='top:2px;position:absolute;left:{$intPropertyValueLeft}px;'>$strSchemaVersion</span>
 			</div>
 			<div style='margin-bottom:8px'>
 				<span style='top:2px'>Description</span>

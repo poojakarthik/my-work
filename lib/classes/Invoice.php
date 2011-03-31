@@ -2366,6 +2366,44 @@ class Invoice extends ORM_Cached
 		return Collectable::getForInvoice($this, $bIncludePromised);
 	}
 	
+	// getPaymentTotal:	Returns the total amount for all payments within the invoices bill period. Can optionally return a
+	// 					'revised' total which excludes reversals that affect payments before the bill period.
+	//					Simply put the balance needs to exclude 'new' reversals of 'old' payments (if revised).
+	public function getPaymentTotal($bRevised=false)
+	{
+		// By default, allows only payments created during the invoices bill period
+		$sExtraWhereClause = "AND p.created_datetime BETWEEN <billing_period_start_datetime> AND <billing_period_end_datetime>";	
+		if ($bRevised)
+		{
+			// Allow payments created within to the Billing Period and that aren't reversals, 
+			// if they are reversed they must be reversing another payment within the bill period
+			$sExtraWhereClause = "	AND (
+										(
+											p.created_datetime BETWEEN <billing_period_start_datetime> AND <billing_period_end_datetime>
+											AND p_reversed.id IS NULL
+										) OR (
+											p_reversed.id IS NOT NULL
+											AND p_reversed.created_datetime BETWEEN <billing_period_start_datetime> AND <billing_period_end_datetime>
+										)
+									)";
+		}
+
+		$aTotal =	Query::run(
+						"	SELECT	COALESCE(SUM(p.amount * pn.value_multiplier), 0) AS payment_total
+							FROM	payment p
+									JOIN payment_nature pn ON (pn.id = p.payment_nature_id)
+									LEFT JOIN payment p_reversed ON (p_reversed.id = p.reversed_payment_id)
+							WHERE	p.account_id = <account_id>
+									{$sExtraWhereClause}",
+						array(
+							'account_id'					=> $this->Account,
+							'billing_period_start_datetime'	=> $this->billing_period_start_datetime,
+							'billing_period_end_datetime' 	=> $this->billing_period_end_datetime
+						)
+					)->fetch_assoc();
+		return $aTotal['payment_total'];
+	}
+	
 	public function getAdjustmentTotal()
 	{
 		$aTotal =	Query::run(
@@ -2421,6 +2459,19 @@ class Invoice extends ORM_Cached
 						)
 					)->fetch_assoc();
 		return $aTotal['adjustment_total'];
+	}
+	
+	public function getOpeningBalance($bRevised=false)
+	{
+		// Returns historical outstanding balance for the invoices account, as of the start of the billing period minus 1 second
+		$sEffectiveDatetime = date('Y-m-d H:i:s', strtotime($this->billing_period_start_datetime) - 1);
+		return Account::getForId($this->Account)->getHistoricalBalance($sEffectiveDatetime, false, $bRevised);
+	}
+
+	public function getTotalOverdue($bRevised=false)
+	{
+		// Returns historical overdue balance for the invoices account, as of the end of the billing period
+		return Account::getForId($this->Account)->getHistoricalBalance($this->billing_period_end_datetime, true, $bRevised);
 	}
 
 	//------------------------------------------------------------------------//

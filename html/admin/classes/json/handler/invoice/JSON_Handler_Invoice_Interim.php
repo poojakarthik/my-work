@@ -252,14 +252,10 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				$strInvoiceDate		= date("j M y", strtotime($objInvoiceRun->BillingDate));
 				$strBillingPeriod	= date("j M y", strtotime($objInvoice->billing_period_start_datetime)) . " - " . date("j M y", strtotime($objInvoice->billing_period_end_datetime));
 				
-				// Get the last Invoice to determine Payments
-				$resLastInvoice	= $qryQuery->Execute("SELECT * FROM Invoice WHERE Account = {$objAccount->Id} AND Id < {$objInvoice->Id} ORDER BY Id DESC LIMIT 1");
-				if ($resLastInvoice === false)
-				{
-					throw new Exception_Database($qryQuery->Error());
-				}
-				$arrLastInvoice	= $resLastInvoice->fetch_assoc();
-				$fltPayments	= ($arrLastInvoice) ? max(0.0, (float)$arrLastInvoice['TotalOwing'] - $objInvoice->AccountBalance) : 0.0;
+				// Add extra summary detail info
+				$fOpeningBalance	= $objInvoice->getOpeningBalance(true);
+				$fPaymentTotal		= $objInvoice->getPaymentTotal(true);
+				$fAdjustmentTotal	= $objInvoice->getAdjustmentTotal(true);
 				
 				$dacFlex->TransactionCommit();
 			}
@@ -279,13 +275,15 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 			
 			// If no exceptions were thrown, then everything worked
 			return array(
-							"Success"					=> true,
-							"objInvoiceRun"				=> $objInvoiceRun->toArray(),
-							"objInvoice"				=> $objInvoice->toArray(),
-							"strBillingPeriod"			=> $strBillingPeriod,
-							"strInvoiceDate"			=> $strInvoiceDate,
-							"fltPayments"				=> $fltPayments,
-							"strDebug"					=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+							"Success"			=> true,
+							"objInvoiceRun"		=> $objInvoiceRun->toArray(),
+							"objInvoice"		=> $objInvoice->toStdClass(),
+							"strBillingPeriod"	=> $strBillingPeriod,
+							"strInvoiceDate"	=> $strInvoiceDate,
+							"fPaymentTotal"		=> $fPaymentTotal,
+							"fAdjustmentTotal"	=> $fAdjustmentTotal,
+							"fOpeningBalance"	=> $fOpeningBalance,
+							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
 						);
 		}
 		catch (Exception $e)
