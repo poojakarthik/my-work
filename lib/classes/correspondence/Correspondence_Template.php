@@ -39,6 +39,11 @@ class Correspondence_Template extends ORM_Cached
 		$this->setSaved();
 	}
 	
+	public function isActive()
+	{
+		return ($this->status_id == STATUS_ACTIVE ? true : false);
+	}
+	
 	public static function searchFor($bCountOnly=false, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null)
 	{
 		$aAliases = array(
@@ -79,7 +84,7 @@ class Correspondence_Template extends ORM_Cached
 		
 		$aWhere	= Statement::generateWhere($aAliases, get_object_vars($oFilter));
 		$sWhere	= $aWhere['sClause'];
-		$sWhere	.= 	($sWhere != '' ? " AND " : '')."cst.is_user_selectable = 1";	
+		$sWhere	.= 	($sWhere != '' ? " AND " : '');//."cst.is_user_selectable = 1";	
 		
 		$oSelect = new StatementSelect($sFrom, $sSelect, $sWhere, $sOrderBy, $sLimit);
 		if ($oSelect->Execute($aWhere['aValues']) === false)

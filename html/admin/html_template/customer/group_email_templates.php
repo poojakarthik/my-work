@@ -58,7 +58,7 @@ class HtmlTemplateCustomerGroupEmailTemplates extends HtmlTemplate
 		$bolTemplateUndefined = FALSE;
 
 		//TODO! make a h2 css class for this
-		echo "<h2 class='CustomerGroup'>Current Email Templates</h2>\n";
+		echo "<h2 class='customer-group-email-template-list-title'>Current Email Templates</h2>\n";
 
 		// Set up the header for the table of LetterTemplates
 		Table()->EmailTemplate->SetHeader("Type", "Current Version Description", "Effective From");
@@ -70,20 +70,8 @@ class HtmlTemplateCustomerGroupEmailTemplates extends HtmlTemplate
 			$strTemplateType = $aTemplate['name'];
 			$strVersion		= $aTemplate['description'];
 			$strEffectiveOn	= OutputMask()->ShortDate($aTemplate['effective_datetime']);
-			/*if ($dboTemplate->TemplateId->Value != NULL)
-			{
-				// There is an active template
-				$strVersion		= $dboTemplate->Version->Value;
-				$strEffectiveOn	= OutputMask()->ShortDate($dboTemplate->EffectiveOn->Value);
-			}
-			else
-			{
-				$strVersion		= "[ No template has been defined yet ]";
-				$strEffectiveOn	= "";
-			}*/
 
 			Table()->EmailTemplate->AddRow($strTemplateType, $strVersion, $strEffectiveOn);
-			//Table()->DocumentTemplate->SetOnClick("Vixen.CustomerGroupDetails.LoadDocumentTemplateHistory({$dboTemplate->TypeId->Value})");
 			$strLoadTemplateHistory = Href()->ViewEmailTemplateHistory(DBO()->CustomerGroup->Id->value, $aTemplate['name'], $aTemplate['id']);
 			Table()->EmailTemplate->SetOnClick("window.location='$strLoadTemplateHistory'");
 		}
@@ -91,14 +79,13 @@ class HtmlTemplateCustomerGroupEmailTemplates extends HtmlTemplate
 		Table()->EmailTemplate->RowHighlighting = TRUE;
 		Table()->EmailTemplate->Render();
 
-		// Draw the button to link to the "View Document Resources" page
-		$strViewDocumentResourceLink = htmlspecialchars(Href()->ViewDocumentResources(DBO()->CustomerGroup->Id->Value), ENT_QUOTES);
-		echo "
-<div class='ButtonContainer'>
-
-</div>
-			";
-		//<input type='button' value='View Document Resources' onClick='window.location = \"$strViewDocumentResourceLink\"' style='float:right'></input>
+		$sNewTemplateLink = Href()->NewCorrespondenceEmailTemplate();
+		echo "	<div class='ButtonContainer'>
+					<button class='customer-group-email-template-list-newtemplate icon-button' onclick=\"{$sNewTemplateLink}\">
+						<img src='../admin/img/template/new.png'/>
+						<span>New Correspondence Email Template</span>
+					</button>
+				</div>";
 	}
 }
 

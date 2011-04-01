@@ -4300,7 +4300,28 @@ else
 									true
 								);";
 	}
-
+	
+	public function NewCorrespondenceEmailTemplate()
+	{
+		$this->strContextMenuLabel 	= "New Correspondence Email Template";
+		$this->strLabel 			= "New Correspondence Email Template";
+		
+		return	"javascript:	JsAutoLoader.loadScript(
+									['control_field.js',
+									'control_field_text.js',
+									'control_field_textarea.js',
+									'control_field_select.js',
+									'control_field_checkbox.js',
+									'reflex_validation.js',
+									'popup_email_template_correspondence.js',
+									'customer_group.js'],
+									function() {
+										new Popup_Email_Template_Correspondence();
+									},
+									true
+								);";
+	}
+	
 	//------------------------------------------------------------------------//
 	// BreadCrumb
 	//------------------------------------------------------------------------//

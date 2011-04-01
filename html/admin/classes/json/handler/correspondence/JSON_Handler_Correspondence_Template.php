@@ -11,7 +11,7 @@ class JSON_Handler_Correspondence_Template extends JSON_Handler
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 	
-	public function getAll()
+	public function getAll($bActiveOnly=false)
 	{
 		try
 		{
@@ -19,7 +19,10 @@ class JSON_Handler_Correspondence_Template extends JSON_Handler
 			$aResults	= array();
 			foreach ($aTemplates as $oTemplate)
 			{
-				$aResults[$oTemplate->id]	= $oTemplate->toStdClass();
+				if (!$bActiveOnly || $oTemplate->isActive())
+				{
+					$aResults[$oTemplate->id]	= $oTemplate->toStdClass();
+				}
 			}
 			
 			// If no exceptions were thrown, then everything worked
@@ -302,7 +305,7 @@ class JSON_Handler_Correspondence_Template extends JSON_Handler
 				$aErrors[] = "Description cannot be more than 510 characters.";
 			}
 			
-			if ($oDetails->correspondence_source_type_id === null)
+			if ($oDetails->correspondence_source_type_id === '')
 			{
 				$aErrors[] = "Source Type was not supplied.";
 			}
@@ -494,7 +497,7 @@ class JSON_Handler_Correspondence_Template extends JSON_Handler
 				$aErrors[] = "Template Code cannot be more than 45 characters.";
 			}
 			
-			if ($oDetails->carrier_module_id === null)
+			if ($oDetails->carrier_module_id === '')
 			{
 				$aErrors[] = "Carrier Module was not supplied.";
 			}

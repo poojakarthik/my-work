@@ -3,7 +3,7 @@ var Popup_Correspondence_Template_List = Class.create(Reflex_Popup,
 {
 	initialize : function($super, iAccountId)
 	{
-		$super(60);
+		$super(70);
 	
 		this._oComponent = new Component_Correspondence_Template_List();
 		

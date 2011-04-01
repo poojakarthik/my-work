@@ -11363,3 +11363,48 @@ div.component-collections-scenario > table.reflex
 }
 
 /************************** END - Popup Correspondence Template Carrier Module - END **************************/
+
+/************************** END - Customer Group Email Template List - END **************************/
+
+.customer-group-email-template-list-title
+{
+	background-image 	: url("../img/template/article.png");
+	background-position	: left center;
+    background-repeat	: no-repeat;
+    height				: 21px;
+    margin-bottom		: 5px;
+    padding-left		: 22px;
+}
+
+.customer-group-email-template-list-newtemplate
+{
+	float	: right;
+}
+
+/************************** END - Customer Group Email Template List - END **************************/
+
+/************************** START - Popup Email Template Correspondence - START **************************/
+
+.popup-email-template-correspondence
+{
+	margin	: 0.5em;
+}
+
+.popup-email-template-correspondence > table.reflex.input
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.popup-email-template-correspondence-buttons
+{
+	text-align	: center;
+	margin-top	: 0.5em;
+}
+
+.popup-email-template-correspondence > table.reflex > tbody > tr > th
+{
+	white-space	: nowrap;
+}
+
+/************************** END - Popup Email Template Correspondence - END **************************/
