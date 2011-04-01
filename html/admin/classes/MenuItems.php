@@ -4272,6 +4272,35 @@ else
 		return self::NEW_FRAMEWORK."reflex.php/Account/ManageClasses/";
 	}
 
+	public function CorrespondenceTemplateList()
+	{
+		$this->strContextMenuLabel 	= "Correspondence Template List";
+		$this->strLabel 			= "Correspondence Template List";
+
+		return	"javascript:	JsAutoLoader.loadScript(
+									['control_field.js',
+									'control_field_text.js',
+									'control_field_textarea.js',
+									'control_field_select.js',
+									'section.js',
+									'sort.js',
+									'filter.js',
+									'dataset_ajax.js',
+									'pagination.js',
+									'reflex_loading_overlay.js',
+									'reflex_validation.js',
+									'component_correspondence_template_list.js',
+									'component_correspondence_template_additional_columns.js',
+									'popup_correspondence_template_list.js',
+									'popup_correspondence_template.js',
+									'popup_correspondence_template_carrier_module.js'],
+									function() {
+										new Popup_Correspondence_Template_List();
+									},
+									true
+								);";
+	}
+
 	//------------------------------------------------------------------------//
 	// BreadCrumb
 	//------------------------------------------------------------------------//

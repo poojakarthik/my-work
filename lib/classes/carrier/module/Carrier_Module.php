@@ -13,6 +13,11 @@ class Carrier_Module extends ORM_Cached
 	
 	protected			$_oCarrierModuleConfigSet;
 	
+	public function isActive()
+	{
+		return (($this->Active == 1) ? true : 0);
+	}
+	
 	protected static function getCacheName()
 	{
 		// It's safest to keep the cache name the same as the class name, to ensure uniqueness

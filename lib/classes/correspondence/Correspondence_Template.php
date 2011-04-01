@@ -38,6 +38,63 @@ class Correspondence_Template extends ORM_Cached
 			parent::save();
 		$this->setSaved();
 	}
+	
+	public static function searchFor($bCountOnly=false, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null)
+	{
+		$aAliases = array(
+						'id'								=> "ct.id",
+						'name'								=> "ct.name",
+						'description'						=> "ct.description",
+						'created_employee_id'				=> "ct.created_employee_id",
+						'created_employee_name'				=> "CONCAT(e_created.FirstName, ' ', e_created.LastName)",
+						'created_timestamp'					=> "ct.created_timestamp",
+						'correspondence_source_type_name'	=> "cst.name",
+						'correspondence_source_type_id'		=> "cst.id",
+						'status_id'							=> "ct.status_id",
+						'status_name' 						=> "s.name",
+					);
+		
+		$sFrom = "	correspondence_template ct
+					JOIN	Employee e_created ON (e_created.id = ct.created_employee_id)
+					JOIN	status s ON (s.id = ct.status_id)
+					JOIN	correspondence_source cs ON (cs.id = ct.correspondence_source_id)
+					JOIN	correspondence_source_type cst ON (cst.id = cs.correspondence_source_type_id)";
+		if ($bCountOnly)
+		{
+			$sSelect 	= "COUNT(ct.id) AS count";
+			$sOrderBy	= "";
+			$sLimit		= "";
+		}
+		else
+		{
+			$aSelectLines = array();
+			foreach ($aAliases as $sAlias => $sClause)
+			{
+				$aSelectLines[] = "{$sClause} AS {$sAlias}";
+			}
+			$sSelect	= implode(', ', $aSelectLines);
+			$sOrderBy	= Statement::generateOrderBy($aAliases, get_object_vars($oSort));
+			$sLimit		= Statement::generateLimit($iLimit, $iOffset);
+		}
+		
+		$aWhere	= Statement::generateWhere($aAliases, get_object_vars($oFilter));
+		$sWhere	= $aWhere['sClause'];
+		$sWhere	.= 	($sWhere != '' ? " AND " : '')."cst.is_user_selectable = 1";	
+		
+		$oSelect = new StatementSelect($sFrom, $sSelect, $sWhere, $sOrderBy, $sLimit);
+		if ($oSelect->Execute($aWhere['aValues']) === false)
+		{
+			throw new Exception_Database("Failed to get search results. ".$oSelect->Error());
+		}
+		
+		if ($bCountOnly)
+		{
+			$aRow = $oSelect->Fetch();
+			return $aRow['count'];
+		}
+		
+		return $oSelect->FetchAll();
+	}
 
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START

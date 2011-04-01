@@ -5,6 +5,11 @@ class Correspondence_Source_Type extends ORM_Cached
 	protected 			$_strTableName			= "correspondence_source_type";
 	protected static	$_strStaticTableName	= "correspondence_source_type";
 
+	public function isUserSelectable()
+	{
+		return ($this->is_user_selectable == 1) ? true : false;
+	}
+
 	protected static function getCacheName()
 	{
 		// It's safest to keep the cache name the same as the class name, to ensure uniqueness

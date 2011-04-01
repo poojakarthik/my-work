@@ -11190,3 +11190,176 @@ div.component-collections-scenario > table.reflex
 }
 
 /************************** END - Rate Plan List - END **************************/
+
+/************************** START - Popup Correspondence Template - START **************************/
+
+.popup-correspondence-template
+{
+	margin	: 0.5em;
+}
+
+.popup-correspondence-template > table.reflex.input
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.popup-correspondence-template-buttons
+{
+	text-align	: center;
+	margin-top	: 0.5em;
+}
+
+.popup-correspondence-template > table.reflex > tbody > tr > th
+{
+	white-space	: nowrap;
+}
+
+.popup-correspondence-template-carrier-modules
+{
+	border-spacing	: 0;
+}
+
+.popup-correspondence-template-carrier-modules > tbody > tr > th
+{
+	width	: 3em !important;
+}
+
+.popup-correspondence-template-sql-syntax > span
+{
+	display		: inline-block;
+	max-height	: 10em;
+	overflow	: auto;
+}
+
+/************************** END - Popup Correspondence Template - END **************************/
+
+/************************** START - Correspondence_Template List - START **************************/
+
+.popup-correspondence-template-list
+{
+	margin	: 0.5em;
+}
+
+.component-correspondence-template-list
+{
+	position	: relative
+}
+
+.component-correspondence-template-list > .section table.reflex
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.component-correspondence-template-list > .section .section-header .icon-button
+{
+	margin	: 0em !important;
+}
+
+.component-correspondence-template-list > .section .section-footer > ul.reset
+{
+	margin	: 0em;
+}
+
+.component-correspondence-template-list-filter-heading > span
+{
+	margin-right	: 0.5em;
+	vertical-align	: middle;
+	font-style		: italic;
+	font-size		: 0.85em;
+}
+
+.component-correspondence-template-list-filter-heading > div
+{
+	display			: inline-block;
+	vertical-align	: middle;
+}
+
+.component-correspondence-template-list-header-sort img
+{
+	margin-right	: 0.25em;
+}
+
+.component-correspondence-template-list table.reflex > tbody > tr > td
+{
+	vertical-align	: middle;
+}
+
+/************************** END - Correspondence_Template List - END **************************/
+
+/************************** END - Component Correspondence Template Additional Columns - END **************************/
+
+.component-correspondence-template-additional-columns-columnlist
+{
+	max-height	: 10em;
+	overflow	: auto;
+	border		: solid 1px #333;
+}
+
+.component-correspondence-template-additional-columns > table,
+.component-correspondence-template-additional-columns-columnlist > table
+{
+	width			: 100%;
+	border-spacing	: 0;
+}
+
+.component-correspondence-template-additional-columns > table tr > td:nth-child(1),
+.component-correspondence-template-additional-columns-columnlist > table tr > td:nth-child(1)
+{
+	width	: 10em;
+}
+
+.component-correspondence-template-additional-columns > table > thead > tr > td
+{
+	font-weight	: bold;
+}
+
+.component-correspondence-template-additional-columns-column-move > img
+{
+	cursor	: pointer;
+	opacity	: 0.25;
+}
+
+.component-correspondence-template-additional-columns-column-move:hover > img
+{
+	opacity	: 1;
+}
+
+.component-correspondence-template-additional-columns .icon-button
+{
+	margin	: 0em !important;
+}
+
+.popup-correspondence-template-new-templatecarriermodule
+{
+	float	: right;
+}
+
+/************************** END - Component Correspondence Template Additional Columns - END **************************/
+
+/************************** START - Popup Correspondence Template Carrier Module - START **************************/
+
+.popup-correspondence-template-carrier-module
+{
+	margin	: 0.5em;
+}
+
+.popup-correspondence-template-carrier-module > table.reflex.input
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.popup-correspondence-template-carrier-module-buttons
+{
+	text-align	: center;
+	margin-top	: 0.5em;
+}
+
+.popup-correspondence-template-carrier-module > table.reflex > tbody > tr > th
+{
+	white-space	: nowrap;
+}
+
+/************************** END - Popup Correspondence Template Carrier Module - END **************************/

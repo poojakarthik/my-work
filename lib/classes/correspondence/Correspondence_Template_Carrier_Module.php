@@ -45,6 +45,16 @@ class Correspondence_Template_Carrier_Module extends ORM_Cached
 			parent::save();
 		$this->setSaved();
 	}
+	
+	public function getForCarrierModuleAndTemplateCode($iCarrierModuleId, $sTemplateCode)
+	{
+		$aRow = Query::run("SELECT	*
+							FROM	correspondence_template_carrier_module
+							WHERE	carrier_module_id = <carrier_module_id>
+									AND template_code = <template_code>",
+							array('carrier_module_id' => $iCarrierModuleId, 'template_code' => $sTemplateCode))->fetch_assoc();
+		return ($aRow ? new self($aRow) : null);
+	}
 
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START

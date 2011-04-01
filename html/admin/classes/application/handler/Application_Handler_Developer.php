@@ -3,7 +3,7 @@ class Application_Handler_Developer extends Application_Handler
 {
 	const	URL_TYPE_JS		= 'onclick';
 	const	URL_TYPE_HREF	= 'href';
-	
+
 	// View the Developer Page
 	public function ViewList($subPath)
 	{

@@ -267,6 +267,7 @@ class Application
 				ContextMenu()->Admin->Correspondence->CreateCorrespondence();
 				ContextMenu()->Admin->Correspondence->Ledger->ViewCorrespondenceBatchLedger();
 				ContextMenu()->Admin->Correspondence->Ledger->ViewCorrespondenceRunLedger();
+				ContextMenu()->Admin->Correspondence->Configuration->CorrespondenceTemplateList();
 			}
 
 			ContextMenu()->Admin->Collections->Collections_Configuration->ConfigureAllCollections();
@@ -536,6 +537,7 @@ class Application
 				ContextMenu()->Admin->Correspondence->CreateCorrespondence();
 				ContextMenu()->Admin->Correspondence->Ledger->ViewCorrespondenceBatchLedger();
 				ContextMenu()->Admin->Correspondence->Ledger->ViewCorrespondenceRunLedger();
+				ContextMenu()->Admin->Correspondence->Configuration->CorrespondenceTemplateList();
 			}
 			
 			ContextMenu()->Admin->Collections->Collections_Configuration->ConfigureAllCollections();
