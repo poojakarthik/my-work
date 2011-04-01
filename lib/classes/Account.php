@@ -2,9 +2,9 @@
 
 class Account
 {
-	const BALANCE_REDISTRIBUTION_REGULAR = 0;
-	const BALANCE_REDISTRIBUTION_FORCED = 1;
-	const BALANCE_REDISTRIBUTION_FORCED_INCLUDING_ARCHIVED = 2;
+	const BALANCE_REDISTRIBUTION_REGULAR = 1;
+	const BALANCE_REDISTRIBUTION_FORCED = 2;
+	const BALANCE_REDISTRIBUTION_FORCED_INCLUDING_ARCHIVED = 3;
 
 	protected static $cache = array();
 
@@ -444,15 +444,15 @@ class Account
                     $oQuery->Execute($sSQL);
 
                     $sSQL = "INSERT INTO account_payable (id, collection_promise_id, due_date, amount, created_datetime,created_employee_id,  account_id)
-                                SELECT cpi.*, cp.account_id
-                                FROM collection_promise_instalment cpi
-                                JOIN collection_promise cp ON ( cp.id = cpi.collection_promise_id
-                                                                AND cp.completed_datetime IS NULL AND cp.account_id = $this->Id)";
+							SELECT cpi.*, cp.account_id
+							FROM collection_promise_instalment cpi
+							JOIN collection_promise cp ON ( cp.id = cpi.collection_promise_id
+															AND cp.completed_datetime IS NULL AND cp.account_id = $this->Id)";
                     $oQuery->Execute($sSQL);
 
                     $sSQL = "SELECT *
-                              FROM account_payable
-                              ORDER BY due_date, balance asc"; //ordering by balance will ensure that promise instalments come first as their balance is NULL in the temp table
+							  FROM account_payable
+							  ORDER BY due_date, balance asc"; //ordering by balance will ensure that promise instalments come first as their balance is NULL in the temp table
 
                     $mResult = $oQuery->Execute($sSQL);
                     $aResult = array();
@@ -487,7 +487,7 @@ class Account
 
 
 
-        public static function getForBalanceRedistribution($iRedistributionType = Account::BALANCE_REDISTRIBUTION_REGULAR)
+        public static function getForBalanceRedistribution($iRedistributionType = Account::BALANCE_REDISTRIBUTION_REGULAR, $iAccountId = NULL)
         {
 
             $aAccountsForRedistribution = array();
@@ -495,41 +495,41 @@ class Account
             switch($iRedistributionType)
             {
                 case  Account::BALANCE_REDISTRIBUTION_REGULAR:
-
-                    //1 create the temporary table, and populate it with all collectables that are not part of a promise
-                    $oQuery = new Query();
+					$sSingleAccountClause = $iAccountId === NULL ? NULL : "AND c.account_id = {$iAccountId}";
+                    //1 create the temporary table, and populate it with all collectables that are not part of a promise					
                     $sSQL = "   CREATE  TEMPORARY TABLE tmp_payable
                                 SELECT  due_date, amount, c.account_id, balance
                                 FROM collectable c
                                 LEFT JOIN collection_promise cp ON ( c.collection_promise_id = cp.id)
-                                WHERE ( c.collection_promise_id IS NULL OR cp.completed_datetime is NOT NULL )";
+                                WHERE ( c.collection_promise_id IS NULL OR cp.completed_datetime is NOT NULL ) {$sSingleAccountClause}";
 
-                    $oQuery->Execute($sSQL);
+                    Query::run($sSQL);
 
                     //2 for all active promises retrieve all promise instalments and amounts paid for each promise
-                    $sSQL = "   SELECT cp.id as promise_id, cpi.due_date as due_date, cpi.amount as amount, cp.account_id as account_id, c.amount-c.balance as paid
+
+                    $sSQL = "   SELECT cp.id as promise_id, cpi.due_date as due_date, cpi.amount as amount, cp.account_id as account_id, SUM(c.amount)-SUM(c.balance) as paid
                                 FROM collection_promise_instalment cpi
                                 JOIN collection_promise cp ON ( cp.id = cpi.collection_promise_id
-                                                                AND cp.completed_datetime IS NULL )
-                                JOIN collectable c ON (cp.id = c.collection_promise_id)
+                                                                AND cp.completed_datetime IS NULL  )
+                                JOIN collectable c ON (cp.id = c.collection_promise_id {$sSingleAccountClause})
+								GROUP BY cpi.id
                                 ORDER BY cp.id, cpi.due_date ASC";
 
-                    $mResult = $oQuery->Execute($sSQL);
-                    $aResult = array();
+					$mResult =  Query::run($sSQL);
+					$aResult = array();
                     if ($mResult)
                     {
-                         while ($aRow = $mResult->fetch_assoc())
-                        {
-                            if (!array_key_exists($aRow['promise_id'], $aResult))
-                                 $aResult[$aRow['promise_id']]= array();
-                            $aResult[$aRow['promise_id']][] = $aRow;
-
-                        }
+						while ($aRow = $mResult->fetch_assoc())
+						{
+							if (!array_key_exists($aRow['promise_id'], $aResult))
+								$aResult[$aRow['promise_id']]= array();
+							$aResult[$aRow['promise_id']][] = $aRow;
+						}
                     }
 
                     if (count($aResult) > 0)
                     {
-                        //3 distribut the paid amount on each promise over each instalment, and insert these records into the temporary table
+                        //3 distribute the paid amount on each promise over each instalment, and insert these records into the temporary table
                         $aInsertRecords = array();
                         foreach ($aResult as $iPromiseId=>$aInstalments)
                         {
@@ -542,7 +542,7 @@ class Account
                                // $x = new StatementInsert('tmp_payable', array_keys($aRecord));
                                // $x->Execute($aRecord);
                                 $sSQL = "INSERT into tmp_payable VALUES ('".$aInstalmentRecord['due_date']."', ".$aInstalmentRecord['amount'].",". $aInstalmentRecord['account_id'].",". ($aInstalmentRecord['amount'] - $fAmountToApply).")";
-                                $oQuery->Execute($sSQL);
+								Query::run($sSQL);
                             }
                         }
 
@@ -566,7 +566,7 @@ class Account
                                                 OR max_fully_paid 	> min_partially_paid
                                                 OR min_fully_unpaid 	< max_partially_paid
                                                 OR min_fully_unpaid 	< max_fully_paid";
-                    $mResult = $oQuery ->Execute($sSQL);
+                    $mResult = Query::run($sSQL);
 
                     if ($mResult)
                     {
@@ -579,9 +579,9 @@ class Account
                     //5 retrieve accounts that have both distributable collectables and collectables with outstanding balances
                     $sSQL = "   SELECT DISTINCT c.account_id as account_id
                                 FROM collectable c
-                                JOIN collectable c2 ON (c2.account_id = c.account_id  AND c2.balance > 0 AND c.balance < 0)
+                                JOIN collectable c2 ON (c2.account_id = c.account_id  AND c2.balance > 0 AND c.balance < 0 {$sSingleAccountClause})
                                 ";
-                    $mResult = $oQuery->Execute($sSQL);
+                    $mResult = Query::run($sSQL);
                     if ($mResult)
                     {
                         while ($aRow = $mResult->fetch_assoc())
@@ -599,9 +599,10 @@ class Account
 														  (c.balance > 0 AND p.balance > 0 AND p.payment_nature_id = 1)
 														  OR (c.balance <> c.amount AND  p.balance > 0 AND p.payment_nature_id = 2)
 														)
+													{$sSingleAccountClause}
 												  )
                                 ";
-                    $mResult = $oQuery->Execute($sSQL);
+                    $mResult = Query::run($sSQL);
                     if ($mResult)
                     {
                         while ($aRow = $mResult->fetch_assoc())
@@ -613,14 +614,14 @@ class Account
 					//7 retrieve accounts that have both distributable adjustments and collectables these can be distributed to
                     $sSQL = "   SELECT DISTINCT c.account_id
 								FROM collectable c
-								JOIN adjustment a ON (c.account_id = a.account_id AND a.balance > 0 and c.amount > 0)
+								JOIN adjustment a ON (c.account_id = a.account_id AND a.balance > 0 and c.amount > 0 {$sSingleAccountClause})
 								JOIN adjustment_type at ON (at.id = a.adjustment_type_id )
 								JOIN transaction_nature tn ON (tn.id = at.transaction_nature_id)
 								JOIN adjustment_nature an ON (an.id = a.adjustment_nature_id)
 								JOIN adjustment_status ast ON (a.adjustment_status_id = ast.id and ast.const_name = 'ADJUSTMENT_STATUS_APPROVED')
 								WHERE  ((c.balance > 0 AND an.value_multiplier*tn.value_multiplier = -1   ) OR (c.balance = c.amount AND an.value_multiplier*tn.value_multiplier = 1))
                                 ";
-                    $mResult = $oQuery->Execute($sSQL);
+                    $mResult = Query::run($sSQL);
                     if ($mResult)
                     {
                         while ($aRow = $mResult->fetch_assoc())
@@ -639,32 +640,31 @@ class Account
 
 					$aAccountsForRedistribution = $aResult;
                     break;
-              case Account::BALANCE_REDISTRIBUTION_FORCED:
-                   $sSQL = "    SELECT DISTINCT a.*
-                                FROM Account a
-                                WHERE a.Archived <> ".ACCOUNT_STATUS_ARCHIVED." LIMIT 200 ";
-                              
-					Log::getLog()->log($sSQL);
-                    $oQuery = new Query();
+				case Account::BALANCE_REDISTRIBUTION_FORCED:
 
-                    $mResult = $oQuery->Execute($sSQL);
-                    if ($mResult)
-                    {
-                        while ($aRow = $mResult->fetch_assoc())
-                        {
-                            $aAccountsForRedistribution[] = new self($aRow);
-                        }
-                    }
+					$sSingleAccountClause = $iAccountId === NULL ? NULL : "AND a.Id = {$iAccountId}";
+					$sSQL = "    SELECT DISTINCT a.*
+								FROM Account a
+								WHERE a.Archived <> ".ACCOUNT_STATUS_ARCHIVED." {$sSingleAccountClause} LIMIT 200 ";
 
-                  break;
+					$mResult = Query::run($sSQL);
+					if ($mResult)
+					{
+						while ($aRow = $mResult->fetch_assoc())
+						{
+							$aAccountsForRedistribution[] = new self($aRow);
+						}
+					}
+
+					break;
               case Account::BALANCE_REDISTRIBUTION_FORCED_INCLUDING_ARCHIVED:
-                   $sSQL = "    SELECT DISTINCT a.*
-                                FROM Account a
-                                ";
-					Log::getLog()->log($sSQL);
-                    $oQuery = new Query();
+				  $sSingleAccountClause = $iAccountId === NULL ? NULL : "WHERE  a.Id = {$iAccountId}";
 
-                    $mResult = $oQuery->Execute($sSQL);
+                   $sSQL = "    SELECT DISTINCT a.*
+                                FROM Account a {$sSingleAccountClause}
+                                ";				              
+
+                    $mResult = Query::run($sSQL);
                     if ($mResult)
                     {
                         while ($aRow = $mResult->fetch_assoc())
@@ -674,9 +674,12 @@ class Account
                     }
                default:
                        //try to resolve it to an account id
-                       $mResult = self::getForId($iRedistributionType);
-                       if ($mResult != null)
-                           $aAccountsForRedistribution[] = $mResult;
+					   if ($iAccountId != NULL)
+					   {
+						   $mResult = self::getForId($iAccountId);
+						   if ($mResult != null)
+							   $aAccountsForRedistribution[] = $mResult;
+					   }
 
             }
 
