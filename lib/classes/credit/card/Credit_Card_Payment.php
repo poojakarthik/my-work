@@ -504,6 +504,7 @@ class Credit_Card_Payment
 					$oEmail->subject	= (self::isTestMode() ? '[TEST EMAIL] ' : '')."{$oCustomerGroup->name} Credit Card Payment Confirmation (Ref: {$oTransactionDetails->sPurchaseOrderNumber} / {$oTransactionDetails->sTransactionId})";
 					$oEmail->text 		= self::replaceMessageTokens($oCreditCardPaymentConfig->confirmationEmail, $aMessageTokens);
 					$oEmail->to 		= (self::isTestMode() ? 'ybs-admin@ybs.net.au' : $sEmail);
+					$oEmail->disableAdminAutoBCC();
 					$oEmail->send();
 					Log::getLog()->log("Email sent to '".implode(', ', $oEmail->getRecipients())."'".(self::isTestMode() ? " instead of '{$sEmail}'" : ''));
 				}
