@@ -271,7 +271,7 @@ class JSON_Handler_Collection_Promise extends JSON_Handler
 						$fTransferValue		= Rate::roundToRatingStandard(max(0, min($oInvoice->fPromisedAmount, $oInvoiceCollectable->balance)), 2);
 						$fPromisedRemaining	= Rate::roundToRatingStandard($fPromisedRemaining - $fTransferValue);
 
-						if ($fTransferValue <= 0) {
+						if ($fTransferValue <= 0.01) {
 							Log::getLog()->log("Skipping: No value to Transfer");
 							continue;
 						}
