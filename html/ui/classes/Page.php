@@ -287,6 +287,7 @@ class Page
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_debug.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/date.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_template.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_component.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_queue.js' ></script>\n";
 		
 		// Include reference to all other javascript files required of the page
@@ -309,6 +310,7 @@ class Page
 										"reflex_fx_shift",
 										"reflex_popup",
 										"reflex_template",
+										"reflex_component",
 										"reflex_queue"
 									);
 		
