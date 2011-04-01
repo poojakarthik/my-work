@@ -19,6 +19,12 @@ class Email_Notification extends Email_Flex
 	private $_cc 					= array();
 	private $_bcc 					= array();
 
+	private	$_bAutoBCCAdmin	= true;
+
+	public function disableAdminAutoBCC() {
+		$this->_bAutoBCCAdmin	= false;
+	}
+
 	public function __set($property, $value)
 	{
 		switch(strtolower($property))
@@ -149,7 +155,7 @@ class Email_Notification extends Email_Flex
 			Log::getLog()->log("Email_Notification::send - Added ybs admin as 'to'");
 			$this->addTo('ybs-admin@ybs.net.au', 'Yellow Billing Services');
 		}
-		else
+		elseif ($this->_bAutoBCCAdmin)
 		{
 			Log::getLog()->log("Email_Notification::send - Added ybs admin as 'bcc'");
 			$this->addBcc('ybs-admin@ybs.net.au', 'Yellow Billing Services');

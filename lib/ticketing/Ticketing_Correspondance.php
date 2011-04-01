@@ -559,6 +559,7 @@ class Ticketing_Correspondance
 		$emailText 		= str_replace('[TICKET_ID]', 'T'.$this->ticketId.'Z', $emailText);
 		$emailText 		= str_replace('[CUSTOMER_GROUP_NAME]', $customerGroupName, $emailText);
 		$email->text 	= $emailText;
+		$email->disableAdminAutoBCC();
 		$email->send();
 	}
 
@@ -614,6 +615,7 @@ class Ticketing_Correspondance
 		$email->subject = $this->summary . " [T" . $this->ticketId . "Z]";
 		$email->text = $this->details;
 
+		$email->disableAdminAutoBCC();
 		$email->send();
 
 		$this->deliveryStatusId = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_SENT;

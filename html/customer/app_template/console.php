@@ -1299,6 +1299,7 @@ class AppTemplateConsole extends ApplicationTemplate
 				$email->setFrom("$_POST[mixContact_Email]", "$_POST[mixContact_FirstName] $_POST[mixContact_LastName]");
 				$email->setSubject("Account Support Request - " . DBO()->Contact->Account->Value);
 				$email->setBodyText("$message");
+				$email->disableAdminAutoBCC();
 				$email->send();
 				
 				// for debug only.
