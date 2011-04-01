@@ -11,10 +11,9 @@ class Logic_Collection_Promise implements DataLogic
 {
     // Put your code here
     protected $oDO;
-    protected $aInstalments;
-    protected $aCollectables;
+    protected $aInstalments;   
     protected $oAccount;
-
+	protected $aCollectables;
     protected $oException;
 
     public function __construct($mDefinition)
@@ -58,14 +57,16 @@ class Logic_Collection_Promise implements DataLogic
 
     public function getCollectables()
     {
-    	if ($this->aCollectables === null)
-        {
-        	$aCollectables = Collectable::getForPromiseId($this->oDO->id);
-	    	foreach ($aCollectables as $oCollectable)
-	    	{
-	    		$this->addCollectable(Logic_Collectable::getInstance($oCollectable));
-	    	}
-        }
+    	if ($this->aCollectables === NULL)
+		{
+			$this->aCollectables = array();
+			$aCollectables = Collectable::getForPromiseId($this->oDO->id);
+			foreach ($aCollectables as $oCollectable)
+			{
+				$this->aCollectables[$oCollectable->id] = Logic_Collectable::getInstance($oCollectable);
+			}
+		}
+       
         if (count($this->aCollectables)==0)
                 throw new Logic_Collection_Exception ("Promise $this->id has no underlying collectable");
     	return $this->aCollectables;
@@ -97,14 +98,7 @@ class Logic_Collection_Promise implements DataLogic
         return null;
     }
 
-    public function addCollectable($oCollectable)
-    {
-        if ($this->aCollectables === null)
-        {
-        	$this->aCollectables = array();
-        }
-        $this->aCollectables[$oCollectable->id] = $oCollectable;
-    }
+
 
     public function getAccount()
     {
@@ -217,14 +211,14 @@ class Logic_Collection_Promise implements DataLogic
     {
     	// Calculate balance
     	$aCollectables	= $this->getCollectables();
+		
     	$fPaid			= 0;
-
 
         $iLeniencyWindow = Collections_Config::get()->promise_instalment_leniency_days;
 
     	foreach ($aCollectables as $oCollectable)
-    	{
-    		$fPaid += $oCollectable->amount - $oCollectable->balance;
+    	{    		
+			$fPaid += $oCollectable->amount - $oCollectable->balance;
     	}
 
     	// Calculate how much of the instalments should have been paid by now
@@ -248,9 +242,7 @@ class Logic_Collection_Promise implements DataLogic
 
     /**
      * Returns true if the promise is not yet complete and the balance == 0 OR if the promise is complete and the completion status is KEPT
-     * Returns false if the above condition was not met
-     * Note: this method does not take the time factor into account, ie it does not check whether sufficient payment was made on due dates.
-     * For this reason it is important that before processing incoming payments on an account, the isbroken() method is run on the active promise on the account
+     * Returns false if the above condition was not met     * 
      */
     public function isFulfilled()
     {
@@ -321,7 +313,11 @@ class Logic_Collection_Promise implements DataLogic
      */
     public function process()
     {
-        if ($this->isBroken())
+        //only process active promises
+		if ($this->completed_datetime !== NULL)
+			return;
+
+		if ($this->isBroken())
         {
             Log::getLog()->log("... promise is broken");
             $this->complete(COLLECTION_PROMISE_COMPLETION_BROKEN);

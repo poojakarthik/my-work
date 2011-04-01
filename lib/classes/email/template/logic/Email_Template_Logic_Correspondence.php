@@ -236,7 +236,9 @@ class Email_Template_Logic_Correspondence extends Email_Template_Logic
 			{
 				throw new Exception("Empty PDF File for correspondence id {$iCorrespondenceId}.");
 			}
-			$oEmail->createAttachment($sPDFContents, 'application/pdf', Zend_Mime::DISPOSITION_ATTACHMENT, Zend_Mime::ENCODING_BASE64, $sPDFFilePath);
+
+			$sFileName = basename ($sPDFFilePath);
+			$oEmail->createAttachment($sPDFContents, 'application/pdf', Zend_Mime::DISPOSITION_ATTACHMENT, Zend_Mime::ENCODING_BASE64, $sFileName);
 		}
 		
 		return $oEmail;

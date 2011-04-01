@@ -45,7 +45,7 @@ class Logic_Collection_Event_Action extends Logic_Collection_Event
 		   throw new Logic_Collection_Exception("Incorrect Action Type: Account is not an allowable association type. Configuration Error");
 		}
 
-		$intEmployeeId = Flex::getUserId();
+		$intEmployeeId = Flex::getUserId()!== NULL ? Flex::getUserId() : Employee::SYSTEM_EMPLOYEE_ID;
 
 		$oAction = Action::createAction($actionType, $strExtraDetails, $intAccountId,null, null, $intEmployeeId, $intEmployeeId);
 		

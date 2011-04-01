@@ -610,7 +610,7 @@ class Logic_Account implements DataLogic
 		Logic_Collectable_Payment::createRecords();
 		Logic_Collectable_Adjustment::createRecords();
 		Logic_Collectable_Transfer_Balance::createRecords();
-
+		Log::getLog()->log("Distributing: ".Logic_Stopwatch::getInstance()->lap());
 		return array('iterations'=>$iIterations, 'Debit Collectables' =>count($this->getCollectables()), 'Credit Collectables'=> count($aCreditCollectable) , 'Credit Payments' =>count($aPayments) , 'Credit Adjustments'=> count($aAdjustments), 'Debit Payments' => count($aReversedPayments) , 'Debit Adjustments' =>count($aDebitAdjustments), 'Balance'=>$this->getPayableBalance() );
 
 	}
@@ -619,25 +619,34 @@ class Logic_Account implements DataLogic
 
 	public function redistributeBalances()
 	{
-		//Log::getLog()->log("Redistributing Account #{$this->Id}");
-		// delete all records for this account in the following tables: collectable_adjustment; collectable_payment; collectable_transfer where collectable_transfer_type == COLLECTABLE_TRANSFER_TYPE_BALANCE
+		$oDataAccess = DataAccess::getDataAccess();
+		$oDataAccess->TransactionStart();
+		try
+		{
+			Collectable_Adjustment::deleteForAccount($this->id);
+			Collectable_Payment::deleteForAccount($this->id);
+			Collectable_Transfer_Balance::deleteForAccount($this->id);
+			Collectable::resetBalanceForAccount($this->id);
+			Adjustment::resetBalanceForAccount($this->id);
+			Payment::resetBalanceForAccount($this->id);
+			//The preceding statements directly accessed the database and modified data, so we need to force a cache refresh on the following data members
+			$this->aPayments		= NULL;
+			$this->aAdjustments		= NULL;
+			$this->_aPayables		= NULL;
+			Logic_Collectable::refreshCache(array_merge($this->getCollectables(Logic_Collectable::CREDIT, TRUE), $this->getCollectables(Logic_Collectable::DEBIT, TRUE)));
 
-		Collectable_Adjustment::deleteForAccount($this->id);
-		Collectable_Payment::deleteForAccount($this->id);
-		Collectable_Transfer_Balance::deleteForAccount($this->id);		
-		Collectable::resetBalanceForAccount($this->id);		
+			Logic_Stopwatch::getInstance()->lap();
+			$aStats = $this->processDistributables();
+		}
+		catch(Exception $e)
+		{
+			 $oDataAccess->TransactionRollback();
+			 throw $e;
+		}
+		$oDataAccess->TransactionCommit();
 
-		//The preceding statements directly accessed the database and modified data, so we need to force a cache refresh on the following data members
-		Adjustment::resetBalanceForAccount($this->id);
-		Payment::resetBalanceForAccount($this->id);
-		$this->aPayments		= NULL;
-		$this->aAdjustments		= NULL;
-		$this->_aPayables		= NULL;
-		$this->aCollectables	= NULL;
-		Logic_Collectable::clearCache();		
-
-		return $this->processDistributables();
-
+		return $aStats;
+		
 	}
 
 	/**
@@ -699,8 +708,6 @@ class Logic_Account implements DataLogic
 			$oCurrentScenario->save();
 			$this->aActiveScenarioInstances = array();
 		}
-
-
 
 		$oNewInstance 				= new Account_Collection_Scenario();
 		$oNewInstance->account_id 			= $this->oDO->Id;
@@ -786,6 +793,28 @@ class Logic_Account implements DataLogic
 			}
 			return $oOldest;
 		}
+	}
+
+
+	public function getOldestOverDueCollectableRelativeToDate($sDate)
+	{
+		$iDate			= strtotime($sDate);
+		$aCollectables	= $this->getCollectables();
+		$oOldest		= null;
+		$iOldestDueDate = null;
+		foreach ($aCollectables as $oCollectable)
+		{
+			if (!$oCollectable->belongsToActivePromise() && $oCollectable->balance > 0)
+			{
+				$iDueDate		= strtotime($oCollectable->due_date." 23:59:59");
+				if (($oOldest == null ||$iOldestDueDate > $iDueDate ) && ($iDueDate < $iDate))
+				{
+					$oOldest		= $oCollectable;
+					$iOldestDueDate = $iDueDate;
+				}
+			}
+		}
+		return $oOldest;
 	}
 
 	/**

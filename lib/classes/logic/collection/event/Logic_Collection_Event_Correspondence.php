@@ -48,19 +48,20 @@ class Logic_Collection_Event_Correspondence extends Logic_Collection_Event
 	private static function buildXML($iDocumentTemplateId, $aEventInstances)
 	{
 		//this mapping is obsolete, but the automatic invoice action is for the moment still used to determine the date by which late fees are waived if payment is received by it.
-		$aNoticeTypes	= 	array(
-										DOCUMENT_TEMPLATE_TYPE_FRIENDLY_REMINDER 	=> AUTOMATIC_INVOICE_ACTION_FRIENDLY_REMINDER,
-										DOCUMENT_TEMPLATE_TYPE_OVERDUE_NOTICE 		=> AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE,
-										DOCUMENT_TEMPLATE_TYPE_SUSPENSION_NOTICE 	=> AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE,
-										DOCUMENT_TEMPLATE_TYPE_FINAL_DEMAND 		=> AUTOMATIC_INVOICE_ACTION_FINAL_DEMAND,
-									 );
+		//$aNoticeTypes	= 	array(
+		////								DOCUMENT_TEMPLATE_TYPE_FRIENDLY_REMINDER 	=> AUTOMATIC_INVOICE_ACTION_FRIENDLY_REMINDER,
+		//								DOCUMENT_TEMPLATE_TYPE_OVERDUE_NOTICE 		=> AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE,
+		//								DOCUMENT_TEMPLATE_TYPE_SUSPENSION_NOTICE 	=> AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE,
+		//								DOCUMENT_TEMPLATE_TYPE_FINAL_DEMAND 		=> AUTOMATIC_INVOICE_ACTION_FINAL_DEMAND,
+		//							 );
 		// Append a backslash to the path, if it doesn't already end in one
 		$strBasePath = FILES_BASE_PATH;
 		if (substr($strBasePath, -1) != "/")
 		{
 				$strBasePath .= "/";
 		}
-		$iActionType = $aNoticeTypes[$iDocumentTemplateId];
+
+		//$iActionType = $aNoticeTypes[$iDocumentTemplateId];
 		$aAccounts = array();
 
 		$intEffectiveDate =  time();
@@ -80,7 +81,7 @@ class Logic_Collection_Event_Correspondence extends Logic_Collection_Event
 			$aAccount['TotalOutstanding'] = $oAccount->getAccountBalance();
 			$aAccount['OutstandingNotOverdue'] = $aAccount['TotalOutstanding'] -  $aAccount['Overdue'];
 
-			$mxdSuccess = BuildLatePaymentNotice($iDocumentTemplateId, $aAccount, $strBasePath, $intEffectiveDate, $iActionType);
+			$mxdSuccess = BuildLatePaymentNotice($iDocumentTemplateId, $aAccount, $strBasePath, $intEffectiveDate);
 
 			if ($mxdSuccess !== NULL)
 			{
@@ -275,7 +276,6 @@ class Logic_Collection_Event_Correspondence extends Logic_Collection_Event
 				$aCorrespondence[] = array('account_id' => $oInstance->account_id);
 			}
 		}   
-
 
 		// Create the correspondence run
 		$oRun	= $oTemplate->createRun($bPreprinted, $aCorrespondence);

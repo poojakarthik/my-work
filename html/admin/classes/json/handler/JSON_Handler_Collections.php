@@ -561,68 +561,26 @@ class JSON_Handler_Collections extends JSON_Handler
 			    self::_createAccountEventSummaryItems($aRow, 'account_collection_event_history', $aUnsortedEvents);
 		    }
 		    
-			$oAccount 				= Logic_Account::getInstance($iAccountId);
-			$oScenario  			= $oAccount->getCurrentScenarioInstance()->getScenario();
-			$oLastScheduledEvent 	= $oAccount->getMostRecentCollectionEventInstance();
-			$bIsIncollections 		= $oAccount->isCurrentlyInCollections();
-			$bShouldBeInCollections = $oAccount->shouldCurrentlyBeInCollections();
-			
-			$oEvent = $bIsIncollections && ! $bShouldBeInCollections ? new Logic_Collection_Event_ExitCollections() :$oAccount->getNextCollectionScenarioEvent(TRUE);
-
-			$iInvocationId;
-			$sEventName;
-			$iEventId;
-			$sNextEventDate;
-			$bIsExit;
-
-
-			if ($oEvent instanceof Logic_Collection_Event_ExitCollections)
+			$aPreviousEvent = NULL;
+			while ($aNextEvent = $this->getNextEventDetails($iAccountId, $aPreviousEvent))
 			{
-				$iInvocationId	= COLLECTION_EVENT_INVOCATION_AUTOMATIC;
-				$sEventName		= $oEvent->name;
-				$iEventId		= $oEvent->id;
-				$sNextEventDate = date("Y-m-d", DataAccess::getDataAccess()->getNow(TRUE));
-				$bIsExit		= TRUE;
-			}
-			else if ($oEvent !== NULL)
-			{
-				if ($bIsIncollections && $oScenario->id == $oLastScheduledEvent->getScenario()->id)
-				{
-					$sDateToOffset = $oLastScheduledEvent->completed_datetime != NULL ? $oLastScheduledEvent->completed_datetime : Data_Source_Time::currentTimestamp();
-				}
-				else
-				{
-					$sDateToOffset = $oAccount->getCollectionsStartDate();
-				}
 
-				$iDateToOffset 				= strtotime($sDateToOffset);
-				$iNextEventDate 			= max (strtotime("+$oEvent->day_offset day", $iDateToOffset), time());
-				$sNextEventDate 			= date ("Y-m-d", $iNextEventDate);
-				$bOverdueOnNextEventDate	= $oScenario->evaluateThresholdCriterion($oAccount->getOverDueCollectableAmount($sNextEventDate),$oAccount->getOverdueBalance($sNextEventDate));
-
-				if ($bOverdueOnNextEventDate)
-				{
-					$iInvocationId	= $oEvent->getInvocationId();
-					$sEventName		= $oEvent->getEventName();
-					$iEventId		= $oEvent->collection_event_id;
-					$bIsExit		= FALSE;
-				}
-			}
-
-			if ($iInvocationId !== NULL && $sEventName!== NULL && $iEventId !== NULL && $sNextEventDate !== NULL && $bIsExit !== NULL)
-			{
 				$aScenarioEvent 									= array();
-				$aScenarioEvent['collection_event_invocation_id']	= $iInvocationId;
-				$aScenarioEvent['collection_event_name'] 			= "Next Collections Event: ".$sEventName;
-				$aScenarioEvent['id'] 								= $iEventId;
-				$aScenarioEvent['isExit']							= $bIsExit;
+				$aScenarioEvent['collection_event_invocation_id']	= $aNextEvent['invocation'];
+				$aScenarioEvent['collection_event_name'] 			= "Next Collections Event: ".$aNextEvent['event_name'];
+				$aScenarioEvent['id'] 								= $aNextEvent['event_id'];
+				$aScenarioEvent['isExit']							= $aNextEvent['is_exit'];
 				$aScenarioEvent['isNextEvent']						= TRUE;
-				if (!isset($aUnsortedEvents[$sNextEventDate]))
+				if (!isset($aUnsortedEvents[$aNextEvent['event_date']]))
 				{
-					$aUnsortedEvents[$sNextEventDate] = array();
+					$aUnsortedEvents[$aNextEvent['event_date']] = array();
 				}
-				$aUnsortedEvents[$sNextEventDate]['collection_scenario_collection_event'][] = $aScenarioEvent;
+				$aUnsortedEvents[$aNextEvent['event_date']]['collection_scenario_collection_event'][] = $aScenarioEvent;
+
+
+				$aPreviousEvent = $aNextEvent;
 			}
+			
 			
 		    // Suspensions
 		    $mSuspensionResult = $oQuery->Execute("	SELECT 	cs.*
@@ -669,6 +627,116 @@ class JSON_Handler_Collections extends JSON_Handler
 						'sDebug'	=> ($bUserIsGod ? $this->_JSONDebug : '')
 					);
 		}
+	}
+
+	/**
+	 * Gets the next collections event.
+	 * If  $aPreviousEvent === NULL, the next event is calculated relative to the most recent collection event instance for the account.
+	 * If  $aPreviousEvent !== NULL, the next event is calculated relative to  $aPreviousEvent
+	 *
+	 * @param <type> $iAccountId
+	 * @param <array> $aPreviousEvent - array('invocation'=>$iInvocationId, 'event_name'=>$sEventName, 'event_id'=>$iEventId, 'is_exit' => $bIsExit, 'event_date'=>$sNextEventDate, 'event_object'=>$oEvent )
+	 * @return <array> array('invocation'=>$iInvocationId, 'event_name'=>$sEventName, 'event_id'=>$iEventId, 'is_exit' => $bIsExit, 'event_date'=>$sNextEventDate, 'event_object'=>$oEvent )
+	 */
+	private function getNextEventDetails($iAccountId, $aPreviousEvent = NULL)
+	{
+		$oAccount 				= Logic_Account::getInstance($iAccountId);
+		$oScenario  			= $oAccount->getCurrentScenarioInstance()->getScenario();
+		$oLastScheduledEvent 	= $oAccount->getMostRecentCollectionEventInstance();
+		$bIsIncollections 		= $oAccount->isCurrentlyInCollections();
+		$bShouldBeInCollections = $oAccount->shouldCurrentlyBeInCollections();
+		$oEvent;
+		if ($aPreviousEvent === NULL)
+		{
+			$oEvent = $bIsIncollections && ! $bShouldBeInCollections ? new Logic_Collection_Event_ExitCollections() :$oAccount->getNextCollectionScenarioEvent(TRUE);
+		
+
+			$iInvocationId;
+			$sEventName;
+			$iEventId;
+			$sNextEventDate;
+			$bIsExit;
+
+			if ($oEvent instanceof Logic_Collection_Event_ExitCollections)
+			{
+				$iInvocationId	= COLLECTION_EVENT_INVOCATION_AUTOMATIC;
+				$sEventName		= $oEvent->name;
+				$iEventId		= $oEvent->id;
+				$sNextEventDate = date("Y-m-d", DataAccess::getDataAccess()->getNow(TRUE));
+				$bIsExit		= TRUE;
+			}
+			else if ($oEvent !== NULL)
+			{
+				if ($bIsIncollections && $oScenario->id == $oLastScheduledEvent->getScenario()->id)
+				{
+					$sDateToOffset = $oLastScheduledEvent->completed_datetime != NULL ? $oLastScheduledEvent->completed_datetime : DataAccess::getDataAccess()->getNow();
+				}
+				else
+				{
+					$sDateToOffset = $oAccount->getCollectionsStartDate();
+				}
+
+				$iDateToOffset 				= strtotime($sDateToOffset);
+				$iNextEventDate 			= max (strtotime("+$oEvent->day_offset day", $iDateToOffset), time());
+				$sNextEventDate 			= date ("Y-m-d", $iNextEventDate);
+				$bOverdueOnNextEventDate	= $oScenario->evaluateThresholdCriterion($oAccount->getOverDueCollectableAmount($sNextEventDate),$oAccount->getOverdueBalance($sNextEventDate));
+
+				if ($bOverdueOnNextEventDate)
+				{
+					$iInvocationId	= $oEvent->getInvocationId();
+					$sEventName		= $oEvent->getEventName();
+					$iEventId		= $oEvent->id;
+					$bIsExit		= FALSE;
+
+				}
+			}
+		}
+		else if ($aPreviousEvent['invocation'] === COLLECTION_EVENT_INVOCATION_AUTOMATIC )
+		{
+			$oPreviousEvent = $aPreviousEvent['event_object'];
+			if ($oPreviousEvent instanceof Logic_Collection_Event_ExitCollections)
+			{
+				$iOffset = $oScenario->day_offset;
+				$iToday = strtotime("+$iOffset day", time());
+				$sToday = date ("Y-m-d", $iToday);
+				$bOverdue	= $oScenario->evaluateThresholdCriterion($oAccount->getOverDueCollectableAmount($sToday),$oAccount->getOverdueBalance($sToday));
+				if ($bOverdue)
+				{
+					//get the correct day offset by determining the due date of what will be the source collectable after exit collections
+					$oCollectable = $oAccount->getOldestOverDueCollectableRelativeToDate($sToday);
+					$iOverDueDate = strtotime("+1 day", strtotime($oCollectable->due_date));
+					$iStartDate = strtotime("-$iOffset day", $iOverDueDate);
+					$sStartDate = date ("Y-m-d", $iStartDate);
+					$iOffset = Flex_Date::difference( $sStartDate,  Data_Source_Time::currentDate(), 'd');
+					$oEvent = $oScenario->getInitialScenarioEvent($iOffset, FALSE);
+				}
+				if ($oEvent === NULL)
+					return FALSE;
+
+			}
+			else
+			{
+				$oEvent = $oPreviousEvent->getNext();
+				if ($oEvent === NULL || $oEvent->day_offset > 0)
+					return FALSE;
+			}
+
+			$iInvocationId	= $oEvent->getInvocationId();
+			$sEventName		= $oEvent->getEventName();
+			$iEventId		= $oEvent->id;
+			$bIsExit		= FALSE;
+			$sNextEventDate	= $aPreviousEvent['event_date'];
+
+		}
+
+		if ($iInvocationId !== NULL && $sEventName!== NULL && $iEventId !== NULL && $sNextEventDate !== NULL && $bIsExit !== NULL)
+		{
+			return array('invocation'=>$iInvocationId, 'event_name'=>$sEventName, 'event_id'=>$iEventId, 'is_exit' => $bIsExit, 'event_date'=>$sNextEventDate, 'event_object'=>$oEvent );
+			
+		}
+
+		return FALSE;
+
 	}
 	
 	public function getTodaysEventsForAccount($iAccountId)

@@ -71,6 +71,16 @@ class Logic_Collection_Scenario_Event implements DataLogic
 		return $this->oCollectionEvent;
 	}
 
+	public function getNext()
+	{
+		return $this->getScenario()->getScenarioEventAfter($this);
+	}
+
+	public function getScenario()
+	{
+		return Logic_Collection_Scenario::getForId($this->collection_scenario_id);
+	}
+
 	public static function getForId($iId)
 	{
 		return new self(Collection_Scenario_Collection_Event::getForId($iId));

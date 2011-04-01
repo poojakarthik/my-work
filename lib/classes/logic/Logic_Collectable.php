@@ -43,7 +43,21 @@ class Logic_Collectable extends Logic_Distributable implements DataLogic, Logic_
 		}
 	}
 
+	public static function refreshCache($aCollectableIds = NULL)
+	{
+		Logic_Stopwatch::getInstance()->lap();
+		$aArray = $aCollectableIds === NULL ? self::$aInstances : $aCollectableIds;
+		foreach($aArray as $oInstance)
+		{
+			self::getInstance($oInstance->id, TRUE);
+		}
+		Log::getLog()->log("Collectable Instances Data Refresh: ".Logic_Stopwatch::getInstance()->lap());
+	}
 
+	public static function getInstances()
+	{
+		return self::$aInstances;
+	}
 	private function __construct($mDefinition)
 	{
 		$this->oDO = is_numeric($mDefinition) ? Collectable::getForId($mDefinition) : (get_class($mDefinition) == 'Collectable' ? $mDefinition : null);
@@ -65,7 +79,7 @@ class Logic_Collectable extends Logic_Distributable implements DataLogic, Logic_
 		$aResult = array();
 		foreach ($aORMs as $oORM)
 		{
-			$aResult[] = self::getInstance($oORM, $bBypassCache);
+			$aResult[$oORM->id] = self::getInstance($oORM, $bBypassCache);
 		}
 
 		return $aResult;

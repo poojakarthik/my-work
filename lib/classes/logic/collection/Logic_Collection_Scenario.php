@@ -26,22 +26,16 @@ class Logic_Collection_Scenario implements DataLogic
 	}
 
 	public function getInitialScenarioEvent($iDayOffset, $bIgnoreDayOffsetRules)
-	{
+	{	
 		
-		$iDayOffset += $this->oDO->day_offset;
-		
-		// Determine if the first event has been reached
 		$aScenarioEvents 	= $this->getEvents();
-		$oFirst				= array_shift($aScenarioEvents);
-		////Log::getLog()->log("Day offset = {$iDayOffset}, needs to be atleast {$oFirst->day_offset}");
+		$oFirst				= array_shift($aScenarioEvents);		
 		
 		if ($iDayOffset >= $oFirst->day_offset || $bIgnoreDayOffsetRules)
-		{
-			////Log::getLog()->log("Found initial event ($oFirst->id).");
+		{			
 			return $oFirst;
-		}
+		}		
 		
-		////Log::getLog()->log("Not ready for initial event: offset={$iDayOffset}, should be: {$oFirst->day_offset}");
 		return null;
 	}
 
@@ -75,17 +69,15 @@ class Logic_Collection_Scenario implements DataLogic
 	public function getEventToTrigger($oMostRecentEventInstance, $sStartDate, $bIgnoreDayOffsetRules = FALSE)
 	{
 	   if ($oMostRecentEventInstance!== null && $oMostRecentEventInstance->completed_datetime === null && !$bIgnoreDayOffsetRules)
-	   {
-		   ////Log::getLog()->log("No event should be triggered, the previous event is still in a scheduled (not completed) state");
-		   
+	   {		   
 		   return null; //previous event is still awaiting completion, no new event to be triggered
 	   }
 	   
 	   $aScenarioEvents = $this->getEvents();
 	   $iMostRecentEventScenario	= $oMostRecentEventInstance!= null && $oMostRecentEventInstance->getScenario()!=null ? $oMostRecentEventInstance->getScenario()->id : null;
 	   $oMostRecentScenarioEvent	= $oMostRecentEventInstance!= null ? $oMostRecentEventInstance->getScenarioEvent() : null;
-	   $sCompletionDate				= $oMostRecentEventInstance!= null && $oMostRecentEventInstance->completed_datetime!= NULL ? date('Y-m-d', Flex_Date::truncate($oMostRecentEventInstance->completed_datetime, 'd', false)) : ($bIgnoreDayOffsetRules ? Data_Source_Time::currentTimestamp() : NULL);
-	   $sPointOfReference		   =  $sCompletionDate != NULL ?$sCompletionDate : $sStartDate;
+	   $sCompletionDate				= $oMostRecentEventInstance!= null && !$oMostRecentEventInstance->isExitEvent() && $oMostRecentEventInstance->completed_datetime!= NULL ? date('Y-m-d', Flex_Date::truncate($oMostRecentEventInstance->completed_datetime, 'd', false)) : ($bIgnoreDayOffsetRules ? Data_Source_Time::currentTimestamp() : NULL);
+	   $sPointOfReference			=  $sCompletionDate != NULL ? $sCompletionDate : $sStartDate;
 	   $iDayOffset = Flex_Date::difference( $sPointOfReference,  Data_Source_Time::currentDate(), 'd');
 		if ($iMostRecentEventScenario != $this->id)
 		{
@@ -106,6 +98,27 @@ class Logic_Collection_Scenario implements DataLogic
 		////Log::getLog()->log("No event found given the current day offset or prerequisite rules");
 		
 		return null;
+	}
+
+
+
+	public function getScenarioEventAfter(Logic_Collection_Scenario_Event $oEvent)
+	{
+		if ($oEvent->collection_scenario_id !== $this->id)
+				return $this->getInitialScenarioEvent (0, TRUE);
+		$aScenarioEvents = $this->getEvents();
+		$bThisOne = FALSE;
+		
+		foreach($aScenarioEvents as $iId => $oEventObject)
+		{
+			if ($bThisOne)
+				return $oEventObject;
+			
+			 if ($iId === $oEvent->id)
+				 $bThisOne = TRUE;
+		}
+
+		return NULL;
 	}
 
 	public function evaluateThresholdCriterion($fAmount, $fBalance)

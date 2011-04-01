@@ -42,12 +42,12 @@ class Collection_Promise extends ORM_Cached
 	{
 	    if ($bActiveOnly)
 	    {
-		$aResult = self::getFor(array('account_id' => $iAccountId, 'completed_datetime'=>'null'));
-		return count($aResult) > 0 ? $aResult[0] : null;
+			$aResult = self::getFor(array('account_id' => $iAccountId, 'completed_datetime'=>'null'));
+			return count($aResult) > 0 ? $aResult[0] : null;
 	    }
 	    else
 	    {
-		return self::getFor(array('account_id' => $iAccountId));
+			return self::getFor(array('account_id' => $iAccountId));
 	    }
 	}
 

@@ -4491,7 +4491,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	 *
 	 * @function
 	 */
-	function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath=FILES_BASE_PATH, $intEffectiveDate, $intAutomaticInvoiceActionType)
+	function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath=FILES_BASE_PATH, $intEffectiveDate)
 	{
 		VixenRequire('lib/classes/note/Note.php');
 		// Static instances of the db access objects used to add records to the AccountNotice and FileExport tables
@@ -4519,7 +4519,8 @@ function CreateDefaultPaymentTerms($customerGroupId)
 		// Set up all values required of the notice, which have not been defined yet
 		$dom->Document->DocumentType->setValue(GetConstantName($intNoticeType, 'DocumentTemplateType'));
 
-		$responseDays = GetAutomaticInvoiceActionResponseTime($intAutomaticInvoiceActionType, $arrAccount['CustomerGroup']);
+		//GetAutomaticInvoiceActionResponseTime and the data it relies on is deprecated, without being replaced by a new version of it.
+		$responseDays = 0;//GetAutomaticInvoiceActionResponseTime($intAutomaticInvoiceActionType, $arrAccount['CustomerGroup']);
 		$actionDate = ($responseDays * 24 * 60 * 60) + $intEffectiveDate;
 
 		// Always issue on the scheduled date!

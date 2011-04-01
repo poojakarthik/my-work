@@ -36,6 +36,11 @@ class Logic_Payment extends Logic_Distributable implements DataLogic{
 		return $aResult;
 
 	}
+
+	private function refreshData()
+	{
+		$this->oDO = Payment::getForId($this->id);
+	}
 	
 	public function reverse($iReversalReasonId, $bDistribute=true)
 	{
@@ -48,18 +53,28 @@ class Logic_Payment extends Logic_Distributable implements DataLogic{
 		try
 		{
 			// Create the reversal payment
-			$oReversal	= $this->oDO->reverse($iReversalReasonId, $bDistribute);
+			$this->oDO->reverse($iReversalReasonId, $bDistribute);
 			$oAccount	= Logic_Account::getInstance($this->oDO->account_id);
+			$oPromise = Logic_Collection_Promise::getForAccount($oAccount);
 			
 			//rather than merely distributing the reversed payment, we need to do a full redistribution of balances at this point.
 			//The reaon for this is that if the original payment had any distributable balance left, this would need to be applied after distributing the reversed payment's balance in full, or else the collectable balance will be wrong.
-			if ($bDistribute) {
+			if ($bDistribute || ($oPromise !== NULL && $oReason->payment_reversal_type_id == PAYMENT_REVERSAL_TYPE_DISHONOUR)) {
 				$oAccount->redistributeBalances();
+				$this->refreshData();				
 			}
+
+			
+
 			// Check the reason type
 			$oReason = Payment_Reversal_reason::getForId($iReversalReasonId);
 			if ($oReason->payment_reversal_type_id == PAYMENT_REVERSAL_TYPE_DISHONOUR)
 			{
+				//the rule is that a dishonoured payment scenario takes precedence over a broken promise scenario, thats why we process any active promises at this point
+				
+				if ($oPromise !== NULL)
+					$oPromise->process();
+
 				// Change scenario for the account, dishonoured payment
 				$oConfig = Collection_Scenario_System_Config::getForSystemScenario(COLLECTION_SCENARIO_SYSTEM_DISHONOURED_PAYMENT);
 				if (!$oConfig)
