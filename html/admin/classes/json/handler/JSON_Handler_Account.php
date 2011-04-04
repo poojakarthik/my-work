@@ -1411,7 +1411,6 @@ class JSON_Handler_Account extends JSON_Handler
 			$oEmail->setFrom("contact@{$oCustomerGroup->email_domain}");
 			foreach ($aEmails as $sEmail)
 			{
-				$sEmail	= 'ybs-admin@ybs.net.au';	// TODO: CR135 -- remove this so that actual recipients receive emails
 				$oEmail->addTo($sEmail);
 			}
 			$oEmail->send();
