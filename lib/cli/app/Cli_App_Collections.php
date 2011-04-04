@@ -215,33 +215,26 @@ class Cli_App_Collections extends Cli
 			}
 
 
-
-
-
-			$sPath = FILES_BASE_PATH.'temp/';
-			$bPathExists = file_exists ($sPath);
-			if (!$bPathExists)
-			{
-				$bPathExists = mkdir ($sPath , 0777 , true);
-			}
-
-			Logic_Collection_BatchProcess_Report::emailReport();
-
-
-
-
-			$this->log("Finished.");
-			return 0;
+			
 
 		}
 		catch(Exception $exception)
 		{
 			// We can now show the error message
-			$this->showUsage($exception->getMessage());
-			Logic_Collection_BatchProcess_Report::addException($e);
-			return 1;
+			Log::getLog()->log($exception->__toString());
+			Logic_Collection_BatchProcess_Report::addException($e);			
 		}
 
+		$sPath = FILES_BASE_PATH.'temp/';
+		$bPathExists = file_exists ($sPath);
+		if (!$bPathExists)
+		{
+			$bPathExists = mkdir ($sPath , 0777 , true);
+		}
+
+		Logic_Collection_BatchProcess_Report::emailReport();
+		$this->log("Finished.");
+		return 0;
 	}
 
 	protected function _balance_distribution()
