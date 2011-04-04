@@ -32,14 +32,22 @@ class Logic_Collection_Scenario_Instance
 
 	public static function getForAccount($oAccount, $bActiveOnly = true)
 	{
-	$aScenarios	= Account_Collection_Scenario::getForAccountId($oAccount->Id, $bActiveOnly);
-	$aInstances	= array();
-	foreach ($aScenarios as $oAccountCollectionScenario)
+		$aScenarios	= Account_Collection_Scenario::getForAccountId($oAccount->Id, $bActiveOnly);
+		$aInstances	= array();
+		foreach ($aScenarios as $oAccountCollectionScenario)
+		{
+			$aInstances[]	= new self($oAccountCollectionScenario);
+		}
+		return $aInstances;
+	}
+
+
+	public function getInitialScenarioEvent ($iDaysSinceStartOfCollections = NULL)
 	{
-		$aInstances[]	= new self($oAccountCollectionScenario);
+		return $this->oScenario->getInitialScenarioEvent($iDaysSinceStartOfCollections);
 	}
-	return $aInstances;
-	}
+
+	
 
 	public function getNextScheduledEvent($oMostRecentCollectionEvent, $sDueDate, $bIgnoreDayOffsetRules = FALSE)
 	{

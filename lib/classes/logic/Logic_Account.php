@@ -215,26 +215,78 @@ class Logic_Account implements DataLogic
 	 * $bIgnoreDayOffsetRules should be set to TRUE if you just want to see which event is 'next in line', whether or not is qualifies to run today or not
 	 */
 
-	public function getNextCollectionScenarioEvent($bIgnoreDayOffsetRules = FALSE)
-	{
-		$oMostRecentEventInstance 		= $this->getMostRecentCollectionEventInstance();
-		if (!$bIgnoreDayOffsetRules && ($oMostRecentEventInstance!== null && $oMostRecentEventInstance->completed_datetime === null) )
+//	public function getNextCollectionScenarioEvent($bIgnoreDayOffsetRules = FALSE)
+//	{
+//		$oMostRecentEventInstance 		= $this->getMostRecentCollectionEventInstance();
+//		if (!$bIgnoreDayOffsetRules && ($oMostRecentEventInstance!== null && $oMostRecentEventInstance->completed_datetime === null) )
+//		{
+//		   $this->bPreviousEventNotCompleted = true;
+//		   return null;
+//		}
+//		else
+//		{
+//		   $this->bPreviousEventNotCompleted = false;
+//		}
+//		$oScenario	= $this->getCurrentScenarioInstance();
+//		$oNextEvent = $oScenario->getNextScheduledEvent($oMostRecentEventInstance,  $this->getCollectionsStartDate(), $bIgnoreDayOffsetRules);
+//
+//		$this->bNoNextEventFound = $oNextEvent === null ? true : false;
+//
+//		return $oNextEvent;
+//
+//	}
+
+
+		public function getNextCollectionScenarioEvent($bIgnoreDayOffsetRules = FALSE)
 		{
-		   $this->bPreviousEventNotCompleted = true;
-		   return null;
+			$oMostRecentEventInstance 		= $this->getMostRecentCollectionEventInstance();
+			if (!$bIgnoreDayOffsetRules && ($oMostRecentEventInstance!== null && $oMostRecentEventInstance->completed_datetime === null) )
+			{
+			   $this->bPreviousEventNotCompleted = true;
+			   return null;
+			}
+			else if (!$bIgnoreDayOffsetRules)
+			{
+			   $this->bPreviousEventNotCompleted = false;
+			}
+
+			//grab the account's current scenario, and determine the next event, based on the most recent scenario event
+			$oMostRecentScenarioEvent = $oMostRecentEventInstance !== NULL ? $oMostRecentEventInstance->getScenarioEvent() : NULL;
+			$oNextEvent = $this->getCurrentScenarioInstance()->getScenario()->getScenarioEventAfter($oMostRecentScenarioEvent);
+
+			//if we're simply curious about what the next event will be, return it now
+			if ($bIgnoreDayOffsetRules)
+				return $oNextEvent;
+
+			//otherwise, check if it is eligible to be scheduled before returning it
+			
+			//if we have a previous event, and it belongs to the current scenario, we calculate the day offset relative to its completion date. In other cases we use the source collectable's due date
+			if ($oMostRecentEventInstance !== NULL && $oNextEvent->collection_scenario_id === $oMostRecentEventInstance->getScenario()->id)
+			{
+				$sMostRecentCompletedDateTime = date('Y-m-d', Flex_Date::truncate($oMostRecentEventInstance->completed_datetime, 'd', false));
+			}
+			else
+			{
+				$sMostRecentCompletedDateTime = $this->getCurrentDueDate();
+			}
+
+
+			$iDayOffset = Flex_Date::difference( $sMostRecentCompletedDateTime,  Data_Source_Time::currentDate(), 'd');
+
+			if ($oNextEvent !== NULL && ($iDayOffset >= $oNextEvent->day_offset))
+			{
+				$this->bNoNextEventFound =FALSE;
+				return $oNextEvent;
+			}
+			else
+			{
+				$this->bNoNextEventFound =TRUE;
+				return NULL;
+			}
 		}
-		else
-		{
-		   $this->bPreviousEventNotCompleted = false;
-		}
-		$oScenario	= $this->getCurrentScenarioInstance();
-		$oNextEvent = $oScenario->getNextScheduledEvent($oMostRecentEventInstance,  $this->getCollectionsStartDate(), $bIgnoreDayOffsetRules);
 
-		$this->bNoNextEventFound = $oNextEvent === null ? true : false;
 
-		return $oNextEvent;
 
-	}
 
 	public function previousEventNotCompleted()
 	{
@@ -263,14 +315,19 @@ class Logic_Account implements DataLogic
 		return $oBarringLevel == null ? false : $oBarringLevel->barring_level_id != BARRING_LEVEL_UNRESTRICTED;
 	}
 
+	/**
+	 * Determines whether an account should be in collections
+	 * @return <type> 
+	 */
 	public function shouldCurrentlyBeInCollections()
 	{
+		//if an account is in suspension, it should not be part of the collections process
 		if ($this->isInSuspension())
 			return false;
 
 		 $oScenario  = $this->getCurrentScenarioInstance()->getScenario();
 
-		 //if they are not in collections
+		 //if they are not in collections, we evaluate the scenario threshold criterion against the overdue amount and balance on (today + the scenario offset).
 		 if (!$this->isCurrentlyInCollections())
 		 {
 			 $mNow = date('Y-m-d', strtotime("+$oScenario->day_offset days", time()));
@@ -285,6 +342,8 @@ class Logic_Account implements DataLogic
 			 $iCollectionsStart = strtotime($this->getStartOfCollectionsEventInstance()->scheduled_datetime);
 			 $iNow = strtotime("+$oScenario->day_offset days",$iCollectionsStart );
 			 $sNow = date('Y-m-d', $iNow );
+
+			 //now apply the scenario threshold criterion to the overdue amount/balance on that date
 			 if ($oScenario->evaluateThresholdCriterion($this->getOverDueCollectableAmount($sNow),$this->getOverdueBalance($sNow)))
 				 return true;
 
@@ -299,7 +358,7 @@ class Logic_Account implements DataLogic
 	 * @method Account_Logic::scheduleNextScheduledScenarioEvent
 	 * If the account is currently in collections or should be in collections, the next scenario event is triggered,
 	 * based on the following rules:
-	 * - An event will be scheduled for accounts that are not in suspension AND are either currently in collections or have a due balance above the entry threshold
+	 * - An event will be scheduled for accounts that are not in suspension AND are either currently in collections or have an overdue balance on or above the entry threshold
 	 * - If such an account is below the scenario exit threshold, the ExitCollections event is triggered
 	 * - Else: the next event is triggered, based on the collections start date of the account (if no previous event exists for the current scenario) OR on the most recent event of the current scenario
 	 *
@@ -310,7 +369,7 @@ class Logic_Account implements DataLogic
 	 * have been completed before calling this method, eg if there is a broken promise on the account, this should
 	 * have been dealt with before calling this method.
 	 *
-	 * Also, this method assumes that all distribution of balances from payments, adjustments, and credit collectables has been done. It only looks at collectable balances
+	 * Also, this method assumes that all distribution of balances from payments, adjustments, and credit collectables has been done.
 	 *
 	 */
 	public function scheduleNextScenarioEvent()
@@ -761,8 +820,8 @@ class Logic_Account implements DataLogic
 
 	/**
 	 * Logic_Account::getSourceCollectable
-	 * @return Logic_Collectable -  If the account is currently in collections, return the collecatble that triggered it into collections
-	 *					Else - the collectable with the oldest due date that has a balance > 0 and is not part of an active promise
+	 * @return Logic_Collectable -  If the account is currently in collections, and the last event was triggerred under the current scenario: return the collecatble that triggered it into collections
+	 *								Else - the collectable with the oldest due date that has a balance > 0 and is not part of an active promise is returned
 	 */
 	public function getSourceCollectable()
 	{
@@ -819,12 +878,8 @@ class Logic_Account implements DataLogic
 
 	/**
 	 * @method Account_Logic::getCurrentDueDate
-	 * Returns the due date that will be the point of reference to work out which event should be triggered.
-	 * the date returned will be either:
-	 *  - the due date of the collectable that triggered most recent Logic_Collection_Event_Instance (account_collection_event_history record) IF that event instance was not the 'exit collections' event
-	 *  - the due date of the oldest currently open collectable that is not part of an active promise to pay
-	 * This function does not check whether a promise is in a 'broken' state but has not been processed as such. It is the caller's responsibility to first process the promises that are active on the account
-	 * This function does not evaluate the source collectable amount and balance against the scenario threshold criteron
+	 * Returns the due date of the source collectable.
+	 * 	 *
 	 */
 	public function getCurrentDueDate()
 	{
@@ -839,14 +894,22 @@ class Logic_Account implements DataLogic
 	 */
 	public function getCollectionsStartDate()
 	{
+		//get the scenario day offset
 		$iOffset = $this->getCurrentScenarioInstance()->getScenario()->day_offset;
+		Log::getLog()->log("Scenario day offset: $iOffset");
+
+		//get the current due date, or end of time if no collectables with balance > 0 exist
 		$sDueDate = coalesce($this->getCurrentDueDate(), Data_Source_Time::END_OF_TIME);
 		$iDueDate = strtotime($sDueDate);
+		
+		//add one day to determine when the account will be overdue
 		$iOverDueDate = strtotime("+1 day", $iDueDate);
+
+		//bring the overdue date forward by the scenario day offset, this will be the start date for the collections process
 		$iStartDate = strtotime("-$iOffset day", $iOverDueDate);
-		$sStartDate = date ("Y-m-d", $iStartDate);
-		Log::getLog()->log("Scenario day offset: $iOffset");
+		$sStartDate = date ("Y-m-d", $iStartDate);		
 		Log::getLog()->log("account due date: ".$sDueDate."; collections date: $sStartDate");
+
 		return $sStartDate;
 	}
 
@@ -972,12 +1035,18 @@ class Logic_Account implements DataLogic
 		unset($this->_aPayables);
 	}
 
+	/**
+	 * For each account passed into this method, if the account is in collections, or should be in collections, the next event is scheduled.
+	 * If the next event is invoked automatically, it is also queued to be invoked and completed, which is done in a separate step after scheduling was done for each account.
+	 * To to a complete batch process, this method must be called recursively for as long as automated events are scheduled, invoked and completed, because multimple events might have to be scheduled on one day (day offset of next event === 0)
+	 * For this reason, when a next event was not found for an account, it is deleted from the accounts array, as it does not need inclusion in the next iteration of the batch process
+	 * @param <type> $aAccounts
+	 * @return <type> 
+	 */
 	public static function batchProcessCollections(&$aAccounts)
 	{
 
 		Log::getLog()->log("-------Starting Account Batch Collections Process-------------------------");
-
-
 
 		foreach ($aAccounts as $oAccount)
 		{
@@ -1010,6 +1079,7 @@ class Logic_Account implements DataLogic
 				}
 			}
 		}
+		//this is where event invocation and completion happens
 		return  Logic_Collection_Event_Instance::completeWaitingInstances();
 	}
 

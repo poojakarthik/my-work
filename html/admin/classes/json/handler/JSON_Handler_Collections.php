@@ -634,6 +634,8 @@ class JSON_Handler_Collections extends JSON_Handler
 	 * If  $aPreviousEvent === NULL, the next event is calculated relative to the most recent collection event instance for the account.
 	 * If  $aPreviousEvent !== NULL, the next event is calculated relative to  $aPreviousEvent
 	 *
+	 * IF $aPreviousEvent !== NULL a next event is only returned if it would be scheduled on the same day as the previous event, ie day_offset === 0
+	 *
 	 * @param <type> $iAccountId
 	 * @param <array> $aPreviousEvent - array('invocation'=>$iInvocationId, 'event_name'=>$sEventName, 'event_id'=>$iEventId, 'is_exit' => $bIsExit, 'event_date'=>$sNextEventDate, 'event_object'=>$oEvent )
 	 * @return <array> array('invocation'=>$iInvocationId, 'event_name'=>$sEventName, 'event_id'=>$iEventId, 'is_exit' => $bIsExit, 'event_date'=>$sNextEventDate, 'event_object'=>$oEvent )
@@ -648,8 +650,7 @@ class JSON_Handler_Collections extends JSON_Handler
 		$oEvent;
 		if ($aPreviousEvent === NULL)
 		{
-			$oEvent = $bIsIncollections && ! $bShouldBeInCollections ? new Logic_Collection_Event_ExitCollections() :$oAccount->getNextCollectionScenarioEvent(TRUE);
-		
+			$oEvent = $bIsIncollections && ! $bShouldBeInCollections ? new Logic_Collection_Event_ExitCollections() :$oAccount->getNextCollectionScenarioEvent(TRUE);		
 
 			$iInvocationId;
 			$sEventName;

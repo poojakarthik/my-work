@@ -102,19 +102,21 @@ class Logic_Collection_Event_Instance
 		// Return an instance of this class
 		$oEventInstance					= new self(new Account_Collection_Event_History());
 		$oEventInstance->account_id		= $oAccount->Id;
-		$oEventInstance->collectable_id	= $oAccount->getSourceCollectable()->id;
+		
 
 		if ($mItemToSchedule instanceof Logic_Collection_Scenario_Event)
 		{
-		// A scenario event, set both event id and scenario event id
-		$oEventInstance->collection_event_id						= $mItemToSchedule->collection_event_id;
-		$oEventInstance->collection_scenario_collection_event_id	= $mItemToSchedule->id;
+			// A scenario event, set both event id and scenario event id
+			$oEventInstance->collection_event_id						= $mItemToSchedule->collection_event_id;
+			$oEventInstance->collection_scenario_collection_event_id	= $mItemToSchedule->id;
+			$oEventInstance->collectable_id	= $oAccount->getSourceCollectable()->id;
 		}
 		else if (is_numeric($mItemToSchedule) && $mItemToSchedule === COLLECTION_EVENT_TYPE_IMPLEMENTATION_EXIT_COLLECTIONS)
 		{
-		// Just an event, set only the event id. This one didn't come from a scenario
-		$oEvent = new Logic_Collection_Event_ExitCollections($oEventInstance);
-		$oEventInstance->collection_event_id = $oEvent->id;
+			// Just an event, set only the event id. This one didn't come from a scenario
+			$oEvent = new Logic_Collection_Event_ExitCollections($oEventInstance);
+			$oEventInstance->collection_event_id = $oEvent->id;
+			$oEventInstance->collectable_id = $oAccount->getMostRecentCollectionEventInstance()->collectable_id;
 		}
 
 		$oEventInstance->scheduled_datetime					= DataAccess::getDataAccess()->getNow();
@@ -175,6 +177,11 @@ class Logic_Collection_Event_Instance
 		return  $this->oException;
 	}
 
+	public function getNextEventToSchedule()
+	{
+
+	}
+
 	/**
 	 * Logic_Collection_Event_Instance::_registerWithArray
 	 * adds $this to self::$aEventInstancesWaitingForCompletion, an associative array with key == collection_event_id value = Logic_Collection_Event_Instance object
@@ -189,7 +196,9 @@ class Logic_Collection_Event_Instance
 
 	  /**
 	 * Logic_Collection_Event_Instance:: completeWaitingInstances
-	 * Loops through  self::$aEventInstancesWaitingForCompletion, derives the event class name and calls the static complete method on it, passing in the set of event instances to be completed
+	 *  self::$aEventInstancesWaitingForCompletion is a 2 dimensional array, and contains all scheduled events that should be invoked and completed,grouped by event id
+	   * this method iterates over the array, so in effect handles the invocation and completion per event, which is necessary as some events require completion for all accounts in batch
+	   * if invocation fails and throws an exception, invocation of the event for all subsequent accounts is still attempted. If completion fails, the failure is for all accounts involved.
 	   * @return the number of event instances that were completed
 	 */
 
@@ -225,6 +234,7 @@ class Logic_Collection_Event_Instance
 			$aSuccesfullyInvokedInstances = array();
 			try
 			{
+				//this first checks if this event is eligible to be invoked today
 				if (Collections_Schedule::getEligibility($iEventId))
 				{
 					

@@ -25,18 +25,10 @@ class Logic_Collection_Scenario implements DataLogic
 				}
 	}
 
-	public function getInitialScenarioEvent($iDayOffset, $bIgnoreDayOffsetRules)
-	{	
-		
+	public function getInitialScenarioEvent()
+	{		
 		$aScenarioEvents 	= $this->getEvents();
-		$oFirst				= array_shift($aScenarioEvents);		
-		
-		if ($iDayOffset >= $oFirst->day_offset || $bIgnoreDayOffsetRules)
-		{			
-			return $oFirst;
-		}		
-		
-		return null;
+		return array_shift($aScenarioEvents);
 	}
 
 	/**
@@ -60,62 +52,26 @@ class Logic_Collection_Scenario implements DataLogic
 		return $this->aScenarioEvents;
 	}
 
+
+
+
 	/**
-	 * gets the next event to be scheduled
-	 * @param <type> $oMostRecentEventInstance - most recent event, null if there was none
-	 * @param <type> $sDueDate - duedate of the oldest collectable on the account, used to calculate the day offset if there was no previous event, or if the previous event belonged to a different scenario
-	 * @return <type> scenario event or null
+	 * returns the scneario event after the scenario event passed in as parameter
+	 * this is the method to use if you wish to retrieve the next event without wanting to determine whether is should actually be scheduled at this time
+	 * @param Logic_Collection_Scenario_Event $oEvent
+	 * @return <type>
 	 */
-	public function getEventToTrigger($oMostRecentEventInstance, $sStartDate, $bIgnoreDayOffsetRules = FALSE)
+	public function getScenarioEventAfter(Logic_Collection_Scenario_Event $oEvent = NULL)
 	{
-	   if ($oMostRecentEventInstance!== null && $oMostRecentEventInstance->completed_datetime === null && !$bIgnoreDayOffsetRules)
-	   {		   
-		   return null; //previous event is still awaiting completion, no new event to be triggered
-	   }
-	   
-	   $aScenarioEvents = $this->getEvents();
-	   $iMostRecentEventScenario	= $oMostRecentEventInstance!= null && $oMostRecentEventInstance->getScenario()!=null ? $oMostRecentEventInstance->getScenario()->id : null;
-	   $oMostRecentScenarioEvent	= $oMostRecentEventInstance!= null ? $oMostRecentEventInstance->getScenarioEvent() : null;
-	   $sCompletionDate				= $oMostRecentEventInstance!= null && !$oMostRecentEventInstance->isExitEvent() && $oMostRecentEventInstance->completed_datetime!= NULL ? date('Y-m-d', Flex_Date::truncate($oMostRecentEventInstance->completed_datetime, 'd', false)) : ($bIgnoreDayOffsetRules ? Data_Source_Time::currentTimestamp() : NULL);
-	   $sPointOfReference			=  $sCompletionDate != NULL ? $sCompletionDate : $sStartDate;
-	   $iDayOffset = Flex_Date::difference( $sPointOfReference,  Data_Source_Time::currentDate(), 'd');
-		if ($iMostRecentEventScenario != $this->id)
-		{
-			////Log::getLog()->log("No prerequisite, getting initial event");
-			return $this->getInitialScenarioEvent($iDayOffset, $bIgnoreDayOffsetRules);
-		}
-		
-		foreach($aScenarioEvents as $oEvent)
-		{
-			////Log::getLog()->log("Checking event {$oEvent->id} ({$iDayOffset} against {$oEvent->day_offset}), ({$oEvent->prerequisite_collection_scenario_collection_event_id} against {$oMostRecentScenarioEvent->id})");
-			if (($oEvent->prerequisite_collection_scenario_collection_event_id == $oMostRecentScenarioEvent->id) && ($iDayOffset >= $oEvent->day_offset || $bIgnoreDayOffsetRules))
-			{
-				////Log::getLog()->log("Found next event");
-				return $oEvent;
-			}
-		}
-		
-		////Log::getLog()->log("No event found given the current day offset or prerequisite rules");
-		
-		return null;
-	}
-
-
-
-	public function getScenarioEventAfter(Logic_Collection_Scenario_Event $oEvent)
-	{
-		if ($oEvent->collection_scenario_id !== $this->id)
-				return $this->getInitialScenarioEvent (0, TRUE);
+		if ($oEvent === NULL || $oEvent->collection_scenario_id !== $this->id)
+			return $this->getInitialScenarioEvent (0, TRUE);
 		$aScenarioEvents = $this->getEvents();
 		$bThisOne = FALSE;
 		
 		foreach($aScenarioEvents as $iId => $oEventObject)
-		{
-			if ($bThisOne)
+		{			
+			 if ($oEventObject->prerequisite_collection_scenario_collection_event_id === $oEvent->id)
 				return $oEventObject;
-			
-			 if ($iId === $oEvent->id)
-				 $bThisOne = TRUE;
 		}
 
 		return NULL;
