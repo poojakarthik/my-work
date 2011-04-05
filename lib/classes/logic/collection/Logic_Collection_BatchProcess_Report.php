@@ -326,11 +326,16 @@ class Logic_Collection_BatchProcess_Report
 				$oSpreadsheet->addRecord(array("Completed Promises"));
 				if (count(self::$aCompletedPromises)>0)
 				{
-					$oSpreadsheet->addRecord(array("Account ID", "Promise ID", "Completion Reason"));
+					$oSpreadsheet->addRecord(array("Account ID", "Promise ID", "Completion Reason", "Details"));
 					foreach(self::$aCompletedPromises as $oPromise)
 					{
 						$sReason = Collection_Promise_Completion::getForId($oPromise->collection_promise_completion_id)->name;
-						$oSpreadsheet->addRecord(array($oPromise->account_id,$oPromise->id,  $sReason));
+						$sDetails = "";
+						foreach ($oPromise->aReportDetails as $sKey => $value)
+						{
+							$sDetails .= " $sKey: $value;";
+						}
+						$oSpreadsheet->addRecord(array($oPromise->account_id,$oPromise->id,  $sReason, $sDetails));
 					}
 				}
 				else

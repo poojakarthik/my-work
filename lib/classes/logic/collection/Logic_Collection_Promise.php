@@ -15,6 +15,7 @@ class Logic_Collection_Promise implements DataLogic
     protected $oAccount;
 	protected $aCollectables;
     protected $oException;
+	public $aReportDetails = array();
 
     public function __construct($mDefinition)
     {
@@ -207,7 +208,7 @@ class Logic_Collection_Promise implements DataLogic
     /**
      * Returns true if the promise is not yet complete and the balance > sum of all instalments that are still outstanding
      */
-    public function isBroken()
+    public function oldIsBroken()
     {
     	// Calculate balance
     	$aCollectables	= $this->getCollectables();
@@ -239,6 +240,60 @@ class Logic_Collection_Promise implements DataLogic
         ////Log::getLog()->log("isBroken: $fPaid < $fTotalDueAmount = ".($bBroken ? 'yes' : 'no'));
         return $bBroken;
     }
+
+	public function getInstalmentAmount()
+	{
+		$aInstalments		= $this->getInstalments();
+		$fAmount = 0.0;
+		foreach ($aInstalments as $oInstalment)
+		{
+			$fAmount += $oInstalment->amount;
+		}
+
+		return $fAmount;
+	}
+
+	 public function isBroken()
+    {
+    	// Calculate balance
+		$bBroken = FALSE;
+		$iNow			= time();
+		$iLeniencyWindow = Collections_Config::get()->promise_instalment_leniency_days;
+		$iDaysToAddForOverdue = $iLeniencyWindow +1;
+		$iInstalment = 1;
+		$fAccountBalance = $this->getAccount()->getAccountBalance();
+		$aInstalments		= $this->getInstalments();
+		foreach ($aInstalments as $oInstalment)
+		{
+			$sDueDate = $oInstalment->due_date;
+			//add one day to determine when the account will be overdue
+			$iOverDue = strtotime("+$iDaysToAddForOverdue day", strtotime($sDueDate));
+			$sOverDueDate = date("Y-m-d",$iOverDue );
+			$fBalance = $oInstalment->getBalance();
+			if ($iOverDue < $iNow && $fBalance > 0)
+			{
+				$this->aReportDetails = array(	'promise id' => $this->id,
+												'promise balance'=>$this->getBalance(),
+												'instalment number'=>$iInstalment,
+												'instalment amount'=>$oInstalment->amount,
+												'instalment balance'=>$oInstalment->getBalance(),
+												'instalment due date' => $sDueDate,
+												'leniency window applied' => $iLeniencyWindow,
+												'instalment overdue date' => $sOverDueDate,
+												'account balance' => $fAccountBalance,
+												'total promise collectable amount' => $this->getAmount(),
+												'total promise instalment amount' => $this->getInstalmentAmount());
+				$bBroken = TRUE;
+				break;
+
+			}
+			$iInstalment++;
+		}
+		return $bBroken;
+    }
+
+
+
 
     /**
      * Returns true if the promise is not yet complete and the balance == 0 OR if the promise is complete and the completion status is KEPT
@@ -288,10 +343,10 @@ class Logic_Collection_Promise implements DataLogic
         $iEmployeeId					= Flex::getUserId();
         $this->completed_employee_id 	= ($iEmployeeId != null ? $iEmployeeId : Employee::SYSTEM_EMPLOYEE_ID);
         $this->completed_datetime 		= Data_Source_Time::currentTimestamp();
-
+		$oAccount = $this->getAccount();
+		$fBalanceBefore = $oAccount->getCollectableBalance();
         if ($iCompletionId == COLLECTION_PROMISE_COMPLETION_BROKEN)
-        {
-            $oAccount = $this->getAccount();
+        {           
             $iScenario = $this->getScenarioId();
             $oAccount->setCurrentScenario($iScenario, false);
         }
@@ -299,10 +354,61 @@ class Logic_Collection_Promise implements DataLogic
         $this->save();
 
         if ($iCompletionId == COLLECTION_PROMISE_COMPLETION_BROKEN || $iCompletionId == COLLECTION_PROMISE_COMPLETION_CANCELLED)
-        {
-            $oAccount = $this->getAccount();			
+        {           			
             $oAccount->redistributeBalances();
         }
+		$fBalanceAfter = $oAccount->getCollectableBalance();
+
+
+		$oEmail	=  new Email_Notification(1);
+		
+		$oEmail->setSubject('Collection Promise Completion Report');
+		$sText = "Summary: \n\n";
+		foreach ($this->aReportDetails as $key => $value)
+		{
+			$sText .= " $key: $value;\n";
+		}
+
+		$sText .= "Collectable Balance prior to save: $fBalanceBefore\n";
+		$sText .= "Collectable Balance after save: $fBalanceAfter\n\n";
+
+		$sText .="Promise Details: \n\n";
+
+		$aArray = $this->toArray();
+
+		foreach ($aArray as $sKey => $mValue)
+		{
+			if (is_array($mValue))
+			{
+				$sText .= $sKey.":\n";
+				foreach ($mValue as $sKey1 => $mValue1)
+				{
+					if (is_array($mValue1))
+					{
+						$sText .= $sKey1.":\n";
+						foreach ($mValue1 as $sKey2 => $mValue2)
+						{
+							$sText .= "\t$sKey2: $mValue2\n";
+						}
+					}
+					else
+					{
+					
+					$sText .= "\t$sKey1: $mValue1\n";
+					}
+				}
+			}
+			else
+			{
+				$sText .= "$sKey: $mValue\n";
+			}
+		}
+
+		$oEmail->setBodyText($sText);
+		$oEmployee = Employee::getForId(Flex::getUserId());
+		if ($oEmployee!= null && $oEmployee->email!=null)
+			$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
+		$oEmail->send();
 
         return $this->id;
 
@@ -395,36 +501,36 @@ class Logic_Collection_Promise implements DataLogic
      */
     public static function batchProcess($aPromises)
     {
-        Log::getLog()->log("--------Promises Batch Process Start -------------");
+		Log::getLog()->log("--------Promises Batch Process Start -------------");
 
-	foreach ($aPromises as $oPromise)
-	{
-	    $oDataAccess = DataAccess::getDataAccess();
-	    $oDataAccess->TransactionStart();
-	    try
-	    {
-		Log::getLog()->log("Processing promise with ID: .$oPromise->id. ");
-		$oPromise->process();
-		$oDataAccess->TransactionCommit();
-
-	    }
-	    catch (Exception $e)
-	    {
-		if ($e instanceof Exception_Database)
+		foreach ($aPromises as $oPromise)
 		{
-		    $oDataAccess->TransactionRollback();
-		    throw $e;
-		}
-		else
-		{
-		    $oDataAccess->TransactionRollback();
-		    $oPromise->setException($e);
-		    Logic_Collection_BatchProcess_Report::addPromise($oPromise);
-		}
-	    }
-	}
+			$oDataAccess = DataAccess::getDataAccess();
+			$oDataAccess->TransactionStart();
+			try
+			{
+			Log::getLog()->log("Processing promise with ID: .$oPromise->id. ");
+			$oPromise->process();
+			$oDataAccess->TransactionCommit();
 
-        Log::getLog()->log("-------Promises Batch Process End--------------");
+			}
+			catch (Exception $e)
+			{
+			if ($e instanceof Exception_Database)
+			{
+				$oDataAccess->TransactionRollback();
+				throw $e;
+			}
+			else
+			{
+				$oDataAccess->TransactionRollback();
+				$oPromise->setException($e);
+				Logic_Collection_BatchProcess_Report::addPromise($oPromise);
+			}
+			}
+		}
+
+		Log::getLog()->log("-------Promises Batch Process End--------------");
     }
 
 

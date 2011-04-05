@@ -43,6 +43,8 @@ class Logic_Collectable extends Logic_Distributable implements DataLogic, Logic_
 		}
 	}
 
+
+
 	public static function refreshCache($aCollectableIds = NULL)
 	{
 		Logic_Stopwatch::getInstance()->lap();

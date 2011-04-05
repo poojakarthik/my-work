@@ -109,14 +109,15 @@ class Logic_Collection_Event_Instance
 			// A scenario event, set both event id and scenario event id
 			$oEventInstance->collection_event_id						= $mItemToSchedule->collection_event_id;
 			$oEventInstance->collection_scenario_collection_event_id	= $mItemToSchedule->id;
-			$oEventInstance->collectable_id	= $oAccount->getSourceCollectable()->id;
+			$oEventInstance->collectable_id								= $oAccount->getSourceCollectable()->id;
 		}
 		else if (is_numeric($mItemToSchedule) && $mItemToSchedule === COLLECTION_EVENT_TYPE_IMPLEMENTATION_EXIT_COLLECTIONS)
 		{
-			// Just an event, set only the event id. This one didn't come from a scenario
+			//exit event, does not belong to a scenario
 			$oEvent = new Logic_Collection_Event_ExitCollections($oEventInstance);
-			$oEventInstance->collection_event_id = $oEvent->id;
-			$oEventInstance->collectable_id = $oAccount->getMostRecentCollectionEventInstance()->collectable_id;
+			$oEventInstance->collection_event_id	= $oEvent->id;
+			//regardless of scenario changes since the last event, for the exit event the source collectable is the same as for the most recent event.
+			$oEventInstance->collectable_id			= $oAccount->getMostRecentCollectionEventInstance()->collectable_id;
 		}
 
 		$oEventInstance->scheduled_datetime					= DataAccess::getDataAccess()->getNow();
@@ -326,10 +327,11 @@ class Logic_Collection_Event_Instance
 		$aEventInstances = array();
 		foreach ($aAccounts as $oAccount)
 		{
+			//there can only be one waiting event for an account, but the getWaitingEvents() method returns an array.....
 			$aEvent = self::getWaitingEvents($oAccount->id);
-			if (count($aEvent) > 0 && $oAccount->shouldCurrentlyBeInCollections())
+			$oInstance = reset($aEvent);
+			if (count($aEvent) > 0 && ($oAccount->shouldCurrentlyBeInCollections() || $oInstance->isExitEvent()))
 			{				
-				$oInstance = reset($aEvent);
 				if ($oInstance->getInvocationId() == COLLECTION_EVENT_INVOCATION_AUTOMATIC)
 				{
 					if (!array_key_exists($oInstance->collection_event_id, $aEventInstances))

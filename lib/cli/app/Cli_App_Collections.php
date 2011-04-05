@@ -107,6 +107,7 @@ class Cli_App_Collections extends Cli
 				Logic_Account::batchRedistributeBalances($aAccountsForRedistribution);
 			}
 
+			Logic_Account::clearCache();
 
 			$iAccountsBatchProcessIteration = 1;
 
@@ -142,6 +143,7 @@ class Cli_App_Collections extends Cli
 				}
 			}
 
+			Logic_Account::clearCache();
 
 			try
 			{
@@ -160,6 +162,7 @@ class Cli_App_Collections extends Cli
 				Log::getLog()->log($e->__toString());
 			}
 
+			Logic_Account::clearCache();
 
 			try
 			{
@@ -212,10 +215,7 @@ class Cli_App_Collections extends Cli
 				}
 				Log::getLog()->log($e->__toString());
 				Logic_Collection_BatchProcess_Report::addException($e);
-			}
-
-
-			
+			}			
 
 		}
 		catch(Exception $exception)

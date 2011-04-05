@@ -693,7 +693,7 @@ class Logic_Account implements DataLogic
 			$this->aAdjustments		= NULL;
 			$this->_aPayables		= NULL;
 			Logic_Collectable::refreshCache(array_merge($this->getCollectables(Logic_Collectable::CREDIT, TRUE), $this->getCollectables(Logic_Collectable::DEBIT, TRUE)));
-
+			$this->aCollectables = NULL;
 			Logic_Stopwatch::getInstance()->lap();
 			$aStats = $this->processDistributables();
 		}
@@ -1047,7 +1047,7 @@ class Logic_Account implements DataLogic
 	{
 
 		Log::getLog()->log("-------Starting Account Batch Collections Process-------------------------");
-
+		
 		foreach ($aAccounts as $oAccount)
 		{
 			$oDataAccess	= DataAccess::getDataAccess();

@@ -372,12 +372,13 @@ class Account
                                                                                 AND ach.id = (	select max(id)
                                                                                                 FROM account_collection_event_history
                                                                                                 WHERE account_id = a.Id
+
                                                                                                 )
                                                                                 AND a.Id  NOT in(select account_id from collection_suspension cs where cs.start_datetime< now() AND cs.effective_end_datetime is null)
                                                                                 $sExcludeSql
                                                                               )
                                 JOIN collection_event ce ON (ce.id = ach.collection_event_id)
-                                JOIN collection_event_type cet ON (cet.id = ce.collection_event_type_id and cet.system_name <> 'EXIT_COLLECTIONS')
+                                JOIN collection_event_type cet ON (cet.id = ce.collection_event_type_id and (cet.system_name <> 'EXIT_COLLECTIONS' OR ach.completed_datetime IS NULL))
 
                                 UNION
 
@@ -629,6 +630,9 @@ class Account
 							$aAccountsForRedistribution[] = $aRow['account_id'];
                         }
                     }
+
+					//8 retrieve accounts that have a discrepancy between sum(collectable.balance) and balance calculated through collectable, payment, adjustment amnounts
+
 
 
 					$aAccountsForRedistribution = array_unique($aAccountsForRedistribution);
