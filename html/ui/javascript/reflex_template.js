@@ -13,16 +13,7 @@ Reflex_Template	= function(sTag) {
 
 	// Children
 	for (var i = 0, j = oArgumentData.aChildren.length; i < j; i++) {
-		if (typeof Reflex_Component !== 'undefined' && oArgumentData.aChildren[i] instanceof Reflex_Component) {
-			oElement.appendChild(oArgumentData.aChildren[i].getNode());
-		} else if (oArgumentData.aChildren[i].nodeType) {
-			// Child Element
-			oElement.appendChild(oArgumentData.aChildren[i]);
-		} else {
-			// Text Node
-			//oElement.appendChild(document.createTextNode(String(arguments[i]).escapeHTML()));
-			oElement.appendChild(document.createTextNode(String(oArgumentData.aChildren[i])));
-		}
+		oElement.appendChild(Reflex_Template.extractNode(oArgumentData.aChildren[i]));
 	}
 
 	// Return the Element
@@ -34,11 +25,13 @@ Reflex_Template.parseArguments	= function (aArguments) {
 		oConfig		: {},
 		aChildren	: []
 	};
+	//debugger;
 	for (var i=0, l=aArguments.length; i < l; i++) {
 		if (typeof aArguments[i] === 'undefined' || aArguments[i] === null) {
 			// No data -- do nothing
-		} else if (i == 0 && typeof aArguments[i] === 'object' && !aArguments[i].nodeType) {
+		} else if (i == 0 && typeof aArguments[i] === 'object' && Object.getPrototypeOf(aArguments[i]) === Object.getPrototypeOf({})) {
 			// Attribute/Config Definition
+			//debugger;
 			oArgumentData.oConfig	= aArguments[i];
 		} else {
 			// Child
@@ -51,11 +44,11 @@ Reflex_Template.parseArguments	= function (aArguments) {
 // extractNode(): Takes any input and attempts to extract a DOM node from it
 Reflex_Template.extractNode	= function (mNodeContainer) {
 	var	oNode;
-
+	//debugger;
 	// Use our Node Parsers
-	for (var i=0, j=Reflex_Template.aChildParsers.length; i < j; i++) {
-		oNode	= Reflex_Template.aChildParsers[i](mNodeContainer);
-		if (oNode.nodeType) {
+	for (var i=0, j=Reflex_Template.aChildNodeParsers.length; i < j; i++) {
+		oNode	= Reflex_Template.aChildNodeParsers[i](mNodeContainer);
+		if (oNode) {
 			return oNode;
 		}
 	}

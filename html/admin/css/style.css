@@ -716,10 +716,11 @@ div.reflex-popup-footer {
 	text-align	: right;
 	bottom		: 0;
 	right		: 0;
-	padding-right: 1%;
+	/*padding-right: 1%;
 	padding-left: 1%;
 	padding-top: 0;
-	padding-bottom: 0.5em;
+	padding-bottom: 0.5em;*/
+	padding	: 0.2em;
 }
 
 input.displayOnly[disabled] {
@@ -11408,3 +11409,167 @@ div.component-collections-scenario > table.reflex
 }
 
 /************************** END - Popup Email Template Correspondence - END **************************/
+
+.reflex-component,
+.reflex-component * {
+	/**/-moz-box-sizing		: border-box;
+	-webkit-box-sizing	: border-box;
+	box-sizing			: border-box;/**/
+}
+
+/************************** START - Component Account Links - START **************************/
+.component-account-links {
+	/*margin	: 0.2em;*/
+	margin-top	: 0.25em;
+}
+
+.component-account-links-list {
+	list-style-type		: none;
+	padding				: 0.25em;
+	background-image	: -moz-linear-gradient(bottom, #666, #111);
+}
+
+.component-account-links-list > .component-account-links-list-item:first-child {
+	border-top-left-radius	: 4px;
+	border-top-right-radius	: 4px;
+}
+
+.component-account-links-list > .component-account-links-list-item:last-child {
+	border-bottom-left-radius	: 4px;
+	border-bottom-right-radius	: 4px;
+}
+
+.component-account-links-list-item {
+	-webkit-box-pack	: justify;
+	-moz-box-pack		: justify;
+	box-pack			: justify;
+	-webkit-box-align	: center;
+	-moz-box-align		: center;
+	box-align			: center;
+	-webkit-box-orient	: horizontal;
+	-moz-box-orient		: horizontal;
+	box-orient			: horizontal;
+	display				: -webkit-box;
+	display				: -moz-box;
+	display				: box;
+	width				: 100%;
+
+	background-color	: #fff;
+	padding				: 0.5em;
+}
+
+.component-account-links-list-item:hover {
+	background-color	: #FFFFCC;
+}
+
+.component-account-links-list-item > * {
+	display	: block;
+}
+
+.component-account-links-list-item > *:first-child {
+	-webkit-box-flex	: 1;
+	-moz-box-flex		: 1;
+	box-flex			: 1;
+
+	text-overflow	: ellipsis;
+	white-space		: nowrap;
+	overflow		: hidden;
+}
+
+.component-account-links-list-item-unlink {
+	width	: 16px;
+	cursor	: pointer;
+}
+
+/************************** END - Component Account Links - END **************************/
+
+/************************** START - Component Section - START **************************/
+
+.component-section {
+	display	: -webkit-box;
+	display	: -moz-box;
+	display	: box;
+
+	-webkit-box-orient	: vertical;
+	-moz-box-orient		: vertical;
+	box-orient			: vertical;
+
+	-webkit-box-align	: stretch;
+	-moz-box-align		: stretch;
+	box-align			: stretch;
+
+	-webkit-box-pack	: end;
+	-moz-box-pack		: end;
+	box-pack			: end;
+
+	width	: 100%;
+}
+
+.component-section > * {
+	display	: block;
+}
+
+.component-section-body {
+	-webkit-box-flex	: 1;
+	-moz-box-flex		: 1;
+	box-flex			: 1;
+}
+
+.component-section-header,
+.component-section-footer {
+	display	: -webkit-box;
+	display	: -moz-box;
+	display	: box;
+
+	-webkit-box-orient	: horizontal;
+	-moz-box-orient		: horizontal;
+	box-orient			: horizontal;
+
+	-webkit-box-align	: end;
+	-moz-box-align		: end;
+	box-align			: end;
+
+	-webkit-box-pack	: justify;
+	-moz-box-pack		: justify;
+	box-pack			: justify;
+}
+
+.component-section-body > *:first-child {
+	border-top	: 1px solid #111;
+	margin-top	: 0;
+}
+
+.component-section-body > *:last-child {
+	border-bottom	: 1px solid #111;
+	margin-bottom	: 0;
+}
+
+.component-section-header > *:first-child {
+	margin					: 0 0 0 4px;
+	padding					: 0.2em 0.25em 0.2em 0.25em;
+	color					: #eee;
+	background-color		: #111;
+	background-image		: -moz-linear-gradient(top, #444, #1C1C1C 1em);
+	border-radius			: 4px 4px 0 0;
+	font-size				: 1em;
+	text-shadow				: 0 -1px 0 #000;
+	line-height				: 1.4;
+}
+
+.component-section-header > *:first-child > * {
+	vertical-align	: middle;
+}
+
+.component-section-header-icon {
+	margin-right	: 0.25em;
+}
+
+.component-section-header-actions,
+.component-section-footer-actions {
+	-webkit-box-flex	: 1;
+	-moz-box-flex		: 1;
+	box-flex			: 1;
+	text-align			: right;
+}
+
+/************************** END - Component Section - END **************************/

@@ -2,6 +2,7 @@
 Reflex_Component	= Class.create({
 
 	initialize	: function () {
+		//debugger;
 		// General init
 		this.NODE			= null;
 		
@@ -18,19 +19,23 @@ Reflex_Component	= Class.create({
 					}
 					return mValue ? mValue : null;
 				}).bind(this)
+			},
+			fnOnReady	: {
+				fnSetter	: function(mValue){if (Object.isFunction(mValue)) return mValue;}
 			}
 		}, this.CONFIG || {});
 
 		this.ATTACHMENTS	= Object.extend({
-			'default'	: this.getNode().bind(this)
+			'default'	: this.getNode.bind(this)
 		}, this.ATTACHMENTS || {});
 		
 		// Parameters
-		var	oArgumentData	= Reflex_Template.parseArguments($A(arguments).slice(1));
+		var	oArgumentData	= Reflex_Template.parseArguments($A(arguments));
 
 		// Init the DOM
 		this._buildUI();
 		this.NODE.addClassName(Reflex_Component.COMPONENT_DEFAULT_CLASS);
+		this.NODE.oReflexComponent	= this;
 
 		// Attach Children
 		for (var i=0, j=oArgumentData.aChildren.length; i < j; i++) {
@@ -51,9 +56,10 @@ Reflex_Component	= Class.create({
 		this.NODE	= $T(Reflex_Component.COMPONENT_DEFAULT_ELEMENT, {'class':Reflex_Component.COMPONENT_DEFAULT_CLASS});
 	},
 
-	// _syncUI(): Updates the UI with the Config
+	// _syncUI(): Updates the UI with the Config.  Should call _onReady() when the UI is ready for use
 	_syncUI	: function () {
-		// Default implementation does nothing
+		// Default implementation does nothing other than set the component to "ready"
+		this._onReady();
 	},
 
 	// "Final" Methods (no need to override that I can think of)
@@ -72,11 +78,18 @@ Reflex_Component	= Class.create({
 		return null;
 	},
 
+	_onReady	: function () {
+		var	fnOnReady	= this.get('fnOnReady');
+		if (fnOnReady) {
+			setTimeout(fnOnReady, 0);
+		}
+	},
+
 	// setConfig(): Public API to set the Config of this Component
-	setConfig	: function (config) {
-		for (var sAttribute in config) {
-			if (config.hasOwnProperty(sAttribute)) {
-				this.set(config[sAttribute]);
+	setConfig	: function (oConfig) {
+		for (var sAttribute in oConfig) {
+			if (oConfig.hasOwnProperty(sAttribute)) {
+				this.set(sAttribute, oConfig[sAttribute]);
 			}
 		}
 	},
@@ -84,14 +97,17 @@ Reflex_Component	= Class.create({
 	// set(): Sets an individual Config record
 	set	: function (sAttribute, mValue) {
 		if (sAttribute in this.CONFIG) {
-			this.CONFIG[sAttribute].mValue	= (typeof this.CONFIG[sAttribute].fnSetter === 'function') ? this.CONFIG[sAttribute].fnSetter(mValue) : mValue;
+			mValue	= (typeof this.CONFIG[sAttribute].fnSetter === 'function') ? this.CONFIG[sAttribute].fnSetter(mValue) : mValue;
+			if (typeof mValue !== 'undefined') {
+				this.CONFIG[sAttribute].mValue	= mValue;
+			}
 		}
 	},
 
 	// set(): Gets an individual Config record
 	get	: function (sAttribute) {
 		if (sAttribute in this.CONFIG) {
-			return (typeof this.CONFIG[sAttribute].fnGetter === 'function') ? this.CONFIG[sAttribute].fnGetter(mValue) : mValue;
+			return (typeof this.CONFIG[sAttribute].fnGetter === 'function') ? this.CONFIG[sAttribute].fnGetter(this.CONFIG[sAttribute].mValue) : this.CONFIG[sAttribute].mValue;
 		}
 		return null;
 	},
@@ -137,6 +153,6 @@ Reflex_Component._parseChildReflexComponent	= function (mNodeContainer) {
 };
 
 // Register the Reflex_Template Child Node Parser
-if (Reflex_Template && Reflex_Template.aChildNodeParsers && !Reflex_Template.aChildNodeParsers.indexOf()) {
+if (Reflex_Template && Reflex_Template.aChildNodeParsers && Reflex_Template.aChildNodeParsers.indexOf(Reflex_Template.aChildNodeParsers) === -1) {
 	Reflex_Template.aChildNodeParsers.unshift(Reflex_Component._parseChildReflexComponent);
 }
