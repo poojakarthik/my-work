@@ -360,7 +360,7 @@ class Logic_Collection_Promise implements DataLogic
 		$fBalanceAfter = $oAccount->getCollectableBalance();
 
 
-		$oEmail	=  new Email_Notification(1);
+		$oEmail	=  Email_Notification::getForSystemName('ALERT');
 		
 		$oEmail->setSubject('Collection Promise Completion Report');
 		$sText = "Summary: \n\n";
@@ -406,8 +406,8 @@ class Logic_Collection_Promise implements DataLogic
 
 		$oEmail->setBodyText($sText);
 		$oEmployee = Employee::getForId(Flex::getUserId());
-		if ($oEmployee!= null && $oEmployee->email!=null)
-			$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
+		//if ($oEmployee!= null && $oEmployee->email!=null)
+		//	$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
 		$oEmail->send();
 
         return $this->id;
