@@ -1293,7 +1293,6 @@ class Account
 		$sPaymentBalanceClause = "AND p.created_datetime < <effective_date>";
 		if ($bRevisedBalance)
 		{
-			//throw new Exception('test');
 			$sPaymentBalanceClause = "	AND (
 											/* Payment was created prior to the Billing Period Start, or is reversing a Payment prior to the Billing Period Start */
 											p.created_datetime < <effective_date>
@@ -1479,7 +1478,7 @@ class Account
 							FROM	Invoice
 							WHERE	billing_period_end_datetime >= <effective_datetime>
 							AND		Account = <account_id>
-							ORDER BY CreatedOn DESC
+							ORDER BY CreatedOn ASC
 							LIMIT 	1",
 							array('effective_datetime' => $sEffectiveDate, 'account_id' => $this->Id))->fetch_assoc();
 		if ($aRow)
