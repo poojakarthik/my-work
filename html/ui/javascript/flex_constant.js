@@ -60,7 +60,7 @@ var Flex_Constant	= Class.create
 		{
 			aOptions.push(
 				$T.option({value: iId},
-					aConstantGroup[iId].Name
+					aConstantGroup[iId].Name ? aConstantGroup[iId].Name : aConstantGroup[iId].Description
 				)
 			);
 		}

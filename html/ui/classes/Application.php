@@ -232,6 +232,7 @@ class Application
 			{
 				ContextMenu()->Admin->System_Settings->ViewAllCustomerGroups();
 			}
+			ContextMenu()->Admin->System_Settings->CarrierModuleList();
 
 			if (Flex_Module::isActive(FLEX_MODULE_CONTRACT_MANAGEMENT))
 			{
@@ -502,7 +503,8 @@ class Application
 			{
 				ContextMenu()->Admin->System_Settings->ViewAllCustomerGroups();
 			}
-
+			ContextMenu()->Admin->System_Settings->CarrierModuleList();
+			
 			if (Flex_Module::isActive(FLEX_MODULE_CONTRACT_MANAGEMENT))
 			{
 				ContextMenu()->Admin->Contracts->ManageBreachedContracts();

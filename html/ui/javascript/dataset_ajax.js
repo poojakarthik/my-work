@@ -162,9 +162,15 @@ var Dataset_Ajax	= Class.create
 			this._aRecordCache	= oRecords;
 			this._iRecordCount	= oResponse.iRecordCount;
 			this._iLastCachedOn	= (new Date()).getTime();
+			
+			// NOTE: DEV ONLY
+			if (oResponse.sDebug != '')
+			{
+				//Reflex_Popup.debug(oResponse.sDebug);
+			}
 		}
 		
-		iLimit	= (iLimit > 0) ? iLimit : Object.keys(this._aRecordCache).length;
+		iLimit = (iLimit > 0) ? iLimit : Object.keys(this._aRecordCache).length;
 		
 		// Choose our results
 		var aResultSet	= {};

@@ -13,11 +13,6 @@ class Carrier_Module extends ORM_Cached
 	
 	protected			$_oCarrierModuleConfigSet;
 	
-	public function isActive()
-	{
-		return (($this->Active == 1) ? true : 0);
-	}
-	
 	protected static function getCacheName()
 	{
 		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
@@ -66,6 +61,11 @@ class Carrier_Module extends ORM_Cached
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
+	
+	public function isActive()
+	{
+		return (($this->Active == 1) ? true : 0);
+	}
 	
 	public static function getForCarrierModuleType($mCarrierModuleType, $bIncludeInactive=false)
 	{
@@ -133,6 +133,103 @@ class Carrier_Module extends ORM_Cached
 			$this->_oCarrierModuleConfigSet	= Carrier_Module_Config_Set::getForCarrierModule($this);
 		}
 		return $this->_oCarrierModuleConfigSet;
+	}
+	
+	public static function searchFor($bCountOnly=false, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null)
+	{
+		$oFrequencyTypes = Constant_Group::getConstantGroup('FrequencyType');
+		
+		$aAliases = array(
+						'id'						=> "cm.id",
+						'carrier_id'				=> "cm.Carrier",
+						'carrier_name'				=> "c.Name",
+						'customer_group_id'			=> "cm.customer_group",
+						'customer_group_name'		=> "cg.internal_name",
+						'carrier_module_type_id'	=> "cm.Type",
+						'carrier_module_type_name'	=> "cmt.name",
+						'file_type_id'				=> "rt.id",
+						'file_type_name'			=> "rt.name",
+						'module'					=> "cm.Module",
+						'description'				=> "cm.description",
+						'frequency_type'			=> "cm.FrequencyType",
+						'frequency_type_name'		=> "(
+															CASE
+																WHEN cm.FrequencyType = ".FREQUENCY_SECOND."
+																THEN '".$oFrequencyTypes->getConstantName(FREQUENCY_SECOND)."'
+																WHEN cm.FrequencyType = ".FREQUENCY_MINUTE."
+																THEN '".$oFrequencyTypes->getConstantName(FREQUENCY_MINUTE)."'
+																WHEN cm.FrequencyType = ".FREQUENCY_HOUR."
+																THEN '".$oFrequencyTypes->getConstantName(FREQUENCY_HOUR)."'
+																WHEN cm.FrequencyType = ".FREQUENCY_DAY."
+																THEN '".$oFrequencyTypes->getConstantName(FREQUENCY_DAY)."'
+															END
+														)",
+						'frequency'					=> "cm.Frequency",
+						'frequency_value'			=> "(
+															cm.Frequency 
+															* 
+															cm.FrequencyType
+															*
+															(
+																CASE
+																	WHEN cm.FrequencyType = ".FREQUENCY_SECOND."
+																	THEN 1
+																	WHEN cm.FrequencyType = ".FREQUENCY_MINUTE."
+																	THEN 60
+																	WHEN cm.FrequencyType = ".FREQUENCY_HOUR."
+																	THEN 3600
+																	WHEN cm.FrequencyType = ".FREQUENCY_DAY."
+																	THEN 86400
+																END
+															)
+														)",
+						'last_sent_datetime'		=> "cm.LastSentOn",
+						'earliest_delivery'			=> "cm.EarliestDelivery",
+						'is_active'					=> "cm.Active",
+						'is_active_label'			=> "IF(cm.Active = 1, 'Active', 'Disabled')",
+					);
+		
+		$sFrom = "	CarrierModule cm
+					JOIN Carrier c ON (c.Id = cm.Carrier)
+					JOIN carrier_module_type cmt ON (cmt.id = cm.Type)
+					JOIN resource_type rt ON (rt.id = cm.FileType)
+					LEFT JOIN CustomerGroup cg ON (cg.Id = cm.customer_group)";
+		if ($bCountOnly)
+		{
+			$sSelect 	= "COUNT(cm.id) AS count";
+			$sOrderBy	= "";
+			$sLimit		= "";
+		}
+		else
+		{
+			$aSelectLines = array();
+			foreach ($aAliases as $sAlias => $sClause)
+			{
+				$aSelectLines[] = "{$sClause} AS {$sAlias}";
+			}
+			$sSelect	= implode(', ', $aSelectLines);
+			$sOrderBy	= Statement::generateOrderBy($aAliases, get_object_vars($oSort));
+			$sLimit		= Statement::generateLimit($iLimit, $iOffset);
+		}
+		
+		$aWhere	= Statement::generateWhere($aAliases, get_object_vars($oFilter));
+		$sWhere	= $aWhere['sClause'];
+		
+		$oSelect = new StatementSelect($sFrom, $sSelect, $sWhere, $sOrderBy, $sLimit);
+		if ($oSelect->Execute($aWhere['aValues']) === false)
+		{
+			throw new Exception_Database("Failed to get search results. ".$oSelect->Error());
+		}
+		
+		Log::getLog()->log($oSelect->_strQuery);
+		
+		if ($bCountOnly)
+		{
+			$aRow = $oSelect->Fetch();
+			return $aRow['count'];
+		}
+		
+		return $oSelect->FetchAll();
 	}
 	
 	/**

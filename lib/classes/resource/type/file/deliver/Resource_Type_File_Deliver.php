@@ -9,28 +9,28 @@ abstract class Resource_Type_File_Deliver extends Resource_Type_Base
 	
 	abstract public function disconnect();
 	
-	public final function deliver($sLocalPath)
+	public final function deliver($sLocalPath, $mCarrierModule=null)
 	{
 		Log::getLog()->log("Delivery using class ".get_class($this));
 		if (Resource_Type_File_Deliver::isTestModeEnabled())
 		{
-			$this->_testDeliver($sLocalPath);
+			$this->_testDeliver($sLocalPath, $mCarrierModule);
 		}
 		else
 		{
-			$this->_deliver($sLocalPath);
+			$this->_deliver($sLocalPath, $mCarrierModule);
 		}
 		return $this;
 	}
 	
-	public function getDebugEmailContent($sLocalPath)
+	public function getDebugEmailContent($sLocalPath, $mCarrierModule=null)
 	{
 		return 'File Delivery is in Test Mode. The delivered file is attached.';
 	}
 	
-	abstract protected function _deliver($sLocalPath);
+	abstract protected function _deliver($sLocalPath, $mCarrierModule=null);
 	
-	protected function _testDeliver($sLocalPath)
+	protected function _testDeliver($sLocalPath, $mCarrierModule=null)
 	{
 		if (!self::isTestModeEnabled())
 		{
@@ -42,7 +42,7 @@ abstract class Resource_Type_File_Deliver extends Resource_Type_Base
 		$oEmailFlex->setSubject('File Delivery Test Email');
 		$oEmailFlex->addTo('ybs-admin@ybs.net.au');
 		$oEmailFlex->setFrom('ybs-admin@ybs.net.au');
-		$oEmailFlex->setBodyText($this->getDebugEmailContent($sLocalPath));
+		$oEmailFlex->setBodyText($this->getDebugEmailContent($sLocalPath, $mCarrierModule=null));
 		
 		// Attachment (file to deliver)
 		$sMimeType	= mime_content_type($sLocalPath);

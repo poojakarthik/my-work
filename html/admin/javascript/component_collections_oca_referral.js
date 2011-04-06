@@ -952,7 +952,7 @@ Object.extend(Component_Collections_OCA_Referral,
 	_ajaxError : function(oResponse)
 	{
 		var sMessage = (oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.');
-		Reflex_Popup.alert(sMessage, {sTitle: 'Error'});
+		Reflex_Popup.alert(sMessage, {sTitle: 'Error', sDebugContent: oResponse.sDebug});
 	},
 		
 	_getConstantGroupOptions : function(sConstantGroup, fnCallback)

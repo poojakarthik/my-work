@@ -10,7 +10,7 @@ class Resource_Type_File_Deliver_FileSystem extends Resource_Type_File_Deliver
 		return $this;
 	}
 
-	public function _deliver($sLocalPath)
+	public function _deliver($sLocalPath, $mCarrierModule=null)
 	{
 
 		$sDeliveryPath	= $this->_getDeliveryPath($sLocalPath);

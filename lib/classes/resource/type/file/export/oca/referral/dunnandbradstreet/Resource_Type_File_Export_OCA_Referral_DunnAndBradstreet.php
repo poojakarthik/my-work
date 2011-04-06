@@ -89,7 +89,7 @@ class Resource_Type_File_Export_OCA_Referral_DunnAndBradstreet extends Resource_
 	
 	public function deliver()
 	{
-		$this->_oFileDeliver->connect()->deliver($this->_sFilePath)->disconnect();
+		$this->_oFileDeliver->connect()->deliver($this->_sFilePath, $this->getCarrierModule())->disconnect();
 		return $this;
 	}
 	

@@ -118,17 +118,16 @@ var Control_Field_Combo_Time	= Class.create(/* extends */ Control_Field,
 	
 	setElementValue	: function(mValue)
 	{
-		var aDateTime	= null;
-		
+		var aDateTime = null;
 		if (mValue)
 		{
-			aDateTime	= mValue.match(Control_Field_Combo_Time.VALUE_REGEX);
+			aDateTime = mValue.match(Control_Field_Combo_Time.VALUE_REGEX);
 		}
 		
 		if (aDateTime)
 		{
 			var sHour	= aDateTime[1];
-			var sMinute	= aDateTime[2];
+			var sMinute	= (aDateTime[2] ? aDateTime[2] : 0);
 			var sAMPM	= (aDateTime[3] ? aDateTime[3] : null);
 			
 			// Special process for hours
@@ -157,10 +156,14 @@ var Control_Field_Combo_Time	= Class.create(/* extends */ Control_Field,
 	
 	getElementValue	: function()
 	{
-		var sValue = 	Control_Field_Combo_Time.padWithZero(this.oHours.getElementValue()) + 
-						Control_Field_Combo_Time.SEPARATOR 	+ 
-						Control_Field_Combo_Time.padWithZero(this.oMinutes.getElementValue());
+		var mHours 		= this.oHours.getElementValue();
+		var mMinutes	= this.oMinutes.getElementValue();
+		if (mHours === null && mMinutes === null)
+		{
+			return null;
+		}
 		
+		var sValue = Control_Field_Combo_Time.padWithZero(mHours) + Control_Field_Combo_Time.SEPARATOR + Control_Field_Combo_Time.padWithZero(mMinutes);
 		if (this.iFormat == Control_Field_Combo_Time.FORMAT_12_HOUR)
 		{
 			sValue += 	' ' + this.oAMPM.getElementValue();
@@ -377,4 +380,4 @@ Control_Field_Combo_Time.AMPM_PM		= 'PM';
 
 Control_Field_Combo_Time.SEPARATOR		= ':';
 
-Control_Field_Combo_Time.VALUE_REGEX	= /^(\d{2}):(\d{2})[:\d\s]*(AM|PM)?/;
+Control_Field_Combo_Time.VALUE_REGEX	= /^(\d{2}):(\d{2})?[:\d\s]*(AM|PM)?/;

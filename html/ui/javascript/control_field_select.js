@@ -44,14 +44,13 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 		{
 			this.oControlOutput.oEdit.selectedIndex	= (!mValue && mValue !== 0) ? -1 : this._getIndexForValue(mValue);
 		}
+		this.oControlOutput.oView.innerHTML	= (this.oControlOutput.oEdit.selectedIndex >= 0) ? this.oControlOutput.oEdit.options[this.oControlOutput.oEdit.selectedIndex].innerHTML : '[ None ]';
 	},
 	
 	updateElementValue	: function()
 	{
 		var	mValue	= this.getValue();
-		
 		this.setElementValue(mValue);
-		this.oControlOutput.oView.innerHTML	= (this.oControlOutput.oEdit.selectedIndex >= 0) ? this.oControlOutput.oEdit.options[this.oControlOutput.oEdit.selectedIndex].innerHTML : '[ None ]';
 	},
 	
 	setPopulateFunction	: function(fnPopulateFunction, bPopulateImmediately)

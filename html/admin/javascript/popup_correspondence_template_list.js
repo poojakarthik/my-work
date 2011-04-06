@@ -1,7 +1,7 @@
 
 var Popup_Correspondence_Template_List = Class.create(Reflex_Popup,
 {
-	initialize : function($super, iAccountId)
+	initialize : function($super)
 	{
 		$super(70);
 	

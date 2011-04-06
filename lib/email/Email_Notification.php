@@ -191,14 +191,13 @@ class Email_Notification extends Email_Flex
 			$custWhere = ' OR customer_group_id = ' . $intCustGroupId . ' ';
 		}
 		$strWhere = "email_notification_id = $intEmailNotification AND (customer_group_id IS NULL$custWhere)";
-	
-		/*
-		// DEBUG: Output the query that gets run
+			
+		/*// DEBUG: Output the query that gets run
 		$select = array();
 		foreach($arrColumns as $alias => $column) $select[] = "$column '$alias'";
-		echo "\n\nSELECT " . implode(",\n       ", $select) . "\nFROM $strTables\nWHERE $strWhere\n\n";
-		//*/
-	
+		Log::getLog()->log("SELECT " . implode(",       ", $select) . " FROM $strTables WHERE $strWhere ");
+		*/
+		
 		$selEmails = new StatementSelect($strTables, $arrColumns, $strWhere);
 		$result = $selEmails->Execute();
 		if ($result === FALSE)

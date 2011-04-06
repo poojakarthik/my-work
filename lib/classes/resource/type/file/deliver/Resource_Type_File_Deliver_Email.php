@@ -10,7 +10,7 @@ class Resource_Type_File_Deliver_Email extends Resource_Type_File_Deliver
 		return $this;
 	}
 
-	protected function _deliver($sLocalPath)
+	protected function _deliver($sLocalPath, $mCarrierModule=null)
 	{
 		$oEmailFlex	= new Email_Flex();
 		

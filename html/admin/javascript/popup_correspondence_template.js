@@ -185,82 +185,89 @@ var Popup_Correspondence_Template = Class.create(Reflex_Popup,
 	
 	_doSave : function()
 	{
-		this._save();
+		// Validate base controls
+		var aErrors = [];
+		for (var i = 0; i < this._aControls.length; i++)
+		{
+			try
+			{
+				this._aControls[i].validate(false);
+				this._aControls[i].save(true);
+			}
+			catch (oException)
+			{
+				aErrors.push(oException);
+			}
+		}
+		
+		// Validate source type controls
+		var oSourceDetails = {};
+		for (var sField in this._hSourceTypeControls)
+		{
+			try
+			{
+				this._hSourceTypeControls[sField].oControl.validate(false);
+				oSourceDetails[sField] = this._hSourceTypeControls[sField].oControl.getElementValue();
+			}
+			catch (oException)
+			{
+				aErrors.push(oException);
+			}
+		}
+					
+		if (aErrors.length)
+		{
+			// There were validation errors, show all in a popup
+			Popup_Correspondence_Template._validationError(aErrors);
+			return;
+		}
+		
+		// Build the details object
+		var oDetails = 	
+		{
+			id								: this._iTemplateId,
+			name 							: this._aControls[0].getValue(),
+			description 					: this._aControls[1].getValue(),
+			correspondence_source_type_id	: parseInt(this._aControls[2].getValue()),
+			correspondence_source_details 	: oSourceDetails,
+			columns							: this._oAdditionalColumnControl.getColumns(),
+			template_carrier_modules		: {}
+		};
+		
+		// Add template carrier module values to details
+		for (var iId in this._hCarrierModuleControls)
+		{
+			var sValue = this._hCarrierModuleControls[iId].getElementValue();
+			if (sValue !== null)
+			{
+				oDetails.template_carrier_modules[iId] = parseInt(sValue);
+			}
+		}
+		
+		// Confirmation popup
+		Reflex_Popup.yesNoCancel(
+			$T.div({class: 'alert-content'},
+				$T.div('If you save this Template, no more changes can be made to it.'),
+				$T.div('Are you sure you wish to save?')
+			), 
+			{fnOnYes: this._makeSaveRequest.bind(this, oDetails)}
+		);
 	},
 	
-	_save : function(oResponse)
+	_makeSaveRequest : function(oDetails, oResponse)
 	{
 		if (!oResponse)
 		{
-			// Validate base controls
-			var aErrors = [];
-			for (var i = 0; i < this._aControls.length; i++)
-			{
-				try
-				{
-					this._aControls[i].validate(false);
-					this._aControls[i].save(true);
-				}
-				catch (oException)
-				{
-					aErrors.push(oException);
-				}
-			}
-			
-			// Validate source type controls
-			var oSourceDetails = {};
-			for (var sField in this._hSourceTypeControls)
-			{
-				try
-				{
-					this._hSourceTypeControls[sField].oControl.validate(false);
-					oSourceDetails[sField] = this._hSourceTypeControls[sField].oControl.getElementValue();
-				}
-				catch (oException)
-				{
-					aErrors.push(oException);
-				}
-			}
-						
-			if (aErrors.length)
-			{
-				// There were validation errors, show all in a popup
-				Popup_Correspondence_Template._validationError(aErrors);
-				return;
-			}
-			
-			// Build the details object
-			var oDetails = 	
-			{
-				id								: this._iTemplateId,
-				name 							: this._aControls[0].getValue(),
-				description 					: this._aControls[1].getValue(),
-				correspondence_source_type_id	: parseInt(this._aControls[2].getValue()),
-				correspondence_source_details 	: oSourceDetails,
-				columns							: this._oAdditionalColumnControl.getColumns(),
-				template_carrier_modules		: {}
-			};
-			
-			// Add template carrier module values to details
-			for (var iId in this._hCarrierModuleControls)
-			{
-				var sValue = this._hCarrierModuleControls[iId].getElementValue();
-				if (sValue !== null)
-				{
-					oDetails.template_carrier_modules[iId] = parseInt(sValue);
-				}
-			}
-			
 			this._oLoading = new Reflex_Popup.Loading('Saving...');
 			this._oLoading.display();
 			
 			// Make request (sending the details object)
-			var fnResp 	= this._save.bind(this);
+			var fnResp 	= this._makeSaveRequest.bind(this, oDetails);
 			var fnReq	= jQuery.json.jsonFunction(fnResp, fnResp, 'Correspondence_Template', 'saveTemplate');
 			fnReq(oDetails);
 			return;
 		}
-
+		
 		this._oLoading.hide();
 		delete this._oLoading;
 		

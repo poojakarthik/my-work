@@ -122,7 +122,7 @@ var Component_Correspondence_Template_Additional_Columns = Class.create(
 							this._bRenderMode ? $T.input({type: 'text', value: sName}) : $T.span(sName)
 						),
 						$T.td({class: 'component-correspondence-template-additional-columns-column-description'},
-							this._bRenderMode ? $T.input({type: 'text', value: sDescription}) : $T.span(sName)
+							this._bRenderMode ? $T.input({type: 'text', value: sDescription}) : $T.span(sDescription)
 						),
 						this._bRenderMode ? $T.td({class: 'component-correspondence-template-additional-columns-column-move'},
 							$T.img({src: '../admin/img/template/icon_moveup.png', alt: 'Move Up', title: 'Move Up'}).observe('click', this._moveColumnUp.bind(this)),

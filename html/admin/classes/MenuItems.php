@@ -4274,8 +4274,8 @@ else
 
 	public function CorrespondenceTemplateList()
 	{
-		$this->strContextMenuLabel 	= "Correspondence Template List";
-		$this->strLabel 			= "Correspondence Template List";
+		$this->strContextMenuLabel 	= "Manage Correspondence Templates";
+		$this->strLabel 			= "Manage Correspondence Templates";
 
 		return	"javascript:	JsAutoLoader.loadScript(
 									['control_field.js',
@@ -4299,6 +4299,13 @@ else
 									},
 									true
 								);";
+	}
+	
+	public function CarrierModuleList()
+	{
+		$this->strContextMenuLabel 	= "Manage Carrier Modules";
+		$this->strLabel 			= "Manage Carrier Modules";
+		return self::NEW_FRAMEWORK."reflex.php/CarrierModule/Manage/";
 	}
 	
 	public function NewCorrespondenceEmailTemplate()

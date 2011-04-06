@@ -153,7 +153,8 @@ var Control_Field	= Class.create
 	trim	: function(bReturnValue)
 	{
 		// Perform Trim
-		var mValue	= this.getElementValue();
+		var mValue			= this.getElementValue();
+		var mOriginalValue	= mValue;
 		if (typeof this.mAutoTrim == 'function')
 		{
 			// Callback
@@ -169,7 +170,7 @@ var Control_Field	= Class.create
 		{
 			return mValue;
 		}
-		else
+		else if (mValue != mOriginalValue)
 		{
 			this.setElementValue(mValue);
 		}
@@ -560,6 +561,11 @@ Control_Field.factory	= function(sType, oDefinition)
 			oControlField.setMaxLength(oDefinition.iMaxLength ? oDefinition.iMaxLength : false);
 			oControlField.setAutoTrim(oDefinition.mAutoTrim ? oDefinition.mAutoTrim : false);
 			break;
+		
+		case 'hidden':
+			oControlField = new Control_Field_Hidden(oDefinition.sLabel);
+			break;
+			
 		case 'textarea':
 			oControlField	= new Control_Field_Textarea(oDefinition.sLabel, oDefinition.sLabelSeparator, oDefinition.rows, oDefinition.cols);
 			break;
@@ -576,7 +582,7 @@ Control_Field.factory	= function(sType, oDefinition)
 		
 		case 'combo_time':
 		case 'combo-time':
-			oControlField	= new Control_Field_Combo_Time(oDefinition.sLabel, null, oDefinition.iFormat);
+			oControlField	= new Control_Field_Combo_Time(oDefinition.sLabel, null, oDefinition.iFormat, oDefinition.mSeparatorElement);
 			break;
 		
 		case 'text_ajax':

@@ -227,6 +227,8 @@ class JSON_Handler_Collections extends JSON_Handler
 				$aAccountsByCustomerGroupId[$iCustomerGroupId][] = $oAccount;
 			}
 			
+			Log::getLog()->log("Sorted accounts by customer group");
+			
 			$iDeliveryMethodIdOverride = Collections_Config::get()->oca_final_invoice_delivery_method_id;
 			foreach ($aAccountsByCustomerGroupId as $iCustomerGroupId => $aAccounts)
 			{
@@ -259,6 +261,8 @@ class JSON_Handler_Collections extends JSON_Handler
 					{
 						$aAccountOCAReferralsByAccountId[$oAccount->Id]->invoice_run_id = $oInvoiceRun->Id;
 					}
+					
+					Log::getLog()->log("Generated, Commited & Deliverd Invoice run for customer group {$iCustomerGroupId}");
 				}
 				catch (Exception $oException)
 	            {
@@ -279,17 +283,20 @@ class JSON_Handler_Collections extends JSON_Handler
 			foreach ($aAccountOCAReferralsByAccountId as $iAccountId => $oAccountOCAReferral)
 			{
 				$oAccountOCAReferral->action();
+				Log::getLog()->log("Actioned Account {$iAccountId}");
 			}
 			
 			// Deliver the referral file
 			$oResourceTypeHandler->deliver();
+			
+			Log::getLog()->log("Delivered Referral file");
 			
 			if (!$oDataAccess->TransactionCommit())
 			{
 				throw new JSON_Handler_Collections_Exception("Successful but failed to commit db transaction.");
 			}
 			
-			return array('bSuccess' => true);
+			return array('bSuccess' => true, 'sDebug' => $this->_JSONDebug);
 		}
 		catch (JSON_Handler_Collections_Exception $oEx)
 		{
@@ -299,7 +306,7 @@ class JSON_Handler_Collections extends JSON_Handler
 				$sMessage .= " Failed to rollback db transaction.";
 			}
 			
-			return array('bSuccess' => false,'sMessage' => $sMessage);
+			return array('bSuccess' => false,'sMessage' => $sMessage, 'sDebug' => $this->_JSONDebug);
 		}
 		catch (Exception $e)
 		{
@@ -309,7 +316,7 @@ class JSON_Handler_Collections extends JSON_Handler
 				$sMessage .= " Failed to rollback db transaction.";
 			}
 			
-			return array('bSuccess' => false,'sMessage' => $sMessage);
+			return array('bSuccess' => false,'sMessage' => $sMessage, 'sDebug' => $this->_JSONDebug);
 		}
 	}
 	

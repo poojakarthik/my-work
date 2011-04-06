@@ -4679,7 +4679,6 @@ div.control-field-combo-time-select
 	vertical-align	: top;
 }
 
-li.control-field-combo-time-select-separator,
 li.control-field-combo-date-select-separator > span
 {
 	vertical-align	: middle;
@@ -4687,6 +4686,11 @@ li.control-field-combo-date-select-separator > span
 }
 
 li.control-field-combo-time-select-separator > span,
+.control-field-combo-time li > .control-field-combo-time-select > span
+{
+	vertical-align	: middle;
+}
+
 li.control-field-combo-date-select-separator > span
 {
 	font-size		: 1.5em;
@@ -11409,6 +11413,240 @@ div.component-collections-scenario > table.reflex
 }
 
 /************************** END - Popup Email Template Correspondence - END **************************/
+
+/************************** START - Carrier Module List - START **************************/
+
+.popup-carrier-module-list
+{
+	margin	: 0.5em;
+}
+
+.component-carrier-module-list
+{
+	position	: relative
+}
+
+.component-carrier-module-list > .section table.reflex
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.component-carrier-module-list > .section .section-header .icon-button
+{
+	margin	: 0em !important;
+}
+
+.component-carrier-module-list > .section .section-footer > ul.reset
+{
+	margin	: 0em;
+}
+
+.component-carrier-module-list-filter-heading > span
+{
+	margin-right	: 0.5em;
+	vertical-align	: middle;
+	font-style		: italic;
+	font-size		: 0.85em;
+}
+
+.component-carrier-module-list-filter-heading > div
+{
+	display			: inline-block;
+	vertical-align	: middle;
+}
+
+.component-carrier-module-list-header-sort img
+{
+	margin-right	: 0.25em;
+}
+
+.component-carrier-module-list table.reflex > tbody > tr > td
+{
+	vertical-align	: middle;
+}
+
+.component-carrier-module-list-id-header
+{
+	width	: 1.5em;
+}
+
+.component-carrier-module-list-carrier-header
+{
+	width	: 6em;
+}
+
+.component-carrier-module-list-customergroup-header
+{
+	width	: 9em;
+}
+
+.component-carrier-module-list-type-header
+{
+	width	: 11em;
+}
+
+.component-carrier-module-list-filetype-header
+{
+	width	: 15em;
+}
+
+.component-carrier-module-list-lastsent-header
+{
+	width	: 6em;
+}
+
+.component-carrier-module-list-earliestdelivery-header
+{
+	width	: 9em;
+}
+
+.component-carrier-module-list-status-header
+{
+	width	: 4em;
+}
+
+.component-carrier-module-list-actions-header
+{
+	width	: 5em;
+}
+
+.component-carrier-module-list-frequency-header
+{
+	width	: 7em;
+}
+
+.component-carrier-module-list-description-header
+{
+	width	: 8em;
+}
+
+.component-carrier-module-list-module-cell
+{
+	width		: 20em;
+	max-width	: 20em;
+	overflow	: hidden;
+}
+
+.component-carrier-module-list-description-cell
+{
+	width		: 8em;
+	max-width	: 8em;
+	overflow	: hidden;
+}
+
+/************************** END - Carrier Module List - END **************************/
+
+/************************** START - Popup Carrier Module - START **************************/
+
+.popup-carrier-module
+{
+	margin	: 0.5em;
+}
+
+.popup-carrier-module > table.reflex.input
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.popup-carrier-module-buttons
+{
+	text-align	: center;
+	margin-top	: 0.5em;
+}
+
+.popup-carrier-module > table.reflex > tbody > tr > th
+{
+	white-space	: nowrap;
+}
+
+.popup-carrier-module-frequency
+{
+	display			: inline-block;
+	margin-right	: 0.5em;
+}
+
+.popup-carrier-module-frequency > input
+{
+	width : 4em;
+}
+
+.popup-carrier-module-frequency-type
+{
+	display	: inline-block;
+}
+
+.popup-carrier-module-frequency-type > select
+{
+	width : 8em;
+}
+
+/************************** END - Popup Carrier Module - END **************************/
+
+/************************** START - Component Carrier Module Config - START **************************/
+
+.component-carrier-module-config-columnlist
+{
+	max-height	: 20em;
+	overflow	: auto;
+	border		: solid 1px #333;
+}
+
+.component-carrier-module-config > table,
+.component-carrier-module-config-columnlist > table
+{
+	width			: 100%;
+	border-spacing	: 0;
+}
+
+.component-carrier-module-config > table > thead > tr > td
+{
+	font-weight	: bold;
+}
+
+.component-carrier-module-config table > thead > tr > td:last-child,
+.component-carrier-module-config table > tbody > tr > td:last-child
+{
+	width	: 40%;
+}
+
+.component-carrier-module-config table > thead > tr > td:first-child,
+.component-carrier-module-config table > tbody > tr > td:first-child,
+.component-carrier-module-config table > thead > tr > td:nth-child(2),
+.component-carrier-module-config table > tbody > tr > td:nth-child(2)
+{
+	width	: 30%;
+}
+
+.component-carrier-module-config-stringfield > textarea
+{
+	width	: 100%;
+	height	: 100%;
+}
+
+/************************** END - Component Carrier Module Config - END **************************/
+
+/************************** END - Popup Carrier Module Config JSON Editor - END **************************/
+
+.popup-carrier-module-config-json-editor
+{
+	margin	: 0.5em;
+}
+
+.popup-carrier-module-config-json-editor-text
+{
+	width	: 100%;
+	height	: 100%;
+}
+
+.popup-carrier-module-config-json-editor-buttons
+{
+	text-align	: center;
+	margin-top	: 0.5em;
+}
+
+/************************** END - Popup Carrier Module Config JSON Editor - END **************************/
 
 .reflex-component,
 .reflex-component * {
