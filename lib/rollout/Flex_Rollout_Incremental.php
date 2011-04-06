@@ -70,7 +70,7 @@ class Flex_Rollout_Incremental
 			catch (Exception $e)
 			{
 				@self::RollbackDatabaseConstantsFile();
-				throw new Exception("Failed to begin database transactions prior to attempting rollout $intVersion. Current version is $currentVersion.");
+				throw new Exception("Failed to begin database transactions prior to attempting rollout $intVersion. Current version is $currentVersion. ".$e->getMessage());
 			}
 
 			try

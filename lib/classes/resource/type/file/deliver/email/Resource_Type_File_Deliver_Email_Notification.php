@@ -1,7 +1,7 @@
 <?php
 class Resource_Type_File_Deliver_Email_Notification extends Resource_Type_File_Deliver
 {
-	const 		RESOURCE_TYPE 			= RESOURCE_TYPE_FILE_DELIVERER_EMAIL;
+	const 		RESOURCE_TYPE 			= RESOURCE_TYPE_FILE_DELIVERER_EMAIL_NOTIFICATION;
 	const		VARIABLE_CUSTOMER_GROUP	= 'customer_group';
 	const		VARIABLE_CARRIER_MODULE	= 'carrier_module';
 	
@@ -10,7 +10,7 @@ class Resource_Type_File_Deliver_Email_Notification extends Resource_Type_File_D
 											self::VARIABLE_CUSTOMER_GROUP => 'Name of the Customer Group associated with the Carrier Module that is delivering the file',
 											self::VARIABLE_CARRIER_MODULE => 'Description of the Carrier Module that is delivering the file'
 										);
-
+	
 	public function connect()
 	{
 		return $this;
