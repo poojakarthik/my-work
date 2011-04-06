@@ -291,9 +291,8 @@ class Cli_App_Collections extends Cli
 
 			try
 			{
-				Log::getLog()->log("Account, Time, Memory Usage, iterations, Debit Collectables, Credit Collectables, Credit Payments, Credit Adjustments, Debit Payments,Debit Adjustments, Account Balance (based on amounts) , Payable Balance (based on balances) ");
 				$aAccounts = Account::getForBalanceRedistribution($iMode, $iAccountId);
-				Logic_Account::batchRedistributeBalances($aAccounts);				
+				Logic_Account::batchRedistributeBalances($aAccounts);
 			}
 			catch (Exception $e)
 			{

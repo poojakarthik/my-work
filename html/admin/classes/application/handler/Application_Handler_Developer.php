@@ -4,6 +4,129 @@ class Application_Handler_Developer extends Application_Handler
 	const	URL_TYPE_JS		= 'onclick';
 	const	URL_TYPE_HREF	= 'href';
 
+	
+	public function rod($aSubPath)
+	{
+		if ($aSubPath[0])
+		{
+			$iId = (int)$aSubPath[0];
+		}
+		else
+		{
+			$iMin 	= 3000165031;
+			$iMax 	= 3003281750;
+			$iStart = rand($iMin, $iMax - 100);
+			$iId	= $iStart;
+		}
+		
+		try
+		{
+			$oInvoice = Invoice::getForId($iId);
+			if ($oInvoice->TotalOwing == 0)
+			{
+				throw new Exception('No total owing');
+			}
+		}
+		catch (Exception $oEx)
+		{
+			echo "No invoice {$iId}. ".$oEx->getMessage();
+			die;
+		}
+		
+		$arrInvoice 	= $oInvoice->toArray();
+		$arrCustomer	= Invoice_Export::getCustomerData($arrInvoice);
+		
+		$arrLastInvoice			= Invoice_Export::getOldInvoice($arrInvoice, 1);
+		$fOpeningBalance1		= number_format(Invoice::roundOut($arrLastInvoice['TotalOwing'], 2), 2, '.', '');
+		$fPayments1				= number_format(max(Invoice::roundOut($arrLastInvoice['TotalOwing'], 2) - Invoice::roundOut($arrInvoice['AccountBalance'], 2), 0.0), 2, '.', '');
+		$fAdjustments1 			= number_format($arrInvoice['adjustment_total'] + $arrInvoice['adjustment_tax'], 2, '.', '');
+		$fOutstandingBalance1	= number_format($arrInvoice['AccountBalance'] + $arrInvoice['adjustment_total'] + $arrInvoice['adjustment_tax'], 2, '.', '');
+		$fOverdueBalance1 		= number_format($arrCustomer['OverdueBalance'] + $arrInvoice['adjustment_total'] + $arrInvoice['adjustment_tax'], 2, '.', '');
+		$fNewCharges1 			= number_format($arrInvoice['charge_total'] + $arrInvoice['charge_tax'], 2, '.', '');
+		$fTotalOwing1			= number_format(Invoice::roundOut($arrInvoice['TotalOwing'], 2), 2, '.', '');
+		
+		$oAccount			= Account::getForId($arrInvoice['Account']);
+		//Log::registerFunctionLog('rod', 'logMessage', 'Application_Handler_Developer');
+		//Log::setDefaultLog('rod');
+		//echo "<pre>";
+		$fOpeningBalance2	= Rate::roundToCurrencyStandard($oAccount->getHistoricalBalance(date('Y-m-d H:i:s', strtotime($arrInvoice['billing_period_start_datetime']) - 1)));
+		//echo "</pre>";
+		$fPaymentTotal2		= Rate::roundToCurrencyStandard(Invoice_Export::getPaymentTotal($arrInvoice));
+		$fAdjustmentTotal2	= Rate::roundToCurrencyStandard(Invoice_Export::getAdjustmentTotal($arrInvoice));
+		$fNewCharges2		= Rate::roundToCurrencyStandard($arrInvoice['charge_total'] + $arrInvoice['charge_tax']);
+		$fTotalOwing2		= Rate::roundToCurrencyStandard($fOpeningBalance2 + $fPaymentTotal2 + $fAdjustmentTotal2 + $fNewCharges2);
+		$fTotalOverdue2		= Rate::roundToCurrencyStandard($oAccount->getHistoricalBalance(date('Y-m-d H:i:s', strtotime($arrInvoice['billing_period_end_datetime'])), true));
+		
+		$sOpeningBalance = (($fOpeningBalance1 - $fOpeningBalance2) != 0 ? "X" : '');
+		
+		echo "	<table border='1'>
+					<caption>
+						Invoice {$iId} ({$oInvoice->Account})
+						".date('d/m/y', strtotime($oInvoice->billing_period_start_datetime))." to ".date('d/m/y', strtotime($oInvoice->billing_period_end_datetime))."
+					</caption>
+					<thead>
+						<tr>
+							<td/>
+							<td>Old</td>
+							<td>New</td>
+							<td></td>
+						</tr>
+					</thead>
+					<tbody>
+					<tr>
+						<td>opening balance</td>
+						<td>{$fOpeningBalance1}</td>
+						<td>{$fOpeningBalance2}</td>
+						<td>".(($fOpeningBalance1 - $fOpeningBalance2) != 0 ? ($fOpeningBalance1 - $fOpeningBalance2) : '')."</td>
+					</tr>
+					<tr>
+						<td>payment total</td>
+						<td>{$fPayments1}</td>
+						<td>{$fPaymentTotal2}</td>
+						<td>".(($fPayments1 - abs($fPaymentTotal2)) != 0 ? ($fPayments1 - abs($fPaymentTotal2)) : '')."</td>
+					</tr>
+					<tr>
+						<td>adjustment total</td>
+						<td>{$fAdjustments1}</td>
+						<td>{$fAdjustmentTotal2}</td>
+						<td>".(($fAdjustments1 - $fAdjustmentTotal2) != 0 ? ($fAdjustments1 - $fAdjustmentTotal2) : '')."</td>
+					</tr>
+					<tr>
+						<td>new charges</td>
+						<td>{$fNewCharges1}</td>
+						<td>{$fNewCharges2}</td>
+						<td>".(($fNewCharges1 - $fNewCharges2) != 0 ? ($fNewCharges1 - $fNewCharges2) : '')."</td>
+					</tr>
+					<tr>
+						<td>total owing</td>
+						<td>{$fTotalOwing1}</td>
+						<td>{$fTotalOwing2}</td>
+						<td>".(($fTotalOwing1 - $fTotalOwing2) != 0 ? ($fTotalOwing1 - $fTotalOwing2) : '')."</td>
+					</tr>
+					<tr>
+						<td>total overdue</td>
+						<td>{$fOverdueBalance1}</td>
+						<td>{$fTotalOverdue2}</td>
+						<td>".(($fOverdueBalance1 - $fTotalOverdue2) != 0 ? ($fOverdueBalance1 - $fTotalOverdue2) : '')."</td>
+					</tr>
+				</tbody>
+			</table>";
+		
+		die;
+	}
+
+	public function correspondence()
+	{
+		Log::registerFunctionLog('Developer_CollectionsLogic', 'logMessage', 'Application_Handler_Developer');
+		Log::setDefaultLog('Developer_CollectionsLogic');
+		Correspondence_Logic_Run::sendWaitingRuns();
+		die;
+
+	}
+
+
+	
+
 	// View the Developer Page
 	public function ViewList($subPath)
 	{
@@ -406,21 +529,19 @@ class Application_Handler_Developer extends Application_Handler
             Log::setDefaultLog('Developer_Balance_Redistribute');
             $oDataAccess	= DataAccess::getDataAccess();
             
-			//if (!$oDataAccess->TransactionStart())
-			// {
-			//     throw new Exception("transcaction failed to start.");
-			//  }
+			
 			try
 			{
-				$aAccounts = Account::getForBalanceRedistribution(1000154797);
+				$aAccounts = Account::getForBalanceRedistribution();
+				Logic_Account::batchRedistributeBalances($aAccounts);
 
 			foreach ($aAccounts as $oAccount)
 			{
-			Log::getLog()->log($oAccount->Id);
+				Log::getLog()->log($oAccount->Id);
 			}
 
-			Logic_Account::batchRedistributeBalances($aAccounts);
-			//$oDataAccess->TransactionRollback();
+			
+			
 			}
 			catch(Exception $e)
 			{
@@ -509,133 +630,203 @@ class Application_Handler_Developer extends Application_Handler
 		die;
 	}
 
+	public function testFileName()
+	{
+		$sPDFFilePath =  "data/www/jvanderbreggen.ybs.net.au/files/friendly_reminder/pdf/20110330/telco_blue/1000009353.pdf";
+		$sFileName = basename ( $sPDFFilePath );//substr ($sPDFFilePath , strrpos ( $sPDFFilePath, "/" )+1 );
+		die;
+	}
+
+	public function testGetForRedistribute()
+	{
+		$aAccounts = Account::getForBalanceRedistribution(Account::BALANCE_REDISTRIBUTION_FORCED_INCLUDING_ARCHIVED, 1000180081);
+		die;
+	}
+
     public function CollectionsLogic()
 	{
-		Log::registerFunctionLog('Developer_CollectionsLogic', 'logMessage', 'Application_Handler_Developer');
-		Log::setDefaultLog('Developer_CollectionsLogic');
-                try
+			Log::registerFunctionLog('Developer_CollectionsLogic', 'logMessage', 'Application_Handler_Developer');
+			Log::setDefaultLog('Developer_CollectionsLogic');
+			try
 			{
-                            $oDataAccess = DataAccess::getDataAccess();
-                            $oDataAccess->TransactionStart();
+				$iAccountId = 1000006461;
+				$aPromises;
+				$aActiveSuspensions;
+				$aAccounts;
+
+				if ($iAccountId != NULL)
+				{
+					
+					Log::getLog()->log("Processing Collections for Account $iAccountId, starting with balance redistribution for this account only.");
+
+					//$aAccountsForRedistribution = Account::getForBalanceRedistribution();
+					//Logic_Account::batchRedistributeBalances($aAccountsForRedistribution);
+					
+					Logic_Account::getInstance($iAccountId)->redistributeBalances();
+					
+					
+				}
+				else
+				{
+					Log::getLog()->log("Processing Collections in batch for all accounts, starting with balance redistribution for all accounts that need it.");
+					$aAccountsForRedistribution = Account::getForBalanceRedistribution();
+					Logic_Account::batchRedistributeBalances($aAccountsForRedistribution);
+				}
 
 
-                            $iAccountsBatchProcessIteration = 1;                           
-                           
-                            try
-                            {
-                                $aPromises =  Logic_Collection_Promise::getActivePromises();
-                                //Logic_Collection_Promise::batchProcess($aPromises);
-                            }
-                            catch (Exception $e)
-                            {
-                                 Logic_Collection_BatchProcess_Report::addException($e);
-                                if ($e instanceof Exception_Database)
-                                {
-                                    throw $e;
-                                }
-                            }
+				Logic_Account::clearCache();
+				$iAccountsBatchProcessIteration = 1;
 
-                            try
-                            {
-                                $aActiveSuspensions = Collection_Suspension::getActive();
-                              //  Logic_Collection_Suspension::batchProcess($aActiveSuspensions);
-                            }
-                            catch(Exception $e)
-                            {
-                                if ($e instanceof Exception_Database)
-                                {
-                                    throw $e;
-                                }
-                                else
-                                {
-                                    Logic_Collection_BatchProcess_Report::addException($e);
-                                }
-                            }
+				if ($iAccountId !== null)
+				{
+					$oPromise =	Logic_Account::getInstance($iAccountId)->getActivePromise();
+					$aPromises = $oPromise === null ? array() : array($oPromise);
+					$oSuspension =	Collection_Suspension::getActiveForAccount($iAccountId);
+					$aActiveSuspensions = $oSuspension === null ? array() : array($oSuspension);
+					Logic_Collection_BatchProcess_Report::setProcessInvocationType(Logic_Collection_BatchProcess_Report::INVOCATION_TYPE_ACCOUNT);
+				}
+				else
+				{
+					$aPromises =	Logic_Collection_Promise::getActivePromises();
+					$aActiveSuspensions = Collection_Suspension::getActive();
+					Logic_Collection_BatchProcess_Report::setProcessInvocationType(Logic_Collection_BatchProcess_Report::INVOCATION_TYPE_BATCH);
+				}
 
-                            try
-                            {
-                                 //Log::getLog()->log('&&&&&&&&& Accounts Batch Process Iteration '.$iAccountsBatchProcessIteration++.'  &&&&&&&&&&&&&');
-                                $aExcludedAccounts = Logic_Collection_BatchProcess_Report::getAccountsWithExceptions();
-                               // $aAccounts = Logic_Account::getForBatchCollectionProcess($aExcludedAccounts);
-								$aAccounts = array(Logic_Account::getInstance(1000154797));//Logic_Account::getForBatchCollectionProcess($aExcludedAccounts);
-                                $iCompletedInstances = 0;
+				Logic_Account::clearCache();
 
-								Logic_Stopwatch::getInstance()->start();
-								$iIteration = 1;
-								do
-								{
-									Log::getLog()->log("About to process ".count($aAccounts)." In Batch.");
-									$iCompletedInstances = Logic_Account::batchProcessCollections($aAccounts);
-									Log::getlog()->log("Completed Scheduled Events In : ".Logic_Stopwatch::getInstance()->lap());
-									Log::getLog()->log("-------End Account Batch Collections Process Iteration $iIteration -------------------------");
-									$iIteration++;
-								}
-								while ($iCompletedInstances > 0);
-                            }
-                            catch (Exception $e)
-                            {
-                                Logic_Collection_BatchProcess_Report::addException($e);
-                            }
+				try
+				{
+					Logic_Collection_Promise::batchProcess($aPromises);
+				}
+				catch (Exception $e)
+				{
+					Logic_Collection_BatchProcess_Report::addException($e);
+					Log::getLog($e->__toString());
 
-                            throw new Exception("force rollback");
-                                $oDataAccess->TransactionCommit();
-                            
-			}
-			catch (Exception $e)
-			{
-                             $oDataAccess->TransactionRollback();
-                             Log::getLog()->log($e->__toString());
+					if ($e instanceof Exception_Database)
+					{
+						throw $e;
+					}
+				}
 
-			}
+				Logic_Account::clearCache();
+				try
+				{
+					Logic_Collection_Suspension::batchProcess($aActiveSuspensions);
 
-                try
-                {
-              
+				}
+				catch(Exception $e)
+				{
+
+					Logic_Collection_BatchProcess_Report::addException($e);
+
+					if ($e instanceof Exception_Database)
+					{
+						throw $e;
+					}
+					Log::getLog()->log($e->__toString());
+				}
+
+				Logic_Account::clearCache();
+
+				try
+				{
+					if (Collections_Schedule::getEligibility())
+					{
+						if ($iAccountId === null)
+						{
+							$aExcludedAccounts = Logic_Collection_BatchProcess_Report::getAccountsWithExceptions();
+							$aAccounts = Logic_Account::getForBatchCollectionProcess($aExcludedAccounts);
+						}
+						else
+						{
+
+							$oAccount = Logic_Account::getInstance($iAccountId);
+							$aAccounts = array($oAccount);
+						}
+
+						$iCompletedInstances = 0;
+
+						Logic_Stopwatch::getInstance()->start();
+						//Check if there are any uncompleted automated events left over from last time......
+						Logic_Collection_Event_Instance::completeScheduledInstancesForAccounts($aAccounts);
+						$iIteration = 1;
+						$oDataAccess = DataAccess::getDataAccess();
+						$oDataAccess->TransactionStart();
+						do
+						{
+							Log::getLog()->log("About to process ".count($aAccounts)." In Batch.");
+							$iCompletedInstances = Logic_Account::batchProcessCollections($aAccounts);
+							Log::getlog()->log("Completed Scheduled Events In : ".Logic_Stopwatch::getInstance()->lap());
+							Log::getLog()->log("-------End Account Batch Collections Process Iteration $iIteration -------------------------");
+							$iIteration++;
+						}
+						while ($iCompletedInstances > 0);
+						$oDataAccess->TransactionRollback();
+
+						Log::getLog()->log("Total Time: ".Logic_Stopwatch::getInstance()->split());
+
+					}
+					else
+					{
+						throw new Exception("The Collections Batch Process is not eligible to run today.");
+					}
+				}
+				catch (Exception $e)
+				{
+
+					if ($e instanceof Exception_Database)
+					{
+						Logic_Collection_BatchProcess_Report::addException($e);
+						throw $e;
+					}
+					Log::getLog()->log($e->__toString());
+					Logic_Collection_BatchProcess_Report::addException($e);
+				}
 
 
-               
-               $sPath = FILES_BASE_PATH.'temp/';
 
-            $sTimeStamp = str_replace(array(' ',':','-'), '',Data_Source_Time::currentTimestamp());
-            $sFilename	= "Collections_BatchProcess_Report_$sTimeStamp.$sFileExtension.csv";
-            Logic_Collection_BatchProcess_Report::generateReport($sPath.$sFilename, "CSV");
-           
-            //send the email
-            $sFile = file_get_contents($sPath.$sFilename);
-            $oEmail	=  new Email_Notification(1);
-            $oEmail->addAttachment($sFile, $sFilename, 'text/csv');
-            //$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
-            $oEmail->setSubject('Collections Batch Process Report');
-            $oEmail->setBodyText("Report Testing");
-            $oEmployee = Employee::getForId(Flex::getUserId());
-		if ($oEmployee!= null && $oEmployee->email!=null)
-			$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
-            $oEmail->send();
 
-                }
-                catch(Exception $e)
-                {
-                     $sPath = FILES_BASE_PATH.'temp/';
 
-                    $sTimeStamp = str_replace(array(' ',':','-'), '',Data_Source_Time::currentTimestamp());
-                    $sFilename	= "Collections_BatchProcess_Report_$sTimeStamp.$sFileExtension.csv";
-                    Logic_Collection_BatchProcess_Report::generateReport($sPath.$sFilename, "CSV");
+				$sPath = FILES_BASE_PATH.'temp/';
+				$bPathExists = file_exists ($sPath);
+				if (!$bPathExists)
+				{
+					$bPathExists = mkdir ($sPath , 0777 , true);
+				}
 
-                    //send the email
-                    $sFile = file_get_contents($sPath.$sFilename);
-                    $oEmail	=  new Email_Notification(1);
-                    $oEmail->addAttachment($sFile, $sFilename, 'text/csv');
-                    //$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
-                    $oEmail->setSubject('Collections Batch Process Report');
-                    $oEmail->setBodyText("Report Testing");
-                    $oEmployee = Employee::getForId(Flex::getUserId());
-                        if ($oEmployee!= null && $oEmployee->email!=null)
-                                $oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
-                    $oEmail->send();
-                    throw $e;
-                }
+				Logic_Collection_BatchProcess_Report::emailReport();
+
+
+
+
+				
+				die;
+
+		}
+		catch(Exception $e)
+		{
+			 $sPath = FILES_BASE_PATH.'temp/';
+
+			$sTimeStamp = str_replace(array(' ',':','-'), '',Data_Source_Time::currentTimestamp());
+			$sFilename	= "Collections_BatchProcess_Report_$sTimeStamp.$sFileExtension.csv";
+			Logic_Collection_BatchProcess_Report::generateReport($sPath.$sFilename, "CSV");
+
+			//send the email
+			$sFile = file_get_contents($sPath.$sFilename);
+			$oEmail	=  new Email_Notification(1);
+			$oEmail->addAttachment($sFile, $sFilename, 'text/csv');
+			//$oEmail->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
+			$oEmail->setSubject('Collections Batch Process Report');
+			$oEmail->setBodyText("Report Testing");
+			$oEmployee = Employee::getForId(Flex::getUserId());
+				if ($oEmployee!= null && $oEmployee->email!=null)
+						$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
+			$oEmail->send();
+			throw $e;
+		}
             
-		exit;
+		die;
 	}
 
         public function excelTest()
@@ -877,6 +1068,50 @@ class Application_Handler_Developer extends Application_Handler
         }
 
 
+	public function jan()
+	{
+		Log::registerFunctionLog('Developer_CollectionsLogic', 'logMessage', 'Application_Handler_Developer');
+		Log::setDefaultLog('Developer_CollectionsLogic');
+		$b = new b();
+		$aAs = $b->getAs();
+
+		$oObject = $aAs[3];
+
+		$oObject->refreshData(array('a'=>11,'b'=> 12));
+		$oObject2 = a::getInstance(3);
+
+		echo $oObject2->array['b'];
+
+
+		$oAccount = Logic_Account::getInstance(1000181544);
+
+		$oPromise = Logic_Collection_Promise::getForAccount($oAccount);
+		$aPromiseCollectables = $oPromise->getCollectables();
+		foreach($aPromiseCollectables as $oCollectable)
+		{
+			Log::getLog()->Log("$oCollectable->id , $oCollectable->balance");
+		}
+
+		$aAccountCollectables = $oAccount->getCollectables();
+		foreach ($aAccountCollectables as $oCollectable)
+		{
+			$oCollectable->balance = 555;
+			//$oCollectable->save();
+		}
+		Logic_Collectable::refreshCache();
+		//$oAccount->redistributeBalances();
+		//$oAccount->getCollectables(Logic_Collectable::DEBIT, TRUE);
+		Log::getLog()->log("After");
+
+		foreach($aPromiseCollectables as $oCollectable)
+		{
+			Log::getLog()->log("$oCollectable->id , $oCollectable->balance");
+		}
+
+		die;
+
+	}
+
 
 
 
@@ -885,6 +1120,51 @@ class Application_Handler_Developer extends Application_Handler
 	// END: COLLECTIONS LOGIC TESTING
 	//
 
+}
+
+class b
+{
+	public $aAs;
+
+	public function getAs()
+	{
+		if ($aAs === NULL)
+		{
+			for ($a=0;$a<5;$a++)
+			{
+				$aObjects[] = a::getInstance($a);
+			}
+
+			$this->aAs = $aObjects;
+		}
+
+		return $this->aAs;
+	}
+}
+
+class a
+{
+	public static $instances = array();
+
+	public $array = array('a'=>1, 'b'=>2);
+	public $id;
+
+	public static function getInstance($id)
+	{
+		if (!array_key_exists($id, self::$instances))
+				self::$instances[$id] = new self($id);
+		return self::$instances[$id];
+	}
+
+	private function __construct($datamember)
+	{
+		$this->datamember = $datamember;
+	}
+
+	public function refreshData($aNewArray)
+	{
+		$this->array = $aNewArray;
+	}
 }
 
 ?>

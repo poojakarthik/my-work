@@ -34,9 +34,9 @@ class Logic_Adjustment extends Logic_Distributable implements DataLogic{
 		return $oAdjustment!== null ? new self($oAdjustment) : null;
 	}
 
-	public static function getForAccount($oAccount, $iSignType)
+	public static function getForAccount($oAccount, $iSignType, $iStatus = null)
 	{
-		$aORM = Adjustment::getForAccountId($oAccount->id, $iSignType);
+		$aORM = Adjustment::getForAccountId($oAccount->id, $iSignType, $iStatus);
 		$aResult = array();
 		foreach ($aORM as $oORM)
 		{

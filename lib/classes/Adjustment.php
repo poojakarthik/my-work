@@ -66,7 +66,7 @@ class Adjustment extends ORM_Cached
     {
         $iValueMultiplier = $iSignType == Logic_Adjustment::CREDIT ? -1 : 1;
         $sSignTypeWhereClause = $iSignType !== null ? "AND an.value_multiplier * tn.value_multiplier = $iValueMultiplier" : "";
-        $sStatusWhereClause = $iStatus !== null ? "AND a.status_id = $iStatus" : "";
+        $sStatusWhereClause = $iStatus !== null ? "AND a.adjustment_status_id = $iStatus" : "";
         $sBalanceWhereClause = $bWithDistributableBalanceOnly ? " AND a.balance > 0" : "";
         $sSQL = "   SELECT a.*
                     FROM adjustment a

@@ -53,7 +53,7 @@ class Logic_Collectable extends Logic_Distributable implements DataLogic, Logic_
 		{
 			self::getInstance($oInstance->id, TRUE);
 		}
-		Log::getLog()->log("Collectable Instances Data Refresh: ".Logic_Stopwatch::getInstance()->lap());
+		//Log::getLog()->log("Collectable Instances Data Refresh: ".Logic_Stopwatch::getInstance()->lap());
 	}
 
 	public static function getInstances()

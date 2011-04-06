@@ -492,11 +492,13 @@ class Account
         {
 
             $aAccountsForRedistribution = array();
+			$iCount = 0;
 
             switch($iRedistributionType)
             {
                 case  Account::BALANCE_REDISTRIBUTION_REGULAR:
 					$sSingleAccountClause = $iAccountId === NULL ? NULL : "AND c.account_id = {$iAccountId}";
+					Log::getLog()->log("Retrieving accounts that have for some reason been wrongly distributed");
                     //1 create the temporary table, and populate it with all collectables that are not part of a promise					
                     $sSQL = "   CREATE  TEMPORARY TABLE tmp_payable
                                 SELECT  due_date, amount, c.account_id, balance
@@ -576,8 +578,11 @@ class Account
                                    $aAccountsForRedistribution[] = $aRow['account_id'];
                         }
                     }
+					$iCount = count($aAccountsForRedistribution);
+					Log::getLog()->log("$iCount Accounts found.");
 
                     //5 retrieve accounts that have both distributable collectables and collectables with outstanding balances
+					Log::getLog()->Log("Retrieving accounts with distributable balance AND with room for distributing these to payables");
                     $sSQL = "   SELECT DISTINCT c.account_id as account_id
                                 FROM collectable c
                                 JOIN collectable c2 ON (c2.account_id = c.account_id  AND c2.balance > 0 AND c.balance < 0 {$sSingleAccountClause})
@@ -631,9 +636,74 @@ class Account
                         }
                     }
 
-					//8 retrieve accounts that have a discrepancy between sum(collectable.balance) and balance calculated through collectable, payment, adjustment amnounts
+					$iCount = count($aAccountsForRedistribution) - $iCount;
+					Log::getLog()->log("$iCount Accounts found.");
+					//8 retrieve accounts that have a discrepancy between SUM(amount) and SUM(balance)
+					Log::getLog()->log("retrieving accounts that have a discrepancy between SUM(amount) and SUM(balance). This points at more 'serious' cases of data corruption and should possibly be investigated.");
+
+					$mResult = Query::run("SELECT	c2.account_id AS account_id,
+													COALESCE((
+																SELECT 	SUM(p.amount * pn.value_multiplier)
+																FROM 	payment p
+																JOIN 	payment_nature pn ON (pn.id = p.payment_nature_id )
+																WHERE  p.account_id = c2.account_id
+															), 0)
+													+
+													COALESCE((
+																SELECT 	SUM(adj.amount*an.value_multiplier*tn.value_multiplier)
+																FROM 	adjustment adj
+																JOIN 	adjustment_type at ON (at.id = adj.adjustment_type_id )
+																JOIN 	transaction_nature tn ON (tn.id = at.transaction_nature_id)
+																JOIN 	adjustment_nature an ON (an.id = adj.adjustment_nature_id)
+																JOIN 	adjustment_status ast ON (adj.adjustment_status_id = ast.id and ast.const_name = 'ADJUSTMENT_STATUS_APPROVED')
+																WHERE adj.account_id = c2.account_id
+													), 0)
+													+
+													COALESCE((
+																SELECT 	SUM(c.amount)
+																FROM 	collectable c
+																WHERE 	c.account_id = c2.account_id
+													), 0)
+													AS balance_amounts,
+
+													COALESCE((
+																SELECT 	SUM(p.balance * pn.value_multiplier)
+																FROM 	payment p
+																JOIN 	payment_nature pn ON (pn.id = p.payment_nature_id )
+																WHERE  p.account_id = c2.account_id
+															), 0)
+
+													+
+
+												  COALESCE((
+																SELECT 	SUM(adj.balance*an.value_multiplier*tn.value_multiplier)
+																FROM 	adjustment adj
+																JOIN 	adjustment_type at ON (at.id = adj.adjustment_type_id )
+																JOIN 	transaction_nature tn ON (tn.id = at.transaction_nature_id)
+																JOIN 	adjustment_nature an ON (an.id = adj.adjustment_nature_id)
+																JOIN 	adjustment_status ast ON (adj.adjustment_status_id = ast.id and ast.const_name = 'ADJUSTMENT_STATUS_APPROVED')
+																WHERE adj.account_id = c2.account_id
+															), 0)
+
+												  +
+
+												  COALESCE ((SELECT SUM(c3.balance) FROM collectable c3 WHERE c3.account_id = c2.account_id),0)
+												  AS balance_balances
+												  FROM collectable c2
+												  GROUP BY c2.account_id
+												  HAVING (abs(balance_balances -balance_amounts) > 0.01)");
 
 
+					if ($mResult)
+                    {
+                        while ($aRow = $mResult->fetch_assoc())
+                        {
+							$aAccountsForRedistribution[] = $aRow['account_id'];
+                        }
+                    }
+					
+					$iCount = count($aAccountsForRedistribution) - $iCount;
+					Log::getLog()->log("$iCount Accounts found.");
 
 					$aAccountsForRedistribution = array_unique($aAccountsForRedistribution);
 					$aResult = array();

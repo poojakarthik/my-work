@@ -445,12 +445,18 @@ class Logic_Account implements DataLogic
 		return $iPaymentNature=== null ? $this->aPayments : $this->aPayments[$iPaymentNature];
 	}
 
-	public function getAdjustments($iSignType = null, $bRefreshFromDatabase = false)
+	/**
+	 * Returns an array of Logic_Adjustment objects. NOTE: ONLY APPROVED ADJUSTMENTS ARE RETURNED BY THIS METHOD
+	 * @param <type> $iSignType
+	 * @param <type> $bRefreshFromDatabase
+	 * @return <type> 
+	 */
+	public function getAdjustments($iSignType = null,  $bRefreshFromDatabase = false)
 	{
-		if ($this->aAdjustments === null)
+		if ($this->aAdjustments === null || $bRefreshFromDatabase )
 		{
-			$this->aAdjustments[Logic_Adjustment::DEBIT] = Logic_Adjustment::getForAccount($this,  Logic_Adjustment::DEBIT);
-			$this->aAdjustments[Logic_Adjustment::CREDIT] = Logic_Adjustment::getForAccount($this, Logic_Adjustment::CREDIT);
+			$this->aAdjustments[Logic_Adjustment::DEBIT] = Logic_Adjustment::getForAccount($this,  Logic_Adjustment::DEBIT, ADJUSTMENT_STATUS_APPROVED);
+			$this->aAdjustments[Logic_Adjustment::CREDIT] = Logic_Adjustment::getForAccount($this, Logic_Adjustment::CREDIT, ADJUSTMENT_STATUS_APPROVED );
 		}
 		return $iSignType === null ? $this->aAdjustments : $this->aAdjustments [$iSignType];
 	}
@@ -658,7 +664,7 @@ class Logic_Account implements DataLogic
 				$oPayment->distributeToPayables($aPayables);
 			}
 
-			$aDebitAdjustments = $this->getAdjustments(Logic_Adjustment::DEBIT);
+			$aDebitAdjustments = $this->getAdjustments(Logic_Adjustment::DEBIT, ADJUSTMENT_STATUS_APPROVED);
 			foreach ( $aDebitAdjustments as $oAdjustment)
 			{
 				$oAdjustment->distributeToPayables($aPayables);
@@ -669,7 +675,7 @@ class Logic_Account implements DataLogic
 		Logic_Collectable_Payment::createRecords();
 		Logic_Collectable_Adjustment::createRecords();
 		Logic_Collectable_Transfer_Balance::createRecords();
-		Log::getLog()->log("Distributing: ".Logic_Stopwatch::getInstance()->lap());
+		//Log::getLog()->log("Distributing: ".Logic_Stopwatch::getInstance()->lap());
 		return array('iterations'=>$iIterations, 'Debit Collectables' =>count($this->getCollectables()), 'Credit Collectables'=> count($aCreditCollectable) , 'Credit Payments' =>count($aPayments) , 'Credit Adjustments'=> count($aAdjustments), 'Debit Payments' => count($aReversedPayments) , 'Debit Adjustments' =>count($aDebitAdjustments), 'Balance'=>$this->getPayableBalance() );
 
 	}
@@ -970,8 +976,7 @@ class Logic_Account implements DataLogic
 
 	public static function batchRedistributeBalances($aAccounts)
 	{
-		self::$aMemory['before_looping'] = memory_get_usage (TRUE );
-	   // //Log::getLog()->log(count($aAccounts)." Accounts");
+		Log::getLog()->log("Account, Time, Memory Usage, iterations, Debit Collectables, Credit Collectables, Credit Payments, Credit Adjustments, Debit Payments,Debit Adjustments, Account Balance (based on amounts) , Payable Balance (based on balances) ");
 
 		foreach ($aAccounts as $iIndex => $oAccountORM)
 		{
