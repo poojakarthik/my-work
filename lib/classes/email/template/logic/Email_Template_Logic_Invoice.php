@@ -75,7 +75,11 @@ class Email_Template_Logic_Invoice extends Email_Template_Logic
 
 	}
 
-
+	public function getSampleData()
+	{
+		$aSampleInvoiceData	= Invoice::getSampleDataForCustomerGroupId($this->_oEmailTemplate->customer_group_id);
+		return $this->getData($aSampleInvoiceData['invoice_id'], $aSampleInvoiceData['contact_id']);
+	}
 
 	public function generateEmail($aDataParameters, Email_Flex $mEmail=null)
 	{
