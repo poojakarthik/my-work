@@ -4329,6 +4329,28 @@ else
 								);";
 	}
 	
+	public function AccountActivityLog($iAccountId)
+	{
+		$this->strContextMenuLabel 	= "Account Activity Log";
+		$this->strLabel 			= "Account Activity Log";
+		return	"javascript:	JsAutoLoader.loadScript(
+									['component_section.js','component_account_activity_log.js', 'component_list_tooltip.js'], 
+									function() {
+										var oLoadingPopup = new Reflex_Popup.Loading();
+										oLoadingPopup.display();
+
+										var oPopup = Component_Account_Activity_Log.createAsPopup(
+											{
+												iAccountId	: {$iAccountId}, 
+												fnOnReady	: function() {
+													oPopup.display();
+													oLoadingPopup.hide();
+												}
+											}
+										);
+									}, true);";
+	}
+	
 	//------------------------------------------------------------------------//
 	// BreadCrumb
 	//------------------------------------------------------------------------//

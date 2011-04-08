@@ -192,6 +192,15 @@ class Adjustment extends ORM_Cached
 		$this->save();
 	}
 
+	public function getReversal()
+	{
+		$aRow = Query::run("SELECT	*
+							FROM	adjustment
+							WHERE	reversed_adjustment_id = <adjustment_id>",
+							array('adjustment_id' => $this->id))->fetch_assoc();
+		return ($aRow ? new self($aRow) : null);
+	}
+
 	public static function searchForApproved($bCountOnly, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null)
 	{
 		$aAliases =	array(

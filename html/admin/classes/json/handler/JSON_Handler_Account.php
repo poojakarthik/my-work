@@ -1774,6 +1774,206 @@ class JSON_Handler_Account extends JSON_Handler
 			throw $oException;
 		}
 	}
+	
+	public function getActivityLog($iAccountId)
+	{
+		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		try
+		{
+			$aDataByDate = array();
+			
+			// Invoices
+			$aInvoices = Invoice::getForAccount($iAccountId);
+			foreach ($aInvoices as $oInvoice)
+			{
+				$oStdInvoice 						= $oInvoice->toStdClass();
+				$oStdInvoice->invoice_run_type_id 	= Invoice_Run::getForId($oInvoice->invoice_run_id)->invoice_run_type_id;
+				$oStdInvoice->collectable_balance	= $oInvoice->getCollectableBalance();
+				self::_createActivityLogRecord($oInvoice->CreatedOn, 'aInvoices', $oStdInvoice, $aDataByDate);
+			}
+			
+			// Payments
+			$aPayments = Payment::getForAccountId($iAccountId, null, false);
+			foreach ($aPayments as $oPayment)
+			{
+				$oPaymentNature 				= Payment_Nature::getForId($oPayment->payment_nature_id);
+				$oReversal						= $oPayment->getReversal();
+				$oStdPayment 					= $oPayment->toStdClass();
+				$oStdPayment->proper_amount		= $oPayment->amount * $oPaymentNature->value_multiplier;
+				$oStdPayment->proper_balance	= $oPayment->balance * $oPaymentNature->value_multiplier;
+				$oStdPayment->is_reversed		= ($oReversal ? true : false);
+				$oStdPayment->reversal_reason	= Payment_Reversal_Reason::getForId($oReversal ? $oReversal->payment_reversal_reason_id : $oPayment->payment_reversal_reason_id)->name;
+				
+				self::_createActivityLogRecord($oPayment->created_datetime, 'aPayments', $oStdPayment, $aDataByDate);
+			}
+			
+			// Promises
+			$aPromises = Collection_Promise::getForAccountId($iAccountId, false);
+			foreach ($aPromises as $oPromise)
+			{
+				$oStdPromise 			= $oPromise->toStdClass();
+				$oStdPromise->reason	= Collection_Promise_Reason::getForId($oPromise->collection_promise_reason_id)->name;
+				
+				self::_createActivityLogRecord($oPromise->created_datetime, 'aCreatedPromises', $oStdPromise, $aDataByDate);
+				
+				if ($oPromise->completed_datetime !== null)
+				{
+					self::_createActivityLogRecord($oPromise->completed_datetime, 'aCompletedPromises', $oStdPromise, $aDataByDate);
+				}
+				
+				$aInstalments = Collection_Promise_Instalment::getForPromiseId($oPromise->id);
+				foreach ($aInstalments as $oInstalment)
+				{
+					$iInstalmentDue							= strtotime($oInstalment->due_date);
+					$oStdInstalment 						= $oInstalment->toStdClass();
+					$oStdInstalment->within_promise_range	= ($iInstalmentDue >= strtotime($oPromise->created_datetime)) && ($iInstalmentDue <= strtotime($oPromise->completed_datetime));
+					
+					self::_createActivityLogRecord($oInstalment->due_date, 'aDuePromiseInstalments', $oStdInstalment, $aDataByDate);
+				}
+			}
+			
+			// Adjustments
+			$aAdjustments = Adjustment::getForAccountId($iAccountId, null, null, false);
+			foreach ($aAdjustments as $oAdjustment)
+			{
+				if ($oAdjustment->reviewed_datetime !== null)
+				{
+					$oReversal								= $oAdjustment->getReversal();
+					$oAdjustmentNature 						= Adjustment_Nature::getForId($oAdjustment->adjustment_nature_id);
+					$oStdAdjustment 						= $oAdjustment->toStdClass();
+					$oTransactionNature						= Transaction_Nature::getForId(Adjustment_Type::getForId($oAdjustment->adjustment_type_id)->transaction_nature_id);
+					$oStdAdjustment->proper_amount			= $oAdjustment->amount * $oAdjustmentNature->value_multiplier * $oTransactionNature->value_multiplier;
+					$oStdAdjustment->is_reversed			= ($oReversal ? true : false);
+					$oStdAdjustment->reversal_reason		= Adjustment_Reversal_Reason::getForId($oReversal ? $oReversal->adjustment_reversal_reason_id : $oAdjustment->adjustment_reversal_reason_id)->name;
+					$oStdAdjustment->created_employee_name	= Employee::getForId($oAdjustment->created_employee_id)->getName();
+					$oStdAdjustment->reviewed_employee_name	= Employee::getForId($oAdjustment->reviewed_employee_id)->getName();
+					
+					self::_createActivityLogRecord($oAdjustment->reviewed_datetime, 'aAdjustments', $oStdAdjustment, $aDataByDate);
+				}
+			}
+			
+			// Collection events
+			$aEvents = Account_Collection_Event_History::getForAccountId($iAccountId);
+			foreach ($aEvents as $oEvent)
+			{
+				if ($oEvent->completed_datetime !== null)
+				{
+					$oStdEvent 									= $oEvent->toStdClass();
+					$oStdEvent->collection_event_name			= $oEvent->getEvent()->name;
+					$oStdEvent->completed_employee_name			= Employee::getForId($oEvent->completed_employee_id)->getName();
+					$oStdEvent->collection_event_invocation_id	= Logic_Collection_Event_Instance::getForId($oStdEvent->id)->getInvocationId();
+					
+					self::_createActivityLogRecord($oEvent->completed_datetime, 'aCollectionEvents', $oStdEvent, $aDataByDate);
+				}
+			}
+			
+			// Collection suspensions
+			$aSuspensions = Collection_Suspension::getForAccountId($iAccountId);
+			foreach ($aSuspensions as $oSuspension)
+			{
+				$oStdSuspension 						= $oSuspension->toStdClass();
+				$oStdSuspension->start_employee_name	= Employee::getForId($oSuspension->start_employee_id)->getName();
+				$oStdSuspension->reason					= Collection_Suspension_Reason::getForId($oSuspension->collection_suspension_reason_id)->name;
+				
+				self::_createActivityLogRecord($oSuspension->start_datetime, 'aStartedCollectionSuspensions', $oStdSuspension, $aDataByDate);
+				
+				if ($oSuspension->proposed_end_datetime != Data_Source_Time::END_OF_TIME)
+				{
+					self::_createActivityLogRecord($oSuspension->proposed_end_datetime, 'aProposedCompleteCollectionSuspensions', $oStdSuspension, $aDataByDate);
+				}
+				
+				if ($oSuspension->effective_end_datetime !== null)
+				{
+					$oStdSuspension->end_employee_name	= Employee::getForId($oSuspension->end_employee_id ? $oSuspension->end_employee_id : Employee::SYSTEM_EMPLOYEE_ID)->getName();
+					$oStdSuspension->end_reason			= Collection_Suspension_End_Reason::getForId($oSuspension->collection_suspension_end_reason_id)->name;
+				
+					self::_createActivityLogRecord($oSuspension->effective_end_datetime, 'aCompletedCollectionSuspensions', $oStdSuspension, $aDataByDate);
+				}
+			}
+			
+			// Scenario changes
+			$aAccountCollectionScenario = Account_Collection_Scenario::getForAccountId($iAccountId);
+			foreach ($aAccountCollectionScenario as $oAccountCollectionScenario)
+			{
+				$oStdScenarioChange 							= $oAccountCollectionScenario->toStdClass();
+				$oStdScenarioChange->collection_scenario_name	= Collection_Scenario::getForId($oAccountCollectionScenario->collection_scenario_id)->name;
+				self::_createActivityLogRecord($oAccountCollectionScenario->start_datetime, 'aScenarioChangeStart', $oStdScenarioChange, $aDataByDate);
+				if ($oAccountCollectionScenario->end_datetime !== Data_Source_Time::END_OF_TIME)
+				{
+					self::_createActivityLogRecord($oAccountCollectionScenario->end_datetime, 'aScenarioChangeEnd', $oStdScenarioChange, $aDataByDate);
+				}
+			}
+			
+			// Sort the dates in descending order
+			$aDates = array_keys($aDataByDate);
+			sort($aDates);
+			
+			$aActivityData = array();
+			foreach ($aDates as $sDate)
+			{
+				$aActivityData[] = $aDataByDate[$sDate];
+			}
+			
+			return	array(
+						'aActivityData'	=> $aActivityData,
+						'bSuccess'		=> true,
+						'sDebug'		=> ($bUserIsGod ? $this->_JSONDebug : '')
+					);
+		}
+		catch (Exception $oEx)
+		{
+			$sMessage = $bUserIsGod ? $oEx->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
+			return 	array(
+						'bSuccess'	=> false,
+						'sMessage'	=> $sMessage
+					);
+		}
+	}
+	
+	public function getHistoricBalance($iAccountId, $sEffectiveDate)
+	{
+		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		try
+		{
+			return	array(
+						'fBalance'	=> Rate::roundToCurrencyStandard(Account::getForId($iAccountId)->getHistoricalBalance($sEffectiveDate)),
+						'bSuccess'	=> true,
+						'sDebug'	=> ($bUserIsGod ? $this->_JSONDebug : '')
+					);
+		}
+		catch (Exception $oEx)
+		{
+			$sMessage = $bUserIsGod ? $oEx->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
+			return 	array(
+						'bSuccess'	=> false,
+						'sMessage'	=> $sMessage
+					);
+		}
+	}
+	
+	private static function _createActivityLogRecord($sDate, $sTargetSubList, $oData, &$aDataByDate)
+	{
+		$sDate = date('Y-m-d', strtotime($sDate));		
+		if (!isset($aDataByDate[$sDate]))
+		{
+			$aDataByDate[$sDate] = 	array(
+										'sDate'										=> $sDate,
+										'aInvoices'									=> array(),
+										'aPayments'									=> array(),
+										'aCreatedPromises'							=> array(),
+										'aCompletedPromises'						=> array(),
+										'aDuePromiseInstalments'					=> array(),
+										'aAdjustments'								=> array(),
+										'aCollectionEvents'							=> array(),
+										'aProposedCompleteCollectionSuspensions'	=> array(),
+										'aCompletedCollectionSuspensions'			=> array(),
+										'aStartedCollectionSuspensions'				=> array(),
+										'aScenarioChangeStart'						=> array(),
+										'aScenarioChangeEnd'						=> array()
+									);
+		}
+		$aDataByDate[$sDate][$sTargetSubList][] = $oData;
+	}
 }
 
 class JSON_Handler_Account_Exception extends Exception

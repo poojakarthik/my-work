@@ -116,6 +116,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		// TODO: Check for permission to view correspondence
 		ContextMenu()->Account->ViewAccountCorrespondenceLedger($intAccountId);
+		ContextMenu()->Account->AccountActivityLog($intAccountId);
 	}
 	
 	//------------------------------------------------------------------------//

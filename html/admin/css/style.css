@@ -4934,6 +4934,7 @@ div.recurring-charge-type > div.section
 	border-radius			: 4px 4px 4px 4px;
 	-moz-border-radius		: 4px 4px 4px 4px;
 	-webkit-border-radius	: 4px 4px 4px 4px;
+	z-index					: 46;
 }
 
 .component-list-tooltip > table > tbody > tr > th
@@ -11811,3 +11812,191 @@ div.component-collections-scenario > table.reflex
 }
 
 /************************** END - Component Section - END **************************/
+
+/************************** START - Component Account Activity Log - START **************************/
+
+.component-account-activity-log
+{
+	margin	: 0.5em;
+}
+
+.component-account-activity-log .component-section
+{
+	display	: block;
+}
+
+.component-account-activity-log-list-container
+{
+	height		: 35em;
+	min-height	: 10em;
+	overflow	: auto;
+	resize		: vertical;
+}
+
+.component-account-activity-log .component-section-body table.reflex
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+.component-account-activity-log .component-section-body table.reflex > tbody > tr > td
+{
+	border-right	: solid 1px #777;
+}
+
+.component-account-activity-log .component-section-body table.reflex > tbody > tr > td:last-child
+{
+	border-right	: none;
+}
+
+.component-account-activity-log-date
+{
+	width		: 4em;
+	max-width	: 4em;
+}
+
+.component-account-activity-log tbody .component-account-activity-log-date
+{
+	vertical-align	: middle;
+}
+
+.component-account-activity-log-invoice
+{
+	width		: 6em;
+	max-width	: 6em;
+}
+
+.component-account-activity-log-payment
+{
+	width		: 6em;
+	max-width	: 6em;
+}
+
+.component-account-activity-log-promise
+{
+	width		: 5em;
+	max-width	: 5em;
+}
+
+.component-account-activity-log-adjustment
+{
+	width		: 6em;
+	max-width	: 6em;
+}
+
+.component-account-activity-log-collection
+{
+	width		: 8em;
+	max-width	: 8em;
+}
+
+.component-account-activity-log-historicbalance
+{
+	width		: 4em;
+	max-width	: 4em;
+}
+
+.component-account-activity-log-item
+{
+	border-radius			: 4px 4px 4px 4px;
+	-moz-border-radius		: 4px 4px 4px 4px;
+	-webkit-border-radius	: 4px 4px 4px 4px;
+	border					: solid 1px #333;
+	padding					: 0.25em;
+	margin-top				: 0.25em;
+}
+
+.component-account-activity-log-item:first-child
+{
+	margin-top	: 0em;
+}
+
+.component-account-activity-log-item > *
+{
+	vertical-align	: middle;
+}
+
+.component-account-activity-log-currency
+{
+	text-align	: right;
+	font-family	: monospace;
+	font-size	: 1.3em !important;
+}
+
+.component-account-activity-log-currency-icon
+{
+	float	: left;
+}
+
+.component-account-activity-log-row-inbetween-minimised > td
+{
+	font-size	: 0.65em !important;
+}
+
+.component-account-activity-log-row-inbetween-minimised:hover > .component-account-activity-log-historicbalance > img
+{
+	display	: block;
+}
+.component-account-activity-log-list-navigation
+{
+	text-align	: left;
+}
+
+.component-account-activity-log-list-navigation > button.icon-button:nth-child(3)
+{
+	display			: inline-block;
+	margin-right	: 3em !important;
+}
+
+.component-account-activity-log-list-navigation > .icon-button:nth-child(5)
+{
+	display			: inline-block;
+	margin-right	: 5em !important;
+}
+
+.component-account-activity-log-semitransparent
+{
+	opacity	: 0.5;
+}
+
+.component-account-activity-log-item-invoice
+{
+	background-color	: #FFBB99;
+}
+
+.component-account-activity-log-item-payment
+{
+	background-color	: #FFEE99;
+}
+
+.component-account-activity-log-item-promise
+{
+	background-color	: #AAFF99;
+}
+
+.component-account-activity-log-item-promiseinstalment
+{
+	background-color	: #AAFF99;
+}
+
+.component-account-activity-log-item-adjustment
+{
+	background-color	: #AAAA55;
+}
+
+.component-account-activity-log-item-collectionevent
+{
+	background-color	: #BB99FF;
+}
+
+.component-account-activity-log-item-collectionsuspension
+{
+	background-color	: #FFC34D;
+}
+
+.component-account-activity-log-item-collectionscenario
+{
+	background-color	: #75A3FF;
+}
+
+/************************** END - Component Account Activity Log - END **************************/
