@@ -586,6 +586,7 @@ Control_Field.factory	= function(sType, oDefinition)
 			break;
 		
 		case 'text_ajax':
+		case 'text-ajax':
 			oControlField	= new Control_Field_Text_AJAX(oDefinition.sLabel, null, oDefinition.oDatasetAjax, oDefinition.sDisplayValueProperty, oDefinition.oColumnProperties, oDefinition.iResultLimit, oDefinition.sResultPaneClass);
 			break;
 
