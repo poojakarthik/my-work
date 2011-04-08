@@ -248,6 +248,36 @@ Object.extend(Reflex_Popup, {
 				bOverrideStyles	: false
 			}
 		);
+	},
+
+	factory	: function (mContent, oConfig) {
+		oConfig	= Object.extend({
+			iWidth					: 25,
+			aHeaderButtons			: [],
+			aFooterButtons			: [],
+			bFooterButtonsCentred	: true,
+			bClosable				: true,
+			fnOnClose				: null,
+			bAutoDisplay			: false
+		}, oConfig || {});
+
+		var	oPopup	= new Reflex_Popup(oConfig.iWidth);
+
+		oPopup.setContent(mContent);
+		if (oConfig.aHeaderButtons) {
+			oPopup.setHeaderButtons(Object.isArray(oConfig.aHeaderButtons) ? oConfig.aHeaderButtons : [oConfig.aHeaderButtons]);
+		}
+		if (oConfig.aFooterButtons) {
+			oPopup.setFooterButtons(Object.isArray(oConfig.aFooterButtons) ? oConfig.aFooterButtons : [oConfig.aFooterButtons], !!oConfig.bFooterButtonsCentred);
+		}
+		if (oConfig.bClosable) {
+			oPopup.addCloseButton(oConfig.fnOnClose);
+		}
+		if (oConfig.bAutoDisplay) {
+			oPopup.display();
+		}
+
+		return oPopup;
 	}
 });
 
