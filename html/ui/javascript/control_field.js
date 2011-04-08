@@ -499,7 +499,7 @@ Control_Field.factory	= function(sType, oDefinition)
 	
 	// Determine type
 	
-	switch (sType.toLowerCase())
+	switch (sType.toLowerCase().replace('-', '_'))
 	{
 		
 		case 'checkbox':
@@ -586,7 +586,6 @@ Control_Field.factory	= function(sType, oDefinition)
 			break;
 		
 		case 'text_ajax':
-		case 'text-ajax':
 			oControlField	= new Control_Field_Text_AJAX(oDefinition.sLabel, null, oDefinition.oDatasetAjax, oDefinition.sDisplayValueProperty, oDefinition.oColumnProperties, oDefinition.iResultLimit, oDefinition.sResultPaneClass);
 			break;
 
