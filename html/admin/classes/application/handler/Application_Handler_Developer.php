@@ -114,7 +114,7 @@ class Application_Handler_Developer extends Application_Handler
 														array	(
 																	'strName'	=> 'Manage Account Links',
 																	'strType'	=> self::URL_TYPE_JS,
-																	'strURL'	=> 'JsAutoLoader.loadScript(["component_section.js","component_account_links.js"], function(){var oPopup = Component_Account_Links.createAsPopup({iAccountId:1000154811,fnOnReady:function(){oPopup.display();}});}, true);'
+																	'strURL'	=> 'JsAutoLoader.loadScript(["dataset_ajax.js", "filter.js", "control_field.js", "control_field_text_ajax.js","component_section.js","component_account_links.js"], function(){var oPopup = Component_Account_Links.createAsPopup({iAccountId:1000154811,fnOnReady:function(){oPopup.display();}});}, true);'
 																)
 													);
 			

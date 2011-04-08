@@ -252,6 +252,8 @@ Object.extend(Reflex_Popup, {
 
 	factory	: function (mContent, oConfig) {
 		oConfig	= Object.extend({
+			sTitle					: null,
+			sIcon					: null,
 			iWidth					: 25,
 			aHeaderButtons			: [],
 			aFooterButtons			: [],
@@ -275,6 +277,13 @@ Object.extend(Reflex_Popup, {
 		}
 		if (oConfig.bAutoDisplay) {
 			oPopup.display();
+		}
+
+		if (oConfig.sTitle) {
+			oPopup.setTitle(oConfig.sTitle);
+		}
+		if (oConfig.sIcon) {
+			oPopup.setIcon(oConfig.sIcon);
 		}
 
 		return oPopup;

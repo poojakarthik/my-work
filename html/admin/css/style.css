@@ -11720,6 +11720,70 @@ div.component-collections-scenario > table.reflex
 	cursor	: pointer;
 }
 
+.component-account-links-popup-unlink {
+	text-align	: left;
+}
+
+.component-account-links-popup-unlink > ul {
+	list-style-type		: none;
+	text-align			: center;
+	margin-left			: 2em;
+	margin-right		: 2em;
+	padding				: 0.5em;
+	border-radius		: 4px;
+	background-color	: #fff;
+	border				: 1px solid #000;
+}
+
+.component-account-links-popup-unlink > ul > li > * {
+	vertical-align	: middle;
+}
+
+.component-account-links-popup-unlink > ul > li > img {
+	margin-right	: 0.25em;
+	margin-left		: -16px;
+}
+
+.component-account-links-popup-link {
+	margin		: 0.5em;
+}
+
+.component-account-links-popup-link > p {
+	text-align	: center;
+	font-weight	: bold;
+}
+
+.component-account-links-popup-link .control-field,
+.component-account-links-popup-link input {
+	width	: 100%;
+	margin	: 0;
+}
+
+.component-account-links-popup-link .control-field-text-ajax-overlay {
+	border-top-left-radius	: 0;
+	border-top-right-radius	: 0;
+	background-color		: transparent;
+	background-image		: -moz-linear-gradient(top, rgba(255, 255, 255, 0.95), rgba(223, 223, 223, 0.95));
+}
+
+.component-account-links-popup-link .control-field-text-ajax-overlay td.control-field-text-ajax-result-column {
+	background-color	: transparent !important;
+}
+
+.component-account-links-popup-link .control-field-text-ajax-overlay .control-field-text-ajax-result-row:hover td.control-field-text-ajax-result-column {
+	background-color	: #ccc !important;
+}
+
+.component-account-links-popup-link .control-field-text-ajax-result-column {
+	vertical-align	: top;
+}
+
+.component-account-links-popup-link-account-list-id {
+	width		: 0;	/* Should be bumped out by the content */
+	font-weight	: bold;
+	padding-right	: 0.5em;
+}
+
 /************************** END - Component Account Links - END **************************/
 
 /************************** START - Component Section - START **************************/

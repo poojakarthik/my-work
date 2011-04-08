@@ -629,6 +629,8 @@ Control_Field.factory	= function(sType, oDefinition)
 	if (oDefinition.sExtraClass) {
 		oControlField.getElement().addClassName(oDefinition.sExtraClass);
 	}
+
+	oControlField.setRenderMode(!!oDefinition.bRenderMode);
 	
 	return oControlField;
 };
