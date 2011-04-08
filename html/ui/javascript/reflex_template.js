@@ -7,12 +7,30 @@ Reflex_Template	= function(sTag) {
 
 	// Configure from Argument Data
 	// Attributes
+	var	aEventName,
+		aEventHandlers,
+		i, l;
 	for (sAttributeName in oArgumentData.oConfig) {
-		oElement.setAttribute(sAttributeName, oArgumentData.oConfig[sAttributeName]);
+		aEventName	= sAttributeName.match(/^on([A-Za-z]+)$/);
+		if (aEventName && (Object.isArray(oArgumentData.oConfig[sAttributeName]) || typeof oArgumentData.oConfig[sAttributeName] === 'function')) {
+			//debugger;
+			// Event Handler(s) which are functions (or an array of functions)
+			aEventHandlers	= Object.isArray(oArgumentData.oConfig[sAttributeName]) ? oArgumentData.oConfig[sAttributeName] : [oArgumentData.oConfig[sAttributeName]];
+
+			// Attach each handler individually
+			for (i=0, l=aEventHandlers.length; i < l; i++) {
+				if (typeof aEventHandlers[i] === 'function') {
+					oElement.on(aEventName[1].toLowerCase(), aEventHandlers[i]);
+				}
+			}
+		} else {
+			// Anything else
+			oElement.setAttribute(sAttributeName, oArgumentData.oConfig[sAttributeName]);
+		}
 	}
 
 	// Children
-	for (var i = 0, j = oArgumentData.aChildren.length; i < j; i++) {
+	for (i = 0, l = oArgumentData.aChildren.length; i < l; i++) {
 		oElement.appendChild(Reflex_Template.extractNode(oArgumentData.aChildren[i]));
 	}
 
