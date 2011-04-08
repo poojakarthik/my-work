@@ -414,43 +414,40 @@ class Email_Template_Logic
 
 			$oElements = $xpath->query("//*[@id='__stripme']");
 			$oRootElement = $oElements->item(0);
-			$oRootElement->firstChild->nextSibling == null&&$oRootElement->firstChild->tagName!=null?$oRootElement=$oRootElement->firstChild:null;
-			$sRootName = $oRootElement==null?'div':$oRootElement->tagName;
+			
+			$imp = new DOMImplementation();
+			$y = $imp->createDocument(	null, 'div',
+										$imp->createDocumentType("xml",
+																'xml version="1.0" encoding="utf-8"',
+																NULL)
+										);
+			
 
-			/*$oRootElement = $oDOMDocument->documentElement;//$oDOMDocument->getElementById ('__stripme');//
-			//$oRootElement->firstChild->nextSibling == null?$oRootElement=$oRootElement->firstChild:null;
-			$oRootElement->firstChild->nextSibling == null&&$oRootElement->tagName =='html'?$oRootElement=$oRootElement->firstChild:null;
-			$sRootName = $oRootElement->tagName =='body'||$oRootElement->tagName =='html'||$oRootElement==null?'div':$oRootElement->tagName;
-*/
-			$aError = error_get_last();
-			$x = @DOMDocument::loadXML('<?xml version="1.0" encoding="utf-8"?>'."<".$sRootName."> </".$sRootName.">");
-			$aNewError = error_get_last();
-			if ($aNewError!=$aError && $aNewError['message'] != "Non-static method DOMDocument::loadXML() should not be called statically")
-			{
-				throw new Exception ("DOM Document XML Error whilst processing HTML: ".$aNewError['message']);
-			}
-
-		 	$oChildren = $oRootElement->childNodes;
+			$oChildren = $oRootElement->childNodes;
 			if ($oChildren!=null)
 			{
 				foreach ($oChildren as $node)
 				{
-					$node = @$x->importNode($node, true);
-					$x->documentElement->appendChild($node);
+					$node = @$y->importNode($node, true);
+					$y->documentElement->appendChild($node);
+					//$x->appendChild($node);
 				}
 
 			}
+			$sString = str_replace ( "<?xml version=\"1.0\"?>" , "" , $y->saveXML());
+			$sString = str_replace("<!DOCTYPE xml PUBLIC 'xml version=\"1.0\" encoding=\"utf-8\"' \"\">", "", $sString);	
 
-			$oDOMDocument = $x;//*DOMDocument::loadXML(str_replace ( '<?xml version="1.0">' , "" , $x->saveXML()));
 
+			/*	//For query debug purpose
+				$oDOMDocument = $y;*/
+				/*$myFile = FILES_BASE_PATH.'temp/'."html_y.txt";
+				$fh = fopen($myFile, 'w') or die("can't open file");
+				$sString = str_replace ( "<?xml version=\"1.0\"?>" , "" , $y->saveXML());
+				$sString = str_replace("<!DOCTYPE xml PUBLIC 'xml version=\"1.0\" encoding=\"utf-8\"' \"\">", "", $sString);
+				fwrite($fh,trim($sString) );
+				fclose($fh);*/
 
-	/*		//For query debug purpose
-		  	$myFile = "html.txt";
-			$fh = fopen($myFile, 'w') or die("can't open file");
-			fwrite($fh, str_replace ( '<?xml version="1.0" encoding="utf-8"?>' , "" , $oDOMDocument->saveXML()));
-			fclose($fh);*/
-
-			return $bReport?$aReport:str_replace ( '<?xml version="1.0" encoding="utf-8"?>' , "" , $oDOMDocument->saveXML());
+			return $bReport?$aReport:str_replace ( '<?xml version="1.0" encoding="utf-8"?>' , "" , trim($sString));
 		}
 		return $bReport?$aReport:"";
 	}
