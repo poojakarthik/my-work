@@ -16,16 +16,6 @@ class Resource_Type_File_Import_Payment_Motorpass extends Resource_Type_File_Imp
 	const	RECORD_TYPE_HEADER		= 'HEADER';
 	const	RECORD_TYPE_TRANSACTION	= 'TRANSCATION';
 	const	RECORD_TYPE_FOOTER		= 'FOOTER';
-
-	public function __construct() {
-		throw new Exception_Assertion(
-			"ReD/Motorpass File Format Encountered",
-			null,
-			"Payment Processing: ReD/Motorpass File Format Encountered"
-		);
-		$aArguments	= func_get_args();
-		call_user_func_array(array('parent', '__construct'), $aArguments);
-	}
 	
 	public function getRecords()
 	{
