@@ -808,6 +808,7 @@ class Invoice_Run
 
 			// Generate the correspondence data
 			$aCorrespondenceData	= array();
+			$aEmailInvoiceIds		= array();
 			foreach ($aPDFFilenames as $iInvoiceId => $sPDFFilename)
 			{
 				Log::getLog()->log("\nInvoice {$iInvoiceId}");
@@ -844,9 +845,9 @@ class Invoice_Run
 							}
 						}
 						
-						// Update the invoices delivery method
-						$oInvoice->DeliveryMethod	= DELIVERY_METHOD_EMAIL_SENT;
-						$oInvoice->save();
+						// Mark the invoice to have it's delivery method updated
+						$aEmailInvoiceIds[] = $oInvoice->Id;
+						Log::getLog()->log("Invoice {$oInvoice->Id} to be emailed to ".count($aContacts)." contacts");
 						break;
 						
 					case DELIVERY_METHOD_EMAIL_SENT:
@@ -892,6 +893,16 @@ class Invoice_Run
 				Log::getLog()->log("Got template");
 				$oRun	= $oTemplate->createRun(true, $aCorrespondenceData);
 				Log::getLog()->log("Run created");
+				
+				// Update delivery method to DELIVERY_METHOD_EMAIL_SENT for each invoice with email as it's delivery method
+				Log::getLog()->log("Update delivery method to DELIVERY_METHOD_EMAIL_SENT for each Invoice with EMAIL as it's delivery method");
+				foreach ($aEmailInvoiceIds as $iInvoiceId)
+				{
+					$oInvoice 					= Invoice::getForId($iInvoiceId);
+					$oInvoice->DeliveryMethod	= DELIVERY_METHOD_EMAIL_SENT;
+					$oInvoice->save();
+				}
+				Log::getLog()->log("... ".count($aEmailInvoiceIds)." Invoices updated");
 			}
 			catch (Correspondence_DataValidation_Exception $oEx)
 			{
