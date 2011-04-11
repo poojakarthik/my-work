@@ -85,8 +85,8 @@ class Resource_Type_File_Import_Payment_Motorpass extends Resource_Type_File_Imp
 		$oPaymentResponse->amount		= $fAmount;
 		
 		// Account
-		$sReference						= trim($oRecord->ClientReferenceNo);
- 		$oPaymentResponse->account_id	= (int)$sReference;
+		$sReference						= (int)trim($oRecord->ClientReferenceNo);
+ 		$oPaymentResponse->account_id	= Invoice::getForId($sReference)->Account;
  		
  		// AccountGroup
  		$oPaymentResponse->account_group_id	= Account::getForId($oPaymentResponse->account_id)->AccountGroup;
