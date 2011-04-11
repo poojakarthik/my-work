@@ -96,7 +96,7 @@ class Cli_App_Payments extends Cli
 		{
 			if ($oFileImport->Status !== FILE_COLLECTED)
 			{
-				throw new Exception("Only Files with Status FILE_IMPORTED (".FILE_IMPORTED.") can be pre-Processed");
+				throw new Exception("Only Files with Status FILE_COLLECTED (".FILE_COLLECTED.") can be pre-Processed");
 			}
 			
 			// Make sure that we have a Carrier Module defined to process this File
