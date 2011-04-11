@@ -92,7 +92,7 @@ class Cli_App_Payments extends Cli
 		
 		// Optional FileImport.Id parameter
 		$iFileImportId	= $this->_aArgs[self::SWITCH_FILE_IMPORT_ID];
-		if ($iFileImportId && ($oFileImport = File_Import::getForId()))
+		if ($iFileImportId && ($oFileImport = File_Import::getForId($iFileImportId)))
 		{
 			if ($oFileImport->Status !== FILE_IMPORTED)
 			{
