@@ -498,7 +498,6 @@ Control_Field.factory	= function(sType, oDefinition)
 	var oControlField;
 	
 	// Determine type
-	
 	switch (sType.toLowerCase().replace('-', '_'))
 	{
 		
@@ -515,7 +514,7 @@ Control_Field.factory	= function(sType, oDefinition)
 			}
 			break;
 		
-		case 'date-picker':
+		case 'date_picker':
 			oControlField	= 	new Control_Field_Date_Picker(
 									oDefinition.sLabel, 
 									null, 
