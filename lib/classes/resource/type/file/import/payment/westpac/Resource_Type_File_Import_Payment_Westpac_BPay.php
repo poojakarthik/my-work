@@ -53,7 +53,8 @@ class Resource_Type_File_Import_Payment_Westpac_BPay extends Resource_Type_File_
 		$oPaymentResponse	= new Payment_Response();
 		
 		// Paid Date
-		$oPaymentResponse->paid_date	= substr($oRecord->Date, 4, 4).'-'.substr($oRecord->Date, 2, 2).'-'.substr($oRecord->Date, 0, 2);
+		$sPaidDate						= (strlen($oRecord->Date == 7)) ? '0'.$oRecord->Date : $oRecord->Date;
+		$oPaymentResponse->paid_date	= substr($sPaidDate, 4, 4).'-'.substr($sPaidDate, 2, 2).'-'.substr($sPaidDate, 0, 2);
 		
 		// Amount
 		$oPaymentResponse->amount		= round((float)$oRecord->Amount, 2);
