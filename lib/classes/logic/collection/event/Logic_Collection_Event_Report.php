@@ -74,6 +74,8 @@ class Logic_Collection_Event_Report extends Logic_Collection_Event
 	{
 		//get the sql for the report
 		$oEventInstance		= $aEventInstances[0];
+		if ($oEventInstance === NULL)
+			return; //nothing to complete
 		$sEventName			= $oEventInstance->getEventName();
 		$oEventObject		= self::getForEventInstance($oEventInstance);
 		$sSql				=  $oEventObject->report_sql;

@@ -97,7 +97,7 @@ class Logic_Collection_Event_Instance
 	 * @param <type> $mItemToSchedule, either a Logic_Collection_Scenario_Event object or a Logic_Collection_Event object
 	 * @param <type> $oAccount
 	 */
-	public static function schedule($oAccount, $mItemToSchedule)
+	public static function queueForscheduling($oAccount, $mItemToSchedule)
 	{
 		// Return an instance of this class
 		$oEventInstance					= new self(new Account_Collection_Event_History());
@@ -120,11 +120,19 @@ class Logic_Collection_Event_Instance
 			$oEventInstance->collectable_id			= $oAccount->getMostRecentCollectionEventInstance()->collectable_id;
 		}
 
-		$oEventInstance->scheduled_datetime					= DataAccess::getDataAccess()->getNow();
+		//$oEventInstance->scheduled_datetime					= DataAccess::getDataAccess()->getNow();
 		$oEventInstance->account_collection_event_status_id = ACCOUNT_COLLECTION_EVENT_STATUS_SCHEDULED;
-		$oEventInstance->save();
-		Log::getLog()->log('Scheduled event \''.$oEventInstance->getEventName().'\' for account Id '.$oAccount->Id);
+		//$oEventInstance->save();
+		$oEventInstance->addToQueue();
+		//Log::getLog()->log('Scheduled event \''.$oEventInstance->getEventName().'\' for account Id '.$oAccount->Id);
 		return $oEventInstance;
+	}
+
+	private function addToQueue()
+	{
+		if (!array_key_exists($this->oDO->collection_event_id, self::$aEventInstancesWaitingForCompletion))
+		   self::$aEventInstancesWaitingForCompletion[$this->oDO->collection_event_id] = array();
+		self::$aEventInstancesWaitingForCompletion[$this->oDO->collection_event_id][] = $this;
 	}
 
 	public static function getWaitingEvents($iAccountId = null)
@@ -143,29 +151,37 @@ class Logic_Collection_Event_Instance
 	/**
 	 * Logic_Collection_Event_Instance::invoke
 	 * Retrieves the Logic_Collection_Event object for this event instance and calls its invoke() method
-	 * Registers $this with the static array that is later used to complete the event instance
+	 * 
 	 */
 	public function invoke($aParameters = null)
 	{
 
-			$oDataAccess	= DataAccess::getDataAccess();
-			$oDataAccess->TransactionStart();
-			try
-			{
+			//$oDataAccess	= DataAccess::getDataAccess();
+			//$oDataAccess->TransactionStart();
+			//try
+			//{
 				// Invoke the event
 				////Log::getLog()->log("About to invoke event '{$this->oDO->collection_event_id}'");
 				$this->oEvent = Logic_Collection_Event::getForEventInstance($this);
 				$this->oEvent->invoke($aParameters);
-				$oDataAccess->TransactionCommit();
-			}
-			catch(Exception $e)
-			{
-		$oDataAccess->TransactionRollback();
-		throw $e;
-			}
+				//$oDataAccess->TransactionCommit();
+			//}
+			//catch(Exception $e)
+			//{
+		//		$oDataAccess->TransactionRollback();
+		//		throw $e;
+		//	}
 
 
 
+	}
+
+	public function getAccount()
+	{
+		if ($this->account_id !== NULL)
+			return Logic_Account::getForId($this->account_id);
+
+		return NULL;
 	}
 
 	public function setException($e)
@@ -188,12 +204,12 @@ class Logic_Collection_Event_Instance
 	 * adds $this to self::$aEventInstancesWaitingForCompletion, an associative array with key == collection_event_id value = Logic_Collection_Event_Instance object
 	 *
 	 */
-	public function _registerWithArray() {
-
-		if (!array_key_exists($this->oDO->collection_event_id, self::$aEventInstancesWaitingForCompletion))
-		   self::$aEventInstancesWaitingForCompletion[$this->oDO->collection_event_id] = array();
-		self::$aEventInstancesWaitingForCompletion[$this->oDO->collection_event_id][] = $this;
-	}
+//	public function _registerWithArray() {
+//
+//		if (!array_key_exists($this->oDO->collection_event_id, self::$aEventInstancesWaitingForCompletion))
+//		   self::$aEventInstancesWaitingForCompletion[$this->oDO->collection_event_id] = array();
+//		self::$aEventInstancesWaitingForCompletion[$this->oDO->collection_event_id][] = $this;
+//	}
 
 	  /**
 	 * Logic_Collection_Event_Instance:: completeWaitingInstances
@@ -203,147 +219,237 @@ class Logic_Collection_Event_Instance
 	   * @return the number of event instances that were completed
 	 */
 
-	public static function completeWaitingInstances($bBypassChachedEvents = false, $aParameters = null, $iAccountId = null)
+	public static function completeWaitingInstances($aParameters = null,  $bCompleteSchedulingFirst = FALSE)
 	{
-		$aEventInstances = array();
-
-		if ($bBypassChachedEvents)
-		{			
-			$aInstances =self::getWaitingEvents($iAccountId);
-			foreach ($aInstances as $oInstance)
-			{
-				if ($oInstance->getInvocationId() == COLLECTION_EVENT_INVOCATION_AUTOMATIC)
-				{
-					if (!array_key_exists($oInstance->collection_event_id, $aEventInstances))
-						$aEventInstances[$oInstance->collection_event_id] = array();
-					$aEventInstances[$oInstance->collection_event_id][] = $oInstance;
-				}
-			}
-		}
-		else
-		{
-			$aEventInstances = self::$aEventInstancesWaitingForCompletion;
-		}
-
+		$aEventInstances = self::$aEventInstancesWaitingForCompletion;
 		$iCompletedEvents = 0;
+		$aFailedInstances = array();
+		$aSucceededInstances = array();
+
+		if (count($aEventInstances) > 0)
+			Log::getLog()->log("Processing Events.......");
+		else
+			Log::getLog()->log("No Events to process.......This is the end.......");
+
 		foreach($aEventInstances as $iEventId => $aCollectionEvents)
 		{
-			$oDataAccess	= DataAccess::getDataAccess();
+			$sName = Collection_Event::getForId($iEventId)->name;
+			Log::getLog()->log("Processing '$sName' Events......");
+			$oDataAccess = DataAccess::getDataAccess();
 			$oDataAccess->TransactionStart();
-			Logic_Stopwatch::getInstance()->lap();
-			$sEventName;
-			$aSuccesfullyInvokedInstances = array();
 			try
 			{
-				//this first checks if this event is eligible to be invoked today
-				if (Collections_Schedule::getEligibility($iEventId))
+				$aInstancesToInvokeAndComplete = array();
+				//first complete the scheduling process, if required
+				//at this time we do this only for the manually invoked events
+				//the automatically invoked events are scheduled within the same transaction as their invoke and complete
+				//scheduling at this stage is simply saving the event object to the database
+				if ($bCompleteSchedulingFirst)
 				{
 					
-					foreach ($aCollectionEvents as $oEventInstance)
+					foreach($aCollectionEvents as $oEvent)
 					{
-						if (!Logic_Collection_BatchProcess_Report::isFailedEventInstance($oEventInstance))
+						if ($oEvent->getInvocationId() === COLLECTION_EVENT_INVOCATION_AUTOMATIC)
 						{
+							$aInstancesToInvokeAndComplete[] = $oEvent;
+						}
+						else
+						{
+							$oDataAccess	= DataAccess::getDataAccess();
+							$oDataAccess->TransactionStart();
 							try
 							{
-								$sEventName = $sEventName === null ? $oEventInstance->getEventName() : $sEventName;
-								$invocationParameters = $aParameters !== null ? $aParameters[$oEventInstance->id] : null;
-								$oEventInstance->invoke($invocationParameters);
-								$aSuccesfullyInvokedInstances[] = $oEventInstance;
+								$oEvent->scheduled_datetime = DataAccess::getDataAccess()->getNow();
+								$oEvent->save();
+								$oDataAccess->TransactionCommit();
+								Logic_Collection_BatchProcess_Report::queueEvent($oEvent);
+								Log::getLog()->log("Scheduled manual event for Account $oEvent->account_id, Event: ". $oEvent->getEventName());
 							}
 							catch(Exception $e)
 							{
-								Log::getLog()->log("Exception occurred during '$sEventName' event invocation. Only this event instance will be rolled back.");
+								$oDataAccess->TransactionRollback();
+								Logic_Collection_BatchProcess_Report::queueEvent($oEvent);
 								if ($e instanceof Exception_Database)
 								{
+									$aFailedInstances = array_merge($aFailedInstances, Logic_Collection_BatchProcess_Report::commit($e));
 									throw $e;
 								}
 								else
 								{
-									$oEventInstance->setException($e);
-									Logic_Collection_BatchProcess_Report::addEvent($oEventInstance);
+									Log::getLog()->log("Exception occurred during event scheduling. Account: $oEvent->account_id, Event:". $oEvent->getEventName().". Only this event instance will be rolled back.");
+									$aFailedInstances = array_merge($aFailedInstances, Logic_Collection_BatchProcess_Report::commit($e));
 								}
-
 							}
 						}
 					}
-
-					//now complete all succesfully invoked instances
-					$sClassName = Logic_Collection_Event::getClassNameForId($iEventId);
-					call_user_func(array( $sClassName, 'complete'), $aSuccesfullyInvokedInstances);
-					$iCompletedEvents += count($aSuccesfullyInvokedInstances);
-					$oDataAccess->TransactionCommit();
-					Log::getlog()->log("Invoked and completed ".count($aSuccesfullyInvokedInstances)." '$sEventName' events in : ".Logic_Stopwatch::getInstance()->lap()." seconds.");
 				}
 				else
 				{
-					throw new Exception("This event is not eligible to be invoked today.");
+					$aInstancesToInvokeAndComplete = $aCollectionEvents;
 				}
+
+
+				if (count($aInstancesToInvokeAndComplete) > 0)
+				{
+					$oDataAccess	= DataAccess::getDataAccess();
+					$oDataAccess->TransactionStart();
+					Logic_Stopwatch::getInstance()->lap();
+					
+					$aSuccesfullyInvokedInstances = array();
+					try
+					{
+						//this first checks if this event is eligible to be invoked today
+						if (Collections_Schedule::getEligibility($iEventId))
+						{
+							$sEventName;
+							foreach ($aInstancesToInvokeAndComplete as $oEventInstance)
+							{
+								
+								$oDataAccess	= DataAccess::getDataAccess();
+								$oDataAccess->TransactionStart();
+								try
+								{
+									//schedule first
+									if ($bCompleteSchedulingFirst)
+									{
+										$oEventInstance->scheduled_datetime = DataAccess::getDataAccess()->getNow();
+										//at this point we must save because some events require the account_event_hisroty_id as a FK reference. Only after save() do we have an id
+										$oEventInstance->save();
+									}
+
+									$sEventName = $sEventName === null ? $oEventInstance->getEventName() : $sEventName;
+									$invocationParameters = $aParameters !== null ? $aParameters[$oEventInstance->id] : null;
+									$oEventInstance->invoke($invocationParameters);
+									Logic_Collection_BatchProcess_Report::queueEvent($oEventInstance);
+									$oDataAccess->TransactionCommit();
+									$aSuccesfullyInvokedInstances[] = $oEventInstance;
+								}
+								catch(Exception $e)
+								{
+									$oDataAccess->TransactionRollback();
+									Logic_Collection_BatchProcess_Report::queueEvent($oEventInstance);
+									if ($e instanceof Exception_Database)
+									{
+										$aFailedInstances = array_merge($aFailedInstances,Logic_Collection_BatchProcess_Report::commit($e));
+										Log::getLog()->log("Database Exception occurred during '$sEventName' event invocation. The process will be cancelled and rolled back.");
+										throw $e;
+									}
+									else
+									{
+										Log::getLog()->log("Exception occurred during '$sEventName' event invocation. Only this event instance will be rolled back.");
+										$aFailedInstances = array_merge($aFailedInstances,Logic_Collection_BatchProcess_Report::commit($e));
+									}
+								}
+							}
+
+
+							//now complete all succesfully invoked instances
+							$sClassName = Logic_Collection_Event::getClassNameForId($iEventId);
+							call_user_func(array( $sClassName, 'complete'), $aSuccesfullyInvokedInstances);							
+							$aSucceededInstances = array_merge($aSucceededInstances, $aSuccesfullyInvokedInstances);
+							$oDataAccess->TransactionCommit();
+							Log::getlog()->log("Invoked and completed ".count($aSuccesfullyInvokedInstances)." '$sEventName' events in : ".Logic_Stopwatch::getInstance()->lap()." seconds.");
+							$sEventName = NULL;
+
+						}
+						else
+						{
+							throw new Exception("This event is not eligible to be invoked today.");
+						}
+
+
+					}
+					catch (Exception $e)
+					{
+						Log::getLog()->log("Exception occurred during '$sEventName' event completion. All ".count($aSuccesfullyInvokedInstances)." invoked instances will be rolled back.");
+						Log::getLog()->log("Exception Details: ");
+						$sEventName = NULL;
+						// Exception caught, rollback db transaction
+						$oDataAccess->TransactionRollback();
+						if ($e instanceof Exception_Database)
+						{
+							Logic_Collection_BatchProcess_Report::addException($e);
+							$aFailedInstances = array_merge($aFailedInstances,Logic_Collection_BatchProcess_Report::commit($e));
+							throw $e;
+						}
+						else
+						{
+							Log::getLog()->log($e->__toString());
+							$aFailedInstances = array_merge($aFailedInstances,Logic_Collection_BatchProcess_Report::commit($e));
+						}
+					}
+				}
+				$oDataAccess->TransactionCommit();
+				Logic_Collection_BatchProcess_Report::commit();
 			}
-			catch (Exception $e)
-			{
-				Log::getLog()->log("Exception occurred during '$sEventName' event completion. All ".count($aSuccesfullyInvokedInstances)." invoked instances will be rolled back.");
-				Log::getLog()->log("Exception Details: ");
-				Log::getLog()->log($e->__toString());
+			catch(Exception $e)
+			{				
 				// Exception caught, rollback db transaction
 				$oDataAccess->TransactionRollback();
+				Log::getLog()->log("Processing $sName failed, all instances will be rolled back.");
 				if ($e instanceof Exception_Database)
 				{
 					Logic_Collection_BatchProcess_Report::addException($e);
+					$aFailedInstances = array_merge($aFailedInstances,Logic_Collection_BatchProcess_Report::commit($e));
 					throw $e;
 				}
 				else
-				{
-					foreach ($aCollectionEvents as $oEvent)
-					{
-						$oEvent->setException($e);
-						Logic_Collection_BatchProcess_Report::addEvent($oEvent);
-					}
+				{			
+					Log::getLog()->log($e->__toString());
+					$aFailedInstances = array_merge($aFailedInstances,Logic_Collection_BatchProcess_Report::commit($e));
 				}
 			}
-
 		}
-		if (!$bBypassChachedEvents)
-			self::$aEventInstancesWaitingForCompletion = array();
-		return $iCompletedEvents;
+		
+		Logic_Collection_BatchProcess_Report::commit();
+		self::$aEventInstancesWaitingForCompletion = array();
+		return array('success'=>$aSucceededInstances, 'failure'=>$aFailedInstances);
 	}
 
+
+
 	/**
-	 *
+	 * Completes any event instances that are passed in, with optional parameters for each
 	 * @param <type> $aParameters - associative array with key == account_collection_event_history.id and value == array of parameters to pass into the invoke method
 	 */
 	public static function completeScheduledInstancesFromUI($aParameters)
 	{
+		self::$aEventInstancesWaitingForCompletion = array();
 		foreach (array_keys($aParameters) as $iInstanceId)
 		{
 			$oInstance = new self($iInstanceId);
-			$oInstance->_registerWithArray();
+			$oInstance->addToQueue();
 		}
 
-		return self::completeWaitingInstances(false , $aParameters);
+		return self::completeWaitingInstances($aParameters);
 	}
 
-	public static function completeScheduledInstancesForAccounts($aAccounts)
-	{
-		$aEventInstances = array();
-		foreach ($aAccounts as $oAccount)
-		{
-			//there can only be one waiting event for an account, but the getWaitingEvents() method returns an array.....
-			$aEvent = self::getWaitingEvents($oAccount->id);
-			$oInstance = reset($aEvent);
-			if (count($aEvent) > 0 && ($oAccount->shouldCurrentlyBeInCollections() || $oInstance->isExitEvent()))
-			{				
-				if ($oInstance->getInvocationId() == COLLECTION_EVENT_INVOCATION_AUTOMATIC)
-				{
-					if (!array_key_exists($oInstance->collection_event_id, $aEventInstances))
-						$aEventInstances[$oInstance->collection_event_id] = array();
-					$aEventInstances[$oInstance->collection_event_id][] = $oInstance;
-				}
-				
-			}
-		}
-		self::$aEventInstancesWaitingForCompletion = $aEventInstances;
-		self::completeWaitingInstances();
-	}
+	/**
+	 * retrieves from the database any scheduled but not completed instances, and completes the auto invoke ones
+	 * @param <type> $aAccounts 
+	 */
+//	public static function completeScheduledInstancesForAccounts($aAccounts)
+//	{
+//		self::$aEventInstancesWaitingForCompletion = array();
+//		foreach ($aAccounts as $oAccount)
+//		{
+//			//there can only be one waiting event for an account, but the getWaitingEvents() method returns an array.....
+//			$aEvent = self::getWaitingEvents($oAccount->id);
+//			$oInstance = reset($aEvent);
+//			if (count($aEvent) > 0 && ($oAccount->shouldCurrentlyBeInCollections() || $oInstance->isExitEvent()))
+//			{
+//				if ($oInstance->getInvocationId() == COLLECTION_EVENT_INVOCATION_AUTOMATIC)
+//				{
+//					$oInstance->addToQueue();
+////					if (!array_key_exists($oInstance->collection_event_id, $aEventInstances))
+////						$aEventInstances[$oInstance->collection_event_id] = array();
+////					$aEventInstances[$oInstance->collection_event_id][] = $oInstance;
+//				}
+//
+//			}
+//		}
+//		self::completeWaitingInstances();
+//	}
 
 	public function complete()
 	{
@@ -354,8 +460,7 @@ class Logic_Collection_Event_Instance
 		$this->oDO->completed_datetime 					= DataAccess::getDataAccess()->getNow();
 		$this->oDO->completed_employee_id				= $iUserId;
 		$this->oDO->account_collection_event_status_id	= ACCOUNT_COLLECTION_EVENT_STATUS_COMPLETED;
-		$this->oDO->save();
-		Logic_Collection_BatchProcess_Report::addEvent($this);
+		$this->oDO->save();		
 	}
 
 	public function cancel()

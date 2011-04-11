@@ -24,7 +24,7 @@ class Logic_Account implements DataLogic
 	public static   $_aTime = array();
 	public static   $aMemory = array();
 
-	protected		$bPreviousEventNotCompleted;
+	protected		$bPreviousEventNotCompleted = false;
 	protected		$bNoNextEventFound = false;
 	protected		$oException;
 
@@ -97,10 +97,7 @@ class Logic_Account implements DataLogic
 	 * Returns the sum of all collectable balance for this account
 	 * only collectables that are currently due are taken into account
 	 * collectables that are part of an active promise are excluded
-	 * @todo: $iOffset is currently the way to calculate the due date against a point in time later than today.
-	 * instead of $iOffset the function parameter should be '$sNow = null'.
-	 * This will be much cleaner, and a way in which the due date can be calculated against any point in time.
-	 */
+	 * */
 	public function getOverdueCollectableBalance($sNow = null, $bBypassCache = false)
 	{
 
@@ -143,11 +140,7 @@ class Logic_Account implements DataLogic
 	 * Returns the sum of all collectables amount for this account
 	 * only collectables that are currently due are taken into account
 	 * collectables that are part of an active promise are excluded
-	 *  @todo: $iOffset is currently the way to calculate the due date against a point in time later than today.
-	 * instead of $iOffset the function parameter should be '$sNow = null'.
-	 * This will be much cleaner, and a way in which the due date can be calculated against any point in time.
-	 * @todo: possibly implement this method in such a way that it determines the amount by means of an sql query rather than iterating over collectables.
-	 *
+	 * 
 	 */
 	public function getOverDueCollectableAmount($sNow = null)
 	{
@@ -372,15 +365,15 @@ class Logic_Account implements DataLogic
 	 * Also, this method assumes that all distribution of balances from payments, adjustments, and credit collectables has been done.
 	 *
 	 */
-	public function scheduleNextScenarioEvent()
+	public function queueNextScenarioEvent()
 	{
 		$bShouldBeInCollections = $this->shouldCurrentlyBeInCollections();
 		$bIsCurrentlyInCollections = $this->isCurrentlyInCollections();
 
 		if ($bIsCurrentlyInCollections && !$bShouldBeInCollections)
 		{
-			$oEventInstance = Logic_Collection_Event_Instance::schedule($this, COLLECTION_EVENT_TYPE_IMPLEMENTATION_EXIT_COLLECTIONS);
-			$oEventInstance->_registerWithArray();
+			$oEventInstance = Logic_Collection_Event_Instance::queueForScheduling($this, COLLECTION_EVENT_TYPE_IMPLEMENTATION_EXIT_COLLECTIONS);
+			//$oEventInstance->_registerWithArray();
 		}
 		else if ($bShouldBeInCollections)
 		{			
@@ -388,16 +381,14 @@ class Logic_Account implements DataLogic
 			$oNextScenarioEvent = $this->getNextCollectionScenarioEvent();
 			if ($oNextScenarioEvent !== null)
 			{
-				$oEventInstance = Logic_Collection_Event_Instance::schedule($this, $oNextScenarioEvent);
+				$oEventInstance = Logic_Collection_Event_Instance::queueForScheduling($this, $oNextScenarioEvent);
 				if ($oEventInstance->getInvocationId() != COLLECTION_EVENT_INVOCATION_MANUAL)
 				{
-					Log::getLog()->log("The event will be invoked and completed automatically");
-					$oEventInstance->_registerWithArray();
+					Log::getLog()->log("Queueing ".$oEventInstance->getEventName().". The event will be invoked and completed automatically");					
 				}
 				else
 				{
-					Log::getLog()->log("The event will require manual completion through Flex");
-					Logic_Collection_BatchProcess_Report::addEvent($oEventInstance);
+					Log::getLog()->log("Queueing ".$oEventInstance->getEventName().".The event will require manual completion through Flex");					
 				}
 			}
 			else
@@ -409,6 +400,11 @@ class Logic_Account implements DataLogic
 				Logic_Collection_BatchProcess_Report::addAccount($this);
 			}
 
+		}
+		else
+		{
+			$this->bNoNextEventFound = TRUE;
+			Log::getLog()->log("This account is currently not in collections and neither should it be. No event was scheduled.");
 		}
 
 	}
@@ -1051,28 +1047,35 @@ class Logic_Account implements DataLogic
 	public static function batchProcessCollections(&$aAccounts)
 	{
 
+
 		Log::getLog()->log("-------Starting Account Batch Collections Process-------------------------");
-		
+		Log::getLog()->log("Processing Collections for ".count($aAccounts)." Accounts.");
 		foreach ($aAccounts as $oAccount)
 		{
-			$oDataAccess	= DataAccess::getDataAccess();
-			$oDataAccess->TransactionStart();
+			//$oDataAccess	= DataAccess::getDataAccess();
+			//$oDataAccess->TransactionStart();
 			try
 			{
 				Log::getLog()->log("Trying to schedule next event for account $oAccount->Id ");
 				Logic_Stopwatch::getInstance()->lap();
-				$oAccount->scheduleNextScenarioEvent();
+				//in case the account was part of the previous iteration of the batch process and an exception occurred in completing an event.
+				//this is just a safety mechanism because these accounts should already have been taken out of the process at an earlier stage
+				if ($oAccount->getException()=== NULL)
+				{
+					$oAccount->queueNextScenarioEvent();
+				}
+
 				//if no event was scheduled, no need to include this account in the next batch process iteration
-				if ($oAccount->noNextEventFound())
+				if ($oAccount->noNextEventFound() || $oAccount->previousEventNotCompleted() || $oAccount->getException()!== NULL)
 					unset($aAccounts[$oAccount->id]);
 
-				Log::getlog()->log("Processed account $oAccount->Id in : ".Logic_Stopwatch::getInstance()->lap());
-				$oDataAccess->TransactionCommit();
+				//Log::getlog()->log("Processed account $oAccount->Id in : ".Logic_Stopwatch::getInstance()->lap());
+				//$oDataAccess->TransactionCommit();
 			}
 			catch (Exception $e)
 			{
 				// Exception caught, rollback db transaction
-				$oDataAccess->TransactionRollback();
+				//$oDataAccess->TransactionRollback();
 				if ($e instanceof Exception_Database)
 				{
 					throw $e;
@@ -1085,7 +1088,14 @@ class Logic_Account implements DataLogic
 			}
 		}
 		//this is where event invocation and completion happens
-		return  Logic_Collection_Event_Instance::completeWaitingInstances();
+		$aResult =  Logic_Collection_Event_Instance::completeWaitingInstances(NULL, TRUE);
+		//remove accounts with failed event instances from the array to avoid the process becoming endless
+		foreach($aResult['failure'] as $oInstance)
+		{
+			unset($aAccounts[$oInstance->account_id]);
+		}
+
+		return count($aResult['success']);
 	}
 
 	public static function getForId($iId)

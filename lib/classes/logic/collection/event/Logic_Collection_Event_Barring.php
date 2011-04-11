@@ -21,6 +21,7 @@ class Logic_Collection_Event_Barring extends Logic_Collection_Event_Barring_Base
 		{
 			$oInstance->complete();
 		}
+		
 	}
 }
 ?>

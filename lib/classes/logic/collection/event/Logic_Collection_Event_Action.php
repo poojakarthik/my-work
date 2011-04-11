@@ -57,6 +57,7 @@ class Logic_Collection_Event_Action extends Logic_Collection_Event
 		{
 			$oInstance->complete();
 		}
+
 	}
 
 	public function __get($sField)

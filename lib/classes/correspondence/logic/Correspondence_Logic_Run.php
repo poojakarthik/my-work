@@ -447,8 +447,8 @@ class Correspondence_Logic_Run
 	public function sendRunCreatedEmail()
 	{
 		$oEmail	= Correspondence_Email::getForEmailNotificationSystemName('CORRESPONDENCE');
-		$oEmail->setSubject("Correspondence Run Scheduling Notification for '".$this->getTemplateName());
-		$sHeader	= "Correspondence Run Delivery Scheduling Notification for '".$this->getTemplateName();
+		$oEmail->setSubject("Correspondence Run Scheduling Notification for '".$this->getTemplateName()."'");
+		$sHeader	= "Correspondence Run Delivery Scheduling Notification for '".$this->getTemplateName()."'";
 		$sMessage 	= 'Details for Run ID '.$this->id.":";
 
 		$this->generateReportEmailBody($oEmail,$sHeader,$sMessage);

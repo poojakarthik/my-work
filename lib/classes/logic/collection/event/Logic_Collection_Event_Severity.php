@@ -38,6 +38,7 @@ class Logic_Collection_Event_Severity extends Logic_Collection_Event
 
 	protected function _invoke($aParameters = null)
 	{
+		
 		$oAccount = $this->getAccount();
 		$oAccount->collection_severity_id = $this->collection_severity_id;
 		//file_put_contents('/home/rmctainsh/log.txt', print_r($oAccount->toArray(), true));

@@ -30,7 +30,7 @@ class Logic_Collection_Event_Correspondence extends Logic_Collection_Event
 
 	protected function _invoke($aParameters = null)
 	{
-
+		
 	}
 
 	public function __get($sField)
@@ -107,6 +107,8 @@ class Logic_Collection_Event_Correspondence extends Logic_Collection_Event
 	public static function complete($aEventInstances)
 	{			
 		$oEventInstance = $aEventInstances[0];
+		if ($oEventInstance === NULL)
+			return; //nothing to complete
 		$oEventObject = self::getForEventInstance($oEventInstance);
 		$iTemplateId =  $oEventObject->correspondence_template_id;
 		$oTemplate	= Correspondence_Logic_Template::getForId($iTemplateId);

@@ -177,27 +177,27 @@ class Cli_App_Collections extends Cli
 					{
 
 						$oAccount = Logic_Account::getInstance($iAccountId);
-						$aAccounts = array($oAccount);
+						$aAccounts = array($oAccount->id => $oAccount);
 					}
 
 					$iCompletedInstances = 0;
 					
 					Logic_Stopwatch::getInstance()->start();
 					//Check if there are any uncompleted automated events left over from last time......
-					Logic_Collection_Event_Instance::completeScheduledInstancesForAccounts($aAccounts);
+					//Logic_Collection_Event_Instance::completeScheduledInstancesForAccounts($aAccounts);
 					$iIteration = 1;
 					do
 					{
-						Log::getLog()->log("About to process ".count($aAccounts)." In Batch.");
+						
 						$iCompletedInstances = Logic_Account::batchProcessCollections($aAccounts);
-						Log::getlog()->log("Completed Scheduled Events In : ".Logic_Stopwatch::getInstance()->lap());
-						Log::getLog()->log("-------End Account Batch Collections Process Iteration $iIteration -------------------------");
+						//Log::getlog()->log("Completed Scheduled Events for collections process iteration $iIteration In : ".Logic_Stopwatch::getInstance()->lap()." seconds.");
+						Log::getLog()->log("-------End Account Collections Process Iteration $iIteration -------------------------");
 						$iIteration++;
 					}
 					while ($iCompletedInstances > 0);
 
 
-					Log::getLog()->log("Total Time: ".Logic_Stopwatch::getInstance()->split());
+					Log::getLog()->log("Finished. Total Collections Process Time: ".Logic_Stopwatch::getInstance()->split());
 
 				}
 				else

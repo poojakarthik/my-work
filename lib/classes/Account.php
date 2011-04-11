@@ -374,7 +374,7 @@ class Account
                                                                                                 WHERE account_id = a.Id
 
                                                                                                 )
-                                                                                AND a.Id  NOT in(select account_id from collection_suspension cs where cs.start_datetime< now() AND cs.effective_end_datetime is null)
+                                                                                AND a.Id  NOT in(select account_id from collection_suspension cs where cs.start_datetime < NOW() AND cs.effective_end_datetime IS NULL)
                                                                                 $sExcludeSql
                                                                               )
                                 JOIN collection_event ce ON (ce.id = ach.collection_event_id)
@@ -386,9 +386,9 @@ class Account
                                 select a.*
                                 FROM Account a
                                 JOIN account_status ast ON (a.Archived = ast.id AND ast.send_late_notice = 1
-                                                            AND a.Id  NOT in(select account_id from collection_suspension cs where cs.start_datetime< now() AND cs.effective_end_datetime is null)
+                                                            AND a.Id  NOT in(select account_id from collection_suspension cs where cs.start_datetime < now() AND cs.effective_end_datetime IS NULL)
                                                             )
-                                JOIN collectable c ON (a.Id = c.account_id AND c.balance>0 AND c.due_date < NOW())
+                                JOIN collectable c ON (a.Id = c.account_id AND c.balance > 0 AND c.due_date < NOW())
                                 LEFT JOIN collection_promise cp ON (c.collection_promise_id = cp.id )
                                 WHERE  (c.collection_promise_id is null OR cp.completed_datetime is not null)
                                  $sExcludeSql
@@ -491,7 +491,8 @@ class Account
         public static function getForBalanceRedistribution($iRedistributionType = Account::BALANCE_REDISTRIBUTION_REGULAR, $iAccountId = NULL)
         {
 
-            $aAccountsForRedistribution = array();
+            $aReport = array('gaps' =>array(), 'distributable_balance' => array(), 'amount_balance_problem' => array());
+			$aAccountsForRedistribution = array();
 			$iCount = 0;
 
             switch($iRedistributionType)
@@ -576,6 +577,7 @@ class Account
                         while ($aRow = $mResult->fetch_assoc())
                         {
                                    $aAccountsForRedistribution[] = $aRow['account_id'];
+								   $aReport['gaps'][] = $aRow;
                         }
                     }
 					$iCount = count($aAccountsForRedistribution);
@@ -593,6 +595,7 @@ class Account
                         while ($aRow = $mResult->fetch_assoc())
                         {
 							$aAccountsForRedistribution[] = $aRow['account_id'];
+							$aReport['distributable_balance'][] = $aRow;
                         }
                     }
 
@@ -614,6 +617,7 @@ class Account
                         while ($aRow = $mResult->fetch_assoc())
                         {
 							$aAccountsForRedistribution[] = $aRow['account_id'];
+							$aReport['distributable_balance'][] = $aRow;
                         }
                     }
 
@@ -633,11 +637,12 @@ class Account
                         while ($aRow = $mResult->fetch_assoc())
                         {
 							$aAccountsForRedistribution[] = $aRow['account_id'];
+							$aReport['distributable_balance'][] = $aRow;
                         }
                     }
-
+					$aReport['distributable_balance'] = array_unique($aReport['distributable_balance']);
 					$iCount = count($aAccountsForRedistribution) - $iCount;
-					Log::getLog()->log("$iCount Accounts found.");
+					Log::getLog()->log("$iCount cases found.");
 					//8 retrieve accounts that have a discrepancy between SUM(amount) and SUM(balance)
 					Log::getLog()->log("retrieving accounts that have a discrepancy between SUM(amount) and SUM(balance). This points at more 'serious' cases of data corruption and should possibly be investigated.");
 
@@ -699,6 +704,7 @@ class Account
                         while ($aRow = $mResult->fetch_assoc())
                         {
 							$aAccountsForRedistribution[] = $aRow['account_id'];
+							$aReport['amount_balance_problem'][] = $aRow;
                         }
                     }
 					
@@ -710,9 +716,61 @@ class Account
 					foreach ($aAccountsForRedistribution as $iAccountId)
 					{
 						$aResult[] = self::getForId($iAccountId);
+
 					}
 
 					$aAccountsForRedistribution = $aResult;
+					
+					///EMAIL THE REPORT
+					
+					$oEmail = Correspondence_Email::getForEmailNotificationSystemName('ALERT');
+					$oEmail->setSubject("Account Balance Redistribution Process Report");										
+					
+					if (count($aReport['gaps']) > 0 || count($aReport['distributable_balance']) || count($aReport['amount_balance_problem']))
+					{
+						$sTimeStamp = str_replace(array(' ',':','-'), '',Data_Source_Time::currentTimestamp());
+						$sFilename	= "Account_Balance_Redistribution_$sTimeStamp.csv";
+						$oSpreadsheet = new Logic_Spreadsheet(array());
+
+						foreach ($aReport as $type => $aReportRows)
+						{
+							if (count($aReportRows) > 0)
+							{
+								$oSpreadsheet->addRecord(array($type));
+								self::addReportRows($oSpreadsheet, $aReportRows);
+							}
+							else
+							{
+								$oSpreadsheet->addRecord(array("No cases of '$type' were found"));
+							}
+						}
+
+						$sPath = FILES_BASE_PATH.'temp/';
+						$oSpreadsheet->saveAs($sPath.$sFilename, "CSV");
+						$sFile = file_get_contents($sPath.$sFilename);
+						$oEmail->addAttachment($sFile, $sFilename, 'text/csv');
+						$oEmail->addTextHeader(4, "Report Summary (see attached csv for full report):");
+						$table =& $oEmail->setTable();
+						$oEmail->addPivotTableRow("gaps", count($aReport['gaps']));
+						$oEmail->addPivotTableRow("distributable balance", count($aReport['distributable_balance']));
+						$oEmail->addPivotTableRow("SUM(amount)<>SUM(balance)", count($aReport['amount_balance_problem']));
+					}
+					else
+					{
+						$oEmail->addTextHeader(4,"No Accounts needed balance redistribution");
+					}
+
+					$oEmployee = Employee::getForId(Flex::getUserId());
+					if ($oEmployee!= null && $oEmployee->email!=null)
+						$oEmail->addTo($oEmployee->Email, $name=$oEmployee->FirstName.' '.$oEmployee->LastName);
+
+					$oEmail->appendSignature();
+					$oEmail->setBodyHTML();
+					$oEmail->send();
+
+			/////END EMAIL REPORT		
+					
+					
                     break;
 				case Account::BALANCE_REDISTRIBUTION_FORCED:
 
@@ -761,6 +819,18 @@ class Account
 
 
         }
+
+		private static function addReportRows(&$oReport, $aRows = array())
+		{
+			$aColumns = array_keys($aRows[0]);
+			$oReport->addRecord($aColumns);
+			foreach($aRows as $aRecord)
+			{
+				$aValues = array_values($aRecord);
+				$oReport->addRecord($aValues);
+
+			}
+		}
 
         /**
          * adapted from (functions) ListLatePaymentAccounts

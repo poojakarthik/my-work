@@ -650,6 +650,8 @@ class JSON_Handler_Collections extends JSON_Handler
 	private function getNextEventDetails($iAccountId, $aPreviousEvent = NULL)
 	{
 		$oAccount 				= Logic_Account::getInstance($iAccountId);
+		if ($oAccount->isInsuspension())
+			return FALSE;
 		$oScenario  			= $oAccount->getCurrentScenarioInstance()->getScenario();
 		$oLastScheduledEvent 	= $oAccount->getMostRecentCollectionEventInstance();
 		$bIsIncollections 		= $oAccount->isCurrentlyInCollections();

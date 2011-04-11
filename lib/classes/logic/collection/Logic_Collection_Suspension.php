@@ -36,38 +36,38 @@ class Logic_Collection_Suspension implements DataLogic
 
         foreach ($aActiveSuspensions as $oORM)
         {
-            $oDataAccess = DataAccess::getDataAccess();
-	    $oDataAccess->TransactionStart();
-	    try
-            {
-                Log::getLog()->log("Processing Suspension with id: $oORM->id");
-		$oCurrentSuspension = new self($oORM);
-                if ( $oCurrentSuspension->isPastEffectiveEndDateTime())
-                {
-                    Log::getLog()->log("Suspension $oCurrentSuspension->id is past its effective enddate time and will be ended.");
-                    $oCurrentSuspension->end();
+			$oDataAccess = DataAccess::getDataAccess();
+			$oDataAccess->TransactionStart();
+			try
+			{
+				Log::getLog()->log("Processing Suspension with id: $oORM->id");
+				$oCurrentSuspension = new self($oORM);
+				if ( $oCurrentSuspension->isPastEffectiveEndDateTime())
+				{
+					Log::getLog()->log("Suspension $oCurrentSuspension->id is past its effective enddate time and will be ended.");
+					$oCurrentSuspension->end();
 
-                }
-		else
-		{
-		    Log::getLog()->log("Suspension $oCurrentSuspension->id is ongoing.");
-		}
-		Logic_Collection_BatchProcess_Report::addSuspension($oCurrentSuspension);
-		$oDataAccess->TransactionCommit();
-            }
-            catch(Exception $e)
-            {
-		$oDataAccess->TransactionRollback();
-		if ($e instanceof Exception_Database)
-                {
-                    throw $e;
-                }
-                else
-                {
-                    $oCurrentSuspension->setException($e);
-                    Logic_Collection_BatchProcess_Report::addSuspension($oCurrentSuspension);
-                }
-            }
+				}
+				else
+				{
+					Log::getLog()->log("Suspension $oCurrentSuspension->id is ongoing.");
+				}
+				Logic_Collection_BatchProcess_Report::addSuspension($oCurrentSuspension);
+				$oDataAccess->TransactionCommit();
+			}
+			catch(Exception $e)
+			{
+				$oDataAccess->TransactionRollback();
+				if ($e instanceof Exception_Database)
+				{
+					throw $e;
+				}
+				else
+				{
+					$oCurrentSuspension->setException($e);
+					Logic_Collection_BatchProcess_Report::addSuspension($oCurrentSuspension);
+				}
+			}
         }
 
         Log::getLog()->log('------End Suspensions Batch Process--------');
@@ -86,7 +86,6 @@ class Logic_Collection_Suspension implements DataLogic
 
     public function isPastEffectiveEndDateTime()
     {
-
         if (strtotime(Data_Source_Time::currentDate())>= Flex_Date::truncate($this->proposed_end_datetime, "d", false))
                 return true;
         return false;

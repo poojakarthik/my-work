@@ -33,6 +33,8 @@ class Logic_Collection_BatchProcess_Report
 
 	public static $aExceptions				= array();
 
+	private static $aQueue					= array();
+
 	public static $sInvocationType;
 
 	public static function setProcessInvocationType($sInvocationType)
@@ -155,7 +157,29 @@ class Logic_Collection_BatchProcess_Report
 		return FALSE;
 	}
 
-	public static function addEvent($oEventInstance)
+	public static function queueEvent($oEventInstance)
+	{
+		self::$aQueue[] = $oEventInstance;
+	}
+
+	public static function commit($oException = NULL)
+	{
+		foreach (self::$aQueue as $oEvent)
+		{
+			if ($oException !== NULL)
+			{
+				$oEvent->setException($oException);
+				$oEvent->getAccount()->setException($oException);
+			}
+
+			self::addEvent($oEvent);
+		}
+		$aResult = self::$aQueue;
+		self::$aQueue = array();
+		return $aResult;
+	}
+
+	private static function addEvent($oEventInstance)
 	{
 		if ($oEventInstance->getException() !== null)
 		{
@@ -564,6 +588,7 @@ class Logic_Collection_BatchProcess_Report
 		{
 			$sTimeStamp = str_replace(array(' ',':','-'), '',Data_Source_Time::currentTimestamp());
 			$sFilename	= "Collections_BatchProcess_Report_$sTimeStamp.csv";
+			$sPath = FILES_BASE_PATH.'temp/';
 			self::generateReport($sPath.$sFilename, "CSV", $sReportType);
 			$sFile = file_get_contents($sPath.$sFilename);
 			$oEmail->addAttachment($sFile, $sFilename, 'text/csv');
