@@ -94,9 +94,9 @@ class Cli_App_Payments extends Cli
 		$iFileImportId	= $this->_aArgs[self::SWITCH_FILE_IMPORT_ID];
 		if ($iFileImportId && ($oFileImport = File_Import::getForId($iFileImportId)))
 		{
-			if ($oFileImport->Status !== FILE_IMPORTED)
+			if ($oFileImport->Status !== FILE_COLLECTED)
 			{
-				throw new Exception("Only Files with Status FILE_IMPORTED (".FILE_IMPORTED.") can be Processed");
+				throw new Exception("Only Files with Status FILE_IMPORTED (".FILE_IMPORTED.") can be pre-Processed");
 			}
 			
 			// Make sure that we have a Carrier Module defined to process this File
