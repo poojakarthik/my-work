@@ -190,8 +190,6 @@ class Cli_App_Payments extends Cli
 					}
 				}
 			}
-
-			Log::getLog()->log(print_r($aData, true));
 		} catch (Exception $oException) {
 			DataAccess::getDataAccess()->TransactionRollback(false);
 			throw $oException;
