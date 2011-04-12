@@ -177,6 +177,20 @@ class Cli_App_Payments extends Cli
 
 			// Process the Record
 			$aData	= $oImporter->processRecord($oFileImportData->data);
+			if ($aData === null) {
+				Log::getLog()->log("Unimportant Record.  No Payment Response would be created.");
+			} else {
+				Log::getLog()->logIf($aData['oRawRecord'], "Raw Record: \n".print_r($aData['oRawRecord']->toArray(), true));
+				Log::getLog()->logIf($aData['oPaymentResponse'], "Payment Response: \n".print_r($aData['oPaymentResponse']->toStdClass(), true));
+
+				if ($aData['aTransactionData']) {
+					Log::getLog()->log("Transaction Data: \n");
+					foreach ($aData['aTransactionData'] as $oTransactionData) {
+						Log::getLog()->log(print_r($oTransactionData->toStdClass(), true));
+					}
+				}
+			}
+
 			Log::getLog()->log(print_r($aData, true));
 		} catch (Exception $oException) {
 			DataAccess::getDataAccess()->TransactionRollback(false);
