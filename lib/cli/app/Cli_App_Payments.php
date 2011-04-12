@@ -155,16 +155,7 @@ class Cli_App_Payments extends Cli
 
 		// Mandatory file_import_data.id parameter
 		$iFileImportDataId	= $this->_aArgs[self::SWITCH_FILE_IMPORT_DATA_ID];
-		if ($iFileImportDataId && ($oFileImportData = File_Import_Data::getForId($iFileImportDataId)))
-		{
-			if ($oFileImportData->file_import_data_status_id !== FILE_IMPORT_DATA_STATUS_IMPORTED)
-			{
-				throw new Exception("Only File Data with Status FILE_IMPORT_DATA_STATUS_IMPORTED (".FILE_IMPORT_DATA_STATUS_IMPORTED.") can be Normalised");
-			}
-
-			// Make sure that we have a Carrier Module defined to process this File
-			Carrier_Module::getForDefinition(MODULE_TYPE_NORMALISATION_PAYMENT, $oFileImport->FileType, $oFileImport->Carrier);
-		}
+		$oFileImportData	 = File_Import_Data::getForId($iFileImportDataId);
 
 		// Process the record
 		DataAccess::getDataAccess()->TransactionStart(false);
