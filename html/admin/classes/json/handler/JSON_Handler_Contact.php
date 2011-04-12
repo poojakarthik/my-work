@@ -256,6 +256,163 @@ class JSON_Handler_Contact extends JSON_Handler
 					);
 		}
 	}
+	
+	public function getLinkedContactsForAccount($iAccountId) {
+		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		try {
+			$oSourceAccount = Account::getForId($iAccountId);
+			$oAccountGroup	= Account_Group::getForId($oSourceAccount->AccountGroup);
+			$aAccounts		= $oAccountGroup->getAccounts(true);
+			$aStdContacts	= array();
+			foreach($aAccounts as $iId => $oAccount) {
+				$aContacts = $oAccount->getContacts(true);
+				foreach ($aContacts as $iId => $oContact) {
+					if ($oContact->Archived == 0) {
+						// Return only non-archived contacts
+						$aStdContacts[$iId] = $oContact->toStdClass();
+					}
+				}
+			}
+			
+			return array(
+				'bSuccess' 	=> true,
+				'oData'		=> $aStdContacts
+			);
+		} catch (Exception $oException) {
+			return array(
+				'bSuccess'	=> false,
+				'sMessage'	=> $bUserIsGod ? $oException->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'
+			);
+		}
+	}
+	
+	public function mergeContacts($oMergedContact, $aMergedContactIds) {
+		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		try {
+			// Start transaction
+			$oDataAccess = DataAccess::getDataAccess();
+			if ($oDataAccess->TransactionStart() === false) {
+				throw new Exception("Failed to start db transaction");
+			}
+			try {
+				// Modify the merged contact
+				$oContact = Contact::getForId($oMergedContact->Id);
+				
+				// Note: Uncomment this to get reversal information in the log output
+				//Log::getLog()->log("REVERSE LOG: Pre-merged contact {$oMergedContact->Id} = ".print_r($oContact->toArray(), true));
+				
+				$oContact->Title 			= $oMergedContact->Title;
+				$oContact->FirstName 		= $oMergedContact->FirstName;
+				$oContact->LastName 		= $oMergedContact->LastName;
+				$oContact->JobTitle 		= $oMergedContact->JobTitle;
+				$oContact->Email 			= $oMergedContact->Email;
+				$oContact->Phone 			= $oMergedContact->Phone;
+				$oContact->Mobile 			= $oMergedContact->Mobile;
+				$oContact->Fax 				= $oMergedContact->Fax;
+				$oContact->DOB 				= $oMergedContact->DOB;
+				$oContact->CustomerContact	= ($oMergedContact->CustomerContact ? 1 : 0);
+				$oContact->PassWord			= Contact::getForId($oMergedContact->password_contact_id)->PassWord;
+				$oContact->save();
+				
+				Log::getLog()->log("Saved merged contact {$oContact->Id}");
+				
+				// Disable the other 'dud' contacts
+				$aReferencesToUpdate = array(
+					0 => array(
+						"table"			=> "Account",
+						"id"			=> "Id",
+						"contact_id"	=> "PrimaryContact"
+					),
+					1 => array(
+						"table"			=> "employee_account_log",
+						"id"			=> "id",
+						"contact_id"	=> "contact_id"
+					),
+					2 => array(
+						"table"			=> "Note",
+						"id"			=> "Id",
+						"contact_id"	=> "Contact"
+					),
+					3 => array(
+						"table"			=> "credit_card_payment_history",
+						"id"			=> "id",
+						"contact_id"	=> "contact_id"
+					),
+					4 => array(
+						"table"			=> "survey_completed",
+						"id"			=> "id",
+						"contact_id"	=> "contact_id"
+					)
+				);
+				
+				foreach ($aMergedContactIds as $iContactId) {
+					$oDudContact = Contact::getForId($iContactId);
+					
+					// Note: Uncomment this to get reversal information in the log output
+					//Log::getLog()->log("REVERSE LOG: Discarding contact {$iContactId} = ".print_r($oDudContact->toArray(), true));
+					
+					$oDudContact->AccountGroup	= 0;
+					$oDudContact->Title			= null;
+					$oDudContact->FirstName 	= '';
+					$oDudContact->LastName 		= '';
+					$oDudContact->JobTitle 		= '';
+					$oDudContact->Email 		= null;
+					$oDudContact->Account 		= 0;
+					$oDudContact->Phone 		= '';
+					$oDudContact->Mobile 		= '';
+					$oDudContact->Fax 			= '';
+					$oDudContact->Archived 		= 0;
+					$oDudContact->save();
+					Log::getLog()->log("Discarded contact {$oDudContact->Id}");
+					
+					// Update all references to the 'dud' contact
+					foreach ($aReferencesToUpdate as $aDetails) {
+						// Note: Uncomment this to get reversal information in the log output
+						/*$mResult = Query::run("	SELECT	{$aDetails['id']} AS table_id
+												FROM	{$aDetails['table']}
+												WHERE	{$aDetails['contact_id']} = {$oDudContact->Id};");
+						$aIds = array();
+						while ($aRow = $mResult->fetch_assoc())
+						{
+							$aIds[] = $aRow['table_id'];
+						}
+						if (count($aIds) > 0)
+						{
+							Log::getLog()->log("REVERSE LOG: UPDATE	{$aDetails['table']} SET {$aDetails['contact_id']} = {$oDudContact->Id} WHERE {$aDetails['id']} IN (".implode(',', $aIds).");");
+						}*/
+						// END: Reversal log output
+
+						Query::run("UPDATE	{$aDetails['table']} 
+									SET 	{$aDetails['contact_id']} = {$oContact->Id} 
+									WHERE 	{$aDetails['contact_id']} = {$oDudContact->Id};");
+						Log::getLog()->log("Updated contact reference for discarded contact {$oDudContact->Id} in table {$aDetails['table']}");
+					}
+				}
+			} catch (Exception $oEx) {
+				// Exception, rollback transaction
+				if ($oDataAccess->TransactionRollback() === false) {
+					throw new Exception("Failed to rollback db transaction. Exception=".$oEx->getMessage());
+				}
+				throw $oEx;
+			}
+			
+			// Commit transaction
+			if ($oDataAccess->TransactionCommit() === false) {
+				throw new Exception("Failed to commit db transaction");
+			}
+			
+			return array(
+				'bSuccess' 	=> true,
+				'sDebug'	=> $bUserIsGod ? $this->_JSONDebug : ''
+			);
+		} catch (Exception $oException) {
+			return array(
+				'bSuccess'	=> false,
+				'sMessage'	=> $bUserIsGod ? $oException->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.',
+				'sDebug'	=> $bUserIsGod ? $this->_JSONDebug : ''
+			);
+		}
+	}
 }
 
 class JSON_Handler_Contact_Exception extends Exception

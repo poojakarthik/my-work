@@ -57,14 +57,15 @@ var Control_Field_Checkbox	= Class.create(/* extends */ Control_Field,
 		this.aEventHandlers				= {};
 		this.aEventHandlers.fnOnChange	= this._valueChanged.bind(this);
 		
-		this.oControlOutput.oEdit.addEventListener('click'	, this.aEventHandlers.fnOnChange, false);
+		// NOTE: This is commented out because the change event was firing twice in quick succession
+		//this.oControlOutput.oEdit.addEventListener('click'	, this.aEventHandlers.fnOnChange, false);
 		this.oControlOutput.oEdit.addEventListener('change'	, this.aEventHandlers.fnOnChange, false);
 		this.oControlOutput.oEdit.addEventListener('keyup'	, this.aEventHandlers.fnOnChange, false);
 	},
 	
 	removeEventListeners	: function()
 	{
-		this.oControlOutput.oEdit.removeEventListener('click'	, this.aEventHandlers.fnOnChange, false);
+		//this.oControlOutput.oEdit.removeEventListener('click'	, this.aEventHandlers.fnOnChange, false);
 		this.oControlOutput.oEdit.removeEventListener('change'	, this.aEventHandlers.fnOnChange, false);
 		this.oControlOutput.oEdit.removeEventListener('keyup'	, this.aEventHandlers.fnOnChange, false);
 	},

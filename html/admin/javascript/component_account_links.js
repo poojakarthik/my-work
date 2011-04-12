@@ -2,7 +2,6 @@
 Component_Account_Links	= Class.create(/* extends */Reflex_Component, {
 
 	initialize	: function ($super) {
-		//debugger;
 		// Additional Configuration
 		this.CONFIG	= Object.extend({
 			'iAccountId'	: {}
@@ -15,36 +14,13 @@ Component_Account_Links	= Class.create(/* extends */Reflex_Component, {
 	},
 
 	_load	: function (oResponse) {
-		/* DEBUG */
-		this._oData	= {
-			oCustomerGroup	: {
-				id				: 1,
-				internal_name	: "Telcoblue",
-				external_name	: "Telcoblue"
-			},
-			oAccounts	: {
-				'1000154811'	: {id: 1000154811, account_group_id: 1000154811, account_name: 'Telco Blue', primary_contact_id: 24},
-				'1000154803'	: {id: 1000154803, account_group_id: 1000154811, account_name: 'Telco Blue Pty Ltd', primary_contact_id: 152},
-				'1000180081'	: {id: 1000180081, account_group_id: 1000154811, account_name: 'Ryan Forrester', primary_contact_id: 948},
-				'1000160069'	: {id: 1000160069, account_group_id: 1000154811, account_name: 'Scott Hales', primary_contact_id: 518}
-			},
-			oContacts	: {
-				'50'	: {id: 50, first_name: 'Rich', last_name: 'Davis', account_id: 1000154811, account_group_id: 1000154811, is_shared_contact: true},
-				'152'	: {id: 152, first_name: 'Mark', last_name: 'Shield', account_id: 1000154811, account_group_id: 1000154811, is_shared_contact: false},
-				'24'	: {id: 24, first_name: 'Julie', last_name: 'Snelson', account_id: 1000154811, account_group_id: 1000154811, is_shared_contact: true},
-				'518'	: {id: 518, first_name: 'Scott', last_name: 'Hales', account_id: 1000160069, account_group_id: 1000154811, is_shared_contact: true},
-				'948'	: {id: 948, first_name: 'Ryan', last_name: 'Forrester', account_id: 1000180081, account_group_id: 1000154811, is_shared_contact: true}
-			}
-		};
-		this._syncUI();
-		/* /DEBUG */
-
 		if (!oResponse || oResponse.element) {
 			// No Response (or Response is an Event): Request Data
-			jQuery.json.jsonFunction(this._load.bind(this))
+			var fnResp 	= this._load.bind(this);
+			var fnReq	= jQuery.json.jsonFunction(fnResp, fnResp, 'Account', 'getAccountGroupInformationForAccount');
+			fnReq(this.get('iAccountId'));
 		} else if (!oResponse.bSuccess) {
 			// Error
-			this._oLoadingPopup.hide();
 			Reflex_Popup.alert(oResponse.sMessage || 'There was a critical error accessing the Flex Server', {
 				sTitle			: 'Database Error',
 				sDebugContent	: oResponse.sDebug
@@ -57,7 +33,6 @@ Component_Account_Links	= Class.create(/* extends */Reflex_Component, {
 	},
 
 	_buildUI	: function () {
-		//debugger;
 		this.NODE	= $T.div(
 			new Component_Section({sIcon:'../admin/img/template/link.png',sTitle:'Linked Accounts'},
 				$T.ul({'class':'component-account-links-list'})
@@ -75,13 +50,13 @@ Component_Account_Links	= Class.create(/* extends */Reflex_Component, {
 			oComponentSection	= this.NODE.select('.component-section').first().oReflexComponent;
 
 		oNewAccountButton.on('click', this._linkAccount.bind(this));
+		oContactsButton.on('click', this._manageContacts.bind(this));
 
 		oComponentSection.getAttachmentNode('header-actions').appendChild(oContactsButton);
 		oComponentSection.getAttachmentNode('header-actions').appendChild(oNewAccountButton);
 	},
 
 	_syncUI	: function () {
-		//debugger;
 		this.NODE.select('.component-section').first().oReflexComponent.set('sTitle', "Accounts Linked to " + this.get('iAccountId'));
 
 		if (!this._oData) {
@@ -99,11 +74,17 @@ Component_Account_Links	= Class.create(/* extends */Reflex_Component, {
 			for (var i in this._oData.oAccounts) {
 				this._buildItemUI(this._oData.oAccounts[i]);
 			}
-
+			
 			// Component is ready
 			//----------------------------------------------------------------//
 			this._onReady();
 		}
+	},
+	
+	_reSyncUI : function()
+	{
+		this._oData = null;
+		this._syncUI();
 	},
 
 	_buildItemUI	: function (oAccount) {
@@ -123,9 +104,10 @@ Component_Account_Links	= Class.create(/* extends */Reflex_Component, {
 
 	_linkAccount	: function () {
 		var	iAccountId		= this.get('iAccountId'),
-			oDatasetAJAX	= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_NO_CACHING, {sObject: 'Account', sMethod: 'searchCustomerGroup'}),	// FIXME
+			oDatasetAJAX	= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_NO_CACHING, {sObject: 'Account', sMethod: 'searchCustomerGroup'}),
 			oAccountSearch	= Control_Field.factory('text-ajax', {
 				mEditable				: true,
+				mMandatory				: true,
 				bRenderMode				: Control_Field.RENDER_MODE_EDIT,
 				sLabel					: 'Account',
 				oDatasetAjax			: oDatasetAJAX,
@@ -150,7 +132,7 @@ Component_Account_Links	= Class.create(/* extends */Reflex_Component, {
 				$T.p("Search for a " + this._oData.oCustomerGroup.internal_name + " Account to link with " + iAccountId),
 				oAccountSearch.getElement()
 			),
-			oPopupOK		= $T.button({onclick:Reflex_Popup.alert.curry('LOL, jk!')},
+			oPopupOK		= $T.button(
 				$T.img({src:'../admin/img/template/link_add.png', alt:'', title:'Link to ' + iAccountId, 'class':'icon'}),
 				$T.span("Link to " + iAccountId)
 			),
@@ -167,18 +149,31 @@ Component_Account_Links	= Class.create(/* extends */Reflex_Component, {
 				sIcon			: "../admin/img/template/link_add.png"
 			});
 		oPopupCancel.on('click', oPopup.hide.bind(oPopup));
+		oPopupOK.on('click', this._linkAccountSelected.bind(this, oAccountSearch, oPopup));
 	},
-
+	
+	_manageContacts : function()
+	{
+		var oPopup = Component_Account_Merge_Contacts_List.createAsPopup(
+			{
+				iAccountId		: this.get('iAccountId'), 
+				fnOnComplete	: this._reSyncUI.bind(this),
+				fnOnReady		: function() {
+					oPopup.display();
+				}
+			}
+		);
+	},
+	
 	_unlinkAccount	: function (iUnlinkAccountId) {
 		var	oRetainedContactList	= $T.ul(),
 			oLostContactList		= $T.ul(),
 			oContent				= $T.div({'class':'component-account-links-popup-unlink'},
-				$T.p('Are you sure you want to break ' + iUnlinkAccountId + ' out of this Account Group?'),
-				$T.p('The following Contacts will be retained for this Account:'),
-				oRetainedContactList
+				$T.p('Are you sure you want to break ' + iUnlinkAccountId + ' out of this Account Group?')
 			),
-			aContacts				= this._getContactsForAccount(iUnlinkAccountId),
+			aContacts = this._getContactsForAccount(iUnlinkAccountId),
 			oLI;
+		
 		for (var i=0, l=aContacts.length; i < l; i++) {
 			oLI	= $T.li(
 				$T.a({href:'../admin/reflex.php/Contact/View/' + aContacts[i].id},
@@ -202,6 +197,12 @@ Component_Account_Links	= Class.create(/* extends */Reflex_Component, {
 				oLostContactList.appendChild(oLI);
 			}
 		}
+		
+		if (oRetainedContactList.childElements().length) {
+			// Show retained contacts
+			oContent.appendChild($T.p('The following Contacts will be retained for this Account:'));
+			oContent.appendChild(oRetainedContactList);
+		}
 
 		if (oLostContactList.childElements().length) {
 			oContent.appendChild($T.p('The following Contacts will no longer be able to access this Account:'));
@@ -217,9 +218,7 @@ Component_Account_Links	= Class.create(/* extends */Reflex_Component, {
 			sYesIconSource	: '../admin/img/template/tick.png',
 			sNoLabel		: 'Cancel',
 			sNoIconSource	: '../admin/img/template/delete.png',
-			fnOnYes			: (function () {
-				Reflex_Popup.alert("LOL, jk!");
-			}).bind(this)
+			fnOnYes			: this._doAccountUnlink.bind(this, iUnlinkAccountId)
 		});
 	},
 
@@ -243,6 +242,56 @@ Component_Account_Links	= Class.create(/* extends */Reflex_Component, {
 		}
 
 		return aContacts;
+	},
+	
+	_linkAccountSelected : function(oAccountSearchControl, oPopup) {
+		try {
+			oAccountSearchControl.validate(false);
+			oAccountSearchControl.save(true);
+		} catch (oException) {
+			Reflex_Popup.alert('Please choose an Account', {sTitle: 'Invalid Account', iWidth: 25});
+			return;
+		}
+		
+		var oAccount = oAccountSearchControl.getValue();
+		this._doAccountLink(oAccount.Id, oPopup);
+	},
+	
+	_doAccountLink : function(iAccountId, oPopup, oResponse) {
+		if (!oResponse || oResponse.element) {
+			// No Response (or Response is an Event): Request Data
+			var fnResp 	= this._doAccountLink.bind(this, iAccountId, oPopup);
+			var fnReq	= jQuery.json.jsonFunction(fnResp, fnResp, 'Account', 'linkAccounts');
+			fnReq(this.get('iAccountId'), iAccountId);
+		} else if (!oResponse.bSuccess) {
+			// Error
+			Reflex_Popup.alert(oResponse.sMessage || 'There was a critical error accessing the Flex Server', {
+				sTitle			: 'Database Error',
+				sDebugContent	: oResponse.sDebug
+			});
+		} else {
+			// Success
+			oPopup.hide();
+			this._reSyncUI();
+		}
+	},
+	
+	_doAccountUnlink : function(iUnlinkAccountId, oResponse) {
+		if (!oResponse || oResponse.element) {
+			// No Response (or Response is an Event): Request Data
+			var fnResp 	= this._doAccountUnlink.bind(this, iUnlinkAccountId);
+			var fnReq	= jQuery.json.jsonFunction(fnResp, fnResp, 'Account', 'unlinkAccount');
+			fnReq(iUnlinkAccountId);
+		} else if (!oResponse.bSuccess) {
+			// Error
+			Reflex_Popup.alert(oResponse.sMessage || 'There was a critical error accessing the Flex Server', {
+				sTitle			: 'Database Error',
+				sDebugContent	: oResponse.sDebug
+			});
+		} else {
+			// Success
+			this._reSyncUI();
+		}
 	}
 });
 

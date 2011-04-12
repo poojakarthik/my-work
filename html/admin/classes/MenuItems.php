@@ -4351,6 +4351,39 @@ else
 									}, true);";
 	}
 	
+	public function ManageLinkedAccounts($iAccountId)
+	{
+		$this->strContextMenuLabel 	= "Manage Linked Accounts";
+		$this->strLabel 			= "Manage Linked Accounts";
+		return	"javascript:	JsAutoLoader.loadScript(
+									['dataset_ajax.js', 
+									'filter.js', 
+									'control_field.js', 
+									'control_field_checkbox.js', 
+									'control_field_text_ajax.js', 
+									'control_field_select.js', 
+									'control_field_text.js',
+									'control_field_hidden.js',
+									'component_date_picker.js',
+									'control_field_date_picker.js',
+									'component_section.js',
+									'component_account_links.js', 
+									'component_account_merge_contacts_list.js', 
+									'component_account_merge_contacts.js'], 
+									function() {
+										var oPopup = Component_Account_Links.createAsPopup(
+											{
+												iAccountId 	: {$iAccountId},
+												fnOnReady	: function() {
+													oPopup.display();
+												}
+											}
+										);
+									}, 
+									true
+								);";
+	}
+	
 	//------------------------------------------------------------------------//
 	// BreadCrumb
 	//------------------------------------------------------------------------//

@@ -113,6 +113,19 @@ var Control_Field_Text_AJAX	= Class.create(/* extends */ Control_Field,
 		}
 	},
 	
+	// Overrides save: No commit is done because when a dataset result is selected, it is commited straight away
+	save	: function(bCommit)
+	{
+		if (this.validate())
+		{
+			// No commit needed because when a dataset result is selected, it is commited straight away
+		}
+		else
+		{
+			throw "Saving an invalid value!";
+		}
+	},
+	
 	// Private
 	
 	_valueChange	: function()
@@ -134,7 +147,6 @@ var Control_Field_Text_AJAX	= Class.create(/* extends */ Control_Field,
 		{
 			this._sLastSearchTerm	= sSearchTerm;
 			this._oFilter.setFilterValue(Control_Field_Text_AJAX.FILTER_FIELD_SEARCH_TERM, sSearchTerm);
-			//debugger;
 			this._oFilter.refreshData();
 			this._oDatasetAjax.getRecords(this._datasetLoaded.bind(this), this._iResultLimit);
 		}

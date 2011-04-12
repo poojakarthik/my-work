@@ -11185,7 +11185,12 @@ div.component-collections-scenario > table.reflex
 
 .alert-validation-error
 {
-	margin	: 0.5em;
+	margin	: 0.5em 0.5em 0em 0.5em;
+}
+
+.alert-validation-error > ul
+{
+	margin	: 0em;
 }
 
 /************************** START - Rate Plan List - START **************************/
@@ -11658,8 +11663,7 @@ div.component-collections-scenario > table.reflex
 
 /************************** START - Component Account Links - START **************************/
 .component-account-links {
-	/*margin	: 0.2em;*/
-	margin-top	: 0.25em;
+	margin	: 0.25em 0.45em 0;
 }
 
 .component-account-links-list {
@@ -11785,6 +11789,71 @@ div.component-collections-scenario > table.reflex
 }
 
 /************************** END - Component Account Links - END **************************/
+
+/************************** START - Component Account Contact Merge List - START **************************/
+
+.component-account-merge-contacts-list
+{
+	margin		: 0.5em 0.5em 0em 0.5em;
+	min-width	: 30em;
+}
+
+.component-account-merge-contacts-list-contactlist-item > ul.reset > li
+{
+	margin	: 0.25em;
+}
+
+.component-account-merge-contacts-list-contactlist-item > ul.reset
+{
+	height	: 2em;
+}
+
+.component-account-merge-contacts-list-contactlist-item-checkbox
+{
+	vertical-align	: middle;
+}
+
+/************************** END - Component Account Contact Merge List - END **************************/
+
+/************************** START - Component Account Contact Merge - START **************************/
+
+.component-account-merge-contacts
+{
+	margin	: 0.5em 0.5em 0em 0.5em;
+}
+
+.component-account-merge-contacts-contact-property
+{
+	cursor	: pointer;
+	border	: solid 1px transparent;
+	padding	: 0.25em !important;
+}
+
+.component-account-merge-contacts-contact-property:hover
+{
+	border-radius			: 4px 4px 4px 4px;
+	-moz-border-radius		: 4px 4px 4px 4px;
+	-webkit-border-radius	: 4px 4px 4px 4px;
+	border					: solid 1px #333;
+	padding					: 0.25em;
+}
+
+.component-account-merge-contacts .component-section .component-section-body table.reflex
+{
+	margin	: 0em;
+}
+
+.component-account-merge-contacts .component-section .component-section-body table.reflex > tbody > tr > th
+{
+	width	: 11em;
+}
+
+.component-account-merge-contacts .component-section .component-section-body table.reflex > tbody > tr > td > .control-field
+{
+	white-space	: nowrap;
+}
+
+/************************** END - Component Account Contact Merge - END **************************/
 
 /************************** START - Component Section - START **************************/
 

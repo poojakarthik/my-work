@@ -73,6 +73,7 @@ var Popup_Rate_Plan_Test	= Class.create(Reflex_Popup,
 		
 	_accountSelected	: function()
 	{
+		debugger;
 		var oAccount	= this._oAccountField.getValue();
 		this._doInvoiceSearch(oAccount.Id);
 	},

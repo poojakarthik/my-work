@@ -3,7 +3,27 @@ class Application_Handler_Developer extends Application_Handler
 {
 	const	URL_TYPE_JS		= 'onclick';
 	const	URL_TYPE_HREF	= 'href';
-
+	
+	public function HistoricalBalanceTest()
+	{
+		Log::registerFunctionLog('Developer_rod', 'logMessage', 'Application_Handler_Developer');
+		Log::setDefaultLog('Developer_rod');
+		
+		$sStartDate	= '2011-03-10 23:59:55';
+		$aDates 	= array();
+		while (count($aDates) < 10)
+		{
+			$sStartDate = date('Y-m-d H:i:s', strtotime($sStartDate) + 1);
+			$aDates[] = $sStartDate;
+		}
+		
+		foreach ($aDates as $sDate)
+		{
+			$fBalance = Account::getForId(1000155184)->getHistoricalBalance($sDate);
+			echo "{$sDate} : {$fBalance}<br/>";
+		}
+		die;
+	}
 	
 	public function correspondence()
 	{
@@ -110,13 +130,33 @@ class Application_Handler_Developer extends Application_Handler
 																)
 													);
 
-			$arrFunctions[]	= self::_stdClassFactory(
+			/*$arrFunctions[]	= self::_stdClassFactory(
 														array	(
 																	'strName'	=> 'Manage Account Links',
 																	'strType'	=> self::URL_TYPE_JS,
-																	'strURL'	=> 'JsAutoLoader.loadScript(["dataset_ajax.js", "filter.js", "control_field.js", "control_field_text_ajax.js","component_section.js","component_account_links.js"], function(){var oPopup = Component_Account_Links.createAsPopup({iAccountId:1000154811,fnOnReady:function(){oPopup.display();}});}, true);'
+																	'strURL'	=> 'JsAutoLoader.loadScript(
+																						["dataset_ajax.js", 
+																						"filter.js", 
+																						"control_field.js", 
+																						"control_field_checkbox.js", 
+																						"control_field_text_ajax.js", 
+																						"control_field_select.js", 
+																						"control_field_text.js",
+																						"control_field_hidden.js",
+																						"component_date_picker.js",
+																						"control_field_date_picker.js",
+																						"component_section.js",
+																						"component_account_links.js", 
+																						"component_account_merge_contacts_list.js", 
+																						"component_account_merge_contacts.js"], 
+																						function() {
+																							var oPopup = Component_Account_Links.createAsPopup({iAccountId:1000182292,fnOnReady:function(){oPopup.display();}});
+																						}, 
+																						true
+																					);'
+																	//1000182292, 1000155184
 																)
-													);
+													);*/
 			
 			/*$arrFunctions[]	= self::_stdClassFactory(
 														array	(

@@ -777,13 +777,7 @@ class Invoice_Run
 			$aInvoices		= Invoice::getForInvoiceRunId($this->Id);
 			$aPDFFilenames	= array();
 			foreach ($aInvoices as $iId => $oInvoice)
-			{
-				// TODO: DEV ONLY -- REMOVE ME
-				/*if ($iId != 3002639912)
-				{
-					continue;
-				}*/
-				
+			{			
 				// Generate the PDF file
 				$iCreatedOn 			= strtotime("-1 month", strtotime($oInvoice->CreatedOn));
 				$iYear 					= (int)date("Y", $iCreatedOn);

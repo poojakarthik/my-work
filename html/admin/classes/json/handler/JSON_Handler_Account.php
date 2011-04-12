@@ -448,7 +448,160 @@ class JSON_Handler_Account extends JSON_Handler
 					);
 		}
 	}
-
+	
+	public function getAccountGroupInformationForAccount($iAccountId) {
+		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		try {
+			$oSourceAccount = Account::getForId($iAccountId);
+			$oCustomerGroup	= Customer_Group::getForId($oSourceAccount->CustomerGroup);
+			$oAccountGroup	= Account_Group::getForId($oSourceAccount->AccountGroup);
+			$aAccounts		= $oAccountGroup->getAccounts(true);
+			
+			$aStdAccounts	= array();
+			$aStdContacts	= array();
+			foreach($aAccounts as $iId => $oAccount) {
+				$aStdAccounts[$iId] = array(
+					'id' 					=> $oAccount->Id,
+					'account_group_id' 		=> $oAccount->AccountGroup,
+					'account_name' 			=> $oAccount->BusinessName,
+					'primary_contact_id' 	=> $oAccount->PrimaryContact
+				);
+				$aContacts = $oAccount->getContacts(true);
+				foreach ($aContacts as $iId => $oContact) {
+					if ($oContact->Archived == 0) {
+						// Return only non-archived contacts
+						$aStdContacts[$iId] = array(
+							'id'				=> $oContact->Id,
+							'first_name'		=> $oContact->FirstName,
+							'last_name'			=> $oContact->LastName,
+							'account_id'		=> $oContact->Account,
+							'account_group_id'	=> $oContact->AccountGroup,
+							'is_shared_contact'	=> ($oContact->CustomerContact == 1 ? true : false)
+						);
+					}
+				}
+			}
+			
+			return array(
+				'bSuccess' 	=> true,
+				'oData'		=> array(
+					'oCustomerGroup'	=> array(
+						'id'			=> $oCustomerGroup->Id,
+						'internal_name'	=> $oCustomerGroup->internal_name,
+						'external_name'	=> $oCustomerGroup->external_name
+					),
+					'oContacts'			=> $aStdContacts,
+					'oAccounts'			=> $aStdAccounts
+				)
+			);
+		} catch (Exception $oException) {
+			return array(
+				'bSuccess'	=> false,
+				'sMessage'	=> $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'
+			);
+		}
+	}
+	
+	public function linkAccounts($iParentAccountId, $iChildAccountId) {
+		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		try {
+			$oDataAccess = DataAccess::getDataAccess();
+			if ($oDataAccess->TransactionStart() === false) {
+				throw new Exception("Failed to start db transaction");
+			}
+			try {
+				$oParentAccount					= Account::getForId($iParentAccountId);
+				$oChildAccount					= Account::getForId($iChildAccountId);
+				$oOldChildAccountGroup			= Account_Group::getForId($oChildAccount->AccountGroup);
+				$oChildAccount->AccountGroup	= $oParentAccount->AccountGroup;
+				$oChildAccount->save();
+				
+				// Check if the old (child) account group needs to be archived (if it is now empty)
+				$aAccountsOnOldChildAccountGroup = $oOldChildAccountGroup->getAccounts();
+				if (count($aAccountsOnOldChildAccountGroup) == 0) {
+					$oOldChildAccountGroup->Archived = 1;
+					$oOldChildAccountGroup->save();
+					Log::getLog()->log("Archived account group {$oOldChildAccountGroup->Id}");
+				}
+			} catch (Exception $oEx) {
+				if ($oDataAccess->TransactionRollback() === false) {
+					throw new Exception("Failed to rollback db transaction. Exception=".$oEx->getMessage());
+				}
+				throw $oEx;
+			}
+			
+			if ($oDataAccess->TransactionCommit() === false) {
+				throw new Exception("Failed to commit db transaction");
+			}
+			
+			return array(
+				'bSuccess'	=> true, 
+				'sDebug' 	=> $bUserIsGod ? $this->_JSONDebug : ''
+			);
+		} catch (Exception $oException) {
+			return array(
+				'bSuccess'	=> false,
+				'sMessage'	=> $bUserIsGod ? $oException->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.',
+				'sDebug'	=> $bUserIsGod ? $this->_JSONDebug : ''
+			);
+		}
+	}
+	
+	public function unlinkAccount($iAccountId) {
+		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		try {
+			$oDataAccess = DataAccess::getDataAccess();
+			if ($oDataAccess->TransactionStart() === false) {
+				throw new Exception("Failed to start db transaction");
+			}
+			try {
+				// Create a new account group
+				$oAccountGroup 				= new Account_Group();
+				$oAccountGroup->CreatedBy 	= Flex::getUserId();
+				$oAccountGroup->CreatedOn	= date('Y-m-d', $oDataAccess->getNow(true));
+				$oAccountGroup->Archived	= 0;
+				$oAccountGroup->save();
+				Log::getLog()->log("Created account group {$oAccountGroup->Id}");
+				
+				// Set the accounts account group to the new one (isolating it)
+				$oAccount				= Account::getForId($iAccountId);
+				$oOldAccountGroup		= Account_Group::getForId($oAccount->AccountGroup);
+				$oAccount->AccountGroup = $oAccountGroup->Id;
+				$oAccount->save();
+				Log::getLog()->log("Update account group on account {$oAccount->Id}");
+				
+				// Check if the old account group needs to be archived
+				$aAccountsOnOldAccountGroup = $oOldAccountGroup->getAccounts();
+				if (count($aAccountsOnOldAccountGroup) == 0) {
+					$oOldAccountGroup->Archived = 1;
+					$oOldAccountGroup->save();
+					Log::getLog()->log("Archived account group {$oOldAccountGroup->Id}");
+				}
+			} catch (Exception $oEx) {
+				if ($oDataAccess->TransactionRollback() === false) {
+					throw new Exception("Failed to rollback db transaction. Exception=".$oEx->getMessage());
+				}
+				throw $oEx;
+			}
+			
+			if ($oDataAccess->TransactionCommit() === false) {
+				throw new Exception("Failed to commit db transaction");
+			}
+			
+			return array(
+				'bSuccess' 			=> true, 
+				'iAccountGroupId' 	=> $oAccountGroup->Id, 
+				'sDebug' 			=> $bUserIsGod ? $this->_JSONDebug : ''
+			);
+		} catch (Exception $oException) {
+			return array(
+				'bSuccess'	=> false,
+				'sMessage'	=> $bUserIsGod ? $oException->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.',
+				'sDebug' 	=> $bUserIsGod ? $this->_JSONDebug : ''
+			);
+		}
+	}
+	
 	public function getCreditCardTypes()
 	{
 		try

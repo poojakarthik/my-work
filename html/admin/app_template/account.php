@@ -50,6 +50,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		$bolUserHasViewPerm			= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW);
 		$bolUserHasExternalPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_EXTERNAL);
 		$bolUserHasCreditManagement	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
+		$bUserHasProperAdmin		= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
 		
 		$objAccount = Account::getForId($intAccountId);
 		
@@ -116,7 +117,13 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		// TODO: Check for permission to view correspondence
 		ContextMenu()->Account->ViewAccountCorrespondenceLedger($intAccountId);
+		
 		ContextMenu()->Account->AccountActivityLog($intAccountId);
+		
+		if ($bUserHasProperAdmin)
+		{
+			ContextMenu()->Account->ManageLinkedAccounts($intAccountId);
+		}
 	}
 	
 	//------------------------------------------------------------------------//
