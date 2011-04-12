@@ -162,11 +162,11 @@ class Cli_App_Payments extends Cli
 		try {
 			// Prepare the Importer
 			$oFileImport	= File_Import::getForId($oFileImportData->file_import_id);
-			$oCarrierModule	= reset(Carrier_Module::getForDefinition(self::CARRIER_MODULE_TYPE, $oFileImport->FileType, $oFileImport->Carrier));
+			$oCarrierModule	= reset(Carrier_Module::getForDefinition(MODULE_TYPE_NORMALISATION_PAYMENT, $oFileImport->FileType, $oFileImport->Carrier));
 			$sImporterClass	= $oCarrierModule->Module;
 			Flex::assert(
-				is_subclass_of($sImporterClass, __CLASS__),
-				"Carrier Module #{$oCarrierModule->Id}'s Class '{$sImporterClass}' does not inherit from ".__CLASS__,
+				is_subclass_of($sImporterClass, Resource_Type_File_Import_Payment),
+				"Carrier Module #{$oCarrierModule->Id}'s Class '{$sImporterClass}' does not inherit from ".Resource_Type_File_Import_Payment,
 				array(
 					'oFileImportData'	=> $oFileImportData->toArray(),
 					'oCarrierModule'	=> $oCarrierModule->toArray()
