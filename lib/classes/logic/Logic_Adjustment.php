@@ -18,6 +18,10 @@ class Logic_Adjustment extends Logic_Distributable implements DataLogic{
 	protected $iSignType;
 	public $iMultiplier;
 
+	public function refreshData() {
+		$this->oDO = Adjustment::getForId($this->id);
+	}
+
 	public function __construct($mDefinition)
 	{
 		$this->oDO = $mDefinition;
@@ -124,6 +128,7 @@ class Logic_Adjustment extends Logic_Distributable implements DataLogic{
 		// We're temporarily always redistributing
 		//Logic_Account::getInstance($this->account_id)->processDistributable($this);
 		Logic_Account::getInstance($this->account_id)->redistributeBalances();
+		$this->refreshData();
 	}
 }
 ?>

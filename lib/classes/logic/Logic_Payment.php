@@ -308,6 +308,8 @@ class Logic_Payment extends Logic_Distributable implements DataLogic{
 		// We're temporarily always redistributing
 		//Logic_Account::getInstance($this->account_id)->processDistributable($this);
 		Logic_Account::getInstance($this->account_id)->redistributeBalances();
+		//at this point, refresh the object, as the balance was most likely affected by the redistribution process
+		$this->refreshData();
 	}
 
 	// Optionally accepts an array of Payments (array values can be Logic_Payment, Payment, or a Payment Id)

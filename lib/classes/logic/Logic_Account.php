@@ -1614,6 +1614,8 @@ class Logic_Account implements DataLogic
 				{$sWhereClause}
 				GROUP BY a.Id";
 	}
+
+
 }
 
 
