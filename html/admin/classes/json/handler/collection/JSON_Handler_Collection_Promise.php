@@ -225,10 +225,22 @@ class JSON_Handler_Collection_Promise extends JSON_Handler
 
 					// Need to discontinue it
 					Log::getLog()->log("Discontinuing Active Suspension #{$oActiveSuspension->id}");
-					$oActiveSuspension->effective_end_datetime				= $this->_sDatetime;
-					$oActiveSuspension->collection_suspension_end_reason_id	= $oCollectionSuspensionEndReason->id;
-					$oActiveSuspension->end_employee_id						= Flex::getUserId();
-					$oActiveSuspension->save();
+					
+					if ($oActiveSuspension->getReason()->system_name == 'TIO_COMPLAINT') {
+						// TIO Complaint, end it
+						Log::getLog()->log("Suspension is a TIO Complaint");
+						$oTIOComplaint = Account_TIO_Complaint::getForCollectionSuspensionId($oActiveSuspension->id);
+						if ($oTIOComplaint === null) {
+							throw new Exception("Unable to find account_tio_complaint for suspension {$oActiveSuspension->id}");
+						}
+						$oTIOComplaint->end($oCollectionSuspensionEndReason->id);
+						Log::getLog()->log("...complaint ended");
+					} else {
+						// Regular suspension, end it
+						Log::getLog()->log("Regular suspension");
+						$oActiveSuspension->end($oCollectionSuspensionEndReason->id);
+						Log::getLog()->log("...suspension ended");
+					}
 					Log::getLog()->log(print_r($oActiveSuspension->toStdClass(), true));
 				}
 

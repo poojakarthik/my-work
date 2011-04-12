@@ -79,14 +79,22 @@ class Account_TIO_Complaint extends ORM_Cached
 		return ($aRow ? new self($aRow) : null);
 	}
 
+	public static function getForCollectionSuspensionId($iSuspensionId)
+	{
+		$aRow = Query::run("SELECT	*
+							FROM	account_tio_complaint
+							WHERE	collection_suspension_id = {$iSuspensionId}")->fetch_assoc();
+		return ($aRow ? new self($aRow) : null);
+	}
+
 	public function end($iEndReasonId)
 	{
 		// End Suspension
 		Collection_Suspension::getForId($this->collection_suspension_id)->end($iEndReasonId);
 		
 		// Remove tio ref from account record
-		$oAccount = Account::getForId($this->account_id);
-		$oAccount->tio_reference_number = null;
+		$oAccount 						= Account::getForId($this->account_id);
+		$oAccount->tio_reference_number	= null;
 		$oAccount->save();
 	}
 
