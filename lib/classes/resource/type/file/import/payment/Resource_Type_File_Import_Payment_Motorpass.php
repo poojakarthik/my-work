@@ -106,6 +106,7 @@ class Resource_Type_File_Import_Payment_Motorpass extends Resource_Type_File_Imp
 		// Return an Array of Records added/modified
 		//--------------------------------------------------------------------//
 		return array(
+			'oRawRecord'		=> $oRecord,
 			'oPaymentResponse'	=> $oPaymentResponse
 		);
 	}

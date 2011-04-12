@@ -83,6 +83,7 @@ class Resource_Type_File_Import_Payment_Westpac_BPay extends Resource_Type_File_
 		// Return an Array of Records added/modified
 		//--------------------------------------------------------------------//
 		return array(
+			'oRawRecord'		=> $oRecord,
 			'oPaymentResponse'	=> $oPaymentResponse
 		);
 	}

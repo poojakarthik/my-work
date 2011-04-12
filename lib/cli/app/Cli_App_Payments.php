@@ -152,7 +152,48 @@ class Cli_App_Payments extends Cli
 	}
 
 	protected function _debug() {
-		
+
+		// Mandatory file_import_data.id parameter
+		$iFileImportDataId	= $this->_aArgs[self::SWITCH_FILE_IMPORT_DATA_ID];
+		if ($iFileImportDataId && ($oFileImportData = File_Import_Data::getForId($iFileImportDataId)))
+		{
+			if ($oFileImportData->file_import_data_status_id !== FILE_IMPORT_DATA_STATUS_IMPORTED)
+			{
+				throw new Exception("Only File Data with Status FILE_IMPORT_DATA_STATUS_IMPORTED (".FILE_IMPORT_DATA_STATUS_IMPORTED.") can be Normalised");
+			}
+
+			// Make sure that we have a Carrier Module defined to process this File
+			Carrier_Module::getForDefinition(MODULE_TYPE_NORMALISATION_PAYMENT, $oFileImport->FileType, $oFileImport->Carrier);
+		}
+
+		// Process the record
+		DataAccess::getDataAccess()->TransactionStart(false);
+		try {
+			// Prepare the Importer
+			$oFileImport	= File_Import::getForId($oFileImportData->file_import_id);
+			$oCarrierModule	= reset(Carrier_Module::getForDefinition(self::CARRIER_MODULE_TYPE, $oFileImport->FileType, $oFileImport->Carrier));
+			$sImporterClass	= $oCarrierModule->Module;
+			Flex::assert(
+				is_subclass_of($sImporterClass, __CLASS__),
+				"Carrier Module #{$oCarrierModule->Id}'s Class '{$sImporterClass}' does not inherit from ".__CLASS__,
+				array(
+					'oFileImportData'	=> $oFileImportData->toArray(),
+					'oCarrierModule'	=> $oCarrierModule->toArray()
+				),
+				"Payment Processing: Carrier Module with Invalid Class"
+			);
+			$oImporter		= new $sImporterClass($oCarrierModule, $oFileImport);
+
+			// Process the Record
+			$aData	= $oImporter->processRecord($oFileImportData->data);
+			Log::getLog()->log(print_r($aData, true));
+		} catch (Exception $oException) {
+			DataAccess::getDataAccess()->TransactionRollback(false);
+			throw $oException;
+		}
+		DataAccess::getDataAccess()->TransactionRollback(false);
+
+		return;
 	}
 	
 	protected function _distribute()
@@ -746,7 +787,7 @@ class Cli_App_Payments extends Cli
 			self::SWITCH_FILE_IMPORT_DATA_ID => array(
 				self::ARG_REQUIRED		=> false,
 				self::ARG_LABEL			=> "FILE_IMPORT_DATA_ID",
-				self::ARG_DESCRIPTION	=> "File Import Data Id (".self::MODE_PROCESS." Mode only)",
+				self::ARG_DESCRIPTION	=> "File Import Data Id (".self::MODE_PROCESS.", ".self::MODE_DEBUG." Modes only)",
 				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
 			),
 			

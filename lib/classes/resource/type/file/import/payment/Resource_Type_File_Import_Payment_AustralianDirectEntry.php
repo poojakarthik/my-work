@@ -173,6 +173,7 @@ class Resource_Type_File_Import_Payment_AustralianDirectEntry extends Resource_T
 		// Return an Array of Records added/modified
 		//--------------------------------------------------------------------//
 		return array(
+			'oRawRecord'		=> $oRecord,
 			'oPaymentResponse'	=> $oPaymentResponse,
 			'aTransactionData'	=> $aTransactionData
 		);
