@@ -1343,16 +1343,19 @@ class Account
 	
 	// getHistoricalBalance: 	Retrieves the balance as at the given effective date. Can optionally return the overdue balance.
 	// 							Can optionally return the 'revised' balance, which means that payment reversals that affect payments 
-	//							before the effective date are included. Simply put the balance needs to include 'new' reversals if revised.
+	//							before the effective date are included.
 	public function getHistoricalBalance($mEffectiveDate=null, $bOverdueBalance=false, $bRevisedBalance=false) {
-		// Defaults to the now if not given
-		$sEffectiveDate 	= ($mEffectiveDate === null) ? DataAccess::getDataAccess()->getNow() : $mEffectiveDate;
-		$sEffectiveEndDate 	= self::getNextBillingPeriodEndDatetime($sEffectiveDate);
+		// Effective (start) date defaults to the now if not given
+		$sEffectiveDate = ($mEffectiveDate === null) ? DataAccess::getDataAccess()->getNow() : $mEffectiveDate;
+		
+		// The effective end date is calculated to be the end of the current billing period or if at the end of the current
+		// billing period, the end of the next billing period. Effective date +1 second is given as the effective when calculating
+		// the end of the current billing period to account for the 'at end of current billing period' scenario.
+		$sEffectiveEndDate = self::getNextBillingPeriodEndDatetime(date('Y-m-d H:i:s', strtotime($sEffectiveDate) + 1));
 		
 		// Add overdue clause if needed
 		$sOverdueClause = '';
-		if ($bOverdueBalance)
-		{
+		if ($bOverdueBalance) {
 			$sOverdueClause	= "	AND (
 						            c.due_date < <effective_date> 
 						            OR c.amount < 0
@@ -1361,8 +1364,7 @@ class Account
 		
 		// Payments are selected differently depending on bRevised
 		$sPaymentBalanceClause = "AND p.created_datetime < <effective_date>";
-		if ($bRevisedBalance)
-		{
+		if ($bRevisedBalance) {
 			$sPaymentBalanceClause = "	AND (
 											/* Payment was created prior to the Billing Period Start, or is reversing a Payment prior to the Billing Period Start */
 											p.created_datetime < <effective_date>
@@ -1574,7 +1576,7 @@ class Account
 		if (strtotime($sEffectiveDate) > $iEndDatetime)
 		{
 			// End Date is next Month
-			$iInvoiceDatetime = strtotime("+1 month", $iInvoiceDatetime);
+			$iEndDatetime = strtotime("+1 month", $iEndDatetime);
 		}
 		
 		return date("Y-m-d H:i:s", $iEndDatetime);
