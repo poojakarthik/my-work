@@ -175,6 +175,8 @@ class Cli_App_Payments extends Cli
 			);
 			$oImporter		= new $sImporterClass($oCarrierModule, $oFileImport);
 
+			Log::getLog()->log("Data String: \n".$oFileImportData->data."\n");
+
 			// Process the Record
 			$aData	= $oImporter->processRecord($oFileImportData->data);
 			if ($aData === null) {
