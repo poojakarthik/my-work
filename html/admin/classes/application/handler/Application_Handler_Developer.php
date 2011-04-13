@@ -4,27 +4,6 @@ class Application_Handler_Developer extends Application_Handler
 	const	URL_TYPE_JS		= 'onclick';
 	const	URL_TYPE_HREF	= 'href';
 	
-	public function HistoricalBalanceTest()
-	{
-		Log::registerFunctionLog('Developer_rod', 'logMessage', 'Application_Handler_Developer');
-		Log::setDefaultLog('Developer_rod');
-		
-		$sStartDate	= '2011-03-10 23:59:55';
-		$aDates 	= array();
-		while (count($aDates) < 10)
-		{
-			$sStartDate = date('Y-m-d H:i:s', strtotime($sStartDate) + 1);
-			$aDates[] = $sStartDate;
-		}
-		
-		foreach ($aDates as $sDate)
-		{
-			$fBalance = Account::getForId(1000155184)->getHistoricalBalance($sDate);
-			echo "{$sDate} : {$fBalance}<br/>";
-		}
-		die;
-	}
-	
 	public function correspondence()
 	{
 		Log::registerFunctionLog('Developer_CollectionsLogic', 'logMessage', 'Application_Handler_Developer');
