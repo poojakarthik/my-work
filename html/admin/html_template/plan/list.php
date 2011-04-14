@@ -78,7 +78,7 @@ class HtmlTemplatePlanList extends HtmlTemplate
 		foreach ($arrCustomerGroups as $intCustomerGroup=>$objCustomerGroup)
 		{
 			$strSelected					= ($intCustomerGroupFilter == $intCustomerGroup) ? "selected='selected'" : "";
-			$strCustomerGroupFilterOptions	.= "<option value='$intCustomerGroup' $strSelected>{$objCustomerGroup->externalName}</option>\n";
+			$strCustomerGroupFilterOptions	.= "<option value='$intCustomerGroup' $strSelected>{$objCustomerGroup->internalName}</option>\n";
 		}
 		
 		// Build the contents for the Status filter combobox
@@ -147,7 +147,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			$strViewPlanHref	= Href()->ViewPlan($arrRatePlan['Id']);
 			$strNameCell		= "<a href='$strViewPlanHref' title='$strDescription'>$strName</a>";
 			$strServiceType		= htmlspecialchars(GetConstantDescription($arrRatePlan['ServiceType'], "service_type"), ENT_QUOTES);
-			$strCustomerGroup	= htmlspecialchars(Customer_Group::getForId($arrRatePlan['customer_group'])->externalName, ENT_QUOTES);
+			$strCustomerGroup	= htmlspecialchars(Customer_Group::getForId($arrRatePlan['customer_group'])->internalName, ENT_QUOTES);
 			//$strStatusCell		= GetConstantDescription($arrRatePlan['Archived'], "RateStatus");
 			
 			$strStatusCell		= "<img ";
@@ -206,7 +206,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			}
 			
 			$objCustomerGroup	= Customer_Group::getForId($arrRatePlan['customer_group']);
-			$strCustomerGroup	= $objCustomerGroup->externalName;
+			$strCustomerGroup	= $objCustomerGroup->internalName;
 			
 			// Build the Plan Brochure link
 			$strBrochureCell	= '';
