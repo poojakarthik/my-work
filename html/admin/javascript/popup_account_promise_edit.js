@@ -828,7 +828,7 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 			oTotalPromised.addOnChangeCallback(this._distributeTotalPromisedOverInvoices.bind(this));
 
 			// Control Field Render Modes
-			if (oData.payment_method_system === 'DIRECT_DEBIT') {
+			if (oData.payment_method_constant === 'PAYMENT_METHOD_DIRECT_DEBIT') {
 				oDirectDebitInstalments.setRenderMode(Control_Field.RENDER_MODE_EDIT);
 			}
 			oPromiseReason.setRenderMode(Control_Field.RENDER_MODE_EDIT);
