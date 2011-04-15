@@ -15,14 +15,14 @@ class Flex_Rollout_Version_000245 extends Flex_Rollout_Version
 							(
 								array
 								(
-									'sDescription'		=> "Add the collections_config.promise_instalment_balance_leniency",
+									'sDescription'		=> "Add the collections_config.promise_instalment_leniency_dollars",
 									'sAlterSQL'			=> "
 										ALTER TABLE	collections_config
-										ADD COLUMN	promise_instalment_balance_leniency DECIMAL(13, 4)	NOT NULL DEFAULT 0;
+										ADD COLUMN	promise_instalment_leniency_dollars DECIMAL(13, 4)	NOT NULL DEFAULT 0;
 									",
 									'sRollbackSQL'		=> "
 										ALTER TABLE	collections_config
-										DROP COLUMN	promise_instalment_balance_leniency;
+										DROP COLUMN	promise_instalment_leniency_dollars;
 									",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								)
