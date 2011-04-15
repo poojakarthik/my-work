@@ -205,42 +205,6 @@ class Logic_Collection_Promise implements DataLogic
         return ($this->completed_datetime == null);
     }
 
-    /**
-     * Returns true if the promise is not yet complete and the balance > sum of all instalments that are still outstanding
-     */
-    public function oldIsBroken()
-    {
-    	// Calculate balance
-    	$aCollectables	= $this->getCollectables();
-		
-    	$fPaid			= 0;
-
-        $iLeniencyWindow = Collections_Config::get()->promise_instalment_leniency_days;
-
-    	foreach ($aCollectables as $oCollectable)
-    	{    		
-			$fPaid += $oCollectable->amount - $oCollectable->balance;
-    	}
-
-    	// Calculate how much of the instalments should have been paid by now
-        $aInstalments		= $this->getInstalments();
-        $fTotalDueAmount	= 0;
-        $iNow			= time();
-        foreach ($aInstalments as $oInstalment)
-        {
-            $iDue = strtotime("+$iLeniencyWindow day", strtotime("$oInstalment->due_date 23:59:59"));
-            if ($iDue < $iNow)
-            {
-                    // The instalment is due, add it's amount to the total due
-                    $fTotalDueAmount += $oInstalment->amount;
-            }
-        }
-
-        $bBroken = (Rate::roundToRatingStandard($fPaid,4) < Rate::roundToRatingStandard($fTotalDueAmount,4));
-        ////Log::getLog()->log("isBroken: $fPaid < $fTotalDueAmount = ".($bBroken ? 'yes' : 'no'));
-        return $bBroken;
-    }
-
 	public function getInstalmentAmount()
 	{
 		$aInstalments		= $this->getInstalments();
@@ -259,6 +223,7 @@ class Logic_Collection_Promise implements DataLogic
 		$bBroken = FALSE;
 		$iNow			= time();
 		$iLeniencyWindow = Collections_Config::get()->promise_instalment_leniency_days;
+		$fLeniencyAmount =  Collections_Config::get()->promise_instalment_leniency_dollars;
 		$iDaysToAddForOverdue = $iLeniencyWindow +1;
 		$iInstalment = 1;
 		$fAccountBalance = $this->getAccount()->getAccountBalance();
@@ -270,19 +235,20 @@ class Logic_Collection_Promise implements DataLogic
 			$iOverDue = strtotime("+$iDaysToAddForOverdue day", strtotime($sDueDate));
 			$sOverDueDate = date("Y-m-d",$iOverDue );
 			$fBalance = $oInstalment->getBalance();
-			if ($iOverDue < $iNow && $fBalance > 0)
+			if ($iOverDue < $iNow && $fBalance > $fLeniencyAmount)
 			{
-				$this->aReportDetails = array(	'promise id' => $this->id,
-												'promise balance'=>$this->getBalance(),
-												'instalment number'=>$iInstalment,
-												'instalment amount'=>$oInstalment->amount,
-												'instalment balance'=>$oInstalment->getBalance(),
-												'instalment due date' => $sDueDate,
-												'leniency window applied' => $iLeniencyWindow,
-												'instalment overdue date' => $sOverDueDate,
-												'account balance' => $fAccountBalance,
-												'total promise collectable amount' => $this->getAmount(),
-												'total promise instalment amount' => $this->getInstalmentAmount());
+				$this->aReportDetails = array(	'promise id'						=> $this->id,
+												'promise balance'					=>$this->getBalance(),
+												'instalment number'					=>$iInstalment,
+												'instalment amount'					=>$oInstalment->amount,
+												'instalment balance'				=>$oInstalment->getBalance(),
+												'instalment due date'				=> $sDueDate,
+												'leniency window applied'			=> $iLeniencyWindow,
+												'leniency amount applied'			=> $fLeniencyAmount,
+												'instalment overdue date'			=> $sOverDueDate,
+												'account balance'					=> $fAccountBalance,
+												'total promise collectable amount'	=> $this->getAmount(),
+												'total promise instalment amount'	=> $this->getInstalmentAmount());
 				$bBroken = TRUE;
 				break;
 
