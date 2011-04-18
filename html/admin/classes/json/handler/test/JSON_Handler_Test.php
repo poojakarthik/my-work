@@ -98,7 +98,7 @@ class JSON_Handler_Test extends JSON_Handler implements JSON_Handler_Loggable, J
 	protected static function _readFilesInDirectory($sDirectory, &$aFiles) {
 		$rHandler = opendir($sDirectory);
 		while ($sFile = readdir($rHandler)) {
-			if ($sFile != "." && $sFile != "..") {
+			if ($sFile != "." && $sFile != ".." && $sFile != ".svn") {
 				if (preg_match('/\.php/', $sFile)) {
 					// Class file
 					$aFiles[] = $sFile;

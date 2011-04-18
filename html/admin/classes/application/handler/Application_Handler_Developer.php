@@ -171,7 +171,7 @@ class Application_Handler_Developer extends Application_Handler
 				)
 			);
 			
-			$arrFunctions[]	= self::_stdClassFactory(
+			/*$arrFunctions[]	= self::_stdClassFactory(
 				array (
 					'strName'	=> 'Dataset AJAX Table Component Testing',
 					'strType'	=> self::URL_TYPE_JS,
@@ -193,7 +193,7 @@ class Application_Handler_Developer extends Application_Handler
 										true
 									);'
 				)
-			);
+			);*/
 			
 			$arrDetailsToRender = array();
 			$arrDetailsToRender['arrFunctions']	= $arrFunctions;
