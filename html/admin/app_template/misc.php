@@ -58,6 +58,7 @@ class AppTemplateMisc extends ApplicationTemplate
 	 */
 	function MoveDelinquentCDRs()
 	{
+		throw new Exception("Deprecated: please use lib/classes/application/handler/Application_Handler_CDR::MoveDelinquentCDRs");
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);

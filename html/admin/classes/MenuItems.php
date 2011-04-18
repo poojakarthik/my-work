@@ -3372,26 +3372,10 @@ class MenuItems {
 	//------------------------------------------------------------------------//
 	// MoveDelinquentCDRs
 	//------------------------------------------------------------------------//
-	/**
-	 * MoveDelinquentCDRs()
-	 *
-	 * Compiles the Href to be executed when the MoveDelinquentCDRs menu item is triggered
-	 *
-	 * Compiles the Href to be executed when the MoveDelinquentCDRs menu item is triggered
-	 *
-	 * @return	string					Href to trigger the functionality
-	 * @method
-	 */
-	function MoveDelinquentCDRs() {
+	function moveDelinquentCDRs()
+	{
 		$this->strContextMenuLabel = "Delinquent CDRs";
 		$this->strLabel = "Delinquent CDRs";
-		return self :: NEW_FRAMEWORK . "flex.php/Misc/MoveDelinquentCDRs/";
-	}
-
-	function NewMoveDelinquentCDRs()
-	{
-		$this->strContextMenuLabel = "New Delinquent CDRs";
-		$this->strLabel = "New Delinquent CDRs";
 		return self :: NEW_FRAMEWORK . "reflex.php/CDR/MoveDelinquentCDRs/";
 	}
 
