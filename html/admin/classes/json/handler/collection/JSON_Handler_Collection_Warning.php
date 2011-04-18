@@ -1,16 +1,7 @@
 <?php
 
-class JSON_Handler_Collection_Warning extends JSON_Handler
+class JSON_Handler_Collection_Warning extends JSON_Handler implements JSON_Handler_Loggable
 {
-	protected	$_JSONDebug	= '';
-
-	public function __construct()
-	{
-		// Send Log output to a debug string
-		Log::registerLog('JSON_Handler_Debug', Log::LOG_TYPE_STRING, $this->_JSONDebug);
-		Log::setDefaultLog('JSON_Handler_Debug');
-	}
-	
 	public function getAll()
 	{
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
@@ -25,8 +16,7 @@ class JSON_Handler_Collection_Warning extends JSON_Handler
 			
 			return	array(
 						'bSuccess'	=> true,
-						'aResults'	=> $aResults,
-						'sDebug'	=> ($bUserIsGod ? $this->_JSONDebug : '')
+						'aResults'	=> $aResults
 					);
 		}
 		catch (Exception $e)
@@ -82,7 +72,6 @@ class JSON_Handler_Collection_Warning extends JSON_Handler
 			
 			return	array(
 						'bSuccess'		=> true,
-						'sDebug'		=> ($bUserIsGod ? $this->_JSONDebug : ''),
 						'iWarningId'	=> $oWarning->id
 					);
 		}

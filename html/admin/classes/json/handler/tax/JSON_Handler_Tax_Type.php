@@ -2,15 +2,6 @@
 
 class JSON_Handler_Tax_Type extends JSON_Handler
 {
-	protected	$_JSONDebug	= '';
-
-	public function __construct()
-	{
-		// Send Log output to a debug string
-		Log::registerLog('JSON_Handler_Debug', Log::LOG_TYPE_STRING, $this->_JSONDebug);
-		Log::setDefaultLog('JSON_Handler_Debug');
-	}
-	
 	public function getGlobalTaxType()
 	{
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();

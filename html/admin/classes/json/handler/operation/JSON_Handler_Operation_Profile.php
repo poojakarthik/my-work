@@ -1,16 +1,7 @@
 <?php
 
-class JSON_Handler_Operation_Profile extends JSON_Handler
+class JSON_Handler_Operation_Profile extends JSON_Handler implements JSON_Handler_Loggable
 {
-	protected	$_JSONDebug	= '';
-		
-	public function __construct()
-	{
-		// Send Log output to a debug string
-		Log::registerLog('JSON_Handler_Debug', Log::LOG_TYPE_STRING, $this->_JSONDebug);
-		Log::setDefaultLog('JSON_Handler_Debug');
-	}
-	
 	public function getForId($iOperationProfileId, $bolIncludePermissions=false)
 	{
 		try
@@ -22,16 +13,14 @@ class JSON_Handler_Operation_Profile extends JSON_Handler
 			// If no exceptions were thrown, then everything worked
 			return array(
 							"Success"			=> true,
-							"oOperationProfile"	=> $aOperationProfile,
-							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+							"oOperationProfile"	=> $aOperationProfile
 						);
 		}
 		catch (Exception $e)
 		{
 			return array(
 							"Success"	=> false,
-							"Message"	=> 'ERROR: '.$e->getMessage(),
-							"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+							"Message"	=> 'ERROR: '.$e->getMessage()
 						);
 		}
 	}
@@ -61,8 +50,7 @@ class JSON_Handler_Operation_Profile extends JSON_Handler
 				// Count Only
 				return 	array(
 							"Success"		=> true,
-							"iRecordCount"	=> self::_getRecordCount(),
-							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+							"iRecordCount"	=> self::_getRecordCount()
 						);
 			}
 			else
@@ -105,8 +93,7 @@ class JSON_Handler_Operation_Profile extends JSON_Handler
 				return 	array(
 							"Success"		=> true,
 							"aRecords"		=> $aResults,
-							"iRecordCount"	=> ($iLimit === null) ? count($aResults) : self::_getRecordCount(),
-							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+							"iRecordCount"	=> ($iLimit === null) ? count($aResults) : self::_getRecordCount()
 						);
 			}
 		}
@@ -114,8 +101,7 @@ class JSON_Handler_Operation_Profile extends JSON_Handler
 		{
 			return 	array(
 						"Success"	=> false,
-						"Message"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $e->getMessage() : 'There was an error accessing the database',
-						"strDebug"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $this->_JSONDebug : ''
+						"Message"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $e->getMessage() : 'There was an error accessing the database'
 					);
 		}
 	}
@@ -130,8 +116,7 @@ class JSON_Handler_Operation_Profile extends JSON_Handler
 			// Failure!
 			return 	array(
 						"Success"	=> false,
-						"Message"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? 'There was an error accessing the database' : '',
-						"sDebug"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $this->_JSONDebug : ''
+						"Message"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? 'There was an error accessing the database' : ''
 					);
 		}
 		
@@ -189,8 +174,7 @@ class JSON_Handler_Operation_Profile extends JSON_Handler
 			return 	array(
 						"Success"	=> true,
 						"iId"		=> $oOperationProfile->id,
-						'test'		=> $oOperationProfile,
-						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+						'test'		=> $oOperationProfile
 					);
 		}
 		catch (Exception $e)
@@ -199,8 +183,7 @@ class JSON_Handler_Operation_Profile extends JSON_Handler
 			
 			return array(
 							"Success"	=> false,
-							"Message"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $e->getMessage() : 'There was an error accessing the database',
-							"strDebug"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $this->_JSONDebug : ''
+							"Message"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $e->getMessage() : 'There was an error accessing the database'
 						);
 		}
 	}

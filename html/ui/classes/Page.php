@@ -283,6 +283,8 @@ class Page
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_fx_morph.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_fx_shift.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_popup.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_ajax_request.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_ajax_response.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/flex_constant.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_debug.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/date.js' ></script>\n";
@@ -319,7 +321,9 @@ class Page
 		{
 			$sApplicationDir	= Flex::applicationUrlBase();
 			echo "\t\t<script type='text/javascript' src='{$sApplicationDir}javascript/followup_link.js'></script>\n";
+			echo "\t\t<script type='text/javascript' src='{$sApplicationDir}javascript/component_debug_log.js'></script>\n";
 			$arrFiles[]	= 'followup_link';
+			$arrFiles[]	= 'component_debug_log';
 		}
 		
 		$arrStandardJsFiles				= array_merge($arrStandardJsFiles, $arrFiles);
@@ -765,6 +769,7 @@ class Page
 						<input type='submit' id='Search' name='Search' value='Search'/>
 					</form>
 				</div>
+				".(Employee::getForId(Flex::getUserId())->isGod() ? "<div id='component-debug-log-container'></div>" : '')."
 			</div> <!-- person_search-->\n";
 	}
 

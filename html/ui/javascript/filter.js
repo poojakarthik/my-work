@@ -29,6 +29,11 @@ var Filter	= Class.create
 	// Public Methods
 	//
 	
+	setFilterUpdateCallback : function(fnFilterUpdateCallback) 
+	{
+		this._fnFilterUpdateCallback = fnFilterUpdateCallback;
+	},
+	
 	/*
 	 * oDefinition structure
 	 * 	- iType: 	FILTER_TYPE constant

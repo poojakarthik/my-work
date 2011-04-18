@@ -24,7 +24,6 @@ var Reflex_Loading_Overlay = Class.create(
 		this._oElement.style.width 	= oElement.getWidth() + 'px';
 		this._oElement.style.height	= oElement.getHeight() + 'px';
 		oElement.appendChild(this._oElement);
-		
 		oElement.addClassName('reflex-loading-overlay-parent');
 	},
 	

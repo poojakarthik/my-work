@@ -1,16 +1,7 @@
 <?php
 
-class JSON_Handler_Correspondence_Template extends JSON_Handler
+class JSON_Handler_Correspondence_Template extends JSON_Handler implements JSON_Handler_Loggable
 {
-	protected	$_JSONDebug	= '';
-	
-	public function __construct()
-	{
-		// Send Log output to a debug string
-		Log::registerLog('JSON_Handler_Debug', Log::LOG_TYPE_STRING, $this->_JSONDebug);
-		Log::setDefaultLog('JSON_Handler_Debug');
-	}
-	
 	public function getAll($bActiveOnly=false)
 	{
 		try
@@ -180,15 +171,12 @@ class JSON_Handler_Correspondence_Template extends JSON_Handler
 		}
 	}
 	
-	public function getDataset($bCountOnly=false, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null)
-	{
+	public function getDataset($bCountOnly=false, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null) {
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
-		try
-		{
+		try {
 			$iRecordCount = Correspondence_Template::searchFor(true, $iLimit, $iOffset, $oSort, $oFilter);
-			if ($bCountOnly)
-			{
-				return array('bSuccess' => true, 'iRecordCount' => $iRecordCount);
+			if ($bCountOnly) {
+				return array('iRecordCount' => $iRecordCount);
 			}
 			
 			$iLimit		= ($iLimit === null ? 0 : $iLimit);
@@ -197,25 +185,17 @@ class JSON_Handler_Correspondence_Template extends JSON_Handler
 			$aResults	= array();
 			$i			= $iOffset;
 			
-			foreach ($aData as $aRecord)
-			{
+			foreach ($aData as $aRecord) {
 				$aResults[$i] = $aRecord;
 				$i++;
 			}
 			
-			return	array(
-						'bSuccess'		=> true,
-						'aRecords'		=> $aResults,
-						'iRecordCount'	=> $iRecordCount
-					);
-		}
-		catch (Exception $oEx)
-		{
-			$sMessage	= $bUserIsGod ? $oEx->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
-			return 	array(
-						'bSuccess'	=> false,
-						'sMessage'	=> $sMessage
-					);
+			return array(
+				'aRecords'		=> $aResults,
+				'iRecordCount'	=> $iRecordCount
+			);
+		} catch (Exception $oEx) {
+			return self::_buildExceptionResponse($oEx);
 		}
 	}
 	
@@ -467,8 +447,7 @@ class JSON_Handler_Correspondence_Template extends JSON_Handler
 			$oTemplate->save();
 			
 			return	array(
-						'bSuccess'	=> true,
-						'sDebug'	=> ($bUserIsGod ? $this->_JSONDebug : '')
+						'bSuccess'	=> true
 					);
 		}
 		catch (Exception $e)

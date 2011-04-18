@@ -1,16 +1,7 @@
 <?php
 
-class JSON_Handler_Collection_Event_Type extends JSON_Handler
+class JSON_Handler_Collection_Event_Type extends JSON_Handler implements JSON_Handler_Loggable
 {
-	protected	$_JSONDebug	= '';
-
-	public function __construct()
-	{
-		// Send Log output to a debug string
-		Log::registerLog('JSON_Handler_Debug', Log::LOG_TYPE_STRING, $this->_JSONDebug);
-		Log::setDefaultLog('JSON_Handler_Debug');
-	}
-	
 	public function getDataset($bCountOnly=false, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null)
 	{
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
@@ -74,8 +65,7 @@ class JSON_Handler_Collection_Event_Type extends JSON_Handler
 			
 			return	array(
 						'bSuccess'					=> true,
-						'aEventTypeImplementations'	=> $aResults,
-						'sDebug'					=> ($bUserIsGod ? $this->_JSONDebug : '')
+						'aEventTypeImplementations'	=> $aResults
 					);
 		}
 		catch (Exception $e)
@@ -107,8 +97,7 @@ class JSON_Handler_Collection_Event_Type extends JSON_Handler
 			
 			return	array(
 						'bSuccess'		=> true,
-						'aEventTypes'	=> $aResults,
-						'sDebug'		=> ($bUserIsGod ? $this->_JSONDebug : '')
+						'aEventTypes'	=> $aResults
 					);
 		}
 		catch (Exception $e)
@@ -172,8 +161,7 @@ class JSON_Handler_Collection_Event_Type extends JSON_Handler
 			
 			return	array(
 						'bSuccess'		=> true,
-						'iEventTypeId'	=> $oEventType->id,
-						'sDebug'		=> ($bUserIsGod ? $this->_JSONDebug : '')
+						'iEventTypeId'	=> $oEventType->id
 					);
 		}
 		catch (Exception $e)
@@ -196,8 +184,7 @@ class JSON_Handler_Collection_Event_Type extends JSON_Handler
 			$oEventType->save();
 			
 			return	array(
-						'bSuccess'	=> true,
-						'sDebug'	=> ($bUserIsGod ? $this->_JSONDebug : '')
+						'bSuccess'	=> true
 					);
 		}
 		catch (Exception $e)

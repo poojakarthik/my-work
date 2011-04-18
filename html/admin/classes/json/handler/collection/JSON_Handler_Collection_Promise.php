@@ -1,16 +1,11 @@
 <?php
 
-class JSON_Handler_Collection_Promise extends JSON_Handler
+class JSON_Handler_Collection_Promise extends JSON_Handler implements JSON_Handler_Loggable
 {
-	protected	$_JSONDebug	= '';
 	protected	$_iTimestamp;
 
 	public function __construct()
 	{
-		// Send Log output to a debug string
-		Log::registerLog('JSON_Handler_Debug', Log::LOG_TYPE_STRING, $this->_JSONDebug);
-		Log::setDefaultLog('JSON_Handler_Debug');
-
 		$this->_iTimestamp	= time();
 		$this->_sDatetime	= date('Y-m-d H:i:s', $this->_iTimestamp);
 		$this->_sDate		= date('Y-m-d', $this->_iTimestamp);
@@ -164,7 +159,7 @@ class JSON_Handler_Collection_Promise extends JSON_Handler
 				throw new Exception_Database("Unable to commit db Transaction");
 			}
 			
-			return array('bSuccess' => true, 'sDebug' => $this->_JSONDebug);
+			return array('bSuccess' => true);
 		} catch (JSON_Handler_Collection_Promise_Exception $oEx) {
 			// Custom exception
 			return 	array(
@@ -356,16 +351,14 @@ class JSON_Handler_Collection_Promise extends JSON_Handler
 
 			// Success!
 			return 	array(
-						'bSuccess'	=> true,
-						'sDebug'	=> $bUserIsGod ? $this->_JSONDebug : null
+						'bSuccess'	=> true
 					);
 
 		} catch (Exception $oException) {
 			$sMessage	= $bUserIsGod || $oException instanceof Exception_Validation ? $oException->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
 			return 	array(
 						'bSuccess'	=> false,
-						'sMessage'	=> $sMessage,
-						'sDebug'	=> $bUserIsGod ? $this->_JSONDebug : null
+						'sMessage'	=> $sMessage
 					);
 		}
 	}

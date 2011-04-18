@@ -26,6 +26,11 @@ var Sort	= Class.create
 	// Public methods
 	//
 	
+	setFieldUpdateCallback : function(fnFieldUpdateCallback) 
+	{
+		this._fFieldUpdateCallback = fnFieldUpdateCallback;
+	},
+	
 	registerToggleElement	: function(oElement, sField, sDefaultDirection)
 	{
 		oElement.observe('click', this._toggleField.bind(this, sField));

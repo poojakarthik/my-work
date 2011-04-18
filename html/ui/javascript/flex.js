@@ -27,6 +27,6 @@ Flex.cookie = {
 	},
 	
 	erase: function(name) {
-		createCookie(name,"",-1);
+		Flex.cookie.create(name,"",-1);
 	}
 }

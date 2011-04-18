@@ -1691,7 +1691,7 @@ var Developer_Collections	= Class.create(Reflex_Popup,
 			aCookieData[i] = oCopy;
 		}
 		
-		var sCookie 			= aCookieData.toJSON();
+		var sCookie 			= Object.toJSON(aCookieData);
 		var iNewCookieLength	= document.cookie.toString().length + sCookie.length;
 		if (iNewCookieLength > 4096)
 		{

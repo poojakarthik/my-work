@@ -68,7 +68,7 @@ class Application
 			}
 
 			// Run the handler
-			$response = call_user_func_array(array(0 => $this->objJsonHandler, 1 => $strHandlerMethod), $arrArgs);
+			$response = $this->objJsonHandler->invokeHandlerMethod($strHandlerMethod, $arrArgs);
 		}
 		catch(Exception $e)
 		{
@@ -236,6 +236,7 @@ class Application
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
 			{
 				ContextMenu()->Admin->System_Settings->CarrierModuleList();
+				ContextMenu()->Admin->System_Settings->EmailQueueList();
 			}
 			
 			if (Flex_Module::isActive(FLEX_MODULE_CONTRACT_MANAGEMENT))
@@ -511,6 +512,7 @@ class Application
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
 			{
 				ContextMenu()->Admin->System_Settings->CarrierModuleList();
+				ContextMenu()->Admin->System_Settings->EmailQueueList();
 			}
 			
 			if (Flex_Module::isActive(FLEX_MODULE_CONTRACT_MANAGEMENT))

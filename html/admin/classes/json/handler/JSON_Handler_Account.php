@@ -1688,7 +1688,9 @@ class JSON_Handler_Account extends JSON_Handler
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 		try
 		{
+			Log::getLog()->log("Redistributing balance");
 			Logic_Account::getInstance($iAccountId)->redistributeBalances();
+			Log::getLog()->log("...done");
 			return array('bSuccess' => true);
 		}
 		catch (Exception $e)

@@ -15,6 +15,11 @@ var Pagination	= Class.create
 		}
 	},
 	
+	setUpdateCallback : function(fnUpdateCallback) 
+	{
+		this._fncCallback = fnUpdateCallback;
+	},
+	
 	getPageSize : function()
 	{
 		return this._intPageSize;

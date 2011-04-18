@@ -1,21 +1,13 @@
 <?php
 
-class JSON_Handler_Payment extends JSON_Handler
+class JSON_Handler_Payment extends JSON_Handler implements JSON_Handler_Loggable
 {
-	protected	$_JSONDebug	= '';
-
-	public function __construct()
-	{
-		// Send Log output to a debug string
-		Log::registerLog('JSON_Handler_Debug', Log::LOG_TYPE_STRING, $this->_JSONDebug);
-		Log::setDefaultLog('JSON_Handler_Debug');
-	}
-	
 	public function getDataset($bCountOnly=false, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null)
 	{
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 		try
 		{
+			Log::getLog()->log("Getting payment dataset ".($bCountOnly ? '(Count Only)' : '')."...");
 			$iRecordCount = Payment::searchFor(true, $iLimit, $iOffset, $oSort, $oFilter);
 			if ($bCountOnly)
 			{
@@ -148,14 +140,13 @@ class JSON_Handler_Payment extends JSON_Handler
 				throw new Exception_Database("Failed to commit db transaction");
 			}
 			
-			return array('bSuccess' => true, 'iPaymentId' => $mPaymentId, 'sDebug' => ($bUserIsGod ? $this->_JSONDebug : ''));
+			return array('bSuccess' => true, 'iPaymentId' => $mPaymentId);
 		}
 		catch (Exception $e)
 		{
 			return 	array(
 						'bSuccess'	=> false,
-						'sMessage'	=> ($bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'),
-						'sDebug' 	=> ($bUserIsGod ? $this->_JSONDebug : '')
+						'sMessage'	=> ($bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.')
 					);
 		}
 	}

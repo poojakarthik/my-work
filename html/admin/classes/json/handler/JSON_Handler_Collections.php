@@ -1,16 +1,7 @@
 <?php
 
-class JSON_Handler_Collections extends JSON_Handler
+class JSON_Handler_Collections extends JSON_Handler implements JSON_Handler_Loggable
 {
-	protected	$_JSONDebug	= '';
-
-	public function __construct()
-	{
-		// Send Log output to a debug string
-		Log::registerLog('JSON_Handler_Debug', Log::LOG_TYPE_STRING, $this->_JSONDebug);
-		Log::setDefaultLog('JSON_Handler_Debug');
-	}
-	
 	public function getAccounts($bCountOnly=false, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null)
 	{
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
@@ -296,7 +287,7 @@ class JSON_Handler_Collections extends JSON_Handler
 				throw new JSON_Handler_Collections_Exception("Successful but failed to commit db transaction.");
 			}
 			
-			return array('bSuccess' => true, 'sDebug' => $this->_JSONDebug);
+			return array('bSuccess' => true);
 		}
 		catch (JSON_Handler_Collections_Exception $oEx)
 		{
@@ -306,7 +297,7 @@ class JSON_Handler_Collections extends JSON_Handler
 				$sMessage .= " Failed to rollback db transaction.";
 			}
 			
-			return array('bSuccess' => false,'sMessage' => $sMessage, 'sDebug' => $this->_JSONDebug);
+			return array('bSuccess' => false,'sMessage' => $sMessage);
 		}
 		catch (Exception $e)
 		{
@@ -316,7 +307,7 @@ class JSON_Handler_Collections extends JSON_Handler
 				$sMessage .= " Failed to rollback db transaction.";
 			}
 			
-			return array('bSuccess' => false,'sMessage' => $sMessage, 'sDebug' => $this->_JSONDebug);
+			return array('bSuccess' => false,'sMessage' => $sMessage);
 		}
 	}
 	
@@ -622,16 +613,14 @@ class JSON_Handler_Collections extends JSON_Handler
 
 		    return	array(
 					    'bSuccess' 	=> true,
-					    'aEvents'	=> $aSortedEvents,
-					    'sDebug'	=> ($bUserIsGod ? $this->_JSONDebug : '')
+					    'aEvents'	=> $aSortedEvents
 				    );
 		}
 		catch (Exception $oException)
 		{
 			return	array(
 						'bSuccess' 	=> false,
-						'sMessage'	=> ($bUserIsGod ? $oException->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'),
-						'sDebug'	=> ($bUserIsGod ? $this->_JSONDebug : '')
+						'sMessage'	=> ($bUserIsGod ? $oException->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.')
 					);
 		}
 	}
@@ -805,7 +794,9 @@ class JSON_Handler_Collections extends JSON_Handler
 				$aEvents[$aRow['account_collection_event_status_id']][] = $aRow;
 			}
 			
-			return array('bSuccess' => true, 'aEvents' => $aEvents, 'sDebug' => $sQuery);
+			Log::getLog()->log("Query: $sQuery");
+			
+			return array('bSuccess' => true, 'aEvents' => $aEvents);
 		}
 		catch (Exception $e)
 		{

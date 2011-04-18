@@ -279,21 +279,21 @@
 			{
 				// LIKE, starting with...
 				$sPlaceHolder						= $sOriginalAlias.$sPlaceHolderSuffix;
-				$aResult['aValues'][$sPlaceHolder]	= "'{$mValue->sStartsWith}%'";
+				$aResult['aValues'][$sPlaceHolder]	= "{$mValue->sStartsWith}%";
 				$aWhereParts[]						= "{$sAlias} LIKE <{$sPlaceHolder}>";
 			}
 			else if ($mValue->sEndsWith)
 			{
 				// LIKE, ending with...
 				$sPlaceHolder						= $sOriginalAlias.$sPlaceHolderSuffix;
-				$aResult['aValues'][$sPlaceHolder]	= "'%{$mValue->sEndsWith}'";
+				$aResult['aValues'][$sPlaceHolder]	= "%{$mValue->sEndsWith}";
 				$aWhereParts[]						= "{$sAlias} LIKE <{$sPlaceHolder}>";
 			}
 			else if ($mValue->sContains)
 			{
 				// LIKE, containing...
 				$sPlaceHolder						= $sOriginalAlias.$sPlaceHolderSuffix;
-				$aResult['aValues'][$sPlaceHolder]	= "'%{$mValue->sContains}%'";
+				$aResult['aValues'][$sPlaceHolder]	= "%{$mValue->sContains}%";
 				$aWhereParts[]						= "{$sAlias} LIKE <{$sPlaceHolder}>";
 			}
 			else if ($mValue->aValues && count($mValue->aValues) > 0)

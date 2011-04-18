@@ -36,14 +36,14 @@ class Email_Flex extends Zend_Mail
     {
     	try
     	{
-    		//Log::getLog()->log("\t ...sending to:\n".print_r($this->_recipients, true));
+    		Log::getLog()->log("Email_Flex: sending to:\n\t".print_r($this->_recipients, true));
     		$mReturnVal			= parent::send($transport);
     		$this->_bSuccess	= true;
     		return $mReturnVal;
     	}
     	catch (Exception $oException)
     	{
-    		$this->_bSuccess	= false;
+    		$this->_bSuccess = false;
     		throw $oException;
     	}
     }

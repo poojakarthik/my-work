@@ -1,16 +1,7 @@
 <?php
 
-class JSON_Handler_Collection_Scenario extends JSON_Handler
+class JSON_Handler_Collection_Scenario extends JSON_Handler implements JSON_Handler_Loggable
 {
-	protected	$_JSONDebug	= '';
-
-	public function __construct()
-	{
-		// Send Log output to a debug string
-		Log::registerLog('JSON_Handler_Debug', Log::LOG_TYPE_STRING, $this->_JSONDebug);
-		Log::setDefaultLog('JSON_Handler_Debug');
-	}
-	
 	public function getForId($iScenarioId, $bLoadEvents=false)
 	{
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
@@ -41,8 +32,7 @@ class JSON_Handler_Collection_Scenario extends JSON_Handler
 			}
 			return	array(
 						'bSuccess'	=> true,
-						'oScenario'	=> $aScenario,
-						'sDebug'	=> ($bUserIsGod ? $this->_JSONDebug : '')
+						'oScenario'	=> $aScenario
 					);
 		}
 		catch (Exception $e)
@@ -99,8 +89,7 @@ class JSON_Handler_Collection_Scenario extends JSON_Handler
 			
 			return	array(
 						'bSuccess'		=> true,
-						'aScenarios'	=> $aResults,
-						'sDebug'		=> ($bUserIsGod ? $this->_JSONDebug : '')
+						'aScenarios'	=> $aResults
 					);
 		}
 		catch (Exception $e)
@@ -253,7 +242,6 @@ class JSON_Handler_Collection_Scenario extends JSON_Handler
 			
 			return	array(
 						'bSuccess'		=> true,
-						'sDebug'		=> ($bUserIsGod ? $this->_JSONDebug : ''),
 						'iScenarioId'	=> $oScenario->id
 					);
 		}

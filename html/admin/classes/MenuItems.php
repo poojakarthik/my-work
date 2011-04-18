@@ -4292,6 +4292,37 @@ else
 		return self::NEW_FRAMEWORK."reflex.php/CarrierModule/Manage/";
 	}
 	
+	public function EmailQueueList()
+	{
+		$this->strContextMenuLabel 	= "Email Queues";
+		$this->strLabel 			= "Email Queues";
+		return "javascript:	JsAutoLoader.loadScript(
+									['control_field.js',
+									'control_field_text.js',
+									'control_field_select.js',
+									'component_date_picker.js',
+									'control_field_date_picker.js',
+									'sort.js',
+									'filter.js',
+									'pagination.js',
+									'dataset_ajax.js',
+									'reflex_validation.js',
+									'reflex_component.js',
+									'component_section.js',
+									'reflex_loading_overlay.js',
+									'employee.js',
+									'component_dataset_ajax_table.js',
+									'popup_email_queue_list.js',
+									'popup_email_queue_email_list.js',
+									'component_email_queue_email_preview.js',
+									'popup_email_queue_email_preview_send.js'],
+									function() {
+										new Popup_Email_Queue_List();
+									},
+									true
+								);";
+	}
+	
 	public function NewCorrespondenceEmailTemplate()
 	{
 		$this->strContextMenuLabel 	= "New Correspondence Email Template";

@@ -145,6 +145,56 @@ class Application_Handler_Developer extends Application_Handler
 																)
 													);*/
 			
+			$arrFunctions[]	= self::_stdClassFactory(
+				array (
+					'strName'	=> 'Testing Interface',
+					'strType'	=> self::URL_TYPE_JS,
+					'strURL'	=> 'JsAutoLoader.loadScript(
+										["control_field.js", 
+										"control_field_checkbox.js", 
+										"control_field_textarea.js",
+										"control_field_number.js",
+										"component_section.js", 
+										"reflex_breadcrumb_select.js",
+										"component_test_run.js"], 
+										function() {
+											var oPopup = Component_Test_Run.createAsPopup(
+												{
+													fnOnReady: function() {
+														oPopup.display();
+													}
+												}
+											);
+										}, 
+										true
+									);'
+				)
+			);
+			
+			$arrFunctions[]	= self::_stdClassFactory(
+				array (
+					'strName'	=> 'Dataset AJAX Table Component Testing',
+					'strType'	=> self::URL_TYPE_JS,
+					'strURL'	=> 'JsAutoLoader.loadScript(
+										["control_field.js", 
+										"control_field_checkbox.js", 
+										"control_field_text.js", 
+										"control_field_select.js",
+										"control_field_date_picker.js",
+										"sort.js",
+										"filter.js",
+										"component_section.js",
+										"reflex_loading_overlay.js",
+										"customer_group.js",
+										"component_dataset_ajax_table.js"], 
+										function() {
+											Component_Dataset_AJAX_Table.test();
+										}, 
+										true
+									);'
+				)
+			);
+			
 			$arrDetailsToRender = array();
 			$arrDetailsToRender['arrFunctions']	= $arrFunctions;
 			

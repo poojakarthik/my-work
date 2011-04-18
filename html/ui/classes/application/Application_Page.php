@@ -159,6 +159,8 @@ class Application_Page extends Page
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_fx_morph.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_fx_shift.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_popup.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_ajax_request.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_ajax_response.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/flex_constant.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_debug.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/date.js' ></script>\n";
@@ -196,7 +198,9 @@ class Application_Page extends Page
 		{
 			$sApplicationDir	= Flex::applicationUrlBase();
 			echo "\t\t<script type='text/javascript' src='{$sApplicationDir}javascript/followup_link.js'></script>\n";
+			echo "\t\t<script type='text/javascript' src='{$sApplicationDir}javascript/component_debug_log.js'></script>\n";
 			$arrFiles[]	= 'followup_link';
+			$arrFiles[]	= 'component_debug_log';
 
 			echo "\t\t<script type='text/javascript' src='".Flex::getUrlBase()."reflex.php/Package/Load/FW'></script>\n";
 			$arrFiles[]	= 'FW';

@@ -210,6 +210,53 @@ class Email_Queue extends ORM_Cached
 		return $aQueues;
 	}
 	
+	public static function searchFor($bCountOnly=false, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null) {
+		$aAliases = array(
+			'id'									=> "eq.id",
+			'scheduled_datetime'					=> "eq.scheduled_datetime",
+			'delivered_datetime'					=> "eq.delivered_datetime",
+			'email_queue_batch_id'					=> "eq.email_queue_batch_id",
+			'created_datetime'						=> "eq.created_datetime",
+			'created_employee_id'					=> "eq.created_employee_id",
+			'created_employee_name'					=> "CONCAT(e_created.FirstName, ' ', e_created.LastName)",
+			'email_queue_status_id'					=> "eq.email_queue_status_id",
+			'email_queue_status_name'				=> "eqs.name",
+			'description'							=> "eq.description"
+		);
+		
+		$sFrom = "	email_queue eq
+					JOIN email_queue_status eqs ON (eqs.id = eq.email_queue_status_id)
+					JOIN Employee e_created ON (e_created.Id = eq.created_employee_id)";
+		if ($bCountOnly) {
+			$sSelect 	= "COUNT(eq.id) AS count";
+			$sOrderBy	= "";
+			$sLimit		= "";
+		} else {
+			$aSelectLines = array();
+			foreach ($aAliases as $sAlias => $sClause) {
+				$aSelectLines[] = "{$sClause} AS {$sAlias}";
+			}
+			$sSelect	= implode(', ', $aSelectLines);
+			$sOrderBy	= Statement::generateOrderBy($aAliases, get_object_vars($oSort));
+			$sLimit		= Statement::generateLimit($iLimit, $iOffset);
+		}
+		
+		$aWhere	= Statement::generateWhere($aAliases, get_object_vars($oFilter));
+		$sWhere	= $aWhere['sClause'];
+		
+		$oSelect = new StatementSelect($sFrom, $sSelect, $sWhere, $sOrderBy, $sLimit);
+		if ($oSelect->Execute($aWhere['aValues']) === false) {
+			throw new Exception_Database("Failed to get search results. ".$oSelect->Error());
+		}
+		
+		if ($bCountOnly) {
+			$aRow = $oSelect->Fetch();
+			return $aRow['count'];
+		}
+		
+		return $oSelect->FetchAll();
+	}
+	
 	/**
 	 * _preparedStatement()
 	 *

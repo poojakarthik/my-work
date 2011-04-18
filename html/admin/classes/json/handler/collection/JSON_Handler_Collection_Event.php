@@ -2,15 +2,6 @@
 
 class JSON_Handler_Collection_Event extends JSON_Handler
 {
-	protected	$_JSONDebug	= '';
-
-	public function __construct()
-	{
-		// Send Log output to a debug string
-		Log::registerLog('JSON_Handler_Debug', Log::LOG_TYPE_STRING, $this->_JSONDebug);
-		Log::setDefaultLog('JSON_Handler_Debug');
-	}
-
 	public function getScenarioEventForId($iId)
 	{
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
@@ -415,16 +406,14 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 			// If no exceptions were thrown, then everything worked
 			return array(
 							'bSuccess'		=> true,
-							'aActionTypes'	=> $aResults,
-							'sDebug'		=> ($bGod ? $this->_JSONDebug : '')
+							'aActionTypes'	=> $aResults
 						);
 		}
 		catch (Exception $e)
 		{
 			return array(
 							'bSuccess'	=> false,
-							'sMessage'	=> ($bGod ? $e->getMessage() : 'There was an error accessing the database, please contact YBS for assistance.'),
-							'sDebug'	=> ($bGod ? $this->_JSONDebug : '')
+							'sMessage'	=> ($bGod ? $e->getMessage() : 'There was an error accessing the database, please contact YBS for assistance.')
 						);
 		}
 	}
@@ -635,8 +624,7 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 			
 			return	array(
 						'bSuccess'	=> true,
-						'iEventId'	=> $oEvent->id,
-						'sDebug'	=> ($bUserIsGod ? $this->_JSONDebug : '')
+						'iEventId'	=> $oEvent->id
 					);
 		}
 		catch (Exception $e)
@@ -673,8 +661,7 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 			
 			return	array(
 						'bSuccess'	=> true,
-						'aEvents'	=> $aResults,
-						'sDebug'	=> ($bUserIsGod ? $this->_JSONDebug : '')
+						'aEvents'	=> $aResults
 					);
 		}
 		catch (Exception $e)
@@ -697,8 +684,7 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 			$oEvent->save();
 			
 			return	array(
-						'bSuccess'	=> true,
-						'sDebug'	=> ($bUserIsGod ? $this->_JSONDebug : '')
+						'bSuccess'	=> true
 					);
 		}
 		catch (Exception $e)
@@ -718,8 +704,7 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		{
 			return	array(
 						'bSuccess'	=> true,
-						'oEvent'	=> self::_getStdClassEvent(Collection_Event::getForId($iEventId)),
-						'sDebug'	=> ($bUserIsGod ? $this->_JSONDebug : '')
+						'oEvent'	=> self::_getStdClassEvent(Collection_Event::getForId($iEventId))
 					);
 		}
 		catch (Exception $e)

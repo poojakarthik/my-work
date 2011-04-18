@@ -221,8 +221,6 @@ class Carrier_Module extends ORM_Cached
 			throw new Exception_Database("Failed to get search results. ".$oSelect->Error());
 		}
 		
-		Log::getLog()->log($oSelect->_strQuery);
-		
 		if ($bCountOnly)
 		{
 			$aRow = $oSelect->Fetch();

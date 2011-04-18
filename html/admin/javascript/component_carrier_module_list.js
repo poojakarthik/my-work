@@ -135,7 +135,7 @@ var Component_Carrier_Module_List = Class.create(
 						this._createFilterValueElement('carrier_module_type_id', 'Type'),
 						this._createFilterValueElement('file_type_id', 'File Type'),
 						$T.th(),
-						$T.th(),
+						this._createFilterValueElement('description', 'Description'),
 						$T.th(),
 						$T.th(),
 						$T.th(),
@@ -520,6 +520,10 @@ var Component_Carrier_Module_List = Class.create(
 			case 'is_active':
 				sValue = (aControls[0].getElementValue() ? 'Yes' : 'No');
 				break;
+			
+			case 'description':
+				sValue = "Like '" + aControls[0].getElementValue() + "'";
+				break;
 		}
 
 		return sValue;
@@ -578,7 +582,7 @@ var Component_Carrier_Module_List = Class.create(
 
 Object.extend(Component_Carrier_Module_List,
 {
-	DATA_SET_DEFINITION			: {sObject: 'Carrier_Module', sMethod: 'getDataset'},
+	DATA_SET_DEFINITION			: new Reflex_AJAX_Request('Carrier_Module', 'getDataset'),
 	MAX_RECORDS_PER_PAGE		: 10,
 	FILTER_IMAGE_SOURCE			: '../admin/img/template/table_row_insert.png',
 	REMOVE_FILTER_IMAGE_SOURCE	: '../admin/img/template/delete.png',
@@ -716,6 +720,21 @@ Component_Carrier_Module_List.FILTER_FIELDS	=
 			oDefinition	:
 			{
 				sLabel		: 'Is Active',
+				mEditable	: true,
+				mMandatory	: false
+			}
+		}
+	},
+	description	:
+	{
+		iType	: Filter.FILTER_TYPE_CONTAINS,
+		oOption	:
+		{
+			sType		: 'text',
+			mDefault	: null,
+			oDefinition	:
+			{
+				sLabel		: 'Description',
 				mEditable	: true,
 				mMandatory	: false
 			}

@@ -24,6 +24,12 @@ var Reflex_Breadcrumb_Select = Class.create(
 	
 	// Public
 	
+	populate : function()
+	{
+		this._clearValuesFromMaxLevel();
+		this._refresh();
+	},
+	
 	getValueAtLevel : function(iLevel)
 	{
 		if (Object.isUndefined(this._aOptions[iLevel]))

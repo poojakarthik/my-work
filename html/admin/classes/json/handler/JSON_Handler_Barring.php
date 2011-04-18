@@ -1,16 +1,7 @@
 <?php
 
-class JSON_Handler_Barring extends JSON_Handler
+class JSON_Handler_Barring extends JSON_Handler implements JSON_Handler_Loggable
 {
-	protected	$_JSONDebug	= '';
-
-	public function __construct()
-	{
-		// Send Log output to a debug string
-		Log::registerLog('JSON_Handler_Debug', Log::LOG_TYPE_STRING, $this->_JSONDebug);
-		Log::setDefaultLog('JSON_Handler_Debug');
-	}
-	
 	public function getAuthorisationLedgerDataset($bCountOnly=false, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null)
 	{
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();

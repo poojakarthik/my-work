@@ -31,11 +31,6 @@ var Developer_OperationPermission	= Class.create
 	{
 		if (objResponse)
 		{
-			/*if (objResponse.strDebug)
-			{
-				Reflex_Popup.debug(objResponse.strDebug);
-			}*/
-			
 			// Handle Response
 			Reflex_Popup.alert("User does " + (objResponse.bolHasPermission ? '' : 'NOT ') + "have permission to access this functionality.");
 		}

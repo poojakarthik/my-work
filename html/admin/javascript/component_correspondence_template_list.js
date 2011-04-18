@@ -482,7 +482,7 @@ var Component_Correspondence_Template_List = Class.create(
 
 Object.extend(Component_Correspondence_Template_List,
 {
-	DATA_SET_DEFINITION			: {sObject: 'Correspondence_Template', sMethod: 'getDataset'},
+	DATA_SET_DEFINITION			: new Reflex_AJAX_Request('Correspondence_Template', 'getDataset'),
 	MAX_RECORDS_PER_PAGE		: 10,
 	FILTER_IMAGE_SOURCE			: '../admin/img/template/table_row_insert.png',
 	REMOVE_FILTER_IMAGE_SOURCE	: '../admin/img/template/delete.png',

@@ -84,6 +84,52 @@ class Email extends ORM_Cached
 		return $aQueues;
 	}
 	
+	public static function searchFor($bCountOnly=false, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null) {
+		$aAliases = array(
+			'id'					=> "e.id",
+			'recipients'			=> "e.recipients",
+			'sender'				=> "e.sender",
+			'subject'				=> "e.subject",
+			'email_status_id'		=> "e.email_status_id",
+			'email_status_name'		=> "es.name",
+			'created_datetime'		=> "e.created_datetime",
+			'created_employee_id'	=> "e.created_employee_id",
+			'created_employee_name'	=> "CONCAT(e_created.FirstName, ' ', e_created.LastName)"
+		);
+		
+		$sFrom = "	email e
+					JOIN email_status es ON (es.id = e.email_status_id)
+					JOIN Employee e_created ON (e_created.Id = e.created_employee_id)";
+		if ($bCountOnly) {
+			$sSelect 	= "COUNT(e.id) AS count";
+			$sOrderBy	= "";
+			$sLimit		= "";
+		} else {
+			$aSelectLines = array();
+			foreach ($aAliases as $sAlias => $sClause) {
+				$aSelectLines[] = "{$sClause} AS {$sAlias}";
+			}
+			$sSelect	= implode(', ', $aSelectLines);
+			$sOrderBy	= Statement::generateOrderBy($aAliases, get_object_vars($oSort));
+			$sLimit		= Statement::generateLimit($iLimit, $iOffset);
+		}
+		
+		$aWhere	= Statement::generateWhere($aAliases, get_object_vars($oFilter));
+		$sWhere	= $aWhere['sClause'];
+		
+		$oSelect = new StatementSelect($sFrom, $sSelect, $sWhere, $sOrderBy, $sLimit);
+		if ($oSelect->Execute($aWhere['aValues']) === false) {
+			throw new Exception_Database("Failed to get search results. ".$oSelect->Error());
+		}
+		
+		if ($bCountOnly) {
+			$aRow = $oSelect->Fetch();
+			return $aRow['count'];
+		}
+		
+		return $oSelect->FetchAll();
+	}
+	
 	/**
 	 * _preparedStatement()
 	 *

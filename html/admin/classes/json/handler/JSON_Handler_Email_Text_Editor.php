@@ -1,17 +1,7 @@
 <?php
 
-class JSON_Handler_Email_Text_Editor extends JSON_Handler
+class JSON_Handler_Email_Text_Editor extends JSON_Handler implements JSON_Handler_Loggable
 {
-	protected	$_JSONDebug	= '';
-
-
-	 function __construct()
-	{
-		// Send Log output to a debug string
-		Log::registerLog('JSON_Handler_Debug', Log::LOG_TYPE_STRING, $this->_JSONDebug);
-		Log::setDefaultLog('JSON_Handler_Debug');
-	}
-
 	function getTemplates($bCountOnly=false, $iLimit=null, $iOffset=null, $sSortDirection='DESC')
 	{
 		try

@@ -236,7 +236,14 @@ jQuery.json = {
 				success = false;
 			}
 
-			var argsArray = [ arguments[0] ];
+			var oResponse = arguments[0];
+			try {
+				Component_Debug_Log.extractLogStringFromJSONResponse(oResponse);
+			} catch (oException) {
+				// Component_Debug_Log must not be defined
+			}
+					
+			var argsArray = [oResponse];
 
 			if (!success)
 			{
