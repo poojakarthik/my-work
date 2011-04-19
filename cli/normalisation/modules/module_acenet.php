@@ -10,6 +10,8 @@ class NormalisationModuleAcenet extends NormalisationModule
 {
 	public $intBaseCarrier	= CARRIER_ACENET;
 	public $intBaseFileType	= RESOURCE_TYPE_FILE_IMPORT_CDR_ACENET;
+
+	const	CARRIER_OPTUS	= 'OPTUS';
 	
 	const	RECORD_TYPE_USAGE						= 1;
 	const	RECORD_TYPE_SERVICE_AND_EQUIPMENT		= 7;
@@ -90,6 +92,13 @@ class NormalisationModuleAcenet extends NormalisationModule
 	// Usage Records
 	private function _normalise()
 	{
+		// We only support OPTUS CDRs at the moment
+		Flex::assert(
+			trim($this->_FetchRawCDR('Carrier')) == self::CARRIER_OPTUS,
+			"Acenet CDR File: Non-Optus Record Encountered",
+			print_r($this->DebugCDR(), true)
+		);
+
 		// CarrierRef
 		$this->_AppendCDR('CarrierRef', $this->_FetchRawCDR('UniqueId'));
 		
@@ -122,7 +131,7 @@ class NormalisationModuleAcenet extends NormalisationModule
 		switch ($iAcenetRecordType)
 		{
 			case self::RECORD_TYPE_USAGE:
-				$sRecordCode	= $this->FindRecordCode($sClassCode);
+				$sRecordCode	= $this->FindRecordCode((count($aClassCode) > 1) ? $aClassCode[1] : $sClassCode);
 
 				// Debug: Throw a caught Assertion to notify YBS of missing Class Codes
 				try
@@ -148,8 +157,21 @@ class NormalisationModuleAcenet extends NormalisationModule
 		$aDestination	= null;
 		if ($this->_intContext)
 		{
-			$aDestination	= $this->FindDestination((isset($aClassCode[1])) ? $aClassCode[1] : null);
-			$this->_AppendCDR('DestinationCode', $aDestination['Code']);
+			$sDestination	= (isset($aClassCode[1])) ? $aClassCode[1] : null;
+
+			// WARNING: This only works for Optus-based calls
+			$iJurisdiction	= (int)$this->_FetchRawCDR('Jurisdiction');
+			$iProviderClass	= (int)$this->_FetchRawCDR('ProviderClass');
+
+			// Check for a Provider Class-specific Destination first
+			if ($aDestination = $this->_findDestination("{$iJurisdiction}:{$iProviderClass}", true, true)) {
+				// Provider Class-specific match
+				$this->_AppendCDR('DestinationCode', $aDestination['Code']);
+			} else {
+				// Search for a Provider Class-less Destination
+				$aDestination	= $this->_findDestination($iJurisdiction);
+				$this->_AppendCDR('DestinationCode', $aDestination['Code']);
+			}
 		}
 		
 		// Description
@@ -252,6 +274,14 @@ class NormalisationModuleAcenet extends NormalisationModule
 																												'Index'		=> 15
 																											),
 																			'OtherInfo2'				=>	array
+																											(
+																												'Index'		=> 16
+																											),
+																			'Jurisdiction'				=>	array
+																											(
+																												'Index'		=> 16
+																											),
+																			'ProviderClass'				=>	array
 																											(
 																												'Index'		=> 16
 																											)
