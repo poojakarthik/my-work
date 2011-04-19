@@ -179,8 +179,9 @@ var Popup_Email_Queue_List = Class.create(Reflex_Popup, {
 				return $T.td(oData[sNameField]);
 			
 			case 'actions':
+				var bShowDelete = (oData.email_queue_status_id == $CONSTANT.EMAIL_QUEUE_STATUS_SCHEDULED);
 				return $T.td(
-					$T.img({class: 'pointer', src: '../admin/img/template/delete.png', alt: 'Cancel Delivery', title: 'Cancel Delivery', onclick: this._cancelQueueDelivery.bind(this, oData.id, false)}),
+					bShowDelete ? $T.img({class: 'pointer', src: '../admin/img/template/delete.png', alt: 'Cancel Delivery', title: 'Cancel Delivery', onclick: this._cancelQueueDelivery.bind(this, oData.id, false)}) : null,
 					$T.img({class: 'pointer', src: '../admin/img/template/magnifier.png', alt: 'View Emails', title: 'View Emails', onclick: this._viewQueueEmails.bind(this, oData.id)})
 				);
 		}
