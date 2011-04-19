@@ -96,7 +96,7 @@ class Collections_Config extends ORM_Cached
 			switch ($strStatement)
 			{
 				// SELECTS
-                                case 'selCurrent':
+            	case 'selCurrent':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "created_datetime = (SELECT MAX(created_datetime) FROM ".self::$_strStaticTableName.")", NULL, 1);
 					break;
 				case 'selById':

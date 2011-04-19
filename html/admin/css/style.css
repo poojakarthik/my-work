@@ -12211,6 +12211,10 @@ div.component-collections-scenario > table.reflex
 	height	: 30em;
 }
 
+.component-test-run-parameter-container > tr > th {
+	white-space	: nowrap;
+}
+
 /************************** END - Component Test Run - END **************************/
 
 /************************** START - Component Dataset AJAX Table - START **************************/

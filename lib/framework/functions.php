@@ -4430,7 +4430,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 			$strPath			= substr($strPath, 1);
 			$strCumulativePath	= '/';
 		}
-
+		
 		$arrDirs = explode('/' , $strPath);
 		foreach ($arrDirs as $strDir)
 		{
@@ -4502,7 +4502,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 
 		// Directory structure = BasePath/CustomerGroup/NoticeType/YYYY/MM/DD/
 		$strFullPath = 	$strBasePath . str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "DocumentTemplateType"))) . "/xml/" . date("Ymd");
-
+		
 		// Make the directory structure if it hasn't already been made
 		if (!is_dir($strFullPath))
 		{
@@ -4519,9 +4519,8 @@ function CreateDefaultPaymentTerms($customerGroupId)
 		// Set up all values required of the notice, which have not been defined yet
 		$dom->Document->DocumentType->setValue(GetConstantName($intNoticeType, 'DocumentTemplateType'));
 
-		//GetAutomaticInvoiceActionResponseTime and the data it relies on is deprecated, without being replaced by a new version of it.
-		$responseDays = 0;//GetAutomaticInvoiceActionResponseTime($intAutomaticInvoiceActionType, $arrAccount['CustomerGroup']);
-		$actionDate = ($responseDays * 24 * 60 * 60) + $intEffectiveDate;
+		$responseDays 	= Collections_Config::get()->event_action_offset_days;
+		$actionDate 	= ($responseDays * 24 * 60 * 60) + $intEffectiveDate;
 
 		// Always issue on the scheduled date!
 		$dom->Document->DateIssued = date("d M Y", $intEffectiveDate);
