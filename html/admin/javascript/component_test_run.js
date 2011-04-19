@@ -97,10 +97,12 @@ var Component_Test_Run = Class.create(Reflex_Component, {
 		var aOptions = [];
 		if (this._hTestClasses) {
 			for (var sClass in this._hTestClasses) {
-				var oClass 		= this._hTestClasses[sClass];
-				var sTidyClass	= sClass.replace(/^Test_/, '');
-				sTidyClass		= sTidyClass.replace(/(_)/g, ' ');
-				aOptions.push({mValue: sClass, sText: sTidyClass + ': ' + oClass.sName});
+				if (this._hTestClasses[sClass].aMethods) {
+					var oClass 		= this._hTestClasses[sClass];
+					var sTidyClass	= sClass.replace(/^Test_/, '');
+					sTidyClass		= sTidyClass.replace(/(_)/g, ' ');
+					aOptions.push({mValue: sClass, sText: sTidyClass + ': ' + oClass.sName});
+				}
 			}
 		}
 		fnCallback(aOptions);
