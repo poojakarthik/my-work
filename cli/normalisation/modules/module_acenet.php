@@ -279,11 +279,11 @@ class NormalisationModuleAcenet extends NormalisationModule
 																											),
 																			'Jurisdiction'				=>	array
 																											(
-																												'Index'		=> 16
+																												'Index'		=> 17
 																											),
 																			'ProviderClass'				=>	array
 																											(
-																												'Index'		=> 16
+																												'Index'		=> 18
 																											)
 																		)
 												);
