@@ -9,6 +9,10 @@ var Component_Test_Run = Class.create(Reflex_Component, {
 		// Parent Constructor
 		$super.apply(this, $A(arguments).slice(1));
 		
+		this._sCurrentClass 	= null;
+		this._sCurrentMethod	= null;
+		this._hParameterCache	= {};
+		
 		this.NODE.addClassName('component-test-run');
 	},
 	
@@ -126,14 +130,27 @@ var Component_Test_Run = Class.create(Reflex_Component, {
 	},
 	
 	_breadcrumbChange : function () {
+		var sClass	= this._oBreadcrumbSelect.getValueAtLevel(0);
+		var sMethod = this._oBreadcrumbSelect.getValueAtLevel(1);
+		
+		// Cache the previous parameters for pre-population next time
+		if ((this._sCurrentClass !== null) && ((sClass != this._sCurrentClass) || (sMethod != this._sCurrentMethod))) {
+			if (!this._hParameterCache[this._sCurrentClass]) {
+				this._hParameterCache[this._sCurrentClass] = {};
+			}
+			
+			this._hParameterCache[this._sCurrentClass][this._sCurrentMethod] = [];
+			for (var i = 0; i < this._aParameterControls.length; i++) {
+				this._hParameterCache[this._sCurrentClass][this._sCurrentMethod][i] = this._aParameterControls[i].getElementValue();
+			}
+		}
+		
 		// Clear current parameters and output
 		this._aParameterControls 	= [];
 		var oParameterContainer 	= this.NODE.select('.component-test-run-parameter-container').first();
 		oParameterContainer.select('tr').each(Element.remove);
 		this._clearOutput();
 		
-		var sClass	= this._oBreadcrumbSelect.getValueAtLevel(0);
-		var sMethod = this._oBreadcrumbSelect.getValueAtLevel(1);
 		if (sClass && sMethod) {
 			var aParameters	= this._hTestClasses[sClass].aMethods[sMethod];
 			for (var i = 0; i < aParameters.length; i++) {
@@ -202,7 +219,18 @@ var Component_Test_Run = Class.create(Reflex_Component, {
 				}
 			}
 			
-			if (!this._aParameterControls.length) {
+			if (this._aParameterControls.length) {
+				// Set pre-cached values
+				if (this._hParameterCache[sClass] && this._hParameterCache[sClass][sMethod]) {
+					for (var i = 0; i < this._hParameterCache[sClass][sMethod].length; i++) {
+						var oControl = this._aParameterControls[i];
+						if (oControl) {
+							oControl.setValue(this._hParameterCache[sClass][sMethod][i]);
+							oControl.validate();
+						}
+					}
+				}
+			} else {
 				oParameterContainer.appendChild(
 					$T.tr(
 						$T.td({colspan: 0}, 
@@ -221,6 +249,9 @@ var Component_Test_Run = Class.create(Reflex_Component, {
 				)
 			);
 		}
+		
+		this._sCurrentClass 	= sClass;
+		this._sCurrentMethod	= sMethod;
 	},
 	
 	_clearOutput : function() {
@@ -246,8 +277,7 @@ var Component_Test_Run = Class.create(Reflex_Component, {
 			if (aErrors.length) {
 				// Invalid parameters
 				var oErrorElement = $T.ul();
-				for (var i = 0; i < aErrors.length; i++)
-				{
+				for (var i = 0; i < aErrors.length; i++) {
 					oErrorElement.appendChild($T.li(aErrors[i]));
 				}
 				
@@ -264,12 +294,10 @@ var Component_Test_Run = Class.create(Reflex_Component, {
 			this._oLoading.display();
 			
 			// Request
-			var sClass	= this._oBreadcrumbSelect.getValueAtLevel(0);
-			var sMethod = this._oBreadcrumbSelect.getValueAtLevel(1);
-			var fnResp	= this._runTest.bind(this);
-			//var fnReq	= jQuery.json.jsonFunction(fnResp, fnResp, 'Test', 'runTest');
-			//fnReq(sClass, sMethod, aParameters);
-			var oRequest = new Reflex_AJAX_Request('Test', 'runTest', this._runTest.bind(this));
+			var sClass		= this._oBreadcrumbSelect.getValueAtLevel(0);
+			var sMethod 	= this._oBreadcrumbSelect.getValueAtLevel(1);
+			var fnResp		= this._runTest.bind(this);
+			var oRequest	= new Reflex_AJAX_Request('Test', 'runTest', this._runTest.bind(this));
 			oRequest.send(sClass, sMethod, aParameters);
 		} else {
 			this._oLoading.hide();
