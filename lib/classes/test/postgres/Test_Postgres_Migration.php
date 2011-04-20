@@ -134,16 +134,6 @@ class Test_Postgres_Migration extends Test {
 		'collections_schedule' => array(
 			'day' => 'day'
 		),
-		'm2_credits' => array(
-			'Status' 		=> 'status',
-			'NormalisedOn'	=> 'normalised_datetime',
-			'RatedOn'		=> 'rated_datetime'
-		),
-		'm2_credits1' => array(
-			'Status' 		=> 'status',
-			'NormalisedOn' 	=> 'normalised_datetime',
-			'RatedOn' 		=> 'rated_datetime'
-		),
 		'contact_terms' => array(
 			'created_by'	=> 'created_employee_id',
 			'created_on'	=> 'created_datetime'
@@ -185,7 +175,12 @@ class Test_Postgres_Migration extends Test {
 		'tmp_staggered_barring_accounts_1264030997',
 		'tmp_staggered_barring_accounts_1264031089',
 		'tmp_staggered_barring_accounts_1264031094',
-		'tmp_staggered_barring_accounts_1264031102'
+		'tmp_staggered_barring_accounts_1264031102',
+		'cd_11',
+		'cd_12',
+		'm2_credits',
+		'm2_credits1',
+		'UnitelFundedFNNs'
 	);
 	
 	private static $_aTablesToNotMigrate = array(
@@ -203,7 +198,10 @@ class Test_Postgres_Migration extends Test {
 		'tmp_staggered_barring_accounts_1264031094',
 		'tmp_staggered_barring_accounts_1264031102',
 		'cd_11',
-		'cd_12'
+		'cd_12',
+		'm2_credits',
+		'm2_credits1',
+		'UnitelFundedFNNs'
 	);
 	
 	public function __construct() {
@@ -235,10 +233,15 @@ class Test_Postgres_Migration extends Test {
 				Log::getLog()->log("Table: {$sTableName} => {$sNewTableName}");
 			}
 			
-			$mResultColumns = Query::run("	SELECT	COLUMN_NAME, DATA_TYPE
-											FROM	INFORMATION_SCHEMA.COLUMNS
-											WHERE	TABLE_SCHEMA = 'flex_rdavis'
-											AND		TABLE_NAME = '{$sTableName}'");
+			$mResultColumns = Query::run("	SELECT	c.COLUMN_NAME, c.DATA_TYPE
+											FROM	INFORMATION_SCHEMA.COLUMNS c
+											JOIN	INFORMATION_SCHEMA.TABLES t ON (
+														t.TABLE_NAME = c.TABLE_NAME 
+														AND t.TABLE_SCHEMA = c.TABLE_SCHEMA 
+														AND t.TABLE_TYPE = 'BASE TABLE'
+													)
+											WHERE	c.TABLE_SCHEMA = 'flex_rdavis'
+											AND		c.TABLE_NAME = '{$sTableName}'");
 			while ($aRowColumn = $mResultColumns->fetch_assoc()) {
 				// Peform conversion
 				$sColumnName 	= $aRowColumn['COLUMN_NAME'];
@@ -286,7 +289,10 @@ class Test_Postgres_Migration extends Test {
 		// Repeat for views
 		$mResult = Query::run("	SELECT	c.TABLE_NAME, c.COLUMN_NAME
 								FROM	INFORMATION_SCHEMA.VIEWS v
-								JOIN	INFORMATION_SCHEMA.COLUMNS c ON (c.TABLE_NAME = v.TABLE_NAME AND c.TABLE_SCHEMA = v.TABLE_SCHEMA)
+								JOIN	INFORMATION_SCHEMA.COLUMNS c ON (
+											c.TABLE_NAME = v.TABLE_NAME 
+											AND c.TABLE_SCHEMA = v.TABLE_SCHEMA
+										)
 								WHERE	v.TABLE_SCHEMA = 'flex_rdavis'");
 		$aViews	= array();
 		while ($aRow = $mResult->fetch_assoc()) {
