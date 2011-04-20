@@ -1345,9 +1345,7 @@ class Logic_Account implements DataLogic
 		}
 
 		$sSelectQuery 	= self::_buildAccountLedgerQuery($aFilter);
-
-		//file_put_contents('/home/rmctainsh/log.txt', $sSelectQuery);
-
+		Log::getLog()->log($sSelectQuery);
 		$sInsert 		= "	INSERT INTO account_collection_ledger(
 											account_id,
 											account_collection_event_history_id,
@@ -1391,7 +1389,7 @@ class Logic_Account implements DataLogic
 
 	private static function _buildAccountLedgerQueryWhereClause($aFilter)
 	{
-		$aWherePieces = array("a.Archived = 0");
+		$aWherePieces = array("a.Archived <> ".ACCOUNT_STATUS_ARCHIVED);
 		foreach ($aFilter as $sFilter => $mValue)
 		{
 			$sValue = $mValue;
