@@ -374,6 +374,11 @@ class Test_Postgres_Migration extends Test {
 		}
 		return implode('', $aNewName);
 	}
+	
+	public function storedProcedureConversion($sQuery) {
+		$sNew = preg_replace('/<([\d\w]+)>/misU', ':$1', $sQuery);
+		Log::getLog()->log($sNew);
+	}
 }
 
 ?>
