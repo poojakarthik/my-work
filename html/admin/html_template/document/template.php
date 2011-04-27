@@ -161,6 +161,9 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 	 */
 	function RenderNew()
 	{
+		// Escape the Source Code
+		DBO()->DocumentTemplate->Source = htmlspecialchars(DBO()->DocumentTemplate->Source->Value, ENT_QUOTES);
+		
 		// Prepare data
 		$jsonObjTemplate				= Json()->encode(DBO()->DocumentTemplate->_arrProperties);
 		$jsonObjSchema					= Json()->encode(DBO()->DocumentTemplateSchema->_arrProperties);
