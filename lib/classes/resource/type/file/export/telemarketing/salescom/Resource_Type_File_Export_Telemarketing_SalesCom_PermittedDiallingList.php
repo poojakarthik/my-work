@@ -108,7 +108,7 @@ class Resource_Type_File_Export_Telemarketing_SalesCom_PermittedDiallingList
 								'FNN'			=>	array
 													(
 														'Index'			=> 5,
-														'Validation'	=> "/^0[2378]\d{8}$/"
+														'Validation'	=> "/^0[23478]\d{8}$/"
 													)
 							);
 			
