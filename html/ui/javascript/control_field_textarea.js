@@ -14,6 +14,9 @@ var Control_Field_Textarea	= Class.create(/* extends */ Control_Field,
 		this.oControlOutput.oElement.appendChild(this.oControlOutput.oEdit);
 		
 		this.oControlOutput.oView	= document.createElement('span');
+		this.oControlOutput.oView.setAttribute('class', 'control-field-textarea-view');
+		
+		
 		this.oControlOutput.oElement.appendChild(this.oControlOutput.oView);
 		
 		this._bCancelFocusShiftOnTab	= (typeof bCancelFocusShiftOnTab == 'undefined') || bCancelFocusShiftOnTab;
@@ -40,7 +43,7 @@ var Control_Field_Textarea	= Class.create(/* extends */ Control_Field,
 		var	mValue	= this.getValue();
 		
 		this.setElementValue(mValue);
-		this.oControlOutput.oView.innerHTML	= mValue;
+		this.oControlOutput.oView.innerHTML	= mValue.escapeHTML();
 	},
 	
 	addEventListeners	: function()
