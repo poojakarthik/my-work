@@ -211,8 +211,10 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		
 		var iNumRows	= document.viewport.getHeight()>768?25:18;
 		this.oTextArea	= Control_Field.factory('textarea', {sLabel:"", sLabelSeparator:null, mVisible:true, mEditable:true, rows:iNumRows, cols:25});
-		
-		this.oTextArea.setElementValue(this._oTemplateDetails.email_text);
+
+		this.oTextArea.setValue(this._oTemplateDetails.email_text);
+		//this.oTextArea.setElementValue(this._oTemplateDetails.email_text);
+		this.oTextArea.disableValidationStyling();
 		this.oTextArea.oControlOutput.oEdit.isFocused		= false;
 		this.oTextArea.oControlOutput.oEdit.onfocus			= function(){this.isFocused=true};
 		this.oTextArea.oControlOutput.oEdit.onblur			= function(){this.isFocused=false};
@@ -241,12 +243,13 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 						);
 			 
 		this.oHTMLTextArea	= Control_Field.factory('textarea', {sLabel:"", sLabelSeparator:null, mVisible:true, mEditable:true, rows:iNumRows, cols:25});
+		this.oHTMLTextArea.setValue(this._oTemplateDetails.email_html);
 		this.oHTMLTextArea.setElementValue(this._oTemplateDetails.email_html);
 		this.oHTMLTextArea.oControlOutput.oEdit.isFocused=false;
 		this.oHTMLTextArea.oControlOutput.oEdit.variableFormat='tag';
 		this.oHTMLTextArea.oControlOutput.oEdit.onfocus=function(){this.isFocused=true};
 		this.oHTMLTextArea.oControlOutput.oEdit.onblur=function(){this.isFocused=false};
-		
+		this.oHTMLTextArea.disableValidationStyling(); 
 		oTableRow	= this.oHTMLTextArea.generateInputTableRow().oElement;		
 		th 			= oTableRow.select('th').first();
 		th.appendChild(
@@ -289,19 +292,20 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		
 		this._oDescriptionTextField.setEditable(bRenderMode);		
 		this._oDescriptionTextField.setRenderMode(bRenderMode);
+
+		this.oTextArea.setEditable(bRenderMode);
+		this.oTextArea.setRenderMode(bRenderMode);
+
+		this.oHTMLTextArea.setEditable(bRenderMode);
+		this.oHTMLTextArea.setRenderMode(bRenderMode);
 		
 		if (bRenderMode == Control_Field.RENDER_MODE_VIEW)
 		{
 			this._oSubjectTextField.save(true);
 			this._oSenderTextField.save(true);
 			this._oDescriptionTextField.save(true);
-			
-			this.oTextArea.oControlOutput.oEdit.readonly	= "readonly";
-			this.oTextArea.oControlOutput.oEdit.className 	= 'disabled';
-			
-			this.oHTMLTextArea.oControlOutput.oEdit.readonly	= "readonly";
-			this.oHTMLTextArea.oControlOutput.oEdit.className 	= 'disabled';
 		}
+		
 		
 		this._generateTextButton.style.display	= bRenderMode ? '' : 'none';
 		this._saveButton.style.display 			= bRenderMode ? '' : 'none';

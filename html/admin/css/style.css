@@ -574,6 +574,12 @@ div.control-field > input.text-ajax-input
 	display	: none	!important;
 }
 
+.control-field-textarea-view
+{
+	display: block;
+	white-space: pre-wrap;	
+}
+
 /********************* END - Reflex Input Controls - END **********************/
 
 /************************** START - Buttons - START ***************************/
@@ -7875,10 +7881,12 @@ div.popup-email-text-edit
 	min-width	: 160px;
 }
 
-.popup-email-text-edit div.control-field span
+.popup-email-text-edit-fields div.control-field span
 {
-	white-space	: pre-wrap;
-	height		: auto;
+	font-family: monospace;
+	font-size: 1.3em;
+	border: 3px solid #CCCCCC;
+	
 }
 
 .popup-email-text-edit div.control-field .disabled

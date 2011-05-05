@@ -164,7 +164,6 @@ class Test_Postgres_Migration extends Test {
 	private static $_aTablesToIgnoreChanges = array(
 		'CVFV1',
 		'Payment',
-		'file_type',
 		'tmp_staggered_barring_accounts_1261621293',
 		'tmp_staggered_barring_accounts_1261621488',
 		'tmp_staggered_barring_accounts_1264030405',
@@ -191,12 +190,15 @@ class Test_Postgres_Migration extends Test {
 		'cd_12',
 		'm2_credits',
 		'm2_credits1',
-		'UnitelFundedFNNs'
+		'UnitelFundedFNNs',
+		//We're adding the names of any views here, because the mysql info schema lists them as tables as well
+		'account_services',
+		'current_service_account'
 	);
 	
 	private static $_aTablesToNotMigrate = array(
 		'CVFV1',
-		'Payment',
+		'Payment',		
 		'tmp_staggered_barring_accounts_1261621293',
 		'tmp_staggered_barring_accounts_1261621488',
 		'tmp_staggered_barring_accounts_1264030405',
@@ -208,11 +210,25 @@ class Test_Postgres_Migration extends Test {
 		'tmp_staggered_barring_accounts_1264031089',
 		'tmp_staggered_barring_accounts_1264031094',
 		'tmp_staggered_barring_accounts_1264031102',
+		"tmp_staggered_account_ranks_1261621293",
+		"tmp_staggered_account_ranks_1261621488",
+		"tmp_staggered_account_ranks_1264030405",
+		"tmp_staggered_account_ranks_1264030465",
+		"tmp_staggered_account_ranks_1264030756",
+		"tmp_staggered_account_ranks_1264030782",
+		"tmp_staggered_account_ranks_1264030844",
+		"tmp_staggered_account_ranks_1264030997",
+		"tmp_staggered_account_ranks_1264031089",
+		"tmp_staggered_account_ranks_1264031094",
+		"tmp_staggered_account_ranks_1264031102",
 		'cd_11',
 		'cd_12',
 		'm2_credits',
 		'm2_credits1',
-		'UnitelFundedFNNs'
+		'UnitelFundedFNNs',
+		//We're adding the names of any views here, because the mysql info schema lists them as tables as well
+		'account_services',
+		'current_service_account'
 	);
 	
 	public function __construct() {
@@ -224,6 +240,7 @@ class Test_Postgres_Migration extends Test {
 		$mResult = Query::run("	SELECT	TABLE_NAME
 								FROM 	INFORMATION_SCHEMA.TABLES
 								WHERE 	TABLE_SCHEMA = 'flex_rdavis'");
+		Data_Source_Time::
 		$aAllTables = array();
 		while ($aRow = $mResult->fetch_assoc()) {
 			$sTableName = $aRow['TABLE_NAME'];
@@ -238,7 +255,10 @@ class Test_Postgres_Migration extends Test {
 		foreach ($aAllTables as $aRow) {
 			$sTableName = $aRow['TABLE_NAME'];
 			if (preg_match('/[A-Z]/', $sTableName)) {
-				$sNewTableName 			= $this->convertDbName($sTableName);
+				if ($sTableName === "FileType")
+					$sNewTableName = 'file_type_';//temporary hack, duplicate table name needs to be resolved....
+				else
+					$sNewTableName 			= $this->convertDbName($sTableName);
 				$aTables[$sTableName]	= array('sNewName' => $sNewTableName, 'oColumns' => array());
 				$iTotalChanges++;
 				Log::getLog()->log("Table: {$sTableName} => {$sNewTableName}");
@@ -298,26 +318,120 @@ class Test_Postgres_Migration extends Test {
 		}
 		
 		// Repeat for views
-		$mResult = Query::run("	SELECT	c.TABLE_NAME, c.COLUMN_NAME
-								FROM	INFORMATION_SCHEMA.VIEWS v
-								JOIN	INFORMATION_SCHEMA.COLUMNS c ON (
-											c.TABLE_NAME = v.TABLE_NAME 
-											AND c.TABLE_SCHEMA = v.TABLE_SCHEMA
-										)
-								WHERE	v.TABLE_SCHEMA = 'flex_rdavis'");
+		//$mResult = Query::run("	SELECT	v.TABLE_NAME, v.VIEW_DEFINITION
+		//						FROM	INFORMATION_SCHEMA.VIEWS v
+		//						WHERE	v.TABLE_SCHEMA = 'flex_rdavis'");
 		$aViews	= array();
-		while ($aRow = $mResult->fetch_assoc()) {
-			$sViewName		= $aRow['TABLE_NAME'];
-			$sColumnName 	= $aRow['COLUMN_NAME'];
-			if (preg_match('/[A-Z]/', $sColumnName)) {
-				$sNewColumnName = $this->convertDbName($sColumnName);
-				if (!isset($aViews[$sViewName])) {
-					$aViews[$sViewName] = array('oColumns' => array());
-				}
-				
-				$aViews[$sViewName]['oColumns'][$sColumnName] = $sNewColumnName;
-			}
+
+		$aViewDefs = array(					
+			
+						'current_service_account' => "	SELECT
+										MAX(flex_rdavis.service.id) AS service_id,
+										MAX(flex_rdavis.account.id) AS account_id
+										FROM flex_rdavis.service
+										JOIN flex_rdavis.account ON (flex_rdavis.service.account_id = flex_rdavis.account.id)
+										WHERE ((flex_rdavis.account.id = flex_rdavis.service.account_id)
+										AND (	flex_rdavis.service.closed_datetime IS NULL
+												OR (now() < flex_rdavis.service.closed_datetime)
+											)
+										AND (flex_rdavis.service.created_datetime < NOW()))
+										GROUP BY flex_rdavis.account.id,flex_rdavis.service.fnn"
+										,
+							'account_services' => "SELECT
+							<schema_name>.service.account_id	AS account_id,
+							<schema_name>.service.id			AS service_id,
+							<schema_name>.service.fnn			AS fnn
+							FROM (
+									<schema_name>.service
+									JOIN <schema_name>.current_service_account ON(		(<schema_name>.service.account_id = <schema_name>.current_service_account.account_id)
+																					AND (<schema_name>.service.id = <schema_name>.current_service_account.service_id)
+																					AND (<schema_name>.service.service_status_id IN (400,402,403)))
+								)"
+								
+						
+					);
+
+		foreach ($aViewDefs as $sViewName => $sViewDef) {
+			$aViews[$sViewName]= $sViewDef;
 		}
+
+		$aStoredProcedures = array (
+				"	CREATE LANGUAGE 'plpgsql';
+					CREATE OR REPLACE FUNCTION rebillMotorpassInsertAndUpdate() RETURNS trigger AS '
+					DECLARE
+						 acc_num INTEGER;
+						 expiry DATE;
+						 acc_name VARCHAR(256);
+					BEGIN
+						IF (NEW.motorpass_account_id IS NOT NULL) THEN
+							SELECT	ma.account_name
+							INTO	acc_name
+							FROM	motorpass_account ma
+							WHERE	ma.id = NEW.motorpass_account_id;
+
+							SELECT	ma.account_number
+							INTO	acc_num
+							FROM	motorpass_account ma
+							WHERE	ma.id = NEW.motorpass_account_id;
+
+							SELECT	mc.card_expiry_date
+							INTO	expiry
+							FROM	motorpass_account ma
+							JOIN	motorpass_card mc
+										ON ma.motorpass_card_id = mc.id
+							WHERE	ma.id = NEW.motorpass_account_id;
+
+							NEW.account_name := acc_name;
+							NEW.account_number := acc_num;
+							NEW.card_expiry_date := expiry;
+
+							RETURN NEW;
+						END IF;
+						RETURN NULL;
+					END;
+					' LANGUAGE 'plpgsql'",
+			"	CREATE OR REPLACE FUNCTION rebillMotorpassUpdateAccountNameAndNumber() RETURNS trigger AS '
+					BEGIN
+						UPDATE	rebill_motorpass rm
+						SET	rm.account_number = NEW.account_number,
+							rm.account_name = NEW.account_name
+						WHERE	rm.motorpass_account_id = NEW.id;
+						RETURN NEW;
+					END;
+				' LANGUAGE 'plpgsql'",
+			"CREATE OR REPLACE FUNCTION rebillMotorpassUpdateCardExpiryDate() RETURNS trigger AS '
+				BEGIN
+					UPDATE	rebill_motorpass rm
+					SET	rm.card_expiry_date = NEW.card_expiry_date
+					WHERE	rm.motorpass_account_id IN (
+								SELECT	ma.id
+								FROM	motorpass_account ma
+								WHERE	ma.motorpass_card_id = NEW.id);
+					RETURN NEW;
+				END;
+				' LANGUAGE 'plpgsql'");
+
+		$aTriggers = array('CREATE TRIGGER rebill_motorpass_insert
+							BEFORE INSERT ON <schema_name>.rebill_motorpass
+							FOR EACH ROW
+							EXECUTE PROCEDURE rebillMotorpassInsertAndUpdate()'
+							,
+							'CREATE TRIGGER rebill_motorpass_update
+							BEFORE UPDATE ON <schema_name>.rebill_motorpass
+							FOR EACH ROW
+							EXECUTE PROCEDURE rebillMotorpassInsertAndUpdate()'
+							,
+							"CREATE TRIGGER rebill_motorpass_account_name_and_number
+							AFTER UPDATE ON <schema_name>.motorpass_account
+							FOR EACH ROW
+							EXECUTE PROCEDURE rebillMotorpassUpdateAccountNameAndNumber()"
+							,
+							"CREATE TRIGGER rebill_motorpass_card_expiry_date
+							AFTER UPDATE ON <schema_name>.motorpass_card
+							FOR EACH ROW
+							EXECUTE PROCEDURE rebillMotorpassUpdateCardExpiryDate()"
+
+			);
 		
 		// Add details for tables not to be migrated
 		foreach (self::$_aTablesToNotMigrate as $sTable) {
@@ -329,7 +443,7 @@ class Test_Postgres_Migration extends Test {
 		}
 		
 		Log::getLog()->log("Total Changes: {$iTotalChanges}");
-		return array('oTables' => $aTables, 'oViews' => $aViews);
+		return array('oTables' => $aTables, 'oViews' => $aViews, 'oProcedures' => $aStoredProcedures, 'oTriggers' => $aTriggers);
 	}
 	
 	public function convertDbName($sDBName) {
