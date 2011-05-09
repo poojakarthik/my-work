@@ -1365,8 +1365,8 @@ class Invoice_Run
 		$strSampleType			= (isset($arrInvoiceRunSchedule['description'])) ? $arrInvoiceRunSchedule['description'] : '';
 		$strSampleType			= trim($strSampleType . ((stripos($strSampleType, 'sample')) ? '' : ' Samples'));
 
-		//$strInvoiceRunBlurb	= date("F Y", strtotime("-1 day", strtotime($this->BillingDate)))." {$strCustomerGroup} {$arrInvoiceRun['description']} Samples for ".Customer_Group::getForId($this->customer_group_id)->externalName;
-		$strInvoiceRunBlurb	= Customer_Group::getForId($this->customer_group_id)->externalName." {$strSampleType} for ".date("F Y", strtotime("-1 day", strtotime($this->BillingDate)));
+		//$strInvoiceRunBlurb	= date("F Y", strtotime("-1 day", strtotime($this->BillingDate)))." {$strCustomerGroup} {$arrInvoiceRun['description']} Samples for ".Customer_Group::getForId($this->customer_group_id)->internalName;
+		$strInvoiceRunBlurb	= Customer_Group::getForId($this->customer_group_id)->internalName." {$strSampleType} for ".date("F Y", strtotime("-1 day", strtotime($this->BillingDate)));
 
 		$strTextContent	= '';
 		$strHTMLContent	=	"<div style='font-family: Calibri, sans-serif;'>\n";
