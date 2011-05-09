@@ -107,6 +107,29 @@ class JSON_Handler_Credit_Card_Payment extends JSON_Handler
 			$response['OUTCOME'] = 'FLEX_LOGGING_FAILURE';
 			$response['MESSAGE'] = $e->getMessage();
 		}
+		catch (Credit_Card_Payment_Reversal_Exception $e)
+		{
+			// A reversal was sent due a payment recording failure
+			$sMessage = "The credit card payment was successful but Flex encountered a problem when trying to record the payment. A reversal was sent to reverse the payment";
+			if ($e->reversalFailed())
+			{
+				// Reversal failed as well
+				$sMessage .= " however the reversal was NOT successful.";
+			} 
+			else 
+			{
+				$sMessage .= " and was successful.";
+			}
+			
+			// Should probably send an email to alert us to the fact that payments are failing!
+			$response['OUTCOME'] = 'FAILED';
+			$response['MESSAGE'] = $sMessage;
+			
+			if ($bTestMode)
+			{
+				$response['MESSAGE'] .= ' '.$e->getMessage();
+			}
+		}
 		catch (Exception_Assertion $e)
 		{
 			// Assertions should be handled at a much higher level than this
@@ -146,7 +169,7 @@ Message sent to User:
 CustomerDetails:
 $strCustomerDetails\n\n";
 			
-			Flex::sendEmailNotificationAlert("SecurePay Transaction Failure", $strDetails, FALSE, TRUE, TRUE);
+			Flex::sendEmailNotificationAlert((Credit_Card_Payment::isTestMode() ? '[TEST MODE] ' : '')."SecurePay Transaction Failure", $strDetails, FALSE, TRUE, TRUE);
 		}
 
 		return $response;

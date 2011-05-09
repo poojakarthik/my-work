@@ -733,10 +733,11 @@ class Credit_Card_Payment
 							date('Y-m-d H:i:s', $iTime), 
 							array
 							(
-								'aTransactionData' =>	array
-														(
-															Payment_Transaction_Data::CREDIT_CARD_NUMBER => Credit_Card::getMaskedCardNumber($sCardNumber)
-														)
+								'aTransactionData' =>
+									array
+									(
+										Payment_Transaction_Data::CREDIT_CARD_NUMBER => Credit_Card::getMaskedCardNumber($sCardNumber)
+									)
 							)
 						);
 			
@@ -762,25 +763,74 @@ class Credit_Card_Payment
 			$oPaymentRequest->save();
 			
 			// Make the secure pay request
-			$sTransactionId	= self::_securePayRequest($sMerchantId, $sPassword, $iTime, $sMessageId, $fTotal, $sPurchaseOrderNo, $sCardNumber, $iCVV, $iMonth, $iYear);
+			$sTransactionId	=	self::_securePayRequest(
+									$sMerchantId, 
+									$sPassword, 
+									$iTime, 
+									$sMessageId, 
+									$fTotal, 
+									$sPurchaseOrderNo, 
+									$sCardNumber, 
+									$iCVV, 
+									$iMonth, 
+									$iYear
+								);
 			
-			// Set the Payments transaction reference
-			$oPayment->transaction_reference = $sTransactionId;
-			$oPayment->save();
-			
-			// Process the payment
-			$oLogicAccount = Logic_Account::getInstance($iAccountId);
-			$oLogicAccount->redistributeBalances();
-			
-			// Set the credit card payment history transaction reference
-			$oCreditCardPaymentHistory->txn_id	= $sTransactionId;
-			$oCreditCardPaymentHistory->save();
-			
-			// Cache transaction id in details
-			$oTransactionDetails->sTransactionId	= $sTransactionId;
-			
-			// Commit transaction
-			$oDataAccess->TransactionCommit();
+			try
+			{
+				// Set the Payments transaction reference
+				$oPayment->transaction_reference = $sTransactionId;
+				$oPayment->save();
+				
+				// Process the payment
+				$oLogicAccount = Logic_Account::getInstance($iAccountId);
+				$oLogicAccount->redistributeBalances();
+				
+				// Set the credit card payment history transaction reference
+				$oCreditCardPaymentHistory->txn_id = $sTransactionId;
+				$oCreditCardPaymentHistory->save();
+				
+				// Cache transaction id in details
+				$oTransactionDetails->sTransactionId = $sTransactionId;
+				
+				// Commit transaction
+				$oDataAccess->TransactionCommit();
+			} 
+			catch (Exception $oEx) 
+			{
+				// Post transaction process failed
+				$oExReversal = null;
+				try 
+				{
+					// Send a reversal to secure pay
+					$sReversalMessageId	= 	substr('reversal.' . $sMessageId, 0, 30);
+					$sTransactionId		=	self::_securePayRequest(
+												$sMerchantId, 
+												$sPassword, 
+												$iTime, 
+												$sReversalMessageId, 
+												$fTotal, 
+												$sPurchaseOrderNo, 
+												$sCardNumber, 
+												$iCVV, 
+												$iMonth, 
+												$iYear,
+												self::REQUEST_TYPE_PAYMENT, 
+												self::PAYMENT_TYPE_CREDIT_CARD_REVERSAL, 
+												self::CURRENCY_AUD, 
+												"", 
+												$sTransactionId
+											);
+				}
+				catch (Exception $oExReversal) 
+				{
+					// Reversal failed
+					Log::getLog()->log("Reversal failed: ".$oExReversal->getMessage());
+				}
+				
+				// Throw the new exception
+				throw new Credit_Card_Payment_Reversal_Exception($oEx, $oExReversal);
+			}
 		}
 		catch (Exception $oException)
 		{
@@ -799,16 +849,14 @@ class Credit_Card_Payment
 		return $oTransactionDetails;
 	}
 
-	private static function _securePayRequest($sMerchantId, $sPassword, $iTime, $sMessageId, $fTotal, $sPurchaseOrderNo, $sCardNumber, $iCVV, $iMonth, $iYear)
+	private static function _securePayRequest($sMerchantId, $sPassword, $iTime, $sMessageId, $fTotal, $sPurchaseOrderNo, $sCardNumber, $iCVV, $iMonth, $iYear, $requestType=self::REQUEST_TYPE_PAYMENT, $sPaymentType=self::PAYMENT_TYPE_CREDIT_CARD_PAYMENT, $sCurrency=self::CURRENCY_AUD, $sPreauthid='', $sTxnid='')
 	{
 		// Send request
-		$sXmlmessage	= self::setPaymentCreditCard($sMerchantId, $sPassword, $iTime, $sMessageId, $fTotal, $sPurchaseOrderNo, $sCardNumber, $iCVV, $iMonth, $iYear);
+		$sXmlmessage	= self::setPaymentCreditCard($sMerchantId, $sPassword, $iTime, $sMessageId, $fTotal, $sPurchaseOrderNo, $sCardNumber, $iCVV, $iMonth, $iYear, $requestType, $sPaymentType, $sCurrency, $sPreauthid, $sTxnid);
 		$sHost 			= self::getHost();
 		
-		Log::getLog()->log("Sending to host: {$sHost}");
-		
-		$sResponse 		= self::openSocket($sHost, $sXmlmessage);
-		
+		Log::getLog()->log("Sending to host: {$sHost} - Message: \n {$sXmlmessage}");
+		$sResponse = self::openSocket($sHost, $sXmlmessage);
 		Log::getLog()->log("Got response: {$sResponse}");
 		
 		// Need to check the XML response is valid and that the status code (SecurePayMessage/Status/statusCode) == "000".
@@ -818,7 +866,7 @@ class Credit_Card_Payment
 		// Get actual status code of response
 		if (preg_match("/\<statusCode(?:| [^\>]*)\>([^\>]*)\</i", $sResponse, $aMatches))
 		{
-			$sStatusCode	= $aMatches[1];
+			$sStatusCode = $aMatches[1];
 		}
 		
 		Log::getLog()->log("Checking status code...");
@@ -837,12 +885,13 @@ class Credit_Card_Payment
 		// Get the actual response code from the response
 		if (preg_match("/\<responseCode(?:| [^\>]*)\>([^\>]*)\</i", $sResponse, $aMatches))
 		{
-			$sResponseCode	= $aMatches[1];
+			$sResponseCode = $aMatches[1];
 		}
+		
 		// Get the actual response text from the response
 		if (preg_match("/\<responseText(?:| [^\>]*)\>([^\>]*)\</i", $sResponse, $aMatches))
 		{
-			$sResponseText	= $aMatches[1];
+			$sResponseText = $aMatches[1];
 		}
 
 		Log::getLog()->log("Checking approval...");
@@ -865,7 +914,6 @@ class Credit_Card_Payment
 		}
 		
 		Log::getLog()->log("Transaction ID: {$sTxnId}");
-		
 		return $sTxnId;
 	}
 
@@ -1085,4 +1133,46 @@ class Credit_Card_Payment_Validation_Exception extends Exception
 		return $this->statusCode;
 	}
 }
+
+class Credit_Card_Payment_Reversal_Exception extends Exception
+{
+	private $_oInitialException		= null;
+	private $_oReversalException	= null;
+	
+	public function __construct($oInitialException=null, $oReversalException=null) 
+	{
+		$sMessage = '';
+		if ($oInitialException !== null) 
+		{
+			$sMessage .= " \n\tInitial Exception: ".$oInitialException->getMessage();
+		}
+		
+		if ($oReversalException !== null)
+		{
+			// Reversal failed as well
+			$sMessage .= ". \n\n\tReversal Exception: ".$oReversalException->getMessage();
+		}
+		
+		parent::__construct($sMessage);
+		
+		$this->_oInitialException	= $oInitialException;
+		$this->_oReversalException	= $oReversalException;
+	}
+	
+	public function getInitialException()
+	{
+		return $this->_oInitialException;
+	}
+	
+	public function getReversalException()
+	{
+		return $this->_oReversalException;
+	}
+	
+	public function reversalFailed() 
+	{
+		return ($this->_oReversalException !== null ? true : false);
+	}
+}
+
 ?>

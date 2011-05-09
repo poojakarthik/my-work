@@ -13,7 +13,11 @@ class JSON_Handler {
 		$aInterfaces	= class_implements($this);
 		$bIsLoggable 	= isset($aInterfaces['JSON_Handler_Loggable']);
 		$bIsCatchable	= isset($aInterfaces['JSON_Handler_Catchable']);
-		$bUserIsGod		= Employee::getForId(Flex::getUserId())->isGod();
+		try {
+			$bUserIsGod = Employee::getForId(Flex::getUserId())->isGod();
+		} catch (Exception $oEx) {
+			$bUserIsGod = false;
+		}
 		$bLogCookieSet	= (isset($_COOKIE[self::LOG_COOKIE_NAME]) && ((int)$_COOKIE[self::LOG_COOKIE_NAME] == 1));
 		$bLogEnabled	= ($bIsLoggable && $bUserIsGod && $bLogCookieSet);
 		
@@ -47,7 +51,11 @@ class JSON_Handler {
 	}
 	
 	protected static function _buildExceptionResponse($oException) {
-		$bUserIsGod = Employee::getForId(Flex::getUserId())->isGod();
+		try {
+			$bUserIsGod = Employee::getForId(Flex::getUserId())->isGod();
+		} catch (Exception $oEx) {
+			$bUserIsGod = false;
+		}
 		
 		// Determine the exception message
 		$aExceptionInterfaces = class_implements($oException);

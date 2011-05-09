@@ -860,7 +860,8 @@ class JSON_Handler_Account extends JSON_Handler
 				$oDetails->iCardNumber, 
 				$oDetails->sCardHolderName, 
 				$fAmount, 
-				$sMessage
+				$sMessage, 
+				$oException
 			);
 			
 			return 	array(
@@ -885,7 +886,8 @@ class JSON_Handler_Account extends JSON_Handler
 				$oDetails->iCardNumber, 
 				$oDetails->sCardHolderName, 
 				$fAmount, 
-				$sMessage
+				$sMessage, 
+				$oException
 			);
 			
 			return 	array(
@@ -923,6 +925,41 @@ class JSON_Handler_Account extends JSON_Handler
 			return 	array(
 						"Success"		=> false,
 						"Message"		=> $sMessage,
+						'bPaymentError'	=> true,
+						"strDebug"		=> ($bGod ? $this->_JSONDebug : '')
+					);
+		}
+		catch (Credit_Card_Payment_Reversal_Exception $oEx)
+		{
+			$sMessage = "The credit card payment was successful but Flex encountered a problem when trying to record the payment. A reversal was sent to reverse the payment";
+			if ($oEx->reversalFailed())
+			{
+				// Reversal failed as well
+				$sMessage .= " however the reversal was NOT successful.";
+			}
+			else 
+			{
+				$sMessage .= " and was successful.";
+			}
+			
+			if (Credit_Card_Payment::isTestMode())
+			{
+				$sMessage .= ' '.$oEx->getMessage();
+			}
+			
+			self::_sendCreditCardPaymentErrorEmail(
+				$iAccountId, 
+				$oContact->Email, 
+				$oDetails->iCardNumber, 
+				$oDetails->sCardHolderName, 
+				$fAmount, 
+				$sMessage, 
+				$oEx
+			);
+			
+			return	array(
+						'Success' 		=> false,
+						'Message'		=> $sMessage,
 						'bPaymentError'	=> true,
 						"strDebug"		=> ($bGod ? $this->_JSONDebug : '')
 					);
@@ -1715,7 +1752,7 @@ class JSON_Handler_Account extends JSON_Handler
 		return $mResult;
 	}
 	
-	private static function _sendCreditCardPaymentErrorEmail($iAccountId, $sEmail, $sCardNumber, $sName, $fAmount, $sMessage)
+	private static function _sendCreditCardPaymentErrorEmail($iAccountId, $sEmail, $sCardNumber, $sName, $fAmount, $sMessage, $oException)
 	{
 		$aCustomerDetails = array(
 								"AccountId"			=> $iAccountId,
