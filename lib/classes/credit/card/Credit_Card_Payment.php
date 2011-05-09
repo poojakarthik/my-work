@@ -795,7 +795,7 @@ class Credit_Card_Payment
 				
 				// Commit transaction
 				$oDataAccess->TransactionCommit();
-			} 
+			}
 			catch (Exception $oEx) 
 			{
 				// Post transaction process failed
