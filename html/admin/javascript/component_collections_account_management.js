@@ -18,6 +18,21 @@ var Component_Collections_Account_Management = Class.create(
 	refresh : function()
 	{
 		// Load the initial dataset
+		if (!this._bFirstLoadComplete) 
+		{
+			// First time refreshing, try to load previous filter data from the cookie
+			var sFilter = Flex.cookie.read(Component_Collections_Account_Management.FILTER_COOKIE_NAME);
+			if (sFilter !== null) 
+			{
+				// Got previous filter data, update the filter object
+				var hFilter = sFilter.evalJSON();
+				for (var sField in hFilter)
+				{
+					this._oFilter.setFilterValue(sField, hFilter[sField]);
+				}
+			}
+		}
+		
 		this._oSort.refreshData(true);
 		this._oFilter.refreshData(true);
 		this.oPagination.getCurrentPage();
@@ -280,7 +295,7 @@ var Component_Collections_Account_Management = Class.create(
 			}
 		}
 
-		this._bFirstLoadComplete	= true;
+		this._bFirstLoadComplete = true;
 		this._updatePagination();
 		this._updateSorting();
 		this._updateFilters();
@@ -465,6 +480,7 @@ var Component_Collections_Account_Management = Class.create(
 
 	_updateFilters	: function()
 	{
+		// Update the display value of each filter header in the table
 		for (var sField in Component_Collections_Account_Management.FILTER_FIELDS)
 		{
 			if (Component_Collections_Account_Management.FILTER_FIELDS[sField].iType)
@@ -472,6 +488,15 @@ var Component_Collections_Account_Management = Class.create(
 				this._updateFilterDisplayValue(sField);
 			}
 		}
+		
+		// Store the filter data in a cookie
+		var hFilter = this._oFilter.getFilterData();
+		var sFilter	= Object.toJSON(hFilter);
+		Flex.cookie.create(
+			Component_Collections_Account_Management.FILTER_COOKIE_NAME, 
+			sFilter, 
+			Component_Collections_Account_Management.FILTER_COOKIE_AGE_DAYS
+		);
 	},
 
 	_updateFilterDisplayValue	: function(sField)
@@ -625,6 +650,9 @@ Object.extend(Component_Collections_Account_Management,
 	REMOVE_FILTER_IMAGE_SOURCE		: '../admin/img/template/delete.png',
 	DETAILS_ACCOUNT_IMAGE_SOURCE	: '../admin/img/template/account.png',
 	ACTION_VIEW_IMAGE_SOURCE		: '../admin/img/template/magnifier.png',
+	
+	FILTER_COOKIE_NAME 		: 'component_collections_account_management_filter',
+	FILTER_COOKIE_AGE_DAYS 	: 365,
 	
 	collection_status :
 	{
