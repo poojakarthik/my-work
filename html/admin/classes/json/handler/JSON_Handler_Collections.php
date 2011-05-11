@@ -59,21 +59,21 @@ class JSON_Handler_Collections extends JSON_Handler implements JSON_Handler_Logg
 		try
 		{
 			$aColumns =	array(
-							'account_id' 								=> 'Account|int',
-							'account_name' 								=> 'Business Name',
-							'customer_group_name' 						=> 'Customer Group',
-							'balance'				 					=> 'Balance|currency',
-							'overdue_balance'		 					=> 'Overdue Balance|currency',
-							'overdue_amount_from_1_30'					=> 'Debt (1-30 days old)|currency',
-							'overdue_amount_from_30_60' 				=> 'Debt (30-60 days old)|currency',
-							'overdue_amount_from_60_90'					=> 'Debt (60-90 days old)|currency',
-							'overdue_amount_from_90_on'					=> 'Debt (90+ days old)|currency',
-							'last_payment_paid_date'					=> 'Last Payment Date',
-							'last_payment_amount' 						=> 'Last Payment Amount|currency',
-							'collection_status'							=> 'Collections Status',
-							'previous_promise_instalment_due_datetime' => 'Previous Promise Instalment Due',
-							'next_promise_instalment_due_datetime'		=> 'Next Promise Instalment Due',
-							'collection_event_name'						=> 'Current Event'
+							'account_id' 							=> 'Account|int',
+							'account_name' 							=> 'Business Name',
+							'customer_group_name' 					=> 'Customer Group',
+							'balance'				 				=> 'Balance|currency',
+							'overdue_balance'		 				=> 'Overdue Balance|currency',
+							'overdue_amount_from_1_30'				=> 'Debt (1-30 days old)|currency',
+							'overdue_amount_from_30_60' 			=> 'Debt (30-60 days old)|currency',
+							'overdue_amount_from_60_90'				=> 'Debt (60-90 days old)|currency',
+							'overdue_amount_from_90_on'				=> 'Debt (90+ days old)|currency',
+							'last_payment_paid_date'				=> 'Last Payment Date',
+							'last_payment_amount' 					=> 'Last Payment Amount|currency',
+							'collection_status'						=> 'Collections Status',
+							'previous_promise_instalment_due_date' 	=> 'Previous Promise Instalment Due',
+							'next_promise_instalment_due_date'		=> 'Next Promise Instalment Due',
+							'collection_event_name'					=> 'Current Event'
 						);
 			$aRecords = Logic_Account::searchForCollectionsLedger(null, null, get_object_vars($oSort), get_object_vars($oFilter));
 			
