@@ -229,6 +229,8 @@ class JSON_Handler_Collections extends JSON_Handler implements JSON_Handler_Logg
 					$oInvoiceRun = new Invoice_Run();
 					$oInvoiceRun->generateForAccounts($iCustomerGroupId, $aAccounts, INVOICE_RUN_TYPE_FINAL);
 					
+					Log::getLog()->log("Invoice Run generated");
+					
 					// Override delivery method of each invoice, if set in collections_config
 					if ($iDeliveryMethodIdOverride !== null)
 					{
@@ -243,10 +245,13 @@ class JSON_Handler_Collections extends JSON_Handler implements JSON_Handler_Logg
 						$oInvoiceRun->export();
 					}
 					
-					// Commit & deliver the invoice run
 					$oInvoiceRun->commit();
-					$oInvoiceRun->deliver();
 					
+					// Clear cache so that Invoice objects inherit their new status
+					Invoice::clearCache();
+					
+					$oInvoiceRun->deliver();
+										
 					// Update the invoice_run_id for each account_oca_referral (saved, when they are actioned, below)
 					foreach ($aAccounts as $oAccount)
 					{
@@ -257,10 +262,19 @@ class JSON_Handler_Collections extends JSON_Handler implements JSON_Handler_Logg
 				}
 				catch (Exception $oException)
 	            {
+	            	Log::getLog()->log("Error, attempting to revoke now: ".$oException->getMessage());
+	            	
 	                // Perform a Revoke on the Temporary Invoice Run
 	                if ($oInvoiceRun->Id)
 	                {
-	                	$oInvoiceRun->revoke();
+	                	try 
+	                	{
+	                		$oInvoiceRun->revoke();
+	                	}
+	                	catch (Exception $oEx)
+	                	{
+	                		// Ignore errors in this process, the transaction is to be rolled back anyway when the exception is thrown below
+	                	}
 	                }
 	                
 	                throw new JSON_Handler_Collections_Exception("Failed to commit Final Invoice for customer group ".Customer_Group::getForId($iCustomerGroupId)->internal_name.". Details: ".$oException->getMessage());
