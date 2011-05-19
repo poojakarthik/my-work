@@ -156,14 +156,12 @@ class Correspondence_Logic_Template
 
 	public function getAdditionalColumnSet($iStandardColumnCount = 0)
 	{
-
 		$aColumns = array();
 		foreach ($this->_aExtraColumns as $oColumn)
 		{
-			$aColumns[$iStandardColumnCount -1 + $oColumn->column_index] = $oColumn->name;
+			$aColumns[$iStandardColumnCount - 1 + $oColumn->column_index] = $oColumn->name;
 		}
 		return $aColumns;
-
 	}
 
 	public function getSourceType()

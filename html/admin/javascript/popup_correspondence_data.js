@@ -13,7 +13,7 @@ var Popup_Correspondence_Data	= Class.create(Reflex_Popup,
 		this._buildUI();
 	},
 	
-	_buildUI	: function(aData, aAdditionalColumns)
+	_buildUI	: function(aData, hAdditionalColumns)
 	{
 		if (!aData)
 		{
@@ -54,17 +54,17 @@ var Popup_Correspondence_Data	= Class.create(Reflex_Popup,
 			}
 			
 			// Additional columns
-			for (var i = 0; i < aAdditionalColumns.length; i++)
+			for (var sColumnIndex in hAdditionalColumns)
 			{
 				oTBody.appendChild(
 					$T.tr(
-						$T.th(aAdditionalColumns[i]),
-						$T.td(aData[aAdditionalColumns[i]])
+						$T.th(hAdditionalColumns[sColumnIndex]),
+						$T.td(aData[hAdditionalColumns[sColumnIndex]])
 					)
 				);
 			}
 			
-			var oSection	= new Section();
+			var oSection = new Section();
 			oSection.setContent(
 				$T.table({class: 'reflex input'},
 					oTBody

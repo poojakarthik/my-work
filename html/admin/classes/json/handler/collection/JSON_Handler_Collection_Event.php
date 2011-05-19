@@ -546,7 +546,7 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 					$oCollectionEventCorrespondence 							= new Collection_Event_Correspondence();
 					$oCollectionEventCorrespondence->collection_event_id 		= $oEvent->id;
 					$oCollectionEventCorrespondence->correspondence_template_id	= (int)$oDetails->implementation_details->correspondence_template_id;
-					if ($oDetails->implementation_details->document_template_type_id !== null)
+					if ($oDetails->implementation_details->document_template_type_id !== null && $oDetails->implementation_details->document_template_type_id != '')
 					{
 						$oCollectionEventCorrespondence->document_template_type_id = (int)$oDetails->implementation_details->document_template_type_id;
 					}
