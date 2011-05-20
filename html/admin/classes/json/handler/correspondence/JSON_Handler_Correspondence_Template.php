@@ -57,7 +57,8 @@ class JSON_Handler_Correspondence_Template extends JSON_Handler implements JSON_
 											FROM	correspondence_template ct
 											JOIN	correspondence_source cs ON ct.correspondence_source_id = cs.id
 											JOIN	correspondence_source_type cst ON cs.correspondence_source_type_id = cst.id
-											WHERE	cst.system_name NOT IN ('SYSTEM', 'SQL_ACCOUNTS');");
+											WHERE	cst.system_name NOT IN ('SYSTEM', 'SQL_ACCOUNTS')
+											AND		ct.status_id = ".STATUS_ACTIVE.";");
 			if ($mResult === false)
 			{
 				throw new Exception_Database("Failed to get correspondence templates. ".$oQuery->Error());
