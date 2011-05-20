@@ -86,6 +86,7 @@ var Component_Account_Payment_Create = Class.create(
 												}
 											);
 		oCreditCardSurchargeControl.setRenderMode(Control_Field.RENDER_MODE_EDIT);
+		oCreditCardSurchargeControl.addOnChangeCallback(this._updateCreditCardSummary.bind(this));
 		this._aControls.push(oCreditCardSurchargeControl);
 		this._oCreditCardSurchargeControl = oCreditCardSurchargeControl;
 		
@@ -218,20 +219,21 @@ var Component_Account_Payment_Create = Class.create(
 			}
 			
 			// Build the details object
-
-			var iCreditCardType	= this._oCreditCardTypeControl.getValue();
-			var fSurcharge 		= (iCreditCardType != '' ? CreditCardType.cardTypeForId(iCreditCardType).surcharge : null);
+			var iPaymentType		= parseInt(this._oPaymentTypeControl.getValue());
+			var bCreditCardPayment	= iPaymentType == $CONSTANT.PAYMENT_TYPE_CREDIT_CARD;
+			var iCreditCardType		= (bCreditCardPayment ? this._oCreditCardTypeControl.getValue() : null);
+			var fSurcharge 			= (bCreditCardPayment ? CreditCardType.cardTypeForId(iCreditCardType).surcharge : null);
 			
 			var oDetails = 	
 			{
 				account_id				: this._iAccountId,
-				payment_type_id			: this._oPaymentTypeControl.getValue(),
+				payment_type_id			: iPaymentType,
 				amount					: this._oAmountControl.getValue(),
 				transaction_reference	: this._oTXNReferenceControl.getValue(),
-				charge_surcharge		: this._oCreditCardSurchargeControl.getValue(),
-				credit_card_type_id		: this._oCreditCardTypeControl.getValue(),
-				credit_card_number		: this._oCreditCardNumberControl.getValue(),
-				credit_card_surcharge	: fSurcharge
+				charge_surcharge		: (bCreditCardPayment ? this._oCreditCardSurchargeControl.getValue() : null),
+				credit_card_type_id		: (bCreditCardPayment ? this._oCreditCardTypeControl.getValue() : null),
+				credit_card_number		: (bCreditCardPayment ? this._oCreditCardNumberControl.getValue() : null),
+				credit_card_surcharge	: (bCreditCardPayment ? fSurcharge : null)
 			};
 			
 			if (this._iSaveMode == Component_Account_Payment_Create.SAVE_MODE_CALLBACK_WITH_DETAILS)
@@ -293,9 +295,10 @@ var Component_Account_Payment_Create = Class.create(
 	_updateCreditCardSummary : function()
 	{
 		var oCardType 		= CreditCardType.cardTypeForId(this._oCreditCardTypeControl.getElementValue());
+		var bAddSurchage	= this._oCreditCardSurchargeControl.getElementValue();
 		var fAmount			= parseFloat(this._oAmountControl.getElementValue());
 		fAmount 		 	= (isNaN(fAmount) ? 0 : fAmount);
-		var fSurcharge		= (oCardType ? oCardType.surcharge : 0);
+		var fSurcharge		= (bAddSurchage && oCardType ? oCardType.surcharge : 0);
 		var fAmountPiece	= fSurcharge * fAmount;
 		var fTotal			= fAmount + fAmountPiece;
 		

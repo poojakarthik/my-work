@@ -163,7 +163,7 @@ class JSON_Handler_Payment extends JSON_Handler implements JSON_Handler_Loggable
 			}
 			
 			$fAmount			= $oDetails->amount;
-			$bChargeSurcharge	= ($oDetails->credit_card_type_id !== null);
+			$bChargeSurcharge	= $oDetails->charge_surcharge && ($oDetails->credit_card_type_id !== null);
 			$aTransactionData	= array();
 			if ($bChargeSurcharge)
 			{
