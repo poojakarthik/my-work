@@ -328,7 +328,7 @@ class Rate extends ORM_Cached
 		self::_logRateAlgorithmStage("\t".'[fCharge = (iUnitBlocks * fRatePerUnitBlock) + fFlagfall]');
 		
 		// Markup
-		if ($fMarkupPercentage || $fMarkupDollarsPerUnit)
+		if ($fMarkupPercentage || $fMarkupDollarsPerUnitBlock)
 		{
 			$fBaseCharge	= $fCharge;
 			$fCharge		= $fBaseCharge + ($fCost + (($fMarkupPercentage / 100) * $fCost) + ($iUnitBlocks * $fMarkupDollarsPerUnitBlock));
