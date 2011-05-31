@@ -571,7 +571,7 @@ $sWriteOffStausDescr = GetConstantDescription(CDR_DELINQUENT_WRITTEN_OFF, "CDR")
 			$arrSuccessfulCDRs[] = array('account_id'=>$arrService['Account'], 'service_id'=>$arrService['Id'], 'fnn'=>$arrService['FNN']);
 		}
 
-		return $arrSuccessfulCDRs;
+		return count($arrSuccessfulCDRs) > 0 ?$arrSuccessfulCDRs : $strErrorMsg;
 	}
 
 
