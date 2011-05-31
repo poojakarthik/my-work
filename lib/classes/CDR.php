@@ -448,6 +448,14 @@ $sWriteOffStausDescr = GetConstantDescription(CDR_DELINQUENT_WRITTEN_OFF, "CDR")
 
 	}
 
+	/**
+	 * As of 31/05/2011 the code associated entirely with calculating whether a CDR's start date is within the 189 day period before the current bill cycle has been commented out.
+	 * @param <type> $strFNN
+	 * @param <type> $intCarrier
+	 * @param <type> $intServiceType
+	 * @param <type> $arrCDRs
+	 * @return <type> 
+	 */
 	public function assignCDRsToService($strFNN	, $intCarrier, $intServiceType, $arrCDRs)
 	{
 
@@ -480,25 +488,27 @@ $sWriteOffStausDescr = GetConstantDescription(CDR_DELINQUENT_WRITTEN_OFF, "CDR")
 		foreach ($arrRecordSet as $arrRecord)
 		{
 			$arrServices[$arrRecord['Id']] = $arrRecord;
+//This commented block of code is related to the obsolete rule that the CDR start date must be within 189 days from the current billing period
+/*//			try
+//			{
+//				$account = Account::getForId($arrRecord['Account']);
+//				if ($account === NULL)
+//				{
+//					throw new exception("There is no account associated with this service record");
+//				}
+//				$strStartOfCurrentBillingPeriod = Invoice_Run::getLastInvoiceDateByCustomerGroup($account->customerGroup, $strNow);
+//			}
+//			catch (Exception $e)
+//			{
+//				// The start of the current billing period could not be calculated, for the account in question
+//				// Just use the current timestamp, because clearly we are in the current billing period
+//				$strStartOfCurrentBillingPeriod = $strNow;
+//			}
+//
+//			$arrServices[$arrRecord['Id']]['EarliestAllowableCDRStartDate']	= date("Y-m-d", strtotime("-189 days $strStartOfCurrentBillingPeriod"));
+ */
+		 }
 
-			try
-			{
-				$account = Account::getForId($arrRecord['Account']);
-				if ($account === NULL)
-				{
-					throw new exception("There is no account associated with this service record");
-				}
-				$strStartOfCurrentBillingPeriod = Invoice_Run::getLastInvoiceDateByCustomerGroup($account->customerGroup, $strNow);
-			}
-			catch (Exception $e)
-			{
-				// The start of the current billing period could not be calculated, for the account in question
-				// Just use the current timestamp, because clearly we are in the current billing period
-				$strStartOfCurrentBillingPeriod = $strNow;
-			}
-
-			$arrServices[$arrRecord['Id']]['EarliestAllowableCDRStartDate']	= date("Y-m-d", strtotime("-189 days $strStartOfCurrentBillingPeriod"));
-		}
 
 		// Build the Database objects required
 		$selCDR = new StatementSelect("CDR", "Id, FNN, Service, Account, AccountGroup, Status, StartDatetime", "Id = <Id>");
@@ -529,16 +539,16 @@ $sWriteOffStausDescr = GetConstantDescription(CDR_DELINQUENT_WRITTEN_OFF, "CDR")
 			$arrCDRRecord = $selCDR->Fetch();
 
 			$strStartDate = substr($arrCDRRecord['StartDatetime'], 0, 10);
-
-			// Check that the CDR's StartDatetime is within 189 days of the next bill date of the account that the CDR will be allocated to
-			if ($strStartDate < $arrService['EarliestAllowableCDRStartDate'])
-			{
-				// CDR is too old
-				$strStartTime = date("H:i:s d/m/Y", strtotime($arrCDRRecord['StartDatetime']));
-				$strErrorMsg = "ERROR: CDR {$objCDR->Record} with start time: $strStartTime is considered too old to be billed to this customer.  Operation aborted.";
-				break;
-			}
-
+//This commented block of code is related to the obsolete rule that the CDR start date must be within 189 days from the current billing period
+/*//			// Check that the CDR's StartDatetime is within 189 days of the next bill date of the account that the CDR will be allocated to
+//			if ($strStartDate < $arrService['EarliestAllowableCDRStartDate'])
+//			{
+//				// CDR is too old
+//				$strStartTime = date("H:i:s d/m/Y", strtotime($arrCDRRecord['StartDatetime']));
+//				$strErrorMsg = "ERROR: CDR {$objCDR->Record} with start time: $strStartTime is considered too old to be billed to this customer.  Operation aborted.";
+//				break;
+//			}
+*/
 			// Check the FNNs match
 			if ($strFNN != $arrCDRRecord['FNN'])
 			{

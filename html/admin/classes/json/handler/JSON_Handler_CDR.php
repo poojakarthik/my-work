@@ -443,8 +443,6 @@ function GetStatusInfoForCDRs($aCDRIDs, $bFilterOnlyDelinquents = false)
 
 function BulkAssignCDRsToServices ($strFNN, $intCarrier, $intServiceType,  $strStartDate,$strEndDate, $iServiceId)
 {
-
-
 	$aCDRs = CDR::GetDelinquentCDRIDs($strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType);
 	$aServiceInfo = array();
 	try
@@ -456,8 +454,10 @@ function BulkAssignCDRsToServices ($strFNN, $intCarrier, $intServiceType,  $strS
 			$oCDR = new stdClass();
 			$oCDR->Id = $iCDR;
 			$oCDR->Service = $iServiceId;
+			//because we're assigning all delinquent CDRs that comply with the parameters passed in to $iServiceId, we only need one of the returned result sets, hence $mResults can be overwritten with each iteration
 			$mResult = CDR::assignCDRsToService($strFNN, $intCarrier, $intServiceType, array($oCDR));
 
+			//if one of the CDRs contained in $aCDRs causes an error, the whole transaction will be rolled back
 			if (!is_array($mResult))
 			{
 				throw new Exception($mResult);
@@ -467,12 +467,12 @@ function BulkAssignCDRsToServices ($strFNN, $intCarrier, $intServiceType,  $strS
 
 
 		TransactionCommit();
-			return	array(
-						'Success'	=> true,
-						'aData'		=>$aCDRs,
-						'aServiceInfo' => $aServiceInfo
+		return	array(
+					'Success'	=> true,
+					'aData'		=>$aCDRs,
+					'aServiceInfo' => $mResult
 
-					);
+				);
 
 	}
 	catch(Exception $e)
