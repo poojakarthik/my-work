@@ -446,7 +446,7 @@ function BulkAssignCDRsToServices ($strFNN, $intCarrier, $intServiceType,  $strS
 
 
 	$aCDRs = CDR::GetDelinquentCDRIDs($strStartDate, $strEndDate, $strFNN	,$intCarrier, $intServiceType);
-$aServiceInfo = array();
+	$aServiceInfo = array();
 	try
 	{
 
@@ -456,7 +456,12 @@ $aServiceInfo = array();
 			$oCDR = new stdClass();
 			$oCDR->Id = $iCDR;
 			$oCDR->Service = $iServiceId;
-			$aServiceInfo = CDR::assignCDRsToService($strFNN, $intCarrier, $intServiceType, array($oCDR));
+			$mResult = CDR::assignCDRsToService($strFNN, $intCarrier, $intServiceType, array($oCDR));
+
+			if (!is_array($mResult))
+			{
+				throw new Exception($mResult);
+			}
 
 		}
 
