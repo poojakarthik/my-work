@@ -65,7 +65,8 @@ var Popup_Email_Queue_List = Class.create(Reflex_Popup, {
 								oDefinition : {
 									fnPopulate : Employee.getAllAsSelectOptions
 								}
-							}
+							},
+							fnGetDisplayText : this._getFilterValueDisplayText.bind(this, 'created_employee_id')
 						},	
 						fnCreateCell : this._getCell.bind(this, 'created_employee_id')
 					},
@@ -80,8 +81,9 @@ var Popup_Email_Queue_List = Class.create(Reflex_Popup, {
 								oDefinition	: {
 									fnPopulate 	: Flex.Constant.getConstantGroupOptions.curry('email_queue_status')
 								}
-							}
-						},
+							},
+							fnGetDisplayText : this._getFilterValueDisplayText.bind(this, 'email_queue_status_id')
+						},	
 						fnCreateCell : this._getCell.bind(this, 'email_queue_status_id')
 					},
 					
