@@ -428,7 +428,8 @@ class Invoice extends ORM_Cached
 									WHERE	account_id = {$this->Account} 
 									AND 	invoice_run_id IS NULL
 									AND 	effective_date <= '{$this->billing_period_end_datetime}'
-									AND 	reviewed_datetime <= '{$this->billing_period_end_datetime}'");
+									AND 	reviewed_datetime <= '{$this->billing_period_end_datetime}'
+									AND		adjustment_status_id = ".ADJUSTMENT_STATUS_APPROVED);
 			Log::getLog()->log("Updated {$mResult} Adjustments");
 			
 			// Get Preliminary Charge Totals
