@@ -399,7 +399,7 @@ Object.extend(Component_Account_Payment_Create,
 	{
 		if (Reflex_Validation.Exception.float(mValue))
 		{
-			if (parseInt(mValue) > 0)
+			if (parseFloat(mValue) > 0)
 			{
 				return true;
 			}
