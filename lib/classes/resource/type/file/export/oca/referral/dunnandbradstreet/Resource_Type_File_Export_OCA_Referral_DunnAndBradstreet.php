@@ -64,7 +64,7 @@ class Resource_Type_File_Export_OCA_Referral_DunnAndBradstreet extends Resource_
 		$oRecord->Mobile 		= $oContact->Mobile;
 		$oRecord->Email 		= $oContact->Email;
 		$oRecord->DateofDebt 	= $aEarliestInvoiceRow['date_of_debt'];
-		$oRecord->BalanceDue 	= $oAccount->getOverdueBalance();
+		$oRecord->BalanceDue 	= $oAccount->getAccountBalance();
 		
 		// Add to the file
 		$this->_oFileExporter->addRecord($oRecord, File_Exporter::RECORD_GROUP_BODY);
