@@ -9,8 +9,13 @@ var Control_Field_Textarea	= Class.create(/* extends */ Control_Field,
 	
 		this.oControlOutput.oEdit		= document.createElement('textarea');
 		//this.oControlOutput.oEdit.type	= 'textarea';
-		this.oControlOutput.oEdit.rows	= rows;
-		this.oControlOutput.oEdit.cols	= cols;
+		
+		if (rows) {
+			this.oControlOutput.oEdit.rows	= rows;
+		}
+		if (cols) {
+			this.oControlOutput.oEdit.cols	= cols;
+		}
 		this.oControlOutput.oElement.appendChild(this.oControlOutput.oEdit);
 		
 		this.oControlOutput.oView	= document.createElement('span');
