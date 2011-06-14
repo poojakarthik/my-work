@@ -127,6 +127,11 @@ class JSON_Handler_Adjustment extends JSON_Handler implements JSON_Handler_Logga
 		$oDataAccess	= DataAccess::getDataAccess();
 		try
 		{
+			// Verify that creation, not modification is being performed
+			if (isset($oDetails->id)) {
+				throw new Exception("Cannot use createAdjustment with an existing Adjustment (Id is {$oDetails->id} in this case).");
+			}
+			
 			// Validation
 			$aErrors = array();
 			if ($oDetails->adjustment_type_id === null)
