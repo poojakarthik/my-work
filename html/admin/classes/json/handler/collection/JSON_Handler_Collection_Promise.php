@@ -43,8 +43,8 @@ class JSON_Handler_Collection_Promise extends JSON_Handler implements JSON_Handl
 				$fTotalAmount	= 0;
 				$fTotalBalance	= 0;
 				foreach ($aCollectables as $oCollectable) {
-					$fTotalAmount	= Rate::floorToPrecision($fTotalAmount + (float)$oCollectable->amount);
-					$fTotalBalance	= Rate::floorToPrecision($fTotalBalance + (float)$oCollectable->balance);
+					$fTotalAmount	= Rate::floorToPrecision($fTotalAmount + Rate::floorToPrecision((float)$oCollectable->amount));
+					$fTotalBalance	= Rate::floorToPrecision($fTotalBalance + Rate::floorToPrecision((float)$oCollectable->balance));
 				}
 
 				if ($fTotalBalance > 0) {
@@ -275,8 +275,10 @@ class JSON_Handler_Collection_Promise extends JSON_Handler implements JSON_Handl
 							break;
 						}
 
-						$fTransferValue		= Rate::roundToRatingStandard(max(0, min($oInvoice->fPromisedAmount, $oInvoiceCollectable->balance)), 2);
-						$fPromisedRemaining	= Rate::roundToRatingStandard($fPromisedRemaining - $fTransferValue);
+						// Transfer value is floored to try and fix problems of Invoices/Collectables with
+						// more than 2 decimal places.
+						$fTransferValue		= Rate::floorToPrecision(max(0, min($oInvoice->fPromisedAmount, $oInvoiceCollectable->balance)), 2);
+						$fPromisedRemaining	= Rate::roundToCurrencyStandard($fPromisedRemaining - $fTransferValue);
 
 						if ($fTransferValue <= 0.01) {
 							Log::getLog()->log("Skipping: No value to Transfer");
@@ -310,6 +312,12 @@ class JSON_Handler_Collection_Promise extends JSON_Handler implements JSON_Handl
 						Log::getLog()->log(print_r($oInvoiceCollectable->toStdClass(), true));
 						Log::getLog()->log(print_r($oTransfer->toStdClass(), true));
 						Log::getLog()->log(print_r($oCollectable->toStdClass(), true));
+					}
+
+					// Make sure that the sum of our rounding errors do not exceed $0.01
+					// This should solve
+					if ($fPromisedRemaining >= 0.01) {
+						throw new Exception("Sum of Collectable transfer/distribution rounding errors is >= $0.01");
 					}
 				}
 
