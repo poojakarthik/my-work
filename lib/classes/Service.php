@@ -311,7 +311,7 @@ class Service extends ORM
 		
 		$iContractTerm	= (int)$oNewRatePlan->ContractTerm;
 		
-		$oServiceRatePlan->contract_scheduled_end_datetime	= ($iContractTerm && $iContractTerm > 0) ? date('Y-m-d H:i:s', strtotime("-1 second", strtotime("+{$intContractTerm} months", $iStartDatetime))) : NULL;
+		$oServiceRatePlan->contract_scheduled_end_datetime	= ($iContractTerm && $iContractTerm > 0) ? date('Y-m-d H:i:s', strtotime("-1 second", strtotime("+{$iContractTerm} months", $iStartDatetime))) : NULL;
 		$oServiceRatePlan->contract_effective_end_datetime	= NULL;
 		$oServiceRatePlan->contract_status_id				= ($iContractTerm && $iContractTerm > 0) ? CONTRACT_STATUS_ACTIVE : NULL;
 		
