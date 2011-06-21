@@ -12,7 +12,7 @@ var Reflex_AJAX_Response = Class.create({
 			if (!sClass) {
 				return true;
 			} else {
-				return !!(this._oData.oException.aClasses.indexOf(sClass) !== 1);
+				return !!(this._oData.oException.aClasses.indexOf(sClass) !== -1);
 			}
 		}
 		return false;
