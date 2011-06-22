@@ -165,6 +165,12 @@ class Application_Page extends Page
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_debug.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/date.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_template.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_event.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_event_instance.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/observable.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/configurable.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/pluginable.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_plugin.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_component.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_queue.js' ></script>\n";
 
@@ -190,7 +196,17 @@ class Application_Page extends Page
 										"reflex_popup",
 										"reflex_template",
 										"reflex_component",
-										"reflex_queue"
+										"reflex_queue",
+										"reflex_ajax_request",
+										"reflex_ajax_response",
+										"reflex_debug",
+										"date",
+										"reflex_event",
+										"reflex_event_instance",
+										"observable",
+										"configurable",
+										"pluginable",
+										"reflex_plugin"
 									);
 
 		// Only include this file for the admin framework

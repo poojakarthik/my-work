@@ -1,36 +1,59 @@
 
 Reflex_Component	= Class.create({
-
 	initialize	: function () {
-		//debugger;
 		// General init
-		this.NODE			= null;
+		this.NODE	= null;
 		
-		this.CONFIG			= Object.extend({
+		this.CONFIG	= Object.extend({
 			sExtraClass	: {
-				fnSetter	: (function (mValue) {
-					var	sExistingClass	= this.get('sExtraClass');
+				fnSetter : (function (mValue) {
+					var	sExistingClass = this.get('sExtraClass');
 					if (sExistingClass) {
 						this.getNode().removeClassName(sExistingClass);
 					}
+					
 					if (mValue) {
-						mValue	= String(mValue);
+						mValue = String(mValue);
 						this.getNode().addClassName(mValue);
 					}
 					return mValue ? mValue : null;
 				}).bind(this)
 			},
-			fnOnReady	: {
-				fnSetter	: function(mValue){if (Object.isFunction(mValue)) return mValue;}
+			fnOnReady : {
+				fnSetter : function(mValue) {
+					if (Object.isFunction(mValue)) {
+						this.observe('ready', mValue);
+						return mValue;
+					};
+				}.bind(this)
+			},
+			PLUGINS : {
+				fnSetter : function(hPluginConfig) {
+					// Check if the plugins value has been set
+					if (this.CONFIG.PLUGINS.mValue) {
+						throw "Can't set the PLUGINS config value twice.";
+					}
+					
+					// Plug them in
+					Object.keys(hPluginConfig).each(
+						function(sPluginName) {
+							this.plug(sPluginName, hPluginConfig[sPluginName]);
+						}.bind(this)
+					);
+					
+					return hPluginConfig;
+				}.bind(this)
 			}
 		}, this.CONFIG || {});
 
-		this.ATTACHMENTS	= Object.extend({
-			'default'	: this.getNode.bind(this)
+		this.PLUGINS = {};
+		
+		this.ATTACHMENTS = Object.extend({
+			'default' : this.getNode.bind(this)
 		}, this.ATTACHMENTS || {});
 		
 		// Parameters
-		var	oArgumentData	= Reflex_Template.parseArguments($A(arguments));
+		var	oArgumentData = Reflex_Template.parseArguments($A(arguments));
 
 		// Init the DOM
 		this._buildUI();
@@ -41,7 +64,7 @@ Reflex_Component	= Class.create({
 		for (var i=0, j=oArgumentData.aChildren.length; i < j; i++) {
 			this.appendChild(oArgumentData.aChildren[i]);
 		}
-
+		
 		// Set Config
 		this.setConfig(oArgumentData.oConfig);
 
@@ -79,37 +102,8 @@ Reflex_Component	= Class.create({
 	},
 
 	_onReady	: function () {
-		var	fnOnReady	= this.get('fnOnReady');
-		if (fnOnReady) {
-			setTimeout(fnOnReady, 0);
-		}
-	},
-
-	// setConfig(): Public API to set the Config of this Component
-	setConfig	: function (oConfig) {
-		for (var sAttribute in oConfig) {
-			if (oConfig.hasOwnProperty(sAttribute)) {
-				this.set(sAttribute, oConfig[sAttribute]);
-			}
-		}
-	},
-
-	// set(): Sets an individual Config record
-	set	: function (sAttribute, mValue) {
-		if (sAttribute in this.CONFIG) {
-			mValue	= (typeof this.CONFIG[sAttribute].fnSetter === 'function') ? this.CONFIG[sAttribute].fnSetter(mValue) : mValue;
-			if (typeof mValue !== 'undefined') {
-				this.CONFIG[sAttribute].mValue	= mValue;
-			}
-		}
-	},
-
-	// set(): Gets an individual Config record
-	get	: function (sAttribute) {
-		if (sAttribute in this.CONFIG) {
-			return (typeof this.CONFIG[sAttribute].fnGetter === 'function') ? this.CONFIG[sAttribute].fnGetter(this.CONFIG[sAttribute].mValue) : this.CONFIG[sAttribute].mValue;
-		}
-		return null;
+		// Fire the 'ready' event asynchronously
+		setTimeout(this.fire.bind(this, 'ready'), 0);
 	},
 
 	appendChild	: function (mChild) {
@@ -173,3 +167,7 @@ Reflex_Component._parseChildReflexComponent	= function (mNodeContainer) {
 if (Reflex_Template && Reflex_Template.aChildNodeParsers && Reflex_Template.aChildNodeParsers.indexOf(Reflex_Template.aChildNodeParsers) === -1) {
 	Reflex_Template.aChildNodeParsers.unshift(Reflex_Component._parseChildReflexComponent);
 }
+
+Reflex.mixin(Reflex_Component, Observable);
+Reflex.mixin(Reflex_Component, Configurable);
+Reflex.mixin(Reflex_Component, Pluginable);

@@ -16,7 +16,7 @@ var Control_Field_Text_AJAX	= Class.create(/* extends */ Control_Field,
 		this._oFilter	= new Filter(oDatasetAjax);
 		
 		// Add filter field for the search term 
-		this._oFilter.addFilter(Control_Field_Text_AJAX.FILTER_FIELD_SEARCH_TERM, {iType: Filter.FILTER_TYPE_VALUE})
+		this._oFilter.addFilter(Control_Field_Text_AJAX.FILTER_FIELD_SEARCH_TERM, {iType: Filter.FILTER_TYPE_VALUE});
 		
 		// Create the DOM Elements
 		this.oControlOutput.oEdit	= $T.input({type: 'text'})
@@ -128,10 +128,12 @@ var Control_Field_Text_AJAX	= Class.create(/* extends */ Control_Field,
 	
 	// Private
 	
-	_valueChange	: function()
+	_valueChange	: function(oEvent)
 	{
 		this.validate();
+		this.fire('change', oEvent);
 		
+		// Kept for backwards compatibility
 		for (var i = 0; i < this._aOnChangeCallbacks.length; i++)
 		{
 			this._aOnChangeCallbacks[i]();
@@ -209,6 +211,7 @@ var Control_Field_Text_AJAX	= Class.create(/* extends */ Control_Field,
 		this._sLastSearchTerm	= this._hDisplayValues[i];
 		this.setValue(i);
 		this._hideResults();
+		this.fire('select', oEvent);
 		
 		// Invoke on select callbacks
 		for (var i = 0; i < this._aOnSelectCallbacks.length; i++)

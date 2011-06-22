@@ -76,9 +76,12 @@ var Control_Field_RadioButton	= Class.create(/* extends */ Control_Field,
 		this.oControlOutput.oEdit.removeEventListener('keyup'	, this.aEventHandlers.fnOnChange, false);
 	},
 	
-	_valueChanged	: function()
+	_valueChanged	: function(oEvent)
 	{
 		this.validate();
+		this.fire('change', oEvent);
+		
+		// Kept for backwards compatibility
 		for (var i = 0; i < this._aOnChangeCallbacks.length; i++)
 		{
 			this._aOnChangeCallbacks[i](this);

@@ -38,11 +38,13 @@ var Control_Field_Checkbox	= Class.create(/* extends */ Control_Field,
 		this.oControlOutput.oView.innerHTML	= (Number(mValue)) ? 'Yes' : 'No';
 	},
 	
+	// Deprecated: Kept for backwards compatibility
 	addOnChangeCallback	: function(fnCallback)
 	{
 		this._aOnChangeCallbacks.push(fnCallback);
 	},
 	
+	// Deprecated: Kept for backwards compatibility
 	removeOnChangeCallback	: function(fnCallback)
 	{
 		var i	= this._aOnChangeCallbacks.indexOf(fnCallback);
@@ -58,14 +60,12 @@ var Control_Field_Checkbox	= Class.create(/* extends */ Control_Field,
 		this.aEventHandlers.fnOnChange	= this._valueChanged.bind(this);
 		
 		// NOTE: This is commented out because the change event was firing twice in quick succession
-		//this.oControlOutput.oEdit.addEventListener('click'	, this.aEventHandlers.fnOnChange, false);
 		this.oControlOutput.oEdit.addEventListener('change'	, this.aEventHandlers.fnOnChange, false);
 		this.oControlOutput.oEdit.addEventListener('keyup'	, this.aEventHandlers.fnOnChange, false);
 	},
 	
 	removeEventListeners	: function()
 	{
-		//this.oControlOutput.oEdit.removeEventListener('click'	, this.aEventHandlers.fnOnChange, false);
 		this.oControlOutput.oEdit.removeEventListener('change'	, this.aEventHandlers.fnOnChange, false);
 		this.oControlOutput.oEdit.removeEventListener('keyup'	, this.aEventHandlers.fnOnChange, false);
 	},
@@ -85,9 +85,12 @@ var Control_Field_Checkbox	= Class.create(/* extends */ Control_Field,
 		return this.oControlOutput.oEdit.hasAttribute('disabled');
 	},
 	
-	_valueChanged	: function()
+	_valueChanged	: function(oEvent)
 	{
 		this.validate();
+		this.fire('change', oEvent);
+		
+		// Deprecated: Kept for backwards compatibility
 		for (var i = 0; i < this._aOnChangeCallbacks.length; i++)
 		{
 			this._aOnChangeCallbacks[i](this);

@@ -59,7 +59,7 @@ class JSON_Handler {
 		
 		// Determine the exception message
 		$aExceptionInterfaces = class_implements($oException);
-		if (isset($aInterfaces['JSON_Handler_Exception'])) {
+		if (isset($aExceptionInterfaces['JSON_Handler_Exception'])) {
 			// JSON_Handler_Exception exceptions have a friendly (non-god users) and detailed (god users) message
 			$sMessage = ($bUserIsGod ? $oException->getDetailedMessage() : $oException->getFriendlyMessage());
 		} else {

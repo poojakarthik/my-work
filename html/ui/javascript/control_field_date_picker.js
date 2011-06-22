@@ -98,7 +98,9 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		var sDate	= oDate.$format(this._sDateFormat);
 		this.setElementValue(sDate);
 		this.validate();
+		this.fire('change');
 		
+		// Kept for backwards compatibility
 		for (var i = 0; i < this._aOnChangeCallbacks.length; i++)
 		{
 			this._aOnChangeCallbacks[i]();
@@ -140,17 +142,12 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 	addEventListeners	: function()
 	{
 		this.aEventHandlers					= {};
-		//this.aEventHandlers.fnValueChange	= this._valueChange.bind(this);
 		this.aEventHandlers.fnOpenPicker	= this._showDatePicker.bind(this);
-		
-		//this.oControlOutput.oHidden.addEventListener('change' ,this.aEventHandlers.fnValueChange, false);
-		//this.oControlOutput.oHidden.addEventListener('change' ,this.aEventHandlers.fnValueChange, false);
 		this.oControlOutput.oIcon.addEventListener('click' ,this.aEventHandlers.fnOpenPicker, false);
 	},
 	
 	removeEventListeners	: function()
 	{
-		//this.oControlOutput.oInput.removeEventListener('change'	, this.aEventHandlers.fnValidate, false);
 		this.oControlOutput.oIcon.removeEventListener('click'	, this.aEventHandlers.fnOpenPicker, false);
 	},
 	
@@ -158,16 +155,6 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 	{
 		this._aOnChangeCallbacks.push(fnCallback);
 	},
-	
-	/*_valueChange	: function()
-	{
-		this.validate();
-		
-		for (var i = 0; i < this._aOnChangeCallbacks.length; i++)
-		{
-			this._aOnChangeCallbacks[i]();
-		}
-	},*/
 	
 	disableInput	: function()
 	{

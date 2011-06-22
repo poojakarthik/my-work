@@ -633,3 +633,5 @@ Control_Field.factory	= function(sType, oDefinition)
 	
 	return oControlField;
 };
+
+Reflex.mixin(Control_Field, Observable);

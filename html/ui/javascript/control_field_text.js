@@ -60,10 +60,12 @@ var Control_Field_Text	= Class.create(/* extends */ Control_Field,
 		this._aOnChangeCallbacks.push(fnCallback);
 	},
 	
-	_valueChange	: function()
+	_valueChange	: function(oEvent)
 	{
 		this.validate();
+		this.fire('change', oEvent);
 		
+		// Kept for backwards compatibility
 		for (var i = 0; i < this._aOnChangeCallbacks.length; i++)
 		{
 			this._aOnChangeCallbacks[i]();

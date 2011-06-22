@@ -139,10 +139,12 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 		}
 	},
 	
-	_valueChange	: function()
+	_valueChange	: function(oEvent)
 	{
 		this.validate();
+		this.fire('change', oEvent);
 		
+		// Kept for backwards compatibility
 		for (var i = 0; i < this._aOnChangeCallbacks.length; i++)
 		{
 			this._aOnChangeCallbacks[i]();
