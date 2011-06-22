@@ -12445,6 +12445,129 @@ div.component-collections-scenario > table.reflex
 
 /************************** END - COMPONENT Contract Details - END **************************/
 
+
+/************************** START - Validation Error Popup - START **************************/
+
+.validation-error-content {
+	margin	: 0.5em 0.5em 0em 0.5em;
+}
+
+.validation-error-content > ul {
+	margin	: 0.25em 0em;
+}
+
+/************************** END - Validation Error Popup - END **************************/
+
+/************************** START - Control - START **************************/
+
+.control.mandatory input[type='text'][disabled],
+.control.mandatory input[type='number'][disabled],
+.control.mandatory input[type='date'][disabled],
+.control.mandatory select[disabled],
+.control.mandatory textarea[disabled],
+.control.invalid input[type='text'][disabled],
+.control.invalid input[type='number'][disabled],
+.control.invalid input[type='date'][disabled],
+.control.invalid select[disabled],
+.control.invalid textarea[disabled],
+.control.valid input[type='text'][disabled],
+.control.valid input[type='number'][disabled],
+.control.valid input[type='date'][disabled],
+.control.valid select[disabled],
+.control.valid textarea[disabled] {
+	background-color	: #EFEBE7;
+	color				: #888;
+}
+
+.control.mandatory input,
+.control.mandatory select,
+.control.mandatory textarea {
+	background	: #fff;
+	color		: #111;
+	border		: .1em solid #da8;
+}
+
+.control.invalid input,
+.control.invalid select,
+.control.invalid textarea {
+	background	: #ffecf0;
+	color		: #111;
+	border		: .1em solid #d30;
+}
+
+.control.valid input,
+.control.valid select,
+.control.valid textarea {
+	background		: #ecfff0;
+	color			: #111;
+	border-color	:   #33DD00;
+}
+
+.control-validation-error {
+	position			: fixed;
+	display				: none !important;
+	max-width			: 20em;
+	height				: auto;
+	background			: rgba(255, 236, 240, 0.9);
+	color				: #111;
+	border				: .1em solid #d30;
+	border-radius		: 4px;
+	-moz-border-radius	: 4px;
+	padding				: 0.25em;
+	z-index				: 1;
+	white-space			: normal;
+}
+
+.control.invalid:hover > .control-validation-error:not(:empty) {
+	display	: block	!important;
+}
+
+.control.control-textarea > span {
+	white-space	: pre;
+}
+
+.control-text-ajax-overlay
+{
+	position			: absolute;
+	padding				: 0.5em;
+	background-color	: #fff;
+	border				: solid 1px black;
+	z-index				: 45;
+
+	-moz-box-sizing		: border-box;
+	-moz-border-radius	: 0.25em;
+
+	-webkit-box-sizing		: border-box;
+	-webkit-border-radius	: 0.25em;
+}
+
+table.control-field-text-ajax-result-table
+{
+	border-spacing	: 0;
+	width			: 100%;
+}
+
+table.control-text-ajax-result-table > tbody > tr.highlighted-row td.control-text-ajax-result-column
+{
+	background-color	: #aaa;
+}
+
+table.control-text-ajax-result-table > tbody > tr > td.control-text-ajax-result-column
+{
+	cursor				: pointer;
+	font-size			: 10pt;
+	color				: #000;
+	background-color	: #fff;
+}
+
+.control > input.text-ajax-input
+{
+	-moz-box-sizing		: border-box;
+	-webkit-box-sizing	: border-box;
+}
+
+/************************** END - Control - END **************************/
+
 /************************** START - Property List - START **************************/
 /* This is designed to work on Definition Lists, but should work anywhere (extra classes required for non-DLs) */
 .reflex-propertylist {

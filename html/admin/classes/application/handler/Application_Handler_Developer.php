@@ -195,6 +195,45 @@ class Application_Handler_Developer extends Application_Handler
 				)
 			);*/
 			
+			$arrFunctions[]	= self::_stdClassFactory(
+				array (
+					'strName'	=> 'New Control Field',
+					'strType'	=> self::URL_TYPE_JS,
+					'strURL'	=> 'JsAutoLoader.loadScript(
+										["form.js",
+										"control.js",
+										"control_text.js",
+										"control_select.js",
+										"control_checkbox.js",
+										"control_radio.js",
+										"component_date_picker.js",
+										"control_datetime.js",
+										"control_number.js",
+										"control_password.js",
+										"control_textarea.js",
+										"control_hidden.js",
+										"filter.js",
+										"sort.js",
+										"dataset_ajax.js",
+										"control_text_ajax.js",
+										"developer_control.js"], 
+										function() {
+											var oLoading = new Reflex_Popup.Loading();
+											oLoading.display();
+											var oPopup = Developer_Control.createAsPopup(
+												{
+													onready: function(oLoading) {
+														oPopup.display();
+														oLoading.hide();
+													}.curry(oLoading)
+												}
+											);
+										}, 
+										true
+									);'
+				)
+			);
+			
 			$arrDetailsToRender = array();
 			$arrDetailsToRender['arrFunctions']	= $arrFunctions;
 			
