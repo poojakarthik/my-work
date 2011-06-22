@@ -12375,3 +12375,142 @@ div.component-collections-scenario > table.reflex
 }
 
 /************************** END - Popup Email Queue Email Preview Send - END **************************/
+
+
+/************************** START - Account Service List: Contracts - START **************************/
+.account-service-list-contract {
+	font-size	: 0.8em;
+	margin-left	: 0.25em;
+}
+
+.account-service-list-contract-ended {
+	
+}
+
+.account-service-list-contract-breached {
+	
+}
+
+.account-service-list-contract .icon {
+	width			: 12px;
+	height			: 12px;
+	vertical-align	: text-top;
+	margin-right	: 0.25em;
+}
+
+.account-service-list-contract-end {
+	font-style	: italic;
+}
+.account-service-list-contract-ended .account-service-list-contract-end {
+	font-style	: normal;
+}
+.account-service-list-contract-breached .account-service-list-contract-end {
+	color	: #eb364e;
+}
+
+/************************** END - Account Service List: Contracts - END **************************/
+
+/************************** START - COMPONENT Contract Details - START **************************/
+
+.component-service-contract-details {
+	padding	: 0.5em 0.5em 0 0.5em;
+}
+
+.component-service-contract-details p {
+	margin	: 0;
+}
+
+.component-service-contract-details > * + .component-section {
+	margin-top	: 0.5em;
+}
+
+.component-service-contract-details-contract-payout {
+	padding			: 0 !important;
+	border-top		: 1px solid rgba(0, 0, 0, 0.2);
+	border-bottom	: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.component-service-contract-details-contract-payout > .reflex-propertylist::before {
+	width				: 40%;
+	border-right		: 1px solid rgba(0, 0, 0, 0.2);
+	background-image	: -moz-linear-gradient(top, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.1));
+}
+
+.component-service-contract-details-contract-payout > .reflex-propertylist > dt {
+	width	: 40%;
+}
+.component-service-contract-details-contract-payout > .reflex-propertylist > dd {
+	width	: 60%;
+}
+
+/************************** END - COMPONENT Contract Details - END **************************/
+
+/************************** START - Property List - START **************************/
+/* This is designed to work on Definition Lists, but should work anywhere (extra classes required for non-DLs) */
+.reflex-propertylist {
+	position	: relative;
+	overflow	: auto;
+
+	box-sizing		: border-box;
+	-moz-box-sizing	: border-box;
+}
+
+.reflex-propertylist::before {
+	/* Draws the key background */
+	content		: '';
+	position	: absolute;
+	top			: 0;
+	left		: 0;
+	width		: 30%;
+	height		: 100%;
+
+	/*border-left		: 1px solid rgba(0, 0, 0, 0.3);*/
+	border-right		: 1px solid rgba(0, 0, 0, 0.3);
+	background-image	: -moz-linear-gradient(top, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2));
+
+	box-sizing		: border-box;
+	-moz-box-sizing	: border-box;
+}
+
+.reflex-propertylist > .reflex-propertylist-key,
+dl.reflex-propertylist > dt {
+	/* Key/Term */
+	float	: left;
+	clear	: both;
+	width	: 30%;
+
+	padding			: 0.2em;
+	padding-left	: 0.5em;
+	padding-right	: 0.5em;
+	font-weight		: bold;
+	text-shadow		: 0 1px 0 #fff;
+	text-align		: right;
+	vertical-align	: top;
+
+	box-sizing		: border-box;
+	-moz-box-sizing	: border-box;
+}
+
+.reflex-propertylist > .reflex-propertylist-value,
+dl.reflex-propertylist > dd {
+	/* Value */
+	margin	: 0;
+	width	: 70%;
+	float	: right;
+	padding	: 0.2em;
+	vertical-align	: top;
+
+	box-sizing		: border-box;
+	-moz-box-sizing	: border-box;
+}
+
+.reflex-propertylist > .reflex-propertylist-key > *,
+dl.reflex-propertylist > dt > * {
+	vertical-align	: top;
+}
+.reflex-propertylist > .reflex-propertylist-value > *,
+dl.reflex-propertylist > dd > * {
+	vertical-align	: top;
+}
+
+/************************** END - Property List - END **************************/
