@@ -12566,6 +12566,10 @@ table.control-text-ajax-result-table > tbody > tr > td.control-text-ajax-result-
 	-webkit-box-sizing	: border-box;
 }
 
+table.reflex tbody tr .control.control-datetime > input {
+	width : auto !important;
+}
+
 /************************** END - Control - END **************************/
 
 /************************** START - Property List - START **************************/
