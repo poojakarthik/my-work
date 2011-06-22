@@ -142,6 +142,23 @@ Reflex_Component	= Class.create({
 			throw "This Component does not have a default attachment node"
 		}
 		return oAttachmentNode.removeChild(Reflex_Template.extractNode(mChild));
+	},
+
+	select	: function () {
+		var	oNode	= this.getAttachmentNode();
+		return oNode.select.apply(oNode, $A(arguments));
+	},
+
+	_select	: function () {
+		return this.NODE.select.apply(this.NODE, $A(arguments));
+	},
+
+	$$	: function () {
+		return this.select.apply(this, $A(arguments));
+	},
+
+	_$$	: function () {
+		return this._select.apply(this, $A(arguments));
 	}
 });
 
