@@ -11899,6 +11899,8 @@ div.component-collections-scenario > table.reflex
 
 .component-section-header,
 .component-section-footer {
+	width	: 100%;
+	
 	display	: -webkit-box;
 	display	: -moz-box;
 	display	: box;
