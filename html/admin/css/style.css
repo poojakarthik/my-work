@@ -12430,10 +12430,14 @@ div.component-collections-scenario > table.reflex
 	border-bottom	: 1px solid rgba(0, 0, 0, 0.2);
 }
 
+.component-service-contract-details-contract-payout > .reflex-propertylist {
+	margin	: 0;
+}
 .component-service-contract-details-contract-payout > .reflex-propertylist::before {
 	width				: 40%;
 	border-right		: 1px solid rgba(0, 0, 0, 0.2);
 	background-image	: -moz-linear-gradient(top, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.1));
+	background-image	: -webkit-linear-gradient(top, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.1));
 }
 
 .component-service-contract-details-contract-payout > .reflex-propertylist > dt {
@@ -12581,10 +12585,17 @@ table.reflex tbody tr .control.control-datetime > input {
 	box-sizing		: border-box;
 	-moz-box-sizing	: border-box;
 }
+/*.reflex-propertylist::after {
+	content		: '\0020';
+	display		: block;
+	height		: 0;
+	overflow	: hidden;
+	clear		: both;
+}*/
 
 .reflex-propertylist::before {
 	/* Draws the key background */
-	content		: '';
+	content		: '\0020';
 	position	: absolute;
 	top			: 0;
 	left		: 0;
@@ -12594,6 +12605,7 @@ table.reflex tbody tr .control.control-datetime > input {
 	/*border-left		: 1px solid rgba(0, 0, 0, 0.3);*/
 	border-right		: 1px solid rgba(0, 0, 0, 0.3);
 	background-image	: -moz-linear-gradient(top, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2));
+	background-image	: -webkit-linear-gradient(top, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2));
 
 	box-sizing		: border-box;
 	-moz-box-sizing	: border-box;
@@ -12603,7 +12615,7 @@ table.reflex tbody tr .control.control-datetime > input {
 dl.reflex-propertylist > dt {
 	/* Key/Term */
 	float	: left;
-	clear	: both;
+	clear	: right;
 	width	: 30%;
 
 	padding			: 0.2em;
