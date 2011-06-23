@@ -11867,7 +11867,8 @@ div.component-collections-scenario > table.reflex
 /************************** START - Component Section - START **************************/
 
 .component-section {
-	display	: -webkit-box;
+	display	: block;
+	/*display	: -webkit-box;
 	display	: -moz-box;
 	display	: box;
 
@@ -11881,7 +11882,7 @@ div.component-collections-scenario > table.reflex
 
 	-webkit-box-pack	: end;
 	-moz-box-pack		: end;
-	box-pack			: end;
+	box-pack			: end;*/
 
 	width	: 100%;
 }
@@ -11891,9 +11892,9 @@ div.component-collections-scenario > table.reflex
 }
 
 .component-section-body {
-	-webkit-box-flex	: 1;
+	/*-webkit-box-flex	: 1;
 	-moz-box-flex		: 1;
-	box-flex			: 1;
+	box-flex			: 1;*/
 }
 
 .component-section-header,
@@ -12424,27 +12425,27 @@ div.component-collections-scenario > table.reflex
 	margin-top	: 0.5em;
 }
 
-.component-service-contract-details-contract-payout {
-	padding			: 0 !important;
-	border-top		: 1px solid rgba(0, 0, 0, 0.2);
-	border-bottom	: 1px solid rgba(0, 0, 0, 0.2);
+.component-service-contract-details-penalties-payout {
+	padding			: 0								!important;
+	border-top		: 1px solid rgba(0, 0, 0, 0.2)	!important;
+	border-bottom	: 1px solid rgba(0, 0, 0, 0.2)	!important;
 }
 
-.component-service-contract-details-contract-payout > .reflex-propertylist {
-	margin	: 0;
+.component-service-contract-details-penalties-payout > .reflex-propertylist {
+	margin	: 0	!important;
 }
-.component-service-contract-details-contract-payout > .reflex-propertylist::before {
-	width				: 40%;
-	border-right		: 1px solid rgba(0, 0, 0, 0.2);
-	background-image	: -moz-linear-gradient(top, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.1));
-	background-image	: -webkit-linear-gradient(top, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.1));
+.component-service-contract-details-penalties-payout > .reflex-propertylist::before {
+	width				: 35%																	!important;
+	border-right		: 1px solid rgba(0, 0, 0, 0.2)											!important;
+	background-image	: -moz-linear-gradient(top, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.1))	!important;
+	background-image	: -webkit-linear-gradient(top, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.1))	!important;
 }
 
-.component-service-contract-details-contract-payout > .reflex-propertylist > dt {
-	width	: 40%;
+.component-service-contract-details-penalties-payout > .reflex-propertylist > dt {
+	width	: 35%	!important;
 }
-.component-service-contract-details-contract-payout > .reflex-propertylist > dd {
-	width	: 60%;
+.component-service-contract-details-penalties-payout > .reflex-propertylist > dd {
+	width	: 65%	!important;
 }
 
 /************************** END - COMPONENT Contract Details - END **************************/
@@ -12578,14 +12579,19 @@ table.reflex tbody tr .control.control-datetime > input {
 
 /************************** START - Property List - START **************************/
 /* This is designed to work on Definition Lists, but should work anywhere (extra classes required for non-DLs) */
+/*.reflex-propertylist * {
+	-moz-box-sizing	: content-box !important;
+}*/
+
 .reflex-propertylist {
 	position	: relative;
-	overflow	: auto;
+	overflow	: hidden;
 
 	box-sizing		: border-box;
 	-moz-box-sizing	: border-box;
 }
-/*.reflex-propertylist::after {
+/*
+.reflex-propertylist::after {
 	content		: '\0020';
 	display		: block;
 	height		: 0;
@@ -12615,7 +12621,7 @@ table.reflex tbody tr .control.control-datetime > input {
 dl.reflex-propertylist > dt {
 	/* Key/Term */
 	float	: left;
-	clear	: right;
+	clear	: both;
 	width	: 30%;
 
 	padding			: 0.2em;
@@ -12625,6 +12631,7 @@ dl.reflex-propertylist > dt {
 	text-shadow		: 0 1px 0 #fff;
 	text-align		: right;
 	vertical-align	: top;
+	margin			: 0;
 
 	box-sizing		: border-box;
 	-moz-box-sizing	: border-box;
