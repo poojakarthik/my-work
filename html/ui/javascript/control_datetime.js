@@ -72,6 +72,10 @@ var Control_Datetime = Class.create(Control, {
 	},
 	
 	_setValue : function(mValue) {
+		if (!mValue || mValue == '') {
+			return;
+		}
+		
 		var sDate = null;
 		if (mValue instanceof Date) {
 			// Date object
