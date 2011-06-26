@@ -484,28 +484,41 @@ var Filter	= Class.create
 		var oContent		= this._oFilterOptionsElement.select('div.filter-overlay-options-content').first();
 		oContent.innerHTML	= '';
 		
-		var oScrollOffsets = document.viewport.getScrollOffsets();
 		if (oParentElement)
 		{
 			// Attach and position relative to the given element
+			// Get the position
 			var iValueT		= 0;
 			var iValueL		= 0;
 			var oElement	= oParentElement;
 			do 
 			{
-				iValueT += oElement.offsetTop || 0;
-				iValueL += oElement.offsetLeft || 0;
-				oElement = oElement.offsetParent;
+				iValueT 	+= oElement.offsetTop || 0;
+				iValueL 	+= oElement.offsetLeft || 0;
+				oElement 	= oElement.offsetParent;
 			} 
 			while (oElement);
 			
-			this._oFilterOptionsElement.style.left	= (oEvent.clientX - iValueL + iDisplayOffsetX + oScrollOffsets.left) + 'px';
-			this._oFilterOptionsElement.style.top	= (oEvent.clientY - iValueT + iDisplayOffsetY + oScrollOffsets.top) + 'px';
+			// Get the scroll offset
+			var oElement	= oParentElement;
+			var iScrollT	= 0;
+			var iScrollL	= 0;
+			do 
+			{
+				iScrollL	+= oElement.scrollLeft || 0;
+				iScrollT	+= oElement.scrollTop || 0;
+				oElement 	= oElement.parentNode;
+			}
+			while (oElement);
+			
+			this._oFilterOptionsElement.style.left	= (oEvent.clientX - iValueL + iDisplayOffsetX + iScrollL) + 'px';
+			this._oFilterOptionsElement.style.top	= (oEvent.clientY - iValueT + iDisplayOffsetY + iScrollT) + 'px';
 			oParentElement.appendChild(this._oFilterOptionsElement);
 		}
 		else
 		{
 			// Attach and position relative to the document
+			var oScrollOffsets 						= document.viewport.getScrollOffsets();
 			this._oFilterOptionsElement.style.left	= (oEvent.clientX + iDisplayOffsetX + oScrollOffsets.left) + 'px';
 			this._oFilterOptionsElement.style.top	= (oEvent.clientY + iDisplayOffsetY + oScrollOffsets.top) + 'px';
 			document.body.appendChild(this._oFilterOptionsElement);
@@ -513,7 +526,17 @@ var Filter	= Class.create
 		
 		this._oFilterOptionsElement.sField	= sField;
 		oContent.appendChild(this._hFilters[sField].oOptionsElement);
+		
+		// Make sure the element hasn't overflown the parent
+		var iElementWidth			= this._oFilterOptionsElement.getWidth();
+		var iElementLeftmostPixel 	= parseInt(this._oFilterOptionsElement.style.left, 10) + iElementWidth;
+		var iParentWidth			= oParentElement.getWidth();
+		if (iElementLeftmostPixel > iParentWidth) {
+			this._oFilterOptionsElement.style.left = (iParentWidth - iElementWidth) + 'px';
+		}
+		
 		this._oFilterOptionsElement.show();
+		
 		oEvent.stop();
 	},
 	
