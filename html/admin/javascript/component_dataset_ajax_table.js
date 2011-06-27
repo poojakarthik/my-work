@@ -1,16 +1,33 @@
 
 var Component_Dataset_AJAX_Table = Class.create(Reflex_Component, {
-	
 	initialize : function($super) {
 		// Additional Configuration
 		this.CONFIG	= Object.extend({
-			'sTitle'					: {},
+			'sTitle'					: {
+				fnSetter : function(mValue) {
+					this.NODE.select('.component-dataset-ajax-table-title').first().innerHTML = mValue.toString().escapeHTML();
+					return mValue;
+				}.bind(this)
+			},
 			'sIcon'						: {},
 			'oPagination'				: {},
 			'oFilter'					: {},
 			'oSort'						: {},
 			'hFields'					: {},
-			'aRequiredConstantGroups'	: []
+			'bExpandable'				: {},
+			'aRequiredConstantGroups'	: {
+				fnGetter : function(mValue) {
+					return (mValue ? mValue : []);
+				}
+			},
+			oSection : {
+				fnSetter : function() {
+					throw "Cannot modify oSection.";
+				},
+				fnGetter : function() {
+					return this._oSection;
+				}.bind(this)
+			}
 		}, this.CONFIG || {});
 		
 		// Parent Constructor
@@ -22,6 +39,7 @@ var Component_Dataset_AJAX_Table = Class.create(Reflex_Component, {
 	// Public
 	
 	refresh : function() {
+		this._showLoading(true);
 		this._refreshData();
 	},
 	
@@ -72,7 +90,15 @@ var Component_Dataset_AJAX_Table = Class.create(Reflex_Component, {
 				)
 			)
 		);
-
+		
+		// Header
+		this.NODE.select('.component-section-header-text').first().appendChild(
+			$T.span(
+				$T.span({class: 'component-dataset-ajax-table-title'}),
+				$T.span({class: 'component-dataset-ajax-table-pagination-info'})
+			)
+		);
+		
 		// Bind events to the pagination buttons
 		var aBottomPageButtons 	= this.NODE.select('.component-dataset-ajax-table-paginationbutton');
 		aBottomPageButtons[0].observe('click', this._changePage.bind(this, 'firstPage'));
@@ -89,6 +115,7 @@ var Component_Dataset_AJAX_Table = Class.create(Reflex_Component, {
 		};
 		
 		this.ATTACHMENTS['header-actions'] = this._oSection.getAttachmentNode('header-actions');
+		this.ATTACHMENTS['footer-actions'] = this._oSection.getAttachmentNode('footer-actions');
 	},
 	
 	_syncUI : function(bConstantsLoaded) {
@@ -97,13 +124,12 @@ var Component_Dataset_AJAX_Table = Class.create(Reflex_Component, {
 			return;
 		}
 		
+		if (this.get('bExpandable')) {
+			this._oSection.plug('expander', Plugin_Section_Expander);
+			this._oSection.plugin('expander').createExpander();
+		}
+		
 		// Section header
-		this.NODE.select('.component-section-header-text').first().appendChild(
-			$T.span(
-				$T.span(this.get('sTitle')),
-				$T.span({class: 'component-dataset-ajax-table-pagination-info'})
-			)
-		);
 		this.NODE.select('.component-section-header-icon').first().src = this.get('sIcon');
 		
 		this.get('oPagination').setUpdateCallback(this._pageLoaded.bind(this));
@@ -202,7 +228,8 @@ var Component_Dataset_AJAX_Table = Class.create(Reflex_Component, {
 		var oControlDefinition 	= oFieldDefinition.oOption.oDefinition;
 		
 		if (!oControlDefinition) {
-			oFieldDefinition.oOption.oDefinition = {};
+			oFieldDefinition.oOption.oDefinition	= {};
+			oControlDefinition						= oFieldDefinition.oOption.oDefinition;
 		}
 		
 		if (!oControlDefinition.sLabel) {
@@ -246,7 +273,7 @@ var Component_Dataset_AJAX_Table = Class.create(Reflex_Component, {
 					var oFieldDefinition = hFields[sFieldName];
 					if (oFieldDefinition.fnCreateCell) {
 						// A cell creation function has been defined, use it 
-						oTR.appendChild(oFieldDefinition.fnCreateCell(oData, iPosition));
+						oTR.appendChild(oFieldDefinition.fnCreateCell(oData, iPosition, oResultSet.intTotalResults));
 					} else {
 						// No cell creation function defined, show the raw field value
 						var mRawValue = oData[sFieldName];
