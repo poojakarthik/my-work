@@ -530,8 +530,9 @@ var Filter	= Class.create
 		// Make sure the element hasn't overflown the parent
 		var iElementWidth			= this._oFilterOptionsElement.getWidth();
 		var iElementLeftmostPixel 	= parseInt(this._oFilterOptionsElement.style.left, 10) + iElementWidth;
-		var iParentWidth			= oParentElement.getWidth();
-		if (iElementLeftmostPixel > iParentWidth) {
+		var iParentWidth			= oParentElement.getWidth() + iScrollL;
+		if (iElementLeftmostPixel > iParentWidth)
+		{
 			this._oFilterOptionsElement.style.left = (iParentWidth - iElementWidth) + 'px';
 		}
 		
