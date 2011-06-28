@@ -36,7 +36,7 @@ var Reflex_Loading_Overlay = Class.create({
 	
 	detach : function() {
 		if (this._oElement.up()) {
-			this._oElement.removeClassName('reflex-loading-overlay-parent');
+			this._oElement.up().removeClassName('reflex-loading-overlay-parent');
 			this._oElement.remove();
 		}
 	}
