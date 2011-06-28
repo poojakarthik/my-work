@@ -79,13 +79,17 @@ var Popup_Login	= Class.create(Reflex_Popup,
 		else if (oResponse.Success)
 		{
 			// Login Successful, perform the request that failed previously then hide this popup
-			var fnRecovery	=	jQuery.json.jsonFunction(
-									this._fnOnSuccess,
-									this._fnOnFailure,
-									this._sHandler,
-									this._sMethod
-								);
-			fnRecovery.apply(null, this._aParameters);
+			if (!this.fire('beforerecovery').isCancelled())
+			{
+				var fnRecovery	=	jQuery.json.jsonFunction(
+										this._fnOnSuccess,
+										this._fnOnFailure,
+										this._sHandler,
+										this._sMethod
+									);
+				fnRecovery.apply(null, this._aParameters);
+			}
+			
 			this.hide();
 		}
 		else
@@ -105,3 +109,5 @@ var Popup_Login	= Class.create(Reflex_Popup,
 	}
 });
 
+Reflex.mixin(Popup_Login, Observable);
+Reflex.mixin(Popup_Login, Pluginable);

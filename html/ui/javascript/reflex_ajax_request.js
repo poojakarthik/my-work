@@ -62,13 +62,26 @@ var Reflex_AJAX_Request = Class.create({
 		// Decode & store the response
 		var oResponseData = oResponse.responseText.evalJSON();
 		if (!oResponseData || oResponseData.ERROR) {
-			Reflex_Popup.alert(
-				'There was an error accessing the server. Please contact YBS for assistance.', 
-				{
-					sTitle			: 'Error', 
-					sDebugContent	: oResponseData.ERROR
-				}
-			);
+			if (oResponseData.ERROR == 'LOGIN') {
+				// Authentication error, special case due to backwards compatibility with jQuery.json.jsonFunction
+				JsAutoLoader.loadScript(
+					['javascript/popup_login.js', 
+					'javascript/plugin_login_reflex_ajax.js'], 
+					function() {
+						var oPopup = new Popup_Login(oResponseData.sHandler, oResponseData.sMethod, oResponseData.aParameters);
+						oPopup.plug('reflex_ajax', Plugin_Login_Reflex_AJAX);
+						oPopup.plugin('reflex_ajax').setReflexAJAXRequest(this);
+					}.bind(this)
+				);
+			} else {
+				Reflex_Popup.alert(
+					'There was an error accessing the server. Please contact YBS for assistance.', 
+					{
+						sTitle			: 'Error', 
+						sDebugContent	: oResponseData.ERROR
+					}
+				);
+			}
 			return;
 		}
 		
