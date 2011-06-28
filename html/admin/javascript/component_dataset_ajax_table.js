@@ -38,9 +38,15 @@ var Component_Dataset_AJAX_Table = Class.create(Reflex_Component, {
 	
 	// Public
 	
-	refresh : function() {
+	refresh : function(bGoToFirstPage) {
 		this._showLoading(true);
-		this._refreshData();
+		if (bGoToFirstPage) {
+			this.get('oSort').refreshData(true);
+			this.get('oFilter').refreshData(true);
+			this.get('oPagination').firstPage();
+		} else {
+			this._refreshData();
+		}
 	},
 	
 	// Protected
@@ -295,6 +301,8 @@ var Component_Dataset_AJAX_Table = Class.create(Reflex_Component, {
 			this._bFirstLoadComplete = true;
 			this._onReady();
 		}
+		
+		this.fire('load');
 	},
 	
 	_showLoading : function(bShow) {
