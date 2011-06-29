@@ -11,6 +11,9 @@ var Control_Radio = Class.create(Control, {
 					}
 					this._updateViewElement();
 					return bChecked;
+				}.bind(this),
+				fnGetter : function() {
+					return !!this._oInput.checked;
 				}.bind(this)
 			}
 		}, this.CONFIG || {});
@@ -72,7 +75,7 @@ var Control_Radio = Class.create(Control, {
 	},
 	
 	_radioChange : function(oEvent) {
-		this.set('bChecked', !!this._oInput.checked);
+		//this.set('bChecked', !!this._oInput.checked);
 		this.fire('change');
 	}
 });
