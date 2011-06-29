@@ -291,7 +291,7 @@ var Component_Dataset_AJAX_Table = Class.create(Reflex_Component, {
 				oTBody.appendChild(oTR);
 			}
 		}
-
+		
 		this._updatePagination();
 		this._updateSorting();
 		this._updateFilters();
@@ -306,6 +306,7 @@ var Component_Dataset_AJAX_Table = Class.create(Reflex_Component, {
 	},
 	
 	_showLoading : function(bShow) {
+		this._bLoading = bShow;
 		if (!this._bFirstLoadComplete) {
 			return;
 		} else if (bShow) {
@@ -409,6 +410,10 @@ var Component_Dataset_AJAX_Table = Class.create(Reflex_Component, {
 	},
 	
 	_changePage	: function(sFunction) {
+		if (this._bLoading) {
+			return;
+		}
+		
 		this._showLoading(true);
 		this.get('oPagination')[sFunction]();
 	}
