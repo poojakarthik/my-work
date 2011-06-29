@@ -287,7 +287,7 @@
 					else
 					{
 						// Error
-						throw new Exception("Error retrieving contents of '{$strCurrentPath}': ".$php_errormsg());
+						throw new Exception("Error retrieving contents of '{$strCurrentPath}': ".$php_errormsg);
 					}
 				}
 				else
