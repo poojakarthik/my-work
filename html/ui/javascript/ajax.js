@@ -467,15 +467,12 @@ function VixenAjaxClass()
 			if (objObject.HtmlMode)
 			{
 				//debugger;
-				
 				// HACK: HTML5 dictates that <script> tags inserted using innerHTML (which these methods use) should not
 				//		 be parsed, though we kind of depend on it.  So we're going to be tricky and extract the JS, and execute
 				//		 it after the innerHTML has been set.  It has only worked to date, because Firefox < 4.0b6 didn't care
-				var	oTempDIV		= document.createElement('div');
-				oTempDIV.innerHTML	= strReply;
-				var	aScripts		= $A(oTempDIV.select('script'));
-				aScripts.each(Element.remove);
-				strReply			= oTempDIV.innerHTML;
+				var	oExtractedScriptsResult	= _extractScriptElements(strReply),
+					aScripts				= oExtractedScriptsResult.aScriptElements;
+				strReply	= oExtractedScriptsResult.sHTML;
 				
 				switch (objObject.TargetType)
 				{
@@ -518,55 +515,68 @@ function VixenAjaxClass()
 					default:
 						ajaxError(null, strReply);
 				}
-				
+
 				// HACK: (continued) Execute any scripts (by attaching them to the head)
 				//debugger;
+				_injectScriptElements(aScripts);
+			}
+	}
 
-				if (aScripts.length)
-				{
-					var	oLoadingPopup	= new Reflex_Popup.Loading(),
-						aScriptActions	= [oLoadingPopup.hide.bind(oLoadingPopup)],
-						aScript;
-					for (var i = aScripts.length - 1; i >= 0; i--)
-					{
-						aScript	= aScripts[i];
-						if (aScript.src)
-						{
-							// External Script
-							//alert("External Script: " + aScript.src);
-							aScriptActions.unshift(
-								JsAutoLoader.loadScript.bind(
-									JsAutoLoader,
-									JsAutoLoader.getJavascriptPHPScripts(aScript.src),
-									aScriptActions.length ? aScriptActions.first() : null,
-									!!(aScript.src.match(/javascript\.php/i)),
-									false,
-									true	// Force reload (this should simulate the previous behaviour)
-								)
-							);
+	function _extractScriptElements(sHTML) {
+		// HACK: HTML5 dictates that <script> tags inserted using innerHTML (which these methods use) should not
+		//		 be parsed, though we kind of depend on it.  So we're going to be tricky and extract the JS, and execute
+		//		 it after the innerHTML has been set.  It has only worked to date, because Firefox < 4.0b6 didn't care
+		var	oTempDIV		= document.createElement('div');
+		oTempDIV.innerHTML	= sHTML;
+		var	aScripts		= $A(oTempDIV.select('script'));
+		aScripts.each(Element.remove);
+
+		return {
+			sHTML			: oTempDIV.innerHTML,
+			aScriptElements	: aScripts
+		};
+	}
+
+	function _injectScriptElements(aScriptElements) {
+		// HACK: (continued) Execute any scripts (by attaching them to the head)
+		if (aScriptElements.length) {
+			var	oLoadingPopup	= new Reflex_Popup.Loading(),
+				aScriptActions	= [oLoadingPopup.hide.bind(oLoadingPopup)],
+				oScript;
+			for (var i = aScriptElements.length - 1; i >= 0; i--) {
+				oScript	= aScriptElements[i];
+				if (oScript.src) {
+					// External Script
+					//alert("External Script: " + oScript.src);
+					aScriptActions.unshift(
+						JsAutoLoader.loadScript.bind(
+							JsAutoLoader,
+							JsAutoLoader.getJavascriptPHPScripts(oScript.src),
+							aScriptActions.length ? aScriptActions.first() : null,
+							!!(oScript.src.match(/javascript\.php/i)),
+							false,
+							true	// Force reload (this should simulate the previous behaviour)
+						)
+					);
+				} else if (oScript.innerHTML) {
+					// Inline Script
+					//alert("Inline Script: " + oScript.innerHTML);
+					aScriptActions.unshift((function(sJavascript, fnCallback){
+						//alert("Executing Inline Script: " + oScript.innerHTML);
+						//debugger;
+						eval(sJavascript);
+						if (Object.isFunction(fnCallback)) {
+							fnCallback();
 						}
-						else if (aScript.innerHTML)
-						{
-							// Inline Script
-							//alert("Inline Script: " + aScript.innerHTML);
-							aScriptActions.unshift((function(sJavascript, fnCallback){
-								//alert("Executing Inline Script: " + aScript.innerHTML);
-								//debugger;
-								eval(sJavascript);
-								if (Object.isFunction(fnCallback))
-								{
-									fnCallback();
-								}
-							}).curry('/*debugger;/**/'+aScript.innerHTML, aScriptActions.first()));
-						}
-					}
-
-					oLoadingPopup.display();
-
-					// Invoke the first Script
-					aScriptActions.first()();
+					}).curry('/*debugger;/**/'+oScript.innerHTML, aScriptActions.first()));
 				}
 			}
+
+			oLoadingPopup.display();
+
+			// Invoke the first Script
+			aScriptActions.first()();
+		}
 	}
 	
 	
@@ -642,17 +652,30 @@ function VixenAjaxClass()
 						alert("Command: ReplaceDivContents\nError: The container div does not exist\nContainer Div Id = '" + objInput[intKey].ContainerDivId +"'");
 						return FALSE;
 					}
+
+					var	sDIVInnerHTML	= objInput[intKey].Data;
+					//debugger;
+					// HACK: HTML5 dictates that <script> tags inserted using innerHTML (which these methods use) should not
+					//		 be parsed, though we kind of depend on it.  So we're going to be tricky and extract the JS, and execute
+					//		 it after the innerHTML has been set.  It has only worked to date, because Firefox < 4.0b6 didn't care
+					var	oExtractedScriptsResult	= _extractScriptElements(sDIVInnerHTML),
+						aScripts				= oExtractedScriptsResult.aScriptElements;
+					sDIVInnerHTML	= oExtractedScriptsResult.sHTML;
 					
 					// Create a new container div
 					var elmNewContainer = document.createElement('div');
 					elmNewContainer.setAttribute('Id', objInput[intKey].ContainerDivId);
-					elmNewContainer.innerHTML = objInput[intKey].Data;
+					elmNewContainer.innerHTML = sDIVInnerHTML;
 
 					// Retrieve the parent element of the current container div element
 					var elmParent = elmOldContainer.parentNode;
 
 					// Replace the element
 					elmParent.replaceChild(elmNewContainer, elmOldContainer);
+
+					// HACK: (continued) Execute any scripts (by attaching them to the head)
+					//debugger;
+					_injectScriptElements(aScripts);
 					break;
 				case "AppendHtmlToElement":
 					// The html code defined in objInput[intKey].Data will be Appended to the end of innerHtml of the parent element
@@ -709,6 +732,21 @@ function VixenAjaxClass()
 					break;
 			}
 		}
+	}
+
+	// There was some JS code that was trying to call this method... which never seemed to exist prior to 30/6/2011...
+	function ajaxError(oError, sReply) {
+		/* HACKHACKHACK: I would LOVE to fix errors caught by this, but FF seems to have been previously
+						silently failing on some errors (and no longer is as of ~v5).  In order to replicate this
+						shoddy functionality, we will also sliently fail..
+		*/
+	   /**/
+		if (oError) {
+			throw oError;
+		} else {
+			Reflex_Popup.alert(sReply);
+		}
+		/**/
 	}
 	
 	// AJAX handle_error

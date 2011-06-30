@@ -102,16 +102,18 @@ function VixenAccountDetailsClass()
 		this.strContainerDivId			= strContainerDivId;
 		this.bolInvoicesAndPaymentsPage = bolInvoicesAndPaymentsPage;
 		this.objAccount					= objAccount;
-		
+		/* This no longer exists as of 2011 Collections re-Engineer
 		// Register the EventListener for the WithTIO checkbox
 		var elmWithTIOCheckbox = $ID("Account.WithTIO");
 		Event.startObserving(elmWithTIOCheckbox, "click", this.WithTIOCheckboxOnClick.bind(this), true);
 		this.WithTIOCheckboxOnClick();
+		*/
 	}
 
 	// Toggles the displaying of the TIO Reference Number textbox
 	this.WithTIOCheckboxOnClick = function()
 	{
+		/* This no longer exists as of 2011 Collections re-Engineer
 		var elmWithTIOCheckbox	= $ID("Account.WithTIO");
 		var elmTIORefNum		= $ID("Account.tio_reference_number");
 		var elmLabel			= $ID("TIOLabel");
@@ -128,6 +130,7 @@ function VixenAccountDetailsClass()
 			elmTIORefNum.style.display		= "none";
 			elmLabel.innerHTML				= "With T.I.O.";
 		}
+		*/
 	}
 
 	// Prompts the user and then save the changes
