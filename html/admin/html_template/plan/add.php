@@ -607,7 +607,8 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		
 		Table()->RateGroups->Render();
 		
-		echo "<script type='text/javascript'>Vixen.RatePlanAdd.ShowRateGroupsTab()</script>";
+		//echo "<script type='text/javascript'>Vixen.RatePlanAdd.ShowRateGroupsTab()</script>";
+		//echo "<script type='text/javascript'>Vixen.RatePlanAdd.setRateGroupTabVisible(true)</script>";
 	}
 	
 	private function _RenderPlanDiscountDetails()

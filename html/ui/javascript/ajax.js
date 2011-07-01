@@ -564,10 +564,21 @@ function VixenAjaxClass()
 					aScriptActions.unshift((function(sJavascript, fnCallback){
 						//alert("Executing Inline Script: " + oScript.innerHTML);
 						//debugger;
-						eval(sJavascript);
-						if (Object.isFunction(fnCallback)) {
-							fnCallback();
-						}
+						// Do this in a non-blocking manner
+						setTimeout(function () {
+							// Catch Exceptions and log them to the console
+							try {
+								// Execute our JS
+								eval(sJavascript);
+							} catch (mException) {
+								if (console && log in console) {
+									console.log(mException);
+								}
+							}
+							if (Object.isFunction(fnCallback)) {
+								fnCallback();
+							}
+						}, 0);
 					}).curry('/*debugger;/**/'+oScript.innerHTML, aScriptActions.first()));
 				}
 			}
