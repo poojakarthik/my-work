@@ -95,7 +95,7 @@ class BillingModuleReports
  	{
  		if (method_exists($this, "_Report$strReportName"))
  		{
- 			return call_user_method("_Report$strReportName", $this);
+ 			return call_user_func(array($this, "_Report$strReportName"));
  		}
  		else
  		{
