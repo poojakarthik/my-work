@@ -48,11 +48,12 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 			$this->log(count($arrEmailAddresses) . ' different failed email address detected.');
 
 			// Escape the email address strings to prevent sql injection & prevent errors - this is a bit hacky!
-			$func = function_exists('mysql_escape_string') ? 'mysql_escape_string' : (function_exists('mysqli_escape_string') ? 'mysqli_escape_string' : 'pg_escape_string');
+			//$func = function_exists('mysql_escape_string') ? 'mysql_escape_string' : (function_exists('mysqli_escape_string') ? 'mysqli_escape_string' : 'pg_escape_string');
 			//array_walk($arrEmailAddresses, $func);
 			foreach ($arrEmailAddresses as &$strEmailAddress)
 			{
-				$strEmailAddress	= call_user_func($func, $strEmailAddress);
+				//$strEmailAddress	= call_user_func($func, $strEmailAddress);
+				$strEmailAddress	= DataAccess::getDataAccess()->refMysqliConnection->real_escape_string($strEmailAddress);
 			}
 			unset($strEmailAddress);
 

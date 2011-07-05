@@ -30,7 +30,7 @@ class Destination extends ORM_Cached
 		$aWhereLike	= array();
 		foreach ($aDescription as $sToken)
 		{
-			$aWhereLike[]	= "Description LIKE '%".mysql_escape_string($sToken)."%'";
+			$aWhereLike[]	= "Description LIKE '%".DataAccess::getDataAccess()->refMysqliConnection->real_escape_string($sToken)."%'";
 		}
 		$sWhereLike	= (count($aWhereLike)) ? implode(' OR ', $aWhereLike) : '1';
 		
