@@ -200,7 +200,7 @@ class Ticketing_Attachment
 			throw new Exception("Attachment '$id' was not found.");
 		}
 
-		$objAttachment =& new Ticketing_Attachment($selAttachments->Fetch());
+		$objAttachment = new Ticketing_Attachment($selAttachments->Fetch());
 
 		return $objAttachment;
 	}

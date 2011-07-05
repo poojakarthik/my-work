@@ -57,7 +57,7 @@ class DB_Data_Source_Handler {
 				break;
 
 			case 'soap':
-				$this->source = & new SOAPDataSource($type, $this);
+				$this->source = new SOAPDataSource($type, $this);
 				break;
 
 			default:

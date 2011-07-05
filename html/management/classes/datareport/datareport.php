@@ -218,7 +218,7 @@
 							while ($arrStatement = $selStatement->Fetch())
 							{
 								//Debug($arrStatement);
-								$oblOption =& new $arrInput['DBSelect']['ValueType']('Option', $arrStatement['Value']);
+								$oblOption = new $arrInput['DBSelect']['ValueType']('Option', $arrStatement['Value']);
 								$oblOption->setAttribute('Label', $arrStatement['Label']);
 								$oblarrValue->Push($oblOption);
 							}
@@ -227,7 +227,7 @@
 							// Does this have an ALL/IGNORE option?
 							if (is_array($arrInput['DBSelect']['IgnoreField']))
 							{
-								$oblOption =& new $arrInput['DBSelect']['ValueType']('Option', $arrInput['DBSelect']['IgnoreField']['Value']);
+								$oblOption = new $arrInput['DBSelect']['ValueType']('Option', $arrInput['DBSelect']['IgnoreField']['Value']);
 								$oblOption->setAttribute('Label', $arrInput['DBSelect']['IgnoreField']['Label']);
 								$oblarrValue->Push($oblOption);
 							}
@@ -240,7 +240,7 @@
 							// Does this have an ALL/IGNORE option?
 							if (is_array($arrInput['DBQuery']['IgnoreField']))
 							{
-								$oblOption =& new $arrInput['DBQuery']['ValueType']('Option', $arrInput['DBQuery']['IgnoreField']['Value']);
+								$oblOption = new $arrInput['DBQuery']['ValueType']('Option', $arrInput['DBQuery']['IgnoreField']['Value']);
 								$oblOption->setAttribute('Label', $arrInput['DBQuery']['IgnoreField']['Label']);
 								$oblarrValue->Push($oblOption);
 							}
@@ -257,7 +257,7 @@
 							
 							while ($arrRecord = $objRecordSet->fetch_assoc())
 							{
-								$oblOption =& new $arrInput['DBQuery']['ValueType']('Option', $arrRecord['Value']);
+								$oblOption = new $arrInput['DBQuery']['ValueType']('Option', $arrRecord['Value']);
 								$oblOption->setAttribute('Label', $arrRecord['Label']);
 								$oblarrValue->Push($oblOption);
 							}
