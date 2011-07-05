@@ -51,7 +51,7 @@ try
 		}
 		
 		// Parse the line
-		$arrLine	= split(',', $strLine);
+		$arrLine	= explode(',', $strLine);
 		$intAccount	= (int)$arrLine[0];
 		$fltAmount	= ((float)$arrLine[1] / 100);
 		

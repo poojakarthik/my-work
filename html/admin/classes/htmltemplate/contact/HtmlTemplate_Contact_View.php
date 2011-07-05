@@ -50,7 +50,7 @@ class HtmlTemplate_Contact_View extends FlexHtmlTemplate
 		}
 		
 		// Reorganise date string
-		$aDate			= split('-', $oContact->DOB);
+		$aDate			= explode('-', $oContact->DOB);
 		$sDate			= "{$aDate[2]}-{$aDate[1]}-{$aDate[0]}";		
 		$sNotSupplied	= "<span class='contact-field-null'>[ None ]</span>";
 		$sHtml			= "	<div class='section'>" .

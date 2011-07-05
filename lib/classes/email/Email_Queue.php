@@ -94,7 +94,7 @@ class Email_Queue extends ORM_Cached
 			
 			$oEmailFlex	= new Email_Flex();
 			
-			$aTo	= split(',', $oEmail->recipients);
+			$aTo	= explode(',', $oEmail->recipients);
 			foreach ($aTo as $sTo)
 			{
 				Log::getLog()->log("\trecipient: $sTo");

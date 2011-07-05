@@ -68,7 +68,7 @@ class API_Server_Request extends API_Request {
 		if (!isset($this->_aURLTokens))
 		{
 			
-			$aTokens	= split(API_REQUEST::TOKEN_DELIMITER, $this->sQueryString);
+			$aTokens	= explode(API_REQUEST::TOKEN_DELIMITER, $this->sQueryString);
 			// Remove the blank string (first element)
 			//array_splice($aTokens, 0, 1);
 			$this->_aURLTokens	= $aTokens;

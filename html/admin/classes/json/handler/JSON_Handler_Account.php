@@ -55,7 +55,7 @@ class JSON_Handler_Account extends JSON_Handler
 			
 			// Split the search term by spaces then use each part as a search term
 			$sWhere	= '';	
-			$aTerms	= split(' ', $sSearchTerm);
+			$aTerms	= preg_split('\s+', $sSearchTerm);
 			foreach ($aTerms as $sTerm)
 			{
 				if ($sTerm == '')

@@ -47,7 +47,7 @@ class JSON_Handler_Contact extends JSON_Handler
 				$oStdClassContact	= $oContact->toStdClass();
 				
 				// Split DOB
-				$aDOB							= split( '-', $oContact->DOB );
+				$aDOB							= explode( '-', $oContact->DOB );
 				$oStdClassContact->dob_day		= (int)$aDOB[2];
 				$oStdClassContact->dob_month	= (int)$aDOB[1];
 				$oStdClassContact->dob_year		= (int)$aDOB[0];

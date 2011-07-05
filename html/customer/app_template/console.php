@@ -304,7 +304,7 @@ class AppTemplateConsole extends ApplicationTemplate
 				HAVING (
 			";
 
-			$splitted = split ('[ +]', $mixSearch);
+			$splitted = preg_split ('\s+', $mixSearch);
 
 			$count=0;
  			$bolFoundWord = FALSE;

@@ -245,7 +245,7 @@ class Zend_Cache_Frontend_Page extends Zend_Cache_Core
             if (headers_sent()) {
                 $headersList = headers_list();
                 foreach ($headersList as $header) {
-                    $tmp = split(':', $header);
+                    $tmp = explode(':', $header);
                     if (strtolower(trim($tmp[0])) == 'content-type') {
                         $contentType = trim($tmp[1]);
                     }
