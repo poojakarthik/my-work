@@ -80,13 +80,13 @@ abstract class Dummy
 		return (array_key_exists($sName, $this->_aProperties)) ? $this->_aProperties[$sName] : NULL;
 	}
 
-	protected function __set($sName, $mValue)
+	public function __set($sName, $mValue)
 	{
 		$sName = $this->_getFieldName($sName);
 		$this->___set($sName, $mValue);
 	}
 	
-	final protected function ___set($sName, $mValue)
+	final public function ___set($sName, $mValue)
 	{
 		$sName = $this->_getFieldName($sName);
 		if (array_key_exists($sName, $this->_aProperties))

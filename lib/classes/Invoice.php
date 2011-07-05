@@ -2310,7 +2310,7 @@ class Invoice extends ORM_Cached
 		}
 	}
 
-	protected function __set($strName, $mxdValue)
+	public function __set($strName, $mxdValue)
 	{
 		parent::__set($strName, $mxdValue);
 

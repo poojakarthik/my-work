@@ -105,7 +105,7 @@ REQUESTS;
 		}
 	}
 
-	private function __call($function, $args) {
+	public function __call($function, $args) {
 		return call_user_func_array(array(& $this->source, $function), $args);
 	}
 }

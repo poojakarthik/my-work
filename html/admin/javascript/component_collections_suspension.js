@@ -138,6 +138,12 @@ var Component_Collections_Suspension = Class.create(
 	
 	_save : function(oResponse)
 	{
+		// Hide any saving-related popup
+		if (this._oSavingPopup) {
+			this._oSavingPopup.hide();
+			delete this._oSavingPopup;
+		}
+
 		if (!oResponse)
 		{
 			// Validate base controls
@@ -166,7 +172,9 @@ var Component_Collections_Suspension = Class.create(
 								proposed_end_datetime			: this._oEndDateControl.getValue(),
 								collection_suspension_reason_id	: this._oReasonControl.getValue()
 							};
-			
+
+			this._oSavingPopup	= new Reflex_Popup.Loading('Creating Suspension...', true);
+
 			// Make request (sending the details object)
 			var fnResp 	= this._save.bind(this);
 			var fnReq	= jQuery.json.jsonFunction(fnResp, fnResp, 'Collection_Suspension', 'createSuspension');

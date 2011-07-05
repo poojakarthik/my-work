@@ -209,7 +209,7 @@ abstract class ORM
 		return (array_key_exists($strName, $this->_arrProperties)) ? $this->_arrProperties[$strName] : NULL;
 	}
 
-	protected function __set($strName, $mxdValue)
+	public function __set($strName, $mxdValue)
 	{
 		$this->___set($strName, $mxdValue);
 	}

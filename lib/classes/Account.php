@@ -1640,7 +1640,7 @@ class Account
 		return (array_key_exists($strName, $this->_arrProperties)) ? $this->_arrProperties[$strName] : NULL;
 	}
 
-	protected function __set($strName, $mxdValue)
+	public function __set($strName, $mxdValue)
 	{
 		$strName	= array_key_exists($strName, $this->_arrTidyNames) ? $this->_arrTidyNames[$strName] : $strName;
 

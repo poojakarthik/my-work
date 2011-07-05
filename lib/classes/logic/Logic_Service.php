@@ -416,7 +416,7 @@ abstract class Logic_Service implements DataLogic
 
 
 
-    private function __call($function, $args)
+    public function __call($function, $args)
     {
         return call_user_func_array(array($this->oDO, $function),$args);
     }
