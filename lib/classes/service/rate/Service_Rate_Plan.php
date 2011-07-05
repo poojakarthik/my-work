@@ -11,60 +11,96 @@
  *
  * @class	Service
  */
-class Service_Rate_Plan extends ORM
+class Service_Rate_Plan extends ORM_Cached
 {	
-	protected	$_strTableName	= "ServiceRatePlan";
-        protected static $_strStaticTableName = "ServiceRatePlan";
-	
-	//------------------------------------------------------------------------//
-	// __construct
-	//------------------------------------------------------------------------//
-	/**
-	 * __construct()
-	 *
-	 * constructor
-	 * 
-	 * constructor
-	 *
-	 * @param	array	$arrProperties 		[optional]	Associative array defining the class with keys for each field of the table
-	 * @param	boolean	$bolLoadById		[optional]	Automatically load the object with the passed Id
-	 * 
-	 * @return	void
-	 * 
-	 * @constructor
-	 */
-	public function __construct($arrProperties=Array(), $bolLoadById=FALSE)
+	protected			$_strTableName			= "ServiceRatePlan";
+	protected static	$_strStaticTableName	= "ServiceRatePlan";
+
+	protected static function getCacheName()
 	{
-		// Parent constructor
-		parent::__construct($arrProperties, $bolLoadById);
+		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
+		static $strCacheName;
+		if (!isset($strCacheName))
+		{
+			$strCacheName = __CLASS__;
+		}
+		return $strCacheName;
 	}
+
+	protected static function getMaxCacheSize()
+	{
+		return 100;
+	}
+
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
+	//---------------------------------------------------------------------------------------------------------------------------------//
+
+	public static function clearCache()
+	{
+		parent::clearCache(__CLASS__);
+	}
+
+	protected static function getCachedObjects()
+	{
+		return parent::getCachedObjects(__CLASS__);
+	}
+
+	protected static function addToCache($mixObjects)
+	{
+		parent::addToCache($mixObjects, __CLASS__);
+	}
+
+	public static function getForId($intId, $bolSilentFail=false)
+	{
+		return parent::getForId($intId, $bolSilentFail, __CLASS__);
+	}
+
+	public static function getAll($bolForceReload=false)
+	{
+		return parent::getAll($bolForceReload, __CLASS__);
+	}
+
+	public static function importResult($aResultSet)
+	{
+		return parent::importResult($aResultSet, __CLASS__);
+	}
+
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
+	//---------------------------------------------------------------------------------------------------------------------------------//
+
 	
 	/**
 	 * contractMonthsRemaining()
 	 *
 	 * Calculates the number of months remaining on this Contract
 	 *
-	 * @param	[boolean	$bolInclusive		]	TRUE	: The months remaining is rounded up (includes this month) (Default)
-	 * 												FALSE	: The months remaining is rounded down (excludes this month)
+	 * @param	[boolean	$bInclusive		]	TRUE	: The months remaining is rounded up (includes this month) (Default)
+	 * 											FALSE	: The months remaining is rounded down (excludes this month)
 	 * 
 	 * @return	integer
 	 * 
 	 * @method
 	 */
-	public function contractMonthsRemaining($bolInclusive=true)
+	public function contractMonthsRemaining($bInclusive=true)
 	{
-		$intScheduledEndDatetime		= strtotime($this->contract_scheduled_end_datetime);
+		$iScheduledEndDatetime		= strtotime($this->contract_scheduled_end_datetime);
+		$iEffectiveEndDatetime		= $this->contract_effective_end_datetime ? strtotime($this->contract_effective_end_datetime) : null;
+		$iStartDatetime				= strtotime($this->StartDatetime);
 		//throw new Exception("Scheduled Contract End: {$this->contract_scheduled_end_datetime}");
 		
-		if ($intScheduledEndDatetime)
-		{
-			$intCurrentDate		= time();
-			$strEndDate			= date("Y-m-d", $intScheduledEndDatetime);
-			
-			return Flex_Date::difference(date('Y-m-d', $intCurrentDate), $strEndDate, 'm') + 1;
-		}
-		else
-		{
+		if ($iScheduledEndDatetime) {
+			$iCurrentDate		= time();
+			$sEndDate			= date("Y-m-d", $iScheduledEndDatetime);
+
+			// From Date:
+			//	Never earlier than the Contract Start
+			//	Never later than the Contract End (effective)
+			$iFromDate			= max($iCurrentDate, $iStartDatetime);
+			$iFromDate			= min($iFromDate, coalesce($iEffectiveEndDatetime, PHP_INT_MAX));
+			return Flex_Date::difference(date('Y-m-d', $iFromDate), $sEndDate, 'm') + 1;
+		} else {
 			return false;
 		}
 	}
@@ -74,34 +110,61 @@ class Service_Rate_Plan extends ORM
 	 *
 	 * Calculates the Payout figure for this Contract (excluding global tax)
 	 *
-	 * @param	[boolean	$bolInclusive		]	TRUE	: The months remaining is rounded up (includes this month) (Default)
-	 * 												FALSE	: The months remaining is rounded down (excludes this month)
+	 * @param	[boolean	$bInclusive		]	TRUE	: The months remaining is rounded up (includes this month) (Default)
+	 * 											FALSE	: The months remaining is rounded down (excludes this month)
 	 * 
 	 * @return	integer
 	 * 
 	 * @method
 	 */
-	public function calculatePayout($bolInclusive=true)
+	public function calculatePayout($bInclusive=true)
 	{
-		$objContractTerms	= Contract_Terms::getCurrent();
-		$objRatePlan		= new Rate_Plan(array('id'=>$this->RatePlan), true);
+		$oContractTerms	= Contract_Terms::getCurrent();
+		$oRatePlan		= Rate_Plan::getForId($this->RatePlan);
 		
-		$fltTotalPayout		= 0.0;
+		$fTotalPayout		= 0.0;
 		
-		$intInvoiceCount	= $this->getInvoiceCount();
+		$iContractMonthsRemaining	= $this->contractMonthsRemaining($bInclusive);
+		//throw new Exception("Months Remaining: {$iContractMonthsRemaining}; Invoice Count: {$iInvoiceCount}");
 		
-		$intContractMonthsRemaining	= $this->contractMonthsRemaining($bolInclusive);
-		//throw new Exception("Months Remaining: {$intContractMonthsRemaining}; Invoice Count: {$intInvoiceCount}");
-		
-		if ($intContractMonthsRemaining)
+		if ($iContractMonthsRemaining)
 		{
 			// Payout
-			$fltTotalPayout	+= ($intInvoiceCount >= $objContractTerms->contract_payout_minimum_invoices) ? (($intContractMonthsRemaining * $objRatePlan->MinMonthly) * ($objRatePlan->contract_payout_percentage / 100)) : 0.0;
+			$fTotalPayout	+= coalesce($this->calculateContractPayout($bInclusive), 0.0);
 			
 			// Early Exit Fee
-			$fltTotalPayout	+= ($intInvoiceCount >= $objContractTerms->exit_fee_minimum_invoices) ? $objRatePlan->contact_exit_fee : 0.0;
+			$fTotalPayout	+= coalesce($this->calculateContractExitFee($bInclusive), 0.0);
 		}
-		return round($fltTotalPayout, 2);
+		return Rate::roundToCurrencyStandard($fTotalPayout, 2);
+	}
+
+	public function calculateContractPayout($bInclusive=true) {
+		$oContractTerms				= Contract_Terms::getCurrent();
+		$iInvoiceCount				= $this->getInvoiceCount();
+		$oRatePlan					= Rate_Plan::getForId($this->RatePlan);
+		$iContractMonthsRemaining	= $this->contractMonthsRemaining($bInclusive);
+
+		$fPayout	= 0.0;
+		if ($iContractMonthsRemaining) {
+			if ($iInvoiceCount >= $oContractTerms->contract_payout_minimum_invoices) {
+				return Rate::roundToCurrencyStandard(($iContractMonthsRemaining * $oRatePlan->MinMonthly) * ($oRatePlan->contract_payout_percentage / 100), 2);
+			}
+		}
+		return null;
+	}
+
+	public function calculateContractExitFee($bInclusive=true) {
+		$oContractTerms				= Contract_Terms::getCurrent();
+		$iInvoiceCount				= $this->getInvoiceCount();
+		$oRatePlan					= Rate_Plan::getForId($this->RatePlan);
+		$iContractMonthsRemaining	= $this->contractMonthsRemaining($bInclusive);
+
+		if ($iContractMonthsRemaining) {
+			if ($iInvoiceCount >= $oContractTerms->exit_fee_minimum_invoices) {
+				return Rate::roundToCurrencyStandard($oRatePlan->contract_exit_fee, 2);
+			}
+		}
+		return null;
 	}
 	
 	/**
@@ -169,24 +232,27 @@ class Service_Rate_Plan extends ORM
 			switch ($strStatement)
 			{
 				// SELECTS
-                                case 'selActiveForServiceId':
+                case 'selActiveForServiceId':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "Service = <iServiceId> AND <sDateTime> BETWEEN StartDateTime AND EndDatetime", 'CreatedOn DESC, Id DESC', 1);
 					break;
 				case 'selById':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ServiceRatePlan", "*", "Id = <Id>", NULL, 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
+					break;
+				case 'selAll':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
 					break;
 				case 'selInvoiceCount':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ServiceTotal JOIN InvoiceRun ON InvoiceRun.Id = ServiceTotal.invoice_run_id", "COUNT(ServiceTotal.Id) AS invoice_count", "service_rate_plan = <Id> AND InvoiceRun.invoice_run_status_id = ".INVOICE_RUN_STATUS_COMMITTED);
 					break;
-				
+
 				// INSERTS
 				case 'insSelf':
-					$arrPreparedStatements[$strStatement]	= new StatementInsert("ServiceRatePlan");
+					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);
 					break;
-				
+
 				// UPDATE BY IDS
 				case 'ubiSelf':
-					$arrPreparedStatements[$strStatement]	= new StatementUpdateById("ServiceRatePlan");
+					$arrPreparedStatements[$strStatement]	= new StatementUpdateById(self::$_strStaticTableName);
 					break;
 				
 				// UPDATES

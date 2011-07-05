@@ -698,6 +698,9 @@ div.reflex-popup-title {
 	width : 79%;
 	font-weight: bold;
 
+	overflow		: hidden;
+	white-space		: nowrap;
+	text-overflow	: ellipsis;
 }
 
 span.reflex-popup-title-text {
@@ -12384,6 +12387,7 @@ div.component-collections-scenario > table.reflex
 .account-service-list-contract {
 	font-size	: 0.8em;
 	margin-left	: 0.25em;
+	color		: #000	!important;
 }
 
 .account-service-list-contract-ended {
@@ -12416,7 +12420,7 @@ div.component-collections-scenario > table.reflex
 /************************** START - COMPONENT Contract Details - START **************************/
 
 .component-service-contract-details {
-	padding	: 0.5em 0.5em 0 0.5em;
+	padding	: 0.5em 0 0 0;
 }
 
 .component-service-contract-details p {
@@ -12427,27 +12431,91 @@ div.component-collections-scenario > table.reflex
 	margin-top	: 0.5em;
 }
 
-.component-service-contract-details-penalties-payout {
+.component-service-contract-details-penalties-payout,
+.component-service-contract-details-penalties-earlyexit {
 	padding			: 0								!important;
 	border-top		: 1px solid rgba(0, 0, 0, 0.2)	!important;
-	border-bottom	: 1px solid rgba(0, 0, 0, 0.2)	!important;
+	/*border-bottom	: 1px solid rgba(0, 0, 0, 0.2)	!important;*/
 }
 
-.component-service-contract-details-penalties-payout > .reflex-propertylist {
+.component-service-contract-details-penalties-payout > .reflex-propertylist,
+.component-service-contract-details-penalties-earlyexit > .reflex-propertylist {
 	margin	: 0	!important;
 }
-.component-service-contract-details-penalties-payout > .reflex-propertylist::before {
+.component-service-contract-details-penalties-payout > .reflex-propertylist::before,
+.component-service-contract-details-penalties-earlyexit > .reflex-propertylist::before {
 	width				: 35%																	!important;
 	border-right		: 1px solid rgba(0, 0, 0, 0.2)											!important;
 	background-image	: -moz-linear-gradient(top, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.1))	!important;
 	background-image	: -webkit-linear-gradient(top, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.1))	!important;
 }
 
-.component-service-contract-details-penalties-payout > .reflex-propertylist > dt {
+.component-service-contract-details-customer-account,
+.component-service-contract-details-contract-rateplan-name {
+	white-space		: nowrap;
+	overflow		: hidden;
+	text-overflow	: ellipsis;
+}
+
+.component-service-contract-details-customer-customergroup {
+	text-shadow	: 0 1px 0 #fff;
+}
+
+.component-service-contract-details-penalties-status-audit,
+.component-service-contract-details-contract-status-expiry,
+.component-service-contract-details-contract-rateplan-charge,
+.component-service-contract-details-customer-customergroup {
+	margin-left	: 0.15em	!important;
+}
+
+.component-service-contract-details-customer-service-servicetype {
+	margin-right	: 0.25em;
+}
+
+.component-service-contract-details-contract-status-description {
+	font-weight	: bold;
+}
+.component-service-contract-details-contract-status[data-status='CONTRACT_STATUS_EXPIRED'] .component-service-contract-details-contract-status-description {
+	color	: #00a6ff;
+}
+.component-service-contract-details-contract-status[data-status='CONTRACT_STATUS_BREACHED'] .component-service-contract-details-contract-status-description {
+	color	: #eb364e;
+}
+
+.component-service-contract-details-penalties-payout > .reflex-propertylist > dt,
+.component-service-contract-details-penalties-earlyexit > .reflex-propertylist > dt {
 	width	: 35%	!important;
 }
-.component-service-contract-details-penalties-payout > .reflex-propertylist > dd {
+.component-service-contract-details-penalties-payout > .reflex-propertylist > dd,
+.component-service-contract-details-penalties-earlyexit > .reflex-propertylist > dd {
 	width	: 65%	!important;
+}
+
+.component-service-contract-details-penalties-status-audit {
+	margin-left	: 0.25em;
+}
+
+.component-service-contract-details-contract-term-remaining,
+.component-service-contract-details-contract-value-remaining,
+.component-service-contract-details-penalties-status-audit,
+.component-service-contract-details-contract-status-expiry,
+.component-service-contract-details-contract-rateplan-charge {
+	font-style	: oblique;
+}
+
+/* STATE */
+.component-service-contract-details-contract-endingdate[datetime^='9999-12-31'] {
+	font-style	: oblique;
+}
+
+.component-service-contract-details-penalties-status:not([data-status='applied']):not([data-status='waived']) .component-service-contract-details-penalties-status-audit {
+	display	: none;
+}
+.component-service-contract-details-penalties-payout:not([data-status='applied']) .component-service-contract-details-penalties-payout-effective-details {
+	display	: none;
+}
+.component-service-contract-details-penalties-earlyexit:not([data-status='applied']) .component-service-contract-details-penalties-earlyexit-effective-details {
+	display	: none;
 }
 
 /************************** END - COMPONENT Contract Details - END **************************/

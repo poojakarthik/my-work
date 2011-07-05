@@ -197,7 +197,7 @@ var Contract_ManageExpired	= Class.create
 			
 			// Send off the AJAX request
 			jsonFunc = jQuery.json.jsonFunction(this._actionNext.bind(this), this._actionNext.bind(this), "Contract_ManageBreached", this._strAction);
-			jsonFunc(this._arrSelectedContracts[0].intId, $ID('ContractConfirm_Reason').value, this._arrSelectedContracts[0].fltExitFee, this._arrSelectedContracts[0].fltPayout, this._arrSelectedContracts[0].fltExitFee);
+			jsonFunc(this._arrSelectedContracts[0].intId, $ID('ContractConfirm_Reason').value, this._arrSelectedContracts[0].fltPayoutPercentage, this._arrSelectedContracts[0].fltPayout, this._arrSelectedContracts[0].fltExitFee);
 		}
 		else
 		{

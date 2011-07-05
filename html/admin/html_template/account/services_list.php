@@ -302,6 +302,9 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 						}
 					}
 				}
+
+				// Contract Data panel
+				$strPlanCell	.= "<br />\n".$this->_buildContractData($arrService['CurrentPlan']);
 			}
 			else
 			{
@@ -335,6 +338,9 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 						}
 					}
 				}
+
+				// Contract Data panel
+				$strPlanCell	.= "<br />\n".$this->_buildContractData($arrService['FuturePlan']);
 			}
 			
 			// This is no longer used (but they might want to use it again in the future)
@@ -472,6 +478,46 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 		// Row highlighting has been turned off, because it stops working if the Service table is ever redrawn
 		Table()->Services->RowHighlighting = TRUE;
 		Table()->Services->Render();
+	}
+
+	private function _buildContractData($aService) {
+		$bContracted		= !!$aService['ContractTerm'];
+		$bContractEnded		= !($aService['ContractEnd'] === null);
+		$bContractBreached	= $bContractEnded && ($aService['ContractEnd'] < $aService['ContractEndScheduled']);
+
+		$aClasses	= array('account-service-list-contract');
+		if (!$bContracted) {
+			$aClasses[]	= 'account-service-list-contract-none';
+		} else {
+			if ($bContractEnded) {
+				$aClasses[]	= 'account-service-list-contract-ended';
+			}
+			if ($bContractBreached) {
+				$aClasses[]	= 'account-service-list-contract-breached';
+			}
+		}
+
+		$sDetailsClick	= "JsAutoLoader.loadScript(['component_section','component_service_contract_details'], function(){Component_Service_Contract_Details.createAsPopup({iServiceRatePlanId:{$aService['ContractId']}});}, true, true);return false;";
+
+		$D				= new DOM_Factory();
+		if (!$bContracted) {
+			$oContractPanel	= $D->span(array('class'=>implode(' ', $aClasses)), 'No Contract');
+		} else {
+			$sContractEnd	= ($aService['ContractEnd']) ? date('Y-m-d H:i:s', min(strtotime($aService['ContractEnd']), strtotime($aService['ContractEndScheduled']))) : $aService['ContractEndScheduled'];
+			
+			$oContractPanel	= $D->span(array('class'=>implode(' ', $aClasses), 'onclick'=>$sDetailsClick),
+				$D->img(array('class'=>'icon', 'src'=>'../admin/img/template/contract.png', 'alt'=>"{$aService['ContractTerm']}-month Contract")),
+				$D->time(array('class'=>'account-service-list-contract-start'),
+					date('d/m/Y', strtotime($aService['ContractStart']))
+				),
+				$D->_ndash(),
+				$D->time(array('class'=>'account-service-list-contract-end'),
+					date('d/m/Y', strtotime($sContractEnd))
+				)
+			);
+		}
+		
+		return $D->getDOMDocument()->saveXML($oContractPanel);
 	}
 }
 

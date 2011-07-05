@@ -729,7 +729,19 @@ class AppTemplateAccount extends ApplicationTemplate
 							"FuturePlanId"				=> "RP2.Id",
 							"FuturePlanName"			=> "RP2.Name",
 							"FuturePlanBrochureId"		=> "RP2.brochure_document_id",
-							"FuturePlanStartDatetime"	=> "SRP3.StartDatetime");
+							"FuturePlanStartDatetime"	=> "SRP3.StartDatetime",
+
+							"CurrentPlanContractId"				=> "SRP1.Id",
+							"CurrentPlanContractStart"			=> "SRP1.StartDatetime",
+							"CurrentPlanContractTerm"			=> "RP1.ContractTerm",
+							"CurrentPlanContractEndScheduled"	=> "SRP1.contract_scheduled_end_datetime",
+							"CurrentPlanContractEnd"			=> "SRP1.contract_effective_end_datetime",
+
+							"FuturePlanContractId"				=> "SRP3.Id",
+							"FuturePlanContractStart"			=> "SRP3.StartDatetime",
+							"FuturePlanContractTerm"			=> "RP2.ContractTerm",
+							"FuturePlanContractEndScheduled"	=> "SRP3.contract_scheduled_end_datetime",
+							"FuturePlanContractEnd"				=> "SRP3.contract_effective_end_datetime");
 		$strWhere	= "S.Account = <AccountId> AND (S.ClosedOn IS NULL OR S.CreatedOn <= S.ClosedOn)";
 		$arrWhere	= Array("AccountId" => $intAccount);
 		$strOrderBy	= ("S.ServiceType ASC, S.FNN ASC, S.Id DESC");
@@ -759,7 +771,13 @@ class AppTemplateAccount extends ApplicationTemplate
 				$arrService['CurrentPlan'] = Array	(
 														"Id"					=> $arrRecord['CurrentPlanId'],
 														"Name"					=> $arrRecord['CurrentPlanName'],
-														"brochure_document_id"	=> $arrRecord['CurrentPlanBrochureId']
+														"brochure_document_id"	=> $arrRecord['CurrentPlanBrochureId'],
+
+														"ContractId"			=> $arrRecord['CurrentPlanContractId'],
+														"ContractStart"			=> $arrRecord['CurrentPlanContractStart'],
+														"ContractTerm"			=> $arrRecord['CurrentPlanContractTerm'],
+														"ContractEndScheduled"	=> $arrRecord['CurrentPlanContractEndScheduled'],
+														"ContractEnd"			=> $arrRecord['CurrentPlanContractEnd']
 													);
 			}
 			else
@@ -774,7 +792,13 @@ class AppTemplateAccount extends ApplicationTemplate
 														"Id"					=> $arrRecord['FuturePlanId'],
 														"Name"					=> $arrRecord['FuturePlanName'],
 														"brochure_document_id"	=> $arrRecord['FuturePlanBrochureId'],
-														"StartDatetime"			=> $arrRecord['FuturePlanStartDatetime']
+														"StartDatetime"			=> $arrRecord['FuturePlanStartDatetime'],
+
+														"ContractId"			=> $arrRecord['FuturePlanContractId'],
+														"ContractStart"			=> $arrRecord['FuturePlanContractStart'],
+														"ContractTerm"			=> $arrRecord['FuturePlanContractTerm'],
+														"ContractEndScheduled"	=> $arrRecord['FuturePlanContractEndScheduled'],
+														"ContractEnd"			=> $arrRecord['FuturePlanContractEnd']
 													);
 			}
 			else
