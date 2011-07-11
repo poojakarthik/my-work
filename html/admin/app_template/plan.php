@@ -88,6 +88,11 @@ class AppTemplatePlan extends ApplicationTemplate
 		// Context menu
 		// (Nothing to add)
 		
+		// DEBUG
+		if (DBO()->RatePlan->Status->Value == RATE_STATUS_DRAFT) {
+			//throw new Exception("Filtered to Drafts");
+		}
+		
 		// Breadcrumb menu
 		Breadcrumb()->Employee_Console();
 		BreadCrumb()->SetCurrentPage("Available Plans");
@@ -462,9 +467,14 @@ class AppTemplatePlan extends ApplicationTemplate
 					// The plan was successfully saved to the database
 					TransactionCommit();
 					
+					// If we've saved as a draft, then filter our Plan List to Drafts
+					if (DBO()->Plan->Archived->Value == RATE_STATUS_DRAFT) {
+						$_SESSION['AvailablePlansPage']['Filter']['Status']	= RATE_STATUS_DRAFT;
+					}
+					
 					// Set the message appropriate to the action
 					$strSuccessMsg = (DBO()->Plan->Archived->Value == RATE_STATUS_ACTIVE)? "The plan has been successfully saved" : "The plan has been successfully saved as a draft";
-					Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => $strSuccessMsg, "Location" => Href()->AvailablePlans()));
+					Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => $strSuccessMsg, "Location" => Href()->AvailablePlans().'?RatePlan.Status='.RATE_STATUS_DRAFT));
 					return TRUE;
 				}
 			}
