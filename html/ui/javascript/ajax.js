@@ -571,8 +571,10 @@ function VixenAjaxClass()
 								// Execute our JS
 								eval(sJavascript);
 							} catch (mException) {
-								if (console && log in console) {
+								if (console && 'log' in console) {
 									console.log(mException);
+								} else {
+									throw mException;
 								}
 							}
 							if (Object.isFunction(fnCallback)) {
