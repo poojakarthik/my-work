@@ -46,7 +46,7 @@ class Correspondence_Template_Carrier_Module extends ORM_Cached
 		$this->setSaved();
 	}
 	
-	public function getForCarrierModuleAndTemplateCode($iCarrierModuleId, $sTemplateCode)
+	public static function getForCarrierModuleAndTemplateCode($iCarrierModuleId, $sTemplateCode)
 	{
 		$aRow = Query::run("SELECT	*
 							FROM	correspondence_template_carrier_module
