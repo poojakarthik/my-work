@@ -20,7 +20,7 @@ class Email_Template_Logic_Correspondence extends Email_Template_Logic
 	public function getVariables()
 	{
 		$oQuery		= new Query();
-		$sQuery		= preg_replace('/<[a-zA-Z_]+>/', 'NULL', $this->_oEmailTemplateCorrespondence->datasource_sql);
+		$sQuery		= preg_replace('/<[a-zA-Z_0-9]+>/', 'NULL', $this->_oEmailTemplateCorrespondence->datasource_sql);
 		$mResult	= $oQuery->Execute($sQuery);
 		if ($mResult === false)
 		{

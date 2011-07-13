@@ -13,7 +13,7 @@ Object.extend(Reflex_Popup, {
 	display: function(popup)
 	{
 		// If the overlay only contains the opaque pane, we need to add the overlay to the page
-		if (!Reflex_Popup.overlay.select('div.reflex-popup').length)
+		if (!$ID(Reflex_Popup.overlay).select('div.reflex-popup').length)
 		{
 			document.body.appendChild(Reflex_Popup.overlay);
 			if (document.all)
@@ -34,7 +34,7 @@ Object.extend(Reflex_Popup, {
 		//alert("Container Removed");
 		
 		// If the overlay only contains the opaque pane, remove the overlay from the page
-		var aPopups	= Reflex_Popup.overlay.select('div.reflex-popup');
+		var aPopups	= $ID(Reflex_Popup.overlay).select('div.reflex-popup');
 		if (!aPopups.length)
 		{
 			Reflex_Popup.overlay.remove();
@@ -110,7 +110,7 @@ Object.extend(Reflex_Popup, {
 		// Apply padding if text only content
 		if (typeof mContent == 'string')
 		{
-			mContent = 	$T.div({class: 'alert-content'},
+			mContent = 	$T.div({'class': 'alert-content'},
 							mContent
 						);
 		}
@@ -157,7 +157,7 @@ Object.extend(Reflex_Popup, {
 		// Yes
 		if (oConfig.sYesIconSource)
 		{
-			var oYesButton 	= 	$T.button({class: 'icon-button'},
+			var oYesButton 	= 	$T.button({'class': 'icon-button'},
 									$T.img({src: oConfig.sYesIconSource}),
 									$T.span(oConfig.sYesLabel.escapeHTML())
 								);
@@ -172,7 +172,7 @@ Object.extend(Reflex_Popup, {
 		// No
 		if (oConfig.sNoIconSource)
 		{
-			var oNoButton 	= 	$T.button({class: 'icon-button'},
+			var oNoButton 	= 	$T.button({'class': 'icon-button'},
 									$T.img({src: oConfig.sNoIconSource}),
 									$T.span(oConfig.sNoLabel.escapeHTML())
 								);
@@ -206,7 +206,7 @@ Object.extend(Reflex_Popup, {
 		{
 			if (oConfig.sCancelIconSource)
 			{
-				var oCancelButton	= 	$T.button({class: 'icon-button'},
+				var oCancelButton	= 	$T.button({'class': 'icon-button'},
 											$T.img({src: oConfig.sCancelIconSource}),
 											$T.span(oConfig.sCancelLabel.escapeHTML())
 										);
@@ -227,7 +227,7 @@ Object.extend(Reflex_Popup, {
 		// Apply padding if text only content
 		if ((typeof mContent == 'string') || !oConfig.bOverrideStyle)
 		{
-			mContent = 	$T.div({class: 'alert-content'},
+			mContent = 	$T.div({'class': 'alert-content'},
 							mContent
 						);
 		}
@@ -239,7 +239,7 @@ Object.extend(Reflex_Popup, {
 	debug	: function(sText)
 	{
 		Reflex_Popup.alert(
-			$T.textarea({class: 'popup-debug-text'},
+			$T.textarea({'class': 'popup-debug-text'},
 				sText
 			), 
 			{
@@ -581,7 +581,7 @@ Object.extend(Reflex_Popup.Loading.prototype, {
 		var bShowTitle	= (sMessage ? true : false);
 		sMessage		= sMessage ? String(sMessage) : 'Loading...';
 		
-		this.loading	= 	$T.div({class: 'reflex-loading-image'},
+		this.loading	= 	$T.div({'class': 'reflex-loading-image'},
 								$T.div(sMessage),
 								$T.div('Please wait.')
 							);

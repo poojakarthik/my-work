@@ -34,10 +34,12 @@ function $Validate(strRule, mixValue, bolNotRequired)
 
 // This doesn't work, if prototype.js is included before this file is
 // This file should always be included before prototype.js
-Element.prototype.Validate = function(strRule, bolNotRequired)
-{
-	var strValue = this.value.toString();
-	return Vixen.Validation.Validate(strRule, strValue, bolNotRequired);
+if (typeof Element !== 'undefined') {
+	Element.prototype.Validate = function(strRule, bolNotRequired)
+	{
+		var strValue = this.value.toString();
+		return Vixen.Validation.Validate(strRule, strValue, bolNotRequired);
+	}
 }
 
 String.prototype.Validate = function(strRule, bolNotRequired)

@@ -637,7 +637,7 @@ Date.prototype.$oMonths	=	{
 														9	: 'September',
 														10	: 'October',
 														11	: 'November',
-														12	: 'December',
+														12	: 'December'
 														//13	: 'Smarch'	// Known for its lousy weather
 													},
 								oShortNames		:	{
@@ -652,7 +652,7 @@ Date.prototype.$oMonths	=	{
 														9	: 'Sep',
 														10	: 'Oct',
 														11	: 'Nov',
-														12	: 'Dec',
+														12	: 'Dec'
 														//13	: 'Sma'
 													},
 								oDaysInMonth	:	{
@@ -667,7 +667,7 @@ Date.prototype.$oMonths	=	{
 														9	: 30,
 														10	: 31,
 														11	: 30,
-														12	: 31,
+														12	: 31
 													}
 							};
 Date.prototype.$oDays	=	{

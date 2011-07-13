@@ -197,11 +197,14 @@ var JsAutoLoader = {
 }
 
 // On load, register all of the scripts added by other means
-window.addEventListener(
-	'load', 
-	function()
-	{
-		JsAutoLoader.registerPreLoadedScripts();
-	}, 
-	false
-);
+var fnWindowLoad = function() {
+	JsAutoLoader.registerPreLoadedScripts();
+};
+
+if (typeof window.addEventListener == 'undefined') {
+	// Not gecko, try IE method
+	window.attachEvent('onload', fnWindowLoad);
+} else {
+	// Gecko
+	window.addEventListener('load', fnWindowLoad, false);
+}

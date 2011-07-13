@@ -503,7 +503,7 @@ Object.extend(CreditCardPayment.prototype,
 
 		this.showProcessing();
 		var $submit = jQuery.json.jsonFunction(this.submitted.bind(this), null, 'Credit_Card_Payment', 'makePayment');
-
+		
 		// Gather the validated values and submit to the server
 		$submit(this.accountNumber,
 				this.inputEmail.value,
@@ -617,7 +617,7 @@ Object.extend(CreditCardPayment.prototype,
 
 		// The details of the response (the confirmation message)
 		// need to be displayed to the user, assuming it all worked.
-alert(outcome);
+		alert(outcome);
 	},
 
 	showConfirmationMessage: function(message)
