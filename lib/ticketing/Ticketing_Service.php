@@ -600,7 +600,7 @@ class Ticketing_Service
 	
 	private function getEmailNameAndAddress($email)
 	{
-		self::_log("[+] Extracting Email Name & Address from '".($email->__toString())."'");
+		self::_log("[+] Extracting Email Name & Address from '".($email->textContent)."'");
 		
 		$emailAddress = $email ? $email->getElementsByTagName('email')->item(0)->textContent : '';
 		$emailAddress = trim($emailAddress);
