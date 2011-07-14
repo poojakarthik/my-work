@@ -514,6 +514,7 @@ class Ticketing_Service
 		$details['subject'] = $dom->getElementsByTagName('subject')->item(0)->textContent;
 
 		$email = $dom->getElementsByTagName('from')->item(0);
+		self::_log("Processing FROM address...");
 		$details['from'] = self::getEmailNameAndAddress($email);
 
 		$details['to'] = array();
@@ -521,6 +522,7 @@ class Ticketing_Service
 		for ($x = 0; $x < $emails->length; $x++)
 		{
 			$email = $emails->item($x);
+			self::_log("Processing TO address...");
 			$details['to'][] = self::getEmailNameAndAddress($email); 
 		}
 
@@ -529,6 +531,7 @@ class Ticketing_Service
 		for ($x = 0; $x < $emails->length; $x++)
 		{
 			$email = $emails->item($x);
+			self::_log("Processing CC address...");
 			$details['cc'][] = self::getEmailNameAndAddress($email); 
 		}
 
