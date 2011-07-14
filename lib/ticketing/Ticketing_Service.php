@@ -600,7 +600,7 @@ class Ticketing_Service
 	
 	private function getEmailNameAndAddress($email)
 	{
-		self::_log("[+] Extracting Email Name & Address from '".($email->textContent)."'");
+		self::_log("[+] Extracting Email Name & Address from '".($email->ownerDocument->saveXML($email))."'");
 		
 		$emailAddress = $email ? $email->getElementsByTagName('email')->item(0)->textContent : '';
 		$emailAddress = trim($emailAddress);
@@ -623,7 +623,7 @@ class Ticketing_Service
 		if (substr($emailAddress, 0, 1) == '<') $emailAddress = substr($emailAddress, 1);
 		if (substr($emailAddress, -1) == '>') $emailAddress = substr($emailAddress, 0, -1);
 		$details = array('name' => '', 'address' => '');
-		self::_log("[+] Validating Email Address: '{$emailAddress}'");
+		self::_log("\t[+] Validating Email Address: '{$emailAddress}'");
 		if ($emailAddress)
 		{
 			if (EmailAddressValid($emailAddress)) {
@@ -636,7 +636,7 @@ class Ticketing_Service
 					$details['name'] = $name;
 				}
 			} else {
-				self::_log("[!] '{$emailAddress}' is not a valid email address");
+				self::_log("\t[!] '{$emailAddress}' is not a valid email address");
 			}
 		}
 		return $details;
