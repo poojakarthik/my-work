@@ -20,6 +20,14 @@ function glog($str)
 
 class Ticketing_Service
 {
+	const LOGGING_ENABLED = true;
+	
+	protected static function _log($sMessage, $bNewLine=true) {
+		if (self::LOGGING_ENABLED) {
+			Log::getLog()->log($sMessage, $bNewLine);
+		}
+	}
+	
 	public static function loadEmails()
 	{
 		// Load the ticketing configuration
@@ -592,15 +600,21 @@ class Ticketing_Service
 	
 	private function getEmailNameAndAddress($email)
 	{
+		self::_log("[+] Extracting Email Name & Address from '{$email}'");
+		
 		$emailAddress = $email ? $email->getElementsByTagName('email')->item(0)->textContent : '';
 		$emailAddress = trim($emailAddress);
 		// "Margaret Munro "<magneticfx@iinet.net.au>;
 		// "lenrhonda"<lenrhonda@westnet.com.au>;
+		self::_log("\t[i] Address Component: '{$emailAddress}'");
+		
 		$name = array();
 		if (preg_match("/^\"([^\"]*)\" *\</", $emailAddress, $name))
 		{
 			$name = $name[1];
 			$emailAddress = trim(substr($emailAddress, strlen($name) + 2));
+			
+			self::_log("\t[+] Found Name in Address Component (Name: '{$name}'; Remaining Address: '{$emailAddress}')");
 		}
 		else
 		{
@@ -609,15 +623,20 @@ class Ticketing_Service
 		if (substr($emailAddress, 0, 1) == '<') $emailAddress = substr($emailAddress, 1);
 		if (substr($emailAddress, -1) == '>') $emailAddress = substr($emailAddress, 0, -1);
 		$details = array('name' => '', 'address' => '');
-		if ($emailAddress && EmailAddressValid($emailAddress))
+		self::_log("[+] Validating Email Address: '{$emailAddress}'");
+		if ($emailAddress)
 		{
-			$details = array(
-				'name' => trim($email->getElementsByTagName('name')->item(0)->textContent),
-				'address' => $emailAddress,
-			);
-			if ($name && !$details['name'])
-			{
-				$details['name'] = $name;
+			if (EmailAddressValid($emailAddress)) {
+				$details = array(
+					'name' => trim($email->getElementsByTagName('name')->item(0)->textContent),
+					'address' => $emailAddress,
+				);
+				if ($name && !$details['name'])
+				{
+					$details['name'] = $name;
+				}
+			} else {
+				self::_log("[!] '{$emailAddress}' is not a valid email address");
 			}
 		}
 		return $details;
