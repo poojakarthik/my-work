@@ -78,7 +78,7 @@ var Reflex_AJAX_Request = Class.create({
 					'There was an error accessing the server. Please contact YBS for assistance.', 
 					{
 						sTitle			: 'Error', 
-						sDebugContent	: oResponseData.ERROR
+						sDebugContent	: (oResponseData.ERROR || oResponse.responseText)
 					}
 				);
 			}
