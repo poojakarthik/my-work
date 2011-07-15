@@ -31,8 +31,8 @@ var Control_Select = Class.create(Control, {
 	populate : function(aOptions) {
 		if (!aOptions) {
 			// Clear options
-			for (var i = 0; i < this._oSelect.options.length; i++) {
-				this._oSelect.options[i].remove();
+			while (this._oSelect.options.length) {
+				this._oSelect.options[0].remove();
 			}
 			
 			// Cache the current value so it can be reset
@@ -60,6 +60,7 @@ var Control_Select = Class.create(Control, {
 			}
 			
 			this._valueChange();
+			this.fire('populate');
 		}
 	},
 	
@@ -81,25 +82,23 @@ var Control_Select = Class.create(Control, {
 	},
 	
 	_setValue : function(mValue) {
+		var iIndex	= -1;
+		var sView 	= '[None]';
 		if (!this._oSelect.options.length) {
 			// Not yet populated, cache for when it is
 			this._mTempValue = mValue;
-			return;
-		}
-		
-		// Populated, set the value and update the view dom
-		var iIndex	= -1;
-		var sView 	= '[None]';
-		if (!mValue && mValue !== 0) {
-			// NO value
+		} else if (!mValue && mValue !== 0) {
+			// Populated, but NO value
 		} else {
+			// Populated, value
 			iIndex = this._getIndexForValue(mValue);
 			if (iIndex != -1) {
 				sView = this._oSelect.options[iIndex].innerHTML;
 			}
-		}
-		this._oSelect.selectedIndex 	= iIndex;
-		this._oView.innerHTML 			= sView;
+		}		
+		
+		this._oSelect.selectedIndex	= iIndex;
+		this._oView.innerHTML 		= sView;
 	},
 	
 	_getValue : function() {
