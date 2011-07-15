@@ -4,6 +4,7 @@ var Control_Text_AJAX = Class.create(Control, {
 		this.CONFIG = Object.extend({
 			oDatasetAjax			: {}, 
 			sDisplayValueProperty	: {}, 
+			fnCreateResult			: {},
 			oColumnProperties		: {}, 
 			iResultLimit			: {
 				fnGetter : function(mValue) {
@@ -147,24 +148,29 @@ var Control_Text_AJAX = Class.create(Control, {
 		for (var i in hResults) {
 			// Add all of the configured properties as columns
 			var oResult	= hResults[i];
-			var oTR		= $T.tr({class: 'control-field-text-ajax-result-row'});
-			oTR.observe('mouseover', this._rowMouseOver.bind(this, oTR));
-			
-			var oColumnProperties = this.get('oColumnProperties');
-			for (var sProperty in oColumnProperties) {
-				var oColumn	= oColumnProperties[sProperty];
-				var mValue	= (oResult[sProperty] ? oResult[sProperty] : '');
-				var oTD		= $T.td({class: 'control-field-text-ajax-result-column'},
-					mValue
-				);
-				
-				if (oColumn.sClass) {
-					oTD.addClassName(oColumn.sClass);
+			var oTR		= null;
+			if (this.get('fnCreateResult')) {
+				// Custom result creation function
+				oTR = this.get('fnCreateResult')(oResult);
+				oTR.addClassName('control-field-text-ajax-result-row');
+			} else {
+				// Use configured column properties
+				oTR						= $T.tr({class: 'control-field-text-ajax-result-row'});
+				var oColumnProperties 	= this.get('oColumnProperties');
+				for (var sProperty in oColumnProperties) {
+					var oColumn	= oColumnProperties[sProperty];
+					var mValue	= (oResult[sProperty] ? oResult[sProperty] : '');
+					var oTD 	= $T.td(mValue);					
+					if (oColumn.sClass) {
+						oTD.addClassName(oColumn.sClass);
+					}
+					oTR.appendChild(oTD);
 				}
-				oTR.appendChild(oTD);
 			}
 			
-			oTR.iIndex				= i;
+			oTR.observe('mouseover', this._rowMouseOver.bind(this, oTR));
+			oTR.iIndex = i;
+			
 			this._hValues[i]		= oResult;
 			this._hDisplayValues[i]	= oResult[this.get('sDisplayValueProperty')];
 			oTR.observe('click', this._resultClicked.bind(this, i));
