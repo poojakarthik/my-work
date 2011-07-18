@@ -92,14 +92,20 @@ class Service_Rate_Plan extends ORM_Cached
 		
 		if ($iScheduledEndDatetime) {
 			$iCurrentDate		= time();
-			$sEndDate			= date("Y-m-d", $iScheduledEndDatetime);
+			
+			// End Date:
+			//	Subtract 1 day from this day for purposes of difference calculation so that the
+			//	difference gets reduced by 1 on the anniversary, rather than the day after
+			$sEndDate			= date("Y-m-d", $iScheduledEndDatetime - Flex_Date::SECONDS_IN_DAY);
 
 			// From Date:
 			//	Never earlier than the Contract Start
 			//	Never later than the Contract End (effective)
 			$iFromDate			= max($iCurrentDate, $iStartDatetime);
 			$iFromDate			= min($iFromDate, coalesce($iEffectiveEndDatetime, PHP_INT_MAX));
-			return Flex_Date::difference(date('Y-m-d', $iFromDate), $sEndDate, 'm') + 1;
+			
+			$iDifference	= Flex_Date::difference(date('Y-m-d', $iFromDate), $sEndDate, 'm');
+			return ($iDifference) > 0 ? $iDifference+1 : $iDifference;
 		} else {
 			return false;
 		}
