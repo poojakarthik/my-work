@@ -104,8 +104,7 @@ class Service_Rate_Plan extends ORM_Cached
 			$iFromDate			= max($iCurrentDate, $iStartDatetime);
 			$iFromDate			= min($iFromDate, coalesce($iEffectiveEndDatetime, PHP_INT_MAX));
 			
-			$iDifference	= Flex_Date::difference(date('Y-m-d', $iFromDate), $sEndDate, 'm');
-			return ($iDifference) > 0 ? $iDifference+1 : $iDifference;
+			return Flex_Date::difference(date('Y-m-d', $iFromDate), $sEndDate, 'm') + 1;
 		} else {
 			return false;
 		}
