@@ -249,8 +249,8 @@ class Email_Template_Logic_Correspondence extends Email_Template_Logic
 		$sQuery	= $sQueryTemplate;
 		foreach ($aParameters as $sParameter => $mValue)
 		{
-			$sValue	= ($mValue === null ? 'NULL' : "'{$mValue}'");
-			$sQuery	= preg_replace('/<'.$sParameter.'>/', $sValue, $sQuery);
+			//$sValue	= ($mValue === null ? 'NULL' : "'{$mValue}'");
+			$sQuery	= preg_replace('/<'.$sParameter.'>/', Query::prepareByPHPType($mValue), $sQuery);
 		}
 		return $sQuery;
 	}
