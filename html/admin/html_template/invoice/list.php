@@ -174,7 +174,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 				$aInvoiceIds[] = $dboInvoice->Id->Value;
 			
 				// Build the links
-				$oInvoiceRun	= Invoice_Run::getForId($dboInvoice->invoice_run_id);
+				$oInvoiceRun	= Invoice_Run::getForId($dboInvoice->invoice_run_id->Value);
 				$intDate = strtotime("-1 month", strtotime($oInvoiceRun->BillingDate));
 				$intYear = (int)date("Y", $intDate);
 				$intMonth = (int)date("n", $intDate);
