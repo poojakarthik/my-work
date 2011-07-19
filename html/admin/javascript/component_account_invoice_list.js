@@ -327,7 +327,7 @@ var Component_Account_Invoice_List = Class.create(
 			
 			var oDate 	= Date.$parseDate(oData.created_on, 'Y-m-d').shift(-1, 'months');
 			var iYear 	= oDate.getFullYear();
-			var iMonth	= oDate.getMonth();
+			var iMonth	= oDate.getMonth() + 1;	// Date.prototype.getMonth() is zero-indexed
 			
 			if ((bUserHasExternalPerm || bUserHasViewPerm) && oData.pdf_exists)
 			{
