@@ -122,7 +122,7 @@ class JSON_Handler_Collections extends JSON_Handler implements JSON_Handler_Logg
 		}
 		catch (Exception $oException)
 		{
-			$sMessage = $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
+			$sMessage = $bUserIsGod ? $oException->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
 			return array('bSuccess' => false, 'sMessage' => $sMessage);
 		}
 	}
