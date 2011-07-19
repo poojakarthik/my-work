@@ -174,9 +174,10 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 				$aInvoiceIds[] = $dboInvoice->Id->Value;
 			
 				// Build the links
-				$intDate = strtotime("-1 month", strtotime($dboInvoice->CreatedOn->Value));
+				$oInvoiceRun	= Invoice_Run::getForId($dboInvoice->invoice_run_id);
+				$intDate = strtotime("-1 month", strtotime($oInvoiceRun->BillingDate));
 				$intYear = (int)date("Y", $intDate);
-				$intMonth = (int)date("m", $intDate);
+				$intMonth = (int)date("n", $intDate);
 	
 				// Check if a pdf exists for the invoice
 				$strPdfLabel	= "&nbsp;";
