@@ -219,7 +219,9 @@ var Control_Text_AJAX = Class.create(Control, {
 					}
 					break;
 				case 13:	// ENTER
-					this._resultClicked(this._oHighlightedResult.iIndex);
+					if (this._oHighlightedResult) {
+						this._resultClicked(this._oHighlightedResult.iIndex);
+					}
 					break;
 				default:
 					//alert('down: ' + oEvent.keyCode);
