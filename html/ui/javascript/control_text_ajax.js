@@ -91,6 +91,9 @@ var Control_Text_AJAX = Class.create(Control, {
 		if (mDisplayValue !== null && (typeof mDisplayValue != 'undefined')) {
 			this._oInput.value 		= mDisplayValue;
 			this._oView.innerHTML 	= mDisplayValue.toString().escapeHTML();
+		} else {
+			this._oInput.value = '';
+			this._oView.innerHTML = '';
 		}
 	},
 	
