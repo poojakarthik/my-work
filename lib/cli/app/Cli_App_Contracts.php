@@ -104,85 +104,107 @@ class Cli_App_Contracts extends Cli
 		$arrLossClosures	= Array(SERVICE_CLOSURE_DISCONNECTED, SERVICE_CLOSURE_ARCHIVED);
 		
 		// Statements
-		$selContractServices	= new StatementSelect(	"Service JOIN ServiceRatePlan SRP ON Service.Id = SRP.Service",
+		/*$selContractServices	= new StatementSelect(	"Service JOIN ServiceRatePlan SRP ON Service.Id = SRP.Service",
 														"Service.Account, Service.FNN, Service.ClosedOn, Service.NatureOfClosure, Service.LineStatus, Service.LineStatusDate, SRP.*, SRP.Id AS ServiceRatePlanId",
-														"SRP.Id = (SELECT Id FROM ServiceRatePlan WHERE Service = Service.Id AND <EffectiveDate> BETWEEN StartDatetime AND EndDatetime ORDER BY CreatedOn LIMIT 1) AND contract_status_id = ".CONTRACT_STATUS_ACTIVE." AND Service.Status != ".SERVICE_ARCHIVED);
+														"SRP.Id = (SELECT Id FROM ServiceRatePlan WHERE Service = Service.Id AND <EffectiveDate> BETWEEN StartDatetime AND EndDatetime ORDER BY CreatedOn LIMIT 1) AND contract_status_id = ".CONTRACT_STATUS_ACTIVE." AND Service.Status != ".SERVICE_ARCHIVED);*/
 		$ubiServiceRatePlan		= new StatementUpdateById("ServiceRatePlan", Array('contract_effective_end_datetime'=>NULL, 'contract_status_id'=>NULL, 'contract_breach_reason_id'=>NULL, 'contract_breach_reason_description'=>NULL));
 		
 		// Get list of Services/Contracts to update
-		if ($selContractServices->Execute(Array('EffectiveDate' => $strEffectiveDate)) === FALSE)
+		$oResult	= Query::run("
+						SELECT		s.Account,
+									s.FNN,
+									s.ClosedOn,
+									s.NatureOfClosure,
+									s.LineStatus,
+									s.LineStatusDate,
+									srp.*,
+									srp.Id	AS ServiceRatePlan
+
+						FROM		Service s
+									JOIN ServiceRatePlan srp ON (
+										srp.Service = s.Id
+										AND srp.contract_status_id = ".CONTRACT_STATUS_ACTIVE."	/* CONTRACT_STATUS_ACTIVE */
+										AND s.Status != ".SERVICE_ARCHIVED."	/* SERVICE_ARCHIVED */
+										AND <EffectiveDate> BETWEEN StartDatetime AND EndDatetime
+										AND srp.Id = (
+											SELECT		Id
+											FROM		ServiceRatePlan
+											WHERE		Service = s.Id
+														AND <EffectiveDate> BETWEEN StartDatetime AND EndDatetime
+											ORDER BY	Id DESC
+											LIMIT		1
+										)
+									)
+
+						WHERE		1;", array(
+							'EffectiveDate'	=> $strEffectiveDate
+						));
+		while ($arrContractService = $oResult->fetch_assoc())
 		{
-			throw new Exception_Database($selContractServices->Error());
-		}
-		else
-		{
-			while ($arrContractService = $selContractServices->Fetch())
+			$this->log(" + {$arrContractService['Account']}::{$arrContractService['FNN']}... ", FALSE, TRUE);
+
+			$intClosedOn				= strtotime($arrContractService['ClosedOn']);
+			$intLineStatusDate			= strtotime($arrContractService['LineStatusDate']);
+			$intScheduledEndDatetime	= strtotime($arrContractService['contract_scheduled_end_datetime']);
+
+			// Has this Contract ended and why?
+			$arrServiceRatePlan	= Array('Id' => $arrContractService['ServiceRatePlanId']);
+			if ($intScheduledEndDatetime < $intEffectiveDate)
 			{
-				$this->log(" + {$arrContractService['Account']}::{$arrContractService['FNN']}... ", FALSE, TRUE);
-				
-				$intClosedOn				= strtotime($arrContractService['ClosedOn']);
-				$intLineStatusDate			= strtotime($arrContractService['LineStatusDate']);
-				$intScheduledEndDatetime	= strtotime($arrContractService['contract_scheduled_end_datetime']);
-				
-				// Has this Contract ended and why?
-				$arrServiceRatePlan	= Array('Id' => $arrContractService['ServiceRatePlanId']);
-				if ($intScheduledEndDatetime < $intEffectiveDate)
-				{
-					// Contract has expired
-					$arrServiceRatePlan['contract_effective_end_datetime']	= $arrContractService['contract_scheduled_end_datetime'];
-					$arrServiceRatePlan['contract_status_id']				= CONTRACT_STATUS_EXPIRED;
-				}
-				elseif ($intLineStatusDate < $intEffectiveDate && in_array($arrContractService['LineStatus'], $arrLossStatuses))
-				{
-					// Contract has been Breached -- Loss notice via Carrier
-					$arrServiceRatePlan['contract_effective_end_datetime']	= $arrContractService['LineStatusDate'];
-					$arrServiceRatePlan['contract_status_id']				= CONTRACT_STATUS_BREACHED;
-					
-					switch ($arrContractService['LineStatus'])
-					{
-						case SERVICE_LINE_DISCONNECTED:
-							$arrServiceRatePlan['contract_breach_reason_id']		= CONTRACT_BREACH_REASON_DISCONNECTED;
-							break;
-							
-						case SERVICE_LINE_CHURNED:
-							$arrServiceRatePlan['contract_breach_reason_id']		= CONTRACT_BREACH_REASON_CHURNED;
-							break;
-							
-						default:
-							// Line Status is not a Contract-breaker
-							$this->log("SKIPPED");
-							continue 2;
-					}
-				}
-				elseif ($intClosedOn !== NULL && $intClosedOn < $intEffectiveDate && in_array($arrContractService['NatureOfClosure'], $arrLossClosures))
-				{
-					// Contract has been Breached -- Service prematurely closed
-					$arrServiceRatePlan['contract_effective_end_datetime']		= $arrContractService['ClosedOn'];
-					$arrServiceRatePlan['contract_status_id']					= CONTRACT_STATUS_BREACHED;
-					$arrServiceRatePlan['contract_breach_reason_id']			= CONTRACT_BREACH_REASON_OTHER;
-					$arrServiceRatePlan['contract_breach_reason_description']	= "Service Prematurely Closed in Flex";
-				}
-				else
-				{
-					// Contract is still active
-					$this->log("SKIPPED (".date("Y-m-d H:i:s", $intClosedOn)." > ".date("Y-m-d H:i:s", $intEffectiveDate).")");
-					continue;
-				}
-				
-				// Fill the Description field
-				if (!$arrServiceRatePlan['contract_breach_reason_description'])
-				{
-					$arrServiceRatePlan['contract_breach_reason_description']	= GetConstantDescription($arrServiceRatePlan['contract_breach_reason_id'], 'contract_breach_reason');
-				}
-				
-				// Update the ServiceRatePlan record
-				if ($ubiServiceRatePlan->Execute($arrServiceRatePlan) === FALSE)
-				{
-					throw new Exception_Database($ubiServiceRatePlan->Error());
-				}
-				
-				$this->log("{$arrServiceRatePlan['contract_breach_reason_description']} @ {$arrServiceRatePlan['contract_effective_end_datetime']}");
+				// Contract has expired
+				$arrServiceRatePlan['contract_effective_end_datetime']	= $arrContractService['contract_scheduled_end_datetime'];
+				$arrServiceRatePlan['contract_status_id']				= CONTRACT_STATUS_EXPIRED;
 			}
+			elseif ($intLineStatusDate < $intEffectiveDate && in_array($arrContractService['LineStatus'], $arrLossStatuses))
+			{
+				// Contract has been Breached -- Loss notice via Carrier
+				$arrServiceRatePlan['contract_effective_end_datetime']	= $arrContractService['LineStatusDate'];
+				$arrServiceRatePlan['contract_status_id']				= CONTRACT_STATUS_BREACHED;
+
+				switch ($arrContractService['LineStatus'])
+				{
+					case SERVICE_LINE_DISCONNECTED:
+						$arrServiceRatePlan['contract_breach_reason_id']		= CONTRACT_BREACH_REASON_DISCONNECTED;
+						break;
+
+					case SERVICE_LINE_CHURNED:
+						$arrServiceRatePlan['contract_breach_reason_id']		= CONTRACT_BREACH_REASON_CHURNED;
+						break;
+
+					default:
+						// Line Status is not a Contract-breaker
+						$this->log("SKIPPED");
+						continue 2;
+				}
+			}
+			elseif ($intClosedOn !== NULL && $intClosedOn < $intEffectiveDate && in_array($arrContractService['NatureOfClosure'], $arrLossClosures))
+			{
+				// Contract has been Breached -- Service prematurely closed
+				$arrServiceRatePlan['contract_effective_end_datetime']		= $arrContractService['ClosedOn'];
+				$arrServiceRatePlan['contract_status_id']					= CONTRACT_STATUS_BREACHED;
+				$arrServiceRatePlan['contract_breach_reason_id']			= CONTRACT_BREACH_REASON_OTHER;
+				$arrServiceRatePlan['contract_breach_reason_description']	= "Service Prematurely Closed in Flex";
+			}
+			else
+			{
+				// Contract is still active
+				$this->log("SKIPPED (".date("Y-m-d H:i:s", $intClosedOn)." > ".date("Y-m-d H:i:s", $intEffectiveDate).")");
+				continue;
+			}
+
+			// Fill the Description field
+			if (!$arrServiceRatePlan['contract_breach_reason_description'])
+			{
+				$arrServiceRatePlan['contract_breach_reason_description']	= GetConstantDescription($arrServiceRatePlan['contract_breach_reason_id'], 'contract_breach_reason');
+			}
+
+			// Update the ServiceRatePlan record
+			if ($ubiServiceRatePlan->Execute($arrServiceRatePlan) === FALSE)
+			{
+				throw new Exception_Database($ubiServiceRatePlan->Error());
+			}
+
+			$this->log("{$arrServiceRatePlan['contract_breach_reason_description']} @ {$arrServiceRatePlan['contract_effective_end_datetime']}");
 		}
 	}
 	
