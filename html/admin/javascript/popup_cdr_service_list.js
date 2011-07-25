@@ -92,7 +92,7 @@ this._iServiceType = intServiceType;
 	{
 			 var accountLink = document.createElement("A");
 			 //set the href using rowIndex (+1 since 0-indexed)
-   accountLink.href = 'http://localhost/flex/html/admin/flex.php/Account/Overview/?Account.Id=' + oService.Account ;
+   accountLink.href = '../admin/flex.php/Account/Overview/?Account.Id=' + oService.Account ;
 
    //set the inner text using current cell's inner text
    accountLink.innerHTML = oService.Account;
