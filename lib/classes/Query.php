@@ -140,7 +140,7 @@
 		if (false === ($mResult = $oQuery->Execute($sQuery)) && !$bSilentFail) {
 			throw new Exception_Database($oQuery->Error());
 		}
-		return new Query_Result($mResult);
+		return ($mResult instanceof mysqli_result) ? new Query_Result($mResult) : $mResult;
 	 }
 
 	 public static function prepareByPHPType($mValue, $sConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT) {
