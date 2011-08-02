@@ -94,6 +94,11 @@ class JSON_Handler_Credit_Card_Payment extends JSON_Handler
 			$aResponse['sMessage']			= $oException->getMessage();
 			$aResponse['bInformativeError']	= true;
 		}
+		catch (Credit_Card_Payment_Exception $oException)
+		{
+			$aResponse['sMessage']			= $oException->getMessage();
+			$aResponse['bInformativeError']	= true;
+		}
 		catch (Credit_Card_Payment_Reversal_Exception $oException)
 		{
 			$sMessage = "The credit card payment was successful but Flex encountered a problem when trying to record the payment. A reversal was sent to reverse the payment";
