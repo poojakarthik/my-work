@@ -132,7 +132,7 @@ var Component_Account_Invoice_List = Class.create(
 		}
 		
 		// Add in button to Generate a Final/Interim Invoice
-		if (this._iInterimInvoiceType && this._oPermissions.bUserHasInterimPerm)
+		if (this._iInterimInvoiceType && this._oPermissions.bUserHasInterimPerm && !this._bAccountHasOCAReferral)
 		{
 			oSection.addToHeaderOptions(
 				$T.button({class: 'icon-button'},

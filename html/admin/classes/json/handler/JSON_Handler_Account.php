@@ -1664,7 +1664,7 @@ class JSON_Handler_Account extends JSON_Handler
 		{
 			return	array(
 						'bSuccess' 					=> true, 
-						'bAccountHasOCAReferral' 	=> Account_OCA_Referral::accountExists($iAccountId)
+						'bAccountHasOCAReferral' 	=> Account_OCA_Referral::accountExists($iAccountId, true)
 					);
 		}
 		catch (Exception $e)
