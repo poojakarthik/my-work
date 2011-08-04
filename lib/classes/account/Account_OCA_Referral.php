@@ -251,7 +251,7 @@ class Account_OCA_Referral extends ORM_Cached
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
 					break;
 				case 'selByAccountId':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "id", "account_id = <account_id> AND (<current_only> = 0 OR account_oca_referral_status_id IN (".ACCOUNT_OCA_REFERRAL_STATUS_COMPLETE.", ".ACCOUNT_OCA_REFERRAL_STATUS_CANCELLED."))");
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "id", "account_id = <account_id> AND (<current_only> = 0 OR account_oca_referral_status_id = ".ACCOUNT_OCA_REFERRAL_STATUS_PENDING.")");
 					break;
 					
 				// INSERTS
