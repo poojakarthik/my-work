@@ -1,12 +1,15 @@
 
-// CommonJS Modules/2.0d8 Browser Module Loader Plugin
+//debugger;
+
+// CommonJS Modules/2.0d8 Browser Module Loader Plugin for Flex
 (function (NS) {
 	var	MODULE_URL_BASE	= '../admin/reflex_json.php/Javascript_Module/get';
 
 	var	SOURCES		= {},
 		OBSERVERS	= {};
 
-	var	_aXHRFactories	= [
+	var	_undefined,
+		_aXHRFactories	= [
 			function(){return new XMLHttpRequest()},
 			function(){return new ActiveXObject("Msxml2.XMLHTTP")},
 			function(){return new ActiveXObject("Msxml3.XMLHTTP")},
@@ -46,7 +49,7 @@
 
 			// Configure
 			oRequest.open(_oConfig.sHTTPMethod, sURL, _oConfig.bAsync);
-			oRequest.setRequestHeader('User-Agent', 'XMLHTTP/1.0');
+			//oRequest.setRequestHeader('User-Agent', 'XMLHTTP/1.0');
 			if (_oConfig.sContent !== null) {
 				oRequest.setRequestHeader('Content-type', _oConfig.sContentType);
 			}
@@ -59,13 +62,14 @@
 				if (typeof _oConfig.fnCallback === 'function') {
 					_oConfig.fnCallback({
 						// TODO: We might do some fanciness here
-						oRequest	: oRequest
+						oRequest	: oRequest,
+						sContent	: oRequest.responseText
 					});
 				}
 			};
 
 			// Dispatch
-			oRequest.send(sContent);
+			oRequest.send(_oConfig.sContent);
 		},
 		// _moduleIdentifierToURL(): Converts a Module Identifier to a URL that the server can handle
 		_moduleIdentifierToURL	= function (sModuleIdentifier) {
@@ -76,6 +80,8 @@
 			return !!sSource.trim().match(/^module\.declare\(/);
 		},
 		_wrapModules1	= function(sSource) {
+			//return sSource;
+			//return "debugger;module.declare(function(require, exports, module) {debugger;});";
 			return	"module.declare(function(require, exports, module) {\n/* START MODULE SECTION */\n"+sSource.trim()+"\n/* END MODULE SECTION */\n});";
 		},
 		_observeModuleProvided	= function (sModuleId, fnCallback) {
@@ -85,12 +91,15 @@
 			OBSERVERS[sModuleId].push(fnCallback);
 
 			// If we have already been loaded, invoke the callback now(ish)
+			//debugger;
 			if (require.isMemoized(sModuleId)) {
 				module.eventually(fnCallback);
 			}
 		};
 
 	var	_oDeclaringModule;
+
+	//debugger;
 
 	// module.eventually()
 	module.constructor.prototype.eventually	= function (fnCallback) {
@@ -100,27 +109,31 @@
 	// module.declare()
 	module.constructor.prototype.declare	= function (aDependencies, fnFactory) {
 		if (typeof aDependencies === 'function') {
-			aDependencies	= [];
 			fnFactory		= aDependencies;
+			aDependencies	= [];
 		}
 
+		//debugger;
 		if (!_oDeclaringModule) {
-			throw new Error("There is no module being declared!");
+			// Probably a mischievous module.declare() statement somewhere it shouldn't be
+			throw new Error("There is no module being declared (most likely an out-of-place module.declare())");
 		}
-		var	oDeclaringModule	= _oDeclaringModule;
-		delete _oDeclaringModule;
+		var oDeclaringModule	= _oDeclaringModule;
+		_oDeclaringModule		= _undefined;
 
 		// Link the provided callback to our module
 		_observeModuleProvided(oDeclaringModule.sModuleId, oDeclaringModule.fnCallback);
 
 		// Load the dependencies using module.prototype.provide() (or any override)
 		this.provide(aDependencies, function () {
+			//debugger;
+
 			// Memoise the Module
 			require.memoize(oDeclaringModule.sModuleId, aDependencies, fnFactory);
 			
 			// Invoke our observers
 			for (var i=0, l=OBSERVERS[oDeclaringModule.sModuleId].length; i < l; i++) {
-				this.eventually(OBSERVERS[oDeclaringModule.sModuleId][i]);
+				module.eventually(OBSERVERS[oDeclaringModule.sModuleId][i]);
 			}
 		});
 	};
@@ -141,20 +154,29 @@
 			};
 		
 		var	sModuleId,
-			sModuleIdentifier;
-		for (var i=0, l=aNormalisedDependencies.length; i < l; i++) {
-			// Load if it is yet to be provided to the environment
-			sModuleIdentifier	=
-			sModuleId	= require.id(aNormalisedDependencies[i]);
-			if (!require.isMemoized(sModuleId)) {
-				if (!SOURCES[aNormalisedDependencies[i]]) {
-					// Not memoised or currently loading -- load
-					this.load(sModuleId, fnOnLoad);
-				} else {
-					// Waiting for it to load -- notify us later
-					_observeModuleProvided(sModuleId, fnOnLoad);
+			sModuleIdentifier,
+			iPendingModules	= 0;
+		if (aNormalisedDependencies.length) {
+			for (var i=0, l=aNormalisedDependencies.length; i < l; i++) {
+				// Load if it is yet to be provided to the environment
+				sModuleIdentifier	=
+				sModuleId	= require.id(aNormalisedDependencies[i]);
+				if (!require.isMemoized(sModuleId)) {
+					iPendingModules++;
+					if (!SOURCES[aNormalisedDependencies[i]]) {
+						// Not memoised or currently loading -- load
+						this.load(sModuleId, fnOnLoad);
+					} else {
+						// Waiting for it to load -- notify us later
+						_observeModuleProvided(sModuleId, fnOnLoad);
+					}
 				}
 			}
+		}
+
+		if (!iPendingModules) {
+			// Not waiting on any Modules
+			_thisModule.eventually(fnCallback);
 		}
 	};
 
@@ -163,11 +185,12 @@
 		var	sModuleId	= require.id(sModuleIdentifier);
 
 		// Load via XHR
-		_XHR(MODULE_URL_BASE+_moduleIdentifierToURL(sModuleIdentifier), {
+		_XHR(MODULE_URL_BASE, {
 			sHTTPMethod		: 'POST',
-			sContent		: "json="+encodeURIComponent(JSON.stringify([sModuleIdentifier])),
+			sContent		: "json="+encodeURIComponent(JSON.stringify([[sModuleIdentifier]])),
 
 			fnCallback	: function (oResponse) {
+				//debugger;
 				if (_oDeclaringModule) {
 					throw new Error("There is already a module being loaded: '"+_oDeclaringModule.sModuleIdentifier+"'");
 				}
@@ -215,11 +238,25 @@
 						};
 						
 						// FIXME: We should probably sanitise the source prior to eval()
-						eval(sSource);
+						// Run in the global scope (don't want it polluting our local vars through closure)
+						//eval(sSource);
+						var	fnSandbox	= new Function(sSource);
+						fnSandbox();
 					}
 				}
 			}
 		});
 	};
 
+	// Define the Main Module (empty, as much of Flex exists in the extra-module environment)
+	module.declare(function () {
+		//debugger;
+		// TODO: We can probably remove this logging at some stage.  It doesn't really serve any purpose.  Still need to keep the function, though.
+		if (console && typeof console.log === 'function') {
+			console.log("Flex's Main Module invoked");
+		}
+	});
+
 })(window);
+
+//debugger;

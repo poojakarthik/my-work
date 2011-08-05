@@ -173,6 +173,8 @@ class Application_Page extends Page
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_plugin.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_component.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_queue.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/modules.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_modules.js' ></script>\n";
 
 		// Include reference to all other javascript files required of the page
 		if (!array_key_exists('*arrJavaScript', $GLOBALS) || !is_array($GLOBALS['*arrJavaScript']))
@@ -206,7 +208,9 @@ class Application_Page extends Page
 										"observable",
 										"configurable",
 										"pluginable",
-										"reflex_plugin"
+										"reflex_plugin",
+										"modules",
+										"reflex_modules"
 									);
 
 		// Only include this file for the admin framework

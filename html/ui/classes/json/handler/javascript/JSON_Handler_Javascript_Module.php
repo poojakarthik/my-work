@@ -13,9 +13,13 @@ class JSON_Handler_Javascript_Module extends JSON_Handler implements JSON_Handle
 	public function get($aModuleIdentifiers, $bResolveDependencies=false, $aIgnoreDependencies=array()) {
 		
 		$aModuleSources	= array();
+
+		if (!is_array($aModuleIdentifiers)) {
+			throw new Exception("Invalid Module set provided: '".print_r($aModuleIdentifiers, true)."'");
+		}
 		
 		reset($aModuleIdentifiers);
-		while ($sModuleIdentifier = each($aModuleIdentifiers)) {
+		while (list(, $sModuleIdentifier) = each($aModuleIdentifiers)) {
 			$aModuleSources[$sModuleIdentifier]	= self::_getJavascriptSource($sModuleIdentifier);
 			
 			// Do static analysis for module dependencies
@@ -55,22 +59,28 @@ class JSON_Handler_Javascript_Module extends JSON_Handler implements JSON_Handle
 		// Get a list of our supported paths: Shared App + CWD
 		// CWD has higher priority than the Shared App
 		$aPaths	= array(
-			getcwd().MODULE_RELATIVE_DIR,
-			dirname(__FILE__).'../../../../../'.MODULE_SHARED_APP.MODULE_RELATIVE_DIR
+			getcwd().self::MODULE_RELATIVE_DIR,
+			getcwd().'/../'.self::MODULE_SHARED_APP.self::MODULE_RELATIVE_DIR
 		);
 		
 		$sModuleIdentifier	= trim(rtrim($sModuleIdentifier, '/'));
 		
 		// Loop through our search paths
+		$aSearchedPaths	= array();
 		foreach ($aPaths as $sBasePath) {
 			// The path must match exactly.  No fancy alternate paths like with PHP files.
-			$sPath	= $sBasePath.'/'.$sModuleIdentifier.'.js';
+			$sPath				= $sBasePath.'/'.$sModuleIdentifier.'.js';
+			$aSearchedPaths[]	= $sPath;
 			if (file_exists($sPath) && is_readable($sPath)) {
 				return file_get_contents($sPath);
 			}
 		}
 		
-		throw new JSON_Handler_Exception_Javascript_Module_NoSuchModule($sModuleIdentifier);
+		throw new JSON_Handler_Exception_Javascript_Module_NoSuchModule($sModuleIdentifier, $aSearchedPaths);
+	}
+
+	protected static function _realPath() {
+		
 	}
 	
 	protected static function _realIdentifier($sIdentifier, $sBaseIdentifier='') {
@@ -135,18 +145,20 @@ class JSON_Handler_Javascript_Module extends JSON_Handler implements JSON_Handle
 
 class JSON_Handler_Exception_Javascript_Module_NoSuchModule extends Exception implements JSON_Handler_Exception {
 	
-	public function __construct($sModuleIdentifier) {
+	public function __construct($sModuleIdentifier, $aPaths=array()) {
 		$this->_sModuleIdentifier	= $sModuleIdentifier;
+		$this->_aPaths				= $aPaths;
 		
 		parent::__construct($this->getFriendlyMessage());
 	}
 	
 	public function getFriendlyMessage() {
-		return self::ERROR_MESSAGE_FRIENDLY;
+		return JSON_Handler_Javascript_Module::ERROR_MESSAGE_FRIENDLY;
 	}
 	
 	public function getDetailedMessage() {
-		return "Unable to load Javascript Module '{$this->_sModuleIdentifier}'";
+
+		return "Unable to load Javascript Module '{$this->_sModuleIdentifier}'.  The following paths were checked: ".(implode('; ', $this->_aPaths));
 	}
 	
 }
@@ -161,7 +173,7 @@ class JSON_Handler_Exception_Javascript_Module_IdentifierJailbreak extends Excep
 	}
 	
 	public function getFriendlyMessage() {
-		return self::ERROR_MESSAGE_FRIENDLY;
+		return JSON_Handler_Javascript_Module::ERROR_MESSAGE_FRIENDLY;
 	}
 	
 	public function getDetailedMessage() {

@@ -233,6 +233,26 @@ class Application_Handler_Developer extends Application_Handler
 									);'
 				)
 			);
+
+			$arrFunctions[]	= self::_stdClassFactory(
+				array (
+					'strName'	=> 'CommonJS Modules/2.0d8',
+					'strType'	=> self::URL_TYPE_JS,
+					'strURL'	=> 'module.provide(["dom/factory"], function () {
+									//debugger;
+									var	$D	= require("dom/factory"),
+										$D2	= require("dom/factory").$for(document);
+									//debugger;
+
+									Reflex_Popup.alert(
+										$D.div(
+											$D2.h3("Modules/2.0d8 Loader"),
+											$D2.p("It seems to work!")
+										)
+									);
+								})'
+				)
+			);
 			
 			$arrDetailsToRender = array();
 			$arrDetailsToRender['arrFunctions']	= $arrFunctions;
