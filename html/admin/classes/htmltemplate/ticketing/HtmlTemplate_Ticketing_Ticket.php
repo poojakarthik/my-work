@@ -632,9 +632,11 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 						<?php
 							// Handle the displaying of notes specific to the Category (but only for new tickets)
 							// We currently only have notes for the "Fault" category
-							$strDisplay = ($ticket->categoryId == TICKETING_CATEGORY_FAULTS)? "display:table-row;" : "display:none";
+							// NOT ANYMORE!
+							//$strDisplay = ($ticket->categoryId == TICKETING_CATEGORY_FAULTS)? "display:table-row;" : "display:none";
+							$strDisplay	= "display:none";
 						?>
-						<tr class="alt TicketCategoryNotes" style='<?=$strDisplay?>' id='<?=TICKETING_CATEGORY_FAULTS?>'>
+						<tr class="alt TicketCategoryNotes" style='<?=$strDisplay?>' id='TICKETING_CATEGORY_FAULTS'>
 							<td class="title">Details to Record: </td>
 							<td style='width:100%'>
 								<ul>
