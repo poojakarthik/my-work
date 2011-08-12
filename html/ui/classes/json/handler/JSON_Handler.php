@@ -41,7 +41,7 @@ class JSON_Handler {
 		if ($bLogEnabled) {
 			// Add the logging output to the response
 			$aResponse[self::LOG_STRING_RESPONSE_PROPERTY_NAME] = $this->_sJSONDebug;
-		} else if ($bUserIsGod && $bLogCookieSet && isset($aResponse['strDebug']) && ($aResponse['strDebug'] != '')) {
+		} else if ($bUserIsGod && $bLogCookieSet && is_array($aResponse) && isset($aResponse['strDebug']) && ($aResponse['strDebug'] != '')) {
 			// The JSON handler doesn't implement the logging interface however an old style of logging is used,
 			// send it back as though it were a new piece of logging
 			$aResponse[self::LOG_STRING_RESPONSE_PROPERTY_NAME] = $aResponse['strDebug'];
