@@ -56,7 +56,7 @@ class Product_Type_Module_Service_Landline extends Product_Type_Module
 		$productDetails->bill_name = $product->billName;
 		$productDetails->bill_postcode = $product->billPostcode;
 		$productDetails->has_extension_level_billing = $product->hasExtensionLevelBilling;
-		echo '/*         ' . gettype($product->hasExtensionLevelBilling) . '        */';
+		//echo '/*         ' . gettype($product->hasExtensionLevelBilling) . '        */';
 		$productDetails->is_indial_100 = $product->isIndial100;
 		$productDetails->landline_service_address_type_id = $product->landlineServiceAddressTypeId;
 		$productDetails->landline_service_state_id = $product->landlineServiceStateId;
