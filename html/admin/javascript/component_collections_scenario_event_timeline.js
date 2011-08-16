@@ -288,17 +288,16 @@ var Component_Collections_Scenario_Event_Timeline = Class.create(
 	_createNode : function(iNodeType, oPrerequisiteNode, iEventId, sEventName, iDayOffset, iInvocationId)
 	{
 		iDayOffset	= (iDayOffset ? iDayOffset : 0);
-		iEventId	= (iEventId ? iEventId : null);
-		
-		var oNode =	{
-						iNodeType			: iNodeType,
-						iEventId			: iEventId,
-						sEventName			: sEventName,
-						iDayOffset			: iDayOffset,
-						iInvocationId		: iInvocationId,
-						oPrerequisiteNode	: (oPrerequisiteNode ? oPrerequisiteNode : null),
-						oContentDiv			: null
-					};
+		iEventId	= ((Object.isUndefined(iEventId) || (iEventId === null)) ? null : iEventId);
+		var oNode 	= {
+			iNodeType			: iNodeType,
+			iEventId			: iEventId,
+			sEventName			: sEventName,
+			iDayOffset			: iDayOffset,
+			iInvocationId		: iInvocationId,
+			oPrerequisiteNode	: (oPrerequisiteNode ? oPrerequisiteNode : null),
+			oContentDiv			: null
+		};
 		
 		this._createNodeContent(oNode);
 		this._updateNodeContent(oNode);

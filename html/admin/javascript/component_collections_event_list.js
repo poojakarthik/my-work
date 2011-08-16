@@ -261,7 +261,7 @@ var Component_Collections_Event_List = Class.create(
 
 	_createTableRow	: function(oData, iPosition, iTotalResults)
 	{
-		if (oData.id)
+		if ((oData.id !== null) && !Object.isUndefined(oData.id))
 		{
 			// Create the row element
 			var sActionIconText = null;

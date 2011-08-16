@@ -786,8 +786,8 @@ var Component_Collections_Event_Management = Class.create(
 	{
 		var iEventTypeId	= parseInt(this._oBreadcrumb.getValueAtLevel(0));
 		var iEventId		= parseInt(this._oBreadcrumb.getValueAtLevel(1));
-		iEventTypeId		= (iEventTypeId ? iEventTypeId : null);
-		iEventId			= (iEventId ? iEventId : null);
+		iEventTypeId		= (isNaN(iEventTypeId) ? null : iEventTypeId);
+		iEventId			= (isNaN(iEventId) ? null : iEventId);
 		
 		this._oFilter.setFilterValue('collection_event_type_id', iEventTypeId);
 		this._oFilter.setFilterValue('collection_event_id', iEventId);
