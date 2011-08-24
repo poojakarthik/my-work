@@ -516,9 +516,10 @@
 			}
 
 			// Insert every CDR Line into the database
-			$fileCDRFile	= fopen($arrCDRFile['php_stream_wrapper'].$arrCDRFile['Location'], "r");
-			$intSequence	= 1;
-			while (!feof($fileCDRFile))
+			$sWrappedLocation	= $arrCDRFile['php_stream_wrapper'].$arrCDRFile['Location'];
+			$fileCDRFile		= fopen($sWrappedLocation, "r");
+			$intSequence		= 1;
+			while ($fileCDRFile && file_get_contents($sWrappedLocation) && !feof($fileCDRFile))
 			{
 				// Add to report <Action> CDR <SeqNo> from <FileName>...");
 				$arrReportLine['<Action>']		= "Importing";
@@ -545,6 +546,7 @@
 					if ($insInsertCDRLine->Error())
 					{
 						// error inserting
+
 
 					}
 				}
