@@ -198,6 +198,8 @@ class Cli_App_Contracts extends Cli
 				$arrServiceRatePlan['contract_breach_reason_description']	= GetConstantDescription($arrServiceRatePlan['contract_breach_reason_id'], 'contract_breach_reason');
 			}
 
+			$this->log("Saving: ".print_r($arrServiceRatePlan, true));
+
 			// Update the ServiceRatePlan record
 			if ($ubiServiceRatePlan->Execute($arrServiceRatePlan) === FALSE)
 			{
