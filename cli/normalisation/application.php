@@ -524,8 +524,8 @@
 			{
 				// Set fields that are consistent over all CDRs for this file
 				$arrCDRLine	= array(
-					"File"		= $arrCDRFile["Id"],
-					"Carrier"	= $arrCDRFile["Carrier"]
+					"File"		=> $arrCDRFile["Id"],
+					"Carrier"	=> $arrCDRFile["Carrier"]
 				);
 
 				// Add to report <Action> CDR <SeqNo> from <FileName>...");
