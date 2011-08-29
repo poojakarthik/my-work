@@ -553,7 +553,7 @@
 
 				if (trim($arrCDRLine["CDR"]))
 				{
-					$this->rptNormalisationReport->AddMessage("Line {$intSequence} is: '{$arrCDRLine["CDR"]}'");
+					//$this->rptNormalisationReport->AddMessage("Line {$intSequence} is: '{$arrCDRLine["CDR"]}'");
 					$insInsertCDRLine->Execute($arrCDRLine);
 					if ($insInsertCDRLine->Error())
 					{
@@ -562,7 +562,7 @@
 
 					}
 				} else {
-					$this->rptNormalisationReport->AddMessage("Line {$intSequence} is empty");
+					//$this->rptNormalisationReport->AddMessage("Line {$intSequence} is empty");
 				}
 				$intSequence++;
 
