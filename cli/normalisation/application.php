@@ -502,8 +502,8 @@
 			}
 
 			// Set fields that are consistent over all CDRs for this file
-			$arrCDRLine["File"]			= $arrCDRFile["Id"];
-			$arrCDRLine["Carrier"]		= $arrCDRFile["Carrier"];
+			//$arrCDRLine["File"]			= $arrCDRFile["Id"];
+			//$arrCDRLine["Carrier"]		= $arrCDRFile["Carrier"];
 
 			// check for a preprocessor
 			$bolPreprocessor = FALSE;
@@ -520,8 +520,14 @@
 			$sWrappedLocation	= $arrCDRFile['php_stream_wrapper'].$arrCDRFile['Location'];
 			$fileCDRFile		= fopen($sWrappedLocation, "r");
 			$intSequence		= 1;
-			while ($fileCDRFile && file_get_contents($sWrappedLocation) && !feof($fileCDRFile))
+			while ($fileCDRFile && file_get_contents($arrCDRFile['Location']) && file_get_contents($sWrappedLocation) && !feof($fileCDRFile))
 			{
+				// Set fields that are consistent over all CDRs for this file
+				$arrCDRLine	= array(
+					"File"		= $arrCDRFile["Id"],
+					"Carrier"	= $arrCDRFile["Carrier"]
+				);
+
 				// Add to report <Action> CDR <SeqNo> from <FileName>...");
 				$arrReportLine['<Action>']		= "Importing";
 				$arrReportLine['<SeqNo>']		= $intSequence;
@@ -547,6 +553,7 @@
 
 				if (trim($arrCDRLine["CDR"]))
 				{
+					$this->rptNormalisationReport->AddMessage("Line {$intSequence} is: '{$arrCDRLine["CDR"]}'");
 					$insInsertCDRLine->Execute($arrCDRLine);
 					if ($insInsertCDRLine->Error())
 					{
@@ -554,6 +561,8 @@
 						throw new Exception("There was an error inserting line {$intSequence} into the database");
 
 					}
+				} else {
+					$this->rptNormalisationReport->AddMessage("Line {$intSequence} is empty");
 				}
 				$intSequence++;
 
