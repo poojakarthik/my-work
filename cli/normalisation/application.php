@@ -343,7 +343,7 @@
 					$arrCDRFile["Status"] = FILE_IMPORT_FAILED;
 					if ($updUpdateCDRFiles->Execute($arrDefine, Array("Id" => $arrCDRFile["Id"])) === FALSE)
 					{
-
+						throw new Exception("Unable to mark file as not existing on disk");
 					}
 
 					// Add to the Normalisation report
@@ -498,7 +498,7 @@
 			$arrCDRFile['ImportedOn'] 	= new MySQLFunction("NOW()");
 			if ($updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"])) === FALSE)
 			{
-
+				throw new Exception("Unable to mark the file as 'Importing'");
 			}
 
 			// Set fields that are consistent over all CDRs for this file
@@ -511,6 +511,7 @@
 			{
 				if (method_exists ($this->_arrNormalisationModule[$arrCDRFile['Carrier']][$arrCDRFile["FileType"]], "Preprocessor" ))
 				{
+					$this->rptNormalisationReport->AddMessage("\tusing a pre-processor...");
 					$bolPreprocessor = TRUE;
 				}
 			}
@@ -540,13 +541,17 @@
 					$arrCDRLine["CDR"]		= fgets($fileCDRFile);
 				}
 
+				if ($arrCDRLine["CDR"] === false) {
+					throw new Exception("Attempting to read line {$intSequence} from the file failed: {$php_errormsg}");
+				}
+
 				if (trim($arrCDRLine["CDR"]))
 				{
 					$insInsertCDRLine->Execute($arrCDRLine);
 					if ($insInsertCDRLine->Error())
 					{
 						// error inserting
-
+						throw new Exception("There was an error inserting line {$intSequence} into the database");
 
 					}
 				}
@@ -570,7 +575,7 @@
 			//$arrCDRFile['NormalisedOn'] = new MySQLFunction("Now()");
 			if ($updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"])) === FALSE)
 			{
-
+				throw new Exception("Unabelt to mark the file as 'Imported'");
 			}
 		}
 		catch (ExceptionVixen $exvException)
