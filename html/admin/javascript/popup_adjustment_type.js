@@ -72,7 +72,7 @@ var Popup_Adjustment_Type = Class.create(Reflex_Popup,
 										'checkbox',
 										{
 											sLabel		: 'Fixation',
-											mMandatory	: true,
+											mMandatory	: false,
 											mEditable	: true
 										}
 									);
