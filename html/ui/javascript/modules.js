@@ -11,7 +11,8 @@
 			if (console && 'log' in console && 'apply' in console.log) {
 				console.log.apply(console, aArgs);
 			} else {
-				alert(aArgs.join("\n"));
+				// Suppress... unfortunately
+				//alert(aArgs.join("\n"));
 			}
 		},
 		_extend	= function (oTo, oFrom) {
@@ -42,13 +43,21 @@
 			var	oModule	= (sModuleId) ? MODULES[sModuleId] : MODULES_MAIN;
 			
 			if (!oModule.hasOwnProperty('mExports')) {
-				var	mExports	= {};
+				oModule.oModule		= new Module(sModuleId, oModule.aDependencies);
+				oModule.oRequire	= new Require(oModule.aDependencies, sModuleId ? sModuleId+'/../' : '');
 
-				oModule.mExports	= mExports;
+				// Keep a separate reference to `module.exports` so that naughty module code can't modify our "real" exports after
+				// the factory has finished
+				oModule.mExports	= oModule.oModule.exports;
 
-				mReturned	= oModule.fnFactory(new Require(), mExports, new Module());
+				//debugger;
+				var	mReturned	= oModule.fnFactory(oModule.oRequire, oModule.mExports, oModule.oModule);
 				if (mReturned) {
+					// Modules can `return` their `exports`
 					oModule.oModule.setExports(mReturned);
+				} else {
+					// Modules can set `modules.exports` directly
+					oModule.oModule.setExports(oModule.oModule.exports);
 				}
 			}
 			oModule.bExportsRetrieved	= true;
@@ -78,6 +87,10 @@
 			// FIXME: This may break when initialising the main module or extra-module environment
 			// TODO: Reinstate later
 			//this.main	= _getExports('');
+
+			// module.exports
+			// NodeJS allows the setting of `module.exports` as an alternative to `return exports` or `module.setExports()`
+			this.exports	= {};
 		};
 	//debugger;
 	_extend(Module.prototype, {
@@ -103,11 +116,14 @@
 
 		// Works similar to the functionality described at (http://wiki.commonjs.org/wiki/Modules/SetExports)
 		setExports	: function (mExports) {
+			var MODULE	= this.id ? MODULES[this.id] : MODULES_MAIN;
+
 			if (!(mExports instanceof Object || typeof mExports === 'function')) {
 				throw new Error("Exports must be an Object or Function");
-			} else if (MODULES[this.id].bRequired) {
+			} else if (MODULE.bRequired) {
 				throw new Error("Module '"+this.id+"' has already been require()'d, cannot replace exports");
 			}
+			MODULE.mExports	= mExports;
 		},
 
 		// module.main	[§4.4]
@@ -127,12 +143,12 @@
 			var	fnRequire	= function (sModuleIdentifier) {
 				//debugger;
 				// Dereference the Module Identifier
-				var	sModuleId	= require.id(sModuleIdentifier);
+				var	sModuleId	= fnRequire.id(sModuleIdentifier);
 
 				// Check if we have a labelled dependency by this name
 				if (oLabelledDependencies.hasOwnProperty(sModuleIdentifier)) {
 					// Return this instead of the resolved module id
-					return _getExports(require.id(oLabelledDependencies[sModuleIdentifier]));
+					return _getExports(fnRequire.id(oLabelledDependencies[sModuleIdentifier]));
 				}
 
 				// Return the Module's Exports
@@ -149,7 +165,11 @@
 			//fnRequire.main	= _getExports('');
 
 			fnRequire.constructor	= Require;
-			fnRequire.__proto__		= Require.prototype;
+
+			// It would be nice to use a __proto__ hack here, but boo to some browsers
+			//fnRequire.__proto__		= Require.prototype;
+			_extend(fnRequire, Require.prototype);
+
 			return fnRequire;
 		};
 	
@@ -191,6 +211,7 @@
 
 		// realIdentifier(): Normalises/realpath()'s a Module Identifier
 		realIdentifier	: function (sModuleIdentifier, sBasePath) {
+			//debugger;
 			var	sAbsolutePath		= (sBasePath || '') + '/';
 			
 			if (sModuleIdentifier.charAt(0) === '.') {
@@ -202,7 +223,7 @@
 			}
 
 			// Convert into a "realpath"
-			var	aTerms				= (sModuleIdentifier).toLowerCase().split('/'),
+			var	aTerms				= sAbsolutePath.toLowerCase().split('/'),
 				aNormalisedTerms	= [];
 			for (var i=0, l=aTerms.length; i < l; i++) {
 				switch (aTerms[i]) {
@@ -294,6 +315,7 @@
 		// Provide any dependencies
 		module.provide(aDependencies, function () {
 			// Memoize & invoke the main module
+			//debugger;
 			require.memoize('', aDependencies, fnFactory);
 			_getExports('');
 		});
