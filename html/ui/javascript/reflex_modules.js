@@ -142,7 +142,7 @@
 
 	// module.provide()
 	module.constructor.prototype.provide	= function (aDependencies, fnCallback) {
-		debugger;
+		//debugger;
 		var	_thisModule				= this,
 			aNormalisedDependencies	= require.normaliseDependencies(aDependencies),
 			oPending				= {},
