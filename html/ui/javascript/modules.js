@@ -6,9 +6,10 @@
 	// CommonJS Modules/2.0d8 implementation (http://www.page.ca/~wes/CommonJS/modules-2.0-draft8/commonjs%20modules%202.0-8(2).pdf)
 
 	var	_undefined,
+		_global	= window || global,
 		_log	= function () {
 			var	aArgs	= Array.prototype.slice.apply(arguments);
-			if (console && 'log' in console && 'apply' in console.log) {
+			if ('console' in _global && 'log' in console && 'apply' in console.log) {
 				console.log.apply(console, aArgs);
 			} else {
 				// Suppress... unfortunately

@@ -3,6 +3,8 @@
 
 // CommonJS Modules/2.0d8 Browser Module Loader Plugin for Flex
 (function (NS) {
+	var	_global	= window || global;
+
 	var	MODULE_URL_BASE	= '../admin/reflex_json.php/Javascript_Module/get';
 
 	var	SOURCES		= {},
@@ -140,6 +142,7 @@
 
 	// module.provide()
 	module.constructor.prototype.provide	= function (aDependencies, fnCallback) {
+		debugger;
 		var	_thisModule				= this,
 			aNormalisedDependencies	= require.normaliseDependencies(aDependencies),
 			oPending				= {},
@@ -252,7 +255,7 @@
 	module.declare(function () {
 		//debugger;
 		// TODO: We can probably remove this logging at some stage.  It doesn't really serve any purpose.  Still need to keep the function, though.
-		if (console && typeof console.log === 'function') {
+		if ('console' in _global && typeof console.log === 'function') {
 			console.log("Flex's Main Module invoked");
 		}
 	});
