@@ -486,6 +486,8 @@
 	 */
  	function InsertCDRFile($arrCDRFile, $insInsertCDRLine, $updUpdateCDRFiles)
  	{
+ 		$oStopwatch	= new Stopwatch(true);
+
 		unset($arrCDRFile['NormalisedOn']);
 
 		// Report
@@ -501,6 +503,8 @@
 				throw new Exception("Unable to mark the file as 'Importing'");
 			}
 
+			$this->rptNormalisationReport->AddMessage("\t\tMark as Importing: ".$oStopwatch->lap(4));
+
 			// Set fields that are consistent over all CDRs for this file
 			//$arrCDRLine["File"]			= $arrCDRFile["Id"];
 			//$arrCDRLine["Carrier"]		= $arrCDRFile["Carrier"];
@@ -515,69 +519,82 @@
 					$bolPreprocessor = TRUE;
 				}
 			}
+			$this->rptNormalisationReport->AddMessage("\t\tTesting for preprocessor: ".$oStopwatch->lap(4));
 
 			// Insert every CDR Line into the database
 			$sWrappedLocation	= $arrCDRFile['php_stream_wrapper'].$arrCDRFile['Location'];
-			$fileCDRFile		= fopen($sWrappedLocation, "r");
 			$intSequence		= 1;
-			while ($fileCDRFile && file_get_contents($arrCDRFile['Location']) && file_get_contents($sWrappedLocation) && !feof($fileCDRFile))
-			{
-				// Set fields that are consistent over all CDRs for this file
-				$arrCDRLine	= array(
-					"File"		=> $arrCDRFile["Id"],
-					"Carrier"	=> $arrCDRFile["Carrier"]
-				);
+			$sFileContents		= file_get_contents($sWrappedLocation);
+			$this->rptNormalisationReport->AddMessage("\t\tFile contents retrieved: ".$oStopwatch->lap(4));
+			if ($sFileContents) {
+				$aFileContents	= explode("\n", $sFileContents);
 
-				// Add to report <Action> CDR <SeqNo> from <FileName>...");
-				$arrReportLine['<Action>']		= "Importing";
-				$arrReportLine['<SeqNo>']		= $intSequence;
-				$arrReportLine['<FileName>']	= TruncateName($arrCDRFile['FileName'], MSG_MAX_FILENAME_LENGTH);
-				//$this->AddToNormalisationReport(MSG_LINE, $arrReportLine);
+				$this->rptNormalisationReport->AddMessage("\t\tProcessing ".count($aFileContents)." lines..... (sleeping for 5 seconds)");
+				sleep(5);
+				foreach ($aFileContents as $sLine) {
+					$oStopwatch->lap();
 
-				$arrCDRLine["SequenceNo"]	= $intSequence;
-				$arrCDRLine["Status"]		= CDR_READY;
+					// Set fields that are consistent over all CDRs for this file
+					$arrCDRLine	= array(
+						"File"		=> $arrCDRFile["Id"],
+						"Carrier"	=> $arrCDRFile["Carrier"]
+					);
 
-				// run Preprocessor
-				if ($bolPreprocessor)
-				{
-					$arrCDRLine["CDR"]		= $this->_arrNormalisationModule[$arrCDRFile['Carrier']][$arrCDRFile["FileType"]]->Preprocessor(fgets($fileCDRFile));
-				}
-				else
-				{
-					$arrCDRLine["CDR"]		= fgets($fileCDRFile);
-				}
+					// Add to report <Action> CDR <SeqNo> from <FileName>...");
+					$arrReportLine['<Action>']		= "Importing";
+					$arrReportLine['<SeqNo>']		= $intSequence;
+					$arrReportLine['<FileName>']	= TruncateName($arrCDRFile['FileName'], MSG_MAX_FILENAME_LENGTH);
+					//$this->AddToNormalisationReport(MSG_LINE, $arrReportLine);
 
-				if ($arrCDRLine["CDR"] === false) {
-					throw new Exception("Attempting to read line {$intSequence} from the file failed: {$php_errormsg}");
-				}
+					$arrCDRLine["SequenceNo"]	= $intSequence;
+					$arrCDRLine["Status"]		= CDR_READY;
 
-				if (trim($arrCDRLine["CDR"]))
-				{
-					//$this->rptNormalisationReport->AddMessage("Line {$intSequence} is: '{$arrCDRLine["CDR"]}'");
-					$insInsertCDRLine->Execute($arrCDRLine);
-					if ($insInsertCDRLine->Error())
+					$this->rptNormalisationReport->AddMessage("\t\tSequence {$intSequence} configured in : ".$oStopwatch->lapSplit(4));
+
+					// run Preprocessor
+					if ($bolPreprocessor)
 					{
-						// error inserting
-						throw new Exception("There was an error inserting line {$intSequence} into the database");
-
+						$arrCDRLine["CDR"]		= $this->_arrNormalisationModule[$arrCDRFile['Carrier']][$arrCDRFile["FileType"]]->Preprocessor($sLine);
 					}
-				} else {
-					//$this->rptNormalisationReport->AddMessage("Line {$intSequence} is empty");
-				}
-				$intSequence++;
+					else
+					{
+						$arrCDRLine["CDR"]		= $sLine;
+					}
+					$this->rptNormalisationReport->AddMessage("\t\tSequence {$intSequence} pre-processed in : ".$oStopwatch->lapSplit(4));
 
-				// Report
-				//$this->AddToNormalisationReport(MSG_OK);
+					if ($arrCDRLine["CDR"] === false) {
+						throw new Exception("Attempting to read line {$intSequence} from the file failed: {$php_errormsg}");
+					}
 
-				$this->_intImportPass++;
+					if (trim($arrCDRLine["CDR"]))
+					{
+						//$this->rptNormalisationReport->AddMessage("Line {$intSequence} is: '{$arrCDRLine["CDR"]}'");
+						$insInsertCDRLine->Execute($arrCDRLine);
+						if ($insInsertCDRLine->Error())
+						{
+							// error inserting
+							throw new Exception("There was an error inserting line {$intSequence} into the database");
 
-				// Break here for fast normalisation test
-				if (FAST_NORMALISATION_TEST === TRUE && $intSequence > 100)
-				{
-					break;
+						}
+						$this->rptNormalisationReport->AddMessage("\t\tSequence {$intSequence} inserted in : ".$oStopwatch->lapSplit(4));
+					} else {
+						//$this->rptNormalisationReport->AddMessage("Line {$intSequence} is empty");
+					}
+					$intSequence++;
+
+					// Report
+					//$this->AddToNormalisationReport(MSG_OK);
+
+					$this->_intImportPass++;
+
+					// Break here for fast normalisation test
+					if (FAST_NORMALISATION_TEST === TRUE && $intSequence > 100)
+					{
+						break;
+					}
+					$this->rptNormalisationReport->AddMessage("\t\tSequence {$intSequence} processed in : ".$oStopwatch->lapSplit(4));
 				}
 			}
-			fclose($fileCDRFile);
 
 			// Set the File status to "Normalised"
 			$arrCDRFile["Status"]		= FILE_IMPORTED;
