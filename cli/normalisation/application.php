@@ -503,7 +503,7 @@
 				throw new Exception("Unable to mark the file as 'Importing'");
 			}
 
-			$this->rptNormalisationReport->AddMessage("\t\tMark as Importing: ".$oStopwatch->lap(4));
+			//$this->rptNormalisationReport->AddMessage("\t\tMark as Importing: ".$oStopwatch->lap(4));
 
 			// Set fields that are consistent over all CDRs for this file
 			//$arrCDRLine["File"]			= $arrCDRFile["Id"];
@@ -515,22 +515,22 @@
 			{
 				if (method_exists ($this->_arrNormalisationModule[$arrCDRFile['Carrier']][$arrCDRFile["FileType"]], "Preprocessor" ))
 				{
-					$this->rptNormalisationReport->AddMessage("\tusing a pre-processor...");
+					//$this->rptNormalisationReport->AddMessage("\tusing a pre-processor...");
 					$bolPreprocessor = TRUE;
 				}
 			}
-			$this->rptNormalisationReport->AddMessage("\t\tTesting for preprocessor: ".$oStopwatch->lap(4));
+			//$this->rptNormalisationReport->AddMessage("\t\tTesting for preprocessor: ".$oStopwatch->lap(4));
 
 			// Insert every CDR Line into the database
 			$sWrappedLocation	= $arrCDRFile['php_stream_wrapper'].$arrCDRFile['Location'];
 			$intSequence		= 1;
 			$sFileContents		= file_get_contents($sWrappedLocation);
-			$this->rptNormalisationReport->AddMessage("\t\tFile contents retrieved: ".$oStopwatch->lap(4));
+			//$this->rptNormalisationReport->AddMessage("\t\tFile contents retrieved: ".$oStopwatch->lap(4));
 			if ($sFileContents) {
 				$aFileContents	= explode("\n", $sFileContents);
 
-				$this->rptNormalisationReport->AddMessage("\t\tProcessing ".count($aFileContents)." lines..... (sleeping for 5 seconds)");
-				sleep(5);
+				//$this->rptNormalisationReport->AddMessage("\t\tProcessing ".count($aFileContents)." lines..... (sleeping for 5 seconds)");
+				//sleep(5);
 				foreach ($aFileContents as $sLine) {
 					$oStopwatch->lap();
 
@@ -549,7 +549,7 @@
 					$arrCDRLine["SequenceNo"]	= $intSequence;
 					$arrCDRLine["Status"]		= CDR_READY;
 
-					$this->rptNormalisationReport->AddMessage("\t\tSequence {$intSequence} configured in : ".$oStopwatch->lapSplit(4));
+					//$this->rptNormalisationReport->AddMessage("\t\tSequence {$intSequence} configured in : ".$oStopwatch->lapSplit(4));
 
 					// run Preprocessor
 					if ($bolPreprocessor)
@@ -560,7 +560,7 @@
 					{
 						$arrCDRLine["CDR"]		= $sLine;
 					}
-					$this->rptNormalisationReport->AddMessage("\t\tSequence {$intSequence} pre-processed in : ".$oStopwatch->lapSplit(4));
+					//$this->rptNormalisationReport->AddMessage("\t\tSequence {$intSequence} pre-processed in : ".$oStopwatch->lapSplit(4));
 
 					if ($arrCDRLine["CDR"] === false) {
 						throw new Exception("Attempting to read line {$intSequence} from the file failed: {$php_errormsg}");
@@ -576,7 +576,7 @@
 							throw new Exception("There was an error inserting line {$intSequence} into the database");
 
 						}
-						$this->rptNormalisationReport->AddMessage("\t\tSequence {$intSequence} inserted in : ".$oStopwatch->lapSplit(4));
+						//$this->rptNormalisationReport->AddMessage("\t\tSequence {$intSequence} inserted in : ".$oStopwatch->lapSplit(4));
 					} else {
 						//$this->rptNormalisationReport->AddMessage("Line {$intSequence} is empty");
 					}
@@ -592,7 +592,7 @@
 					{
 						break;
 					}
-					$this->rptNormalisationReport->AddMessage("\t\tSequence {$intSequence} processed in : ".$oStopwatch->lapSplit(4));
+					//$this->rptNormalisationReport->AddMessage("\t\tSequence {$intSequence} processed in : ".$oStopwatch->lapSplit(4));
 				}
 			}
 
@@ -601,7 +601,7 @@
 			//$arrCDRFile['NormalisedOn'] = new MySQLFunction("Now()");
 			if ($updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"])) === FALSE)
 			{
-				throw new Exception("Unabelt to mark the file as 'Imported'");
+				throw new Exception("Unable to mark the file as 'Imported'");
 			}
 		}
 		catch (ExceptionVixen $exvException)
@@ -624,7 +624,7 @@
 		$intPassed = $this->_intImportPass;
 		$intFailed = ($intSequence - 1) - $intPassed;
 		$this->_intImportFail += $intFailed;
-		$this->rptNormalisationReport->AddMessage("\t$intPassed passed, $intFailed failed.");
+		$this->rptNormalisationReport->AddMessage("\t$intPassed passed, $intFailed failed. in ".$oStopwatch->split(4));
 
 		return $intSequence;
  	}
