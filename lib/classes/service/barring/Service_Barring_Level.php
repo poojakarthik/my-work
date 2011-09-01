@@ -328,10 +328,12 @@ class Service_Barring_Level extends ORM_Cached
 					            )
 					        ) barring_level_union
 					{$sWhere}
-					GROUP BY account_id, barring_level_id
+					".($bCountOnly ? '' : "GROUP BY account_id, barring_level_id")."
 					{$sOrderBy}
 					{$sLimit};";
-
+		
+		//Log::getLog()->log($sQuery);
+		
 		// Execute the query
 		$oQuery 	= new Query();
 		$mResult	= $oQuery->Execute($sQuery);
