@@ -192,7 +192,8 @@ class MenuItems
 	{
 		$this->strLabel	= "First time user?";
 
-		return $this->GetBaseURL()."./flex.php/Console/Setup/";
+		//return $this->GetBaseURL()."./flex.php/Console/Setup/";
+		return $this->GetBaseURL()."./flex.php/User/Register/";
 	}
 
 	//------------------------------------------------------------------------//

@@ -1945,3 +1945,154 @@ input.time
 	margin-bottom: 			7px;
 	font-weight:			bold;
 }
+
+
+/* User Registration (Username-based) */
+#portal-user-registration {
+	width	: 440px;
+	margin	: 0 auto;
+
+}
+
+#portal-user-registration h2 {
+	font-size	: 1em;
+
+	text-indent			: 10px;
+	color				: [customer_breadcrumb_menu_link_color];
+	background-repeat	: repeat-x;
+	background-image	: url('./img/template/menu-options-bg.gif');
+	background-position	: 0px 100%;
+	border				: solid 1px #D1D1D1;
+	padding				: 0px;
+	margin-bottom		: 5px;
+	font-weight			: bold;
+}
+
+#portal-user-registration form {
+	border				: solid 1px #D1D1D1;
+	background-color	: #F9F9F9;
+	padding				: 5px 40px;
+	margin-bottom		: 7px;
+	font-weight			: normal;
+}
+
+#portal-user-registration form fieldset {
+	overflow	: hidden;
+	padding		: 30px;
+	padding-top	: 0;
+	margin		: 0;
+
+	border		: 0;
+	border-top	: 1px solid #ccc;
+}
+
+#portal-user-registration form fieldset * {
+	/*float	: right;
+	width	: 260px;*/
+	/*display	: inline-block;*/
+	display		: block;
+
+	/*width		: 306px;*/
+
+	font-size	: inherit;
+	padding		: 4px;
+
+	margin		: 0;
+	margin-top	: .4em;
+
+	width	: 276px;
+}
+#portal-user-registration form fieldset label {
+	/*float	: left;
+	clear	: both;*/
+
+	font-weight	: bold;
+	margin-top	: 1em;
+	color		: #222;
+
+	/*width		: 140px;*/
+	text-align	: left;
+	padding		: 0;
+	height		: auto;
+	line-height	: 1em;
+	text-indent	: 2px;
+}
+#portal-user-registration form fieldset legend {
+	/*float		: left;*/
+	margin		: 0;
+	width		: auto;
+	padding		: 2px 5px;
+
+	font-weight	: bold;
+	color		: #444;
+	text-align	: center;
+}
+
+#portal-user-registration small {
+	font-size	: .8em !important;
+	font-style	: italic;
+	margin-top	: 0 !important;
+
+	text-align	: right;
+	line-height	: 1em;
+
+	color		: #555;
+}
+
+#portal-user-registration-user-username {
+	/*margin-bottom	: 30px !important;*/
+}
+
+/*
+#portal-user-registration form hr {
+	border			: 0;
+	border-bottom	: 1px solid #ddd;
+
+	margin	: 1em -8px;
+	width	: 296px;
+
+	visibility	: hidden;
+}
+*/
+#portal-user-registration-buttons {
+	/*border	: 0 !important;*/
+
+	padding-top		: 10px	!important;
+	padding-bottom	: 10px	!important;
+
+	text-align	: center;
+}
+
+#portal-user-registration-buttons button {
+	float	: none	!important;
+	width	: auto	!important;
+	display	: inline-block	!important;
+
+	margin-left		: 0.25em	!important;
+	margin-right	: 0.25em	!important;
+}
+
+#portal-user-registration-submit {
+	
+}
+#portal-user-registration-cancel {
+	background	: transparent;
+	border		: none;
+
+	color		: #303030;
+	font-weight	: bolder;
+
+	padding		: 0			!important;
+	cursor		: pointer;
+}
+
+#portal-user-registration .portal-user-registration-instructions {
+	text-align	: center;
+}
+
+input::-webkit-input-placeholder {
+	font-style	: oblique;	
+}
+input:-moz-placeholder {
+	text-style	: oblique;
+}
