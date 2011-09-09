@@ -13,35 +13,40 @@ class JSON_Handler_Credit_Card_Payment extends JSON_Handler
 			$response['MESSAGE']	= 'Unknown';
 			
 			// Check that the requested account is in the authenticated customers account group
-			$oAccount		= Account::getForId($intAccountNumber);
-			$oContact		= Contact::getForId(Flex::getUserId());
 			$iEmployeeId	= Employee::SYSTEM_EMPLOYEE_ID;
-			
-			if (!$oContact || !$oContact->canAccessAccount($oAccount))
+			$oAccount		= Account::getForId($intAccountNumber);
+			$oAccountUser	= Account_User::getForId(Flex::getUserId());
+			if (!$oAccountUser || ($oAccountUser->account_id != $intAccountNumber))
 			{
 				throw new Exception("Invalid user account selected for credit card payment.");
 			}
-
+			
+			$oContact = Contact::getForId($oAccount->primaryContact);
+			if (!$oContact)
+			{
+				throw new Exception("Failed to load primary contact details for the account.");
+			}
+			
 			// Check that the customer provided a valid password
-			if ($bolDD && !$oContact->passwordIsValid($strPassword))
+			if ($bolDD && ($oAccountUser->password != sha1($strPassword)))
 			{
 				throw new Credit_Card_Payment_Incorrect_Password_Exception();
 			}
 			
-			$oTransactionDetails	=	Credit_Card_Payment::makeCreditCardPayment(
-											$intAccountNumber, 
-											$oContact->id, 
-											$iEmployeeId, 
-											$intCardType, 
-											$strCardNumber, 
-											$intCVV, 
-											$intMonth, 
-											$intYear, 
-											$strName, 
-											$fltAmount, 
-											$strEmail,
-											$bolDD
-										);
+			$oTransactionDetails = Credit_Card_Payment::makeCreditCardPayment(
+				$intAccountNumber, 
+				$oContact->id, 
+				$iEmployeeId, 
+				$intCardType, 
+				$strCardNumber, 
+				$intCVV, 
+				$intMonth, 
+				$intYear, 
+				$strName, 
+				$fltAmount, 
+				$strEmail,
+				$bolDD
+			);
 			
 			$response['OUTCOME']	= 'SUCCESS';
 			$response['MESSAGE']	= 'Thank you for your payment.';

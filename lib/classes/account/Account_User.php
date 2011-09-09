@@ -4,6 +4,10 @@ class Account_User extends ORM_Cached {
 	protected 			$_strTableName			= "account_user";
 	protected static	$_strStaticTableName	= "account_user";
 
+	public function getName() {
+		return $this->given_name.($this->family_name ? " {$this->family_name}" : '');
+	}
+
 	protected static function getCacheName() {
 		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
 		static $strCacheName;

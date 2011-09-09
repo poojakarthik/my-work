@@ -966,22 +966,25 @@ class Credit_Card_Payment
 		{
 			// Take contact id from the account.PrimaryContact
 			$contactId = $account->primaryContact;
+			
+			// Load the contact details
+			$contact = $contactId ? Contact::getForId($contactId) : NULL;
+			if (!$contact)
+			{
+				return FALSE;
+			}
+	
+			$contactName = str_replace("'", "\\'", str_replace("\\", "\\\\", $contact->getName()));
+			$contactEmail = str_replace("'", "\\'", str_replace("\\", "\\\\", $contact->email));
 		}
 		else if (Flex::isCustomerSession())
 		{
-			// Take the contact id from the session
-			$contactId = $_SESSION["User"]["Id"];
+			// Take the account_user id from the session
+			$oAccountUser 	= Account_User::getForId($_SESSION["User"]["id"]);
+			$sUserName		= "{$oAccountUser->given_name} {$oAccountUser->family_name}";
+			$contactName 	= str_replace("'", "\\'", str_replace("\\", "\\\\", $sUserName));
+			$contactEmail 	= str_replace("'", "\\'", str_replace("\\", "\\\\", $oAccountUser->email));
 		}
-
-		// Load the contact details
-		$contact = $contactId ? Contact::getForId($contactId) : NULL;
-		if (!$contact)
-		{
-			return FALSE;
-		}
-
-		$contactName = str_replace("'", "\\'", str_replace("\\", "\\\\", $contact->getName()));
-		$contactEmail = str_replace("'", "\\'", str_replace("\\", "\\\\", $contact->email));
 
 		$amountOwing = $account->getBalance();
 		$accountName = str_replace("'", "\\'", str_replace("\\", "\\\\", $account->getName()));

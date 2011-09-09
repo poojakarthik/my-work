@@ -57,7 +57,7 @@ final class Flex
 	{
 		if (isset($_SESSION) && self::loggedIn())
 		{
-			return $_SESSION['User']['Id'];
+			return (self::isCustomerSession() ? $_SESSION['User']['id'] : $_SESSION['User']['Id']);
 		}
 		return NULL;
 	}
