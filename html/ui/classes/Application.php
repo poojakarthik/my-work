@@ -1124,26 +1124,9 @@ class Application
 				DBO()->CustomerGroup->Id = DBO()->Account->CustomerGroup->Value;
 				DBO()->CustomerGroup->Load();
 
-				// NOTE: Deprecated
-				// Get the Account table.
-				/*DBO()->Contact->Id = $currentUser['Id'];
-				DBO()->Contact->Load();
-
-				DBO()->Contact->LastLogin = $currentUser['CurrentLogin'];
-				DBO()->Contact->CurrentLogin = time();*/
-				
+				// Log the authentication attempt
 				Account_User_Log::createForAccountUser($currentUser['id']);
 
-				// Save when the user last logged in.
-				// DBO()->Contact->SetColumns("LastLogin,CurrentLogin");
-
-				// NOTE: Deprecated
-				// Seems to be a bug where empty rows are being added, hopefully this will resolve it?
-				/*if(DBO()->Contact->Id !== "")
-				{
-					// DBO()->Contact->SetColumns("LastLogin,CurrentLogin");
-					DBO()->Contact->Save();
-				}*/
 				// Check if CustomersGroup in database matches the URL being used.
 				// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
 				// if(!eregi($_SERVER['HTTP_HOST'],DBO()->CustomerGroup->flex_url->Value)){

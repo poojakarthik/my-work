@@ -76,16 +76,7 @@ class AppTemplateService extends ApplicationTemplate
 		
 		// Check that the user can view this service
 		$bolUserCanViewService = FALSE;
-		// NOTE: Deprecated
-		/*if (AuthenticatedUser()->_arrUser['CustomerContact'])
-		{
-			// The user can only view the account, if it belongs to the account group that they belong to
-			if (AuthenticatedUser()->_arrUser['AccountGroup'] == DBO()->Service->AccountGroup->Value)
-			{
-				$bolUserCanViewService = TRUE;
-			}
-		}
-		else*/if (AuthenticatedUser()->_arrUser['account_id'] == DBO()->Service->Account->Value)
+		if (AuthenticatedUser()->_arrUser['account_id'] == DBO()->Service->Account->Value)
 		{
 			// The user can only view the account, if it is their primary account
 			$bolUserCanViewService = TRUE;

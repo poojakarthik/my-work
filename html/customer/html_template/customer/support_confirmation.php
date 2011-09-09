@@ -676,47 +676,6 @@
 		echo $D->getDOMDocument()->saveHTML();
 		echo "<br/>";
 		
-		/* NOTE: Deprecated
-		print "
-		<div class='customer-standard-table-title-style-contact'>Contact Details</div>
-		<div class='GroupedContent'>
-		<TABLE class=\"customer-standard-table-style\">
-		<TR>
-		<TD width=\"160\">Title: </TD>
-		<TD>$mixContact_Title</TD>
-		</TR>
-		<TR>
-		<TD>Job Title: </TD>
-		<TD>$mixContact_JobTitle</TD>
-		</TR>
-		<TR>
-		<TD>First Name: </TD>
-		<TD>$mixContact_FirstName</TD>
-		</TR>
-		<TR>
-		<TD>Last Name: </TD>
-		<TD>$mixContact_LastName</TD>
-		</TR>
-		<TR>
-		<TD>E-mail: </TD>
-		<TD>$mixContact_Email</TD>
-		</TR>
-		<TR>
-		<TD>Phone: </TD>
-		<TD>$mixContact_Phone</TD>
-		</TR>
-		<TR>
-		<TD>Mobile: </TD>
-		<TD>$mixContact_Mobile</TD>
-		</TR>
-		<TR>
-		<TD>Fax: </TD>
-		<TD>$mixContact_Fax</TD>
-		</TR>
-		</TABLE>
-		</div>
-		<br>";*/
-
 		if($bolInContract && $intRequestType == "3")
 		{
 			print "

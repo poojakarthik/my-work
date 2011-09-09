@@ -51,7 +51,7 @@
 		<table id='LoginTable'>
 			<tr>
 				<td>
-					<label for=\"UserName\" style='font-size: 10pt;'>Email:</label>
+					<label for=\"UserName\" style='font-size: 10pt;'>Username:</label>
 				</td>
 				<td>
 					<input type=\"text\" name=\"mixUserName\" class=\"LoginBox\" maxlength=\"255\"/>
@@ -104,7 +104,7 @@
 		<TABLE align=center class=login-table-style-main>
 		<TR VALIGN=\"TOP\">
 			<TD>";
-			print "The email entered does not exist.";
+			print "The Username entered does not exist.";
 			echo "<br /><br />\n";
 			echo "<a href='" . Href()->ResetPassword() . "' ><span>Please Try Again</span></a>\n";
 			print "

@@ -77,16 +77,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		// Check that the user can view this account
 		$bolUserCanViewAccount = FALSE;
-		// NOTE: Deprecated
-		/*if (AuthenticatedUser()->_arrUser['CustomerContact'])
-		{
-			// The user can only view the account, if it belongs to the account group that they belong to
-			if (AuthenticatedUser()->_arrUser['AccountGroup'] == DBO()->Account->AccountGroup->Value)
-			{
-				$bolUserCanViewAccount = TRUE;
-			}
-		}
-		else*/if (AuthenticatedUser()->_arrUser['account_id'] == DBO()->Account->Id->Value)
+		if (AuthenticatedUser()->_arrUser['account_id'] == DBO()->Account->Id->Value)
 		{
 			// The user can only view the account, if it is their primary account
 			$bolUserCanViewAccount = TRUE;
@@ -170,16 +161,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		// Check that the user can view this account
 		$bolUserCanViewAccount = FALSE;
-		// NOTE: Deprecated
-		/*if (AuthenticatedUser()->_arrUser['CustomerContact'])
-		{
-			// The user can only view the account, if it belongs to the account group that they belong to
-			if (AuthenticatedUser()->_arrUser['AccountGroup'] == DBO()->Account->AccountGroup->Value)
-			{
-				$bolUserCanViewAccount = TRUE;
-			}
-		}
-		else*/if (AuthenticatedUser()->_arrUser['account_id'] == DBO()->Account->Id->Value)
+		if (AuthenticatedUser()->_arrUser['account_id'] == DBO()->Account->Id->Value)
 		{
 			// The user can only view the account, if it is their primary account
 			$bolUserCanViewAccount = TRUE;
@@ -297,16 +279,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		// Check that the user can view this account
 		$bolUserCanViewAccount = FALSE;
-		// NOTE: Deprecated
-		/*if (AuthenticatedUser()->_arrUser['CustomerContact'])
-		{
-			// The user can only view the account, if it belongs to the account group that they belong to
-			if (AuthenticatedUser()->_arrUser['AccountGroup'] == DBO()->Account->AccountGroup->Value)
-			{
-				$bolUserCanViewAccount = TRUE;
-			}
-		}
-		else*/if (AuthenticatedUser()->_arrUser['account_id'] == DBO()->Account->Id->Value)
+		if (AuthenticatedUser()->_arrUser['account_id'] == DBO()->Account->Id->Value)
 		{
 			// The user can only view the account, if it is their primary account
 			$bolUserCanViewAccount = TRUE;

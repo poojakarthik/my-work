@@ -200,47 +200,47 @@
 			</div>
 			<br/>";
 
-			// NOTE: Deprecated
-			/*echo "<div class='customer-standard-table-title-style-contact'>Contact Details</div>
-			<div class='groupedcontent'>
-			<table class=\"customer-standard-table-style\">
-			<tr>
-			<td width=\"160\">Title: </td>
-			<td><input type=\"text\" name=\"mixContact_Title\" value=\"" . htmlspecialchars(DBO()->Contact->Title->Value) . "\" size=\"10\" maxlength=\"255\" /></td>
-			</tr>
-			<tr>
-			<td>Job Title: </td>
-			<td><input type=\"text\" name=\"mixContact_JobTitle\" value=\"" . htmlspecialchars(DBO()->Contact->JobTitle->Value) . "\" /></td>
-			</tr>
-			<tr>
-			<td>First Name: </td>
-			<td><input type=\"text\" name=\"mixContact_FirstName\" value=\"" . htmlspecialchars(DBO()->Contact->FirstName->Value) . "\" /></td>
-			</tr>
-			<tr>
-			<td>Last Name: </td>
-			<td><input type=\"text\" name=\"mixContact_LastName\" value=\"" . htmlspecialchars(DBO()->Contact->LastName->Value) . "\" /></td>
-			</tr>
-			<tr>
-			<td>E-mail: </td>
-			<td><input type=\"text\" name=\"mixContact_Email\" value=\"" . htmlspecialchars(DBO()->Contact->Email->Value) . "\" size=\"30\" maxlength=\"255\" /></td>
-			</tr>
-			<tr>
-			<td>Phone: </td>
-			<td><input type=\"text\" name=\"mixContact_Phone\" value=\"" . htmlspecialchars(DBO()->Contact->Phone->Value) . "\" /></td>
-			</tr>
-			<tr>
-			<td>Mobile: </td>
-			<td><input type=\"text\" name=\"mixContact_Mobile\" value=\"" . htmlspecialchars(DBO()->Contact->Mobile->Value) . "\" /></td>
-			</tr>
-			<tr>
-			<td>Fax: </td>
-			<td><input type=\"text\" name=\"mixContact_Fax\" value=\"" . htmlspecialchars(DBO()->Contact->Fax->Value) . "\" /></td>
-			</tr>
-			</TABLE>
-			</div>";*/
-			
-			self::_contactDetailsFields();
-
+			$oAccountUser 	= Account_User::getForId(AuthenticatedUser()->_arrUser['id']);
+			$D 				= new DOM_Factory();
+			$D->getDOMDocument()->appendChild(
+				$D->div(array('class' => 'customer-standard-table-title-style-contact'),
+					"Contact Details"
+				)
+			);
+			$D->getDOMDocument()->appendChild(
+				$D->div(array('class' => 'grouped-content'),
+					$D->table(array('class' => 'customer-standard-table-style'),
+						$D->tr(
+							$D->td(array('width' => 160),
+								"Given Name: "
+							),
+							$D->td(
+								$D->input(array('type' => 'text', 'name' => 'mixContact_GivenName', 'value' => $oAccountUser->given_name)) 
+							)
+						),
+						$D->tr(
+							$D->td("Family Name: "),
+							$D->td(
+								$D->input(array('type' => 'text', 'name' => 'mixContact_FamilyName', 'value' => $oAccountUser->family_name)) 
+							)
+						),
+						$D->tr(
+							$D->td("Email Address: "),
+							$D->td(
+								$D->input(array(
+									'type' 		=> 'text', 
+									'name' 		=> 'mixContact_Email', 
+									'value' 	=> $oAccountUser->email, 
+									'size' 		=> 30, 
+									'maxlength' => 255
+								)) 
+							)
+						)
+					)
+				)
+			);
+		
+			echo $D->getDOMDocument()->saveHTML();
 			echo "<br/>
 			<table class=\"customer-standard-table-style\">
 			<tr>
@@ -252,50 +252,6 @@
 		}
 
 		echo "</div>\n";
-	}
-	
-	private static function _contactDetailsFields() {
-		$oAccountUser 	= Account_User::getForId(AuthenticatedUser()->_arrUser['id']);
-		$D 				= new DOM_Factory();
-		$D->getDOMDocument()->appendChild(
-			$D->div(array('class' => 'customer-standard-table-title-style-contact'),
-				"Contact Details"
-			)
-		);
-		$D->getDOMDocument()->appendChild(
-			$D->div(array('class' => 'grouped-content'),
-				$D->table(array('class' => 'customer-standard-table-style'),
-					$D->tr(
-						$D->td(array('width' => 160),
-							"Given Name: "
-						),
-						$D->td(
-							$D->input(array('type' => 'text', 'name' => 'mixContact_GivenName', 'value' => $oAccountUser->given_name)) 
-						)
-					),
-					$D->tr(
-						$D->td("Family Name: "),
-						$D->td(
-							$D->input(array('type' => 'text', 'name' => 'mixContact_FamilyName', 'value' => $oAccountUser->family_name)) 
-						)
-					),
-					$D->tr(
-						$D->td("Email Address: "),
-						$D->td(
-							$D->input(array(
-								'type' 		=> 'text', 
-								'name' 		=> 'mixContact_Email', 
-								'value' 	=> $oAccountUser->email, 
-								'size' 		=> 30, 
-								'maxlength' => 255
-							)) 
-						)
-					)
-				)
-			)
-		);
-	
-		echo $D->getDOMDocument()->saveHTML();
 	}
 }
 

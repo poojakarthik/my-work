@@ -1103,47 +1103,6 @@
 			
 				echo $D->getDOMDocument()->saveHTML();
 
-				// NOTE: Deprecated
-				/*print "
-				<div class='customer-standard-table-title-style-contact'>Contact Details</div>
-				<div class='GroupedContent'>
-				<TABLE class=\"customer-standard-table-style\">
-				<TR>
-				<TD width=\"160\">Title: </TD>
-				<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Title\" VALUE=\"" . DBO()->Contact->Title->Value . "\" size=\"10\" maxlength=\"255\"></TD>
-				</TR>
-				<TR>
-				<TD>Job Title: </TD>
-				<TD><INPUT TYPE=\"text\" NAME=\"mixContact_JobTitle\" VALUE=\"" . DBO()->Contact->JobTitle->Value . "\"></TD>
-				</TR>
-				<TR>
-				<TD>First Name: </TD>
-				<TD><INPUT TYPE=\"text\" NAME=\"mixContact_FirstName\" VALUE=\"" . DBO()->Contact->FirstName->Value . "\"></TD>
-				</TR>
-				<TR>
-				<TD>Last Name: </TD>
-				<TD><INPUT TYPE=\"text\" NAME=\"mixContact_LastName\" VALUE=\"" . DBO()->Contact->LastName->Value . "\"></TD>
-				</TR>
-				<TR>
-				<TD>E-mail: </TD>
-				<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Email\" VALUE=\"" . DBO()->Contact->Email->Value . "\" size=\"30\" maxlength=\"255\"></TD>
-				</TR>
-				<TR>
-				<TD>Phone: </TD>
-				<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Phone\" VALUE=\"" . DBO()->Contact->Phone->Value . "\"></TD>
-				</TR>
-				<TR>
-				<TD>Mobile: </TD>
-				<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Mobile\" VALUE=\"" . DBO()->Contact->Mobile->Value . "\"></TD>
-				</TR>
-				<TR>
-				<TD>Fax: </TD>
-				<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Fax\" VALUE=\"" . DBO()->Contact->Fax->Value . "\"></TD>
-				</TR>
-				</TABLE>
-				</div>
-				<br>";*/
-
 				switch($_POST['intRequestType'])
 				{
 					// Logging a fault to an existing service

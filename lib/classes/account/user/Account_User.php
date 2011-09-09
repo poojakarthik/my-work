@@ -9,7 +9,7 @@ class Account_User extends ORM_Cached {
 	}
 
 	public function getLatestLogEntry($iOffset=0) {
-		return Account_User_Log::getLatestForAccountUser($this->id, $iOffset=0);
+		return Account_User_Log::getLatestForAccountUser($this->id, $iOffset);
 	}
 
 	protected static function getCacheName() {

@@ -102,10 +102,6 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 		$strCustomerFAQ = Href()->CustomerFAQ(DBO()->Account->Id->Value);
 		$strCustomerFAQLabel = "<span><img src=\"" . Href()->GetBaseUrl() . "img/generic/square_black.gif\"> <a href='$strCustomerFAQ' >&nbsp;&nbsp;Frequently Asked Questions</a></span>";
  
-		// Customer Survey, NOTE: Deprecated
-		//$strCustomerSurvey = Href()->CustomerSurvey(DBO()->Account->Id->Value);
-		//$strCustomerSurveyLabel = "<span><img src=\"" . Href()->GetBaseUrl() . "img/generic/square_black.gif\"> <a href='$strCustomerSurvey' >&nbsp;&nbsp;Customer Survey</a></span>";
- 
 		echo "<div class='customer-standard-table-style-menu-options-title'>Options</div>\n";
 		echo "<table class=\"customer-standard-table-style-menu-options\">\n";
 		
