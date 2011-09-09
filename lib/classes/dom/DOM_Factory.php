@@ -29,7 +29,13 @@ class DOM_Factory {
 				foreach ($aAttributes as $sKey=>$mValue) {
 					if (is_string($sKey)) {
 						//_log("Adding Attribute '{$sKey}' = '{$mValue}'");
-						$oDOMElement->setAttribute($sKey, $mValue);
+						if ($mValue === true) {
+							// Boolean declaration
+							$oDOMElement->setAttribute($sKey, $sKey);
+						} else if ($mValue !== false) {
+							// Anything other than a boolean
+							$oDOMElement->setAttribute($sKey, $mValue);
+						}
 					}
 				}
 			} elseif (isset($mArg)) {

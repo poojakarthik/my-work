@@ -487,9 +487,11 @@ class Page
 <!DOCTYPE html>
 <html>
 	<head>
+		<meta charset='utf8' />
+		<meta http-equiv='X-UA-Compatible' content='IE=Edge,chrome=1'><!-- IE: use Chrome Frame or latest Trident -->
 		<link rel=\"shortcut icon\" href=\"{$strBaseDir}img/favicon.ico\" />
 		<link rel=\"icon\" href=\"{$strBaseDir}img/favicon.ico\" />
-		<meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1' />
+		<!--<meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1' />-->
 		<title>Flex - {$this->_strPageName}</title>
 		<base href='$strBaseDir'/>\n";
 		$this->RenderHeaderJS();

@@ -328,6 +328,20 @@ class Customer_Group
 		return $tidy;
 	}
 
+	public static function getForBaseURL($sBaseURL) {
+		// TODO: We should probably make a full URL as well
+		$mResult	= Query::run("
+			SELECT		*
+			FROM		CustomerGroup
+			WHERE		flex_url = <sBaseURL>
+		", array('sBaseURL'=>trim((string)$sBaseURL)));
+
+		$aMatches	= array();
+		while ($aMatch = $mResult->fetch_assoc()) {
+			$aMatches[$aMatch['Id']]	= new self($aMatch);
+		}
+		return $aMatches;
+	}
 	
 }
 

@@ -383,9 +383,11 @@ class Application_Page extends Page
 		echo "<!DOCTYPE html>
 <html>
 	<head>
+		<meta charset='utf8' />
+		<meta http-equiv='X-UA-Compatible' content='IE=Edge,chrome=1'><!-- IE: use Chrome Frame or latest Trident -->
 		<link rel=\"shortcut icon\" href=\"{$strBaseDir}img/favicon.ico\" />
 		<link rel=\"icon\" href=\"{$strBaseDir}img/favicon.ico\" />
-		<meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\" />
+		<!--<meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\" />-->
 		<meta name=\"generator\" content=\"Flex\" />
 		<title>Flex - $this->_strPageName</title>
 		<base href='$strBaseDir'/>\n";

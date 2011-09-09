@@ -47,7 +47,10 @@ abstract class ORM
 	protected function __construct($arrProperties=array(), $bolLoadById=FALSE)
 	{
 		// Get list of columns from Data Model
-		$arrTableDefine		= DataAccess::getDataAccess()->FetchTableDefine($this->_strTableName);
+		if (!($arrTableDefine	= DataAccess::getDataAccess()->FetchTableDefine($this->_strTableName))) {
+			throw new Exception_ORM("Table '{$this->_strTableName}' cannot be found in the Data Model");
+		}
+
 		$this->_strIdField	= $arrTableDefine['Id'];
 		foreach ($arrTableDefine['Column'] as $strName=>$arrColumn)
 		{
