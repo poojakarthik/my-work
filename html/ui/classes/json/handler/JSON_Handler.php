@@ -51,17 +51,15 @@ class JSON_Handler {
 	}
 	
 	protected static function _buildExceptionResponse($oException) {
-		try {
-			$bUserIsGod = Employee::getForId(Flex::getUserId())->isGod();
-		} catch (Exception $oEx) {
-			$bUserIsGod = false;
-		}
+		$bUserIsGod = Employee::getForId(Flex::getUserId())->isGod();
 		
 		// Determine the exception message
-		$aExceptionInterfaces = class_implements($oException);
+		$aExceptionInterfaces 	= class_implements($oException);
+		$mData					= null;
 		if (isset($aExceptionInterfaces['JSON_Handler_Exception'])) {
 			// JSON_Handler_Exception exceptions have a friendly (non-god users) and detailed (god users) message
-			$sMessage = ($bUserIsGod ? $oException->getDetailedMessage() : $oException->getFriendlyMessage());
+			$sMessage 	= ($bUserIsGod ? $oException->getDetailedMessage() : $oException->getFriendlyMessage());
+			$mData		= $oException->getData();
 		} else {
 			// Not a json handler exception, show the message if god
 			$sMessage = ($bUserIsGod ? $oException->getMessage() : self::GENERIC_EXCEPTION_MESSAGE);
@@ -79,7 +77,8 @@ class JSON_Handler {
 			'oException' => array(
 				'sMessage'		=> $sMessage,
 				'aClasses'		=> $aClasses,
-				'aStackTrace'	=> ($bUserIsGod ? $oException->getTrace() : null)
+				'aStackTrace'	=> ($bUserIsGod ? $oException->getTrace() : null),
+				'mData'			=> $mData
 			)
 		);
 	}

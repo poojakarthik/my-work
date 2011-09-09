@@ -5243,6 +5243,7 @@ div.filter-overlay-options-buttons
 {
 	margin-top	: 0.25em;
 	text-align	: center;
+	white-space	: nowrap;
 }
 
 /************************ END - Filter Class - END ************************/
@@ -12730,3 +12731,45 @@ dl.reflex-propertylist > dd > * {
 }
 
 /************************** END - Property List - END **************************/
+
+/************************** START - Component Account User Edit/List - START **************************/
+
+.component-account-user-list .component-section-header .component-account-user-list-new-user {
+	margin : 0.25em 0 !important;
+}
+
+.component-account-user-list thead tr th:nth-child(1),
+.component-account-user-list thead tr th:nth-child(2),
+.component-account-user-list thead tr th:nth-child(3),
+.component-account-user-list thead tr th:nth-child(4) {
+	width : 20%;
+}
+
+.component-account-user-list thead tr th:nth-child(5) {
+	width : 16%;
+}
+
+.component-account-user-edit {
+	margin : 0.5em;
+}
+
+.component-account-user-edit-buttons {
+	margin-top	: 0.5em;
+	text-align 	: center;
+}
+
+.component-account-user-edit .reflex-propertylist {
+	margin 					: 0;
+	border					: solid 1px #bbb;
+	border-radius			: 4px 4px 4px 4px;
+	-moz-border-radius		: 4px 4px 4px 4px;
+	-webkit-border-radius	: 4px 4px 4px 4px;
+}
+
+.component-account-user-edit .reflex-propertylist dd .control input[type="text"],
+.component-account-user-edit .reflex-propertylist dd .control input[type="password"],
+.component-account-user-edit .reflex-propertylist dd .control select {
+	width : 100%;
+}
+
+/************************** END - Component Account User Edit - END **************************/

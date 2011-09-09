@@ -120,6 +120,10 @@ class JSON_Handler_Test_Exception extends Exception implements JSON_Handler_Exce
 	public function getDetailedMessage() {
 		return "DETAILED: ".$this->getMessage();
 	}
+	
+	public function getData() {
+		return null;
+	}
 }
 
 ?>

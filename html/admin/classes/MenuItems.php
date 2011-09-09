@@ -4399,6 +4399,38 @@ else
 								);";
 	}
 	
+	public function CustomerPortalLogins($iAccountId) {
+		$this->strContextMenuLabel 	= "Customer Portal Logins";
+		$this->strLabel 			= "Manage Customer Portal Logins";
+		return	"javascript:	JsAutoLoader.loadScript(
+									['dataset_ajax.js', 
+									'filter.js',  
+									'sort.js',   
+									'pagination.js',
+									'control.js', 
+									'control_checkbox.js', 
+									'control_select.js', 
+									'control_text.js',
+									'control_password.js',
+									'control_hidden.js',
+									'control_radio.js',
+									'form.js',
+									'component_section.js',
+									'component_dataset_ajax_table.js',
+									'component_account_user_edit.js',
+									'component_account_user_list.js'], 
+									function() {
+										var oPopup = Component_Account_User_List.createAsPopup({
+											iAccountId 	: {$iAccountId},
+											fnOnReady	: function() {
+												oPopup.display();
+											}
+										});
+									}, 
+									true
+								);";
+	}
+	
 	//------------------------------------------------------------------------//
 	// BreadCrumb
 	//------------------------------------------------------------------------//

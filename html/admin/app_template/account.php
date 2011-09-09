@@ -51,6 +51,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		$bolUserHasExternalPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_EXTERNAL);
 		$bolUserHasCreditManagement	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
 		$bUserHasProperAdmin		= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
+		$bUserHasAdmin				= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 		
 		$objAccount = Account::getForId($intAccountId);
 		
@@ -123,6 +124,11 @@ class AppTemplateAccount extends ApplicationTemplate
 		if ($bUserHasProperAdmin)
 		{
 			ContextMenu()->Account->ManageLinkedAccounts($intAccountId);
+		}
+		
+		if ($bUserHasAdmin) 
+		{
+			ContextMenu()->Account->CustomerPortalLogins($intAccountId);
 		}
 	}
 	

@@ -161,6 +161,9 @@ class JSON_Handler_Exception_Javascript_Module_NoSuchModule extends Exception im
 		return "Unable to load Javascript Module '{$this->_sModuleIdentifier}'.  The following paths were checked: ".(implode('; ', $this->_aPaths));
 	}
 	
+	public function getData() {
+		return null;
+	}
 }
 
 class JSON_Handler_Exception_Javascript_Module_IdentifierJailbreak extends Exception implements JSON_Handler_Exception {
