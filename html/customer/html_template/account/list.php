@@ -71,7 +71,6 @@ class HtmlTemplateAccountList extends HtmlTemplate
 	function Render()
 	{
 		echo "<div class='WideContent'>\n";
-		// TODO: AU - make sure this works
 		// display all accounts that the user can view, if there is more than one
 		if (DBL()->Account->RecordCount())
 		{

@@ -1716,7 +1716,6 @@ class AppTemplateConsole extends ApplicationTemplate
 		// Calculate the total unbilled CDRs for the account (inc GST), omitting Credit CDRs
 		DBO()->Account->UnbilledCDRs = AddGST(UnbilledAccountCDRTotal(DBO()->Account->Id->Value, TRUE));
 		
-		// TODO: AU
 		$strShowLastLogin 	= "Never";
 		$oLastLogEntry 		= $oAccountUser->getLatestLogEntry(1);
 		if ($oLastLogEntry) {
