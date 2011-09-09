@@ -31,6 +31,19 @@ class Flex_Rollout_Version_000249 extends Flex_Rollout_Version
 					) ENGINE=InnoDB;",
 				'sRollbackSQL'		=> "DROP TABLE account_user;",
 				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+			),
+			array(
+				'sDescription'		=> "Creates the `account_user_log` table, which holds successful login attempts for Customer Portal users",
+				'sAlterSQL'			=> "
+					CREATE TABLE account_user_log (
+						id					BIGINT	UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT 'Unique Identifier',
+						account_user_id		BIGINT	UNSIGNED	NOT NULL					COMMENT '(FK) Account User that logged in',
+						created_datetime	DATETIME			NOT NULL					COMMENT 'Datetime of the login attempt',
+						CONSTRAINT	pk_account_user_log_id					PRIMARY KEY (id),
+						CONSTRAINT	fk_account_user_log_account_user_idd	FOREIGN KEY (account_user_id)	REFERENCES account_user(id)	ON UPDATE CASCADE	ON DELETE RESTRICT
+					) ENGINE=InnoDB;",
+				'sRollbackSQL'		=> "DROP TABLE account_user_log;",
+				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 			)
 		);
 

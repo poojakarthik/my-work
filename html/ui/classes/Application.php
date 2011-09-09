@@ -1131,6 +1131,8 @@ class Application
 
 				DBO()->Contact->LastLogin = $currentUser['CurrentLogin'];
 				DBO()->Contact->CurrentLogin = time();*/
+				
+				Account_User_Log::createForAccountUser($currentUser['id']);
 
 				// Save when the user last logged in.
 				// DBO()->Contact->SetColumns("LastLogin,CurrentLogin");

@@ -1955,12 +1955,11 @@ class AppTemplateConsole extends ApplicationTemplate
 		DBO()->Account->UnbilledCDRs = AddGST(UnbilledAccountCDRTotal(DBO()->Account->Id->Value, TRUE));
 		
 		// TODO: AU
-		$strShowLastLogin = "Never";
-		/*$intLastLogin = DBO()->Contact->LastLogin->Value;
-		if($intLastLogin != "")
-		{
-			$strShowLastLogin = date("F j, Y, g:i a",$intLastLogin);
-		}*/
+		$strShowLastLogin 	= "Never";
+		$oLastLogEntry 		= $oAccountUser->getLatestLogEntry(1);
+		if ($oLastLogEntry) {
+			$strShowLastLogin = date("F j, Y, g:i a", strtotime($oLastLogEntry->created_datetime));
+		}
 
 		// Setup BreadCrumb Menu
 		$strWelcome = "<div class=\"welcome_message\">Welcome {$oAccountUser->given_name}. Last Login: {$strShowLastLogin}</div>\n";
@@ -2090,7 +2089,10 @@ class AppTemplateConsole extends ApplicationTemplate
 											FROM	account_user
 											WHERE	username = <username>;",
 											array('username' => $mixInput))->fetch_assoc();
-				if (!$aAccountUser) {
+				$oAccountUser = new Account_User($aAccountUser);
+				
+				// Before we can send the username, check and make sure they have already activated and entered a valid email 
+				if($oAccountUser->getLastLogEntry() == NULL && $oAccountUser->Id != NULL) {
 					/// if they don't have an activated account we redirect to activation page 
 					unset($_POST['mixFirstName']);
 					$bolFoundError = TRUE;

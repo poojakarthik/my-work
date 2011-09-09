@@ -8,6 +8,10 @@ class Account_User extends ORM_Cached {
 		return $this->given_name.($this->family_name ? " {$this->family_name}" : '');
 	}
 
+	public function getLatestLogEntry($iOffset=0) {
+		return Account_User_Log::getLatestForAccountUser($this->id, $iOffset=0);
+	}
+
 	protected static function getCacheName() {
 		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
 		static $strCacheName;
@@ -72,17 +76,6 @@ class Account_User extends ORM_Cached {
 					break;
 				case 'selAll':
 					$arrPreparedStatements[$strStatement] = new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
-					break;
-				case 'selAllWaiting':
-					$arrPreparedStatements[$strStatement] = new StatementSelect(
-						self::$_strStaticTableName, 
-						"*", 
-						"	email_queue_batch_id IS NULL 
-						AND	delivered_datetime IS NULL 
-						AND	scheduled_datetime <= NOW()
-						AND email_queue_status_id = ".EMAIL_QUEUE_STATUS_SCHEDULED, 
-						"created_datetime ASC"
-					);
 					break;
 					
 				// INSERTS
