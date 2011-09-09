@@ -72,12 +72,13 @@
 	function Render()
 	{
 		echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>";
-
-		$mixFoundError = FALSE;
+		
+		$oAccountUser 	= Account_User::getForId(AuthenticatedUser()->_arrUser['id']);
+		$mixFoundError 	= FALSE;
 		if($_POST['mixAccount_NewPassword1'] != "" || $_POST['mixAccount_NewPassword2'] != "")
 		{
 			// they have tried to change the password.. lets check if it went ok...
-			if(SHA1($_POST['mixAccount_NewPassword1']) != DBO()->Contact->PassWord->Value)
+			if(SHA1($_POST['mixAccount_NewPassword1']) != $oAccountUser->password)
 			{
 				$mixFoundError = TRUE;
 			}

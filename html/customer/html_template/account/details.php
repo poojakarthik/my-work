@@ -160,7 +160,7 @@
 		</div>
 		<br/>\n";
 
-/*
+		/* NOTE: Deprecated
 		echo "<div class='GroupedContent'>";
 
 
@@ -263,7 +263,7 @@
 		</div>
 		<br/>";
 		
-		/*
+		/* NOTE: Deprecated
 		echo "<h2 class='Account'>Address Details</h2>\n";
 		echo "<div class='GroupedContent'>\n";
 		// Display the details of their primary account
@@ -302,9 +302,38 @@
 
 		*/
 
-
-
-		echo "<div class='customer-standard-table-title-style-contact'>Contact Details</div>\n";
+		$oAccountUser 	= Account_User::getForId(AuthenticatedUser()->_arrUser['id']);
+		$D 				= new DOM_Factory();
+		$D->getDOMDocument()->appendChild(
+			$D->div(array('class' => 'customer-standard-table-title-style-contact'),
+				"Contact Details"
+			)
+		);
+		$D->getDOMDocument()->appendChild(
+			$D->div(array('class' => 'grouped-content'),
+				$D->table(array('class' => 'customer-standard-table-style'),
+					$D->tr(
+						$D->td(array('width' => 160),
+							"Given Name: "
+						),
+						$D->td($oAccountUser->given_name)
+					),
+					$D->tr(
+						$D->td("Family Name: "),
+						$D->td($oAccountUser->family_name)
+					),
+					$D->tr(
+						$D->td("Email Address: "),
+						$D->td(trim($oAccountUser->email))
+					)
+				)
+			)
+		);
+		echo $D->getDOMDocument()->saveHTML();
+		echo "<br/>";
+		
+		// NOTE: Deprecated
+		/*echo "<div class='customer-standard-table-title-style-contact'>Contact Details</div>\n";
 
 		echo "	
 		<div class='GroupedContent'>
@@ -346,8 +375,9 @@
 		</TR>
 		</TABLE>
 		</div>
-		<br/>";
+		<br/>";*/
 
+		// NOTE: Deprecated
 		/*
 		echo "<h2 class='Account'>Contact Details</h2>\n";
 		echo "<div class='GroupedContent'>\n";

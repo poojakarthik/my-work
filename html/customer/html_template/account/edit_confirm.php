@@ -88,14 +88,22 @@
 		<input type=\"hidden\" name=\"mixAccount_State\" value=\"$mixAccount_State\" />
 		<input type=\"hidden\" name=\"mixAccount_Postcode\" value=\"$mixAccount_Postcode\" />
 		<input type=\"hidden\" name=\"mixAccount_BillingMethod\" value=\"$mixAccount_BillingMethod\" />
-		<input type=\"hidden\" name=\"mixAccount_Country\" value=\"$mixAccount_Country\" />
-		<input type=\"hidden\" name=\"mixContact_FirstName\" value=\"$mixContact_FirstName\" />
+		<input type=\"hidden\" name=\"mixAccount_Country\" value=\"$mixAccount_Country\" />";
+		
+		/*<input type=\"hidden\" name=\"mixContact_FirstName\" value=\"$mixContact_FirstName\" />
 		<input type=\"hidden\" name=\"mixContact_LastName\" value=\"$mixContact_LastName\" />
 		<input type=\"hidden\" name=\"mixContact_Title\" value=\"$mixContact_Title\" />
 		<input type=\"hidden\" name=\"mixContact_JobTitle\" value=\"$mixContact_JobTitle\" />
 		<input type=\"hidden\" name=\"mixContact_Email\" value=\"$mixContact_Email\" />
 		<input type=\"hidden\" name=\"mixContact_Phone\" value=\"$mixContact_Phone\" />
-		<input type=\"hidden\" name=\"mixContact_Mobile\" value=\"$mixContact_Mobile\" />
+		<input type=\"hidden\" name=\"mixContact_Mobile\" value=\"$mixContact_Mobile\" />*/
+		
+		echo "
+		<input type=\"hidden\" name=\"mixContact_GivenName\" value=\"$mixContact_GivenName\" />
+		<input type=\"hidden\" name=\"mixContact_FamilyName\" value=\"$mixContact_FamilyName\" />
+		<input type=\"hidden\" name=\"mixContact_Email\" value=\"$mixContact_Email\" />";
+		
+		echo "
 		<input type=\"hidden\" name=\"mixAccount_OldPassword\" value=\"$mixAccount_OldPassword\" />
 		<input type=\"hidden\" name=\"mixAccount_NewPassword1\" value=\"$mixAccount_NewPassword1\" />
 		<input type=\"hidden\" name=\"mixAccount_NewPassword2\" value=\"$mixAccount_NewPassword2\" />
@@ -168,7 +176,7 @@
 		</div>
 		<br />";
 
-		print "
+		/*print "
 		<div class='customer-standard-table-title-style-confirm-details'>Contact Details</div>
 		<div class='GroupedContent'>
 		<table class=\"customer-standard-table-style\">
@@ -206,9 +214,11 @@
 		</tr>
 		</table>
 		</div>
-		<br />
+		<br />";*/
+		
+		self::_contactDetailsDisplay();
 
-		<div class='customer-standard-table-title-style-confirm-details'>Disclaimer</div>
+		echo "<div class='customer-standard-table-title-style-confirm-details'>Disclaimer</div>
 		<div class='GroupedContent'>
 		<table class=\"customer-standard-table-style\">
 		<tr>
@@ -230,6 +240,37 @@
 		";
 		
 		echo "</div>\n";
+	}
+	
+	private static function _contactDetailsDisplay() {
+		$D = new DOM_Factory();
+		$D->getDOMDocument()->appendChild(
+			$D->div(array('class' => 'customer-standard-table-title-style-confirm-details'),
+				"Contact Details"
+			)
+		);
+		$D->getDOMDocument()->appendChild(
+			$D->div(array('class' => 'GroupedContent'),
+				$D->table(array('class' => 'customer-standard-table-style'),
+					$D->tr(
+						$D->td(array('width' => 160),
+							"Given Name: "
+						),
+						$D->td($_POST['mixContact_GivenName'])
+					),
+					$D->tr(
+						$D->td("Family Name: "),
+						$D->td($_POST['mixContact_FamilyName'])
+					),
+					$D->tr(
+						$D->td("Email Address: "),
+						$D->td($_POST['mixContact_Email'])
+					)
+				)
+			)
+		);
+	
+		echo $D->getDOMDocument()->saveHTML();
 	}
 }
 

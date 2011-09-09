@@ -77,7 +77,8 @@ class HtmlTemplateConsole extends HtmlTemplate
 		
 		echo "<h2 class='Console'>Console</h2>\n";
 		
-		$strWelcome = "&nbsp;&nbsp;Welcome " . DBO()->Contact->FirstName->Value ." ". DBO()->Contact->LastName->Value .". You are currently logged into your account\n";
+		$oAccountUser 	= Account_User::getForId(AuthenticatedUser()->_arrUser['id']);
+		$strWelcome 	= "&nbsp;&nbsp;Welcome {$oAccountUser->given_name} {$oAccountUser->family_name}. You are currently logged into your account\n";
 		
 		echo "<span class='DefaultOutputSpan Default'>$strWelcome</span>";
 		

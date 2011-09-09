@@ -646,6 +646,37 @@
 		</div>
 		<br/>";
 
+		$oAccountUser 	= Account_User::getForId(AuthenticatedUser()->_arrUser['id']);
+		$D 				= new DOM_Factory();
+		$D->getDOMDocument()->appendChild(
+			$D->div(array('class' => 'customer-standard-table-title-style-contact'),
+				"Contact Details"
+			)
+		);
+		$D->getDOMDocument()->appendChild(
+			$D->div(array('class' => 'GroupedContent'),
+				$D->table(array('class' => 'customer-standard-table-style'),
+					$D->tr(
+						$D->td(array('width' => 160),
+							"Given Name: "
+						),
+						$D->td($mixContact_GivenName)
+					),
+					$D->tr(
+						$D->td("Family Name: "),
+						$D->td($mixContact_FamilyName)
+					),
+					$D->tr(
+						$D->td("Email Address: "),
+						$D->td($mixContact_Email)
+					)
+				)
+			)
+		);
+		echo $D->getDOMDocument()->saveHTML();
+		echo "<br/>";
+		
+		/* NOTE: Deprecated
 		print "
 		<div class='customer-standard-table-title-style-contact'>Contact Details</div>
 		<div class='GroupedContent'>
@@ -684,7 +715,7 @@
 		</TR>
 		</TABLE>
 		</div>
-		<br>";
+		<br>";*/
 
 		if($bolInContract && $intRequestType == "3")
 		{

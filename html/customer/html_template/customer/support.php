@@ -1061,7 +1061,50 @@
 				</div>
 				<br/>";
 
-				print "
+				$oAccountUser 	= Account_User::getForId(AuthenticatedUser()->_arrUser['id']);
+				$D 				= new DOM_Factory();
+				$D->getDOMDocument()->appendChild(
+					$D->div(array('class' => 'customer-standard-table-title-style-contact'),
+						"Contact Details"
+					)
+				);
+				$D->getDOMDocument()->appendChild(
+					$D->div(array('class' => 'grouped-content'),
+						$D->table(array('class' => 'customer-standard-table-style'),
+							$D->tr(
+								$D->td(array('width' => 160),
+									"Given Name: "
+								),
+								$D->td(
+									$D->input(array('type' => 'text', 'name' => 'mixContact_GivenName', 'value' => $oAccountUser->given_name)) 
+								)
+							),
+							$D->tr(
+								$D->td("Family Name: "),
+								$D->td(
+									$D->input(array('type' => 'text', 'name' => 'mixContact_FamilyName', 'value' => $oAccountUser->family_name)) 
+								)
+							),
+							$D->tr(
+								$D->td("Email Address: "),
+								$D->td(
+									$D->input(array(
+										'type' 		=> 'text', 
+										'name' 		=> 'mixContact_Email', 
+										'value' 	=> $oAccountUser->email, 
+										'size' 		=> 30, 
+										'maxlength' => 255
+									)) 
+								)
+							)
+						)
+					)
+				);
+			
+				echo $D->getDOMDocument()->saveHTML();
+
+				// NOTE: Deprecated
+				/*print "
 				<div class='customer-standard-table-title-style-contact'>Contact Details</div>
 				<div class='GroupedContent'>
 				<TABLE class=\"customer-standard-table-style\">
@@ -1099,7 +1142,7 @@
 				</TR>
 				</TABLE>
 				</div>
-				<br>";
+				<br>";*/
 
 				switch($_POST['intRequestType'])
 				{

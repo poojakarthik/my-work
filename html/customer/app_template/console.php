@@ -50,14 +50,23 @@ class AppTemplateConsole extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckClientAuth();
 		
-		// Retrieve the client's details
-		DBO()->Contact->Id = AuthenticatedUser()->_arrUser['Id'];
+		// Retrieve the client's details, NOTE: Deprecated
+		/*DBO()->Contact->Id = AuthenticatedUser()->_arrUser['id'];
 		if (!DBO()->Contact->Load())
 		{
 			// This should never actually occur because if the contact can't be loaded then AuthenticatedUser()->CheckClientAuth() would have failed
 			DBO()->Error->Message = "The contact with contact id: ". DBO()->Contact->Id->Value ." could not be found";
 			$this->LoadPage('error');
 			return FALSE;
+		}*/
+		
+		$iAccountUserId	= AuthenticatedUser()->_arrUser['id'];
+		$oAccountUser	= Account_User::getForId($iAccountUserId);
+		if (!$oAccountUser) {
+			// This should never actually occur because if the contact can't be loaded then AuthenticatedUser()->CheckClientAuth() would have failed
+			DBO()->Error->Message = "The contact with contact id: {$iAccountUserId} could not be found";
+			$this->LoadPage('error');
+			return false;
 		}
 		
 		if (DBO()->Account->Id->Value)
@@ -68,22 +77,23 @@ class AppTemplateConsole extends ApplicationTemplate
 		else
 		{
 			// No specific account has been specified, so load the contact's primary account
-			DBO()->Account->Id = DBO()->Contact->Account->Value;
+			DBO()->Account->Id = $oAccountUser->account_id;
 		}
 		
 		// Load the clients primary account
 		DBO()->Account->Load();
 
-		// If the user can view all accounts in their account group then load these too
-		if (DBO()->Contact->CustomerContact->Value)
+		// If the user can view all accounts in their account group then load these too, NOTE: Deprecated
+		/*if (DBO()->Contact->CustomerContact->Value)
 		{
 			DBL()->Account->AccountGroup = DBO()->Contact->AccountGroup->Value;
 			DBL()->Account->Archived = 0;
 			DBL()->Account->Load();
-		}
+		}*/
 		// Make sure that the Account requested belongs to the account group that the contact belongs to
 		$bolUserCanViewAccount = FALSE;
-		if (AuthenticatedUser()->_arrUser['CustomerContact'])
+		// NOTE: Deprecated
+		/*if (AuthenticatedUser()->_arrUser['CustomerContact'])
 		{
 			// The user can only view the account, if it belongs to the account group that they belong to
 			if (AuthenticatedUser()->_arrUser['AccountGroup'] == DBO()->Account->AccountGroup->Value)
@@ -91,7 +101,7 @@ class AppTemplateConsole extends ApplicationTemplate
 				$bolUserCanViewAccount = TRUE;
 			}
 		}
-		elseif (AuthenticatedUser()->_arrUser['Account'] == DBO()->Account->Id->Value)
+		else*/if (AuthenticatedUser()->_arrUser['account_id'] == DBO()->Account->Id->Value)
 		{
 			// The user can only view the account, if it is their primary account
 			$bolUserCanViewAccount = TRUE;
@@ -161,14 +171,23 @@ class AppTemplateConsole extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckClientAuth();
 		
-		// Retrieve the client's details
-		DBO()->Contact->Id = AuthenticatedUser()->_arrUser['Id'];
+		// Retrieve the client's details, NOTE: Deprecated
+		/*DBO()->Contact->Id = AuthenticatedUser()->_arrUser['id'];
 		if (!DBO()->Contact->Load())
 		{
 			// This should never actually occur because if the contact can't be loaded then AuthenticatedUser()->CheckClientAuth() would have failed
 			DBO()->Error->Message = "The contact with contact id: ". DBO()->Contact->Id->Value ." could not be found";
 			$this->LoadPage('error');
 			return FALSE;
+		}*/
+		
+		$iAccountUserId	= AuthenticatedUser()->_arrUser['id'];
+		$oAccountUser	= Account_User::getForId($iAccountUserId);
+		if (!$oAccountUser) {
+			// This should never actually occur because if the contact can't be loaded then AuthenticatedUser()->CheckClientAuth() would have failed
+			DBO()->Error->Message = "The contact with contact id: {$iAccountUserId} could not be found";
+			$this->LoadPage('error');
+			return false;
 		}
 		
 		if (DBO()->Account->Id->Value)
@@ -179,22 +198,23 @@ class AppTemplateConsole extends ApplicationTemplate
 		else
 		{
 			// No specific account has been specified, so load the contact's primary account
-			DBO()->Account->Id = DBO()->Contact->Account->Value;
+			DBO()->Account->Id = $oAccountUser->account_id;
 		}
 		
 		// Load the clients primary account
 		DBO()->Account->Load();
 
-		// If the user can view all accounts in their account group then load these too
-		if (DBO()->Contact->CustomerContact->Value)
+		// If the user can view all accounts in their account group then load these too, NOTE: Deprecated
+		/*if (DBO()->Contact->CustomerContact->Value)
 		{
 			DBL()->Account->AccountGroup = DBO()->Contact->AccountGroup->Value;
 			DBL()->Account->Archived = 0;
 			DBL()->Account->Load();
-		}
+		}*/
 		// Make sure that the Account requested belongs to the account group that the contact belongs to
 		$bolUserCanViewAccount = FALSE;
-		if (AuthenticatedUser()->_arrUser['CustomerContact'])
+		// NOTE: Deprecated
+		/*if (AuthenticatedUser()->_arrUser['CustomerContact'])
 		{
 			// The user can only view the account, if it belongs to the account group that they belong to
 			if (AuthenticatedUser()->_arrUser['AccountGroup'] == DBO()->Account->AccountGroup->Value)
@@ -202,7 +222,7 @@ class AppTemplateConsole extends ApplicationTemplate
 				$bolUserCanViewAccount = TRUE;
 			}
 		}
-		elseif (AuthenticatedUser()->_arrUser['Account'] == DBO()->Account->Id->Value)
+		else*/if (AuthenticatedUser()->_arrUser['account_id'] == DBO()->Account->Id->Value)
 		{
 			// The user can only view the account, if it is their primary account
 			$bolUserCanViewAccount = TRUE;
@@ -376,17 +396,28 @@ class AppTemplateConsole extends ApplicationTemplate
 	 // User Survey
 	 function Survey()
 	 {
+	 	Flex::assert(false, "Survey functionality has been deprecated");
+	 	
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckClientAuth();
 		
-		// Retrieve the client's details
-		DBO()->Contact->Id = AuthenticatedUser()->_arrUser['Id'];
+		// Retrieve the client's details, NOTE: Deprecated
+		/*DBO()->Contact->Id = AuthenticatedUser()->_arrUser['id'];
 		if (!DBO()->Contact->Load())
 		{
 			// This should never actually occur because if the contact can't be loaded then AuthenticatedUser()->CheckClientAuth() would have failed
 			DBO()->Error->Message = "The contact with contact id: ". DBO()->Contact->Id->Value ." could not be found";
 			$this->LoadPage('error');
 			return FALSE;
+		}*/
+		
+		$iAccountUserId	= AuthenticatedUser()->_arrUser['id'];
+		$oAccountUser	= Account_User::getForId($iAccountUserId);
+		if (!$oAccountUser) {
+			// This should never actually occur because if the contact can't be loaded then AuthenticatedUser()->CheckClientAuth() would have failed
+			DBO()->Error->Message = "The contact with contact id: {$iAccountUserId} could not be found";
+			$this->LoadPage('error');
+			return false;
 		}
 		
 		if (DBO()->Account->Id->Value)
@@ -397,22 +428,23 @@ class AppTemplateConsole extends ApplicationTemplate
 		else
 		{
 			// No specific account has been specified, so load the contact's primary account
-			DBO()->Account->Id = DBO()->Contact->Account->Value;
+			DBO()->Account->Id = $oAccountUser->account_id;
 		}
 		
 		// Load the clients primary account
 		DBO()->Account->Load();
 
 		// If the user can view all accounts in their account group then load these too
-		if (DBO()->Contact->CustomerContact->Value)
+		/*if (DBO()->Contact->CustomerContact->Value)
 		{
 			DBL()->Account->AccountGroup = DBO()->Contact->AccountGroup->Value;
 			DBL()->Account->Archived = 0;
 			DBL()->Account->Load();
-		}
+		}*/
 		// Make sure that the Account requested belongs to the account group that the contact belongs to
 		$bolUserCanViewAccount = FALSE;
-		if (AuthenticatedUser()->_arrUser['CustomerContact'])
+		// NOTE: Deprecated
+		/*if (AuthenticatedUser()->_arrUser['CustomerContact'])
 		{
 			// The user can only view the account, if it belongs to the account group that they belong to
 			if (AuthenticatedUser()->_arrUser['AccountGroup'] == DBO()->Account->AccountGroup->Value)
@@ -420,7 +452,7 @@ class AppTemplateConsole extends ApplicationTemplate
 				$bolUserCanViewAccount = TRUE;
 			}
 		}
-		elseif (AuthenticatedUser()->_arrUser['Account'] == DBO()->Account->Id->Value)
+		else*/if (AuthenticatedUser()->_arrUser['account_id'] == DBO()->Account->Id->Value)
 		{
 			// The user can only view the account, if it is their primary account
 			$bolUserCanViewAccount = TRUE;
@@ -1075,14 +1107,23 @@ class AppTemplateConsole extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckClientAuth();
 		
-		// Retrieve the client's details
-		DBO()->Contact->Id = AuthenticatedUser()->_arrUser['Id'];
+		// Retrieve the client's details, NOTE: Deprecated
+		/*DBO()->Contact->Id = AuthenticatedUser()->_arrUser['id'];
 		if (!DBO()->Contact->Load())
 		{
 			// This should never actually occur because if the contact can't be loaded then AuthenticatedUser()->CheckClientAuth() would have failed
 			DBO()->Error->Message = "The contact with contact id: ". DBO()->Contact->Id->Value ." could not be found";
 			$this->LoadPage('error');
 			return FALSE;
+		}*/
+		
+		$iAccountUserId	= AuthenticatedUser()->_arrUser['id'];
+		$oAccountUser	= Account_User::getForId($iAccountUserId);
+		if (!$oAccountUser) {
+			// This should never actually occur because if the contact can't be loaded then AuthenticatedUser()->CheckClientAuth() would have failed
+			DBO()->Error->Message = "The contact with contact id: {$iAccountUserId} could not be found";
+			$this->LoadPage('error');
+			return false;
 		}
 		
 		if (DBO()->Account->Id->Value)
@@ -1093,22 +1134,23 @@ class AppTemplateConsole extends ApplicationTemplate
 		else
 		{
 			// No specific account has been specified, so load the contact's primary account
-			DBO()->Account->Id = DBO()->Contact->Account->Value;
+			DBO()->Account->Id = $oAccountUser->account_id;
 		}
 		
 		// Load the clients primary account
 		DBO()->Account->Load();
 
-		// If the user can view all accounts in their account group then load these too
-		if (DBO()->Contact->CustomerContact->Value)
+		// If the user can view all accounts in their account group then load these too, NOTE: Deprecated
+		/*if (DBO()->Contact->CustomerContact->Value)
 		{
 			DBL()->Account->AccountGroup = DBO()->Contact->AccountGroup->Value;
 			DBL()->Account->Archived = 0;
 			DBL()->Account->Load();
-		}
+		}*/
 		// Make sure that the Account requested belongs to the account group that the contact belongs to
 		$bolUserCanViewAccount = FALSE;
-		if (AuthenticatedUser()->_arrUser['CustomerContact'])
+		// NOTE: Deprecated
+		/*if (AuthenticatedUser()->_arrUser['CustomerContact'])
 		{
 			// The user can only view the account, if it belongs to the account group that they belong to
 			if (AuthenticatedUser()->_arrUser['AccountGroup'] == DBO()->Account->AccountGroup->Value)
@@ -1116,7 +1158,7 @@ class AppTemplateConsole extends ApplicationTemplate
 				$bolUserCanViewAccount = TRUE;
 			}
 		}
-		elseif (AuthenticatedUser()->_arrUser['Account'] == DBO()->Account->Id->Value)
+		else*/if (AuthenticatedUser()->_arrUser['account_id'] == DBO()->Account->Id->Value)
 		{
 			// The user can only view the account, if it is their primary account
 			$bolUserCanViewAccount = TRUE;
@@ -1256,14 +1298,20 @@ class AppTemplateConsole extends ApplicationTemplate
 
 			$arrFieldsList['Request Details'] = $_POST['mixCustomerComments'] . "\n";
 
-			$arrFieldsList['Contact Title'] = $_POST['mixContact_Title'];
+			// NOTE: Deprecated
+			/*$arrFieldsList['Contact Title'] = $_POST['mixContact_Title'];
 			$arrFieldsList['Contact Job Title'] = $_POST['mixContact_JobTitle'];
 			$arrFieldsList['Contact First Name'] = $_POST['mixContact_FirstName'];
 			$arrFieldsList['Contact Last Name'] = $_POST['mixContact_LastName'];
 			$arrFieldsList['Contact Email'] = $_POST['mixContact_Email'];
 			$arrFieldsList['Contact Phone'] = $_POST['mixContact_Phone'];
 			$arrFieldsList['Contact Mobile'] = $_POST['mixContact_Mobile'];
-			$arrFieldsList['Contact Fax'] = $_POST['mixContact_Fax'];
+			$arrFieldsList['Contact Fax'] = $_POST['mixContact_Fax'];*/
+			
+			$arrFieldsList['Contact Given Name'] 	= $_POST['mixContact_GivenName'];
+			$arrFieldsList['Contact Family Name'] 	= $_POST['mixContact_FamilyName'];
+			$arrFieldsList['Contact Email'] 		= $_POST['mixContact_Email'];
+			
 			$arrFieldsList['Contact Address Line 1'] = $_POST['mixAccount_Address1'];
 			$arrFieldsList['Contact Address Line 2'] = $_POST['mixAccount_Address2'];
 			$arrFieldsList['Contact Suburb'] = $_POST['mixAccount_Suburb'];
@@ -1296,8 +1344,8 @@ class AppTemplateConsole extends ApplicationTemplate
 				
 				
 				$email = Email_Notification::getForSystemName('SUPPORT_FORM', DBO()->Account->CustomerGroup->Value);
-				$email->setFrom("$_POST[mixContact_Email]", "$_POST[mixContact_FirstName] $_POST[mixContact_LastName]");
-				$email->setSubject("Account Support Request - " . DBO()->Contact->Account->Value);
+				$email->setFrom("$_POST[mixContact_Email]", "$_POST[mixContact_GivenName] $_POST[mixContact_FamilyName]");
+				$email->setSubject("Account Support Request - " . $oAccountUser->account_id);
 				$email->setBodyText("$message");
 				$email->disableAdminAutoBCC();
 				$email->send();
@@ -1356,14 +1404,23 @@ class AppTemplateConsole extends ApplicationTemplate
 	// Check user authorization and permissions
 	AuthenticatedUser()->CheckClientAuth();
 	
-	// Retrieve the client's details
-	DBO()->Contact->Id = AuthenticatedUser()->_arrUser['Id'];
+	// Retrieve the client's details, NOTE: Deprecated
+	/*DBO()->Contact->Id = AuthenticatedUser()->_arrUser['id'];
 	if (!DBO()->Contact->Load())
 	{
 		// This should never actually occur because if the contact can't be loaded then AuthenticatedUser()->CheckClientAuth() would have failed
 		DBO()->Error->Message = "The contact with contact id: ". DBO()->Contact->Id->Value ." could not be found";
 		$this->LoadPage('error');
 		return FALSE;
+	}*/
+	
+	$iAccountUserId	= AuthenticatedUser()->_arrUser['id'];
+	$oAccountUser	= Account_User::getForId($iAccountUserId);
+	if (!$oAccountUser) {
+		// This should never actually occur because if the contact can't be loaded then AuthenticatedUser()->CheckClientAuth() would have failed
+		DBO()->Error->Message = "The contact with contact id: {$iAccountUserId} could not be found";
+		$this->LoadPage('error');
+		return false;
 	}
 	
 	if (DBO()->Account->Id->Value)
@@ -1374,22 +1431,23 @@ class AppTemplateConsole extends ApplicationTemplate
 	else
 	{
 		// No specific account has been specified, so load the contact's primary account
-		DBO()->Account->Id = DBO()->Contact->Account->Value;
+		DBO()->Account->Id = $oAccountUser->account_id;
 	}
 	
 	// Load the clients primary account
 	DBO()->Account->Load();
 
-	// If the user can view all accounts in their account group then load these too
-	if (DBO()->Contact->CustomerContact->Value)
+	// If the user can view all accounts in their account group then load these too, NOTE: Deprecated
+	/*if (DBO()->Contact->CustomerContact->Value)
 	{
 		DBL()->Account->AccountGroup = DBO()->Contact->AccountGroup->Value;
 		DBL()->Account->Archived = 0;
 		DBL()->Account->Load();
-	}
+	}*/
 	// Make sure that the Account requested belongs to the account group that the contact belongs to
 	$bolUserCanViewAccount = FALSE;
-	if (AuthenticatedUser()->_arrUser['CustomerContact'])
+	// NOTE: Deprecated
+	/*if (AuthenticatedUser()->_arrUser['CustomerContact'])
 	{
 		// The user can only view the account, if it belongs to the account group that they belong to
 		if (AuthenticatedUser()->_arrUser['AccountGroup'] == DBO()->Account->AccountGroup->Value)
@@ -1397,7 +1455,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			$bolUserCanViewAccount = TRUE;
 		}
 	}
-	elseif (AuthenticatedUser()->_arrUser['Account'] == DBO()->Account->Id->Value)
+	else*/if (AuthenticatedUser()->_arrUser['account_id'] == DBO()->Account->Id->Value)
 	{
 		// The user can only view the account, if it is their primary account
 		$bolUserCanViewAccount = TRUE;
@@ -1454,8 +1512,8 @@ class AppTemplateConsole extends ApplicationTemplate
 
 
 	// Get account Id, we need to auto fill some form details.
-	$intAccountId = DBO()->Account->Id->Value;
-	$strOldEmailAddress = DBO()->Contact->Email->Value;
+	$intAccountId 		= DBO()->Account->Id->Value;
+	$strOldEmailAddress	= $oAccountUser->email;
 
 	if(array_key_exists('intUpdateAccountId', $_POST))
 	{
@@ -1468,7 +1526,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			$mixFoundError = FALSE;
 			if($_POST['mixAccount_NewPassword1'] != "" || $_POST['mixAccount_NewPassword2'] != "")
 			{
-				if(SHA1($_POST['mixAccount_OldPassword']) != DBO()->Contact->PassWord->Value)
+				if(SHA1($_POST['mixAccount_OldPassword']) != $oAccountUser->password)
 				{
 					DBO()->ErrorMessage .= "Invalid input: Old password does not match<br/>";
 					$mixFoundError = TRUE;
@@ -1493,15 +1551,19 @@ class AppTemplateConsole extends ApplicationTemplate
 				DBO()->ErrorMessage .= "$strErrorResponse<br/>";
 			}
 
-			// Connect to database
-			$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
-			$strCustContactEmail = $dbConnection->fetchone("SELECT Id,Email FROM `Contact` WHERE Email = \"$_POST[mixContact_Email]\" AND Id != \"" . DBO()->Contact->Id->Value . "\" LIMIT 1");
+			// Connect to database, NOTE: Deprecated
+			/*$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
+			$strCustContactEmail = $dbConnection->fetchone("SELECT	Id, Email
+															FROM 	`Contact` 
+															WHERE 	Email = \"$_POST[mixContact_Email]\" 
+															AND 	Id != \"" . DBO()->Contact->Id->Value . "\" 
+															LIMIT 	1");
 			// Check for duplicate email being used...
 			if($strCustContactEmail)
 			{
 				$mixFoundError=TRUE;
 				DBO()->ErrorMessage .= "The email address entered already exists.<br/>";
-			}
+			}*/
 			
 			if($mixFoundError)
 			{
@@ -1538,14 +1600,23 @@ class AppTemplateConsole extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckClientAuth();
 		
-		// Retrieve the client's details
-		DBO()->Contact->Id = AuthenticatedUser()->_arrUser['Id'];
+		// Retrieve the client's details, NOTE: Deprecated
+		/*DBO()->Contact->Id = AuthenticatedUser()->_arrUser['id'];
 		if (!DBO()->Contact->Load())
 		{
 			// This should never actually occur because if the contact can't be loaded then AuthenticatedUser()->CheckClientAuth() would have failed
 			DBO()->Error->Message = "The contact with contact id: ". DBO()->Contact->Id->Value ." could not be found";
 			$this->LoadPage('error');
 			return FALSE;
+		}*/
+		
+		$iAccountUserId	= AuthenticatedUser()->_arrUser['id'];
+		$oAccountUser	= Account_User::getForId($iAccountUserId);
+		if (!$oAccountUser) {
+			// This should never actually occur because if the contact can't be loaded then AuthenticatedUser()->CheckClientAuth() would have failed
+			DBO()->Error->Message = "The contact with contact id: {$iAccountUserId} could not be found";
+			$this->LoadPage('error');
+			return false;
 		}
 		
 		if (DBO()->Account->Id->Value)
@@ -1556,22 +1627,23 @@ class AppTemplateConsole extends ApplicationTemplate
 		else
 		{
 			// No specific account has been specified, so load the contact's primary account
-			DBO()->Account->Id = DBO()->Contact->Account->Value;
+			DBO()->Account->Id = $oAccountUser->account_id;
 		}
 		
 		// Load the clients primary account
 		DBO()->Account->Load();
 
-		// If the user can view all accounts in their account group then load these too
-		if (DBO()->Contact->CustomerContact->Value)
+		// If the user can view all accounts in their account group then load these too, NOTE: Deprecated
+		/*if (DBO()->Contact->CustomerContact->Value)
 		{
 			DBL()->Account->AccountGroup = DBO()->Contact->AccountGroup->Value;
 			DBL()->Account->Archived = 0;
 			DBL()->Account->Load();
-		}
+		}*/
 		// Make sure that the Account requested belongs to the account group that the contact belongs to
 		$bolUserCanViewAccount = FALSE;
-		if (AuthenticatedUser()->_arrUser['CustomerContact'])
+		// NOTE: Deprecated
+		/*if (AuthenticatedUser()->_arrUser['CustomerContact'])
 		{
 			// The user can only view the account, if it belongs to the account group that they belong to
 			if (AuthenticatedUser()->_arrUser['AccountGroup'] == DBO()->Account->AccountGroup->Value)
@@ -1579,7 +1651,7 @@ class AppTemplateConsole extends ApplicationTemplate
 				$bolUserCanViewAccount = TRUE;
 			}
 		}
-		elseif (AuthenticatedUser()->_arrUser['Account'] == DBO()->Account->Id->Value)
+		else*/if (AuthenticatedUser()->_arrUser['account_id'] == DBO()->Account->Id->Value)
 		{
 			// The user can only view the account, if it is their primary account
 			$bolUserCanViewAccount = TRUE;
@@ -1635,8 +1707,8 @@ class AppTemplateConsole extends ApplicationTemplate
 		}
 
 		// Get account Id, we need to auto fill some form details.
-		$intAccountId = DBO()->Account->Id->Value;
-		$strOldEmailAddress = DBO()->Contact->Email->Value;
+		$intAccountId 		= DBO()->Account->Id->Value;
+		$strOldEmailAddress = $oAccountUser->email;
 
 		if(array_key_exists('intUpdateAccountId', $_POST))
 		{
@@ -1668,14 +1740,19 @@ class AppTemplateConsole extends ApplicationTemplate
 				# Debug.
 				# var_dump($_POST);exit;
 
-				DBO()->Contact->FirstName = $_POST['mixContact_FirstName'];
+				// NOTE: Deprecated
+				/*DBO()->Contact->FirstName = $_POST['mixContact_FirstName'];
 				DBO()->Contact->LastName = $_POST['mixContact_LastName'];
 				DBO()->Contact->Title = $_POST['mixContact_Title'];
 				DBO()->Contact->JobTitle = $_POST['mixContact_JobTitle'];
 				DBO()->Contact->Email = $_POST['mixContact_Email'];
 				DBO()->Contact->Phone = $_POST['mixContact_Phone'];
 				DBO()->Contact->Mobile = $_POST['mixContact_Mobile'];
-				DBO()->Contact->Fax = $_POST['mixContact_Fax'];
+				DBO()->Contact->Fax = $_POST['mixContact_Fax'];*/
+				
+				$oAccountUser->given_name 	= $_POST['mixContact_GivenName'];
+				$oAccountUser->family_name 	= $_POST['mixContact_FamilyName'];
+				$oAccountUser->email 		= $_POST['mixContact_Email'];
 
 				$mixFoundError = FALSE;
 				if($_POST['mixAccount_OldPassword'] == "" || $_POST['mixAccount_NewPassword1'] == "" || $_POST['mixAccount_NewPassword2'] == "")
@@ -1683,7 +1760,7 @@ class AppTemplateConsole extends ApplicationTemplate
 					//echo "error 1<br/>";
 					$mixFoundError = TRUE;
 				}
-				if(SHA1($_POST['mixAccount_OldPassword']) != DBO()->Contact->PassWord->Value)
+				if(SHA1($_POST['mixAccount_OldPassword']) != $oAccountUser->password)
 				{
 					//echo "error 2<br/>";
 					$mixFoundError = TRUE;
@@ -1701,15 +1778,25 @@ class AppTemplateConsole extends ApplicationTemplate
 				}
 				if($mixFoundError == FALSE)
 				{
-					DBO()->Contact->SetColumns("FirstName,LastName,Title,JobTitle,Email,Phone,Mobile,Fax,PassWord");
-					DBO()->Contact->PassWord = SHA1($_POST['mixAccount_NewPassword1']);
+					// NOTE: Deprecated
+					//DBO()->Contact->SetColumns("FirstName,LastName,Title,JobTitle,Email,Phone,Mobile,Fax,PassWord");
+					//DBO()->Contact->PassWord = SHA1($_POST['mixAccount_NewPassword1']);
+					$oAccountUser->password = sha1($_POST['mixAccount_NewPassword1']);
 				}
-				if($mixFoundError)
+				
+				// NOTE: Deprecated					
+				/*if($mixFoundError)
 				{
 					DBO()->Contact->SetColumns("FirstName,LastName,Title,JobTitle,Email,Phone,Mobile,Fax");
 				}
 				if (!DBO()->Contact->Save())
 				{
+					throw new Exception("Could not save changes to contact details");
+				}*/
+				
+				try {
+					$oAccountUser->save();
+				} catch (Exception $oEx) {
 					throw new Exception("Could not save changes to contact details");
 				}
 
@@ -1717,14 +1804,20 @@ class AppTemplateConsole extends ApplicationTemplate
 				$subject = "Account Updated #$intAccountId";
 				$message = "The account changes below have been made:\n\n";
 
-				$message .= "FirstName: " . $_POST['mixContact_FirstName'] . "\n";
+				// NOTE: Deprecated
+				/*$message .= "FirstName: " . $_POST['mixContact_FirstName'] . "\n";
 				$message .= "LastName: " . $_POST['mixContact_LastName'] . "\n";
 				$message .= "Title: " . $_POST['mixContact_Title'] . "\n";
 				$message .= "JobTitle: " . $_POST['mixContact_JobTitle'] . "\n";
 				$message .= "Email: " . $_POST['mixContact_Email'] . "\n";
 				$message .= "Phone: " . $_POST['mixContact_Phone'] . "\n";
 				$message .= "Mobile: " . $_POST['mixContact_Mobile'] . "\n";
-				$message .= "Fax: " . $_POST['mixContact_Fax'] . "\n";
+				$message .= "Fax: " . $_POST['mixContact_Fax'] . "\n";*/
+				
+				$message .= "Given Name: " . $_POST['mixContact_GivenName'] . "\n";
+				$message .= "Family Name: " . $_POST['mixContact_FamilyName'] . "\n";
+				$message .= "Email: " . $_POST['mixContact_Email'] . "\n";
+				
 				$message .= "Address1: " . $_POST['mixAccount_Address1'] . "\n";
 				$message .= "Address2: " . $_POST['mixAccount_Address2'] . "\n";
 				$message .= "Suburb: " . $_POST['mixAccount_Suburb'] . "\n";
@@ -1772,14 +1865,24 @@ class AppTemplateConsole extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckClientAuth();
 		
+		// NOTE: Deprecated
 		// Retrieve the client's details
-		DBO()->Contact->Id = AuthenticatedUser()->_arrUser['Id'];
+		/*DBO()->Contact->Id = AuthenticatedUser()->_arrUser['id'];
 		if (!DBO()->Contact->Load())
 		{
 			// This should never actually occur because if the contact can't be loaded then AuthenticatedUser()->CheckClientAuth() would have failed
 			DBO()->Error->Message = "The contact with contact id: ". DBO()->Contact->Id->Value ." could not be found";
 			$this->LoadPage('error');
 			return FALSE;
+		}*/
+		
+		$iAccountUserId	= AuthenticatedUser()->_arrUser['id'];
+		$oAccountUser	= Account_User::getForId($iAccountUserId);
+		if (!$oAccountUser) {
+			// This should never actually occur because if the contact can't be loaded then AuthenticatedUser()->CheckClientAuth() would have failed
+			DBO()->Error->Message = "The contact with contact id: {$iAccountUserId} could not be found";
+			$this->LoadPage('error');
+			return false;
 		}
 		
 		if (DBO()->Account->Id->Value)
@@ -1790,21 +1893,27 @@ class AppTemplateConsole extends ApplicationTemplate
 		else
 		{
 			// No specific account has been specified, so load the contact's primary account
-			DBO()->Account->Id = DBO()->Contact->Account->Value;
+			DBO()->Account->Id = $oAccountUser->account_id;
+			
+			// NOTE: Deprecated
+			//DBO()->Account->Id = DBO()->Contact->Account->Value;
 		}
 		// Load the clients primary account
 		DBO()->Account->Load();
 
+		// NOTE: Deprecated
 		// If the user can view all accounts in their account group then load these too
-		if (DBO()->Contact->CustomerContact->Value)
+		/*if (DBO()->Contact->CustomerContact->Value)
 		{
 			DBL()->Account->AccountGroup = DBO()->Contact->AccountGroup->Value;
 			DBL()->Account->Archived = 0;
 			DBL()->Account->Load();
-		}
+		}*/
+		
 		// Make sure that the Account requested belongs to the account group that the contact belongs to
 		$bolUserCanViewAccount = FALSE;
-		if (AuthenticatedUser()->_arrUser['CustomerContact'])
+		// NOTE: Deprecated
+		/*if (AuthenticatedUser()->_arrUser['CustomerContact'])
 		{
 			// The user can only view the account, if it belongs to the account group that they belong to
 			if (AuthenticatedUser()->_arrUser['AccountGroup'] == DBO()->Account->AccountGroup->Value)
@@ -1812,7 +1921,7 @@ class AppTemplateConsole extends ApplicationTemplate
 				$bolUserCanViewAccount = TRUE;
 			}
 		}
-		elseif (AuthenticatedUser()->_arrUser['Account'] == DBO()->Account->Id->Value)
+		else*/if (AuthenticatedUser()->_arrUser['account_id'] == DBO()->Account->Id->Value)
 		{
 			// The user can only view the account, if it is their primary account
 			$bolUserCanViewAccount = TRUE;
@@ -1845,15 +1954,16 @@ class AppTemplateConsole extends ApplicationTemplate
 		// Calculate the total unbilled CDRs for the account (inc GST), omitting Credit CDRs
 		DBO()->Account->UnbilledCDRs = AddGST(UnbilledAccountCDRTotal(DBO()->Account->Id->Value, TRUE));
 		
+		// TODO: AU
 		$strShowLastLogin = "Never";
-		$intLastLogin = DBO()->Contact->LastLogin->Value;
+		/*$intLastLogin = DBO()->Contact->LastLogin->Value;
 		if($intLastLogin != "")
 		{
 			$strShowLastLogin = date("F j, Y, g:i a",$intLastLogin);
-		}
+		}*/
 
 		// Setup BreadCrumb Menu
-		$strWelcome = "<div class=\"welcome_message\">Welcome " . DBO()->Contact->FirstName->Value . ". Last Login: $strShowLastLogin</div>\n";
+		$strWelcome = "<div class=\"welcome_message\">Welcome {$oAccountUser->given_name}. Last Login: {$strShowLastLogin}</div>\n";
 		BreadCrumb()->SetCurrentPage($strWelcome);
 		
 		$this->LoadPage('console');
@@ -1919,6 +2029,7 @@ class AppTemplateConsole extends ApplicationTemplate
 	 */
 	function Password()
 	{
+		Flex::assert(false, "Password reset, deprecated functionality");
 		
 		// eventually user will not even see a flex login page, so this page will need to be separate.
 		// Password() - doesn't seem to work as expected but does work.
@@ -1935,18 +2046,19 @@ class AppTemplateConsole extends ApplicationTemplate
 
 			// Check the syntax of the username entered by user..
 			$mixInput = $_POST['mixUserName'];
-			list($strFoundError,$strErrorResponse) = InputValidation("UserName",$mixInput,"email",255);
-
+			
+			// NOTE: Deprecated
+			//list($strFoundError,$strErrorResponse) = InputValidation("UserName",$mixInput,"email",255);
 			// If there is no UserName errror
-			if(!$strFoundError)
-			{
-				//then we can check the database for a record.
-				$strCustEmail = $dbConnection->fetchone("SELECT Id,Email,Account,LastLogin FROM `Contact` WHERE Email = \"$mixInput\" LIMIT 1");
-
-				/* Before we can send the username, check and make sure they have already activated and entered a valid email */
+			//if(!$strFoundError)
+			//{
+				//then we can check the database for a record. NOTE: Deprecated
+				/*$strCustEmail = $dbConnection->fetchone("SELECT Id,Email,Account,LastLogin FROM `Contact` WHERE Email = \"$mixInput\" LIMIT 1");
+								
+				// Before we can send the username, check and make sure they have already activated and entered a valid email 
 				if($strCustEmail->LastLogin == NULL && $strCustEmail->Id != NULL)
 				{
-					/* if they don't have an activated account we redirect to activation page */
+					/// if they don't have an activated account we redirect to activation page 
 					unset($_POST['mixFirstName']);
 					$bolFoundError=TRUE;
 					$this->LoadPage('setup_account');
@@ -1972,8 +2084,39 @@ class AppTemplateConsole extends ApplicationTemplate
 					# supress email errors.
 					@mail($to, $subject, $message, $headers);
 					DBO()->Fail = FALSE;
+				}*/
+				
+				$aAccountUser = Query::run("SELECT	*
+											FROM	account_user
+											WHERE	username = <username>;",
+											array('username' => $mixInput))->fetch_assoc();
+				if (!$aAccountUser) {
+					/// if they don't have an activated account we redirect to activation page 
+					unset($_POST['mixFirstName']);
+					$bolFoundError = TRUE;
+					$this->LoadPage('setup_account');
+					return TRUE;
+				} else {
+					// Reset password
+					$strTxtPassword			= RandomString("10");
+					$oAccountUser 			= new Account_User($aAccountUser);
+					$oAccountUser->password = sha1($oAccountUser);
+					$oAccountUser->save();
+
+					// And send an email...
+					$to      = $oAccountUser->email;
+					$subject = "Account Updated #".$oAccountUser->account_id;
+					$message = "The account changes below have been made:\n\n";
+					$message .= "New Password: $strTxtPassword\n\n";
+					$message .= "Kind Regards\n";
+					$message .= "Customer Service Group\n";
+					$headers .= 'From: Customer Service Group<noreply@' . DBO()->CustomerGroup->email_domain->Value . ">\r\n" .
+						'X-Mailer: Flex/' . phpversion();
+					# supress email errors.
+					@mail($to, $subject, $message, $headers);
+					DBO()->Fail = FALSE;
 				}
-			}
+			//}
 
 			// email not found in db?
 			if(DBO()->Fail)
@@ -2003,6 +2146,7 @@ class AppTemplateConsole extends ApplicationTemplate
 	 */
 	function Username()
 	{
+		Flex::assert(false, "Username resend, deprecated functionality");
 		
 		// eventually user will not even see a flex login page, so this page will need to be separate.
 		// Password() - doesn't seem to work as expected but does work.
@@ -2092,6 +2236,8 @@ class AppTemplateConsole extends ApplicationTemplate
 	 */
 	function Setup()
 	{
+		Flex::assert(false, "Setup is deprecated functionality");
+		
 		error_reporting(0);
 
 		// Connect to database

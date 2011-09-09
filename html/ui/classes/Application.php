@@ -1095,14 +1095,21 @@ class Application
 		{
 			// user has just logged in. Get the Id of the contact (Identified by UserName and PassWord combination)
 			$selSelectStatement = new StatementSelect (
-				"Contact",
+				"account_user",
 				"*",
-				"Email = <UserName> AND PassWord = SHA1(<PassWord>) AND Archived = 0",
+				"	username = <UserName> 
+				AND password = SHA1(<PassWord>)
+				AND	status_id = ".STATUS_ACTIVE,
 				null,
 				"1"
 			);
 
-			$selSelectStatement->Execute(Array("UserName"=>$_POST['VixenUserName'], "PassWord"=>$_POST['VixenPassword']));
+			$selSelectStatement->Execute(
+				array(
+					"UserName"	=> $_POST['VixenUserName'], 
+					"PassWord"	=> $_POST['VixenPassword']
+				)
+			);
 
 			// Check if the contact was found
 			if ($selSelectStatement->Count() == 1)
@@ -1110,29 +1117,31 @@ class Application
 				$currentUser = $selSelectStatement->Fetch();
 
 				// Get the Account table.
-				DBO()->Account->Id = $currentUser['Account'];
+				DBO()->Account->Id = $currentUser['account_id'];
 				DBO()->Account->Load();
 
 				// Get the CustomerGroup table.
 				DBO()->CustomerGroup->Id = DBO()->Account->CustomerGroup->Value;
 				DBO()->CustomerGroup->Load();
 
+				// NOTE: Deprecated
 				// Get the Account table.
-				DBO()->Contact->Id = $currentUser['Id'];
+				/*DBO()->Contact->Id = $currentUser['Id'];
 				DBO()->Contact->Load();
 
 				DBO()->Contact->LastLogin = $currentUser['CurrentLogin'];
-				DBO()->Contact->CurrentLogin = time();
+				DBO()->Contact->CurrentLogin = time();*/
 
 				// Save when the user last logged in.
 				// DBO()->Contact->SetColumns("LastLogin,CurrentLogin");
 
+				// NOTE: Deprecated
 				// Seems to be a bug where empty rows are being added, hopefully this will resolve it?
-				if(DBO()->Contact->Id !== "")
+				/*if(DBO()->Contact->Id !== "")
 				{
 					// DBO()->Contact->SetColumns("LastLogin,CurrentLogin");
 					DBO()->Contact->Save();
-				}
+				}*/
 				// Check if CustomersGroup in database matches the URL being used.
 				// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
 				// if(!eregi($_SERVER['HTTP_HOST'],DBO()->CustomerGroup->flex_url->Value)){
@@ -1143,7 +1152,7 @@ class Application
 				}
 
 				// If the user logging in is not the same user to which previous session data belongs, clear out the old stuff!
-				if (!array_key_exists('User', $_SESSION) || $_SESSION['User']['Id'] != $currentUser['Id'])
+				if (!array_key_exists('User', $_SESSION) || $_SESSION['User']['id'] != $currentUser['id'])
 				{
 					$_SESSION = array();
 				}
@@ -1166,18 +1175,23 @@ class Application
 
 			// user is already logged in. Get the CustomerGroup
 			$selSelectStatement = new StatementSelect (
-				"Contact",
+				"account_user",
 				"*",
-				"Email = <UserName> AND PassWord = <PassWord> AND Archived = 0",
+				"	username = <UserName> 
+				AND password = <PassWord>
+				AND	status_id = ".STATUS_ACTIVE,
 				null,
 				"1"
 			);
 
-			$selSelectStatement->Execute(Array("UserName"=>$_SESSION['User']['Email'], "PassWord"=>$_SESSION['User']['PassWord']));
+			$selSelectStatement->Execute(array(
+				"UserName"	=> $_SESSION['User']['username'], 
+				"PassWord"	=> $_SESSION['User']['password']
+			));
 			$currentUser = $selSelectStatement->Fetch();
 
 			// Get the Account table.
-			DBO()->Account->Id = $currentUser['Account'];
+			DBO()->Account->Id = $currentUser['account_id'];
 			DBO()->Account->Load();
 
 			// Get the CustomerGroup table.
@@ -1272,7 +1286,7 @@ class Application
 				"1"
 			);
 
-			$selSelectStatement->Execute(Array("UserName"=>$_SESSION['User']['UserName'], "PassWord"=>$_SESSION['User']['PassWord']));
+			$selSelectStatement->Execute(Array("UserName"=>$_SESSION['User']['username'], "PassWord"=>$_SESSION['User']['password']));
 			$currentUser = $selSelectStatement->Fetch();
 
 			// Get the Account table.
