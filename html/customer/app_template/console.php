@@ -1926,6 +1926,7 @@ class AppTemplateConsole extends ApplicationTemplate
 	 */
 	function Setup()
 	{
+		header("Location: ".Href()->SetupAccount());
 		Flex::assert(false, "Setup is deprecated functionality");
 		
 		error_reporting(0);
