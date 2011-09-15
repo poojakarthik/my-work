@@ -497,10 +497,8 @@ var Component_Carrier_Module_List = Class.create(
 			oSpan = oElement;
 		}
 		
-		oSpan.addClassName('component-carrier-module-list-header-sort');
-		
+		oSpan.addClassName('component-carrier-module-list-header-sort');		
 		this._oSort.registerToggleElement(oSpan, sSortField, Component_Carrier_Module_List.SORT_FIELDS[sSortField]);
-		this._oSort.registerToggleElement(oSortImg, sSortField, Component_Carrier_Module_List.SORT_FIELDS[sSortField]);
 	},
 	
 	_formatFilterValueForDisplay	: function(sField, mValue)

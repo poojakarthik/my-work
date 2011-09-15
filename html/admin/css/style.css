@@ -11480,6 +11480,10 @@ div.component-collections-scenario > table.reflex
 	margin-right	: 0.25em;
 }
 
+.component-carrier-module-list-header-sort {
+	cursor : pointer;
+}
+
 .component-carrier-module-list table.reflex > tbody > tr > td
 {
 	vertical-align	: middle;
