@@ -216,6 +216,10 @@ var Component_Account_User_Edit = Class.create(Reflex_Component, {
 	},
 	
 	_validateUsername : function(oControl) {
+		if (this.get('iAccountUserId')) {
+			return true;
+		}
+		
 		var sUsername = oControl.getValue();
 		if (this._sValidUsername == sUsername) {
 			return true;
