@@ -126,7 +126,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			ContextMenu()->Account->ManageLinkedAccounts($intAccountId);
 		}
 		
-		if ($bUserHasAdmin) 
+		if ($bolUserHasOperatorPerm) 
 		{
 			ContextMenu()->Account->CustomerPortalLogins($intAccountId);
 		}
