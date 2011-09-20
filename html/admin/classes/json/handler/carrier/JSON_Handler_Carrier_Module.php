@@ -2,12 +2,12 @@
 
 class JSON_Handler_Carrier_Module extends JSON_Handler implements JSON_Handler_Loggable
 {
-	public function getAll($bActiveOnly=false)
+	public function getAll($bActiveOnly=false, $iCarrierModuleType=null)
 	{
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 		try
 		{
-			$aModules 		= Carrier_Module::getAll();
+			$aModules 		= ($iCarrierModuleType) ? Carrier_Module::getForCarrierModuleType($iCarrierModuleType, !$bActiveOnly) : Carrier_Module::getAll();
 			$aStdModules	= array();
 			foreach ($aModules as $oModule)
 			{

@@ -135,7 +135,7 @@ var Popup_Correspondence_Template_Carrier_Module = Class.create(Reflex_Popup,
 
 Object.extend(Popup_Correspondence_Template_Carrier_Module, 
 {
-	REQUIRED_CONSTANT_GROUPS : [],
+	REQUIRED_CONSTANT_GROUPS : ['carrier_module_type'],
 	
 	_ajaxError : function(oResponse, sMessage)
 	{
@@ -177,7 +177,8 @@ Object.extend(Popup_Correspondence_Template_Carrier_Module,
 		{
 			var fnResponse	= Popup_Correspondence_Template_Carrier_Module._getCarrierModuleOptions.curry(fnCallback);
 			var fnRequest 	= jQuery.json.jsonFunction(fnResponse, fnResponse, 'Carrier_Module', 'getAll');
-			fnRequest(true);
+			fnRequest(true, $CONSTANT.MODULE_TYPE_CORRESPONDENCE_EXPORT);
+			//fnRequest(true);
 			return;
 		}
 		
@@ -188,18 +189,35 @@ Object.extend(Popup_Correspondence_Template_Carrier_Module,
 		}
 		
 		var aOptions = [];
+		//debugger;
 		if (!Object.isArray(oResponse.aModules))
 		{
 			for (var iId in oResponse.aModules)
 			{
-				var oModule = oResponse.aModules[iId];
+				var oModule			= oResponse.aModules[iId],
+					sDescription	= Popup_Correspondence_Template_Carrier_Module._buildCarrierModuleDescription(oResponse.aModules[iId]);
 				aOptions.push(
 					$T.option({value: iId},
-						oModule.carrier_name + ' : ' + oModule.carrier_module_type_name + (oModule.customer_group_name !== null ? ' (' + oModule.customer_group_name + ')' : '')
+						sDescription
 					)
 				);
 			}
 		}
 		fnCallback(aOptions);
+	},
+
+	_buildCarrierModuleDescription	: function (oCarrierModule) {
+		var	sDescription;
+
+		if (oCarrierModule.description) {
+			sDescription	= oCarrierModule.description;
+		} else {
+			sDescription	= oCarrierModule.carrier_name + ' : ' + oCarrierModule.carrier_module_type_name;
+			
+			if (oCarrierModule.customer_group_name !== null) {
+				sDescription	+= ' (' + oCarrierModule.customer_group_name + ')';
+			};
+		}
+		return sDescription;
 	}
 });
