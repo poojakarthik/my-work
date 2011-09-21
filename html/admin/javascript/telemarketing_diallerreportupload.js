@@ -7,7 +7,7 @@ var Telemarketing_DiallerReportUpload	= Class.create
 						strSize		: 'medium',
 						strAlign	: 'centre',
 						strNature	: 'modal',
-						strTitle	: 'Upload Proposed Dialling List'
+						strTitle	: 'Upload Dialler Report'
 					},
 	
 	// Function: initialize()
@@ -179,7 +179,7 @@ var Telemarketing_DiallerReportUpload	= Class.create
 		"					</td>\n" + 
 		"				</tr>\n" + 
 		"				<tr>\n" + 
-		"					<td>File to wash:</td>\n" + 
+		"					<td>File to import:</td>\n" + 
 		"					<td>\n" + 
 		"						<input type='file' id='Telemarketing_DiallerReportUpload_File' name='Telemarketing_DiallerReportUpload_File' />\n" + 
 		"					</td>\n" + 
