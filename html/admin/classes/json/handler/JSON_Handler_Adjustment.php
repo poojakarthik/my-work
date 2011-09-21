@@ -169,6 +169,8 @@ class JSON_Handler_Adjustment extends JSON_Handler implements JSON_Handler_Logga
 					$aErrors[] = 'This service is not currently active on this account. Adjustments can only be requested for active services.';
 				}
 			}
+
+			$oDetails->note	= (is_string($oDetails->note) && strlen($oDetails->note = trim($oDetails->note))) ? $oDetails->note : null;
 			
 			if (count($aErrors) > 0)
 			{
@@ -197,8 +199,11 @@ class JSON_Handler_Adjustment extends JSON_Handler implements JSON_Handler_Logga
 			$oAdjustment->effective_date		= date('Y-m-d', $iNow);
 			$oAdjustment->created_datetime		= date('Y-m-d H:i:s', $iNow);
 			$oAdjustment->created_employee_id	= Flex::getUserId();
+			$oAdjustment->note					= $oDetails->note;
 			$oAdjustment->calculateTaxComponent();
 			$oAdjustment->save();
+
+			//throw new Exception("DEBUG: ".print_r($oAdjustment->toStdClass(), true));
 			
 			// Create an action to record the requested adjustment
 			if ($oAdjustment->service_id !== null)

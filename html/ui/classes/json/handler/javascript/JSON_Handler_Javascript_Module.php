@@ -78,10 +78,6 @@ class JSON_Handler_Javascript_Module extends JSON_Handler implements JSON_Handle
 		
 		throw new JSON_Handler_Exception_Javascript_Module_NoSuchModule($sModuleIdentifier, $aSearchedPaths);
 	}
-
-	protected static function _realPath() {
-		
-	}
 	
 	protected static function _realIdentifier($sIdentifier, $sBaseIdentifier='') {
 		$sFullIdentifier	= $sIdentifier;
@@ -91,7 +87,7 @@ class JSON_Handler_Javascript_Module extends JSON_Handler implements JSON_Handle
 		}
 		
 		// Break Identifier into terms
-		$aIdentifier	= explode('/', $sBaseIdentifier.'/'.$sIdentifier);
+		$aIdentifier	= explode('/', $sFullIdentifier);
 		
 		$aRealIdentifier	= array();
 		foreach ($aIdentifier as $sTerm) {
@@ -131,7 +127,7 @@ class JSON_Handler_Javascript_Module extends JSON_Handler implements JSON_Handle
 		// FIXME: If your require() has a comment within it (that is still syntactically correct), it will be ignored!
 		// FIXME: Very strict matching rules: MUST be in the form require('module/path/here'), with no spaces (single or double quotes allowed)
 		$aMatches	= array();
-		preg_match_all("/require\((['\"])([a-zA-Z0-9\-\_]+(\/[a-zA-Z0-9\-\_]+)*)(\1)\)/", $sSource, $aMatches);
+		preg_match_all('/require\(([\'"])([a-zA-Z0-9\-\_]+(\/[a-zA-Z0-9\-\_]+)*)(\1)\)/', $sSource, $aMatches);
 		
 		$aDependencies	= $aMatches[2];
 		

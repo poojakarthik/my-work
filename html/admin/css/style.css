@@ -10365,6 +10365,16 @@ div.component-collections-scenario > table.reflex
 	text-align	: right;
 }
 
+.component-account-adjustment-list-tooltip-note {
+	white-space	: pre-wrap;
+
+	overflow-x	: hidden;
+
+	-moz-hyphens	: auto;
+	-webkit-hyphens	: auto;
+	hyphens			: auto;
+}
+
 /************************** END - Component Account Adjustment List - END **************************/
 
 /************************** END - Component Account Payment List - END **************************/
@@ -10621,6 +10631,12 @@ div.component-collections-scenario > table.reflex
 	margin-top	: 0.5em;
 }
 
+.popup-adjustment-request-note > textarea {
+	overflow-y	: auto;
+	resize		: vertical;
+	min-height	: 8ex;
+}
+
 /************************** END - Popup Adjustment Request - END **************************/
 
 /************************** START - Page Adjustment Management - START **************************/
@@ -10733,6 +10749,30 @@ div.component-collections-scenario > table.reflex
 .popup-adjustment-management-action-adjustment > table.reflex > tbody > tr > th
 {
 	width	: 13em;
+}
+
+.page-adjustment-management-note {
+	margin-right	: 20px !important;
+	cursor			: pointer;
+}
+.page-adjustment-management-note.-no-content {
+	opacity	: .4;
+	cursor	: default;
+}
+.page-adjustment-management-note-details {
+	white-space	: pre-wrap;
+	overflow-y	: auto;
+	resize		: vertical;
+	min-height	: 20ex;
+	margin		: .25em;
+	padding		: .25em;
+
+	-moz-hyphens	: auto;
+	-webkit-hyphens	: auto;
+	hyphens			: auto;
+
+	background-color	: #fff;
+	border				: 1px solid #000;
 }
 
 /************************** END - Page Adjustment Management - END **************************/

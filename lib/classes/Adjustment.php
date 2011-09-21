@@ -221,7 +221,8 @@ class Adjustment extends ORM_Cached
 															)",
 						'transaction_nature_code'		=> "tn.code",
 						'created_employee_name' 		=> "CONCAT(e_created.FirstName, ' ', e_created.LastName)",
-						'reviewed_employee_name' 		=> "IF(e_reviewed.Id IS NOT NULL, CONCAT(e_reviewed.FirstName, ' ', e_reviewed.LastName), NULL)"
+						'reviewed_employee_name' 		=> "IF(e_reviewed.Id IS NOT NULL, CONCAT(e_reviewed.FirstName, ' ', e_reviewed.LastName), NULL)",
+						'note'							=> "a.note"
 					);
 		
 		$sFrom		= "				adjustment a
@@ -301,7 +302,8 @@ class Adjustment extends ORM_Cached
 						'adjustment_type_code' 			=> "at.code",
 						'adjustment_type_description' 	=> "at.description",
 						'transaction_nature_id'			=> "tn.id",
-						'transaction_nature_name'		=> "tn.name"
+						'transaction_nature_name'		=> "tn.name",
+						'note'							=> 'a.note'
 					);
 		
 		$sFrom		= "				adjustment a

@@ -2826,6 +2826,8 @@ class MenuItems {
 								'control_field_text.js',
 								'control_field_select.js',
 								'control_field_textarea.js',
+								'control.js',
+								'control_textarea.js',
 								'popup_adjustment_request.js'],
 								function() {
 									var oPopup = new Popup_Adjustment_Request({$iAccountId}, {$sServiceId});

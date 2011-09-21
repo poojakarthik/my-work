@@ -118,6 +118,25 @@ var Popup_Adjustment_Request = Class.create(Reflex_Popup,
 													this._iInvoiceId,
 													null
 												).getElement())
+										),
+										$T.tr(
+											$T.th('Note'),
+											$T.td(
+												new Control_Textarea({
+													sExtraClass		: 'popup-adjustment-request-note',
+													sName			: 'Note',
+													iControlState	: Control.STATE_ENABLED,
+													fnValidate		: function (oControl) {
+														// Ensure that it doesn't exceed our storage capacity
+														var	sValue	= String(oControl.getValue()),
+															iLength	= sValue.length;
+														if (iLength > 1000) {
+															throw "Exceeded maximum length of 1000 characters (currently "+iLength+")";
+														}
+														return true;
+													}
+												})
+											)
 										)
 									)
 								),
@@ -136,7 +155,9 @@ var Popup_Adjustment_Request = Class.create(Reflex_Popup,
 		this._oAdjustmentTypeDescription	= oContentDiv.select('.popup-adjustment-request-adjustment-type-description').first();
 		this._oAdjustmentTypeNature 		= oContentDiv.select('.popup-adjustment-request-adjustment-type-nature').first();
 		this._oAmountExGST					= oContentDiv.select('.popup-adjustment-request-amount-exgst').first();
-		this._oAmountTax					= oContentDiv.select('.popup-adjustment-request-amount-tax').first();		
+		this._oAmountTax					= oContentDiv.select('.popup-adjustment-request-amount-tax').first();
+		
+		this._oNote	= oContentDiv.select('.popup-adjustment-request-note').first().oReflexComponent;
 		
 		this._oLoading.hide();
 		delete this._oLoading;
@@ -254,6 +275,15 @@ var Popup_Adjustment_Request = Class.create(Reflex_Popup,
 					aErrors.push(oException);
 				}
 			}
+
+			// Also validate the Note (it validates differently, being a newer Control)
+			debugger;
+			var	mException;
+			try {
+				this._oNote.validate(false);
+			} catch (mException) {
+				aErrors.push(mException);
+			}
 			
 			if (aErrors.length)
 			{
@@ -269,7 +299,8 @@ var Popup_Adjustment_Request = Class.create(Reflex_Popup,
 				amount				: parseFloat(this._aControls[1].getValue()),
 				invoice_id			: parseInt(this._aControls[2].getValue()),
 				account_id			: this._iAccountId, 
-				service_id			: this._iServiceId
+				service_id			: this._iServiceId,
+				note				: this._oNote.getValue()
 			};
 			
 			this._oLoading = new Reflex_Popup.Loading('Saving...');

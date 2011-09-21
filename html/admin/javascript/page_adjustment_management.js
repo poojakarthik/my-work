@@ -317,12 +317,28 @@ var Page_Adjustment_Management = Class.create(
 				this._hSelectedRecords[oCheckbox.iRecordId]	= true;
 			}
 			
+			var oCreatedDate = Date.$parseDate(oData.effective_date, 'Y-m-d');
+
+			//oData.note	= "FAKE NOTE CONTENT\n\nHere is some multiline stuff.  Some really long lines should teach you a lesson!";
+			var	oNoteIcon	= $T.img({'class':'page-adjustment-management-note', src:Page_Adjustment_Management.NOTE_IMAGE_SOURCE, alt:'View Note', title:'View Note'});
+			if (oData.note) {
+				oNoteIcon.observe('click', Reflex_Popup.alert.curry($T.div({'class':'page-adjustment-management-note-details'}, oData.note), {
+					sTitle			: 'Note for ' + oData.adjustment_type_code + ' from ' + oCreatedDate.$format('d/m/Y') + ' for ' + oData.account_id,
+					iWidth			: 35,
+					sButtonLabel	: 'Close',
+					sIconSource		: Page_Adjustment_Management.NOTE_IMAGE_SOURCE
+				}));
+			} else {
+				oNoteIcon.addClassName('-no-content');
+				oNoteIcon.setAttribute('alt', 'No Note Supplied');
+				oNoteIcon.setAttribute('title', 'No Note Supplied');
+			}
+			oActionTD.appendChild(oNoteIcon);
+			
 			var oApproveIcon	= $T.img({class: 'pointer', src: Page_Adjustment_Management.APPROVE_IMAGE_SOURCE, alt: 'Approve This Adjustment', title: 'Approve This Adjustment'}).observe('click', this._actionSingle.bind(this, Page_Adjustment_Management.ACTION_APPROVE, oData.id))
 			var oRejectIcon 	= $T.img({class: 'pointer', src: Page_Adjustment_Management.REJECT_IMAGE_SOURCE, alt: 'Reject This Adjustment', title: 'Reject This Adjustment'}).observe('click', this._actionSingle.bind(this, Page_Adjustment_Management.ACTION_REJECT, oData.id))
 			oActionTD.appendChild(oApproveIcon);
 			oActionTD.appendChild(oRejectIcon);
-			
-			var oCreatedDate = Date.$parseDate(oData.effective_date, 'Y-m-d');
 			
 			var	oTR	=	$T.tr(
 							$T.td(oCheckbox),
@@ -621,6 +637,7 @@ Object.extend(Page_Adjustment_Management,
 	REMOVE_FILTER_IMAGE_SOURCE	: '../admin/img/template/delete.png',
 	APPROVE_IMAGE_SOURCE		: '../admin/img/template/approve.png',
 	REJECT_IMAGE_SOURCE			: '../admin/img/template/decline.png',
+	NOTE_IMAGE_SOURCE			: '../admin/img/template/note.png',
 	
 	ACTION_APPROVE	: 1,
 	ACTION_REJECT	: 2,

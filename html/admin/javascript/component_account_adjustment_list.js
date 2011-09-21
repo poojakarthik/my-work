@@ -7,7 +7,7 @@ var Component_Account_Adjustment_List = Class.create(
 		
 		this._iAccountId	= iAccountId;
 		this._oContainerDiv	= oContainerDiv;
-		this._oTooltip 		= new Component_List_Tooltip(20);
+		this._oTooltip 		= new Component_List_Tooltip(25);
 		
 		// Load constants then create UI
 		Flex.Constant.loadConstantGroup(Component_Account_Adjustment_List.REQUIRED_CONSTANT_GROUPS, this._buildUI.bind(this));
@@ -117,7 +117,7 @@ var Component_Account_Adjustment_List = Class.create(
 						);
 		
 		// Bind events to the pagination buttons
-		var aBottomPageButtons 	= this._oElement.select('.component-account-adjustment-list-paginationbutton');
+		var aBottomPageButtons	= this._oElement.select('.component-account-adjustment-list-paginationbutton');
 		aBottomPageButtons[0].observe('click', this._changePage.bind(this, 'firstPage'));
 		aBottomPageButtons[1].observe('click', this._changePage.bind(this, 'previousPage'));
 		aBottomPageButtons[2].observe('click', this._changePage.bind(this, 'nextPage'));
@@ -186,7 +186,7 @@ var Component_Account_Adjustment_List = Class.create(
 		}
 		
 		// Check if any results came back
-		if (!oResultSet || oResultSet.intTotalResults == 0 || oResultSet.arrResultSet.length == 0)
+		if (!oResultSet || oResultSet.intTotalResults === 0 || oResultSet.arrResultSet.length === 0)
 		{
 			oTBody.appendChild(this._createNoRecordsRow());
 		}
@@ -198,7 +198,7 @@ var Component_Account_Adjustment_List = Class.create(
 			for (var i in aData)
 			{
 				iCount++;
-				oTBody.appendChild(this._createTableRow(aData[i], parseInt(i), oResultSet.intTotalResults));
+				oTBody.appendChild(this._createTableRow(aData[i], parseInt(i, 10), oResultSet.intTotalResults));
 			}
 		}
 
@@ -208,7 +208,7 @@ var Component_Account_Adjustment_List = Class.create(
 
 	_createNoRecordsRow	: function(bOnLoad)
 	{
-		return 	$T.tr(
+		return	$T.tr(
 					$T.td({class: 'no-rows', colspan: 9},
 						(bOnLoad ? '' : 'There are no adjustments to display')
 					)
@@ -235,13 +235,13 @@ var Component_Account_Adjustment_List = Class.create(
 				oActionIcon.addClassName('pointer');
 			}
 
-			oActionIcon.title 	= oActionIcon.alt;
+			oActionIcon.title	= oActionIcon.alt;
 			var oEffectiveDate	= Date.$parseDate(oData.effective_date, 'Y-m-d');
 			var	oTR	=	$T.tr(
 							$T.td(oEffectiveDate ? oEffectiveDate.$format('d-m-Y') : 'N/A'),
 							$T.td(oData.adjustment_type_code),
 							$T.td({class: 'component-account-adjustment-list-amount Currency'},
-								new Number(oData.amount).toFixed(2)
+								Number(oData.amount).toFixed(2)
 							),
 							$T.td(oData.transaction_nature_code),
 							$T.td(oActionIcon)
@@ -266,6 +266,12 @@ var Component_Account_Adjustment_List = Class.create(
 				}
 				
 				hTooltipContent['Service FNN'] = oData.service_fnn;
+			}
+
+			// Note
+			//oData.note	= "FAKE NOTE CONTENT\n\nHere is some multiline stuff.  Some really long lines should teach you a lesson!";
+			if (oData.note) {
+				hTooltipContent.Note = $T.div({'class':'component-account-adjustment-list-tooltip-note'}, oData.note);
 			}
 			
 			hTooltipContent['Status'] = oData.adjustment_status_description;
