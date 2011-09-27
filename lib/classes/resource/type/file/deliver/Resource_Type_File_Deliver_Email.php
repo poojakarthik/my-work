@@ -16,9 +16,16 @@ class Resource_Type_File_Deliver_Email extends Resource_Type_File_Deliver
 		
 		// Add recipients
 		$aRecipients	= explode(',', $this->getConfig()->Recipients);
-		foreach ($aRecipients as $sEmail)
-		{
+		foreach ($aRecipients as $sEmail) {
 			$oEmailFlex->addTo(trim($sEmail));
+		}
+		$aCC	= ($this->getConfig()->CC) ? explode(',', $this->getConfig()->CC) : array();
+		foreach ($aCC as $sEmail) {
+			$oEmailFlex->addCc(trim($sEmail));
+		}
+		$aBCC	= ($this->getConfig()->BCC) ? explode(',', $this->getConfig()->BCC) : array();
+		foreach ($aBCC as $sEmail) {
+			$oEmailFlex->addBcc(trim($sEmail));
 		}
 		
 		// Subject, body, sender
@@ -59,6 +66,8 @@ class Resource_Type_File_Deliver_Email extends Resource_Type_File_Deliver
 	{
 		return array_merge(parent::defineCarrierModuleConfig(), array(
 			'Recipients'	=> array('Description' => 'Email addresses to recieve the email (comma separated)'),
+			'CC'			=> array('Description' => 'Email addresses to recieve a carbon copy of the email (comma separated)'),
+			'BCC'			=> array('Description' => 'Email addresses to recieve a blind carbon copy of the email (comma separated)'),
 			'EmailSubject'	=> array('Description' => 'Subject of the delivered email'),
 			'EmailFrom'		=> array('Description' => 'The sender/reply-to address'),
 			'EmailBody'		=> array('Description' => 'The body text of the delivered email')
