@@ -626,6 +626,8 @@ class Cli_App_Billing extends Cli
 		$iPDFMissingXML	= 0;
 		$iPDFTooYoung	= 0;
 
+		$iPDFRemovedSize	= 0;
+
 		// Search PDF Directory for all Invoice PDFs
 		$aInvoicePDFs	= @glob($sPDFPath.'/*/*.pdf');
 		if ($aInvoicePDFs !== false) {
@@ -658,6 +660,7 @@ class Cli_App_Billing extends Cli
 							$this->log("    [~] Test Mode: PDF not removed ($sInvoicePDFPath)");
 						}
 						$iPDFRemoved++;
+						$iPDFRemovedSize	+= filesize($sInvoicePDFPath);
 					} else {
 						$this->log("    [~] PDF doesn't have an XML fallback (Searched: {$sInvoiceXMLPath})");
 						$iPDFMissingXML++;
@@ -676,7 +679,7 @@ class Cli_App_Billing extends Cli
 
 		// Summary
 		$this->log();
-		$this->log("PDFs Removed".(($bTestMode) ? ' (not really -- just testing)' : '').": {$iPDFRemoved}");
+		$this->log("PDFs Removed".(($bTestMode) ? ' (not really -- just testing)' : '').": {$iPDFRemoved} ({$iPDFRemovedSize} bytes)");
 		$this->log("PDFs without fallback XML: {$iPDFMissingXML}");
 		$this->log("PDFs which are too young: {$iPDFTooYoung}");
 		$this->log();
