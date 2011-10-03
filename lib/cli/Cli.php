@@ -32,6 +32,8 @@ abstract class Cli
 	const EMAIL_ATTACHMENT_MIME_TYPE = 'dfilename';
 	const EMAIL_ATTACHMENT_CONTENT = 'CONTENT';
 
+	const POSIX_USER_ID_ROOT	= 0;
+
 	private $logFile = NULL;
 	private $logSilent = FALSE;
 	private $logVerbose = FALSE;
@@ -352,7 +354,7 @@ abstract class Cli
 		}
 	}
 
-	protected function log($message, $isError=FALSE, $suppressNewLine=FALSE, $alwaysEcho=FALSE)
+	protected function log($message='', $isError=FALSE, $suppressNewLine=FALSE, $alwaysEcho=FALSE)
 	{
 		if (!$alwaysEcho && !$this->logVerbose && !$isError) return;
 		if (!$this->logSilent || $alwaysEcho)
@@ -383,6 +385,13 @@ abstract class Cli
 		if ($this->logFile == NULL) return;
 		$this->log("::END::");
 		fclose($this->logFile);
+	}
+
+	protected function _isRootUser() {
+		if (!function_exists('posix_getuid')) {
+			return false;
+		}
+		return !!(posix_getuid() === self::POSIX_USER_ID_ROOT);
 	}
 
 

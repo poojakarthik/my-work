@@ -14,19 +14,25 @@
  */
 class Cli_App_Billing extends Cli
 {
-	const	SWITCH_TEST_RUN			= "t";
-	const	SWITCH_MODE				= "m";
-	const	SWITCH_INVOICE_RUN		= "i";
-	const	SWITCH_ACCOUNT_ID		= "a";
-	const	SWITCH_SKIP_PREBILLING	= "k";
-	const	SWITCH_FAKE_DATE		= "d";
-	const	SWITCH_EXPORT_MODULE	= 'e';
+	const	SWITCH_TEST_RUN				= "t";
+	const	SWITCH_MODE					= "m";
+	const	SWITCH_INVOICE_RUN			= "i";
+	const	SWITCH_ACCOUNT_ID			= "a";
+	const	SWITCH_SKIP_PREBILLING		= "k";
+	const	SWITCH_FAKE_DATE			= "d";
+	const	SWITCH_EXPORT_MODULE		= 'e';
+	const	SWITCH_MAX_PDF_CACHE_AGE	= 'x';
 	
 	const	FLEX_FRONTEND_HOST				= "10.50.50.131";
 	const	FLEX_FRONTEND_USERNAME			= "ybs-admin";
 	const	FLEX_FRONTEND_SHARED_KEY_FILE	= "/home/ybs-admin/.ssh/id_dsa";
 	
 	const	FLEX_MANAGEMENT_REPORT_PATH		= "/data/www/reports.yellowbilling.com.au/html/";
+
+	const	INVOICE_XML_RELATIVE_PATH		= 'files/invoices/xml/';
+	const	INVOICE_PDF_RELATIVE_PATH		= 'files/invoices/pdf/';
+
+	const	MAX_PDF_CACHE_AGE_DAYS_DEFAULT	= 60;
 	
 	function run()
 	{
@@ -278,6 +284,10 @@ class Cli_App_Billing extends Cli
 					
 				case 'REDISTRIBUTE':
 					Invoice::redistributeBalances();
+					break;
+
+				case 'CLEAN_PDF_CACHE':
+					$this->_clearInvoicePDFCache();
 					break;
 
 				default:
@@ -590,6 +600,87 @@ class Cli_App_Billing extends Cli
 			throw new Exception("Failed to compress dump files: \n{$sCompressOutput}\n");
 		}
 	}
+
+	private function _clearInvoicePDFCache() {
+		// Configuration
+		$sXMLPath	= realpath(FLEX_BASE_PATH.'/'.self::INVOICE_XML_RELATIVE_PATH);
+		$sPDFPath	= realpath(FLEX_BASE_PATH.'/'.self::INVOICE_PDF_RELATIVE_PATH);
+
+		$iEarliestPDFTimestamp	= max(0, time() - (Flex_Date::SECONDS_IN_DAY * max($this->_arrArgs[self::SWITCH_MAX_PDF_CACHE_AGE], 0)));
+
+		$bTestMode	= !!$this->_arrArgs[self::SWITCH_TEST_RUN];
+		//$bTestMode	= true; // DEBUG: Force Test Mode
+
+		$this->log("XML Base Path: {$sXMLPath}");
+		$this->log("PDF Base Path: {$sPDFPath}");
+		$this->log("Earliest Allowable Cache Date: ".date('Y-m-d H:i:s', $iEarliestPDFTimestamp));
+		$this->log("Test Mode: ".(($bTestMode) ? 'Enabled (no files or directories will be removed)' : 'Disabled'));
+		$this->log();
+
+		// Must have root access to run this script (hack, but good enough until a Flex permissions overhaul)
+		if (!$this->_isRootUser()) {
+			throw new Exception("You must have root access to clear the Invoice PDF cache");
+		}
+
+		$iPDFRemoved	= 0;
+		$iPDFMissingXML	= 0;
+		$iPDFTooYoung	= 0;
+
+		// Search PDF Directory for all Invoice PDFs
+		$aInvoicePDFs	= @glob($sPDFPath.'/*/*.pdf');
+		if ($aInvoicePDFs !== false) {
+			$this->log('Processing '.count($aInvoicePDFs).' PDFs...');
+			foreach ($aInvoicePDFs as $sInvoicePDFPath) {
+				$sInvoicePDFRelativePath	= basename(dirname($sInvoicePDFPath)).'/'.basename($sInvoicePDFPath);
+				$this->log("  [*] {$sInvoicePDFRelativePath}");
+				
+				// Ensure this PDF is outside our allowable cache period
+				$iPDFModifiedTimestamp	= filemtime($sInvoicePDFPath);
+				if ($iPDFModifiedTimestamp < $iEarliestPDFTimestamp) {
+					$this->log('    [i] PDF is old enough to be removed (Modified: '.date('Y-m-d H:i:s', $iPDFModifiedTimestamp).')');
+
+					// Verify that we have an XML file from which we can regenerate the PDF
+					$sInvoiceXMLPath	= $sXMLPath.'/'.basename(dirname($sInvoicePDFPath)).'/'.basename($sInvoicePDFPath, '.pdf').'.xml';
+					if (@file_exists($sInvoiceXMLPath) && @filesize($sInvoiceXMLPath) > 0) {
+						$this->log("    [i] PDF has an XML fallback ({$sInvoiceXMLPath})");
+						
+						// Remove PDF
+						if (!$bTestMode) {
+							if (@unlink($sInvoicePDFPath)) {
+								// PDF Removed
+								$this->log("    [-] PDF removed ($sInvoicePDFPath)");
+							} else {
+								// PDF Removal Error
+								$this->log("    [!] Error removing PDF ($sInvoicePDFPath): {$php_errormsg}", true);
+								throw new Exception("Error removing PDF ($sInvoicePDFPath): {$php_errormsg}");
+							}
+						} else {
+							$this->log("    [~] Test Mode: PDF not removed ($sInvoicePDFPath)");
+						}
+						$iPDFRemoved++;
+					} else {
+						$this->log("    [~] PDF doesn't have an XML fallback (Searched: {$sInvoiceXMLPath})");
+						$iPDFMissingXML++;
+					}
+				} else {
+					$this->log('    [~] PDF is not old enough to be removed (Modified: '.date('Y-m-d H:i:s', $iPDFModifiedTimestamp).')');
+					$iPDFTooYoung++;
+				}
+			}
+		} else {
+			$this->log("    [!] Error retrieving list of PDFs: {$php_errormsg}", true);
+			throw new Exception("Error retrieving list of PDFs: {$php_errormsg}");
+		}
+
+		// TODO: Perhaps also clean up any empty PDF directories?
+
+		// Summary
+		$this->log();
+		$this->log("PDFs Removed".(($bTestMode) ? ' (not really -- just testing)' : '').": {$iPDFRemoved}");
+		$this->log("PDFs without fallback XML: {$iPDFMissingXML}");
+		$this->log("PDFs which are too young: {$iPDFTooYoung}");
+		$this->log();
+	}
 	
 	public static function debug($mixMessage, $bolNewLine=TRUE)
 	{
@@ -625,8 +716,8 @@ class Cli_App_Billing extends Cli
 			self::SWITCH_MODE => array(
 				self::ARG_LABEL			=> "MODE",
 				self::ARG_REQUIRED		=> TRUE,
-				self::ARG_DESCRIPTION	=> "Invoice Run operation to perform [GENERATE|COMMIT|REVOKE|REVOKE_ALL_INTERIM|EXPORT|REPORTS|REGENERATE|ARCHIVE|SAMPLE_ACCOUNT|REDISTRIBUTE|DELIVER]",
-				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("GENERATE","COMMIT","REVOKE","REVOKE_ALL_INTERIM","EXPORT","REPORTS","REGENERATE","ARCHIVE","SAMPLE_ACCOUNT","REDISTRIBUTE","DELIVER"))'
+				self::ARG_DESCRIPTION	=> "Invoice Run operation to perform [GENERATE|COMMIT|REVOKE|REVOKE_ALL_INTERIM|EXPORT|REPORTS|REGENERATE|ARCHIVE|SAMPLE_ACCOUNT|REDISTRIBUTE|DELIVER|CLEAN_PDF_CACHE]",
+				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("GENERATE","COMMIT","REVOKE","REVOKE_ALL_INTERIM","EXPORT","REPORTS","REGENERATE","ARCHIVE","SAMPLE_ACCOUNT","REDISTRIBUTE","DELIVER","CLEAN_PDF_CACHE"))'
 			),
 
 			self::SWITCH_INVOICE_RUN	=> array(
@@ -666,6 +757,14 @@ class Cli_App_Billing extends Cli
 				self::ARG_DEFAULT		=> NULL,
 				self::ARG_VALIDATION	=> 'Cli::_validClassName("%1$s")'
 			),
+			
+			self::SWITCH_MAX_PDF_CACHE_AGE => array(
+				self::ARG_LABEL			=> "MAX_PDF_CACHE_AGE",
+				self::ARG_REQUIRED		=> FALSE,
+				self::ARG_DESCRIPTION	=> "Maximum age in days for a cached PDF Invoice to exist before it is cleaned up (only applicable to CLEAN_PDF_CACHE)",
+				self::ARG_DEFAULT		=> self::MAX_PDF_CACHE_AGE_DAYS_DEFAULT,
+				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
+			)
 		);
 	}
 }
