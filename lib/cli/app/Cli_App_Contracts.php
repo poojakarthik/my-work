@@ -113,12 +113,14 @@ class Cli_App_Contracts extends Cli
 		$oResult	= Query::run("
 						SELECT		s.Account,
 									s.FNN,
+									s.CreatedOn,
 									s.ClosedOn,
 									s.NatureOfClosure,
 									s.LineStatus,
 									s.LineStatusDate,
 									srp.*,
-									srp.Id	AS ServiceRatePlanId
+									srp.Id			AS ServiceRatePlanId,
+									srp.CreatedOn	AS contract_start_datetime
 
 						FROM		Service s
 									JOIN ServiceRatePlan srp ON (
@@ -143,8 +145,10 @@ class Cli_App_Contracts extends Cli
 		{
 			$this->log(" + {$arrContractService['Account']}::{$arrContractService['FNN']}... ", FALSE, TRUE);
 
+			$intCreatedOn				= strtotime($arrContractService['CreatedOn']);
 			$intClosedOn				= strtotime($arrContractService['ClosedOn']);
 			$intLineStatusDate			= strtotime($arrContractService['LineStatusDate']);
+			$intStartDatetime			= strtotime($arrContractService['contract_start_datetime']);
 			$intScheduledEndDatetime	= strtotime($arrContractService['contract_scheduled_end_datetime']);
 
 			// Has this Contract ended and why?
@@ -155,7 +159,7 @@ class Cli_App_Contracts extends Cli
 				$arrServiceRatePlan['contract_effective_end_datetime']	= $arrContractService['contract_scheduled_end_datetime'];
 				$arrServiceRatePlan['contract_status_id']				= CONTRACT_STATUS_EXPIRED;
 			}
-			elseif ($intLineStatusDate < $intEffectiveDate && in_array($arrContractService['LineStatus'], $arrLossStatuses))
+			elseif ($intLineStatusDate < $intEffectiveDate && $intLineStatusDate > $intStartDatetime && in_array($arrContractService['LineStatus'], $arrLossStatuses))
 			{
 				// Contract has been Breached -- Loss notice via Carrier
 				$arrServiceRatePlan['contract_effective_end_datetime']	= $arrContractService['LineStatusDate'];
