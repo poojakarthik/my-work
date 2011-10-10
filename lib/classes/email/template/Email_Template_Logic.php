@@ -161,13 +161,14 @@ class Email_Template_Logic
 		
 		// From (Sender)
 		$sFrom	= $this->oDetails->email_from;
-		if ($sFrom !== '')
-		{
-			if (!EmailAddressValid($sFrom))
-			{
-				throw new Exception("Failed to generate email, invalid from address supplied: '{$sFrom}'.");
+		if ($sFrom) {
+			if (EmailAddressValid($sFrom)) {
+				$oEmail->setFrom($sFrom);
+			} else {
+				Flex::alert(false, "Email Template {$this->_oEmailTemplate->id} has an invalid From address: '{$sFrom}'", array('Email_Template_Logic'=>$this), "Email Template {$this->_oEmailTemplate->id} has an invalid From address: '{$sFrom}'");
 			}
-			$oEmail->setFrom($sFrom);
+		} else {
+			Flex::alert(false, "Email Template {$this->_oEmailTemplate->id} doesn't have a From address", array('Email_Template_Logic'=>$this), "Email Template {$this->_oEmailTemplate->id} doesn't have a From address");
 		}
 		
 		return $oEmail;
