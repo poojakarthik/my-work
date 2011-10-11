@@ -830,7 +830,7 @@ class Invoice_Run
 						$aContacts	= $oAccount->getContacts(true);
 						foreach ($aContacts as $iId => $oContact)
 						{
-							if (($oContact->Archived !== 0) || !trim($oContact->Email)))
+							if (($oContact->Archived !== 0) || !trim($oContact->Email))
 							{
 								// Ignore the contact, they're archived, or have no email address
 								$sReason	= (($oContact->Archived !== 0) ? "they have been archived" : "they have no email address");
