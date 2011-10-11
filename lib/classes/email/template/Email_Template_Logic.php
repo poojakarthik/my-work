@@ -32,9 +32,10 @@ class Email_Template_Logic
 		
 		if (!$oEmailTemplateDetails) {
 			$oEmailTemplateDetails	= Email_Template_Details::getCurrentDetailsForTemplateId($this->_oEmailTemplate->id);
+			/* TODO: Damnit -- can't do this here, because the Logic is expected to be able to be created without details
 			if (!$oEmailTemplateDetails) {
 				throw new Exception("Email Template {$this->_oEmailTemplate->email_template_id} does not have a template for Customer Group {$this->_oEmailTemplate->customer_group_id}");
-			}
+			}*/
 		}
 		
 		$this->oDetails	= $oEmailTemplateDetails;
