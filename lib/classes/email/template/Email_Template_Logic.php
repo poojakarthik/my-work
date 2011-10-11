@@ -1,4 +1,7 @@
 <?php
+/*
+	NOTE: This doesn't actually represent an Email Template.  Instead, it represents an Email Template-Customer Group relationship
+*/
 class Email_Template_Logic
 {
 
@@ -27,9 +30,11 @@ class Email_Template_Logic
 	{
 		$this->_oEmailTemplate	= $oEmailTemplate;
 		
-		if ($oEmailTemplateDetails === null)
-		{
+		if (!$oEmailTemplateDetails) {
 			$oEmailTemplateDetails	= Email_Template_Details::getCurrentDetailsForTemplateId($this->_oEmailTemplate->id);
+			if (!$oEmailTemplateDetails) {
+				throw new Exception("Email Template {$this->_oEmailTemplate->email_template_id} does not have a template for Customer Group {$this->_oEmailTemplate->customer_group_id}");
+			}
 		}
 		
 		$this->oDetails	= $oEmailTemplateDetails;
@@ -165,10 +170,10 @@ class Email_Template_Logic
 			if (EmailAddressValid($sFrom)) {
 				$oEmail->setFrom($sFrom);
 			} else {
-				Flex::assert(false, "Email Template {$this->_oEmailTemplate->id} has an invalid From address: '{$sFrom}'", array('Email_Template_Logic'=>$this), "Email Template {$this->_oEmailTemplate->id} has an invalid From address: '{$sFrom}'");
+				Flex::assert(false, "Email Template {$this->_oEmailTemplate->email_template_id}/Customer Group {$this->_oEmailTemplate->customer_group_id} has an invalid From address: '{$sFrom}'", array('Email_Template_Logic'=>$this), "Email Template {$this->_oEmailTemplate->email_template_id}/Customer Group {$this->_oEmailTemplate->customer_group_id} has an invalid From address: '{$sFrom}'");
 			}
 		} else {
-			Flex::assert(false, "Email Template {$this->_oEmailTemplate->id} doesn't have a From address", array('Email_Template_Logic'=>$this), "Email Template {$this->_oEmailTemplate->id} doesn't have a From address");
+			Flex::assert(false, "Email Template {$this->_oEmailTemplate->email_template_id}/Customer Group {$this->_oEmailTemplate->customer_group_id} doesn't have a From address", array('Email_Template_Logic'=>$this), "Email Template {$this->_oEmailTemplate->email_template_id}/Customer Group {$this->_oEmailTemplate->customer_group_id} doesn't have a From address");
 		}
 		
 		return $oEmail;
