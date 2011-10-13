@@ -147,7 +147,16 @@ class Account_OCA_Referral extends ORM_Cached
 		$sFrom	= "	account_oca_referral aor
 					JOIN		Account a ON (a.Id = aor.account_id)
 					JOIN		CustomerGroup cg ON (cg.Id = a.CustomerGroup)
-					JOIN		payment_terms pt ON (pt.customer_group_id = cg.Id)
+					JOIN		payment_terms pt ON (
+						pt.customer_group_id = cg.Id
+						AND pt.Id = (
+							SELECT		id
+							FROM		payment_terms
+							WHERE		customer_group_id = cg.Id
+							ORDER BY	id DESC
+							LIMIT		1
+						)
+					)
 					JOIN		account_oca_referral_status aors ON (aors.id = aor.account_oca_referral_status_id)
 					LEFT JOIN 	Employee e_actioned ON (e_actioned.Id = aor.actioned_employee_id)
 					LEFT JOIN	FileExport fe ON (fe.Id = aor.file_export_id)
