@@ -634,6 +634,7 @@ class Cli_App_Billing extends Cli
 			$this->log('Processing '.count($aInvoicePDFs).' PDFs...');
 			foreach ($aInvoicePDFs as $sInvoicePDFPath) {
 				$sInvoicePDFRelativePath	= basename(dirname($sInvoicePDFPath)).'/'.basename($sInvoicePDFPath);
+				$sInvoiceBaseName			= substr(basename($sInvoicePDFPath), 0, strpos(basename($sInvoicePDFPath), '.'));
 				$this->log("  [*] {$sInvoicePDFRelativePath}");
 				
 				// Ensure this PDF is outside our allowable cache period
@@ -642,11 +643,12 @@ class Cli_App_Billing extends Cli
 					$this->log('    [i] PDF is old enough to be removed (Modified: '.date('Y-m-d H:i:s', $iPDFModifiedTimestamp).')');
 
 					// Verify that we have an XML file from which we can regenerate the PDF
-					$sInvoiceXMLPath	= $sXMLPath.'/'.basename(dirname($sInvoicePDFPath)).'/'.basename($sInvoicePDFPath, '.pdf').'.xml';
+					$sInvoiceXMLPath	= $sXMLPath.'/'.basename(dirname($sInvoicePDFPath)).'/'.$sInvoiceBaseName.'.xml';
 					if (@file_exists($sInvoiceXMLPath) && @filesize($sInvoiceXMLPath) > 0) {
 						$this->log("    [i] PDF has an XML fallback ({$sInvoiceXMLPath})");
 						
 						// Remove PDF
+						$iPDFFileSize	= filesize($sInvoicePDFPath);
 						if (!$bTestMode) {
 							if (@unlink($sInvoicePDFPath)) {
 								// PDF Removed
@@ -660,7 +662,7 @@ class Cli_App_Billing extends Cli
 							$this->log("    [~] Test Mode: PDF not removed ($sInvoicePDFPath)");
 						}
 						$iPDFRemoved++;
-						$iPDFRemovedSize	+= filesize($sInvoicePDFPath);
+						$iPDFRemovedSize	+= $iPDFFileSize;
 					} else {
 						$this->log("    [~] PDF doesn't have an XML fallback (Searched: {$sInvoiceXMLPath})");
 						$iPDFMissingXML++;
