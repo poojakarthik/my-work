@@ -71,7 +71,7 @@ class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_T
 		$sBSB						= str_pad((int)$oBankAccount->BSB, 6, '0', STR_PAD_LEFT);
  		$oRecord->BSB				= substr($sBSB, 0, 3).'-'.substr($sBSB, -3);
 		$oRecord->AccountNumber		= $oBankAccount->AccountNumber;
-		$oRecord->Amount			= Rate::ceilToPrecision($oPaymentRequest->amount * 100, 2);
+		$oRecord->Amount			= ceil($oPaymentRequest->amount * 100);
 		$oRecord->AccountName		= strtoupper(substr(preg_replace("/[^\ \-a-z0-9]+/i", '', trim($oBankAccount->AccountName)), 0, 32));
 		$oRecord->TransactionRef	= $oPayment->transaction_reference;
 		
