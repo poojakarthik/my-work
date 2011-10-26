@@ -283,22 +283,23 @@ class JSON_Handler_Collections extends JSON_Handler implements JSON_Handler_Logg
 			
 			// Build referral file
 			$oResourceTypeHandler = Resource_Type_File_Export_OCA_Referral::exportOCAReferrals($aAccountOCAReferralIds);
-			
-			// Mark referrals as actioned
-			foreach ($aAccountOCAReferralsByAccountId as $iAccountId => $oAccountOCAReferral)
-			{
-				$oAccountOCAReferral->action();
-				Log::getLog()->log("Actioned Account {$iAccountId}");
-			}
-			
-			// Deliver the referral file
-			$oResourceTypeHandler->deliver();
-			
-			Log::getLog()->log("Delivered Referral file");
-			
-			if (!$oDataAccess->TransactionCommit())
-			{
-				throw new JSON_Handler_Collections_Exception("Successful but failed to commit db transaction.");
+			if ($oResourceTypeHandler) {
+				// Mark referrals as actioned
+				foreach ($aAccountOCAReferralsByAccountId as $iAccountId => $oAccountOCAReferral) {
+					$oAccountOCAReferral->action();
+					Log::getLog()->log("Actioned Account {$iAccountId}");
+				}
+				
+				// Deliver the referral file
+				$oResourceTypeHandler->deliver();
+				
+				Log::getLog()->log("Delivered Referral file");
+				
+				if (!$oDataAccess->TransactionCommit()) {
+					throw new JSON_Handler_Collections_Exception("Successful but failed to commit db transaction.");
+				}
+			} else {
+				Log::getLog()->log("No Referral file generated: no referrals to send");
 			}
 			
 			return array('bSuccess' => true);

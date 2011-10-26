@@ -39,16 +39,29 @@ class Resource_Type_File_Export_OCA_Referral_DunnAndBradstreet extends Resource_
 		
 		$oAccount	= Account::getForId($oAccountOCAReferral->account_id);
 		$oContact	= Contact::getForId($oAccount->PrimaryContact);
-		
-		$oQuery = new Query();
-		$mEarliestInvoiceResult = $oQuery->Execute("SELECT	MIN(CreatedOn) as date_of_debt
-													FROM	Invoice
-													WHERE	Account = {$oAccountOCAReferral->account_id}");
-		if ($mEarliestInvoiceResult === false)
-		{
-			throw new Exception("Failed to get the created date of the earliest invoice for account {$oAccountOCAReferral->account_id}. ".$oQuery->Error());
+
+		$mEarliestOutstandingInvoiceResult = Query::run("
+			SELECT		i.Id			AS id,
+						i.CreatedOn		AS invoiced_date,
+						i.DueOn			AS due_date,
+						SUM(c.balance)	AS balance
+
+			FROM		Invoice i
+						JOIN collectable c ON (c.invoice_id = i.Id)
+
+			WHERE		i.Account = <account_id>
+
+			GROUP BY	i.Id
+
+			HAVING		balance > 0.01
+
+			ORDER BY	due_date ASC
+
+			LIMIT		1;
+			", array('account_id'=>(int)$oAccountOCAReferral->account_id));
+		if (!($aEarliestOutstandingInvoiceRow = $mEarliestOutstandingInvoiceResult->fetch_assoc())) {
+			throw new Exception("Failed to get the created date of the earliest outstanding invoice for account {$oAccountOCAReferral->account_id} as there are no outstanding invoices.");
 		}
-		$aEarliestInvoiceRow = $mEarliestInvoiceResult->fetch_assoc();
 		
 		// Populate record
 		$oRecord->AccountNumber	= $oAccountOCAReferral->account_id;
@@ -63,8 +76,10 @@ class Resource_Type_File_Export_OCA_Referral_DunnAndBradstreet extends Resource_
 		$oRecord->Phone 		= $oContact->Phone;
 		$oRecord->Mobile 		= $oContact->Mobile;
 		$oRecord->Email 		= $oContact->Email;
-		$oRecord->DateofDebt 	= $aEarliestInvoiceRow['date_of_debt'];
+		$oRecord->DateofDebt 	= $aEarliestOutstandingInvoiceRow['invoiced_date'];
 		$oRecord->BalanceDue 	= $oAccount->getAccountBalance();
+
+		//throw new Exception(print_r($oRecord, true));
 		
 		// Add to the file
 		$this->_oFileExporter->addRecord($oRecord, File_Exporter::RECORD_GROUP_BODY);
