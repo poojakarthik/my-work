@@ -60,7 +60,7 @@ class Collections_Schedule extends ORM_Cached
 								collection_event_id IS NULL
 								OR (
 									<collection_event_id> IS NOT NULL
-									AND collection_event_id = 6
+									AND collection_event_id = <collection_event_id>
 									AND (is_direct_debit IS NULL OR is_direct_debit = 0)
 								)
 							)
