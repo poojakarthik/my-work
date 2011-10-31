@@ -12,10 +12,14 @@ class Cli_App_Collections extends Cli
 	const	SWITCH_ACCOUNT_ID							= 'a';
 	const	SWITCH_REDISTRIBUTE_FULL					= 'f';
 	const	SWITCH_REDISTRIBUTE_FULL_INCLUDE_ARCHIVED	= 'r';
-
+	const	SWITCH_EVENT_IDENTIFIER						= 'e';
+	const	SWITCH_EFFECTIVE_DATE						= 'd';
 
 	const	MODE_BALANCE_DISTRIBUTION					= 'BALANCE_DISTRIBUTION';
 	const	MODE_PROCESS								= 'PROCESS';
+	const	MODE_EVENT_ELIGIBILITY						= 'EVENT_ELIGIBILITY';
+
+	const	EVENT_IDENTIFIER_DIRECTDEBIT				= 'directdebit';
 
 	function run()
 	{
@@ -316,6 +320,37 @@ class Cli_App_Collections extends Cli
 		}
 	}
 
+	protected function _event_eligibility() {		
+		// Check arguments
+		$mCollectionEventIdentifier	= $this->_aArgs[self::SWITCH_EVENT_IDENTIFIER];
+		$sEffectiveDate				= $this->_aArgs[self::SWITCH_EFFECTIVE_DATE];
+
+		//throw new Exception(print_r($this->_aArgs, true));
+
+		// Event Identifier
+		if (trim($mCollectionEventIdentifier)) {
+			$bIsDirectDebit		= (strtolower(preg_replace('/[\s\_\-]/', '', $mCollectionEventIdentifier)) == self::EVENT_IDENTIFIER_DIRECTDEBIT) ? true : false;
+			$oCollectionEvent	= ($bIsDirectDebit) ? null : Collection_Event::getForId($mCollectionEventIdentifier);
+		} else {
+			throw new Exception('You must supply a Collections Event (or Direct Debit) to check for eligibilty.');
+		}
+
+		// Date
+		$iEffectiveDate	= time();
+		if ($sEffectiveDate) {
+			$iEffectiveDate	= strtotime($sEffectiveDate);
+			if ($iEffectiveDate === false) {
+				throw new Exception("'{$sEffectiveDate}' is not a valid effective date");
+			}
+		}
+		$sEffectiveDate	= date("Y-m-d", $iEffectiveDate);
+
+		$bEligible	= Collections_Schedule::getEligibility(($oCollectionEvent) ? $oCollectionEvent->id : null, $bIsDirectDebit, $sEffectiveDate);
+
+		$sEventDescription	= ($bIsDirectDebit) ? 'Direct Debit' : "Collection Event #{$oCollectionEvent->id} '{$oCollectionEvent->name}'";
+		Log::getLog()->log("{$sEventDescription} is ".(($bEligible) ? 'eligible' : '*not* eligible')." on ".date('l, j F Y', strtotime($sEffectiveDate)));
+	}
+
 	function getCommandLineArguments()
 	{
 		return array(
@@ -328,8 +363,8 @@ class Cli_App_Collections extends Cli
 			self::SWITCH_MODE => array(
 				self::ARG_LABEL			=> "MODE",
 				self::ARG_REQUIRED		=> TRUE,
-				self::ARG_DESCRIPTION	=> "Operation to perform [".self::MODE_PROCESS."|".self::MODE_BALANCE_DISTRIBUTION."]",
-				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("'.self::MODE_PROCESS.'","'.self::MODE_BALANCE_DISTRIBUTION.'"))'
+				self::ARG_DESCRIPTION	=> "Operation to perform [".self::MODE_PROCESS."|".self::MODE_BALANCE_DISTRIBUTION."|".self::MODE_EVENT_ELIGIBILITY."]",
+				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("'.self::MODE_PROCESS.'","'.self::MODE_BALANCE_DISTRIBUTION.'", "'.self::MODE_EVENT_ELIGIBILITY.'"))'
 			),
 			self::SWITCH_REDISTRIBUTE_FULL => array(
 				self::ARG_REQUIRED		=> FALSE,
@@ -348,7 +383,22 @@ class Cli_App_Collections extends Cli
 				self::ARG_LABEL			=> "ACCOUNT_ID",
 				self::ARG_DESCRIPTION	=> "Account Id",
 				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
-		));
+			),
+			self::SWITCH_EVENT_IDENTIFIER => array(
+				self::ARG_REQUIRED		=> false,
+				self::ARG_LABEL			=> "EVENT_IDENTIFIER",
+				self::ARG_DESCRIPTION	=> 'Event Identifier (EVENT_ELIGIBILITY mode only).  If supplied, must be a Collection Event Id or "'.self::EVENT_IDENTIFIER_DIRECTDEBIT.'".',
+				self::ARG_DEFAULT		=> null,
+				self::ARG_VALIDATION	=> 'Cli::_validString("%1$s")'
+			),
+			self::SWITCH_EFFECTIVE_DATE	=> array(
+				self::ARG_REQUIRED		=> false,
+				self::ARG_LABEL			=> "EFFECTIVE_DATE",
+				self::ARG_DESCRIPTION	=> 'Effective Date (EVENT_ELIGIBILITY mode only).',
+				self::ARG_DEFAULT		=> null,
+				self::ARG_VALIDATION	=> 'Cli::_validString("%1$s")'
+			)
+		);
 	}
 }
 

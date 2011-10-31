@@ -32,75 +32,64 @@ class Collections_Schedule extends ORM_Cached
 		return $this->status_id == STATUS_ACTIVE;
 	}
 	
-	public static function getEligibility($iForCollectionEventId=null, $bForDirectDebit=false)
+	public static function getEligibility($iForCollectionEventId=null, $bForDirectDebit=false, $sEffectiveDate=null)
 	{
-		// Get todays values
-		$iDay		= (int)date('d');
-		$iMonth		= (int)date('m');
-		$iYear		= (int)date('Y');
-		$iDayOfWeek	= (int)date('N');
-		
-		$sForCollectionEventId	= ($iForCollectionEventId === null ? 'NULL' : $iForCollectionEventId);
-		$sForDirectDebit 		= ($bForDirectDebit === true ? '1' : '0');
-		
-		// Get rules for today
-		$sQuery = "	SELECT	eligibility, precedence
-					FROM	collections_schedule
-					WHERE	(day IS NULL OR day = {$iDay})
-					AND		(month IS NULL OR month = {$iMonth})
-					AND		(year IS NULL OR year = {$iYear})
-					AND		(
-								(monday = 1 AND {$iDayOfWeek} = 1)
-								OR
-								(tuesday = 1 AND {$iDayOfWeek} = 2)
-								OR
-								(wednesday = 1 AND {$iDayOfWeek} = 3)
-								OR
-								(thursday = 1 AND {$iDayOfWeek} = 4)
-								OR
-								(friday = 1 AND {$iDayOfWeek} = 5)
-								OR
-								(saturday = 1 AND {$iDayOfWeek} = 6)
-								OR
-								(sunday = 1 AND {$iDayOfWeek} = 7)
+		$mResult = Query::run("
+				SELECT		eligibility
+
+				FROM		collections_schedule
+
+				WHERE		/* Date */
+							(day IS NULL OR day = DAYOFMONTH(<effective_date>))
+							AND (month IS NULL OR month = MONTH(<effective_date>))
+							AND (year IS NULL OR year = YEAR(<effective_date>))
+
+							/* Day of Week */
+							AND (
+								(monday = 1 AND WEEKDAY(<effective_date>) = 0)
+								OR (tuesday = 1 AND WEEKDAY(<effective_date>) = 1)
+								OR (wednesday = 1 AND WEEKDAY(<effective_date>) = 2)
+								OR (thursday = 1 AND WEEKDAY(<effective_date>) = 3)
+								OR (friday = 1 AND WEEKDAY(<effective_date>) = 4)
+								OR (saturday = 1 AND WEEKDAY(<effective_date>) = 5)
+								OR (sunday = 1 AND WEEKDAY(<effective_date>) = 6)
 							)
-					AND		status_id = ".STATUS_ACTIVE."
-					AND		(
-								(collection_event_id IS NULL)
-								OR
-								(
-									{$sForCollectionEventId} IS NOT NULL
-									AND collection_event_id = {$sForCollectionEventId}
+
+							/* Events/Direct Debit */
+							AND (
+								collection_event_id IS NULL
+								OR (
+									<collection_event_id> IS NOT NULL
+									AND collection_event_id = 6
 									AND (is_direct_debit IS NULL OR is_direct_debit = 0)
 								)
 							)
-					AND		(
+							AND (
 								(is_direct_debit IS NULL OR is_direct_debit = 0)
-								OR
-								(
-									{$sForDirectDebit} = 1
+								OR (
+									<is_direct_debit> = 1
 									AND is_direct_debit = 1
-									AND (collection_event_id IS NULL)
+									AND collection_event_id IS NULL
 								)
-							);";
-		$mResult = Query::run($sQuery);
+							)
+
+							/* Status */
+							AND status_id = ".STATUS_ACTIVE."
+
+				ORDER BY	precedence DESC,
+							eligibility ASC;	/* Ineligibility beats eligibility at the same precedence */
+			", array(
+				'collection_event_id'	=> $iForCollectionEventId,
+				'is_direct_debit'		=> $bForDirectDebit,
+				'effective_date'		=> ($sEffectiveDate && strtotime($sEffectiveDate) !== false) ? $sEffectiveDate : date('Y-m-d')
+			)
+		);
 		
-		// Determine one with the maximum precedence
-		$iEligibility 	= 0;
-		$iMaxPrecedence	= null;
-		while ($aRow = $mResult->fetch_assoc())
-		{
-			// Overwrite (final) eligibility if
-			//	- there is no max precedence
-			//	- the rows precedence is greater than the max precedence
-			//	- the rows precedence is equal to the max precedence and it's eligibility is 0 (ineligible has priority over eligibility)
-			if (($iMaxPrecedence === null) || ($aRow['precedence'] > $iMaxPrecedence) || (($aRow['precedence'] == $iMaxPrecedence) && ($aRow['eligibility'] == 0)))
-			{
-				$iEligibility = $aRow['eligibility'];
-			}
-		}
+		// Our query does the resolution of precedence/weighting for us, so we simply need to look at the first result
+		$aRow = $mResult->fetch_assoc();
 		
-		return ($iEligibility == 1);
+		// If there are no results, the default state is 'ineligible'
+		return ($aRow && $aRow['eligibility'] == 1);
 	}
 	
 	//---------------------------------------------------------------------------------------------------------------------------------//
