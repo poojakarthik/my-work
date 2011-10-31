@@ -1782,33 +1782,35 @@ class AppTemplateConsole extends ApplicationTemplate
 										WHERE	username = <username>;",
 										array('username' => $_POST['mixUserName']))->fetch_assoc();
 			
-			$oAccountUser = new Account_User($aAccountUser);
-			
-			// Before we can send the username, check and make sure they have already activated and entered a valid email 
-			if($oAccountUser->getLatestLogEntry() == null && $oAccountUser->id != null) {
-				// If they don't have an activated account we redirect to activation page 
-				unset($_POST['mixFirstName']);
-				$this->LoadPage('setup_account');
-				return true;
-			} else {
-				// Reset password
-				$sTxtPassword			= RandomString("10");
-				$oAccountUser 			= new Account_User($aAccountUser);
-				$oAccountUser->password = sha1($sTxtPassword);
-				$oAccountUser->save();
+			if ($aAccountUser) {
+				$oAccountUser = new Account_User($aAccountUser);
+				
+				// Before we can send the username, check and make sure they have already activated and entered a valid email 
+				if($oAccountUser->getLatestLogEntry() == null && $oAccountUser->id != null) {
+					// If they don't have an activated account we redirect to activation page 
+					unset($_POST['mixFirstName']);
+					$this->LoadPage('setup_account');
+					return true;
+				} else {
+					// Reset password
+					$sTxtPassword			= RandomString("10");
+					$oAccountUser 			= new Account_User($aAccountUser);
+					$oAccountUser->password = sha1($sTxtPassword);
+					$oAccountUser->save();
 
-				// And send an email...
-				$sTo      	= $oAccountUser->email;
-				$sSubject 	= "Account Updated #{$oAccountUser->account_id}";
-				$sMessage 	= "The account changes below have been made:\n\n";
-				$sMessage 	.= "New Password: {$sTxtPassword}\n\n";
-				$sMessage 	.= "Kind Regards\n";
-				$sMessage 	.= "Customer Service Group\n";
-				$sHeaders 	.= "From: Customer Service Group<noreply@".DBO()->CustomerGroup->email_domain->Value.">\r\n".'X-Mailer: Flex/'.phpversion();
+					// And send an email...
+					$sTo      	= $oAccountUser->email;
+					$sSubject 	= "Account Updated #{$oAccountUser->account_id}";
+					$sMessage 	= "The account changes below have been made:\n\n";
+					$sMessage 	.= "New Password: {$sTxtPassword}\n\n";
+					$sMessage 	.= "Kind Regards\n";
+					$sMessage 	.= "Customer Service Group\n";
+					$sHeaders 	.= "From: Customer Service Group<noreply@".DBO()->CustomerGroup->email_domain->Value.">\r\n".'X-Mailer: Flex/'.phpversion();
 
-				// Supress email errors.
-				@mail($sTo, $sSubject, $sMessage, $sHeaders);
-				DBO()->Fail = false;
+					// Supress email errors.
+					@mail($sTo, $sSubject, $sMessage, $sHeaders);
+					DBO()->Fail = false;
+				}
 			}
 			
 			// Email not found in db?
