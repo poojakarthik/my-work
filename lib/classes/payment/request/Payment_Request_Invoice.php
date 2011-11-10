@@ -62,6 +62,19 @@ class Payment_Request_Invoice extends ORM_Cached
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
+	
+	public static function getForPaymentRequest($mPaymentRequest) {
+		$mResult	= Query::run("
+			SELECT	*
+			FROM	payment_request_invoice
+			WHERE	payment_request_id = <payment_request_id>
+		", array(
+			'payment_request_id'	=> ORM::extractId($mPaymentRequest)
+		));
+
+		$aData	= $mResult->fetch_assoc();
+		return ($aData) ? new self($aData) : null;
+	}
 
 	/**
 	 * _preparedStatement()

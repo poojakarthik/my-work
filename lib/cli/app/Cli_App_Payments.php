@@ -224,6 +224,9 @@ class Cli_App_Payments extends Cli
 		// Ensure that Payment Export isn't already running, then identify that it is now running
 		Flex_Process::factory(Flex_Process::PROCESS_PAYMENTS_EXPORT)->lock();
 		
+		$oEmailQueue	= Email_Flex_Queue::get();
+		$oEmailQueue->setDebugAddress('ybs-admin@ybs.net.au');
+
 		try
 		{
 			$bTestRun	= $this->_aArgs[self::SWITCH_TEST_RUN];
@@ -245,14 +248,18 @@ class Cli_App_Payments extends Cli
 			
 			Resource_Type_File_Export_Payment::exportDirectDebits();
 			
-			if ($bTestRun)
-			{
+			if ($bTestRun) {
 				if ($oDataAccess->TransactionRollback() === false)
 				{
 					throw new Exception("Failed to ROLLBACK db transaction");
 				}
 				Log::getLog()->log("Transaction rolled back");
+			} else {
+				$oEmailQueue->commit();
 			}
+
+			// Send emails in the queue
+			$oEmailQueue->send();
 		}
 		catch (Exception $oException)
 		{
@@ -278,6 +285,9 @@ class Cli_App_Payments extends Cli
 		$aArgs		= $this->getValidatedArguments();
 		$bTestRun	= (bool)$aArgs[self::SWITCH_TEST_RUN];
 		
+		$oEmailQueue	= Email_Flex_Queue::get();
+		$oEmailQueue->setDebugAddress('ybs-admin@ybs.net.au');
+		
 		if ($bTestRun)
 		{
 			// In test mode, start a db transaction
@@ -294,23 +304,56 @@ class Cli_App_Payments extends Cli
 			// Determine if this should be run
 			if (Collections_Schedule::getEligibility(null, true))
 			{
-				$this->_runBalanceDirectDebits();
-				$this->_runPromiseInstalmentDirectDebits();
+				$iTimestamp	= DataAccess::getDataAccess()->getNow(true);
+
+				// Execute subprocesses
+				$aInvoiceDirectDebitSummary	= $this->_runBalanceDirectDebits($iTimestamp);
+				//Log::getLog()->log("Invoice Direct Debit Summary Data: ".print_r($aInvoiceDirectDebitSummary, true));
+				$aPromiseDirectDebitSummary	= $this->_runPromiseInstalmentDirectDebits($iTimestamp);
+				//Log::getLog()->log("Promise Direct Debit Summary Data: ".print_r($aPromiseDirectDebitSummary, true));
+
+				// Combine summary data
+				$aSummaryData		= array(
+					'iTimestamp'		=> $iTimestamp,
+					'aCustomerGroups'	=> array()
+				);
+				$aCustomerGroups	= Customer_Group::getAll();
+				foreach ($aCustomerGroups as $iCustomerGroup=>$aData) {
+					$aSummaryData['aCustomerGroups'][$iCustomerGroup]	= array(
+						'iInvoiceDirectDebitCount'	=> (isset($aInvoiceDirectDebitSummary['aCustomerGroups'][$iCustomerGroup])) ? $aInvoiceDirectDebitSummary['aCustomerGroups'][$iCustomerGroup]['iCount'] : 0,
+						'fInvoiceDirectDebitValue'	=> (isset($aInvoiceDirectDebitSummary['aCustomerGroups'][$iCustomerGroup])) ? $aInvoiceDirectDebitSummary['aCustomerGroups'][$iCustomerGroup]['fValue'] : 0.0,
+						'iPromiseDirectDebitCount'	=> (isset($aPromiseDirectDebitSummary['aCustomerGroups'][$iCustomerGroup])) ? $aPromiseDirectDebitSummary['aCustomerGroups'][$iCustomerGroup]['iCount'] : 0,
+						'fPromiseDirectDebitValue'	=> (isset($aPromiseDirectDebitSummary['aCustomerGroups'][$iCustomerGroup])) ? $aPromiseDirectDebitSummary['aCustomerGroups'][$iCustomerGroup]['fValue'] : 0.0
+					);
+				}
+
+				//Log::getLog()->log("Building Summary Emails with data: ".print_r($aSummaryData, true));
+
+				// Summary Email
+				$oDirectDebitSummaryEmail			= Email_Notification::getForSystemName('DIRECT_DEBIT_REPORT');
+				$oDirectDebitSummaryEmail->subject	= 'Direct Debit Summary Report from '.date('d/m/Y H:i', $iTimestamp);
+				$oDirectDebitSummaryEmail->html		= self::_buildDirectDebitSummaryEmailHTMLContent($aSummaryData);
+				$oDirectDebitSummaryEmail->text		= self::_buildDirectDebitSummaryEmailTextContent($aSummaryData);
+				$oEmailQueue->push($oDirectDebitSummaryEmail);
 			}
 			else
 			{
 				Log::getLog()->log("Direct debits cannot be processed today, check collections_schedule for more info.");
 			}
 			
-			if ($bTestRun)
-			{
+			if ($bTestRun) {
 				// In test mode, rollback all changes
 				if ($oDataAccess->TransactionRollback() === false)
 				{
 					throw new Exception_Database("Failed to rollback db transaction");
 				}
 				Log::getLog()->log("Running in Test Mode, Transaction rolled back");
+			} else {
+				$oEmailQueue->commit();
 			}
+
+			// Flush the Email Queue
+			$oEmailQueue->send();
 		}
 		catch (Exception $oEx)
 		{
@@ -327,7 +370,7 @@ class Cli_App_Payments extends Cli
 		}
 	}
 	
-	private function _runBalanceDirectDebits()
+	private function _runBalanceDirectDebits($iTimestamp)
 	{
 		Log::getLog()->log("");
 		Log::getLog()->log("Overdue Balance Direct Debits");
@@ -340,7 +383,7 @@ class Cli_App_Payments extends Cli
 			throw new Exception("There is no direct debit due date offset configured in collections_config.");
 		}
 
-		$iTimestamp	= DataAccess::getDataAccess()->getNow(true);
+		$iTimestamp	= ($iTimestamp) ? $iTimestamp : DataAccess::getDataAccess()->getNow(true);
 		
 		// Get Account records
 		Log::getLog()->log("Getting accounts that are eligible");
@@ -395,11 +438,22 @@ class Cli_App_Payments extends Cli
 		Log::getLog()->log("Got accounts");
 		
 		// Process each account
-		$iAppliedCount		= 0;
-		$iDoubleUpsCount	= 0;
-		$aAccountsApplied	= array();
-		$sDatetime			= date('Y-m-d H:i:s', $iTimestamp);
-		$sPaidOn			= date('Y-m-d', $iTimestamp);
+		$iAppliedCount			= 0;
+		$fAppliedValue			= 0.0;
+		$iDoubleUpsCount		= 0;
+		$aAccountsApplied		= array();
+		$sDatetime				= date('Y-m-d H:i:s', $iTimestamp);
+		$sPaidOn				= date('Y-m-d', $iTimestamp);
+
+		// Set up summary details per-Customer Group
+		$aCustomerGroupSummary	= array();
+		$aCustomerGroups		= Customer_Group::getAll();
+		foreach ($aCustomerGroups as $iCustomerGroup=>$oCustomerGroup) {
+			$aCustomerGroupSummary[$iCustomerGroup]	= array(
+				'iCount'	=> 0,
+				'fValue'	=> 0.0
+			);
+		}
 		
 		// Arrays for recording error information
 		$aIneligible = 	array(
@@ -560,6 +614,12 @@ class Cli_App_Payments extends Cli
 				
 				Log::getLog()->log("Account: {$oAccount->Id}, Payment: {$oPayment->id}, payment_request: {$oPaymentRequest->id}, Amount: {$fAmount}; Due: {$oInvoice->DueOn}");
 				
+				// Add to Customer Group Totals
+				$aCustomerGroupSummary[$oAccount->CustomerGroup]['iCount']++;
+				$aCustomerGroupSummary[$oAccount->CustomerGroup]['fValue']	= Rate::roundToCurrencyStandard($aCustomerGroupSummary[$oAccount->CustomerGroup]['fValue'] + $fAmount);
+				
+				// Add to General Totals
+				$fAppliedValue	= Rate::roundToCurrencyStandard($fAppliedValue + $fAmount);
 				$iAppliedCount++;
 			}
 		}
@@ -567,16 +627,22 @@ class Cli_App_Payments extends Cli
 		Log::getLog()->log("APPLIED: {$iAppliedCount}");
 		Log::getLog()->log("INELIGIBLE: ".print_r($aIneligible, true));
 		Log::getLog()->log("DOUBLE-UPS: {$iDoubleUpsCount} (This should always be zero)");
+
+		return array(
+			'iCount'			=> $iAppliedCount,
+			'fValue'			=> $fAppliedValue,
+			'aCustomerGroups'	=> $aCustomerGroupSummary
+		);
 	}
 	
-	private function _runPromiseInstalmentDirectDebits()
+	private function _runPromiseInstalmentDirectDebits($iTimestamp=null)
 	{
 		Log::getLog()->log("");
 		Log::getLog()->log("");
 		Log::getLog()->log("Promise Instalment Direct Debits");
 		Log::getLog()->log("");
 
-		$iTimestamp	= DataAccess::getDataAccess()->getNow(true);
+		$iTimestamp	= ($iTimestamp) ? $iTimestamp : DataAccess::getDataAccess()->getNow(true);
 		
 		// Eligible for direct debits today, list the instalments that are eligible
 		$oCollectionsConfig = Collections_Config::get();
@@ -613,6 +679,8 @@ class Cli_App_Payments extends Cli
 										AND pr.payment_request_status_id != ".PAYMENT_REQUEST_STATUS_CANCELLED."
 							LIMIT		1
 						))
+
+			LIMIT		50
 		", array(
 			'effective_date'						=> date('Y-m-d', $iTimestamp),
 			'promise_direct_debit_due_date_offset'	=> (int)$oCollectionsConfig->promise_direct_debit_due_date_offset
@@ -620,8 +688,19 @@ class Cli_App_Payments extends Cli
 		
 		// Process each instalment
 		$iAppliedCount 	= 0;
+		$fAppliedValue	= 0.0;
 		$sDatetime		= date('Y-m-d H:i:s', $iTimestamp);
 		$sPaidOn		= date('Y-m-d', $iTimestamp);
+
+		// Set up summary details per-Customer Group
+		$aCustomerGroupSummary	= array();
+		$aCustomerGroups		= Customer_Group::getAll();
+		foreach ($aCustomerGroups as $iCustomerGroup=>$oCustomerGroup) {
+			$aCustomerGroupSummary[$iCustomerGroup]	= array(
+				'iCount'	=> 0,
+				'fValue'	=> 0.0
+			);
+		}
 		
 		// Arrays for recording error information
 		$aIneligible = 	array(
@@ -750,12 +829,219 @@ class Cli_App_Payments extends Cli
 
 				Log::getLog()->log("Account: {$oAccount->Id}, Payment: {$oPayment->id}, payment_request: {$oPaymentRequest->id}, Amount: {$fAmount}; Due: {$oInstalment->due_date}");
 				
+				// Add to Customer Group Totals
+				$aCustomerGroupSummary[$oAccount->CustomerGroup]['iCount']++;
+				$aCustomerGroupSummary[$oAccount->CustomerGroup]['fValue']	= Rate::roundToCurrencyStandard($aCustomerGroupSummary[$oAccount->CustomerGroup]['fValue'] + $fAmount);
+				
+				// Add to General Totals
+				$fAppliedValue	= Rate::roundToCurrencyStandard($fAppliedValue + $fAmount);
 				$iAppliedCount++;
 			}
 		}
 		
 		Log::getLog()->log("APPLIED: {$iAppliedCount}");
 		Log::getLog()->log("INELIGIBLE: ".print_r($aIneligible, true));
+
+		return array(
+			'iCount'			=> $iAppliedCount,
+			'fValue'			=> $fAppliedValue,
+			'aCustomerGroups'	=> $aCustomerGroupSummary
+		);
+	}
+
+	private static function _buildDirectDebitSummaryEmailHTMLContent($aData) {
+		$D				= new DOM_Factory();
+		$oDOMDocument	= $D->getDOMDocument();
+
+		$oDOMDocument->formatOutput	= true;
+		
+		// General Content
+		$oContent	= $D->div(
+			$D->h1('Direct Debit Summary Report from '.date('d/m/Y H:i', $aData['iTimestamp'])),
+			$D->table(
+				$D->thead(
+					$D->tr(
+						$D->th(array('rowspan'=>2), 'Customer Group'),
+						$D->th(array('colspan'=>2), 'Invoice Direct Debits'),
+						$D->th(array('colspan'=>2), 'Promise Direct Debits')
+					),
+					$D->tr(
+						$D->th($D->abbr(array('title'=>'Count'), '#')),
+						$D->th($D->abbr(array('title'=>'Value'), '$')),
+						$D->th($D->abbr(array('title'=>'Count'), '#')),
+						$D->th($D->abbr(array('title'=>'Value'), '$'))
+					)
+				),
+				$oTableBody = $D->tbody(),
+				$D->tfoot(
+					$D->tr(
+						$D->th('Totals'),
+						$oTotalInvoiceDirectDebitCount = $D->td(),
+						$oTotalInvoiceDirectDebitValue = $D->td(),
+						$oTotalPromiseDirectDebitCount = $D->td(),
+						$oTotalPromiseDirectDebitValue = $D->td()
+					)
+				)
+			),
+			$D->div(array('class'=>'signature'),
+				$D->p('Regards'),
+				$D->p('Flexor')
+			)
+		);
+		$oDOMDocument->appendChild($oContent);
+
+		$iTotalInvoiceDirectDebitCount	= 0;
+		$fTotalInvoiceDirectDebitValue	= 0.0;
+		$iTotalPromiseDirectDebitCount	= 0;
+		$fTotalPromiseDirectDebitValue	= 0.0;
+
+		// Customer Group Details
+		$aCustomerGroups	= Customer_Group::getAll();
+		foreach ($aCustomerGroups as $iCustomerGroup=>$oCustomerGroup) {
+			// Data
+			$iInvoiceDirectDebitCount	= $aData['aCustomerGroups'][$iCustomerGroup]['iInvoiceDirectDebitCount'];
+			$fInvoiceDirectDebitValue	= $aData['aCustomerGroups'][$iCustomerGroup]['fInvoiceDirectDebitValue'];
+			$iPromiseDirectDebitCount	= $aData['aCustomerGroups'][$iCustomerGroup]['iPromiseDirectDebitCount'];
+			$fPromiseDirectDebitValue	= $aData['aCustomerGroups'][$iCustomerGroup]['fPromiseDirectDebitValue'];
+
+			// Add a row for this Customer Group
+			$oTableBody->appendChild(
+				$D->tr(
+					$D->td($oCustomerGroup->internal_name),
+					$D->td($iInvoiceDirectDebitCount),
+					$D->td('$'.number_format($fInvoiceDirectDebitValue, 2)),
+					$D->td($iPromiseDirectDebitCount),
+					$D->td('$'.number_format($fPromiseDirectDebitValue, 2))
+				)
+			);
+
+			// Add to totals
+			$iTotalInvoiceDirectDebitCount	+= $iInvoiceDirectDebitCount;
+			$fTotalInvoiceDirectDebitValue	+= $fInvoiceDirectDebitValue;
+			$iTotalPromiseDirectDebitCount	+= $iPromiseDirectDebitCount;
+			$fTotalPromiseDirectDebitValue	+= $fPromiseDirectDebitValue;
+		}
+
+		// Totals
+		$oTotalInvoiceDirectDebitCount->appendChild($D->getDOMDocument()->createTextNode($iTotalInvoiceDirectDebitCount));
+		$oTotalInvoiceDirectDebitValue->appendChild($D->getDOMDocument()->createTextNode('$'.number_format($fTotalInvoiceDirectDebitValue, 2)));
+		$oTotalPromiseDirectDebitCount->appendChild($D->getDOMDocument()->createTextNode($iTotalPromiseDirectDebitCount));
+		$oTotalPromiseDirectDebitValue->appendChild($D->getDOMDocument()->createTextNode('$'.number_format($fTotalPromiseDirectDebitValue, 2)));
+
+		//Log::getLog()->log($oDOMDocument->saveXML());
+
+		// Configure Styles
+		DOM_Style::style($oDOMDocument, array(
+			'//*'		=> '
+				font-family	: "Helvetica Neue", Arial, sans-serif;
+				color		: #111;
+			',
+			'//table'	=> '
+				border			: 1px solid #333;
+				border-collapse	: collapse;
+			',
+			'//thead/tr/*|//tfoot/tr/*'	=> '
+				background-color	: #333;
+				color				: #eee;
+				border				: 0;
+			',
+			'//thead//*|//tfoot//*'	=> '
+				color				: #eee;
+			',
+			'//td|//th'	=> '
+				vertical-align	: top;
+				padding			: 0.2em 0.5em;
+			',
+			'//td'	=> '
+				text-align	: right;
+			',
+			'//tbody/tr/td[1]'	=> '
+				text-align		: left;
+				font-weight		: bold;
+				padding-left	: 0.2em;
+				padding-right	: 1em;
+			',
+			'//h1'	=> '
+				font-size	: 1.2em;
+			',
+			'//thead/tr[1]/th[not(1)]'	=> '
+				width	: 14em;
+			',
+			'//thead/tr[2]/th'	=> '
+				width				: 7em;
+				background-color	: #444;
+			',
+			'//tfoot/tr/*'	=> '
+				font-weight	: bold;
+			',
+			'//tfoot/tr/th[1]'	=> '
+				text-align		: left;
+				padding-left	: 0.2em
+			',
+			'//thead/tr[1]/th[1]'	=> '
+				vertical-align	: middle;
+				padding-left	: 1em;
+				padding-right	: 1em;
+			',
+			'//*[@class="signature"]/p[1]'	=> '
+				margin-bottom	: 0;
+			',
+			'//*[@class="signature"]/p[2]'	=> '
+				margin-top	: 0.2em;
+				font-weight	: bold;
+			'
+		));
+
+		return "<!DOCTYPE html>\n".$oDOMDocument->saveXML($oContent);
+	}
+
+	private static function _buildDirectDebitSummaryEmailTextContent($aData) {
+		$aLines	= array();
+
+		$aLines[]	= 'Direct Debit Summary Report from '.date('d/m/Y H:i', $aData['iTimestamp']);
+		$aLines[]	= '';
+
+		$iTotalInvoiceDirectDebitCount	= 0;
+		$fTotalInvoiceDirectDebitValue	= 0.0;
+		$iTotalPromiseDirectDebitCount	= 0;
+		$fTotalPromiseDirectDebitValue	= 0.0;
+
+		// Customer Group Details
+		$aCustomerGroups	= Customer_Group::getAll();
+		foreach ($aCustomerGroups as $iCustomerGroup=>$oCustomerGroup) {
+			// Data
+			$iInvoiceDirectDebitCount	= $aData['aCustomerGroups'][$iCustomerGroup]['iInvoiceDirectDebitCount'];
+			$fInvoiceDirectDebitValue	= $aData['aCustomerGroups'][$iCustomerGroup]['fInvoiceDirectDebitValue'];
+			$iPromiseDirectDebitCount	= $aData['aCustomerGroups'][$iCustomerGroup]['iPromiseDirectDebitCount'];
+			$fPromiseDirectDebitValue	= $aData['aCustomerGroups'][$iCustomerGroup]['fPromiseDirectDebitValue'];
+
+			// Add a data set for this Customer Group
+			$aLines[]	= "\t".$oCustomerGroup->internal_name;
+			$aLines[]	= "\t\tInvoice Direct Debits #: ".$iInvoiceDirectDebitCount;
+			$aLines[]	= "\t\tInvoice Direct Debits $: ".'$'.number_format($fInvoiceDirectDebitValue, 2);
+			$aLines[]	= "\t\tPromise Direct Debits #: ".$iPromiseDirectDebitCount;
+			$aLines[]	= "\t\tPromise Direct Debits $".'$'.number_format($fPromiseDirectDebitValue, 2);
+
+			// Add to totals
+			$iTotalInvoiceDirectDebitCount	+= $iInvoiceDirectDebitCount;
+			$fTotalInvoiceDirectDebitValue	+= $fInvoiceDirectDebitValue;
+			$iTotalPromiseDirectDebitCount	+= $iPromiseDirectDebitCount;
+			$fTotalPromiseDirectDebitValue	+= $fPromiseDirectDebitValue;
+		}
+		$aLines[]	= '';
+
+		// Totals
+		$aLines[]	= 'Total Invoice Direct Debits #: '.$iTotalInvoiceDirectDebitCount;
+		$aLines[]	= 'Total Invoice Direct Debits $: '.number_format($iTotalInvoiceDirectDebitCount, 2);
+		$aLines[]	= 'Total Promise Direct Debits #: '.$iTotalInvoiceDirectDebitCount;
+		$aLines[]	= 'Total Promise Direct Debits $: '.number_format($iTotalInvoiceDirectDebitCount, 2);
+
+		// Signature
+		$aLines[]	= '';
+		$aLines[]	= 'Regards';
+		$aLines[]	= 'Flexor';
+
+		return implode("\n", $aLines);
 	}
 	
 	function getCommandLineArguments()
