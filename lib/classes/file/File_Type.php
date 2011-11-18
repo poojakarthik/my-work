@@ -2,94 +2,100 @@
 /**
  * File_Type
  *
- * Models a record of the file_type table
+ * This is an example of a class that extends ORM_Cached
  *
- * @class	File_Type
+ * @class	ORM_Cached_Example
  */
-class File_Type extends ORM
+class File_Type extends ORM_Cached
 {
-	protected			$_strTableName				= "file_type";
-	protected static	$_strStaticTableName		= "file_type";
+	protected 			$_strTableName			= "file_type";
+	protected static	$_strStaticTableName	= "file_type";
 	
-	protected static 	$_arrAllowableResolutions	= array(16, 64);
+	protected static 	$_aAllowableResolutions	= array(16, 64);
 	
-	protected			$_objPreferredMIMEType;
+	protected			$_oPreferredMIMEType;
 	
-	/**
-	 * __construct()
-	 *
-	 * constructor
-	 *
-	 * @param	array	$arrProperties 		[optional]	Associative array defining the class with keys for each field of the table
-	 * @param	boolean	$bolLoadById		[optional]	Automatically load the object with the passed Id
-	 * 
-	 * @return	void
-	 * 
-	 * @constructor
-	 */
-	public function __construct($arrProperties=Array(), $bolLoadById=FALSE, $bolDetailsOnly=false)
+	protected static function getCacheName()
 	{
-		// Parent constructor
-		parent::__construct($arrProperties, $bolLoadById);
-	}
-	
-	public function getAll()
-	{
-		$oSelect = self::_preparedStatement('selAll');
-		if ($oSelect->Execute() === false)
+		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
+		static $strCacheName;
+		if (!isset($strCacheName))
 		{
-			throw new Exception("Failed to get all file_type records. ".$oSelect->Error());
+			$strCacheName = __CLASS__;
 		}
-		
-		return ORM::importResult($oSelect->FetchAll(), 'File_Type');
+		return $strCacheName;
+	}
+	
+	protected static function getMaxCacheSize()
+	{
+		return 100;
+	}
+	
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
+	//---------------------------------------------------------------------------------------------------------------------------------//
+
+	public static function clearCache()
+	{
+		parent::clearCache(__CLASS__);
 	}
 
-    public function getForId($iId)
-    {
-        $sSql = "select * from file_type where id = $iId";
-        $oQuery = new Query();
-        $mResult = $oQuery->Execute($sSql);
-        if ($mResult)
-        {
-          return new self($mResult->fetch_assoc());
+	protected static function getCachedObjects()
+	{
+		return parent::getCachedObjects(__CLASS__);
+	}
+	
+	protected static function addToCache($mixObjects)
+	{
+		parent::addToCache($mixObjects, __CLASS__);
+	}
 
-        }
-        return null;
-    }
+	public static function getForId($intId, $bolSilentFail=false)
+	{
+		return parent::getForId($intId, $bolSilentFail, __CLASS__);
+	}
+	
+	public static function getAll($bolForceReload=false)
+	{
+		return parent::getAll($bolForceReload, __CLASS__);
+	}
+	
+	public static function importResult($aResultSet)
+	{
+		return parent::importResult($aResultSet, __CLASS__);
+	}
+	
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	
 	
 	/**
 	 * getPreferredMIMEType()
 	 *
 	 * Returns a the preferred MIME Type Object for this File_Type
 	 * 
-	 * @param	[boolean	$bolForceRefresh	]	TRUE	: Refresh cache
+	 * @param	[boolean	$bForceRefresh	]	TRUE	: Refresh cache
 	 * 												FALSE	: Use cached value if available (default)
 	 * 
 	 * @return	Mime_Type
 	 * 
 	 * @method
 	 */
-	public function getPreferredMIMEType($bolForceRefresh=false)
-	{
-		if (!isset($this->_objPreferredMIMEType) || $bolForceRefresh)
-		{
-			$selPreferredMimeType	=  self::_preparedStatement('selPreferredMimeType');
-			$resPreferredMimeType	= $selPreferredMimeType->Execute($this->toArray());
-			if ($resPreferredMimeType === false)
-			{
-				throw new Exception_Database($selPreferredMimeType->Error());
-			}
-			elseif ($arrMimeType = $selPreferredMimeType->Fetch())
-			{
-				$this->_objPreferredMIMEType	= new Mime_Type($arrMimeType);
-			}
-			else
-			{
+	public function getPreferredMIMEType($bForceRefresh=false) {
+		if (!isset($this->_oPreferredMIMEType) || $bForceRefresh) {
+			$oPreferredMimeType	=  self::_preparedStatement('selPreferredMimeType');
+			$mResult	= $oPreferredMimeType->Execute($this->toArray());
+			if ($mResult === false) {
+				throw new Exception_Database($oPreferredMimeType->Error());
+			} elseif ($aMimeType = $oPreferredMimeType->Fetch()) {
+				$this->_oPreferredMIMEType	= new Mime_Type($aMimeType);
+			} else {
 				return null;
 			}
 		}
 		
-		return $this->_objPreferredMIMEType;
+		return $this->_oPreferredMIMEType;
 	}
 	
 	/**
@@ -97,33 +103,27 @@ class File_Type extends ORM
 	 *
 	 * Returns a File_Type based on the file extension and mime type
 	 *
-	 * @param	string		$strExtension 			File Extension
-	 * @param	string		$strMimeType 			MIME Content Type
-	 * @param	[boolean	$bolAsArray			]	TRUE	: Return an associative array
+	 * @param	string		$sExtension 			File Extension
+	 * @param	string		$sMimeType 			MIME Content Type
+	 * @param	[boolean	$bAsArray			]	TRUE	: Return an associative array
 	 * 												FALSE	: Return a File_Type object (default)
 	 * 
 	 * @return	mixed								Associative Array or File_Type object
 	 * 
 	 * @method
 	 */
-	public static function getForExtensionAndMimeType($strExtension, $strMimeType, $bolAsArray=false)
-	{
-		$selByExtensionMimeType	= self::_preparedStatement('selByExtensionMimeType');
-		$mixResult				= $selByExtensionMimeType->Execute(array('extension'=>trim($strExtension, '.'), 'mime_content_type'=>$strMimeType));
+	public static function getForExtensionAndMimeType($sExtension, $sMimeType, $bAsArray=false) {
+		$oByExtensionMimeType	= self::_preparedStatement('selByExtensionMimeType');
+		$mResult				= $oByExtensionMimeType->Execute(array('extension'=>trim($sExtension, '.'), 'mime_content_type'=>$sMimeType));
 		
-		if ($mixResult === false)
-		{
-			throw new Exception_Database($selByExtensionMimeType->Error());
-		}
-		elseif (!$mixResult)
-		{
+		if ($mResult === false) {
+			throw new Exception_Database($oByExtensionMimeType->Error());
+		} elseif (!$mResult) {
 			return null;
-		}
-		else
-		{
-			$arrFileType	= $selByExtensionMimeType->Fetch();
+		} else {
+			$aFileType	= $oByExtensionMimeType->Fetch();
 			
-			return ($bolAsArray) ? $arrFileType : new File_Type($arrFileType);
+			return ($bAsArray) ? $aFileType : new File_Type($aFileType);
 		}
 	}
 	
@@ -132,64 +132,51 @@ class File_Type extends ORM
 	 *
 	 * Returns whether a given File Type has an icon
 	 *
-	 * @param	integer		$intFileTypeId					File Type to check
-	 * @param	[integer	$intResolution				]	Only check RxR resolution (Default: null)
+	 * @param	integer		$iFileTypeId					File Type to check
+	 * @param	[integer	$iResolution				]	Only check RxR resolution (Default: null)
 	 * 
 	 * @return	boolean
 	 * 
 	 * @method
 	 */
-	public static function hasIcon($intFileTypeId, $intResolution=null)
-	{
-		static	$qryQuery;
-		$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
+	public static function hasIcon($iFileTypeId, $iResolution=null) {
+		static	$oQuery;
+		$oQuery	= (isset($oQuery)) ? $oQuery : new Query();
 		
-		$intFileTypeId	= (int)$intFileTypeId;
+		$iFileTypeId	= (int)$iFileTypeId;
 		
-		if ($intResolution > 0)
-		{
-			if (!in_array($intResolution, self::$_arrAllowableResolutions))
-			{
-				throw new Exception("Unsupported File_Type Icon Resolution: {$intResolution}x{$intResolution}");
+		if ($iResolution > 0) {
+			if (!in_array($iResolution, self::$_aAllowableResolutions)) {
+				throw new Exception("Unsupported File_Type Icon Resolution: {$iResolution}x{$iResolution}");
+			} else {
+				$sColumn	= "(icon_{$iResolution}x{$iResolution} IS NOT NULL)";
 			}
-			else
-			{
-				$strColumn	= "(icon_{$intResolution}x{$intResolution} IS NOT NULL)";
+		} else {
+			$aWhere	= array();
+			foreach (self::$_aAllowableResolutions as $iSupportedResolution) {
+				$aWhere[]	 = "(icon_{$iSupportedResolution}x{$iSupportedResolution} IS NOT NULL)";
 			}
-		}
-		else
-		{
-			$arrWhere	= array();
-			foreach (self::$_arrAllowableResolutions as $intSupportedResolution)
-			{
-				$arrWhere[]	 = "(icon_{$intSupportedResolution}x{$intSupportedResolution} IS NOT NULL)";
-			}
-			$strColumn	= "(".implode(' OR ', $arrWhere).")";
+			$sColumn	= "(".implode(' OR ', $aWhere).")";
 		}
 		
-		$strColumn	.= " AS has_icon";
-		$resHasIcon	= $qryQuery->Execute("SELECT {$strColumn} FROM file_type WHERE id = {$intFileTypeId} LIMIT 1");
-		if ($resHasIcon === false)
-		{
-			throw new Exception_Database($qryQuery->Error());
-		}
-		elseif ($arrHasIcon = $resHasIcon->fetch_assoc())
-		{
-			return (bool)$arrHasIcon['has_icon'];
-		}
-		else
-		{
-			throw new Exception("Unknown File Type with Id '{$intFileTypeId}'");
+		$sColumn	.= " AS has_icon";
+		$oHasIcon	= $oQuery->Execute("SELECT {$sColumn} FROM file_type WHERE id = {$iFileTypeId} LIMIT 1");
+		if ($oHasIcon === false) {
+			throw new Exception_Database($oQuery->Error());
+		} elseif ($aHasIcon = $oHasIcon->fetch_assoc()) {
+			return (bool)$aHasIcon['has_icon'];
+		} else {
+			throw new Exception("Unknown File Type with Id '{$iFileTypeId}'");
 		}
 	}
-	
+
 	/**
 	 * _preparedStatement()
 	 *
 	 * Access a Static Cache of Prepared Statements used by this Class
-	 * 
+	 *
 	 * @param	string		$strStatement						Name of the statement
-	 * 
+	 *
 	 * @return	Statement										The requested Statement
 	 *
 	 * @method
@@ -206,11 +193,11 @@ class File_Type extends ORM
 			switch ($strStatement)
 			{
 				// SELECTS
-				case 'selAll':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1");
-					break;
 				case 'selById':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
+					break;
+				case 'selAll':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
 					break;
 				case 'selByExtensionMimeType':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("file_type JOIN file_type_mime_type ftmt ON file_type.id = ftmt.file_type_id JOIN mime_type ON ftmt.mime_type_id = mime_type.id", "file_type.*", "file_type.extension = <extension> AND mime_type.mime_content_type = <mime_content_type>", NULL, 1);
