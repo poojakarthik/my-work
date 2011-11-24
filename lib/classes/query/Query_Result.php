@@ -1,6 +1,8 @@
 <?php
 
 class Query_Result {
+	const LOG_DEBUG	= true;
+
 	const DATA_TYPE_TINYINT 	= 1;
 	const DATA_TYPE_SMALLINT	= 2;
 	const DATA_TYPE_INT 		= 3;
@@ -93,21 +95,21 @@ class Query_Result {
 			case self::DATA_TYPE_MEDIUMINT:
 				// Integer
 				$mValue = ($sValue === null ? null : (int)$sValue);
-				//Log::getLog()->log("{$oField->name} = int => {$mValue}");
+				Log::getLog()->logIf(self::LOG_DEBUG, "{$oField->name} = int => {$mValue}");
 				break;
 			case self::DATA_TYPE_FLOAT:
 			case self::DATA_TYPE_DOUBLE:
 			//case DATA_TYPE_DECIMAL: -- Removed because DECIMAL values aren't technically floating point numbers
 				// Floating point
 				$mValue = ($sValue === null ? null : (float)$sValue);
-				//Log::getLog()->log("{$oField->name} = float => {$mValue}");
+				Log::getLog()->logIf(self::LOG_DEBUG, "{$oField->name} = float => {$mValue}");
 				break;
 			case self::DATA_TYPE_NULL:
 				$mValue = null;
-				//Log::getLog()->log("{$oField->name} = null");
+				Log::getLog()->logIf(self::LOG_DEBUG, "{$oField->name} = null");
 				break;
 			default:
-				//Log::getLog()->log("{$oField->name} NO CONVERSION = {$oField->type}");
+				Log::getLog()->logIf(self::LOG_DEBUG, "{$oField->name} NO CONVERSION = {$oField->type}");
 				break;
 		}
 		return $mValue;
