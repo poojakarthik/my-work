@@ -17,6 +17,7 @@ class Cli_App_Contracts extends Cli
 	const	SWITCH_TEST_RUN			= "t";
 	const	SWITCH_MODE				= "m";
 	const	SWITCH_EFFECTIVE_DATE	= "d";
+	const	SWITCH_SERVICE_ID		= 'i';
 	
 	function run()
 	{
@@ -91,7 +92,7 @@ class Cli_App_Contracts extends Cli
 		}
 	}
 	
-	private function _updateContracts($strEffectiveDate=NULL)
+	private function _updateContracts($strEffectiveDate=null, $iServiceId=null)
 	{
 		$this->log(":: Updating Contract Details ::\n");
 		
@@ -138,8 +139,9 @@ class Cli_App_Contracts extends Cli
 										)
 									)
 
-						WHERE		1;", array(
-							'EffectiveDate'	=> $strEffectiveDate
+						WHERE		(<service_id> IS NULL OR <service_id> = s.Id);", array(
+							'EffectiveDate'	=> $strEffectiveDate,
+							'service_id'	=> (int)$iServiceId
 						));
 		while ($arrContractService = $oResult->fetch_assoc())
 		{
@@ -289,6 +291,14 @@ class Cli_App_Contracts extends Cli
 				self::ARG_DESCRIPTION	=> "Effective Date for the Contract Calculations (YYYY-MM-DD format)",
 				self::ARG_DEFAULT		=> null,
 				self::ARG_VALIDATION	=> 'Cli::_validDate("%1$s")'
+			),
+
+			self::SWITCH_SERVICE_ID => array(
+				self::ARG_LABEL			=> "SERVICE_ID",
+				self::ARG_REQUIRED		=> FALSE,
+				self::ARG_DESCRIPTION	=> "Limit the run to a single Service.",
+				self::ARG_DEFAULT		=> null,
+				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
 			)
 		);
 	}
