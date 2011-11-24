@@ -111,7 +111,7 @@ class Cli_App_Contracts extends Cli
 		$ubiServiceRatePlan		= new StatementUpdateById("ServiceRatePlan", Array('contract_effective_end_datetime'=>NULL, 'contract_status_id'=>NULL, 'contract_breach_reason_id'=>NULL, 'contract_breach_reason_description'=>NULL));
 		
 		// Get list of Services/Contracts to update
-		Log::getLog()->log("Searching for Active Contracts".(($iServiceId !== null) ? " for Service #{$iServiceId}" : '').'...');
+		Log::getLog()->log("Searching for Active Contracts".((((int)$iServiceId) !== null) ? " for Service #{$iServiceId}" : '').'...');
 		$oResult	= Query::run("
 			SELECT		s.Account,
 						s.FNN,
@@ -140,7 +140,7 @@ class Cli_App_Contracts extends Cli
 							)
 						)
 
-			WHERE		(<service_id> IS NULL OR <service_id> = s.Id);",
+			WHERE		(ISNULL(<service_id>) OR <service_id> = s.Id);",
 			array(
 				'EffectiveDate'	=> $strEffectiveDate,
 				'service_id'	=> (int)$iServiceId
