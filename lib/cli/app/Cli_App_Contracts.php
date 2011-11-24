@@ -47,7 +47,7 @@ class Cli_App_Contracts extends Cli
 			{
 				case 'UPDATE':
 					// Updates the Contract Details for each Service 
-					$this->_updateContracts($this->_arrArgs[self::SWITCH_EFFECTIVE_DATE]);
+					$this->_updateContracts($this->_arrArgs[self::SWITCH_EFFECTIVE_DATE], $this->_arrArgs[self::SWITCH_SERVICE_ID]);
 					break;
 					
 				case 'FIX':
@@ -111,40 +111,42 @@ class Cli_App_Contracts extends Cli
 		$ubiServiceRatePlan		= new StatementUpdateById("ServiceRatePlan", Array('contract_effective_end_datetime'=>NULL, 'contract_status_id'=>NULL, 'contract_breach_reason_id'=>NULL, 'contract_breach_reason_description'=>NULL));
 		
 		// Get list of Services/Contracts to update
+		Log::getLog()->log("Searching for Active Contracts".(($iServiceId) ? " for Service #{$iServiceId}" : '').'...');
 		$oResult	= Query::run("
-						SELECT		s.Account,
-									s.FNN,
-									s.CreatedOn,
-									s.ClosedOn,
-									s.NatureOfClosure,
-									s.LineStatus,
-									s.LineStatusDate,
-									srp.*,
-									srp.Id			AS ServiceRatePlanId,
-									srp.CreatedOn	AS contract_start_datetime
+			SELECT		s.Account,
+						s.FNN,
+						s.CreatedOn,
+						s.ClosedOn,
+						s.NatureOfClosure,
+						s.LineStatus,
+						s.LineStatusDate,
+						srp.*,
+						srp.Id			AS ServiceRatePlanId,
+						srp.CreatedOn	AS contract_start_datetime
 
-						FROM		Service s
-									JOIN ServiceRatePlan srp ON (
-										srp.Service = s.Id
-										AND srp.contract_status_id = ".CONTRACT_STATUS_ACTIVE."	/* CONTRACT_STATUS_ACTIVE */
-										AND s.Status != ".SERVICE_ARCHIVED."	/* SERVICE_ARCHIVED */
-										AND <EffectiveDate> BETWEEN StartDatetime AND EndDatetime
-										AND srp.Id = (
-											SELECT		Id
-											FROM		ServiceRatePlan
-											WHERE		Service = s.Id
-														AND <EffectiveDate> BETWEEN StartDatetime AND EndDatetime
-											ORDER BY	Id DESC
-											LIMIT		1
-										)
-									)
+			FROM		Service s
+						JOIN ServiceRatePlan srp ON (
+							srp.Service = s.Id
+							AND srp.contract_status_id = ".CONTRACT_STATUS_ACTIVE."	/* CONTRACT_STATUS_ACTIVE */
+							AND s.Status != ".SERVICE_ARCHIVED."	/* SERVICE_ARCHIVED */
+							AND <EffectiveDate> BETWEEN StartDatetime AND EndDatetime
+							AND srp.Id = (
+								SELECT		Id
+								FROM		ServiceRatePlan
+								WHERE		Service = s.Id
+											AND <EffectiveDate> BETWEEN StartDatetime AND EndDatetime
+								ORDER BY	Id DESC
+								LIMIT		1
+							)
+						)
 
-						WHERE		(<service_id> IS NULL OR <service_id> = s.Id);", array(
-							'EffectiveDate'	=> $strEffectiveDate,
-							'service_id'	=> (int)$iServiceId
-						));
-		while ($arrContractService = $oResult->fetch_assoc())
-		{
+			WHERE		(<service_id> IS NULL OR <service_id> = s.Id);",
+			array(
+				'EffectiveDate'	=> $strEffectiveDate,
+				'service_id'	=> (int)$iServiceId
+		));
+		Log::getLog()->log("Found {$oResult->num_rows} Contracts to check");
+		while ($arrContractService = $oResult->fetch_assoc()) {
 			$this->log(" + {$arrContractService['Account']}::{$arrContractService['FNN']}... ", FALSE, TRUE);
 
 			$intCreatedOn				= strtotime($arrContractService['CreatedOn']);
