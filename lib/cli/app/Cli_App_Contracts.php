@@ -148,6 +148,7 @@ class Cli_App_Contracts extends Cli
 		Log::getLog()->log("Found {$oResult->num_rows} Contracts to check");
 		while ($arrContractService = $oResult->fetch_assoc()) {
 			//$this->log(" + {$arrContractService['Account']}::{$arrContractService['FNN']}... ", FALSE, TRUE);
+			Log::getLog()->log(print_r($arrContractService, true)):
 
 			$intCreatedOn				= strtotime($arrContractService['CreatedOn']);
 			$intClosedOn				= strtotime($arrContractService['ClosedOn']);
@@ -156,7 +157,7 @@ class Cli_App_Contracts extends Cli
 			$intScheduledEndDatetime	= strtotime($arrContractService['contract_scheduled_end_datetime']);
 
 			Log::getLog()->log(" + {$arrContractService['Account']}: {$arrContractService['FNN']} [", false);
-			Log::getLog()->log(date('Y-m-d', $intCreatedOn).'-'.(($intClosedOn) ? date('Y-m-d', $intClosedOn).' ('.Constant_Group::getConstantGroup('ServiceClosure')->getConstantName($arrContractService['NatureOfClosure']).')' : '?').'; ', false);
+			Log::getLog()->log(date('Y-m-d', $intCreatedOn).'~'.(($intClosedOn) ? date('Y-m-d', $intClosedOn).' ('.Constant_Group::getConstantGroup('ServiceClosure')->getConstantName($arrContractService['NatureOfClosure']).')' : '?').'; ', false);
 			Log::getLog()->log('Line '.Constant_Group::getConstantGroup('service_line_status')->getConstantName($arrContractService['LineStatus']).' @ '.date('Y-m-d', $intLineStatusDate).'; ', false);
 			Log::getLog()->log("Contracted {$arrContractService['contract_start_datetime']}~{$arrContractService['contract_scheduled_end_datetime']}]");
 
@@ -201,7 +202,7 @@ class Cli_App_Contracts extends Cli
 			else
 			{
 				// Contract is still active
-				$this->log("SKIPPED (".date("Y-m-d H:i:s", $intClosedOn)." > ".date("Y-m-d H:i:s", $intEffectiveDate).")");
+				$this->log("SKIPPED (".(($intClosedOn) ? date("Y-m-d H:i:s", $intClosedOn) : 'Active Service')." > ".date("Y-m-d H:i:s", $intEffectiveDate).")");
 				continue;
 			}
 
