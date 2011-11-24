@@ -1,7 +1,7 @@
 <?php
 
 class Query_Result {
-	const LOG_DEBUG	= true;
+	const LOG_DEBUG	= false;
 
 	const DATA_TYPE_TINYINT 	= 1;
 	const DATA_TYPE_SMALLINT	= 2;
@@ -100,7 +100,7 @@ class Query_Result {
 	}
 	
 	private static function _getTypedValue($oField, $sValue) {
-		Log::getLog()->logIf(self::LOG_DEBUG, print_r($oField, true));
+		//Log::getLog()->logIf(self::LOG_DEBUG, print_r($oField, true));
 
 		$mValue 	= $sValue;
 		$iFieldType	= $oField->type;
