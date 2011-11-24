@@ -148,7 +148,7 @@ class Cli_App_Contracts extends Cli
 		Log::getLog()->log("Found {$oResult->num_rows} Contracts to check");
 		while ($arrContractService = $oResult->fetch_assoc()) {
 			//$this->log(" + {$arrContractService['Account']}::{$arrContractService['FNN']}... ", FALSE, TRUE);
-			Log::getLog()->log(print_r($arrContractService, true)):
+			Log::getLog()->log(print_r($arrContractService, true));
 
 			$intCreatedOn				= strtotime($arrContractService['CreatedOn']);
 			$intClosedOn				= strtotime($arrContractService['ClosedOn']);
