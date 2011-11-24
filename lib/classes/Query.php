@@ -133,7 +133,7 @@
 			}
 		}
 		$sQuery	= preg_replace(array_keys($aReplaceData), array_values($aReplaceData), (string)$sQuery);
-		Log::getLog()->log("Final Query form: {\n{$sQuery}\n}");
+		//Log::getLog()->log("Final Query form: {\n{$sQuery}\n}");
 
 		// Run Query
 		//Log::getLog()->log("Executing Query");
