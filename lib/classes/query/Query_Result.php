@@ -44,9 +44,9 @@ class Query_Result {
 	}
 	
 	public function __call($sMethod, $aArgs) {
-		$mResult = call_user_func_array(array($this->_mResult, $sMethod), $aArgs);
 		switch ($sMethod) {
 			case 'fetch_row':
+				$mResult = call_user_func_array(array($this->_mResult, 'fetch_row'), $aArgs);
 				if (!$mResult) {
 					return null;
 				}
@@ -59,21 +59,27 @@ class Query_Result {
 				return $aResult;
 				
 			case 'fetch_assoc':
+				$mResult = call_user_func_array(array($this->_mResult, 'fetch_row'), $aArgs);
 				if (!$mResult) {
 					return null;
 				}
 				
 				$aResult	= array();
-				$i			= 0;
+				foreach ($mResult as $i => $mValue) {
+					$oField 				= $this->_getField($i);
+					$aResult[$oField->name]	= self::_getTypedValue($oField, $mValue);
+				}
+				/*$i			= 0;
 				foreach ($mResult as $sField => $mValue) {
 					$oField 			= $this->_getField($i);
 					$aResult[$sField] 	= self::_getTypedValue($oField, $mValue);
 					$i++;
-				}
+				}*/
 				return $aResult;
 					
 			default:
-				return $mResult;
+				// Pass through
+				return call_user_func_array(array($this->_mResult, $sMethod), $aArgs);
 		}
 	}
 	
