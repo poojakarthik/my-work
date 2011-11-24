@@ -45,7 +45,9 @@ class Query_Result {
 	
 	public function __call($sMethod, $aArgs) {
 		switch ($sMethod) {
+			// fetch_row()
 			case 'fetch_row':
+				// We simply want to auto-cast our results
 				$mResult = call_user_func_array(array($this->_mResult, 'fetch_row'), $aArgs);
 				if (!$mResult) {
 					return null;
@@ -59,6 +61,12 @@ class Query_Result {
 				return $aResult;
 				
 			case 'fetch_assoc':
+				// We want to auto-cast our results
+				// Because results can have multiple fields with the same name, return values
+				// from fetch_assoc() can have different column counts to fetch_row(),
+				// so we will simulate fetch_assoc(), while calling fetch_row() under the hood.
+				// As per http://au.php.net/manual/en/mysqli-result.fetch-assoc.php `Return Values`,
+				// the last column with a given name takes precedence
 				$mResult = call_user_func_array(array($this->_mResult, 'fetch_row'), $aArgs);
 				if (!$mResult) {
 					return null;
@@ -69,7 +77,8 @@ class Query_Result {
 					$oField 				= $this->_getField($i);
 					$aResult[$oField->name]	= self::_getTypedValue($oField, $mValue);
 				}
-				/*$i			= 0;
+				/*// This method doesn't work when a query has been coded to expect multiple columns with the same name
+				$i			= 0;
 				foreach ($mResult as $sField => $mValue) {
 					$oField 			= $this->_getField($i);
 					$aResult[$sField] 	= self::_getTypedValue($oField, $mValue);
