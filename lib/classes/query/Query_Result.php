@@ -85,6 +85,8 @@ class Query_Result {
 	}
 	
 	private static function _getTypedValue($oField, $sValue) {
+		Log::getLog()->logIf(self::LOG_DEBUG, print_r($oField, true));
+
 		$mValue 	= $sValue;
 		$iFieldType	= $oField->type;
 		switch ($iFieldType) {
@@ -109,7 +111,7 @@ class Query_Result {
 				Log::getLog()->logIf(self::LOG_DEBUG, "{$oField->name} = null");
 				break;
 			default:
-				Log::getLog()->logIf(self::LOG_DEBUG, "{$oField->name} NO CONVERSION = {$oField->type}");
+				Log::getLog()->logIf(self::LOG_DEBUG, "{$oField->name} NO CONVERSION = {$oField->type} => {$mValue}");
 				break;
 		}
 		return $mValue;
