@@ -155,6 +155,11 @@ class Cli_App_Contracts extends Cli
 			$intStartDatetime			= strtotime($arrContractService['contract_start_datetime']);
 			$intScheduledEndDatetime	= strtotime($arrContractService['contract_scheduled_end_datetime']);
 
+			Log::getLog()->log(" + {$arrContractService['Account']}: {$arrContractService['FNN']} [", false);
+			Log::getLog()->log(Constant_Group::getContantGroup('service_status')->getConstantName().': '.date('Y-m-d', $intCreatedOn).'-'(($intClosedOn) ? date('Y-m-d', $intClosedOn) : '').'; ', false);
+			Log::getLog()->log('Line '.Constant_Group::getContantGroup('service_line_status')->getConstantName().' @ '.date('Y-m-d', $intLineStatusDate).'; ', false);
+			Log::getLog()->log("Contracted {$arrContractService['contract_start_datetime']}~{$arrContractService['contract_scheduled_end_datetime']}]");
+
 			// Has this Contract ended and why?
 			$arrServiceRatePlan	= Array('Id' => $arrContractService['ServiceRatePlanId']);
 			if ($intScheduledEndDatetime < $intEffectiveDate)
