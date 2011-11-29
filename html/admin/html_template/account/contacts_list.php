@@ -138,7 +138,7 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 			
 			// Build the Actions Cell
 			$strViewContactLink = Href()->ViewContact($dboContact->Id->Value);
-			$strViewContact = "<a href='$strViewContactLink'><img src='img/template/article.png' title='View Contact Details'</a>";
+			$strViewContact = "<a href='$strViewContactLink'><img src='img/template/article.png' title='View Contact Details'></a>";
 			if ($bolUserHasOperatorPerm && ($dboContact->Id->Value != DBO()->Account->PrimaryContact->Value) && ($dboContact->Archived->Value != 1))
 			{
 				// The contact is not the primary contact, and they are not archived

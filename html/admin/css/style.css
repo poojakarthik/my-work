@@ -12817,3 +12817,7 @@ dl.reflex-propertylist > dd > * {
 }
 
 /************************** END - Component Account User Edit - END **************************/
+
+#ContactTable > tbody td:last-of-type img {
+	vertical-align	: top;
+}
