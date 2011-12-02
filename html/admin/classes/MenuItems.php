@@ -2028,7 +2028,7 @@ class MenuItems {
 			$this->strLabel				= "emp: new";
 			$aData['Employee']['Id']	= -1;
 			$sJsonCode					= Json()->encode($aData);
-			return "javascript:Vixen.Popup.ShowAjaxPopup(\"Employee{}AddPopup\", \"medium\", \"Employee\", \"Employee\", \"Create\", $sJsonCode)";
+			return "javascript:Vixen.Popup.ShowAjaxPopup(\"EmployeeAddPopup\", \"medium\", \"Employee\", \"Employee\", \"Create\", $sJsonCode)";
 		}
 
 		// Removed until permissions are released. rmctainsh 20100429

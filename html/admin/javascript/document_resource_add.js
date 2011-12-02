@@ -73,9 +73,16 @@ function VixenDocumentResourceAddClass()
 		
 		RegisterAllInputMasks();
 	}
-
+	
 	this.InitialiseFrame = function(arrFileTypes)
 	{
+		// HACKHACKHACK: There is some strange bug where sometimes the iframe's contentDocument is null.
+		if (!this.elmFrame || !this.elmFrame.contentDocument) {
+			setTimeout(this.InitialiseFrame.bind(this, arrFileTypes), 0);
+			return;
+		}
+		//debugger;
+
 		this.arrFileTypes	= arrFileTypes;
 		this.elmFile		= this.elmFrame.contentDocument.getElementById("ResourceFile");
 		
