@@ -27,27 +27,28 @@ class Service_Barring_Level extends ORM_Cached
 		return 100;
 	}
 
-	public static function getLastActionedBarringLevelForAccount($iAccountId)
-    {
-    	$aResult = Query::run("	SELECT	a.Id AS account_id,
-										sbl.barring_level_id AS barring_level_id,
-										COUNT(DISTINCT sbl.service_id) AS service_count,
-										sbl.actioned_datetime AS actioned_datetime
-								FROM	service_barring_level sbl
-								JOIN	Service s ON (s.Id = sbl.service_id)
-								JOIN	Account a ON (a.Id = s.Account)
-								WHERE	sbl.actioned_datetime = (
-											SELECT	MAX(sbl_2.actioned_datetime)
-											FROM	service_barring_level sbl_2
-											JOIN	Service s_2 ON (s_2.Id = sbl_2.service_id)
-											JOIN	Account a_2 ON (a_2.Id = s_2.Account)
-											WHERE	a_2.Id = a.Id
-											AND		sbl_2.actioned_datetime IS NOT NULL
-										)
-								AND		a.Id = <account_id>;",
-								array('account_id' => $iAccountId))->fetch_assoc();
+	public static function getLastActionedBarringLevelForAccount($iAccountId) {
+		$aResult = Query::run("
+			SELECT		s.Account						AS account_id,
+						sbl.barring_level_id			AS barring_level_id,
+						sbl.actioned_datetime			AS actioned_datetime,
+						COUNT(DISTINCT sbl.service_id)	AS service_count
+			FROM		service_barring_level sbl
+						JOIN Service s ON (s.Id = sbl.service_id)
+			WHERE		sbl.actioned_datetime = (
+							SELECT	MAX(actioned_datetime)
+							FROM	service_barring_level latest_sbl
+									JOIN Service latest_s ON (latest_s.Id = latest_sbl.id)
+							WHERE	latest_s.Account = s.Account
+									AND latest_sbl.actioned_datetime IS NOT NULL
+						)
+						AND s.Account = <account_id>
+			GROUP BY	s.Account,
+						sbl.barring_level_id,
+						sbl.actioned_datetime;
+			", array('account_id' => $iAccountId))->fetch_assoc();
 		
-		return (($aResult['barring_level_id'] !== null) ? $aResult : null);
+		return ($aResult ? $aResult : null);
     }
 
 	//---------------------------------------------------------------------------------------------------------------------------------//

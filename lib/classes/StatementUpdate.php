@@ -273,11 +273,15 @@
 	 	// Only do bind_param if we have params to bind
 	 	if (count($arrParams))
 	 	{
-		 	array_unshift($arrParams, $strType);
-			if (!call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams))
+	 		// `bind_param` expects the bound parameter values to be passed by reference, which requires the following hack
+	 		// in order to be called using `call_user_func_array`:
+	 		$aReferencialised = referencialiseArrayValues($arrParams);
+	 		
+		 	array_unshift($aReferencialised, $strType);
+			if (!call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $aReferencialised))
 			{
-				Debug($arrParams);
-				Debug("Total Params: ".count($arrParams)."; Data Params: $intParamCount");
+				Debug($aReferencialised);
+				Debug("Total Params: ".count($aReferencialised)."; Data Params: $intParamCount");
 				Debug($this->_strQuery);
 			}
 	 	}

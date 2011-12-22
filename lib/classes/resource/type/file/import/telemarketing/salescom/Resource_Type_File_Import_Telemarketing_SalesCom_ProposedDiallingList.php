@@ -112,8 +112,10 @@ class Resource_Type_File_Import_Telemarketing_SalesCom_ProposedDiallingList
 		$arrExplode		= self::parseCSV($strLine);
 		
 		// Ensure that we have the correct number of fields
+		$aColumnDefinition	= self::_getFileFormatDefinition(null, '__COLUMNS__');
+
 		$intActualColumns	= count($arrExplode);
-		$intRequiredColumns	= count(self::_getFileFormatDefinition(null, '__COLUMNS__'));
+		$intRequiredColumns	= count($aColumnDefinition);
 		if ($intActualColumns !== $intRequiredColumns)
 		{
 			$arrNormalised['__WARNINGS__'][]	= "Incorrect number of CSV fields (Actual: {$intActualColumns};Expected: {$intRequiredColumns})";
@@ -127,7 +129,7 @@ class Resource_Type_File_Import_Telemarketing_SalesCom_ProposedDiallingList
 		$arrNormalised['CallPeriodEnd']		= date("Y-m-d H:i:s", strtotime("+{$intCallPeriodLengthDays} days", strtotime($arrNormalised['CallPeriodStart'])));
 		
 		// Validate
-		if (!preg_match("/^0[2378]\d{8}$/", $arrNormalised['FNN']))
+		if (!preg_match($aColumnDefinition['FNN']['Validation'], $arrNormalised['FNN']))
 		{
 			$arrNormalised['__ERRORS__'][]	= "FNN '{$arrNormalised['FNN']}' is invalid!";
 		}

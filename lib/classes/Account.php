@@ -692,7 +692,7 @@ class Account
 
 												  +
 
-												  COALESCE ((SELECT SUM(c3.balance) FROM collectable c3 WHERE c3.account_id = c2.account_id),0)
+												  COALESCE((SELECT SUM(c3.balance) FROM collectable c3 WHERE c3.account_id = c2.account_id),0)
 												  AS balance_balances
 												  FROM collectable c2
 												  GROUP BY c2.account_id
@@ -1043,7 +1043,7 @@ class Account
 
 	public function getUnbilledAdjustments()
 	{
-	    $sSQL = "	Select COALESCE (SUM(adj.balance*an.value_multiplier*tn.value_multiplier), 0) balance
+	    $sSQL = "	Select COALESCE(SUM(adj.balance*an.value_multiplier*tn.value_multiplier), 0) balance
 			FROM adjustment adj
 			JOIN adjustment_type at ON (at.id = adj.adjustment_type_id and adj.account_id = {$this->Id} AND adj.invoice_run_id IS NULL)
 			JOIN transaction_nature tn ON (tn.id = at.transaction_nature_id)

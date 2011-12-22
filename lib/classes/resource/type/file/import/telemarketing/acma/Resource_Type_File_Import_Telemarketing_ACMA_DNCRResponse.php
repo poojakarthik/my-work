@@ -105,8 +105,10 @@ class Resource_Type_File_Import_Telemarketing_ACMA_DNCRResponse
 		$arrExplode		= self::parseCSV($strLine);
 		
 		// Ensure that we have the correct number of fields
+		$aColumnDefinition	= self::_getFileFormatDefinition(null, '__COLUMNS__');
+
 		$intActualColumns	= count($arrExplode);
-		$intRequiredColumns	= count(self::_getFileFormatDefinition(null, '__COLUMNS__'));
+		$intRequiredColumns	= count($aColumnDefinition);
 		if ($intActualColumns !== $intRequiredColumns)
 		{
 			$arrNormalised['__ERRORS__'][]	= "Incorrect number of CSV fields (Actual: {$intActualColumns};Expected: {$intRequiredColumns})";
@@ -117,11 +119,11 @@ class Resource_Type_File_Import_Telemarketing_ACMA_DNCRResponse
 		$arrNormalised['DNCRRegistered']	= $arrExplode[1];
 		
 		// Validate
-		if (!preg_match("/^0[2378]\d{8}$/", $arrNormalised['FNN']))
+		if (!preg_match($aColumnDefinition['FNN']['Validation'], $arrNormalised['FNN']))
 		{
 			$arrNormalised['__ERRORS__'][]	= "FNN '{$arrNormalised['FNN']}' is invalid!";
 		}
-		if (!preg_match("/^([Yy]|[Nn])$/", $arrNormalised['DNCRRegistered']))
+		if (!preg_match($aColumnDefinition['DNCRRegistered']['Validation'], $arrNormalised['DNCRRegistered']))
 		{
 			$arrNormalised['__ERRORS__'][]	= "DNCR-Registered flag '{$arrNormalised['DNCRRegistered']}' is invalid!";
 		}

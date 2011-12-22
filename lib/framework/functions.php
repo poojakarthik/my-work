@@ -5954,4 +5954,12 @@ function CreateDefaultPaymentTerms($customerGroupId)
 		return null;
 	}
 
+	function referencialiseArrayValues(array &$aSubject) {
+		$aReferencialised = array();
+		foreach ($aSubject as $mKey=>&$mValue) {
+			$aReferencialised[$mKey] = &$mValue;
+		}
+		return $aReferencialised;
+	}
+
 ?>

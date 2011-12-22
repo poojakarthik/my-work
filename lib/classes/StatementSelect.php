@@ -340,11 +340,15 @@
 		 	Debug("Aliases: ".count($this->_arrPlaceholders)."; Params: ".count($arrParams). "; Types: $strType; Query: \n".$this->_strQuery);
 		 	DebugBacktrace();*/
 		 	//Debug("Aliases: ".count($this->_arrPlaceholders)."; Params: ".count($arrParams). "; Types: $strType; Query: \n".$this->_strQuery);
-			if (isset ($arrParams) && is_array($arrParams))
+			if (isset($arrParams) && is_array($arrParams))
 			{
-		 		array_unshift($arrParams, $strType);
+		 		// `bind_param` expects the bound parameter values to be passed by reference, which requires the following hack
+		 		// in order to be called using `call_user_func_array`:
+		 		$aReferencialised = referencialiseArrayValues($arrParams);
+
+		 		array_unshift($aReferencialised, $strType);
 		 		//throw new Exception("Binding Parameters: ".print_r($arrParams, true));
-				call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
+				call_user_func_array(array($this->_stmtSqlStatment, "bind_param"), $aReferencialised);
 			}
 			//Debug ($this);
 	 	}
