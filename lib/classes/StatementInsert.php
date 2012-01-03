@@ -232,12 +232,11 @@
 			}
 		}
 
- 		// `bind_param` expects the bound parameter values to be passed by reference, which requires the following hack
- 		// in order to be called using `call_user_func_array`:
- 		$aReferencialised = referencialiseArrayValues($arrParams);
-		
+ 		// `bind_param` expects the bound parameter values to be passed by reference, which requires calling the following hack
+ 		// function `referencialiseArrayValues` in order to be called using `call_user_func_array`:
+ 		$aReferencialised = $arrParams;
 		array_unshift($aReferencialised, $strType);
-		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $aReferencialised);
+		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), referencialiseArrayValues($aReferencialised));
 	 	
 	 	// Send any blobs that have been defined
 	 	$intBlobPos = -1;
