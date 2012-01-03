@@ -219,7 +219,7 @@ class Flex_Data_Model
 			$modelDef['Column'][$colDef['Field']]['Type']		= $colDef['RefType'];
 			$modelDef['Column'][$colDef['Field']]['SqlType']	= $colDef['nativetype'];
 			$modelDef['Column'][$colDef['Field']]['Null']		= !$colDef['notnull'];
-			$modelDef['Column'][$colDef['Field']]['Default']	= $colDef['default'] === null;
+			$modelDef['Column'][$colDef['Field']]['Default']	= !isset($colDef['default']);
 			$modelDef['Column'][$colDef['Field']]['ObLib']		= $colDef['ObLib'];
 		}
 		else
