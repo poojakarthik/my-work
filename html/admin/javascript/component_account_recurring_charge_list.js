@@ -316,7 +316,8 @@ var Component_Account_Recurring_Charge_List = Class.create(
 			var iTimesToCharge = oData.times_to_charge;
 			
 			// Work out the end date
-			var oStartDate = Date.$parseDate(oData.started_on, 'Y-m-d');
+			var oStartDate = Date.$parseDate(oData.started_on, 'Y-m-d'),
+				oEndDate = new Date(oStartDate);
 			if (!isNaN(iTimesToCharge))
 			{
 				// The end date depends on the Recurring Frequency type, the recurring frequency and the times to charge
@@ -324,12 +325,12 @@ var Component_Account_Recurring_Charge_List = Class.create(
 				{
 					case Component_Account_Recurring_Charge_List.BILLING_FREQ_DAY:
 						var iTotalNumOfDays	= iTimesToCharge * oData.recurring_freq;
-						var iEndTime		= oStartDate.shift(iTotalNumOfDays, 'days').getTime();
+						var iEndTime		= oEndDate.shift(iTotalNumOfDays, 'days').getTime();
 						break;
 						
 					case Component_Account_Recurring_Charge_List.BILLING_FREQ_MONTH:
 						var iTotalNumOfMonths	= iTimesToCharge * oData.recurring_freq;
-						var iEndTime			= oStartDate.shift(iTotalNumOfMonths, 'months').getTime();
+						var iEndTime			= oEndDate.shift(iTotalNumOfMonths, 'months').getTime();
 						break;
 						
 					case Component_Account_Recurring_Charge_List.BILLING_FREQ_HALF_MONTH:
@@ -339,7 +340,7 @@ var Component_Account_Recurring_Charge_List = Class.create(
 						var iTotalNumOfHalfMonths	= iTimesToCharge * oData.recurring_freq;
 						var iTotalNumOfMonths		= (int)(iTotalNumOfHalfMonths / 2);
 						var bExtraHalfMonth			= iTotalNumOfHalfMonths % 2;
-						var iEndTime				= oStartDate.shift(iTotalNumOfMonths, 'months').getTime();
+						var iEndTime				= oEndDate.shift(iTotalNumOfMonths, 'months').getTime();
 						
 						if (bExtraHalfMonth)
 						{
