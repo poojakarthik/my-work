@@ -1787,12 +1787,11 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			}
 		}
 
-		$blobFileContent = file_get_contents($strTempFilename);
-		if ($blobFileContent === FALSE)
-		{
-			return "ERROR: Could not read the file";
+		$blobFileContent = @file_get_contents($strTempFilename);
+		if ($blobFileContent === FALSE) {
+			return "ERROR: Could not read the file ({$php_errormsg})";
 		}
-
+		
 		// Add the DocumentResource Record
 		TransactionStart();
 		$arrResource = Array(	"CustomerGroup"		=> $intCustomerGroup,
@@ -1804,7 +1803,6 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 								"OriginalFilename"	=> $strFilename,
 								"FileContent"		=> $blobFileContent
 							);
-
 		$insResource	= new StatementInsert("DocumentResource", $arrResource);
 		$intResourceId	= $insResource->Execute($arrResource);
 

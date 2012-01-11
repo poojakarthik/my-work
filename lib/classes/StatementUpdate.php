@@ -290,8 +290,8 @@
 	 	$intBlobPos = -1;
 	 	while (($intBlobPos = strpos($strType, "b", ++$intBlobPos)) !== FALSE)
 	 	{
-	 		// The parameter data starts at $arrParams[1]
-	 		$blobParam = $arrParams[1 + $intBlobPos];
+	 		// The parameter data starts at $aReferencialised[1]
+	 		$blobParam = $aReferencialised[1 + $intBlobPos];
 	 		
 	 		// Split into 1MB chunks
 	 		$arrChunks = str_split($blobParam, 1048576);
