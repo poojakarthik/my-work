@@ -376,7 +376,7 @@ var Popup_Account_Add_CreditCard	= Class.create(Reflex_Popup,
 			// No payment, check if they want to use this account as the payment method
 			Reflex_Popup.yesNoCancel(
 				'Do you want to use this Credit Card as the Payment Method for the Flex Account ' + this._iAccountId + ' (' + this._oAccountInfo.sBusinessName + ')?',
-				{fnOnYes: this._doSave.bind(this, true)}
+				{fnOnYes: this._doSave.bind(this, true), fnOnNo: this._doSave.bind(this, false)}
 			);
 		}
 	},
@@ -394,6 +394,10 @@ var Popup_Account_Add_CreditCard	= Class.create(Reflex_Popup,
 			parseInt(this._hFieldValues[Popup_Account_Add_CreditCard.FIELD_CARD_TYPE]);
 		
 		var oExpiryDate	= Date.$parseDate(this._hFieldValues[Popup_Account_Add_CreditCard.FIELD_EXPIRY_DATE], 'Y-m');
+		
+		// NOTE: The date is set to the 1st here because the date object uses the current date when it doesn't parse an overriding one
+		oExpiryDate.setDate(1);
+		
 		this._hFieldValues[Popup_Account_Add_CreditCard.FIELD_EXPIRY_MONTH]	= oExpiryDate.getMonth() + 1;
 		this._hFieldValues[Popup_Account_Add_CreditCard.FIELD_EXPIRY_YEAR]	= oExpiryDate.getFullYear();
 		
@@ -402,11 +406,11 @@ var Popup_Account_Add_CreditCard	= Class.create(Reflex_Popup,
 		this._oLoading.display();
 		
 		var fnAddCreditCard	= 	jQuery.json.jsonFunction(
-										this._saveResponse.bind(this, bChangePaymentMethod), 
-										this._ajaxError.bind(this), 
-										'Account', 
-										'addCreditCard'
-									);
+									this._saveResponse.bind(this, bChangePaymentMethod), 
+									this._ajaxError.bind(this), 
+									'Account', 
+									'addCreditCard'
+								);
 		fnAddCreditCard(this._iAccountId, this._hFieldValues);
 	},
 	
