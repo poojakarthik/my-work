@@ -111,29 +111,20 @@ class Logic_Collectable extends Logic_Distributable implements DataLogic, Logic_
 		return ($bNoPromise && $bOverdue);
 	}
 
-	public function processDistributable($mBalanceTransferItem, $fMaxAmount = null)
-	{
+	public function processDistributable($mBalanceTransferItem, $fMaxAmount = null) {
 		//Log::getLog()->log('before_create_transfer for '.$mBalanceTransferItem->id.", ".memory_get_usage(true));
-		if ($mBalanceTransferItem instanceof Logic_Collectable)
-		{
+		if ($mBalanceTransferItem instanceof Logic_Collectable) {
 			$fBalance = Logic_Collectable_Transfer_Balance::create($mBalanceTransferItem, $this, $fMaxAmount);
-		}
-		else if ($mBalanceTransferItem instanceof Logic_Adjustment)
-		{
+		} else if ($mBalanceTransferItem instanceof Logic_Adjustment) {
 			$fBalance = Logic_Collectable_Adjustment::create($mBalanceTransferItem, $this, $fMaxAmount);
-		}
-		else
-		{
+		} else {
 			$fBalance = Logic_Collectable_Payment::create($mBalanceTransferItem, $this, $fMaxAmount);
-		}		
-
-		$this->balance += $fBalance ;
-		if ($mBalanceTransferItem->isDebit() || $mBalanceTransferItem instanceof Logic_Collectable)
-		{
-			$mBalanceTransferItem->balance -= $fBalance;
 		}
-		else
-		{
+
+		$this->balance += $fBalance;
+		if ($mBalanceTransferItem->isDebit() || $mBalanceTransferItem instanceof Logic_Collectable) {
+			$mBalanceTransferItem->balance -= $fBalance;
+		} else {
 			$mBalanceTransferItem->balance += $fBalance;
 		}
 

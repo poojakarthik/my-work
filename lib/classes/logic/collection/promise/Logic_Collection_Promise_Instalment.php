@@ -91,31 +91,23 @@ class Logic_Collection_Promise_Instalment implements DataLogic, Logic_Payable {
 		return $this->oDO->amount;
 	}
 
-
 	public function processDistributable($mDistributable) {
 		$oPromise = Logic_Collection_Promise::getForId($this->collection_promise_id);
-		if ($mDistributable->isCredit())
-		{
+		if ($mDistributable->isCredit()) {
 			$oCollectable = $oPromise->getOldestOpenCollectable();
-			while ($mDistributable->balance > 0 && $this->getBalance() > 0 && $oCollectable!== null)
-			{
+			while (abs($mDistributable->balance) > 0 && $this->getBalance() > 0 && $oCollectable !== null) {
 			   $oCollectable->processDistributable($mDistributable, $this->getBalance());
 			   $oCollectable = $oCollectable->balance > 0 ? $oCollectable : $oPromise->getOldestOpenCollectable();
 			}
-		}
-		else
-		{
+		} else {
 			$oCollectable = $oPromise->getNewestCollectableWithRoomForDebit();
-			while ($oCollectable != null && $mDistributable->balance!=null && ($this->amount - $this->getBalance()) > 0)
-			{
+			while ($oCollectable != null && $mDistributable->balance!=null && ($this->amount - $this->getBalance()) > 0) {
 				////Log::getLog()->log("Applying Balance to Promise Instalment: $oInstalment->id with due date: $oInstalment->due_date");
 				////Log::getLog()->log("Amount: ".Rate::roundToRatingStandard($oInstalment->amount, 4).", Balance: ".Rate::roundToRatingStandard($oInstalment->getBalance(), 4));
 				$oCollectable->processDistributable($mDistributable, $this->amount - $this->getBalance());
 				$oCollectable = $oPromise->getNewestCollectableWithRoomForDebit();
 			}
-
 		}
-
 	}
 }
 ?>
