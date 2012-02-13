@@ -641,7 +641,7 @@ class Logic_Account implements DataLogic
 			Log::getLog()->logIf(self::DEBUG_LOGGING, "  [*] Distributable Debit Balance: ".$this->getDistributableDebitBalance());
 
 			$aPayables = $this->getPayables();
-			Log::getLog()->logIf(self::DEBUG_LOGGING, "  [+] ".count($aCreditCollectables)." Payables");
+			Log::getLog()->logIf(self::DEBUG_LOGGING, "  [+] ".count($aPayables)." Payables");
 
 			$aCreditCollectables = $this->getCollectables(Logic_Collectable::CREDIT);
 			Log::getLog()->logIf(self::DEBUG_LOGGING, "  [+] ".count($aCreditCollectables)." CR Collectables");
