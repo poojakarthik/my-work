@@ -618,10 +618,10 @@ class Logic_Account implements DataLogic
 	public function hasPayablesWithBalanceBelowAmount()
 	{
 		$aCollectables = $this->getPayables();
-		foreach ($aCollectables as $oCollectable)
-		{
-			if ($oCollectable->amount > 0 && ($oCollectable->amount - $oCollectable->balance >0))
-					return true;
+		foreach ($aCollectables as $oCollectable) {
+			if ($oCollectable->amount > 0 && ($oCollectable->amount - $oCollectable->balance) > 0) {
+				return true;
+			}
 		}
 
 		return false;
@@ -633,47 +633,45 @@ class Logic_Account implements DataLogic
 		$iIterations = 0;
 
 		while ((($this->getPayableBalance(TRUE) > 0 && $this->getDistributableCreditBalance() > 0)
-				|| ($this->hasPayablesWithBalanceBelowAmount() && $this->getDistributableDebitBalance() > 0)))
-		{
+				|| ($this->hasPayablesWithBalanceBelowAmount() && $this->getDistributableDebitBalance() > 0))) {
 			$iIterations++;
 			Log::getLog()->logIf(self::DEBUG_LOGGING, "[+] Iteration #{$iIterations}");
+			Log::getLog()->logIf(self::DEBUG_LOGGING, "  [*] Payable Balance: ".$this->getPayableBalance(TRUE));
+			Log::getLog()->logIf(self::DEBUG_LOGGING, "  [*] Distributable Credit Balance: ".$this->getDistributableCreditBalance());
+			Log::getLog()->logIf(self::DEBUG_LOGGING, "  [*] Has Payables with Balance below Amount?: ".(($this->hasPayablesWithBalanceBelowAmount()) ? 'Yes' : 'No'));
+			Log::getLog()->logIf(self::DEBUG_LOGGING, "  [*] Distributable Debit Balance: ".$this->getDistributableDebitBalance());
 
 			$aPayables = $this->getPayables();
 			Log::getLog()->logIf(self::DEBUG_LOGGING, "  [+] ".count($aCreditCollectables)." Payables");
 
 			$aCreditCollectables = $this->getCollectables(Logic_Collectable::CREDIT);
 			Log::getLog()->logIf(self::DEBUG_LOGGING, "  [+] ".count($aCreditCollectables)." CR Collectables");
-			foreach ($aCreditCollectables as $oCollectable)
-			{
+			foreach ($aCreditCollectables as $oCollectable) 
 				$oCollectable->distributeToPayables($aPayables);
 			}
 
 			$aPayments = $this->getPayments(PAYMENT_NATURE_PAYMENT);
 			Log::getLog()->logIf(self::DEBUG_LOGGING, "  [+] ".count($aPayments)." CR Payments");
-			foreach ($aPayments as $oPayment)
-			{
+			foreach ($aPayments as $oPayment) {
 				$oPayment->distributeToPayables($aPayables);
 			}
 
 			$aAdjustments = $this->getAdjustments(Logic_Adjustment::CREDIT);
-			Log::getLog()->logIf(self::DEBUG_LOGGING, "  [+] ".count($aPayments)." CR Adjustments");
-			foreach ($aAdjustments as $oAdjustment)
-			{
+			Log::getLog()->logIf(self::DEBUG_LOGGING, "  [+] ".count($aAdjustments)." CR Adjustments");
+			foreach ($aAdjustments as $oAdjustment) {
 				$oAdjustment->distributeToPayables($aPayables);
 			}
 
 			$aPayables = array_reverse($this->getPayables());
 			$aReversedPayments = $this->getPayments(PAYMENT_NATURE_REVERSAL);
 			Log::getLog()->logIf(self::DEBUG_LOGGING, "  [+] ".count($aReversedPayments)." DR Payments");
-			foreach($aReversedPayments as $oPayment)
-			{
+			foreach($aReversedPayments as $oPayment) {
 				$oPayment->distributeToPayables($aPayables);
 			}
 
 			$aDebitAdjustments = $this->getAdjustments(Logic_Adjustment::DEBIT, ADJUSTMENT_STATUS_APPROVED);
 			Log::getLog()->logIf(self::DEBUG_LOGGING, "  [+] ".count($aDebitAdjustments)." DR Adjustments");
-			foreach ( $aDebitAdjustments as $oAdjustment)
-			{
+			foreach ( $aDebitAdjustments as $oAdjustment) {
 				$oAdjustment->distributeToPayables($aPayables);
 			}
 

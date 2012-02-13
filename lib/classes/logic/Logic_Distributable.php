@@ -9,6 +9,8 @@
  * @author JanVanDerBreggen
  */
 abstract class  Logic_Distributable {
+
+	const DEBUG_LOGGING = true;
 	
 	abstract public function isDebit();
 
@@ -24,23 +26,23 @@ abstract class  Logic_Distributable {
 	public function distributeToPayables(&$aPayables)
 	{
 		$bDebit = $this->isDebit();
-				
+		
 		foreach($aPayables as $iKey => $oPayable)
 		{
-			if ($this->balance == 0)
+			if ($this->balance == 0) {
 				break;
-			if (!$bDebit && $oPayable->getBalance() > 0)
-			{
-				$oPayable->processDistributable($this);
-				if ($oPayable->getBalance() == 0)
-					unset($aPayables[$iKey]);
-
 			}
-			else if ($bDebit && $oPayable->getBalance() < $oPayable->getAmount())
-			{
+			if (!$bDebit && $oPayable->getBalance() > 0) {
 				$oPayable->processDistributable($this);
-				if ($oPayable->getBalance() == $oPayable->getAmount())
+				if ($oPayable->getBalance() == 0) {
 					unset($aPayables[$iKey]);
+				}
+
+			} else if ($bDebit && $oPayable->getBalance() < $oPayable->getAmount()) {
+				$oPayable->processDistributable($this);
+				if ($oPayable->getBalance() == $oPayable->getAmount()) {
+					unset($aPayables[$iKey]);
+				}
 			}
 			
 		}
