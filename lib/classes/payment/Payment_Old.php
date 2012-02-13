@@ -10,6 +10,8 @@ class Payment extends ORM_Cached
 {
 	protected 			$_strTableName			= "Payment";
 	protected static	$_strStaticTableName	= "Payment";
+
+	const DEBUG_LOGGING = true;
 	
 	protected static function getCacheName()
 	{
@@ -29,6 +31,7 @@ class Payment extends ORM_Cached
 
         public static function resetBalanceForAccount($iAccountId)
         {
+			Log::getLog()->logIf(self::DEBUG_LOGGING, "Reseting Payment Balance for Account #{$iAccountId}");
             $oQuery = new Query();
             $sSql = "   UPDATE payment p
                         LEFT JOIN payment p2 ON ( p2.reversed_payment_id = p.id)

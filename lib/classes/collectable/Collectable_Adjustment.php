@@ -11,7 +11,7 @@ class Collectable_Adjustment extends ORM_Cached
 	protected 			$_strTableName			= "collectable_adjustment";
 	protected static	$_strStaticTableName	= "collectable_adjustment";
 
-
+	const DEBUG_LOGGING = true;
 	
 	protected static function getCacheName()
 	{
@@ -31,6 +31,7 @@ class Collectable_Adjustment extends ORM_Cached
 
 	public static function deleteForAccount($iAccountId, $bQuick = FALSE)
 	{
+		Log::getLog()->logIf(self::DEBUG_LOGGING, "Deleting collectable_adjustment records for Account #{$iAccountId}".(($bQuick) ? ' (QUICK mode)' : ''));
 		$sQuick = $bQuick ? "QUICK" : NULL;
 		Query::run(
 					"DELETE {$sQuick} collectable_adjustment

@@ -11,6 +11,8 @@ class Collectable extends ORM_Cached
 	protected 			$_strTableName			= "collectable";
 	protected static	$_strStaticTableName	= "collectable";
 
+	const DEBUG_LOGGING = true;
+
 	protected static function getCacheName()
 	{
 		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
@@ -60,6 +62,7 @@ class Collectable extends ORM_Cached
 
 	public static function resetBalanceForAccount($iAccountId)
 	{
+		Log::getLog()->logIf(self::DEBUG_LOGGING, "Reseting Collectable Balance for Account #{$iAccountId}");
 		$oQuery = new Query();
 		$sSql = "UPDATE ".self::$_strStaticTableName." SET balance = amount WHERE account_id = $iAccountId";
 		$oQuery->Execute($sSql);

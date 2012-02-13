@@ -11,7 +11,7 @@ class Adjustment extends ORM_Cached
 	protected 			$_strTableName			= "adjustment";
 	protected static	$_strStaticTableName	= "adjustment";
 
-
+	const DEBUG_LOGGING = true;
 
 	protected static function getCacheName()
 	{
@@ -31,6 +31,7 @@ class Adjustment extends ORM_Cached
 
     public static function resetBalanceForAccount($iAccountId)
     {
+		Log::getLog()->logIf(self::DEBUG_LOGGING, "Reseting Adjustment Balance for Account #{$iAccountId}");
         $oQuery = new Query();
         $sSql = "   UPDATE adjustment a
                     LEFT JOIN adjustment a2 ON ( a2.reversed_adjustment_id = a.id)

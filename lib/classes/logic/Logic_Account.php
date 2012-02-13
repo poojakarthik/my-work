@@ -7,6 +7,7 @@
  */
 class Logic_Account implements DataLogic
 {
+	const DEBUG_LOGGING = true;
 
 	const			SCENARIO_OFFSET_USED_TO_DETERMINE_EXIT_COLLECTIONS = FALSE;
 	const			CACHE_MODE_BYPASS = 'bypass';
@@ -671,7 +672,7 @@ class Logic_Account implements DataLogic
 		Logic_Collectable_Payment::createRecords();
 		Logic_Collectable_Adjustment::createRecords();
 		Logic_Collectable_Transfer_Balance::createRecords();
-		//Log::getLog()->log("Distributing: ".Logic_Stopwatch::getInstance()->lap());
+		Log::getLog()->logIf(self::DEBUG_LOGGING, "Distributing: ".Logic_Stopwatch::getInstance()->lap());
 		return array('iterations'=>$iIterations, 'Debit Collectables' =>count($this->getCollectables()), 'Credit Collectables'=> count($aCreditCollectable) , 'Credit Payments' =>count($aPayments) , 'Credit Adjustments'=> count($aAdjustments), 'Debit Payments' => count($aReversedPayments) , 'Debit Adjustments' =>count($aDebitAdjustments), 'Balance'=>$this->getPayableBalance() );
 
 	}
@@ -694,9 +695,11 @@ class Logic_Account implements DataLogic
 			$this->aPayments		= NULL;
 			$this->aAdjustments		= NULL;
 			$this->_aPayables		= NULL;
+			Log::getLog()->logIf(self::DEBUG_LOGGING, "Refreshing Logic_Collectable cache");
 			Logic_Collectable::refreshCache(array_merge($this->getCollectables(Logic_Collectable::CREDIT, TRUE), $this->getCollectables(Logic_Collectable::DEBIT, TRUE)));
 			$this->aCollectables = NULL;
 			Logic_Stopwatch::getInstance()->lap();
+			Log::getLog()->logIf(self::DEBUG_LOGGING, "Processing Distributables");
 			$aStats = $this->processDistributables();
 		}
 		catch(Exception $e)
@@ -994,9 +997,11 @@ class Logic_Account implements DataLogic
 				$oStopwatch->start();
 				Log::getLog()->log("Instantiated logic account $oAccountORM->Id,".  memory_get_usage(true));
 
+				Log::getLog()->log("Calculating Account Balance");
 				$fAccountBalance = $oAccount->getAccountBalance();
 
 				//this is the actual balance redistribution
+				Log::getLog()->log("Redistributing Account Balances");
 				$aResult = $oAccount->redistributeBalances();
 				$iRedistributeTime = Logic_Stopwatch::getInstance()->lap();
 				Log::getlog()->log("Processing Distributables for Account {$oAccount->id},$iRedistributeTime");

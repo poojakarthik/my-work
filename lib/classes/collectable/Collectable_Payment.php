@@ -10,6 +10,8 @@ class Collectable_Payment extends ORM_Cached
 {
 	protected 			$_strTableName			= "collectable_payment";
 	protected static	$_strStaticTableName	= "collectable_payment";
+
+	const DEBUG_LOGGING = true;
 	
 	protected static function getCacheName()
 	{
@@ -29,6 +31,7 @@ class Collectable_Payment extends ORM_Cached
 
 	public static function deleteForAccount($iAccountId, $bQuick = FALSE)
 	{
+		Log::getLog()->logIf(self::DEBUG_LOGGING, "Deleting collectable_payment records for Account #{$iAccountId}".(($bQuick) ? ' (QUICK mode)' : ''));
 		$sQuick = $bQuick ? "QUICK" : NULL;
 		Query::run (
 					"DELETE {$sQuick} collectable_payment
