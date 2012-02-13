@@ -10,7 +10,7 @@
  * @author JanVanDerBreggen
  */
 class Logic_Collection_Promise_Instalment implements DataLogic, Logic_Payable {
-	const DEBUG_LOGGING = true;
+	const DEBUG_LOGGING = false;
 
 	//put your code here
 	protected $oDO;

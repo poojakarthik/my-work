@@ -11,7 +11,7 @@ class Collectable_Transfer_Balance extends ORM_Cached
 	protected 			$_strTableName			= "collectable_transfer_balance";
 	protected static	$_strStaticTableName	= "collectable_transfer_balance";
 
-	const DEBUG_LOGGING = true;
+	const DEBUG_LOGGING = false;
 	
 	protected static function getCacheName()
 	{

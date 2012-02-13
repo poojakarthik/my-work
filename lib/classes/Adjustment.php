@@ -11,7 +11,7 @@ class Adjustment extends ORM_Cached
 	protected 			$_strTableName			= "adjustment";
 	protected static	$_strStaticTableName	= "adjustment";
 
-	const DEBUG_LOGGING = true;
+	const DEBUG_LOGGING = false;
 
 	protected static function getCacheName()
 	{

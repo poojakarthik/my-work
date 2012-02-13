@@ -11,7 +11,7 @@ class Collectable_Payment extends ORM_Cached
 	protected 			$_strTableName			= "collectable_payment";
 	protected static	$_strStaticTableName	= "collectable_payment";
 
-	const DEBUG_LOGGING = true;
+	const DEBUG_LOGGING = false;
 	
 	protected static function getCacheName()
 	{

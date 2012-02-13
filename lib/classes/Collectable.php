@@ -11,7 +11,7 @@ class Collectable extends ORM_Cached
 	protected 			$_strTableName			= "collectable";
 	protected static	$_strStaticTableName	= "collectable";
 
-	const DEBUG_LOGGING = true;
+	const DEBUG_LOGGING = false;
 
 	protected static function getCacheName()
 	{
