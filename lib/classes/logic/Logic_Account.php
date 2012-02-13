@@ -642,6 +642,9 @@ class Logic_Account implements DataLogic
 
 			$aPayables = $this->getPayables();
 			Log::getLog()->logIf(self::DEBUG_LOGGING, "  [+] ".count($aPayables)." Payables");
+			foreach ($aPayables as $oPayable) {
+				Log::getLog()->logIf(self::DEBUG_LOGGING, "    [+] ".get_class($oPayable)." #{$oPayable->id} (".$oPayable->balance."/".$oPayable->amount.")");
+			}
 
 			$aCreditCollectables = $this->getCollectables(Logic_Collectable::CREDIT);
 			Log::getLog()->logIf(self::DEBUG_LOGGING, "  [+] ".count($aCreditCollectables)." CR Collectables");
