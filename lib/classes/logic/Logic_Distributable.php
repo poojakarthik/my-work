@@ -37,6 +37,7 @@ abstract class  Logic_Distributable {
 			if (!$bDebit && $oPayable->getBalance() > 0) {
 				Log::getLog()->logIf(self::DEBUG_LOGGING, "    [+] Crediting");
 				$oPayable->processDistributable($this);
+				Log::getLog()->logIf(self::DEBUG_LOGGING, "      [*] Distributable ({$this->balance}/{$this->amount}); Payable ({$oPayable->balance}/{$oPayable->amount})");
 				if ($oPayable->getBalance() == 0) {
 					Log::getLog()->logIf(self::DEBUG_LOGGING, "      [*] Payable's Credit Balance depleted");
 					unset($aPayables[$iKey]);
@@ -45,6 +46,7 @@ abstract class  Logic_Distributable {
 			} else if ($bDebit && $oPayable->getBalance() < $oPayable->getAmount()) {
 				Log::getLog()->logIf(self::DEBUG_LOGGING, "    [+] Debiting");
 				$oPayable->processDistributable($this);
+				Log::getLog()->logIf(self::DEBUG_LOGGING, "      [*] Distributable ({$this->balance}/{$this->amount}); Payable ({$oPayable->balance}/{$oPayable->amount})");
 				if ($oPayable->getBalance() == $oPayable->getAmount()) {
 					Log::getLog()->logIf(self::DEBUG_LOGGING, "      [*] Payable's Debit Balance depleted");
 					unset($aPayables[$iKey]);
