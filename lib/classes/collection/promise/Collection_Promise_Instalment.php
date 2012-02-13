@@ -27,9 +27,21 @@ class Collection_Promise_Instalment extends ORM_Cached
 		return 100;
 	}
 
-    public static function getForPromiseId($iPromiseId)
-	{
-		return self::getFor(array('collection_promise_id' => $iPromiseId));
+    public static function getForPromiseId($iPromiseId, $bDueDateOrder=true) {
+		$mResult = Query::run("
+			SELECT		pi.*
+			FROM		collection_promise_instalment pi
+			WHERE		pi.collection_promise_id = <collection_promise_id>
+			ORDER BY	IF(<due_date_order>, pi.due_date, pi.id) ASC
+		", array(
+			'collection_promise_id' => $iPromiseId,
+			'due_date_order' => $bDueDateOrder
+		));
+		$aInstalments = array();
+		while ($aInstalment = $mResult->fetch_assoc()) {
+			$aInstalments[$aInstalment['id']] = new self($aInstalment);
+		}
+		return $aInstalments;
 	}
 
     public static function getFor($aCriteria)

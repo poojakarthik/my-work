@@ -10,50 +10,47 @@
  * @author JanVanDerBreggen
  */
 class Logic_Collection_Promise_Instalment implements DataLogic, Logic_Payable {
+	const DEBUG_LOGGING = true;
+
 	//put your code here
 	protected $oDO;
 
-	public function __construct($mDefinition)
-	{
-		if ($mDefinition instanceof Collection_Promise_Instalment)
-		{
+	public function __construct($mDefinition) {
+		if ($mDefinition instanceof Collection_Promise_Instalment) {
 			$this->oDO = $mDefinition;
 		}
 	}
 
-	public function getBalance()
-	{
+	public function getBalance() {
 		$oPromise = Logic_Collection_Promise::getForId($this->collection_promise_id);
 		$aCollectables	= $oPromise->getCollectables();
-		$fPaid			= 0;
-		foreach ($aCollectables as $oCollectable)
-		{
+
+		// Calculate total paid off on the Promise's Collectables
+		$fPaid = 0;
+		foreach ($aCollectables as $oCollectable) {
 			$fPaid += $oCollectable->amount - $oCollectable->balance;
 		}
 
-		
-		$aInstalments		= $oPromise->getInstalments();
-		foreach ($aInstalments as $oInstalment)
-		{			
-			if ($oInstalment->id == $this->id)
-			{
+		// Reduce "paid" value by each instalment's amount until we reach ourselves
+		$aInstalments = $oPromise->getInstalments();
+		foreach ($aInstalments as $oInstalment) {
+			if ($oInstalment->id == $this->id) {
+				// Instalment is me: return my Amount - paid remaining
 				return Rate::roundToRatingStandard(max(($oInstalment->amount - max($fPaid, 0)), 0), 4);
-			}
-			else
-			{
+			} else {
+				// Instalment prior to me: reduce the "paid" amount by its value
 				$fPaid -= $oInstalment->amount;
 			}
-		   
 		}
+
+		// This should really never EVER happen, unless there is a logic error somewhere
+		Flex::assert(false, "Promise Instalment #{$this->id} is not listed as one of its Promise's Instalments");
 	}
 
 
 
 	 public function __get($sField) {
-
-	   switch($sField)
-	   {
-		   
+	   switch($sField) {
 		   case 'amount':
 			   return Rate::roundToRatingStandard($this->oDO->$sField, 4);
 			case 'balance':
@@ -61,14 +58,11 @@ class Logic_Collection_Promise_Instalment implements DataLogic, Logic_Payable {
 			default:
 				return $this->oDO->$sField;
 	   }
-
 	}
 
 
 	public function __set($sField, $mValue) {
-
-		switch($sField)
-	   {
+		switch($sField) {
 		   case 'amount':
 			   $this->oDO->$sField = Rate::roundToRatingStandard($mValue, 4);
 			default:
@@ -78,18 +72,15 @@ class Logic_Collection_Promise_Instalment implements DataLogic, Logic_Payable {
 
 
 
-	public function save() 
-	{
+	public function save() {
 		return $this->oDO->save();
 	}
 
-	public function toArray() 
-	{
+	public function toArray() {
 		return $this->oDO->toArray();
 	}
 
-	public function display()
-	{
+	public function display() {
 		////Log::getLog()->log('Details of Promise Instalment: '.$this->id);
 		////Log::getLog()->log('Promise: '.$this->promise_id);
 		////Log::getLog()->log('Due Date: '.$this->due_date);
@@ -101,8 +92,7 @@ class Logic_Collection_Promise_Instalment implements DataLogic, Logic_Payable {
 	}
 
 
-	public function processDistributable($mDistributable)
-	{
+	public function processDistributable($mDistributable) {
 		$oPromise = Logic_Collection_Promise::getForId($this->collection_promise_id);
 		if ($mDistributable->isCredit())
 		{
