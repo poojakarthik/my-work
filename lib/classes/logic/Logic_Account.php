@@ -632,8 +632,7 @@ class Logic_Account implements DataLogic
 	{
 		$iIterations = 0;
 
-		while ((($this->getPayableBalance(TRUE) > 0 && $this->getDistributableCreditBalance() > 0)
-				|| ($this->hasPayablesWithBalanceBelowAmount() && $this->getDistributableDebitBalance() > 0))) {
+		while (($this->getPayableBalance(TRUE) > 0 && $this->getDistributableCreditBalance() > 0) || ($this->hasPayablesWithBalanceBelowAmount() && $this->getDistributableDebitBalance() > 0)) {
 			$iIterations++;
 			Log::getLog()->logIf(self::DEBUG_LOGGING, "[+] Iteration #{$iIterations}");
 			Log::getLog()->logIf(self::DEBUG_LOGGING, "  [*] Payable Balance: ".$this->getPayableBalance(TRUE));
@@ -646,7 +645,7 @@ class Logic_Account implements DataLogic
 
 			$aCreditCollectables = $this->getCollectables(Logic_Collectable::CREDIT);
 			Log::getLog()->logIf(self::DEBUG_LOGGING, "  [+] ".count($aCreditCollectables)." CR Collectables");
-			foreach ($aCreditCollectables as $oCollectable) 
+			foreach ($aCreditCollectables as $oCollectable) {
 				$oCollectable->distributeToPayables($aPayables);
 			}
 
