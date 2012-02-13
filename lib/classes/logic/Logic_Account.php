@@ -972,10 +972,15 @@ class Logic_Account implements DataLogic
 
 	public static function batchRedistributeBalances($aAccounts)
 	{
+		Log::getLog()->log("Redistributing ".count($aAccounts)." Accounts");
 		Log::getLog()->log("Account, Time, Memory Usage, iterations, Debit Collectables, Credit Collectables, Credit Payments, Credit Adjustments, Debit Payments,Debit Adjustments, Account Balance (based on amounts) , Payable Balance (based on balances) ");
 
+		$iProgress = 0;
+		$iTotalAccounts = count($aAccounts);
 		foreach ($aAccounts as $iIndex => $oAccountORM)
 		{
+			$iProgress++;
+			Log::getLog()->log("  [+] ({$iProgress}/{$iTotalAccounts}) #{$oAccountORM->Id}");
 			$oDataAccess = DataAccess::getDataAccess();
 			$oDataAccess->TransactionStart();
 			try
@@ -987,19 +992,19 @@ class Logic_Account implements DataLogic
 				$iId = $oAccount->Id;
 				$oStopwatch = Logic_Stopwatch::getInstance(true);
 				$oStopwatch->start();
-				 //Log::getLog()->log("Instantiated logic account $oAccountORM->Id,".  memory_get_usage(true));
+				Log::getLog()->log("Instantiated logic account $oAccountORM->Id,".  memory_get_usage(true));
 
 				$fAccountBalance = $oAccount->getAccountBalance();
 
 				//this is the actual balance redistribution
 				$aResult = $oAccount->redistributeBalances();
-				//$time = Logic_Stopwatch::getInstance()->lap();
-			//	Log::getlog()->log("Processing Distributables for Account {$oAccount->id},$time");
+				$iRedistributeTime = Logic_Stopwatch::getInstance()->lap();
+				Log::getlog()->log("Processing Distributables for Account {$oAccount->id},$iRedistributeTime");
 				//further process reporting
-				$time = $oStopwatch->split();
 				$fOverdueBalance = $oAccount->getOverdueCollectableBalance();
+				$iTotalAccountTime = $oStopwatch->split();
 				//self::$aMemory['after_before_cache_clear'] = memory_get_usage (TRUE );
-				//Log::getlog()->log("Total Time for {$oAccount->id},$time");
+				Log::getlog()->log("Total Time for {$oAccount->id},$iTotalAccountTime");
 				//memory management
 				$oAccount->reset();
 				unset($oAccount);
@@ -1009,7 +1014,7 @@ class Logic_Account implements DataLogic
 
 				//output the process report to the commandline
 				$iMemory = (memory_get_usage (TRUE ));
-				Log::getLog()->log("$iId, $time,  $iMemory ,".$aResult['iterations'].",".$aResult['Debit Collectables'].",".$aResult['Credit Collectables'].",".$aResult['Credit Payments'].",".$aResult['Credit Adjustments'].",".$aResult['Debit Payments'].",".$aResult['Debit Adjustments'].",".$fAccountBalance.",".$aResult['Balance']);
+				Log::getLog()->log("$iId, $iTotalAccountTime,  $iMemory ,".$aResult['iterations'].",".$aResult['Debit Collectables'].",".$aResult['Credit Collectables'].",".$aResult['Credit Payments'].",".$aResult['Credit Adjustments'].",".$aResult['Debit Payments'].",".$aResult['Debit Adjustments'].",".$fAccountBalance.",".$aResult['Balance']);
 
 				$oDataAccess->TransactionCommit();
 			}
