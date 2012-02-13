@@ -636,32 +636,42 @@ class Logic_Account implements DataLogic
 				|| ($this->hasPayablesWithBalanceBelowAmount() && $this->getDistributableDebitBalance() > 0)))
 		{
 			$iIterations++;
-			$aCreditCollectable = $this->getCollectables(Logic_Collectable::CREDIT);
+			Log::getLog()->logIf(self::DEBUG_LOGGING, "[+] Iteration #{$iIterations}");
+
 			$aPayables = $this->getPayables();
-			foreach ($aCreditCollectable as $oCollectable)
+			Log::getLog()->logIf(self::DEBUG_LOGGING, "  [+] ".count($aCreditCollectables)." Payables");
+
+			$aCreditCollectables = $this->getCollectables(Logic_Collectable::CREDIT);
+			Log::getLog()->logIf(self::DEBUG_LOGGING, "  [+] ".count($aCreditCollectables)." CR Collectables");
+			foreach ($aCreditCollectables as $oCollectable)
 			{
 				$oCollectable->distributeToPayables($aPayables);
 			}
 
 			$aPayments = $this->getPayments(PAYMENT_NATURE_PAYMENT);
+			Log::getLog()->logIf(self::DEBUG_LOGGING, "  [+] ".count($aPayments)." CR Payments");
 			foreach ($aPayments as $oPayment)
 			{
 				$oPayment->distributeToPayables($aPayables);
 			}
 
 			$aAdjustments = $this->getAdjustments(Logic_Adjustment::CREDIT);
+			Log::getLog()->logIf(self::DEBUG_LOGGING, "  [+] ".count($aPayments)." CR Adjustments");
 			foreach ($aAdjustments as $oAdjustment)
 			{
 				$oAdjustment->distributeToPayables($aPayables);
 			}
+
 			$aPayables = array_reverse($this->getPayables());
 			$aReversedPayments = $this->getPayments(PAYMENT_NATURE_REVERSAL);
+			Log::getLog()->logIf(self::DEBUG_LOGGING, "  [+] ".count($aReversedPayments)." DR Payments");
 			foreach($aReversedPayments as $oPayment)
 			{
 				$oPayment->distributeToPayables($aPayables);
 			}
 
 			$aDebitAdjustments = $this->getAdjustments(Logic_Adjustment::DEBIT, ADJUSTMENT_STATUS_APPROVED);
+			Log::getLog()->logIf(self::DEBUG_LOGGING, "  [+] ".count($aDebitAdjustments)." DR Adjustments");
 			foreach ( $aDebitAdjustments as $oAdjustment)
 			{
 				$oAdjustment->distributeToPayables($aPayables);
@@ -672,8 +682,8 @@ class Logic_Account implements DataLogic
 		Logic_Collectable_Payment::createRecords();
 		Logic_Collectable_Adjustment::createRecords();
 		Logic_Collectable_Transfer_Balance::createRecords();
-		Log::getLog()->logIf(self::DEBUG_LOGGING, "Distributing: ".Logic_Stopwatch::getInstance()->lap());
-		return array('iterations'=>$iIterations, 'Debit Collectables' =>count($this->getCollectables()), 'Credit Collectables'=> count($aCreditCollectable) , 'Credit Payments' =>count($aPayments) , 'Credit Adjustments'=> count($aAdjustments), 'Debit Payments' => count($aReversedPayments) , 'Debit Adjustments' =>count($aDebitAdjustments), 'Balance'=>$this->getPayableBalance() );
+		Log::getLog()->logIf(self::DEBUG_LOGGING, "Distributing ({$iIterations} iterations): ".Logic_Stopwatch::getInstance()->lap());
+		return array('iterations'=>$iIterations, 'Debit Collectables' =>count($this->getCollectables()), 'Credit Collectables'=> count($aCreditCollectables) , 'Credit Payments' =>count($aPayments) , 'Credit Adjustments'=> count($aAdjustments), 'Debit Payments' => count($aReversedPayments) , 'Debit Adjustments' =>count($aDebitAdjustments), 'Balance'=>$this->getPayableBalance() );
 
 	}
 
