@@ -652,12 +652,14 @@ class Logic_Account implements DataLogic
 			$aPayments = $this->getPayments(PAYMENT_NATURE_PAYMENT);
 			Log::getLog()->logIf(self::DEBUG_LOGGING, "  [+] ".count($aPayments)." CR Payments");
 			foreach ($aPayments as $oPayment) {
+				Log::getLog()->logIf(self::DEBUG_LOGGING, "    [+] #{$oPayment->id} (".$oPayment->getBalance()."/".$oPayment->getAmount().")");
 				$oPayment->distributeToPayables($aPayables);
 			}
 
 			$aAdjustments = $this->getAdjustments(Logic_Adjustment::CREDIT);
 			Log::getLog()->logIf(self::DEBUG_LOGGING, "  [+] ".count($aAdjustments)." CR Adjustments");
 			foreach ($aAdjustments as $oAdjustment) {
+				Log::getLog()->logIf(self::DEBUG_LOGGING, "    [+] #{$oAdjustment->id} (".$oAdjustment->getBalance()."/".$oAdjustment->getAmount().")");
 				$oAdjustment->distributeToPayables($aPayables);
 			}
 
@@ -665,12 +667,14 @@ class Logic_Account implements DataLogic
 			$aReversedPayments = $this->getPayments(PAYMENT_NATURE_REVERSAL);
 			Log::getLog()->logIf(self::DEBUG_LOGGING, "  [+] ".count($aReversedPayments)." DR Payments");
 			foreach($aReversedPayments as $oPayment) {
+				Log::getLog()->logIf(self::DEBUG_LOGGING, "    [+] #{$oPayment->id} (".$oPayment->getBalance()."/".$oPayment->getAmount().")");
 				$oPayment->distributeToPayables($aPayables);
 			}
 
 			$aDebitAdjustments = $this->getAdjustments(Logic_Adjustment::DEBIT, ADJUSTMENT_STATUS_APPROVED);
 			Log::getLog()->logIf(self::DEBUG_LOGGING, "  [+] ".count($aDebitAdjustments)." DR Adjustments");
 			foreach ( $aDebitAdjustments as $oAdjustment) {
+				Log::getLog()->logIf(self::DEBUG_LOGGING, "    [+] #{$oAdjustment->id} (".$oAdjustment->getBalance()."/".$oAdjustment->getAmount().")");
 				$oAdjustment->distributeToPayables($aPayables);
 			}
 
