@@ -157,7 +157,7 @@ Object.extend(FW.Script,
 				oScript.__bPathTestEventTriggered = true;
 				FW.testScriptPath(oScript.__sSrc);
 			}
-			setTimeout(FW.Script.waitForScript.bind(oScript), 0);
+			setTimeout(FW.Script.waitForScript.curry(oScript), 0);
 			return false;
 		}
 	},
