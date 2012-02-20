@@ -88,6 +88,7 @@ FW.ScriptRequest = Class.create({
 		}
 		this.bRequestStatus = bStatus;
 		if (this.bRequestStatus) {
+			console.log('Request #' + this.iRequestNumber + ' is ready');
 			this.callBack();
 		}
 	},
