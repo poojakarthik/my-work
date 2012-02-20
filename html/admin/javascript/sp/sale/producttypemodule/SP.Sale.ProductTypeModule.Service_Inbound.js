@@ -83,12 +83,12 @@ FW.Package.create('SP.Sale.ProductTypeModule.Service_Inbound', {
 	{
 		return this.object.configuration;
 	}
-});
+}, false);
 
 FW.Package.extend(SP.Sale.ProductTypeModule.Service_Inbound, SP.Sale.ProductTypeModule);
 //SP.Sale.ProductTypeModule.Service_Inbound.prototype = {};
 
-Object.extend(SP.Sale.ProductTypeModule.Service_Inbound, {
+FW.Package.extend(SP.Sale.ProductTypeModule.Service_Inbound, {
 
 	product_type_module: 'Service_Inbound',
 
@@ -101,3 +101,5 @@ Object.extend(SP.Sale.ProductTypeModule.Service_Inbound, {
 
 // Load the static data required by this module
 SP.Sale.ProductTypeModule.Service_Inbound.autoloadAndRegister();
+
+FW.Package.setDefined(SP.Sale.ProductTypeModule.Service_Inbound, true);

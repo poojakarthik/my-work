@@ -5,14 +5,12 @@ FW.Package.create('SP.Sale.ProductTypeModule.Service_Landline', {
 	advancedAddressCheckbox: null,
 	landlineAddressDetails: null,
 
-	initialize: function(obj)
-	{
+	initialize: function(obj) {
 		this.uniqueId = SP.Sale.ProductTypeModule.Service_Mobile.unique++;
 		SP.Sale.ProductTypeModule.prototype.initialize.bind(this)(obj);
 	},
 
-	_getBlankDetailsObject: function()
-	{
+	_getBlankDetailsObject: function() {
 		var saleAccount = SP.Sale.getInstance().getSaleAccount();
 		//saleAccount.updateFromGUI();
 
@@ -736,13 +734,13 @@ FW.Package.create('SP.Sale.ProductTypeModule.Service_Landline', {
 		return (intValue >= 2 && intValue <= 14);
 	}
 
-});
+}, false);
 
 
 FW.Package.extend(SP.Sale.ProductTypeModule.Service_Landline, SP.Sale.ProductTypeModule);
 //SP.Sale.ProductTypeModule.Service_Landline.prototype = {};
 
-Object.extend(SP.Sale.ProductTypeModule.Service_Landline, {
+FW.Package.extend(SP.Sale.ProductTypeModule.Service_Landline, {
 
 	product_type_module: 'Service_Landline',
 
@@ -925,7 +923,7 @@ Object.extend(SP.Sale.ProductTypeModule.Service_Landline, {
 
 });
 
-
-
 // Load the static data required by this module
 SP.Sale.ProductTypeModule.Service_Landline.autoloadAndRegister();
+
+FW.Package.setDefined(SP.Sale.ProductTypeModule.Service_Landline, true);

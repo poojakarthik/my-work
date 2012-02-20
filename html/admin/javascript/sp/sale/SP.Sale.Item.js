@@ -235,10 +235,9 @@ FW.Package.create('SP.Sale.Item', {
 		return this.object.product_detail;
 	}
 
-}
-);
+}, false);
 
-Object.extend(SP.Sale.Item, {
+FW.Package.extend(SP.Sale.Item, {
 
 	unique: 1,
 	instances: {},
@@ -284,4 +283,4 @@ Object.extend(SP.Sale.Item, {
 		}
 	}
 
-});
+}, true);

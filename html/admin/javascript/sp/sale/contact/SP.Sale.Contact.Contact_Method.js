@@ -77,11 +77,11 @@ FW.Package.create('SP.Sale.Contact.Contact_Method', {
 			}
 
 		}
-);
+, false);
 
-Object.extend(SP.Sale.Contact.Contact_Method, {
+FW.Package.extend(SP.Sale.Contact.Contact_Method, {
 	CONTACT_METHOD_TYPE_EMAIL: 		1,
 	CONTACT_METHOD_TYPE_FAX: 		2,
 	CONTACT_METHOD_TYPE_PHONE: 		3,
 	CONTACT_METHOD_TYPE_MOBILE: 	4
-});
+}, true);

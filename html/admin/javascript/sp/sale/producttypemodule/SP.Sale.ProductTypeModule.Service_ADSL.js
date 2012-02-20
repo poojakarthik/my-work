@@ -116,13 +116,13 @@ FW.Package.create('SP.Sale.ProductTypeModule.Service_ADSL', {
 
 
 
-});
+}, false);
 
-;
+
 FW.Package.extend(SP.Sale.ProductTypeModule.Service_ADSL, SP.Sale.ProductTypeModule);
 //SP.Sale.ProductTypeModule.Service_ADSL.prototype = {};
 
-Object.extend(SP.Sale.ProductTypeModule.Service_ADSL, {
+FW.Package.extend(SP.Sale.ProductTypeModule.Service_ADSL, {
 
 	product_type_module: 'Service_ADSL',
 
@@ -134,3 +134,5 @@ Object.extend(SP.Sale.ProductTypeModule.Service_ADSL, {
 
 // Load the static data required by this module
 SP.Sale.ProductTypeModule.Service_ADSL.autoloadAndRegister();
+
+FW.Package.setDefined(SP.Sale.ProductTypeModule.Service_ADSL, true);

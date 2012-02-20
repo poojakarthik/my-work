@@ -204,10 +204,9 @@ FW.Package.create('SP.Sale.Note', {
 	{
 		return (!this.object.id) ? '[ New Unsaved Note ]' : this.object.created_timestamp;
 	}
-}
-);
+}, false);
 
-Object.extend(SP.Sale.Note,
+FW.Package.extend(SP.Sale.Note,
 {
 	iNewNoteId	: 0,
 	oSaleNotes	: {},
@@ -314,4 +313,4 @@ Object.extend(SP.Sale.Note,
 		}
 		return aDataArray;
 	}
-});
+}, true);

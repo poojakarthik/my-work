@@ -1077,10 +1077,10 @@ FW.Package.create('SP.Sale', {
 		SP.Sale.JSONObject.setSaleNotes(this.getNotes());
 		return SP.Sale.JSONObject.getInstance();
 	}
-});
+}, false);
 
 // Static class variables are defined here
-Object.extend(SP.Sale,
+Package.extend(SP.Sale,
 		{
 			instance: null,
 			canCreateSale: false,
@@ -1143,4 +1143,4 @@ Object.extend(SP.Sale,
 				SP.Sale.historyPopup.recentre();
 			}
 		}
-);
+, true);

@@ -191,13 +191,13 @@ FW.Package.create('SP.Sale.ProductTypeModule.Service_Mobile', {
 		//alert(intValue);
 		return (intValue == 1);
 	}
-});
+}, false);
 
 
 FW.Package.extend(SP.Sale.ProductTypeModule.Service_Mobile, SP.Sale.ProductTypeModule);
 //SP.Sale.ProductTypeModule.Service_Mobile.prototype = {};
 
-Object.extend(SP.Sale.ProductTypeModule.Service_Mobile, {
+FW.Package.extend(SP.Sale.ProductTypeModule.Service_Mobile, {
 
 	product_type_module: 'Service_Mobile',
 
@@ -207,3 +207,5 @@ Object.extend(SP.Sale.ProductTypeModule.Service_Mobile, {
 
 });
 SP.Sale.ProductTypeModule.Service_Mobile.autoloadAndRegister();
+
+FW.Package.setDefined(SP.Sale.ProductTypeModule.Service_Mobile, true);

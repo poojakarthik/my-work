@@ -3,7 +3,7 @@
 Class to represent a Package, extends FW.Script
 *************************************************/
 
-FW.Package 				= Class.create();
+FW.Package = Class.create();
 
 
 /***********************************************************************************************************************************************************************
@@ -19,7 +19,7 @@ Object.extend(FW.Package,{
 	/*
 		-Creates a package definition on the DOM, and defines its member variables and methods
 		-only if the package has not already been created on the DOM is it newly created, and only if it has not yet been fully defined (indicated by __bDefined) will it be defined
-		param: 
+		param:
 		1 the package name;
 		2 package definition in JSON format.
 			the first two members in the package definition can optionally be the following:
