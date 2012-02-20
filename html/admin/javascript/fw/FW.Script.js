@@ -59,6 +59,10 @@ Object.extend(FW.Script,
 		returns: the new dom node if it did not yet exist, or the already existing one
 	*/
 	load: function(oScript) {
+		if (oScript == null) {
+			debugger;
+		}
+
 		if (FW.bLoadError) {
 			return;
 		}
