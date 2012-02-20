@@ -80,10 +80,6 @@ FW.PackageRequest = Class.create(FW.ScriptRequest, {
 		//we still need to check if all the requires of the requested packages were also already fully loaded
 		this.addNewRequires();
 		this.updateStatus();
-		if (this.bRequestStatus) {
-			this.callBack();
-		}
-
 	},
 	
 	/*

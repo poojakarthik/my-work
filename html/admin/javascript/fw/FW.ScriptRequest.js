@@ -61,9 +61,6 @@ FW.ScriptRequest = Class.create({
 			this.addNewRequires();
 		} else if (iEventType == FW.PackageRequest.BDEFINED) {
 			this.updateStatus();
-			if (this.bRequestStatus) {
-				this.callBack();
-			}
 		}
 	},
 
@@ -90,6 +87,9 @@ FW.ScriptRequest = Class.create({
 			}
 		}
 		this.bRequestStatus = bStatus;
+		if (this.bRequestStatus) {
+			this.callBack();
+		}
 	},
 
 	/*
