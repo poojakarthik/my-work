@@ -16,11 +16,6 @@ This class inherits from FW.PackageRequest and uses a lot of its functionality
 
 ***********************************************************/
 FW.PackageRequest = Class.create(FW.ScriptRequest, {
-	
-	initialize: function($super, fnCallback) {
-		$super(fnCallback);
-	},
-
 	/*
 		tests whether the package passed in as param is already part of the request
 	*/
@@ -69,8 +64,11 @@ FW.PackageRequest = Class.create(FW.ScriptRequest, {
 		this.aScriptObjects = aPackages;
 		for (var q=0; q < this.aScriptObjects.length; q++) {
 			//if the package is still in the process of being fully defined, add this request object as an observer to the current package
-			if (typeof(this.aScriptObjects[q].__aObservers)!='undefined') {
+			if (typeof this.aScriptObjects[q].__aObservers != 'undefined') {
 				this.aScriptObjects[q].__aObservers.push(this);
+				console.log('Request #' + this.iRequestNumber + ": Watching '"+ this.aScriptObjects[q].__sSrc +"'");
+			} else {
+				console.log('Request #' + this.iRequestNumber + ": Added '"+ this.aScriptObjects[q].__sSrc +"'");
 			}
 		}
 		
