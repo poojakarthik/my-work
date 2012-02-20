@@ -62,9 +62,10 @@ FW.PackageRequest = Class.create(FW.ScriptRequest, {
 	*/
 	addPackages: function(aPackages) {
 		this.aScriptObjects = aPackages;
+		debugger;
 		for (var q=0; q < this.aScriptObjects.length; q++) {
 			//if the package is still in the process of being fully defined, add this request object as an observer to the current package
-			if (typeof this.aScriptObjects[q].__aObservers != 'undefined') {
+			if (this.aScriptObjects[q].__aObservers) {
 				this.aScriptObjects[q].__aObservers.push(this);
 				console.log('Request #' + this.iRequestNumber + ": Watching '"+ this.aScriptObjects[q].__sSrc +"'");
 			} else {
