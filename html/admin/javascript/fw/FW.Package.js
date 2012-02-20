@@ -15,6 +15,19 @@ FW.Package = Class.create();
 
 
 Object.extend(FW.Package,{
+	PACKAGE_SPECIAL_PROPERTIES : [
+		'__bDefined',
+		'__sPackageName',
+		'__iLoadStartTime',
+		'__bPathTestEventTriggered',
+		'__aRequires',
+		'__aExtends',
+		'__sSrc',
+		'__aObservers',
+		'superclass',
+		'subclasses',
+		'addMethods'
+	],
 
 	/*
 		-Creates a package definition on the DOM, and defines its member variables and methods
@@ -417,8 +430,13 @@ Object.extend(FW.Package,{
 			bSetPackageToDefined = bSetDefined;
 		}
 
-		for (var property in oSource) {
+		/*for (var property in oSource) {
 			if (oSource.hasOwnProperty(property) && !oSource[property].__sPackageName && property!='__bDefined' && property!='__sPackageName' && property!='__iLoadStartTime' && property!='__bPathTestEventTriggered' && property!='__aRequires' && property!='__aExtends' && property!='__sSrc' && property!='__aObservers') {
+				oDestination[property] = oSource[property];
+			}
+		}*/
+		for (var property in oSource) {
+			if (oSource.hasOwnProperty(property) && FW.Package.PACKAGE_SPECIAL_PROPERTIES.indexOf(property) === -1) {
 				oDestination[property] = oSource[property];
 			}
 		}
