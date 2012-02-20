@@ -1080,7 +1080,7 @@ FW.Package.create('SP.Sale', {
 }, false);
 
 // Static class variables are defined here
-Package.extend(SP.Sale,
+FW.Package.extend(SP.Sale,
 		{
 			instance: null,
 			canCreateSale: false,
