@@ -436,7 +436,7 @@ Object.extend(FW.Package,{
 			}
 		}*/
 		for (var property in oSource) {
-			if (oSource.hasOwnProperty(property) && FW.Package.PACKAGE_SPECIAL_PROPERTIES.indexOf(property) === -1) {
+			if (oSource.hasOwnProperty(property) && FW.Package.PACKAGE_SPECIAL_PROPERTIES.indexOf(property) === -1 && oSource[property].__bDefined == null) {
 				oDestination[property] = oSource[property];
 			}
 		}
