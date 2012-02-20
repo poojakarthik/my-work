@@ -1,4 +1,4 @@
-Object.extend(SP.Sale.prototype, {
+FW.Package.extend(SP.Sale.prototype, {
 
 	buildGUI: function()
 	{
@@ -244,7 +244,7 @@ Object.extend(SP.Sale.prototype, {
 	}
 });
 
-Object.extend(SP.Sale.SaleAccount.prototype, {
+FW.Package.extend(SP.Sale.SaleAccount.prototype, {
 
 	buildGUI: function()
 	{
