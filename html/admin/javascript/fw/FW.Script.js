@@ -5,31 +5,26 @@ A Class to represent a Javascript file
 - It makes sure that the same script is not loaded more than once
 - It monitors the load process and launches a file path test if it takes too long
 ****************************************************/
-FW.Script 				= Class.create();
+FW.Script = Class.create();
 
-Object.extend(FW.Script,
-{
-
+Object.extend(FW.Script, {
 
 	/*
 	creates the script object, and kicks off its loading.
 	returns: a reference to the script object
 	*/
-	create: function(sSrc)
-	{
-
-			var oScript	= document.createElement('script');
-			oScript.type	= 'text/javascript';
-			FW.Script.addLoadEvent(oScript, FW.Script.onScriptLoad.bind(this, oScript));
-			oScript.src		= sSrc;
-			oScript.__sSrc = sSrc;
-			oScript.id = sSrc;
-			oScript.__bDefined = false;
-			oScript.iWaitTime = 0;
-			oScript.__bPathTestEventTriggered = false;
-			oScript.__aObservers = [];
-			return FW.Script.load(oScript);
-
+	create: function(sSrc) {
+		var oScript = document.createElement('script');
+		oScript.type = 'text/javascript';
+		FW.Script.addLoadEvent(oScript, FW.Script.onScriptLoad.bind(this, oScript));
+		oScript.src = sSrc;
+		oScript.__sSrc = sSrc;
+		oScript.id = sSrc;
+		oScript.__bDefined = false;
+		oScript.iWaitTime = 0;
+		oScript.__bPathTestEventTriggered = false;
+		oScript.__aObservers = [];
+		return FW.Script.load(oScript);
 	},
 
 	/*
@@ -64,13 +59,13 @@ Object.extend(FW.Script,
 		}
 
 		var oHead	= $$('head').first();
-		//test if a node with this ID already exists on the DOM		
+		//test if a node with this ID already exists on the DOM
 		var node = null;//$$(oScript.__sSrc);
 		var aScripts = document.getElementsByTagName('script');
 		for(i=0; i<aScripts.length; i++) {
 			if (aScripts[i].src.indexOf(oScript.__sSrc) != -1) {
 				node = aScripts[i];
-				break;			
+				break;
 			}
 		}
 		
@@ -80,7 +75,7 @@ Object.extend(FW.Script,
 			FW.Script.waitForScript(oScript);
 			oScript.__iLoadStartTime = new Date().getTime();
 			return oScript;
-		} else {		
+		} else {
 			// the node already exists, instead of adding it again, make this script object refer to it, and start monitoring its loading
 			//if this script does not have a .__defined property it was not dynamically loaded throught our framework, and we have to assume its loading has completed
 			if (typeof(node.__bDefined) == 'undefined') {
@@ -99,64 +94,49 @@ Object.extend(FW.Script,
 		var oldonload = oScript.onload;
 		var oldonready = oScript.onreadystatechange;
 		//first process the onload event, if none exists, simply set 'func' to be the one
-		if (typeof oScript.onload != 'function')
-		{
+		if (typeof oScript.onload != 'function') {
 			oScript.onload = fnCallback;
-		} 
-		//if one was already defined before, preserve that one by passing into the new one as oldonload, then add 'func'
-		else 
-		{
-			oScript.onload = function() 
-			{
-				if (oldonload)
-				{
+		} else {
+			//if one was already defined before, preserve that one by passing into the new one as oldonload, then add 'func'
+			oScript.onload = function() {
+				if (oldonload) {
 					oldonload();
 				}
 				fnCallback();
-			}
+			};
 		}
   
 		//do the same for the onreadystatechange event
-		if (typeof oScript.onreadystatechange != 'function')
-		{
+		if (typeof oScript.onreadystatechange != 'function') {
 			oScript.onreadystatechange = fnCallback;
-		}
-		else
-		{
-			oScript.onreadystatechange = function() 
-			{
-				if (oldonready)
-				{
+		} else {
+			oScript.onreadystatechange = function() {
+				if (oldonready) {
 					oldonready();
 				}
 				fnCallback();
-			}
+			};
 		}
 	},
 	
 	
 	/*
-		monitors the loading, and triggers an investigation into the script path when too much time has lapsed		
+		monitors the loading, and triggers an investigation into the script path when too much time has lapsed
 	*/
-	waitForScript:	function(oScript)
-	{
-		if (!FW.bLoadError)
-		{
-			if (oScript.__bDefined)
-			{
+	waitForScript:	function(oScript) {
+		if (!FW.bLoadError) {
+			if (oScript.__bDefined) {
 				return true;
 			}
 			//if this script has been loading for longer than the configured time lapse
 			//check the validity of the script path
-			if (new Date().getTime() - oScript.__iLoadStartTime>FW.iTimeLapseBeforeTriggerPathTest && !oScript.__bPathTestEventTriggered)
-			{
+			if (new Date().getTime() - oScript.__iLoadStartTime>FW.iTimeLapseBeforeTriggerPathTest && !oScript.__bPathTestEventTriggered) {
 				oScript.__bPathTestEventTriggered = true;
 				FW.testScriptPath(oScript.__sSrc);
 			}
 			setTimeout(FW.Script.waitForScript.curry(oScript), 0);
 			return false;
 		}
-	},
-
+	}
 
 });
