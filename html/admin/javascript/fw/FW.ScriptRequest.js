@@ -44,8 +44,8 @@ FW.ScriptRequest = Class.create({
 		if (!this.bRequestStatus && !FW.bLoadError) {
 			//test for request time. If acceptable time is exceeded, trigger error message
 			if (((new Date()).getTime() - this.iProcessStartTime) > FW.iTimeOut) {
-				// One last-ditch attempt at checking load status
-				this.updateStatus();
+				/*// One last-ditch attempt at checking load status
+				this.updateStatus();*/
 				if (!this.bRequestStatus) {
 					FW.throwLoadError('Package Load Error', '<b>A script request has timed out. <br>' + this.toString() +'<br>');
 					return false;

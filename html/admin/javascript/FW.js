@@ -97,7 +97,6 @@ FW.requireScript = function(mScripts, fnCallback, sRequestName) {
 	for (var i = 0; i < aScriptRequests.length; i++) {
 		var sCurrentScriptPath = FW.sJavaScriptPath+aScriptRequests[i];
 		oRequest.add(FW.Script.create(sCurrentScriptPath));
-
 	}
 };
 

@@ -102,7 +102,7 @@ Object.extend(FW.Package, {
 					return oPackage;
 				} else if (!oParentNode.__bDefined) {
 					//if the parent package has started loading, but has not yet been fully defined, wait.
-					setTimeout(fnCallback,5);
+					setTimeout(fnCallback, 5);
 					return oPackage;
 				} else {
 					//if the parent package has been fully defined, continue defining the current package
@@ -361,7 +361,7 @@ Object.extend(FW.Package, {
 				//if the path is found to be faulty a load error is generated
 				FW.testScriptPath(oPackage.__sSrc);
 			}
-			setTimeout(FW.Package.waitForPackage.bind(this, oPackage), 0);
+			setTimeout(FW.Package.waitForPackage.curry(oPackage), 0);
 			return false;
 		}
 	},
