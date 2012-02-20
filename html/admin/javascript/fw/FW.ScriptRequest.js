@@ -89,6 +89,9 @@ FW.ScriptRequest = Class.create({
 			}
 		}
 		this.bRequestStatus = bStatus;
+		if (this.bRequestStatus) {
+			debugger;
+		}
 	},
 
 	/*
