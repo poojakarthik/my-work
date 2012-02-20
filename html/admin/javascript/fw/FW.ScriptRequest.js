@@ -5,13 +5,12 @@ fnCallback will be invoked when all scripts have been set to dDefined
 Note: for package requests, the FW.PackageRequest class, which inherits from FW.ScriptRequest, must be instantiated
 
 ******************************************************************/
-FW.ScriptRequest		= Class.create(
-{
-	initialize: function(fnCallback)
-	{
+FW.ScriptRequest = Class.create({
+
+	initialize: function(fnCallback) {
 		this.fnCallback = fnCallback;
-	    this.bRequestStatus = false;
-	    this.aScriptObjects = [];
+		this.bRequestStatus = false;
+		this.aScriptObjects = [];
 		this.bRequestStartedProcessing = false;
 		this.iProcessStartTime = 0;
 		this.iRequestNumber = FW.iRequestNumber;
@@ -23,15 +22,13 @@ FW.ScriptRequest		= Class.create(
 		adds a new script to the current request, checks for duplicates and only adds oScript if it does not yet exist
 		works for both packages and scripts
 	*/
-	add: function(oScript)
-	{
-			if (!this.exists(oScript))
-			{
-				this.aScriptObjects.push(oScript);
-				if (typeof(oScript.__aObservers)!='undefined')
-						oScript.__aObservers.push(this);
+	add: function(oScript) {
+		if (!this.exists(oScript)) {
+			this.aScriptObjects.push(oScript);
+			if (typeof(oScript.__aObservers) != 'undefined') {
+				oScript.__aObservers.push(this);
 			}
-
+		}
 	},
 	
 	/*
@@ -87,12 +84,8 @@ FW.ScriptRequest		= Class.create(
 	updateStatus: function() {
 		var bStatus= true;
 		for (var q=0; q < this.aScriptObjects.length; q++) {
-			if (bStatus) {
-				if (this.aScriptObjects[q].__bDefined) {
-					bStatus = true;
-				} else {
-					bStatus = false;
-				}
+			if (bStatus && !this.aScriptObjects[q].__bDefined) {
+				bStatus = false;
 			}
 		}
 		this.bRequestStatus = bStatus;
@@ -112,35 +105,27 @@ FW.ScriptRequest		= Class.create(
 	/*
 		invokes the request callback, and cleans up
 	*/
-	callBack: function()
-	{
-		
+	callBack: function() {
 		//cleaning up: deregister this request as observer of its scripts/packages and where appropriate, clean up the script/package objects by stripping its load members off it
-		if (!FW.bDebug)
-		{
+		if (!FW.bDebug) {
 			FW.endLoading();
-			for (var q=0;q<this.aScriptObjects.length;q++)
-			{
-				if(typeof(this.aScriptObjects[q].__aObservers) == 'object')
-				{
+			for (var q=0; q < this.aScriptObjects.length; q++) {
+				if (typeof this.aScriptObjects[q].__aObservers == 'object') {
 					//we're calling the deregisterObserver and deleteLoadMember methods in FW.Package, but they will work for plain script objects as well......
 					FW.Package.deregisterObserver(this.aScriptObjects[q],this);
 					//if no more observers left for this script/package we may delete its members that only serve a purpose when loading the script/package
-					if (this.nullArray(this.aScriptObjects[q].__aObservers))
+					if (this.nullArray(this.aScriptObjects[q].__aObservers)) {
 						FW.Package.deleteLoadMembers(this.aScriptObjects[q]);
-
+					}
 				}
-			}		
+			}
 		}
 		
-		if (FW.bDebug)
+		if (FW.bDebug) {
 			FW.displayAlert('perfomance message', 'The JS load for this request ('+ this.iRequestNumber + ') took: ' + (new Date().getTime() - this.iProcessStartTime)/1000 + 'seconds');
-			
-			
+		}
 		
 		this.fnCallback();
-		
-		
 	},
 	
 	/*
@@ -148,15 +133,13 @@ FW.ScriptRequest		= Class.create(
 		used to decide is a script/package has any observers left
 		this method should probably be moved to another place
 	*/
-	nullArray: function(array)
-	{
-		for (var a=0;a<array.length;a++)
-		{
-			if (array[a]!=null)
+	nullArray: function(array) {
+		for (var a=0;a<array.length;a++) {
+			if (array[a] != null) {
 				return false;
+			}
 		}
-		return true;	
-	
+		return true;
 	}
 
 });
