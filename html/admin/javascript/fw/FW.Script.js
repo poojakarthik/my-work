@@ -35,20 +35,16 @@ Object.extend(FW.Script,
 	/*
 		to notify registered observers of the bDefined == TRUE state
 	*/
-	notify: function(oScript)
-	{
-		for (var i=0;i<oScript.__aObservers.length;i++)
-		{
+	notify: function(oScript) {
+		for (var i=0; i < oScript.__aObservers.length; i++) {
 			oScript.__aObservers[i].notify(FW.PackageRequest.BDEFINED);
 		}
-
 	},
 
 	/*
-		the method invoked through the 'onLoad' event	
+		the method invoked through the 'onLoad' event
 	*/
-	onScriptLoad:	 function(oScript)
-	{
+	onScriptLoad: function(oScript) {
 		oScript.__bDefined = true;
 		FW.Script.notify(oScript);
 	},

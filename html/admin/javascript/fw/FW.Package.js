@@ -166,15 +166,12 @@ Object.extend(FW.Package,{
 		notifies all package request objects when 'package' has changed state in terms of:
 			having its parent package or required packaged defined, in which case iEventType must be FW.PackageRequest.NEWREQUIRE
 			having set its status to bDefined, in which case iEventType must be FW.PackageRequest.BDEFINED
-	 */
-	 notifyObservers: function(oPackage, iEventType)
-	 {			
-		for (var i=0;i<oPackage.__aObservers.length;i++)
-		{
-			oPackage.__aObservers[i].notify(iEventType);		
-		
-		} 	 
-	 },
+	*/
+	notifyObservers: function(oPackage, iEventType) {
+		for (var i=0; i < oPackage.__aObservers.length; i++) {
+			oPackage.__aObservers[i].notify(iEventType);
+		}
+	},
 
 	/*
 		loads the parent Package of the currently loading package, in order to successfully implement package inheritance
@@ -262,9 +259,10 @@ Object.extend(FW.Package,{
 		just after the callback in the oPackage request object is executed, the request object will deregister itself as an observer
 		When there are no observers left, the request object will call FW.Package.deleteLoadMembers
 	*/
-	deregisterObserver: function(oPackage, oObserver)
-	{
-		oPackage.__aObservers[oPackage.__aObservers.indexOf(oObserver)]=null;	
+	deregisterObserver: function(oPackage, oObserver) {
+		if (oPackage.__aObservers.indexOf(oObserver) > -1) {
+			oPackage.__aObservers.splice(oPackage.__aObservers.indexOf(oObserver), 1);
+		}
 	},
 	
 	/*
