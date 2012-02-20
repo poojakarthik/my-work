@@ -58,42 +58,36 @@ Object.extend(FW.Script,
 		will kick of the DOM operation, only if a script with this script source does not yet exist
 		returns: the new dom node if it did not yet exist, or the already existing one
 	*/
-	load: function(oScript)
-	{
-		if (FW.bLoadError)
+	load: function(oScript) {
+		if (FW.bLoadError) {
 			return;
+		}
 
 		var oHead	= $$('head').first();
 		//test if a node with this ID already exists on the DOM		
 		var node = null;//$$(oScript.__sSrc);
 		var aScripts = document.getElementsByTagName('script');
-		for(i=0;i<aScripts.length;i++)
-		{
-			if (aScripts[i].src.indexOf(oScript.__sSrc)!=-1)
-			{
+		for(i=0; i<aScripts.length; i++) {
+			if (aScripts[i].src.indexOf(oScript.__sSrc) != -1) {
 				node = aScripts[i];
 				break;			
 			}
-		
 		}
 		
 		//if no such node exists, append this script to the document header
-		if( !node)
-		{
+		if(!node) {
 			oHead.appendChild(oScript);
 			FW.Script.waitForScript(oScript);
 			oScript.__iLoadStartTime = new Date().getTime();
 			return oScript;
-		}
-		//if the node already exists, instead of adding it again, make this script object refer to it, and start monitoring its loading
-		else
-		{		
+		} else {		
+			// the node already exists, instead of adding it again, make this script object refer to it, and start monitoring its loading
 			//if this script does not have a .__defined property it was not dynamically loaded throught our framework, and we have to assume its loading has completed
-			if (typeof(node.__bDefined) == 'undefined')
+			if (typeof(node.__bDefined) == 'undefined') {
 				node.__bDefined = true;
+			}
 			return node;
 		}
-
 	},
 
 	/*
