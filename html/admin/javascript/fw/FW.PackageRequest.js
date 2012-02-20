@@ -101,33 +101,26 @@ FW.PackageRequest		= Class.create(FW.ScriptRequest,
 		//we still need to check if all the requires of the requested packages were also already fully loaded
 		this.addNewRequires();
 		this.updateStatus();
-		if (this.bRequestStatus)
-		{
+		if (this.bRequestStatus) {
 			this.callBack();
-		}	
+		}
 
 	},
 	
 	/*
 	Utility method
 	*/
-	toString: function()
-	{
-		var sString = 'Request Details for request: ' + this.iRequestNumber + ' ';
-		for (var q=0;q<this.aScriptObjects.length;q++)
-		{
-			sString += this.aScriptObjects[q].__sPackageName+ ', status: ' + this.aScriptObjects[q].__bDefined + ';\n';
+	toString: function() {
+		var sString = 'Request Details for request: ' + this.iRequestNumber + ':\n ';
+		for (var q=0; q < this.aScriptObjects.length; q++) {
+			sString += '['+this.aScriptObjects[q].__sPackageName+ ']: ' + (this.aScriptObjects[q].__bDefined ? 'defined' : 'not defined') + ';\n';
 		}
 		return sString;
-	},
-
-	 
-
+	}
 });
 
-Object.extend(FW.PackageRequest,{
-
-				NEWREQUIRE: 1,
-				BDEFINED: 2,	
-});	
+Object.extend(FW.PackageRequest, {
+	NEWREQUIRE: 1,
+	BDEFINED: 2
+});
 
