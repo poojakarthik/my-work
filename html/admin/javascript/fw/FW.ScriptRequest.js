@@ -37,29 +37,20 @@ FW.ScriptRequest		= Class.create(
 	/*
 		this method monitors the processing time for this request, and makes it time out with a load error if too much time has lapsed(as specified in FW.iTimeOut)
 	*/
-	monitorRequest: function()
-	{
-	
-		if (!this.bRequestStartedProcessing)
-		{
+	monitorRequest: function() {
+		if (!this.bRequestStartedProcessing) {
 			this.bRequestStartedProcessing = true;
 			this.iProcessStartTime = new Date().getTime();
 		}
 		
-		if (!this.bRequestStatus  && !FW.bLoadError)
-		{
-
-		  //test for request time. If acceptable time is exceeded, trigger error message
-		   if ((new Date().getTime()-this.iProcessStartTime)>(FW.iTimeOut))
-		   {
-			 FW.throwLoadError('Package Load Error', '<b>A script request has timed out. <br>' + this.toString() +'<br>');
-			return false;
-		   }			
-
-			setTimeout(this.monitorRequest.bind(this),200);
-		
+		if (!this.bRequestStatus && !FW.bLoadError) {
+			//test for request time. If acceptable time is exceeded, trigger error message
+			if (((new Date()).getTime() - this.iProcessStartTime) > FW.iTimeOut) {
+				FW.throwLoadError('Package Load Error', '<b>A script request has timed out. <br>' + this.toString() +'<br>');
+				return false;
+			}
+			setTimeout(this.monitorRequest.bind(this), 200);
 		}
-	
 	},
 	
 	/*
@@ -67,75 +58,53 @@ FW.ScriptRequest		= Class.create(
 			- the load of new 'requires' has been initialised by a package object, and these must be added to this request
 			- the package has been set to bDefined == TRUE, in which case the current request should run an update status event to see if it is ready for callback
 	*/
-	notify: function(iEventType)
-	{
-		
-		if (iEventType == FW.PackageRequest.NEWREQUIRE)
-		{
+	notify: function(iEventType) {
+		if (iEventType == FW.PackageRequest.NEWREQUIRE) {
 			this.addNewRequires();
-					
-		}
-		else if (iEventType == FW.PackageRequest.BDEFINED)
-		{
-			
+		} else if (iEventType == FW.PackageRequest.BDEFINED) {
 			this.updateStatus();
-			if (this.bRequestStatus)
-			{
-				this.callBack();			
-			}		
-		}	
+			if (this.bRequestStatus) {
+				this.callBack();
+			}
+		}
 	},
 
 	/*
 		works for both packages and scripts
 	*/
-	exists: function(oScript)
-	{
-		for (var q=0;q<this.aScriptObjects.length;q++)
-		{
-			if (this.aScriptObjects[q].src ==oScript.src)
-			{
+	exists: function(oScript) {
+		for (var q=0; q < this.aScriptObjects.length; q++) {
+			if (this.aScriptObjects[q].src ==oScript.src) {
 				return true;
 			}
-
 		}
 		return false;
-
 	},
 
 	/*
 	Iterates over all the script objects that are part of this request to check their __bDefined status, and sets bRequestStatus accordingly
 	*/
-	updateStatus: function()
-	{
+	updateStatus: function() {
 		var bStatus= true;
-		for (var q=0;q<this.aScriptObjects.length;q++)
-		{
-			if (bStatus)
-			{
-					if (this.aScriptObjects[q].__bDefined)
-					{
-
-						bStatus = true;
-					}
-					else
-					{
-						bStatus = false;
-					}
+		for (var q=0; q < this.aScriptObjects.length; q++) {
+			if (bStatus) {
+				if (this.aScriptObjects[q].__bDefined) {
+					bStatus = true;
+				} else {
+					bStatus = false;
+				}
 			}
 		}
-		this.bRequestStatus =  bStatus;
+		this.bRequestStatus = bStatus;
 	},
 
 	/*
 	Utility method
 	*/
-	toString: function()
-	{
-		var sString = 'Request Details for request: ' + this.iRequestNumber + ' ';
-		for (var q=0;q<this.aScriptObjects.length;q++)
-		{
-			sString += this.aScriptObjects[q].__src+ ', status: ' + this.aScriptObjects[q].__bDefined + ';\n';
+	toString: function() {
+		var sString = 'Request Details for request: ' + this.iRequestNumber + ':\n ';
+		for (var q=0; q < this.aScriptObjects.length; q++) {
+			sString += '['+this.aScriptObjects[q].__src+ ']: ' + (this.aScriptObjects[q].__bDefined ? 'defined' : 'not defined') + ';\n';
 		}
 		return sString;
 	},
