@@ -145,6 +145,7 @@ Object.extend(FW.Package, {
 		performs all the actions related to setting a packge to defined. Currently this only involves notifying the observing package request objects.
 	*/
 	setDefined: function (oPackage) {
+		debugger;
 		oPackage.__bDefined = true;
 		FW.Package.notifyObservers(oPackage, FW.PackageRequest.BDEFINED);
 	},
