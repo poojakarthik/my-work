@@ -296,7 +296,7 @@ Object.extend(FW.Package, {
 				}
 			} else {
 				//if it is a 'one token' package (eg SP)
-				if (aPackages.indexof(packageToPush) === -1) {
+				if (aPackages.indexOf(packageToPush) === -1) {
 					aPackages.push(aRequiredPackages[i]);
 					aPackageObjects.push(FW.Package.load(aRequiredPackages[i]));
 				}
