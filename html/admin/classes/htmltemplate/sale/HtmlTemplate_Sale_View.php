@@ -157,11 +157,20 @@ class HtmlTemplate_Sale_View extends FlexHtmlTemplate
 		_sale = new SP.Sale($ID('sale_panel'), <?=$saleId?>, '<?=$bodyClassName?>');
 	}
 
-	function initiateJS()
-	{
+	function initiateJS() {
 		//var sSPOverride = 'sp/flex_sale.js';
-		var loadSPOverride = function(){FW.requireScript(['sp/flex_sale.js', 'json.js'], initiateSale);};
-		FW.requirePackage(['SP.Sale', 'SP.Sale.ProductTypeModule','SP.Sale.ProductTypeModule.Service_Mobile','SP.Sale.ProductTypeModule.Service_Landline','SP.Sale.ProductTypeModule.Service_Inbound','SP.Sale.ProductTypeModule.Service_ADSL'], loadSPOverride);
+		FW.requirePackage(
+			[
+				'SP',
+				'SP.Sale',
+				'SP.Sale.ProductTypeModule',
+				'SP.Sale.ProductTypeModule.Service_Mobile',
+				'SP.Sale.ProductTypeModule.Service_Landline',
+				'SP.Sale.ProductTypeModule.Service_Inbound',
+				'SP.Sale.ProductTypeModule.Service_ADSL'
+			],
+			FW.requireScript.curry(['sp/flex_sale.js', 'json.js'], initiateSale)
+		);
 	}
 
 	Event.observe(window, 'load', initiateJS, true);
