@@ -40,6 +40,7 @@ FW.ScriptRequest = Class.create({
 			this.iProcessStartTime = new Date().getTime();
 		}
 		
+		this.updateStatus();
 		if (!this.bRequestStatus && !FW.bLoadError) {
 			//test for request time. If acceptable time is exceeded, trigger error message
 			if (((new Date()).getTime() - this.iProcessStartTime) > FW.iTimeOut) {
@@ -89,9 +90,6 @@ FW.ScriptRequest = Class.create({
 			}
 		}
 		this.bRequestStatus = bStatus;
-		if (this.bRequestStatus) {
-			debugger;
-		}
 	},
 
 	/*
