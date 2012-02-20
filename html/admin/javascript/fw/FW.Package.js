@@ -325,8 +325,8 @@ Object.extend(FW.Package, {
 			//derive the file path of the package definition .js file
 			var sCurrentScriptPath = FW.sJavaScriptPath;
 			var aPackageTokens = sPackage.split('.');
-			for (var x = 0; x < aPackageTokens.length-1; x++) {
-				sCurrentScriptPath	+= aPackageTokens[x].toLowerCase()+'/';
+			for (var x = 0; x < aPackageTokens.length - 1; x++) {
+				sCurrentScriptPath += aPackageTokens[x].toLowerCase() + '/';
 			}
 			sCurrentScriptPath = sCurrentScriptPath + sPackage + '.js';
 
@@ -356,7 +356,7 @@ Object.extend(FW.Package, {
 				return true;
 			}
 			//if this script has been loading for longer than the configured max time, check the validity of the script path
-			if (new Date().getTime() - oPackage.__iLoadStartTime>FW.iTimeLapseBeforeTriggerPathTest && !oPackage.__bPathTestEventTriggered) {
+			if ((new Date().getTime() - oPackage.__iLoadStartTime > FW.iTimeLapseBeforeTriggerPathTest) && !oPackage.__bPathTestEventTriggered) {
 				oPackage.__bPathTestEventTriggered = true;
 				//if the path is found to be faulty a load error is generated
 				FW.testScriptPath(oPackage.__sSrc);
@@ -372,8 +372,8 @@ Object.extend(FW.Package, {
 		this should be used instead of Object.exted for the FW to work properly
 	*/
 	extend: function(oDestination, oSource, bSetDefined) {
-		if (typeof oDestination !='function') {
-			debugger;
+		if (typeof oDestination != 'function') {
+			//debugger;
 			FW.throwLoadError(
 				'Package Definition Error',
 				'FW.Package.extend requires function, but ' + (typeof oDestination) + ' was passed as parameter(' + oDestination + ')'

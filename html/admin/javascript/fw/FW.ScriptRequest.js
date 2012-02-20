@@ -25,7 +25,7 @@ FW.ScriptRequest = Class.create({
 	add: function(oScript) {
 		if (!this.exists(oScript)) {
 			this.aScriptObjects.push(oScript);
-			if (typeof(oScript.__aObservers) != 'undefined') {
+			if (typeof oScript.__aObservers != 'undefined') {
 				oScript.__aObservers.push(this);
 			}
 		}
@@ -44,10 +44,15 @@ FW.ScriptRequest = Class.create({
 		if (!this.bRequestStatus && !FW.bLoadError) {
 			//test for request time. If acceptable time is exceeded, trigger error message
 			if (((new Date()).getTime() - this.iProcessStartTime) > FW.iTimeOut) {
-				FW.throwLoadError('Package Load Error', '<b>A script request has timed out. <br>' + this.toString() +'<br>');
-				return false;
+				// One last-ditch attempt at checking load status
+				this._updateStatus();
+				if (!this.bRequestStatus) {
+					FW.throwLoadError('Package Load Error', '<b>A script request has timed out. <br>' + this.toString() +'<br>');
+					return false;
+				}
+			} else {
+				setTimeout(this.monitorRequest.bind(this), 200);
 			}
-			setTimeout(this.monitorRequest.bind(this), 200);
 		}
 	},
 	
