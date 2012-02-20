@@ -40,6 +40,7 @@ Object.extend(FW.Script, {
 		the method invoked through the 'onLoad' event
 	*/
 	onScriptLoad: function(oScript) {
+		console.log("Script '" + oScript.__sSrc + "' ready");
 		oScript.__bDefined = true;
 		FW.Script.notify(oScript);
 	},
@@ -130,7 +131,7 @@ Object.extend(FW.Script, {
 			}
 			//if this script has been loading for longer than the configured time lapse
 			//check the validity of the script path
-			if (new Date().getTime() - oScript.__iLoadStartTime>FW.iTimeLapseBeforeTriggerPathTest && !oScript.__bPathTestEventTriggered) {
+			if ((new Date().getTime() - oScript.__iLoadStartTime) > FW.iTimeLapseBeforeTriggerPathTest && !oScript.__bPathTestEventTriggered) {
 				oScript.__bPathTestEventTriggered = true;
 				FW.testScriptPath(oScript.__sSrc);
 			}
