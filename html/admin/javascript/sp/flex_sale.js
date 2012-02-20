@@ -1,7 +1,7 @@
 
 FW.requirePackage(['SP.Sale', 'SP.Sale.SaleAccount'], function () {
 
-	FW.Package.extend(SP.Sale.prototype, {
+	Object.extend(SP.Sale.prototype, {
 
 		buildGUI: function()
 		{
@@ -247,7 +247,7 @@ FW.requirePackage(['SP.Sale', 'SP.Sale.SaleAccount'], function () {
 		}
 	});
 
-	FW.Package.extend(SP.Sale.SaleAccount.prototype, {
+	Object.extend(SP.Sale.SaleAccount.prototype, {
 
 		buildGUI: function()
 		{

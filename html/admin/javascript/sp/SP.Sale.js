@@ -8,15 +8,13 @@ FW.Package.create('SP.Sale', {
 	newSale: false,
 	remote$listProductTypesForVendor: null,
 	remote$listProductsForProductTypeModuleAndVendor: null,
-	contacts: new Array(),
+	contacts: [],
 	saleAccount: null,
 	saleItems: null,
 
-	initialize: function(container, saleId, initialStyle)
-	{
+	initialize: function(container, saleId, initialStyle) {
 		SP.Sale.startLoading();
-		this.object =
-		{
+		this.object = {
 			id: null,
 			sale_type_id: null, //FK to sale_type table
 			sale_status_id: null,
@@ -35,22 +33,15 @@ FW.Package.create('SP.Sale', {
 		this.saleItems = [];
 		this.elementGroups = {};
 		this.contacts = [];
-		if (saleId == undefined || saleId == null)
-		{
+		if (saleId == undefined || saleId == null) {
 			this.newSale = true;
 
-			if (!FW.bDebug)
-			{
+			if (!FW.bDebug) {
 				this.buildPageForObject(this.object);
-			}
-			else
-			{
+			} else {
 				this.buildPageForObject(new SP.TestSale());
-
 			}
-		}
-		else
-		{
+		} else {
 			var onLoadFunc = this.buildPageForObject.bind(this);
 			var remote = SalesPortal.getRemoteFunction('Sale', 'load', onLoadFunc);
 			remote(saleId);
@@ -1080,8 +1071,7 @@ FW.Package.create('SP.Sale', {
 }, false);
 
 // Static class variables are defined here
-FW.Package.extend(SP.Sale,
-		{
+FW.Package.extend(SP.Sale, {
 			instance: null,
 			canCreateSale: false,
 			canCancelSale: false,
