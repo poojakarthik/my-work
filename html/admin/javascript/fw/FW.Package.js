@@ -422,8 +422,12 @@ Object.extend(FW.Package,{
 		this should be used instead of Object.exted for the FW to work properly
 	*/
 	extend: function(oDestination, oSource, bSetDefined) {
-		if (typeof(oDestination)!='function') {
-			FW.throwLoadError('Package Definition Error', 'FW.Package.extend requires object, but ' + typeof(oDestination) + ' was passed as parameter(' + oDestination + ')');
+		if (typeof oDestination !='function') {
+			debugger;
+			FW.throwLoadError(
+				'Package Definition Error',
+				'FW.Package.extend requires function, but ' + (typeof oDestination) + ' was passed as parameter(' + oDestination + ')'
+			);
 		}
 		var bSetPackageToDefined = false;
 		if (typeof(bSetDefined) == 'boolean') {
@@ -464,7 +468,9 @@ Object.extend(FW.Package,{
 
 		return false;
 
+	},
+
+	observeDefined : function (mPackage) {
+
 	}
-	
-	
 });
