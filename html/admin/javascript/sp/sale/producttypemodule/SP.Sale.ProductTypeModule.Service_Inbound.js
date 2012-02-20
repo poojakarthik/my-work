@@ -85,21 +85,24 @@ FW.Package.create('SP.Sale.ProductTypeModule.Service_Inbound', {
 	}
 }, false);
 
-FW.Package.extend(SP.Sale.ProductTypeModule.Service_Inbound, SP.Sale.ProductTypeModule);
-//SP.Sale.ProductTypeModule.Service_Inbound.prototype = {};
+FW.requirePackage('SP.Sale.ProductTypeModule', function () {
 
-FW.Package.extend(SP.Sale.ProductTypeModule.Service_Inbound, {
+	FW.Package.extend(SP.Sale.ProductTypeModule.Service_Inbound, SP.Sale.ProductTypeModule);
+	//SP.Sale.ProductTypeModule.Service_Inbound.prototype = {};
 
-	product_type_module: 'Service_Inbound',
+	FW.Package.extend(SP.Sale.ProductTypeModule.Service_Inbound, {
 
-	unique: 1,
+		product_type_module: 'Service_Inbound',
 
-	// Nothing to autoload from server - this prevents a wasted request for nothing
-	staticData: {}
+		unique: 1,
 
+		// Nothing to autoload from server - this prevents a wasted request for nothing
+		staticData: {}
+
+	});
+
+	// Load the static data required by this module
+	SP.Sale.ProductTypeModule.Service_Inbound.autoloadAndRegister();
+
+	FW.Package.setDefined(SP.Sale.ProductTypeModule.Service_Inbound, true);
 });
-
-// Load the static data required by this module
-SP.Sale.ProductTypeModule.Service_Inbound.autoloadAndRegister();
-
-FW.Package.setDefined(SP.Sale.ProductTypeModule.Service_Inbound, true);

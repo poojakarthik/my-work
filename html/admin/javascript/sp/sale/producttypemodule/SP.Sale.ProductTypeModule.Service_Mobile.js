@@ -194,18 +194,21 @@ FW.Package.create('SP.Sale.ProductTypeModule.Service_Mobile', {
 }, false);
 
 
-FW.Package.extend(SP.Sale.ProductTypeModule.Service_Mobile, SP.Sale.ProductTypeModule);
-//SP.Sale.ProductTypeModule.Service_Mobile.prototype = {};
+FW.requirePackage('SP.Sale.ProductTypeModule', function () {
 
-FW.Package.extend(SP.Sale.ProductTypeModule.Service_Mobile, {
+	FW.Package.extend(SP.Sale.ProductTypeModule.Service_Mobile, SP.Sale.ProductTypeModule);
+	//SP.Sale.ProductTypeModule.Service_Mobile.prototype = {};
 
-	product_type_module: 'Service_Mobile',
+	FW.Package.extend(SP.Sale.ProductTypeModule.Service_Mobile, {
 
-	unique: 1//,
+		product_type_module: 'Service_Mobile',
 
-	//staticData: {} // Can use states from Sale.state which is populated by default
+		unique: 1//,
 
+		//staticData: {} // Can use states from Sale.state which is populated by default
+
+	});
+	SP.Sale.ProductTypeModule.Service_Mobile.autoloadAndRegister();
+
+	FW.Package.setDefined(SP.Sale.ProductTypeModule.Service_Mobile, true);
 });
-SP.Sale.ProductTypeModule.Service_Mobile.autoloadAndRegister();
-
-FW.Package.setDefined(SP.Sale.ProductTypeModule.Service_Mobile, true);

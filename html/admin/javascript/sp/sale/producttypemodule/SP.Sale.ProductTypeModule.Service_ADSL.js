@@ -119,20 +119,23 @@ FW.Package.create('SP.Sale.ProductTypeModule.Service_ADSL', {
 }, false);
 
 
-FW.Package.extend(SP.Sale.ProductTypeModule.Service_ADSL, SP.Sale.ProductTypeModule);
-//SP.Sale.ProductTypeModule.Service_ADSL.prototype = {};
+FW.requirePackage('SP.Sale.ProductTypeModule', function () {
 
-FW.Package.extend(SP.Sale.ProductTypeModule.Service_ADSL, {
+	FW.Package.extend(SP.Sale.ProductTypeModule.Service_ADSL, SP.Sale.ProductTypeModule);
+	//SP.Sale.ProductTypeModule.Service_ADSL.prototype = {};
 
-	product_type_module: 'Service_ADSL',
+	FW.Package.extend(SP.Sale.ProductTypeModule.Service_ADSL, {
 
-	unique: 1,
+		product_type_module: 'Service_ADSL',
 
-	staticData: {} // Can use states from Sale.state which is populated by default
+		unique: 1,
 
+		staticData: {} // Can use states from Sale.state which is populated by default
+
+	});
+
+	// Load the static data required by this module
+	SP.Sale.ProductTypeModule.Service_ADSL.autoloadAndRegister();
+
+	FW.Package.setDefined(SP.Sale.ProductTypeModule.Service_ADSL, true);
 });
-
-// Load the static data required by this module
-SP.Sale.ProductTypeModule.Service_ADSL.autoloadAndRegister();
-
-FW.Package.setDefined(SP.Sale.ProductTypeModule.Service_ADSL, true);
