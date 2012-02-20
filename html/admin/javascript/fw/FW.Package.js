@@ -408,23 +408,21 @@ Object.extend(FW.Package,{
 		it does not copy the special __ members from source to destination
 		this should be used instead of Object.exted for the FW to work properly
 	*/
-	extend: function(oDestination, oSource, bSetDefined)
-	{
-		if (typeof(oDestination)!='function')
+	extend: function(oDestination, oSource, bSetDefined) {
+		if (typeof(oDestination)!='function') {
 			FW.throwLoadError('Package Definition Error', 'FW.Package.extend requires object, but ' + typeof(oDestination) + ' was passed as parameter(' + oDestination + ')');
+		}
 		var bSetPackageToDefined = false;
-		if (typeof(bSetDefined) == 'boolean')
-		{
+		if (typeof(bSetDefined) == 'boolean') {
 			bSetPackageToDefined = bSetDefined;
 		}
 
-		for (var property in oSource)
-		{			
-			if (property!='__bDefined' && property!='__sPackageName' && property!='__iLoadStartTime' && property!='__bPathTestEventTriggered' && property!='__aRequires' && property!='__aExtends' && property!='__sSrc' && property!='__aObservers')
+		for (var property in oSource) {
+			if (oSource.hasOwnProperty(property) && !oSource[property].__sPackageName && property!='__bDefined' && property!='__sPackageName' && property!='__iLoadStartTime' && property!='__bPathTestEventTriggered' && property!='__aRequires' && property!='__aExtends' && property!='__sSrc' && property!='__aObservers') {
 				oDestination[property] = oSource[property];
+			}
 		}
-		if (bSetPackageToDefined)
-		{
+		if (bSetPackageToDefined) {
 			FW.Package.setDefined(oDestination);
 		}
 		return oDestination;
