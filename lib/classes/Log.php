@@ -170,6 +170,10 @@ class Log
 			throw new Exception("Log {$strLogAlias} has not been defined");
 		}
 	}
+
+	public static function get($sLogAlias=null) {
+		return self::getLog($sLogAlias);
+	}
 	
 	/**
 	 * logExists()

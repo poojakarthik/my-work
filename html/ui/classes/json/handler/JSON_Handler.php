@@ -35,6 +35,9 @@ class JSON_Handler {
 			if ($bIsCatchable) {
 				// The handler implements Catchable, build an exception response
 				$aResponse = self::_buildExceptionResponse($oException);
+			} else {
+				// Non-catchable exceptions should be passed through
+				throw $oException;
 			}
 		}
 		

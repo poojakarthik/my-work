@@ -440,7 +440,7 @@ final class Flex
 			$strClassPath = MODULE_BASE_DIR . "module";
 			$strClassName = substr($strClassName, 6);
 		}
-		elseif (defined('TEMPLATE_BASE_DIR'))
+		elseif (defined('TEMPLATE_BASE_DIR') && strpos($strClassName, 'Template') !== false)
 		{
 			$arrClassName = explode("Template", $strClassName, 2);
 			$strClassPath = TEMPLATE_BASE_DIR . strtolower($arrClassName[0]) . "_template";

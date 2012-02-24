@@ -2,89 +2,49 @@
 //debugger;
 
 // CommonJS Modules/2.0d8 Browser Module Loader Plugin for Flex
+// We assume that Prototype has been loaded
 (function (NS) {
-	var	_global	= window || global;
-
-	var	MODULE_URL_BASE	= '../admin/reflex_json.php/Javascript_Module/get';
+	var	MODULE_URL_BASE	= 'reflex_json.php/Javascript_Module/get';
 
 	var	SOURCES		= {},
 		OBSERVERS	= {};
 
 	var	_undefined,
-		_aXHRFactories	= [
-			function(){return new XMLHttpRequest()},
-			function(){return new ActiveXObject("Msxml2.XMLHTTP")},
-			function(){return new ActiveXObject("Msxml3.XMLHTTP")},
-			function(){return new ActiveXObject("Microsoft.XMLHTTP")}
-		],
-		XHR_READYSTATES	= {
-			UNSENT				: 0,
-			OPENED				: 1,
-			HEADERS_RECEIVED	: 2,
-			LOADING				: 3,
-			DONE				: 4
+		_log	= function () {
+			//debugger;
+			var	aArgs	= $A(arguments);
+			if (console && 'log' in console && 'apply' in console.log) {
+				console.log.apply(console, aArgs);
+			} else {
+				alert(aArgs.join("\n"));
+			}
 		},
-		// _XHR(): Cross-browser(?) XMLHttpRequest implementation
-		_XHR	= function (sURL, oConfig) {
-			// Config
-			var	_oConfig	= {
-				fnCallback		: oConfig.fnCallback || null,
-				sHTTPMethod		: (['GET','POST'].indexOf(oConfig.sHTTPMethod.toUpperCase()) > -1) ? oConfig.sHTTPMethod.toUpperCase() : 'GET',
-				bAsync			: (oConfig.bAsync === false) ? false : true,
-				sContentType	: oConfig.sContentType || 'application/x-www-form-urlencoded',
-				sContent		: (typeof oConfig.sContent !== 'undefined' && oConfig.sContent !== null) ? oConfig.sContent : null
-			};
-			
-			// XMLHTTPRequest
-			var	oRequest;
-			for (var i=0, l=_aXHRFactories.length; i < l; i++) {
-				try {
-					oRequest	= _aXHRFactories[i]();
-				} catch (mException) {
-					continue;
-				}
-				break;
-			}
-			if (!oRequest) {
-				throw new Error("No XMLHttpRequest implementation detected");
-			}
-
-			// Configure
-			oRequest.open(_oConfig.sHTTPMethod, sURL, _oConfig.bAsync);
-			//oRequest.setRequestHeader('User-Agent', 'XMLHTTP/1.0');
-			if (_oConfig.sContent !== null) {
-				oRequest.setRequestHeader('Content-type', _oConfig.sContentType);
-			}
-
-			// Monitor updates
-			oRequest.onreadystatechange	= function () {
-				if (oRequest.readyState != XHR_READYSTATES.DONE) {
-					return;
-				}
-				if (typeof _oConfig.fnCallback === 'function') {
-					_oConfig.fnCallback({
-						// TODO: We might do some fanciness here
-						oRequest	: oRequest,
-						sContent	: oRequest.responseText
-					});
-				}
-			};
-
-			// Dispatch
-			oRequest.send(_oConfig.sContent);
-		},
-		// _moduleIdentifierToURL(): Converts a Module Identifier to a URL that the server can handle
-		_moduleIdentifierToURL	= function (sModuleIdentifier) {
-			return sModuleIdentifier+'.js';
+		// _moduleIdToURL(): Converts a Module Id to a URL that the server can handle
+		_moduleIdToURL	= function (sModuleId) {
+			return MODULE_URL_BASE;
 		},
 		_isModules2	= function (sSource) {
-			// Not completely correct, but probably good enough
-			return !!sSource.trim().match(/^module\.declare\(/);
+			try {
+				// Not completely correct, but probably good enough
+				return !!sSource.trim().match(/^module\.declare\(/);
+			} catch (oEx) {
+				_log('Error: _isModules2 : ' + oEx.message);
+			}
 		},
 		_wrapModules1	= function(sSource) {
-			//return sSource;
-			//return "debugger;module.declare(function(require, exports, module) {debugger;});";
-			return	"module.declare(function(require, exports, module) {\n/* START MODULE SECTION */\n"+sSource.trim()+"\n/* END MODULE SECTION */\n});";
+			try {
+				//return sSource;
+				//return "debugger;module.declare(function(require, exports, module) {debugger;});";
+				return	"//debugger;\n" +
+						"module.declare(function(require, exports, module) {\n" +
+							"//debugger;\n" +
+							"/* START MODULE SECTION */\n" +
+							sSource.trim() + "\n/" +
+							"* END MODULE SECTION */\n" +
+						"});";
+			} catch (oEx) {
+				_log('Error: _isModules2 : ' + oEx.message);
+			}
 		},
 		_observeModuleProvided	= function (sModuleId, fnCallback) {
 			if (!OBSERVERS[sModuleId]) {
@@ -142,7 +102,10 @@
 
 	// module.provide()
 	module.constructor.prototype.provide	= function (aDependencies, fnCallback) {
-		//debugger;
+		if (this !== window.module) {
+			//debugger;
+		}
+
 		var	_thisModule				= this,
 			aNormalisedDependencies	= require.normaliseDependencies(aDependencies),
 			oPending				= {},
@@ -162,12 +125,13 @@
 		if (aNormalisedDependencies.length) {
 			for (var i=0, l=aNormalisedDependencies.length; i < l; i++) {
 				// Load if it is yet to be provided to the environment
-				sModuleIdentifier	=
-				sModuleId	= require.id(aNormalisedDependencies[i]);
+				sModuleIdentifier	= require.realIdentifier(aNormalisedDependencies[i], this.id ? this.id+'/../' : '');
+				sModuleId			= require.id(sModuleIdentifier);
 				if (!require.isMemoized(sModuleId)) {
 					iPendingModules++;
-					if (!SOURCES[aNormalisedDependencies[i]]) {
+					if (!SOURCES[sModuleId]) {
 						// Not memoised or currently loading -- load
+						SOURCES[sModuleId]	= {};
 						this.load(sModuleId, fnOnLoad);
 					} else {
 						// Waiting for it to load -- notify us later
@@ -188,25 +152,51 @@
 		var	sModuleId	= require.id(sModuleIdentifier);
 
 		// Load via XHR
-		_XHR(MODULE_URL_BASE, {
-			sHTTPMethod		: 'POST',
-			sContent		: "json="+encodeURIComponent(JSON.stringify([[sModuleIdentifier]])),
+		new Ajax.Request(_moduleIdToURL(sModuleId), {
+			method		: 'post',
+			contentType	: 'application/x-www-form-urlencoded',
+			postBody	: "json=" + encodeURIComponent(JSON.stringify([
+				[sModuleIdentifier],
+				true,
+				Object.keys(SOURCES).reject(function(sId){return sModuleId == sId;})
+			])),
 
-			fnCallback	: function (oResponse) {
+			onException	: function (oEvent, oException) {
+				_log(oException);
+				throw oException;
+			},
+
+			onFailure	: function (oAJAXResponse) {
+				_log("Unable to load Module '"+sModuleIdentifier+"' ("+oAJAXResponse.status+": "+oAJAXResponse.statusText+").");
+				throw new Error("Unable to load Module '"+sModuleIdentifier+"' ("+oAJAXResponse.status+": "+oAJAXResponse.statusText+").");
+			},
+			
+			onSuccess	: function (oAJAXResponse) {
 				//debugger;
 				if (_oDeclaringModule) {
+					_log("There is already a module being loaded: '"+_oDeclaringModule.sModuleIdentifier+"'");
 					throw new Error("There is already a module being loaded: '"+_oDeclaringModule.sModuleIdentifier+"'");
 				}
 
 				// Expecting a JSON object in the form of {IDENTIFIER: SOURCE}
 				// This is because the Server tries to load our dependencies
-				var	oSources	= JSON.parse(oResponse.sContent),
+				var	oSources = oAJAXResponse.responseJSON || (oAJAXResponse.responseText && oAJAXResponse.responseText.evalJSON()),
 					sSource;
+				//debugger;
+
+				if (!oSources) {
+					_log("Unable to load module '"+sModuleIdentifier+"': response data is invalid", oAJAXResponse);
+					throw new Error("Unable to load module '"+sModuleIdentifier+"': response data is invalid");
+				}
 
 				var	_onAfterModuleDeclared	= function (sDeclaredIdentifier) {
 					delete oSources[sDeclaredIdentifier];
+					var	aRemainingDeclarations	= Object.keys(oSources);
+					_log("Module '"+sDeclaredIdentifier+"' has been declared/provided."+(aRemainingDeclarations.length ? " Still waiting on: "+aRemainingDeclarations.join(';') : ''));
 					// If we have no more modules to declare, invoke our callback
-					if (!Object.keys(oSources).length) {
+					if (!aRemainingDeclarations.length) {
+						_log("All pending modules declared/provided -- invoking callback...");
+						//debugger;
 						fnCallback();
 					}
 				};
@@ -216,8 +206,7 @@
 				for (sLoadedIdentifier in oSources) {
 					if (oSources.hasOwnProperty(sLoadedIdentifier)) {
 						sLoadedId	= require.id(sLoadedIdentifier);
-
-						sSource	= oSources[sLoadedId];
+						sSource		= oSources[sLoadedId];
 
 						// Allow Modules/1.* modules as well
 						if (!_isModules2(sSource)) {
@@ -225,26 +214,37 @@
 						}
 
 						// Add to our list of loaded sources
+						//debugger;
 						SOURCES[sLoadedId]	= sSource;
 					}
 				}
-
+				//debugger;
 				for (sLoadedIdentifier in oSources) {
 					if (oSources.hasOwnProperty(sLoadedIdentifier)) {
-						sSource	= SOURCES[sLoadedIdentifier];
+						sLoadedId	= require.id(sLoadedIdentifier);
+						sSource		= SOURCES[sLoadedId];
+						//debugger;
 
 						// Invoke module.declare
 						_oDeclaringModule	= {
-							sModuleId			: sModuleId,
-							sModuleIdentifier	: sModuleIdentifier,
-							fnCallback			: function () {_onAfterModuleDeclared(sModuleIdentifier);}
+							sModuleId			: sLoadedId,
+							sModuleIdentifier	: sLoadedIdentifier,
+							fnCallback			: (function (sLoadedIdentifier) {_onAfterModuleDeclared(sLoadedIdentifier);}).curry(sLoadedIdentifier)
 						};
-						
+						//debugger;
 						// FIXME: We should probably sanitise the source prior to eval()
 						// Run in the global scope (don't want it polluting our local vars through closure)
 						//eval(sSource);
-						var	fnSandbox	= new Function(sSource);
-						fnSandbox();
+						try {
+							// The `//@ sourceURL=[IDENTIFIER]` hack allows Firebug and Chrome Developer Tools to give a "name" to the eval'd code
+							var	fnSandbox	= new Function("//@ sourceURL=module://"+sLoadedIdentifier+"\n"+sSource);
+							fnSandbox();
+						} catch (mException) {
+							//debugger;
+							_log("Unable to evaluate source of Module '"+sLoadedIdentifier+"'", mException, sSource);
+							throw mException;
+						}
+						//debugger;
 					}
 				}
 			}
@@ -255,7 +255,7 @@
 	module.declare(function () {
 		//debugger;
 		// TODO: We can probably remove this logging at some stage.  It doesn't really serve any purpose.  Still need to keep the function, though.
-		if ('console' in _global && typeof console.log === 'function') {
+		if (typeof console == "undefined" || typeof console.log == "undefined") {
 			console.log("Flex's Main Module invoked");
 		}
 	});

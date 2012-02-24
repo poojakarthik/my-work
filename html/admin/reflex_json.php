@@ -1,5 +1,4 @@
 <?php
-
 // Get the Flex class...
 require_once '../../lib/classes/Flex.php';
 

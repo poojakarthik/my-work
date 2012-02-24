@@ -14,7 +14,9 @@ class Data_Source
 		static $arrRequestedDSNs;
 		if (!isset($arrRequestedDSNs))
 		{
-			MDB2::classExists('who cares? this forces MDB2 to be loaded!!');
+			//MDB2::classExists('who cares? this forces MDB2 to be loaded!!');
+			//MDB2::classExists('MDB2');
+			class_exists('MDB2');
 			$arrRequestedDSNs = array();
 		}
 
