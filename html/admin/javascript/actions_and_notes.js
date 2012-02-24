@@ -17,6 +17,11 @@ Object.extend(ActionsAndNotes,
 	TYPE_NOTE : 'NOTE',
 	TYPE_ACTION	: 'ACTION',
 
+	REFERENCE_PREFIX : {
+		'NOTE' : 'N',
+		'ACTION' : 'A'
+	},
+
 	// These member variables are used by the load method
 	bolIsLoading : false,
 	bolHasLoaded : false,
@@ -78,7 +83,6 @@ Object.extend(ActionsAndNotes,
 	load : function(funcOnLoaded)
 	{
 		// Do all the things you need to do before the ActionsAndNotes package can be used, then run the funcOnLoaded
-
 		if (this.bolHasLoaded)
 		{
 			// The package has already loaded
@@ -1369,6 +1373,7 @@ Object.extend(ActionsAndNotes.List.prototype,
 		{
 			strByLine = "Logged by "+ objItem.createdBy +", Performed by "+ objItem.performedBy;
 		}
+		//debugger;
 
 		elmHeaderDiv.appendChild(elmTimestampContainer);
 		elmHeaderDiv.appendChild(elmTypeContainer);
@@ -1384,6 +1389,15 @@ Object.extend(ActionsAndNotes.List.prototype,
 		
 		var oDetailsLeftDiv				= $T.div(elmByLineContainer);
 		oDetailsLeftDiv.style.display	= 'table-cell';
+
+		// "Reference" for the Action/Note
+		var sReferenceNumber = ActionsAndNotes.REFERENCE_PREFIX[objItem.recordType] + objItem.id,
+			sReferenceType = (objItem.recordType == ActionsAndNotes.TYPE_NOTE) ? 'Note' : 'Action',
+			oReference = $T.div({class:'reference'},
+				$T.span('Ref #:'),
+				$T.span(sReferenceNumber)
+			);
+		elmDetailsDiv.appendChild(oReference);
 		
 		// Handle any associated Accounts
 		if (objItem.associatedAccounts && (j=objItem.associatedAccounts.length) > 0)

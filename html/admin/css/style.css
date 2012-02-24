@@ -1381,6 +1381,9 @@ div.action-list div.item
 	/*padding				: 0.25em;*/
 	border 				: 1px solid #000;
 	background-color 	: #EFEBE7;
+
+	/* Force auto-clearing of child floats */
+	overflow : hidden;
 }
 
 div.action-list.embedded div.item
@@ -1436,6 +1439,23 @@ div.action-list div.item div.details div.details-inner
 
 div.action-list-controls
 {
+}
+
+div.action-list .reference {
+	float : right;
+	margin-right : .2em;
+}
+div.action-list .reference > :first-child {
+	font-size : 1em;
+	font-family : monospace, monospace;
+	margin-right : .2em;
+}
+div.action-list .reference > span {
+	font-size : 1em;
+	font-family : monospace, monospace;
+}
+div.action-list div.followup-context-list-placeholder {
+	clear : right;
 }
 
 /***************************** END - Actions - END ****************************/
