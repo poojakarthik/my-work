@@ -90,8 +90,11 @@
 		this.provide(aDependencies, function () {
 			//debugger;
 
-			// Memoise the Module
-			require.memoize(oDeclaringModule.sModuleId, aDependencies, fnFactory);
+			// Ensure we still haven't been provided/memoised through some kind of async behaviour
+			if (!require.isMemoized(oDeclaringModule.sModuleId)) {
+				// Memoise the Module
+				require.memoize(oDeclaringModule.sModuleId, aDependencies, fnFactory);
+			}
 			
 			// Invoke our observers
 			for (var i=0, l=OBSERVERS[oDeclaringModule.sModuleId].length; i < l; i++) {
