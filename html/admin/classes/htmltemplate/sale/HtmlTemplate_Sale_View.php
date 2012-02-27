@@ -105,6 +105,7 @@ class HtmlTemplate_Sale_View extends FlexHtmlTemplate
 
 	function initiateSale () {
 		//debugger;
+		require('flex/sp/sale');
 		var Sale = require('sp/sale');
 
 		Sale.canCancelSale = <?=Sales_Portal_Sale::canBeCancelled($objSale) ? 'true' : 'false'?>;
@@ -158,7 +159,7 @@ class HtmlTemplate_Sale_View extends FlexHtmlTemplate
 
 	function initiateJS () {
 		//debugger;
-		module.provide(['sp/sale'], initiateSale);
+		module.provide(['flex/sp/sale'], initiateSale);
 	}
 
 	Event.observe(window, 'load', initiateJS, true);

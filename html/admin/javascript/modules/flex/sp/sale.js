@@ -2,10 +2,12 @@ var DropDown = require('sp/guicomponent/dropdown'),
 	TextInputGroup = require('sp/guicomponent/textinputgroup');
 var SalesPortal = require('sp/salesportal'),
 	Sale = require('sp/sale'),
+	SaleType = require('sp/sale/saletype'),
 	SaleAccount = require('sp/sale/saleaccount'),
 	SaleItem = require('sp/sale/item'),
 	Note = require('sp/sale/note'),
-	BillPaymentType = require('sp/sale/billpaymenttype');
+	BillPaymentType = require('sp/sale/billpaymenttype'),
+	Validation = require('sp/validation');
 
 Object.extend(Sale.prototype, {
 	buildGUI : function () {
@@ -108,7 +110,7 @@ Object.extend(Sale.prototype, {
 			this.detailsContainer.select('.sale-verify')[0].observe('click', this.verifySale.bind(this));
 		}
 		this.detailsContainer.select('.sale-viewhistory')[0].observe('click', Sale.showHistory.bind(Sale, this.getId()));
-		this.detailsContainer.select('.sale-items-add')[0].observe('click', this.addSaleItem.bind(this));
+		this.detailsContainer.select('.sale-items-add')[0].observe('click', this.addSaleItem.bind(this, null));
 		this.detailsContainer.select('.sale-items-collapse')[0].observe('click', function () {
 			if (this.value == 'Collapse All') {
 				this.value = 'Expand All';
@@ -276,12 +278,12 @@ Object.extend(SaleAccount.prototype, {
 		this.elementGroups.vendor.disable();
 		this.addElementGroup('businessName', new TextInputGroup(this.getBusinessName(), true),'Business Name','business_name');
 		this.addElementGroup('tradingName', new TextInputGroup(this.getTradingName()),'Trading Name','trading_name');
-		this.addElementGroup('abn', new TextInputGroup(this.getABN(), false, window._validate.australianBusinessNumber.bind(this)),'ABN');
-		this.addElementGroup('acn', new TextInputGroup(this.getACN(), false, window._validate.australianCompanyNumber.bind(this)),'ACN');
+		this.addElementGroup('abn', new TextInputGroup(this.getABN(), false, Validation.australianBusinessNumber.bind(this)),'ABN');
+		this.addElementGroup('acn', new TextInputGroup(this.getACN(), false, Validation.australianCompanyNumber.bind(this)),'ACN');
 		this.addElementGroup('addressLine1', new TextInputGroup(this.getAddressLine1(), true),'Address (Line 1)','address_line_1');
 		this.addElementGroup('addressLine2', new TextInputGroup(this.getAddressLine2()),'Address (Line 2)','address_line_2');
 		this.addElementGroup('suburb', new TextInputGroup(this.getSuburb(), true),'Suburb');
-		this.addElementGroup('postcode', new TextInputGroup(this.getPostcode(), true, window._validate.postcode.bind(this)),'Postcode');
+		this.addElementGroup('postcode', new TextInputGroup(this.getPostcode(), true, Validation.postcode.bind(this)),'Postcode');
 		this.addElementGroup('state', new DropDown(Sale.states.ids, Sale.states.labels, this.getStateId(), true),'State','state_id');
 
 		this.setWorkingTable($ID('bill-details'));
