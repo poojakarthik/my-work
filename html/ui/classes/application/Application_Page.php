@@ -222,8 +222,8 @@ class Application_Page extends Page
 			$arrFiles[]	= 'followup_link';
 			$arrFiles[]	= 'component_debug_log';
 
-			echo "\t\t<script type='text/javascript' src='".Flex::getUrlBase()."reflex.php/Package/Load/FW'></script>\n";
-			$arrFiles[]	= 'FW';
+			//echo "\t\t<script type='text/javascript' src='".Flex::getUrlBase()."reflex.php/Package/Load/FW'></script>\n";
+			//$arrFiles[]	= 'FW';
 		}
 
 		$arrStandardJsFiles				= 	array_merge($arrStandardJsFiles, $arrFiles);
