@@ -1,14 +1,20 @@
 var DropDown = require('sp/guicomponent/dropdown'),
 	TextInputGroup = require('sp/guicomponent/textinputgroup');
-var SalesPortal = require('sp/salesportal'),
-	Sale = require('sp/sale'),
+
+var SalesPortal = require('sp/salesportal');
+Object.extend(SalesPortal, {
+	getRemoteFunction : function ($remoteClass, $remoteFunction, $onSuccess, $onFailure) {
+		return new jQuery.json.jsonFunction($onSuccess, $onFailure, $remoteClass, $remoteFunction);
+	}
+});
+
+var Sale = require('sp/sale'),
 	SaleType = require('sp/sale/saletype'),
 	SaleAccount = require('sp/sale/saleaccount'),
 	SaleItem = require('sp/sale/item'),
 	Note = require('sp/sale/note'),
 	BillPaymentType = require('sp/sale/billpaymenttype'),
 	Validation = require('sp/validation');
-
 Object.extend(Sale.prototype, {
 	buildGUI : function () {
 		// The 'Verify' and the 'Awaiting Dispatch' actions are in the same function.  They probably shouldn't be
