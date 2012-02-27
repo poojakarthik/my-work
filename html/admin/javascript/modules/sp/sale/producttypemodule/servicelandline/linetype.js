@@ -1,5 +1,0 @@
-
-return {
-	LINE_TYPE_RESIDENTIAL: 1,
-	LINE_TYPE_BUSINESS: 2
-};
