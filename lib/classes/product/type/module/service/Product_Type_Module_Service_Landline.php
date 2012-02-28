@@ -98,7 +98,7 @@ class Product_Type_Module_Service_Landline extends Product_Type_Module
 				$arrLandlineType = DO_Sales_SaleItemServiceLandlineBusiness::listForSaleItemServiceLandline($product);
 				if (!count($arrLandlineType))
 				{
-					throw new Exception('Residential landline details not found for residential landline service.');
+					throw new Exception('Residential landline details not found for business landline service.');
 				}
 				$objLandlineType = $arrLandlineType[0];
 				$productDetails->landline_type_details->id = $objLandlineType->id;
