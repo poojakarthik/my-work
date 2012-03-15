@@ -8378,6 +8378,14 @@ div.delinquent-fnn-list table.reflex thead th.followup-list-all-filter > div > i
 	cursor			: pointer;
 }
 
+.delinquent-fnn-list table.reflex tbody td:nth-child(3) {
+	font-family : "Courier New", monospace;
+	text-align : right;
+}
+.delinquent-fnn-list table.reflex tbody td:nth-child(4) {
+	text-align	: right;
+}
+
 .delinquent-service-content
 {
 	max-height: 500px;
@@ -8483,11 +8491,13 @@ div.content-delinquent-cdrs .section > div.section-content.section-content-fitte
 	padding				: 0em;
 }
 
-div.content-delinquent-cdrs .section-header-options >.icon-button
-{
+div.content-delinquent-cdrs .section-header-options >.icon-button {
+	vertical-align: top;
+}
 
-vertical-align: top;
-
+.content-delinquent-cdrs table.reflex tbody td:nth-child(3) {
+	font-family : "Courier New", monospace;
+	text-align : right;
 }
 
 div.writeoff-detail
