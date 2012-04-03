@@ -8,7 +8,6 @@
  */
 class NormalisationModuleLinxMonthlyInvoiceFile extends NormalisationModule
 {
-	public $intBaseCarrier	= CARRIER_TELSTRA;
 	public $intBaseFileType	= RESOURCE_TYPE_FILE_IMPORT_CDR_LINX_MONTHLY_INVOICE_FILE;
 	
 	/**

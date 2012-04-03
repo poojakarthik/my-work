@@ -8,7 +8,6 @@
  */
 class NormalisationModuleArborCOCE extends NormalisationModule
 {
-	public $intBaseCarrier	= CARRIER_AAPT;
 	public $intBaseFileType	= RESOURCE_TYPE_FILE_IMPORT_CDR_AAPT_ESYSTEMS_COCE;
 	
 	const	TYPE_CODE_RECURRING_CHARGE		= 2;

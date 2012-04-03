@@ -8,7 +8,6 @@
  */
 class NormalisationModuleIseekData extends NormalisationModule
 {
-	public $intBaseCarrier	= CARRIER_ISEEK;
 	public $intBaseFileType	= RESOURCE_TYPE_FILE_IMPORT_CDR_ISEEK_DATA;
 	
 	const	OCTETS_TO_KILOBYTES_DIVISOR	= 1024;

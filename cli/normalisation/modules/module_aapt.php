@@ -78,7 +78,6 @@ class NormalisationModuleAAPT extends NormalisationModule
 	 */
 	private $_strCallDate;
 	
-	public $intBaseCarrier	= CARRIER_AAPT;
 	public $intBaseFileType	= RESOURCE_TYPE_FILE_IMPORT_CDR_AAPT_STANDARD;
 	
 	//------------------------------------------------------------------------//

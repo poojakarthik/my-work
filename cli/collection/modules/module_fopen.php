@@ -11,7 +11,6 @@
 	protected	$_resConnection;
 	protected	$_strWrapper		= '';
 	
-	//public $intBaseCarrier			= CARRIER_UNITEL;
 	//public $intBaseFileType			= RESOURCE_TYPE_FILE_RESOURCE_LOCAL;
 	
 	const	DIRECTORY_NAME_REGEX_PREFIX	= 'regex:';

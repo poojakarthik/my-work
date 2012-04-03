@@ -370,8 +370,6 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		
 		// Build the list of default Carrier values for each ServiceType that has defaults
 		$arrServiceTypeDefaults = Array();
-		$arrServiceTypeDefaults[SERVICE_TYPE_LAND_LINE]['CarrierFullService']	= CARRIER_UNITEL;
-		$arrServiceTypeDefaults[SERVICE_TYPE_LAND_LINE]['CarrierPreselection']	= CARRIER_OPTUS;
 		
 		// Build the ServiceType Combobox
 		if (DBO()->RatePlan->Id->Value > 0)

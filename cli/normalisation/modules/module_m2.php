@@ -43,7 +43,6 @@
  */
 class NormalisationModuleM2 extends NormalisationModule
 {
-	public $intBaseCarrier	= CARRIER_M2;
 	public $intBaseFileType	= RESOURCE_TYPE_FILE_IMPORT_CDR_M2_STANDARD;
 
 	//------------------------------------------------------------------------//

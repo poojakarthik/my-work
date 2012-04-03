@@ -231,14 +231,18 @@ abstract class NormalisationModule extends CarrierModule
 	public $strFNN;
 	
 	public $_intCarrier;
-	public $intBaseCarrier;
 	
 	function __construct($intCarrier)
 	{
  		// Call CarrierModule Constructor
  		parent::__construct($intCarrier, MODULE_TYPE_NORMALISATION_CDR);
 		
-		//$this->_selFindOwner 			= new StatementSelect("Service", "AccountGroup, Account, Id", "FNN = <fnn> AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
+		$this->_arrModuleConfig['CarrierTranslationContextId'] = array(
+			'Type'			=> DATA_TYPE_INTEGER,
+	   		'Description'	=> "Carrier Translation Context Id"
+		);
+
+		//$->_selFindOwner 			= new StatementSelect("Service", "AccountGroup, Account, Id", "FNN = <fnn> AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
 		//$this->_selFindOwnerIndial100	= new StatementSelect("Service", "AccountGroup, Account, Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE)AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
 		$strAccountStatus	= ACCOUNT_STATUS_ACTIVE.", ".ACCOUNT_STATUS_CLOSED.", ".ACCOUNT_STATUS_DEBT_COLLECTION.", ".ACCOUNT_STATUS_SUSPENDED;
 		$strServiceStatus	= SERVICE_ACTIVE.", ".SERVICE_DISCONNECTED;
@@ -879,9 +883,10 @@ abstract class NormalisationModule extends CarrierModule
 	 */
 	 protected function FindRecordCode($mixCarrierCode)
 	 {
-		//CliEcho("Finding Record Code Translation for Carrier {$this->intBaseCarrier} with Code '{$mixCarrierCode}'");
+	 	$iCarrierTranslationContextId = $this->GetConfigField('CarrierTranslationContextId');
+		//CliEcho("Finding Record Code Translation for Carrier {$iCarrierTranslationContextId} with Code '{$mixCarrierCode}'");
 		
-	 	$intResult = $this->_selFindRecordCode->Execute(Array("Carrier" => $this->intBaseCarrier, "CarrierCode" => $mixCarrierCode));
+	 	$intResult = $this->_selFindRecordCode->Execute(Array("Carrier" => $iCarrierTranslationContextId, "CarrierCode" => $mixCarrierCode));
 		
 		if($intResult === FALSE)
 		{
@@ -1008,7 +1013,8 @@ abstract class NormalisationModule extends CarrierModule
 		static	$oGetUnknownDestination;
 		
 		// Check for exact match destination
-		if ($this->_selFindDestination->Execute(array("Carrier"=>$this->intBaseCarrier, "CarrierCode"=>(string)$mCarrierCode, "Context"=>$this->_intContext)) === false)
+		$iCarrierTranslationContextId = $this->GetConfigField('CarrierTranslationContextId');
+		if ($this->_selFindDestination->Execute(array("Carrier"=> $iCarrierTranslationContextId, "CarrierCode"=>(string)$mCarrierCode, "Context"=>$this->_intContext)) === false)
 		{
 			throw new Exception_Database($this->_selFindDestination->Error());
 		}
@@ -1045,7 +1051,7 @@ abstract class NormalisationModule extends CarrierModule
 		}
 		else
 		{
-	 		throw new Exception("No Destination found for Context {$this->_intContext}! (Code: '{$mCarrierCode}'; Carrier: {$this->intBaseCarrier}; )");
+	 		throw new Exception("No Destination found for Context {$this->_intContext}! (Code: '{$mCarrierCode}'; Carrier: {$iCarrierTranslationContextId}; )");
 		}
 	}
 

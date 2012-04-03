@@ -8,7 +8,6 @@
  */
 class NormalisationModuleAcenet extends NormalisationModule
 {
-	public $intBaseCarrier	= CARRIER_ACENET;	// This is so Destinations are resolved against Optus configuration
 	public $intBaseFileType	= RESOURCE_TYPE_FILE_IMPORT_CDR_ACENET;
 
 	const	CARRIER_OPTUS	= 'OPTUS';

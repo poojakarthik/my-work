@@ -47,8 +47,7 @@
 	
 	private $_resConnection;
  	
-	//public $intBaseCarrier			= CARRIER_UNITEL;
-	public $intBaseFileType			= RESOURCE_TYPE_FILE_RESOURCE_SSH2;
+	public $intBaseFileType = RESOURCE_TYPE_FILE_RESOURCE_SSH2;
 	
 	public static function getConfigDefinition()
 	{

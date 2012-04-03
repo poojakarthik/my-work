@@ -156,7 +156,7 @@ class Correspondence_Logic_Source_CSV extends Correspondence_Logic_Source
 
 	public function import()
 	{
-		$oFileImport = File_Import::import($this->_sTmpPath, RESOURCE_TYPE_FILE_IMPORT_CORRESPONDENCE_YELLOWBILLING_CSV, CARRIER_YELLOW_BILLING, $this->_sFileName);
+		$oFileImport = File_Import::import($this->_sTmpPath, RESOURCE_TYPE_FILE_IMPORT_CORRESPONDENCE_YELLOWBILLING_CSV, Carrier_Config::get()->vendor_carrier_id, $this->_sFileName);
 		return $oFileImport->id;
 	}
 
@@ -167,8 +167,6 @@ class Correspondence_Logic_Source_CSV extends Correspondence_Logic_Source
 
 	public static function getFilePath()
 	{
-		//return FILES_BASE_PATH.'import/'.CARRIER_YELLOW_BILLING."/Correspondence_Logic_Source_CSV/";
-
 		return FILES_BASE_PATH."import/".$intCarrier.'/'.GetConstantName(RESOURCE_TYPE_FILE_IMPORT_CORRESPONDENCE_YELLOWBILLING_CSV, 'resource_type').'/';
 	}
 }

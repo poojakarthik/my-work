@@ -56,7 +56,7 @@
 		
 		// Unitel Landline Definition
 		$arrConfig['Define']["TBUnitel"]	["Name"]							= "TelcoBlue: Unitel Landline/S&E";
-		$arrConfig['Define']["TBUnitel"]	["Carrier"]							= CARRIER_UNITEL;
+		//$arrConfig['Define']["TBUnitel"]	["Carrier"]							= CARRIER_UNITEL; // -- Carriers are no longer constants
  		$arrConfig['Define']["TBUnitel"]	["Type"]							= COLLECTION_TYPE_FTP;
  		$arrConfig['Define']["TBUnitel"]	["Server"]							= "rslcom.com.au";
  		$arrConfig['Define']["TBUnitel"]	["Username"]						= "sp058";
@@ -68,7 +68,7 @@
 		$arrConfig['Define']["TBUnitel"]	["FileType"][REGEX_UNITEL_SE]		= CDR_UNITEL_RSLCOM;
 		
 		$arrConfig['Define']["VTUnitel"]	["Name"]							= "VoiceTalk: Unitel Landline/S&E";
-		$arrConfig['Define']["VTUnitel"]	["Carrier"]							= CARRIER_UNITEL_VOICETALK;
+		//$arrConfig['Define']["VTUnitel"]	["Carrier"]							= CARRIER_UNITEL_VOICETALK; // -- Carriers are no longer constants
  		$arrConfig['Define']["VTUnitel"]	["Type"]							= COLLECTION_TYPE_FTP;
  		$arrConfig['Define']["VTUnitel"]	["Server"]							= "rslcom.com.au";
  		$arrConfig['Define']["VTUnitel"]	["Username"]						= "sp321";
@@ -82,7 +82,7 @@
 		// Unitel Mobile Definition
 		// (needs a separate definition because the regex's for Commander and LL are the same, but different file format)
 		$arrConfig['Define']["TBUnitelMobile"]	["Name"]							= "TelcoBlue: Unitel Commander Mobile";
-		$arrConfig['Define']["TBUnitelMobile"]	["Carrier"]							= CARRIER_UNITEL;
+		//$arrConfig['Define']["TBUnitelMobile"]	["Carrier"]							= CARRIER_UNITEL; // -- Carriers are no longer constants
  		$arrConfig['Define']["TBUnitelMobile"]	["Type"]							= COLLECTION_TYPE_FTP;
  		$arrConfig['Define']["TBUnitelMobile"]	["Server"]							= "rslcom.com.au";
  		$arrConfig['Define']["TBUnitelMobile"]	["Username"]						= "sp058";
@@ -92,7 +92,7 @@
 		$arrConfig['Define']["TBUnitelMobile"]	["FileType"][REGEX_COMMANDER]		= CDR_UNITEL_COMMANDER;
 		
 		$arrConfig['Define']["VTUnitelMobile"]	["Name"]							= "VoiceTalk: Unitel Commander Mobile";
-		$arrConfig['Define']["VTUnitelMobile"]	["Carrier"]							= CARRIER_UNITEL_VOICETALK;
+		//$arrConfig['Define']["VTUnitelMobile"]	["Carrier"]							= CARRIER_UNITEL_VOICETALK; // -- Carriers are no longer constants
  		$arrConfig['Define']["VTUnitelMobile"]	["Type"]							= COLLECTION_TYPE_FTP;
  		$arrConfig['Define']["VTUnitelMobile"]	["Server"]							= "rslcom.com.au";
  		$arrConfig['Define']["VTUnitelMobile"]	["Username"]						= "sp321";
@@ -104,7 +104,7 @@
 		
 		// Optus Definition	
 		$arrConfig['Define']["Optus"]	["Name"]						= "Optus";
-		$arrConfig['Define']["Optus"]	["Carrier"]						= CARRIER_OPTUS;
+		//$arrConfig['Define']["Optus"]	["Carrier"]						= CARRIER_OPTUS; // -- Carriers are no longer constants
  		$arrConfig['Define']["Optus"]	["Type"]						= COLLECTION_TYPE_OPTUS;
  		$arrConfig['Define']["Optus"]	["Server"]						= "https://www.optus.com.au/wholesalenet/";
  		$arrConfig['Define']["Optus"]	["Username"]					= 948115;
@@ -115,7 +115,7 @@
 
 		// AAPT Definition
 		$arrConfig['Define']["AAPT"]	["Name"]						= "AAPT";
-		$arrConfig['Define']["AAPT"]	["Carrier"]						= CARRIER_AAPT;
+		//$arrConfig['Define']["AAPT"]	["Carrier"]						= CARRIER_AAPT; // -- Carriers are no longer constants
  		$arrConfig['Define']["AAPT"]	["Type"]						= COLLECTION_TYPE_AAPT;
  		$arrConfig['Define']["AAPT"]	["AlwaysUnique"]				= TRUE;
  		$arrConfig['Define']["AAPT"]	["Server"]						= "https://wholesalebbs.aapt.com.au/";
@@ -127,7 +127,7 @@
 			
 		// iSeek Definition
 		$arrConfig['Define']["iSeek"]	["Name"]						= "iSeek";
-		$arrConfig['Define']["iSeek"]	["Carrier"]						= CARRIER_ISEEK;
+		//$arrConfig['Define']["iSeek"]	["Carrier"]						= CARRIER_ISEEK; // -- Carriers are no longer constants
  		$arrConfig['Define']["iSeek"]	["Type"]						= COLLECTION_TYPE_SSH2;
  		$arrConfig['Define']["iSeek"]	["Server"]						= "adsl2.iseek.com.au";
  		$arrConfig['Define']["iSeek"]	["Username"]					= "telcoblue";
@@ -146,7 +146,7 @@
 		// Unitel Landline and S&E Definition
 		$strUnitelTestDir = strtolower(date("Y/M"));
 		$arrConfig['Define']["RSLCOM"]	["Name"]							= "RSLCOM";
-		$arrConfig['Define']["RSLCOM"]	["Carrier"]							= CARRIER_UNITEL;
+		//$arrConfig['Define']["RSLCOM"]	["Carrier"]							= CARRIER_UNITEL; // -- Carriers are no longer constants
  		$arrConfig['Define']["RSLCOM"]	["Type"]							= COLLECTION_TYPE_FTP;
  		$arrConfig['Define']["RSLCOM"]	["Server"]							= $strTestServer;
  		$arrConfig['Define']["RSLCOM"]	["Username"]						= $strTestUsername;
@@ -160,7 +160,7 @@
 		// iSeek Temp Definition
 		$strOptusTestDir = "Oct 07/";
 		$arrConfig['Define']["iSeek"]	["Name"]						= "iSeek";
-		$arrConfig['Define']["iSeek"]	["Carrier"]						= CARRIER_ISEEK;
+		//$arrConfig['Define']["iSeek"]	["Carrier"]						= CARRIER_ISEEK; // -- Carriers are no longer constants
  		$arrConfig['Define']["iSeek"]	["Type"]						= COLLECTION_TYPE_FTP;
  		$arrConfig['Define']["iSeek"]	["Server"]						= $strTestServer;
  		$arrConfig['Define']["iSeek"]	["Username"]					= $strTestUsername;
@@ -174,7 +174,7 @@
 		//--------------------------------//
 		
 		$arrConfig['Define']["Payments"]	["Name"]															= "Payments";
-		$arrConfig['Define']["Payments"]	["Carrier"]															= CARRIER_PAYMENT;
+		//$arrConfig['Define']["Payments"]	["Carrier"]															= CARRIER_PAYMENT; // -- Carriers are no longer constants
  		$arrConfig['Define']["Payments"]	["Type"]															= COLLECTION_TYPE_FTP;
  		$arrConfig['Define']["Payments"]	["Server"]															= "10.11.12.13";
  		$arrConfig['Define']["Payments"]	["Username"]														= "telcoblue";

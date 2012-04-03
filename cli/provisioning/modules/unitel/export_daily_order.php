@@ -52,7 +52,7 @@
 	protected	$_arrFooter;
 	protected	$_ptrFile;
 	
-	public $intBaseCarrier			= CARRIER_UNITEL;
+	public $intBaseCarrier			= null;
 	public $intBaseFileType			= RESOURCE_TYPE_FILE_EXPORT_PROVISIONING_UNITEL_DAILY_ORDER;
 	public $_strDeliveryType		= 'FTP';
 	
@@ -80,6 +80,7 @@
  	{
  		// Parent Constructor
  		parent::__construct($intCarrier);
+ 		$this->intBaseCarrier = $intCarrier;
  		
  		// Module Description
  		$this->strDescription		= "Daily Order";

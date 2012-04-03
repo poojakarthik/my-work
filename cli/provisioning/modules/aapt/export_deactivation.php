@@ -18,7 +18,7 @@
 	protected	$_arrFooter;
 	protected	$_ptrFile;
 	
-	public $intBaseCarrier			= CARRIER_AAPT;
+	public $intBaseCarrier			= null;
 	public $intBaseFileType			= RESOURCE_TYPE_FILE_EXPORT_PROVISIONING_AAPT_ESYSTEMS_DEACTIVATIONS;
 	public $_strDeliveryType		= 'FTP';
 	
@@ -41,9 +41,10 @@
  	{
  		// Parent Constructor
  		parent::__construct($intCarrier);
- 		
+ 		$this->intBaseCarrier = $intCarrier;
+
  		// Module Description
- 		$this->strDescription		= "Deactivation";
+ 		$this->strDescription = "Deactivation";
  		
 		//##----------------------------------------------------------------##//
 		// Define Module Configuration and Defaults

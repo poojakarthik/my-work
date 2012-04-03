@@ -43,7 +43,7 @@
  class ImportUnitelDSC extends ImportBase
  {
 	
-	public $intBaseCarrier	= CARRIER_UNITEL;
+	public $intBaseCarrier	= null;
 	public $intBaseFileType	= RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_UNITEL_DAILY_STATUS;
 	
  	//------------------------------------------------------------------------//
@@ -66,7 +66,13 @@
  	{
  		// Parent Constructor
  		parent::__construct($intCarrier);
+ 		$this->intBaseCarrier = $intCarrier;
 		
+ 		$this->_arrModuleConfig['UnitelRejectCarrierTranslationContext'] = array(
+			'Type'			=> DATA_TYPE_INTEGER,
+	   		'Description'	=> "Carrier Translation Context Id - Unitel Reject Codes"
+		);
+
 		//##----------------------------------------------------------------##//
 		// Define File Format
 		//##----------------------------------------------------------------##//
@@ -387,7 +393,7 @@
  			if (stripos($arrPDR['Description'], '<Reason>'))
  			{
  				// Convert Unitel Error Code to Text
- 				$arrPDR['Description']	= str_ireplace('<Reason>', $this->TranslateCarrierCode(CARRIER_TRANSLATION_CONTEXT_UNITEL_REJECT, $arrData['ReasonCode']), $arrPDR['Description']);
+ 				$arrPDR['Description']	= str_ireplace('<Reason>', $this->TranslateCarrierCode($this->GetConfigField('UnitelRejectCarrierTranslationContext'), $arrData['ReasonCode']), $arrPDR['Description']);
  			}
  			
  			$arrPDR['Description']	.= " (Baskets: ".implode(', ', $arrBaskets).")";
@@ -419,7 +425,7 @@
 			if ($arrPDR['Type'] == PROVISIONING_TYPE_LOSS_FULL)
 			{
 				// Add System Note
-				//AddServiceChurnNote($arrOwner['Account'], $arrOwner['AccountGroup'], $arrPDR['FNN'], CARRIER_UNITEL);
+				//AddServiceChurnNote($arrOwner['Account'], $arrOwner['AccountGroup'], $arrPDR['FNN'], $this->intBaseCarrier);
 				CliEcho("{$arrPDR['FNN']} ({$arrPDR['Account']}) has been lost");
 			}
 		}

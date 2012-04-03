@@ -8,7 +8,6 @@
  */
 class NormalisationModuleArborCTOP extends NormalisationModule
 {
-	public $intBaseCarrier	= CARRIER_AAPT;
 	public $intBaseFileType	= RESOURCE_TYPE_FILE_IMPORT_CDR_AAPT_ESYSTEMS_CTOP;
 	
 	const	UNIT_TYPE_SECONDS			= 100;

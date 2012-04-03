@@ -16,6 +16,8 @@ class Application_Handler_Telemarketing extends Application_Handler
 															'CALL_OUTCOME'		=> 'Call Outcome'
 														);
 	
+	private $_iDNCRRequestCarrierId = null;
+
 	// Shows a history of Proposed Dialling Lists and their associated data
 	public function History($subPath)
 	{
@@ -169,7 +171,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			
 			// HACKHACKHACK: Assume we are dealing with the ACMA, and using their File Format			
 			// Create DNCR Export File
-			$objDNCRExport	= new Resource_Type_File_Export_Telemarketing_ACMA_DNCRExport(CARRIER_ACMA);
+			$objDNCRExport	= new Resource_Type_File_Export_Telemarketing_ACMA_DNCRExport($this->_getDNCRRequestCarrierId());
 			$arrErrors		= $objDNCRExport->export($arrFNNs);
 			
 			$objFileExport	= $objDNCRExport->getFileExport();
@@ -220,7 +222,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			$intFileExportId	= (int)$_POST['Telemarketing_DNCRDownload_File'];
 			
 			// HACKHACKHACK: Assume we are dealing with the ACMA, and using their File Format
-			$intCarrier		= CARRIER_ACMA;
+			$intCarrier		= $this->_getDNCRRequestCarrierId();
 			$intFileType	= RESOURCE_TYPE_FILE_IMPORT_TELEMARKETING_ACMA_DNCR_RESPONSE;
 			
 			// Check the File Name format
@@ -366,6 +368,18 @@ class Application_Handler_Telemarketing extends Application_Handler
 			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
 		}
 		die;
+	}
+
+	private function _getDNCRRequestCarrierId() {
+		if (!$this->_iDNCRRequestCarrierId === null) {
+			$aRow = Query::run("SELECT	Carrier
+								FROM	CarrierModule
+								WHERE	Active = 1
+								AND		Type = <carrier_module_type_id>;",
+								array('carrier_module_type_id' => MODULE_TYPE_TELEMARKETING_DNCR_EXPORT))->fetch_assoc();
+			$this->_iDNCRRequestCarrierId = $aRow['Carrier'];
+		}
+		return $this->_iDNCRRequestCarrierId;
 	}
 	
 	private static function _washFNNsByImportFile($intFileImportId)

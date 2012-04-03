@@ -47,8 +47,7 @@
 	
 	private $_resConnection;
  	
-	//public $intBaseCarrier			= CARRIER_OPTUS;
-	public $intBaseFileType			= RESOURCE_TYPE_FILE_RESOURCE_OPTUS;
+	public $intBaseFileType = RESOURCE_TYPE_FILE_RESOURCE_OPTUS;
 	
 	public static function getConfigDefinition()
 	{

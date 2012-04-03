@@ -42,7 +42,7 @@
  */
  class ImportOptusPPR extends ImportBase
  {
-	public $intBaseCarrier	= CARRIER_OPTUS;
+	public $intBaseCarrier	= null;
 	public $intBaseFileType	= RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_OPTUS_PPR;
 	
  	//------------------------------------------------------------------------//
@@ -65,7 +65,18 @@
  	{
  		// Parent Constructor
  		parent::__construct($intCarrier);
+ 		$this->intBaseCarrier = $intCarrier;
 		
+		$this->_arrModuleConfig['EPIDCarrierTranslationContext'] = array(
+			'Type'			=> DATA_TYPE_INTEGER,
+	   		'Description'	=> "Carrier Translation Context Id - Eligible Party ID"
+		);
+		
+		$this->_arrModuleConfig['RejectCarrierTranslationContext'] = array(
+			'Type'			=> DATA_TYPE_INTEGER,
+	   		'Description'	=> "Carrier Translation Context Id - ACIF Reject Codes"
+		);
+
 		//##----------------------------------------------------------------##//
 		// Define File Format
 		//##----------------------------------------------------------------##//
@@ -215,7 +226,7 @@
 			switch ($arrData['LossCode'])
 			{
 				case '01':
-					$strLostTo						= $this->TranslateCarrierCode(CARRIER_TRANSLATION_CONTEXT_EPID, $arrPDR['LossPSD']);
+					$strLostTo						= $this->TranslateCarrierCode($this->GetConfigField('EPIDCarrierTranslationContext'), $arrPDR['LossPSD']);
 					$arrPDR['Description']			= "Churned to ".(($strLostTo) ? $strLostTo : 'Unknown Carrier');
 					$arrPDR['request_status']		= REQUEST_STATUS_COMPLETED;
 					break;
@@ -262,7 +273,7 @@
 					break;
 					
 				case 'UNSUCCESSFUL':
-					$strRejected					= $this->TranslateCarrierCode(CARRIER_TRANSLATION_CONTEXT_REJECT, $arrPDR['LossCode']);
+					$strRejected					= $this->TranslateCarrierCode($this->GetConfigField('RejectCarrierTranslationContext'), $arrPDR['LossCode']);
 					$arrPDR['Description']			= "Churn Rejected ($strRejected)";
 					$arrPDR['request_status']		= REQUEST_STATUS_REJECTED;
 					break;

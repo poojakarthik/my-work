@@ -52,7 +52,7 @@
 	protected	$_arrFooter;
 	protected	$_ptrFile;
 	
-	public $intBaseCarrier		= CARRIER_OPTUS;
+	public $intBaseCarrier		= null;
 	public $intBaseFileType		= RESOURCE_TYPE_FILE_EXPORT_PROVISIONING_OPTUS_PRESELECTION_REVERSAL;
 	public $_strDeliveryType	= 'Email';
 	
@@ -77,6 +77,7 @@
  	{
  		// Parent Constructor
  		parent::__construct($intCarrier);
+ 		$this->intBaseCarrier = $intCarrier;
  		
  		// Carrier Reference / Line Number Init
  		$this->intCarrierReference	= 0;

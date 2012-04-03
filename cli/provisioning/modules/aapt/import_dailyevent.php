@@ -8,7 +8,7 @@
  */
  class ImportAAPTDailyEvent extends ImportBase
  {
-	public $intBaseCarrier		= CARRIER_UNITEL;
+	public $intBaseCarrier		= null;
 	public $intBaseFileType		= RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_AAPT_ESYSTEMS_DAILYEVENT;
 	
 	// Real Record Types
@@ -36,6 +36,7 @@
  	{
  		// Parent Constructor
  		parent::__construct($intCarrier);
+ 		$this->intBaseCarrier = $intCarrier;
 		
 		//##----------------------------------------------------------------##//
 		// Define File Format

@@ -46,9 +46,8 @@
 	const	RESOURCE_TYPE	= RESOURCE_TYPE_FILE_RESOURCE_FTP;
 	
 	private $_resConnection;
-
-	//public $intBaseCarrier			= CARRIER_UNITEL;
-	public $intBaseFileType			= RESOURCE_TYPE_FILE_RESOURCE_FTP;
+	
+	public $intBaseFileType = RESOURCE_TYPE_FILE_RESOURCE_FTP;
 	
 	public static function getConfigDefinition()
 	{

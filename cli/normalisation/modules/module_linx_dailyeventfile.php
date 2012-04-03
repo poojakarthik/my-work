@@ -8,7 +8,6 @@
  */
 class NormalisationModuleLinxDailyEventFile extends NormalisationModule
 {
-	public $intBaseCarrier	= CARRIER_TELSTRA;
 	public $intBaseFileType	= RESOURCE_TYPE_FILE_IMPORT_CDR_LINX_DAILY_EVENT_FILE;
 	
 	/**
