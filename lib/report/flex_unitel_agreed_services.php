@@ -121,7 +121,7 @@ if ($resOutputFile)
 					CliEcho("W", FALSE);
 					
 					// Finalise Output Row
-					$arrService['Carrier']										= GetConstantDescription($intCarrier, 'Carrier');
+					$arrService['Carrier']										= Carrier::getForId($intCarrier)->description;
 					$arrService['Flex Account']									= $arrServiceOwner['Account'];
 					$arrService['Flex Earliest CDR']							= $arrServiceDetails['EarliestCDR'];
 					$arrService['Flex Latest CDR']								= $arrServiceDetails['LatestCDR'];

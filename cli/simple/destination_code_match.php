@@ -35,7 +35,7 @@ if ($resDestinationTranslation === false)
 
 while ($arrDestinationTranslation = $resDestinationTranslation->fetch_assoc())
 {
-	CliEcho("\t[+] ".GetConstantDescription($arrDestinationTranslation['Carrier'], 'Carrier').": ({$arrDestinationTranslation['CarrierCode']}) {$arrDestinationTranslation['Description']}...", false);
+	CliEcho("\t[+] ".Carrier::getForId($arrDestinationTranslation['Carrier'])->description.": ({$arrDestinationTranslation['CarrierCode']}) {$arrDestinationTranslation['Description']}...", false);
 	
 	fwrite($resOutputFile, "\"{$arrDestinationTranslation['Carrier']}\",{$arrDestinationTranslation['CarrierCode']},\"{$arrDestinationTranslation['Description']}\"");
 	

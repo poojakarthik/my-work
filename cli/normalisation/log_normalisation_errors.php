@@ -20,7 +20,7 @@ $selCarrierModules->Execute(Array('Type' => MODULE_TYPE_NORMALISATION_CDR));
 while ($arrModule = $selCarrierModules->Fetch())
 {
 	$arrNormalisationModule[$arrModule['Carrier']][$arrModule['FileType']]	= new $arrModule['Module']($arrModule['Carrier']);
-	CliEcho("\t + ".GetConstantDescription($arrModule['Carrier'], 'Carrier')." : ".$arrNormalisationModule[$arrModule['Carrier']][$arrModule['FileType']]->strDescription);
+	CliEcho("\t + ".Carrier::getForId($arrModule['Carrier'])->description." : ".$arrNormalisationModule[$arrModule['Carrier']][$arrModule['FileType']]->strDescription);
 }
 
 $strLogPath	= FILES_BASE_PATH."/logs/normalisation/cdrerrorlogger/";
@@ -133,7 +133,7 @@ else
 	// Write a Destination Summary for each Carrier
 	foreach ($arrDestinationSummary as $intCarrier=>$arrDestinations)
 	{
-		$strCarrier						= strtolower(str_replace(' ', '', GetConstantDescription($intCarrier, 'Carrier')));
+		$strCarrier						= strtolower(str_replace(' ', '', Carrier::getForId($intCarrier)->description));
 		$resCarrierDestinationSummary	= fopen($strLogPath."{$strRunDate}_destination_{$strCarrier}.csv", 'w');
 		
 		foreach ($arrDestinations as $mixDestination=>$intCount)
@@ -152,7 +152,7 @@ function updateHUD($arrRecordTypeSummary, $arrDestinationSummary, $arrInvalidSum
 	CliEcho("[ RECORD TYPES ]");
 	foreach ($arrRecordTypeSummary as $intCarrier=>$arrRecordTypes)
 	{
-		CliEcho("\t".GetConstantDescription($intCarrier, 'Carrier')." (Unique: ".count($arrRecordTypes)."):");
+		CliEcho("\t".Carrier::getForId($intCarrier)->description." (Unique: ".count($arrRecordTypes)."):");
 		foreach ($arrRecordTypes as $mixRecordType=>$intCount)
 		{
 			CliEcho("\t\t{$mixRecordType}\t: {$intCount}");
@@ -162,7 +162,7 @@ function updateHUD($arrRecordTypeSummary, $arrDestinationSummary, $arrInvalidSum
 	CliEcho("[ DESTINATIONS ]");
 	foreach ($arrDestinationSummary as $intCarrier=>$arrDestinations)
 	{
-		CliEcho("\t".GetConstantDescription($intCarrier, 'Carrier')." (Unique: ".count($arrDestinations)."):");
+		CliEcho("\t".Carrier::getForId($intCarrier)->description." (Unique: ".count($arrDestinations)."):");
 		foreach ($arrDestinations as $mixDestination=>$intCount)
 		{
 			CliEcho("\t\t{$mixDestination}\t: {$intCount}");
@@ -172,7 +172,7 @@ function updateHUD($arrRecordTypeSummary, $arrDestinationSummary, $arrInvalidSum
 	CliEcho("[ INVALID ]");
 	foreach ($arrInvalidSummary as $intCarrier=>$arrFields)
 	{
-		CliEcho("\t".GetConstantDescription($intCarrier, 'Carrier')." (Unique: ".count($arrFields)."):");
+		CliEcho("\t".Carrier::getForId($intCarrier)->description." (Unique: ".count($arrFields)."):");
 		foreach ($arrFields as $strField=>$intCount)
 		{
 			CliEcho("\t\t{$strField}\t: {$intCount}");

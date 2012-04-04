@@ -72,7 +72,7 @@ class ApplicationCollection extends ApplicationBaseClass
  		while ($arrModule = $this->_selCarrierModules->Fetch())
  		{
  			$this->_arrModules[$arrModule['Carrier']][$arrModule['Id']]	= new $arrModule['Module']($arrModule['Id']);
- 			CliEcho("\t + ".GetConstantDescription($arrModule['Carrier'], 'Carrier')." : {$arrModule['Description']}");
+ 			CliEcho("\t + ".Carrier::getForId($arrModule['Carrier'])->description." : {$arrModule['Description']}");
  		}
 	}
 	
@@ -104,7 +104,8 @@ class ApplicationCollection extends ApplicationBaseClass
 		$arrFiles	= array();
 		foreach ($this->_arrModules as $intCarrier=>&$arrFileTypes)
 		{
-			CliEcho("\t * Provider: ".GetConstantDescription($intCarrier, 'Carrier'));
+			$oCarrier = Carrier::getForId($intCarrier);
+			CliEcho("\t * Provider: {$oCarrier->description}");
 			foreach ($arrFileTypes as $iCarrierModuleId=>&$modModule)
 			{
 				// Are we restricting this run to a single CarrierModule?
@@ -117,7 +118,7 @@ class ApplicationCollection extends ApplicationBaseClass
 				CliEcho("\n\t\t * Module #{$iCarrierModuleId}: ".get_class($modModule));
 				
 				// Download paths
-				$strCarrierName			= preg_replace("/\W/", '_', GetConstantDescription($intCarrier, 'Carrier'));
+				$strCarrierName			= preg_replace("/\W/", '_', $oCarrier->description);
 				$strDownloadDirectory	= FILES_BASE_PATH."download/current/{$strCarrierName}/{$iCarrierModuleId}/";
 				@mkdir($strDownloadDirectory, 0777, TRUE);
 				
@@ -467,7 +468,7 @@ class ApplicationCollection extends ApplicationBaseClass
 		else
 		{
 			// Copy to final location
-			$strDestination	= FILES_BASE_PATH."import/".GetConstantDescription($intCarrier, 'Carrier').'/'.GetConstantName($intFileType, 'FileImport').'/';
+			$strDestination	= FILES_BASE_PATH."import/".Carrier::getForId($intCarrier)->description.'/'.GetConstantName($intFileType, 'FileImport').'/';
 			@mkdir($strDestination, 0777, TRUE);
 			$strNewFileName	= basename($strFilePath);
 			$strNewFileName	.= date("_Ymdhis");

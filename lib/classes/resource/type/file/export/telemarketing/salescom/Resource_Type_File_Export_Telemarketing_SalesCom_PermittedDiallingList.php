@@ -49,7 +49,7 @@ class Resource_Type_File_Export_Telemarketing_SalesCom_PermittedDiallingList
 		
 		// Dump the data to the Export file
 		$strFileName	= 'permitted_'.date("YmdHis").'.csv';
-		$strCarrier		= GetConstantName($this->_intCarrier, 'Carrier');
+		$strCarrier		= Carrier::getForId($this->_intCarrier)->name;
 		$strFilePath	= FILES_BASE_PATH."export/telemarketing/{$strCarrier}/".__CLASS__.'/'.$strFileName;
 		
 		if (!is_dir(dirname($strFilePath)))

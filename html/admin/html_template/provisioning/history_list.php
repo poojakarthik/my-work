@@ -348,7 +348,7 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 			$strTimeStampCell	= date("j M y H:i:s", strtotime($arrRecord['TimeStamp']));
 			
 			$strRequestType	= GetConstantDescription($arrRecord['Type'], "provisioning_type");
-			$strCarrier		= GetConstantDescription($arrRecord['Carrier'], "Carrier");
+			$strCarrier		= Carrier::getForId($arrRecord['Carrier'])->description;
 			
 			$strDescription = htmlspecialchars($arrRecord['Description'], ENT_QUOTES);
 			

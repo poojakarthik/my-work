@@ -2168,7 +2168,7 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 		{
 			// The request could not be made
 			$strRequest = GetConstantDescription($intRequest, "provisioning_type");
-			$strCarrier	= GetConstantDescription($intCarrier, "Carrier");
+			$strCarrier	= Carrier::getForId($intCarrier)->description;
 			$this->_strErrorMsg = "Unexpected database error occurred while trying to make a '$strRequest' request to the '$strCarrier' carrier";
 			return FALSE;
 		}

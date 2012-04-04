@@ -25,7 +25,7 @@ if ($intCDR)
 	while ($arrModule = $selCarrierModules->Fetch())
 	{
 		$arrNormalisationModule[$arrModule['Carrier']][$arrModule['FileType']]	= new $arrModule['Module']($arrModule['Carrier']);
-		CliEcho("\t + ".GetConstantDescription($arrModule['Carrier'], 'Carrier')." : ".$arrNormalisationModule[$arrModule['Carrier']][$arrModule['FileType']]->strDescription);
+		CliEcho("\t + ".Carrier::getForId($arrModule['Carrier'])->description." : ".$arrNormalisationModule[$arrModule['Carrier']][$arrModule['FileType']]->strDescription);
 	}
 	CliEcho();
 	

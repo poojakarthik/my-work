@@ -82,7 +82,7 @@ define("PROVISIONING_DEBUG_MODE",	FALSE);
  		while ($arrModule = $this->_selCarrierModules->Fetch())
  		{
  			$this->_arrImportFiles[$arrModule['Carrier']][$arrModule['FileType']]	= new $arrModule['Module']($arrModule['Carrier']);
- 			CliEcho("\t + ".GetConstantDescription($arrModule['Carrier'], 'Carrier')." : ".$this->_arrImportFiles[$arrModule['Carrier']][$arrModule['FileType']]->strDescription);
+ 			CliEcho("\t + ".Carrier::getForId($arrModule['Carrier'])->description." : ".$this->_arrImportFiles[$arrModule['Carrier']][$arrModule['FileType']]->strDescription);
  		}
  		
  		// Init Export Modules
@@ -98,7 +98,7 @@ define("PROVISIONING_DEBUG_MODE",	FALSE);
  				$this->_arrExportModules[$arrModule['Carrier']][$intType]	= $this->_arrExportFiles[$arrModule['Carrier']][$arrModule['FileType']];
  			}
  			
- 			CliEcho("\t + ".GetConstantDescription($arrModule['Carrier'], 'Carrier')." : ".$this->_arrExportFiles[$arrModule['Carrier']][$arrModule['FileType']]->strDescription);
+ 			CliEcho("\t + ".Carrier::getForId($arrModule['Carrier'])->description." : ".$this->_arrExportFiles[$arrModule['Carrier']][$arrModule['FileType']]->strDescription);
  		}
  		CliEcho('');
  	}
@@ -376,7 +376,7 @@ define("PROVISIONING_DEBUG_MODE",	FALSE);
 				// No module
 				$arrRequest['Status']	= REQUEST_STATUS_NO_MODULE;
 				
-				$strCarrier	= GetConstantDescription($arrRequest['Carrier'], 'Carrier');
+				$strCarrier	= Carrier::getForId($arrRequest['Carrier'])->description;
 				$strType	= GetConstantDescription($arrRequest['Type'], 'provisioning_type');
 				CliEcho("[ FAILED ]\n\t\t- No module ($strCarrier: $strType)");
 			}
@@ -393,7 +393,7 @@ define("PROVISIONING_DEBUG_MODE",	FALSE);
 			{
 				if ($arrModules[$intType]->bolCanRunModule && !$arrModules[$intType]->bolExported)
 				{
-					$strCarrier	= GetConstantDescription($intCarrier, 'Carrier');
+					$strCarrier	= Carrier::getForId($intCarrier)->description;
 					$strType	= $arrModules[$intType]->strDescription;
 	 				CliEcho("\t + $strCarrier: $strType...\t\t\t", FALSE);
 	 				$mixResult	= $arrModules[$intType]->Export();

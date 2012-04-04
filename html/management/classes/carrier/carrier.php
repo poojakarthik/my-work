@@ -96,7 +96,7 @@
 			
 			$strName = 'Unknown';
 			
-			$strName = GetConstantDescription($intType, "Carrier");
+			$strName = Carrier::getForId($intType)->description;
 			
 			$this->oblintType		= $this->Push (new dataInteger	('Id',		$intType));
 			$this->oblstrName		= $this->Push (new dataString	('Name',	$strName));

@@ -127,7 +127,7 @@ class AppTemplateMisc extends ApplicationTemplate
 		
 		foreach ($arrRecordSet as $arrRecord)
 		{
-			$strCarrier		= GetConstantDescription($arrRecord['Carrier'], "Carrier");
+			$strCarrier		= Carrier::getForId($arrRecord['Carrier'])->description;
 			$strTotalCost	= OutputMask()->MoneyValue($arrRecord['TotalCost']);
 			$strEarliest	= date("d/m/Y", strtotime($arrRecord['EarliestStartDatetime']));
 			$strLatest		= date("d/m/Y", strtotime($arrRecord['LatestStartDatetime']));

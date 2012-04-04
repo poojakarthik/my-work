@@ -119,7 +119,7 @@
  		while ($arrModule = $this->_selCarrierModules->Fetch())
  		{
  			$this->_arrPaymentModules[$arrModule['Carrier']][$arrModule['FileType']]	= new $arrModule['Module']($arrModule['Carrier']);
- 			CliEcho("\t + ".GetConstantDescription($arrModule['Carrier'], 'Carrier')." : ".$this->_arrPaymentModules[$arrModule['Carrier']][$arrModule['FileType']]->strDescription);
+ 			CliEcho("\t + ".Carrier::getForId($arrModule['Carrier'])->description." : ".$this->_arrPaymentModules[$arrModule['Carrier']][$arrModule['FileType']]->strDescription);
  		}
 		
  		// Load Direct Debit CarrierModules
@@ -130,7 +130,7 @@
  			$modModule	= new $arrModule['Module']($arrModule['Carrier'], $arrModule['customer_group']);
  			$this->_arrDirectDebitModules[$arrModule['customer_group']][$modModule->intBillingType]	= $modModule;
  			
- 			CliEcho("\t + ".Customer_Group::getForId($arrModule['customer_group'])->externalName." : ".GetConstantDescription($arrModule['Carrier'], 'Carrier')." : ".GetConstantDescription($modModule->intBillingType, 'billing_type'));
+ 			CliEcho("\t + ".Customer_Group::getForId($arrModule['customer_group'])->externalName." : ".Carrier::getForId($arrModule['Carrier'])->description." : ".GetConstantDescription($modModule->intBillingType, 'billing_type'));
  		}
  		
  		CliEcho();

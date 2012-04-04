@@ -20,7 +20,7 @@ $intCarrier			= (int)$argv[1];
 $intCustomerGroup	= (int)$argv[2];
 $strClassName		= trim($argv[3]);
 
-if (!GetConstantName($intCarrier, 'Carrier'))
+if (!Carrier::getForId($intCarrier, true))
 {
 	CliEcho("ERROR: '$intCarrier' is not a valid Carrier Id!\n");
 	die;

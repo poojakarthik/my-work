@@ -218,7 +218,7 @@
  		while ($arrModule = $this->_selCarrierModules->Fetch())
  		{
  			$this->_arrNormalisationModule[$arrModule['Carrier']][$arrModule['FileType']]	= new $arrModule['Module']($arrModule['Carrier']);
- 			CliEcho("\t + ".GetConstantDescription($arrModule['Carrier'], 'Carrier')." : ".$this->_arrNormalisationModule[$arrModule['Carrier']][$arrModule['FileType']]->strDescription);
+ 			CliEcho("\t + ".Carrier::getForId($arrModule['Carrier'])->description." : ".$this->_arrNormalisationModule[$arrModule['Carrier']][$arrModule['FileType']]->strDescription);
  		}
 
 

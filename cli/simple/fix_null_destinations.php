@@ -64,7 +64,7 @@ try
 			throw new Exception("Record {$intLine}'s Carrier Description is invalid ('{$arrLine[2]}')");
 		}
 		
-		CliEcho("\t\t".GetConstantDescription($arrDestinationTranslation['Carrier'], 'Carrier').": '{$arrDestinationTranslation['Description']} ({$arrDestinationTranslation['CarrierCode']})'\t==> ", false); 
+		CliEcho("\t\t".Carrier::getForId($arrDestinationTranslation['Carrier'])->description.": '{$arrDestinationTranslation['Description']} ({$arrDestinationTranslation['CarrierCode']})'\t==> ", false); 
 		
 		// Is there a Flex Destination defined?
 		if (!$arrDestination['Code'] && !$arrDestination['Description'])
@@ -108,7 +108,7 @@ try
 		}
 		else
 		{
-			throw new Exception("The ".GetConstantDescription($arrDestinationTranslation['Carrier'], 'Carrier')." Destination '{$arrDestinationTranslation['Description']} ({$arrDestinationTranslation['CarrierCode']})' doesn't exist!");
+			throw new Exception("The ".Carrier::getForId($arrDestinationTranslation['Carrier'])->description." Destination '{$arrDestinationTranslation['Description']} ({$arrDestinationTranslation['CarrierCode']})' doesn't exist!");
 		}
 	}
 	

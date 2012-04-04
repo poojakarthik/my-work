@@ -475,7 +475,7 @@ function ReplaceAliases($strMessage, $arrAliases)
  */
 function GetCarrierName($intCarrier)
 {
-	return GetConstantDescription($intCarrier, 'Carrier');
+	return Carrier::getForId($intCarrier)->description;
 }
 
 //------------------------------------------------------------------------//

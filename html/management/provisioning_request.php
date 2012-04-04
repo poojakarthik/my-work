@@ -83,7 +83,7 @@
 
 		$strNote  = "$strBarAction\n";
 		$strNote .= "Service: ". $srvService->Pull('FNN')->getValue() ."\n";
-		$strNote .= "Carrier: " . GetConstantDescription($_POST ['Carrier'], 'Carrier') . "\n";
+		$strNote .= "Carrier: " . Carrier::getForId($_POST ['Carrier'])->description . "\n";
 
 		$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE_TYPE, $strEmployeeId, $intAccountGroup, $intAccountId, $intServiceId, NULL);
 	}

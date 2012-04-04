@@ -45,7 +45,7 @@ class Resource_Type_File_Export_Telemarketing_CallReconciliationReport
 		
 		// Dump the data to the Export file
 		$sFileName	= 'reconciled_'.date("YmdHis").'.csv';
-		$sCarrier	= GetConstantName($this->_iCarrier, 'Carrier');
+		$sCarrier	= Carrier::getForId($this->_iCarrier)->name;
 		$sFilePath	= FILES_BASE_PATH."export/telemarketing/{$sCarrier}/".__CLASS__.'/'.$sFileName;
 		
 		$sCSVContents	= $oCSVFile->save();

@@ -245,7 +245,7 @@ class Module_Config
 								break;
 							
 							case 'carrier':
-								$strReplace	= GetConstantDescription($this->_intModuleCarrier, 'Carrier');
+								$strReplace	= Carrier::getForId($this->_intModuleCarrier)->description;
 								break;
 								
 							default:

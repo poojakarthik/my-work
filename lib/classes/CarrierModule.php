@@ -169,7 +169,7 @@ class CarrierModule
 	 						break;
 	 					
 	 					case 'carrier':
-	 						$strReplace	= GetConstantDescription($this->_intModuleCarrier, 'Carrier');
+	 						$strReplace	= Carrier::getForId($this->_intModuleCarrier)->description;
 	 						break;
 	 						
 	 					default:
@@ -413,7 +413,7 @@ class CarrierModule
 	 	$insCarrierModule		= new StatementInsert("CarrierModule");
 		$insCarrierModuleConfig	= new StatementInsert("CarrierModuleConfig");
 		
-	 	if (!GetConstantName($intCarrier, 'Carrier'))
+	 	if (!Carrier::getForId($intCarrier, true))
 	 	{
 	 		// Invalid Carrier Specified
 	 		return "Invalid Carrier '$intCarrier' Specified";
