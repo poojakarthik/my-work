@@ -237,11 +237,10 @@ abstract class NormalisationModule extends CarrierModule
  		// Call CarrierModule Constructor
  		parent::__construct($intCarrier, MODULE_TYPE_NORMALISATION_CDR);
 		
-		$this->_arrModuleConfig['CarrierTranslationContextId'] = array(
-			'Type'			=> DATA_TYPE_INTEGER,
-	   		'Description'	=> "Carrier Translation Context Id"
-		);
-
+		// Module configuration
+		$this->_arrModuleConfig['CarrierTranslationContextId']['Type']			= DATA_TYPE_INTEGER;
+	   	$this->_arrModuleConfig['CarrierTranslationContextId']['Description']	= "Carrier Translation Context Id";
+		
 		//$->_selFindOwner 			= new StatementSelect("Service", "AccountGroup, Account, Id", "FNN = <fnn> AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
 		//$this->_selFindOwnerIndial100	= new StatementSelect("Service", "AccountGroup, Account, Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE)AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
 		$strAccountStatus	= ACCOUNT_STATUS_ACTIVE.", ".ACCOUNT_STATUS_CLOSED.", ".ACCOUNT_STATUS_DEBT_COLLECTION.", ".ACCOUNT_STATUS_SUSPENDED;

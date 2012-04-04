@@ -68,10 +68,9 @@
  		parent::__construct($intCarrier);
  		$this->intBaseCarrier = $intCarrier;
 		
- 		$this->_arrModuleConfig['UnitelRejectCarrierTranslationContext'] = array(
-			'Type'			=> DATA_TYPE_INTEGER,
-	   		'Description'	=> "Carrier Translation Context Id - Unitel Reject Codes"
-		);
+		// Module configuration
+ 		$this->_arrModuleConfig['UnitelRejectCarrierTranslationContext']['Type'] 		= DATA_TYPE_INTEGER;
+	   	$this->_arrModuleConfig['UnitelRejectCarrierTranslationContext']['Description']	= "Carrier Translation Context Id - Unitel Reject Codes";
 
 		//##----------------------------------------------------------------##//
 		// Define File Format

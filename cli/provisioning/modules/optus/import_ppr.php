@@ -67,16 +67,13 @@
  		parent::__construct($intCarrier);
  		$this->intBaseCarrier = $intCarrier;
 		
-		$this->_arrModuleConfig['EPIDCarrierTranslationContext'] = array(
-			'Type'			=> DATA_TYPE_INTEGER,
-	   		'Description'	=> "Carrier Translation Context Id - Eligible Party ID"
-		);
+		// Module configuration
+		$this->_arrModuleConfig['EPIDCarrierTranslationContext']['Type'] 		= DATA_TYPE_INTEGER;
+	   	$this->_arrModuleConfig['EPIDCarrierTranslationContext']['Description']	= "Carrier Translation Context Id - Eligible Party ID";
 		
-		$this->_arrModuleConfig['RejectCarrierTranslationContext'] = array(
-			'Type'			=> DATA_TYPE_INTEGER,
-	   		'Description'	=> "Carrier Translation Context Id - ACIF Reject Codes"
-		);
-
+		$this->_arrModuleConfig['RejectCarrierTranslationContext']['Type']			= DATA_TYPE_INTEGER;
+	   	$this->_arrModuleConfig['RejectCarrierTranslationContext']['Description']	= "Carrier Translation Context Id - ACIF Reject Codes";
+		
 		//##----------------------------------------------------------------##//
 		// Define File Format
 		//##----------------------------------------------------------------##//
