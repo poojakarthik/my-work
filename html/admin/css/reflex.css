@@ -51,7 +51,7 @@ div.reflex-content
 	margin-right		: auto;
 	border				: .1em solid #333;
 	border-spacing		: 0;
-	-moz-border-radius	: 6px;
+	border-radius	: 6px;
 }
 
 div.reflex-content div.header,
@@ -71,8 +71,8 @@ div.reflex-content div.footer
 
 div.reflex-content div.header
 {
-	-moz-border-radius-topleft	: 3px;
-	-moz-border-radius-topright	: 3px;
+	border-top-left-radius	: 3px;
+	border-top-right-radius	: 3px;
 }
 
 div.reflex-content div.body
