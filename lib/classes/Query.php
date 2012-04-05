@@ -61,7 +61,11 @@
 	 	
 	 	$aProfiling				= array();
 		$aProfiling['sQuery']	= $strQuery;
-	 	
+
+		$aExecutionProfile = array(
+			'fStartTime' => microtime(true)
+		);
+
 	 	// run query
 	 	$mixResult = mysqli_query($this->db->refMysqliConnection, $strQuery);
 	 	
@@ -99,7 +103,7 @@
 	 	}
 	 	
 	 	$aExecutionProfile['fDuration']	= microtime(true) - $aExecutionProfile['fStartTime'];
-	 	$aExecutionProfile['iResults']	= $this->_stmtSqlStatment->num_rows;
+	 	$aExecutionProfile['iResults']	= isset($mixResult->num_rows) ? $mixResult->num_rows : null;
 		if ($this->db->getProfilingEnabled()) {
 			$aProfiling['aExecutions'][]	= $aExecutionProfile;
 		}

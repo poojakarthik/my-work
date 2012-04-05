@@ -345,28 +345,8 @@ final class Flex
 		{
 			return TRUE;
 		}
-
-		// Create an error class so that we can handle this failure gracefully
-		// (This will only work as of PHP 5.3.0. Until then this would just complicate matters!)
-		if (version_compare(PHP_VERSION, '5.3.0', '>='))
-		{
-			self::autoloadError($strClassName);
-		}
+		
 		return TRUE;
-	}
-
-	private static function autoloadError($strClassName)
-	{
-		eval("class $strClassName {
-			public function __construct() {
-				throw new AutoloadException('Class $strClassName not found');
-			}
-
-			// As of PHP 5.3.0 ...
-			public static function __callStatic(\$m, \$args) {
-				throw new AutoloadException('Class $strClassName not found');
-			}
-		}");
 	}
 
 	public static function getUrlBase()
@@ -687,6 +667,81 @@ final class Flex
 			throw new Exception_Assertion($strMessage, $strDebugData, $strAssertionName);
 		}
 		return (bool)$mixExpression;
+	}
+
+	const ERROR_HANDLER_LOG_CONTEXT = false;
+	public static function errorHandlerLog($iLevel, $sMessage, $sFile, $iLine, $aContext) {
+		if (self::_isErrorLevelSuppressed($iLevel)) {
+			// Suppressed: Do nothing (or do we want to pass through?  Probably not)
+			return true;
+		}
+
+		// Log it
+		$sDescription = self::_getErrorName($iLevel)." (".var_export($iLevel, true)."): ".
+					$sMessage.
+					(($sFile && $iLine) ? " @ {$sFile}:{$iLine}" : '').
+					(($aContext && self::ERROR_HANDLER_LOG_CONTEXT) ? " with context ".print_r($aContext, true) : '');
+		Log::get()->log($sDescription);
+
+		return true;
+	}
+
+	public static function errorHandlerException($iLevel, $sMessage, $sFile, $iLine, $aContext) {
+		if (!self::_isErrorLevelSuppressed($iLevel)) {
+			// Suppressed: Do nothing (or do we want to pass through?  Probably not)
+			return true;
+		}
+
+		// Throw an ErrorException
+		// NOTE: We lose the context, which is probably not desirable.  We'll need our own Exceptions to handle this for us.
+		throw new ErrorException(self::_getErrorName($iLevel).": {$sMessage}", 0, $iLevel, $sFile, $iLine);
+	}
+
+	private static function _isErrorLevelSuppressed($iLevel) {
+		$iReportingLevel = error_reporting();
+		if (!$iReportingLevel) {
+			// Suppressed by "@" operator
+			//Log::get()->log("Error Level ".var_export($iLevel, true)." suppressed by @ operator");
+			return true;
+		} elseif (!($iReportingLevel & $iLevel)) {
+			//Log::get()->log("Error Level ".var_export($iLevel, true)." suppressed by error reporting mask {$iReportingLevel}");
+			// Suppressed by error_reporting mask
+			return true;
+		}
+		// Not suppressed
+		return false;
+	}
+
+	private static function _getErrorName($iLevel) {
+		// NOTE: We're doing this as a function, because some errors aren't available until PHP 5.3
+		static $aErrorNames;
+		if (!isset($aErrorNames)) {
+			// Define Error Names
+			$aErrorNames = array(
+				E_ERROR => 'E_ERROR',
+				E_WARNING => 'E_WARNING',
+				E_PARSE => 'E_PARSE',
+				E_NOTICE => 'E_NOTICE',
+				E_CORE_ERROR => 'E_CORE_ERROR',
+				E_CORE_WARNING => 'E_CORE_WARNING',
+				E_COMPILE_ERROR => 'E_COMPILE_ERROR',
+				E_COMPILE_WARNING => 'E_COMPILE_WARNING',
+				E_USER_ERROR => 'E_USER_ERROR',
+				E_USER_WARNING => 'E_USER_WARNING',
+				E_USER_NOTICE => 'E_USER_NOTICE',
+				E_STRICT => 'E_STRICT',
+				E_RECOVERABLE_ERROR => 'E_RECOVERABLE_ERROR'
+			);
+
+			// These errors are only available from PHP 5.3 onwards
+			if (version_compare(PHP_VERSION, '5.3.0', '>=')) {
+				$aErrorNames = array_merge($aErrorNames, array(
+					E_DEPRECATED => 'E_DEPRECATED',
+					E_USER_DEPRECATED => 'E_USER_DEPRECATED'
+				));
+			}
+		}
+		return isset($aErrorNames[$iLevel]) ? $aErrorNames[$iLevel] : null;
 	}
 }
 

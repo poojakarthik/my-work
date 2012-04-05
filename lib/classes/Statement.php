@@ -248,10 +248,10 @@
 		}
 		else if (is_object($mValue))
 		{
-			if ($mValue->mFrom || $mValue->mTo)
+			if (isset($mValue->mFrom) || isset($mValue->mTo))
 			{
 				// Range of values
-				if ($mValue->mFrom && $mValue->mTo)
+				if (isset($mValue->mFrom) && isset($mValue->mTo))
 				{
 					// BETWEEN
 					$sFromPlaceHolder						= "{$sOriginalAlias}{$sPlaceHolderSuffix}0";
@@ -260,14 +260,14 @@
 					$aResult['aValues'][$sToPlaceHolder]	= $mValue->mTo;
 					$aWhereParts[]							= "{$sAlias} BETWEEN <{$sFromPlaceHolder}> AND <{$sToPlaceHolder}>";
 				}
-				else if ($mValue->mFrom)
+				else if (isset($mValue->mFrom))
 				{
 					// > (Greater than)
 					$sPlaceHolder						= $sOriginalAlias.$sPlaceHolderSuffix;
 					$aResult['aValues'][$sPlaceHolder]	= $mValue->mFrom;
 					$aWhereParts[]						= "{$sAlias} >= <{$sPlaceHolder}>";
 				}
-				else if ($mValue->mTo)
+				else if (isset($mValue->mTo))
 				{
 					// < (Less than)
 					$sPlaceHolder						= $sOriginalAlias.$sPlaceHolderSuffix;
@@ -275,28 +275,28 @@
 					$aWhereParts[]						= "{$sAlias} <= <{$sPlaceHolder}>";
 				}
 			}
-			else if ($mValue->sStartsWith)
+			else if (isset($mValue->sStartsWith))
 			{
 				// LIKE, starting with...
 				$sPlaceHolder						= $sOriginalAlias.$sPlaceHolderSuffix;
 				$aResult['aValues'][$sPlaceHolder]	= "{$mValue->sStartsWith}%";
 				$aWhereParts[]						= "{$sAlias} LIKE <{$sPlaceHolder}>";
 			}
-			else if ($mValue->sEndsWith)
+			else if (isset($mValue->sEndsWith))
 			{
 				// LIKE, ending with...
 				$sPlaceHolder						= $sOriginalAlias.$sPlaceHolderSuffix;
 				$aResult['aValues'][$sPlaceHolder]	= "%{$mValue->sEndsWith}";
 				$aWhereParts[]						= "{$sAlias} LIKE <{$sPlaceHolder}>";
 			}
-			else if ($mValue->sContains)
+			else if (isset($mValue->sContains))
 			{
 				// LIKE, containing...
 				$sPlaceHolder						= $sOriginalAlias.$sPlaceHolderSuffix;
 				$aResult['aValues'][$sPlaceHolder]	= "%{$mValue->sContains}%";
 				$aWhereParts[]						= "{$sAlias} LIKE <{$sPlaceHolder}>";
 			}
-			else if ($mValue->aValues && count($mValue->aValues) > 0)
+			else if (isset($mValue->aValues) && count($mValue->aValues) > 0)
 			{
 				// An array of values, convert to IN (?,?,?)
 				$iValueIndex	= 0;

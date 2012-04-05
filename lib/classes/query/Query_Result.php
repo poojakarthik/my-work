@@ -93,7 +93,7 @@ class Query_Result {
 	}
 	
 	private function _getField($iPosition) {
-		if (!$this->_aFields[$iPosition]) {
+		if (!isset($this->_aFields[$iPosition]) || !$this->_aFields[$iPosition]) {
 			$this->_aFields[$iPosition] = $this->_mResult->fetch_field_direct($iPosition);
 		}
 		return $this->_aFields[$iPosition];
