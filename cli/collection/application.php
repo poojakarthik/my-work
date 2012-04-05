@@ -178,7 +178,7 @@ class ApplicationCollection extends ApplicationBaseClass
 									next($arrDownloadedFiles);
 									
 									// Compression
-									if ($arrFile['FileType']['Compression'])
+									if (isset($arrFile['FileType']['Compression']) && $arrFile['FileType']['Compression'])
 									{
 										$sCompressedFileName	= basename($arrFile['LocalPath']);
 										
@@ -254,7 +254,7 @@ class ApplicationCollection extends ApplicationBaseClass
 									}
 									
 									// If this file is an archive, unpack it
-									if ($arrFile['FileType']['ArchiveType'])
+									if (isset($arrFile['FileType']['ArchiveType']) && $arrFile['FileType']['ArchiveType'])
 									{
 										CliEcho("\n\t\t\t\t\t * Unpacking Archive... ", FALSE);
 										$strPassword	= $arrFile['FileType']['ArchivePassword'];
@@ -309,7 +309,7 @@ class ApplicationCollection extends ApplicationBaseClass
 						CliEcho("\t\t\t\t + $strRelativePath\t\t\t", FALSE);
 						
 						// If this is not a Download-only file, them Import
-						if (!$arrDownloadedFile['FileType']['DownloadOnly'])
+						if (!isset($arrDownloadedFile['FileType']['DownloadOnly']) || !$arrDownloadedFile['FileType']['DownloadOnly'])
 						{
 							$mixImportResult	= $this->ImportModuleFile($arrDownloadedFile, $modModule);
 							if (is_int($mixImportResult) || $mixImportResult === TRUE)

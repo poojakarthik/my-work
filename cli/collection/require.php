@@ -42,4 +42,6 @@ VixenRequire("cli/collection/modules/module_fopen_ftp.php");
 
 VixenRequire("cli/collection/modules/module_ftp_new.php");
 
+VixenRequire("cli/collection/modules/module_ispone.php");
+
 ?>
