@@ -165,9 +165,9 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			}
 			
 			$strStatusCell	.= " />";
-			
-			$strCarrierFullServiceCell	= Carrier::getForId($arrRatePlan['CarrierFullService'])->description;
-			$strCarrierPreselectionCell	= Carrier::getForId($arrRatePlan['CarrierPreselection'])->description;
+
+			$strCarrierFullServiceCell	= ($arrRatePlan['CarrierFullService']) ? Carrier::getForId($arrRatePlan['CarrierFullService'])->description : '';
+			$strCarrierPreselectionCell	= ($arrRatePlan['CarrierPreselection']) ? Carrier::getForId($arrRatePlan['CarrierPreselection'])->description : '';
 			
 			switch ($arrRatePlan['ServiceType'])
 			{
