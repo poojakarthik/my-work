@@ -1,7 +1,33 @@
 <?php
-class Collection_Scenario extends ORM_Cached {
-	protected $_strTableName = "collection_scenario";
-	protected static $_strStaticTableName = "collection_scenario";
+class Carrier_Translation extends ORM_Cached {
+	protected $_strTableName = "carrier_translation";
+	protected static $_strStaticTableName = "carrier_translation";
+	
+	// One of the few classes we allow a delete() for, so we can remove translation configurations
+	public function delete() {
+		$this->_delete();
+	}
+	
+	public static function getForCarrierCode($mCarrierTranslationContext, $mInValue, $bSilentFail=false) {
+		$mResult = Query::run("
+			SELECT		*
+			FROM		carrier_translation
+			WHERE		carrier_translation_context_id = <carrier_translation_context_id>
+						AND in_value = <in_value>
+			ORDER BY	id DESC
+			LIMIT		1;
+		", array(
+			'carrier_translation_context_id' => ORM::extractId($mCarrierTranslationContext),
+			'in_value' => (string)$mInValue
+		));
+		if ($aRecord = $mResult->fetch_assoc()) {
+			return new self($aRecord);
+		} elseif (!$bSilentFail) {
+			throw new Exception("No Translation found for Carrier {$iCarrier} and Code '{$mCarrierCode}'");
+		} else {
+			return false;
+		}
+	}
 	
 	protected static function getCacheName() {
 		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
@@ -16,54 +42,31 @@ class Collection_Scenario extends ORM_Cached {
 		return 100;
 	}
 	
-	public function getForWorkingStatus($mWorkingStatusIds) {
-		$aWorkingStatusIds = (is_array($mWorkingStatusIds) ? $mWorkingStatusIds : array($mWorkingStatusIds));
-		$oSelect = self::_preparedStatement('selByWorkingStatus');
-		if ($oSelect->Execute(array('working_status_ids' => implode(',', $aWorkingStatusIds))) === false) {
-			throw new Exception_Database("Failed to get scenarios for working statuses '".implode(',', $aWorkingStatusIds)."'. ".$oSelect->Error());
-		}
-		return ORM::importResult($oSelect->FetchAll(), 'Collection_Scenario');
-	}
-
-	public function isActive() {
-		return $this->working_status_id == WORKING_STATUS_ACTIVE;
-	}
-
-	public function isDraft() {
-		return $this->working_status_id == WORKING_STATUS_DRAFT;
-	}
-	
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
 	//---------------------------------------------------------------------------------------------------------------------------------//
 
-	public static function clearCache()
-	{
+	public static function clearCache() {
 		parent::clearCache(__CLASS__);
 	}
 
-	protected static function getCachedObjects()
-	{
+	protected static function getCachedObjects() {
 		return parent::getCachedObjects(__CLASS__);
 	}
 	
-	protected static function addToCache($mixObjects)
-	{
+	protected static function addToCache($mixObjects) {
 		parent::addToCache($mixObjects, __CLASS__);
 	}
 
-	public static function getForId($intId, $bolSilentFail=false)
-	{
+	public static function getForId($intId, $bolSilentFail=false) {
 		return parent::getForId($intId, $bolSilentFail, __CLASS__);
 	}
 	
-	public static function getAll($bolForceReload=false)
-	{
+	public static function getAll($bolForceReload=false) {
 		return parent::getAll($bolForceReload, __CLASS__);
 	}
 	
-	public static function importResult($aResultSet)
-	{
+	public static function importResult($aResultSet) {
 		return parent::importResult($aResultSet, __CLASS__);
 	}
 	
@@ -71,17 +74,6 @@ class Collection_Scenario extends ORM_Cached {
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 
-	/**
-	 * _preparedStatement()
-	 *
-	 * Access a Static Cache of Prepared Statements used by this Class
-	 *
-	 * @param	string		$strStatement						Name of the statement
-	 *
-	 * @return	Statement										The requested Statement
-	 *
-	 * @method
-	 */
 	protected static function _preparedStatement($strStatement) {
 		static $arrPreparedStatements = array();
 		if (isset($arrPreparedStatements[$strStatement])) {
@@ -96,11 +88,7 @@ class Collection_Scenario extends ORM_Cached {
 				case 'selAll':
 					$arrPreparedStatements[$strStatement] = new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
 					break;
-
-				case 'selByWorkingStatus':
-					$arrPreparedStatements[$strStatement] = new StatementSelect(self::$_strStaticTableName, "*", "working_status_id IN (<working_status_ids>)", "name ASC");
-					break;
-					
+				
 				// INSERTS
 				case 'insSelf':
 					$arrPreparedStatements[$strStatement] = new StatementInsert(self::$_strStaticTableName);
@@ -120,4 +108,3 @@ class Collection_Scenario extends ORM_Cached {
 		}
 	}
 }
-?>

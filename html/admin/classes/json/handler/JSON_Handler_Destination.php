@@ -15,9 +15,13 @@ class JSON_Handler_Destination extends JSON_Handler
 	
 	public function getDestinationContexts()
 	{
-		$bIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		$bIsGod = Employee::getForId(Flex::getUserId())->isGod();
+		
 		try
 		{
+			throw new Exception(
+				"This functionality is not available at this time.".($bIsGod ? '  Currently based on deprecated `cdr_call_type_translation`, needs to be converted to `carrier_translation`' : '')
+			);
 			$aORMs					= Destination_Context::getAll();
 			$aDestinationContexts	= array();
 			foreach ($aORMs as $iDestinationContextId=>$oDestinationContext)
@@ -47,11 +51,15 @@ class JSON_Handler_Destination extends JSON_Handler
 	
 	public function ImportTranslations($oDestinations, $iCarrierId)
 	{
-		$bIsGod		= Employee::getForId(Flex::getUserId())->isGod();
+		$bIsGod = Employee::getForId(Flex::getUserId())->isGod();
+
 		$iCarrierId	= (int)$iCarrierId;
 		
 		try
 		{
+			throw new Exception(
+				"This functionality is not available at this time.".($bIsGod ? '  Currently based on deprecated `cdr_call_type_translation`, needs to be converted to `carrier_translation`' : '')
+			);
 			//throw new Exception(print_r((array)$oDestinations, true));
 			
 			if (!DataAccess::getDataAccess()->TransactionStart())
@@ -154,6 +162,9 @@ class JSON_Handler_Destination extends JSON_Handler
 		$bIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 		try
 		{
+			throw new Exception(
+				"This functionality is not available at this time.".($bIsGod ? '  Currently based on deprecated `cdr_call_type_translation`, needs to be converted to `carrier_translation`' : '')
+			);
 			//
 			// NOTE: 	This is designed to be used by a Control_Field_Text_AJAX object on the client side
 			//			As a result, the count only, offset and sorting data are ignored.
@@ -205,6 +216,9 @@ class JSON_Handler_Destination extends JSON_Handler
 	{
 		try
 		{
+			throw new Exception(
+				"This functionality is not available at this time.".($bIsGod ? '  Currently based on deprecated `cdr_call_type_translation`, needs to be converted to `carrier_translation`' : '')
+			);
 			return	array(
 						'Success'		=> true,
 						'aResults'		=> self::matchDestinationsCSV($sDestinationsCSV, $aIgnoreWords)
@@ -247,6 +261,10 @@ class JSON_Handler_Destination extends JSON_Handler
 	{
 		try
 		{
+			$bIsGod = Employee::getForId(Flex::getUserId())->isGod();
+			throw new Exception(
+				"This functionality is not available at this time.".($bIsGod ? '  Currently based on deprecated `cdr_call_type_translation`, needs to be converted to `carrier_translation`' : '')
+			);
 			// Parse CSV
 			$oImportFile	= new File_CSV(',', '"', '\\', array('carrier_code', 'description'));
 			$oImportFile->importFileAsString($sDestinationsCSV);

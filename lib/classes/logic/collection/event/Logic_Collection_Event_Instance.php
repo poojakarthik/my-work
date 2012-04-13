@@ -39,17 +39,15 @@ class Logic_Collection_Event_Instance
 		return Collection_Event::getForId($this->collection_event_id)->name;
 	}
 
-	public function getScenario()
-	{
-
-		if ($this->collection_scenario_collection_event_id != null)
-		{
+	public function getScenario() {
+		//Log::get()->log("Getting Scenario for Collection Scenario Event ".var_export($this->collection_scenario_collection_event_id, true));
+		if ($this->collection_scenario_collection_event_id != null) {
 			$oScenarioEvent = Logic_Collection_Scenario_Event::getForId($this->collection_scenario_collection_event_id);
-			return new Logic_Collection_Scenario( $oScenarioEvent->collection_scenario_id);
+			//Log::get()->log("Scenario Event for Collection Scenario Event ".var_export($this->collection_scenario_collection_event_id, true).": ".print_r($oScenarioEvent, true));
+			//Log::get()->log("Scenario Id for Scenario Event {$oScenarioEvent->id}: ".var_export($oScenarioEvent->collection_scenario_id, true));
+			return new Logic_Collection_Scenario($oScenarioEvent->collection_scenario_id);
 		}
-
 		return null;
-
 	}
 
 
@@ -301,7 +299,7 @@ class Logic_Collection_Event_Instance
 						//this first checks if this event is eligible to be invoked today
 						if (Collections_Schedule::getEligibility($iEventId))
 						{
-							$sEventName;
+							$sEventName = null;
 							foreach ($aInstancesToInvokeAndComplete as $oEventInstance)
 							{
 								
@@ -490,6 +488,10 @@ class Logic_Collection_Event_Instance
 			$this->oScenarioEvent = Logic_Collection_Scenario_Event::getForId($this->collection_scenario_collection_event_id);
 		}
 		return $this->oScenarioEvent;
+	}
+
+	public function getORM() {
+		return $this->oDO;
 	}
 
 	public static function getForId($iId)

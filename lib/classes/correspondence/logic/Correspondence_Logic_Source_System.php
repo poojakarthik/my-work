@@ -48,7 +48,7 @@ class Correspondence_Logic_Source_System extends Correspondence_Logic_Source
 
 	public function __get($sField)
 	{
-		return $this->_oDO->$sField!=null?$this->_oDO->$sField:parent::__get($sField);
+		return isset($this->_oDO->$sField) ? $this->_oDO->$sField : parent::__get($sField);
 	}
 }
 ?>

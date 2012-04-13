@@ -231,51 +231,45 @@ class Logic_Account implements DataLogic
 //	}
 
 
-		public function getNextCollectionScenarioEvent($bIgnoreDayOffsetRules = FALSE)
-		{
-			$oMostRecentEventInstance 		= $this->getMostRecentCollectionEventInstance();
-			if (!$bIgnoreDayOffsetRules && ($oMostRecentEventInstance!== null && $oMostRecentEventInstance->completed_datetime === null) )
-			{
+		public function getNextCollectionScenarioEvent($bIgnoreDayOffsetRules=false) {
+			$oMostRecentEventInstance = $this->getMostRecentCollectionEventInstance();
+			if (!$bIgnoreDayOffsetRules && ($oMostRecentEventInstance !== null && $oMostRecentEventInstance->completed_datetime === null)) {
 			   $this->bPreviousEventNotCompleted = true;
 			   return null;
-			}
-			else if (!$bIgnoreDayOffsetRules)
-			{
+			} else if (!$bIgnoreDayOffsetRules) {
 			   $this->bPreviousEventNotCompleted = false;
 			}
 
 			//grab the account's current scenario, and determine the next event, based on the most recent scenario event
-			$oMostRecentScenarioEvent = $oMostRecentEventInstance !== NULL ? $oMostRecentEventInstance->getScenarioEvent() : NULL;
+			$oMostRecentScenarioEvent = $oMostRecentEventInstance !== null ? $oMostRecentEventInstance->getScenarioEvent() : null;
 			$oNextEvent = $this->getCurrentScenarioInstance()->getScenario()->getScenarioEventAfter($oMostRecentScenarioEvent);
 
+			if ($oNextEvent === null) {
+				$this->bNoNextEventFound = true;
+				return null;
+			}
+
 			//if we're simply curious about what the next event will be, return it now
-			if ($bIgnoreDayOffsetRules)
+			if ($bIgnoreDayOffsetRules) {
 				return $oNextEvent;
+			}
 
 			//otherwise, check if it is eligible to be scheduled before returning it
 			
 			//if we have a previous event, and it belongs to the current scenario, we calculate the day offset relative to its completion date. In other cases we use the source collectable's due date
-			if ($oMostRecentEventInstance !== NULL && $oNextEvent->collection_scenario_id === $oMostRecentEventInstance->getScenario()->id)
-			{
+			if ($oMostRecentEventInstance !== null && $oMostRecentEventInstance->collection_scenario_collection_event_id && $oNextEvent->collection_scenario_id === $oMostRecentEventInstance->getScenario()->id) {
 				$sMostRecentCompletedDateTime = date('Y-m-d', Flex_Date::truncate($oMostRecentEventInstance->completed_datetime, 'd', false));
-			}
-			else
-			{
+			} else {
 				$sMostRecentCompletedDateTime = $this->getCurrentDueDate();
 			}
 
-
 			$iDayOffset = Flex_Date::difference( $sMostRecentCompletedDateTime,  Data_Source_Time::currentDate(), 'd');
-
-			if ($oNextEvent !== NULL && ($iDayOffset >= $oNextEvent->day_offset))
-			{
-				$this->bNoNextEventFound =FALSE;
+			if ($oNextEvent !== null && ($iDayOffset >= $oNextEvent->day_offset)) {
+				$this->bNoNextEventFound = false;
 				return $oNextEvent;
-			}
-			else
-			{
-				$this->bNoNextEventFound =TRUE;
-				return NULL;
+			} else {
+				$this->bNoNextEventFound = true;
+				return null;
 			}
 		}
 

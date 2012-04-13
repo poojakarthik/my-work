@@ -103,7 +103,7 @@ class Logic_Collection_Event_Report extends Logic_Collection_Event
 			}
 		}
 
-		$oEmail				= Correspondence_Email::getForEmailNotificationSystemName(LATE_NOTICE_LIST);
+		$oEmail				= Correspondence_Email::getForEmailNotificationSystemName('LATE_NOTICE_LIST');
 		$oEmail->setSubject("$sEventName (Collection Event id $oEventInstance->collection_event_id)");
 		$body				= $oEmail->getBody();
 		$oEmail->addTextHeader(3, $sEventName." (Collection Event id $oEventInstance->collection_event_id)");

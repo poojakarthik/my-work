@@ -89,10 +89,9 @@ class Logic_Collection_Scenario_Event implements DataLogic
 
 	public static function getForScenario($oScenario) 
 	{
-		$aEvents 		= Collection_Scenario_Collection_Event::getForScenarioId($oScenario->id);
-		$aEventObjects	= array();
-		foreach($aEvents as $oEvent)
-		{
+		$aEvents = Collection_Scenario_Collection_Event::getForScenarioId($oScenario->id);
+		$aEventObjects = array();
+		foreach($aEvents as $oEvent) {
 			$aEventObjects[$oEvent->id] = new self($oEvent);
 		}
 		return $aEventObjects;

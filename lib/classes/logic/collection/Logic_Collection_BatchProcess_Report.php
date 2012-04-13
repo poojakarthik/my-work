@@ -15,7 +15,7 @@ class Logic_Collection_BatchProcess_Report
 
 	const INVOCATION_TYPE_ACCOUNT			= "Single Account Mode";
 	const INVOCATION_TYPE_BATCH				= "Batch Mode";
-	const EMAIL_NOTIFICATION				= LATE_NOTICE_LIST;
+	const EMAIL_NOTIFICATION				= 'LATE_NOTICE_LIST';
    
 	public static $aCompletedPromises		= array();
 	public static $aContinuingPromises		= array();

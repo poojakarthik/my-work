@@ -104,10 +104,12 @@ class StatementUpdate extends Statement {
 					$strType .= $this->db->arrTableDefine->{$this->_strTable}["Column"][$mixKey]["Type"];
 					
 					// account for table.column key names
-					if (isset($arrData [$mixKey])) {
+					if (isset($arrData[$mixKey])) {
 						$arrParams[] = $arrData[$mixKey];
-					} else {
+					} elseif (isset($arrData[$this->_strTable.".".$mixKey])) {
 						$arrParams[] = $arrData[$this->_strTable.".".$mixKey];
+					} else {
+						$arrParams[] = null;
 					}
 				}
 			}

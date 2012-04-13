@@ -832,53 +832,52 @@ class Account
 			}
 		}
 
-        /**
+		/**
          * adapted from (functions) ListLatePaymentAccounts
          * this method will return account data in the right format for the pdf generation functions to work properly
          */
-        public static function getAccountDataForLateNotice($aAccountIds)
-        {
-            $sAccountIds = implode(", ", $aAccountIds);
-            $arrColumns = array(
+		public static function getAccountDataForLateNotice($aAccountIds) {
+			$sAccountIds = implode(", ", $aAccountIds);
+			$arrColumns = array(
+				'AccountId' => "a.Id",
+				'AccountGroup' => "a.AccountGroup",
+				'BusinessName' => "a.BusinessName",
+				'CustomerGroup' => "cg.Id",
+				'CustomerGroupName' => "cg.external_name",
+				'DeliveryMethod' => "a.BillingMethod",
+				'FirstName' => "c.FirstName",
+				'LastName' => "c.LastName",
+				'Email' => "c.Email",
+				'Title' => "c.Title",
+				'AddressLine1' => "a.Address1",
+				'AddressLine2' => "a.Address2",
+				'Suburb' => "UPPER(a.Suburb)",
+				'Postcode' => "a.Postcode",
+				'State' => "a.State",
+				'Mobile' => "c.Mobile",
+				'Landline' => "c.Phone",
+				'InvoiceId' => "'InvoiceId'",
+				'OutstandingNotOverdue' => "'OutstandingNotOverdue'",
+				'Overdue' => "'Overdue'",
+				'TotalOutstanding' => "'TotalOutstanding'"
+			);
 
-		'AccountId'			=> "a.Id",
-		'BusinessName'			=> "a.BusinessName",
-		'CustomerGroup'			=> "cg.Id",
-                'CustomerGroupName'		=> "cg.external_name",
-		'DeliveryMethod'		=> "a.BillingMethod",
-		'FirstName'			=> "c.FirstName",
-		'LastName'			=> "c.LastName",
-		'Email'				=> "c.Email",
-		'Title'				=> "c.Title",
-		'AddressLine1'			=> "a.Address1",
-		'AddressLine2'			=> "a.Address2",
-		'Suburb'			=> "UPPER(a.Suburb)",
-		'Postcode'			=> "a.Postcode",
-		'State'				=> "a.State",
-                'Mobile'			=> "c.Mobile",
-		'Landline'			=> "c.Phone",
-		'InvoiceId'			=> "'InvoiceId'",
-		'OutstandingNotOverdue'		=> "'OutstandingNotOverdue'",
-		'Overdue'			=> "'Overdue'",
-		'TotalOutstanding'		=> "'TotalOutstanding'",
+			$strTables = "
+				Account a
+				JOIN Contact c ON (c.Id = a.PrimaryContact)
+				JOIN CustomerGroup cg ON (a.CustomerGroup = cg.Id)
+			";
+			$strWhere = "a.Id in ($sAccountIds)";
+			$strOrderBy = "a.Id ASC";
 
-            );
-
-            $strTables	= " Account a
-                                JOIN Contact c ON (c.Id = a.PrimaryContact)
-                                JOIN CustomerGroup cg ON (a.CustomerGroup = cg.Id)";
-            $strWhere	= "a.Id in ($sAccountIds)";
-            $strOrderBy	= "a.Id ASC";
-
-            $oAccounts = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy, "");
-            $mxdReturn =  $oAccounts->Execute();
-            if ($mxdReturn !== FALSE)
-            {
-                    $mxdReturn =  $oAccounts->FetchAll();
-            }
-            return $mxdReturn;
-
-        }
+			$oAccounts = new StatementSelect(trim($strTables), $arrColumns, $strWhere, $strOrderBy, "");
+			$mResult = $oAccounts->Execute();
+			$aAccountsData = array();
+			while ($mResult && $aAccountData = $oAccounts->Fetch()) {
+				$aAccountsData[$aAccountData['AccountId']] = $aAccountData;
+			}
+			return $mResult ? $aAccountsData : $mResult;
+		}
 
 	private static function getFor($where, $arrWhere, $bolAsArray=FALSE)
 	{

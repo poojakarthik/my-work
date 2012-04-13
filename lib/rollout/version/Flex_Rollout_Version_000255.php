@@ -11,7 +11,8 @@ class Flex_Rollout_Version_000255 extends Flex_Rollout_Version
 	public function rollout()
 	{
 		if (!$this->getUserResponseYesNo("Proceed with REMOVING carrier_translation_context.const_name and other carrier/carrier translation related removals?")) {
-			return;
+			throw new Exception("Rollout ".self::getRolloutVersionNumber(__CLASS__)." aborted.");
+			//return;
 		}
 
 		// Define operations

@@ -144,6 +144,10 @@ abstract class Flex_Dom_Object
 		// Return the wrapper of the given name and index from the cache
 		return $this->_arrChildren[$strChildName][$index];
 	}
+
+	public function getDomNode() {
+		return $this->_getDomNode();
+	}
 }
 
 

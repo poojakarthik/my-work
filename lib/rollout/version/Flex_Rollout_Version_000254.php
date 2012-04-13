@@ -175,21 +175,32 @@ class Flex_Rollout_Version_000254 extends Flex_Rollout_Version
 			RESOURCE_TYPE_FILE_IMPORT_CDR_OPTUS_STANDARD 			=> CARRIER_OPTUS,
 			RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_STANDARD 			=> CARRIER_UNITEL
 		);
-
 		$iType = DATA_TYPE_INTEGER;
 		foreach ($aResourceTypeCarrierIds as $iResourceTypeId => $iCarrierId) {
-			$iValue			= $aCarrierTranslationContexts['cdr_call_type_translation'][$iCarrierId];
 			$aOperations[] 	= array(
-				'sDescription'		=> "Add carrier module configuration to carrier modules (for carrier {$iCarrierId}) with resource type {$iResourceTypeId}. A property called 'CarrierTranslationContextId' to replace the use of carrier constants.",
+				'sDescription'		=> "Add carrier module configuration to carrier modules (for carrier {$iCarrierId}) with resource type {$iResourceTypeId}. A property called 'CallGroupCarrierTranslationContextId' to replace the use of carrier constants.",
 				'sAlterSQL'			=> "INSERT INTO CarrierModuleConfig (CarrierModule, Name, Type, Description, Value)
 										(
-											SELECT	cm.Id, 'CarrierTranslationContextId', {$iType}, 'Carrier Translation Context Id', {$iValue}
+											SELECT	cm.Id, 'CallGroupCarrierTranslationContextId', {$iType}, 'Call Group (Record Type) Carrier Translation Context Id', {$aCarrierTranslationContexts['cdr_call_group_translation'][$iCarrierId]}
 											FROM	CarrierModule cm
 											WHERE	cm.FileType = {$iResourceTypeId}
 											AND		Active = 1
 										);",
 				'sRollbackSQL'		=> "DELETE FROM CarrierModuleConfig
-										WHERE		Name = 'CarrierTranslationContextId';",
+										WHERE		Name = 'CallGroupCarrierTranslationContextId';",
+				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+			);
+			$aOperations[] 	= array(
+				'sDescription'		=> "Add carrier module configuration to carrier modules (for carrier {$iCarrierId}) with resource type {$iResourceTypeId}. A property called 'CallTypeCarrierTranslationContextId' to replace the use of carrier constants.",
+				'sAlterSQL'			=> "INSERT INTO CarrierModuleConfig (CarrierModule, Name, Type, Description, Value)
+										(
+											SELECT	cm.Id, 'CallTypeCarrierTranslationContextId', {$iType}, 'Call Type (Destination) Carrier Translation Context Id', {$aCarrierTranslationContexts['cdr_call_type_translation'][$iCarrierId]}
+											FROM	CarrierModule cm
+											WHERE	cm.FileType = {$iResourceTypeId}
+											AND		Active = 1
+										);",
+				'sRollbackSQL'		=> "DELETE FROM CarrierModuleConfig
+										WHERE		Name = 'CallTypeCarrierTranslationContextId';",
 				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 			);
 		}

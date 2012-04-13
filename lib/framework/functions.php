@@ -301,53 +301,62 @@ function Trace($strString, $strLogname = 'Debug')
 function Backtrace($backtrace = NULL)
 {
 	$output = "";
-	if (!is_array($backtrace))
-	{
+	if (!is_array($backtrace)) {
 		$backtrace = debug_backtrace();
 	}
 
-	foreach ($backtrace as $key=>$bt)
-	{
+	foreach ($backtrace as $key=>$bt) {
 		$args = '';
-		if (is_array($bt['args']))
-		{
-			foreach ($bt['args'] as $a)
-			{
-				if (!empty($args))
-				{
+		if (is_array($bt['args'])) {
+			foreach ($bt['args'] as $a) {
+				if (!empty($args)) {
 					$args .= ', ';
 				}
-				switch (gettype($a))
-				{
-				case 'integer':
-				case 'double':
-					$args .= $a;
-					break;
-				case 'string':
-					$a = htmlspecialchars(substr($a, 0, 64)).((strlen($a) > 64) ? '...' : '');
-					$args .= "\"$a\"";
-					break;
-				case 'array':
-					$args .= 'Array('.count($a).')';
-					break;
-				case 'object':
-					$args .= 'Object('.get_class($a).')';
-					break;
-				case 'resource':
-					$args .= 'Resource('.strstr($a, '#').')';
-					break;
-				case 'boolean':
-					$args .= $a ? 'TRUE' : 'FALSE';
-					break;
-				case 'NULL':
-					$args .= 'NULL';
-					break;
-				default:
-					$args .= 'Unknown';
+				switch (gettype($a)) {
+					case 'integer':
+					case 'double':
+						$args .= $a;
+						break;
+
+					case 'string':
+						$a = htmlspecialchars(substr($a, 0, 64)).((strlen($a) > 64) ? '...' : '');
+						$args .= "\"$a\"";
+						break;
+
+					case 'array':
+						$args .= 'Array('.count($a).')';
+						break;
+
+					case 'object':
+						$args .= 'Object('.get_class($a).')';
+						break;
+
+					case 'resource':
+						$args .= 'Resource('.strstr($a, '#').')';
+						break;
+
+					case 'boolean':
+						$args .= $a ? 'TRUE' : 'FALSE';
+						break;
+
+					case 'NULL':
+						$args .= 'NULL';
+						break;
+
+					default:
+						$args .= 'Unknown';
 				}
 			}
 		}
-		$output .= "#{$key}  {$bt['class']}{$bt['type']}{$bt['function']}($args) called at [{$bt['file']}:{$bt['line']}]";
+		//$output .= "#{$key}  {$bt['class']}{$bt['type']}{$bt['function']}($args) called at [{$bt['file']}:{$bt['line']}]";
+		//$output .= "\n";
+		$output .= "#{$key} ";
+		$output .= (isset($bt['class'])) ? $bt['class'] : '';
+		$output .= (isset($bt['type'])) ? $bt['type'] : '';
+		$output .= "{$bt['function']}({$args})";
+		if (isset($bt['file'])) {
+			$output .= " called at [{$bt['file']}:{$bt['line']}]";
+		}
 		$output .= "\n";
 	}
 	$output .= "\n";
@@ -1649,10 +1658,8 @@ function UnmaskShortDate ($strShortDate)
  *
  * @function
  */
-function CliEcho($strOutput='', $bolNewLine=TRUE)
-{
-	if (!$GLOBALS['**stdout'])
-	{
+function CliEcho($strOutput='', $bolNewLine=true) {
+	if (!isset($GLOBALS['**stdout'])) {
 		$GLOBALS['**stdout'] = fopen("php://stdout","w");
 	}
 	$stdout = $GLOBALS['**stdout'];
@@ -1844,6 +1851,9 @@ die;
  */
 function LoadFramework($strFrameworkDir=NULL, $bolBasicsOnly=FALSE, $loadDbConstants=TRUE)
 {
+	// PEAR (for some reason, certain areas of code cause parts of PEAR to be redeclared if we don't do this very early)
+	require_once('PEAR.php');
+
 	// Get viXen base dir
 	if (!$strFrameworkDir)
 	{
@@ -4515,6 +4525,8 @@ function CreateDefaultPaymentTerms($customerGroupId)
 		// Build XML for the data...
 		VixenRequire('lib/dom/Flex_Dom_Document.php');
 		$dom = new Flex_Dom_Document();
+		$dom->formatOutput = true;
+		$D = new DOM_Factory($dom->getDomDocument());
 
 		// Set up all values required of the notice, which have not been defined yet
 		$dom->Document->DocumentType->setValue(GetConstantName($intNoticeType, 'DocumentTemplateType'));
@@ -4587,6 +4599,51 @@ function CreateDefaultPaymentTerms($customerGroupId)
 		$dom->Document->Outstanding->CurrentInvoiceId->setValue($arrAccount['InvoiceId']);
 
 		$dom->Document->Outstanding->ActionDate->setValue(date("d M Y", $actionDate));
+
+		// Collections Events
+		//--------------------//
+		$dom->Document->getDomNode()->appendChild($D->__fragment(
+			$D->Scenario(array('CollectionScenarioId' => $arrAccount['CurrentScenario']->id),
+				$oEvents = $D->Events(array('CurrentAccountCollectionEventHistoryId'=>$arrAccount['CurrentEvent']->id))
+			)
+		));
+		// Prior Events
+		foreach ($arrAccount['PriorEvents'] as $oPriorAccountCollectionEvent) {
+			$oEvents->appendChild($D->Event(array(
+					'CollectionEventId' => $oPriorAccountCollectionEvent->collection_event_id,
+					'AccountCollectionEventHistoryId' => $oPriorAccountCollectionEvent->id,
+					'CollectionEventTypeId' => $oPriorAccountCollectionEvent->getEvent()->collection_event_type_id
+				),
+				$D->Name($oPriorAccountCollectionEvent->getEvent()->name),
+				$D->Description($oPriorAccountCollectionEvent->getEvent()->description),
+				$D->Date(date('d M Y', strtotime($oPriorAccountCollectionEvent->completed_datetime))),
+				$D->SystemDate(date('Y-m-d', strtotime($oPriorAccountCollectionEvent->completed_datetime)))
+			));
+		}
+		// Current Event
+		$oEvents->appendChild($D->Event(array(
+				'CollectionEventId' => $arrAccount['CurrentEvent']->collection_event_id,
+				'AccountCollectionEventHistoryId' => $arrAccount['CurrentEvent']->id,
+				'CollectionEventTypeId' => $arrAccount['CurrentEvent']->getEvent()->collection_event_type_id
+			),
+			$D->Name($arrAccount['CurrentEvent']->getEvent()->name),
+			$D->Description($arrAccount['CurrentEvent']->getEvent()->description),
+			$D->Date(date('d M Y', strtotime($arrAccount['CurrentEvent']->completed_datetime ? $arrAccount['CurrentEvent']->completed_datetime : $arrAccount['CurrentEvent']->scheduled_datetime))),
+			$D->SystemDate(date('Y-m-d', strtotime($arrAccount['CurrentEvent']->completed_datetime ? $arrAccount['CurrentEvent']->completed_datetime : $arrAccount['CurrentEvent']->scheduled_datetime)))
+		));
+		// Predicted Events
+		foreach ($arrAccount['PredictedEvents'] as $oPredictedAccountCollectionEvent) {
+			$oEvents->appendChild($D->Event(array(
+					'CollectionEventId' => $oPredictedAccountCollectionEvent->collection_event_id,
+					'CollectionEventTypeId' => $oPredictedAccountCollectionEvent->getEvent()->collection_event_type_id
+				),
+				$D->Name($oPredictedAccountCollectionEvent->getEvent()->name),
+				$D->Description($oPredictedAccountCollectionEvent->getEvent()->description),
+				$D->Date(date('d M Y', strtotime($oPredictedAccountCollectionEvent->scheduled_datetime))),
+				$D->SystemDate(date('Y-m-d', strtotime($oPredictedAccountCollectionEvent->scheduled_datetime)))
+			));
+		}
+		//--------------------//
 
 		$strXML = $dom->saveXML();
 

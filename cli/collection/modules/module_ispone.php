@@ -66,7 +66,11 @@ class CollectionModuleISPOne extends CollectionModuleBase {
 			$sRemoteURL = $this->_getFullURL($sMissingDate);
 			Log::get()->logIf(self::DEBUG_LOGGING, "Downloading file for {$sMissingDate} @ {$sRemoteURL}");
 			$oCURL = CURL::get($sRemoteURL, array(
-				CURLOPT_RETURNTRANSFER => true
+				CURLOPT_RETURNTRANSFER => true,
+				CURLOPT_AUTOREFERER => true,
+				CURLOPT_BINARYTRANSFER => true,
+				CURLOPT_FOLLOWLOCATION => true,
+				CURLINFO_HEADER_OUT => true
 			));
 			$mResult = $oCURL->getResult();
 
@@ -79,7 +83,7 @@ class CollectionModuleISPOne extends CollectionModuleBase {
 				throw new Exception("cURLing {$sRemoteURL} gave a non-200 HTTP response code: ".print_r($oCURL->getTransferInfo(), true));
 			}
 			if (!self::_isValidResponseContentType($oCURL->CONTENT_TYPE)) {
-				throw new Exception("cURLing {$sRemoteURL} gave an unhandle Content Type: ".print_r($oCURL->getTransferInfo(), true));
+				throw new Exception("cURLing {$sRemoteURL} gave an unhandled Content Type: ".print_r($oCURL->getTransferInfo(), true));
 			}
 			if (!$mResult || !is_string($mResult)) {
 				throw new Exception("cURLing {$sRemoteURL} gave no result: ".print_r($oCURL->getTransferInfo(), true));
