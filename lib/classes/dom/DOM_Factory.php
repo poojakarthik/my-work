@@ -10,7 +10,7 @@ class DOM_Factory {
 		return $this->_oDOMDocument;
 	}
 
-	public function __elementFactory($sElement, $mAttributes) {
+	public function __elementFactory($sElement, $mAttributes=null) {
 		//_log('Building Element: {$sElement}');
 		$oDOMElement = $this->_oDOMDocument->createElement($sElement);
 
