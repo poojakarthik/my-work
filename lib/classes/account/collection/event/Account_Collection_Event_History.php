@@ -3,6 +3,8 @@ class Account_Collection_Event_History extends ORM_Cached {
 	protected $_strTableName = "account_collection_event_history";
 	protected static $_strStaticTableName = "account_collection_event_history";
 
+	const EVENT_PREDICTION_LOOKAHEAD_LIMIT = 365;
+
 	protected static function getCacheName() {
 		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
 		static $strCacheName;
@@ -21,7 +23,7 @@ class Account_Collection_Event_History extends ORM_Cached {
 	}
 
 	public function getScenarioEvent() {
-		return ($this->collection_scenario_collection_event === null) ? null : Collection_Scenario_Collection_Event::getForId($this->collection_scenario_collection_event);
+		return ($this->collection_scenario_collection_event_id === null) ? null : Collection_Scenario_Collection_Event::getForId($this->collection_scenario_collection_event_id);
 	}
 
 	public static function getWaitingEvents($iAccountId=null) {
@@ -229,7 +231,7 @@ class Account_Collection_Event_History extends ORM_Cached {
 		return $this->_getPrevious(true);
 	}
 
-	public function predictNextInScenarioInstance() {
+	public function predictNextInScenarioInstance($bRespectCollectionsSchedule=false) {
 		// We're creating a "fake" Account_Collection_Event_History record
 		// We're intentionally not setting details such as the agent and status, so that it cannot be saved (and they're irrelevant)
 		// The details we're populating should be enough to "recursively" call the predictNextInScenarioInstance() method
@@ -243,6 +245,19 @@ class Account_Collection_Event_History extends ORM_Cached {
 			WHERE		csce.prerequisite_collection_scenario_collection_event_id = <collection_scenario_collection_event_id>
 		", $this->toArray());
 		if ($aPredicted = $mResult->fetch_assoc()) {
+			if ($bRespectCollectionsSchedule) {
+				// Pull Collections Schedule related to this Event
+				$iLookaheadDays = 0;
+				$sOriginalScheduledDate = $aPredicted['scheduled_datetime'];
+				while (!Collections_Schedule::getEligibility($aPredicted['collection_event_id'], false, $aPredicted['scheduled_datetime'])) {
+					if ($iLookaheadDays > self::EVENT_PREDICTION_LOOKAHEAD_LIMIT) {
+						throw new Exception("No scheduled event date for {$aPredicted['collection_event_id']}:".Collection_Event::getForId($aPredicted['collection_event_id'])->name." up to ".self::EVENT_PREDICTION_LOOKAHEAD_LIMIT." days from {$sOriginalScheduledDate}");
+					}
+					$aPredicted['scheduled_datetime'] = date('Y-m-d', strtotime('+1 day', strtotime($aPredicted['scheduled_datetime'])));
+					$iLookaheadDays++;
+				}
+			}
+
 			return new self($aPredicted);
 		}
 		// No previous event

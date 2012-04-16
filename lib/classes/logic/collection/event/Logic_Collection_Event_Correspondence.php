@@ -91,7 +91,7 @@ class Logic_Collection_Event_Correspondence extends Logic_Collection_Event
 			// Get prior events in this iteration of the Scenario
 			Log::get()->log("    Finding prior Events");
 			$aPriorEvents = array();
-			$oPriorEvent = $oEventInstanceORM;
+			$oPriorEvent = new Account_Collection_Event_History($oEventInstanceORM->toArray());
 			while ($oPriorEvent = $oPriorEvent->getPreviousInScenarioInstance()) {
 				Log::get()->log("      + ".Collection_Event::getForId($oPriorEvent->collection_event_id)->name." (i{$oPriorEvent->id}|a{$oPriorEvent->account_id}|c{$oPriorEvent->collectable_id}|ce{$oPriorEvent->collection_event_id}|csce{$oPriorEvent->collection_scenario_collection_event_id}|s{$oPriorEvent->scheduled_datetime})");
 				$aPriorEvents[] = $oPriorEvent;
@@ -102,8 +102,8 @@ class Logic_Collection_Event_Correspondence extends Logic_Collection_Event
 			// Predict upcoming Collection Events
 			Log::get()->log("    Finding upcoming Events");
 			$aPredictedEvents = array();
-			$oPredictedEvent = $oEventInstanceORM;
-			while ($oPredictedEvent = $oPredictedEvent->predictNextInScenarioInstance()) {
+			$oPredictedEvent = new Account_Collection_Event_History($oEventInstanceORM->toArray());
+			while ($oPredictedEvent = $oPredictedEvent->predictNextInScenarioInstance(true)) {
 				Log::get()->log("      + ".Collection_Event::getForId($oPredictedEvent->collection_event_id)->name." (i{$oPredictedEvent->id}|a{$oPredictedEvent->account_id}|c{$oPredictedEvent->collectable_id}|ce{$oPredictedEvent->collection_event_id}|csce{$oPredictedEvent->collection_scenario_collection_event_id}|s{$oPredictedEvent->scheduled_datetime})");
 				$aPredictedEvents[] = $oPredictedEvent;
 			}
@@ -112,6 +112,8 @@ class Logic_Collection_Event_Correspondence extends Logic_Collection_Event
 			$aAccount['CurrentEvent'] = $oEventInstanceORM;
 			$aAccount['PredictedEvents'] = $aPredictedEvents;
 
+			//Log::get()->log(print_r($oEventInstanceORM, true));
+			//Log::get()->log(print_r($oEventInstanceORM->getScenarioEvent(), true));
 			$aAccount['CurrentScenario'] = $oEventInstanceORM->getScenarioEvent()->getScenario();
 
 			// Generate the Late Notice XML

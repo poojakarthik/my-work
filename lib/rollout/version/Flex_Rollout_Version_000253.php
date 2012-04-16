@@ -12,7 +12,9 @@ class Flex_Rollout_Version_000253 extends Flex_Rollout_Version
 	{
 		// Define operations
 		$aOperations = array(
-			array(
+			// ispONE support is rolling out with constant-less Carriers, so this is not required.
+			// There are also compatibility issues with current production Telcoblue Group Flex
+			/*array(
 				'sDescription'		=> "Adds the 'ispONE' Carrier",
 				'sAlterSQL'			=> "
 					INSERT INTO	Carrier
@@ -25,7 +27,7 @@ class Flex_Rollout_Version_000253 extends Flex_Rollout_Version
 					WHERE		const_name = 'CARRIER_ISPONE';
 				",
 				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
-			),
+			),*/
 			array(
 				'sDescription'		=> "Adds ispONE-related Resource Types",
 				'sAlterSQL'			=> "
