@@ -39,19 +39,15 @@ abstract class NormalisationModule extends CarrierModule {
 		$this->_selFindOwnerNowIndial100 = new StatementSelect("Service JOIN Account ON Account.Id = Service.Account", "Service.*", "(FNN LIKE <fnn>) AND (Indial100 = TRUE) AND Service.Status != ".SERVICE_ARCHIVED." AND Account.Archived IN ($strAccountStatus)", "(Service.Status IN ($strServiceStatus)) DESC, Service.ClosedOn DESC, Account DESC", "1");
 		
 		$this->_selFindRecordType = new StatementSelect("RecordType", "Id, Context", "ServiceType = <ServiceType> AND Code = <Code>", "", "1");
-		$this->_selFindRecordCode = new StatementSelect("cdr_call_group_translation", "code", "carrier_id = <Carrier> AND carrier_code = <CarrierCode>", "", "1");
+		//$this->_selFindRecordCode = new StatementSelect("cdr_call_group_translation", "code", "carrier_id = <Carrier> AND carrier_code = <CarrierCode>", "", "1");
 		
-		$strTables = "Destination, cdr_call_type_translation";
-		$strData = "Destination.Code AS Code, Destination.Description AS Description";
-		$strWhere = "Destination.Code = cdr_call_type_translation.code AND ";
-		$strWhere .= "cdr_call_type_translation.carrier_id = <Carrier> AND cdr_call_type_translation.carrier_code = <CarrierCode> AND Destination.Context = <Context>";
-		$this->_selFindDestination = new StatementSelect(
-			$strTables,
-			$strData,
-			$strWhere,
+		/*$this->_selFindDestination = new StatementSelect(
+			"Destination, cdr_call_type_translation",
+			"Destination.Code AS Code, Destination.Description AS Description",
+			"Destination.Code = cdr_call_type_translation.code AND cdr_call_type_translation.carrier_id = <Carrier> AND cdr_call_type_translation.carrier_code = <CarrierCode> AND Destination.Context = <Context>",
 			null,
 			1
-		);
+		);*/
 		$this->_sFindDestinationSQL = "
 			SELECT		d.Code,
 						d.Description
