@@ -131,7 +131,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 	// Uploads a Proposed Dialling List file
 	public function DownloadDNCRWashList($subPath) {
 		//echo "Here we go...";
-		error_reporting(-1);
+		//error_reporting(-1);
 		$bolVerboseErrors = AuthenticatedUser()->UserHasPerm(PERMISSION_GOD);
 		
 		$arrDetailsToRender	= array();
@@ -163,8 +163,8 @@ class Application_Handler_Telemarketing extends Application_Handler
 			header('content-disposition: attachment; filename="'.$objFileExport->FileName.'"');
 			echo file_get_contents($objFileExport->Location);
 		} catch (Exception $e) {
-			echo "Exception: {$e}";
-			die;
+			//echo "Exception: {$e}";
+			//die;
 			$arrDetailsToRender['Success'] = false;
 			$arrDetailsToRender['Message'] = $e->getMessage();
 			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
