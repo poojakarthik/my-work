@@ -130,6 +130,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 	
 	// Uploads a Proposed Dialling List file
 	public function DownloadDNCRWashList($subPath) {
+		error_reporting(-1);
 		$bolVerboseErrors = AuthenticatedUser()->UserHasPerm(PERMISSION_GOD);
 		
 		$arrDetailsToRender	= array();
@@ -137,7 +138,6 @@ class Application_Handler_Telemarketing extends Application_Handler
 			$qryQuery = new Query();
 			
 			$intFileImportId = (int)$_REQUEST['Telemarketing_DNCRDownload_File'];
-			
 			
 			// Get list of washed FNNs for this File
 			$arrFNNs = self::_washFNNsByImportFile($intFileImportId);
@@ -422,7 +422,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			}
 			
 			// Wash against the Internal DNCR Cache
-			elseif ($arrDNCR[$arrFNN['fnn']]) {
+			elseif (isset($arrDNCR[$arrFNN['fnn']])) {
 				// ACMA DNCR
 				$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
 				$objFNN->telemarketing_fnn_withheld_reason_id = TELEMARKETING_FNN_WITHHELD_REASON_DNCR;
@@ -431,7 +431,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 				unset($arrFNNs[$mixIndex]);
 				$strDescription	= "--DNCR {$arrDNCR[$arrFNN['fnn']]['cached_on']} >> {$arrDNCR[$arrFNN['fnn']]['expired_on']}";
 				$arrResult['DNCR']++;
-			} elseif ($arrServiceCache[$arrFNN['fnn']]) { // Wash against Active Services in Flex
+			} elseif (isset($arrServiceCache[$arrFNN['fnn']])) { // Wash against Active Services in Flex
 				// Currently in Flex
 				$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
 				$objFNN->telemarketing_fnn_withheld_reason_id = TELEMARKETING_FNN_WITHHELD_REASON_FLEX_SERVICE;
@@ -440,7 +440,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 				unset($arrFNNs[$mixIndex]);
 				$strDescription	= "--FLEX SERVICE";
 				$arrResult['FLEX_SERVICE']++;
-			} elseif ($arrContactCache[$arrFNN['fnn']]) { // Wash against Active Contacts in Flex
+			} elseif (isset($arrContactCache[$arrFNN['fnn']])) { // Wash against Active Contacts in Flex
 				// Active Contact in Flex
 				$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
 				$objFNN->telemarketing_fnn_withheld_reason_id = TELEMARKETING_FNN_WITHHELD_REASON_FLEX_CONTACT;
