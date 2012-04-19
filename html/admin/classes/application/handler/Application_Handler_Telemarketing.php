@@ -130,6 +130,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 	
 	// Uploads a Proposed Dialling List file
 	public function DownloadDNCRWashList($subPath) {
+		//echo "Here we go...";
 		error_reporting(-1);
 		$bolVerboseErrors = AuthenticatedUser()->UserHasPerm(PERMISSION_GOD);
 		
@@ -155,12 +156,15 @@ class Application_Handler_Telemarketing extends Application_Handler
 				$objFNN->do_not_call_file_export_id	= $objFileExport->Id;
 				$objFNN->save();
 			}
+			//echo "We're done!";
 			
 			// Send the File to be downloaded
 			header('content-type: text/csv');
 			header('content-disposition: attachment; filename="'.$objFileExport->FileName.'"');
 			echo file_get_contents($objFileExport->Location);
 		} catch (Exception $e) {
+			echo "Exception: {$e}";
+			die;
 			$arrDetailsToRender['Success'] = false;
 			$arrDetailsToRender['Message'] = $e->getMessage();
 			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
@@ -322,6 +326,9 @@ class Application_Handler_Telemarketing extends Application_Handler
 				WHERE	Active = 1
 						AND Type = <carrier_module_type_id>;
 			", array('carrier_module_type_id' => MODULE_TYPE_TELEMARKETING_DNCR_EXPORT))->fetch_assoc();
+			if ($aRow === false) {
+				throw new Exception("No DNCR Carrier found!");
+			}
 			$this->_iDNCRRequestCarrierId = $aRow['Carrier'];
 		}
 		return $this->_iDNCRRequestCarrierId;
