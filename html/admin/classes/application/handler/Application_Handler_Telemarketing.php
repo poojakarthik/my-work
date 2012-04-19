@@ -326,7 +326,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 				WHERE	Active = 1
 						AND Type = <carrier_module_type_id>;
 			", array('carrier_module_type_id' => MODULE_TYPE_TELEMARKETING_DNCR_EXPORT))->fetch_assoc();
-			if ($aRow === false) {
+			if (!$aRow) {
 				throw new Exception("No DNCR Carrier found!");
 			}
 			$this->_iDNCRRequestCarrierId = $aRow['Carrier'];
