@@ -410,7 +410,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			$fltLap = microtime(true);
 			
 			// Wash against the Internal Opt-Out
-			if ($arrOptOut[$arrFNN['fnn']]) {
+			if (isset($arrOptOut[$arrFNN['fnn']])) {
 				// Blacklisted (Opt-Out)
 				$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
 				$objFNN->telemarketing_fnn_withheld_reason_id = TELEMARKETING_FNN_WITHHELD_REASON_OPTOUT;
