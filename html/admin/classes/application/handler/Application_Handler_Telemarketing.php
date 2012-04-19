@@ -319,7 +319,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 	}
 
 	private function _getDNCRRequestCarrierId() {
-		if (!$this->_iDNCRRequestCarrierId === null) {
+		if ($this->_iDNCRRequestCarrierId === null) {
 			$aRow = Query::run("
 				SELECT	Carrier
 				FROM	CarrierModule
