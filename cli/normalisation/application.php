@@ -39,7 +39,7 @@ class ApplicationNormalise extends ApplicationBaseClass {
 		$this->_selCarrierModules->Execute(array('Type' => MODULE_TYPE_NORMALISATION_CDR));
 		while ($arrModule = $this->_selCarrierModules->Fetch()) {
 			$this->_arrNormalisationModule[$arrModule['Carrier']][$arrModule['FileType']] = new $arrModule['Module']($arrModule['Carrier']);
-			CliEcho("\t + ".GetConstantDescription($arrModule['Carrier'], 'Carrier')." : {$arrModule['description']} ({$arrModule['Id']})");
+			CliEcho("\t + ".Carrier::getForId($arrModule['Carrier'])->Description." : {$arrModule['description']} ({$arrModule['Id']})");
 		}
 
  		// Load CDR Normalisation CarrierModules

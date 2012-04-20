@@ -65,7 +65,7 @@ abstract class Resource_Type_File_Import_Payment extends Resource_Type_File_Impo
 				// Get the Carrier Module
 				$oCarrierModule	= reset(Carrier_Module::getForDefinition(self::CARRIER_MODULE_TYPE, $oFileImport->FileType, $oFileImport->Carrier));
 				if (!$oCarrierModule) {
-					throw new Exception("No Carrier Module found for definition [".GetConstantName('carrier_module_type', self::CARRIER_MODULE_TYPE)."|".GetConstantName('resource_type', $oFileImport->FileType)."|".GetConstantName('Carrier', $oFileImport->Carrier)."]");
+					throw new Exception("No Carrier Module found for definition [".GetConstantName('carrier_module_type', self::CARRIER_MODULE_TYPE)."|".GetConstantName('resource_type', $oFileImport->FileType)."|".Carrier::getForId($oFileImport->Carrier)->Description."]");
 				}
 
 				// Initialise the Importer Class

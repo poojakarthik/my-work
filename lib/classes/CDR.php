@@ -793,7 +793,7 @@ class CDR extends ORM_Cached {
 
 		// Carrier name
 		if ($aCDR['CarrierId']) {
-			$aCDR['CarrierName'] = Constant_Group::getConstantGroup('Carrier')->getConstantName($aCDR['CarrierId']);
+			$aCDR['CarrierName'] = Carrier::getForId($aCDR['CarrierId'])->Name;
 		}
 
 		// Destination code description
