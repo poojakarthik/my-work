@@ -5,6 +5,7 @@ class CollectionModuleISPOne extends CollectionModuleBase {
 	public $intBaseFileType = RESOURCE_TYPE_FILE_RESOURCE_ISPONE;
 
 	const DEBUG_LOGGING = false;
+	const DOWNLOAD_GRACEFUL_FAILURE = true;
 
 	private $_aMissingDates;
 
@@ -77,16 +78,24 @@ class CollectionModuleISPOne extends CollectionModuleBase {
 			//Log::get()->logIf(self::DEBUG_LOGGING, 'Transfer Info: '.var_export($oCURL->getTransferInfo(), true));
 			//Log::get()->logIf(self::DEBUG_LOGGING, 'Result: '.var_export($oCURL->getResult(), true));
 			//throw new Exception("Debugging");
-
-			// Verify response data
-			if ($oCURL->HTTP_CODE != 200) {
-				throw new Exception("cURLing {$sRemoteURL} gave a non-200 HTTP response code: ".print_r($oCURL->getTransferInfo(), true));
-			}
-			if (!self::_isValidResponseContentType($oCURL->CONTENT_TYPE)) {
-				throw new Exception("cURLing {$sRemoteURL} gave an unhandled Content Type: ".print_r($oCURL->getTransferInfo(), true));
-			}
-			if (!$mResult || !is_string($mResult)) {
-				throw new Exception("cURLing {$sRemoteURL} gave no result: ".print_r($oCURL->getTransferInfo(), true));
+			try {
+				// Verify response data
+				if ($oCURL->HTTP_CODE != 200) {
+					throw new Exception("cURLing {$sRemoteURL} gave a non-200 HTTP response code: ".print_r($oCURL->getTransferInfo(), true));
+				}
+				if (!self::_isValidResponseContentType($oCURL->CONTENT_TYPE)) {
+					throw new Exception("cURLing {$sRemoteURL} gave an unhandled Content Type: ".print_r($oCURL->getTransferInfo(), true));
+				}
+				if (!$mResult || !is_string($mResult)) {
+					throw new Exception("cURLing {$sRemoteURL} gave no result: ".print_r($oCURL->getTransferInfo(), true));
+				}
+			} catch (Exception $oException) {
+				if (!self::DOWNLOAD_GRACEFUL_FAILURE) {
+					throw $oException;
+				}
+				// Fail gracefully
+				Log::get()->log("ERROR: {$oException}");
+				return false;
 			}
 
 			// Write to local file
