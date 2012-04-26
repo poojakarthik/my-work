@@ -1,7 +1,9 @@
 <?php
 
 // Load Framework
-require_once("../../flex.require.php");
+//require_once("../../flex.require.php");
+require_once("../../lib/classes/Flex.php");
+Flex::load();
 LoadApplication();
 
 CliEcho("\n[ CREATE CARRIER MODULE ]\n");
