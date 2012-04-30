@@ -253,7 +253,7 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler {
 							CustomerGroup.external_name AS customer_group_name
 				
 				FROM		FileImport
-							JOIN telemarketing_fnn_dialled tfd (ON tfd.file_import_id = FileImport.Id)
+							JOIN telemarketing_fnn_dialled tfd ON (tfd.file_import_id = FileImport.Id)
 							JOIN CustomerGroup ON (CustomerGroup.Id = tfd.customer_group_id)
 							JOIN dealer ON (dealer.id = tfd.dealer_id)
 				
