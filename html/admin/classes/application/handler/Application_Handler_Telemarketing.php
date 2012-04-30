@@ -74,7 +74,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			$strFriendlyFileName = dirname($_FILES['Telemarketing_ProposedUpload_File']['tmp_name']).'/'.$_FILES['Telemarketing_ProposedUpload_File']['name'];
 			move_uploaded_file($_FILES['Telemarketing_ProposedUpload_File']['tmp_name'], $strFriendlyFileName);
 			try {
-				$objFileImport = File_Import::import($strFriendlyFileName, $arrCarrierModule['FileType'], $objDealer->carrierId, null, "FileName = <FileName>");
+				$objFileImport = File_Import::import($strFriendlyFileName, $arrCarrierModule['FileType'], $objDealer->carrierId, basename($strFriendlyFileName), "FileName = <FileName>");
 			} catch (Exception $eException) {
 				throw new Exception("There was an internal error when importing the File.  If this problem occurs more than once, please notify YBS at support@ybs.net.au" . (($bolVerboseErrors) ? "\n".$eException->getMessage() : ''));
 			}
@@ -207,7 +207,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 					throw new Exception("Unable to move temporary file");
 				}
 				
-				$objFileImport = File_Import::import($strFriendlyFileName, $intFileType, $intCarrier, null, "FileName = <FileName>");
+				$objFileImport = File_Import::import($strFriendlyFileName, $intFileType, $intCarrier, basename($strFriendlyFileName), "FileName = <FileName>");
 			} catch (Exception $eException) {
 				throw new Exception("There was an internal error when importing the File.  If this problem occurs more than once, please notify YBS at support@ybs.net.au" . (($bolVerboseErrors) ? "\n".$eException->getMessage() : ''));
 			}
@@ -513,7 +513,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			$strFriendlyFileName = dirname($_FILES['Telemarketing_DiallerReportUpload_File']['tmp_name']).'/'.$_FILES['Telemarketing_DiallerReportUpload_File']['name'];
 			move_uploaded_file($_FILES['Telemarketing_DiallerReportUpload_File']['tmp_name'], $strFriendlyFileName);
 			try {
-				$objFileImport = File_Import::import($strFriendlyFileName, $arrCarrierModule['FileType'], $objDealer->carrierId, null, "FileName = <FileName>");
+				$objFileImport = File_Import::import($strFriendlyFileName, $arrCarrierModule['FileType'], $objDealer->carrierId, basename($strFriendlyFileName), "FileName = <FileName>");
 			} catch (Exception $eException) {
 				throw new Exception("There was an internal error when importing the File.  If this problem occurs more than once, please notify YBS at support@ybs.net.au" . (($bolVerboseErrors) ? "\n".$eException->getMessage() : ''));
 			}
