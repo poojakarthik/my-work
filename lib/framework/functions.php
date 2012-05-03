@@ -5873,9 +5873,13 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	 *
 	 * @return	boolean
 	 */
-	function IsValidTIOReferenceNumber($strTIORefNum)
-	{
-		return preg_match("/^\d{2}\/\d{6,7}$/", $strTIORefNum);
+	function IsValidTIOReferenceNumber($strTIORefNum) {
+		return (
+			// Old Format
+			preg_match("/^\d{2}\/\d{6,7}$/", $strTIORefNum) ||
+			// New Format
+			preg_match("/^\d{4}\/\d{2}\/\d{2,}$/", $strTIORefNum)
+		);
 	}
 
 	/**
