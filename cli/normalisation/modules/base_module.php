@@ -355,6 +355,8 @@ abstract class NormalisationModule extends CarrierModule {
 	}
 	
 	protected function FindRecordCode($mixCarrierCode) {
+		$iCarrierTranslationContextId = $this->GetConfigField('CallGroupCarrierTranslationContextId');
+		Flex::assert($iCarrierTranslationContextId !== null, "No Call Group (Record Type) Carrier Translation Context defined for Module {$this->_arrCarrierModule['Id']}:{$this->_arrCarrierModule['description']} (".get_class($this).")");
 		$mResult = Query::run("
 			SELECT		ct.out_value AS code
 			FROM		carrier_translation ct
@@ -362,7 +364,7 @@ abstract class NormalisationModule extends CarrierModule {
 						AND ct.in_value = <in_value>
 			LIMIT		1;
 		", array(
-			'carrier_translation_context_id' => $this->GetConfigField('CallGroupCarrierTranslationContextId'),
+			'carrier_translation_context_id' => $iCarrierTranslationContextId,
 			'in_value' => (string)$mixCarrierCode
 		));
 		
@@ -443,7 +445,8 @@ abstract class NormalisationModule extends CarrierModule {
 		
 		// Check for exact match destination
 		$iCarrierTranslationContextId = $this->GetConfigField('CallTypeCarrierTranslationContextId');
-		$mResult = Query::run($this->_sFindDestinationSQL, array('carrier_translation_context_id'=>$this->GetConfigField('CarrierTranslationContextId'), 'in_value'=>(string)$mCarrierCode));
+		Flex::assert($iCarrierTranslationContextId !== null, "No Call Type (Destination) Carrier Translation Context defined for Module {$this->_arrCarrierModule['Id']}:{$this->_arrCarrierModule['description']} (".get_class($this).")");
+		$mResult = Query::run($this->_sFindDestinationSQL, array('carrier_translation_context_id'=>$iCarrierTranslationContextId, 'in_value'=>(string)$mCarrierCode));
 		if ($aDestination = $mResult->fetch_assoc()) {
 			return $aDestination;
 		}
