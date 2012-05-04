@@ -11,6 +11,24 @@ class JSON_Handler_Employee extends JSON_Handler
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 	
+	
+	public function getCurrentEmployee()
+	{
+		try
+		{
+			$aEmployee	= Employee::getForId(Flex::getUserId())->toArray();
+		}
+		catch (Exception $e)
+		{
+			return 	array(
+						'bSuccess'	=> false,
+						'sMessage'	=> 'There was an error getting the accessing the database. Please contact YBS for assistance.'
+					);
+		}
+		return $aEmployee;
+	}
+
+
 	public function getForId($iEmployeeId)
 	{
 		try
