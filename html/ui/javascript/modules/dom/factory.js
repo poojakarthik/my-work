@@ -2,7 +2,10 @@
 //debugger;
 
 var	_undefined,
-	_aElements	= ['a','abbr','address','area','article','aside','audio','b','base','bdo','blockquote','body','br','button','canvas','caption','cite','code','col','colgroup','command','datalist','dd','del','details','dfn','div','dl','dt','em','embed','fieldset','figcaption','figure','footer','form','h1','h2','h3','h4','h5','h6','head','header','hgroup','hr','html','i','iframe','img','input','ins','keygen','kbd','label','legend','li','link','map','mark','menu','meta','meter','nav','noscript','object','ol','optgroup','option','output','p','param','pre','progress','q','rp','rt','ruby','s','samp','script','section','select','small','source','span','strong','style','sub','summary','sup','table','tbody','td','textarea','tfoot','th','thead','time','title','tr','ul','var','video','wbr'],
+	_aElements	= [
+		/* HTML5 */'a','abbr','address','area','article','aside','audio','b','base','bdo','blockquote','body','br','button','canvas','caption','cite','code','col','colgroup','command','datalist','dd','del','details','dfn','div','dl','dt','em','embed','fieldset','figcaption','figure','footer','form','h1','h2','h3','h4','h5','h6','head','header','hgroup','hr','html','i','iframe','img','input','ins','keygen','kbd','label','legend','li','link','map','mark','menu','meta','meter','nav','noscript','object','ol','optgroup','option','output','p','param','pre','progress','q','rp','rt','ruby','s','samp','script','section','select','small','source','span','strong','style','sub','summary','sup','table','tbody','td','textarea','tfoot','th','thead','time','title','tr','ul','var','video','wbr',
+		/* SVG */'svg', 'g', 'defs', 'desc', 'title', 'symbol', 'use', 'image', 'switch', 'style', 'path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'text', 'tspan', 'tref', 'textPath', 'altGlyph', 'glyphRef', 'altGlyphItem', 'altGlyphDef', 'marker', 'color-profile', 'filter', 'cursor', 'a', 'view', 'script', 'animate', 'set', 'animateMotion', 'animateColor', 'animateTransform', 'font', 'glyph', 'missing-glyph', 'hkern', 'vkern', 'font-face', 'font-face-src', 'font-face-uri', 'font-face-format', 'font-face-name', 'metadata', 'foreignObject'
+	],
 	_toArray	= function (mArray) {
 		return Array.prototype.slice.call(mArray, 0);
 	},
