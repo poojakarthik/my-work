@@ -1,135 +1,45 @@
 <?php
-
-//----------------------------------------------------------------------------//
-// PropertyToken
-//----------------------------------------------------------------------------//
-/**
- * PropertyToken
- *
- * Token Property Object for Database Objects
- *
- * Token Property Object for Database Objects
- *
- *
- * @prefix	tok
- *
- * @package	framework_ui
- * @class	PropertyToken
- */
-class PropertyToken
-{
-	//------------------------------------------------------------------------//
-	// Properties
-	//------------------------------------------------------------------------//
+class PropertyToken {
 	private $_dboOwner;
 	private $_strProperty;
-	
-	//------------------------------------------------------------------------//
-	// __construct
-	//------------------------------------------------------------------------//
-	/**
-	 * __construct()
-	 *
-	 * Token constructor
-	 *
-	 * Token constructor
-	 *
-	 * @return	PropertyToken
-	 *
-	 * @method
-	 */
-	function __construct()
-	{
-		$this->_dboOwner	= NULL;
-		$this->_strProperty	= NULL;
+
+	function __construct() {
+		$this->_dboOwner = null;
+		$this->_strProperty = null;
 	}
 
-	//------------------------------------------------------------------------//
-	// instance
-	//------------------------------------------------------------------------//
-	/**
-	 * instance()
-	 *
-	 * Returns a singleton instance of this class
-	 *
-	 * Returns a singleton instance of this class
-	 *
-	 * @return	__CLASS__
-	 *
-	 * @method
-	 */
-	public static function instance()
-	{
+	public static function instance() {
 		static $instance;
-		if (!isset($instance))
-		{
+		if (!isset($instance)) {
 			$instance = new self();
 		}
 		return $instance;
 	}
 
-
-	//------------------------------------------------------------------------//
-	// Property
-	//------------------------------------------------------------------------//
-	/**
-	 * Property()
-	 *
-	 * Token Object takes form of the passed Property and returns itself
-	 *
-	 * Token Object takes form of the passed Property and returns itself
-	 *
-	 * @param	DBObject		$dboOwner	The owner object
-	 * @param	string			
-	 *
-	 * @return	PropertyToken
-	 *
-	 * @method
-	 */
-	function _Property($dboOwner, $strProperty)
-	{
-		$this->_dboOwner	= $dboOwner;
-		$this->_strProperty	= $strProperty;
-		//Debug("Token = {$dboOwner->_strName}->$strProperty");
+	function _Property($dboOwner, $strProperty) {
+		$this->_dboOwner = $dboOwner;
+		$this->_strProperty = $strProperty;
 		return $this;
 	}
 
-	//------------------------------------------------------------------------//
-	// __get
-	//------------------------------------------------------------------------//
-	/**
-	 * __get()
-	 *
-	 * Accessor for Token Property's... Properties? 
-	 *
-	 * Accessor for Token Property's... Properties?
-	 *
-	 * @param	string	$strName	Property's Property
-	 * 
-	 * @return	mixed
-	 *
-	 * @method
-	 */
-	function __get($strName)
-	{
-		//Debug("Get: {$this->_dboOwner->_strName}->{$this->_strProperty}->$strName");
-
+	function __get($strName) {
 		// Are we after one of our "magic" variables?
-		switch (strtolower($strName))
-		{
+		switch (strtolower($strName)) {
 			// The property's value
 			case "value":
-				if (array_key_exists($this->_strProperty, $this->_dboOwner->_arrProperties))
-				{
+				if (array_key_exists($this->_strProperty, $this->_dboOwner->_arrProperties)) {
 					return $this->_dboOwner->_arrProperties[$this->_strProperty];
 				}
-				return NULL;
+				return null;
+
 			// The property's validity
 			case "valid":
 				return $this->_dboOwner->_arrValid[$this->_strProperty];
-			// TRUE if the property has been set at all
+
+			// true if the property has been set at all
 			case "isset":
 				return isset($this->_dboOwner->_arrProperties[$this->_strProperty]);
+
 			// The property's value with html special chars escaped
 			case "htmlsafevalue":
 				return htmlspecialchars($this->_dboOwner->_arrProperties[$this->_strProperty], ENT_QUOTES);
@@ -137,40 +47,19 @@ class PropertyToken
 		
 		// Do we have a Define property by this name?
 		$intContext = (int)$this->_dboOwner->_intContext;
-		if (isset($this->_dboOwner->_arrDefine[$this->_strProperty][$intContext][$strName]))
-		{
+		if (isset($this->_dboOwner->_arrDefine[$this->_strProperty][$intContext][$strName])) {
 			return $this->_dboOwner->_arrDefine[$this->_strProperty][$intContext][$strName];
 		}
 		
-		return NULL;
+		return null;
 	}
 
-
-	//------------------------------------------------------------------------//
-	// __set
-	//------------------------------------------------------------------------//
-	/**
-	 * __set()
-	 *
-	 * Modifier for Token Property's... Properties? 
-	 *
-	 * Modifier for Token Property's... Properties?
-	 *
-	 * @param	string	$strName	Property's Property
-	 * @param	mixed	$mixValue	Value to assign
-	 * 
-	 * @return	boolean				Pass/Fail
-	 *
-	 * @method
-	 */
-	function __set($strName, $mixValue)
-	{		
+	function __set($strName, $mixValue) { 
 		// Validate
 		// TODO
 		
 		// Set the value & return
-		switch (strtolower($strName))
-		{
+		switch (strtolower($strName)) {
 			// The property's value
 			case "value":
 				return (bool)($this->_dboOwner->_arrProperties[$this->_strProperty] = $mixValue);
@@ -181,146 +70,44 @@ class PropertyToken
 		return $this->_dboOwner->_arrDefine[$this->_strProperty][$intContext][$strName] = $mixValue;
 	}
 
-	//------------------------------------------------------------------------//
-	// Trim
-	//------------------------------------------------------------------------//
-	/**
-	 * Trim()
-	 *
-	 * Performs a Trim operation on the property
-	 *
-	 * Performs a Trim operation on the property
-	 *
-	 * @param	string	$strTrimType	optional, the type of trim to perform (trim, ltrim, rtrim)
-	 *									Defaults to trim
-	 * @param	string	$strCharList	optional, list of chars to strip.  Defaults 
-	 *									to the default of the trim method (usually 
-	 *									all whitespace chars)
-	 * 
-	 * @method
-	 */
-	function Trim($strTrimType=NULL, $strCharList=NULL)
-	{
-		switch (strtolower($strTrimType))
-		{
+	function Trim($strTrimType=null, $strCharList=null) {
+		switch (strtolower($strTrimType)) {
 			case "ltrim":
 				$strFunc = "ltrim";
 				break;
+
 			case "rtrim":
 				$strFunc = "rtrim";
 				break;
+
 			default:
 				$strFunc = "trim";
 				break;
 		}
 		
-		$arrArgs = Array();
+		$arrArgs = array();
 		$arrArgs[] = $this->_dboOwner->_arrProperties[$this->_strProperty];
 		
-		if ($strCharList !== NULL)
-		{
+		if ($strCharList !== null) {
 			$arrArgs[] = $strCharList;
 		}
 		
 		$this->_dboOwner->_arrProperties[$this->_strProperty] = call_user_func_array($strFunc, $arrArgs);
 	}
 
-	//------------------------------------------------------------------------//
-	// __call
-	//------------------------------------------------------------------------//
-	/**
-	 * __call()
-	 *
-	 * 
-	 *
-	 * 
-	 *
-	 * @param	dbo		$dboObject		The owner object
-	 * @param	string	$strMethod		Method to run
-	 * @param	array	$arrArguments	Passed Arguments
-	 * 
-	 * @return	mixed
-	 *
-	 * @method
-	 */
-	/*function __call($strMethod, $arrArguments)
-	{
-	
-	}*/
-
-	//------------------------------------------------------------------------//
-	// RenderInput
-	//------------------------------------------------------------------------//
-	/**
-	 * RenderInput()
-	 *
-	 * Renders the property in its HTML input form
-	 *
-	 * Renders the property in its HTML input form
-	 *
-	 * @param	int		$intContext			[optional] The context in which the property will be displayed
-	 * @param	bool	$bolRequired		[optional] Whether the field should be mandatory
-	 * @param	bool	$bolApplyOutputMask [optional] Set to FALSE to not apply the Output Mask
-	 * @param	array	$arrAdditionalArgs	[optional] This can be used to pass Element attributes to the 
-	 * 										element (ie $arrAdditionalArgs["attribute:maxlength"]= 30, will
-	 * 										set the max length attribute of an input text element to 30)
-	 * 										This is also used to set the date range for InputShortDates input elements
-	 * 
-	 * @return	mixed	PropertyValue	returns the value of the property
-	 *
-	 * @method
-	 */
-	function RenderInput($intContext=CONTEXT_DEFAULT, $bolRequired=FALSE, $bolApplyOutputMask=TRUE, $arrAdditionalArgs=NULL)
-	{
+	function RenderInput($intContext=CONTEXT_DEFAULT, $bolRequired=false, $bolApplyOutputMask=true, $arrAdditionalArgs=null) {
 		echo $this->_RenderIO(RENDER_INPUT, $intContext, $bolRequired, $bolApplyOutputMask, $arrAdditionalArgs);
 		
-		return array_key_exists($this->_strProperty, $this->_dboOwner->_arrProperties) ? $this->_dboOwner->_arrProperties[$this->_strProperty] : NULL;
+		return array_key_exists($this->_strProperty, $this->_dboOwner->_arrProperties) ? $this->_dboOwner->_arrProperties[$this->_strProperty] : null;
 	}
 
-	//------------------------------------------------------------------------//
-	// RenderOutput
-	//------------------------------------------------------------------------//
-	/**
-	 * RenderOutput()
-	 *
-	 * Renders the property in its standard label form
-	 *
-	 * Renders the property in its standard label form
-	 *
-	 * @param	int		$intContext		[optional] The context in which the property will be displayed
-	 * 
-	 * @return	mixed	PropertyValue	returns the value of the property
-	 *
-	 * @method
-	 */
-	function RenderOutput($intContext=CONTEXT_DEFAULT)
-	{
+	function RenderOutput($intContext=CONTEXT_DEFAULT) {
 		echo $this->_RenderIO(RENDER_OUTPUT, $intContext);
 		
-		return array_key_exists($this->_strProperty, $this->_dboOwner->_arrProperties) ? $this->_dboOwner->_arrProperties[$this->_strProperty] : NULL;
+		return array_key_exists($this->_strProperty, $this->_dboOwner->_arrProperties) ? $this->_dboOwner->_arrProperties[$this->_strProperty] : null;
 	}
 
-	//------------------------------------------------------------------------//
-	// _RenderIO
-	//------------------------------------------------------------------------//
-	/**
-	 * _RenderIO()
-	 *
-	 * Renders the property in its specified template
-	 *
-	 * Renders the property in its specified template
-	 *
-	 * @param	string	$strType			either RENDER_OUTPUT or RENDER_INPUT
-	 * @param	int		$intContext			[optional] The context in which the property will be displayed
-	 * @param	bool	$bolRequired		[optional] Whether the field should be mandatory
-	 *
-	 * @return	mixed						Html generated
-	 *										If there was no definition data for this property/context, then returns NULL
-	 *
-	 * @method
-	 */
-	private function _RenderIO($strType, $intContext=CONTEXT_DEFAULT, $bolRequired=FALSE, $bolApplyOutputMask=TRUE, $arrAdditionalArgs=NULL)
-	{
+	private function _RenderIO($strType, $intContext=CONTEXT_DEFAULT, $bolRequired=false, $bolApplyOutputMask=true, $arrAdditionalArgs=null) {
 		$intContext = $this->_CalculateContext($intContext);
 		
 		// Build up parameters for HtmlElements
@@ -329,45 +116,19 @@ class PropertyToken
 		return HtmlElements()->$arrParams['Definition'][$strType.'Type']($arrParams, $arrAdditionalArgs);
 	}
 
-	//------------------------------------------------------------------------//
-	// _CalculateContext
-	//------------------------------------------------------------------------//
-	/**
-	 * _CalculateContext()
-	 *
-	 * Calculates what context to use when rendering a property
-	 *
-	 * Calculates what context to use when rendering a property 
-	 * The property's context can be conditional based on the property's value.
-	 * These conditions are defined in the database table ConditionalContexts
-	 *
-	 * @param	int		$intCurrentContext		The context in which the property will be 
-	 *											displayed if it is not subject to conditions
-	 * @param	mixed	$mixValue				[optional] the value to check the conditions against.
-	 *											if not supplied then the property's actual value will be used
-	 * 
-	 * @return	int								context to use
-	 *
-	 * @method
-	 */
-	private function _CalculateContext($intCurrentContext, $mixValue = NULL)
-	{
+	private function _CalculateContext($intCurrentContext, $mixValue=null) {
 		// if a value has not been specified then use the current value of the property
-		if ($mixValue === NULL && array_key_exists($this->_strProperty, $this->_dboOwner->_arrProperties))
-		{
+		if ($mixValue === null && array_key_exists($this->_strProperty, $this->_dboOwner->_arrProperties)) {
 			$mixValue = $this->_dboOwner->_arrProperties[$this->_strProperty];
 		}
 		
 		$intContext = $intCurrentContext;
 		
 		// work out if the context of the property is subject to its value
-		if (is_array($this->_dboOwner->_arrDefine) && array_key_exists($this->_strProperty, $this->_dboOwner->_arrDefine) && array_key_exists('ConditionalContexts', $this->_dboOwner->_arrDefine[$this->_strProperty]) && is_array($this->_dboOwner->_arrDefine[$this->_strProperty]['ConditionalContexts']))
-		{
+		if (is_array($this->_dboOwner->_arrDefine) && array_key_exists($this->_strProperty, $this->_dboOwner->_arrDefine) && array_key_exists('ConditionalContexts', $this->_dboOwner->_arrDefine[$this->_strProperty]) && is_array($this->_dboOwner->_arrDefine[$this->_strProperty]['ConditionalContexts'])) {
 			// test each defined condition and use the context of the first one that is found to be true
-			foreach ($this->_dboOwner->_arrDefine[$this->_strProperty]['ConditionalContexts'] as $arrCondition)
-			{
-				if (IsConditionTrue($mixValue, $arrCondition['Operator'], $arrCondition['Value']))
-				{
+			foreach ($this->_dboOwner->_arrDefine[$this->_strProperty]['ConditionalContexts'] as $arrCondition) {
+				if (IsConditionTrue($mixValue, $arrCondition['Operator'], $arrCondition['Value'])) {
 					// set the context to use
 					$intContext = $arrCondition['Context'];
 					break;
@@ -378,130 +139,57 @@ class PropertyToken
 		return $intContext;
 	}
 
-	//------------------------------------------------------------------------//
-	// _BuildParams
-	//------------------------------------------------------------------------//
-	/**
-	 * _BuildParams()
-	 *
-	 * Builds the parameter array which is then used by the HtmlElements class to render properties
-	 *
-	 * Builds the parameter array which is then used by the HtmlElements class to render properties
-	 *
-	 * @param	int		$intContext			context in which the property will be rendered
-	 * @param	string	$strType			[optional] either RENDER_OUTPUT, RENER_INPUT or RENDER_VALUE, defines
-	 *										how the property will be rendered. Defaults to RENDER_OUTPUT
-	 * @param	bool	$bolRequired		[optional] Whether the field should be mandatory
-	 * 
-	 * @return	array						This array is defined at the top of the HtmlElements class
-	 *
-	 * @method
-	 */
-	private function _BuildParams($intContext, $strType=RENDER_OUTPUT, $bolRequired=FALSE, $bolApplyOutputMask=TRUE)
-	{
-		$arrParams = Array();
-		if (!$this->_dboOwner->_arrDefine[$this->_strProperty][$intContext])
-		{
+	private function _BuildParams($intContext, $strType=RENDER_OUTPUT, $bolRequired=false, $bolApplyOutputMask=true) {
+		$arrParams = array();
+		if (!$this->_dboOwner->_arrDefine[$this->_strProperty][$intContext]) {
 			// A UIAppDocumentation record could not be found for this particular context.  Use defaults
 			$strLabel = $this->_TokenizeStudlyString($this->_strProperty);
-			$arrParams['Definition']	= Array("OutputType"=>"Label", "InputType"=>"InputText", "Label"=>$strLabel,
-												"OutputLabel"=>NULL, "OutputMask"=>NULL, "Class"=>"Default");
-		}
-		else
-		{
+			$arrParams['Definition'] = array(
+				"OutputType" => "Label",
+				"InputType" => "InputText",
+				"Label" => $strLabel,
+				"OutputLabel" => null,
+				"OutputMask" => null,
+				"Class" => "Default"
+			);
+		} else {
 			// A UIAppDocumentation record was found
-			$arrParams['Definition']	= $this->_dboOwner->_arrDefine[$this->_strProperty][$intContext];
+			$arrParams['Definition'] = $this->_dboOwner->_arrDefine[$this->_strProperty][$intContext];
 		}
 		
-		$arrParams['Object'] 			= $this->_dboOwner->_strName;
-		$arrParams['Property'] 			= $this->_strProperty;
-		$arrParams['Context'] 			= $intContext;
-		$arrParams['Value'] 			= array_key_exists($this->_strProperty, $this->_dboOwner->_arrProperties) ? $this->_dboOwner->_arrProperties[$this->_strProperty] : NULL;
-		if (array_key_exists($this->_strProperty, $this->_dboOwner->_arrValid)) 
-		{
-			$arrParams['Valid'] 			= $this->_dboOwner->_arrValid[$this->_strProperty];
+		$arrParams['Object'] = $this->_dboOwner->_strName;
+		$arrParams['Property'] = $this->_strProperty;
+		$arrParams['Context'] = $intContext;
+		$arrParams['Value'] = array_key_exists($this->_strProperty, $this->_dboOwner->_arrProperties) ? $this->_dboOwner->_arrProperties[$this->_strProperty] : null;
+		if (array_key_exists($this->_strProperty, $this->_dboOwner->_arrValid)) {
+			$arrParams['Valid'] = $this->_dboOwner->_arrValid[$this->_strProperty];
 		}
-		$arrParams['Required'] 			= $bolRequired;
-		$arrParams['Type']				= $strType;
-		$arrParams['ApplyOutputMask']	= $bolApplyOutputMask;
+		$arrParams['Required'] = $bolRequired;
+		$arrParams['Type'] = $strType;
+		$arrParams['ApplyOutputMask'] = $bolApplyOutputMask;
 
 		// work out the base class to use
 		$arrParams['Definition']['BaseClass'] = CLASS_DEFAULT; // Default
-		if (array_key_exists('Valid', $arrParams) && $arrParams['Valid'] === FALSE)
-		{
+		if (array_key_exists('Valid', $arrParams) && $arrParams['Valid'] === false) {
 			$arrParams['Definition']['BaseClass'] .= "Invalid"; // DefaultInvalid
 		}
 		
 		return $arrParams;
 	}
 
-
-	//------------------------------------------------------------------------//
-	// strGetLabel
-	//------------------------------------------------------------------------//
-	/**
-	 * strGetLabel()
-	 *
-	 * Returns the label for the field in a given context
-	 *
-	 * Returns the label for the field in a given context
-	 *
-	 * @param	int		$intContext	[optional] context for which the label is required
-	 * 
-	 * @return	string	label for the field in a given context
-	 *
-	 * @method
-	 */
-	function strGetLabel($intContext=CONTEXT_DEFAULT)
-	{
+	function strGetLabel($intContext=CONTEXT_DEFAULT) {
 		return $this->_dboOwner->_arrDefine[$this->_strProperty][$intContext]['Label'];
 	}
 	
-	//------------------------------------------------------------------------//
-	// Render
-	//------------------------------------------------------------------------//
-	/**
-	 * Render()
-	 *
-	 * Renders the property's value without formating or mark-up
-	 *
-	 * Renders the property's value without formating or mark-up
-	 *
-	 * @param	string	$strOutputMask	[optional] output mask 
-	 * 
-	 * @return	mixed					property's value
-	 *
-	 * @method
-	 */
-	function Render($strOutputMask=NULL)
-	{
+	function Render($strOutputMask=null) {
 		$strValue = HtmlElements()->ApplyOutputMask($this->_dboOwner->_arrProperties[$this->_strProperty], $strOutputMask);
 		
 		echo $strValue;
-		return $this->_dboOwner->_arrProperties[$this->_strProperty];		
+		return $this->_dboOwner->_arrProperties[$this->_strProperty]; 
 	}
 
-
-	//------------------------------------------------------------------------//
-	// _Value
-	//------------------------------------------------------------------------//
-	/**
-	 * _Value()
-	 *
-	 * Used by RenderValue and AsValue to build the html required
-	 *
-	 * Used by RenderValue and AsValue to build the html required
-	 *
-	 * @param	int		$intContext		[optional] context in which the property will be displayed
-	 * @return	mixed					html code, or NULL
-	 * @method
-	 *
-	 * always sets the context to zero
-	 */
-	private function _Value($intContext=CONTEXT_DEFAULT, $bolUseConditionalContext=FALSE)
-	{
-		if ($bolUseConditionalContext)
-		{
+	private function _Value($intContext=CONTEXT_DEFAULT, $bolUseConditionalContext=false) {
+		if ($bolUseConditionalContext) {
 			$intContext = $this->_CalculateContext($intContext);
 		}
 
@@ -511,119 +199,31 @@ class PropertyToken
 		return HtmlElements()->RenderValue($arrParams);
 	}
 
-	//------------------------------------------------------------------------//
-	// RenderValue
-	//------------------------------------------------------------------------//
-	/**
-	 * RenderValue()
-	 *
-	 * Renders the property's value with formating and mark-up
-	 *
-	 * Renders the property's value with formating and mark-up
-	 * The value's accompanying label is not included
-	 *
-	 * @param	int		$intContext		[optional] context in which the property will be displayed
-	 * @return	mixed					property's value
-	 * @method
-	 */
-	function RenderValue($intContext=CONTEXT_DEFAULT, $bolUseConditionalContext=FALSE)
-	{
+	function RenderValue($intContext=CONTEXT_DEFAULT, $bolUseConditionalContext=false) {
 		echo $this->_Value($intContext, $bolUseConditionalContext);
 		
 		return $this->_dboOwner->_arrProperties[$this->_strProperty];
 	}
 
-	//------------------------------------------------------------------------//
-	// AsValue
-	//------------------------------------------------------------------------//
-	/**
-	 * AsValue()
-	 *
-	 * Returns the html code used to render the property's value with formating and mark-up
-	 *
-	 * Returns the html code used to render the property's value with formating and mark-up
-	 * The value's accompanying label is not included
-	 *
-	 * @param	int		$intContext		[optional] context in which the property will be displayed
-	 * @return	string					html code
-	 * @method
-	 */
-	function AsValue($intContext=CONTEXT_DEFAULT, $bolUseConditionalContext=FALSE)
-	{
+	function AsValue($intContext=CONTEXT_DEFAULT, $bolUseConditionalContext=false) {
 		return $this->_Value($intContext, $bolUseConditionalContext);
 	}
 
-	//------------------------------------------------------------------------//
-	// AsInput
-	//------------------------------------------------------------------------//
-	/**
-	 * AsInput()
-	 *
-	 * Returns the html code used to render the property as an input
-	 *
-	 * Returns the html code used to render the property as an input
-	 *
-	 * @param	int		$intContext		[optional] The context in which the property will be displayed
-	 * @param	bool	$bolRequired	[optional] Whether the field should be mandatory
-	 * 
-	 * @return	string 					html code
-	 *
-	 * @method
-	 */
-	function AsInput($intContext=CONTEXT_DEFAULT, $bolRequired=NULL, $bolApplyOutputMask=TRUE, $arrAdditionalArgs=NULL)
-	{
+	function AsInput($intContext=CONTEXT_DEFAULT, $bolRequired=null, $bolApplyOutputMask=true, $arrAdditionalArgs=null) {
 		return $this->_RenderIO(RENDER_INPUT, $intContext, $bolRequired, $bolApplyOutputMask, $arrAdditionalArgs);
 	}
 
-	//------------------------------------------------------------------------//
-	// AsOutput
-	//------------------------------------------------------------------------//
-	/**
-	 * AsOutput()
-	 *
-	 * Returns the html code used to render the property as an output
-	 *
-	 * Returns the html code used to render the property as an output
-	 *
-	 * @param	int		$intContext		[optional] The context in which the property will be displayed
-	 * 
-	 * @return	string					html code
-	 *
-	 * @method
-	 */
-	function AsOutput($intContext=CONTEXT_DEFAULT)
-	{
+	function AsOutput($intContext=CONTEXT_DEFAULT) {
 		return $this->_RenderIO(RENDER_OUTPUT, $intContext);
 	}
 
-	//------------------------------------------------------------------------//
-	// FormattedValue
-	//------------------------------------------------------------------------//
-	/**
-	 * FormattedValue()
-	 *
-	 * Returns the property's value, formatted but not marked-up
-	 *
-	 * Returns the property's value, formatted but not marked-up
-	 *
-	 * @param	int		$intContext		[optional] context in which the property will be formatted
-	 * @param	mixed	$mixArbitrary	[optional] arbitrary value to use as the property's value 
-	 *									when creating the formatted value
-	 * @return	mixed					property's formatted value
-	 *									If the context could not be found
-	 *									then NULL is returned
-	 *
-	 * @method
-	 */
-	function FormattedValue($intContext=CONTEXT_DEFAULT, $mixArbitrary=NULL)
-	{
+	function FormattedValue($intContext=CONTEXT_DEFAULT, $mixArbitrary=null) {
 		$intContext = $this->_CalculateContext($intContext);
 
 		// Build up parameters for HtmlElements
 		$arrParams = $this->_BuildParams($intContext);
 		
-		if ($mixArbitrary !== NULL)
-		{
+		if ($mixArbitrary !== null) {
 			// An arbitrary value has been specified, use it instead
 			$arrParams['Value'] = $mixArbitrary;
 		}
@@ -632,24 +232,7 @@ class PropertyToken
 		return $strFormattedValue;
 	}
 
-	//------------------------------------------------------------------------//
-	// _Link
-	//------------------------------------------------------------------------//
-	/**
-	 * _Link()
-	 *
-	 * Used by RenderLink and AsLink to build the html required
-	 *
-	 * Used by RenderLink and AsLink to build the html required
-	 *
-	 * @param	string	$strHref		href for the hyperlink
-	 * @param	int		$intContext		[optional] context in which the property will be displayed
-	 *
-	 * @return	string					html code
-	 * @method
-	 */
-	private function _Link($strHref, $intContext = CONTEXT_DEFAULT)
-	{
+	private function _Link($strHref, $intContext = CONTEXT_DEFAULT) {
 		$intContext = $this->_CalculateContext($intContext);
 
 		// build up parameters
@@ -658,69 +241,17 @@ class PropertyToken
 		return HtmlElements()->RenderLink($arrParams, $strHref);
 	}
 	
-	//------------------------------------------------------------------------//
-	// AsLink
-	//------------------------------------------------------------------------//
-	/**
-	 * AsLink()
-	 *
-	 * Returns the html code used to render the property as a hyperlink
-	 *
-	 * Returns the html code used to render the property as a hyperlink
-	 *
-	 * @param	string	$strHref		href for the hyperlink
-	 * @param	int		$intContext		[optional] context in which the property will be displayed
-	 *
-	 * @return	string					html code
-	 * @method
-	 */
-	function AsLink($strHref, $intContext=CONTEXT_DEFAULT)
-	{
+	function AsLink($strHref, $intContext=CONTEXT_DEFAULT) {
 		return $this->_Link($strHref, $intContext);
 	}
 
-	//------------------------------------------------------------------------//
-	// RenderLink
-	//------------------------------------------------------------------------//
-	/**
-	 * RenderLink()
-	 *
-	 * Renders the property's value with formating and mark-up within a hyperlink
-	 *
-	 * Renders the property's value with formating and mark-up within a hyperlink
-	 *
-	 * @param	string	$strHref		href for the hyperlink
-	 * @param	int		$intContext		[optional] context in which the property will be displayed
-	 *
-	 * @return	mix						property's value
-	 * @method
-	 */
-	function RenderLink($strHref, $intContext=CONTEXT_DEFAULT)
-	{
+	function RenderLink($strHref, $intContext=CONTEXT_DEFAULT) {
 		echo $this->_Link($strHref, $intContext);
 		
 		return $this->_dboOwner->_arrProperties[$this->_strProperty];
 	}
 
-	//------------------------------------------------------------------------//
-	// _Arbitrary
-	//------------------------------------------------------------------------//
-	/**
-	 * _Arbitrary()
-	 *
-	 * Used by RenderArbitrary and AsArbitrary to build the html required
-	 *
-	 * Used by RenderArbitrary and AsArbitrary to build the html required
-	 *
-	 * @param	mixed	$mixValue		href for the hyperlink
-	 * @param	string	$strRenderType	[optional] either RENDER_VALUE, RENDER_OUTPUT or RENDER_INPUT
-	 * @param	int		$intContext		[optional] context in which the property will be displayed
-	 *
-	 * @return	string					html code
-	 * @method
-	 */
-	private function _Arbitrary($mixValue, $strRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT, $bolRequired=FALSE, $bolApplyOutputMask=TRUE)
-	{
+	private function _Arbitrary($mixValue, $strRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT, $bolRequired=false, $bolApplyOutputMask=true) {
 		$intContext = $this->_CalculateContext($intContext, $mixValue);
 
 		// build up parameters
@@ -730,14 +261,15 @@ class PropertyToken
 		$arrParams['Value'] = $mixValue;
 		
 		// Render the value
-		switch ($strRenderType)
-		{
+		switch ($strRenderType) {
 			case RENDER_INPUT:
 				return HtmlElements()->$arrParams['Definition']['InputType']($arrParams);
 				break;
+
 			case RENDER_OUTPUT:
 				return HtmlElements()->$arrParams['Definition']['OutputType']($arrParams);
 				break;
+
 			case RENDER_VALUE:
 			default:
 				return HtmlElements()->RenderValue($arrParams);
@@ -745,85 +277,25 @@ class PropertyToken
 		}
 	}
 
-	//------------------------------------------------------------------------//
-	// AsArbitrary
-	//------------------------------------------------------------------------//
-	/**
-	 * AsArbitrary()
-	 *
-	 * Returns the html code used to render $mixValue as the value of the property (with formatting and mark-up)
-	 *
-	 * Returns the html code used to render $mixValue as the value of the property (with formatting and mark-up)
-	 * $mixValue will be subject to conditions defined in the ConditionalContexts and UIAppDocumentationOptions tables
-	 *
-	 * @param	mixed	$mixValue		The value to substitute for the property's value
-	 * @param	string	$strRenderType	[optional] either RENDER_VALUE, RENDER_OUTPUT or RENDER_INPUT
-	 * @param	int		$intContext		[optional] context in which the property will be displayed
-	 *
-	 * @return	string					html code
-	 * @method
-	 */
-	function AsArbitrary($mixValue, $strRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT, $bolRequired=FALSE, $bolApplyOutputMask=TRUE)
-	{
+	function AsArbitrary($mixValue, $strRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT, $bolRequired=false, $bolApplyOutputMask=true) {
 		return $this->_Arbitrary($mixValue, $strRenderType, $intContext, $bolRequired, $bolApplyOutputMask);
 	}
 
-	//------------------------------------------------------------------------//
-	// RenderArbitrary
-	//------------------------------------------------------------------------//
-	/**
-	 * RenderArbitrary()
-	 *
-	 * Renders $mixValue as the value of the property (with formatting and mark-up)
-	 *
-	 * Renders $mixValue as the value of the property (with formatting and mark-up)
-	 * $mixValue will be subject to conditions defined in the ConditionalContexts and UIAppDocumentationOptions tables
-	 *
-	 * @param	mixed	$mixValue		The value to substitute for the property's value
-	 * @param	string	$strRenderType	[optional] either RENDER_VALUE, RENDER_OUTPUT or RENDER_INPUT
-	 * @param	int		$intContext		[optional] context in which the property will be displayed
-	 *
-	 * @return	mixed	PropertyValue	returns the actual value of the property
-	 * @method
-	 */
-	function RenderArbitrary($mixValue, $strRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT, $bolRequired=FALSE, $bolApplyOutputMask=TRUE)
-	{
+	function RenderArbitrary($mixValue, $strRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT, $bolRequired=false, $bolApplyOutputMask=true) {
 		echo $this->_Arbitrary($mixValue, $strRenderType, $intContext, $bolRequired, $bolApplyOutputMask);
 		
 		return $this->_dboOwner->_arrProperties[$this->_strProperty];
 	}
 
-	//------------------------------------------------------------------------//
-	// _Callback
-	//------------------------------------------------------------------------//
-	/**
-	 * _Callback()
-	 *
-	 * Used by RenderCallback and AsCallback to build the html required
-	 *
-	 * Used by RenderCallback and AsCallback to build the html required
-	 *
-	 * @param	mixed	$mixCallbackFunc	name of the function to call
-	 *										This can be specified as "FunctionName"
-	 *										or Array("ClassName", "MethodName")
-	 * @param	array	$arrAdditionalArgs	[optional] additional arguments required of the callback function
- 	 * @param	string	$strRenderType		[optional] either RENDER_VALUE, RENDER_OUTPUT or RENDER_INPUT
-	 * @param	int		$intContext			[optional] context in which the property will be displayed
-	 *
-	 * @return	string						html code
-	 * @method
-	 */
-	private function _Callback($mixCallbackFunc, $arrAdditionalArgs=NULL, $strRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT, $bolRequired=FALSE, $bolApplyOutputMask=TRUE)
-	{
+	private function _Callback($mixCallbackFunc, $arrAdditionalArgs=null, $strRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT, $bolRequired=false, $bolApplyOutputMask=true) {
 		$intContext = $this->_CalculateContext($intContext);
 
 		// build up parameters
 		$arrParams = $this->_BuildParams($intContext, $strRenderType, $bolRequired, $bolApplyOutputMask);
 		
 		// build arguement array for the callback function
-		$arrArgs = Array($arrParams['Value']);
-		if (is_array($arrAdditionalArgs))
-		{
+		$arrArgs = array($arrParams['Value']);
+		if (is_array($arrAdditionalArgs)) {
 			$arrArgs = array_merge($arrArgs, $arrAdditionalArgs);
 		}
 		
@@ -831,14 +303,15 @@ class PropertyToken
 		$arrParams['Value'] = call_user_func_array($mixCallbackFunc, $arrArgs);
 
 		// Render the value
-		switch ($strRenderType)
-		{
+		switch ($strRenderType) {
 			case RENDER_INPUT:
 				return HtmlElements()->$arrParams['Definition']['InputType']($arrParams);
 				break;
+
 			case RENDER_OUTPUT:
 				return HtmlElements()->$arrParams['Definition']['OutputType']($arrParams);
 				break;
+
 			case RENDER_VALUE:
 			default:
 				return HtmlElements()->RenderValue($arrParams);
@@ -846,192 +319,51 @@ class PropertyToken
 		}
 	}
 
-	//------------------------------------------------------------------------//
-	// AsCallback
-	//------------------------------------------------------------------------//
-	/**
-	 * AsCallBack()
-	 *
-	 * Returns the html code used to render the value of the property (with formatting and markup) after having modified it using the callback function
-	 *
-	 * Returns the html code used to render the value of the property (with formatting and markup) after having modified it using the callback function
-	 * The property's value will be the first argument passed to the callback function, 
-	 * followed by any other arguements defined in $arrAdditionalArgs
-	 *
-	 * @param	mixed	$mixCallbackFunc	name of the function to call
-	 *										This can be specified as "FunctionName"
-	 *										or Array("ClassName", "MethodName")
-	 * @param	array	$arrAdditionalArgs	[optional] additional arguments required of the callback function
-	 * @param	string	$strRenderType		[optional] either RENDER_VALUE, RENDER_OUTPUT or RENDER_INPUT
-	 * @param	int		$intContext			[optional] context in which the property will be displayed
-	 *
-	 * @return	string						html code
-	 * @method
-	 */
-	function AsCallback($strCallbackFunc, $arrAdditionalArgs=NULL, $strRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT, $bolRequired=FALSE, $bolApplyOutputMask=TRUE)
-	{
+	function AsCallback($strCallbackFunc, $arrAdditionalArgs=null, $strRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT, $bolRequired=false, $bolApplyOutputMask=true) {
 		return $this->_Callback($strCallbackFunc, $arrAdditionalArgs, $strRenderType, $intContext, $bolRequired, $bolApplyOutputMask);
 	}
 
-	//------------------------------------------------------------------------//
-	// RenderCallback
-	//------------------------------------------------------------------------//
-	/**
-	 * RenderCallback()
-	 *
-	 * Renders the value of the property (with formatting and markup) after having modified the property's value using the callback function
-	 *
-	 * Renders the value of the property (with formatting and markup) after having modified the property's value using the callback function
-	 * The property's value will be the first argument passed to the callback function, 
-	 * followed by any other arguements defined in $arrAdditionalArgs
-	 *
-	 * @param	mixed	$mixCallbackFunc	name of the function to call
-	 *										This can be specified as "FunctionName"
-	 *										or Array("ClassName", "MethodName")
-	 * @param	array	$arrAdditionalArgs	[optional] additional arguments required of the callback function
-	 * @param	string	$strRenderType		[optional] either RENDER_VALUE, RENDER_OUTPUT or RENDER_INPUT
-	 * @param	int		$intContext			[optional] context in which the property will be displayed
-	 *
-	 * @return	mixed	PropertyValue		returns the actual value of the property
-	 * @method
-	 */
-	function RenderCallback($mixCallbackFunc, $arrAdditionalArgs=NULL, $strRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT, $bolRequired=FALSE, $bolApplyOutputMask=TRUE)
-	{
+	function RenderCallback($mixCallbackFunc, $arrAdditionalArgs=null, $strRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT, $bolRequired=false, $bolApplyOutputMask=true) {
 		echo $this->_Callback($mixCallbackFunc, $arrAdditionalArgs, $strRenderType, $intContext, $bolRequired, $bolApplyOutputMask);
 		
 		return $this->_dboOwner->_arrProperties[$this->_strProperty];
 	}
 
-	//------------------------------------------------------------------------//
-	// _Hidden
-	//------------------------------------------------------------------------//
-	/**
-	 * _Hidden()
-	 *
-	 * Used by RenderHidden and AsHidden to build the html required
-	 *
-	 * Used by RenderHidden and AsHidden to build the html required
-	 *
-	 * @return	string					html code
-	 * @method
-	 */
-	private function _Hidden()
-	{
-		$arrParams['Object']	= $this->_dboOwner->_strName;
-		$arrParams['Property']	= $this->_strProperty;
-		$arrParams['Value']		= $this->_dboOwner->_arrProperties[$this->_strProperty];
+	private function _Hidden() {
+		$arrParams['Object'] = $this->_dboOwner->_strName;
+		$arrParams['Property'] = $this->_strProperty;
+		$arrParams['Value'] = $this->_dboOwner->_arrProperties[$this->_strProperty];
 
 		// Render the value as hidden
 		return HtmlElements()->InputHidden($arrParams);
 	}
 
-	//------------------------------------------------------------------------//
-	// AsHidden
-	//------------------------------------------------------------------------//
-	/**
-	 * AsHidden()
-	 *
-	 * Returns the html code used to render the property as a hidden input
-	 *
-	 * Returns the html code used to render the property as a hidden input
-	 *
-	 * @return	string					html code
-	 * @method
-	 */
-	function AsHidden()
-	{
+	function AsHidden() {
 		return $this->_Hidden();
 	}
 
-	//------------------------------------------------------------------------//
-	// RenderHidden
-	//------------------------------------------------------------------------//
-	/**
-	 * RenderHidden()
-	 *
-	 * Renders the property as a hidden input
-	 *
-	 * Renders the property as a hidden input
-	 *
-	 * @return	mixed	PropertyValue	returns the actual value of the property
-	 * @method
-	 */
-	function RenderHidden()
-	{
+	function RenderHidden() {
 		echo $this->_Hidden();
 		
 		return $this->_dboOwner->_arrProperties[$this->_strProperty];
 	}
 
-	//------------------------------------------------------------------------//
-	// Validate
-	//------------------------------------------------------------------------//
-	/**
-	 * Validate()
-	 *
-	 * Validate the property
-	 *
-	 * Validate the property
-	 * 
-	 * @param	int		$intContext		optional, defaults to CONTEXT_DEFAULT
-	 * 
-	 * @return	bool
-	 *
-	 * @method
-	 */
-	function Validate($intContext=CONTEXT_DEFAULT)
-	{
+	function Validate($intContext=CONTEXT_DEFAULT) {
 		return $this->_dboOwner->ValidateProperty($this->_strProperty, $intContext);
 	}
 
-	//------------------------------------------------------------------------//
-	// SetToInvalid
-	//------------------------------------------------------------------------//
-	/**
-	 * SetToInvalid()
-	 *
-	 * Explicitly sets the property to invalid
-	 *
-	 * Explicitly sets the property to invalid
-	 *
-	 * @return	void
-	 *
-	 * @method
-	 */
-	function SetToInvalid()
-	{
-		$this->_dboOwner->_arrValid[$this->_strProperty] = FALSE;
+	function SetToInvalid() {
+		$this->_dboOwner->_arrValid[$this->_strProperty] = false;
 	}
 
-	//------------------------------------------------------------------------//
-	// _TokenizeStudlyString
-	//------------------------------------------------------------------------//
-	/**
-	 * _TokenizeStudlyString()
-	 *
-	 * Splits a Studly Caps string into token seperated with spaces
-	 *
-	 * Splits a Studly Caps string into token seperated with spaces
-	 * "ThisIsA_STUDLY_CapString" would become "This Is A STUDLY Cap String"
-	 * (Although I don't think this is true study cap convention)
-	 * 
-	 * @param	string		The Studly cap string to tokenize.  Underscores can 
-	 * 						be used to explicitly specify spaces
-	 *
-	 * @return	string		the tokenized string
-	 * @method
-	 */
-	private function _TokenizeStudlyString($strSource)
-	{
+	private function _TokenizeStudlyString($strSource) {
 		$intSourceLength = strlen($strSource);
 		$intLittleA = ord("a");
 		$intLittleZ = ord("z");
 		
-		$strDestination	= $strSource[0];
-		for ($i=1; $i < $intSourceLength; $i++)
-		{
-			if ($strSource[$i] == "_")
-			{
+		$strDestination = $strSource[0];
+		for ($i=1; $i < $intSourceLength; $i++) {
+			if ($strSource[$i] == "_") {
 				// Convert underscores to spaces
 				$strDestination .= " ";
 				continue;
@@ -1039,12 +371,10 @@ class PropertyToken
 
 			$intChar = ord($strSource[$i]);
 
-			if ($intChar < $intLittleA || $intChar > $intLittleZ)
-			{
+			if ($intChar < $intLittleA || $intChar > $intLittleZ) {
 				// The character is not a lower case letter
 				$intPreviousChar = ord($strSource[($i-1)]);
-				if ($intPreviousChar >= $intLittleA && $intPreviousChar <= $intLittleZ)
-				{
+				if ($intPreviousChar >= $intLittleA && $intPreviousChar <= $intLittleZ) {
 					// The previous character is a lowercase letter, so place a space here
 					$strDestination .= " ";
 				}
@@ -1053,82 +383,35 @@ class PropertyToken
 			$strDestination .= $strSource[$i];
 		}
 
-		if ($strDestination == strtolower($strDestination))
-		{
+		if ($strDestination == strtolower($strDestination)) {
 			$strDestination = ucwords($strDestination);
 		}
 	
 		return $strDestination;
 	}
 
-	//------------------------------------------------------------------------//
-	// IsInvalid
-	//------------------------------------------------------------------------//
-	/**
-	 * IsInvalid()
-	 *
-	 * If the property had been explicitly sets to invalid
-	 *
-	 * If the property had been explicitly sets to invalid
-	 *
-	 * @return	bool If the property has been explicitly set to invalid
-	 *
-	 * @method
-	 */
-	function IsInvalid()
-	{
-		return array_key_exists($this->_strProperty, $this->_dboOwner->_arrValid) && $this->_dboOwner->_arrValid[$this->_strProperty] === FALSE;
+	function IsInvalid() {
+		return array_key_exists($this->_strProperty, $this->_dboOwner->_arrValid) && $this->_dboOwner->_arrValid[$this->_strProperty] === false;
 	}
 
-
-	//------------------------------------------------------------------------//
-	// ValidateProperty
-	//------------------------------------------------------------------------//
-	/**
-	 * ValidateProperty()
-	 *
-	 * Validates property and explicitly sets the property to invalid if invalid 
-	 *
-	 * Validates property using logic supplied by parameters
-	 *
-	 * @param	array	&$arrValidationErrors	Array to which any error message will be added	
-	 * @param	boolean	$bolRequired			Whether or not the value is required (cannot be empty)
-	 * @param	string	$strValidationFunction	Name of validation function to be invoked if required, 
-	 * 											returning TRUE if valid or FALSE if invalid
-	 * @param	string	$strValidationMessage	Message to be used if $strValidationFunction returns false.
-	 * 											Message can contain '<label>' which will be replaced with the
-	 * 											appropriate field label.
-	 *
-	 * @return	void
-	 *
-	 * @method
-	 */
-	function ValidateProperty(&$arrValidationErrors, $bolRequired, $intContext=CONTEXT_DEFAULT, $strValidationFunction=NULL, $strValidationMessage="<label> is invalid.")
-	{
-		if (strlen($this->Value) == 0)
-		{
-			if ($bolRequired)
-			{
+	function ValidateProperty(&$arrValidationErrors, $bolRequired, $intContext=CONTEXT_DEFAULT, $strValidationFunction=null, $strValidationMessage="<label> is invalid.") {
+		if (strlen($this->Value) == 0) {
+			if ($bolRequired) {
 				$this->SetToInvalid();
 				$strLabel = $this->strGetLabel($intContext);
 				$arrValidationErrors[] = "$strLabel is required.";
-				return FALSE;
+				return false;
 			}
-			return TRUE;
+			return true;
 		}
-		if ($strValidationFunction !== NULL)
-		{
-			if (!Validation::$strValidationFunction($this->Value))
-			{
+		if ($strValidationFunction !== null) {
+			if (!Validation::$strValidationFunction($this->Value)) {
 				$this->SetToInvalid();
 				$strLabel = $this->strGetLabel($intContext);
 				$arrValidationErrors[] = str_ireplace("<label>", $strLabel, $strValidationMessage);
-				return FALSE;
+				return false;
 			}
 		}
-		return TRUE;
+		return true;
 	}
 }
-
-
-?>
