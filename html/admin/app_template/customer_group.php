@@ -519,7 +519,11 @@ class AppTemplateCustomerGroup extends ApplicationTemplate {
 		}
 
 		// Load the most recent schema for this DocumentTemplateType
-		$arrSchema = $this->_GetCurrentSchema(DBO()->DocumentTemplateType->Id->Value);
+		if (false === ($arrSchema = $this->_GetCurrentSchema(DBO()->DocumentTemplateType->Id->Value))) {
+			DBO()->Error->Message = "There is no Schema defined for Document Template ".DBO()->DocumentTemplateType->Id->Name." (#". DBO()->DocumentTemplateType->Id->Value .") could not be found";
+			$this->LoadPage('error');
+			return true;
+		}
 		DBO()->DocumentTemplateSchema->_arrProperties = $arrSchema;
 
 		// If there is a draft template, then load it, and copy the contents of the BaseTemplate into it
@@ -1304,9 +1308,12 @@ class AppTemplateCustomerGroup extends ApplicationTemplate {
 
 	// Returns the record (associative array) of the current document template schema for the specified TemplateType
 	// Returns false on error
-	private function _GetCurrentSchema($intTemplateType)
-	{
-		$selSchema = new StatementSelect("DocumentTemplateSchema", "*", "Id = (SELECT MAX(Id) FROM DocumentTemplateSchema WHERE TemplateType = <TemplateType>)");
+	private function _GetCurrentSchema($intTemplateType) {
+		$selSchema = new StatementSelect(
+			"DocumentTemplateSchema",
+			"*",
+			"Id = (SELECT MAX(Id) FROM DocumentTemplateSchema WHERE TemplateType = <TemplateType>)"
+		);
 		if (!$selSchema->Execute(array("TemplateType" => $intTemplateType))) {
 			return false;
 		}
