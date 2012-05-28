@@ -344,17 +344,19 @@ Object.extend(Popup_Correspondence_Template, {
 		}
 		
 		var aOptions = [],
-			i, il;
-		for (i = 0, il = oResponse.aSourceTypes.length; i < il; i++) {
-			aOptions.push(
-				$T.option({value: i},
-					oResponse.aSourceTypes[i].name 
-				)
-			);
+			i;
+		for (i in oResponse.aSourceTypes) {
+			if (oResponse.aSourceTypes.hasOwnProperty(i)) {
+				aOptions.push(
+					$T.option({value: i},
+						oResponse.aSourceTypes[i].name 
+					)
+				);
+			}
 		}
 		fnCallback(aOptions);
 	},
-	
+
 	_getCarrierModuleOptions : function (fnCallback, oResponse) {
 		if (!oResponse) {
 			var fnResp = Popup_Correspondence_Template._getCarrierModuleOptions.curry(fnCallback);
@@ -370,14 +372,16 @@ Object.extend(Popup_Correspondence_Template, {
 		
 		var aOptions = [],
 			oModule,
-			i, il;
-		for (i = 0, il = oResponse.aModules.length; i < il; i++) {
-			oModule = oResponse.aModules[i];
-			aOptions.push(
-				$T.option({value: i},
-					oModule.template_code + ' - ' + oModule.carrier_name + ' : ' + oModule.carrier_module_type_name + (oModule.customer_group_name !== null ? ' (' + oModule.customer_group_name + ')' : '')
-				)
-			);
+			i;
+		for (i in oResponse.aModules) {
+			if (oResponse.aModules.hasOwnProperty(i)) {
+				oModule = oResponse.aModules[i];
+				aOptions.push(
+					$T.option({value: i},
+						oModule.template_code + ' - ' + oModule.carrier_name + ' : ' + oModule.carrier_module_type_name + (oModule.customer_group_name !== null ? ' (' + oModule.customer_group_name + ')' : '')
+					)
+				);
+			}
 		}
 		fnCallback(aOptions);
 	}
