@@ -520,7 +520,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate {
 
 		// Load the most recent schema for this DocumentTemplateType
 		if (false === ($arrSchema = $this->_GetCurrentSchema(DBO()->DocumentTemplateType->Id->Value))) {
-			DBO()->Error->Message = "There is no Schema defined for Document Template ".DBO()->DocumentTemplateType->Id->Name." (#". DBO()->DocumentTemplateType->Id->Value .") could not be found";
+			DBO()->Error->Message = "There is no Schema defined for Document Template ".DBO()->DocumentTemplateType->Name->Value." (#". DBO()->DocumentTemplateType->Id->Value .")";
 			$this->LoadPage('error');
 			return true;
 		}
