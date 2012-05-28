@@ -17,7 +17,8 @@ class Application_Handler_Employee extends Application_Handler
 
 			$strEarliestEffectiveOnTimestamp = date("Y-m-d 00:00:00", strtotime("-7 day", strtotime(GetCurrentISODateTime())));
 
-			$arrMessages = Employee_Message::getAllEffectiveSince($strEarliestEffectiveOnTimestamp);
+			//$arrMessages = Employee_Message::getAllEffectiveSince($strEarliestEffectiveOnTimestamp);
+			$arrMessages = Employee_Message::getMesagesForTypeAndFromEffectiveOnTimestamp($strEarliestEffectiveOnTimestamp, constant('EMPLOYEE_MESSAGE_TYPE_GENERAL'));
 			//$arrMessages = Employee_Message::getAll(20);
 	
 			$arrDetailsToRender = array();
@@ -33,6 +34,38 @@ class Application_Handler_Employee extends Application_Handler
 		}
 	}
 	
+
+	public function TechnicalNoticeManagement($subPath) {
+		// Check user permissions
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		
+		BreadCrumb()->Employee_Console();
+		BreadCrumb()->SetCurrentPage("Technical Notice Management");
+
+		try
+		{
+			// We want to retrieve all messages that have an effective_on date > today - 7 days
+
+			$strEarliestEffectiveOnTimestamp = date("Y-m-d 00:00:00", strtotime("-7 day", strtotime(GetCurrentISODateTime())));
+
+			//$arrMessages = Employee_Message::getAllEffectiveSince($strEarliestEffectiveOnTimestamp);
+			$arrMessages = Employee_Message::getMesagesForTypeAndFromEffectiveOnTimestamp($strEarliestEffectiveOnTimestamp, constant('EMPLOYEE_MESSAGE_TYPE_TECHNICAL'));
+
+			//$arrMessages = Employee_Message::getAll(20);
+	
+			$arrDetailsToRender = array();
+			$arrDetailsToRender['MessageHistory'] = $arrMessages;
+	
+			$this->LoadPage('employee_technical_notice_management', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
+		}
+		catch (Exception $e)
+		{
+			$arrDetailsToRender['Message'] = "An error occured when trying to generate the Employee Message Management page";
+			$arrDetailsToRender['ErrorMessage'] = $e->getMessage();
+			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
+		}
+	}
+
 	public function EmployeeList($subPath)
 	{
 		try

@@ -39,9 +39,10 @@
 /**************************************************************************/
 /* GENERIC																  */
 /**************************************************************************/
+
 input, select
 {
-	font-family:		Arial, sans-serif;
+	/*font-family:		Arial, sans-serif;*/
 	margin-bottom:		1px;
 	border:				solid 1px #000000;
 }
@@ -58,19 +59,19 @@ img[onclick]
 
 a:link, a:visited
 {
-	color: #0000FF;
+	color: #003399;
 	text-decoration:	none;		
 }
 
 a:hover
 {
-	color:				#0000FF;
+	color: #003399;
 	text-decoration:	underline;
 }
 
 a:active
 {
-	color: 				#0000FF;
+	color: #003399;
 	text-decoration:	none;		
 }
 
@@ -78,7 +79,7 @@ a[onclick],
 span[onclick]
 {
 	cursor : pointer;
-	color: #0000FF;
+	color: #003399;
 }
 
 span[onclick]:hover
@@ -99,12 +100,12 @@ a#ContextMenuItemLink:hover
 
 h1
 {
-	color:                #006599;
+	color:                #336699;
 	font-size:            18pt;
 	margin-top:           0;
 	margin-bottom:			20px;
 	padding-bottom:			5px;
-	border-bottom:			solid 1px #006599;
+	border-bottom:			solid 1px #336699;
 }
 
 h2
@@ -315,14 +316,21 @@ div.paginated-table-navigation span.paginated-table-navigation-control-current
 
 table.Listing
 {
-	border:              solid 1px #C1C1C1;
+	border:              solid 1px #D1D1D1;
 }
 
 table.Listing tr.First th
 {
+	background: -webkit-linear-gradient(bottom, #3688c2 1px, #489ecf 2px, #61bbde 100%);
+	background: -moz-linear-gradient(bottom, #3688c2 1px, #489ecf 2px, #61bbde 100%);
+	background: -ms-linear-gradient(bottom, #3688c2 1px, #489ecf 2px, #61bbde 100%);
+	background: -o-linear-gradient(bottom, #3688c2 1px, #489ecf 2px, #61bbde 100%);
+	background: linear-gradient(bottom, #3688c2 1px, #489ecf 2px, #61bbde 100%);
+	/*
 	border-bottom:       solid 1px #C1C1C1;
 	background-repeat:   repeat-x;
 	background-image:    url('img/template/background.png');
+	*/
 	color:               #FFFFFF;
 	font-size:			 10pt;
 }
@@ -399,6 +407,23 @@ table.Listing tr.Hover td
 	background-color:    #FFFFAA;
 	vertical-align:			top;		
 }
+
+
+table.Listing a:link, table.Listing a:visited {
+	color: #333333;
+	text-decoration: none;		
+}
+
+table.Listing a:hover {
+	color: #333333;
+	text-decoration: underline;
+}
+
+table.Listing a:active {
+	color: #333333;
+	text-decoration: none;		
+}
+
 table.Summary
 {
 	background-color:    #C0C0C0;		

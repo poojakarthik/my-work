@@ -485,5 +485,5 @@ Object.extend(Component_Account_Recurring_Charge_List,
 Component_Account_Recurring_Charge_List.SORT_IMAGE_SOURCE							= {};
 Component_Account_Recurring_Charge_List.SORT_IMAGE_SOURCE[Sort.DIRECTION_OFF]		= '../admin/img/template/order_neither.png';
 Component_Account_Recurring_Charge_List.SORT_IMAGE_SOURCE[Sort.DIRECTION_ASC]		= '../admin/img/template/order_asc.png';
-Component_Account_Recurring_Charge_List.SORT_IMAGE_SOURCE[Sort.DIRECTION_DESC]	= '../admin/img/template/order_desc.png';
+Component_Account_Recurring_Charge_List.SORT_IMAGE_SOURCE[Sort.DIRECTION_DESC]	= '../admin/img/template/order_neither.png';
 

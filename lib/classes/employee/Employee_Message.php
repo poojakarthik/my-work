@@ -45,11 +45,12 @@ class Employee_Message
 	// throws an exception on failure
 	// If $bolGetAsObject == FALSE then returns the id of the employee_message record
 	// If $bolGetAsObject == TRUE then returns an Employee_Message object defining the Employee Message
-	public static function declareMessage($strMessage, $strEffectiveOn, $bolGetAsObject=FALSE)
+	public static function declareMessage($strMessage, $strEffectiveOn, $intMessageTypeId, $bolGetAsObject=FALSE)
 	{
-		$arrData = array(	"created_on"	=> GetCurrentISODateTime(),
-							"effective_on"	=> $strEffectiveOn,
-							"message"		=> $strMessage
+		$arrData = array(	"created_on"				=> GetCurrentISODateTime(),
+							"effective_on"				=> $strEffectiveOn,
+							"message"					=> $strMessage,
+							"employee_message_type_id"	=> $intMessageTypeId
 						);
 		
 		$insMessage = new StatementInsert("employee_message", $arrData);
@@ -181,7 +182,46 @@ class Employee_Message
 		return $arrRecordSet;
 	}
 	
-	
+	public static function getMesagesForTypeAndFromEffectiveOnTimestamp($strTime, $intMessageTypeId) {
+		$qryQuery = new Query();
+		$strColumns = implode(", ", self::getColumns());
+		
+		$strQuery = "	SELECT $strColumns
+						FROM employee_message AS em1
+						WHERE 	(	em1.id >= (
+												SELECT id
+												FROM employee_message
+												WHERE effective_on <= '$strTime'
+												ORDER BY created_on DESC
+												LIMIT 1 )
+									OR
+									(
+												SELECT COUNT(id)
+												FROM employee_message
+												WHERE effective_on <= '$strTime'
+												ORDER BY created_on DESC
+												LIMIT 1
+									) = 0
+								)
+								AND (
+									SELECT COUNT( id )
+									FROM employee_message AS em2
+									WHERE em2.id > em1.id AND em2.effective_on <= em1.effective_on AND em2.created_on >= em1.created_on
+									) = 0
+								AND employee_message_type_id = $intMessageTypeId
+						ORDER BY em1.created_on DESC , em1.effective_on DESC;";		
+		$objRecordSet = $qryQuery->Execute($strQuery);
+		if (!$objRecordSet) {
+			throw new Exception_Database("Failed to retrieve employee_message records in effective since $strTime - " . $qryQuery->Error());
+		}
+		$arrRecordSet = array();
+		while ($arrRecord = $objRecordSet->fetch_assoc()) {
+			$arrRecordSet[] = new Employee_Message($arrRecord);
+		}
+
+		return $arrRecordSet;
+	}
+
 	// returns the effective message as of $strTime.  if $strTime is NULL, then it uses NOW()
 	// returns Employee_Message object, if one was found, else returns NULL
 	public static function getForTime($strTime=NULL)

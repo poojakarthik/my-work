@@ -1,3 +1,69 @@
+
+/**************************************************************************/
+/* Links																  */
+/**************************************************************************/
+#nav a {
+	display: block;
+	/*width: 8em;*/
+	color: #fff;
+	text-decoration: none;
+	padding: 0.25em 1em;
+}
+#nav a.dropright {
+	background-image: url('../img/template/menu_open_right.png');
+	background-position: 95% 50%;
+	background-repeat: no-repeat;
+}
+#nav li ul > li > a {
+	color: #333;
+}
+#nav li ul > li:hover > a {
+	color: #ffffff;
+}
+
+
+/**************************************************************************/
+/* Root Level															  */
+/**************************************************************************/
+#nav > ul > li {
+	/* experimental stuff, if it looks shit remove it. ryanf 20.4.12. */
+	/*box-shadow: -10px 0 30px 0 rgba(0,0,0,0.2);*/
+	border-radius: 2px 2px 0 0;
+	background-color: #3CADE5;
+	margin-right: 0.3em;
+}
+#nav > ul > li.dropdown > a {
+	background-image: url('../img/template/order_desc.png');
+	background-position: 0.5em 50%;
+	background-repeat: no-repeat;
+	text-indent: 0.5em;
+}
+#nav li:hover {
+	background-color: #999;
+}
+
+/**************************************************************************/
+/* Children																  */
+/**************************************************************************/
+#nav li ul > li {
+	width: 16.2em;
+	border-left: .1em solid #999;
+	border-right: .1em solid #999;
+	border-bottom: .1em solid #999;
+	color: #333;
+	background-color: #eee;
+}
+#nav li ul > li:hover {
+	background-color: #666;
+}
+.dropdown > ul > li:first-child {
+	border-top: .1em solid #999;
+}
+
+
+/**************************************************************************/
+/* Menu																	  */
+/**************************************************************************/
 #nav {
 	z-index: 1000;
 	width: 100%;
@@ -6,52 +72,31 @@
 	line-height: 1;
 	font-weight: bold;
 	padding: 0;
-	margin-top: -1em;
+	/*margin-top: -1em;*/
 }
-
 #nav ul {
 	width: 100%;
-	background-color: #111;
 	float: left;
 	list-style: none;
 	line-height: 1;
 	font-weight: bold;
 	padding: 0;
+	margin: 0.5em 0 0 0;
 }
-
-#nav a {
-	display: block;
-	width: 8em;
-	color: #fff;
-	text-decoration: none;
-	padding: 0.25em 1em;
+#nav > ul > li {
+	white-space: nowrap;
+	width: 11em;
 }
-
-#nav a[onclick], #nav a[href] {
-	cursor: pointer;
-}
-
-#nav li.dropdown {
-	background-image: url('../img/template/order_desc.png');
-	background-position: 0% 50%;
-	background-repeat: no-repeat;
-}
-
-#nav a.dropright {
-	background-image: url('../img/template/menu_open_right.png');
-	background-position: 95% 50%;
-	background-repeat: no-repeat;
-}
-
 #nav li {
+	white-space: normal;
 	float: left;
-	background-color: #111;
 	padding: 0;
+	/*
 	width: 10em;
-	margin-left: .1em;
+	*/
+	/*margin-left: .1em;*/
 	margin-right: .1em;
 }
-
 #nav li ul {
 	position: absolute;
 	left: -999em;
@@ -61,46 +106,74 @@
 	margin: 0;
 	background-color: transparent;
 }
-
 #nav li li {
 	padding-right: 1em;
 }
-
-#nav li ul a:first-child {
-	border-top: .1em solid #111;
-}
-
-#nav li ul a {
-	width: 14em;
-	border-left: .1em solid #111;
-	border-right: .1em solid #111;
-	border-bottom: .1em solid #111;
-	color: #111;
-	background-color: #eee;
-}
-
 #nav li ul ul {
 	margin: -1.75em 0 0 14em;
 }
-
-#nav li:hover ul ul, #nav li:hover ul ul ul, #nav li.sfhover ul ul, #nav li.sfhover ul ul ul {
+#nav li:hover ul ul, 
+#nav li:hover ul ul ul {
 	left: -999em;
 	background-color: transparent;
 	color: #ffde05;
 }
+#nav li:hover ul, 
+#nav li li:hover ul, 
+#nav li li li:hover ul {
+	left: auto;
+	background-color: transparent;
+	color: #ffde05;
+}
+#nav li:hover {
+	cursor: pointer;
+}
 
-#nav li:hover ul, #nav li li:hover ul, #nav li li li:hover ul, #nav li.sfhover ul, #nav li li.sfhover ul, #nav li li li.sfhover ul {
+
+/**************************************************************************/
+/* Deprecated															  */
+/**************************************************************************/
+/*
+
+#nav li.sfhover ul ul, 
+#nav li.sfhover ul ul ul {
+	left: -999em;
+	background-color: transparent;
+	color: #ffde05;
+}
+#nav li.sfhover ul, 
+#nav li li.sfhover ul, 
+#nav li li li.sfhover ul {
 	left: auto;
 	background-color: transparent;
 	color: #ffde05;
 }
 
-#nav li:hover, #nav li.sfhover {
-	background-color: #111;
-	color: #ffde05;
+#nav a[onclick], 
+#nav a[href] {
+	cursor: pointer;
 }
-
+#nav li ul a {
+	width: 14em;
+	border-left: .1em solid #111;
+	border-right: .1em solid #111;
+	border-bottom: .1em solid #111;
+	color: #333333;
+	background-color: #eee;
+}
+#nav li ul a:first-child {
+	border-top: .1em solid #111;
+}
 #nav a:hover {
-	background-color: #111;
-	color: #ffde05;
+	background-color: #666;
+	color: #003399;
 }
+#nav > ul > li > a:hover {
+	background-color: rgba(0, 51, 153, 1);
+	color: #ffffff;
+}
+#nav li.sfhover {
+	background-color: #003399;
+}
+*/
+

@@ -2,6 +2,257 @@
 
 class JSON_Handler_Ticketing extends JSON_Handler
 {
+
+	public function getTicketStatsForDates($mDateRange) {
+		$aResultSet = Array();
+		if (is_array($mDateRange)) {
+			// Multiple date rnges
+			foreach ($mDateRange as $oDateRange) {
+				$aResult = $this->_getClosedTicketCountForDateRange($oDateRange->sDateFrom, $oDateRange->sDateTo);
+				$aResult['sRangeStart'] = $oDateRange->sDateFrom;
+				$aResult['sRangeEnd'] = $oDateRange->sDateTo;
+				$aResult['oStatusesAtRangeEnd'] = $this->_getOpenAndPendingTicketCountForDate($oDateRange->sDateFrom);
+				$aResultSet[] = $aResult;
+			}
+		} else {
+			// Single date range
+			$aResult = $this->_getClosedTicketCountForDateRange($mDateRange->sDateFrom, $mDateRange->sDateTo);
+			$aResult['sRangeStart'] = $mDateRange->sDateFrom;
+			$aResult['sRangeEnd'] = $mDateRange->sDateTo;
+			$aResult['oStatusesAtRangeEnd'] = $this->_getOpenAndPendingTicketCountForDate($mDateRange->sDateFrom);
+			$aResultSet[] = $aResult;
+		}
+		return $aResultSet;
+	}
+
+
+	// TICKETS CLOSED COMPARISON
+	private function _getClosedTicketCountForDateRange($sFrom, $sTo) {
+		try {
+			// Amount of tickets closed between snapshots.
+			$oQuery = Query::run("
+			SELECT		GREATEST(0, current.tickets_closed - previous.tickets_closed) AS iTicketsClosedInRange
+
+			FROM		(
+			SELECT		COUNT(DISTINCT t.id) AS tickets_closed
+
+			FROM		ticketing_ticket t
+						JOIN ticketing_ticket_history th ON (
+							th.ticket_id = t.id
+							AND th.modified_datetime <= <sFrom>
+						)
+						JOIN ticketing_status ths ON (ths.id = th.status_id)
+						JOIN ticketing_status_type thst ON (
+							thst.id = ths.status_type_id
+							AND thst.const_name = 'TICKETING_STATUS_TYPE_CLOSED'
+						)
+						) previous,
+						(
+							SELECT		COUNT(DISTINCT t.id) AS tickets_closed
+
+							FROM		ticketing_ticket t
+										JOIN ticketing_ticket_history th ON (
+											th.ticket_id = t.id
+											AND th.modified_datetime <= <sTo>
+										)
+										JOIN ticketing_status ths ON (ths.id = th.status_id)
+										JOIN ticketing_status_type thst ON (
+											thst.id = ths.status_type_id
+											AND thst.const_name = 'TICKETING_STATUS_TYPE_CLOSED'
+										)
+						) current;", array(
+							'sFrom'	=> $sFrom,
+							'sTo'	=> $sTo
+						));
+
+			$aRecord = $oQuery->fetch_assoc();
+			return (isset($aRecord)) ? $aRecord : null;
+		}
+		catch (Exception $oException) {
+			// Suppress the normal form of error reporting, by displaying the error as the message of the day
+			$aData = array(
+						"message"	=> "Please notify your system administrators.\n" . $oException->getMessage()
+					);
+			return $aData;
+		}
+	}
+
+	// STATUS SNAPSHOT
+	private function _getOpenAndPendingTicketCountForDate($sDate) {
+
+		try {
+			
+			//$aStatuses = Ticketing_Status::listAll();
+			$oQuery = Query::run("
+			SELECT	ts.const_name AS status_constant,
+					ts.id AS status_id,
+					ts.name AS status_name
+
+			FROM	ticketing_status ts
+			JOIN	ticketing_status_type tst ON (
+			        tst.id = ts.status_type_id
+			        AND (
+			            tst.const_name IN ('TICKETING_STATUS_TYPE_PENDING', 'TICKETING_STATUS_TYPE_OPEN')
+			        )
+			)");
+
+			$aStatuses = array();
+			while ($aRow = $oQuery->fetch_assoc()) {
+				$aStatuses[] = $aRow;	
+			}
+			// Label: Tickets closed on day.
+
+			$aResultSet = array();
+			foreach ($aStatuses as $aStatus) {
+				// Number of tickets at a status, at a particular time.
+				$oQuery = Query::run("
+				SELECT	ths.id AS status_id,
+						ths.name AS status_name,
+						ths.const_name AS status_constant,
+						COUNT(t.id) AS status_count
+				FROM	ticketing_ticket t
+				JOIN 	ticketing_status ts ON (ts.id = t.status_id)
+				JOIN 	ticketing_status_type tst ON (
+							tst.id = ts.status_type_id
+							AND (
+								tst.const_name IN ('TICKETING_STATUS_TYPE_PENDING', 'TICKETING_STATUS_TYPE_OPEN')
+								OR t.modified_datetime > <sDate>
+							)
+						)
+				JOIN 	ticketing_ticket_history th ON (
+							th.ticket_id = t.id
+							AND th.id = (
+								SELECT	MAX(id)
+								FROM	ticketing_ticket_history
+								WHERE	ticket_id = t.id
+								AND 	modified_datetime <= <sDate>
+							)
+						)
+						JOIN ticketing_status ths ON (
+							ths.id = th.status_id
+							AND ths.const_name = <sConst>
+						)
+				GROUP BY status_constant;", array(
+					'sDate'		=> $sDate,
+					'sConst'	=> $aStatus['status_constant']
+				));
+				/*
+					#AND ths.const_name = 'TICKETING_STATUS_WITH_INTERNAL' # 0.1992
+					#AND ths.const_name = 'TICKETING_STATUS_ASSIGNED' # 0.132
+					#AND ths.const_name = 'TICKETING_STATUS_UNASSIGNED' # 0.1294
+					#AND ths.const_name = 'TICKETING_STATUS_WITH_CARRIER' # 0.4998
+					#AND ths.const_name = 'TICKETING_STATUS_WITH_CUSTOMER' # 0.0684
+					#AND ths.const_name = 'TICKETING_STATUS_WITH_INTERNAL' # 0.2 (1.2968 Total)
+				*/
+				$aResult = $oQuery->fetch_assoc();
+				if (isset($aResult)) {
+					$aResultSet[] = $aResult;
+				} else {
+					$aResultSet[] = array(
+						'status_id'			=> $aStatus['status_id'],
+						'status_name'		=> $aStatus['status_name'],
+						'status_constant'	=> $aStatus['status_constant'],
+						'status_count'		=> 0
+					);
+				}
+			}
+			// $sDate
+			return (isset($aResultSet)) ? $aResultSet : null;
+		}
+		catch (Exception $oException) {
+			// Suppress the normal form of error reporting, by displaying the error as the message of the day
+			$aData = array(
+						"message"	=> "Please notify your system administrators.\n" . $oException->getMessage()
+					);
+			return $aData;
+		}
+	}
+
+
+	public function getTicketsForCurrentUser() {
+		try {
+
+			// Authenticate.
+			if (!Ticketing_User::currentUserIsTicketingUser()) {
+				AuthenticatedUser()->InsufficientPrivilegeDie();
+			}
+
+			// Get a list of 'ticket status type' ids, for 'Open' and 'Pending' tickets
+			$iTicketingStatusTypeConglomerateOpenOrPendingId = Ticketing_Status_Type_Conglomerate::TICKETING_STATUS_TYPE_CONGLOMERATE_OPEN_OR_PENDING;
+			$oStatusTypeConglomerateOpenOrPending = Ticketing_Status_Type_Conglomerate::getForId($iTicketingStatusTypeConglomerateOpenOrPendingId);
+			$aStatusId = $oStatusTypeConglomerateOpenOrPending->listStatusIds();
+
+			// Get the ticket owner id of the currently logged in user
+			$iOwnerId = Ticketing_User::getCurrentUser()->id;
+
+			// Set Search Filters
+			$aFilter = array();
+
+			// Filter: Owner
+			if ($iOwnerId !== NULL) {
+				$aFilter['ownerId'] = array(
+					'value'			=> $iOwnerId, 
+					'comparison'	=> '='
+				);
+			}
+			// Filter: Status
+			if ($aStatusId !== NULL) {
+				$aFilter['statusId'] = array(
+					'value'			=> $aStatusId,
+					'comparison'	=> '='
+				);
+			}
+
+			// Get Tickets matching our filters
+			$aTickets = Ticketing_Ticket::findMatching($aColumns=null, $aSort=array(), $aFilter, $iOffset=null, $iLimit=null, $sQuickSearch=null);
+
+			// Prepare result set.
+			$aData = array();
+			if (isset($aTickets)) {
+				foreach($aTickets as $oTicket) {
+					
+					// Ticket Status
+					$oTicketStatus = $oTicket->getStatus();
+					$oTicketPriority = $oTicket->getPriority();
+
+					$aData[] = array(
+						'id'					=> $oTicket->id,
+						'account_id'			=> $oTicket->account_id,
+						'category_id'			=> $oTicket->category_id,
+						'contact_id'			=> $oTicket->contact_id,
+						'creation_datetime'		=> $oTicket->creation_datetime,
+						'customer_group_id'		=> $oTicket->customer_group_id,
+						'group_ticket_id'		=> $oTicket->group_ticket_id,
+						'modified_by_user_id'	=> $oTicket->modified_by_user_id,
+						'modified_datetime'		=> $oTicket->modified_datetime,
+						'owner_id'				=> $oTicket->owner_id,
+						'priority_id'			=> $oTicket->priority_id,
+						'status_id'				=> $oTicket->status_id,
+						'subject'				=> $oTicket->subject,
+						'status'				=> array(
+							'id'			=> $oTicketStatus->Id,
+							'name'			=> $oTicketStatus->Name,
+							'description'	=> $oTicketStatus->Description,
+							'constant'		=> $oTicketStatus->Constant
+						),
+						'priority'				=> array(
+							'id'			=> $oTicketPriority->Id,
+							'name'			=> $oTicketPriority->Name,
+							'description'	=> $oTicketPriority->Description,
+							'constant'		=> $oTicketPriority->Constant
+						)
+					);
+				}
+			}
+		
+			return $aData;
+		}
+		catch(Exception $oException) {
+			return array(	'Success'		=> false,
+							'ErrorMessage'	=> $oException->getMessage());
+		}
+	}
+
 	public function validateAccount($accountId, $ticketId=NULL)
 	{
 		if (!Ticketing_User::currentUserIsTicketingUser())

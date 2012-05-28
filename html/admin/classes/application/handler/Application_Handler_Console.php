@@ -2,9 +2,23 @@
 
 class Application_Handler_Console extends Application_Handler
 {
-	// View all the Customer Statuses in a tabulated format
+
+	// ----------------------------------------------------------------------------------- //
+	// Console View
+	// ----------------------------------------------------------------------------------- //
 	public function View($subPath)
 	{
+
+		try {
+			$this->LoadPage('console', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
+		} catch (Exception $e) {
+			$arrDetailsToRender['Message']		= "An error occured";
+			$arrDetailsToRender['ErrorMessage']	= $e->getMessage();
+			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
+		}
+
+		// Old
+		/*
 		$bolIsGOD	= AuthenticatedUser()->UserHasPerm(PERMISSION_GOD);
 		
 		try
@@ -75,6 +89,7 @@ class Application_Handler_Console extends Application_Handler
 			$arrDetailsToRender['ErrorMessage']	= $e->getMessage();
 			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
 		}
+		*/
 	}
 }
 

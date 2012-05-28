@@ -10,10 +10,464 @@
  *
  * It is hoped that everything here will eventually be phased out, or moved into style.css
  */
+
+
+.flex-page-dashboard-container {
+	overflow: visible !important;
+}
+.flex-page {}
+.reflex .flex-datetime-date {}
+.reflex .flex-datetime-time {
+	font-size: 85%;
+	display: block;
+	min-width: 75px;
+}
+
+/**************************************************************************/
+/* Component - Dashboard												  */
+/**************************************************************************/
+/* Dashboard */
+.flex-page-dashboard {
+	min-width: 1150px;
+}
+.flex-page-dashboard > header {
+	margin-top: 0;
+	margin-bottom: 20px;
+	padding-bottom: 5px;
+	border-bottom: solid 1px #369;
+	display: block;
+}
+
+.flex-page-dashboard > header h1 {
+	color: #369;
+	font-size: 18pt;
+	font-weight: bold;
+	display: inline-block;
+	margin: 0;
+}
+.flex-page-dashboard > header h2 {
+	color: #369;
+	font-size: 12pt;
+	font-weight: bold;
+	display: inline-block;
+	margin: 7px 0 0 0;
+	/*
+	position: absolute;
+	right: 0;
+	*/
+	float: right;
+}
+.flex-page-dashboard > section > header {
+	height: 100%;
+	color: white;
+	background: -webkit-linear-gradient(bottom, #3688C2 1px, #489ECF 2px, #61BBDE 100%);
+	background: -moz-linear-gradient(bottom, #3688C2 1px, #489ECF 2px, #61BBDE 100%);
+	background: -ms-linear-gradient(bottom, #3688C2 1px, #489ECF 2px, #61BBDE 100%);
+	background: -o-linear-gradient(bottom, #3688C2 1px, #489ECF 2px, #61BBDE 100%);
+	background: linear-gradient(bottom, #3688C2 1px, #489ECF 2px, #61BBDE 100%);
+	text-align: center;
+	font-weight: bold;
+	padding-top: .4em;
+	padding-bottom: .4em;
+	border-radius: 6px 6px 0 0;
+}
+
+
+/**************************************************************************/
+/* Component - Dashboard Tickets										  */
+/**************************************************************************/
+.flex-page-dashboard .flex-page-dashboard-tickets {}
+.flex-page-dashboard .flex-page-dashboard-tickets-mine {
+	float: left;
+	width: 350px;
+	margin: 0 20px;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-mine > header {
+	display: inline-block;
+	width: 300px;
+	margin: 0 0 0 0.5em;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-mine table {
+	border: 1px solid #D1D1D1;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-mine thead {
+	color: white;
+	background-color: #499FCF;
+	text-align: left;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-mine-id {
+	width: 50px;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-mine-subject {
+	/*
+	white-space: nowrap;
+	overflow: hidden;
+	max-width: 190px;
+	*/
+	width: 100%;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-mine-last-modified {
+	white-space: nowrap;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-mine-priority {
+	width: 100px;
+}
+.flex-page-dashboard button.flex-page-dashboard-tickets-mine-view-all {
+	float: right;
+}
+
+/**************************************************************************/
+/* Component - Dashboard Customers										  */
+/**************************************************************************/
+.flex-page-dashboard .flex-page-dashboard-customers {}
+.flex-page-dashboard .flex-page-dashboard-customers-recent {
+	float: left;
+	width: 350px;
+}
+.flex-page-dashboard .flex-page-dashboard-customers-recent > header {
+	display: inline-block;
+	width: 300px;
+	margin: 0 0 0 0.5em;
+}
+.flex-page-dashboard .flex-page-dashboard-customers-recent table {
+	border: 1px solid #D1D1D1;
+}
+.flex-page-dashboard .flex-page-dashboard-customers-recent thead {
+	color: white;
+	background-color: #499FCF;
+	text-align: left;
+}
+.flex-page-dashboard .flex-page-dashboard-customers-recent-account {
+	width: 100px;
+}
+.flex-page-dashboard .flex-page-dashboard-customers-recent-business-name {
+	/*
+	white-space: nowrap;
+	overflow: hidden;
+	max-width: 190px;
+	*/
+	width: 100%;
+}
+.flex-page-dashboard .flex-page-dashboard-customers-recent-viewed-on {
+	width: 100px;
+}
+.flex-page-dashboard button.flex-page-dashboard-customers-recent-view-all {
+	float: right;
+}
+
+/**************************************************************************/
+/* Component - Dashboard Updates										  */
+/**************************************************************************/
+
+.flex-page-dashboard-updates > div {
+    /*display: table;*/
+    display: block;
+    padding: 1em;
+}
+.flex-page-dashboard-updates > div * {
+	vertical-align: top;
+}
+.flex-page-dashboard .flex-page-dashboard-updates-separator {
+	display: inline-block;
+	border-left: 1px solid #D1D1D1;
+	height: 100%;
+	width: 10px;
+}
+.flex-page-dashboard .flex-page-dashboard-updates::before {
+	clear: both;
+	content: ".";
+	visibility: hidden;
+	height: 0;
+}
+.flex-page-dashboard .flex-page-dashboard-updates {
+	margin: 20px 0 0 0;
+	clear: both;
+	display: block;
+	width: 1150px;
+}
+.flex-page-dashboard .flex-page-dashboard-updates > div {
+	border: 1px solid #d1d1d1;
+}
+.flex-page-dashboard .flex-page-dashboard-updates section > header > h3 {
+	color: #369;
+	font-size: 12pt;
+	font-weight: bold;
+	margin: 0;
+	padding: 0;
+}
+.flex-page-dashboard .flex-page-dashboard-updates section > header {
+	margin: 1em 1em 0 1em;
+	padding: 0;
+}
+.flex-page-dashboard .flex-page-dashboard-updates section > div {
+	margin: 0.5em 1em 1em 1em;
+	padding: 0;
+}
+
+/**************************************************************************/
+/* Component - Dashboard Updates Technical								  */
+/**************************************************************************/
+.flex-page-dashboard .flex-page-dashboard-notices-technical {
+	display: inline-block;
+	width: 420px;
+}
+
+/**************************************************************************/
+/* Component - Dashboard Updates General								  */
+/**************************************************************************/
+.flex-page-dashboard .flex-page-dashboard-notices-general {
+	display: inline-block;
+	width: 420px;
+}
+
+/**************************************************************************/
+/* Component - Dashboard Updates Time & Date							  */
+/**************************************************************************/
+.flex-page-dashboard .flex-page-dashboard-time-and-date {
+	display: inline-block;
+}
+.flex-page-dashboard .flex-page-dashboard-time-and-date-picker {
+	top: auto !important;
+	position: relative !important;
+	display: inline-block !important;
+	left: auto !important;
+	margin: 0.5em 1em 1em 1em;
+	padding: 0;
+}
+.flex-page-dashboard .flex-page-dashboard-time-and-date-picker .dateChooser {
+	border-collapse: separate;
+	border-spacing: 0.4em;
+}
+.flex-page-dashboard .flex-page-dashboard-time-and-date-picker > .bar {
+	text-align: center;
+}
+.flex-page-dashboard .flex-page-dashboard-time-and-date-picker > .bar > img {
+	display: none;
+}
+.flex-page-dashboard .flex-page-dashboard-time-and-date-picker > .bar {
+}
+.flex-page-dashboard .flex-page-dashboard-time-and-date-picker .date-time-active {
+	background-color: rgb(30,95,167);
+	color: #ffffff;
+	border-radius: 0.4em;
+	border: 1px solid rgba(0,0,0,0.1);
+	padding: 0.4em;
+	text-align: center;
+}
+.flex-page-dashboard .flex-page-dashboard-time-and-date-selected-value {
+	display: none;
+}
+.flex-page-dashboard .flex-page-dashboard-time-and-date-picker-today {
+	font-weight: bold;
+	background-color: rgb(49,155,229) !important;
+	color: #ffffff !important;
+	text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
+}
+
+/**************************************************************************/
+/* Component - Dashboard Statistics										  */
+/**************************************************************************/
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics {
+	display: inline-block;
+	width: 410px;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics > header {
+    display: inline-block;
+    width: 300px;
+    margin: 0 0 0 0.5em;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics > h2 {
+    display: inline-block;
+    width: 100%;
+    background-color: #499FCF;
+    color: #ffffff;
+    padding: 0.25em;
+    margin: 0;
+    font-size: inherit;
+    border: 1px solid #D1D1D1;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics > svg {
+	width: 410px;
+	height: 237px;
+	margin: 0;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics .flex-page-dashboard-tickets-statistics-graph {
+	/*fill: rgba(0,0,0,0.1);*/
+	fill: transparent;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics .flex-page-dashboard-tickets-statistics-grid {
+	/*fill: rgba(0,0,0,0.1);*/
+	fill: transparent;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics .flex-page-dashboard-tickets-statistics-grid-line-x {
+	/*stroke: rgba(0,0,0,0.4);*/
+	fill: transparent;
+	stroke-width: 0.5;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics .flex-page-dashboard-tickets-statistics-grid-line-y {
+	stroke: rgba(0,0,0,0.1);
+	fill: transparent;
+	stroke-width: 0.5;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics .flex-page-dashboard-tickets-statistics-label {
+	font-size: 6px;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics .flex-page-dashboard-tickets-statistics-graph-x-axes {
+	stroke: rgba(0,0,0,0.2);
+	stroke-width: 1;	
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics .flex-page-dashboard-tickets-statistics-graph-y-axes {
+	stroke: rgba(0,0,0,0.2);
+	stroke-width: 1;	
+}
+
+/**************************************************************************/
+/* Component - Dashboard Statistics - Polylines							  */
+/**************************************************************************/
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics-ticket-status-assigned {
+	stroke: #01243B;
+	fill: transparent;
+	stroke-width: 1;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics-ticket-status-completed {
+	stroke: blue;
+	fill: transparent;
+	stroke-width: 1;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics-ticket-status-inprogress {
+	stroke: green;
+	fill: transparent;
+	stroke-width: 1;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics-ticket-status-unassigned {
+	stroke: red;
+	fill: transparent;
+	stroke-width: 1;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics-ticket-status-withcarrier {
+	stroke: teal;
+	fill: transparent;
+	stroke-width: 1;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics-ticket-status-withcustomer {
+	stroke: orange;
+	fill: transparent;
+	stroke-width: 1;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics-ticket-status-withinternal {
+	stroke: magenta;
+	fill: transparent;
+	stroke-width: 1;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics-ticket-status-deleted {
+	stroke: grey;
+	fill: transparent;
+	stroke-width: 1;
+}
+.flex-page-dashboard polygon.flex-page-dashboard-tickets-statistics-tickets-closed {
+	/*stroke: rgb(104,134,236);*/
+	fill: rgba(195, 211, 255, 0.8);
+	stroke: rgba(195, 211, 255, 0.8);
+	stroke-width: 1;
+}
+.flex-page-dashboard polyline.flex-page-dashboard-tickets-statistics-tickets-closed {
+	fill: transparent;
+	stroke: rgb(104,134,236);
+	stroke-width: 1;
+}
+
+/**************************************************************************/
+/* Component - Dashboard Statistics - Legend							  */
+/**************************************************************************/
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics-legend-tickets-closed > rect {
+	stroke: rgb(104,134,236);
+	fill: rgba(195, 211, 255, 0.8);
+	stroke-width: 1;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics-legend-ticket-status-unassigned > line {
+	stroke: red;
+	stroke-width: 1;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics-legend-ticket-status-withcustomer > line {
+	stroke: orange;
+	stroke-width: 1;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics-legend-ticket-status-withcarrier > line {
+	stroke: teal;
+	stroke-width: 1;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics-legend-ticket-status-inprogress > line {
+	stroke: green;
+	stroke-width: 1;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics-legend-ticket-status-completed > line {
+	stroke: blue;
+	stroke-width: 1;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics-legend-ticket-status-assigned > line {
+	stroke: #01243B;
+	stroke-width: 1;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics-legend-ticket-status-withinternal > line {
+	stroke: magenta;
+	stroke-width: 1;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics-legend-ticket-status-deleted > line {
+	stroke: grey;
+	stroke-width: 1;
+}
+
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics-legend-tickets-closed > text {
+	font-size: 5px;
+	fill: black;
+	stroke: none;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics-legend-ticket-status-assigned > text {
+	font-size: 5px;
+	fill: #01243B;
+	stroke: none;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics-legend-ticket-status-completed > text {
+	font-size: 5px;
+	fill: blue;
+	stroke: none;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics-legend-ticket-status-inprogress > text {
+	font-size: 5px;
+	fill: green;
+	stroke: none;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics-legend-ticket-status-unassigned > text {
+	font-size: 5px;
+	fill: red;
+	stroke: none;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics-legend-ticket-status-withcarrier > text {
+	font-size: 5px;
+	fill: teal;
+	stroke: none;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics-legend-ticket-status-withcustomer > text {
+	font-size: 5px;
+	fill: orange;
+	stroke: none;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics-legend-ticket-status-withinternal > text {
+	font-size: 5px;
+	fill: magenta;
+	stroke: none;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics-legend-ticket-status-deleted > text {
+	font-size: 5px;
+	fill: grey;
+	stroke: none;
+}
+
+
 a,
 a:link,
 a:visited {
-	color: #00F;
+	color: #003399;
 	text-decoration: none;
 }
 
@@ -26,7 +480,7 @@ a[onclick],
 span[onclick]
 {
 	cursor : pointer;
-	color: #00F;
+	color: #003399;
 	text-decoration: none;
 }
 /*
@@ -57,7 +511,7 @@ div.reflex-content
 div.reflex-content div.header,
 div.reflex-content div.footer
 {
-	background-color	: #1C1C1C;
+	background-color	: #499FCF;
 	color				: #eee;
 	text-align			: left;
 	padding				: .25em .5em;
@@ -195,7 +649,7 @@ input[type='button'].expand-button-retracted
 /* This is used by the timer present on the "All Tickets" page */
 th#refreshPanel
 {
-	color		: #ffde05;
+	color		: #ffffff;
 	margin-left	: 0.25em;
 }
 
@@ -205,7 +659,7 @@ input,
 select, 
 textarea {
 	font-size: 1em;
-	border: .1em solid #111;
+	border: .1em solid #333;
 	color: #111;
 	margin: .1em;
 	background-color: #fff;
@@ -285,19 +739,23 @@ table tr.Hover {
 
 table tr.First {
 	margin-top: .25em;
-	background-color: #333;
+	background: -webkit-linear-gradient(bottom, #3688c2 1px, #489ecf 2px, #61bbde 100%);
+	background: -moz-linear-gradient(bottom, #3688c2 1px, #489ecf 2px, #61bbde 100%);
+	background: -ms-linear-gradient(bottom, #3688c2 1px, #489ecf 2px, #61bbde 100%);
+	background: -o-linear-gradient(bottom, #3688c2 1px, #489ecf 2px, #61bbde 100%);
+	background: linear-gradient(bottom, #3688c2 1px, #489ecf 2px, #61bbde 100%);
+	/*background-color: #333;*/
 	color: #eee;
 }
 
 table.Listing {
 	margin: .25em;
 	width: 99%;
-	border .1em solid #333;
+	border:              solid 1px #D1D1D1;
 }
 
 table.Listing tr.PrimarySelected th, 
 table.Listing tr.PrimarySelected td {
-	background-color:#11FF33;
+	background-color:#FFFFCC;
 	vertical-align:top;
 }
-

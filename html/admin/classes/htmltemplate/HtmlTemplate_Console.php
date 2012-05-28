@@ -7,6 +7,28 @@ class HtmlTemplate_Console extends FlexHtmlTemplate
 		parent::__construct($intContext, $strId, $mxdDataToRender);
 	}
 
+	// ----------------------------------------------------------------------------------- //
+	// Console View
+	// ----------------------------------------------------------------------------------- //
+	public function Render() {
+		?>
+		<article class='flex-page'></article>
+		<script>
+			// Provide component once all dom content has been loaded.
+			document.observe('DOMContentLoaded', 
+				module.provide.bind(module, ["flex/component/page/dashboard"], function () {
+					// Instantiate Component
+					new require('flex/component/page/dashboard')({
+						// Component.CONFIG
+					});
+				})
+			);
+		</script>
+		<?
+	}
+
+	// Old
+	/*
 	public function Render()
 	{
 		$arrMessage = $this->mxdDataToRender['DailyMessage'];
@@ -138,6 +160,7 @@ $strDailyMessageSection
 </div>";
 		}
 	}
+	*/
 }
 
 ?>

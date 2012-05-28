@@ -18,6 +18,13 @@ body {
 	padding: 0em;
 }
 
+li
+{
+	font-family:		Arial, sans-serif;
+	line-height:		14pt;
+/*	font-size:			10pt;		*/
+}
+
 div.clearing
 {
 	clear	: both;
@@ -32,10 +39,10 @@ a,
 /************************ START - Page Header - START *************************/
 div#header {
 	width: 100%;
-	background-color: #111;
-	color: #eee;
-	background-image: url("../img/template/background.png");
-	background-repeat: repeat-x;
+	background-color: #0d4292;
+	color: #ffffff;
+	background-image: url("../img/template/header_background.jpg");
+	background-repeat: no-repeat;
 	position: fixed;
 	z-index: 10;
 }
@@ -55,19 +62,19 @@ div#person {
 div#person a,
 div#person a:link,
 div#person a:visited {
-	color: #ffde05;
+	color: #ffffff;
 	text-decoration: none;
 	font-weight: normal;
 }
 
 div#person a:hover {
-	color: #ffde05;
+	color: #ffffff;
 	text-decoration: underline;
 	cursor: pointer;
 }
 
 div#person a:active {
-	color: #ffde05;
+	color: #ffffff;
 	text-decoration: underline;
 }
 
@@ -76,15 +83,16 @@ div#logo {
 	width: 50%;
 	height: 4em;
 	display: block;
-	background-image: url("../img/template/yellow_billing_logo_small.png");
+	background-image: url("../img/template/logo.png");
 	background-repeat: no-repeat;
+	background-position: 1em 50%;
 
 	cursor: pointer;
 }
 
 div#logo div#blurb {
-	margin-left: 7em;
-	padding-top: .8em;
+	margin-left: 6em;
+	padding-top: 1.2em;
 	height: 4em;
 	font-weight: bold;
 	font-size: 1.2em;
@@ -102,7 +110,7 @@ div.bread-crumb-menu {
 	padding				: .2em 0em .2em 1.5em;
 	width				: 100%;
 	background-color	: #fff;
-	color				: #000;
+	color				: #666;
 }
 
 div#menu {
@@ -133,7 +141,7 @@ table.reflex {
 	width: 99%;
 	margin-left: auto;
 	margin-right: auto;
-	border: .1em solid #1C1C1C;
+	border: .1em solid #D1D1D1;
 	border-spacing: 0;
 	font-size	: inherit;
 }
@@ -182,10 +190,18 @@ table.reflex caption div.caption_title
 	float: left;
 	width: 20%;
 	height: 100%;
-	color: #eee;
-	background-color: #1C1C1C;
-    background-image: url('../img/template/background.png');
-    background-repeat: repeat-x;
+	color: #ffffff;
+	/*background-color: #1C1C1C;*/
+    /*background-image: url('../img/template/background.png');*/
+
+	background: -webkit-linear-gradient(bottom, #3688c2 1px, #489ecf 2px, #61bbde 100%);
+	background: -moz-linear-gradient(bottom, #3688c2 1px, #489ecf 2px, #61bbde 100%);
+	background: -ms-linear-gradient(bottom, #3688c2 1px, #489ecf 2px, #61bbde 100%);
+	background: -o-linear-gradient(bottom, #3688c2 1px, #489ecf 2px, #61bbde 100%);
+	background: linear-gradient(bottom, #3688c2 1px, #489ecf 2px, #61bbde 100%);;
+	/*border-bottom: 1px solid #3688c2;*/
+
+    /*background-repeat: repeat-x;*/
 	text-align: center;
 	font-weight: bold;
 	padding-top: .4em;
@@ -236,7 +252,8 @@ table.reflex caption div.caption_bar div.caption_title {
 	-moz-box-sizing : border-box;
 	box-sizing : border-box;
 
-	text-shadow	: 0 1px 0 rgba(0, 0, 0, 1);
+	/*text-shadow	: 0 1px 0 rgba(0, 0, 0, 1);*/
+	/*text-shadow: 0 -1px 0 rgba(0, 0, 0, .8);*/
 }
 
 table.reflex caption div.caption_bar div.caption_title > * {
@@ -249,9 +266,15 @@ table.reflex caption div.caption_bar div.caption_title .icon {
 
 table.reflex thead,
 table.reflex tfoot {
+
+	color: #ffffff;
+	background-color: #499FCF;
+
 	/* was background-color: #202020;*/
-	background-color: #1C1C1C;
+	/*
+	background-color: #499FCF;
 	color: #eee;
+	*/
 	text-align: left;
 }
 
@@ -374,7 +397,7 @@ table.reflex th.reflex-sorted-descending
 table.reflex tfoot a,
 table.reflex tfoot a:visited,
 table.reflex tfoot a:link {
-	color: #ffde05 !important;
+	color: #ffffff !important;
 }
 
 
@@ -433,7 +456,16 @@ input[type='text'],
 select,
 textarea
 {
-	border : .1em solid #111;
+	border : .1em solid #333;
+}
+input,
+select,
+textarea
+{
+	background-color: #FFFFFF;
+	color: #111111;
+	font-size: 1em;
+	margin: 0.1em;
 }
 
 input[type='text'][disabled],
@@ -572,7 +604,11 @@ div.control-field > input.text-ajax-input
 /********************* END - Reflex Input Controls - END **********************/
 
 /************************** START - Buttons - START ***************************/
-input[type='button'], input.normal-button[type='submit'], a.button, button
+input[type='button'],
+input[type='submit'],
+input.normal-button[type='submit'],
+a.button,
+button
 {
 	background-image:	url('../img/template/transparent-bg.png') !important;
 	background-repeat:	repeat-x !important;
@@ -647,14 +683,16 @@ div.reflex-popup-opaque {
 
 div.reflex-popup {
 	margin				: auto;
-	border				: 0.1em solid #000000;
+	border				: 0.1em solid rgba(0, 0, 0, 0.4);
+	/*border: 0.1em solid rgba(0, 0, 0, 0.5);*/
+	/*border				: 0.1em solid #000000;*/
 	background-color	: #efefef;
 	z-index				: 50;
 	position			: absolute;
 
 	border-radius : 4px;
-	box-shadow : 0 0 20px #000;
-
+	box-shadow : 0 0 40px #000;
+	overflow			: hidden;
 }
 
 div.reflex-popup table.reflex {
@@ -663,22 +701,58 @@ div.reflex-popup table.reflex {
 	margin-right: 1%;
 	margin-top: 0.5em;
 	margin-bottom: 0.5em;
-	border: .1em solid #333;
+	border: .1em solid #D1D1D1;
 	border-spacing: 0;
 }
 
 div.reflex-popup-title-bar {
 	height				: auto;
-	background-color	: #000000;
 	padding				: 3px;
+	/*
+	background-color	: #499FCF;
+	*/
+
+	/*
 	background-image	: url('../img/template/background.png');
 	background-repeat	: repeat-x;
+	background-color	: #000000;
+	*/
+
+	/*
+	background-color: #999;
+	box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.2);
+	border-bottom: 0.1em solid rgba(0, 0, 0, 0.1);
+	*/
+	background : -webkit-linear-gradient(top, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.2) 100%);
+	background : -moz-linear-gradient(top, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.2) 100%);
+	background : -ms-linear-gradient(top, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.2) 100%);
+	background : -o-linear-gradient(top, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.2) 100%);
+	background : linear-gradient(top, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.2) 100%);
+
+	box-shadow : 0 -8px 8px 8px #000; /* We can tweak this if it's too dark */
+   /*
+	background: -webkit-linear-gradient(top, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.4) 100%);
+	background: -moz-linear-gradient(top, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.4) 100%);
+	background: -ms-linear-gradient(top, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.4) 100%);
+	background: -o-linear-gradient(top, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.4) 100%);
+	background: linear-gradient(top, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.4) 100%);
+	*/
+	/*
+	background: -webkit-linear-gradient(top, rgba(50,50,50,1), rgba(17,17,17,1) 100%);
+	background: -moz-linear-gradient(top, rgba(50,50,50,1), rgba(17,17,17,1) 100%);
+	background: -ms-linear-gradient(top, rgba(50,50,50,1), rgba(17,17,17,1) 100%);
+	background: -o-linear-gradient(top, rgba(50,50,50,1), rgba(17,17,17,1) 100%);
+	background: linear-gradient(top, rgba(50,50,50,1), rgba(17,17,17,1) 100%);
+	*/
+
+	/*border-radius: 2px 2px 0 0;*/
 	-moz-user-select	: none;
 	-webkit-user-select	: none;
 }
 
 div.reflex-popup-title {
-	color : #EEEEEE;
+	color : #333;
+	text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
 	float : left;
 	width : 79%;
 	font-weight: bold;
@@ -989,8 +1063,8 @@ table.highlight-rows tbody tr:hover td
 }
 
 div.Title{
-	color:					#eeeeee;
-	background-color:		#333333;
+	color:					#ffffff;
+	background-color:		#499FCF;
 	height:					20px;
 	width:					965px;
 	text-indent:			10px;
@@ -1002,8 +1076,8 @@ div.Title{
 }
 
 div.PartTitle{
-	color:					#eeeeee;
-	background-color:		#333333;
+	color:					#ffffff;
+	background-color:		#499FCF;
 	height:					20px;
 	width:					470px;
 	text-indent:			10px;
@@ -1107,7 +1181,7 @@ div.document-explorer-address
 {
 	background-color	: #eee;
 	padding				: 0.5em;
-	border				: 0.1em solid #333;
+	border				: 0.1em solid #D1D1D1;
 	clear				: both;
 }
 
@@ -1162,8 +1236,10 @@ div.document-explorer-address-separator img
 
 div.document-explorer
 {
-	border-left		: 0.1em solid #333;
-	border-right	: 0.1em solid #333;
+	/*
+	border-left		: 0.1em solid #D1D1D1;
+	border-right	: 0.1em solid #D1D1D1;
+	*/
 	padding			: 0px;
 	clear			: both;
 	margin-top		: .25em;
@@ -1176,8 +1252,8 @@ div.document-explorer-list
 	max-height			: 30em;
 	overflow-y			: scroll;
 	background-color	: #efefef;
-	border-left			: .1em solid #333;
-	border-right		: .1em solid #333;
+	border-left			: .1em solid #D1D1D1;
+	border-right		: .1em solid #D1D1D1D1D1D1;
 }
 
 
@@ -1228,7 +1304,7 @@ table.document-explorer th.notice-normal
 
 table.document-explorer th span[onclick]
 {
-	color				: #ffde05;
+	color				: #ffffff;
 }
 
 table.document-explorer th span[onclick]:hover
@@ -1320,7 +1396,7 @@ div.document-explorer-status
 {
 	background-color	: #f9f9f9;
 	padding				: 0.5em;
-	border				: 0.1em solid #333;
+	border				: 0.1em solid #D1D1D1;
 }
 
 div.document-explorer-status
@@ -2539,9 +2615,17 @@ table.listing-fw3 th
 
 table.listing-fw3 thead th
 {
+	background: -webkit-linear-gradient(bottom, #3688C2 1px, #489ECF 2px, #61BBDE 100%);
+	background: -moz-linear-gradient(bottom, #3688C2 1px, #489ECF 2px, #61BBDE 100%);
+	background: -ms-linear-gradient(bottom, #3688C2 1px, #489ECF 2px, #61BBDE 100%);
+	background: -o-linear-gradient(bottom, #3688C2 1px, #489ECF 2px, #61BBDE 100%);
+	background: linear-gradient(bottom, #3688C2 1px, #489ECF 2px, #61BBDE 100%);
+
+	/*
 	border-bottom:       solid 1px #C1C1C1;
 	background-repeat:   repeat-x;
 	background-image:    url('../../admin/img/template/background.png');
+	*/
 	color:               #FFFFFF;
 	font-size:			 10pt;
 }
@@ -3365,8 +3449,8 @@ div.invoice-dispute-buttons
 
 div#content > div > h1
 {
-	border-bottom	: 1px solid black;
-	color			: black;
+	border-bottom	: 1px solid #336699;
+	color			: #336699;
 	font-size		: 1.8em;
 	margin-bottom	: 0.5em;
 	margin-top		: 0;
@@ -3608,10 +3692,20 @@ div.section > div.section-header > div.section-header-title > img
 div.section > div.section-header > div.section-header-title
 {
 	height					: 100%;
+
+	color: #ffffff;
+	background: -webkit-linear-gradient(bottom, #3688c2 1px, #489ecf 2px, #61bbde 100%);
+	background: -moz-linear-gradient(bottom, #3688c2 1px, #489ecf 2px, #61bbde 100%);
+	background: -ms-linear-gradient(bottom, #3688c2 1px, #489ecf 2px, #61bbde 100%);
+	background: -o-linear-gradient(bottom, #3688c2 1px, #489ecf 2px, #61bbde 100%);
+	background: linear-gradient(bottom, #3688c2 1px, #489ecf 2px, #61bbde 100%);
+	/*text-shadow: 0 -1px 0 rgba(0, 0, 0, .8);*/
+	/*
 	color					: #eee;
 	background-color		: #1C1C1C;
     background-image		: url('../img/template/background.png');
     background-repeat		: repeat-x;
+    */
 	text-align				: center;
 	font-weight				: bold;
 	padding-top				: .4em;
@@ -5385,8 +5479,16 @@ div.popup-followup-recurring-dates-reason div:first-child
 div#followup-link
 {
 	display					: inline-block;
+	background-color		: #ffffff;
+	background-image: url('../img/template/transparent-bg.png'), -webkit-linear-gradient(bottom, #cccccc 0px,  #cccccc 1px, #ffffff 100%);
+	background-image: url('../img/template/transparent-bg.png'), -moz-linear-gradient(bottom, #cccccc 0px,  #cccccc 1px, #ffffff 100%);
+	background-image: url('../img/template/transparent-bg.png'), -ms-linear-gradient(bottom, #cccccc 0px,  #cccccc 1px, #ffffff 100%);
+	background-image: url('../img/template/transparent-bg.png'), -o-linear-gradient(bottom, #cccccc 0px,  #cccccc 1px, #ffffff 100%);
+	background-image: url('../img/template/transparent-bg.png'), linear-gradient(bottom, #cccccc 0px,  #cccccc 1px, #ffffff 100%);
+	/*
 	background-color		: #888888;
 	background-image		: url('../img/template/transparent-bg.png') !important;
+	*/
 	background-repeat		: repeat-x !important;
 	color					: #1A1A33 !important;
 	font-family				: Arial, sans-serif !important;
@@ -5419,7 +5521,12 @@ div#followup-link > img
 
 div#followup-link.followup-link-flash
 {
-	background-color	: #ff8822 !important;
+	background-image	: -webkit-linear-gradient(bottom, #ff8822, #ff8822) !important;
+	background-image	: -moz-linear-gradient(bottom, #ff8822, #ff8822) !important;
+	background-image	: -ms-linear-gradient(bottom, #ff8822, #ff8822) !important;
+	background-image	: -o-linear-gradient(bottom, #ff8822, #ff8822) !important;
+	background-image	: linear-gradient(bottom, #ff8822, #ff8822) !important;
+	/*background-color	: #ff8822 !important;*/
 }
 
 div#followup-link > span
@@ -11983,9 +12090,18 @@ div.component-collections-scenario > table.reflex
 .component-section-header > *:first-child {
 	margin					: 0 0 0 4px;
 	padding					: 0.2em 0.25em 0.2em 0.25em;
-	color					: #eee;
+	color					: #ffffff;
+	/*
 	background-color		: #111;
 	background-image		: -moz-linear-gradient(top, #444, #1C1C1C 1em);
+	*/
+
+	background: -webkit-linear-gradient(bottom, #3688C2 1px, #489ECF 2px, #61BBDE 100%);
+	background: -moz-linear-gradient(bottom, #3688C2 1px, #489ECF 2px, #61BBDE 100%);
+	background: -ms-linear-gradient(bottom, #3688C2 1px, #489ECF 2px, #61BBDE 100%);
+	background: -o-linear-gradient(bottom, #3688C2 1px, #489ECF 2px, #61BBDE 100%);
+	background: linear-gradient(bottom, #3688C2 1px, #489ECF 2px, #61BBDE 100%);
+
 	border-radius			: 4px 4px 0 0;
 	font-size				: 1em;
 	text-shadow				: 0 -1px 0 #000;

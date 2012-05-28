@@ -2,6 +2,7 @@ var FlexEmployeeMessage = {
 	POPUP_ID		: "EmployeeMessage",
 
 	elmMessage		: null,
+	strMessageTypeConstant	: 'EMPLOYEE_MESSAGE_TYPE_GENERAL',
 
 	// Loads the popup, for the customer declared by intContact and intAccount
 	newMessage : function()
@@ -32,8 +33,7 @@ var FlexEmployeeMessage = {
 	initialiseNewMessagePopup : function()
 	{
 		// Grab references to all important items on the form
-		this.elmMessage = $ID('EmployeeMessagePopup_Message');
-	
+		this.elmMessage		= $ID('EmployeeMessagePopup_Message');
 		this.elmMessage.focus();
 	},
 	
@@ -63,7 +63,7 @@ var FlexEmployeeMessage = {
 	{
 		jsonFunc = jQuery.json.jsonFunction(this.saveMessageReturnHandler.bind(this), null, "Employee_Message", "save");
 		Vixen.Popup.ShowPageLoadingSplash("Saving", null, null, null, 1500);
-		jsonFunc(intId, strMessage, strEffectiveOn);
+		jsonFunc(intId, strMessage, strEffectiveOn, this.strMessageTypeConstant);
 	},
 
 	saveMessageReturnHandler : function(response)

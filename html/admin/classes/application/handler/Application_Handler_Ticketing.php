@@ -137,7 +137,7 @@ class Application_Handler_Ticketing extends Application_Handler
 
 		if (array_key_exists('columns', $_REQUEST))
 		{
-			$column = array();
+			$columns = array();
 			foreach($_REQUEST['columns'] as $column)
 			{
 				if (!$column)

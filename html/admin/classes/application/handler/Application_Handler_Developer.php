@@ -3,7 +3,7 @@ class Application_Handler_Developer extends Application_Handler
 {
 	const	URL_TYPE_JS		= 'onclick';
 	const	URL_TYPE_HREF	= 'href';
-	
+
 	public function correspondence()
 	{
 		Log::registerFunctionLog('Developer_CollectionsLogic', 'logMessage', 'Application_Handler_Developer');
@@ -22,7 +22,15 @@ class Application_Handler_Developer extends Application_Handler
 		{
 			// Build list of Developer Functions
 			$arrFunctions	= array();
-			
+			/*
+			$arrFunctions[]	= self::_stdClassFactory(
+														array	(
+																	'strName'	=> 'Dashboard',
+																	'strType'	=> self::URL_TYPE_HREF,
+																	'strURL'	=> '/admin/reflex.php/Developer/Dashboard'
+																)
+													);
+			*/
 			$arrFunctions[]	= self::_stdClassFactory(
 														array	(
 																	'strName'	=> 'Operation-based Permission Tests',

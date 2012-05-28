@@ -44,12 +44,12 @@ elseif (DBO()->Account->TradingName->Value != "")
 $this->Page->SetName($strPageName);
 
 // set the layout template for the page
-$this->Page->SetLayout('3Column_65_35');
+$this->Page->SetLayout('2Column_65_35');
 
 // add the Html Objects to their respective columns
 if (Flex_Module::isActive(FLEX_MODULE_CUSTOMER_STATUS))
 {
-	$this->Page->AddObject(AccountCustomerStatusHistory, COLUMN_ONE);
+	//$this->Page->AddObject(AccountCustomerStatusHistory, COLUMN_ONE);
 	//$this->Page->AddObject(AccountCustomerStatusHistory, COLUMN_TWO);
 }
 
@@ -71,9 +71,10 @@ if (Flex_Module::isActive(FLEX_MODULE_TICKETING) && Ticketing_User::currentUserI
 $this->Page->AddObject('AccountDetails', COLUMN_ONE, HTML_CONTEXT_VIEW, "AccountDetailsDiv");
 $this->Page->AddObject('AccountContactsList', COLUMN_ONE, HTML_CONTEXT_PAGE);
 $this->Page->AddObject('InvoiceList', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
+$this->Page->AddObject('AccountServicesList', COLUMN_ONE, HTML_CONTEXT_PAGE, "AccountServicesDiv");
 
 // The ActionsAndNotesList Includes the embedded creator control
 $this->Page->AddObject('ActionsAndNotesList', COLUMN_TWO, HTML_CONTEXT_PAGE, "ActionsAndNotesListDiv");
 
-$this->Page->AddObject('AccountServicesList', COLUMN_THREE, HTML_CONTEXT_PAGE, "AccountServicesDiv");
+//$this->Page->AddObject('AccountServicesList', COLUMN_THREE, HTML_CONTEXT_PAGE, "AccountServicesDiv");
 ?>

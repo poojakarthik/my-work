@@ -25,17 +25,17 @@ var Page_DataReport_List = Class.create(
 												$T.div({class: 'caption_bar'},						
 													$T.div({class: 'caption_title'},
 														'Report Listing'
-													)
-												),
-												$T.div({class: 'caption_options'},
-													$T.ul({class: 'reset horizontal datareport-legend'},
-														$T.li(
-															$T.img({src: Page_DataReport_List.INSTANT_REPORT_IMAGE_SOURCE, alt: 'Immediate', title: 'Immediate'}),
-															$T.span(' : Immediate')
-														),
-														$T.li(
-															$T.img({src: Page_DataReport_List.EMAIL_REPORT_IMAGE_SOURCE, alt: 'Emailed', title: 'Emailed'}),
-															$T.span(' : Emailed')
+													),
+													$T.div({class: 'caption_options'},
+														$T.ul({class: 'reset horizontal datareport-legend'},
+															$T.li(
+																$T.img({src: Page_DataReport_List.INSTANT_REPORT_IMAGE_SOURCE, alt: 'Immediate', title: 'Immediate'}),
+																$T.span(' : Immediate')
+															),
+															$T.li(
+																$T.img({src: Page_DataReport_List.EMAIL_REPORT_IMAGE_SOURCE, alt: 'Emailed', title: 'Emailed'}),
+																$T.span(' : Emailed')
+															)
 														)
 													)
 												)

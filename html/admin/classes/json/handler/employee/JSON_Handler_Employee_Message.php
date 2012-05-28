@@ -3,9 +3,42 @@
 class JSON_Handler_Employee_Message extends JSON_Handler
 {
 
+	// Get the daily message
+	public function getLastestMessageForConstant($sMessageTypeConstant=null) {
+		try {
+			$oQuery = Query::run("
+							SELECT		id,
+										created_on,
+										effective_on,
+										message,
+										employee_message_type_id
+
+							FROM		employee_message AS em1
+
+							WHERE		NOW( ) > em1.effective_on
+										AND em1.employee_message_type_id = (
+											SELECT id FROM employee_message_type WHERE const_name = '{$sMessageTypeConstant}'
+										)
+
+							ORDER BY	em1.created_on DESC,
+										em1.effective_on DESC
+							LIMIT 1;");
+			
+			$aRecord = $oQuery->fetch_assoc();
+			return (isset($aRecord)) ? $aRecord : null;
+		}
+		catch (Exception $oException) {
+			// Suppress the normal form of error reporting, by displaying the error as the message of the day
+			$aData = array(
+						"message"	=> "The Daily Message functionality is currently broken.  Please notify your system administrators.\n" . $oException->getMessage()
+					);
+			return $aData;
+		}
+	}
+
 	// used to save a message
 	// set $intId to null to save a new message
-	public function save($intId=NULL, $strMessage, $strEffectiveOn=NULL)
+	public function save($intId=NULL, $strMessage, $strEffectiveOn=NULL, $strMessageTypeConstant)
 	{
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
@@ -13,6 +46,15 @@ class JSON_Handler_Employee_Message extends JSON_Handler
 		try
 		{
 			
+			// INPROGRESS
+			// Get message type id for constant
+			// Validate $intMessageTypeId
+			$intMessageTypeId = constant($strMessageTypeConstant);
+			if (!isset($intMessageTypeId)) {
+				throw new Exception("Message type not defined");
+			}
+			// INPROGRESS
+
 			// Check that the message is not empty
 			$strMessage = trim($strMessage);
 			if (strlen($strMessage) == 0)
@@ -31,7 +73,7 @@ class JSON_Handler_Employee_Message extends JSON_Handler
 			if ($intId === NULL)
 			{
 				// This is a new message
-				Employee_Message::declareMessage($strMessage, $strEffectiveOn);
+				Employee_Message::declareMessage($strMessage, $strEffectiveOn, $intMessageTypeId);
 			}
 			else
 			{

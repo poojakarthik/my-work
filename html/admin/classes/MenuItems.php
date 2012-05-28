@@ -132,6 +132,28 @@ class MenuItems {
 	}
 
 	//------------------------------------------------------------------------//
+	// TechnicalNoticeManagement
+	//------------------------------------------------------------------------//
+	/**
+	 * TechnicalNoticeManagement()
+	 *
+	 * Compiles the Href to be executed when the TechnicalNoticeManagement functionality is requested
+	 *
+	 * Compiles the Href to be executed when the TechnicalNoticeManagement functionality is requested
+	 *
+	 * @return	string				Href
+	 *
+	 * @method
+	 */
+	function TechnicalNoticeManagement()
+	{
+		$this->strContextMenuLabel = "Technical Notice Management";
+		$this->strLabel = "Technical Notice Management";
+		return self :: NEW_FRAMEWORK . "reflex.php/Employee/TechnicalNoticeManagement";
+	}
+
+
+	//------------------------------------------------------------------------//
 	// TicketingAdmin
 	//------------------------------------------------------------------------//
 	/**

@@ -696,7 +696,7 @@ class Page
 		echo "
 		<div id='header' name='header'>
 			<div id='logo' onclick='window.location.href=\"../admin/reflex.php/Console/View/\"'>
-				<div id='blurb' name='blurb'>Flex Customer Management System</div>
+				<div id='blurb' name='blurb'>Flex Business Management System</div>
 			</div>\n";
 
 		if ($bolWithSearch && Flex::loggedIn())
@@ -784,10 +784,11 @@ class Page
 				</div>
 				<div id='search_bar' name='search_bar'>
 					<form action='#' onsubmit='FlexSearch.quickSearch();return false;'>
-						Search:
-						<input type='text' id='search_string' name='search_string' value='$strLastConstraint' onkeypress='FlexSearch.quickSearchOnEnter(event)' />
-						<select name='category' id='quick_search_category'>$strCategoryOptions
+						<!--Search:-->
+						<select name='category' id='quick_search_category'>
+							{$strCategoryOptions}
 						</select>
+						<input type='text' id='search_string' name='search_string' value='$strLastConstraint' onkeypress='FlexSearch.quickSearchOnEnter(event)' />
 						<input type='submit' id='Search' name='Search' value='Search'/>
 					</form>
 				</div>

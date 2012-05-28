@@ -207,6 +207,7 @@ class Application
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
 			{
 				ContextMenu()->Admin->Employees->EmployeeMessageManagement();
+				ContextMenu()->Admin->Employees->TechnicalNoticeManagement();
 			}
 
 			// Permissions menu
