@@ -1,110 +1,22 @@
 <?php
-//----------------------------------------------------------------------------//
-// (c) copyright 2008 VOIPTEL Pty Ltd
-//
-// NOT FOR EXTERNAL DISTRIBUTION
-//----------------------------------------------------------------------------//
-
-//----------------------------------------------------------------------------//
-// group_new.php
-//----------------------------------------------------------------------------//
-/**
- * group_new
- *
- * HTML Template for the CustomerGroupNew HTML object
- *
- * HTML Template for the CustomerGroupNew HTML object
- * This class is responsible for defining and rendering the layout of the HTML Template object
- * which displays the form used to add a new Customer Group.
- *
- * @file		group_new.php
- * @language	PHP
- * @package		ui_app
- * @author		Joel 'MagnumSwordFortress' Dawkins
- * @version		8.01
- * @copyright	2007 VOIPTEL Pty Ltd
- * @license		NOT FOR EXTERNAL DISTRIBUTION
- *
- */
-
-
-//----------------------------------------------------------------------------//
-// HtmlTemplateCustomerGroupNew
-//----------------------------------------------------------------------------//
-/**
- * HtmlTemplateCustomerGroupNew
- *
- * HTML Template class for the CustomerGroupNew HTML object
- *
- * HTML Template class for the CustomerGroupNew HTML object
- * displays the form used to add a new CustomerGroup
- *
- * @package	ui_app
- * @class	HtmlTemplateCustomerGroupNew
- * @extends	HtmlTemplate
- */
-class HtmlTemplateCustomerGroupNew extends HtmlTemplate
-{
-	//------------------------------------------------------------------------//
-	// _intContext
-	//------------------------------------------------------------------------//
-	/**
-	 * _intContext
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * @type		integer
-	 *
-	 * @property
-	 */
+class HtmlTemplateCustomerGroupNew extends HtmlTemplate {
 	public $_intContext;
 
-	//------------------------------------------------------------------------//
-	// __construct
-	//------------------------------------------------------------------------//
-	/**
-	 * __construct
-	 *
-	 * Constructor
-	 *
-	 * Constructor - java script required by the HTML object is loaded here
-	 *
-	 * @param	int		$intContext		context in which the html object will be rendered
-	 * @param	string	$strId			the id of the div that this HtmlTemplate is rendered in
-	 *
-	 * @method
-	 */
-	function __construct($intContext, $strId)
-	{
+	function __construct($intContext, $strId) {
 		$this->_intContext = $intContext;
 		$this->_strContainerDivId = $strId;
 	}
-	
-	//------------------------------------------------------------------------//
-	// Render
-	//------------------------------------------------------------------------//
-	/**
-	 * Render()
-	 *
-	 * Render this HTML Template
-	 *
-	 * Render this HTML Template
-	 *
-	 * @method
-	 */
-	function Render()
-	{	
+
+	function Render() {	
 		$this->FormStart("NewCustomerGroup", "CustomerGroup", "Add");
 
 		echo "<div class='GroupedContent'>\n";
 
-		DBO()->CustomerGroup->internal_name->RenderInput(CONTEXT_DEFAULT, TRUE);
-		DBO()->CustomerGroup->external_name->RenderInput(CONTEXT_DEFAULT, TRUE);
-		DBO()->CustomerGroup->outbound_email->RenderInput(CONTEXT_DEFAULT, TRUE);
-		DBO()->CustomerGroup->flex_url->RenderInput(CONTEXT_DEFAULT, TRUE);
-		DBO()->CustomerGroup->email_domain->RenderInput(CONTEXT_DEFAULT, TRUE);
+		DBO()->CustomerGroup->internal_name->RenderInput(CONTEXT_DEFAULT, true);
+		DBO()->CustomerGroup->external_name->RenderInput(CONTEXT_DEFAULT, true);
+		DBO()->CustomerGroup->outbound_email->RenderInput(CONTEXT_DEFAULT, true);
+		DBO()->CustomerGroup->flex_url->RenderInput(CONTEXT_DEFAULT, true);
+		DBO()->CustomerGroup->email_domain->RenderInput(CONTEXT_DEFAULT, true);
 		
 		echo "</div>"; // GroupedContent
 		
@@ -117,5 +29,3 @@ class HtmlTemplateCustomerGroupNew extends HtmlTemplate
 		$this->FormEnd();
 	}
 }
-
-?>
