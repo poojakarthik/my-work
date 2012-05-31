@@ -21,6 +21,7 @@ var self = new Class({
 	_buildUI	: function() {
 		this.NODE = H.section(
 			H.header(
+				H.img({'src':'/admin/img/template/building.png'}),
 				H.h3('General Notices')
 			),
 			this._oNotice = H.div(),

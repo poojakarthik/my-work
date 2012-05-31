@@ -20,7 +20,8 @@ var self = new Class({
 	// ----------------------------------------------------------------------------------- //
 	_buildUI	: function() {
 		this.NODE = H.section(
-			H.header(
+			H.header(				
+				H.img({'src':'/admin/img/template/transmit_blue.png'}),
 				H.h3('Technical Notices')
 			),
 			this._oNotice = H.div(),

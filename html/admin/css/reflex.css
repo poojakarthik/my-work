@@ -245,6 +245,13 @@
 	display: inline-block;
 	width: 420px;
 }
+.flex-page-dashboard .flex-page-dashboard-notices-technical > header > img {
+	margin-right: 0.5em;
+}
+.flex-page-dashboard .flex-page-dashboard-notices-technical > header * {
+	vertical-align: middle;
+	display: inline-block;
+}
 
 /**************************************************************************/
 /* Component - Dashboard Updates General								  */
@@ -252,6 +259,13 @@
 .flex-page-dashboard .flex-page-dashboard-notices-general {
 	display: inline-block;
 	width: 420px;
+}
+.flex-page-dashboard .flex-page-dashboard-notices-general > header > img {
+	margin-right: 0.5em;
+}
+.flex-page-dashboard .flex-page-dashboard-notices-general > header * {
+	vertical-align: middle;
+	display: inline-block;
 }
 
 /**************************************************************************/
