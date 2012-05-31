@@ -29,7 +29,8 @@ var self = new Class({
 				S.rect({'class':'flex-page-dashboard-tickets-statistics-grid','x':self.GRAPH_MARGIN_LEFT,'y':self.GRAPH_MARGIN_TOP,'width':self.GRAPH_WIDTH,'height':self.GRAPH_HEIGHT}),
 				// Graph Lines
 				this._getGraphGrid()
-			)
+			),
+			this._oLoading = H.div({'class':'flex-page-dashboard-loading -enabled'})
 		);
 	},
 
@@ -43,6 +44,9 @@ var self = new Class({
 				// First call.
 				this._getData(this._getDataDates(), function(oData){
 						this._renderGraph(oData);
+						this._oLoading.classList.remove('-enabled'); // Hide loading message
+						// setAttribute is used here because classList and addClassName only work on HTML Elements.
+						this._oSvg.setAttribute('class','-enabled');
 					}.bind(this)
 				);
 			} else {

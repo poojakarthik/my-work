@@ -23,7 +23,8 @@ var self = new Class({
 			H.header(
 				H.h3('General Notices')
 			),
-			this._oNotice = H.div()
+			this._oNotice = H.div(),
+			this._oLoading = H.div({'class':'flex-page-dashboard-loading -enabled'})
 		);
 	},
 
@@ -34,7 +35,10 @@ var self = new Class({
 	_syncUI	: function() {
 		if (!this._bInitialised) {
 			// First call.
-			this._loadData(this._populateNotice.bind(this));
+			this._loadData(function(oData) {
+				this._populateNotice(oData);
+				this._oLoading.classList.remove('-enabled'); // Hide loading message
+			}.bind(this));
 		} else {
 			// Every other call
 		}

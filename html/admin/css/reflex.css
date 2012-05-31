@@ -72,6 +72,39 @@
 	border-radius: 6px 6px 0 0;
 }
 
+/**************************************************************************/
+/* Component - Dashboard Loading										  */
+/**************************************************************************/
+.flex-page-dashboard .flex-page-dashboard-loading {
+	display: none;
+}
+.flex-page-dashboard .flex-page-dashboard-loading.-enabled {
+	background-image: url('/admin/img/template/loading.gif');
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	height: 100px;
+	display: block;
+}
+.flex-page-dashboard .flex-page-dashboard-customers-recent .ButtonContainer {
+	display: none;
+}
+.flex-page-dashboard .flex-page-dashboard-customers-recent .ButtonContainer.-enabled {
+	display: block;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-mine .ButtonContainer {
+	display: none;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-mine .ButtonContainer.-enabled {
+	display: block;
+}
+
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics svg {
+	display: none;
+}
+.flex-page-dashboard .flex-page-dashboard-tickets-statistics svg.-enabled {
+	display: block;
+}
+
 
 /**************************************************************************/
 /* Component - Dashboard Tickets										  */
@@ -82,6 +115,7 @@
 	width: 350px;
 	margin: 0 20px;
 }
+
 .flex-page-dashboard .flex-page-dashboard-tickets-mine > header {
 	display: inline-block;
 	width: 300px;

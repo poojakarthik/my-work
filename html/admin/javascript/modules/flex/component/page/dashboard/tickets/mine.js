@@ -32,7 +32,8 @@ var self = new Class({
 				),
 				this._oTicketList = H.tbody()
 			),
-			H.div({'class':'ButtonContainer'},
+			this._oLoading = H.div({'class':'flex-page-dashboard-loading -enabled'}),
+			this._oButtons = H.div({'class':'ButtonContainer'},
 				H.button({'onclick':'window.location = "/admin/reflex.php/Ticketing/Tickets/Mine/"', 'class':'flex-page-dashboard-tickets-mine-view-all'}, 'More')
 			)
 		);
@@ -46,7 +47,11 @@ var self = new Class({
 		try {
 			if (!this._bInitialised) {
 				// First call.
-				this._getAll(this._buildTicketList.bind(this));
+				this._getAll(function(oData) {
+					this._buildTicketList(oData);
+					this._oLoading.classList.remove('-enabled'); // Hide loading message
+					this._oButtons.classList.add('-enabled'); // Enable button bar.
+				}.bind(this));
 			} else {
 				// Every other call
 			}

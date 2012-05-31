@@ -33,7 +33,8 @@ var self = new Class({
 				),
 				this._oRecentCustomerList = H.tbody()
 			),
-			H.div({'class':'ButtonContainer'},
+			this._oLoading = H.div({'class':'flex-page-dashboard-loading -enabled'}),
+			this._oButtons = H.div({'class':'ButtonContainer'},
 				H.button({"onclick":"javascript:Vixen.Popup.ShowAjaxPopup('ViewRecentCustomersId', 'extralarge', 'Recent Customers', 'Employee', 'ViewRecentCustomers')", 'class':'flex-page-dashboard-customers-recent-view-all'},'More')
 			)
 
@@ -47,7 +48,11 @@ var self = new Class({
 	_syncUI	: function() {
 		if (!this._bInitialised) {
 			// First call.
-			this._getAll(this._buildRecentList.bind(this));
+			this._getAll(function(oData) {
+				this._buildRecentList(oData);
+				this._oLoading.classList.remove('-enabled'); // Hide loading message
+				this._oButtons.classList.add('-enabled'); // Enable button bar.
+			}.bind(this));
 		} else {
 			// Every other call
 		}
