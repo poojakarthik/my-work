@@ -269,9 +269,16 @@
 }
 
 /**************************************************************************/
-/* Component - Dashboard Updates Time & Date							  */
+/* Component - Dashboard Calendar										  */
 /**************************************************************************/
 .flex-page-dashboard .flex-page-dashboard-time-and-date {
+	display: inline-block;
+}
+.flex-page-dashboard .flex-page-dashboard-time-and-date > header > img {
+	margin-right: 0.5em;
+}
+.flex-page-dashboard .flex-page-dashboard-time-and-date > header * {
+	vertical-align: middle;
 	display: inline-block;
 }
 .flex-page-dashboard .flex-page-dashboard-time-and-date-picker {

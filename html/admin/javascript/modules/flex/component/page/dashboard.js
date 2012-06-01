@@ -47,6 +47,7 @@ var self = new Class({
 					H.div({'class':'flex-page-dashboard-updates-separator'}),
 					H.section({'class':'flex-page-dashboard-time-and-date'},
 						H.header(
+							H.img({'src':'/admin/img/template/calendar_view_month.png'}),
 							H.h3('Calendar')
 						),
 						H.form({'id':'flex-page-dashboard-time-and-date-picker', 'class':'flex-page-dashboard-time-and-date-picker'}),
