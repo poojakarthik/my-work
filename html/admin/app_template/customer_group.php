@@ -777,7 +777,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate {
 		}
 
 		// This array has to be wrapped in the DBO() so that they are accessable within the HtmlTemplates
-		DBO()->DocumentResourceTypes->Asarray = $selResourceType->FetchAll();
+		DBO()->DocumentResourceTypes->AsArray = $selResourceType->FetchAll();
 
 		// Breadcrumb menu
 		BreadCrumb()->Employee_Console();
@@ -897,7 +897,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate {
 		$selFileTypes = new StatementSelect("FileType", "*", $strWhere);
 		$selFileTypes->Execute();
 		$arrFileTypes = $selFileTypes->FetchAll();
-		DBO()->FileTypes->Asarray = $arrFileTypes;
+		DBO()->FileTypes->AsArray = $arrFileTypes;
 
 		// Check if the form has been submitted
 		if (SubmittedForm("ImportResource")) {
