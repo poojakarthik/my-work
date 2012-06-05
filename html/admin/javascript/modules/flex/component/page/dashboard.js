@@ -26,6 +26,7 @@ var self = new Class({
 	// ----------------------------------------------------------------------------------- //
 	_buildUI	: function() {
 		
+		// Overriding default layout style.
 		$$('.maximum-area-body')[0].addClassName('flex-page-dashboard-container');
 		
 		this.NODE = H.section(
