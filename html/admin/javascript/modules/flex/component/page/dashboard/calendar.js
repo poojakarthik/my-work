@@ -100,12 +100,12 @@ var self = new Class({
 		return $$('.flex-page-dashboard-time-and-date-picker td');
 	},
 	_getSelectedMonth : function() {
-		var oMonthElement = $$('.flex-page-dashboard-time-and-date-picker').first().select('select')[0];
+		var oMonthElement = $$('.flex-page-dashboard-time-and-date-picker select')[0];
 		return oMonthElement.options[oMonthElement.selectedIndex].value;
 	},
 
 	_getSelectedYear : function() {
-		var oYearElement = $$('.flex-page-dashboard-time-and-date-picker').first().select('select')[1];
+		var oYearElement = $$('.flex-page-dashboard-time-and-date-picker select')[1];
 		return oYearElement.options[oYearElement.selectedIndex].value;
 	},
 
