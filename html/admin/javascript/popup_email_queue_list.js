@@ -18,6 +18,7 @@ var Popup_Email_Queue_List = Class.create(Reflex_Popup, {
 		var oComponent 	= new Component_Dataset_AJAX_Table(
 			{
 				sTitle		: 'Email Queues',
+				sIcon		: '/admin/img/template/email.png',
 				oPagination	: oPagination,
 				oFilter		: oFilter,
 				oSort		: oSort,
