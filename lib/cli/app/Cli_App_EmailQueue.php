@@ -38,6 +38,7 @@ class Cli_App_EmailQueue extends Cli {
 
 	private function _debugEmail() {
 		// Args
+		$arrArgs = $this->getValidatedArguments();
 		$bTestRun = (bool)$arrArgs[self::SWITCH_TEST_RUN];
 		$iDebugEmailId = (int)$arrArgs[self::SWITCH_DEBUG_EMAIL_ID];
 		$sDebugAddress = $arrArgs[self::SWITCH_DEBUG_EMAIL_ADDRESS];
@@ -86,6 +87,7 @@ class Cli_App_EmailQueue extends Cli {
 
 	private function _flush() {
 		// Args
+		$arrArgs = $this->getValidatedArguments();
 		$bTestRun = (bool)$arrArgs[self::SWITCH_TEST_RUN];
 		$iQueueId = (int)$arrArgs[self::SWITCH_QUEUE_ID];
 		$sDebugAddress = $arrArgs[self::SWITCH_DEBUG_EMAIL_ADDRESS];
@@ -141,23 +143,24 @@ class Cli_App_EmailQueue extends Cli {
 
 	private function _cleanup() {
 		// Args
+		$arrArgs = $this->getValidatedArguments();
 		$iMinimumAge = (int)$arrArgs[self::SWITCH_CLEANUP_AGE];
-		$iQueueId = (int)$arrArgs[self::SWITCH_QUEUE_ID];
+		$iQueueId = ($arrArgs[self::SWITCH_QUEUE_ID]) ? (int)$arrArgs[self::SWITCH_QUEUE_ID] : null;
 		$bTestRun = (bool)$arrArgs[self::SWITCH_TEST_RUN];
 
 		if (!is_int($iMinimumAge) || $iMinimumAge < 0) {
-			throw new Exception("Invalid minimum age ".var_export($iMinimumAge, true)." encountered. Minimum age must be a positive integer.");
+			throw new Exception("Invalid minimum age ".var_export($arrArgs[self::SWITCH_CLEANUP_AGE], true)." encountered. Minimum age must be a positive (or zero) integer.");
 		}
 
 		// Determine which email queues will be cleaned up
-		Log::get()->log("[*] Looking for email queues to clean up...");
-		$oSummaryResult = $Query::run("
+		Log::get()->log("[*] Looking for Email Queues to clean up (at least ".var_export($iMinimumAge, true)." days old)...");
+		$oSummaryResult = Query::run("
 			SELECT		eq.*,
 						COUNT(DISTINCT e.id) AS email_count,
 						COUNT(DISTINCT ea.id) AS email_attachment_count,
 						CAST(eq.delivered_datetime AS DATE) <= CURDATE() - INTERVAL <minimum_age_days> DAY AS cleanup_eligible
 			FROM		email_queue eq
-						JOIN email e ON (e.email_queue_id = eq.id)
+						LEFT JOIN email e ON (e.email_queue_id = eq.id)
 						LEFT JOIN email_attachment ea ON (ea.email_id = e.id)
 			WHERE		(<email_queue_id> IS NULL OR <email_queue_id> = eq.id)
 			GROUP BY	eq.id
@@ -172,18 +175,17 @@ class Cli_App_EmailQueue extends Cli {
 		$iEligibleAttachments = 0;
 		while ($aEmailQueueSummary = $oSummaryResult->fetch_assoc()) {
 			if ($aEmailQueueSummary['cleanup_eligible']) {
-				$iEligible++;
 				$iEligibleEmails += $aEmailQueueSummary['email_count'];
 				$iEligibleAttachments += $aEmailQueueSummary['email_attachment_count'];
-				Log::get()->log("  [-] #{$aEmailQueueSummary['id']} (emails: {$aEmailQueueSummary['email_count']}; attachments: {$aEmailQueueSummary['email_attachment_count']})");
+				Log::get()->log("  [-] #{$aEmailQueueSummary['id']} (dispatched: ".var_export($aEmailQueueSummary['delivered_datetime'], true)."; emails: {$aEmailQueueSummary['email_count']}; attachments: {$aEmailQueueSummary['email_attachment_count']})");
 			} else {
-				Log::get()->log("  [~] #{$aEmailQueueSummary['id']} (emails: {$aEmailQueueSummary['email_count']}; attachments: {$aEmailQueueSummary['email_attachment_count']})");
+				Log::get()->log("  [~] #{$aEmailQueueSummary['id']} (dispatched: ".var_export($aEmailQueueSummary['delivered_datetime'], true)."; emails: {$aEmailQueueSummary['email_count']}; attachments: {$aEmailQueueSummary['email_attachment_count']})");
 			}
 		}
 
 		DataAccess::getDataAccess()->TransactionStart(false);
 		try {
-			Log::get()->log("[-] Removing {$iEligibleQueues} Email Queues emails (emails: {$iEligibleEmails}; attachments: {$iEligibleAttachments})");
+			Log::get()->log("[-] Removing {$iEligibleQueues} Email Queues (emails: {$iEligibleEmails}; attachments: {$iEligibleAttachments})");
 			if (!$bTestRun || self::CLEANUP_TEST_SUMMARY_ONLY === false) {
 				// Perform cleanup/delete (if we're not in test mode, or test mode is transaction-rollback-based)
 				throw new Exception("uhh... not yet...");
@@ -191,7 +193,7 @@ class Cli_App_EmailQueue extends Cli {
 					DELETE	e,
 							ea
 					FROM	email_queue eq
-							JOIN email e ON (e.email_queue_id = eq.id)
+							LEFT JOIN email e ON (e.email_queue_id = eq.id)
 							LEFT JOIN email_attachment ea ON (ea.email_id = e.id)
 					WHERE	eq.delivered_datetime IS NOT NULL
 							AND CAST(eq.delivered_datetime AS DATE) <= CURDATE() - INTERVAL <minimum_age_days> DAY
