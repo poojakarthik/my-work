@@ -11,7 +11,7 @@ class Cli_App_EmailQueue extends Cli {
 	const SWITCH_CLEANUP = 'c';
 	const SWITCH_CLEANUP_AGE = 'a';
 
-	const CLEANUP_TEST_SUMMARY_ONLY = true;
+	const CLEANUP_TEST_SUMMARY_ONLY = false;
 	const CLEANUP_AGE_DEFAULT = 60;
 	
 	function run() {
@@ -170,11 +170,18 @@ class Cli_App_EmailQueue extends Cli {
 			'minimum_age_days' => $iMinimumAge,
 			'email_queue_id' => $iQueueId
 		));
+		$iTotalQueues = 0;
+		$iTotalEmails = 0;
+		$iTotalAttachments = 0;
 		$iEligibleQueues = 0;
 		$iEligibleEmails = 0;
 		$iEligibleAttachments = 0;
 		while ($aEmailQueueSummary = $oSummaryResult->fetch_assoc()) {
+			$iTotalQueues++;
+			$iTotalEmails += $aEmailQueueSummary['email_count'];
+			$iTotalAttachments += $aEmailQueueSummary['email_attachment_count'];
 			if ($aEmailQueueSummary['cleanup_eligible']) {
+				$iEligibleQueues++;
 				$iEligibleEmails += $aEmailQueueSummary['email_count'];
 				$iEligibleAttachments += $aEmailQueueSummary['email_attachment_count'];
 				Log::get()->log("  [-] #{$aEmailQueueSummary['id']} (dispatched: ".var_export($aEmailQueueSummary['delivered_datetime'], true)."; emails: {$aEmailQueueSummary['email_count']}; attachments: {$aEmailQueueSummary['email_attachment_count']})");
@@ -183,15 +190,16 @@ class Cli_App_EmailQueue extends Cli {
 			}
 		}
 
+		Log::get()->log("[+] Intialising DB Transaction");
 		DataAccess::getDataAccess()->TransactionStart(false);
 		try {
-			Log::get()->log("[-] Removing {$iEligibleQueues} Email Queues (emails: {$iEligibleEmails}; attachments: {$iEligibleAttachments})");
+			Log::get()->log("[-] Removing {$iEligibleQueues}/{$iTotalQueues} Email Queues (emails: {$iEligibleEmails}/{$iTotalEmails}; attachments: {$iEligibleAttachments}/{$iTotalAttachments})");
 			if (!$bTestRun || self::CLEANUP_TEST_SUMMARY_ONLY === false) {
 				// Perform cleanup/delete (if we're not in test mode, or test mode is transaction-rollback-based)
-				throw new Exception("uhh... not yet...");
+				// NOTE: This currently needs to be done in 2 steps, otherwise the ON DELETE RESRICT on email.email_queue_id fails
 				Query::run("
-					DELETE	e,
-							ea
+					DELETE	ea,
+							e
 					FROM	email_queue eq
 							LEFT JOIN email e ON (e.email_queue_id = eq.id)
 							LEFT JOIN email_attachment ea ON (ea.email_id = e.id)
@@ -200,17 +208,41 @@ class Cli_App_EmailQueue extends Cli {
 				", array(
 					'minimum_age_days' => $iMinimumAge
 				));
+				Query::run("
+					DELETE	eq
+					FROM	email_queue eq
+					WHERE	eq.delivered_datetime IS NOT NULL
+							AND CAST(eq.delivered_datetime AS DATE) <= CURDATE() - INTERVAL <minimum_age_days> DAY
+				", array(
+					'minimum_age_days' => $iMinimumAge
+				));
+
+				// Count remaining queues, emails, and attachments
+				$aPostDeleteSummary = Query::run("
+					SELECT		COUNT(DISTINCT eq.id) AS email_queue_count,
+								COUNT(DISTINCT e.id) AS email_count,
+								COUNT(ea.id) AS email_attachment_count
+					FROM		email_queue eq
+								LEFT JOIN email e ON (e.email_queue_id = eq.id)
+								LEFT JOIN email_attachment ea ON (ea.email_id = e.id)
+				")->fetch_assoc();
+				Log::get()->log("[*] Post-DELETE Summary");
+				Log::get()->log("  [*] Email Queues: {$aPostDeleteSummary['email_queue_count']}");
+				Log::get()->log("  [*] Emails: {$aPostDeleteSummary['email_count']}");
+				Log::get()->log("  [*] Email Attachments: {$aPostDeleteSummary['email_attachment_count']}");
 			}
 			if ($bTestRun) {
 				throw new Exception("TEST MODE");
 			}
 		} catch (Exception $oException) {
 			// Rollback & re-throw
+			Log::get()->log("[!] Rolling back DB Transaction (Exception: ".$oException->getMessage().")");
 			DataAccess::getDataAccess()->TransactionRollback(false);
 			throw $oException;
 		}
 
 		// Commit changes
+		Log::get()->log("[+] Committing DB Transaction");
 		DataAccess::getDataAccess()->TransactionCommit(false);
 	}
 

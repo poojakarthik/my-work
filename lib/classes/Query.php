@@ -83,7 +83,7 @@
 
 		// Run Query
 		//Log::getLog()->log("Executing Query");
-		if (false === ($mResult = $oQuery->Execute($sQuery)) && !$bSilentFail) {
+		if (false === ($mResult = $oQuery->Execute($sQuery))) {
 			throw new Exception_Database($oQuery->Error());
 		}
 		return ($mResult instanceof mysqli_result) ? new Query_Result($mResult) : $mResult;
