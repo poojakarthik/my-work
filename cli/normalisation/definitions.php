@@ -38,7 +38,7 @@ define("USER_NAME"						, "Normalisation_app");
 define("LOG_PATH"						, FILES_BASE_PATH."log/normalisation/");
 
 // Normalisation Report Messages
-define("MSG_HORIZONTAL_RULE"			, "================================================================================\n");
+//define("MSG_HORIZONTAL_RULE"			, "================================================================================\n");
 define("MSG_NO_NORMALISATION_MODULE"	, "NO NORMALISATION MODULE\t: <FriendlyName> (<Type>)\n\n");
 define("MSG_IMPORTING_TITLE"			, "\n[ Importing CDRs ]\n\n");
 define("MSG_NORMALISATION_TITLE"		, "\n[ Normalising CDRs ]\n\n");

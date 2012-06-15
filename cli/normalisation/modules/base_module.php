@@ -163,7 +163,10 @@ abstract class NormalisationModule extends CarrierModule {
 		return IsValidFNN($strFNN);
 	}
 	
-	protected function _SplitRawCDR($strCDR) {
+	protected function _SplitRawCDR($strCDR=null) {
+		if ($strCDR === null) {
+			$strCDR = $this->_arrNormalisedData['CDR'];
+		}
 		// keep a record of the raw CDR
 		$this->_strRawCDR = $strCDR;
 		
@@ -453,15 +456,7 @@ abstract class NormalisationModule extends CarrierModule {
 		
 		// Check for Unknown Destination
 		if (!$bExactMatchOnly) {
-			$oGetUnknownDestination	= ($oGetUnknownDestination) ? $oGetUnknownDestination : new StatementSelect(
-				"destination_context JOIN Destination ON destination_context.fallback_destination_id = Destination.Id",
-				"Destination.*",
-				"destination_context.id = <Context>"
-			);
-			if ($oGetUnknownDestination->Execute(array('Context'=>$this->_intContext)) === false) {
-				throw new Exception_Database($oGetUnknownDestination->Error());
-			}
-			if ($aUnknownDestination = $oGetUnknownDestination->Fetch()) {
+			if ($aUnknownDestination = $this->_getUnknownDestination()) {
 				$aUnknownDestination['bolUnknownDestination'] = true;
 				return $aUnknownDestination;
 			} else {
@@ -475,6 +470,17 @@ abstract class NormalisationModule extends CarrierModule {
 		} else {
 			throw new Exception("No Destination found for Context {$this->_intContext}! (Code: '{$mCarrierCode}'; Carrier Translation Context: {$iCarrierTranslationContextId};)");
 		}
+	}
+
+	protected function _getUnknownDestination() {
+		return Query::run("
+			SELECT	d.*
+			FROM	destination_context dc
+					JOIN Destination d ON (d.Id = dc.fallback_destination_id)
+			WHERE	dc.id = <destination_context_id>
+		", array(
+			'destination_context_id' => $this->_intContext
+		))->fetch_assoc();
 	}
 
 	protected function _GenerateUID() {
