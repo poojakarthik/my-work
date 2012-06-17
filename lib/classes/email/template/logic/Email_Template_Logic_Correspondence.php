@@ -70,9 +70,9 @@ class Email_Template_Logic_Correspondence extends Email_Template_Logic {
 	public function getSampleData() {
 		// Grab the latest piece of correspondence
 		$aCorrespondence = 	self::_getLatestCorrespndenceForTemplateAndCustomerGroup(
-									$this->_oEmailTemplateCorrespondence->correspondence_template_id,
-									$this->_oEmailTemplate->customer_group_id
-								);
+			$this->_oEmailTemplateCorrespondence->correspondence_template_id,
+			$this->_oEmailTemplate->customer_group_id
+		);
 		if ($aCorrespondence === null) {
 			// NO Correspondence in the system for the template yet.
 			// Get the latest account & fill in the standard columns required for the template, leave additional 
@@ -80,10 +80,11 @@ class Email_Template_Logic_Correspondence extends Email_Template_Logic {
 			
 			// Get the account
 			$oQuery = new Query();
-			$mResult = $oQuery->Execute("SELECT 	MAX(a.Id) AS account_id
-											FROM 	Account a
-											JOIN	Invoice i ON (i.Account = a.Id)
-											WHERE	a.CustomerGroup = {$this->_oEmailTemplate->customer_group_id};");
+			$mResult = $oQuery->Execute("
+				SELECT 	MAX(a.Id) AS account_id
+				FROM 	Account a
+				WHERE	a.CustomerGroup = {$this->_oEmailTemplate->customer_group_id};
+			");
 			if ($mResult === false) {
 				throw new Exception("Failed to get latest account id. ".$oQuery->Error());
 			}
@@ -96,23 +97,23 @@ class Email_Template_Logic_Correspondence extends Email_Template_Logic {
 			
 			$oAccount = Account::getForId($aRow['account_id']);
 			$oPrimaryContact = Contact::getForId($oAccount->PrimaryContact);
-			$aCorrespondence = 	array(
-										'account_id' => $oAccount->Id,
-										'customer_group_id' => $oAccount->CustomerGroup,
-										'correspondence_delivery_method_id' => Correspondence_Delivery_Method::getForId(CORRESPONDENCE_DELIVERY_METHOD_POST)->system_name,
-										'account_name' => $oAccount->BusinessName,
-										'title' => $oPrimaryContact->Title,
-										'first_name' => $oPrimaryContact->FirstName,
-										'last_name' => $oPrimaryContact->LastName,
-										'address_line_1' => $oAccount->Address1,
-										'address_line_2' => $oAccount->Address2,
-										'suburb' => $oAccount->Suburb,
-										'postcode' => $oAccount->Postcode,
-										'state' => $oAccount->State,
-										'email' => $oPrimaryContact->Email,
-										'mobile' => $oPrimaryContact->Mobile,
-										'landline' => $oPrimaryContact->Phone
-									);
+			$aCorrespondence = array(
+				'account_id' => $oAccount->Id,
+				'customer_group_id' => $oAccount->CustomerGroup,
+				'correspondence_delivery_method_id' => Correspondence_Delivery_Method::getForId(CORRESPONDENCE_DELIVERY_METHOD_POST)->system_name,
+				'account_name' => $oAccount->BusinessName,
+				'title' => $oPrimaryContact->Title,
+				'first_name' => $oPrimaryContact->FirstName,
+				'last_name' => $oPrimaryContact->LastName,
+				'address_line_1' => $oAccount->Address1,
+				'address_line_2' => $oAccount->Address2,
+				'suburb' => $oAccount->Suburb,
+				'postcode' => $oAccount->Postcode,
+				'state' => $oAccount->State,
+				'email' => $oPrimaryContact->Email,
+				'mobile' => $oPrimaryContact->Mobile,
+				'landline' => $oPrimaryContact->Phone
+			);
 			
 			$oTemplate = $this->getCorrespondenceTemplate();
 			$iStandardColumns = count($aCorrespondence);
