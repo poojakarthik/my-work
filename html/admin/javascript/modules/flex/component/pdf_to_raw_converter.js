@@ -191,9 +191,15 @@ var self = new Class({
 		});
 	},
 	_saveFile : function(oData) {
+		
 		// Decode data from server
-		var sFile = window.atob(oData.sRawData);
+		// var sFile = window.atob(oData.sRawData);
 
+		// In most browsers, calling window.btoa on a Unicode string will cause a Character Out Of Range exception.
+		// To avoid this, consider this pattern
+		// https://developer.mozilla.org/en/DOM/window.btoa
+		var sFile = decodeURIComponent(escape(window.atob(oData.sRawData)));
+		
 		// Create a new blob from the data
 		var oBB = new BlobBuilder;
 		oBB.append(sFile);
