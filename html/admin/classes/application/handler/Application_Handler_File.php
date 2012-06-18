@@ -17,7 +17,7 @@ class Application_Handler_File extends Application_Handler
 		echo $strContent;
 		exit;
 	}
-	
+
 	public function Document($arrSubPath)
 	{
 		// Get raw data for an image and return it to the browser

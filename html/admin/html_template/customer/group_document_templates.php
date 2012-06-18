@@ -92,10 +92,9 @@ class HtmlTemplateCustomerGroupDocumentTemplates extends HtmlTemplate
 		// Draw the button to link to the "View Document Resources" page
 		$strViewDocumentResourceLink = htmlspecialchars(Href()->ViewDocumentResources(DBO()->CustomerGroup->Id->Value), ENT_QUOTES);
 		echo "
-<div class='ButtonContainer'>
-	<input type='button' value='View Document Resources' onClick='window.location = \"$strViewDocumentResourceLink\"' style='float:right'></input>
-</div>
-			";
+		<div class='ButtonContainer'>
+			<input type='button' value='View Document Resources' onClick='window.location = \"$strViewDocumentResourceLink\"' style='float:right' />
+		</div>";
 	}
 }
 

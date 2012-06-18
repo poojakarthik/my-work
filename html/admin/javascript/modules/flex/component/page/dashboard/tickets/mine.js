@@ -79,14 +79,29 @@ var self = new Class({
 			var oResponse = oXHREvent.getData();
 			// Success
 			var oData = oResponse.getData();
-			if (fnCallback) {
-				fnCallback(oData);
+			if (oData.hasOwnProperty('ErrorMessage')){ 
+				this._handleException(oData);
+				this._oLoading.classList.remove('-enabled'); // Hide loading message
 			} else {
-				return (oData) ? oData : {};
+				if (fnCallback) {
+					fnCallback(oData);
+				} else {
+					return (oData) ? oData : {};
+				}
 			}
 		}
 	},
 
+
+	_handleException : function(oException) {
+		if (oException && oException.message) {
+			this.NODE.appendChild(H.span(oException.message));
+		} else if (oException && oException.ErrorMessage) {
+			this.NODE.appendChild(H.span(oException.ErrorMessage));
+		} else {
+			this.NODE.appendChild(H.span('An unknown error has occurred.'));
+		}
+	},
 
 	_buildTicketList : function(oData) {
 		// for(var iKey=0; iKey<self.TICKET_LIST_LIMIT; iKey++) {

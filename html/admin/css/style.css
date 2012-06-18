@@ -31,6 +31,18 @@ a,
   overflow: visible !important;
 }
 /**************************************************************************/
+/* Component - PDF to RAW file converter								  */
+/**************************************************************************/
+.flex-pdf-to-raw-converter-uploader.-disabled {
+  display: none;
+}
+.flex-pdf-to-raw-converter-uploader {
+  padding: 0.5em;
+}
+.flex-pdf-to-raw-converter-uploader > footer {
+  text-align: center;
+}
+/**************************************************************************/
 /* Component - Dashboard												  */
 /**************************************************************************/
 /* Dashboard */

@@ -10,6 +10,21 @@ class HtmlTemplateDocumentResourceManagement extends HtmlTemplate {
 	}
 
 	function Render() {
+		echo "
+		<script>
+			// Provide component once all dom content has been loaded.
+			document.observe('DOMContentLoaded', 
+				module.provide.bind(module, [\"flex/component/pdf_to_raw_converter\"], function () {
+					// Instantiate Component
+					var oComponent = new require('flex/component/pdf_to_raw_converter')({
+						// Component.CONFIG
+					});
+					// Append Component to DOM
+					$$('#Column1')[0].appendChild(oComponent.getNode());
+				})
+			);
+		</script>";
+
 		switch ($this->_intContext) {
 			case HTML_CONTEXT_TABLE:
 				$this->RenderHistory();

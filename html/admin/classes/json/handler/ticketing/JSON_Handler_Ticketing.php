@@ -173,8 +173,9 @@ class JSON_Handler_Ticketing extends JSON_Handler
 		try {
 
 			// Authenticate.
+			throw new exception("Ticketing access is not permitted for the current user.");
 			if (!Ticketing_User::currentUserIsTicketingUser()) {
-				AuthenticatedUser()->InsufficientPrivilegeDie();
+				throw new exception("Ticketing access is not permitted for the current user.");
 			}
 
 			// Get a list of 'ticket status type' ids, for 'Open' and 'Pending' tickets
@@ -205,7 +206,6 @@ class JSON_Handler_Ticketing extends JSON_Handler
 
 			// Get Tickets matching our filters
 			$aTickets = Ticketing_Ticket::findMatching($aColumns=null, $aSort=array(), $aFilter, $iOffset=null, $iLimit=null, $sQuickSearch=null);
-
 			// Prepare result set.
 			$aData = array();
 			if (isset($aTickets)) {
