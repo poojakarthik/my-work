@@ -173,7 +173,6 @@ class JSON_Handler_Ticketing extends JSON_Handler
 		try {
 
 			// Authenticate.
-			throw new exception("Ticketing access is not permitted for the current user.");
 			if (!Ticketing_User::currentUserIsTicketingUser()) {
 				throw new exception("Ticketing access is not permitted for the current user.");
 			}
