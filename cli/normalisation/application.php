@@ -630,8 +630,8 @@ class ApplicationNormalise extends ApplicationBaseClass {
 			$this->AddToNormalisationReport("Normalisation module completed in ".$this->Framework->uptime()." seconds");
 
 			// Deliver the reports
-			$this->rptNormalisationReport->Finish();
-			$this->rptDelinquentsReport->Finish();
+			//$this->rptNormalisationReport->Finish();
+			//$this->rptDelinquentsReport->Finish();
 
 			// Commit the Transaction
 			DataAccess::getDataAccess()->TransactionCommit();
