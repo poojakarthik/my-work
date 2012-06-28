@@ -604,14 +604,14 @@ class ApplicationNormalise extends ApplicationBaseClass {
 				if ($intTotalCDRs) {
 					$fltPercentageValid = ($intTotalCDRs - $intErrorCDRs) / $intTotalCDRs;
 					try {
-						if (Flex::assert(
+						/*if (Flex::assert(
 							$fltPercentageValid >= self::FILE_MINIMUM_PERCENT_VALID,
 							"CDR File #{$intFileImportId} has too many invalid CDRs",
 							$strPercentageDebug,
 							"CDR File Minimum Percentage Valid"
-						)) {
+						)) {*/
 							$this->AddToNormalisationReport($strPercentageDebug);
-						}
+						//}
 					} catch (Exception_Assertion $eException) {
 						$this->AddToNormalisationReport($eException->getMessage());
 					}
