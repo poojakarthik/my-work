@@ -134,6 +134,11 @@ class ApplicationProvisioning extends ApplicationBaseClass {
 						
 					default:
 						// Is this a duplicate?
+						if (!isset($arrNormalised['Id'])) {
+							$arrNormalised['Id'] = null;
+						}
+
+						// Check for another provisioning response with the same data
 						$this->_selDuplicate = new StatementSelect(
 							"ProvisioningResponse",
 							"Id",
@@ -250,7 +255,7 @@ class ApplicationProvisioning extends ApplicationBaseClass {
 				$strType = GetConstantDescription($arrRequest['Type'], 'provisioning_type');
 				CliEcho("[ FAILED ]\n\t\t- No module ($strCarrier: $strType)");
 			}
-			
+
 			// Update Request Status and Details
 			$ubiRequest->Execute($arrRequest);
 		}
@@ -313,3 +318,5 @@ class ApplicationProvisioning extends ApplicationBaseClass {
 		}
 	}
 }
+
+?>

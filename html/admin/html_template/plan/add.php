@@ -442,6 +442,21 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		echo "      </select>\n";
 		echo "</div>\n"; // DefaultElement
 		
+		// Full Service Wholesale plan
+		$sWholesalePlanReference = DBO()->RatePlan->fullservice_wholesale_plan->Value;
+		echo"
+		<div class='DefaultElement'>
+			<input type='text' id='RatePlan.fullservice_wholesale_plan' name='RatePlan.fullservice_wholesale_plan' class='DefaultInputText' value='{$sWholesalePlanReference}'/>
+			<div class='DefaultLabel'>&nbsp;&nbsp;Full Service Wholesale Plan :</div>
+		</div>";
+
+		// Pre-selection Wholesale plan
+		$sWholesalePlanReference = DBO()->RatePlan->preselection_wholesale_plan->Value;
+		echo"
+		<div class='DefaultElement'>
+			<input type='text' id='RatePlan.preselection_wholesale_plan' name='RatePlan.preselection_wholesale_plan' class='DefaultInputText' value='{$sWholesalePlanReference}'/>
+			<div class='DefaultLabel'>&nbsp;&nbsp;Pre-Selection Wholesale Plan :</div>
+		</div>";
 
 		echo "</div>";  // PlanDetailsColumn2
 		echo "<div style='float:none; clear:both;'></div>";

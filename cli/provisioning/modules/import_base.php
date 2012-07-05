@@ -1,4 +1,5 @@
 <?php
+
  class ImportBase extends CarrierModule {
 	public $intLineNumber;
 	

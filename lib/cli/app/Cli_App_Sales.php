@@ -1779,6 +1779,7 @@ class Cli_App_Sales extends Cli
 						$objFullServiceRequest->Type				= PROVISIONING_TYPE_FULL_SERVICE;
 						$objFullServiceRequest->RequestedOn			= Data_Source_Time::currentTimestamp();
 						$objFullServiceRequest->AuthorisationDate	= $objService->CreatedOn;
+						$objFullServiceRequest->scheduled_datetime	= $objFullServiceRequest->RequestedOn;
 						$objFullServiceRequest->Status				= REQUEST_STATUS_WAITING;
 						$objFullServiceRequest->save();
 						
@@ -1794,6 +1795,7 @@ class Cli_App_Sales extends Cli
 						$objPreselectionRequest->Type				= PROVISIONING_TYPE_PRESELECTION;
 						$objPreselectionRequest->RequestedOn		= Data_Source_Time::currentTimestamp();
 						$objPreselectionRequest->AuthorisationDate	= $arrService['verified_on'];
+						$objPreselectionRequest->scheduled_datetime	= $objPreselectionRequest->RequestedOn;
 						$objPreselectionRequest->Status				= REQUEST_STATUS_WAITING;
 						$objPreselectionRequest->save();
 						break;

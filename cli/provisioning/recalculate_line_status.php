@@ -27,6 +27,7 @@ CliEcho("\n[ RECALCULATING LINE STATUS ]\n");
 // Select all non-Archived Landline Services
 $intCount = 0;
 $intTimeStart = time();
+$arrFileTypeConvert = array();
 if ($intServiceCount = $selServices->Execute()) {
 	while ($arrService = $selServices->Fetch()) {
 		$intCount++;
@@ -45,7 +46,7 @@ if ($intServiceCount = $selServices->Execute()) {
 			while ($arrResponse = $selResponses->Fetch()) {
 				WaitingIcon();
 				//Debug($arrResponse);
-				$intFileType = ($arrFileTypeConvert[$arrResponse['FileType']]) ? $arrFileTypeConvert[$arrResponse['FileType']] : $arrResponse['FileType'];
+				$intFileType = (isset($arrFileTypeConvert[$arrResponse['FileType']]) ? $arrFileTypeConvert[$arrResponse['FileType']] : $arrResponse['FileType']);
 				if (!array_key_exists($intFileType, $appProvisioning->_arrImportFiles[$arrResponse['Carrier']])) {
 					// Old file type -- no longer supported
 					CliEcho("OLD FILE TYPE -- SKIPPED");

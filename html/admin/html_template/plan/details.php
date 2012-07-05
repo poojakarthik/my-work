@@ -320,6 +320,26 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
       <span id="RatePlan.cdr_required.Label.Text">Wait for Call Data : </span>
    </div>
 </div>';
+
+		// Full service Wholesale plan
+		echo '
+		<div class="DefaultElement">
+		   <div class="DefaultOutput Default" name="RatePlan.fullservice_wholesale_plan" id="RatePlan.fullservice_wholesale_plan.Output">'.DBO()->RatePlan->fullservice_wholesale_plan->Value.'</div>
+		   <div class="DefaultLabel" id="RatePlan.fullservice_wholesale_plan.Label">
+		      <span> &nbsp;</span>
+		      <span id="RatePlan.fullservice_wholesale_plan.Label.Text">Full Service Wholesale Plan : </span>
+		   </div>
+		</div>';
+
+		// Preselection Wholesale plan
+		echo '
+		<div class="DefaultElement">
+		   <div class="DefaultOutput Default" name="RatePlan.preselection_wholesale_plan" id="RatePlan.preselection_wholesale_plan.Output">'.DBO()->RatePlan->preselection_wholesale_plan->Value.'</div>
+		   <div class="DefaultLabel" id="RatePlan.preselection_wholesale_plan.Label">
+		      <span> &nbsp;</span>
+		      <span id="RatePlan.preselection_wholesale_plan.Label.Text">Pre-Selection Wholesale Plan : </span>
+		   </div>
+		</div>';
 		
 		echo "</td></tr></table>\n";
 		

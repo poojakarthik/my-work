@@ -11,9 +11,8 @@
  *
  * @class	Provisioning_Request
  */
-class Provisioning_Request extends ORM
-{	
-	protected	$_strTableName	= "ProvisioningRequest";
+class Provisioning_Request extends ORM {	
+	protected $_strTableName = "ProvisioningRequest";
 	
 	//------------------------------------------------------------------------//
 	// __construct
@@ -32,12 +31,22 @@ class Provisioning_Request extends ORM
 	 * 
 	 * @constructor
 	 */
-	public function __construct($arrProperties=Array(), $bolLoadById=FALSE)
-	{
+	public function __construct($aProperties=Array(), $bLoadById=FALSE) {
 		// Parent constructor
-		parent::__construct($arrProperties, $bolLoadById);
+		parent::__construct($aProperties, $bLoadById);
 	}
 	
+	public function cancel() {
+		// Only requests with Status == REQUEST_STATUS_WAITING can be cancelled
+		if ($this->Status != REQUEST_STATUS_WAITING) {
+			throw new Exception("Request cannot be cancelled as it has already been sent");
+		}
+		
+		// Update the status of the request
+		$this->Status = REQUEST_STATUS_CANCELLED;
+		$this->save();
+	}
+
 	//------------------------------------------------------------------------//
 	// _preparedStatement
 	//------------------------------------------------------------------------//
@@ -48,44 +57,44 @@ class Provisioning_Request extends ORM
 	 *
 	 * Access a Static Cache of Prepared Statements used by this Class
 	 * 
-	 * @param	string		$strStatement						Name of the statement
+	 * @param	string		$sStatement						Name of the statement
 	 * 
-	 * @return	Statement										The requested Statement
+	 * @return	Statement									The requested Statement
 	 *
 	 * @method
 	 */
-	protected static function _preparedStatement($strStatement)
+	protected static function _preparedStatement($sStatement)
 	{
 		static	$arrPreparedStatements	= Array();
-		if (isset($arrPreparedStatements[$strStatement]))
+		if (isset($arrPreparedStatements[$sStatement]))
 		{
-			return $arrPreparedStatements[$strStatement];
+			return $arrPreparedStatements[$sStatement];
 		}
 		else
 		{
-			switch ($strStatement)
+			switch ($sStatement)
 			{
 				// SELECTS
 				case 'selById':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ProvisioningRequest", "*", "Id = <Id>", NULL, 1);
+					$arrPreparedStatements[$sStatement]	= new StatementSelect("ProvisioningRequest", "*", "Id = <Id>", NULL, 1);
 					break;
 				
 				// INSERTS
 				case 'insSelf':
-					$arrPreparedStatements[$strStatement]	= new StatementInsert("ProvisioningRequest");
+					$arrPreparedStatements[$sStatement]	= new StatementInsert("ProvisioningRequest");
 					break;
 				
 				// UPDATE BY IDS
 				case 'ubiSelf':
-					$arrPreparedStatements[$strStatement]	= new StatementUpdateById("ProvisioningRequest");
+					$arrPreparedStatements[$sStatement]	= new StatementUpdateById("ProvisioningRequest");
 					break;
 				
 				// UPDATES
 				
 				default:
-					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
+					throw new Exception(__CLASS__."::{$sStatement} does not exist!");
 			}
-			return $arrPreparedStatements[$strStatement];
+			return $arrPreparedStatements[$sStatement];
 		}
 	}
 }

@@ -32,18 +32,15 @@
 //----------------------------------------------------------------------------//
 
 // Load viXen/Flex Global Config File
-$strPath	= dirname(dirname(dirname(__FILE__))) . "/flex.cfg.php";
-if (!@include_once($strPath))
-{
-	echo "\nFATAL ERROR: Unable to find Flex configuration file at location '$strPath'\n\n";
+$sPath = dirname(dirname(dirname(__FILE__))) . "/flex.cfg.php";
+if (!@include_once($sPath)) {
+	echo "\nFATAL ERROR: Unable to find Flex configuration file at location '$sPath'\n\n";
 	die;
 }
 
 // Set PHP Timezone
-if (defined(FLEX_LOCAL_TIMEZONE))
-{
-	if (!putenv("TZ=".FLEX_LOCAL_TIMEZONE))
-	{
+if (defined('FLEX_LOCAL_TIMEZONE')) {
+	if (!putenv("TZ=".FLEX_LOCAL_TIMEZONE)) {
 		// Unable to set timezone
 		// Do we want to do anything here?
 	}

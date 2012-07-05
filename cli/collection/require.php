@@ -44,4 +44,6 @@ VixenRequire("cli/collection/modules/module_ftp_new.php");
 
 VixenRequire("cli/collection/modules/module_ispone.php");
 
+VixenRequire("cli/collection/modules/module_telcoblue.php");
+
 ?>

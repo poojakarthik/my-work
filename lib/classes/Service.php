@@ -221,7 +221,7 @@ class Service extends ORM
 		}
 		
 		// Make the rate plan effective for the deterimined period
-		$this->setPlanFromStartDatetime($objNewRatePlan, $intActive, $strStartDatetime);
+		$oNewServiceRatePlan = $this->setPlanFromStartDatetime($objNewRatePlan, $intActive, $strStartDatetime);
 		
 		// If the plan goes into affect at the begining of the current month, then you must rerate all the cdrs which are currently
 		// rated but not billed
@@ -250,7 +250,56 @@ class Service extends ORM
 			}
 		}
 		
-		//TODO! Do automatic provisioning here
+		// Perform Automatic provisioning
+		if ($this->ServiceType == SERVICE_TYPE_LAND_LINE) {
+			$sNow = DataAccess::getDataAccess()->getNow();
+
+			// Cancel any waiting requests for this service
+			$mResult = Query::run("	SELECT	*
+									FROM	ProvisioningRequest
+									WHERE	Service = <service_id>
+									AND		Status = <provisioning_request_status_id>;",
+									array(
+										'service_id' 						=> $this->Id,
+										'provisioning_request_status_id'	=> REQUEST_STATUS_WAITING
+									));
+			while ($aRow = $mResult->fetch_assoc()) {
+				$oRequest = new Provisioning_Request($aRow);
+				$oRequest->cancel();
+			}
+
+			// Request data (scheduled for when the plan change becomes effective)
+			$aRequestData = array(
+				"AccountGroup"			=> $this->AccountGroup,
+				"Account"				=> $this->Account,
+				"Service"				=> $this->Id,
+				"FNN"					=> $this->FNN,
+				"Employee"				=> AuthenticatedUser()->_arrUser['Id'],
+				"Carrier"				=> NULL,
+				"Type"					=> NULL,
+				"RequestedOn"			=> $sNow,
+				"AuthorisationDate"		=> $sNow, 
+				'scheduled_datetime'	=> $strStartDatetime,
+				"Status"				=> REQUEST_STATUS_WAITING
+			);
+			
+			// Full Service Request
+			$aRequestData['Carrier']	= $this->Carrier;
+			$aRequestData['Type']		= PROVISIONING_TYPE_FULL_SERVICE_PLAN_CHANGE;
+			$oFullServiceRequest 		= new Provisioning_Request($aRequestData);
+			$oFullServiceRequest->save();
+			
+			// Preselection Request
+			$aRequestData['Carrier'] 	= $this->CarrierPreselect;
+			$aRequestData['Type']		= PROVISIONING_TYPE_PRESELECTION_PLAN_CHANGE;
+			$oPreSelectionRequest 		= new Provisioning_Request($aRequestData);
+			$oPreSelectionRequest->save();
+
+			// Update the ServiceRatePlan with the provisioning_request_ids
+			$oNewServiceRatePlan->fullservice_provisioning_request_id = $oFullServiceRequest->id;
+			$oNewServiceRatePlan->preselection_provisioning_request_id = $oPreSelectionRequest->id;
+			$oNewServiceRatePlan->save();
+		}
 		
 		// Add a system note describing the change of plan
 		$intUserId			= Flex::getUserId();
