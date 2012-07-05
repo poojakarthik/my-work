@@ -1,0 +1,15 @@
+# Generic/OS
+.DS_Store
+
+# Editor files
+*.sublime-project
+*.sublime-workspace
+
+# Config
+/flex.cfg.php
+/customer.cfg.php
+
+# Run-time files
+/files
+/logs
+/log
