@@ -13,4 +13,6 @@
 /files
 /logs
 /log
-/lib/data/model/type
+/lib/data/model/type/*
+/lib/framework/database_constants.php*
+/html/ui/javascript/credit_card_type.js
