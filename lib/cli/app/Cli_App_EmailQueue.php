@@ -196,13 +196,21 @@ class Cli_App_EmailQueue extends Cli {
 			Log::get()->log("[-] Removing {$iEligibleQueues}/{$iTotalQueues} Email Queues (emails: {$iEligibleEmails}/{$iTotalEmails}; attachments: {$iEligibleAttachments}/{$iTotalAttachments})");
 			if (!$bTestRun || self::CLEANUP_TEST_SUMMARY_ONLY === false) {
 				// Perform cleanup/delete (if we're not in test mode, or test mode is transaction-rollback-based)
-				// NOTE: This currently needs to be done in 2 steps, otherwise the ON DELETE RESRICT on email.email_queue_id fails
+				// NOTE: This currently needs to be done in 3 steps, otherwise the ON DELETE RESTRICTs on email.email_queue_id and email_attachment.email_id fail
 				Query::run("
-					DELETE	ea,
-							e
+					DELETE	ea
 					FROM	email_queue eq
 							LEFT JOIN email e ON (e.email_queue_id = eq.id)
 							LEFT JOIN email_attachment ea ON (ea.email_id = e.id)
+					WHERE	eq.delivered_datetime IS NOT NULL
+							AND CAST(eq.delivered_datetime AS DATE) <= CURDATE() - INTERVAL <minimum_age_days> DAY
+				", array(
+					'minimum_age_days' => $iMinimumAge
+				));
+				Query::run("
+					DELETE	e
+					FROM	email_queue eq
+							LEFT JOIN email e ON (e.email_queue_id = eq.id)
 					WHERE	eq.delivered_datetime IS NOT NULL
 							AND CAST(eq.delivered_datetime AS DATE) <= CURDATE() - INTERVAL <minimum_age_days> DAY
 				", array(
