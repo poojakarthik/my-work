@@ -1,1 +1,19 @@
+# Generic/OS
+.DS_Store
+
+# Editor files
+*.sublime-project
+*.sublime-workspace
 sftp-config.json
+
+# Config
+/flex.cfg.php
+/customer.cfg.php
+
+# Run-time files
+/files
+/logs
+/log
+/lib/data/model/type/*
+/lib/framework/database_constants.php*
+/html/ui/javascript/credit_card_type.js
