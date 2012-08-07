@@ -2,12 +2,14 @@
 
 class CollectionModuleTelcoBlue extends CollectionModuleBase {
 	const DEBUG_LOGGING = true;
-	const RESOURCE_TYPE = RESOURCE_TYPE_FILE_RESOURCE_TELCOBLUE_PROVISIONING;
-	const LINE_TYPE_RESPONSE = 'r';
-	const LINE_TYPE_NOTIFICATION = 'n';
+	const RESOURCE_TYPE = RESOURCE_TYPE_FILE_RESOURCE_TELCOBLUE;
+	const PROVISIONING_LINE_TYPE_RESPONSE = 'r';
+	const PROVISIONING_LINE_TYPE_NOTIFICATION = 'n';
 	const LOG_TABS = "\t\t\t\t";
+	const IMPORT_FILE_PROVISIONING = 'provisioning';
+	const IMPORT_FILE_USAGE = 'usage';
 
-	public $intBaseFileType = RESOURCE_TYPE_FILE_RESOURCE_TELCOBLUE_PROVISIONING;
+	public $intBaseFileType = RESOURCE_TYPE_FILE_RESOURCE_TELCOBLUE;
 
 	protected $_aMissingPeriods;
 	
@@ -35,38 +37,78 @@ class CollectionModuleTelcoBlue extends CollectionModuleBase {
 		$this->_getMissingDates();
 
 		if (list($iKey, $aPeriod) = each($this->_aMissingPeriods)) {
-			// Get data by using the wholesale reseller API
-			$aResponses = $this->_APIRequest('responses', $aPeriod);
-			$aNotifications = $this->_APIRequest('notifications', $aPeriod);
+			switch ($aPeriod['iImportFileType']) {
+				case RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_TELCOBLUE:
+					// Get data by using the wholesale reseller API
+					$aResponses = $this->_APIRequest('responses', $aPeriod);
+					$aNotifications = $this->_APIRequest('notifications', $aPeriod);
 
-			// Generate the csv file content
-			$aLines = array();
-			foreach ($aResponses as $oResponse) {
-				$aLines[] = implode(',', array(
-					self::LINE_TYPE_RESPONSE,
-					$oResponse->client_reference,
-					$oResponse->subject,
-					$oResponse->action,
-					$oResponse->detail,
-					$oResponse->status,
-					$oResponse->timestamp
-				));				
-			}
+					// Generate the csv file content lines
+					$aLines = array();
+					foreach ($aResponses as $oResponse) {
+						$aLines[] = implode(',', array(
+							self::PROVISIONING_LINE_TYPE_RESPONSE,
+							$oResponse->client_reference,
+							$oResponse->subject,
+							$oResponse->action,
+							$oResponse->detail,
+							$oResponse->status,
+							$oResponse->timestamp
+						));
+					}
 
-			foreach ($aNotifications as $oNotification) {
-				$aLines[] = implode(',', array(
-					self::LINE_TYPE_NOTIFICATION,
-					$oNotification->identifier,
-					$oNotification->identifier_context,
-					$oNotification->notification_type,
-					$oNotification->status,
-					$oNotification->status_result,
-					$oNotification->timestamp
-				));
-			}
+					foreach ($aNotifications as $oNotification) {
+						$aLines[] = implode(',', array(
+							self::PROVISIONING_LINE_TYPE_NOTIFICATION,
+							$oNotification->identifier,
+							$oNotification->identifier_context,
+							$oNotification->notification_type,
+							$oNotification->status,
+							$oNotification->status_result,
+							$oNotification->timestamp
+						));
+					}
 
-			// Write to local file
-			$sFileName = $this->_makeFileName($aPeriod);
+					$sFileName = $this->_makeFileName($aPeriod, 'provisioning');
+					break;
+				case RESOURCE_TYPE_FILE_IMPORT_CDR_TELCOBLUE:
+					// Get data by using the wholesale reseller API
+					$aUsageData = $this->_APIRequest('usage', $aPeriod);
+
+					// Generate the csv file content lines
+					$aLines = array();
+					foreach ($aUsageData as $oUsageData) {
+						$aLines[] = implode(',', array(
+							$oUsageData->reference,
+							$oUsageData->type,
+							$oUsageData->origin_identifier,
+							$oUsageData->target_identifier,
+							$oUsageData->billed_identifier,
+							$oUsageData->origin_point,
+							$oUsageData->origin_point_name,
+							$oUsageData->target_point,
+							$oUsageData->target_point_name,
+							$oUsageData->billed_point,
+							$oUsageData->billed_point_name,
+							$oUsageData->units_primary,
+							$oUsageData->unit_type_primary,
+							$oUsageData->units_secondary,
+							$oUsageData->unit_type_secondary,
+							$oUsageData->units_tertiary,
+							$oUsageData->unit_type_tertiary,
+							$oUsageData->cost,
+							$oUsageData->event_start,
+							$oUsageData->event_end,
+							$oUsageData->rate,
+							$oUsageData->description
+						));
+					}
+
+					$sFileName = $this->_makeFileName($aPeriod, 'usage');
+					break;
+			}			
+
+			// Write the lines to local file
 			$sLocalPath = "{$sLocalDirectory}/{$sFileName}";
 			if (false === @file_put_contents($sLocalPath, implode("\n", $aLines), 0777)) {
 				throw new Exception("Unable to write data to local path {$sLocalPath}".(isset($php_errormsg) ? ": {$php_errormsg}" : ''));
@@ -77,7 +119,7 @@ class CollectionModuleTelcoBlue extends CollectionModuleBase {
 				'LocalPath' => realpath($sLocalPath),
 				'RemotePath' => '',
 				'FileType' => array(
-					'FileImportType' => RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_TELCOBLUE,
+					'FileImportType' => $aPeriod['iImportFileType'],
 					'Uniqueness' => 'FileName = <FileName>'
 				)
 			);
@@ -92,33 +134,53 @@ class CollectionModuleTelcoBlue extends CollectionModuleBase {
 			// Get a list of files we already have
 			Log::get()->logIf(self::DEBUG_LOGGING, "\n\n".self::LOG_TABS."Retrieving list of already downloaded files");
 			$mResult = Query::run("
-				SELECT	*
+				SELECT	*,
+						CASE 
+							WHEN FileName LIKE '______________-______________.provisioning.csv'
+							THEN <import_file_type_provisioning>
+							ELSE <import_file_type_usage>
+						END AS import_file_type
 				FROM	FileDownload fd
 				WHERE	fd.Carrier = <carrier_id>
-						AND FileName LIKE '______________-______________.provisioning.csv'
+						AND (
+							(
+								FileName LIKE '______________-______________.provisioning.csv'
+							) OR (
+								FileName LIKE '______________-______________.usage.csv'
+							)
+						)
 				ORDER BY FileName
 			", array(
-				'carrier_id' => $this->getCarrierModule()->Carrier
+				'carrier_id' => $this->getCarrierModule()->Carrier,
+				'import_file_type_provisioning' => RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_TELCOBLUE,
+				'import_file_type_usage' => RESOURCE_TYPE_FILE_IMPORT_CDR_TELCOBLUE
 			));
 
 			$this->_aMissingPeriods = array();
-			$sLatestDate = date('YmdHis', strtotime($this->_oConfig->EarliestDate));
+			$sEarliestDate = date('YmdHis', strtotime($this->_oConfig->EarliestDate));
+			$aLatestDateByFileImportType = array(
+				RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_TELCOBLUE => $sEarliestDate,
+				RESOURCE_TYPE_FILE_IMPORT_CDR_TELCOBLUE => $sEarliestDate
+			);
 			while ($aFileDownload = $mResult->fetch_assoc()) {
 				preg_match('/(\d{14})-(\d{14})\./', $aFileDownload['FileName'], $aMatch);
 				$sFromDate = $aMatch[1];
 				$sToDate = $aMatch[2];
+				$iImportFileType = $aFileDownload['import_file_type'];
 				//Log::get()->logIf(self::DEBUG_LOGGING, self::LOG_TABS."Checking file: {$aFileDownload['FileName']}. Latest=$sLatestDate, From=$sFromDate, To=$sToDate");
 
 				// Check if there is a gap between the end date of the previous file to the start date of this file
+				$sLatestDate = $aLatestDateByFileImportType[$iImportFileType];
 				if ($sLatestDate < $sFromDate) {
 					Log::get()->logIf(self::DEBUG_LOGGING, self::LOG_TABS."There is a gap period: $sLatestDate < $sFromDate");					
 					$this->_aMissingPeriods[] = array(
+						'iImportFileType' => $iImportFileType,
 						'sFrom' => $sLatestDate,
 						'sTo' => $sFromDate
 					);
 				}
 
-				$sLatestDate = $sToDate;
+				$aLatestDateByFileImportType[$iImportFileType] = $sToDate;
 			}
 
 			// Add the final period (if necessary) from the latest files end date until the beginning of this hour
@@ -130,17 +192,30 @@ class CollectionModuleTelcoBlue extends CollectionModuleBase {
 			}
 
 			$sNow = date('YmdHis', $iGetChangesUntil);
-			Log::get()->logIf(self::DEBUG_LOGGING, self::LOG_TABS."Checking if the latest file is before now. Now: $sNow, Latest: $sLatestDate");
-			if ($sLatestDate < $sNow) {
+			$sLatestProvisioningFile = $aLatestDateByFileImportType[RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_TELCOBLUE];
+			Log::get()->logIf(self::DEBUG_LOGGING, self::LOG_TABS."Checking if the latest provisioning file is before now. Now: $sNow, Latest: $sLatestProvisioningFile");
+			if ($sLatestProvisioningFile < $sNow) {
 				$this->_aMissingPeriods[] = array(
-					'sFrom' => $sLatestDate,
+					'iImportFileType' => RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_TELCOBLUE,
+					'sFrom' => $sLatestProvisioningFile,
+					'sTo' => $sNow
+				);
+			}
+
+			$sLatestUsageFile = $aLatestDateByFileImportType[RESOURCE_TYPE_FILE_IMPORT_CDR_TELCOBLUE];
+			Log::get()->logIf(self::DEBUG_LOGGING, self::LOG_TABS."Checking if the latest provisioning file is before now. Now: $sNow, Latest: $sLatestUsageFile");
+			if ($sLatestUsageFile < $sNow) {
+				// Usage
+				$this->_aMissingPeriods[] = array(
+					'iImportFileType' => RESOURCE_TYPE_FILE_IMPORT_CDR_TELCOBLUE,
+					'sFrom' => $sLatestUsageFile,
 					'sTo' => $sNow
 				);
 			}
 
 			Log::get()->logIf(self::DEBUG_LOGGING, self::LOG_TABS."Missing date periods");
 			foreach ($this->_aMissingPeriods as $aPeriod) {
-				Log::get()->logIf(self::DEBUG_LOGGING, self::LOG_TABS."\tFrom: {$aPeriod['sFrom']}; To: {$aPeriod['sTo']}");
+				Log::get()->logIf(self::DEBUG_LOGGING, self::LOG_TABS."\tFrom: {$aPeriod['sFrom']}; To: {$aPeriod['sTo']}; Import File Type: {$aPeriod['iImportFileType']};");
 			}
 			
 			reset($this->_aMissingPeriods);
@@ -154,8 +229,8 @@ class CollectionModuleTelcoBlue extends CollectionModuleBase {
 		return "{$this->_oConfig->APIURL}/{$sType}?from={$aPeriod['sFrom']}&to={$aPeriod['sTo']}";
 	}
 
-	private function _makeFileName($aPeriod) {
-		return date('YmdHis', strtotime($aPeriod['sFrom'])).'-'.date('YmdHis', strtotime($aPeriod['sTo'])).".provisioning.csv";
+	private function _makeFileName($aPeriod, $sImportFileType) {
+		return date('YmdHis', strtotime($aPeriod['sFrom'])).'-'.date('YmdHis', strtotime($aPeriod['sTo'])).".{$sImportFileType}.csv";
 	}
 
 	private function _APIRequest($sType, $aPeriod) {

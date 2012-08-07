@@ -127,31 +127,28 @@ class ImportTelcoBlue extends ImportBase {
 
  		// Split the Line using the file definition
  		$aData = $this->_SplitLine($sLine);
- 		$aPDR = array(); 		
+ 		$aResponse = array(); 		
 
  		// All line types have a timestamp value
- 		$aPDR['EffectiveDate'] = date("Y-m-d H:i:s", strtotime($aData['Timestamp']));
-
- 		// Find the service details
-		$aPDR = $this->FindFNNOwner($aPDR);
+ 		$aResponse['EffectiveDate'] = date("Y-m-d H:i:s", strtotime($aData['Timestamp']));
 
  		// Generate ProvisioningResponse properties based on the line type
 		$sDescription = null;
  		switch ($aData['LineType']) {
  			case self::LINE_TYPE_RESPONSE:
  				// A response to a request
- 				$this->_handleResponse($aPDR, $aData);
+ 				$this->_handleResponse($aResponse, $aData);
  				break;
  			case self::LINE_TYPE_NOTIFICATION:
  				// A notification, unrequested
-		 		$this->_handleNotification($aPDR, $aData);
+		 		$this->_handleNotification($aResponse, $aData);
  				break;
  		}
 		
-		return $aPDR;
+		return $aResponse;
  	}
 
- 	private function _handleResponse(&$aPDR, $aData) {
+ 	private function _handleResponse(&$aResponse, $aData) {
  		Log::get()->logIf(self::DEBUG_LOGGING, "\t\tIt's a Response");
  		if ($aData['ClientReference'] !== '') {
  			// Has a client reference, fetch the provisioning request
@@ -159,26 +156,29 @@ class ImportTelcoBlue extends ImportBase {
  			try {
 	 			$oRequest = new Provisioning_Request(array('Id' => $aData['ClientReference']), true);
 				Log::get()->logIf(self::DEBUG_LOGGING, "\t\t\tGot provisioning request: {$oRequest->Id}");
-				$aPDR['FNN'] = $oRequest->FNN;
-				$aPDR['Type'] = $oRequest->Type;
-				$aPDR['Request'] = $oRequest->Id;
+				$aResponse['FNN'] = $oRequest->FNN;
+				$aResponse['Type'] = $oRequest->Type;
+				$aResponse['Request'] = $oRequest->Id;
 			} catch (Exception $oEx) {
 				// Failed to locate a provisioning request, this shouldn't happend but if it does act as though it wasn't request by flex
-				$aPDR['FNN'] = $aData['Detail'];
-				$aPDR['Type'] = null;
-				$aPDR['Request'] = null;
+				$aResponse['FNN'] = $aData['Detail'];
+				$aResponse['Type'] = null;
+				$aResponse['Request'] = null;
 			}
  		} else {
  			// No client reference, not requested by flex
  			Log::get()->logIf(self::DEBUG_LOGGING, "\t\t\tThe Response has no client_reference");
- 			$aPDR['FNN'] = $aData['Detail'];
-			$aPDR['Type'] = null;
-			$aPDR['Request'] = null;
+ 			$aResponse['FNN'] = $aData['Detail'];
+			$aResponse['Type'] = null;
+			$aResponse['Request'] = null;
  		}
 
+ 		// Find the service details
+		$aResponse = $this->FindFNNOwner($aResponse);
+
  		// Build the provisioning response row data
- 		$aPDR['CarrierRef'] = null;
-		$aPDR['Status'] = null;
+ 		$aResponse['CarrierRef'] = null;
+		$aResponse['Status'] = null;
 
 		// Request status and description depend on the status of the response
 		$iRequestStatusId = null;
@@ -198,57 +198,60 @@ class ImportTelcoBlue extends ImportBase {
 				break;
 			default:
 				$iRequestStatusId = REQUEST_STATUS_DELIVERED;
-				$aPDR['Status'] = RESPONSE_STATUS_CANT_NORMALISE;
+				$aResponse['Status'] = RESPONSE_STATUS_CANT_NORMALISE;
 				$sDescription = "Unable to determine the status from response data";
 		}
 		
-		$aPDR['request_status'] = $iRequestStatusId;
-		$aPDR['Description'] = $sDescription;
+		$aResponse['request_status'] = $iRequestStatusId;
+		$aResponse['Description'] = $sDescription;
  	}
 
- 	private function _handleNotification(&$aPDR, $aData) {
+ 	private function _handleNotification(&$aResponse, $aData) {
  		Log::get()->logIf(self::DEBUG_LOGGING, "\t\tIt's a Notification");
- 		$aPDR['FNN'] = $aData['FNN'];
-		$aPDR['Type'] = null;
-		$aPDR['Request'] = null;
-		$aPDR['CarrierRef'] = null;
-		$aPDR['Status']	= null;
-		$aPDR['request_status'] = REQUEST_STATUS_COMPLETED;
+ 		$aResponse['FNN'] = $aData['FNN'];
+		$aResponse['Type'] = null;
+		$aResponse['Request'] = null;
+		$aResponse['CarrierRef'] = null;
+		$aResponse['Status']	= null;
+		$aResponse['request_status'] = REQUEST_STATUS_COMPLETED;
 
+ 		// Find the service details
+		$aResponse = $this->FindFNNOwner($aResponse);
+				
 		// Convert the notification type to a provisioning type (if a notification type is supplied)
 		$iNotificationType = (int)$aData['NotificationType'];
 		if ($iNotificationType !== null) {
 			// A notification type was returned, determine associated provisioning type
 			$iChurnAway = $this->GetConfigField('ChurnAwayNotification');
 			$iDisconnection = $this->GetConfigField('DisconnectionNotification');
-			$oRatePlan = ((isset($aPDR['Service']) && ($aPDR['Service'] !== null)) ? Service::getForId($aPDR['Service'])->getCurrentPlan() : null);
+			$oRatePlan = ((isset($aResponse['Service']) && ($aResponse['Service'] !== null)) ? Service::getForId($aResponse['Service'])->getCurrentPlan() : null);
 			$iWholesalePackage = (int)$aData['Package'];
 			switch ($iNotificationType) {
 				case $iChurnAway:
 					// It's either PROVISIONING_TYPE_LOSS_FULL or PROVISIONING_TYPE_LOSS_PRESELECT. Check the package.
 					if ($oRatePlan->fullservice_wholesale_plan == $iWholesalePackage) {
 						// The package matches the full service wholesale plan for the services current rate plan. It'a a full service loss notification.
-						$aPDR['Type'] = PROVISIONING_TYPE_LOSS_FULL;
+						$aResponse['Type'] = PROVISIONING_TYPE_LOSS_FULL;
 					} else if ($oRatePlan->preselection_wholesale_plan == $iWholesalePackage) {
 						// The package matches the preselection wholesale plan for the services current rate plan. It'a a preselection loss notification.
-						$aPDR['Type'] = PROVISIONING_TYPE_LOSS_PRESELECT;
+						$aResponse['Type'] = PROVISIONING_TYPE_LOSS_PRESELECT;
 					}
 					break;
 				case $iDisconnection:
 					// It's either PROVISIONING_TYPE_DISCONNECT_FULL or PROVISIONING_TYPE_DISCONNECT_PRESELECT. Check the package.
 					if ($oRatePlan->fullservice_wholesale_plan == $iWholesalePackage) {
 						// The package matches the full service wholesale plan for the services current rate plan. It'a a full service disconnection notification.
-						$aPDR['Type'] = PROVISIONING_TYPE_DISCONNECT_FULL;
+						$aResponse['Type'] = PROVISIONING_TYPE_DISCONNECT_FULL;
 					} else if ($oRatePlan->preselection_wholesale_plan == $iWholesalePackage) {
 						// The package matches the preselection wholesale plan for the services current rate plan. It'a a preselection disconnection notification.
-						$aPDR['Type'] = PROVISIONING_TYPE_DISCONNECT_PRESELECT;
+						$aResponse['Type'] = PROVISIONING_TYPE_DISCONNECT_PRESELECT;
 					}
 					break;
 			}
 
 			// If a provisioning_type matching the notification type was found, use it to describe the response
-			if ($aPDR['Type']) {
-				$sDescription = "Notification: ".Constant_Group::getConstantGroup('provisioning_type')->getConstantDescription($aPDR['Type']);
+			if ($aResponse['Type']) {
+				$sDescription = "Notification: ".Constant_Group::getConstantGroup('provisioning_type')->getConstantDescription($aResponse['Type']);
 			} else {
 				$sDescription = "No Provisioning Type could be found for the Notification Type ({$iNotificationType})";
 			}
@@ -263,17 +266,17 @@ class ImportTelcoBlue extends ImportBase {
 					$sDescription = self::$_aResponseDescriptions[$sStatus][$sStatusResult];
 				} else {
 					// Unsupported status change
-					$aPDR['Status'] = RESPONSE_STATUS_CANT_NORMALISE;
+					$aResponse['Status'] = RESPONSE_STATUS_CANT_NORMALISE;
 					$sDescription = "Unsupported status and status result for notification (Status: {$sStatus}; Status Result: {$sStatusResult})";
 				}
 			} else {
 				// Not a status change, but no notification type, very strange
-				$aPDR['Status'] = RESPONSE_STATUS_CANT_NORMALISE;
+				$aResponse['Status'] = RESPONSE_STATUS_CANT_NORMALISE;
 				$sDescription = "Invalid data. No Notification Type or Status change.";
 			}
 		}
 
-		$aPDR['Description'] = $sDescription;
+		$aResponse['Description'] = $sDescription;
  	}
 
  	protected function _SplitLine($sLine) {

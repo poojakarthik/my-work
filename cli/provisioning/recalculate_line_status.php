@@ -45,6 +45,7 @@ if ($intServiceCount = $selServices->Execute()) {
 			$arrCurrentResponses = array();
 			while ($arrResponse = $selResponses->Fetch()) {
 				WaitingIcon();
+				
 				//Debug($arrResponse);
 				$intFileType = (isset($arrFileTypeConvert[$arrResponse['FileType']]) ? $arrFileTypeConvert[$arrResponse['FileType']] : $arrResponse['FileType']);
 				if (!array_key_exists($intFileType, $appProvisioning->_arrImportFiles[$arrResponse['Carrier']])) {

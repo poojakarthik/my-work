@@ -62,13 +62,14 @@ class Flex_Rollout_Version_000260 extends Flex_Rollout_Version {
 				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 			),
 			array(
-				'sDescription'		=> "New resource_types for wholesale provisioning",
+				'sDescription'		=> "New resource_types for wholesale provisioning & usage normalisation",
 				'sAlterSQL'			=> "INSERT INTO resource_type (name, description, const_name, resource_type_nature)
-										VALUES		('Telcoblue Wholesale Provisioning Export', 		'Telcoblue Wholesale Provisioning Export', 			'RESOURCE_TYPE_FILE_EXPORT_PROVISIONING_TELCOBLUE', 	(SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_EXPORT_FILE')),
-													('Telco Blue Wholesale Provisioning File', 			'Telco Blue Wholesale Provisioning File', 			'RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_TELCOBLUE', 	(SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_IMPORT_FILE')),
-													('Telco Blue Wholesale Provisioning Repository', 	'Telco Blue Wholesale Provisioning Repository', 	'RESOURCE_TYPE_FILE_RESOURCE_TELCOBLUE_PROVISIONING', 	(SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_FILE_REPOSITORY'));",
+										VALUES		('Telcoblue Wholesale Repository', 			'Telcoblue Wholesale Repository', 			'RESOURCE_TYPE_FILE_RESOURCE_TELCOBLUE', 			(SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_FILE_REPOSITORY')),
+													('Telcoblue Wholesale Provisioning File', 	'Telcoblue Wholesale Provisioning File', 	'RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_TELCOBLUE', (SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_IMPORT_FILE')),
+													('Telcoblue Wholesale Usage File',			'Telcoblue Wholesale Usage File', 			'RESOURCE_TYPE_FILE_IMPORT_CDR_TELCOBLUE', 			(SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_IMPORT_FILE')),
+													('Telcoblue Wholesale Provisioning Export', 'Telcoblue Wholesale Provisioning Export', 	'RESOURCE_TYPE_FILE_EXPORT_PROVISIONING_TELCOBLUE', (SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_EXPORT_FILE'));",
 				'sRollbackSQL'		=> "DELETE FROM resource_type
-										WHERE		const_name IN ('RESOURCE_TYPE_FILE_EXPORT_PROVISIONING_TELCOBLUE', 'RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_TELCOBLUE', 'RESOURCE_TYPE_FILE_RESOURCE_TELCOBLUE_PROVISIONING');",
+										WHERE		const_name IN ('RESOURCE_TYPE_FILE_RESOURCE_TELCOBLUE', 'RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_TELCOBLUE', 'RESOURCE_TYPE_FILE_IMPORT_CDR_TELCOBLUE', 'RESOURCE_TYPE_FILE_EXPORT_PROVISIONING_TELCOBLUE');",
 				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 			),
 			array(

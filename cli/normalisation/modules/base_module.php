@@ -218,7 +218,7 @@ abstract class NormalisationModule extends CarrierModule {
 	}
 	
 	protected function _FetchRawCDR($strKey) {
-		return $this->_arrRawData[$strKey];
+		return (isset($this->_arrRawData[$strKey]) ? $this->_arrRawData[$strKey] : null);
 	}
 	
 	protected function _NewCDR($arrCDR) {
