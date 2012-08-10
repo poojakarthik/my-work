@@ -305,26 +305,29 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 			DBO()->RatePlan->included_data->RenderArbitrary("{$intIncludedDataInMB} {$strUnit}", RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
 		}
 		*/
-		echo '<div class="DefaultElement">
-   <div class="DefaultOutput Default" name="RatePlan.locked" id="RatePlan.locked.Output">'.(DBO()->RatePlan->locked->Value ? 'Yes' : 'No').'</div>
-   <div class="DefaultLabel" id="RatePlan.locked.Label">
-      <span> &nbsp;</span>
-      <span id="RatePlan.locked.Label.Text">Restrict Plan Changes : </span>
-   </div>
-</div>';
-		
-		echo '<div class="DefaultElement">
-   <div class="DefaultOutput Default" name="RatePlan.cdr_required" id="RatePlan.cdr_required.Output">'.(DBO()->RatePlan->cdr_required->Value ? 'Yes' : 'No').'</div>
-   <div class="DefaultLabel" id="RatePlan.cdr_required.Label">
-      <span> &nbsp;</span>
-      <span id="RatePlan.cdr_required.Label.Text">Wait for Call Data : </span>
-   </div>
-</div>';
-
-		// Full service Wholesale plan
 		echo '
 		<div class="DefaultElement">
-		   <div class="DefaultOutput Default" name="RatePlan.fullservice_wholesale_plan" id="RatePlan.fullservice_wholesale_plan.Output">'.DBO()->RatePlan->fullservice_wholesale_plan->Value.'</div>
+		   <div class="DefaultOutput Default" name="RatePlan.locked" id="RatePlan.locked.Output">'.(DBO()->RatePlan->locked->Value ? 'Yes' : 'No').'</div>
+		   <div class="DefaultLabel" id="RatePlan.locked.Label">
+		      <span> &nbsp;</span>
+		      <span id="RatePlan.locked.Label.Text">Restrict Plan Changes : </span>
+		   </div>
+		</div>';
+		
+		echo '
+		<div class="DefaultElement">
+		   <div class="DefaultOutput Default" name="RatePlan.cdr_required" id="RatePlan.cdr_required.Output">'.(DBO()->RatePlan->cdr_required->Value ? 'Yes' : 'No').'</div>
+		   <div class="DefaultLabel" id="RatePlan.cdr_required.Label">
+		      <span> &nbsp;</span>
+		      <span id="RatePlan.cdr_required.Label.Text">Wait for Call Data : </span>
+		   </div>
+		</div>';
+
+		// Full service Wholesale plan
+		$sFullServicePlan = (DBO()->RatePlan->fullservice_wholesale_plan->Value ? (string)DBO()->RatePlan->fullservice_wholesale_plan->Value : 'None');
+		echo '
+		<div class="DefaultElement">
+		   <div class="DefaultOutput Default" name="RatePlan.fullservice_wholesale_plan" id="RatePlan.fullservice_wholesale_plan.Output">'.$sFullServicePlan.'</div>
 		   <div class="DefaultLabel" id="RatePlan.fullservice_wholesale_plan.Label">
 		      <span> &nbsp;</span>
 		      <span id="RatePlan.fullservice_wholesale_plan.Label.Text">Full Service Wholesale Plan : </span>
@@ -332,9 +335,10 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 		</div>';
 
 		// Preselection Wholesale plan
+		$sPreselectionPlan = (DBO()->RatePlan->preselection_wholesale_plan->Value ? (string)DBO()->RatePlan->preselection_wholesale_plan->Value : 'None');
 		echo '
 		<div class="DefaultElement">
-		   <div class="DefaultOutput Default" name="RatePlan.preselection_wholesale_plan" id="RatePlan.preselection_wholesale_plan.Output">'.DBO()->RatePlan->preselection_wholesale_plan->Value.'</div>
+		   <div class="DefaultOutput Default" name="RatePlan.preselection_wholesale_plan" id="RatePlan.preselection_wholesale_plan.Output">'.$sPreselectionPlan.'</div>
 		   <div class="DefaultLabel" id="RatePlan.preselection_wholesale_plan.Label">
 		      <span> &nbsp;</span>
 		      <span id="RatePlan.preselection_wholesale_plan.Label.Text">Pre-Selection Wholesale Plan : </span>

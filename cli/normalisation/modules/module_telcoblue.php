@@ -93,6 +93,18 @@ class NormalisationModuleTelcoblue extends NormalisationModule {
 		$this->setNormalised('Destination', trim($this->getRaw('target_identifier')));
 		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Destination', 'target_identifier'));
 		
+		// Pre-validate the source and destination as these may be values that Flex cannot handle
+		$aValidation = $this->Validate(true);
+		if (!$aValidation['Source']) {
+			// An invalid source, set it to the billed FNN
+			$this->setNormalised('Source', $sFNN);
+		}
+
+		if (!$aValidation['Destination']) {
+			// An invalid destination, remove it
+			$this->setNormalised('Destination', NULL);
+		}
+
 		// Cost
 		$fCost = (float)trim($this->getRaw('cost'));
 		$this->setNormalised('Cost', $fCost);
@@ -138,6 +150,7 @@ class NormalisationModuleTelcoblue extends NormalisationModule {
 	}
 
 	private function _getUnits($iRecordType) {
+		$oLog = Log::get();
 		$iCarrierTranslationContextId = $this->GetConfigField('DisplayTypeCarrierTranslationContextId');
 		Flex::assert($iCarrierTranslationContextId !== null, "No Display Type Carrier Translation Context defined for Module {$this->_arrCarrierModule['Id']}:{$this->_arrCarrierModule['description']} (".get_class($this).")");
 		$aTranslation = Query::run("SELECT	ct.in_value AS wholesale_unit_type
@@ -155,10 +168,13 @@ class NormalisationModuleTelcoblue extends NormalisationModule {
 		$mPrimaryUnitType = trim($this->getRaw('unit_type_primary'));
 		$mSecondaryUnitType = trim($this->getRaw('unit_type_secondary'));
 		$mTertiaryUnitType = trim($this->getRaw('unit_type_tertiary'));
+
+		$oLog->logIf(self::DEBUG_LOGGING, "[*] Wholesale Unit Type: {$sWholesaleUnitType}; Primary Unit Type: {$mPrimaryUnitType}; Secondary Unit Type: {$mSecondaryUnitType}; Tertiary Unit Type: {$mTertiaryUnitType}");
+
 		if ($mPrimaryUnitType == $sWholesaleUnitType) {
 			// Use the primary units
 			return (int)trim($this->getRaw('units_primary'));
-		} else if ($mPrimaryUnitType == $sWholesaleUnitType) {
+		} else if ($mSecondaryUnitType == $sWholesaleUnitType) {
 			// Use the secondary units
 			return (int)trim($this->getRaw('units_secondary'));
 		} else if ($mTertiaryUnitType == $sWholesaleUnitType) {
