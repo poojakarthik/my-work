@@ -169,7 +169,7 @@ class NormalisationModuleTelcoblue extends NormalisationModule {
 		$mSecondaryUnitType = trim($this->getRaw('unit_type_secondary'));
 		$mTertiaryUnitType = trim($this->getRaw('unit_type_tertiary'));
 
-		$oLog->logIf(self::DEBUG_LOGGING, "[*] Wholesale Unit Type: {$sWholesaleUnitType}; Primary Unit Type: {$mPrimaryUnitType}; Secondary Unit Type: {$mSecondaryUnitType}; Tertiary Unit Type: {$mTertiaryUnitType}");
+		$oLog->logIf(self::DEBUG_LOGGING, "[*] Required Wholesale Unit Type: {$sWholesaleUnitType}; Primary Unit Type: {$mPrimaryUnitType}; Secondary Unit Type: {$mSecondaryUnitType}; Tertiary Unit Type: {$mTertiaryUnitType}");
 
 		if ($mPrimaryUnitType == $sWholesaleUnitType) {
 			// Use the primary units
