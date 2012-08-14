@@ -189,24 +189,20 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 		DBO()->RatePlan->ServiceType->RenderCallback("GetConstantDescription", Array("service_type"), RENDER_OUTPUT);	
 		
 		$intFullService = DBO()->RatePlan->CarrierFullService->Value;
-		if (!isset($GLOBALS['*arrConstant']['Carrier'][$intFullService]))
-		{
+		$oCarrierFullService = Carrier::getForId($intFullService, true);
+		if ($oCarrierFullService === null) {
 			$strFullService = "[Not Specified]";
-		}
-		else
-		{
-			$strFullService = $GLOBALS['*arrConstant']['Carrier'][$intFullService]['Description'];
+		} else {
+			$strFullService = $oCarrierFullService->description;
 		}
 		DBO()->RatePlan->CarrierFullService->RenderArbitrary($strFullService, RENDER_OUTPUT);
 		
 		$intPreselection = DBO()->RatePlan->CarrierPreselection->Value;
-		if (!isset($GLOBALS['*arrConstant']['Carrier'][$intPreselection]))
-		{
+		$oCarrierPreselection = Carrier::getForId($intPreselection, true);
+		if ($oCarrierPreselection === null) {
 			$strPreselection = "[Not Specified]";
-		}
-		else
-		{
-			$strPreselection = $GLOBALS['*arrConstant']['Carrier'][$intPreselection]['Description'];
+		} else {
+			$strPreselection = $oCarrierPreselection->description;
 		}
 		DBO()->RatePlan->CarrierPreselection->RenderArbitrary($strPreselection, RENDER_OUTPUT);
 		DBO()->RatePlan->Shared->RenderOutput();
