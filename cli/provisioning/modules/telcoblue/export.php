@@ -97,7 +97,7 @@
 	 		// The identifier is the services fnn
 	 		$sIdentifier = $oService->FNN;
 
-	 		// The wholesale identifier type is derived, currently hard coded in this class
+	 		// The wholesale identifier type is derived
 	 		$iRequestType = $aRequest['Type'];
 	 		$iServiceIdentifierContext = $this->_getServiceIdentifierContext($oService->ServiceType, $iRequestType);
 
