@@ -12,7 +12,6 @@
 		$this->_strEndOfLine = "\n";
 		$this->_strEnclosed = '';
 		$this->_arrDefine = array();
-		$this->_arrModuleConfig = array();
 		
 		// Statements
 		$this->_selRequestByCarrierRef = new StatementSelect("ProvisioningRequest", "*", "CarrierRef = <CarrierRef> AND Status IN (301, 302, 303)");
@@ -67,11 +66,16 @@
 			// delimited record
 			$arrRawData = explode($this->_strDelimiter, rtrim($strLine, "\n"));
 			foreach($this->_arrDefine as $strKey=>$strValue) {
-				$_arrData[$strKey] = $arrRawData[$strValue['Index']];
+				$_arrData[$strKey] = '';
+				if (isset($strValue['Index']) && isset($arrRawData[$strValue['Index']])) {
+					$_arrData[$strKey] = $arrRawData[$strValue['Index']];
+				}
+				
 				// delimited fields may have fixed width contents
-				if (isset($strValue['Start']) && $strValue['Length']) {
+				if (isset($strValue['Start']) && isset($strValue['Length']) && $strValue['Length']) {
 					$_arrData[$strKey] = substr($_arrData[$strKey], $strValue['Start'], $strValue['Length']);
 				}
+
 				$_arrData[$strKey] = trim($_arrData[$strKey]);
 			}
 		} else {
@@ -108,12 +112,18 @@
 		return $arrValue['flex_code'];
 	}
 	
-	function FindFNNOwner($arrPDR) {
+	function FindFNNOwner($arrPDR, $bLogError=false) {
 		// Find Owner
 		if (is_array($arrOwner = FindFNNOwner($arrPDR['FNN'], $arrPDR['EffectiveDate'], true))) {
+			// Owner found
 			$arrPDR = array_merge($arrOwner, $arrPDR);
 		} else {
-			$arrPDR['Status']	= RESPONSE_STATUS_BAD_OWNER;
+			// Unable to find owner
+			if ($bLogError) {
+				Log::get()->log("[!] Unable to find FNN Owner: ".var_export($arrOwner, true));
+			}
+
+			$arrPDR['Status'] = RESPONSE_STATUS_BAD_OWNER;
 		}
 		
 		return $arrPDR;

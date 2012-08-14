@@ -83,17 +83,18 @@ class ImportTelcoBlue extends ImportBase {
  	
 	// PreProcess: Pre-processes a file, removes all responses that aren't contract related and any notifications without an FNN
  	function PreProcess($aRawData) {
- 		Log::get()->logIf(self::DEBUG_LOGGING, "\tPre-processing RAW Data:");
+ 		Log::get()->logIf(self::DEBUG_LOGGING, "\t[*] Pre-processing RAW Data:");
  		self::_logArray($aRawData);
 
  		$aPreProcessedData = array();
  		foreach ($aRawData as $sLine) {
  			$sLine = trim($sLine);
  			if (!empty($sLine)) {
+ 				Log::get()->logIf(self::DEBUG_LOGGING, "\t[*] Splitting raw line");
  				$aData = $this->_SplitLine($sLine);
  				switch ($aData['LineType']) {
  					case self::LINE_TYPE_RESPONSE:
- 						Log::get()->logIf(self::DEBUG_LOGGING, "\tResponse: Subject={$aData['Subject']}, Detail={$aData['Detail']}");
+ 						Log::get()->logIf(self::DEBUG_LOGGING, "\t[*] Response: Subject={$aData['Subject']}, Detail={$aData['Detail']}");
  						// A response
  						switch ($aData['Subject']) {
 		 					case 'CONTRACT':
@@ -105,7 +106,7 @@ class ImportTelcoBlue extends ImportBase {
 		 				}
 		 				break;
 		 			case self::LINE_TYPE_NOTIFICATION:
-		 				Log::get()->logIf(self::DEBUG_LOGGING, "\tNotification: FNN={$aData['FNN']}");
+		 				Log::get()->logIf(self::DEBUG_LOGGING, "\t[*] Notification: FNN={$aData['FNN']}");
 		 				// A notification
 		 				if (!empty($aData['FNN'])) {
 		 					// We only care about service notifications
@@ -116,14 +117,14 @@ class ImportTelcoBlue extends ImportBase {
  			}
  		}
 
- 		Log::get()->logIf(self::DEBUG_LOGGING, "\tPre-Processed Data: ");
+ 		Log::get()->logIf(self::DEBUG_LOGGING, "\t[*] Pre-Processed Data: ");
  		self::_logArray($aPreProcessedData);
  		return $aPreProcessedData;
  	}
 
  	// Normalise: Normalises a line from a Provisioning File
 	function Normalise($sLine, $iLineNumber) {
-		Log::get()->logIf(self::DEBUG_LOGGING, "\tNormalising line {$iLineNumber}: {$sLine}");
+		Log::get()->logIf(self::DEBUG_LOGGING, "\t[*] Normalising line {$iLineNumber}: {$sLine}");
 
  		// Split the Line using the file definition
  		$aData = $this->_SplitLine($sLine);
@@ -149,13 +150,13 @@ class ImportTelcoBlue extends ImportBase {
  	}
 
  	private function _handleResponse(&$aResponse, $aData) {
- 		Log::get()->logIf(self::DEBUG_LOGGING, "\t\tIt's a Response");
+ 		Log::get()->logIf(self::DEBUG_LOGGING, "\t\t[*] It's a Response");
  		if ($aData['ClientReference'] !== '') {
  			// Has a client reference, fetch the provisioning request
- 			Log::get()->logIf(self::DEBUG_LOGGING, "\t\t\tGot client reference: '{$aData['ClientReference']}'");
+ 			Log::get()->logIf(self::DEBUG_LOGGING, "\t\t\t[*] Got client reference: '{$aData['ClientReference']}'");
  			try {
 	 			$oRequest = new Provisioning_Request(array('Id' => $aData['ClientReference']), true);
-				Log::get()->logIf(self::DEBUG_LOGGING, "\t\t\tGot provisioning request: {$oRequest->Id}");
+				Log::get()->logIf(self::DEBUG_LOGGING, "\t\t\t[*] Found provisioning request: {$oRequest->Id}");
 				$aResponse['FNN'] = $oRequest->FNN;
 				$aResponse['Type'] = $oRequest->Type;
 				$aResponse['Request'] = $oRequest->Id;
@@ -167,14 +168,14 @@ class ImportTelcoBlue extends ImportBase {
 			}
  		} else {
  			// No client reference, not requested by flex
- 			Log::get()->logIf(self::DEBUG_LOGGING, "\t\t\tThe Response has no client_reference");
+ 			Log::get()->logIf(self::DEBUG_LOGGING, "\t\t\t[*] The Response has no client_reference");
  			$aResponse['FNN'] = $aData['Detail'];
 			$aResponse['Type'] = null;
 			$aResponse['Request'] = null;
  		}
 
  		// Find the service details
-		$aResponse = $this->FindFNNOwner($aResponse);
+		$aResponse = $this->FindFNNOwner($aResponse, self::DEBUG_LOGGING);
 
  		// Build the provisioning response row data
  		$aResponse['CarrierRef'] = null;
@@ -204,10 +205,14 @@ class ImportTelcoBlue extends ImportBase {
 		
 		$aResponse['request_status'] = $iRequestStatusId;
 		$aResponse['Description'] = $sDescription;
+		Log::get()->logIf(self::DEBUG_LOGGING, "\t\t\t[*] Response Description: {$sDescription}");
  	}
 
  	private function _handleNotification(&$aResponse, $aData) {
- 		Log::get()->logIf(self::DEBUG_LOGGING, "\t\tIt's a Notification");
+ 		$oLog = Log::get();
+ 		$oLog->logIf(self::DEBUG_LOGGING, "\t\t[*] It's a Notification");
+ 		
+ 		// Basic response fields
  		$aResponse['FNN'] = $aData['FNN'];
 		$aResponse['Type'] = null;
 		$aResponse['Request'] = null;
@@ -216,34 +221,52 @@ class ImportTelcoBlue extends ImportBase {
 		$aResponse['request_status'] = REQUEST_STATUS_COMPLETED;
 
  		// Find the service details
-		$aResponse = $this->FindFNNOwner($aResponse);
-				
+		$aResponse = $this->FindFNNOwner($aResponse, self::DEBUG_LOGGING);
+		$oCurrentRatePlan = null;
+		if (isset($aResponse['Service'])) {
+			// Fetch the current rate plan of the service
+			$oCurrentRatePlan = ((isset($aResponse['Service']) && ($aResponse['Service'] !== null)) ? Service::getForId($aResponse['Service'])->getCurrentPlan() : null);
+			$oLog->logIf(self::DEBUG_LOGGING, "\t\t[*] Owner Service: {$aResponse['Service']}");
+		} else {
+			$oLog->logIf(self::DEBUG_LOGGING, "\t\t[*] No Owner Service found");
+		}
+
 		// Convert the notification type to a provisioning type (if a notification type is supplied)
 		$iNotificationType = (int)$aData['NotificationType'];
-		if ($iNotificationType !== null) {
-			// A notification type was returned, determine associated provisioning type
-			$iChurnAway = $this->GetConfigField('ChurnAwayNotification');
-			$iDisconnection = $this->GetConfigField('DisconnectionNotification');
-			$oRatePlan = ((isset($aResponse['Service']) && ($aResponse['Service'] !== null)) ? Service::getForId($aResponse['Service'])->getCurrentPlan() : null);
+		if (($iNotificationType !== null) && ($oCurrentRatePlan !== null)) {
+			// A notification type is present
+			$iChurnAway = $this->GetConfigField('ChurnAwayNotificationType');
+			$iDisconnection = $this->GetConfigField('DisconnectionNotificationType');
+			$oLog->logIf(self::DEBUG_LOGGING, "\t\t[*] An owner was found and notification type returned ({$iNotificationType}), getting associated provisioning type (Churn Away: {$iChurnAway}; Disconnection: {$iDisconnection})");
+
+			// Determine the type of notification (record as an inbound provisioning type)
 			$iWholesalePackage = (int)$aData['Package'];
 			switch ($iNotificationType) {
 				case $iChurnAway:
+					$oLog->logIf(self::DEBUG_LOGGING, "\t\t[*] It's a CHURN AWAY notification");
+
 					// It's either PROVISIONING_TYPE_LOSS_FULL or PROVISIONING_TYPE_LOSS_PRESELECT. Check the package.
-					if ($oRatePlan->fullservice_wholesale_plan == $iWholesalePackage) {
+					if ($oCurrentRatePlan->fullservice_wholesale_plan == $iWholesalePackage) {
 						// The package matches the full service wholesale plan for the services current rate plan. It'a a full service loss notification.
+						$oLog->logIf(self::DEBUG_LOGGING, "\t\t[*] It's a FULL SERVICE - CHURN AWAY notification (Wholesale Package: {$iWholesalePackage})");
 						$aResponse['Type'] = PROVISIONING_TYPE_LOSS_FULL;
-					} else if ($oRatePlan->preselection_wholesale_plan == $iWholesalePackage) {
+					} else if ($oCurrentRatePlan->preselection_wholesale_plan == $iWholesalePackage) {
 						// The package matches the preselection wholesale plan for the services current rate plan. It'a a preselection loss notification.
+						$oLog->logIf(self::DEBUG_LOGGING, "\t\t[*] It's a PRESELECTION - CHURN AWAY notification (Wholesale Package: {$iWholesalePackage})");
 						$aResponse['Type'] = PROVISIONING_TYPE_LOSS_PRESELECT;
 					}
 					break;
 				case $iDisconnection:
+					$oLog->logIf(self::DEBUG_LOGGING, "\t\t[*] It's a DISCONNECTION notification");
+
 					// It's either PROVISIONING_TYPE_DISCONNECT_FULL or PROVISIONING_TYPE_DISCONNECT_PRESELECT. Check the package.
-					if ($oRatePlan->fullservice_wholesale_plan == $iWholesalePackage) {
+					if ($oCurrentRatePlan->fullservice_wholesale_plan == $iWholesalePackage) {
 						// The package matches the full service wholesale plan for the services current rate plan. It'a a full service disconnection notification.
+						$oLog->logIf(self::DEBUG_LOGGING, "\t\t[*] It's a FULL SERVICE - DISCONNECTION notification (Wholesale Package: {$iWholesalePackage})");
 						$aResponse['Type'] = PROVISIONING_TYPE_DISCONNECT_FULL;
-					} else if ($oRatePlan->preselection_wholesale_plan == $iWholesalePackage) {
+					} else if ($oCurrentRatePlan->preselection_wholesale_plan == $iWholesalePackage) {
 						// The package matches the preselection wholesale plan for the services current rate plan. It'a a preselection disconnection notification.
+						$oLog->logIf(self::DEBUG_LOGGING, "\t\t[*] It's a PRESELECTION - DISCONNECTION notification (Wholesale Package: {$iWholesalePackage})");
 						$aResponse['Type'] = PROVISIONING_TYPE_DISCONNECT_PRESELECT;
 					}
 					break;
@@ -257,22 +280,27 @@ class ImportTelcoBlue extends ImportBase {
 			}
 		} else {
 			// No notification type, can't determine a provisioning type but we may be able to give it a meaningful description
+			$oLog->logIf(self::DEBUG_LOGGING, "\t\t[*] No notificaiton type or no owner, can't determine a provisioning type");
 			$sStatus = $aData['Status'];
 			$sStatusResult = $aData['StatusResult'];
 			if ($sStatus !== null) {
 				// A status change notification
+				$oLog->logIf(self::DEBUG_LOGGING, "\t\t[*] It's a status change notification (Status: {$sStatus}; Status Result: {$sStatusResult})");
 				if (isset(self::$_aResponseDescriptions[$sStatus]) && isset(self::$_aResponseDescriptions[$sStatus][$sStatusResult])) {
 					// A supported status change notification
 					$sDescription = self::$_aResponseDescriptions[$sStatus][$sStatusResult];
+					$oLog->logIf(self::DEBUG_LOGGING, "\t\t[*] Supported Status Change: {$sDescription}");
 				} else {
 					// Unsupported status change
 					$aResponse['Status'] = RESPONSE_STATUS_CANT_NORMALISE;
 					$sDescription = "Unsupported status and status result for notification (Status: {$sStatus}; Status Result: {$sStatusResult})";
+					$oLog->logIf(self::DEBUG_LOGGING, "\t\t[*] Unsupported Status Change");
 				}
 			} else {
 				// Not a status change, but no notification type, very strange
 				$aResponse['Status'] = RESPONSE_STATUS_CANT_NORMALISE;
 				$sDescription = "Invalid data. No Notification Type or Status change.";
+				$oLog->logIf(self::DEBUG_LOGGING, "\t\t[*] It's not a status change, this should not happen");
 			}
 		}
 

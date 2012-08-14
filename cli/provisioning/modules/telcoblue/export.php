@@ -2,8 +2,6 @@
 
  class ExportTelcoBlue extends ExportBase {
  	const API_AUTHENTICATION_HEADER = 'API_AUTHENTICATION';
- 	const WHOLESALE_IDENTIFIER_CONTEXT_FULLSERVICE_LANDLINE = 1;
- 	const WHOLESALE_IDENTIFIER_CONTEXT_PRESELECTION_LANDLINE = 2;
 
  	public $intBaseFileType = RESOURCE_TYPE_FILE_EXPORT_PROVISIONING_TELCOBLUE;
 	public $_strDeliveryType;
@@ -20,17 +18,17 @@
 
 	private $_aData = array();
 
-	// Maps service types to wholesale identifier contexts
- 	private static $_aServiceIdentifierContexts = array(
+	// Maps service types to wholesale identifier contexts (the config property that stores the identifier context)
+ 	private static $_aServiceIdentifierContextConfigProperties = array(
  		SERVICE_TYPE_ADSL => array(),
  		SERVICE_TYPE_MOBILE => array(),
  		SERVICE_TYPE_LAND_LINE => array(
- 			PROVISIONING_TYPE_FULL_SERVICE => self::WHOLESALE_IDENTIFIER_CONTEXT_FULLSERVICE_LANDLINE,
-	 		PROVISIONING_TYPE_PRESELECTION => self::WHOLESALE_IDENTIFIER_CONTEXT_PRESELECTION_LANDLINE,
-	 		PROVISIONING_TYPE_FULL_SERVICE_PLAN_CHANGE => self::WHOLESALE_IDENTIFIER_CONTEXT_FULLSERVICE_LANDLINE,
-	 		PROVISIONING_TYPE_PRESELECTION_PLAN_CHANGE => self::WHOLESALE_IDENTIFIER_CONTEXT_PRESELECTION_LANDLINE,
-	 		PROVISIONING_TYPE_FULL_SERVICE_REVERSE => self::WHOLESALE_IDENTIFIER_CONTEXT_FULLSERVICE_LANDLINE,
-	 		PROVISIONING_TYPE_PRESELECTION_REVERSE => self::WHOLESALE_IDENTIFIER_CONTEXT_PRESELECTION_LANDLINE
+ 			PROVISIONING_TYPE_FULL_SERVICE => 'WholesaleIdentifierContextFullService',
+	 		PROVISIONING_TYPE_PRESELECTION => 'WholesaleIdentifierContextPreselection',
+	 		PROVISIONING_TYPE_FULL_SERVICE_PLAN_CHANGE => 'WholesaleIdentifierContextFullService',
+	 		PROVISIONING_TYPE_PRESELECTION_PLAN_CHANGE => 'WholesaleIdentifierContextPreselection',
+	 		PROVISIONING_TYPE_FULL_SERVICE_REVERSE => 'WholesaleIdentifierContextFullService',
+	 		PROVISIONING_TYPE_PRESELECTION_REVERSE => 'WholesaleIdentifierContextPreselection',
  		),
  		SERVICE_TYPE_INBOUND => array(),
  		SERVICE_TYPE_DIALUP => array()
@@ -55,6 +53,12 @@
  		
  		$this->_arrModuleConfig['WholesaleAccountId']['Type'] = DATA_TYPE_INTEGER;
 		$this->_arrModuleConfig['WholesaleAccountId']['Description'] = "Wholesale Account Id of this system";
+
+		$this->_arrModuleConfig['WholesaleIdentifierContextFullService']['Type'] = DATA_TYPE_INTEGER;
+		$this->_arrModuleConfig['WholesaleIdentifierContextFullService']['Description'] = "Wholesale Product Identifier Context that represents Full Service Landlines";
+
+		$this->_arrModuleConfig['WholesaleIdentifierContextPreselection']['Type'] = DATA_TYPE_INTEGER;
+		$this->_arrModuleConfig['WholesaleIdentifierContextPreselection']['Description'] = "Wholesale Product Identifier Context that represents Preselection Landlines";
  		
 		// Define File Format, Delimiter & New Line (all not necessary for this module but the variables need to exist for parent class functionality)
  		$this->_strFileFormat = null;
@@ -95,11 +99,7 @@
 
 	 		// The wholesale identifier type is derived, currently hard coded in this class
 	 		$iRequestType = $aRequest['Type'];
-	 		if (!isset(self::$_aServiceIdentifierContexts[$oService->ServiceType]) || !isset(self::$_aServiceIdentifierContexts[$oService->ServiceType][$iRequestType])) {
-	 			throw new Exception("Cannot find service identifier context (Service Type: {$oService->ServiceType}; Provisioning Type: {$iRequestType})");
-	 		}
-
-	 		$iServiceIdentifierContext = self::$_aServiceIdentifierContexts[$oService->ServiceType][$iRequestType];
+	 		$iServiceIdentifierContext = $this->_getServiceIdentifierContext($oService->ServiceType, $iRequestType);
 
 	 		// Create address data if necessary
 	 		$oServiceAddress = $oService->getServiceAddress();
@@ -238,6 +238,15 @@
 	 	return $aRequest;
  	}
  	
+ 	private function _getServiceIdentifierContext($iServiceType, $iRequestType) {
+ 		if (!isset(self::$_aServiceIdentifierContextConfigProperties[$iServiceType]) || !isset(self::$_aServiceIdentifierContextConfigProperties[$iServiceType][$iRequestType])) {
+ 			throw new Exception("Cannot find service identifier context (Service Type: {$iServiceType}; Provisioning Type: {$iRequestType})");
+ 		}
+
+ 		$sConfigProperty = self::$_aServiceIdentifierContextConfigProperties[$iServiceType][$iRequestType];
+ 		return $this->GetConfigField($sConfigProperty);
+ 	}
+
 	// _Render: (Override) Renders this file to its final output format. No output file so nothing required
  	protected function _Render($bRenderToFile=true) {
  		return Array('Pass' => TRUE);

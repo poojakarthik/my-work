@@ -63,6 +63,7 @@ class CollectionModuleTelcoBlue extends CollectionModuleBase {
 							$oNotification->identifier,
 							$oNotification->identifier_context,
 							$oNotification->notification_type,
+							$oNotification->package_id,
 							$oNotification->status,
 							$oNotification->status_result,
 							$oNotification->timestamp
