@@ -197,6 +197,7 @@ abstract class Logic_Service implements DataLogic
 		$oProvisioningRequest->Type 				= $iProvisioningTypeId;
 		$oProvisioningRequest->RequestedOn 			= DataAccess::getDataAccess()->getNow();
 		$oProvisioningRequest->AuthorisationDate	= ($sAuthorisationDate === null ? date('Y-m-d', DataAccess::getDataAccess()->getNow(true)) : $sAuthorisationDate);
+		$oProvisioningRequest->scheduled_datetime	= $oProvisioningRequest->RequestedOn;
 		$oProvisioningRequest->Status 				= REQUEST_STATUS_WAITING;
 		$oProvisioningRequest->customer_group_id 	= $aDetailsRow['account_customer_group_id'];
 		$oProvisioningRequest->save();

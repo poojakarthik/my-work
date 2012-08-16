@@ -72,7 +72,7 @@ class ApplicationCollection extends ApplicationBaseClass
  		while ($arrModule = $this->_selCarrierModules->Fetch())
  		{
  			$this->_arrModules[$arrModule['Carrier']][$arrModule['Id']]	= new $arrModule['Module']($arrModule['Id']);
- 			CliEcho("\t + ".Carrier::getForId($arrModule['Carrier'])->description." : {$arrModule['description']}");
+ 			CliEcho("\t + ".Carrier::getForId($arrModule['Carrier'])->description.(isset($arrModule['Description']) ? " : ".$arrModule['Description'] : ''));
  		}
 	}
 	

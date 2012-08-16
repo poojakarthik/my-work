@@ -1396,16 +1396,17 @@ class AppTemplateService extends ApplicationTemplate
 		{
 			
 			// Prepare the object to add the provisioning requests
-			$arrInsertValues = Array(	"AccountGroup"		=> DBO()->Account->AccountGroup->Value,
-										"Account"			=> DBO()->Account->Id->Value,
-										"Service"			=> NULL,
-										"FNN"				=> NULL,
-										"Employee"			=> AuthenticatedUser()->_arrUser['Id'],
-										"Carrier"			=> NULL,
-										"Type"				=> NULL,
-										"RequestedOn"		=> $strNowDateTime,
-										"AuthorisationDate"	=> NULL, 
-										"Status"			=> REQUEST_STATUS_WAITING
+			$arrInsertValues = Array(	"AccountGroup"			=> DBO()->Account->AccountGroup->Value,
+										"Account"				=> DBO()->Account->Id->Value,
+										"Service"				=> NULL,
+										"FNN"					=> NULL,
+										"Employee"				=> AuthenticatedUser()->_arrUser['Id'],
+										"Carrier"				=> NULL,
+										"Type"					=> NULL,
+										"RequestedOn"			=> $strNowDateTime,
+										"AuthorisationDate"		=> NULL, 
+										"scheduled_datetime"	=> $strNowDateTime,
+										"Status"				=> REQUEST_STATUS_WAITING
 									);
 			$insRequest = new StatementInsert("ProvisioningRequest", $arrInsertValues);
 			

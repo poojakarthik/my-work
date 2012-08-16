@@ -2151,16 +2151,17 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 			$strAuthorisationDate = GetCurrentISODate();
 		}
 		
-		$arrInsertValues = Array(	"AccountGroup"		=> $this->_intAccountGroup,
-									"Account"			=> $this->_intAccount,
-									"Service"			=> $intService,
-									"FNN"				=> $this->_strFNN,
-									"Employee"			=> AuthenticatedUser()->GetUserId(),
-									"Carrier"			=> $intCarrier,
-									"Type"				=> $intRequest,
-									"RequestedOn"		=> $strNow,
-									"AuthorisationDate"	=> $strAuthorisationDate,
-									"Status"			=> REQUEST_STATUS_WAITING
+		$arrInsertValues = Array(	"AccountGroup"			=> $this->_intAccountGroup,
+									"Account"				=> $this->_intAccount,
+									"Service"				=> $intService,
+									"FNN"					=> $this->_strFNN,
+									"Employee"				=> AuthenticatedUser()->GetUserId(),
+									"Carrier"				=> $intCarrier,
+									"Type"					=> $intRequest,
+									"RequestedOn"			=> $strNow,
+									"AuthorisationDate"		=> $strAuthorisationDate,
+									"scheduled_datetime"	=> $strNow,
+									"Status"				=> REQUEST_STATUS_WAITING
 								);
 		$insRequest = new StatementInsert("ProvisioningRequest", $arrInsertValues);
 		

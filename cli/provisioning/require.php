@@ -54,6 +54,9 @@ VixenRequire($strModuleDir."aapt/export_deactivation.php");
 
 VixenRequire($strModuleDir."aapt/import_dailyevent.php");
 
+VixenRequire($strModuleDir."telcoblue/export.php");
+VixenRequire($strModuleDir."telcoblue/import.php");
+
 // Remote Copy
 VixenRequire("lib/framework/remote_copy.php");
 

@@ -132,8 +132,9 @@ abstract class NormalisationModule extends CarrierModule {
 			$i++;
 			if(!$bolValid) {
 				$this->_UpdateStatus(CDR_CANT_NORMALISE_INVALID);
-				Debug($strKey." : '{$this->_arrNormalisedData[$strKey]}' : ".(string)$i);
-				Debug($this->_arrNormalisedData);
+				Debug("Invalid Field: {$strKey}; Value: '{$this->_arrNormalisedData[$strKey]}';");
+				//Debug("Normalised Data: ".$this->_arrNormalisedData);
+				//Debug("Field Validity: ".var_export($arrValid, true));
 				return false;
 			}
 		}
@@ -218,7 +219,7 @@ abstract class NormalisationModule extends CarrierModule {
 	}
 	
 	protected function _FetchRawCDR($strKey) {
-		return $this->_arrRawData[$strKey];
+		return (isset($this->_arrRawData[$strKey]) ? $this->_arrRawData[$strKey] : null);
 	}
 	
 	protected function _NewCDR($arrCDR) {

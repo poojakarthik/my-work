@@ -275,16 +275,17 @@ class AppTemplateProvisioning extends ApplicationTemplate
 		$strRequestedOn = GetCurrentDateAndTimeForMySQL();
 		
 		// Set up objects for record insertion
-		$arrInsertValues = Array(	"AccountGroup"		=> DBO()->Account->AccountGroup->Value,
-									"Account"			=> DBO()->Account->Id->Value,
-									"Service"			=> NULL,
-									"FNN"				=> NULL,
-									"Employee"			=> AuthenticatedUser()->_arrUser['Id'],
-									"Carrier"			=> NULL,
-									"Type"				=> $intRequestType,
-									"RequestedOn"		=> $strRequestedOn,
-									"AuthorisationDate"	=> $strAuthDate,
-									"Status"			=> REQUEST_STATUS_WAITING
+		$arrInsertValues = Array(	"AccountGroup"			=> DBO()->Account->AccountGroup->Value,
+									"Account"				=> DBO()->Account->Id->Value,
+									"Service"				=> NULL,
+									"FNN"					=> NULL,
+									"Employee"				=> AuthenticatedUser()->_arrUser['Id'],
+									"Carrier"				=> NULL,
+									"Type"					=> $intRequestType,
+									"RequestedOn"			=> $strRequestedOn,
+									"AuthorisationDate"		=> $strAuthDate,
+									"scheduled_datetime"	=> $strRequestedOn,
+									"Status"				=> REQUEST_STATUS_WAITING
 								);
 		$insRequest = new StatementInsert("ProvisioningRequest", $arrInsertValues);
 		
@@ -395,40 +396,32 @@ class AppTemplateProvisioning extends ApplicationTemplate
 	 * event passing the following Event object data:
 	 *		Service.Id				= id of the service that the request belongs to
 	 *		ProvisioningRequest.Id	= id of the request which was cancelled
-	 *  
+	 * 
 	 * @return		void
 	 * @method		SubmitRequest
 	 */
-	function CancelRequest()
-	{
+	function CancelRequest() {
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 
-		if (!DBO()->ProvisioningRequest->Load())
-		{
+		if (!DBO()->ProvisioningRequest->Load()) {
 			// The record could not be retrieved
 			Ajax()->AddCommand("Alert", "ERROR: The Request with Id ". DBO()->ProvisioningRequest->Id->Value ." could not be found");
 			return TRUE;
 		}
 		
-		// Only requests with Status == REQUEST_STATUS_WAITING can be cancelled
-		if (DBO()->ProvisioningRequest->Status->Value != REQUEST_STATUS_WAITING)
-		{
-			Ajax()->AddCommand("Alert", "ERROR: The request cannot be cancelled as it has already been sent");
-			return TRUE;
-		}
-		
-		// Update the status of the request
-		DBO()->ProvisioningRequest->Status = REQUEST_STATUS_CANCELLED;
-		
-		if (!DBO()->ProvisioningRequest->Save())
-		{
-			// Saving the changes failed
+		try {
+			$oProvisioningRequest = new Provisioning_Request(array('Id' => DBO()->ProvisioningRequest->Id->Value), true);
+			$oProvisioningRequest->cancel();
+		} catch (Exception_Database $oExDB) {
 			Ajax()->AddCommand("Alert", "ERROR: Cancelling the request failed, unexpectedly");
 			return TRUE;
+		} catch (Exception $oEx) {
+			Ajax()->AddCommand("Alert", "ERROR: ".$oEx->getMessage());
+			return TRUE;
 		}
-		
+
 		// Fire the EVENT_ON_PROVISIONING_REQUEST_CANCELLATION event
 		$arrEvent['ProvisioningRequest']['Id']	= DBO()->ProvisioningRequest->Id->Value;
 		$arrEvent['Service']['Id']				= DBO()->ProvisioningRequest->Service->Value;
@@ -440,6 +433,7 @@ class AppTemplateProvisioning extends ApplicationTemplate
 		
 		return TRUE;
 	}
+
 	//------------------------------------------------------------------------//
 	// ViewHistory
 	//------------------------------------------------------------------------//

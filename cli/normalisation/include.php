@@ -111,7 +111,6 @@ require_once($strApplicationDir."normalisation_modules/module_iseek.php");
 require_once($strApplicationDir."normalisation_modules/module_optus.php");
 require_once($strApplicationDir."normalisation_modules/module_rslcom.php");
 
-
 // load application 
 require_once($strApplicationDir."definitions.php");
 require_once($strApplicationDir."config.php");

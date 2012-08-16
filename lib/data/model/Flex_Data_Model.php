@@ -11,6 +11,7 @@ class Flex_Data_Model
 		{
 			$base = dirname(__FILE__) . '/' . 'type' . '/';
 		}
+		@mkdir($base, 0777, true);
 		return $base . strtolower($tableName) . '.php';
 	}
 

@@ -1,27 +1,85 @@
 <?php
-class AppTemplateEmployee extends ApplicationTemplate {
+//----------------------------------------------------------------------------//
+// (c) copyright 2007 VOIPTEL Pty Ltd
+//
+// NOT FOR EXTERNAL DISTRIBUTION
+//----------------------------------------------------------------------------//
 
-	function ViewRecentCustomers() {
+
+//----------------------------------------------------------------------------//
+// Employee
+//----------------------------------------------------------------------------//
+/**
+ * Employee
+ *
+ * contains all ApplicationTemplate extended classes relating to Available Employee functionality
+ *
+ * contains all ApplicationTemplate extended classes relating to Available Employee functionality
+ *
+ * @file		employee.php
+ * @language	PHP
+ * @package		framework
+ * @author		Ross
+ * @version		7.06
+ * @copyright	2007 VOIPTEL Pty Ltd
+ * @license		NOT FOR EXTERNAL DISTRIBUTION
+ *
+ */
+
+//----------------------------------------------------------------------------//
+// AppTemplateEmployee
+//----------------------------------------------------------------------------//
+/**
+ * AppTemplateEmployee
+ *
+ * The AppTemplateEmployee class
+ *
+ * The AppTemplateEmployee class.  This incorporates all logic for all pages
+ * relating to Employees
+ *
+ *
+ * @package	ui_app
+ * @class	AppTemplateAccount
+ * @extends	ApplicationTemplate
+ */
+class AppTemplateEmployee extends ApplicationTemplate
+{
+
+	//------------------------------------------------------------------------//
+	// ViewRecentCustomers
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewRecentCustomers()
+	 *
+	 * Performs the logic for the View Recent Customers popup window
+	 *
+	 * Performs the logic for the View Recent Customers popup window
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function ViewRecentCustomers()
+	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 
 		// Retrieve that last 20 customers that were verified by the user
-		$arrColumns = array(
-			"RequestedOn" => "eal.viewed_on",
-			"AccountId" => "A.Id",
-			"BusinessName" => "A.BusinessName",
-			"TradingName" => "A.TradingName",
-			"ContactId" => "C.Id",
-			"Title" => "C.Title",
-			"FirstName" => "C.FirstName",
-			"LastName" => "C.LastName"
+		$arrColumns	= Array(	"RequestedOn"	=> "eal.viewed_on",
+								"AccountId"		=> "A.Id",
+								"BusinessName"	=> "A.BusinessName",
+								"TradingName"	=> "A.TradingName",
+								"ContactId"		=> "C.Id",
+								"Title"			=> "C.Title",
+								"FirstName"		=> "C.FirstName",
+								"LastName"		=> "C.LastName"
 		);
-		$strTables = "Contact AS C RIGHT JOIN employee_account_log AS eal ON eal.contact_id = C.Id INNER JOIN Account AS A ON eal.account_id = A.Id";
-		$strWhere = "eal.employee_id = <UserId>";
-		$arrWhere = array("UserId" => AuthenticatedUser()->_arrUser['Id']);
-		$strOrderBy = "eal.viewed_on DESC";
-		$strLimit = "20";
+		$strTables	= "Contact AS C RIGHT JOIN employee_account_log AS eal ON eal.contact_id = C.Id INNER JOIN Account AS A ON eal.account_id = A.Id";
+		$strWhere	= "eal.employee_id = <UserId>";
+		$arrWhere	= array("UserId" => AuthenticatedUser()->_arrUser['Id']);
+		$strOrderBy	= "eal.viewed_on DESC";
+		$strLimit	= "20";
 
 		DBL()->RecentCustomers->SetColumns($arrColumns);
 		DBL()->RecentCustomers->SetTable($strTables);
@@ -34,10 +92,26 @@ class AppTemplateEmployee extends ApplicationTemplate {
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('recent_customers_view');
 
-		return true;
+		return TRUE;
 	}
 
-	function Logout() {
+
+	//------------------------------------------------------------------------//
+	// Logout
+	//------------------------------------------------------------------------//
+	/**
+	 * Logout()
+	 *
+	 * Performs the logout procedure for the employee
+	 *
+	 * Performs the logout procedure for the employee
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function Logout()
+	{
 		// Logout the employee
 		AuthenticatedUser()->Logout();
 		// Redirect the user to the login page
@@ -45,13 +119,30 @@ class AppTemplateEmployee extends ApplicationTemplate {
 		die;
 	}
 
-	function EmployeeList() {
+
+	//------------------------------------------------------------------------//
+	// EmployeeList
+	//------------------------------------------------------------------------//
+	/**
+	 * EmployeeList()
+	 *
+	 * Loads all employees into a list
+	 *
+	 * @param void
+	 *
+	 * @return boolean	TRUE
+	 *
+	 * @method
+	 */
+	function EmployeeList()
+	{
 		// Removed until permissions release. rmctainsh 20100429
 		/*
 		//////////////////////////////
 		//////////////////////////////
 		// DEPRECATED FEATURE
-		try {
+		try
+		{
 			// Create an assertion
 			Flex::assert(
 				false, 
@@ -59,7 +150,9 @@ class AppTemplateEmployee extends ApplicationTemplate {
 				null, 
 				"Deprecated Function Accessed: AppTemplateEmployee::EmployeeList"
 			);
-		} catch (Exception_Assertion $e) {
+		}
+		catch (Exception_Assertion $e)
+		{
 			// The assert function has sent the email already, redirect to the new version
 			header('Location: '.preg_replace("/flex.php\/.*$/", "reflex.php/Employee/EmployeeList/", $_SERVER['REQUEST_URI']));
 			die;
@@ -83,7 +176,8 @@ class AppTemplateEmployee extends ApplicationTemplate {
 		// Retrieve all Employees except the system user
 		$strWhere = "Id != ". USER_ID;
 
-		if (!array_key_exists('Archived', $_POST) || $_POST['Archived'] != 1) {
+		if (!array_key_exists('Archived', $_POST) || $_POST['Archived'] != 1)
+		{
 			$strWhere .= " AND Archived = 0";
 		}
 		DBL()->Employee->Where->SetString($strWhere);
@@ -94,10 +188,25 @@ class AppTemplateEmployee extends ApplicationTemplate {
 
 		$this->LoadPage('employee_list');
 
-		return true;
+		return TRUE;
 	}
 
-	function EmployeeListAjax() {
+	//------------------------------------------------------------------------//
+	// EmployeeListAjax
+	//------------------------------------------------------------------------//
+	/**
+	 * EmployeeList()
+	 *
+	 * Loads all employees into a table (rest of page not wanted for ajax response)
+	 *
+	 * @param void
+	 *
+	 * @return boolean	TRUE
+	 *
+	 * @method
+	 */
+	function EmployeeListAjax()
+	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
@@ -108,14 +217,17 @@ class AppTemplateEmployee extends ApplicationTemplate {
 
 		// If only want non-archived Employees...
 		$strWhere = "Id != ". USER_ID;
-		if (DBO()->Search->Archived->Value == "0") {
+		if (DBO()->Search->Archived->Value == "0")
+		{
 			$strWhere .= " AND Archived = 0";
 		}
 
 		$orderBy = "LastName, FirstName, UserName";
-		if (DBO()->Search->OrderBy->Value != "") {
+		if (DBO()->Search->OrderBy->Value != "")
+		{
 			$orderBy = DBO()->Search->OrderBy->Value;
-			if (DBO()->Search->OrderDesc->Value) {
+			if (DBO()->Search->OrderDesc->Value)
+			{
 				$orderBy .= " desc";
 			}
 		}
@@ -127,53 +239,78 @@ class AppTemplateEmployee extends ApplicationTemplate {
 
 		$this->LoadPage('employee_view_list');
 
-		return true;
+		return TRUE;
 	}
 
-	function EmployeeDetails() {
+	function EmployeeDetails()
+	{
 		AuthenticatedUser()->CheckAuth();
 		DBO()->Employee->Id = AuthenticatedUser()->GetUserId();
 		DBO()->Employee->Load();
-		return $this->Edit(true);
+		return $this->Edit(TRUE);
 	}
 
-	function Edit($bolEditSelf = false) {
-		AuthenticatedUser()->CheckAuth();
-		$bolAdminUser = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
-		$bolProperAdminUser = AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
-		$bolUserIsSelf = false;
 
-		if (DBO()->Employee->Id->Value != AuthenticatedUser()->GetUserId()) {
+	//------------------------------------------------------------------------//
+	// Edit
+	//------------------------------------------------------------------------//
+	/**
+	 * Edit()
+	 *
+	 * Edits or Creates a user
+	 *
+	 * @param void
+	 *
+	 * @return boolean	TRUE
+	 *
+	 * @method
+	 */
+	function Edit($bolEditSelf = FALSE)
+	{
+		AuthenticatedUser()->CheckAuth();
+		$bolAdminUser		= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		$bolProperAdminUser	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
+		$bolUserIsSelf		= FALSE;
+
+		if (DBO()->Employee->Id->Value != AuthenticatedUser()->GetUserId())
+		{
 			AuthenticatedUser()->PermissionOrDie($bolProperAdminUser);
-		} else {
-			$bolUserIsSelf = true;
+		}
+		else
+		{
+			$bolUserIsSelf = TRUE;
 		}
 
 		$bolEditSelf = $bolEditSelf || DBO()->Employee->EditSelf->Value;
 
 		//check if the form was submitted
-		if (SubmittedForm('Employee', 'Save')) {
+		if (SubmittedForm('Employee', 'Save'))
+		{
 			// Start the transaction
 			TransactionStart();
 
-			try {
+			try
+			{
 				// Determine if this is to be a new employee
 				$bolCreateNew = DBO()->Employee->Id->Value < 0;
 
 				$arrValidationErrors = array();
 
-				if ($bolCreateNew) {
+				if ($bolCreateNew)
+				{
 					DBO()->Employee->UserName = trim(DBO()->Employee->UserName->Value);
 					DBO()->Employee->UserName->ValidateProperty($arrValidationErrors, true);
-					if (!DBO()->Employee->UserName->IsInvalid()) {
-						$strWhere = "Employee.UserName = <UserName>";
-						$arrWhere = array("UserName" => DBO()->Employee->UserName->Value);
+					if (!DBO()->Employee->UserName->IsInvalid())
+					{
+						$strWhere	= "Employee.UserName = <UserName>";
+						$arrWhere	= array("UserName" => DBO()->Employee->UserName->Value);
 						DBL()->RecentCustomers->SetColumns(array("UserName"));
 						DBL()->RecentCustomers->SetTable("Employee");
 						DBL()->RecentCustomers->Where->Set($strWhere, $arrWhere);
 						DBL()->RecentCustomers->SetLimit(1);
 						DBL()->RecentCustomers->Load();
-						if (DBL()->RecentCustomers->RecordCount() > 0) {
+						if (DBL()->RecentCustomers->RecordCount() > 0)
+						{
 							DBO()->Employee->UserName->SetToInvalid();
 							$strLabel = DBO()->Employee->UserName->strGetLabel();
 							$arrValidationErrors[] = "$strLabel \"" . DBO()->Employee->UserName->Value . "\" is already in use.";
@@ -182,7 +319,8 @@ class AppTemplateEmployee extends ApplicationTemplate {
 					DBO()->Employee->is_god = 0;
 				}
 
-				if (!$bolEditSelf && $bolAdminUser) {
+				if (!$bolEditSelf && $bolAdminUser)
+				{
 					DBO()->Employee->FirstName = trim(DBO()->Employee->FirstName->Value);
 					DBO()->Employee->FirstName->ValidateProperty($arrValidationErrors, true, CONTEXT_DEFAULT, "IsNotEmptyString");
 					DBO()->Employee->LastName = trim(DBO()->Employee->LastName->Value);
@@ -208,12 +346,14 @@ class AppTemplateEmployee extends ApplicationTemplate {
 				// Check that the password has been entered and confirmed, as appropriate
 				$this->_ValidatePassword($arrValidationErrors, $bolCreateNew);
 
-				if (!$bolEditSelf && $bolAdminUser) {
+				if (!$bolEditSelf && $bolAdminUser)
+				{
 					// Sanitize the permissions that have been set
 					$this->_SetPrivileges();
 				}
 
-				if (!$bolCreateNew) {
+				if (!$bolCreateNew)
+				{
 					// Restrict the fields that can be updated
 					$updatedColumns = array();
 					$updatedColumns[] = "Email";
@@ -222,7 +362,8 @@ class AppTemplateEmployee extends ApplicationTemplate {
 					$updatedColumns[] = "Mobile";
 
 					// Only change the following through the admin console, not when editing self
-					if (!$bolEditSelf && $bolAdminUser) {
+					if (!$bolEditSelf && $bolAdminUser)
+					{
 						$updatedColumns[] = "FirstName";
 						$updatedColumns[] = "LastName";
 						$updatedColumns[] = "DOB";
@@ -232,7 +373,8 @@ class AppTemplateEmployee extends ApplicationTemplate {
 					}
 
 					// If changing the password, allow  it to be updated
-					if (!DBO()->Employee->Password->IsInvalid() && strlen(DBO()->Employee->Password->Value) > 0) {
+					if (!DBO()->Employee->Password->IsInvalid() && strlen(DBO()->Employee->Password->Value) > 0)
+					{
 						$updatedColumns[] = "PassWord";
 					}
 
@@ -241,7 +383,9 @@ class AppTemplateEmployee extends ApplicationTemplate {
 
 					// Need to specifiy the columns to be updated to ensure no other values are changed
 					DBO()->Employee->SetColumns($updatedColumns);
-				} else {
+				}
+				else
+				{
 					DBO()->Employee->DOB = GetCurrentDateForMySQL();
 
 					// Apply default values for non-nullable fields
@@ -254,104 +398,125 @@ class AppTemplateEmployee extends ApplicationTemplate {
 				}
 
 				//Save the employee
-				if (!DBO()->Employee->IsInvalid()) {
+				if (!DBO()->Employee->IsInvalid())
+				{
 					// This could update multiple tables, so needs to be done within a single transaction
 
 					//echo "Employee is NOT invalid Employee would be saved";
 
-					if (DBO()->Employee->Save()) {
-						if (Flex_Module::isActive(FLEX_MODULE_TICKETING)) {
+					if (DBO()->Employee->Save())
+					{
+						if (Flex_Module::isActive(FLEX_MODULE_TICKETING))
+						{
 							$currentUserTicketingPermission = Ticketing_User::getPermissionForEmployeeId(AuthenticatedUser()->GetUserId());
-							if ($bolUserIsSelf) {
+							if ($bolUserIsSelf)
+							{
 								$displayUserTicketingPermission = $currentUserTicketingPermission;
-							} else {
+							}
+							else
+							{
 								$displayUserTicketingPermission = Ticketing_User::getPermissionForEmployeeId(DBO()->Employee->Id->Value);
 							}
-							if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN) || (!$bolUserIsSelf && $currentUserTicketingPermission == TICKETING_USER_PERMISSION_ADMIN)) {
+							if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN) || (!$bolUserIsSelf && $currentUserTicketingPermission == TICKETING_USER_PERMISSION_ADMIN))
+							{
 								Ticketing_User::setPermissionForEmployeeId(DBO()->Employee->Id->Value, intval(DBO()->ticketing_user->permission->Value));
 							}
 						}
 
 						// If the user has the Sales privilege then create/update their dealer record
 						$intEmployeePerms = DBO()->Employee->Privileges->Value;
-						if (Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL)) {
-							try {
-								$bolModifiedDealerTable = false;
-								$objDealerConfig = Dealer_Config::getConfig();
-								$objDefaultEmployeeManagerDealer = ($objDealerConfig->defaultEmployeeManagerDealerId !== null)? Dealer::getForId($objDealerConfig->defaultEmployeeManagerDealerId) : null;
-								if (($intEmployeePerms & PERMISSION_SALES) == PERMISSION_SALES) {
-									// The Employee has the Sales permission
-									// Check if they already have a dealer record
-									$objDealer = Dealer::getForEmployeeId(DBO()->Employee->Id->Value);
+						try
+						{
+							$bolModifiedDealerTable = FALSE;
+							$objDealerConfig = Dealer_Config::getConfig();
+							$objDefaultEmployeeManagerDealer = ($objDealerConfig->defaultEmployeeManagerDealerId !== NULL)? Dealer::getForId($objDealerConfig->defaultEmployeeManagerDealerId) : NULL;
+							if (($intEmployeePerms & PERMISSION_SALES) == PERMISSION_SALES)
+							{
+								// The Employee has the Sales permission
+								// Check if they already have a dealer record
+								$objDealer = Dealer::getForEmployeeId(DBO()->Employee->Id->Value);
 
-									if ($objDealer === null && DBO()->Employee->Archived->Value == 0) {
-										// A dealer record doesn't exist, but the employee is active, so create one
-										$objDealer = new Dealer();
+								if ($objDealer === NULL && DBO()->Employee->Archived->Value == 0)
+								{
+									// A dealer record doesn't exist, but the employee is active, so create one
+									$objDealer = new Dealer();
 
-										// All employees get the "can verify" flag, initially
-										$objDealer->canVerify = true;
-										$objDealer->gstRegistered = false;
-										$objDealer->syncSaleConstraints = true;
-										$objDealer->clawbackPeriod = 0;
-										$objDealer->createdOn = GetCurrentISODateTime();
-										$objDealer->upLineId = $objDealerConfig->defaultEmployeeManagerDealerId;
-									}
-
-									if ($objDealer !== null) {
-										if ($objDealer->id !== null && DBO()->Employee->Archived->Value) {
-											// The dealer is already established, but has been archived
-											// Make sure they are not currently set as the default Employee Manager
-											if ($objDefaultEmployeeManagerDealer !== null && $objDealer->id === $objDefaultEmployeeManagerDealer->id) {
-												throw new Exception("This employee is currently set up as the Default Manager for employee dealers and therefore can not be archived.  If you wish to archive this employee, then please declare a different Default Manager for employee dealers.");
-											}
-										}
-
-										// Update the record
-										$objDealer->firstName = DBO()->Employee->FirstName->Value;
-										$objDealer->lastName = DBO()->Employee->LastName->Value;
-										$objDealer->username = DBO()->Employee->UserName->Value;
-										$objDealer->password = DBO()->Employee->PassWord->Value;
-										$objDealer->phone = DBO()->Employee->Phone->Value;
-										$objDealer->mobile = DBO()->Employee->Mobile->Value;
-										$objDealer->email = DBO()->Employee->Email->Value;
-										$objDealer->dealerStatusId = (DBO()->Employee->Archived->Value == 0)? Dealer_Status::ACTIVE : Dealer_Status::INACTIVE;
-										$objDealer->employeeId = DBO()->Employee->Id->Value;
-										$objDealer->save();
-										$bolModifiedDealerTable = true;
-									}
-								} else {
-									// The employee doesn't have the sales permission
-									// If they have a related dealer record, then de-activate it, but check that they are not currently set as the Default Manager for Employee Dealers
-									$objDealer = Dealer::getForEmployeeId(DBO()->Employee->Id->Value);
-									if ($objDealer !== null && $objDealer->dealerStatusId != Dealer_Status::INACTIVE) {
-										// A dealer record exists and it isn't set to inactive, so set it
-
-										// Check that the dealer isn't currently set as the Default Manager for Employee Dealers
-										if ($objDefaultEmployeeManagerDealer !== null && $objDefaultEmployeeManagerDealer->id == $objDealer->id) {
-											throw new Exception("This employee is currently set up as the Default Manager for employee dealers and therefore must keep the sales permission.  If you wish to remove this employee's sales permission, then please declare a different Default Manager for employee dealers.");
-										}
-
-										$objDealer->dealerStatusId = Dealer_Status::INACTIVE;
-										$objDealer->save();
-										$bolModifiedDealerTable = true;
-									}
+									// All employees get the "can verify" flag, initially
+									$objDealer->canVerify			= TRUE;
+									$objDealer->gstRegistered		= FALSE;
+									$objDealer->syncSaleConstraints	= TRUE;
+									$objDealer->clawbackPeriod		= 0;
+									$objDealer->createdOn			= GetCurrentISODateTime();
+									$objDealer->upLineId			= $objDealerConfig->defaultEmployeeManagerDealerId;
 								}
 
-							} catch (Exception $e) {
-								TransactionRollback();
-								Ajax()->AddCommand("Alert", "Error doing dealer stuff<br />". $e->getMessage());
-								return true;
+								if ($objDealer !== NULL)
+								{
+									if ($objDealer->id !== NULL && DBO()->Employee->Archived->Value)
+									{
+										// The dealer is already established, but has been archived
+										// Make sure they are not currently set as the default Employee Manager
+										if ($objDefaultEmployeeManagerDealer !== NULL && $objDealer->id === $objDefaultEmployeeManagerDealer->id)
+										{
+											throw new Exception("This employee is currently set up as the Default Manager for employee dealers and therefore can not be archived.  If you wish to archive this employee, then please declare a different Default Manager for employee dealers.");
+										}
+									}
+
+									// Update the record
+									$objDealer->firstName		= DBO()->Employee->FirstName->Value;
+									$objDealer->lastName		= DBO()->Employee->LastName->Value;
+									$objDealer->username		= DBO()->Employee->UserName->Value;
+									$objDealer->password		= DBO()->Employee->PassWord->Value;
+									$objDealer->phone			= DBO()->Employee->Phone->Value;
+									$objDealer->mobile			= DBO()->Employee->Mobile->Value;
+									$objDealer->email			= DBO()->Employee->Email->Value;
+									$objDealer->dealerStatusId	= (DBO()->Employee->Archived->Value == 0)? Dealer_Status::ACTIVE : Dealer_Status::INACTIVE;
+									$objDealer->employeeId		= DBO()->Employee->Id->Value;
+									$objDealer->save();
+									$bolModifiedDealerTable = TRUE;
+								}
 							}
+							else
+							{
+								// The employee doesn't have the sales permission
+								// If they have a related dealer record, then de-activate it, but check that they are not currently set as the Default Manager for Employee Dealers
+								$objDealer = Dealer::getForEmployeeId(DBO()->Employee->Id->Value);
+								if ($objDealer !== NULL && $objDealer->dealerStatusId != Dealer_Status::INACTIVE)
+								{
+									// A dealer record exists and it isn't set to inactive, so set it
+
+									// Check that the dealer isn't currently set as the Default Manager for Employee Dealers
+									if ($objDefaultEmployeeManagerDealer !== NULL && $objDefaultEmployeeManagerDealer->id == $objDealer->id)
+									{
+										throw new Exception("This employee is currently set up as the Default Manager for employee dealers and therefore must keep the sales permission.  If you wish to remove this employee's sales permission, then please declare a different Default Manager for employee dealers.");
+									}
+
+									$objDealer->dealerStatusId = Dealer_Status::INACTIVE;
+									$objDealer->save();
+									$bolModifiedDealerTable = TRUE;
+								}
+							}
+
+						}
+						catch (Exception $e)
+						{
+							TransactionRollback();
+							Ajax()->AddCommand("Alert", "Error doing dealer stuff<br />". $e->getMessage());
+							return TRUE;
 						}
 
 						// All Database interactions were successfull
 						TransactionCommit();
 
-						if (isset($bolModifiedDealerTable) && $bolModifiedDealerTable && Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL)) {
+						if (isset($bolModifiedDealerTable) && $bolModifiedDealerTable && Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL))
+						{
 							// Dealer table has been modified, trigger the sync operation
-							try {
+							try
+							{
 								Cli_App_Sales::pushAll();
-							} catch (Exception $e) {
+							}
+							catch (Exception $e)
+							{
 								// Pushing the data failed
 								$strWarning = "Pushing the data from Flex to the Sales database, failed. Contact your system administrators to have them manually trigger the data push.  (Error message: ". htmlspecialchars($e->getMessage()) .")";
 							}
@@ -360,30 +525,36 @@ class AppTemplateEmployee extends ApplicationTemplate {
 
 						$scriptInit = "";
 						$scriptOnClose = "";
-						if ($bolEditSelf) {
+						if ($bolEditSelf)
+						{
 							$scriptInit = "document.getElementsByTagName('TABLE')[0].style.display = 'none';";
 							$scriptOnClose .= "Vixen.Popup.Close('CloseFlexModalWindow');";
-						} else {
+						}
+						else
+						{
 							$scriptInit .= "Vixen.Popup.Close('" . $this->_objAjax->strId . "');";
 							//$scriptInit .= "EmployeeView.Update();";
 							$scriptOnClose .= "EmployeeView.Update();";
 						}
-						$scriptInit = "Vixen.Popup.Close('{$this->_objAjax->strId}');";
-						$scriptOnClose = "if (window.EmployeeView) {EmployeeView.Update();}";
+						$scriptInit		= "Vixen.Popup.Close('{$this->_objAjax->strId}');";
+						$scriptOnClose	= "if (window.EmployeeView) {EmployeeView.Update();}";
 
 						$arrParams = array();
 						$arrParams["Message"] = "The information was successfully saved.";
-						if (isset($strWarning)) {
+						if (isset($strWarning))
+						{
 							$arrParams["Message"] .= "<br />$strWarning";
 						}
 						$arrParams["ScriptInit"] = $scriptInit;
 						$arrParams["ScriptOnClose"] = $scriptOnClose;
 
 						Ajax()->AddCommand("AlertAndExecuteJavascript", $arrParams);
-						return true;
+						return TRUE;
 					}
 				}
-			} catch(Exception $e) {
+			}
+			catch(Exception $e)
+			{
 
 			}
 
@@ -391,14 +562,17 @@ class AppTemplateEmployee extends ApplicationTemplate {
 			TransactionRollback();
 
 			Ajax()->AddCommand("Alert", "The information could not be saved.<br />Please correct the following: -<br />" . implode("<br />\n", $arrValidationErrors));
-			return true;
+			return TRUE;
 		}
 		DBO()->Employee->Load();
 		DBO()->Employee->EditSelf = $bolEditSelf;
 
-		if (!$this->IsModal()) {
+		if (!$this->IsModal())
+		{
 			$this->LoadPage('employee_edit');
-		} else {
+		}
+		else
+		{
 			$this->LoadPage('flex_modal_window');
 
 			// set the page title
@@ -408,26 +582,62 @@ class AppTemplateEmployee extends ApplicationTemplate {
 
 		}
 
-		return true;
+		return TRUE;
 	}
 
-	function Create() {
+
+	//------------------------------------------------------------------------//
+	// Create
+	//------------------------------------------------------------------------//
+	/**
+	 * Create()
+	 *
+	 * Creates a new user
+	 *
+	 * @param void
+	 *
+	 * @return boolean	TRUE
+	 *
+	 * @method
+	 */
+	function Create()
+	{
 		return $this->Edit();
 	}
 
-	private function _SetPrivileges() {
+	//------------------------------------------------------------------------//
+	// _SetPrivileges
+	//------------------------------------------------------------------------//
+	/**
+	 * _SetPrivileges()
+	 *
+	 * Set the privileges on the user
+	 *
+	 * Set the privileges on the user, converting from an array to a single value
+	 * and preserving any privileges that should not be changed by the current user
+	 *
+	 * @param void
+	 *
+	 * @return void
+	 *
+	 * @method
+	 */
+	private function _SetPrivileges()
+	{
 		// This is the old way, when each permission was a single bit, but now, some permissions automatically include others
 		//$proposedPrivileges = array_sum(DBO()->Employee->Privileges->Value);
 
 		// Logically OR all the privileges together
 		$arrPrivileges = DBO()->Employee->Privileges->Value;
 		$proposedPrivileges = 0;
-		foreach ($arrPrivileges as $intPrivilege) {
+		foreach ($arrPrivileges as $intPrivilege)
+		{
 			$proposedPrivileges = $proposedPrivileges | $intPrivilege;
 		}
 
 		$originalPrivileges = 0;
-		if (DBO()->Employee->Id->Value >= 0) {
+		if (DBO()->Employee->Id->Value >= 0)
+		{
 			// Need to get the current privileges of the user
 			DBO()->CurrentEmployee->SetTable("Employee");
 			DBO()->CurrentEmployee->Id = DBO()->Employee->Id->Value;
@@ -437,27 +647,52 @@ class AppTemplateEmployee extends ApplicationTemplate {
 
 		// Don't allow super admin, god or debug privileges to be changed
 		//$proposed = $this->_PreservePrivileges($originalPrivileges, $proposedPrivileges, PERMISSION_SUPER_ADMIN | PERMISSION_DEBUG);
-		$proposed = $this->_PreservePrivileges($originalPrivileges, $proposedPrivileges, array(PERMISSION_DEBUG, USER_PERMISSION_GOD));
+		$proposed = $this->_PreservePrivileges($originalPrivileges, $proposedPrivileges, Array(PERMISSION_DEBUG, USER_PERMISSION_GOD));
 
-		if (!AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN)) {
+		if (!AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
+		{
 			// The user isn't a SuperAdmin, so don't allow them to change the CustomerGroupAdmin privilege, or the KB_ADMIN_USER privilege or the Credit Management privilege
-			$proposed = $this->_PreservePrivileges($originalPrivileges, $proposed, array(PERMISSION_CUSTOMER_GROUP_ADMIN, PERMISSION_KB_ADMIN_USER, PERMISSION_CREDIT_MANAGEMENT));
+			$proposed = $this->_PreservePrivileges($originalPrivileges, $proposed, Array(PERMISSION_CUSTOMER_GROUP_ADMIN, PERMISSION_KB_ADMIN_USER, PERMISSION_CREDIT_MANAGEMENT));
 		}
 
 		DBO()->Employee->Privileges = $proposed;
 	}
 
-	private function _PreservePrivileges($intOriginal, $intProposed, $mixPrivileges) {
-		$arrPrivileges = (is_array($mixPrivileges))? $mixPrivileges : array($mixPrivileges);
+	//------------------------------------------------------------------------//
+	// _PreservePrivileges
+	//------------------------------------------------------------------------//
+	/**
+	 * _PreservePrivileges()
+	 *
+	 * Preserve privileges that exist in an original set and prevent addition in a proposed set
+	 *
+	 * Preserve privileges that exist in an original set and prevent addition in a proposed set
+	 *
+	 * @param int $intOriginal		Original set of privileges containing those to be preserved
+	 * @param int $intProposed		Proposed set of privileges
+	 * @param int $mixPrivileges	int:	Privilege to be preserved
+	 * 								array:	array of privileges to be preserved
+	 *
+	 * @return int 					modified list of proposed privileges
+	 * @method
+	 */
+	private function _PreservePrivileges($intOriginal, $intProposed, $mixPrivileges)
+	{
+		$arrPrivileges = (is_array($mixPrivileges))? $mixPrivileges : Array($mixPrivileges);
 
 		//TODO! iterate through the array of privileges, and if it is in $original, then remove it from $proposed
-		foreach ($arrPrivileges as $intPrivilege) {
-			if (($intOriginal & $intPrivilege) == $intPrivilege) {
+		foreach ($arrPrivileges as $intPrivilege)
+		{
+			if (($intOriginal & $intPrivilege) == $intPrivilege)
+			{
 				// The privilege is in the original.  Add it to the proposed
 				$intProposed = $intProposed | $intPrivilege;
-			} else {
+			}
+			else
+			{
 				// The privilege is not in the original.  Remove it from the proposed, but only if it is in the proposed
-				if (($intProposed & $intPrivilege) == $intPrivilege) {
+				if (($intProposed & $intPrivilege) == $intPrivilege)
+				{
 					$intProposed = $intProposed - $intPrivilege;
 				}
 
@@ -477,28 +712,51 @@ class AppTemplateEmployee extends ApplicationTemplate {
 		*/
 	}
 
-	private function _ValidatePassword(&$arrValidationErrors, $bolCreateNew) {
+
+	//------------------------------------------------------------------------//
+	// _ValidatePassword
+	//------------------------------------------------------------------------//
+	/**
+	 * _ValidatePassword()
+	 *
+	 * Validates the passwords array stored in the DBO()->Employee->Password property
+	 *
+	 * @param array		&$arrValidationErrors	Array to which and error messages will be added
+	 * @param boolean	$bolCreateNew			Whether the validation is for a new user or not
+	 *
+	 * @return void
+	 *
+	 * @method
+	 */
+	private function _ValidatePassword(&$arrValidationErrors, $bolCreateNew)
+	{
 		// Validate that the password has been submitted as a 2 value array
-		if (!is_array(DBO()->Employee->Password->Value) || count(DBO()->Employee->Password->Value) != 2) {
+		if (!is_array(DBO()->Employee->Password->Value) || count(DBO()->Employee->Password->Value) != 2)
+		{
 			DBO()->Employee->Password = "";
 			DBO()->Employee->Password->SetToInvalid();
 			$arrValidationErrors[] = "Password must be entered twice.";
 		}
 		// Check that neither value is empty
-		else if (strlen(DBO()->Employee->Password->Value[0]) == 0 || strlen(DBO()->Employee->Password->Value[1]) == 0) {
+		else if (strlen(DBO()->Employee->Password->Value[0]) == 0 || strlen(DBO()->Employee->Password->Value[1]) == 0)
+		{
 			$bolPasswordEntered = (strlen(DBO()->Employee->Password->Value[0]) + strlen(DBO()->Employee->Password->Value[1])) > 0;
 			DBO()->Employee->Password = "";
-			if ($bolCreateNew || $bolPasswordEntered) {
+			if ($bolCreateNew || $bolPasswordEntered)
+			{
 				DBO()->Employee->Password->SetToInvalid();
 				$arrValidationErrors[] = "Both Password and Password Confirmation are required.";
 			}
 		}
 		// Check that the values are the same
-		else if (DBO()->Employee->Password->Value[0] != DBO()->Employee->Password->Value[1]) {
+		else if (DBO()->Employee->Password->Value[0] != DBO()->Employee->Password->Value[1])
+		{
 			DBO()->Employee->Password = "";
 			DBO()->Employee->Password->SetToInvalid();
 			$arrValidationErrors[] = "Password does not match Password Confirmation.";
-		} else {
+		}
+		else
+		{
 			// Set the validated password value into the password property
 			DBO()->Employee->PassWord = sha1(DBO()->Employee->Password->Value[0]);
 			DBO()->Employee->Password = DBO()->Employee->Password->Value[0];
@@ -506,3 +764,4 @@ class AppTemplateEmployee extends ApplicationTemplate {
 	}
 
 }
+?>

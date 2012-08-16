@@ -319,7 +319,7 @@ class CarrierModule
 	 	$bolFailed	= FALSE;
 	 	foreach ($this->_arrModuleConfig as $strName=>$arrProperties)
 	 	{
-	 		if (!$arrProperties['AutoUpdate'])
+	 		if (!isset($arrProperties['AutoUpdate']) || !$arrProperties['AutoUpdate'])
 	 		{
 	 			// This field does not get updated
 	 			continue;

@@ -340,7 +340,9 @@ class Cli_App_Rating extends Cli
 		}
 		
 		$fTotalTime	= $oStopwatch->split();
-		Log::getLog()->log("Rated {$iTotalCDRs} CDRs in ".round($fTotalTime, 2).' seconds (average '.round(($fTotalTime / $iTotalCDRs), 2).' CDRs/second)');
+		if ($iTotalCDRs > 0) {
+			Log::getLog()->log("Rated {$iTotalCDRs} CDRs in ".round($fTotalTime, 2).' seconds (average '.round(($fTotalTime / $iTotalCDRs), 2).' CDRs/second)');
+		}
 		
 		return $aCDRChanges;
 	}

@@ -199,24 +199,20 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 			$dboRatePlan->CustomerGroup->RenderOutput();
 			
 			$intFullService = $dboRatePlan->CarrierFullService->Value;
-			if (!isset($GLOBALS['*arrConstant']['Carrier'][$intFullService]))
-			{
+			$oCarrierFullService = Carrier::getForId($intFullService);
+			if ($oCarrierFullService === null) {
 				$strFullService = "[Not Specified]";
-			}
-			else
-			{
-				$strFullService = $GLOBALS['*arrConstant']['Carrier'][$intFullService]['Description'];
+			} else {
+				$strFullService = $oCarrierFullService->description;
 			}
 			$dboRatePlan->CarrierFullService->RenderArbitrary($strFullService, RENDER_OUTPUT);
 			
 			$intPreselection = $dboRatePlan->CarrierPreselection->Value;
-			if (!isset($GLOBALS['*arrConstant']['Carrier'][$intPreselection]))
-			{
+			$oCarrierPreselection = Carrier::getForId($intPreselection);
+			if ($oCarrierPreselection === null) {
 				$strPreselection = "[Not Specified]";
-			}
-			else
-			{
-				$strPreselection = $GLOBALS['*arrConstant']['Carrier'][$intPreselection]['Description'];
+			} else {
+				$strPreselection = $oCarrierPreselection->description;
 			}
 			$dboRatePlan->CarrierPreselection->RenderArbitrary($strPreselection, RENDER_OUTPUT);
 			

@@ -5403,17 +5403,19 @@ function CreateDefaultPaymentTerms($customerGroupId)
 			if ($arrDetails['CarrierId'] !== NULL && array_search($arrDetails['CarrierId'], $arrAutomaticallyBarrableCarriers) !== FALSE)
 			{
 				// Write the record to bar the service
+				$sNow		= new MySQLFunction('NOW()');
 				$arrColumns = array(
-					'AccountGroup' 		=> $intAccountGroup,
-					'Account'			=> $intAccountId,
-					'Service'			=> $intServiceId,
-					'FNN'				=> $arrDetails['FNN'],
-					'Employee'			=> USER_ID,
-					'Carrier'			=> $arrDetails['CarrierId'],
-					'Type'				=> PROVISIONING_TYPE_BAR,
-					'RequestedOn'		=> new MySQLFunction('NOW()'),
-					'AuthorisationDate'	=> new MySQLFunction('NOW()'),
-					'Status'			=> REQUEST_STATUS_WAITING,
+					'AccountGroup' 			=> $intAccountGroup,
+					'Account'				=> $intAccountId,
+					'Service'				=> $intServiceId,
+					'FNN'					=> $arrDetails['FNN'],
+					'Employee'				=> USER_ID,
+					'Carrier'				=> $arrDetails['CarrierId'],
+					'Type'					=> PROVISIONING_TYPE_BAR,
+					'RequestedOn'			=> $sNow,
+					'AuthorisationDate'		=> $sNow,
+					'scheduled_datetime'	=> $sNow,
+					'Status'				=> REQUEST_STATUS_WAITING
 				);
 				$insProvisioningRequest = new StatementInsert('ProvisioningRequest', $arrColumns, FALSE);
 				$mxdResult = $insProvisioningRequest->Execute($arrColumns);
@@ -5474,17 +5476,19 @@ function CreateDefaultPaymentTerms($customerGroupId)
 			if ($arrDetails['CarrierId'] !== NULL && array_search($arrDetails['CarrierId'], $arrAutomaticallyUnbarrableCarriers) !== FALSE)
 			{
 				// Write the record to unbar the service
+				$sNow		= new MySQLFunction('NOW()');
 				$arrColumns = array(
-					'AccountGroup' 		=> $intAccountGroup,
-					'Account'			=> $intAccountId,
-					'Service'			=> $intServiceId,
-					'FNN'				=> $arrDetails['FNN'],
-					'Employee'			=> USER_ID,
-					'Carrier'			=> $arrDetails['CarrierId'],
-					'Type'				=> PROVISIONING_TYPE_UNBAR,
-					'RequestedOn'		=> new MySQLFunction('NOW()'),
-					'AuthorisationDate'	=> new MySQLFunction('NOW()'),
-					'Status'			=> REQUEST_STATUS_WAITING,
+					'AccountGroup' 			=> $intAccountGroup,
+					'Account'				=> $intAccountId,
+					'Service'				=> $intServiceId,
+					'FNN'					=> $arrDetails['FNN'],
+					'Employee'				=> USER_ID,
+					'Carrier'				=> $arrDetails['CarrierId'],
+					'Type'					=> PROVISIONING_TYPE_UNBAR,
+					'RequestedOn'			=> $sNow,
+					'AuthorisationDate'		=> $sNow,
+					'scheduled_datetime'	=> $sNow,
+					'Status'				=> REQUEST_STATUS_WAITING
 				);
 				$insProvisioningRequest = new StatementInsert('ProvisioningRequest', $arrColumns, FALSE);
 				$mxdResult = $insProvisioningRequest->Execute($arrColumns);

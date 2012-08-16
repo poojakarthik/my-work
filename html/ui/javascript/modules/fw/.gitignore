@@ -1,0 +1,6 @@
+# Generic/OS
+.DS_Store
+
+# Editor files
+*.sublime-project
+*.sublime-workspace
