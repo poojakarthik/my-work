@@ -142,6 +142,8 @@ class Service extends ORM
 	public function changePlan($mixRatePlan, $bolStartThisBillingPeriod=TRUE, $bolForceChangeIfPlanIsArchived=FALSE)
 	{
 		$objAccount	= new Account(array('Id'=>$this->Account), FALSE, TRUE);
+		$intUserId = Flex::getUserId();
+		$intUserId = ($intUserId) ? $intUserId : Employee::SYSTEM_EMPLOYEE_ID;
 		
 		// Check if the billing/invoice process is being run
 		if (Invoice_Run::checkTemporary($objAccount->customerGroup, $objAccount->id))
@@ -274,7 +276,7 @@ class Service extends ORM
 				"Account"				=> $this->Account,
 				"Service"				=> $this->Id,
 				"FNN"					=> $this->FNN,
-				"Employee"				=> AuthenticatedUser()->_arrUser['Id'],
+				"Employee"				=> $intUserId,
 				"Carrier"				=> NULL,
 				"Type"					=> NULL,
 				"RequestedOn"			=> $sNow,
@@ -302,8 +304,6 @@ class Service extends ORM
 		}
 		
 		// Add a system note describing the change of plan
-		$intUserId			= Flex::getUserId();
-		$intUserId			= ($intUserId) ? $intUserId : 0;
 		$strCurrentRatePlan	= ($objCurrentRatePlan) ? $objCurrentRatePlan->Name : "undefined";
 		$strNote  			= "This service has had its plan changed from '{$strCurrentRatePlan}' to '{$objNewRatePlan->Name}'.  $strNotePlanStart";
 		Note::createSystemNote($strNote, $intUserId, $this->Account, $this->Id);
