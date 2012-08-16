@@ -284,15 +284,15 @@ class Service extends ORM
 				'scheduled_datetime'	=> $strStartDatetime,
 				"Status"				=> REQUEST_STATUS_WAITING
 			);
-			
+			/*
 			// Full Service Request
-			$aRequestData['Carrier']	= $this->Carrier;
+			$aRequestData['Carrier']	= $objNewRatePlan->CarrierFullService;
 			$aRequestData['Type']		= PROVISIONING_TYPE_FULL_SERVICE_PLAN_CHANGE;
 			$oFullServiceRequest 		= new Provisioning_Request($aRequestData);
 			$oFullServiceRequest->save();
 			
 			// Preselection Request
-			$aRequestData['Carrier'] 	= $this->CarrierPreselect;
+			$aRequestData['Carrier'] 	= $objNewRatePlan->CarrierPreselection;
 			$aRequestData['Type']		= PROVISIONING_TYPE_PRESELECTION_PLAN_CHANGE;
 			$oPreSelectionRequest 		= new Provisioning_Request($aRequestData);
 			$oPreSelectionRequest->save();
@@ -300,6 +300,7 @@ class Service extends ORM
 			// Update the ServiceRatePlan with the provisioning_request_ids
 			$oNewServiceRatePlan->fullservice_provisioning_request_id = $oFullServiceRequest->id;
 			$oNewServiceRatePlan->preselection_provisioning_request_id = $oPreSelectionRequest->id;
+			*/
 			$oNewServiceRatePlan->save();
 		}
 		
