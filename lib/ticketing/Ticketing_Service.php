@@ -1,92 +1,303 @@
 <?php
 
-// Ensure that the Zend folder (lib) is in the incoude path
-//set_include_path(get_include_path() . PATH_SEPARATOR . realpath(dirname(__FILE__) . '/' . ".." . '/'));
-
-// Load the Zend mail library (used for retrieving and parsing emails)
-//require_once 'Zend/Mail.php';
-
 // Load other required classes
 require_once dirname(__FILE__).'/Ticketing_Ticket.php';
 
-
-function glog($str)
-{
-	$f = fopen('php://stdout', 'w');
-	fwrite($f, $str . "\n");
-	fclose($f);
-}
-
-
-class Ticketing_Service
-{
+class Ticketing_Service {
 	const LOGGING_ENABLED = true;
-	
-	protected static function _log($sMessage, $bNewLine=true) {
-		if (self::LOGGING_ENABLED) {
-			Log::getLog()->log($sMessage, $bNewLine);
-		}
-	}
-	
-	public static function loadEmails()
-	{
-		// Load the ticketing configuration
-		$config = Ticketing_Config::load();
-
-		switch(strtoupper($config->protocol))
-		{
+		
+	public static function loadEmails() {
+		$oTicketingConfig = Ticketing_Config::load();
+		switch(strtoupper($oTicketingConfig->protocol)) {
 			case 'XML':
-				$outcome = self::loadXmlFiles();
+				Flex::assert(false, "Trying to load ticketing email from XML. Change the ticketing_config to use IMAP it is the only current supported implementation");
+				$mOutcome = self::_loadXmlFiles();
 				break;
 
 			default:
-				$outcome = self::loadFromMailServer();
+				Log::get()->logIf(self::LOGGING_ENABLED, "[*] Loading Emails (Protocol: {$oTicketingConfig->protocol})");
+				$mOutcome = self::_loadFromMailServer();
 				break;
 		}
-
-		return $outcome;
+		return $mOutcome;
 	}
 
-	public static function loadXmlFiles()
-	{
+	// ===========================================
+	// Mail Server Implementation
+	// ===========================================
+
+	private static function _loadFromMailServer() {
+		$oDataAccess = DataAccess::getDataAccess();
+		$oDataAccess->TransactionStart(false);
+		try {
+			// Connect to the email storage
+			$oStorage = self::_getEmailStorage();
+
+			// Find out how many emails there are
+			Log::get()->logIf(self::LOGGING_ENABLED, "[*] Getting list of emails");
+			$aUniqueMessageIds = $oStorage->getUniqueId();
+			$iMessages = count($aUniqueMessageIds);
+			if (!$iMessages) {
+				Log::get()->logIf(self::LOGGING_ENABLED, "[*] No messages");
+				return 0;
+			} else {
+				Log::get()->logIf(self::LOGGING_ENABLED, "[*] Number of messages: {$iMessages}");
+			}
+
+			$aMessageIdsToArchive = array();
+			foreach($aUniqueMessageIds as $sUniqueId) {
+				$iMessageNumber = $oStorage->getNumberByUniqueId($sUniqueId);
+				$oMessage = $oStorage->getMessage($iMessageNumber);
+				Log::get()->logIf(self::LOGGING_ENABLED, "[*] Message {$sUniqueId} (Message #: {$iMessageNumber})");
+				if (!$oMessage->hasFlag(Zend_Mail_Storage::FLAG_SEEN)) {
+					Log::get()->logIf(self::LOGGING_ENABLED, "[*] Unread");
+
+					// Process the email
+					// Get the details of the email
+					$sSubject = $oMessage->subject;
+					Log::get()->logIf(self::LOGGING_ENABLED, "[*] Subject: {$sSubject}");
+
+					$aParts = array();
+					self::_extractEmailParts($aParts, $oMessage);
+
+					Log::get()->logIf(self::LOGGING_ENABLED, "[*] Parts: ".var_export($aParts, true));
+
+					// Create a piece of correspondance
+					/*$ticketingMessage = new Ticketing_Correspondance($sSubject, $sMessage, $aAttachments);
+					Log::get()->logIf(self::LOGGING_ENABLED, "[*] Ticket number: ' . $ticketingMessage->getTicketNumber());
+					$ticketingMessage->save();
+
+					// and send am acknowledging email for.
+					$ticketingMessage->acknowledgeReceipt();*/
+				} else {
+					Log::get()->logIf(self::LOGGING_ENABLED, "[*] Already read");
+				}
+
+				$aMessageIdsToArchive[] = $iMessageNumber;
+				$oStorage->setFlags($iMessageNumber, array(Zend_Mail_Storage::FLAG_SEEN));
+			}
+
+			// Archive all processed messages
+			self::_archiveMessages($aMessageIdsToArchive, $oStorage);
+		} catch (Exception $oEx) {
+			// Something went wrong, rollback all changes
+			$oDataAccess->TransactionRollback(false);
+			throw $oEx;
+		}
+
+		$oDataAccess->TransactionCommit(false);
+		return count($aMessageIdsToArchive);
+	}
+
+	private static function _extractEmailParts(&$aParts, $oMessagePart, $bAlternative=false) {
+		// Find out if the message part is multipart
+		if ($oMessagePart->isMultipart()) {
+			Log::get()->logIf(self::LOGGING_ENABLED, "=========START========= MULTI  PART =========START========");
+
+			// For each part we need to extract the sub-parts
+			foreach ($oMessagePart as $oChildMessagePart) {
+				try {
+					Log::get()->logIf(self::LOGGING_ENABLED, "[*] Looking for content disposition");
+					$sDisposition = $oMessagePart->ContentDisposition;
+					Log::get()->logIf(self::LOGGING_ENABLED, "[*] Disposition = {$sDisposition}");
+				} catch(Exception $oException) {
+					Log::get()->logIf(self::LOGGING_ENABLED, "[!] Couldn't get disposition, none");
+					$sDisposition = "";
+				}
+
+				// Check out whether this is an 'alternative' section (i.e. We only need one section)
+				$bAlternative = false;
+				try {
+					$sType = $oMessagePart->ContentType;
+					if (stripos('multipart/alternative', trim(strtolower($sType))) === 0) {
+						$bAlternative = true;
+					}
+				} catch(Exception $oException) {
+					Log::get()->logIf(self::LOGGING_ENABLED, "[!] Couldn't get ContentType, none");
+					$sType = "";
+				}
+				self::_extractEmailParts($aParts, $oChildMessagePart, $bAlternative);
+			}
+			Log::get()->logIf(self::LOGGING_ENABLED, "[*] End Multipart");
+		} else {
+			// We have a single part.
+			Log::get()->logIf(self::LOGGING_ENABLED, "[*] Start single part");
+
+			// Check out whether or not this is 'inline' (part of the message body)
+			// We need to look at the content type and the disposition to decide what to do with it
+			try {
+				Log::get()->logIf(self::LOGGING_ENABLED, "[*] Looking for content disposition");
+				$sDisposition = $oMessagePart->ContentDisposition;
+				Log::get()->logIf(self::LOGGING_ENABLED, "[*] Disposition = $sDisposition");
+			} catch(Exception $oException) {
+				Log::get()->logIf(self::LOGGING_ENABLED, "[!] Couldn't get disposition: inline");
+				$sDisposition = "inline";
+			}
+
+			try {
+				$sType = $oMessagePart->ContentType;
+				Log::get()->logIf(self::LOGGING_ENABLED, "[*] Single part type: $sType");
+			} catch(Exception $oException) {
+				Log::get()->logIf(self::LOGGING_ENABLED, "[!] Couldn't get ContentType, none");
+				$sType = "";
+			}
+
+			$sContent = $oMessagePart->getContent();
+			$bText = stripos('text/', strtolower(trim($sType))) === 0;
+			if ($bText) {
+				if (stripos('text/html', strtolower(trim($sType))) === 0) {
+					$sContent = strip_tags(preg_replace(array("/\<style.*style *\>/i", "/\<script.*script *\>/i"), '', $sContent));
+				}
+			}
+
+			switch (strtolower(trim($sType))) {
+				case 'text/html':
+					// TODO: 
+					break;
+			}
+
+			$aParts[$sDisposition] = $oMessagePart->getContent();
+
+			Log::get()->logIf(self::LOGGING_ENABLED, "[*] End single part");
+		}
+	}
+
+	private static function _getEmailStorage() {
 		// Load the ticketing configuration
-		$config = Ticketing_Config::load();
+		$oTicketingConfig = Ticketing_Config::load();
+
+		Log::get()->logIf(self::LOGGING_ENABLED, "[*] Getting email storage");
+		$oStorage = NULL;
+		try {
+			switch(strtoupper($oTicketingConfig->protocol)) {
+				case 'POP3':
+					Flex::assert(false, "POP3 is not a supported ticketing email protocol, use IMAP instead");
+
+					// Connect to the POP3 mail server
+					require_once 'Zend/Mail/Storage/Pop3.php';
+					$oStorage = new Zend_Mail_Storage_Pop3(array('host'		=> $oTicketingConfig->host,
+																'user'		=> $oTicketingConfig->username,
+																'password'	=> $oTicketingConfig->password,
+																'port'		=> $oTicketingConfig->port));
+					break;
+
+				case 'IMAP':
+					// Connect to the IMAP mail server
+					require_once 'Zend/Mail/Storage/Imap.php';
+					Log::get()->logIf(self::LOGGING_ENABLED, "[*] IMAP Storage");
+					$oStorage = new Zend_Mail_Storage_Imap(array('host'		=> $oTicketingConfig->host,
+																'user'		=> $oTicketingConfig->username,
+																'password'	=> $oTicketingConfig->password,
+																'port'		=> $oTicketingConfig->port,
+																'ssl'		=> true));
+					break;
+
+				case 'MBOX':
+					Flex::assert(false, "MBOX is not a supported ticketing email protocol, use IMAP instead");
+
+					// Connect to the MBox mail directory
+					require_once 'Zend/Mail/Storage/Mbox.php';
+					$oStorage = new Zend_Mail_Storage_Mbox(array('dirname'	=> $oTicketingConfig->host));
+					break;
+
+				case 'MAILDIR':
+					Flex::assert(false, "MAILDIR is not a supported ticketing email protocol, use IMAP instead");
+
+					// Connect to the Maildir mail directory
+					require_once 'Zend/Mail/Storage/Maildir.php';
+					$oStorage = new Zend_Mail_Storage_Maildir(array('dirname'=> $oTicketingConfig->host));
+					break;
+
+				default:
+					throw new Exception('An unsupported mail protocol specified in the ticketing configuration: ' . $oTicketingConfig->protocol);
+			}
+	
+			if ($oStorage == NULL) {
+				throw new Exception('Error unknown.');
+			}
+		} catch (Exception $oException) {
+			throw new Exception('Failed to connect to mail storage: ' . $oException->getMessage());
+		}
+
+		return $oStorage;
+	}
+
+	private static function _archiveMessages($aMessageIdsToArchive, $oStorage) {
+		$sArchiveFolder = 'ditch';//Ticketing_Config::load()->archive_folder_name;
+		try {
+			Log::get()->logIf(self::LOGGING_ENABLED, "[*] Changing to folder '{$sArchiveFolder}'");
+			$oStorage->selectFolder($sArchiveFolder);
+			Log::get()->logIf(self::LOGGING_ENABLED, "[*] Successfully changed folder, changing back to the INBOX");
+			$oStorage->selectFolder('INBOX');
+		} catch(Zend_Mail_Storage_Exception $oException) {
+			Log::get()->logIf(self::LOGGING_ENABLED, "[!] No folder with name '{$sArchiveFolder}', creating it");
+			$oStorage->createFolder($sArchiveFolder);
+		}
+
+		// Move all messages to the folder
+		$aCopiedMessageIds = array();
+		try {
+			foreach ($aMessageIdsToArchive as $sMessageId) {
+				Log::get()->logIf(self::LOGGING_ENABLED, "[*] Copying message {$sMessageId}");
+				$oStorage->copyMessage($sMessageId, $sArchiveFolder);
+				$aCopiedMessageIds[] = $sMessageId;
+			}
+		} catch (Exception $oEx) {
+			// Failed to copy a message, move all of the copied messages back to the INBOX
+			foreach ($aCopiedMessageIds as $sMessageId) {
+				Log::get()->logIf(self::LOGGING_ENABLED, "[*] Copying message {$sMessageId} back to INBOX");
+				$oStorage->copyMessage($sMessageId, 'INBOX');
+			}
+
+			throw $oEx;
+		}
+
+		// All messages copied to the archive folder, remove them from the inbox
+		foreach ($aMessageIdsToArchive as $sMessageId) {
+			Log::get()->logIf(self::LOGGING_ENABLED, "[*] Removing message {$sMessageId}");
+			$oStorage->removeMessage($sMessageId);
+		}
+	}
+
+	// ===========================================
+	// XML Implementation
+	// ===========================================
+
+	private static function _loadXmlFiles() {
+		// Load the ticketing configuration
+		$oTicketingConfig = Ticketing_Config::load();
 
 		// Get the source directory
-		$strSourceDirectory = $config->getSourceDirectory();
+		$sSourceDirectory = $oTicketingConfig->getSourceDirectory();
 
 		// Get the backup directory
-		$strBackupDirectory = $config->getBackupDirectory();
+		$sBackupDirectory = $oTicketingConfig->getBackupDirectory();
 
 		// Get the junk mail directory
-		$strJunkDirectory = $config->getJunkDirectory();
+		$sJunkDirectory = $oTicketingConfig->getJunkDirectory();
 
 		// Assume the dir is in the host setting
-		$xmlFiles = glob($strSourceDirectory . '*.xml');
+		$xmlFiles = glob($sSourceDirectory . '*.xml');
 
-		foreach($xmlFiles as $xmlFile)
-		{
+		foreach($xmlFiles as $xmlFile) {
 			$correspondence = NULL;
 
-			try
-			{
+			try {
 				// Each email should be processed in its own db transaction,
 				// as each email will be deleted separately
 				$dbAccess = DataAccess::getDataAccess();
 				$dbAccess->TransactionStart();
 
 				// Parse the file
-				$details = self::parseXmlFile($xmlFile);
+				$details = self::_parseXmlFile($xmlFile);
 
-				if ($details === FALSE)
-				{
+				if ($details === false) {
 					continue;
 				}
 
 				// Check that there is a sender
-				$correspondence = FALSE;
-				if (array_key_exists('from', $details))
-				{
+				$correspondence = false;
+				if (array_key_exists('from', $details)) {
 					// Set delivery status to received (this is inbound)
 					$details['delivery_status'] = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_RECEIVED; //
 	
@@ -102,65 +313,50 @@ class Ticketing_Service
 					// Load the details into the ticketing system
 					$correspondence = Ticketing_Correspondance::createForDetails($details);
 					// If a correspondence was created...
-					if ($correspondence)
-					{
+					if ($correspondence) {
 						// Acknowledge receipt of the correspondence
 						$correspondence->acknowledgeReceipt();
 					}
 				}
 
 				// Determine whether we will be backing up files
-				$bolBackup = $correspondence ? ($strBackupDirectory ? TRUE : FALSE) : ($strJunkDirectory ? TRUE : FALSE);
-				$strMoveToDir = $correspondence ? $strBackupDirectory : $strJunkDirectory;
+				$bBackup = $correspondence ? ($sBackupDirectory ? true : false) : ($sJunkDirectory ? true : false);
+				$sMoveToDir = $correspondence ? $sBackupDirectory : $sJunkDirectory;
 
 				$dbAccess->TransactionCommit();
-			}
-			catch (Exception $exception)
-			{
+			} catch (Exception $oException) {
 				$dbAccess->TransactionRollback();
-				throw $exception;
+				throw $oException;
 			}
 
 			// Backup or remove files as required
-			for ($i = 1; $i <= 2; $i++)
-			{
-				foreach ($details['files_to_remove'] as $path)
-				{
-					if (file_exists($path))
-					{
-						$strRealPath = realpath($path);
+			for ($i = 1; $i <= 2; $i++) {
+				foreach ($details['files_to_remove'] as $path) {
+					if (file_exists($path)) {
+						$sRealPath = realpath($path);
 
 						// First run through we move / remove the files
-						if ($i == 1 && is_file($strRealPath))
-						{
-							if ($bolBackup)
-							{
+						if ($i == 1 && is_file($sRealPath)) {
+							if ($bBackup) {
 								// Work out the location for the backup
-								$newPath = str_replace($strSourceDirectory, $strMoveToDir, $strRealPath);
+								$newPath = str_replace($sSourceDirectory, $sMoveToDir, $sRealPath);
 								// Ensure the directory exists
-								self::mkdir(dirname($newPath));
+								self::_mkdir(dirname($newPath));
 								// Move the file to the new location
 								rename($path, $newPath);
-							}
-							else
-							{
+							} else {
 								// We don't care about the file. Just remove it
 								@unlink($path);
 							}
-						}
-
-						// On the second pass we can remove any directories
-						// (can't do this on the first pass as they may contain the files we are backing up)
-						else if ($i == 2 && is_dir($strRealPath))
-						{
-							$baseDir = realpath($strSourceDirectory);
-							while ($baseDir != $strRealPath && strpos($strRealPath, $baseDir) === 0)
-							{
-								@rmdir($strRealPath);
-								$strRealPath = realpath(dirname($strRealPath));
+						} else if ($i == 2 && is_dir($sRealPath)) {
+							// On the second pass we can remove any directories
+							// (can't do this on the first pass as they may contain the files we are backing up)
+							$baseDir = realpath($sSourceDirectory);
+							while ($baseDir != $sRealPath && strpos($sRealPath, $baseDir) === 0) {
+								@rmdir($sRealPath);
+								$sRealPath = realpath(dirname($sRealPath));
 							}
 						}
-
 					}
 				}
 			}
@@ -168,23 +364,20 @@ class Ticketing_Service
 		}
 	}
 
-	private static function mkdir($path)
-	{
+	private static function _mkdir($path) {
 		$parentDir = dirname($path);
-		if (!file_exists($parentDir))
-		{
-			self::mkdir($parentDir);
+		if (!file_exists($parentDir)) {
+			self::_mkdir($parentDir);
 		}
-		if (!file_exists($path))
-		{
-			@mkdir($path);
+		
+		if (!file_exists($path)) {
+			@_mkdir($path);
 		}
 	}
 	
-	private static function cleanseXML($strXML)
-	{
-		$arrDodgyChars = array(
-		//  Good char sequence => Bad char sequence
+	private static function _cleanseXML($sXML) {
+		$aDodgyChars = array(
+			//  Good char sequence => Bad char sequence
 			'&#193;' => '&Aacute;', // latin capital letter A with acute
 			'&#225;' => '&aacute;', // latin small letter a with acute
 			'&#226;' => '&acirc;', // latin small letter a with circumflex
@@ -441,22 +634,20 @@ class Ticketing_Service
 		
 		$out = array();
 		$in = array();
-		foreach ($arrDodgyChars as $strIn => $strOut)
-		{
-			$in[] = $strIn;
-			$out[] = '/' . preg_quote($strOut) . '/';
+		foreach ($aDodgyChars as $sIn => $sOut) {
+			$in[] = $sIn;
+			$out[] = '/' . preg_quote($sOut) . '/';
 		}
 		
-		$strXML = preg_replace($out, $in, $strXML);
+		$sXML = preg_replace($out, $in, $sXML);
 		
 		// Remove any remaining decimal entity codes with nothing
-		$strXML	= preg_replace("/\&\#\d+\;/", "", $strXML);
+		$sXML	= preg_replace("/\&\#\d+\;/", "", $sXML);
 		
-		return $strXML;
+		return $sXML;
 	}
 
-	private static function parseXmlFile($xmlFilePath)
-	{
+	private static function _parseXmlFile($xmlFilePath) {
 		/* XML schema for email content
 			<?xml version="1.0"?>
 			<document>
@@ -497,42 +688,36 @@ class Ticketing_Service
 		// Resolve to a real path (removing symbolics)
 		$xmlFilePath = realpath($xmlFilePath);
 
-		$xml = self::cleanseXML(file_get_contents($xmlFilePath));
+		$xml = self::_cleanseXML(file_get_contents($xmlFilePath));
 
 		$dom = new DOMDocument();
-		if (!$dom->loadXML($xml))
-		{
+		if (!$dom->loadXML($xml)) {
 			return false;
 		}
 		$details = array();
 
 		$details['files_to_remove'] = array();
 		$details['files_to_remove'][] = $xmlFilePath;
-
 		$details['timestamp'] = $dom->getElementsByTagName('timestamp')->item(0)->textContent;
-
 		$details['subject'] = $dom->getElementsByTagName('subject')->item(0)->textContent;
 
 		$email = $dom->getElementsByTagName('from')->item(0);
-		self::_log("Processing FROM address...");
-		$details['from'] = self::getEmailNameAndAddress($email);
-
+		Log::get()->logIf(self::LOGGING_ENABLED, "Processing FROM address...");
+		$details['from'] = self::_getEmailNameAndAddress($email);
 		$details['to'] = array();
 		$emails = $dom->getElementsByTagName('to');
-		for ($x = 0; $x < $emails->length; $x++)
-		{
+		for ($x = 0; $x < $emails->length; $x++) {
 			$email = $emails->item($x);
-			self::_log("Processing TO address...");
-			$details['to'][] = self::getEmailNameAndAddress($email); 
+			Log::get()->logIf(self::LOGGING_ENABLED, "Processing TO address...");
+			$details['to'][] = self::_getEmailNameAndAddress($email); 
 		}
 
 		$details['cc'] = array();
 		$emails = $dom->getElementsByTagName('cc');
-		for ($x = 0; $x < $emails->length; $x++)
-		{
+		for ($x = 0; $x < $emails->length; $x++) {
 			$email = $emails->item($x);
-			self::_log("Processing CC address...");
-			$details['cc'][] = self::getEmailNameAndAddress($email); 
+			Log::get()->logIf(self::LOGGING_ENABLED, "Processing CC address...");
+			$details['cc'][] = self::_getEmailNameAndAddress($email); 
 		}
 
 		$body = $dom->getElementsByTagName('body')->item(0);
@@ -540,34 +725,29 @@ class Ticketing_Service
 
 		// Check to see if the message looks like it might be base64 encoded
 		// If it contains no word spaces
-		if (!preg_match("/[a-zA-Z0-9\+\/]+ +[a-zA-Z0-9\+\/]+/", trim($details['message'])))
-		{
+		if (!preg_match("/[a-zA-Z0-9\+\/]+ +[a-zA-Z0-9\+\/]+/", trim($details['message']))) {
 			// Get the message with all whitespace removed
 			$sansWhiteSpace = preg_replace("/[\r\n\t ]*/", "", $details['message']);
 			// If this has a multiple of 4 chars and only comprises base64 chars with either 0, 1 or 2 trailing '='
-			if((strlen($sansWhiteSpace)%4 == 0) && preg_match("/^[a-zA-Z0-9\+\/]+[=]{0,2}$/", $sansWhiteSpace))
-			{
+			if((strlen($sansWhiteSpace)%4 == 0) && preg_match("/^[a-zA-Z0-9\+\/]+[=]{0,2}$/", $sansWhiteSpace)) {
 				// Decode it
 				$decoded = @base64_decode($sansWhiteSpace);
-				if ($decoded)
-				{
+				if ($decoded) {
 					$details['message'] = $decoded;
 				}
 			}
 		}
 
-		if (trim(strtolower($body->getAttribute('type'))) == 'html')
-		{
+		if (trim(strtolower($body->getAttribute('type'))) == 'html') {
 			// De-html'ify the message
-			$details['message'] = self::html2txt($details['message']);
+			$details['message'] = self::_html2txt($details['message']);
 		}
 
 		$attachments = $dom->getElementsByTagName('file');
 		$details['attachments'] = array();
 
 		// Extract attachments that are included in the XML file
-		for ($x = 0; $x < $attachments->length; $x++)
-		{
+		for ($x = 0; $x < $attachments->length; $x++) {
 			$attachment = $attachments->item($x);
 			$data = $attachment->getElementsByTagName('data')->item(0);
 			$details['attachments'][] = array(
@@ -579,13 +759,10 @@ class Ticketing_Service
 
 		// Check for attachments in an associated directory
 		$attachmentDirPath = $xmlFilePath . '-attachments';
-		if (file_exists($attachmentDirPath) && is_dir($attachmentDirPath))
-		{
+		if (file_exists($attachmentDirPath) && is_dir($attachmentDirPath)) {
 			$attachmentFiles = glob($attachmentDirPath . '/' . '*.*');
-			foreach($attachmentFiles as $attachmentFile)
-			{
-				if (is_file($attachmentFile))
-				{
+			foreach($attachmentFiles as $attachmentFile) {
+				if (is_file($attachmentFile)) {
 					$details['attachments'][] = array(
 						'name' => basename($attachmentFile),
 						// TODO:: Replace mime_content_type (deprecated) with PECL FileInfo function
@@ -601,52 +778,45 @@ class Ticketing_Service
 		return $details;
 	}
 	
-	private function getEmailNameAndAddress($email)
-	{
-		self::_log("[+] Extracting Email Name & Address from '".($email->ownerDocument->saveXML($email))."'");
+	private static function _getEmailNameAndAddress($email) {
+		Log::get()->logIf(self::LOGGING_ENABLED, "[+] Extracting Email Name & Address from '".($email->ownerDocument->saveXML($email))."'");
 		
 		$emailAddress = $email ? $email->getElementsByTagName('email')->item(0)->textContent : '';
 		$emailAddress = trim($emailAddress);
 		// "Margaret Munro "<magneticfx@iinet.net.au>;
 		// "lenrhonda"<lenrhonda@westnet.com.au>;
-		self::_log("\t[i] Address Component: '{$emailAddress}'");
+		Log::get()->logIf(self::LOGGING_ENABLED, "\t[i] Address Component: '{$emailAddress}'");
 		
 		$name = array();
-		if (preg_match("/^\"([^\"]*)\" *\</", $emailAddress, $name))
-		{
+		if (preg_match("/^\"([^\"]*)\" *\</", $emailAddress, $name)) {
 			$name = $name[1];
 			$emailAddress = trim(substr($emailAddress, strlen($name) + 2));
 			
-			self::_log("\t[+] Found Name in Address Component (Name: '{$name}'; Remaining Address: '{$emailAddress}')");
-		}
-		else
-		{
+			Log::get()->logIf(self::LOGGING_ENABLED, "\t[+] Found Name in Address Component (Name: '{$name}'; Remaining Address: '{$emailAddress}')");
+		} else {
 			$name = false;
 		}
 		if (substr($emailAddress, 0, 1) == '<') $emailAddress = substr($emailAddress, 1);
 		if (substr($emailAddress, -1) == '>') $emailAddress = substr($emailAddress, 0, -1);
 		$details = array('name' => '', 'address' => '');
-		self::_log("\t[+] Validating Email Address: '{$emailAddress}'");
-		if ($emailAddress)
-		{
+		Log::get()->logIf(self::LOGGING_ENABLED, "\t[+] Validating Email Address: '{$emailAddress}'");
+		if ($emailAddress) {
 			if (EmailAddressValid($emailAddress)) {
 				$details = array(
 					'name' => trim($email->getElementsByTagName('name')->item(0)->textContent),
 					'address' => $emailAddress,
 				);
-				if ($name && !$details['name'])
-				{
+				if ($name && !$details['name']) {
 					$details['name'] = $name;
 				}
 			} else {
-				self::_log("\t[!] '{$emailAddress}' is not a valid email address");
+				Log::get()->logIf(self::LOGGING_ENABLED, "\t[!] '{$emailAddress}' is not a valid email address");
 			}
 		}
 		return $details;
 	}
 
-	private function html2txt($document)
-	{
+	private static function _html2txt($document) {
 		$search = array("/\<script[^\>]*?\>.*?\<\/script\>/si",	// Strip out javascript
 						"/\<style[^>]*?\>.*?\<\/style\>/siU",	// Strip style tags properly
 						"/\<[\/\!]*?[^\<\>]*?>/si",			// Strip out HTML tags
@@ -654,212 +824,6 @@ class Ticketing_Service
 		);
 		$text = preg_replace($search, '', $document);
 		return $text;
-	}
-
-	public static function loadFromMailServer()
-	{
-		// This function has not been fully implemented!!
-		// Requires email parsing!
-		return FALSE;
-
-		// Connect to the email storage
-		$storage = self::getEmailStorage();
-
-		// Find out how many emails there are
-		$arrUniqueIds = $storage->getUniqueId();
-		$nrMessages = count($arrUniqueIds);
-
-//echo 'Nr. messages: ' . $nrMessages . "\n\n";
-
-		if (!$nrMessages)
-		{
-			return 0;
-		}
-
-		foreach($arrUniqueIds as $idx => $strUniqueId)
-		{
-			$objMessage = $storage->getMessage($storage->getNumberByUniqueId($strUniqueId));
-//echo 'Id: ' . $strUniqueId . '(' . $idx . ')' . "\n";
-
-			// Process the email
-			// Get the details of the email
-			$strSubject = $objMessage->subject;
-//echo 'Subject: ' . $strSubject . "\n";
-
-			$arrSections = array();
-			self::extractEmailParts($arrSections, $objMessage);
-
-			$strMessage = '';
-			//$strMessage = $objMessage->getBodyText(TRUE);
-			if (!$strMessage)
-			{
-				//$strMessage = $objMessage->getBodyHtml(TRUE);
-			}
-//echo 'Message: ' . $strMessage . "\n";
-
-			$arrAttachments = array();
-
-			// we should create a Ticketing_Ticket_Message,
-			$ticketingMessage = new Ticketing_Correspondance($strSubject, $strMessage, $arrAttachments);
-
-//echo 'Ticket number: ' . $ticketingMessage->getTicketNumber() . "\n\n";
-
-			// which we should save to the db 
-			$ticketingMessage->save();
-
-			// and send am acknowledging email for.
-			$ticketingMessage->acknowledgeReceipt();
-
-			// Remove it from the server
-			//$storage->removeMessage($storage->getNumberByUniqueId($strUniqueId));
-		}
-	}
-
-	private function extractEmailParts(&$arrEmailSections, $objMessagePart, $bolAlternative=FALSE)
-	{
-		// Find out if the message part is multipart
-		if ($objMessagePart->isMultipart())
-		{
-			//echo "\n=========START========= MULTI  PART =========START========\n";
-			var_dump($objMessagePart->getHeaders());
-			//echo $objMessagePart->getContent();
-			// For each part we need to extract the sub-parts
-			foreach ($objMessagePart as $objChildMessagePart)
-			{
-				try 
-				{
-					//echo "\nxxLooking for content disposition\n";
-					$strDisposition = $objMessagePart->ContentDisposition;
-					//echo "\$strDisposition = $strDisposition\n\n";
-				}
-				catch(Exception $exception)
-				{
-					$strDisposition = "";
-				}
-				// Check out whether this is an 'alternative' section (i.e. We only need one section)
-				$bolAlternative = FALSE;
-				try 
-				{
-					$strType = $objMessagePart->ContentType;
-					if (stripos('multipart/alternative', trim(strtolower($strType))) === 0)
-					{
-						$bolAlternative = TRUE;
-					}
-				}
-				catch(Exception $exception)
-				{
-					$strType = "";
-				}
-				self::extractEmailParts($arrEmailSections, $objChildMessagePart, $bolAlternative);
-			}
-			//echo "\n==========END========== MULTI  PART ==========END=========\n";
-		}
-		else
-		{
-			// We have a single part.
-			//echo "\n=========START========= SINGLE PART =========START========\n";
-
-			// Check out whether or not this is 'inline' (part of the message body)
-			// We need to look at the content type and the disposition to decide what to do with it
-			try 
-			{
-				//echo "\nLooking for content disposition\n";
-				$strDisposition = $objMessagePart->ContentDisposition;
-				//echo "\$strDisposition = $strDisposition\n\n";
-			}
-			catch(Exception $exception)
-			{
-				$strDisposition = "inline";
-			}
-
-			try 
-			{
-				$strType = $objMessagePart->ContentType;
-				//echo "\n\nsingle part type: $strType\n\n";
-			}
-			catch(Exception $exception)
-			{
-				$strType = "";
-			}
-
-			$content = $objMessagePart->getContent();
-
-			$isText = stripos('text/', strtolower(trim($strType))) === 0;
-
-			if ($isText)
-			{
-				if (stripos('text/html', strtolower(trim($strType))) === 0)
-				{
-					$content = strip_tags(preg_replace(array("/\<style.*style *\>/i", "/\<script.*script *\>/i"), '', $content));
-				}
-			}
-
-			switch(strtolower(trim($strType)))
-			{
-				case "text/html";
-			}
-
-			//echo $objMessagePart->getContent();
-			//echo "\n==========END========== SINGLE PART ==========END=========\n";
-		}
-	}
-
-	private static function getEmailStorage()
-	{
-		// Load the ticketing configuration
-		$config = Ticketing_Config::load();
-
-		$storage = NULL;
-
-		try
-		{
-			switch(strtoupper($config->protocol))
-			{
-				case 'POP3':
-					// Connect to the POP3 mail server
-					require_once 'Zend/Mail/Storage/Pop3.php';
-					$storage = new Zend_Mail_Storage_Pop3(array('host'		=> $config->host,
-																'user'		=> $config->username,
-																'password'	=> $config->password,
-																'port'		=> $config->port));
-					break;
-
-				case 'IMAP':
-					// Connect to the IMAP mail server
-					require_once 'Zend/Mail/Storage/Imap.php';
-					$storage = new Zend_Mail_Storage_Imap(array('host'		=> $config->host,
-																'user'		=> $config->username,
-																'password'	=> $config->password,
-																'port'		=> $config->port));
-					break;
-
-				case 'MBOX':
-					// Connect to the MBox mail directory
-					require_once 'Zend/Mail/Storage/Mbox.php';
-					$storage = new Zend_Mail_Storage_Mbox(array('dirname'	=> $config->host));
-					break;
-
-				case 'MAILDIR':
-					// Connect to the Maildir mail directory
-					require_once 'Zend/Mail/Storage/Maildir.php';
-					$storage = new Zend_Mail_Storage_Maildir(array('dirname'=> $config->host));
-					break;
-
-				default:
-					throw new Exception('An unsupported mail protocol specified in the ticketing configuration: ' . $config->protocol);
-			}
-	
-			if ($storage == NULL)
-			{
-				throw new Exception('Error unknown.');
-			}
-		}
-		catch (Exception $exception)
-		{
-			throw new Exception('Failed to connect to mail storage: ' . $exception->getMessage());
-		}
-
-		return $storage;
 	}
 }
 
