@@ -5,8 +5,7 @@
  * Instanciating an Exception_Assertion, will automatically send an EMAIL_NOTIFICATION_ALERT email to all predefined recipients of this email notification type
  */
 class Exception_Assertion extends Exception {
-	public function __construct($sMessage=null, $sExtraDetails=null, $sAssertionName=null)
-	{
+	public function __construct($sMessage=null, $sExtraDetails=null, $sAssertionName=null) {
 		parent::__construct($sMessage);
 		
 		// Send an EMAIL_NOTIFICATION_ALERT email
@@ -23,7 +22,7 @@ class Exception_Assertion extends Exception {
 		$sEmailSubject = "Assertion Failed";
 		if (strlen($sAssertionName)) {
 			$sEmailSubject .= " - {$sAssertionName}";
-		} elseif () {
+		} elseif (strlen($sMessage)) {
 			$sEmailSubject .= " - {$sMessage}";
 		}
 		
