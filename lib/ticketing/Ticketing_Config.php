@@ -36,7 +36,9 @@ class Ticketing_Config
 			'host',
 			'port', 
 			'username', 
-			'password',
+			'password', 
+			'use_ssl', 
+			'archive_folder_name'
 		);
 	}
 

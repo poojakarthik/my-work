@@ -95,162 +95,140 @@ class Ticketing_Correspondance
 	 *		-or-
 	 *			customer_group_id	=> FOR OUTBOUND EMAILS (id of record in ticketing_customer_group_config table) to use default address for
 	 */
-	public static function createForDetails($arrDetails)
-	{
+	public static function createForDetails($aDetails, $bLoggingEnabled=false) {
+		$oLog = Log::get();
+
 		// Is this inbound or outbound? (It is considered outbound if a user of the ticketing system created it)
-		$bolOutbound = array_key_exists('user_id', $arrDetails) && $arrDetails['user_id'];
+		$bOutbound = array_key_exists('user_id', $aDetails) && $aDetails['user_id'];
 
 		// We should look at the 'to' addresses to determine which customer group this is for.
 		// If the 'to' addresses are not for a customer group, we should check the 'cc' addresses
 		// If the 'to' and 'cc' addresses are not for a customer broup, we should check the 'bcc' addresses
-		$addresses = array();
-		if (array_key_exists('to', $arrDetails)) 
-		{
-			$addresses[] = $arrDetails['to'];
-		}
-		if (array_key_exists('cc', $arrDetails)) 
-		{
-			$addresses[] = $arrDetails['cc'];
-		}
-		if (array_key_exists('bcc', $arrDetails)) 
-		{
-			$addresses[] = $arrDetails['bcc'];
+		$aAddresses = array();
+		if (array_key_exists('to', $aDetails)) {
+			$aAddresses[] = $aDetails['to'];
 		}
 
-		if (!array_key_exists('default_email_id', $arrDetails) || !$arrDetails['default_email_id'])
-		{
-			if ($bolOutbound)
-			{
-				if (!array_key_exists('customer_group_id', $arrDetails))
-				{
+		if (array_key_exists('cc', $aDetails)) {
+			$aAddresses[] = $aDetails['cc'];
+		}
+
+		if (array_key_exists('bcc', $aDetails)) {
+			$aAddresses[] = $aDetails['bcc'];
+		}
+
+		if (!array_key_exists('default_email_id', $aDetails) || !$aDetails['default_email_id']) {
+			Log::get()->logIf($bLoggingEnabled, "[~] No default customer group email provided");
+			if ($bOutbound) {
+				Log::get()->logIf($bLoggingEnabled, "[*] Outbound correspondance");
+				if (!array_key_exists('customer_group_id', $aDetails)) {
 					// TODO:: Don't give up so easy! If a ticket has been specified, check for a previous correspondence and use the address from that.
 					throw new Exception('Unable to create correspondence as email address could not be determined for a sender.');
 				}
-				$custGroupConfig = Ticketing_Customer_Group_Config::getForId($arrDetails['customer_group_id']);
-				$custGroupEmail = $custGroupConfig->getDefaultCustomerGroupEmail();
+
+				$oCustGroupConfig = Ticketing_Customer_Group_Config::getForId($aDetails['customer_group_id']);
+				$oCustGroupEmail = $oCustGroupConfig->getDefaultCustomerGroupEmail();
+			} else {
+				Log::get()->logIf($bLoggingEnabled, "[*] Inbound correspondance, find the customer group email");
+				$oCustGroupEmail = self::getCustomerGroupEmailForEmailAddresses($aAddresses);
 			}
-			else
-			{
-				$custGroupEmail = self::getCustomerGroupEmailForEmailAddresses($addresses);
-			}
-		}
-		else
-		{
-			$custGroupEmail = Ticketing_Customer_Group_Email::getForId($arrDetails['default_email_id']);
+		} else {
+			Log::get()->logIf($bLoggingEnabled, "[*] Default customer group email supplied");
+			$oCustGroupEmail = Ticketing_Customer_Group_Email::getForId($aDetails['default_email_id']);
 		}
 
-		if ($custGroupEmail === NULL)
-		{
-			return NULL;
+		if ($oCustGroupEmail === null) {
+			Log::get()->logIf($bLoggingEnabled, "[!] No customer group email, cancelling creation of correspondance");
+			return;
 		}
 
 		// We should use the 'from' address to determine the contact
-		$from = $arrDetails['from']['address'];
-		$name = $arrDetails['from']['name'];
+		$sFrom = $aDetails['from']['address'];
+		$sName = $aDetails['from']['name'];
 
-		$objCorrespondence = new Ticketing_Correspondance();
+		$oCorrespondence = new Ticketing_Correspondance();
 
-		$objCorrespondence->customerGroupEmailId = $custGroupEmail->id;
+		$oCorrespondence->customerGroupEmailId = $oCustGroupEmail->id;
 
-		if (!array_key_exists('delivery_status', $arrDetails))
-		{
-			$objCorrespondence->deliveryStatusId = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_NOT_SENT;
-		}
-		else
-		{
-			$objCorrespondence->deliveryStatusId = $arrDetails['delivery_status'];
+		if (!array_key_exists('delivery_status', $aDetails)) {
+			$oCorrespondence->deliveryStatusId = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_NOT_SENT;
+		} else {
+			$oCorrespondence->deliveryStatusId = $aDetails['delivery_status'];
 		}
 
-		$objCorrespondence->userId = $arrDetails['user_id'];
-		$objCorrespondence->sourceId = $arrDetails['source_id'];
+		$oCorrespondence->userId = $aDetails['user_id'];
+		$oCorrespondence->sourceId = $aDetails['source_id'];
 		
-		if (!array_key_exists('creation_datetime', $arrDetails) || !$arrDetails['creation_datetime'])
-		{
-			$objCorrespondence->creationDatetime = GetCurrentISODateTime();
-		}
-		else
-		{
-			$objCorrespondence->creationDatetime = $arrDetails['creation_datetime'];
+		if (!array_key_exists('creation_datetime', $aDetails) || !$aDetails['creation_datetime']) {
+			$oCorrespondence->creationDatetime = GetCurrentISODateTime();
+		} else {
+			$oCorrespondence->creationDatetime = $aDetails['creation_datetime'];
 		}
 
-		if (!array_key_exists('delivery_datetime', $arrDetails) || !$arrDetails['delivery_datetime'])
-		{
-			$objCorrespondence->deliveryDatetime = NULL;
-		}
-		else
-		{
-			if ($objCorrespondence->deliveryStatusId == TICKETING_CORRESPONDANCE_DELIVERY_STATUS_NOT_SENT)
-			{
-				$objCorrespondence->deliveryDatetime = $arrDetails['delivery_datetime'];
-			}
-			else
-			{
-				$objCorrespondence->deliveryDatetime = NULL;
+		if (!array_key_exists('delivery_datetime', $aDetails) || !$aDetails['delivery_datetime']) {
+			$oCorrespondence->deliveryDatetime = NULL;
+		} else {
+			if ($oCorrespondence->deliveryStatusId == TICKETING_CORRESPONDANCE_DELIVERY_STATUS_NOT_SENT) {
+				$oCorrespondence->deliveryDatetime = $aDetails['delivery_datetime'];
+			} else {
+				$oCorrespondence->deliveryDatetime = NULL;
 			}
 		}
 
 		// Set either the userId (for outbound) or contactId (for inbound)
-		if ($bolOutbound)
-		{
-			$objCorrespondence->userId = $arrDetails['user_id'];
-			$objCorrespondence->contact = NULL;
-			$objCorrespondence->contactId = NULL;
-		}
-		else
-		{
+		if ($bOutbound) {
+			$oCorrespondence->userId = $aDetails['user_id'];
+			$oCorrespondence->contact = NULL;
+			$oCorrespondence->contactId = NULL;
+		} else {
 			// If a contact does not exist for the email address, one will be created
-			$objCorrespondence->userId = NULL;
-			$objCorrespondence->contact = Ticketing_Contact::getForEmailAddress($from, $name);
-			$objCorrespondence->contactId = $objCorrespondence->contact->id;
+			$oCorrespondence->userId = NULL;
+			$oCorrespondence->contact = Ticketing_Contact::getForEmailAddress($sFrom, $sName);
+			$oCorrespondence->contactId = $oCorrespondence->contact->id;
 		}
 
-		$objCorrespondence->summary = $arrDetails['subject'];
-		$objCorrespondence->details = $arrDetails['message'];
+		$oCorrespondence->summary = $aDetails['subject'];
+		$oCorrespondence->details = $aDetails['message'];
 
 		// Check the subject for a ticket number
 		// TODO: Q: Could this apply to more than one ticket?
-		$arrMatches = array();
+		$aMatches = array();
 		
 		// Check for the ticket number in the summary searching for [T<ticket_id>Z] where the square brackets are optional, and the T & Z can be upper or lower case
 		$strTReg = "/\[?T[0-9 ]+Z\]? */i";
 		
 		// Check for the ticket number in the body of the email searching for [T<ticket_id>Z] where the square brackets are manditory and the T & Z have to be in upper case
 		$strBReg = "/\[T[0-9]+Z\]/";
-		if (preg_match($strTReg, $objCorrespondence->summary, $arrMatches))
-		{
+		if (preg_match($strTReg, $oCorrespondence->summary, $aMatches)) {
 			// The ticket nmber has been found in the summary of the correspondence
-			$objCorrespondence->summary = preg_replace($strTReg, "", $objCorrespondence->summary);
-			$objCorrespondence->ticketId = intval(preg_replace("/[^0-9]*/", "", $arrMatches[0]));
-		}
-		elseif(preg_match($strBReg, $objCorrespondence->details, $arrMatches))
-		{
+			$oCorrespondence->summary = preg_replace($strTReg, "", $oCorrespondence->summary);
+			$oCorrespondence->ticketId = intval(preg_replace("/[^0-9]*/", "", $aMatches[0]));
+		} elseif(preg_match($strBReg, $oCorrespondence->details, $aMatches)) {
 			// The ticket number has been found in the body of the ticket
-			$objCorrespondence->ticketId = intval(preg_replace("/[^0-9]*/", "", $arrMatches[0]));
+			$oCorrespondence->ticketId = intval(preg_replace("/[^0-9]*/", "", $aMatches[0]));
 		}
 
-		if (array_key_exists('ticket_id', $arrDetails) && $arrDetails['ticket_id'])
-		{
-			$objCorrespondence->ticketId = $arrDetails['ticket_id'];
+		if (array_key_exists('ticket_id', $aDetails) && $aDetails['ticket_id']) {
+			$oCorrespondence->ticketId = $aDetails['ticket_id'];
 		}
 
 		// Load the ticket for this correspondence (if a ticket does not exist, one will be created)
 		// Note: If this record has a ticket number that does not exist, a new ticket will be created.
-		$ticket = Ticketing_Ticket::forCorrespondence($objCorrespondence);
+		$ticket = Ticketing_Ticket::forCorrespondence($oCorrespondence);
 
 		// Update this instance's ticket id, as a new ticket may have been created if an existing ticket was not found
-		$objCorrespondence->ticketId = $ticket->id;
+		$oCorrespondence->ticketId = $ticket->id;
 
 		// Need to save this correspondence to get assigned the id, 
 		// which we need in order that we may create associated attchments
-		$objCorrespondence->save();
+		$oCorrespondence->save();
 
-		foreach ($arrDetails['attachments'] as $attachmentDetails)
-		{
-			$objAttchment = Ticketing_Attachment::create($objCorrespondence, $attachmentDetails['name'], $attachmentDetails['type'], $attachmentDetails['data']);
-			$objCorrespondence->arrAttchments[$objAttchment->id] = $objAttchment;
+		foreach ($aDetails['attachments'] as $aAttachmentDetails) {
+			$oAttachment = Ticketing_Attachment::create($oCorrespondence, $aAttachmentDetails['name'], $aAttachmentDetails['type'], $aAttachmentDetails['data']);
+			//$oCorrespondence->arrAttachments[$oAttachment->id] = $oAttachment;
 		}
 
-		return $objCorrespondence;
+		return $oCorrespondence;
 	}
 
 	public function getTicket()

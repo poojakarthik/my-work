@@ -6,11 +6,11 @@ class Flex_Rollout_Version_000261 extends Flex_Rollout_Version {
 	public function rollout() {
 		$aOperations = array(
 			array(
-				'sDescription'		=> "Add the use_ssl and archive_folder_name columns to RatePlan",
-				'sAlterSQL'			=> "ALTER TABLE RatePlan
+				'sDescription'		=> "Add the use_ssl and archive_folder_name columns to ticketing_config",
+				'sAlterSQL'			=> "ALTER TABLE ticketing_config
 										ADD COLUMN	use_ssl TINYINT(1) UNSIGNED NULL,
 										ADD COLUMN	archive_folder_name VARCHAR(1024) NULL;",
-				'sRollbackSQL'		=> "ALTER TABLE RatePlan
+				'sRollbackSQL'		=> "ALTER TABLE ticketing_config
 										DROP COLUMN	use_ssl,
 										DROP COLUMN	archive_folder_name;",
 				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN

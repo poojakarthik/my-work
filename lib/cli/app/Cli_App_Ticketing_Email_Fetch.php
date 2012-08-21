@@ -6,8 +6,8 @@ Flex::load();
 class Cli_App_Ticketing_Email_Fetch extends Cli {
 	function run() {
 		try {
-			// Load the ticketing configuration
-			Ticketing_Service::loadEmails();
+			$aArgs = $this->getValidatedArguments();
+			Ticketing_Import::getInstance($aArgs[self::SWITCH_VERBOSE])->import();
 		} catch(Exception $oException) {
 			$this->showUsage("ERROR: " . $oException->getMessage());
 		}
