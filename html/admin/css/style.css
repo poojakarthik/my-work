@@ -30,6 +30,116 @@ a,
 .flex-page-dashboard-container {
   overflow: visible !important;
 }
+/******************************************************************************/
+/* FW Windows */
+/******************************************************************************/
+.fw-layer-window {
+  border: 1px solid #000;
+  background: transparent;
+  position: absolute;
+  box-shadow: 0 0 20px #000;
+  border-radius: 5px 5px 1px 1px;
+  -webkit-animation-duration: 0.1s;
+  -moz-animation-duration: 0.1s;
+  -ms-animation-duration: 0.1s;
+  -o-animation-duration: 0.1s;
+  animation-duration: 0.1s;
+  -webkit-animation-name: zoom;
+  -moz-animation-name: zoom;
+  -ms-animation-name: zoom;
+  -o-animation-name: zoom;
+  animation-name: zoom;
+}
+@-moz-keyframes zoom {
+  0% {
+    -vnd-transform: scale(0);
+  }
+
+  100% {
+    -vnd-transform: scale(1);
+  }
+}
+@-webkit-keyframes zoom {
+  0% {
+    -vnd-transform: scale(0);
+  }
+
+  100% {
+    -vnd-transform: scale(1);
+  }
+}
+.fw-layer-window .fw-popup-content {
+  padding: 0.5em;
+}
+.fw-layer-window.-closable .fw-popup-header-close {
+  display: block;
+}
+/******************************************************************************/
+/* FW Popup */
+/******************************************************************************/
+.fw-layer {
+  position: fixed;
+  top: 0em;
+  left: 0em;
+  width: 100%;
+  height: 100%;
+  z-index: 45;
+}
+.fw-layer-underlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  filter: alpha(opacity=25);
+  -moz-opacity: 0.25;
+  opacity: 0.25;
+}
+.fw-layer-window {
+  margin: auto;
+  border: 0.1em solid rgba(0,0,0,0.40);
+  background-color: #efefef;
+  z-index: 50;
+  position: absolute;
+  border-radius: 4px;
+  box-shadow: 0 0 40px #000;
+  overflow: hidden;
+}
+.fw-popup-header * {
+  vertical-align: middle;
+}
+.fw-popup-header {
+  height: auto;
+  padding: 3px;
+  background: -webkit-linear-gradient(top, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.20) 100%);
+  box-shadow: 0 -8px 8px 8px #000;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+}
+.fw-popup-header-title {
+  color: #333;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.50);
+  display: inline-block;
+  font-size: 1em;
+  padding: 0;
+  margin: 0;
+  width: 79%;
+  font-weight: bold;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.fw-popup-header-close {
+  float: right;
+}
+.fw-popup-alert-buttons {
+  text-align: center;
+  padding: 0.5em;
+}
+.fw-popup-alert {
+  width: 300px;
+}
 /**************************************************************************/
 /* Component - PDF to RAW file converter								  */
 /**************************************************************************/

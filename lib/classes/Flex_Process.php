@@ -56,7 +56,7 @@ class Flex_Process
 			// Create Running File
 			$iWouldBlock	= 0;
 			$this->_rLockFile	= fopen($this->_sLockFilePath, 'a');
-			if (Flex::assert($this->_rLockFile && flock($this->_rLockFile, LOCK_EX | LOCK_NB, $iWouldBlock) && !$iWouldBlock))
+			if (Flex::assert($this->_rLockFile && flock($this->_rLockFile, LOCK_EX | LOCK_NB, $iWouldBlock) && !$iWouldBlock, "Unable to lock Process Lock file at '{$this->_sLockFilePath}'"))
 			{
 				// Write the current timestamp to the file, and leave it open
 				fwrite($this->_rLockFile, date("Y-m-d H:i:s")."\n");
