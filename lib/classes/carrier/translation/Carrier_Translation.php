@@ -9,24 +9,41 @@ class Carrier_Translation extends ORM_Cached {
 	}
 	
 	public static function getForCarrierCode($mCarrierTranslationContext, $mInValue, $bSilentFail=false) {
-		$mResult = Query::run("
-			SELECT		*
-			FROM		carrier_translation
-			WHERE		carrier_translation_context_id = <carrier_translation_context_id>
-						AND in_value = <in_value>
-			ORDER BY	id DESC
-			LIMIT		1;
-		", array(
-			'carrier_translation_context_id' => ORM::extractId($mCarrierTranslationContext),
-			'in_value' => (string)$mInValue
-		));
-		if ($aRecord = $mResult->fetch_assoc()) {
-			return new self($aRecord);
-		} elseif (!$bSilentFail) {
-			throw new Exception("No Translation found for Carrier {$iCarrier} and Code '{$mCarrierCode}'");
-		} else {
-			return false;
+		try {
+			Carrier_Translation::translate(ORM::extractId($mCarrierTranslationContext), $mInValue);
+		} catch (Exception $oException) {
+			if ($bSilentFail) {
+				return false;
+			}
+			throw $oException;
 		}
+	}
+
+	const DEBUG_JSON_TEST = false;
+	private $_oInValueJSON;
+	public function testJSON(stdClass $oJSON) {
+		if (!isset($this->_oInValueJSON)) {
+			Flex::assert(null !== ($this->_oInValueJSON = json_decode($this->in_value)),
+				"Translation in-value ".var_export($this->in_value, true)." cannot be JSON-decoded",
+				$this->toArray()
+			);
+		}
+
+		Log::get()->logIf(self::DEBUG_JSON_TEST, "Testing ".var_export($oJSON, true)." against Translation #{$this->id} (".var_export($this->_oInValueJSON, true).")");
+		$aMatches = array();
+		foreach ($oJSON as $sProperty=>$mValue) {
+			if (!isset($this->_oInValueJSON->$sProperty)) {
+				Log::get()->logIf(self::DEBUG_JSON_TEST, "[*] Wildcard match on {$sProperty}");
+				$aMatches[$sProperty] = null;
+			} elseif ($this->_oInValueJSON->$sProperty === $oJSON->$sProperty) {
+				Log::get()->logIf(self::DEBUG_JSON_TEST, "[+] Exact match on {$sProperty}");
+				$aMatches[$sProperty] = true;
+			} else {
+				Log::get()->logIf(self::DEBUG_JSON_TEST, "[-] No match on {$sProperty}");
+				$aMatches[$sProperty] = false;
+			}
+		}
+		return $aMatches;
 	}
 	
 	protected static function getCacheName() {

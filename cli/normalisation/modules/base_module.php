@@ -627,5 +627,3 @@ abstract class NormalisationModule extends CarrierModule {
 		}
 	}
 }
-
-?>
