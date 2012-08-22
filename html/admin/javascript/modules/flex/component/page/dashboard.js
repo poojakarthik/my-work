@@ -66,7 +66,6 @@ var self = new Class({
 	// Sync UI
 	// ----------------------------------------------------------------------------------- //
 	_syncUI	: function() {
-		new require('fw/component/popup/alert')({sTitle: 'Title of Popup'}, 'Content of Popup');
 		try {		
 			if (!this._bInitialised) {
 				// Add Calendar
