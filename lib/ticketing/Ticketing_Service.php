@@ -30,6 +30,8 @@ class Ticketing_Service
 	
 	public static function loadEmails()
 	{
+		Flex::assert(false, "Ticketing_Service has been deprecated, please use one of the Ticketing_Import classes");
+
 		// Load the ticketing configuration
 		$config = Ticketing_Config::load();
 
@@ -50,7 +52,7 @@ class Ticketing_Service
 	public static function loadXmlFiles()
 	{
 		Flex::assert(false, "Ticketing_Service has been deprecated, please use one of the Ticketing_Import classes");
-		
+
 		// Load the ticketing configuration
 		$config = Ticketing_Config::load();
 
@@ -660,6 +662,8 @@ class Ticketing_Service
 
 	public static function loadFromMailServer()
 	{
+		Flex::assert(false, "Ticketing_Service has been deprecated, please use one of the Ticketing_Import classes");
+		
 		// This function has not been fully implemented!!
 		// Requires email parsing!
 		return FALSE;
