@@ -2,7 +2,7 @@
 
 class Ticketing_Import_XML extends Ticketing_Import {
 	public function import() {
-		Flex::assert(false, "Trying to load ticketing email from XML. Change the ticketing_config to use IMAP it is the only current supported implementation");
+		//Flex::assert(false, "Trying to load ticketing email from XML. Change the ticketing_config to use IMAP it is the only current supported implementation");
 		
 		// Get the source directory
 		$sSourceDirectory = $this->_oTicketingConfig->getSourceDirectory();
@@ -40,9 +40,7 @@ class Ticketing_Import_XML extends Ticketing_Import {
 	
 					// XML files originate from emails
 					$details['source_id'] = TICKETING_CORRESPONDANCE_SOURCE_EMAIL;
-	
-					// System user id
-					//$details['user_id'] = USER_ID;
+					$details['user_id'] = null;
 	
 					// Set delivery time (to system) same as creation time (now)
 					$details['delivery_datetime'] = $details['creation_datetime'] = date('Y-m-d H-i-s');

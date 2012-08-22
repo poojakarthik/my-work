@@ -49,6 +49,8 @@ class Ticketing_Service
 
 	public static function loadXmlFiles()
 	{
+		Flex::assert(false, "Ticketing_Service has been deprecated, please use one of the Ticketing_Import classes");
+		
 		// Load the ticketing configuration
 		$config = Ticketing_Config::load();
 

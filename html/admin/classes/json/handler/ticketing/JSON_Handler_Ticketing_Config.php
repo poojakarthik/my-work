@@ -36,7 +36,7 @@ class JSON_Handler_Ticketing_Config extends JSON_Handler implements JSON_Handler
 		self::_validateData($oData);
 		$oRecord->protocol = $oData->protocol;
 		$oRecord->host = $oData->host;
-		$oRecord->port = (int)$oData->port;
+		$oRecord->port = (($oData->port != '') ? (int)$oData->port : null);
 		$oRecord->username = $oData->username;
 		$oRecord->password = $oData->password;
 		$oRecord->use_ssl = ($oData->use_ssl == '1' ? 1 : 0);
