@@ -60,12 +60,12 @@ class NormalisationModuleIseekMobile extends NormalisationModule {
 				break;
 
 			case self::RECORD_TYPE_CONTENTRECORD: // Content Record
-				Flex::assert(false, "iSeek Mobile Normalisation: Content Record Encountered (currently unsupported)", $aCDR['CDR']);
+				$this->_normaliseContent();
 				//$this->_normaliseContent();
 				break;
 
 			case self::RECORD_TYPE_DATARECORD: // Data Record
-				$this->_normaliseData($sCDRRecordType);
+				$this->_normaliseData();
 				break;
 
 			case self::RECORD_TYPE_HEADER: // Header
@@ -90,6 +90,7 @@ class NormalisationModuleIseekMobile extends NormalisationModule {
 	}
 
 	const CALL_TYPE_INTERNATIONAL = 3; // Call types are constants defined by the file format, not configuration
+	protected static $_aHomeTranslatePriorities = array('record_type', 'gsm_service_type', 'call_medium', 'call_type', 'is_pushtotalk');
 	private function _normaliseHome() {
 		$this->_arrDefineCarrier = self::$_aRecordDefinitions[self::RECORD_TYPE_HOMECALL];
 		$this->_SplitRawCDR();
@@ -125,13 +126,26 @@ class NormalisationModuleIseekMobile extends NormalisationModule {
 		$sCallType = $this->getRaw('call_type'); // Indicates Call Type
 		$sGSMServiceType = $this->getRaw('gsm_service_type'); // Inticates Voice vs Data
 		$iIsPushToTalk = (int)$bCalledNumberIsPushToTalk;
-		$sCallGroupCombination = self::RECORD_TYPE_HOMECALL."[{$sGSMServiceType}:{$sCallMedium}:{$sCallType}:{$iIsPushToTalk}]";
-		$this->setNormalised('RecordType', $this->translateRecordType($this->getNormalised('ServiceType'), $sCallGroupCombination));
+		$this->setNormalised(
+			'RecordType',
+			Record_Type::getForServiceTypeAndCode(
+				$this->getNormalised('ServiceType'),
+				Carrier_Translation_Context::getForId($this->GetConfigField('CallGroupCarrierTranslationContextId'))->translateJSON(
+					array(
+						'record_type' => (int)self::RECORD_TYPE_HOMECALL,
+						'gsm_service_type' => $this->getRaw('gsm_service_type'), // Inticates Voice vs Data
+						'call_medium' => $this->getRaw('call_medium'), // Indicates Mobile2Mobile or Mobile2Fixed
+						'call_type' => $this->getRaw('call_type'), // Indicates Call Type
+						'is_pushtotalk' => $bCalledNumberIsPushToTalk
+					),
+					self::$_aDataTranslatePriorities
+				)->out_value
+			)->id
+		);
 		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('RecordType', 'record_type', 'call_medium', 'gsm_service_type', 'call_type', 'called_number'));
 
 		// Destination (sub-Call Type)
 		if ($this->_intContext > 0) { // Only resolve Destination if there is a Destination Context
-			$sCallTypeCombination = $sCallGroupCombination;
 			if ((int)$sCallType === self::CALL_TYPE_INTERNATIONAL) {
 				// International Calls
 				Flex::assert(false, "iSeek Mobile Normalisation: Mobile to International Record Encountered", $this->_arrRawData);
@@ -182,6 +196,7 @@ class NormalisationModuleIseekMobile extends NormalisationModule {
 		//throw new Exception("TESTING");
 	}
 
+	protected static $_aMessageTranslatePriorities = array('record_type', 'direction', 'event_type');
 	private function _normaliseMessage() {
 		$this->_arrDefineCarrier = self::$_aRecordDefinitions[self::RECORD_TYPE_MESSAGEEVENT];
 		$this->_SplitRawCDR();
@@ -211,8 +226,20 @@ class NormalisationModuleIseekMobile extends NormalisationModule {
 		// RecordType (Call Type Group)
 		$sDirection = $this->getRaw('direction'); // Indicates Mobile Terminating or Mobile Originating
 		$sEventType = $this->getRaw('event_type'); // Indicates Event Type
-		$sCallGroupCombination = self::RECORD_TYPE_MESSAGEEVENT."[{$sDirection}:{$sEventType}]";
-		$this->setNormalised('RecordType', $this->translateRecordType($this->getNormalised('ServiceType'), $sCallGroupCombination));
+		$this->setNormalised(
+			'RecordType',
+			Record_Type::getForServiceTypeAndCode(
+				$this->getNormalised('ServiceType'),
+				Carrier_Translation_Context::getForId($this->GetConfigField('CallGroupCarrierTranslationContextId'))->translateJSON(
+					array(
+						'record_type' => (int)self::RECORD_TYPE_MESSAGEEVENT,
+						'direction' => $this->getRaw('direction'),
+						'event_type' => $this->getRaw('event_type')
+					),
+					self::$_aMessageTranslatePriorities
+				)->out_value
+			)->id
+		);
 		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('RecordType', 'record_type', 'direction', 'event_type'));
 
 		// Destination (sub-Call Type)
@@ -252,6 +279,7 @@ class NormalisationModuleIseekMobile extends NormalisationModule {
 	const DATA_CHARGING_METHOD_DURATION = 'D';
 	const DATA_CHARGING_METHOD_VOLUME = 'V';
 	const DATA_CHARGING_METHOD_EVENT = 'E';
+	protected static $_aDataTranslatePriorities = array('record_type', 'gsm_service_type', 'network_type', 'call_type', 'data_charging_method');
 	private function _normaliseData() {
 		$this->_arrDefineCarrier = self::$_aRecordDefinitions[self::RECORD_TYPE_DATARECORD];
 		$this->_SplitRawCDR();
@@ -285,9 +313,23 @@ class NormalisationModuleIseekMobile extends NormalisationModule {
 		$sCallType = $this->getRaw('call_type'); // Indicates Call Type
 		$sGSMServiceType = $this->getRaw('gsm_service_type'); // Inticates Voice vs Data
 		$sDataChargingMethod = $this->getRaw('data_charging_method'); // (D)uration, (V)olume, (E)vent.  This is not ideal, though necessary, as can indicate duration-based or item-based usage, which mandates a different Record Type.
-		$sCallGroupCombination = self::RECORD_TYPE_DATARECORD."[{$sGSMServiceType}:{$sNetworkType}:{$sCallType}:{$sDataChargingMethod}]";
-		$this->setNormalised('RecordType', $this->translateRecordType($this->getNormalised('ServiceType'), $sCallGroupCombination));
-		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('RecordType', 'record_type', 'network_type', 'gsm_service_type', 'call_type'));
+		$this->setNormalised(
+			'RecordType',
+			Record_Type::getForServiceTypeAndCode(
+				$this->getNormalised('ServiceType'),
+				Carrier_Translation_Context::getForId($this->GetConfigField('CallGroupCarrierTranslationContextId'))->translateJSON(
+					array(
+						'record_type' => (int)self::RECORD_TYPE_DATARECORD,
+						'gsm_service_type' => $this->getRaw('gsm_service_type'), // Inticates Voice vs Data
+						'network_type' => $this->getRaw('network_type'), // GPRS, 3G, etc
+						'call_type' => $this->getRaw('call_type'), // Indicates Call Type
+						'data_charging_method' => $sDataChargingMethod
+					),
+					self::$_aDataTranslatePriorities
+				)->out_value
+			)->id
+		);
+		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('RecordType', 'record_type', 'network_type', 'gsm_service_type', 'call_type', 'data_charging_method'));
 
 		// Destination (sub-Call Type)
 		if ($this->_intContext > 0) {
@@ -347,11 +389,113 @@ class NormalisationModuleIseekMobile extends NormalisationModule {
 		//throw new Exception("TESTING");
 	}
 
+	protected static $_aContentTranslatePriorities = array('record_type', 'provider_id', 'category_type', 'content_category', 'content_id', 'content_charge_type');
+	private function _normaliseContent() {
+		$this->_arrDefineCarrier = self::$_aRecordDefinitions[self::RECORD_TYPE_CONTENTRECORD];
+		$this->_SplitRawCDR();
+		Log::get()->logIf(self::DEBUG_LOGGING, '  Raw Data: '.var_export($this->_arrRawData, true));
+
+		// FNN
+		$sCellularNumber = trim($this->getRaw('cellular_number'));
+		$this->setNormalised('FNN', $sCellularNumber);
+		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('FNN', 'cellular_number'));
+
+		// Source
+		// NOTE: Not applicable
+
+		// Destination
+		// NOTE: Not applicable
+		
+		// Cost
+		// NOTE: This seems to be the most appropriate field
+		$fTotalCharges = self::_parseCurrency($this->getRaw('total_charges'));
+		$this->setNormalised('Cost', $fTotalCharges);
+		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Cost', 'total_charges'));
+
+		// RecordType (Call Type Group)
+		$sProviderId = $this->getRaw('provider_id');
+		$sCategoryType = $this->getRaw('category_type');
+		$sContentCategory = $this->getRaw('content_category');
+		$sContentId = $this->getRaw('content_id');
+		$sContentChargeType = $this->getRaw('content_charge_type');
+		$this->setNormalised(
+			'RecordType',
+			Record_Type::getForServiceTypeAndCode(
+				$this->getNormalised('ServiceType'),
+				Carrier_Translation_Context::getForId($this->GetConfigField('CallGroupCarrierTranslationContextId'))->translateJSON(
+					array(
+						'record_type' => (int)self::RECORD_TYPE_CONTENTRECORD,
+						'provider_id' => $this->getRaw('provider_id'),
+						'category_type' => $this->getRaw('category_type'),
+						'content_category' => $this->getRaw('content_category'),
+						'content_id' => $this->getRaw('content_id'),
+						'content_charge_type' => $this->getRaw('content_charge_type')
+					),
+					self::$_aContentTranslatePriorities
+				)->out_value
+			)->id
+		);
+		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('RecordType', 'record_type', 'provider_id', 'category_type', 'content_category', 'content_id', 'content_charge_type', 'content_description'));
+
+		// Destination (sub-Call Type)
+		if ($this->_intContext > 0) {
+			// NOTE: Not implemented (or even required at this point?)
+			// The service_class field (identifies different services, e.g. Facebook and YouTube) might be appropriate
+			$aDestination = $this->_getUnknownDestination();
+			$this->setNormalised('DestinationCode', $aDestination['Code']);
+			Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('DestinationCode'). " (always Unknown Destination)");
+		}
+
+		// Description
+		$this->setNormalised('Description', $this->getRaw('content_description'));
+		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Description', 'content_description'));
+		
+		// Units
+		// NOTE: There is a `time_elapsed` field, though is seldom appropriate for rating units
+		$this->setNormalised('Units', 1);
+		Log::get()->logIf(self::DEBUG_LOGGING, '  '.'Units: 1');
+
+		// StartDatetime
+		$sStartDatetime = date('Y-m-d H:i:s', strtotime($this->getRaw('request_date').'t'.$this->getRaw('request_time')));
+		$this->setNormalised('StartDatetime', $sStartDatetime);
+		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('StartDatetime', 'request_date', 'request_time'));
+		
+		// EndDatetime
+		if ($iElapsedTime = (int)$this->getRaw('elapsed_time')) {
+			$sEndDatetime = date('Y-m-d H:i:s', strtotime("+{$iElapsedTime} seconds", strtotime($sStartDatetime)));
+			$this->setNormalised('EndDatetime', $sEndDatetime);
+			Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('EndDatetime', 'request_date', 'request_time', 'elapsed_time'));
+		}
+		
+		// Credit
+		$this->setNormalised('Credit', (int)self::_chargeSignIsCredit($this->getRaw('charge_sign')));
+		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Credit', 'charge_sign'));
+
+		//throw new Exception("TESTING");
+	}
+
 	// INTERNAL UTILITY
 	//-----------------------------------------------------------------------//
 	private static function _parseCurrency($sValue) {
 		// Format is $$$$$$$$CCC
 		return (float)(substr($sValue, 0, 8).'.'.substr($sValue, -3));
+	}
+
+	private static function _chargeSignIsCredit($sChargeSign) {
+		switch (trim(strtoupper($sChargeSign))) {
+			case 'DR':
+				return false;
+				break;
+			case 'CR':
+				return true;
+				break;
+		}
+		Flex::assert(
+			false,
+			"Unhandled Charge Sign ".var_export($sChargeSign, true)." encountered",
+			$sChargeSign,
+			"iSeek Mobile Normaliser: Unhandled Charge Sign ".var_export($sChargeSign, true)." encountered"
+		);
 	}
 
 	// RECORD DEFINITIONS
@@ -1091,7 +1235,7 @@ class NormalisationModuleIseekMobile extends NormalisationModule {
 				'Start' => 223,
 				'Length' => 1
 			),	
-			'aud_total_charge' => array(
+			'total_charges' => array(
 				'Start' => 224,
 				'Length' => 11
 			),
@@ -1099,7 +1243,7 @@ class NormalisationModuleIseekMobile extends NormalisationModule {
 				'Start' => 235,
 				'Length' => 2
 			),
-			'aud_tax_amount' => array(
+			'tax_amount' => array(
 				'Start' => 237,
 				'Length' => 11
 			),
