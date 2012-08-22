@@ -9,11 +9,8 @@ class Exception_Assertion extends Exception {
 		parent::__construct($sMessage);
 		
 		// Send an EMAIL_NOTIFICATION_ALERT email
-		if (!strlen($sMessage)) {
-			$sMessage = "[ No Message ]";
-		}
+		$sDetails = strlen($sMessage) ? $sMessage : "[ No Message ]";
 		
-		$sDetails = $sMessage;
 		if ($sExtraDetails) {
 			$sDetails .= "\n\nFurther Details:\n"
 						. (is_string($sExtraDetails) ? $sExtraDetails : print_r($sExtraDetails, true));
