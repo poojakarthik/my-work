@@ -1,15 +1,24 @@
 <?php
-/**
- * Record_Type
- *
- * Models the RecordType table
- *
- * @class	Record_Type
- */
-class Record_Type extends ORM_Cached
-{
+class Record_Type extends ORM_Cached {
 	protected 			$_strTableName			= "RecordType";
 	protected static	$_strStaticTableName	= "RecordType";
+
+	public static function getForServiceTypeAndCode($mServiceType, $sCode) {
+		$iServiceType = ORM::extractId($mServiceType);
+		$mResult = Query::run("
+			SELECT	*
+			FROM	RecordType
+			WHERE	ServiceType = <service_type_id>
+					AND Code = <code>
+		", array(
+			'service_type_id' => $iServiceType,
+			'code' => $sCode
+		));
+		if ($aRecordType = $mResult->fetch_assoc()) {
+			return new self($aRecordType);
+		}
+		throw new Exception("Unable to resolve Record Type with Service Type {$iServiceType} and Code ".var_export($sCode, true));
+	}
 	
 	protected static function getCacheName()
 	{

@@ -53,7 +53,7 @@ class CommonLayout
 		<table style="height: 90px; width: 100%;" cellpadding=0 cellspacing=0>
 		<tr>
 			<td width=10></td>
-			<td><img src="logo.php" WIDTH="320" HEIGHT="60" BORDER="0" ALT=""></td>
+			<td><img class='customer-brand-logo' src="logo.php"></td>
 		</tr>
 		</table>
 			<!-- <div id="Banner"></div> -->
