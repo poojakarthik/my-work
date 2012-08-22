@@ -14,10 +14,7 @@ abstract class Ticketing_Import {
 
 	abstract public function import();
 
-	public static function getInstance($bLoggingEnabled) {
-		// Get the ticketing configuration
-		$oTicketingConfig = Ticketing_Config::load();
-
+	public static function getInstance($oTicketingConfig, $bLoggingEnabled) {
 		// Verify that there an implementation for the recorded protocol
 		$sClass = 'Ticketing_Import_'.strtoupper($oTicketingConfig->protocol);
 		if (!class_exists($sClass)) {

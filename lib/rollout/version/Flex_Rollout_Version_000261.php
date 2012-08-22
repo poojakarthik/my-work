@@ -6,13 +6,15 @@ class Flex_Rollout_Version_000261 extends Flex_Rollout_Version {
 	public function rollout() {
 		$aOperations = array(
 			array(
-				'sDescription'		=> "Add the use_ssl and archive_folder_name columns to ticketing_config",
+				'sDescription'		=> "Add use_ssl, archive_folder_name and is_active to ticketing_config",
 				'sAlterSQL'			=> "ALTER TABLE ticketing_config
 										ADD COLUMN	use_ssl TINYINT(1) UNSIGNED NULL,
-										ADD COLUMN	archive_folder_name VARCHAR(1024) NULL;",
+										ADD COLUMN	archive_folder_name VARCHAR(1024) NULL,
+										ADD COLUMN	is_active TINYINT(1) NOT NULL DEFAULT 0;",
 				'sRollbackSQL'		=> "ALTER TABLE ticketing_config
 										DROP COLUMN	use_ssl,
-										DROP COLUMN	archive_folder_name;",
+										DROP COLUMN	archive_folder_name,
+										DROP COLUMN	is_active;",
 				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 			)
 		);

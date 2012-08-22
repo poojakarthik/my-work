@@ -1502,70 +1502,16 @@ class Application_Handler_Ticketing extends Application_Handler
 		return $this->Tickets($subPath);
 	}
 
-
-	public function Admin($subPath)
-	{
-		if (!Ticketing_User::currentUserIsTicketingAdminUser())
-		{
+	public function Admin($sSubPath) {
+		if (!Ticketing_User::currentUserIsTicketingAdminUser()) {
 			AuthenticatedUser()->InsufficientPrivilegeDie();
-		}
-
-		$action = count($subPath) ? strtolower(array_shift($subPath)) : 'view';
-
-		$config = Ticketing_Config::load();
-
-		$detailsToRender = array();
-		$detailsToRender['error'] = '';
-		$invalidValues = array();
-
-		// Need to check to see if we are editing general settings
-		if ($action == 'edit')
-		{
-			$detailsToRender['saved'] = FALSE;
-			if (array_key_exists('save', $_REQUEST))
-			{
-				// Cannot validate the submitted paths before saving as they are on the backend 
-				$strSourcePath = array_key_exists('sourcePath', $_REQUEST) ? trim($_REQUEST['sourcePath']) : NULL;
-				$strBackupPath = array_key_exists('backupPath', $_REQUEST) ? trim($_REQUEST['backupPath']) : NULL;
-				$strJunkPath = array_key_exists('junkPath', $_REQUEST) ? trim($_REQUEST['junkPath']) : NULL;
-
-				// MUST NOT BE BLANK AND MUST BE VALID
-				if (!$strSourcePath)
-				{
-					$invalidValues['sourcePath'] = 'You must specify a source directory.';
-				}
-				$config->setSourceDirectory($strSourcePath ? $strSourcePath : NULL);
-
-				// CAN BE BLANK BUT IF SET MUST BE VALID
-				$config->setBackupDirectory($strBackupPath ? $strBackupPath : NULL);
-
-				// CAN BE BLANK BUT IF SET MUST BE VALID
-				$config->setJunkDirectory($strJunkPath ? $strJunkPath : NULL);
-
-				if (!empty($invalidValues))
-				{
-					$detailsToRender['error'] = 'Please correct all highlighted fields.';
-					
-				}
-				else
-				{
-					$config->save();
-					$detailsToRender['saved'] = TRUE;
-					$action = 'save';
-				}
-			}
 		}
 
 		BreadCrumb()->EmployeeConsole();
 		BreadCrumb()->SetCurrentPage("Ticketing Administration");
 
-		// The admin interface allows the setting of the mail paths and settings per customer group
-		$detailsToRender['action'] = $action;
-		$detailsToRender['config'] = $config;
-		$detailsToRender['invalid_values'] = $invalidValues;
-		$this->LoadPage('ticketing_admin', HTML_CONTEXT_DEFAULT, $detailsToRender);
+		$this->LoadPage('ticketing_admin', HTML_CONTEXT_DEFAULT, array());
 	}
-
 
 	public function GroupAdmin($subPath)
 	{
