@@ -256,17 +256,14 @@ jQuery.json = {
 			}
 		},
 
-		defaultErrorHandler: function(error)
-		{
+		defaultErrorHandler: function(oResponse) {
 			// Close the Splash, if it is open
-			if (window.Vixen && window.Vixen.Popup)
-			{
+			if (window.Vixen && window.Vixen.Popup) {
 				window.Vixen.Popup.ClosePageLoadingSplash();
 			}
 			
-			alert('An error occurred when communicating with the server.\n\nIf this continues, please contact your system administrator with the following details:\n\n' + error['ERROR']);
+			jQuery.json.errorPopup(oResponse);
 		}
-
 	},
 
 	jsonFunction: function(onSuccess, onFailure, remoteClass, remoteMethod) {
@@ -303,7 +300,8 @@ jQuery.json = {
 			(oResponse.ERROR ? oResponse.ERROR : (oResponse.sMessage ? oResponse.sMessage : '-')), 
 			oResponseFunction.requestFunction.funcClass, 
 			oResponseFunction.requestFunction.funcName, 
-			oResponseFunction.funcArgs
+			oResponseFunction.funcArgs,
+			{'Response' : oResponse}
 		);
 	},
 

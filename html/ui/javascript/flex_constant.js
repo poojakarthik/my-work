@@ -67,48 +67,29 @@ var Flex_Constant	= Class.create
 		fnCallback(aOptions);
 	},
 	
-	_loadConstantGroupResponse	: function (fncCallback, objResponse)
-	{
-		if (objResponse)
-		{
+	_loadConstantGroupResponse	: function (fnCallback, oResponse) {
+		if (oResponse) {
 			// AJAX Success
-			if (objResponse.Success)
-			{
+			if (oResponse.Success) {
 				// Load Successful
-				for (var i in objResponse.arrConstantGroups)
-				{
+				for (var i in oResponse.arrConstantGroups) {
 					// Add to Constant Group List
-					this.arrConstantGroups[i]	= objResponse.arrConstantGroups[i];
+					this.arrConstantGroups[i] = oResponse.arrConstantGroups[i];
 					
 					// Add to Constant List
-					for (var t in this.arrConstantGroups[i])
-					{
-						this.arrConstants[this.arrConstantGroups[i][t].Constant]	= parseInt(t);
+					for (var t in this.arrConstantGroups[i]) {
+						this.arrConstants[this.arrConstantGroups[i][t].Constant] = parseInt(t);
 					}
 				}
 				
-				if (fncCallback)
-				{
-					fncCallback();
+				if (fnCallback) {
+					fnCallback();
 				}
 				return true;
 			}
-			else if (objResponse.Message)
-			{
-				$Alert(objResponse.Message);
-				return false;
-			}
-			else
-			{
-				$Alert(objResponse);
-				return false;
-			}
 		}
-		else
-		{
-			// AJAX Failure
-			$Alert("There was an error while trying to contact the Server.");
-		}
+
+		jQuery.json.errorPopup(oResponse);
 	}
 });
 

@@ -127,7 +127,7 @@ var Reflex_AJAX_Request = Class.create({
 });
 
 Object.extend(Reflex_AJAX_Request, {
-	showErrorPopup : function(sRequestType, sMessage, sHandler, sMethod, aParameters, mOtherStuff) {
+	showErrorPopup : function(sRequestType, sMessage, sHandler, sMethod, aParameters, oOther) {
 		Reflex_Popup.yesNoCancel(
 			'An error has occured', 
 			{
@@ -152,11 +152,13 @@ Object.extend(Reflex_AJAX_Request, {
 						'Arguments: ' + aParameterStrings.join(', ')
 					];
 
-					if (mOtherStuff) {
-						aLines.push('Other: ' + Object.toJSON(mOtherStuff));
+					if (oOther) {
+						for (var sLabel in oOther) {
+							aLines.push(sLabel + ': ' + Object.toJSON(oOther[sLabel]));
+						}
 					}
 
-					window.location = 'mailto:rmctainsh@ybs.net.au?subject=' + escape(sTitle) + '&body=' + escape(aLines.join("\n"));
+					window.location = 'mailto:ybs-admin@ybs.net.au?subject=' + escape(sTitle) + '&body=' + escape(aLines.join("\n"));
 				}
 			}
 		);

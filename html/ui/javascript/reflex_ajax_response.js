@@ -49,7 +49,7 @@ Object.extend(Reflex_AJAX_Response, {
 			oRequest.getHandler(), 
 			oRequest.getMethod(), 
 			oRequest.getParameters(),
-			oResponse.getException()
+			{'Exception' : oResponse.getException(), 'Debug': oResponse.get('sDebug')}
 		);
 	}
 });
