@@ -88,9 +88,10 @@ var Dataset_Ajax = Class.create({
 			this._oJSONDefinition.send(bCountOnly, iLimit, iOffset, this._hSort, this._hFilter);
 		} else {
 			// Object and method, use a jquery json function
+			var fnResp = jQuery.json.handleResponse.curry(fnCallback);
 			var fnReq = jQuery.json.jsonFunction(
-				jQuery.json.handleResponse.curry(fnCallback), 
-				null, 
+				fnResp, 
+				fnResp, 
 				this._oJSONDefinition.sObject, 
 				this._oJSONDefinition.sMethod
 			);
@@ -101,15 +102,7 @@ var Dataset_Ajax = Class.create({
 	// _reflexAJAXResponse: Special json request callback when Reflex_AJAX_Request is used to get the dataset. Handles exceptions.
 	_reflexAJAXResponse : function(fnCallback, oResponse) {
 		if (oResponse.hasException()) {
-			// There is an exception in the response, display it or a generic error message
-			var oException = oResponse.getException();
-			Reflex_Popup.alert(
-				(oException.sMessage ? oException.sMessage : 'There was a critical error accessing the Flex Server'), 
-				{
-					sTitle			: 'Database Error: Dataset Retrieval',
-					sDebugContent	: oResponse.getDebugLog()
-				}
-			);
+			Reflex_AJAX_Response.errorPopup(oResponse);
 			return;
 		}
 		

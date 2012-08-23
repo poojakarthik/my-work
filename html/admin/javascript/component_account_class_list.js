@@ -555,7 +555,7 @@ Object.extend(Component_Account_Class_List,
 		
 		if (!oResponse.bSuccess)
 		{
-			Component_Account_Class_List._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		

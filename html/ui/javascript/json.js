@@ -191,6 +191,7 @@ jQuery.json = {
 		callPostJson: function()
 		{
 			this.localFunc.funcArgs = $A(arguments);
+			this.localFunc.requestFunction = this;
 			
 			var data = {
 				json: jQuery.json.encode(this.localFunc.funcArgs)
@@ -295,6 +296,16 @@ jQuery.json = {
 		return responseHandler.funcRemote;
 	},
 	
+	errorPopup : function(oResponse) {
+		var oResponseFunction = arguments.callee.caller.caller.caller.caller;
+		Reflex_AJAX_Request.showErrorPopup(
+			'jQuery.json.jsonFunction', 
+			(oResponse.ERROR ? oResponse.ERROR : (oResponse.sMessage ? oResponse.sMessage : '-')), 
+			oResponseFunction.requestFunction.funcClass, 
+			oResponseFunction.requestFunction.funcName, 
+			oResponseFunction.funcArgs
+		);
+	},
 
 	// Iframe-basd AJAX
 	jsonIframeFormSubmit	: function(elmForm, funcResponseHandler)
@@ -380,34 +391,15 @@ jQuery.json = {
 	},
 	
 	// handleResponse()	: Generic Response Handler
-	handleResponse		: function(fncCallback, objResponse)
-	{
-		//alert(objResponse);
-		//alert(fncCallback);
-		if (objResponse)
-		{
-			if (objResponse.Success || objResponse.bSuccess)
-			{
-				//alert("Invoking Callback");
-				fncCallback(objResponse);
+	handleResponse : function(fnCallback, oResponse) {
+		if (oResponse) {
+			if (oResponse.Success || oResponse.bSuccess) {
+				fnCallback(oResponse);
 				return true;
 			}
-			else if (objResponse.Message)
-			{
-				$Alert(objResponse.Message, null, null, 'modal');
-				return false;
-			}
-			else
-			{
-				$Alert(objResponse, null, null, 'modal');
-				return false;
-			}
 		}
-		else
-		{
-			$Alert("There was an error communicating with the Server");
-			return false;
-		}
+
+		jQuery.json.errorPopup(oResponse);
 	},
 	
 	arrayAsObject	: function(mArray)

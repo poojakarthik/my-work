@@ -2,10 +2,11 @@
 var Reflex_AJAX_Request = Class.create({
 	
 	initialize : function(sHandler, sMethod, fnOnSuccess, fnOnError) {
-		this._sHandler			= sHandler;
-		this._sMethod			= sMethod;
-		this._sURL				= 'reflex_json.php/' + this._sHandler + '/' + this._sMethod + '/';
-		this._hEventCallbacks	= {};
+		this._sHandler = sHandler;
+		this._sMethod = sMethod;
+		this._sURL = 'reflex_json.php/' + this._sHandler + '/' + this._sMethod + '/';
+		this._hEventCallbacks = {};
+		this._aParameters = null;
 		
 		if (fnOnSuccess) {
 			this.observe('success', fnOnSuccess);
@@ -15,6 +16,22 @@ var Reflex_AJAX_Request = Class.create({
 	
 	// Public
 	
+	getHandler : function() {
+		return this._sHandler;
+	},
+
+	getMethod : function() {
+		return this._sHandler;
+	},
+
+	getParameters : function() {
+		return this._aParameters;
+	},
+
+	getURL : function() {
+		return this._sURL;
+	},
+
 	observe : function(sEvent, fnCallback) {
 		if (!this._hEventCallbacks[sEvent]) {
 			this._hEventCallbacks[sEvent] = [];
@@ -42,14 +59,14 @@ var Reflex_AJAX_Request = Class.create({
 	
 	send : function() {
 		// Extract method parameters
-		var aParameters	= $A(arguments);
+		this._aParameters = $A(arguments);
 		
 		// Make the request
 		new Ajax.Request(
 			this._sURL,
 			{
 				contentType	: 'application/x-www-form-urlencoded',
-				parameters	: {json: Object.toJSON(aParameters)},
+				parameters	: {json: Object.toJSON(this._aParameters)},
 				onComplete	: this._response.bind(this, 'success'),
 				onFailure	: this._response.bind(this, 'error')
 			}
@@ -86,7 +103,7 @@ var Reflex_AJAX_Request = Class.create({
 		}
 		
 		// Create response object
-		var oResponse = new Reflex_AJAX_Response(oResponseData);
+		var oResponse = new Reflex_AJAX_Response(oResponseData, this);
 		
 		// Add the debug log to the global debug log catcher
 		try {
@@ -106,5 +123,42 @@ var Reflex_AJAX_Request = Class.create({
 		} catch (oEx) {
 			Reflex_Popup.alert(oEx.message, {sTitle: 'Error'});
 		}
+	}
+});
+
+Object.extend(Reflex_AJAX_Request, {
+	showErrorPopup : function(sRequestType, sMessage, sHandler, sMethod, aParameters, mOtherStuff) {
+		Reflex_Popup.yesNoCancel(
+			'An error has occured', 
+			{
+				iWidth : 20,
+				sTitle : 'Error',
+				sYesLabel : 'Report Error',
+				sNoLabel : 'Close',
+				fnOnYes : function() {
+					var sTitle = "XHR Error in Flex (" + document.domain + ")";
+					var aParameterStrings = [];
+					if (aParameters) {
+						for (var i = 0; i < aParameters.length; i++) {
+							aParameterStrings[i] = Object.toJSON(aParameters[i]);
+						}
+					}
+
+					var aLines = [
+						'Request Method: ' + sRequestType,
+						'Message: ' + sMessage,
+						'JSON Handler: ' + sHandler,
+						'Function: ' + sMethod,
+						'Arguments: ' + aParameterStrings.join(', ')
+					];
+
+					if (mOtherStuff) {
+						aLines.push('Other: ' + Object.toJSON(mOtherStuff));
+					}
+
+					window.location = 'mailto:rmctainsh@ybs.net.au?subject=' + escape(sTitle) + '&body=' + escape(aLines.join("\n"));
+				}
+			}
+		);
 	}
 });
