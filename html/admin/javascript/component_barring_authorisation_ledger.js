@@ -510,13 +510,7 @@ Object.extend(Component_Barring_Authorisation_Ledger,
 		created_datetime			: Sort.DIRECTION_OFF,
 		created_employee_name		: Sort.DIRECTION_OFF
 	},
-	
-	_ajaxError : function(oResponse)
-	{
-		var sMessage = (oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.');
-		Reflex_Popup.alert(sMessage, {sTitle: 'Error'});
-	},
-	
+		
 	_getAllScenariosAsOptions : function(fnCallback, oResponse)
 	{
 		if (!oResponse)
@@ -529,7 +523,7 @@ Object.extend(Component_Barring_Authorisation_Ledger,
 		
 		if (!oResponse.bSuccess)
 		{
-			Component_Barring_Authorisation_Ledger._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		

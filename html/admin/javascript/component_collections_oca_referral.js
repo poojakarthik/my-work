@@ -622,7 +622,7 @@ var Component_Collections_OCA_Referral = Class.create(
 		if (!oResponse.bSuccess)
 		{
 			// Error
-			Component_Collections_OCA_Referral._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -650,7 +650,7 @@ var Component_Collections_OCA_Referral = Class.create(
 		if (!oResponse.bSuccess)
 		{
 			// Error
-			Component_Collections_OCA_Referral._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -791,7 +791,7 @@ var Component_Collections_OCA_Referral = Class.create(
 		
 		if (!oResponse.bSuccess)
 		{
-			Component_Collections_OCA_Referral._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -899,7 +899,7 @@ var Component_Collections_OCA_Referral = Class.create(
 		if (!oResponse.bSuccess)
 		{
 			// Error
-			Component_Collections_OCA_Referral._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 
@@ -949,12 +949,6 @@ Object.extend(Component_Collections_OCA_Referral,
 		actioned_employee_name				: Sort.DIRECTION_OFF
 	},
 	
-	_ajaxError : function(oResponse)
-	{
-		var sMessage = (oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.');
-		Reflex_Popup.alert(sMessage, {sTitle: 'Error', sDebugContent: oResponse.sDebug});
-	},
-		
 	_getConstantGroupOptions : function(sConstantGroup, fnCallback)
 	{
 		var aOptions		= [];

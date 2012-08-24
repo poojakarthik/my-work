@@ -64,7 +64,7 @@ var Popup_Carrier_Module_Config_JSON_Editor = Class.create(Reflex_Popup,
 		
 		if (!oResponse.bSuccess)
 		{
-			Popup_Carrier_Module_Config_JSON_Editor._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -89,7 +89,7 @@ var Popup_Carrier_Module_Config_JSON_Editor = Class.create(Reflex_Popup,
 		
 		if (!oResponse.bSuccess)
 		{
-			Popup_Carrier_Module_Config_JSON_Editor._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -186,14 +186,5 @@ var Popup_Carrier_Module_Config_JSON_Editor = Class.create(Reflex_Popup,
 			sStr += "\t";
 		}
 		return sStr;
-	}
-});
-
-Object.extend(Popup_Carrier_Module_Config_JSON_Editor, 
-{
-	_ajaxError : function(oResponse)
-	{
-		var sMessage = (oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.');
-		Reflex_Popup.alert(sMessage, {sTitle: 'Error', sDebugContent: oResponse.sDebug});
 	}
 });

@@ -127,15 +127,15 @@ var Reflex_AJAX_Request = Class.create({
 });
 
 Object.extend(Reflex_AJAX_Request, {
-	showErrorPopup : function(sRequestType, sMessage, sHandler, sMethod, aParameters, oOther) {
-		Reflex_Popup.yesNoCancel(
-			'An error has occured', 
+	showErrorPopup : function(sRequestType, sMessage, sHandler, sMethod, aParameters, oOther, sPopupMessage, fnOnClose) {
+		return Reflex_Popup.yesNoCancel(
+			(sPopupMessage ? sPopupMessage : 'An error has occured'), 
 			{
 				iWidth : 20,
 				sTitle : 'Error',
 				sYesLabel : 'Report Error',
 				sNoLabel : 'Close',
-				fnOnYes : function() {
+				fnOnYes : function(fnOnClose) {
 					var sTitle = "XHR Error in Flex (" + document.domain + ")";
 					var aParameterStrings = [];
 					if (aParameters) {
@@ -159,7 +159,12 @@ Object.extend(Reflex_AJAX_Request, {
 					}
 
 					window.location = 'mailto:ybs-admin@ybs.net.au?subject=' + escape(sTitle) + '&body=' + escape(aLines.join("\n"));
-				}
+
+					if (fnOnClose) {
+						fnOnClose();
+					}
+				}.curry(fnOnClose),
+				fnOnNo : fnOnClose
 			}
 		);
 	}

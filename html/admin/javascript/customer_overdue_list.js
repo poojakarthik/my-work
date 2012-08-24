@@ -13,22 +13,18 @@ var FlexCustomerOverdueList = {
 	 */
 	popupControls : {},
 	
-	displayPopupReturnHandler : function(response)
-	{
+	displayPopupReturnHandler : function(oResponse) {
 		Vixen.Popup.ClosePageLoadingSplash();
 
-		if (response.Success)
-		{
-			this.searchTypes = response.SearchTypes;
+		if (oResponse.Success) {
+			this.searchTypes = oResponse.SearchTypes;
 			
-			Vixen.Popup.Create("CustomerOverdueList", response.PopupContent, "extralarge", "centre", "modal", "Overdue Customers");
+			Vixen.Popup.Create("CustomerOverdueList", oResponse.PopupContent, "extralarge", "centre", "modal", "Overdue Customers");
 			
 			// Initialise the popup
 			// TODO!
-		}
-		else
-		{
-			$Alert("Failed to open the 'Overdue Customers' popup" + ((response.ErrorMessage != undefined)? "<br />" + response.ErrorMessage : ""));
+		} else {
+			jQuery.json.errorPopup(oResponse, "Failed to open the 'Overdue Customers' popup");
 		}
 	}
 	

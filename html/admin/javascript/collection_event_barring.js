@@ -11,10 +11,8 @@ var Collection_Event_Barring = Class.create(Collection_Event_Type,
 		this._completeInvoke();
 	},
 
-	_completeInvoke : function(oResponse)
-	{
-		if (!oResponse)
-		{
+	_completeInvoke : function(oResponse) {
+		if (!oResponse) {
 			this._loading('');
 			
 			var fnResp 	= this._completeInvoke.bind(this);
@@ -25,9 +23,8 @@ var Collection_Event_Barring = Class.create(Collection_Event_Type,
 		
 		this._hideLoading();
 		
-		if (!oResponse.bSuccess)
-		{
-			Collection_Event_Type.ajaxError(oResponse);
+		if (!oResponse.bSuccess) {
+			jQuery.json.errorPopup(oResponse);
 		}
 		
 		Collection_Event_Type._displayInvokeInformation(oResponse, this._fnComplete);

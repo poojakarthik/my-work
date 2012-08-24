@@ -71,39 +71,31 @@ var Employee	= Class.create
 		}
 	},
 	
-	setPermissions	: function(aOperationProfileIds, aOperationIds, fnCallback, oResponse)
-	{
-		if (typeof oResponse == 'undefined')
-		{
+	setPermissions	: function(aOperationProfileIds, aOperationIds, fnCallback, oResponse) {
+		if (typeof oResponse == 'undefined') {
 			// Make ajax request
-			if (this.oProperties.Id !== 'undefined')
-			{
+			if (this.oProperties.Id !== 'undefined') {
 				// Create json function
-				var fnJSON	= 	jQuery.json.jsonFunction(
-									this.setPermissions.bind(
-										this,
-										aOperationProfileIds, 
-										aOperationIds, 
-										fnCallback
-									), 
-									null, 
-									'Employee', 
-									'setPermissions'
-								);
+				var fnJSON = jQuery.json.jsonFunction(
+					this.setPermissions.bind(
+						this,
+						aOperationProfileIds, 
+						aOperationIds, 
+						fnCallback
+					), 
+					null, 
+					'Employee', 
+					'setPermissions'
+				);
 				fnJSON(this.oProperties.Id, aOperationProfileIds, aOperationIds);
 			}
-		}
-		else if(oResponse.Success)
-		{
-			if (fnCallback)
-			{
+		} else if(oResponse.Success) {
+			if (fnCallback) {
 				fnCallback(oResponse);
 			}
-		}
-		else
-		{
+		} else {
 			// AJAX Error
-			Reflex_Popup.alert(oResponse.Message ? oResponse.Message : '');
+			jQuery.json.errorPopup(oResponse);
 		}
 	},
 	
@@ -131,27 +123,22 @@ var Employee	= Class.create
 				};
 	},
 	
-	changePassword	: function(fnCallback, oResponse)
-	{
-		if (typeof oResponse == 'undefined')
-		{
+	changePassword	: function(fnCallback, oResponse) {
+		if (typeof oResponse == 'undefined') {
 			// Validate password and confirmation
 			var aValidationErrors		= [];
 			var sPasswordError			= Control_Field.getError(this.oPropertyControls.PassWord);
 			var sPassWordConfirmError	= Control_Field.getError(this.oPropertyControls.PassWordConfirm);
 			
-			if (sPasswordError)
-			{
+			if (sPasswordError) {
 				aValidationErrors.push(sPasswordError);
 			}
 			
-			if (sPassWordConfirmError)
-			{
+			if (sPassWordConfirmError) {
 				aValidationErrors.push(sPassWordConfirmError);
 			}
 			
-			if (aValidationErrors.length)
-			{
+			if (aValidationErrors.length) {
 				this.showValidationErrors(aValidationErrors);
 				return;
 			}
@@ -172,31 +159,19 @@ var Employee	= Class.create
 				this.oPropertyControls.PassWord.getValue(true),
 				this.oPropertyControls.PassWordConfirm.getValue(true)
 			);
-		}
-		else
-		{
+		} else {
 			this.oLoading.hide();
 			delete this.oLoading;			
 			
-			if (oResponse.Success)
-			{
+			if (oResponse.Success) {
 				// All good!
 				fnCallback(this);
-			}
-			else
-			{
+			} else {
 				// Error occurred, either validation or exception
-				if (oResponse.aValidationErrors)
-				{
+				if (oResponse.aValidationErrors) {
 					this.showValidationErrors(oResponse.aValidationErrors);
-				}
-				else if (oResponse.Message)
-				{
-					Reflex_Popup.alert(oResponse.Message);
-				}
-				else
-				{
-					Reflex_Popup.alert('An error occured saving the employees password');
+				} else {
+					jQuery.json.errorPopup(oResponse);
 				}
 			}
 		}
@@ -339,33 +314,22 @@ var Employee	= Class.create
 		fnSave((this.oProperties.Id ? this.oProperties.Id : null), oDetails);
 	},
 	
-	saveResponse	: function(fnCallback, oResponse)
-	{
+	saveResponse : function(fnCallback, oResponse) {
 		// Kill loading
 		this.oLoading.hide();
 		delete this.oLoading;
 		
-		if (oResponse.Success)
-		{
+		if (oResponse.Success) {
 			this.oProperties.Id	= oResponse.iEmployeeId;
 			
 			// All good!
 			fnCallback(this);
-		}
-		else
-		{
+		} else {
 			// Error occurred, either validation or exception
-			if (oResponse.aValidationErrors)
-			{
+			if (oResponse.aValidationErrors) {
 				this.showValidationErrors(oResponse.aValidationErrors);
-			}
-			else if (oResponse.Message)
-			{
-				Reflex_Popup.alert(oResponse.Message);
-			}
-			else
-			{
-				Reflex_Popup.alert('An error occured saving the employee information');
+			} else {
+				jQuery.json.errorPopup(oResponse);
 			}
 		}
 	},

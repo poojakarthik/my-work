@@ -305,11 +305,7 @@ var Popup_Destination_Import	= Class.create(/* extends */Reflex_Popup,
 			else
 			{
 				// Failure
-				var	sMessage	= oResponse.Message || oResponse.sMessage || "There was an error while importing the Destination translations. Please retry, and contact YBS if this problem persists.";
-				
-				Reflex_Popup.alert(sMessage, {
-					sTitle		: 'Destination Import Failed'
-				});
+				jQuery.json.errorPopup(oResponse, "There was an error while importing the Destination translations, please retry");
 			}
 			
 			// Debug information will only show if the user is God
@@ -369,11 +365,7 @@ var Popup_Destination_Import	= Class.create(/* extends */Reflex_Popup,
 			else
 			{
 				// Failure
-				var	sMessage	= oResponse.Message || oResponse.sMessage || "There was an error while accessing the database. Please retry, and contact YBS if this problem persists.";
-				
-				Reflex_Popup.alert(sMessage, {
-					fnClose	: this.hide.bind(this)
-				});
+				jQuery.json.errorPopup(oResponse);
 			}
 		}
 		else
@@ -404,11 +396,7 @@ var Popup_Destination_Import	= Class.create(/* extends */Reflex_Popup,
 			else
 			{
 				// Failure
-				var	sMessage	= oResponse.Message || oResponse.sMessage || "There was an error while accessing the database. Please retry, and contact YBS if this problem persists.";
-				
-				Reflex_Popup.alert(sMessage, {
-					fnClose	: this.hide.bind(this)
-				});
+				jQuery.json.errorPopup(oResponse);
 			}
 		}
 		else

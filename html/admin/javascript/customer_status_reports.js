@@ -144,33 +144,24 @@ function FlexCustomerStatusReportsClass()
 		}
 		
 		// Define return handlers
-		funcSuccess = function(response)
-		{
+		funcSuccess = function(oResponse) {
 			Vixen.Popup.ClosePageLoadingSplash();
 			
-			if (response.Success)
-			{
+			if (oResponse.Success) {
 				// The report was successfully generated
-				if (response.Report !== null)
-				{
+				if (oResponse.Report !== null) {
 					// The report has been returned.  Stick it in the page
 					var elmReportContainer = $ID("ReportResultsContainer");
-					elmReportContainer.innerHTML = response.Report;
-				}
-				else
-				{
+					elmReportContainer.innerHTML = oResponse.Report;
+				} else {
 					// Retrieve the report from the server by relocating the page
-					if (response.ReportLocation != undefined)
-					{
-						window.location = response.ReportLocation;
+					if (oResponse.ReportLocation != undefined) {
+						window.location = oResponse.ReportLocation;
 					}
 				}
-			}
-			else
-			{
-				$Alert("Generating the report failed<br />" + response.Message);
-			}
-			
+			} else {
+				jQuery.json.errorPopup(oResponse, "Generating the report failed");
+			}			
 		}
 
 		remoteClass		= 'Customer_Status';
@@ -247,31 +238,31 @@ function FlexCustomerStatusReportsClass()
 		}
 		
 		// Define return handlers
-		funcSuccess = function(response)
+		funcSuccess = function(oResponse)
 		{
 			Vixen.Popup.ClosePageLoadingSplash();
 			
-			if (response.Success)
+			if (oResponse.Success)
 			{
 				// The report was successfully generated
-				if (response.Report !== null)
+				if (oResponse.Report !== null)
 				{
 					// The report has been returned.  Stick it in the page
 					var elmReportContainer = $ID("ReportResultsContainer");
-					elmReportContainer.innerHTML = response.Report;
+					elmReportContainer.innerHTML = oResponse.Report;
 				}
 				else
 				{
 					// Retrieve the report from the server by relocating the page
-					if (response.ReportLocation != undefined)
+					if (oResponse.ReportLocation != undefined)
 					{
-						window.location = response.ReportLocation;
+						window.location = oResponse.ReportLocation;
 					}
 				}
 			}
 			else
 			{
-				$Alert("Generating the report failed<br />" + response.Message);
+				jQuery.json.errorPopup(oResponse, "Generating the report failed");
 			}
 		}
 

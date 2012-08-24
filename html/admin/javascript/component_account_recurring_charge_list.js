@@ -451,16 +451,8 @@ Object.extend(Component_Account_Recurring_Charge_List,
 	
 	_hRecurringChargeStatus : {},
 	
-	_ajaxError : function(oResponse)
-	{
-		var sMessage = (oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.');
-		Reflex_Popup.alert(sMessage, {sTitle: 'Error', sDebugContent: oResponse.sDebug});
-	},
-	
-	_getGlobalTaxType : function(fnCallback, oResponse)
-	{
-		if (!oResponse)
-		{
+	_getGlobalTaxType : function(fnCallback, oResponse) {
+		if (!oResponse) {
 			// Make request
 			var fnResp 	= Component_Account_Recurring_Charge_List._getGlobalTaxType.curry(fnCallback);
 			var fnReq	= jQuery.json.jsonFunction(fnResp, fnResp, 'Tax_Type', 'getGlobalTaxType');
@@ -468,15 +460,13 @@ Object.extend(Component_Account_Recurring_Charge_List,
 			return;
 		}
 		
-		if (!oResponse.bSuccess)
-		{
+		if (!oResponse.bSuccess) {
 			// Error
-			Popup_Adjustment_Request._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
-		if (fnCallback)
-		{
+		if (fnCallback) {
 			fnCallback(oResponse.oTaxType);
 		}
 	}

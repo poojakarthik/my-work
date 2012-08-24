@@ -323,12 +323,8 @@ Object.extend(Component_Carrier_Module_Config,
 {
 	REQUIRED_CONSTANT_GROUPS : ['data_type'],
 	
-	_ajaxError : function(oResponse, sMessage)
-	{
+	_ajaxError : function(oResponse, sMessage) {
 		// Exception
-		Reflex_Popup.alert(
-			(sMessage ? sMessage + '. ' : '') + oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.', 
-			{sTitle: 'Error', sDebugContent: oResponse.sDebug}
-		);
+		jQuery.json.errorPopup(oResponse, sMessage);
 	}
 });

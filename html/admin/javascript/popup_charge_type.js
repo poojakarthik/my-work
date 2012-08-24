@@ -288,16 +288,8 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 		}
 	},
 	
-	_saveError	: function(oResponse)
-	{
-		if (oResponse.Message)
-		{
-			Reflex_Popup.alert(oResponse.Message, {sTitle: 'Error'});
-		}
-		else if (oResponse.ERROR)
-		{
-			Reflex_Popup.alert(oResponse.ERROR, {sTitle: 'Error'});
-		}
+	_saveError	: function(oResponse) {
+		jQuery.json.errorPopup(oResponse);
 	},
 	
 	_showCancelConfirmation	: function()

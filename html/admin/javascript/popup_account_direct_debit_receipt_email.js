@@ -33,7 +33,7 @@ var Popup_Account_Direct_Debit_Receipt_Email	= Class.create(Reflex_Popup,
 		
 		if (!oResponse.bSuccess)
 		{
-			Reflex_Popup.alert(oResponse.sMessage);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -288,7 +288,7 @@ var Popup_Account_Direct_Debit_Receipt_Email	= Class.create(Reflex_Popup,
 		if (!oResponse.bSuccess)
 		{
 			// Processing error
-			Reflex_Popup.alert(oResponse.sMessage);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		

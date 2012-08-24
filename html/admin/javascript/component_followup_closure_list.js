@@ -382,7 +382,7 @@ var Component_FollowUp_Closure_List = Class.create(
 		return oTH;
 	},
 	
-	_ajaxError	: function(bHideOnClose, oResponse)
+	_ajaxError	: function(oResponse)
 	{
 		if (this.oLoading)
 		{
@@ -390,16 +390,7 @@ var Component_FollowUp_Closure_List = Class.create(
 			delete this.oLoading;
 		}
 		
-		var oConfig	= {sTitle: 'Error', fnOnClose: (bHideOnClose ? this.hide.bind(this) : null)};
-		
-		if (oResponse.Message)
-		{
-			Reflex_Popup.alert(oResponse.Message, oConfig);
-		}
-		else if (oResponse.ERROR)
-		{
-			Reflex_Popup.alert(oResponse.ERROR, oConfig);
-		}
+		jQuery.json.errorPopup(oResponse);
 	},
 	
 	_edit	: function(iClosureId)
@@ -419,12 +410,12 @@ var Component_FollowUp_Closure_List = Class.create(
 		if (bConfirmation)
 		{
 			// Got confirmation, deactive the closure
-			var fnDeactivate	= 	jQuery.json.jsonFunction(
-										this.oPagination.getCurrentPage.bind(this.oPagination),
-										this._ajaxError.bind(this),
-										'FollowUp_Closure',
-										'deactivate'
-									);
+			var fnDeactivate = jQuery.json.jsonFunction(
+				this.oPagination.getCurrentPage.bind(this.oPagination),
+				this._ajaxError.bind(this),
+				'FollowUp_Closure',
+				'deactivate'
+			);
 			fnDeactivate(iClosureId);
 		}
 		else

@@ -272,25 +272,20 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 		this.hide();
 	},
 	
-	_ajaxError	: function(oResponse, sDescription)
-	{
-		if (this._oLoading)
-		{
+	_ajaxError	: function(oResponse, sDescription) {
+		if (this._oLoading) {
 			this._oLoading.hide();
 			delete this._oLoading;
 		}
 		
 		var oConfig	= {sTitle: 'Error'};
-		if (oResponse.oException)
-		{
+		if (oResponse.oException) {
 			var oEx	= oResponse.oException;
-			switch (oEx.iError)
-			{
+			switch (oEx.iError) {
 				case $CONSTANT.CORRESPONDENCE_RUN_ERROR_NO_DATA:
 					// No data to process, confirm the processing
 					var sNoDataDescription	= '';
-					switch (this._oSourceType.system_name)
-					{
+					switch (this._oSourceType.system_name) {
 						case 'CSV':
 							sNoDataDescription	= 'CSV File';
 							break;
@@ -313,38 +308,14 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 					Reflex_Popup.alert('A file with that name has already been uploaded, please change it or choose a different file', oConfig);
 					break;
 			}
-		}
-		else if (oResponse.aErrors)
-		{
+		} else if (oResponse.aErrors) {
 			// Multiple input errors
 			Reflex_Popup.alert(
 				Popup_Correspondence_Create._getMultipleErrorHTML(oResponse.aErrors, oResponse.sMessage), 
 				oConfig
 			);
-		}
-		else if (oResponse.sMessage)
-		{
-			// Exception/Error message
-			Reflex_Popup.alert(oResponse.sMessage, oConfig);
-		}
-		else if (oResponse.ERROR)
-		{
-			// System error, not thrown by handler code
-			Reflex_Popup.alert(oResponse.ERROR, oConfig);
-		}
-		else if (oResponse.Message)
-		{
-			// IFrame ajax output, most likely php error
-			oConfig.iWidth	= 25;
-			Reflex_Popup.alert(
-				$T.div({class: 'popup-correspondence-create-error-content'},
-					$T.div('A server error has occured, please contact YBS for assistance.'),
-					$T.textarea(
-						oResponse.Message
-					)
-				),
-				oConfig
-			);
+		} else {
+			jQuery.json.errorPopup(oResponse);
 		}
 	},
 	

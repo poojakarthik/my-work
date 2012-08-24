@@ -113,7 +113,7 @@ var Popup_Collections_Warning = Class.create(Reflex_Popup,
 		
 		if (!oResponse.bSuccess)
 		{
-			Popup_Collections_Severity._ajaxError(oResponse, 'Could not save the Warning');
+			Popup_Collections_Warning._ajaxError(oResponse, 'Could not save the Warning');
 			return;
 		}
 		
@@ -129,20 +129,13 @@ var Popup_Collections_Warning = Class.create(Reflex_Popup,
 
 Object.extend(Popup_Collections_Warning, 
 {
-	_ajaxError : function(oResponse, sMessage)
-	{
-		if (oResponse.aErrors)
-		{
+	_ajaxError : function(oResponse, sMessage) {
+		if (oResponse.aErrors) {
 			// Validation errors
 			Popup_Collections_Warning._validationError(oResponse.aErrors);
-		}
-		else
-		{
+		} else {
 			// Exception
-			Reflex_Popup.alert(
-				(sMessage ? sMessage + '. ' : '') + oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.', 
-				{sTitle: 'Error'}
-			);
+			jQuery.json.errorPopup(oResponse, sMessage);
 		}
 	},
 	

@@ -76,7 +76,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 			}
 			else				
 			{
-				Popup_Email_Text_Editor.serverErrorMessage.bind(this,oResponse.message, 'Email Template Retrieval Error')();
+				Popup_Email_Text_Editor.serverErrorMessage.bind(this, oResponse, 'Email Template Retrieval Error')();
 			}
 		}	
 	},
@@ -99,7 +99,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 			}
 			else
 			{
-				Popup_Email_Text_Editor.serverErrorMessage.bind(this,oResponse.message, 'Email Template Retrieval Error')();				
+				Popup_Email_Text_Editor.serverErrorMessage.bind(this, oResponse, 'Email Template Retrieval Error')();				
 			}
 		
 		}
@@ -477,7 +477,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		}
 		else
 		{
-			Popup_Email_Text_Editor.serverErrorMessage.bind(this,oResponse.message, 'Email Template Text Generation Error')();				
+			Popup_Email_Text_Editor.serverErrorMessage.bind(this, oResponse, 'Email Template Text Generation Error')();				
 		}
 	},	
 	
@@ -514,7 +514,7 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 			}
 			else
 			{
-				Popup_Email_Text_Editor.serverErrorMessage.bind(this,oResponse.message, 'Email Template Save Error')();
+				Popup_Email_Text_Editor.serverErrorMessage.bind(this, oResponse, 'Email Template Save Error')();
 			}
 			this._oLoadingPopup.hide();	
 		}
@@ -550,35 +550,17 @@ Popup_Email_Text_Editor.processError = function(oResponse)
 	}
 	else
 	{
-		Popup_Email_Text_Editor.serverErrorMessage.bind(this,oResponse.message, 'Email Template HTML Preview Error')();
+		Popup_Email_Text_Editor.serverErrorMessage.bind(this, oResponse, 'Email Template HTML Preview Error')();
 	}
 }
 
-
-
-Popup_Email_Text_Editor.serverErrorMessage = function (sMessage,sTitle)
-{
-	this._oLoadingPopup.hide();
-	var detailsDiv = document.createElement('div');
-	detailsDiv.innerHTML = sMessage;
-	detailsDiv.style.display = 'none';
-	detailsDiv.className = 'error-details';
-	var div = document.createElement('div');
-	div.observe('click', Popup_Email_Text_Editor._toggleErrorDetails.bind(this,detailsDiv));
-	div.innerHTML = "Error Details";
-	div.className = 'details-link';
-	var containerDiv = document.createElement('div');
-	containerDiv.innerHTML = "There was a server processing error. Please contact YBS for assistance.";
-	containerDiv.appendChild(div);
-	containerDiv.appendChild(detailsDiv);
-	containerDiv.className = "email-template-error";	
-	Reflex_Popup.alert(containerDiv, {sTitle: sTitle});
+Popup_Email_Text_Editor.serverErrorMessage = function (oResponse, sMessage) {
+	this._oLoadingPopup.hide();	
+	jQuery.json.errorPopup(oResponse, sMessage);
 };
 
 Popup_Email_Text_Editor.userErrorMessage = function (sSummary, sMessage,sTitle, iLineNumber)
 {
-
-
 	var containerDiv = document.createElement('div');
 	containerDiv.innerHTML = sSummary; 
 	typeof iLineNumber!= 'undefined'?containerDiv.innerHTML =containerDiv.innerHTML + ' Line Number: ' + iLineNumber:null;
@@ -587,18 +569,14 @@ Popup_Email_Text_Editor.userErrorMessage = function (sSummary, sMessage,sTitle, 
 	Reflex_Popup.alert(containerDiv, {sTitle: sTitle});
 };
 
-Popup_Email_Text_Editor.errorCallback = function()
-{		  
-	Popup_Email_Text_Editor.serverErrorMessage.bind(this,"Ajax error. No details available", 'Email Template System Error')();
+Popup_Email_Text_Editor.errorCallback = function(oResponse) {
+	Popup_Email_Text_Editor.serverErrorMessage.bind(this, oResponse)();
 };
-
 
 Popup_Email_Text_Editor._toggleErrorDetails = function (oDiv)
 {
 	oDiv.style.display == 'none'?oDiv.style.display = '':oDiv.style.display = 'none';
-
 };
-
 
 Popup_Email_Text_Editor.ICON_IMAGE_SOURCE 		= '../admin/img/template/rebill.png';
 Popup_Email_Text_Editor.CANCEL_IMAGE_SOURCE 	= '../admin/img/template/delete.png';

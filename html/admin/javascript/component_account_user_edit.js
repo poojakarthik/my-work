@@ -137,11 +137,7 @@ var Component_Account_User_Edit = Class.create(Reflex_Component, {
 			oReq.send(this.get('iAccountUserId'));
 		} else if (oResponse.hasException()) {
 			// Error
-			var oException = oResponse.getException();
-			Reflex_Popup.alert(oException.sMessage || 'There was a critical error accessing the Flex Server', {
-				sTitle			: 'Database Error',
-				sDebugContent	: oResponse.getDebugLog()
-			});
+			Reflex_AJAX_Response.errorPopup(oResponse);
 		} else {
 			// Success
 			var oUser = oResponse.getData();
@@ -181,11 +177,7 @@ var Component_Account_User_Edit = Class.create(Reflex_Component, {
 			);
 		} else if (oResponse.hasException()) {
 			// Error
-			var oException = oResponse.getException();
-			Reflex_Popup.alert(oException.sMessage || 'There was a critical error accessing the Flex Server', {
-				sTitle			: 'Database Error',
-				sDebugContent	: oResponse.getDebugLog()
-			});
+			Reflex_AJAX_Response.errorPopup(oResponse);
 		} else {
 			// Success
 			this.fire('complete');
@@ -235,11 +227,7 @@ var Component_Account_User_Edit = Class.create(Reflex_Component, {
 			oReq.send(sUsername);
 		} else if (oResponse.hasException()) {
 			// Error
-			var oException = oResponse.getException();
-			Reflex_Popup.alert(oException.sMessage || 'There was a critical error accessing the Flex Server', {
-				sTitle			: 'Database Error',
-				sDebugContent	: oResponse.getDebugLog()
-			});
+			Reflex_AJAX_Response.errorPopup(oResponse);
 		} else {
 			// Success
 			if (oResponse.get('bUnique') === true) {

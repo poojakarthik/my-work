@@ -144,10 +144,7 @@ Object.extend(Popup_Account_Class_Replace_Default_For_Customer_Groups,
 	_ajaxError : function(oResponse, sMessage)
 	{
 		// Exception
-		Reflex_Popup.alert(
-			(sMessage ? sMessage + '. ' : '') + oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.', 
-			{sTitle: 'Error'}
-		);
+		jQuery.json.errorPopup(oResponse, sMessage);
 	},
 	
 	_getAccountClassForId : function(iId, fnCallback, oResponse)

@@ -113,7 +113,7 @@ var Popup_Rate_Plan_Test	= Class.create(Reflex_Popup,
 			if (!oResponse.bSuccess)
 			{
 				// Error, show message
-				Popup_Rate_Plan_Test._ajaxError(oResponse);
+				jQuery.json.errorPopup(oResponse);
 				return;
 			}
 			
@@ -180,20 +180,5 @@ Object.extend(Popup_Rate_Plan_Test,
 			BusinessName	: {sClass: 'popup-rate-plan-test-account-business-name'},
 			Id				: {}
 		}
-	},
-	
-	_ajaxError	: function(oResponse)
-	{
-		var oConfig	= {sTitle: 'Error'};
-		if (oResponse.sMessage)
-		{
-			// Exception/Error message
-			Reflex_Popup.alert(oResponse.sMessage, oConfig);
-		}
-		else if (oResponse.ERROR)
-		{
-			// System error, not thrown by handler code
-			Reflex_Popup.alert(oResponse.ERROR, oConfig);
-		}		
-	},
+	}
 });

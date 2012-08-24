@@ -80,16 +80,7 @@ var Popup_FollowUp_Due_Date	= Class.create(Reflex_Popup,
 			delete this.oLoading;
 		}
 		
-		var oConfig	= {sTitle: 'Error', fnOnClose: (bHideOnClose ? this.hide.bind(this) : null)};
-		
-		if (oResponse.Message)
-		{
-			Reflex_Popup.alert(oResponse.Message, oConfig);
-		}
-		else if (oResponse.ERROR)
-		{
-			Reflex_Popup.alert(oResponse.ERROR, oConfig);
-		}
+		jQuery.json.errorPopup(oResponse, null, (bHideOnClose ? this.hide.bind(this) : null));
 	},
 	
 	_doUpdate	: function(oEvent, oResponse)
@@ -141,7 +132,7 @@ var Popup_FollowUp_Due_Date	= Class.create(Reflex_Popup,
 		else
 		{
 			// Error
-			this._ajaxError(oResponse);
+			this._ajaxError(false, oResponse);
 		}
 	},
 	

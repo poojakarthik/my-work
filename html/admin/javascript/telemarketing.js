@@ -134,14 +134,9 @@ var Telemarketing	= Class.create
 						$Alert("The Service Number '"+objResponse.strFNN+"' has been successfully added to the Flex Telemarketing Blacklist.");
 						return true;
 					}
-					else if (objResponse.Success == undefined)
-					{
-						$Alert("Unknown Error: "+objResponse);
-						return false;
-					}
 					else
 					{
-						$Alert(objResponse.ErrorMessage);
+						jQuery.json.errorPopup(objResponse);
 						return false;
 					}
 				}

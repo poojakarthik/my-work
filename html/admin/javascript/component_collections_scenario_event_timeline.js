@@ -175,7 +175,7 @@ var Component_Collections_Scenario_Event_Timeline = Class.create(
 		if (!oResponse.bSuccess)
 		{
 			// Error
-			Component_Collections_Scenario_Event_Timeline._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -710,13 +710,5 @@ Object.extend(Component_Collections_Scenario_Event_Timeline,
 	NODE_TYPE_EVENT				: 3,
 	
 	INVOCATION_MANUAL_IMAGE_SOURCE		: '../admin/img/template/collection_event_invocation_manual.png',
-	INVOCATION_AUTOMATIC_IMAGE_SOURCE	: '../admin/img/template/collection_event_invocation_automatic.png',
-	
-	_ajaxError : function(oResponse, sMessage)
-	{
-		Reflex_Popup.alert(
-			(sMessage ? sMessage + '. ' : '') + oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.', 
-			{sTitle: 'Error'}
-		);
-	}
+	INVOCATION_AUTOMATIC_IMAGE_SOURCE	: '../admin/img/template/collection_event_invocation_automatic.png'
 });

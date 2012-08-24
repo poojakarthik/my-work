@@ -104,7 +104,7 @@ var Popup_Invoice_Rerate_Ticket	= Class.create(Reflex_Popup,
 			else
 			{
 				// Ticket creation failed
-				Reflex_Popup.alert('Ticket creation failed. ' + oResponse.sMessage);
+				jQuery.json.errorPopup(oResponse);
 			}
 			
 			this.hide();

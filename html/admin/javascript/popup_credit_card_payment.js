@@ -873,19 +873,16 @@ Object.extend(Popup_Credit_Card_Payment,
 		fnCallback(aOptions);
 	},
 	
-	_getAccountPaymentInfo	: function(iAccountId, fnCallback, oResponse)
-	{
-		if (Object.isUndefined(oResponse))
-		{
+	_getAccountPaymentInfo	: function(iAccountId, fnCallback, oResponse) {
+		if (Object.isUndefined(oResponse)) {
 			var fnResp	= Popup_Credit_Card_Payment._getAccountPaymentInfo.curry(iAccountId, fnCallback);
 			var oReq	= jQuery.json.jsonFunction(fnResp, fnResp, 'Account', 'getPaymentInfo');
 			oReq(iAccountId);
 			return;
 		}
 		
-		if (!oResponse.bSuccess)
-		{
-			Reflex_Popup.alert(oResponse.sMessage, {sTitle: 'Error'});
+		if (!oResponse.bSuccess) {
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		

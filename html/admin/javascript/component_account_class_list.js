@@ -442,10 +442,8 @@ var Component_Account_Class_List = Class.create(
 		return sValue;
 	},
 	
-	_setClassStatus : function(iClassId, iStatusId, oResponse)
-	{
-		if (!oResponse)
-		{
+	_setClassStatus : function(iClassId, iStatusId, oResponse) {
+		if (!oResponse) {
 			// Make request
 			this._oLoading = new Reflex_Popup.Loading('Changing status...');
 			this._oLoading.display();
@@ -459,17 +457,13 @@ var Component_Account_Class_List = Class.create(
 		this._oLoading.hide();
 		delete this._oLoading;
 		
-		if (!oResponse.bSuccess)
-		{
-			if (oResponse.aCustomerGroups)
-			{
+		if (!oResponse.bSuccess) {
+			if (oResponse.aCustomerGroups) {
 				// In use as default account class for the customer groups, 
 				// prompt for replacement the continue with the status change
 				var aCustomerGroupIds = [];
-				for (var i in oResponse.aCustomerGroups)
-				{
-					if (oResponse.aCustomerGroups[i].Id)
-					{
+				for (var i in oResponse.aCustomerGroups) {
+					if (oResponse.aCustomerGroups[i].Id) {
 						aCustomerGroupIds.push(oResponse.aCustomerGroups[i].Id);
 					}
 				}
@@ -479,11 +473,9 @@ var Component_Account_Class_List = Class.create(
 					aCustomerGroupIds, 
 					this._defaultAccountClassReplaced.bind(this, iClassId)
 				);
-			}
-			else
-			{
+			} else {
 				// Handle error
-				Component_Account_Class_List._ajaxError(oResponse);
+				jQuery.json.errorPopup(oResponse);
 			}
 			return;
 		}
@@ -536,34 +528,23 @@ Object.extend(Component_Account_Class_List,
 		scenario_name	: Sort.DIRECTION_OFF,
 		status_name		: Sort.DIRECTION_OFF
 	},
-	
-	_ajaxError : function(oResponse)
-	{
-		var sMessage = (oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.');
-		Reflex_Popup.alert(sMessage, {sTitle: 'Error'});
-	},
-	
-	_getScenarioOptions : function(fnCallback, oResponse)
-	{
-		if (!oResponse)
-		{
-			var fnResponse	= Component_Account_Class_List._getScenarioOptions.curry(fnCallback);
-			var fnRequest 	= jQuery.json.jsonFunction(fnResponse, fnResponse, 'Collection_Scenario', 'getAll');
+		
+	_getScenarioOptions : function(fnCallback, oResponse) {
+		if (!oResponse) {
+			var fnResponse = Component_Account_Class_List._getScenarioOptions.curry(fnCallback);
+			var fnRequest = jQuery.json.jsonFunction(fnResponse, fnResponse, 'Collection_Scenario', 'getAll');
 			fnRequest(false, true);
 			return;
 		}
 		
-		if (!oResponse.bSuccess)
-		{
+		if (!oResponse.bSuccess) {
 			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
 		var aOptions = [];
-		if (!Object.isArray(oResponse.aScenarios))
-		{
-			for (var iId in oResponse.aScenarios)
-			{
+		if (!Object.isArray(oResponse.aScenarios)) {
+			for (var iId in oResponse.aScenarios) {
 				aOptions.push(
 					$T.option({value: iId},
 						oResponse.aScenarios[iId].name

@@ -276,7 +276,7 @@ var Component_Delinquent_CDR_List = Class.create({
 			}
 		} else if (!oResponse.Success) {
 			this._oLoadingPopup.hide();
-			Component_Delinquent_CDR_List.serverErrorMessage(oResponse.sMessage, 'CDR Write Off Error');
+			Component_Delinquent_CDR_List.serverErrorMessage(oResponse, 'CDR Write Off Error');
 		} else {
 			var keys = Object.keys(oResponse.aData);
 			oStatusCell.innerHTML =  oResponse.sStatus;
@@ -293,7 +293,7 @@ var Component_Delinquent_CDR_List = Class.create({
 			fnRequest(strFNN, intCarrier, intServiceType, strStartDate, strEndDate, iServiceId);
 		} else if (!oResponse.Success) {
 			this._oLoadingPopup.hide();
-			Component_Delinquent_CDR_List.serverErrorMessage(oResponse.sMessage, 'CDR Assignment Error');
+			Component_Delinquent_CDR_List.serverErrorMessage(oResponse, 'CDR Assignment Error');
 		} else {
 			Reflex_Popup.alert('All CDRs have been assigned succesfully.');
 
@@ -532,7 +532,7 @@ Component_Delinquent_CDR_List.getCarrierList = function (fCallback, oResponse) {
 		fn();
 	} else {
 		if (!oResponse.Success) {
-			Component_Delinquent_CDR_List.serverErrorMessage(oResponse.sMessage, 'CDR Carrier List Retrieval Error');
+			Component_Delinquent_CDR_List.serverErrorMessage(oResponse, 'CDR Carrier List Retrieval Error');
 		} else {
 			// Create an Array of OPTION DOM Elements
 			var oResults = jQuery.json.arrayAsObject(oResponse.aCarriers);
@@ -563,7 +563,7 @@ Component_Delinquent_CDR_List.getStatusList = function (fCallback, oResponse) {
 		fn();
 	} else {
 		if (!oResponse.Success) {
-			Component_Delinquent_CDR_List.serverErrorMessage(oResponse.sMessage, 'CDR Status List Retrieval Error');
+			Component_Delinquent_CDR_List.serverErrorMessage(oResponse, 'CDR Status List Retrieval Error');
 		} else {
 			// Create an Array of OPTION DOM Elements
 			var oResults = jQuery.json.arrayAsObject(oResponse.aData);
@@ -586,21 +586,8 @@ Component_Delinquent_CDR_List.isValidFNN = function (strFNN) {
 	return true;
 },
 
-Component_Delinquent_CDR_List.serverErrorMessage = function (sMessage, sTitle) {
-	var detailsDiv = document.createElement('div');
-	detailsDiv.innerHTML = sMessage;
-	detailsDiv.style.display = 'none';
-	detailsDiv.className = 'error-details';
-	var div = document.createElement('div');
-	div.observe('click', Component_Delinquent_CDR_List._toggleErrorDetails.bind(this,detailsDiv));
-	div.innerHTML = "Error Details";
-	div.className = 'details-link';
-	var containerDiv = document.createElement('div');
-	containerDiv.innerHTML = "There was a server processing error. Please contact YBS for assistance.";
-	containerDiv.appendChild(div);
-	containerDiv.appendChild(detailsDiv);
-	containerDiv.className = "email-template-error";
-	Reflex_Popup.alert(containerDiv, {sTitle: sTitle});
+Component_Delinquent_CDR_List.serverErrorMessage = function (oResponse, sMessage) {
+	jQuery.json.errorPopup(oResponse, sMessage);
 };
 
 Component_Delinquent_CDR_List._toggleErrorDetails = function (oDiv) {

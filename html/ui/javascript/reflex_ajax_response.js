@@ -41,15 +41,17 @@ var Reflex_AJAX_Response = Class.create({
 });
 
 Object.extend(Reflex_AJAX_Response, {
-	errorPopup : function(oResponse) {
+	errorPopup : function(oResponse, sPopupMessage, fnOnClose) {
 		var oRequest = oResponse.getRequest();
-		Reflex_AJAX_Request.showErrorPopup(
+		return Reflex_AJAX_Request.showErrorPopup(
 			'Reflex_AJAX_Request', 
 			oResponse.getException().sMessage, 
 			oRequest.getHandler(), 
 			oRequest.getMethod(), 
 			oRequest.getParameters(),
-			{'Exception' : oResponse.getException(), 'Debug': oResponse.get('sDebug')}
+			{'Exception' : oResponse.getException(), 'Debug': oResponse.get('sDebug')},
+			sPopupMessage, 
+			fnOnClose
 		);
 	}
 });

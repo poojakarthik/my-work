@@ -190,7 +190,7 @@ var Popup_Invoice_View	= Class.create(Reflex_Popup,
 			delete this.oLoadingPopup;
 			
 			// Error in AJAX request
-			Popup_Invoice_View._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 		}
 	},
 	
@@ -261,15 +261,3 @@ Popup_Invoice_View.CLOSE_IMAGE_SOURCE	= '../admin/img/template/delete.png';
 /////////////////////////////
 // End Class constants
 /////////////////////////////
-
-Popup_Invoice_View._ajaxError	= function(oResponse)
-{
-	if (oResponse.Message)
-	{
-		Reflex_Popup.alert(oResponse.Message, {sTitle: 'Error'});
-	}
-	else if (oResponse.ERROR)
-	{
-		Reflex_Popup.alert(oResponse.ERROR, {sTitle: 'Error'});
-	}
-}

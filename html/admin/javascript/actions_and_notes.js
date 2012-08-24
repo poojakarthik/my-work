@@ -53,12 +53,12 @@ Object.extend(ActionsAndNotes, {
 		}
 	},
 	
-	_loadActionAndNoteTypesResponse : function(funcOnLoaded, response) {
-		if (response.success && response.success == true) {
-			ActionsAndNotes.setNoteTypes(response.noteTypes);
-			ActionsAndNotes.setActionTypes(response.actionTypes);
+	_loadActionAndNoteTypesResponse : function(funcOnLoaded, oResponse) {
+		if (oResponse.success && oResponse.success == true) {
+			ActionsAndNotes.setNoteTypes(oResponse.noteTypes);
+			ActionsAndNotes.setActionTypes(oResponse.actionTypes);
 		} else {
-			$Alert("Loading the ActionTypes and NoteTypes failed" + ((response.errorMessage != undefined)? "<br />" + response.errorMessage : ""));
+			jQuery.json.errorPopup(oResponse, "Loading the ActionTypes and NoteTypes failed");
 			return;
 		}
 
@@ -406,11 +406,11 @@ Object.extend(ActionsAndNotes.Creator.prototype, {
 		}
 	},
 	
-	submitNoteResponse : function(note, response) {
+	submitNoteResponse : function(note, oResponse) {
 		this.bolSubmitting = false;
 		Vixen.Popup.ClosePageLoadingSplash();
 		
-		if (response.success && response.success === true) {
+		if (oResponse.success && oResponse.success === true) {
 			// Show a popup which has an option to create a follow-up for the newly added action
 			Reflex_Popup.yesNoCancel(
 				"Successfully saved the '"+ note.noteType.typeLabel +"' note",
@@ -419,7 +419,7 @@ Object.extend(ActionsAndNotes.Creator.prototype, {
 					sYesIconSource : '../admin/img/template/followup.png',
 					sNoLabel : 'Close',
 					fnOnYes : function() {
-						FollowUpLink.showAddFollowUpPopup($CONSTANT.FOLLOWUP_TYPE_NOTE, response.iNoteId);
+						FollowUpLink.showAddFollowUpPopup($CONSTANT.FOLLOWUP_TYPE_NOTE, oResponse.iNoteId);
 					}
 				}
 			);
@@ -429,15 +429,15 @@ Object.extend(ActionsAndNotes.Creator.prototype, {
 			// Fire an OnNewNote Event
 			ActionsAndNotes.fireEvent("NewNote");
 		} else {
-			$Alert("Saving the '"+ note.noteType.typeLabel +"' failed" + ((response.errorMessage != undefined)? "<br />" + response.errorMessage : ""));
+			jQuery.json.errorPopup(oResponse, "Saving the '" + note.noteType.typeLabel + "' failed");
 		}
 	},
 
-	submitActionResponse : function(action, response) {
+	submitActionResponse : function(action, oResponse) {
 		this.bolSubmitting = false;
 		Vixen.Popup.ClosePageLoadingSplash();
 		
-		if (response.success && response.success === true) {
+		if (oResponse.success && oResponse.success === true) {
 			// Show a popup which has an option to create a follow-up for the newly added action
 			Reflex_Popup.yesNoCancel(
 				"Successfully saved the '"+ action.actionType.name +"' action",
@@ -446,7 +446,7 @@ Object.extend(ActionsAndNotes.Creator.prototype, {
 					sYesIconSource : '../admin/img/template/followup.png',
 					sNoLabel : 'Close',
 					fnOnYes : function() {
-						FollowUpLink.showAddFollowUpPopup($CONSTANT.FOLLOWUP_TYPE_ACTION, response.iActionId);
+						FollowUpLink.showAddFollowUpPopup($CONSTANT.FOLLOWUP_TYPE_ACTION, oResponse.iActionId);
 					}
 				}
 			);
@@ -456,7 +456,7 @@ Object.extend(ActionsAndNotes.Creator.prototype, {
 			// Fire an Action Event
 			ActionsAndNotes.fireEvent("NewAction");
 		} else {
-			$Alert("Saving the '"+ action.actionType.name +"' action failed" + ((response.errorMessage != undefined)? "<br />" + response.errorMessage : ""));
+			jQuery.json.errorPopup(oResponse, "Saving the '"+ action.actionType.name +"' action failed");
 		}
 	},
 	
@@ -1012,7 +1012,7 @@ Object.extend(ActionsAndNotes.List.prototype, {
 			this.displayResults(response.search, response.items);
 		} else {
 			// Failure
-			$Alert("Retrieving Actions and Notes failed" + ((response.errorMessage != undefined)? "<br />" + response.errorMessage : ""));
+			jQuery.json.errorPopup("Retrieving Actions and Notes failed");
 
 			this.displayResults();
 		}

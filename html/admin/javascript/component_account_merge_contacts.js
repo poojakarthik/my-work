@@ -223,10 +223,7 @@ var Component_Account_Merge_Contacts = Class.create(Reflex_Component, {
 			delete this._oLoading;
 			
 			// Error
-			Reflex_Popup.alert(oResponse.sMessage || 'There was a critical error accessing the Flex Server', {
-				sTitle			: 'Database Error',
-				sDebugContent	: oResponse.sDebug
-			});
+			jQuery.json.errorPopup(oResponse);
 		} else {
 			this._oLoading.hide();
 			delete this._oLoading;

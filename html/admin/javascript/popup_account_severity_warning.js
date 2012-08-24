@@ -27,7 +27,7 @@ var Popup_Account_Severity_Warning = Class.create(
 		if (!oResponse.bSuccess)
 		{
 			// Error
-			Popup_Account_Severity_Warning._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -85,7 +85,7 @@ var Popup_Account_Severity_Warning = Class.create(
 		if (!oResponse.bSuccess)
 		{
 			// Error
-			Popup_Account_Severity_Warning._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 
@@ -112,22 +112,11 @@ var Popup_Account_Severity_Warning = Class.create(
 		if (!oResponse.bSuccess)
 		{
 			// Error
-			Popup_Account_Severity_Warning._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 
 		// Redirect to console
 		window.location = 'reflex.php/Console/View/';
-	}
-});
-
-Object.extend(Popup_Account_Severity_Warning, 
-{
-	_ajaxError : function(oResponse, sMessage)
-	{
-		Reflex_Popup.alert(
-			(sMessage ? sMessage + '. ' : '') + oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.', 
-			{sTitle: 'Error', sDebugContent: oResponse.sDebug}
-		);
 	}
 });
