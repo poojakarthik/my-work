@@ -223,3 +223,4 @@ var self = new Class({
 });
 
 return self;
+
