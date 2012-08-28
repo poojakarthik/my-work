@@ -5,11 +5,9 @@ var Popup_Correspondence_Run = Class.create(Reflex_Popup,
 	{
 		$super(0);
 		
-		this.container.style.minWidth = '75em';
-		this.container.style.width = 'auto';
+		this.setWidth(75);
+		this._iId = iId;
 		
-		this._iId	= iId;
-		//Flex.Constant.loadConstantGroup('correspondence_delivery_method', this._buildUI.bind(this));
 		this._buildUI();
 	},
 

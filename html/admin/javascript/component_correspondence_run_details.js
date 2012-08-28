@@ -247,7 +247,8 @@ Object.extend(Component_Correspondence_Run_Details,
 	{
 		if (sValue)
 		{
-			return Date.$parseDate(sValue, 'Y-m-d H:i:s').$format('jS M, Y g:ia');
+			var oDate = Date.$parseDate(sValue, 'Y-m-d H:i:s');
+			return (oDate ? oDate.$format('jS M, Y g:ia') : '');
 		}
 		else
 		{
