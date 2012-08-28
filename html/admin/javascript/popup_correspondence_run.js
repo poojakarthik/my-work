@@ -3,11 +3,8 @@ var Popup_Correspondence_Run = Class.create(Reflex_Popup,
 {
 	initialize	: function($super, iId)
 	{
-		$super(0);
-		
-		this.setWidth(75);
+		$super(75);
 		this._iId = iId;
-		
 		this._buildUI();
 	},
 
