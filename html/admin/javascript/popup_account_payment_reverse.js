@@ -230,11 +230,7 @@ Object.extend(Popup_Account_Payment_Reverse,
 		fnCallback(aOptions);
 	},
 	
-	_ajaxError : function(oResponse)
-	{
-		Reflex_Popup.alert(
-			oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.', 
-			{sTitle: 'Error', sDebugContent: oResponse.sDebug}
-		);
+	_ajaxError : function(oResponse) {
+		jQuery.json.errorPopup(oResponse);
 	}
 });

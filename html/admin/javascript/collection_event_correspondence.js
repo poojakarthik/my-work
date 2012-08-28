@@ -11,10 +11,8 @@ var Collection_Event_Correspondence = Class.create(Collection_Event_Type,
 		this._createCorrespondenceRun();
 	},
 	
-	_createCorrespondenceRun : function(oResponse)
-	{
-		if (!oResponse)
-		{
+	_createCorrespondenceRun : function(oResponse) {
+		if (!oResponse) {
 			this._loading('Sending Correspondence...');
 			
 			var fnResp 	= this._createCorrespondenceRun.bind(this);
@@ -25,9 +23,8 @@ var Collection_Event_Correspondence = Class.create(Collection_Event_Type,
 		
 		this._hideLoading();
 		
-		if (!oResponse.bSuccess)
-		{
-			Collection_Event_Type.ajaxError(oResponse);
+		if (!oResponse.bSuccess) {
+			jQuery.json.errorPopup(oResponse);
 		}
 		
 		Collection_Event_Type._displayInvokeInformation(oResponse, this._fnComplete);

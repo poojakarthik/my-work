@@ -464,7 +464,7 @@ var Component_Correspondence_Template_List = Class.create(
 		if (!oResponse.bSuccess)
 		{
 			// Handle error
-			Component_Correspondence_Template_List._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -498,12 +498,6 @@ Object.extend(Component_Correspondence_Template_List,
 		created_timestamp				: Sort.DIRECTION_OFF,
 		correspondence_source_type_name	: Sort.DIRECTION_OFF,
 		status_name						: Sort.DIRECTION_OFF
-	},
-	
-	_ajaxError : function(oResponse)
-	{
-		var sMessage = (oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.');
-		Reflex_Popup.alert(sMessage, {sTitle: 'Error', sDebugContent: oResponse.sDebug});
 	}
 });
 

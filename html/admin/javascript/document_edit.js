@@ -285,12 +285,12 @@ var Document_Edit	= Class.create
 		}
 		else if (objResponse.Success == undefined)
 		{
-			$Alert(objResponse.toSource());
+			jQuery.json.errorPopup(objResponse);
 			return false;
 		}
 		else
 		{
-			$Alert(objResponse.Message);
+			jQuery.json.errorPopup(objResponse);
 			return false;
 		}
 	},

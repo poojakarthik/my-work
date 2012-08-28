@@ -383,16 +383,11 @@ var Page_Recurring_Charge_Type = Class.create(
 		}
 	},
 	
-	_archiveFailed	: function(oResponse)
-	{
-		if (oResponse.ERROR)
-		{
-			Reflex_Popup.alert(oResponse.ERROR, {sTitle: 'Error'});
-		}
+	_archiveFailed : function(oResponse) {
+		jQuery.json.errorPopup(oResponse);
 		
 		// Close the loading popup
-		if (this.oLoadingOverlay)
-		{
+		if (this.oLoadingOverlay) {
 			this.oLoadingOverlay.hide();
 			delete this.oLoadingOverlay;
 		}

@@ -50,21 +50,21 @@ var FlexCustomerVerification = {
 		jsonFunc(intContact, intAccount);
 	},
 	
-	loadReturnHandler : function(response)
+	loadReturnHandler : function(oResponse)
 	{
 		Vixen.Popup.ClosePageLoadingSplash();
 
-		if (response.Success)
+		if (oResponse.Success)
 		{
 			// Display the popup
-			Vixen.Popup.Create(this.POPUP_ID, response.PopupContent, "medium", "centre", "modal", "Customer Verification");
+			Vixen.Popup.Create(this.POPUP_ID, oResponse.PopupContent, "medium", "centre", "modal", "Customer Verification");
 			
 			// Initialise the popup
-			this.initialisePopup(response.Customer, response.RequiredScoreToVerifyAccount, response.RequiredScoreToVerifyContact, response.ViewContactLink, response.ViewAccountLink);
+			this.initialisePopup(oResponse.Customer, oResponse.RequiredScoreToVerifyAccount, oResponse.RequiredScoreToVerifyContact, oResponse.ViewContactLink, oResponse.ViewAccountLink);
 		}
 		else
 		{
-			$Alert("Loading the Customer Verification Popup failed" + ((response.ErrorMessage != undefined)? "<br />" + response.ErrorMessage : ""));
+			jQuery.json.errorPopup(oResponse, "Loading the Customer Verification Popup failed");
 		}
 	},
 	
@@ -508,22 +508,15 @@ var FlexCustomerVerification = {
 		jsonFunc(intContactId, intAccountId, objVerifiedContactProperties, objVerifiedAccountProperties, strRequestedPage, bolOverrideVerification);
 	},
 	
-	verifyOnServerReturnHandler : function(response)
-	{
-		if (response.Success)
-		{
-			if (response.PageToRelocateTo)
-			{
-				window.location = response.PageToRelocateTo;
-			}
-			else
-			{
+	verifyOnServerReturnHandler : function(oResponse) {
+		if (oResponse.Success) {
+			if (oResponse.PageToRelocateTo) {
+				window.location = oResponse.PageToRelocateTo;
+			} else {
 				$Alert("Recording the customer in your Recent Customers list worked, but no page has been specified to relocate to.  You should be able to find the customer in the Recent Customers popup");
 			}
-		}
-		else
-		{
-			$Alert("Verifying the customer on the server failed" + ((response.ErrorMessage != undefined)? "<br />" + response.ErrorMessage : ""));
+		} else {
+			jQuery.json.errorPopup(oResponse, "Verifying the customer on the server failed");
 		}
 	},
 	

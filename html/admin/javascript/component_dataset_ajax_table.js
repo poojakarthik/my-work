@@ -473,7 +473,7 @@ Object.extend(Component_Dataset_AJAX_Table, {
 									fnPopulate	: function(fnCallback) {
 										var fnResponse	= function(fnCallback, oResponse) {
 											if (!oResponse.bSuccess) {
-												Component_Carrier_Module_List._ajaxError(oResponse);
+												jQuery.json.errorPopup(oResponse);
 											} else {
 												var aOptions = [];
 												for (var i = 0; i < oResponse.aRecords.length; i++) {

@@ -24,7 +24,7 @@ var Popup_Collections_Promise_Instalment_View = Class.create(Reflex_Popup,
 		if (!oResponse.bSuccess)
 		{
 			// Error
-			Popup_Collections_Promise_Instalment_View._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -106,12 +106,6 @@ Object.extend(Popup_Collections_Promise_Instalment_View,
 			}
 		}
 		return '';
-	},
-	
-	_ajaxError : function(oResponse)
-	{
-		var sMessage = (oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.');
-		Reflex_Popup.alert(sMessage, {sTitle: 'Error'});
 	}
 });
 

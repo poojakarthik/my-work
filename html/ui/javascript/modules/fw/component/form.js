@@ -106,7 +106,7 @@ var self = new Class({
 						oErrorElement
 					),
 					$D.nav({'class': 'fw-form-validationerrorpopup-buttons'},
-						$D.button('Close').observe('click', function() {
+						$D.button($D.span('Close')).observe('click', function() {
 							oPopup.hide();
 						})
 					)

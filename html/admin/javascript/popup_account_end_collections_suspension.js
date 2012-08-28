@@ -193,11 +193,7 @@ Object.extend(Popup_Account_End_Collections_Suspension,
 		fnCallback(aOptions);
 	},
 	
-	_ajaxError : function()
-	{
-		Reflex_Popup.alert(
-			(sMessage ? sMessage + '. ' : '') + oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.', 
-			{sTitle: 'Error'}
-		);
+	_ajaxError : function(oResponse) {
+		jQuery.json.errorPopup(oResponse);
 	}
 });

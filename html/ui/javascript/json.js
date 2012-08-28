@@ -191,6 +191,7 @@ jQuery.json = {
 		callPostJson: function()
 		{
 			this.localFunc.funcArgs = $A(arguments);
+			this.localFunc.requestFunction = this;
 			
 			var data = {
 				json: jQuery.json.encode(this.localFunc.funcArgs)
@@ -255,17 +256,14 @@ jQuery.json = {
 			}
 		},
 
-		defaultErrorHandler: function(error)
-		{
+		defaultErrorHandler: function(oResponse) {
 			// Close the Splash, if it is open
-			if (window.Vixen && window.Vixen.Popup)
-			{
+			if (window.Vixen && window.Vixen.Popup) {
 				window.Vixen.Popup.ClosePageLoadingSplash();
 			}
 			
-			alert('An error occurred when communicating with the server.\n\nIf this continues, please contact your system administrator with the following details:\n\n' + error['ERROR']);
+			jQuery.json.errorPopup(oResponse);
 		}
-
 	},
 
 	jsonFunction: function(onSuccess, onFailure, remoteClass, remoteMethod) {
@@ -295,6 +293,44 @@ jQuery.json = {
 		return responseHandler.funcRemote;
 	},
 	
+	errorPopup : function(oResponse, sPopupMessage, fnOnClose) {
+		// Find the function that represented the response handler (NOTE: The max distance is arbitrary but there to prevent infinitum)
+		var fnParent = arguments.callee;
+		var iDistance = 0;
+		while (fnParent && !fnParent.requestFunction && (iDistance < 20)) {
+			fnParent = fnParent.caller;
+			iDistance++;
+		}
+
+		var oResponseFunction = (fnParent.requestFunction ? fnParent : null);
+
+		// Extract the message
+		var sMessage = '-';
+		if (oResponse.ERROR) {
+			sMessage = oResponse.ERROR;
+		} else if (oResponse.sMessage) {
+			sMessage = oResponse.sMessage;
+		} else if (oResponse.Message) {
+			sMessage = oResponse.Message;
+		} else if (oResponse.message) {
+			sMessage = oResponse.message;
+		} else if (oResponse.errorMessage) {
+			sMessage = oResponse.errorMessage;
+		} else if (oResponse.ErrorMessage) {
+			sMessage = oResponse.ErrorMessage;
+		}
+
+		return Reflex_AJAX_Request.showErrorPopup(
+			'jQuery.json.jsonFunction', 
+			sMessage,
+			(oResponseFunction ? oResponseFunction.requestFunction.funcClass : 'Unknown'), 
+			(oResponseFunction ? oResponseFunction.requestFunction.funcName : 'Unknown'), 
+			(oResponseFunction ? oResponseFunction.funcArgs : 'Unknown'),
+			{'Response' : oResponse}, 
+			sPopupMessage, 
+			fnOnClose
+		);
+	},
 
 	// Iframe-basd AJAX
 	jsonIframeFormSubmit	: function(elmForm, funcResponseHandler)
@@ -380,34 +416,15 @@ jQuery.json = {
 	},
 	
 	// handleResponse()	: Generic Response Handler
-	handleResponse		: function(fncCallback, objResponse)
-	{
-		//alert(objResponse);
-		//alert(fncCallback);
-		if (objResponse)
-		{
-			if (objResponse.Success || objResponse.bSuccess)
-			{
-				//alert("Invoking Callback");
-				fncCallback(objResponse);
+	handleResponse : function(fnCallback, oResponse) {
+		if (oResponse) {
+			if (oResponse.Success || oResponse.bSuccess) {
+				fnCallback(oResponse);
 				return true;
 			}
-			else if (objResponse.Message)
-			{
-				$Alert(objResponse.Message, null, null, 'modal');
-				return false;
-			}
-			else
-			{
-				$Alert(objResponse, null, null, 'modal');
-				return false;
-			}
 		}
-		else
-		{
-			$Alert("There was an error communicating with the Server");
-			return false;
-		}
+
+		jQuery.json.errorPopup(oResponse);
 	},
 	
 	arrayAsObject	: function(mArray)

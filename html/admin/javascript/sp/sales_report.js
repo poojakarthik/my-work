@@ -363,13 +363,11 @@ var FlexSalesReport = {
 			else
 			{
 				$Alert("ERROR: No location was given for the report.  Please notify your system administrators");
-			}
-			
-			
+			}			
 		}
 		else
 		{
-			$Alert("Generating the report failed" + ((response.ErrorMessage != undefined)? "<br />" + response.ErrorMessage : ""));
+			jQuery.json.errorPopup(response, "Generating the report failed");
 		}
 	},
 	

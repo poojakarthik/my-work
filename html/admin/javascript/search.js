@@ -78,7 +78,7 @@ var FlexSearch = {
 		}
 		else
 		{
-			$Alert("Search failed" + ((response.ErrorMessage != undefined)? "<br />" + response.ErrorMessage : ""));
+			jQuery.json.errorPopup(response, "Search failed");
 		}
 	},
 	
@@ -198,9 +198,8 @@ var FlexSearch = {
 		}
 		else
 		{
-			$Alert("Failed to open Customer Search popup" + ((response.ErrorMessage != undefined)? "<br />" + response.ErrorMessage : ""));
+			jQuery.json.errorPopup(response, "Failed to open Customer Search popup");
 		}
-
 	},
 	
 	constraintTextBoxOnEnter : function(event)

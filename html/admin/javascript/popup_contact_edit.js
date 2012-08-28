@@ -533,20 +533,9 @@ var Popup_Contact_Edit	= Class.create(Reflex_Popup,
 Popup_Contact_Edit.CANCEL_IMAGE_SOURCE 	= '../admin/img/template/delete.png';
 Popup_Contact_Edit.SAVE_IMAGE_SOURCE 	= '../admin/img/template/tick.png';
 
-Popup_Contact_Edit._ajaxError	= function(oResponse, bHideOnClose)
-{
-	if (oResponse.Success == false)
-	{
-		var oConfig	= {sTitle: 'Error', fnOnClose: (bHideOnClose ? this.hide.bind(this) : null)};
-		
-		if (oResponse.Message)
-		{
-			Reflex_Popup.alert(oResponse.Message, oConfig);
-		}
-		else if (oResponse.ERROR)
-		{
-			Reflex_Popup.alert(oResponse.ERROR, oConfig);
-		}
+Popup_Contact_Edit._ajaxError = function(oResponse, bHideOnClose) {
+	if (oResponse.Success == false) {
+		jQuery.json.errorPopup(oResponse, null, (bHideOnClose ? this.hide.bind(this) : null));
 	}
 };
 

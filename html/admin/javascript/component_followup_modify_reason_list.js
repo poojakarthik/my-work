@@ -375,24 +375,13 @@ var Component_FollowUp_Modify_Reason_List = Class.create(
 		return oTH;
 	},
 	
-	_ajaxError	: function(bHideOnClose, oResponse)
-	{
-		if (this.oLoading)
-		{
+	_ajaxError : function(oResponse) {
+		if (this.oLoading) {
 			this.oLoading.hide();
 			delete this.oLoading;
 		}
 		
-		var oConfig	= {sTitle: 'Error', fnOnClose: (bHideOnClose ? this.hide.bind(this) : null)};
-		
-		if (oResponse.Message)
-		{
-			Reflex_Popup.alert(oResponse.Message, oConfig);
-		}
-		else if (oResponse.ERROR)
-		{
-			Reflex_Popup.alert(oResponse.ERROR, oConfig);
-		}
+		jQuery.json.errorPopup(oResponse);
 	},
 	
 	_edit	: function(iReasonId)

@@ -11,23 +11,20 @@ var Collection_Event_Milestone = Class.create(Collection_Event_Type,
 		this._completeInvoke();
 	},
 	
-	_completeInvoke : function(oResponse)
-	{
-		if (!oResponse)
-		{
+	_completeInvoke : function(oResponse) {
+		if (!oResponse) {
 			this._loading();
 			
-			var fnResp 	= this._completeInvoke.bind(this);
-			var fnReq	= jQuery.json.jsonFunction(fnResp, fnResp, 'Collection_Event', 'invokeMilestoneEvent');
+			var fnResp = this._completeInvoke.bind(this);
+			var fnReq = jQuery.json.jsonFunction(fnResp, fnResp, 'Collection_Event', 'invokeMilestoneEvent');
 			fnReq(this._aEventInstanceIds);
 			return;
 		}
 		
 		this._hideLoading();
 		
-		if (!oResponse.bSuccess)
-		{
-			Collection_Event_Type.ajaxError(oResponse);
+		if (!oResponse.bSuccess) {
+			jQuery.json.errorPopup(oResponse);
 		}
 		
 		Collection_Event_Type._displayInvokeInformation(oResponse, this._fnComplete);

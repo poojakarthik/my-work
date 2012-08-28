@@ -361,17 +361,7 @@ Object.extend(Popup_Email_Templates,
 	MAX_RECORDS_PER_PAGE	: 10,
 	DATA_SET_DEFINITION		: {sObject: 'Email_Text_Editor', sMethod: 'getTemplates'},
 	
-	_ajaxError	: function(oResponse)
-	{
-		var oConfig	= {sTitle: 'Error'};
-		
-		if (oResponse.Message)
-		{
-			Reflex_Popup.alert(oResponse.Message, oConfig);
-		}
-		else if (oResponse.ERROR)
-		{
-			Reflex_Popup.alert(oResponse.ERROR, oConfig);
-		}
+	_ajaxError : function(oResponse) {
+		jQuery.json.errorPopup(oResponse);
 	},
 });

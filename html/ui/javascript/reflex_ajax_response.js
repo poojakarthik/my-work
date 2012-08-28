@@ -1,8 +1,9 @@
 
 var Reflex_AJAX_Response = Class.create({
 	
-	initialize	: function(oData) {
+	initialize	: function(oData, oRequest) {
 		this._oData = oData;
+		this._oRequest = oRequest;
 	},
 	
 	// Public
@@ -29,8 +30,28 @@ var Reflex_AJAX_Response = Class.create({
 	getData : function() {
 		return this._oData;
 	},
+
+	getRequest : function() {
+		return this._oRequest;
+	},
 	
 	getDebugLog : function() {
 		return this.get('sDebug');
+	}
+});
+
+Object.extend(Reflex_AJAX_Response, {
+	errorPopup : function(oResponse, sPopupMessage, fnOnClose) {
+		var oRequest = oResponse.getRequest();
+		return Reflex_AJAX_Request.showErrorPopup(
+			'Reflex_AJAX_Request', 
+			oResponse.getException().sMessage, 
+			oRequest.getHandler(), 
+			oRequest.getMethod(), 
+			oRequest.getParameters(),
+			{'Exception' : oResponse.getException(), 'Debug': oResponse.get('sDebug')},
+			sPopupMessage, 
+			fnOnClose
+		);
 	}
 });

@@ -86,23 +86,18 @@ Object.extend(Collection_Event_Type,
 		}
 	},
 	
-	getAll : function(fnCallback, oResponse)
-	{
-		if (!oResponse)
-		{
-			var fnGetAll =	jQuery.json.jsonFunction(
-								Collection_Event_Type.getAll.curry(fnCallback),
-								Collection_Event_Type.getAll.curry(fnCallback),
-								'Collection_Event_Type',
-								'getAll'
-							);
+	getAll : function(fnCallback, oResponse) {
+		if (!oResponse) {
+			var fnGetAll = jQuery.json.jsonFunction(
+				Collection_Event_Type.getAll.curry(fnCallback),
+				Collection_Event_Type.getAll.curry(fnCallback),
+				'Collection_Event_Type',
+				'getAll'
+			);
 			fnGetAll();
-		}
-		else
-		{
-			if (!oResponse.bSuccess)
-			{
-				Collection_Event_Type.ajaxError(oResponse);
+		} else {
+			if (!oResponse.bSuccess) {
+				jQuery.json.errorPopup(oResponse);
 				return;
 			}
 			
@@ -110,19 +105,20 @@ Object.extend(Collection_Event_Type,
 		}
 	},
 	
-	_getEventInstancesForIds : function(aEventInstanceIds, fnCallback, oResponse)
-	{
-		if (!oResponse)
-		{
-			var fnResp	= Collection_Event_Type._getEventInstancesForIds.curry(aEventInstanceIds, fnCallback);
-			var fnReq 	= jQuery.json.jsonFunction(fnResp, fnResp, 'Collection_Event_Instance', 'getForIds');
+	_getEventInstancesForIds : function(aEventInstanceIds, fnCallback, oResponse) {
+		if (!oResponse) {
+			var fnResp = Collection_Event_Type._getEventInstancesForIds.curry(aEventInstanceIds, fnCallback);
+			var fnReq = jQuery.json.jsonFunction(fnResp, fnResp, 'Collection_Event_Instance', 'getForIds');
 			fnReq(aEventInstanceIds);
 			return;
-		}
-		
-		if (fnCallback)
-		{
-			fnCallback(oResponse.aResults);
+		} else {
+			if (!oResponse.bSuccess) {
+				jQuery.json.errorPopup(oResponse);
+			} else {
+				if (fnCallback) {
+					fnCallback(oResponse.aResults);
+				}
+			}
 		}
 	},
 	

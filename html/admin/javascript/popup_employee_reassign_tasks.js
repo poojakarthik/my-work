@@ -282,22 +282,13 @@ var Popup_Employee_Reassign_Tasks	= Class.create(Reflex_Popup,
 		}
 	},
 	
-	_ajaxError	: function(oResponse)
-	{
-		if (this._oLoading)
-		{
+	_ajaxError	: function(oResponse) {
+		if (this._oLoading) {
 			this._oLoading.hide();
 			delete this._oLoading;
 		}
 		
-		if (oResponse.Message)
-		{
-			Reflex_Popup.alert(oResponse.Message, {sTitle: 'Error'});
-		}
-		else if (oResponse.ERROR)
-		{
-			Reflex_Popup.alert(oResponse.ERROR, {sTitle: 'Error'});
-		}
+		jQuery.json.errorPopup(oResponse);
 	}
 });
 

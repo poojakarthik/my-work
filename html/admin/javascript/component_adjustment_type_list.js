@@ -398,13 +398,11 @@ var Component_Adjustment_Type_List = Class.create(
 		}
 	},
 	
-	_archiveFailed	: function(oResponse)
-	{
-		Reflex_Popup.alert((oResponse.ERROR ? oResponse.ERROR : ''), {sTitle: 'Error'});
+	_archiveFailed	: function(oResponse) {
+		jQuery.json.errorPopup(oResponse);
 		
 		// Close the loading popup
-		if (this.oLoadingOverlay)
-		{
+		if (this.oLoadingOverlay) {
 			this.oLoadingOverlay.hide();
 			delete this.oLoadingOverlay;
 		}

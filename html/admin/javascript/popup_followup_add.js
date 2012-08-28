@@ -288,19 +288,11 @@ var Popup_FollowUp_Add	= Class.create(Reflex_Popup,
 		
 		if (oResponse.Success == false)
 		{
-			var oConfig	= {sTitle: 'Error', fnOnClose: (bHideOnClose ? this.hide.bind(this) : null)};
-			
-			if (oResponse.Message)
-			{
-				Reflex_Popup.alert(oResponse.Message, oConfig);
-			}
-			else if (oResponse.ERROR)
-			{
-				Reflex_Popup.alert(oResponse.ERROR, oConfig);
-			}
-			else if (oResponse.aValidationErrors)
+			if (oResponse.aValidationErrors)
 			{
 				Popup_FollowUp_Add._showValidationErrorPopup(oResponse.aValidationErrors);
+			} else {
+				jQuery.json.errorPopup(oResponse, null, (bHideOnClose ? this.hide.bind(this) : null));
 			}
 		}
 	},

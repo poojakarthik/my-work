@@ -121,42 +121,35 @@ var Collection_Event_Action = Class.create(Collection_Event_Type,
 
 Object.extend(Collection_Event_Action, 
 {
-	invokeEventInstances : function(hEventInstanceDetails, fnCallback, oResponse)
-	{
-		if (!oResponse)
-		{
+	invokeEventInstances : function(hEventInstanceDetails, fnCallback, oResponse) {
+		if (!oResponse) {
 			var fnResp	= Collection_Event_Action.invokeEventInstances.bind(this, hEventInstanceDetails, fnCallback);
 			var fnReq	= jQuery.json.jsonFunction(fnResp, fnResp, 'Collection_Event', 'invokeActionEvents');
 			fnReq(hEventInstanceDetails);
 			return;
 		}
 		
-		if (!oResponse.bSuccess)
-		{
-			Collection_Event_Type.ajaxError(oResponse);
+		if (!oResponse.bSuccess) {
+			jQuery.json.errorPopup(oResponse);
 		}
 		
 		Collection_Event_Type._displayInvokeInformation(oResponse, fnCallback);
 	},
 	
-	_getActionTypes : function(aActionTypeIds, fnCallback, oResponse)
-	{
-		if (!oResponse)
-		{
-			var fnResp	= Collection_Event_Action._getActionTypes.bind(this, aActionTypeIds, fnCallback);
-			var fnReq	= jQuery.json.jsonFunction(fnResp, fnResp, 'ActionType', 'getForIds');
+	_getActionTypes : function(aActionTypeIds, fnCallback, oResponse) {
+		if (!oResponse) {
+			var fnResp = Collection_Event_Action._getActionTypes.bind(this, aActionTypeIds, fnCallback);
+			var fnReq = jQuery.json.jsonFunction(fnResp, fnResp, 'ActionType', 'getForIds');
 			fnReq(aActionTypeIds);
 			return;
 		}
 		
-		if (!oResponse.bSuccess)
-		{
-			Collection_Event_Type.ajaxError(oResponse);
+		if (!oResponse.bSuccess) {
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
-		if (fnCallback)
-		{
+		if (fnCallback) {
 			fnCallback(oResponse.aActionTypes);
 		}
 	}

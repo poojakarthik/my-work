@@ -126,12 +126,12 @@ function VixenPlanChangeClass()
 			}
 			else if (objResponse.Success == undefined)
 			{
-				$Alert(objResponse);
+				jQuery.json.errorPopup(objResponse);
 				return false;
 			}
 			else
 			{
-				$Alert(objResponse.Message);
+				jQuery.json.errorPopup(objResponse);
 				return false;
 			}
 		}

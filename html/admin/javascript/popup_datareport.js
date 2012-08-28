@@ -506,14 +506,6 @@ Popup_DataReport._createBooleanSelect	= function(oInputInfo)
 			);
 };
 
-Popup_DataReport._ajaxError	= function(oResponse)
-{
-	if (oResponse.Message)
-	{
-		Reflex_Popup.alert(oResponse.Message, {sTitle: 'Error'});
-	}
-	else if (oResponse.ERROR)
-	{
-		Reflex_Popup.alert(oResponse.ERROR, {sTitle: 'Error'});
-	}
+Popup_DataReport._ajaxError	= function(oResponse) {
+	jQuery.json.errorPopup(oResponse);
 }

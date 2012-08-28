@@ -59,7 +59,7 @@ var Popup_Barring_Authorisation_Ledger_Authorise_Account = Class.create(Reflex_P
 		if (!oResponse.bSuccess)
 		{
 			// Error
-			Popup_Barring_Authorisation_Ledger_Authorise_Account._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -129,7 +129,7 @@ var Popup_Barring_Authorisation_Ledger_Authorise_Account = Class.create(Reflex_P
 		if (!oResponse.bSuccess)
 		{
 			// Error
-			Popup_Barring_Authorisation_Ledger_Authorise_Account._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -158,13 +158,4 @@ var Popup_Barring_Authorisation_Ledger_Authorise_Account = Class.create(Reflex_P
 			oCheckbox.checked = true;
 		}
 	}
-});
-
-Object.extend(Popup_Barring_Authorisation_Ledger_Authorise_Account, 
-{
-	_ajaxError : function(oResponse)
-	{
-		var sMessage = (oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.');
-		Reflex_Popup.alert(sMessage, {sTitle: 'Error'});
-	},
 });

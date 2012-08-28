@@ -72,7 +72,7 @@ var Popup_Account_Promise_Cancel = Class.create(Reflex_Popup,
 		
 		if (!oResponse.bSuccess)
 		{
-			Popup_Account_Promise_Cancel._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -95,17 +95,5 @@ var Popup_Account_Promise_Cancel = Class.create(Reflex_Popup,
 		{
 			Vixen.AccountDetails.CancelEdit();
 		}
-	}
-});
-
-Object.extend(Popup_Account_Promise_Cancel, 
-{	
-	_ajaxError : function(oResponse, sMessage)
-	{
-		// Exception
-		Reflex_Popup.alert(
-			(sMessage ? sMessage + '. ' : '') + oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.', 
-			{sTitle: 'Error', sDebugContent: oResponse.sDebug}
-		);
 	}
 });

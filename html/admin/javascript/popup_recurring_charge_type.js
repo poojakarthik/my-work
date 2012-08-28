@@ -295,26 +295,17 @@ var Popup_Recurring_Charge_Type	= Class.create(Reflex_Popup,
 		}
 	},
 	
-	_saveError	: function(oResponse)
-	{
+	_saveError : function(oResponse) {
 		// Hide loading
-		if (this.oLoading)
-		{
+		if (this.oLoading) {
 			this.oLoading.hide();
 			delete this.oLoading;
 		}
 		
-		if (oResponse.Message)
-		{
-			Reflex_Popup.alert(oResponse.Message, {sTitle: 'Error'});
-		}
-		else if (oResponse.ERROR)
-		{
-			Reflex_Popup.alert(oResponse.ERROR, {sTitle: 'Error'});
-		}
-		else if (oResponse.aValidationErrors)
-		{
+		if (oResponse.aValidationErrors) {
 			Popup_Recurring_Charge_Type.showValidationErrors(oResponse.aValidationErrors);
+		} else {
+			jQuery.json.errorPopup(oResponse);
 		}
 	},
 	

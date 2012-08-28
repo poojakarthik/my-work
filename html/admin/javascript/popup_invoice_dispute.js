@@ -180,7 +180,7 @@ var Popup_Invoice_Dispute	= Class.create(Reflex_Popup,
 		else
 		{
 			// Error
-			Popup_Invoice_Dispute._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 		}
 	}
 });
@@ -197,14 +197,3 @@ Popup_Invoice_Dispute.CANCEL_IMAGE_SOURCE 	= '../admin/img/template/delete.png';
 // End Class constants
 /////////////////////////////
 
-Popup_Invoice_Dispute._ajaxError	= function(oResponse)
-{
-	if (oResponse.Message)
-	{
-		Reflex_Popup.alert(oResponse.Message, {sTitle: 'Error'});
-	}
-	else if (oResponse.ERROR)
-	{
-		Reflex_Popup.alert(oResponse.ERROR, {sTitle: 'Error'});
-	}
-}

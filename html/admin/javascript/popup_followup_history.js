@@ -26,7 +26,7 @@ var Popup_FollowUp_History	= Class.create(Reflex_Popup,
 			var sJSONHandlerMethod		= (this._bIsRecurring ? 'getForRecurringFollowUp' 	: 'getForFollowUp');
 			var fnHistory				= 	jQuery.json.jsonFunction(
 												this._buildUI.bind(this), 
-												this._ajaxError.bind(this),
+												this._ajaxError.bind(this, false),
 												sJSONHandlerBaseName + '_History',
 												sJSONHandlerMethod
 											);
@@ -255,29 +255,17 @@ var Popup_FollowUp_History	= Class.create(Reflex_Popup,
 		}
 	},
 	
-	_ajaxError	: function(bHideOnClose, oResponse)
-	{
-		if (this.oLoading)
-		{
+	_ajaxError : function(bHideOnClose, oResponse) {
+		if (this.oLoading) {
 			this.oLoading.hide();
 			delete this.oLoading;
 		}
 		
-		if (oResponse.Success == false)
-		{
-			var oConfig	= {sTitle: 'Error', fnOnClose: (bHideOnClose ? this.hide.bind(this) : null)};
-			
-			if (oResponse.Message)
-			{
-				Reflex_Popup.alert(oResponse.Message, oConfig);
-			}
-			else if (oResponse.ERROR)
-			{
-				Reflex_Popup.alert(oResponse.ERROR, oConfig);
-			}
-			else if (oResponse.aValidationErrors)
-			{
+		if (oResponse.Success == false) {
+			if (oResponse.aValidationErrors) {
 				Popup_FollowUp_History._showValidationErrorPopup(oResponse.aValidationErrors);
+			} else {
+				jQuery.json.errorPopup(oResponse, null, (bHideOnClose ? this.hide.bind(this) : null));
 			}
 		}
 	}

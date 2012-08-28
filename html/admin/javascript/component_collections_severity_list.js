@@ -481,7 +481,7 @@ var Component_Collections_Severity_List = Class.create(
 		if (!oResponse.bSuccess)
 		{
 			// Handle error
-			Component_Collections_Severity_List._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -520,13 +520,7 @@ Object.extend(Component_Collections_Severity_List,
 		description			: Sort.DIRECTION_OFF,
 		working_status_name	: Sort.DIRECTION_OFF
 	},
-	
-	_ajaxError : function(oResponse)
-	{
-		var sMessage = (oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.');
-		Reflex_Popup.alert(sMessage, {sTitle: 'Error'});
-	},
-	
+		
 	_getConstantGroupOptions : function(sConstantGroup, fnCallback)
 	{
 		var aOptions		= [];

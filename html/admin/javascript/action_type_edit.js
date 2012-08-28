@@ -18,27 +18,17 @@ var Action_Type_Edit	= Class.create
 		fncJsonFunc(intActionTypeId);
 	},
 	
-	_loadForIdResponse	: function(objResponse)
-	{
+	_loadForIdResponse : function(oResponse) {
 		Vixen.Popup.ClosePageLoadingSplash();
 		
-		if (objResponse)
-		{
-			if (objResponse.Success)
-			{
-				this._render(objResponse.objActionType);
-			}
-			else if (objResponse.Message)
-			{
-				$Alert(objResponse.Message);
-				return false;
+		if (oResponse) {
+			if (oResponse.Success) {
+				this._render(oResponse.objActionType);
+				return;
 			}
 		}
-		else
-		{
-			$Alert(objResponse);
-			return false;
-		}
+
+		jQuery.json.errorPopup(oResponse);
 	},
 	
 	_render		: function(objActionType)
@@ -536,24 +526,14 @@ var Action_Type_Edit	= Class.create
 		fncJsonFunc(objActionTypeSave);
 	},
 	
-	_submitResponse	: function(objResponse)
-	{
+	_submitResponse	: function(oResponse) {
 		Vixen.Popup.ClosePageLoadingSplash();
-		if (objResponse.Success)
-		{
+		if (oResponse.Success) {
 			$Alert("The Action Type '"+this.elmInputName.value+"' has been successfully saved.", null, null, null, "Save Successful", this._close.bind(this, null, true, true));
 			return true;
 		}
-		else if (objResponse.Success == undefined)
-		{
-			$Alert(objResponse.toSource());
-			return false;
-		}
-		else
-		{
-			$Alert(objResponse.Message);
-			return false;
-		}
+
+		jQuery.json.errorPopup(oResponse);
 	},
 	
 	_close	: function(eEvent, bolConfirmed, bolRefresh)

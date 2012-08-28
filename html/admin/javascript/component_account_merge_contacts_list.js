@@ -40,10 +40,7 @@ var Component_Account_Merge_Contacts_List = Class.create(Reflex_Component, {
 			fnReq(this.get('iAccountId'));
 		} else if (!oResponse.bSuccess) {
 			// Error
-			Reflex_Popup.alert(oResponse.sMessage || 'There was a critical error accessing the Flex Server', {
-				sTitle			: 'Database Error',
-				sDebugContent	: oResponse.sDebug
-			});
+			jQuery.json.errorPopup(oResponse);
 		} else {
 			// Success
 			this._oData	= oResponse.oData;

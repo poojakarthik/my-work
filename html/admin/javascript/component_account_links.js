@@ -21,10 +21,7 @@ Component_Account_Links	= Class.create(/* extends */Reflex_Component, {
 			fnReq(this.get('iAccountId'));
 		} else if (!oResponse.bSuccess) {
 			// Error
-			Reflex_Popup.alert(oResponse.sMessage || 'There was a critical error accessing the Flex Server', {
-				sTitle			: 'Database Error',
-				sDebugContent	: oResponse.sDebug
-			});
+			jQuery.json.errorPopup(oResponse);
 		} else {
 			// Success
 			this._oData	= oResponse.oData;
@@ -265,10 +262,7 @@ Component_Account_Links	= Class.create(/* extends */Reflex_Component, {
 			fnReq(this.get('iAccountId'), iAccountId);
 		} else if (!oResponse.bSuccess) {
 			// Error
-			Reflex_Popup.alert(oResponse.sMessage || 'There was a critical error accessing the Flex Server', {
-				sTitle			: 'Database Error',
-				sDebugContent	: oResponse.sDebug
-			});
+			jQuery.json.errorPopup(oResponse);
 		} else {
 			// Success
 			oPopup.hide();
@@ -284,10 +278,7 @@ Component_Account_Links	= Class.create(/* extends */Reflex_Component, {
 			fnReq(iUnlinkAccountId);
 		} else if (!oResponse.bSuccess) {
 			// Error
-			Reflex_Popup.alert(oResponse.sMessage || 'There was a critical error accessing the Flex Server', {
-				sTitle			: 'Database Error',
-				sDebugContent	: oResponse.sDebug
-			});
+			jQuery.json.errorPopup(oResponse);
 		} else {
 			// Success
 			this._reSyncUI();

@@ -634,15 +634,6 @@ Object.extend(Popup_Invoice_Rerate_Summary,
 	
 	// Private
 	
-	_ajaxError : function(oResponse, sMessage)
-	{
-		// Exception
-		Reflex_Popup.alert(
-			(sMessage ? sMessage + '. ' : '') + oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.', 
-			{sTitle: 'Error'}
-		);
-	},
-	
 	// _getAmountTD: Returns a TD element containing a formatted amount value given the raw amount
 	_getAmountTD	: function(mValue, sExtraClass)
 	{
@@ -790,7 +781,7 @@ Object.extend(Popup_Invoice_Rerate_Summary,
 		
 		if (!oResponse.bSuccess)
 		{
-			Popup_Invoice_Rerate_Summary._ajaxError(oResponse, 'Failed to retrieve the Rerate Adjustment type');
+			jQuery.json.errorPopup(oResponse, 'Failed to retrieve the Rerate Adjustment type');
 			return;
 		}
 		

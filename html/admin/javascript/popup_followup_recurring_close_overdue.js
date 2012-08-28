@@ -184,23 +184,13 @@ var Popup_FollowUp_Recurring_Close_Overdue	= Class.create( /* extends */ Reflex_
 		this._getOverdueOccurrences(this._refreshContent.bind(this));
 	},
 	
-	_ajaxError	: function(oResponse)
-	{
-		if (this.oLoading)
-		{
+	_ajaxError : function(oResponse) {
+		if (this.oLoading) {
 			this.oLoading.hide();
 			delete this.oLoading;
 		}
 		
-		var oConfig	= {sTitle: 'Error'};
-		if (oResponse.Message)
-		{
-			Reflex_Popup.alert(oResponse.Message, oConfig);
-		}
-		else if (oResponse.ERROR)
-		{
-			Reflex_Popup.alert(oResponse.ERROR, oConfig);
-		}
+		jQuery.json.errorPopup(oResponse);
 	}
 });
 

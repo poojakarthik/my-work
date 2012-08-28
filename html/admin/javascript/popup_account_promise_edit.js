@@ -33,11 +33,7 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 			)(this._iAccountId);
 		} else if (!oResponse.bSuccess) {
 			// Error!
-			Reflex_Popup.alert(oResponse.sMessage, {
-				sTitle		: 'Database Error',
-				fnOnClose	: this.hide.bind(this)
-			});
-
+			jQuery.json.errorPopup(oResponse, null, this.hide.bind(this));
 		} else {
 			//debugger;
 			fnCallback(oResponse.oData);
@@ -161,11 +157,7 @@ var	Popup_Account_Promise_Edit	= Class.create(Reflex_Popup, {
 			// Error!
 			this._oLoadingPopup.hide();
 			//debugger;
-			Reflex_Popup.alert(oResponse.sMessage, {
-				sTitle			: 'Database Error',
-				fnOnClose		: this.hide.bind(this),
-				sDebugContent	: oResponse.sDebug
-			});
+			jQuery.json.errorPopup(oResponse, null, this.hide.bind(this));
 		} else {
 			// Success!
 			//debugger;

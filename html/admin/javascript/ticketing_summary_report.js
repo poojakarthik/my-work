@@ -183,9 +183,8 @@ function FlexTicketingSummaryReportClass()
 			}
 			else
 			{
-				$Alert("Generating the report failed<br />" + response.Message);
+				jQuery.json.errorPopup(response, "Generating the report failed");
 			}
-			
 		}
 
 		remoteClass		= 'Ticketing';

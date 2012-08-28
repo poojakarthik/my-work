@@ -167,10 +167,7 @@ Object.extend(Popup_Account_Class,
 		else
 		{
 			// Exception
-			Reflex_Popup.alert(
-				(sMessage ? sMessage + '. ' : '') + oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.', 
-				{sTitle: 'Error'}
-			);
+			jQuery.json.errorPopup(oResponse);
 		}
 	},
 	

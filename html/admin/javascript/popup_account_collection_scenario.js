@@ -220,10 +220,7 @@ Object.extend(Popup_Account_Collection_Scenario,
 	_ajaxError : function(oResponse, sMessage)
 	{
 		// Exception
-		Reflex_Popup.alert(
-			(sMessage ? sMessage + '. ' : '') + oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.', 
-			{sTitle: 'Error', sDebugContent: oResponse.sDebug}
-		);
+		jQuery.json.errorPopup(oResponse, sMessage);
 	},
 	
 	_getEventBreakdown : function(iAccountId, fnCallback, oResponse)

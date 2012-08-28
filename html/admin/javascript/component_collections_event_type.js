@@ -257,20 +257,13 @@ Object.extend(Component_Collections_Event_Type,
 	_hEventTypeImplementations	: null,
 	_aRequiredConstantGroups 	: ['collection_event_invocation', 'collection_event_type_implementation'],
 	
-	_ajaxError : function(oResponse, sMessage)
-	{
-		if (oResponse.aErrors)
-		{
+	_ajaxError : function(oResponse, sMessage) {
+		if (oResponse.aErrors) {
 			// Validation errors
 			Component_Collections_Event_Type._validationError(oResponse.aErrors);
-		}
-		else
-		{
+		} else {
 			// Exception
-			Reflex_Popup.alert(
-				(sMessage ? sMessage + '. ' : '') + oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.', 
-				{sTitle: 'Error'}
-			);
+			jQuery.json.errorPopup(oResponse, sMessage);
 		}
 	},
 	

@@ -292,7 +292,7 @@ var Popup_Account_Add_CreditCard	= Class.create(Reflex_Popup,
 			if (oResponse.sMessage)
 			{
 				// Error
-				Reflex_Popup.alert(oResponse.sMessage, {sTitle: 'Error'});
+				jQuery.json.errorPopup(oResponse);
 			}
 			else
 			{
@@ -468,26 +468,14 @@ var Popup_Account_Add_CreditCard	= Class.create(Reflex_Popup,
 		}
 	},
 	
-	_ajaxError	: function(oResponse, bHideOnClose)
-	{
-		if (this._oLoading)
-		{
+	_ajaxError : function(oResponse) {
+		if (this._oLoading) {
 			this._oLoading.hide();
 			delete this._oLoading;
 		}
 		
-		if (oResponse.Success == false)
-		{
-			var oConfig	= {sTitle: 'Error', fnOnClose: (bHideOnClose ? this.hide.bind(this) : null)};
-			
-			if (oResponse.Message)
-			{
-				Reflex_Popup.alert(oResponse.Message, oConfig);
-			}
-			else if (oResponse.ERROR)
-			{
-				Reflex_Popup.alert(oResponse.ERROR, oConfig);
-			}
+		if (oResponse.Success == false) {
+			jQuery.json.errorPopup(oResponse);
 		}
 	},
 	

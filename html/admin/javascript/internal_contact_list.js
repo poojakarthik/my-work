@@ -23,24 +23,23 @@ var InternalContactList	= Class.create
 		Vixen.Popup.ShowPageLoadingSplash(null, null, null, null, 1);
 		
 		// Perform AJAX query
-		var fncJsonFunc		= jQuery.json.jsonFunction(Flex.InternalContactList._renderViewPopupHTML.bind(this), null, 'InternalContactList', 'getContactListHTML');
-		//var fncJsonFunc		= jQuery.json.jsonFunction(Flex.InternalContactList._renderViewPopup.bind(this), null, 'InternalContactList', 'getContactList');
+		var fncJsonFunc	= jQuery.json.jsonFunction(Flex.InternalContactList._renderViewPopupHTML.bind(this), null, 'InternalContactList', 'getContactListHTML');
 		fncJsonFunc();
 	},
 	
-	_renderViewPopupHTML	: function(objResponse)
+	_renderViewPopupHTML : function(oResponse)
 	{
 		// Close the Splash and display the Summary
 		Vixen.Popup.ClosePageLoadingSplash();
 		
 		// Did we succeed?
-		if (objResponse.Success === false)
+		if (oResponse.Success === false)
 		{
-			$Alert(objResponse.ErrorMessage);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
-		var strHTML	= "<div style='height: 500px; overflow: auto;'><div align='center'>\n" + objResponse.strHTML + "\n</div></div>\n";
+		var strHTML	= "<div style='height: 500px; overflow: auto;'><div align='center'>\n" + oResponse.strHTML + "\n</div></div>\n";
 		
 		// Render the popup
 		this.pupPopup.setContent(strHTML);

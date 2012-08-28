@@ -96,7 +96,7 @@ var Component_Customer_Group_Account_Class_Configuration = Class.create(
 		if (!oResponse.bSuccess)
 		{
 			// Error
-			Component_Customer_Group_Account_Class_Configuration._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -187,7 +187,7 @@ var Component_Customer_Group_Account_Class_Configuration = Class.create(
 		if (!oResponse.bSuccess)
 		{
 			// Error
-			Component_Customer_Group_Account_Class_Configuration._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -209,12 +209,6 @@ Object.extend(Component_Customer_Group_Account_Class_Configuration,
 {
 	REQUIRED_CONSTANT_GROUPS	: ['status'],
 	
-	_ajaxError : function(oResponse)
-	{
-		var sMessage = (oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.');
-		Reflex_Popup.alert(sMessage, {sTitle: 'Error'});
-	},
-	
 	_getAccountClassOptions : function(fnCallback, oResponse)
 	{
 		if (!oResponse)
@@ -227,7 +221,7 @@ Object.extend(Component_Customer_Group_Account_Class_Configuration,
 		
 		if (!oResponse.bSuccess)
 		{
-			Component_Customer_Group_Account_Class_Configuration._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		

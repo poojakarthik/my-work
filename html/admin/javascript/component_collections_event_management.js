@@ -763,7 +763,7 @@ var Component_Collections_Event_Management = Class.create(
 		
 		if (!oResponse.bSuccess)
 		{
-			Component_Collections_Event_Management._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -895,7 +895,7 @@ var Component_Collections_Event_Management = Class.create(
 		if (!oResponse.bSuccess)
 		{
 			// Error
-			Component_Collections_Event_Management._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 
@@ -941,12 +941,6 @@ Object.extend(Component_Collections_Event_Management,
 	
 	_hEventTypes : null,
 	
-	_ajaxError : function(oResponse)
-	{
-		var sMessage = (oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.');
-		Reflex_Popup.alert(sMessage, {sTitle: 'Error'});
-	},
-	
 	_getDateTimeElement	: function(sMySQLDate)
 	{
 		if (sMySQLDate === null)
@@ -984,7 +978,7 @@ Object.extend(Component_Collections_Event_Management,
 		
 		if (!oResponse.bSuccess)
 		{
-			Component_Collections_Event_Management._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
