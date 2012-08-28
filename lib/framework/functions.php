@@ -2739,53 +2739,38 @@ function GetPdfFilename($intAccount, $intYear, $intMonth, $intInvoiceId, $intInv
  *
  * @function
  */
-function GetPDFContent($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvoiceRunId, $intTargetMedia=0)
-{
-	if (!strpos($intInvoiceRunId, '-'))
-	{
-		$intInvoiceRunId = intval($intInvoiceRunId);
+function GetPDFContent($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId, $iTargetMedia=0) {
+	if (!strpos($iInvoiceRunId, '-')) {
+		$iInvoiceRunId = intval($iInvoiceRunId);
 	}
-	$mxdInvoicePath = InvoicePDFExists($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvoiceRunId);
-	
-	if (!$mxdInvoicePath)
-	{
+
+	$sInvoicePath = InvoicePDFExists($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId);	
+	if (!$sInvoicePath) {
 		return FALSE;
-	}
-	else
-	{
-		$ext = substr($mxdInvoicePath, strrpos($mxdInvoicePath, '.'));
+	} else {
+		$sExt = substr($sInvoicePath, strrpos($sInvoicePath, '.'));
+		switch ($sExt) {
+			case '.bz2':
+				// Load the xml from the bz2 file
+				$sXML = file_get_contents("compress.bz2://{$sInvoicePath}");
+			case '.xml':
+				// Load the xml from the xml file
+				if ($sExt == '.xml') {
+					$sXML = file_get_contents($sInvoicePath);
+				}
 
-		switch ($ext)
-		{
-		case '.bz2':
-			// Load the xml from the bz2 file
-			$xml = '';
-			$bz = bzopen($mxdInvoicePath, 'r');
-			$line = TRUE;
-			while (!feof($bz) && $line)
-			{
-				$line = bzread($bz, 8192);
-				$xml .= $line;
-			}
-			bzclose($bz);
+				$sPDF = generateInvoicePDF($sXML, $iInvoiceId, $iTargetMedia, $iInvoiceRunId, $iAccount);
+				break;
 
-		case '.xml':
-			// Load the xml from the xml file
-			if ($ext == '.xml')
-			{
-				$xml = file_get_contents($mxdInvoicePath);
-			}
-			$pdf	= generateInvoicePDF($xml, $intInvoiceId, $intTargetMedia, $intInvoiceRunId, $intAccount);
-			break;
+			case '.pdf':
+				$sPDF = file_get_contents($sInvoicePath);
+				break;
 
-		case '.pdf':
-			$pdf = file_get_contents($mxdInvoicePath);
-			break;
-
-		default:
-			$pdf = FALSE;
+			default:
+				$sPDF = FALSE;
 		}
-		return $pdf;
+
+		return $sPDF;
 	}
 }
 

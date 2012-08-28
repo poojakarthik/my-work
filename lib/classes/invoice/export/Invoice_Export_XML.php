@@ -293,9 +293,9 @@ class Invoice_Export_XML {
 				mkdir($strFullDirectory, 0777, true);
 			}
 			
-			$strFilename = "{$strFullDirectory}/{$intAccount}.xml";
-			$mixReturn = (bool)file_put_contents($strFilename, $strXMLOutput);
-			
+			$strFilename = "{$strFullDirectory}/{$intAccount}.xml.bz2";
+			$mixReturn = (bool)file_put_contents("compress.bzip2://{$strFilename}", $strXMLOutput);
+
 			if ($mixReturn) {
 				Cli_App_Billing::debug("Successully exported to '{$strFilename}'");
 			} else {
