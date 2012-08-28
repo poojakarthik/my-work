@@ -9478,4 +9478,140 @@ dl.reflex-propertylist > dd > * {
 #ContactTable > tbody td:last-of-type img {
   vertical-align: top;
 }
+/************************** END - Component Account User Edit - END **************************/
+/************************** START - FW Control Styling - START **************************/
+.fw-control.-novalue input[required],
+.fw-control.-novalue select[required],
+.fw-control.-novalue textarea[required] {
+  box-shadow: 0 5px 5px -5px rgba(221,170,136,0.50) inset;
+}
+.fw-control-datetime * {
+  vertical-align: middle;
+}
+.fw-control.-novalue input[type='text'][disabled][required],
+.fw-control.-novalue input[type='number'][disabled][required],
+.fw-control.-novalue input[type='date'][disabled][required],
+.fw-control.-novalue select[disabled][required],
+.fw-control.-novalue textarea[disabled][required],
+.fw-control.-invalid input[type='text'][disabled],
+.fw-control.-invalid input[type='number'][disabled],
+.fw-control.-invalid input[type='date'][disabled],
+.fw-control.-invalid select[disabled],
+.fw-control.-invalid textarea[disabled] {
+  background-color: #efebe7;
+  color: #888;
+}
+.fw-control.-novalue input[required],
+.fw-control.-novalue select[required],
+.fw-control.-novalue textarea[required] {
+  background: #fcfaf9;
+  color: #111;
+  border: 0.1em solid #da8;
+}
+.fw-control.-invalid input,
+.fw-control.-invalid select,
+.fw-control.-invalid textarea {
+  background: #ffecf0;
+  color: #111;
+  border: 0.1em solid #d30;
+}
+.fw-control-validation-error {
+  position: fixed;
+  display: none;
+  max-width: 20em;
+  height: auto;
+  background: rgba(255,236,240,0.90);
+  color: #111;
+  border: 0.1em solid #d30;
+  border-radius: 4px;
+  -moz-border-radius: 4px;
+  padding: 0.25em;
+  z-index: 1;
+  white-space: normal;
+}
+.fw-control.-invalid:hover > .fw-control-validation-error:not(:empty) {
+  display: block;
+}
+.fw-control.fw-control-textarea > span {
+  white-space: pre-wrap;
+}
+.fw-form-validationerrorpopup {
+  padding: 0.5em;
+}
+.fw-form-validationerrorpopup > ul {
+  padding-left: 1.5em;
+}
+.fw-form-validationerrorpopup-buttons {
+  text-align: center;
+  margin-top: 0.25em;
+}
+/************************** END - FW Control Styling - END **************************/
+/************************** START - Component Ticketing Administration - START **************************/
+.flex-page-ticketing-administration table.reflex {
+  margin-bottom: 1em;
+}
+.flex-page-ticketing-administration-actions {
+  width: 4em;
+  text-align: right;
+}
+.flex-page-ticketing-administration-actions > img,
+.flex-page-ticketing-administration-actions > a {
+  margin: 0 0.25em;
+  cursor: pointer;
+}
+.flex-page-ticketing-administration-mailsources tbody tr.-inactive td:nth-child(8) {
+  color: #c00;
+}
+.flex-page-ticketing-administration-mailsources tbody tr.-active td:nth-child(8) {
+  color: #008000;
+}
+.flex-page-ticketing-administration-mailsources tbody tr.-inactive .flex-page-ticketing-administration-actions > img:first-child {
+  display: none;
+}
+/************************** END - Component Ticketing Administration - END **************************/
+/************************** START - Component Ticketing Config - START **************************/
+.flex-page-ticketing-administration-ticketingconfig .reflex-propertylist {
+  margin-top: 0.5em;
+  border-style: solid;
+  border-width: 1px 0px;
+  border-color: #aaa;
+  padding: 0.25em 0.5em 0 0.5em;
+}
+.flex-page-ticketing-administration-ticketingconfig .reflex-propertylist select,
+.flex-page-ticketing-administration-ticketingconfig .reflex-propertylist textarea,
+.flex-page-ticketing-administration-ticketingconfig .reflex-propertylist input[type='text'],
+.flex-page-ticketing-administration-ticketingconfig .reflex-propertylist input[type="search"],
+.flex-page-ticketing-administration-ticketingconfig .reflex-propertylist input[type="password"],
+.flex-page-ticketing-administration-ticketingconfig .reflex-propertylist input[type="number"] {
+  width: 100%;
+}
+.flex-page-ticketing-administration-ticketingconfig-buttons {
+  text-align: center;
+  padding: 0.25em;
+}
+.flex-page-ticketing-administration-ticketingconfig-buttons-reactivate {
+  display: none;
+}
+.flex-page-ticketing-administration-ticketingconfig.-inactive .flex-page-ticketing-administration-ticketingconfig-buttons-save {
+  display: none;
+}
+.flex-page-ticketing-administration-ticketingconfig .reflex-propertylist > dt {
+  width: 30%;
+  display: inline-block;
+  margin-left: 0;
+  height: 1.75em;
+}
+.flex-page-ticketing-administration-ticketingconfig .reflex-propertylist > dd {
+  width: 70%;
+  display: inline-block;
+  margin-left: 0;
+  height: 1.75em;
+}
+.reflex-propertylist dd .fw-control {
+  width: 100%;
+}
+.flex-page-ticketing-administration-ticketingconfig.-inactive .flex-page-ticketing-administration-ticketingconfig-buttons-reactivate {
+  display: inline;
+}
+/************************** END - Component Ticketing Config - END **************************/
 

@@ -517,7 +517,7 @@ var Component_Collections_Scenario_List = Class.create(
 		if (!oResponse.bSuccess)
 		{
 			// Handle error
-			Component_Collections_Scenario_List._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -577,12 +577,6 @@ Object.extend(Component_Collections_Scenario_List,
 		working_status_name					: Sort.DIRECTION_OFF
 	},
 	
-	_ajaxError : function(oResponse)
-	{
-		var sMessage = (oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.');
-		Reflex_Popup.alert(sMessage, {sTitle: 'Error'});
-	},
-	
 	_getConstantGroupOptions : function(sConstantGroup, fnCallback)
 	{
 		var aOptions		= [];
@@ -612,7 +606,7 @@ Object.extend(Component_Collections_Scenario_List,
 		if (!oResponse.bSuccess)
 		{
 			// Error
-			Component_Collections_Scenario_List._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		

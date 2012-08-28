@@ -132,32 +132,23 @@ function FlexCustomerStatusEditClass()
 		
 		
 		// Define return handlers
-		funcSuccess = function(response)
-		{
+		funcSuccess = function(response) {
 			Vixen.Popup.ClosePageLoadingSplash();
 			
-			if (response.ERROR)
-			{
+			if (response.ERROR) {
 				$Alert(response.ERROR);
 				return;
 			}
 			
-			if (response.Success)
-			{
+			if (response.Success) {
 				$Alert("Customer Status has been successfully updated");
-			}
-			else
-			{
-				if (response.ValidationErrors != undefined)
-				{
+			} else {
+				if (response.ValidationErrors != undefined) {
 					$Alert("Failed validation:<br />" + response.ValidationErrors);
+				} else {
+					jQuery.json.errorPopup(response, "Failed for some unknown reason");
 				}
-				else
-				{
-					$Alert("Failed for some unknown reason");
-				}
-			}
-			
+			}			
 		}
 
 		remoteClass		= 'Customer_Status';

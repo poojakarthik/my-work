@@ -20,10 +20,7 @@ Component_Service_Contract_Details	= Class.create(/* extends */Reflex_Component,
 			(new Reflex_AJAX_Request('Service_Contract', 'getDetails', this._load.bind(this))).send(this.get('iServiceRatePlanId'));
 		} else if (oResponse.hasException()) {
 			// Error
-			Reflex_Popup.alert(oResponse.sMessage || 'There was a critical error accessing the Flex Server', {
-				sTitle			: 'Data Error',
-				sDebugContent	: oResponse.getDebugLog()
-			});
+			Reflex_AJAX_Response.errorPopup(oResponse);
 		} else {
 			// Success
 			this._oData	= oResponse.getData();

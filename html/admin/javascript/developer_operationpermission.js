@@ -149,31 +149,16 @@ var Developer_OperationPermission	= Class.create
 });
 
 // Static Methods
-Developer_OperationPermission._handleResponse	= function(fncCallback, objResponse)
-{
+Developer_OperationPermission._handleResponse = function(fnCallback, oResponse) {
 	Vixen.Popup.ClosePageLoadingSplash();
-	
-	//alert(objResponse);
-	//alert(fncCallback);
-	if (objResponse)
-	{
-		if (objResponse.Success)
-		{
-			//alert("Invoking Callback");
-			fncCallback(objResponse);
+	if (oResponse) {
+		if (oResponse.Success) {
+			fnCallback(oResponse);
 			return true;
 		}
-		else if (objResponse.Message)
-		{
-			$Alert(objResponse.Message);
-			return false;
-		}
 	}
-	else
-	{
-		$Alert(objResponse);
-		return false;
-	}
+
+	jQuery.json.errorPopup(oResponse);
 }
 
 Developer_OperationPermission.outputFieldFactory	= function(strLabel, domOutputElement, strDescription)

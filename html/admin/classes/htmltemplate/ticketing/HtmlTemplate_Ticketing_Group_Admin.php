@@ -209,9 +209,7 @@ class HtmlTemplate_Ticketing_Group_Admin extends FlexHtmlTemplate
 		if (!arrResult['Success'])
 		{
 			// A problem occurred
-			var strErrorMsg	= "Failed to archive the email address.  ";
-			strErrorMsg		+= (arrResult['ErrorMessage'])? arrResult['ErrorMessage'] : 'An unidentified error occurred';
-			$Alert(strErrorMsg);
+			jQuery.json.errorPopup(arrResult, 'Failed to archive the email address');
 			return false;
 		}
 	
@@ -350,9 +348,7 @@ class HtmlTemplate_Ticketing_Group_Admin extends FlexHtmlTemplate
 		if (!savedDetails['Success'])
 		{
 			// A problem occurred
-			var strErrorMsg = "Failed to save changes made to the email address.  ";
-			strErrorMsg += (savedDetails['ErrorMessage'])? savedDetails['ErrorMessage'] : 'An unidentified error occurred';
-			$Alert(strErrorMsg);
+			jQuery.json.errorPopup(arrResult, 'Failed to save changes made to the email address');			
 			return false;
 		}
 

@@ -24,7 +24,7 @@ var Popup_Collections_Suspension_View = Class.create(Reflex_Popup,
 		if (!oSuspensionResponse.bSuccess)
 		{
 			// Error
-			Popup_Collections_Suspension_View._ajaxError(oSuspensionResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -111,12 +111,6 @@ Object.extend(Popup_Collections_Suspension_View,
 			}
 		}
 		return '';
-	},
-	
-	_ajaxError : function(oResponse)
-	{
-		var sMessage = (oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.');
-		Reflex_Popup.alert(sMessage, {sTitle: 'Error'});
 	}
 });
 

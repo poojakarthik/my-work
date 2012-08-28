@@ -184,7 +184,7 @@ var Popup_Adjustment_Management_Action_Adjustment = Class.create(Reflex_Popup,
 		
 		if (!oResponse.bSuccess)
 		{
-			Page_Adjustment_Management._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -202,15 +202,6 @@ Object.extend(Popup_Adjustment_Management_Action_Adjustment,
 	REQUIRED_CONSTANT_GROUPS : ['transaction_nature',
 	                            'adjustment_review_outcome_type'],
 	
-	_ajaxError : function(oResponse, sMessage)
-	{
-		// Exception
-		Reflex_Popup.alert(
-			(sMessage ? sMessage + '. ' : '') + oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.', 
-			{sTitle: 'Error'}
-		);
-	},
-	
 	_getAdjustments : function(aAdjustmentIds, fnCallback, oResponse)
 	{
 		if (!oResponse)
@@ -223,7 +214,7 @@ Object.extend(Popup_Adjustment_Management_Action_Adjustment,
 		
 		if (!oResponse.bSuccess)
 		{
-			Popup_Adjustment_Management_Action_Adjustment._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -245,7 +236,7 @@ Object.extend(Popup_Adjustment_Management_Action_Adjustment,
 		
 		if (!oResponse.bSuccess)
 		{
-			Popup_Adjustment_Management_Action_Adjustment._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		

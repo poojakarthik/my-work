@@ -255,27 +255,13 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 		this.hPaymentMethods[oPaymentMethod.Id]	= oPaymentMethod;
 	},
 	
-	_ajaxError	: function(oResponse, bHideOnClose)
-	{
-		if (this.oLoading)
-		{
+	_ajaxError : function(oResponse, bHideOnClose) {
+		if (this.oLoading) {
 			this.oLoading.hide();
 			delete this.oLoading;
 		}
 		
-		if (oResponse.Success == false)
-		{
-			var oConfig	= {sTitle: 'Error', fnOnClose: (bHideOnClose ? this.hide.bind(this) : null)};
-			
-			if (oResponse.Message)
-			{
-				Reflex_Popup.alert(oResponse.Message, oConfig);
-			}
-			else if (oResponse.ERROR)
-			{
-				Reflex_Popup.alert(oResponse.ERROR, oConfig);
-			}
-		}
+		jQuery.json.errorPopup(oResponse, (bHideOnClose ? this.hide.bind(this) : null));
 	},
 	
 	_paymentMethodSelected	: function()

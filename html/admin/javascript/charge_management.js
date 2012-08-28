@@ -868,22 +868,17 @@ var Charge_Management = Class.create
 		Vixen.Popup.ShowPageLoadingSplash("Processing", null, null, null, 100);
 	},
 
-	_approveChargesResponse : function(objResponse)
-	{
+	_approveChargesResponse : function(oResponse) {
 		this._bolIsSubmitting = false;
 		Vixen.Popup.ClosePageLoadingSplash();
 		
 		this._closeConfirmationPopup();
 		
-		if (objResponse.success && objResponse.success == true)
-		{
+		if (oResponse.success && oResponse.success == true) {
 			var strMessage = "";
-			if (objResponse.intSuccessCount == 1)
-			{
+			if (oResponse.intSuccessCount == 1) {
 				strMessage = "The " + this._sChargeModel + " request has been approved";
-			}
-			else
-			{
+			} else {
 				strMessage = "The " + this._sChargeModel + " requests have been approved";
 			}
 			
@@ -891,10 +886,8 @@ var Charge_Management = Class.create
 			
 			// Refresh the page
 			this.objPagination.getCurrentPage();
-		}
-		else
-		{
-			$Alert("Approving the " + this._sChargeModel + " requests, failed" + ((objResponse.errorMessage != undefined)? "<br />" + objResponse.errorMessage : ""), null, null, 'modal');
+		} else {
+			jQuery.json.errorPopup(oResponse, "Approving the " + this._sChargeModel + " requests, failed");
 		}
 	},
 	
@@ -922,17 +915,17 @@ var Charge_Management = Class.create
 		Vixen.Popup.ShowPageLoadingSplash("Processing", null, null, null, 100);
 	},
 	
-	_declineChargesResponse : function(objResponse)
+	_declineChargesResponse : function(oResponse)
 	{
 		this._bolIsSubmitting = false;
 		Vixen.Popup.ClosePageLoadingSplash();
 		
 		this._closeConfirmationPopup();
 		
-		if (objResponse.success && objResponse.success == true)
+		if (oResponse.success && oResponse.success == true)
 		{
 			var strMessage = "";
-			if (objResponse.intSuccessCount == 1)
+			if (oResponse.intSuccessCount == 1)
 			{
 				strMessage = "The " + this._sChargeModel + " request has been rejected";
 			}
@@ -948,7 +941,7 @@ var Charge_Management = Class.create
 		}
 		else
 		{
-			$Alert("Rejecting the " + this._sChargeModel + " requests, failed" + ((objResponse.errorMessage != undefined)? "<br />" + objResponse.errorMessage : ""), null, null, 'modal');
+			jQuery.json.errorPopup(oResponse, "Rejecting the " + this._sChargeModel + " requests, failed");
 		}
 	},
 	

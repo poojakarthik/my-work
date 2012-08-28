@@ -932,7 +932,7 @@ var Recurring_Charge_Management = Class.create
 		}
 		else
 		{
-			$Alert("Approving the recurring charge requests, failed" + ((objResponse.errorMessage != undefined)? "<br />" + objResponse.errorMessage : ""), null, null, 'modal');
+			jQuery.json.errorPopup(objResponse, "Approving the recurring charge requests, failed");
 		}
 	},
 	
@@ -986,7 +986,7 @@ var Recurring_Charge_Management = Class.create
 		}
 		else
 		{
-			$Alert("Rejecting the recurring charge requests, failed" + ((objResponse.errorMessage != undefined)? "<br />" + objResponse.errorMessage : ""), null, null, 'modal');
+			jQuery.json.errorPopup(objResponse, "Rejecting the recurring charge requests, failed");
 		}
 	},
 	

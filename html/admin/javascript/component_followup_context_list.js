@@ -89,18 +89,8 @@ var Component_FollowUp_Context_List	= Class.create
 		FollowUpLink.showAddFollowUpPopup(this._iFollowUpType, this._iTypeDetail, sUrl);
 	},
 	
-	_ajaxError	: function(oResponse)
-	{
-		var oConfig	= {sTitle: 'FollowUp Context List Error'};
-		
-		if (oResponse.Message)
-		{
-			Reflex_Popup.alert(oResponse.Message, oConfig);
-		}
-		else if (oResponse.ERROR)
-		{
-			Reflex_Popup.alert(oResponse.ERROR, oConfig);
-		}
+	_ajaxError	: function(oResponse) {
+		jQuery.json.errorPopup(oResponse, 'FollowUp Context List Error');
 	},
 	
 	_createIcon	: function(oFollowUp)

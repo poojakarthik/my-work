@@ -241,21 +241,22 @@ var Document	= Class.create
 		fncJsonFunc(this._arrEmailAddresses, this._arrFromAddresses[$ID('Document_Email_From').value], $ID('Document_Email_Subject').value, $ID('Document_Email_Content').value, this._arrDocuments, this._intAccountId);
 	},
 	
-	_emailDocumentResponse	: function(objResponse)
+	_emailDocumentResponse : function(oResponse)
 	{
 		// Close the Loading Splash & Popup
 		Vixen.Popup.ClosePageLoadingSplash();
 		this.pupEmail.hide();
 		
 		// Display response message
-		if (objResponse.Success)
+		if (oResponse.Success)
 		{
 			$Alert("Email delivered!");
 		}
 		else
 		{
-			$Alert(objResponse.Message);
+			jQuery.json.errorPopup(oResponse);
 		}
+
 		Flex.Document.initialize();
 	},
 	

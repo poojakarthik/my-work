@@ -23,7 +23,7 @@ var Invoice	= Class.create
 		{
 			if (!oResponse.Success)
 			{
-				Reflex_Popup.alert(oResponse.sMessage + ((oResponse.strDebug != '') ? ' -- DEBUG LOG:' + oResponse.strDebug : ''));
+				jQuery.json.errorPopup(oResponse);
 				fnCallback(null);
 				return;
 			}
@@ -46,7 +46,7 @@ var Invoice	= Class.create
 		{
 			if (!oResponse.bSuccess)
 			{
-				Reflex_Popup.alert(oResponse.sMessage + ((oResponse.sDebug != '') ? ' -- DEBUG LOG: ' + oResponse.sDebug : ''));
+				jQuery.json.errorPopup(oResponse);
 				fnCallback(null);
 				return;
 			}
@@ -116,7 +116,7 @@ var Invoice	= Class.create
 		{
 			if (!oResponse.bSuccess)
 			{
-				Reflex_Popup.alert(oResponse.sMessage + ((oResponse.sDebug != '') ? ' -- DEBUG LOG: ' + oResponse.sDebug : ''));
+				jQuery.json.errorPopup(oResponse);
 				fnCallback(null);
 				return;
 			}
@@ -161,7 +161,7 @@ var Invoice	= Class.create
 		// Did we succeed?
 		if (objResponse.Success === false)
 		{
-			$Alert(objResponse.ErrorMessage);
+			jQuery.json.errorPopup(objResponse);
 			return;
 		}
 		
@@ -255,7 +255,7 @@ var Invoice	= Class.create
 		// Did we succeed?
 		if (objResponse.Success === false)
 		{
-			$Alert(objResponse.ErrorMessage);
+			jQuery.json.errorPopup(objResponse);
 			return;
 		}
 
@@ -386,7 +386,7 @@ var Invoice	= Class.create
 		// Did we succeed?
 		if (objResponse.Success === false)
 		{
-			$Alert(objResponse.ErrorMessage, null, null, 'autohide-reload', "Invoice Committed");
+			jQuery.json.errorPopup(objResponse);
 			return;
 		}
 		
@@ -423,7 +423,7 @@ var Invoice	= Class.create
 		// Did we succeed?
 		if (objResponse.Success === false)
 		{
-			$Alert(objResponse.ErrorMessage, null, null, 'autohide-reload');
+			jQuery.json.errorPopup(objResponse);
 			return;
 		}
 		
@@ -513,8 +513,7 @@ var Invoice	= Class.create
 			}
 			else
 			{
-				var sMessage	= (oResponse.sMessage ? oResponse.sMessage : 'An error occured accessing the database, please contact YBS');
-				Reflex_Popup.alert(sMessage, {sTitle: 'Error'});
+				jQuery.json.errorPopup(oResponse);
 			}
 		}
 	},

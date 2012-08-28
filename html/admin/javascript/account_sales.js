@@ -9,19 +9,15 @@ var AccountSales = {
 		jsonFunc(intAccountId);
 	},
 	
-	showSalesReturnHandler : function(response)
-	{
+	showSalesReturnHandler : function(response) {
 		Vixen.Popup.ClosePageLoadingSplash();
 
-		if (response.success && response.success == true)
-		{
+		if (response.success && response.success == true) {
 			var strPopupTitle = "Sales for "+ response.accountId +" - "+ response.accountName;
 			
 			Vixen.Popup.Create(this.POPUP_ID, response.popupContent, "ExtraLarge", "centre", "modal", strPopupTitle);
-		}
-		else
-		{
-			$Alert("Loading the Account Sales popup failed" + ((response.errorMessage != undefined)? "<br />" + response.errorMessage : ""));
+		} else {
+			jQuery.json.errorPopup("Loading the Account Sales popup failed");
 		}
 	}
 };

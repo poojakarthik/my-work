@@ -72,7 +72,7 @@ var Page_DataReport_List = Class.create(
 		else
 		{
 			// Error
-			Page_DataReport_List.ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 		}
 	},
 	
@@ -146,15 +146,3 @@ var Page_DataReport_List = Class.create(
 Page_DataReport_List.INSTANT_REPORT_IMAGE_SOURCE	= '../admin/img/template/report_instant.png';
 Page_DataReport_List.EMAIL_REPORT_IMAGE_SOURCE		= '../admin/img/template/report_email.png';
 Page_DataReport_List.EDIT_PERMISSION_IMAGE_SOURCE	= '../admin/img/template/user_key.png';
-
-Page_DataReport_List.ajaxError	= function(oResponse)
-{
-	if (oResponse.Message)
-	{
-		Reflex_Popup.alert(oResponse.Message, {sTitle: 'Error'});
-	}
-	else if (oResponse.ERROR)
-	{
-		Reflex_Popup.alert(oResponse.ERROR, {sTitle: 'Error'});
-	}
-}

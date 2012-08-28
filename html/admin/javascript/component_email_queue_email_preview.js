@@ -121,11 +121,7 @@ var Component_Email_Queue_Email_Preview = Class.create(Reflex_Component, {
 			oReq.send(this.get('iEmailId'));
 		} else if (oResponse.hasException()) {
 			// Error
-			var oException = oResponse.getException();
-			Reflex_Popup.alert(oException.sMessage || 'There was a critical error accessing the Flex Server', {
-				sTitle			: 'Database Error',
-				sDebugContent	: oResponse.getDebugLog()
-			});
+			Reflex_AJAX_Response.errorPopup(oResponse);
 		} else {
 			// Success
 			this._oData = oResponse.get('oEmail');

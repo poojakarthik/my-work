@@ -297,15 +297,7 @@ Object.extend(Popup_Collections_Scenario_Event_Timeline_Event,
 	
 	_hEvents 				: null,
 	_oRequiredInactiveEvent	: null,
-	
-	_ajaxError : function(oResponse, sMessage)
-	{
-		Reflex_Popup.alert(
-			(sMessage ? sMessage + '. ' : '') + oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.', 
-			{sTitle: 'Error'}
-		);
-	},
-	
+		
 	_getEventOptions : function(iRequiredEventId, fnCallback, oResponse, oRequiredEventResponse)
 	{
 		// No events cached
@@ -321,7 +313,7 @@ Object.extend(Popup_Collections_Scenario_Event_Timeline_Event,
 		if (!oResponse.bSuccess)
 		{
 			// Error
-			Popup_Collections_Scenario_Event_Timeline_Event._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -343,7 +335,7 @@ Object.extend(Popup_Collections_Scenario_Event_Timeline_Event,
 			if (!oRequiredEventResponse.bSuccess)
 			{
 				// Error
-				Popup_Collections_Scenario_Event_Timeline_Event._ajaxError(oRequiredEventResponse);
+				jQuery.json.errorPopup(oResponse);
 				return;
 			}
 			

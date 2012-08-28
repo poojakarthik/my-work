@@ -359,26 +359,14 @@ var Popup_Data_Report_Permission	= Class.create(Reflex_Popup,
 		}
 	},
 	
-	_ajaxError	: function(bHideOnClose, oResponse)
-	{
-		if (this.oLoading)
-		{
+	_ajaxError : function(bHideOnClose, oResponse) {
+		if (this.oLoading) {
 			this.oLoading.hide();
 			delete this.oLoading;
 		}
 		
-		if (oResponse.Success == false)
-		{
-			var oConfig	= {sTitle: 'Error', fnOnClose: (bHideOnClose ? this.hide.bind(this) : null)};
-			
-			if (oResponse.Message)
-			{
-				Reflex_Popup.alert(oResponse.Message, oConfig);
-			}
-			else if (oResponse.ERROR)
-			{
-				Reflex_Popup.alert(oResponse.ERROR, oConfig);
-			}
+		if (oResponse.Success == false) {
+			jQuery.json.errorPopup(oResponse, null, (bHideOnClose ? this.hide.bind(this) : null));
 		}
 	},
 	

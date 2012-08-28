@@ -73,11 +73,7 @@ var Component_Test_Run = Class.create(Reflex_Component, {
 			oRequest.send();
 		} else if (oResponse.hasException()) {
 			// Error
-			var oException = oResponse.getException();
-			Reflex_Popup.alert(oException.sMessage || 'There was a critical error accessing the Flex Server', {
-				sTitle			: 'Database Error',
-				sDebugContent	: oResponse.getDebugLog()
-			});
+			Reflex_AJAX_Response.errorPopup(oResponse);
 		} else {
 			// Success!
 			this._hTestClasses = oResponse.get('aClasses');
