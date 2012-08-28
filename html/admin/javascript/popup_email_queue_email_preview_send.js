@@ -82,11 +82,7 @@ var Popup_Email_Queue_Email_Preview_Send = Class.create(Reflex_Popup, {
 			oReq.send();
 		} else if (oResponse.hasException()) {
 			// Error
-			var oException = oResponse.getException();
-			Reflex_Popup.alert(oException.sMessage || 'There was a critical error accessing the Flex Server', {
-				sTitle			: 'Database Error',
-				sDebugContent	: oResponse.getDebugLog()
-			});
+			Reflex_AJAX_Response.errorPopup(oResponse);
 			return;
 		} else {
 			// Success
@@ -153,11 +149,7 @@ var Popup_Email_Queue_Email_Preview_Send = Class.create(Reflex_Popup, {
 			
 			if (oResponse.hasException()) {
 				// Error
-				var oException = oResponse.getException();
-				Reflex_Popup.alert(oException.sMessage || 'There was a critical error accessing the Flex Server', {
-					sTitle			: 'Database Error',
-					sDebugContent	: oResponse.getDebugLog()
-				});
+				Reflex_AJAX_Response.errorPopup(oResponse);
 				return;
 			}
 			
