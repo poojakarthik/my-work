@@ -10,21 +10,16 @@ var Account	= Class.create
 	},
 	
 	// getForId: JSON Handler Request Wrapper
-	getForId	: function(iAccountId, fnCallback, oResponse)
-	{
-		if (typeof oResponse == 'undefined')
-		{
+	getForId : function(iAccountId, fnCallback, oResponse) {
+		if (typeof oResponse == 'undefined') {
 			// Make request
 			var fnHandler	= this.getForId.bind(this, iAccountId, fnCallback);
 			var fnGetForId	= jQuery.json.jsonFunction(fnHandler, fnHandler, 'Account', 'getForId');
 			fnGetForId(iAccountId);
-		}
-		else
-		{
+		} else {
 			// Handle response
-			if (!oResponse.bSuccess)
-			{
-				Reflex_Popup.alert(oResponse.sMessage + (oResponse.sDebug !== '' ? ' -- DEBUG LOG: ' + oResponse.sDebug : ''), {sTitle: 'Error'});
+			if (!oResponse.bSuccess) {
+				jQuery.json.errorPopup(oResponse);
 				return;
 			}
 			
@@ -83,7 +78,7 @@ var Account	= Class.create
 			elmTableBody.innerHTML	=	"			<tr>\n" +
 										"				<td colspan='3' style='text-align:center;'><strong>There was an error loading the referee list.</strong></td>\n" +
 										"			</tr>\n";
-			$Alert(objResponse.ErrorMessage);
+			jQuery.json.errorPopup(objResponse);
 			return;
 		}
 		

@@ -30,7 +30,7 @@ var SaleCancellationPopup = {
 		}
 		else
 		{
-			$Alert("Initialising Sale Cancellation failed. " + ((response.errorMessage != undefined)? "<br />" + response.errorMessage : ""));
+			jQuery.json.errorPopup(response, "Initialising Sale Cancellation failed");
 		}
 	},
 	
@@ -112,13 +112,8 @@ var SaleCancellationPopup = {
 		Vixen.Popup.Confirm(strPrompt, function(){window.location = window.location});
 	},
 	
-	cancelSaleFailedReturnHandler: function(response)
-	{
+	cancelSaleFailedReturnHandler : function(oResponse) {
 		Vixen.Popup.ClosePageLoadingSplash();
-
-		$Alert(response.ERROR);
-	},
-	
-	
-	
+		jQuery.json.errorPopup(oResponse);
+	}	
 };

@@ -137,20 +137,13 @@ Object.extend(Popup_Correspondence_Template_Carrier_Module,
 {
 	REQUIRED_CONSTANT_GROUPS : ['carrier_module_type'],
 	
-	_ajaxError : function(oResponse, sMessage)
-	{
-		if (oResponse.aErrors)
-		{
+	_ajaxError : function(oResponse, sMessage) {
+		if (oResponse.aErrors) {
 			// Validation errors
 			Popup_Correspondence_Template_Carrier_Module._validationError(oResponse.aErrors);
-		}
-		else
-		{
+		} else {
 			// Exception
-			Reflex_Popup.alert(
-				(sMessage ? sMessage + '. ' : '') + oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.', 
-				{sTitle: 'Error', sDebugContent: oResponse.sDebug}
-			);
+			jQuery.json.errorPopup(oResponse, sMessage);
 		}
 	},
 	

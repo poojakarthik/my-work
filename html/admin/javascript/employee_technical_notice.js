@@ -12,21 +12,21 @@ var FlexEmployeeTechnicalNotice = {
 		jsonFunc(null);
 	},
 	
-	newMessageReturnHandler : function(response)
+	newMessageReturnHandler : function(oResponse)
 	{
 		Vixen.Popup.ClosePageLoadingSplash();
 
-		if (response.Success)
+		if (oResponse.Success)
 		{
 			// Display the popup
-			Vixen.Popup.Create(this.POPUP_ID, response.PopupContent, "ExtraLarge", "centre", "modal", "Employee Technical Notice");
+			Vixen.Popup.Create(this.POPUP_ID, oResponse.PopupContent, "ExtraLarge", "centre", "modal", "Employee Technical Notice");
 			
 			// Initialise the popup
 			this.initialiseNewMessagePopup();
 		}
 		else
 		{
-			$Alert("Loading the Employee Message Popup failed" + ((response.ErrorMessage != undefined)? "<br />" + response.ErrorMessage : ""));
+			jQuery.json.errorPopup(oResponse, "Loading the Employee Message Popup failed");
 		}
 	},
 	
@@ -66,11 +66,11 @@ var FlexEmployeeTechnicalNotice = {
 		jsonFunc(intId, strMessage, strEffectiveOn, this.strMessageTypeConstant);
 	},
 
-	saveMessageReturnHandler : function(response)
+	saveMessageReturnHandler : function(oResponse)
 	{
 		Vixen.Popup.ClosePageLoadingSplash();
 
-		if (response.Success)
+		if (oResponse.Success)
 		{
 			$Alert("The message has been successfully saved");
 			Vixen.Popup.Close(this.POPUP_ID);
@@ -79,7 +79,7 @@ var FlexEmployeeTechnicalNotice = {
 		}
 		else
 		{
-			$Alert("Saving the message failed" + ((response.ErrorMessage != undefined)? "<br />" + response.ErrorMessage : ""));
+			jQuery.json.errorPopup(oResponse, "Saving the message failed");
 		}
 	},
 	

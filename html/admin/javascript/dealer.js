@@ -53,29 +53,22 @@ var Dealer = {
 		jsonFunc();
 	},
 	
-	loadNewDealerPopupReturnHandler : function(response)
-	{
+	loadNewDealerPopupReturnHandler : function(oResponse) {
 		Vixen.Popup.ClosePageLoadingSplash();
 
-		if (response.Success && response.Success == true)
-		{
+		if (oResponse.Success && oResponse.Success == true) {
 			// Check if there are any employees who can become dealers
-			if (response.EmployeeCount > 0)
-			{
+			if (oResponse.EmployeeCount > 0) {
 				// Display the popup
-				var objPopup = Vixen.Popup.Create(this.POPUP_ID, response.PopupContent, "Medium", "centre", "modal", "New Dealer");
+				var objPopup = Vixen.Popup.Create(this.POPUP_ID, oResponse.PopupContent, "Medium", "centre", "modal", "New Dealer");
 				this.controls = {};
 				this.controls.newDealerEmployeeIdCombo = $ID("NewDealerPopupEmployeeIdCombo");
-			}
-			else
-			{
+			} else {
 				// There are no eligible employees to base new dealers on, so just open the new dealer popup
 				this.editDealer(null);
 			}
-		}
-		else
-		{
-			$Alert("Loading the New Dealer Popup failed" + ((response.ErrorMessage != undefined)? "<br />" + response.ErrorMessage : ""));
+		} else {
+			jQuery.json.errorPopup(oResponse, "Loading the New Dealer Popup failed");
 		}
 	},
 
@@ -97,21 +90,17 @@ var Dealer = {
 		jsonFunc(intDealerId);
 	},
 	
-	viewDealerReturnHandler : function(response)
-	{
+	viewDealerReturnHandler : function(oResponse) {
 		Vixen.Popup.ClosePageLoadingSplash();
 
-		if (response.Success && response.Success == true)
-		{
+		if (oResponse.Success && oResponse.Success == true) {
 			// Display the popup
-			var objPopup = Vixen.Popup.Create(this.POPUP_ID, response.PopupContent, "Large", "centre", "modal", "Dealer - " + response.Data.DealerName);
+			var objPopup = Vixen.Popup.Create(this.POPUP_ID, oResponse.PopupContent, "Large", "centre", "modal", "Dealer - " + oResponse.Data.DealerName);
 			
 			// Initialise the popup
-			this.initialiseViewPopup(response.Data, objPopup);
-		}
-		else
-		{
-			$Alert("Loading the ViewDealer Popup failed" + ((response.ErrorMessage != undefined)? "<br />" + response.ErrorMessage : ""));
+			this.initialiseViewPopup(oResponse.Data, objPopup);
+		} else {
+			jQuery.json.errorPopup(oResponse, "Loading the ViewDealer Popup failed");
 		}
 	},
 	
@@ -136,21 +125,17 @@ var Dealer = {
 		jsonFunc(intDealerId, intEmployeeId, intCallingPage);
 	},
 	
-	editDealerReturnHandler : function(response)
-	{
+	editDealerReturnHandler : function(oResponse) {
 		Vixen.Popup.ClosePageLoadingSplash();
 
-		if (response.Success && response.Success == true)
-		{
+		if (oResponse.Success && oResponse.Success == true) {
 			// Display the popup
-			var objPopup = Vixen.Popup.Create(this.POPUP_ID, response.PopupContent, "Large", "centre", "modal", (response.Data.Dealer.id === null && response.Data.Dealer.employeeId === null)? "New Dealer" : "Dealer - " + response.Data.DealerName);
+			var objPopup = Vixen.Popup.Create(this.POPUP_ID, oResponse.PopupContent, "Large", "centre", "modal", (oResponse.Data.Dealer.id === null && oResponse.Data.Dealer.employeeId === null)? "New Dealer" : "Dealer - " + oResponse.Data.DealerName);
 			
 			// Initialise the popup
-			this.initialiseEditPopup(response.Data, objPopup);
-		}
-		else
-		{
-			$Alert("Loading the EditDealer Popup failed" + ((response.ErrorMessage != undefined)? "<br />" + response.ErrorMessage : ""));
+			this.initialiseEditPopup(oResponse.Data, objPopup);
+		} else {
+			jQuery.json.errorPopup(oResponse, "Loading the EditDealer Popup failed");
 		}
 	},
 	
@@ -653,16 +638,16 @@ var Dealer = {
 	},
 
 
-	saveDealerDetailsReturnHandler : function(response)
+	saveDealerDetailsReturnHandler : function(oResponse)
 	{
 		Vixen.Popup.ClosePageLoadingSplash();
 
-		if (response.Success && response.Success == true)
+		if (oResponse.Success && oResponse.Success == true)
 		{
-			if (response.Warning)
+			if (oResponse.Warning)
 			{
 				// The save was successfull, but threw a warning
-				$Alert("<p>The dealer was successfully saved, however the following warning was raised:</p><p>"+ response.Warning +"</p>");
+				$Alert("<p>The dealer was successfully saved, however the following warning was raised:</p><p>"+ oResponse.Warning +"</p>");
 			}
 			else
 			{
@@ -670,7 +655,7 @@ var Dealer = {
 			}
 			
 			// Update dealer object
-			this.objDealer = response.Dealer;
+			this.objDealer = oResponse.Dealer;
 			
 			// The sales constraints might be out of sync with what they are in the database, so reset the
 			this.initialiseSalesConstraints();
@@ -680,7 +665,7 @@ var Dealer = {
 		}
 		else
 		{
-			$Alert("Saving the dealer failed" + ((response.ErrorMessage != undefined)? "<br />" + response.ErrorMessage : ""));
+			jQuery.json.errorPopup(oResponse, "Saving the dealer failed");
 		}
 	},
 	

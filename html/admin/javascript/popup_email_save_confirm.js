@@ -347,13 +347,13 @@ var Popup_Email_Save_Confirm	= Class.create(Reflex_Popup,
 		fnRequest(oTemplateDetails.email_html, oTemplateDetails.email_template_customer_group_id);	
 	},
 	
-	errorCallback: function(oResponse)
+	/*errorCallback: function(oResponse)
 	{
 		if (oResponse.message)
 		{
 			Reflex_Popup.alert(oResponse.message, {sTitle: 'Error'});
 		}
-	},	
+	},*/
 	
 	successPreviewCallback: function (oResponse)
 	{

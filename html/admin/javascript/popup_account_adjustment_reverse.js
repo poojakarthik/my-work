@@ -78,7 +78,7 @@ var Popup_Account_Adjustment_Reverse = Class.create(Reflex_Popup,
 		if (!oResponse.bSuccess)
 		{
 			// Error
-			Popup_Account_Adjustment_Reverse._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -108,7 +108,7 @@ Object.extend(Popup_Account_Adjustment_Reverse,
 		if (!oResponse.bSuccess)
 		{
 			// Error
-			Popup_Account_Adjustment_Reverse._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -132,7 +132,7 @@ Object.extend(Popup_Account_Adjustment_Reverse,
 		if (!oResponse.bSuccess)
 		{
 			// Error
-			Popup_Account_Adjustment_Reverse._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -148,13 +148,5 @@ Object.extend(Popup_Account_Adjustment_Reverse,
 		}
 		
 		fnCallback(aOptions);
-	},
-	
-	_ajaxError : function()
-	{
-		Reflex_Popup.alert(
-			(sMessage ? sMessage + '. ' : '') + oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.', 
-			{sTitle: 'Error'}
-		);
 	}
 });

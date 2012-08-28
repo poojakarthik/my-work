@@ -279,32 +279,25 @@ function VixenAvailablePlansPageClass()
 			return false;
 		}
 		
-		var fncResponseHandler	=	function(objResponse)
-									{
-										Vixen.Popup.ClosePageLoadingSplash();
-										
-										// Render the popup
-										if (objResponse.Success)
-										{
-											return eval(objResponse.strEval);
-										}
-										else
-										{
-											var strMessage	= (objResponse.Message) ? objResponse.Message : objResponse;
-											
-											$Alert(strMessage);
-											return false;
-										}
-									};
+		var fncResponseHandler = function(oResponse) {
+			Vixen.Popup.ClosePageLoadingSplash();
+			
+			// Render the popup
+			if (oResponse.Success) {
+				return eval(oResponse.strEval);
+			} else {
+				jQuery.json.errorPopup(oResponse);
+				return false;
+			}
+		};
 		
-		var	fncJSONRequest		=	function(intCustomerGroup, arrRatePlanIds)
-									{
-										Vixen.Popup.ShowPageLoadingSplash();
-										
-										// Get JS code to load the Popup
-										var fncJsonFunc		= jQuery.json.jsonFunction(fncResponseHandler, null, 'Rate_Plan', 'generateEmailButtonOnClick');
-										fncJsonFunc(intCustomerGroup, arrRatePlanIds);
-									};
+		var	fncJSONRequest = function(intCustomerGroup, arrRatePlanIds) {
+			Vixen.Popup.ShowPageLoadingSplash();
+			
+			// Get JS code to load the Popup
+			var fncJsonFunc	= jQuery.json.jsonFunction(fncResponseHandler, null, 'Rate_Plan', 'generateEmailButtonOnClick');
+			fncJsonFunc(intCustomerGroup, arrRatePlanIds);
+		};
 		
 		// Check if every selected Plan has a Brochure
 		if (arrNoBrochures.length)

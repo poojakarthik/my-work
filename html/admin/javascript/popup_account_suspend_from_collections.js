@@ -63,7 +63,7 @@ var Popup_Account_Suspend_From_Collections = Class.create(Reflex_Popup,
 		if (!oResponse.bSuccess)
 		{
 			// Error
-			Popup_Account_Suspend_From_Collections._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -100,16 +100,4 @@ var Popup_Account_Suspend_From_Collections = Class.create(Reflex_Popup,
 		
 		this._buildUI();
 	}
-});
-
-Object.extend(Popup_Account_Suspend_From_Collections, 
-{
-	_ajaxError : function(oResponse, sMessage)
-   	{
-   		// Exception
-		Reflex_Popup.alert(
-			(sMessage ? sMessage + '. ' : '') + oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.', 
-			{sTitle: 'Error'}
-		);
-   	},
 });

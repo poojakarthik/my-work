@@ -20,7 +20,7 @@ var Popup_Collections_Event_List_Details = Class.create(Reflex_Popup,
 		
 		if (!oResponse.bSuccess)
 		{
-			Popup_Collections_Event_List_Details._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -190,11 +190,5 @@ var Popup_Collections_Event_List_Details = Class.create(Reflex_Popup,
 Object.extend(Popup_Collections_Event_List_Details,
 {
 	REQUIRED_CONSTANT_GROUPS : ['collection_event_invocation', 
-	                        	'collection_event_type_implementation'],
-	
-	_ajaxError : function(oResponse)
-	{
-		var sMessage = (oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.');
-		Reflex_Popup.alert(sMessage, {sTitle: 'Error'});
-	},
+	                        	'collection_event_type_implementation']
 });

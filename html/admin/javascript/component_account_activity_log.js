@@ -35,10 +35,7 @@ Component_Account_Activity_Log = Class.create(/* extends */Reflex_Component, {
 			fnReq(this.get('iAccountId'));
 		} else if (!oResponse.bSuccess) {
 			// Error
-			Reflex_Popup.alert(oResponse.sMessage || 'There was a critical error accessing the Flex Server', {
-				sTitle			: 'Database Error',
-				sDebugContent	: oResponse.sDebug
-			});
+			jQuery.json.errorPopup(oResponse);
 		} else {
 			// Success
 			this._aData = oResponse.aActivityData;
@@ -603,11 +600,7 @@ Component_Account_Activity_Log = Class.create(/* extends */Reflex_Component, {
 			var fnReq	= jQuery.json.jsonFunction(fnResp, fnResp, 'Account', 'getHistoricBalance');
 			fnReq(this.get('iAccountId'), sDate);
 		} else if (!oResponse.bSuccess) {
-			// Error
-			Reflex_Popup.alert(oResponse.sMessage || 'There was a critical error accessing the Flex Server', {
-				sTitle			: 'Database Error',
-				sDebugContent	: oResponse.sDebug
-			});
+			jQuery.json.errorPopup(oResponse);
 		} else {
 			// Success
 			var oTR		= this.NODE.select('tr.component-account-activity-log-row-' + sDate).first();

@@ -333,20 +333,13 @@ Object.extend(Component_Account_Payment_Create,
 	SAVE_MODE_SAVE 					: 1,
 	SAVE_MODE_CALLBACK_WITH_DETAILS	: 2,
 	
-	_ajaxError : function(oResponse, sMessage)
-	{
-		if (oResponse.aErrors)
-		{
+	_ajaxError : function(oResponse, sMessage) {
+		if (oResponse.aErrors) {
 			// Validation errors
 			Component_Account_Payment_Create._validationError(oResponse.aErrors);
-		}
-		else
-		{
+		} else {
 			// Exception
-			Reflex_Popup.alert(
-				(sMessage ? sMessage + '. ' : '') + oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.', 
-				{sTitle: 'Error'}
-			);
+			jQuery.json.errorPopup(oResponse, sMessage);
 		}
 	},
 	

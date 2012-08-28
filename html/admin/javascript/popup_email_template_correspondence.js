@@ -244,20 +244,13 @@ Object.extend(Popup_Email_Template_Correspondence,
 {
 	REQUIRED_CONSTANT_GROUPS : [],
 	
-	_ajaxError : function(oResponse, sMessage)
-	{
-		if (oResponse.aErrors)
-		{
+	_ajaxError : function(oResponse, sMessage) {
+		if (oResponse.aErrors) {
 			// Validation errors
 			Popup_Email_Template_Correspondence._validationError(oResponse.aErrors);
-		}
-		else
-		{
+		} else {
 			// Exception
-			Reflex_Popup.alert(
-				(sMessage ? sMessage + '. ' : '') + oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.', 
-				{sTitle: 'Error', sDebugContent: oResponse.sDebug}
-			);
+			jQuery.json.errorPopup(oResponse, sMessage);
 		}
 	},
 	

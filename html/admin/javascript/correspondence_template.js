@@ -131,14 +131,6 @@ Object.extend(Correspondence_Template,
 	
 	_ajaxError	: function(oResponse)
 	{
-		var oConfig	= {sTitle: 'Error'};
-		if (oResponse.sMessage)
-		{
-			Reflex_Popup.alert(oResponse.sMessage, oConfig);
-		}
-		else if (oResponse.ERROR)
-		{
-			Reflex_Popup.alert(oResponse.ERROR, oConfig);
-		}
+		jQuery.json.errorPopup(oResponse);
 	}
 });

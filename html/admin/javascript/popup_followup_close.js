@@ -86,24 +86,13 @@ var Popup_FollowUp_Close	= Class.create(Reflex_Popup,
 		this.display();
 	},
 	
-	_ajaxError	: function(oResponse)
-	{
-		if (this.oLoading)
-		{
+	_ajaxError : function(oResponse) {
+		if (this.oLoading) {
 			this.oLoading.hide();
 			delete this.oLoading;
 		}
 		
-		var oConfig	= {sTitle: 'Error'};
-		
-		if (oResponse.Message)
-		{
-			Reflex_Popup.alert(oResponse.Message, oConfig);
-		}
-		else if (oResponse.ERROR)
-		{
-			Reflex_Popup.alert(oResponse.ERROR, oConfig);
-		}
+		jQuery.json.errorPopup(oResponse);
 	},
 	
 	_doClose	: function(oEvent, oResponse)

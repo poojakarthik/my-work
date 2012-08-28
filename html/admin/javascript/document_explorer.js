@@ -246,13 +246,13 @@ var Document_Explorer = Class.create
 			
 			this._registerEventHandlers();
 			//this.pupExplorer.recentre();
-		} else if (objResponse.Success == null) {
+		} else if (objResponse.Success == null) {			
 			this.pupExplorer.hide();
-			$Alert(objResponse);
+			jQuery.json.errorPopup(objResponse);
 			return false;
 		} else {
 			this.pupExplorer.hide();
-			$Alert(objResponse.Message);
+			jQuery.json.errorPopup(objResponse);
 			return false;
 		}
 	},
@@ -488,30 +488,30 @@ var Document_Explorer = Class.create
 		}
 	},
 	
-	_responseRefresh : function(objResponse) {
-		if (objResponse.Success) {
+	_responseRefresh : function(oResponse) {
+		if (oResponse.Success) {
 			this.refresh();
-			if (objResponse.Message) {
-				$Alert(objResponse.Message);
+			if (oResponse.Message) {
+				$Alert(oResponse.Message);
 			}
 			return true;
-		} else if (objResponse.Success == null) {
-			$Alert(objResponse);
+		} else if (oResponse.Success == null) {
+			jQuery.json.errorPopup(oResponse);
 			return false;
 		} else {
-			$Alert(objResponse.Message);
+			jQuery.json.errorPopup(oResponse);
 			return false;
 		}
 	},
 	
-	renderEditPopup : function(objResponse) {
-		if (objResponse.Success) {
-			JsAutoLoader.loadScript("javascript/document_edit.js", (function(intParentDocumentId, strNature, objDocument){return new Document_Edit(intParentDocumentId, strNature, objDocument);}).curry(this.objDocument.intId, objResponse.nature, objResponse.objDocument));
-		} else if (objResponse.Success == null) {
-			$Alert(objResponse);
+	renderEditPopup : function(oResponse) {
+		if (oResponse.Success) {
+			JsAutoLoader.loadScript("javascript/document_edit.js", (function(intParentDocumentId, strNature, objDocument){return new Document_Edit(intParentDocumentId, strNature, objDocument);}).curry(this.objDocument.intId, oResponse.nature, oResponse.objDocument));
+		} else if (oResponse.Success == null) {
+			jQuery.json.errorPopup(oResponse);
 			return false;
 		} else {
-			$Alert(objResponse.Message);
+			jQuery.json.errorPopup(oResponse);
 			return false;
 		}
 	}

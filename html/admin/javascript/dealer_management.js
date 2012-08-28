@@ -11,26 +11,24 @@ var DealerManagement = {
 		jsonFunc();
 	},
 	
-	showConfigReturnHandler : function(response)
+	showConfigReturnHandler : function(oResponse)
 	{
 		Vixen.Popup.ClosePageLoadingSplash();
 
-		if (response.success && response.success == true)
+		if (oResponse.success && oResponse.success == true)
 		{
 			// Store details
-			this.config.dealerConfig = response.config;
-			this.config.dealers = response.dealers;
+			this.config.dealerConfig = oResponse.config;
+			this.config.dealers = oResponse.dealers;
 		
 			// Display the popup
 			this.showConfigPopup();
 		}
 		else
 		{
-			$Alert("Loading the History popup failed" + ((response.errorMessage != undefined)? "<br />" + response.errorMessage : ""));
+			jQuery.json.errorPopup(oResponse, "Loading the History popup failed");
 		}
-	},
-	
-	
+	},	
 	
 	showConfigPopup: function()
 	{
@@ -135,11 +133,11 @@ var DealerManagement = {
 		return true;
 	},
 	
-	saveDealerConfigReturnHandler: function(response)
+	saveDealerConfigReturnHandler: function(oResponse)
 	{
 		Vixen.Popup.ClosePageLoadingSplash();
 
-		if (response.success && response.success == true)
+		if (oResponse.success && oResponse.success == true)
 		{
 			$Alert("The dealer configuration was successfully saved");
 			this.closeConfigPopup();
@@ -149,7 +147,7 @@ var DealerManagement = {
 		}
 		else
 		{
-			$Alert("Saving the dealer configuration failed" + ((response.errorMessage != undefined)? "<br />" + response.errorMessage : ""));
+			jQuery.json.errorPopup(oResponse, "Saving the dealer configuration failed");
 		}
 	}
 	

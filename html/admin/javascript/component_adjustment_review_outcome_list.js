@@ -468,7 +468,7 @@ var Component_Adjustment_Review_Outcome_List = Class.create(
 		if (!oResponse.bSuccess)
 		{
 			// Handle error
-			Component_Adjustment_Review_Outcome_List._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -501,12 +501,6 @@ Object.extend(Component_Adjustment_Review_Outcome_List,
 		status_name							: Sort.DIRECTION_OFF,
 		adjustment_review_outcome_type_name	: Sort.DIRECTION_OFF,
 		is_system							: Sort.DIRECTION_OFF
-	},
-	
-	_ajaxError : function(oResponse)
-	{
-		var sMessage = (oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.');
-		Reflex_Popup.alert(sMessage, {sTitle: 'Error'});
 	}
 });
 

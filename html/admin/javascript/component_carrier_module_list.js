@@ -547,7 +547,7 @@ var Component_Carrier_Module_List = Class.create(
 		if (!oResponse.bSuccess)
 		{
 			// Handle error
-			Component_Carrier_Module_List._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -601,13 +601,7 @@ Object.extend(Component_Carrier_Module_List,
 		earliest_delivery 			: Sort.DIRECTION_OFF,
 		is_active_label 			: Sort.DIRECTION_OFF
 	},
-	
-	_ajaxError : function(oResponse)
-	{
-		var sMessage = (oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.');
-		Reflex_Popup.alert(sMessage, {sTitle: 'Error', sDebugContent: oResponse.sDebug});
-	},
-	
+		
 	_getCarrierOptions : function(fnCallback, oResponse)
 	{
 		if (!oResponse)
@@ -620,7 +614,7 @@ Object.extend(Component_Carrier_Module_List,
 		
 		if (!oResponse.bSuccess)
 		{
-			Component_Carrier_Module_List._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		

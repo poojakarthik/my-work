@@ -87,7 +87,7 @@ var Plan	= Class.create
 		}
 		else
 		{
-			$Alert(objResponse.Message);
+			jQuery.json.errorPopup(objResponse);
 		}
 	},
 	
@@ -163,26 +163,21 @@ var Plan	= Class.create
 		}
 		else
 		{
-			$Alert(objResponse.Message);
+			jQuery.json.errorPopup(objResponse);
 		}
 	},
 	
 	// getForAccount: JSON Handler wrapper
-	getForAccount	: function(iAccountId, bReturnArchived, fnCallback, oResponse)
-	{
-		if (typeof oResponse == 'undefined')
-		{
+	getForAccount : function(iAccountId, bReturnArchived, fnCallback, oResponse) {
+		if (typeof oResponse == 'undefined') {
 			// Make request
 			var fnResponse		= this.getForAccount.bind(this, iAccountId, bReturnArchived, fnCallback);
 			var fnGetForAccount	= jQuery.json.jsonFunction(fnResponse, fnResponse, 'Rate_Plan', 'getForAccount');
 			fnGetForAccount(iAccountId, bReturnArchived);
-		}
-		else
-		{
+		} else {
 			// Handle response
-			if (!oResponse.bSuccess)
-			{
-				Reflex_Popup.alert(oResponse.sMessage + ((oResponse.sDebug != '') ? ' -- DEBUG LOG: ' + oResponse.sDebug : ''));
+			if (!oResponse.bSuccess) {
+				jQuery.json.errorPopup(oResponse);
 				fnCallback(null);
 				return;
 			}
@@ -192,21 +187,16 @@ var Plan	= Class.create
 	},
 	
 	// getForCustomerGroup: JSON Handler wrapper
-	getForCustomerGroup	: function(iCustomerGroupId, bReturnArchived, fnCallback, oResponse)
-	{
-		if (typeof oResponse == 'undefined')
-		{
+	getForCustomerGroup	: function(iCustomerGroupId, bReturnArchived, fnCallback, oResponse) {
+		if (typeof oResponse == 'undefined') {
 			// Make request
 			var fnResponse				= this.getForCustomerGroup.bind(this, iCustomerGroupId, bReturnArchived, fnCallback);
 			var fnGetForCustomerGroup	= jQuery.json.jsonFunction(fnResponse, fnResponse, 'Rate_Plan', 'getForCustomerGroup');
 			fnGetForCustomerGroup(iCustomerGroupId, bReturnArchived);
-		}
-		else
-		{
+		} else {
 			// Handle response
-			if (!oResponse.bSuccess)
-			{
-				Reflex_Popup.alert(oResponse.sMessage + ((oResponse.sDebug != '') ? ' -- DEBUG LOG: ' + oResponse.sDebug : ''));
+			if (!oResponse.bSuccess) {
+				jQuery.json.errorPopup(oResponse);
 				fnCallback(null);
 				return;
 			}
@@ -216,21 +206,16 @@ var Plan	= Class.create
 	},
 	
 	// getForId: JSON Handler wrapper
-	getForId	: function(iId, fnCallback, oResponse)
-	{
-		if (typeof oResponse == 'undefined')
-		{
+	getForId : function(iId, fnCallback, oResponse) {
+		if (typeof oResponse == 'undefined') {
 			// Make request
 			var fnResponse	= this.getForId.bind(this, iId, fnCallback);
 			var fnGetForId	= jQuery.json.jsonFunction(fnResponse, fnResponse, 'Rate_Plan', 'getForId');
 			fnGetForId(iId);
-		}
-		else
-		{
+		} else {
 			// Handle response
-			if (!oResponse.bSuccess)
-			{
-				Reflex_Popup.alert(oResponse.sMessage + ((oResponse.sDebug != '') ? ' -- DEBUG LOG: ' + oResponse.sDebug : ''));
+			if (!oResponse.bSuccess) {
+				jQuery.json.errorPopup(oResponse);
 				fnCallback(null);
 				return;
 			}

@@ -595,10 +595,8 @@ Object.extend(Component_Account_Invoice_List,
 		}
 	},
 	
-	_ajaxError : function(oResponse, sMessage)
-	{
-		var sMessage = (sMessage ? sMessage + '. ' : '') + (oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.');
-		Reflex_Popup.alert(sMessage, {sTitle: 'Error', sDebugContent: oResponse.sDebug});
+	_ajaxError : function(oResponse, sMessage) {
+		jQuery.json.errorPopup(oResponse, sMessage);
 	},
 	
 	_getInvoiceRunTypeIcon : function(iInvoiceRunTypeId)

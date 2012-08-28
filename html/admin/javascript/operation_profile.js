@@ -73,31 +73,19 @@ var Operation_Profile	= Class.create
 		);
 	},
 	
-	_saveComplete	: function(fnCallback, oResponse)
-	{
+	_saveComplete : function(fnCallback, oResponse) {
 		// Got response, hide loading
 		this.oLoading.hide();
 		delete this.oLoading;
 		
-		if (oResponse.Success)
-		{
+		if (oResponse.Success) {
 			// All good
-			if (fnCallback)
-			{
+			if (fnCallback) {
 				fnCallback(oResponse);
 			}
-		}
-		else
-		{
+		} else {
 			// AJAX Error
-			if (oResponse.Message)
-			{
-				Reflex_Popup.alert(oResponse.Message);
-			}
-			else
-			{
-				Reflex_Popup.alert('There was an error saving the profile.');
-			}
+			jQuery.json.errorPopup(oResponse);
 		}
 	},
 	

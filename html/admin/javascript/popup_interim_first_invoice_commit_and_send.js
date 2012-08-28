@@ -435,34 +435,15 @@ Object.extend(Popup_Interim_First_Invoice_Commit_And_Send,
 
 	// _ajaxError: 	Called in the event that something went wrong with an ajax request, shows an error message
 	//				if returned in the response, failing that, a generic message is shown.
-	_ajaxError	: function(oResponse)
-	{
+	_ajaxError	: function(oResponse) {
 		// Hide loading
-		if (this._oLoading)
-		{
+		if (this._oLoading) {
 			this._oLoading.hide();
 			delete this._oLoading;
 		}
 		
 		// Show message
-		var sMessage	= null;
-		if (oResponse.sMessage)
-		{
-			// Error message returned by the json handler
-			sMessage	= oResponse.sMessage;
-		}
-		else if (oResponse.ERROR)
-		{
-			// Lower level ajax error
-			sMessage	= oResponse.ERROR;
-		}
-		else
-		{
-			// No error message returned, use generic one.
-			sMessage	= 'An error occured accessing the database. Please contact YBS for assistance.';
-		}
-		
-		Reflex_Popup.alert(sMessage);
+		jQuery.json.errorPopup(oResponse);
 	}
 });
 

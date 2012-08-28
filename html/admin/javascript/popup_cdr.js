@@ -515,7 +515,7 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 		else if (!oResponse.Success)
 		{
 			this._oLoadingPopup.hide();
-			Component_Delinquent_CDR_List.serverErrorMessage(oResponse.sMessage, 'CDR Write Off Error');
+			Component_Delinquent_CDR_List.serverErrorMessage(oResponse, 'CDR Write Off Error');
 		
 		}
 		else
@@ -557,7 +557,7 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 		{
 			
 			this._oLoadingPopup.hide();
-			Component_Delinquent_CDR_List.serverErrorMessage(oResponse.sMessage, 'CDR Assignment Error');
+			Component_Delinquent_CDR_List.serverErrorMessage(oResponse, 'CDR Assignment Error');
 		
 		}
 		else
@@ -597,7 +597,7 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 			if (!oResponse.Success)
 			{
 				this._oLoadingPopup.hide();
-				Component_Delinquent_CDR_List.serverErrorMessage(oResponse.sMessage, 'CSV Error');
+				Component_Delinquent_CDR_List.serverErrorMessage(oResponse, 'CSV Error');
 			
 			}
 			else
@@ -633,7 +633,7 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 		{
 			
 			this._oLoadingPopup.hide();
-			Component_Delinquent_CDR_List.serverErrorMessage(oResponse.sMessage, 'CDR Assignment Error');
+			Component_Delinquent_CDR_List.serverErrorMessage(oResponse, 'CDR Assignment Error');
 		
 		}
 		else
@@ -681,7 +681,7 @@ var Popup_CDR	= Class.create(Reflex_Popup,
 		{
 			
 			this._oLoadingPopup.hide();
-			Component_Delinquent_CDR_List.serverErrorMessage(oResponse.sMessage, 'CDR Write Off Error');
+			Component_Delinquent_CDR_List.serverErrorMessage(oResponse, 'CDR Write Off Error');
 		
 		}
 		else

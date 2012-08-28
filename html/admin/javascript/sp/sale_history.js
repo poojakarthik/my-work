@@ -21,7 +21,7 @@ var SaleHistory = {
 		}
 		else
 		{
-			$Alert("Loading the History popup failed" + ((response.ErrorMessage != undefined)? "<br />" + response.ErrorMessage : ""));
+			jQuery.json.errorPopup(response, "Loading the History popup failed");
 		}
 	}
 };

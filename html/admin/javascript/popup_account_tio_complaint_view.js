@@ -24,7 +24,7 @@ var Popup_Account_TIO_Complaint_View = Class.create(Reflex_Popup,
 		if (!oResponse.bSuccess)
 		{
 			// Error
-			Popup_Account_TIO_Complaint_View._ajaxError(oResponse);
+			jQuery.json.errorPopup(oResponse);
 			return;
 		}
 		
@@ -78,19 +78,5 @@ var Popup_Account_TIO_Complaint_View = Class.create(Reflex_Popup,
 		{
 			this._fnOnComplaintEnd();
 		}
-	}
-});
-
-// Static
-
-Object.extend(Popup_Account_TIO_Complaint_View, 
-{
-	_ajaxError : function(oResponse, sMessage)
-   	{
-		// Exception
-		Reflex_Popup.alert(
-			(sMessage ? sMessage + '. ' : '') + oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.', 
-			{sTitle: 'Error'}
-		);
 	}
 });

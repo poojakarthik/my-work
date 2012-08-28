@@ -221,16 +221,7 @@ var FollowUp_Link	= Class.create
 	
 	_ajaxError	: function(oResponse)
 	{
-		var oConfig	= {sTitle: 'FollowUp Link Error'};
-		
-		if (oResponse.Message)
-		{
-			Reflex_Popup.alert(oResponse.Message, oConfig);
-		}
-		else if (oResponse.ERROR)
-		{
-			Reflex_Popup.alert(oResponse.ERROR, oConfig);
-		}
+		jQuery.json.errorPopup(oResponse);
 	},
 	
 	_showPopup	: function()

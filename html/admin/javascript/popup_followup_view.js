@@ -173,7 +173,7 @@ var Popup_FollowUp_View	= Class.create(Reflex_Popup,
 			// Make request to get the next recurring due date
 			var fnNextDueDate	= 	jQuery.json.jsonFunction(
 									this._getNextDueDate.bind(this, fnCallback), 
-									this._ajaxError.bind(this),
+									this._ajaxError.bind(this, false),
 									'FollowUp_Recurring',
 									'getNextDueDate'
 								);
@@ -210,7 +210,7 @@ var Popup_FollowUp_View	= Class.create(Reflex_Popup,
 			// Make request to get the all occurrences for the recurring follow-up 
 			var fnOccurrenceData	= 	jQuery.json.jsonFunction(
 											this._getOccurenceData.bind(this, fnCallback), 
-											this._ajaxError.bind(this),
+											this._ajaxError.bind(this, false),
 											'FollowUp_Recurring',
 											'getOccurrences'
 										);
@@ -438,29 +438,17 @@ var Popup_FollowUp_View	= Class.create(Reflex_Popup,
 		this.display();
 	},
 	
-	_ajaxError	: function(bHideOnClose, oResponse)
-	{
-		if (this.oLoading)
-		{
+	_ajaxError : function(bHideOnClose, oResponse) {
+		if (this.oLoading) {
 			this.oLoading.hide();
 			delete this.oLoading;
 		}
 		
-		if (oResponse.Success == false)
-		{
-			var oConfig	= {sTitle: 'Error', fnOnClose: (bHideOnClose ? this.hide.bind(this) : null)};
-			
-			if (oResponse.Message)
-			{
-				Reflex_Popup.alert(oResponse.Message, oConfig);
-			}
-			else if (oResponse.ERROR)
-			{
-				Reflex_Popup.alert(oResponse.ERROR, oConfig);
-			}
-			else if (oResponse.aValidationErrors)
-			{
+		if (oResponse.Success == false) {
+			if (oResponse.aValidationErrors) {
 				Popup_FollowUp_View._showValidationErrorPopup(oResponse.aValidationErrors);
+			} else {
+				jQuery.json.errorPopup(oResponse, null, (bHideOnClose ? this.hide.bind(this) : null));
 			}
 		}
 	},

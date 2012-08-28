@@ -150,24 +150,13 @@ var Popup_FollowUp_Recurring_End_Date	= Class.create(Reflex_Popup,
 		this.display();
 	},
 	
-	_ajaxError	: function(bHideOnClose, oResponse)
-	{
-		if (this.oLoading)
-		{
+	_ajaxError : function(bHideOnClose, oResponse) {
+		if (this.oLoading) {
 			this.oLoading.hide();
 			delete this.oLoading;
 		}
 		
-		var oConfig	= {sTitle: 'Error', fnOnClose: (bHideOnClose ? this.hide.bind(this) : null)};
-		
-		if (oResponse.Message)
-		{
-			Reflex_Popup.alert(oResponse.Message, oConfig);
-		}
-		else if (oResponse.ERROR)
-		{
-			Reflex_Popup.alert(oResponse.ERROR, oConfig);
-		}
+		jQuery.json.errorPopup(oResponse, null, (bHideOnClose ? this.hide.bind(this) : null));
 	},
 		
 	_validateDate	: function(sValue)
@@ -346,7 +335,7 @@ var Popup_FollowUp_Recurring_End_Date	= Class.create(Reflex_Popup,
 		else
 		{
 			// Error
-			this._ajaxError(oResponse);
+			this._ajaxError(false, oResponse);
 		}
 	},
 	

@@ -377,7 +377,9 @@ class Email_Template_Logic {
 		$sPreviousLine = "";
 		$aResult = array();
 		foreach ($aText as $sLine) {
-			($sPreviousLine == "\n\n"&&($sLine=="\n\n" || $sLine == "\n"))||($sPreviousLine=="\n" && $sLine=="\n\n")?null:$aResult[]=$sLine;
+			if (!(($sPreviousLine == "\n\n") && (($sLine == "\n\n") || ($sLine == "\n"))) && !(($sPreviousLine == "\n") && ($sLine == "\n\n"))) {
+				$aResult[] = $sLine;
+			}
 			$sPreviousLine = $sLine;
 		}
 		return $aResult;
@@ -385,12 +387,19 @@ class Email_Template_Logic {
 
 
 	public static function toText($sHTML) {
+		//Log::get()->log("[*] Email_Template_Logic::toText - HTML - {$sHTML}");
 		$sHTML = str_replace(array("\r\n", "\r", "\n", "\t"), ' ', $sHTML);
+		//Log::get()->log("[*] Email_Template_Logic::toText - Stage 1 - {$sHTML}");
 
-		$sText =  !empty($sHTML) && trim($sHTML)!='' && $sHTML!=null?implode("",self::normalizeNewLines(self::_toText(DOMDocument::loadXML(self::processHTML($sHTML))->documentElement, array()))):"";
-		//$sText = preg_replace('/\s\s+/s', 'bbbbbbbb', $sText);
-
+		$sText = '';
+		if (trim((string)$sHTML)) {
+			$sDocumentXML = DOMDocument::loadXML(self::processHTML($sHTML))->documentElement;
+			$sText = implode("", self::normalizeNewLines(self::_toText($sDocumentXML, array())));
+		}
+		
+		//Log::get()->log("[*] Email_Template_Logic::toText - Stage 2 - {$sText}");
 		$sText = self::trimLines(self::normalizeWhiteSpaces($sText));
+		//Log::get()->log("[*] Email_Template_Logic::toText - TEXT - ".trim($sText));
 		return trim($sText);
 	}
 
@@ -438,7 +447,7 @@ class Email_Template_Logic {
 
 		if ($x != null) {
 			foreach ($x as $node) {
-				if ($node->tagName == 'li') {
+				if (property_exists($node, 'tagName') && ($node->tagName == 'li')) {
 					$aTextArray[] ="\n";
 					$sListChar = $oNode->tagName =='ul'?"\t* ":($oNode->tagName=='ol'?"\t".++$iListCount.". ":null);
 					$aTextArray[] = $sListChar;
