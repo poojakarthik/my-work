@@ -128,7 +128,7 @@ var Reflex_AJAX_Request = Class.create({
 
 Object.extend(Reflex_AJAX_Request, {
 	showErrorPopup : function(sRequestType, sMessage, sHandler, sMethod, aParameters, oOther, sPopupMessage, fnOnClose) {
-		return Reflex_Popup.yesNoCancel(
+		var oPopup = Reflex_Popup.yesNoCancel(
 			(sPopupMessage ? sPopupMessage : 'An error has occured'), 
 			{
 				iWidth : 20,
@@ -145,20 +145,40 @@ Object.extend(Reflex_AJAX_Request, {
 					}
 
 					var aLines = [
-						'Request Method: ' + sRequestType,
-						'Message: ' + sMessage,
-						'JSON Handler: ' + sHandler,
-						'Function: ' + sMethod,
-						'Arguments: ' + aParameterStrings.join(', ')
+						escape('Request Method: ' + sRequestType),
+						escape('Message: ' + sMessage),
+						escape('JSON Handler: ' + sHandler),
+						escape('Function: ' + sMethod),
+						escape('Arguments: ' + aParameterStrings.join(', '))
 					];
 
 					if (oOther) {
 						for (var sLabel in oOther) {
-							aLines.push(sLabel + ': ' + Object.toJSON(oOther[sLabel]));
+							aLines.push(escape(sLabel + ': ' + Object.toJSON(oOther[sLabel])));
 						}
 					}
 
-					window.location = 'mailto:ybs-admin@ybs.net.au?subject=' + escape(sTitle) + '&body=' + escape(aLines.join("\n"));
+					// Create the url, truncate if too long (around 2000 is max)
+					var sURL = '';
+					var iURLLength = 0;
+					var iMaxURLLength = 1990;
+					var sNewLine = escape("\n");					
+					while ((sURL === '') || (iURLLength > iMaxURLLength)) {
+						if (iURLLength > iMaxURLLength) {
+							var sLastLine = aLines.pop();
+							var sTempURL = 'mailto:ybs-admin@ybs.net.au?subject=' + escape(sTitle) + '&body=' + aLines.join(sNewLine);
+							if (sTempURL.length < iMaxURLLength) {
+								// Removing this line brings it under the max url length, try chopping exactly the right amount out
+								aLines.push(sLastLine.substr(0, iMaxURLLength - sTempURL.length - (aLines.length * 3)));
+							}
+						}
+
+						sURL = 'mailto:ybs-admin@ybs.net.au?subject=' + escape(sTitle) + '&body=' + aLines.join(sNewLine);
+						iURLLength = sURL.length;
+					}
+
+					// Redirect to launch mail client
+					window.location = sURL;
 
 					if (fnOnClose) {
 						fnOnClose();
@@ -167,5 +187,7 @@ Object.extend(Reflex_AJAX_Request, {
 				fnOnNo : fnOnClose
 			}
 		);
+		
+		return oPopup;
 	}
 });
