@@ -41,10 +41,10 @@ var self = Class.create({
 								),
 								$D.option({value: 'MBOX'},
 									'Mbox'
-								),
+								)*/,
 								$D.option({value: 'XML'},
 									'XML'
-								)*/
+								)
 							]);
 						},
 						mMandatory : true
