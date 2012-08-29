@@ -224,10 +224,14 @@
 	 			$aRequest['SentOn']	= $sNow;
 	 			$this->_APIRequest($sURL, $aData, $aExtraHeaders);
 	 			$aRequest['Status'] = REQUEST_STATUS_DELIVERED;
+	 		} catch (ExportTelcoBlue_Exception_APICommunication $oEx) {
+	 			// Failed to communicate with the api, try again later
+	 			$aRequest['Status']	= REQUEST_STATUS_WAITING;
+	 			$aRequest['Description'] = "An error occurred communicating with the API";
 	 		} catch (Exception $oEx) {
 	 			$aRequest['Status'] = REQUEST_STATUS_REJECTED;
 	 			$aRequest['Description'] = $oEx->getMessage();
-	 		}	 		
+	 		}
 	 	} catch (Exception $oEx) {
 	 		// Something failed, return as such
 	 		$aRequest['Status']	= REQUEST_STATUS_WAITING;
@@ -298,13 +302,13 @@
 		try {
 			$sResponse = $oCURL->execute();	
 		} catch (Exception $oEx) {
-			throw new Exception($oEx->getMessage()." (URL: {$oCURL->URL})");
+			throw new ExportTelcoBlue_Exception_APICommunication($oEx->getMessage(), "URL: {$sURL}");
 		}
 
 		// Process the response, look for errors
 		$aResponseParts = explode("\r\n\r\n", $sResponse);
 		if (empty($aResponseParts)) {
-			throw new Exception("Unexpected response from API: {$sResponse}");
+			throw new ExportTelcoBlue_Exception_APICommunication("Unexpected response from API", "Response: {$sResponse}");
 		}
 
 		$iBodyPartIndex = count($aResponseParts) - 1;
@@ -315,7 +319,7 @@
 			$iResponseStatus = (int)$aStatus[1];
 		} else {
 			// No header, weird response
-			throw new Exception("Unexpected response from API, no HTTP header: {$sResponse}");
+			throw new ExportTelcoBlue_Exception_APICommunication("Unexpected response from API, no HTTP header", "Response: {$sResponse}");
 		}
 		
 		$sBody = $aResponseParts[$iBodyPartIndex];
@@ -329,19 +333,25 @@
 			case 501: // NOT_IMPLEMENTED
 				if (!$bInvalidJSONBody && property_exists($mBody, 'oException') && property_exists($mBody->oException, 'sMessage')) {
 					// Error passed back from API
-					throw new Exception("API Error: ".$mBody->oException->sMessage);
+					throw new Exception("API Error: {$mBody->oException->sMessage}");
 				} else {
 					// Other Http error
-					throw new Exception("Error response from API: {$iResponseStatus}. URL='{$sURL}' Response='{$sBody}'");
+					throw new ExportTelcoBlue_Exception_APICommunication("Error response from API. HTTP Status: {$iResponseStatus}; URL: '{$sURL}'", "Response: '{$sBody}'");
 				}
 				break;
 		}
 		
 		if ($bInvalidJSONBody) {
 			// JSON decode error
-			throw new Exception("Invalid JSON response from API. URL='{$sURL}' Response='{$sBody}'");
+			throw new ExportTelcoBlue_Exception_APICommunication("Invalid JSON response from API. URL: '{$sURL}'", "Response: '{$sBody}'");
 		}
  	}
+}
+
+class ExportTelcoBlue_Exception_APICommunication extends Exception_Assertion {
+	public function __construct($sMessage, $sExtraDetails=null, $sAssertionName=null) {
+		parent::__construct($sMessage, "Telcoblue Wholesale Provisioning Export - API Communication Error\n{$sExtraDetails}", null);
+	}
 }
 
 ?>
