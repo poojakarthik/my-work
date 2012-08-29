@@ -22,7 +22,7 @@ var	self = new Class({
 		this._super();
 		this.NODE.appendChild(
 			$D.div({'class': 'fw-popup-alert-buttons'},
-				$D.button('OK').observe('click', this._ok.bind(this))
+				$D.button($D.span('OK')).observe('click', this._ok.bind(this))
 			)
 		);
 	},
@@ -49,7 +49,7 @@ var	self = new Class({
 		}
 		
 		if (sOKLabel) {
-			this.NODE.select('.fw-popup-alert-buttons button').first().update(sOKLabel);
+			this.NODE.select('.fw-popup-alert-buttons button > span').first().update(sOKLabel);
 		}
 		
 		this._onReady();
