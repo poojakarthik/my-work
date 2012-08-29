@@ -2748,15 +2748,17 @@ function GetPDFContent($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId, 
 	if (!$sInvoicePath) {
 		return FALSE;
 	} else {
-		$sExt = substr($sInvoicePath, strrpos($sInvoicePath, '.'));
-		switch ($sExt) {
+		$sExtension = substr($sInvoicePath, strrpos($sInvoicePath, '.'));
+		switch ($sExtension) {
 			case '.bz2':
 				// Load the xml from the bz2 file
-				$sXML = file_get_contents("compress.bz2://{$sInvoicePath}");
+				$sXML = file_get_contents("compress.bzip2://{$sInvoicePath}");
 			case '.xml':
-				// Load the xml from the xml file
-				if ($sExt == '.xml') {
+				if ($sExtension == '.xml') {
+					// Load the xml from the xml file
 					$sXML = file_get_contents($sInvoicePath);
+				} else {
+					// The xml file was bzipped
 				}
 
 				$sPDF = generateInvoicePDF($sXML, $iInvoiceId, $iTargetMedia, $iInvoiceRunId, $iAccount);

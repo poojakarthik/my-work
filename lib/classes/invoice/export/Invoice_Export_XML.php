@@ -293,6 +293,7 @@ class Invoice_Export_XML {
 				mkdir($strFullDirectory, 0777, true);
 			}
 			
+			// Write the xml file using bzip2 compression
 			$strFilename = "{$strFullDirectory}/{$intAccount}.xml.bz2";
 			$mixReturn = (bool)file_put_contents("compress.bzip2://{$strFilename}", $strXMLOutput);
 
