@@ -145,36 +145,38 @@ Object.extend(Reflex_AJAX_Request, {
 					}
 
 					var aLines = [
-						escape('Request Method: ' + sRequestType),
-						escape('Message: ' + sMessage),
-						escape('JSON Handler: ' + sHandler),
-						escape('Function: ' + sMethod),
-						escape('Arguments: ' + aParameterStrings.join(', '))
+						'Request Method: ' + sRequestType,
+						'Message: ' + sMessage,
+						'JSON Handler: ' + sHandler,
+						'Function: ' + sMethod,
+						'Arguments: ' + aParameterStrings.join(', ')
 					];
 
 					if (oOther) {
 						for (var sLabel in oOther) {
-							aLines.push(escape(sLabel + ': ' + Object.toJSON(oOther[sLabel])));
+							aLines.push(sLabel + ': ' + Object.toJSON(oOther[sLabel]));
 						}
 					}
 
 					// Create the url, truncate if too long (around 2000 is max)
-					var sURL = '';
-					var iURLLength = 0;
+					var sTitle = escape(sTitle);
+					var sUnescapedBody = aLines.join("\n");
+					var sBody = escape(sUnescapedBody);
+					var sURL = 'mailto:ybs-admin@ybs.net.au?subject=' + sTitle + '&body=' + sBody;
+					var iURLLength = iURLLength = sURL.length;
+					var iBodyLength = sBody.length;
 					var iMaxURLLength = 1990;
-					var sNewLine = escape("\n");					
-					while ((sURL === '') || (iURLLength > iMaxURLLength)) {
-						if (iURLLength > iMaxURLLength) {
-							var sLastLine = aLines.pop();
-							var sTempURL = 'mailto:ybs-admin@ybs.net.au?subject=' + escape(sTitle) + '&body=' + aLines.join(sNewLine);
-							if (sTempURL.length < iMaxURLLength) {
-								// Removing this line brings it under the max url length, try chopping exactly the right amount out
-								aLines.push(sLastLine.substr(0, iMaxURLLength - sTempURL.length - (aLines.length * 3)));
-							}
+					if (iURLLength > iMaxURLLength) {
+						// Too long, chop off the body so that it fits the max length
+						var iNewBodyLength = iMaxURLLength - (iURLLength - iBodyLength);
+						sBody = sBody.substr(0, iNewBodyLength);
+
+						// Make sure that no escaped characters were chopped in two, leaving un-decodable content
+						while (sUnescapedBody.indexOf(unescape(sBody)) == -1) {
+							sBody = sBody.substr(0, sBody.length - 1);
 						}
 
-						sURL = 'mailto:ybs-admin@ybs.net.au?subject=' + escape(sTitle) + '&body=' + aLines.join(sNewLine);
-						iURLLength = sURL.length;
+						sURL = 'mailto:ybs-admin@ybs.net.au?subject=' + sTitle + '&body=' + sBody;
 					}
 
 					// Redirect to launch mail client
