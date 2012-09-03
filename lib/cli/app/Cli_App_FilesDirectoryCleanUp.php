@@ -3,6 +3,7 @@
 class Cli_App_FilesDirectoryCleanUp extends Cli {
 	const SWITCH_TEST_MODE = 't';
 	const SWITCH_MINIMUM_AGE = 'a';
+	const SWITCH_MAXIMUM_RECORDS_AFFECTED = 'r';
 	
 	const FILE_TYPE_IMPORT = 1;
 	const FILE_TYPE_DOWNLOAD = 2;
@@ -12,6 +13,7 @@ class Cli_App_FilesDirectoryCleanUp extends Cli {
 
 	private $_aArgs;
 	private $_bTestMode;
+	private $_iMaxRecordsAffected;
 	private $_sDatetimeCutoff;
 	private $_aFilesToRemove = array();
 
@@ -19,6 +21,7 @@ class Cli_App_FilesDirectoryCleanUp extends Cli {
 		$oLog = Log::get();
 		$this->_aArgs = $this->getValidatedArguments();
 		$this->_bTestMode = (isset($this->_aArgs[self::SWITCH_TEST_MODE]) && $this->_aArgs[self::SWITCH_TEST_MODE]);
+		$this->_iMaxRecordsAffected = (isset($this->_aArgs[self::SWITCH_MAXIMUM_RECORDS_AFFECTED]) ? $this->_aArgs[self::SWITCH_MAXIMUM_RECORDS_AFFECTED] : null);
 
 		if ($this->_bTestMode) {
 			$oLog->log("[*] TEST MODE: no records or files will be deleted");
@@ -54,7 +57,7 @@ class Cli_App_FilesDirectoryCleanUp extends Cli {
 
 			// Remove the files associated with the db records that were removed
 			$this->_removeFiles();
-		}		
+		}
 
 		// Generate the report of changes made
 		$this->_generateReport();
@@ -74,7 +77,15 @@ class Cli_App_FilesDirectoryCleanUp extends Cli {
 								));
 		$aIdsToDelete = array();
 		while ($aRow = $mResult->fetch_assoc()) {
+			if (($this->_iMaxRecordsAffected !== null) && (count($aIdsToDelete) >= $this->_iMaxRecordsAffected)) {
+				// Maximum records affected, stop
+				break;
+			}
+
 			$oLog->log("[*] Duplicate FileImport: {$aRow['Id']} - {$aRow['Location']}");
+			if (!self::_isFileRemovable($aRow['Location'])) {
+				continue;
+			}
 
 			// Record the file data
 			$aFiles[] = (object)array(
@@ -96,10 +107,20 @@ class Cli_App_FilesDirectoryCleanUp extends Cli {
 				if ($this->_bTestMode) {
 					$oLog->log("[*] TEST MODE: Not deleting (".count($aSlice)." records)");
 				} else {
-					$oLog->log("[*] Deleting: (".count($aSlice)." records)");
-					$sIdsToDelete = implode(', ', $aSlice);
-					$mResult = Query::run("	DELETE FROM	FileImport
-											WHERE		Id IN ({$sIdsToDelete});");
+					// Delete the records
+					$oDB = DataAccess::getDataAccess();
+					$oDB->TransactionStart(false);
+					try {
+						$oLog->log("[*] Deleting: (".count($aSlice)." records)");
+						$sIdsToDelete = implode(', ', $aSlice);
+						$mResult = Query::run("	DELETE FROM	FileImport
+												WHERE		Id IN ({$sIdsToDelete});");
+					} catch (Exception $oEx) {
+						$oDB->TransactionRollback(false);
+						throw $oEx;
+					}
+
+					$oDB->TransactionCommit(false);
 				}
 			}
 		}
@@ -125,6 +146,11 @@ class Cli_App_FilesDirectoryCleanUp extends Cli {
 			$oLog->log("[*] There are {$aCount['count']} FileDownload records of an appropriate age");
 			$iStartId = 0;
 			do {
+				if (($this->_iMaxRecordsAffected !== null) && (count($aIdsToDelete) >= $this->_iMaxRecordsAffected)) {
+					// Maximum records affected, stop
+					break;
+				}
+
 				// Select the FileDownload records
 				$iEndId = $iStartId + self::DOWNLOAD_SELECT_RECORD_INCREMENT;
 				$oLog->log("[*] Checking FileDownload records with ids between {$iStartId} and {$iEndId} (Split: ".($oStopwatch->split() - $iStartTime)."; Lap: ".$oStopwatch->lap().")");
@@ -146,7 +172,15 @@ class Cli_App_FilesDirectoryCleanUp extends Cli {
 
 				// Process the records
 				while ($aRow = $mResult->fetch_assoc()) {
+					if (($this->_iMaxRecordsAffected !== null) && (count($aIdsToDelete) >= $this->_iMaxRecordsAffected)) {
+						// Maximum records affected, stop
+						break;
+					}
+
 					$oLog->log("[*] Unreferenced FileDownload: {$aRow['Id']} - {$aRow['Location']}");
+					if (!self::_isFileRemovable($aRow['Location'])) {
+						continue;
+					}
 
 					// Record the file data
 					$aFiles[] = (object)array(
@@ -158,7 +192,7 @@ class Cli_App_FilesDirectoryCleanUp extends Cli {
 					$aIdsToDelete[] = $aRow['Id'];
 				}
 			} while ($mResult->num_rows > 0);
-		}		
+		}
 
 		$oLog->log("[*] ".count($aIdsToDelete)." FileDownload records to delete");
 
@@ -170,10 +204,20 @@ class Cli_App_FilesDirectoryCleanUp extends Cli {
 				if ($this->_bTestMode) {
 					$oLog->log("[*] TEST MODE: Not deleting (".count($aSlice)." records)");
 				} else {
-					$oLog->log("[*] Deleting: (".count($aSlice)." records)");
-					$sIdsToDelete = implode(', ', $aSlice);
-					$mResult = Query::run("	DELETE FROM	FileDownload
-											WHERE		Id IN ({$sIdsToDelete});");
+					// Delete the records
+					$oDB = DataAccess::getDataAccess();
+					$oDB->TransactionStart(false);
+					try {
+						$oLog->log("[*] Deleting: (".count($aSlice)." records)");
+						$sIdsToDelete = implode(', ', $aSlice);
+						$mResult = Query::run("	DELETE FROM	FileDownload
+												WHERE		Id IN ({$sIdsToDelete});");
+					} catch (Exception $oEx) {
+						$oDB->TransactionRollback(false);
+						throw $oEx;
+					}
+
+					$oDB->TransactionCommit(false);
 				}
 			}
 		}
@@ -185,7 +229,10 @@ class Cli_App_FilesDirectoryCleanUp extends Cli {
 		$oLog = Log::get();
 		foreach ($this->_aFilesToRemove as $oFile) {
 			$oLog->log("[*] Removing file: {$oFile->sFilePath}");
-			unlink($oFile->sFilePath);
+			$bSuccess = unlink($oFile->sFilePath);
+			if (!$bSuccess) {
+				throw new Exception("Failed to remove file: {$oFile->sFilePath}");
+			}
 		}
 	}
 
@@ -205,18 +252,38 @@ class Cli_App_FilesDirectoryCleanUp extends Cli {
 		$oLog->log("[*] Import Records ".($this->_bTestMode ? 'To Be ' : '')."Removed: {$iImportCount}");
 	}
 
+	private static function _isFileRemovable($sLocation) {
+		// Check if the file exists and that php has write permission on it's directory (so that it can be removed)
+		$sDirectory = dirname($sLocation);
+		if (!file_exists($sLocation)) {
+			Log::get()->log("[~] Ignoring this file, cannot find it at the stored location: {$sLocation}");
+			return false;
+		} else if (!is_writable($sDirectory)) {
+			Log::get()->log("[~] Ignoring this file, PHP doesn't have write permission on it's directory: {$sDirectory}");
+			return false;
+		}
+
+		return true;
+	}
+
 	function getCommandLineArguments() {
 		return array(
 			self::SWITCH_TEST_MODE => array(
 				self::ARG_REQUIRED => false,
-				self::ARG_DESCRIPTION => "No changes will be made to the filesystem or the database.",
+				self::ARG_DESCRIPTION => "No changes will be made to the filesystem or the database",
 				self::ARG_DEFAULT => false,
 				self::ARG_VALIDATION => 'Cli::_validIsSet()'
 			),
 			self::SWITCH_MINIMUM_AGE => array(
 				self::ARG_REQUIRED => false,
-				self::ARG_DESCRIPTION => "Minimum Age (in days) of the files that will get cleaned up.",
+				self::ARG_DESCRIPTION => "Minimum Age (in days) of the files that will get cleaned up",
 				self::ARG_DEFAULT => 60,
+				self::ARG_VALIDATION => 'Cli::_validInteger("%1$s")'
+			),
+			self::SWITCH_MAXIMUM_RECORDS_AFFECTED => array(
+				self::ARG_REQUIRED => false,
+				self::ARG_DESCRIPTION => "Maximum number of records affected (import and download counted separately)",
+				self::ARG_DEFAULT => null,
 				self::ARG_VALIDATION => 'Cli::_validInteger("%1$s")'
 			)
 		);
