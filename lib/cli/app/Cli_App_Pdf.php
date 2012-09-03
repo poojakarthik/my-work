@@ -101,7 +101,7 @@ class Cli_App_Pdf extends Cli
 
 			$this->log("Source location: $strSource");
 
-			$this->log("Destination location: $strSource");
+			$this->log("Destination location: $strDestination");
 			
 			if (is_dir($strSource) && $arrArgs[self::SWITCH_RESUME_RUN])
 			{
@@ -133,36 +133,52 @@ class Cli_App_Pdf extends Cli
 			if (is_file($strSource))
 			{
 				// Store the destination file for the source file
-				$arrFiles[$strSource] = is_dir($strDestination) ? ($strDestination . '/' . basename($strSource) . ".pdf") : $strDestination;
+				$sSourceXMLFileName = preg_replace('/\.bz2$/', '', $strSource);
+				$arrFiles[$strSource] = is_dir($strDestination) ? ($strDestination . '/' . basename($sSourceXMLFileName) . ".pdf") : $strDestination;
+				$this->log("Destination file: ".$arrFiles[$strSource]);
 			}
 			else
 			{
 				// Look for files in the source directory...
+				$this->log("Look for files in the source directory: {$strSource}");
 				$arrSourceContents = scandir($strSource);
 				for ($i = 0, $l = count($arrSourceContents); $i < $l; $i++)
 				{
-					$strPath = $strSource . '/' . $arrSourceContents[$i];
 					// Ignore directories (including source directory '.' and parent directory '..')
+					$sFile = $arrSourceContents[$i];
+					$strPath = $strSource . '/' . $sFile;
 					if (is_file($strPath))
 					{
-						// Ignore non-xml files
-						if (substr($strPath, -4) != '.xml') continue;
+						// Ignore non-xml (or bzipped xml) files
+						if (!preg_match('/\.xml(\.bz2)?$/', $strPath, $aPath))
+						{
+							$this->log("Invalid file, not *.xml or *.xml.bz2");
+							continue;
+						}
+
+						$sPathSuffix = $aPath[0];
+						$this->log("Valid file, suffix: {$sPathSuffix}");
+
 						// If the file cannot be read, we'd better throw a wobbler as the user may be expecting a PDF for it!
 						if (!is_readable($strPath))
 						{
-							throw new Exception("Directory '" . $strSource . "' contains unreadable file '" . $arrSourceContents[$i] . "'");
+							throw new Exception("Directory '" . $strSource . "' contains unreadable file '" . $sFile . "'");
 						}
 						
 						// Ensure that it isn't in our ignore list
-						if (!in_array((int)basename($strPath, '.xml'), $arrIgnoreAccounts))
+						if (!in_array((int)basename($strPath, $sPathSuffix), $arrIgnoreAccounts))
 						{
 							// Store the destination file for this source file
-							$arrFiles[$strPath] = $strDestination . '/' . $arrSourceContents[$i] . ".$instanceRef.pdf";
+							$sSourceXMLFileName = preg_replace('/\.bz2$/', '', $sFile);
+							$arrFiles[$strPath] = "{$strDestination}/{$sSourceXMLFileName}.{$instanceRef}.pdf";
+							$this->log("Destination file: ".$arrFiles[$strPath]);
 						}
 						else
 						{
 							$this->log("Skipping File '{$strPath}': Account Ignored");
 						}
+					} else {
+						$this->log("Not a file: {$strPath}");
 					}
 				}
 			}
@@ -200,8 +216,13 @@ class Cli_App_Pdf extends Cli
 				// Make sure we have enough time to generate this PDF (2 minutes should hopefully always be enough!)...
 				//set_time_limit(1800);
 
-				$fileContents = file_get_contents($strSource);
-
+				// Extract the xml contents (decompress if bzipped) 
+				if (preg_match('/\.bz2$/', $strSource)) {
+					$fileContents = file_get_contents("compress.bzip2://{$strSource}");
+				} else {
+					$fileContents = file_get_contents($strSource);
+				}
+				
 				$parts = array();
 				$requiredTags = array('DocumentType', 'CustomerGroup', 'CreationDate', 'DeliveryMethod');
 				preg_match_all("/(?:\<(" . implode('|', $requiredTags) . ")\>([^\<]*)\<)/", $fileContents, $parts);
@@ -342,7 +363,8 @@ class Cli_App_Pdf extends Cli
 					$targetMedia = $arrArgs[self::SWITCH_OUTPUT_MEDIA];
 				}
 
-				$docNameLen = strlen($strSource);
+				$sSourceXMLFileName = preg_replace('/\.bz2$/', '', $strSource);
+				$docNameLen = strlen($sSourceXMLFileName);
 				$pad = $lastDocNameLen > $docNameLen ? ($lastDocNameLen - $docNameLen) : 0;
 				$this->log(str_repeat(chr(8), strlen($docCount)+$lastDocNameLen+3) . ++$docCount . " ($strSource)" . str_repeat(" ", $pad) . str_repeat(chr(8), $pad), FALSE, TRUE, TRUE);
 				ob_flush();
