@@ -64,6 +64,7 @@ class Cli_App_CollectionCleanUp extends Cli {
 								array('location' => $sPath))->fetch_assoc();
 			$bDuplicate = ($aRow['Status'] == FILE_NOT_UNIQUE);
 			if (!$aRow || $bDuplicate) {
+				// Either missing a record or there is on and it's status is NOT_UNIQUE
 				$sCounter = (($this->_iMaxRecordsAffected !== null) ? "(".($iFilesRemoved + 1)."/{$this->_iMaxRecordsAffected}) " : '');
 				$oLog->log("[*] {$sCounter}".($bDuplicate ? 'Duplicate' : 'No')." FileImport record, removing file: {$sPath}");
 				
