@@ -273,7 +273,7 @@ class Logic_Collection_Event_Correspondence extends Logic_Collection_Event
 					//$aSummary[$sCustGroupName][$sLetterType][$sSummaryDeliveryMethod][]	= $iAccountId;
 				}
 			}
-		} else if ($oTemplate->getSourceType() == CORRESPONDENCE_SOURCE_TYPE_SQL_ACCOUNTS) {		   
+		} else if ($oTemplate->getSourceType() == CORRESPONDENCE_SOURCE_TYPE_SQL_ACCOUNTS) {
 			foreach ($aEventInstances as $oInstance) {
 				$aCorrespondence[] = $oInstance->account_id;
 			}
@@ -291,22 +291,17 @@ class Logic_Collection_Event_Correspondence extends Logic_Collection_Event
 		}		
 	}
 
-	private static function getPDFContent($iCustGroupId, $sEffectiveDate, $iDocumentTypeId, $sPathToXMLFile, $sTargetMedia)
-	{
-		//$this->startErrorCatching();
+	private static function getPDFContent($iCustGroupId, $sEffectiveDate, $iDocumentTypeId, $sPathToXMLFile, $sTargetMedia) {
+		if (preg_match('/\.bz2$/', $sPathToXMLFile)) {
+			$sFileContents = file_get_contents("compress.bzip2://{$sPathToXMLFile}");
+		} else {
+			$sFileContents = file_get_contents($sPathToXMLFile);
+		}
 
-		$fileContents	= file_get_contents($sPathToXMLFile);
-		$oPDFTemplate	= new Flex_Pdf_Template($iCustGroupId, $sEffectiveDate, $iDocumentTypeId, $fileContents, $sTargetMedia, TRUE);
-		$oPDF			= $oPDFTemplate->createDocument();
+		$oPDFTemplate = new Flex_Pdf_Template($iCustGroupId, $sEffectiveDate, $iDocumentTypeId, $sFileContents, $sTargetMedia, TRUE);
+		$oPDF = $oPDFTemplate->createDocument();
 		$oPDFTemplate->destroy();
-		$oPDF			= $oPDF->render();
-
-		//if ($this->getCachedError())
-		//{
-		//	return FALSE;
-		//}
-
-		return $oPDF;
+		return $oPDF->render();
 	}
 }
 ?>
