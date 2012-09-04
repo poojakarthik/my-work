@@ -3,6 +3,7 @@
 class Cli_App_CollectionCleanUp extends Cli {
 	const SWITCH_TEST_MODE = 't';
 	const SWITCH_MINIMUM_AGE = 'a';
+	const SWITCH_DETAILED_LOGGING = 'd';
 	const SWITCH_MAXIMUM_ITEMS_AFFECTED = 'i';
 	
 	const DELETE_RECORD_INCREMENT = 1000;
@@ -11,6 +12,7 @@ class Cli_App_CollectionCleanUp extends Cli {
 
 	private $_aArgs;
 	private $_bTestMode;
+	private $_bDetailedLogging;
 	private $_iMaxRecordsAffected;
 	private $_iMinimumAge;
 	private $_sDatetimeCutoff;
@@ -20,6 +22,7 @@ class Cli_App_CollectionCleanUp extends Cli {
 			$oLog = Log::get();
 			$this->_aArgs = $this->getValidatedArguments();
 			$this->_bTestMode = (isset($this->_aArgs[self::SWITCH_TEST_MODE]) && $this->_aArgs[self::SWITCH_TEST_MODE]);
+			$this->_bDetailedLogging = (isset($this->_aArgs[self::SWITCH_DETAILED_LOGGING]) && $this->_aArgs[self::SWITCH_DETAILED_LOGGING]);
 			$this->_iMaxRecordsAffected = (isset($this->_aArgs[self::SWITCH_MAXIMUM_ITEMS_AFFECTED]) ? $this->_aArgs[self::SWITCH_MAXIMUM_ITEMS_AFFECTED] : null);
 
 			if ($this->_bTestMode) {
@@ -49,7 +52,7 @@ class Cli_App_CollectionCleanUp extends Cli {
 		$oLog->log("[*] Removing orphaned (no FileImport record) import files");
 
 		$aPaths = array();
-		self::_listFilesInDirectory(FILES_BASE_PATH."import", $aPaths, $this->_iMinimumAge);
+		$this->_listFilesInDirectory(FILES_BASE_PATH."import", $aPaths, $this->_iMinimumAge);
 
 		$iFilesRemoved = 0;
 		foreach ($aPaths as $sPath) {
@@ -93,7 +96,7 @@ class Cli_App_CollectionCleanUp extends Cli {
 
 		// Get all archived downloads past the given age
 		$aPaths = array();
-		self::_listFilesInDirectory(FILES_BASE_PATH."download/archived", $aPaths, $this->_iMinimumAge);
+		$this->_listFilesInDirectory(FILES_BASE_PATH."download/archived", $aPaths, $this->_iMinimumAge);
 
 		// Remove them
 		$iFilesRemoved = 0;
@@ -122,7 +125,14 @@ class Cli_App_CollectionCleanUp extends Cli {
 		$oLog->log("[*] {$iFilesRemoved} archived download files removed");
 	}
 
-	private static function _listFilesInDirectory($sDirectory, &$aPaths=array(), $iMinimumAgeInDays) {
+	private function _isFileOfAge($sFilePath, $iAgeInDays) {
+		$iAge = ((time() - filectime($sFilePath)) / self::SECONDS_IN_DAY);
+		$bOfAge = ($iAge > $iAgeInDays);
+		Log::get()->logIf($this->_bDetailedLogging, "[~] File is ".($bOfAge ? '' : 'NOT ')."of age ({$iAgeInDays} days): {$sFilePath} (Age: {$iAge} days)");
+		return $bOfAge;
+	}
+
+	private function _listFilesInDirectory($sDirectory, &$aPaths=array(), $iMinimumAgeInDays) {
 		$aChildren = scandir($sDirectory);
 		foreach ($aChildren as $sChild) {
 			if (preg_match('/^\.(\.)?$/', $sChild)) {
@@ -131,21 +141,14 @@ class Cli_App_CollectionCleanUp extends Cli {
 
 			$sPath = "{$sDirectory}/{$sChild}";
 			if (is_dir($sPath)) {
-				self::_listFilesInDirectory($sPath, $aPaths, $iMinimumAgeInDays);
+				$this->_listFilesInDirectory($sPath, $aPaths, $iMinimumAgeInDays);
 			} else {
 				$sPath = realpath($sPath);
-				if (self::_isFileOfAge($sPath, $iMinimumAgeInDays)) {
+				if ($this->_isFileOfAge($sPath, $iMinimumAgeInDays)) {
 					$aPaths[] = realpath($sPath);
 				}
 			}
 		}
-	}
-
-	private static function _isFileOfAge($sFilePath, $iAgeInDays) {
-		$iAge = ((time() - filectime($sFilePath)) / self::SECONDS_IN_DAY);
-		$bOfAge = ($iAge > $iAgeInDays);
-		//Log::get()->log("[~] File is ".($bOfAge ? '' : 'NOT ')."of age ({$iAgeInDays} days): {$sFilePath} (Age: {$iAge} days)");
-		return $bOfAge;
 	}
 
 	/*private static function _isFileRemovable($sLocation) {
@@ -167,6 +170,12 @@ class Cli_App_CollectionCleanUp extends Cli {
 			self::SWITCH_TEST_MODE => array(
 				self::ARG_REQUIRED => false,
 				self::ARG_DESCRIPTION => "No changes will be made to the filesystem",
+				self::ARG_DEFAULT => false,
+				self::ARG_VALIDATION => 'Cli::_validIsSet()'
+			),
+			self::SWITCH_DETAILED_LOGGING => array(
+				self::ARG_REQUIRED => false,
+				self::ARG_DESCRIPTION => "Enabled detailed logging (e.g. file age tests)",
 				self::ARG_DEFAULT => false,
 				self::ARG_VALIDATION => 'Cli::_validIsSet()'
 			),
