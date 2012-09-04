@@ -3679,6 +3679,40 @@ class MenuItems {
 	}
 
 	/**
+	 * ManageLogo()
+	 *
+	 * Manage the Logo
+	 *
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function ManageLogo()
+	{
+		$this->strContextMenuLabel = "Manage Logo";
+		$this->strLabel = "Manage the System Logo";
+
+		return 'javascript:
+			// Show loading popup
+			var oLoadingPopup = new Reflex_Popup.Loading();
+			oLoadingPopup.display();
+
+			module.provide(["flex/component/page/system/settings/logo"], function () {
+			var ManageLogo = require("flex/component/page/system/settings/logo");
+
+			var oOverlay = ManageLogo.createAsOverlay({
+				onready: function () {
+					oOverlay.display();
+					oLoadingPopup.hide();
+				},
+				oncancel : function() {
+					oOverlay.hide();
+				}
+			});
+
+		})';
+	}
+
+	/**
 	 * DownloadInterimEligibilityReport()
 	 *
 	 * Compiles the Href to be executed when the SubmitInterimInterimEligibilityReport menu item is triggered

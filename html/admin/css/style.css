@@ -160,6 +160,16 @@ a,
   text-align: center;
 }
 /**************************************************************************/
+/* Component - Flex System Settings Logo Uploader								  */
+/**************************************************************************/
+.flex-system-settings-logo-uploader > footer {
+  margin-top: 0.5em;
+  text-align: center;
+}
+.flex-system-settings-logo-uploader table.reflex tbody tr th.label {
+  width: 100px;
+}
+/**************************************************************************/
 /* Component - Dashboard												  */
 /**************************************************************************/
 /* Dashboard */
@@ -686,18 +696,19 @@ div#logo {
   width: 50%;
   height: 4em;
   display: block;
-  background-image: url("../img/template/logo.png");
-  background-repeat: no-repeat;
-  background-position: 1em 50%;
   cursor: pointer;
 }
+div#logo > img {
+  vertical-align: top;
+  max-height: 56px;
+}
 div#logo div#blurb {
-  margin-left: 6em;
   padding-top: 1.2em;
   height: 4em;
   font-weight: bold;
   font-size: 1.2em;
   vertical-align: text-bottom;
+  display: inline-block;
 }
 div#search_bar {
   width: 100%;

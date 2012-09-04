@@ -693,9 +693,14 @@ class Page
 	 */
 	function RenderFlexHeader($bolWithSearch=TRUE, $bolWithMenu=TRUE, $bolWithBreadCrumbs=TRUE)
 	{
+
+		// Flex Config
+		$oFlexConfig = Flex_Config::instance()->toStdClass();
+
 		echo "
 		<div id='header' name='header'>
 			<div id='logo' onclick='window.location.href=\"../admin/reflex.php/Console/View/\"'>
+				<img src=\"{$oFlexConfig->logo}\" />
 				<div id='blurb' name='blurb'>Flex Business Management System</div>
 			</div>\n";
 
