@@ -28,7 +28,7 @@ $arrConfig['Normalise']				= $arrSubscript;
 
 // Rating
 $arrSubscript = Array();
-$arrSubscript['Command']			= 'php rating.php';
+$arrSubscript['Command']			= 'php rating.php -v';
 $arrSubscript['Directory']			= BACKEND_BASE_PATH;
 $arrSubscript['ChildDie']			= TRUE;
 $arrConfig['Rate']					= $arrSubscript;
@@ -40,11 +40,18 @@ $arrSubscript['Directory']			= BACKEND_BASE_PATH;
 $arrSubscript['ChildDie']			= TRUE;
 $arrConfig['RecurringCharges']		= $arrSubscript;
 
-// Payments
+// Payments (pre-process)
 $arrSubscript = Array();
-$arrSubscript['Command']			= 'php payments.php';
-$arrSubscript['Directory']			= BACKEND_BASE_PATH.'payment/';
+$arrSubscript['Command']			= 'php payments.php -m PREPROCESS -v';
+$arrSubscript['Directory']			= BACKEND_BASE_PATH;
 $arrSubscript['ChildDie']			= TRUE;
-$arrConfig['Payments']				= $arrSubscript;
+$arrConfig['PaymentsPreprocess']	= $arrSubscript;
+
+// Payments (process)
+$arrSubscript = Array();
+$arrSubscript['Command']			= 'php payments.php -m PROCESS -v';
+$arrSubscript['Directory']			= BACKEND_BASE_PATH;
+$arrSubscript['ChildDie']			= TRUE;
+$arrConfig['PaymentsProcess']		= $arrSubscript;
 
 ?>
