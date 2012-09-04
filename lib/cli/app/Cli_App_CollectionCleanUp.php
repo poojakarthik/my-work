@@ -6,8 +6,6 @@ class Cli_App_CollectionCleanUp extends Cli {
 	const SWITCH_DETAILED_LOGGING = 'd';
 	const SWITCH_MAXIMUM_ITEMS_AFFECTED = 'i';
 	
-	const DELETE_RECORD_INCREMENT = 1000;
-	const DOWNLOAD_SELECT_RECORD_INCREMENT = 100;
 	const SECONDS_IN_DAY = 86400;
 
 	private $_aArgs;
@@ -150,20 +148,6 @@ class Cli_App_CollectionCleanUp extends Cli {
 			}
 		}
 	}
-
-	/*private static function _isFileRemovable($sLocation) {
-		// Check if the file exists and that php has write permission on it's directory (so that it can be removed)
-		$sDirectory = dirname($sLocation);
-		if (!file_exists($sLocation)) {
-			Log::get()->log("[~] Ignoring this file, cannot find it at the stored location: {$sLocation}");
-			return false;
-		} else if (!is_writable($sDirectory)) {
-			Log::get()->log("[~] Ignoring this file, PHP doesn't have write permission on it's directory: {$sDirectory}");
-			return false;
-		}
-
-		return true;
-	}*/
 
 	function getCommandLineArguments() {
 		return array(
