@@ -5,12 +5,8 @@ class Cli_App_CollectionCleanUp extends Cli {
 	const SWITCH_MINIMUM_AGE = 'a';
 	const SWITCH_MAXIMUM_ITEMS_AFFECTED = 'i';
 	
-	const FILE_TYPE_IMPORT = 1;
-	const FILE_TYPE_DOWNLOAD = 2;
-
 	const DELETE_RECORD_INCREMENT = 1000;
 	const DOWNLOAD_SELECT_RECORD_INCREMENT = 100;
-
 	const SECONDS_IN_DAY = 86400;
 
 	private $_aArgs;
@@ -20,8 +16,6 @@ class Cli_App_CollectionCleanUp extends Cli {
 	private $_sDatetimeCutoff;
 
 	function run() {
-		$oDB = DataAccess::getDataAccess();
-		$oDB->TransactionStart(false);
 		try {
 			$oLog = Log::get();
 			$this->_aArgs = $this->getValidatedArguments();
@@ -33,95 +27,29 @@ class Cli_App_CollectionCleanUp extends Cli {
 			}
 			
 			// Determine the datetime cutoff
-			$iAge = (int)$this->_aArgs[self::SWITCH_MINIMUM_AGE];
-			$aResult = Query::run("	SELECT	NOW() - INTERVAL {$iAge} DAY AS cutoff")->fetch_assoc();
-			$this->_iMinimumAge = $iAge;
+			$this->_iMinimumAge = (int)$this->_aArgs[self::SWITCH_MINIMUM_AGE];
+			$aResult = Query::run("	SELECT	NOW() - INTERVAL {$this->_iMinimumAge} DAY AS cutoff")->fetch_assoc();			
 			$this->_sDatetimeCutoff = $aResult['cutoff'];
-			$oLog->log("[*] Cleaning up files that are atleast {$iAge} days old (On or Before: {$this->_sDatetimeCutoff})");
+			$oLog->log("[*] Cleaning up files that are atleast {$this->_iMinimumAge} days old (On or Before: {$this->_sDatetimeCutoff})");
 
-			$this->_removeDuplicateImportRecords();
 			$oLog->log("[*] - - -");
 			$this->_removeOrphanedImportFiles();
 			$oLog->log("[*] - - -");
 			$this->_removeArchivedDownloads();
-
-			if ($this->_bTestMode) {
-				// Test mode, rollback db transaction
-				$oLog->log("[*] TEST MODE: Rolling back db transaction, NOT removing files");
-				$oDB->TransactionRollback(false);
-			} else {
-				// Not testing
-				// Commit db transaction
-				$oDB->TransactionCommit(false);
-			}
+			$oLog->log("[*] - - -");
 		} catch (Exception $oEx) {
 			// Unexpected Exception, rollback transaction and rethrow
 			$oLog->log("[!] Exception: ".$oEx->getMessage());
-			$oDB->TransactionRollback(false);
 			throw $oEx;
 		}
 	}
  
-	private function _removeDuplicateImportRecords() {
-		$oLog = Log::get();
-		$oLog->log("[*] Removing duplicate FileImport records");
-		$mResult = Query::run("	SELECT	fi.*
-								FROM	FileImport fi
-								WHERE	Status = <status>
-								AND		ImportedOn <= <age>;",
-								array(
-									'status' => FILE_NOT_UNIQUE,
-									'age' => $this->_sDatetimeCutoff
-								));
-		$aIdsToDelete = array();
-		while ($aRow = $mResult->fetch_assoc()) {
-			if (($this->_iMaxRecordsAffected !== null) && (count($aIdsToDelete) >= $this->_iMaxRecordsAffected)) {
-				// Maximum records affected, stop
-				break;
-			}
-
-			$sCounter = (($this->_iMaxRecordsAffected !== null) ? "(".(count($aIdsToDelete) + 1)."/{$this->_iMaxRecordsAffected}) " : '');
-			$oLog->log("[*] {$sCounter}Duplicate FileImport: {$aRow['Id']} - {$aRow['Location']}");
-			
-			// Mark for deletion
-			$aIdsToDelete[] = $aRow['Id'];
-		}
-
-		$oLog->log("[*] ".count($aIdsToDelete)." FileImport records to delete");
-
-		if (!empty($aIdsToDelete)) {
-			// Delete the duplicate records
-			$oLog->log("[*] Deleting duplicate FileImport records (".count($aIdsToDelete)." records)");
-			while (!empty($aIdsToDelete)) {
-				$aSlice = array_splice($aIdsToDelete, 0, self::DELETE_RECORD_INCREMENT);
-				if ($this->_bTestMode) {
-					$oLog->log("[*] TEST MODE: Not deleting (".count($aSlice)." records)");
-				} else {
-					// Delete the records
-					$oDB = DataAccess::getDataAccess();
-					$oDB->TransactionStart(false);
-					try {
-						$oLog->log("[*] Deleting: (".count($aSlice)." records)");
-						$sIdsToDelete = implode(', ', $aSlice);
-						$mResult = Query::run("	DELETE FROM	FileImport
-												WHERE		Id IN ({$sIdsToDelete});");
-					} catch (Exception $oEx) {
-						$oDB->TransactionRollback(false);
-						throw $oEx;
-					}
-
-					$oDB->TransactionCommit(false);
-				}
-			}
-		}
-	}
-
 	private function _removeOrphanedImportFiles() {
 		$oLog = Log::get();
 		$oLog->log("[*] Removing orphaned (no FileImport record) import files");
 
 		$aPaths = array();
-		self::_listFilesInDirectory(FILES_BASE_PATH."import", $aPaths);
+		self::_listFilesInDirectory(FILES_BASE_PATH."import", $aPaths, $this->_iMinimumAge);
 
 		$iFilesRemoved = 0;
 		foreach ($aPaths as $sPath) {
@@ -130,13 +58,14 @@ class Cli_App_CollectionCleanUp extends Cli {
 				break;
 			}
 
-			$aRow = Query::run("SELECT	Id
+			$aRow = Query::run("SELECT	Id, Status
 								FROM	FileImport
 								WHERE	Location = <location>;",
 								array('location' => $sPath))->fetch_assoc();
-			if (!$aRow) {
+			$bDuplicate = ($aRow['Status'] == FILE_NOT_UNIQUE);
+			if (!$aRow || $bDuplicate) {
 				$sCounter = (($this->_iMaxRecordsAffected !== null) ? "(".($iFilesRemoved + 1)."/{$this->_iMaxRecordsAffected}) " : '');
-				$oLog->log("[*] {$sCounter}No FileImport record, removing file: {$sPath}");
+				$oLog->log("[*] {$sCounter}".($bDuplicate ? 'Duplicate' : 'No')." FileImport record, removing file: {$sPath}");
 				
 				if ($this->_bTestMode) {
 					$oLog->log("[~] TEST MODE: Not removing file");
@@ -192,7 +121,7 @@ class Cli_App_CollectionCleanUp extends Cli {
 		$oLog->log("[*] {$iFilesRemoved} archived download files removed");
 	}
 
-	private static function _listFilesInDirectory($sDirectory, &$aPaths=array(), $iMinimumAgeInDays=0) {
+	private static function _listFilesInDirectory($sDirectory, &$aPaths=array(), $iMinimumAgeInDays) {
 		$aChildren = scandir($sDirectory);
 		foreach ($aChildren as $sChild) {
 			if (preg_match('/^\.(\.)?$/', $sChild)) {
@@ -201,21 +130,20 @@ class Cli_App_CollectionCleanUp extends Cli {
 
 			$sPath = "{$sDirectory}/{$sChild}";
 			if (is_dir($sPath)) {
-				self::_listFilesInDirectory($sPath, $aPaths);
+				self::_listFilesInDirectory($sPath, $aPaths, $iMinimumAgeInDays);
 			} else {
 				$sPath = realpath($sPath);
 				if (self::_isFileOfAge($sPath, $iMinimumAgeInDays)) {
 					$aPaths[] = realpath($sPath);
-				} else {
-					//Log::get()->log("[~] File is not of age ({$iMinimumAgeInDays} days): {$sPath}");
 				}
 			}
 		}
 	}
 
 	private static function _isFileOfAge($sFilePath, $iAgeInDays) {
-		$bOfAge = (((time() - filectime($sFilePath)) / self::SECONDS_IN_DAY) > $iAgeInDays);
-		//Log::get()->log("[~] File is of age ({$iAgeInDays} days): {$sFilePath}");
+		$iAge = ((time() - filectime($sFilePath)) / self::SECONDS_IN_DAY);
+		$bOfAge = ($iAge > $iAgeInDays);
+		//Log::get()->log("[~] File is ".($bOfAge ? '' : 'NOT ')."of age ({$iAgeInDays} days): {$sFilePath} (Age: {$iAge} days)");
 		return $bOfAge;
 	}
 
@@ -237,7 +165,7 @@ class Cli_App_CollectionCleanUp extends Cli {
 		return array(
 			self::SWITCH_TEST_MODE => array(
 				self::ARG_REQUIRED => false,
-				self::ARG_DESCRIPTION => "No changes will be made to the filesystem or the database",
+				self::ARG_DESCRIPTION => "No changes will be made to the filesystem",
 				self::ARG_DEFAULT => false,
 				self::ARG_VALIDATION => 'Cli::_validIsSet()'
 			),
@@ -249,7 +177,7 @@ class Cli_App_CollectionCleanUp extends Cli {
 			),
 			self::SWITCH_MAXIMUM_ITEMS_AFFECTED => array(
 				self::ARG_REQUIRED => false,
-				self::ARG_DESCRIPTION => "Maximum number of items affected (import records/files and download files counted separately)",
+				self::ARG_DESCRIPTION => "Maximum number of items (files) removed (import and download files counted separately)",
 				self::ARG_DEFAULT => null,
 				self::ARG_VALIDATION => 'Cli::_validInteger("%1$s")'
 			)
