@@ -697,10 +697,13 @@ class Page
 		// Flex Config
 		$oFlexConfig = Flex_Config::instance()->toStdClass();
 
+		$sBase64EncodedLogoData = base64_encode($oFlexConfig->logo);
+		$sDataURI = "data:image/png;base64,{$sBase64EncodedLogoData}";
+
 		echo "
 		<div id='header' name='header'>
 			<div id='logo' onclick='window.location.href=\"../admin/reflex.php/Console/View/\"'>
-				<img src=\"{$oFlexConfig->logo}\" />
+				<img src=\"{$sDataURI}\" />
 				<div id='blurb' name='blurb'>Flex Business Management System</div>
 			</div>\n";
 

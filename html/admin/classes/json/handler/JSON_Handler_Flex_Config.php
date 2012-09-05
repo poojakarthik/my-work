@@ -19,13 +19,12 @@ class JSON_Handler_Flex_Config extends JSON_Handler
 
 			// Save
 			$oFlexConfig					= Flex_Config::instance();
-			$oFlexConfig->logo				= $oRequest->mContent;
+			$oFlexConfig->logo				= base64_decode($this->_prepareDataURL($oRequest->mContent));
 			$oFlexConfig->logo_mime_type	= $oRequest->sMimeType;
 			$oFlexConfig->save();
 			
 			// Commit db transaction
 			$oDataAccess->TransactionCommit();
-			
 			return array("Success" => true);
 
 		}
@@ -41,6 +40,10 @@ class JSON_Handler_Flex_Config extends JSON_Handler
 
 	}
 
+	private function _prepareDataURL($sDataURL) {
+		$aSplit = split('base64,', $sDataURL);
+		return $aSplit[1];
+	}
 }
 
 ?>
