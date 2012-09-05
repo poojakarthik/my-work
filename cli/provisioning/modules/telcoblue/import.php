@@ -206,12 +206,7 @@ class ImportTelcoBlue extends ImportBase {
 		}
 		
 		// Add notifications to the description
-		$aNotifications = JSON_Services::decode($aData['Notifications']);
-		$aNotificationStrings = array();
-		foreach ($aNotifications as $oNotification) {
-			$aNotificationStrings[] = "{$oNotification->description} ({$oNotification->timestamp})";
-		}
-
+		$aNotificationStrings = self::_getResponseNotifications($aData);
 		if (!empty($aNotificationStrings)) {
 			$sDescription .= ". ".implode('. ', $aNotificationStrings);
 		}
@@ -338,6 +333,18 @@ class ImportTelcoBlue extends ImportBase {
  		foreach ($aArray as $sKey => $mValue) {
  			Log::get()->logIf(self::DEBUG_LOGGING, "\t\t{$sKey} => {$mValue}");
  		}
+ 	}
+
+ 	private static function _getResponseNotifications($aData) {
+ 		$sNotifications = $aData['Notifications'];
+
+ 		// Remove surrounding quotes
+ 		$sNotifications = preg_replace('/^"|"$/', '', $sNotifications);
+
+ 		// Unescape backslashes & quotes
+ 		$sNotifications = preg_replace('/(\\\)(\\\|")/', '$2', $sNotifications);
+ 		
+ 		return JSON_Services::decode($sNotifications);
  	}
 }
 
