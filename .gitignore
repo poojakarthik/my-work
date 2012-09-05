@@ -9,6 +9,7 @@ sftp-config.json
 # Config
 /flex.cfg.php
 /customer.cfg.php
+/crontab
 
 # Run-time files
 /files
