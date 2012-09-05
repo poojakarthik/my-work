@@ -25,6 +25,7 @@ class Flex_Rollout_Version_000262 extends Flex_Rollout_Version {
 		}
 
 		$aOperations = array(
+			// Alter table, add columns
 			array(
 				'sDescription'		=> "Alter the flex_config table, to add support for a configurable logo.",
 				'sAlterSQL'			=> "ALTER TABLE flex_config
@@ -35,12 +36,20 @@ class Flex_Rollout_Version_000262 extends Flex_Rollout_Version {
 										DROP COLUMN	logo_mime_type;",
 				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 			),
+			// Insert new Logo
 			array(
 				'sDescription'		=> "Insert the logo into the flex_config table.",
-				'sAlterSQL'			=> "UPDATE flex_config SET logo=" . $dbAdmin->quote($sFlexLogo) . ", logo_mime_type='image/png'",
-				'sRollbackSQL'		=> "UPDATE flex_config SET logo=NULL,logo_mime_type=NULL",
+				'sAlterSQL'			=> "INSERT INTO	flex_config (created_by, created_on, internal_contact_list_html, logo, logo_mime_type)
+										SELECT		" . Employee::SYSTEM_EMPLOYEE_ID . ", NOW(), internal_contact_list_html, " . $dbAdmin->quote($sFlexLogo) . ", 'image/png'
+										FROM		flex_config
+										ORDER BY	id DESC
+										LIMIT		1",
+				'sRollbackSQL'		=> "DELETE FROM		flex_config
+										ORDER BY		id DESC
+										LIMIT			1;",
 				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 			)
+
 		);
 		
 		// Perform Batch Rollout
