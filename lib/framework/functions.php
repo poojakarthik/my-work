@@ -4507,7 +4507,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 		}
 
 		// Create the filename
-		$strFilename = $arrAccount['AccountId'] . ".xml";
+		$strFilename = $arrAccount['AccountId'] . ".xml.bz2";
 
 		// Build XML for the data...
 		VixenRequire('lib/dom/Flex_Dom_Document.php');
@@ -4633,20 +4633,19 @@ function CreateDefaultPaymentTerms($customerGroupId)
 		//--------------------//
 
 		$strXML = $dom->saveXML();
-
 		$return = $strFullPath ."/". $strFilename;
 
 		// Open the file in text mode
-		$ptrNoticeFile = fopen($return, 'wt');
-
+		$ptrNoticeFile = bzopen($return, 'w');
 		if ($ptrNoticeFile === FALSE)
 		{
 			// The file could not be opened
 			return FALSE;
 		}
 
-		fwrite($ptrNoticeFile, $strXML);
-		fclose($ptrNoticeFile);
+		bzwrite($ptrNoticeFile, $strXML);
+		bzclose($ptrNoticeFile);
+		Log::get()->log("[*] XML Written to file: {$return}");
 
 		$strNow = date("Y-m-d H:i:s");
 		// Log the Notice in the account_letter_log Table

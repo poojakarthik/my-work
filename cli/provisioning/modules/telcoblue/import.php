@@ -67,7 +67,8 @@ class ImportTelcoBlue extends ImportBase {
 			'Package' => array('Index' => 4),
 			'Status' => array('Index' => 5),
 			'StatusResult' => array('Index' => 6),
-			'Timestamp' => array('Index' => 7)
+			'Timestamp' => array('Index' => 7),
+			'Description' => array('Index' => 8)
 		);
 
 		$this->_aDefineResponse = array(
@@ -77,7 +78,8 @@ class ImportTelcoBlue extends ImportBase {
 			'Action' => array('Index' => 3),
 			'Detail' => array('Index' => 4),
 			'Status' => array('Index' => 5),
-			'Timestamp' => array('Index' => 6)
+			'Timestamp' => array('Index' => 6),
+			'Notifications' => array('Index' => 7)
 		);
  	}
  	
@@ -203,6 +205,12 @@ class ImportTelcoBlue extends ImportBase {
 				$sDescription = "Unable to determine the status from response data";
 		}
 		
+		// Add notifications to the description
+		$aNotificationStrings = self::_getResponseNotifications($aData);
+		if (!empty($aNotificationStrings)) {
+			$sDescription .= ". ".implode('. ', $aNotificationStrings);
+		}
+
 		$aResponse['request_status'] = $iRequestStatusId;
 		$aResponse['Description'] = $sDescription;
 		Log::get()->logIf(self::DEBUG_LOGGING, "\t\t\t[*] Response Description: {$sDescription}");
@@ -325,6 +333,18 @@ class ImportTelcoBlue extends ImportBase {
  		foreach ($aArray as $sKey => $mValue) {
  			Log::get()->logIf(self::DEBUG_LOGGING, "\t\t{$sKey} => {$mValue}");
  		}
+ 	}
+
+ 	private static function _getResponseNotifications($aData) {
+ 		$sNotifications = $aData['Notifications'];
+
+ 		// Remove surrounding quotes
+ 		$sNotifications = preg_replace('/^"|"$/', '', $sNotifications);
+
+ 		// Unescape backslashes & quotes
+ 		$sNotifications = preg_replace('/(\\\)(\\\|")/', '$2', $sNotifications);
+ 		
+ 		return JSON_Services::decode($sNotifications);
  	}
 }
 
