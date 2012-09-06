@@ -1,17 +1,18 @@
 <?php
 
-class Cli_App_InvoiceXMLbZIP2 extends Cli {
-	const SWITCH_REMOVE_XML_FILES = 'd';
+class Cli_App_XMLBZIP extends Cli {
+	const SWITCH_SUB_DIRECTORY = 'd';
+	const SWITCH_REMOVE_XML_FILES = 'r';
 
-	private $_bRemoveXMLFiles;
-	
+	const DEBUG_LOGGING = true;
+
 	function run() {
 		try {
 			$oLog = Log::get();
 			$aArgs = $this->getValidatedArguments();
 			$bRemoveXMLFiles = (isset($aArgs[self::SWITCH_REMOVE_XML_FILES]) && $aArgs[self::SWITCH_REMOVE_XML_FILES]);
 			$aXMLFiles = array();
-			$this->_listFilesInDirectory(FILES_BASE_PATH."invoices", $aXMLFiles);
+			$this->_listFilesInDirectory(FILES_BASE_PATH.$aArgs[self::SWITCH_SUB_DIRECTORY], $aXMLFiles);
 			$oLog->log("[*] Generating bzipped versions of ".(count($aXMLFiles))." xml files");
 			foreach ($aXMLFiles as $sXMLFile) {
 				$sBZipFile = "{$sXMLFile}.bz2";
@@ -32,6 +33,7 @@ class Cli_App_InvoiceXMLbZIP2 extends Cli {
 	}
  
 	private function _listFilesInDirectory($sDirectory, &$aPaths=array()) {
+		Log::get()->logIf(self::DEBUG_LOGGING, "[*] Checking Directory: {$sDirectory}");
 		$aChildren = scandir($sDirectory);
 		foreach ($aChildren as $sChild) {
 			if (preg_match('/^\.(\.)?$/', $sChild)) {
@@ -41,15 +43,24 @@ class Cli_App_InvoiceXMLbZIP2 extends Cli {
 			$sPath = "{$sDirectory}/{$sChild}";
 			if (is_dir($sPath)) {
 				$this->_listFilesInDirectory($sPath, $aPaths);
-			} else if (preg_match('/^\d+\.xml$/', $sPath)){
+			} else if (preg_match('/^\d+\.xml$/', $sChild)) {
 				// An xml invoice
+				Log::get()->logIf(self::DEBUG_LOGGING, "[*] XML File: {$sChild}");
 				$aPaths[] = realpath($sPath);
+			} else {
+				Log::get()->logIf(self::DEBUG_LOGGING, "[*] Not a directory or xml file: {$sChild}");
 			}
 		}
 	}
 
 	function getCommandLineArguments() {
 		return array(
+			self::SWITCH_SUB_DIRECTORY => array(
+				self::ARG_REQUIRED => true,
+				self::ARG_DESCRIPTION => "The sub directory within the files directory",
+				self::ARG_DEFAULT => null,
+				self::ARG_VALIDATION => 'Cli::_validString("%1$s")'
+			),
 			self::SWITCH_REMOVE_XML_FILES => array(
 				self::ARG_REQUIRED => false,
 				self::ARG_DESCRIPTION => "If supplied, the original xml files will be removed after the bz2 version is created",
