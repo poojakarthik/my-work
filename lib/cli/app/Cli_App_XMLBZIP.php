@@ -4,7 +4,7 @@ class Cli_App_XMLBZIP extends Cli {
 	const SWITCH_SUB_DIRECTORY = 'd';
 	const SWITCH_REMOVE_XML_FILES = 'r';
 
-	const DEBUG_LOGGING = false;
+	const DEBUG_LOGGING = true;
 
 	function run() {
 		try {
@@ -43,7 +43,7 @@ class Cli_App_XMLBZIP extends Cli {
 			$sPath = "{$sDirectory}/{$sChild}";
 			if (is_dir($sPath)) {
 				$this->_listFilesInDirectory($sPath, $aPaths);
-			} else if (preg_match('/^\d+\.xml$/', $sPath)){
+			} else if (preg_match('/^\d+\.xml$/', $sChild)) {
 				// An xml invoice
 				Log::get()->logIf(self::DEBUG_LOGGING, "[*] XML File: {$sChild}");
 				$aPaths[] = realpath($sPath);
