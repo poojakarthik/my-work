@@ -240,6 +240,11 @@ class Application
 				ContextMenu()->Admin->System_Settings->EmailQueueList();
 			}
 			
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
+			{
+				ContextMenu()->Admin->System_Settings->ManageLogo();
+			}
+			
 			if (Flex_Module::isActive(FLEX_MODULE_CONTRACT_MANAGEMENT))
 			{
 				ContextMenu()->Admin->Contracts->ManageBreachedContracts();
@@ -514,6 +519,11 @@ class Application
 			{
 				ContextMenu()->Admin->System_Settings->CarrierModuleList();
 				ContextMenu()->Admin->System_Settings->EmailQueueList();
+			}
+			
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
+			{
+				ContextMenu()->Admin->System_Settings->ManageLogo();
 			}
 			
 			if (Flex_Module::isActive(FLEX_MODULE_CONTRACT_MANAGEMENT))

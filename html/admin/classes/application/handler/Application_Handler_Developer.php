@@ -31,6 +31,32 @@ class Application_Handler_Developer extends Application_Handler
 																)
 													);
 			*/
+
+			$arrFunctions[]	= self::_stdClassFactory(
+														array	(
+																	'strName'	=> 'Flex Settings Logo',
+																	'strType'	=> self::URL_TYPE_JS,
+																	'strURL'	=> '
+																				// Show loading popup
+																				var oLoadingPopup = new Reflex_Popup.Loading();
+																				oLoadingPopup.display();
+
+																				module.provide(["flex/component/page/system/settings/logo"], function () {
+																				var ManageLogo = require("flex/component/page/system/settings/logo");
+																				var oOverlay = ManageLogo.createAsOverlay({
+																					onready: function () {
+																						oOverlay.display();
+																						oLoadingPopup.hide();
+																					},
+																					oncancel : function() {
+																						oOverlay.hide();
+																					}
+																				});
+																			})'
+
+																)
+													);
+
 			$arrFunctions[]	= self::_stdClassFactory(
 														array	(
 																	'strName'	=> 'Operation-based Permission Tests',
@@ -38,6 +64,7 @@ class Application_Handler_Developer extends Application_Handler
 																	'strURL'	=> 'new Developer_OperationPermission();'
 																)
 													);
+
 			$arrFunctions[]	= self::_stdClassFactory(
 														array	(
 																	'strName'	=> 'AJAX Dataset & Pagination Test (Cached)',
