@@ -5,6 +5,6 @@
 	// TEMPORARY
 	set_error_handler('Flex::errorHandlerLog');
 
-	Cli::execute("Cli_App_InvoiceXMLbZIP2");
+	Cli::execute("Cli_App_XMLBZIP");
 
 ?>
