@@ -64,6 +64,23 @@ class Flex_Config extends ORM
 		return self::$_objInstance;
 	}
 	
+	
+	/**
+	 * createInstance()
+	 *
+	 * Returns a new instance of Flex_Config
+	 * 
+	 * @return	void
+	 * 
+	 * @constructor
+	 */
+	public static function createInstance()
+	{
+		// Return new Instance
+		return new self(array());
+	}
+	
+
 	//------------------------------------------------------------------------//
 	// _preparedStatement
 	//------------------------------------------------------------------------//

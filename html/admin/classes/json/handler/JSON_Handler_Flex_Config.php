@@ -17,12 +17,20 @@ class JSON_Handler_Flex_Config extends JSON_Handler
 		}
 		try {
 
+			// Current Config
+			$oCurrentFlexConfig = Flex_Config::instance();
+
+			// New Config
+			$oFlexConfig								= Flex_Config::createInstance();
+			$oFlexConfig->internal_contact_list_html	= $oCurrentFlexConfig->internal_contact_list_html;
+			$oFlexConfig->created_by					= Employee::SYSTEM_EMPLOYEE_ID;
+			$oFlexConfig->created_on					= date('Y-m-d H:i:s');
+			$oFlexConfig->logo							= base64_decode($this->_prepareDataURL($oRequest->mContent));
+			$oFlexConfig->logo_mime_type				= $oRequest->sMimeType;
+
 			// Save
-			$oFlexConfig					= Flex_Config::instance();
-			$oFlexConfig->logo				= base64_decode($this->_prepareDataURL($oRequest->mContent));
-			$oFlexConfig->logo_mime_type	= $oRequest->sMimeType;
 			$oFlexConfig->save();
-			
+
 			// Commit db transaction
 			$oDataAccess->TransactionCommit();
 			return array("Success" => true);
