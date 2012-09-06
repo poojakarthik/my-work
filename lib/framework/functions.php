@@ -2597,82 +2597,67 @@ function ListPDFSamples($intAccountId)
  *
  * @method
  */
-function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $mxdInvoiceRun)
-{
-	$strPath	= null;
+function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $mxdInvoiceRun) {
+	$strPath = null;
 	
 	// Check for XML Invoice
 	$strXMLGlob = PATH_INVOICE_PDFS ."xml/$mxdInvoiceRun/{$intAccountId}.xml";
 	$arrXMLs = glob($strXMLGlob);
-	if ($arrXMLs && count($arrXMLs))
-	{
-		$strPath	= $arrXMLs[0];
+	if ($arrXMLs && count($arrXMLs)) {
+		$strPath = $arrXMLs[0];
 	}
 
-	if ($intInvoiceId)
-	{
-		$strGlob = PATH_INVOICE_PDFS ."xml/$mxdInvoiceRun/{$intAccountId}_{$intInvoiceId}.xml";
-		$arrPDFs = glob($strGlob);
-		if ($arrPDFs && count($arrPDFs))
-		{
-			$strPath	= $arrPDFs[0];
+	if ($intInvoiceId) {
+		$strXMLGlob = PATH_INVOICE_PDFS ."xml/$mxdInvoiceRun/{$intAccountId}_{$intInvoiceId}.xml";
+		$arrPDFs = glob($strXMLGlob);
+		if ($arrPDFs && count($arrPDFs)) {
+			$strPath = $arrPDFs[0];
 		}
 	}
 
-	$strGlob = PATH_INVOICE_PDFS ."xml/$mxdInvoiceRun/{$intAccountId}.xml.bz2";
-	$arrPDFs = glob($strGlob);
-	if ($arrPDFs && count($arrPDFs))
-	{
-		$strPath	= $arrPDFs[0];
+	$strXMLGlob = PATH_INVOICE_PDFS ."xml/$mxdInvoiceRun/{$intAccountId}.xml.bz2";
+	$arrPDFs = glob($strXMLGlob);
+	if ($arrPDFs && count($arrPDFs)) {
+		$strPath = $arrPDFs[0];
 	}
 
-	if ($intInvoiceId)
-	{
-		$strGlob = PATH_INVOICE_PDFS ."xml/$mxdInvoiceRun/{$intAccountId}_{$intInvoiceId}.xml.bz2";
-		$arrPDFs = glob($strGlob);
-		if ($arrPDFs && count($arrPDFs))
-		{
-			$strPath	= $arrPDFs[0];
+	if ($intInvoiceId) {
+		$strXMLGlob = PATH_INVOICE_PDFS ."xml/$mxdInvoiceRun/{$intAccountId}_{$intInvoiceId}.xml.bz2";
+		$arrPDFs = glob($strXMLGlob);
+		if ($arrPDFs && count($arrPDFs)) {
+			$strPath = $arrPDFs[0];
 		}
 	}
 	
 	// If we have XML, check to see if we have a cached version of this Invoice (check timestamps as well to make sure we're not seeing an old cache)
-	if ($strPath)
-	{
+	if ($strPath) {
 		$strPDFGlob = PATH_INVOICE_PDFS ."pdf/$mxdInvoiceRun/{$intAccountId}.pdf";
 		$arrPDFs = glob($strPDFGlob);
-		if ($arrPDFs && count($arrPDFs) && filemtime($strXMLGlob) < filemtime($strPDFGlob))
-		{
+		if ($arrPDFs && count($arrPDFs) && filemtime($strXMLGlob) < filemtime($strPDFGlob)) {
 			//throw new Exception("Cached Invoice Found @ '{$arrPDFs[0]}'! (XML Modified: ".date("Y-m-d H:i:s", filemtime($strXMLGlob))."; PDF Modified: ".date("Y-m-d H:i:s", filemtime($strPDFGlob)).")");
 			// Return cached PDF
 			return $arrPDFs[0];
-		}
-		else
-		{
+		} else {
 			// Return XML
 			return $strPath;
 		}
 	}
 
-	if ($intInvoiceId)
-	{
+	if ($intInvoiceId) {
 		$intMonth = intVal($intMonth);
 		$strGlob = PATH_INVOICE_PDFS ."pdf/$intYear/$intMonth/{$intAccountId}_{$intInvoiceId}.pdf";
 		$arrPDFs = glob($strGlob);
-		if ($arrPDFs && count($arrPDFs))
-		{
+		if ($arrPDFs && count($arrPDFs)) {
 			return $arrPDFs[0];
 		}
 	}
 
-	if (is_int($mxdInvoiceRun))
-	{
+	if (is_int($mxdInvoiceRun)) {
 		// We must have just searched using an invoice run id.
 		// Historically we have stored against the invoice run name (InvoiceRun.InvoiceRun),
 		// so we should have a go searching with this before we give up.
 		$selInvoiceRun = new StatementSelect('InvoiceRun', 'InvoiceRun', 'Id=<Id>');
-		if ($mxdOutcome	= $selInvoiceRun->Execute(Array('Id' => $mxdInvoiceRun)))
-		{
+		if ($mxdOutcome	= $selInvoiceRun->Execute(Array('Id' => $mxdInvoiceRun))) {
 			$arrInvoiceRun = $selInvoiceRun->Fetch();
 			$strInvoiceRun = strval($arrInvoiceRun['InvoiceRun']);
 			return InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $strInvoiceRun);
