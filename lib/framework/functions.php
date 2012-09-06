@@ -2608,8 +2608,8 @@ function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $mx
 	}
 
 	if ($intInvoiceId) {
-		$strXMLGlob = PATH_INVOICE_PDFS ."xml/$mxdInvoiceRun/{$intAccountId}_{$intInvoiceId}.xml";
-		$arrPDFs = glob($strXMLGlob);
+		$strGlob = PATH_INVOICE_PDFS ."xml/$mxdInvoiceRun/{$intAccountId}_{$intInvoiceId}.xml";
+		$arrPDFs = glob($strGlob);
 		if ($arrPDFs && count($arrPDFs)) {
 			$strPath = $arrPDFs[0];
 		}
@@ -2622,8 +2622,8 @@ function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $mx
 	}
 
 	if ($intInvoiceId) {
-		$strXMLGlob = PATH_INVOICE_PDFS ."xml/$mxdInvoiceRun/{$intAccountId}_{$intInvoiceId}.xml.bz2";
-		$arrPDFs = glob($strXMLGlob);
+		$strGlob = PATH_INVOICE_PDFS ."xml/$mxdInvoiceRun/{$intAccountId}_{$intInvoiceId}.xml.bz2";
+		$arrPDFs = glob($strGlob);
 		if ($arrPDFs && count($arrPDFs)) {
 			$strPath = $arrPDFs[0];
 		}
