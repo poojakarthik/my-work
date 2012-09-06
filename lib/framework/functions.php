@@ -2616,6 +2616,7 @@ function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $mx
 		if ($arrPDFs && count($arrPDFs))
 		{
 			$strPath = $arrPDFs[0];
+			$strXMLGlob = $strGlob;
 		}
 	}
 
