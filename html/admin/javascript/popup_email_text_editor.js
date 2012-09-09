@@ -358,37 +358,35 @@ var Popup_Email_Text_Editor	= Class.create(Reflex_Popup,
 		var div = oVariableList.select('div.vars').first();			
 		//aKeys = oVariables.keys();
 		
-		for(var key in this._oVariables)
-		{
-			
-			oLabel = $T.span({class:'varobject'});
-			oLabel.innerHTML = key;
-			
-			div.appendChild(oLabel);
-			var ul = $T.ul({class:'list'});
-			div.appendChild(ul);
-			var fields =  Object.keys(this._oVariables[key]);
-			for (var i=0;i<fields.length;i++)
-			{
-				var li = document.createElement('li');
-				 li.innerHTML = fields[i];
-				 oVariable = {
-								tag:  "<variable object = \""+key+"\" field = \"" + fields[i] + "\"/>",
-								text: "{" + key +"."+ fields[i]+"}"
-							}
-				 if (!this._bReadOnly)
-				 {
-					li.observe('mousedown', this._insertVariable.bindAsEventListener(this, oTextArea.oControlOutput.oEdit , this._oSubjectTextField.oControlOutput.oEdit, oVariable));
-				 }
-				 else
-				 {
-					li.style.cursor = 'default';
-					li.style.hover = '';
-				 }
+		if (typeof this._oVariables.length == 'undefined') {
+			for(var key in this._oVariables) {
+				oLabel = $T.span({class:'varobject'});
+				oLabel.innerHTML = key;
 				
-				ul.appendChild(li);				
-			}		
+				div.appendChild(oLabel);
+				var ul = $T.ul({class:'list'});
+				div.appendChild(ul);
+				var fields =  Object.keys(this._oVariables[key]);
+				for (var i=0;i<fields.length;i++) {
+					var li = document.createElement('li');
+					li.innerHTML = fields[i];
+					oVariable = {
+						tag : "<variable object = \""+key+"\" field = \"" + fields[i] + "\"/>",
+						text : "{" + key +"."+ fields[i]+"}"
+					};
+
+					if (!this._bReadOnly) {
+						li.observe('mousedown', this._insertVariable.bindAsEventListener(this, oTextArea.oControlOutput.oEdit , this._oSubjectTextField.oControlOutput.oEdit, oVariable));
+					} else {
+						li.style.cursor = 'default';
+						li.style.hover = '';
+					}
+
+					ul.appendChild(li);				
+				}
+			}
 		}
+		
 		return oVariableList;
 		
 	},
