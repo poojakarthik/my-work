@@ -239,7 +239,7 @@ class JSON_Handler_Adjustment extends JSON_Handler implements JSON_Handler_Logga
 			$oDataAccess->TransactionRollback();
 			return 	array(
 						'bSuccess'	=> false,
-						'sMessage'	=> ($bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.')
+						'sMessage'	=> $e->getMessage()
 					);
 		}
 	}
