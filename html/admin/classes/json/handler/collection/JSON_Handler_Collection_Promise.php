@@ -363,11 +363,10 @@ class JSON_Handler_Collection_Promise extends JSON_Handler implements JSON_Handl
 					);
 
 		} catch (Exception $oException) {
-			$sMessage	= $bUserIsGod || $oException instanceof Exception_Validation ? $oException->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
-			return 	array(
-						'bSuccess'	=> false,
-						'sMessage'	=> $sMessage
-					);
+			return array(
+				'bSuccess' => false,
+				'sMessage' => $oException->getMessage()
+			);
 		}
 	}
 
