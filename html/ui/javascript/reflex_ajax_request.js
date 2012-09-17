@@ -136,7 +136,7 @@ Object.extend(Reflex_AJAX_Request, {
 				sYesLabel : 'Report Error',
 				sNoLabel : 'Close',
 				fnOnYes : function(fnOnClose) {
-					var sTitle = "XHR Error in Flex (" + document.domain + ")";
+					var sTitle = "XHR Error in Flex (" + document.domain + ") " + new Date().toString();
 					var aParameterStrings = [];
 					if (aParameters) {
 						for (var i = 0; i < aParameters.length; i++) {

@@ -52,7 +52,7 @@ var Component_Account_Recurring_Charge_List = Class.create(
 	
 	_buildUI : function(oTaxType)
 	{
-		if (!oTaxType)
+		if (typeof oTaxType == 'undefined')
 		{
 			Component_Account_Recurring_Charge_List._getGlobalTaxType(this._buildUI.bind(this));
 			return;
@@ -464,6 +464,10 @@ Object.extend(Component_Account_Recurring_Charge_List,
 			// Error
 			jQuery.json.errorPopup(oResponse);
 			return;
+		}
+
+		if (!oResponse.oTaxType) {
+			Reflex_Popup.alert("No Global Tax Type is defined");
 		}
 		
 		if (fnCallback) {

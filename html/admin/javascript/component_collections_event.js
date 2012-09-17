@@ -1065,6 +1065,10 @@ Object.extend(Component_Collections_Event,
 			Component_Collections_Event._ajaxError(oResponse);
 			return;
 		}
+
+		if (!oResponse.oTaxType) {
+			Reflex_Popup.alert("No Global Tax Type is defined");
+		}
 		
 		if (fnCallback)
 		{

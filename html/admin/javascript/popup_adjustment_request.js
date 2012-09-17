@@ -32,7 +32,7 @@ var Popup_Adjustment_Request = Class.create(Reflex_Popup,
 			return;
 		}
 		
-		if (!oTaxType)
+		if (!typeof oTaxType == 'undefined')
 		{
 			Popup_Adjustment_Request._getGlobalTaxType(this._buildUI.bind(this, oAccount));
 			return;
@@ -248,8 +248,13 @@ var Popup_Adjustment_Request = Class.create(Reflex_Popup,
 		var fTaxComponent	= fAmount - (fAmount / fTaxDivisor);
 		fTaxComponent		= (isNaN(fTaxComponent) ? 0 : fTaxComponent);
 		
-		this._oAmountExGST.innerHTML 	= new Number(fAmount - fTaxComponent).toFixed(2);
-		this._oAmountTax.innerHTML 		= new Number(fTaxComponent).toFixed(2);
+		var fExGST = fAmount - fTaxComponent;
+		if (isNaN(fExGST)) {
+			fExGST = 0;
+		}
+
+		this._oAmountExGST.innerHTML = new Number(fExGST).toFixed(2);
+		this._oAmountTax.innerHTML = new Number(fTaxComponent).toFixed(2);
 	},
 	
 	_doSave : function()
@@ -277,7 +282,6 @@ var Popup_Adjustment_Request = Class.create(Reflex_Popup,
 			}
 
 			// Also validate the Note (it validates differently, being a newer Control)
-			debugger;
 			var	mException;
 			try {
 				this._oNote.validate(false);
@@ -388,15 +392,17 @@ Object.extend(Popup_Adjustment_Request,
 		}
 		
 		var aOptions = [];
-		for (var i in oResponse.aAdjustmentTypes)
-		{
-			var oType = oResponse.aAdjustmentTypes[i];
-			aOptions.push(
-				$T.option({value: i},
-					oType.transaction_nature_code + ': ' + oType.description + ' (' + oType.code + ')'
-				)
-			);
-			Popup_Adjustment_Request._hAdjustmentTypes[i] = oType;
+		if (typeof oResponse.aAdjustmentTypes.length == 'undefined') {
+			for (var i in oResponse.aAdjustmentTypes)
+			{
+				var oType = oResponse.aAdjustmentTypes[i];
+				aOptions.push(
+					$T.option({value: i},
+						oType.transaction_nature_code + ': ' + oType.description + ' (' + oType.code + ')'
+					)
+				);
+				Popup_Adjustment_Request._hAdjustmentTypes[i] = oType;
+			}
 		}
 		
 		fnCallback(aOptions);
@@ -454,6 +460,10 @@ Object.extend(Popup_Adjustment_Request,
 			// Error
 			Popup_Adjustment_Request._ajaxError(oResponse);
 			return;
+		}
+
+		if (!oResponse.oTaxType) {
+			Reflex_Popup.alert("No Global Tax Type is defined");
 		}
 		
 		if (fnCallback)
