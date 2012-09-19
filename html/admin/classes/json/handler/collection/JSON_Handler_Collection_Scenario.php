@@ -45,60 +45,47 @@ class JSON_Handler_Collection_Scenario extends JSON_Handler implements JSON_Hand
 		}
 	}
 	
-	public function getAll($bActiveOnly=false, $bSelectableOnly=false, $aMustIncludeIds=null)
-	{
+	public function getAll($bActiveOnly=false, $bSelectableOnly=false, $aMustIncludeIds=null) {
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
-		try
-		{
-			if ($bActiveOnly)
-			{
+		try {
+			if ($bActiveOnly) {
 				$aWorkingStatuses = array(WORKING_STATUS_ACTIVE);
-			}
-			else if ($bSelectableOnly)
-			{
+			} else if ($bSelectableOnly) {
 				$aWorkingStatuses = array(WORKING_STATUS_ACTIVE, WORKING_STATUS_INACTIVE);
-			}
-			else
-			{
+			} else {
 				$aWorkingStatuses = array(WORKING_STATUS_ACTIVE, WORKING_STATUS_INACTIVE, WORKING_STATUS_DRAFT);
 			}
 			
 			// Add all given the status limits
 			$aScenarios = Collection_Scenario::getForWorkingStatus($aWorkingStatuses);
 			$aResults	= array();
-			foreach ($aScenarios as $oScenario)
-			{
-				$aResults[$oScenario->id] = $oScenario->toStdClass();
+			foreach ($aScenarios as $oScenario) {
+				if ($oScenario->id !== null) {
+					$aResults[$oScenario->id] = $oScenario->toStdClass();
+				}
 			}
 			
 			// Add the 'must-include' records
-			if ($aMustIncludeIds !== null)
-			{
-				foreach ($aMustIncludeIds as $iId)
-				{
-					if (!isset($aResults[$iId]))
-					{
+			if ($aMustIncludeIds !== null) {
+				foreach ($aMustIncludeIds as $iId) {
+					if (!isset($aResults[$iId])) {
 						$oScenario = Collection_Scenario::getForId($iId);
-						if ($oScenario->id)
-						{
+						if ($oScenario->id) {
 							$aResults[$iId] = $oScenario->toStdClass();
 						}
 					}
 				}
 			}
 			
-			return	array(
-						'bSuccess'		=> true,
-						'aScenarios'	=> $aResults
-					);
-		}
-		catch (Exception $e)
-		{
-			$sMessage = $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
-			return 	array(
-						'bSuccess'	=> false,
-						'sMessage'	=> $sMessage
-					);
+			return array(
+				'bSuccess' => true,
+				'aScenarios' => $aResults
+			);
+		} catch (Exception $e) {
+			return array(
+				'bSuccess' => false,
+				'sMessage' => $e->getMessage()
+			);
 		}
 	}
 	
