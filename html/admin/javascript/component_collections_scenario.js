@@ -125,6 +125,32 @@ var Component_Collections_Scenario = Class.create(
 		this._oAutomaticUnbarControl = oAutomaticUnbarControl;
 		this._aControls.push(oAutomaticUnbarControl);
 		
+		var oBrokenPromiseScenarioControl = Control_Field.factory(
+			'select', 
+			{
+				sLabel		: 'Broken Promise to Pay Scenario',
+				mMandatory	: true,
+				mEditable	: true,
+				fnPopulate	: Component_Collections_Scenario._getScenarioOptions.curry(this.iScenarioId)
+			}
+		);
+		oBrokenPromiseScenarioControl.setRenderMode(this._bRenderMode);
+		this._oBrokenPromiseScenarioControl = oBrokenPromiseScenarioControl;
+		this._aControls.push(oBrokenPromiseScenarioControl);
+
+		var oDishonouredPaymentScenarioControl = Control_Field.factory(
+			'select', 
+			{
+				sLabel		: 'Dishonoured Payment Scenario',
+				mMandatory	: true,
+				mEditable	: true,
+				fnPopulate	: Component_Collections_Scenario._getScenarioOptions.curry(this.iScenarioId)
+			}
+		);
+		oDishonouredPaymentScenarioControl.setRenderMode(this._bRenderMode);
+		this._oDishonouredPaymentScenarioControl = oDishonouredPaymentScenarioControl;
+		this._aControls.push(oDishonouredPaymentScenarioControl);
+
 		this._validateControls();
 		this._oEventTimeline = new Component_Collections_Scenario_Event_Timeline(this._bRenderMode);
 		
@@ -190,6 +216,14 @@ var Component_Collections_Scenario = Class.create(
 										$T.tr(
 											$T.th('Allow Automatic Unbar'),
 											$T.td(oAutomaticUnbarControl.getElement())
+										),
+										$T.tr(
+											$T.th('Broken Promise to Pay Scenario'),
+											$T.td(oBrokenPromiseScenarioControl.getElement())
+										),
+										$T.tr(
+											$T.th('Dishonoured Payment Scenario'),
+											$T.td(oDishonouredPaymentScenarioControl.getElement())
 										)
 									)
 								),
@@ -233,10 +267,8 @@ var Component_Collections_Scenario = Class.create(
 		this._oContainerDiv.appendChild(this._oContentDiv);
 	},
 	
-	_loadFromScenario : function(iScenarioId, oScenario)
-	{
-		if ((iScenarioId !== null) && !oScenario)
-		{
+	_loadFromScenario : function(iScenarioId, oScenario) {
+		if ((iScenarioId !== null) && !oScenario) {
 			this._getScenarioDetails(iScenarioId, this._loadFromScenario.bind(this, iScenarioId));
 			return;
 		}
@@ -248,6 +280,8 @@ var Component_Collections_Scenario = Class.create(
 		this._oThresholdAmountControl.setRenderMode(this._bRenderMode);
 		this._oInitialSeverityControl.setRenderMode(this._bRenderMode);
 		this._oAutomaticUnbarControl.setRenderMode(this._bRenderMode);
+		this._oBrokenPromiseScenarioControl.setRenderMode(this._bRenderMode);
+		this._oDishonouredPaymentScenarioControl.setRenderMode(this._bRenderMode);
 		
 		// Load details from scenario
 		this._oNameControl.setValue(oScenario.name);
@@ -258,14 +292,15 @@ var Component_Collections_Scenario = Class.create(
 		this._oThresholdAmountControl.setValue(oScenario.threshold_amount);
 		this._oInitialSeverityControl.setValue(oScenario.initial_collection_severity_id ? oScenario.initial_collection_severity_id : 0);
 		
-		if (oScenario.initial_collection_severity_id)
-		{
+		if (oScenario.initial_collection_severity_id) {
 			this._oInitialSeverityControl.setPopulateFunction(
 				Component_Collections_Scenario._getSeverityOptions.curry(oScenario.initial_collection_severity_id)
 			);
 		}
 		
 		this._oAutomaticUnbarControl.setValue(oScenario.allow_automatic_unbar);
+		this._oBrokenPromiseScenarioControl.setValue(oScenario.broken_promise_collection_scenario_id);
+		this._oDishonouredPaymentScenarioControl.setValue(oScenario.dishonoured_payment_collection_scenario_id);
 	
 		this._validateControls();
 		
@@ -274,20 +309,16 @@ var Component_Collections_Scenario = Class.create(
 		this._oEventTimeline.refresh(oScenario.id);
 		
 		// Can edit AND (Creating a new one OR The one we're edit is a draft)
-		if (this._bRenderMode && ((this._iScenarioId === null) || (oScenario.working_status_id == $CONSTANT.WORKING_STATUS_DRAFT)))
-		{
+		if (this._bRenderMode && ((this._iScenarioId === null) || (oScenario.working_status_id == $CONSTANT.WORKING_STATUS_DRAFT))) {
 			this._oButtonDiv.show();
 			this._oStartEarlyControl.setValue(true);
 			this._startEarlyChange();
-		}
-		else
-		{
+		} else {
 			this._oButtonDiv.hide();
 			this._startEarlyChange(true);
 		}
 		
-		if (this._oLoadingPopup)
-		{
+		if (this._oLoadingPopup) {
 			this._oLoadingPopup.hide();
 			delete this._oLoadingPopup;
 		}
@@ -338,18 +369,19 @@ var Component_Collections_Scenario = Class.create(
 			
 			// Start to build the details object using base controls
 			var iSeverityId = parseFloat(this._oInitialSeverityControl.getElementValue());
-			var oDetails = 	
-			{
-				id								: this._iScenarioId,
-				name 							: this._oNameControl.getElementValue(),
-				description 					: this._oDescriptionControl.getElementValue(),
-				day_offset						: parseFloat(this._oDayOffsetControl.getElementValue()),
-				threshold_percentage			: parseFloat(this._oThresholdPercentageControl.getElementValue()),
-				threshold_amount				: parseFloat(this._oThresholdAmountControl.getElementValue()),
-				initial_collection_severity_id	: (iSeverityId ? iSeverityId : null),
-				allow_automatic_unbar			: this._oAutomaticUnbarControl.getElementValue(),
-				working_status_id				: iWorkingStatusId,
-				collection_event_data			: this._oEventTimeline.getData()
+			var oDetails = 	{
+				id : this._iScenarioId,
+				name : this._oNameControl.getElementValue(),
+				description : this._oDescriptionControl.getElementValue(),
+				day_offset : parseFloat(this._oDayOffsetControl.getElementValue()),
+				threshold_percentage : parseFloat(this._oThresholdPercentageControl.getElementValue()),
+				threshold_amount : parseFloat(this._oThresholdAmountControl.getElementValue()),
+				initial_collection_severity_id : (iSeverityId ? iSeverityId : null),
+				allow_automatic_unbar : this._oAutomaticUnbarControl.getElementValue(),
+				broken_promise_collection_scenario_id : this._oBrokenPromiseScenarioControl.getElementValue(),
+				dishonoured_payment_collection_scenario_id : this._oDishonouredPaymentScenarioControl.getElementValue(),
+				working_status_id : iWorkingStatusId,
+				collection_event_data : this._oEventTimeline.getData()
 			};
 			
 			// Make request (sending the details object)
@@ -501,6 +533,41 @@ Object.extend(Component_Collections_Scenario,
 			);
 		}
 		fnCallback(aOptions);
+	},
+
+	_getScenarioOptions : function(iExceptScenarioId, fnCallback, oResponse) {
+		if (!oResponse) {
+			var oReq = new Reflex_AJAX_Request('Collection_Scenario', 'getAll', Component_Collections_Scenario._getScenarioOptions.curry(iExceptScenarioId, fnCallback));
+			oReq.send(false, true, []);
+		} else if (oResponse.hasException()) {
+			// Error
+			Reflex_AJAX_Response.errorPopup(oResponse);
+		} else {
+			// Success
+			// Create options & callback
+			var aOptions = [
+				$T.option({value: 0},
+					'None'
+				)
+			];
+			
+			var oScenarios = oResponse.get('aScenarios');
+			if (typeof oScenarios.length == 'undefined') {
+				for (var i in oScenarios) {
+					if (parseInt(i, 10) == iExceptScenarioId) {
+						continue;
+					}
+
+					aOptions.push(
+						$T.option({value : i},
+							oScenarios[i].name	
+						)
+					);
+				}
+			}
+			
+			fnCallback(aOptions);
+		}
 	},
 	
 	_validateDayOffset : function(mValue)

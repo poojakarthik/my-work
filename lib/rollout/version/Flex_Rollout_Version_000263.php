@@ -4,8 +4,6 @@ class Flex_Rollout_Version_000263 extends Flex_Rollout_Version {
 	private $rollbackSQL = array();
 
 	public function rollout() {
-		$oDB = Data_Source::get(FLEX_DATABASE_CONNECTION_ADMIN);
-
 		$mResult = Query::run("	SELECT 	css.system_name, cssc.collection_scenario_id
 								FROM 	collection_scenario_system css
 								JOIN	collection_scenario_system_config cssc ON (
@@ -19,44 +17,57 @@ class Flex_Rollout_Version_000263 extends Flex_Rollout_Version {
 			$aScenarioIdBySystemName[$aRow['system_name']] = $aRow['collection_scenario_id'];
 		}
 
-		$sBrokenPromiseScenarioId = $oDB->prepareByPHPType($aScenarioIdBySystemName['BROKEN_PROMISE_TO_PAY']);
-		$sDishonouredPaymentScenarioId = $oDB->prepareByPHPType($aScenarioIdBySystemName['DISHONOURED_PAYMENT']);
+		if (isset($aScenarioIdBySystemName['BROKEN_PROMISE_TO_PAY'])) {
+			$sBrokenPromiseScenarioId = (string)$aScenarioIdBySystemName['BROKEN_PROMISE_TO_PAY'];
+		} else {
+			$sBrokenPromiseScenarioId = trim($this->getUserResponse("Please specify the scenario id to use as the broken promise to pay scenario for all existing scenarios:"));
+		}
 
+		if (isset($aScenarioIdBySystemName['DISHONOURED_PAYMENT'])) {
+			$sDishonouredPaymentScenarioId = (string)$aScenarioIdBySystemName['DISHONOURED_PAYMENT'];
+		} else {
+			$sDishonouredPaymentScenarioId = trim($this->getUserResponse("Please specify the scenario id to use as the dishonoured payment scenario for existing scenarios:"));
+		}
+		
 		$aOperations = array(
 			array(
 				'sDescription' => "Add broken_promise_collection_scenario_id and dishonoured_payment_collection_scenario_id to collection_scenario (leave nullable until populated).",
 				'sAlterSQL' => "ALTER TABLE 	collection_scenario
-								ADD COLUMN 		broken_promise_collection_scenario_id 		BIGINT NULL,
-								ADD COLUMN 		dishonoured_payment_collection_scenario_id 	BIGINT NULL,
+								ADD COLUMN 		broken_promise_collection_scenario_id 		BIGINT UNSIGNED NULL,
+								ADD COLUMN 		dishonoured_payment_collection_scenario_id 	BIGINT UNSIGNED NULL,
 								ADD CONSTRAINT	fk_collection_scenario_broken_promise_collection_scenario_id 		FOREIGN KEY (broken_promise_collection_scenario_id) 		REFERENCES collection_scenario (id) ON UPDATE CASCADE ON DELETE RESTRICT,
-								ADD CONSTRAINT 	fk_collection_scenario_dishonoured_payment_collection_scenario_id, 	FOREIGN KEY (dishonoured_payment_collection_scenario_id) 	REFERENCES collection_scenario (id) ON UPDATE CASCADE ON DELETE RESTRICT;",
-				'sRollbackSQL' => "	ALTER TABLE 	collection_scenario
-									DROP CONSTRAINT fk_collection_scenario_broken_promise_collection_scenario_id,
-									DROP CONSTRAINT fk_collection_scenario_dishonoured_payment_collection_scenario_id,
-									DROP COLUMN 	broken_promise_collection_scenario_id,
-									DROP COLUMN 	dishonoured_payment_collection_scenario_id;",
+								ADD CONSTRAINT 	fk_collection_scenario_dishonoured_payment_collection_scnrio_id 	FOREIGN KEY (dishonoured_payment_collection_scenario_id) 	REFERENCES collection_scenario (id) ON UPDATE CASCADE ON DELETE RESTRICT;",
+				'sRollbackSQL' => "	ALTER TABLE 		collection_scenario
+									DROP FOREIGN KEY 	fk_collection_scenario_broken_promise_collection_scenario_id,
+									DROP FOREIGN KEY 	fk_collection_scenario_dishonoured_payment_collection_scnrio_id,
+									DROP COLUMN 		broken_promise_collection_scenario_id,
+									DROP COLUMN 		dishonoured_payment_collection_scenario_id;",
 				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
 			),
 			array(
 				'sDescription' => "Set initial broken promise and dishonoured payment scenarios to the currently configured system ones",
 				'sAlterSQL' => "UPDATE	collection_scenario
 								SET		broken_promise_collection_scenario_id = {$sBrokenPromiseScenarioId},
-										dishonoured_payment_collection_scenario_id = {$sDishonouredPaymentScenarioId};"
+										dishonoured_payment_collection_scenario_id = {$sDishonouredPaymentScenarioId};",
+				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
 			),
 			array(
-				'sDescription' => "Make broken_promise_collection_scenario_id and dishonoured_payment_collection_scenario_id nullable",
+				'sDescription' => "Make broken_promise_collection_scenario_id and dishonoured_payment_collection_scenario_id NOT nullable",
 				'sAlterSQL' => "ALTER TABLE collection_scenario
-								CHANGE 		broken_promise_collection_scenario_id 		BIGINT NOT NULL,
-								CHANGE 		dishonoured_payment_collection_scenario_id 	BIGINT NOT NULL;"
-			)/*,
+								CHANGE 		broken_promise_collection_scenario_id 		broken_promise_collection_scenario_id 		BIGINT UNSIGNED NOT NULL,
+								CHANGE 		dishonoured_payment_collection_scenario_id	dishonoured_payment_collection_scenario_id 	BIGINT UNSIGNED NOT NULL;",
+				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
+			),
 			array(
 				'sDescription' => "Remove the collection_scenario_system_config table",
-				'sAlterSQL' => "DROP TABLE collection_scenario_system_config;"
+				'sAlterSQL' => "DROP TABLE collection_scenario_system_config;",
+				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
 			),
 			array(
 				'sDescription' => "Remove the collection_scenario_system table",
-				'sAlterSQL' => "DROP TABLE collection_scenario_system;"
-			)*/
+				'sAlterSQL' => "DROP TABLE collection_scenario_system;",
+				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
+			)
 		);
 		
 		// Perform Batch Rollout

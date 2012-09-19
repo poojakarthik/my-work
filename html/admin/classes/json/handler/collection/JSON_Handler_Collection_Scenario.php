@@ -143,116 +143,103 @@ class JSON_Handler_Collection_Scenario extends JSON_Handler implements JSON_Hand
 		}
 	}
 	
-	public function createScenario($oDetails)
-	{
-		$bUserIsGod		= Employee::getForId(Flex::getUserId())->isGod();
-		$oDataAccess	= DataAccess::getDataAccess();
-		try
-		{
-			if (!$oDataAccess->TransactionStart())
-			{
-				throw new Exception("Failed to start transaction.");
-			}
+	public function createScenario($oDetails) {
+		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		$oDataAccess = DataAccess::getDataAccess();
+		try {
+			$oDataAccess->TransactionStart(false);
 			
 			// Validation
-			if ($oDetails->name === '')
-			{
+			if ($oDetails->name === '') {
 				$aErrors[] = 'No name was supplied';
 			}
 			
-			if (strlen($oDetails->name) > 256)
-			{
+			if (strlen($oDetails->name) > 256) {
 				$aErrors[] = 'Name is too long (maximum 256 chars)';
 			}
 			
-			if ($oDetails->description === '')
-			{
+			if ($oDetails->description === '') {
 				$aErrors[] = 'No description was supplied';
 			}
 			
-			if (strlen($oDetails->description) > 256)
-			{
+			if (strlen($oDetails->description) > 256) {
 				$aErrors[] = 'Description is too long (maximum 256 chars)';
 			}
 			
-			if ($oDetails->threshold_percentage === '')
-			{
+			if ($oDetails->threshold_percentage === '') {
 				$aErrors[] = 'No threshold percentage was supplied';
 			}
 			
-			if ($oDetails->threshold_amount === '')
-			{
+			if ($oDetails->threshold_amount === '') {
 				$aErrors[] = 'No threshold amount was supplied';
 			}
 			
-			if ($oDetails->allow_automatic_unbar === null)
-			{
+			if ($oDetails->allow_automatic_unbar === null) {
 				$aErrors[] = 'No allow automatic unbar (yes/no) was supplied';
 			}
 			
-			if (count($aErrors) > 0)
-			{
-				return	array(
-							'bSuccess'	=> false,
-							'aErrors'	=> $aErrors
-						);
+			if ($oDetails->broken_promise_collection_scenario_id === null) {
+				$aErrors[] = 'No broken promise to pay colleciton scenario was supplied';
+			}
+
+			if ($oDetails->dishonoured_payment_collection_scenario_id === null) {
+				$aErrors[] = 'No dishonoured payment collection scenario was supplied';
+			}
+
+			if (count($aErrors) > 0) {
+				return array(
+					'bSuccess' => false,
+					'aErrors' => $aErrors
+				);
 			}
 			
 			// Create collection_scenario
-			if ($oDetails->id !== null)
-			{
+			if ($oDetails->id !== null) {
 				$oScenario = Collection_Scenario::getForId($oDetails->id);
 				
 				// Clear all collection_scenario_collection_event records
 				Collection_Scenario_Collection_Event::removeForScenarioId($oScenario->id);
-			}
-			else
-			{
+			} else {
 				$oScenario = new Collection_Scenario();
 			}
 			
-			$oScenario->name 							= $oDetails->name;
-			$oScenario->description 					= $oDetails->description;
-			$oScenario->day_offset 						= $oDetails->day_offset;
-			$oScenario->working_status_id				= $oDetails->working_status_id;
-			$oScenario->threshold_percentage			= $oDetails->threshold_percentage;
-			$oScenario->threshold_amount				= $oDetails->threshold_amount;
-			$oScenario->initial_collection_severity_id	= $oDetails->initial_collection_severity_id;
-			$oScenario->allow_automatic_unbar			= (int)$oDetails->allow_automatic_unbar;
+			$oScenario->name = $oDetails->name;
+			$oScenario->description = $oDetails->description;
+			$oScenario->day_offset = $oDetails->day_offset;
+			$oScenario->working_status_id = $oDetails->working_status_id;
+			$oScenario->threshold_percentage = $oDetails->threshold_percentage;
+			$oScenario->threshold_amount = $oDetails->threshold_amount;
+			$oScenario->initial_collection_severity_id = $oDetails->initial_collection_severity_id;
+			$oScenario->allow_automatic_unbar = (int)$oDetails->allow_automatic_unbar;
+			$oScenario->broken_promise_collection_scenario_id = (int)$oDetails->broken_promise_collection_scenario_id;
+			$oScenario->dishonoured_payment_collection_scenario_id = (int)$oDetails->dishonoured_payment_collection_scenario_id;
 			$oScenario->save();
 			
 			// Create collection_scenario_collection_event(s)
 			$oPrevious = null;
-			foreach ($oDetails->collection_event_data as $oEventData)
-			{
-				$oScenarioEvent 								= new Collection_Scenario_Collection_Event();
-				$oScenarioEvent->collection_scenario_id 		= $oScenario->id;
-				$oScenarioEvent->collection_event_id 			= $oEventData->collection_event_id;
+			foreach ($oDetails->collection_event_data as $oEventData) {
+				$oScenarioEvent = new Collection_Scenario_Collection_Event();
+				$oScenarioEvent->collection_scenario_id = $oScenario->id;
+				$oScenarioEvent->collection_event_id = $oEventData->collection_event_id;
 				$oScenarioEvent->collection_event_invocation_id = $oEventData->collection_event_invocation_id;
-				$oScenarioEvent->day_offset 					= $oEventData->day_offset;
+				$oScenarioEvent->day_offset = $oEventData->day_offset;
 				$oScenarioEvent->prerequisite_collection_scenario_collection_event_id = ($oPrevious ? $oPrevious->id : null);
 				$oScenarioEvent->save();
 				$oPrevious = $oScenarioEvent;
 			}
 			
-			if (!$oDataAccess->TransactionCommit())
-			{
-				throw new Exception("Failed to start transaction.");
-			}
-			
-			return	array(
-						'bSuccess'		=> true,
-						'iScenarioId'	=> $oScenario->id
-					);
-		}
-		catch (Exception $e)
-		{
-			$oDataAccess->TransactionRollback();
-			$sMessage = $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
-			return 	array(
-						'bSuccess'	=> false,
-						'sMessage'	=> $sMessage
-					);
+			$oDataAccess->TransactionCommit(false);
+
+			return array(
+				'bSuccess' => true,
+				'iScenarioId' => $oScenario->id
+			);
+		} catch (Exception $e) {
+			$oDataAccess->TransactionRollback(false);
+			return array(
+				'bSuccess' => false,
+				'sMessage' => $e->getMessage()
+			);
 		}
 	}
 	
