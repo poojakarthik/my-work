@@ -129,7 +129,7 @@ var Component_Collections_Scenario = Class.create(
 			'select', 
 			{
 				sLabel		: 'Broken Promise to Pay Scenario',
-				mMandatory	: true,
+				mMandatory	: false,
 				mEditable	: true,
 				fnPopulate	: Component_Collections_Scenario._getScenarioOptions.curry(this.iScenarioId)
 			}
@@ -142,7 +142,7 @@ var Component_Collections_Scenario = Class.create(
 			'select', 
 			{
 				sLabel		: 'Dishonoured Payment Scenario',
-				mMandatory	: true,
+				mMandatory	: false,
 				mEditable	: true,
 				fnPopulate	: Component_Collections_Scenario._getScenarioOptions.curry(this.iScenarioId)
 			}
@@ -353,6 +353,8 @@ var Component_Collections_Scenario = Class.create(
 	
 	_saveAndCommit : function()
 	{
+		this._oBrokenPromiseScenarioControl.setMandatory(true);
+		this._oDishonouredPaymentScenarioControl.setMandatory(true);
 		this._save($CONSTANT.WORKING_STATUS_ACTIVE);
 	},
 	
