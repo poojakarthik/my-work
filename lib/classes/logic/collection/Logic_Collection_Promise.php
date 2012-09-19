@@ -406,13 +406,9 @@ class Logic_Collection_Promise implements DataLogic
 		Logic_Collection_BatchProcess_Report::addPromise($this);
     }
 
-    public function getScenarioId()
-    {
-        $oORM = Collection_Scenario_System_Config::getForSystemScenario(COLLECTION_SCENARIO_SYSTEM_BROKEN_PROMISE_TO_PAY);
-        if ($oORM == null)
-            throw new Logic_Collection_Exception ("Configuration error. No broken promise scenario defined.");
-        else
-            return $oORM->collection_scenario_id;
+    public function getScenarioId() {
+        $iCurrentScenarioId = $this->getAccount()->getCurrentScenarioInstance()->collection_scenario_id;
+        return Collection_Scenario::getForId($iCurrentScenarioId)->broken_promise_collection_scenario_id;
     }
 
     public function setException($e)

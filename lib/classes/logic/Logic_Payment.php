@@ -42,61 +42,41 @@ class Logic_Payment extends Logic_Distributable implements DataLogic{
 		$this->oDO = Payment::getForId($this->id);
 	}
 	
-	public function reverse($iReversalReasonId, $bDistribute=true)
-	{
+	public function reverse($iReversalReasonId, $bDistribute=true) {
 		$oDataAccess = DataAccess::getDataAccess();
-		if ($oDataAccess->TransactionStart() === false)
-		{
-			throw new Exception("Failed to start transaction");
-		}
-		
-		try
-		{
+		$oDataAccess->TransactionStart(false);
+		try {
 			// Create the reversal payment
 			$this->oDO->reverse($iReversalReasonId, $bDistribute);
-			$oAccount	= Logic_Account::getInstance($this->oDO->account_id);
+			$oAccount = Logic_Account::getInstance($this->oDO->account_id);
 			$oPromise = Logic_Collection_Promise::getForAccount($oAccount);
 			
-			//rather than merely distributing the reversed payment, we need to do a full redistribution of balances at this point.
-			//The reaon for this is that if the original payment had any distributable balance left, this would need to be applied after distributing the reversed payment's balance in full, or else the collectable balance will be wrong.
+			// Rather than merely distributing the reversed payment, we need to do a full redistribution of balances at this point.
+			// The reaon for this is that if the original payment had any distributable balance left, this would need to be applied after distributing the reversed payment's balance in full, or else the collectable balance will be wrong.
 			if ($bDistribute || ($oPromise !== NULL && $oReason->payment_reversal_type_id == PAYMENT_REVERSAL_TYPE_DISHONOUR)) {
 				$oAccount->redistributeBalances();
-				$this->refreshData();				
-			}
-
-			
+				$this->refreshData();
+			}			
 
 			// Check the reason type
 			$oReason = Payment_Reversal_reason::getForId($iReversalReasonId);
-			if ($oReason->payment_reversal_type_id == PAYMENT_REVERSAL_TYPE_DISHONOUR)
-			{
-				//the rule is that a dishonoured payment scenario takes precedence over a broken promise scenario, thats why we process any active promises at this point
-				
-				if ($oPromise !== NULL)
+			if ($oReason->payment_reversal_type_id == PAYMENT_REVERSAL_TYPE_DISHONOUR) {
+				// The rule is that a dishonoured payment scenario takes precedence over a broken promise scenario, thats why we process any active promises at this point				
+				if ($oPromise !== NULL) {
 					$oPromise->process();
+				}
 
 				// Change scenario for the account, dishonoured payment
-				$oConfig = Collection_Scenario_System_Config::getForSystemScenario(COLLECTION_SCENARIO_SYSTEM_DISHONOURED_PAYMENT);
-				if (!$oConfig)
-				{
-					throw new Exception("Failed to retrieve system scenario for dishonoured payment.");
-				}
-				$oAccount->setCurrentScenario($oConfig->collection_scenario_id, false);
+				$iCurrentScenarioId = $oAccount->getCurrentScenarioInstance()->collection_scenario_id;
+				$iDishonouredPaymentScenarioId = Collection_Scenario::getForId($iCurrentScenarioId)->dishonoured_payment_collection_scenario_id;
+				$oAccount->setCurrentScenario($iDishonouredPaymentScenarioId, false);
 			}
-		}
-		catch (Exception $oEx)
-		{
-			if ($oDataAccess->TransactionRollback() === false)
-			{
-				throw new Exception("Failed to rollback transaction");
-			}
+		} catch (Exception $oEx) {
+			$oDataAccess->TransactionRollback(false);
 			throw $oEx;
 		}
 		
-		if ($oDataAccess->TransactionCommit() === false)
-		{
-			throw new Exception("Failed to commit transaction");
-		}
+		$oDataAccess->TransactionCommit(false);
 	}
 
 	public function getReversal() {
