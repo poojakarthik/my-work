@@ -20,13 +20,13 @@ class Flex_Rollout_Version_000263 extends Flex_Rollout_Version {
 		if (isset($aScenarioIdBySystemName['BROKEN_PROMISE_TO_PAY'])) {
 			$sBrokenPromiseScenarioId = (string)$aScenarioIdBySystemName['BROKEN_PROMISE_TO_PAY'];
 		} else {
-			$sBrokenPromiseScenarioId = trim($this->getUserResponse("Please specify the scenario id to use as the broken promise to pay scenario for all existing scenarios:"));
+			$sBrokenPromiseScenarioId = 'NULL';
 		}
 
 		if (isset($aScenarioIdBySystemName['DISHONOURED_PAYMENT'])) {
 			$sDishonouredPaymentScenarioId = (string)$aScenarioIdBySystemName['DISHONOURED_PAYMENT'];
 		} else {
-			$sDishonouredPaymentScenarioId = trim($this->getUserResponse("Please specify the scenario id to use as the dishonoured payment scenario for existing scenarios:"));
+			$sDishonouredPaymentScenarioId = 'NULL';
 		}
 		
 		$aOperations = array(
