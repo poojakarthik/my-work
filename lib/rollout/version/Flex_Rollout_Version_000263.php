@@ -31,7 +31,7 @@ class Flex_Rollout_Version_000263 extends Flex_Rollout_Version {
 		
 		$aOperations = array(
 			array(
-				'sDescription' => "Add broken_promise_collection_scenario_id and dishonoured_payment_collection_scenario_id to collection_scenario (leave nullable until populated).",
+				'sDescription' => "Add broken_promise_collection_scenario_id and dishonoured_payment_collection_scenario_id to collection_scenario",
 				'sAlterSQL' => "ALTER TABLE 	collection_scenario
 								ADD COLUMN 		broken_promise_collection_scenario_id 		BIGINT UNSIGNED NULL,
 								ADD COLUMN 		dishonoured_payment_collection_scenario_id 	BIGINT UNSIGNED NULL,
@@ -49,13 +49,6 @@ class Flex_Rollout_Version_000263 extends Flex_Rollout_Version {
 				'sAlterSQL' => "UPDATE	collection_scenario
 								SET		broken_promise_collection_scenario_id = {$sBrokenPromiseScenarioId},
 										dishonoured_payment_collection_scenario_id = {$sDishonouredPaymentScenarioId};",
-				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
-			),
-			array(
-				'sDescription' => "Make broken_promise_collection_scenario_id and dishonoured_payment_collection_scenario_id NOT nullable",
-				'sAlterSQL' => "ALTER TABLE collection_scenario
-								CHANGE 		broken_promise_collection_scenario_id 		broken_promise_collection_scenario_id 		BIGINT UNSIGNED NOT NULL,
-								CHANGE 		dishonoured_payment_collection_scenario_id	dishonoured_payment_collection_scenario_id 	BIGINT UNSIGNED NOT NULL;",
 				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
 			),
 			array(

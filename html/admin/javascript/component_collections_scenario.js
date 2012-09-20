@@ -353,8 +353,6 @@ var Component_Collections_Scenario = Class.create(
 	
 	_saveAndCommit : function()
 	{
-		this._oBrokenPromiseScenarioControl.setMandatory(true);
-		this._oDishonouredPaymentScenarioControl.setMandatory(true);
 		this._save($CONSTANT.WORKING_STATUS_ACTIVE);
 	},
 	
@@ -540,7 +538,7 @@ Object.extend(Component_Collections_Scenario,
 	_getScenarioOptions : function(iExceptScenarioId, fnCallback, oResponse) {
 		if (!oResponse) {
 			var oReq = new Reflex_AJAX_Request('Collection_Scenario', 'getAll', Component_Collections_Scenario._getScenarioOptions.curry(iExceptScenarioId, fnCallback));
-			oReq.send(false, true, []);
+			oReq.send(true);
 		} else if (oResponse.hasException()) {
 			// Error
 			Reflex_AJAX_Response.errorPopup(oResponse);
@@ -548,7 +546,7 @@ Object.extend(Component_Collections_Scenario,
 			// Success
 			// Create options & callback
 			var aOptions = [
-				$T.option({value: 0},
+				$T.option({value: ''},
 					'None'
 				)
 			];

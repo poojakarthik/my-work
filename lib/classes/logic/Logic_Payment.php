@@ -69,7 +69,9 @@ class Logic_Payment extends Logic_Distributable implements DataLogic{
 				// Change scenario for the account, dishonoured payment
 				$iCurrentScenarioId = $oAccount->getCurrentScenarioInstance()->collection_scenario_id;
 				$iDishonouredPaymentScenarioId = Collection_Scenario::getForId($iCurrentScenarioId)->dishonoured_payment_collection_scenario_id;
-				$oAccount->setCurrentScenario($iDishonouredPaymentScenarioId, false);
+				if ($iDishonouredPaymentScenarioId !== null) {
+					$oAccount->setCurrentScenario($iDishonouredPaymentScenarioId, false);
+				}
 			}
 		} catch (Exception $oEx) {
 			$oDataAccess->TransactionRollback(false);

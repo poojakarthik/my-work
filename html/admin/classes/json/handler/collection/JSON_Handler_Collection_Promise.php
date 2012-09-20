@@ -140,9 +140,11 @@ class JSON_Handler_Collection_Promise extends JSON_Handler implements JSON_Handl
 				// Change scenario if necessary
 				if ($bChangeScenario) {
 					try {
-						$oLogicAccount 				= $oLogicPromise->getAccount();
-			            $iBrokenPromiseScenarioId	= $oLogicPromise->getScenarioId();
-			            $oLogicAccount->setCurrentScenario($iBrokenPromiseScenarioId, false);
+						$oLogicAccount = $oLogicPromise->getAccount();
+			            $iBrokenPromiseScenarioId = $oLogicPromise->getScenarioId();
+			            if ($iBrokenPromiseScenarioId !== null) {
+			            	$oLogicAccount->setCurrentScenario($iBrokenPromiseScenarioId, false);
+			            }
 					} catch (Logic_Collection_Exception $oEx) {
 						// Failed, most likely non configured broken promise scenario, pass out the error
 						throw new JSON_Handler_Collection_Promise_Exception($oEx->getMessage());

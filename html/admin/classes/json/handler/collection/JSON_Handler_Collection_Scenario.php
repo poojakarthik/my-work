@@ -165,16 +165,6 @@ class JSON_Handler_Collection_Scenario extends JSON_Handler implements JSON_Hand
 				$aErrors[] = 'No allow automatic unbar (yes/no) was supplied';
 			}
 			
-			if ($oDetails->working_status_id == WORKING_STATUS_ACTIVE) {
-				if ($oDetails->broken_promise_collection_scenario_id === null) {
-					$aErrors[] = 'No broken promise to pay colleciton scenario was supplied';
-				}
-
-				if ($oDetails->dishonoured_payment_collection_scenario_id === null) {
-					$aErrors[] = 'No dishonoured payment collection scenario was supplied';
-				}
-			}
-			
 			if (count($aErrors) > 0) {
 				return array(
 					'bSuccess' => false,
@@ -200,8 +190,15 @@ class JSON_Handler_Collection_Scenario extends JSON_Handler implements JSON_Hand
 			$oScenario->threshold_amount = $oDetails->threshold_amount;
 			$oScenario->initial_collection_severity_id = $oDetails->initial_collection_severity_id;
 			$oScenario->allow_automatic_unbar = (int)$oDetails->allow_automatic_unbar;
-			$oScenario->broken_promise_collection_scenario_id = (($oDetails->broken_promise_collection_scenario_id !== null) ? (int)$oDetails->broken_promise_collection_scenario_id : null);
-			$oScenario->dishonoured_payment_collection_scenario_id = (($oDetails->dishonoured_payment_collection_scenario_id !== null) ? (int)$oDetails->dishonoured_payment_collection_scenario_id : null);
+
+			if (($oDetails->broken_promise_collection_scenario_id !== null) && ($oDetails->broken_promise_collection_scenario_id !== '')) {
+				$oScenario->broken_promise_collection_scenario_id = (int)$oDetails->broken_promise_collection_scenario_id;
+			}
+
+			if (($oDetails->dishonoured_payment_collection_scenario_id !== null) && ($oDetails->dishonoured_payment_collection_scenario_id !== '')) {
+				$oScenario->dishonoured_payment_collection_scenario_id = (int)$oDetails->dishonoured_payment_collection_scenario_id;
+			}
+			
 			$oScenario->save();
 			
 			// Create collection_scenario_collection_event(s)
