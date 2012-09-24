@@ -1,20 +1,18 @@
 <?php
-class Resource_Type_File_Deliver_FTP extends Resource_Type_File_Deliver
-{
-	const	RESOURCE_TYPE		= RESOURCE_TYPE_FILE_DELIVERER_FTP;
+class Resource_Type_File_Deliver_FTP extends Resource_Type_File_Deliver {
+	const RESOURCE_TYPE = RESOURCE_TYPE_FILE_DELIVERER_FTP;
 	
-	protected	$_rConnection	= '';
+	protected $_rConnection = '';
 	
-	public function connect()
-	{
-		$sHost		= $this->getConfig()->Host;
-		$sUsername	= $this->getConfig()->Username;
-		$sPassword	= $this->getConfig()->Password;
-		$iPort		= $this->getConfig()->Port;
-		$bPassive	= $this->getConfig()->Passive;
+	public function connect() {
+		$sHost = $this->getConfig()->Host;
+		$sUsername = $this->getConfig()->Username;
+		$sPassword = $this->getConfig()->Password;
+		$iPort = $this->getConfig()->Port;
+		$bPassive = $this->getConfig()->PassiveMode;
 		
 		// Connect to the FTP server
-		$this->_rConnection	= @ftp_connect($this->getConfig()->Host, $this->getConfig()->Port);
+		$this->_rConnection = @ftp_connect($this->getConfig()->Host, $this->getConfig()->Port);
 		Flex::assert($this->_rConnection,
 			"Unable to connect to FTP host '{$sHost}:{$iPort}'",
 			$php_errormsg,
@@ -28,8 +26,7 @@ class Resource_Type_File_Deliver_FTP extends Resource_Type_File_Deliver
 			'File Delivery: Unable to authenticate with FTP host'
 		);
 		
-		if ($bPassive)
-		{
+		if ($bPassive) {
 			Flex::assert(@ftp_pasv($this->_rConnection, true),
 				"Unable to initiate PASV mode on FTP host '{$sHost}' as '{$sUsername}'",
 				$php_errormsg,
@@ -40,16 +37,14 @@ class Resource_Type_File_Deliver_FTP extends Resource_Type_File_Deliver
 		return $this;
 	}
 	
-	protected function _deliver($sLocalPath, $mCarrierModule=null)
-	{
-		$sDeliveryPath	= $this->_getDeliveryPath($sLocalPath);
+	protected function _deliver($sLocalPath, $mCarrierModule=null) {
+		$sDeliveryPath = $this->_getDeliveryPath($sLocalPath);
 		
-		$aErrorData	=	array
-						(
-							'sLocalPath'			=> $sLocalPath,
-							'sDeliveryPath'			=> $sDeliveryPath,
-							'aCarrierModuleConfig'	=> $this->getConfig()->toArray()
-						);
+		$aErrorData = array(
+			'sLocalPath' => $sLocalPath,
+			'sDeliveryPath' => $sDeliveryPath,
+			'aCarrierModuleConfig' => $this->getConfig()->toArray()
+		);
 		
 		Flex::assert($this->getConfig()->AllowOverwrite || (@ftp_mdtm($this->_rConnection, $sDeliveryPath) === -1),
 			"File Delivery Path '{$sDeliveryPath}' already exists",
@@ -66,16 +61,14 @@ class Resource_Type_File_Deliver_FTP extends Resource_Type_File_Deliver
 		return $this;
 	}
 	
-	public function disconnect()
-	{
+	public function disconnect() {
 		// We probably don't really care if this fails
 		@ftp_close($this->_rConnection);
 		
 		return $this;
 	}
 	
-	protected function _getDeliveryPath($sFilePath)
-	{
+	protected function _getDeliveryPath($sFilePath) {
 		return rtrim($this->getConfig()->RemotePath, '/\\').'/'.basename($sFilePath);
 	}
 
@@ -83,17 +76,15 @@ class Resource_Type_File_Deliver_FTP extends Resource_Type_File_Deliver
 		parent::createCarrierModule($iCarrier, $iCustomerGroup, $sClass, self::RESOURCE_TYPE);
 	}
 	
-	static public function defineCarrierModuleConfig()
-	{
+	static public function defineCarrierModuleConfig() {
 		return array_merge(parent::defineCarrierModuleConfig(), array(
-			'RemotePath'		=>	array('Description'=>'Remote path to deposit the file to'),
-			'AllowOverwrite'	=>	array('Description'=>'Allow overwriting of existing files on the host'),
-			'Host'				=>	array('Description'=>'FTP Host'),
-			'Username'			=>	array('Description'=>'Username'),
-			'Password'			=>	array('Description'=>'Password'),
-			'Port'				=>	array('Description'=>'Port','Value'=>21,'Type'=>DATA_TYPE_INTEGER),
-			'PassiveMode'		=>	array('Description'=>'0: Active Mode; 1: Passive Mode','Value'=>false,'Type'=>DATA_TYPE_BOOLEAN)
+			'RemotePath' => array('Description'=>'Remote path to deposit the file to'),
+			'AllowOverwrite' => array('Description'=>'Allow overwriting of existing files on the host'),
+			'Host' => array('Description'=>'FTP Host'),
+			'Username' => array('Description'=>'Username'),
+			'Password' => array('Description'=>'Password'),
+			'Port' => array('Description'=>'Port','Value'=>21,'Type'=>DATA_TYPE_INTEGER),
+			'PassiveMode' => array('Description'=>'0: Active Mode; 1: Passive Mode','Value'=>false,'Type'=>DATA_TYPE_BOOLEAN)
 		));
 	}
 }
-?>
