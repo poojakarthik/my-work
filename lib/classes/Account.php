@@ -1242,17 +1242,19 @@ class Account
 			$oServiceToDisconnect = Logic_Service::getForId($oServiceFNNInstance->Id);
 
 			Flex::assert(is_object($oServiceFNNInstance), 'Unable to close Account #'.var_export($this->id, true).': Unable to fetch latest ORM instance of FNN '.var_export($oService->FNN, true), array(
-				'Account' => $oAccount,
+				'Account' => $oAccount->toArray(),
 				'Services' => $aServices,
+				'Service' => $oService->toArray(),
 				'ServicesForFNN' => $aServicesForFNN,
-				'ServiceFNNInstance' => $oServiceFNNInstance,
+				'ServiceFNNInstance' => $oServiceFNNInstance->toArray(),
 				'ServiceToDisconnect' => $oServiceToDisconnect
 			));
 			Flex::assert(is_object($oServiceToDisconnect), 'Unable to close Account #'.var_export($this->id, true).': Unable to fetch latest Logic instance of FNN '.var_export($oService->FNN, true), array(
-				'Account' => $oAccount,
+				'Account' => $oAccount->toArray(),
 				'Services' => $aServices,
+				'Service' => $oService->toArray(),
 				'ServicesForFNN' => $aServicesForFNN,
-				'ServiceFNNInstance' => $oServiceFNNInstance,
+				'ServiceFNNInstance' => $oServiceFNNInstance->toArray(),
 				'ServiceToDisconnect' => $oServiceToDisconnect
 			));
 
