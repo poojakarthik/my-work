@@ -1240,12 +1240,12 @@ class Account
 
 			$oServiceFNNInstance = array_pop($aServicesForFNN);
 			$oServiceToDisconnect = Logic_Service::getForId($oServiceFNNInstance->Id);
-
+			/*
 			Flex::assert(is_object($oServiceFNNInstance), 'Unable to close Account #'.var_export($this->id, true).': Unable to fetch latest ORM instance of FNN '.var_export($oService->FNN, true), array(
 				'Account' => $this->toArray(),
 				'Services' => $aServices,
 				'Service' => $oService->toArray(),
-				'ServicesForFNN' => $aServicesForFNN,
+				'EarlierServicesForFNN' => $aServicesForFNN,
 				'ServiceFNNInstance' => $oServiceFNNInstance->toArray(),
 				'ServiceToDisconnect' => $oServiceToDisconnect
 			));
@@ -1253,13 +1253,14 @@ class Account
 				'Account' => $this->toArray(),
 				'Services' => $aServices,
 				'Service' => $oService->toArray(),
-				'ServicesForFNN' => $aServicesForFNN,
+				'EarlierServicesForFNN' => $aServicesForFNN,
 				'ServiceFNNInstance' => $oServiceFNNInstance->toArray(),
 				'ServiceToDisconnect' => $oServiceToDisconnect
 			));
-
-			if ($oServiceFNNInstance && $oServiceToDisconnect) {
-
+			*/
+	
+			// NOTE: There are some pre-Flex Services that have invalid Service Types, causing problems (just skip them)
+			if ($oServiceToDisconnect !== false) {
 				if($oServiceToDisconnect->Status != SERVICE_ARCHIVED && $oServiceToDisconnect->Status != SERVICE_DISCONNECTED) {
 					$mResult = $oServiceToDisconnect->ChangeStatus(SERVICE_DISCONNECTED);
 					if ($bSetDefaultPlanOnServices) {
