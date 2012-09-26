@@ -7965,6 +7965,9 @@ div.component-collections-scenario > table.reflex {
   resize: vertical;
   min-height: 8ex;
 }
+.popup-adjustment-request table.input tbody tr th {
+  width: 12em;
+}
 /************************** END - Popup Adjustment Request - END **************************/
 /************************** START - Page Adjustment Management - START **************************/
 .page-adjustment-management > .section table.reflex {

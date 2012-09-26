@@ -24,148 +24,167 @@ var Popup_Adjustment_Request = Class.create(Reflex_Popup,
 		Flex.Constant.loadConstantGroup(Popup_Adjustment_Request.REQUIRED_CONSTANT_GROUPS, this._buildUI.bind(this));
 	},
 	
-	_buildUI : function(oAccount, oTaxType)
-	{
-		if (!oAccount)
-		{
-			Flex.Account.getForId(this._iAccountId, this._buildUI.bind(this));
-			return;
-		}
+	_buildUI : function() {		
+		var oContentDiv = $T.div({class: 'popup-adjustment-request'},
+			$T.table({class: 'reflex input'},
+				$T.tbody(
+					$T.tr(
+						$T.th('Account Number'),
+						$T.td({'class': 'popup-adjustment-request-accountid'})
+					),
+					$T.tr(
+						$T.th('Business Name'),
+						$T.td({'class': 'popup-adjustment-request-accountbusinessname'})
+					),
+					$T.tr(
+						$T.th('Adjustment'),
+						$T.td(
+							this._createControl(
+								'select', 
+								'Adjustment', 
+								true, 
+								Popup_Adjustment_Request._getAdjustmentTypeOptions,
+								this._iAdjustmentTypeId,
+								this._adjustmentTypeChange.bind(this)
+							).getElement()
+						)
+					),
+					$T.tr(
+						$T.th('Adjustment Type'),
+						$T.td({class: 'popup-adjustment-request-adjustment-type-code'},
+							'-'
+						)
+					),
+					$T.tr(
+						$T.th('Description'),
+						$T.td({class: 'popup-adjustment-request-adjustment-type-description'},
+							'-'
+						)
+					),
+					$T.tr(
+						$T.th('Nature'),
+						$T.td({class: 'popup-adjustment-request-adjustment-type-nature'},
+							'-'
+						)
+					),
+					$T.tr(
+						$T.th({'class': 'popup-adjustment-request-amountlabel'}),
+						$T.td(
+							this._createControl(
+								'text', 
+								'Amount', 
+								this._isAmountRequired.bind(this), 
+								Reflex_Validation.float,
+								this._fOverrideAmount,
+								this._amountChange.bind(this)
+							).getElement()
+						)
+					),
+					$T.tr(
+						$T.th({'class': 'popup-adjustment-request-amount-exgstlabel'}),
+						$T.td({class: 'popup-adjustment-request-amount-exgst'},
+							'-'
+						)
+					),
+					$T.tr(
+						$T.th({class: 'popup-adjustment-request-amount-taxlabel'}),
+						$T.td({class: 'popup-adjustment-request-amount-tax'},
+							'-'
+						)
+					),
+					$T.tr(
+						$T.th('Invoice'),
+						$T.td(
+							this._createControl(
+								'select', 
+								'Invoice', 
+								false, 
+								Popup_Adjustment_Request._getInvoiceOptionsForAccount.curry(this._iAccountId),
+								this._iInvoiceId,
+								null
+							).getElement())
+					),
+					$T.tr(
+						$T.th('Note'),
+						$T.td(
+							new Control_Textarea({
+								sExtraClass		: 'popup-adjustment-request-note',
+								sName			: 'Note',
+								iControlState	: Control.STATE_ENABLED,
+								fnValidate		: function (oControl) {
+									// Ensure that it doesn't exceed our storage capacity
+									var	sValue	= String(oControl.getValue()),
+										iLength	= sValue.length;
+									if (iLength > 1000) {
+										throw "Exceeded maximum length of 1000 characters (currently "+iLength+")";
+									}
+									return true;
+								}
+							})
+						)
+					)
+				)
+			),
+			$T.div({class: 'popup-adjustment-request-buttons'},
+				$T.button({class: 'icon-button'},
+					$T.img({src: '../admin/img/template/approve.png'}),
+					$T.span('Save')
+				).observe('click', this._doSave.bind(this)),
+				$T.button({class: 'icon-button'},
+					$T.span('Cancel')
+				).observe('click', this.hide.bind(this))
+			)
+		);
 		
-		if (!typeof oTaxType == 'undefined')
-		{
-			Popup_Adjustment_Request._getGlobalTaxType(this._buildUI.bind(this, oAccount));
-			return;
-		}
-				
-		this._oTaxType = oTaxType;
-		
-		var oContentDiv = 	$T.div({class: 'popup-adjustment-request'},
-								$T.table({class: 'reflex input'},
-									$T.tbody(
-										$T.tr(
-											$T.th('Account Number'),
-											$T.td(oAccount.Id)
-										),
-										$T.tr(
-											$T.th('Business Name'),
-											$T.td(oAccount.BusinessName)
-										),
-										$T.tr(
-											$T.th('Adjustment'),
-											$T.td(
-												this._createControl(
-													'select', 
-													'Adjustment', 
-													true, 
-													Popup_Adjustment_Request._getAdjustmentTypeOptions,
-													this._iAdjustmentTypeId,
-													this._adjustmentTypeChange.bind(this)
-												).getElement()
-											)
-										),
-										$T.tr(
-											$T.th('Adjustment Type'),
-											$T.td({class: 'popup-adjustment-request-adjustment-type-code'},
-												'-'
-											)
-										),
-										$T.tr(
-											$T.th('Description'),
-											$T.td({class: 'popup-adjustment-request-adjustment-type-description'},
-												'-'
-											)
-										),
-										$T.tr(
-											$T.th('Nature'),
-											$T.td({class: 'popup-adjustment-request-adjustment-type-nature'},
-												'-'
-											)
-										),
-										$T.tr(
-											$T.th('Amount ($ inc. GST)'),
-											$T.td(
-												this._createControl(
-													'text', 
-													'Amount', 
-													this._isAmountRequired.bind(this), 
-													Reflex_Validation.float,
-													this._fOverrideAmount,
-													this._amountChange.bind(this)
-												).getElement()
-											)
-										),
-										$T.tr(
-											$T.th('Amount ($ ex. GST)'),
-											$T.td({class: 'popup-adjustment-request-amount-exgst'},
-												'-'
-											)
-										),
-										$T.tr(
-											$T.th('GST'),
-											$T.td({class: 'popup-adjustment-request-amount-tax'},
-												'-'
-											)
-										),
-										$T.tr(
-											$T.th('Invoice'),
-											$T.td(
-												this._createControl(
-													'select', 
-													'Invoice', 
-													false, 
-													Popup_Adjustment_Request._getInvoiceOptionsForAccount.curry(this._iAccountId),
-													this._iInvoiceId,
-													null
-												).getElement())
-										),
-										$T.tr(
-											$T.th('Note'),
-											$T.td(
-												new Control_Textarea({
-													sExtraClass		: 'popup-adjustment-request-note',
-													sName			: 'Note',
-													iControlState	: Control.STATE_ENABLED,
-													fnValidate		: function (oControl) {
-														// Ensure that it doesn't exceed our storage capacity
-														var	sValue	= String(oControl.getValue()),
-															iLength	= sValue.length;
-														if (iLength > 1000) {
-															throw "Exceeded maximum length of 1000 characters (currently "+iLength+")";
-														}
-														return true;
-													}
-												})
-											)
-										)
-									)
-								),
-								$T.div({class: 'popup-adjustment-request-buttons'},
-									$T.button({class: 'icon-button'},
-										$T.img({src: '../admin/img/template/approve.png'}),
-										$T.span('Save')
-									).observe('click', this._doSave.bind(this)),
-									$T.button({class: 'icon-button'},
-										$T.span('Cancel')
-									).observe('click', this.hide.bind(this))
-								)
-							);
-		
-		this._oAdjustmentTypeCode 			= oContentDiv.select('.popup-adjustment-request-adjustment-type-code').first();
-		this._oAdjustmentTypeDescription	= oContentDiv.select('.popup-adjustment-request-adjustment-type-description').first();
-		this._oAdjustmentTypeNature 		= oContentDiv.select('.popup-adjustment-request-adjustment-type-nature').first();
-		this._oAmountExGST					= oContentDiv.select('.popup-adjustment-request-amount-exgst').first();
-		this._oAmountTax					= oContentDiv.select('.popup-adjustment-request-amount-tax').first();
-		
+		this._oAdjustmentTypeCode = oContentDiv.select('.popup-adjustment-request-adjustment-type-code').first();
+		this._oAdjustmentTypeDescription = oContentDiv.select('.popup-adjustment-request-adjustment-type-description').first();
+		this._oAdjustmentTypeNature = oContentDiv.select('.popup-adjustment-request-adjustment-type-nature').first();
+		this._oAmountExTax = oContentDiv.select('.popup-adjustment-request-amount-exgst').first();
+		this._oAmountTax = oContentDiv.select('.popup-adjustment-request-amount-tax').first();		
 		this._oNote	= oContentDiv.select('.popup-adjustment-request-note').first().oReflexComponent;
-		
-		this._oLoading.hide();
-		delete this._oLoading;
-		
+
 		this.setTitle('Request Adjustment');
 		this.addCloseButton();
 		this.setContent(oContentDiv);
+		
+		this._finaliseUI();
+
+	},
+
+	_finaliseUI : function(oAccount, oTaxType) {
+		if (!oAccount) {
+			Flex.Account.getForId(this._iAccountId, this._finaliseUI.bind(this));
+			return;
+		}
+		
+		if (typeof oTaxType == 'undefined') {
+			Popup_Adjustment_Request._getGlobalTaxType(this._finaliseUI.bind(this, oAccount));
+			return;
+		}
+		
+		this._oLoading.hide();
+		delete this._oLoading;
+
+		if (!oTaxType) {
+			Reflex_Popup.alert("No Global Tax Type has been configured. Adjustments cannot be requested.");
+			return;
+		}
+
+		this._oTaxType = oTaxType;
+
+		this.contentPane.select('.popup-adjustment-request-amountlabel')[0].innerHTML = 'Amount ($ inc. ' + this._oTaxType.name + ')';
+		this.contentPane.select('.popup-adjustment-request-amount-exgstlabel')[0].innerHTML = 'Amount ($ ex. ' + this._oTaxType.name + ')';
+		this.contentPane.select('.popup-adjustment-request-amount-taxlabel')[0].innerHTML = this._oTaxType.name;
+
+		this.contentPane.select('.popup-adjustment-request-accountid')[0].innerHTML = oAccount.Id;
+		this.contentPane.select('.popup-adjustment-request-accountbusinessname')[0].innerHTML = oAccount.BusinessName;
+
 		this.display();
+
+		// Force clear the adjustment type select because of chromes auto-selecting the first element bug
+		if (this._aControls[0].oControlOutput.oEdit.selectedIndex !== -1) {
+			this._aControls[0].oControlOutput.oEdit.selectedIndex = -1;
+		}
 	},
 	
 	_createControl : function(sType, sLabel, mMandatory)
@@ -248,12 +267,12 @@ var Popup_Adjustment_Request = Class.create(Reflex_Popup,
 		var fTaxComponent	= fAmount - (fAmount / fTaxDivisor);
 		fTaxComponent		= (isNaN(fTaxComponent) ? 0 : fTaxComponent);
 		
-		var fExGST = fAmount - fTaxComponent;
-		if (isNaN(fExGST)) {
-			fExGST = 0;
+		var fExTax = fAmount - fTaxComponent;
+		if (isNaN(fExTax)) {
+			fExTax = 0;
 		}
 
-		this._oAmountExGST.innerHTML = new Number(fExGST).toFixed(2);
+		this._oAmountExTax.innerHTML = new Number(fExTax).toFixed(2);
 		this._oAmountTax.innerHTML = new Number(fTaxComponent).toFixed(2);
 	},
 	
@@ -444,10 +463,8 @@ Object.extend(Popup_Adjustment_Request,
 		fnCallback(aOptions);
 	},
 	
-	_getGlobalTaxType : function(fnCallback, oResponse)
-	{
-		if (!oResponse)
-		{
+	_getGlobalTaxType : function(fnCallback, oResponse) {
+		if (!oResponse) {
 			// Make request
 			var fnResp 	= Popup_Adjustment_Request._getGlobalTaxType.curry(fnCallback);
 			var fnReq	= jQuery.json.jsonFunction(fnResp, fnResp, 'Tax_Type', 'getGlobalTaxType');
@@ -455,19 +472,13 @@ Object.extend(Popup_Adjustment_Request,
 			return;
 		}
 		
-		if (!oResponse.bSuccess)
-		{
+		if (!oResponse.bSuccess) {
 			// Error
 			Popup_Adjustment_Request._ajaxError(oResponse);
 			return;
 		}
-
-		if (!oResponse.oTaxType) {
-			Reflex_Popup.alert("No Global Tax Type is defined");
-		}
 		
-		if (fnCallback)
-		{
+		if (fnCallback) {
 			fnCallback(oResponse.oTaxType);
 		}
 	}
