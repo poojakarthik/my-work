@@ -352,255 +352,255 @@ class Account
 		}
 	}
 
-  	 /**
-         * returns an array of Account objects representing all accounts which are:
-         * 1 are currently in collections, defined by most recent account_collection_event_history record not being for the 'exit collections' event
-         * 2 OR are not in collections (as defined under 1) but have collectables with a balance > 0 that are not part of an active promise
-         *
-         */
-        public static function getForBatchCollectionsProcess($aAccountsToExclude)
-        {
-            $sExcluded = implode(",",$aAccountsToExclude );
-            $sExcludeSql = $sExcluded == "" ? "" : "AND a.Id NOT IN ($sExcluded)";
-            $sSql = "   SELECT *
-                        FROM(
+	 /**
+		 * returns an array of Account objects representing all accounts which are:
+		 * 1 are currently in collections, defined by most recent account_collection_event_history record not being for the 'exit collections' event
+		 * 2 OR are not in collections (as defined under 1) but have collectables with a balance > 0 that are not part of an active promise
+		 *
+		 */
+		public static function getForBatchCollectionsProcess($aAccountsToExclude)
+		{
+			$sExcluded = implode(",",$aAccountsToExclude );
+			$sExcludeSql = $sExcluded == "" ? "" : "AND a.Id NOT IN ($sExcluded)";
+			$sSql = "   SELECT *
+						FROM(
 
-                                  /*retrieve accounts for which the last event was not the exit event*/
-                                select a.*
-                                FROM Account a
-                                JOIN account_collection_event_history ach ON (  a.Id = ach.account_id
-                                                                                AND ach.id = (	select max(id)
-                                                                                                FROM account_collection_event_history
-                                                                                                WHERE account_id = a.Id
+								  /*retrieve accounts for which the last event was not the exit event*/
+								select a.*
+								FROM Account a
+								JOIN account_collection_event_history ach ON (  a.Id = ach.account_id
+																				AND ach.id = (	select max(id)
+																								FROM account_collection_event_history
+																								WHERE account_id = a.Id
 
-                                                                                                )
-                                                                                AND a.Id  NOT in(select account_id from collection_suspension cs where cs.start_datetime < NOW() AND cs.effective_end_datetime IS NULL)
-                                                                                $sExcludeSql
-                                                                              )
-                                JOIN collection_event ce ON (ce.id = ach.collection_event_id)
-                                JOIN collection_event_type cet ON (cet.id = ce.collection_event_type_id and (cet.system_name <> 'EXIT_COLLECTIONS' OR ach.completed_datetime IS NULL))
+																								)
+																				AND a.Id  NOT in(select account_id from collection_suspension cs where cs.start_datetime < NOW() AND cs.effective_end_datetime IS NULL)
+																				$sExcludeSql
+																			  )
+								JOIN collection_event ce ON (ce.id = ach.collection_event_id)
+								JOIN collection_event_type cet ON (cet.id = ce.collection_event_type_id and (cet.system_name <> 'EXIT_COLLECTIONS' OR ach.completed_datetime IS NULL))
 
-                                UNION
+								UNION
 
-                                /*retrieve accounts with a non-promise balance > 0 */
-                                select a.*
-                                FROM Account a
-                                JOIN account_status ast ON (a.Archived = ast.id AND ast.send_late_notice = 1
-                                                            AND a.Id  NOT in(select account_id from collection_suspension cs where cs.start_datetime < now() AND cs.effective_end_datetime IS NULL)
-                                                            )
-                                JOIN collectable c ON (a.Id = c.account_id AND c.balance > 0 AND c.due_date < NOW())
-                                LEFT JOIN collection_promise cp ON (c.collection_promise_id = cp.id )
-                                WHERE  (c.collection_promise_id is null OR cp.completed_datetime is not null)
-                                 $sExcludeSql
-
-
-                        ) accounts 
-            ";
-
-            $oQuery = new Query();
-            $mResult = $oQuery->Execute($sSql);
-            $aResult = array();
-            if ($mResult)
-                {
-                    while ($aRow = $mResult->fetch_assoc())
-                    {
-                            $aResult[]= new self($aRow);
-                    }
-                }
-            return $aResult;
+								/*retrieve accounts with a non-promise balance > 0 */
+								select a.*
+								FROM Account a
+								JOIN account_status ast ON (a.Archived = ast.id AND ast.send_late_notice = 1
+															AND a.Id  NOT in(select account_id from collection_suspension cs where cs.start_datetime < now() AND cs.effective_end_datetime IS NULL)
+															)
+								JOIN collectable c ON (a.Id = c.account_id AND c.balance > 0 AND c.due_date < NOW())
+								LEFT JOIN collection_promise cp ON (c.collection_promise_id = cp.id )
+								WHERE  (c.collection_promise_id is null OR cp.completed_datetime is not null)
+								 $sExcludeSql
 
 
-        }
+						) accounts 
+			";
 
-        public function getPayables()
-        {
-            $oQuery = new Query();
-                    $sSQL = "   CREATE TEMPORARY TABLE IF NOT EXISTS account_payable
-                                (
-                                        id BIGINT(20) UNSIGNED,
-                                        account_id BIGINT UNSIGNED,
-                                        amount DECIMAL(13,4),
-                                        balance DECIMAL(13,4),
-                                        created_datetime DATETIME,
-                                        due_date DATE,
-                                        collection_promise_id BIGINT(20) UNSIGNED,
-                                        invoice_id BIGINT(20) UNSIGNED,
-                                        created_employee_id BIGINT(20) UNSIGNED,
-                                        modified_datetime DATETIME,
-                                        modified_employee_id BIGINT(20) UNSIGNED,
-                                        status_id BIGINT(20),
-                                        INDEX in_account_payable_due_date (due_date)
-                                )";
+			$oQuery = new Query();
+			$mResult = $oQuery->Execute($sSql);
+			$aResult = array();
+			if ($mResult)
+				{
+					while ($aRow = $mResult->fetch_assoc())
+					{
+							$aResult[]= new self($aRow);
+					}
+				}
+			return $aResult;
 
-                    $oQuery->Execute($sSQL);
 
-                    $oQuery->Execute("DELETE FROM account_payable");
+		}
 
-                    $sSQL = "INSERT INTO account_payable (id, account_id, amount, balance, created_datetime, due_date, collection_promise_id, invoice_id )
-                                SELECT c.*
-                                FROM collectable c
-                                LEFT JOIN collection_promise cp ON ( c.collection_promise_id = cp.id )
-                                WHERE ( c.amount > 0  AND c.account_id = $this->Id AND (c.collection_promise_id IS NULL OR cp.completed_datetime is NOT NULL) )";
+		public function getPayables()
+		{
+			$oQuery = new Query();
+					$sSQL = "   CREATE TEMPORARY TABLE IF NOT EXISTS account_payable
+								(
+										id BIGINT(20) UNSIGNED,
+										account_id BIGINT UNSIGNED,
+										amount DECIMAL(13,4),
+										balance DECIMAL(13,4),
+										created_datetime DATETIME,
+										due_date DATE,
+										collection_promise_id BIGINT(20) UNSIGNED,
+										invoice_id BIGINT(20) UNSIGNED,
+										created_employee_id BIGINT(20) UNSIGNED,
+										modified_datetime DATETIME,
+										modified_employee_id BIGINT(20) UNSIGNED,
+										status_id BIGINT(20),
+										INDEX in_account_payable_due_date (due_date)
+								)";
 
-                    $oQuery->Execute($sSQL);
+					$oQuery->Execute($sSQL);
 
-                    $sSQL = "INSERT INTO account_payable (id, collection_promise_id, due_date, amount, created_datetime,created_employee_id,  account_id)
+					$oQuery->Execute("DELETE FROM account_payable");
+
+					$sSQL = "INSERT INTO account_payable (id, account_id, amount, balance, created_datetime, due_date, collection_promise_id, invoice_id )
+								SELECT c.*
+								FROM collectable c
+								LEFT JOIN collection_promise cp ON ( c.collection_promise_id = cp.id )
+								WHERE ( c.amount > 0  AND c.account_id = $this->Id AND (c.collection_promise_id IS NULL OR cp.completed_datetime is NOT NULL) )";
+
+					$oQuery->Execute($sSQL);
+
+					$sSQL = "INSERT INTO account_payable (id, collection_promise_id, due_date, amount, created_datetime,created_employee_id,  account_id)
 							SELECT cpi.*, cp.account_id
 							FROM collection_promise_instalment cpi
 							JOIN collection_promise cp ON ( cp.id = cpi.collection_promise_id
 															AND cp.completed_datetime IS NULL AND cp.account_id = $this->Id)";
-                    $oQuery->Execute($sSQL);
+					$oQuery->Execute($sSQL);
 
-                    $sSQL = "SELECT *
+					$sSQL = "SELECT *
 							  FROM account_payable
 							  ORDER BY due_date, balance asc"; //ordering by balance will ensure that promise instalments come first as their balance is NULL in the temp table
 
-                    $mResult = $oQuery->Execute($sSQL);
-                    $aResult = array();
-                    if ($mResult)
-                    {
-                        while ($aRecord = $mResult->fetch_assoc())
-                        {
-                            $oItem;
-                            if ($aRecord['balance'] === null)
-                            {
-                                unset ($aRecord['account_id']);
-                                unset ($aRecord['balance']);
-                                $oORM = new Collection_Promise_Instalment($aRecord );
-                                $aResult[] = new Logic_Collection_Promise_Instalment($oORM);
-                            }
-                            else
-                            {
-                                unset($aRecord['created_employee_id']);
-                                unset($aRecord['modified_datetime']);
-                                unset($aRecord['modified_employee_id']);
-                                unset($aRecord['status_id']);
-                                $oORM = new Collectable($aRecord);
-                                $aResult[] = Logic_Collectable::getInstance($oORM, TRUE);
-                            }
+					$mResult = $oQuery->Execute($sSQL);
+					$aResult = array();
+					if ($mResult)
+					{
+						while ($aRecord = $mResult->fetch_assoc())
+						{
+							$oItem;
+							if ($aRecord['balance'] === null)
+							{
+								unset ($aRecord['account_id']);
+								unset ($aRecord['balance']);
+								$oORM = new Collection_Promise_Instalment($aRecord );
+								$aResult[] = new Logic_Collection_Promise_Instalment($oORM);
+							}
+							else
+							{
+								unset($aRecord['created_employee_id']);
+								unset($aRecord['modified_datetime']);
+								unset($aRecord['modified_employee_id']);
+								unset($aRecord['status_id']);
+								$oORM = new Collectable($aRecord);
+								$aResult[] = Logic_Collectable::getInstance($oORM, TRUE);
+							}
 
-                        }
-                    }
-                    mysqli_free_result($mResult);
-                    return $aResult;
+						}
+					}
+					mysqli_free_result($mResult);
+					return $aResult;
 
-        }
+		}
 
 
 
-        public static function getForBalanceRedistribution($iRedistributionType = Account::BALANCE_REDISTRIBUTION_REGULAR, $iAccountId = NULL)
-        {
+		public static function getForBalanceRedistribution($iRedistributionType = Account::BALANCE_REDISTRIBUTION_REGULAR, $iAccountId = NULL)
+		{
 
-            $aReport = array('gaps' =>array(), 'distributable_balance' => array(), 'amount_balance_problem' => array());
+			$aReport = array('gaps' =>array(), 'distributable_balance' => array(), 'amount_balance_problem' => array());
 			$aAccountsForRedistribution = array();
 			$iCount = 0;
 
-            switch($iRedistributionType)
-            {
-                case  Account::BALANCE_REDISTRIBUTION_REGULAR:
+			switch($iRedistributionType)
+			{
+				case  Account::BALANCE_REDISTRIBUTION_REGULAR:
 					$sSingleAccountClause = $iAccountId === NULL ? NULL : "AND c.account_id = {$iAccountId}";
 					Log::getLog()->log("Retrieving accounts that have for some reason been wrongly distributed");
-                    //1 create the temporary table, and populate it with all collectables that are not part of a promise					
-                    $sSQL = "   CREATE  TEMPORARY TABLE tmp_payable
-                                SELECT  due_date, amount, c.account_id, balance
-                                FROM collectable c
-                                LEFT JOIN collection_promise cp ON ( c.collection_promise_id = cp.id)
-                                WHERE ( c.collection_promise_id IS NULL OR cp.completed_datetime is NOT NULL ) {$sSingleAccountClause}";
+					//1 create the temporary table, and populate it with all collectables that are not part of a promise					
+					$sSQL = "   CREATE  TEMPORARY TABLE tmp_payable
+								SELECT  due_date, amount, c.account_id, balance
+								FROM collectable c
+								LEFT JOIN collection_promise cp ON ( c.collection_promise_id = cp.id)
+								WHERE ( c.collection_promise_id IS NULL OR cp.completed_datetime is NOT NULL ) {$sSingleAccountClause}";
 
-                    Query::run($sSQL);
+					Query::run($sSQL);
 
-                    //2 for all active promises retrieve all promise instalments and amounts paid for each promise
+					//2 for all active promises retrieve all promise instalments and amounts paid for each promise
 
-                    $sSQL = "   SELECT cp.id as promise_id, cpi.due_date as due_date, cpi.amount as amount, cp.account_id as account_id, SUM(c.amount)-SUM(c.balance) as paid
-                                FROM collection_promise_instalment cpi
-                                JOIN collection_promise cp ON ( cp.id = cpi.collection_promise_id
-                                                                AND cp.completed_datetime IS NULL  )
-                                JOIN collectable c ON (cp.id = c.collection_promise_id {$sSingleAccountClause})
+					$sSQL = "   SELECT cp.id as promise_id, cpi.due_date as due_date, cpi.amount as amount, cp.account_id as account_id, SUM(c.amount)-SUM(c.balance) as paid
+								FROM collection_promise_instalment cpi
+								JOIN collection_promise cp ON ( cp.id = cpi.collection_promise_id
+																AND cp.completed_datetime IS NULL  )
+								JOIN collectable c ON (cp.id = c.collection_promise_id {$sSingleAccountClause})
 								GROUP BY cpi.id
-                                ORDER BY cp.id, cpi.due_date ASC";
+								ORDER BY cp.id, cpi.due_date ASC";
 
 					$mResult =  Query::run($sSQL);
 					$aResult = array();
-                    if ($mResult)
-                    {
+					if ($mResult)
+					{
 						while ($aRow = $mResult->fetch_assoc())
 						{
 							if (!array_key_exists($aRow['promise_id'], $aResult))
 								$aResult[$aRow['promise_id']]= array();
 							$aResult[$aRow['promise_id']][] = $aRow;
 						}
-                    }
+					}
 
-                    if (count($aResult) > 0)
-                    {
-                        //3 distribute the paid amount on each promise over each instalment, and insert these records into the temporary table
-                        $aInsertRecords = array();
-                        foreach ($aResult as $iPromiseId=>$aInstalments)
-                        {
-                            $fPaidAmount = $aInstalments[0]['paid'];
-                            foreach ($aInstalments as $aInstalmentRecord)
-                            {
-                                $fAmountToApply = $aInstalmentRecord['amount'] >= $fPaidAmount ?  $fPaidAmount :  $aInstalmentRecord['amount'];
-                                $fPaidAmount -= $fAmountToApply;
-                                $aRecord = array('due_date' => $aInstalmentRecord['due_date'], 'amount'=>$aInstalmentRecord['amount'], 'account_id'=>$aInstalmentRecord['account_id'], 'balance'=>$aInstalmentRecord['amount'] - $fAmountToApply);
-                               // $x = new StatementInsert('tmp_payable', array_keys($aRecord));
-                               // $x->Execute($aRecord);
-                                $sSQL = "INSERT into tmp_payable VALUES ('".$aInstalmentRecord['due_date']."', ".$aInstalmentRecord['amount'].",". $aInstalmentRecord['account_id'].",". ($aInstalmentRecord['amount'] - $fAmountToApply).")";
+					if (count($aResult) > 0)
+					{
+						//3 distribute the paid amount on each promise over each instalment, and insert these records into the temporary table
+						$aInsertRecords = array();
+						foreach ($aResult as $iPromiseId=>$aInstalments)
+						{
+							$fPaidAmount = $aInstalments[0]['paid'];
+							foreach ($aInstalments as $aInstalmentRecord)
+							{
+								$fAmountToApply = $aInstalmentRecord['amount'] >= $fPaidAmount ?  $fPaidAmount :  $aInstalmentRecord['amount'];
+								$fPaidAmount -= $fAmountToApply;
+								$aRecord = array('due_date' => $aInstalmentRecord['due_date'], 'amount'=>$aInstalmentRecord['amount'], 'account_id'=>$aInstalmentRecord['account_id'], 'balance'=>$aInstalmentRecord['amount'] - $fAmountToApply);
+							   // $x = new StatementInsert('tmp_payable', array_keys($aRecord));
+							   // $x->Execute($aRecord);
+								$sSQL = "INSERT into tmp_payable VALUES ('".$aInstalmentRecord['due_date']."', ".$aInstalmentRecord['amount'].",". $aInstalmentRecord['account_id'].",". ($aInstalmentRecord['amount'] - $fAmountToApply).")";
 								Query::run($sSQL);
-                            }
-                        }
+							}
+						}
 
 
-                    }
+					}
 
 
-                    //4 retrieve the account ids of accounts that need balance redistribution from the temporary table
+					//4 retrieve the account ids of accounts that need balance redistribution from the temporary table
 
-                    $sSQL =     "SELECT 		p.account_id as account_id,
-                                MIN(IF(p.balance = 0, p.due_date, NULL))                           AS min_fully_paid,
-                                MIN(IF(p.balance > 0 AND p.balance < p.amount, p.due_date, NULL))  AS min_partially_paid,
-                                MIN(IF(p.balance = p.amount, p.due_date, NULL))                    AS min_fully_unpaid,
-                                MAX(IF(p.balance = 0, p.due_date, NULL))                           AS max_fully_paid,
-                                MAX(IF(p.balance > 0 AND p.balance < p.amount, p.due_date, NULL))  AS max_partially_paid,
-                                MAX(IF(p.balance = p.amount, p.due_date, NULL))                    AS max_fully_unpaid
-                                FROM     	tmp_payable p
-                                WHERE p.amount > 0
-                                GROUP BY 	p.account_id
-                                HAVING  	min_partially_paid 	!= max_partially_paid
-                                                OR max_fully_paid 	> min_partially_paid
-                                                OR min_fully_unpaid 	< max_partially_paid
-                                                OR min_fully_unpaid 	< max_fully_paid";
-                    $mResult = Query::run($sSQL);
+					$sSQL =     "SELECT 		p.account_id as account_id,
+								MIN(IF(p.balance = 0, p.due_date, NULL))                           AS min_fully_paid,
+								MIN(IF(p.balance > 0 AND p.balance < p.amount, p.due_date, NULL))  AS min_partially_paid,
+								MIN(IF(p.balance = p.amount, p.due_date, NULL))                    AS min_fully_unpaid,
+								MAX(IF(p.balance = 0, p.due_date, NULL))                           AS max_fully_paid,
+								MAX(IF(p.balance > 0 AND p.balance < p.amount, p.due_date, NULL))  AS max_partially_paid,
+								MAX(IF(p.balance = p.amount, p.due_date, NULL))                    AS max_fully_unpaid
+								FROM     	tmp_payable p
+								WHERE p.amount > 0
+								GROUP BY 	p.account_id
+								HAVING  	min_partially_paid 	!= max_partially_paid
+												OR max_fully_paid 	> min_partially_paid
+												OR min_fully_unpaid 	< max_partially_paid
+												OR min_fully_unpaid 	< max_fully_paid";
+					$mResult = Query::run($sSQL);
 
-                    if ($mResult)
-                    {
-                        while ($aRow = $mResult->fetch_assoc())
-                        {
-                                   $aAccountsForRedistribution[] = $aRow['account_id'];
+					if ($mResult)
+					{
+						while ($aRow = $mResult->fetch_assoc())
+						{
+								   $aAccountsForRedistribution[] = $aRow['account_id'];
 								   $aReport['gaps'][] = $aRow;
-                        }
-                    }
+						}
+					}
 					$iCount = count($aAccountsForRedistribution);
 					Log::getLog()->log("$iCount Accounts found.");
 
-                    //5 retrieve accounts that have both distributable collectables and collectables with outstanding balances
+					//5 retrieve accounts that have both distributable collectables and collectables with outstanding balances
 					Log::getLog()->Log("Retrieving accounts with distributable balance AND with room for distributing these to payables");
-                    $sSQL = "   SELECT DISTINCT c.account_id as account_id
-                                FROM collectable c
-                                JOIN collectable c2 ON (c2.account_id = c.account_id  AND c2.balance > 0 AND c.balance < 0 {$sSingleAccountClause})
-                                ";
-                    $mResult = Query::run($sSQL);
-                    if ($mResult)
-                    {
-                        while ($aRow = $mResult->fetch_assoc())
-                        {
+					$sSQL = "   SELECT DISTINCT c.account_id as account_id
+								FROM collectable c
+								JOIN collectable c2 ON (c2.account_id = c.account_id  AND c2.balance > 0 AND c.balance < 0 {$sSingleAccountClause})
+								";
+					$mResult = Query::run($sSQL);
+					if ($mResult)
+					{
+						while ($aRow = $mResult->fetch_assoc())
+						{
 							$aAccountsForRedistribution[] = $aRow['account_id'];
 							$aReport['distributable_balance'][] = $aRow;
-                        }
-                    }
+						}
+					}
 
 					//6 retrieve accounts that have both distributable payments and collectables these can be distributed to
-                    $sSQL = "   SELECT DISTINCT c.account_id
+					$sSQL = "   SELECT DISTINCT c.account_id
 								FROM collectable c
 								JOIN payment p ON (	c.account_id = p.account_id
 													AND c.amount > 0
@@ -610,19 +610,19 @@ class Account
 														)
 													{$sSingleAccountClause}
 												  )
-                                ";
-                    $mResult = Query::run($sSQL);
-                    if ($mResult)
-                    {
-                        while ($aRow = $mResult->fetch_assoc())
-                        {
+								";
+					$mResult = Query::run($sSQL);
+					if ($mResult)
+					{
+						while ($aRow = $mResult->fetch_assoc())
+						{
 							$aAccountsForRedistribution[] = $aRow['account_id'];
 							$aReport['distributable_balance'][] = $aRow;
-                        }
-                    }
+						}
+					}
 
 					//7 retrieve accounts that have both distributable adjustments and collectables these can be distributed to
-                    $sSQL = "   SELECT DISTINCT c.account_id
+					$sSQL = "   SELECT DISTINCT c.account_id
 								FROM collectable c
 								JOIN adjustment a ON (c.account_id = a.account_id AND a.balance > 0 and c.amount > 0 {$sSingleAccountClause})
 								JOIN adjustment_type at ON (at.id = a.adjustment_type_id )
@@ -630,16 +630,16 @@ class Account
 								JOIN adjustment_nature an ON (an.id = a.adjustment_nature_id)
 								JOIN adjustment_status ast ON (a.adjustment_status_id = ast.id and ast.const_name = 'ADJUSTMENT_STATUS_APPROVED')
 								WHERE  ((c.balance > 0 AND an.value_multiplier*tn.value_multiplier = -1   ) OR (c.balance = c.amount AND an.value_multiplier*tn.value_multiplier = 1))
-                                ";
-                    $mResult = Query::run($sSQL);
-                    if ($mResult)
-                    {
-                        while ($aRow = $mResult->fetch_assoc())
-                        {
+								";
+					$mResult = Query::run($sSQL);
+					if ($mResult)
+					{
+						while ($aRow = $mResult->fetch_assoc())
+						{
 							$aAccountsForRedistribution[] = $aRow['account_id'];
 							$aReport['distributable_balance'][] = $aRow;
-                        }
-                    }
+						}
+					}
 					$aReport['distributable_balance'] = array_unique($aReport['distributable_balance']);
 					$iCount = count($aAccountsForRedistribution) - $iCount;
 					Log::getLog()->log("$iCount cases found.");
@@ -700,13 +700,13 @@ class Account
 
 
 					if ($mResult)
-                    {
-                        while ($aRow = $mResult->fetch_assoc())
-                        {
+					{
+						while ($aRow = $mResult->fetch_assoc())
+						{
 							$aAccountsForRedistribution[] = $aRow['account_id'];
 							$aReport['amount_balance_problem'][] = $aRow;
-                        }
-                    }
+						}
+					}
 					
 					$iCount = count($aAccountsForRedistribution) - $iCount;
 					Log::getLog()->log("$iCount Accounts found.");
@@ -771,7 +771,7 @@ class Account
 			/////END EMAIL REPORT		
 					
 					
-                    break;
+					break;
 				case Account::BALANCE_REDISTRIBUTION_FORCED:
 
 					$sSingleAccountClause = $iAccountId === NULL ? NULL : "AND a.Id = {$iAccountId}";
@@ -789,23 +789,23 @@ class Account
 					}
 
 					break;
-              case Account::BALANCE_REDISTRIBUTION_FORCED_INCLUDING_ARCHIVED:
+			  case Account::BALANCE_REDISTRIBUTION_FORCED_INCLUDING_ARCHIVED:
 				  $sSingleAccountClause = $iAccountId === NULL ? NULL : "WHERE  a.Id = {$iAccountId}";
 
-                   $sSQL = "    SELECT DISTINCT a.*
-                                FROM Account a {$sSingleAccountClause}
-                                ";				              
+				   $sSQL = "    SELECT DISTINCT a.*
+								FROM Account a {$sSingleAccountClause}
+								";				              
 
-                    $mResult = Query::run($sSQL);
-                    if ($mResult)
-                    {
-                        while ($aRow = $mResult->fetch_assoc())
-                        {
-                            $aAccountsForRedistribution[] = new self($aRow);
-                        }
-                    }
-               default:
-                       //try to resolve it to an account id
+					$mResult = Query::run($sSQL);
+					if ($mResult)
+					{
+						while ($aRow = $mResult->fetch_assoc())
+						{
+							$aAccountsForRedistribution[] = new self($aRow);
+						}
+					}
+			   default:
+					   //try to resolve it to an account id
 					   if ($iAccountId != NULL)
 					   {
 						   $mResult = self::getForId($iAccountId);
@@ -813,12 +813,12 @@ class Account
 							   $aAccountsForRedistribution[] = $mResult;
 					   }
 
-            }
+			}
 
-           return $aAccountsForRedistribution;
+		   return $aAccountsForRedistribution;
 
 
-        }
+		}
 
 		private static function addReportRows(&$oReport, $aRows = array())
 		{
@@ -833,9 +833,9 @@ class Account
 		}
 
 		/**
-         * adapted from (functions) ListLatePaymentAccounts
-         * this method will return account data in the right format for the pdf generation functions to work properly
-         */
+		 * adapted from (functions) ListLatePaymentAccounts
+		 * this method will return account data in the right format for the pdf generation functions to work properly
+		 */
 		public static function getAccountDataForLateNotice($aAccountIds) {
 			$sAccountIds = implode(", ", $aAccountIds);
 			$arrColumns = array(
@@ -1042,7 +1042,7 @@ class Account
 
 	public function getUnbilledAdjustments()
 	{
-	    $sSQL = "	Select COALESCE(SUM(adj.balance*an.value_multiplier*tn.value_multiplier), 0) balance
+		$sSQL = "	Select COALESCE(SUM(adj.balance*an.value_multiplier*tn.value_multiplier), 0) balance
 			FROM adjustment adj
 			JOIN adjustment_type at ON (at.id = adj.adjustment_type_id and adj.account_id = {$this->Id} AND adj.invoice_run_id IS NULL)
 			JOIN transaction_nature tn ON (tn.id = at.transaction_nature_id)
@@ -1054,12 +1054,12 @@ class Account
 			$mResult = $oQuery->Execute($sSQL);
 			if ($mResult)
 			{
-			    $aResult	= $mResult->fetch_assoc();
-			    return (float)$aResult['balance'];
+				$aResult	= $mResult->fetch_assoc();
+				return (float)$aResult['balance'];
 			}
 			else
 			{
-			    throw new Exception_Database($oQuery->Error());
+				throw new Exception_Database($oQuery->Error());
 			}
 
 	}
@@ -1118,27 +1118,27 @@ class Account
 
 	public function setBarringLevel($iBarringLevel, $iAuthorisedEmployeeId = null)
 	{
-	    $oAccountBarringLevel = new  Account_Barring_Level();
-	    $sNow = Data_Source_Time::currentTimestamp();
-	    $oAccountBarringLevel->account_id = $this->Id;
-	    $iUserId = Flex::getUserId()!==null?Flex::getUserId():Employee::SYSTEM_EMPLOYEE_ID;
-	    if ($iAuthorisedEmployeeId !== null)
-	    {
+		$oAccountBarringLevel = new  Account_Barring_Level();
+		$sNow = Data_Source_Time::currentTimestamp();
+		$oAccountBarringLevel->account_id = $this->Id;
+		$iUserId = Flex::getUserId()!==null?Flex::getUserId():Employee::SYSTEM_EMPLOYEE_ID;
+		if ($iAuthorisedEmployeeId !== null)
+		{
 
 		$oAccountBarringLevel-> authorised_datetime = $sNow;
 		$oAccountBarringLevel->authorised_employee_id = $iAuthorisedEmployeeId;
-	    }
-	    $oAccountBarringLevel->created_datetime = $sNow;
-	    $oAccountBarringLevel->created_employee_id =  $iUserId;
-	    $oAccountBarringLevel->barring_level_id = $iBarringLevel;
-	    $oAccountBarringLevel->save();
+		}
+		$oAccountBarringLevel->created_datetime = $sNow;
+		$oAccountBarringLevel->created_employee_id =  $iUserId;
+		$oAccountBarringLevel->barring_level_id = $iBarringLevel;
+		$oAccountBarringLevel->save();
 
-	    //TODO: process the barring level for each service on the account
-	    //create a record for each service in the service_barring_level table (retrieve the services as follows.......)
-	    $aServices = $this->getServicesForBarring();
+		//TODO: process the barring level for each service on the account
+		//create a record for each service in the service_barring_level table (retrieve the services as follows.......)
+		$aServices = $this->getServicesForBarring();
 
-	    foreach ($aServices as $oService)
-	    {
+		foreach ($aServices as $oService)
+		{
 		$oServiceBarringLevel                           = new Service_Barring_Level();
 		$oServiceBarringLevel->service_id               = $oService->id;
 		$oServiceBarringLevel->barring_level_id         = $iBarringLevel;
@@ -1150,42 +1150,42 @@ class Account
 
 		if ($iAuthorisedEmployeeId !== null)
 		{
-		    $oServiceBarringLevel-> authorised_datetime = $sNow;
-		    $oServiceBarringLevel->authorised_employee_id = $iAuthorisedEmployeeId;
+			$oServiceBarringLevel-> authorised_datetime = $sNow;
+			$oServiceBarringLevel->authorised_employee_id = $iAuthorisedEmployeeId;
 		}
 
 		$oServiceBarringLevel->save();
 
 		if ($iAuthorisedEmployeeId !== null)
 		{
-		    if (Logic_Service::canServiceBeAutomaticallyBarred($oServiceBarringLevel->service_id, $oServiceBarringLevel->barring_level_id))
-		    {
+			if (Logic_Service::canServiceBeAutomaticallyBarred($oServiceBarringLevel->service_id, $oServiceBarringLevel->barring_level_id))
+			{
 			  // ... it is possible action & create provisioning request
 			  $oServiceBarringLevel->action();
 			  switch ($oServiceBarringLevel->barring_level_id)
 			  {
 				case BARRING_LEVEL_UNRESTRICTED:
-				      $iProvisioningTypeId = PROVISIONING_TYPE_UNBAR;
-				      break;
+					  $iProvisioningTypeId = PROVISIONING_TYPE_UNBAR;
+					  break;
 				case BARRING_LEVEL_BARRED:
-				      $iProvisioningTypeId = PROVISIONING_TYPE_BAR;
-				      break;
+					  $iProvisioningTypeId = PROVISIONING_TYPE_BAR;
+					  break;
 				case BARRING_LEVEL_TEMPORARY_DISCONNECTION:
-				      $iProvisioningTypeId = PROVISIONING_TYPE_DISCONNECT_TEMPORARY;
-				      break;
+					  $iProvisioningTypeId = PROVISIONING_TYPE_DISCONNECT_TEMPORARY;
+					  break;
 			  }
 
 			  Logic_Service::createProvisioningRequest($oServiceBarringLevel->service_id, $iProvisioningTypeId, $sNow, $iAuthorisedEmployeeId);
-		    }
+			}
 		}
-	    }
+		}
 	}
 
 	public function getServicesForBarring()
 	{
-	    // Get all barrable services for the account
-	    $oQuery = new Query();
-	    $sSQL = " SELECT *
+		// Get all barrable services for the account
+		$oQuery = new Query();
+		$sSQL = " SELECT *
 					  FROM   Service
 					  INNER JOIN  (
 								SELECT MAX(Service.Id) serviceId
@@ -1198,114 +1198,129 @@ class Account
 								AND Service.CreatedOn < NOW()
 								AND Service.FNN IN (SELECT FNN FROM Service WHERE Account = {$this->Id})
 								GROUP BY Service.FNN
-						    ) CurrentService ON (
+							) CurrentService ON (
 											Service.Account = {$this->Id}
 											AND Service.Id = CurrentService.serviceId
 											AND Service.Status IN (".SERVICE_ACTIVE.", ".SERVICE_DISCONNECTED.", ".SERVICE_ARCHIVED.")
 									)
 					  ORDER BY            Service.FNN ASC;";
-	    $mResult = $oQuery->Execute( $sSQL);
-	    if ($mResult === false)
-	    {
-			    throw new Exception("Failed to get barrable services for account.".$oQuery->Error());
-	    }
-	    $aResult = array();
-	    while ( $aRecord = $mResult->fetch_assoc())
-	    {
-		$aResult[] = new Service($aRecord);
-	    }
-
-	    return $aResult;
-
-	}
-
-	public function close($bSetDefaultPlanOnServices = false)
-	{
-
-	    //set the status on the account
-	    $this->Archived		= ACCOUNT_STATUS_CLOSED;
-	    $this->save();
-	    $oHistory		    = new  Account_Status_History();
-	    $oHistory->account	    = $this->Id;
-	    $oHistory->from_status	    = $this->Archived;
-	    $oHistory->to_status	    = ACCOUNT_STATUS_CLOSED;
-	    $oHistory->employee	    = AuthenticatedUser()->GetUserId();
-	    $oHistory->change_datetime  = Data_Source_Time::currentTimestamp();
-	    $oHistory->save();
-
-	    //disconnect all services and set them to the default plan
-	    $aServices = $this->getAllServiceRecords(true);
-
-	    foreach ($aServices as $oService)
-	    {
-		$aServicesForFNN			= Service::getFNNInstances($oService->FNN, $this->id, false);
-		$oServiceToDisconnect		= Logic_Service::getForId(array_pop($aServicesForFNN)->Id);
-		if($oServiceToDisconnect->Status	!= SERVICE_ARCHIVED && $oServiceToDisconnect->Status !=SERVICE_DISCONNECTED)
+		$mResult = $oQuery->Execute( $sSQL);
+		if ($mResult === false)
 		{
-		    $mResult = $oServiceToDisconnect->ChangeStatus(SERVICE_DISCONNECTED);
-		    if ($bSetDefaultPlanOnServices)
-		    {
-			$mDefaultRatePlan = $oServiceToDisconnect->getDefaultRatePlan();
-			$mCurrentPlan = $oServiceToDisconnect->getCurrentPlan();
-			if ($mDefaultRatePlan !== null && $mCurrentPlan->Id != $mDefaultRatePlan->Id)
-			{
-			    $oServiceToDisconnect->changePlan($mDefaultRatePlan->Id);
-			    $aCDRs = $oServiceToDisconnect->getCDRsForStatus(array(CDR_NORMALISED));
-			    foreach ($aCDRs as $oCDR)
-			    {
-				$oCDR->rate();
-				$oCDR->save();
-			    }
-
-			    if (is_numeric($mResult))
-			    {
-				$oNewService = Logic_Service::getForId($mResult);
-				$oNewService->changePlan($mDefaultRatePlan->Id);
-			    }
-			}
-		    }
+				throw new Exception("Failed to get barrable services for account.".$oQuery->Error());
 		}
-	    }
+		$aResult = array();
+		while ( $aRecord = $mResult->fetch_assoc())
+		{
+		$aResult[] = new Service($aRecord);
+		}
+
+		return $aResult;
+
 	}
 
+	public function close($bSetDefaultPlanOnServices = false) {
+		//set the status on the account
+		$this->Archived = ACCOUNT_STATUS_CLOSED;
+		$this->save();
 
+		$oHistory = new  Account_Status_History();
+		$oHistory->account = $this->Id;
+		$oHistory->from_status = $this->Archived;
+		$oHistory->to_status = ACCOUNT_STATUS_CLOSED;
+		$oHistory->employee = AuthenticatedUser()->GetUserId();
+		$oHistory->change_datetime = Data_Source_Time::currentTimestamp();
+		$oHistory->save();
+
+		//disconnect all services and set them to the default plan
+		$aServices = $this->getAllServiceRecords(true);
+
+		foreach ($aServices as $oService) {
+			$aServicesForFNN = Service::getFNNInstances($oService->FNN, $this->id, false);
+
+			$oServiceFNNInstance = array_pop($aServicesForFNN);
+			$oServiceToDisconnect = Logic_Service::getForId($oServiceFNNInstance->Id);
+			/*
+			Flex::assert(is_object($oServiceFNNInstance), 'Unable to close Account #'.var_export($this->id, true).': Unable to fetch latest ORM instance of FNN '.var_export($oService->FNN, true), array(
+				'Account' => $this->toArray(),
+				'Services' => $aServices,
+				'Service' => $oService->toArray(),
+				'EarlierServicesForFNN' => $aServicesForFNN,
+				'ServiceFNNInstance' => $oServiceFNNInstance->toArray(),
+				'ServiceToDisconnect' => $oServiceToDisconnect
+			));
+			Flex::assert(is_object($oServiceToDisconnect), 'Unable to close Account #'.var_export($this->id, true).': Unable to fetch latest Logic instance of FNN '.var_export($oService->FNN, true), array(
+				'Account' => $this->toArray(),
+				'Services' => $aServices,
+				'Service' => $oService->toArray(),
+				'EarlierServicesForFNN' => $aServicesForFNN,
+				'ServiceFNNInstance' => $oServiceFNNInstance->toArray(),
+				'ServiceToDisconnect' => $oServiceToDisconnect
+			));
+			*/
+	
+			// NOTE: There are some pre-Flex Services that have invalid Service Types, causing problems (just skip them)
+			if ($oServiceToDisconnect !== false) {
+				if($oServiceToDisconnect->Status != SERVICE_ARCHIVED && $oServiceToDisconnect->Status != SERVICE_DISCONNECTED) {
+					$mResult = $oServiceToDisconnect->ChangeStatus(SERVICE_DISCONNECTED);
+					if ($bSetDefaultPlanOnServices) {
+						$mDefaultRatePlan = $oServiceToDisconnect->getDefaultRatePlan();
+						$mCurrentPlan = $oServiceToDisconnect->getCurrentPlan();
+						if ($mDefaultRatePlan !== null && $mCurrentPlan->Id != $mDefaultRatePlan->Id) {
+							$oServiceToDisconnect->changePlan($mDefaultRatePlan->Id);
+							$aCDRs = $oServiceToDisconnect->getCDRsForStatus(array(CDR_NORMALISED));
+							foreach ($aCDRs as $oCDR) {
+								$oCDR->rate();
+								$oCDR->save();
+							}
+
+							if (is_numeric($mResult)) {
+								$oNewService = Logic_Service::getForId($mResult);
+								$oNewService->changePlan($mDefaultRatePlan->Id);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 
 	public function getAccountBalance()
 	{
-	    return $this->_getBalance(Data_Source_Time::END_OF_TIME, true);
+		return $this->_getBalance(Data_Source_Time::END_OF_TIME, true);
 	}
 
 	public function getOverdueBalance($sEffectiveDate=null)
 	{
-	    $sEffectiveDate	= (is_int($iEffectiveDate = strtotime($sEffectiveDate))) ? date('Y-m-d', $iEffectiveDate) : date('Y-m-d', DataAccess::getDataAccess()->getNow(true));
-	    return max(0.0, $this->_getBalance($sEffectiveDate, FALSE));
+		$sEffectiveDate	= (is_int($iEffectiveDate = strtotime($sEffectiveDate))) ? date('Y-m-d', $iEffectiveDate) : date('Y-m-d', DataAccess::getDataAccess()->getNow(true));
+		return max(0.0, $this->_getBalance($sEffectiveDate, FALSE));
 	}
 
 	protected function _getBalance($sEffectiveDate, $bIncludeActivePromises)
 	{
-	    if ($bIncludeActivePromises)
-	    {
-	    	// Don't exclude promise collectables
-	    	$sCollectableFilterClause = "	WHERE 	c.account_id = {$this->Id} 
+		if ($bIncludeActivePromises)
+		{
+			// Don't exclude promise collectables
+			$sCollectableFilterClause = "	WHERE 	c.account_id = {$this->Id} 
 											AND 	(
-												    	c.due_date < '{$sEffectiveDate}' 
-												    	OR c.amount < 0
-												    )";
-	    }
-	    else
-	    {
-	    	// Exclude promise collectables
-	    	$sCollectableFilterClause = "	LEFT JOIN 	collection_promise cp ON (c.collection_promise_id = cp.id) 
+														c.due_date < '{$sEffectiveDate}' 
+														OR c.amount < 0
+													)";
+		}
+		else
+		{
+			// Exclude promise collectables
+			$sCollectableFilterClause = "	LEFT JOIN 	collection_promise cp ON (c.collection_promise_id = cp.id) 
 											WHERE 		(c.collection_promise_id IS NULL OR cp.completed_datetime IS NOT NULL) 
 											AND 		c.account_id = {$this->Id} 
 											AND 		(
-												            c.due_date < '{$sEffectiveDate}' 
-												            OR c.amount < 0
-												        )";
-	    }
-	    
-	    $oQuery = new Query();
-	    $sQuery = "	SELECT	COALESCE((
+															c.due_date < '{$sEffectiveDate}' 
+															OR c.amount < 0
+														)";
+		}
+		
+		$oQuery = new Query();
+		$sQuery = "	SELECT	COALESCE((
 								SELECT 	SUM(p.amount * pn.value_multiplier)
 								FROM 	payment p
 								JOIN 	payment_nature pn ON (pn.id = p.payment_nature_id AND p.account_id = {$this->Id})
@@ -1326,17 +1341,17 @@ class Account
 								{$sCollectableFilterClause}
 							), 0)
 							AS balance";
-	    $mResult = $oQuery->Execute ($sQuery);
+		$mResult = $oQuery->Execute ($sQuery);
 
-	    if ($mResult === false)
-	    {
-		    throw new Exception_Database($oQuery->Error());
-	    }
-	    else
-	    {
-		    $aResult	= $mResult->fetch_assoc();
-		    return (float)$aResult['balance'];
-	    }
+		if ($mResult === false)
+		{
+			throw new Exception_Database($oQuery->Error());
+		}
+		else
+		{
+			$aResult	= $mResult->fetch_assoc();
+			return (float)$aResult['balance'];
+		}
 
 	}
 	
@@ -1356,9 +1371,9 @@ class Account
 		$sOverdueClause = '';
 		if ($bOverdueBalance) {
 			$sOverdueClause	= "	AND (
-						            c.due_date < <effective_date> 
-						            OR c.amount < 0
-						        )";
+									c.due_date < <effective_date> 
+									OR c.amount < 0
+								)";
 		}
 		
 		// Payments are selected differently depending on bRevised

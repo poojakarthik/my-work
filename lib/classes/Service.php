@@ -259,17 +259,18 @@ class Service extends ORM
 				$sNow = DataAccess::getDataAccess()->getNow();
 
 				// Cancel any waiting requests for this service
-				$mResult = Query::run("	SELECT	*
-										FROM	ProvisioningRequest
-										WHERE	Service = <service_id>
-										AND		Status = <provisioning_request_status_id>
-										AND		Type IN (<full_service_plan_change>, <preselection_plan_change>);",
-										array(
-											'service_id' => $this->Id,
-											'provisioning_request_status_id' => REQUEST_STATUS_WAITING,
-											'full_service_plan_change' => PROVISIONING_TYPE_FULL_SERVICE_PLAN_CHANGE,
-											'preselection_plan_change' => PROVISIONING_TYPE_PRESELECTION_PLAN_CHANGE
-										));
+				$mResult = Query::run("
+						SELECT	*
+						FROM	ProvisioningRequest
+						WHERE	Service = <service_id>
+						AND		Status = <provisioning_request_status_id>
+						AND		Type IN (<full_service_plan_change>, <preselection_plan_change>);
+				", array(
+					'service_id' => $this->Id,
+					'provisioning_request_status_id' => REQUEST_STATUS_WAITING,
+					'full_service_plan_change' => PROVISIONING_TYPE_FULL_SERVICE_PLAN_CHANGE,
+					'preselection_plan_change' => PROVISIONING_TYPE_PRESELECTION_PLAN_CHANGE
+				));
 				while ($aRow = $mResult->fetch_assoc()) {
 					$oRequest = new Provisioning_Request($aRow);
 					$oRequest->cancel();
