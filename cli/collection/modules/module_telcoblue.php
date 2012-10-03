@@ -53,7 +53,8 @@ class CollectionModuleTelcoBlue extends CollectionModuleBase {
 							$oResponse->action,
 							$oResponse->detail,
 							$oResponse->status,
-							$oResponse->timestamp,
+							$oResponse->modified_timestamp,
+							$oResponse->effective_timestamp,
 							'"'.preg_replace('/\\\|"/', '\\\$0', JSON_Services::encode($oResponse->notifications)).'"'
 						));
 					}
@@ -67,7 +68,8 @@ class CollectionModuleTelcoBlue extends CollectionModuleBase {
 							$oNotification->package_id,
 							$oNotification->status,
 							$oNotification->status_result,
-							$oNotification->timestamp,
+							$oNotification->notification_timestamp,
+							$oNotification->effective_timestamp,
 							$oNotification->description
 						));
 					}

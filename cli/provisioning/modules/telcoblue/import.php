@@ -67,8 +67,9 @@ class ImportTelcoBlue extends ImportBase {
 			'Package' => array('Index' => 4),
 			'Status' => array('Index' => 5),
 			'StatusResult' => array('Index' => 6),
-			'Timestamp' => array('Index' => 7),
-			'Description' => array('Index' => 8)
+			'NotificationTimestamp' => array('Index' => 7),
+			'EffectiveTimestamp' => array('Index' => 8),
+			'Description' => array('Index' => 9)
 		);
 
 		$this->_aDefineResponse = array(
@@ -78,8 +79,9 @@ class ImportTelcoBlue extends ImportBase {
 			'Action' => array('Index' => 3),
 			'Detail' => array('Index' => 4),
 			'Status' => array('Index' => 5),
-			'Timestamp' => array('Index' => 6),
-			'Notifications' => array('Index' => 7)
+			'ModifiedTimestamp' => array('Index' => 6),
+			'EffectiveTimestamp' => array('Index' => 7),
+			'Notifications' => array('Index' => 8)
 		);
  	}
  	
@@ -132,8 +134,8 @@ class ImportTelcoBlue extends ImportBase {
  		$aData = $this->_SplitLine($sLine);
  		$aResponse = array(); 		
 
- 		// All line types have a timestamp value
- 		$aResponse['EffectiveDate'] = date("Y-m-d H:i:s", strtotime($aData['Timestamp']));
+ 		// All line types have an effective timestamp
+ 		$aResponse['EffectiveDate'] = date("Y-m-d H:i:s", strtotime($aData['EffectiveTimestamp']));
 
  		// Generate ProvisioningResponse properties based on the line type
 		$sDescription = null;
