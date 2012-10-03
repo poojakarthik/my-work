@@ -1208,96 +1208,55 @@ function EchoLine($strText)
 }
 
 
-//------------------------------------------------------------------------//
-// CheckLuhn INCOMPLETE
-//------------------------------------------------------------------------//
-/**
- * CheckLuhn()
- *
- * Verify a number using the Luhn algorithm
- *
- * Verify a number using the Luhn algorithm
- *
- * @param	mix	$mixNumber	the number to be checked
- *
- * @return	bool
- *
- * @comments
- * @function
- *
- */
-function CheckLuhn($mixNumber)
-{
-	$card = (string)$mixNumber;
-	$card = strrev($card);
-	$total = 0;
-
-	for ($n=0; $n<strlen($card); $n++)
-	{
-		$digit = substr($card,$n,1);
-		if ($n/2 != floor($n/2))
-		{
-			$digit *= 2;
-		}
-		if (strlen($digit) == 2)
-		{
-			$digit = substr($digit,0,1) + substr($digit,1,1);
-		}
-		$total += $digit;
-	}
-	if ($total % 10 == 0)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+function CheckLuhn($mixNumber) {
+	return validateLuhn($mixNumber);
 }
 
-//------------------------------------------------------------------------//
-// MakeLuhn INCOMPLETE
-//------------------------------------------------------------------------//
-/**
- * MakeLuhn()
- *
- * Create a check digit using the Luhn formula
- *
- * Create a check digit using the Luhn formula
- *
- * @param	mix	$mixNumber	the number to be used
- *
- * @return	int
- *
- * @comments
- * @function
- *
- */
-function MakeLuhn($mixNumber)
-{
-	$card = (string)$mixNumber;
-	$intCheckDigit = 0;
-	for ($n=0; $n<strlen($card); $n++)
-	{
-		$digit = substr($card,$n,1);
-		if ($n/2 != floor($n/2))
-		{
-			$digit *= 2;
+function MakeLuhn($mixNumber) {
+	return generateLuhnCheckDigit($mixNumber);
+}
+
+// Calculate a Luhn checksum
+function calculateLuhnChecksum($iNumber) {
+	// Luhn Checksum imlementation taken from Wikipedia: http://en.wikipedia.org/wiki/Luhn_algorithm
+	$sNumber = (string)((int)$iNumber);
+
+	// Reverse the digits
+	$sDigits = strrev($sNumber);
+	
+	$iSum = 0;
+	$aDigits = str_split($sDigits);
+	foreach ($aDigits as $i=>$sDigit) {
+		if (($i + 1) % 2) {
+			// Odd-positioned digit: add to sum
+			$iSum += $sDigit;
+		} else {
+			// Even-positioned digit: multiply by 2, then sum the digits of the result (e.g. 7 * 2 = 14 becomes 1 + 4 = 5)
+			$iDigitProduct = $sDigit * 2;
+			$sDigitProduct = (string)$iDigitProduct;
+			$iSum += $sDigitProduct[0];
+			if (strlen($sDigitProduct) === 2) {
+				$iSum += $sDigitProduct[1];
+			}
 		}
-		if (strlen($digit) == 2)
-		{
-			$digit = substr($digit,0,1) + substr($digit,1,1);
-		}
-		$intCheckDigit += $digit;
 	}
 
-	$intCheckDigit = $intCheckDigit % 10;
+	// Last digit is the checksum (i.e. mod 10)
+	$iSumMod10 = $iSum % 10;
+	return $iSumMod10;
+}
 
-	if($intCheckDigit > 0)
-	{
-		$intCheckDigit = 10 - $intCheckDigit;
-	}
-	return $intCheckDigit;
+// Generate a Luhn checkdigit for a bare number
+function generateLuhnCheckDigit($iNumber) {
+	// If the Luhn checksum is 0, so is the checkdigit, other wise 10 - checksum
+	$iCheckDigit = calculateLuhnChecksum($iNumber * 10);
+	return ($iCheckDigit === 0) ? $iCheckDigit : 10 - $iCheckDigit;
+}
+
+// Validate a number with a Luhn checkdigit
+function validateLuhn($iNumber) {
+	// Valid numbers with Luhn checkdigits appended should have a Luhn checksum of 0
+	return (calculateLuhnChecksum($iNumber) == 0);
 }
 
 //------------------------------------------------------------------------//

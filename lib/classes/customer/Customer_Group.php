@@ -333,7 +333,9 @@ class Customer_Group
 		$mResult	= Query::run("
 			SELECT		*
 			FROM		CustomerGroup
-			WHERE		flex_url = <sBaseURL>
+			WHERE		flex_url LIKE <sBaseURL>
+						OR flex_url LIKE CONCAT('http://', <sBaseURL>)
+						OR flex_url LIKE CONCAT('https://', <sBaseURL>)
 		", array('sBaseURL'=>trim((string)$sBaseURL)));
 
 		$aMatches	= array();
