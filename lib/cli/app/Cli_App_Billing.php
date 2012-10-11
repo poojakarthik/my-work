@@ -449,7 +449,7 @@ class Cli_App_Billing extends Cli
 		
 		if ($intAccountId !== null) {
 			$strInvoicePathXML = "/{$intAccountId}.xml";
-			$strInvoicePathXMLBZ2 = "/{$intAccountId}.xml";
+			$strInvoicePathXMLBZ2 = "/{$intAccountId}.xml.bz2";
 			if (file_exists("{$strFlexXMLPath}{$intInvoiceRunId}{$strInvoicePathXMLBZ2}")) {
 				$strInvoicePath = $strInvoicePathXMLBZ2;
 			} else {
