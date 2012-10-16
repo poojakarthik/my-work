@@ -46,6 +46,8 @@ class CollectionModuleTelcoBlue extends CollectionModuleBase {
 					// Generate the csv file content lines
 					$aLines = array();
 					foreach ($aResponses as $oResponse) {
+						$sNotifications = preg_replace('/\\\|"/', '\\\$0', JSON_Services::encode($oResponse->notifications));
+						$sNotifications = preg_replace('/,/', ';', $sNotifications);
 						$aLines[] = implode(',', array(
 							self::PROVISIONING_LINE_TYPE_RESPONSE,
 							$oResponse->client_reference,
@@ -55,7 +57,8 @@ class CollectionModuleTelcoBlue extends CollectionModuleBase {
 							$oResponse->status,
 							$oResponse->modified_timestamp,
 							$oResponse->effective_timestamp,
-							'"'.preg_replace('/\\\|"/', '\\\$0', JSON_Services::encode($oResponse->notifications)).'"'
+							'"'.$sNotifications.'"',
+							$oResponse->package_id
 						));
 					}
 

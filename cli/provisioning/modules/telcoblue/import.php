@@ -41,6 +41,12 @@ class ImportTelcoBlue extends ImportBase {
  		$this->strDescription = 'Importing Telco Blue Wholesale Provisioning File';
 
  		// Module Config
+ 		$this->_arrModuleConfig['ChurnNotificationType']['Type'] = DATA_TYPE_INTEGER;
+		$this->_arrModuleConfig['ChurnNotificationType']['Description'] = "Wholesale Notification Type - Churn";
+
+		$this->_arrModuleConfig['ReverseChurnNotificationType']['Type'] = DATA_TYPE_INTEGER;
+		$this->_arrModuleConfig['ReverseChurnNotificationType']['Description'] = "Wholesale Notification Type - Reverse Churn";
+
 		$this->_arrModuleConfig['ChurnAwayNotificationType']['Type'] = DATA_TYPE_INTEGER;
 		$this->_arrModuleConfig['ChurnAwayNotificationType']['Description'] = "Wholesale Notification Type - Churn Away";
 
@@ -81,7 +87,8 @@ class ImportTelcoBlue extends ImportBase {
 			'Status' => array('Index' => 5),
 			'ModifiedTimestamp' => array('Index' => 6),
 			'EffectiveTimestamp' => array('Index' => 7),
-			'Notifications' => array('Index' => 8)
+			'Notifications' => array('Index' => 8),
+			'Package' => array('Index' => 9)
 		);
  	}
  	
@@ -155,6 +162,7 @@ class ImportTelcoBlue extends ImportBase {
 
  	private function _handleResponse(&$aResponse, $aData) {
  		Log::get()->logIf(self::DEBUG_LOGGING, "\t\t[*] It's a Response");
+ 		$aNotifications = self::_getResponseNotifications($aData);
  		if ($aData['ClientReference'] !== '') {
  			// Has a client reference, fetch the provisioning request
  			Log::get()->logIf(self::DEBUG_LOGGING, "\t\t\t[*] Got client reference: '{$aData['ClientReference']}'");
@@ -165,7 +173,7 @@ class ImportTelcoBlue extends ImportBase {
 				$aResponse['Type'] = $oRequest->Type;
 				$aResponse['Request'] = $oRequest->Id;
 			} catch (Exception $oEx) {
-				// Failed to locate a provisioning request, this shouldn't happend but if it does act as though it wasn't request by flex
+				// Failed to locate a provisioning request, this shouldn't happen but if it does act as though it wasn't request by flex
 				$aResponse['FNN'] = $aData['Detail'];
 				$aResponse['Type'] = null;
 				$aResponse['Request'] = null;
@@ -174,12 +182,15 @@ class ImportTelcoBlue extends ImportBase {
  			// No client reference, not requested by flex
  			Log::get()->logIf(self::DEBUG_LOGGING, "\t\t\t[*] The Response has no client_reference");
  			$aResponse['FNN'] = $aData['Detail'];
-			$aResponse['Type'] = null;
+ 			$aResponse = $this->FindFNNOwner($aResponse, self::DEBUG_LOGGING);
+			$aResponse['Type'] = self::_getProvisioningTypeForUnrequestedResponse($aResponse, $aData, $aNotifications);
 			$aResponse['Request'] = null;
  		}
 
- 		// Find the service details
-		$aResponse = $this->FindFNNOwner($aResponse, self::DEBUG_LOGGING);
+ 		if (!isset($aResponse['Service'])) {
+ 			// Find the service details
+			$aResponse = $this->FindFNNOwner($aResponse, self::DEBUG_LOGGING);
+ 		}
 
  		// Build the provisioning response row data
  		$aResponse['CarrierRef'] = null;
@@ -207,9 +218,14 @@ class ImportTelcoBlue extends ImportBase {
 				$sDescription = "Unable to determine the status from response data";
 		}
 		
-		// Add notifications to the description
-		$aNotificationStrings = self::_getResponseNotifications($aData);
-		if (!empty($aNotificationStrings)) {
+		// Add notifications descriptions to the description
+		if (!empty($aNotifications)) {
+			Log::get()->logIf(self::DEBUG_LOGGING, "\t\t\t[*] Got ".count($aNotifications)." Notifications");
+			$aNotificationStrings = array();
+			foreach ($aNotifications as $oNotification) {
+				Log::get()->logIf(self::DEBUG_LOGGING, "\t\t\t\t[*] Notification: {$oNotification->description}");
+				$aNotificationStrings[] = $oNotification->description;
+			}
 			$sDescription .= ". ".implode('. ', $aNotificationStrings);
 		}
 
@@ -340,6 +356,9 @@ class ImportTelcoBlue extends ImportBase {
  	private static function _getResponseNotifications($aData) {
  		$sNotifications = $aData['Notifications'];
 
+ 		// Convert ; to ,
+ 		$sNotifications = preg_replace('/;/', ',', $sNotifications);
+
  		// Remove surrounding quotes
  		$sNotifications = preg_replace('/^"|"$/', '', $sNotifications);
 
@@ -347,6 +366,35 @@ class ImportTelcoBlue extends ImportBase {
  		$sNotifications = preg_replace('/(\\\)(\\\|")/', '$2', $sNotifications);
  		
  		return JSON_Services::decode($sNotifications);
+ 	}
+
+ 	private static function _getProvisioningTypeForUnrequestedResponse($aResponse, $aData, $aNotifications) {
+ 		// NOTE: This function looks at the notifications that were returned along with a response and checks the notification types of each (along with the package that was associated with the response)
+ 		// It then determines the Flex provisioning type that is appropriate (currently it stops looking once it finds a match)
+ 		$oCurrentRatePlan = ((isset($aResponse['Service']) && ($aResponse['Service'] !== null)) ? Service::getForId($aResponse['Service'])->getCurrentPlan() : null);
+ 		if ($aNotifications && !empty($aNotifications) && ($oCurrentRatePlan !== null)) {
+ 			$iChurn = $this->GetConfigField('ChurnNotificationType');
+			$iReverseChurn = $this->GetConfigField('ReverseChurnNotificationType');
+			$iWholesalePackage = (int)$aData['Package'];
+			$aProvisioningTypes = array(
+				$iChurn => array(
+					$oCurrentRatePlan->fullservice_wholesale_plan => PROVISIONING_TYPE_FULL_SERVICE,
+					$oCurrentRatePlan->preselection_wholesale_plan => PROVISIONING_TYPE_PRESELECTION
+				),
+				$iReverseChurn => array(
+					$oCurrentRatePlan->fullservice_wholesale_plan => PROVISIONING_TYPE_FULL_SERVICE_REVERSE,
+					$oCurrentRatePlan->preselection_wholesale_plan => PROVISIONING_TYPE_PRESELECTION_REVERSE
+				)
+			);
+			
+ 			foreach ($aNotifications as $oNotification) {
+				if (isset($aProvisioningTypes[$oNotification->notification_type]) && isset($aProvisioningTypes[$oNotification->notification_type][$iWholesalePackage])) {
+					return $aProvisioningTypes[$oNotification->notification_type][$iWholesalePackage];
+				}
+ 			}
+ 		}
+ 		
+ 		return null;
  	}
 }
 

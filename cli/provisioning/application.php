@@ -149,7 +149,12 @@ class ApplicationProvisioning extends ApplicationBaseClass {
 							$arrNormalised['Status'] = RESPONSE_STATUS_IMPORTED;
 							
 							// Attempt to link to a Request
-							if ($arrLinkedRequest = $this->_arrImportFiles[$arrFile['Carrier']][$arrFile['FileType']]->LinkToRequest($arrNormalised)) {
+							if (isset($arrNormalised['Request'])) {
+								// The normaliser found a request
+								$oRequest = new Provisioning_Request(array('Id' => $arrNormalised['Request']), true);
+								$arrLinkedRequest = $oRequest->toArray();
+							} else if ($arrLinkedRequest = $this->_arrImportFiles[$arrFile['Carrier']][$arrFile['FileType']]->LinkToRequest($arrNormalised)) {
+								// Found the request via the import modules LinkToRequest function
 								$arrNormalised['Request'] = $arrLinkedRequest['Id'];
 							}
 							
