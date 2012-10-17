@@ -665,7 +665,7 @@ var Dealer = {
 		}
 		else
 		{
-			jQuery.json.errorPopup(oResponse, "Saving the dealer failed");
+			$Alert("Saving the dealer failed. " + oResponse.ErrorMessage);
 		}
 	},
 	
