@@ -53,6 +53,12 @@ class ImportTelcoBlue extends ImportBase {
 		$this->_arrModuleConfig['DisconnectionNotificationType']['Type'] = DATA_TYPE_INTEGER;
 		$this->_arrModuleConfig['DisconnectionNotificationType']['Description'] = "Wholesale Notification Type - Disconnection";
 		
+		$this->_arrModuleConfig['WholesaleIdentifierContextFullService']['Type'] = DATA_TYPE_INTEGER;
+		$this->_arrModuleConfig['WholesaleIdentifierContextFullService']['Description'] = "Wholesale Product Identifier Context that represents Full Service Landlines";
+
+		$this->_arrModuleConfig['WholesaleIdentifierContextPreselection']['Type'] = DATA_TYPE_INTEGER;
+		$this->_arrModuleConfig['WholesaleIdentifierContextPreselection']['Description'] = "Wholesale Product Identifier Context that represents Preselection Landlines";
+
 		// Define row start (account for header rows)
 		// Row numbers start at 1
 		// For a file without any header row, set this to 1
@@ -88,7 +94,8 @@ class ImportTelcoBlue extends ImportBase {
 			'ModifiedTimestamp' => array('Index' => 6),
 			'EffectiveTimestamp' => array('Index' => 7),
 			'Notifications' => array('Index' => 8),
-			'Package' => array('Index' => 9)
+			'Package' => array('Index' => 9),
+			'IdentifierContext' => array('Index' => 10)
 		);
  	}
  	
@@ -183,7 +190,7 @@ class ImportTelcoBlue extends ImportBase {
  			Log::get()->logIf(self::DEBUG_LOGGING, "\t\t\t[*] The Response has no client_reference");
  			$aResponse['FNN'] = $aData['Detail'];
  			$aResponse = $this->FindFNNOwner($aResponse, self::DEBUG_LOGGING);
-			$aResponse['Type'] = self::_getProvisioningTypeForUnrequestedResponse($aResponse, $aData, $aNotifications);
+			$aResponse['Type'] = $this->_getProvisioningTypeForUnrequestedResponse($aResponse, $aData, $aNotifications);
 			$aResponse['Request'] = null;
  		}
 
@@ -243,15 +250,13 @@ class ImportTelcoBlue extends ImportBase {
 		$aResponse['Type'] = null;
 		$aResponse['Request'] = null;
 		$aResponse['CarrierRef'] = null;
-		$aResponse['Status']	= null;
+		$aResponse['Status'] = null;
 		$aResponse['request_status'] = REQUEST_STATUS_COMPLETED;
 
  		// Find the service details
 		$aResponse = $this->FindFNNOwner($aResponse, self::DEBUG_LOGGING);
-		$oCurrentRatePlan = null;
 		if (isset($aResponse['Service'])) {
 			// Fetch the current rate plan of the service
-			$oCurrentRatePlan = ((isset($aResponse['Service']) && ($aResponse['Service'] !== null)) ? Service::getForId($aResponse['Service'])->getCurrentPlan() : null);
 			$oLog->logIf(self::DEBUG_LOGGING, "\t\t[*] Owner Service: {$aResponse['Service']}");
 		} else {
 			$oLog->logIf(self::DEBUG_LOGGING, "\t\t[*] No Owner Service found");
@@ -259,44 +264,10 @@ class ImportTelcoBlue extends ImportBase {
 
 		// Convert the notification type to a provisioning type (if a notification type is supplied)
 		$iNotificationType = (int)$aData['NotificationType'];
-		if (($iNotificationType !== null) && ($oCurrentRatePlan !== null)) {
-			// A notification type is present
-			$iChurnAway = $this->GetConfigField('ChurnAwayNotificationType');
-			$iDisconnection = $this->GetConfigField('DisconnectionNotificationType');
-			$oLog->logIf(self::DEBUG_LOGGING, "\t\t[*] An owner was found and notification type returned ({$iNotificationType}), getting associated provisioning type (Churn Away: {$iChurnAway}; Disconnection: {$iDisconnection})");
-
-			// Determine the type of notification (record as an inbound provisioning type)
-			$iWholesalePackage = (int)$aData['Package'];
-			switch ($iNotificationType) {
-				case $iChurnAway:
-					$oLog->logIf(self::DEBUG_LOGGING, "\t\t[*] It's a CHURN AWAY notification");
-
-					// It's either PROVISIONING_TYPE_LOSS_FULL or PROVISIONING_TYPE_LOSS_PRESELECT. Check the package.
-					if ($oCurrentRatePlan->fullservice_wholesale_plan == $iWholesalePackage) {
-						// The package matches the full service wholesale plan for the services current rate plan. It'a a full service loss notification.
-						$oLog->logIf(self::DEBUG_LOGGING, "\t\t[*] It's a FULL SERVICE - CHURN AWAY notification (Wholesale Package: {$iWholesalePackage})");
-						$aResponse['Type'] = PROVISIONING_TYPE_LOSS_FULL;
-					} else if ($oCurrentRatePlan->preselection_wholesale_plan == $iWholesalePackage) {
-						// The package matches the preselection wholesale plan for the services current rate plan. It'a a preselection loss notification.
-						$oLog->logIf(self::DEBUG_LOGGING, "\t\t[*] It's a PRESELECTION - CHURN AWAY notification (Wholesale Package: {$iWholesalePackage})");
-						$aResponse['Type'] = PROVISIONING_TYPE_LOSS_PRESELECT;
-					}
-					break;
-				case $iDisconnection:
-					$oLog->logIf(self::DEBUG_LOGGING, "\t\t[*] It's a DISCONNECTION notification");
-
-					// It's either PROVISIONING_TYPE_DISCONNECT_FULL or PROVISIONING_TYPE_DISCONNECT_PRESELECT. Check the package.
-					if ($oCurrentRatePlan->fullservice_wholesale_plan == $iWholesalePackage) {
-						// The package matches the full service wholesale plan for the services current rate plan. It'a a full service disconnection notification.
-						$oLog->logIf(self::DEBUG_LOGGING, "\t\t[*] It's a FULL SERVICE - DISCONNECTION notification (Wholesale Package: {$iWholesalePackage})");
-						$aResponse['Type'] = PROVISIONING_TYPE_DISCONNECT_FULL;
-					} else if ($oCurrentRatePlan->preselection_wholesale_plan == $iWholesalePackage) {
-						// The package matches the preselection wholesale plan for the services current rate plan. It'a a preselection disconnection notification.
-						$oLog->logIf(self::DEBUG_LOGGING, "\t\t[*] It's a PRESELECTION - DISCONNECTION notification (Wholesale Package: {$iWholesalePackage})");
-						$aResponse['Type'] = PROVISIONING_TYPE_DISCONNECT_PRESELECT;
-					}
-					break;
-			}
+		if ($iNotificationType !== null) {
+			// A notification type is present, determine the corresponding Flex provisioning type
+			$iIdentifierContext = (int)$aData['IdentifierContext'];
+			$aResponse['Type'] = $this->_getProvisioningTypeForNotification($iNotificationType, $iIdentifierContext);
 
 			// If a provisioning_type matching the notification type was found, use it to describe the response
 			if ($aResponse['Type']) {
@@ -347,6 +318,77 @@ class ImportTelcoBlue extends ImportBase {
  		return parent::_SplitLine($sLine);
  	}
 
+ 	private function _getProvisioningTypeForNotification($iNotificationType, $iIdentifierContext) {
+ 		$iChurnAway = $this->GetConfigField('ChurnAwayNotificationType');
+		$iDisconnection = $this->GetConfigField('DisconnectionNotificationType');
+		$iIdentifierContextFullService = $this->GetConfigField('WholesaleIdentifierContextFullService');
+		$iIdentifierContextPreselection = $this->GetConfigField('WholesaleIdentifierContextPreselection');
+		
+		Log::get()->logIf(self::DEBUG_LOGGING, "\t\t[*] An owner was found and notification type returned ({$iNotificationType}), getting associated provisioning type (Churn Away: {$iChurnAway}; Disconnection: {$iDisconnection})");
+
+		// Define provisioning type mapping info
+		$aProvisioningTypes = array(
+			$iChurnAway => array(
+				$iIdentifierContextFullService => PROVISIONING_TYPE_LOSS_FULL,
+				$iIdentifierContextPreselection => PROVISIONING_TYPE_LOSS_PRESELECT
+			),
+			$iDisconnection => array(
+				$iIdentifierContextFullService => PROVISIONING_TYPE_DISCONNECT_FULL,
+				$iIdentifierContextPreselection => PROVISIONING_TYPE_DISCONNECT_PRESELECT
+			)
+		);
+
+		if (isset($aProvisioningTypes[$iNotificationType]) && isset($aProvisioningTypes[$iNotificationType][$iIdentifierContext])) {
+			$iProvisioningType = $aProvisioningTypes[$iNotificationType][$iIdentifierContext];
+			Log::get()->logIf(self::DEBUG_LOGGING, "\t\t\t[*] Found provisioning type: {$iProvisioningType}");
+			return $iProvisioningType;
+		} else {
+			Log::get()->logIf(self::DEBUG_LOGGING, "\t\t\t[*] No provisioning type found (Notification Type: {$iNotificationType}; Identifier Context: {$iIdentifierContext})");
+			return null;
+		}
+ 	}
+
+ 	private function _getProvisioningTypeForUnrequestedResponse($aResponse, $aData, $aNotifications) {
+ 		// NOTE: This function looks at the notifications that were returned along with a response and checks the notification types of each (along with the identifier context of the service)
+ 		// It then determines the Flex provisioning type that is appropriate (currently it stops looking once it finds a match)
+ 		Log::get()->logIf(self::DEBUG_LOGGING, "\t\t\t\t[*] Trying to determine the provisioning_type");
+ 		if ($aNotifications && !empty($aNotifications)) {
+ 			$iChurn = $this->GetConfigField('ChurnNotificationType');
+			$iReverseChurn = $this->GetConfigField('ReverseChurnNotificationType');
+			$iIdentifierContextFullService = $this->GetConfigField('WholesaleIdentifierContextFullService');
+			$iIdentifierContextPreselection = $this->GetConfigField('WholesaleIdentifierContextPreselection');
+			$iIdentifierContext = (int)$aData['IdentifierContext'];
+
+			// Define provisioning type mapping info
+			$aProvisioningTypes = array(
+				$iChurn => array(
+					$iIdentifierContextFullService => PROVISIONING_TYPE_FULL_SERVICE,
+					$iIdentifierContextPreselection => PROVISIONING_TYPE_PRESELECTION
+				),
+				$iReverseChurn => array(
+					$iIdentifierContextFullService => PROVISIONING_TYPE_FULL_SERVICE_REVERSE,
+					$iIdentifierContextPreselection => PROVISIONING_TYPE_PRESELECTION_REVERSE
+				)
+			);
+			
+			// Check notifications until a provisioning type is found
+ 			foreach ($aNotifications as $oNotification) {
+				if (isset($aProvisioningTypes[$oNotification->notification_type]) && isset($aProvisioningTypes[$oNotification->notification_type][$iIdentifierContext])) {
+					$iProvisioningType = $aProvisioningTypes[$oNotification->notification_type][$iIdentifierContext];
+					Log::get()->logIf(self::DEBUG_LOGGING, "\t\t\t\t\t[*] Found provisioning type: {$iProvisioningType}");
+					return $iProvisioningType;
+				} else {
+					Log::get()->logIf(self::DEBUG_LOGGING, "\t\t\t\t\t[*] No provisioning type found (Notification Type: {$oNotification->notification_type}; Identifier Context: {$iIdentifierContext})");
+				}
+ 			}
+ 		} else {
+ 			Log::get()->logIf(self::DEBUG_LOGGING, "\t\t\t\t\t[*] Can't determine provisioning type, no notifications present in data");
+ 		}
+
+ 		Log::get()->logIf(self::DEBUG_LOGGING, "\t\t\t\t[*] No provisioning type found in the data");
+ 		return null;
+ 	}
+
  	private static function _logArray($aArray) {
  		foreach ($aArray as $sKey => $mValue) {
  			Log::get()->logIf(self::DEBUG_LOGGING, "\t\t{$sKey} => {$mValue}");
@@ -366,35 +408,6 @@ class ImportTelcoBlue extends ImportBase {
  		$sNotifications = preg_replace('/(\\\)(\\\|")/', '$2', $sNotifications);
  		
  		return JSON_Services::decode($sNotifications);
- 	}
-
- 	private static function _getProvisioningTypeForUnrequestedResponse($aResponse, $aData, $aNotifications) {
- 		// NOTE: This function looks at the notifications that were returned along with a response and checks the notification types of each (along with the package that was associated with the response)
- 		// It then determines the Flex provisioning type that is appropriate (currently it stops looking once it finds a match)
- 		$oCurrentRatePlan = ((isset($aResponse['Service']) && ($aResponse['Service'] !== null)) ? Service::getForId($aResponse['Service'])->getCurrentPlan() : null);
- 		if ($aNotifications && !empty($aNotifications) && ($oCurrentRatePlan !== null)) {
- 			$iChurn = $this->GetConfigField('ChurnNotificationType');
-			$iReverseChurn = $this->GetConfigField('ReverseChurnNotificationType');
-			$iWholesalePackage = (int)$aData['Package'];
-			$aProvisioningTypes = array(
-				$iChurn => array(
-					$oCurrentRatePlan->fullservice_wholesale_plan => PROVISIONING_TYPE_FULL_SERVICE,
-					$oCurrentRatePlan->preselection_wholesale_plan => PROVISIONING_TYPE_PRESELECTION
-				),
-				$iReverseChurn => array(
-					$oCurrentRatePlan->fullservice_wholesale_plan => PROVISIONING_TYPE_FULL_SERVICE_REVERSE,
-					$oCurrentRatePlan->preselection_wholesale_plan => PROVISIONING_TYPE_PRESELECTION_REVERSE
-				)
-			);
-			
- 			foreach ($aNotifications as $oNotification) {
-				if (isset($aProvisioningTypes[$oNotification->notification_type]) && isset($aProvisioningTypes[$oNotification->notification_type][$iWholesalePackage])) {
-					return $aProvisioningTypes[$oNotification->notification_type][$iWholesalePackage];
-				}
- 			}
- 		}
- 		
- 		return null;
  	}
 }
 

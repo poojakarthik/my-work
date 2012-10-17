@@ -8,7 +8,7 @@ Flex::load();
 $arrConfig = LoadApplication();
 $appProvisioning = new ApplicationProvisioning();
 
-$bolUpdateAllFNNInstances = false;
+$bolUpdateAllFNNInstances = true;
 $bolMustHaveExistingStatus = false;
 
 ///*DEBUG QUERY*/$selServices = new StatementSelect("Service JOIN Account ON Account.Id = Service.Account", "Service.*", "Account = 1000154811 AND ServiceType = 102 AND Service.Status != 403 AND Account.Archived != 1", "Account.Id, Service.FNN, Service.Id");
@@ -54,9 +54,6 @@ if ($intServiceCount = $selServices->Execute()) {
 					continue;
 				}
 				
-				$arrResponse = array_merge($arrResponse, $appProvisioning->_arrImportFiles[$arrResponse['Carrier']][$intFileType]->Normalise($arrResponse['Raw'], DONKEY));
-				//Debug($arrResponse);
-				
 				// Is this Response on the last EffectiveDate?
 				if ($intEffectiveDate < strtotime($arrResponse['EffectiveDate'])) {
 					//CliEcho("(".date("Y-m-d H:i:s", $intEffectiveDate).") $intEffectiveDate < ".strtotime($arrResponse['EffectiveDate'])." ({$arrResponse['EffectiveDate']})");
@@ -92,6 +89,8 @@ if ($intServiceCount = $selServices->Execute()) {
 			if ($bolUpdateAllFNNInstances && $arrNewStatus['LineStatus']) {
 				if ($updFNNLineStatus->Execute($arrNewStatus, $arrNewStatus) === false) {
 					throw new Exception_Database($updFNNLineStatus->Error());
+				} else {
+					CliEcho(" * Updated successfully");
 				}
 			}
 		} else {

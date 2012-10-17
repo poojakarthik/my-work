@@ -58,7 +58,8 @@ class CollectionModuleTelcoBlue extends CollectionModuleBase {
 							$oResponse->modified_timestamp,
 							$oResponse->effective_timestamp,
 							'"'.$sNotifications.'"',
-							$oResponse->package_id
+							$oResponse->package_id,
+							$oResponse->identifier_context
 						));
 					}
 
@@ -289,7 +290,7 @@ class CollectionModuleTelcoBlue extends CollectionModuleBase {
 		
 		if ($bInvalidJSONResponse) {
 			// JSON decode error
-			throw new Exception("Invalid JSON response from API. URL='{$sURL}' Response='{$sBody}'");
+			throw new Exception("Invalid JSON response from API. URL='{$sRemoteURL}' Response='{$sBody}'");
 		}
 
 		switch ($iResponseStatus) {
@@ -303,7 +304,7 @@ class CollectionModuleTelcoBlue extends CollectionModuleBase {
 					throw new Exception("API Error: ".$mJSONResponse->oException->sMessage);
 				} else {
 					// Other Http error
-					throw new Exception("Error response from API: {$iResponseStatus}. URL='{$sURL}' Response='{$sBody}'");
+					throw new Exception("Error response from API: {$iResponseStatus}. URL='{$sRemoteURL}' Response='{$sBody}'");
 				}
 				break;
 		}
