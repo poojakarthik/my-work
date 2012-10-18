@@ -8,7 +8,7 @@ Flex::load();
 $arrConfig = LoadApplication();
 $appProvisioning = new ApplicationProvisioning();
 
-$bolUpdateAllFNNInstances = true;
+$bolUpdateAllFNNInstances = false;
 $bolMustHaveExistingStatus = false;
 
 ///*DEBUG QUERY*/$selServices = new StatementSelect("Service JOIN Account ON Account.Id = Service.Account", "Service.*", "Account = 1000154811 AND ServiceType = 102 AND Service.Status != 403 AND Account.Archived != 1", "Account.Id, Service.FNN, Service.Id");
