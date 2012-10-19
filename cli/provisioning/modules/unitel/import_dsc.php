@@ -304,6 +304,7 @@
 				case "M":	// Change - address
 				case "B":	// Change - number & address
 					$arrPDR['Type']				= PROVISIONING_TYPE_CHANGE_ADDRESS;
+					$arrPDR['request_status']	= REQUEST_STATUS_COMPLETED;
 					$arrPDR['Description']		= "Address Changed";
 					
 					// This can span over multiple lines in the file
