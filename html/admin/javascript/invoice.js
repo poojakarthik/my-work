@@ -153,15 +153,19 @@ var Invoice	= Class.create
 		fncJsonFunc(intAccount);
 	},
 	
-	_getPreGenerateValuesResponse	: function(objResponse)
-	{
+	_getPreGenerateValuesResponse : function(objResponse) {
 		// Close the Splash and display the Summary
 		Vixen.Popup.ClosePageLoadingSplash();
 		
 		// Did we succeed?
-		if (objResponse.Success === false)
-		{
-			jQuery.json.errorPopup(objResponse);
+		if (objResponse.Success === false) {
+			if (objResponse.bolNotAllowed) {
+				// Not allowed to generate the interim invoice, show an alert
+				Reflex_Popup.alert(objResponse.ErrorMessage);
+			} else {
+				// An unexpected exception
+				jQuery.json.errorPopup(objResponse);
+			}
 			return;
 		}
 		

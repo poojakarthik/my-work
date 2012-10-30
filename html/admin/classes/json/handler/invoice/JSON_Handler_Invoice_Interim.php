@@ -148,11 +148,16 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				
 				if ($eException instanceof Exception_Invoice_Interim_NotAllowed || AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
 				{
-					throw $eException;
+					return array(
+						"Success" => false,
+						"bolNotAllowed" => true,
+						"ErrorMessage" => $eException->getMessage(),
+						"strDebug" => (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+					);
 				}
 				else
 				{
-					throw new Exception("There was an internal error in Flex.  Please try again.");
+					throw new Exception("There was an internal error in Flex.  Please try again. ".$eException->getMessage());
 				}
 			}
 			

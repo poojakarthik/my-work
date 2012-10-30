@@ -21,7 +21,7 @@ var Reflex_AJAX_Request = Class.create({
 	},
 
 	getMethod : function() {
-		return this._sHandler;
+		return this._sMethod;
 	},
 
 	getParameters : function() {
