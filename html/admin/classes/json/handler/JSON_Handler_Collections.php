@@ -524,16 +524,14 @@ class JSON_Handler_Collections extends JSON_Handler implements JSON_Handler_Logg
 		}
 	}
 	
-	public function getEventSummaryForAccount($iAccountId, $iStartMilliseconds, $iEndMilliseconds)
-	{
+	public function getEventSummaryForAccount($iAccountId, $iStartMilliseconds, $iEndMilliseconds) {
 		$bUserIsGod = Employee::getForId(Flex::getUserId())->isGod;
-		try
-		{
-		    $sStartDate			= date('Y-m-d H:i:s', floor($iStartMilliseconds / 1000));
-		    $sEndDate			= date('Y-m-d H:i:s', floor($iEndMilliseconds / 1000));
-		    $sBetween			= "'{$sStartDate}' AND '{$sEndDate}'";
-		    $oQuery 			= new Query();
-		    $aUnsortedEvents	= array();
+		try {
+		    $sStartDate	= date('Y-m-d H:i:s', floor($iStartMilliseconds / 1000));
+		    $sEndDate = date('Y-m-d H:i:s', floor($iEndMilliseconds / 1000));
+		    $sBetween = "'{$sStartDate}' AND '{$sEndDate}'";
+		    $oQuery = new Query();
+		    $aUnsortedEvents = array();
 
 		    // Promise Instalments
 		    $mPromiseInstalmentResult = $oQuery->Execute("	SELECT 	cpi.*
@@ -543,14 +541,12 @@ class JSON_Handler_Collections extends JSON_Handler implements JSON_Handler_Logg
 															AND 	cp.account_id = {$iAccountId}
 															AND		(cp.collection_promise_completion_id IS NULL
 																	OR cp.collection_promise_completion_id = ".COLLECTION_PROMISE_COMPLETION_KEPT.");");
-		    if ($mPromiseInstalmentResult === false)
-		    {
+		    if ($mPromiseInstalmentResult === false) {
 			    throw new Exception("Failed to get promise instalment summary. ".$oQuery->Error());
 		    }
 
 		    // Create unsorted event items for each row
-		    while ($aRow = $mPromiseInstalmentResult->fetch_assoc())
-		    {
+		    while ($aRow = $mPromiseInstalmentResult->fetch_assoc()) {
 			    self::_createAccountEventSummaryItems($aRow, 'collection_promise_instalment', $aUnsortedEvents);
 		    }
 
@@ -563,29 +559,25 @@ class JSON_Handler_Collections extends JSON_Handler implements JSON_Handler_Logg
 																	OR aceh.completed_datetime BETWEEN {$sBetween}
 																)
 														AND 	aceh.account_id = {$iAccountId};");
-		    if ($mEventInstanceResult === false)
-		    {
+		    if ($mEventInstanceResult === false) {
 			    throw new Exception("Failed to get completed event instance summary. ".$oQuery->Error());
 		    }
 
 		    // Create unsorted event items for each row (one for completed_datetime, one for scheduled_datetime if different)
-		    while ($aRow = $mEventInstanceResult->fetch_assoc())
-		    {
+		    while ($aRow = $mEventInstanceResult->fetch_assoc()) {
 			    self::_createAccountEventSummaryItems($aRow, 'account_collection_event_history', $aUnsortedEvents);
 		    }
 		    
 			$aPreviousEvent = NULL;
-			while ($aNextEvent = $this->getNextEventDetails($iAccountId, $aPreviousEvent))
-			{
+			while ($aNextEvent = $this->getNextEventDetails($iAccountId, $aPreviousEvent)) {
 
-				$aScenarioEvent 									= array();
-				$aScenarioEvent['collection_event_invocation_id']	= $aNextEvent['invocation'];
-				$aScenarioEvent['collection_event_name'] 			= "Next Collections Event: ".$aNextEvent['event_name'];
-				$aScenarioEvent['id'] 								= $aNextEvent['event_id'];
-				$aScenarioEvent['isExit']							= $aNextEvent['is_exit'];
-				$aScenarioEvent['isNextEvent']						= TRUE;
-				if (!isset($aUnsortedEvents[$aNextEvent['event_date']]))
-				{
+				$aScenarioEvent = array();
+				$aScenarioEvent['collection_event_invocation_id'] = $aNextEvent['invocation'];
+				$aScenarioEvent['collection_event_name'] = "Next Collections Event: ".$aNextEvent['event_name'];
+				$aScenarioEvent['id'] = $aNextEvent['event_id'];
+				$aScenarioEvent['isExit'] = $aNextEvent['is_exit'];
+				$aScenarioEvent['isNextEvent'] = TRUE;
+				if (!isset($aUnsortedEvents[$aNextEvent['event_date']])) {
 					$aUnsortedEvents[$aNextEvent['event_date']] = array();
 				}
 				$aUnsortedEvents[$aNextEvent['event_date']]['collection_scenario_collection_event'][] = $aScenarioEvent;
@@ -604,14 +596,12 @@ class JSON_Handler_Collections extends JSON_Handler implements JSON_Handler_Logg
 															    OR cs.effective_end_datetime BETWEEN {$sBetween}
 														    )
 												    AND 	cs.account_id = {$iAccountId};");
-		    if ($mSuspensionResult === false)
-		    {
+		    if ($mSuspensionResult === false) {
 			    throw new Exception("Failed to get suspension summary. ".$oQuery->Error());
 		    }
 
 		    // Create unsorted event items for each row (one for start_datetime, one for proposed_datetime if not finished, otherwise effective_end_datetime)
-		    while ($aRow = $mSuspensionResult->fetch_assoc())
-		    {
+		    while ($aRow = $mSuspensionResult->fetch_assoc()) {
 			    self::_createAccountEventSummaryItems($aRow, 'collection_suspension', $aUnsortedEvents);
 		    }
 
@@ -621,22 +611,20 @@ class JSON_Handler_Collections extends JSON_Handler implements JSON_Handler_Logg
 
 		    // Create new sorted event hash
 		    $aSortedEvents = array();
-		    foreach ($aDates as $sDate)
-		    {
+		    foreach ($aDates as $sDate) {
 			    $aSortedEvents[$sDate] = $aUnsortedEvents[$sDate];
 		    }
 
-		    return	array(
-					    'bSuccess' 	=> true,
-					    'aEvents'	=> $aSortedEvents
-				    );
+		    return array(
+			    'bSuccess' => true,
+			    'aEvents' => $aSortedEvents
+		    );
 		}
-		catch (Exception $oException)
-		{
-			return	array(
-						'bSuccess' 	=> false,
-						'sMessage'	=> ($bUserIsGod ? $oException->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.')
-					);
+		catch (Exception $oException) {
+			return array(
+				'bSuccess' => false,
+				'sMessage' => $oException->getMessage()
+			);
 		}
 	}
 
