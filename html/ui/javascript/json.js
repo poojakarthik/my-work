@@ -294,6 +294,15 @@ jQuery.json = {
 	},
 	
 	errorPopup : function(oResponse, sPopupMessage, fnOnClose) {
+		// Check if it was a DatabaseAccess lock timeout or deadlock exception 
+		if (oResponse.sExceptionClass) {
+			switch (oResponse.sExceptionClass) {
+				case 'Exception_Database_LockTimeout':
+					Reflex_Popup.alert('This action could not be completed because the Flex server is currently very busy.\nPlease wait a moment and then try again.');
+					return;
+			}
+		}
+
 		// Find the function that represented the response handler (NOTE: The max distance is arbitrary but there to prevent infinitum)
 		var fnParent = arguments.callee;
 		var iDistance = 0;

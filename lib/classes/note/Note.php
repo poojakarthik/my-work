@@ -128,7 +128,8 @@ class Note extends ORM
 		}
 		catch (Exception $e)
 		{
-			throw new Exception(__METHOD__ ." Failed to save note - ". $e->getMessage());
+			$sClass = get_class($e);
+			throw new $sClass(__METHOD__ ." Failed to save note - ". $e->getMessage());
 		}
 	 	
 	 	return $objNote;

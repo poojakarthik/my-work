@@ -77,6 +77,7 @@ class JSON_Handler_ActionsAndNotes extends JSON_Handler {
 			}
 			
 			$oNote = Note::createNote($noteType->id, $strContent, Flex::getUserId(), $intAccountId, $intServiceId, $intContactId);
+			throw new Exception_Database_LockTimeout("ya");
 			TransactionCommit();
 			
 			return array(
@@ -87,7 +88,8 @@ class JSON_Handler_ActionsAndNotes extends JSON_Handler {
 			TransactionRollback();
 			return array(
 				"success" => false,
-				"errorMessage" => $e->getMessage()
+				"errorMessage" => $e->getMessage(),
+				'sExceptionClass' => get_class($e)
 			);
 		}
 	}
