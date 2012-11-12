@@ -96,7 +96,7 @@ class CollectionModuleTelcoBlue extends CollectionModuleBase {
 
 						// Make sure there is something to collect
 						if (empty($aUsageData)) {
-							// There is not usage for this period
+							// There is no usage for this period
 							if ($this->_canDeferPeriod($iKey, $aPeriod)) {
 								throw new CollectionModuleTelcoBlue_Exception_NoDataForLastPeriod();
 							}
@@ -135,7 +135,7 @@ class CollectionModuleTelcoBlue extends CollectionModuleBase {
 						break;
 				}
 			} catch (CollectionModuleTelcoBlue_Exception_NoDataForLastPeriod $oEx) {
-				// There was not data for this period Collect the next file
+				// There was no data for this period and it is the last of it's type for this run
 				Log::get()->logIf(self::DEBUG_LOGGING, self::LOG_TABS."\tThis period returned no data and is the last of it's kind in this run. Deferring collection to next run.");
 				continue;
 			}
@@ -163,6 +163,7 @@ class CollectionModuleTelcoBlue extends CollectionModuleBase {
 
 	private function _canDeferPeriod($iKey, $aPeriod) {
 		// If this is the last provisioning period to collect it can be ignored and will be joined on the first period next time this module is run.
+		// NOTE: This is done in a way that won't affect the pointer of the _aMissingPeriods array because Download uses each() to iterate it.
 		$aKeys = array_keys($this->_aMissingPeriods);
 		$iMaxKeyForImportFileType = $iKey;
 		foreach ($aKeys as $i) {
