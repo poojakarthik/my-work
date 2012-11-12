@@ -36,86 +36,109 @@ class CollectionModuleTelcoBlue extends CollectionModuleBase {
 	public function Download($sLocalDirectory) {
 		$this->_getMissingDates();
 
-		if (list($iKey, $aPeriod) = each($this->_aMissingPeriods)) {
-			switch ($aPeriod['iImportFileType']) {
-				case RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_TELCOBLUE:
-					// Get data by using the wholesale reseller API
-					$aResponses = $this->_APIRequest('responses', $aPeriod);
-					$aNotifications = $this->_APIRequest('notifications', $aPeriod);
+		while (list($iKey, $aPeriod) = each($this->_aMissingPeriods)) {
+			try {
+				Log::get()->logIf(self::DEBUG_LOGGING, self::LOG_TABS."Date Period: {$aPeriod['sFrom']} - {$aPeriod['sTo']}");
+				switch ($aPeriod['iImportFileType']) {
+					case RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_TELCOBLUE:
+						// Get data by using the wholesale reseller API
+						$aResponses = $this->_APIRequest('responses', $aPeriod);
+						$aNotifications = $this->_APIRequest('notifications', $aPeriod);
 
-					// Generate the csv file content lines
-					$aLines = array();
-					foreach ($aResponses as $oResponse) {
-						$sNotifications = preg_replace('/\\\|"/', '\\\$0', JSON_Services::encode($oResponse->notifications));
-						$sNotifications = preg_replace('/,/', ';', $sNotifications);
-						$aLines[] = implode(',', array(
-							self::PROVISIONING_LINE_TYPE_RESPONSE,
-							$oResponse->client_reference,
-							$oResponse->subject,
-							$oResponse->action,
-							$oResponse->detail,
-							$oResponse->status,
-							$oResponse->modified_timestamp,
-							$oResponse->effective_timestamp,
-							'"'.$sNotifications.'"',
-							$oResponse->package_id,
-							$oResponse->identifier_context
-						));
-					}
+						// Make sure there is something to collect
+						if (empty($aResponses) && empty($aNotifications)) {
+							// There is no responses or notifications. 
+							if ($this->_canDeferPeriod($iKey, $aPeriod)) {
+								throw new CollectionModuleTelcoBlue_Exception_NoDataForLastPeriod();
+							}
+						}
 
-					foreach ($aNotifications as $oNotification) {
-						$aLines[] = implode(',', array(
-							self::PROVISIONING_LINE_TYPE_NOTIFICATION,
-							$oNotification->identifier,
-							$oNotification->identifier_context,
-							$oNotification->notification_type,
-							$oNotification->package_id,
-							$oNotification->status,
-							$oNotification->status_result,
-							$oNotification->notification_timestamp,
-							$oNotification->effective_timestamp,
-							$oNotification->description
-						));
-					}
+						// Generate the csv file content lines
+						$aLines = array();
+						foreach ($aResponses as $oResponse) {
+							$sNotifications = preg_replace('/\\\|"/', '\\\$0', JSON_Services::encode($oResponse->notifications));
+							$sNotifications = preg_replace('/,/', ';', $sNotifications);
+							$aLines[] = implode(',', array(
+								self::PROVISIONING_LINE_TYPE_RESPONSE,
+								$oResponse->client_reference,
+								$oResponse->subject,
+								$oResponse->action,
+								$oResponse->detail,
+								$oResponse->status,
+								$oResponse->modified_timestamp,
+								$oResponse->effective_timestamp,
+								'"'.$sNotifications.'"',
+								$oResponse->package_id,
+								$oResponse->identifier_context
+							));
+						}
 
-					$sFileName = $this->_makeFileName($aPeriod, 'provisioning');
-					break;
-				case RESOURCE_TYPE_FILE_IMPORT_CDR_TELCOBLUE:
-					// Get data by using the wholesale reseller API
-					$aUsageData = $this->_APIRequest('usage', $aPeriod);
+						foreach ($aNotifications as $oNotification) {
+							$aLines[] = implode(',', array(
+								self::PROVISIONING_LINE_TYPE_NOTIFICATION,
+								$oNotification->identifier,
+								$oNotification->identifier_context,
+								$oNotification->notification_type,
+								$oNotification->package_id,
+								$oNotification->status,
+								$oNotification->status_result,
+								$oNotification->notification_timestamp,
+								$oNotification->effective_timestamp,
+								$oNotification->description
+							));
+						}
 
-					// Generate the csv file content lines
-					$aLines = array();
-					foreach ($aUsageData as $oUsageData) {
-						$aLines[] = implode(',', array(
-							$oUsageData->reference,
-							$oUsageData->type,
-							$oUsageData->origin_identifier,
-							$oUsageData->target_identifier,
-							$oUsageData->billed_identifier,
-							$oUsageData->origin_point,
-							$oUsageData->origin_point_name,
-							$oUsageData->target_point,
-							$oUsageData->target_point_name,
-							$oUsageData->billed_point,
-							$oUsageData->billed_point_name,
-							$oUsageData->units_primary,
-							$oUsageData->unit_type_primary,
-							$oUsageData->units_secondary,
-							$oUsageData->unit_type_secondary,
-							$oUsageData->units_tertiary,
-							$oUsageData->unit_type_tertiary,
-							$oUsageData->cost,
-							$oUsageData->event_start,
-							$oUsageData->event_end,
-							$oUsageData->rate,
-							$oUsageData->description
-						));
-					}
+						$sFileName = $this->_makeFileName($aPeriod, 'provisioning');
+						break;
+					case RESOURCE_TYPE_FILE_IMPORT_CDR_TELCOBLUE:
+						// Get data by using the wholesale reseller API
+						$aUsageData = $this->_APIRequest('usage', $aPeriod);
 
-					$sFileName = $this->_makeFileName($aPeriod, 'usage');
-					break;
-			}			
+						// Make sure there is something to collect
+						if (empty($aUsageData)) {
+							// There is not usage for this period
+							if ($this->_canDeferPeriod($iKey, $aPeriod)) {
+								throw new CollectionModuleTelcoBlue_Exception_NoDataForLastPeriod();
+							}
+						}
+
+						// Generate the csv file content lines
+						$aLines = array();
+						foreach ($aUsageData as $oUsageData) {
+							$aLines[] = implode(',', array(
+								$oUsageData->reference,
+								$oUsageData->type,
+								$oUsageData->origin_identifier,
+								$oUsageData->target_identifier,
+								$oUsageData->billed_identifier,
+								$oUsageData->origin_point,
+								$oUsageData->origin_point_name,
+								$oUsageData->target_point,
+								$oUsageData->target_point_name,
+								$oUsageData->billed_point,
+								$oUsageData->billed_point_name,
+								$oUsageData->units_primary,
+								$oUsageData->unit_type_primary,
+								$oUsageData->units_secondary,
+								$oUsageData->unit_type_secondary,
+								$oUsageData->units_tertiary,
+								$oUsageData->unit_type_tertiary,
+								$oUsageData->cost,
+								$oUsageData->event_start,
+								$oUsageData->event_end,
+								$oUsageData->rate,
+								$oUsageData->description
+							));
+						}
+
+						$sFileName = $this->_makeFileName($aPeriod, 'usage');
+						break;
+				}
+			} catch (CollectionModuleTelcoBlue_Exception_NoDataForLastPeriod $oEx) {
+				// There was not data for this period Collect the next file
+				Log::get()->logIf(self::DEBUG_LOGGING, self::LOG_TABS."\tThis period returned no data and is the last of it's kind in this run. Deferring collection to next run.");
+				continue;
+			}
 
 			// Write the lines to local file
 			$sLocalPath = "{$sLocalDirectory}/{$sFileName}";
@@ -132,10 +155,24 @@ class CollectionModuleTelcoBlue extends CollectionModuleBase {
 					'Uniqueness' => 'FileName = <FileName>'
 				)
 			);
-		} else {
-			// No more files
-			return false;
 		}
+		
+		// No more files
+		return false;
+	}
+
+	private function _canDeferPeriod($iKey, $aPeriod) {
+		// If this is the last provisioning period to collect it can be ignored and will be joined on the first period next time this module is run.
+		$aKeys = array_keys($this->_aMissingPeriods);
+		$iMaxKeyForImportFileType = $iKey;
+		foreach ($aKeys as $i) {
+			if (($this->_aMissingPeriods[$i]['iImportFileType'] == $aPeriod['iImportFileType']) && ($i > $iMaxKeyForImportFileType)) {
+				// This period is for the same import file type and it occurs after the current file
+				$iMaxKeyForImportFileType = $i;
+			}
+		}
+
+		return ($iMaxKeyForImportFileType == $iKey);
 	}
 	
 	private function _getMissingDates() {
@@ -342,5 +379,7 @@ class CollectionModuleTelcoBlue extends CollectionModuleBase {
 		);
 	}
 }
+
+class CollectionModuleTelcoBlue_Exception_NoDataForLastPeriod extends Exception {}
 
 ?>
