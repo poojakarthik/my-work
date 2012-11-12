@@ -83,12 +83,12 @@ class JSON_Handler_ActionsAndNotes extends JSON_Handler {
 				"success" => true,
 				"iNoteId" => $oNote->Id
 			);
-		} catch (Exception $e) {
+		} catch (Exception $oEx) {
 			TransactionRollback();
 			return array(
 				"success" => false,
-				"errorMessage" => $e->getMessage(),
-				'sExceptionClass' => get_class($e)
+				"errorMessage" => $oEx->getMessage(),
+				'sExceptionClass' => get_class($oEx)
 			);
 		}
 	}

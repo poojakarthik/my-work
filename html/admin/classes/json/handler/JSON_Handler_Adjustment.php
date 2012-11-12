@@ -121,12 +121,9 @@ class JSON_Handler_Adjustment extends JSON_Handler implements JSON_Handler_Logga
 		}
 	}
 	
-	public function createAdjustment($oDetails)
-	{
-		$bUserIsGod		= Employee::getForId(Flex::getUserId())->isGod();
-		$oDataAccess	= DataAccess::getDataAccess();
-		try
-		{
+	public function createAdjustment($oDetails) {
+		$oDataAccess = DataAccess::getDataAccess();
+		try {
 			// Verify that creation, not modification is being performed
 			if (isset($oDetails->id)) {
 				throw new Exception("Cannot use createAdjustment with an existing Adjustment (Id is {$oDetails->id} in this case).");
@@ -134,113 +131,94 @@ class JSON_Handler_Adjustment extends JSON_Handler implements JSON_Handler_Logga
 			
 			// Validation
 			$aErrors = array();
-			if ($oDetails->adjustment_type_id === null)
-			{
+			if ($oDetails->adjustment_type_id === null) {
 				$aErrors[] = 'Adjustment Type not supplied';
 			}
 			
-			if ($oDetails->amount === '')
-			{
+			if ($oDetails->amount === '') {
 				$aErrors[] = 'Amount not supplied';
-			}
-			else if ($oDetails->amount === '')
-			{
+			} else if ($oDetails->amount === '') {
 				$aErrors[] = 'Invalid Amount supplied';
 			}
 			
-			if ($oDetails->account_id === null)
-			{
+			if ($oDetails->account_id === null) {
 				$aErrors[] = 'Account Id not supplied';
-			}
-			else if (Account::getForId($oDetails->account_id)->Archived == ACCOUNT_STATUS_PENDING_ACTIVATION)
-			{
+			} else if (Account::getForId($oDetails->account_id)->Archived == ACCOUNT_STATUS_PENDING_ACTIVATION) {
 				$aErrors[] = 'The Account is pending activation. Adjustments cannot be requested at this time.';
 			}
 			
-			if ($oDetails->service_id !== null)
-			{
+			if ($oDetails->service_id !== null) {
 				$oService = Service::getForId($oDetails->service_id);
-				if ($oService->Status == SERVICE_PENDING)
-				{
+				if ($oService->Status == SERVICE_PENDING) {
 					$aErrors[] = 'Cannot use the Service, it is pending activation. Adjustments can not be requested at this time.';
-				}
-				else if (!$oService->isCurrentlyActive())
-				{
+				} else if (!$oService->isCurrentlyActive()) {
 					$aErrors[] = 'This service is not currently active on this account. Adjustments can only be requested for active services.';
 				}
 			}
 
 			$oDetails->note	= (is_string($oDetails->note) && strlen($oDetails->note = trim($oDetails->note))) ? $oDetails->note : null;
 			
-			if (count($aErrors) > 0)
-			{
+			if (count($aErrors) > 0) {
 				return array('bSuccess' => false, 'aErrors' => $aErrors);
 			}
 			
-			if (!$oDataAccess->TransactionStart())
-			{
+			if (!$oDataAccess->TransactionStart()) {
 				throw new Exception("Failed to start db transaction");
 			}
 			
 			// Prepare details
 			$oDetails->amount = Rate::roundToRatingStandard($oDetails->amount, 2);
-			if ($oDetails->invoice_id == '')
-			{
+			if ($oDetails->invoice_id == '') {
 				$oDetails->invoice_id = null;
 			}
 			
 			$iNow = DataAccess::getDataAccess()->getNow(true);
 			
 			// Create adjustment
-			$oAdjustment 						= new Adjustment(get_object_vars($oDetails));
-			$oAdjustment->balance				= $oAdjustment->amount;
-			$oAdjustment->adjustment_nature_id 	= ADJUSTMENT_NATURE_ADJUSTMENT;
-			$oAdjustment->adjustment_status_id 	= ADJUSTMENT_STATUS_PENDING;
-			$oAdjustment->effective_date		= date('Y-m-d', $iNow);
-			$oAdjustment->created_datetime		= date('Y-m-d H:i:s', $iNow);
-			$oAdjustment->created_employee_id	= Flex::getUserId();
-			$oAdjustment->note					= $oDetails->note;
+			$oAdjustment = new Adjustment(get_object_vars($oDetails));
+			$oAdjustment->balance = $oAdjustment->amount;
+			$oAdjustment->adjustment_nature_id = ADJUSTMENT_NATURE_ADJUSTMENT;
+			$oAdjustment->adjustment_status_id = ADJUSTMENT_STATUS_PENDING;
+			$oAdjustment->effective_date = date('Y-m-d', $iNow);
+			$oAdjustment->created_datetime = date('Y-m-d H:i:s', $iNow);
+			$oAdjustment->created_employee_id = Flex::getUserId();
+			$oAdjustment->note = $oDetails->note;
 			$oAdjustment->calculateTaxComponent();
 			$oAdjustment->save();
 
 			//throw new Exception("DEBUG: ".print_r($oAdjustment->toStdClass(), true));
 			
 			// Create an action to record the requested adjustment
-			if ($oAdjustment->service_id !== null)
-			{
+			if ($oAdjustment->service_id !== null) {
 				// The adjustment is being applied to a specific service
 				$iAccountId = NULL;
 				$iServiceId = $oAdjustment->service_id;
-			}
-			else
-			{
+			} else {
 				// The adjustment is being applied to an account
 				$iAccountId = $oAdjustment->account_id;
 				$iServiceId = NULL;
 			}
 			
-			$oAdjustmentType		= Adjustment_Type::getForId($oAdjustment->adjustment_type_id);
-			$sNature				= Transaction_Nature::getForId($oAdjustmentType->transaction_nature_id)->code;
-			$sAmount				= $oAdjustment->amount;
-			$sChargeType			= "{$oAdjustmentType->code} - {$oAdjustmentType->description}";
-			$sActionExtraDetails	= "	Type: {$sChargeType} ({$sNature})\n Amount (Inc GST): \${$sAmount} {$sNature}";
+			$oAdjustmentType = Adjustment_Type::getForId($oAdjustment->adjustment_type_id);
+			$sNature = Transaction_Nature::getForId($oAdjustmentType->transaction_nature_id)->code;
+			$sAmount = $oAdjustment->amount;
+			$sChargeType = "{$oAdjustmentType->code} - {$oAdjustmentType->description}";
+			$sActionExtraDetails = "	Type: {$sChargeType} ({$sNature})\n Amount (Inc GST): \${$sAmount} {$sNature}";
 			
 			Action::createAction("Adjustment Requested", $sActionExtraDetails, $iAccountId, $iServiceId, null, Flex::getUserId(), Employee::SYSTEM_EMPLOYEE_ID);
 			
-			if (!$oDataAccess->TransactionCommit())
-			{
+			if (!$oDataAccess->TransactionCommit()) {
 				throw new Exception("Failed to commit db transaction");
 			}
 			
 			return array('bSuccess' => true, 'iAdjustmentId' => $oAdjustment->id);
-		}
-		catch (Exception $e)
-		{
+		} catch (Exception $oEx) {
 			$oDataAccess->TransactionRollback();
-			return 	array(
-						'bSuccess'	=> false,
-						'sMessage'	=> $e->getMessage()
-					);
+			return array(
+				'bSuccess' => false,
+				'sMessage' => $oEx->getMessage(),
+				'sExceptionClass' => get_class($oEx)
+			);
 		}
 	}
 	
