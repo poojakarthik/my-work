@@ -119,7 +119,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			DataAccess::getDataAccess()->TransactionRollback();
 			
 			$arrDetailsToRender['Success'] = false;
-			$arrDetailsToRender['Message'] = $e->getMessage();
+			$arrDetailsToRender['Message'] = $e->getMessage().($bolVerboseErrors ? " -- POST DATA: ".var_export($_POST, true) : '.');
 		}
 		
 		// Render the JSON'd Array
