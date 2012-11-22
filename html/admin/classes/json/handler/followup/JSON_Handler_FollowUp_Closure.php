@@ -12,8 +12,8 @@ class JSON_Handler_FollowUp_Closure extends JSON_Handler implements JSON_Handler
 				throw new JSON_Handler_FollowUp_Closure_Exception('You do not have permission to view Follow-Up Closures.');
 			}
 			
-			$aSort		= get_object_vars($oSort);
-			$aFilter	= get_object_vars($oFilter);
+			$aSort		= $oSort !== null ? get_object_vars($oSort) : array();
+			$aFilter	= $oFilter !== null ? get_object_vars($oFilter) : array();
 			
 			if ($bCountOnly)
 			{

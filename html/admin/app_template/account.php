@@ -1019,7 +1019,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			Ajax()->AddCommand("Alert", "This action is temporarily unavailable because a related, live invoice run is currently outstanding");
 			return TRUE;
 		}
-				
+
 		// If the validation has failed display the invalid fields
 		if (DBO()->Account->IsInvalid())
 		{
@@ -1030,6 +1030,26 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		// Merge the Account data from the database with the newly defined details
 		DBO()->Account->LoadMerge();
+
+		if (DBO()->Account->BillingMethod->Value == DELIVERY_METHOD_EMAIL) {
+			// Make sure the primary contact has a valid email address
+			$oPrimaryContact = Contact::getForId(DBO()->Account->PrimaryContact->Value);
+			//throw new Exception(DBO()->Account->PrimaryContact->Value.";;".var_export($oPrimaryContact, true));
+			$sErrorMessage = null;
+			if (($oPrimaryContact->Email == '') || ($oPrimaryContact->Email === null)) {
+				// Not email address saved for the contact
+				$sErrorMessage = "The Primary Contact for this Account (".$oPrimaryContact->getName().") does not have an email address";
+			} else if (!Validation::isValidEmail($oPrimaryContact->Email)) {
+				// Invalid email address saved for the contact
+				$sErrorMessage = "The Primary Contact for this Account (".$oPrimaryContact->getName().") does not have a valid email address ({$oPrimaryContact->Email})";
+			}
+
+			if ($sErrorMessage !== null) {
+				Ajax()->AddCommand("Alert", "ERROR: {$sErrorMessage}. The Billing Method cannot be set to Email");
+				Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT, $this->_objAjax->strContainerDivId, $this->_objAjax);
+				return TRUE;
+			}
+		}
 
 		// This will store the properties that have been changed and have to cascade
 		// to tables other than the Account table, which I believe is only the
@@ -1095,6 +1115,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		{
 			$strChangesNote .= "Billing Method was changed from ". GetConstantDescription(DBO()->CurrentAccount->BillingMethod->Value, 'delivery_method') ." to " . GetConstantDescription(DBO()->Account->BillingMethod->Value, 'delivery_method') . "\n";
 		}
+
 		if (!$bolIsSuperAdminUser)
 		{
 			// Only Super Admins can change the CustomerGroup of an Account

@@ -523,6 +523,17 @@ class AppTemplateContact extends ApplicationTemplate
 			}
 		}
 		
+		if (DBO()->Account->BillingMethod->Value == DELIVERY_METHOD_EMAIL) {
+			// Make sure the contact has a valid email address
+			if ((DBO()->PrimaryContact->Email->Value == '') || (DBO()->PrimaryContact->Email->Value === null)) {
+				// Not email address saved for the contact
+				$strErrorMessage = "ERROR: The Delivery Method of this Account is Email and this Contact does not have an email address";
+			} else if (!Validation::isValidEmail(DBO()->PrimaryContact->Email->Value)) {
+				// Invalid email address saved for the contact
+				$strErrorMessage = "ERROR: The Delivery Method of this Account is Email and this Contact does not have a valid email address";
+			}
+		}
+
 		if ($strErrorMessage)
 		{
 			// The contact is invalid.  Exit gracefully
