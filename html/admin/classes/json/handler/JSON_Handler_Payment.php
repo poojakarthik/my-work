@@ -61,42 +61,34 @@ class JSON_Handler_Payment extends JSON_Handler implements JSON_Handler_Loggable
 		}
 	}
 	
-	public function reversePayment($iPaymentId, $iReasonId, $oReplacementPaymentDetails=null)
-	{
-		$bUserIsGod	 = Employee::getForId(Flex::getUserId())->isGod();
-		try
-		{
-			$oDataAccess	= DataAccess::getDataAccess();
-			if ($oDataAccess->TransactionStart() === false)
-			{
+	public function reversePayment($iPaymentId, $iReasonId, $oReplacementPaymentDetails=null) {
+		try {
+			$oDataAccess = DataAccess::getDataAccess();
+			if ($oDataAccess->TransactionStart() === false) {
 				throw new Exception_Database("Failed to start db transaction");
 			}
 			
-			try
-			{
+			try {
 				// Reverse payment
 				$oPayment = new Logic_Payment(Payment::getForId($iPaymentId));
 				$oPayment->reverse($iReasonId);
 				
 				// Create replacement payment
 				$mPaymentId = null;
-				if ($oReplacementPaymentDetails !== null)
-				{
+				if ($oReplacementPaymentDetails !== null) {
 					$aErrors = self::_validatePaymentDetails($oReplacementPaymentDetails);
-					if (count($aErrors) > 0)
-					{
+					if (count($aErrors) > 0) {
 						return array('bSuccess' => false, 'aErrors' => $aErrors);
 					}
 					
 					// Add credit card surcharge if need be
-					$fAmount			= $oReplacementPaymentDetails->amount;
-					$bChargeSurcharge	= ($oReplacementPaymentDetails->credit_card_type_id !== null);
-					$aTransactionData	= array();
-					if ($bChargeSurcharge)
-					{
+					$fAmount = $oReplacementPaymentDetails->amount;
+					$bChargeSurcharge = ($oReplacementPaymentDetails->credit_card_type_id !== null);
+					$aTransactionData = array();
+					if ($bChargeSurcharge) {
 						Log::getLog()->log("Surcharge to be applied");
-						$oCardType 	= Credit_Card_Type::getForId($oReplacementPaymentDetails->credit_card_type_id);
-						$fAmount	= $fAmount + $oCardType->calculateSurcharge($fAmount);
+						$oCardType = Credit_Card_Type::getForId($oReplacementPaymentDetails->credit_card_type_id);
+						$fAmount = $fAmount + $oCardType->calculateSurcharge($fAmount);
 						
 						// Add transaction data for the card number
 						$aTransactionData[Payment_Transaction_Data::CREDIT_CARD_NUMBER] = Credit_Card::getMaskedCardNumber($oReplacementPaymentDetails->credit_card_number);
@@ -105,19 +97,16 @@ class JSON_Handler_Payment extends JSON_Handler implements JSON_Handler_Loggable
 					}
 					
 					$oPayment =	Logic_Payment::factory(
-									$oReplacementPaymentDetails->account_id, 
-									$oReplacementPaymentDetails->payment_type_id, 
-									$fAmount, 
-									PAYMENT_NATURE_PAYMENT, 
-									$oReplacementPaymentDetails->transaction_reference, 
-									date('Y-m-d', DataAccess::getDataAccess()->getNow(true)),
-									array(
-										'aTransactionData' => $aTransactionData
-									)
-								);
+						$oReplacementPaymentDetails->account_id, 
+						$oReplacementPaymentDetails->payment_type_id, 
+						$fAmount, 
+						PAYMENT_NATURE_PAYMENT, 
+						$oReplacementPaymentDetails->transaction_reference, 
+						date('Y-m-d', DataAccess::getDataAccess()->getNow(true)),
+						array('aTransactionData' => $aTransactionData)
+					);
 					
-					if ($bChargeSurcharge)
-					{
+					if ($bChargeSurcharge) {
 						// Apply credit card surcharge
 						Log::getLog()->log("Applying surcharge");
 						$oPayment->applyCreditCardSurcharge($oReplacementPaymentDetails->credit_card_type_id);
@@ -125,29 +114,25 @@ class JSON_Handler_Payment extends JSON_Handler implements JSON_Handler_Loggable
 					
 					$mPaymentId = $oPayment->id;
 				}
-			}
-			catch (Exception $e)
-			{
-				if ($oDataAccess->TransactionRollback() === false)
-				{
+			} catch (Exception $oEx) {
+				if ($oDataAccess->TransactionRollback() === false) {
 					throw new Exception_Database("Failed to rollback db transaction");
 				}
-				throw $e;
+
+				throw $oEx;
 			}
 			
-			if ($oDataAccess->TransactionCommit() === false)
-			{
+			if ($oDataAccess->TransactionCommit() === false) {
 				throw new Exception_Database("Failed to commit db transaction");
 			}
 			
 			return array('bSuccess' => true, 'iPaymentId' => $mPaymentId);
-		}
-		catch (Exception $e)
-		{
-			return 	array(
-						'bSuccess'	=> false,
-						'sMessage'	=> ($bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.')
-					);
+		} catch (Exception $oEx) {
+			return array(
+				'bSuccess' => false,
+				'sMessage' => $oEx->getMessage(),
+				'sExceptionClass' => get_class($oEx)
+			);
 		}
 	}
 	
