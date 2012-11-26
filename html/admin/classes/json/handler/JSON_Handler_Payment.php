@@ -136,22 +136,17 @@ class JSON_Handler_Payment extends JSON_Handler implements JSON_Handler_Loggable
 		}
 	}
 	
-	public function createPayment($oDetails)
-	{
-		$bUserIsGod = Employee::getForId(Flex::getUserId())->isGod();
-		try
-		{
+	public function createPayment($oDetails) {
+		try {
 			$aErrors = self::_validatePaymentDetails($oDetails);
-			if (count($aErrors) > 0)
-			{
+			if (count($aErrors) > 0) {
 				return array('bSuccess' => false, 'aErrors' => $aErrors);
 			}
 			
-			$fAmount			= $oDetails->amount;
-			$bChargeSurcharge	= $oDetails->charge_surcharge && ($oDetails->credit_card_type_id !== null);
-			$aTransactionData	= array();
-			if ($bChargeSurcharge)
-			{
+			$fAmount = $oDetails->amount;
+			$bChargeSurcharge = $oDetails->charge_surcharge && ($oDetails->credit_card_type_id !== null);
+			$aTransactionData = array();
+			if ($bChargeSurcharge) {
 				Log::getLog()->log("Credit card surcharge to be applied");
 				$oCardType 	= Credit_Card_Type::getForId($oDetails->credit_card_type_id);
 				$fAmount	= $fAmount + $oCardType->calculateSurcharge($fAmount);
@@ -163,31 +158,27 @@ class JSON_Handler_Payment extends JSON_Handler implements JSON_Handler_Loggable
 			}
 			
 			$oPayment =	Logic_Payment::factory(
-							$oDetails->account_id, 
-							$oDetails->payment_type_id, 
-							$fAmount, 
-							PAYMENT_NATURE_PAYMENT, 
-							$oDetails->transaction_reference, 
-							date('Y-m-d', DataAccess::getDataAccess()->getNow(true)),
-							array(
-								'aTransactionData' => $aTransactionData
-							)
-						);
+				$oDetails->account_id, 
+				$oDetails->payment_type_id, 
+				$fAmount, 
+				PAYMENT_NATURE_PAYMENT, 
+				$oDetails->transaction_reference, 
+				date('Y-m-d', DataAccess::getDataAccess()->getNow(true)),
+				array('aTransactionData' => $aTransactionData)
+			);
 			
-			if ($bChargeSurcharge)
-			{
+			if ($bChargeSurcharge) {
 				// Apply credit card surcharge
 				$oPayment->applyCreditCardSurcharge($oDetails->credit_card_type_id);
 			}
 			
 			return array('bSuccess' => true, 'iPaymentId' => $oPayment->id);
-		}
-		catch (Exception $e)
-		{
-			return 	array(
-						'bSuccess'	=> false,
-						'sMessage'	=> ($bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.')
-					);
+		} catch (Exception $oEx) {
+			return array(
+				'bSuccess' => false,
+				'sMessage' => $oEx->getMessage(),
+				'sExceptionClass' => get_class($oEx)
+			);
 		}
 	}
 	
