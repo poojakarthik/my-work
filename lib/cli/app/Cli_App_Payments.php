@@ -236,7 +236,7 @@ class Cli_App_Payments extends Cli {
 		}
 	}
 	
-	protected function _directdebit() { 
+	protected function _directdebit() {
 		// The arguments are present and in a valid format if we get past this point.
 		$aArgs = $this->getValidatedArguments();
 		$bTestRun = (bool)$aArgs[self::SWITCH_TEST_RUN];
@@ -253,13 +253,13 @@ class Cli_App_Payments extends Cli {
 			Log::getLog()->log("Running in Test Mode, transaction started");
 		}
 		
-		try { 
+		try {
 			// Determine if this should be run
 			if (Collections_Schedule::getEligibility(null, true)) { 
 				$iTimestamp = DataAccess::getDataAccess()->getNow(true);
 
 				// Execute subprocesses
-				$aInvoiceDirectDebitSummary = $this->_runBalanceDirectDebits($iTimestamp);
+				//$aInvoiceDirectDebitSummary = $this->_runBalanceDirectDebits($iTimestamp);
 				//Log::getLog()->log("Invoice Direct Debit Summary Data: ".print_r($aInvoiceDirectDebitSummary, true));
 				$aPromiseDirectDebitSummary = $this->_runPromiseInstalmentDirectDebits($iTimestamp);
 				//Log::getLog()->log("Promise Direct Debit Summary Data: ".print_r($aPromiseDirectDebitSummary, true));
@@ -640,6 +640,7 @@ class Cli_App_Payments extends Cli {
 						);
 		
 		while ($aRow = $mResult->fetch_assoc()) { 
+			Log::getLog()->log("Collection Promise Instalment: {$aRow['collection_promise_instalment_id']}");
 			$oInstalment = Collection_Promise_Instalment::getForId($aRow['collection_promise_instalment_id']);
 			$oPayable = new Logic_Collection_Promise_Instalment($oInstalment);
 			$fAmount = Rate::roundToCurrencyStandard($oPayable->getBalance(), 2);
@@ -700,6 +701,7 @@ class Cli_App_Payments extends Cli {
 			if ($bDirectDebitable) { 
 				DataAccess::getDataAccess()->TransactionStart(false);
 				try {
+					Log::getLog()->log("Is Direct Debitable - Creating Payment...");
 					// Create Payment (using origin id, payment type, account & amount)
 					$oPayment = Logic_Payment::factory(
 									$oAccount->Id,
@@ -716,6 +718,7 @@ class Cli_App_Payments extends Cli {
 									false
 								);
 
+					Log::getLog()->log("Creating Payment Request...");
 					// Create payment_request (linked to the payment & invoice run id)
 					$oPaymentRequest = Payment_Request::generatePending(
 												$oAccount->Id, // Account id
@@ -738,6 +741,7 @@ class Cli_App_Payments extends Cli {
 					$oPayment->save();
 
 					// Now that the Payment is finalised, distribute!
+					Log::getLog()->log("Distributing Payment...");
 					$oPayment->distribute();
 				} catch (Exception $oException) {
 					DataAccess::getDataAccess()->TransactionRollback(false);
@@ -745,7 +749,7 @@ class Cli_App_Payments extends Cli {
 				}
 				DataAccess::getDataAccess()->TransactionCommit(false);
 
-				Log::getLog()->log("Account: {$oAccount->Id}, Payment: {$oPayment->id}, payment_request: {$oPaymentRequest->id}, Amount: {$fAmount}; Due: {$oInstalment->due_date}");
+				Log::getLog()->log("Complete (Account: {$oAccount->Id}, Payment: {$oPayment->id}, payment_request: {$oPaymentRequest->id}, Amount: {$fAmount}; Due: {$oInstalment->due_date})");
 				
 				// Add to Customer Group Totals
 				$aCustomerGroupSummary[$oAccount->CustomerGroup]['iCount']++;
@@ -754,7 +758,10 @@ class Cli_App_Payments extends Cli {
 				// Add to General Totals
 				$fAppliedValue = Rate::roundToCurrencyStandard($fAppliedValue + $fAmount);
 				$iAppliedCount++;
+			} else {
+				Log::getLog()->log("Is NOT Direct Debitable");
 			}
+			Log::getLog()->log("");
 		}
 		
 		Log::getLog()->log("APPLIED: {$iAppliedCount}");

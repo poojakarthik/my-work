@@ -73,17 +73,14 @@ class Logic_Collection_Promise implements DataLogic
     	return $this->aCollectables;
     }
 
-    public function getOldestOpenCollectable()
-    {
+    public function getOldestOpenCollectable() {
         $aCollectables = $this->getCollectables();
-        $oOldest;
-        foreach ($aCollectables as $oCollectable)
-        {
-            if ( $oCollectable->balance > 0 && ($oOldest === null ||  $oCollectable->due_date < $oOldest->due_date))
-                    $oOldest = $oCollectable;
-
+        $oOldest = null;
+        foreach ($aCollectables as $oCollectable) {
+            if ($oCollectable->balance > 0 && (($oOldest === null) || ($oCollectable->due_date < $oOldest->due_date))) {
+                $oOldest = $oCollectable;
+            }
         }
-
         return $oOldest;
     }
 
