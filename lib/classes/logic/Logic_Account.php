@@ -7,7 +7,7 @@
  */
 class Logic_Account implements DataLogic
 {
-	const DEBUG_LOGGING = true;
+	const DEBUG_LOGGING = false;
 
 	const			SCENARIO_OFFSET_USED_TO_DETERMINE_EXIT_COLLECTIONS = FALSE;
 	const			CACHE_MODE_BYPASS = 'bypass';

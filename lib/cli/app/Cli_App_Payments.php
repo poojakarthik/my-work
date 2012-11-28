@@ -259,7 +259,7 @@ class Cli_App_Payments extends Cli {
 				$iTimestamp = DataAccess::getDataAccess()->getNow(true);
 
 				// Execute subprocesses
-				//$aInvoiceDirectDebitSummary = $this->_runBalanceDirectDebits($iTimestamp);
+				$aInvoiceDirectDebitSummary = $this->_runBalanceDirectDebits($iTimestamp);
 				//Log::getLog()->log("Invoice Direct Debit Summary Data: ".print_r($aInvoiceDirectDebitSummary, true));
 				$aPromiseDirectDebitSummary = $this->_runPromiseInstalmentDirectDebits($iTimestamp);
 				//Log::getLog()->log("Promise Direct Debit Summary Data: ".print_r($aPromiseDirectDebitSummary, true));
