@@ -10,7 +10,7 @@
  */
 abstract class  Logic_Distributable {
 
-	const DEBUG_LOGGING = false;
+	const DEBUG_LOGGING = true;
 	
 	abstract public function isDebit();
 
