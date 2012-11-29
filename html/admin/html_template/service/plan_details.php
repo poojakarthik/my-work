@@ -199,7 +199,7 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 			$dboRatePlan->CustomerGroup->RenderOutput();
 			
 			$intFullService = $dboRatePlan->CarrierFullService->Value;
-			$oCarrierFullService = Carrier::getForId($intFullService);
+			$oCarrierFullService = Carrier::getForId($intFullService, true);
 			if ($oCarrierFullService === null) {
 				$strFullService = "[Not Specified]";
 			} else {
@@ -208,7 +208,7 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 			$dboRatePlan->CarrierFullService->RenderArbitrary($strFullService, RENDER_OUTPUT);
 			
 			$intPreselection = $dboRatePlan->CarrierPreselection->Value;
-			$oCarrierPreselection = Carrier::getForId($intPreselection);
+			$oCarrierPreselection = Carrier::getForId($intPreselection, true);
 			if ($oCarrierPreselection === null) {
 				$strPreselection = "[Not Specified]";
 			} else {
