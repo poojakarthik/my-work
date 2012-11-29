@@ -719,7 +719,7 @@ Date.$parseDate = function(input, format) {
 }
 
 Date.$createParser = function(format) {
-	var funcName = "parse" + Date.$parseFunctions.count++;
+	var funcName = "$parse" + Date.$parseFunctions.count++;
 	var regexNum = Date.$parseRegexes.length;
 	var currentGroup = 1;
 	Date.$parseFunctions[format] = funcName;
@@ -768,7 +768,6 @@ Date.$createParser = function(format) {
 		+ "else if (y > 0)\n"
 		+ "{return new Date(y);}\n"
 		+ "}return null;}";
-
 	Date.$parseRegexes[regexNum] = new RegExp("^" + regex + "$");
 	eval(code);
 }
