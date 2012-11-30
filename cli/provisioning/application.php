@@ -227,7 +227,7 @@ class ApplicationProvisioning extends ApplicationBaseClass {
 		$arrCols['Description'] = null;
 		$arrCols['CarrierRef'] = null;
 		$ubiRequest = new StatementUpdateById("ProvisioningRequest", $arrCols);
-		$selRequests = new StatementSelect("ProvisioningRequest", "*", "Status = ".REQUEST_STATUS_WAITING);
+		$selRequests = new StatementSelect("ProvisioningRequest", "*", "Status = ".REQUEST_STATUS_WAITING." AND scheduled_datetime <= NOW()");
 		
 		CliEcho("[ PROVISIONING EXPORT ]\n");
 		

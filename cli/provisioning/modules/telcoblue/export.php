@@ -17,6 +17,7 @@
 	protected $_ptrFile;
 
 	private $_aData = array();
+	private $_aExportedRequestIds = array();
 
 	// Maps service types to wholesale identifier contexts (the config property that stores the identifier context)
  	private static $_aServiceIdentifierContextConfigProperties = array(
@@ -223,7 +224,7 @@
 	 		try {
 	 			$aRequest['SentOn']	= $sNow;
 	 			$this->_APIRequest($sURL, $aData, $aExtraHeaders);
-	 			$aRequest['Status'] = REQUEST_STATUS_DELIVERED;
+	 			$aRequest['Status'] = REQUEST_STATUS_EXPORTING;
 	 		} catch (ExportTelcoBlue_Exception_APICommunication $oEx) {
 	 			// Failed to communicate with the api, try again later
 	 			$aRequest['Status']	= REQUEST_STATUS_WAITING;
@@ -237,6 +238,9 @@
 	 		$aRequest['Status']	= REQUEST_STATUS_WAITING;
 	 		$aRequest['Description'] = $oEx->getMessage();
 	 	}
+
+	 	// Cache, for delivery
+	 	$this->_aExportedRequestIds[] = $aRequest['Id'];
  		
 	 	// Return the modified Request
 	 	return $aRequest;
@@ -263,6 +267,14 @@
 
  	// _Deliver: (Override) No delivery required
  	protected function _Deliver() {
+ 		// Mark each request as delivered
+ 		foreach ($this->_aExportedRequestIds as $iId) {
+ 			$oRequest = new Provisioning_Request(array('Id' => $iId), true);
+ 			$oRequest->Status = REQUEST_STATUS_DELIVERED;
+ 			$oRequest->SentOn = DataAccess::getDataAccess()->getNow();
+ 			$oRequest->save();
+ 		}
+
  		return array('Pass' => true, 'Description' => "No delivery required");
  	}
 
