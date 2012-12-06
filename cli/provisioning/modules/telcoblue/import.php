@@ -231,7 +231,8 @@ class ImportTelcoBlue extends ImportBase {
 			$aNotificationStrings = array();
 			foreach ($aNotifications as $oNotification) {
 				Log::get()->logIf(self::DEBUG_LOGGING, "\t\t\t\t[*] Notification: {$oNotification->description}");
-				$aNotificationStrings[] = $oNotification->description;
+				$sNotificationTimestamp = ($oNotification->effective_timestamp !== null ? $oNotification->effective_timestamp : $oNotification->notification_timestamp);
+				$aNotificationStrings[] = "{$oNotification->description} ({$sNotificationTimestamp})";
 			}
 			$sDescription .= ". ".implode('. ', $aNotificationStrings);
 		}
