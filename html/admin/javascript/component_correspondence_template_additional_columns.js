@@ -34,30 +34,30 @@ var Component_Correspondence_Template_Additional_Columns = Class.create(
 		return aColumns;
 	},
 	
-	setColumns : function(aColumns)
-	{
+	setColumns : function(aColumns) {
 		// Clear table
 		this._oTBody.innerHTML = '';
 		
 		// Put the columns in order
-		aColumns 			= $A(aColumns);
-		var hRowsInOrder	= {};
-		for (var i = 0; i < aColumns.length; i++)
-		{
+		aColumns = $A(aColumns);
+		var hRowsInOrder = {};
+		var aIndexes = [];
+		for (var i = 0; i < aColumns.length; i++) {
 			var oColumn	= aColumns[i];
-			var iIndex	= oColumn.column_index - 1;
-			if (!hRowsInOrder[iIndex])
-			{
+			var iIndex = oColumn.column_index - 1;
+			if (!hRowsInOrder[iIndex]) {
 				hRowsInOrder[iIndex] = [];
 			}
 			hRowsInOrder[iIndex].push(oColumn);
+			aIndexes.push(iIndex);
 		}
 		
-		for (var iIndex in hRowsInOrder)
-		{
-			for (var i = 0; i < hRowsInOrder[iIndex].length; i++)
-			{
-				var oColumn = hRowsInOrder[iIndex][i];
+		aIndexes.sort();
+
+		for (var i = 0; i < aIndexes.length; i++) {
+			var aRowsAtIndex = hRowsInOrder[aIndexes[i]];
+			for (var j = 0; j < aRowsAtIndex.length; j++) {
+				var oColumn = aRowsAtIndex[j];
 				this._addColumnRow(oColumn.name, oColumn.description);
 			}
 		}
