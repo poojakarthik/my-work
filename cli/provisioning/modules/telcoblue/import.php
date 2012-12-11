@@ -148,7 +148,7 @@ class ImportTelcoBlue extends ImportBase {
  		$aData = $this->_SplitLine($sLine);
  		$aResponse = array(); 		
 
- 		// All line types have an effective timestamp
+ 		// All line types have an effective timestamp (it may be overriden depending on the data)
  		$aResponse['EffectiveDate'] = date("Y-m-d H:i:s", strtotime($aData['EffectiveTimestamp']));
 
  		// Generate ProvisioningResponse properties based on the line type
@@ -170,6 +170,7 @@ class ImportTelcoBlue extends ImportBase {
  	private function _handleResponse(&$aResponse, $aData) {
  		Log::get()->logIf(self::DEBUG_LOGGING, "\t\t[*] It's a Response");
  		$aNotifications = self::_getResponseNotifications($aData);
+ 		$oRequest = null;
  		if ($aData['ClientReference'] !== '') {
  			// Has a client reference, fetch the provisioning request
  			Log::get()->logIf(self::DEBUG_LOGGING, "\t\t\t[*] Got client reference: '{$aData['ClientReference']}'");
@@ -184,6 +185,7 @@ class ImportTelcoBlue extends ImportBase {
 				$aResponse['FNN'] = $aData['Detail'];
 				$aResponse['Type'] = null;
 				$aResponse['Request'] = null;
+				$oRequest = null;
 			}
  		} else {
  			// No client reference, not requested by flex
@@ -209,6 +211,11 @@ class ImportTelcoBlue extends ImportBase {
 			case 'PENDING':
 				$iRequestStatusId = REQUEST_STATUS_DELIVERED;
 				$sDescription = "Request is still being processed";
+				
+				// Set the effective date to that of the request
+				if ($oRequest !== null) {
+					$aResponse['EffectiveDate'] = $oRequest->SentOn;
+				}
 				break;
 			case 'COMPLETE':
 			case 'COMPLETE_NO_CHANGE':
@@ -218,11 +225,21 @@ class ImportTelcoBlue extends ImportBase {
 			case 'FAILED':
 				$iRequestStatusId = REQUEST_STATUS_REJECTED;
 				$sDescription = "Request was unable to be completed";
+
+				// Set the effective date to that of the request
+				if ($oRequest !== null) {
+					$aResponse['EffectiveDate'] = $oRequest->SentOn;
+				}
 				break;
 			default:
 				$iRequestStatusId = REQUEST_STATUS_DELIVERED;
 				$aResponse['Status'] = RESPONSE_STATUS_CANT_NORMALISE;
 				$sDescription = "Unable to determine the status from response data";
+				
+				// Set the effective date to that of the request
+				if ($oRequest !== null) {
+					$aResponse['EffectiveDate'] = $oRequest->SentOn;
+				}
 		}
 		
 		// Add notifications descriptions to the description
