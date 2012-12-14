@@ -1170,28 +1170,15 @@ class JSON_Handler_Account extends JSON_Handler
 							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 						);
 			}
-		}
-		catch (JSON_Handler_Account_Exception $oException)
-		{
+		} catch (Exception $oEx) {
 			// Rollback db transaction
 			$oDataAccess->TransactionRollback();
-
-			return 	array(
-						"Success"	=> false,
-						"Message"	=> $oException->getMessage(),
-						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
-					);
-		}
-		catch (Exception $e)
-		{
-			// Rollback db transaction
-			$oDataAccess->TransactionRollback();
-
-			return 	array(
-						"Success"	=> false,
-						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database',
-						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
-					);
+			return array(
+				"Success" => false,
+				"Message" => $oEx->getMessage(),
+				"strDebug" => (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : '',
+				'sExceptionClass' => get_class($oEx)
+			);
 		}
 	}
 

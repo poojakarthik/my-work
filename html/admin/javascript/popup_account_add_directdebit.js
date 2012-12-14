@@ -350,42 +350,34 @@ var Popup_Account_Add_DirectDebit	= Class.create(Reflex_Popup,
 		fnAddDirectDebit(this._iAccountId, this._hFieldValues);
 	},
 	
-	_saveResponse	: function(bChangePaymentMethod, oResponse)
-	{
+	_saveResponse : function(bChangePaymentMethod, oResponse) {
 		this._oLoading.hide();
 		delete this._oLoading;
 		
-		if (oResponse.Success)
-		{
+		if (oResponse.Success) {
 			this.hide();
 			
-			if (oResponse.oPaymentReceipt !== null)
-			{
+			if (oResponse.oPaymentReceipt !== null) {
 				// A payment has been submitted, ask who to email the receipt to
 				JsAutoLoader.loadScript('popup_account_direct_debit_receipt_email', 
-					function()
-					{
+					function() {
 						new Popup_Account_Direct_Debit_Receipt_Email(this._iAccountId, oResponse.oPaymentReceipt, this._receiptEmailSent.bind(this, bChangePaymentMethod, oResponse));
 					}.bind(this),
 					true
 				);
-			}
-			else if (bChangePaymentMethod && this._fnOnPaymentMethodChange)
-			{
+			} else if (bChangePaymentMethod && this._fnOnPaymentMethodChange) {
 				this._fnOnPaymentMethodChange(oResponse.oDirectDebit);
-			}
-			else if (this._fnOnSave)
-			{
+			} else if (this._fnOnSave) {
 				this._fnOnSave(oResponse.oDirectDebit);
 			}
-		}
-		else if (oResponse.aValidationErrors)
-		{
+		} else if (oResponse.sExceptionClass == 'JSON_Handler_Account_Exception') {
+			// Special exception message (e.g. insufficient permission), must be shown to user
+			Reflex_Popup.alert(oResponse.Message);
+		} else if (oResponse.aValidationErrors) {
 			// Validation errors
 			Popup_Account_Add_DirectDebit._showValidationErrorPopup(oResponse.aValidationErrors);
-		}
-		else
-		{
+		} else {
+			// Any other kind of failure, show ajax error popup
 			this._ajaxError(oResponse);
 		}
 	},
