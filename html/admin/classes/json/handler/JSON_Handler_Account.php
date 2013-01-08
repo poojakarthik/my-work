@@ -1105,7 +1105,7 @@ class JSON_Handler_Account extends JSON_Handler
 					
 					if ($fAmount === null)
 					{
-						throw new Exception("Invalid amount supplied");
+						throw new JSON_Handler_Account_Exception("Invalid amount supplied");
 					}
 					
 					$iEmployeeId	= Flex::getUserId();
