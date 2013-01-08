@@ -1795,7 +1795,8 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 			// Update the corresponding sale_item record in the Sales Portal, if there is one (set it to COMPLETE) 
 			if (Data_Source::dsnExists(FLEX_DATABASE_CONNECTION_SALES))
 			{
-				$objFlexSaleItem = FlexSaleItem::getForServiceId($intService, TRUE);
+				// NOTE: We previously also searched for previous Service versions that were attached to a Sale Item, though this seems inappropriate
+				$objFlexSaleItem = FlexSaleItem::getForServiceId($intService, false);
 				if ($objFlexSaleItem !== NULL)
 				{
 					// The service originated from a sale in the Sales Portal

@@ -59,7 +59,7 @@ class CollectionModuleISPOne extends CollectionModuleBase {
 	public function Download($sLocalDirectory) {
 		$this->_getMissingDates();
 
-		if (list($iKey, $sMissingDate) = each($this->_aMissingDates)) {
+		while (list($iKey, $sMissingDate) = each($this->_aMissingDates)) {
 			// Download file
 			$sFileName = $this->_makeFileName($sMissingDate);
 			$sLocalPath = "{$sLocalDirectory}/{$sFileName}";
@@ -94,8 +94,13 @@ class CollectionModuleISPOne extends CollectionModuleBase {
 					throw $oException;
 				}
 				// Fail gracefully
-				Log::get()->log("ERROR: {$oException}");
-				return false;
+				if (self::DEBUG_LOGGING) {
+					Log::get()->log("ERROR: {$oException}");
+				} else {
+					Log::get()->log("No data for date {$sMissingDate}");
+				}
+				//return false;
+				continue; // Try next file
 			}
 
 			// Write to local file
@@ -112,10 +117,10 @@ class CollectionModuleISPOne extends CollectionModuleBase {
 					'Uniqueness' => 'FileName = <FileName>'
 				)
 			);
-		} else {
-			// No more files
-			return false;
 		}
+
+		// No more files
+		return false;
 	}
 
 	private function _getMissingDates() {
