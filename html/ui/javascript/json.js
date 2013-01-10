@@ -298,6 +298,7 @@ jQuery.json = {
 		if (oResponse.sExceptionClass) {
 			switch (oResponse.sExceptionClass) {
 				case 'Exception_Database_LockTimeout':
+				case 'Exception_Database_Deadlock':
 					Reflex_Popup.alert('This action could not be completed because the Flex server is currently busy.\nPlease wait a moment and then try again.');
 					return;
 			}
