@@ -476,12 +476,12 @@ class Application_Handler_Telemarketing extends Application_Handler
 	}
 	
 	public function UploadDiallerReport() {
+		$sLog = '';
+		Log::setDefaultLog(Log::registerLog(__CLASS__.'::'.__METHOD__, Log::LOG_TYPE_STRING, $sLog));
 		$bolVerboseErrors = AuthenticatedUser()->UserHasPerm(PERMISSION_GOD);
 		
 		$arrDetailsToRender	= array();
-		if (!DataAccess::getDataAccess()->TransactionStart()) {
-			throw new Exception("Flex was unable to start a Transaction.  The Upload has been aborted.  Please try again shortly.");
-		}
+		DataAccess::getDataAccess()->TransactionStart(false);
 		try {
 			$qryQuery = new Query();
 			
@@ -511,7 +511,10 @@ class Application_Handler_Telemarketing extends Application_Handler
 			
 			// Import the File (into FileImport)
 			$strFriendlyFileName = dirname($_FILES['Telemarketing_DiallerReportUpload_File']['tmp_name']).'/'.$_FILES['Telemarketing_DiallerReportUpload_File']['name'];
-			move_uploaded_file($_FILES['Telemarketing_DiallerReportUpload_File']['tmp_name'], $strFriendlyFileName);
+			if (!move_uploaded_file($_FILES['Telemarketing_DiallerReportUpload_File']['tmp_name'], $strFriendlyFileName)) {
+				throw new Exception("There was an internal error when importing the File.  If this problem occurs more than once, please notify YBS at support@ybs.net.au" . (($bolVerboseErrors) ? "\n\nCouldn't move temporary file {$_FILES['Telemarketing_DiallerReportUpload_File']['tmp_name']} to {$strFriendlyFileName}" : ''));
+			}
+			Log::get()->log('Moved temporary file ' . var_export($_FILES['Telemarketing_DiallerReportUpload_File']['tmp_name'], true) . ' to ' . var_export($strFriendlyFileName, true));
 			try {
 				$objFileImport = File_Import::import($strFriendlyFileName, $arrCarrierModule['FileType'], $objDealer->carrierId, basename($strFriendlyFileName), "FileName = <FileName>");
 			} catch (Exception $eException) {
@@ -559,6 +562,9 @@ class Application_Handler_Telemarketing extends Application_Handler
 			
 			$arrDetailsToRender['Success'] = false;
 			$arrDetailsToRender['Message'] = $e->getMessage();
+		}
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) {
+			$arrDetailsToRender['sLog'] = $sLog;
 		}
 		
 		// Render the JSON'd Array
