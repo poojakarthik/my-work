@@ -133,8 +133,31 @@ class AppTemplateInvoice extends ApplicationTemplate
 			$arrHeaders = Array('From' => $strFromAddress, 'Subject' => $strSubject);
 
 			// Send them
-			foreach ($arrEmails as $strEmailAddress)
-			{
+			foreach ($arrEmails as $strEmailAddress) {
+				$oEmailFlex	= new Email_Flex();
+				$oEmailFlex->setSubject($arrHeaders['Subject']);
+				$oEmailFlex->addTo($strEmailAddress);
+				$oEmailFlex->setFrom($arrHeaders['From']);
+				$oEmailFlex->setBodyText($strContent);
+				// Attachment (file to deliver)
+				$oEmailFlex->createAttachment(
+					$strPDFtoSend, 
+					'application/pdf', 
+					Zend_Mime::DISPOSITION_ATTACHMENT, 
+					Zend_Mime::ENCODING_BASE64, 
+					$strInvoiceFileName
+				);
+				// Send the email
+				try {
+					$oEmailFlex->send();
+				} catch (Zend_Mail_Transport_Exception $e) {
+					// Sending the email failed
+					Ajax()->AddCommand("Alert", "Emails not sent successfully. The email addresses may be incorrect or there could be a problem with the email system.");
+					return TRUE;
+				}
+				// Mail_mime Deprecated, ryanf 30.1.2013
+				// Leaving this here for the moment incase the replacement above goes pear shaped during testing.
+				/*
 				$mimMime = new Mail_mime("\n");
 				$mimMime->setTXTBody($strContent);
 				$mimMime->addAttachment($strPDFtoSend, 'application/pdf', $strInvoiceFileName, FALSE);
@@ -148,6 +171,7 @@ class AppTemplateInvoice extends ApplicationTemplate
 					Ajax()->AddCommand("Alert", "Emails not sent successfully. The email addresses may be incorrect or there could be a problem with the email system.");
 					return TRUE;
 				}
+				*/
 			}
 
 			// The emails were successfully sent
