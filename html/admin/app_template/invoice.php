@@ -150,7 +150,7 @@ class AppTemplateInvoice extends ApplicationTemplate
 				// Send the email
 				try {
 					$oEmailFlex->send();
-				} catch (Zend_Mail_Transport_Exception $e) {
+				} catch (Zend_Mail_Transport_Exception $oException) {
 					// Sending the email failed
 					Ajax()->AddCommand("Alert", "Emails not sent successfully. The email addresses may be incorrect or there could be a problem with the email system.");
 					return TRUE;
