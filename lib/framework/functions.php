@@ -1866,7 +1866,7 @@ die;
 
 		// PEAR Packages
 		require_once("Console/Getopt.php");
-		require_once("Spreadsheet/Excel/Writer.php");
+		//require_once("Spreadsheet/Excel/Writer.php");
 		require_once("Mail.php");
 		require_once("Mail/mime.php");
 	}
