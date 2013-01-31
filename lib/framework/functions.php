@@ -1865,7 +1865,7 @@ die;
 		require_once($strFrameworkDir."exception_vixen.php");
 
 		// PEAR Packages
-		require_once("Console/Getopt.php");
+		// require_once("Console/Getopt.php");
 		require_once("Spreadsheet/Excel/Writer.php");
 		require_once("Mail.php");
 		require_once("Mail/mime.php");
