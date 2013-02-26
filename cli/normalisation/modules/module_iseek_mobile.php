@@ -196,6 +196,7 @@ class NormalisationModuleIseekMobile extends NormalisationModule {
 		//throw new Exception("TESTING");
 	}
 
+	const ROAM_CALLED_NUMBER_HACK_SMS = '8880000000000';
 	const DIRECTION_ORIGINATING = 1;
 	const DIRECTION_TERMINATING = 2;
 	protected static $_aRoamTranslatePriorities = array('record_type', 'gsm_service_type', 'call_type');
@@ -211,15 +212,29 @@ class NormalisationModuleIseekMobile extends NormalisationModule {
 
 		$sOtherParty = trim($this->getRaw('called_number'));
 		$iCallDirection = (int)$this->getRaw('call_direction');
-		Flex::assert(!preg_match('/^(888|999)\d+$/', $sOtherParty), "iSeek Mobile Normalisation: Roam Call SMS/GPRS Hack Encountered", $this->getRaw('CDR'));
+		
+		if ($sOtherParty === self::ROAM_CALLED_NUMBER_HACK_SMS) {
+			// SMS Hack
+			// Source
+			$this->setNormalised('Source', $iCallDirection === self::DIRECTION_ORIGINATING ? $sCellularNumber : null);
+			Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Source', 'call_direction', 'cellular_number', 'called_number'));
 
-		// Source
-		$this->setNormalised('Source', $iCallDirection === self::DIRECTION_ORIGINATING ? $sCellularNumber : $sOtherParty);
-		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Source', 'call_direction', 'cellular_number', 'called_number'));
+			// Destination
+			$this->setNormalised('Destination', $iCallDirection === self::DIRECTION_TERMINATING ? $sCellularNumber : null);
+			Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Destination', 'call_direction', 'cellular_number', 'called_number'));
+		} elseif (preg_match('/^999\d+$/', $sOtherParty)) {
+			// GPRS Hack
+			Flex::assert(false, 'iSeek Mobile Normalisation: Roaming GPRS Hack Record Encountered', $this->_arrRawData);
+		} else {
+			// Normal Call
+			// Source
+			$this->setNormalised('Source', $iCallDirection === self::DIRECTION_ORIGINATING ? $sCellularNumber : $sOtherParty);
+			Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Source', 'call_direction', 'cellular_number', 'called_number'));
 
-		// Destination
-		$this->setNormalised('Destination', $iCallDirection === self::DIRECTION_TERMINATING ? $sCellularNumber : $sOtherParty);
-		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Destination', 'call_direction', 'cellular_number', 'called_number'));
+			// Destination
+			$this->setNormalised('Destination', $iCallDirection === self::DIRECTION_TERMINATING ? $sCellularNumber : $sOtherParty);
+			Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Destination', 'call_direction', 'cellular_number', 'called_number'));
+		}
 
 		// Cost
 		// NOTE: This seems to be the most appropriate field
@@ -244,7 +259,7 @@ class NormalisationModuleIseekMobile extends NormalisationModule {
 				)->out_value
 			)->id
 		);
-		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('RecordType', 'record_type', 'call_medium', 'gsm_service_type', 'call_type', 'called_number'));
+		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('RecordType', 'record_type', 'gsm_service_type', 'call_type', 'called_number'));
 
 		// Destination (sub-Call Type)
 		if ($this->_intContext > 0) { // Only resolve Destination if there is a Destination Context
