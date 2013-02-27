@@ -224,7 +224,13 @@ class NormalisationModuleIseekMobile extends NormalisationModule {
 			Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Destination', 'call_direction', 'cellular_number', 'called_number'));
 		} elseif (preg_match('/^999\d+$/', $sOtherParty)) {
 			// GPRS Hack
-			Flex::assert(false, 'iSeek Mobile Normalisation: Roaming GPRS Hack Record Encountered', $this->_arrRawData);
+			// Source
+			$this->setNormalised('Source', $sCellularNumber);
+			Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Source', 'call_direction', 'cellular_number', 'called_number'));
+
+			// Destination
+			$this->setNormalised('Destination', null);
+			Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Destination', 'call_direction', 'cellular_number', 'called_number'));
 		} else {
 			// Normal Call
 			// Source
