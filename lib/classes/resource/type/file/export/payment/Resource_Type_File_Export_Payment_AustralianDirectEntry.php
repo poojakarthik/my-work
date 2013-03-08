@@ -59,6 +59,13 @@ class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_T
 			"A Payment Request that is tied to a reversed payment was added to an 'Australian Direct Entry' Export File",
 			print_r($oPaymentRequest->toStdClass(), true)
 		);
+
+		// Ensure that the Amount is greater than zero (file format dictates that the value cannot be 0)
+		Flex::assert(
+			$oPayment->amount > 0,
+			'$0.00-valued Payment requested in Australian Direct Entry Export File',
+			print_r($oPaymentRequest->toStdClass(), true)
+		);
 		
 		// NOTE: The following fields have default values 
 		//	- RecordType
