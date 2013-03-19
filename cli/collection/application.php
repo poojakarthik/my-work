@@ -360,7 +360,7 @@ class ApplicationCollection extends ApplicationBaseClass
 		
 		CliEcho("\n * Archiving Downloaded Files to '{$strTARFile}'...\t\t\t", FALSE);
 		$resTARchive	= new Archive_Tar($strTARFile);
-		$resTARchive->setErrorHandling(PEAR_ERROR_PRINT);
+		//$resTARchive->setErrorHandling(PEAR_ERROR_PRINT);
 		if ($resTARchive->create($arrFiles) && @filesize($strTARFile))
 		{
 			CliEcho("[   OK   ]");

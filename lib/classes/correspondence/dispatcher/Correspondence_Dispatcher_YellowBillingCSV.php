@@ -80,7 +80,7 @@ class Correspondence_Dispatcher_YellowBillingCSV extends Correspondence_Dispatch
 
 		if ($this->_bPreprinted) {
 			try {
-				require_once("Archive/Tar.php");
+				//require_once("Archive/Tar.php");
 				$oTar = new Archive_Tar($this->_aTARFilePath);
 				if (!$oTar->createModify($this->_aPDFFilenames, '', $this->_sInvoiceRunPDFBasePath)) {
 					 throw new Exception("Failed to create tar file for Files = ".print_r($this->_aPDFFilenames, true) );

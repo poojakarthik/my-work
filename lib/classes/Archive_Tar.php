@@ -24,7 +24,10 @@ class Archive_Tar {
 		return $this->_handleOperation(self::TAR_OPERATION_MODE_ADD, $mFiles);
 	}
 
-	public function addModify($mFiles, $sRemovePath=null) {
+	public function addModify($mFiles, $sAddPath=null, $sRemovePath=null) {
+		if(!empty($sAddPath)) {
+			throw new Exception("Unsupported/unimplemented Parameter sAddPath: {$sAddPath}");
+		}
 		return $this->_handleOperation(self::TAR_OPERATION_MODE_ADD, $mFiles, $sRemovePath);
 	}
 
@@ -32,7 +35,10 @@ class Archive_Tar {
 		return $this->_handleOperation(self::TAR_OPERATION_MODE_CREATE, $mFiles);
 	}
 
-	public function createModify($mFiles, $sRemovePath=null) {
+	public function createModify($mFiles, $sAddPath=null, $sRemovePath=null) {
+		if(!empty($sAddPath)) {
+			throw new Exception("Unsupported/unimplemented Parameter sAddPath: {$sAddPath}");
+		}
 		return $this->_handleOperation(self::TAR_OPERATION_MODE_CREATE, $mFiles, $sRemovePath);
 	}
 
