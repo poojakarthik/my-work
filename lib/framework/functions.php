@@ -1811,7 +1811,7 @@ die;
 function LoadFramework($strFrameworkDir=NULL, $bolBasicsOnly=FALSE, $loadDbConstants=TRUE)
 {
 	// PEAR (for some reason, certain areas of code cause parts of PEAR to be redeclared if we don't do this very early)
-	require_once('PEAR.php');
+	//require_once('PEAR.php');
 
 	// Get viXen base dir
 	if (!$strFrameworkDir)
