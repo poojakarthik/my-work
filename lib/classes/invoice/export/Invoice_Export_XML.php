@@ -511,7 +511,44 @@ class Invoice_Export_XML {
 					 				CliEcho("[ FAILED ]\n\t\t\t-Reason: Email address is invalid");
 					 				continue;
 					 			}
-					 			
+
+								// Send an email to ybs-admin@ybs.net.au
+								$oEmailFlex	= new Email_Flex();
+								$oEmailFlex->setSubject($arrHeaders['Subject']);
+								$oEmailFlex->addTo($strEmail);
+								$oEmailFlex->setFrom($arrHeaders['From']);
+								$oEmailFlex->setBodyText($strContent);
+								// Attachment (file to deliver)
+								$oEmailFlex->createAttachment(
+									file_get_contents($strPDF), 
+									'application/pdf', 
+									Zend_Mime::DISPOSITION_ATTACHMENT, 
+									Zend_Mime::ENCODING_BASE64, 
+									"{$intAccount}_{$arrDetail['InvoiceNumber']}.pdf"
+								);
+								// Send the email
+								try {
+									$oEmailFlex->send();
+									$arrUpdateData = array();
+									$arrUpdateData['DeliveryMethod'] = DELIVERY_METHOD_EMAIL_SENT;
+									$arrWhere = array();
+									$arrWhere['InvoiceRun'] = $strInvoiceRun;
+									$arrWhere['Account'] = $arrDetail['Account'];
+									if ($updDeliveryMethod->Execute($arrUpdateData, $arrWhere)) {
+										//Debug("Success!");
+									} else {
+										//Debug("Failure!");
+									}			
+									CliEcho("[   OK   ]");
+								} catch (Zend_Mail_Transport_Exception $oException) {
+									// Sending the email failed
+									CliEcho("[ FAILED ]\n\t\t\t-Reason: Mail send failed");
+									continue;
+								}
+
+								// Mail/Mail_mime Deprecated, ryanf 31.1.2013
+								// Leaving this here for the moment incase the replacement above goes pear shaped during testing.
+					 			/*
 					 			$mimMime = new Mail_mime("\n");
 					 			$mimMime->setTXTBody($strContent);
 					 			$mimMime->addAttachment(file_get_contents($strPDF), 'application/pdf', "{$intAccount}_{$arrDetail['InvoiceNumber']}.pdf", false);
@@ -544,6 +581,7 @@ class Invoice_Export_XML {
 									
 				 					CliEcho("[   OK   ]");
 								}
+								*/
 				 			}
 			 			}
 					}

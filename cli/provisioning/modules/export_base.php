@@ -764,12 +764,40 @@
 				$strMIME	= "application/excel";
 		}
 		
-		// Send Email
+		// Email Headers
 		$arrHeaders = Array	(
 								'From'		=> $strReplyTo,
 								'Reply-To'	=> $strReplyTo,
 								'Subject'	=> $strSubject
 							);
+
+		// Send an email
+		$oEmailFlex	= new Email_Flex();
+		$oEmailFlex->setSubject($arrHeaders['Subject']);
+		$oEmailFlex->addTo($strEmailAddress);
+		$oEmailFlex->setFrom($arrHeaders['From']);
+		$oEmailFlex->setBodyText($strEmailContent);
+		$oEmailFlex->addHeader('Reply-To', $aHeaders['Reply-To']);
+		// Attachment (file to deliver)
+		$oEmailFlex->createAttachment(
+			file_get_contents($this->_strFilePath), 
+			$strMIME, 
+			Zend_Mime::DISPOSITION_ATTACHMENT, 
+			Zend_Mime::ENCODING_BASE64, 
+			basename($this->_strFilePath)
+		);
+		// Send the email
+		try {
+			$oEmailFlex->send();
+			return Array('Pass' => TRUE,	'Description' => "Deliver() Successful");
+		} catch (Zend_Mail_Transport_Exception $oException) {
+			// Sending the email failed
+			return Array('Pass' => FALSE,	'Description' => "Email could not be sent");
+		}
+
+		// Mail/Mail_mime Deprecated, ryanf 31.1.2013
+		// Leaving this here for the moment incase the replacement above goes pear shaped during testing.
+		/*
 		$mimMime = new Mail_mime("\n");
 		$mimMime->setTXTBody($strEmailContent);
 		$mimMime->addAttachment($this->_strFilePath, $strMIME);
@@ -787,6 +815,7 @@
 		{
 			return Array('Pass' => FALSE,	'Description' => "Email could not be sent");
 		}
+		*/
 	}
 	
 	//------------------------------------------------------------------------//

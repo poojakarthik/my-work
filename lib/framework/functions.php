@@ -1867,8 +1867,8 @@ die;
 		// PEAR Packages
 		// require_once("Console/Getopt.php");
 		require_once("Spreadsheet/Excel/Writer.php");
-		require_once("Mail.php");
-		require_once("Mail/mime.php");
+		//require_once("Mail.php");
+		//require_once("Mail/mime.php");
 	}
 
 	// Init Signal Handler
@@ -2912,8 +2912,36 @@ function WriteOffInvoice($intInvoice, $bolAddNote = TRUE)
  *
  * @method
  */
-function SendEmail($strAddresses, $strSubject, $strContent, $strFrom='auto@yellowbilling.com.au', $bolHTML = FALSE)
-{
+function SendEmail($sAddresses, $sSubject, $sContent, $sFrom='auto@yellowbilling.com.au', $bHTML = FALSE) {
+
+	$aHeaders = Array	(
+		'From'		=> $sFrom,
+		'Reply-To'	=> $sFrom,
+		'Subject'	=> $sSubject
+	);
+	$oEmailFlex	= new Email_Flex();
+	$oEmailFlex->setSubject($aHeaders['Subject']);
+	$oEmailFlex->addTo($sAddresses);
+	$oEmailFlex->setFrom($aHeaders['From']);
+	$oEmailFlex->addHeader('Reply-To', $aHeaders['Reply-To']);
+
+	if ($bHTML) {
+		$oEmail->setBodyHtml($sContent);
+	} else {
+		$oEmailFlex->setBodyText($sContent);
+	}
+	// Send the email
+	try {
+		$oEmailFlex->send();
+		return true;
+	} catch (Zend_Mail_Transport_Exception $oException) {
+		// Sending the email failed
+		return false;
+	}
+
+	// Mail/Mail_mime Deprecated, ryanf 30.1.2013
+	// Leaving this here for the moment incase the replacement above goes pear shaped during testing.
+	/*
 	require_once("Mail.php");
 	require_once("Mail/mime.php");
 
@@ -2939,6 +2967,7 @@ function SendEmail($strAddresses, $strSubject, $strContent, $strFrom='auto@yello
 
 	// Send the email
 	return (bool)$emlMail->send($strAddresses, $strHeaders, $strBody);
+	*/
 }
 
 
