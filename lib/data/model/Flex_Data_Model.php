@@ -36,18 +36,16 @@ class Flex_Data_Model
 		}
 	}
 
-	public static function generateDataModelForDatabaseTable($tableName, $strDataSource=FLEX_DATABASE_CONNECTION_FLEX, &$dataSource=NULL)
-	{
-		if ($dataSource === NULL)
-		{
+	public static function generateDataModelForDatabaseTable($tableName, $strDataSource=FLEX_DATABASE_CONNECTION_FLEX, &$dataSource=NULL) {
+		if ($dataSource === NULL) {
 			$dataSource = Data_Source::get($strDataSource);
-			$dataSource->loadModule('Manager');
-			$dataSource->loadModule('Reverse');
+			//$dataSource->loadModule('Manager');
+			//$dataSource->loadModule('Reverse');
 		}
 
-		$cols = $dataSource->manager->listTableFields($tableName);
-		if (PEAR::isError($cols))
-		{
+		//$cols = $dataSource->manager->listTableFields($tableName);
+		$cols = $dataSource->listTableFields($tableName);
+		if (MDB2::isError($cols)) {
 			throw new Exception(__CLASS__ . ' Failed to list columns for the \'' . $tableName . '\' table in \'' . $strDataSource . '\' database. ' . $cols->getMessage());
 		}
 
@@ -58,9 +56,8 @@ class Flex_Data_Model
 		$modelDef['Index'][]	= ''; 
 		$modelDef['Unique'][]	= ''; 
 
-		foreach ($cols as $colName)
-		{
-			$col = $dataSource->reverse->getTableFieldDefinition($tableName, $colName);
+		foreach ($cols as $colName) {
+			$col = $dataSource->getTableFieldDefinition($tableName, $colName);
 			$col[0]['Field'] = $colName;
 			self::_addColumnDefToModelDef($modelDef, $col[0], $tableName);
 		}
@@ -70,22 +67,20 @@ class Flex_Data_Model
 		return $modelDef;
 	}
 
-	public static function generateDataModelForDatabase($strDataSource=FLEX_DATABASE_CONNECTION_FLEX)
-	{
+	public static function generateDataModelForDatabase($strDataSource=FLEX_DATABASE_CONNECTION_FLEX) {
 		$dataSource = Data_Source::get($strDataSource, false, true);
 
-		$dataSource->loadModule('Manager');
-		$dataSource->loadModule('Reverse');
+		//$dataSource->loadModule('Manager');
+		//$dataSource->loadModule('Reverse');
 		
-		$tables = $dataSource->manager->listTables();
+		//$tables = $dataSource->manager->listTables();
+		$tables = $dataSource->listTables();
 
-		if (PEAR::isError($tables))
-		{
+		if (MDB2::isError($tables)) {
 			throw new Exception(__CLASS__ . ' Failed to list tables for \'' . $strDataSource . '\' database. ' . $tables->getMessage());
 		}
 
-		foreach ($tables as $tableName)
-		{
+		foreach ($tables as $tableName) {
 			self::generateDataModelForDatabaseTable($tableName, $strDataSource);
 		}
 	}
