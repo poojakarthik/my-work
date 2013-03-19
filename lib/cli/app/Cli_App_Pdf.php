@@ -82,7 +82,7 @@ class Cli_App_Pdf extends Cli
 
 					// Check that the PEAR library 'Archive_Tar' is available
 					$this->startErrorCatching();
-					require_once "Archive/Tar.php";
+					//require_once "Archive/Tar.php";
 					$this->dieIfErred();
 				}
 			}

@@ -2,7 +2,7 @@
 
 // Framework & Archive_Tar
 require_once("../../flex.require.php");
-require_once("Archive/Tar.php");
+//require_once("Archive/Tar.php");
 
 // Statements
 $arrStatuses		= Array(FILE_IMPORTED, FILE_NORMALISED, FILE_NOT_UNIQUE);
