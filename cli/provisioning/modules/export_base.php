@@ -40,8 +40,8 @@
  * @package		provisioning
  * @class		ExportBase
  */
- class ExportBase extends CarrierModule
- {
+ class ExportBase extends CarrierModule {
+
  	//------------------------------------------------------------------------//
 	// Properties
 	//------------------------------------------------------------------------//
@@ -71,8 +71,7 @@
 	 *
 	 * @method
 	 */
- 	function __construct($intCarrier)
- 	{
+ 	function __construct($intCarrier) {
  		parent::__construct($intCarrier, MODULE_TYPE_PROVISIONING_OUTPUT);
  		
  		// Defaults
@@ -112,34 +111,32 @@
 	 *
 	 * @method
 	 */
- 	protected function _Render($bolRenderToFile = TRUE)
- 	{
+ 	protected function _Render($bolRenderToFile = TRUE) {
  		$strDirectory		= FILES_BASE_PATH."export/provisioning/".strtolower(Carrier::getForId($this->_intModuleCarrier)->description)."/".get_class($this)."/";
  		$arrResult			= $this->_RenderLineTXT($this->_arrFilename, FALSE, '');
  		$this->_strFilePath	= $strDirectory . $arrResult['Line'];
  		
  		// Init file
- 		if ($bolRenderToFile)
- 		{
-	 		if (!file_exists($strDirectory))
-	 		{
+ 		if ($bolRenderToFile) {
+	 		if (!file_exists($strDirectory)) {
 	 			mkdir($strDirectory, 0777, TRUE);
 	 		}
 	 		
-	 		switch ($this->_strFileFormat)
-	 		{
+	 		switch ($this->_strFileFormat) {
 	 			case 'XLS':
+					// Create a new PHPExcel object
+					$this->_ptrFile = new PHPExcel();
 	 				// Create new XLS file
-					$this->_ptrFile			= new Spreadsheet_Excel_Writer($this->_strFilePath);
-					$this->_wksWorksheet	=& $this->_ptrFile->addWorksheet();
+					//$this->_ptrFile			= new Spreadsheet_Excel_Writer($this->_strFilePath);
+					//$this->_wksWorksheet	=& $this->_ptrFile->addWorksheet();
+					$this->_wksWorksheet	= $this->_ptrFile->createSheet();
 					$this->_arrFormat		= $this->_InitExcelFormats($this->_ptrFile);
 					$this->_intRow			= 0;
 	 				break;
 	 				
 	 			default:
 	 				// Create new TXT file
-	 				if (!$this->_ptrFile = fopen($this->_strFilePath, 'w'))
-	 				{
+	 				if (!$this->_ptrFile = fopen($this->_strFilePath, 'w')) {
 	 					return Array('Pass' => FALSE, 'Description' => "Could not open file '{$this->_strFilePath}'");
 	 				}
 	 				break;
@@ -147,8 +144,7 @@
  		}
  		
  		// Render Header
- 		if ($this->_arrDefine['Header'])
- 		{
+ 		if ($this->_arrDefine['Header']) {
 			$arrResult	= $this->_RenderLine($this->_arrHeader, 'Title', $bolRenderToFile);
 			
 			Flex::assert($arrResult['Pass'], "Unable to render Header", print_r($arrResult, true), "Provisioning Export: File Header");
@@ -157,8 +153,7 @@
  		
  		// Render each line
  		$iLine	= 0;
- 		foreach ($this->_arrFileContent as $arrLine)
- 		{
+ 		foreach ($this->_arrFileContent as $arrLine) {
  			$iLine++;
  			$arrResult	= $this->_RenderLine($arrLine, NULL, $bolRenderToFile);
 			
@@ -167,8 +162,7 @@
  		}
  		
  		// Render Footer
- 		if ($this->_arrDefine['Footer'])
- 		{
+ 		if ($this->_arrDefine['Footer']) {
 			$arrResult	= $this->_RenderLine($this->_arrFooter, NULL, $bolRenderToFile);
 			
 			Flex::assert($arrResult['Pass'], "Unable to render Footer", print_r($arrResult, true), "Provisioning Export: File Footer");
@@ -180,19 +174,19 @@
  		$this->_strFileContents	= str_replace('\n', "\n", $this->_strFileContents);
  		
  		// Close file
- 		if ($bolRenderToFile)
- 		{
-	 		switch ($this->_strFileFormat)
-	 		{
+ 		if ($bolRenderToFile) {
+	 		switch ($this->_strFileFormat) {
 	 			case 'XLS':
+					// Render to Excel (xls) file
+	 				$oWriter = PHPExcel_IOFactory::createWriter($this->_ptrFile, 'Excel5');
+					$oWriter->save($this->_strFilePath);
 	 				// Close XLS file
-					$this->_ptrFile->close();
-	 				break;
+					//$this->_ptrFile->close();
+					break;
 	 				
 	 			default:
 	 				// Close TXT file
-	 				if (!fclose($this->_ptrFile))
-	 				{
+	 				if (!fclose($this->_ptrFile)) {
 	 					return Array('Pass' => FALSE, 'Description' => "Could not close file '{$this->_strFilePath}'");
 	 				}
 	 				break;
@@ -226,10 +220,8 @@
 	 *
 	 * @method
 	 */
- 	protected function _RenderLine($arrLine, $strStyle = NULL, $bolRenderToFile = TRUE)
- 	{
- 		switch ($this->_strFileFormat)
- 		{
+ 	protected function _RenderLine($arrLine, $strStyle = NULL, $bolRenderToFile = TRUE) {
+ 		switch ($this->_strFileFormat) {
  			case 'XLS':
  				$arrResult	= $this->_RenderLineXLS($arrLine, $strStyle, $bolRenderToFile);
  				//CliEcho($arrResult['Line']);
@@ -263,13 +255,11 @@
 	 *
 	 * @method
 	 */
- 	protected function _RenderLineTXT($arrLine, $bolRenderToFile = TRUE, $strDelimiterOverride = NULL)
- 	{
+ 	protected function _RenderLineTXT($arrLine, $bolRenderToFile = TRUE, $strDelimiterOverride = NULL) {
  		//Debug($arrLine);
  		
  		$arrOutput = Array();
- 		foreach ($this->_arrDefine[$arrLine['**Type']] as $strField=>$arrField)
- 		{
+ 		foreach ($this->_arrDefine[$arrLine['**Type']] as $strField=>$arrField) {
  			
  			//CliEcho("{$arrField['PadType']}; {$arrField['PadChar']}\t", FALSE);
  			// Put in default values
@@ -281,16 +271,13 @@
  			//Debug($arrField['Value']);
  			
  			// Prepare field
- 			if (!trim($arrField['Value']) && isset($arrField['Optional']))
- 			{
+ 			if (!trim($arrField['Value']) && isset($arrField['Optional'])) {
 				// Optional field is empty
 				$mixValue	= $arrField['Optional'];
  			}
- 			else
- 			{
+ 			else {
 	 			$arrType = explode('::', $arrField['Type']);
-	 			switch ($arrType[0])
-	 			{
+	 			switch ($arrType[0]) {
 	 				case 'Integer':
 	 					$mixValue	= (int)$arrField['Value'];
 	 					//Debug($mixValue);
@@ -299,8 +286,7 @@
 	 				case 'Date':
 	 					$strDate		= $arrField['Value'];
 	 					$sRegexMatch	= '';
-	 					switch ($arrType[1])
-	 					{
+	 					switch ($arrType[1]) {
 	 						case 'YYYYMMDD':
 	 							$strParse	= $strDate;
 	 							
@@ -322,8 +308,7 @@
 	 					}
 	 					
 	 					// Is it a valid date?
-	 					if (!preg_match($sRegexMatch, $strParse))
-	 					{
+	 					if (!preg_match($sRegexMatch, $strParse)) {
 							$strMessage	= "Request #{$arrLine['**Request']}; Field '$strField' with value '$strDate' is not a valid {$arrType[1]} date";
 							return Array('Pass' => FALSE, 'Line' => $strMessage);
 	 					}
@@ -338,16 +323,13 @@
  			}
  			
 			// Is this fixed-width?
-			if ($arrField['Length'] > 0)
-			{
-				if (($intLength = strlen($mixValue)) > $arrField['Length'])
-				{
+			if ($arrField['Length'] > 0) {
+				if (($intLength = strlen($mixValue)) > $arrField['Length']) {
 					// Field is too long, fail out
 					$strMessage	= "Request #{$arrLine['**Request']}; Field '$strField' is $intLength chars, expected max {$arrField['Length']} chars";
 					return Array('Pass' => FALSE, 'Line' => $strMessage);
 				}
-				else
-				{
+				else {
 					// Pad the field
 					$mixValue	= str_pad($mixValue, $arrField['Length'], $arrField['PadChar'], $arrField['PadType']);
 				}
@@ -363,8 +345,7 @@
  		//DebugBackTrace();
  		
  		// Write to file
- 		if ($bolRenderToFile)
- 		{
+ 		if ($bolRenderToFile) {
  			fwrite($this->_ptrFile, $strLine.$this->_strNewLine);
  		}
  		
@@ -392,14 +373,12 @@
 	 *
 	 * @method
 	 */
- 	protected function _RenderLineXLS($arrLine, $strStyle = NULL, $bolRenderToFile = TRUE)
- 	{
+ 	protected function _RenderLineXLS($arrLine, $strStyle = NULL, $bolRenderToFile = TRUE) {
  		// Set first column
  		$intCol	= ($this->_intColOffset) ? $this->_intColOffset : 0;
  		
  		$arrOutput = Array();
- 		foreach ($this->_arrDefine[$arrLine['**Type']] as $strField=>$arrField)
- 		{
+ 		foreach ($this->_arrDefine[$arrLine['**Type']] as $strField=>$arrField) {
  			// Put in default values
  			$arrField['Value']		= ($arrLine[$strField] !== NULL)	? $arrLine[$strField]							: $arrField['Value'];
  			$arrField['PadChar']	= ($arrField['PadChar'] !== NULL)	? $arrField['PadChar']							: ' ';
@@ -408,8 +387,7 @@
  			
  			// Prepare field
  			$arrType = explode('::', $arrField['Type']);
- 			switch ($arrType[0])
- 			{
+ 			switch ($arrType[0]) {
  				case 'Integer':
  					$mixValue	= (int)$arrField['Value'];
  					break;
@@ -417,8 +395,7 @@
  				case 'Date':
  				case 'Time':
  					$strDate	= $arrField['Value'];
- 					switch ($arrType[1])
- 					{
+ 					switch ($arrType[1]) {
  						case 'YYYYMMDD':
  							$strParse	= $strDate;
  							break;
@@ -443,8 +420,7 @@
  					}
  					
  					// Is it a valid date?
- 					if (!strtotime($strParse))
- 					{
+ 					if (!strtotime($strParse)) {
 						$strMessage	= "Request #{$arrLine['**Request']}; Field '$strField' with value '$strDate' is not a valid {$arrType[1]} date";
 						return Array('Pass' => FALSE, 'Line' => $strMessage);
  					}
@@ -458,41 +434,41 @@
  			}
  			
 			// Is this fixed-width?
-			if ($arrField['Length'])
-			{
-				if (($intLength = strlen($mixValue)) > $arrField['Length'])
-				{
+			if ($arrField['Length']) {
+				if (($intLength = strlen($mixValue)) > $arrField['Length']) {
 					// Field is too long, fail out
 					$strMessage	= "Request #{$arrLine['**Request']}; Field '$strField' is $intLength chars, expected max {$arrField['Length']} chars";
 					return Array('Pass' => FALSE, 'Line' => $strMessage);
 				}
-				else
-				{
+				else {
 					// Pad the field
 					$strValue	= str_pad($mixValue, $arrField['Length'], $arrField['PadChar'], $arrField['PadType']);
 				}
 			}
 			
 			// Render XLS line
-			if ($bolRenderToFile)
-			{
-				if ($strStyle)
-				{
-					$this->_wksWorksheet->writeString($this->_intRow, $intCol, $mixValue, $this->_arrFormat[$strStyle]);
+			if ($bolRenderToFile) {
+				if ($strStyle) {
+					$this->_wksWorksheet->getActiveSheet()->setCellValueByColumnAndRow($intCol, $this->_intRow, $mixValue);
+					$this->_wksWorksheet->getActiveSheet()->getStyleByColumnAndRow("{$intCol}:{$this->_intRow}")->applyFromArray($this->_arrFormat[$strStyle]);
+					//$this->_wksWorksheet->writeString($this->_intRow, $intCol, $mixValue, $this->_arrFormat[$strStyle]);
 				}
-				else
-				{
-					switch ($arrType[0])
-					{
+				else {
+					switch ($arrType[0]) {
 						case 'Integer':
-							$this->_wksWorksheet->writeNumber($this->_intRow, $intCol, $mixValue, $this->_arrFormat['Integer']);
+							$this->_wksWorksheet->getActiveSheet()->setCellValueByColumnAndRow($intCol, $this->_intRow, $mixValue);
+							$this->_wksWorksheet->getActiveSheet()->getStyleByColumnAndRow("{$intCol}:{$this->_intRow}")->applyFromArray($this->_arrFormat['Integer']);
+							//$this->_wksWorksheet->writeNumber($this->_intRow, $intCol, $mixValue, $this->_arrFormat['Integer']);
 							break;
 							
-						case 'FNN':
-							$this->_wksWorksheet->writeNumber($this->_intRow, $intCol, $mixValue, $this->_arrFormat['FNN']);
+						case 'FNN':	
+							$this->_wksWorksheet->getActiveSheet()->setCellValueByColumnAndRow($intCol, $this->_intRow, $mixValue);
+							$this->_wksWorksheet->getActiveSheet()->getStyleByColumnAndRow("{$intCol}:{$this->_intRow}")->applyFromArray($this->_arrFormat['FNN']);
+							//$this->_wksWorksheet->writeNumber($this->_intRow, $intCol, $mixValue, $this->_arrFormat['FNN']);
 						
 						default:
-							$this->_wksWorksheet->writeString($this->_intRow, $intCol, $mixValue);
+							$this->_wksWorksheet->getActiveSheet()->setCellValueByColumnAndRow($intCol, $this->_intRow, $mixValue);
+							//$this->_wksWorksheet->writeString($this->_intRow, $intCol, $mixValue);
 							break;
 					}
 				}
@@ -523,13 +499,11 @@
 	 *
 	 * @method
 	 */
-	 protected function _Deliver()
-	 {
+	 protected function _Deliver() {
 	 	// Debug
 	 	//return Array('Pass' => TRUE, 'Message' => "Delivery Bypassed");
 	 	
-	 	switch ($this->_strDeliveryType)
-	 	{
+	 	switch ($this->_strDeliveryType) {
 	 		case 'FTP':
 	 			$mixResult	= $this->_DeliverFTP();
 	 			break;
@@ -549,23 +523,19 @@
  		$arrCols['Id']				= $this->_intFileExport;
  		$arrCols['Status']			= ($mixResult['Pass']) ? FILE_DELIVERED : FILE_DELIVERY_FAILED;
  		$this->_ubiFileDelivered	= new StatementUpdateById("FileExport", $arrCols);
- 		if ($this->_ubiFileDelivered->Execute($arrCols) === FALSE)
- 		{
+ 		if ($this->_ubiFileDelivered->Execute($arrCols) === FALSE) {
  			return Array('Pass' => FALSE, 'Description' => "Unable to update FileExport to Delivered Status");
  		}
- 		else
- 		{
+ 		else {
 	 		// Update ProvisioningRequest records
 	 		$arrCols	= Array();
-	 		if ($mixResult['Pass'])
-	 		{
+	 		if ($mixResult['Pass']) {
 		 		// File Delivered
 		 		$arrCols['Status']		= REQUEST_STATUS_DELIVERED;
 		 		$arrCols['SentOn']		= new MySQLFunction("NOW()");
 		 		$arrCols['FileExport']	= $this->_intFileExport;
 	 		}
-	 		else
-	 		{
+	 		else {
 	 			// Delivery Failed -- Send in next file
 		 		$arrCols['Status']		= REQUEST_STATUS_WAITING;
 		 		$arrCols['SentOn']		= new MySQLFunction("NOW()");
@@ -574,22 +544,18 @@
 	 		
 	 		$ubiRequest			= new StatementUpdateById("ProvisioningRequest", $arrCols);
 	 		$aUpdatedRequests	= array();
-	 		foreach ($this->_arrFileContent as &$arrRequest)
-	 		{
-	 			if (!isset($aUpdatedRequests[$arrRequest['**Type']]))
-	 			{
+	 		foreach ($this->_arrFileContent as &$arrRequest) {
+	 			if (!isset($aUpdatedRequests[$arrRequest['**Type']])) {
 	 				$aUpdatedRequests[$arrRequest['**Type']]	= array();
 	 			}
 	 			
 	 			// Save
 	 			$arrCols['Id']	= $arrRequest['**Request'];
-	 			if ($ubiRequest->Execute($arrCols) === false)
-	 			{
+	 			if ($ubiRequest->Execute($arrCols) === false) {
 	 				// Error
 	 				$aUpdatedRequests[$arrRequest['**Type']][$arrRequest['**Request']]	= $ubiRequest->Error();
 	 			}
-	 			else
-	 			{
+	 			else {
 	 				$aUpdatedRequests[$arrRequest['**Type']][$arrRequest['**Request']]	= true;
 	 			}
 	 		}
@@ -600,12 +566,10 @@
 	 		unset($arrRequest);
  		}
  		
-	 	if ($mixResult['Pass'])
-	 	{
+	 	if ($mixResult['Pass']) {
 			return Array('Pass' => TRUE, 'Description' => "File Successfully Delivered");
 	 	}
-	 	else
-	 	{
+	 	else {
 			return Array('Pass' => FALSE, 'Description' => "File Delivery Failed!");
 	 	}
 	 }
@@ -626,10 +590,8 @@
 	*
 	* @method
 	*/
-	protected function _DeliverFTP()
-	{
-		if (PROVISIONING_DEBUG_MODE === TRUE)
-		{
+	protected function _DeliverFTP() {
+		if (PROVISIONING_DEBUG_MODE === TRUE) {
 	 		return Array('Pass' => TRUE, 'Description' => "FTP Delivery Bypassed");
 		}
 		
@@ -640,31 +602,24 @@
 		$strPath	= $this->GetConfigField('Path');
 		
 		// Copy File
-		if ($ptrConnection = ftp_connect($strServer))
-		{
-			if ($mixResult = ftp_login($ptrConnection, $strUser, $strPass))
-			{
-				if ($mixResult = ftp_chdir($ptrConnection, $strPath))
-				{
-					if ($mixResult = ftp_put($ptrConnection, basename($this->_strFilePath), $this->_strFilePath, FTP_BINARY))
-					{
+		if ($ptrConnection = ftp_connect($strServer)) {
+			if ($mixResult = ftp_login($ptrConnection, $strUser, $strPass)) {
+				if ($mixResult = ftp_chdir($ptrConnection, $strPath)) {
+					if ($mixResult = ftp_put($ptrConnection, basename($this->_strFilePath), $this->_strFilePath, FTP_BINARY)) {
 						$mixResult = ftp_close($ptrConnection);
 					}
 				}
 			}
 		}
-		else
-		{
+		else {
 			$mixResult	= FALSE;
 		}
 		
 		// Return extended error messaging
-		if ($mixResult === TRUE)
-		{
+		if ($mixResult === TRUE) {
 			return Array('Pass' => TRUE,	'Description' => "Deliver() Successful");
 		}
-		else
-		{
+		else {
 			return Array('Pass' => FALSE,	'Description' => "Remote Copy to FTP Server Failed ($mixResult)");
 		}
 	}
@@ -685,21 +640,18 @@
 	*
 	* @method
 	*/
-	protected function _DeliverEmail()
-	{
+	protected function _DeliverEmail() {
 		// Get Configuration
 		$strEmailAddress	= $this->GetConfigField('Destination');
 		$strSubject			= $this->GetConfigField('Subject');
 		$strReplyTo			= $this->GetConfigField('ReplyTo');
 		$strCC				= $this->GetConfigField('CarbonCopy');
 		
-		if ($strCC)
-		{
+		if ($strCC) {
 			$strEmailAddress .= ', ' . $strCC;
 		}
 		
-		if (PROVISIONING_DEBUG_MODE === TRUE)
-		{
+		if (PROVISIONING_DEBUG_MODE === TRUE) {
 	 		$strEmailAddress	= "rdavis@ybs.net.au";
 		}
 		
@@ -707,12 +659,10 @@
 		$mixResult			= SendEmail($strEmailAddress, $strSubject, $this->_strFileContents, $strReplyTo);
 		
 		// Return extended error messaging
-		if ($mixResult === TRUE)
-		{
+		if ($mixResult === TRUE) {
 			return Array('Pass' => TRUE,	'Description' => "Deliver() Successful");
 		}
-		else
-		{
+		else {
 			return Array('Pass' => FALSE,	'Description' => "Email could not be sent");
 		}
 	}
@@ -733,21 +683,18 @@
 	*
 	* @method
 	*/
-	protected function _DeliverEmailAttachment()
-	{
+	protected function _DeliverEmailAttachment() {
 		// Get Configuration
 		$strEmailAddress	= $this->GetConfigField('Destination');
 		$strSubject			= $this->GetConfigField('Subject');
 		$strReplyTo			= $this->GetConfigField('ReplyTo');
 		$strCC				= $this->GetConfigField('CarbonCopy');
 		
-		if ($strCC)
-		{
+		if ($strCC) {
 			$strEmailAddress .= ', ' . $strCC;
 		}
-		
-		if (PROVISIONING_DEBUG_MODE === TRUE)
-		{
+
+		if (PROVISIONING_DEBUG_MODE === TRUE) {
 	 		$strEmailAddress	= "rdavis@ybs.net.au";
 		}
 		
@@ -755,8 +702,7 @@
 		$strEmailContent	= $this->GetConfigField('EmailContent');
 		
 		// Determine MIME Type
-		switch ($this->_strFileFormat)
-		{
+		switch ($this->_strFileFormat) {
 			case 'CSV':
 				$strMIME	= "text/csv";
 				
@@ -807,12 +753,10 @@
 		$mixResult	= $emlMail->send($strEmailAddress, $strHeaders, $strBody);
 		
 		// Return extended error messaging
-		if ($mixResult === TRUE)
-		{
+		if ($mixResult === TRUE) {
 			return Array('Pass' => TRUE,	'Description' => "Deliver() Successful");
 		}
-		else
-		{
+		else {
 			return Array('Pass' => FALSE,	'Description' => "Email could not be sent");
 		}
 		*/
@@ -834,36 +778,34 @@
 	 *
 	 * @method
 	 */
- 	private function _InitExcelFormats($wkbWorkbook)
- 	{
+ 	private function _InitExcelFormats($wkbWorkbook) {
+ 		/*
  		$arrFormat = Array();
  		
  		// Integer format (make sure it doesn't show exponentials for large ints)
 		$fmtInteger =& $wkbWorkbook->addFormat();
 		$fmtInteger->setNumFormat('0');
 		$arrFormat['Integer']		= $fmtInteger;
-		
+
  		// Bold Integer format (make sure it doesn't show exponentials for large ints)
 		$fmtIntegerBold =& $wkbWorkbook->addFormat();
 		$fmtIntegerBold->setNumFormat('0');
 		$fmtIntegerBold->SetBold();
 		$arrFormat['IntegerBold']		= $fmtIntegerBold;
-		
+
  		// Total Integer format (make sure it doesn't show exponentials for large ints)
 		$fmtIntegerTotal =& $wkbWorkbook->addFormat();
 		$fmtIntegerTotal->setNumFormat('0');
 		$fmtIntegerTotal->setBold();
 		$fmtIntegerTotal->setTopColor('black');
 		$fmtIntegerTotal->setTop(1);
-		$arrFormat['IntegerTotal']		= $fmtIntegerTotal;
-		
-		
+		$arrFormat['IntegerTotal']		= $fmtIntegerTotal;		
 		
 		// Bold Text
 		$fmtBold		= $wkbWorkbook->addFormat();
 		$fmtBold->setBold();
 		$arrFormat['TextBold']		= $fmtBold;
-		
+
 		// Title Row
 		$fmtTitle =& $wkbWorkbook->addFormat();
 		$fmtTitle->setBold();
@@ -877,9 +819,7 @@
 		$fmtTotalText->setTop(1);
 		$fmtTotalText->setBold();
 		$arrFormat['TotalText']		= $fmtTotalText;
-		
-		
-		
+
 		// Currency
 		$fmtCurrency	= $wkbWorkbook->addFormat();
 		$fmtCurrency->setNumFormat('$#,##0.00;$#,##0.00 CR');
@@ -898,9 +838,7 @@
 		$fmtTotal->setTopColor('black');
 		$fmtTotal->setTop(1);
 		$arrFormat['CurrencyTotal']	= $fmtTotal;
-		
-		
-		
+
 		// Percentage
 		$fmtPercentage	= $wkbWorkbook->addFormat();
 		$fmtPercentage->setNumFormat('0.00%;[red]-0.00%');
@@ -919,15 +857,136 @@
 		$fmtPCTotal->setTopColor('black');
 		$fmtPCTotal->setTop(1);
 		$arrFormat['PercentageTotal']	= $fmtPCTotal;
-		
-		
-		
+
 		// FNN
 		$fmtFNN			= $wkbWorkbook->addFormat();
 		$fmtFNN->setNumFormat('0000000000');
 		$arrFormat['FNN']				= $fmtFNN;
 		
 		return $arrFormat;
+		*/
+
+ 		$aFormat = array(
+			'Integer' => array(
+				'numberformat' => array(
+					'code' => PHPExcel_Style_NumberFormat::FORMAT_NUMBER
+				)
+			),
+			'IntegerBold' => array(
+				'numberformat' => array(
+					'code' => PHPExcel_Style_NumberFormat::FORMAT_NUMBER
+				),
+				'font' => array(
+					'bold' => true
+				)
+			),
+			'IntegerTotal' => array(
+				'numberformat' => array(
+					'code' => PHPExcel_Style_NumberFormat::FORMAT_NUMBER
+				),
+				'font' => array(
+					'bold' => true
+				),
+				'borders' => array(
+					'top' => array(
+						'style' => PHPExcel_Style_Border::BORDER_THIN,
+						'color' => array('argb' => '000000')
+					)
+				)
+			),
+			'TextBold' => array(
+				'font' => array(
+					'bold' => true
+				)
+			),
+			'Title' => array(
+				'font' => array(
+					'bold' => true
+				),
+				'borders' => array(
+					'outline' => array(
+						'style' => PHPExcel_Style_Border::BORDER_THIN,
+						'color' => array('argb' => '000000')
+					)
+				),
+				'fill' => array(
+					'type' => PHPExcel_Style_Fill::FILL_SOLID,
+					'startcolor' => array(
+						'rgb' => 'FF8080',
+					)
+				)
+			),
+			'TotalText' => array(
+				'font' => array(
+					'bold' => true
+				),
+				'borders' => array(
+					'top' => array(
+						'style' => PHPExcel_Style_Border::BORDER_THIN,
+						'color' => array('argb' => '000000')
+					) 
+				)
+			),
+			'Currency' => array(
+				'numberformat' => array(
+					'code' => '$#,##0.00;$#,##0.00 CR'
+				)
+			),
+			'CurrencyBold' => array(
+				'font' => array(
+					'bold' => true
+				),
+				'numberformat' => array(
+					'code' => '$#,##0.00;$#,##0.00 CR'
+				)
+			),
+			'CurrencyTotal' => array(
+				'font' => array(
+					'bold' => true
+				),
+				'numberformat' => array(
+					'code' => '$#,##0.00;$#,##0.00 CR'
+				),
+				'top' => array(
+					'style' => PHPExcel_Style_Border::BORDER_THIN,
+					'color' => array('argb' => '000000')
+				)
+			),
+			'Percentage' => array(
+				'numberformat' => array(
+					'code' => '0.00%;[red]-0.00%'
+				)
+			),
+			'PercentageBold' => array(
+				'font' => array(
+					'bold' => true
+				),
+				'numberformat' => array(
+					'code' => '0.00%;-0.00%'
+				)
+			),
+			'PercentageTotal' => array(
+				'font' => array(
+					'bold' => true
+				),
+				'numberformat' => array(
+					//'code' => PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE_00
+					'code' => '0.00%;-0.00%'
+				),
+				'top' => array(
+					'style' => PHPExcel_Style_Border::BORDER_THIN,
+					'color' => array('argb' => '000000')
+				)
+			),
+			'FNN' => array(
+				'numberformat' => array(
+					'code' => '0000000000'
+				)
+			)
+		);
+
+		return $aFormat;
+
  	}
  	
  	
@@ -946,33 +1005,27 @@
 	 *
 	 * @method
 	 */
- 	function Export()
- 	{
+ 	function Export() {
  		// Check to see if we have enough requests
 	 	$bolReturn	= TRUE;
  		$mixResult	= NULL;
- 		if (count($this->_arrFileContent) >= $this->_intMinRequests)
- 		{
+ 		if (count($this->_arrFileContent) >= $this->_intMinRequests) {
 	 		// Render File
 	 		$mixResult	= $this->_Render();
-	 		if ($mixResult['Pass'])
-	 		{
+	 		if ($mixResult['Pass']) {
 		 		// Insert FileExport Record
 		 		$mixResult	= $this->_UpdateDB();
-		 		if ($mixResult['Pass'])
-		 		{
+		 		if ($mixResult['Pass']) {
 		 			// Deliver to FTP Server
 			 		$mixResult	= $this->_Deliver();
-			 		if ($mixResult['Pass'])
-			 		{
+			 		if ($mixResult['Pass']) {
 			 			// Update the Configuration
 				 		$mixResult	= $this->SaveModule();
 			 		}
 		 		}
 	 		}
  		}
- 		else
- 		{
+ 		else {
  			// Not enough Requests, SKIP
  			$mixResult	= Array('Pass' => NULL, 'Description' => "No Requests to Export");
  		}
@@ -999,8 +1052,7 @@
 	 *
 	 * @method
 	 */
- 	protected function _UpdateDB()
- 	{
+ 	protected function _UpdateDB() {
  		// Insert FileExport record
  		$arrFileExport	= Array();
  		$arrFileExport['FileName']		= basename($this->_strFilePath);
@@ -1011,8 +1063,7 @@
  		$arrFileExport['FileType']		= $this->intBaseFileType;
  		$arrFileExport['SHA1']			= sha1_file($this->_strFilePath);
  		$insFileExport	= new StatementInsert("FileExport", $arrFileExport);
- 		if (($intFileExport	= $insFileExport->Execute($arrFileExport)) === FALSE)
- 		{
+ 		if (($intFileExport	= $insFileExport->Execute($arrFileExport)) === FALSE) {
  			return Array('Pass' => FALSE, 'Description' => "Unable to create FileExport DB entry!");
  		}
  		
@@ -1039,11 +1090,9 @@
 	 *
 	 * @method
 	 */
- 	protected function _CleanServiceAddress($intService)
- 	{
+ 	protected function _CleanServiceAddress($intService) {
  		// Retrieve Service Address details
- 		if (!$this->_selServiceAddress->Execute(Array('Service' => $intService)))
- 		{
+ 		if (!$this->_selServiceAddress->Execute(Array('Service' => $intService))) {
  			// Error
  			return "There is no Service Address information for this Service";
  		}
@@ -1061,8 +1110,7 @@
 		$arrClean['ServicePostcode']	= (!$arrAddress['ServicePostcode'])	? FALSE : $arrAddress['ServicePostcode'];
 		
 
-		if ($arrAddress['Residential'])
-		{
+		if ($arrAddress['Residential']) {
 			// Residential-Specific
 			// Mandatory
 			$arrClean['EndUserTitle']		= (!$arrAddress['EndUserTitle'])			? FALSE : $arrAddress['EndUserTitle'];
@@ -1079,8 +1127,7 @@
 			$arrClean['Employer']			= $arrAddress['Employer'];
 			$arrClean['Occupation']			= $arrAddress['Occupation'];
 		}
-		else
-		{
+		else {
 			// Business-Specific
 			// Mandatory
 			$arrClean['EndUserCompanyName']	= (!$arrAddress['EndUserCompanyName'])	? FALSE : $arrAddress['EndUserCompanyName'];
@@ -1100,27 +1147,23 @@
 		
 		// ServiceAddress
 		$arrClean['ServiceAddressType']	= $arrAddress['ServiceAddressType'];
-		switch ($arrAddress['ServiceAddressType'])
-		{
+		switch ($arrAddress['ServiceAddressType']) {
 			// LOTs
 			case "LOT":
 				// Mandatory
 				$arrClean['ServiceAddressTypeNumber']		= (!$arrAddress['ServiceAddressTypeNumber'])	? FALSE : trim($arrAddress['ServiceAddressTypeNumber']);
 				
 				// Dependent
-				if ($arrAddress['ServiceStreetName'])
-				{
+				if ($arrAddress['ServiceStreetName']) {
 					$arrClean['ServiceStreetName']			= $arrAddress['ServiceStreetName'];
 					$arrClean['ServiceStreetTypeSuffix']	= $arrAddress['ServiceStreetTypeSuffix'];
 					$arrClean['ServicePropertyName']		= $arrAddress['ServicePropertyName'];
 					$arrClean['ServiceStreetType']			= (!$arrAddress['ServiceStreetType'])			? FALSE : $arrAddress['ServiceStreetType'];
 				}
-				elseif ($arrAddress['ServicePropertyName'])
-				{
+				elseif ($arrAddress['ServicePropertyName']) {
 					$arrClean['ServicePropertyName']		= $arrAddress['ServicePropertyName'];
 				}
-				else
-				{
+				else {
 					$arrClean['ServiceStreetName']			= FALSE;
 					$arrClean['ServicePropertyName']		= FALSE;
 				}
@@ -1170,41 +1213,34 @@
 				
 				
 				// Dependent
-				if ($arrAddress['ServiceAddressType'])
-				{
+				if ($arrAddress['ServiceAddressType']) {
 					$arrClean['ServiceAddressTypeNumber']	= (!$arrAddress['ServiceAddressTypeNumber'])	? FALSE : trim($arrAddress['ServiceAddressTypeNumber']);
 					$arrClean['ServiceAddressTypeSuffix']	= $arrAddress['ServiceAddressTypeSuffix'];
 				}
-				else
-				{
+				else {
 					$arrClean['ServiceAddressTypeNumber']	= "";
 					$arrClean['ServiceAddressTypeSuffix']	= "";
 				}
 				
-				if ($arrAddress['ServiceStreetName'])
-				{
+				if ($arrAddress['ServiceStreetName']) {
 					$arrClean['ServiceStreetName']			= $arrAddress['ServiceStreetName'];
 					$arrClean['ServiceStreetTypeSuffix']	= $arrAddress['ServiceStreetTypeSuffix'];
 					$arrClean['ServicePropertyName']		= $arrAddress['ServicePropertyName'];
 					$arrClean['ServiceStreetType']			= (!$arrAddress['ServiceStreetType'])			? FALSE : $arrAddress['ServiceStreetType'];
 					
-					if ($arrAddress['ServiceStreetNumberStart'])
-					{
+					if ($arrAddress['ServiceStreetNumberStart']) {
 						$arrClean['ServiceStreetNumberStart']	= trim($arrAddress['ServiceStreetNumberStart']);
 						$arrClean['ServiceStreetNumberEnd']		= (!$arrAddress['ServiceStreetNumberEnd'])	? "     " : trim($arrAddress['ServiceStreetNumberEnd']);
 						$arrClean['ServiceStreetNumberSuffix']	= $arrAddress['ServiceStreetNumberSuffix'];
 					}
-					else
-					{
+					else {
 						$arrClean['ServiceStreetNumberStart']	= FALSE;
 					}
 				}
-				elseif ($arrAddress['ServicePropertyName'])
-				{
+				elseif ($arrAddress['ServicePropertyName']) {
 					$arrClean['ServicePropertyName']			= $arrAddress['ServicePropertyName'];
 				}
-				else
-				{
+				else {
 					$arrClean['ServiceStreetName']				= FALSE;
 					$arrClean['ServicePropertyName']			= FALSE;
 				}
@@ -1216,22 +1252,18 @@
 		
 		// Normalise Whitespace (\s to ' ') and Trim all Fields
 		$strError	= "";
-		foreach ($arrClean as $strField=>$mixValue)
-		{
-			if ($mixValue === FALSE)
-			{
+		foreach ($arrClean as $strField=>$mixValue) {
+			if ($mixValue === FALSE) {
 				$strError .= "Mandatory Service Address Field '{$strField}' is Empty\n";
 			}
-			else
-			{
+			else {
 				$arrClean[$strField]	= trim(preg_replace("/\s/", ' ', $mixValue));
 			}
 		}
 		
 		// Have we given values for all fields?
 		// We'll let the Carrier tell us if something is wrong
-		/*if (count($arrClean) !== (count($arrAddress)-4))
-		{
+		/*if (count($arrClean) !== (count($arrAddress)-4)) {
 			$strError	= "Original Service Address Field Count (".(count($arrAddress)-4).") != Cleaned Address Field Count (".count($arrClean).")";
 			Debug($strError);
 			Debug($arrAddress);
@@ -1239,12 +1271,10 @@
 		}*/
 		
 		// Return Cleaned Array or Error Messages
-		if ($strError)
-		{
+		if ($strError) {
 			return trim($strError);
 		}
-		else
-		{
+		else {
 			return $arrClean;
 		}
  	}
@@ -1263,14 +1293,11 @@
 	 * @return	array						Indexed array of Provisioning Types
 	 * @method
 	 */
- 	function GetTypes()
- 	{
+ 	function GetTypes() {
  		$arrTypes	= Array();
  		
- 		foreach ($this->_arrDefine as $mixType=>$arrProperties)
- 		{
- 			if (is_int($mixType))
- 			{
+ 		foreach ($this->_arrDefine as $mixType=>$arrProperties) {
+ 			if (is_int($mixType)) {
  				$arrTypes[]	= $mixType;
  			}
  		}
