@@ -9,7 +9,7 @@ class Cli_App_Sales extends Cli
 	
 	const	SALES_PORTAL_SYSTEM_DEALER_ID	= 1;
 	
-	const	PROVISIONING_AMNESTY_HOURS		= 120; // 5 days x 24 hours
+	const	PROVISIONING_AMNESTY_HOURS		= 192; // 8 days x 24 hours
 	
 	const	PAYMENT_TERMS_DEFAULT = 14;
 	const	BILLING_DATE_DEFAULT = 1;

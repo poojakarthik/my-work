@@ -359,7 +359,7 @@ class JSON_Handler_Invoice extends JSON_Handler
 			$bUserHasOperatorPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 			$bUserHasViewPerm			= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW);
 			$bUserHasExternalPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_EXTERNAL);
-			$bUserHasInterimPerm		= (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT) || AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN));
+			$bUserHasInterimPerm		= (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT) || AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN));
 			$bUserHasRedistributePerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN);
 			return	array(
 						'bSuccess' 		=> true,

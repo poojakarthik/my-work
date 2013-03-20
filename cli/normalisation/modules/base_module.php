@@ -230,7 +230,7 @@ abstract class NormalisationModule extends CarrierModule {
 		$this->_arrNormalisedData['Status'] = CDR_NORMALISED;
 		
 		// not a credit by default
-		if (!$this->_arrNormalisedData['Credit']) {
+		if (!isset($this->_arrNormalisedData['Credit'])) {
 			$this->_arrNormalisedData['Credit'] = 0;
 		}
 		

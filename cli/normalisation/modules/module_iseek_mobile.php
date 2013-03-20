@@ -51,8 +51,8 @@ class NormalisationModuleIseekMobile extends NormalisationModule {
 				break;
 
 			case self::RECORD_TYPE_ROAMCALL: // Roam Call
-				Flex::assert(false, "iSeek Mobile Normalisation: Roam Call Encountered (currently unsupported)", $aCDR['CDR']);
-				//$this->_normaliseRoam();
+				//Flex::assert(false, "iSeek Mobile Normalisation: Roam Call Encountered (currently unsupported)", $aCDR['CDR']);
+				$this->_normaliseRoam();
 				break;
 
 			case self::RECORD_TYPE_MESSAGEEVENT: // Message Event
@@ -187,6 +187,124 @@ class NormalisationModuleIseekMobile extends NormalisationModule {
 		$sEndDatetime = date('Y-m-d H:i:s', strtotime("+{$iElapsedSeconds} seconds", strtotime($sStartDatetime)));
 		$this->setNormalised('EndDatetime', $sEndDatetime);
 		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('EndDatetime', 'call_placed_date', 'call_placed_time', 'elapsed_time'));
+		
+		// Credit
+		// NOTE: There doesn't appear to be a way to determine this.  Assume debit.
+		$this->setNormalised('Credit', 0);
+		Log::get()->logIf(self::DEBUG_LOGGING, '  '.'Credit: 0');
+
+		//throw new Exception("TESTING");
+	}
+
+	const ROAM_CALLED_NUMBER_HACK_SMS = '8880000000000';
+	const DIRECTION_ORIGINATING = 1;
+	const DIRECTION_TERMINATING = 2;
+	protected static $_aRoamTranslatePriorities = array('record_type', 'gsm_service_type', 'call_type');
+	private function _normaliseRoam() {
+		$this->_arrDefineCarrier = self::$_aRecordDefinitions[self::RECORD_TYPE_ROAMCALL];
+		$this->_SplitRawCDR();
+		Log::get()->logIf(self::DEBUG_LOGGING, '  Raw Data: '.var_export($this->_arrRawData, true));
+
+		// FNN
+		$sCellularNumber = trim($this->getRaw('cellular_number'));
+		$this->setNormalised('FNN', $sCellularNumber);
+		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('FNN', 'cellular_number'));
+
+		$sOtherParty = trim($this->getRaw('called_number'));
+		$iCallDirection = (int)$this->getRaw('call_direction');
+		
+		if ($sOtherParty === self::ROAM_CALLED_NUMBER_HACK_SMS) {
+			// SMS Hack
+			// Source
+			$this->setNormalised('Source', $iCallDirection === self::DIRECTION_ORIGINATING ? $sCellularNumber : null);
+			Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Source', 'call_direction', 'cellular_number', 'called_number'));
+
+			// Destination
+			$this->setNormalised('Destination', $iCallDirection === self::DIRECTION_TERMINATING ? $sCellularNumber : null);
+			Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Destination', 'call_direction', 'cellular_number', 'called_number'));
+		} elseif (preg_match('/^999\d+$/', $sOtherParty)) {
+			// GPRS Hack
+			// Source
+			$this->setNormalised('Source', $sCellularNumber);
+			Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Source', 'call_direction', 'cellular_number', 'called_number'));
+
+			// Destination
+			$this->setNormalised('Destination', null);
+			Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Destination', 'call_direction', 'cellular_number', 'called_number'));
+		} else {
+			// Normal Call
+			// Source
+			$this->setNormalised('Source', $iCallDirection === self::DIRECTION_ORIGINATING ? $sCellularNumber : $sOtherParty);
+			Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Source', 'call_direction', 'cellular_number', 'called_number'));
+
+			// Destination
+			$this->setNormalised('Destination', $iCallDirection === self::DIRECTION_TERMINATING ? $sCellularNumber : $sOtherParty);
+			Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Destination', 'call_direction', 'cellular_number', 'called_number'));
+		}
+
+		// Cost
+		// NOTE: This seems to be the most appropriate field
+		$fTotalCharges = self::_parseCurrency($this->getRaw('total_charges'));
+		$this->setNormalised('Cost', $fTotalCharges);
+		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Cost', 'total_charges'));
+
+		// RecordType (Call Type Group)
+		$sCallType = $this->getRaw('call_type'); // Indicates Call Type
+		$sGSMServiceType = $this->getRaw('gsm_service_type'); // Inticates Voice vs Data
+		$this->setNormalised(
+			'RecordType',
+			Record_Type::getForServiceTypeAndCode(
+				$this->getNormalised('ServiceType'),
+				Carrier_Translation_Context::getForId($this->GetConfigField('CallGroupCarrierTranslationContextId'))->translateJSON(
+					array(
+						'record_type' => (int)self::RECORD_TYPE_ROAMCALL,
+						'gsm_service_type' => $this->getRaw('gsm_service_type'), // Inticates Voice vs Data
+						'call_type' => $this->getRaw('call_type') // Indicates Call Type
+					),
+					self::$_aRoamTranslatePriorities
+				)->out_value
+			)->id
+		);
+		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('RecordType', 'record_type', 'gsm_service_type', 'call_type', 'called_number'));
+
+		// Destination (sub-Call Type)
+		if ($this->_intContext > 0) { // Only resolve Destination if there is a Destination Context
+			// NOTE: We're currently assuming no call sub-types.  This may change in the future.
+			Flex::assert(false, "iSeek Mobile Normalisation: Non-International Destination Context Record Encountered", $this->_arrRawData);
+			$aDestination = $this->_getUnknownDestination();
+			$this->setNormalised('DestinationCode', $aDestination['Code']);
+			Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('DestinationCode', 'call_medium', 'gsm_service_type', 'call_type', 'called_number'));
+		}
+
+		// Description
+		// NOTE: This is probably acceptable as the description.  Seems to be a end-service description or country name
+		$sCallingPlace = trim($this->getRaw('calling_place'));
+		$sCalledPlace = trim($this->getRaw('called_place'));
+		if ($sCallingPlace && $sCalledPlace) {
+			$this->setNormalised('Description', "{$sCallingPlace} to {$sCalledPlace}");
+		} elseif ($sCallingPlace) {
+			$this->setNormalised('Description', $sCallingPlace);
+		} elseif ($sCalledPlace) {
+			$this->setNormalised('Description', $sCalledPlace);
+		}
+		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Description', 'calling_place', 'called_place'));
+		
+		// Units
+		$aChargeableTime = array();
+		preg_match('/^(?<minutes>\d{4})(?<seconds>\d{2})$/', $this->getRaw('chargeable_time'), $aChargeableTime);
+		$iChargeableSeconds = (int)$aChargeableTime['seconds'] + ((int)$aChargeableTime['minutes'] * Flex_Date::SECONDS_IN_MINUTE);
+		$this->setNormalised('Units', $iChargeableSeconds);
+		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Units', 'chargeable_time'));
+
+		// StartDatetime
+		$sStartDatetime = date('Y-m-d H:i:s', strtotime($this->getRaw('call_placed_date').'t'.$this->getRaw('call_placed_time')));
+		$this->setNormalised('StartDatetime', $sStartDatetime);
+		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('StartDatetime', 'call_placed_date', 'call_placed_time'));
+		
+		// EndDatetime
+		$sEndDatetime = date('Y-m-d H:i:s', strtotime("+{$iChargeableSeconds} seconds", strtotime($sStartDatetime)));
+		$this->setNormalised('EndDatetime', $sEndDatetime);
+		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('EndDatetime', 'call_placed_date', 'call_placed_time', 'chargeable_time'));
 		
 		// Credit
 		// NOTE: There doesn't appear to be a way to determine this.  Assume debit.

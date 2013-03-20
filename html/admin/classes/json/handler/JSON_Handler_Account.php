@@ -1103,7 +1103,7 @@ class JSON_Handler_Account extends JSON_Handler
 						$fAmount	= (float)$oDetails->sPaymentAmount;
 					}
 					
-					if ($fAmount === null)
+					if ($fAmount === null || round($fAmount, 2) === 0.0)
 					{
 						throw new JSON_Handler_Account_Exception("Invalid amount supplied");
 					}
