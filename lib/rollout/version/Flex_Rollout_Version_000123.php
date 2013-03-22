@@ -20,7 +20,7 @@ class Flex_Rollout_Version_000123 extends Flex_Rollout_Version
 		// 1:	Change PCAD - Plan Charge in Advance to PCAD - Plan Charge and PCAR - Plan Charge in Arrears to PCAR - Plan Charge
 		$strSQL = "UPDATE ChargeType SET Description = 'Plan Charge' WHERE ChargeType IN ('PCAD', 'PCAR');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to change PCAD - Plan Charge in Advance to PCAD - Plan Charge and PCAR - Plan Charge in Arrears to PCAR - Plan Charge. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -30,7 +30,7 @@ class Flex_Rollout_Version_000123 extends Flex_Rollout_Version
 		// 2:	Change PCR - Plan Credit in Arrears to PCR - Plan Usage
 		$strSQL = "UPDATE ChargeType SET Description = 'Plan Usage' WHERE ChargeType = 'PCR';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to change PCR - Plan Credit in Arrears to PCR - Plan Usage ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -39,7 +39,7 @@ class Flex_Rollout_Version_000123 extends Flex_Rollout_Version
 		// 3:	Change PDCR - Plan Data Credit in Arrears to PDCR - Plan Data Usage
 		$strSQL = "UPDATE ChargeType SET Description = 'Plan Data Usage' WHERE ChargeType = 'PDCR';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to change PDCR - Plan Data Credit in Arrears to PCR - Plan Data Usage ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -48,7 +48,7 @@ class Flex_Rollout_Version_000123 extends Flex_Rollout_Version
 		// 4:	Change Voicemail Setup & Retrieval to Voicemail Retrieval
 		$strSQL = "UPDATE RecordType SET Description = 'Mobile VoiceMail Retrieval' WHERE Code = 'VoiceMailRetrieval' AND ServiceType = 101;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to change Voicemail Setup & Retrieval to Voicemail Retrieval ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -64,7 +64,7 @@ class Flex_Rollout_Version_000123 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

@@ -858,12 +858,12 @@ class JSON_Services
 	}
 
 	/**
-	 * @todo Ultimately, this should just call PEAR::isError()
+	 * @todo Ultimately, this should just call MDB2::isError()
 	 */
 	function isError($data, $code = null)
 	{
 		if (class_exists('pear')) {
-			return PEAR::isError($data, $code);
+			return MDB2::isError($data, $code);
 		} elseif (is_object($data) && (strtolower(get_class($data)) == 'json_services_error' ||
 								 is_subclass_of($data, 'JSON_Services_Error'))) {
 			return true;

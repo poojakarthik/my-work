@@ -29,7 +29,7 @@ class Flex_Rollout_Version_000143 extends Flex_Rollout_Version
 					"ADD CONSTRAINT fk_account_letter_log_invoice_id				FOREIGN KEY	(invoice_id) 				REFERENCES Invoice(Id)				ON UPDATE CASCADE ON DELETE RESTRICT, " .
 					"ADD CONSTRAINT fk_account_letter_log_document_template_type_id	FOREIGN KEY	(document_template_type_id) REFERENCES DocumentTemplateType(Id)	ON UPDATE CASCADE ON DELETE RESTRICT;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to rename AccountLetterLog and its Fields to underscored naming convention. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -56,7 +56,7 @@ class Flex_Rollout_Version_000143 extends Flex_Rollout_Version
 					"\n" .
 					"ADD CONSTRAINT fk_cdr_call_type_translation_carrier_id			FOREIGN KEY	(carrier_id) 				REFERENCES Carrier(Id)				ON UPDATE CASCADE ON DELETE RESTRICT;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to rename DestinationTranslation and its Fields to underscored naming convention. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -80,7 +80,7 @@ class Flex_Rollout_Version_000143 extends Flex_Rollout_Version
 					"ADD CONSTRAINT fk_document_resource_type_file_type_document_resource_type_id	FOREIGN KEY	(document_resource_type_id) REFERENCES DocumentResourceType(Id)	ON UPDATE CASCADE ON DELETE CASCADE, " .
 					"ADD CONSTRAINT fk_document_resource_type_file_type_file_type_id				FOREIGN KEY	(file_type_id) 				REFERENCES FileType(Id)				ON UPDATE CASCADE ON DELETE RESTRICT;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to rename DocumentResourceTypeFileType and its Fields to underscored naming convention. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -104,7 +104,7 @@ class Flex_Rollout_Version_000143 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

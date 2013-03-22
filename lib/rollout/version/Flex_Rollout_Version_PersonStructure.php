@@ -65,7 +65,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the permission Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -92,7 +92,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					('Ticketing Operator'		, 'Ticketing Operator'																	, 'PERMISSION_TICKETING_OPERATOR'),
 					('Ticketing Admin'			, 'Ticketing Administration'															, 'PERMISSION_TICKETING_ADMIN');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the permission Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -110,7 +110,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the permission_group Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -122,7 +122,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 						FROM permission
 						WHERE const_name NOT IN ('PERMISSION_GOD');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the GOD permission_group. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -131,7 +131,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 						FROM permission
 						WHERE const_name NOT IN ('PERMISSION_GOD', 'PERMISSION_DEBUG', 'PERMISSION_SUPER_ADMIN');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the SUPER ADMIN permission_group. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -140,7 +140,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 						FROM permission
 						WHERE const_name IN ('PERMISSION_OPERATOR_VIEW', 'PERMISSION_ACCOUNTS', 'PERMISSION_OPERATOR', 'PERMISSION_PUBLIC', 'PERMISSION_SALES');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the OPERATOR ADVANCED permission_group. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -149,7 +149,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 						FROM permission
 						WHERE const_name IN ('PERMISSION_TICKETING_OPERATOR');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the TICKETING ADMIN permission_group. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -166,7 +166,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the person_group Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -179,7 +179,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					('Account Contact'		, 'Account Contact'		, 'PERSON_GROUP_CONTACT_ACCOUNT'),
 					('Ticketing Contact'	, 'Ticketing Contact'	, 'PERSON_GROUP_CONTACT_TICKETING');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the person_group Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -197,7 +197,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the account_type Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -209,7 +209,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 						FROM permission
 						WHERE 1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the person_group_permission Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -234,7 +234,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the person Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -253,7 +253,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the person_employee Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -286,7 +286,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the person_dealer Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -304,7 +304,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the person_contact_account Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -322,7 +322,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the person_contact_ticketing Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -341,7 +341,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the person_person_group Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -360,7 +360,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the person_permission Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -380,7 +380,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the person_address Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -399,7 +399,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the person_ticket Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -417,7 +417,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the contact_method_type Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -430,7 +430,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					('Phone'	, 'Phone',	'CONTACT_METHOD_TYPE_PHONE'),
 					('Mobile'	, 'Mobile',	'CONTACT_METHOD_TYPE_MOBILE');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the contact_method_type Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -451,7 +451,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the person_contact_method Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -469,7 +469,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the account_person_association_type Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -481,7 +481,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					('Billing'		, 'Billing',	'ACCOUNT_PERSON_ASSOCIATION_TYPE_BILLING'),
 					('Technical'	, 'Technical',	'ACCOUNT_PERSON_ASSOCIATION_TYPE_TECHNICAL');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the account_person_association_type Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -501,7 +501,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the account_person Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -517,7 +517,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

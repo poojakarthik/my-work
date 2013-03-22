@@ -19,7 +19,7 @@ class Flex_Rollout_Version_000124 extends Flex_Rollout_Version
 		// 1:	Add the 'Destination Not Found' Destination for IDD
 		$strSQL = "INSERT INTO Destination (Code, Description, Context) VALUES (100, 'Unknown Destination', 1);";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the \'Destination Not Found\' Destination for IDD. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -38,7 +38,7 @@ class Flex_Rollout_Version_000124 extends Flex_Rollout_Version
 						CONSTRAINT fk_destination_context_fallback_destination_id FOREIGN KEY (fallback_destination_id) REFERENCES Destination(Id) ON UPDATE CASCADE ON DELETE RESTRICT
 					) ENGINE = innodb;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the destination_context Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -49,7 +49,7 @@ class Flex_Rollout_Version_000124 extends Flex_Rollout_Version
 					"(1	, 'IDD'	, 'International Direct Dial'	, 'DESTINATION_CONTEXT_IDD'						, (SELECT Id FROM Destination WHERE Code = 100)), " .
 					"(2	, 'S&E'	, 'Service & Equipment'			, 'DESTINATION_CONTEXT_SERVICE_AND_EQUIPMENT'	, (SELECT Id FROM Destination WHERE Code = 80001));";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the destination_context Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -65,7 +65,7 @@ class Flex_Rollout_Version_000124 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

@@ -19,7 +19,7 @@ class Flex_Rollout_Version_000128 extends Flex_Rollout_Version
 					SET description = 'Friendly Reminder has been sent', test = 'AccountSentFriendlyReminder'
 					WHERE name = 'D';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . " Failed to update the customer_status 'D' record, to test for FriendlyReminder instead of OverdueNotice - " . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -37,7 +37,7 @@ class Flex_Rollout_Version_000128 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

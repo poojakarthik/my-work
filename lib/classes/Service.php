@@ -690,14 +690,14 @@ class Service extends ORM
 					$sCdrs			= "$sSelect $sCdrs";
 					$oResultCount	= $cdrDb->query($sCountCdrs);
 					
-					if (PEAR::isError($oResultCount))
+					if (MDB2::isError($oResultCount))
 					{
 						throw new Exception_Database("Failed to count CDRs ($sCountCdrs): " . $oResultCount->getMessage());
 					}
 					
 					$oResultCDRs	= $cdrDb->query($sCdrs);
 					
-					if (PEAR::isError($oResultCDRs))
+					if (MDB2::isError($oResultCDRs))
 					{
 						throw new Exception_Database("Failed to load CDRs: " . $oResultCDRs->getMessage());
 					}

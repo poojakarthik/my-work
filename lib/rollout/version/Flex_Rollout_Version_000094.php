@@ -19,7 +19,7 @@ class Flex_Rollout_Version_000094 extends Flex_Rollout_Version
 					VALUES
 					(3, 'Sales Portal', 'Sales Portal Module', 'FLEX_MODULE_SALES_PORTAL', 0);";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to insert the FLEX_MODULE_SALES_PORTAL record into the flex_module table (id: 3). ' . $result->getMessage());
 		}
@@ -35,7 +35,7 @@ class Flex_Rollout_Version_000094 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

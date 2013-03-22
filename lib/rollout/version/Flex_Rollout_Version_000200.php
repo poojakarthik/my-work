@@ -24,7 +24,7 @@ class Flex_Rollout_Version_000200 extends Flex_Rollout_Version
 					VALUES
 						('Telstra'	, 'Telstra'	, 'CARRIER_TELSTRA'	, (SELECT id FROM carrier_type WHERE const_name = 'CARRIER_TYPE_TELECOM' LIMIT 1));";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the Telstra Carrier. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -38,7 +38,7 @@ class Flex_Rollout_Version_000200 extends Flex_Rollout_Version
 						('LinxOnline Daily Event File'		, 'LinxOnline Daily Event File'		, 'RESOURCE_TYPE_FILE_IMPORT_CDR_LINX_DAILY_EVENT_FILE'		, (SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_IMPORT_FILE' LIMIT 1)),
 						('LinxOnline Monthly Invoice File'	, 'LinxOnline Monthly Invoice File'	, 'RESOURCE_TYPE_FILE_IMPORT_CDR_LINX_MONTHLY_INVOICE_FILE'	, (SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_IMPORT_FILE' LIMIT 1));";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the LinxOnline Daily Event and Monthly Invoice Resource Types. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -56,7 +56,7 @@ class Flex_Rollout_Version_000200 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

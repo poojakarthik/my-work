@@ -23,7 +23,7 @@ class Flex_Rollout_Version_000153 extends Flex_Rollout_Version
 		// 1:	Drop the MasterState table
 		$strSQL =	"DROP TABLE IF EXISTS MasterState;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to drop the Master Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -31,7 +31,7 @@ class Flex_Rollout_Version_000153 extends Flex_Rollout_Version
 		// 2:	Drop the MasterInstructions table
 		$strSQL =	"DROP TABLE IF EXISTS MasterInstructions;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to drop the MasterInstructions Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -39,7 +39,7 @@ class Flex_Rollout_Version_000153 extends Flex_Rollout_Version
 		// 3:	Drop the InvoiceOutput table
 		$strSQL =	"DROP TABLE IF EXISTS InvoiceOutput;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to drop the InvoiceOutput Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -47,7 +47,7 @@ class Flex_Rollout_Version_000153 extends Flex_Rollout_Version
 		// 4:	Drop the InvoiceOutputArchive table
 		$strSQL =	"DROP TABLE IF EXISTS InvoiceOutputArchive;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to drop the InvoiceOutputArchive Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -55,7 +55,7 @@ class Flex_Rollout_Version_000153 extends Flex_Rollout_Version
 		// 5:	Drop the Request table
 		$strSQL =	"DROP TABLE IF EXISTS Request;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to drop the Request Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -63,7 +63,7 @@ class Flex_Rollout_Version_000153 extends Flex_Rollout_Version
 		// 6:	Drop the ErrorLog table
 		$strSQL =	"DROP TABLE IF EXISTS ErrorLog;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to drop the ErrorLog Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -78,7 +78,7 @@ class Flex_Rollout_Version_000153 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

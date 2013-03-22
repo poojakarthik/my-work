@@ -36,7 +36,7 @@ class Flex_Rollout_Version_000072 extends Flex_Rollout_Version
 												9223372036854775807, 0, '1'
 											);";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the system user employee record to the Employee table. ' . $result->getMessage());
 		}
@@ -47,7 +47,7 @@ class Flex_Rollout_Version_000072 extends Flex_Rollout_Version
 					SET Id = $intNewSystemUserId
 					WHERE FirstName = 'System' AND LastName = '' AND UserName = '' AND PassWord = 'no password';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . " Failed to change the id of the system user employee record to $intNewSystemUserId. " . $result->getMessage());
 		}
@@ -56,7 +56,7 @@ class Flex_Rollout_Version_000072 extends Flex_Rollout_Version
 		
 		$strSQL = "ALTER TABLE Employee AUTO_INCREMENT = 1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to recalculate the proper auto increment counter for the Employee table. ' . $result->getMessage());
 		}
@@ -97,7 +97,7 @@ class Flex_Rollout_Version_000072 extends Flex_Rollout_Version
 			self::outputMessage("Updating references to the System User Employee id for {$arrDetails['Table']}.{$arrDetails['Column']} ...\n");
 			
 			$result = $dbAdmin->query($strSQL);
-			if (PEAR::isError($result))
+			if (MDB2::isError($result))
 			{
 				throw new Exception(__CLASS__ . " Failed to update references to System User Employee id for {$arrDetails['Table']}.{$arrDetails['Column']} - " . $result->getMessage());
 			}
@@ -113,7 +113,7 @@ class Flex_Rollout_Version_000072 extends Flex_Rollout_Version
 		// First drop the table if it already exists
 		$strSQL	= "DROP TABLE IF EXISTS account_history;";
 		$result	= $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . " Failed to drop (if exists) the account_history table.  (it might already exist but shouldn't) - " . $result->getMessage());
 		}
@@ -139,7 +139,7 @@ class Flex_Rollout_Version_000072 extends Flex_Rollout_Version
 						CONSTRAINT fk_employee_id FOREIGN KEY (employee_id) REFERENCES Employee(Id) ON DELETE CASCADE ON UPDATE CASCADE
 					) ENGINE = innodb COMMENT = 'history of account table';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to create account_history table. ' . $result->getMessage());
 		}
@@ -152,7 +152,7 @@ class Flex_Rollout_Version_000072 extends Flex_Rollout_Version
 					FROM Account;";
 
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to perform initial population of the account_history table. ' . $result->getMessage());
 		}
@@ -168,7 +168,7 @@ class Flex_Rollout_Version_000072 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

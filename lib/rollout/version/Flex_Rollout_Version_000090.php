@@ -18,7 +18,7 @@ class Flex_Rollout_Version_000090 extends Flex_Rollout_Version
 		$strSQL = "ALTER TABLE ServiceRatePlan " .
 					"ADD contract_breach_fees_reason VARCHAR(512) NULL COMMENT 'Reason for approving/waiving the Contract Fees' AFTER contract_breach_fees_employee_id;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the ServiceRatePlan.contract_breach_fees_reason Field. ' . $result->getMessage());
 		}
@@ -35,7 +35,7 @@ class Flex_Rollout_Version_000090 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

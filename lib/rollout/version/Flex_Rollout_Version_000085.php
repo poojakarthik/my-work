@@ -25,7 +25,7 @@ class Flex_Rollout_Version_000085 extends Flex_Rollout_Version
 						"const_name VARCHAR(512) NOT NULL COMMENT 'Constant Name for the Contract Breach Reason'" .
 					") ENGINE = innodb;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the contract_breach_reason Table. ' . $result->getMessage());
 		}
@@ -41,7 +41,7 @@ class Flex_Rollout_Version_000085 extends Flex_Rollout_Version
 					"('Moved', 'Service Moved to another Account', 'CONTRACT_BREACH_REASON_MOVED')," .
 					"('Other', 'Other', 'CONTRACT_BREACH_REASON_OTHER');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the contract_breach_reason Table. ' . $result->getMessage());
 		}
@@ -52,7 +52,7 @@ class Flex_Rollout_Version_000085 extends Flex_Rollout_Version
 					"ADD contract_breach_reason_id BIGINT(20) NULL COMMENT '(FK) Reason why the Contract was breached' AFTER contract_status_id," .
 					"ADD contract_breach_reason_description VARCHAR(512) NULL COMMENT 'Description of why the Contract was breached' AFTER contract_breach_reason_id;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the ServiceRatePlan.contract_breach_reason_id and contract_breach_reason_description fields. ' . $result->getMessage());
 		}
@@ -70,7 +70,7 @@ class Flex_Rollout_Version_000085 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

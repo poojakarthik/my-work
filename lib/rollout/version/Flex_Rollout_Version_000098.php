@@ -18,7 +18,7 @@ class Flex_Rollout_Version_000098 extends Flex_Rollout_Version
 		$strSQL = "ALTER TABLE sale " .
 					"ADD verified_on DATETIME NOT NULL COMMENT 'The Date and Time at which this Sale was Verified';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the sale.verified_on Field. ' . $result->getMessage());
 		}
@@ -35,7 +35,7 @@ class Flex_Rollout_Version_000098 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

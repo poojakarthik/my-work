@@ -19,7 +19,7 @@ class Flex_Rollout_Version_000154 extends Flex_Rollout_Version
 		// 1:	Drop the ConfigConstant table
 		$strSQL =	"DROP TABLE IF EXISTS ConfigConstant;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to drop the ConfigConstant Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -27,7 +27,7 @@ class Flex_Rollout_Version_000154 extends Flex_Rollout_Version
 		// 2:	Drop the ConfigConstantGroup table
 		$strSQL =	"DROP TABLE IF EXISTS ConfigConstantGroup;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to drop the ConfigConstantGroup Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -42,7 +42,7 @@ class Flex_Rollout_Version_000154 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

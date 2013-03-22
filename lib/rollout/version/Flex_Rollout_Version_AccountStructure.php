@@ -40,7 +40,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the address_locality Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -58,7 +58,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the address_type Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -69,7 +69,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					('Street'	, 'Street Address'	, 'ADDRESS_TYPE_STREET'),
 					('Postal'	, 'Postal Address'	, 'ADDRESS_TYPE_POSTAL');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the address_type Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -87,7 +87,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the address Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -105,7 +105,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the account_type Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -116,7 +116,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					('Residential'	, 'Residential'	, 'ACCOUNT_TYPE_RESIDENTIAL'),
 					('Business'		, 'Business'	, 'ACCOUNT_TYPE_BUSINESS');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the account_type Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -164,7 +164,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the account Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -184,7 +184,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the account_address Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -199,7 +199,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					"CHANGE disable_ddr				waive_payment_method_fee	TINYINT				NOT NULL	COMMENT '1: PMF is waived; 0: PMF is charged', " .
 					"";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the account_address Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -215,7 +215,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

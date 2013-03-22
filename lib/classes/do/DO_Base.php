@@ -99,7 +99,7 @@ abstract class DO_Base
 
 		$dataSource = self::getDataSource();
 
-		if (PEAR::isError($results = $dataSource->query($strSQL)))
+		if (MDB2::isError($results = $dataSource->query($strSQL)))
 		{
 			throw new Exception('Failed to load records for ' . __CLASS__ . ' :: ' . $results->getMessage());
 		}
@@ -144,7 +144,7 @@ abstract class DO_Base
 
 		$dataSource = self::getDataSource();
 
-		if (PEAR::isError($results = $dataSource->query($strSQL)))
+		if (MDB2::isError($results = $dataSource->query($strSQL)))
 		{
 			throw new Exception('Failed to count records for ' . __CLASS__ . ' :: ' . $results->getMessage());
 		}
@@ -219,7 +219,7 @@ abstract class DO_Base
 			//echo "/*\n\n$strSQL\n\n*/";
 		}
 
-		if (PEAR::isError($outcome = $dataSource->query($strSQL)))
+		if (MDB2::isError($outcome = $dataSource->query($strSQL)))
 		{
 			throw new Exception('Failed to save ' . __CLASS__ . ' details: ' . $outcome->getMessage());
 		}
@@ -245,7 +245,7 @@ abstract class DO_Base
 		
 		$dataSource = $this->getDataSource();
 		
-		if (PEAR::isError($result = $dataSource->query($strSQL)))
+		if (MDB2::isError($result = $dataSource->query($strSQL)))
 		{
 			 // This is a cludge! Really want to use static::getDataSourceName instead of $this->getDataSourceName, but that is a PHP 5.3.0+ feature :(
 			 // well, actually we want to revisit this so that we can change the dataSourceName on the instance!

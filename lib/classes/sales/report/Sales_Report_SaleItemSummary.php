@@ -283,7 +283,7 @@ ORDER BY v.name ASC, pt.name ASC, p.name ASC
 			$strQuery = str_replace("<DealerIds>", $strDealerIds, $strQueryTemplate);
 			
 			// Execute the query
-			if (PEAR::isError($objResults = $dsSales->query($strQuery)))
+			if (MDB2::isError($objResults = $dsSales->query($strQuery)))
 			{
 				throw new Exception("Failed to execute SaleItemSummary Report Query for dealer {$objDealerDetails->dealer->username}, using query: $strQuery - ". $objResults->getMessage());
 			}

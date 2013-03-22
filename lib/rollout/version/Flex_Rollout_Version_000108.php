@@ -18,7 +18,7 @@ class Flex_Rollout_Version_000108 extends Flex_Rollout_Version
 		// 1:	Remove PaymentType ConfigConstants
 		$strSQL = "DELETE FROM ConfigConstant WHERE ConstantGroup = (SELECT Id FROM ConfigConstantGroup WHERE Name = 'PaymentType')";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to remove PaymentType ConfigConstants. ' . $result->getMessage());
 		}
@@ -36,7 +36,7 @@ class Flex_Rollout_Version_000108 extends Flex_Rollout_Version
 		// 2:	Remove PaymentType ConfigConstantGroup
 		$strSQL = "DELETE FROM ConfigConstantGroup WHERE Name = 'PaymentType'";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to remove PaymentType ConfigConstantGroup. ' . $result->getMessage());
 		}
@@ -53,7 +53,7 @@ class Flex_Rollout_Version_000108 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

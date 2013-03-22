@@ -20,7 +20,7 @@ class Flex_Rollout_Version_000111 extends Flex_Rollout_Version
 		$strSQL = "INSERT INTO carrier_type (name, description, const_name) VALUES
 					('Sales Call Centre', 'Sales Call Centre', 'CARRIER_TYPE_SALES_CALL_CENTRE')";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add new Carrier Type for Outbound Call Centres. ' . $result->getMessage());
 		}
@@ -32,7 +32,7 @@ class Flex_Rollout_Version_000111 extends Flex_Rollout_Version
 					('Insel', (SELECT id FROM carrier_type WHERE const_name = 'CARRIER_TYPE_SALES_CALL_CENTRE'), 'Insel', 'CARRIER_INSEL'),
 					('Indian Call Centre', (SELECT id FROM carrier_type WHERE const_name = 'CARRIER_TYPE_SALES_CALL_CENTRE'), 'Indian Call Centre', 'CARRIER_INDIAL_CALL_CENTRE')";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add Yellow Call Centre, Insel, and OTHER INDIAN CALL CENTRE Carriers. ' . $result->getMessage());
 		}
@@ -46,7 +46,7 @@ class Flex_Rollout_Version_000111 extends Flex_Rollout_Version
 					('INDIAN CC Permitted Dialling List'	, 'INDIAN CC Permitted Dialling List'	, 'RESOURCE_TYPE_FILE_EXPORT_TELEMARKETING_INDIAN_PERMITTED_DIALLING_LIST'	, (SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_EXPORT_FILE')),
 					('INDIAN CC Dialler Report'				, 'INDIAN CC Dialler Report'			, 'RESOURCE_TYPE_FILE_IMPORT_TELEMARKETING_INDIAN_DIALLER_REPORT'			, (SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_IMPORT_FILE'))";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add new Telemarketing File Types. ' . $result->getMessage());
 		}
@@ -67,7 +67,7 @@ class Flex_Rollout_Version_000111 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

@@ -30,7 +30,7 @@ class Flex_Rollout_Version_000152 extends Flex_Rollout_Version
 					"	CONSTRAINT	pk_delivery_method_id	PRIMARY KEY (id)" .
 					") ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the delivery_method Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -43,7 +43,7 @@ class Flex_Rollout_Version_000152 extends Flex_Rollout_Version
 					"(2	, 'Withheld'	, 'Do Not Send'		, 'DELIVERY_METHOD_DO_NOT_SEND'	, 0), " .
 					"(3	, 'Email Sent'	, 'Email (Sent)'	, 'DELIVERY_METHOD_EMAIL_SENT'	, 0)";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the delivery_method Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -64,7 +64,7 @@ class Flex_Rollout_Version_000152 extends Flex_Rollout_Version
 					"	CONSTRAINT	fk_customer_group_delivery_method_employee_id			FOREIGN KEY (employee_id)			REFERENCES Employee(Id)			ON UPDATE CASCADE ON DELETE RESTRICT " .
 					") ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the customer_group_delivery_method Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -80,7 +80,7 @@ class Flex_Rollout_Version_000152 extends Flex_Rollout_Version
 				$strSQL =	"INSERT INTO customer_group_delivery_method (customer_group_id, delivery_method_id, employee_id) VALUES " .
 							"({$objCustomerGroup->id}, {$objDeliveryMethod->id}, ".Employee::SYSTEM_EMPLOYEE_ID.")";
 				$result = $dbAdmin->query($strSQL);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to populate the customer_group_delivery_method Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 				}
@@ -98,7 +98,7 @@ class Flex_Rollout_Version_000152 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

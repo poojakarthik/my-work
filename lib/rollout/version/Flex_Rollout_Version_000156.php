@@ -25,7 +25,7 @@ class Flex_Rollout_Version_000156 extends Flex_Rollout_Version
 					"ADD CONSTRAINT fk_rate_plan_created_employee_id	FOREIGN KEY (created_employee_id)	REFERENCES Employee(Id)	ON UPDATE CASCADE ON DELETE RESTRICT, " .
 					"ADD CONSTRAINT fk_rate_plan_modified_employee_id	FOREIGN KEY (modified_employee_id)	REFERENCES Employee(Id)	ON UPDATE CASCADE ON DELETE RESTRICT;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the new RatePlan fields. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -47,7 +47,7 @@ class Flex_Rollout_Version_000156 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

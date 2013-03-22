@@ -79,7 +79,7 @@ class Sale_Type
 			$strQuery = "SELECT $strColumns FROM sale_type ORDER BY name ASC";
 			
 			$mixResult = $objDB->queryAll($strQuery, self::getColumnDataTypes(), MDB2_FETCHMODE_ASSOC);
-			if (PEAR::isError($mixResult))
+			if (MDB2::isError($mixResult))
 			{
 				throw new Exception("Failed to retrieve sale type records. ". $mixResult->getMessage());
 			}

@@ -23,7 +23,7 @@ class Flex_Rollout_Version_000095 extends Flex_Rollout_Version
 					VALUES
 					(4, 'Knowledge Base', 'Knowledge Base Module', 'FLEX_MODULE_KNOWLEDGE_BASE', 0);";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to insert the FLEX_MODULE_KNOWLEDGE_BASE record into the flex_module table (id: 4). ' . $result->getMessage());
 		}
@@ -38,7 +38,7 @@ class Flex_Rollout_Version_000095 extends Flex_Rollout_Version
 						WHERE Privileges & $strCurrentSuperAdminPerm = $strCurrentSuperAdminPerm;";
 		
 		$result = $dbAdmin->queryAll($strQuery, NULL, MDB2_FETCHMODE_ASSOC);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to retrieve SuperAdmin users. ' . $result->getMessage());
 		}
@@ -53,7 +53,7 @@ class Flex_Rollout_Version_000095 extends Flex_Rollout_Version
 					SET Privileges = Privileges | $strNewSuperAdminPerm
 					WHERE Privileges & $strCurrentSuperAdminPerm = $strCurrentSuperAdminPerm;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to update SuperAdmin employees so that they have the new Super Admin permission. ' . $result->getMessage());
 		}
@@ -69,7 +69,7 @@ class Flex_Rollout_Version_000095 extends Flex_Rollout_Version
 		$strSQL = "	ALTER TABLE dealer
 					CHANGE dealer_status_id dealer_status_id BIGINT(20) UNSIGNED NOT NULL COMMENT 'FK into the dealer_status table, defininng the current status of the dealer';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to alter dealer.dealer_status_id to set it to being manditory (not NULLable). ' . $result->getMessage());
 		}
@@ -82,7 +82,7 @@ class Flex_Rollout_Version_000095 extends Flex_Rollout_Version
 		// First get the current highest id of dealers in the dealer table
 		$intHighestId = $dbAdmin->queryOne('SELECT MAX(id) FROM dealer;', 'integer');
 		
-		if (PEAR::isError($intHighestId))
+		if (MDB2::isError($intHighestId))
 		{
 			throw new Exception(__CLASS__ . ' Could not find the MAX(id) in dealer table'. $intHighestId->getMessage());
 		}
@@ -94,7 +94,7 @@ class Flex_Rollout_Version_000095 extends Flex_Rollout_Version
 					WHERE (Archived = 0) AND (Privileges & 0x08 = 0x08) AND Id NOT IN (SELECT employee_id FROM dealer WHERE employee_id IS NOT NULL);";
 		
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to create dealer records for all employees that have the Sales privilege (0x08). ' . $result->getMessage());
 		}
@@ -110,7 +110,7 @@ class Flex_Rollout_Version_000095 extends Flex_Rollout_Version
 					SET Privileges = $intNewGodPerm
 					WHERE Privileges > $intNewGodPerm;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to update GOD employees so that they have the new GOD permission. ' . $result->getMessage());
 		}
@@ -127,7 +127,7 @@ class Flex_Rollout_Version_000095 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

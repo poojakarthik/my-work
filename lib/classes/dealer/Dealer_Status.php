@@ -78,7 +78,7 @@ class Dealer_Status
 			$strQuery = "SELECT $strColumns FROM dealer_status ORDER BY name ASC";
 			
 			$mixResult = $objDB->queryAll($strQuery, NULL, MDB2_FETCHMODE_ASSOC);
-			if (PEAR::isError($mixResult))
+			if (MDB2::isError($mixResult))
 			{
 				throw new Exception("Failed to retrieve dealer status records. ". $mixResult->getMessage());
 			}

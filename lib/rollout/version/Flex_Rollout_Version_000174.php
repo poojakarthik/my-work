@@ -24,7 +24,7 @@ class Flex_Rollout_Version_000174 extends Flex_Rollout_Version
 		$strSQL = "	ALTER TABLE	FileDownload
 						ADD	customer_group_id	BIGINT	UNSIGNED	NULL	COMMENT '(FK) Customer Group';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the FileDownload.customer_group_id Field. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -35,7 +35,7 @@ class Flex_Rollout_Version_000174 extends Flex_Rollout_Version
 		$strSQL = "	ALTER TABLE	FileExport
 						ADD	customer_group_id	BIGINT	UNSIGNED	NULL	COMMENT '(FK) Customer Group';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the FileExport.customer_group_id Field. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -46,7 +46,7 @@ class Flex_Rollout_Version_000174 extends Flex_Rollout_Version
 		$strSQL = "	ALTER TABLE	ProvisioningRequest
 						ADD	customer_group_id	BIGINT	UNSIGNED	NULL	COMMENT '(FK) Customer Group';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the ProvisioningRequest.customer_group_id Field. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -57,7 +57,7 @@ class Flex_Rollout_Version_000174 extends Flex_Rollout_Version
 		$strSQL = "	ALTER TABLE	ProvisioningResponse
 						ADD	customer_group_id	BIGINT	UNSIGNED	NULL	COMMENT '(FK) Customer Group';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the ProvisioningResponse.customer_group_id Field. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -74,7 +74,7 @@ class Flex_Rollout_Version_000174 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

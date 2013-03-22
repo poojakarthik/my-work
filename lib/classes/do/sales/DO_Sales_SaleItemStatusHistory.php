@@ -29,7 +29,7 @@ class DO_Sales_SaleItemStatusHistory extends DO_Sales_Base_SaleItemStatusHistory
 		$new = true;
 		
 		$dataSource = self::getDataSource();
-		if (PEAR::isError($results = $dataSource->query($strSQL)))
+		if (MDB2::isError($results = $dataSource->query($strSQL)))
 		{
 			throw new Exception('Failed to check for ' . __CLASS__ . ' :: ' . $results->getMessage());
 		}

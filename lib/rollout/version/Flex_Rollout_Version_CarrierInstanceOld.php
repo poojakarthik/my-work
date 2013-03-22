@@ -43,7 +43,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->exec($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the carrier_instance Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -62,7 +62,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->exec($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the carrier_instance_customer_group Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -73,7 +73,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 						ADD	carrier_instance_id	BIGINT	UNSIGNED	NULL	COMMENT '(FK) Carrier Instance',
 						ADD	CONSTRAINT	fk_carrier_module_carrier_instance_id	FOREIGN KEY	(carrier_instance_id)	REFERENCES carrier_instance(id)	ON UPDATE CASCADE	ON DELETE CASCADE;";
 		$result = $dbAdmin->exec($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the CarrierModule.carrier_instance_id Field. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -84,7 +84,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 		//	4:	Populate the carrier_instance and carrier_instance_customer_group Tables
 		$arrCustomerGroups	= array();
 		$resCutomerGroups	= $dbAdmin->query("SELECT * FROM CustomerGroup WHERE 1");
-		if (PEAR::isError($resCutomerGroups))
+		if (MDB2::isError($resCutomerGroups))
 		{
 			throw new Exception(__CLASS__ . ' Failed to retrieve Customer Group records. ' . $resCutomerGroups->getMessage() . " (DB Error: " . $resCutomerGroups->getUserInfo() . ")");
 		}
@@ -95,7 +95,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 		
 		$arrCarriers	= array();
 		$resCarriers	= $dbAdmin->query("SELECT * FROM Carrier WHERE 1");
-		if (PEAR::isError($resCarriers))
+		if (MDB2::isError($resCarriers))
 		{
 			throw new Exception(__CLASS__ . ' Failed to retrieve Carrier records. ' . $resCarriers->getMessage() . " (DB Error: " . $resCarriers->getUserInfo() . ")");
 		}
@@ -112,7 +112,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 									FROM	CarrierModule
 									WHERE	carrier_instance_id IS NULL;";
 		$resCarrierModule = $dbAdmin->query($strCarrierModuleSQL);
-		if (PEAR::isError($resCarrierModule))
+		if (MDB2::isError($resCarrierModule))
 		{
 			throw new Exception(__CLASS__ . ' Failed to retrieve Carrier Module records. ' . $resCarrierModule->getMessage() . " (DB Error: " . $resCarrierModule->getUserInfo() . ")");
 		}
@@ -202,7 +202,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 													".$dbAdmin->quote($arrCarrierInstance['description']	, 'text')."
 												);";
 			$resCarrierInstanceInsert	= $dbAdmin->query($strCarrierInstanceInsert);
-			if (PEAR::isError($resCarrierInstanceInsert))
+			if (MDB2::isError($resCarrierInstanceInsert))
 			{
 				throw new Exception(__CLASS__ . ' Failed to add Carrier Instance \''.$arrCarrierInstance['name'].'\'. ' . $resCarrierInstanceInsert->getMessage() . " (DB Error: " . $resCarrierInstanceInsert->getUserInfo() . ")");
 			}
@@ -224,7 +224,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 															".$dbAdmin->quote($intCustomerGroupId		, 'integer')."
 														);";
 				$resCarrierInstanceLinkInsert	= $dbAdmin->query($strCarrierInstanceLinkInsert);
-				if (PEAR::isError($resCarrierInstanceLinkInsert))
+				if (MDB2::isError($resCarrierInstanceLinkInsert))
 				{
 					throw new Exception(__CLASS__ . ' Failed to link Carrier Instance \''.$arrCarrierInstance['name'].'\' to Customer Groups. ' . $resCarrierInstanceLinkInsert->getMessage() . " (DB Error: " . $resCarrierInstanceLinkInsert->getUserInfo() . ")");
 				}
@@ -248,7 +248,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 										SET		carrier_instance_id	= ".$dbAdmin->quote($arrCarrierModule['arrCarrierInstance']['id'], 'integer')."
 										WHERE	Id = ".$dbAdmin->quote($arrCarrierModule['Id'], 'integer').";";
 			$resCarrierModuleUpdate	= $dbAdmin->query($strCarrierModuleUpdate);
-			if (PEAR::isError($resCarrierModuleUpdate))
+			if (MDB2::isError($resCarrierModuleUpdate))
 			{
 				throw new Exception(__CLASS__ . ' Failed to set CarrierModule.carrier_instance_id #'.$arrCarrierModule['Id'].'. ' . $resCarrierModuleUpdate->getMessage() . " (DB Error: " . $resCarrierModuleUpdate->getUserInfo() . ")");
 			}
@@ -259,7 +259,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 						ADD	carrier_module_id	BIGINT	UNSIGNED	NULL	COMMENT '(FK) Carrier Module',
 						ADD	CONSTRAINT	fk_file_download_carrier_module_id	FOREIGN KEY	(carrier_module_id)	REFERENCES CarrierModule(Id)	ON UPDATE CASCADE	ON DELETE RESTRICT;";
 		$result = $dbAdmin->exec($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the FileDownload.carrier_module_id Field. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -272,7 +272,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 						ADD	carrier_module_id	BIGINT	UNSIGNED	NULL	COMMENT '(FK) Carrier Module',
 						ADD	CONSTRAINT	fk_file_export_carrier_module_id	FOREIGN KEY	(carrier_module_id)	REFERENCES CarrierModule(Id)	ON UPDATE CASCADE	ON DELETE RESTRICT;";
 		$result = $dbAdmin->exec($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the FileExport.carrier_module_id Field. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -285,7 +285,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 						ADD	carrier_module_id	BIGINT	UNSIGNED	NULL	COMMENT '(FK) Carrier Module',
 						ADD	CONSTRAINT	fk_file_import_carrier_module_id	FOREIGN KEY	(carrier_module_id)	REFERENCES CarrierModule(Id)	ON UPDATE CASCADE	ON DELETE RESTRICT;";
 		$result = $dbAdmin->exec($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the FileImport.carrier_module_id Field. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -298,7 +298,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 						ADD	carrier_module_id	BIGINT	UNSIGNED	NULL	COMMENT '(FK) Carrier Module',
 						ADD	CONSTRAINT	fk_provisioning_request_carrier_module_id	FOREIGN KEY	(carrier_module_id)	REFERENCES CarrierModule(Id)	ON UPDATE CASCADE	ON DELETE RESTRICT;";
 		$result = $dbAdmin->exec($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the ProvisioningRequest.carrier_module_id Field. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -311,7 +311,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 						ADD	carrier_module_id	BIGINT	UNSIGNED	NULL	COMMENT '(FK) Carrier Module',
 						ADD	CONSTRAINT	fk_provisioning_response_carrier_module_id	FOREIGN KEY	(carrier_module_id)	REFERENCES CarrierModule(Id)	ON UPDATE CASCADE	ON DELETE RESTRICT;";
 		$result = $dbAdmin->exec($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the ProvisioningResponse.carrier_module_id Field. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -330,7 +330,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

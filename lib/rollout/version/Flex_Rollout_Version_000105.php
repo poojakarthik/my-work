@@ -18,7 +18,7 @@ class Flex_Rollout_Version_000105 extends Flex_Rollout_Version
 		$strSQL = "INSERT INTO ChargeType (ChargeType, Description, Nature, Fixed, automatic_only, Amount, Archived) VALUES " .
 					"('PDCR', 'Plan Data Credit in Arrears', 'CR', 0, 1, 0.0, 0);";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the \'PDCR\' ChargeType. ' . $result->getMessage());
 		}
@@ -34,7 +34,7 @@ class Flex_Rollout_Version_000105 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

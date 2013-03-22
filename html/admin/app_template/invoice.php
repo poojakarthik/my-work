@@ -235,7 +235,7 @@ class AppTemplateInvoice extends ApplicationTemplate
 		$db				= Data_Source::get();
 		$sqlRecordTypes	= "SELECT Id, Name, Description, DisplayType FROM RecordType";
 		$res			= $db->query($sqlRecordTypes, array('integer', 'text', 'text', 'integer'));
-		if (PEAR::isError($res))
+		if (MDB2::isError($res))
 		{
 			throw new Exception("Failed to load call record types: " . $res->getMessage());
 		}

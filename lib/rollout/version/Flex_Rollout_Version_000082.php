@@ -28,7 +28,7 @@ class Flex_Rollout_Version_000082 extends Flex_Rollout_Version
 						"php_stream_wrapper VARCHAR(50) NULL COMMENT 'PHP fopen() stream wrapper prefix'" .
 					") ENGINE = innodb;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the compression_algorithm Table. ' . $result->getMessage());
 		}
@@ -40,7 +40,7 @@ class Flex_Rollout_Version_000082 extends Flex_Rollout_Version
 					"('bzip2', 'bzip2', 'COMPRESSION_ALGORITHM_BZIP2', '.bz2', 'compress.bzip2://')," .
 					"('gzip', 'gzip', 'COMPRESSION_ALGORITHM_GZIP', '.gz', 'compress.zlib://');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the compression_algorithm Table. ' . $result->getMessage());
 		}
@@ -49,7 +49,7 @@ class Flex_Rollout_Version_000082 extends Flex_Rollout_Version
 		// 3:	Add the FileImport.compression_algorithm_id field
 		$strSQL = "ALTER TABLE FileImport ADD compression_algorithm_id BIGINT(20) NOT NULL COMMENT '(FK) Compression Algorithm applied at Collection' AFTER archive_location;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the FileImport.compression_algorithm_id field. ' . $result->getMessage());
 		}
@@ -58,7 +58,7 @@ class Flex_Rollout_Version_000082 extends Flex_Rollout_Version
 		// 4:	Populate the FileImport.compression_algorithm_id field
 		$strSQL = "UPDATE FileImport SET compression_algorithm_id = (SELECT id FROM compression_algorithm WHERE name = 'None' LIMIT 1) WHERE compression_algorithm_id NOT IN (SELECT id FROM compression_algorithm);";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the FileImport.compression_algorithm_id field. ' . $result->getMessage());
 		}
@@ -73,7 +73,7 @@ class Flex_Rollout_Version_000082 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

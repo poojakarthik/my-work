@@ -22,7 +22,7 @@ class Flex_Rollout_Version_000142 extends Flex_Rollout_Version
 		// 1:	Remove the Config Table
 		$strSQL =	"DROP TABLE IF EXISTS Config;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to remove the Config Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -30,7 +30,7 @@ class Flex_Rollout_Version_000142 extends Flex_Rollout_Version
 		// 2:	Remove the BugReport Table
 		$strSQL =	"DROP TABLE IF EXISTS BugReport;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to remove the BugReport Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -38,7 +38,7 @@ class Flex_Rollout_Version_000142 extends Flex_Rollout_Version
 		// 3:	Remove the BugReportComment Table
 		$strSQL =	"DROP TABLE IF EXISTS BugReportComment;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to remove the BugReportComment Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -46,7 +46,7 @@ class Flex_Rollout_Version_000142 extends Flex_Rollout_Version
 		// 4:	Remove the Tip Table
 		$strSQL =	"DROP TABLE IF EXISTS Tip;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to remove the Tip Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -54,7 +54,7 @@ class Flex_Rollout_Version_000142 extends Flex_Rollout_Version
 		// 5:	Remove the InvoiceTemp Table
 		$strSQL =	"DROP TABLE IF EXISTS InvoiceTemp;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to remove the InvoiceTemp Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -62,7 +62,7 @@ class Flex_Rollout_Version_000142 extends Flex_Rollout_Version
 		// 6:	Remove the InvoiceTemp_bk Table
 		$strSQL =	"DROP TABLE IF EXISTS InvoiceTemp_bk;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to remove the InvoiceTemp_bk Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -77,7 +77,7 @@ class Flex_Rollout_Version_000142 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

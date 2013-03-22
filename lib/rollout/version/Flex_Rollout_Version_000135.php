@@ -18,7 +18,7 @@ class Flex_Rollout_Version_000135 extends Flex_Rollout_Version
 		$strSQL =	"ALTER TABLE document_content " .
 					"MODIFY content MEDIUMBLOB NULL COMMENT 'Binary content of the Document';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to make the document_content.content Field NULLable. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -35,7 +35,7 @@ class Flex_Rollout_Version_000135 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

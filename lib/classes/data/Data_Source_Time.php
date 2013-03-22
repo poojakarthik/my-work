@@ -27,7 +27,7 @@ class Data_Source_Time
 		{
 			// Retrieve a fresh value for "Current" time
 			$strTime = $objDataSource->queryOne("SELECT NOW();");
-			if (PEAR::isError($strTime))
+			if (MDB2::isError($strTime))
 			{
 				throw new Exception("Could not retrieve current time from data source - ". $strTime->getMessage());
 			}

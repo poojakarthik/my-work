@@ -38,7 +38,7 @@ class Flex_Rollout_Version_000180 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . " Failed stage 1 - Create recurring_charge_status table. " . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -54,7 +54,7 @@ class Flex_Rollout_Version_000180 extends Flex_Rollout_Version
 					('Active', 'Active', 'ACTIVE', 'RECURRING_CHARGE_STATUS_ACTIVE'),
 					('Completed', 'Completed', 'COMPLETED', 'RECURRING_CHARGE_STATUS_COMPLETED');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . " Failed stage 2 - Populate recurring_charge_status table. " . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -75,7 +75,7 @@ class Flex_Rollout_Version_000180 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . " Failed stage 3 - Create charge_recurring_charge table. " . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -88,7 +88,7 @@ class Flex_Rollout_Version_000180 extends Flex_Rollout_Version
 					FROM Charge INNER JOIN RecurringCharge ON Charge.LinkType IN (501, 502) AND Charge.LinkId = RecurringCharge.Id
 					ORDER BY Charge.Id ASC;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . " Failed stage 4 - Populate charge_recurring_charge table. " . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -101,7 +101,7 @@ class Flex_Rollout_Version_000180 extends Flex_Rollout_Version
 					SET ApprovedBy = $intSystemEmployeeId
 					WHERE ApprovedBy IS NULL;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . " Failed stage 5 - Set RecurringCharge.ApprovedBy to the System Employee Id for all records that are currently set to NULL. " . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -114,7 +114,7 @@ class Flex_Rollout_Version_000180 extends Flex_Rollout_Version
 					ADD recurring_charge_status_id INTEGER UNSIGNED NULL COMMENT '(FK) Recurring Charge Status' AFTER Archived,
 					ADD CONSTRAINT fk_recurring_charge_recurring_charge_status_id FOREIGN KEY (recurring_charge_status_id) REFERENCES recurring_charge_status(id) ON UPDATE CASCADE ON DELETE RESTRICT;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . " Failed stage 6.1 - Add the recurring_charge_status_id column, but don't make it manditory yet. " . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -128,7 +128,7 @@ class Flex_Rollout_Version_000180 extends Flex_Rollout_Version
 					SET recurring_charge_status_id = (SELECT id FROM recurring_charge_status WHERE system_name = 'AWAITING_APPROVAL')
 					WHERE recurring_charge_status_id IS NULL AND Archived = 0 AND ApprovedBy IS NULL;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . " Failed stage 6.2 - Set RecurringCharge.recurring_charge_status_id to AWAITING APPROVAL where appropriate. " . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -140,7 +140,7 @@ class Flex_Rollout_Version_000180 extends Flex_Rollout_Version
 					SET recurring_charge_status_id = (SELECT id FROM recurring_charge_status WHERE system_name = 'CANCELLED')
 					WHERE recurring_charge_status_id IS NULL AND Archived = 1 AND TotalCharged < (MinCharge - 0.5);";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . " Failed stage 6.3 - Set RecurringCharge.recurring_charge_status_id to CANCELLED where appropriate. " . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -152,7 +152,7 @@ class Flex_Rollout_Version_000180 extends Flex_Rollout_Version
 					SET recurring_charge_status_id = (SELECT id FROM recurring_charge_status WHERE system_name = 'COMPLETED')
 					WHERE recurring_charge_status_id IS NULL AND TotalCharged >= (MinCharge - 0.5) AND (Continuable = 0 OR (Continuable = 1 AND Archived = 1));";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . " Failed stage 6.4 - Set RecurringCharge.recurring_charge_status_id to COMPLETED where appropriate. " . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -166,7 +166,7 @@ class Flex_Rollout_Version_000180 extends Flex_Rollout_Version
 					AND NOT (TotalCharged >= (MinCharge - 0.5) AND (Continuable = 0 OR (Continuable = 1 AND Archived = 1)))
 					AND NOT (Archived = 0 AND ApprovedBy IS NULL);";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . " Failed stage 6.5 - Set RecurringCharge.recurring_charge_status_id to ACTIVE where appropriate. " . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -176,7 +176,7 @@ class Flex_Rollout_Version_000180 extends Flex_Rollout_Version
 		//	6.6:	Make recurring_charge_status_id column manditory 
 		$strSQL = "ALTER TABLE RecurringCharge CHANGE recurring_charge_status_id recurring_charge_status_id INTEGER UNSIGNED NOT NULL COMMENT '(FK) Recurring Charge Status';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . " Failed stage 6.6 - Make recurring_charge_status_id column manditory. " . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -186,7 +186,7 @@ class Flex_Rollout_Version_000180 extends Flex_Rollout_Version
 		$strSQL = "	ALTER TABLE RecurringChargeType
 					ADD approval_required TINYINT(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT '1=RecCharges require approval; 0=don''t require approval' AFTER UniqueCharge;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . " Failed stage 7 - Add is_auto_approved column to RecurringChargeType table. " . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -203,7 +203,7 @@ class Flex_Rollout_Version_000180 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

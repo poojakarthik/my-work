@@ -26,7 +26,7 @@ class Flex_Rollout_Version_000083 extends Flex_Rollout_Version
 						"const_name VARCHAR(512) NOT NULL COMMENT 'Constant Name for the Contract Exit Nature'" .
 					") ENGINE = innodb;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the contract_exit_nature Table. ' . $result->getMessage());
 		}
@@ -37,7 +37,7 @@ class Flex_Rollout_Version_000083 extends Flex_Rollout_Version
 					"('Expired', 'Contract Expired', 'CONTRACT_EXIT_NATURE_EXPIRED'), " .
 					"('Breached', 'Contract Breached', 'CONTRACT_EXIT_NATURE_BREACHED');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the contract_exit_nature Table. ' . $result->getMessage());
 		}
@@ -49,7 +49,7 @@ class Flex_Rollout_Version_000083 extends Flex_Rollout_Version
 					"ADD contract_effective_end_datetime DATETIME NULL COMMENT 'Scheduled Contract End Date' AFTER contract_scheduled_end_datetime," .
 					"ADD contract_exit_nature_id BIGINT(20) NULL COMMENT '(FK) The nature of the End of Contract' AFTER contract_effective_end_datetime;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the contract_scheduled_end_datetime, contract_effective_end_datetime, contract_exit_nature_id fields to the ServiceRatePlan table. ' . $result->getMessage());
 		}
@@ -63,7 +63,7 @@ class Flex_Rollout_Version_000083 extends Flex_Rollout_Version
 					"ADD contract_exit_fee DECIMAL(13, 4) NOT NULL DEFAULT 0 COMMENT 'Contract Exit Fee' AFTER ContractTerm," .
 					"ADD contract_payout_percentage DECIMAL(13, 4) NOT NULL DEFAULT 0 COMMENT 'Contract Payout Percentage' AFTER contract_exit_fee;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the contract_exit_fee, contract_payout_percentage fields to the RatePlan table. ' . $result->getMessage());
 		}
@@ -81,7 +81,7 @@ class Flex_Rollout_Version_000083 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

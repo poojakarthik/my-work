@@ -18,7 +18,7 @@ class Flex_Rollout_Version_000145 extends Flex_Rollout_Version
 		// 1: Add a const_name column to the ticketing_category table
 		$strSQL = "ALTER TABLE ticketing_category ADD const_name VARCHAR(255) NOT NULL DEFAULT 'hello' COMMENT 'constant for this ticketing category' AFTER description";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed add const_name field to ticketing_category table. ' . $result->getMessage());
 		}
@@ -28,7 +28,7 @@ class Flex_Rollout_Version_000145 extends Flex_Rollout_Version
 		$strSQL = "UPDATE ticketing_category SET const_name = upper(replace(css_name, '-', '_'))"; 
 
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to update the ticketing_category.const_name values to reflect the css_name field. ' . $result->getMessage());
 		}
@@ -37,7 +37,7 @@ class Flex_Rollout_Version_000145 extends Flex_Rollout_Version
 		// Now that all records have had their const_name properly defined, alter the column so that there is no default value
 		$strSQL = "ALTER TABLE ticketing_category CHANGE const_name const_name VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'constant for this ticketing category'";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed alter ticketing_category.const_name field, to remove the default value. ' . $result->getMessage());
 		}
@@ -53,7 +53,7 @@ class Flex_Rollout_Version_000145 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

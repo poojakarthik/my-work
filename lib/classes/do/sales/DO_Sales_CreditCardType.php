@@ -24,7 +24,7 @@ class DO_Sales_CreditCardType extends DO_Sales_Base_CreditCardType
 
 		$result = $dataSource->query($strSQL);
 
-		if(PEAR::isError($result))
+		if(MDB2::isError($result))
 		{
 			throw new Exception("Failed to Build a list of credit card types: " . $result->getMessage());
 		}

@@ -43,7 +43,7 @@ class Flex_Rollout_Version_000165 extends Flex_Rollout_Version
 		
 		// Convert Employees to Person-Employees
 		$resEmployee = $dbAdmin->query("SELECT * FROM Employee WHERE 1");
-		if (PEAR::isError($resEmployee))
+		if (MDB2::isError($resEmployee))
 		{
 			throw new Exception(__CLASS__ . ' Failed to retrieve the list of Old Employees. ' . $resEmployee->getMessage() . " (DB Error: " . $resEmployee->getUserInfo() . ")");
 		}
@@ -54,7 +54,7 @@ class Flex_Rollout_Version_000165 extends Flex_Rollout_Version
 		
 		// Convert Dealers to Person-Dealers
 		$resDealer = $dbAdmin->query("SELECT * FROM dealer WHERE 1");
-		if (PEAR::isError($resDealer))
+		if (MDB2::isError($resDealer))
 		{
 			throw new Exception(__CLASS__ . ' Failed to retrieve the list of Old Dealers. ' . $resDealer->getMessage() . " (DB Error: " . $resDealer->getUserInfo() . ")");
 		}
@@ -65,7 +65,7 @@ class Flex_Rollout_Version_000165 extends Flex_Rollout_Version
 		
 		// Convert Accounts
 		$resAccount	= $dbAdmin->query("SELECT * FROM Account WHERE 1");
-		if (PEAR::isError($resAccount))
+		if (MDB2::isError($resAccount))
 		{
 			throw new Exception(__CLASS__ . ' Failed to retrieve the list of Old Accounts. ' . $resAccount->getMessage() . " (DB Error: " . $resAccount->getUserInfo() . ")");
 		}
@@ -76,7 +76,7 @@ class Flex_Rollout_Version_000165 extends Flex_Rollout_Version
 		
 		// Convert Contacts
 		$resContact	= $dbAdmin->query("SELECT Contact.*, Account.Id AS account_id, Account.PrimaryContact FROM Contact LEFT JOIN Account ON (Account.PrimaryContact = Contact.Id OR (Account.AccountGroup = Contact.AccountGroup AND Contact.CustomerContact = 1)) WHERE 1");
-		if (PEAR::isError($resContact))
+		if (MDB2::isError($resContact))
 		{
 			throw new Exception(__CLASS__ . ' Failed to retrieve the list of Old Contacts. ' . $resContact->getMessage() . " (DB Error: " . $resContact->getUserInfo() . ")");
 		}
@@ -87,7 +87,7 @@ class Flex_Rollout_Version_000165 extends Flex_Rollout_Version
 		
 		// Convert Telemarketing Contacts
 		$resTelemarketingContact	= $dbAdmin->query("SELECT telemarketing_contact.*, telemarketing_contact_account.account_id FROM telemarketing_contact LEFT JOIN telemarketing_contact_account ON telemarketing_contact.id = telemarketing_contact_account.telemarketing_contact_id WHERE 1");
-		if (PEAR::isError($resTelemarketingContact))
+		if (MDB2::isError($resTelemarketingContact))
 		{
 			throw new Exception(__CLASS__ . ' Failed to retrieve the list of Old Telenmarketing Contacts. ' . $resTelemarketingContact->getMessage() . " (DB Error: " . $resTelemarketingContact->getUserInfo() . ")");
 		}
@@ -109,7 +109,7 @@ class Flex_Rollout_Version_000165 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}
@@ -224,7 +224,7 @@ class Flex_Rollout_Version_000165 extends Flex_Rollout_Version
 								")";
 		
 		$resAccountInsert	= $dbAdmin->exec($strInsertAccountSQL);
-		if (PEAR::isError($resAccountInsert))
+		if (MDB2::isError($resAccountInsert))
 		{
 			throw new Exception(__CLASS__ . ' Failed to convert Account '.$arrOldAccount['Id'].'. ' . $resPersonInsert->getMessage() . " (DB Error: " . $resPersonInsert->getUserInfo() . ")");
 		}
@@ -256,7 +256,7 @@ class Flex_Rollout_Version_000165 extends Flex_Rollout_Version
 		
 		// Convert Account History
 		$resAccountHistory	= $dbAdmin->query("SELECT * FROM account_history WHERE account_id = {$arrOldAccount['Id']}");
-		if (PEAR::isError($resAccountHistory))
+		if (MDB2::isError($resAccountHistory))
 		{
 			throw new Exception(__CLASS__ . ' Failed to retrieve the list of Old account_history for Account #'.$arrOldAccount['Id'].'. ' . $resAccountHistory->getMessage() . " (DB Error: " . $resAccountHistory->getUserInfo() . ")");
 		}
@@ -276,7 +276,7 @@ class Flex_Rollout_Version_000165 extends Flex_Rollout_Version
 										"SET	person_id	= ".$dbAdmin->quote($arrOldAccountHistory['person_id']	, 'integer').", " .
 										"WHERE	id			= ".$dbAdmin->quote($arrOldAccountHistory['id']			, 'integer').";";
 		$resAccountHistoryUpdate	= $dbAdmin->exec($strUpdateAccountHistory);
-		if (PEAR::isError($resAccountHistoryUpdate))
+		if (MDB2::isError($resAccountHistoryUpdate))
 		{
 			throw new Exception(__CLASS__ . ' Failed to convert account_history #'.$arrOldAccountHistory['id'].'. ' . $resAccountHistoryUpdate->getMessage() . " (DB Error: " . $resAccountHistoryUpdate->getUserInfo() . ")");
 		}
@@ -313,7 +313,7 @@ class Flex_Rollout_Version_000165 extends Flex_Rollout_Version
 								")";
 		
 		$resPersonInsert	= $dbAdmin->exec($strInsertPersonSQL);
-		if (PEAR::isError($resPersonInsert))
+		if (MDB2::isError($resPersonInsert))
 		{
 			throw new Exception(__CLASS__ . ' Failed to convert Employee '.$arrOldEmployee['Id'].' to a person. ' . $resPersonInsert->getMessage() . " (DB Error: " . $resPersonInsert->getUserInfo() . ")");
 		}
@@ -331,7 +331,7 @@ class Flex_Rollout_Version_000165 extends Flex_Rollout_Version
 										")";
 		
 		$resPersonEmployeeInsert	= $dbAdmin->exec($strInsertPersonEmployeeSQL);
-		if (PEAR::isError($resPersonEmployeeInsert))
+		if (MDB2::isError($resPersonEmployeeInsert))
 		{
 			throw new Exception(__CLASS__ . ' Failed to convert Employee '.$arrOldEmployee['Id'].' to a person_employee. ' . $resPersonEmployeeInsert->getMessage() . " (DB Error: " . $resPersonEmployeeInsert->getUserInfo() . ")");
 		}
@@ -339,7 +339,7 @@ class Flex_Rollout_Version_000165 extends Flex_Rollout_Version
 		
 		// Add to Employee Person-Group
 		$resPersonGroupEmployeeInsert	= $dbAdmin->exec("INSERT INTO person_person_group (person_id, person_group_id) VALUES ({$arrNewPerson['id']}, ".$this->_cgPersonGroup->getValue('PERSON_GROUP_EMPLOYEE').");");
-		if (PEAR::isError($resPersonGroupEmployeeInsert))
+		if (MDB2::isError($resPersonGroupEmployeeInsert))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add Employee '.$arrOldEmployee['Id'].' to the Employee person_group. ' . $resPersonGroupEmployeeInsert->getMessage() . " (DB Error: " . $resPersonGroupEmployeeInsert->getUserInfo() . ")");
 		}
@@ -387,7 +387,7 @@ class Flex_Rollout_Version_000165 extends Flex_Rollout_Version
 									")";
 			
 			$resPersonInsert	= $dbAdmin->exec($strInsertPersonSQL);
-			if (PEAR::isError($resPersonInsert))
+			if (MDB2::isError($resPersonInsert))
 			{
 				throw new Exception(__CLASS__ . ' Failed to convert Dealer '.$arrOldDealer['Id'].' to a person. ' . $resPersonInsert->getMessage() . " (DB Error: " . $resPersonInsert->getUserInfo() . ")");
 			}
@@ -432,7 +432,7 @@ class Flex_Rollout_Version_000165 extends Flex_Rollout_Version
 										")";
 		
 		$resPersonDealerInsert	= $dbAdmin->exec($strInsertPersonDealerSQL);
-		if (PEAR::isError($resPersonDealerInsert))
+		if (MDB2::isError($resPersonDealerInsert))
 		{
 			throw new Exception(__CLASS__ . ' Failed to convert Dealer '.$arrOldDealer['Id'].' to a person_dealer. ' . $resPersonDealerInsert->getMessage() . " (DB Error: " . $resPersonDealerInsert->getUserInfo() . ")");
 		}
@@ -440,7 +440,7 @@ class Flex_Rollout_Version_000165 extends Flex_Rollout_Version
 		
 		// Add to Dealer Person-Group
 		$resPersonGroupDealerInsert	= $dbAdmin->exec("INSERT INTO person_person_group (person_id, person_group_id) VALUES ({$arrNewPerson['id']}, ".$this->_cgPersonGroup->getValue('PERSON_GROUP_DEALER').");");
-		if (PEAR::isError($resPersonGroupDealerInsert))
+		if (MDB2::isError($resPersonGroupDealerInsert))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add Dealer '.$arrOldDealer['Id'].' to the Dealer person_group. ' . $resPersonGroupDealerInsert->getMessage() . " (DB Error: " . $resPersonGroupDealerInsert->getUserInfo() . ")");
 		}
@@ -506,7 +506,7 @@ class Flex_Rollout_Version_000165 extends Flex_Rollout_Version
 								")";
 		
 		$resPersonInsert	= $dbAdmin->exec($strInsertPersonSQL);
-		if (PEAR::isError($resPersonInsert))
+		if (MDB2::isError($resPersonInsert))
 		{
 			throw new Exception(__CLASS__ . ' Failed to convert Contact '.$arrOldContact['Id'].' to a person. ' . $resPersonInsert->getMessage() . " (DB Error: " . $resPersonInsert->getUserInfo() . ")");
 		}
@@ -524,7 +524,7 @@ class Flex_Rollout_Version_000165 extends Flex_Rollout_Version
 										")";
 		
 		$resPersonContactAccountInsert	= $dbAdmin->exec($strInsertPersonEmployeeSQL);
-		if (PEAR::isError($resPersonContactAccountInsert))
+		if (MDB2::isError($resPersonContactAccountInsert))
 		{
 			throw new Exception(__CLASS__ . ' Failed to convert Contact '.$arrOldContact['Id'].' to a person_contact_account. ' . $resPersonContactAccountInsert->getMessage() . " (DB Error: " . $resPersonContactAccountInsert->getUserInfo() . ")");
 		}
@@ -532,7 +532,7 @@ class Flex_Rollout_Version_000165 extends Flex_Rollout_Version
 		
 		// Add to Account Contact Person-Group
 		$resPersonGroupContactAccountInsert	= $dbAdmin->exec("INSERT INTO person_person_group (person_id, person_group_id) VALUES ({$arrNewPerson['id']}, ".$this->_cgPersonGroup->getValue('PERSON_GROUP_CONTACT_ACCOUNT').");");
-		if (PEAR::isError($resPersonGroupContactAccountInsert))
+		if (MDB2::isError($resPersonGroupContactAccountInsert))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add Contact '.$arrOldContact['Id'].' to the Account Contact person_group. ' . $resPersonGroupContactAccountInsert->getMessage() . " (DB Error: " . $resPersonGroupContactAccountInsert->getUserInfo() . ")");
 		}
@@ -574,7 +574,7 @@ class Flex_Rollout_Version_000165 extends Flex_Rollout_Version
 								")";
 		
 		$resPersonInsert	= $dbAdmin->exec($strInsertPersonSQL);
-		if (PEAR::isError($resPersonInsert))
+		if (MDB2::isError($resPersonInsert))
 		{
 			throw new Exception(__CLASS__ . ' Failed to convert Contact '.$arrOldTicketingContact['Id'].' to a person. ' . $resPersonInsert->getMessage() . " (DB Error: " . $resPersonInsert->getUserInfo() . ")");
 		}
@@ -592,7 +592,7 @@ class Flex_Rollout_Version_000165 extends Flex_Rollout_Version
 										")";
 		
 		$resPersonContactTicketingInsert	= $dbAdmin->exec($strInsertPersonEmployeeSQL);
-		if (PEAR::isError($resPersonContactTicketingInsert))
+		if (MDB2::isError($resPersonContactTicketingInsert))
 		{
 			throw new Exception(__CLASS__ . ' Failed to convert Contact '.$arrOldTicketingContact['Id'].' to a person_contact_ticketing. ' . $resPersonContactTicketingInsert->getMessage() . " (DB Error: " . $resPersonContactTicketingInsert->getUserInfo() . ")");
 		}
@@ -600,7 +600,7 @@ class Flex_Rollout_Version_000165 extends Flex_Rollout_Version
 		
 		// Add to Ticketing Contact Person-Group
 		$resPersonGroupContactTicketingInsert	= $dbAdmin->exec("INSERT INTO person_person_group (person_id, person_group_id) VALUES ({$arrNewPerson['id']}, ".$this->_cgPersonGroup->getValue('PERSON_GROUP_CONTACT_TICKETING').");");
-		if (PEAR::isError($resPersonGroupContactTicketingInsert))
+		if (MDB2::isError($resPersonGroupContactTicketingInsert))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add Contact '.$arrOldTicketingContact['Id'].' to the Account Contact person_group. ' . $resPersonGroupContactTicketingInsert->getMessage() . " (DB Error: " . $resPersonGroupContactTicketingInsert->getUserInfo() . ")");
 		}
@@ -658,7 +658,7 @@ class Flex_Rollout_Version_000165 extends Flex_Rollout_Version
 		// Find the Locality for this Address
 		$strSelectSQL	= "SELECT id FROM address_locality WHERE UPPER(TRIM(name)) = '".strtoupper(trim($strLocality))."' AND postcode = '{$strPostcode}'";
 		$resSelect		= $dbAdmin->query($strSelectSQL);
-		if (PEAR::isError($resSelect))
+		if (MDB2::isError($resSelect))
 		{
 			throw new Exception(__CLASS__ . ' Failed to retrieve Locality information. ' . $resSelect->getMessage() . " (DB Error: " . $resSelect->getUserInfo() . ")");
 		}
@@ -668,7 +668,7 @@ class Flex_Rollout_Version_000165 extends Flex_Rollout_Version
 			$strInsertSQL	=	"INSERT INTO address (address_line_1, address_line_2, address_locality_id) VALUES " .
 								"(".$dbAdmin->quote($strAddressLine1, 'text').", ".$dbAdmin->quote($strAddressLine2, 'text').", ".$dbAdmin->quote((int)$arrLocality['id'], 'integer').");";
 			$resInsert		= $dbAdmin->exec($strInsertSQL);
-			if (PEAR::isError($resInsert))
+			if (MDB2::isError($resInsert))
 			{
 				throw new Exception(__CLASS__ . ' Failed to convert Address information. ' . $resInsert->getMessage() . " (DB Error: " . $resInsert->getUserInfo() . ")");
 			}

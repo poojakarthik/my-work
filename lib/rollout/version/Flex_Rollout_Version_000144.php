@@ -39,7 +39,7 @@ class Flex_Rollout_Version_000144 extends Flex_Rollout_Version
 						CONSTRAINT	pk_product_type_nature_id	PRIMARY KEY	(id)
 					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the product_type_nature Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -50,7 +50,7 @@ class Flex_Rollout_Version_000144 extends Flex_Rollout_Version
 					('Service'	, 'Service'		, 'PRODUCT_TYPE_NATURE_SERVICE'), 
 					('Hardware'	, 'Hardware'	, 'PRODUCT_TYPE_NATURE_HARDWARE');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the product_type_nature Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -69,7 +69,7 @@ class Flex_Rollout_Version_000144 extends Flex_Rollout_Version
 						CONSTRAINT	fk_product_type_product_type_nature_id	FOREIGN KEY	(product_type_nature_id)	REFERENCES product_type_nature(id)	ON UPDATE CASCADE ON DELETE RESTRICT
 					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the product_type Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -83,7 +83,7 @@ class Flex_Rollout_Version_000144 extends Flex_Rollout_Version
 					('Mobile'	, 'Mobile'				,	'PRODUCT_TYPE_MOBILE'	, (SELECT id FROM product_type_nature WHERE const_name = 'PRODUCT_TYPE_NATURE_SERVICE' LIMIT 1)), 
 					('Inbound'	, 'Inbound'				,	'PRODUCT_TYPE_INBOUND'	, (SELECT id FROM product_type_nature WHERE const_name = 'PRODUCT_TYPE_NATURE_SERVICE' LIMIT 1));";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the product_type Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -100,7 +100,7 @@ class Flex_Rollout_Version_000144 extends Flex_Rollout_Version
 						CONSTRAINT	pk_product_status_id	PRIMARY KEY	(id)
 					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the product_status Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -112,7 +112,7 @@ class Flex_Rollout_Version_000144 extends Flex_Rollout_Version
 					('Active'	, 'Active'		, 'PRODUCT_STATUS_ACTIVE'),
 					('Inactive'	, 'Inactive'	, 'PRODUCT_STATUS_INACTIVE');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the product_status Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -129,7 +129,7 @@ class Flex_Rollout_Version_000144 extends Flex_Rollout_Version
 						CONSTRAINT	pk_product_priority_id	PRIMARY KEY	(id)
 					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the product_sale_priority Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -140,7 +140,7 @@ class Flex_Rollout_Version_000144 extends Flex_Rollout_Version
 					('Active'	, 'Actively Sold'		, 'PRODUCT_SALE_PRIORITY_ACTIVE'), 
 					('Passive'	, 'Passively Sold'		, 'PRODUCT_SALE_PRIORITY_PASSIVE');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the product_sale_priority Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -167,7 +167,7 @@ class Flex_Rollout_Version_000144 extends Flex_Rollout_Version
 						CONSTRAINT	fk_product_product_status_id		FOREIGN KEY	(product_status_id)			REFERENCES product_status(id)			ON UPDATE CASCADE ON DELETE RESTRICT
 					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the product Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -178,7 +178,7 @@ class Flex_Rollout_Version_000144 extends Flex_Rollout_Version
 					ADD product_id		BIGINT(20)	UNSIGNED	NULL	COMMENT '(FK) Product that this defines',
 					ADD CONSTRAINT	fk_rate_plan_product_id	FOREIGN KEY (product_id)	REFERENCES product(id)	ON UPDATE CASCADE ON DELETE SET NULL;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the RatePlan.product_id Field. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -196,7 +196,7 @@ class Flex_Rollout_Version_000144 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

@@ -25,7 +25,7 @@ class Flex_Rollout_Version_000106 extends Flex_Rollout_Version
 						CONSTRAINT fk_dealer_config_default_employee_manager_dealer_id_dealer_id FOREIGN KEY (default_employee_manager_dealer_id) REFERENCES dealer(id) ON UPDATE CASCADE ON DELETE RESTRICT
 					) ENGINE = innodb COMMENT = 'dealer configuration';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to create the dealer_config table. ' . $result->getMessage());
 		}
@@ -34,7 +34,7 @@ class Flex_Rollout_Version_000106 extends Flex_Rollout_Version
 		// 2: Insert a default record to the dealer_config table
 		$strSQL = "INSERT INTO dealer_config (default_employee_manager_dealer_id) VALUES (NULL);";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to insert a default record into the dealer_config table. ' . $result->getMessage());
 		}
@@ -50,7 +50,7 @@ class Flex_Rollout_Version_000106 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

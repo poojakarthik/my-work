@@ -24,7 +24,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 					WHERE	const_name = 'RESOURCE_TYPE_FILE_RESOURCE_SFTP'
 					LIMIT	1;";
 		$result	= $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to check whether SFTP Resource Type already exists . ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -39,7 +39,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 						VALUES
 							('SFTP File Server'			, 'SFTP File Server'		, 'RESOURCE_TYPE_FILE_RESOURCE_SFTP'			, (SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_FILE_REPOSITORY' LIMIT 1));";
 			$result = $dbAdmin->query($strSQL);
-			if (PEAR::isError($result))
+			if (MDB2::isError($result))
 			{
 				throw new Exception(__CLASS__ . ' Failed to add the SFTP Resource Type. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 			}
@@ -53,7 +53,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 					WHERE	const_name = 'RESOURCE_TYPE_FILE_IMPORT_CDR_ISEEK_DATA'
 					LIMIT	1;";
 		$result	= $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to check whether iSeek Data File Resource Type already exists . ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -68,7 +68,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 						VALUES
 							('iSeek Data Usage File'	, 'iSeek Data Usage File'	, 'RESOURCE_TYPE_FILE_IMPORT_CDR_ISEEK_DATA'	, (SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_IMPORT_FILE' LIMIT 1));";
 			$result = $dbAdmin->query($strSQL);
-			if (PEAR::isError($result))
+			if (MDB2::isError($result))
 			{
 				throw new Exception(__CLASS__ . ' Failed to add the iSeek Data File Resource Type. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 			}
@@ -86,7 +86,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

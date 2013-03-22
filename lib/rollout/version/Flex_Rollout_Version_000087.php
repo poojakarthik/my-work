@@ -17,7 +17,7 @@ class Flex_Rollout_Version_000087 extends Flex_Rollout_Version
 		// 1:	Adds indexes to the ProvisioningResponse Table
 		$strSQL = "CREATE INDEX Account ON ProvisioningResponse (Account);";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the ProvisioningResponse.Account Index. ' . $result->getMessage());
 		}
@@ -25,7 +25,7 @@ class Flex_Rollout_Version_000087 extends Flex_Rollout_Version
 		
 		$strSQL = "CREATE INDEX Service ON ProvisioningResponse (Service);";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the ProvisioningResponse.Service Index. ' . $result->getMessage());
 		}
@@ -33,7 +33,7 @@ class Flex_Rollout_Version_000087 extends Flex_Rollout_Version
 		
 		$strSQL = "CREATE INDEX FNN ON ProvisioningResponse (FNN);";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the ProvisioningResponse.FNN Index. ' . $result->getMessage());
 		}
@@ -41,7 +41,7 @@ class Flex_Rollout_Version_000087 extends Flex_Rollout_Version
 		
 		$strSQL = "CREATE INDEX Carrier ON ProvisioningResponse (Carrier);";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the ProvisioningResponse.Carrier Index. ' . $result->getMessage());
 		}
@@ -49,7 +49,7 @@ class Flex_Rollout_Version_000087 extends Flex_Rollout_Version
 		
 		$strSQL = "CREATE INDEX Type ON ProvisioningResponse (Type);";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the ProvisioningResponse.Type Index. ' . $result->getMessage());
 		}
@@ -57,7 +57,7 @@ class Flex_Rollout_Version_000087 extends Flex_Rollout_Version
 		
 		$strSQL = "CREATE INDEX Request ON ProvisioningResponse (Request);";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the ProvisioningResponse.Request Index. ' . $result->getMessage());
 		}
@@ -65,7 +65,7 @@ class Flex_Rollout_Version_000087 extends Flex_Rollout_Version
 		
 		$strSQL = "CREATE INDEX Status ON ProvisioningResponse (Status);";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the ProvisioningResponse.Status Index. ' . $result->getMessage());
 		}
@@ -73,7 +73,7 @@ class Flex_Rollout_Version_000087 extends Flex_Rollout_Version
 		
 		$strSQL = "CREATE INDEX request_status ON ProvisioningResponse (request_status);";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the ProvisioningResponse.request_status Index. ' . $result->getMessage());
 		}
@@ -89,7 +89,7 @@ class Flex_Rollout_Version_000087 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

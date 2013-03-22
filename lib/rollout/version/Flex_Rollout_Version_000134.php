@@ -21,7 +21,7 @@ class Flex_Rollout_Version_000134 extends Flex_Rollout_Version
 					"ADD CONSTRAINT fk_rate_plan_brochure_document_id FOREIGN KEY (brochure_document_id) REFERENCES document(id) ON UPDATE CASCADE ON DELETE SET NULL," .
 					"ADD CONSTRAINT fk_rate_plan_auth_script_document_id FOREIGN KEY (auth_script_document_id) REFERENCES document(id) ON UPDATE CASCADE ON DELETE SET NULL;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to the RatePlan.brochure_document_id and auth_script_document_id Fields. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -41,7 +41,7 @@ class Flex_Rollout_Version_000134 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

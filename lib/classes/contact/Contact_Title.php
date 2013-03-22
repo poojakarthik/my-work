@@ -72,7 +72,7 @@ class Contact_Title
 			$strQuery = "SELECT $strColumns FROM contact_title ORDER BY $strOrderByClause";
 			
 			$mixResult = $objDB->queryAll($strQuery, NULL, MDB2_FETCHMODE_ASSOC);
-			if (PEAR::isError($mixResult))
+			if (MDB2::isError($mixResult))
 			{
 				throw new Exception("Failed to retrieve contact_title records. ". $mixResult->getMessage());
 			}

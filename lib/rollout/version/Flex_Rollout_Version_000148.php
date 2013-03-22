@@ -25,7 +25,7 @@ SET name = 'Sending to Debt Collection',
 const_name = 'CREDIT_CONTROL_STATUS_SENDING_TO_DEBT_COLLECTION'
 WHERE const_name = 'CREDIT_CONTROL_STATUS_SENDING_TO_AUSTRAL';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . " Failed to change the CREDIT_CONTROL_STATUS_SENDING_TO_AUSTRAL constant to CREDIT_CONTROL_STATUS_SENDING_TO_DEBT_COLLECTION " . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ") Query: $strSQL");
 		}
@@ -40,7 +40,7 @@ SET name = 'With Debt Collection',
 const_name = 'CREDIT_CONTROL_STATUS_WITH_DEBT_COLLECTION'
 WHERE const_name = 'CREDIT_CONTROL_STATUS_WITH_AUSTRAL';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . " Failed to change the CREDIT_CONTROL_STATUS_WITH_AUSTRAL constant to CREDIT_CONTROL_STATUS_WITH_DEBT_COLLECTION " . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ") Query: $strSQL");
 		}
@@ -52,7 +52,7 @@ WHERE const_name = 'CREDIT_CONTROL_STATUS_WITH_DEBT_COLLECTION';";
 		// 3:	Remove the auto_increment property from credit_control_status.id because we don't need it
 		$strSQL = "ALTER TABLE credit_control_status CHANGE id id BIGINT(20) UNSIGNED NOT NULL COMMENT 'Id for the status';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . " Failed to remove the auto_increment property from credit_control_status.id " . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ") Query: $strSQL");
 		}
@@ -64,7 +64,7 @@ VALUES
 (5, 'Win Back', 'Do not bar.', 'CREDIT_CONTROL_STATUS_WIN_BACK', 0, 1),
 (6, 'Payment Plan', 'Do not bar.', 'CREDIT_CONTROL_STATUS_PAYMENT_PLAN', 0, 1);";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . " Failed to add the CREDIT_CONTROL_STATUS_WIN_BACK and CREDIT_CONTROL_STATUS_PAYMENT_PLAN to the credit_control_status table " . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ") Query: $strSQL");
 		}
@@ -78,7 +78,7 @@ SET description = 'Account has gone to Debt Collection',
 test = 'AccountWithDebtCollection'
 WHERE name = 'H';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . " Failed to change 'Austral' references to 'Debt Collection' in the customer_status table " . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ") Query: $strSQL");
 		}
@@ -93,7 +93,7 @@ SET description = 'Account is ready for Debt Collection but has not gone there y
 test = 'AccountReadyForDebtCollection'
 WHERE name = 'G';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . " Failed to change 'Austral' references to 'Debt Collection' in the customer_status table " . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ") Query: $strSQL");
 		}
@@ -113,7 +113,7 @@ WHERE name = 'G';";
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

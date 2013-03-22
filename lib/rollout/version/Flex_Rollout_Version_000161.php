@@ -21,7 +21,7 @@ class Flex_Rollout_Version_000161 extends Flex_Rollout_Version
 					"ADD previous_balance	DECIMAL(13, 4) NULL DEFAULT NULL COMMENT 'Total oustanding balance of the customer group''s previous invoice run, at the time of this invoice run' AFTER invoice_run_status_id, ".
 					"ADD total_balance		DECIMAL(13, 4) NULL DEFAULT NULL COMMENT 'Total outstanding balance of all of the customer group''s previous invoice runs, at the time of this invoice run' AFTER previous_balance;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add previous_balance AND total_balance columns to the InvoiceRun table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -34,7 +34,7 @@ class Flex_Rollout_Version_000161 extends Flex_Rollout_Version
 		// First Retrieve all the balance data, so that it can be used for the rollback for when we drop the BalanceData field
 		$strSQL = "SELECT Id, BalanceData FROM InvoiceRun;";
 		$arrInvoiceRunRecords = $dbAdmin->queryAll($strSQL, array('integer', 'text'), MDB2_FETCHMODE_ASSOC);
-		if (PEAR::isError($arrInvoiceRunRecords))
+		if (MDB2::isError($arrInvoiceRunRecords))
 		{
 			throw new Exception(__CLASS__ . ' Failed to retreive BalanceData info from the InvoiceRun table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -42,7 +42,7 @@ class Flex_Rollout_Version_000161 extends Flex_Rollout_Version
 		// Now Drop the BalanceData field
 		$strSQL = "ALTER TABLE InvoiceRun DROP BalanceData;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to drop the BalanceData column from the InvoiceRun table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -68,7 +68,7 @@ class Flex_Rollout_Version_000161 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

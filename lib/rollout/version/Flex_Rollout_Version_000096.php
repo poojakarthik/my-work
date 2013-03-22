@@ -27,7 +27,7 @@ class Flex_Rollout_Version_000096 extends Flex_Rollout_Version
 						CONSTRAINT fk_sale_account_id FOREIGN KEY (account_id) REFERENCES Account(Id) ON UPDATE CASCADE ON DELETE CASCADE
 					) ENGINE = innodb COMMENT = 'Defines sales';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to create the sale table. ' . $result->getMessage());
 		}
@@ -47,7 +47,7 @@ class Flex_Rollout_Version_000096 extends Flex_Rollout_Version
 						CONSTRAINT fk_sale_item_service_id FOREIGN KEY (service_id) REFERENCES Service(Id) ON UPDATE CASCADE ON DELETE CASCADE
 					) ENGINE = innodb COMMENT = 'Defines sale items';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to create the sale_item table. ' . $result->getMessage());
 		}
@@ -63,7 +63,7 @@ class Flex_Rollout_Version_000096 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

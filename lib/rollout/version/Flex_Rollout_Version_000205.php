@@ -28,7 +28,7 @@ class Flex_Rollout_Version_000205 extends Flex_Rollout_Version
 					) ENGINE=InnoDB COMMENT = 'Defines a relationship between a data_report and an employee';";
 		
 		$objResult = $dbAdmin->query($strSQL);
-		if (PEAR::isError($objResult))
+		if (MDB2::isError($objResult))
 		{
 			throw new Exception(__CLASS__ . " Failed to create data_report_employee table - ". $objResult->getMessage());
 		}
@@ -49,7 +49,7 @@ class Flex_Rollout_Version_000205 extends Flex_Rollout_Version
 					) ENGINE = innodb COMMENT = 'Defines a relationship between a data_report and an operation_profile';";
 		
 		$objResult = $dbAdmin->query($strSQL);
-		if (PEAR::isError($objResult))
+		if (MDB2::isError($objResult))
 		{
 			throw new Exception(__CLASS__ . " Failed to create data_report_operation_profile table - ". $objResult->getMessage());
 		}
@@ -80,7 +80,7 @@ class Flex_Rollout_Version_000205 extends Flex_Rollout_Version
 				// Perform the SQL
 				$objResult = $objDb->query($this->rollbackSQL[$l]['SQL']);
 				
-				if (PEAR::isError($objResult))
+				if (MDB2::isError($objResult))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l]['SQL'] . '. ' . $objResult->getMessage());
 				}

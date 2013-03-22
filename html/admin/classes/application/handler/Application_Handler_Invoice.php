@@ -26,7 +26,7 @@ class Application_Handler_Invoice extends Application_Handler
 	
 			$res = $db->query($sServiceTotal);
 			
-			if (PEAR::isError($res))
+			if (MDB2::isError($res))
 			{
 				throw new Exception("Failed to load service details: " . $res->getMessage());
 			}
@@ -119,7 +119,7 @@ class Application_Handler_Invoice extends Application_Handler
 	
 			$res	= $db->query($sServiceTotal);
 			
-			if (PEAR::isError($res))
+			if (MDB2::isError($res))
 			{
 				throw new Exception("Failed to load service details:$sServiceTotal; " . $res->getMessage());
 			}

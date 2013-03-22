@@ -19,7 +19,7 @@ class Flex_Rollout_Version_000099 extends Flex_Rollout_Version
 					"ADD sale_type_id BIGINT(20) UNSIGNED NOT NULL DEFAULT 1 COMMENT 'FK into sale_type table', ".
 					"ADD CONSTRAINT fk_sale_sale_type_id FOREIGN KEY (sale_type_id) REFERENCES sale_type(id) ON UPDATE CASCADE ON DELETE RESTRICT;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the sale.sale_type_id Field and declare it as a foreign key into the sale_type table. ' . $result->getMessage());
 		}
@@ -39,7 +39,7 @@ class Flex_Rollout_Version_000099 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

@@ -73,7 +73,7 @@ class Cli_App_Staggered_Automatic_Barring extends Cli
 				  AND (ir.customer_group_id = apc.customer_group_id OR (ir.customer_group_id IS NULL AND apc.customer_group_id IS NULL))
 				";
 
-			if (PEAR::isError($result = $db->query($strSQL)))
+			if (MDB2::isError($result = $db->query($strSQL)))
 			{
 				$this->showUsage('ERROR: Failed to load applicable invoice runs details: ' . $result->getMessage() . "\n\n" . $strSQL . "\n\n");
 				return 1;
@@ -321,7 +321,7 @@ class Cli_App_Staggered_Automatic_Barring extends Cli
 						}
 						$strSQL .= " WHERE invoice_run_id = " . $invoiceRunId . ";";
 
-						if (PEAR::isError($result = $db->query($strSQL)))
+						if (MDB2::isError($result = $db->query($strSQL)))
 						{
 							throw new Exception($result->getMessage());
 						}
@@ -587,7 +587,7 @@ class Cli_App_Staggered_Automatic_Barring extends Cli
 		$invoiceRunId = $qryQuery->escape($invoiceRunId);
 		$strSQL = "UPDATE automatic_invoice_run_event SET actioned_datetime = '$this->runDateTime' WHERE invoice_run_id = $invoiceRunId AND automatic_invoice_action_id = $intAutomaticInvoiceAction";
 		$message = TRUE;
-		if (PEAR::isError($result = $qryQuery->query($strSQL)))
+		if (MDB2::isError($result = $qryQuery->query($strSQL)))
 		{
 			$message = 'Failed to update automatic_invoice_run_event.actioned_datetime to ' . $this->runDateTime . ' for invoice run ' . $invoiceRunId . '  and event ' . $intAutomaticInvoiceAction . '. '. $result->getMessage();
 			$this->log($message, TRUE);

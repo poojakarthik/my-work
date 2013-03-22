@@ -22,7 +22,7 @@ class Flex_Rollout_Version_000190 extends Flex_Rollout_Version
 		$strSQL = "	ALTER TABLE ticketing_customer_group_email
 					ADD COLUMN archived_on_datetime DATETIME NULL COMMENT 'Time at which this record was archived';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the ticketing_customer_group_email.archived_on_datetime Field. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -35,7 +35,7 @@ class Flex_Rollout_Version_000190 extends Flex_Rollout_Version
 					CHANGE COLUMN	email email VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'Email address for accepted emails',
 					CHANGE COLUMN	name name VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'Email name for outbound emails';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to make ticketing_customer_group_email.customer_group_id, .email & .name not nullable. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -54,7 +54,7 @@ class Flex_Rollout_Version_000190 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

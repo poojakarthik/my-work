@@ -153,7 +153,7 @@ ORDER BY vendor_id ASC, sale_id ASC
 		$arrDealers			= array();
 		
 		// Execute the query
-		if (PEAR::isError($objResults = $dsSales->query($strQuery)))
+		if (MDB2::isError($objResults = $dsSales->query($strQuery)))
 		{
 			throw new Exception("Failed to execute OutstandingSales Report Query, using query: $strQuery - ". $objResults->getMessage());
 		}

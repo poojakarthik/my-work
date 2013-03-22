@@ -27,7 +27,7 @@ class Flex_Rollout_Version_000109 extends Flex_Rollout_Version
 						"const_name VARCHAR(512) NOT NULL COMMENT 'Constant Name for the Payment Status' " .
 					") ENGINE = innodb;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the payment_status Table. ' . $result->getMessage());
 		}
@@ -50,7 +50,7 @@ class Flex_Rollout_Version_000109 extends Flex_Rollout_Version
 				(207, 'Invalid Check Digit', 'Invalid Check Digit', 'PAYMENT_INVALID_CHECK_DIGIT'),
 				(250, 'Reversed', 'Reversed', 'PAYMENT_REVERSED')";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the payment_status Table. ' . $result->getMessage());
 		}
@@ -65,7 +65,7 @@ class Flex_Rollout_Version_000109 extends Flex_Rollout_Version
 						"const_name VARCHAR(512) NOT NULL COMMENT 'Constant Name for the Payment Status' " .
 					") ENGINE = innodb;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the payment_type Table. ' . $result->getMessage());
 		}
@@ -85,7 +85,7 @@ class Flex_Rollout_Version_000109 extends Flex_Rollout_Version
 				(9, 'Contra', 'Contra', 'PAYMENT_TYPE_CONTRA'),
 				(10, 'Bank Transfer', 'Bank Transfer', 'PAYMENT_TYPE_BANK_TRANSFER')";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the payment_type Table. ' . $result->getMessage());
 		}
@@ -94,7 +94,7 @@ class Flex_Rollout_Version_000109 extends Flex_Rollout_Version
 		// 5:	Rename the 'BPAY Westpac' Carrier to just 'Westpac'
 		$strSQL = "UPDATE Carrier SET Name = 'Westpac', description = 'Westpac', const_name = 'CARRIER_WESTPAC' WHERE const_name = 'CARRIER_BPAY_WESTPAC'";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to rename the \'BPAY Westpac\' Carrier to just \'Westpac\'. ' . $result->getMessage());
 		}
@@ -110,7 +110,7 @@ class Flex_Rollout_Version_000109 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

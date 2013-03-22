@@ -25,7 +25,7 @@ class DO_Sales_State extends DO_Sales_Base_State
 
 		$result = $dataSource->query($strSQL);
 
-		if(PEAR::isError($result))
+		if(MDB2::isError($result))
 		{
 			throw new Exception("Failed to Returns an array of states: " . $result->getMessage());
 
