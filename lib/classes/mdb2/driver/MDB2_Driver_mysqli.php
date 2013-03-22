@@ -159,6 +159,10 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 		}
 	}
 
+	public function quote($sQuote, $iParameterType=PDO::PARAM_STR) {
+		return $this->_oPDO->quote($sQuote, $iParameterType);
+	}
+
 	private function _validatePortabilityOptions() {
 		$aErrors = array();
 		// Not allowed options.
@@ -174,7 +178,6 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 	private function _isPortabilityOptionSet($iPortabilityConstant) {
 		return (isset($this->aPortabilityOptions['portability']) && $this->aPortabilityOptions['portability'] & $iPortabilityConstant);
 	}
-
 	// Method inspired by MDB2.
 	private static function _getNativeDataType($sDatatype) {
 		return preg_replace('/^([a-z]+)[^a-z].*/i', '\\1', $sDatatype);
