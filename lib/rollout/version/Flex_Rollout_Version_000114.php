@@ -38,7 +38,7 @@ class Flex_Rollout_Version_000114 extends Flex_Rollout_Version
 						PRIMARY KEY  (`id`)
 					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add telemarketing_fnn_blacklist_nature Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -49,7 +49,7 @@ class Flex_Rollout_Version_000114 extends Flex_Rollout_Version
 					"('Opt-Out'					, 'Internal Opt-Out'		, 'TELEMARKETING_FNN_BLACKLIST_NATURE_OPTOUT'), " .
 					"('Do Not Call Register'	, 'Do Not Call Register'	, 'TELEMARKETING_FNN_BLACKLIST_NATURE_DNCR');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate telemarketing_fnn_blacklist_nature Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -67,7 +67,7 @@ class Flex_Rollout_Version_000114 extends Flex_Rollout_Version
 						CONSTRAINT fk_telemarketing_fnn_blacklist_nature_id FOREIGN KEY (telemarketing_fnn_blacklist_nature_id) REFERENCES telemarketing_fnn_blacklist_nature(id) ON UPDATE CASCADE ON DELETE RESTRICT
 					) ENGINE=InnoDB AUTO_INCREMENT=1 ;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add telemarketing_fnn_blacklist Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -83,7 +83,7 @@ class Flex_Rollout_Version_000114 extends Flex_Rollout_Version
 						CONSTRAINT pk_telemarketing_fnn_dialled_result PRIMARY KEY (id)
 					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add telemarketing_fnn_dialled_result Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -108,7 +108,7 @@ class Flex_Rollout_Version_000114 extends Flex_Rollout_Version
 						CONSTRAINT fk_telemarketing_fnn_dialled_telemarketing_fnn_dialled_result_id	FOREIGN KEY (telemarketing_fnn_dialled_result_id)	REFERENCES telemarketing_fnn_dialled_result(id)	ON UPDATE CASCADE 	ON DELETE RESTRICT
 					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add telemarketing_fnn_dialled Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -124,7 +124,7 @@ class Flex_Rollout_Version_000114 extends Flex_Rollout_Version
 						CONSTRAINT pk_telemarketing_fnn_proposed_status PRIMARY KEY (id)
 					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add telemarketing_fnn_proposed_status Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -136,7 +136,7 @@ class Flex_Rollout_Version_000114 extends Flex_Rollout_Version
 					"('Withheld'	, 'Withheld'	, 'TELEMARKETING_FNN_PROPOSED_STATUS_WITHHELD'), " .
 					"('Exported'	, 'Exported'	, 'TELEMARKETING_FNN_PROPOSED_STATUS_EXPORT');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate telemarketing_fnn_proposed_status Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -152,7 +152,7 @@ class Flex_Rollout_Version_000114 extends Flex_Rollout_Version
 						CONSTRAINT pk_telemarketing_fnn_withheld_reason PRIMARY KEY (id)
 					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add telemarketing_fnn_withheld_reason Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -165,7 +165,7 @@ class Flex_Rollout_Version_000114 extends Flex_Rollout_Version
 					"('Tolling'					, 'Currently Tolling'		, 'TELEMARKETING_FNN_WITHHELD_REASON_TOLLING'), " .
 					"('Call Period Conflict'	, 'Call Period Conflict'	, 'TELEMARKETING_FNN_WITHHELD_REASON_CALL_PERIOD_CONFLICT');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate telemarketing_fnn_withheld_reason Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -197,7 +197,7 @@ class Flex_Rollout_Version_000114 extends Flex_Rollout_Version
 						CONSTRAINT fk_telemarketing_fnn_proposed_telemarketing_fnn_withheld_reason	FOREIGN KEY (telemarketing_fnn_withheld_reason_id)	REFERENCES telemarketing_fnn_withheld_reason(id)	ON UPDATE CASCADE	ON DELETE RESTRICT
 					) ENGINE=InnoDB DEFAULT CHARSET=latin1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add telemarketing_fnn_proposed Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -213,7 +213,7 @@ class Flex_Rollout_Version_000114 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

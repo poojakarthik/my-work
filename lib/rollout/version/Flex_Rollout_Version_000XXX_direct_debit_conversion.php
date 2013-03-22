@@ -35,7 +35,7 @@ class Flex_Rollout_Version_000XXX extends Flex_Rollout_Version
 		
 		$arrDirectDebitTypes	= array();
 		$resDirectDebitTypes = $dbAdmin->query("SELECT * FROM direct_debit_type WHERE 1");
-		if (PEAR::isError($resDirectDebitTypes))
+		if (MDB2::isError($resDirectDebitTypes))
 		{
 			throw new Exception(__CLASS__ . ' Failed to retrieve the list of direct_debit_type Constants. ' . $resDirectDebitTypes->getMessage() . " (DB Error: " . $resDirectDebitTypes->getUserInfo() . ")");
 		}
@@ -48,7 +48,7 @@ class Flex_Rollout_Version_000XXX extends Flex_Rollout_Version
 		
 		$arrStatuses	= array();
 		$resStatuses = $dbAdmin->query("SELECT * FROM status WHERE 1");
-		if (PEAR::isError($resStatuses))
+		if (MDB2::isError($resStatuses))
 		{
 			throw new Exception(__CLASS__ . ' Failed to retrieve the list of status Constants. ' . $resStatuses->getMessage() . " (DB Error: " . $resStatuses->getUserInfo() . ")");
 		}
@@ -67,7 +67,7 @@ class Flex_Rollout_Version_000XXX extends Flex_Rollout_Version
 					"ADD CONSTRAINT fk_account_payment_method_id	FOREIGN KEY (payment_method_id)	REFERENCES payment_method(id)		ON UPDATE CASCADE ON DELETE RESTRICT, " .
 					"ADD CONSTRAINT fk_account_direct_debit_id		FOREIGN KEY (direct_debit_id)	REFERENCES direct_debit(id)	ON UPDATE CASCADE ON DELETE SET NULL;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the Account.payment_method_id and direct_debit_id Fields. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -87,7 +87,7 @@ class Flex_Rollout_Version_000XXX extends Flex_Rollout_Version
 					"ADD CONSTRAINT fk_account_history_payment_method_id	FOREIGN KEY (payment_method_id)		REFERENCES payment_method(id)	ON UPDATE CASCADE ON DELETE RESTRICT, " .
 					"ADD CONSTRAINT fk_account_history_direct_debit_id		FOREIGN KEY (new_direct_debit_id)	REFERENCES direct_debit(id)		ON UPDATE CASCADE ON DELETE SET NULL;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the account_history.payment_method_id and new_direct_debit_id Fields. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -103,7 +103,7 @@ class Flex_Rollout_Version_000XXX extends Flex_Rollout_Version
 		Log::getLog()->log("Retrieving list of Credit Cards...");
 		$strCreditCardSQL	=	"SELECT CreditCard.*, Account.Id AS account_id FROM CreditCard JOIN Account USING (AccountGroup) WHERE 1;";
 		$resCreditCards		= $dbAdmin->query($strCreditCardSQL);
-		if (PEAR::isError($resCreditCards))
+		if (MDB2::isError($resCreditCards))
 		{
 			throw new Exception(__CLASS__ . ' Failed to retrieve the list of Credit Cards. ' . $resCreditCards->getMessage() . " (DB Error: " . $resCreditCards->getUserInfo() . ")");
 		}
@@ -162,7 +162,7 @@ class Flex_Rollout_Version_000XXX extends Flex_Rollout_Version
 		Log::getLog()->log("Retrieving list of Direct Debits...");
 		$strDirectDebitSQL	=	"SELECT DirectDebit.*, Account.Id AS account_id FROM DirectDebit JOIN Account USING (AccountGroup) WHERE 1;";
 		$resDirectDebits	= $dbAdmin->query($strDirectDebitSQL);
-		if (PEAR::isError($resDirectDebits))
+		if (MDB2::isError($resDirectDebits))
 		{
 			throw new Exception(__CLASS__ . ' Failed to retrieve the list of Direct Debits. ' . $resDirectDebits->getMessage() . " (DB Error: " . $resDirectDebits->getUserInfo() . ")");
 		}
@@ -206,7 +206,7 @@ class Flex_Rollout_Version_000XXX extends Flex_Rollout_Version
 		Log::getLog()->log("Retrieving list of Accounts...");
 		$strAccountSQL	=	"SELECT Id, BillingType, CreditCard, DirectDebit FROM Account WHERE 1;";
 		$resAccounts	= $dbAdmin->query($strAccountSQL);
-		if (PEAR::isError($resAccounts))
+		if (MDB2::isError($resAccounts))
 		{
 			throw new Exception(__CLASS__ . ' Failed to retrieve the list of Accounts. ' . $resAccounts->getMessage() . " (DB Error: " . $resAccounts->getUserInfo() . ")");
 		}
@@ -235,7 +235,7 @@ class Flex_Rollout_Version_000XXX extends Flex_Rollout_Version
 									"	payment_method_id	= {$arrAccount['payment_method_id']} " .
 									"WHERE Id = {$arrAccount['Id']};";
 			$resAccountSave		= $dbAdmin->query($strAccountSaveSQL);
-			if (PEAR::isError($resAccountSave))
+			if (MDB2::isError($resAccountSave))
 			{
 				throw new Exception(__CLASS__ . ' Failed to convert Direct Debit details for Account #'.$arrAccount['Id'].'. ' . $resAccountSave->getMessage() . " (DB Error: " . $resAccountSave->getUserInfo() . ")");
 			}
@@ -249,7 +249,7 @@ class Flex_Rollout_Version_000XXX extends Flex_Rollout_Version
 		Log::getLog()->log("Retrieving list of account_history Records...");
 		$strAccountHistorySQL	=	"SELECT id, billing_type, credit_card_id, direct_debit_id FROM account_history WHERE 1;";
 		$resAccountHistories	= $dbAdmin->query($strAccountHistorySQL);
-		if (PEAR::isError($resAccountHistories))
+		if (MDB2::isError($resAccountHistories))
 		{
 			throw new Exception(__CLASS__ . ' Failed to retrieve the list of account_history Records. ' . $resAccountHistories->getMessage() . " (DB Error: " . $resAccountHistories->getUserInfo() . ")");
 		}
@@ -278,7 +278,7 @@ class Flex_Rollout_Version_000XXX extends Flex_Rollout_Version
 									"	payment_method_id	= {$arrAccountHistory['payment_method_id']} " .
 									"WHERE id = {$arrAccountHistory['id']};";
 			$resAccountHistorySave		= $dbAdmin->query($strAccountHistorySaveSQL);
-			if (PEAR::isError($resAccountHistorySave))
+			if (MDB2::isError($resAccountHistorySave))
 			{
 				throw new Exception(__CLASS__ . ' Failed to convert Direct Debit details for account_history #'.$arrAccountHistory['Id'].'. ' . $resAccountHistorySave->getMessage() . " (DB Error: " . $resAccountHistorySave->getUserInfo() . ")");
 			}
@@ -299,7 +299,7 @@ class Flex_Rollout_Version_000XXX extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}
@@ -318,7 +318,7 @@ class Flex_Rollout_Version_000XXX extends Flex_Rollout_Version
 			
 			// Load the Payment Methods
 			$result = $dbAdmin->query("SELECT * FROM payment_method WHERE 1");
-			if (PEAR::isError($result))
+			if (MDB2::isError($result))
 			{
 				throw new Exception(__CLASS__ . ' Failed to retrieve the payment_method Constants. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 			}
@@ -356,7 +356,7 @@ class Flex_Rollout_Version_000XXX extends Flex_Rollout_Version
 			
 			// Load the Credit Card Types
 			$result = $dbAdmin->query("SELECT * FROM credit_card_type WHERE 1");
-			if (PEAR::isError($result))
+			if (MDB2::isError($result))
 			{
 				throw new Exception(__CLASS__ . ' Failed to retrieve the credit_card_type Constants. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 			}

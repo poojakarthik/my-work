@@ -33,7 +33,7 @@ class Flex_Rollout_Version_000163 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the file_type_mime_type Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -41,7 +41,7 @@ class Flex_Rollout_Version_000163 extends Flex_Rollout_Version
 
 		// 2:	Populate the file_type_mime_type Table
 		$resFileType = $dbAdmin->query("SELECT * FROM file_type WHERE 1");
-		if (PEAR::isError($resFileType))
+		if (MDB2::isError($resFileType))
 		{
 			throw new Exception(__CLASS__ . ' Failed to retrieve the list of file_type Records. ' . $resFileType->getMessage() . " (DB Error: " . $resFileType->getUserInfo() . ")");
 		}
@@ -51,7 +51,7 @@ class Flex_Rollout_Version_000163 extends Flex_Rollout_Version
 			$strSQL = "	INSERT INTO file_type_mime_type (file_type_id, mime_type_id, is_preferred_mime_type) VALUES 
 						({$arrFileType['id']}	, {$arrFileType['mime_type_id']}	, 1);";
 			$result = $dbAdmin->query($strSQL);
-			if (PEAR::isError($result))
+			if (MDB2::isError($result))
 			{
 				throw new Exception(__CLASS__ . ' Failed to populate the file_type_mime_type Table for file_type '.$arrFileType['id'].'. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 			}
@@ -64,7 +64,7 @@ class Flex_Rollout_Version_000163 extends Flex_Rollout_Version
 					"DROP FOREIGN KEY fk_file_type_mime_type_id, " .
 					"DROP mime_type_id;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to remove the file_type.mime_type_id Field. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -83,7 +83,7 @@ class Flex_Rollout_Version_000163 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

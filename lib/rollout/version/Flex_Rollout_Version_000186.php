@@ -34,7 +34,7 @@ class Flex_Rollout_Version_000186 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the charge_type_visibility Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -48,7 +48,7 @@ class Flex_Rollout_Version_000186 extends Flex_Rollout_Version
 						('Hidden'			, 'Hidden from all Users'				, 'HIDDEN'			, 'CHARGE_TYPE_VISIBILITY_HIDDEN'),
 						('Credit Control'	, 'Visible to Credit Controllers only'	, 'CREDIT_CONTROL'	, 'CHARGE_TYPE_VISIBILITY_CREDIT_CONTROL');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the charge_type_visibility Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -58,7 +58,7 @@ class Flex_Rollout_Version_000186 extends Flex_Rollout_Version
 					ADD COLUMN		charge_type_visibility_id	INTEGER	UNSIGNED	NULL	COMMENT '(FK) ChargeType Visiblity Mode',
 					ADD CONSTRAINT	fk_charge_type_charge_type_visibility_id	FOREIGN KEY (charge_type_visibility_id)	REFERENCES charge_type_visibility(id)	ON UPDATE CASCADE	ON DELETE RESTRICT;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the ChargeType.charge_type_visibility_id Field. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -71,7 +71,7 @@ class Flex_Rollout_Version_000186 extends Flex_Rollout_Version
 					SET		charge_type_visibility_id	= (SELECT id FROM charge_type_visibility WHERE system_name = 'VISIBLE' LIMIT 1)
 					WHERE	charge_type_visibility_id IS NULL;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to set the default value for ChargeType.charge_type_visibility_id to VISIBLE. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -80,7 +80,7 @@ class Flex_Rollout_Version_000186 extends Flex_Rollout_Version
 		$strSQL = "	ALTER TABLE	ChargeType
 					MODIFY COLUMN		charge_type_visibility_id	INTEGER	UNSIGNED	NOT NULL	COMMENT '(FK) ChargeType Visiblity Mode';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to alter ChargeType.charge_type_visibility_id so that it cannot be NULL. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -95,7 +95,7 @@ class Flex_Rollout_Version_000186 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

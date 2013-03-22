@@ -21,7 +21,7 @@ class Flex_Rollout_Version_000084 extends Flex_Rollout_Version
 		// 1:	Drop the contract_exit_nature table
 		$strSQL = "DROP TABLE IF EXISTS contract_exit_nature;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to drop the contract_exit_nature Table. ' . $result->getMessage());
 		}
@@ -42,7 +42,7 @@ class Flex_Rollout_Version_000084 extends Flex_Rollout_Version
 						"const_name VARCHAR(512) NOT NULL COMMENT 'Constant Name for the Contract Status'" .
 					") ENGINE = innodb;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the contract_status Table. ' . $result->getMessage());
 		}
@@ -54,7 +54,7 @@ class Flex_Rollout_Version_000084 extends Flex_Rollout_Version
 					"('Expired', 'Contract Expired', 'CONTRACT_STATUS_EXPIRED'), " .
 					"('Breached', 'Contract Breached', 'CONTRACT_STATUS_BREACHED');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the contract_status Table. ' . $result->getMessage());
 		}
@@ -63,7 +63,7 @@ class Flex_Rollout_Version_000084 extends Flex_Rollout_Version
 		// 4:	Drop the ServiceRatePlan.contract_exit_nature_id field
 		$strSQL = "ALTER TABLE ServiceRatePlan DROP contract_exit_nature_id;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to drop the ServiceRatePlan.contract_exit_nature_id field. ' . $result->getMessage());
 		}
@@ -72,7 +72,7 @@ class Flex_Rollout_Version_000084 extends Flex_Rollout_Version
 		// 5:	Add the ServiceRatePlan.contract_status_id field
 		$strSQL = "ALTER TABLE ServiceRatePlan ADD contract_status_id BIGINT(20) NULL COMMENT '(FK) The Status of this Contract' AFTER contract_effective_end_datetime;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the ServiceRatePlan.contract_status_id field. ' . $result->getMessage());
 		}
@@ -88,7 +88,7 @@ class Flex_Rollout_Version_000084 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

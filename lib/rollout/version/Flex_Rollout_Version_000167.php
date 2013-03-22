@@ -31,7 +31,7 @@ class Flex_Rollout_Version_000167 extends Flex_Rollout_Version
 						(83000	, 'ISDN New Service Connection'						, (SELECT id FROM destination_context WHERE const_name = 'DESTINATION_CONTEXT_SERVICE_AND_EQUIPMENT')),
 						(83001	, 'ISDN In-Place service connection'				, (SELECT id FROM destination_context WHERE const_name = 'DESTINATION_CONTEXT_SERVICE_AND_EQUIPMENT'));";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the new Line Connection Destinations. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -51,7 +51,7 @@ class Flex_Rollout_Version_000167 extends Flex_Rollout_Version
 						(83000	, (SELECT Id FROM Carrier WHERE name = 'Unitel')	, 'ISDN New Service Connection'						, 'ISDN New Service Connection'),
 						(83001	, (SELECT Id FROM Carrier WHERE name = 'Unitel')	, 'ISDN In-Place service connection'				, 'ISDN In-Place service connection');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the  Unitel Destination Translation data for new Line Connection Destinations. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -78,7 +78,7 @@ class Flex_Rollout_Version_000167 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

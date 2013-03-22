@@ -32,7 +32,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 						CONSTRAINT	pk_action_association_type	PRIMARY KEY (id)
 					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to create the action_association_type Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -45,7 +45,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					('Service', 'Service', 'ACTION_ASSOCIATION_TYPE_SERVICE'),
 					('Contact', 'Contact', 'ACTION_ASSOCIATION_TYPE_CONTACT');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the action_association_type Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -65,7 +65,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 						CONSTRAINT	fk_action_type_action_association_type_association_type_id	FOREIGN KEY (action_association_type_id)	REFERENCES action_association_type(id)	ON UPDATE CASCADE ON DELETE RESTRICT
 					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to create the action_type_action_association_type Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -77,7 +77,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					CHANGE			created_by_employee_id created_by_employee_id	BIGINT UNSIGNED NOT NULL COMMENT '(FK) Employee who logged the Action',
 					ADD CONSTRAINT	fk_action_performed_by_employee_id				FOREIGN KEY (performed_by_employee_id) REFERENCES Employee(Id) ON UPDATE CASCADE ON DELETE RESTRICT;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add performed_by_employee_id column to action Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -91,7 +91,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					DROP COLUMN		const_name,
 					ADD CONSTRAINT	un_action_type_name UNIQUE KEY (name);";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to modify the structure of the action_type Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -121,7 +121,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					('Closed Fault', 'Closed Fault', $intDetailRequiredId, 0),
 					('Checked Fault', 'Checked Fault', $intDetailRequiredId, 0);";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the action_type Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -141,7 +141,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					FROM action_type
 					WHERE TRUE;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the action_type_action_association_type Table for account constraints. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -153,7 +153,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					FROM action_type
 					WHERE name IN ('Manual Bar', 'Manual Unbar', 'Manual TDC', 'Manual UnTDC', 'Logged Fault', 'Closed Fault', 'Checked Fault');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the action_type_action_association_type Table for service constraints. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -165,7 +165,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					FROM action_type
 					WHERE name IN ('Left Message to Call');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the action_type_action_association_type Table for contact constraints. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -181,7 +181,7 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

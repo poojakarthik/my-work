@@ -17,7 +17,7 @@ class Flex_Rollout_Version_000074 extends Flex_Rollout_Version
 		// 1:	alter customer_faq
 		$strSQL = "ALTER TABLE `survey_question_option` DROP `survey_id`;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to ALTER table. ' . $result->getMessage());
 		}
@@ -34,7 +34,7 @@ class Flex_Rollout_Version_000074 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

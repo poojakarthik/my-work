@@ -29,7 +29,7 @@ class Flex_Rollout_Version_000078 extends Flex_Rollout_Version
 					    PRIMARY KEY  (id)
 					) ENGINE = innodb COMMENT = 'Automatic invoice action configuration settings';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to create automatic_invoice_action_config table. ' . $result->getMessage());
 		}
@@ -38,7 +38,7 @@ class Flex_Rollout_Version_000078 extends Flex_Rollout_Version
 		// 1b:	Populate it with the current configuration settings for each customer group
 		$strSQL = "SELECT automatic_invoice_action.id, CustomerGroup.Id, days_from_invoice, can_schedule, response_days FROM automatic_invoice_action, CustomerGroup ORDER BY CustomerGroup.Id";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to read from automatic_invoice_action table. ' . $result->getMessage());
 		}
@@ -58,7 +58,7 @@ class Flex_Rollout_Version_000078 extends Flex_Rollout_Version
 			$xxx = implode(',', $record);
 			$strSQL = str_replace('xxx', $xxx, $strSqlTemplate);
 			$result = $dbAdmin->query($strSQL);
-			if (PEAR::isError($result))
+			if (MDB2::isError($result))
 			{
 				throw new Exception(__CLASS__ . ' Failed to insert into automatic_invoice_action table (' . $xxx . '). ' . $result->getMessage());
 			}
@@ -69,7 +69,7 @@ class Flex_Rollout_Version_000078 extends Flex_Rollout_Version
 				$xxx = implode(',', $record);
 				$strSQL = str_replace('xxx', $xxx, $strSqlTemplate);
 				$result = $dbAdmin->query($strSQL);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to insert into automatic_invoice_action table (' . $xxx . '). ' . $result->getMessage());
 				}
@@ -81,7 +81,7 @@ class Flex_Rollout_Version_000078 extends Flex_Rollout_Version
 		$strSQL = " ALTER TABLE automatic_invoice_action DROP days_from_invoice, DROP can_schedule, DROP response_days";
 		
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to alter automatic_invoice_action table. ' . $result->getMessage());
 		}
@@ -103,7 +103,7 @@ class Flex_Rollout_Version_000078 extends Flex_Rollout_Version
 			";
 
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to alter payment_terms table. ' . $result->getMessage());
 		}
@@ -112,7 +112,7 @@ class Flex_Rollout_Version_000078 extends Flex_Rollout_Version
 		// 1b:	Populate it with the current configuration settings for each customer group
 		$strSQL = "SELECT CustomerGroup.Id, invoice_day, payment_terms, minimum_balance_to_pursue, late_payment_fee, employee, created, direct_debit_days, direct_debit_minimum FROM payment_terms, CustomerGroup  WHERE payment_terms.id = (SELECT MAX(id) FROM payment_terms) ORDER BY CustomerGroup.Id";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to read from automatic_invoice_action table. ' . $result->getMessage());
 		}
@@ -124,7 +124,7 @@ class Flex_Rollout_Version_000078 extends Flex_Rollout_Version
 			$xxx = "'" . implode("','", $record) . "'";
 			$strSQL = str_replace('xxx', $xxx, $strSqlTemplate);
 			$result = $dbAdmin->query($strSQL);
-			if (PEAR::isError($result))
+			if (MDB2::isError($result))
 			{
 				throw new Exception(__CLASS__ . ' Failed to insert into payment_terms table (' . $xxx . '). ' . $result->getMessage());
 			}
@@ -142,7 +142,7 @@ class Flex_Rollout_Version_000078 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

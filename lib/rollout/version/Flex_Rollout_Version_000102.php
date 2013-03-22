@@ -17,7 +17,7 @@ class Flex_Rollout_Version_000102 extends Flex_Rollout_Version
 		// 1: Adds the CustomerGroup.cooling_off_period column
 		$strSQL = "ALTER TABLE CustomerGroup ADD cooling_off_period INT UNSIGNED DEFAULT NULL COMMENT 'Cooling off period for sales (in hours)';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the cooling_off_period column to the CustomerGroup table. ' . $result->getMessage());
 		}
@@ -33,7 +33,7 @@ class Flex_Rollout_Version_000102 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

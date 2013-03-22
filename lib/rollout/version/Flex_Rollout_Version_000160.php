@@ -25,7 +25,7 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 		// 1:	Update CDRCreditLink table so that it is in the new format
 		$strSQL = "RENAME TABLE CDRCreditLink TO cdr_credit_link;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to rename CDRCreditLink table to cdr_credit_link. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -36,7 +36,7 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
                     "CHANGE CreditCDR credit_cdr_id BIGINT(20) UNSIGNED NOT NULL, ".
 					"CHANGE DebitCDR debit_cdr_id BIGINT(20) UNSIGNED NOT NULL;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to rename columns of the CDRCreditLink table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -56,7 +56,7 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 						CONSTRAINT	pk_action_type_detail_requirement_id	PRIMARY KEY (id)
 					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to create the action_type_detail_requirement Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -68,7 +68,7 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 					('Optional'		, 'Details Optional'	, 'ACTION_TYPE_DETAIL_REQUIREMENT_OPTIONAL'),  
 					('Required'		, 'Details Required'	, 'ACTION_TYPE_DETAIL_REQUIREMENT_REQUIRED');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the action_type_detail_requirement Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -87,7 +87,7 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 						CONSTRAINT	fk_action_type_detail_requirement_id	FOREIGN KEY (action_type_detail_requirement_id)	REFERENCES action_type_detail_requirement(id)	ON UPDATE CASCADE	ON DELETE RESTRICT
 					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to create the action_type Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -107,7 +107,7 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 						CONSTRAINT	fk_action_created_by_employee_id	FOREIGN KEY (created_by_employee_id)	REFERENCES Employee(Id)		ON UPDATE CASCADE	ON DELETE RESTRICT
 					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to create the action Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -125,7 +125,7 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 						CONSTRAINT	fk_account_action_action_id		FOREIGN KEY (action_id)		REFERENCES action(id)	ON UPDATE CASCADE	ON DELETE CASCADE
 					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to create the account_action Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -143,7 +143,7 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 						CONSTRAINT	fk_service_action_action_id		FOREIGN KEY (action_id)		REFERENCES action(id)	ON UPDATE CASCADE	ON DELETE CASCADE
 					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to create the service_action Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -161,7 +161,7 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 						CONSTRAINT	fk_contact_action_action_id		FOREIGN KEY (action_id)		REFERENCES action(id)	ON UPDATE CASCADE	ON DELETE CASCADE
 					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to create the contact_action Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -177,7 +177,7 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

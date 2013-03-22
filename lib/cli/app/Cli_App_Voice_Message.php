@@ -202,7 +202,7 @@ Account.Id IN (" . implode(',', $arrAccountIds) . ")
 		
 		$db = Data_Source::get();
 		$res = $db->query($strSQL);
-		if (PEAR::isError($res))
+		if (MDB2::isError($res))
 		{
 			$this->log("\n\n$strSQL\n\n");
 			throw new Exception("Failed to load contact details for barring: " . $res->getMessage());

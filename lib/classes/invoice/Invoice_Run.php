@@ -1286,31 +1286,31 @@ class Invoice_Run
 
 					// Create the cdr_invoiced_* partition table
 					$resCreateTable			= $dsCDRInvoiced->exec("CREATE TABLE {$strTableName} (CHECK (invoice_run_id = {$this->Id})) INHERITS (cdr_invoiced);");
-					if (PEAR::isError($resCreateTable))
+					if (MDB2::isError($resCreateTable))
 					{
 						throw new Exception($resCreateTable->getMessage()." :: ".$resCreateTable->getUserInfo());
 					}
 					// Set its Owner
 					$resOwner				= $dsCDRInvoiced->exec("ALTER TABLE ONLY {$strTableName} OWNER TO {$GLOBALS['**arrDatabase']['cdr']['User']};");
-					if (PEAR::isError($resOwner))
+					if (MDB2::isError($resOwner))
 					{
 						throw new Exception($resOwner->getMessage()." :: ".$resOwner->getUserInfo());
 					}
 					// Set its Comment
 					$resComment				= $dsCDRInvoiced->exec("COMMENT ON TABLE {$strTableName} IS 'Invoiced CDR Records for Invoice Run {$this->Id} dated {$this->BillingDate}';");
-					if (PEAR::isError($resComment))
+					if (MDB2::isError($resComment))
 					{
 						throw new Exception($resComment->getMessage()." :: ".$resComment->getUserInfo());
 					}
 					// Create an Index on the account Field
 					$resAccountIndex		= $dsCDRInvoiced->exec("CREATE INDEX in_{$strTableName}_account ON {$strTableName} USING btree (account);");
-					if (PEAR::isError($resAccountIndex))
+					if (MDB2::isError($resAccountIndex))
 					{
 						throw new Exception($resAccountIndex->getMessage()." :: ".$resAccountIndex->getUserInfo());
 					}
 					// Create an Index on the invoice_run_id Field
 					$resInvoiceRunIdIndex	= $dsCDRInvoiced->exec("CREATE INDEX in_{$strTableName}_invoice_run_id ON {$strTableName} USING btree (invoice_run_id);");
-					if (PEAR::isError($resInvoiceRunIdIndex))
+					if (MDB2::isError($resInvoiceRunIdIndex))
 					{
 						throw new Exception($resInvoiceRunIdIndex->getMessage()." :: ".$resInvoiceRunIdIndex->getUserInfo());
 					}
@@ -1434,7 +1434,7 @@ class Invoice_Run
 							END AS DataSource";
 		$oDB	= Data_Source::get();
 		$oRes	= $oDB->query($sQuery);
-		if (PEAR::isError($oRes))
+		if (MDB2::isError($oRes))
 		{
 			throw new Exception("Failed to find the data source storing CDRs for invoice run: {$this->Id} and Account: {$iAccountId} - " . $oRes->getMessage());
 		}

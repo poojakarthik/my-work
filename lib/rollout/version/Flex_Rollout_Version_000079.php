@@ -18,7 +18,7 @@ class Flex_Rollout_Version_000079 extends Flex_Rollout_Version
 		// 1:	Add vip flag field to Account table
 		$strSQL = "	ALTER TABLE Account ADD vip TINYINT( 1 ) NOT NULL DEFAULT '0' COMMENT 'VIP status (1 = VIP, 0 = Non-VIP)'; ";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add vip flag field to Account table. ' . $result->getMessage());
 		}
@@ -35,7 +35,7 @@ class Flex_Rollout_Version_000079 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

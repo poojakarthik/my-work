@@ -24,7 +24,7 @@ class Flex_Rollout_Version_000203 extends Flex_Rollout_Version
 						('Australia\\'s Telecom'	, 'Australia\\'s Telecom'	, 'CARRIER_AUSTRALIAS_TELECOM'	, (SELECT id FROM carrier_type WHERE const_name = 'CARRIER_TYPE_SALES_CALL_CENTRE' LIMIT 1)),
 						('Sparkz Infotech'			, 'Sparkz Infotech'			, 'CARRIER_SPARKZ_INFOTECH'		, (SELECT id FROM carrier_type WHERE const_name = 'CARRIER_TYPE_SALES_CALL_CENTRE' LIMIT 1));";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the "Australia\'s Telecom" and "Sparkz Infotech" Carriers. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -42,7 +42,7 @@ class Flex_Rollout_Version_000203 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

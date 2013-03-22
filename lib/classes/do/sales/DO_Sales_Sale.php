@@ -294,7 +294,7 @@ $strVerifiedOnChangedOn AS verified_on
 $strFromClause $strWhereClause $strOrderByClause $strLimitClause;";
 		
 		// Execute the query
-		if (PEAR::isError($results = $dataSource->query($strQuery)))
+		if (MDB2::isError($results = $dataSource->query($strQuery)))
 		{
 			throw new Exception('Failed to retreive records for '. __METHOD__ ." - using query: $strQuery - ". $results->getMessage());
 		}
@@ -310,7 +310,7 @@ $strFromClause $strWhereClause $strOrderByClause $strLimitClause;";
 		}
 
 		// Perform Pagination Calculations
-		if (PEAR::isError($results = $dataSource->query($strRowCountQuery)))
+		if (MDB2::isError($results = $dataSource->query($strRowCountQuery)))
 		{
 			throw new Exception('Failed to calculate row count for '. __METHOD__ ." - ". $results->getMessage());
 		}

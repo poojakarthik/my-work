@@ -19,7 +19,7 @@ class Flex_Rollout_Version_000107 extends Flex_Rollout_Version
 		$strSQL = 'UPDATE ticketing_category SET const_name = replace(lower(const_name), "_", "-");'; 
 
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to manipulate ticketing_category data. ' . $result->getMessage());
 		}
@@ -28,7 +28,7 @@ class Flex_Rollout_Version_000107 extends Flex_Rollout_Version
 		// 2: Alter the table (rename the column)
 		$strSQL = " ALTER TABLE ticketing_category CHANGE const_name css_name VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'The css class name' ";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed alter ticketing_category table. ' . $result->getMessage());
 		}
@@ -44,7 +44,7 @@ class Flex_Rollout_Version_000107 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

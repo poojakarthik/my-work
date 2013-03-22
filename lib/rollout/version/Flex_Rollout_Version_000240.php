@@ -23,7 +23,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 		$mTaxTypeResult = $oDB->query("	SELECT 	rate_percentage
 										FROM	tax_type
 										WHERE	global = 1;");
-		if (PEAR::isError($mTaxTypeResult))
+		if (MDB2::isError($mTaxTypeResult))
 		{
 			// Failed
 			throw new Exception(__CLASS__." Failed to get the global tax rate_percentage. ".$mTaxTypeResult->getMessage()." (DB Error: ".$mTaxTypeResult->getUserInfo().")");
@@ -78,7 +78,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 														".STATUS_INACTIVE.",
 														(SELECT id FROM adjustment_type_invoice_visibility WHERE system_name = 'HIDDEN')
 													);");
-		if (PEAR::isError($mInsertResult))
+		if (MDB2::isError($mInsertResult))
 		{
 			// Failed
 			throw new Exception(__CLASS__." Failed to create adjustment_type for ChargeType {$aRow['Id']}. ".$mInsertResult->getMessage()." (DB Error: ".$mInsertResult->getUserInfo().")");
@@ -99,7 +99,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 		$mResult = $oDB->query("SELECT	*
 								FROM	ChargeType
 								WHERE	charge_model_id = ".CHARGE_MODEL_ADJUSTMENT.";");
-		if (PEAR::isError($mResult))
+		if (MDB2::isError($mResult))
 		{
 			// Failed
 			throw new Exception(__CLASS__." Failed to get all adjustment charge types. ".$mResult->getMessage()." (DB Error: ".$mResult->getUserInfo().")");
@@ -128,7 +128,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 														(SELECT id FROM transaction_nature WHERE code = '{$aRow['Nature']}'), 
 														{$iStatus},
 														(SELECT id FROM adjustment_type_invoice_visibility WHERE system_name = '{$sVisibilitySystemName}'));");
-			if (PEAR::isError($mInsertResult))
+			if (MDB2::isError($mInsertResult))
 			{
 				// Failed
 				throw new Exception(__CLASS__." Failed to create adjustment_type for ChargeType {$aRow['Id']}. ".$mInsertResult->getMessage()." (DB Error: ".$mInsertResult->getUserInfo().")");
@@ -136,7 +136,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 			
 			// Get the id of the last inserted adjustment_type
 			$mLastIdResult = $oDB->lastInsertId('adjustment_type');
-			if (PEAR::isError($mLastIdResult))
+			if (MDB2::isError($mLastIdResult))
 			{
 				// Failed
 				throw new Exception(__CLASS__." Failed to get the last adjustment_type insert id for ChargeType ".$aRow['Id'].". ".$mLastIdResult->getMessage()." (DB Error: ".$mLastIdResult->getUserInfo().")");
@@ -153,7 +153,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 												JOIN		charge_type_system cts ON (cts.id = ctsc.charge_type_system_id)
 												LEFT JOIN 	adjustment_type_system ats ON (ats.system_name = cts.system_name)
 												WHERE		ctsc.charge_type_id = {$aRow['Id']}");
-			if (PEAR::isError($mSystemConfigResult))
+			if (MDB2::isError($mSystemConfigResult))
 			{
 				// Failed
 				throw new Exception(__CLASS__." Failed to get system charge type config for ChargeType {$aRow['Id']}. ".$mSystemConfigResult->getMessage()." (DB Error: ".$mSystemConfigResult->getUserInfo().")");
@@ -171,7 +171,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 				// Insert an equivalent adjustment_type_system_config row
 				$mSystemConfigInsertResult = $oDB->query("	INSERT INTO adjustment_type_system_config (adjustment_type_system_id, adjustment_type_id)
 															VALUES		({$aSystemConfigRow['adjustment_type_system_id']}, {$iAdjustmentTypeId});");
-				if (PEAR::isError($mSystemConfigInsertResult))
+				if (MDB2::isError($mSystemConfigInsertResult))
 				{
 					// Failed
 					throw new Exception(__CLASS__." Failed to get create adjustment_type_system_config row for ChargeType={$aRow['Id']}, charge_type_system_config.id={$aSystemConfigRow['id']}. ".$mSystemConfigInsertResult->getMessage()." (DB Error: ".$mSystemConfigInsertResult->getUserInfo().")");
@@ -192,7 +192,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 								FROM	Charge
 								WHERE	charge_model_id = ".CHARGE_MODEL_ADJUSTMENT."
 								AND		Status IN (".CHARGE_WAITING.", ".CHARGE_APPROVED.", ".CHARGE_TEMP_INVOICE.");");
-		if (PEAR::isError($mResult))
+		if (MDB2::isError($mResult))
 		{
 			// Failed
 			throw new Exception(__CLASS__." Failed to get all adjustment Charges. ".$mResult->getMessage()." (DB Error: ".$mResult->getUserInfo().")");
@@ -277,7 +277,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 															{$sInvoice},
 															{$sInvoiceRun}
 														);");
-			if (PEAR::isError($mInsertResult))
+			if (MDB2::isError($mInsertResult))
 			{
 				// Failed
 				throw new Exception(__CLASS__." Failed to create adjustment from Charge.Id={$aRow['Id']}. ".$mInsertResult->getMessage()." (DB Error: ".$mInsertResult->getUserInfo().")");
@@ -294,7 +294,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 															".CHARGE_UNINVOICED_APPROVED_ADJUSTMENT_MIGRATED."
 														)
 												WHERE	Id IN (".implode(',', $aCopiedChargeIds).");");
-		if (PEAR::isError($mUpdateOldChargeResult))
+		if (MDB2::isError($mUpdateOldChargeResult))
 		{
 			// Failed
 			throw new Exception(__CLASS__." Failed to update the status of all copied charge (adjustment) records. ".$mUpdateOldChargeResult->getMessage()." (DB Error: ".$mUpdateOldChargeResult->getUserInfo().")");
@@ -323,7 +323,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 													WHERE	Status = ".INVOICE_WRITTEN_OFF."
 													AND		Balance <> 0
 													AND		Total <> 0;");
-		if (PEAR::isError($mWrittenOffInvoicesResult))
+		if (MDB2::isError($mWrittenOffInvoicesResult))
 		{
 			// Failed
 			throw new Exception(__CLASS__." Failed to get all written off invoices. ".$mWrittenOffInvoicesResult->getMessage()." (DB Error: ".$mWrittenOffInvoicesResult->getUserInfo().")");
@@ -334,7 +334,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 														FROM	adjustment_type at
 														JOIN	transaction_nature tn ON (tn.id = at.transaction_nature_id)
 														WHERE	at.code = 'INVOICE_WRITE_OFF';");
-		if (PEAR::isError($mWriteOffAdjustmentTypeResult))
+		if (MDB2::isError($mWriteOffAdjustmentTypeResult))
 		{
 			// Failed
 			throw new Exception(__CLASS__." Failed to get the 'invoice write off' adjustment types. ".$mWriteOffAdjustmentTypeResult->getMessage()." (DB Error: ".$mWriteOffAdjustmentTypeResult->getUserInfo().")");
@@ -407,7 +407,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 																{$aRow['Id']},
 																{$aRow['invoice_run_id']}
 															);");
-			if (PEAR::isError($mInsertResult))
+			if (MDB2::isError($mInsertResult))
 			{
 				// Failed
 				throw new Exception(__CLASS__." Failed to create adjustment from Charge.Id={$aRow['Id']}. ".$mInsertResult->getMessage()." (DB Error: ".$mInsertResult->getUserInfo().")");
@@ -423,7 +423,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 		// Turn OFF foreign key checks
 		$this->outputMessage("Turn OFF foreign key checks...\n");
 		$mFKResult = $oDB->query("SET foreign_key_checks = 0;");
-		if (PEAR::isError($mFKResult))
+		if (MDB2::isError($mFKResult))
 		{
 			// Failed
 			throw new Exception(__CLASS__." Failed to turn OFF foreign keys. ".$mFKResult->getMessage()." (DB Error: ".$mFKResult->getUserInfo().")");
@@ -437,7 +437,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 		$mFKResult = $oDB->query("	ALTER TABLE payment_request
 									DROP FOREIGN KEY fk_payment_request_payment_id,
 									ADD CONSTRAINT fk_payment_request_payment_v2_id FOREIGN KEY (payment_id) REFERENCES payment(id) ON UPDATE CASCADE ON DELETE RESTRICT;");
-		if (PEAR::isError($mFKResult))
+		if (MDB2::isError($mFKResult))
 		{
 			// Failed
 			throw new Exception(__CLASS__." Failed to Drop Payment.Id in payment_request table. ".$mFKResult->getMessage()." (DB Error: ".$mFKResult->getUserInfo().")");
@@ -453,7 +453,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 		$mFKResult = $oDB->query("	ALTER TABLE payment_response
 									DROP FOREIGN KEY fk_payment_response_payment_id,
 									ADD CONSTRAINT fk_payment_response_payment_v2_id FOREIGN KEY (payment_id) REFERENCES payment(id) ON UPDATE CASCADE ON DELETE RESTRICT;");
-		if (PEAR::isError($mFKResult))
+		if (MDB2::isError($mFKResult))
 		{
 			// Failed
 			throw new Exception(__CLASS__." Failed to Drop Payment.Id in payment_response table. ".$mFKResult->getMessage()." (DB Error: ".$mFKResult->getUserInfo().")");
@@ -472,7 +472,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 		$mResult 	= $oDB->query("	SELECT		p.*, a.Id as account_id
 									FROM		Payment p
 									LEFT JOIN	Account a ON (a.Id = p.Account);");
-		if (PEAR::isError($mResult))
+		if (MDB2::isError($mResult))
 		{
 			// Failed
 			throw new Exception(__CLASS__." Failed to get all payments. ".$mResult->getMessage()." (DB Error: ".$mResult->getUserInfo().")");
@@ -522,7 +522,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 				$mInvoicePaymentResult 	= $oDB->query("	SELECT		ip.Account
 														FROM		InvoicePayment ip
 														WHERE		ip.Payment = {$aRow['Id']};");
-				if (PEAR::isError($mInvoicePaymentResult))
+				if (MDB2::isError($mInvoicePaymentResult))
 				{
 					// Failed
 					throw new Exception(__CLASS__." Failed to get InvoicePayment records for payment {$aRow['Id']}. ".$mInvoicePaymentResult->getMessage()." (DB Error: ".$mInvoicePaymentResult->getUserInfo().")");
@@ -656,7 +656,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 											)
 								VALUES	".implode(', ', $aValues).";";
 			$mInsertResult = $oDB->query($sInsertQuery);
-			if (PEAR::isError($mInsertResult))
+			if (MDB2::isError($mInsertResult))
 			{
 				// Failed
 				throw new Exception(__CLASS__." Failed to insert copied payment records. Query number {$i}. ".$mInsertResult->getMessage()." (DB Error: ".$mInsertResult->getUserInfo().")");
@@ -684,7 +684,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 																	payment_reversal_reason_id
 																)
 													VALUES	".implode(', ', $aValues).";");	
-			if (PEAR::isError($mInsertReversalsResult))
+			if (MDB2::isError($mInsertReversalsResult))
 			{
 				// Failed
 				throw new Exception(__CLASS__." Failed to insert reversed payment records. Query number {$i}");
@@ -708,7 +708,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 				$mPaymentRequestFKResult = $oDB->query("SELECT	id, payment_id
 														FROM	payment_request
 														WHERE	payment_id IN (".implode(',', $aFKNullifyIds).");");
-				if (PEAR::isError($mPaymentRequestFKResult))
+				if (MDB2::isError($mPaymentRequestFKResult))
 				{
 					// Failed
 					throw new Exception(__CLASS__." Failed to get payment_request records that link to non-copied payments. ".$mPaymentRequestFKResult->getMessage()." (DB Error: ".$mPaymentRequestFKResult->getUserInfo().")");
@@ -718,7 +718,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 				$mPaymentResponseFKResult = $oDB->query("SELECT	id, payment_id
 														FROM	payment_response
 														WHERE	payment_id IN (".implode(',', $aFKNullifyIds).");");
-				if (PEAR::isError($mPaymentResponseFKResult))
+				if (MDB2::isError($mPaymentResponseFKResult))
 				{
 					// Failed
 					throw new Exception(__CLASS__." Failed to get payment_response records that link to non-copied payments. ".$mPaymentResponseFKResult->getMessage()." (DB Error: ".$mPaymentResponseFKResult->getUserInfo().")");
@@ -750,7 +750,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 		$mUpdatePaymentRequestResult = $oDB->query("UPDATE	payment_request
 													SET		payment_id = NULL
 													WHERE	payment_id IN (".implode(',', $aFKNullifyIds).");");
-		if (PEAR::isError($mUpdatePaymentRequestResult))
+		if (MDB2::isError($mUpdatePaymentRequestResult))
 		{
 			// Failed
 			throw new Exception(__CLASS__." Failed to update payment request records with a null payment_id (for non-copied payments). (DB Error: ".$mUpdatePaymentRequestResult->getUserInfo().")");
@@ -760,7 +760,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 		$mUpdatePaymentResponseResult = $oDB->query("	UPDATE	payment_response
 														SET		payment_id = NULL
 														WHERE	payment_id IN (".implode(',', $aFKNullifyIds).");");
-		if (PEAR::isError($mUpdatePaymentResponseResult))
+		if (MDB2::isError($mUpdatePaymentResponseResult))
 		{
 			// Failed
 			throw new Exception(__CLASS__." Failed to update payment response records with a null payment_id (for non-copied payments). (DB Error: ".$mUpdatePaymentResponseResult->getUserInfo().")");
@@ -769,7 +769,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 		// Turn ON foreign keys
 		$this->outputMessage("Turn ON foreign key checks...\n");
 		$mFKResult = $oDB->query("SET foreign_key_checks = 1;");
-		if (PEAR::isError($mFKResult))
+		if (MDB2::isError($mFKResult))
 		{
 			// Failed
 			throw new Exception(__CLASS__." Failed to turn ON foreign keys. ".$mFKResult->getMessage()." (DB Error: ".$mFKResult->getUserInfo().")");
@@ -807,7 +807,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 																	WHERE		p.Id IS NOT NULL
 																	HAVING		data_value IS NOT NULL
 																);");
-		if (PEAR::isError($mPaymentResponseTransactionDataResult))
+		if (MDB2::isError($mPaymentResponseTransactionDataResult))
 		{
 			// Failed
 			throw new Exception(__CLASS__." Failed to insert payment_response payment_transaction_data records. ".$mPaymentResponseTransactionDataResult->getMessage()." (DB Error: ".$mPaymentResponseTransactionDataResult->getUserInfo().")");
@@ -819,7 +819,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 		$this->outputMessage("Insert payment transaction_data records (ones with no payment response...\n");
 		$mPaymentTransactionDataResult = $oDB->query("	INSERT INTO payment_transaction_data(name, value, data_type_id, payment_id)
 														VALUES		".implode(',', $aNoPaymentResponseTransactionInserts).";");
-		if (PEAR::isError($mPaymentTransactionDataResult))
+		if (MDB2::isError($mPaymentTransactionDataResult))
 		{
 			// Failed
 			throw new Exception(__CLASS__." Failed to insert payment_response payment_transaction_data records. ".$mPaymentTransactionDataResult->getMessage()." (DB Error: ".$mPaymentTransactionDataResult->getUserInfo().")");
@@ -842,7 +842,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 																		NULL
 																	)
 																);");
-		if (PEAR::isError($mPaymentResponseReversalResult))
+		if (MDB2::isError($mPaymentResponseReversalResult))
 		{
 			// Failed
 			throw new Exception(__CLASS__." Failed to insert payment_response payment_transaction_data records. ".$mPaymentResponseReversalResult->getMessage()." (DB Error: ".$mPaymentResponseReversalResult->getUserInfo().")");
@@ -863,7 +863,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 												FROM	adjustment_type at
 												JOIN	transaction_nature tn ON (tn.id = at.transaction_nature_id)
 												WHERE	at.code = 'MIGRATION_BALANCE_CORRECTION';");
-		if (PEAR::isError($mAdjustmentTypeResult))
+		if (MDB2::isError($mAdjustmentTypeResult))
 		{
 			// Failed
 			throw new Exception(__CLASS__." Failed to get the 'account balance difference' adjustment types. ".$mAdjustmentTypeResult->getMessage()." (DB Error: ".$mAdjustmentTypeResult->getUserInfo().")");
@@ -918,7 +918,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 								        ) as old_balance
 								FROM Account a
 								HAVING balance <> old_balance;");
-		if (PEAR::isError($mResult))
+		if (MDB2::isError($mResult))
 		{
 			// Failed
 			throw new Exception(__CLASS__." Failed to retrieve accounts with balance difference. ".$mResult->getMessage()." (DB Error: ".$mResult->getUserInfo().")");
@@ -988,7 +988,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 															account_id
 														)
 											VALUES		".implode(',', $aAdjustmentInsertData).";");
-			if (PEAR::isError($mResult))
+			if (MDB2::isError($mResult))
 			{
 				// Failed
 				throw new Exception(__CLASS__." Failed to insert the adjustments for accounts with balance difference. ".$mInsertResult->getMessage()." (DB Error: ".$mInsertResult->getUserInfo().")");
@@ -1086,7 +1086,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 											        ) as old_balance
 											FROM 	Account a
 											HAVING 	balance <> old_balance;");
-		if (PEAR::isError($mBalanceCheckResult))
+		if (MDB2::isError($mBalanceCheckResult))
 		{
 			// Failed
 			throw new Exception(__CLASS__." Failed the second account balance difference check. ".$mBalanceCheckResult->getMessage()." (DB Error: ".$mBalanceCheckResult->getUserInfo().")");
@@ -1161,7 +1161,7 @@ class Flex_Rollout_Version_000240 extends Flex_Rollout_Version
 			{
 				$this->outputMessage("Rolling back: '".$this->rollbackSQL[$l]."'...\n");
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

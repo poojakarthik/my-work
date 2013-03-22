@@ -33,7 +33,7 @@ class Flex_Rollout_Version_000195 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the telemarketing_fnn_dialled_result_category Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -51,7 +51,7 @@ class Flex_Rollout_Version_000195 extends Flex_Rollout_Version
 						('Not Qualified'	, 'Not Qualified'		, 'NOT_QUALIFIED'		, 'TELEMARKETING_FNN_DIALLED_RESULT_CATEGORY_NOT_QUALIFIED'),
 						('Call Dropped'		, 'Call Dropped'		, 'CALL_DROPPED'		, 'TELEMARKETING_FNN_DIALLED_RESULT_CATEGORY_CALL_DROPPED');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the telemarketing_fnn_dialled_result_category Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -62,7 +62,7 @@ class Flex_Rollout_Version_000195 extends Flex_Rollout_Version
 					ADD		COLUMN		telemarketing_fnn_dialled_result_category_id						INTEGER		UNSIGNED	NOT NULL	COMMENT '(FK) Category for this Call Result',
 					ADD		CONSTRAINT	fk_telemarketing_fnn_dialled_result_dialled_result_category_id	FOREIGN KEY	(telemarketing_fnn_dialled_result_category_id)	REFERENCES telemarketing_fnn_dialled_result_category(id)	ON UPDATE CASCADE	ON DELETE RESTRICT;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the telemarketing_fnn_dialled_result.telemarketing_fnn_dialled_result_category_id Field and make the id non-AUTO_INCREMENT. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -102,7 +102,7 @@ class Flex_Rollout_Version_000195 extends Flex_Rollout_Version
 						(701	, 'Static on Line'			, 'Static on the Line'					, 'TELEMARKETING_FNN_DIALLED_RESULT_STATIC_ON_LINE'				, (SELECT id FROM telemarketing_fnn_dialled_result_category WHERE const_name = 'TELEMARKETING_FNN_DIALLED_RESULT_CATEGORY_CALL_DROPPED')),
 						(702	, 'Unknown Termination'		, 'Call Terminated For Unknown Reasons'	, 'TELEMARKETING_FNN_DIALLED_RESULT_UNKNOWN_TERMINATION'		, (SELECT id FROM telemarketing_fnn_dialled_result_category WHERE const_name = 'TELEMARKETING_FNN_DIALLED_RESULT_CATEGORY_CALL_DROPPED'));";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the telemarketing_fnn_dialled_result Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -118,7 +118,7 @@ class Flex_Rollout_Version_000195 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

@@ -23,7 +23,7 @@ class DO_Sales_Product extends DO_Sales_Base_Product
 
 		$result = $dataSource->query($strSQL);
 
-		if(PEAR::isError($result))
+		if(MDB2::isError($result))
 		{
 			throw new Exception("Failed to build a list of products: " . $result->getMessage());
 		}
@@ -50,7 +50,7 @@ class DO_Sales_Product extends DO_Sales_Base_Product
 
 		$result = $dataSource->query($strSQL);
 
-		if(PEAR::isError($result))
+		if(MDB2::isError($result))
 		{
 			throw new Exception("Failed to build a list of products: " . $result->getMessage());
 		}

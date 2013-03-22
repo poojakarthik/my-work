@@ -21,7 +21,7 @@ class Flex_Rollout_Version_000089 extends Flex_Rollout_Version
 					"ADD payout_charge_type_id BIGINT(20) NULL COMMENT '(FK) The ChargeType for the Contract Payout Fee'," .
 					"ADD exit_fee_charge_type_id BIGINT(20) NULL COMMENT '(FK) The ChargeType for the Contract Exit Fee';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the contract_terms.payout_charge_type_id and exit_fee_charge_type_id fields. ' . $result->getMessage());
 		}
@@ -50,7 +50,7 @@ class Flex_Rollout_Version_000089 extends Flex_Rollout_Version
 		$result = $dbAdmin->query("INSERT INTO ChargeType (ChargeType, Description, Nature, Fixed, automatic_only, Amount, Archived) VALUES " .
 									"('{$arrPayoutChargeType['ChargeType']}', '{$arrPayoutChargeType['Description']}', '{$arrPayoutChargeType['Nature']}', {$arrPayoutChargeType['Fixed']}, {$arrPayoutChargeType['automatic_only']}, {$arrPayoutChargeType['Amount']}, {$arrPayoutChargeType['Archived']}), " .
 									"('{$arrExitFeeChargeType['ChargeType']}', '{$arrExitFeeChargeType['Description']}', '{$arrExitFeeChargeType['Nature']}', {$arrExitFeeChargeType['Fixed']}, {$arrExitFeeChargeType['automatic_only']}, {$arrExitFeeChargeType['Amount']}, {$arrExitFeeChargeType['Archived']});");
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add ChargeTypes for Contract Payout and Exit Fees fields. ' . $result->getMessage());
 		}
@@ -62,7 +62,7 @@ class Flex_Rollout_Version_000089 extends Flex_Rollout_Version
 					"payout_charge_type_id = (SELECT Id FROM ChargeType WHERE ChargeType = '{$arrPayoutChargeType['ChargeType']}' ORDER BY Id DESC LIMIT 1), " .
 					"exit_fee_charge_type_id = (SELECT Id FROM ChargeType WHERE ChargeType = '{$arrExitFeeChargeType['ChargeType']}' ORDER BY Id DESC LIMIT 1)";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the contract_terms.payout_charge_type_id and exit_fee_charge_type_id fields. ' . $result->getMessage());
 		}
@@ -77,7 +77,7 @@ class Flex_Rollout_Version_000089 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

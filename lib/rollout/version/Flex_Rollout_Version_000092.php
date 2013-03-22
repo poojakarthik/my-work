@@ -40,7 +40,7 @@ class Flex_Rollout_Version_000092 extends Flex_Rollout_Version
 					) ENGINE = innodb COMMENT = 'Defines dealer statuses';";
 		
 		$objResult = $dbAdmin->query($strSQL);
-		if (PEAR::isError($objResult))
+		if (MDB2::isError($objResult))
 		{
 			throw new Exception(__CLASS__ . " Failed to create dealer_status table - ". $objResult->getMessage());
 		}
@@ -56,7 +56,7 @@ class Flex_Rollout_Version_000092 extends Flex_Rollout_Version
 					(2, 'Inactive', 'Inactive');";
 		
 		$objResult = $dbAdmin->query($strSQL);
-		if (PEAR::isError($objResult))
+		if (MDB2::isError($objResult))
 		{
 			throw new Exception(__CLASS__ . " Failed to populate dealer_status table - ". $objResult->getMessage());
 		}
@@ -75,7 +75,7 @@ class Flex_Rollout_Version_000092 extends Flex_Rollout_Version
 					) ENGINE = innodb COMMENT = 'Defines various countries';";
 		
 		$objResult = $dbAdmin->query($strSQL);
-		if (PEAR::isError($objResult))
+		if (MDB2::isError($objResult))
 		{
 			throw new Exception(__CLASS__ . " Failed to create country table - ". $objResult->getMessage());
 		}
@@ -91,7 +91,7 @@ class Flex_Rollout_Version_000092 extends Flex_Rollout_Version
 					(2, 'India', 'India', 'IND');";
 
 		$objResult = $dbAdmin->query($strSQL);
-		if (PEAR::isError($objResult))
+		if (MDB2::isError($objResult))
 		{
 			throw new Exception(__CLASS__ . " Failed to populate country table - ". $objResult->getMessage());
 		}
@@ -112,7 +112,7 @@ class Flex_Rollout_Version_000092 extends Flex_Rollout_Version
 					) ENGINE = innodb COMMENT = 'Geographical States';";
 		
 		$objResult = $dbAdmin->query($strSQL);
-		if (PEAR::isError($objResult))
+		if (MDB2::isError($objResult))
 		{
 			throw new Exception(__CLASS__ . " Failed to create state table - ". $objResult->getMessage());
 		}
@@ -133,7 +133,7 @@ class Flex_Rollout_Version_000092 extends Flex_Rollout_Version
 					(8, 'Western Australia', 'Western Australia', 1, 'WA');";
 		
 		$objResult = $dbAdmin->query($strSQL);
-		if (PEAR::isError($objResult))
+		if (MDB2::isError($objResult))
 		{
 			throw new Exception(__CLASS__ . " Failed to populate state table - ". $objResult->getMessage());
 		}
@@ -151,7 +151,7 @@ class Flex_Rollout_Version_000092 extends Flex_Rollout_Version
 					) ENGINE = innodb COMMENT = 'Defines contact titles';";
 		
 		$objResult = $dbAdmin->query($strSQL);
-		if (PEAR::isError($objResult))
+		if (MDB2::isError($objResult))
 		{
 			throw new Exception(__CLASS__ . " Failed to create contact_title table - ". $objResult->getMessage());
 		}
@@ -172,7 +172,7 @@ class Flex_Rollout_Version_000092 extends Flex_Rollout_Version
 					(8, 'Prof', 'Professor');";
 		
 		$objResult = $dbAdmin->query($strSQL);
-		if (PEAR::isError($objResult))
+		if (MDB2::isError($objResult))
 		{
 			throw new Exception(__CLASS__ . " Failed to populate contact_title table - ". $objResult->getMessage());
 		}
@@ -181,7 +181,7 @@ class Flex_Rollout_Version_000092 extends Flex_Rollout_Version
                 // Delete the old dealer table (The structure has changed substantially)
                 $strSQL = "DROP TABLE IF EXISTS dealer";
                 $objResult = $dbAdmin->query($strSQL);
-                if (PEAR::isError($objResult))
+                if (MDB2::isError($objResult))
                 {
                         throw new Exception(__CLASS__ . " Failed to drop dealer table (cleansing) - ". $objResult->getMessage());
                 }
@@ -189,7 +189,7 @@ class Flex_Rollout_Version_000092 extends Flex_Rollout_Version
 		// Delete the old Dealer table (The structure has changed substantially)
 		$strSQL = "DROP TABLE IF EXISTS Dealer";
 		$objResult = $dbAdmin->query($strSQL);
-		if (PEAR::isError($objResult))
+		if (MDB2::isError($objResult))
 		{
 			throw new Exception(__CLASS__ . " Failed to drop Dealer table - ". $objResult->getMessage());
 		}
@@ -287,7 +287,7 @@ class Flex_Rollout_Version_000092 extends Flex_Rollout_Version
 					) ENGINE = innodb COMMENT = 'Defines dealers';
 					";
 		$objResult = $dbAdmin->query($strSQL);
-		if (PEAR::isError($objResult))
+		if (MDB2::isError($objResult))
 		{
 			throw new Exception(__CLASS__ . " Failed to create dealer table - ". $objResult->getMessage());
 		}
@@ -309,7 +309,7 @@ class Flex_Rollout_Version_000092 extends Flex_Rollout_Version
 					) ENGINE = innodb COMMENT = 'dealer - customer group relationships';";
 		
 		$objResult = $dbAdmin->query($strSQL);
-		if (PEAR::isError($objResult))
+		if (MDB2::isError($objResult))
 		{
 			throw new Exception(__CLASS__ . " Failed to create dealer_customer_group table - ". $objResult->getMessage());
 		}
@@ -331,7 +331,7 @@ class Flex_Rollout_Version_000092 extends Flex_Rollout_Version
 					) ENGINE = innodb COMMENT = 'dealer - rate plan relationships';";
 		
 		$objResult = $dbAdmin->query($strSQL);
-		if (PEAR::isError($objResult))
+		if (MDB2::isError($objResult))
 		{
 			throw new Exception(__CLASS__ . " Failed to create dealer_rate_plan table - ". $objResult->getMessage());
 		}
@@ -351,7 +351,7 @@ class Flex_Rollout_Version_000092 extends Flex_Rollout_Version
 					) ENGINE = innodb COMMENT = 'Defines sale types';";
 		
 		$objResult = $dbAdmin->query($strSQL);
-		if (PEAR::isError($objResult))
+		if (MDB2::isError($objResult))
 		{
 			throw new Exception(__CLASS__ . " Failed to create sale_type table - ". $objResult->getMessage());
 		}
@@ -367,7 +367,7 @@ class Flex_Rollout_Version_000092 extends Flex_Rollout_Version
 					(3, 'Win Back', 'Win Back');";
 		
 		$objResult = $dbAdmin->query($strSQL);
-		if (PEAR::isError($objResult))
+		if (MDB2::isError($objResult))
 		{
 			throw new Exception(__CLASS__ . " Failed to populate sale_type table - ". $objResult->getMessage());
 		}
@@ -387,7 +387,7 @@ class Flex_Rollout_Version_000092 extends Flex_Rollout_Version
 					) ENGINE = innodb COMMENT = 'dealer - sale type relationships';";
 		
 		$objResult = $dbAdmin->query($strSQL);
-		if (PEAR::isError($objResult))
+		if (MDB2::isError($objResult))
 		{
 			throw new Exception(__CLASS__ . " Failed to create dealer_sale_type table - ". $objResult->getMessage());
 		}
@@ -401,7 +401,7 @@ class Flex_Rollout_Version_000092 extends Flex_Rollout_Version
 					(1, 'System', '', 'system', '', 1, 1, 0);";
 		
 		$objResult = $dbAdmin->query($strSQL);
-		if (PEAR::isError($objResult))
+		if (MDB2::isError($objResult))
 		{
 			throw new Exception(__CLASS__ . " Failed to add the System dealer to the dealer table - ". $objResult->getMessage());
 		}
@@ -431,7 +431,7 @@ class Flex_Rollout_Version_000092 extends Flex_Rollout_Version
 				// Perform the SQL
 				$objResult = $objDb->query($this->rollbackSQL[$l]['SQL']);
 				
-				if (PEAR::isError($objResult))
+				if (MDB2::isError($objResult))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l]['SQL'] . '. ' . $objResult->getMessage());
 				}

@@ -29,7 +29,7 @@ class Flex_Rollout_Version_000197 extends Flex_Rollout_Version
 						('OC'	, 'Other Charges'			, 'DESTINATION_CONTEXT_OC'),
 						('3G'	, '3G Data'					, 'DESTINTAION_CONTEXT_3G');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the Other Charges & 3G Destination Contexts. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -42,7 +42,7 @@ class Flex_Rollout_Version_000197 extends Flex_Rollout_Version
 					VALUES
 						(40000	, '3G Usage'	, (SELECT id FROM destination_context WHERE const_name = 'DESTINTAION_CONTEXT_3G' LIMIT 1));";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the 3G default/fallback Destination. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -54,7 +54,7 @@ class Flex_Rollout_Version_000197 extends Flex_Rollout_Version
 					SET		fallback_destination_id = (SELECT Id FROM Destination WHERE Code = 40000 LIMIT 1)
 					WHERE	const_name = 'DESTINTAION_CONTEXT_3G';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to map the 3G fallback Destination to the 3G Context. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -65,7 +65,7 @@ class Flex_Rollout_Version_000197 extends Flex_Rollout_Version
 					WHERE	Code = '3G'
 							AND ServiceType = 101;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to map the 3G Record Type to the 3G Context. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -85,7 +85,7 @@ class Flex_Rollout_Version_000197 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

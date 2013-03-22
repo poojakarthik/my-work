@@ -19,7 +19,7 @@ class Flex_Rollout_Version_000071 extends Flex_Rollout_Version
 		$strSQL = "ALTER TABLE `customer_faq` CHANGE `time_added` `time_added` TIMESTAMP NULL DEFAULT NULL COMMENT 'time faq was added',
 		CHANGE `time_updated` `time_updated` TIMESTAMP NULL DEFAULT NULL COMMENT 'time faq was updated';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to ALTER table. ' . $result->getMessage());
 		}
@@ -39,7 +39,7 @@ class Flex_Rollout_Version_000071 extends Flex_Rollout_Version
 		  PRIMARY KEY  (`id`)
 		) ENGINE=InnoDB COMMENT='survey table';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to create tables. `survey`' . $result->getMessage());
 		}
@@ -54,7 +54,7 @@ class Flex_Rollout_Version_000071 extends Flex_Rollout_Version
 		  PRIMARY KEY  (`id`)
 		) ENGINE=InnoDB COMMENT='surveys completed';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to create tables. `survey_completed`' . $result->getMessage());
 		}
@@ -66,7 +66,7 @@ class Flex_Rollout_Version_000071 extends Flex_Rollout_Version
 		  PRIMARY KEY  (`id`)
 		) ENGINE=InnoDB COMMENT='survey questions response type';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to create tables. `survey_option_response_type`' . $result->getMessage());
 		}
@@ -82,7 +82,7 @@ class Flex_Rollout_Version_000071 extends Flex_Rollout_Version
 		  PRIMARY KEY  (`id`)
 		) ENGINE=InnoDB COMMENT='survey questions';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to create tables. `survey_question`' . $result->getMessage());
 		}
@@ -94,7 +94,7 @@ class Flex_Rollout_Version_000071 extends Flex_Rollout_Version
 		  PRIMARY KEY  (`id`)
 		) ENGINE=InnoDB COMMENT='survey questions response type';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to create tables. `survey_questions_response_type`' . $result->getMessage());
 		}
@@ -109,7 +109,7 @@ class Flex_Rollout_Version_000071 extends Flex_Rollout_Version
 		  PRIMARY KEY  (`id`)
 		) ENGINE=InnoDB COMMENT='survey questions options';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to create tables. `survey_question_option`' . $result->getMessage());
 		}
@@ -125,7 +125,7 @@ class Flex_Rollout_Version_000071 extends Flex_Rollout_Version
 		  PRIMARY KEY  (`id`)
 		) ENGINE=InnoDB COMMENT='survey response';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to create tables. `survey_response`' . $result->getMessage());
 		}
@@ -140,7 +140,7 @@ class Flex_Rollout_Version_000071 extends Flex_Rollout_Version
 		  PRIMARY KEY  (`id`)
 		) ENGINE=InnoDB COMMENT='survey response options';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to create tables. `survey_response_options`' . $result->getMessage());
 		}
@@ -156,7 +156,7 @@ class Flex_Rollout_Version_000071 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

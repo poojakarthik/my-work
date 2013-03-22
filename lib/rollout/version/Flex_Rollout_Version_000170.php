@@ -25,7 +25,7 @@ class Flex_Rollout_Version_000170 extends Flex_Rollout_Version
 											ServiceRecurringCharge,
 											RatePlanRecurringChargeType;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to drop the ProvisioningExport, ServiceRecurringCharge, and RatePlanRecurringChargeType Tables. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -42,7 +42,7 @@ class Flex_Rollout_Version_000170 extends Flex_Rollout_Version
 									AND (SELECT Id FROM Account WHERE Id = EmployeeAccountAudit.Account LIMIT 1) IS NULL
 								);";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to delete invalid EmployeeAccountAudit records. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -61,7 +61,7 @@ class Flex_Rollout_Version_000170 extends Flex_Rollout_Version
 					ADD CONSTRAINT	fk_employee_account_log_account_id	FOREIGN KEY (account_id)	REFERENCES Account(Id)	ON UPDATE CASCADE	ON DELETE CASCADE,
 					ADD CONSTRAINT	fk_employee_account_log_contact_id	FOREIGN KEY (contact_id)	REFERENCES Contact(Id)	ON UPDATE CASCADE	ON DELETE CASCADE;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to Postgres-ify EmployeeAccountAudit. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -90,7 +90,7 @@ class Flex_Rollout_Version_000170 extends Flex_Rollout_Version
 					
 					ADD CONSTRAINT	fk_cdr_call_group_translation_carrier_id	FOREIGN KEY (carrier_id)	REFERENCES Carrier(Id)	ON UPDATE CASCADE	ON DELETE CASCADE;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to Postgres-ify RecordTypeTranslation. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -115,7 +115,7 @@ class Flex_Rollout_Version_000170 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

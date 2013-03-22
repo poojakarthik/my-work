@@ -24,7 +24,7 @@ class Flex_Rollout_Version_000175 extends Flex_Rollout_Version
 		//	1:	Set the FirstName, LastName and UserName of the system Employee
 		$strSQL = "UPDATE Employee SET FirstName = 'System', LastName = 'User', UserName = 'System' WHERE Id = {$intSystemUserEmployeeId};";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to update the FirstName, LastName and UserName of the system employee. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -33,7 +33,7 @@ class Flex_Rollout_Version_000175 extends Flex_Rollout_Version
 		//	2:	Set the first_name, last_name and username of the system dealer record
 		$strSQL = "UPDATE dealer SET first_name = 'System', last_name = 'User', username = 'System' WHERE id = {$intSystemUserDealerId};";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to update the first_name, last_name and username of the system dealer. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -49,7 +49,7 @@ class Flex_Rollout_Version_000175 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

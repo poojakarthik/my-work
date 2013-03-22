@@ -254,7 +254,7 @@ ORDER BY sale_type_id ASC, sale_id ASC, sale_item_id ASC, business_name ASC
 		$arrProducts	= array();
 		
 		// Execute the query
-		if (PEAR::isError($objResults = $dsSales->query($strQuery)))
+		if (MDB2::isError($objResults = $dsSales->query($strQuery)))
 		{
 			throw new Exception("Failed to execute SaleItemStatus Report Query, using query: $strQuery - ". $objResults->getMessage());
 		}

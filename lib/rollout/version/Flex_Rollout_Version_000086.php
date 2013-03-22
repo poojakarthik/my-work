@@ -26,7 +26,7 @@ class Flex_Rollout_Version_000086 extends Flex_Rollout_Version
 						"exit_fee_minimum_invoices INT(10) NOT NULL COMMENT 'Minimum number of invoices for the contract before Exit Fees are charged'" .
 					") ENGINE = innodb;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the contract_terms Table. ' . $result->getMessage());
 		}
@@ -41,7 +41,7 @@ class Flex_Rollout_Version_000086 extends Flex_Rollout_Version
 			INSERT INTO contract_terms (created_by, created_on, contract_payout_minimum_invoices, exit_fee_minimum_invoices)
 				VALUES (0, NOW(), $intContractPayoutOffset, $intExitFeeOffset)";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the contract_terms Table. ' . $result->getMessage());
 		}
@@ -55,7 +55,7 @@ class Flex_Rollout_Version_000086 extends Flex_Rollout_Version
 					"ADD contract_breach_fees_charged_on DATETIME NULL COMMENT 'Date and time the Contract Breach Fees were applied' AFTER exit_fee_charge_id," .
 					"ADD contract_breach_fees_employee_id BIGINT(20) NULL COMMENT '(FK) Employee who charges the Contract Breach Fees' AFTER contract_breach_fees_charged_on;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to Add the ServiceRatePlan.contract_payout_percentage, contract_payout_charge_id, exit_fee_charge_id, contract_breach_fees_charged_on, contract_breach_fees_employee_id fields. ' . $result->getMessage());
 		}
@@ -76,7 +76,7 @@ class Flex_Rollout_Version_000086 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

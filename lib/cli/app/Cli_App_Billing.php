@@ -566,14 +566,14 @@ class Cli_App_Billing extends Cli
 		$aVerifyMySQL	= $rVerifyMySQLResult->fetch_assoc();
 		
 		$oVerifyPostgreSQLPartitionResult	= $dsArchiveDB->query("SELECT COUNT(id) AS cdr_count FROM cdr_invoiced_{$iInvoiceRunId} WHERE 1");
-		if (PEAR::isError($oVerifyPostgreSQLPartitionResult))
+		if (MDB2::isError($oVerifyPostgreSQLPartitionResult))
 		{
 			throw new Exception($oVerifyPostgreSQLPartitionResult->getMessage() . " (DB Error: " . $oVerifyPostgreSQLPartitionResult->getUserInfo() . ")");
 		}
 		$aVerifyPostgreSQLPartition	= $oVerifyPostgreSQLPartitionResult->fetchRow(MDB2_FETCHMODE_ASSOC);
 		
 		$oVerifyPostgreSQLTableResult	= $dsArchiveDB->query("SELECT COUNT(id) AS cdr_count FROM cdr_invoiced WHERE invoice_run_id = {$iInvoiceRunId}");
-		if (PEAR::isError($oVerifyPostgreSQLTableResult))
+		if (MDB2::isError($oVerifyPostgreSQLTableResult))
 		{
 			throw new Exception($oVerifyPostgreSQLTableResult->getMessage() . " (DB Error: " . $oVerifyPostgreSQLTableResult->getUserInfo() . ")");
 		}

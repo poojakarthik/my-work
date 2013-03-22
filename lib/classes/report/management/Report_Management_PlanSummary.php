@@ -98,7 +98,7 @@ class Report_Management_PlanSummary extends Report_Management
 				Cli_App_Billing::debug($strWorksheet);
 				$wksWorksheet	=& $wkbWorkbook->addWorksheet($strWorksheet);
 				
-				if (PEAR::isError($wksWorksheet))
+				if (MDB2::isError($wksWorksheet))
 				{
 					throw new Exception($wksWorksheet->toString());
 				}

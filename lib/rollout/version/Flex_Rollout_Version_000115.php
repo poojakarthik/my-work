@@ -20,7 +20,7 @@ class Flex_Rollout_Version_000115 extends Flex_Rollout_Version
 		$strSQL = "INSERT INTO carrier_module_type (name, description, const_name) VALUES " .
 					"('Telemarketing', 'Telemarketing', 'MODULE_TYPE_TELEMARKETING')";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the MODULE_TYPE_TELEMARKETING Carrier Module Type. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -30,7 +30,7 @@ class Flex_Rollout_Version_000115 extends Flex_Rollout_Version
 		$strSQL = "INSERT INTO carrier_type (name, description, const_name) VALUES " .
 					"('Telecom Authority', 'Telecommunications Authority', 'CARRIER_TYPE_TELECOM_AUTHORITY')";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the Telecommunications Authority Carrier Type. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -40,7 +40,7 @@ class Flex_Rollout_Version_000115 extends Flex_Rollout_Version
 		$strSQL = "INSERT INTO Carrier (Name, carrier_type, description, const_name) VALUES " .
 					"('ACMA', (SELECT id FROM carrier_type WHERE const_name = 'CARRIER_TYPE_TELECOM_AUTHORITY'), 'Australian Communications and Media Authority', 'CARRIER_ACMA')";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the ACMA Carrier. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -56,7 +56,7 @@ class Flex_Rollout_Version_000115 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

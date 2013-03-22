@@ -109,7 +109,7 @@ foreach ($arrAddressTables as $strTable=>$arrDefinition)
 	
 	$strSelectSQL	= "SELECT ".implode(', ', $arrColumns)." FROM {$strTable} WHERE 1;";
 	$resSelect		= $dbConnection->query($strSelectSQL);
-	if (PEAR::isError($resSelect))
+	if (MDB2::isError($resSelect))
 	{
 		throw new Exception($resSelect->getMessage()."\n".$resSelect->getUserInfo());
 	}

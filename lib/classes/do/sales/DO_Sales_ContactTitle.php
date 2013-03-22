@@ -24,7 +24,7 @@ class DO_Sales_ContactTitle extends DO_Sales_Base_ContactTitle
 
 		$result = $dataSource->query($strSQL);
 
-		if(PEAR::isError($result))
+		if(MDB2::isError($result))
 		{
 			throw new Exception("Failed to get titles: " . $result->getMessage());
 		}

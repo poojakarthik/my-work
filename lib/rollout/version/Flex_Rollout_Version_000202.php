@@ -21,7 +21,7 @@ class Flex_Rollout_Version_000202 extends Flex_Rollout_Version
 		$strSQL = "	ALTER TABLE	dealer
 					ADD sync_sale_constraints TINYINT(1) UNSIGNED NOT NULL DEFAULT 1 COMMENT 'If TRUE AND up_line_id IS NOT NULL, then sale constraints should be kept in sync with those of up_line_id';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the dealer.sync_sale_constraints Field. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -37,7 +37,7 @@ class Flex_Rollout_Version_000202 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

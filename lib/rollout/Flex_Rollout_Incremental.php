@@ -17,7 +17,7 @@ class Flex_Rollout_Incremental
 
 		// Find the available updates
 		$db = Data_Source::get();
-		if (PEAR::isError($db))
+		if (MDB2::isError($db))
 		{
 			throw new Excpetion("Unable to connect to the Database: ".$db->getMessage());
 		}
@@ -25,7 +25,7 @@ class Flex_Rollout_Incremental
 		$sql = "SELECT MAX(version) FROM database_version";
 		$res = $db->query($sql);
 
-		if (PEAR::isError($res))
+		if (MDB2::isError($res))
 		{
 			throw new Exception("Failed to find latest database version: " . $res->getMessage());
 		}
@@ -83,7 +83,7 @@ class Flex_Rollout_Incremental
 				// Update the database_version table with the latest version number (insert a new record)
 				$strSQL = "INSERT INTO database_version (version, rolled_out_date) VALUES ($intVersion, '" . date("Y-m-d H:i:s") . "')";
 				$res = $db->query($strSQL);
-				if (PEAR::isError($res))
+				if (MDB2::isError($res))
 				{
 					throw new Exception("Failed to update database_version table: " . $res->getMessage());
 				}
@@ -255,7 +255,7 @@ class Flex_Rollout_Incremental
 			Log::getLog()->log("Starting transaction for data source '{$name}'");
 
 			$res = $dataSource->beginTransaction();
-			if (PEAR::isError($res))
+			if (MDB2::isError($res))
 			{
 				$errors[] = "Failed to begin transaction for data source '$name': " . $res->getMessage();
 			}
@@ -275,7 +275,7 @@ class Flex_Rollout_Incremental
 			if ($dataSource->inTransaction())
 			{
 				$res = $dataSource->commit();
-				if (PEAR::isError($res))
+				if (MDB2::isError($res))
 				{
 					$errors[] = "Failed to commit transaction for data source '$name': " . $res->getMessage();
 				}
@@ -296,7 +296,7 @@ class Flex_Rollout_Incremental
 			if ($dataSource->inTransaction())
 			{
 				$res = $dataSource->rollback();
-				if (PEAR::isError($res))
+				if (MDB2::isError($res))
 				{
 					$errors[] = "Failed to roll-back transaction for data source '$name': " . $res->getMessage();
 				}
@@ -364,7 +364,7 @@ class Flex_Rollout_Incremental
 
 			$tables = $dataSource->manager->listTables();
 
-			if (PEAR::isError($tables))
+			if (MDB2::isError($tables))
 			{
 				throw new Exception("Failed to list tables when building DB constants: " . $tables->getMessage());
 			}
@@ -373,7 +373,7 @@ class Flex_Rollout_Incremental
 			{
 				$arrColumns = $dataSource->manager->listTableFields($strTable);
 
-				if (PEAR::isError($arrColumns))
+				if (MDB2::isError($arrColumns))
 				{
 					throw new Exception("Failed to retrieve column listing for the '$strTable' table: " . $arrColumns->getMessage());
 				}
@@ -431,7 +431,7 @@ class Flex_Rollout_Incremental
 
 				$mxdResult	= $dataSource->query($strQuery);
 
-				if (PEAR::isError($mxdResult))
+				if (MDB2::isError($mxdResult))
 				{
 					throw new Exception("Failed to retrieve the contents of the '$strTable' table: " . $mxdResult->getMessage());
 				}
@@ -585,7 +585,7 @@ class Flex_Rollout_Incremental
 		$sql = "SELECT id, name, description, const_name, surcharge, valid_lengths, valid_prefixes, cvv_length, minimum_amount, maximum_amount FROM credit_card_type";
 		$creditCards = $db->query($sql);
 
-		if (PEAR::isError($creditCards))
+		if (MDB2::isError($creditCards))
 		{
 			throw new Exception("Failed to retrieve credit card type details from database: " . $creditCards->getMessage());
 		}

@@ -46,7 +46,7 @@ class Flex_Data_Model
 		}
 
 		$cols = $dataSource->manager->listTableFields($tableName);
-		if (PEAR::isError($cols))
+		if (MDB2::isError($cols))
 		{
 			throw new Exception(__CLASS__ . ' Failed to list columns for the \'' . $tableName . '\' table in \'' . $strDataSource . '\' database. ' . $cols->getMessage());
 		}
@@ -79,7 +79,7 @@ class Flex_Data_Model
 		
 		$tables = $dataSource->manager->listTables();
 
-		if (PEAR::isError($tables))
+		if (MDB2::isError($tables))
 		{
 			throw new Exception(__CLASS__ . ' Failed to list tables for \'' . $strDataSource . '\' database. ' . $tables->getMessage());
 		}

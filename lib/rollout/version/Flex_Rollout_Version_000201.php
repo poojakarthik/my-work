@@ -32,7 +32,7 @@ class Flex_Rollout_Version_000201 extends Flex_Rollout_Version
 										UsageCap > 0
 									);";
 		$oPlanSelectResult	= $dbAdmin->query($sPlanSelectSQL);
-		if (PEAR::isError($oPlanSelectResult))
+		if (MDB2::isError($oPlanSelectResult))
 		{
 			throw new Exception(__CLASS__ . ' Failed to retrieve Rate Plans with a Usage Limit or Included Data. ' . $oPlanSelectResult->getMessage() . " (DB Error: " . $oPlanSelectResult->getUserInfo() . ")");
 		}
@@ -66,7 +66,7 @@ class Flex_Rollout_Version_000201 extends Flex_Rollout_Version
 											VALUES
 												(".$dbAdmin->quote($sDataDiscountName, 'text').", ".$dbAdmin->quote($sDataDiscountDescription, 'text').", {$iIncludedDataKB});";
 				$oDataDiscountInsertResult	= $dbAdmin->exec($sDataDiscountInsertSQL);
-				if (PEAR::isError($oDataDiscountInsertResult))
+				if (MDB2::isError($oDataDiscountInsertResult))
 				{
 					throw new Exception(__CLASS__ . ' Failed to insert a Data Discount for Rate Plan #'.$aRatePlan['Id'].'. ' . $oDataDiscountInsertResult->getMessage() . " (DB Error: " . $oDataDiscountInsertResult->getUserInfo() . ")");
 				}
@@ -83,7 +83,7 @@ class Flex_Rollout_Version_000201 extends Flex_Rollout_Version
 														WHERE		rt.ServiceType = {$aRatePlan['ServiceType']}
 																	AND rt.DisplayType = 3;";
 				$oDataDiscountRecordTypeInsertResult	= $dbAdmin->exec($sDataDiscountRecordTypeInsertSQL);
-				if (PEAR::isError($oDataDiscountRecordTypeInsertResult))
+				if (MDB2::isError($oDataDiscountRecordTypeInsertResult))
 				{
 					throw new Exception(__CLASS__ . ' Failed to insert Data Discount <-> RecordType link for Discount #'.$iDataDiscountId.' for Rate Plan #'.$aRatePlan['Id'].'. ' . $oDataDiscountRecordTypeInsertResult->getMessage() . " (DB Error: " . $oDataDiscountRecordTypeInsertResult->getUserInfo() . ")");
 				}
@@ -95,7 +95,7 @@ class Flex_Rollout_Version_000201 extends Flex_Rollout_Version
 													VALUES
 														({$aRatePlan['Id']}, {$iDataDiscountId});";
 				$oDataRatePlanDiscountInsertResult	= $dbAdmin->exec($sDataRatePlanDiscountInsertSQL);
-				if (PEAR::isError($oDataRatePlanDiscountInsertResult))
+				if (MDB2::isError($oDataRatePlanDiscountInsertResult))
 				{
 					throw new Exception(__CLASS__ . ' Failed to insert Data Discount <-> RatePlan link for Discount #'.$iDataDiscountId.' for Rate Plan #'.$aRatePlan['Id'].'. ' . $oDataRatePlanDiscountInsertResult->getMessage() . " (DB Error: " . $oDataRatePlanDiscountInsertResult->getUserInfo() . ")");
 				}
@@ -120,7 +120,7 @@ class Flex_Rollout_Version_000201 extends Flex_Rollout_Version
 												VALUES
 													(".$dbAdmin->quote($sGeneralDiscountName, 'text').", ".$dbAdmin->quote($sGeneralDiscountDescription, 'text').", {$fUsageLimit});";
 				$oGeneralDiscountInsertResult	= $dbAdmin->exec($sGeneralDiscountInsertSQL);
-				if (PEAR::isError($oGeneralDiscountInsertResult))
+				if (MDB2::isError($oGeneralDiscountInsertResult))
 				{
 					throw new Exception(__CLASS__ . ' Failed to insert a General Usage Discount for Rate Plan #'.$aRatePlan['Id'].'. ' . $oGeneralDiscountInsertResult->getMessage() . " (DB Error: " . $oGeneralDiscountInsertResult->getUserInfo() . ")");
 				}
@@ -137,7 +137,7 @@ class Flex_Rollout_Version_000201 extends Flex_Rollout_Version
 															WHERE		rt.ServiceType = {$aRatePlan['ServiceType']}
 																		AND rt.DisplayType != 3;";
 				$oGeneralDiscountRecordTypeInsertResult	= $dbAdmin->exec($sGeneralDiscountRecordTypeInsertSQL);
-				if (PEAR::isError($oGeneralDiscountRecordTypeInsertResult))
+				if (MDB2::isError($oGeneralDiscountRecordTypeInsertResult))
 				{
 					throw new Exception(__CLASS__ . ' Failed to insert General Usage Discount <-> RecordType link for Discount #'.$iGeneralDiscountId.' for Rate Plan #'.$aRatePlan['Id'].'. ' . $oGeneralDiscountRecordTypeInsertResult->getMessage() . " (DB Error: " . $oGeneralDiscountRecordTypeInsertResult->getUserInfo() . ")");
 				}
@@ -149,7 +149,7 @@ class Flex_Rollout_Version_000201 extends Flex_Rollout_Version
 														VALUES
 															({$aRatePlan['Id']}, {$iGeneralDiscountId});";
 				$oGeneralRatePlanDiscountInsertResult	= $dbAdmin->exec($sGeneralRatePlanDiscountInsertSQL);
-				if (PEAR::isError($oGeneralRatePlanDiscountInsertResult))
+				if (MDB2::isError($oGeneralRatePlanDiscountInsertResult))
 				{
 					throw new Exception(__CLASS__ . ' Failed to insert General Usage Discount <-> RatePlan link for Discount #'.$iDataDiscountId.' for Rate Plan #'.$aRatePlan['Id'].'. ' . $oGeneralRatePlanDiscountInsertResult->getMessage() . " (DB Error: " . $oGeneralRatePlanDiscountInsertResult->getUserInfo() . ")");
 				}
@@ -172,7 +172,7 @@ class Flex_Rollout_Version_000201 extends Flex_Rollout_Version
 								        AND rp.included_data > 0
 								        AND r.Uncapped = 1;";
 		$oDataRateFixResult	= $dbAdmin->exec($sDataRateFixSQL);
-		if (PEAR::isError($oDataRateFixResult))
+		if (MDB2::isError($oDataRateFixResult))
 		{
 			throw new Exception(__CLASS__ . ' Failed to correct Data Rate cap inclusiveness. ' . $oDataRateFixResult->getMessage() . " (DB Error: " . $oDataRateFixResult->getUserInfo() . ")");
 		}
@@ -196,7 +196,7 @@ class Flex_Rollout_Version_000201 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

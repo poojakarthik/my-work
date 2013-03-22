@@ -632,7 +632,7 @@ class CDR extends ORM_Cached {
 			$res =& $cdrDb->query($strCdrSelect);
 	
 			// Always check that result is not an error
-			if (PEAR::isError($res)) {
+			if (MDB2::isError($res)) {
 				throw new Exception($res->getMessage() . "\n{$strCdrSelect}");
 			}
 	
@@ -661,7 +661,7 @@ class CDR extends ORM_Cached {
 		$db = Data_Source::get();
 		$res = $db->query($strQuery);
 
-		if (PEAR::isError($res)) {
+		if (MDB2::isError($res)) {
 			throw new Exception("Failed to find the data source storing CDRs for invoice run: {$intInvoiceRunId} - " . $res->getMessage());
 		}
 
@@ -773,7 +773,7 @@ class CDR extends ORM_Cached {
 		// Run the CDR query
 		$rCdr = $rCDRDb->query($sCdr);
 
-		if (PEAR::isError($rCdr)) {
+		if (MDB2::isError($rCdr)) {
 			throw new Exception("Failed to load CDR details: " . $rCdr->getMessage() ." - Query: {$sCdr}");
 		}
 

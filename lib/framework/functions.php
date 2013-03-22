@@ -2165,7 +2165,7 @@ function ParseArguments($arrConfig)
 
 	// Parse arguments and check for error
 	$arrArguments = $argGetOpt->getopt($arrArgV, $strAllowedOptions);
-	if (PEAR::isError($arrArguments))
+	if (MDB2::isError($arrArguments))
 	{
 		Debug("Fatal Error: Unsupported command line argument ('".$arrArguments->getMessage()."')");
 die;
@@ -3533,7 +3533,7 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 
 	// If we don't know the customer group id ($intCustomerGroupId===FALSE) than we need to find it for the given invoice_run_id
 	$strSQL = "SELECT distinct(customer_group_id) FROM InvoiceRun WHERE Id IN (" . implode(',', $arrInvoiceRunIds) . ") AND customer_group_id IS NOT NULL";
-	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
+	if (MDB2::isError($result = $dbAdmin->query($strSQL)))
 	{
 		throw new Exception("Failed to find customer group ids for invoice runs: \n$strSQL\n" . $result->getMessage());
 	}
@@ -3547,7 +3547,7 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 	$tmpTableName = "tmp_staggered_barring_accounts_$time";
 
 	$strSQL = "DROP TABLE IF EXISTS $tmpTableName;";
-	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
+	if (MDB2::isError($result = $dbAdmin->query($strSQL)))
 	{
 		throw new Exception("Failed to drop (1) (if exists) $tmpTableName: " . $result->getMessage());
 	}
@@ -3571,7 +3571,7 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 			PRIMARY KEY (id)
 		) ENGINE=InnoDB AUTO_INCREMENT=0;
 	";
-	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
+	if (MDB2::isError($result = $dbAdmin->query($strSQL)))
 	{
 		throw new Exception("Failed to create tmp table (1) $tmpTableName: " . $result->getMessage());
 	}
@@ -3580,7 +3580,7 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 	$tmpRankTableName = "tmp_staggered_account_ranks_$time";
 
 	$strSQL = "DROP TABLE IF EXISTS $tmpRankTableName;";
-	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
+	if (MDB2::isError($result = $dbAdmin->query($strSQL)))
 	{
 		throw new Exception("Failed to drop (2) (if exists) $tmpRankTableName: " . $result->getMessage());
 	}
@@ -3594,7 +3594,7 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 			PRIMARY KEY (id)
 		) ENGINE=InnoDB AUTO_INCREMENT=0;
 	";
-	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
+	if (MDB2::isError($result = $dbAdmin->query($strSQL)))
 	{
 		throw new Exception("Failed to create tmp table (2) $tmpRankTableName: " . $result->getMessage());
 	}
@@ -3685,7 +3685,7 @@ ir_barring.Id IN (" . implode(',', $arrInvoiceRunIds) . ")
 	$tmpCols = implode(', ', array_keys($arrColumns));
 	$strSQL = /*"INSERT INTO $tmpTableName ($tmpCols) ".*/"SELECT " . implode(",\n       ", $select) . "\nFROM $strTables\nWHERE $strWhere\nGROUP BY $strGroupBy\nORDER BY $strOrderBy";
 
-	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
+	if (MDB2::isError($result = $dbAdmin->query($strSQL)))
 	{
 		throw new Exception("Failed to populate tmp table $tmpTableName: " . $result->getMessage() . "\n\n$strSQL\n\n");
 	}
@@ -3696,7 +3696,7 @@ ir_barring.Id IN (" . implode(',', $arrInvoiceRunIds) . ")
 		$strSQL = "INSERT INTO $tmpTableName ($tmpCols)
 			 VALUES (" . $row['invoice_run_id'] . ", " . $row['AccountId'] . ", " . $row['AccountGroupId'] . ", " .
 			$row['CustomerGroupId'] . ", '" . $row['CustomerGroupName'] . "', " . $row['TotalOutstanding'] . ", " . $row['Overdue'] . ", " . $row['EligibleOverdue'] . ", " . $row['TotalFromOverdueInvoices'] . ", " . $row['TotalFromEligibleOverdueInvoices'] . ", " . $row['minBalanceToPursue'] . ")";
-		if (PEAR::isError($result = $dbAdmin->query($strSQL)))
+		if (MDB2::isError($result = $dbAdmin->query($strSQL)))
 		{
 			throw new Exception("Failed to populate tmp table (1.$i) $tmpTableName: " . $result->getMessage() . "\n\n$strSQL\n\n");
 		}
@@ -3755,7 +3755,7 @@ ir_barring.Id IN (" . implode(',', $arrInvoiceRunIds) . ")
 	 ) as AccountRankings
 	 GROUP BY account_id
 	 ";
-	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
+	if (MDB2::isError($result = $dbAdmin->query($strSQL)))
 	{
 		throw new Exception("Failed to populate tmp rankings table $tmpRankTableName: " . $result->getMessage());
 	}
@@ -3765,7 +3765,7 @@ ir_barring.Id IN (" . implode(',', $arrInvoiceRunIds) . ")
 	{
 		$strSQL = "INSERT INTO $tmpRankTableName (account_id, ranking)
 			VALUES (" . $row['account_id'] . ", " . $row['ranking'] . ")";
-		if (PEAR::isError($result = $dbAdmin->query($strSQL)))
+		if (MDB2::isError($result = $dbAdmin->query($strSQL)))
 		{
 			throw new Exception("Failed to populate tmp table (2.$i) $tmpRankTableName: " . $result->getMessage() . "\n\n$strSQL\n\n");
 		}
@@ -3773,7 +3773,7 @@ ir_barring.Id IN (" . implode(',', $arrInvoiceRunIds) . ")
 
 	// Load the details from the tmp tables in reverse rank order (worst first)
 	$strSQL = "SELECT $tmpCols, ranking FROM $tmpTableName, $tmpRankTableName WHERE $tmpTableName.AccountId = $tmpRankTableName.account_id ORDER BY ranking DESC";
-	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
+	if (MDB2::isError($result = $dbAdmin->query($strSQL)))
 	{
 		throw new Exception("Failed to load data from tmp tables: " . $result->getMessage());
 	}
@@ -3782,13 +3782,13 @@ ir_barring.Id IN (" . implode(',', $arrInvoiceRunIds) . ")
 
 	// Drop the temp tables
 	$strSQL = "DROP TABLE $tmpTableName;";
-	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
+	if (MDB2::isError($result = $dbAdmin->query($strSQL)))
 	{
 		throw new Exception("Failed to drop tmp table (1) $tmpTableName: " . $result->getMessage());
 	}
 
 	$strSQL = "DROP TABLE $tmpRankTableName;";
-	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
+	if (MDB2::isError($result = $dbAdmin->query($strSQL)))
 	{
 		throw new Exception("Failed to drop tmp table (2) $tmpRankTableName: " . $result->getMessage());
 	}

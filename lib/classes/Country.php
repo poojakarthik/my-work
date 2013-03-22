@@ -74,7 +74,7 @@ class Country
 			$strQuery = "SELECT $strColumns FROM country ORDER BY $strOrderByClause";
 			
 			$mixResult = $objDB->queryAll($strQuery, NULL, MDB2_FETCHMODE_ASSOC);
-			if (PEAR::isError($mixResult))
+			if (MDB2::isError($mixResult))
 			{
 				throw new Exception("Failed to retrieve country records. ". $mixResult->getMessage());
 			}

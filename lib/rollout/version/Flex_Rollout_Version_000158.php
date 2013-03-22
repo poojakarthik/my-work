@@ -21,7 +21,7 @@ class Flex_Rollout_Version_000158 extends Flex_Rollout_Version
 					"ADD modified_by_user_id BIGINT(20) UNSIGNED NULL DEFAULT NULL COMMENT 'FK into ticketing_user; the user who last modified the ticket' AFTER modified_datetime, ".
 					"ADD CONSTRAINT fk_ticketing_ticket_modified_by_user_id_ticketing_user_id FOREIGN KEY (modified_by_user_id) REFERENCES ticketing_user(id) ON UPDATE CASCADE ON DELETE RESTRICT;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the modified_by_user_id to the ticketing_ticket table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -35,7 +35,7 @@ class Flex_Rollout_Version_000158 extends Flex_Rollout_Version
 					"ADD CONSTRAINT fk_ticketing_ticket_history_modified_by_user_id_ticketing_user FOREIGN KEY (modified_by_user_id) REFERENCES ticketing_user(id) ON UPDATE CASCADE ON DELETE RESTRICT;";
 
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the modified_by_user_id to the ticketing_ticket_history table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -53,7 +53,7 @@ class Flex_Rollout_Version_000158 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

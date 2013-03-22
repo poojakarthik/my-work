@@ -27,7 +27,7 @@ class Flex_Rollout_Version_000196 extends Flex_Rollout_Version
 					ADD	INDEX	in_telemarketing_fnn_proposed_call_period_start	(call_period_start),
 					ADD	INDEX	in_telemarketing_fnn_proposed_call_period_end	(call_period_end);";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add indexes to the telemarketing_fnn_proposed Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -42,7 +42,7 @@ class Flex_Rollout_Version_000196 extends Flex_Rollout_Version
 					ADD	INDEX	in_telemarketing_fnn_dialled_fnn		(fnn),
 					ADD	INDEX	in_telemarketing_fnn_dialled_dialled_on	(dialled_on);";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add indexes to the telemarketing_fnn_dialled Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -62,7 +62,7 @@ class Flex_Rollout_Version_000196 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

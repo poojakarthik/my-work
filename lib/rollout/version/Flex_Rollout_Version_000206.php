@@ -30,7 +30,7 @@ class Flex_Rollout_Version_000206 extends Flex_Rollout_Version
 					) ENGINE=InnoDB COMMENT = 'Defines a data report status';";
 		
 		$oResult	= $dbAdmin->query($sSQL);
-		if (PEAR::isError($oResult))
+		if (MDB2::isError($oResult))
 		{
 			throw new Exception(__CLASS__ . " Failed to create data_report_status table - ". $oResult->getMessage());
 		}
@@ -48,7 +48,7 @@ class Flex_Rollout_Version_000206 extends Flex_Rollout_Version
 						('Active'	, 'Active Data Report'		, 'ACTIVE'		, 'DATA_REPORT_STATUS_ACTIVE'),
 						('Inactive'	, 'Inactive Data Report'	, 'INACTIVE'	, 'DATA_REPORT_STATUS_INACTIVE');";
 		$oResult	= $dbAdmin->query($sSQL);
-		if (PEAR::isError($oResult))
+		if (MDB2::isError($oResult))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the Other Charges & 3G Destination Contexts. ' . $oResult->getMessage() . " (DB Error: " . $oResult->getUserInfo() . ")");
 		}
@@ -65,7 +65,7 @@ class Flex_Rollout_Version_000206 extends Flex_Rollout_Version
 						FROM	data_report_status
 						WHERE	const_name	= 'DATA_REPORT_STATUS_ACTIVE';";
 		$oResult	= $dbAdmin->query($sDefault);
-		if (PEAR::isError($oResult))
+		if (MDB2::isError($oResult))
 		{
 			throw new Exception(__CLASS__ . ' Failed to get the id of the DATA_REPORT_STATUS_ACTIVE data_report_status. ' . $oResult->getMessage() . " (DB Error: " . $oResult->getUserInfo() . ")");
 		}
@@ -85,7 +85,7 @@ class Flex_Rollout_Version_000206 extends Flex_Rollout_Version
 		";
 		
 		$oResult	= $dbAdmin->query($sSQL);
-		if (PEAR::isError($oResult))
+		if (MDB2::isError($oResult))
 		{
 			throw new Exception(__CLASS__ . " Failed to add data_report_status_id column to the DataReport table - ". $oResult->getMessage());
 		}
@@ -96,7 +96,7 @@ class Flex_Rollout_Version_000206 extends Flex_Rollout_Version
 						FROM	data_report_status
 						WHERE	const_name	= 'DATA_REPORT_STATUS_DRAFT';";
 		$oResult	= $dbAdmin->query($sDraft);
-		if (PEAR::isError($oResult))
+		if (MDB2::isError($oResult))
 		{
 			throw new Exception(__CLASS__ . ' Failed to get the id of the DATA_REPORT_STATUS_DRAFT data_report_status. ' . $oResult->getMessage() . " (DB Error: " . $oResult->getUserInfo() . ")");
 		}
@@ -113,7 +113,7 @@ class Flex_Rollout_Version_000206 extends Flex_Rollout_Version
 						WHERE	Priviledges >= {$this->iPermissionDebug};";
 		
 		$oResult	= $dbAdmin->query($sUpdate);
-		if (PEAR::isError($oResult))
+		if (MDB2::isError($oResult))
 		{
 			throw new Exception(__CLASS__ . " Failed to update the data_report_status_id column in the DataReport table - ". $oResult->getMessage().". QUERY='{$sUpdate}'.");
 		}
@@ -148,7 +148,7 @@ class Flex_Rollout_Version_000206 extends Flex_Rollout_Version
 				// Perform the SQL
 				$objResult = $objDb->query($this->rollbackSQL[$l]['SQL']);
 				
-				if (PEAR::isError($objResult))
+				if (MDB2::isError($objResult))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l]['SQL'] . '. ' . $objResult->getMessage());
 				}

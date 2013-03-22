@@ -54,7 +54,7 @@ class DO_Modeler
 
 		$dbConnection = Data_Source::get($this->strDataSourceName, true, $options);
 
-		if (PEAR::isError($dbConnection))
+		if (MDB2::isError($dbConnection))
 		{
 			throw new Exception("Failed to connect to " . $this->arrDataSourceConfig['phptype'] . " database '" . $this->arrDataSourceConfig['database'] . "' on " . $this->arrDataSourceConfig['hostspec'] . " using username '" . $this->arrDataSourceConfig['username'] . "': " . $dbConnection->getMessage());
 		}
@@ -146,7 +146,7 @@ class DO_Database
 		
 		$tables = $this->dbConnection->manager->listTables();
 
-		if (PEAR::isError($tables))
+		if (MDB2::isError($tables))
 		{
 			throw new Exception(__CLASS__ . ' Failed to list tables in database. ' . $tables->getMessage());
 		}
@@ -234,7 +234,7 @@ class DO_Table
 	{
 		$constraints = $this->doDatabase->getDBConnection()->manager->listTableConstraints($this->tableName);
 
-		if (PEAR::isError($constraints))
+		if (MDB2::isError($constraints))
 		{
 			throw new Exception(__CLASS__ . ' Failed to list constraints for the \'' . $this->tableName . '\' table. ' . $constraints->getMessage());
 		}
@@ -277,7 +277,7 @@ class DO_Table
 		}
 
 		$cols = $this->doDatabase->getDBConnection()->manager->listTableFields($this->tableName);
-		if (PEAR::isError($cols))
+		if (MDB2::isError($cols))
 		{
 			throw new Exception(__CLASS__ . ' Failed to list columns for the \'' . $this->tableName . '\' table. ' . $cols->getMessage());
 		}
@@ -1436,7 +1436,7 @@ abstract class '.$obBaseClassName.' extends '.$dsnClassName.'
 
 		$dataSource = '.$obClassName.'::getDataSource();
 
-		if (PEAR::isError($results = $dataSource->query($strSQL, $arrMDB2Types)))
+		if (MDB2::isError($results = $dataSource->query($strSQL, $arrMDB2Types)))
 		{
 			throw new Exception(\'Failed to load records for \' . __CLASS__ . \' :: \' . $results->getMessage());
 		}
@@ -1492,7 +1492,7 @@ abstract class '.$obBaseClassName.' extends '.$dsnClassName.'
 
 		$dataSource = '.$obClassName.'::getDataSource();
 
-		if (PEAR::isError($results = $dataSource->query($strSQL, array(\'integer\'))))
+		if (MDB2::isError($results = $dataSource->query($strSQL, array(\'integer\'))))
 		{
 			throw new Exception(\'Failed to count records for \' . __CLASS__ . \' :: \' . $results->getMessage());
 		}

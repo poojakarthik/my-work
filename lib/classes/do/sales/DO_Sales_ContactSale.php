@@ -41,7 +41,7 @@ class DO_Sales_ContactSale extends DO_Sales_Base_ContactSale
 
 		$result = $dataSource->query($strSQL);
 
-		if(PEAR::isError($result))
+		if(MDB2::isError($result))
 		{
 			throw new Exception("Failed to get contact methods: " . $result->getMessage());
 		}

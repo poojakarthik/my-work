@@ -29,7 +29,7 @@ class DO_Sales_SaleStatusHistory extends DO_Sales_Base_SaleStatusHistory
 		$new = true;
 		
 		$dataSource = self::getDataSource();
-		if (PEAR::isError($results = $dataSource->query($strSQL)))
+		if (MDB2::isError($results = $dataSource->query($strSQL)))
 		{
 			throw new Exception('Failed to check for ' . __CLASS__ . ' :: ' . $results->getMessage());
 		}
@@ -72,7 +72,7 @@ class DO_Sales_SaleStatusHistory extends DO_Sales_Base_SaleStatusHistory
 				  ' LIMIT 1 OFFSET 0';
 
 		$dataSource = self::getDataSource();
-		if (PEAR::isError($results = $dataSource->query($strSQL)))
+		if (MDB2::isError($results = $dataSource->query($strSQL)))
 		{
 			throw new Exception('Failed to get status history description for ' . __CLASS__ . ' :: ' . $results->getMessage());
 		}

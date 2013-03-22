@@ -23,7 +23,7 @@ class Flex_Rollout_Version_000166 extends Flex_Rollout_Version
 					ADD		uncompressed_file_size	INT			UNSIGNED	NULL	COMMENT 'Size in Bytes of the uncompressed Content',
 					MODIFY	content					MEDIUMBLOB				NULL	COMMENT 'Binary content of the Document (compressed with BZIP2)';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the document_content.uncompressed_file_size Field. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -33,7 +33,7 @@ class Flex_Rollout_Version_000166 extends Flex_Rollout_Version
 		
 		//	2:	Compress all document_content.content data with BZIP2
 		$resDocumentContent	= $dbAdmin->query("SELECT * FROM document_content WHERE content IS NOT NULL");
-		if (PEAR::isError($resDocumentContent))
+		if (MDB2::isError($resDocumentContent))
 		{
 			throw new Exception(__CLASS__ . ' Failed to retrieve the list of document_content Records. ' . $resDocumentContent->getMessage() . " (DB Error: " . $resDocumentContent->getUserInfo() . ")");
 		}
@@ -47,21 +47,21 @@ class Flex_Rollout_Version_000166 extends Flex_Rollout_Version
 				throw new Exception("Unable to compress Content for Document {$arrDocumentContent['document_id']} (Revision: {$arrDocumentContent['id']}): Error #{$mixCompressed}");
 			}
 			
-			if (PEAR::isError($strNewContent = $dbAdmin->quote($mixCompressed, 'text')))
+			if (MDB2::isError($strNewContent = $dbAdmin->quote($mixCompressed, 'text')))
 			{
 				throw new Exception(__CLASS__ . ' Failed to quote new document_content.content: '. $strNewContent->getMessage() . " (DB Error: " . $strNewContent->getUserInfo() . ")");
 			}
-			if (PEAR::isError($intUncompressedFileSize = $dbAdmin->quote(strlen($arrDocumentContent['content']), 'integer')))
+			if (MDB2::isError($intUncompressedFileSize = $dbAdmin->quote(strlen($arrDocumentContent['content']), 'integer')))
 			{
 				throw new Exception(__CLASS__ . ' Failed to quote document_content.uncompressed_file_size: '. $strNewContent->getMessage() . " (DB Error: " . $strNewContent->getUserInfo() . ")");
 			}
-			if (PEAR::isError($intDocumentContentId = $dbAdmin->quote($arrDocumentContent['id'], 'integer')))
+			if (MDB2::isError($intDocumentContentId = $dbAdmin->quote($arrDocumentContent['id'], 'integer')))
 			{
 				throw new Exception(__CLASS__ . ' Failed to quote document_content.id: '. $intDocumentContentId->getMessage() . " (DB Error: " . $intDocumentContentId->getUserInfo() . ")");
 			}
 			
 			// Rollback values
-			if (PEAR::isError($strOldContent = $dbAdmin->quote($arrDocumentContent['content'], 'text')))
+			if (MDB2::isError($strOldContent = $dbAdmin->quote($arrDocumentContent['content'], 'text')))
 			{
 				throw new Exception(__CLASS__ . ' Failed to quote old document_content.content: '. $strOldContent->getMessage() . " (DB Error: " . $strOldContent->getUserInfo() . ")");
 			}
@@ -72,7 +72,7 @@ class Flex_Rollout_Version_000166 extends Flex_Rollout_Version
 								"WHERE	id		= {$intDocumentContentId};";
 			
 			$resDocumentContentUpdate	= $dbAdmin->exec($strUpdateSQL);
-			if (PEAR::isError($resDocumentContentUpdate))
+			if (MDB2::isError($resDocumentContentUpdate))
 			{
 				throw new Exception(__CLASS__ . ' Failed to compress document_content '.$arrDocumentContent['id'].'. ' . $resDocumentContentUpdate->getMessage() . " (DB Error: " . $resDocumentContentUpdate->getUserInfo() . ")");
 			}
@@ -92,7 +92,7 @@ class Flex_Rollout_Version_000166 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

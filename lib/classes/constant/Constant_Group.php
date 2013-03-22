@@ -217,7 +217,7 @@ class Constant_Group
 			{
 				// MDB2 data source
 				$mixRecordSet = $ds->queryAll($strLoadSQL, null, MDB2_FETCHMODE_ASSOC);
-				if (PEAR::isError($mixRecordSet))
+				if (MDB2::isError($mixRecordSet))
 				{
 					throw new Exception($mixRecordSet->getMessage());
 				}

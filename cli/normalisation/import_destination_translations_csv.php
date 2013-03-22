@@ -29,7 +29,7 @@ try
 	
 	// Ensure Carrier is valid
 	$resCarrierByConstant	= $dsFlex->query("SELECT * FROM Carrier WHERE const_name = ".$dsFlex->quote($mixCarrier, 'text')." LIMIT 1");
-	if (PEAR::isError($resCarrierByConstant))
+	if (MDB2::isError($resCarrierByConstant))
 	{
 		throw new Exception($resCarrierByConstant->getMessage()."\n\n".$resCarrierByConstant->getUserInfo());
 	}
@@ -39,7 +39,8 @@ try
 	}
 	else
 	{
-		$resCarrierById	= $dsFlex->query("SELECT * FROM Carrier WHERE Id = ".$dsFlex->quote($mixCarrier, 'integer')." LIMIT 1");if (PEAR::isError($resCarrierByConstant))
+		$resCarrierById	= $dsFlex->query("SELECT * FROM Carrier WHERE Id = ".$dsFlex->quote($mixCarrier, 'integer')." LIMIT 1");
+		if (MDB2::isError($resCarrierByConstant))
 		{
 			throw new Exception($resCarrierById->getMessage()."\n\n".$resCarrierById->getUserInfo());
 		}
@@ -128,7 +129,7 @@ try
 			// Ensure this is not a duplicate
 			$strDuplicateSQL	= "SELECT cdr_call_type_translation.* FROM cdr_call_type_translation WHERE carrier_id = ".$dsFlex->quote($arrDestinationTranslation['carrier_id'], 'integer')." AND carrier_code = ".$dsFlex->quote($arrDestinationTranslation['carrier_code'], 'text')." LIMIT 1";
 			$resDuplicate		= $dsFlex->query($strDuplicateSQL);
-			if (PEAR::isError($resDuplicate))
+			if (MDB2::isError($resDuplicate))
 			{
 				throw new Exception($resDuplicate->getMessage()."\n\n".$resDuplicate->getUserInfo());
 			}
@@ -182,7 +183,7 @@ try
 											".$dsFlex->quote($arrDestinationTranslation['description']	, 'text')."
 										);";
 				$resInsert	= $dsFlex->exec($strInsertSQL);
-				if (PEAR::isError($resInsert))
+				if (MDB2::isError($resInsert))
 				{
 					throw new Exception($resInsert->getMessage()."\n\n".$resInsert->getUserInfo());
 				}
@@ -196,7 +197,7 @@ try
 											description	= ".$dsFlex->quote($arrDestinationTranslation['description']	, 'text')."
 									WHERE	id = ".$dsFlex->quote($arrDuplicate['id'], 'integer').";";
 				$resUpdate	= $dsFlex->exec($strUpdateSQL);
-				if (PEAR::isError($resUpdate))
+				if (MDB2::isError($resUpdate))
 				{
 					throw new Exception($resUpdate->getMessage()."\n\n".$resUpdate->getUserInfo());
 				}

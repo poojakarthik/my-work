@@ -23,7 +23,7 @@ class Flex_Rollout_Version_000164 extends Flex_Rollout_Version
 					ADD COLUMN		active_status_id SMALLINT UNSIGNED NULL COMMENT 'FK into active_status table' AFTER is_system,
 					ADD CONSTRAINT	fk_action_type_active_status_id FOREIGN KEY (active_status_id) REFERENCES active_status(id) ON UPDATE CASCADE ON DELETE RESTRICT;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to modify the structure of the action_type Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -42,7 +42,7 @@ class Flex_Rollout_Version_000164 extends Flex_Rollout_Version
 					SET active_status_id = $intActiveStatusActive,
 					is_system = CASE WHEN name = 'Payment Made' THEN 1 ELSE 0 END;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to update the active_status_id and is_system fields for the records of the action_type Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -53,7 +53,7 @@ class Flex_Rollout_Version_000164 extends Flex_Rollout_Version
 					CHANGE	is_system is_system TINYINT UNSIGNED NOT NULL COMMENT '1 = the system specifically uses this action type, 0 = it doesn''t',
 					CHANGE	active_status_id active_status_id SMALLINT UNSIGNED NOT NULL COMMENT 'FK into active_status table';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to modify the structure of the action_type Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -69,7 +69,7 @@ class Flex_Rollout_Version_000164 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

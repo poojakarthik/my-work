@@ -27,7 +27,7 @@ class Flex_Rollout_Version_000169 extends Flex_Rollout_Version
 						ADD		code_2_char				CHAR(2)			NULL					COMMENT '2-character Country Code (ISO 3166-1 alpha-2)',
 						ADD		has_postcode			TINYINT			NOT NULL	DEFAULT 1	COMMENT '1: This Country uses Postcodes; 0: No Postcodes';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to remove country.description, change code to code_3_char, and add code_2_char Fields. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -45,7 +45,7 @@ class Flex_Rollout_Version_000169 extends Flex_Rollout_Version
 					SET		code_2_char	= 'AU'
 					WHERE	code_3_char	= 'AUS';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to set country.code_2_char for AUS. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -53,7 +53,7 @@ class Flex_Rollout_Version_000169 extends Flex_Rollout_Version
 					SET		code_2_char	= 'IN'
 					WHERE	code_3_char	= 'IND';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to set country.code_2_char for IND. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -62,7 +62,7 @@ class Flex_Rollout_Version_000169 extends Flex_Rollout_Version
 		$strSQL = "	ALTER TABLE	`state`
 						DROP	description;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to remove state.description Field. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -85,7 +85,7 @@ class Flex_Rollout_Version_000169 extends Flex_Rollout_Version
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the address_locality Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -101,7 +101,7 @@ class Flex_Rollout_Version_000169 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

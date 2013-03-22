@@ -20,7 +20,7 @@ class Flex_Rollout_Version_000068 extends Flex_Rollout_Version
 		// 1:	Adds the account_status.can_invoice field
 		$strSQL = "ALTER TABLE account_status ADD can_invoice TINYINT(1) NOT NULL DEFAULT 0 COMMENT '1: Account can be Invoiced; 0: Account cannot be Invoiced' AFTER name;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the account_status.can_invoice field. ' . $result->getMessage());
 		}
@@ -29,7 +29,7 @@ class Flex_Rollout_Version_000068 extends Flex_Rollout_Version
 		// 2:	Populates the account_status.can_invoice field
 		$strSQL = "UPDATE account_status SET can_invoice = 1 WHERE name IN ('Active', 'Closed');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the account_status.can_invoice field. ' . $result->getMessage());
 		}
@@ -37,7 +37,7 @@ class Flex_Rollout_Version_000068 extends Flex_Rollout_Version
 		// 3:	Adds the service_status.can_invoice field
 		$strSQL = "ALTER TABLE service_status ADD can_invoice TINYINT(1) NOT NULL DEFAULT 0 COMMENT '1: Service can be Invoiced; 0: Service cannot be Invoiced' AFTER name;";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the service_status.can_invoice field. ' . $result->getMessage());
 		}
@@ -46,7 +46,7 @@ class Flex_Rollout_Version_000068 extends Flex_Rollout_Version
 		// 4:	Populates the service_status.can_invoice field
 		$strSQL = "UPDATE service_status SET can_invoice = 1 WHERE name IN ('Active', 'Disconnected');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the service_status.can_invoice field. ' . $result->getMessage());
 		}
@@ -62,7 +62,7 @@ class Flex_Rollout_Version_000068 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

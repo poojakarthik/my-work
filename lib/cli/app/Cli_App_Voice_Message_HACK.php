@@ -139,7 +139,7 @@ Account.Id IN (1000006120, 1000006261, 1000008396, 1000008470, 1000159961, 10001
 		
 		$db = Data_Source::get();
 		$res = $db->query($strSQL);
-		if (PEAR::isError($res))
+		if (MDB2::isError($res))
 		{
 			$this->log("\n\n$strSQL\n\n");
 			throw new Exception("Failed to load contact details for barring: " . $res->getMessage());

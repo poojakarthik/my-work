@@ -332,9 +332,9 @@ class Application_Handler_Developer extends Application_Handler
 		{
 			echo "Error producing JSON output: ".$php_errormsg;
 		}
-		elseif (PEAR::isError($sJSONResponse))
+		elseif (MDB2::isError($sJSONResponse))
 		{
-			echo "PEAR Error:\n";
+			echo "MDB2 Error:\n";
 			echo print_r($sJSONResponse, true);
 		}
 		else

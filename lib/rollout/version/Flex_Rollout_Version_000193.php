@@ -60,7 +60,7 @@ class Flex_Rollout_Version_000193 extends Flex_Rollout_Version
 				$fltStartTime	= microtime(true);
 				$result			= $dbAdmin->query($arrCommand['check_sql']);
 				$strTimeTaken	= number_format(microtime(true) - $fltStartTime, 3, '.', '');
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . " Failed Check for Step {$intStep} " . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 				}
@@ -93,7 +93,7 @@ class Flex_Rollout_Version_000193 extends Flex_Rollout_Version
 			$this->outputMessage("\nStep {$intStep} - {$arrCommand['step_name']}\n");
 
 			$result = $dbAdmin->query($arrCommand['rollout_sql']);
-			if (PEAR::isError($result))
+			if (MDB2::isError($result))
 			{
 				throw new Exception(__CLASS__ . " Failed Step {$intStep} " . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 			}
@@ -119,7 +119,7 @@ class Flex_Rollout_Version_000193 extends Flex_Rollout_Version
 				$this->outputMessage("\nUndoing Step {$intStep}\t- ". $this->rollbackSQL[$l]['step_name'] ."\n");
 				
 				$result = $dbAdmin->query($this->rollbackSQL[$l]['rollback_sql']);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l]['rollback_sql'] . '. ' . $result->getMessage());
 				}

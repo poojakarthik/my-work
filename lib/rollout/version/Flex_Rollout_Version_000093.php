@@ -19,7 +19,7 @@ class Flex_Rollout_Version_000093 extends Flex_Rollout_Version
 		$strSQL = "ALTER TABLE Rate " .
 					"ADD allow_cdr_hiding TINYINT(1) NOT NULL DEFAULT 0 COMMENT '1: Allows Zero-Rated CDRs to be hidden on the Invoice (must also be set at the RatePlan level); 0: Normal behaviour';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the Rate.allow_cdr_hiding Field. ' . $result->getMessage());
 		}
@@ -30,7 +30,7 @@ class Flex_Rollout_Version_000093 extends Flex_Rollout_Version
 		$strSQL = "ALTER TABLE RatePlan " .
 					"ADD allow_cdr_hiding TINYINT(1) NOT NULL DEFAULT 0 COMMENT '1: Allows Zero-Rated CDRs to be hidden on the Invoice (must also be set at the Rate level); 0: Normal behaviour';";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the RatePlan.allow_cdr_hiding Field. ' . $result->getMessage());
 		}
@@ -47,7 +47,7 @@ class Flex_Rollout_Version_000093 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

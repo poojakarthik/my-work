@@ -31,7 +31,7 @@ class Flex_Rollout_Version_000081 extends Flex_Rollout_Version
 			) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Days of the week: ISO-8601 numeric representation' AUTO_INCREMENT=1;
 		";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' failed to create day table. ' . $result->getMessage());
 		}
@@ -49,7 +49,7 @@ class Flex_Rollout_Version_000081 extends Flex_Rollout_Version
 				(7, 'Sun', 'Sunday', 'DAY_SUNDAY');
 		";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' failed to populate day table. ' . $result->getMessage());
 		}
@@ -72,7 +72,7 @@ class Flex_Rollout_Version_000081 extends Flex_Rollout_Version
 			) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='TEMPORARY config table for staggered barring' AUTO_INCREMENT=0;
 		";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' failed to create automated_invoice_run_process_config table. ' . $result->getMessage());
 		}
@@ -94,7 +94,7 @@ class Flex_Rollout_Version_000081 extends Flex_Rollout_Version
 			) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='TEMPORARY table for staggered barring' AUTO_INCREMENT=0;
 		";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' failed to create automated_invoice_run_process table. ' . $result->getMessage());
 		}
@@ -114,7 +114,7 @@ class Flex_Rollout_Version_000081 extends Flex_Rollout_Version
 			) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='TEMPORARY table for staggered barring accounts' AUTO_INCREMENT=0;
 		";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' failed to create automated_invoice_run_process_account table. ' . $result->getMessage());
 		}
@@ -132,7 +132,7 @@ class Flex_Rollout_Version_000081 extends Flex_Rollout_Version
 			) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='TEMPORARY table message delivery outcomes' AUTO_INCREMENT=0;
 		";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' failed to create automated_invoice_run_message_delivery_outcome table. ' . $result->getMessage());
 		}
@@ -150,7 +150,7 @@ class Flex_Rollout_Version_000081 extends Flex_Rollout_Version
 				('Sun', 'Sunday', 'DAY_SUNDAY');
 		";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' failed to populate automated_invoice_run_message_delivery_outcome table. ' . $result->getMessage());
 		}
@@ -166,7 +166,7 @@ class Flex_Rollout_Version_000081 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}

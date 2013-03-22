@@ -23,7 +23,7 @@ class Flex_Rollout_Version_000189 extends Flex_Rollout_Version
 					VALUES
 						(7, 'Cooling Off', 0, 1, 'Do not bar.', 'CREDIT_CONTROL_STATUS_COOLING_OFF');";
 		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
+		if (MDB2::isError($result))
 		{
 			throw new Exception(__CLASS__ . " Failed to add the 'Cooling Off' Credit Control Status. " . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
@@ -40,7 +40,7 @@ class Flex_Rollout_Version_000189 extends Flex_Rollout_Version
 			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
 			{
 				$result = $dbAdmin->query($this->rollbackSQL[$l]);
-				if (PEAR::isError($result))
+				if (MDB2::isError($result))
 				{
 					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . $result->getMessage());
 				}
