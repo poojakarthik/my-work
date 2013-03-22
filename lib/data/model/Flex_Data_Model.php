@@ -43,15 +43,9 @@ class Flex_Data_Model
 			//$dataSource->loadModule('Reverse');
 		}
 
-<<<<<<< HEAD
 		//$cols = $dataSource->manager->listTableFields($tableName);
 		$cols = $dataSource->listTableFields($tableName);
 		if (MDB2::isError($cols)) {
-=======
-		$cols = $dataSource->manager->listTableFields($tableName);
-		if (MDB2::isError($cols))
-		{
->>>>>>> pear-deprecation-iserror
 			throw new Exception(__CLASS__ . ' Failed to list columns for the \'' . $tableName . '\' table in \'' . $strDataSource . '\' database. ' . $cols->getMessage());
 		}
 
@@ -82,12 +76,7 @@ class Flex_Data_Model
 		//$tables = $dataSource->manager->listTables();
 		$tables = $dataSource->listTables();
 
-<<<<<<< HEAD
 		if (MDB2::isError($tables)) {
-=======
-		if (MDB2::isError($tables))
-		{
->>>>>>> pear-deprecation-iserror
 			throw new Exception(__CLASS__ . ' Failed to list tables for \'' . $strDataSource . '\' database. ' . $tables->getMessage());
 		}
 
