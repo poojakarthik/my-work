@@ -24,12 +24,11 @@ class Flex_Rollout_Incremental
 
 		$sql = "SELECT MAX(version) FROM database_version";
 		$res = $db->query($sql);
-
 		if (MDB2::isError($res))
 		{
 			throw new Exception("Failed to find latest database version: " . $res->getMessage());
 		}
-
+		
 		$currentVersion	= intval($res->fetchOne());
 
 		Log::getLog()->log("Got latest version {$currentVersion}");
@@ -360,9 +359,10 @@ class Flex_Rollout_Incremental
 		try
 		{
 			$dataSource = Data_Source::get();
-			$dataSource->loadModule('Manager');
+			//$dataSource->loadModule('Manager');
 
-			$tables = $dataSource->manager->listTables();
+			//$tables = $dataSource->manager->listTables();
+			$tables = $dataSource->listTables();
 
 			if (MDB2::isError($tables))
 			{
@@ -371,7 +371,8 @@ class Flex_Rollout_Incremental
 
 			foreach ($tables as $strTable)
 			{
-				$arrColumns = $dataSource->manager->listTableFields($strTable);
+				//$arrColumns = $dataSource->manager->listTableFields($strTable);
+				$arrColumns = $dataSource->listTableFields($strTable);
 
 				if (MDB2::isError($arrColumns))
 				{

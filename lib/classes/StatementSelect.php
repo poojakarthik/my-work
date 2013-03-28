@@ -112,9 +112,14 @@
 	function __construct($strTables, $mixColumns, $mixWhere = "", $strOrder = "", $strLimit = "", $strGroupBy = "", $strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 	{
 		parent::__construct($strConnectionType);
-		
+
+		// Pumping an array into string will produce "PHP Notice:  Array to string conversion"
+		// So lets safely convert the mixed value to a string before passing it over to Trace()
+		$sColumnsForTrace = var_export($mixColumns, true);
+		$sWhereForTrace = var_export($mixWhere, true);
+
 		// Trace
-		$this->Trace("Input: $strTables, $mixColumns, $mixWhere, $strOrder, $strLimit, $strGroupBy");
+		$this->Trace("Input: {$strTables}, {$sColumnsForTrace}, {$sWhereForTrace}, {$strOrder}, {$strLimit}, {$strGroupBy}");
 		
 		// prepare the WHERE clause
 		$strWhere = $this->PrepareWhere($mixWhere);

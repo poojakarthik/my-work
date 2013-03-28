@@ -12,8 +12,29 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 
 		$aValidationErrors = $this->_validatePortabilityOptions();
 		if (!empty($aValidationErrors)) {
-			throw new Exception("Unsupported portability option/s: " . implode(", ", $aValidationErrors));
+			throw new Exception("Error in method __construct(), unsupported portability option/s: " . implode(", ", $aValidationErrors));
 		}
+	}
+
+	// TOOD
+	/*
+	MDB2: http://pear.php.net/package/MDB2/docs/latest/MDB2/MDB2_Driver_Common.html#methodquote
+	
+	Convert a text value into a DBMS specific format that is suitable to compose query statements.
+
+	Return: text string that represents the given argument value in a DBMS specific format.
+	Access: public
+
+	Parameters:
+	string  	$value  	—	  text string value that is intended to be converted.
+	string  	$type  	—	  type to which the value should be converted to
+	bool  	$quote  	—	  quote
+	bool  	$escape_wildcards  	—	  escape wildcards
+	*/
+	public function quote($sValue, $sType=null, $bQuote=true, $bEscapeWildcards=false) {
+		throw new Exception("Error in method quote(), not implemented.");
+		// PDO's quote does not work the same...
+		//return $this->_oPDO->quote($sValue, $iParameterType=PDO::PARAM_STR);
 	}
 
 	public function listTables() {
@@ -48,12 +69,15 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 		try {
 			$oStatement = $this->_oPDO->query("DESCRIBE {$sTable} {$sFieldName}");
 			$aDefinition = $oStatement->fetchAll(MDB2_FETCHMODE_ASSOC);
+			preg_match("/\((\d+)\)/", $aDefinition[0]['Type'], $aMatches);
+			$iLength = (isset($aMatches[1])) ? (int)$aMatches[1] : null;
 			return array(array(
 				'notnull' => ($aDefinition[0]['Null'] === 'NO') ? true : false,
 				'nativetype' => self::_getNativeDataType($aDefinition[0]['Type']),
 				'default' => $aDefinition[0]['Default'],
 				'type' => $aDefinition[0]['Type'],
-				'mdb2type' => self::_getMDB2DataType($aDefinition[0]['Type'])
+				'mdb2type' => self::_getMDB2DataType($aDefinition[0]['Type']),
+				'length' => $iLength
 			));
 		} catch (PDOException $oException) {
 			return MDB2_Error::fromPDOException($oException);
@@ -62,7 +86,7 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 
 	public function beginTransaction($sSavepoint=null) {
 		if($sSavepoint) {
-			throw new Exception("Unimplemented property: \$sSavepoint");
+			throw new Exception("Error in method beginTransaction(), unimplemented property: \$sSavepoint");
 		} else {
 			if($this->inTransaction()) {
 				return MDB2_OK;
@@ -78,7 +102,7 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 
 	public function inTransaction($bIgnoreNested=false) {
 		if($bIgnoreNested) {
-			throw new Exception("Unimplemented property: \$bIgnoreNested");
+			throw new Exception("Error in method inTransaction(), unimplemented property: \$bIgnoreNested");
 		}
 		if($this->_oPDO->inTransaction()) {
 			return true;
@@ -88,7 +112,7 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 
 	public function commit($sSavepoint=null) {
 		if($sSavepoint) {
-			throw new Exception("Unimplemented property: \$sSavepoint");
+			throw new Exception("Error in method commit(), unimplemented property: \$sSavepoint");
 		} else {
 			if($this->inTransaction()) {
 				if($this->_oPDO->commit()) {
@@ -104,7 +128,7 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 
 	public function rollback($sSavepoint=null) {
 		if($sSavepoint) {
-			throw new Exception("Unimplemented property: \$sSavepoint");
+			throw new Exception("Error in method rollback(), unimplemented property: \$sSavepoint");
 		} else {
 			if($this->_oPDO->rollBack()) {
 				return MDB2_OK;
@@ -116,10 +140,10 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 
 	public function setFetchMode($iFetchMode, $sObjectClass='stdClass') {
 		if ($sObjectClass !== 'stdClass') {
-			throw new Exception("Setting the object class is not supported: " . var_export($sObjectClass, true));
+			throw new Exception("Error in method setFetchMode(), setting the object class is not supported: " . var_export($sObjectClass, true));
 		}
 		if (!is_numeric($iFetchMode)) {
-			throw new Exception("Unsupported Fetch Mode requested: " . var_export($iFetchMode, true));
+			throw new Exception("Error in method setFetchMode(), unsupported Fetch Mode requested: " . var_export($iFetchMode, true));
 		}
 		$this->setPDOFetchMode($iFetchMode);
 		$this->_oPDO->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, $this->getPDOFetchMode($iFetchMode));
@@ -136,13 +160,13 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 	public function query($sQuery, $mTypes=null, $mResultClass=true, $mResultWrapClass=true) {
 		try {
 			if ($mResultClass !== true) {
-				throw new Exception('Unimplemented/unknown result class: ' . var_export($mResultClass, true));
+				throw new Exception('Error in method query(), unimplemented/unknown result class: ' . var_export($mResultClass, true));
 			}
 			if ($mResultWrapClass !== true) {
-				throw new Exception('Unimplemented/unknown class to wrap results: ' . var_export($mResultWrapClass, true));
+				throw new Exception('Error in method query(), unimplemented/unknown class to wrap results: ' . var_export($mResultWrapClass, true));
 			}
 			if ($mTypes !== null) {
-				throw new Exception('Unimplemented/unknown column types: ' . var_export($mTypes, true));
+				throw new Exception('Error in method query(), unimplemented/unknown column types: ' . var_export($mTypes, true));
 			}
 			return new MDB2_Driver_mysqli_Result($this->_oPDO->query($sQuery), $this);
 
@@ -157,10 +181,6 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 		} else {
 			return new MDB2_Error();
 		}
-	}
-
-	public function quote($sQuote, $iParameterType=PDO::PARAM_STR) {
-		return $this->_oPDO->quote($sQuote, $iParameterType);
 	}
 
 	private function _validatePortabilityOptions() {
@@ -257,7 +277,7 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 				$sMDB2Datatype = 'date';
 				break;
 			default:
-				throw new Exception("Unknown database attribute type: " . var_export($sDatatype, true));
+				throw new Exception("Error in method _getMDB2DataType(), unknown database attribute type: " . var_export($sDatatype, true));
 		}
 
 		return $sMDB2Datatype;
