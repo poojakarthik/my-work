@@ -1,6 +1,7 @@
 <?php
 
 //require_once('Spreadsheet/Excel/Writer.php');
+require_once FLEX_BASE_PATH.'/lib/PHPExcel/Classes/PHPExcel.php';
 
 /**
  * Cli_App_Rating
@@ -357,31 +358,41 @@ class Cli_App_Rating extends Cli
 		Log::getLog()->log("Writing Comparison Report to '{$sTempFileName}'...");
 		
 		// Create an XLS
-		$oWorkbook	= new Spreadsheet_Excel_Writer($sTempFileName);
+		// OLD
+		/*$oWorkbook	= new Spreadsheet_Excel_Writer($sTempFileName);*/
+		// NEW
+		// Create a new PHPExcel object
+		$oWorkbook = new PHPExcel();
 		
 		$aWorksheets	= array(
 			'SIGNIFICANT'	=> array(
-				'oWorksheet'	=> $oWorkbook->addWorksheet('Significant Differences'),
+				//'oWorksheet'	=> $oWorkbook->addWorksheet('Significant Differences'),
+				'oWorksheet'	=> $oWorkbook->createSheet('Significant Differences'),
 				'iCount'		=> 0
 			),
 			'MINOR'			=> array(
-				'oWorksheet'	=> $oWorkbook->addWorksheet('Minor Differences'),
+				//'oWorksheet'	=> $oWorkbook->addWorksheet('Minor Differences'),
+				'oWorksheet'	=> $oWorkbook->createSheet('Minor Differences'),
 				'iCount'		=> 0
 			),
 			'NONE'			=> array(
-				'oWorksheet'	=> $oWorkbook->addWorksheet('No Differences'),
+				//'oWorksheet'	=> $oWorkbook->addWorksheet('No Differences'),
+				'oWorksheet'	=> $oWorkbook->createSheet('No Differences'),
 				'iCount'		=> 0
 			),
 			'NO_OLD_RATE'	=> array(
-				'oWorksheet'	=> $oWorkbook->addWorksheet('No Old Rate'),
+				//'oWorksheet'	=> $oWorkbook->addWorksheet('No Old Rate'),
+				'oWorksheet'	=> $oWorkbook->createSheet('No Old Rate'),
 				'iCount'		=> 0
 			),
 			'NO_NEW_RATE'	=> array(
-				'oWorksheet'	=> $oWorkbook->addWorksheet('No New Rate'),
+				//'oWorksheet'	=> $oWorkbook->addWorksheet('No New Rate'),
+				'oWorksheet'	=> $oWorkbook->createSheet('No New Rate'),
 				'iCount'		=> 0
 			),
 			'NO_NEW_OLD_RATE'	=> array(
-				'oWorksheet'	=> $oWorkbook->addWorksheet('No New or Old Rate'),
+				//'oWorksheet'	=> $oWorkbook->addWorksheet('No New or Old Rate'),
+				'oWorksheet'	=> $oWorkbook->createSheet('No New or Old Rate'),
 				'iCount'		=> 0
 			)
 		);

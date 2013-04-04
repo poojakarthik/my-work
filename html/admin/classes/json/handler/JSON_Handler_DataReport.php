@@ -407,8 +407,10 @@ class JSON_Handler_DataReport extends JSON_Handler
 					// Immediately generated and return the path to the file
 					
 					// Include XLS generator
-					require_once('Spreadsheet/Excel/Writer.php');
-	
+					// OLD
+					/*require_once('Spreadsheet/Excel/Writer.php');*/
+					require_once FLEX_BASE_PATH.'/lib/PHPExcel/Classes/PHPExcel.php';
+
 					// Create an ApplicationReport
 					$aConfig 	= LoadApplication("lib/report");
 					$oAppReport	= new ApplicationReport(Array('Display' => FALSE));

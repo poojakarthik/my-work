@@ -16,7 +16,6 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 		}
 	}
 
-	// TOOD
 	/*
 	MDB2: http://pear.php.net/package/MDB2/docs/latest/MDB2/MDB2_Driver_Common.html#methodquote
 	
@@ -32,9 +31,20 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 	bool  	$escape_wildcards  	—	  escape wildcards
 	*/
 	public function quote($sValue, $sType=null, $bQuote=true, $bEscapeWildcards=false) {
-		throw new Exception("Error in method quote(), not implemented.");
-		// PDO's quote does not work the same...
-		//return $this->_oPDO->quote($sValue, $iParameterType=PDO::PARAM_STR);
+		//throw new Exception("Error in method quote(), not implemented.");
+		return $this->_oPDO->quote($sValue);
+	}
+
+	public function queryOne($sQuery, $sType=null, $mColnum=0){
+		$oStatement = $this->_oPDO->query($sQuery);
+		if (gettype($mColnum) === 'integer') {
+			$aRow = $oStatement->fetch(PDO::FETCH_NUM);
+		} elseif (gettype($mColnum) === 'string') {
+			$aRow = $oStatement->fetch(PDO::FETCH_ASSOC);
+		} else {
+			throw new Exception("Error in method queryOne(), unsupported type: " . gettype($sType));
+		}
+		return (isset($aRow[$mColnum])) ? $aRow[$mColnum] : new MDB2_Error();
 	}
 
 	public function listTables() {
@@ -54,7 +64,7 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 	public function listTableFields($sTable) {
 		try {
 			$oStatement = $this->_oPDO->query("SHOW COLUMNS FROM {$sTable}");
-			$aTableFields = $oStatement->fetchAll();			
+			$aTableFields = $oStatement->fetchAll();		
 			$aResult = array();
 			foreach($aTableFields as $aTable) {
 				$aResult[] = $aTable['Field'];
@@ -165,9 +175,11 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 			if ($mResultWrapClass !== true) {
 				throw new Exception('Error in method query(), unimplemented/unknown class to wrap results: ' . var_export($mResultWrapClass, true));
 			}
+			/*
 			if ($mTypes !== null) {
 				throw new Exception('Error in method query(), unimplemented/unknown column types: ' . var_export($mTypes, true));
 			}
+			*/
 			return new MDB2_Driver_mysqli_Result($this->_oPDO->query($sQuery), $this);
 
 		} catch (PDOException $oException) {

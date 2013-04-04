@@ -416,6 +416,7 @@
 
 		// Generate Excel 5 Workbook
  		$strFileName = $this->_MakeFileName($arrReport, $arrReportParameters);
+		require_once FLEX_BASE_PATH.'/lib/PHPExcel/Classes/PHPExcel.php';
  		
  		// Saving?
  		if ($bolSave)
@@ -423,21 +424,37 @@
  			$sBaseDir		= FILES_BASE_PATH."upload/datareport/";
  			@mkdir($sBaseDir, 0777, true);
  			$strPath		= "$sBaseDir$strFileName";
-			$wkbWorkbook	= new Spreadsheet_Excel_Writer($strPath);
+ 			// OLD
+			/*$wkbWorkbook	= new Spreadsheet_Excel_Writer($strPath);*/
+			// NEW
+			// Create a new PHPExcel object
+			$wkbWorkbook = new PHPExcel($strPath);
  		}
  		else
  		{
-			$wkbWorkbook	= new Spreadsheet_Excel_Writer();
+ 			// OLD
+			/*$wkbWorkbook	= new Spreadsheet_Excel_Writer();*/
+
+			// NEW
+			// Create a new PHPExcel object
+			$wkbWorkbook = new PHPExcel();
+
 			$strPath		= $strFileName;
 			$wkbWorkbook->send($strFileName);
  		}
- 		
+
  		// Add the worksheet
-		$wksWorksheet =& $wkbWorkbook->addWorksheet();
+ 		// OLD
+		/*$wksWorksheet =& $wkbWorkbook->addWorksheet();*/
 		
 		// Set up formatting styles
-		$arrFormat = $this->_InitExcelFormats($wkbWorkbook);
+		// OLD
+		/*$arrFormat = $this->_InitExcelFormats($wkbWorkbook);*/
 		
+		// NEW
+ 		$wksWorksheet	= $wkbWorkbook->createSheet();
+		$arrFormat		= $this->_InitExcelFormats($wksWorksheet);
+
 		// Add in the title row
  		$arrColumns	= array_keys($arrData[0]);
  		foreach ($arrColumns as $intKey=>$strColumn)

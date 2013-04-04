@@ -127,8 +127,11 @@
 					// Create a new PHPExcel object
 					$this->_ptrFile = new PHPExcel();
 	 				// Create new XLS file
-					//$this->_ptrFile			= new Spreadsheet_Excel_Writer($this->_strFilePath);
-					//$this->_wksWorksheet	=& $this->_ptrFile->addWorksheet();
+	 				// OLD
+					/*$this->_ptrFile			= new Spreadsheet_Excel_Writer($this->_strFilePath);*/
+					// OLD
+					/*$this->_wksWorksheet	=& $this->_ptrFile->addWorksheet();*/
+					// NEW
 					$this->_wksWorksheet	= $this->_ptrFile->createSheet();
 					$this->_arrFormat		= $this->_InitExcelFormats($this->_ptrFile);
 					$this->_intRow			= 0;
