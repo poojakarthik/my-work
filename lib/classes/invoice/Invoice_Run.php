@@ -942,7 +942,7 @@ class Invoice_Run
 		//------------------------------ ACCOUNT -----------------------------//
 		Log::getLog()->log(" * Updating Accounts...");
 		$resUpdateAccounts	= $qryQuery->Execute(	"UPDATE Account JOIN Invoice ON Account.Id = Invoice.Account \n" .
-													"SET Account.LastBilled = {$this->BillingDate}, Account.Sample = (CASE WHEN Account.Sample < 0 THEN Account.Sample + 1 ELSE Account.Sample END) \n" .
+													"SET Account.LastBilled = '{$this->BillingDate}', Account.Sample = (CASE WHEN Account.Sample < 0 THEN Account.Sample + 1 ELSE Account.Sample END) \n" .
 													"WHERE Invoice.invoice_run_id = {$this->Id}");
 		if ($resUpdateAccounts === FALSE)
 		{

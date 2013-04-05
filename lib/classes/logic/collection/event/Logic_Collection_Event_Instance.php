@@ -513,7 +513,7 @@ class Logic_Collection_Event_Instance
 
 	public static function getForLedger($bCountOnly=false, $iLimit=0, $iOffset=0, $oSort=null, $oFilter=null)
 	{
-		return Account_Collection_Event_History::getForLedger($bCountOnly, $iLimit, $iOffset, get_object_vars($oSort), get_object_vars($oFilter));
+		return Account_Collection_Event_History::getForLedger($bCountOnly, $iLimit, $iOffset, (($oSort !== null) ? get_object_vars($oSort) : null), (($oFilter !== null) ? get_object_vars($oFilter) : null));
 	}
 
 	public function save()

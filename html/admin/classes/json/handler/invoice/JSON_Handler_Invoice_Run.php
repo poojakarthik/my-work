@@ -32,7 +32,7 @@ class JSON_Handler_Invoice_Run extends JSON_Handler
 		{
 			return array(
 						"bSuccess"	=> false,
-						"sMessage"	=> ($bIsGod ? $e->getMessage() : ''),
+						"sMessage"	=> ($bIsGod ? $oEx->getMessage() : ''),
 						'sDebug'	=> ($bIsGod ? $this->_sJSONDebug : false)
 					);
 		}

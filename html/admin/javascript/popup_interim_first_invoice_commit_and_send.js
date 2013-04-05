@@ -153,35 +153,34 @@ var Popup_Interim_First_Invoice_Commit_And_Send	= Class.create(Reflex_Popup,
 	
 	// _invoiceRunsLoaded: 	Callback for the _getInvoiceRuns json function, populates the 'Invoice Runs' section
 	//						listing each and showing their status, starts at 'Uncommited' (STATUS_UNCOMMITED)
-	_invoiceRunsLoaded	: function(oResponse)
-	{
-		this._oInvoiceRunsTBody.innerHTML	= '';
+	_invoiceRunsLoaded	: function(oResponse) {
+		this._oInvoiceRunsTBody.innerHTML = '';
 		
 		// Add invoice runs to table
 		var oInvoiceRun	= null;
-		var oStatusTD	= null;
-		for (var iId in oResponse.aInvoiceRuns)
-		{
-			oInvoiceRun	= oResponse.aInvoiceRuns[iId];
-			
-			// Add the row to represent the invoice run
-			oStatusTD	= $T.td(Popup_Interim_First_Invoice_Commit_And_Send.STATUS_UNCOMMITED);
-			this._oInvoiceRunsTBody.appendChild(
-				$T.tr(
-					$T.td(oInvoiceRun.customer_group_name),
-					oStatusTD
-				)
-			);
-			
-			// Cache the runs 'status' default summary
-			this._hInvoiceRunStatus[iId]	=
-			{
-				bCommitAttempted	: false,
-				bCommitted			: false,
-				bDeliverAttempted	: false,
-				bDelivered			: false, 
-				oStatusElement		: oStatusTD
-			};
+		var oStatusTD = null;
+		if (typeof oResponse.aInvoiceRuns.length == 'undefined') {
+			for (var iId in oResponse.aInvoiceRuns) {
+				oInvoiceRun	= oResponse.aInvoiceRuns[iId];
+				
+				// Add the row to represent the invoice run
+				oStatusTD = $T.td(Popup_Interim_First_Invoice_Commit_And_Send.STATUS_UNCOMMITED);
+				this._oInvoiceRunsTBody.appendChild(
+					$T.tr(
+						$T.td(oInvoiceRun.customer_group_name),
+						oStatusTD
+					)
+				);
+				
+				// Cache the runs 'status' default summary
+				this._hInvoiceRunStatus[iId] = {
+					bCommitAttempted : false,
+					bCommitted : false,
+					bDeliverAttempted : false,
+					bDelivered : false, 
+					oStatusElement : oStatusTD
+				};
+			}
 		}
 		
 		// Show the commit button
