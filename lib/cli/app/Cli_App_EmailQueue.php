@@ -10,6 +10,7 @@ class Cli_App_EmailQueue extends Cli {
 	const SWITCH_DEBUG_EMAIL_ID = "i";
 	const SWITCH_CLEANUP = 'c';
 	const SWITCH_CLEANUP_AGE = 'a';
+	const SWITCH_CLEANUP_UNDELIVERED = 'u';
 
 	const CLEANUP_TEST_SUMMARY_ONLY = false;
 	const CLEANUP_AGE_DEFAULT = 60;
@@ -144,6 +145,7 @@ class Cli_App_EmailQueue extends Cli {
 	private function _cleanup() {
 		// Args
 		$arrArgs = $this->getValidatedArguments();
+		$bCleanupUndelivered = (bool)$arrArgs[self::SWITCH_CLEANUP_UNDELIVERED];
 		$iMinimumAge = (int)$arrArgs[self::SWITCH_CLEANUP_AGE];
 		$iQueueId = ($arrArgs[self::SWITCH_QUEUE_ID]) ? (int)$arrArgs[self::SWITCH_QUEUE_ID] : null;
 		$bTestRun = (bool)$arrArgs[self::SWITCH_TEST_RUN];
@@ -153,12 +155,19 @@ class Cli_App_EmailQueue extends Cli {
 		}
 
 		// Determine which email queues will be cleaned up
-		Log::get()->log("[*] Looking for Email Queues to clean up (at least ".var_export($iMinimumAge, true)." days old)...");
+		Log::get()->log("[*] Looking for Email Queues to clean up (dispatched at least ".var_export($iMinimumAge, true)." days ago)...");
+		Log::get()->log("[".($bCleanupUndelivered ? '+' : '~')."] Undelivered Email Queues (scheduled at least ".var_export($iMinimumAge, true)." days ago) will ".($bCleanupUndelivered ? '' : 'NOT ')." be included");
 		$oSummaryResult = Query::run("
 			SELECT		eq.*,
 						COUNT(DISTINCT e.id) AS email_count,
 						COUNT(DISTINCT ea.id) AS email_attachment_count,
-						CAST(eq.delivered_datetime AS DATE) <= CURDATE() - INTERVAL <minimum_age_days> DAY AS cleanup_eligible
+						(
+							(CAST(eq.delivered_datetime AS DATE) <= (CURDATE() - INTERVAL <minimum_age_days> DAY))
+							OR (
+								<cleanup_undelivered> = 1
+								AND (CAST(eq.scheduled_datetime AS DATE) <= (CURDATE() - INTERVAL <minimum_age_days> DAY))
+							)
+						) AS cleanup_eligible
 			FROM		email_queue eq
 						LEFT JOIN email e ON (e.email_queue_id = eq.id)
 						LEFT JOIN email_attachment ea ON (ea.email_id = e.id)
@@ -168,7 +177,8 @@ class Cli_App_EmailQueue extends Cli {
 						eq.delivered_datetime ASC
 		", array(
 			'minimum_age_days' => $iMinimumAge,
-			'email_queue_id' => $iQueueId
+			'email_queue_id' => $iQueueId,
+			'cleanup_undelivered' => $bCleanupUndelivered
 		));
 		$iTotalQueues = 0;
 		$iTotalEmails = 0;
@@ -184,9 +194,9 @@ class Cli_App_EmailQueue extends Cli {
 				$iEligibleQueues++;
 				$iEligibleEmails += $aEmailQueueSummary['email_count'];
 				$iEligibleAttachments += $aEmailQueueSummary['email_attachment_count'];
-				Log::get()->log("  [-] #{$aEmailQueueSummary['id']} (dispatched: ".var_export($aEmailQueueSummary['delivered_datetime'], true)."; emails: {$aEmailQueueSummary['email_count']}; attachments: {$aEmailQueueSummary['email_attachment_count']})");
+				Log::get()->log("  [-] #{$aEmailQueueSummary['id']} (created: ".var_export($aEmailQueueSummary['created_datetime'], true)."; dispatched: ".var_export($aEmailQueueSummary['delivered_datetime'], true)."; emails: {$aEmailQueueSummary['email_count']}; attachments: {$aEmailQueueSummary['email_attachment_count']})");
 			} else {
-				Log::get()->log("  [~] #{$aEmailQueueSummary['id']} (dispatched: ".var_export($aEmailQueueSummary['delivered_datetime'], true)."; emails: {$aEmailQueueSummary['email_count']}; attachments: {$aEmailQueueSummary['email_attachment_count']})");
+				Log::get()->log("  [~] #{$aEmailQueueSummary['id']} (created: ".var_export($aEmailQueueSummary['created_datetime'], true)."; dispatched: ".var_export($aEmailQueueSummary['delivered_datetime'], true)."; emails: {$aEmailQueueSummary['email_count']}; attachments: {$aEmailQueueSummary['email_attachment_count']})");
 			}
 		}
 
@@ -202,27 +212,39 @@ class Cli_App_EmailQueue extends Cli {
 					FROM	email_queue eq
 							LEFT JOIN email e ON (e.email_queue_id = eq.id)
 							LEFT JOIN email_attachment ea ON (ea.email_id = e.id)
-					WHERE	eq.delivered_datetime IS NOT NULL
-							AND CAST(eq.delivered_datetime AS DATE) <= CURDATE() - INTERVAL <minimum_age_days> DAY
+					WHERE	(CAST(eq.delivered_datetime AS DATE) <= (CURDATE() - INTERVAL <minimum_age_days> DAY))
+							OR (
+								<cleanup_undelivered> = 1
+								AND (CAST(eq.scheduled_datetime AS DATE) <= (CURDATE() - INTERVAL <minimum_age_days> DAY))
+							)
 				", array(
-					'minimum_age_days' => $iMinimumAge
+					'minimum_age_days' => $iMinimumAge,
+					'cleanup_undelivered' => $bCleanupUndelivered
 				));
 				Query::run("
 					DELETE	e
 					FROM	email_queue eq
 							LEFT JOIN email e ON (e.email_queue_id = eq.id)
-					WHERE	eq.delivered_datetime IS NOT NULL
-							AND CAST(eq.delivered_datetime AS DATE) <= CURDATE() - INTERVAL <minimum_age_days> DAY
+					WHERE	(CAST(eq.delivered_datetime AS DATE) <= (CURDATE() - INTERVAL <minimum_age_days> DAY))
+							OR (
+								<cleanup_undelivered> = 1
+								AND (CAST(eq.scheduled_datetime AS DATE) <= (CURDATE() - INTERVAL <minimum_age_days> DAY))
+							)
 				", array(
-					'minimum_age_days' => $iMinimumAge
+					'minimum_age_days' => $iMinimumAge,
+					'cleanup_undelivered' => $bCleanupUndelivered
 				));
 				Query::run("
 					DELETE	eq
 					FROM	email_queue eq
-					WHERE	eq.delivered_datetime IS NOT NULL
-							AND CAST(eq.delivered_datetime AS DATE) <= CURDATE() - INTERVAL <minimum_age_days> DAY
+					WHERE	(CAST(eq.delivered_datetime AS DATE) <= (CURDATE() - INTERVAL <minimum_age_days> DAY))
+							OR (
+								<cleanup_undelivered> = 1
+								AND (CAST(eq.scheduled_datetime AS DATE) <= (CURDATE() - INTERVAL <minimum_age_days> DAY))
+							)
 				", array(
-					'minimum_age_days' => $iMinimumAge
+					'minimum_age_days' => $iMinimumAge,
+					'cleanup_undelivered' => $bCleanupUndelivered
 				));
 
 				// Count remaining queues, emails, and attachments
@@ -294,7 +316,7 @@ class Cli_App_EmailQueue extends Cli {
 
 			self::SWITCH_CLEANUP => array(
 				self::ARG_REQUIRED => false,
-				self::ARG_DESCRIPTION => "Cleans up (i.e. deletes) old email queues (and their emails + attachments)",
+				self::ARG_DESCRIPTION => "Cleans up (i.e. deletes) old delivered email queues (and their emails + attachments)",
 				self::ARG_DEFAULT => false,
 				self::ARG_VALIDATION => 'Cli::_validIsSet()'
 			),
@@ -304,6 +326,13 @@ class Cli_App_EmailQueue extends Cli {
 				self::ARG_DESCRIPTION => "Minimum number of days since delivery for an email queue to be cleaned up",
 				self::ARG_DEFAULT => self::CLEANUP_AGE_DEFAULT,
 				self::ARG_VALIDATION => 'Cli::_validInteger("%1$s");'
+			),
+
+			self::SWITCH_CLEANUP_UNDELIVERED => array(
+				self::ARG_REQUIRED => false,
+				self::ARG_DESCRIPTION => "Cleans up old undelivered email queues in addition to delivered ones",
+				self::ARG_DEFAULT => false,
+				self::ARG_VALIDATION => 'Cli::_validIsSet()'
 			)
 		);
 	}
