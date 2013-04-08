@@ -3016,36 +3016,6 @@ function SendEmail($sAddresses, $sSubject, $sContent, $sFrom='auto@yellowbilling
 		// Sending the email failed
 		return false;
 	}
-
-	// Mail/Mail_mime Deprecated, ryanf 30.1.2013
-	// Leaving this here for the moment incase the replacement above goes pear shaped during testing.
-	/*
-	require_once("Mail.php");
-	require_once("Mail/mime.php");
-
-	$arrHeaders = Array	(
-		'From'		=> $strFrom,
-		'Reply-To'	=> $strFrom,
-		'Subject'	=> $strSubject
-	);
-	$mimMime = new Mail_mime("\n");
-
-	if ($bolHTML)
-	{
-		$mimMime->setTXTBody($strContent);
-	}
-	else
-	{
-		$mimMime->setHTMLBody($strContent);
-	}
-
-	$strBody = $mimMime->get();
-	$strHeaders = $mimMime->headers($arrHeaders);
-	$emlMail =& Mail::factory('mail');
-
-	// Send the email
-	return (bool)$emlMail->send($strAddresses, $strHeaders, $strBody);
-	*/
 }
 
 

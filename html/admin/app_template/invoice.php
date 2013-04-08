@@ -155,23 +155,6 @@ class AppTemplateInvoice extends ApplicationTemplate
 					Ajax()->AddCommand("Alert", "Emails not sent successfully. The email addresses may be incorrect or there could be a problem with the email system.");
 					return TRUE;
 				}
-				// Mail_mime Deprecated, ryanf 30.1.2013
-				// Leaving this here for the moment incase the replacement above goes pear shaped during testing.
-				/*
-				$mimMime = new Mail_mime("\n");
-				$mimMime->setTXTBody($strContent);
-				$mimMime->addAttachment($strPDFtoSend, 'application/pdf', $strInvoiceFileName, FALSE);
-				$strBody = $mimMime->get();
-				$strHeaders = $mimMime->headers($arrHeaders);
-				$emlMail =& Mail::factory('mail');
-
-				if (!$emlMail->send($strEmailAddress, $strHeaders, $strBody))
-				{
-					// Sending the email failed
-					Ajax()->AddCommand("Alert", "Emails not sent successfully. The email addresses may be incorrect or there could be a problem with the email system.");
-					return TRUE;
-				}
-				*/
 			}
 
 			// The emails were successfully sent

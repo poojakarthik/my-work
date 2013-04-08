@@ -448,22 +448,23 @@
 
 			// Render XLS line
 			if ($bolRenderToFile) {
+ 				$strCol = PHPExcel_Cell::stringFromColumnIndex($intCol);
 				if ($strStyle) {
 					$this->_ptrFile->getActiveSheet()->setCellValueByColumnAndRow($intCol, $this->_intRow, $mixValue);
-					$this->_ptrFile->getActiveSheet()->getStyleByColumnAndRow("{$intCol}:{$this->_intRow}")->applyFromArray($arrFormat[$strStyle]);
+					$this->_ptrFile->getActiveSheet()->getStyle("{$strCol}{$this->_intRow}")->applyFromArray($arrFormat[$strStyle]);
 					//$this->_wksWorksheet->writeString($this->_intRow, $intCol, $mixValue, $this->_arrFormat[$strStyle]);
 				}
 				else {
 					switch ($arrType[0]) {
 						case 'Integer':
 							$this->_ptrFile->getActiveSheet()->setCellValueByColumnAndRow($intCol, $this->_intRow, $mixValue);
-							$this->_ptrFile->getActiveSheet()->getStyleByColumnAndRow("{$intCol}:{$this->_intRow}")->applyFromArray($arrFormat['Integer']);
+							$this->_ptrFile->getActiveSheet()->getStyle("{$strCol}{$this->_intRow}")->applyFromArray($arrFormat['Integer']);
 							//$this->_wksWorksheet->writeNumber($this->_intRow, $intCol, $mixValue, $this->_arrFormat['Integer']);
 							break;
 							
 						case 'FNN':	
 							$this->_ptrFile->getActiveSheet()->setCellValueByColumnAndRow($intCol, $this->_intRow, $mixValue);
-							$this->_ptrFile->getActiveSheet()->getStyleByColumnAndRow("{$intCol}:{$this->_intRow}")->applyFromArray($arrFormat['FNN']);
+							$this->_ptrFile->getActiveSheet()->getStyle("{$strCol}{$this->_intRow}")->applyFromArray($arrFormat['FNN']);
 							//$this->_wksWorksheet->writeNumber($this->_intRow, $intCol, $mixValue, $this->_arrFormat['FNN']);
 						
 						default:
@@ -740,26 +741,6 @@
 			// Sending the email failed
 			return Array('Pass' => FALSE,	'Description' => "Email could not be sent");
 		}
-
-		// Mail/Mail_mime Deprecated, ryanf 31.1.2013
-		// Leaving this here for the moment incase the replacement above goes pear shaped during testing.
-		/*
-		$mimMime = new Mail_mime("\n");
-		$mimMime->setTXTBody($strEmailContent);
-		$mimMime->addAttachment($this->_strFilePath, $strMIME);
-		$strBody = $mimMime->get();
-		$strHeaders = $mimMime->headers($arrHeaders);
-		$emlMail =& Mail::factory('mail');
-		$mixResult	= $emlMail->send($strEmailAddress, $strHeaders, $strBody);
-		
-		// Return extended error messaging
-		if ($mixResult === TRUE) {
-			return Array('Pass' => TRUE,	'Description' => "Deliver() Successful");
-		}
-		else {
-			return Array('Pass' => FALSE,	'Description' => "Email could not be sent");
-		}
-		*/
 	}
 	
 	//------------------------------------------------------------------------//
