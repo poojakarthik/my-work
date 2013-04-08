@@ -47,17 +47,18 @@ class Archive_Tar {
 		// Files
 		$aFiles = is_array($mFiles) ? $mFiles : array($mFiles);
 		// Normalise filenames for shell.
-		$sFilelist = implode(" ", self::_normaliseForShell($aFiles));
+		$mFilelist = implode(" ", self::_normaliseForShell($aFiles));
+		$sFilelist = ($mFilelist) ? $mFilelist : '/dev/null';
 		$sCompressionMode = ($this->_getCompressionMode()) ? $this->_getCompressionMode() : null;
 
 		if ($sRemovePath) {
 			// Transform
 			$sRemovePath = implode("/", array_filter(explode("/", $sRemovePath)));
 			$sPathToRemove = implode(" ", str_replace("/", "\/", self::_normaliseForShell($sRemovePath)));
-			$bResult = $this->_save("tar --transform='s/^\/{$sPathToRemove}//x' -P{$sCompressionMode}{$sOperationMode}f {$this->_sArchiveFile} {$sFilelist}");
+			$bResult = $this->_save("tar --transform='s/^\/{$sPathToRemove}//x' -P{$sCompressionMode}{$sOperationMode}f {$this->_sArchiveFile} -T {$sFilelist}");
 		} else {
 			// Nothing to do.	
-			$bResult = $this->_save("tar -{$sCompressionMode}{$sOperationMode}f {$this->_sArchiveFile} {$sFilelist}");
+			$bResult = $this->_save("tar -{$sCompressionMode}{$sOperationMode}f {$this->_sArchiveFile} -T {$sFilelist}");
 		}
 		return $bResult;
 	}

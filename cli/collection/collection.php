@@ -14,8 +14,6 @@ Flex::load();
 //require_once("../../flex.require.php");
 $arrConfig = LoadApplication();
 
-require_once("Archive/Tar.php");
-
 define('COLLECTION_DEBUG_MODE',		FALSE);
 
 // Application entry point - create an instance of the application object
