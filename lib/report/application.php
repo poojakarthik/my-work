@@ -417,140 +417,132 @@
 		// Generate Excel 5 Workbook
  		$strFileName = $this->_MakeFileName($arrReport, $arrReportParameters);
 		require_once FLEX_BASE_PATH.'/lib/PHPExcel/Classes/PHPExcel.php';
+		require_once FLEX_BASE_PATH.'/lib/PHPExcel/Classes/PHPExcel/IOFactory.php';
  		
  		// Saving?
- 		if ($bolSave)
- 		{
- 			$sBaseDir		= FILES_BASE_PATH."upload/datareport/";
+ 		if ($bolSave) {
+ 			$sBaseDir = FILES_BASE_PATH."upload/datareport/";
  			@mkdir($sBaseDir, 0777, true);
- 			$strPath		= "$sBaseDir$strFileName";
- 			// OLD
-			/*$wkbWorkbook	= new Spreadsheet_Excel_Writer($strPath);*/
-			// NEW
+ 			$strPath = "$sBaseDir$strFileName";
 			// Create a new PHPExcel object
 			$wkbWorkbook = new PHPExcel($strPath);
- 		}
- 		else
- 		{
- 			// OLD
-			/*$wkbWorkbook	= new Spreadsheet_Excel_Writer();*/
-
-			// NEW
+ 		} else {
 			// Create a new PHPExcel object
 			$wkbWorkbook = new PHPExcel();
-
-			$strPath		= $strFileName;
-			$wkbWorkbook->send($strFileName);
- 		}
+			$strPath = $strFileName;
+			header("Content-Type: application/ms-excel");
+			header("Content-Disposition: attachment;filename='{$strFileName}'");
+			header("Cache-Control: max-age=0");
+		}
 
  		// Add the worksheet
- 		// OLD
-		/*$wksWorksheet =& $wkbWorkbook->addWorksheet();*/
-		
-		// Set up formatting styles
-		// OLD
-		/*$arrFormat = $this->_InitExcelFormats($wkbWorkbook);*/
-		
-		// NEW
  		$wksWorksheet	= $wkbWorkbook->createSheet();
-		$arrFormat		= $this->_InitExcelFormats($wksWorksheet);
+		$arrFormat		= $this->_InitExcelFormats($wkbWorkbook);
+		$intRow = 1;
+		$intCol = 1;
 
 		// Add in the title row
  		$arrColumns	= array_keys($arrData[0]);
- 		foreach ($arrColumns as $intKey=>$strColumn)
- 		{
- 			$wksWorksheet->write(0, $intKey+1, $strColumn, $arrFormat['Title']);
+ 		foreach ($arrColumns as $intKey=>$strValue) {
+ 			$strCol = PHPExcel_Cell::stringFromColumnIndex($intCol);
+ 			$wkbWorkbook->getActiveSheet()->setCellValueByColumnAndRow($intCol, $intRow, $strValue);
+			$wkbWorkbook->getActiveSheet()->getStyle("{$strCol}{$intRow}")->applyFromArray($arrFormat['Title']);
+ 			$intCol++;
  		}
 		
 		// Add in data rows
 		$arrSQLSelect	= unserialize($arrReport['SQLSelect']);
 		//Debug($arrSQLSelect);
 		$arrExcelCols	= Array();
-		$intRow			= 0;
-		foreach ($arrData as $intRow=>$arrRow)
-		{
-			$intCol = 1;
-			foreach ($arrRow as $strName=>$mixField)
-			{
+
+		foreach ($arrData as $iKey=>$arrRow) {
+			$intRow++;
+			$intCol=1;
+			foreach ($arrRow as $strName=>$mixField) {
 				$arrExcelCols[$strName]['Col'] = $intCol;
+ 				$strCol = PHPExcel_Cell::stringFromColumnIndex($intCol);
 				
 				// Is this field a function?
-				if ($strFunction = $arrSQLSelect[$strName]['Function'])
-				{
-					foreach ($arrSQLSelect as $strSubName=>$arrSubField)
-					{
-						$strCell	= Spreadsheet_Excel_Writer::rowcolToCell($intRow+1, $arrExcelCols[$strSubName]['Col']);
+				if ($strFunction = $arrSQLSelect[$strName]['Function']) {
+					foreach ($arrSQLSelect as $strSubName=>$arrSubField) {
+						$strCellColLetter = PHPExcel_Cell::stringFromColumnIndex($arrExcelCols[$strSubName]['Col']);
+						$strCell = "{$strCellColLetter}{$intRow}";
 						$strFunction = str_replace("<$strSubName>", $strCell, $strFunction);
 					}
 					$mixField = $strFunction;
 					//Debug($mixField);
 				}
-				
+
 				// If an output type is specified then use it, else 'best guess'
-				switch ($arrSQLSelect[$strName]['Type'])
-				{
+				switch ($arrSQLSelect[$strName]['Type']) {
+
 					case EXCEL_TYPE_CURRENCY:
-						if (!$arrSQLSelect[$strName]['Function'])
-						{
-							$wksWorksheet->writeNumber($intRow+1, $intCol, (float)$mixField, $arrFormat['Currency']);
-						}
-						else
-						{
-							$wksWorksheet->writeFormula($intRow+1, $intCol, $mixField, $arrFormat['Currency']);
+						if (!$arrSQLSelect[$strName]['Function']) {
+				 			$wkbWorkbook->getActiveSheet()->setCellValueByColumnAndRow($intCol, $intRow, (float)$mixField);
+							$wkbWorkbook->getActiveSheet()->getStyle("{$strCol}{$intRow}")->applyFromArray($arrFormat['Currency']);
+							//$wksWorksheet->writeNumber($intRow+1, $intCol, (float)$mixField, $arrFormat['Currency']);
+						} else {
+				 			$wkbWorkbook->getActiveSheet()->setCellValueByColumnAndRow($intCol, $intRow, $mixField);
+							$wkbWorkbook->getActiveSheet()->getStyle("{$strCol}{$intRow}")->applyFromArray($arrFormat['Currency']);
+							//$wksWorksheet->writeFormula($intRow+1, $intCol, $mixField, $arrFormat['Currency']);
 						}
 						$arrExcelCols[$strName]['TotalFormat'] = $arrFormat['CurrencyTotal'];
 						break;
 						
 					case EXCEL_TYPE_INTEGER:
-						if (!$arrSQLSelect[$strName]['Function'])
-						{
-							$wksWorksheet->writeNumber($intRow+1, $intCol, (int)$mixField, $arrFormat['Integer']);
-						}
-						else
-						{
-							$wksWorksheet->writeFormula($intRow+1, $intCol, $mixField, $arrFormat['Integer']);
+						if (!$arrSQLSelect[$strName]['Function']) {
+				 			$wkbWorkbook->getActiveSheet()->setCellValueByColumnAndRow($intCol, $intRow, (int)$mixField);
+							$wkbWorkbook->getActiveSheet()->getStyle("{$strCol}{$intRow}")->applyFromArray($arrFormat['Integer']);
+							//$wksWorksheet->writeNumber($intRow+1, $intCol, (int)$mixField, $arrFormat['Integer']);
+						} else {
+							$wkbWorkbook->getActiveSheet()->setCellValueByColumnAndRow($intCol, $intRow, $mixField);
+							$wkbWorkbook->getActiveSheet()->getStyle("{$strCol}{$intRow}")->applyFromArray($arrFormat['Integer']);
+							//$wksWorksheet->writeFormula($intRow+1, $intCol, $mixField, $arrFormat['Integer']);
 						}
 						$arrExcelCols[$strName]['TotalFormat'] = $arrFormat['IntegerTotal'];
 						break;
 						
 					case EXCEL_TYPE_PERCENTAGE:
-						if (!$arrSQLSelect[$strName]['Function'])
-						{
-							$wksWorksheet->writeNumber($intRow+1, $intCol, (float)$mixField	, $arrFormat['Percentage']);
-						}
-						else
-						{
-							$wksWorksheet->writeFormula($intRow+1, $intCol, $mixField, $arrFormat['Percentage']);
+						if (!$arrSQLSelect[$strName]['Function']) {
+							$wkbWorkbook->getActiveSheet()->setCellValueByColumnAndRow($intCol, $intRow, (float)$mixField);
+							$wkbWorkbook->getActiveSheet()->getStyle("{$strCol}{$intRow}")->applyFromArray($arrFormat['Percentage']);
+							//$wksWorksheet->writeNumber($intRow+1, $intCol, (float)$mixField	, $arrFormat['Percentage']);
+						} else {
+							$wkbWorkbook->getActiveSheet()->setCellValueByColumnAndRow($intCol, $intRow, $mixField);
+							$wkbWorkbook->getActiveSheet()->getStyle("{$strCol}{$intRow}")->applyFromArray($arrFormat['Percentage']);
+							//$wksWorksheet->writeFormula($intRow+1, $intCol, $mixField, $arrFormat['Percentage']);
 						}
 						$arrExcelCols[$strName]['TotalFormat'] = $arrFormat['PercentageTotal'];
 						break;
 						
 					case EXCEL_TYPE_FNN:
-						$wksWorksheet->writeNumber($intRow+1, $intCol, $mixField, $arrFormat['FNN']);
+						$wkbWorkbook->getActiveSheet()->setCellValueByColumnAndRow($intCol, $intRow, $mixField);
+						$wkbWorkbook->getActiveSheet()->getStyle("{$strCol}{$intRow}")->applyFromArray($arrFormat['FNN']);
+						//$wksWorksheet->writeNumber($intRow+1, $intCol, $mixField, $arrFormat['FNN']);
 						break;
 					
 					// Best Guess
 					default:
-						if (IsValidFNN($mixField))
-						{
+						if (IsValidFNN($mixField)) {
 							// FNN
-							$wksWorksheet->writeNumber($intRow+1, $intCol, $mixField, $arrFormat['FNN']);
-						}
-						elseif (is_int($mixField['Value']))
-						{
+							$wkbWorkbook->getActiveSheet()->setCellValueByColumnAndRow($intCol, $intRow, $mixField);
+							$wkbWorkbook->getActiveSheet()->getStyle("{$strCol}{$intRow}")->applyFromArray($arrFormat['FNN']);
+							//$wksWorksheet->writeNumber($intRow+1, $intCol, $mixField, $arrFormat['FNN']);
+						} elseif (is_int($mixField['Value'])) {
 							// Integer
-							$wksWorksheet->writeNumber($intRow+1, $intCol, $mixField, $arrFormat['Integer']);
+							$wkbWorkbook->getActiveSheet()->setCellValueByColumnAndRow($intCol, $intRow, $mixField);
+							$wkbWorkbook->getActiveSheet()->getStyle("{$strCol}{$intRow}")->applyFromArray($arrFormat['Integer']);
+							//$wksWorksheet->writeNumber($intRow+1, $intCol, $mixField, $arrFormat['Integer']);
 							$arrExcelCols[$strName]['TotalFormat'] = $arrFormat['IntegerTotal'];
-						}
-						elseif (IsValidFNN($mixField))
-						{
+						} elseif (IsValidFNN($mixField)) {
 							// FNN
-							$wksWorksheet->writeNumber($intRow+1, $intCol, $mixField, $arrFormat['FNN']);
-						}
-						else
-						{
+							$wkbWorkbook->getActiveSheet()->setCellValueByColumnAndRow($intCol, $intRow, $mixField);
+							$wkbWorkbook->getActiveSheet()->getStyle("{$strCol}{$intRow}")->applyFromArray($arrFormat['FNN']);
+							//$wksWorksheet->writeNumber($intRow+1, $intCol, $mixField, $arrFormat['FNN']);
+						} else {
 							// Just a string
-							$wksWorksheet->writeString($intRow+1, $intCol, $mixField);
+							$wkbWorkbook->getActiveSheet()->setCellValueByColumnAndRow($intCol, $intRow, $mixField);
+							//$wksWorksheet->writeString($intRow+1, $intCol, $mixField);
 						}
 				}
 				$intCol++;
@@ -559,73 +551,68 @@
 		
 		// Do we have any Totals?
 		$bolTotals = FALSE;
-		foreach ($arrSQLSelect as $strName=>$arrField)
-		{
+		foreach ($arrSQLSelect as $strName=>$arrField) {
 			$bolTotals = ($arrField['Total']) ? TRUE : $bolTotals;
 		}
 		
-		if ($bolTotals)
-		{
+
+		$intCol=0;
+ 		$strCol = PHPExcel_Cell::stringFromColumnIndex($intCol);
+ 		$intRow++;
+
+		if ($bolTotals) {
 			// Draw a Horizontal Line to separate totals from data
-			$wksWorksheet->writeString($intRow+2, 0, "Grand Totals", $arrFormat['TotalText']);
-			for ($intCol = 1; $intCol <= count($arrExcelCols); $intCol++)
-			{
-				$wksWorksheet->writeString($intRow+2, $intCol, "", $arrFormat['TotalText']);
+			$wkbWorkbook->getActiveSheet()->setCellValueByColumnAndRow($intCol, $intRow, "Grand Totals");
+			$wkbWorkbook->getActiveSheet()->getStyle("{$strCol}{$intRow}")->applyFromArray($arrFormat['TotalText']);
+			for ($intCol = 1; $intCol <= count($arrExcelCols); $intCol++) {
+ 				$strCol = PHPExcel_Cell::stringFromColumnIndex($intCol);
+				$wkbWorkbook->getActiveSheet()->setCellValueByColumnAndRow($intCol, $intRow, "");
+				$wkbWorkbook->getActiveSheet()->getStyle("{$strCol}{$intRow}")->applyFromArray($arrFormat['TotalText']);
 			}
 			
 			// Add totals, if specified
-			foreach ($arrSQLSelect as $strName=>$arrField)
-			{
-				if (!$arrField['Total'])
-				{
+			foreach ($arrSQLSelect as $strName=>$arrField) {
+				if (!$arrField['Total']) {
 					continue;
 				}
 				
 				// Calculate Cell Range
-				$strCellStart	= Spreadsheet_Excel_Writer::rowcolToCell(1					, $arrExcelCols[$strName]['Col']);
-				$strCellEnd		= Spreadsheet_Excel_Writer::rowcolToCell(count($arrData)	, $arrExcelCols[$strName]['Col']);
-				
+ 				$strCol = PHPExcel_Cell::stringFromColumnIndex($arrExcelCols[$strName]['Col']);
+				$strCellStart	= $strCol . "1";
+				$strCellEnd		= $strCol . count($arrData);
 				// Construct the Excel Function
-				switch ($arrField['Total'])
-				{
+				switch ($arrField['Total']) {
 					case EXCEL_TOTAL_SUM:
 		 				// Standard SUM
-		 				$wksWorksheet->writeFormula($intRow + 2, $arrExcelCols[$strName]['Col'], "=SUM($strCellStart:$strCellEnd)", $arrExcelCols[$strName]['TotalFormat']);
+						$wkbWorkbook->getActiveSheet()->setCellValue("{$strCol}{$intRow}", "=SUM({$strCellStart}:{$strCellEnd})");
 						break;
 						
 					case EXCEL_TOTAL_AVG:
 		 				// Standard AVG
-		 				$wksWorksheet->writeFormula($intRow + 2, $arrExcelCols[$strName]['Col'], "=AVG($strCellStart:$strCellEnd)", $arrExcelCols[$strName]['TotalFormat']);
+						$wkbWorkbook->getActiveSheet()->setCellValue("{$strCol}{$intRow}", "=AVG({$strCellStart}:{$strCellEnd})");
 						break;
-						
 					// TODO: More specific cases?
-						
 					default:
 						// Do we even have a total?
-						if (is_string($arrField['Total']))
-						{
+						if (is_string($arrField['Total'])) {
 							// A custom formula, based off other totals
 							$strFunction = $arrField['Total'];
-							foreach ($arrSQLSelect as $strSubName=>$arrSubField)
-							{
-								$strCell	= Spreadsheet_Excel_Writer::rowcolToCell($intRow + 2, $arrExcelCols[$strSubName]['Col']);
+							foreach ($arrSQLSelect as $strSubName=>$arrSubField) {
+ 								$strCol = PHPExcel_Cell::stringFromColumnIndex($arrExcelCols[$strName]['Col']);
+								$strCell = "{$strCol}{$intRow}";
 								$strFunction = str_replace("<$strSubName>", $strCell, $strFunction);
 							}
 							$strFunction = (substr($strFunction, 0, 1) == "=") ? $strFunction : "=$strFunction";
-							$wksWorksheet->writeFormula($intRow + 2, $arrExcelCols[$strName]['Col'], $strFunction, $arrExcelCols[$strName]['TotalFormat']);
+							$wkbWorkbook->getActiveSheet()->setCellValue("{$strCol}{$intRow}", "{$strFunction}");
 							//Debug($strFunction);
 						}
 				}
 			}
 		}
-		
-		// Save the XLS file, CHMOD, return path
-		$wkbWorkbook->close();
-		
-		if ($bolSave)
-		{
- 			chmod($strPath, 0777);
-		}
+
+		$oWriter = PHPExcel_IOFactory::createWriter($wkbWorkbook, 'Excel5');
+		$oWriter->save("{$strPath}");		
+ 		chmod($strPath, 0777);
  		return $strPath;
  	}
  	
@@ -646,100 +633,128 @@
 	 *
 	 * @method
 	 */
- 	private function _InitExcelFormats($wkbWorkbook)
- 	{
- 		$arrFormat = Array();
- 		
- 		// Integer format (make sure it doesn't show exponentials for large ints)
-		$fmtInteger =& $wkbWorkbook->addFormat();
-		$fmtInteger->setNumFormat('0');
-		$arrFormat['Integer']		= $fmtInteger;
-		
- 		// Bold Integer format (make sure it doesn't show exponentials for large ints)
-		$fmtIntegerBold =& $wkbWorkbook->addFormat();
-		$fmtIntegerBold->setNumFormat('0');
-		$fmtIntegerBold->SetBold();
-		$arrFormat['IntegerBold']		= $fmtIntegerBold;
-		
- 		// Total Integer format (make sure it doesn't show exponentials for large ints)
-		$fmtIntegerTotal =& $wkbWorkbook->addFormat();
-		$fmtIntegerTotal->setNumFormat('0');
-		$fmtIntegerTotal->setBold();
-		$fmtIntegerTotal->setTopColor('black');
-		$fmtIntegerTotal->setTop(1);
-		$arrFormat['IntegerTotal']		= $fmtIntegerTotal;
-		
-		
-		
-		// Bold Text
-		$fmtBold		= $wkbWorkbook->addFormat();
-		$fmtBold->setBold();
-		$arrFormat['TextBold']		= $fmtBold;
-		
-		// Title Row
-		$fmtTitle =& $wkbWorkbook->addFormat();
-		$fmtTitle->setBold();
-		$fmtTitle->setFgColor(22);
-		$fmtTitle->setBorder(1);
-		$arrFormat['Title']			= $fmtTitle;
-		
-		// Total Text Cell
-		$fmtTotalText	= $wkbWorkbook->addFormat();
-		$fmtTotalText->setTopColor('black');
-		$fmtTotalText->setTop(1);
-		$fmtTotalText->setBold();
-		$arrFormat['TotalText']		= $fmtTotalText;
-		
-		
-		
-		// Currency
-		$fmtCurrency	= $wkbWorkbook->addFormat();
-		$fmtCurrency->setNumFormat('$#,##0.00;$#,##0.00 CR');
-		$arrFormat['Currency']		= $fmtCurrency;
-		
-		// Bold Currency
-		$fmtCurrencyBold	= $wkbWorkbook->addFormat();
-		$fmtCurrencyBold->setNumFormat('$#,##0.00;$#,##0.00 CR');
-		$fmtCurrencyBold->setBold();
-		$arrFormat['CurrencyBold']	= $fmtCurrencyBold;
-		
-		// Total Currency
-		$fmtTotal		= $wkbWorkbook->addFormat();
-		$fmtTotal->setNumFormat('$#,##0.00;$#,##0.00 CR');
-		$fmtTotal->setBold();
-		$fmtTotal->setTopColor('black');
-		$fmtTotal->setTop(1);
-		$arrFormat['CurrencyTotal']	= $fmtTotal;
-		
-		
-		
-		// Percentage
-		$fmtPercentage	= $wkbWorkbook->addFormat();
-		$fmtPercentage->setNumFormat('0.00%;[red]-0.00%');
-		$arrFormat['Percentage']	= $fmtPercentage;
-		
-		// Bold Percentage
-		$fmtPCBold		= $wkbWorkbook->addFormat();
-		$fmtPCBold->setNumFormat('0.00%;-0.00%');
-		$fmtPCBold->setBold();
-		$arrFormat['PercentageBold']	= $fmtPCBold;
-		
-		// Total Percentage
-		$fmtPCTotal		= $wkbWorkbook->addFormat();
-		$fmtPCTotal->setNumFormat('0.00%;-0.00%');
-		$fmtPCTotal->setBold();
-		$fmtPCTotal->setTopColor('black');
-		$fmtPCTotal->setTop(1);
-		$arrFormat['PercentageTotal']	= $fmtPCTotal;
-		
-		
-		
-		// FNN
-		$fmtFNN			= $wkbWorkbook->addFormat();
-		$fmtFNN->setNumFormat('0000000000');
-		$arrFormat['FNN']				= $fmtFNN;
-		
-		return $arrFormat;
+ 	private function _InitExcelFormats($wkbWorkbook) {
+ 		$aFormat = array(
+			'Integer' => array(
+				'numberformat' => array(
+					'code' => PHPExcel_Style_NumberFormat::FORMAT_NUMBER
+				)
+			),
+			'IntegerBold' => array(
+				'numberformat' => array(
+					'code' => PHPExcel_Style_NumberFormat::FORMAT_NUMBER
+				),
+				'font' => array(
+					'bold' => true
+				)
+			),
+			'IntegerTotal' => array(
+				'numberformat' => array(
+					'code' => PHPExcel_Style_NumberFormat::FORMAT_NUMBER
+				),
+				'font' => array(
+					'bold' => true
+				),
+				'borders' => array(
+					'top' => array(
+						'style' => PHPExcel_Style_Border::BORDER_THIN,
+						'color' => array('argb' => '000000')
+					)
+				)
+			),
+			'TextBold' => array(
+				'font' => array(
+					'bold' => true
+				)
+			),
+			'Title' => array(
+				'font' => array(
+					'bold' => true
+				),
+				'borders' => array(
+					'outline' => array(
+						'style' => PHPExcel_Style_Border::BORDER_THIN,
+						'color' => array('argb' => '000000')
+					)
+				),
+				'fill' => array(
+					'type' => PHPExcel_Style_Fill::FILL_SOLID,
+					'startcolor' => array(
+						'rgb' => 'D3D3D3',
+					)
+				)
+			),
+			'TotalText' => array(
+				'font' => array(
+					'bold' => true
+				),
+				'borders' => array(
+					'top' => array(
+						'style' => PHPExcel_Style_Border::BORDER_THIN,
+						'color' => array('argb' => '000000')
+					) 
+				)
+			),
+			'Currency' => array(
+				'numberformat' => array(
+					'code' => '$#,##0.00;$#,##0.00 CR'
+				)
+			),
+			'CurrencyBold' => array(
+				'font' => array(
+					'bold' => true
+				),
+				'numberformat' => array(
+					'code' => '$#,##0.00;$#,##0.00 CR'
+				)
+			),
+			'CurrencyTotal' => array(
+				'font' => array(
+					'bold' => true
+				),
+				'numberformat' => array(
+					'code' => '$#,##0.00;$#,##0.00 CR'
+				),
+				'top' => array(
+					'style' => PHPExcel_Style_Border::BORDER_THIN,
+					'color' => array('argb' => '000000')
+				)
+			),
+			'Percentage' => array(
+				'numberformat' => array(
+					'code' => '0.00%;[red]-0.00%'
+				)
+			),
+			'PercentageBold' => array(
+				'font' => array(
+					'bold' => true
+				),
+				'numberformat' => array(
+					'code' => '0.00%;-0.00%'
+				)
+			),
+			'PercentageTotal' => array(
+				'font' => array(
+					'bold' => true
+				),
+				'numberformat' => array(
+					//'code' => PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE_00
+					'code' => '0.00%;-0.00%'
+				),
+				'top' => array(
+					'style' => PHPExcel_Style_Border::BORDER_THIN,
+					'color' => array('argb' => '000000')
+				)
+			),
+			'FNN' => array(
+				'numberformat' => array(
+					'code' => '0000000000'
+				)
+			)
+		);
+
+		return $aFormat;
+
  	}
  	
  	

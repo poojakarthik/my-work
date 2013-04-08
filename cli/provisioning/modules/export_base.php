@@ -127,11 +127,6 @@
 					// Create a new PHPExcel object
 					$this->_ptrFile = new PHPExcel();
 	 				// Create new XLS file
-	 				// OLD
-					/*$this->_ptrFile			= new Spreadsheet_Excel_Writer($this->_strFilePath);*/
-					// OLD
-					/*$this->_wksWorksheet	=& $this->_ptrFile->addWorksheet();*/
-					// NEW
 					$this->_wksWorksheet	= $this->_ptrFile->createSheet();
 					$this->_arrFormat		= $this->_InitExcelFormats($this->_ptrFile);
 					$this->_intRow			= 0;
@@ -449,28 +444,30 @@
 				}
 			}
 			
+			$arrFormat = $this->_InitExcelFormats($this->_ptrFile);
+
 			// Render XLS line
 			if ($bolRenderToFile) {
 				if ($strStyle) {
-					$this->_wksWorksheet->getActiveSheet()->setCellValueByColumnAndRow($intCol, $this->_intRow, $mixValue);
-					$this->_wksWorksheet->getActiveSheet()->getStyleByColumnAndRow("{$intCol}:{$this->_intRow}")->applyFromArray($this->_arrFormat[$strStyle]);
+					$this->_ptrFile->getActiveSheet()->setCellValueByColumnAndRow($intCol, $this->_intRow, $mixValue);
+					$this->_ptrFile->getActiveSheet()->getStyleByColumnAndRow("{$intCol}:{$this->_intRow}")->applyFromArray($arrFormat[$strStyle]);
 					//$this->_wksWorksheet->writeString($this->_intRow, $intCol, $mixValue, $this->_arrFormat[$strStyle]);
 				}
 				else {
 					switch ($arrType[0]) {
 						case 'Integer':
-							$this->_wksWorksheet->getActiveSheet()->setCellValueByColumnAndRow($intCol, $this->_intRow, $mixValue);
-							$this->_wksWorksheet->getActiveSheet()->getStyleByColumnAndRow("{$intCol}:{$this->_intRow}")->applyFromArray($this->_arrFormat['Integer']);
+							$this->_ptrFile->getActiveSheet()->setCellValueByColumnAndRow($intCol, $this->_intRow, $mixValue);
+							$this->_ptrFile->getActiveSheet()->getStyleByColumnAndRow("{$intCol}:{$this->_intRow}")->applyFromArray($arrFormat['Integer']);
 							//$this->_wksWorksheet->writeNumber($this->_intRow, $intCol, $mixValue, $this->_arrFormat['Integer']);
 							break;
 							
 						case 'FNN':	
-							$this->_wksWorksheet->getActiveSheet()->setCellValueByColumnAndRow($intCol, $this->_intRow, $mixValue);
-							$this->_wksWorksheet->getActiveSheet()->getStyleByColumnAndRow("{$intCol}:{$this->_intRow}")->applyFromArray($this->_arrFormat['FNN']);
+							$this->_ptrFile->getActiveSheet()->setCellValueByColumnAndRow($intCol, $this->_intRow, $mixValue);
+							$this->_ptrFile->getActiveSheet()->getStyleByColumnAndRow("{$intCol}:{$this->_intRow}")->applyFromArray($arrFormat['FNN']);
 							//$this->_wksWorksheet->writeNumber($this->_intRow, $intCol, $mixValue, $this->_arrFormat['FNN']);
 						
 						default:
-							$this->_wksWorksheet->getActiveSheet()->setCellValueByColumnAndRow($intCol, $this->_intRow, $mixValue);
+							$this->_ptrFile->getActiveSheet()->setCellValueByColumnAndRow($intCol, $this->_intRow, $mixValue);
 							//$this->_wksWorksheet->writeString($this->_intRow, $intCol, $mixValue);
 							break;
 					}
@@ -782,93 +779,6 @@
 	 * @method
 	 */
  	private function _InitExcelFormats($wkbWorkbook) {
- 		/*
- 		$arrFormat = Array();
- 		
- 		// Integer format (make sure it doesn't show exponentials for large ints)
-		$fmtInteger =& $wkbWorkbook->addFormat();
-		$fmtInteger->setNumFormat('0');
-		$arrFormat['Integer']		= $fmtInteger;
-
- 		// Bold Integer format (make sure it doesn't show exponentials for large ints)
-		$fmtIntegerBold =& $wkbWorkbook->addFormat();
-		$fmtIntegerBold->setNumFormat('0');
-		$fmtIntegerBold->SetBold();
-		$arrFormat['IntegerBold']		= $fmtIntegerBold;
-
- 		// Total Integer format (make sure it doesn't show exponentials for large ints)
-		$fmtIntegerTotal =& $wkbWorkbook->addFormat();
-		$fmtIntegerTotal->setNumFormat('0');
-		$fmtIntegerTotal->setBold();
-		$fmtIntegerTotal->setTopColor('black');
-		$fmtIntegerTotal->setTop(1);
-		$arrFormat['IntegerTotal']		= $fmtIntegerTotal;		
-		
-		// Bold Text
-		$fmtBold		= $wkbWorkbook->addFormat();
-		$fmtBold->setBold();
-		$arrFormat['TextBold']		= $fmtBold;
-
-		// Title Row
-		$fmtTitle =& $wkbWorkbook->addFormat();
-		$fmtTitle->setBold();
-		$fmtTitle->setFgColor(22);
-		$fmtTitle->setBorder(1);
-		$arrFormat['Title']			= $fmtTitle;
-		
-		// Total Text Cell
-		$fmtTotalText	= $wkbWorkbook->addFormat();
-		$fmtTotalText->setTopColor('black');
-		$fmtTotalText->setTop(1);
-		$fmtTotalText->setBold();
-		$arrFormat['TotalText']		= $fmtTotalText;
-
-		// Currency
-		$fmtCurrency	= $wkbWorkbook->addFormat();
-		$fmtCurrency->setNumFormat('$#,##0.00;$#,##0.00 CR');
-		$arrFormat['Currency']		= $fmtCurrency;
-		
-		// Bold Currency
-		$fmtCurrencyBold	= $wkbWorkbook->addFormat();
-		$fmtCurrencyBold->setNumFormat('$#,##0.00;$#,##0.00 CR');
-		$fmtCurrencyBold->setBold();
-		$arrFormat['CurrencyBold']	= $fmtCurrencyBold;
-		
-		// Total Currency
-		$fmtTotal		= $wkbWorkbook->addFormat();
-		$fmtTotal->setNumFormat('$#,##0.00;$#,##0.00 CR');
-		$fmtTotal->setBold();
-		$fmtTotal->setTopColor('black');
-		$fmtTotal->setTop(1);
-		$arrFormat['CurrencyTotal']	= $fmtTotal;
-
-		// Percentage
-		$fmtPercentage	= $wkbWorkbook->addFormat();
-		$fmtPercentage->setNumFormat('0.00%;[red]-0.00%');
-		$arrFormat['Percentage']	= $fmtPercentage;
-		
-		// Bold Percentage
-		$fmtPCBold		= $wkbWorkbook->addFormat();
-		$fmtPCBold->setNumFormat('0.00%;-0.00%');
-		$fmtPCBold->setBold();
-		$arrFormat['PercentageBold']	= $fmtPCBold;
-		
-		// Total Percentage
-		$fmtPCTotal		= $wkbWorkbook->addFormat();
-		$fmtPCTotal->setNumFormat('0.00%;-0.00%');
-		$fmtPCTotal->setBold();
-		$fmtPCTotal->setTopColor('black');
-		$fmtPCTotal->setTop(1);
-		$arrFormat['PercentageTotal']	= $fmtPCTotal;
-
-		// FNN
-		$fmtFNN			= $wkbWorkbook->addFormat();
-		$fmtFNN->setNumFormat('0000000000');
-		$arrFormat['FNN']				= $fmtFNN;
-		
-		return $arrFormat;
-		*/
-
  		$aFormat = array(
 			'Integer' => array(
 				'numberformat' => array(
