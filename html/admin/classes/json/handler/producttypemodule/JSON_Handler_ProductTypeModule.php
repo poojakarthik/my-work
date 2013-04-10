@@ -26,7 +26,6 @@ class JSON_Handler_ProductTypeModule extends JSON_Handler
 		}
 		
 		$instance = new $strModuleClassName();
-		
 		$args = func_get_args();
 		array_shift($args);
 		

@@ -16,20 +16,6 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 		}
 	}
 
-	/*
-	MDB2: http://pear.php.net/package/MDB2/docs/latest/MDB2/MDB2_Driver_Common.html#methodquote
-	
-	Convert a text value into a DBMS specific format that is suitable to compose query statements.
-
-	Return: text string that represents the given argument value in a DBMS specific format.
-	Access: public
-
-	Parameters:
-	string  	$value  	—	  text string value that is intended to be converted.
-	string  	$type  	—	  type to which the value should be converted to
-	bool  	$quote  	—	  quote
-	bool  	$escape_wildcards  	—	  escape wildcards
-	*/
 	public function quote($sValue, $sType=null, $bQuote=true, $bEscapeWildcards=false) {
 		//throw new Exception("Error in method quote(), not implemented.");
 		return $this->_oPDO->quote($sValue);

@@ -32,4 +32,38 @@ class MDB2_Driver {
 		$this->_iPDOFetchMode = $this->getPDOFetchMode($iFetchMode);
 	}
 
+	function splitTableSchema($table) {
+		$ret = array();
+		if (strpos($table, '.') !== false) {
+			return explode('.', $table);
+		}
+		return array(null, $table);
+	}
+
+    function queryCol($query, $type = null, $colnum = 0) {
+        $result = $this->query($query, $type);
+        $col = $result->fetchCol($colnum);
+        return $col;
+    }
+
+
+    function getIndexName($idx) {
+        return sprintf('%s_idx', preg_replace('/[^a-z0-9_\-\$.]/i', '_', $idx));
+    }
+
+	function fixIndexName($idx) {
+		$idx_pattern = '/^'.preg_replace('/%s/', '([a-z0-9_]+)', '%s_idx').'$/i';
+		$idx_name = preg_replace($idx_pattern, '\\1', $idx);
+		if ($idx_name && !strcasecmp($idx, $this->getIndexName($idx_name))) {
+			return $idx_name;
+		}
+		return $idx;
+	}
+
+	function queryRow($query, $types = null, $fetchmode = MDB2_FETCHMODE_DEFAULT) {
+		$result = $this->query($query, $types);
+		$row = $result->fetchRow($fetchmode);
+		return $row;
+	}
+
 }

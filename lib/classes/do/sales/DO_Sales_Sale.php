@@ -300,7 +300,6 @@ $strFromClause $strWhereClause $strOrderByClause $strLimitClause;";
 		}
 
 		$arrRecordSet = $results->fetchAll(MDB2_FETCHMODE_ASSOC);
-		
 		$arrSales = array();
 		foreach ($arrRecordSet as $arrRecord)
 		{

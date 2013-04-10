@@ -11,7 +11,9 @@
 //
 // Hadrian 28/10/2008
 //
-require_once "MDB2_Driver_Reverse_pgsql.php";
+//require_once "MDB2_Driver_Reverse_pgsql.php";
+
+require_once dirname(__FILE__) . "/../mdb2/MDB2.php";
 
 class DO_Modeler
 {
@@ -141,11 +143,10 @@ class DO_Database
 	public function load()
 	{
 		// List the tables in the database
-		$this->dbConnection->loadModule('Manager');
-		$this->dbConnection->loadModule('Reverse', null, true);
-		
-		$tables = $this->dbConnection->manager->listTables();
-
+		//$this->dbConnection->loadModule('Manager');
+		//$this->dbConnection->loadModule('Reverse', null, true);
+		//$tables = $this->dbConnection->manager->listTables();
+		$tables = $this->dbConnection->listTables();
 		if (MDB2::isError($tables))
 		{
 			throw new Exception(__CLASS__ . ' Failed to list tables in database. ' . $tables->getMessage());
@@ -230,61 +231,46 @@ class DO_Table
 		return self::$tables[$tableName];
 	}
 		
-	public function load()
-	{
-		$constraints = $this->doDatabase->getDBConnection()->manager->listTableConstraints($this->tableName);
-
-		if (MDB2::isError($constraints))
-		{
+	public function load() {
+		//$constraints = $this->doDatabase->getDBConnection()->manager->listTableConstraints($this->tableName);
+		$constraints = $this->doDatabase->getDBConnection()->listTableConstraints($this->tableName);
+		if (MDB2::isError($constraints)) {
 			throw new Exception(__CLASS__ . ' Failed to list constraints for the \'' . $this->tableName . '\' table. ' . $constraints->getMessage());
 		}
-
-		foreach ($constraints as $constraint)
-		{
-			$con = $this->doDatabase->getDBConnection()->reverse->getTableConstraintDefinition($this->tableName, $constraint);
+		foreach ($constraints as $constraint) {
+			//$con = $this->doDatabase->getDBConnection()->reverse->getTableConstraintDefinition($this->tableName, $constraint);
+			$con = $this->doDatabase->getDBConnection()->getTableConstraintDefinition($this->tableName, $constraint);
 			$con[0]['Name'] = $constraint;
-			
-			if ($con['primary'])
-			{
+			if ($con['primary']) {
 				$this->pk = array_keys($con['fields']);
-			}
-			
-			else if ($con['foreign'])
-			{
+			} else if ($con['foreign']) {
 				$onDelete = array_key_exists('ondelete', $con['references']) ? $con['references']['ondelete'] : null;
 				$onUpdate = array_key_exists('onupdate', $con['references']) ? $con['references']['onupdate'] : null;
 				$table = array_key_exists('table', $con['references']) ? $con['references']['table'] : null;
 				$refFields = array_key_exists('fields', $con['references']) ? $con['references']['fields'] : null;
 				$this->fks[$constraint] = $this->getDoForeignKey($constraint, $this->tableName, $con['fields'], $table, $refFields, $onUpdate, $onDelete);
-			}
-			
-			else if ($con['unique'])
-			{
+			} else if ($con['unique']) {
 				$this->uks[$constraint] = $this->getDoUniqueKey($constraint, $con['fields']);
-			}
-			
-			else if ($con['check'])
-			{
+			} else if ($con['check']) {
 				// Checks aren't supported by mdb2 yet :(
-			}
-			
-			// Unhandled constraint type!
-			else 
-			{
+			} else {
+				// Unhandled constraint type!
 				echo $this->tableName . '.' . $constraint . "\n";
-				var_dump($con);
+				//var_dump($con);
 			}
 		}
-
-		$cols = $this->doDatabase->getDBConnection()->manager->listTableFields($this->tableName);
-		if (MDB2::isError($cols))
-		{
+		//$cols = $this->doDatabase->getDBConnection()->manager->listTableFields($this->tableName);
+		$cols = $this->doDatabase->getDBConnection()->listTableFields($this->tableName);
+		if (MDB2::isError($cols)) {
 			throw new Exception(__CLASS__ . ' Failed to list columns for the \'' . $this->tableName . '\' table. ' . $cols->getMessage());
 		}
-
+		//var_dump($cols);
 		foreach ($cols as $colName)
 		{
-			$col = $this->doDatabase->getDBConnection()->reverse->getTableFieldDefinition($this->tableName, $colName);
+			//$col = $this->doDatabase->getDBConnection()->reverse->getTableFieldDefinition($this->tableName, $colName);
+			//echo "FIXME COLNAME DOESNT EXIT!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+			//echo "xxxxxxxx{$this->tableName}, {$colName}xxxxxxxxxx";
+			$col = $this->doDatabase->getDBConnection()->getTableFieldDefinition($this->tableName, $colName);
 			$propName = DO_Modeler::codifyName($colName);
 			$this->intMaxPropertyNameLength = max($this->intMaxPropertyNameLength, strlen($propName));
 			$this->intMaxDataSourceNameLength = max($this->intMaxDataSourceNameLength, strlen($colName));
