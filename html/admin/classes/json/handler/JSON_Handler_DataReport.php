@@ -23,26 +23,21 @@ class JSON_Handler_DataReport extends JSON_Handler
 			}
 			
 			// Retrieve the datareports & convert response to std classes
-			$aDataReports	=	DataReport::getForEmployeeId(
-									Flex::getUserId(), 
-									AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)
-								);
-			
-			foreach ($aDataReports as $iId => $oDataReport)
-			{
-				$aDataReports[$iId]	= $oDataReport->toStdClass();
-				
+			$aDataReports = DataReport::getForEmployeeId(Flex::getUserId(), AuthenticatedUser()->UserHasPerm(PERMISSION_GOD));			
+			$aStdClasses = array();
+			foreach ($aDataReports as $oDataReport) {
 				// Not sure if this is still needed. rmctainsh
-				if ($oDataReport->isDraft())
-				{
-					$aDataReports[$iId]->bDraft	= true;
+				$oStdClass = $oDataReport->toStdClass();
+				if ($oDataReport->isDraft()) {
+					$oStdClass->bDraft = true;
 				}
+				$aStdClasses[]	= $oStdClass;
 			}
 			
 			// If no exceptions were thrown, then everything worked
 			return array(
 						"Success"			=> true,
-						"aRecords"			=> $aDataReports,
+						"aRecords"			=> $aStdClasses,
 						"bEditPermission"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN),
 						"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 					);
