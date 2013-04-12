@@ -10,7 +10,7 @@
 //----------------------------------------------------------------------------//
 
 // Get the Flex class...
-require_once '../../lib/classes/Flex.php';
+require_once dirname(__FILE__).'/../../lib/classes/Flex.php';
 require_once dirname(__FILE__).'/report_permissions.php';
 Flex::load();
 

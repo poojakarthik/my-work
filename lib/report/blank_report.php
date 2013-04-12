@@ -78,8 +78,10 @@ $arrDataReport = array(
 	'RenderMode' => REPORT_RENDER_INSTANT,
 	// Leave this null to allow the option of csv or excel as the output format
 	'RenderTarget' => NULL,
-	// Leave null
-	'Overrides' => NULL,
+	// This overrides the csv delimiter to use comma instead of semi-colon
+	'Overrides' => serialize(array(
+		'Delimiter' => ','
+	)),
 	// Leave null
 	'PostSelectProcess' => NULL,
 	/* 	data_report_status_id
