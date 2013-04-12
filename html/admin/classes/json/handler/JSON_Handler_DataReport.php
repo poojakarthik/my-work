@@ -23,7 +23,7 @@ class JSON_Handler_DataReport extends JSON_Handler
 			}
 			
 			// Retrieve the datareports & convert response to std classes
-			$aDataReports = DataReport::getForEmployeeId(Flex::getUserId(), AuthenticatedUser()->UserHasPerm(PERMISSION_GOD));			
+			$aDataReports = DataReport::getForEmployeeId(Flex::getUserId(), AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN));
 			$aStdClasses = array();
 			foreach ($aDataReports as $oDataReport) {
 				// Not sure if this is still needed. rmctainsh
