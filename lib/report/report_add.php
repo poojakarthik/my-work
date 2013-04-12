@@ -11,6 +11,7 @@
 
 // Get the Flex class...
 require_once '../../lib/classes/Flex.php';
+require_once dirname(__FILE__).'/report_permissions.php';
 Flex::load();
 
 //----------------------------------------------------------------------------//
@@ -75,14 +76,43 @@ require $strFilename;
 
 // Insert it into the database
 TransactionStart();
+
 if ($iDataReportId !== null) {
+	// Update
+	$oReport = DataReport::getForId($iDataReportId);
+	echo "\nUpdating report: '{$oReport->Name}' from {$strFilename}... ";
+
+	// Check status
+	switch ($oReport->data_report_status_id) {
+		case DATA_REPORT_STATUS_ACTIVE:
+			if ($arrDataReport['data_report_status_id'] != DATA_REPORT_STATUS_DRAFT) {
+				echo "\nSetting the report status to: ".strtoupper(Constant_Group::getConstantGroup('data_report_status')->getConstantName($arrDataReport['data_report_status_id']));
+				$arrDataReport = array(
+					'data_report_status_id' => $arrDataReport['data_report_status_id']
+				);
+			} else {
+				echo "\nCannot set the report to DRAFT again, it is currently ACTIVE\n\n";
+				TransactionRollback();
+				exit(1);
+			}
+			break;
+		case DATA_REPORT_STATUS_INACTIVE:
+			echo "\nCannot edit this report, it is INACTIVE\n\n";
+			TransactionRollback();
+			exit(1);
+			break;
+		case DATA_REPORT_STATUS_DRAFT:
+			echo "\nThis report is a DRAFT, updating it's definition\n";
+			break;
+	}
+
 	$arrDataReport['Id'] = $iDataReportId;
 	$oStmt = new StatementUpdateById("DataReport", $arrDataReport);
 } else {
+	// Insert
+	echo "\nCreating new report: '{$arrDataReport['Name']}' from {$strFilename}... ";
 	$oStmt = new StatementInsert("DataReport");
 }
-
-echo "\nImporting report: '{$arrDataReport['Name']}' from {$strFilename}... ";
 
 if ($oStmt->Execute($arrDataReport) === false) {
 	TransactionRollback();
