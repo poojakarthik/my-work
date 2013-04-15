@@ -59,11 +59,8 @@ var Page_DataReport_List = Class.create(
 			
 			// Add rows
 			var oTBody 	= this.oContentDiv.select('tbody').first();
-			var	aData	= jQuery.json.arrayAsObject(oResponse.aRecords);
-			
-			for (var iId in aData)
-			{
-				oTBody.appendChild(this._createRow(aData[iId], oResponse.bEditPermission));
+			for (var i = 0; i < oResponse.aRecords.length; i++) {
+				oTBody.appendChild(this._createRow(oResponse.aRecords[i], oResponse.bEditPermission));
 			}
 			
 			// Attach content
