@@ -124,7 +124,7 @@ class Resource_Type_File_Import_Telemarketing_SalesCom_ProposedDiallingList
 		$intCallPeriodLengthDays	= self::CALL_PERIOD_LENGTH_DAYS;
 		
 		// Pull the data
-		$arrNormalised['FNN']				= $arrExplode[5];
+		$arrNormalised['FNN']				= preg_replace('/\s/', '', $arrExplode[5]);
 		$arrNormalised['CallPeriodStart']	= date("Y-m-d 00:00:00");
 		$arrNormalised['CallPeriodEnd']		= date("Y-m-d H:i:s", strtotime("+{$intCallPeriodLengthDays} days", strtotime($arrNormalised['CallPeriodStart'])));
 		

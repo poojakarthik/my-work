@@ -121,7 +121,7 @@ class Resource_Type_File_Import_Telemarketing_SalesCom_DiallerReport
 		// Pull the data
 		$aIndexes						= self::_getFileFormatDefinition(null, '__INDEXES__');
 		
-		$aNormalised['FNN']									= $aExplode[$aColumns['FNN']['Index']];
+		$aNormalised['FNN']									= preg_replace('/\s/', '', $aExplode[$aColumns['FNN']['Index']]);
 		$aNormalised['CallDatetime']						= self::_processDatetime(trim($aExplode[$aColumns['CallDatetime']['Index']]));
 		$aNormalised['OutcomeCode']							= (int)$aExplode[$aColumns['OutcomeCode']['Index']];
 		
