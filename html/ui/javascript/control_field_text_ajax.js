@@ -239,7 +239,7 @@ var Control_Field_Text_AJAX	= Class.create(/* extends */ Control_Field,
 		// Check that the target of the click event does not belong within the results overlay
 		if (oEvent.explicitOriginalTarget != this._oTableContainer)
 		{
-			var oParent	= oEvent.explicitOriginalTarget.parentNode;
+			var oParent	= (oEvent.explicitOriginalTarget ? oEvent.explicitOriginalTarget.parentNode : null);
 			while (oParent && (oParent != document.body))
 			{
 				if (oParent == this._oTableContainer)
