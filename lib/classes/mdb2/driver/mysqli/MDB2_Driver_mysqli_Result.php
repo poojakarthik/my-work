@@ -81,6 +81,8 @@ class MDB2_Driver_mysqli_Result {
 			foreach ($mData as $sKey => $mValue) {
 				if (is_string($mValue)) {
 					$mNewData[$sKey] = call_user_func($fnApply, $mValue);
+				} else {
+					$mNewData[$sKey] = $mValue;
 				}
 			}
 		} else {
