@@ -167,12 +167,14 @@ class Cli_App_Payments extends Cli {
 		return;
 	}
 	
-	protected function _distribute() { 
-		// Ensure that Payment Processing isn't already running, then identify that it is now running
-		Flex_Process::factory(Flex_Process::PROCESS_PAYMENTS_DISTRIBUTE)->lock();
-		
+	protected function _distribute() {
 		// Optional Payment.Id parameter
 		$iPaymentId = $this->_aArgs[self::SWITCH_PAYMENT_ID];
+		if ($iPaymentId === null) {
+			// Ensure that Payment Processing isn't already running, then identify that it is now running
+			Flex_Process::factory(Flex_Process::PROCESS_PAYMENTS_DISTRIBUTE)->lock();
+		}
+
 		if ($iPaymentId && ($oPayment = Payment::getForId($iPaymentId))) { 
 			Log::getLog()->log("Applying Payment #{$iPaymentId}");
 			Logic_Payment::distributeAll(array((int)$iPaymentId));
@@ -235,7 +237,168 @@ class Cli_App_Payments extends Cli {
 			Log::getLog()->log("Successful!");
 		}
 	}
-	
+
+	const PROCPIPE_STDIN = 0;
+	const PROCPIPE_STDOUT = 1;
+	const PROCPIPE_STDERR = 2;
+	private static function _reduceFlattenReadPipes($aPipes, $aProcess) {
+		if (isset($aProcess['aPipes'][self::PROCPIPE_STDOUT])) {
+			$aPipes []= $aProcess['aPipes'][self::PROCPIPE_STDOUT];
+		}
+		if (isset($aProcess['aPipes'][self::PROCPIPE_STDERR])) {
+			$aPipes []= $aProcess['aPipes'][self::PROCPIPE_STDERR];
+		}
+		return $aPipes;
+	}
+
+	const PARALLEL_PROCESS_DEFAULT = 1;
+	const EXEC_STREAM_READ_CHUNK_SIZE = 8192;
+	private static function _execParallel(array $aCommands, $iProcesses=self::PARALLEL_PROCESS_DEFAULT) {
+		$aProcesses = array();
+		$aResults = array();
+
+		// NOTE: We reverse the "commands" array then pop off the end so that we can preserve keys to map output to input
+		// This is not possible if we shift off the start of an array, because it reindexes
+		$aCommands = array_reverse($aCommands, true);
+		while (count($aCommands) || count($aProcesses)) {
+			while (count($aCommands) && count($aProcesses) < $iProcesses) {
+				$sCommand = end($aCommands);
+				$mCommandKey = key($aCommands);
+				array_pop($aCommands);
+
+				// Execute command
+				Log::get()->log('Executing: ' . $sCommand);
+				$aPipes = null;
+				$rProcess = proc_open($sCommand, array(
+					self::PROCPIPE_STDIN => array('pipe', 'r'), // STDIN
+					self::PROCPIPE_STDOUT => array('pipe', 'w'), // STDOUT
+					self::PROCPIPE_STDERR => array('pipe', 'w') // STDERR
+				), $aPipes);
+
+				// Set STD* pipes to non-blocking
+				stream_set_blocking($aPipes[self::PROCPIPE_STDIN], 0);
+				stream_set_blocking($aPipes[self::PROCPIPE_STDOUT], 0);
+				stream_set_blocking($aPipes[self::PROCPIPE_STDERR], 0);
+
+				$aProcesses []= array(
+					'rProcess' => $rProcess,
+					'aPipes' => $aPipes,
+					'sOutput' => '',
+					'sError' => '',
+					'sCommand' => $sCommand,
+					'mCommandKey' => $mCommandKey
+				);
+			}
+
+			// Wait until there is activity on one of our pipes
+			//Log::get()->log('Commands: ' . count($aCommands));
+			//Log::get()->log('Processes: ' . count($aProcesses));
+			$aReadStreams = array_reduce($aProcesses, 'self::_reduceFlattenReadPipes', array());
+			$aWriteStreams = null;
+			$aExceptStreams = null;
+
+			//Log::get()->log('Waiting on processes...');
+			if (false === @stream_select($aReadStreams, $aWriteStreams, $aExceptStreams, null)) {
+				// Error
+				throw new Exception('Error waiting for stream activity: ' . $php_errormsg);
+			}
+
+			// Activity: $aReadStreams contains pipes that have activity
+			$aTerminatedProcesses = array();
+			//Log::get()->log(print_r($aReadStreams, true));
+			foreach ($aReadStreams as $rUpdatedStream) {
+				// Read from the pipe & find its process
+				$sRead = fread($rUpdatedStream, self::EXEC_STREAM_READ_CHUNK_SIZE);
+				$bEOF = feof($rUpdatedStream);
+				//Log::get()->log("Event on ({$rUpdatedStream}): " . var_export($sRead, true));
+				foreach ($aProcesses as $mProcessKey=>&$aProcess) {
+					if ($iPipe = array_search($rUpdatedStream, $aProcess['aPipes'], true)) {
+						$sPipeDescription = null;
+						switch ($iPipe) {
+							case self::PROCPIPE_STDOUT:
+								$sPipeDescription = 'STDOUT';
+								$aProcess['sOutput'] .= $sRead;
+								break;
+
+							case self::PROCPIPE_STDERR:
+								$sPipeDescription = 'STDERR';
+								$aProcess['sError'] .= $sRead;
+								break;
+						}
+
+						//Log::get()->log("{$sPipeDescription} for ({$aProcess['sCommand']}): " . var_export($sRead, true));
+
+						if ($bEOF) {
+							//Log::get()->log("{$sPipeDescription} for ({$aProcess['sCommand']}): EOF");
+							unset($aProcess['aPipes'][$iPipe]);
+							$aTerminatedProcesses []= $mProcessKey;
+						}
+					}
+				}
+				unset($aProcess);
+			}
+
+			// Check if processes are terminated
+			foreach (array_unique($aTerminatedProcesses) as $mProcessKey) {
+				$aProcess = $aProcesses[$mProcessKey];
+				if (count($aProcess['aPipes']) === 1) {
+					$aStatus = proc_get_status($aProcess['rProcess']);
+					//Log::get()->log("  [{$aProcess['mCommandKey']}]: " . print_r($aStatus, true));
+					if (!$aStatus['running']) {
+						$aResults[$aProcess['mCommandKey']] = array(
+							'sCommand' => $aProcess['sCommand'],
+							'iExitCode' => $aStatus['exitcode'],
+							'sOutput' => $aProcess['sOutput'],
+							'sError' => $aProcess['sError']
+						);
+
+						Log::get()->log("Terminated ({$aStatus['exitcode']}): {$aProcess['sCommand']}");
+						if ($aStatus['exitcode'] > 0) {
+							Log::get()->log('  Output: ' . preg_replace('/\n/', "\n    ", $aProcess['sOutput']));
+							Log::get()->log('  Error: ' . preg_replace('/\n/', "\n    ", $aProcess['sError']));
+						}
+
+						proc_close($aProcess['rProcess']);
+						unset($aProcesses[$mProcessKey]);
+					}
+				}
+			}
+		}
+
+		return $aResults;
+	}
+
+	const PARALLEL_PROCESS_DISTRIBUTION = 1;
+	const DISTRIBUTION_ATTEMPTS_MAXIMUM = 4;
+	private static function _distributePayments($aPayments) {
+		Log::get()->log(sprintf('Distributing %d Payments...', count($aPayments)));
+		
+		// Prepare commands
+		$aCommands = array();
+		foreach ($aPayments as $iPaymentId) {
+			$aCommands[$iPaymentId] = sprintf('php %s/cli/payments.php -m %s -p %d -v',
+				Flex::getBase(),
+				self::MODE_DISTRIBUTE,
+				$iPaymentId
+			);
+		}
+
+		// Attempt to distribute up to DISTRIBUTION_ATTEMPTS_MAXIMUM times
+		$iAttempts = 0;
+		while (count($aCommands) && $iAttempts < self::DISTRIBUTION_ATTEMPTS_MAXIMUM) {
+			$aResults = self::_execParallel($aCommands, self::PARALLEL_PROCESS_DISTRIBUTION);
+
+			$iAttempts++;
+			$aCommands = array();
+			foreach ($aResults as $iPaymentId=>$aResult) {
+				if ($aResult['iExitCode'] > 0) {
+					// Error: retry
+					$aCommands[$iPaymentId] = $aResult['sCommand'];
+				}
+			}
+		}
+	}
+
 	protected function _directdebit() {
 		// The arguments are present and in a valid format if we get past this point.
 		$aArgs = $this->getValidatedArguments();
@@ -259,10 +422,12 @@ class Cli_App_Payments extends Cli {
 				$iTimestamp = DataAccess::getDataAccess()->getNow(true);
 
 				// Execute subprocesses
-				$aInvoiceDirectDebitSummary = $this->_runBalanceDirectDebits($iTimestamp);
-				//Log::getLog()->log("Invoice Direct Debit Summary Data: ".print_r($aInvoiceDirectDebitSummary, true));
+				// NOTE: Run Promises first, because there are much fewer of them
 				$aPromiseDirectDebitSummary = $this->_runPromiseInstalmentDirectDebits($iTimestamp);
 				//Log::getLog()->log("Promise Direct Debit Summary Data: ".print_r($aPromiseDirectDebitSummary, true));
+
+				$aInvoiceDirectDebitSummary = $this->_runBalanceDirectDebits($iTimestamp);
+				//Log::getLog()->log("Invoice Direct Debit Summary Data: ".print_r($aInvoiceDirectDebitSummary, true));
 
 				// Combine summary data
 				$aSummaryData = array(
@@ -303,6 +468,11 @@ class Cli_App_Payments extends Cli {
 
 			// Flush the Email Queue
 			$oEmailQueue->send();
+
+			// Distribute Payments
+			if (!$bTestRun) {
+				self::_distributePayments(array_merge($aPromiseDirectDebitSummary['aPayments'], $aInvoiceDirectDebitSummary['aPayments']));
+			}
 		} catch (Exception $oEx) { 
 			if ($bTestRun) { 
 				// In test mode, rollback transaction
@@ -407,11 +577,13 @@ class Cli_App_Payments extends Cli {
 			self::DIRECT_DEBIT_INELIGIBLE_RETRY => 0
 		);
 		
+		$aAppliedAccountIds = array();
+		$aPayments = array();
 		while ($aRow = $mResult->fetch_assoc()) { 
 			// Check if the account has already been processed, potentially useless 
 			// but is here just to be sure that accounts aren't charged more than once
 			$iAccountId = $aRow['account_id'];
-			if ($aAccountsApplied[$iAccountId]) { 
+			if (isset($aAccountsApplied[$iAccountId])) { 
 				$iDoubleUpsCount++;
 				Log::getLog()->log("Already applied to account {$iAccountId}");
 				continue;
@@ -534,8 +706,9 @@ class Cli_App_Payments extends Cli {
 					$oPayment->transaction_reference = $oPaymentRequest->generateTransactionReference();
 					$oPayment->save();
 
-					// Now that the Payment is finalised, distribute!
-					$oPayment->distribute();
+					// Defer distribution to the end
+					$aPayments []= $oPayment->id;
+					$aAppliedAccountIds []= $oAccount->Id;
 				} catch (Exception $oException) {
 					DataAccess::getDataAccess()->TransactionRollback(false);
 					throw $oException;
@@ -562,7 +735,9 @@ class Cli_App_Payments extends Cli {
 		return array(
 			'iCount' => $iAppliedCount,
 			'fValue' => $fAppliedValue,
-			'aCustomerGroups' => $aCustomerGroupSummary
+			'aCustomerGroups' => $aCustomerGroupSummary,
+			'aAccountsApplied' => $aAppliedAccountIds,
+			'aPayments' => $aPayments
 		);
 	}
 	
@@ -638,7 +813,8 @@ class Cli_App_Payments extends Cli {
 							self::DIRECT_DEBIT_INELIGIBLE_CREDIT_CARD_EXPIRY => 0, 
 							self::DIRECT_DEBIT_INELIGIBLE_AMOUNT => 0
 						);
-		
+		$aAppliedAccountIds = array();
+		$aPayments = array();
 		while ($aRow = $mResult->fetch_assoc()) { 
 			Log::getLog()->log("Collection Promise Instalment: {$aRow['collection_promise_instalment_id']}");
 			$oInstalment = Collection_Promise_Instalment::getForId($aRow['collection_promise_instalment_id']);
@@ -740,9 +916,9 @@ class Cli_App_Payments extends Cli {
 					$oPayment->transaction_reference = $oPaymentRequest->generateTransactionReference();
 					$oPayment->save();
 
-					// Now that the Payment is finalised, distribute!
-					Log::getLog()->log("Distributing Payment...");
-					$oPayment->distribute();
+					// Defer distribtion to the end
+					$aPayments []= $oPayment->id;
+					$aAppliedAccountIds []= $oAccount->Id;
 				} catch (Exception $oException) {
 					DataAccess::getDataAccess()->TransactionRollback(false);
 					throw $oException;
@@ -770,7 +946,9 @@ class Cli_App_Payments extends Cli {
 		return array(
 			'iCount' => $iAppliedCount,
 			'fValue' => $fAppliedValue,
-			'aCustomerGroups' => $aCustomerGroupSummary
+			'aCustomerGroups' => $aCustomerGroupSummary,
+			'aAccountsApplied' => $aAppliedAccountIds,
+			'aPayments' => $aPayments
 		);
 	}
 

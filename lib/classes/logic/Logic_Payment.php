@@ -316,7 +316,7 @@ class Logic_Payment extends Logic_Distributable implements DataLogic{
 			$oPayment	= ($mPayment instanceof self) ? $mPayment : new self(Payment::getForId($mPayment));
 
 			$iProgress++;
-			Log::getLog()->log("({$iProgress}/{$iTotalPayments}) Payment #{$$oPayment->id}");
+			Log::getLog()->log("({$iProgress}/{$iTotalPayments}) Payment #{$oPayment->id}");
 
 			// Encase each Payment in a Transaction
 			DataAccess::getDataAccess()->TransactionStart(false);
