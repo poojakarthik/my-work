@@ -98,6 +98,11 @@ class Payment extends ORM_Cached
 	{
 		return parent::getAll($bolForceReload, __CLASS__);
 	}
+
+	public static function importResult($aResultSet)
+	{
+		return parent::importResult($aResultSet, __CLASS__);
+	}
 	
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
