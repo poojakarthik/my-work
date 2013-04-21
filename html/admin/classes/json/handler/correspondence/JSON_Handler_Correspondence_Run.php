@@ -96,17 +96,18 @@ class JSON_Handler_Correspondence_Run extends JSON_Handler implements JSON_Handl
 		catch (JSON_Handler_Correspondence_Run_Exception $oException)
 		{
 			return 	array(
-						'bSuccess'	=> false,
-						'sMessage'	=> $oException->getMessage()
+						'bSuccess' => false,
+						'sMessage' => $oException->getMessage()
 					);
 		}
-		catch (Exception $e)
+		catch (Exception $oEx)
 		{
 			$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
-			return 	array(
-						'bSuccess'	=> false,
-						'sMessage'	=> $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'
-					);
+			return array(
+				'bSuccess' => false,
+				'sMessage' => $oEx->getMessage(),
+				'sExceptionClass' => get_class($oEx)
+			);
 		}
 	}
 
