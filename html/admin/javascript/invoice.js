@@ -85,8 +85,8 @@ var Invoice	= Class.create
 				}
 				else
 				{
-					// NO log, show message
-					Reflex_Popup.alert(oResponse.sMessage);
+					// NO log, show error popup
+					jQuery.json.errorPopup(oResponse, "Failed to Re-Rate Invoice '" + iInvoiceId + "'");
 				}
 				fnCallback(null);
 				return;
