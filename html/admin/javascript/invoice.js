@@ -57,21 +57,15 @@ var Invoice	= Class.create
 	},
 	
 	// rerateInvoice: JSON Handler wrapper
-	rerateInvoice	: function(iInvoiceId, hServiceRatePlans, fnCallback, oResponse)
-	{
-		if (typeof oResponse == 'undefined')
-		{
+	rerateInvoice : function(iInvoiceId, hServiceRatePlans, fnCallback, oResponse) {
+		if (typeof oResponse == 'undefined') {
 			// Make request
 			var fnResponseCallback	= this.rerateInvoice.bind(this, iInvoiceId, hServiceRatePlans, fnCallback);
 			var fnRerateInvoice		= jQuery.json.jsonFunction(fnResponseCallback, fnResponseCallback, 'Invoice', 'rerateInvoice');
 			fnRerateInvoice(iInvoiceId, hServiceRatePlans);
-		}
-		else
-		{
-			if (!oResponse.bSuccess)
-			{
-				if (oResponse.sDebug != '')
-				{
+		} else {
+			if (!oResponse.bSuccess) {
+				if (oResponse.sDebug != '') {
 					// Have log, show message & 'View Log' button
 					Reflex_Popup.yesNoCancel(
 						oResponse.sMessage, 
@@ -82,9 +76,9 @@ var Invoice	= Class.create
 							fnOnNo		: this._showLogPopup.bind(this, oResponse.sDebug)
 						}
 					);
-				}
-				else
-				{
+				} else if (oResponse.sExceptionClass == 'Exception_Rating_RateNotFound') {
+					Reflex_Popup.alert("Failed to Re-Rate Invoice '" + iInvoiceId + "'. " + oResponse.sMessage);
+				} else {
 					// NO log, show error popup
 					jQuery.json.errorPopup(oResponse, "Failed to Re-Rate Invoice '" + iInvoiceId + "'");
 				}
