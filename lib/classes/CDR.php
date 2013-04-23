@@ -33,7 +33,7 @@ class CDR extends ORM_Cached {
 											rp.Id AS rate_plan_id,
 											rp.Name AS rate_plan_name,
 											d.Code AS destination_code,
-											d.Description As destination_desciption,
+											d.Description As destination_description,
 											c.StartDatetime AS event_datetime
 										FROM CDR c
 											JOIN RecordType rt ON (rt.id = c.RecordType)
