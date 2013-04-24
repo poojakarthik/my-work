@@ -274,6 +274,7 @@ var Popup_Correspondence_Template = Class.create(Reflex_Popup, {
 
 				this._hSourceTypeControls.sql_syntax.oControl.cancelFocusShiftOnTab();
 				this._hSourceTypeControls.sql_syntax.oControl.setRenderMode(this._bRenderMode);
+				break;
 			case $CONSTANT.CORRESPONDENCE_SOURCE_TYPE_SQL_ACCOUNTS:
 				// SQL Accounts
 				this._hSourceTypeControls = {
