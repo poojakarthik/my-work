@@ -19,7 +19,7 @@ class CDR extends ORM_Cached {
 			$oService->save();
 			
 			$oRate = ($bUseExistingRate && $this->Rate) ? Rate::getForId($this->Rate) : Rate::getForCDR($this);
-
+			
 			// Did we find a Rate?
 			if (!$oRate) {
 				$this->Charge = null;
@@ -50,7 +50,7 @@ class CDR extends ORM_Cached {
 										array(
 											'cdr_id' => $this->Id
 										))->fetch_assoc();
-				throw new Exception_Rating_RateNotFound("No Rate found for CDR (Call Started: {$aInfo['event_datetime']}; Record Type: {$aInfo['record_type_name']}; Rate Plan: {$aInfo['rate_plan_name']}; Destination Code: {$aInfo['destination_code']}; Destination Desctiption: '{$aInfo['destination_description']}')");
+				throw new Exception_Rating_RateNotFound("No Rate found for CDR (Call Started: {$aInfo['event_datetime']}; Record Type: {$aInfo['record_type_name']}; Rate Plan: {$aInfo['rate_plan_name']}; Destination Code: {$aInfo['destination_code']}; Destination Description: '{$aInfo['destination_description']}')");
 			}
 
 			$this->Rate = $oRate->Id;
