@@ -20,11 +20,9 @@ class Correspondence_Logic_Source_SQLAccounts extends Correspondence_Logic_Sourc
 
 	public function _getCorrespondence()
 	{
-		$this->db 	= DataAccess::getDataAccess();
-
-                 $sSql = str_replace("<ACCOUNTS>", implode(",", $this->_aAccounts), $this->sql_syntax);
-
-		$result 	= $this->db->refMysqliConnection->query($sSql);
+		$this->db = DataAccess::getDataAccess();
+		$sSql = str_replace("<ACCOUNTS>", implode(",", $this->_aAccounts), $this->sql_syntax);
+		$result = $this->db->refMysqliConnection->query($sSql);
 		if (!$result)
 		{
 			throw new Correspondence_DataValidation_Exception(Correspondence_DataValidation_Exception::SQLERROR);
@@ -33,8 +31,6 @@ class Correspondence_Logic_Source_SQLAccounts extends Correspondence_Logic_Sourc
 		{
 			throw new Correspondence_DataValidation_Exception(Correspondence_DataValidation_Exception::NODATA);
 		}
-
-
 
 		while($row = $result->fetch_array(MYSQLI_ASSOC))
  		{

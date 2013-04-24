@@ -740,10 +740,9 @@ var Component_Collections_Event = Class.create(
 			var oCorrespondenceTemplate = Component_Collections_Event._hCorrespondenceTemplates[iCorrespondenceTemplateId];
 			if (oCorrespondenceTemplate.correspondence_source_type_id != $CONSTANT.CORRESPONDENCE_SOURCE_TYPE_SYSTEM)
 			{
-				var oNAOption = $T.option({value: null}, 
-									'N/A'
-								);
-				fnCallback([oNAOption]);
+				fnCallback([$T.option({value: ''},
+					'N/A'
+				)]);
 				return;
 			}
 		}

@@ -259,16 +259,51 @@ var Popup_Correspondence_Template = Class.create(Reflex_Popup, {
 		this._hSourceTypeControls = {};
 		switch (iSourceTypeId) {
 			case $CONSTANT.CORRESPONDENCE_SOURCE_TYPE_SQL:
-				oControl = Control_Field.factory('textarea', {
-					sLabel : 'SQL Syntax',
-					mMandatory : true,
-					mEditable : true,
-					rows : 7,
-					sExtraClass : 'popup-correspondence-template-sql-syntax'
-				});
-				oControl.cancelFocusShiftOnTab();
-				oControl.setRenderMode(this._bRenderMode);
-				this._hSourceTypeControls.sql_syntax = {oControl: oControl}; 
+				// SQL
+				this._hSourceTypeControls = {
+					sql_syntax : {
+						oControl : Control_Field.factory('textarea', {
+							sLabel : 'SQL Syntax',
+							mMandatory : true,
+							mEditable : true,
+							rows : 7,
+							sExtraClass : 'popup-correspondence-template-sql-syntax'
+						})
+					}
+				};
+
+				this._hSourceTypeControls.sql_syntax.oControl.cancelFocusShiftOnTab();
+				this._hSourceTypeControls.sql_syntax.oControl.setRenderMode(this._bRenderMode);
+			case $CONSTANT.CORRESPONDENCE_SOURCE_TYPE_SQL_ACCOUNTS:
+				// SQL Accounts
+				this._hSourceTypeControls = {
+					sql_syntax : {
+						oControl : Control_Field.factory('textarea', {
+							sLabel : 'SQL Syntax',
+							mMandatory : true,
+							mEditable : true,
+							rows : 7,
+							sExtraClass : 'popup-correspondence-template-sql-syntax',
+							fnValidate : function(mValue) {
+								if (!mValue.toString().match(/<ACCOUNTS>/)) {
+									throw new Error("Include a placeholder for the comma separated list of accounts: <ACCOUNTS>");
+								}
+
+								return true;
+							}
+						})
+					},
+					enforce_account_set : {
+						oControl : Control_Field.factory('checkbox', {
+							sLabel : 'Enforce Account Set',
+							mEditable : true
+						})
+					}
+				};
+
+				this._hSourceTypeControls.sql_syntax.oControl.cancelFocusShiftOnTab();
+				this._hSourceTypeControls.sql_syntax.oControl.setRenderMode(this._bRenderMode);
+				this._hSourceTypeControls.enforce_account_set.oControl.setRenderMode(this._bRenderMode);
 				break;
 		}
 		
@@ -330,7 +365,7 @@ Object.extend(Popup_Correspondence_Template, {
 	_getSourceTypeOptions : function (fnCallback, oResponse) {
 		if (!oResponse) {
 			var fnResp = Popup_Correspondence_Template._getSourceTypeOptions.curry(fnCallback);
-			var fnReq = jQuery.json.jsonFunction(fnResp, fnResp, 'Correspondence_Template', 'getSelectableSourceTypes');
+			var fnReq = jQuery.json.jsonFunction(fnResp, fnResp, 'Correspondence_Template', 'getSourceTypes');
 			fnReq();
 			return;
 		}
@@ -344,6 +379,11 @@ Object.extend(Popup_Correspondence_Template, {
 			i;
 		for (i in oResponse.aSourceTypes) {
 			if (oResponse.aSourceTypes.hasOwnProperty(i)) {
+				if (oResponse.aSourceTypes[i].const_name == 'CORRESPONDENCE_SOURCE_TYPE_SYSTEM') {
+					// System templates cannot be created
+					continue;
+				}
+
 				aOptions.push(
 					$T.option({value: i},
 						oResponse.aSourceTypes[i].name 
