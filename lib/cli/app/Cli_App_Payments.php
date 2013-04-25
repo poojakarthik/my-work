@@ -241,7 +241,7 @@ class Cli_App_Payments extends Cli {
 	const PROCPIPE_STDIN = 0;
 	const PROCPIPE_STDOUT = 1;
 	const PROCPIPE_STDERR = 2;
-	private static function _reduceFlattenReadPipes($aPipes, $aProcess) {
+	public static function reduceFlattenReadPipes($aPipes, $aProcess) {
 		if (isset($aProcess['aPipes'][self::PROCPIPE_STDOUT])) {
 			$aPipes []= $aProcess['aPipes'][self::PROCPIPE_STDOUT];
 		}
@@ -293,7 +293,7 @@ class Cli_App_Payments extends Cli {
 			// Wait until there is activity on one of our pipes
 			//Log::get()->log('Commands: ' . count($aCommands));
 			//Log::get()->log('Processes: ' . count($aProcesses));
-			$aReadStreams = array_reduce($aProcesses, 'self::_reduceFlattenReadPipes', array());
+			$aReadStreams = array_reduce($aProcesses, 'self::reduceFlattenReadPipes', array());
 			$aWriteStreams = null;
 			$aExceptStreams = null;
 
