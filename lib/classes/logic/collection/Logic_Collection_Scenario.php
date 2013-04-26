@@ -20,15 +20,24 @@ class Logic_Collection_Scenario implements DataLogic {
 
 	// getInitialScenarioEvent: Get the event with no prerequisite for this scenario
 	public function getInitialScenarioEvent() {
-		$aRow = Query::run("SELECT id
-							FROM collection_scenario_collection_event
-							WHERE collection_scenario_id = <collection_scenario_id>
-								AND prerequisite_collection_scenario_collection_event_id IS NULL",
-							array(
-								'collection_scenario_id' => $this->id
-							))->fetch_assoc();
-		Flex::assert(!!$aRow, "Logic_Collection_Scenario: Scenario #{$this->id} ({$this->name}) has no initial event (i.e. one without a prerequisite)");
-		return Logic_Collection_Scenario_Event::getForId($aRow['id']);
+		// Get all events
+		$aScenarioEvents = $this->getEvents();
+		if (empty($aScenarioEvents)) {
+			// No events in this scenario
+			return null;
+		}
+
+		// Look for the event with no prerequisite event
+		$oInitialEvent = null;
+		foreach ($aScenarioEvents as $iId => $oScenarioEvent) {
+			if ($oScenarioEvent->prerequisite_collection_scenario_collection_event_id === null) {
+				$oInitialEvent = $oScenarioEvent;
+				break;
+			}
+		}
+
+		Flex::assert(($oInitialEvent !== null), "Logic_Collection_Scenario: Scenario #{$this->id} ({$this->name}) has no initial event (i.e. one without a prerequisite)");
+		return $oInitialEvent;
 	}
 
 	/**
