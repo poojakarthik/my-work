@@ -648,7 +648,7 @@ class JSON_Handler_Collections extends JSON_Handler implements JSON_Handler_Logg
 		$oLastScheduledEvent 	= $oAccount->getMostRecentCollectionEventInstance();
 		$bIsIncollections 		= $oAccount->isCurrentlyInCollections();
 		$bShouldBeInCollections = $oAccount->shouldCurrentlyBeInCollections();
-		$oEvent;
+		$oEvent = null;
 		if ($aPreviousEvent === NULL)
 		{
 			$oEvent = $bIsIncollections && ! $bShouldBeInCollections ? new Logic_Collection_Event_ExitCollections() :$oAccount->getNextCollectionScenarioEvent(TRUE);		
@@ -698,26 +698,23 @@ class JSON_Handler_Collections extends JSON_Handler implements JSON_Handler_Logg
 			$oPreviousEvent = $aPreviousEvent['event_object'];
 			if ($oPreviousEvent instanceof Logic_Collection_Event_ExitCollections)
 			{
+				// Exit collections event
 				$iOffset = $oScenario->day_offset;
 				$iToday = strtotime("+$iOffset day", time());
 				$sToday = date ("Y-m-d", $iToday);
 				$bOverdue	= $oScenario->evaluateThresholdCriterion($oAccount->getOverDueCollectableAmount($sToday),$oAccount->getOverdueBalance($sToday));
 				if ($bOverdue)
 				{
-					//get the correct day offset by determining the due date of what will be the source collectable after exit collections
-					$oCollectable = $oAccount->getOldestOverDueCollectableRelativeToDate($sToday);
-					$iOverDueDate = strtotime("+1 day", strtotime($oCollectable->due_date));
-					$iStartDate = strtotime("-$iOffset day", $iOverDueDate);
-					$sStartDate = date ("Y-m-d", $iStartDate);
-					$iOffset = Flex_Date::difference( $sStartDate,  Data_Source_Time::currentDate(), 'd');
-					$oEvent = $oScenario->getInitialScenarioEvent($iOffset, FALSE);
+					$oEvent = $oScenario->getInitialScenarioEvent();
 				}
-				if ($oEvent === NULL)
+
+				if ($oEvent === NULL) 
 					return FALSE;
 
 			}
 			else
 			{
+				// Instance of Logic_Collection_Scenario_Event
 				$oEvent = $oPreviousEvent->getNext();
 				if ($oEvent === NULL || $oEvent->day_offset > 0)
 					return FALSE;

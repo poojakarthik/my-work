@@ -18,9 +18,17 @@ class Logic_Collection_Scenario implements DataLogic {
 		}
 	}
 
-	public function getInitialScenarioEvent() {		
-		$aScenarioEvents = $this->getEvents();
-		return array_shift($aScenarioEvents);
+	// getInitialScenarioEvent: Get the event with no prerequisite for this scenario
+	public function getInitialScenarioEvent() {
+		$aRow = Query::run("SELECT id
+							FROM collection_scenario_collection_event
+							WHERE collection_scenario_id = <collection_scenario_id>
+								AND prerequisite_collection_scenario_collection_event_id IS NULL",
+							array(
+								'collection_scenario_id' => $this->id
+							))->fetch_assoc();
+		Flex::assert(!!$aRow, "Logic_Collection_Scenario: Scenario #{$this->id} ({$this->name}) has no initial event (i.e. one without a prerequisite)");
+		return Logic_Collection_Scenario_Event::getForId($aRow['id']);
 	}
 
 	/**
@@ -48,12 +56,11 @@ class Logic_Collection_Scenario implements DataLogic {
 	 * @return <type>
 	 */
 	public function getScenarioEventAfter(Logic_Collection_Scenario_Event $oEvent=null) {
-		if ($oEvent === NULL || $oEvent->collection_scenario_id !== $this->id) {
-			return $this->getInitialScenarioEvent (0, true);
+		if (($oEvent === null) || ($oEvent->collection_scenario_id !== $this->id)) {
+			return $this->getInitialScenarioEvent();
 		}
+
 		$aScenarioEvents = $this->getEvents();
-		$bThisOne = false;
-		
 		foreach($aScenarioEvents as $iId=>$oEventObject) {			
 			 if ($oEventObject->prerequisite_collection_scenario_collection_event_id === $oEvent->id) {
 				return $oEventObject;

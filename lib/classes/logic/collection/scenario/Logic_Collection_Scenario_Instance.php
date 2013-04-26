@@ -42,9 +42,9 @@ class Logic_Collection_Scenario_Instance
 	}
 
 
-	public function getInitialScenarioEvent ($iDaysSinceStartOfCollections = NULL)
+	public function getInitialScenarioEvent()
 	{
-		return $this->oScenario->getInitialScenarioEvent($iDaysSinceStartOfCollections);
+		return $this->oScenario->getInitialScenarioEvent();
 	}
 
 	
