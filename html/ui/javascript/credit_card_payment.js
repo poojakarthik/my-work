@@ -502,7 +502,7 @@ Object.extend(CreditCardPayment.prototype,
 		}
 
 		this.showProcessing();
-		var $submit = jQuery.json.jsonFunction(this.submitted.bind(this), null, 'Credit_Card_Payment', 'makePayment');
+		var $submit = jQuery.json.jsonFunction(this.submitted.bind(this), this.submitted.bind(this), 'Credit_Card_Payment', 'makePayment');
 		
 		// Gather the validated values and submit to the server
 		$submit(this.accountNumber,
@@ -556,6 +556,14 @@ Object.extend(CreditCardPayment.prototype,
 
 	submitted: function(response)
 	{
+		if (response.ERROR) {
+			// An error occured, show the message
+			$Alert(response.ERROR);
+			this.preparePopup();
+			this.displayForm();
+			return false;
+		}
+
 		// Check the 'OUTCOME' property of the response
 		var outcome = response['OUTCOME'];
 
