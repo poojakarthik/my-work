@@ -312,7 +312,7 @@ jQuery.json = {
 			iDistance++;
 		}
 
-		var oResponseFunction = (fnParent.requestFunction ? fnParent : null);
+		var oResponseFunction = ((fnParent && fnParent.requestFunction) ? fnParent : null);
 
 		// Extract the message
 		var sMessage = '-';
