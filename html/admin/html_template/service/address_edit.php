@@ -197,7 +197,7 @@ class HtmlTemplateServiceAddressEdit extends HtmlTemplate
 		echo "<form id='VixenForm_ServiceAddress' >\n";
 		
 		// Render the Details
-		echo "<div class='GroupedContent' style='height:370px'>\n";
+		echo "<div class='GroupedContent' style='height:460px'>\n";
 
 		// Render the AddressRecord Combobox (used to populate the form with 
 		// values form another service belonging to the Account)
@@ -224,7 +224,7 @@ class HtmlTemplateServiceAddressEdit extends HtmlTemplate
 		echo "<div id='AddressEdit_Column1' style='width:50%; float:left'>\n";
 		
 		// Render the UserDetails div
-		echo "<div id='Container.UserDetails' style='height:185px'>";
+		echo "<div id='Container.UserDetails' style='height:220px'>";
 		echo "<span><strong>User Details</strong></span>\n";
 		echo "<div class='SmallSeparator'></div>\n";
 		
