@@ -17,6 +17,7 @@ class Cli_App_Recurring_Charges extends Cli
 	{
 		try
 		{
+			Flex_Process::factory(Flex_Process::PROCESS_CHARGES_RECURRING)->lock();
 			$this->log("Starting.");
 
 			// The arguments are present and in a valid format if we get past this point.
