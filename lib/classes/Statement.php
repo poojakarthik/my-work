@@ -335,30 +335,33 @@
 		}
 	}
 	
-	public static function generateOrderBy($aAliases=array(), $aOrderBy=null)
-	{
-		$sOrderBy	= '';
+	public static function generateOrderBy($aAliases=array(), $aOrderBy=array(), $aFallback=array()) {
+		$aSortFields = array();
 		
-		if ($aOrderBy && is_array($aOrderBy))
-		{
-			$aSortFields	= array();
-			foreach ($aOrderBy as $sAlias => $sDirection)
-			{
-				if (isset($aAliases[$sAlias]))
-				{
-					$sAlias	= $aAliases[$sAlias];
-				}
-				
-				$aSortFields[]	= "{$sAlias} {$sDirection}";
+		$aOrderBy = is_array($aOrderBy) ? $aOrderBy : array();
+		$aFallback = is_array($aFallback) ? $aFallback : array();
+
+		// Opt-in Sorting
+		foreach ($aOrderBy as $sAlias=>$sDirection) {
+			if (isset($aAliases[$sAlias])) {
+				$sAlias = $aAliases[$sAlias];
 			}
 			
-			if (count($aSortFields))
-			{
-				$sOrderBy	= implode(', ', $aSortFields);
+			$aSortFields[$sAlias] = "{$sAlias} {$sDirection}";
+		}
+
+		// Fallback Sorting
+		foreach ($aFallback as $sAlias=>$sDirection) {
+			if (isset($aAliases[$sAlias])) {
+				$sAlias = $aAliases[$sAlias];
+			}
+
+			if (!isset($aSortFields[$sAlias])) {
+				$aSortFields[$sAlias] = "{$sAlias} {$sDirection}";
 			}
 		}
 		
-		return $sOrderBy;
+		return implode(', ', $aSortFields);
 	}
 	
 	public static function generateLimit($iLimit=null, $iOffset=null) {

@@ -119,7 +119,7 @@ class Correspondence_Run extends ORM_Cached
 								'preprinted'					=> 'cr.preprinted',
 								'correspondence_run_error_id'	=> 'cr.correspondence_run_error_id'
 							);
-		$sOrderByClause	= 	StatementSelect::generateOrderBy($aSortAlias, array_merge(array('correspondence_run_id' => 'ASC'), $aSort));
+		$sOrderByClause	= 	StatementSelect::generateOrderBy($aSortAlias, $aSort, array('correspondence_run_id' => 'ASC'));
 		$sLimitClause	= 	StatementSelect::generateLimit($iLimit, $iOffset);
 		$sWhereClause	= 	$aWhere['sClause'];
 		
