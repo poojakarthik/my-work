@@ -361,22 +361,12 @@
 		return $sOrderBy;
 	}
 	
-	public static function generateLimit($iLimit=null, $iOffset=null)
-	{
+	public static function generateLimit($iLimit=null, $iOffset=null) {
 		$sLimit	= '';
-		
-		if ($iLimit !== NULL)
-		{
-			$sLimit	= intval($iLimit);
-			
-			if ($iOffset !== NULL)
-			{
-				$sLimit	.= " OFFSET ". intval($iOffset);
-			}
+		if ($iLimit !== null) {
+			$sLimit = intval($iLimit) . ' OFFSET ' . ($iOffset === null ? 0 : intval($iOffset));
 		}
 		
 		return $sLimit;
 	}
 }
-
-?>

@@ -111,6 +111,7 @@ class Correspondence_Run extends ORM_Cached
 							);
 		$aWhere			= 	StatementSelect::generateWhere($aWhereAlias, $aFilter);
 		$aSortAlias		=	array(
+								'correspondence_run_id'			=> 'cr.id',
 								'processed_datetime' 			=> 'cr.processed_datetime',
 								'scheduled_datetime' 			=> 'cr.scheduled_datetime',
 								'created' 						=> 'cr.created',
@@ -118,7 +119,7 @@ class Correspondence_Run extends ORM_Cached
 								'preprinted'					=> 'cr.preprinted',
 								'correspondence_run_error_id'	=> 'cr.correspondence_run_error_id'
 							);
-		$sOrderByClause	= 	StatementSelect::generateOrderBy($aSortAlias, $aSort);
+		$sOrderByClause	= 	StatementSelect::generateOrderBy($aSortAlias, array_merge(array('correspondence_run_id' => 'ASC'), $aSort));
 		$sLimitClause	= 	StatementSelect::generateLimit($iLimit, $iOffset);
 		$sWhereClause	= 	$aWhere['sClause'];
 		
