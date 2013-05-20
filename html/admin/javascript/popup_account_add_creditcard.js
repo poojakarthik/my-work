@@ -460,7 +460,11 @@ var Popup_Account_Add_CreditCard	= Class.create(Reflex_Popup,
 					{sTitle: 'Payment Failed'}
 				);
 			}
-			else
+			else if (oResponse.sExceptionClass == 'JSON_Handler_Account_Exception') 
+			{
+				Reflex_Popup.alert(oResponse.Message);
+			}
+			else 
 			{
 				// General ajax error
 				this._ajaxError(oResponse);

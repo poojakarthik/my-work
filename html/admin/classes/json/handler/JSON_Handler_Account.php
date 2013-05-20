@@ -835,6 +835,7 @@ class JSON_Handler_Account extends JSON_Handler
 			$oDataAccess->TransactionRollback();
 
 			return 	array(
+						'sExceptionClass' => get_class($oException),
 						"Success"	=> false,
 						"Message"	=> $oException->getMessage(),
 						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
