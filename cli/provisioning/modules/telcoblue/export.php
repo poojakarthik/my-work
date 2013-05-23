@@ -36,7 +36,7 @@
  	);
 
  	private static $_aPackageFlags = array(
- 		'AUXILIARY' => 'is_external_true'
+ 		'AUXILIARY' => 'is_external_churn'
  	);
 	
 	function __construct($iCarrierId) {
@@ -256,18 +256,18 @@
  	
  	private static function _parseWholesalePlan($sWholesalePackage) {
  		// Extract the package and any special ordering flags that have been supplied
-		preg_match('/(\d+)\s?\((([A-Z_-;]+)+)\)/', $sWholesalePackage, $aPackageParts);
+		preg_match('/(\d+)\s?(\(([;A-Z_-]+)\))?/', $sWholesalePackage, $aPackageParts);
 		$iPackage = (int)$aPackageParts[1];
-		$sOptions = $aPackageParts[2];
-		$aOptions = implode(';', $sOptions);
 		$aFlags = array();
-		foreach ($aOptions as $sOption) {
-			if (isset(self::$_aPackageFlags[$sOption])) {
-				$sFlag = self::$_aPackageFlags[$sOption];
-				$aFlags[$sFlag] = true;
+		if (isset($aPackageParts[3])) {
+			$aOptions = explode(';', $aPackageParts[3]);
+			foreach ($aOptions as $sOption) {
+				if (isset(self::$_aPackageFlags[$sOption])) {
+					$aFlags[self::$_aPackageFlags[$sOption]] = true;
+				}
 			}
 		}
-
+		
 		return (object)array(
 			'iPackage' => $iPackage,
 			'aFlags' => $aFlags
