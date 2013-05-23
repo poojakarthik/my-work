@@ -34,6 +34,10 @@
  		SERVICE_TYPE_INBOUND => array(),
  		SERVICE_TYPE_DIALUP => array()
  	);
+
+ 	private static $_aPackageFlags = array(
+ 		'AUXILIARY' => 'is_external_true'
+ 	);
 	
 	function __construct($iCarrierId) {
  		// Parent Constructor
@@ -139,13 +143,14 @@
 			 			throw new Exception("The rate plan for the requested service does not have a fullservice_wholesale_plan");
 			 		}
 
+					$oPackageData = self::_parseWholesalePlan($oRatePlan->fullservice_wholesale_plan);
 			 		$aData = array_merge($aData, array(
-						'package' => (int)$oRatePlan->fullservice_wholesale_plan,
+						'package' => $oPackageData->iPackage,
 						'identifier' => $sIdentifier,
 						'identifier_context' => $iServiceIdentifierContext,
 						'address' => $aAddress,
 						'ca_signed_date' => $aRequest['AuthorisationDate']
-					));
+					), $oPackageData->aFlags);
 
 			 		$sURL = "/services";
 			 		$aExtraHeaders = array();
@@ -156,13 +161,14 @@
 			 			throw new Exception("The rate plan for the requested service does not have a preselection_wholesale_plan");
 			 		}
 
+			 		$oPackageData = self::_parseWholesalePlan($oRatePlan->preselection_wholesale_plan);
 			 		$aData = array_merge($aData, array(
-						'package' => (int)$oRatePlan->preselection_wholesale_plan,
+						'package' => $oPackageData->iPackage,
 						'identifier' => $sIdentifier,
 						'identifier_context' => $iServiceIdentifierContext,
 						'address' => $aAddress,
 						'ca_signed_date' => $aRequest['AuthorisationDate']
-					));
+					), $oPackageData->aFlags);
 
 			 		$sURL = "/services";
 			 		$aExtraHeaders = array();
@@ -173,11 +179,12 @@
 			 			throw new Exception("The rate plan for the requested service does not have a fullservice_wholesale_plan");
 			 		}
 
+			 		$oPackageData = self::_parseWholesalePlan($oRatePlan->fullservice_wholesale_plan);
 			 		$aData = array_merge($aData, array(
-						'package' => (int)$oRatePlan->fullservice_wholesale_plan,
+						'package' => $oPackageData->iPackage,
 						'address' => $aAddress,
 						'ca_signed_date' => $aRequest['AuthorisationDate']
-					));
+					), $oPackageData->aFlags);
 
 			 		$sURL = "/services/{$iServiceIdentifierContext}:{$sIdentifier}/package";
 			 		$aExtraHeaders = array("OVERRIDE_METHOD: PUT");
@@ -188,11 +195,12 @@
 			 			throw new Exception("The rate plan for the requested service does not have a preselection_wholesale_plan");
 			 		}
 
+			 		$oPackageData = self::_parseWholesalePlan($oRatePlan->preselection_wholesale_plan);
 			 		$aData = array_merge($aData, array(
-						'package' => (int)$oRatePlan->preselection_wholesale_plan,
+						'package' => $oPackageData->iPackage,
 						'address' => $aAddress,
 						'ca_signed_date' => $aRequest['AuthorisationDate']
-					));
+					), $oPackageData->aFlags);
 
 			 		$sURL = "/services/{$iServiceIdentifierContext}:{$sIdentifier}/package";
 			 		$aExtraHeaders = array("OVERRIDE_METHOD: PUT");
@@ -246,6 +254,26 @@
 	 	return $aRequest;
  	}
  	
+ 	private static function _parseWholesalePlan($sWholesalePackage) {
+ 		// Extract the package and any special ordering flags that have been supplied
+		preg_match('/(\d+)\s?\((([A-Z_-;]+)+)\)/', $sWholesalePackage, $aPackageParts);
+		$iPackage = (int)$aPackageParts[1];
+		$sOptions = $aPackageParts[2];
+		$aOptions = implode(';', $sOptions);
+		$aFlags = array();
+		foreach ($aOptions as $sOption) {
+			if (isset(self::$_aPackageFlags[$sOption])) {
+				$sFlag = self::$_aPackageFlags[$sOption];
+				$aFlags[$sFlag] = true;
+			}
+		}
+
+		return (object)array(
+			'iPackage' => $iPackage,
+			'aFlags' => $aFlags
+		);
+	}
+
  	private function _getServiceIdentifierContext($iServiceType, $iRequestType) {
  		if (!isset(self::$_aServiceIdentifierContextConfigProperties[$iServiceType]) || !isset(self::$_aServiceIdentifierContextConfigProperties[$iServiceType][$iRequestType])) {
  			throw new Exception("Cannot find service identifier context (Service Type: {$iServiceType}; Provisioning Type: {$iRequestType})");
