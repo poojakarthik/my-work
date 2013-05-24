@@ -2,6 +2,7 @@
 
  class ExportTelcoBlue extends ExportBase {
  	const API_AUTHENTICATION_HEADER = 'API_AUTHENTICATION';
+ 	const PACKAGE_FLAG_AUXILIARY = 'AUXILIARY';
 
  	public $intBaseFileType = RESOURCE_TYPE_FILE_EXPORT_PROVISIONING_TELCOBLUE;
 	public $_strDeliveryType;
@@ -33,10 +34,6 @@
  		),
  		SERVICE_TYPE_INBOUND => array(),
  		SERVICE_TYPE_DIALUP => array()
- 	);
-
- 	private static $_aPackageFlags = array(
- 		'AUXILIARY' => 'is_external_churn'
  	);
 	
 	function __construct($iCarrierId) {
@@ -262,8 +259,10 @@
 		if (isset($aPackageParts[3])) {
 			$aOptions = explode(';', $aPackageParts[3]);
 			foreach ($aOptions as $sOption) {
-				if (isset(self::$_aPackageFlags[$sOption])) {
-					$aFlags[self::$_aPackageFlags[$sOption]] = true;
+				switch ($sOption) {
+					case self::PACKAGE_FLAG_AUXILIARY:
+						$aFlags['is_auxiliary'] = true;
+						break;
 				}
 			}
 		}
