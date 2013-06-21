@@ -55,7 +55,6 @@ define("MSG_REPORT"						, "\n<Action> <Total> files in <Time> seconds.  <Pass> 
 define("MSG_PROVISIONING_FOOTER"		, "\nProvisioning completed in <Time> seconds.");
 define("MSG_OK"							, "[   OK   ]");
 define("MSG_FAILED"						, "[ FAILED ]");
-define("MSG_IGNORE"						, "[ IGNORE ]");
 
 // Success/Failure codes
 define("PRV_SUCCESS"					, 100);

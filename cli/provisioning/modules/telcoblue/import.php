@@ -182,18 +182,19 @@ class ImportTelcoBlue extends ImportBase {
 				$aResponse['Request'] = $oRequest->Id;
 			} catch (Exception $oEx) {
 				// Failed to locate a provisioning request, this shouldn't happen but if it does act as though it wasn't request by flex
-				$aResponse['FNN'] = $aData['Detail'];
-				$aResponse['Type'] = null;
-				$aResponse['Request'] = null;
 				$oRequest = null;
 			}
- 		} else {
+ 		}
+
+ 		$bRequested = ($oRequest !== null);
+		if (!$bRequested) {
  			// No client reference, not requested by flex
  			Log::get()->logIf(self::DEBUG_LOGGING, "\t\t\t[*] The Response has no client_reference");
  			$aResponse['FNN'] = $aData['Detail'];
  			$aResponse = $this->FindFNNOwner($aResponse, self::DEBUG_LOGGING);
 			$aResponse['Type'] = $this->_getProvisioningTypeForUnrequestedResponse($aResponse, $aData, $aNotifications);
 			$aResponse['Request'] = null;
+			$sUnrequestedChangeDescription = $this->_getDescriptionForUnrequestedResponse($aData);
  		}
 
  		if (!isset($aResponse['Service'])) {
@@ -210,25 +211,34 @@ class ImportTelcoBlue extends ImportBase {
 		switch ($aData['Status']) {
 			case 'PENDING':
 				$iRequestStatusId = REQUEST_STATUS_DELIVERED;
-				$sDescription = "Request is still being processed";
 				
 				// Set the effective date to that of the request
-				if ($oRequest !== null) {
+				if ($bRequested) {
+					$sDescription = "Request is still being processed";
 					$aResponse['EffectiveDate'] = $oRequest->SentOn;
+				} else {
+					// Not requested
+					$sDescription = "Unrequested change is being processed: {$sUnrequestedChangeDescription}";
 				}
 				break;
 			case 'COMPLETE':
 			case 'COMPLETE_NO_CHANGE':
 				$iRequestStatusId = REQUEST_STATUS_COMPLETED;
-				$sDescription = "Request has been completed";
+				if ($bRequested) {
+					$sDescription = "Request has been completed";
+				} else {
+					$sDescription = "Unrequested change has been completed: {$sUnrequestedChangeDescription}";
+				}
 				break;
 			case 'FAILED':
 				$iRequestStatusId = REQUEST_STATUS_REJECTED;
-				$sDescription = "Request was unable to be completed";
-
+				
 				// Set the effective date to that of the request
-				if ($oRequest !== null) {
+				if ($bRequested) {
+					$sDescription = "Request was unable to be completed";
 					$aResponse['EffectiveDate'] = $oRequest->SentOn;
+				} else {
+					$sDescription = "Unrequested change was unable to be completed: {$sUnrequestedChangeDescription}";
 				}
 				break;
 			default:
@@ -237,7 +247,7 @@ class ImportTelcoBlue extends ImportBase {
 				$sDescription = "Unable to determine the status from response data";
 				
 				// Set the effective date to that of the request
-				if ($oRequest !== null) {
+				if ($bRequested) {
 					$aResponse['EffectiveDate'] = $oRequest->SentOn;
 				}
 		}
@@ -405,6 +415,29 @@ class ImportTelcoBlue extends ImportBase {
 
  		Log::get()->logIf(self::DEBUG_LOGGING, "\t\t\t\t[*] No provisioning type found in the data");
  		return null;
+ 	}
+
+ 	private function _getDescriptionForUnrequestedResponse($aData) {
+ 		$iIdentifierContextFullService = $this->GetConfigField('WholesaleIdentifierContextFullService');
+		$iIdentifierContextPreselection = $this->GetConfigField('WholesaleIdentifierContextPreselection');
+		$aDescriptions = array(
+ 			'ADD' => array(
+ 				$iIdentifierContextFullService => "Adding Full Service",
+ 				$iIdentifierContextPreselection => "Adding Preselection"
+ 			),
+ 			'REMOVE' => array(
+ 				$iIdentifierContextFullService => "Removing Full Service",
+ 				$iIdentifierContextPreselection => "Removing Preselection"
+ 			)
+ 		);
+
+		$sAction = $aData['Action'];
+ 		$iIdentifierContext = (int)$aData['IdentifierContext'];
+ 		if (isset($aDescriptions[$sAction]) && isset($aDescriptions[$sAction][$iIdentifierContext])) {
+ 			return $aDescriptions[$sAction][$iIdentifierContext];
+ 		}
+
+ 		return 'Unknown';
  	}
 
  	private static function _logArray($aArray) {
