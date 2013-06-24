@@ -626,45 +626,37 @@
 	*
 	* @method
 	*/
-	protected function _DeliverFTP()
-	{
-		if (PROVISIONING_DEBUG_MODE === TRUE)
-		{
+	protected function _DeliverFTP() {
+		if (PROVISIONING_DEBUG_MODE === TRUE) {
 	 		return Array('Pass' => TRUE, 'Description' => "FTP Delivery Bypassed");
 		}
 		
 		// Get Configuration
-		$strServer	= $this->GetConfigField('Server');
-		$strUser	= $this->GetConfigField('User');
-		$strPass	= $this->GetConfigField('Password');
-		$strPath	= $this->GetConfigField('Path');
+		$strServer = $this->GetConfigField('Server');
+		$strUser = $this->GetConfigField('User');
+		$strPass = $this->GetConfigField('Password');
+		$strPath = $this->GetConfigField('Path');
+		$bPassive = $this->GetConfigField('PassiveMode');
 		
 		// Copy File
-		if ($ptrConnection = ftp_connect($strServer))
-		{
-			if ($mixResult = ftp_login($ptrConnection, $strUser, $strPass))
-			{
-				if ($mixResult = ftp_chdir($ptrConnection, $strPath))
-				{
-					if ($mixResult = ftp_put($ptrConnection, basename($this->_strFilePath), $this->_strFilePath, FTP_BINARY))
-					{
-						$mixResult = ftp_close($ptrConnection);
+		if ($ptrConnection = ftp_connect($strServer)) {
+			if ($mixResult = ftp_login($ptrConnection, $strUser, $strPass)) {
+				if ($mixResult = ftp_pasv($ptrConnection, $bPassive)) {
+					if ($mixResult = ftp_chdir($ptrConnection, $strPath)) {
+						if ($mixResult = ftp_put($ptrConnection, basename($this->_strFilePath), $this->_strFilePath, FTP_BINARY)) {
+							$mixResult = ftp_close($ptrConnection);
+						}
 					}
 				}
 			}
-		}
-		else
-		{
+		} else {
 			$mixResult	= FALSE;
 		}
 		
 		// Return extended error messaging
-		if ($mixResult === TRUE)
-		{
+		if ($mixResult === TRUE) {
 			return Array('Pass' => TRUE,	'Description' => "Deliver() Successful");
-		}
-		else
-		{
+		} else {
 			return Array('Pass' => FALSE,	'Description' => "Remote Copy to FTP Server Failed ($mixResult)");
 		}
 	}

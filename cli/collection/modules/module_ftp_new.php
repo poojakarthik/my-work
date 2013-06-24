@@ -48,6 +48,11 @@
 										'Type'			=> DATA_TYPE_STRING,
 										'Description'	=> 'FTP Password'
 									),
+					'PassiveMode' => array(
+						'Type' => DATA_TYPE_BOOLEAN,
+						'Description' => "FTP Use Passive Mode",
+						'Value' => 1
+					),
 					'FileDefine'	=>	array
 									(
 										'Value'			=> array(),
@@ -68,24 +73,30 @@
 	 */
 	function Connect()
 	{
-		$strHost				= $this->_oConfig->Host;
-		$strUsername			= $this->_oConfig->Username;
-		$strPassword			= $this->_oConfig->Password;
+		$strHost = $this->_oConfig->Host;
+		$strUsername = $this->_oConfig->Username;
+		$strPassword = $this->_oConfig->Password;
 		
 		// Init wrapper
 		if ($this->_resConnection = ftp_connect($strHost))
 		{
 			if (ftp_login($this->_resConnection, $strUsername, $strPassword))
 			{
-				// Get list of files to download
-				$this->_arrDownloadPaths	= $this->_getDownloadPaths();
-				reset($this->_arrDownloadPaths);
-				
-				return true;
+				if (ftp_pasv($this->_resConnection, $this->_oConfig->PassiveMode))
+				{
+					// Get list of files to download
+					$this->_arrDownloadPaths = $this->_getDownloadPaths();
+					reset($this->_arrDownloadPaths);
+					return true;
+				}
+				else
+				{
+					return "Unable to set passive mode to '".var_export($this->_oConfig->PassiveMode, true)."' on host {$strHost}";
+				}
 			}
 			else
 			{
-			return "Unable to log in to host {$strHost}";
+				return "Unable to log in to host {$strHost}";
 			}
 		}
 		else

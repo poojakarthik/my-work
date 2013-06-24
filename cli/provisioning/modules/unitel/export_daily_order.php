@@ -45,6 +45,10 @@ class ExportUnitelDailyOrder extends ExportBase {
 		$this->_arrModuleConfig['Password']['Type'] = DATA_TYPE_STRING;
 		$this->_arrModuleConfig['Password']['Description'] = "FTP Password";
 		
+		$this->_arrModuleConfig['PassiveMode']['Default'] = 1;
+ 		$this->_arrModuleConfig['PassiveMode']['Type'] = DATA_TYPE_BOOLEAN;
+ 		$this->_arrModuleConfig['PassiveMode']['Description'] = "FTP Use Passive Mode";
+		
 		$this->_arrModuleConfig['Path']['Default'] = '/ebill_dailyorderfiles/';
 		$this->_arrModuleConfig['Path']['Type'] = DATA_TYPE_STRING;
 		$this->_arrModuleConfig['Path']['Description'] = "Directory to drop the file in";

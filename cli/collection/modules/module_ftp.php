@@ -69,6 +69,11 @@
 										'Type'			=> DATA_TYPE_STRING,
 										'Description'	=> 'FTP Password'
 									),
+					'PassiveMode' => array(
+						'Type' => DATA_TYPE_BOOLEAN,
+						'Description' => "FTP Use Passive Mode",
+						'Value' => 1
+					),
 					'FileDefine'	=>	array
 									(
 										'Value'			=> array(),
@@ -94,24 +99,31 @@
 	 */
  	function Connect()
  	{
-		$strHost				= $this->_oConfig->Host;
-		$strUsername			= $this->_oConfig->Username;
-		$strPassword			= $this->_oConfig->Password;
+		$strHost = $this->_oConfig->Host;
+		$strUsername = $this->_oConfig->Username;
+		$strPassword = $this->_oConfig->Password;
 
 		// Connect to the Server
 		//CliEcho("Connecting to {$strUsername}@{$strHost}");
-		$this->_resConnection	= ($this->_oConfig->SSL === TRUE) ? @ftp_ssl_connect($strHost) : @ftp_connect($strHost);
+		$this->_resConnection = ($this->_oConfig->SSL === TRUE) ? @ftp_ssl_connect($strHost) : @ftp_connect($strHost);
 		if ($this->_resConnection)
 		{
 			// Log in to the Server
 			//CliEcho("Authenticating with u:'{$strUsername}';p:'{$strPassword}'");
 			if (@ftp_login($this->_resConnection, $strUsername, $strPassword))
 			{
-				//CliEcho("Getting list of paths...");
-				// Retrieve full file listing
-				$this->_arrDownloadPaths	= $this->_GetDownloadPaths();
-				//CliEcho(count($this->_arrDownloadPaths)." paths to download from");
-				reset($this->_arrDownloadPaths);
+				if (@ftp_pasv($this->_resConnection, $this->_oConfig->PassiveMode))
+				{
+					//CliEcho("Getting list of paths...");
+					// Retrieve full file listing
+					$this->_arrDownloadPaths = $this->_GetDownloadPaths();
+					//CliEcho(count($this->_arrDownloadPaths)." paths to download from");
+					reset($this->_arrDownloadPaths);
+				}
+				else
+				{
+					return "Could not set ftp passive mode '".var_export($this->_oConfig->PassiveMode, true)."'";
+				}
 			}
 			else
 			{
