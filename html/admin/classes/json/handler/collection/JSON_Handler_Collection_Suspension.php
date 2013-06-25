@@ -199,8 +199,9 @@ class JSON_Handler_Collection_Suspension extends JSON_Handler implements JSON_Ha
 		catch (Exception $oEx)
 		{
 			return	array(
+						'sExceptionClass' => get_class($oEx),
 						'bSuccess' 	=> false,
-						'sMessage'	=> ($bUserIsGod ? $oEx->getMessage() : 'There was an error accessing the database. Please contact YBS for assistance.')
+						'sMessage'	=> $oEx->getMessage()
 					);
 		}
 	}
