@@ -55,7 +55,7 @@ var Popup_Collections_Event_List_Details = Class.create(Reflex_Popup,
 				aRows.push(
 					$T.tr(
 						$T.th('Document Template Type'),
-						$T.td(this._oEventDetails.document_template_type ? this._oEventDetails.document_template_type.name : 'None')
+						$T.td(this._oEventDetails.document_template_type ? this._oEventDetails.document_template_type.Name : 'None')
 					)
 				);
 				break;
