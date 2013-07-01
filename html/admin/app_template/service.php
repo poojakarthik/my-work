@@ -1430,7 +1430,7 @@ class AppTemplateService extends ApplicationTemplate
 					}
 				}
 				
-				if ($arrService['CarrierPreselect'] !== null) {
+				if (($arrService['ServiceType'] === SERVICE_TYPE_LAND_LINE) && ($arrService['CarrierPreselect'] !== null)) {
 					// Preselection Request				
 					$arrInsertValues['Carrier'] = $arrService['CarrierPreselect'];
 					$arrInsertValues['Type']	= PROVISIONING_TYPE_PRESELECTION;

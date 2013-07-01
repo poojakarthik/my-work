@@ -301,7 +301,7 @@ class Service extends ORM
 				$oNewServiceRatePlan->fullservice_provisioning_request_id = $oFullServiceRequest->id;
 			}
 			
-			if ($objNewRatePlan->CarrierPreselection !== null) {
+			if (($this->ServiceType === SERVICE_TYPE_LAND_LINE) && ($objNewRatePlan->CarrierPreselection !== null)) {
 				// Preselection Request
 				$aRequestData['Carrier'] 	= $objNewRatePlan->CarrierPreselection;
 				$aRequestData['Type']		= PROVISIONING_TYPE_PRESELECTION_PLAN_CHANGE;

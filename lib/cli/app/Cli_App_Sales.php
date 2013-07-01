@@ -1785,8 +1785,8 @@ class Cli_App_Sales extends Cli
 					$bProvisioningToDo = true;
 				}
 
-				if ($objRatePlan->CarrierPreselection !== null) {
-					// Preselection
+				if (($objService->ServiceType === SERVICE_TYPE_LAND_LINE) && ($objRatePlan->CarrierPreselection !== null)) {
+					// Preselection - Land lines only
 					$this->log("\t\t\t+ Adding Preselection Request...");
 					$objPreselectionRequest	= new Provisioning_Request();
 					$objPreselectionRequest->AccountGroup		= $objService->AccountGroup;

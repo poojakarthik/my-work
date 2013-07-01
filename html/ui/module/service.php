@@ -2236,6 +2236,12 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 			$this->_strErrorMsg = "Service does not currently have a plan";
 			return FALSE;
 		}
+
+		if ($this->_intServiceType !== SERVICE_TYPE_LAND_LINE) {
+			$this->_strErrorMsg = "The service's current plan is not for Land Lines, preselection is not supported";
+			return FALSE;
+		}
+
 		if ($arrCurrentPlan['CarrierPreselection'] == NULL)
 		{
 			$this->_strErrorMsg = "The service's current plan does not declare a Preselection carrier";
