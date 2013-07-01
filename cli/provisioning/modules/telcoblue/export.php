@@ -23,7 +23,11 @@
 	// Maps service types to wholesale identifier contexts (the config property that stores the identifier context)
  	private static $_aServiceIdentifierContextConfigProperties = array(
  		SERVICE_TYPE_ADSL => array(),
- 		SERVICE_TYPE_MOBILE => array(),
+ 		SERVICE_TYPE_MOBILE => array(
+ 			PROVISIONING_TYPE_FULL_SERVICE => 'WholesaleIdentifierContextMobile',
+	 		PROVISIONING_TYPE_FULL_SERVICE_PLAN_CHANGE => 'WholesaleIdentifierContextMobile',
+	 		PROVISIONING_TYPE_FULL_SERVICE_REVERSE => 'WholesaleIdentifierContextMobile'
+ 		),
  		SERVICE_TYPE_LAND_LINE => array(
  			PROVISIONING_TYPE_FULL_SERVICE => 'WholesaleIdentifierContextFullService',
 	 		PROVISIONING_TYPE_PRESELECTION => 'WholesaleIdentifierContextPreselection',
@@ -58,9 +62,11 @@
 
 		$this->_arrModuleConfig['WholesaleIdentifierContextFullService']['Type'] = DATA_TYPE_INTEGER;
 		$this->_arrModuleConfig['WholesaleIdentifierContextFullService']['Description'] = "Wholesale Product Identifier Context that represents Full Service Landlines";
-
 		$this->_arrModuleConfig['WholesaleIdentifierContextPreselection']['Type'] = DATA_TYPE_INTEGER;
 		$this->_arrModuleConfig['WholesaleIdentifierContextPreselection']['Description'] = "Wholesale Product Identifier Context that represents Preselection Landlines";
+
+		$this->_arrModuleConfig['WholesaleIdentifierContextMobile']['Type'] = DATA_TYPE_INTEGER;
+		$this->_arrModuleConfig['WholesaleIdentifierContextMobile']['Description'] = "Wholesale Product Identifier Context that represents Mobiles";
  		
 		// Define File Format, Delimiter & New Line (all not necessary for this module but the variables need to exist for parent class functionality)
  		$this->_strFileFormat = null;
