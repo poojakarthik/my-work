@@ -749,7 +749,7 @@ class AppTemplateProvisioning extends ApplicationTemplate
 							"FuturePlanId"				=> "RP2.Id",
 							"FuturePlanName"			=> "RP2.Name",
 							"FuturePlanStartDatetime"	=> "SRP3.StartDatetime");
-		$strWhere	= "S.Account = <AccountId> AND S.ServiceType IN (". SERVICE_TYPE_LAND_LINE .")";
+		$strWhere	= "S.Account = <AccountId>";
 		$arrWhere	= Array("AccountId" => $intAccountId);
 		DBL()->Service->SetTable($strTables);
 		DBL()->Service->SetColumns($arrColumns);
@@ -839,7 +839,7 @@ class AppTemplateProvisioning extends ApplicationTemplate
 							"FuturePlanId"				=> "RP2.Id",
 							"FuturePlanName"			=> "RP2.Name",
 							"FuturePlanStartDatetime"	=> "SRP3.StartDatetime");
-		$strWhere	= "S.Account = <AccountId> AND S.ServiceType IN (". SERVICE_TYPE_LAND_LINE .") AND (S.ClosedOn IS NULL OR S.CreatedOn <= S.ClosedOn)";
+		$strWhere	= "S.Account = <AccountId> AND (S.ClosedOn IS NULL OR S.CreatedOn <= S.ClosedOn)";
 		$arrWhere	= Array("AccountId" => $intAccount);
 		$strOrderBy	= ("S.ServiceType ASC, S.FNN ASC, S.Id DESC");
 		

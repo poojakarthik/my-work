@@ -136,9 +136,9 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 				$strSelectCell			= "<img src='img/template/flag_red.png' title='Pending Activation' />";
 				$bolHasFlaggedServices	= TRUE;
 			}
-			elseif ($arrService['AddressId'] != NULL)
+			else if (($arrService['ServiceType'] != SERVICE_TYPE_LAND_LINE) || ($arrService['AddressId'] != NULL))
 			{
-				// The service already has address details defined for it
+				// The service isn't a landline or it is and it already has address details defined for it
 				$strChecked		= (in_array($intServiceId, $arrSelectedServices))? "checked='checked'" : "";
 				$strSelectCell	= "<input type='checkbox' class='DefaultInputCheckBox' name='ServiceCheckbox' Service='$intServiceId' $strChecked onchange='Vixen.ProvisioningPage.UpdateServiceToggle();'/>";
 			}

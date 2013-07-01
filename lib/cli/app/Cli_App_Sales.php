@@ -1764,52 +1764,53 @@ class Cli_App_Sales extends Cli
 				$this->log("\t\t\t* Rate Plan\t: {$objRatePlan->Name} ...");
 				
 				// Create
-				switch ($objService->ServiceType)
-				{
-					case SERVICE_TYPE_LAND_LINE:
-						// Full Service
-						$this->log("\t\t\t+ Adding Full Service Request...");
-						$objFullServiceRequest	= new Provisioning_Request();
-						$objFullServiceRequest->AccountGroup		= $objService->AccountGroup;
-						$objFullServiceRequest->Account				= $objService->Account;
-						$objFullServiceRequest->Service				= $objService->Id;
-						$objFullServiceRequest->FNN					= $objService->FNN;
-						$objFullServiceRequest->Employee			= 0;
-						$objFullServiceRequest->Carrier				= $objRatePlan->CarrierFullService;
-						$objFullServiceRequest->Type				= PROVISIONING_TYPE_FULL_SERVICE;
-						$objFullServiceRequest->RequestedOn			= Data_Source_Time::currentTimestamp();
-						$objFullServiceRequest->AuthorisationDate	= $objService->CreatedOn;
-						$objFullServiceRequest->scheduled_datetime	= $objFullServiceRequest->RequestedOn;
-						$objFullServiceRequest->Status				= REQUEST_STATUS_WAITING;
-						$objFullServiceRequest->save();
-						
-						// Preselection
-						$this->log("\t\t\t+ Adding Preselection Request...");
-						$objPreselectionRequest	= new Provisioning_Request();
-						$objPreselectionRequest->AccountGroup		= $objService->AccountGroup;
-						$objPreselectionRequest->Account			= $objService->Account;
-						$objPreselectionRequest->Service			= $objService->Id;
-						$objPreselectionRequest->FNN				= $objService->FNN;
-						$objPreselectionRequest->Employee			= 0;
-						$objPreselectionRequest->Carrier			= $objRatePlan->CarrierPreselection;
-						$objPreselectionRequest->Type				= PROVISIONING_TYPE_PRESELECTION;
-						$objPreselectionRequest->RequestedOn		= Data_Source_Time::currentTimestamp();
-						$objPreselectionRequest->AuthorisationDate	= $arrService['verified_on'];
-						$objPreselectionRequest->scheduled_datetime	= $objPreselectionRequest->RequestedOn;
-						$objPreselectionRequest->Status				= REQUEST_STATUS_WAITING;
-						$objPreselectionRequest->save();
-						break;
-					
-					default:
-						// This case will only occur if a Service is of a type that must be manually provisioned, and the service has not yet been set to ACTIVE in Flex
-						
-						// These services will require manual Provisioning
-						$arrServicesNeedingManualProvisioning[] = $objService->id;
-						
-						// Note that php considers a switch block to be a looping structure, so we have to do a continue 2 instead of just a continue, which I think is retarded because that's what the motherfucking break construct is for (unless you had a loop within a switch)
-						continue 2;
+				$bProvisioningToDo = false;
+				if ($objRatePlan->CarrierFullService !== null) {
+					// Full Service
+					$this->log("\t\t\t+ Adding Full Service Request...");
+					$objFullServiceRequest	= new Provisioning_Request();
+					$objFullServiceRequest->AccountGroup		= $objService->AccountGroup;
+					$objFullServiceRequest->Account				= $objService->Account;
+					$objFullServiceRequest->Service				= $objService->Id;
+					$objFullServiceRequest->FNN					= $objService->FNN;
+					$objFullServiceRequest->Employee			= 0;
+					$objFullServiceRequest->Carrier				= $objRatePlan->CarrierFullService;
+					$objFullServiceRequest->Type				= PROVISIONING_TYPE_FULL_SERVICE;
+					$objFullServiceRequest->RequestedOn			= Data_Source_Time::currentTimestamp();
+					$objFullServiceRequest->AuthorisationDate	= $objService->CreatedOn;
+					$objFullServiceRequest->scheduled_datetime	= $objFullServiceRequest->RequestedOn;
+					$objFullServiceRequest->Status				= REQUEST_STATUS_WAITING;
+					$objFullServiceRequest->save();
+
+					$bProvisioningToDo = true;
+				}
+
+				if ($objRatePlan->CarrierPreselection !== null) {
+					// Preselection
+					$this->log("\t\t\t+ Adding Preselection Request...");
+					$objPreselectionRequest	= new Provisioning_Request();
+					$objPreselectionRequest->AccountGroup		= $objService->AccountGroup;
+					$objPreselectionRequest->Account			= $objService->Account;
+					$objPreselectionRequest->Service			= $objService->Id;
+					$objPreselectionRequest->FNN				= $objService->FNN;
+					$objPreselectionRequest->Employee			= 0;
+					$objPreselectionRequest->Carrier			= $objRatePlan->CarrierPreselection;
+					$objPreselectionRequest->Type				= PROVISIONING_TYPE_PRESELECTION;
+					$objPreselectionRequest->RequestedOn		= Data_Source_Time::currentTimestamp();
+					$objPreselectionRequest->AuthorisationDate	= $arrService['verified_on'];
+					$objPreselectionRequest->scheduled_datetime	= $objPreselectionRequest->RequestedOn;
+					$objPreselectionRequest->Status				= REQUEST_STATUS_WAITING;
+					$objPreselectionRequest->save();
+
+					$bProvisioningToDo = true;
 				}
 				
+				if (!$bProvisioningToDo) {
+					// The Service must be manually provisioned, and the service has not yet been set to ACTIVE in Flex
+					$arrServicesNeedingManualProvisioning[] = $objService->id;
+					continue;
+				}
+								
 				// Set this Service to Active in Flex
 				$objService->Status	= SERVICE_ACTIVE;
 				$objService->save();
