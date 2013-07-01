@@ -59,6 +59,9 @@ class ImportTelcoBlue extends ImportBase {
 		$this->_arrModuleConfig['WholesaleIdentifierContextPreselection']['Type'] = DATA_TYPE_INTEGER;
 		$this->_arrModuleConfig['WholesaleIdentifierContextPreselection']['Description'] = "Wholesale Product Identifier Context that represents Preselection Landlines";
 
+		$this->_arrModuleConfig['WholesaleIdentifierContextMobile']['Type'] = DATA_TYPE_INTEGER;
+		$this->_arrModuleConfig['WholesaleIdentifierContextMobile']['Description'] = "Wholesale Product Identifier Context that represents Mobiles";
+
 		// Define row start (account for header rows)
 		// Row numbers start at 1
 		// For a file without any header row, set this to 1
@@ -420,14 +423,18 @@ class ImportTelcoBlue extends ImportBase {
  	private function _getDescriptionForUnrequestedResponse($aData) {
  		$iIdentifierContextFullService = $this->GetConfigField('WholesaleIdentifierContextFullService');
 		$iIdentifierContextPreselection = $this->GetConfigField('WholesaleIdentifierContextPreselection');
+		$iIdentifierContextMobile = $this->GetConfigField('WholesaleIdentifierContextMobile');
+
 		$aDescriptions = array(
  			'ADD' => array(
- 				$iIdentifierContextFullService => "Adding Full Service",
- 				$iIdentifierContextPreselection => "Adding Preselection"
+ 				$iIdentifierContextFullService => "Add Full Service",
+ 				$iIdentifierContextPreselection => "Add Preselection",
+ 				$iIdentifierContextMobile => "Add Mobile"
  			),
  			'REMOVE' => array(
- 				$iIdentifierContextFullService => "Removing Full Service",
- 				$iIdentifierContextPreselection => "Removing Preselection"
+ 				$iIdentifierContextFullService => "Remove Full Service",
+ 				$iIdentifierContextPreselection => "Remove Preselection",
+ 				$iIdentifierContextMobile => "Remove Mobile"
  			)
  		);
 

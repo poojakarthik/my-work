@@ -109,6 +109,13 @@
 	 		$iRequestType = $aRequest['Type'];
 	 		$iServiceIdentifierContext = $this->_getServiceIdentifierContext($oService->ServiceType, $iRequestType);
 
+	 		if ($iServiceIdentifierContext === null) {
+	 			// Unsupported
+	 			$aRequest['Status'] = REQUEST_STATUS_REJECTED_FLEX;
+	 			$aRequest['Description'] = "Service Type and Provisioning Type combination not supported";
+	 			return $aRequest;
+	 		}
+
 	 		// Create address data if necessary
 	 		$oServiceAddress = $oService->getServiceAddress();
 	 		$aAddress = null;
@@ -281,7 +288,7 @@
 
  	private function _getServiceIdentifierContext($iServiceType, $iRequestType) {
  		if (!isset(self::$_aServiceIdentifierContextConfigProperties[$iServiceType]) || !isset(self::$_aServiceIdentifierContextConfigProperties[$iServiceType][$iRequestType])) {
- 			throw new Exception("Cannot find service identifier context (Service Type: {$iServiceType}; Provisioning Type: {$iRequestType})");
+ 			return null;
  		}
 
  		$sConfigProperty = self::$_aServiceIdentifierContextConfigProperties[$iServiceType][$iRequestType];
