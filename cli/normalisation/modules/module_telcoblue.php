@@ -63,8 +63,6 @@ class NormalisationModuleTelcoblue extends NormalisationModule {
 		$this->_SplitRawCDR($aCDR['CDR']);
 		$this->_normalise();
 		
-		//Debug($this->_arrNormalisedData);
-		
 		// Apply Ownership
 		$this->ApplyOwnership();
 		
