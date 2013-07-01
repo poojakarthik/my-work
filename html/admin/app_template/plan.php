@@ -714,22 +714,25 @@ class AppTemplatePlan extends ApplicationTemplate
 		}
 		
 		// V3: CarrierFullService and CarrierPreselection are manditory for landlines only
-		if (DBO()->RatePlan->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
-		{
+		if (DBO()->RatePlan->ServiceType->Value == SERVICE_TYPE_LAND_LINE) {
 			// CarrierFullService
-			if (!DBO()->RatePlan->CarrierFullService->Value)
-			{
+			if (!DBO()->RatePlan->CarrierFullService->Value) {
 				Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
 				$strServiceType = GetConstantDescription(DBO()->RatePlan->ServiceType->Value, "service_type");
 				return "ERROR: $strServiceType requires Carrier Full Service to be declared";
 			}
+		
 			// CarrierPreselection
-			if (!DBO()->RatePlan->CarrierPreselection->Value)
-			{
+			if (!DBO()->RatePlan->CarrierPreselection->Value) {
 				Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
 				$strServiceType = GetConstantDescription(DBO()->RatePlan->ServiceType->Value, "service_type");
 				return "ERROR: $strServiceType requires Carrier Preselection to be declared";
 			}
+		} else if (!!DBO()->RatePlan->CarrierPreselection->Value) {
+			// Non-landline plans cannot have a preselection carrier
+			Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
+			$strServiceType = GetConstantDescription(DBO()->RatePlan->ServiceType->Value, "service_type");
+			return "ERROR: $strServiceType cannot have a Carrier Preselection declared";
 		}
 		
 		// V4: Make sure the name of the rate plan isn't currently in use for this CustomerGroup/ServiceType
