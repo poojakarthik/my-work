@@ -2282,22 +2282,34 @@ class AppTemplateService extends ApplicationTemplate
 					// Do FullService and Preselection provisioning requests
 					if ($objService->CanBeProvisioned())
 					{
-						if (!$objService->MakeFullServiceProvisioningRequest())
-						{
-							// Failed to make the FullService provisioning Request
-							TransactionRollback();
-							Ajax()->AddCommand("Alert", "ERROR: Failed to make the Full Service provisioning request.<br />". $objService->GetErrorMsg() ."<br />All modifications to the service have been aborted");
-							return TRUE;
-						}
-						if (!$objService->MakePreselectionProvisioningRequest())
-						{
-							// Failed to make the Preselection provisioning Request
-							TransactionRollback();
-							Ajax()->AddCommand("Alert", "ERROR: Failed to make the Preselection provisioning request.<br />". $objService->GetErrorMsg() ."<br />All modifications to the service have been aborted");
-							return TRUE;
+						$aCurrentRatePlan = $objService->GetCurrentPlan(true);
+						$iFullServiceCount = 0;
+						if ($aCurrentRatePlan['CarrierFullService'] !== null) {
+							// There is a full service carrier, attempt to send request
+							if (!$objService->MakeFullServiceProvisioningRequest()) {
+								// Failed to make the FullService provisioning Request
+								TransactionRollback();
+								Ajax()->AddCommand("Alert", "ERROR: Failed to make the Full Service provisioning request.<br />". $objService->GetErrorMsg() ."<br />All modifications to the service have been aborted");
+								return TRUE;
+							}
+
+							$iFullServiceCount = 1;
 						}
 						
-						$strProvisioningNote = "  FullService and Preselection provisioning requests have been made.";
+						$iPreselectionCount = 0;
+						if (($objService->GetServiceType() === SERVICE_TYPE_LAND_LINE) && ($aCurrentRatePlan['CarrierPreselection'] !== null)) {
+							// The service is a land line and there is a preselection carrier, attempt to send request
+							if (!$objService->MakePreselectionProvisioningRequest()) {
+								// Failed to make the Preselection provisioning Request
+								TransactionRollback();
+								Ajax()->AddCommand("Alert", "ERROR: Failed to make the Preselection provisioning request.<br />". $objService->GetErrorMsg() ."<br />All modifications to the service have been aborted");
+								return TRUE;
+							}
+
+							$iPreselectionCount = 1;
+						}
+						
+						$strProvisioningNote = " {$iFullServiceCount} FullService and {$iPreselectionCount} Preselection provisioning requests have been made.";
 					}
 				}
 				
