@@ -21,19 +21,19 @@ class Cli_App_Billing extends Cli
 	const	SWITCH_SKIP_PREBILLING		= "k";
 	const	SWITCH_FAKE_DATE			= "d";
 	const	SWITCH_EXPORT_MODULE		= 'e';
-	const	SWITCH_MAX_PDF_CACHE_AGE	= 'x';
-	
-	const	FLEX_FRONTEND_HOST				= "10.50.50.131";
+	const	SWITCH_MAX_CACHE_AGE		= 'x';
+
+	const	FLEX_FRONTEND_HOST				= "bne-feprod-01.ybs.net.au";
 	const	FLEX_FRONTEND_USERNAME			= "ybs-admin";
 	const	FLEX_FRONTEND_SHARED_KEY_FILE	= "/home/ybs-admin/.ssh/id_dsa";
-	
+
 	const	FLEX_MANAGEMENT_REPORT_PATH		= "/data/www/reports.yellowbilling.com.au/html/";
 
 	const	INVOICE_XML_RELATIVE_PATH		= 'files/invoices/xml/';
 	const	INVOICE_PDF_RELATIVE_PATH		= 'files/invoices/pdf/';
 
-	const	MAX_PDF_CACHE_AGE_DAYS_DEFAULT	= 60;
-	
+	const	MAX_CACHE_AGE_DAYS_DEFAULT	= 60;
+
 	function run()
 	{
 		try
@@ -57,18 +57,18 @@ class Cli_App_Billing extends Cli
 				define('BILLING_TEST_MODE'	, TRUE);
 			}
 			define('INVOICE_XML_PATH', FILES_BASE_PATH.'invoices/xml/');
-			
+
 			// Set the default Log() to redirect to Cli_App_Billing::debug()
 			Log::registerFunctionLog('Cli_App_Billing', 'debug', 'Cli_App_Billing');
 			Log::setDefaultLog('Cli_App_Billing');
-			
+
 			// Start a new Transcation
 			//$bolTransactionResult	= DataAccess::getDataAccess()->TransactionStart();
 			//Log::getLog()->log("Transaction was " . ((!$bolTransactionResult) ? 'not ' : '') . "successfully started!");
-			
+
 			$oDataAccessFlex	= DataAccess::getDataAccess();
 			$oQuery				= new Query();
-			
+
 			// Perform the operation
 			switch ($this->_arrArgs[self::SWITCH_MODE])
 			{
@@ -82,11 +82,11 @@ class Cli_App_Billing extends Cli
 					{
 						throw new Exception("You must supply an Invoice Run Id when running EXPORT!");
 					}
-					
+
 					$sExportModule	= $this->_arrArgs[self::SWITCH_EXPORT_MODULE];
-					
+
 					$oInvoiceRun	= new Invoice_Run(Array('Id' => $this->_arrArgs[self::SWITCH_INVOICE_RUN]), true);
-					
+
 					$iInvoiceId	= (int)$this->_arrArgs[self::SWITCH_ACCOUNT_ID];
 					if ($iInvoiceId)
 					{
@@ -100,7 +100,7 @@ class Cli_App_Billing extends Cli
 					}
 					Log::getLog()->log($this->_copyXML($oInvoiceRun->Id));
 					break;
-				
+
 				case 'REPORTS':
 					if (!$this->_arrArgs[self::SWITCH_INVOICE_RUN])
 					{
@@ -117,7 +117,7 @@ class Cli_App_Billing extends Cli
 					{
 						throw new Exception("You must supply an Invoice Run Id when running REVOKE!");
 					}
-					
+
 					// Revoke Temporary Invoice Runs
 					$objInvoiceRun	= new Invoice_Run(Array('Id' => $this->_arrArgs[self::SWITCH_INVOICE_RUN]), TRUE);
 					$objInvoiceRun->revoke();
@@ -130,7 +130,7 @@ class Cli_App_Billing extends Cli
 					{
 						throw new Exception($oQuery);
 					}
-					
+
 					// Revoke all Temporary Interim (not Final) Invoice Runs
 					while ($aInvoiceRun = $oResult->fetch_assoc())
 					{
@@ -144,7 +144,7 @@ class Cli_App_Billing extends Cli
 					{
 						throw new Exception("You must supply an Invoice Run Id when running COMMIT!");
 					}
-					
+
 					// Commit the Invoice Run
 					$objInvoiceRun	= new Invoice_Run(Array('Id' => $this->_arrArgs[self::SWITCH_INVOICE_RUN]), TRUE);
 					$objInvoiceRun->commit();
@@ -155,7 +155,7 @@ class Cli_App_Billing extends Cli
 					{
 						throw new Exception("You must supply an Invoice Run Id when running DELIVER!");
 					}
-					
+
 					// Deliver the Invoice Run
 					$objInvoiceRun	= new Invoice_Run(Array('Id' => $this->_arrArgs[self::SWITCH_INVOICE_RUN]), TRUE);
 					$objInvoiceRun->deliver();
@@ -166,30 +166,30 @@ class Cli_App_Billing extends Cli
 					{
 						throw new Exception("You must supply an Invoice Run Id when running REGENERATE!");
 					}
-					
+
 					$objOldInvoiceRun	= new Invoice_Run(Array('Id'=>(int)$this->_arrArgs[self::SWITCH_INVOICE_RUN]), TRUE);
 					if ($objOldInvoiceRun->invoice_run_status_id != INVOICE_RUN_STATUS_TEMPORARY)
 					{
 						throw new Exception("Cannot Regenerate Invoice Run #{$objOldInvoiceRun->Id} because it is not a Temporary Invoice Run! (Actual Status: ".Constant_Group::getConstantGroup('invoice_run_status')->getConstantName($objOldInvoiceRun->invoice_run_status_id).")");
 					}
-					
+
 					if ($this->_arrArgs[self::SWITCH_ACCOUNT_ID])
 					{
 						// Regenerating a single Invoice
 						$objAccount		= new Account(Array('Id'=>(int)$this->_arrArgs[self::SWITCH_ACCOUNT_ID]), FALSE, TRUE);
 						$objInvoiceRun	= $objOldInvoiceRun;
 						$objInvoiceRun->calculateBillingPeriodDates($objInvoiceRun->BillingDate);
-						
+
 						//$this->debug($objAccount->toArray());
 						//$this->debug($objInvoiceRun->toArray());
-						
+
 						// Regenerate this Account for this Invoice Run
 						$objInvoice	= new Invoice();
 						$objInvoice->generate($objAccount, $objInvoiceRun);
-						
+
 						// Regenerate Invoice Run Totals
 						$objInvoiceRun->calculateTotals();
-						
+
 						// Copy XML
 						Log::getLog()->log($this->_copyXML($objInvoiceRun->Id, (int)$this->_arrArgs[self::SWITCH_ACCOUNT_ID]));
 					}
@@ -201,7 +201,7 @@ class Cli_App_Billing extends Cli
 						Log::getLog()->log($this->_copyXML($objInvoiceRun->Id));
 					}
 					break;
-				
+
 				case 'ARCHIVE':
 					/*
 					// For a future, less hacky age...
@@ -212,12 +212,12 @@ class Cli_App_Billing extends Cli
 						$objInvoiceRun->archiveToCDRInvoiced();
 					}
 					*/
-					
+
 					$oUnarchivedInvoiceRunsResult	= $oQuery->Execute("	SELECT		ir.Id
-																			
+
 																			FROM		InvoiceRun ir
 																						JOIN invoice_run_status irs ON (irs.id = ir.invoice_run_status_id)
-																			
+
 																			WHERE		irs.const_name = 'INVOICE_RUN_STATUS_COMMITTED'
 																						AND	(
 																								SELECT		Id
@@ -236,7 +236,7 @@ class Cli_App_Billing extends Cli
 						self::_archiveInvoiceRunCDRs($aInvoiceRun['Id']);
 					}
 					break;
-					
+
 				case 'SAMPLE_ACCOUNT':
 					// Load the Account
 					$iAccountId	= (int)$this->_arrArgs[self::SWITCH_ACCOUNT_ID];
@@ -248,31 +248,31 @@ class Cli_App_Billing extends Cli
 					{
 						throw new Exception("Unable to load Account with Id {$iAccountId}");
 					}
-					
+
 					Log::getLog()->log("Sampling Account #{$iAccountId}...");
-					
+
 					// Was there a Fake Date provided?
 					$sDatetime	= date("Y-m-d H:i:s", ($this->_arrArgs[self::SWITCH_FAKE_DATE]) ?  $this->_arrArgs[self::SWITCH_FAKE_DATE] : time());
 					$sDate		= date("Y-m-d", strtotime($sDatetime));
-					
+
 					Log::getLog()->log("Effective Date: {$sDate} ($sDatetime)");
-					
+
 					// Predict the next Billing Date
 					$sInvoiceDate	= Invoice_Run::predictNextInvoiceDate($oAccount->CustomerGroup, $sDatetime);
 					Log::getLog()->log("Predicted Production Date: {$sInvoiceDate}");
-					
+
 					$oDataAccessFlex->TransactionStart();
 					try
 					{
 						Log::getLog()->log("Generating Sample Invoice Run...");
-						
+
 						// Perform the Sample Invoice Run!
 						$oInvoiceRun	= new Invoice_Run();
 						$oInvoiceRun->generateSingle($oAccount->CustomerGroup, INVOICE_RUN_TYPE_SAMPLES, strtotime($sInvoiceDate), $iAccountId);
-						
+
 						// Copy PDF to the front-end Server
 						$this->_copyXML($oInvoiceRun->Id);
-						
+
 						$oDataAccessFlex->TransactionCommit();
 					}
 					catch (Exception $eException)
@@ -281,7 +281,7 @@ class Cli_App_Billing extends Cli
 						throw $eException;
 					}
 					break;
-					
+
 				case 'REDISTRIBUTE':
 					Invoice::redistributeBalances();
 					break;
@@ -333,7 +333,7 @@ class Cli_App_Billing extends Cli
 		$strDatetime	= date("Y-m-d H:i:s", ($this->_arrArgs[self::SWITCH_FAKE_DATE]) ?  $this->_arrArgs[self::SWITCH_FAKE_DATE] : time());
 		$strDate		= date("Y-m-d", strtotime($strDatetime));
 		Log::getLog()->log("Today's date\t: {$strDatetime} ({$strDate})");
-		
+
 		// Are there any Invoice Runs due?
 		$selPaymentTerms		= new StatementSelect("payment_terms", "customer_group_id, invoice_day, payment_terms", "id = (SELECT MAX(id) FROM payment_terms pt2 WHERE customer_group_id = payment_terms.customer_group_id)", "customer_group_id");
 		$selInvoiceRunSchedule	= new StatementSelect("invoice_run_schedule", "*", "customer_group_id = <customer_group_id> AND '{$strDate}' = ADDDATE(<InvoiceDate>, INTERVAL invoice_day_offset DAY)");
@@ -366,11 +366,11 @@ class Cli_App_Billing extends Cli
 				{
 					// There is at least one scheduled today, so run the pre-Billing Scripts
 					$this->_preGenerateScripts();
-					
+
 					while ($arrInvoiceRunSchedule = $selInvoiceRunSchedule->Fetch())
 					{
 						Log::getLog()->log("\t\t + Generating '{$arrInvoiceRunSchedule['description']}' Invoice Run for ".Customer_Group::getForId($arrInvoiceRunSchedule['customer_group_id'])->externalName."\n");
-						
+
 						// Yes, so lets Generate!
 						try
 						{
@@ -387,7 +387,7 @@ class Cli_App_Billing extends Cli
 							throw $eException;
 						}
 						Log::getLog()->log($this->_copyXML($objInvoiceRun->Id));
-						
+
 						// Generate Invoice Sample Email
 						$objInvoiceRun->generateSampleList();
 					}
@@ -404,16 +404,16 @@ class Cli_App_Billing extends Cli
 			}
 		}
 	}
-	
+
 	private function _preGenerateScripts()
 	{
 		static	$bolHasRun	= FALSE;
-			
+
 		if (!$bolHasRun && !$this->_arrArgs[self::SWITCH_SKIP_PREBILLING])
 		{
 			$strWorkingDirectory	= getcwd();
 			chdir(BACKEND_BASE_PATH.'process/');
-			
+
 			// Run the Multi-part script
 			$strCommand				= "php multipart.php pre_billing.cfg.php";
 			$ptrProcess				= popen($strCommand, 'r');
@@ -429,24 +429,24 @@ class Cli_App_Billing extends Cli
 				}
 			}
 			$intReturnCode = pclose($ptrProcess);
-			
+
 			chdir($strWorkingDirectory);
-			
+
 			// Was there an error running a child script?
 			if ($intReturnCode > 0)
 			{
 				throw new Exception("There was an error running one of the pre-Generate Scripts");
 			}
-			
+
 			// Make sure this doesn't run twice
 			$bolHasRun	= TRUE;
 		}
 		return;
 	}
-	
+
 	private function _copyXML($intInvoiceRunId, $intAccountId=null) {
 		$strFlexXMLPath	= FLEX_BASE_PATH."files/invoices/xml/";
-		
+
 		if ($intAccountId !== null) {
 			$strInvoicePathXML = "/{$intAccountId}.xml";
 			$strInvoicePathXMLBZ2 = "/{$intAccountId}.xml.bz2";
@@ -463,46 +463,46 @@ class Cli_App_Billing extends Cli
 			$strFlexXMLRemotePath = $strFlexXMLPath;
 			$strOptions = '-r';
 		}
-		
+
 		$strSCPCommand	= "scp -i ".self::FLEX_FRONTEND_SHARED_KEY_FILE." {$strOptions} {$strFlexXMLPath}{$intInvoiceRunId}{$strInvoicePath} ".self::FLEX_FRONTEND_USERNAME."@".self::FLEX_FRONTEND_HOST.":{$strFlexXMLRemotePath}";
-		
+
 		self::debug($strSCPCommand);
 		return shell_exec($strSCPCommand);
 	}
-	
+
 	private function _copyManagementReports($strSourcePath)
 	{
 		if (is_dir($strSourcePath))
 		{
 			// Copy the Management Reports
 			$strDestinationPath	= str_replace(FLEX_BASE_PATH."files/reports/", self::FLEX_MANAGEMENT_REPORT_PATH.CUSTOMER_URL_NAME.'/', dirname($strSourcePath));
-			
+
 			$strSCPCommand	= "scp -i ".self::FLEX_FRONTEND_SHARED_KEY_FILE." -r {$strSourcePath} ".self::FLEX_FRONTEND_USERNAME."@".self::FLEX_FRONTEND_HOST.":{$strDestinationPath}";
-			
+
 			self::debug($strSCPCommand);
 			return shell_exec($strSCPCommand);
 		}
 	}
-	
+
 	private static function _archiveInvoiceRunCDRs($iInvoiceRunId)
 	{
 		$dsArchiveDB						= Data_Source::get('cdr');
 		$oQuery								= new Query();
-		
+
 		$sFlexDatabaseHost			= $GLOBALS['**arrDatabase']['flex']['URL'];
 		$sFlexDatabaseName			= $GLOBALS['**arrDatabase']['flex']['Database'];
 		$sFlexDatabaseUser			= $GLOBALS['**arrDatabase']['flex']['User'];
 		$sFlexDatabasePass			= $GLOBALS['**arrDatabase']['flex']['Password'];
-		
+
 		$sArchiveDatabaseHost		= $GLOBALS['**arrDatabase']['cdr']['URL'];
 		$sArchiveDatabaseName		= $GLOBALS['**arrDatabase']['cdr']['Database'];
 		$sArchiveDatabaseUser		= $GLOBALS['**arrDatabase']['cdr']['User'];
 		$sArchiveDatabasePass		= $GLOBALS['**arrDatabase']['cdr']['Password'];	// Not actually used -- uses .pgpass file
-		
+
 		$sMySQLDumpFilename			= "{$sFlexDatabaseName}_CDR_{$iInvoiceRunId}.sql";
 		$sPostgreSQLDumpFilename	= "{$sFlexDatabaseName}_CDR_{$iInvoiceRunId}.pgsql";
 		$sPostgreSQLInsertFilename	= "{$sFlexDatabaseName}_cdr_invoiced_{$iInvoiceRunId}.pgsql";
-		
+
 		// Perform the MySQL Dump
 		$sMySQLDumpCommand	= "mysqldump -h {$sFlexDatabaseHost} -u {$sFlexDatabaseUser} --password='{$sFlexDatabasePass}' {$sFlexDatabaseName} -t CDR --where='invoice_run_id={$iInvoiceRunId}' > {$sMySQLDumpFilename}";
 		$iMySQLDumpReturn	= null;
@@ -511,7 +511,7 @@ class Cli_App_Billing extends Cli
 		{
 			throw new Exception("Failed to get CDR dump: \n{$sMySQLDumpOutput}\n");
 		}
-		
+
 		// Convert MySQL statements to PostgreSQL statements
 		$sMySQL2PostgreSQLCommand	= "perl /data/bin/mysql2pgsql.pl {$sMySQLDumpFilename} {$sPostgreSQLDumpFilename}";
 		$iMySQL2PostgreSQLReturn	= null;
@@ -520,7 +520,7 @@ class Cli_App_Billing extends Cli
 		{
 			throw new Exception("Failed to Convert MySQL statements to PostgreSQL statements: \n{$sMySQL2PostgreSQLOutput}\n");
 		}
-		
+
 		// Archivify Statements
 		$sArchivifyStatementsCommand	= "perl -pi -e 's/INTO \"cdr\"/INTO cdr_invoiced_{$iInvoiceRunId}/' {$sPostgreSQLDumpFilename}";
 		$iArchivifyStatementsReturn		= null;
@@ -529,7 +529,7 @@ class Cli_App_Billing extends Cli
 		{
 			throw new Exception("Failed to archivify statements to PostgreSQL statements: \n{$sArchivifyStatementsOutput}\n");
 		}
-		
+
 		// Trim the Dump file to only include INSERT statements
 		$sTrimCommand	= "grep \"INSERT INTO\" {$sPostgreSQLDumpFilename} > {$sPostgreSQLInsertFilename}";
 		$iTrimReturn	= null;
@@ -538,7 +538,7 @@ class Cli_App_Billing extends Cli
 		{
 			throw new Exception("Failed to trim the Dump file to only include INSERT statements: \n{$sTrimOutput}\n");
 		}
-		
+
 		// Create the cdr_invoiced_$iInvoiceRunId Table in to Archive DB
 		$sCreateTableCommand	= "echo 'CREATE TABLE cdr_invoiced_{$iInvoiceRunId} (CHECK(invoice_run_id = {$iInvoiceRunId})) INHERITS (cdr_invoiced);' | psql -h {$sArchiveDatabaseHost} -U {$sArchiveDatabaseUser} {$sArchiveDatabaseName}";
 		$iCreateTableReturn		= null;
@@ -547,7 +547,7 @@ class Cli_App_Billing extends Cli
 		{
 			throw new Exception("Failed to create the cdr_invoiced_$iInvoiceRunId Table in to Archive DB: \n{$sCreateTableOutput}\n");
 		}
-		
+
 		// Insert the CDRs into the Archive DB (requires .pgpass to be set up)
 		$sInsertCommand	= "psql -h {$sArchiveDatabaseHost} -U {$sArchiveDatabaseUser} {$sArchiveDatabaseName} < {$sPostgreSQLInsertFilename}";
 		$iInsertReturn	= null;
@@ -556,7 +556,7 @@ class Cli_App_Billing extends Cli
 		{
 			throw new Exception("Failed to create the cdr_invoiced_$iInvoiceRunId Table in to Archive DB: \n{$sInsertOutput}\n");
 		}
-		
+
 		// Verify CDR counts
 		$rVerifyMySQLResult	= $oQuery->Execute("SELECT COUNT(Id) AS cdr_count FROM CDR WHERE invoice_run_id = {$iInvoiceRunId}");
 		if ($rVerifyMySQLResult === false)
@@ -564,21 +564,21 @@ class Cli_App_Billing extends Cli
 			throw new Exception_Database($oQuery->Error());
 		}
 		$aVerifyMySQL	= $rVerifyMySQLResult->fetch_assoc();
-		
+
 		$oVerifyPostgreSQLPartitionResult	= $dsArchiveDB->query("SELECT COUNT(id) AS cdr_count FROM cdr_invoiced_{$iInvoiceRunId} WHERE 1");
 		if (PEAR::isError($oVerifyPostgreSQLPartitionResult))
 		{
 			throw new Exception($oVerifyPostgreSQLPartitionResult->getMessage() . " (DB Error: " . $oVerifyPostgreSQLPartitionResult->getUserInfo() . ")");
 		}
 		$aVerifyPostgreSQLPartition	= $oVerifyPostgreSQLPartitionResult->fetchRow(MDB2_FETCHMODE_ASSOC);
-		
+
 		$oVerifyPostgreSQLTableResult	= $dsArchiveDB->query("SELECT COUNT(id) AS cdr_count FROM cdr_invoiced WHERE invoice_run_id = {$iInvoiceRunId}");
 		if (PEAR::isError($oVerifyPostgreSQLTableResult))
 		{
 			throw new Exception($oVerifyPostgreSQLTableResult->getMessage() . " (DB Error: " . $oVerifyPostgreSQLTableResult->getUserInfo() . ")");
 		}
 		$aVerifyPostgreSQLTable	= $oVerifyPostgreSQLTableResult->fetchRow(MDB2_FETCHMODE_ASSOC);
-		
+
 		$iCDRCount					= (int)$aVerifyMySQL['cdr_count'];
 		$iCDRInvoicedCount			= (int)$aVerifyPostgreSQLPartition['cdr_count'];
 		$iCDRInvoicePartitionCount	= (int)$aVerifyPostgreSQLTable['cdr_count'];
@@ -586,14 +586,14 @@ class Cli_App_Billing extends Cli
 		{
 			throw new Exception("CDR Count Mismatch: (CDR: {$iCDRCount}; cdr_invoiced_{$iInvoiceRunId}: {$iCDRInvoicePartitionCount}; cdr_invoiced: {$iCDRInvoicedCount})");
 		}
-		
+
 		// Remove CDRs from Flex database
 		$oDeleteResult	= $oQuery->Execute("DELETE FROM CDR WHERE invoice_run_id = {$iInvoiceRunId}");
 		if ($oDeleteResult === false)
 		{
 			throw new Exception_Database($oQuery->Error());
 		}
-		
+
 		// File Cleanup -- BZ2 them for now, manual cleanup later
 		$sCompressCommand	= "bzip2 {$sMySQLDumpFilename} {$sPostgreSQLDumpFilename} {$sPostgreSQLInsertFilename}";
 		$iCompressReturn	= null;
@@ -609,7 +609,7 @@ class Cli_App_Billing extends Cli
 		$sXMLPath	= realpath(FLEX_BASE_PATH.'/'.self::INVOICE_XML_RELATIVE_PATH);
 		$sPDFPath	= realpath(FLEX_BASE_PATH.'/'.self::INVOICE_PDF_RELATIVE_PATH);
 
-		$iEarliestPDFTimestamp	= max(0, time() - (Flex_Date::SECONDS_IN_DAY * max($this->_arrArgs[self::SWITCH_MAX_PDF_CACHE_AGE], 0)));
+		$iEarliestPDFTimestamp	= max(0, time() - (Flex_Date::SECONDS_IN_DAY * max($this->_arrArgs[self::SWITCH_MAX_CACHE_AGE], 0)));
 
 		$bTestMode	= !!$this->_arrArgs[self::SWITCH_TEST_RUN];
 		//$bTestMode	= true; // DEBUG: Force Test Mode
@@ -639,17 +639,24 @@ class Cli_App_Billing extends Cli
 				$sInvoicePDFRelativePath	= basename(dirname($sInvoicePDFPath)).'/'.basename($sInvoicePDFPath);
 				$sInvoiceBaseName			= substr(basename($sInvoicePDFPath), 0, strpos(basename($sInvoicePDFPath), '.'));
 				$this->log("  [*] {$sInvoicePDFRelativePath}");
-				
+
 				// Ensure this PDF is outside our allowable cache period
 				$iPDFModifiedTimestamp	= filemtime($sInvoicePDFPath);
 				if ($iPDFModifiedTimestamp < $iEarliestPDFTimestamp) {
 					$this->log('    [i] PDF is old enough to be removed (Modified: '.date('Y-m-d H:i:s', $iPDFModifiedTimestamp).')');
 
 					// Verify that we have an XML file from which we can regenerate the PDF
-					$sInvoiceXMLPath	= $sXMLPath.'/'.basename(dirname($sInvoicePDFPath)).'/'.$sInvoiceBaseName.'.xml';
-					if (@file_exists($sInvoiceXMLPath) && @filesize($sInvoiceXMLPath) > 0) {
+					$sInvoiceXMLPath = null;
+					$sInvoiceXMLUncompressedPath = $sXMLPath.'/'.basename(dirname($sInvoicePDFPath)).'/'.$sInvoiceBaseName.'.xml';
+					$sInvoiceXMLCompressedPath = $sInvoiceXMLUncompressedPath . '.bz2';
+					if ((@file_exists($sInvoiceXMLUncompressedPath) && @filesize($sInvoiceXMLUncompressedPath) > 0)) {
+						$sInvoiceXMLPath = $sInvoiceXMLUncompressedPath;
+					} elseif ((@file_exists($sInvoiceXMLCompressedPath) && @filesize($sInvoiceXMLCompressedPath) > 0)) {
+						$sInvoiceXMLPath = $sInvoiceXMLCompressedPath;
+					}
+					if (isset($sInvoiceXMLPath)) {
 						$this->log("    [i] PDF has an XML fallback ({$sInvoiceXMLPath})");
-						
+
 						// Remove PDF
 						$iPDFFileSize	= filesize($sInvoicePDFPath);
 						if (!$bTestMode) {
@@ -667,7 +674,7 @@ class Cli_App_Billing extends Cli
 						$iPDFRemoved++;
 						$iPDFRemovedSize	+= $iPDFFileSize;
 					} else {
-						$this->log("    [~] PDF doesn't have an XML fallback (Searched: {$sInvoiceXMLPath})");
+						$this->log("    [~] PDF doesn't have an XML fallback (Searched: {$sInvoiceXMLUncompressedPath}; {$sInvoiceXMLCompressedPath})");
 						$iPDFMissingXML++;
 					}
 				} else {
@@ -689,7 +696,7 @@ class Cli_App_Billing extends Cli
 		$this->log("PDFs which are too young: {$iPDFTooYoung}");
 		$this->log();
 	}
-	
+
 	public static function debug($mixMessage, $bolNewLine=TRUE)
 	{
 		if (defined('BILLING_TEST_MODE') && BILLING_TEST_MODE)
@@ -743,21 +750,21 @@ class Cli_App_Billing extends Cli
 				self::ARG_DEFAULT		=> NULL,
 				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
 			),
-			
+
 			self::SWITCH_SKIP_PREBILLING => array(
 				self::ARG_REQUIRED		=> FALSE,
 				self::ARG_DESCRIPTION	=> "Skips the pre-Billing scripts (only applicable to GENERATE)",
 				self::ARG_DEFAULT		=> FALSE,
 				self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
 			),
-			
+
 			self::SWITCH_FAKE_DATE => array(
 				self::ARG_REQUIRED		=> FALSE,
 				self::ARG_DESCRIPTION	=> "Forces Billing to think that today is a given date",
 				self::ARG_DEFAULT		=> NULL,
 				self::ARG_VALIDATION	=> 'Cli::_validDate("%1$s")'
 			),
-			
+
 			self::SWITCH_EXPORT_MODULE => array(
 				self::ARG_LABEL			=> "EXPORT_MODULE",
 				self::ARG_REQUIRED		=> FALSE,
@@ -765,12 +772,12 @@ class Cli_App_Billing extends Cli
 				self::ARG_DEFAULT		=> NULL,
 				self::ARG_VALIDATION	=> 'Cli::_validClassName("%1$s")'
 			),
-			
-			self::SWITCH_MAX_PDF_CACHE_AGE => array(
-				self::ARG_LABEL			=> "MAX_PDF_CACHE_AGE",
+
+			self::SWITCH_MAX_CACHE_AGE => array(
+				self::ARG_LABEL			=> "MAX_CACHE_AGE",
 				self::ARG_REQUIRED		=> FALSE,
-				self::ARG_DESCRIPTION	=> "Maximum age in days for a cached PDF Invoice to exist before it is cleaned up (only applicable to CLEAN_PDF_CACHE)",
-				self::ARG_DEFAULT		=> self::MAX_PDF_CACHE_AGE_DAYS_DEFAULT,
+				self::ARG_DESCRIPTION	=> "Maximum age in days for a cached Invoice to exist before it is cleaned up (only applicable to CLEAN_PDF_CACHE)",
+				self::ARG_DEFAULT		=> self::MAX_CACHE_AGE_DAYS_DEFAULT,
 				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
 			)
 		);
