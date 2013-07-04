@@ -178,7 +178,7 @@ class ModuleInbound extends ModuleService
 	 */
 	public function CanBeProvisioned()
 	{
-		return FALSE;
+		return false;
 	}
 	
 	//------------------------------------------------------------------------//

@@ -1763,49 +1763,56 @@ class Cli_App_Sales extends Cli
 				$this->log("\t\t\t* Sale Item\t: ". $objFlexSaleItem->getExternalReferenceValue() ." ...");
 				$this->log("\t\t\t* Rate Plan\t: {$objRatePlan->Name} ...");
 				
-				// Create
-				$bProvisioningToDo = false;
-				if ($objRatePlan->CarrierFullService !== null) {
-					// Full Service
-					$this->log("\t\t\t+ Adding Full Service Request...");
-					$objFullServiceRequest	= new Provisioning_Request();
-					$objFullServiceRequest->AccountGroup		= $objService->AccountGroup;
-					$objFullServiceRequest->Account				= $objService->Account;
-					$objFullServiceRequest->Service				= $objService->Id;
-					$objFullServiceRequest->FNN					= $objService->FNN;
-					$objFullServiceRequest->Employee			= 0;
-					$objFullServiceRequest->Carrier				= $objRatePlan->CarrierFullService;
-					$objFullServiceRequest->Type				= PROVISIONING_TYPE_FULL_SERVICE;
-					$objFullServiceRequest->RequestedOn			= Data_Source_Time::currentTimestamp();
-					$objFullServiceRequest->AuthorisationDate	= $objService->CreatedOn;
-					$objFullServiceRequest->scheduled_datetime	= $objFullServiceRequest->RequestedOn;
-					$objFullServiceRequest->Status				= REQUEST_STATUS_WAITING;
-					$objFullServiceRequest->save();
+				// Create requests
 
-					$bProvisioningToDo = true;
+				// First determine what is required, based on the service type and the configured carriers
+				$aProvisioningInfo = array();
+				switch ($objService->ServiceType) {
+					case SERVICE_TYPE_LAND_LINE:
+						if ($objRatePlan->CarrierFullService !== null) {
+							$aProvisioningInfo[PROVISIONING_TYPE_FULL_SERVICE] = array(
+								'iCarrier' => $objRatePlan->CarrierFullService,
+								'sAuthorisationDate' => $objService->CreatedOn
+							);
+						}
+
+						if ($objRatePlan->CarrierPreselection !== null) {
+							$aProvisioningInfo[PROVISIONING_TYPE_PRESELECTION] = array(
+								'iCarrier' => $objRatePlan->CarrierPreselection,
+								'sAuthorisationDate' => $arrService['verified_on']
+							);
+						}
+						break;
+					case SERVICE_TYPE_MOBILE:
+						if ($objRatePlan->CarrierFullService !== null) {
+							$aProvisioningInfo[PROVISIONING_TYPE_MOBILE_ADD] = array(
+								'iCarrier' => $objRatePlan->CarrierFullService,
+								'sAuthorisationDate' => $objService->CreatedOn
+							);
+						}
+						break;
 				}
 
-				if (($objService->ServiceType === SERVICE_TYPE_LAND_LINE) && ($objRatePlan->CarrierPreselection !== null)) {
-					// Preselection - Land lines only
-					$this->log("\t\t\t+ Adding Preselection Request...");
-					$objPreselectionRequest	= new Provisioning_Request();
-					$objPreselectionRequest->AccountGroup		= $objService->AccountGroup;
-					$objPreselectionRequest->Account			= $objService->Account;
-					$objPreselectionRequest->Service			= $objService->Id;
-					$objPreselectionRequest->FNN				= $objService->FNN;
-					$objPreselectionRequest->Employee			= 0;
-					$objPreselectionRequest->Carrier			= $objRatePlan->CarrierPreselection;
-					$objPreselectionRequest->Type				= PROVISIONING_TYPE_PRESELECTION;
-					$objPreselectionRequest->RequestedOn		= Data_Source_Time::currentTimestamp();
-					$objPreselectionRequest->AuthorisationDate	= $arrService['verified_on'];
-					$objPreselectionRequest->scheduled_datetime	= $objPreselectionRequest->RequestedOn;
-					$objPreselectionRequest->Status				= REQUEST_STATUS_WAITING;
-					$objPreselectionRequest->save();
-
-					$bProvisioningToDo = true;
-				}
-				
-				if (!$bProvisioningToDo) {
+				if (!empty($aProvisioningInfo)) {
+					// Create the requests
+					foreach ($aProvisioningInfo as $iProvisioningType => $aInfo) {
+						// Full Service
+						$this->log("\t\t\t+ Adding Request (Type: {$iProvisioningType}; Carrier: {$aInfo['iCarrier']})...");
+						$oRequest = new Provisioning_Request();
+						$oRequest->AccountGroup = $objService->AccountGroup;
+						$oRequest->Account = $objService->Account;
+						$oRequest->Service = $objService->Id;
+						$oRequest->FNN = $objService->FNN;
+						$oRequest->Employee = 0;
+						$oRequest->Carrier = $aInfo['iCarrier'];
+						$oRequest->Type	= $iProvisioningType;
+						$oRequest->RequestedOn = Data_Source_Time::currentTimestamp();
+						$oRequest->AuthorisationDate = $aInfo['sAuthorisationDate'];
+						$oRequest->scheduled_datetime = $oRequest->RequestedOn;
+						$oRequest->Status = REQUEST_STATUS_WAITING;
+						$oRequest->save();
+					}
+				} else {
 					// The Service must be manually provisioned, and the service has not yet been set to ACTIVE in Flex
 					$arrServicesNeedingManualProvisioning[] = $objService->id;
 					continue;

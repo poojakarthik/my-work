@@ -105,7 +105,7 @@ class ModuleADSL extends ModuleService
 	 */
 	public function CanBeProvisioned()
 	{
-		return true;
+		return false;
 	}
 
 	

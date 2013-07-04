@@ -1306,6 +1306,7 @@ class AppTemplateService extends ApplicationTemplate
 				$arrServicesToProvision[] = array(
 					"Id" => $intServiceId,
 					"FNN" => $arrServiceRec['FNN'],
+					"ServiceType" => $arrServiceRec['ServiceType'],
 					"Carrier" => $arrServiceRec['Carrier'],
 					"CarrierPreselect" => $arrServiceRec['CarrierPreselect'],
 					"AuthorisationDate" => $arrServiceRec['AuthorisationDate']
@@ -1421,20 +1422,29 @@ class AppTemplateService extends ApplicationTemplate
 				// Full Service Request
 				if ($arrService['Carrier'] !== null) {
 					$arrInsertValues['Carrier']	= $arrService['Carrier'];
-					$arrInsertValues['Type']	= PROVISIONING_TYPE_FULL_SERVICE;
+					$arrInsertValues['Type'] = null;
 					
-					if ($insRequest->Execute($arrInsertValues) === FALSE)
-					{
-						$bolSuccess = FALSE;
-						break;
+					switch ($arrService['ServiceType']) {
+						case SERVICE_TYPE_LAND_LINE:
+							$arrInsertValues['Type'] = PROVISIONING_TYPE_FULL_SERVICE;
+							break;
+						case SERVICE_TYPE_MOBILE:
+							$arrInsertValues['Type'] = PROVISIONING_TYPE_MOBILE_ADD;
+							break;
+					}
+
+					if ($arrInsertValues['Type'] !== null) {
+						if ($insRequest->Execute($arrInsertValues) === FALSE) {
+							$bolSuccess = FALSE;
+							break;
+						}
 					}
 				}
 				
 				if (($arrService['ServiceType'] === SERVICE_TYPE_LAND_LINE) && ($arrService['CarrierPreselect'] !== null)) {
-					// Preselection Request				
+					// Preselection Request
 					$arrInsertValues['Carrier'] = $arrService['CarrierPreselect'];
 					$arrInsertValues['Type']	= PROVISIONING_TYPE_PRESELECTION;
-					
 					if ($insRequest->Execute($arrInsertValues) === FALSE)
 					{
 						$bolSuccess = FALSE;
@@ -1442,7 +1452,7 @@ class AppTemplateService extends ApplicationTemplate
 					}
 				}
 			}
-			
+
 			if (!$bolSuccess)
 			{
 				// An Error Occured
