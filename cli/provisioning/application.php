@@ -240,9 +240,14 @@ class ApplicationProvisioning extends ApplicationBaseClass {
 			CliEcho("\t+ Exporting #{$arrRequest['Id']}...\t\t\t", false);
 			
 			// Final sanity check that the service being requested against supports the request type
-			//Service_Service::getForId($arrRequest['Service'])->
-
-			if ($this->_arrExportModules[$arrRequest['Carrier']][$arrRequest['Type']]) {
+			$oService = Service::getForId($arrRequest['Service']);
+			$oServiceType = Service_Type::getForId($oService->ServiceType);
+			if (!$oServiceType->canProvision($arrRequest['Type'])) {
+				// Provisioning Type is incompatible with the services type
+				$arrRequest['Status'] = REQUEST_STATUS_REJECTED_FLEX;
+				$strType = GetConstantDescription($arrRequest['Type'], 'provisioning_type');
+				CliEcho("[ FAILED ]\n\t\t- Service Type '{$oServiceType->name}' cannot support '{$strType}' requests");
+			} else if ($this->_arrExportModules[$arrRequest['Carrier']][$arrRequest['Type']]) {
 				// Prepare output for this request
 				$arrRequest = $this->_arrExportModules[$arrRequest['Carrier']][$arrRequest['Type']]->Output($arrRequest);
 				
