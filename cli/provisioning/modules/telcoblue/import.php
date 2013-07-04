@@ -388,17 +388,20 @@ class ImportTelcoBlue extends ImportBase {
 			$iReverseChurn = $this->GetConfigField('ReverseChurnNotificationType');
 			$iIdentifierContextFullService = $this->GetConfigField('WholesaleIdentifierContextFullService');
 			$iIdentifierContextPreselection = $this->GetConfigField('WholesaleIdentifierContextPreselection');
+			$iIdentifierContextMobile = $this->GetConfigField('WholesaleIdentifierContextMobile');
 			$iIdentifierContext = (int)$aData['IdentifierContext'];
 
 			// Define provisioning type mapping info
 			$aProvisioningTypes = array(
 				$iChurn => array(
 					$iIdentifierContextFullService => PROVISIONING_TYPE_FULL_SERVICE,
-					$iIdentifierContextPreselection => PROVISIONING_TYPE_PRESELECTION
+					$iIdentifierContextPreselection => PROVISIONING_TYPE_PRESELECTION,
+					$iIdentifierContextMobile => PROVISIONING_TYPE_MOBILE_ADD
 				),
 				$iReverseChurn => array(
 					$iIdentifierContextFullService => PROVISIONING_TYPE_FULL_SERVICE_REVERSE,
-					$iIdentifierContextPreselection => PROVISIONING_TYPE_PRESELECTION_REVERSE
+					$iIdentifierContextPreselection => PROVISIONING_TYPE_PRESELECTION_REVERSE,
+					$iIdentifierContextMobile => PROVISIONING_TYPE_MOBILE_REMOVE
 				)
 			);
 			
