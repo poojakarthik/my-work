@@ -555,13 +555,25 @@ var Popup_Invoice_Rerate_Summary	= Class.create(Reflex_Popup,
 			return;
 		}
 		
-		new Popup_Adjustment_Request(
-			this._oNewInvoice.Account, 
-			null, 
-			Math.abs(this._fAdjustmentAmount), 
-			this._oOriginalInvoice.Id, 
-			(oRerateAdjustmentType ? oRerateAdjustmentType.id : null), 
-			this._adjustmentAdded.bind(this)
+		JsAutoLoader.loadScript(
+			['control_field.js',
+			'control_field_text.js',
+			'control_field_select.js',
+			'control_field_textarea.js',
+			'control.js',
+			'control_textarea.js',
+			'popup_adjustment_request.js'],
+			function() {
+				new Popup_Adjustment_Request(
+					this._oNewInvoice.Account, 
+					null, 
+					Math.abs(this._fAdjustmentAmount), 
+					this._oOriginalInvoice.Id, 
+					(oRerateAdjustmentType ? oRerateAdjustmentType.id : null), 
+					this._adjustmentAdded.bind(this)
+				);
+			}.bind(this),
+			true
 		);
 	},
 	
