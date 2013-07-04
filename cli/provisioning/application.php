@@ -239,6 +239,9 @@ class ApplicationProvisioning extends ApplicationBaseClass {
 		while ($arrRequest = $selRequests->Fetch()) {
 			CliEcho("\t+ Exporting #{$arrRequest['Id']}...\t\t\t", false);
 			
+			// Final sanity check that the service being requested against supports the request type
+			//Service_Service::getForId($arrRequest['Service'])->
+
 			if ($this->_arrExportModules[$arrRequest['Carrier']][$arrRequest['Type']]) {
 				// Prepare output for this request
 				$arrRequest = $this->_arrExportModules[$arrRequest['Carrier']][$arrRequest['Type']]->Output($arrRequest);

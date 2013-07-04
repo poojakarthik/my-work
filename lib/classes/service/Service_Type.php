@@ -11,6 +11,22 @@ class Service_Type extends ORM_Enumerated
 	protected 			$_strTableName			= "service_type";
 	protected static	$_strStaticTableName	= "service_type";
 
+	public function canProvision($iProvisioningType) {
+		return !!Query::run(
+			"	SELECT pt.id
+				FROM provisioning_type pt
+					JOIN provisioning_type_nature ptn ON (
+						ptn.id = pt.provisioning_type_nature
+						AND ptn.service_type = <service_type_id>
+					)
+				WHERE pt.id = <provisioning_type_id>",
+			array(
+				'provisioning_type_id' => $iProvisioningType,
+				'service_type_id' => $this->id
+			)
+		)->fetch_assoc();
+	}
+
 	protected static function getCacheName()
 	{
 		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
