@@ -2,17 +2,17 @@
 
  class ImportBase extends CarrierModule {
 	public $intLineNumber;
-	
+
 	function __construct($intCarrier) {
 		parent::__construct($intCarrier, MODULE_TYPE_PROVISIONING_INPUT);
-		
+
 		// Defaults
 		$this->intCarrier = null;
 		$this->_strDelimiter = ",";
 		$this->_strEndOfLine = "\n";
 		$this->_strEnclosed = '';
 		$this->_arrDefine = array();
-		
+
 		// Statements
 		$this->_selRequestByCarrierRef = new StatementSelect("ProvisioningRequest", "*", "CarrierRef = <CarrierRef> AND Status IN (301, 302, 303)");
 		$this->_selRequestByFNN = new StatementSelect(
@@ -22,18 +22,18 @@
 			"RequestedOn DESC"
 		);
 		$this->_selTranslateCarrierCode = new StatementSelect("carrier_translation", "out_value AS flex_code", "carrier_translation_context_id = <Context> AND in_value = <CarrierCode>");
-		
+
 		$this->_selCarrierModule = new StatementSelect("CarrierModule", "*", "Carrier = <Carrier> AND Module = <Module> AND Type = ".MODULE_TYPE_PROVISIONING_INPUT);
-		
+
 		$this->_selLineStatus = new StatementSelect("Service", "LineStatus, LineStatusDate, PreselectionStatus, PreselectionStatusDate", "Id = <Id>");
-		
+
 		$arrColumns	= array();
 		$arrColumns['LineStatus'] = null;
 		$arrColumns['LineStatusDate'] = null;
 		$arrColumns['PreselectionStatus'] = null;
 		$arrColumns['PreselectionStatusDate'] = null;
 		$this->_ubiLineStatus = new StatementUpdateById("Service", $arrColumns);
-		
+
 		$this->_selLineStatusAction = new StatementSelect(
 			"provisioning_type LEFT JOIN service_line_status_update ON service_line_status_update.provisioning_type = provisioning_type.id",
 			"new_line_status, provisioning_type_nature",
@@ -44,22 +44,22 @@
 
 		$this->_selProvisioningType = new StatementSelect("provisioning_type", "*", "id = <id>");
 	}
-	
+
 	function PreProcess($arrRawData) {
 		// Just return the data.  Function can be overridden to pre-process
 		return $arrRawData;
 	}
-	
+
 	function Normalise($arrNormalised, $intLineNumber) {
 		DebugBacktrace();
 		throw new Exception("ImportBase::Normalised() is a virtual function!");
 	}
-	
+
 	function Validate($arrLine) {
 		// Validate Line
 		return true;
 	}
-	
+
 	protected function _SplitLine($strLine) {
 		// build the array
 		if ($this->_strDelimiter) {
@@ -70,7 +70,7 @@
 				if (isset($strValue['Index']) && isset($arrRawData[$strValue['Index']])) {
 					$_arrData[$strKey] = $arrRawData[$strValue['Index']];
 				}
-				
+
 				// delimited fields may have fixed width contents
 				if (isset($strValue['Start']) && isset($strValue['Length']) && $strValue['Length']) {
 					$_arrData[$strKey] = substr($_arrData[$strKey], $strValue['Start'], $strValue['Length']);
@@ -84,10 +84,10 @@
 				$_arrData[$strKey] = trim(substr($strLine, $strValue['Start'], $strValue['Length']));
 			}
 		}
-		
+
 		return $_arrData;
 	}
-	
+
 	function LinkToRequest($arrResponse) {
 		// Match by FNN and Type
 		if ($this->_selRequestByFNN->Execute($arrResponse)) {
@@ -95,11 +95,11 @@
 			$arrReturn = $this->_selRequestByFNN->Fetch();
 			return $arrReturn;
 		}
-		
+
 		// No Match
 		return null;
 	}
-	
+
 	function TranslateCarrierCode($intContext, $mixValue) {
 		$arrWhere = array();
 		$arrWhere['Context'] = (int)$intContext;
@@ -107,11 +107,11 @@
 		if (!$this->_selTranslateCarrierCode->Execute($arrWhere)) {
 			return false;
 		}
-		
+
 		$arrValue = $this->_selTranslateCarrierCode->Fetch();
 		return $arrValue['flex_code'];
 	}
-	
+
 	function FindFNNOwner($arrPDR, $bLogError=false) {
 		// Find Owner
 		if (is_array($arrOwner = FindFNNOwner($arrPDR['FNN'], $arrPDR['EffectiveDate'], true))) {
@@ -125,19 +125,41 @@
 
 			$arrPDR['Status'] = RESPONSE_STATUS_BAD_OWNER;
 		}
-		
+
 		return $arrPDR;
 	}
-	
+
+	// NOTE: Child classes should override this generic logic if they have a more definitive way of determining this
+	public function updateRequestStatus($aResponse, $aRequest) {
+		Log::get()->log("\tResolving Response @ {$aResponse['EffectiveDate']} against Request Last Updated @ {$aRequest['LastUpdated']}");
+		// Update Request Table if this is the most recent Response for this Request
+		if (!(strtotime($aRequest['LastUpdated']) < strtotime($aResponse['EffectiveDate']))) {
+			// If the Response isn't newer than the last update, don't update the Request
+			Log::get()->log("\t\tResponse #{$aResponse['Id']} is not newer ({$aResponse['EffectiveDate']}) than Request @ {$aRequest['LastUpdated']}");
+			return;
+		}
+
+		Log::get()->log("\t\tUpdating Request #{$aResponse['Request']} with Response #{$aResponse['Id']} ({$aResponse['request_status']}: {$aResponse['Description']}) @ {$aResponse['EffectiveDate']}");
+		Query::run('
+			UPDATE ProvisioningRequest
+			SET Response = <Id>,
+				LastUpdated = <EffectiveDate>,
+				Status = <request_status>,
+				Description = <Description>
+			WHERE Id = <Request>
+		', $aResponse);
+		//Log::get()->log("\t\t\tUpdated " . DataAccess::get()->refMysqliConnection->affected_rows . ": " . var_dump(Query::run('SELECT * FROM ProvisioningRequest WHERE Id = <Id>', $aRequest)->fetch_assoc(), true));
+	}
+
 	static function UpdateLineStatus($arrResponse) {
 		//Debug($arrResponse);
-		
+
 		// Init Statements
 		static $selLineStatus = null;
 		static $selProvisioningType = null;
 		static $selLineStatusAction = null;
 		static $ubiLineStatus = null;
-		
+
 		if (!isset($selLineStatus)) {
 			$selLineStatus = new StatementSelect("Service", "Id, LineStatus, LineStatusDate, PreselectionStatus, PreselectionStatusDate", "Id = <Service>");
 		}
@@ -155,11 +177,11 @@
 			$arrColumns['PreselectionStatusDate'] = null;
 			$ubiLineStatus = new StatementUpdateById("Service", $arrColumns);
 		}
-		
+
 		// Get Current Line Status for the Service
 		if ($selLineStatus->Execute($arrResponse)) {
 			$arrLineStatus	= $selLineStatus->Fetch();
-			
+
 			// Get the Provisioning Type Nature Details
 			if ($selProvisioningType->Execute(array('id' => $arrResponse['Type']))) {
 				$arrProvisioningType = $selProvisioningType->Fetch();
@@ -172,12 +194,12 @@
 					$strCurrentEffectiveDate = &$arrLineStatus['LineStatusDate'];
 					$intCurrentLineStatus = &$arrLineStatus['LineStatus'];
 				}
-				
+
 				// Is this Status newer than the current Status?
 				if (strtotime($arrResponse['EffectiveDate']) > strtotime($strCurrentEffectiveDate)) {
 					// Current Status is older than this Status
 					$intCurrentLineStatus	= null;
-					
+
 				} elseif (strtotime($arrResponse['EffectiveDate']) === strtotime($strCurrentEffectiveDate)) {
 					// Same Date
 					$intActionLineStatus = $intCurrentLineStatus;
@@ -186,13 +208,13 @@
 					//CliEcho("({$arrResponse['Id']}) -- Current Status ($strCurrentEffectiveDate) is newer than ({$arrResponse['EffectiveDate']})");
 					return false;
 				}
-				
+
 				// Get the Update Details for the Current Status + the Request Type
 				if ($selLineStatusAction->Execute(array('LineStatus' => $intCurrentLineStatus, 'Request' => $arrProvisioningType['id'], 'RequestStatus' => $arrResponse['request_status']))) {
 					$arrLineStatusAction = $selLineStatusAction->Fetch();
 					$strCurrentEffectiveDate = $arrResponse['EffectiveDate'];
 					$intCurrentLineStatus = $arrLineStatusAction['new_line_status'];
-					
+
 					// Save the new Line Status
 					if ($ubiLineStatus->Execute($arrLineStatus) === false) {
 						return "DB Error for _ubiLineStatus: ".$ubiLineStatus->Error();
