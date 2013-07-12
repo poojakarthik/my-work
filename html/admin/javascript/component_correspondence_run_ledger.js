@@ -367,7 +367,7 @@ var Component_Correspondence_Run_Ledger = Class.create(
 		oDeleteImage.observe('click', this._clearFilterValue.bind(this, sField));
 
 		var oFiterImage	= $T.img({class: 'header-filter', src: Component_Correspondence_Run_Ledger.FILTER_IMAGE_SOURCE, alt: 'Filter by ' + sLabel, title: 'Filter by ' + sLabel});
-		this._oFilter.registerFilterIcon(sField, oFiterImage, sLabel, this._oContentDiv, 0, 10);
+		this._oFilter.registerFilterIcon(sField, oFiterImage, sLabel, null, 0, 10, 'correspondence-run-ledger-filterpopup');
 
 		return	$T.th({class: 'filter-heading'},
 					$T.span({class: 'filter-' + sField},

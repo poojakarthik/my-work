@@ -413,9 +413,9 @@ var Filter	= Class.create
 		}
 	},
 	
-	registerFilterIcon	: function(sField, oIcon, sLabel, oParentElement, iDisplayOffsetX, iDisplayOffsetY)
+	registerFilterIcon	: function(sField, oIcon, sLabel, oParentElement, iDisplayOffsetX, iDisplayOffsetY, sPopupExtraClass)
 	{
-		oIcon.observe('click', this._showFilterOptions.bind(this, sField, sLabel, oParentElement, iDisplayOffsetX, iDisplayOffsetY));
+		oIcon.observe('click', this._showFilterOptions.bind(this, sField, sLabel, oParentElement, iDisplayOffsetX, iDisplayOffsetY, sPopupExtraClass));
 	},
 	
 	getControlsForField	: function(sField)
@@ -455,11 +455,11 @@ var Filter	= Class.create
 		}
 	},
 	
-	_showFilterOptions	: function(sField, sLabel, oParentElement, iDisplayOffsetX, iDisplayOffsetY, oEvent)
+	_showFilterOptions	: function(sField, sLabel, oParentElement, iDisplayOffsetX, iDisplayOffsetY, sPopupExtraClass, oEvent)
 	{
 		if (!this._oFilterOptionsElement)
 		{
-			this._oFilterOptionsElement	= 	$T.div({class: 'filter-overlay-options'},
+			this._oFilterOptionsElement	= 	$T.div({class: 'filter-overlay-options' + (sPopupExtraClass ? ' ' + sPopupExtraClass : '')},
 												$T.div({class: 'filter-overlay-options-content'}),
 												$T.div({class: 'filter-overlay-options-buttons'},
 													$T.button({class: 'icon-button'},
@@ -528,12 +528,13 @@ var Filter	= Class.create
 		oContent.appendChild(this._hFilters[sField].oOptionsElement);
 		
 		// Make sure the element hasn't overflown the parent
-		var iElementWidth			= this._oFilterOptionsElement.getWidth();
-		var iElementLeftmostPixel 	= parseInt(this._oFilterOptionsElement.style.left, 10) + iElementWidth;
-		var iParentWidth			= oParentElement.getWidth() + iScrollL;
-		if (iElementLeftmostPixel > iParentWidth)
-		{
-			this._oFilterOptionsElement.style.left = (iParentWidth - iElementWidth) + 'px';
+		if (oParentElement) {
+			var iElementWidth = this._oFilterOptionsElement.getWidth();
+			var iElementLeftmostPixel = parseInt(this._oFilterOptionsElement.style.left, 10) + iElementWidth;
+			var iParentWidth = oParentElement.getWidth() + iScrollL;
+			if (iElementLeftmostPixel > iParentWidth) {
+				this._oFilterOptionsElement.style.left = (iParentWidth - iElementWidth) + 'px';
+			}
 		}
 		
 		this._oFilterOptionsElement.show();
