@@ -10,7 +10,7 @@
  *
  * Allows the usage of MySQL Functions in Prepared statements
  *
- * Can be used 
+ * Can be used
  *
  *
  * @prefix		fnc
@@ -40,7 +40,7 @@ class MySQLFunction
 	private $_strFunction;
 	private $_arrParams;
 	private $_arrOrderedParams;
-	
+
 	//------------------------------------------------------------------------//
 	// MySQLFunction() - Constructor
 	//------------------------------------------------------------------------//
@@ -57,8 +57,8 @@ class MySQLFunction
 	 *
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
-	 */ 
-	
+	 */
+
 	function __construct ($strFunction, $arrParams=null)
 	{
 		$this->_strFunction = $strFunction;
@@ -79,31 +79,31 @@ class MySQLFunction
 	 *
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
-	 */ 
+	 */
 
 	public function getFunction ()
 	{
 		return $this->_strFunction;
 	}
-	
+
 	public function getParameters ()
 	{
 		return $this->_arrParams;
 	}
-	
+
 	public function setParameters ($arrParams)
 	{
 		$this->_arrParams = $arrParams;
 	}
-	
+
 	public function Prepare ()
 	{
 		$strFunction = $this->_strFunction;
 		$this->_arrOrderedParams = Statement::FindAlias ($strFunction);
-		
+
 		return $strFunction;
 	}
-	
+
 	public function Execute (&$strType, &$arrParams, $arrData)
 	{
 		foreach ($this->_arrOrderedParams as $mixColumn)
@@ -111,6 +111,10 @@ class MySQLFunction
 			$strType .= Statement::GetDBInputType ($arrData [$mixColumn]);
 			$arrParams [] = $arrData [$mixColumn];
 		}
+	}
+
+	public function __toString() {
+		return 'MySQL Function: ' . $this->_strFunction;
 	}
 }
 
