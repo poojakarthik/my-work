@@ -30,7 +30,7 @@ class JSON_Handler_Ticketing extends JSON_Handler
 	private function _getClosedTicketCountForDateRange($sFrom, $sTo) {
 		try {
 			return Query::run(
-				"	SELECT GREATEST(0, closed.current - closed.previous) AS \"iTicketsClosedInRange\"
+				"	SELECT COALESCE(GREATEST(0, closed.current - closed.previous), 0) AS \"iTicketsClosedInRange\"
 					FROM (
 							SELECT SUM(
 									CASE 
