@@ -47,14 +47,15 @@ class JSON_Handler_Ticketing extends JSON_Handler
 									END
 								) AS current
 							FROM (
-									SELECT DISTINCT th.ticket_id, MAX(th.modified_datetime) AS modified_datetime
-									FROM ticketing_ticket_history th	
+									SELECT t.id, MIN(th.modified_datetime) AS modified_datetime
+									FROM ticketing_ticket t
+										JOIN ticketing_ticket_history th ON (th.ticket_id = t.id)
 										JOIN ticketing_status ts ON (ts.id = th.status_id)
 										JOIN ticketing_status_type tst ON (
 											tst.id = ts.status_type_id
 											AND tst.const_name = 'TICKETING_STATUS_TYPE_CLOSED'
 										)
-									GROUP BY th.ticket_id
+									GROUP BY t.id
 								) th
 						) closed", 
 				array(
