@@ -29,7 +29,7 @@ class JSON_Handler_Ticketing extends JSON_Handler
 	// TICKETS CLOSED COMPARISON
 	private function _getClosedTicketCountForDateRange($sFrom, $sTo) {
 		try {
-			return Query::run(
+			/*return Query::run(
 				"	SELECT COALESCE(GREATEST(0, closed.current - closed.previous), 0) AS \"iTicketsClosedInRange\"
 					FROM (
 							SELECT SUM(
@@ -57,9 +57,9 @@ class JSON_Handler_Ticketing extends JSON_Handler
 					'sFrom' => $sFrom,
 					'sTo' => $sTo
 				)
-			)->fetch_assoc();
+			)->fetch_assoc();*/
 
-			/*// Amount of tickets closed between snapshots.
+			// Amount of tickets closed between snapshots.
 			$oQuery = Query::run("
 			SELECT		GREATEST(0, current.tickets_closed - previous.tickets_closed) AS iTicketsClosedInRange
 
@@ -96,7 +96,7 @@ class JSON_Handler_Ticketing extends JSON_Handler
 						));
 
 			$aRecord = $oQuery->fetch_assoc();
-			return (isset($aRecord)) ? $aRecord : null;*/
+			return (isset($aRecord)) ? $aRecord : null;
 		}
 		catch (Exception $oException) {
 			// Suppress the normal form of error reporting, by displaying the error as the message of the day
