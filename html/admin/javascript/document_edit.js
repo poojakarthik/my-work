@@ -278,19 +278,21 @@ var Document_Edit	= Class.create
 	_submitResponse	: function(objResponse)
 	{
 		Vixen.Popup.ClosePageLoadingSplash();
-		if (objResponse.Success)
-		{
+		if (objResponse.Success) {
 			$Alert("The "+this.strFriendlyNature+" '"+this.elmInputName.value.replace(/(^\s+|\s+$)/g, '')+"' has been successfully saved.", null, null, null, "Save Successful", this._close.bind(this, null, true));
 			return true;
-		}
-		else if (objResponse.Success == undefined)
-		{
+		} else if (objResponse.Success == undefined) {
+			// The response is likely to be useless, add atleast where it came from (this function) to the message
+			if (objResponse === false) {
+				objResponse = {};
+			}
+
+			objResponse.Message = (objResponse.Message ? objResponse.Message + ' -- ' : '') + 'document_edit.js (_submitResponse)';
+
 			jQuery.json.errorPopup(objResponse);
 			return false;
-		}
-		else
-		{
-			jQuery.json.errorPopup(objResponse);
+		} else if (objResponse.sExceptionClass == 'Application_Handler_Document_Exception_Save') {
+			Reflex_Popup.alert(objResponse.Message);
 			return false;
 		}
 	},

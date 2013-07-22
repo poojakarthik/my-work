@@ -335,7 +335,7 @@ jQuery.json = {
 			sMessage,
 			(oResponseFunction ? oResponseFunction.requestFunction.funcClass : 'Unknown'), 
 			(oResponseFunction ? oResponseFunction.requestFunction.funcName : 'Unknown'), 
-			(oResponseFunction ? oResponseFunction.funcArgs : 'Unknown'),
+			(oResponseFunction ? oResponseFunction.funcArgs : null),
 			{'Response' : oResponse}, 
 			sPopupMessage, 
 			fnOnClose
