@@ -80,10 +80,11 @@ class JSON_Handler_Adjustment_Type extends JSON_Handler implements JSON_Handler_
 		}
 		catch (Exception $oEx)
 		{
-			return 	array(
-						'bSuccess'	=> false,
-						'sMessage'	=> ($bUserIsGod ? $oEx->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.')
-					);
+			return array(
+				'sExceptionClass' => get_class($oEx),
+				'bSuccess' => false,
+				'sMessage' => $oEx->getMessage()
+			);
 		}
 	}
 	
