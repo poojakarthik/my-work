@@ -69,6 +69,12 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 		$this->LoadJavascript("account_services");
 		$this->LoadJavascript("highlight");
 		$this->LoadJavascript("retractable");
+
+		$this->LoadJavascript("credit_card_type");
+		$this->LoadJavascript("credit_card_payment");
+		
+		$this->LoadJavascript("control_field");
+		$this->LoadJavascript("control_field_checkbox");
 	}
 	
 	//------------------------------------------------------------------------//
