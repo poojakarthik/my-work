@@ -157,7 +157,7 @@ class JSON_Handler_Collection_Event extends JSON_Handler
         }
 		catch (Exception $e)
 		{
-			// Do nothing
+			// All exceptions have been accounted for by the collection batch processing logic and will have been cached
 		}
 		
 		return	array(
@@ -183,7 +183,7 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
-			// Do nothing
+			// All exceptions have been accounted for by the collection batch processing logic and will have been cached
 		}
 		
 		return	array(
@@ -209,7 +209,7 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
-			// Do nothing
+			// All exceptions have been accounted for by the collection batch processing logic and will have been cached
 		}
 		
 		return	array(
@@ -235,7 +235,7 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
-			// Do nothing
+			// All exceptions have been accounted for by the collection batch processing logic and will have been cached
 		}
 		
 		return	array(
@@ -261,7 +261,7 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
-			// Do nothing
+			// All exceptions have been accounted for by the collection batch processing logic and will have been cached
 		}
 		
 		return	array(
@@ -287,7 +287,7 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
-			// Do nothing
+			// All exceptions have been accounted for by the collection batch processing logic and will have been cached
 		}
 		
 		return	array(
@@ -313,7 +313,7 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
-			// Do nothing
+			// All exceptions have been accounted for by the collection batch processing logic and will have been cached
 		}
 		
 		return	array(
@@ -339,7 +339,7 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
-			// Do nothing
+			// All exceptions have been accounted for by the collection batch processing logic and will have been cached
 		}
 		
 		return	array(
@@ -365,7 +365,7 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
-			// Do nothing
+			// All exceptions have been accounted for by the collection batch processing logic and will have been cached
 		}
 		
 		return	array(
