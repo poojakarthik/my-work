@@ -257,7 +257,8 @@ class JSON_Handler_Document extends JSON_Handler
 					throw new Exception("Flex was unable to start a Transaction.  The Deletion has been aborted.  Please try again shortly.");
 				}
 				
-				$objDocument	= new Document(array('id'=>$intDocumentId), true);
+				$objDocument = new Document(array('id'=> $intDocumentId), true);
+				$objDocumentContent = $objDocument->getContentDetails();
 				$objDocument->setStatus(STATUS_INACTIVE);
 				
 				DataAccess::getDataAccess()->TransactionCommit();

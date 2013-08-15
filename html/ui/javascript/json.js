@@ -343,85 +343,69 @@ jQuery.json = {
 	},
 
 	// Iframe-basd AJAX
-	jsonIframeFormSubmit	: function(elmForm, funcResponseHandler)
-	{
+	jsonIframeFormSubmit : function(elmForm, funcResponseHandler) {
 		// Create a hidden IFrame
-		var	strIframeId			= elmForm.id + "_iframe";
-		
-		var elmDiv				= document.createElement('div');
-		elmDiv.id				= strIframeId + '_div';
-		elmDiv.style.visibility	= 'hidden';
+		var	strIframeId = elmForm.id + "_iframe";
+		var elmDiv = document.createElement('div');
+		elmDiv.id = strIframeId + '_div';
+		elmDiv.style.visibility = 'hidden';
 		document.body.appendChild(elmDiv);
 		
-		var elmIframe				= document.createElement('iframe');
-		elmIframe.id				= strIframeId;
-		elmIframe.name				= strIframeId;
-		elmIframe.setAttribute('onload', 'jQuery.json.jsonIframeFormLoaded(this)');
-		elmIframe.style.visibility	= 'hidden';
+		var elmIframe = document.createElement('iframe');
+		elmIframe.id = strIframeId;
+		elmIframe.name = strIframeId;
+		elmIframe.onload = jQuery.json.jsonIframeFormLoaded.curry(elmIframe);
+		elmIframe.style.visibility = 'hidden';
 		elmDiv.appendChild(elmIframe);
 		
 		// Attach a Response Handler function
-		if (typeof(funcResponseHandler) == 'function')
-		{
-			elmIframe.funcResponseHandler	= funcResponseHandler;
+		if (typeof(funcResponseHandler) == 'function') {
+			elmIframe.funcResponseHandler = funcResponseHandler;
 		}
 		
 		// Add a target to the form
-		elmForm.target			= elmIframe.id;
-		//elmForm.target			= '_blank';
+		elmForm.target = elmIframe.id;
+		//elmForm.target = '_blank';
 		
 		return true;
 	},
 	
-	jsonIframeFormLoaded	: function(elmIframe)
-	{
-		var objIframeDocument	= (elmIframe.contentDocument) ? elmIframe.contentDocument : (elmIframe.contentWindow) ? elmIframe.contentWindow.document : window.frames[elmIframe.id].document;
-		
-		try
-		{
+	jsonIframeFormLoaded : function(elmIframe) {
+		var objIframeDocument = (elmIframe.contentDocument) ? elmIframe.contentDocument : (elmIframe.contentWindow) ? elmIframe.contentWindow.document : window.frames[elmIframe.id].document;
+		try {
 			// Parse Iframe contents for response data (JSON'd PHP Array)
-			var sIframeContent		= objIframeDocument.body.innerHTML,
+			var sIframeContent = objIframeDocument.body.innerHTML,
 				objResponse;
-		}
-		catch (mError)
-		{
+		} catch (mError) {
 			Reflex_Popup.alert(mError);
 		}
 		
-		try
-		{
+		try {
 			objResponse	= sIframeContent.unescapeHTML().evalJSON();
-		}
-		catch (mException)
-		{
+		} catch (mException) {
 			objResponse	= {Message: sIframeContent};
 		}
 		
 		// Call the Handler Function (if one was supplied)
-		if (elmIframe.funcResponseHandler != undefined)
-		{
+		if (elmIframe.funcResponseHandler != undefined) {
 			elmIframe.funcResponseHandler(objResponse);
 		}
 		
 		// Schedule Iframe Cleanup
-		setTimeout(this._jsonIframeCleanup.bind(this, elmIframe), 100);
+		setTimeout(jQuery.json.jsonIframeCleanup.bind(this, elmIframe), 100);
 		
 		elmIframe.bolLoaded	= true;
 	},
 	
-	_jsonIframeCleanup		: function(elmIframe)
-	{
+	jsonIframeCleanup : function(elmIframe) {
 		// If the IFrame exists and is loaded, then remove it
-		if ($ID(elmIframe.id) && elmIframe.bolLoaded)
-		{
+		if ($ID(elmIframe.id) && elmIframe.bolLoaded) {
 			// Destroy the Div and Iframe
 			//$Alert("Cleaning up IFrame with Id '"+elmIframe.id+"' and contents '"+$ID(elmIframe.id + '_div').innerHTML+"'");
 			document.body.removeChild($ID(elmIframe.id + '_div'));
-		}
-		else
-		{
+		} else {
 			// Otherwise schedule another cleanup
-			setTimeout(this._jsonIframeCleanup.bind(this, elmIframe), 100);
+			setTimeout(jQuery.json.jsonIframeCleanup.bind(this, elmIframe), 100);
 		}
 	},
 	
