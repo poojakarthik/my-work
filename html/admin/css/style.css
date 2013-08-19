@@ -6082,6 +6082,7 @@ div.popup-email-text-edit {
   -moz-border-radius: 4px 4px 4px 4px;
   border: 1px solid #000;
   background-color: rgba(255,255,255,0.6);
+  overflow-y: auto;
 }
 .popup-email-text-edit .variables ul {
   text-align: left;
@@ -6132,6 +6133,10 @@ div.popup-email-text-edit {
 .popup-email-text-edit > .tab-group .tab-page table.reflex {
   margin: 0em;
   width: 100%;
+}
+.popup-email-text-edit .tab-group .tab-page {
+  max-height: 40em;
+  overflow-y: auto;
 }
 .popup-email-text-edit > .tab-group div.tab {
   padding: 0.25em 0.5em;
