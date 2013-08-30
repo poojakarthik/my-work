@@ -119,7 +119,7 @@ class Application_Handler_Document extends Application_Handler
 		}
 		
 		// Render the JSON'd Array
-		flush();
+		header('Content-Type: application/json');
 		echo JSON_Services::instance()->encode($arrDetailsToRender);
 		die;
 	}

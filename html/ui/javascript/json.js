@@ -354,7 +354,11 @@ jQuery.json = {
 		var elmIframe = document.createElement('iframe');
 		elmIframe.id = strIframeId;
 		elmIframe.name = strIframeId;
-		elmIframe.onload = jQuery.json.jsonIframeFormLoaded.curry(elmIframe);
+
+		// NOTE: Previous attempts at getting the iframe load event to fire - neither of which worked in chrome (but both in ff)
+		//elmIframe.onload = jQuery.json.jsonIframeFormLoaded.curry(elmIframe);
+		//Event.observe(elmIframe, 'load', jQuery.json.jsonIframeFormLoaded.curry(elmIframe));
+
 		elmIframe.style.visibility = 'hidden';
 		elmDiv.appendChild(elmIframe);
 		
@@ -367,6 +371,32 @@ jQuery.json = {
 		elmForm.target = elmIframe.id;
 		//elmForm.target = '_blank';
 		
+		// HACK: This is an attempt at a cross-browser (ff, chrome) way at handling the iframe 'load' event without using the event.
+		// Chrome was being difficult when it came to firing the load event.
+		var sLastIframeContent = null;
+		elmIframe.iInterval = setInterval(function(oIFrame) {
+			// Fetch the document (megaturn ftw)
+			var objIframeDocument = oIFrame.contentDocument
+				? oIFrame.contentDocument 
+				: (oIFrame.contentWindow) 
+					? oIFrame.contentWindow.document 
+					: window.frames[oIFrame.id]
+						? window.frames[oIFrame.id].document
+						: null;
+			
+			if (objIframeDocument) {
+				var sIframeContent = objIframeDocument.body.innerHTML;
+				if (sIframeContent == sLastIframeContent) {
+					sLastIframeContent = null;
+					clearInterval(oIFrame.iInterval);
+					jQuery.json.jsonIframeFormLoaded(oIFrame);
+					return;
+				} else {
+					sLastIframeContent = sIframeContent;
+				}
+			}
+		}.curry(elmIframe), 250);
+
 		return true;
 	},
 	
