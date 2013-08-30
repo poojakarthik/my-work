@@ -518,6 +518,18 @@ final class Flex {
 		return $mixExpression;
 	}
 
+	public static function unsupportedException(Exception $oEx, $mData) {
+		$iNow = time();
+		$sFilename = date('YmdHis', $iNow).'-'.$iNow.'.json';
+		file_put_contents(FLEX_BASE_PATH.'logs/unsupportedexceptions/'.$sFilename, JSON_Services::encode(array(
+			'timestamp' => date('Y-m-d H:i:s', $iNow),
+			'employee_id' => Flex::getUserId(),
+			'exception' => preg_replace('/\\\n\s+/', '', JSON_Services::encode(var_export($oEx, true))), // Removes the \n   from the output, tidies it a bit
+			'data' => $mData
+		)));
+		return $sFilename;
+	}
+
 	const ERROR_HANDLER_LOG_CONTEXT = false;
 	public static function errorHandlerLog($iLevel, $sMessage, $sFile, $iLine, $aContext) {
 		if (self::_isErrorLevelSuppressed($iLevel)) {
