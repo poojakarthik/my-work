@@ -181,8 +181,6 @@ class Cli_App_Collections extends Cli {
 	}
 
 	protected function _balance_distribution() {
-		Flex_Process::factory(Flex_Process::PROCESS_BALANCE_REDISTRIBUTION)->lock();
-
 		try {
 			$this->log("Starting.");
 
@@ -197,6 +195,7 @@ class Cli_App_Collections extends Cli {
 			$iAccountId;
 
 			if ($arrArgs[self::SWITCH_REDISTRIBUTE_FULL]) {
+				Flex_Process::factory(Flex_Process::PROCESS_BALANCE_REDISTRIBUTION)->lock();
 				$iAccountId = NULL;
 				if($arrArgs[self::SWITCH_REDISTRIBUTE_FULL_INCLUDE_ARCHIVED]) {
 					$this->log("Doing redistribution on all accounts, including archived accounts.", TRUE);
@@ -210,6 +209,7 @@ class Cli_App_Collections extends Cli {
 				$iMode			= NULL;
 				Log::getLog()->log("Doing redistribution for Account {$iAccountId}");
 			} else {
+				Flex_Process::factory(Flex_Process::PROCESS_BALANCE_REDISTRIBUTION)->lock();
 				$this->log("Doing redistribution on accounts that need it only.", TRUE);
 				$iMode = Account::BALANCE_REDISTRIBUTION_REGULAR;
 				$iAccountId = NULL;

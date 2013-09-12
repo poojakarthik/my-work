@@ -121,7 +121,7 @@ class Resource_Type_File_Import_Telemarketing_SalesCom_DiallerReport
 		// Pull the data
 		$aIndexes						= self::_getFileFormatDefinition(null, '__INDEXES__');
 		
-		$aNormalised['FNN']									= $aExplode[$aColumns['FNN']['Index']];
+		$aNormalised['FNN']									= preg_replace('/\s/', '', $aExplode[$aColumns['FNN']['Index']]);
 		$aNormalised['CallDatetime']						= self::_processDatetime(trim($aExplode[$aColumns['CallDatetime']['Index']]));
 		$aNormalised['OutcomeCode']							= (int)$aExplode[$aColumns['OutcomeCode']['Index']];
 		
@@ -155,6 +155,15 @@ class Resource_Type_File_Import_Telemarketing_SalesCom_DiallerReport
 		// Allow ISO-like dates and Australian Dates
 		$aTokens	= array();
 		if (preg_match('/^((?<d>\d{2})\/(?<m>\d{2})\/(?<Y>\d{4}))(\ ((?<H>\d{2})\:(?<i>\d{2})\:(?<s>\d{2})))?$/', $sDatetime, $aTokens)) {
+			// Allow Australian-style date
+			$sParsed	= "{$aTokens['Y']}-{$aTokens['m']}-{$aTokens['d']}";
+			if ($aTokens['H']) {
+				// Has a time component
+				$sParsed	.= "{$aTokens['H']}:{$aTokens['i']}:{$aTokens['s']}";
+			}
+			return $sParsed;
+		} elseif (preg_match('/^((?<Y>\d{4})[.](?<m>\d{2})[.](?<d>\d{2}))([T ]((?<H>\d{2})[:](?<i>\d{2})[:](?<s>\d{2})))?$/', $sDatetime, $aTokens)) {
+			// Allow non-standard separators in ISO-like dates
 			$sParsed	= "{$aTokens['Y']}-{$aTokens['m']}-{$aTokens['d']}";
 			if ($aTokens['H']) {
 				// Has a time component

@@ -22,7 +22,7 @@ class Application_Handler_Document extends Application_Handler
 			// Check user permissions
 			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
-				throw new Exception("You do not have sufficient privileges to create a "+GetConstantDescription($objDocument->document_nature_id, 'document_nature')+"!");
+				throw new Application_Handler_Document_Exception_Save("You do not have sufficient privileges to create a "+GetConstantDescription($objDocument->document_nature_id, 'document_nature')+"!");
 			}
 			
 			$intParentDocumentId	= ($_POST['Document_Edit_Parent'] === '') ? null : (int)$_POST['Document_Edit_Parent'];
@@ -42,7 +42,7 @@ class Application_Handler_Document extends Application_Handler
 			$objExistingDocument = Document::getByPath($strPath.$strDocumentName);
 			if ($objExistingDocument && (!$intDocumentId || ($intDocumentId && $objExistingDocument->id != $intDocumentId)))
 			{
-				throw new Exception("There is already an item with the Name '{$strDocumentName}' in this Folder".($bolVerboseErrors ? " ({$strPath}{$strDocumentName})" : ''));
+				throw new Application_Handler_Document_Exception_Save("There is already an item with the Name '{$strDocumentName}' in this Folder".($bolVerboseErrors ? " ({$strPath}{$strDocumentName})" : ''));
 			}
 			
 			if (!$intDocumentId)
@@ -54,14 +54,14 @@ class Application_Handler_Document extends Application_Handler
 				
 				if (GetConstantName(constant($_POST['Document_Edit_Nature']), 'document_nature') !== $_POST['Document_Edit_Nature'])
 				{
-					throw new Exception("Document Nature '{$_POST['Document_Edit_Nature']}' is invalid!");
+					throw new Application_Handler_Document_Exception_Save("Document Nature '{$_POST['Document_Edit_Nature']}' is invalid!");
 				}
 				$objDocument->document_nature_id	= constant($_POST['Document_Edit_Nature']);
 				
 				// Check special permissions for System Documents
 				if ($objDocument->is_system_document && !AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
 				{
-					throw new Exception("You do not have sufficient privileges to create a System "+GetConstantDescription($objDocument->document_nature_id, 'document_nature')+"!");
+					throw new Application_Handler_Document_Exception_Save("You do not have sufficient privileges to create a System "+GetConstantDescription($objDocument->document_nature_id, 'document_nature')+"!");
 				}
 				
 				$objDocument->save();
@@ -94,7 +94,7 @@ class Application_Handler_Document extends Application_Handler
 				$arrFileType	= File_Type::getForExtensionAndMimeType($strExtension, $_FILES['Document_Edit_File']['type'], true);
 				if (!$arrFileType)
 				{
-					throw new Exception("The File you have uploaded is not permitted by Flex".($bolVerboseErrors ? " ({$strExtension}|{$_FILES['Document_Edit_File']['type']})" : ''));
+					throw new Application_Handler_Document_Exception_Save("The File you have uploaded is not permitted by Flex".($bolVerboseErrors ? " ({$strExtension}|{$_FILES['Document_Edit_File']['type']})" : ''));
 				}
 				$objDocumentContent->file_type_id	= $arrFileType['id'];
 				
@@ -113,14 +113,18 @@ class Application_Handler_Document extends Application_Handler
 		{
 			DataAccess::getDataAccess()->TransactionRollback();
 			
-			$arrDetailsToRender['Success']	= false;
-			$arrDetailsToRender['Message']	= $e->getMessage().($bolVerboseErrors ? " ('".$e->getFile()."' @ Line ".$e->getLine().") ".$e->getTraceAsString() : '');
+			$arrDetailsToRender['Success'] = false;
+			$arrDetailsToRender['Message'] = $e->getMessage().($bolVerboseErrors ? " ('".$e->getFile()."' @ Line ".$e->getLine().") ".$e->getTraceAsString() : '');
+			$arrDetailsToRender['sExceptionClass'] = get_class($e);
 		}
 		
 		// Render the JSON'd Array
-		flush();
+		header('Content-Type: application/json');
 		echo JSON_Services::instance()->encode($arrDetailsToRender);
 		die;
 	}
 }
+
+class Application_Handler_Document_Exception_Save extends Exception {}
+
 ?>

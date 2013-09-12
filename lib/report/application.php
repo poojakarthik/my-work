@@ -414,6 +414,10 @@
 		// Apply any post select processing
 		$this->ApplyPostSelectProcesses($arrData, $arrReport);
 
+		// Check for overrides
+		$arrReport['Overrides']	= (isset($arrReport['Overrides']) ? unserialize($arrReport['Overrides']) : Array());
+		$arrReport['Overrides']['NoTitles']	= (isset($arrReport['Overrides']['NoTitles']) ? $arrReport['Overrides']['NoTitles'] : false);
+
 		// Generate Excel 5 Workbook
  		$strFileName = $this->_MakeFileName($arrReport, $arrReportParameters);
 		require_once FLEX_BASE_PATH.'/lib/PHPExcel/Classes/PHPExcel.php';
@@ -452,7 +456,6 @@
 		
 		// Add in data rows
 		$arrSQLSelect	= unserialize($arrReport['SQLSelect']);
-		//Debug($arrSQLSelect);
 		$arrExcelCols	= Array();
 
 		foreach ($arrData as $iKey=>$arrRow) {

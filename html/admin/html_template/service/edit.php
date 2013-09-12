@@ -319,7 +319,7 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		$this->FormEnd();
 		
 		// Initialise the javascript object
-		if ($objService->GetServiceType() == SERVICE_TYPE_LAND_LINE && $objService->GetCurrentPlan() != NULL)
+		if ($objService->GetCurrentPlan() != NULL)
 		{
 			// The service can be automatically provisioned
 			$strCanBeProvisioned = "true";

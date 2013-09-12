@@ -29,23 +29,58 @@ class JSON_Handler_Ticketing extends JSON_Handler
 	// TICKETS CLOSED COMPARISON
 	private function _getClosedTicketCountForDateRange($sFrom, $sTo) {
 		try {
+			return Query::run(
+				"	SELECT CAST(COALESCE(GREATEST(0, closed.current - closed.previous), 0) AS UNSIGNED) AS \"iTicketsClosedInRange\"
+					FROM (
+							SELECT SUM(
+									CASE 
+										WHEN th.modified_datetime <= <sFrom>
+										THEN 1
+										ELSE 0
+									END
+								) AS previous, 
+								SUM(
+									CASE 
+										WHEN th.modified_datetime <= <sTo>
+										THEN 1
+										ELSE 0
+									END
+								) AS current
+							FROM (
+									SELECT t.id, MIN(th.modified_datetime) AS modified_datetime
+									FROM ticketing_ticket t
+										JOIN ticketing_ticket_history th ON (th.ticket_id = t.id)
+										JOIN ticketing_status ts ON (ts.id = th.status_id)
+										JOIN ticketing_status_type tst ON (
+											tst.id = ts.status_type_id
+											AND tst.const_name = 'TICKETING_STATUS_TYPE_CLOSED'
+										)
+									GROUP BY t.id
+								) th
+						) closed", 
+				array(
+					'sFrom' => $sFrom,
+					'sTo' => $sTo
+				)
+			)->fetch_assoc();
+
 			// Amount of tickets closed between snapshots.
-			$oQuery = Query::run("
+			/*$oQuery = Query::run("
 			SELECT		GREATEST(0, current.tickets_closed - previous.tickets_closed) AS iTicketsClosedInRange
 
 			FROM		(
-			SELECT		COUNT(DISTINCT t.id) AS tickets_closed
+							SELECT		COUNT(DISTINCT t.id) AS tickets_closed
 
-			FROM		ticketing_ticket t
-						JOIN ticketing_ticket_history th ON (
-							th.ticket_id = t.id
-							AND th.modified_datetime <= <sFrom>
-						)
-						JOIN ticketing_status ths ON (ths.id = th.status_id)
-						JOIN ticketing_status_type thst ON (
-							thst.id = ths.status_type_id
-							AND thst.const_name = 'TICKETING_STATUS_TYPE_CLOSED'
-						)
+							FROM		ticketing_ticket t
+										JOIN ticketing_ticket_history th ON (
+											th.ticket_id = t.id
+											AND th.modified_datetime <= <sFrom>
+										)
+										JOIN ticketing_status ths ON (ths.id = th.status_id)
+										JOIN ticketing_status_type thst ON (
+											thst.id = ths.status_type_id
+											AND thst.const_name = 'TICKETING_STATUS_TYPE_CLOSED'
+										)
 						) previous,
 						(
 							SELECT		COUNT(DISTINCT t.id) AS tickets_closed
@@ -66,7 +101,7 @@ class JSON_Handler_Ticketing extends JSON_Handler
 						));
 
 			$aRecord = $oQuery->fetch_assoc();
-			return (isset($aRecord)) ? $aRecord : null;
+			return (isset($aRecord)) ? $aRecord : null;*/
 		}
 		catch (Exception $oException) {
 			// Suppress the normal form of error reporting, by displaying the error as the message of the day
@@ -81,7 +116,47 @@ class JSON_Handler_Ticketing extends JSON_Handler
 	private function _getOpenAndPendingTicketCountForDate($sDate) {
 
 		try {
+			$mResult = Query::run(
+				"	SELECT ths.id AS status_id,
+						ths.name AS status_name,
+						ths.const_name AS status_constant,
+						COUNT(th.ticket_id) AS status_count
+					FROM ticketing_status ths
+						LEFT JOIN (
+							SELECT t.id AS ticket_id, th.status_id, t.modified_datetime
+							FROM ticketing_ticket_history th
+								JOIN ticketing_ticket t ON (t.id = th.ticket_id)
+								JOIN ticketing_status ts ON (ts.id = t.status_id)
+								JOIN ticketing_status_type tst ON (
+									tst.id = ts.status_type_id
+									AND (
+										tst.const_name IN ('TICKETING_STATUS_TYPE_PENDING', 'TICKETING_STATUS_TYPE_OPEN')
+										OR t.modified_datetime > <effective_datetime>
+									)
+								)
+							WHERE th.id = (
+									SELECT MAX(id)
+									FROM ticketing_ticket_history
+									WHERE ticket_id = t.id
+										AND modified_datetime <= <effective_datetime>
+								)
+						) th ON (th.status_id = ths.id)
+						JOIN ticketing_status_type tst ON (
+							tst.id = ths.status_type_id
+							AND tst.const_name IN ('TICKETING_STATUS_TYPE_PENDING', 'TICKETING_STATUS_TYPE_OPEN')
+						)
+					GROUP BY ths.id",
+				array('effective_datetime' => $sDate)
+			);
+
+			$aResults = array();
+			while ($aRow = $mResult->fetch_assoc()) {
+				$aResults[] = $aRow;
+			}
+
+			return $aResults;
 			
+			/*
 			//$aStatuses = Ticketing_Status::listAll();
 			$oQuery = Query::run("
 			SELECT	ts.const_name AS status_constant,
@@ -136,14 +211,7 @@ class JSON_Handler_Ticketing extends JSON_Handler
 					'sDate'		=> $sDate,
 					'sConst'	=> $aStatus['status_constant']
 				));
-				/*
-					#AND ths.const_name = 'TICKETING_STATUS_WITH_INTERNAL' # 0.1992
-					#AND ths.const_name = 'TICKETING_STATUS_ASSIGNED' # 0.132
-					#AND ths.const_name = 'TICKETING_STATUS_UNASSIGNED' # 0.1294
-					#AND ths.const_name = 'TICKETING_STATUS_WITH_CARRIER' # 0.4998
-					#AND ths.const_name = 'TICKETING_STATUS_WITH_CUSTOMER' # 0.0684
-					#AND ths.const_name = 'TICKETING_STATUS_WITH_INTERNAL' # 0.2 (1.2968 Total)
-				*/
+				
 				$aResult = $oQuery->fetch_assoc();
 				if (isset($aResult)) {
 					$aResultSet[] = $aResult;
@@ -157,7 +225,7 @@ class JSON_Handler_Ticketing extends JSON_Handler
 				}
 			}
 			// $sDate
-			return (isset($aResultSet)) ? $aResultSet : null;
+			return (isset($aResultSet)) ? $aResultSet : null;*/
 		}
 		catch (Exception $oException) {
 			// Suppress the normal form of error reporting, by displaying the error as the message of the day

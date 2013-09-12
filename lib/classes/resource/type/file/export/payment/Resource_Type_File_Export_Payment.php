@@ -1,8 +1,12 @@
 <?php
-abstract class Resource_Type_File_Export_Payment extends Resource_Type_File_Export { 
+abstract class Resource_Type_File_Export_Payment extends Resource_Type_File_Export {
 	const CARRIER_MODULE_TYPE = MODULE_TYPE_PAYMENT_DIRECT_DEBIT;
-	
-	public static function exportDirectDebits() { 
+
+	protected function getCustomerGroups() {
+		return array($this->getCarrierModule()->customer_group);
+	}
+
+	public static function exportDirectDebits() {
 		$iTimestamp = time();
 		$aSummaryData = array(
 			'iTimestamp' => $iTimestamp,
@@ -10,7 +14,7 @@ abstract class Resource_Type_File_Export_Payment extends Resource_Type_File_Expo
 		);
 
 		$aDirectDebitCarrierModules = Carrier_Module::getForCarrierModuleType(self::CARRIER_MODULE_TYPE);
-		foreach ($aDirectDebitCarrierModules as $oCarrierModule) { 
+		foreach ($aDirectDebitCarrierModules as $oCarrierModule) {
 			$iInvoiceDirectDebitCount = 0;
 			$fInvoiceDirectDebitValue = 0.0;
 			$iPromiseDirectDebitCount = 0;
@@ -18,39 +22,44 @@ abstract class Resource_Type_File_Export_Payment extends Resource_Type_File_Expo
 			$iAdHocPaymentCount = 0;
 			$fAdHocPaymentValue = 0.0;
 
-			Log::getLog()->log("\nResource type handler {$oCarrierModule->Module}");
-			Log::getLog()->log("Customer Group: ".Customer_Group::getForId($oCarrierModule->customer_group)->internal_name);
-			
+			Log::getLog()->log("\nResource type handler #{$oCarrierModule->Id}: {$oCarrierModule->Module}");
+
 			$oDataAccess = DataAccess::getDataAccess();
-			if ($oDataAccess->TransactionStart() === false) { 
-				throw new Exception("Failed to START db transaction for customer group {$oCarrierModule->customer_group}");
-			}
+			$oDataAccess->TransactionStart(false);
 			Log::getLog()->log("Transaction started");
-			
+
 			// Create the file export resource type
 			$sModuleClassName = $oCarrierModule->Module;
 			$oResourceTypeHandler = new $sModuleClassName($oCarrierModule);
-			
-			// Get all pending payment requests for the customer group & payment type associated 
+
+			// Get all pending payment requests for the customer groups & payment type associated
 			// with the carrier module
 			$aExportedPaymentRequests = array();
-			$aPaymentRequests = Payment_Request::getForStatusAndCustomerGroupAndPaymentType(
-				PAYMENT_REQUEST_STATUS_PENDING, 
-				$oCarrierModule->customer_group,
-				$oResourceTypeHandler->getAssociatedPaymentType(),
-				false
-			);
-			foreach ($aPaymentRequests as $oPaymentRequest) { 
-				try { 
-					Log::getLog()->log("Payment request {$oPaymentRequest->id}");
-					
+			$aPaymentRequests = array();
+			Log::get()->log('Customer Groups:');
+			foreach ($oResourceTypeHandler->getCustomerGroups() as $iCustomerGroup) {
+				Log::get()->log('  ' . Customer_Group::getForId($iCustomerGroup)->internal_name, false);
+				$aCustomerGroupPaymentRequests = Payment_Request::getForStatusAndCustomerGroupAndPaymentType(
+					PAYMENT_REQUEST_STATUS_PENDING,
+					$iCustomerGroup,
+					$oResourceTypeHandler->getAssociatedPaymentType(),
+					false
+				);
+				Log::get()->log(' (' . count($aCustomerGroupPaymentRequests) . ' requests)');
+				$aPaymentRequests += $aCustomerGroupPaymentRequests;
+			}
+
+			foreach ($aPaymentRequests as $oPaymentRequest) {
+				try {
+					Log::getLog()->log("Payment request {$oPaymentRequest->id} (a: {$oPaymentRequest->account_id}; cg: " . Account::getForId($oPaymentRequest->account_id)->CustomerGroup . ")");
+
 					// Add to the output
 					$oResourceTypeHandler->addRecord($oPaymentRequest);
-					
+
 					// Update the status of the payment request
 					$oPaymentRequest->payment_request_status_id = PAYMENT_REQUEST_STATUS_DISPATCHED;
 					$oPaymentRequest->save();
-					
+
 					// Add to set of successful exports
 					$aExportedPaymentRequests[] = $oPaymentRequest;
 
@@ -69,12 +78,12 @@ abstract class Resource_Type_File_Export_Payment extends Resource_Type_File_Expo
 						$fAdHocPaymentValue += (float)$oPaymentRequest->amount;
 					}
 				}
-				catch (Exception $oException) { 
+				catch (Exception $oException) {
 					// Continue processing other requests
 					Log::getLog()->log("Failed to export payment request, id={$oPaymentRequest->id}. ".$oException->getMessage());
 				}
 			}
-			
+
 			// File Summary Data
 			$aFileData = array(
 				'iCarrierModule' => $oCarrierModule->Id,
@@ -87,9 +96,7 @@ abstract class Resource_Type_File_Export_Payment extends Resource_Type_File_Expo
 			);
 			if (count($aExportedPaymentRequests) == 0) {
 				Log::getLog()->log("No payment requests exported");
-				if ($oDataAccess->TransactionRollback() === false) {
-					throw new Exception("Failed to ROLLBACK db transaction for customer group {$oCarrierModule->customer_group}");
-				}
+				$oDataAccess->TransactionRollback(false);
 				Log::getLog()->log("Transaction rolled back");
 			} else {
 				try {
@@ -102,20 +109,16 @@ abstract class Resource_Type_File_Export_Payment extends Resource_Type_File_Expo
 						$oPaymentRequest->file_export_id = $oResourceTypeHandler->getFileExport()->Id;
 						$oPaymentRequest->save();
 					}
-					
+
 					Log::getLog()->log("Delivering...");
 					$oResourceTypeHandler->deliver();
-					
-					if ($oDataAccess->TransactionCommit() === false) {
-						throw new Exception("Failed to COMMIT db transaction for customer group {$oCarrierModule->customer_group}");
-					}
+
+					$oDataAccess->TransactionCommit(false);
 					Log::getLog()->log("Transaction commited");
 				} catch (Exception $oException) {
-					if ($oDataAccess->TransactionRollback() === false) {
-						throw new Exception("Failed to ROLLBACK db transaction for customer group {$oCarrierModule->customer_group}");
-					}
+					$oDataAccess->TransactionRollback(false);
 					Log::getLog()->log("Transaction rolled back");
-					
+
 					throw $oException;
 				}
 			}
@@ -132,14 +135,14 @@ abstract class Resource_Type_File_Export_Payment extends Resource_Type_File_Expo
 		Email_Flex_Queue::get()->push($oPaymentExportSummaryEmail);
 	}
 
-	public static function getExportPath($iCarrier, $sClass) { 
+	public static function getExportPath($iCarrier, $sClass) {
 		return parent::getExportPath()."payment/{$iCarrier}/{$sClass}/";
 	}
 
 	private static function _buildExportSummaryEmailHTMLContent($aData) {
 		$D = new DOM_Factory();
 		$oDOMDocument = $D->getDOMDocument();
-		
+
 		// General Content
 		$oContent = $D->div(
 			$D->h1('Payment Export File Report from '.date('d/m/Y H:i', $aData['iTimestamp'])),
@@ -333,7 +336,7 @@ abstract class Resource_Type_File_Export_Payment extends Resource_Type_File_Expo
 			$fAdHocPaymentValue = $aFileData['fAdHocPaymentValue'];
 
 			// Add a data set for this File
-			$aLines[] = "\t".Carrier_Module::getForId($aFileData['iCarrierModule'])->Description.': '.$aFileData['sFileName'];
+			$aLines[] = "\t".Carrier_Module::getForId($aFileData['iCarrierModule'])->Description.': ' . (isset($aFileData['sFileName']) ? $aFileData['sFileName'] : '[ No File ]');
 			$aLines[] = "\t\tInvoice Direct Debits #: ".$iInvoiceDirectDebitCount;
 			$aLines[] = "\t\tInvoice Direct Debits $: ".'$'.number_format($fInvoiceDirectDebitValue, 2);
 			$aLines[] = "\t\tPromise Direct Debits #: ".$iPromiseDirectDebitCount;
@@ -366,7 +369,7 @@ abstract class Resource_Type_File_Export_Payment extends Resource_Type_File_Expo
 
 		return implode("\n", $aLines);
 	}
-	
+
 	static public function createCarrierModule($iCarrier, $iCustomerGroup, $sClassName, $iResourceType) {
 		parent::createCarrierModule($iCarrier, $iCustomerGroup, $sClassName, $iResourceType, self::CARRIER_MODULE_TYPE);
 	}

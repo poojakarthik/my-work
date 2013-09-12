@@ -43,6 +43,12 @@ var Popup_DataReport	= Class.create(Reflex_Popup,
 											$T.tbody(
 												$T.tr(
 													$T.th({class: 'label'},
+														'# :'
+													),
+													$T.td(oDataReport.Id)
+												),
+												$T.tr(
+													$T.th({class: 'label'},
 														'Report Name :'
 													),
 													$T.td(oDataReport.Name)

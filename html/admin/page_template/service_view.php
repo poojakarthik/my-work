@@ -16,9 +16,6 @@ $this->Page->AddObject('ServiceDetails', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
 
 $this->Page->AddObject('ActionsAndNotesList', COLUMN_TWO, HTML_CONTEXT_PAGE, "ActionsAndNotesListDiv");
 
-if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
-{
-	$this->Page->AddObject('ProvisioningHistoryList', COLUMN_THREE, HTML_CONTEXT_PAGE, "ProvHistoryListDiv");
-}
+$this->Page->AddObject('ProvisioningHistoryList', COLUMN_THREE, HTML_CONTEXT_PAGE, "ProvHistoryListDiv");
 
 ?>

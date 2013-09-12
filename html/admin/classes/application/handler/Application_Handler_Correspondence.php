@@ -126,7 +126,7 @@ class Application_Handler_Correspondence extends Application_Handler
 			{
 				// Invalid CSV file, build an error message
 				$oEx->sFileName	= basename($oEx->sFileName);
-				$aOutput['oException']	= $oEx;
+				$aOutput['oException'] = $oEx;
 				throw new Exception();
 			}
 
@@ -134,8 +134,11 @@ class Application_Handler_Correspondence extends Application_Handler
 		}
 		catch (Exception $e)
 		{
-			$aOutput['bSuccess']	= false;
-			$aOutput['sMessage']	= ($bUserIsGod ? $e->getMessage() : 'An error occured trying to schedule the correspondence, please contact YBS for assitance.');
+			$aOutput['bSuccess'] = false;
+			$aOutput['sMessage'] = "Unsupported Exception";
+			$aOutput['log_reference'] = Flex::unsupportedException($e, array(
+				'csv_file' => (isset($_FILES['csv_file']) ? $_FILES['csv_file'] : null)
+			));
 		}
 		
 		if ($bUserIsGod)

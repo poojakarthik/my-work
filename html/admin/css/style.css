@@ -98,7 +98,7 @@ a,
 }
 .fw-layer-window {
   margin: auto;
-  border: 0.1em solid rgba(0,0,0,0.40);
+  border: 0.1em solid rgba(0,0,0,0.4);
   background-color: #efefef;
   z-index: 50;
   position: absolute;
@@ -112,14 +112,14 @@ a,
 .fw-popup-header {
   height: auto;
   padding: 3px;
-  background: -webkit-linear-gradient(top, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.20) 100%);
+  background: -webkit-linear-gradient(top, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.2) 100%);
   box-shadow: 0 -8px 8px 8px #000;
   -moz-user-select: none;
   -webkit-user-select: none;
 }
 .fw-popup-header-title {
   color: #333;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.50);
+  text-shadow: 0 1px 0 rgba(255,255,255,0.5);
   display: inline-block;
   font-size: 1em;
   padding: 0;
@@ -388,7 +388,7 @@ a,
 }
 .flex-page-dashboard .flex-page-dashboard-notices-technical > div:nth-child(2):empty:before {
   content: "There are no technical notices.";
-  color: rgba(0,0,0,0.30);
+  color: rgba(0,0,0,0.3);
   font-style: oblique;
   text-shadow: 0 1px 0 #fff;
 }
@@ -408,7 +408,7 @@ a,
 }
 .flex-page-dashboard .flex-page-dashboard-notices-general > div:nth-child(2):empty:before {
   content: "There are no general notices.";
-  color: rgba(0,0,0,0.30);
+  color: rgba(0,0,0,0.3);
   font-style: oblique;
   text-shadow: 0 1px 0 #fff;
 }
@@ -447,7 +447,7 @@ a,
   background-color: #1e5fa7;
   color: #fff;
   border-radius: 0.4em;
-  border: 1px solid rgba(0,0,0,0.10);
+  border: 1px solid rgba(0,0,0,0.1);
   padding: 0.4em;
   text-align: center;
 }
@@ -458,7 +458,7 @@ a,
   font-weight: bold;
   background-color: #319be5 !important;
   color: #fff !important;
-  text-shadow: 1px 1px 1px rgba(0,0,0,0.40);
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.4);
 }
 /**************************************************************************/
 /* Component - Dashboard Statistics										  */
@@ -501,7 +501,7 @@ a,
   stroke-width: 0.5;
 }
 .flex-page-dashboard .flex-page-dashboard-tickets-statistics .flex-page-dashboard-tickets-statistics-grid-line-y {
-  stroke: rgba(0,0,0,0.10);
+  stroke: rgba(0,0,0,0.1);
   fill: transparent;
   stroke-width: 0.5;
 }
@@ -509,11 +509,11 @@ a,
   font-size: 6px;
 }
 .flex-page-dashboard .flex-page-dashboard-tickets-statistics .flex-page-dashboard-tickets-statistics-graph-x-axes {
-  stroke: rgba(0,0,0,0.20);
+  stroke: rgba(0,0,0,0.2);
   stroke-width: 1;
 }
 .flex-page-dashboard .flex-page-dashboard-tickets-statistics .flex-page-dashboard-tickets-statistics-graph-y-axes {
-  stroke: rgba(0,0,0,0.20);
+  stroke: rgba(0,0,0,0.2);
   stroke-width: 1;
 }
 /**************************************************************************/
@@ -561,8 +561,8 @@ a,
 }
 .flex-page-dashboard polygon.flex-page-dashboard-tickets-statistics-tickets-closed {
 /*stroke: rgb(104,134,236);*/
-  fill: rgba(195,211,255,0.80);
-  stroke: rgba(195,211,255,0.80);
+  fill: rgba(195,211,255,0.8);
+  stroke: rgba(195,211,255,0.8);
   stroke-width: 1;
 }
 .flex-page-dashboard polyline.flex-page-dashboard-tickets-statistics-tickets-closed {
@@ -575,7 +575,7 @@ a,
 /**************************************************************************/
 .flex-page-dashboard .flex-page-dashboard-tickets-statistics-legend-tickets-closed > rect {
   stroke: #6886ec;
-  fill: rgba(195,211,255,0.80);
+  fill: rgba(195,211,255,0.8);
   stroke-width: 1;
 }
 .flex-page-dashboard .flex-page-dashboard-tickets-statistics-legend-ticket-status-unassigned > line {
@@ -1044,7 +1044,7 @@ textarea.valid,
   display: none !important;
   max-width: 20em;
   height: auto;
-  background: rgba(255,236,240,0.90);
+  background: rgba(255,236,240,0.9);
   color: #111;
   border: 0.1em solid #d30;
   border-radius: 4px;
@@ -1119,7 +1119,7 @@ button {
   -moz-user-select: none;
   -webkit-user-select: none;
 /* This is experimental -- remove if it looks shit */
-  text-shadow: 0 1px 0 rgba(255,255,255,0.80);
+  text-shadow: 0 1px 0 rgba(255,255,255,0.8);
 }
 button[disabled] {
   background-image: none !important;
@@ -1129,7 +1129,7 @@ button[disabled] {
   -webkit-user-select: none !important;
   cursor: default !important;
 /* This is experimental -- remove if it looks shit */
-  text-shadow: 0px -1px 0px rgba(0,0,0,0.40);
+  text-shadow: 0px -1px 0px rgba(0,0,0,0.4);
 }
 button[disabled] img {
   opacity: 0.5;
@@ -1162,7 +1162,7 @@ div.reflex-popup-opaque {
 }
 div.reflex-popup {
   margin: auto;
-  border: 0.1em solid rgba(0,0,0,0.40);
+  border: 0.1em solid rgba(0,0,0,0.4);
 /*border: 0.1em solid rgba(0, 0, 0, 0.5);*/
 /*border				: 0.1em solid #000000;*/
   background-color: #efefef;
@@ -1197,11 +1197,11 @@ div.reflex-popup-title-bar {
 	box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.2);
 	border-bottom: 0.1em solid rgba(0, 0, 0, 0.1);
 	*/
-  background: -webkit-linear-gradient(top, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.20) 100%);
-  background: -moz-linear-gradient(top, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.20) 100%);
-  background: -ms-linear-gradient(top, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.20) 100%);
-  background: -o-linear-gradient(top, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.20) 100%);
-  background: linear-gradient(top, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.20) 100%);
+  background: -webkit-linear-gradient(top, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.2) 100%);
+  background: -moz-linear-gradient(top, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.2) 100%);
+  background: -ms-linear-gradient(top, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.2) 100%);
+  background: -o-linear-gradient(top, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.2) 100%);
+  background: linear-gradient(top, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.2) 100%);
   box-shadow: 0 -8px 8px 8px #000;
 /* We can tweak this if it's too dark */
 /*
@@ -1224,7 +1224,7 @@ div.reflex-popup-title-bar {
 }
 div.reflex-popup-title {
   color: #333;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.50);
+  text-shadow: 0 1px 0 rgba(255,255,255,0.5);
   float: left;
   width: 79%;
   font-weight: bold;
@@ -2349,7 +2349,7 @@ table.tree-grid.permissions tr.selectable td {
 }
 div.tree-grid div.loading {
   display: table;
-  background-color: rgba(150,150,150,0.50);
+  background-color: rgba(150,150,150,0.5);
   height: 100%;
   width: 100%;
   position: absolute;
@@ -3639,7 +3639,7 @@ div.payment-methods-list > div.section > div.section-content > ul {
   margin: 0em;
 }
 div.payment-methods-list > div.section > div.section-content > ul > li:nth-child(even) {
-  background-color: rgba(150,150,150,0.20);
+  background-color: rgba(150,150,150,0.2);
 }
 div.payment-methods-list > div.section > div.section-content > ul > li:hover {
   background-color: #d3e4ed;
@@ -5667,6 +5667,9 @@ div.datetime-time {
 .component-correspondence-run-details-dispatchsummary-file-status-dispatchdate {
   margin-left: 0.25em;
 }
+.correspondence-run-ledger-filterpopup {
+  z-index: 46;
+}
 /***************** END - Correspondence Ledger Popup(s) - END *****************/
 /***************** START - Invoice Rerating Popup(s) - START *****************/
 .popup-invoice-rerate,
@@ -6078,7 +6081,8 @@ div.popup-email-text-edit {
   padding: 0.5em;
   -moz-border-radius: 4px 4px 4px 4px;
   border: 1px solid #000;
-  background-color: rgba(255,255,255,0.60);
+  background-color: rgba(255,255,255,0.6);
+  overflow-y: auto;
 }
 .popup-email-text-edit .variables ul {
   text-align: left;
@@ -6101,8 +6105,8 @@ div.popup-email-text-edit {
   border-radius: 4px 4px 4px 4px;
 }
 .popup-email-text-edit .variables ul > li:hover {
-  background-color: rgba(255,255,255,0.80);
-  border: 1px solid rgba(0,0,0,0.60);
+  background-color: rgba(255,255,255,0.8);
+  border: 1px solid rgba(0,0,0,0.6);
 }
 .popup-email-text-edit .variables ul > li:only-child {
   cursor: pointer;
@@ -6119,7 +6123,7 @@ div.popup-email-text-edit {
   margin-bottom: 2px;
   font-size: 1.1em;
   left: 0;
-  border-bottom: 1px solid rgba(0,0,0,0.60);
+  border-bottom: 1px solid rgba(0,0,0,0.6);
 }
 .email-subject-container,
 .popup-email-text-edit > .tab-group {
@@ -6129,6 +6133,10 @@ div.popup-email-text-edit {
 .popup-email-text-edit > .tab-group .tab-page table.reflex {
   margin: 0em;
   width: 100%;
+}
+.popup-email-text-edit .tab-group .tab-page {
+  max-height: 40em;
+  overflow-y: auto;
 }
 .popup-email-text-edit > .tab-group div.tab {
   padding: 0.25em 0.5em;
@@ -8744,6 +8752,7 @@ div.component-collections-scenario > table.reflex {
   margin: 0;
 }
 .component-account-links-popup-link .control-field-text-ajax-overlay {
+  position: relative;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
   background-color: transparent;
@@ -9212,7 +9221,7 @@ div.component-collections-scenario > table.reflex {
 .component-service-contract-details-penalties-payout,
 .component-service-contract-details-penalties-earlyexit {
   padding: 0 !important;
-  border-top: 1px solid rgba(0,0,0,0.20) !important;
+  border-top: 1px solid rgba(0,0,0,0.2) !important;
 /*border-bottom	: 1px solid rgba(0, 0, 0, 0.2)	!important;*/
 }
 .component-service-contract-details-penalties-payout > .reflex-propertylist,
@@ -9222,9 +9231,9 @@ div.component-collections-scenario > table.reflex {
 .component-service-contract-details-penalties-payout > .reflex-propertylist::before,
 .component-service-contract-details-penalties-earlyexit > .reflex-propertylist::before {
   width: 35% !important;
-  border-right: 1px solid rgba(0,0,0,0.20) !important;
-  background-image: -moz-linear-gradient(top, rgba(0,0,0,0.05), rgba(0,0,0,0.10)) !important;
-  background-image: -webkit-linear-gradient(top, rgba(0,0,0,0.05), rgba(0,0,0,0.10)) !important;
+  border-right: 1px solid rgba(0,0,0,0.2) !important;
+  background-image: -moz-linear-gradient(top, rgba(0,0,0,0.05), rgba(0,0,0,0.1)) !important;
+  background-image: -webkit-linear-gradient(top, rgba(0,0,0,0.05), rgba(0,0,0,0.1)) !important;
 }
 .component-service-contract-details-customer-account,
 .component-service-contract-details-contract-rateplan-name {
@@ -9338,7 +9347,7 @@ div.component-collections-scenario > table.reflex {
   display: none !important;
   max-width: 20em;
   height: auto;
-  background: rgba(255,236,240,0.90);
+  background: rgba(255,236,240,0.9);
   color: #111;
   border: 0.1em solid #d30;
   border-radius: 4px;
@@ -9413,9 +9422,9 @@ table.reflex tbody tr .control.control-datetime > input {
   width: 30%;
   height: 100%;
 /*border-left		: 1px solid rgba(0, 0, 0, 0.3);*/
-  border-right: 1px solid rgba(0,0,0,0.30);
-  background-image: -moz-linear-gradient(top, rgba(0,0,0,0.10), rgba(0,0,0,0.20));
-  background-image: -webkit-linear-gradient(top, rgba(0,0,0,0.10), rgba(0,0,0,0.20));
+  border-right: 1px solid rgba(0,0,0,0.3);
+  background-image: -moz-linear-gradient(top, rgba(0,0,0,0.1), rgba(0,0,0,0.2));
+  background-image: -webkit-linear-gradient(top, rgba(0,0,0,0.1), rgba(0,0,0,0.2));
   box-sizing: border-box;
   -moz-box-sizing: border-box;
 }
@@ -9497,7 +9506,7 @@ dl.reflex-propertylist > dd > * {
 .fw-control.-novalue input[required],
 .fw-control.-novalue select[required],
 .fw-control.-novalue textarea[required] {
-  box-shadow: 0 5px 5px -5px rgba(221,170,136,0.50) inset;
+  box-shadow: 0 5px 5px -5px rgba(221,170,136,0.5) inset;
 }
 .fw-control-datetime * {
   vertical-align: middle;
@@ -9534,7 +9543,7 @@ dl.reflex-propertylist > dd > * {
   display: none;
   max-width: 20em;
   height: auto;
-  background: rgba(255,236,240,0.90);
+  background: rgba(255,236,240,0.9);
   color: #111;
   border: 0.1em solid #d30;
   border-radius: 4px;

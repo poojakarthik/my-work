@@ -74,20 +74,22 @@ var Plan	= Class.create
 		return jQuery.json.jsonIframeFormSubmit($ID('Plan_SetBrochure_Form'), Flex.Plan._setBrochureResponse.bind(this));
 	},
 	
-	_setBrochureResponse	: function(objResponse)
-	{
+	_setBrochureResponse : function(oResponse) {
 		// Close the Loading Splash & Popup
 		Vixen.Popup.ClosePageLoadingSplash();
 		this.pupSetBrochure.hide();
 		
 		// Display response message
-		if (objResponse.Success)
-		{
+		if (oResponse.Success) {
 			$Alert("The Brochure was successfully uploaded", null, null, 'autohide-reload');
-		}
-		else
-		{
-			jQuery.json.errorPopup(objResponse);
+		} else {
+			if (oResponse.sExceptionClass == 'Application_Handler_RatePlan_Exception_NotAllowed') {
+				// Supported exception, show the message
+				Reflex_Popup.alert(oResponse.Message);
+			} else {
+				// Unsupported exception, show error report popup
+				jQuery.json.errorPopup(oResponse);
+			}
 		}
 	},
 	

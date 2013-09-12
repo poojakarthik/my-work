@@ -1891,7 +1891,7 @@ class Invoice extends ORM_Cached {
 			return $oInvoice;
 		} catch (Exception $oException) {
 			$oDA->TransactionRollback();
-			throw new Exception("Failed to regenerate invoice {$oOriginalInvoice->Id}. ".$oException->getMessage());
+			throw $oException;
 		}
 	}
 

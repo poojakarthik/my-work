@@ -1223,7 +1223,7 @@ function calculateLuhnChecksum($iNumber) {
 
 	// Reverse the digits
 	$sDigits = strrev($sNumber);
-	
+
 	$iSum = 0;
 	$aDigits = str_split($sDigits);
 	foreach ($aDigits as $i=>$sDigit) {
@@ -2558,7 +2558,7 @@ function ListPDFSamples($intAccountId)
 function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $mxdInvoiceRun)
 {
 	$strPath = null;
-	
+
 	// Check for XML Invoice
 	$strXMLGlob = PATH_INVOICE_PDFS ."xml/$mxdInvoiceRun/{$intAccountId}.xml";
 	$arrXMLs = glob($strXMLGlob);
@@ -2596,7 +2596,7 @@ function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $mx
 			$strXMLGlob = $strGlob;
 		}
 	}
-	
+
 	// If we have XML, check to see if we have a cached version of this Invoice (check timestamps as well to make sure we're not seeing an old cache)
 	if ($strPath)
 	{
@@ -2705,7 +2705,7 @@ function GetPDFContent($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId, 
 		$iInvoiceRunId = intval($iInvoiceRunId);
 	}
 
-	$sInvoicePath = InvoicePDFExists($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId);	
+	$sInvoicePath = InvoicePDFExists($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId);
 	if (!$sInvoicePath) {
 		return FALSE;
 	} else {
@@ -2741,24 +2741,24 @@ function generateInvoicePDF($strXML, $intInvoiceId, $intTargetMedia, $iInvoiceRu
 {
 	static	$qryQuery;
 	$qryQuery	= ($qryQuery) ? $qryQuery : new Query();
-	
+
 	// Get the document properties from the file
 	$parts = array();
 	preg_match_all("/(?:\<(DocumentType|CustomerGroup|CreationDate|DeliveryMethod)\>([^\<]*)\<)/", $strXML, $parts);
-	
+
 	// Check that we have a full set
 	if (count($parts) != 3 || count($parts[1]) != 4 || count($parts[2]) != 4)
 	{
 		throw new Exception("Unable to identify document properties.");
 	}
-	
+
 	// Create a [name=>value,...] arrray...
 	$docProps = array();
 	for($i = 0; $i < 4; $i++)
 	{
 		$docProps[$parts[1][$i]] = $parts[2][$i];
 	}
-	
+
 	// If no target media has been specified, get the default media type for the file
 	if (!$intTargetMedia)
 	{
@@ -2778,16 +2778,19 @@ function generateInvoicePDF($strXML, $intInvoiceId, $intTargetMedia, $iInvoiceRu
 			return FALSE;
 		}
 	}
-	
+
 	// Take the effective date to be the document Creation Date
 	$effectiveDate = $docProps["CreationDate"];
-	
+
 	// Take the customer group from the file - this should be the same as the one for the invoice
 	require_once(SHARED_BASE_PATH.'classes/customer/Customer_Group.php');
-	$custGroupId = Customer_Group::getForConstantName($docProps["CustomerGroup"])->id;
-	
+	require_once(SHARED_BASE_PATH.'classes/invoice/Invoice_Run.php');
+	require_once(SHARED_BASE_PATH.'classes/Account.php');
+
+	$custGroupId = coalesce(Invoice_Run::getForId($iInvoiceRunId)->customer_group_id, Account::getForId($iAccountId)->CustomerGroup);
+
 	VixenRequire('lib/pdf/Flex_Pdf.php');
-	
+
 	try
 	{
 		// Generate the pdf document on the fly
@@ -2798,14 +2801,14 @@ function generateInvoicePDF($strXML, $intInvoiceId, $intTargetMedia, $iInvoiceRu
 			$strXML,
 			$intTargetMedia,
 			TRUE);
-		
+
 		$pdfDocument	= $pdfTemplate->createDocument();
 		$strPDFContent	= $pdfDocument->render();
-		
+
 		$pdfTemplate->destroy();
-		
+
 		$intInvoiceId	= (int)$intInvoiceId;
-		
+
 		/*$resInvoice		= $qryQuery->Execute("SELECT * FROM Invoice WHERE Id = {$intInvoiceId} LIMIT 1");
 		if ($resInvoice === false)
 		{
@@ -2815,14 +2818,14 @@ function generateInvoicePDF($strXML, $intInvoiceId, $intTargetMedia, $iInvoiceRu
 		{
 			throw new Exception("Unable to load Invoice with Id '{$intInvoiceId}'");
 		}*/
-		
+
 		$strPDFPath	= PATH_INVOICE_PDFS."pdf/{$iInvoiceRunId}/{$iAccountId}.pdf";
 		@mkdir(dirname($strPDFPath), 0777, true);
 		if (!file_exists(dirname($strPDFPath)) || !@file_put_contents($strPDFPath, $strPDFContent))
 		{
 			throw new Exception(print_r(error_get_last(), true));
 		}
-		
+
 		return $strPDFContent;
 	}
 	catch (Exception $e)
@@ -3130,7 +3133,7 @@ function AddCreditCardSurcharge($intPayment)
 		null,
 		"Deprecated Functionality: Framework 2 App Handler Payment::Add"
 	);
-	
+
 	// Statements
 	$selAccount	= new StatementSelect("Account", "Id AS Account", "AccountGroup = <AccountGroup>", "(Archived != 1) DESC, Archived ASC, Account DESC", "1");
 	$selPayment	= new StatementSelect("Payment", "*", "Id = <Payment>");
@@ -3152,14 +3155,14 @@ function AddCreditCardSurcharge($intPayment)
 		}
 		$arrCSSRate			= $selCCSRate->Fetch();
 		$fltPC				= (float)$arrCSSRate['surcharge'];
-		
+
 		if ($fltPC !== null && $fltPC > 0.0)
 		{
 			$strDate			= date("d/m/Y", strtotime($arrPayment['PaidOn']));
 			$strPC				= round($fltPC * 100, 2);
 			$fltPaymentAmount	= number_format($arrPayment['Amount'], 2, ".", "");
 			$fltAmount			= RemoveGST(((float)$arrPayment['Amount'] / (1 + $fltPC)) * $fltPC);
-	
+
 			// Insert Charge
 			$arrCharge	= Array();
 			if (!$arrPayment['Account'])
@@ -3174,7 +3177,7 @@ function AddCreditCardSurcharge($intPayment)
 				// Account Payment
 				$arrCharge['Account']		= $arrPayment['Account'];
 			}
-	
+
 			$arrCharge['AccountGroup']		= $arrPayment['AccountGroup'];
 			$arrCharge['CreatedBy']			= $arrPayment['EnteredBy'];
 			$arrCharge['ApprovedBy']		= Employee::SYSTEM_EMPLOYEE_ID;
@@ -3467,7 +3470,7 @@ function ListAutomaticUnbarringAccounts($intEffectiveTime)
 		JOIN CustomerGroup
 		ON CustomerGroup.Id = Account.CustomerGroup
 		JOIN payment_terms ON payment_terms.id = (SELECT MAX(id) FROM payment_terms WHERE payment_terms.customer_group_id = Account.CustomerGroup)
-		
+
 		LEFT JOIN
 		(
 			SELECT		c.Account																						AS account_id,
@@ -4387,7 +4390,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 			$strPath			= substr($strPath, 1);
 			$strCumulativePath	= '/';
 		}
-		
+
 		$arrDirs = explode('/' , $strPath);
 		foreach ($arrDirs as $strDir)
 		{
@@ -4459,7 +4462,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 
 		// Directory structure = BasePath/CustomerGroup/NoticeType/YYYY/MM/DD/
 		$strFullPath = 	$strBasePath . str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "DocumentTemplateType"))) . "/xml/" . date("Ymd");
-		
+
 		// Make the directory structure if it hasn't already been made
 		if (!is_dir($strFullPath))
 		{
@@ -5929,7 +5932,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 		}
 		return $arrKeyedArray;
 	}
-	
+
 	function objectifyArray($arrArray)
 	{
 		$objObjectified	= new stdClass();
@@ -5946,7 +5949,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 		}
 		return $objObjectified;
 	}
-	
+
 	function isValidPHPVariableName($strVariableName)
 	{
 		return (strtolower($strVariableName) !== 'this' && preg_match("/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/", $strVariableName));

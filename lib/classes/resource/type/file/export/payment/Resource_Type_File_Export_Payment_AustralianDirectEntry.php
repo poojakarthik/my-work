@@ -1,58 +1,52 @@
 <?php
-/**
- * Resource_Type_File_Export_Payment_AustralianDirectEntry
- *
- * Models a record of the resource_type table
- *
- * @class	Resource_Type_File_Export_Payment_AustralianDirectEntry
- */
-class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_Type_File_Export_Payment
-{
-	const	RESOURCE_TYPE			= RESOURCE_TYPE_FILE_EXPORT_DIRECT_DEBIT_AUSTRALIAN_DIRECT_ENTRY_FILE;
-	
-	const	RECORD_TYPE_HEADER		= 'HEADER';
-	const	RECORD_TYPE_TRANSACTION	= 'TRANSACTION';
-	const	RECORD_TYPE_FOOTER		= 'FOOTER';
-	
-	const	NEW_LINE_DELIMITER		= "\n";
-	const	FIELD_DELIMITER			= ',';
-	const	FIELD_ENCAPSULATOR		= '';
-	const	ESCAPE_CHARACTER		= '\\';
-	
-	protected	$_oFileExport;
-	protected	$_oFileExporter;
-	protected	$_iTimestamp;
-	protected	$_iRecordCount;
-	protected	$_fDebitTotalCents;
-	
-	public function __construct($mCarrierModule)
-	{
+class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_Type_File_Export_Payment {
+	const RESOURCE_TYPE = RESOURCE_TYPE_FILE_EXPORT_DIRECT_DEBIT_AUSTRALIAN_DIRECT_ENTRY_FILE;
+
+	const RECORD_TYPE_HEADER = 'HEADER';
+	const RECORD_TYPE_TRANSACTION = 'TRANSACTION';
+	const RECORD_TYPE_FOOTER = 'FOOTER';
+
+	const NEW_LINE_DELIMITER = "\n";
+	const FIELD_DELIMITER = ',';
+	const FIELD_ENCAPSULATOR = '';
+	const ESCAPE_CHARACTER = '\\';
+
+	protected $_oFileExport;
+	protected $_oFileExporter;
+	protected $_iTimestamp;
+	protected $_iRecordCount;
+	protected $_fDebitTotalCents;
+
+	public function __construct($mCarrierModule) {
 		parent::__construct($mCarrierModule);
-		
-		$this->_iTimestamp			= time();
-		$this->_fDebitTotalCents	= 0;
-		$this->_iRecordCount		= 0;
-		$this->_oFileExporter		= new File_Exporter();
-		$this->_configureFileExporter();		
+
+		$this->_iTimestamp = time();
+		$this->_fDebitTotalCents = 0;
+		$this->_iRecordCount = 0;
+		$this->_oFileExporter = new File_Exporter();
+		$this->_configureFileExporter();
 		$this->_addHeaderRecord();
 	}
-	
-	public function addRecord($mPaymentRequest)
-	{
-		$oRecord	= $this->_oFileExporter->getRecordType(self::RECORD_TYPE_TRANSACTION)->newRecord();
-		
-		$oPaymentRequest	= Payment_Request::getForId(ORM::extractId($mPaymentRequest));
-		$oPayment			= Payment::getForId($oPaymentRequest->payment_id);
-		$aAccountHistory	= Account_History::getForAccountAndEffectiveDatetime($oPaymentRequest->account_id, $oPaymentRequest->created_datetime);
-		$oBankAccount		= DirectDebit::getForId($aAccountHistory['direct_debit_id']);
-		
+
+	protected function getCustomerGroups() {
+		return is_array($this->getConfig()->CustomerGroups) ? $this->getConfig()->CustomerGroups : array($this->getCarrierModule()->customer_group);
+	}
+
+	public function addRecord($mPaymentRequest) {
+		$oRecord = $this->_oFileExporter->getRecordType(self::RECORD_TYPE_TRANSACTION)->newRecord();
+
+		$oPaymentRequest = Payment_Request::getForId(ORM::extractId($mPaymentRequest));
+		$oPayment = Payment::getForId($oPaymentRequest->payment_id);
+		$aAccountHistory = Account_History::getForAccountAndEffectiveDatetime($oPaymentRequest->account_id, $oPaymentRequest->created_datetime);
+		$oBankAccount = DirectDebit::getForId($aAccountHistory['direct_debit_id']);
+
 		// Verify that the payment type is correct
 		Flex::assert(
-			$oPaymentRequest->payment_type_id === PAYMENT_TYPE_DIRECT_DEBIT_VIA_EFT, 
-			"Non EFT Payment Request sent to Australian Direct Entry Export File", 
+			$oPaymentRequest->payment_type_id === PAYMENT_TYPE_DIRECT_DEBIT_VIA_EFT,
+			"Non EFT Payment Request sent to Australian Direct Entry Export File",
 			print_r($oPaymentRequest->toStdClass(), true)
 		);
-		
+
 		// Verify that the payment hasn't been reversed
 		Flex::assert(
 			$oPayment->getReversal() === null,
@@ -66,95 +60,90 @@ class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_T
 			'$0.00-valued Payment requested in Australian Direct Entry Export File',
 			print_r($oPaymentRequest->toStdClass(), true)
 		);
-		
-		// NOTE: The following fields have default values 
-		//	- RecordType
-		//	- Indicator
-		//	- TransactionCode
-		//	- TraceBSB
-		//	- TraceAccount
-		//	- Remitter
-		//	- WithholdingTax
-		$sBSB						= str_pad((int)$oBankAccount->BSB, 6, '0', STR_PAD_LEFT);
- 		$oRecord->BSB				= substr($sBSB, 0, 3).'-'.substr($sBSB, -3);
-		$oRecord->AccountNumber		= $oBankAccount->AccountNumber;
-		$oRecord->Amount			= ceil($oPaymentRequest->amount * 100);
-		$oRecord->AccountName		= strtoupper(substr(preg_replace("/[^\ \-a-z0-9]+/i", '', trim($oBankAccount->AccountName)), 0, 32));
-		$oRecord->TransactionRef	= $oPayment->transaction_reference;
-		
+
+		// NOTE: The following fields have default values
+		// - RecordType
+		// - Indicator
+		// - TransactionCode
+		// - TraceBSB
+		// - TraceAccount
+		// - Remitter
+		// - WithholdingTax
+		$sBSB = str_pad((int)$oBankAccount->BSB, 6, '0', STR_PAD_LEFT);
+ 		$oRecord->BSB = substr($sBSB, 0, 3).'-'.substr($sBSB, -3);
+		$oRecord->AccountNumber = $oBankAccount->AccountNumber;
+		$oRecord->Amount = ceil($oPaymentRequest->amount * 100);
+		$oRecord->AccountName = strtoupper(substr(preg_replace("/[^\ \-a-z0-9]+/i", '', trim($oBankAccount->AccountName)), 0, 32));
+		$oRecord->TransactionRef = $oPayment->transaction_reference;
+
 		// Add to the file
 		$this->_oFileExporter->addRecord($oRecord, File_Exporter::RECORD_GROUP_BODY);
-		
+
 		// Add to total debit cents & increment record count
-		$this->_fDebitTotalCents	+=	$oRecord->Amount;
+		$this->_fDebitTotalCents += $oRecord->Amount;
 		$this->_iRecordCount++;
-		
+
 		return;
 	}
-	
-	public function render()
-	{
+
+	public function render() {
 		// Filename
-		$sFilename			= $this->getConfig()->SupplierUserName.'_'.$this->getConfig()->FileDescription.'_'.date('Ymd').'.txt';
-		$this->_sFilePath	= self::getExportPath($this->getCarrierModule()->Carrier, __CLASS__).$sFilename;
-		
+		$sFilename = $this->getConfig()->SupplierUserName.'_'.$this->getConfig()->FileDescription.'_'.date('Ymd').'.txt';
+		$this->_sFilePath = self::getExportPath($this->getCarrierModule()->Carrier, __CLASS__).$sFilename;
+
 		// Add footer record
 		$this->_addFooterRecord();
-		
+
 		// Render and write to disk
 		$this->_oFileExporter->renderToFile($this->_sFilePath);
-		
+
 		// TODO: Do we need to return anything special?
 		return $this;
 	}
-	
-	public function deliver()
-	{
+
+	public function deliver() {
 		$this->_oFileDeliver->connect()->deliver($this->_sFilePath)->disconnect();
 		return $this;
 	}
-	
-	protected function _addHeaderRecord()
-	{
-		$oRecord	= $this->_oFileExporter->getRecordType(self::RECORD_TYPE_HEADER)->newRecord();
-		
-		// NOTE: The following fields have default values 
-		//	- RecordType
-		//	- ReelSequence
-		//	- BankAbbreviation
-		//	- SupplierUserName
-		//	- SupplierUserNumber
-		//	- FileDescription
-		$oRecord->TransactionDate	= date("dmy");
-		
+
+	protected function _addHeaderRecord() {
+		$oRecord = $this->_oFileExporter->getRecordType(self::RECORD_TYPE_HEADER)->newRecord();
+
+		// NOTE: The following fields have default values
+		// - RecordType
+		// - ReelSequence
+		// - BankAbbreviation
+		// - SupplierUserName
+		// - SupplierUserNumber
+		// - FileDescription
+		$oRecord->TransactionDate = date("dmy");
+
 		// Add to the file
 		$this->_oFileExporter->addRecord($oRecord, File_Exporter::RECORD_GROUP_BODY);
-		
+
 		return;
 	}
-	
-	protected function _addFooterRecord()
-	{
-		$oRecord	= $this->_oFileExporter->getRecordType(self::RECORD_TYPE_FOOTER)->newRecord();
-		
-		// NOTE: The following fields have default values 
-		//	- RecordType
-		//	- BSBFormatFiller
-		$oRecord->NetTotalCents		= $this->_fDebitTotalCents;
-		$oRecord->DebitTotalCents	= $this->_fDebitTotalCents;
-		$oRecord->CreditTotalCents	= 0;
-		$oRecord->RecordCount		= $this->_iRecordCount;
-		
+
+	protected function _addFooterRecord() {
+		$oRecord = $this->_oFileExporter->getRecordType(self::RECORD_TYPE_FOOTER)->newRecord();
+
+		// NOTE: The following fields have default values
+		// - RecordType
+		// - BSBFormatFiller
+		$oRecord->NetTotalCents = $this->_fDebitTotalCents;
+		$oRecord->DebitTotalCents = $this->_fDebitTotalCents;
+		$oRecord->CreditTotalCents = 0;
+		$oRecord->RecordCount = $this->_iRecordCount;
+
 		// Add to the file
 		$this->_oFileExporter->addRecord($oRecord, File_Exporter::RECORD_GROUP_BODY);
-		
+
 		return;
 	}
-	
-	protected function _configureFileExporter()
-	{
-		$this->_iTimestamp	= time();
-		
+
+	protected function _configureFileExporter() {
+		$this->_iTimestamp = time();
+
 		// Header Record
 		$this->_oFileExporter->registerRecordType(self::RECORD_TYPE_HEADER,
 			File_Exporter_RecordType::factory()
@@ -226,7 +215,7 @@ class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_T
 						->setPaddingString(' ')
 				)
 		);
-		
+
 		// Detail Record
 		$this->_oFileExporter->registerRecordType(self::RECORD_TYPE_TRANSACTION,
 			File_Exporter_RecordType::factory()
@@ -313,7 +302,7 @@ class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_T
 						->setDefaultValue('0')
 				)
 		);
-		
+
 		// Trailer Record
 		$this->_oFileExporter->registerRecordType(self::RECORD_TYPE_FOOTER,
 			File_Exporter_RecordType::factory()
@@ -378,12 +367,11 @@ class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_T
 				)
 		);
 	}
-	
-	public static function getAssociatedPaymentType()
-	{
+
+	public static function getAssociatedPaymentType() {
 		return PAYMENT_TYPE_DIRECT_DEBIT_VIA_EFT;
 	}
-	
+
 	/***************************************************************************
 	 * COMMON METHODS FOR ALL Resource_Type_Base CHILDREN
 	 **************************************************************************/
@@ -391,16 +379,20 @@ class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_T
 	static public function createCarrierModule($iCarrier, $iCustomerGroup, $sClass=__CLASS__) {
 		parent::createCarrierModule($iCarrier, $iCustomerGroup, $sClass, self::RESOURCE_TYPE);
 	}
-	
-	static public function defineCarrierModuleConfig()
-	{
+
+	static public function defineCarrierModuleConfig() {
 		return array_merge(parent::defineCarrierModuleConfig(), array(
-			'BankAbbreviation'		=> array('Description' => '3-Character Approved Financial Institution Abbreviation (eg. WBC for Westpac)'),
-			'SupplierUserName'		=> array('Description' => 'User Name (as per User Preferred Specification)'),
-			'SupplierUserNumber'	=> array('Description' => '6-Digit User Idenitification Number allocated by the Australian Payments Clearing Association (APCA)', 'Type' => DATA_TYPE_INTEGER),
-			'FileDescription'		=> array('Description' => 'File Description (eg. \'DDBANK\'), limited to 12-characters', 'Value' => 'DDBANK'),
-			'TraceBSB'				=> array('Description' => 'The BSB for the Account number to trace back to on payment rejection (XXX-XXX)'),
-			'TraceAccount'			=> array('Description' => 'The Account number to trace back to on payment rejection')
+			'BankAbbreviation' => array('Description' => '3-Character Approved Financial Institution Abbreviation (eg. WBC for Westpac)'),
+			'SupplierUserName' => array('Description' => 'User Name (as per User Preferred Specification)'),
+			'SupplierUserNumber' => array('Description' => '6-Digit User Idenitification Number allocated by the Australian Payments Clearing Association (APCA)', 'Type' => DATA_TYPE_INTEGER),
+			'FileDescription' => array('Description' => 'File Description (eg. \'DDBANK\'), limited to 12-characters', 'Value' => 'DDBANK'),
+			'TraceBSB' => array('Description' => 'The BSB for the Account number to trace back to on payment rejection (XXX-XXX)'),
+			'TraceAccount' => array('Description' => 'The Account number to trace back to on payment rejection'),
+			'CustomerGroups' => array(
+				'Type' => DATA_TYPE_ARRAY,
+				'Description' => 'Customer Groups allowed in this file',
+				'Value' => array()
+			)
 		));
 	}
 }

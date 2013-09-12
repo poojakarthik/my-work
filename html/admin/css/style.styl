@@ -6957,6 +6957,9 @@ div.datetime-time {
 	margin-left	: 0.25em;
 }
 
+.correspondence-run-ledger-filterpopup {
+	z-index: 46;
+}
 /***************** END - Correspondence Ledger Popup(s) - END *****************/
 
 /***************** START - Invoice Rerating Popup(s) - START *****************/
@@ -7462,6 +7465,7 @@ div.popup-email-text-edit {
 	-moz-border-radius	: 4px 4px 4px 4px;
 	border				: 1px solid #000000;
 	background-color	: rgba(255, 255, 255, 0.6);
+	overflow-y			: auto;
 }
 
 .popup-email-text-edit .variables ul {
@@ -7521,6 +7525,10 @@ div.popup-email-text-edit {
 	margin	: 0em;
 	width	: 100%;
 }
+
+.popup-email-text-edit .tab-group .tab-page
+	max-height 40em
+	overflow-y auto
 
 .popup-email-text-edit > .tab-group div.tab {
 	padding	: 0.25em 0.5em;
@@ -10928,10 +10936,11 @@ div.component-collections-scenario > table.reflex {
 }
 
 .component-account-links-popup-link .control-field-text-ajax-overlay {
-	border-top-left-radius	: 0;
-	border-top-right-radius	: 0;
-	background-color		: transparent;
-	background-image		: -moz-linear-gradient(top, rgba(255, 255, 255, 0.95), rgba(223, 223, 223, 0.95));
+	position: relative
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+	background-color: transparent;
+	background-image: -moz-linear-gradient(top, rgba(255, 255, 255, 0.95), rgba(223, 223, 223, 0.95));
 }
 
 .component-account-links-popup-link .control-field-text-ajax-overlay td.control-field-text-ajax-result-column {

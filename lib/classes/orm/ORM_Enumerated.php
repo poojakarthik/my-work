@@ -205,7 +205,7 @@ abstract class ORM_Enumerated extends ORM_Cached
 				$object = new $strClass($arrRecord);
 				
 				// You have to set the system_name
-				$object->setSystemName($arrRecord['system_name']);
+				$object->setSystemName(isset($arrRecord['system_name']) ? $arrRecord['system_name'] : null);
 
 				$arrObjects[$object->id] = $object;
 			}

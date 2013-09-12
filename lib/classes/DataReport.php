@@ -276,11 +276,11 @@ class DataReport extends ORM_Cached
 		$aDataReports				= ($bActiveAndDraft ? self::getActiveAndDraft() : self::getActive());
 		$aPermitted					= array();
 		
-		foreach ($aDataReports as $iId => $oDataReport)
+		foreach ($aDataReports as $oDataReport)
 		{
 			if ($oDataReport->userHasPermission($oEmployee))
 			{
-				$aPermitted[$iId]	= $oDataReport;
+				$aPermitted[]	= $oDataReport;
 			}
 		}
 		
@@ -296,7 +296,7 @@ class DataReport extends ORM_Cached
 		
 		while($aDataReport = $oSelect->Fetch())
 		{
-			$aResult[$aDataReport['Id']]	= new self($aDataReport);
+			$aResult[]	= new self($aDataReport);
 		}
 		
 		return $aResult;
@@ -312,7 +312,7 @@ class DataReport extends ORM_Cached
 		
 		while($aDataReport = $oSelect->Fetch())
 		{
-			$aResult[$aDataReport['Id']]	= new self($aDataReport);
+			$aResult[]	= new self($aDataReport);
 		}
 		
 		return $aResult;

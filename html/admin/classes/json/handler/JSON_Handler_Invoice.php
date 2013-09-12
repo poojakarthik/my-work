@@ -93,7 +93,7 @@ class JSON_Handler_Invoice extends JSON_Handler
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 		
 		// Start transaction (never to be commited)
-		$oDA	= DataAccess::getDataAccess();
+		$oDA = DataAccess::getDataAccess();
 		$oDA->TransactionStart();
 		try
 		{
@@ -141,11 +141,12 @@ class JSON_Handler_Invoice extends JSON_Handler
 		catch (Exception $oException)
 		{
 			$oDA->TransactionRollback();
-			return	array(
-						'bSuccess'	=> false, 
-						'sMessage'	=> "Failed to Re-Rate Invoice '{$iInvoiceId}'. ".($bUserIsGod ? $oException->getMessage() : "There was an error accessing the database."),
-						'sDebug'	=> ($bUserIsGod ? $this->_sJSONDebug : false)
-					);
+			return array(
+				'bSuccess' => false, 
+				'sMessage' => $oException->getMessage(),
+				'sDebug' => ($bUserIsGod ? $this->_sJSONDebug : false),
+				'sExceptionClass' => get_class($oException)
+			);
 		}
 	}
 	

@@ -99,13 +99,15 @@ class AppTemplateService extends ApplicationTemplate
 			ContextMenu()->Service->Move_Service($intServiceId);
 			ContextMenu()->Service->Charges->Add_Charge($intAccountId, $intServiceId);
 			ContextMenu()->Service->Charges->Add_Recurring_Charge($intAccountId, $intServiceId);
-			if ($intServiceType == SERVICE_TYPE_LAND_LINE)
-			{
-				// Only Landlines can be provisioned at this stage
-				ContextMenu()->Service->Provisioning->Provisioning($intServiceId);
-				ContextMenu()->Service->Provisioning->ViewProvisioningHistory($intServiceId);
+
+			ContextMenu()->Service->Provisioning->Provisioning($intServiceId);
+			ContextMenu()->Service->Provisioning->ViewProvisioningHistory($intServiceId);
+
+			if ($intServiceType === SERVICE_TYPE_LAND_LINE) {
+				// Only Landlines can have addresses associated
 				ContextMenu()->Service->ViewServiceAddress($intServiceId);
 			}
+
 			ContextMenu()->Service->{"Actions / Notes"}->ActionsAndNotesCreatorPopup(null, $intServiceId, null,  "$strServiceType - {$objService->fNN}");
 		}
 		elseif ($bolUserHasExternalPerm)
@@ -216,15 +218,12 @@ class AppTemplateService extends ApplicationTemplate
 		// Load the notes
 		//LoadNotes(NULL, DBO()->Service->Id->Value);
 		
-		// Retrieve the Provisioning History for the Service if it is a Land Line
-		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
-		{
-			DBO()->History->CategoryFilter	= PROVISIONING_HISTORY_CATEGORY_BOTH;
-			DBO()->History->TypeFilter		= PROVISIONING_HISTORY_FILTER_ALL;
-			DBO()->History->MaxItems		= 10;
-			$appProvisioning = new AppTemplateProvisioning();
-			DBO()->History->Records = $appProvisioning->GetHistory(DBO()->History->CategoryFilter->Value, DBO()->History->TypeFilter->Value, DBO()->Account->Id->Value, DBO()->Service->Id->Value, DBO()->History->MaxItems->Value);
-		}
+		// Retrieve the Provisioning History for the Service
+		DBO()->History->CategoryFilter	= PROVISIONING_HISTORY_CATEGORY_BOTH;
+		DBO()->History->TypeFilter		= PROVISIONING_HISTORY_FILTER_ALL;
+		DBO()->History->MaxItems		= 10;
+		$appProvisioning = new AppTemplateProvisioning();
+		DBO()->History->Records = $appProvisioning->GetHistory(DBO()->History->CategoryFilter->Value, DBO()->History->TypeFilter->Value, DBO()->Account->Id->Value, DBO()->Service->Id->Value, DBO()->History->MaxItems->Value);
 		
 		// Context menu
 		AppTemplateAccount::BuildContextMenu(DBO()->Account->Id->Value);
@@ -1301,6 +1300,19 @@ class AppTemplateService extends ApplicationTemplate
 			$arrExtraDetails['Service'] = $intServiceId;
 			
 			$bolOk = TRUE;
+
+			// Add this service to the list of those to provision, but only if the Service will be immediately activated
+			if ($arrServiceRec['Status'] == SERVICE_ACTIVE) {
+				$arrServicesToProvision[] = array(
+					"Id" => $intServiceId,
+					"FNN" => $arrServiceRec['FNN'],
+					"ServiceType" => $arrServiceRec['ServiceType'],
+					"Carrier" => $arrServiceRec['Carrier'],
+					"CarrierPreselect" => $arrServiceRec['CarrierPreselect'],
+					"AuthorisationDate" => $arrServiceRec['AuthorisationDate']
+				);
+			}
+
 			switch ($arrServiceRec['ServiceType'])
 			{
 				case SERVICE_TYPE_MOBILE:
@@ -1330,17 +1342,6 @@ class AppTemplateService extends ApplicationTemplate
 					break;
 					
 				case SERVICE_TYPE_LAND_LINE:
-					// Add this service to the list of those to provision, but
-					// only if the Service will be immediately activated
-					if ($arrServiceRec['Status'] == SERVICE_ACTIVE)
-					{
-						$arrServicesToProvision[] = Array(	"Id"				=> $intServiceId,
-															"FNN"				=> $arrServiceRec['FNN'],
-															"Carrier"			=> $arrServiceRec['Carrier'],
-															"CarrierPreselect"	=> $arrServiceRec['CarrierPreselect'],
-															"AuthorisationDate"	=> $arrServiceRec['AuthorisationDate']
-														);
-					}
 					if (!isset($insLandLine))
 					{
 						// Declare the StatementInsert object, as it has not been declared yet
@@ -1419,26 +1420,39 @@ class AppTemplateService extends ApplicationTemplate
 				$arrInsertValues['AuthorisationDate']	= $arrService['AuthorisationDate'];
 				
 				// Full Service Request
-				$arrInsertValues['Carrier']	= $arrService['Carrier'];
-				$arrInsertValues['Type']	= PROVISIONING_TYPE_FULL_SERVICE;
-				
-				if ($insRequest->Execute($arrInsertValues) === FALSE)
-				{
-					$bolSuccess = FALSE;
-					break;
+				if ($arrService['Carrier'] !== null) {
+					$arrInsertValues['Carrier']	= $arrService['Carrier'];
+					$arrInsertValues['Type'] = null;
+					
+					switch ($arrService['ServiceType']) {
+						case SERVICE_TYPE_LAND_LINE:
+							$arrInsertValues['Type'] = PROVISIONING_TYPE_FULL_SERVICE;
+							break;
+						case SERVICE_TYPE_MOBILE:
+							$arrInsertValues['Type'] = PROVISIONING_TYPE_MOBILE_ADD;
+							break;
+					}
+
+					if ($arrInsertValues['Type'] !== null) {
+						if ($insRequest->Execute($arrInsertValues) === FALSE) {
+							$bolSuccess = FALSE;
+							break;
+						}
+					}
 				}
 				
-				// Preselection Request				
-				$arrInsertValues['Carrier'] = $arrService['CarrierPreselect'];
-				$arrInsertValues['Type']	= PROVISIONING_TYPE_PRESELECTION;
-				
-				if ($insRequest->Execute($arrInsertValues) === FALSE)
-				{
-					$bolSuccess = FALSE;
-					break;
+				if (($arrService['ServiceType'] === SERVICE_TYPE_LAND_LINE) && ($arrService['CarrierPreselect'] !== null)) {
+					// Preselection Request
+					$arrInsertValues['Carrier'] = $arrService['CarrierPreselect'];
+					$arrInsertValues['Type']	= PROVISIONING_TYPE_PRESELECTION;
+					if ($insRequest->Execute($arrInsertValues) === FALSE)
+					{
+						$bolSuccess = FALSE;
+						break;
+					}
 				}
 			}
-			
+
 			if (!$bolSuccess)
 			{
 				// An Error Occured
@@ -2278,22 +2292,34 @@ class AppTemplateService extends ApplicationTemplate
 					// Do FullService and Preselection provisioning requests
 					if ($objService->CanBeProvisioned())
 					{
-						if (!$objService->MakeFullServiceProvisioningRequest())
-						{
-							// Failed to make the FullService provisioning Request
-							TransactionRollback();
-							Ajax()->AddCommand("Alert", "ERROR: Failed to make the Full Service provisioning request.<br />". $objService->GetErrorMsg() ."<br />All modifications to the service have been aborted");
-							return TRUE;
-						}
-						if (!$objService->MakePreselectionProvisioningRequest())
-						{
-							// Failed to make the Preselection provisioning Request
-							TransactionRollback();
-							Ajax()->AddCommand("Alert", "ERROR: Failed to make the Preselection provisioning request.<br />". $objService->GetErrorMsg() ."<br />All modifications to the service have been aborted");
-							return TRUE;
+						$aCurrentRatePlan = $objService->GetCurrentPlan(true);
+						$iFullServiceCount = 0;
+						if ($aCurrentRatePlan['CarrierFullService'] !== null) {
+							// There is a full service carrier, attempt to send request
+							if (!$objService->MakeFullServiceProvisioningRequest()) {
+								// Failed to make the FullService provisioning Request
+								TransactionRollback();
+								Ajax()->AddCommand("Alert", "ERROR: Failed to make the Full Service provisioning request.<br />". $objService->GetErrorMsg() ."<br />All modifications to the service have been aborted");
+								return TRUE;
+							}
+
+							$iFullServiceCount = 1;
 						}
 						
-						$strProvisioningNote = "  FullService and Preselection provisioning requests have been made.";
+						$iPreselectionCount = 0;
+						if (($objService->GetServiceType() === SERVICE_TYPE_LAND_LINE) && ($aCurrentRatePlan['CarrierPreselection'] !== null)) {
+							// The service is a land line and there is a preselection carrier, attempt to send request
+							if (!$objService->MakePreselectionProvisioningRequest()) {
+								// Failed to make the Preselection provisioning Request
+								TransactionRollback();
+								Ajax()->AddCommand("Alert", "ERROR: Failed to make the Preselection provisioning request.<br />". $objService->GetErrorMsg() ."<br />All modifications to the service have been aborted");
+								return TRUE;
+							}
+
+							$iPreselectionCount = 1;
+						}
+						
+						$strProvisioningNote = " {$iFullServiceCount} FullService and {$iPreselectionCount} Preselection provisioning requests have been made.";
 					}
 				}
 				

@@ -340,7 +340,6 @@ class Logic_Collection_Event_Instance
 								}
 							}
 
-
 							//now complete all succesfully invoked instances
 							$sClassName = Logic_Collection_Event::getClassNameForId($iEventId);
 							call_user_func(array( $sClassName, 'complete'), $aSuccesfullyInvokedInstances);							
@@ -348,14 +347,18 @@ class Logic_Collection_Event_Instance
 							$oDataAccess->TransactionCommit();
 							Log::getlog()->log("Invoked and completed ".count($aSuccesfullyInvokedInstances)." '$sEventName' events in : ".Logic_Stopwatch::getInstance()->lap()." seconds.");
 							$sEventName = NULL;
-
 						}
 						else
 						{
+							// This kind of event is not eligible to be completed today
+							// All of the instances for this event need to be queued in order for the failure/exception to be cached in the batch process report
+							foreach ($aInstancesToInvokeAndComplete as $oEventInstance)
+							{
+								Logic_Collection_BatchProcess_Report::queueEvent($oEventInstance);
+							}
+
 							throw new Exception("This event is not eligible to be invoked today.");
 						}
-
-
 					}
 					catch (Exception $e)
 					{
@@ -513,7 +516,7 @@ class Logic_Collection_Event_Instance
 
 	public static function getForLedger($bCountOnly=false, $iLimit=0, $iOffset=0, $oSort=null, $oFilter=null)
 	{
-		return Account_Collection_Event_History::getForLedger($bCountOnly, $iLimit, $iOffset, get_object_vars($oSort), get_object_vars($oFilter));
+		return Account_Collection_Event_History::getForLedger($bCountOnly, $iLimit, $iOffset, (($oSort !== null) ? get_object_vars($oSort) : null), (($oFilter !== null) ? get_object_vars($oFilter) : null));
 	}
 
 	public function save()

@@ -19,7 +19,7 @@ class CDR extends ORM_Cached {
 			$oService->save();
 			
 			$oRate = ($bUseExistingRate && $this->Rate) ? Rate::getForId($this->Rate) : Rate::getForCDR($this);
-
+			
 			// Did we find a Rate?
 			if (!$oRate) {
 				$this->Charge = null;
@@ -27,8 +27,32 @@ class CDR extends ORM_Cached {
 				$this->Status = CDR_RATE_NOT_FOUND;
 				$this->save();
 
-				throw new Exception_Rating_RateNotFound("No Rate found for CDR {$this->Id}");
+				// Get debugging info on this cdr
+				$aInfo = Query::run("	SELECT rt.Id AS record_type_id, 
+											rt.Name AS record_type_name, 
+											rp.Id AS rate_plan_id,
+											rp.Name AS rate_plan_name,
+											d.Code AS destination_code,
+											d.Description As destination_description,
+											c.StartDatetime AS event_datetime
+										FROM CDR c
+											JOIN RecordType rt ON (rt.id = c.RecordType)
+											JOIN ServiceRatePlan srp ON (
+												srp.Service = c.Service 
+												AND c.StartDatetime BETWEEN srp.StartDatetime AND srp.EndDatetime
+											)
+											JOIN RatePlan rp ON (rp.Id = srp.RatePlan)
+											LEFT JOIN Destination d ON (
+												d.Code = c.DestinationCode
+												AND d.Context = rt.Context
+											)
+										WHERE c.Id = <cdr_id>",
+										array(
+											'cdr_id' => $this->Id
+										))->fetch_assoc();
+				throw new Exception_Rating_RateNotFound("No Rate found for CDR (Call Started: {$aInfo['event_datetime']}; Record Type: {$aInfo['record_type_name']}; Rate Plan: {$aInfo['rate_plan_name']}; Destination Code: {$aInfo['destination_code']}; Destination Description: '{$aInfo['destination_description']}')");
 			}
+
 			$this->Rate = $oRate->Id;
 
 			// DISCOUNTING (per-CDR): Eligibility

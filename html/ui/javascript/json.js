@@ -312,7 +312,7 @@ jQuery.json = {
 			iDistance++;
 		}
 
-		var oResponseFunction = (fnParent.requestFunction ? fnParent : null);
+		var oResponseFunction = ((fnParent && fnParent.requestFunction) ? fnParent : null);
 
 		// Extract the message
 		var sMessage = '-';
@@ -335,7 +335,7 @@ jQuery.json = {
 			sMessage,
 			(oResponseFunction ? oResponseFunction.requestFunction.funcClass : 'Unknown'), 
 			(oResponseFunction ? oResponseFunction.requestFunction.funcName : 'Unknown'), 
-			(oResponseFunction ? oResponseFunction.funcArgs : 'Unknown'),
+			(oResponseFunction ? oResponseFunction.funcArgs : null),
 			{'Response' : oResponse}, 
 			sPopupMessage, 
 			fnOnClose
@@ -343,85 +343,99 @@ jQuery.json = {
 	},
 
 	// Iframe-basd AJAX
-	jsonIframeFormSubmit	: function(elmForm, funcResponseHandler)
-	{
+	jsonIframeFormSubmit : function(elmForm, funcResponseHandler) {
 		// Create a hidden IFrame
-		var	strIframeId			= elmForm.id + "_iframe";
-		
-		var elmDiv				= document.createElement('div');
-		elmDiv.id				= strIframeId + '_div';
-		elmDiv.style.visibility	= 'hidden';
+		var	strIframeId = elmForm.id + "_iframe";
+		var elmDiv = document.createElement('div');
+		elmDiv.id = strIframeId + '_div';
+		elmDiv.style.visibility = 'hidden';
 		document.body.appendChild(elmDiv);
 		
-		var elmIframe				= document.createElement('iframe');
-		elmIframe.id				= strIframeId;
-		elmIframe.name				= strIframeId;
-		elmIframe.setAttribute('onload', 'jQuery.json.jsonIframeFormLoaded(this)');
-		elmIframe.style.visibility	= 'hidden';
+		var elmIframe = document.createElement('iframe');
+		elmIframe.id = strIframeId;
+		elmIframe.name = strIframeId;
+
+		// NOTE: Previous attempts at getting the iframe load event to fire - neither of which worked in chrome (but both in ff)
+		//elmIframe.onload = jQuery.json.jsonIframeFormLoaded.curry(elmIframe);
+		//Event.observe(elmIframe, 'load', jQuery.json.jsonIframeFormLoaded.curry(elmIframe));
+
+		elmIframe.style.visibility = 'hidden';
 		elmDiv.appendChild(elmIframe);
 		
 		// Attach a Response Handler function
-		if (typeof(funcResponseHandler) == 'function')
-		{
-			elmIframe.funcResponseHandler	= funcResponseHandler;
+		if (typeof(funcResponseHandler) == 'function') {
+			elmIframe.funcResponseHandler = funcResponseHandler;
 		}
 		
 		// Add a target to the form
-		elmForm.target			= elmIframe.id;
-		//elmForm.target			= '_blank';
+		elmForm.target = elmIframe.id;
+		//elmForm.target = '_blank';
 		
+		// HACK: This is an attempt at a cross-browser (ff, chrome) way at handling the iframe 'load' event without using the event.
+		// Chrome was being difficult when it came to firing the load event.
+		var sLastIframeContent = null;
+		elmIframe.iInterval = setInterval(function(oIFrame) {
+			// Fetch the document (megaturn ftw)
+			var objIframeDocument = oIFrame.contentDocument
+				? oIFrame.contentDocument 
+				: (oIFrame.contentWindow) 
+					? oIFrame.contentWindow.document 
+					: window.frames[oIFrame.id]
+						? window.frames[oIFrame.id].document
+						: null;
+			
+			if (objIframeDocument) {
+				var sIframeContent = objIframeDocument.body.innerHTML;
+				if (sIframeContent == sLastIframeContent) {
+					sLastIframeContent = null;
+					clearInterval(oIFrame.iInterval);
+					jQuery.json.jsonIframeFormLoaded(oIFrame);
+					return;
+				} else {
+					sLastIframeContent = sIframeContent;
+				}
+			}
+		}.curry(elmIframe), 250);
+
 		return true;
 	},
 	
-	jsonIframeFormLoaded	: function(elmIframe)
-	{
-		var objIframeDocument	= (elmIframe.contentDocument) ? elmIframe.contentDocument : (elmIframe.contentWindow) ? elmIframe.contentWindow.document : window.frames[elmIframe.id].document;
-		
-		try
-		{
+	jsonIframeFormLoaded : function(elmIframe) {
+		var objIframeDocument = (elmIframe.contentDocument) ? elmIframe.contentDocument : (elmIframe.contentWindow) ? elmIframe.contentWindow.document : window.frames[elmIframe.id].document;
+		try {
 			// Parse Iframe contents for response data (JSON'd PHP Array)
-			var sIframeContent		= objIframeDocument.body.innerHTML,
+			var sIframeContent = objIframeDocument.body.innerHTML,
 				objResponse;
-		}
-		catch (mError)
-		{
+		} catch (mError) {
 			Reflex_Popup.alert(mError);
 		}
 		
-		try
-		{
+		try {
 			objResponse	= sIframeContent.unescapeHTML().evalJSON();
-		}
-		catch (mException)
-		{
+		} catch (mException) {
 			objResponse	= {Message: sIframeContent};
 		}
 		
 		// Call the Handler Function (if one was supplied)
-		if (elmIframe.funcResponseHandler != undefined)
-		{
+		if (elmIframe.funcResponseHandler != undefined) {
 			elmIframe.funcResponseHandler(objResponse);
 		}
 		
 		// Schedule Iframe Cleanup
-		setTimeout(this._jsonIframeCleanup.bind(this, elmIframe), 100);
+		setTimeout(jQuery.json.jsonIframeCleanup.bind(this, elmIframe), 100);
 		
 		elmIframe.bolLoaded	= true;
 	},
 	
-	_jsonIframeCleanup		: function(elmIframe)
-	{
+	jsonIframeCleanup : function(elmIframe) {
 		// If the IFrame exists and is loaded, then remove it
-		if ($ID(elmIframe.id) && elmIframe.bolLoaded)
-		{
+		if ($ID(elmIframe.id) && elmIframe.bolLoaded) {
 			// Destroy the Div and Iframe
 			//$Alert("Cleaning up IFrame with Id '"+elmIframe.id+"' and contents '"+$ID(elmIframe.id + '_div').innerHTML+"'");
 			document.body.removeChild($ID(elmIframe.id + '_div'));
-		}
-		else
-		{
+		} else {
 			// Otherwise schedule another cleanup
-			setTimeout(this._jsonIframeCleanup.bind(this, elmIframe), 100);
+			setTimeout(jQuery.json.jsonIframeCleanup.bind(this, elmIframe), 100);
 		}
 	},
 	

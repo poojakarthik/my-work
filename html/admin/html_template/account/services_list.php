@@ -69,6 +69,12 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 		$this->LoadJavascript("account_services");
 		$this->LoadJavascript("highlight");
 		$this->LoadJavascript("retractable");
+
+		$this->LoadJavascript("credit_card_type");
+		$this->LoadJavascript("credit_card_payment");
+		
+		$this->LoadJavascript("control_field");
+		$this->LoadJavascript("control_field_checkbox");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -242,19 +248,19 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 				$strMoveServiceLink	= Href()->MoveService($arrService['Id']);
 				$strMoveService		= "<img src='img/template/move.png' title='Move Service' onclick='$strMoveServiceLink'/>";
 	
-				// Include a button for provisioning, if the service is a landline
-				if ($arrService['ServiceType'] == SERVICE_TYPE_LAND_LINE)
-				{
-					$strProvisioningLink	= Href()->Provisioning($arrService['Id']);
-					$strProvisioning		= "<a href='$strProvisioningLink' title='Provisioning'><img src='img/template/provisioning.png'></img></a>";
-					
-					$strViewProvisioningHistoryLink = Href()->ViewProvisioningHistory($arrService['Id']);
-					$strViewProvisioningHistory		= "<img src='img/template/provisioning_history.png' title='View Provisioning History' onclick='$strViewProvisioningHistoryLink'/>";
-					
+				// Include a button for provisioning
+				$strProvisioningLink	= Href()->Provisioning($arrService['Id']);
+				$strProvisioning		= "<a href='$strProvisioningLink' title='Provisioning'><img src='img/template/provisioning.png'></img></a>";
+				
+				$strViewProvisioningHistoryLink = Href()->ViewProvisioningHistory($arrService['Id']);
+				$strViewProvisioningHistory		= "<img src='img/template/provisioning_history.png' title='View Provisioning History' onclick='$strViewProvisioningHistoryLink'/>";
+				
+				if ($arrService['ServiceType'] === SERVICE_TYPE_LAND_LINE) {
+					// Include a button for service address, if the service is a landline
 					$strViewAddressLink			= Href()->ViewServiceAddress($arrService['Id']);
 					$strViewAddress				= "<img src='img/template/address.png' title='Address Details' onclick='$strViewAddressLink'/>";
 				}
-				
+
 				if ($bolTicketingModuleIsActive && $bolUserIsTicketingUser && array_search($arrService['History'][0]['Status'], $arrAllowableServiceStatusesForTickets) !== FALSE)
 				{
 					$strCreateTicket = "<a href='". Href()->AddTicket($intAccountId, $arrService['Id']) ."' title='Create Ticket'><img src='img/template/create_ticket.png'></img></a>";

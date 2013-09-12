@@ -22,7 +22,7 @@ Object.extend(Correspondence_Template,
 		else
 		{
 			// Build array of option elements
-			var aOptions	= [];
+			var aOptions = [];
 			if (!oResponse.bSuccess)
 			{
 				// Failed
@@ -31,21 +31,22 @@ Object.extend(Correspondence_Template,
 			else
 			{
 				// Success
-				var oTemplate	= null;
-				for (i in oResponse.aCorrespondenceTemplates)
-				{
-					if (isNaN(i))
-					{
-						continue;
+				aOptions = Object.keys(oResponse.aCorrespondenceTemplates).filter(function (id) {
+					return !isNaN(id);
+				}).sort(function (id1, id2) {
+					// Sort alphabetically
+					if (oResponse.aCorrespondenceTemplates[id1].name < oResponse.aCorrespondenceTemplates[id2].name) {
+						return -1;
+					} else if (oResponse.aCorrespondenceTemplates[id1].name > oResponse.aCorrespondenceTemplates[id2].name) {
+						return 1;
+					} else {
+						return 0;
 					}
-					
-					oTemplate	= oResponse.aCorrespondenceTemplates[i];
-					aOptions.push(
-						$T.option({value: oTemplate.id},
-								oTemplate.name
-						)
-					);		
-				}
+				}).map(function (id) {
+					return $T.option({value: id},
+						oResponse.aCorrespondenceTemplates[id].name
+					);
+				});
 			}
 			
 			// Pass to Callback

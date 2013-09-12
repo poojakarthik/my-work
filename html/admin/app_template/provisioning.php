@@ -261,7 +261,7 @@ class AppTemplateProvisioning extends ApplicationTemplate
 		}
 		
 		// Retrieve the Service records
-		$strColumns = "Id, AccountGroup, Account, FNN, Status";
+		$strColumns = "Id, AccountGroup, Account, FNN, Status, ServiceType";
 		$strWhere	= "Account = <AccountId> AND Id IN (". implode(", ", $arrServiceIds) .")";
 		$selService = new StatementSelect("Service", $strColumns, $strWhere, "FNN");
 		$intServicesFound = $selService->Execute(Array("AccountId" => DBO()->Account->Id->Value));
@@ -291,12 +291,27 @@ class AppTemplateProvisioning extends ApplicationTemplate
 		
 		$arrServices = $selService->FetchAll();
 		
-		// Check that none of the services are pending activation
+		// Check that none of the services are pending activation also that the service types match the provisioning type nature
 		foreach ($arrServices as $arrService)
 		{
+			// Check the service status
 			if ($arrService['Status'] == SERVICE_PENDING)
 			{
 				Ajax()->AddCommand("Alert", "ERROR: Service {$arrService['FNN']} cannot be provisioned as it is pending activation.  Provisioning request aborted");
+				return TRUE;
+			}
+
+			// Check the request type nature against the service type
+			$oServiceType = Service_Type::getForId($arrService['ServiceType']);
+			if (!$oServiceType->canProvision($intRequestType)) {
+				$aProvisioningTypeName = Query::run(
+					"	SELECT name
+						FROM provisioning_type
+						WHERE id = <provisioning_type_id>",
+					array('provisioning_type_id' => $intRequestType)
+				)->fetch_assoc();
+
+				Ajax()->AddCommand("Alert", "ERROR: Service {$arrService['FNN']} cannot be provisioned because '{$aProvisioningTypeName['name']}' requests are not supported by {$oServiceType->name} services");
 				return TRUE;
 			}
 		}
@@ -749,7 +764,7 @@ class AppTemplateProvisioning extends ApplicationTemplate
 							"FuturePlanId"				=> "RP2.Id",
 							"FuturePlanName"			=> "RP2.Name",
 							"FuturePlanStartDatetime"	=> "SRP3.StartDatetime");
-		$strWhere	= "S.Account = <AccountId> AND S.ServiceType IN (". SERVICE_TYPE_LAND_LINE .")";
+		$strWhere	= "S.Account = <AccountId>";
 		$arrWhere	= Array("AccountId" => $intAccountId);
 		DBL()->Service->SetTable($strTables);
 		DBL()->Service->SetColumns($arrColumns);
@@ -839,7 +854,7 @@ class AppTemplateProvisioning extends ApplicationTemplate
 							"FuturePlanId"				=> "RP2.Id",
 							"FuturePlanName"			=> "RP2.Name",
 							"FuturePlanStartDatetime"	=> "SRP3.StartDatetime");
-		$strWhere	= "S.Account = <AccountId> AND S.ServiceType IN (". SERVICE_TYPE_LAND_LINE .") AND (S.ClosedOn IS NULL OR S.CreatedOn <= S.ClosedOn)";
+		$strWhere	= "S.Account = <AccountId> AND (S.ClosedOn IS NULL OR S.CreatedOn <= S.ClosedOn)";
 		$arrWhere	= Array("AccountId" => $intAccount);
 		$strOrderBy	= ("S.ServiceType ASC, S.FNN ASC, S.Id DESC");
 		

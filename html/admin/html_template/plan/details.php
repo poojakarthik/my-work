@@ -320,7 +320,7 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 		</div>';
 
 		// Full service Wholesale plan
-		$sFullServicePlan = (DBO()->RatePlan->fullservice_wholesale_plan->Value ? (string)DBO()->RatePlan->fullservice_wholesale_plan->Value : 'None');
+		$sFullServicePlan = (DBO()->RatePlan->fullservice_wholesale_plan->Value ? DBO()->RatePlan->fullservice_wholesale_plan->Value : 'None');
 		echo '
 		<div class="DefaultElement">
 		   <div class="DefaultOutput Default" name="RatePlan.fullservice_wholesale_plan" id="RatePlan.fullservice_wholesale_plan.Output">'.$sFullServicePlan.'</div>
@@ -331,7 +331,7 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 		</div>';
 
 		// Preselection Wholesale plan
-		$sPreselectionPlan = (DBO()->RatePlan->preselection_wholesale_plan->Value ? (string)DBO()->RatePlan->preselection_wholesale_plan->Value : 'None');
+		$sPreselectionPlan = (DBO()->RatePlan->preselection_wholesale_plan->Value ? DBO()->RatePlan->preselection_wholesale_plan->Value : 'None');
 		echo '
 		<div class="DefaultElement">
 		   <div class="DefaultOutput Default" name="RatePlan.preselection_wholesale_plan" id="RatePlan.preselection_wholesale_plan.Output">'.$sPreselectionPlan.'</div>

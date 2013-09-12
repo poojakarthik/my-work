@@ -506,16 +506,18 @@ class JSON_Handler_Account extends JSON_Handler
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 		try {
 			$oDataAccess = DataAccess::getDataAccess();
-			if ($oDataAccess->TransactionStart() === false) {
-				throw new Exception("Failed to start db transaction");
-			}
+			$oDataAccess->TransactionStart(false);
 			try {
-				$oParentAccount					= Account::getForId($iParentAccountId);
-				$oChildAccount					= Account::getForId($iChildAccountId);
-				$oOldChildAccountGroup			= Account_Group::getForId($oChildAccount->AccountGroup);
-				$oChildAccount->AccountGroup	= $oParentAccount->AccountGroup;
+				$oParentAccount	= Account::getForId($iParentAccountId);
+				$oChildAccount = Account::getForId($iChildAccountId);
+				$iOldAccountGroup = $oChildAccount->AccountGroup;
+				$oOldChildAccountGroup = Account_Group::getForId($oChildAccount->AccountGroup);
+				$oChildAccount->AccountGroup = $oParentAccount->AccountGroup;
 				$oChildAccount->save();
 				
+				// Update all references to the account group for this accounts associated records
+				self::_updateAccountGroupReferences($iChildAccountId, $iOldAccountGroup, $oChildAccount->AccountGroup);
+
 				// Check if the old (child) account group needs to be archived (if it is now empty)
 				$aAccountsOnOldChildAccountGroup = $oOldChildAccountGroup->getAccounts();
 				if (count($aAccountsOnOldChildAccountGroup) == 0) {
@@ -524,15 +526,11 @@ class JSON_Handler_Account extends JSON_Handler
 					Log::getLog()->log("Archived account group {$oOldChildAccountGroup->Id}");
 				}
 			} catch (Exception $oEx) {
-				if ($oDataAccess->TransactionRollback() === false) {
-					throw new Exception("Failed to rollback db transaction. Exception=".$oEx->getMessage());
-				}
+				$oDataAccess->TransactionRollback(false);
 				throw $oEx;
 			}
-			
-			if ($oDataAccess->TransactionCommit() === false) {
-				throw new Exception("Failed to commit db transaction");
-			}
+
+			$oDataAccess->TransactionCommit(false);
 			
 			return array(
 				'bSuccess'	=> true, 
@@ -551,25 +549,26 @@ class JSON_Handler_Account extends JSON_Handler
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 		try {
 			$oDataAccess = DataAccess::getDataAccess();
-			if ($oDataAccess->TransactionStart() === false) {
-				throw new Exception("Failed to start db transaction");
-			}
+			$oDataAccess->TransactionStart(false);
 			try {
 				// Create a new account group
-				$oAccountGroup 				= new Account_Group();
-				$oAccountGroup->CreatedBy 	= Flex::getUserId();
-				$oAccountGroup->CreatedOn	= date('Y-m-d', $oDataAccess->getNow(true));
-				$oAccountGroup->Archived	= 0;
+				$oAccountGroup = new Account_Group();
+				$oAccountGroup->CreatedBy = Flex::getUserId();
+				$oAccountGroup->CreatedOn = date('Y-m-d', $oDataAccess->getNow(true));
+				$oAccountGroup->Archived = 0;
 				$oAccountGroup->save();
 				Log::getLog()->log("Created account group {$oAccountGroup->Id}");
 				
 				// Set the accounts account group to the new one (isolating it)
-				$oAccount				= Account::getForId($iAccountId);
-				$oOldAccountGroup		= Account_Group::getForId($oAccount->AccountGroup);
+				$oAccount = Account::getForId($iAccountId);
+				$oOldAccountGroup = Account_Group::getForId($oAccount->AccountGroup);
 				$oAccount->AccountGroup = $oAccountGroup->Id;
 				$oAccount->save();
 				Log::getLog()->log("Update account group on account {$oAccount->Id}");
 				
+				// Update all references to the account group for this accounts associated records
+				self::_updateAccountGroupReferences($iAccountId, $oOldAccountGroup->Id, $oAccount->AccountGroup);
+
 				// Check if the old account group needs to be archived
 				$aAccountsOnOldAccountGroup = $oOldAccountGroup->getAccounts();
 				if (count($aAccountsOnOldAccountGroup) == 0) {
@@ -578,15 +577,11 @@ class JSON_Handler_Account extends JSON_Handler
 					Log::getLog()->log("Archived account group {$oOldAccountGroup->Id}");
 				}
 			} catch (Exception $oEx) {
-				if ($oDataAccess->TransactionRollback() === false) {
-					throw new Exception("Failed to rollback db transaction. Exception=".$oEx->getMessage());
-				}
+				$oDataAccess->TransactionRollback(false);
 				throw $oEx;
 			}
 			
-			if ($oDataAccess->TransactionCommit() === false) {
-				throw new Exception("Failed to commit db transaction");
-			}
+			$oDataAccess->TransactionCommit(false);
 			
 			return array(
 				'bSuccess' 			=> true, 
@@ -840,6 +835,7 @@ class JSON_Handler_Account extends JSON_Handler
 			$oDataAccess->TransactionRollback();
 
 			return 	array(
+						'sExceptionClass' => get_class($oException),
 						"Success"	=> false,
 						"Message"	=> $oException->getMessage(),
 						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
@@ -2152,6 +2148,43 @@ class JSON_Handler_Account extends JSON_Handler
 									);
 		}
 		$aDataByDate[$sDate][$sTargetSubList][] = $oData;
+	}
+
+	private static function _updateAccountGroupReferences($iAccountId, $iOldAccountGroup, $iNewAccountGroup) {
+		Log::get()->log("Updating all fields that reference account group '{$iOldAccountGroup}' for account '{$iAccountId}' to reference account group '{$iNewAccountGroup}'");
+		$aTablesToUpdate = array(
+			'CDR' => array('AccountGroup', 'Account'),
+			'Charge' => array('AccountGroup', 'Account'),
+			'Contact' => array('AccountGroup', 'Account'),
+			'CostCentre' => array('AccountGroup', 'Account'),
+			'Invoice' => array('AccountGroup', 'Account'),
+			'InvoicePayment' => array('AccountGroup', 'Account'),
+			'Note' => array('AccountGroup', 'Account'),
+			'Payment' => array('AccountGroup', 'Account'),
+			'payment_response' => array('account_group_id', 'account_id'),
+			'ProvisioningRequest' => array('AccountGroup', 'Account'),
+			'ProvisioningResponse' => array('AccountGroup', 'Account'),
+			'RecurringCharge' => array('AccountGroup', 'Account'),
+			'Service' => array('AccountGroup', 'Account'),
+			'ServiceAddress' => array('AccountGroup', 'Account'),
+			'ServiceMobileDetail' => array('AccountGroup', 'Account'),
+			'ServiceTotal' => array('AccountGroup', 'Account'),
+			'ServiceTypeTotal' => array('AccountGroup', 'Account')
+		);
+		
+		foreach ($aTablesToUpdate as $sTable => $aFields) {
+			$sAccountGroupField = $aFields[0];
+			$sAccountField = $aFields[1];
+			Query::run("UPDATE {$sTable}
+						SET {$sAccountGroupField} = <new_account_group_id>
+						WHERE {$sAccountGroupField} = <old_account_group_id>
+							AND {$sAccountField} = <account_id>;",
+						array(
+							'old_account_group_id' => $iOldAccountGroup,
+							'new_account_group_id' => $iNewAccountGroup,
+							'account_id' => $iAccountId
+						));
+		}
 	}
 }
 

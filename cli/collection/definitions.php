@@ -84,17 +84,8 @@ define("CDRFILE_DOWNLOAD_FAILED"	, 255);
 define("CDRFILE_MOVE_FAILED"		, 256);
 define("CDRFILE_BAD_TYPE"			, 257);
 define("CDRFILE_NOT_UNIQUE"			, 258);
-define("CDRFILE_WAITING"			, 200);
-define("CDRFILE_IMPORTING"			, 201);
-define("CDRFILE_IMPORTED"			, 202);
-define("CDRFILE_REIMPORT"			, 203);
-define("CDRFILE_IGNORE"				, 204);
-define("CDRFILE_IMPORT_FAILED"		, 205);
-define("CDRFILE_NORMALISE_FAILED"	, 206);
-define("CDRFILE_NORMALISED"			, 207);
 
 // Collection Report Messages
-define("MSG_HORIZONTAL_RULE"		, "================================================================================\n");
 define("MSG_NO_COLLECTION_MODULE"	, "NO COLLECTION MODULE\t: <FriendlyName> (<Type>)\n\n");
 define("MSG_CONNECTION_FAILED"		, "CONNECTION FAILED\t: <FriendlyName> (<Type>)\n\n");
 define("MSG_CONNECTED"				, MSG_HORIZONTAL_RULE."CONNECTED TO\t\t: <FriendlyName> (<Type>)".MSG_HORIZONTAL_RULE);

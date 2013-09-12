@@ -4324,6 +4324,7 @@ else
 									'control_field_text.js',
 									'control_field_textarea.js',
 									'control_field_select.js',
+									'control_field_checkbox.js',
 									'section.js',
 									'sort.js',
 									'filter.js',

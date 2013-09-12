@@ -367,7 +367,8 @@ class JSON_Handler_Collection_Promise extends JSON_Handler implements JSON_Handl
 		} catch (Exception $oException) {
 			return array(
 				'bSuccess' => false,
-				'sMessage' => $oException->getMessage()
+				'sMessage' => $oException->getMessage(),
+				'sExceptionClass' => get_class($oException)
 			);
 		}
 	}

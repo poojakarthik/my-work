@@ -15,7 +15,8 @@ class Ticketing_Import_XML extends Ticketing_Import {
 
 		// Assume the dir is in the host setting
 		$xmlFiles = glob($sSourceDirectory . '*.xml');
-
+		
+		Log::get()->log('Processing ' . count($xmlFiles) . ' XML files...');
 		foreach($xmlFiles as $xmlFile) {
 			$correspondence = null;
 
@@ -26,6 +27,7 @@ class Ticketing_Import_XML extends Ticketing_Import {
 				$dbAccess->TransactionStart();
 
 				// Parse the file
+				Log::get()->log('  Processing file: ' . $xmlFile);
 				$details = $this->_parseXmlFile($xmlFile);
 
 				if ($details === false) {

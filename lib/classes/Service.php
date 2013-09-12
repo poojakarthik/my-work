@@ -253,23 +253,49 @@ class Service extends ORM
 		}
 		
 		// Perform Automatic provisioning
-		if ($this->ServiceType == SERVICE_TYPE_LAND_LINE) {
-			// Don't provision Pending or Archived Services
-			if ($this->Status != SERVICE_PENDING && $this->Status != SERVICE_ARCHIVED) {
-				$sNow = DataAccess::getDataAccess()->getNow();
+		// Don't provision Pending or Archived Services
+		if (($this->Status != SERVICE_PENDING) && ($this->Status != SERVICE_ARCHIVED)) {
+			$sNow = DataAccess::getDataAccess()->getNow();
 
+			$aProvisioningInfo = array();
+			switch ($this->ServiceType) {
+				case SERVICE_TYPE_LAND_LINE:
+					if ($objNewRatePlan->CarrierFullService !== null) {
+						$aProvisioningInfo[PROVISIONING_TYPE_FULL_SERVICE_PLAN_CHANGE] = array(
+							'iCarrier' => $objNewRatePlan->CarrierFullService,
+							'sReferenceProperty' => "fullservice_provisioning_request_id"
+						);
+					}
+
+					if ($objNewRatePlan->CarrierPreselection !== null) {
+						$aProvisioningInfo[PROVISIONING_TYPE_PRESELECTION_PLAN_CHANGE] = array(
+							'iCarrier' => $objNewRatePlan->CarrierPreselection,
+							'sReferenceProperty' => "preselection_provisioning_request_id"
+						);
+					}
+					break;
+				case SERVICE_TYPE_MOBILE:
+					if ($objNewRatePlan->CarrierFullService !== null) {
+						$aProvisioningInfo[PROVISIONING_TYPE_MOBILE_PLAN_CHANGE] = array(
+							'iCarrier' => $objNewRatePlan->CarrierFullService,
+							'sReferenceProperty' => "fullservice_provisioning_request_id"
+						);
+					}
+					break;
+			}
+
+			if (!empty($aProvisioningInfo)) {
 				// Cancel any waiting requests for this service
+				$sTypes = implode(', ', array_keys($aProvisioningInfo));
 				$mResult = Query::run("
-						SELECT	*
-						FROM	ProvisioningRequest
-						WHERE	Service = <service_id>
-						AND		Status = <provisioning_request_status_id>
-						AND		Type IN (<full_service_plan_change>, <preselection_plan_change>);
+					SELECT *
+					FROM ProvisioningRequest
+					WHERE Service = <service_id>
+						AND	Status = <provisioning_request_status_id>
+						AND Type IN ({$sTypes});
 				", array(
 					'service_id' => $this->Id,
-					'provisioning_request_status_id' => REQUEST_STATUS_WAITING,
-					'full_service_plan_change' => PROVISIONING_TYPE_FULL_SERVICE_PLAN_CHANGE,
-					'preselection_plan_change' => PROVISIONING_TYPE_PRESELECTION_PLAN_CHANGE
+					'provisioning_request_status_id' => REQUEST_STATUS_WAITING
 				));
 				while ($aRow = $mResult->fetch_assoc()) {
 					$oRequest = new Provisioning_Request($aRow);
@@ -290,30 +316,25 @@ class Service extends ORM
 					'scheduled_datetime'	=> $strStartDatetime,
 					"Status"				=> REQUEST_STATUS_WAITING
 				);
-				
-				// Full Service Request
-				$aRequestData['Carrier']	= $objNewRatePlan->CarrierFullService;
-				$aRequestData['Type']		= PROVISIONING_TYPE_FULL_SERVICE_PLAN_CHANGE;
-				$oFullServiceRequest 		= new Provisioning_Request($aRequestData);
-				$oFullServiceRequest->save();
-				
-				// Preselection Request
-				$aRequestData['Carrier'] 	= $objNewRatePlan->CarrierPreselection;
-				$aRequestData['Type']		= PROVISIONING_TYPE_PRESELECTION_PLAN_CHANGE;
-				$oPreSelectionRequest 		= new Provisioning_Request($aRequestData);
-				$oPreSelectionRequest->save();
 
-				// Update the ServiceRatePlan with the provisioning_request_ids
-				$oNewServiceRatePlan->fullservice_provisioning_request_id = $oFullServiceRequest->id;
-				$oNewServiceRatePlan->preselection_provisioning_request_id = $oPreSelectionRequest->id;
+				foreach ($aProvisioningInfo as $iProvisioningType => $aInfo) {
+					// Create the request Request
+					$aRequestData['Carrier'] = $aInfo['iCarrier'];
+					$aRequestData['Type'] = $iProvisioningType;
+					$oNewRequest = new Provisioning_Request($aRequestData);
+					$oNewRequest->save();
+
+					// Update the ServiceRatePlan with the provisioning_request_id
+					$oNewServiceRatePlan->$aInfo['sReferenceProperty'] = $oNewRequest->id;
+				}
 				
 				$oNewServiceRatePlan->save();
 			}
 		}
 		
 		// Add a system note describing the change of plan
-		$strCurrentRatePlan	= ($objCurrentRatePlan) ? $objCurrentRatePlan->Name : "undefined";
-		$strNote  			= "This service has had its plan changed from '{$strCurrentRatePlan}' to '{$objNewRatePlan->Name}'.  $strNotePlanStart";
+		$strCurrentRatePlan = ($objCurrentRatePlan) ? $objCurrentRatePlan->Name : "undefined";
+		$strNote = "This service has had its plan changed from '{$strCurrentRatePlan}' to '{$objNewRatePlan->Name}'.  $strNotePlanStart";
 		Note::createSystemNote($strNote, $intUserId, $this->Account, $this->Id);
 		
 		return TRUE;

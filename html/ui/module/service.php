@@ -2207,8 +2207,20 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 			$this->_strErrorMsg = "The service's current plan does not declare a Full Service carrier";
 			return FALSE;
 		}
-		
-		return $this->MakeProvisioningRequest(PROVISIONING_TYPE_FULL_SERVICE, $arrCurrentPlan['CarrierFullService'], $strAuthorisationDate);
+
+		switch ($this->_intServiceType) {
+			case SERVICE_TYPE_LAND_LINE:
+				$iProvisioningType = PROVISIONING_TYPE_FULL_SERVICE;
+				break;
+			case SERVICE_TYPE_MOBILE:
+				$iProvisioningType = PROVISIONING_TYPE_MOBILE_ADD;
+				break;
+			default:
+				$this->_strErrorMsg = "Services of type {$this->_intServiceType} cannot be automatically added";
+				return false;
+		}
+
+		return $this->MakeProvisioningRequest($iProvisioningType, $arrCurrentPlan['CarrierFullService'], $strAuthorisationDate);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -2236,6 +2248,12 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 			$this->_strErrorMsg = "Service does not currently have a plan";
 			return FALSE;
 		}
+
+		if ($this->_intServiceType !== SERVICE_TYPE_LAND_LINE) {
+			$this->_strErrorMsg = "The service's current plan is not for Land Lines, preselection is not supported";
+			return FALSE;
+		}
+
 		if ($arrCurrentPlan['CarrierPreselection'] == NULL)
 		{
 			$this->_strErrorMsg = "The service's current plan does not declare a Preselection carrier";

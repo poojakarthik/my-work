@@ -274,9 +274,10 @@ var Popup_Invoice_Rerate	= Class.create(Reflex_Popup,
 	
 	_rerateComplete	: function(oNewInvoice, oOldInvoice, mDebugLog)
 	{
+		this._hideLoading();
+		
 		if (oNewInvoice && oOldInvoice)
 		{
-			this._hideLoading();
 			this.hide();
 			new Popup_Invoice_Rerate_Summary(oNewInvoice, oOldInvoice, mDebugLog, !this._oRatePlanOverride);
 		}

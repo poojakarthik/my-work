@@ -200,29 +200,21 @@ class JSON_Handler_Correspondence_Template extends JSON_Handler implements JSON_
 		}
 	}
 	
-	public function getSelectableSourceTypes()
-	{
+	public function getSourceTypes() {
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
-		try
-		{
-			$aTypes 	= Correspondence_Source_Type::getAll();
-			$aStdTypes	= array();
-			foreach ($aTypes as $oType)
-			{
-				if ($oType->isUserSelectable())
-				{
-					$aStdTypes[$oType->id] = $oType->toStdClass();
-				}
+		try {
+			$aTypes = Correspondence_Source_Type::getAll();
+			$aStdTypes = array();
+			foreach ($aTypes as $oType) {
+				$aStdTypes[$oType->id] = $oType->toStdClass();
 			}
+
 			return array('bSuccess' => true, 'aSourceTypes' => $aStdTypes);
-		}
-		catch (Exception $e)
-		{
-			$sMessage = $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
-			return 	array(
-						'bSuccess'	=> false,
-						'sMessage'	=> $sMessage
-					);
+		} catch (Exception $e) {
+			return array(
+				'bSuccess' => false,
+				'sMessage' => $e->getMessage()
+			);
 		}
 	}
 	
@@ -295,10 +287,15 @@ class JSON_Handler_Correspondence_Template extends JSON_Handler implements JSON_
 				switch ($oDetails->correspondence_source_type_id)
 				{
 					case CORRESPONDENCE_SOURCE_TYPE_SQL:
+					case CORRESPONDENCE_SOURCE_TYPE_SQL_ACCOUNTS:
 						if ($oDetails->correspondence_source_details->sql_syntax == '')
 						{
 							$aErrors[] = "SQL Syntax must be supplied for the chosen Source Type";
 						}
+						break;
+
+					case CORRESPONDENCE_SOURCE_TYPE_SYSTEM:
+						$aErrors[] = "Source Type cannot be 'System'";
 						break;
 				}
 			}
@@ -317,7 +314,7 @@ class JSON_Handler_Correspondence_Template extends JSON_Handler implements JSON_
 			try
 			{
 				// Create source
-				$oSource 								= new Correspondence_Source();
+				$oSource = new Correspondence_Source();
 				$oSource->correspondence_source_type_id	= $oDetails->correspondence_source_type_id;
 				$oSource->save();
 				
@@ -325,38 +322,45 @@ class JSON_Handler_Correspondence_Template extends JSON_Handler implements JSON_
 				switch ($oSource->correspondence_source_type_id)
 				{
 					case CORRESPONDENCE_SOURCE_TYPE_SQL:
-						$oSourceSQL 							= new Correspondence_Source_Sql();
-						$oSourceSQL->correspondence_source_id	= $oSource->id;
-						$oSourceSQL->sql_syntax					= $oDetails->correspondence_source_details->sql_syntax;
+						$oSourceSQL = new Correspondence_Source_Sql();
+						$oSourceSQL->correspondence_source_id = $oSource->id;
+						$oSourceSQL->sql_syntax = $oDetails->correspondence_source_details->sql_syntax;
 						$oSourceSQL->save();
+						break;
+					case CORRESPONDENCE_SOURCE_TYPE_SQL_ACCOUNTS:
+						$oSourceSQLAccounts = new Correspondence_Source_SqlAccounts();
+						$oSourceSQLAccounts->correspondence_source_id = $oSource->id;
+						$oSourceSQLAccounts->sql_syntax = $oDetails->correspondence_source_details->sql_syntax;
+						$oSourceSQLAccounts->enforce_account_set = !!$oDetails->correspondence_source_details->enforce_account_set;
+						$oSourceSQLAccounts->save();
 						break;
 				}
 				
 				// Create template
-				$oTemplate 								= new Correspondence_Template();
-				$oTemplate->name 						= $oDetails->name;
-				$oTemplate->description					= $oDetails->description;
-				$oTemplate->created_employee_id			= Flex::getUserId();
-				$oTemplate->created_timestamp			= DataAccess::getDataAccess()->getNow();
-				$oTemplate->status_id					= STATUS_ACTIVE;
-				$oTemplate->correspondence_source_id	= $oSource->id;
+				$oTemplate = new Correspondence_Template();
+				$oTemplate->name = $oDetails->name;
+				$oTemplate->description = $oDetails->description;
+				$oTemplate->created_employee_id = Flex::getUserId();
+				$oTemplate->created_timestamp = DataAccess::getDataAccess()->getNow();
+				$oTemplate->status_id = STATUS_ACTIVE;
+				$oTemplate->correspondence_source_id = $oSource->id;
 				$oTemplate->save();
 				
 				// Create columns
 				foreach ($oDetails->columns as $oColumnDetails)
 				{
-					$oCorrespondenceTemplateColumn 								= new Correspondence_Template_Column(get_object_vars($oColumnDetails));
-					$oCorrespondenceTemplateColumn->correspondence_template_id	= $oTemplate->id;
+					$oCorrespondenceTemplateColumn = new Correspondence_Template_Column(get_object_vars($oColumnDetails));
+					$oCorrespondenceTemplateColumn->correspondence_template_id = $oTemplate->id;
 					$oCorrespondenceTemplateColumn->save();
 				}
 				
 				// Create correspondence template carrier module config
 				foreach ($oDetails->template_carrier_modules as $iCorrespondenceDeliveryMethodId => $iCorrespondenceTemplateCarrierModuleId)
 				{
-					$oConfig 											= new Correspondence_Template_Correspondence_Template_Carrier_Module();
-					$oConfig->correspondence_template_id 				= $oTemplate->id;
-					$oConfig->correspondence_template_carrier_module_id	= $iCorrespondenceTemplateCarrierModuleId;
-					$oConfig->correspondence_delivery_method_id 		= $iCorrespondenceDeliveryMethodId;
+					$oConfig = new Correspondence_Template_Correspondence_Template_Carrier_Module();
+					$oConfig->correspondence_template_id = $oTemplate->id;
+					$oConfig->correspondence_template_carrier_module_id = $iCorrespondenceTemplateCarrierModuleId;
+					$oConfig->correspondence_delivery_method_id = $iCorrespondenceDeliveryMethodId;
 					$oConfig->save();
 				}
 			}
@@ -379,11 +383,10 @@ class JSON_Handler_Correspondence_Template extends JSON_Handler implements JSON_
 		}
 		catch (Exception $e)
 		{
-			$sMessage = $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
-			return 	array(
-						'bSuccess'	=> false,
-						'sMessage'	=> $sMessage
-					);
+			return array(
+				'bSuccess' => false,
+				'sMessage' => $e->getMessage()
+			);
 		}
 	}
 	
@@ -402,7 +405,11 @@ class JSON_Handler_Correspondence_Template extends JSON_Handler implements JSON_
 				case CORRESPONDENCE_SOURCE_TYPE_SQL:
 					$oSourceDetails = Correspondence_Source_Sql::getForCorrespondenceSourceId($oTemplate->correspondence_source_id)->toStdClass();
 					break;
+				case CORRESPONDENCE_SOURCE_TYPE_SQL_ACCOUNTS:
+					$oSourceDetails = Correspondence_Source_SqlAccounts::getForCorrespondenceSourceId($oTemplate->correspondence_source_id)->toStdClass();
+					break;
 			}
+
 			$oStdTemplate->correspondence_source->details = $oSourceDetails;
 			
 			// Get template carrier module config

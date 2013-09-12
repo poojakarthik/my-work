@@ -334,7 +334,7 @@ class Account
 			$arrPaymentTerms	= $selPaymentTerms->Fetch();
 
 			// No InvoiceRuns, so lets calculate when it should have been
-			$intInvoiceDatetime	= strtotime(date("Y-m-{$strDay} 00:00:00", strtotime($strEffectiveDate)));
+			$intInvoiceDatetime	= strtotime(date("Y-m-{$arrPaymentTerms['invoice_day']} 00:00:00", strtotime($strEffectiveDate)));
 			if ((int)date("d", strtotime($strEffectiveDate)) < $arrPaymentTerms['invoice_day'])
 			{
 				// Billing Date is last Month

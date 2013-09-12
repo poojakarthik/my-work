@@ -157,7 +157,7 @@ class JSON_Handler_Collection_Event extends JSON_Handler
         }
 		catch (Exception $e)
 		{
-			// Do nothing
+			// All exceptions have been accounted for by the collection batch processing logic and will have been cached
 		}
 		
 		return	array(
@@ -183,7 +183,7 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
-			// Do nothing
+			// All exceptions have been accounted for by the collection batch processing logic and will have been cached
 		}
 		
 		return	array(
@@ -209,7 +209,7 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
-			// Do nothing
+			// All exceptions have been accounted for by the collection batch processing logic and will have been cached
 		}
 		
 		return	array(
@@ -235,7 +235,7 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
-			// Do nothing
+			// All exceptions have been accounted for by the collection batch processing logic and will have been cached
 		}
 		
 		return	array(
@@ -261,7 +261,7 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
-			// Do nothing
+			// All exceptions have been accounted for by the collection batch processing logic and will have been cached
 		}
 		
 		return	array(
@@ -287,7 +287,7 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
-			// Do nothing
+			// All exceptions have been accounted for by the collection batch processing logic and will have been cached
 		}
 		
 		return	array(
@@ -313,7 +313,7 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
-			// Do nothing
+			// All exceptions have been accounted for by the collection batch processing logic and will have been cached
 		}
 		
 		return	array(
@@ -339,7 +339,7 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
-			// Do nothing
+			// All exceptions have been accounted for by the collection batch processing logic and will have been cached
 		}
 		
 		return	array(
@@ -365,7 +365,7 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
-			// Do nothing
+			// All exceptions have been accounted for by the collection batch processing logic and will have been cached
 		}
 		
 		return	array(
@@ -421,6 +421,8 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 	public function createEvent($oDetails)
 	{
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		$oDB = DataAccess::getDataAccess();
+		$oDB->TransactionStart(false);
 		try
 		{
 			// Validation
@@ -622,6 +624,8 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 					break;
 			}
 			
+			$oDB->TransactionCommit(false);
+			
 			return	array(
 						'bSuccess'	=> true,
 						'iEventId'	=> $oEvent->id
@@ -629,11 +633,11 @@ class JSON_Handler_Collection_Event extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
-			$sMessage = $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.';
-			return 	array(
-						'bSuccess'	=> false,
-						'sMessage'	=> $sMessage
-					);
+			$oDB->TransactionRollback(false);
+			return array(
+				'bSuccess'	=> false,
+				'sMessage'	=> $e->getMessage()
+			);
 		}
 	}
 	
