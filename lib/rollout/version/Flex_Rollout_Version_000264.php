@@ -23,7 +23,7 @@ class Flex_Rollout_Version_000264 extends Flex_Rollout_Version {
 
 			// Attempt to apply changes
 			$oResult = Data_Source::get($aOperation['sDataSourceName'])->query($aOperation['sAlterSQL']);
-			if (PEAR::isError($oResult)) {
+			if (MDB2::isError($oResult)) {
 				throw new Exception(__CLASS__." Failed to {$aOperation['sDescription']}. ".$oResult->getMessage()." (DB Error: ".$oResult->getUserInfo().")");
 			}
 
@@ -44,7 +44,7 @@ class Flex_Rollout_Version_000264 extends Flex_Rollout_Version {
 		if (count($this->aRollbackSQL)) {
 			for ($l = count($this->aRollbackSQL) - 1; $l >= 0; $l--) {
 				$result = $oDB->query($this->aRollbackSQL[$l]);
-				if (PEAR::isError($result)) {
+				if (MDB2::isError($result)) {
 					throw new Exception(__CLASS__.' Failed to rollback: '.$this->aRollbackSQL[$l].'. '.$result->getMessage());
 				}
 			}
