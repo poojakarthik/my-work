@@ -443,7 +443,8 @@
  		$wksWorksheet	= $wkbWorkbook->createSheet();
 		$arrFormat		= $this->_InitExcelFormats($wkbWorkbook);
 		$intRow = 1;
-		$intCol = 1;
+		$intCol = 0;
+		//$intCol = 1;
 
 		// Add in the title row
  		$arrColumns	= array_keys($arrData[0]);
@@ -460,11 +461,12 @@
 
 		foreach ($arrData as $iKey=>$arrRow) {
 			$intRow++;
-			$intCol=1;
+			$intCol=0;
+
 			foreach ($arrRow as $strName=>$mixField) {
 				$arrExcelCols[$strName]['Col'] = $intCol;
  				$strCol = PHPExcel_Cell::stringFromColumnIndex($intCol);
-				
+
 				// Is this field a function?
 				if ($strFunction = $arrSQLSelect[$strName]['Function']) {
 					foreach ($arrSQLSelect as $strSubName=>$arrSubField) {
@@ -475,6 +477,9 @@
 					$mixField = $strFunction;
 					//Debug($mixField);
 				}
+
+				// HACK
+				// $mixField = str_replace(";",",",$mixField);
 
 				// If an output type is specified then use it, else 'best guess'
 				switch ($arrSQLSelect[$strName]['Type']) {
@@ -582,7 +587,11 @@
 				// Calculate Cell Range
  				$strCol = PHPExcel_Cell::stringFromColumnIndex($arrExcelCols[$strName]['Col']);
 				$strCellStart	= $strCol . "1";
-				$strCellEnd		= $strCol . count($arrData);
+
+				$iDataCount		= count($arrData);
+				$iLastRow		= $iDataCount+1;
+				$strCellEnd		= $strCol . $iLastRow;
+
 				// Construct the Excel Function
 				switch ($arrField['Total']) {
 					case EXCEL_TOTAL_SUM:
@@ -601,18 +610,24 @@
 							// A custom formula, based off other totals
 							$strFunction = $arrField['Total'];
 							foreach ($arrSQLSelect as $strSubName=>$arrSubField) {
- 								$strCol = PHPExcel_Cell::stringFromColumnIndex($arrExcelCols[$strName]['Col']);
+ 								$strCol = PHPExcel_Cell::stringFromColumnIndex($arrExcelCols[$strSubName]['Col']);
 								$strCell = "{$strCol}{$intRow}";
 								$strFunction = str_replace("<$strSubName>", $strCell, $strFunction);
 							}
-							$strFunction = (substr($strFunction, 0, 1) == "=") ? $strFunction : "=$strFunction";
+							$strFunction = (substr($strFunction, 0, 1) == "=") ? $strFunction : "={$strFunction}";
+							
+							// HACK
+							// $strFunction = str_replace(";", ",", $strFunction);
+
 							$wkbWorkbook->getActiveSheet()->setCellValue("{$strCol}{$intRow}", "{$strFunction}");
+							$wkbWorkbook->getActiveSheet()->getStyle("{$strCol}{$intRow}")->applyFromArray($arrExcelCols[$strName]['TotalFormat']);
 							//Debug($strFunction);
 						}
 				}
 			}
 		}
 
+		PHPExcel_Calculation::getInstance()->cyclicFormulaCount = 1;
 		$oWriter = PHPExcel_IOFactory::createWriter($wkbWorkbook, 'Excel5');
 		$oWriter->save("{$strPath}");		
  		chmod($strPath, 0777);
