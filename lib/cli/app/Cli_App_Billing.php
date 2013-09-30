@@ -290,6 +290,15 @@ class Cli_App_Billing extends Cli
 					$this->_clearInvoicePDFCache();
 					break;
 
+				case 'COPY_XML':
+					if (!$this->_arrArgs[self::SWITCH_INVOICE_RUN]) {
+						throw new Exception('You must supply an Invoice Run to copy');
+					}
+					$iInvoiceRunId = (int)$this->_arrArgs[self::SWITCH_INVOICE_RUN];
+					$iAccountId = $this->_arrArgs[self::SWITCH_ACCOUNT_ID] ? (int)$this->_arrArgs[self::SWITCH_ACCOUNT_ID] : null;
+					$this->_copyXML($iInvoiceRunId, $iAccountId);
+					break;
+
 				default:
 					throw new Exception("Invalid MODE '{$this->_arrArgs[self::SWITCH_MODE]}' specified!");
 			}
@@ -464,10 +473,20 @@ class Cli_App_Billing extends Cli
 			$strOptions = '-r';
 		}
 
-		$strSCPCommand	= "scp -i ".self::FLEX_FRONTEND_SHARED_KEY_FILE." {$strOptions} {$strFlexXMLPath}{$intInvoiceRunId}{$strInvoicePath} ".self::FLEX_FRONTEND_USERNAME."@".self::FLEX_FRONTEND_HOST.":{$strFlexXMLRemotePath}";
+		//$strSCPCommand	= "scp -i ".self::FLEX_FRONTEND_SHARED_KEY_FILE." {$strOptions} {$strFlexXMLPath}{$intInvoiceRunId}{$strInvoicePath} ".self::FLEX_FRONTEND_USERNAME."@".self::FLEX_FRONTEND_HOST.":{$strFlexXMLRemotePath}";
+		// TODO: Allow multiple XML copy points
+		if (isset($GLOBALS['**aBillingXMLCopyDestination'])) {
+			if ($GLOBALS['**aBillingXMLCopyDestination']['sUser'] && $GLOBALS['**aBillingXMLCopyDestination']['sHost']) {
+				$sDestination = $GLOBALS['**aBillingXMLCopyDestination']['sUser'] . '@' . $GLOBALS['**aBillingXMLCopyDestination']['sHost'];
+				$sSSHKeyfile = $GLOBALS['**aBillingXMLCopyDestination']['sSSHKeyfilePath'];
 
-		self::debug($strSCPCommand);
-		return shell_exec($strSCPCommand);
+				$strSCPCommand  = "scp -i {$sSSHKeyfile} {$strOptions} {$strFlexXMLPath}{$intInvoiceRunId}{$strInvoicePath} {$sDestination}:{$strFlexXMLRemotePath}";
+				self::debug($strSCPCommand);
+				return shell_exec($strSCPCommand);
+			}
+		} else {
+			Log::get()->log('No XML copy configuration');
+		}
 	}
 
 	private function _copyManagementReports($strSourcePath)
@@ -731,14 +750,14 @@ class Cli_App_Billing extends Cli
 			self::SWITCH_MODE => array(
 				self::ARG_LABEL			=> "MODE",
 				self::ARG_REQUIRED		=> TRUE,
-				self::ARG_DESCRIPTION	=> "Invoice Run operation to perform [GENERATE|COMMIT|REVOKE|REVOKE_ALL_INTERIM|EXPORT|REPORTS|REGENERATE|ARCHIVE|SAMPLE_ACCOUNT|REDISTRIBUTE|DELIVER|CLEAN_PDF_CACHE]",
-				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("GENERATE","COMMIT","REVOKE","REVOKE_ALL_INTERIM","EXPORT","REPORTS","REGENERATE","ARCHIVE","SAMPLE_ACCOUNT","REDISTRIBUTE","DELIVER","CLEAN_PDF_CACHE"))'
+				self::ARG_DESCRIPTION	=> "Invoice Run operation to perform [GENERATE|COMMIT|REVOKE|REVOKE_ALL_INTERIM|EXPORT|REPORTS|REGENERATE|ARCHIVE|SAMPLE_ACCOUNT|REDISTRIBUTE|DELIVER|CLEAN_PDF_CACHE|COPY_XML]",
+				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("GENERATE","COMMIT","REVOKE","REVOKE_ALL_INTERIM","EXPORT","REPORTS","REGENERATE","ARCHIVE","SAMPLE_ACCOUNT","REDISTRIBUTE","DELIVER","CLEAN_PDF_CACHE","COPY_XML"))'
 			),
 
 			self::SWITCH_INVOICE_RUN	=> array(
 				self::ARG_LABEL			=> "INVOICE_RUN_ID",
 				self::ARG_REQUIRED		=> FALSE,
-				self::ARG_DESCRIPTION	=> "The Invoice Run Id to Commit or Revoke (required for COMMIT, REVOKE, EXPORT, REGENERATE, and REPORTS)",
+				self::ARG_DESCRIPTION	=> "The Invoice Run Id to Commit or Revoke (required for COMMIT, REVOKE, EXPORT, REGENERATE, REPORTS, and COPY_XML)",
 				self::ARG_DEFAULT		=> NULL,
 				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
 			),
@@ -746,7 +765,7 @@ class Cli_App_Billing extends Cli
 			self::SWITCH_ACCOUNT_ID	=> array(
 				self::ARG_LABEL			=> "ACCOUNT_ID",
 				self::ARG_REQUIRED		=> FALSE,
-				self::ARG_DESCRIPTION	=> "The Account Id to re/generate an Invoice for (required for SAMPLE_ACCOUNT; optional for REGENERATE)",
+				self::ARG_DESCRIPTION	=> "The Account Id to re/generate an Invoice for (required for SAMPLE_ACCOUNT; optional for REGENERATE and COPY_XML)",
 				self::ARG_DEFAULT		=> NULL,
 				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
 			),
