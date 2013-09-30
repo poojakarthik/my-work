@@ -6,31 +6,31 @@ var Popup_Destination_Import	= Class.create(/* extends */Reflex_Popup,
 		$super(60);
 		this.setTitle('Destination Import');
 		this.addCloseButton();
-		
+
 		this.CONTROLS	= {};
 		this.CONTROLS.oDestinationContext	= Control_Field.factory('select', {
 			fnPopulate	: this._getDestinationContexts.bind(this),
-			
+
 			mVisible					: true,
 			mEditable					: true,
 			mMandatory					: true,
 			bDisableValidationStyling	: true
 		});
 		this.CONTROLS.oDestinationContext.setRenderMode(Control_Field.RENDER_MODE_EDIT);
-		
+
 		this.CONTROLS.oCarrier	= Control_Field.factory('select', {
 			fnPopulate	: this._getCarriers.bind(this),
-			
+
 			mVisible					: true,
 			mEditable					: true,
 			mMandatory					: true,
 			bDisableValidationStyling	: true
 		});
 		this.CONTROLS.oCarrier.setRenderMode(Control_Field.RENDER_MODE_EDIT);
-		
+
 		this._buildContent();
 	},
-	
+
 	_buildContent	: function()
 	{
 		this.setContent(
@@ -91,33 +91,33 @@ var Popup_Destination_Import	= Class.create(/* extends */Reflex_Popup,
 		);
 
 		this.contentPane.select('.destination-import-output').first().hide();
-		
+
 		this.oUploadForm	= this.contentPane.select('form').first();
 		this.oUploadForm.observe('submit', this._matchCarrierDestinationsFromCSVFile.bind(this));
-		
+
 		this.oOutputTable	= this.contentPane.select('.destination-import-output > table').first();
-		
+
 		this.oCancelButton	= $T.button({type:'button'},
 								$T.img({class:'icon',src:'../admin/img/template/delete.png'}),
 								$T.span('Cancel')
 							);
 		this.oCancelButton.observe('click', this.hide.bind(this));
-		
+
 		this.oUploadButton	= $T.button({type:'button'},
 								$T.img({class:'icon',src:'../admin/img/template/import.png'}),
 								$T.span('Upload CSV File')
 							);
 		this.oUploadButton.observe('click', this._matchCarrierDestinationsFromCSVFile.bind(this));
-		
+
 		this.oSaveButton	= $T.button({type:'button'},
 								$T.img({class:'icon',src:'../admin/img/template/invoice_commit.png'}),
 								$T.span('Import Translations')
 							);
 		this.oSaveButton.observe('click', this.save.bindAsEventListener(this));
-		
+
 		this.setFooterButtons([this.oUploadButton, this.oCancelButton], true);
 	},
-	
+
 	_matchCarrierDestinationsFromCSVFile	: function(oResponse)
 	{
 		// If there is no response, or oResponse is actually an Event
@@ -139,18 +139,16 @@ var Popup_Destination_Import	= Class.create(/* extends */Reflex_Popup,
 				Reflex_Popup.alert('Please select a CSV File to import before continuing.');
 				return false;
 			}
-			
+
 			// Send Request
 			if (jQuery.json.jsonIframeFormSubmit(this.oUploadForm, this._matchCarrierDestinationsFromCSVFile.bind(this)))
 			{
-				this.oUploadForm.submit();
-
 				this.CONTROLS.oDestinationContext.save(true);
 				this.CONTROLS.oDestinationContext.setRenderMode(Control_Field.RENDER_MODE_VIEW);
 				this.CONTROLS.oCarrier.save(true);
 				this.CONTROLS.oCarrier.setRenderMode(Control_Field.RENDER_MODE_VIEW);
 				this.oUploadForm.select('input').each(function(oElement){oElement.setAttribute('disabled', 'disabled');});
-				
+
 				this.oLoadingSplash	= new Reflex_Popup.Loading('Matching Destinations...');
 				this.oLoadingSplash.display();
 
@@ -164,7 +162,7 @@ var Popup_Destination_Import	= Class.create(/* extends */Reflex_Popup,
 				this.oLoadingSplash.hide();
 				delete this.oLoadingSplash;
 			}
-			
+
 			// Handle Response
 			if (oResponse.Success)
 			{
@@ -179,7 +177,7 @@ var Popup_Destination_Import	= Class.create(/* extends */Reflex_Popup,
 			}
 		}
 	},
-	
+
 	_populateTable	: function(aData)
 	{
 		//debugger;
@@ -193,13 +191,13 @@ var Popup_Destination_Import	= Class.create(/* extends */Reflex_Popup,
 		}
 		oPopulateQueue.push(this.oSaveButton.removeAttribute.bind(this.oSaveButton, 'disabled'), true);	// Recentre the popup
 		oPopulateQueue.push(this.recentre.bind(this), true);	// Recentre the popup
-		
+
 		this.contentPane.select('.destination-import-output').first().show();
-		
+
 		// Execute the Queue once the JS execution stack is clear
 		oPopulateQueue.execute.bind(oPopulateQueue).defer();
 	},
-	
+
 	_buildTableRow	: function(oCarrierDestination)
 	{
 		//debugger;
@@ -218,24 +216,24 @@ var Popup_Destination_Import	= Class.create(/* extends */Reflex_Popup,
 									$T.td(oSearch)
 								);
 		var iMatches	= oCarrierDestination.aMatches.length;
-		
+
 		if (iMatches > 0)
 		{
 			for (var i = 0; i < iMatches; i++)
 			{
 				var	oDestination		= oCarrierDestination.aMatches[i],
 					oOption				= Popup_Destination_Import._createDestinationOption(oDestination);
-				
+
 				// Add this Destination as an Option
 				oOptGroup.appendChild(oOption);
-				
+
 				// If this was a perfect match, then mark it as selected
 				if (oDestination.bPerfectMatch)
 				{
 					oOption.setAttribute('selected', 'selected');
 					oSelect.setAttribute('data-destination-match-perfect', oDestination.Code);
 				}
-				
+
 				oOption.observe('mouseup', Popup_Destination_Import._onDestinationSelect);
 				oOption.observe('keyup', Popup_Destination_Import._onDestinationSelect);
 			}
@@ -244,46 +242,46 @@ var Popup_Destination_Import	= Class.create(/* extends */Reflex_Popup,
 		{
 			oUnknownDestination.setAttribute('selected', 'selected');
 		}
-		
+
 		oUnknownDestination.observe('mouseup', Popup_Destination_Import._onDestinationSelect);
 		oUnknownDestination.observe('keyup', Popup_Destination_Import._onDestinationSelect);
-		
+
 		oSelect.observe('mouseup', Popup_Destination_Import._onDestinationSelect);
 		oSelect.observe('keyup', Popup_Destination_Import._onDestinationSelect);
 		oSelect.observe('change', Popup_Destination_Import._onDestinationSelect);
 		Popup_Destination_Import._onDestinationSelect(null, oSelect);
-		
+
 		oSearch.observe('click', this._selectManualTranslation.bind(this, oCarrierDestination));
-		
+
 		return oTR;
 	},
-	
+
 	_selectManualTranslation	: function(oCarrierDestination)
 	{
 		var	iDestinationContextId	= this.CONTROLS.oDestinationContext.getValue(),
 			oManualPopup			= new Popup_Destination_Import_Manual(iDestinationContextId, oCarrierDestination, this._setManualTranslation.bind(this, oCarrierDestination));
 		oManualPopup.display();
 	},
-	
+
 	_setManualTranslation	: function(oCarrierDestination, oDestination)
 	{
 		var	oSelect	= this.oOutputTable.select('tr[data-destination-carrier-code="'+oCarrierDestination.mCarrierCode+'"] select').first(),
 			oOption	= oSelect.select('option[value="'+oDestination.Code+'"]').first();
-		
+
 		// Create the option if it doesn't already exist
 		if (!oOption)
 		{
 			oOption	= Popup_Destination_Import._createDestinationOption(oDestination);
 			oSelect.select('optgroup').first().appendChild(oOption);
 		}
-		
+
 		// Select the option
 		oOption.setAttribute('selected', 'selected');
-		
+
 		// Update Select
 		Popup_Destination_Import._onDestinationSelect(null, oSelect);
 	},
-	
+
 	save	: function(oEvent, oResponse)
 	{
 		if (oResponse)
@@ -291,7 +289,7 @@ var Popup_Destination_Import	= Class.create(/* extends */Reflex_Popup,
 			// Hide & clean up the splash
 			this.oSavingSplash.hide();
 			delete this.oSavingSplash;
-			
+
 			// Handle response
 			if (oResponse.Success || oResponse.bSuccess)
 			{
@@ -307,7 +305,7 @@ var Popup_Destination_Import	= Class.create(/* extends */Reflex_Popup,
 				// Failure
 				jQuery.json.errorPopup(oResponse, "There was an error while importing the Destination translations, please retry");
 			}
-			
+
 			// Debug information will only show if the user is God
 			if (oResponse.sDebug)
 			{
@@ -317,33 +315,33 @@ var Popup_Destination_Import	= Class.create(/* extends */Reflex_Popup,
 		else
 		{
 			//debugger;
-			
+
 			// Prepare dataset for POSTing
 			var	oDestinations			= {},
 				aCarrierDestinationTRs	= $A(this.oOutputTable.select('tr[data-destination-carrier-code]'));
-			
+
 			for (var i = 0, j = aCarrierDestinationTRs.length; i < j; i++)
 			{
 				var	oTR					= aCarrierDestinationTRs[i],
 					oSelect				= oTR.select('select').first(),
 					iDestinationCode	= parseInt(oSelect.options[oSelect.selectedIndex].value, 10),
 					mCarrierCode		= oTR.getAttribute('data-destination-carrier-code');
-				
+
 				oDestinations[mCarrierCode]	= {
 					mCarrierCode		: mCarrierCode,
 					iDestinationCode	: iDestinationCode,
 					sDescription		: oTR.select('td')[1].innerHTML.unescapeHTML()
 				};
 			}
-			
+
 			// POST!
 			jQuery.json.jsonFunction(this.save.bind(this, null), this.save.bind(this, null), 'Destination', 'ImportTranslations')(oDestinations, parseInt(this.CONTROLS.oCarrier.getValue(), 10));
-			
+
 			this.oSavingSplash	= new Reflex_Popup.Loading('Importing Destination Translations');
 			this.oSavingSplash.display();
 		}
 	},
-	
+
 	_getCarriers	: function(cCallback, oResponse)
 	{
 		if (oResponse)
@@ -359,7 +357,7 @@ var Popup_Destination_Import	= Class.create(/* extends */Reflex_Popup,
 						oOption		= $T.option({value:oCarrier.Id}, oCarrier.Name);
 					aOptions.push(oOption);
 				}
-				
+
 				cCallback(aOptions);
 			}
 			else
@@ -374,7 +372,7 @@ var Popup_Destination_Import	= Class.create(/* extends */Reflex_Popup,
 			jQuery.json.jsonFunction(this._getCarriers.bind(this, cCallback), this._getCarriers.bind(this, cCallback), 'Carrier', 'getCarriers')('CARRIER_TYPE_TELECOM');
 		}
 	},
-	
+
 	_getDestinationContexts	: function(cCallback, oResponse)
 	{
 		if (oResponse)
@@ -390,7 +388,7 @@ var Popup_Destination_Import	= Class.create(/* extends */Reflex_Popup,
 						oOption				= $T.option({value:oDestinationContext.id}, oDestinationContext.description);
 					aOptions.push(oOption);
 				}
-				
+
 				cCallback(aOptions);
 			}
 			else
@@ -413,12 +411,12 @@ Popup_Destination_Import._onDestinationSelect	= function(oEvent, oSelect)
 {
 	var	oSelect	= (oSelect) ? oSelect : oEvent.findElement(),
 		oOption	= (oSelect.selectedIndex > -1) ? oSelect.options[oSelect.selectedIndex] : null;
-	
+
 	// Remove Classes
 	oSelect.removeClassName('destination-import-match-unknown').
 				removeClassName('destination-import-match-perfect').
 				removeClassName('destination-import-match-manual');
-	
+
 	if (oOption === null)
 	{
 		// No selected option

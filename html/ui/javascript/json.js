@@ -360,15 +360,13 @@ jQuery.json = {
 		oXHR.addEventListener('loadend', _loaded);
 		oXHR.open(oForm.method, oForm.action);
 		oXHR.send(oFormData);
-
 		return true;
 	},
 
-	// Iframe-basd AJAX
+	// Iframe-based AJAX
 	jsonIframeFormSubmit : function(elmForm, funcResponseHandler) {
 		if ('FormData' in window) {
-			jQuery.json.jsonFormDataSubmit(elmForm, funcResponseHandler);
-			return false; // NOTE: this is to prevent the default submit action
+			return jQuery.json.jsonFormDataSubmit(elmForm, funcResponseHandler);
 		}
 
 		// Create a hidden IFrame
@@ -424,6 +422,7 @@ jQuery.json = {
 			}
 		}.curry(elmIframe), 250);
 
+		elmForm.submit();
 		return true;
 	},
 

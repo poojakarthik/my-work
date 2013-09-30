@@ -1,19 +1,19 @@
 
-var Popup_Correspondence_Create	= Class.create(Reflex_Popup, 
+var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 {
 	initialize	: function($super)
 	{
 		$super(39);
-		
+
 		this._buildUI();
 	},
-	
+
 	// Private
-	
+
 	_buildUI	: function(oSourceType)
 	{
 		var oTemplateSelect		= 	Control_Field.factory(
-										'select', 
+										'select',
 										{
 											sLabel		: 'Template',
 											mEditable	: true,
@@ -25,21 +25,21 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 		oTemplateSelect.disableValidationStyling();
 		oTemplateSelect.addOnChangeCallback(this._templateChanged.bind(this));
 		this._oTemplateSelect	= oTemplateSelect;
-		
+
 		var oTemplateSection	= new Section(false, 'template-section');
 		oTemplateSection.setTitleText('Choose Template');
 		oTemplateSection.setContent(
 			this._oTemplateSelect.getElement()
 		);
-		
+
 		this._oSection	= new Section(true);
 		this._oSection.setTitleText('Schedule Information');
 		this._oSection.setContent(
-			$T.div({class: 'no-template'}, 
+			$T.div({class: 'no-template'},
 				'No Template has been selected'
 			)
 		);
-		
+
 		this._oContent	=	$T.div({class: 'popup-correspondence-create'},
 								oTemplateSection.getElement(),
 								this._oSection.getElement(),
@@ -52,13 +52,13 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 									).observe('click', this.hide.bind(this))
 								)
 							);
-		
+
 		this.setTitle('Schedule Correspondence');
 		this.addCloseButton();
 		this.setContent(this._oContent);
 		this.display();
 	},
-	
+
 	_templateChanged	: function()
 	{
 		var iTemplateId	= parseInt(this._oTemplateSelect.getElementValue());
@@ -68,7 +68,7 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 			Correspondence_Template.getCorrespondenceSourceType(iTemplateId, this._templateSourceLoaded.bind(this));
 		}
 	},
-	
+
 	_templateSourceLoaded	: function(oSourceType)
 	{
 		var oInputContent	= null;
@@ -84,7 +84,7 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 		this._oSection.setContent(oInputContent);
 		this._oSourceType	= oSourceType;
 	},
-	
+
 	_buildCSVContent	: function()
 	{
 		// Fields
@@ -92,7 +92,7 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 		this._oDeliveryDateTimeHidden	= $T.input({type: 'hidden', name: 'delivery_datetime'});
 		this._oDeliverNow				= Popup_Correspondence_Create._createField('deliver_now');
 		this._oDeliverNow.addOnChangeCallback(this._deliverNowChanged.bind(this));
-		
+
 		// File upload form
 		var oForm	= 	$T.form({method: 'POST', action: '../admin/reflex.php/Correspondence/CreateFromCSV/', enctype: 'multipart/form-data'},
 							$T.input({type: 'hidden', name: 'correspondence_template_id', value: this._iTemplateId}),
@@ -123,10 +123,10 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 								)
 							)
 						);
-		
+
 		return $T.div(oForm);
 	},
-	
+
 	_buildSQLContent	: function()
 	{
 		// Fields
@@ -134,7 +134,7 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 		this._oProcessSQLWhen	= Popup_Correspondence_Create._createField('run_query');
 		this._oDeliverNow		= Popup_Correspondence_Create._createField('deliver_now');
 		this._oDeliverNow.addOnChangeCallback(this._deliverNowChanged.bind(this));
-		
+
 		return 	$T.table({class: 'reflex input'},
 					$T.tbody(
 						$T.tr(
@@ -153,17 +153,17 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 									' Deliver Immediately'
 								).observe('click', this._toggleDeliverNow.bind(this))
 							)
-						)	
+						)
 					)
 				);
 	},
-	
+
 	_toggleDeliverNow	: function()
 	{
 		this._oDeliverNow.setValue(!this._oDeliverNow.getElementValue());
 		this._deliverNowChanged();
 	},
-	
+
 	_deliverNowChanged	: function()
 	{
 		if (this._oDeliverNow.getElementValue())
@@ -172,12 +172,12 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 			this._oDeliveryDateTime.setValue(sNow);
 		}
 	},
-	
+
 	_doCreate	: function()
 	{
 		this._create();
 	},
-	
+
 	_create	: function()
 	{
 		if (!this._oSourceType)
@@ -185,33 +185,31 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 			Reflex_Popup.alert("Please choose a Correspondence Template.", {sTitle: 'Error', iWidth: 25});
 			return;
 		}
-		
+
 		switch (this._oSourceType.system_name)
 		{
 			case 'CSV':
 				// CSV
-				var oForm	= this._oContent.select('form').first();
-				if (jQuery.json.jsonIframeFormSubmit(oForm, this._csvSubmitted.bind(this)))
-				{
-					var sDeliveryDateTime	= this._oDeliveryDateTime.getElementValue();
-					if (this._oDeliverNow.getElementValue())
-					{
-						sDeliveryDateTime	= new Date().$format('Y-m-d H:i:s');
-					}
-					this._oDeliveryDateTimeHidden.value	= sDeliveryDateTime;
+				var oForm = this._oContent.select('form').first();
+				var sDeliveryDateTime = this._oDeliveryDateTime.getElementValue();
+				if (this._oDeliverNow.getElementValue()) {
+					sDeliveryDateTime = new Date().$format('Y-m-d H:i:s');
+				}
+				this._oDeliveryDateTimeHidden.value	= sDeliveryDateTime;
+
+				if (jQuery.json.jsonIframeFormSubmit(oForm, this._csvSubmitted.bind(this))) {
 					this._showLoading();
-					oForm.submit();
 				}
 				break;
 			case 'SQL':
 				// SQL
 				var fnSQL	=	jQuery.json.jsonFunction(
-									this._sqlSubmitted.bind(this), 
-									this._sqlSubmitted.bind(this), 
-									'Correspondence_Run', 
+									this._sqlSubmitted.bind(this),
+									this._sqlSubmitted.bind(this),
+									'Correspondence_Run',
 									'scheduleRunFromSQLTemplate'
 								);
-				
+
 				// Process now?
 				var iProcessNow	= parseInt(this._oProcessSQLWhen.getElementValue());
 				var bProcessNow	= null;
@@ -226,20 +224,20 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 					default:
 						bProcessNow	= null;
 				}
-				
+
 				var sDeliveryDateTime	= this._oDeliveryDateTime.getElementValue();
 				if (this._oDeliverNow.getElementValue())
 				{
 					sDeliveryDateTime	= new Date().$format('Y-m-d H:i:s');
 				}
-				
+
 				// Send request
 				this._showLoading();
 				fnSQL(this._iTemplateId, sDeliveryDateTime, bProcessNow);
 				break;
 		}
 	},
-	
+
 	_sqlSubmitted	: function(oResponse)
 	{
 		if (!oResponse.bSuccess)
@@ -248,14 +246,14 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 			this._ajaxError(oResponse);
 			return;
 		}
-		
+
 		this._hideLoading();
-		
+
 		// Success
 		Reflex_Popup.alert('Correspondence Run created from SQL template', {sTitle: 'Success'});
 		this.hide();
 	},
-	
+
 	_csvSubmitted	: function(oResponse)
 	{
 		if (!oResponse.bSuccess)
@@ -264,20 +262,20 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 			this._ajaxError(oResponse);
 			return;
 		}
-		
+
 		this._hideLoading();
-		
+
 		// Success
 		Reflex_Popup.alert('Correspondence Run created from CSV file', {sTitle: 'Success'});
 		this.hide();
 	},
-	
+
 	_ajaxError	: function(oResponse, sDescription) {
 		if (this._oLoading) {
 			this._oLoading.hide();
 			delete this._oLoading;
 		}
-		
+
 		var oConfig	= {sTitle: 'Error'};
 		if (oResponse.oException) {
 			var oEx	= oResponse.oException;
@@ -311,14 +309,14 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 		} else if (oResponse.aErrors) {
 			// Multiple input errors
 			Reflex_Popup.alert(
-				Popup_Correspondence_Create._getMultipleErrorHTML(oResponse.aErrors, oResponse.sMessage), 
+				Popup_Correspondence_Create._getMultipleErrorHTML(oResponse.aErrors, oResponse.sMessage),
 				oConfig
 			);
 		} else {
 			jQuery.json.errorPopup(oResponse);
 		}
 	},
-	
+
 	_showLoading	: function()
 	{
 		if (!this._oLoading)
@@ -327,7 +325,7 @@ var Popup_Correspondence_Create	= Class.create(Reflex_Popup,
 		}
 		this._oLoading.display();
 	},
-	
+
 	_hideLoading	: function()
 	{
 		if (this._oLoading)
@@ -344,7 +342,7 @@ Object.extend(Popup_Correspondence_Create,
 {
 	RUN_QUERY_NOW			: 1,
 	RUN_QUERY_ON_DELIVERY	: 2,
-	
+
 	_createField	: function(sName)
 	{
 		var oConfig	= Popup_Correspondence_Create.FIELD_CONFIG[sName];
@@ -352,21 +350,21 @@ Object.extend(Popup_Correspondence_Create,
 		oField.setRenderMode(Control_Field.RENDER_MODE_EDIT);
 		return oField;
 	},
-	
+
 	_getRunQueryOptions	: function(fnCallback)
 	{
 		fnCallback(
 			[
-	      	 	$T.option({value: Popup_Correspondence_Create.RUN_QUERY_NOW}, 
+	      	 	$T.option({value: Popup_Correspondence_Create.RUN_QUERY_NOW},
 	      	 		'Now'
-	      	 	), 
-	      	 	$T.option({value: Popup_Correspondence_Create.RUN_QUERY_ON_DELIVERY}, 
+	      	 	),
+	      	 	$T.option({value: Popup_Correspondence_Create.RUN_QUERY_ON_DELIVERY},
 	      	 		'At the Time of Delivery'
 	      	 	)
 	      	]
 	    );
 	},
-	
+
 	_getMultipleErrorHTML	: function(aErrors, sMessage)
 	{
 		// Validation errors
@@ -375,13 +373,13 @@ Object.extend(Popup_Correspondence_Create,
 		{
 			oUL.appendChild($T.li(aErrors[i]));
 		}
-		
+
 		return 	$T.div({class: 'popup-correspondence-create-error-content'},
 					$T.div(sMessage ? sMessage : ''),
 					$T.div(oUL)
 				);
 	},
-	
+
 	_showExceptionPopup	: function(oException)
 	{
 		var oTBody		= $T.tbody();
@@ -404,7 +402,7 @@ Object.extend(Popup_Correspondence_Create,
 						iCount++;
 					}
 				}
-				
+
 				// Generic error, contains array of line numbers where the error occurred
 				if (iCount)
 				{
@@ -419,7 +417,7 @@ Object.extend(Popup_Correspondence_Create,
 					mErrorText	= iCount + ' line' + (iCount != 1 ? 's' : '');
 				}
 			}
-			
+
 			if (mErrorName && mErrorText)
 			{
 				// Add a row to the error output table
@@ -431,12 +429,12 @@ Object.extend(Popup_Correspondence_Create,
 				);
 			}
 		}
-		
+
 		// Show modified yesnocancel popup
 		Reflex_Popup.yesNoCancel(
 			oErrorTable,
 			{
-				sNoLabel		: 'Download Full Error Information', 
+				sNoLabel		: 'Download Full Error Information',
 				sYesLabel		: 'OK',
 				fnOnNo			: Popup_Correspondence_Create._downloadErrorCSV.bind(this, oException.sFileName),
 				bOverrideStyle	: true,
@@ -445,7 +443,7 @@ Object.extend(Popup_Correspondence_Create,
 			}
 		);
 	},
-	
+
 	_downloadErrorCSV	: function(sFilename)
 	{
 		sFilename	= sFilename.replace(/\//g, "\\");
@@ -463,8 +461,8 @@ Object.extend(Popup_Correspondence_Create,
 			sType	: 'date-picker',
 			oConfig	:
 			{
-				sLabel		: 'Delivery On', 
-				sDateFormat	: 'Y-m-d H:i:s', 
+				sLabel		: 'Delivery On',
+				sDateFormat	: 'Y-m-d H:i:s',
 				bTimePicker	: true,
 				iYearStart	: 2010,
 				iYearEnd	: new Date().getFullYear() + 1,
@@ -500,7 +498,7 @@ Object.extend(Popup_Correspondence_Create,
 			}
 		}
 	},
-	
+
 	CSV_ERROR_NAMES	:
 	{
 		customer_group_account_id	: 'Neither Customer Group nor Account Id provided',
@@ -517,9 +515,9 @@ Object.extend(Popup_Correspondence_Create,
 		column_count				: 'Column Count Mismatch',
 		delivery_method				: 'Delivery Method is invalid'
 	},
-	
+
 	CSV_ERROR_NAME_UNKNOWN	: 'Unkown Error',
-	
+
 	CORRESPONDENCE_RUN_ERROR_DUPLICATE_FILE	: 4
 });
 
