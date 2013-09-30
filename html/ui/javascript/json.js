@@ -100,7 +100,7 @@ jQuery.json = {
 			return 'null';
 		}
 	},
-		
+
 	//------------------------------------------------------------------------//
 	// encode
 	//------------------------------------------------------------------------//
@@ -192,7 +192,7 @@ jQuery.json = {
 		{
 			this.localFunc.funcArgs = $A(arguments);
 			this.localFunc.requestFunction = this;
-			
+
 			var data = {
 				json: jQuery.json.encode(this.localFunc.funcArgs)
 			};
@@ -207,7 +207,7 @@ jQuery.json = {
 				Vixen.Popup.ClosePageLoadingSplash();
 			}
 			var success = true;
-			
+
 			if (arguments.length > 0 && arguments[1] != 'success')
 			{
 				success = false;
@@ -243,7 +243,7 @@ jQuery.json = {
 			} catch (oException) {
 				// Component_Debug_Log must not be defined
 			}
-					
+
 			var argsArray = [oResponse];
 
 			if (!success)
@@ -261,7 +261,7 @@ jQuery.json = {
 			if (window.Vixen && window.Vixen.Popup) {
 				window.Vixen.Popup.ClosePageLoadingSplash();
 			}
-			
+
 			jQuery.json.errorPopup(oResponse);
 		}
 	},
@@ -282,8 +282,8 @@ jQuery.json = {
 			onFailure: onFailure,
 			funcRemote: null,
 			funcArgs: null
-		}); 
-		
+		});
+
 		responseHandler.funcRemote = jQuery.json.jsonFunctionHelper.callPostJson.bind({
 			funcClass: remoteClass,
 			funcName: remoteMethod,
@@ -292,9 +292,9 @@ jQuery.json = {
 
 		return responseHandler.funcRemote;
 	},
-	
+
 	errorPopup : function(oResponse, sPopupMessage, fnOnClose) {
-		// Check if it was a DatabaseAccess lock timeout or deadlock exception 
+		// Check if it was a DatabaseAccess lock timeout or deadlock exception
 		if (oResponse.sExceptionClass) {
 			switch (oResponse.sExceptionClass) {
 				case 'Exception_Database_LockTimeout':
@@ -331,26 +331,53 @@ jQuery.json = {
 		}
 
 		return Reflex_AJAX_Request.showErrorPopup(
-			'jQuery.json.jsonFunction', 
+			'jQuery.json.jsonFunction',
 			sMessage,
-			(oResponseFunction ? oResponseFunction.requestFunction.funcClass : 'Unknown'), 
-			(oResponseFunction ? oResponseFunction.requestFunction.funcName : 'Unknown'), 
+			(oResponseFunction ? oResponseFunction.requestFunction.funcClass : 'Unknown'),
+			(oResponseFunction ? oResponseFunction.requestFunction.funcName : 'Unknown'),
 			(oResponseFunction ? oResponseFunction.funcArgs : null),
-			{'Response' : oResponse}, 
-			sPopupMessage, 
+			{'Response' : oResponse},
+			sPopupMessage,
 			fnOnClose
 		);
 	},
 
+	// File submission over regular AJAX
+	jsonFormDataSubmit: function (oForm, fnCallback) {
+		var oFormData = new FormData(oForm);
+		var oXHR = new XMLHttpRequest();
+		function _loaded(oEvent) {
+			debugger;
+			var oResponse;
+			try {
+				oResponse = oXHR.responseText.unescapeHTML().evalJSON();
+			} catch (mException) {
+				oResponse = {Message: oXHR.responseText};
+			}
+			fnCallback(oResponse);
+		}
+
+		oXHR.addEventListener('loadend', _loaded);
+		oXHR.open(oForm.method, oForm.action);
+		oXHR.send(oFormData);
+
+		return true;
+	},
+
 	// Iframe-basd AJAX
 	jsonIframeFormSubmit : function(elmForm, funcResponseHandler) {
+		if ('FormData' in window) {
+			jQuery.json.jsonFormDataSubmit(elmForm, funcResponseHandler);
+			return false; // NOTE: this is to prevent the default submit action
+		}
+
 		// Create a hidden IFrame
 		var	strIframeId = elmForm.id + "_iframe";
 		var elmDiv = document.createElement('div');
 		elmDiv.id = strIframeId + '_div';
 		elmDiv.style.visibility = 'hidden';
 		document.body.appendChild(elmDiv);
-		
+
 		var elmIframe = document.createElement('iframe');
 		elmIframe.id = strIframeId;
 		elmIframe.name = strIframeId;
@@ -361,29 +388,29 @@ jQuery.json = {
 
 		elmIframe.style.visibility = 'hidden';
 		elmDiv.appendChild(elmIframe);
-		
+
 		// Attach a Response Handler function
 		if (typeof(funcResponseHandler) == 'function') {
 			elmIframe.funcResponseHandler = funcResponseHandler;
 		}
-		
+
 		// Add a target to the form
 		elmForm.target = elmIframe.id;
 		//elmForm.target = '_blank';
-		
+
 		// HACK: This is an attempt at a cross-browser (ff, chrome) way at handling the iframe 'load' event without using the event.
 		// Chrome was being difficult when it came to firing the load event.
 		var sLastIframeContent = null;
 		elmIframe.iInterval = setInterval(function(oIFrame) {
 			// Fetch the document (megaturn ftw)
 			var objIframeDocument = oIFrame.contentDocument
-				? oIFrame.contentDocument 
-				: (oIFrame.contentWindow) 
-					? oIFrame.contentWindow.document 
+				? oIFrame.contentDocument
+				: (oIFrame.contentWindow)
+					? oIFrame.contentWindow.document
 					: window.frames[oIFrame.id]
 						? window.frames[oIFrame.id].document
 						: null;
-			
+
 			if (objIframeDocument) {
 				var sIframeContent = objIframeDocument.body.innerHTML;
 				if (sIframeContent == sLastIframeContent) {
@@ -399,7 +426,7 @@ jQuery.json = {
 
 		return true;
 	},
-	
+
 	jsonIframeFormLoaded : function(elmIframe) {
 		var objIframeDocument = (elmIframe.contentDocument) ? elmIframe.contentDocument : (elmIframe.contentWindow) ? elmIframe.contentWindow.document : window.frames[elmIframe.id].document;
 		try {
@@ -409,24 +436,24 @@ jQuery.json = {
 		} catch (mError) {
 			Reflex_Popup.alert(mError);
 		}
-		
+
 		try {
 			objResponse	= sIframeContent.unescapeHTML().evalJSON();
 		} catch (mException) {
 			objResponse	= {Message: sIframeContent};
 		}
-		
+
 		// Call the Handler Function (if one was supplied)
 		if (elmIframe.funcResponseHandler != undefined) {
 			elmIframe.funcResponseHandler(objResponse);
 		}
-		
+
 		// Schedule Iframe Cleanup
 		setTimeout(jQuery.json.jsonIframeCleanup.bind(this, elmIframe), 100);
-		
+
 		elmIframe.bolLoaded	= true;
 	},
-	
+
 	jsonIframeCleanup : function(elmIframe) {
 		// If the IFrame exists and is loaded, then remove it
 		if ($ID(elmIframe.id) && elmIframe.bolLoaded) {
@@ -438,7 +465,7 @@ jQuery.json = {
 			setTimeout(jQuery.json.jsonIframeCleanup.bind(this, elmIframe), 100);
 		}
 	},
-	
+
 	// handleResponse()	: Generic Response Handler
 	handleResponse : function(fnCallback, oResponse) {
 		if (oResponse) {
@@ -450,7 +477,7 @@ jQuery.json = {
 
 		jQuery.json.errorPopup(oResponse);
 	},
-	
+
 	arrayAsObject	: function(mArray)
 	{
 		var oReturn	= {};
@@ -467,19 +494,19 @@ jQuery.json = {
 			// Assume it was already an Object
 			oReturn	= mArray;
 		}
-		
+
 		return oReturn;
 	},
-	
+
 	showLoginPopup	: function(oResponse, fnOnSuccess, fnOnFailure)
 	{
 		var fnShowPopup	= function(sHandler, sMethod, aParameters, fnOnSuccess, fnOnFailure)
 		{
 			var oPopup	= new Popup_Login(sHandler, sMethod, aParameters, fnOnSuccess, fnOnFailure);
 		}
-		
+
 		JsAutoLoader.loadScript(
-			'javascript/popup_login.js', 
+			'javascript/popup_login.js',
 			fnShowPopup.bind(this, oResponse.sHandler, oResponse.sMethod, oResponse.aParameters, fnOnSuccess, fnOnFailure)
 		);
 	}
