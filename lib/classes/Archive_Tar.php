@@ -55,7 +55,8 @@ class Archive_Tar {
 			// Transform
 			$sRemovePath = implode("/", array_filter(explode("/", $sRemovePath)));
 			$sPathToRemove = implode(" ", str_replace("/", "\/", self::_normaliseForShell($sRemovePath)));
-			$bResult = $this->_save("tar --transform='s/^\/{$sPathToRemove}//x' -P{$sCompressionMode}{$sOperationMode}f {$this->_sArchiveFile} -T {$sFilelist}");
+			//$bResult = $this->_save("tar --transform='s/^\/{$sPathToRemove}//x' -P{$sCompressionMode}{$sOperationMode}f {$this->_sArchiveFile} -T {$sFilelist}");
+			$bResult = $this->_save("tar --transform='s/^\/{$sPathToRemove}//x' -P{$sCompressionMode}{$sOperationMode}f {$this->_sArchiveFile} {$sFilelist}");
 		} else {
 			// Nothing to do.	
 			$bResult = $this->_save("tar -{$sCompressionMode}{$sOperationMode}f {$this->_sArchiveFile} -T {$sFilelist}");
