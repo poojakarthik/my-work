@@ -8,23 +8,23 @@ var Component_Customer_Group_Account_Class_Configuration = Class.create(
 		this._oLoadingPopup			= oLoadingPopup;
 		this._oOverlay 				= new Reflex_Loading_Overlay();
 		this._hAccountClassControls	= {};
-		
+
 		// Load constants then create UI
 		Flex.Constant.loadConstantGroup(Component_Customer_Group_Account_Class_Configuration.REQUIRED_CONSTANT_GROUPS, this._buildUI.bind(this));
 	},
 
 	// Public
-	
+
 	getElement : function()
 	{
 		return this._oElement;
 	},
-	
+
 	reloadCustomerGroups : function()
 	{
 		this._loadCustomerGroups();
 	},
-	
+
 	refreshSelectControls : function()
 	{
 		for (var iId in this._hAccountClassControls)
@@ -32,17 +32,17 @@ var Component_Customer_Group_Account_Class_Configuration = Class.create(
 			this._hAccountClassControls[iId].populate();
 		}
 	},
-	
+
 	// Protected
-	
+
 	_buildUI : function()
 	{
 		var oSection		= new Section(true);
 		this._oSection 		= oSection;
 		this._oElement.appendChild(oSection.getElement());
-		
+
 		oSection.setTitleContent($T.span('Customer Group Default Account Classes'));
-		
+
 		// Main content -- table
 		oSection.setContent(
 			$T.table({class: 'component-customer-group-account-class-configuration-table reflex highlight-rows'},
@@ -56,7 +56,7 @@ var Component_Customer_Group_Account_Class_Configuration = Class.create(
 				$T.tbody({class: 'alternating'})
 			)
 		);
-		
+
 		oSection.setFooterContent(
 			$T.div(
 				$T.button({class: 'icon-button'},
@@ -69,17 +69,17 @@ var Component_Customer_Group_Account_Class_Configuration = Class.create(
 				).observe('click', this._doRevert.bind(this))
 			)
 		);
-		
+
 		this._oTBody = this._oElement.select('tbody').first();
 		this._oOverlay.attachTo(this._oTBody);
 		this._loadCustomerGroups();
-		
+
 		if (this._oContainerDiv)
 		{
 			this._oContainerDiv.appendChild(this._oElement);
 		}
 	},
-	
+
 	_loadCustomerGroups : function(oResponse)
 	{
 		if (!oResponse)
@@ -90,40 +90,38 @@ var Component_Customer_Group_Account_Class_Configuration = Class.create(
 			fnReq();
 			return;
 		}
-		
+
 		this._oOverlay.detach();
-		
+
 		if (!oResponse.bSuccess)
 		{
 			// Error
 			jQuery.json.errorPopup(oResponse);
 			return;
 		}
-		
+
 		this._oTBody.innerHTML = '';
-		
-		for (var i in oResponse.aResults)
-		{
-			var oCustomerGroup = oResponse.aResults[i];
+		Object.keys(oResponse.aResults).forEach((function (iCustomerGroupId) {
+			var oCustomerGroup = oResponse.aResults[iCustomerGroupId];
 			this._oTBody.appendChild(
 				$T.tr(
 					$T.td(
-						oCustomerGroup.internal_name	
+						oCustomerGroup.internal_name
 					),
 					$T.td(
 						this._createAccountClassControl(oCustomerGroup).getElement()
 					)
-				)	
+				)
 			);
-		}
-		
+		}.bind(this)));
+
 		if (this._oLoadingPopup)
 		{
 			this._oLoadingPopup.hide();
 			delete this._oLoadingPopup;
 		}
 	},
-	
+
 	_createAccountClassControl : function(oCustomerGroup)
 	{
 		if (!this._hAccountClassControls[oCustomerGroup.Id])
@@ -141,16 +139,16 @@ var Component_Customer_Group_Account_Class_Configuration = Class.create(
 			oControl.setRenderMode(Control_Field.RENDER_MODE_EDIT);
 			this._hAccountClassControls[oCustomerGroup.Id] = oControl;
 		}
-		
+
 		this._hAccountClassControls[oCustomerGroup.Id].setValue(oCustomerGroup.default_account_class_id);
 		return this._hAccountClassControls[oCustomerGroup.Id];
 	},
-	
+
 	_doSave : function()
 	{
 		this._save();
 	},
-	
+
 	_save : function(oResponse)
 	{
 		if (!oResponse)
@@ -171,29 +169,29 @@ var Component_Customer_Group_Account_Class_Configuration = Class.create(
 				Reflex_Popup.alert('Please make sure all Customer Groups have a default Account Class.');
 				return;
 			}
-			
+
 			this._oLoading = new Reflex_Popup.Loading('Saving Changes...');
 			this._oLoading.display();
-			
+
 			var fnResp	= this._save.bind(this);
 			var fnReq	= jQuery.json.jsonFunction(fnResp, fnResp, 'Customer_Group', 'setDefaultAccountClasses');
 			fnReq(hValues);
 			return;
 		}
-		
+
 		this._oLoading.hide();
 		delete this._oLoading;
-		
+
 		if (!oResponse.bSuccess)
 		{
 			// Error
 			jQuery.json.errorPopup(oResponse);
 			return;
 		}
-		
+
 		Reflex_Popup.alert('Changes to Default Account Classes saved.');
 	},
-	
+
 	_doRevert : function()
 	{
 		for (var iId in this._hAccountClassControls)
@@ -208,7 +206,7 @@ var Component_Customer_Group_Account_Class_Configuration = Class.create(
 Object.extend(Component_Customer_Group_Account_Class_Configuration,
 {
 	REQUIRED_CONSTANT_GROUPS	: ['status'],
-	
+
 	_getAccountClassOptions : function(fnCallback, oResponse)
 	{
 		if (!oResponse)
@@ -218,13 +216,13 @@ Object.extend(Component_Customer_Group_Account_Class_Configuration,
 			fnRequest(true);
 			return;
 		}
-		
+
 		if (!oResponse.bSuccess)
 		{
 			jQuery.json.errorPopup(oResponse);
 			return;
 		}
-		
+
 		var aOptions = [];
 		if (!Object.isArray(oResponse.aClasses))
 		{
