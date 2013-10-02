@@ -44,27 +44,27 @@ class PropertyToken {
 			case "htmlsafevalue":
 				return htmlspecialchars($this->_dboOwner->_arrProperties[$this->_strProperty], ENT_QUOTES);
 		}
-		
+
 		// Do we have a Define property by this name?
 		$intContext = (int)$this->_dboOwner->_intContext;
 		if (isset($this->_dboOwner->_arrDefine[$this->_strProperty][$intContext][$strName])) {
 			return $this->_dboOwner->_arrDefine[$this->_strProperty][$intContext][$strName];
 		}
-		
+
 		return null;
 	}
 
-	function __set($strName, $mixValue) { 
+	function __set($strName, $mixValue) {
 		// Validate
 		// TODO
-		
+
 		// Set the value & return
 		switch (strtolower($strName)) {
 			// The property's value
 			case "value":
 				return (bool)($this->_dboOwner->_arrProperties[$this->_strProperty] = $mixValue);
 		}
-		
+
 		// Do we have a define property by this name?
 		$intContext = (int)$this->_dboOwner->_intContext;
 		return $this->_dboOwner->_arrDefine[$this->_strProperty][$intContext][$strName] = $mixValue;
@@ -84,32 +84,44 @@ class PropertyToken {
 				$strFunc = "trim";
 				break;
 		}
-		
+
 		$arrArgs = array();
 		$arrArgs[] = $this->_dboOwner->_arrProperties[$this->_strProperty];
-		
+
 		if ($strCharList !== null) {
 			$arrArgs[] = $strCharList;
 		}
-		
+
 		$this->_dboOwner->_arrProperties[$this->_strProperty] = call_user_func_array($strFunc, $arrArgs);
+	}
+
+	function RenderInputAs(array $arrDefinition, $intContext=CONTEXT_DEFAULT, $bolRequired=false, $bolApplyOutputMask=true, $arrAdditionalArgs=null) {
+		$intContext = $this->_CalculateContext($intContext);
+
+		// Build up parameters for HtmlElements
+		$arrParams = $this->_BuildParams($intContext, RENDER_INPUT, $bolRequired, $bolApplyOutputMask);
+		$arrParams['Definition'] = array_merge($arrParams['Definition'], $arrDefinition);
+
+		echo HtmlElements()->$arrParams['Definition'][RENDER_INPUT.'Type']($arrParams, $arrAdditionalArgs);
+
+		return array_key_exists($this->_strProperty, $this->_dboOwner->_arrProperties) ? $this->_dboOwner->_arrProperties[$this->_strProperty] : null;
 	}
 
 	function RenderInput($intContext=CONTEXT_DEFAULT, $bolRequired=false, $bolApplyOutputMask=true, $arrAdditionalArgs=null) {
 		echo $this->_RenderIO(RENDER_INPUT, $intContext, $bolRequired, $bolApplyOutputMask, $arrAdditionalArgs);
-		
+
 		return array_key_exists($this->_strProperty, $this->_dboOwner->_arrProperties) ? $this->_dboOwner->_arrProperties[$this->_strProperty] : null;
 	}
 
 	function RenderOutput($intContext=CONTEXT_DEFAULT) {
 		echo $this->_RenderIO(RENDER_OUTPUT, $intContext);
-		
+
 		return array_key_exists($this->_strProperty, $this->_dboOwner->_arrProperties) ? $this->_dboOwner->_arrProperties[$this->_strProperty] : null;
 	}
 
 	private function _RenderIO($strType, $intContext=CONTEXT_DEFAULT, $bolRequired=false, $bolApplyOutputMask=true, $arrAdditionalArgs=null) {
 		$intContext = $this->_CalculateContext($intContext);
-		
+
 		// Build up parameters for HtmlElements
 		$arrParams = $this->_BuildParams($intContext, $strType, $bolRequired, $bolApplyOutputMask);
 
@@ -121,9 +133,9 @@ class PropertyToken {
 		if ($mixValue === null && array_key_exists($this->_strProperty, $this->_dboOwner->_arrProperties)) {
 			$mixValue = $this->_dboOwner->_arrProperties[$this->_strProperty];
 		}
-		
+
 		$intContext = $intCurrentContext;
-		
+
 		// work out if the context of the property is subject to its value
 		if (is_array($this->_dboOwner->_arrDefine) && array_key_exists($this->_strProperty, $this->_dboOwner->_arrDefine) && array_key_exists('ConditionalContexts', $this->_dboOwner->_arrDefine[$this->_strProperty]) && is_array($this->_dboOwner->_arrDefine[$this->_strProperty]['ConditionalContexts'])) {
 			// test each defined condition and use the context of the first one that is found to be true
@@ -156,7 +168,7 @@ class PropertyToken {
 			// A UIAppDocumentation record was found
 			$arrParams['Definition'] = $this->_dboOwner->_arrDefine[$this->_strProperty][$intContext];
 		}
-		
+
 		$arrParams['Object'] = $this->_dboOwner->_strName;
 		$arrParams['Property'] = $this->_strProperty;
 		$arrParams['Context'] = $intContext;
@@ -173,19 +185,19 @@ class PropertyToken {
 		if (array_key_exists('Valid', $arrParams) && $arrParams['Valid'] === false) {
 			$arrParams['Definition']['BaseClass'] .= "Invalid"; // DefaultInvalid
 		}
-		
+
 		return $arrParams;
 	}
 
 	function strGetLabel($intContext=CONTEXT_DEFAULT) {
 		return $this->_dboOwner->_arrDefine[$this->_strProperty][$intContext]['Label'];
 	}
-	
+
 	function Render($strOutputMask=null) {
 		$strValue = HtmlElements()->ApplyOutputMask($this->_dboOwner->_arrProperties[$this->_strProperty], $strOutputMask);
-		
+
 		echo $strValue;
-		return $this->_dboOwner->_arrProperties[$this->_strProperty]; 
+		return $this->_dboOwner->_arrProperties[$this->_strProperty];
 	}
 
 	private function _Value($intContext=CONTEXT_DEFAULT, $bolUseConditionalContext=false) {
@@ -195,13 +207,13 @@ class PropertyToken {
 
 		// build up parameters
 		$arrParams = $this->_BuildParams($intContext);
-		
+
 		return HtmlElements()->RenderValue($arrParams);
 	}
 
 	function RenderValue($intContext=CONTEXT_DEFAULT, $bolUseConditionalContext=false) {
 		echo $this->_Value($intContext, $bolUseConditionalContext);
-		
+
 		return $this->_dboOwner->_arrProperties[$this->_strProperty];
 	}
 
@@ -222,12 +234,12 @@ class PropertyToken {
 
 		// Build up parameters for HtmlElements
 		$arrParams = $this->_BuildParams($intContext);
-		
+
 		if ($mixArbitrary !== null) {
 			// An arbitrary value has been specified, use it instead
 			$arrParams['Value'] = $mixArbitrary;
 		}
-		
+
 		$strFormattedValue = HtmlElements()->BuildOutputValue($arrParams);
 		return $strFormattedValue;
 	}
@@ -237,17 +249,17 @@ class PropertyToken {
 
 		// build up parameters
 		$arrParams = $this->_BuildParams($intContext);
-		
+
 		return HtmlElements()->RenderLink($arrParams, $strHref);
 	}
-	
+
 	function AsLink($strHref, $intContext=CONTEXT_DEFAULT) {
 		return $this->_Link($strHref, $intContext);
 	}
 
 	function RenderLink($strHref, $intContext=CONTEXT_DEFAULT) {
 		echo $this->_Link($strHref, $intContext);
-		
+
 		return $this->_dboOwner->_arrProperties[$this->_strProperty];
 	}
 
@@ -256,10 +268,10 @@ class PropertyToken {
 
 		// build up parameters
 		$arrParams = $this->_BuildParams($intContext, $strRenderType, $bolRequired, $bolApplyOutputMask);
-		
+
 		// set the arbitrary value as the value to render
 		$arrParams['Value'] = $mixValue;
-		
+
 		// Render the value
 		switch ($strRenderType) {
 			case RENDER_INPUT:
@@ -283,7 +295,7 @@ class PropertyToken {
 
 	function RenderArbitrary($mixValue, $strRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT, $bolRequired=false, $bolApplyOutputMask=true) {
 		echo $this->_Arbitrary($mixValue, $strRenderType, $intContext, $bolRequired, $bolApplyOutputMask);
-		
+
 		return $this->_dboOwner->_arrProperties[$this->_strProperty];
 	}
 
@@ -292,13 +304,13 @@ class PropertyToken {
 
 		// build up parameters
 		$arrParams = $this->_BuildParams($intContext, $strRenderType, $bolRequired, $bolApplyOutputMask);
-		
+
 		// build arguement array for the callback function
 		$arrArgs = array($arrParams['Value']);
 		if (is_array($arrAdditionalArgs)) {
 			$arrArgs = array_merge($arrArgs, $arrAdditionalArgs);
 		}
-		
+
 		// execute the callback function
 		$arrParams['Value'] = call_user_func_array($mixCallbackFunc, $arrArgs);
 
@@ -325,7 +337,7 @@ class PropertyToken {
 
 	function RenderCallback($mixCallbackFunc, $arrAdditionalArgs=null, $strRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT, $bolRequired=false, $bolApplyOutputMask=true) {
 		echo $this->_Callback($mixCallbackFunc, $arrAdditionalArgs, $strRenderType, $intContext, $bolRequired, $bolApplyOutputMask);
-		
+
 		return $this->_dboOwner->_arrProperties[$this->_strProperty];
 	}
 
@@ -344,7 +356,7 @@ class PropertyToken {
 
 	function RenderHidden() {
 		echo $this->_Hidden();
-		
+
 		return $this->_dboOwner->_arrProperties[$this->_strProperty];
 	}
 
@@ -360,7 +372,7 @@ class PropertyToken {
 		$intSourceLength = strlen($strSource);
 		$intLittleA = ord("a");
 		$intLittleZ = ord("z");
-		
+
 		$strDestination = $strSource[0];
 		for ($i=1; $i < $intSourceLength; $i++) {
 			if ($strSource[$i] == "_") {
@@ -379,14 +391,14 @@ class PropertyToken {
 					$strDestination .= " ";
 				}
 			}
-			
+
 			$strDestination .= $strSource[$i];
 		}
 
 		if ($strDestination == strtolower($strDestination)) {
 			$strDestination = ucwords($strDestination);
 		}
-	
+
 		return $strDestination;
 	}
 
