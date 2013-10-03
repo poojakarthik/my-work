@@ -38,11 +38,16 @@ class MDB2_Driver_mysqli_Result {
 			$mData = $this->_iterateDataAndApplyFunctionToValues('rtrim', $mData);
 		}
 		// MDB2_PORTABILITY_FIX_ASSOC_FIELD_NAMES
+		
+		$fixAssocFieldNames = array('MDB2_Driver_mysqli_Result', 'fixAssocFieldNames');
 		if ($this->_isPortabilityOptionSet(MDB2_PORTABILITY_FIX_ASSOC_FIELD_NAMES)) {
 			$mData = $this->_iterateDataAndApplyFunctionToKeys(
+				/*
 				function($sKey) {
 					return preg_replace('/^(?:.*\.)?([^.]+)$/', '\\1', $sKey);
-				}, 
+				}
+				*/
+				call_user_func($fixAssocFieldNames), 
 				$mData
 			);
 		}
@@ -93,6 +98,10 @@ class MDB2_Driver_mysqli_Result {
 
 	private function _isPortabilityOptionSet($iPortabilityConstant) {
 		return (isset($this->_oPDOMySQLDriver->aPortabilityOptions['portability']) && $this->_oPDOMySQLDriver->aPortabilityOptions['portability'] & $iPortabilityConstant);
+	}
+
+	public static function fixAssocFieldNames($sKey) {
+		return preg_replace('/^(?:.*\.)?([^.]+)$/', '\\1', $sKey);
 	}
 
 }
