@@ -52,6 +52,10 @@ class MDB2_Driver_pgsql_Result {
 		return $aResult;
 	}
 
+	public static function fixAssocFieldNames($sKey) {
+		return preg_replace('/^(?:.*\.)?([^.]+)$/', '\\1', $sKey);
+	}
+
 	private function _applyPortabilityOptions($mData) {
 		// MDB2_PORTABILITY_RTRIM
 		if ($this->_isPortabilityOptionSet(MDB2_PORTABILITY_RTRIM)) {
@@ -59,10 +63,14 @@ class MDB2_Driver_pgsql_Result {
 		}
 		// MDB2_PORTABILITY_FIX_ASSOC_FIELD_NAMES
 		if ($this->_isPortabilityOptionSet(MDB2_PORTABILITY_FIX_ASSOC_FIELD_NAMES)) {
+			$fnApply = array('MDB2_Driver_pgsql_Result', 'fixAssocFieldNames');
 			$mData = $this->_iterateDataAndApplyFunctionToKeys(
+				/*
 				function($sKey) {
 					return preg_replace('/^(?:.*\.)?([^.]+)$/', '\\1', $sKey);
-				}, 
+				},
+				*/
+				$fnApply,
 				$mData
 			);
 		}
