@@ -172,6 +172,12 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 			return MDB2_Error::fromPDOException($oException);
 		}
 	}
+	
+	public function queryAll($sQuery, $aTypes=null, $iFetchmode=null, $bRekey=null, $bForceArray=null, $bGroup=null) {
+		$oResult = $this->query($sQuery, $aTypes);
+		$aResultSet = $oResult->fetchAll($iFetchmode);
+		return $aResultSet;
+	}
 
 	public function numRows() {
 		if($this->_oPDO->rowCount()) {
