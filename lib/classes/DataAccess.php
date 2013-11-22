@@ -3,11 +3,11 @@
 class DataAccess
  {
 	const	PROFILER_LOG_PATH	= 'logs/profiling/data_access/';
-	
+
 	const	TRANSACTION_LOGGING	= false;
-	
+
  	private	$_arrSavepoints	= array();
- 	
+
  	//------------------------------------------------------------------------//
 	// arrTableDefine
 	//------------------------------------------------------------------------//
@@ -23,7 +23,7 @@ class DataAccess
 	 * @property
 	 */
 	public $arrTableDefine;
-	
+
 	//------------------------------------------------------------------------//
 	// refMysqliConnection
 	//------------------------------------------------------------------------//
@@ -39,12 +39,14 @@ class DataAccess
 	 * @property
 	 */
 	public $refMysqliConnection;
-	
+
 	private $_bProfilingEnabled	= false;
-	
+
 	private	$_aProfiling		= array();
 
 	private static $arrDataAccessCache = array();
+
+	private $_sConnectionType;
 
 	public static function getDataAccess($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 	{
@@ -132,26 +134,27 @@ class DataAccess
 			throw new Exception("Database Configuration '$strConnectionType' not found!");
 		}
 
-		$arrDBConfig = $GLOBALS['**arrDatabase'][$strConnectionType];
+		$this->_sConnectionType = $strConnectionType;
+		$arrDBConfig = $GLOBALS['**arrDatabase'][$this->_sConnectionType];
 
 		// Connect to MySQL database
 		$this->refMysqliConnection = new mysqli($arrDBConfig['URL'], $arrDBConfig['User'], $arrDBConfig['Password'], $arrDBConfig['Database']);
-		
+
 		// Make sure the connection was successful
 		if(mysqli_connect_errno())
 		{
 			// TODO: Make custom DatabaseException();
 			throw new Exception();
 		}
-		
+
 		// Enable AutoCommit
 		$this->refMysqliConnection->autocommit(TRUE);
 		$this->_bolHasTransaction = FALSE;
-		
+
 		// make global database definitions available
 		$this->arrTableDefine = new Flex_Data_Model();
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// FetchTableDefine
 	//------------------------------------------------------------------------//
@@ -178,7 +181,7 @@ class DataAccess
 			return FALSE;
 		}
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// FetchAllTableDefinitions
 	//------------------------------------------------------------------------//
@@ -197,7 +200,7 @@ class DataAccess
 	{
 		$arrAllTables = $this->arrTableDefine->getAll();
 		$arrTables = array();
-		
+
 		// Check what tables exist in this database
 		foreach ($arrAllTables as $strTableName=>$arrTableDefinition)
 		{
@@ -208,11 +211,11 @@ class DataAccess
 				$arrTables[$arrTableDefinition['Name']] = $arrTableDefinition;
 			}
 		}
-		
+
 		return $arrTables;
 	}
-	
-	
+
+
 	//------------------------------------------------------------------------//
 	// FetchClean
 	//------------------------------------------------------------------------//
@@ -245,7 +248,7 @@ class DataAccess
 			return FALSE;
 		}
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// FetchCleanOblib
 	//------------------------------------------------------------------------//
@@ -272,13 +275,13 @@ class DataAccess
 		{
 			return FALSE;
 		}
-		
+
 		// retunr false if table does not exist
 		if(!$this->arrTableDefine->{$strTableName})
 		{
 			return FALSE;
 		}
-		
+
 		foreach($this->arrTableDefine->{$strTableName}['Column'] as $strKey => $strValue)
 		{
 			$arrClean[$strKey] = '';
@@ -297,11 +300,15 @@ class DataAccess
 
 		// add in an Id
 		$oblobjPushObject->Push (new dataInteger ("Id", 0));
-	
+
 		// is oblib a bloated pile om monkey puke ?
 		return TRUE;
 	}
-	
+
+	public function query($sQuery, array $aData=null) {
+		return Query::run($sQuery, $aData, $this->_sConnectionType);
+	}
+
 	//------------------------------------------------------------------------//
 	// TransactionStart
 	//------------------------------------------------------------------------//
@@ -327,13 +334,13 @@ class DataAccess
 				$strSavepointUID	= "FLEX_NESTED_".sha1(microtime(true) + $iStepping);
 				$iStepping			+= rand(0, 100);
 			} while (false !== array_search($strSavepointUID, $this->_arrSavepoints));
-			
+
 			Log::getLog()->logIf(self::TRANSACTION_LOGGING, "Creating Savepoint '{$strSavepointUID}'...");
-			
+
 			if (!$this->refMysqliConnection->query("SAVEPOINT {$strSavepointUID}"))
 			{
 				Log::getLog()->logIf(self::TRANSACTION_LOGGING, $this->refMysqliConnection->error);
-				
+
 				// Failure
 				// TODO: Throw an Exception
 				//throw new Exception("Unable to create Savepoint with UID '{$strSavepointUID}'}: ".$this->refMysqliConnection->error);
@@ -342,20 +349,20 @@ class DataAccess
 				}
 				throw new Exception_Database_Transaction("Unable to create Savepoint with UID '{$strSavepointUID}'}: ".$this->refMysqliConnection->error);
 			}
-			
+
 			array_push($this->_arrSavepoints, $strSavepointUID);
 			return true;
 		}
 		else
 		{
 			Log::getLog()->logIf(self::TRANSACTION_LOGGING, "Starting transaction...");
-			
+
 			// Create a Transaction
 			$this->_bolHasTransaction = true;
-			
+
 			// Make sure the table doesn't lock if PHP dies
 			register_shutdown_function(Array($this, "__shutdown"));
-			
+
 			// Disable Auto-Commit
 			if (!$this->refMysqliConnection->autocommit(false)) {
 				if ($bSilentFail !== false) {
@@ -366,7 +373,7 @@ class DataAccess
 			return true;
 		}
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// TransactionRollback
 	//------------------------------------------------------------------------//
@@ -387,7 +394,7 @@ class DataAccess
 		if (!$this->_bolHasTransaction)
 		{
 			Log::getLog()->logIf(self::TRANSACTION_LOGGING, "No Transaction to roll back!");
-			
+
 			// No transaction to roll back
 			if ($bSilentFail !== false) {
 				return false;
@@ -398,13 +405,13 @@ class DataAccess
 		{
 			// Roll back to last Savepoint
 			$strSavepointUID	= array_pop($this->_arrSavepoints);
-			
+
 			Log::getLog()->logIf(self::TRANSACTION_LOGGING, "Rolling back to Savepoint '{$strSavepointUID}'...");
-			
+
 			if (!$this->refMysqliConnection->query("ROLLBACK TO SAVEPOINT {$strSavepointUID}"))
 			{
 				Log::getLog()->logIf(self::TRANSACTION_LOGGING, $this->refMysqliConnection->error);
-				
+
 				// Failure
 				// TODO: Throw an Exception
 				if ($bSilentFail !== false) {
@@ -416,7 +423,7 @@ class DataAccess
 		else
 		{
 			Log::getLog()->logIf(self::TRANSACTION_LOGGING, "Rolling back transaction...");
-			
+
 			// Roll back, then disable transactioning
 			$this->_bolHasTransaction	= false;
 			if (!($this->refMysqliConnection->rollback() && $this->refMysqliConnection->autocommit(true))) {
@@ -428,7 +435,7 @@ class DataAccess
 			return true;
 		}
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// TransactionCommit
 	//------------------------------------------------------------------------//
@@ -449,7 +456,7 @@ class DataAccess
 		if (!$this->_bolHasTransaction)
 		{
 			Log::getLog()->logIf(self::TRANSACTION_LOGGING, "No Transaction to commit!");
-			
+
 			// No transaction to commit
 			if ($bSilentFail !== false) {
 				return false;
@@ -460,13 +467,13 @@ class DataAccess
 		{
 			// Roll back to last Savepoint
 			$strSavepointUID	= array_pop($this->_arrSavepoints);
-			
+
 			Log::getLog()->logIf(self::TRANSACTION_LOGGING, "Releasing Savepoint '{$strSavepointUID}'...");
-			
+
 			if (!$this->refMysqliConnection->query("RELEASE SAVEPOINT {$strSavepointUID}"))
 			{
 				Log::getLog()->logIf(self::TRANSACTION_LOGGING, "Unable to release savepoint '{$strSavepointUID}': {$this->refMysqliConnection->error}");
-				
+
 				// Failure
 				// TODO: Throw an Exception
 				if ($bSilentFail !== false) {
@@ -482,10 +489,10 @@ class DataAccess
 		else
 		{
 			Log::getLog()->logIf(self::TRANSACTION_LOGGING, "Committing transaction...");
-			
+
 			// Commit, then disable transactioning
 			$this->_bolHasTransaction	= false;
-			
+
 			$bCommitted		= $this->refMysqliConnection->commit();
 			if (!$bCommitted)
 			{
@@ -499,7 +506,7 @@ class DataAccess
 					Log::getLog()->logIf(self::TRANSACTION_LOGGING, "Unable to enable Autocommit Mode: {$this->refMysqliConnection->error}");
 				}
 			}
-			
+
 			if (!$bCommitted || !$bAutoCommit) {
 				if ($bSilentFail !== false) {
 					return false;
@@ -509,7 +516,7 @@ class DataAccess
 			return true;
 		}
 	}
-	
+
 	public function TransactionCurrent()
 	{
 		if (!$this->_bolHasTransaction)
@@ -525,7 +532,7 @@ class DataAccess
 			return true;
 		}
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// __shutdown
 	//------------------------------------------------------------------------//
@@ -547,7 +554,7 @@ class DataAccess
 			$this->TransactionRollback();
 		}
 	}
-	
+
 	function __destruct()
 	{
 		try
@@ -563,12 +570,12 @@ class DataAccess
 			echo $eException->__toString();
 		}
 	}
-	
+
 	function escape($value)
 	{
 		return $this->refMysqliConnection->real_escape_string($value);
 	}
-	
+
 	public function addToProfiler(DatabaseAccess $oDatabaseAccess)
 	{
 		if ($this->getProfilingEnabled())
@@ -576,7 +583,7 @@ class DataAccess
 			$this->_aProfiling[]	= $oDatabaseAccess;
 		}
 	}
-	
+
 	public function exportProfilingToXML($sXMLPath=null)
 	{
 		if ($sXMLPath)
@@ -588,38 +595,38 @@ class DataAccess
 		{
 			$sSavePath	= FILES_BASE_PATH.self::PROFILER_LOG_PATH.date("YmdHis+u").'.xml';
 		}
-		
+
 		@mkdir(dirname($sSavePath), 0777, true);
-		
+
 		// Save the XML
 		self::_profilingToXML($this->_aProfiling)->save($sSavePath);
 	}
-	
+
 	static private function _profilingToXML($aProfilingData)
 	{
 		$domDocument				= new DOMDocument('1.0', 'UTF-8');
 		$domDocument->formatOutput	= true;
-		
+
 		$eDatabaseAccesses	= new DOMElement('database-accesses');
 		$domDocument->appendChild($eDatabaseAccesses);
-		
+
 		foreach ($aProfilingData as $oDatabaseAccess)
 		{
 			$aDatabaseAccessProfile	= $oDatabaseAccess->aProfiling;
-			
+
 			$eDatabaseAccess	= new DOMElement('database-access');
 			$eDatabaseAccesses->appendChild($eDatabaseAccess);
-			
+
 			// Query
 			$eQuery	= new DOMElement('query', $aDatabaseAccessProfile['sQuery']);
 			$eDatabaseAccess->appendChild($eQuery);
-			
+
 			// Prepare
 			if (array_key_exists('fPreparationTime', $aDatabaseAccessProfile) || array_key_exists('fPreparationStart', $aDatabaseAccessProfile))
 			{
 				$ePrepare	= new DOMElement('prepare');
 				$eDatabaseAccess->appendChild($ePrepare);
-				
+
 				if (array_key_exists('fPreparationStart', $aDatabaseAccessProfile))
 				{
 					$ePrepareStart	= new DOMElement('start', date("Y-m-d H:i:s.u", $aDatabaseAccessProfile['fPreparationStart']));
@@ -631,7 +638,7 @@ class DataAccess
 					$ePrepare->appendChild($ePrepareDuration);
 				}
 			}
-			
+
 			// Executions
 			$eExecutions	= new DOMElement('executions');
 			$eDatabaseAccess->appendChild($eExecutions);
@@ -639,13 +646,13 @@ class DataAccess
 			{
 				$eExecution	= new DOMElement('execution');
 				$eExecutions->appendChild($eExecution);
-				
+
 				// Time
 				$eExecutionStart	= new DOMElement('start-time', date("Y-m-d H:i:s.u", $aExecution['fStartTime']));
 				$eExecution->appendChild($eExecutionStart);
 				$eExecutionDuration	= new DOMElement('duration', $aExecution['fDuration']);
 				$eExecution->appendChild($eExecutionDuration);
-				
+
 				// Results
 				if (array_key_exists('iResults', $aExecution))
 				{
@@ -662,26 +669,26 @@ class DataAccess
 					$eRowsAffected	= new DOMElement('rows-affected', $aExecution['iRowsAffected']);
 					$eExecution->appendChild($eRowsAffected);
 				}
-				
+
 				// Where
 				if (array_key_exists('aWhere', $aExecution))
 				{
 					$eWhere	= new DOMElement('where');
 					$eExecution->appendChild($eWhere);
-					
+
 					foreach ($aExecution['aWhere'] as $sAlias=>$mValue)
 					{
 						$eWhereParameter	= new DOMElement(preg_replace("/\W+/i", '-', $sAlias), $mValue);
 						$eWhere->appendChild($eWhereParameter);
 					}
 				}
-				
+
 				// Data
 				if (array_key_exists('aData', $aExecution))
 				{
 					$eData	= new DOMElement('data');
 					$eExecution->appendChild($eData);
-					
+
 					foreach ($aExecution['aData'] as $sAlias=>$mValue)
 					{
 						$eDataParameter	= new DOMElement(preg_replace("/\W+/i", '-', $sAlias), $mValue);
@@ -690,20 +697,20 @@ class DataAccess
 				}
 			}
 		}
-		
+
 		return $domDocument;
 	}
-	
+
 	public function setProfilingEnabled($bEnabled)
 	{
 		$this->_bProfilingEnabled	= (bool)$bEnabled;
 	}
-	
+
 	public function getProfilingEnabled()
 	{
 		return $this->_bProfilingEnabled;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// Error()
 	//------------------------------------------------------------------------//
@@ -726,7 +733,7 @@ class DataAccess
 			$strReturn .= "\n Call Stack:\n".Backtrace(debug_backtrace())."\n";
 			return $strReturn;
 		}
-		
+
 		// There was no error
 		return FALSE;
 	}

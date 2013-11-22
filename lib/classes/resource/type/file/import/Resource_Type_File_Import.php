@@ -3,26 +3,22 @@ abstract class Resource_Type_File_Import extends Resource_Type_Base
 {
 	protected	$_oFileImport;
 	protected	$_oFileImporter;
-	
+
 	public function __construct($mCarrierModule, $mFileImport)
 	{
 		parent::__construct($mCarrierModule);
-		
+
 		// File Import ORM
-		$this->_oFileImport	= File_Import::getForId(ORM::extractId($mFileImport));
-		
+		$this->_oFileImport	= ($mFileImport instanceof File_Import) ? $mFileImport : File_Import::getForId(ORM::extractId($mFileImport));
+
 		// File Importer
 		$this->_configureFileImporter();
-		if (!($this->_oFileImporter instanceof File_Importer))
-		{
-			throw new Exception("File Importer has not been configured");
-		}
 	}
-	
+
 	abstract public function getRecords();
-	
+
 	abstract public function processRecord($sRecord);
-	
+
 	public function process()
 	{
 		$aRecords	= $this->getRecords();
@@ -31,21 +27,21 @@ abstract class Resource_Type_File_Import extends Resource_Type_Base
 			$this->processRecord($sRecord);
 		}
 	}
-	
+
 	public function getFileImport()
 	{
 		return $this->_oFileImport;
 	}
-	
+
 	public function save()
 	{
 		$this->_oFileImport->NormalisedOn	= date('Y-m-d H:i:s');
-		$this->_oFileExport->save();
+		$this->_oFileImport->save();
 		return $this;
 	}
-	
+
 	abstract protected function _configureFileImporter();
-	
+
 	protected static function factory($sClassName, $mFileImport)
 	{
 		$oFileImport		= File_Import::getForId(ORM::extractId($mFileImport));
