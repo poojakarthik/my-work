@@ -130,7 +130,7 @@ class Resource_Type_File_Export_Payment_Westpac_RecurringBilling extends Resourc
 				)->addField('OrderNumber',
 					File_Exporter_Field::factory()
 						->setMaximumLength(20)
-						->setValidationRegex('/^(|\d{1,15}|[^&%+])$/')
+						->setValidationRegex('/^(|\d{1,15}|[^&%+]{1,20})$/')
 				)
 		);
 	}
