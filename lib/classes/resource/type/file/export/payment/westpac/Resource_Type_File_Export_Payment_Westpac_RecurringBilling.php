@@ -114,6 +114,7 @@ class Resource_Type_File_Export_Payment_Westpac_RecurringBilling extends Resourc
 				)->addField('SettlementDate',
 					File_Exporter_Field::factory()
 						->setValidationRegex('/^([1-9]|[12][0-9]|3[01]) ([A-Z][a-z]+) (\d{4})$/')
+				)
 		);
 
 		// Detail Record
