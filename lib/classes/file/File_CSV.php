@@ -4,57 +4,57 @@ class File_CSV implements Iterator
 {
 	protected	$_aColumns	= array();
 	protected	$_aRows		= array();
-	
+
 	protected	$_sDelimiter;
 	protected	$_sQuote;
 	protected	$_sEscape;
 	protected	$_sNewLine	= "\n";
-	
+
 	public function __construct($sDelimiter=',', $sQuote='"', $sEscape='\\', $aColumns=null)
 	{
 		$this->setDelimiter($sDelimiter);
 		$this->setQuote($sQuote);
 		$this->setEscape($sEscape);
-		
+
 		if ($aColumns)
 		{
 			$this->setColumns($aColumns);
 		}
 	}
-	
+
 	public function setDelimiter($sDelimiter)
 	{
 		$sDelimiter			= (string)$sDelimiter;
 		$this->_sDelimiter	= ($sDelimiter) ? $sDelimiter[0] : '';
 	}
-	
+
 	public function setQuote($sQuote)
 	{
 		$sQuote			= (string)$sQuote;
 		$this->_sQuote	= ($sQuote) ? $sQuote[0] : '';
 	}
-	
+
 	public function setEscape($sEscape)
 	{
 		$sEscape		= (string)$sEscape;
 		$this->_sEscape	= ($sEscape) ? $sEscape[0] : '';
 	}
-	
+
 	public function setNewLine($sNewLine)
 	{
 		$this->_sNewLine	= (string)$sNewLine;
 	}
-	
+
 	protected function _getSpecialCharacters()
 	{
 		return array($this->_sNewLine, $this->_sDelimiter, $this->_sQuote);
 	}
-	
+
 	protected function _getQuotableCharacters()
 	{
 		return array($this->_sNewLine, $this->_sDelimiter, $this->_sEscape, $this->_sQuote, ' ');
 	}
-	
+
 	public function setColumns($aColumns)
 	{
 		// Update the Columns definition
@@ -72,7 +72,7 @@ class File_CSV implements Iterator
 			}
 		}
 	}
-	
+
 	public function addRow($aRow)
 	{
 		if (is_array($aRow))
@@ -84,11 +84,11 @@ class File_CSV implements Iterator
 			throw new Exception("Parameter \$aRow is not an array");
 		}
 	}
-	
+
 	public function save($bIncludeHeaderRow=true)
 	{
 		$sOutput	= '';
-		
+
 		// Add Header Row
 		if ($bIncludeHeaderRow)
 		{
@@ -99,7 +99,7 @@ class File_CSV implements Iterator
 			}
 			$sOutput	.= implode($this->_sDelimiter, $aRowOutput).$this->_sNewLine;
 		}
-		
+
 		// Add Content
 		foreach ($this->_aRows as $iRow=>$aRow)
 		{
@@ -110,20 +110,20 @@ class File_CSV implements Iterator
 			}
 			$sOutput	.= implode($this->_sDelimiter, $aRowOutput).$this->_sNewLine;
 		}
-		
+
 		return $sOutput;
 	}
-	
+
 	public function saveToFile($sPath, $bIncludeHeaderRow=true)
 	{
 		if (!@file_put_contents($sPath, $this->save($bIncludeHeaderRow)))
 		{
 			throw new Exception("Unable to export to path '{$sPath}': There was an unknown error writing to the path");
 		}
-		
+
 		return true;
 	}
-	
+
 	public function importArray($aArray)
 	{
 		if (is_array($aArray))
@@ -132,7 +132,7 @@ class File_CSV implements Iterator
 			{
 				// Set Columns
 				$this->setColumns(array_keys($aArray[0]));
-				
+
 				// Set Data
 				foreach ($aArray as $aRow)
 				{
@@ -145,7 +145,7 @@ class File_CSV implements Iterator
 			throw new Exception("Parameter \$aArray is not an array! (Type: ".gettype($aArray)."; Value: '{$aArray}')");
 		}
 	}
-	
+
 	public function importFile($sPath, $bHasHeader=false, $bImportHeader=false)
 	{
 		if (!is_readable($sPath))
@@ -156,21 +156,21 @@ class File_CSV implements Iterator
 		{
 			throw new Exception("Unable to import from path '{$sPath}': There was an unknown error reading from the path");
 		}
-		
+
 		return $this->importFileAsString($sDataString, $bHasHeader, $bImportHeader);
 	}
-	
+
 	public function importFileAsString($sDataString, $bHasHeader=false, $bImportHeader=false)
 	{
 		$aLines	= explode($this->_sNewLine, $sDataString);
-		
+
 		Log::getLog()->log("Importing file: ".count($aLines)." lines");
-		
+
 		// Parse the first row as a Header
 		if ($bHasHeader)
 		{
 			Log::getLog()->log("... has header");
-			
+
 			if ($sHeader = trim(reset($aLines), "\n\r\0\x0B"))
 			{
 				if ($bImportHeader)
@@ -180,18 +180,18 @@ class File_CSV implements Iterator
 					$this->setColumns($aColumns);
 				}
 			}
-			
+
 			// Remove the first line
 			array_shift($aLines);
 		}
-		
+
 		Log::getLog()->log("... importing rows: ".count($aLines)." lines");
-		
+
 		// Import each row
 		while (($sRow = current($aLines)) !== false)
 		{
 			Log::getLog()->log("... ROW: {$sRow}");
-			
+
 			$aRow			= self::parseLine($sRow, $this->_sDelimiter, $this->_sQuote, $this->_sEscape);
 			$aFormattedRow	= array();
 			foreach ($aRow as $iIndex=>$mValue)
@@ -206,18 +206,18 @@ class File_CSV implements Iterator
 					$aFormattedRow[]	= $mValue;
 				}
 			}
-			
+
 			$this->addRow($aFormattedRow);
 			next($aLines);
 		}
-		
+
 		return true;
 	}
-	
+
 	public function toArray()
 	{
 		$aOutput	= array();
-		
+
 		foreach ($this->_aRows as $iRow=>$aRow)
 		{
 			$aRowOutput	= array();
@@ -227,47 +227,47 @@ class File_CSV implements Iterator
 			}
 			$aOutput[]	= $aRowOutput;
 		}
-		
+
 		return $aOutput;
 	}
-	
+
 	public function current()
 	{
 		return current($this->_aRows);
 	}
-	
+
 	public function key()
 	{
 		return key($this->_aRows);
 	}
-	
+
 	public function next()
 	{
 		return next($this->_aRows);
 	}
-	
+
 	public function rewind()
 	{
 		return reset($this->_aRows);
 	}
-	
+
 	public function valid()
 	{
 		return (key($this->_aRows) !== null);
 	}
-	
+
 	public function count()
 	{
 		return count($this->_aRows);
 	}
-	
+
 	// Mimic the fgetcsv() function from PHP 5.3
 	public static function parseLine($sLine, $sDelimiter=',', $sQuote='"', $sEscape='\\')
 	{
 		$sDelimiter	= ($sDelimiter)	? $sDelimiter[0]	: ',';
 		$sQuote		= ($sQuote)		? $sQuote[0]		: '';
 		$sEscape	= ($sEscape)	? $sEscape[0]		: '';
-		
+
 		// Parse the Line character-by-character
 		$bEscaped	= false;
 		$bQuoted	= false;
@@ -286,7 +286,7 @@ class File_CSV implements Iterator
 					}
 					$bEscaped	= !$bEscaped;
 					break;
-				
+
 				case $sQuote:
 					if ($bEscaped)
 					{
@@ -299,7 +299,7 @@ class File_CSV implements Iterator
 						$bQuoted	= !$bQuoted;
 					}
 					break;
-				
+
 				case $sDelimiter:
 					if ($bEscaped)
 					{
@@ -319,7 +319,7 @@ class File_CSV implements Iterator
 						$sField		= '';
 					}
 					break;
-				
+
 				default:
 					// Not a special character
 					$sField		.= $sCharacter;
@@ -327,14 +327,14 @@ class File_CSV implements Iterator
 					break;
 			}
 		}
-		
+
 		// Finish the current Field
 		$aLine[]	= $sField;
-		
+
 		// Return the Array representing this Line
 		return $aLine;
 	}
-	
+
 	public static function buildLine($aRecord, $sDelimiter=',', $sQuote='"', $sEscape='\\', $aSpecialCharacters=array(), $mQuote=false)
 	{
 		$aPreparedRecords	= array();
@@ -342,29 +342,30 @@ class File_CSV implements Iterator
 		{
 			$aPreparedRecords[]	= self::_prepare($mValue, $sQuote, $sEscape, $aSpecialCharacters, $mQuote);
 		}
-		
+
 		return implode($sDelimiter, $aPreparedRecords);
 	}
-	
+
 	protected static function _prepare($mValue, $sQuote='"', $sEscape='\\', $aSpecialCharacters=array(), $mQuote=false)
 	{
 		return self::_quote(self::_escape($mValue, $sEscape, $aSpecialCharacters), $sQuote, $mQuote);
 	}
-	
-	protected static function _escape($mValue, $sEscape='\\', $aSpecicalCharacters=array())
-	{
+
+	protected static function _escape($mValue, $sEscape='\\', $aSpecicalCharacters=array()) {
 		// Escape the escape character
 		$mValue	= str_replace($sEscape, $sEscape.$sEscape, $mValue);
-			
+
 		// Escape all other special characters
-		foreach ($aSpecicalCharacters as $sSpecialCharacter)
-		{
-			$mValue	= str_replace($sSpecialCharacter, $sEscape.$sSpecialCharacter, $mValue);
+		foreach ($aSpecicalCharacters as $sSpecialCharacter) {
+			if ($sSpecialCharacter !== $sEscape) {
+				// Escape special characters that are not the Escape character (we've already escaped it)
+				$mValue	= str_replace($sSpecialCharacter, $sEscape.$sSpecialCharacter, $mValue);
+			}
 		}
-		
+
 		return $mValue;
 	}
-	
+
 	protected static function _quote($mValue, $sQuote, $mQuote=false)
 	{
 		$bQuote	= (is_bool($mQuote) && $mQuote);
@@ -376,12 +377,12 @@ class File_CSV implements Iterator
 				$bQuote	= (stripos($mValue, $sQuotableCharacter) === false) ? $bQuote : true;
 			}
 		}
-		
+
 		if ($bQuote)
 		{
 			$mValue	= $sQuote.$mValue.$sQuote;
 		}
-		
+
 		return $mValue;
 	}
 }
