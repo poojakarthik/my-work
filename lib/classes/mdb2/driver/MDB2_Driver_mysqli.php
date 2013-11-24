@@ -4,6 +4,8 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 	private $_oPDO;
 	public $aPortabilityOptions;
 
+	private $_bInTransaction = false;
+
 	function __construct($aDSN, $aOptions=false) {
 		$this->_oPDO = new PDO("mysql:dbname={$aDSN['database']};host={$aDSN['hostspec']}", $aDSN['username'], $aDSN['password']);
 		$this->_oPDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -50,7 +52,7 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 	public function listTableFields($sTable) {
 		try {
 			$oStatement = $this->_oPDO->query("SHOW COLUMNS FROM {$sTable}");
-			$aTableFields = $oStatement->fetchAll();		
+			$aTableFields = $oStatement->fetchAll();
 			$aResult = array();
 			foreach($aTableFields as $aTable) {
 				$aResult[] = $aTable['Field'];
@@ -88,6 +90,7 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 				return MDB2_OK;
 			} else {
 				if($this->_oPDO->beginTransaction()) {
+					$this->_bInTransaction = true;
 					return MDB2_OK;
 				} else {
 					return new MDB2_Error();
@@ -100,10 +103,10 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 		if($bIgnoreNested) {
 			throw new Exception("Error in method inTransaction(), unimplemented property: \$bIgnoreNested");
 		}
-		if($this->_oPDO->inTransaction()) {
-			return true;
-		}
-		return false;
+		return $this->_bInTransaction;
+		/* Not until PHP 5.3
+		return !!$this->_oPDO->inTransaction();
+		*/
 	}
 
 	public function commit($sSavepoint=null) {
@@ -112,6 +115,7 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 		} else {
 			if($this->inTransaction()) {
 				if($this->_oPDO->commit()) {
+					$this->_bInTransaction = false;
 					return MDB2_OK;
 				} else {
 					return new MDB2_Error();
@@ -127,6 +131,7 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 			throw new Exception("Error in method rollback(), unimplemented property: \$sSavepoint");
 		} else {
 			if($this->_oPDO->rollBack()) {
+				$this->_bInTransaction = false;
 				return MDB2_OK;
 			} else {
 				return new MDB2_Error();
@@ -172,7 +177,7 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 			return MDB2_Error::fromPDOException($oException);
 		}
 	}
-	
+
 	public function queryAll($sQuery, $aTypes=null, $iFetchmode=null, $bRekey=null, $bForceArray=null, $bGroup=null) {
 		$oResult = $this->query($sQuery, $aTypes);
 		$aResultSet = $oResult->fetchAll($iFetchmode);
@@ -208,7 +213,7 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 	}
 
 	// Method derived from MDB2.
-	private static function _getMDB2DataType($sDatatype) {		
+	private static function _getMDB2DataType($sDatatype) {
 		$sDatatype = strtolower($sDatatype);
 		$sDatatype = strtok($sDatatype, '(), ');
 		if ($sDatatype == 'national') {

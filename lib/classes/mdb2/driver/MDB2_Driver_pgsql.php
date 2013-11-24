@@ -4,6 +4,8 @@ class MDB2_Driver_pgsql extends MDB2_Driver {
 	private $_oPDO;
 	public $aPortabilityOptions;
 
+    private $_bInTransaction = false;
+
 	function __construct($aDSN, $aOptions=false) {
 		$this->_oPDO = new PDO("pgsql:dbname={$aDSN['database']};host={$aDSN['hostspec']}", $aDSN['username'], $aDSN['password']);
 		$this->_oPDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -224,7 +226,7 @@ class MDB2_Driver_pgsql extends MDB2_Driver {
                 'sorting' => 'ascending',
             );
         }
-        
+
         if ($definition['foreign']) {
             $query = 'SELECT a.attname
                         FROM pg_constraint c
@@ -243,7 +245,7 @@ class MDB2_Driver_pgsql extends MDB2_Driver {
                 );
             }
         }
-        
+
         if ($definition['check']) {
             //$check_def = $this->queryOne("SELECT pg_get_constraintdef(" . $row['oid'] . ", 't')");
             // ...
@@ -331,8 +333,8 @@ class MDB2_Driver_pgsql extends MDB2_Driver {
                      AND a.attnum > 0
                      AND a.attname = ".$this->quote($field_name, 'text')."
                 ORDER BY a.attnum";
-                
-        
+
+
         $column = $this->queryRow($query, null, MDB2_FETCHMODE_ASSOC);
         if (MDB2::isError($column)) {
             return $column;
@@ -524,6 +526,7 @@ class MDB2_Driver_pgsql extends MDB2_Driver {
 				return MDB2_OK;
 			} else {
 				if($this->_oPDO->beginTransaction()) {
+                    $this->_bInTransaction = true;
 					return MDB2_OK;
 				} else {
 					return new MDB2_Error();
@@ -536,10 +539,10 @@ class MDB2_Driver_pgsql extends MDB2_Driver {
 		if($bIgnoreNested) {
 			throw new Exception("Error in method inTransaction(), unimplemented property: \$bIgnoreNested");
 		}
-		if($this->_oPDO->inTransaction()) {
-			return true;
-		}
-		return false;
+        return $this->_bInTransaction;
+        /* Not until PHP 5.3
+        return !!$this->_oPDO->inTransaction();
+        */
 	}
 
 	public function commit($sSavepoint=null) {
@@ -548,6 +551,7 @@ class MDB2_Driver_pgsql extends MDB2_Driver {
 		} else {
 			if($this->inTransaction()) {
 				if($this->_oPDO->commit()) {
+                    $this->_bInTransaction = false;
 					return MDB2_OK;
 				} else {
 					return new MDB2_Error();
@@ -563,6 +567,7 @@ class MDB2_Driver_pgsql extends MDB2_Driver {
 			throw new Exception("Error in method rollback(), unimplemented property: \$sSavepoint");
 		} else {
 			if($this->_oPDO->rollBack()) {
+                $this->_bInTransaction = false;
 				return MDB2_OK;
 			} else {
 				return new MDB2_Error();
