@@ -52,7 +52,7 @@ class Resource_Type_File_Export_Payment_Westpac_RecurringBilling extends Resourc
 
 		$oRecord->CustomerNumber = $oAccount->Id;
 		$oRecord->CustomerName = trim($oAccount->BusinessName);
-		$oRecord->Amount = round($oPaymentRequest->amount, 2);
+		$oRecord->Amount = number_format(round($oPaymentRequest->amount, 2), 2, '.', '');
 		$oRecord->OrderNumber = $oPayment->transaction_reference;
 
 		// Add to the file
