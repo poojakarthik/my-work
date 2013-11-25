@@ -323,14 +323,13 @@ class Cli_App_Payments extends Cli {
 				'file_export_id' => $aFileExport['Id']
 			));
 
+ 			Log::get()->log(sprintf('Payment Export File #%d: %s reversed. %d previously exported Payment Requests now pending re-export.', $aFileExport['Id'], $aFileExport['FileName'], $oDB->refMysqliConnection->affected_rows));
+
  			if ($bTestRun) {
  				throw new Exception('Test Run');
  			}
- 			throw new Exception('DEBUG: not ready for production!');
 
  			$oDB->TransactionCommit(false);
-
- 			Log::get()->log(sprintf('Payment Export File #%d: %s reversed. %d previously exported Payment Requests now pending re-export.', $aFileExport['Id'], $aFileExport['FileName'], $oDB->refMysqliConnection->affected_rows));
  		} catch (Exception $oException) {
  			Log::get()->log(sprintf('ERROR: %s, rolling back transaction…', $oException->getMessage()));
  			$oDB->TransactionRollback(false);
