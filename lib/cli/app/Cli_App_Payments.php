@@ -265,8 +265,8 @@ class Cli_App_Payments extends Cli {
 			$aFileExports []= $aFileExport;
 		}
 
-		Log::get()->log(sprintf('Found %d files matching: %s', $oFileExportResults->row_count, var_export((string)$mFileExport, true)));
-		if ($oFileExportResults->row_count > 1) {
+		Log::get()->log(sprintf('Found %d files matching: %s', $oFileExportResults->num_rows, var_export((string)$mFileExport, true)));
+		if ($oFileExportResults->num_rows > 1) {
 			// Multiple matches: bail out
 			Log::get()->log(sprintf('There were multiple Payment Export files matching %s. Flex currently can\'t reverse Payment Export files with non-unique filenames. Please retry, supplying the Id from the file you want to reverse instead of the file name.', var_export((string)$mFileExport, true)));
 			foreach ($aFileExports as $aFileExport) {
@@ -274,7 +274,7 @@ class Cli_App_Payments extends Cli {
 			}
 			exit(1);
  		}
- 		if ($oFileExportResults->row_count == 0) {
+ 		if ($oFileExportResults->num_rows == 0) {
  			// No matches: bail out
  			Log::get()->log(sprintf('There were no Payment Export files matching %s. This could mean that the payments have already been reversed or the file was never exported.', var_export((string)$mFileExport, true)));
  			exit(1);
@@ -295,7 +295,7 @@ class Cli_App_Payments extends Cli {
 		', array(
 			'file_export_id' => $aFileExport['Id']
 		));
-		if ($oPaymentResponsesResult->row_count) {
+		if ($oPaymentResponsesResult->num_rows) {
 			// Payment Responses encountered: bail out
  			Log::get()->log('There were one or more Payment Responses found for the requests made in the supplied file. This file cannot be reversed.');
  			exit(1);
@@ -330,7 +330,7 @@ class Cli_App_Payments extends Cli {
 
  			$oDB->TransactionCommit(false);
 
- 			Log::get()->log(sprintf('Payment Export File #%d: %s reversed. %d previously exported Payment Requests now pending re-export.', $aFileExport['Id'], $aFileExport['FileName'], $oPaymentRequestsUpdateResult->num_rows));
+ 			Log::get()->log(sprintf('Payment Export File #%d: %s reversed. %d previously exported Payment Requests now pending re-export.', $aFileExport['Id'], $aFileExport['FileName'], $oDB->refMysqliConnection->affected_rows));
  		} catch (Exception $oException) {
  			Log::get()->log(sprintf('ERROR: %s, rolling back transaction…', $oException->getMessage()));
  			$oDB->TransactionRollback(false);
