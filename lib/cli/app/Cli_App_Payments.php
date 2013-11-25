@@ -313,6 +313,7 @@ class Cli_App_Payments extends Cli {
  			", array(
 				'file_export_id' => $aFileExport['Id']
 			));
+ 			$iPaymentRequestsUpdated = $oDB->refMysqliConnection->affected_rows;
 
 			// Update Payment Requests that where exported in this file
  			Log::get()->log('Deleting File Export record for this file…');
@@ -322,8 +323,9 @@ class Cli_App_Payments extends Cli {
  			", array(
 				'file_export_id' => $aFileExport['Id']
 			));
+			$iFileExportsDeleted = $oDB->refMysqliConnection->affected_rows;
 
- 			Log::get()->log(sprintf('Payment Export File #%d: %s reversed. %d previously exported Payment Requests now pending re-export.', $aFileExport['Id'], $aFileExport['FileName'], $oDB->refMysqliConnection->affected_rows));
+ 			Log::get()->log(sprintf('Payment Export File #%d: %s reversed (%d file deleted). %d previously exported Payment Requests now pending re-export.', $aFileExport['Id'], $aFileExport['FileName'], $iFileExportsDeleted, $iPaymentRequestsUpdated));
 
  			if ($bTestRun) {
  				throw new Exception('Test Run');
