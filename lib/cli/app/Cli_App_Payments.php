@@ -1260,8 +1260,8 @@ class Cli_App_Payments extends Cli {
 			self::SWITCH_MODE => array(
 				self::ARG_LABEL => "MODE",
 				self::ARG_REQUIRED => TRUE,
-				self::ARG_DESCRIPTION => "Payment operation to perform [".self::MODE_PREPROCESS."|".self::MODE_PROCESS."|".self::MODE_DISTRIBUTE."|".self::MODE_EXPORT."|".self::MODE_DIRECT_DEBIT."|".self::MODE_DEBUG."|".self::MODE_REVERSE."]",
-				self::ARG_VALIDATION => 'Cli::_validInArray("%1$s", array("'.self::MODE_PREPROCESS.'","'.self::MODE_PROCESS.'","'.self::MODE_DISTRIBUTE.'","'.self::MODE_EXPORT.'","'.self::MODE_DIRECT_DEBIT.'","'.self::MODE_DEBUG.'","'.self::MODE_REVERSE.'"))'
+				self::ARG_DESCRIPTION => "Payment operation to perform [".self::MODE_PREPROCESS."|".self::MODE_PROCESS."|".self::MODE_DISTRIBUTE."|".self::MODE_EXPORT."|".self::MODE_DIRECT_DEBIT."|".self::MODE_DEBUG."|".self::MODE_REVERSE."|".self::MODE_REVERSE_EXPORT"]",
+				self::ARG_VALIDATION => 'Cli::_validInArray("%1$s", array("'.self::MODE_PREPROCESS.'","'.self::MODE_PROCESS.'","'.self::MODE_DISTRIBUTE.'","'.self::MODE_EXPORT.'","'.self::MODE_DIRECT_DEBIT.'","'.self::MODE_DEBUG.'","'.self::MODE_REVERSE.'","'.self::MODE_REVERSE_EXPORT."))'
 			),
 
 			self::SWITCH_PAYMENT_ID => array(
