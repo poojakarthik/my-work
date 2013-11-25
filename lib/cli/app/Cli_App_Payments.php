@@ -281,7 +281,7 @@ class Cli_App_Payments extends Cli {
  		}
 
  		$aFileExport = $aFileExports[0];
- 		Log::get()->log(sprintf('Found %d: %s with %d Payment Requests', $aFileExport['Id'], $aFileExport['FileName'], $aFileExport['payment_request_count']));
+ 		Log::get()->log(sprintf('Found #%d: %s with %d Payment Requests', $aFileExport['Id'], $aFileExport['FileName'], $aFileExport['payment_request_count']));
  		Log::get()->log(var_export($aFileExport, true));
 
 		// Check for Responses to Payment Requests (there should be none)
