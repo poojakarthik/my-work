@@ -57,6 +57,10 @@ class DataAccess
 		return self::$arrDataAccessCache[$strConnectionType];
 	}
 
+	public static function get($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT) {
+		return self::getDataAccess($strConnectionType);
+	}
+
 	public function getNow($bAsTimestamp=false) {
 		// TODO: Caching
 		$sDatetime	= array_value(Query::run('SELECT NOW() AS now')->fetch_assoc(), 'now');
