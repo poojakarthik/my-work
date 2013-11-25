@@ -49,7 +49,7 @@ class File_Exporter_CSV extends File_Exporter
 	}
 
 	public function setEscapeMode($sEscapeMode) {
-		$this->_sEscapeMode = $sEscapeMode
+		$this->_sEscapeMode = $sEscapeMode;
 	}
 
 	protected function _getEscapableCharacters() {
