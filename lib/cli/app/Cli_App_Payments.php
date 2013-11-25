@@ -247,7 +247,7 @@ class Cli_App_Payments extends Cli {
 		$oDB = DataAccess::get();
 
 		// Search for the file to reverse
-		Log::get()->log('Searching for files matching: %s', var_export((string)$mFileExport), true));
+		Log::get()->log('Searching for files matching: %s', var_export((string)$mFileExport, true));
 		$oFileExportResults = $oDB->query('
 			SELECT fe.*,
 				COUNT(pr.id) AS payment_request_count
@@ -265,10 +265,10 @@ class Cli_App_Payments extends Cli {
 			$aFileExports []= $aFileExport;
 		}
 
-		Log::get()->log(sprintf('Found %d files matching: %s', $oFileExportResults->row_count, (string)$mFileExport));
+		Log::get()->log(sprintf('Found %d files matching: %s', $oFileExportResults->row_count, var_export((string)$mFileExport, true)));
 		if ($oFileExportResults->row_count > 1) {
 			// Multiple matches: bail out
-			Log::get()->log(sprintf('There were multiple Payment Export files matching %s. Flex currently can\'t reverse Payment Export files with non-unique filenames. Please retry, supplying the Id from the file you want to reverse instead of the file name.', var_export((string)$mFileExport), true));
+			Log::get()->log(sprintf('There were multiple Payment Export files matching %s. Flex currently can\'t reverse Payment Export files with non-unique filenames. Please retry, supplying the Id from the file you want to reverse instead of the file name.', var_export((string)$mFileExport, true));
 			foreach ($aFileExports as $aFileExport) {
 				Log::get()->log(var_export($aFileExport, true));
 			}
@@ -276,7 +276,7 @@ class Cli_App_Payments extends Cli {
  		}
  		if ($oFileExportResults->row_count == 0) {
  			// No matches: bail out
- 			Log::get()->log('There were no Payment Export files matching %s. This could mean that the payments have already been reversed or the file was never exported.', var_export((string)$mFileExport), true));
+ 			Log::get()->log('There were no Payment Export files matching %s. This could mean that the payments have already been reversed or the file was never exported.', var_export((string)$mFileExport, true));
  			exit(1);
  		}
 
