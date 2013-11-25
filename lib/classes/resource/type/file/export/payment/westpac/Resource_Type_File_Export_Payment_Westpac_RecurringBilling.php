@@ -8,7 +8,7 @@ class Resource_Type_File_Export_Payment_Westpac_RecurringBilling extends Resourc
 	const NEW_LINE_DELIMITER = "\n";
 	const FIELD_DELIMITER = ',';
 	const FIELD_ENCAPSULATOR = '"';
-	const ESCAPE_CHARACTER = '\\';
+	const ESCAPE_CHARACTER = '"';
 
 	protected $_oFileExport;
 	protected $_oFileExporter;
@@ -63,7 +63,7 @@ class Resource_Type_File_Export_Payment_Westpac_RecurringBilling extends Resourc
 
 	public function render() {
 		// Filename
-		$sFilename = $this->getConfig()->SupplierUserName.'_'.$this->getConfig()->FileDescription.'_'.date('Ymd').'.csv';
+		$sFilename = sprintf('%s.%s.csv', $this->getConfig()->FileNamePrefix, date('Ymd', $this->_iTimestamp));
 		$this->_sFilePath = self::getExportPath($this->getCarrierModule()->Carrier, __CLASS__).$sFilename;
 
 		// Render and write to disk
@@ -99,7 +99,8 @@ class Resource_Type_File_Export_Payment_Westpac_RecurringBilling extends Resourc
 			->setNewLine(self::NEW_LINE_DELIMITER)
 			->setQuote(self::FIELD_ENCAPSULATOR)
 			->setEscape(self::ESCAPE_CHARACTER)
-			->setQuoteMode(File_Exporter_CSV::QUOTE_MODE_REACTIVE);
+			->setQuoteMode(File_Exporter_CSV::QUOTE_MODE_REACTIVE)
+			->setEscapeMode(File_Exporter_CSV::ESCAPE_MODE_RFC4180);
 
 		// Header Record
 		$this->_oFileExporter->registerRecordType(self::RECORD_TYPE_HEADER,
