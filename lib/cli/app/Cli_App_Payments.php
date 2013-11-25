@@ -1288,7 +1288,7 @@ class Cli_App_Payments extends Cli {
 			self::SWITCH_FILE_EXPORT => array(
 				self::ARG_REQUIRED => false,
 				self::ARG_LABEL => "FILE_EXPORT",
-				self::ARG_DESCRIPTION => "File Export file name or Id (".self::REVERSEEXPORTFILE." Mode only)",
+				self::ARG_DESCRIPTION => "File Export file name or Id (".self::MODE_REVERSE_EXPORT." Mode only)",
 				self::ARG_VALIDATION => 'Cli::_validIsSet()'
 			),
 
