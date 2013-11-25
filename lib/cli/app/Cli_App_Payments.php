@@ -15,7 +15,7 @@ class Cli_App_Payments extends Cli {
 	const MODE_DIRECT_DEBIT = 'DIRECTDEBIT';
 	const MODE_DEBUG = 'DEBUG';
 	const MODE_REVERSE = 'REVERSE';
-	const MODE_REVERSE_EXPORT = 'REVERSEEXPORTFILE'
+	const MODE_REVERSE_EXPORT = 'REVERSEEXPORTFILE';
 
 	const DIRECT_DEBIT_INELIGIBLE_BANK_ACCOUNT = 'Invalid Bank Account reference';
 	const DIRECT_DEBIT_INELIGIBLE_CREDIT_CARD = 'Invalid Credit Card reference';
