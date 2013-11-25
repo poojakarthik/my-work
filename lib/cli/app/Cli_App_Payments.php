@@ -1,11 +1,12 @@
 <?php
-class Cli_App_Payments extends Cli { 
+class Cli_App_Payments extends Cli {
 	const SWITCH_TEST_RUN = 't';
 	const SWITCH_MODE = 'm';
 	const SWITCH_PAYMENT_ID = 'p';
 	const SWITCH_FILE_IMPORT_ID = 'f';
 	const SWITCH_FILE_IMPORT_DATA_ID = 'd';
 	const SWITCH_LIMIT = 'x';
+	const SWITCH_FILE_EXPORT = 'e';
 
 	const MODE_PREPROCESS = 'PREPROCESS';
 	const MODE_PROCESS = 'PROCESS';
@@ -14,105 +15,106 @@ class Cli_App_Payments extends Cli {
 	const MODE_DIRECT_DEBIT = 'DIRECTDEBIT';
 	const MODE_DEBUG = 'DEBUG';
 	const MODE_REVERSE = 'REVERSE';
-	
+	const MODE_REVERSE_EXPORT = 'REVERSEEXPORTFILE'
+
 	const DIRECT_DEBIT_INELIGIBLE_BANK_ACCOUNT = 'Invalid Bank Account reference';
 	const DIRECT_DEBIT_INELIGIBLE_CREDIT_CARD = 'Invalid Credit Card reference';
 	const DIRECT_DEBIT_INELIGIBLE_CREDIT_CARD_EXPIRY = 'Credit card has expired';
 	const DIRECT_DEBIT_INELIGIBLE_AMOUNT = 'Overdue balance is too small';
 	const DIRECT_DEBIT_INELIGIBLE_RETRY = 'Invoice Run has already been Direct Debited';
-	
-	function run() { 
-		try { 
+
+	function run() {
+		try {
 			// The arguments are present and in a valid format if we get past this point.
 			$this->_aArgs = $this->getValidatedArguments();
-			
+
 			$sMode = '_'.strtolower($this->_aArgs[self::SWITCH_MODE]);
-			if (!method_exists($this, $sMode)) { 
+			if (!method_exists($this, $sMode)) {
 				throw new Exception("Invalid Mode '{$sMode}'");
-			} else { 
+			} else {
 				$oDataAccess = DataAccess::getDataAccess();
-				
+
 				// TEST MODE: Start Transaction
-				if ($this->_aArgs[self::SWITCH_TEST_RUN] && !$oDataAccess->TransactionStart()) { 
+				if ($this->_aArgs[self::SWITCH_TEST_RUN] && !$oDataAccess->TransactionStart()) {
 					throw new Exception_Database($oDataAccess->Error());
 				}
-				
-				try { 
+
+				try {
 					// Call the approrite MODE method
 					$this->$sMode();
-					
+
 					// TEST MODE: Force Rollback
-					if ($this->_aArgs[self::SWITCH_TEST_RUN]) { 
+					if ($this->_aArgs[self::SWITCH_TEST_RUN]) {
 						throw new Exception("TEST MODE");
 					}
-				} catch (Exception $oException) { 
+				} catch (Exception $oException) {
 					// TEST MODE: Rollback
-					if ($this->_aArgs[self::SWITCH_TEST_RUN]) { 
+					if ($this->_aArgs[self::SWITCH_TEST_RUN]) {
 						$oDataAccess->TransactionRollback();
 					}
 					throw $oException;
 				}
-				
+
 				// TEST MODE: Commit
-				if ($this->_aArgs[self::SWITCH_TEST_RUN]) { 
+				if ($this->_aArgs[self::SWITCH_TEST_RUN]) {
 					$oDataAccess->TransactionCommit();
 				}
 			}
-		} catch (Exception $oException) { 
+		} catch (Exception $oException) {
 			echo "\n".$oException."\n";
 			return 1;
 		}
 	}
-	
-	protected function _preprocess() { 
+
+	protected function _preprocess() {
 		// Ensure that Payment Import isn't already running, then identify that it is now running
 		Flex_Process::factory(Flex_Process::PROCESS_PAYMENTS_PREPROCESS)->lock();
-		
+
 		// Optional FileImport.Id parameter
 		$iFileImportId = $this->_aArgs[self::SWITCH_FILE_IMPORT_ID];
-		if ($iFileImportId && ($oFileImport = File_Import::getForId($iFileImportId))) { 
-			if ($oFileImport->Status !== FILE_COLLECTED) { 
+		if ($iFileImportId && ($oFileImport = File_Import::getForId($iFileImportId))) {
+			if ($oFileImport->Status !== FILE_COLLECTED) {
 				throw new Exception("Only Files with Status FILE_COLLECTED (".FILE_COLLECTED.") can be pre-Processed");
 			}
-			
+
 			// Make sure that we have a Carrier Module defined to process this File
 			Carrier_Module::getForDefinition(MODULE_TYPE_NORMALISATION_PAYMENT, $oFileImport->FileType, $oFileImport->Carrier);
 		}
-		
+
 		// Optional Limit Parameter
 		$iLimit = (isset($this->_aArgs[self::SWITCH_LIMIT]) ? (int)$this->_aArgs[self::SWITCH_LIMIT] : null);
-		
+
 		// Process the Files
-		try { 
+		try {
 			Resource_Type_File_Import_Payment::preProcessFiles($iFileImportId, $iLimit);
-		} catch (Exception $oException) { 
+		} catch (Exception $oException) {
 			// TODO: Transaction if testing
 			throw $oException;
 		}
 	}
-	
-	protected function _process() { 
+
+	protected function _process() {
 		// Ensure that Payment Normalisation isn't already running, then identify that it is now running
 		Flex_Process::factory(Flex_Process::PROCESS_PAYMENTS_PROCESS)->lock();
-		
+
 		// Optional file_import_data.id parameter
 		$iFileImportDataId = $this->_aArgs[self::SWITCH_FILE_IMPORT_DATA_ID];
-		if ($iFileImportDataId && ($oFileImportData = File_Import_Data::getForId($iFileImportDataId))) { 
-			if ($oFileImportData->file_import_data_status_id !== FILE_IMPORT_DATA_STATUS_IMPORTED) { 
+		if ($iFileImportDataId && ($oFileImportData = File_Import_Data::getForId($iFileImportDataId))) {
+			if ($oFileImportData->file_import_data_status_id !== FILE_IMPORT_DATA_STATUS_IMPORTED) {
 				throw new Exception("Only File Data with Status FILE_IMPORT_DATA_STATUS_IMPORTED (".FILE_IMPORT_DATA_STATUS_IMPORTED.") can be Normalised");
 			}
-			
+
 			// Make sure that we have a Carrier Module defined to process this File
 			Carrier_Module::getForDefinition(MODULE_TYPE_NORMALISATION_PAYMENT, $oFileImport->FileType, $oFileImport->Carrier);
 		}
-		
+
 		// Optional Limit Parameter
 		$iLimit = (isset($this->_aArgs[self::SWITCH_LIMIT]) ? (int)$this->_aArgs[self::SWITCH_LIMIT] : null);
-		
+
 		// Process the Records
-		try { 
+		try {
 			Resource_Type_File_Import_Payment::processRecords($iFileImportDataId, $iLimit);
-		} catch (Exception $oException) { 
+		} catch (Exception $oException) {
 			// TODO: Transaction if testing
 			throw $oException;
 		}
@@ -166,7 +168,7 @@ class Cli_App_Payments extends Cli {
 
 		return;
 	}
-	
+
 	protected function _distribute() {
 		// Optional Payment.Id parameter
 		$iPaymentId = $this->_aArgs[self::SWITCH_PAYMENT_ID];
@@ -175,43 +177,43 @@ class Cli_App_Payments extends Cli {
 			Flex_Process::factory(Flex_Process::PROCESS_PAYMENTS_DISTRIBUTE)->lock();
 		}
 
-		if ($iPaymentId && ($oPayment = Payment::getForId($iPaymentId))) { 
+		if ($iPaymentId && ($oPayment = Payment::getForId($iPaymentId))) {
 			Log::getLog()->log("Applying Payment #{$iPaymentId}");
 			Logic_Payment::distributeAll(array((int)$iPaymentId));
 			return;
 		}
-		
+
 		// Apply the Payments
 		Logic_Payment::distributeAll();
 	}
-	
-	protected function _export() { 
+
+	protected function _export() {
 		// Ensure that Payment Export isn't already running, then identify that it is now running
 		Flex_Process::factory(Flex_Process::PROCESS_PAYMENTS_EXPORT)->lock();
-		
+
 		$oEmailQueue = Email_Flex_Queue::get();
 		$oEmailQueue->setDebugAddress('ybs-admin@ybs.net.au');
 
-		try { 
+		try {
 			$bTestRun = $this->_aArgs[self::SWITCH_TEST_RUN];
-			if ($bTestRun) { 
+			if ($bTestRun) {
 				Log::getLog()->log("** TEST MODE **");
 				Log::getLog()->log("The exported files will NOT be delivered, instead will be emailed to ybs-admin@ybs.net.au");
-				
+
 				// Enable file delivery testing (this will force emailling of all files to ybs-admin@ybs.net.au)
 				Resource_Type_File_Deliver::enableTestMode();
-				
+
 				$oDataAccess = DataAccess::getDataAccess();
-				if ($oDataAccess->TransactionStart() === false) { 
+				if ($oDataAccess->TransactionStart() === false) {
 					throw new Exception("Failed to START db transaction");
 				}
 				Log::getLog()->log("Transaction started");
 			}
-			
+
 			Resource_Type_File_Export_Payment::exportDirectDebits();
-			
+
 			if ($bTestRun) {
-				if ($oDataAccess->TransactionRollback() === false) { 
+				if ($oDataAccess->TransactionRollback() === false) {
 					throw new Exception("Failed to ROLLBACK db transaction");
 				}
 				Log::getLog()->log("Transaction rolled back");
@@ -221,7 +223,7 @@ class Cli_App_Payments extends Cli {
 
 			// Send emails in the queue
 			$oEmailQueue->send();
-		} catch (Exception $oException) { 
+		} catch (Exception $oException) {
 			throw new Exception("Failed to export. ".$oException->getMessage());
 		}
 	}
@@ -236,6 +238,105 @@ class Cli_App_Payments extends Cli {
 			$oPayment->reverse(Payment_Reversal_Reason::getForSystemName('AGENT_REVERSAL'));
 			Log::getLog()->log("Successful!");
 		}
+	}
+
+	private function _reverseExportFile() {
+		$bTestRun = $this->_aArgs[self::SWITCH_TEST_RUN];
+		$mFileExport = $this->_aArgs[self::SWITCH_FILE_EXPORT];
+
+		$oDB = DataAccess::get();
+
+		// Search for the file to reverse
+		$oFileExportResults = $oDB->query('
+			SELECT fe.*,
+				COUNT(pr.id) AS payment_request_count
+			FROM FileExport fe
+				JOIN payment_request pr ON (pr.file_export_id = fe.Id)
+			WHERE fe.FileName = <filename>
+				OR fe.Id = <id>
+			GROUP BY fe.Id
+		', array(
+			'filename' => (string)$mFileExport,
+			'id' => preg_match('/^\s*(\d+)\s*$/', $mFileExport) ? (int)$mFileExport : null
+		));
+		$aFileExports = array();
+		while ($aFileExport = $oFileExportResults->fetch_assoc()) {
+			$aFileExports []= $aFileExport;
+		}
+
+		Log::get()->log(sprintf('Found %d files matching: %s', $oFileExportResults->row_count, $sFileName));
+		if ($oFileExportResults->row_count > 1) {
+			// Multiple matches: bail out
+			Log::get()->log('There were multiple Payment Export files matching the supplied filename. Flex currently can\'t reverse Payment Export files with non-unique filenames. Please retry, supplying the Id from the file you want to reverse instead of the file name.');
+			foreach ($aFileExports as $aFileExport) {
+				Log::get()->log(var_export($aFileExport, true));
+			}
+			exit(1);
+ 		}
+ 		if ($oFileExportResults->row_count == 0) {
+ 			// No matches: bail out
+ 			Log::get()->log('There were no Payment Export files matching the supplied filename. This could mean that the payments have already been reversed or the file was never exported.');
+ 			exit(1);
+ 		}
+
+ 		$aFileExport = $aFileExports[0];
+ 		Log::get()->log(sprintf('Found %s with %d Payment Requests', $sFileName, $aFileExport['payment_request_count']));
+ 		Log::get()->log(var_export($aFileExport, true));
+
+		// Check for Responses to Payment Requests (there should be none)
+		Log::get()->log('Checking for Responses to Payment Requests (there should be none)…');
+		$oPaymentResponsesResult = $oDB->query('
+			SELECT prq.*,
+				prs.created_datetime AS response_datetime
+			FROM payment_request prq
+				JOIN payment_response prs ON (prs.payment_id = prq.payment_id)
+			WHERE prq.file_export_id = <file_export_id>
+		', array(
+			'file_export_id' => $aFileExport['Id']
+		));
+		if ($oPaymentResponsesResult->row_count) {
+			// Payment Responses encountered: bail out
+ 			Log::get()->log('There were one or more Payment Responses found for the requests made in the supplied file. This file cannot be reversed.');
+ 			exit(1);
+		}
+
+ 		$oDB->TransactionStart(false);
+ 		try {
+ 			// Update Payment Requests that where exported in this file
+ 			Log::get()->log('Updating Payment Requests that where exported in this file…');
+ 			$oPaymentRequestsUpdateResult = $oDB->query("
+ 				UPDATE payment_request prq
+ 				SET prq.file_export_id = NULL,
+ 					prq.payment_request_status_id = (SELECT id FROM payment_request_status WHERE system_name = 'PENDING')
+ 				WHERE prq.file_export_id = <file_export_id>
+ 			", array(
+				'file_export_id' => $aFileExport['Id']
+			));
+
+			// Update Payment Requests that where exported in this file
+ 			Log::get()->log('Deleting File Export record for this file…');
+ 			$oDB->query("
+ 				DELETE FROM FileExport
+ 				WHERE Id = <file_export_id>
+ 			", array(
+				'file_export_id' => $aFileExport['Id']
+			));
+
+ 			if ($bTestRun) {
+ 				throw new Exception('Test Run');
+ 			}
+ 			throw new Exception('DEBUG: not ready for production!');
+
+ 			$oDB->TransactionCommit(false);
+
+ 			Log::get()->log(sprintf('Payment Export File #%d: %s reversed. %d previously exported Payment Requests now pending re-export.', $aFileExport['Id'], $aFileExport['FileName'], $oPaymentRequestsUpdateResult->num_rows));
+ 		} catch (Exception $oException) {
+ 			Log::get()->log(sprintf('ERROR: %s, rolling back transaction…', $oException->getMessage()));
+ 			$oDB->TransactionRollback(false);
+ 			throw $oException;
+ 		}
+
+ 		return;
 	}
 
 	const PROCPIPE_STDIN = 0;
@@ -372,7 +473,7 @@ class Cli_App_Payments extends Cli {
 	const DISTRIBUTION_ATTEMPTS_MAXIMUM = 4;
 	private static function _distributePayments($aPayments) {
 		Log::get()->log(sprintf('Distributing %d Payments...', count($aPayments)));
-		
+
 		// Prepare commands
 		$aCommands = array();
 		foreach ($aPayments as $iPaymentId) {
@@ -403,22 +504,22 @@ class Cli_App_Payments extends Cli {
 		// The arguments are present and in a valid format if we get past this point.
 		$aArgs = $this->getValidatedArguments();
 		$bTestRun = (bool)$aArgs[self::SWITCH_TEST_RUN];
-		
+
 		$oEmailQueue = Email_Flex_Queue::get();
 		$oEmailQueue->setDebugAddress('ybs-admin@ybs.net.au');
-		
-		if ($bTestRun) { 
+
+		if ($bTestRun) {
 			// In test mode, start a db transaction
 			$oDataAccess = DataAccess::getDataAccess();
-			if ($oDataAccess->TransactionStart() === false) { 
+			if ($oDataAccess->TransactionStart() === false) {
 				throw new Exception_Database("Failed to start db transaction");
 			}
 			Log::getLog()->log("Running in Test Mode, transaction started");
 		}
-		
+
 		try {
 			// Determine if this should be run
-			if (Collections_Schedule::getEligibility(null, true)) { 
+			if (Collections_Schedule::getEligibility(null, true)) {
 				$iTimestamp = DataAccess::getDataAccess()->getNow(true);
 
 				// Execute subprocesses
@@ -452,13 +553,13 @@ class Cli_App_Payments extends Cli {
 				$oDirectDebitSummaryEmail->html = self::_buildDirectDebitSummaryEmailHTMLContent($aSummaryData);
 				$oDirectDebitSummaryEmail->text = self::_buildDirectDebitSummaryEmailTextContent($aSummaryData);
 				$oEmailQueue->push($oDirectDebitSummaryEmail);
-			} else { 
+			} else {
 				Log::getLog()->log("Direct debits cannot be processed today, check collections_schedule for more info.");
 			}
-			
+
 			if ($bTestRun) {
 				// In test mode, rollback all changes
-				if ($oDataAccess->TransactionRollback() === false) { 
+				if ($oDataAccess->TransactionRollback() === false) {
 					throw new Exception_Database("Failed to rollback db transaction");
 				}
 				Log::getLog()->log("Running in Test Mode, Transaction rolled back");
@@ -473,10 +574,10 @@ class Cli_App_Payments extends Cli {
 			if (!$bTestRun) {
 				self::_distributePayments(array_merge($aPromiseDirectDebitSummary['aPayments'], $aInvoiceDirectDebitSummary['aPayments']));
 			}
-		} catch (Exception $oEx) { 
-			if ($bTestRun) { 
+		} catch (Exception $oEx) {
+			if ($bTestRun) {
 				// In test mode, rollback transaction
-				if ($oDataAccess->TransactionRollback() === false) { 
+				if ($oDataAccess->TransactionRollback() === false) {
 					throw new Exception_Database("Failed to rollback db transaction");
 				}
 				Log::getLog()->log("Transaction rolled back due to exception (in Test Mode)");
@@ -484,20 +585,20 @@ class Cli_App_Payments extends Cli {
 			throw $oEx;
 		}
 	}
-	
-	private function _runBalanceDirectDebits($iTimestamp) { 
+
+	private function _runBalanceDirectDebits($iTimestamp) {
 		Log::getLog()->log("");
 		Log::getLog()->log("Overdue Balance Direct Debits");
 		Log::getLog()->log("");
-		
+
 		// Eligible for direct debits today, list the invoices that are eligible
 		$oCollectionsConfig = Collections_Config::get();
-		if (!$oCollectionsConfig || $oCollectionsConfig->direct_debit_due_date_offset === null) { 
+		if (!$oCollectionsConfig || $oCollectionsConfig->direct_debit_due_date_offset === null) {
 			throw new Exception("There is no direct debit due date offset configured in collections_config.");
 		}
 
 		$iTimestamp = ($iTimestamp) ? $iTimestamp : DataAccess::getDataAccess()->getNow(true);
-		
+
 		// Get Account records
 		Log::getLog()->log("Getting accounts that are eligible");
 		$mResult = Query::run("
@@ -547,9 +648,9 @@ class Cli_App_Payments extends Cli {
 			'effective_date' => date('Y-m-d', $iTimestamp),
 			'direct_debit_due_date_offset' => (int)$oCollectionsConfig->direct_debit_due_date_offset
 		));
-		
+
 		Log::getLog()->log("Got accounts");
-		
+
 		// Process each account
 		$iAppliedCount = 0;
 		$fAppliedValue = 0.0;
@@ -567,29 +668,29 @@ class Cli_App_Payments extends Cli {
 				'fValue' => 0.0
 			);
 		}
-		
+
 		// Arrays for recording error information
 		$aIneligible = array(
-			self::DIRECT_DEBIT_INELIGIBLE_BANK_ACCOUNT => 0, 
+			self::DIRECT_DEBIT_INELIGIBLE_BANK_ACCOUNT => 0,
 			self::DIRECT_DEBIT_INELIGIBLE_CREDIT_CARD => 0,
-			self::DIRECT_DEBIT_INELIGIBLE_CREDIT_CARD_EXPIRY => 0, 
+			self::DIRECT_DEBIT_INELIGIBLE_CREDIT_CARD_EXPIRY => 0,
 			self::DIRECT_DEBIT_INELIGIBLE_AMOUNT => 0,
 			self::DIRECT_DEBIT_INELIGIBLE_RETRY => 0
 		);
-		
+
 		$aAppliedAccountIds = array();
 		$aPayments = array();
-		while ($aRow = $mResult->fetch_assoc()) { 
-			// Check if the account has already been processed, potentially useless 
+		while ($aRow = $mResult->fetch_assoc()) {
+			// Check if the account has already been processed, potentially useless
 			// but is here just to be sure that accounts aren't charged more than once
 			$iAccountId = $aRow['account_id'];
-			if (isset($aAccountsApplied[$iAccountId])) { 
+			if (isset($aAccountsApplied[$iAccountId])) {
 				$iDoubleUpsCount++;
 				Log::getLog()->log("Already applied to account {$iAccountId}");
 				continue;
 			}
 			$aAccountsApplied[$iAccountId] = true;
-			
+
 			$oAccount = Account::getForId($aRow['account_id']);
 
 			// Check if this Invoice Run has been Direct Debited previously
@@ -601,7 +702,7 @@ class Cli_App_Payments extends Cli {
 				$aIneligible[self::DIRECT_DEBIT_INELIGIBLE_RETRY]++;
 				continue;
 			}
-			
+
 			// Offset Effective Date is today's date MINUS the Direct Debit Offset (as this offset is usually applied to the Due Date)
 			// We then need to ADD 1 day, because we want people that are *Due* (but will not be overdue until tomorrow)
 			$sOffsetEffectiveDate = date(
@@ -622,22 +723,22 @@ class Cli_App_Payments extends Cli {
 				$aIneligible[self::DIRECT_DEBIT_INELIGIBLE_AMOUNT]++;
 				continue;
 			}
-			
+
 			// Determine if the direct debit details are valid & the origin id (cc or bank account number) & payment type (for the payment)
 			$oPaymentMethodDetail = $oAccount->getPaymentMethodDetails();
 			$bDirectDebitable = false;
 			$iPaymentType = null;
 			$sOriginIdType = null;
 			$mOriginId = null;
-			switch($oAccount->BillingType) { 
+			switch($oAccount->BillingType) {
 				case BILLING_TYPE_DIRECT_DEBIT:
 					$iPaymentType = PAYMENT_TYPE_DIRECT_DEBIT_VIA_EFT;
 					$oDirectDebit = DirectDebit::getForId($oAccount->DirectDebit);
-					if ($oDirectDebit) { 
+					if ($oDirectDebit) {
 						$bDirectDebitable = true;
 						$sOriginIdType = Payment_Transaction_Data::BANK_ACCOUNT_NUMBER;
 						$mOriginId = $oPaymentMethodDetail->AccountNumber;
-					} else { 
+					} else {
 						// Ineligible due to invalid bank account
 						Log::getLog()->log("ERROR: {$iAccountId} has an invalid bank account, id = {$oAccount->DirectDebit}");
 						$aIneligible[self::DIRECT_DEBIT_INELIGIBLE_BANK_ACCOUNT]++;
@@ -650,23 +751,23 @@ class Cli_App_Payments extends Cli {
 					$sCompareExpiry = "{$oCreditCard->ExpYear}-{$oCreditCard->ExpMonth}-01 + 1 month";
 					$iExpiry = strtotime($sCompareExpiry);
 					$iNow = time();
-					if ($oCreditCard && ($iNow < $iExpiry)) { 
+					if ($oCreditCard && ($iNow < $iExpiry)) {
 						$bDirectDebitable = true;
 						$sOriginIdType = Payment_Transaction_Data::CREDIT_CARD_NUMBER;
 						$mOriginId = Credit_Card::getMaskedCardNumber(Decrypt($oPaymentMethodDetail->CardNumber));
-					} else if ($iNow >= $iExpiry) { 
+					} else if ($iNow >= $iExpiry) {
 						// Ineligible because credit card has expired
 						Log::getLog()->log("ERROR: {$iAccountId} has an expired credit card: {$sExpiry} (".date('Y-m-d', strtotime($sCompareExpiry)).")");
 						$aIneligible[self::DIRECT_DEBIT_INELIGIBLE_CREDIT_CARD_EXPIRY]++;
-					} else { 
+					} else {
 						// Ineligible due to invalid credit card
 						Log::getLog()->log("ERROR: {$iAccountId} has an invalid credit card, id = {$oAccount->CreditCard}");
 						$aIneligible[self::DIRECT_DEBIT_INELIGIBLE_CREDIT_CARD]++;
 					}
 					break;
 			}
-			
-			if ($bDirectDebitable) { 
+
+			if ($bDirectDebitable) {
 				DataAccess::getDataAccess()->TransactionStart(false);
 				try {
 					// Create Payment (using origin id, payment type, account & amount)
@@ -715,19 +816,19 @@ class Cli_App_Payments extends Cli {
 				}
 
 				DataAccess::getDataAccess()->TransactionCommit(false);
-				
+
 				Log::getLog()->log("Account: {$oAccount->Id}, Payment: {$oPayment->id}, payment_request: {$oPaymentRequest->id}, Amount: {$fAmount}; Due: {$oInvoice->DueOn}");
-				
+
 				// Add to Customer Group Totals
 				$aCustomerGroupSummary[$oAccount->CustomerGroup]['iCount']++;
 				$aCustomerGroupSummary[$oAccount->CustomerGroup]['fValue'] = Rate::roundToCurrencyStandard($aCustomerGroupSummary[$oAccount->CustomerGroup]['fValue'] + $fAmount);
-				
+
 				// Add to General Totals
 				$fAppliedValue = Rate::roundToCurrencyStandard($fAppliedValue + $fAmount);
 				$iAppliedCount++;
 			}
 		}
-		
+
 		Log::getLog()->log("APPLIED: {$iAppliedCount}");
 		Log::getLog()->log("INELIGIBLE: ".print_r($aIneligible, true));
 		Log::getLog()->log("DOUBLE-UPS: {$iDoubleUpsCount} (This should always be zero)");
@@ -740,21 +841,21 @@ class Cli_App_Payments extends Cli {
 			'aPayments' => $aPayments
 		);
 	}
-	
-	private function _runPromiseInstalmentDirectDebits($iTimestamp=null) { 
+
+	private function _runPromiseInstalmentDirectDebits($iTimestamp=null) {
 		Log::getLog()->log("");
 		Log::getLog()->log("");
 		Log::getLog()->log("Promise Instalment Direct Debits");
 		Log::getLog()->log("");
 
 		$iTimestamp = ($iTimestamp) ? $iTimestamp : DataAccess::getDataAccess()->getNow(true);
-		
+
 		// Eligible for direct debits today, list the instalments that are eligible
 		$oCollectionsConfig = Collections_Config::get();
-		if (!$oCollectionsConfig || $oCollectionsConfig->promise_direct_debit_due_date_offset === null) { 
+		if (!$oCollectionsConfig || $oCollectionsConfig->promise_direct_debit_due_date_offset === null) {
 			throw new Exception("There is no promise direct debit due date offset configured in collections_config.");
 		}
-		
+
 		$mResult = Query::run("
 			SELECT cpi.id AS collection_promise_instalment_id,
 						cp.account_id AS account_id,
@@ -789,7 +890,7 @@ class Cli_App_Payments extends Cli {
 			'effective_date' => date('Y-m-d', $iTimestamp),
 			'promise_direct_debit_due_date_offset' => (int)$oCollectionsConfig->promise_direct_debit_due_date_offset
 		));
-		
+
 		// Process each instalment
 		$iAppliedCount = 0;
 		$fAppliedValue = 0.0;
@@ -805,17 +906,17 @@ class Cli_App_Payments extends Cli {
 				'fValue' => 0.0
 			);
 		}
-		
+
 		// Arrays for recording error information
 		$aIneligible = array(
-							self::DIRECT_DEBIT_INELIGIBLE_BANK_ACCOUNT => 0, 
+							self::DIRECT_DEBIT_INELIGIBLE_BANK_ACCOUNT => 0,
 							self::DIRECT_DEBIT_INELIGIBLE_CREDIT_CARD => 0,
-							self::DIRECT_DEBIT_INELIGIBLE_CREDIT_CARD_EXPIRY => 0, 
+							self::DIRECT_DEBIT_INELIGIBLE_CREDIT_CARD_EXPIRY => 0,
 							self::DIRECT_DEBIT_INELIGIBLE_AMOUNT => 0
 						);
 		$aAppliedAccountIds = array();
 		$aPayments = array();
-		while ($aRow = $mResult->fetch_assoc()) { 
+		while ($aRow = $mResult->fetch_assoc()) {
 			Log::getLog()->log("Collection Promise Instalment: {$aRow['collection_promise_instalment_id']}");
 			$oInstalment = Collection_Promise_Instalment::getForId($aRow['collection_promise_instalment_id']);
 			$oPayable = new Logic_Collection_Promise_Instalment($oInstalment);
@@ -837,15 +938,15 @@ class Cli_App_Payments extends Cli {
 			$iPaymentType = null;
 			$sOriginIdType = null;
 			$mOriginId = null;
-			switch($oAccount->BillingType) { 
+			switch($oAccount->BillingType) {
 				case BILLING_TYPE_DIRECT_DEBIT:
 					$iPaymentType = PAYMENT_TYPE_DIRECT_DEBIT_VIA_EFT;
 					$oDirectDebit = DirectDebit::getForId($oAccount->DirectDebit);
-					if ($oDirectDebit) { 
+					if ($oDirectDebit) {
 						$bDirectDebitable = true;
 						$sOriginIdType = Payment_Transaction_Data::BANK_ACCOUNT_NUMBER;
 						$mOriginId = $oPaymentMethodDetail->AccountNumber;
-					} else { 
+					} else {
 						// Ineligible due to invalid bank account
 						Log::getLog()->log("ERROR: {$oAccount->Id} has an invalid bank account, id = {$oAccount->DirectDebit}");
 						$aIneligible[self::DIRECT_DEBIT_INELIGIBLE_BANK_ACCOUNT]++;
@@ -858,23 +959,23 @@ class Cli_App_Payments extends Cli {
 					$sCompareExpiry = "{$oCreditCard->ExpYear}-{$oCreditCard->ExpMonth}-01 + 1 month";
 					$iExpiry = strtotime($sCompareExpiry);
 					$iNow = time();
-					if ($oCreditCard && ($iNow < $iExpiry)) { 
+					if ($oCreditCard && ($iNow < $iExpiry)) {
 						$bDirectDebitable = true;
 						$sOriginIdType = Payment_Transaction_Data::CREDIT_CARD_NUMBER;
 						$mOriginId = Credit_Card::getMaskedCardNumber(Decrypt($oPaymentMethodDetail->CardNumber));
-					} else if ($iNow >= $iExpiry) { 
+					} else if ($iNow >= $iExpiry) {
 						// Ineligible because credit card has expired
 						Log::getLog()->log("ERROR: {$oAccount->Id} has an expired credit card: {$sExpiry} (".date('Y-m-d', strtotime($sCompareExpiry)).")");
 						$aIneligible[self::DIRECT_DEBIT_INELIGIBLE_CREDIT_CARD_EXPIRY]++;
-					} else { 
+					} else {
 						// Ineligible due to invalid credit card
 						Log::getLog()->log("ERROR: {$oAccount->Id} has an invalid credit card, id = {$oAccount->CreditCard}");
 						$aIneligible[self::DIRECT_DEBIT_INELIGIBLE_CREDIT_CARD]++;
 					}
 					break;
 			}
-			
-			if ($bDirectDebitable) { 
+
+			if ($bDirectDebitable) {
 				DataAccess::getDataAccess()->TransactionStart(false);
 				try {
 					Log::getLog()->log("Is Direct Debitable - Creating Payment...");
@@ -926,11 +1027,11 @@ class Cli_App_Payments extends Cli {
 				DataAccess::getDataAccess()->TransactionCommit(false);
 
 				Log::getLog()->log("Complete (Account: {$oAccount->Id}, Payment: {$oPayment->id}, payment_request: {$oPaymentRequest->id}, Amount: {$fAmount}; Due: {$oInstalment->due_date})");
-				
+
 				// Add to Customer Group Totals
 				$aCustomerGroupSummary[$oAccount->CustomerGroup]['iCount']++;
 				$aCustomerGroupSummary[$oAccount->CustomerGroup]['fValue'] = Rate::roundToCurrencyStandard($aCustomerGroupSummary[$oAccount->CustomerGroup]['fValue'] + $fAmount);
-				
+
 				// Add to General Totals
 				$fAppliedValue = Rate::roundToCurrencyStandard($fAppliedValue + $fAmount);
 				$iAppliedCount++;
@@ -939,7 +1040,7 @@ class Cli_App_Payments extends Cli {
 			}
 			Log::getLog()->log("");
 		}
-		
+
 		Log::getLog()->log("APPLIED: {$iAppliedCount}");
 		Log::getLog()->log("INELIGIBLE: ".print_r($aIneligible, true));
 
@@ -957,7 +1058,7 @@ class Cli_App_Payments extends Cli {
 		$oDOMDocument = $D->getDOMDocument();
 
 		$oDOMDocument->formatOutput = true;
-		
+
 		// General Content
 		$oContent = $D->div(
 			$D->h1('Direct Debit Summary Report from '.date('d/m/Y H:i', $aData['iTimestamp'])),
@@ -1146,8 +1247,8 @@ class Cli_App_Payments extends Cli {
 
 		return implode("\n", $aLines);
 	}
-	
-	function getCommandLineArguments() { 
+
+	function getCommandLineArguments() {
 		return array(
 			self::SWITCH_TEST_RUN => array(
 				self::ARG_REQUIRED => false,
@@ -1155,21 +1256,21 @@ class Cli_App_Payments extends Cli {
 				self::ARG_DEFAULT => false,
 				self::ARG_VALIDATION => 'Cli::_validIsSet()'
 			),
-			
+
 			self::SWITCH_MODE => array(
 				self::ARG_LABEL => "MODE",
 				self::ARG_REQUIRED => TRUE,
 				self::ARG_DESCRIPTION => "Payment operation to perform [".self::MODE_PREPROCESS."|".self::MODE_PROCESS."|".self::MODE_DISTRIBUTE."|".self::MODE_EXPORT."|".self::MODE_DIRECT_DEBIT."|".self::MODE_DEBUG."|".self::MODE_REVERSE."]",
 				self::ARG_VALIDATION => 'Cli::_validInArray("%1$s", array("'.self::MODE_PREPROCESS.'","'.self::MODE_PROCESS.'","'.self::MODE_DISTRIBUTE.'","'.self::MODE_EXPORT.'","'.self::MODE_DIRECT_DEBIT.'","'.self::MODE_DEBUG.'","'.self::MODE_REVERSE.'"))'
 			),
-			
+
 			self::SWITCH_PAYMENT_ID => array(
 				self::ARG_REQUIRED => false,
 				self::ARG_LABEL => "PAYMENT_ID",
 				self::ARG_DESCRIPTION => "Payment Id (".self::MODE_DISTRIBUTE.", ".self::MODE_REVERSE." Modes only)",
 				self::ARG_VALIDATION => 'Cli::_validInteger("%1$s")'
 			),
-			
+
 			self::SWITCH_FILE_IMPORT_ID => array(
 				self::ARG_REQUIRED => false,
 				self::ARG_LABEL => "FILE_IMPORT_ID",
@@ -1183,7 +1284,14 @@ class Cli_App_Payments extends Cli {
 				self::ARG_DESCRIPTION => "File Import Data Id (".self::MODE_PROCESS.", ".self::MODE_DEBUG." Modes only)",
 				self::ARG_VALIDATION => 'Cli::_validInteger("%1$s")'
 			),
-			
+
+			self::SWITCH_FILE_EXPORT => array(
+				self::ARG_REQUIRED => false,
+				self::ARG_LABEL => "FILE_EXPORT",
+				self::ARG_DESCRIPTION => "File Export file name or Id (".self::REVERSEEXPORTFILE." Mode only)",
+				self::ARG_VALIDATION => 'Cli::_validIsSet()'
+			),
+
 			self::SWITCH_LIMIT => array(
 				self::ARG_REQUIRED => false,
 				self::ARG_LABEL => "LIMIT",
