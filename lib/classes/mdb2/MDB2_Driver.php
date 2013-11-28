@@ -6,7 +6,7 @@ class MDB2_Driver {
 		'end' => "'",
 		'escape' => false,
 		'escape_pattern' => false,
-	)
+	);
 
 	// Equivalent to the default MDB2 fetch mode.
 	private $_iPDOFetchMode = PDO::FETCH_ASSOC;

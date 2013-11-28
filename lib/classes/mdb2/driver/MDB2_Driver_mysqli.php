@@ -11,7 +11,7 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 		'end' => "'",
 		'escape' => '\\',
 		'escape_pattern' => '\\',
-	)
+	);
 
 	function __construct($aDSN, $aOptions=false) {
 		$this->_oPDO = new PDO("mysql:dbname={$aDSN['database']};host={$aDSN['hostspec']}", $aDSN['username'], $aDSN['password']);
