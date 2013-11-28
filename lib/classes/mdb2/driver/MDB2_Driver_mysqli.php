@@ -6,6 +6,13 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 
 	private $_bInTransaction = false;
 
+	protected $string_quoting = array(
+		'start' => "'",
+		'end' => "'",
+		'escape' => '\\',
+		'escape_pattern' => '\\',
+	)
+
 	function __construct($aDSN, $aOptions=false) {
 		$this->_oPDO = new PDO("mysql:dbname={$aDSN['database']};host={$aDSN['hostspec']}", $aDSN['username'], $aDSN['password']);
 		$this->_oPDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -291,5 +298,4 @@ class MDB2_Driver_mysqli extends MDB2_Driver {
 
 		return $sMDB2Datatype;
 	}
-
 }
