@@ -8,24 +8,24 @@ var Component_Account_Payment_Create = Class.create(
 		this._fnOnComplete	= fnOnComplete;
 		this._aControls 	= [];
 		this._oElement 		= $T.div({class: 'component-account-payment-create'});
-		
+
 		Flex.Constant.loadConstantGroup(Component_Account_Payment_Create.REQUIRED_CONSTANT_GROUPS, this._buildUI.bind(this));
 	},
-	
+
 	// Public
-	
+
 	getElement : function()
 	{
 		return this._oElement;
 	},
-	
+
 	save : function()
 	{
 		this._save();
 	},
-	
+
 	// Protected
-	
+
 	_buildUI : function(oAccount)
 	{
 		if (!oAccount)
@@ -33,27 +33,33 @@ var Component_Account_Payment_Create = Class.create(
 			Flex.Account.getForId(this._iAccountId, this._buildUI.bind(this));
 			return;
 		}
-		
+
 		// Create controls
 		var oPaymentTypeControl =	Control_Field.factory(
 										'select',
 										{
 											sLabel		: 'Payment Type',
-											mMandatory	: true, 
+											mMandatory	: true,
 											mEditable	: true,
-											fnPopulate	: Flex.Constant.getConstantGroupOptions.curry('payment_type')
+											fnPopulate	: function (fnCallback) {
+												Flex.Constant.getConstantGroupOptions('payment_type', function (aOptions) {
+													fnCallback(aOptions.filter(function (oOption) {
+														return (Component_Account_Payment_Create.PERMITTED_PAYMENT_TYPES.indexOf(Flex.Constant.arrConstantGroups.payment_type[oOption.value].Constant) > -1);
+													}));
+												});
+											}
 										}
 									);
 		oPaymentTypeControl.setRenderMode(Control_Field.RENDER_MODE_EDIT);
 		oPaymentTypeControl.addOnChangeCallback(this._paymentTypeChange.bind(this, oPaymentTypeControl));
 		this._aControls.push(oPaymentTypeControl);
 		this._oPaymentTypeControl = oPaymentTypeControl;
-		
+
 		var oAmountControl =	Control_Field.factory(
 									'number',
 									{
 										sLabel			: 'Amount',
-										mMandatory		: true, 
+										mMandatory		: true,
 										mEditable		: true,
 										iDecimalPlaces	: 2,
 										fnValidate		: Component_Account_Payment_Create._validateAmount
@@ -63,12 +69,12 @@ var Component_Account_Payment_Create = Class.create(
 		oAmountControl.addOnChangeCallback(this._amountChange.bind(this));
 		this._aControls.push(oAmountControl);
 		this._oAmountControl = oAmountControl;
-		
+
 		var oTXNReferenceControl =	Control_Field.factory(
 										'text',
 										{
 											sLabel		: 'Transaction Reference',
-											mMandatory	: true, 
+											mMandatory	: true,
 											mEditable	: true,
 											fnValidate	: Reflex_Validation.stringOfLength.curry(0, 128)
 										}
@@ -76,12 +82,12 @@ var Component_Account_Payment_Create = Class.create(
 		oTXNReferenceControl.setRenderMode(Control_Field.RENDER_MODE_EDIT);
 		this._aControls.push(oTXNReferenceControl);
 		this._oTXNReferenceControl = oTXNReferenceControl;
-		
+
 		var oCreditCardSurchargeControl = 	Control_Field.factory(
 												'checkbox',
 												{
 													sLabel		: 'Charge Surcharge',
-													mMandatory	: false, 
+													mMandatory	: false,
 													mEditable	: true
 												}
 											);
@@ -89,12 +95,12 @@ var Component_Account_Payment_Create = Class.create(
 		oCreditCardSurchargeControl.addOnChangeCallback(this._updateCreditCardSummary.bind(this));
 		this._aControls.push(oCreditCardSurchargeControl);
 		this._oCreditCardSurchargeControl = oCreditCardSurchargeControl;
-		
+
 		var oCreditCardTypeControl = 	Control_Field.factory(
 											'select',
 											{
 												sLabel		: 'Charge Card Type',
-												mMandatory	: this._isPaymentTypeCreditCard.bind(this), 
+												mMandatory	: this._isPaymentTypeCreditCard.bind(this),
 												mEditable	: true,
 												fnPopulate	: Component_Account_Payment_Create._getCreditCardTypeOptions
 											}
@@ -103,12 +109,12 @@ var Component_Account_Payment_Create = Class.create(
 		oCreditCardTypeControl.addOnChangeCallback(this._creditCardTypeChange.bind(this));
 		this._aControls.push(oCreditCardTypeControl);
 		this._oCreditCardTypeControl = oCreditCardTypeControl;
-		
+
 		var oCreditCardNumberControl = 	Control_Field.factory(
 											'text',
 											{
 												sLabel		: 'Credit Card Number',
-												mMandatory	: this._isPaymentTypeCreditCard.bind(this), 
+												mMandatory	: this._isPaymentTypeCreditCard.bind(this),
 												mEditable	: true,
 												fnValidate	: this._validateCreditCardNumber.bind(this)
 											}
@@ -116,7 +122,7 @@ var Component_Account_Payment_Create = Class.create(
 		oCreditCardNumberControl.setRenderMode(Control_Field.RENDER_MODE_EDIT);
 		this._aControls.push(oCreditCardNumberControl);
 		this._oCreditCardNumberControl = oCreditCardNumberControl;
-		
+
 		// Build container
 		this._oElement.appendChild(
 			$T.table({class: 'reflex input'},
@@ -167,12 +173,12 @@ var Component_Account_Payment_Create = Class.create(
 												$T.span(' Surcharge')
 											),
 											$T.td({class: 'component-account-payment-create-creditcard-surcharge'}),
-											$T.td('+')	
+											$T.td('+')
 										),
 										$T.tr(
 											$T.td('Total Payment Amount'),
 											$T.td({class: 'component-account-payment-create-creditcard-total'}),
-											$T.td()	
+											$T.td()
 										)
 									)
 								),
@@ -191,7 +197,7 @@ var Component_Account_Payment_Create = Class.create(
 		this._oCreditCardSummaryTotalAmount 		= this._oElement.select('.component-account-payment-create-creditcard-total').first();
 		this._oCreditCardSummaryInstructions		= this._oElement.select('.component-account-payment-create-creditcard-instructions').first();
 	},
-	
+
 	_save : function(oResponse)
 	{
 		if (!oResponse)
@@ -217,14 +223,14 @@ var Component_Account_Payment_Create = Class.create(
 				Component_Account_Payment_Create._validationError(aErrors);
 				return;
 			}
-			
+
 			// Build the details object
 			var iPaymentType		= parseInt(this._oPaymentTypeControl.getValue());
 			var bCreditCardPayment	= iPaymentType == $CONSTANT.PAYMENT_TYPE_CREDIT_CARD;
 			var iCreditCardType		= (bCreditCardPayment ? this._oCreditCardTypeControl.getValue() : null);
 			var fSurcharge 			= (bCreditCardPayment ? CreditCardType.cardTypeForId(iCreditCardType).surcharge : null);
-			
-			var oDetails = 	
+
+			var oDetails =
 			{
 				account_id				: this._iAccountId,
 				payment_type_id			: iPaymentType,
@@ -235,7 +241,7 @@ var Component_Account_Payment_Create = Class.create(
 				credit_card_number		: (bCreditCardPayment ? this._oCreditCardNumberControl.getValue() : null),
 				credit_card_surcharge	: (bCreditCardPayment ? fSurcharge : null)
 			};
-			
+
 			if (this._iSaveMode == Component_Account_Payment_Create.SAVE_MODE_CALLBACK_WITH_DETAILS)
 			{
 				if (this._fnOnComplete)
@@ -244,26 +250,26 @@ var Component_Account_Payment_Create = Class.create(
 				}
 				return;
 			}
-			
+
 			this._oLoading = new Reflex_Popup.Loading('Saving...');
 			this._oLoading.display();
-			
+
 			// Make request (sending the details object)
 			var fnResp 	= this._save.bind(this);
 			var fnReq	= jQuery.json.jsonFunction(fnResp, fnResp, 'Payment', 'createPayment');
 			fnReq(oDetails);
 			return;
 		}
-	
+
 		this._oLoading.hide();
 		delete this._oLoading;
-		
+
 		if (!oResponse.bSuccess)
 		{
 			Component_Account_Payment_Create._ajaxError(oResponse, 'Could not create the new Payment');
 			return;
 		}
-		
+
 		if (this._fnOnComplete)
 		{
 			this._fnOnComplete(oResponse.iPaymentId);
@@ -280,18 +286,18 @@ var Component_Account_Payment_Create = Class.create(
 	{
 		return Reflex_Validation_Credit_Card.validateCardNumber(mValue, this._oCreditCardTypeControl.getElementValue());
 	},
-	
+
 	_amountChange : function()
 	{
 		this._updateCreditCardSummary();
 	},
-	
+
 	_creditCardTypeChange : function(oControl)
 	{
 		this._oCreditCardNumberControl.validate();
 		this._updateCreditCardSummary();
 	},
-	
+
 	_updateCreditCardSummary : function()
 	{
 		var oCardType 		= CreditCardType.cardTypeForId(this._oCreditCardTypeControl.getElementValue());
@@ -301,7 +307,7 @@ var Component_Account_Payment_Create = Class.create(
 		var fSurcharge		= (bAddSurchage && oCardType ? oCardType.surcharge : 0);
 		var fAmountPiece	= fSurcharge * fAmount;
 		var fTotal			= fAmount + fAmountPiece;
-		
+
 		this._oCreditCardSummaryAmount.innerHTML 				= fAmount.toFixed(2);
 		this._oCreditCardSummarySurchargePercentage.innerHTML 	= (fSurcharge * 100) + '% ';
 		this._oCreditCardSummaryCardType.innerHTML 				= (oCardType ? oCardType.name : '?');
@@ -309,7 +315,7 @@ var Component_Account_Payment_Create = Class.create(
 		this._oCreditCardSummaryTotalAmount.innerHTML 			= new Number(fTotal).toFixed(2);
 		this._oCreditCardSummaryInstructions.innerHTML			= 'The amount to be entered into the EFTPOS machine is $' + new Number(fTotal).toFixed(2);
 	},
-	
+
 	_paymentTypeChange : function(oControl)
 	{
 		var iPaymentType = parseInt(oControl.getElementValue());
@@ -326,13 +332,20 @@ var Component_Account_Payment_Create = Class.create(
 	}
 });
 
-Object.extend(Component_Account_Payment_Create, 
+Object.extend(Component_Account_Payment_Create,
 {
 	REQUIRED_CONSTANT_GROUPS : ['payment_type'],
-	
+	PERMITTED_PAYMENT_TYPES: [
+		'PAYMENT_TYPE_CASH',
+		'PAYMENT_TYPE_CHEQUE',
+		'PAYMENT_TYPE_BILLEXPRESS', // Centrepay
+		'PAYMENT_TYPE_EFT',
+		'PAYMENT_TYPE_DEBTCOLLECTION_CREDITCOLLECT'
+	],
+
 	SAVE_MODE_SAVE 					: 1,
 	SAVE_MODE_CALLBACK_WITH_DETAILS	: 2,
-	
+
 	_ajaxError : function(oResponse, sMessage) {
 		if (oResponse.aErrors) {
 			// Validation errors
@@ -342,7 +355,7 @@ Object.extend(Component_Account_Payment_Create,
 			jQuery.json.errorPopup(oResponse, sMessage);
 		}
 	},
-	
+
 	_validationError : function(aErrors)
 	{
 		var oErrorElement = $T.ul();
@@ -350,7 +363,7 @@ Object.extend(Component_Account_Payment_Create,
 		{
 			oErrorElement.appendChild($T.li(aErrors[i]));
 		}
-		
+
 		Reflex_Popup.alert(
 			$T.div({class: 'alert-validation-error'},
 				$T.div('There were errors in the form:'),
@@ -359,7 +372,7 @@ Object.extend(Component_Account_Payment_Create,
 			{sTitle: 'Validation Error'}
 		);
 	},
-	
+
 	_getCreditCardTypeOptions	: function(fnCallback, oResponse)
 	{
 		if (!oResponse)
@@ -369,7 +382,7 @@ Object.extend(Component_Account_Payment_Create,
 			fnReq();
 			return;
 		}
-		
+
 		var aOptions = [];
 		for (var iId in oResponse.aCreditCardTypes)
 		{
@@ -384,10 +397,10 @@ Object.extend(Component_Account_Payment_Create,
 				);
 			}
 		}
-		
+
 		fnCallback(aOptions);
 	},
-	
+
 	_validateAmount : function(mValue)
 	{
 		if (Reflex_Validation.Exception.float(mValue))
