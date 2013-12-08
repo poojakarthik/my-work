@@ -22,7 +22,7 @@ class Resource_Type_File_Import_Payment_Westpac_RECall extends Resource_Type_Fil
 	public function getRecords() {
 		$sData = @file_get_contents($this->_oFileImport->getWrappedLocation());
 		if ($sData === false) {
-			throw new
+			throw new Exception('Unable to read in contents of: ' . $this->_oFileImport->getWrappedLocation());
 		}
 
 		$aLines = preg_split('/\r?\n/', $sData, null, PREG_SPLIT_NO_EMPTY);
@@ -63,7 +63,7 @@ class Resource_Type_File_Import_Payment_Westpac_RECall extends Resource_Type_Fil
 			'processing_month' => array('start' => 54, 'length' => 2),
 			'processing_year' => array('start' => 56, 'length' => 4),
 			// Filler
-		));
+		), $sRecord);
 
 		$this->_sProcessingDate = "{$oRecord->processing_year}-{$oRecord->processing_month}-{$oRecord->processing_day}";
 	}
@@ -83,7 +83,7 @@ class Resource_Type_File_Import_Payment_Westpac_RECall extends Resource_Type_Fil
 			'transaction_type' => array('start' => 89, 'length' => 4),
 			'transaction_sequence' => array('start' => 93, 'length' => 3) // Will be blank
 			// Filler
-		));
+		), $sRecord);
 
 		// Create a new Payment_Response Record
 		//--------------------------------------------------------------------//
@@ -107,7 +107,7 @@ class Resource_Type_File_Import_Payment_Westpac_RECall extends Resource_Type_Fil
 		// TODO: Support all originating systems/transaction types
 		switch ($oRecord->originating_system) {
 			case self::ORIGINATING_SYSTEM_BPAY:
-					$this->_processTransactionBPAY($oRecord);
+					$oPaymentResponse = $this->_processTransactionBPAY($oRecord, $oPaymentResponse);
 				break;
 
 			default:
@@ -133,17 +133,14 @@ class Resource_Type_File_Import_Payment_Westpac_RECall extends Resource_Type_Fil
 		$oPaymentResponse->payment_type_id = PAYMENT_TYPE_BPAY;
 
 		// Paid Date
-		$sPaidDate = $this->_sProcessingDate;
-		if ($this->getConfig()->UseBPAYEnteredDate) {
-			$oExtendedReceipt = (object)self::_extractFixed(array(
-				'bank' => array('start' => 0, 'length' => 3),
-				'day' => array('start' => 3, 'length' => 2),
-				'month' => array('start' => 5, 'length' => 2),
-				'year' => array('start' => 7, 'length' => 4),
-				'receipt' => array('start' => 11)
-			));
-			$sPaidDate = "{$oExtendedReceipt->year}-{$oExtendedReceipt->month}-{$oExtendedReceipt->day}";
-		}
+		$oExtendedReceipt = (object)self::_extractFixed(array(
+			'bank' => array('start' => 0, 'length' => 3),
+			'day' => array('start' => 3, 'length' => 2),
+			'month' => array('start' => 5, 'length' => 2),
+			'year' => array('start' => 7, 'length' => 4),
+			'receipt' => array('start' => 11)
+		), $oRecord->extended_receipt_number);
+		$oPaymentResponse->paid_date = "{$oExtendedReceipt->year}-{$oExtendedReceipt->month}-{$oExtendedReceipt->day}";
 
 		// Account
 		$sCustomerReference = trim($oRecord->customer_reference);
@@ -161,6 +158,10 @@ class Resource_Type_File_Import_Payment_Westpac_RECall extends Resource_Type_Fil
 		$oPaymentResponse->transaction_reference = trim($oRecord->extended_receipt_number);
 
 		return $oPaymentResponse;
+	}
+
+	private static function _processTransactionRecurringBilling() {
+		// TODO
 	}
 
 	private static function _extractFixed(array $aDefinition, $sRecord) {
@@ -246,18 +247,42 @@ class Resource_Type_File_Import_Payment_Westpac_RECall extends Resource_Type_Fil
 			$oInstance = new self($oCarrierModule, $oFileImport);
 
 			// Get Records
-			$aRecords = $oInstance->getRecords($sData);
+			$aRecords = $oInstance->getRecords();
 
 			// Process Records
 			foreach ($aRecords as $mKey=>$sRecord) {
-				$aRecordData = $oInstance->processRecord($sRecord);
-				Log::get()->log(sprintf('[+] Record #%s (%s) produced: %s', $mKey, var_export($sRecord, true), print_r($aRecordData, true)));
+				$mRecordData = $oInstance->processRecord($sRecord);
+				Log::get()->log(sprintf('[+] Record #%s (%s) produced: %s',
+					$mKey,
+					var_export($sRecord, true),
+					self::_debugTestData($mRecordData)
+				));
 			}
 		} catch (Exception $oException) {
 			$oDB->TransactionRollback(false);
 			throw $oException;
 		}
 		$oDB->TransactionRollback(false); // ALWAYS ROLL BACK
+	}
+
+	private static function _debugTestData($mResultData) {
+		if (is_scalar($mResultData)) {
+			return var_export($mResultData, true);
+		}
+
+		if (is_array($mResultData)) {
+			$aDebugData = array();
+			foreach ($mResultData as $mKey=>$mResultDataItem) {
+				if (is_object($mResultDataItem) && method_exists($mResultDataItem, 'toArray')) {
+					$aDebugData[$mKey] = $mResultDataItem->toArray();
+				} else {
+					$aDebugData[$mKey] = $mResultDataItem;
+				}
+			}
+			return print_r($aDebugData, true);
+		}
+
+		return print_r($mResultData, true);
 	}
 
 	/***************************************************************************
