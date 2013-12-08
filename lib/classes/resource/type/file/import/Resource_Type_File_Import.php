@@ -40,7 +40,9 @@ abstract class Resource_Type_File_Import extends Resource_Type_Base
 		return $this;
 	}
 
-	abstract protected function _configureFileImporter();
+	protected function _configureFileImporter() {
+		// NOTE: default no-op behaviour
+	}
 
 	protected static function factory($sClassName, $mFileImport)
 	{
