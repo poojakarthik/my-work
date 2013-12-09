@@ -123,6 +123,37 @@ var Component_Account_Payment_Create = Class.create(
 		this._aControls.push(oCreditCardNumberControl);
 		this._oCreditCardNumberControl = oCreditCardNumberControl;
 
+		var oCurrentDate = new Date;
+		oCurrentDate.setHours(0);
+		oCurrentDate.setMinutes(0);
+		oCurrentDate.setSeconds(0);
+		oCurrentDate.setMilliseconds(0);
+
+		var oEarliestPayableDate = (new Date(oCurrentDate.getTime())).shift(0 - Component_Account_Payment_Create.MAKE_PAYMENT_MAXIMUM_AGE_DAYS, Date.DATE_INTERVAL_DAY);
+		//var oPaidDateControl = Control_Field.factory('combo-date', {
+		var oPaidDateControl = Control_Field.factory('date_picker', {
+			sLabel: 'Paid Date',
+			mMandatory: true,
+			mEditable: true,
+			sDateFormat: 'Y-m-d',
+			iYearStart: oEarliestPayableDate.getFullYear(),
+			iYearEnd: oCurrentDate.getFullYear()
+		});
+		oPaidDateControl.setRenderMode(Control_Field.RENDER_MODE_EDIT);
+		oPaidDateControl.setValue(oCurrentDate.$format('Y-m-d'));
+		oPaidDateControl.setValidateFunction(function (sDate) {
+			var oDate = Date.$parseDate(sDate, 'Y-m-d');
+			if (oDate < oEarliestPayableDate) {
+				throw 'Payments must be no older than ' + Component_Account_Payment_Create.MAKE_PAYMENT_MAXIMUM_AGE_DAYS + ' days (' + oEarliestPayableDate.$format('j M Y') + ')';
+			}
+			if (oDate > oCurrentDate) {
+				throw 'Payments must be no newer than today';
+			}
+			return true;
+		});
+		this._aControls.push(oPaidDateControl);
+		this._oPaidDateControl = oPaidDateControl;
+
 		// Build container
 		this._oElement.appendChild(
 			$T.table({class: 'reflex input'},
@@ -142,6 +173,10 @@ var Component_Account_Payment_Create = Class.create(
 					$T.tr(
 						$T.th('Transaction Reference'),
 						$T.td(oTXNReferenceControl.getElement())
+					),
+					$T.tr(
+						$T.th('Paid Date'),
+						$T.td(oPaidDateControl.getElement())
 					),
 					$T.tr({class: 'component-account-payment-create-creditcard-element'},
 						$T.th('Charge Surcharge'),
@@ -236,6 +271,7 @@ var Component_Account_Payment_Create = Class.create(
 				payment_type_id			: iPaymentType,
 				amount					: this._oAmountControl.getValue(),
 				transaction_reference	: this._oTXNReferenceControl.getValue(),
+				paid_date				: this._oPaidDateControl.getValue(),
 				charge_surcharge		: (bCreditCardPayment ? this._oCreditCardSurchargeControl.getValue() : null),
 				credit_card_type_id		: (bCreditCardPayment ? this._oCreditCardTypeControl.getValue() : null),
 				credit_card_number		: (bCreditCardPayment ? this._oCreditCardNumberControl.getValue() : null),
@@ -345,6 +381,8 @@ Object.extend(Component_Account_Payment_Create,
 
 	SAVE_MODE_SAVE 					: 1,
 	SAVE_MODE_CALLBACK_WITH_DETAILS	: 2,
+
+	MAKE_PAYMENT_MAXIMUM_AGE_DAYS: 30,
 
 	_ajaxError : function(oResponse, sMessage) {
 		if (oResponse.aErrors) {
