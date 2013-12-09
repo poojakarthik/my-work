@@ -12,7 +12,7 @@ var Component_Account_Payment_List = Class.create(
 		oNow.shift(-1, 'years');
 		this._iOneYearAgo = oNow.getTime();
 
-		this._oTooltip = new Component_List_Tooltip(20);
+		this._oTooltip = new Component_List_Tooltip(/*20*/);
 
 		// Load constants then create UI
 		Flex.Constant.loadConstantGroup(Component_Account_Payment_List.REQUIRED_CONSTANT_GROUPS, this._buildUI.bind(this));

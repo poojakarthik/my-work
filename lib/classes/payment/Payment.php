@@ -287,9 +287,9 @@ class Payment extends ORM_Cached
 		$sFrom		= "				payment p
 						JOIN		Employee e_created ON (e_created.id = p.created_employee_id)
 						LEFT JOIN	payment_type pt ON (pt.id = p.payment_type_id)
-						LEFT JOIN	payment_reversal_reason prr ON (prr.id = p.payment_reversal_reason_id)
 						LEFT JOIN	payment p_reversed ON (p_reversed.reversed_payment_id = p.id)
 						LEFT JOIN	Employee e_reversed ON (e_reversed.Id = p_reversed.created_employee_id)
+						LEFT JOIN	payment_reversal_reason prr ON (prr.id = p_reversed.payment_reversal_reason_id)
 						LEFT JOIN	payment_response pr_import ON (
 										pr_import.id = p.latest_payment_response_id
 										AND pr_import.file_import_data_id IS NOT NULL
