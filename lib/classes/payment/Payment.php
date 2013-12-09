@@ -280,7 +280,7 @@ class Payment extends ORM_Cached
 						'imported_datetime'		=> "IF(pr_import.id IS NOT NULL, fi.ImportedOn, NULL)",
 						'transaction_reference' => 'p.transaction_reference',
 						'payment_reversal_reason' => 'prr.name',
-						'payment_reversal_employee' => 'IF(e_reversed.Id <> ".Employee::SYSTEM_EMPLOYEE_ID.", CONCAT(e_reversed.FirstName, ' ', e_reversed.LastName), NULL)',
+						'payment_reversal_employee' => "IF(e_reversed.Id <> ".Employee::SYSTEM_EMPLOYEE_ID.", CONCAT(e_reversed.FirstName, ' ', e_reversed.LastName), NULL)",
 						'payment_reversal_datetime' => 'p_reversed.created_datetime'
 					);
 
