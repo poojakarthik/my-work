@@ -4,32 +4,32 @@ var Component_Account_Payment_List = Class.create(
 	initialize	: function(iAccountId, oContainerDiv, iPageSize)
 	{
 		this._register();
-		
+
 		this._iAccountId	= iAccountId;
 		this._oContainerDiv	= oContainerDiv;
-		
+
 		var oNow = new Date();
 		oNow.shift(-1, 'years');
 		this._iOneYearAgo = oNow.getTime();
-		
+
 		this._oTooltip = new Component_List_Tooltip(20);
-		
+
 		// Load constants then create UI
 		Flex.Constant.loadConstantGroup(Component_Account_Payment_List.REQUIRED_CONSTANT_GROUPS, this._buildUI.bind(this));
 	},
 
 	// Public
-	
+
 	getElement : function()
 	{
 		return this._oElement;
 	},
-	
+
 	getSection : function()
 	{
 		return this._oSection;
 	},
-	
+
 	refresh : function()
 	{
 		// Load the initial dataset
@@ -38,42 +38,42 @@ var Component_Account_Payment_List = Class.create(
 		this.oPagination.getCurrentPage();
 		this._showLoading(true);
 	},
-	
+
 	deregister : function()
 	{
 		var iIndex = Component_Account_Payment_List._aInstances.indexOf(this);
 		Component_Account_Payment_List._aInstances.splice(iIndex, 1);
 	},
-	
+
 	// Protected
-	
+
 	_register : function()
 	{
 		Component_Account_Payment_List._aInstances.push(this);
 	},
-	
+
 	_buildUI : function()
 	{
 		// Create Dataset & pagination object
 		this.oDataSet		= 	new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_NO_CACHING, Component_Account_Payment_List.DATA_SET_DEFINITION);
 		this.oPagination 	= 	new Pagination(
-									this._updateTable.bind(this), 
-									(this._iPageSize ? this._iPageSize : Component_Account_Payment_List.MAX_RECORDS_PER_PAGE), 
+									this._updateTable.bind(this),
+									(this._iPageSize ? this._iPageSize : Component_Account_Payment_List.MAX_RECORDS_PER_PAGE),
 									this.oDataSet
 								);
-		
+
 		this._oOverlay = new Reflex_Loading_Overlay();
-		
+
 		// Create Dataset filter object
 		this._oFilter = new Filter(this.oDataSet, this.oPagination);
 		this._oFilter.addFilter('account_id', {iType: Filter.FILTER_TYPE_VALUE});
-		
+
 		// Create Dataset sort object
 		this._oSort	= new Sort(this.oDataSet, this.oPagination, false, this._showLoading.bind(this, true));
-		
+
 		// Create the page HTML
 		var sButtonPathBase	= '../admin/img/template/resultset_';
-		
+
 		this._oElement = $T.div({class: 'component-account-payment-list'},
 							$T.div({class: 'component-account-payment-list-title'},
 								$T.img({src: Component_Account_Payment_List.ICON_IMAGE_SOURCE, alt: 'Payments', title: 'Payments'}),
@@ -120,7 +120,7 @@ var Component_Account_Payment_List = Class.create(
 								)
 							)
 						);
-		
+
 		// Bind events to the pagination buttons
 		var aBottomPageButtons 	= this._oElement.select('.component-account-payment-list-paginationbutton');
 		aBottomPageButtons[0].observe('click', this._changePage.bind(this, 'firstPage'));
@@ -142,10 +142,10 @@ var Component_Account_Payment_List = Class.create(
 		{
 			this._oContainerDiv.appendChild(this._oElement);
 		}
-		
+
 		// Default filter
 		this._oFilter.setFilterValue('account_id', this._iAccountId);
-		
+
 		// Default sort
 		this._oSort.registerField('paid_date', Sort.DIRECTION_DESC);
 		this._oSort.registerField('created_datetime', Sort.DIRECTION_DESC);
@@ -175,7 +175,7 @@ var Component_Account_Payment_List = Class.create(
 	{
 		this._oTooltip.clearRegisteredRows();
 		var oTBody = this._oElement.select('table > tbody').first();
-		
+
 		// Remove all existing rows
 		while (oTBody.firstChild)
 		{
@@ -190,7 +190,7 @@ var Component_Account_Payment_List = Class.create(
 			// Remove the row
 			oTBody.firstChild.remove();
 		}
-		
+
 		// Check if any results came back
 		if (!oResultSet || oResultSet.intTotalResults == 0 || oResultSet.arrResultSet.length == 0)
 		{
@@ -225,7 +225,7 @@ var Component_Account_Payment_List = Class.create(
 	{
 		if (oData.payment_id)
 		{
-			var bIsLessThanAYearOld = Date.$parseDate(oData.paid_date, 'Y-m-d').getTime() > this._iOneYearAgo;			
+			var bIsLessThanAYearOld = Date.$parseDate(oData.paid_date, 'Y-m-d').getTime() > this._iOneYearAgo;
 			var oActionIcon 		= $T.img();
 			if (oData.is_reversed)
 			{
@@ -251,7 +251,7 @@ var Component_Account_Payment_List = Class.create(
 			}
 
 			oActionIcon.title = oActionIcon.alt;
-			
+
 			var	oTR	=	$T.tr(
 							$T.td(Date.$parseDate(oData.paid_date, 'Y-m-d').$format('d-m-Y')),
 							$T.td(oData.payment_type_name),
@@ -260,38 +260,46 @@ var Component_Account_Payment_List = Class.create(
 							),
 							$T.td(oActionIcon)
 						);
-			
+
 			// Tooltip content
 			var hTooltipContent = {};
-			
+
 			if (oData.extra_detail_enabled)
 			{
 				hTooltipContent['Payment Id'] = oData.payment_id;
 			}
-			
+
 			// Payment Type
 			hTooltipContent['Payment Type'] = oData.payment_type_name;
-			
-			// If there is a file import date associated with the payment, then include this too 
+
+			// If there is a file import date associated with the payment, then include this too
 			if (oData.imported_datetime !== null)
 			{
 				hTooltipContent['Imported On'] = Date.$parseDate(oData.imported_datetime, 'Y-m-d H:i:s').$format('d/m/Y');
 			}
-			
+
 			// EnteredBy (created_employee_name)
 			if (oData.created_employee_name !== null)
 			{
 				hTooltipContent['Entered By'] = oData.created_employee_name;
 			}
-						
+
 			// Amount applied
 			hTooltipContent['Amount Applied ($)'] = new Number(oData.is_reversed ? 0 : (oData.amount - oData.balance)).toFixed(2);
-			
+
 			// Balance
 			hTooltipContent['Balance ($)'] = new Number(oData.balance).toFixed(2);
-			
+
+			// Transaction Reference
+			hTooltipContent['Transaction Reference'] = oData.transaction_reference;
+
+			// Reversal Reason
+			if (oData.is_reversed) {
+				hTooltipContent['Reversal Reason'] = oData.payment_reversal_reason;
+			}
+
 			this._oTooltip.registerRow(oTR, hTooltipContent);
-			
+
 			return oTR;
 		}
 		else
@@ -330,12 +338,12 @@ var Component_Account_Payment_List = Class.create(
 			}
 		}
 	},
-	
+
 	_reversePayment : function(iPaymentId)
 	{
 		new Popup_Account_Payment_Reverse(iPaymentId, this._reverseComplete.bind(this));
 	},
-	
+
 	_cannotReverse : function()
 	{
 		Reflex_Popup.alert(
@@ -343,23 +351,23 @@ var Component_Account_Payment_List = Class.create(
 			{iWidth : 35}
 		);
 	},
-	
+
 	_reverseComplete : function()
 	{
 		this.oPagination.getCurrentPage();
-		
+
 		// Refresh account details, if defined
 		if (typeof Vixen.AccountDetails != 'undefined')
 		{
 			Vixen.AccountDetails.CancelEdit();
 		}
-		
+
 		// Refresh account collections summary, if defined
 		if (typeof Component_Account_Collections != 'undefined')
 		{
 			Component_Account_Collections.refreshInstances();
 		}
-		
+
 		// Refresh account invoice list, if defined
 		if (typeof Component_Account_Invoice_List != 'undefined')
 		{
@@ -379,15 +387,15 @@ Object.extend(Component_Account_Payment_List,
 	REVERSED_IMAGE_SOURCE		: '../admin/img/template/reversed.png',
 	REVERSE_IMAGE_SOURCE		: '../admin/img/template/delete.png',
 	OLD_IMAGE_SOURCE			: '../admin/img/template/etech_payment_notice.png',
-	
+
 	_aInstances					: [],
-	
+
 	_ajaxError : function(oResponse)
 	{
 		var sMessage = (oResponse.sMessage ? oResponse.sMessage : 'There was an error accessing the database. Please contact YBS for assistance.');
 		Reflex_Popup.alert(sMessage, {sTitle: 'Error'});
 	},
-	
+
 	refreshInstances : function()
 	{
 		for (var i = 0; i < Component_Account_Payment_List._aInstances.length; i++)

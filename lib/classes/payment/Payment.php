@@ -69,7 +69,7 @@ class Payment extends ORM_Cached
 
         return $aResult;
     }
-		
+
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
 	//---------------------------------------------------------------------------------------------------------------------------------//
@@ -83,7 +83,7 @@ class Payment extends ORM_Cached
 	{
 		return parent::getCachedObjects(__CLASS__);
 	}
-	
+
 	protected static function addToCache($mixObjects)
 	{
 		parent::addToCache($mixObjects, __CLASS__);
@@ -93,7 +93,7 @@ class Payment extends ORM_Cached
 	{
 		return parent::getForId($intId, $bolSilentFail, __CLASS__);
 	}
-	
+
 	public static function getAll($bolForceReload=false)
 	{
 		return parent::getAll($bolForceReload, __CLASS__);
@@ -103,16 +103,16 @@ class Payment extends ORM_Cached
 	{
 		return parent::importResult($aResultSet, __CLASS__);
 	}
-	
+
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
-	
+
 	public function reverse($iReasonId, $bDistribute=true)
 	{
 		$oReason	= Payment_Reversal_Reason::getForId($iReasonId);
 		$oReversal	= new Payment();
-		
+
 		// Copy fields from this payment
 		$oReversal->account_id				= $this->account_id;
 		$oReversal->carrier_id 				= $this->carrier_id;
@@ -120,23 +120,23 @@ class Payment extends ORM_Cached
 		$oReversal->transaction_reference 	= $this->transaction_reference;
 		$oReversal->amount 					= $this->amount;
 		$oReversal->balance 				= $this->amount;
-		
+
 		// Different fields
 		$oReversal->paid_date 					= date('Y-m-d', DataAccess::getDataAccess()->getNow(true));
 		$oReversal->created_employee_id 		= coalesce(Flex::getUserId(), Employee::SYSTEM_EMPLOYEE_ID);
 		$oReversal->created_datetime 			= DataAccess::getDataAccess()->getNow();
 		$oReversal->surcharge_charge_id			= null;
 		$oReversal->latest_payment_response_id	= null;
-		
+
 		// Reversal specific fields
 		$oReversal->payment_nature_id 			= PAYMENT_NATURE_REVERSAL;
 		$oReversal->reversed_payment_id 		= $this->id;
 		$oReversal->payment_reversal_type_id 	= $oReason->payment_reversal_type_id;
 		$oReversal->payment_reversal_reason_id 	= $iReasonId;
-		
+
 		// Save the reversal
 		$oReversal->save();
-		
+
 		// Deal with any surcharge related to the payment
 		$aSurchargeActions	= array();
 		$aCharges			= $this->getSurcharges();
@@ -146,7 +146,7 @@ class Payment extends ORM_Cached
 			{
 				continue;
 			}
-			
+
 			switch ($oCharge->Status)
 			{
 				case CHARGE_INVOICED:
@@ -163,7 +163,7 @@ class Payment extends ORM_Cached
 							$fTax			= Rate::roundToCurrencyStandard(((float)$oGlobalTaxType->rate_percentage * $fAmount), 4);
 							$fAmount		= $fAmount + $fTax;
 						}
-						
+
 						$oAdjustment 								= new Adjustment();
 						$oAdjustment->adjustment_type_id			= Adjustment_Type_System_Config::getAdjustmentTypeForSystemAdjustmentType(ADJUSTMENT_TYPE_SYSTEM_PAYMENT_SURCHARGE_REVERSAL)->id;
 						$oAdjustment->amount						= Rate::roundToRatingStandard($fAmount, 4);
@@ -182,34 +182,34 @@ class Payment extends ORM_Cached
 						$oAdjustment->invoice_run_id				= $oCharge->invoice_run_id;
 						$oAdjustment->invoice_id 					= Invoice::getForInvoiceRunAndAccount($oCharge->invoice_run_id, $oCharge->Account)->Id;
 						$oAdjustment->save();
-						
+
 						// Process the adjustment
 						if ($bDistribute) {
 							$oLogicAdjustment	= new Logic_Adjustment($oAdjustment);
 							$oLogicAdjustment->distribute();
 						}
-						
+
 						// Link the adjustment to the charge
 						$oAdjustmentCharge 					= new Adjustment_Charge();
 						$oAdjustmentCharge->adjustment_id 	= $oAdjustment->id;
 						$oAdjustmentCharge->charge_id 		= $oCharge->Id;
 						$oAdjustmentCharge->save();
-						
+
 						$aSurchargeActions[] = "An adjustment has been created to credit the Account: {$oCharge->Account} for the invoiced payment surcharge of \$". number_format($oAdjustment->amount, 2).".";
 						break;
 					}
 					// If we're a non-Production Invoice Run, then fall through to CHARGE_APPROVED clause
-					
+
 				case CHARGE_APPROVED:
 					// Mark as Deleted
 					$oCharge->Status = CHARGE_DELETED;
 					$oCharge->save();
-					
+
 					$aSurchargeActions[] = "The yet-to-be-invoiced surcharge charge of \$". number_format(AddGST($oCharge->Amount), 2, ".", "") ." has been deleted from Account: {$oCharge->Account}";
 					break;
 			}
 		}
-		
+
 		// Add a Note
 		$sReversedChargesClause	= (count($aSurchargeActions) > 0 ? implode("\n", $aSurchargeActions) : '');
 		$sEmployeeName 			= ($oReversal->created_employee_id ? Employee::getForId($oReversal->created_employee_id)->getName() : 'Administrators');
@@ -221,10 +221,10 @@ class Payment extends ORM_Cached
 		$oNote->Datetime		= DataAccess::getDataAccess()->getNow();
 		$oNote->NoteType		= Note::SYSTEM_NOTE_TYPE_ID;
 		$oNote->save();
-		
+
 		return $oReversal;
 	}
-	
+
 	public function getSurcharges()
 	{
 		// Get them
@@ -233,22 +233,22 @@ class Payment extends ORM_Cached
 		{
 			throw new Exception_Database($oGetSurcharges->Error());
 		}
-		
+
 		$aCharges = array();
 		while ($aRow = $oGetSurcharges->Fetch())
 		{
 			$aCharges[$aRow['Id']] = new Charge($aRow);
 		}
-		
+
 		$oSurcharge	= Charge::getForId($this->surcharge_charge_id);
 		if (!isset($aCharges[$oSurcharge->Id]))
 		{
 			$aCharges[$oSurcharge->Id] = $oSurcharge;
 		}
-		
+
 		return $aCharges;
 	}
-	
+
 	public function getReversal()
 	{
 		$oSelect = self::_preparedStatement('selReversal');
@@ -256,7 +256,7 @@ class Payment extends ORM_Cached
 		{
 			throw new Exception_Database("Failed to get reversal for payment {$this->id}. ".$oSelect->Error());
 		}
-		
+
 		$aRow = $oSelect->Fetch();
 		if($aRow)
 		{
@@ -264,7 +264,7 @@ class Payment extends ORM_Cached
 		}
 		return null;
 	}
-	
+
 	public static function searchFor($bCountOnly, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null)
 	{
 		$aAliases =	array(
@@ -277,20 +277,26 @@ class Payment extends ORM_Cached
 						'is_reversed'			=> "IF(p_reversed.id IS NULL, 0, 1)",
 						'created_datetime'		=> "p.created_datetime",
 						'created_employee_name' => "IF(e_created.Id <> ".Employee::SYSTEM_EMPLOYEE_ID.", CONCAT(e_created.FirstName, ' ', e_created.LastName), NULL)",
-						'imported_datetime'		=> "IF(pr_import.id IS NOT NULL, fi.ImportedOn, NULL)"
+						'imported_datetime'		=> "IF(pr_import.id IS NOT NULL, fi.ImportedOn, NULL)",
+						'transaction_reference' => 'p.transaction_reference',
+						'payment_reversal_reason' => 'prr.name',
+						'payment_reversal_employee' => 'IF(e_reversed.Id <> ".Employee::SYSTEM_EMPLOYEE_ID.", CONCAT(e_reversed.FirstName, ' ', e_reversed.LastName), NULL)',
+						'payment_reversal_datetime' => 'p_reversed.created_datetime'
 					);
-		
+
 		$sFrom		= "				payment p
 						JOIN		Employee e_created ON (e_created.id = p.created_employee_id)
 						LEFT JOIN	payment_type pt ON (pt.id = p.payment_type_id)
+						LEFT JOIN	payment_reversal_reason prr ON (prr.id = p.payment_reversal_reason_id)
 						LEFT JOIN	payment p_reversed ON (p_reversed.reversed_payment_id = p.id)
+						LEFT JOIN	Employee e_reversed ON (e_reversed.Id = p_reversed.created_employee_id)
 						LEFT JOIN	payment_response pr_import ON (
 										pr_import.id = p.latest_payment_response_id
 										AND pr_import.file_import_data_id IS NOT NULL
 									)
 						LEFT JOIN	file_import_data fid ON (fid.id = pr_import.file_import_data_id)
 						LEFT JOIN	FileImport fi ON (fi.Id = fid.file_import_id)";
-		
+
 		if ($bCountOnly)
 		{
 			$sSelect 	= "COUNT(p.id) AS count";
@@ -308,26 +314,26 @@ class Payment extends ORM_Cached
 			$sOrderBy	= Statement::generateOrderBy($aAliases, get_object_vars($oSort));
 			$sLimit		= Statement::generateLimit($iLimit, $iOffset);
 		}
-		
+
 		$aWhere	= Statement::generateWhere($aAliases, get_object_vars($oFilter));
 		$sWhere	= $aWhere['sClause'];
-		$sWhere	.= ($sWhere != '' ? " AND " : '')."p.reversed_payment_id IS NULL";	
-		
+		$sWhere	.= ($sWhere != '' ? " AND " : '')."p.reversed_payment_id IS NULL";
+
 		$oSelect = new StatementSelect($sFrom, $sSelect, $sWhere, $sOrderBy, $sLimit);
 		if ($oSelect->Execute($aWhere['aValues']) === false)
 		{
 			throw new Exception_Database("Failed to get payment search results. ".$oSelect->Error());
 		}
-		
+
 		if ($bCountOnly)
 		{
 			$aRow = $oSelect->Fetch();
 			return $aRow['count'];
 		}
-		
+
 		return $oSelect->FetchAll();
 	}
-	
+
 	/**
 	 * _preparedStatement()
 	 *
@@ -367,19 +373,19 @@ class Payment extends ORM_Cached
 				case 'selReversal':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "reversed_payment_id = <reversed_payment_id>", null, 1);
 					break;
-					
+
 				// INSERTS
 				case 'insSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);
 					break;
-				
+
 				// UPDATE BY IDS
 				case 'ubiSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementUpdateById(self::$_strStaticTableName);
 					break;
-				
+
 				// UPDATES
-				
+
 				default:
 					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
 			}
