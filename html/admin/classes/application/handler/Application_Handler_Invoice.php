@@ -6,7 +6,7 @@ class Application_Handler_Invoice extends Application_Handler
 	public function Service($subPath)
 	{
 		$aDetailsToRender	= array();
-		
+
 		try
 		{
 			$iServiceTotal 	= count($subPath) ? intval(array_shift($subPath)) : 0;
@@ -23,21 +23,21 @@ class Application_Handler_Invoice extends Application_Handler
 				AND 	s.Id = t.Service
 				AND 	a.Id = t.Account
 			";
-	
+
 			$res = $db->query($sServiceTotal);
-			
+
 			if (MDB2::isError($res))
 			{
 				throw new Exception("Failed to load service details: " . $res->getMessage());
 			}
-	
+
 			$serviceDetails = $res->fetchRow(MDB2_FETCHMODE_ASSOC);
-	
+
 			if (!$serviceDetails)
 			{
 				throw new Exception("Failed to find service details for service total $iServiceTotal.");
 			}
-	
+
 			$iAccountId 	= $serviceDetails['AccountId'];
 			$iInvoiceId 	= $serviceDetails['InvoiceId'];
 			$iInvoiceRunId 	= $serviceDetails['InvoiceRunId'];
@@ -45,23 +45,23 @@ class Application_Handler_Invoice extends Application_Handler
 			$iServiceType 	= $serviceDetails['ServiceType'];
 			$fnn 			= $serviceDetails['FNN'];
 			$oService		= Service::getForId($iServiceId);
-			
+
 			BreadCrumb()->EmployeeConsole();
 			BreadCrumb()->AccountOverview($iAccountId, true);
 			BreadCrumb()->InvoicesAndPayments($iAccountId);
 			BreadCrumb()->ViewInvoice($iInvoiceId, $iAccountId);
 			BreadCrumb()->SetCurrentPage("Service: $fnn");
 			AppTemplateAccount::BuildContextMenu($iAccountId);
-			
+
 			$aDetailsToRender['Invoice'] 		= $serviceDetails;
 			$aDetailsToRender['ServiceType']	= $iServiceType;
-	
+
 			// Need to load up the Charges for the invoice
 			$aDetailsToRender['Charges']	= $oService->getCharges($iInvoiceRunId);
-			
+
 			// Need to load up the RecordTypes for filtering
 			$aDetailsToRender['RecordTypes']	= Record_Type::getForServiceType($iServiceType);
-			
+
 			// Filter information
 			$aDetailsToRender['filter']	= array(
 				'offset' 		=> array_key_exists('offset', $_REQUEST) ? intval($_REQUEST['offset']) : 0,
@@ -69,7 +69,7 @@ class Application_Handler_Invoice extends Application_Handler
 				'recordType'	=> (array_key_exists('recordType', $_REQUEST) && $_REQUEST['recordType']) ? intval($_REQUEST['recordType']) : NULL,
 				'recordCount'	=> 0,
 			);
-			
+
 			// Get the cdr information
 			$aCDRsResult	= 	$oService->getCDRs(
 									$iInvoiceRunId,
@@ -77,10 +77,10 @@ class Application_Handler_Invoice extends Application_Handler
 									$aDetailsToRender['filter']['limit'],
 									$aDetailsToRender['filter']['offset']
 								);
-			
+
 			$aDetailsToRender['CDRs']					= $aCDRsResult['CDRs'];
 			$aDetailsToRender['filter']['recordCount']	= $aCDRsResult['recordCount'];
-			
+
 			$this->LoadPage('invoice_service', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
 		}
 		catch (Exception $e)
@@ -101,7 +101,7 @@ class Application_Handler_Invoice extends Application_Handler
 			}
 
 			$db = Data_Source::get();
-			
+
 			$iServiceTotal 	= intval($subPath[0]);
 			$iInvoiceRunId 	= intval($subPath[1]);
 			$iCdrId 		= intval($subPath[2]);
@@ -116,28 +116,28 @@ class Application_Handler_Invoice extends Application_Handler
 				AND 	s.Id = t.Service
 				AND 	a.Id = t.Account
 			";
-	
+
 			$res	= $db->query($sServiceTotal);
-			
+
 			if (MDB2::isError($res))
 			{
 				throw new Exception("Failed to load service details:$sServiceTotal; " . $res->getMessage());
 			}
-	
+
 			$serviceDetails	= $res->fetchRow(MDB2_FETCHMODE_ASSOC);
-	
+
 			if (!$serviceDetails)
 			{
 				throw new Exception("Failed to find service details for service total $iServiceTotal.");
 			}
-	
+
 			$iAccountId 	= $serviceDetails['AccountId'];
 			$iInvoiceId 	= $serviceDetails['InvoiceId'];
 			$iInvoiceRunId 	= $serviceDetails['InvoiceRunId'];
 			$iServiceId 	= $serviceDetails['ServiceId'];
 			$iServiceType	= $serviceDetails['ServiceType'];
 			$fnn 			= $serviceDetails['FNN'];
-			
+
 			BreadCrumb()->EmployeeConsole();
 			BreadCrumb()->AccountOverview($iAccountId, true);
 			BreadCrumb()->InvoicesAndPayments($iAccountId);
@@ -145,18 +145,18 @@ class Application_Handler_Invoice extends Application_Handler
 			BreadCrumb()->ViewInvoiceService($iServiceTotal, $fnn);
 			BreadCrumb()->SetCurrentPage("Record Id: " . $iCdrId);
 			AppTemplateAccount::BuildContextMenu($iAccountId);
-			
+
 			$aCDR	= CDR::getCDRDetails($iCdrId, $iInvoiceRunId);
 			$status	= $GLOBALS['*arrConstant']['CDR'][$aCDR['Status']]['Description'];
 
 			$aDetailsToRender	= array();
-			
+
 			$aDetailsToRender['FNN'] 				= $fnn;
 			$aDetailsToRender['Id'] 				= $iCdrId;
 			$aDetailsToRender['InvoiceId'] 			= $iInvoiceId;
 			$aDetailsToRender['InvoiceRunId'] 		= $iInvoiceRunId;
 			$aDetailsToRender['Status'] 			= $status;
-			
+
 			$aDetailsToRender['FileName'] 			= $aCDR['FileName'];
 			$aDetailsToRender['Carrier'] 			= $aCDR['CarrierName'];
 			$aDetailsToRender['CarrierRef'] 		= $aCDR['CarrierRef'];
@@ -178,7 +178,7 @@ class Application_Handler_Invoice extends Application_Handler
 			$aDetailsToRender['RawCDR'] 			= $aCDR['RawCDR'];
 			$aDetailsToRender['Units'] 				= $aCDR['Units'];
 			$aDetailsToRender['DisplayType'] 		= $aCDR['DisplayType'];
-			
+
 			$this->LoadPage('Invoice_CDR', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
 		}
 		catch (Exception $e)
@@ -188,7 +188,7 @@ class Application_Handler_Invoice extends Application_Handler
 			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
 		}
 	}
-	
+
 	public function PDF($subPath)
 	{
 		try
@@ -197,30 +197,30 @@ class Application_Handler_Invoice extends Application_Handler
 			{
 				throw new Exception('You do not have permission to view this PDF.');
 			}
-			
+
 			if (!isset($subPath[0]) || !isset($_GET['Account']) || !isset($_GET['Invoice_Run_Id']) || !isset($_GET['Year']) || !isset($_GET['Month']))
 			{
 				throw new Exception('Invalid arguments passed to page');
 			}
-			
+
 			$iInvoiceId		= $subPath[0];
 			$iAccountId		= $_GET['Account'];
 			$iInvoiceRunId	= $_GET['Invoice_Run_Id'];
 			$iYear 			= $_GET['Year'];
 			$iMonth 		= $_GET['Month'];
-			
+
 			// Try to pull the Invoice PDF
 			$sInvoice 		= GetPDFContent($iAccountId, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId);
-			
+
 			if (!$sInvoice)
 			{
 				throw new Exception("PDF Not Found");
 			}
-		
+
 			$sInvoiceFilename = GetPdfFilename($iAccountId, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId);
-	
+
 			header("Content-Type: application/pdf");
-			header("Content-Disposition: attachment; filename=\"$sInvoiceFilename\"");
+			header("Content-Disposition: filename=\"$sInvoiceFilename\"");
 			echo $sInvoice;
 			exit;
 		}
@@ -231,20 +231,20 @@ class Application_Handler_Invoice extends Application_Handler
 			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
 		}
 	}
-	
+
 	public function InterimEligibilityReport($subPath)
 	{
 		// NOTE: FOR DEBUGGING USING THE LOG
 		/*$sLog	= '';
 		Log::registerLog('InterimEligibilityReport_Log', Log::LOG_TYPE_STRING, $sLog);
 		Log::setDefaultLog('InterimEligibilityReport_Log');*/
-		
+
 		// Prepare the CSV File
 		$oCSVFile	= Invoice_Interim::generateEligibilityReport();
-		
+
 		// NOTE: FOR DEBUGGING USING THE LOG
 		//file_put_contents('/home/rmctainsh/interim-invoice-log.txt', $sLog);
-		
+
 		// Output the Report & return to the User Agent
 		$sFileName	= "interim-invoice-eligibility-report-".date("YmdHis").".csv";
 		header("Content-type: text/csv");
@@ -252,7 +252,7 @@ class Application_Handler_Invoice extends Application_Handler
 		echo $oCSVFile->save();
 		exit;
 	}
-	
+
 	public function DownloadInterimInvoiceEligibility($subPath)
 	{
 		$sFileName	= $subPath[0];
@@ -265,14 +265,14 @@ class Application_Handler_Invoice extends Application_Handler
 		}
 		exit;
 	}
-	
+
 	public function ActionInterimInvoicesReport($subPath)
 	{
 		// For logging output
 		//$sLog	= '';
 		//Log::registerLog('ActionInterimInvoicesReport_Log', Log::LOG_TYPE_STRING, $sLog);
 		//Log::setDefaultLog('ActionInterimInvoicesReport_Log');
-		
+
 		$oResponse			= new stdClass();
 		$oFlexDataAccess	= DataAccess::getDataAccess();
 		try
@@ -282,11 +282,11 @@ class Application_Handler_Invoice extends Application_Handler
 			{
 				throw new Exception("You do not have permission to submit an Interim Invoice Eligibility Report.");
 			}
-			
+
 			$sSubmittedEligibilityReportPath	= dirname($_FILES['Invoice_Interim_EligibilityUpload_File']['tmp_name']).'/'.$_FILES['Invoice_Interim_EligibilityUpload_File']['name'];
 			move_uploaded_file($_FILES['Invoice_Interim_EligibilityUpload_File']['tmp_name'], $sSubmittedEligibilityReportPath);
 			$aChanges	= Invoice_Interim::processEligibilityReport($sSubmittedEligibilityReportPath);
-			
+
 			// Return JSON response
 			$oResponse->Success				= true;
 			$oResponse->iAccountsInvoiced	= $aChanges['iAccountsInvoiced'];
@@ -300,10 +300,10 @@ class Application_Handler_Invoice extends Application_Handler
 			$oResponse->Message	= $eException->getMessage();
 			file_put_contents('/tmp/action-interim-invoices-report-'.date("YmdHis").'.csv', $eException->getMessage());
 		}
-		
+
 		// Logging output
 		//file_put_contents('/tmp/action-interim-invoices-report-'.date("YmdHis").'.log', $sLog);
-		
+
 		echo JSON_Services::instance()->encode($oResponse);
 		exit;
 	}
