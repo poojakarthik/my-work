@@ -12,7 +12,9 @@ class Cli_App_Pdf extends Cli
 	const SWITCH_SINGLE_PDF = "j";
 	const SWITCH_SKIP_XML_OVERVIEW = "i";
 	const SWITCH_IGNORE_ACCOUNTS = "n";
-	
+	const SWITCH_XSL_TEMPLATE_PATH = 't';
+	const SWITCH_FORCE_CUSTOMER_GROUP_ID = 'g';
+
 	const SWITCH_RESUME_RUN = 'r';
 
 	private $logFile = NULL;
@@ -46,7 +48,7 @@ class Cli_App_Pdf extends Cli
 			{
 				mkdir($dir, 0777, TRUE);
 			}
-			
+
 			// Parse Ignore List
 			$strIgnoreAccounts	= $arrArgs[self::SWITCH_IGNORE_ACCOUNTS];
 			$this->log("Ignore List: '{$strIgnoreAccounts}'");
@@ -102,21 +104,21 @@ class Cli_App_Pdf extends Cli
 			$this->log("Source location: $strSource");
 
 			$this->log("Destination location: $strDestination");
-			
+
 			if (is_dir($strSource) && $arrArgs[self::SWITCH_RESUME_RUN])
 			{
 				// Trying to resume a partially completed run
 				$sResumeInstanceRef	= $arrArgs[self::SWITCH_RESUME_RUN];
-				
+
 				if (!is_dir($strSource))
 				{
 					throw new Exception("Unable to resume run '{$sResumeInstanceRef}', as the SOURCE is not a directory!");
 				}
-				
+
 				$aPartialExportList	= glob($strDestination."/*.xml.{$sResumeInstanceRef}.pdf");
 				$instanceRef		= $sResumeInstanceRef;
 				$this->log("\Continuing incomplete process thread: $instanceRef (".count($aPartialExportList)." PDFs already generated)");
-				
+
 				// DEBUG
 				//throw new Exception(print_r($aPartialExportList, true));
 			}
@@ -164,7 +166,7 @@ class Cli_App_Pdf extends Cli
 						{
 							throw new Exception("Directory '" . $strSource . "' contains unreadable file '" . $sFile . "'");
 						}
-						
+
 						// Ensure that it isn't in our ignore list
 						if (!in_array((int)basename($strPath, $sPathSuffix), $arrIgnoreAccounts))
 						{
@@ -216,13 +218,13 @@ class Cli_App_Pdf extends Cli
 				// Make sure we have enough time to generate this PDF (2 minutes should hopefully always be enough!)...
 				//set_time_limit(1800);
 
-				// Extract the xml contents (decompress if bzipped) 
+				// Extract the xml contents (decompress if bzipped)
 				if (preg_match('/\.bz2$/', $strSource)) {
 					$fileContents = file_get_contents("compress.bzip2://{$strSource}");
 				} else {
 					$fileContents = file_get_contents($strSource);
 				}
-				
+
 				$parts = array();
 				$requiredTags = array('DocumentType', 'CustomerGroup', 'CreationDate', 'DeliveryMethod');
 				preg_match_all("/(?:\<(" . implode('|', $requiredTags) . ")\>([^\<]*)\<)/", $fileContents, $parts);
@@ -260,16 +262,21 @@ class Cli_App_Pdf extends Cli
 					}
 				}
 
-				if (($custGroupId = Customer_Group::getForConstantName($docProps["CustomerGroup"])->id) === null)
-				{
-					throw new Exception("Customer Group '{$docProps["CustomerGroup"]}' does not exist");
-				}
-				if ($arrArgs[self::SWITCH_CUSTOMER_GROUP_ID] !== FALSE)
-				{
-					if ($custGroupId != $arrArgs[self::SWITCH_CUSTOMER_GROUP_ID])
+				if ($arrArgs[self::SWITCH_FORCE_CUSTOMER_GROUP_ID]) {
+					$custGroupId = $arrArgs[self::SWITCH_FORCE_CUSTOMER_GROUP_ID];
+					$this->log('Forcing Customer Group #' . $custGroupId);
+				} else {
+					if (($custGroupId = Customer_Group::getForConstantName($docProps["CustomerGroup"])->id) === null)
 					{
-						$this->log("Skipping XML file '$strSource' as it is for CustomerGroup $custGroupId. We are only processing CustomerGroup " . $arrArgs[self::SWITCH_CUSTOMER_GROUP_ID] . ".");
-						continue;
+						throw new Exception("Customer Group '{$docProps["CustomerGroup"]}' does not exist");
+					}
+					if ($arrArgs[self::SWITCH_CUSTOMER_GROUP_ID] !== FALSE)
+					{
+						if ($custGroupId != $arrArgs[self::SWITCH_CUSTOMER_GROUP_ID])
+						{
+							$this->log("Skipping XML file '$strSource' as it is for CustomerGroup $custGroupId. We are only processing CustomerGroup " . $arrArgs[self::SWITCH_CUSTOMER_GROUP_ID] . ".");
+							continue;
+						}
 					}
 				}
 
@@ -337,7 +344,7 @@ class Cli_App_Pdf extends Cli
 						continue;
 					}
 				}
-				
+
 				// If we are resuming a run, make sure that this PDF hasn't already been generated
 				if (file_exists($strDestination))
 				{
@@ -350,7 +357,7 @@ class Cli_App_Pdf extends Cli
 					//throw new Exception("{$strDestination} has NOT already been generated");
 				}
 				//throw new Exception("TEST");
-				
+
 
 				if ($targetMedia == 'DO_NOT_SEND')
 				{
@@ -372,15 +379,24 @@ class Cli_App_Pdf extends Cli
 				$lastDocNameLen = $docNameLen;
 
 				// Create the PDF template
+				$mTemplateSource = $documentTypeId;
+				if (isset($arrArgs[self::SWITCH_XSL_TEMPLATE_PATH])) {
+					$mTemplateSource = file_get_contents($arrArgs[self::SWITCH_XSL_TEMPLATE_PATH]);
+					$this->log('Using supplied template: ' . $arrArgs[self::SWITCH_XSL_TEMPLATE_PATH]);
+				}
+
 				$this->startErrorCatching();
 				$pdfTemplate = new Flex_Pdf_Template(
 								$custGroupId,
 								$effectiveDate,
-								$documentTypeId,
+								$mTemplateSource,
 								$fileContents,
 								$targetMedia,
 								TRUE);
 				$this->dieIfErred();
+
+				// DEBUG
+				//$pdfTemplate->
 
 				// Release memory used by file contents
 				$fileContents = "";
@@ -419,7 +435,7 @@ class Cli_App_Pdf extends Cli
 
 			$this->log(str_repeat(chr(8), $lastDocNameLen+3) . "\nProcessing complete", FALSE, TRUE, TRUE);
 			$this->log("\n");
-			
+
 			//throw new Exception("TEST 2");
 
 			ob_flush();
@@ -566,13 +582,13 @@ class Cli_App_Pdf extends Cli
 			$this->showUsage("ERROR: " . $exception->getMessage());
 		}
 	}
-	
+
 	public static function getMemoryUsageFriendly($bRealUsage=false)
 	{
 		$iBytes	= memory_get_usage($bRealUsage);
-		
+
 		$fUnits	= $iBytes;
-		
+
 		$sCurrentMagnitude	= 'B';
 		foreach (array('KB', 'MB', 'GB', 'TB') as $sMagnitude)
 		{
@@ -582,7 +598,7 @@ class Cli_App_Pdf extends Cli
 				$sCurrentMagnitude	= $sMagnitude;
 			}
 		}
-		
+
 		return "{$iBytes} (".(floor($fUnits / 100) * 100)." {$sCurrentMagnitude})";
 	}
 
@@ -622,7 +638,7 @@ class Cli_App_Pdf extends Cli
 				self::ARG_DEFAULT 	=> NULL,
 				self::ARG_VALIDATION 	=> 'Cli::_validWritableFileOrDirectory("%1$s")'
 			),
-		
+
 			self::SWITCH_EFFECTIVE_DATE => array(
 				self::ARG_LABEL 		=> "EFFECTIVE_DATE",
 				self::ARG_REQUIRED 	=> FALSE,
@@ -631,7 +647,7 @@ class Cli_App_Pdf extends Cli
 				self::ARG_DEFAULT 	=> time(),
 				self::ARG_VALIDATION 	=> 'Cli::_validDate("%1$s")'
 			),
-		
+
 			self::SWITCH_SOURCE_MEDIA => array(
 				self::ARG_LABEL 		=> "SOURCE_MEDIA",
 				self::ARG_REQUIRED 	=> FALSE,
@@ -661,7 +677,7 @@ class Cli_App_Pdf extends Cli
 				self::ARG_DEFAULT 	=> FALSE,
 				self::ARG_VALIDATION 	=> 'Cli::_validIsSet()'
 			),
-			
+
 			self::SWITCH_IGNORE_ACCOUNTS => array(
 				self::ARG_LABEL 		=> "IGNORE_ACCOUNTS",
 				self::ARG_REQUIRED 		=> FALSE,
@@ -669,12 +685,28 @@ class Cli_App_Pdf extends Cli
 				self::ARG_DEFAULT 		=> FALSE,
 				self::ARG_VALIDATION 	=> 'Cli::_validString("%1$s")'
 			),
-			
+
 			self::SWITCH_RESUME_RUN => array(
 				self::ARG_LABEL 		=> "RESUME_RUN",
 				self::ARG_REQUIRED 		=> FALSE,
 				self::ARG_DESCRIPTION 	=> "attempts to continue an incomplete export run",
 				self::ARG_DEFAULT 		=> FALSE,
+				self::ARG_VALIDATION 	=> 'Cli::_validString("%1$s")'
+			),
+
+			self::SWITCH_XSL_TEMPLATE_PATH => array(
+				self::ARG_LABEL => 'XSL_TEMPLATE',
+				self::ARG_REQUIRED => false,
+				self::ARG_DESCRIPTION => 'if supplied, uses reads and XSL (t)emplate file at the specified path rather than performing a database lookup based on the effective date and template type',
+				self::ARG_DEFAULT => null,
+				self::ARG_VALIDATION => 'Cli::_validReadableFileOrDirectory("%1$s")'
+			),
+
+			self::SWITCH_FORCE_CUSTOMER_GROUP_ID => array(
+				self::ARG_LABEL => "FORCE_CUSTOMER_GROUP",
+				self::ARG_REQUIRED => FALSE,
+				self::ARG_DESCRIPTION => "force input XML to behave as if it were part of the supplied customer (g)roup [optional, default taken from XML file]",
+				self::ARG_DEFAULT => FALSE,
 				self::ARG_VALIDATION 	=> 'Cli::_validString("%1$s")'
 			),
 		);
