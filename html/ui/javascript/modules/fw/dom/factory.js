@@ -30,9 +30,9 @@ var _undefined,
 	},
 	// Determines whether the Object is an Array
 	_isArray = function (mArray) {
-		return mArray.toString() == '[object Array]';
+		return Object.prototype.toString.call(mArray);
 	},
-	// Determines whether the 
+	// Determines whether the
 	_isFunction = function (mFunction) {
 		return typeof mFunction == 'function';
 	},
@@ -151,7 +151,7 @@ var _parseChild = function (mChild) {
 	},
 	_parseChildren = function (aChildren) {
 	var aParsedChildren = [];
-	
+
 	for (var i=0; i < aChildren.length; i++) {
 		aParsedChildren.push(this.$parseChild(aChildren[i]));
 	}

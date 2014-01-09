@@ -5,11 +5,14 @@ var	$D		= require('./dom/factory'),
 var	_isPlainObject	= function (oObject) {
 		return oObject && oObject.constructor.prototype === Object.prototype;
 	},
+	_isArray = function (mArray) {
+		return Object.prototype.toString.call(mArray);
+	},
 	_parseArguments	= function (aArguments) {
 	var	oArguments	= {
 		aChildren	: []
 	};
-	
+
 	// Optional Arguments
 	if (aArguments.length) {
 		// Param 2: Config (optional)
@@ -60,7 +63,7 @@ var	Component	= new Class({
 	_bReady			: false,
 
 	construct	: function () {
-		
+
 		// General init
 		this.CONFIG	= Object.extend({
 			sExtraClass	: {
@@ -69,7 +72,7 @@ var	Component	= new Class({
 					if (sExistingClass) {
 						this.getNode().removeClassName(sExistingClass);
 					}
-					
+
 					if (mValue) {
 						mValue = String(mValue);
 						this.getNode().addClassName(mValue);
@@ -82,7 +85,7 @@ var	Component	= new Class({
 					if (Object.isFunction(mValue)) {
 						this.observe('ready', mValue);
 						return mValue;
-					};
+					}
 				}.bind(this)
 			},
 			PLUGINS : {
@@ -91,29 +94,29 @@ var	Component	= new Class({
 					if (this.CONFIG.PLUGINS.mValue) {
 						throw "Can't set the PLUGINS config value twice.";
 					}
-					
+
 					// Plug them in
 					Object.keys(hPluginConfig).each(
 						function(sPluginName) {
 							this.plug(sPluginName, hPluginConfig[sPluginName]);
 						}.bind(this)
 					);
-					
+
 					return hPluginConfig;
 				}.bind(this)
 			}
 		}, this.CONFIG || {});
 
 		this.PLUGINS = {};
-		
+
 		this.ATTACHMENTS = Object.extend({
 			'default' : this.getNode.bind(this)
 		}, this.ATTACHMENTS || {});
-		
+
 		// Parameters
 		var	aArgs	= $A(arguments),
 			oConfig	= (_isPlainObject(aArgs[0])) ? aArgs[0] : null;
-		
+
 		// Init the DOM
 		// Allow a "special" config property called NODE, which is an alternate node to build from
 		// A child class may choose to ignore this existing NODE
@@ -132,7 +135,7 @@ var	Component	= new Class({
 		for (var i=0, j=aChildren.length; i < j; i++) {
 			this.appendChild(aChildren[i]);
 		}
-		
+
 		// Set Config
 		this.setConfig(oConfig);
 
@@ -206,7 +209,7 @@ var	Component	= new Class({
 	appendChild	: function (mChild) {
 		var	oAttachmentNode	= this.getAttachmentNode();
 		if (!oAttachmentNode) {
-			throw "This Component does not have a default attachment node"
+			throw "This Component does not have a default attachment node";
 		}
 		return oAttachmentNode.appendChild($D.$parseChild(mChild));
 	},
@@ -214,7 +217,7 @@ var	Component	= new Class({
 	insertBefore	: function (mChild, mBeforeChild) {
 		var	oAttachmentNode	= this.getAttachmentNode();
 		if (!oAttachmentNode) {
-			throw "This Component does not have a default attachment node"
+			throw "This Component does not have a default attachment node";
 		}
 		return oAttachmentNode.insertBefore($D.$parseChild(mChild), $D.$parseChild(mBeforeChild));
 	},
@@ -222,7 +225,7 @@ var	Component	= new Class({
 	addChildren	: function (aChildren, mBeforeChild) {
 		var	oAttachmentNode	= this.getAttachmentNode();
 		if (!oAttachmentNode) {
-			throw "This Component does not have a default attachment node"
+			throw "This Component does not have a default attachment node";
 		}
 
 		var oFragment	= $D.$fragment();
@@ -236,7 +239,7 @@ var	Component	= new Class({
 	replaceChild	: function (mChild, mOldChild) {
 		var	oAttachmentNode	= this.getAttachmentNode();
 		if (!oAttachmentNode) {
-			throw "This Component does not have a default attachment node"
+			throw "This Component does not have a default attachment node";
 		}
 		return oAttachmentNode.replaceChild($D.$parseChild(mChild), $D.$parseChild(mOldChild));
 	},
@@ -244,7 +247,7 @@ var	Component	= new Class({
 	removeChild	: function (mChild) {
 		var	oAttachmentNode	= this.getAttachmentNode();
 		if (!oAttachmentNode) {
-			throw "This Component does not have a default attachment node"
+			throw "This Component does not have a default attachment node";
 		}
 		return oAttachmentNode.removeChild($D.$parseChild(mChild));
 	},
