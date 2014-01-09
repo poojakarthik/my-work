@@ -32,8 +32,8 @@ var	self	= new Class({
 			$D.header({'class' : 'fw-popup-header'},
 				$D.img({'class' : 'fw-popup-header-icon'}),
 				$D.h2({'class' : 'fw-popup-header-title'}),
-				$D.img({'class' : 'fw-popup-header-close', src: self.CLOSE_ICON, title:'Close'}).observe('click', this.hide.bind(this))
-				
+				//$D.img({'class' : 'fw-popup-header-close', src: self.CLOSE_ICON, title:'Close'}).observe('click', this.hide.bind(this)),
+				$D.button({'class' : 'fw-popup-header-close'}).observe('click', this.hide.bind(this))
 			),
 			$D.div({'class' : 'fw-popup-content'})
 		));
@@ -55,9 +55,13 @@ var	self	= new Class({
 			sIconURI		= this.get('sIconURI'),
 			sCloseIconURI	= this.get('sCloseIconURI'),
 			bCloseButton	= this.get('bCloseButton');
+		
+		// UPDATE: Style the close icon using css instead. 
+		/*
 		if (sCloseIconURI) {
 			this._oCloseIcon.setAttribute('src', sCloseIconURI);
-		} 
+		}
+		*/
 		this._oTitle.update(sTitle ? sTitle.escapeHTML() : '');
 		if (sIconURI) {
 			this._oIcon.setAttribute('src', sIconURI);

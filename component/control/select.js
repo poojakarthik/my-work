@@ -215,6 +215,10 @@ var self = new Class({
 			}
 		}
 		return -1;
+	},
+
+	statics : {
+		EXTENSION_POINTS : ['populate']
 	}
 });
 

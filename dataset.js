@@ -125,7 +125,7 @@ var self = new Class({
 		var oResultSet 	= {};
 		var iNumResults	= 0;
 		
-		for (var i = iOffset, j = (iOffset + iLimit); i <= j; i++) {
+		for (var i = iOffset, j = (iOffset + iLimit); i < j; i++) {
 			if (this._hRecordCache[i]) {
 				oResultSet[i] = this._hRecordCache[i];
 				iNumResults++;
