@@ -9,14 +9,14 @@
 class NormalisationModuleArborCOCE extends NormalisationModule
 {
 	public $intBaseFileType	= RESOURCE_TYPE_FILE_IMPORT_CDR_AAPT_ESYSTEMS_COCE;
-	
+
 	const	TYPE_CODE_RECURRING_CHARGE		= 2;
 	const	TYPE_CODE_NON_RECURRING_CHARGE	= 3;
 	const	TYPE_CODE_ADJUSTMENT			= 4;
-	
+
 	const	BILLING_LEVEL_ACCOUNT	= 0;
 	const	BILLING_LEVEL_SERVICE	= 1;
-	
+
 	/**
 	 * __construct()
 	 *
@@ -28,12 +28,12 @@ class NormalisationModuleArborCOCE extends NormalisationModule
 	{
 		// call parent constructor
 		parent::__construct($intCarrier);
-		
+
 		// define row start (account for header rows)
 		$this->_intStartRow = 0;
-		
+
 		$this->_iSequence	= 0;
-		
+
 		// define the carrier CDR format
 		$this->_arrDefineCarrier	= self::$_arrRecordDefinitions['PWTDET'];
 	}
@@ -54,12 +54,12 @@ class NormalisationModuleArborCOCE extends NormalisationModule
 	{
 		// set up CDR
 		$this->_NewCDR($arrCDR);
-		
+
 		// SequenceNo
 		$this->_AppendCDR('SequenceNo', $this->_iSequence++);
-		
+
 		$this->_SplitRawCDR($arrCDR['CDR']);
-		
+
 		//--------------------------------------------------------------------//
 		switch (substr($arrCDR['CDR'], 0, 6))
 		{
@@ -67,7 +67,7 @@ class NormalisationModuleArborCOCE extends NormalisationModule
 				$this->_SplitRawCDR($arrCDR['CDR']);
 				$this->_normalise();
 				break;
-				
+
 			case 'PWTHDR':
 			case 'PWTTRL':
 			default:
@@ -75,19 +75,19 @@ class NormalisationModuleArborCOCE extends NormalisationModule
 				break;
 		}
 		//--------------------------------------------------------------------//
-		
+
 		//Debug($this->_arrNormalisedData);
-		
+
 		// Apply Ownership
 		$this->ApplyOwnership();
-		
+
 		// Validation of Normalised data
 		$this->Validate();
-		
+
 		// return output array
 		return $this->_OutputCDR();
 	}
-	
+
 	// Usage Records
 	private function _normalise()
 	{
@@ -96,10 +96,10 @@ class NormalisationModuleArborCOCE extends NormalisationModule
 		{
 			return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
 		}
-		
+
 		// CarrierRef
 		$this->_AppendCDR('CarrierRef', $this->_FetchRawCDR('COCERecordId'));
-		
+
 		// FNN
 		$sFNN	= null;
 		try
@@ -111,12 +111,12 @@ class NormalisationModuleArborCOCE extends NormalisationModule
 				case self::ID_TYPE_MOBILE_SERVICE_NUMBER:
 					// Allowable Id Types
 					break;
-					
+
 				default:
 					Flex::assert(false, "COCE CDR File: Invalid Id Type '".self::_getIdTypeDescription($iIdType)."' encountered", print_r($this->DebugCDR(), true));
 					break;
 			}
-			
+
 			$sFNN	= self::RemoveAusCode(trim($this->_FetchRawCDR('ExternalId')));
 			$this->_AppendCDR('FNN', $sFNN);
 		}
@@ -124,21 +124,26 @@ class NormalisationModuleArborCOCE extends NormalisationModule
 		{
 			return $this->_ErrorCDR(CDR_CANT_NORMALISE);
 		}
-		
+
 		// Source
 		$this->_AppendCDR('Source', $sFNN);
-		
+
 		// Destination
 		// No Destination
-		
+
 		// Cost
 		$fCost	= $this->_FetchRawCDR('Amount') / 100;	// Value is in cents
 		$this->_AppendCDR('Cost', abs($fCost));	// Value is in cents
-		
+
 		// ServiceType
-		$iServiceType	= self::_getServiceTypeForFNN($sFNN);
+		try {
+			$iServiceType = self::_getServiceTypeForFNN($sFNN);
+		} catch (Exception_Assertion $oException) {
+			// NOTE: We will sometimes receive non-FNN "Telephone Number"s, which will always trigger this state
+			return $this->_ErrorCDR(CDR_CANT_NORMALISE);
+		}
 		$this->_AppendCDR('ServiceType', $iServiceType);
-		
+
 		// RecordType
 		// Build a custom Record Code
 		$sCarrierRecordCode			= trim($this->_FetchRawCDR('TypeCode'));
@@ -155,16 +160,16 @@ class NormalisationModuleArborCOCE extends NormalisationModule
 					$sRecordCode				= 'S&E';
 					$sCarrierDestinationCode	= "{$sCarrierRecordCode}:".trim($this->_FetchRawCDR('ElementId'));
 					break;
-					
+
 				case self::TYPE_CODE_NON_RECURRING_CHARGE:
 					//Flex::assert(false, "COCE CDR File: Encountered a non-Recurring Charge", print_r($this->DebugCDR(), true));
 					$sRecordCode				= 'S&E';
 					$sCarrierDestinationCode	= "{$sCarrierRecordCode}:".trim($this->_FetchRawCDR('NonRecurringChargeTypeId'));
 					break;
-					
+
 				case self::TYPE_CODE_ADJUSTMENT:
 					//Flex::assert(false, "COCE CDR File: Encountered an Adjustment", print_r($this->DebugCDR(), true));
-					
+
 					// We only want to accept certain Adjustments
 					if ($sToDate && $sElementId)
 					{
@@ -190,11 +195,11 @@ class NormalisationModuleArborCOCE extends NormalisationModule
 		{
 			return $this->_ErrorCDR(CDR_CANT_NORMALISE);
 		}
-		
+
 		$this->_AppendCDR('RecordCode', $sRecordCode);
 		$iRecordType	= $this->FindRecordType($iServiceType, $sRecordCode);
 		$this->_AppendCDR('RecordType', $iRecordType);
-		
+
 		// Destination
 		$aDestination	= null;
 		if ($this->_intContext)
@@ -202,7 +207,7 @@ class NormalisationModuleArborCOCE extends NormalisationModule
 			$aDestination	= $this->FindDestination($sCarrierDestinationCode);
 			$this->_AppendCDR('DestinationCode', $aDestination['Code']);
 		}
-		
+
 		// StartDatetime
 		$sFromDate	= trim($this->_FetchRawCDR('FromDate'));
 		$sToDate	= trim($this->_FetchRawCDR('ToDate'));
@@ -220,7 +225,7 @@ class NormalisationModuleArborCOCE extends NormalisationModule
 			$iStartDatetime	= strtotime(trim($this->_FetchRawCDR('TransactionDatetime')));
 		}
 		$this->_AppendCDR('StartDatetime', date('Y-m-d H:i:s', $iStartDatetime));
-		
+
 		// EndDatetime
 		if ($sToDate)
 		{
@@ -232,36 +237,36 @@ class NormalisationModuleArborCOCE extends NormalisationModule
 				$this->_AppendCDR('EndDatetime', date('Y-m-d H:i:s', $iEndDatetime));
 			}
 		}
-		
+
 		// Description
 		$sDescription	= trim($this->_FetchRawCDR('Description'));
 		if ($iStartDatetime)
 		{
 			$sDescription	.= " ".date('d/m/Y', $iStartDatetime);
-			
+
 			if ($iEndDatetime)
 			{
 				$sDescription	.= " to ".date('d/m/Y', $iEndDatetime);
 			}
 		}
 		$this->_AppendCDR('Description', $sDescription);
-		
+
 		// Units
 		// FIXME: Are there any cases where this isn't true?
 		$iUnits	= 1;
 		$this->_AppendCDR('Units', $iUnits);
-		
+
 		// Credit
 		$this->_AppendCDR('Credit', (int)($fCost < 0));
-		
+
 		return;
 	}
-	
+
 	static protected function _getIdTypeDescription($iIdType)
 	{
 		return (isset(self::$_aIdTypes[(int)$iIdType])) ? self::$_aIdTypes[(int)$iIdType] : (string)$iIdType;
 	}
-	
+
 	static private	$_arrRecordDefinitions	=	array
 												(
 													'PWTDET'	=>	array
@@ -383,9 +388,9 @@ class NormalisationModuleArborCOCE extends NormalisationModule
 																										)
 																)
 												);
-												
-	
-	
+
+
+
 	const	ID_TYPE_TELEPHONE_NUMBER					= 1;
 	const	ID_TYPE_ADHOC_DESCRIPTION					= 2;
 	const	ID_TYPE_TELSTRA_SP_ACCOUNT					= 4;
@@ -436,7 +441,7 @@ class NormalisationModuleArborCOCE extends NormalisationModule
 	const	ID_TYPE_ATM_VCI_NUMBER_B					= 523;
 	const	ID_TYPE_DVS_CIRCUIT_QUANTITY				= 525;
 	const	ID_TYPE_DVS_LISTED_DIRECTORY_NUMBER			= 526;
-	
+
 	static protected	$_aIdTypes	=	array
 										(
 											self::ID_TYPE_TELEPHONE_NUMBER						=> 'Telephone Number',
