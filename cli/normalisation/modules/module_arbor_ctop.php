@@ -1,7 +1,7 @@
 <?php
 class NormalisationModuleArborCTOP extends NormalisationModule {
 	public $intBaseFileType = RESOURCE_TYPE_FILE_IMPORT_CDR_AAPT_ESYSTEMS_CTOP;
-	
+
 	const UNIT_TYPE_SECONDS = 100;
 	const UNIT_TYPE_TENTH_OF_A_SECOND = 101;
 	const UNIT_TYPE_MINUTES = 120;
@@ -10,16 +10,16 @@ class NormalisationModuleArborCTOP extends NormalisationModule {
 	const UNIT_TYPE_KILOBYTES = 201;
 	const UNIT_TYPE_MEGABYTES = 202;
 	const UNIT_TYPE_GIGABYTES = 203;
-	
+
 	function __construct($intCarrier) {
 		// call parent constructor
 		parent::__construct($intCarrier);
-		
+
 		// define row start (account for header rows)
 		$this->_intStartRow = 0;
-		
+
 		$this->_iSequence = 0;
-		
+
 		// define the carrier CDR format
 		$this->_arrDefineCarrier = self::$_arrRecordDefinitions['PWTDET'];
 	}
@@ -27,19 +27,19 @@ class NormalisationModuleArborCTOP extends NormalisationModule {
 	function Normalise($arrCDR) {
 		// set up CDR
 		$this->_NewCDR($arrCDR);
-		
+
 		// SequenceNo
 		$this->_AppendCDR('SequenceNo', $this->_iSequence++);
-		
+
 		$this->_SplitRawCDR($arrCDR['CDR']);
-		
+
 		//--------------------------------------------------------------------//
 		switch (substr($arrCDR['CDR'], 0, 6)) {
 			case 'PWTDET':
 				$this->_SplitRawCDR($arrCDR['CDR']);
 				$this->_normalise();
 				break;
-				
+
 			case 'PWTHDR':
 			case 'PWTTRL':
 			default:
@@ -47,24 +47,24 @@ class NormalisationModuleArborCTOP extends NormalisationModule {
 				break;
 		}
 		//--------------------------------------------------------------------//
-		
+
 		//Debug($this->_arrNormalisedData);
-		
+
 		// Apply Ownership
 		$this->ApplyOwnership();
-		
+
 		// Validation of Normalised data
 		$this->Validate();
-		
+
 		// return output array
 		return $this->_OutputCDR();
 	}
-	
+
 	// Usage Records
 	private function _normalise() {
 		// CarrierRef
 		$this->_AppendCDR('CarrierRef', $this->_FetchRawCDR('CTOPRecordId'));
-		
+
 		// FNN
 		$sFNN = null;
 		try {
@@ -74,46 +74,46 @@ class NormalisationModuleArborCTOP extends NormalisationModule {
 				case self::ID_TYPE_MOBILE_SERVICE_NUMBER:
 					// Allowable Id Types
 					break;
-					
+
 				default:
 					// Other Id Types are considered non-CDRs
 					return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
 					//Flex::assert(false, "CTOP CDR File: Invalid Id Type '".self::_getIdTypeDescription($iIdType)."' encountered", print_r($this->DebugCDR(), true));
 					break;
 			}
-			
+
 			$sFNN = self::RemoveAusCode(trim($this->_FetchRawCDR('IdValue')));
 			$this->_AppendCDR('FNN', $sFNN);
 		} catch (Exception_Assertion $oException) {
 			return $this->_ErrorCDR(CDR_CANT_NORMALISE);
 		}
-		
+
 		// Source
 		$this->_AppendCDR('Source', self::RemoveAusCode($this->_FetchRawCDR('Origin')));
-		
+
 		// Destination
 		$this->_AppendCDR('Destination', self::RemoveAusCode($this->_FetchRawCDR('Target')));
-		
+
 		// Cost
 		$this->_AppendCDR('Cost', $this->_FetchRawCDR('AmountCharged') / 100); // Value is in cents
-		
+
 		// ServiceType
 		$iServiceType = self::_getServiceTypeForFNN($sFNN);
 		$this->_AppendCDR('ServiceType', $iServiceType);
-		
+
 		// RecordType
-		$sRecordCode = $this->FindRecordCode(trim($this->_FetchRawCDR('UsageType')));
-		$this->_AppendCDR('RecordCode', $sRecordCode);
-		$iRecordType = $this->FindRecordType($iServiceType, $sRecordCode);
+		//$sRecordCode = $this->FindRecordCode(trim($this->_FetchRawCDR('UsageType')));
+		//$this->_AppendCDR('RecordCode', $sRecordCode);
+		$iRecordType = $this->translateRecordType($iServiceType, trim($this->_FetchRawCDR('UsageType')));
 		$this->_AppendCDR('RecordType', $iRecordType);
-		
+
 		// Destination
 		$aDestination = null;
 		if ($this->_intContext) {
-			$aDestination = $this->FindDestination(trim($this->_FetchRawCDR('Jurisdiction')));
+			$aDestination = $this->translateDestination(trim($this->_FetchRawCDR('Jurisdiction')));
 			$this->_AppendCDR('DestinationCode', $aDestination['Code']);
 		}
-		
+
 		// Description
 		$sDescription = '';
 		if ($aDestination) {
@@ -123,19 +123,19 @@ class NormalisationModuleArborCTOP extends NormalisationModule {
 			}
 		}
 		$this->_AppendCDR('Description', $sDescription);
-		
+
 		// Units
 		$aUnitSets = array();
-		
+
 		$aUnitSets[] = array('iUnits'=>(int)$this->_FetchRawCDR('RawUnits'), 'iUnitType'=>(int)$this->_FetchRawCDR('RawUnitsType'));
-		
+
 		$aUnits = $aUnitSets[0]; // FIXME: If there is more than one unit set, we should try to match with Record Type
 		$this->_AppendCDR('Units',abs(self::_normaliseUnits($aUnits['iUnits'], $aUnits['iUnitType'])));
-		
+
 		// StartDatetime
 		$sStartDatetime = date('Y-m-d H:i:s', strtotime(trim($this->_FetchRawCDR('TransactionDatetime'))));
 		$this->_AppendCDR('StartDatetime', $sStartDatetime);
-		
+
 		// EndDatetime
 		$sEndDatetime = null;
 		try {
@@ -147,7 +147,7 @@ class NormalisationModuleArborCTOP extends NormalisationModule {
 					// Units is in seconds and represents the duration of the usage record
 					$sEndDatetime = date('Y-m-d H:i:s', strtotime("+{$aUnits['iUnits']} seconds", strtotime($sStartDatetime)));
 					break;
-				
+
 				default:
 					Flex::assert(false, "CTOP CDR File: Unhandled Unit Type '{$aUnits['iUnitType']}'", print_r($this->DebugCDR(), true));
 					break;
@@ -156,13 +156,13 @@ class NormalisationModuleArborCTOP extends NormalisationModule {
 			return $this->_ErrorCDR(CDR_CANT_NORMALISE);
 		}
 		$this->_AppendCDR('EndDatetime', $sEndDatetime);
-		
+
 		// Credit
 		$this->_AppendCDR('Credit', (int)($aUnits['iUnits'] < 0));
-		
+
 		return;
 	}
-	
+
 	static protected function _normaliseUnits($iUnits, $iUnitType) {
 		switch ($iUnitType) {
 			case self::UNIT_TYPE_SECONDS:
@@ -196,18 +196,18 @@ class NormalisationModuleArborCTOP extends NormalisationModule {
 			case self::UNIT_TYPE_GIGABYTES:
 				$iUnits = ceil($iUnits * 1024 * 1024);
 				break;
-			
+
 			default:
 				// TODO
 				break;
 		}
 		return $iUnits;
 	}
-	
+
 	static protected function _getIdTypeDescription($iIdType) {
 		return (isset(self::$_aIdTypes[(int)$iIdType])) ? self::$_aIdTypes[(int)$iIdType] : (string)$iIdType;
 	}
-	
+
 	static private $_arrRecordDefinitions = array(
 		'PWTDET' => array(
 			'RecordType' => array(
@@ -371,7 +371,7 @@ class NormalisationModuleArborCTOP extends NormalisationModule {
 	const ID_TYPE_ATM_VCI_NUMBER_B = 523;
 	const ID_TYPE_DVS_CIRCUIT_QUANTITY = 525;
 	const ID_TYPE_DVS_LISTED_DIRECTORY_NUMBER = 526;
-	
+
 	static protected $_aIdTypes = array(
 		self::ID_TYPE_TELEPHONE_NUMBER => 'Telephone Number',
 		self::ID_TYPE_ADHOC_DESCRIPTION => 'Ad hoc Description',

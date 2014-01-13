@@ -11,10 +11,10 @@ abstract class NormalisationModule extends CarrierModule {
 	protected $_errErrorHandler;
 	protected $_selFindOwner;
 	protected $_selFindOwnerIndial100;
-	
+
 	public $strFNN;
 	public $_intCarrier;
-	
+
 	function __construct($intCarrier) {
 		$this->_arrModuleConfig['CallGroupCarrierTranslationContextId'] = array(
 			'Type' => DATA_TYPE_INTEGER,
@@ -34,13 +34,13 @@ abstract class NormalisationModule extends CarrierModule {
 		$strServiceStatus = SERVICE_ACTIVE.", ".SERVICE_DISCONNECTED;
 		$this->_selFindOwner = new StatementSelect("Service JOIN Account ON Account.Id = Service.Account", "Service.*", "FNN = <fnn> AND ((CAST(<date> AS DATE) BETWEEN Service.CreatedOn AND Service.ClosedOn AND Status = ".SERVICE_ARCHIVED.") OR Service.Status IN ($strServiceStatus)) AND Account.Archived IN ($strAccountStatus)", "(Service.ClosedOn IS NULL) DESC, Service.CreatedOn DESC, Account DESC", "1");
 		$this->_selFindOwnerIndial100 = new StatementSelect("Service JOIN Account ON Account.Id = Service.Account", "Service.*", "FNN LIKE <fnn> AND (Indial100 = TRUE) AND ((CAST(<date> AS DATE) BETWEEN Service.CreatedOn AND Service.ClosedOn AND Service.Status = ".SERVICE_ARCHIVED.") OR Service.Status IN ($strServiceStatus)) AND Account.Archived IN ($strAccountStatus)", "(Service.ClosedOn IS NULL) DESC, Service.CreatedOn DESC, Account DESC", "1");
-		
+
 		$this->_selFindOwnerNow = new StatementSelect("Service JOIN Account ON Account.Id = Service.Account", "Service.*", "FNN = <fnn> AND Service.Status != ".SERVICE_ARCHIVED." AND Account.Archived IN ($strAccountStatus)", "(Service.Status IN ($strServiceStatus)) DESC, Service.ClosedOn DESC, Account DESC", "1");
 		$this->_selFindOwnerNowIndial100 = new StatementSelect("Service JOIN Account ON Account.Id = Service.Account", "Service.*", "(FNN LIKE <fnn>) AND (Indial100 = TRUE) AND Service.Status != ".SERVICE_ARCHIVED." AND Account.Archived IN ($strAccountStatus)", "(Service.Status IN ($strServiceStatus)) DESC, Service.ClosedOn DESC, Account DESC", "1");
-		
+
 		$this->_selFindRecordType = new StatementSelect("RecordType", "Id, Context", "ServiceType = <ServiceType> AND Code = <Code>", "", "1");
 		//$this->_selFindRecordCode = new StatementSelect("cdr_call_group_translation", "code", "carrier_id = <Carrier> AND carrier_code = <CarrierCode>", "", "1");
-		
+
 		/*$this->_selFindDestination = new StatementSelect(
 			"Destination, cdr_call_type_translation",
 			"Destination.Code AS Code, Destination.Description AS Description",
@@ -57,16 +57,16 @@ abstract class NormalisationModule extends CarrierModule {
 						AND ct.in_value = <in_value>
 			LIMIT		1;
 		";
-		
+
 		$this->_selGetCDR = new StatementSelect("CDR", "CDR.CDR AS CDR", "Id = <Id>");
-		
+
 		$this->_arrValid = array();
 	}
-	
+
 	function Validate($bolAsArray=false) {
 		// Validate our normalised data
 		$arrValid = array();
-		
+
 		// DestinationCode : required for any record type with a context
 		if ($this->_intContext > 0) {
 			// requires a destination code
@@ -79,27 +79,27 @@ abstract class NormalisationModule extends CarrierModule {
 			// doesn't require a destination code
 			$arrValid['DestinationCode'] = (!$this->_arrNormalisedData["DestinationCode"] || is_numeric($this->_arrNormalisedData["DestinationCode"]));	// 9
 		}
-		
+
 		// FNN : valid FNN
 		$arrValid['FNN'] = preg_match("/^0\d{9}[i]?|13\d{4}|1[89]00\d{6}$/", $this->_arrNormalisedData["FNN"]); // 1
-		
+
 		// CarrierRef : required (non empty)
 		$arrValid['CarrierRef'] = ($this->_arrNormalisedData["CarrierRef"] != ""); // 2
-		
+
 		// source : empty or valid FNN
 		if ($this->_arrNormalisedData["Source"] != "") { // 3
 			$arrValid['Source'] = preg_match("/^\d+$|^\+\d+$|^\d{5}(X+|\d+| +|\d+REV)I?$/", $this->_arrNormalisedData["Source"]);
 		} else {
 			$arrValid['Source'] = true;
 		}
-		
+
 		// destination : empty or valid FNN
 		if ($this->_arrNormalisedData["Destination"] != "") { // 4
 			$arrValid['Destination'] = preg_match("/^\d+$|^\+\d+$|^\d{5}(X+|\d+| +|\d+REV)I?$/", $this->_arrNormalisedData["Destination"]);
 		} else {
 			$arrValid['Destination'] = true;
 		}
-		
+
 		// 5
 		// start time : valid date/time
 		$arrValid['StartDatetime'] = preg_match("/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/",	$this->_arrNormalisedData["StartDatetime"]);
@@ -110,23 +110,23 @@ abstract class NormalisationModule extends CarrierModule {
 		} else {
 			$arrValid['EndDatetime'] = true;
 		}
-		
+
 		// units : numeric
 		$arrValid['Units'] = is_numeric($this->_arrNormalisedData["Units"]); // 7
 		if (is_numeric($this->_arrNormalisedData["Units"]) && (int)$this->_arrNormalisedData["Units"] == 0) {
 			// convert 0 units to 1 units
 			$this->_arrNormalisedData["Units"] = 1;
 		}
-		
+
 		// cost : numeric
 		$arrValid['Cost'] = is_numeric($this->_arrNormalisedData["Cost"]); // 8
-		
+
 		$this->_arrValid = $arrValid;
-		
+
 		if ($bolAsArray) {
 			return $arrValid;
 		}
-		
+
 		$i = 0;
 		foreach ($arrValid as $strKey=>$bolValid) {
 			$i++;
@@ -138,7 +138,7 @@ abstract class NormalisationModule extends CarrierModule {
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
 
@@ -159,23 +159,23 @@ abstract class NormalisationModule extends CarrierModule {
 		}
 		return $strFNN;
 	}
-	
+
 	protected function IsValidFNN($strFNN) {
 		return IsValidFNN($strFNN);
 	}
-	
+
 	protected function _SplitRawCDR($strCDR=null) {
 		if ($strCDR === null) {
 			$strCDR = $this->_arrNormalisedData['CDR'];
 		}
 		// keep a record of the raw CDR
 		$this->_strRawCDR = $strCDR;
-		
+
 		//CliEcho("RAW CDR: '{$this->_strRawCDR}'");
-		
+
 		// clean the array
 		$this->_arrRawData = array();
-		
+
 		// build the array
 		if ($this->_strDelimiter) {
 			// delimited record
@@ -197,11 +197,11 @@ abstract class NormalisationModule extends CarrierModule {
 				$this->_arrRawData[$strKey] = trim(substr($strCDR, $aValue['Start'], $aValue['Length']));
 			}
 		}
-		
+
 		//Debug($this->_arrDefineCarrier);
 		//Debug($this->_arrRawData);
 	}
-	
+
 	protected function _ValidateRawCDR() {
 		if (is_array($this->_arrDefineCarrier)) {
 			foreach($this->_arrDefineCarrier as $strKey=>$aValue) {
@@ -217,31 +217,31 @@ abstract class NormalisationModule extends CarrierModule {
 		// return false if there is no define array for the carrier (should never happen)
 		return false;
 	}
-	
+
 	protected function _FetchRawCDR($strKey) {
 		return (isset($this->_arrRawData[$strKey]) ? $this->_arrRawData[$strKey] : null);
 	}
-	
+
 	protected function _NewCDR($arrCDR) {
 		// set CDR
 		$this->_arrNormalisedData = $arrCDR;
-		
+
 		// Status = Normalised by default
 		$this->_arrNormalisedData['Status'] = CDR_NORMALISED;
-		
+
 		// not a credit by default
 		if (!isset($this->_arrNormalisedData['Credit'])) {
 			$this->_arrNormalisedData['Credit'] = 0;
 		}
-		
+
 		// set Default Context
 		$this->_intContext = 0;
 	}
-	
+
 	protected function _AppendCDR($strKey, $mixValue) {
 		$this->_arrNormalisedData[$strKey] = $mixValue;
 	}
-	
+
 	protected function _UpdateStatus($intStatus) {
 		// only set status if our current status is CDR_NORMALISED, CDR_FIND_OWNER, CDR_RENORMALISE or CDR_BAD_OWNER
 		$intCurStatus = $this->_arrNormalisedData['Status'];
@@ -254,11 +254,11 @@ abstract class NormalisationModule extends CarrierModule {
 			return false;
 		}
 	}
-	
+
 	protected function _OutputCDR() {
 		return $this->_arrNormalisedData;
 	}
-	
+
 	protected function _ErrorCDR($intStatus) {
 		$this->_arrNormalisedData['Status'] = $intStatus;
 		return $this->_arrNormalisedData;
@@ -273,7 +273,7 @@ abstract class NormalisationModule extends CarrierModule {
 			// Use the CDR's StartDatetime
 			$strDate = $this->_arrNormalisedData['StartDatetime'];
 		}
-		
+
 		// Find the Owner
 		if (is_array($mixResult = FindFNNOwner($this->_arrNormalisedData['FNN'], $strDate))) {
 			// Found an Owner
@@ -282,30 +282,30 @@ abstract class NormalisationModule extends CarrierModule {
 			$this->_arrNormalisedData['Service'] = $mixResult['Service'];
 			return true;
 		}
-		
+
 		// Is there only one instance of this FNN?
 		$arrFNNInstances = Service::getFNNInstances($this->_arrNormalisedData['FNN'], null, true);
 		//CliEcho("There are ".count($arrFNNInstances)." instances of {$this->_arrNormalisedData['FNN']}");
 		if (count($arrFNNInstances) === 1) {
 			//CliEcho("Only one instance");
-			
+
 			// Yes, automatically assume that this is the correct Service
 			$this->_arrNormalisedData['AccountGroup'] = $arrFNNInstances[0]['AccountGroup'];
 			$this->_arrNormalisedData['Account'] = $arrFNNInstances[0]['Account'];
 			$this->_arrNormalisedData['Service'] = $arrFNNInstances[0]['Id'];
 			return true;
 		}
-		
+
 		// Return false if there was no match, or more than one match
 		if ($bolUpdateCDRStatus) {
 			$this->_UpdateStatus(CDR_BAD_OWNER);
 		}
-		
+
 		//Debug("Cannot match FNN: ".$this->_arrNormalisedData['FNN']);
 		$this->strFNN = $this->_arrNormalisedData['FNN'];
 		return false;
 	}
-	
+
 	protected function ApplyOwnershipNow() {
 		return $this->ApplyOwnership(true);
 		/*
@@ -325,24 +325,24 @@ abstract class NormalisationModule extends CarrierModule {
 				return true;
 			}
 		}
-		
+
 		// Return false if there was no match, or more than one match
 		$this->_UpdateStatus(CDR_BAD_OWNER);
 		//Debug("Cannot match FNN: ".$this->_arrNormalisedData['FNN']);
 		$this->strFNN = $this->_arrNormalisedData['FNN'];
 		return false;*/
 	}
-	
+
 	public function FindOwner($arrCDR) {
 		// set local copy of CDR
 		$this->_arrNormalisedData = $arrCDR;
-		
+
 		// set context to 0
 		$this->_intContext = 0;
-		
+
 		// default to status = normalised
 		$this->_arrNormalisedData['Status']	= CDR_NORMALISED;
-		
+
 		// apply ownership
 		if ($arrCDR['Status'] === CDR_NORMALISE_NOW) {
 			// Find the current or most recent owner
@@ -351,13 +351,13 @@ abstract class NormalisationModule extends CarrierModule {
 			// Find the owner at the time the call was made
 			$this->ApplyOwnership();
 		}
-		
+
 		// validate
 		$this->Validate();
-		
+
 		return $this->_arrNormalisedData;
 	}
-	
+
 	protected function FindRecordCode($mixCarrierCode) {
 		$iCarrierTranslationContextId = $this->GetConfigField('CallGroupCarrierTranslationContextId');
 		Flex::assert($iCarrierTranslationContextId !== null, "No Call Group (Record Type) Carrier Translation Context defined for Module {$this->_arrCarrierModule['Id']}:{$this->_arrCarrierModule['description']} (".get_class($this).")");
@@ -371,53 +371,53 @@ abstract class NormalisationModule extends CarrierModule {
 			'carrier_translation_context_id' => $iCarrierTranslationContextId,
 			'in_value' => (string)$mixCarrierCode
 		));
-		
+
 		if ($arrResult = $mResult->fetch_assoc()) {
 			return $arrResult['code'];
 		}
-		
+
 		// Return false if there was no match
 		$this->_UpdateStatus(CDR_BAD_RECORD_TYPE);
 		return false;
 	}
-	
+
 	protected function FindRecordType($intServiceType, $strRecordCode) {
 		$intResult = $this->_selFindRecordType->Execute(array("ServiceType" => $intServiceType, "Code" => $strRecordCode));
-		
+
 		if ($intResult === false) {
 			// Yes?  And???
 		}
-		
+
 		if ($arrResult = $this->_selFindRecordType->Fetch()) {
 			$this->_intContext = $arrResult['Context'];
 			return $arrResult['Id'];
 		}
-		
+
 		// Return false if there was no match
 		$this->_UpdateStatus(CDR_BAD_RECORD_TYPE);
 		return false;
 	}
-	
+
 	protected function FindDestination($mixCarrierCode, $bolDontError=false) {
 		// This is now handled by a reimplementation
 		return $this->_findDestination($mixCarrierCode);
 		/*
 		static	$selUnknownDestination;
-		
+
 		//CliEcho("Finding Destination Translation for Carrier {$this->intBaseCarrier} with Code '{$mixCarrierCode}' in Context {$this->_intContext}");
-		
+
 		// See if we have translation data for this destination
 		$arrData = array("Carrier" => $this->intBaseCarrier, "CarrierCode" => $mixCarrierCode, "Context" => $this->_intContext);
 		$intResult = $this->_selFindDestination->Execute($arrData);
-		
+
 		if ($intResult === false) {
 			// Yes?  And???
 		}
-		
+
 		if ($arrResult = $this->_selFindDestination->Fetch()) {
 			return $arrResult;
 		}
-		
+
 		// No translation data -- Use the 'Unknown Destination' Destination for this Context
 		$selUnknownDestination = ($selUnknownDestination) ? $selUnknownDestination : new StatementSelect(
 			"destination_context JOIN Destination ON destination_context.fallback_destination_id = Destination.Id",
@@ -431,30 +431,38 @@ abstract class NormalisationModule extends CarrierModule {
 			$arrUnknownDestination['bolUnknownDestination']	= true;
 			return $arrUnknownDestination;
 		}
-		
+
 		throw new Exception("No Default Destination found for Context {$this->_intContext}!");
 
 		// Set an error status
 		if ($bolDontError !== true) {
 			$this->_UpdateStatus(CDR_BAD_DESTINATION);
 		}
-		
+
 		// Return false if there was no match
 		return false;
 		*/
 	}
-	
+
 	protected function _findDestination($mCarrierCode, $bExactMatchOnly=false, $bSilentFail=false) {
 		static	$oGetUnknownDestination;
-		
+
 		// Check for exact match destination
 		$iCarrierTranslationContextId = $this->GetConfigField('CallTypeCarrierTranslationContextId');
-		Flex::assert($iCarrierTranslationContextId !== null, "No Call Type (Destination) Carrier Translation Context defined for Module {$this->_arrCarrierModule['Id']}:{$this->_arrCarrierModule['description']} (".get_class($this).")");
+		Flex::assert($iCarrierTranslationContextId !== null,
+			"No Call Type (Destination) Carrier Translation Context defined for Module {$this->_arrCarrierModule['Id']}:{$this->_arrCarrierModule['description']} (".get_class($this).")",
+			array(
+				'Source Value' => $mCarrierCode,
+				'Raw Record' => $this->_strRawCDR,
+				'Parsed Record' => $this->_arrRawData,
+				'Normalised Record' => $this->_arrNormalisedData
+			)
+		);
 		$mResult = Query::run($this->_sFindDestinationSQL, array('carrier_translation_context_id'=>$iCarrierTranslationContextId, 'in_value'=>(string)$mCarrierCode));
 		if ($aDestination = $mResult->fetch_assoc()) {
 			return $aDestination;
 		}
-		
+
 		// Check for Unknown Destination
 		if (!$bExactMatchOnly) {
 			if ($aUnknownDestination = $this->_getUnknownDestination()) {
@@ -464,7 +472,7 @@ abstract class NormalisationModule extends CarrierModule {
 				throw new Exception("No Default Destination found for Context {$this->_intContext}!");
 			}
 		}
-		
+
 		// No Destination -- Error
 		if ($bSilentFail) {
 			return false;
@@ -487,7 +495,7 @@ abstract class NormalisationModule extends CarrierModule {
 	protected function _GenerateUID() {
 		return "UID_{$this->_arrNormalisedData["FileName"]}_{$this->_arrNormalisedData["SequenceNo"]}";
 	}
-	
+
 	protected function _IsInbound($strFNN) {
 		$strPrefix = substr(trim($strFNN), 0, 2);
 		if ($strPrefix === '13' || $strPrefix === '18') {
@@ -495,14 +503,14 @@ abstract class NormalisationModule extends CarrierModule {
 		}
 		return false;
 	}
-	
+
 	protected function _IsCredit() {
 		if(!isset($this->_arrNormalisedData['Units']) || !isset($this->_arrNormalisedData['Cost'])) {
 			// Either Units or Cost are not set yet
 			$this->_AppendCDR('Credit', 0);
 			return false;
 		}
-		
+
 		$intUnits = (int)$this->_arrNormalisedData['Units'];
 		$fltCost = (float)$this->_arrNormalisedData['Cost'];
 		if ($fltCost < 0.0) {
@@ -515,10 +523,10 @@ abstract class NormalisationModule extends CarrierModule {
 			return false;
 		}
 	}
-	
+
 	public function DebugCDR() {
 		$arrDebugData = array();
-		
+
 		// Add the Raw CDR string
 		$arrDebugData['CDR'] = $this->_strRawCDR;
 		$arrDebugData['Raw'] = $this->_arrRawData;
@@ -527,13 +535,13 @@ abstract class NormalisationModule extends CarrierModule {
 		$arrDebugData['Define'] = $this->_arrDefineCarrier;
 		return $arrDebugData;
 	}
-	
+
 	public function RawCDR($strCDR=null) {
 		// Split the Raw CDR
 		if ($strCDR) {
 			$this->_SplitRawCDR($strCDR);
 		}
-		
+
 		// return the Raw CDR string
 		return $this->_arrRawData;
 	}
@@ -557,7 +565,10 @@ abstract class NormalisationModule extends CarrierModule {
 			array(
 				'Service Type' => $iServiceType,
 				'Source Value' => $sFromValue,
-				'Record Code' => $sRecordCode
+				'Record Code' => $sRecordCode,
+				'Raw Record' => $this->_strRawCDR,
+				'Parsed Record' => $this->_arrRawData,
+				'Normalised Record' => $this->_arrNormalisedData
 			)
 		);
 	}
@@ -579,7 +590,7 @@ abstract class NormalisationModule extends CarrierModule {
 			var_export($this->getNormalised($sNormalisedField), true).
 			(count($aRawFieldDescriptions) ? ' ('.implode('; ', $aRawFieldDescriptions).')' : '');
 	}
-	
+
 	/**
 	* getFileImport()
 	*
@@ -590,9 +601,9 @@ abstract class NormalisationModule extends CarrierModule {
 	public static function getFileImport($intFileImportId) {
 		static $qryQuery;
 		static $arrFileImports	= array();
-		
+
 		$qryQuery = ($qryQuery) ? $qryQuery : new Query();
-		
+
 		// Cache the FileImport record if we don't already have it
 		$intFileImportId = (int)$intFileImportId;
 		if (!array_key_exists($intFileImportId, $arrFileImports) || !$arrFileImports[$intFileImportId]) {
@@ -605,11 +616,11 @@ abstract class NormalisationModule extends CarrierModule {
 				throw new Exception("Unable to find FileImport with Id '{$intFileImportId}'!");
 			}
 		}
-		
+
 		// Return the FileImport record
 		return $arrFileImports[$intFileImportId];
 	}
-	
+
 	protected static function _getServiceTypeForFNN($sFNN) {
 		if (preg_match("/^1([83]00\d{6}|3{4})$/", $sFNN)) {
 			// Inbound

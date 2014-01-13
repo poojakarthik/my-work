@@ -196,15 +196,14 @@ class NormalisationModuleArborCOCE extends NormalisationModule
 			return $this->_ErrorCDR(CDR_CANT_NORMALISE);
 		}
 
-		$this->_AppendCDR('RecordCode', $sRecordCode);
-		$iRecordType	= $this->FindRecordType($iServiceType, $sRecordCode);
+		$iRecordType = $this->translateRecordType($iServiceType, $sCarrierRecordCode);
 		$this->_AppendCDR('RecordType', $iRecordType);
 
 		// Destination
 		$aDestination	= null;
 		if ($this->_intContext)
 		{
-			$aDestination	= $this->FindDestination($sCarrierDestinationCode);
+			$aDestination = $this->translateDestination($sCarrierDestinationCode);
 			$this->_AppendCDR('DestinationCode', $aDestination['Code']);
 		}
 
@@ -260,6 +259,19 @@ class NormalisationModuleArborCOCE extends NormalisationModule
 		$this->_AppendCDR('Credit', (int)($fCost < 0));
 
 		return;
+	}
+
+	public function FindRecordCode($sCarrierCode) {
+		switch ((int)$sCarrierCode) {
+			case self::TYPE_CODE_RECURRING_CHARGE:
+				return 'S&E';
+
+			case self::TYPE_CODE_NON_RECURRING_CHARGE:
+				return 'S&E';
+
+			case self::TYPE_CODE_ADJUSTMENT:
+				return 'S&E';
+		}
 	}
 
 	static protected function _getIdTypeDescription($iIdType)
