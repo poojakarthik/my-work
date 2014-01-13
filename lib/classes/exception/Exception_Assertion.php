@@ -5,24 +5,53 @@
  * Instanciating an Exception_Assertion, will automatically send an EMAIL_NOTIFICATION_ALERT email to all predefined recipients of this email notification type
  */
 class Exception_Assertion extends Exception {
-	public function __construct($sMessage=null, $sExtraDetails=null, $sAssertionName=null) {
+	protected $_mDebug;
+
+	public function __construct($sMessage=null, $mDebugData=null, $sAssertionName=null) {
 		parent::__construct($sMessage);
-		
+
 		// Send an EMAIL_NOTIFICATION_ALERT email
 		$sDetails = strlen($sMessage) ? $sMessage : "[ No Message ]";
-		
-		if ($sExtraDetails) {
-			$sDetails .= "\n\nFurther Details:\n"
-						. (is_string($sExtraDetails) ? $sExtraDetails : print_r($sExtraDetails, true));
+
+		if ($mDebugData) {
+			$this->_mDebugData = $mDebugData;
+			$sDetails .= "\n\nFurther Details:\n" . $this->getDebugAsString();
 		}
-		
+
 		$sEmailSubject = "Assertion Failed";
 		if (strlen($sAssertionName)) {
 			$sEmailSubject .= " - {$sAssertionName}";
 		} elseif (strlen($sMessage)) {
 			$sEmailSubject .= " - {$sMessage}";
 		}
-		
-		Flex::sendEmailNotificationAlert($sEmailSubject, $sDetails, false, true);
+
+		Flex::sendEmailNotificationAlert(
+			$sEmailSubject,
+			$sDetails,
+			false,
+			true
+		);
+	}
+
+	public function getDebug() {
+		return $_mDebug;
+	}
+
+	public function getDebugAsString() {
+		if ($this->_mDebug === null) {
+			return null;
+		}
+		if (is_string($this->_mDebug)) {
+			return $this->_mDebug;
+		}
+		return print_r($this->_mDebug, true);
+	}
+
+	public function __toString() {
+		$sStringValue = parent::__toString();
+		if ($this->getDebug() !== null) {
+			$sStringValue .= "\n\nFurther Details:\n" . $this->getDebugAsString();
+		}
+		return $sStringValue;
 	}
 }
