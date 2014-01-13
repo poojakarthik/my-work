@@ -77,7 +77,7 @@ class Ticketing_Import_MailServer extends Ticketing_Import {
 					}
 
 					//Log::get()->logIf($this->_bLoggingEnabled, "[*] Details: ".var_export($aDetails, true));
-		
+
 					// Load the details into the ticketing system
 					$oCorrespondance = Ticketing_Correspondance::createForDetails($aDetails, $this->_bLoggingEnabled);
 
@@ -105,7 +105,8 @@ class Ticketing_Import_MailServer extends Ticketing_Import {
 
 			// Set all read messages as unseen
 			foreach ($aReadMessageIds as $iMessageNumber) {
-				$this->_oEmailStorage->setFlags($iMessageNumber, array(Zend_Mail_Storage::FLAG_RECENT));
+				// NOTE: Zend IMAP can't set the RECENT flag, so we remove the SEEN flag instead
+				$this->_oEmailStorage->setFlags($iMessageNumber, array());
 			}
 
 			throw $oEx;
@@ -130,7 +131,7 @@ class Ticketing_Import_MailServer extends Ticketing_Import {
 				Log::get()->logIf($this->_bLoggingEnabled, "[*] Attachment: Type 1");
 				$aParts['aAttachments'][] = array(
 					'sContentType' => $sContentType,
-					'sName' => $oMessagePart->getHeader('content-description'), 
+					'sName' => $oMessagePart->getHeader('content-description'),
 					'sContent' => $this->_encodePartContent($sContentTransferEncoding, $oMessagePart->getContent())
 				);
 			} else {
@@ -169,7 +170,7 @@ class Ticketing_Import_MailServer extends Ticketing_Import {
 
 						$aParts['aAttachments'][] = array(
 							'sContentType' => $sContentType,
-							'sName' => $sFilename, 
+							'sName' => $sFilename,
 							'sContent' => $this->_encodePartContent($sContentTransferEncoding, $oMessagePart->getContent())
 						);
 						break;
@@ -241,9 +242,9 @@ class Ticketing_Import_MailServer extends Ticketing_Import {
 			$sName = $aAddressParts[1];
 			$sAddress = $aAddressParts[2];
 		}
-		
+
 		return array(
-			'sName' => trim($sName), 
+			'sName' => trim($sName),
 			'sAddress' => $sAddress
 		);
 	}
