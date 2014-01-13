@@ -13,8 +13,8 @@ class Exception_Assertion extends Exception {
 		// Send an EMAIL_NOTIFICATION_ALERT email
 		$sDetails = strlen($sMessage) ? $sMessage : "[ No Message ]";
 
-		if ($mDebugData) {
-			$this->_mDebug = $mDebugData;
+		$this->_mDebug = $mDebugData;
+		if ($this->getDebug() !== null) {
 			$sDetails .= "\n\nFurther Details:\n" . $this->getDebugAsString();
 		}
 
@@ -34,7 +34,7 @@ class Exception_Assertion extends Exception {
 	}
 
 	public function getDebug() {
-		return $_mDebug;
+		return $this->_mDebug;
 	}
 
 	public function getDebugAsString() {
@@ -50,7 +50,7 @@ class Exception_Assertion extends Exception {
 	public function __toString() {
 		$sStringValue = parent::__toString();
 		if ($this->getDebug() !== null) {
-			$sStringValue .= "\n\nFurther Details:\n" . $this->getDebugAsString();
+			$sStringValue .= "\nFurther Details:\n" . $this->getDebugAsString();
 		}
 		return $sStringValue;
 	}
