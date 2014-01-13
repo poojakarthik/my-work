@@ -14,7 +14,7 @@ class Exception_Assertion extends Exception {
 		$sDetails = strlen($sMessage) ? $sMessage : "[ No Message ]";
 
 		if ($mDebugData) {
-			$this->_mDebugData = $mDebugData;
+			$this->_mDebug = $mDebugData;
 			$sDetails .= "\n\nFurther Details:\n" . $this->getDebugAsString();
 		}
 
