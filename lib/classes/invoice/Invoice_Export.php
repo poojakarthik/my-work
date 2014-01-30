@@ -6,13 +6,13 @@ class Invoice_Export {
 			// Either not an integer, or an invalid number of periods ago
 			throw new Exception("\$intPeriodsAgo with value '{$intPeriodsAgo}' is less than the minimum of 1");
 		}
-		
+
 		$intPeriodsAgo--;
 		$selOldInvoice = new StatementSelect("Invoice", "*", "Account = <Account> AND CreatedOn < <CreatedOn>", "CreatedOn DESC", "$intPeriodsAgo, 1");
 		if ($selOldInvoice->Execute($arrInvoice) === false) {
 			throw new Exception_Database($selOldInvoice->Error());
 		}
-		
+
 		// Return data or empty array
 		if ($arrOldInvoice = $selOldInvoice->Fetch()) {
 			return $arrOldInvoice;
@@ -20,14 +20,14 @@ class Invoice_Export {
 			return array();
 		}
 	}
- 	
+
 	public static function getCustomerData($arrInvoice) {
 		// Retrieve the Customer Data
 		$selCustomerData = self::_preparedStatement('selCustomerData');
 		if ($selCustomerData->Execute($arrInvoice) === false) {
 			throw new Exception_Database($selCustomerData->Error());
 		}
-		
+
 		// Return data or empty array
 		if ($arrCustomer = $selCustomerData->Fetch()) {
 			return $arrCustomer;
@@ -35,7 +35,7 @@ class Invoice_Export {
 			return array();
 		}
 	}
- 	
+
 	public static function getServices($arrInvoice) {
 		// Get (Primary) FNNs for this Account
 		$selAccountFNNs = self::_preparedStatement('selAccountFNNs');
@@ -43,14 +43,14 @@ class Invoice_Export {
 			throw new Exception_Database($selAccountFNNs->Error());
 		}
 		$arrAccountFNNs = $selAccountFNNs->FetchAll();
-		
+
 		// Get List of Service IDs for each FNN
 		$arrServices = array();
 		$selServiceDetails = self::_preparedStatement('selServiceDetails');
 		$selServiceInstances = self::_preparedStatement('selServiceInstances');
 		foreach ($arrAccountFNNs as $intKey=>$arrService) {
 			//Cli_App_Billing::debug($arrService);
-			
+
 			// Get details from the Current Service
 			$arrService['invoice_run_id'] = $arrInvoice['invoice_run_id'];
 			if ($selServiceDetails->Execute($arrService) === false) {
@@ -58,12 +58,12 @@ class Invoice_Export {
 			} else {
 				$arrServiceDetails = $selServiceDetails->Fetch();
 				$arrService = array_merge($arrService, $arrServiceDetails);
-				
+
 				//Cli_App_Billing::debug($arrService);
-				
+
 				// Is this the Primary FNN?
 				$arrService['Primary'] = ($arrService['FNN'] >= $arrService['RangeStart'] && $arrService['FNN'] <= $arrService['RangeEnd']) ? true : false;
-				
+
 				// Get all Service Ids that are associated with this FNN
 				$arrWhere = array();
 				if ($selServiceInstances->Execute($arrService) === false) {
@@ -74,16 +74,16 @@ class Invoice_Export {
 						$arrService['Id'][] = $arrId['service_id'];
 					}
 				}
-				
+
 				$arrServices[] = $arrService;
 				//Cli_App_Billing::debug($arrService);
 			}
 		}
-		
+
 		foreach ($arrServices as &$arrService) {
 			$arrCategories = array();
 			$fltRatedTotal = 0.0;
-			
+
 			// Get Record Types
 			$arrWhere = array();
 			$arrWhere['invoice_run_id'] = $arrInvoice['invoice_run_id'];
@@ -94,7 +94,7 @@ class Invoice_Export {
 				// Get Call Itemisation
 				$arrWhere['RecordGroup'] = $arrRecordType['GroupId'];
 				$arrRecordType['Itemisation'] = self::_preparedStatementMultiService('selItemisedCalls', $arrService, $arrWhere);
-				
+
 				// Calculate Rated Total
 				$fltCDRTotal = 0.0;
 				$fUnitsTotal = 0.0;
@@ -102,7 +102,7 @@ class Invoice_Export {
 					$fltRatedTotal += $arrCDR['Charge'];
 					$fltCDRTotal += $arrCDR['Charge'];
 					$fUnitsTotal += ($arrCDR['Credit'] == 1 ? -1 : 1) * $arrCDR['Units'];
-					
+
 					// Should we hide this CDR?
 					if ($arrCDR['allow_cdr_hiding'] && $arrCDR['Charge'] === 0.0 && $arrService['allow_cdr_hiding']) {
 						// Yes -- hide it/remove it from itemisation
@@ -111,11 +111,11 @@ class Invoice_Export {
 				}
 				//Cli_App_Billing::debug("CDR Total for {$arrService['FNN']}: \${$fltCDRTotal}");
 				$arrRecordType['UnitsTotal'] = round($fUnitsTotal, 2);
-				
+
 				// Add Record Type to Service array
 				$arrCategories[$arrRecordType['RecordGroup']] = $arrRecordType;
 			}
-			
+
 			// Handle ServiceTotals for non-Indials
 			if (!$arrService['Indial100']) {
 				// Get the ServiceTotal
@@ -125,7 +125,7 @@ class Invoice_Export {
 					$arrService['ServiceTotal'] += $arrServiceTotal['TotalCharge'];
 				}
 			}
-			
+
 			// Only if this is a non-Indial or is the Primary FNN
 			if ($arrService['Primary']) {
 				// Get Charges
@@ -133,31 +133,31 @@ class Invoice_Export {
 				$aChargeItemisation = array();
 				if (count($arrItemised)) {
 					$fltChargesTotal = 0.0;
-					
+
 					// Convert each Charge to a CDR
 					foreach ($arrItemised as $arrCharge) {
 						$arrCDR = array();
 						$arrCDR['Charge'] = ($arrCharge['Nature'] == NATURE_CR) ? 0 - $arrCharge['Charge'] : $arrCharge['Charge'];
 						$fltChargesTotal += $arrCDR['Charge'];
-						
+
 						$arrCDR['Units'] = 1;
 						$arrCDR['Description'] = ($arrCharge['ChargeType']) ? ($arrCharge['ChargeType']." - ".$arrCharge['Description']) : $arrCharge['Description'];
 						$arrCDR['TaxExempt'] = $arrCharge['TaxExempt'];
-						
+
 						$aChargeItemisation[] = $arrCDR;
 					}
-					
+
 					// Perform "Roll-Ups"
 					$aChargeItemisation = self::_chargeRollup($aChargeItemisation);
-					
+
 					$arrCategories['Service Charges & Discounts']['Itemisation'] = $aChargeItemisation;
 					$arrCategories['Service Charges & Discounts']['DisplayType'] = RECORD_DISPLAY_S_AND_E;
 					$arrCategories['Service Charges & Discounts']['TotalCharge'] = $fltChargesTotal;
 					$arrCategories['Service Charges & Discounts']['Records'] = count($aChargeItemisation);
-					
+
 					$fltRatedTotal += $fltChargesTotal;
 				}
-				
+
 				// Get Plan Charges
 				$fltPlanChargeTotal = 0.0;
 				$arrPlanChargeCharges = self::_preparedStatementMultiService('selPlanChargeCharges', $arrService, $arrInvoice);
@@ -170,23 +170,23 @@ class Invoice_Export {
 					$arrCDR['Description'] = ($arrCharge['ChargeType']) ? ($arrCharge['ChargeType']." - ".$arrCharge['Description']) : $arrCharge['Description'];
 					$arrCDR['TaxExempt'] = $arrCharge['TaxExempt'];
 					$arrPlanChargeItemisation[] = $arrCDR;
-					
+
 					$fltPlanChargeTotal += $arrCDR['Charge'];
 				}
-				
+
 				// Perform "Roll-Ups"
 				$arrPlanChargeItemisation = self::_chargeRollup($arrPlanChargeItemisation);
-				
+
 				// Add to Service array
 				if (count($arrPlanChargeItemisation)) {
 					$arrCategories['Plan Charges']['DisplayType'] = RECORD_DISPLAY_S_AND_E;
 					$arrCategories['Plan Charges']['TotalCharge'] = $fltPlanChargeTotal;
 					$arrCategories['Plan Charges']['Records'] = count($arrPlanChargeItemisation);
 					$arrCategories['Plan Charges']['Itemisation'] = $arrPlanChargeItemisation;
-					
+
 					$fltRatedTotal += $fltPlanChargeTotal;
 				}
-				
+
 				// Get Plan Usage/Credits
 				$fltPlanCreditTotal = 0.0;
 				$arrPlanUsageCharges = self::_preparedStatementMultiService('selPlanUsageCharges', $arrService, $arrInvoice);
@@ -199,37 +199,37 @@ class Invoice_Export {
 					$arrCDR['Description'] = ($arrCharge['ChargeType']) ? ($arrCharge['ChargeType']." - ".$arrCharge['Description']) : $arrCharge['Description'];
 					$arrCDR['TaxExempt'] = $arrCharge['TaxExempt'];
 					$arrPlanCreditItemisation[] = $arrCDR;
-					
+
 					$fltPlanCreditTotal += $arrCDR['Charge'];
 				}
-				
+
 				// Perform "Roll-Ups"
 				$arrPlanCreditItemisation = self::_chargeRollup($arrPlanCreditItemisation);
-				
+
 				// Add to Service array
 				if (count($arrPlanCreditItemisation)) {
 					$arrCategories['Plan Usage']['DisplayType'] = RECORD_DISPLAY_S_AND_E;
 					$arrCategories['Plan Usage']['TotalCharge'] = $fltPlanCreditTotal;
 					$arrCategories['Plan Usage']['Records'] = count($arrPlanCreditItemisation);
 					$arrCategories['Plan Usage']['Itemisation'] = $arrPlanCreditItemisation;
-					
+
 					$fltRatedTotal += $fltPlanCreditTotal;
 				}
 			}
-			
+
 			// Handle ServiceTotals for Indials
 			if ($arrService['Indial100'] || $arrService['SharedPlan']) {
 				// Indial 100s & Shared Plans should only have Rated Totals
 				$arrService['ServiceTotal'] = $fltRatedTotal;
 			}
-			
+
 			$arrService['RecordTypes'] = $arrCategories;
 			$arrService['IsRendered'] = ($arrService['ForceRender'] || count($arrCategories)) ? true : false;
 		}
-		
+
 		return $arrServices;
 	}
- 	
+
 	public static function getAccountAdjustments($aInvoice) {
 		// Get Adjustments
 		//--------------------------------------------------------------------//
@@ -279,20 +279,20 @@ class Invoice_Export {
 			$fAccountAdjustmentTotal += $aAdjustment['Charge'];
 			$fAccountAdjustmentTax += $aAdjustment['TaxComponent'];
 		}
-		
+
 		// Perform "Roll-Ups"
 		$aAdjustmentItemisation = self::_chargeRollup($aAdjustmentItemisation);
-		
+
 		// Totals
 		$aAdjustments['Itemisation'] = $aAdjustmentItemisation;
 		$aAdjustments['DisplayType'] = RECORD_DISPLAY_S_AND_E;
 		$aAdjustments['TotalCharge'] = $fAccountAdjustmentTotal;
 		$aAdjustments['TaxComponent'] = $fAccountAdjustmentTax;
 		$aAdjustments['Records'] = count($aAdjustments['Itemisation']);
-		
+
 		return $aAdjustments;
 	}
- 	
+
 	public static function getAccountCharges($arrInvoice) {
 		$arrCharges = array();
 		$fltAccountChargeTotal = 0.0;
@@ -311,22 +311,22 @@ class Invoice_Export {
 				$fltAccountChargeTotal += $arrCDR['Charge'];
 			}
 		}
-		
+
 		// Perform "Roll-Ups"
 		$aChargeItemisation = self::_chargeRollup($aChargeItemisation);
-		
+
 		$arrCharges['Itemisation'] = $aChargeItemisation;
 		$arrCharges['DisplayType'] = RECORD_DISPLAY_S_AND_E;
 		$arrCharges['TotalCharge'] = $fltAccountChargeTotal;
 		$arrCharges['Records'] = count($arrCharges['Itemisation']);
-		
+
 		return $arrCharges;
 	}
- 	
+
 	// Returns the Account Summary and Itemisation as an associative array for a given Invoice
 	public static function getAccountSummary($arrInvoice, $bolCharges=true, $bolPlanCharges=true, $bolGST=true) {
 		$arrAccountSummary = array();
-		
+
 		// Get Account Summary
 		$selAccountSummary = self::_preparedStatement('selAccountSummary');
 		if ($selAccountSummary->Execute($arrInvoice) === false) {
@@ -337,7 +337,7 @@ class Invoice_Export {
 				$arrAccountSummary[$arrSummary['Description']]['DisplayType'] = $arrSummary['DisplayType'];
 			}
 		}
-		
+
 		// Add Other Charges and Credits
 		if ($bolCharges) {
 			$selAccountSummaryCharges = self::_preparedStatement('selAccountSummaryCharges');
@@ -350,10 +350,10 @@ class Invoice_Export {
 				}
 			}
 		}
-		
+
 		// Account Charges and Credits
 		$arrAccountSummary['Account Charges & Discounts'] = self::getAccountCharges($arrInvoice);
-		
+
 		if ($bolPlanCharges) {
 			// Plan Charges
 			$selPlanChargeSummary = self::_preparedStatement('selPlanChargeSummary');
@@ -364,7 +364,7 @@ class Invoice_Export {
 			while ($arrPlanChargeSummary = $selPlanChargeSummary->Fetch()) {
 				$arrAccountSummary['Plan Charges']['TotalCharge'] += $arrPlanChargeSummary['Amount'];
 				$arrAccountSummary['Plan Charges']['DisplayType'] = RECORD_DISPLAY_S_AND_E;
-				
+
 				if ($arrPlanChargeSummary['Service'] === null) {
 					// Shared Plan Charge -- add to Account Itemisation
 					$arrCDR = array();
@@ -372,14 +372,22 @@ class Invoice_Export {
 					$arrCDR['Units'] = 1;
 					$arrCDR['Charge'] = $arrPlanChargeSummary['Amount'];
 					$arrCDR['TaxExempt'] = $arrPlanChargeSummary['TaxExempt'];
+					$arrCDR['ChargeType'] = $arrPlanChargeSummary['ChargeType'];
+
+					// HACKHACKHACK: This is the only way to extract the calculated period for Plan Charges to date
+					$aDescription = self::_parsePlanChargeDescription($arrPlanChargeSummary['Description']);
+					$arrCDR['ShortDescription'] = $aDescription['description'];
+					$arrCDR['StartDatetime'] = "{$aDescription['start-year']}-{$aDescription['start-month']}-{$aDescription['start-day']} 00:00:00";
+					$arrCDR['EndDatetime'] = "{$aDescription['end-year']}-{$aDescription['end-month']}-{$aDescription['end-day']} 23:59:59";
+
 					$arrAccountSummary['Plan Charges']['Itemisation'][] = $arrCDR;
 				}
 			}
-			
+
 			// Perform "Roll-Ups"
 			$arrAccountSummary['Plan Charges']['Itemisation'] = self::_chargeRollup($arrAccountSummary['Plan Charges']['Itemisation']);
 			$arrAccountSummary['Plan Charges']['Records'] = count($arrAccountSummary['Plan Charges']['Itemisation']);
-			
+
 			// Plan Usage/Credit
 			$selPlanChargeSummary = self::_preparedStatement('selPlanUsageSummary');
 			if ($selPlanChargeSummary->Execute($arrInvoice) === false) {
@@ -389,7 +397,7 @@ class Invoice_Export {
 			while ($arrPlanChargeSummary = $selPlanChargeSummary->Fetch()) {
 				$arrAccountSummary['Plan Usage']['TotalCharge'] += $arrPlanChargeSummary['Amount'];
 				$arrAccountSummary['Plan Usage']['DisplayType'] = RECORD_DISPLAY_S_AND_E;
-				
+
 				if ($arrPlanChargeSummary['Service'] === null) {
 					// Shared Plan Credit -- add to Account Itemisation
 					$arrCDR = array();
@@ -397,42 +405,60 @@ class Invoice_Export {
 					$arrCDR['Units'] = 1;
 					$arrCDR['Charge'] = $arrPlanChargeSummary['Amount'];
 					$arrCDR['TaxExempt'] = $arrPlanChargeSummary['TaxExempt'];
+					$arrCDR['ChargeType'] = $arrPlanChargeSummary['ChargeType'];
+
+					// HACKHACKHACK: This is the only way to extract the calculated period for Plan Charges to date
+					$aDescription = self::_parsePlanChargeDescription($arrPlanChargeSummary['Description']);
+					$arrCDR['ShortDescription'] = $aDescription['description'];
+					$arrCDR['StartDatetime'] = "{$aDescription['start-year']}-{$aDescription['start-month']}-{$aDescription['start-day']} 00:00:00";
+					$arrCDR['EndDatetime'] = "{$aDescription['end-year']}-{$aDescription['end-month']}-{$aDescription['end-day']} 23:59:59";
+
 					$arrAccountSummary['Plan Usage']['Itemisation'][] = $arrCDR;
 					$arrAccountSummary['Plan Usage']['Records']++;
 				}
 			}
-			
+
 			// Perform "Roll-Ups"
 			$arrAccountSummary['Plan Usage']['Itemisation'] = self::_chargeRollup($arrAccountSummary['Plan Usage']['Itemisation']);
 			$arrAccountSummary['Plan Usage']['Records'] = count($arrAccountSummary['Plan Usage']['Itemisation']);
 		}
-		
+
 		// Add GST Element
 		if ($bolGST) {
 			$arrAccountSummary['GST Total']['TotalCharge'] = number_format($arrInvoice['charge_tax'], 2, '.', '');
 			$arrAccountSummary['GST Total']['DisplayType'] = RECORD_DISPLAY_S_AND_E;
 		}
-		
+
 		// Return array
 		return $arrAccountSummary;
 	}
-	
+
+	private static function _parsePlanChargeDescription($sDescription) {
+		$aDescription = array();
+		preg_match(
+			'/^(?P<description>.*)(from ((?P<start-day>\d{2})\/((?P<start-month>\d{2})\/((?P<start-year>\d{4})) to (((?P<end-day>\d{2})\/((?P<end-month>\d{2})\/((?P<end-year>\d{4})))$/i',
+			$sDescription,
+			$aDescription
+		);
+		return $aDescription;
+	}
+
 	public static function getRateClasses() {
 		return Rate_Class::getAll();
 	}
-	
+
 	public static function getPaymentTotal($aInvoice) {
 		return Invoice::getForId($aInvoice['Id'])->getPaymentTotal(true);
 	}
-	
+
 	public static function getOpeningBalance($aInvoice) {
 		return Invoice::getForId($aInvoice['Id'])->getOpeningBalance(true);
 	}
-	
+
 	public static function getTotalOverdue($aInvoice) {
 		return Invoice::getForId($aInvoice['Id'])->getTotalOverdue(true);
 	}
-	
+
 	// Removes Credit/Debit pairs in an array of Charges
 	private static function _chargeRollup($aCharges) {
 		/*
@@ -441,14 +467,14 @@ class Invoice_Export {
 			$rLogFile = @fopen('/tmp/invoice-export-rollup-'.date("YmdHis").'.log', 'w');
 		}
 		*/
-		
+
 		$aChargeKeys = array_keys($aCharges);
 		$aChargePairKeys = array_keys($aCharges);
-		
+
 		$aCleanCharges = array();
 		foreach ($aChargeKeys as $mChargeIndex) {
 			$aCharge = &$aCharges[$mChargeIndex];
-			
+
 			// Have we already matched against something?
 			if (!array_key_exists('Matched', $aCharge)) {
 				// Search for a mate
@@ -457,7 +483,7 @@ class Invoice_Export {
 					if ($mChargeIndex === $mPairChargeIndex) {
 						continue;
 					}
-					
+
 					$aPairCharge = &$aCharges[$mPairChargeIndex];
 					/*
 					fwrite($rLogFile, "\n'{$aCharge['Description']}' vs '{$aPairCharge['Description']}'\n");
@@ -465,11 +491,11 @@ class Invoice_Export {
 					*/
 					// Check if Description is the same (which includes ChargeType) && that the Amounts negate eachother
 					// Additionally, we cannot have already matched against this Charge
-					if (!array_key_exists('Matched', $aPairCharge) && 
-						(($aCharge['Description'] === $aPairCharge['Description']) || ($aCharge['UniqueId'] == $aPairCharge['ReversedUniqueId']))&& 
+					if (!array_key_exists('Matched', $aPairCharge) &&
+						(($aCharge['Description'] === $aPairCharge['Description']) || ($aCharge['UniqueId'] == $aPairCharge['ReversedUniqueId']))&&
 						(round((float)$aCharge['Charge'] + (float)$aPairCharge['Charge'], 4) == 0.0)) {
 						Log::getLog()->log("Charge being rolled up: {$aCharge['UniqueId']} - {$aCharge['Description']}");
-						
+
 						// Perfect Pair -- Mark as matched
 						$aCharge['Matched'] = $mPairChargeIndex;
 						$aPairCharge['Matched'] = $mChargeIndex;
@@ -479,7 +505,7 @@ class Invoice_Export {
 					}
 					unset($aPairCharge);
 				}
-				
+
 				// No mate has been found -- Add to the "clean" array
 				$aCleanCharges[] = $aCharges[$mChargeIndex];
 			}
@@ -497,7 +523,7 @@ class Invoice_Export {
 		// Return an array of Charges without CR/DR Pairs
 		return $aCleanCharges;
 	}
-	
+
 	private static function _preparedStatement($strStatement) {
 		static $arrPreparedStatements = array();
 		if (isset($arrPreparedStatements[$strStatement])) {
@@ -606,23 +632,23 @@ class Invoice_Export {
 						"invoice_run_id = <invoice_run_id> AND Account = <Account> AND charge_model_id = ".CHARGE_MODEL_ADJUSTMENT
 					);
 					break;
-				
+
 				default:
 					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
 			}
 			return $arrPreparedStatements[$strStatement];
 		}
 	}
- 	
+
  	private static function _preparedStatementMultiService($strStatement, $arrService, $arrParams) {
  		static $arrPreparedStatements = array();
- 		
+
 		$intCount = count($arrService['Id']);
  		if (!$intCount) {
 			Cli_App_Billing::debug("No Service Ids!");
 			Cli_App_Billing::debug($arrService);
  		}
- 		
+
  		// Is there a Statement for this many Service Ids and Type?
  		if (!$arrPreparedStatements[$strStatement][$intCount]) {
 	 		$arrWhere = array();
@@ -630,7 +656,7 @@ class Invoice_Export {
 	 			$arrWhere[] = "Service = <Service$intKey>";
 	 		}
 	 		$strWhereService = "(".implode(' OR ', $arrWhere).")";
-	 		
+
 	 		switch ($strStatement) {
 	 			case 'selServiceSummary':
 	 				$arrColumns = array();
@@ -646,7 +672,7 @@ class Invoice_Export {
 		 					"GroupType.Description DESC"
 	 					);
 	 				break;
-	 				
+
 	 			case 'selItemisedRecordTypes':
 	 				$arrPreparedStatements[$strStatement][$intCount] = new StatementSelect(
 							"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id, RecordType AS RecordGroup",
@@ -661,7 +687,7 @@ class Invoice_Export {
 							"RecordGroup.Id"
 	 					);
 	 				break;
-	 				
+
 	 			case 'selItemisedCalls':
 					$arrColumns = array();
 					$arrColumns['Charge'] = "CASE WHEN CDR.Credit = 0 THEN CDR.Charge ELSE 0 - CDR.Charge END";
@@ -691,20 +717,23 @@ class Invoice_Export {
 						"CDR.StartDatetime"
  					);
 	 				break;
-	 				
+
 	 			case 'selItemisedCharges':
 	 				$arrColumns['Charge'] = "Amount";
 					$arrColumns['Description'] = "Description";
 					$arrColumns['ChargeType'] = "ChargeType";
 					$arrColumns['Nature'] = "Nature";
 					$arrColumns['TaxExempt'] = "global_tax_exempt";
+					$arrColumns['ChargedOn'] = 'ChargedOn';
+					$arrColumns['StartDatetime'] = 'ChargedOn';
+					$arrColumns['EndDatetime'] = 'NULL';
 					$arrPreparedStatements[$strStatement][$intCount] = new StatementSelect(
 						"Charge",
 						$arrColumns,
 						"$strWhereService AND invoice_run_id = <invoice_run_id> AND ChargeType NOT IN ('PCAD', 'PCAR', 'PCR', 'PDCR') AND charge_model_id = ".CHARGE_MODEL_CHARGE
 					);
 	 				break;
-	 				
+
 	 			case 'selServiceTotal':
 					$arrPreparedStatements[$strStatement][$intCount] = new StatementSelect(
 						"ServiceTotal",
@@ -715,7 +744,7 @@ class Invoice_Export {
 						"Service"
 					);
 	 				break;
-	 				
+
 	 			case 'selServiceChargesTotal':
 					$arrPreparedStatements[$strStatement][$intCount] = new StatementSelect(
 	 					"Charge",
@@ -726,7 +755,7 @@ class Invoice_Export {
 						"Nature"
 					);
 	 				break;
-	 				
+
 	 			case 'selRecordTypes':
 					$arrRecordType = array();
 					$arrRecordType['RecordGroup'] = "RecordGroup.Description";
@@ -744,7 +773,7 @@ class Invoice_Export {
 						"RecordGroup.Id"
 					);
 	 				break;
-	 				
+
 	 			case 'selPlanChargeCharges':
 	 				$arrColumns['Charge'] = "Amount";
 					$arrColumns['Description'] = "Description";
@@ -757,31 +786,34 @@ class Invoice_Export {
 						"$strWhereService AND invoice_run_id = <invoice_run_id> AND ChargeType IN ('PCAD', 'PCAR') AND charge_model_id = ".CHARGE_MODEL_CHARGE
 					);
 	 				break;
-	 				
+
 	 			case 'selPlanUsageCharges':
 	 				$arrColumns['Charge'] = "Amount";
 					$arrColumns['Description'] = "Description";
 					$arrColumns['ChargeType'] = "ChargeType";
 					$arrColumns['Nature'] = "Nature";
 					$arrColumns['TaxExempt'] = "global_tax_exempt";
+					$arrColumns['ChargedOn'] = 'ChargedOn';
+					$arrColumns['StartDatetime'] = "DATE_FORMAT(STR_TO_DATE(SUBSTRING(Description, -24, 10), '%d/%m/%Y'), '%Y-%m-%d')";
+					$arrColumns['EndDatetime'] = "DATE_FORMAT(STR_TO_DATE(SUBSTRING(Description, -10, 10), '%d/%m/%Y'), '%Y-%m-%d')";
 					$arrPreparedStatements[$strStatement][$intCount] = new StatementSelect(
 						"Charge",
 						$arrColumns,
 						"$strWhereService AND invoice_run_id = <invoice_run_id> AND ChargeType IN ('PCR', 'PDCR') AND charge_model_id = ".CHARGE_MODEL_CHARGE
 					);
 	 				break;
-	 			
+
 	 			default:
 	 				// No such Type
 					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
 	 		}
  		}
- 		
+
  		// Prepare WHERE parameters
  		foreach ($arrService['Id'] as $intKey=>$intId) {
  			$arrParams["Service$intKey"] = $intId;
  		}
- 		
+
  		// Execute and return data
  		if ($arrPreparedStatements[$strStatement][$intCount]->Execute($arrParams) === false) {
  			throw new Exception_Database($arrPreparedStatements[$strStatement][$intCount]->Error());
