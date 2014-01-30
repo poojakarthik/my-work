@@ -169,8 +169,14 @@ class Invoice_Export {
 					$arrCDR['Units'] = 1;
 					$arrCDR['Description'] = ($arrCharge['ChargeType']) ? ($arrCharge['ChargeType']." - ".$arrCharge['Description']) : $arrCharge['Description'];
 					$arrCDR['TaxExempt'] = $arrCharge['TaxExempt'];
-					$arrPlanChargeItemisation[] = $arrCDR;
 
+					// HACKHACKHACK: This is the only way to extract the calculated period for Plan Charges to date
+					$aDescription = self::_parsePlanChargeDescription($arrCharge['Description']);
+					$arrCDR['ShortDescription'] = $aDescription['description'];
+					$arrCDR['StartDatetime'] = "{$aDescription['start_year']}-{$aDescription['start_month']}-{$aDescription['start_day']} 00:00:00";
+					$arrCDR['EndDatetime'] = "{$aDescription['end_year']}-{$aDescription['end_month']}-{$aDescription['end_day']} 23:59:59";
+
+					$arrPlanChargeItemisation[] = $arrCDR;
 					$fltPlanChargeTotal += $arrCDR['Charge'];
 				}
 
@@ -198,8 +204,14 @@ class Invoice_Export {
 					$arrCDR['Units'] = 1;
 					$arrCDR['Description'] = ($arrCharge['ChargeType']) ? ($arrCharge['ChargeType']." - ".$arrCharge['Description']) : $arrCharge['Description'];
 					$arrCDR['TaxExempt'] = $arrCharge['TaxExempt'];
-					$arrPlanCreditItemisation[] = $arrCDR;
 
+					// HACKHACKHACK: This is the only way to extract the calculated period for Plan Charges to date
+					$aDescription = self::_parsePlanChargeDescription($arrCharge['Description']);
+					$arrCDR['ShortDescription'] = $aDescription['description'];
+					$arrCDR['StartDatetime'] = "{$aDescription['start_year']}-{$aDescription['start_month']}-{$aDescription['start_day']} 00:00:00";
+					$arrCDR['EndDatetime'] = "{$aDescription['end_year']}-{$aDescription['end_month']}-{$aDescription['end_day']} 23:59:59";
+
+					$arrPlanCreditItemisation[] = $arrCDR;
 					$fltPlanCreditTotal += $arrCDR['Charge'];
 				}
 
@@ -377,8 +389,8 @@ class Invoice_Export {
 					// HACKHACKHACK: This is the only way to extract the calculated period for Plan Charges to date
 					$aDescription = self::_parsePlanChargeDescription($arrPlanChargeSummary['Description']);
 					$arrCDR['ShortDescription'] = $aDescription['description'];
-					$arrCDR['StartDatetime'] = "{$aDescription['start-year']}-{$aDescription['start-month']}-{$aDescription['start-day']} 00:00:00";
-					$arrCDR['EndDatetime'] = "{$aDescription['end-year']}-{$aDescription['end-month']}-{$aDescription['end-day']} 23:59:59";
+					$arrCDR['StartDatetime'] = "{$aDescription['start_year']}-{$aDescription['start_month']}-{$aDescription['start_day']} 00:00:00";
+					$arrCDR['EndDatetime'] = "{$aDescription['end_year']}-{$aDescription['end_month']}-{$aDescription['end_day']} 23:59:59";
 
 					$arrAccountSummary['Plan Charges']['Itemisation'][] = $arrCDR;
 				}
@@ -410,8 +422,8 @@ class Invoice_Export {
 					// HACKHACKHACK: This is the only way to extract the calculated period for Plan Charges to date
 					$aDescription = self::_parsePlanChargeDescription($arrPlanChargeSummary['Description']);
 					$arrCDR['ShortDescription'] = $aDescription['description'];
-					$arrCDR['StartDatetime'] = "{$aDescription['start-year']}-{$aDescription['start-month']}-{$aDescription['start-day']} 00:00:00";
-					$arrCDR['EndDatetime'] = "{$aDescription['end-year']}-{$aDescription['end-month']}-{$aDescription['end-day']} 23:59:59";
+					$arrCDR['StartDatetime'] = "{$aDescription['start_year']}-{$aDescription['start_month']}-{$aDescription['start_day']} 00:00:00";
+					$arrCDR['EndDatetime'] = "{$aDescription['end_year']}-{$aDescription['end_month']}-{$aDescription['end_day']} 23:59:59";
 
 					$arrAccountSummary['Plan Usage']['Itemisation'][] = $arrCDR;
 					$arrAccountSummary['Plan Usage']['Records']++;
@@ -434,12 +446,14 @@ class Invoice_Export {
 	}
 
 	private static function _parsePlanChargeDescription($sDescription) {
+		//Log::get()->log('Plan Charge Description: ' . $sDescription);
 		$aDescription = array();
 		preg_match(
-			'/^(?P<description>.*)(from ((?P<start-day>\d{2})\/((?P<start-month>\d{2})\/((?P<start-year>\d{4})) to (((?P<end-day>\d{2})\/((?P<end-month>\d{2})\/((?P<end-year>\d{4})))$/i',
+			'/^(?P<description>.*)from ((?P<start_day>\d{2})\/(?P<start_month>\d{2})\/(?P<start_year>\d{4})) to ((?P<end_day>\d{2})\/(?P<end_month>\d{2})\/(?P<end_year>\d{4}))$/i',
 			$sDescription,
 			$aDescription
 		);
+		//Log::get()->log('Plan Charge Description: ' . var_export($aDescription, true));
 		return $aDescription;
 	}
 
