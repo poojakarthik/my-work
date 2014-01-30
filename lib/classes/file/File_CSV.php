@@ -335,6 +335,12 @@ class File_CSV implements Iterator
 		return $aLine;
 	}
 
+	const RFC4180_DELIMITER = ',';
+	const RFC4180_QUOTE = '"';
+	public static function buildLineRFC4180($aRecord) {
+		return self::buildLine($aRecord, self::RFC4180_DELIMITER, self::RFC4180_QUOTE, self::RFC4180_QUOTE, array(self::RFC4180_QUOTE), null);
+	}
+
 	public static function buildLine($aRecord, $sDelimiter=',', $sQuote='"', $sEscape='\\', $aSpecialCharacters=array(), $mQuote=false)
 	{
 		$aPreparedRecords	= array();

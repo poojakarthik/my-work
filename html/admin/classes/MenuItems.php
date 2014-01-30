@@ -2841,7 +2841,7 @@ class MenuItems {
 	function AddAdjustment($iAccountId, $iServiceId = NULL) {
 		$this->strContextMenuLabel 	= "Request Adjustment";
 		$this->strLabel 			= "Request Adjustment";
-		
+
 		$sServiceId = ($iServiceId !== null ? (string)$iServiceId : 'null');
 		return "javascript:	JsAutoLoader.loadScript(
 								['control_field.js',
@@ -2875,11 +2875,11 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function MakePayment($iAccountId) 
+	function MakePayment($iAccountId)
 	{
 		$this->strContextMenuLabel 	= "";
 		$this->strLabel 			= "Make payment";
-		
+
 		return "javascript:	JsAutoLoader.loadScript(
 								['control_field.js',
 								'control_field_text.js',
@@ -2890,7 +2890,7 @@ class MenuItems {
 								'reflex_validation_credit_card.js',
 								'component_account_payment_create.js',
 								'popup_account_payment_create.js'],
-								function() 
+								function()
 								{
 									new Popup_Account_Payment_Create({$iAccountId});
 								},
@@ -4113,22 +4113,22 @@ else
 		$this->strLabel 			= "Collections Prototype";
 
 		return	"javascript:	JsAutoLoader.loadScript(
-									'developer_collections.js', 
+									'developer_collections.js',
 									function()
 									{
 										var oPopup = new Developer_Collections();
-									}, 
+									},
 									true
 								);";
 	}
-	
+
 	public function ConfigureAllCollections()
 	{
 		$this->strContextMenuLabel 	= "Configure All";
 		$this->strLabel 			= "Configure All";
 		return self::NEW_FRAMEWORK."reflex.php/Collections/Configure/";
 	}
-	
+
 	public function ViewCollectionsScenario($iScenarioId)
 	{
 		$this->strContextMenuLabel 	= "Add Scenario";
@@ -4136,7 +4136,7 @@ else
 
 		return self::NEW_FRAMEWORK."reflex.php/Collections/Scenario/View/{$iScenarioId}";
 	}
-	
+
 	public function AddCollectionsScenario($iScenarioId=null)
 	{
 		$this->strContextMenuLabel 	= "Add Scenario";
@@ -4144,7 +4144,7 @@ else
 
 		return self::NEW_FRAMEWORK."reflex.php/Collections/Scenario/Create".($iScenarioId !== null ? "From/{$iScenarioId}" : "/");
 	}
-	
+
 	public function AddCollectionsEvent()
 	{
 		$this->strContextMenuLabel 	= "Add Event";
@@ -4162,15 +4162,15 @@ else
 									'component_collections_event.js',
 									'popup_collections_event_type.js',
 									'popup_collections_severity.js',
-									'popup_collections_event.js'], 
+									'popup_collections_event.js'],
 									function()
 									{
 										var oPopup = new Popup_Collections_Event();
-									}, 
+									},
 									true
 								);";
 	}
-	
+
 	public function AddCollectionsEventType()
 	{
 		$this->strContextMenuLabel 	= "Add Event Type";
@@ -4184,15 +4184,15 @@ else
 									'control_field_textarea.js',
 									'control_field_checkbox.js',
 									'component_collections_event_type.js',
-									'popup_collections_event_type.js'], 
+									'popup_collections_event_type.js'],
 									function()
 									{
 										var oPopup = new Popup_Collections_Event_Type();
-									}, 
+									},
 									true
 								);";
 	}
-	
+
 	public function AddCollectionsSeverity()
 	{
 		$this->strContextMenuLabel 	= "Add Severity";
@@ -4204,11 +4204,11 @@ else
 									'control_field_text.js',
 									'component_collections_severity.js',
 									'popup_collections_severity.js',
-									'popup_collections_warning.js'], 
+									'popup_collections_warning.js'],
 									function()
 									{
 										var oPopup = new Popup_Collections_Severity();
-									}, 
+									},
 									true
 								);";
 	}
@@ -4219,7 +4219,7 @@ else
 		$this->strLabel 			= "Account Management";
 		return self::NEW_FRAMEWORK."reflex.php/Collections/Accounts/";
 	}
-	
+
 	public function CollectionsEventManagement()
 	{
 		$this->strContextMenuLabel 	= "Event Management";
@@ -4254,21 +4254,21 @@ else
 		$this->strLabel 			= "Barring Authorisation Ledger";
 		return self::NEW_FRAMEWORK."reflex.php/Barring/Ledger/Authorisation/";
 	}
-	
+
 	public function BarringActionLedger()
 	{
 		$this->strContextMenuLabel 	= "Barring Action Ledger";
 		$this->strLabel 			= "Barring Action Ledger";
 		return self::NEW_FRAMEWORK."reflex.php/Barring/Ledger/Action/";
 	}
-	
+
 	public function OCAReferralLedger()
 	{
 		$this->strContextMenuLabel 	= "OCA Referral Ledger";
 		$this->strLabel 			= "OCA Referral Ledger";
 		return self::NEW_FRAMEWORK."reflex.php/Collections/OCAReferrals/";
 	}
-	
+
 	public function NewCollectionSuspension($iAccountId)
 	{
 		$this->strContextMenuLabel 	= "Suspend from Collections";
@@ -4289,7 +4289,7 @@ else
 									true
 								);";
 	}
-	
+
 	public function EndCollectionSuspension($iAccountId)
 	{
 		$this->strContextMenuLabel 	= "End Collections Suspension";
@@ -4306,7 +4306,7 @@ else
 									true
 								);";
 	}
-	
+
 	public function ManageAccountClasses()
 	{
 		$this->strContextMenuLabel 	= "Manage Account Classes";
@@ -4343,14 +4343,14 @@ else
 									true
 								);";
 	}
-	
+
 	public function CarrierModuleList()
 	{
 		$this->strContextMenuLabel 	= "Manage Carrier Modules";
 		$this->strLabel 			= "Manage Carrier Modules";
 		return self::NEW_FRAMEWORK."reflex.php/CarrierModule/Manage/";
 	}
-	
+
 	public function EmailQueueList()
 	{
 		$this->strContextMenuLabel 	= "Email Queues";
@@ -4381,12 +4381,12 @@ else
 									true
 								);";
 	}
-	
+
 	public function NewCorrespondenceEmailTemplate()
 	{
 		$this->strContextMenuLabel 	= "New Correspondence Email Template";
 		$this->strLabel 			= "New Correspondence Email Template";
-		
+
 		return	"javascript:	JsAutoLoader.loadScript(
 									['control_field.js',
 									'control_field_text.js',
@@ -4402,20 +4402,20 @@ else
 									true
 								);";
 	}
-	
+
 	public function AccountActivityLog($iAccountId)
 	{
 		$this->strContextMenuLabel 	= "Account Activity Log";
 		$this->strLabel 			= "Account Activity Log";
 		return	"javascript:	JsAutoLoader.loadScript(
-									['component_section.js','component_account_activity_log.js', 'component_list_tooltip.js'], 
+									['component_section.js','component_account_activity_log.js', 'component_list_tooltip.js'],
 									function() {
 										var oLoadingPopup = new Reflex_Popup.Loading();
 										oLoadingPopup.display();
 
 										var oPopup = Component_Account_Activity_Log.createAsPopup(
 											{
-												iAccountId	: {$iAccountId}, 
+												iAccountId	: {$iAccountId},
 												fnOnReady	: function() {
 													oPopup.display();
 													oLoadingPopup.hide();
@@ -4424,26 +4424,26 @@ else
 										);
 									}, true);";
 	}
-	
+
 	public function ManageLinkedAccounts($iAccountId)
 	{
 		$this->strContextMenuLabel 	= "Manage Linked Accounts";
 		$this->strLabel 			= "Manage Linked Accounts";
 		return	"javascript:	JsAutoLoader.loadScript(
-									['dataset_ajax.js', 
-									'filter.js', 
-									'control_field.js', 
-									'control_field_checkbox.js', 
-									'control_field_text_ajax.js', 
-									'control_field_select.js', 
+									['dataset_ajax.js',
+									'filter.js',
+									'control_field.js',
+									'control_field_checkbox.js',
+									'control_field_text_ajax.js',
+									'control_field_select.js',
 									'control_field_text.js',
 									'control_field_hidden.js',
 									'component_date_picker.js',
 									'control_field_date_picker.js',
 									'component_section.js',
-									'component_account_links.js', 
-									'component_account_merge_contacts_list.js', 
-									'component_account_merge_contacts.js'], 
+									'component_account_links.js',
+									'component_account_merge_contacts_list.js',
+									'component_account_merge_contacts.js'],
 									function() {
 										var oPopup = Component_Account_Links.createAsPopup(
 											{
@@ -4453,22 +4453,22 @@ else
 												}
 											}
 										);
-									}, 
+									},
 									true
 								);";
 	}
-	
+
 	public function CustomerPortalLogins($iAccountId) {
 		$this->strContextMenuLabel 	= "Customer Portal Logins";
 		$this->strLabel 			= "Manage Customer Portal Logins";
 		return	"javascript:	JsAutoLoader.loadScript(
-									['dataset_ajax.js', 
-									'filter.js',  
-									'sort.js',   
+									['dataset_ajax.js',
+									'filter.js',
+									'sort.js',
 									'pagination.js',
-									'control.js', 
-									'control_checkbox.js', 
-									'control_select.js', 
+									'control.js',
+									'control_checkbox.js',
+									'control_select.js',
 									'control_text.js',
 									'control_password.js',
 									'control_hidden.js',
@@ -4477,7 +4477,7 @@ else
 									'component_section.js',
 									'component_dataset_ajax_table.js',
 									'component_account_user_edit.js',
-									'component_account_user_list.js'], 
+									'component_account_user_list.js'],
 									function() {
 										var oPopup = Component_Account_User_List.createAsPopup({
 											iAccountId 	: {$iAccountId},
@@ -4485,11 +4485,17 @@ else
 												oPopup.display();
 											}
 										});
-									}, 
+									},
 									true
 								);";
 	}
-	
+
+	public function BatchChequeEntry() {
+		$this->strContextMenuLabel = "Cheque Entry";
+		$this->strLabel = "Cheque Entry";
+		return self::NEW_FRAMEWORK."reflex.php/ChequeEntry/Process";
+	}
+
 	//------------------------------------------------------------------------//
 	// BreadCrumb
 	//------------------------------------------------------------------------//

@@ -1,2 +1,152 @@
-// Skin
+font-monospace = Menlo, Consolas, monospace
 
+debuttonify(important='')
+	border 0 unquote(important)
+	background transparent unquote(important)
+	width auto unquote(important)
+	height auto unquote(important)
+	font-size 100% unquote(important)
+
+button-icon(url, width=auto, height=auto)
+	content url(url)
+	height width
+	width height
+	display inline-block
+	margin-right .2em
+	vertical-align bottom
+
+// Forms
+appearance-flex-form-fieldset()
+	display flex
+	flex-direction column
+	align-items stretch
+	align-content stretch
+	border 1px solid #d1d1d1
+	background #ddd
+	padding 0
+
+appearance-flex-form-fieldset-field()
+	display flex
+	flex-direction row
+	border 0
+	margin 0
+	padding 0
+	justify-content flex-start
+
+appearance-flex-form-fieldset-field-label()
+	border 0
+	margin .25em
+	font-weight bold
+	text-align right
+	//background-color #efefef
+
+appearance-flex-form-fieldset-field-control()
+	//padding .2em
+	margin .25em
+	//flex-grow 1
+
+appearance-flex-form-controlset()
+	display flex
+	flex-direction column
+	align-items stretch
+	align-content stretch
+	border 0
+	padding 0
+	margin .25em
+
+appearange-flex-form-buttonpanel()
+	border 0
+	margin 0
+	padding .5em .25em
+	text-align center
+
+// Page Heading
+appearance-flex-page-heading()
+	display block
+
+	margin-top 0
+	margin-bottom 20px
+
+	padding-bottom 5px
+
+	border-bottom solid 1px #369
+
+	color #369
+	//font-size 18pt
+	font-weight bold
+
+appearance-flex-page-heading-label()
+	margin-bottom 0
+
+// "Reflex" table appearance
+skin-flex-table()
+	appearance-flex-table()
+
+	& > thead
+		appearance-flex-table-header()
+
+		& > tr > th
+			appearance-flex-table-header-cell()
+
+	& > * > tr > td
+	& > * > tr > th
+		appearance-flex-table-cell()
+
+	& > tbody
+		appearance-flex-table-body()
+
+		& > tr > td
+		& > tr > th
+			appearance-flex-table-body-cell()
+
+		& > tr:nth-child(even) > td
+		& > tr:nth-child(even) > th
+			appearance-flex-table-body-cell-alternate()
+
+	& > tfoot
+		appearance-flex-table-footer()
+
+		& a:link
+			appearance-flex-table-footer-link()
+
+appearance-flex-table()
+	box-sizing border-box
+	width 99%
+	margin-left auto
+	margin-right auto
+	border .1em solid #d1d1d1
+	border-spacing 0
+	font-size inherit
+
+appearance-flex-table-header()
+	color #fff
+	background-color #499fcf
+	text-align left
+
+appearance-flex-table-footer()
+	appearance-flex-table-header()
+	text-align right
+
+appearance-flex-table-header-cell()
+	padding-top .25em
+	padding-bottom .25em
+	background-repeat repeat-x
+
+appearance-flex-table-body()
+	vertical-align top
+	font-size inherit
+
+appearance-flex-table-footer-link()
+	color #fff
+
+appearance-flex-table-cell()
+	vertical-align top
+	padding .25em .5em
+	font-size inherit
+
+appearance-flex-table-body-cell()
+	background-color #fff
+	color #333
+
+appearance-flex-table-body-cell-alternate()
+	background-color #ddd

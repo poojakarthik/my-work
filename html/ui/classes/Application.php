@@ -194,12 +194,12 @@ class Application
 			// Payment Download has been moved to 2 data reports 'Payment Download' & 'Cheque Payment Download'
 			//ContextMenu()->Admin->PaymentDownload();
 
-			
+
 			ContextMenu()->Admin->Delinquent_CDRs->moveDelinquentCDRs();
 			ContextMenu()->Admin->DataReports();
 
 			ContextMenu()->Admin->Employees->ManageEmployees();
-			
+
 			if (Flex_Module::isActive(FLEX_MODULE_CUSTOMER_STATUS) && AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
 				ContextMenu()->Admin->System_Settings->ManageCustomerStatuses();
@@ -233,18 +233,18 @@ class Application
 			{
 				ContextMenu()->Admin->System_Settings->ViewAllCustomerGroups();
 			}
-			
+
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
 			{
 				ContextMenu()->Admin->System_Settings->CarrierModuleList();
 				ContextMenu()->Admin->System_Settings->EmailQueueList();
 			}
-			
+
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
 			{
 				ContextMenu()->Admin->System_Settings->ManageLogo();
 			}
-			
+
 			if (Flex_Module::isActive(FLEX_MODULE_CONTRACT_MANAGEMENT))
 			{
 				ContextMenu()->Admin->Contracts->ManageBreachedContracts();
@@ -287,19 +287,19 @@ class Application
 			ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsEvent();
 			ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsEventType();
 			ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsSeverity();
-			
+
 			if (Employee::getForId(Flex::getUserId())->isGod())
 			{
 				ContextMenu()->Admin->Collections->CollectionsPrototype();
 			}
-			
+
 			ContextMenu()->Admin->Collections->CollectionsAccountManagement();
 			ContextMenu()->Admin->Collections->CollectionsEventManagement();
 			ContextMenu()->Admin->Collections->OCAReferralLedger();
-			
+
 			ContextMenu()->Admin->Barring->BarringAuthorisationLedger();
 			ContextMenu()->Admin->Barring->BarringActionLedger();
-			
+
 			ContextMenu()->Admin->ManageAccountClasses();
 		}
 
@@ -319,6 +319,11 @@ class Application
 		{
 			ContextMenu()->Follow_Ups->MyFollowUps();
 			ContextMenu()->Follow_Ups->MyRecurringFollowUps();
+		}
+
+		// Cheque Entry
+		if (AuthenticatedUser()->UserHasPerm(array(PERMISSION_PROPER_ADMIN))) {
+			ContextMenu()->Customer->Payments->BatchChequeEntry();
 		}
 
 		// Render Page
@@ -476,7 +481,7 @@ class Application
 			// Payment Download has been moved to 2 data reports 'Payment Download' & 'Cheque Payment Download''. rmctainsh 20100415
 			//ContextMenu()->Admin->PaymentDownload();
 
-			
+
 			ContextMenu()->Admin->Delinquent_CDRs->moveDelinquentCDRs();
 			ContextMenu()->Admin->DataReports();
 
@@ -514,18 +519,18 @@ class Application
 			{
 				ContextMenu()->Admin->System_Settings->ViewAllCustomerGroups();
 			}
-			
+
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
 			{
 				ContextMenu()->Admin->System_Settings->CarrierModuleList();
 				ContextMenu()->Admin->System_Settings->EmailQueueList();
 			}
-			
+
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
 			{
 				ContextMenu()->Admin->System_Settings->ManageLogo();
 			}
-			
+
 			if (Flex_Module::isActive(FLEX_MODULE_CONTRACT_MANAGEMENT))
 			{
 				ContextMenu()->Admin->Contracts->ManageBreachedContracts();
@@ -562,25 +567,25 @@ class Application
 				ContextMenu()->Admin->Correspondence->Ledger->ViewCorrespondenceRunLedger();
 				ContextMenu()->Admin->Correspondence->Configuration->CorrespondenceTemplateList();
 			}
-			
+
 			ContextMenu()->Admin->Collections->Collections_Configuration->ConfigureAllCollections();
 			ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsScenario();
 			ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsEvent();
 			ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsEventType();
 			ContextMenu()->Admin->Collections->Collections_Configuration->AddCollectionsSeverity();
-			
+
 			if (Employee::getForId(Flex::getUserId())->isGod())
 			{
 				ContextMenu()->Admin->Collections->CollectionsPrototype();
 			}
-			
+
 			ContextMenu()->Admin->Collections->CollectionsAccountManagement();
 			ContextMenu()->Admin->Collections->CollectionsEventManagement();
 			ContextMenu()->Admin->Collections->OCAReferralLedger();
-			
+
 			ContextMenu()->Admin->Barring->BarringAuthorisationLedger();
 			ContextMenu()->Admin->Barring->BarringActionLedger();
-			
+
 			ContextMenu()->Admin->ManageAccountClasses();
 		}
 
@@ -600,6 +605,11 @@ class Application
 		{
 			ContextMenu()->Follow_Ups->MyFollowUps();
 			ContextMenu()->Follow_Ups->MyRecurringFollowUps();
+		}
+
+		// Cheque Entry
+		if (AuthenticatedUser()->UserHasPerm(array(PERMISSION_PROPER_ADMIN))) {
+			ContextMenu()->Customer->Payments->BatchChequeEntry();
 		}
 
 		// Render Page
@@ -1108,7 +1118,7 @@ class Application
 			$selSelectStatement = new StatementSelect (
 				"account_user",
 				"*",
-				"	username = <UserName> 
+				"	username = <UserName>
 				AND password = SHA1(<PassWord>)
 				AND	status_id = ".STATUS_ACTIVE,
 				null,
@@ -1117,7 +1127,7 @@ class Application
 
 			$selSelectStatement->Execute(
 				array(
-					"UserName"	=> $_POST['VixenUserName'], 
+					"UserName"	=> $_POST['VixenUserName'],
 					"PassWord"	=> $_POST['VixenPassword']
 				)
 			);
@@ -1173,7 +1183,7 @@ class Application
 			$selSelectStatement = new StatementSelect (
 				"account_user",
 				"*",
-				"	username = <UserName> 
+				"	username = <UserName>
 				AND password = <PassWord>
 				AND	status_id = ".STATUS_ACTIVE,
 				null,
@@ -1181,7 +1191,7 @@ class Application
 			);
 
 			$selSelectStatement->Execute(array(
-				"UserName"	=> $_SESSION['User']['username'], 
+				"UserName"	=> $_SESSION['User']['username'],
 				"PassWord"	=> $_SESSION['User']['password']
 			));
 			$currentUser = $selSelectStatement->Fetch();

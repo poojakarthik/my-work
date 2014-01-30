@@ -1,15 +1,15 @@
 <?php
  class Query extends DatabaseAccess {
  	const PREPARE_CALLBACK_NESTING_MAX = 5000;
- 	
+
 	public function __construct($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT) {
 		$this->intSQLMode = SQL_QUERY;
 		parent::__construct($strConnectionType);
 	}
-	
+
 	public function Execute($strQuery) {
 		$this->Trace($strQuery);
-		
+
 		$aProfiling = array(
 			'sQuery' => $strQuery
 		);
@@ -19,7 +19,7 @@
 
 		// run query
 		$mixResult = mysqli_query($this->db->refMysqliConnection, $strQuery);
-		
+
 		// Handle Locking issues
 		if ($mixResult === false) {
 			// Execute
@@ -31,7 +31,7 @@
 				throw new Exception_Database_LockTimeout($this->Error());
 			}
 		}
-		
+
 		// Profiling
 		if ($mixResult instanceof MySQLi_Result) {
 			// Accessor
@@ -39,22 +39,22 @@
 		} else {
 			// Modifier
 			$aExecutionProfile['iAffectedRows'] = $this->db->refMysqliConnection->affected_rows;
-			
+
 			if ($this->db->refMysqliConnection->insert_id) {
 				$aExecutionProfile['iInsertId'] = $this->db->refMysqliConnection->insert_id;
 			}
 		}
-		
+
 		$aExecutionProfile['fDuration']	= microtime(true) - $aExecutionProfile['fStartTime'];
 		$aExecutionProfile['iResults']	= isset($mixResult->num_rows) ? $mixResult->num_rows : null;
 		if ($this->db->getProfilingEnabled()) {
 			$aProfiling['aExecutions'][]	= $aExecutionProfile;
 		}
-		
+
 		$this->Debug($mixResult);
 		return $mixResult;
 	}
-	
+
 	// Returns the number of records affected by the last INSERT, UPDATE, REPLACE or DELETE query executed
 	public function AffectedRows() {
 		return mysqli_affected_rows($this->db->refMysqliConnection);
@@ -86,7 +86,7 @@
 		if (false === ($mResult = $oQuery->Execute($sQuery))) {
 			throw new Exception_Database($oQuery->Error());
 		}
-		return ($mResult instanceof mysqli_result) ? new Query_Result($mResult) : $mResult;
+		return ($mResult instanceof mysqli_result) ? new Query_Result($sQuery, $mResult) : $mResult;
 	}
 
 	public static function prepareByPHPType($mValue, $sConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT) {
@@ -104,7 +104,17 @@
 		}
 
 		// Escape/Cast/Convert value
-		if (is_int($mValue)) {
+		if (is_array($mValue)) {
+			// Arrays become a comma-separated list of prepared values
+			$aValueElements = array();
+			foreach ($mValue as $mElement) {
+				if (is_array($mElement)) {
+					throw new Exception('Unable to prepare nested arrays');
+				}
+				$aValueElements[] = Query::prepareByPHPType($mElement, $sConnectionType);
+			}
+			return implode(', ', $aValueElements);
+		} elseif (is_int($mValue)) {
 			// Integers are fine as they are
 			//Log::getLog()->log("Integer {$mValue} returned unmodified");
 			return $mValue;

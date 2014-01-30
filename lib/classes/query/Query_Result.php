@@ -27,22 +27,28 @@ class Query_Result {
 	const DATA_TYPE_BLOB		= 252;
 	const DATA_TYPE_VARCHAR		= 253;
 	const DATA_TYPE_CHAR		= 254;
-	
-	private $_mResult 	= null;
-	private $_aFields	= array();
-	
-	public function __construct($mResult) {
+
+	private $_sQuery = null;
+	private $_mResult = null;
+	private $_aFields = array();
+
+	public function __construct($sQuery, $mResult) {
+		$this->_sQuery = $sQuery;
 		$this->_mResult = $mResult;
 	}
-	
+
+	public function getQuery() {
+		return $this->_sQuery;
+	}
+
 	public function __get($sProperty) {
 		return $this->_mResult->$sProperty;
 	}
-	
+
 	public function __set($sProperty, $mValue) {
 		$this->_mResult->$sProperty = $mValue;
 	}
-	
+
 	public function __call($sMethod, $aArgs) {
 		switch ($sMethod) {
 			// fetch_row()
@@ -52,14 +58,14 @@ class Query_Result {
 				if (!$mResult) {
 					return null;
 				}
-				
+
 				$aResult = array();
 				foreach ($mResult as $i => $mValue) {
 					$oField 		= $this->_getField($i);
 					$aResult[$i]	= self::_getTypedValue($oField, $mValue);
 				}
 				return $aResult;
-				
+
 			case 'fetch_assoc':
 				// We want to auto-cast our results
 				// Because results can have multiple fields with the same name, return values
@@ -71,7 +77,7 @@ class Query_Result {
 				if (!$mResult) {
 					return null;
 				}
-				
+
 				$aResult	= array();
 				foreach ($mResult as $i => $mValue) {
 					$oField 				= $this->_getField($i);
@@ -85,20 +91,20 @@ class Query_Result {
 					$i++;
 				}*/
 				return $aResult;
-					
+
 			default:
 				// Pass through
 				return call_user_func_array(array($this->_mResult, $sMethod), $aArgs);
 		}
 	}
-	
+
 	private function _getField($iPosition) {
 		if (!isset($this->_aFields[$iPosition]) || !$this->_aFields[$iPosition]) {
 			$this->_aFields[$iPosition] = $this->_mResult->fetch_field_direct($iPosition);
 		}
 		return $this->_aFields[$iPosition];
 	}
-	
+
 	private static function _getTypedValue($oField, $sValue) {
 		//Log::getLog()->logIf(self::LOG_DEBUG, print_r($oField, true));
 

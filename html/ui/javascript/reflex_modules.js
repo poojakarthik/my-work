@@ -95,7 +95,7 @@
 				// Memoise the Module
 				require.memoize(oDeclaringModule.sModuleId, aDependencies, fnFactory);
 			}
-			
+
 			// Invoke our observers
 			for (var i=0, l=OBSERVERS[oDeclaringModule.sModuleId].length; i < l; i++) {
 				module.eventually(OBSERVERS[oDeclaringModule.sModuleId][i]);
@@ -121,7 +121,7 @@
 					}
 				}
 			};
-		
+
 		var	sModuleId,
 			sModuleIdentifier,
 			iPendingModules	= 0;
@@ -173,7 +173,7 @@
 				_log("Unable to load Module '"+sModuleIdentifier+"' ("+oAJAXResponse.status+": "+oAJAXResponse.statusText+").");
 				throw new Error("Unable to load Module '"+sModuleIdentifier+"' ("+oAJAXResponse.status+": "+oAJAXResponse.statusText+").");
 			},
-			
+
 			onSuccess	: function (oAJAXResponse) {
 				//debugger;
 				if (_oDeclaringModule) {
@@ -239,9 +239,11 @@
 						// Run in the global scope (don't want it polluting our local vars through closure)
 						//eval(sSource);
 						try {
+							var sourceURL = document.head.baseURI + '/javascript/modules/' + sLoadedIdentifier + '.js';
 							// The `//@ sourceURL=[IDENTIFIER]` hack allows Firebug and Chrome Developer Tools to give a "name" to the eval'd code
-							var	fnSandbox	= new Function("//@ sourceURL=module://"+sLoadedIdentifier+"\n"+sSource);
-							fnSandbox();
+							//var	fnSandbox	= new Function(sSource + "\n//@ sourceURL=" + sourceURL + "\n");
+							// fnSandbox();
+							eval(sSource + '//@ sourceURL=' + sourceURL); // Firefox/Firebug doesn't like `new Function` with //@ sourceURL
 						} catch (mException) {
 							//debugger;
 							_log("Unable to evaluate source of Module '"+sLoadedIdentifier+"'", mException, sSource);
