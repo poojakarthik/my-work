@@ -18,6 +18,6 @@ class HtmlTemplate_Cheque_Entry extends FlexHtmlTemplate {
 				")
 			)
 		);
-		echo $dom->saveHTML($article);
+		echo $dom->saveXML($article);
 	}
 }
