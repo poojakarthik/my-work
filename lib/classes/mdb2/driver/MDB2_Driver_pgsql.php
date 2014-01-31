@@ -644,7 +644,7 @@ class MDB2_Driver_pgsql extends MDB2_Driver {
 
 		$sSequence = $sTable;
 		if ($sField) {
-			$sSequence .= '_' $sField;
+			$sSequence .= '_' . $sField;
 		}
 		return $this->queryOne("SELECT currval('" . $this->quoteIdentifier($sSequence) . "')", 'integer');
 	}
