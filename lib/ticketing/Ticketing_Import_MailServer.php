@@ -162,9 +162,9 @@ class Ticketing_Import_MailServer extends Ticketing_Import {
 						// Fall back to content-type
 						if ($sFilename === null) {
 							preg_match('/; name=("?)(?P<filename>.*)\1$/', $oMessagePart->contentType, $aContentTypeMatch);
-							if (isset($aContentDispositionMatch['filename'])) {
+							if (isset($aContentTypeMatch['filename'])) {
 								// The filename was in the content disposition
-								$sFilename = $aContentDispositionMatch['filename'];
+								$sFilename = $aContentTypeMatch['filename'];
 							}
 						}
 
