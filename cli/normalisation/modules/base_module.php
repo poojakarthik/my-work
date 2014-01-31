@@ -88,14 +88,14 @@ abstract class NormalisationModule extends CarrierModule {
 
 		// source : empty or valid FNN
 		if ($this->_arrNormalisedData["Source"] != "") { // 3
-			$arrValid['Source'] = preg_match("/^\d+$|^\+\d+$|^\d{5}(X+|\d+| +|\d+REV)I?$/", $this->_arrNormalisedData["Source"]);
+			$arrValid['Source'] = preg_match("/^\d+$|^\+\d+$|^\d+(X+|\d+| +|\d+REV)I?$/i", $this->_arrNormalisedData["Source"]);
 		} else {
 			$arrValid['Source'] = true;
 		}
 
 		// destination : empty or valid FNN
 		if ($this->_arrNormalisedData["Destination"] != "") { // 4
-			$arrValid['Destination'] = preg_match("/^\d+$|^\+\d+$|^\d{5}(X+|\d+| +|\d+REV)I?$/", $this->_arrNormalisedData["Destination"]);
+			$arrValid['Destination'] = preg_match("/^\d+$|^\+\d+$|^\d+(X+|\d+| +|\d+REV)I?$/i", $this->_arrNormalisedData["Destination"]);
 		} else {
 			$arrValid['Destination'] = true;
 		}

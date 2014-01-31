@@ -52,6 +52,10 @@ class MDB2_Driver_pgsql_Result {
 		return $aResult;
 	}
 
+	public function numRows() {
+		return $this->_oPDOStatement->rowCount();
+	}
+
 	public static function fixAssocFieldNames($sKey) {
 		return preg_replace('/^(?:.*\.)?([^.]+)$/', '\\1', $sKey);
 	}

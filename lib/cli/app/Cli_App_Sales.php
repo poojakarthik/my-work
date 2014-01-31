@@ -6,14 +6,14 @@ class Cli_App_Sales extends Cli
 	const	SWITCH_TEST_RUN		= "t";
 	const	SWITCH_MODE	 		= "m";
 	const	SWITCH_ACTION 		= "a";
-	
+
 	const	SALES_PORTAL_SYSTEM_DEALER_ID	= 1;
-	
+
 	const	PROVISIONING_AMNESTY_HOURS		= 192; // 8 days x 24 hours
-	
+
 	const	PAYMENT_TERMS_DEFAULT = 14;
 	const	BILLING_DATE_DEFAULT = 1;
-	
+
 	function run()
 	{
 		try
@@ -27,11 +27,11 @@ class Cli_App_Sales extends Cli
 			{
 				$this->log("Running in test mode. All changes will be rolled back.", TRUE);
 			}
-			
+
 			// Load Flex Framework
 			$this->requireOnce('lib/classes/Flex.php');
 			Flex::load();
-			
+
 			$strSpecificAction	= ucwords(trim(strtolower($arrArgs[self::SWITCH_ACTION])));
 			$strMode			= trim(strtolower($arrArgs[self::SWITCH_MODE]));
 			switch ($strMode)
@@ -40,16 +40,16 @@ class Cli_App_Sales extends Cli
 				case 'pull':
 					$this->{'_'.$strMode.$strSpecificAction}();
 					break;
-				
+
 				case 'sync':
 					$this->_pushAll();
 					$this->_pullAll();
 					break;
-				
+
 				case 'provision':
 					$this->_automaticProvisioning();
 					break;
-				
+
 				default:
 					throw new Exception("'".trim(strtoupper($arrArgs[self::SWITCH_MODE]))."' is not a valid mode of operation!");
 			}
@@ -66,7 +66,7 @@ class Cli_App_Sales extends Cli
 			return 1;
 		}
 	}
-	
+
 	//---------------------------- PUSH OPERATIONS ---------------------------//
 	// _pushAll()	-- Pushes all shared Data from Flex to the Sales Portal
 	protected function _pushAll()
@@ -75,29 +75,29 @@ class Cli_App_Sales extends Cli
 		$this->_pushProducts();
 		$this->_pushDealers();
 	}
-	
+
 	// This is so the _pushAll method can be called externally
 	public static function pushAll()
 	{
 		$objSyncSales = new self();
 		$objSyncSales->_pushAll();
 	}
-	
+
 	// _pushVendors()	-- Synchronises the Flex.CustomerGroup table with SP Vendors
 	protected function _pushVendors()
 	{
 		$this->log("\t* Pushing Customer Groups/Vendors from Flex to the Sales Portal...");
-		
+
 		$dsSalesPortal	= Data_Source::get('sales');
 		$dacFlex		= DataAccess::getDataAccess();
-		
+
 		// Start a transaction for the Sales Portal
 		$dsSalesPortal->beginTransaction();
-		
+
 		try
 		{
 			$this->log("\t\t* Retrieving list of Flex Customer Groups...");
-			
+
 			// Get list of Customer Groups from Flex
 			$arrCustomerGroups	= Customer_Group::getAll();
 			foreach ($arrCustomerGroups as $objCustomerGroup)
@@ -105,7 +105,7 @@ class Cli_App_Sales extends Cli
 				$this->log("\t\t\t+ Id #{$objCustomerGroup->id} ({$objCustomerGroup->internalName})...");
 
 				$strCoolingOffPeriod = ($objCustomerGroup->coolingOffPeriod !== NULL)? $objCustomerGroup->coolingOffPeriod : "NULL";
-				
+
 				// Does this Customer Group exist in the Sales Portal?
 				$resVendors	= $dsSalesPortal->query("SELECT id FROM vendor WHERE id = {$objCustomerGroup->id}", Array('integer'));
 				if (MDB2::isError($resVendors))
@@ -115,7 +115,7 @@ class Cli_App_Sales extends Cli
 				elseif (!($arrVendor = $resVendors->fetchRow(MDB2_FETCHMODE_ASSOC)))
 				{
 					$this->log("\t\t\t+ Does not exist, adding...");
-					
+
 					// No -- add it
 					$resVendorInsert	= $dsSalesPortal->query("INSERT INTO vendor (id, name, description, cooling_off_period) VALUES ({$objCustomerGroup->id}, '{$objCustomerGroup->internalName}', '{$objCustomerGroup->externalName}', $strCoolingOffPeriod);");
 					if (MDB2::isError($resVendorInsert))
@@ -126,7 +126,7 @@ class Cli_App_Sales extends Cli
 				else
 				{
 					$this->log("\t\t\t+ Already exists, updating...");
-					
+
 					// Yes -- update it
 					$resVendorUpdate	= $dsSalesPortal->query("UPDATE vendor SET id = {$objCustomerGroup->id}, name = '{$objCustomerGroup->internalName}', description = '{$objCustomerGroup->externalName}', cooling_off_period = $strCoolingOffPeriod WHERE id = {$objCustomerGroup->id};");
 					if (MDB2::isError($resVendorUpdate))
@@ -135,7 +135,7 @@ class Cli_App_Sales extends Cli
 					}
 				}
 			}
-			
+
 			// All seems to have worked fine -- Commit the Transaction
 			$dsSalesPortal->commit();
 		}
@@ -146,24 +146,24 @@ class Cli_App_Sales extends Cli
 			throw $eException;
 		}
 	}
-	
+
 	// _pushProducts()	-- Synchronises the Flex Plans with SP Products
 	protected function _pushProducts()
 	{
 		$this->log("\t* Pushing Products from Flex to the Sales Portal...");
-		
+
 		$dsSalesPortal	= Data_Source::get('sales');
 		$dacFlex		= DataAccess::getDataAccess();
-		
+
 		// Start a transaction for the Sales Portal
 		$dsSalesPortal->beginTransaction();
-		
+
 		try
 		{
 			$qryQuery	= new Query();
-			
+
 			$this->log("\t\t* Getting list of Rate Plans from Flex...");
-			
+
 			//-------------------------- RATE PLANS --------------------------//
 			// Get list of Rate Plans from Flex
 			$resRatePlans	= $qryQuery->Execute("SELECT * FROM RatePlan WHERE Archived IN (0, 1);");
@@ -176,14 +176,14 @@ class Cli_App_Sales extends Cli
 				while ($arrRatePlan = $resRatePlans->fetch_assoc())
 				{
 					$this->log("\t\t\t+ Id# {$arrRatePlan['Id']} ({$arrRatePlan['Name']})...");
-					
+
 					// Determine the values
 					$intProductVendor		= $arrRatePlan['customer_group'];
 					$strProductName			= self::_toDBValue($arrRatePlan['Name']);
 					$strProductDescription	= self::_toDBValue($arrRatePlan['Description']);
 					$intProductType			= $this->_convertFlexToSalesPortal('servicetype', $arrRatePlan['ServiceType']);
 					$intProductStatus		= $this->_convertFlexToSalesPortal('planarchived', $arrRatePlan['Archived']);
-					
+
 					// Does it already exist in the SP?
 					$resProduct	= $dsSalesPortal->query("SELECT id FROM product WHERE external_reference = 'RatePlan.Id={$arrRatePlan['Id']}' LIMIT 1", Array('integer'));
 					if (MDB2::isError($resProduct))
@@ -193,7 +193,7 @@ class Cli_App_Sales extends Cli
 					if ($resProduct->numRows())
 					{
 						$this->log("\t\t\t\t+ Already exists, updating...");
-						
+
 						// Already Exists -- do an UPDATE
 						$arrProduct			= $resProduct->fetchRow(MDB2_FETCHMODE_ASSOC);
 						$strUpdateSQL		= "UPDATE product SET vendor_id = {$intProductVendor}, name = {$strProductName}, description = {$strProductDescription}, product_type_id = {$intProductType}, product_status_id = {$intProductStatus} " .
@@ -207,7 +207,7 @@ class Cli_App_Sales extends Cli
 					else
 					{
 						$this->log("\t\t\t\t+ Does not exist, adding...");
-						
+
 						// Doesn't Exist -- do an INSERT
 						$strInsertSQL		= "INSERT INTO product (	vendor_id			, name					, description					, product_type_id	, product_status_id		, external_reference) VALUES " .
 																	"(	{$intProductVendor}	, {$strProductName}		, {$strProductDescription}		, {$intProductType}	, {$intProductStatus}	, 'RatePlan.Id={$arrRatePlan['Id']}')";
@@ -220,10 +220,10 @@ class Cli_App_Sales extends Cli
 				}
 			}
 			//----------------------------------------------------------------//
-			
+
 			// Other Product Definitions go here
 			// TODO
-			
+
 			// All seems to have worked fine -- Commit the Transaction
 			$dsSalesPortal->commit();
 		}
@@ -234,24 +234,24 @@ class Cli_App_Sales extends Cli
 			throw $eException;
 		}
 	}
-	
+
 	// _pushDealers()	-- Synchronises the Flex Dealers with SP Dealers
 	protected function _pushDealers()
 	{
 		$this->log("\t* Pushing Dealers from Flex to the Sales Portal...");
-		
+
 		$dsSalesPortal	= Data_Source::get('sales');
 		$dacFlex		= DataAccess::getDataAccess();
-		
+
 		// Start a transaction for the Sales Portal
 		$dsSalesPortal->beginTransaction();
-		
+
 		try
 		{
 			$qryQuery	= new Query();
-			
+
 			$this->log("\t\t* Getting list of Flex Dealers...");
-			
+
 			// Get list of Dealers from Flex
 			$resFlexDealers	= $qryQuery->Execute("SELECT * FROM dealer ORDER BY ISNULL(up_line_id) DESC, (id < up_line_id) DESC, id ASC;");
 			if ($resFlexDealers === FALSE)
@@ -261,14 +261,14 @@ class Cli_App_Sales extends Cli
 			while ($arrFlexDealer = $resFlexDealers->fetch_assoc())
 			{
 				$this->log("\t\t\t+ Id #{$arrFlexDealer['id']} ({$arrFlexDealer['first_name']} {$arrFlexDealer['last_name']})...");
-				
+
 				//-------------------------- DEALERS -------------------------//
 				// Escape values
 				foreach ($arrFlexDealer as $strField=>$mixValue)
 				{
 					$arrFlexDealer[$strField]	= self::_toDBValue($mixValue);
 				}
-				
+
 				// Does this Dealer exist in the Sales Portal?
 				$resSPDealer	= $dsSalesPortal->query("SELECT id FROM dealer WHERE id = {$arrFlexDealer['id']} LIMIT 1", Array('integer'));
 				if (MDB2::isError($resSPDealer))
@@ -278,10 +278,10 @@ class Cli_App_Sales extends Cli
 				if (!($arrSPDealer = $resSPDealer->fetchRow(MDB2_FETCHMODE_ASSOC)))
 				{
 					$this->log("\t\t\t\t+ Doesn't exit, adding...");
-					
+
 					// Doesn't exist -- INSERT
 					$arrSPDealer	= $arrFlexDealer;
-					
+
 					$strInsertSQL	= "INSERT INTO dealer VALUES " .
 										"( " .
 										"	{$arrSPDealer['id']}, " .
@@ -334,7 +334,7 @@ class Cli_App_Sales extends Cli
 					$this->log("\t\t\t\t+ Already exits, updating...");
 					// Does exist -- UPDATE
 					$arrSPDealer	= $arrFlexDealer;
-					
+
 					$strUpdateSQL	= "UPDATE dealer SET " .
 										"	up_line_id				= {$arrSPDealer['up_line_id']}," .
 										"	username				= {$arrSPDealer['username']}," .
@@ -382,16 +382,19 @@ class Cli_App_Sales extends Cli
 				}
 				//------------------------------------------------------------//
 			}
-			
+
 			//----------------------- DEALER >> PRODUCTS ---------------------//
 			$this->log("\t\t* Recreating Dealers >> Products relationships...");
 			// Truncate the SP Table
-			$resDealerProductTruncate	= $dsSalesPortal->query("TRUNCATE TABLE dealer_product; ALTER SEQUENCE dealer_product_id_seq RESTART WITH 1;");
-			if (MDB2::isError($resDealerProductTruncate))
-			{
+			$resDealerProductTruncate = $dsSalesPortal->query("TRUNCATE TABLE dealer_product;");
+			if (MDB2::isError($resDealerProductTruncate)) {
 				throw new Exception($resDealerProductTruncate->getMessage()." :: ".$resDealerProductTruncate->getUserInfo());
 			}
-			
+			$resDealerProductSequence = $dsSalesPortal->query("ALTER SEQUENCE dealer_product_id_seq RESTART WITH 1;");
+			if (MDB2::isError($resDealerProductSequence)) {
+				throw new Exception($resDealerProductSequence->getMessage()." :: ".$resDealerProductSequence->getUserInfo());
+			}
+
 			// Recreate the SP Table from Flex Data
 			$resDealerRatePlan	= $qryQuery->Execute("SELECT * FROM dealer_rate_plan");
 			if ($resDealerRatePlan === FALSE)
@@ -409,16 +412,19 @@ class Cli_App_Sales extends Cli
 				}
 			}
 			//----------------------------------------------------------------//
-			
+
 			//---------------------- DEALER >> SALE TYPE ---------------------//
 			$this->log("\t\t* Recreating Dealers >> Sale Types relationships...");
 			// Truncate the SP Table
-			$resDealerSaleTypeTruncate	= $dsSalesPortal->query("TRUNCATE TABLE dealer_sale_type; ALTER SEQUENCE dealer_sale_type_id_seq RESTART WITH 1;");
-			if (MDB2::isError($resDealerSaleTypeTruncate))
-			{
+			$resDealerSaleTypeTruncate	= $dsSalesPortal->query("TRUNCATE TABLE dealer_sale_type;");
+			if (MDB2::isError($resDealerSaleTypeTruncate)) {
 				throw new Exception($resDealerSaleTypeTruncate->getMessage()." :: ".$resDealerSaleTypeTruncate->getUserInfo());
 			}
-			
+			$resDealerSaleTypeSequence	= $dsSalesPortal->query("ALTER SEQUENCE dealer_sale_type_id_seq RESTART WITH 1;");
+			if (MDB2::isError($resDealerSaleTypeSequence)) {
+				throw new Exception($resDealerSaleTypeSequence->getMessage()." :: ".$resDealerSaleTypeSequence->getUserInfo());
+			}
+
 			// Recreate the SP Table from Flex Data
 			$resDealerSaleType	= $qryQuery->Execute("SELECT * FROM dealer_sale_type");
 			if ($resDealerSaleType === FALSE)
@@ -436,16 +442,19 @@ class Cli_App_Sales extends Cli
 				}
 			}
 			//----------------------------------------------------------------//
-			
+
 			//------------------------ DEALER >> VENDOR ----------------------//
 			$this->log("\t\t* Recreating Dealers >> Vendors relationships...");
 			// Truncate the SP Table
-			$resDealerVendorTruncate	= $dsSalesPortal->query("TRUNCATE TABLE dealer_vendor; ALTER SEQUENCE dealer_vendor_id_seq RESTART WITH 1;");
-			if (MDB2::isError($resDealerVendorTruncate))
-			{
+			$resDealerVendorTruncate	= $dsSalesPortal->query("TRUNCATE TABLE dealer_vendor;");
+			if (MDB2::isError($resDealerVendorTruncate)) {
 				throw new Exception($resDealerVendorTruncate->getMessage()." :: ".$resDealerVendorTruncate->getUserInfo());
 			}
-			
+			$resDealerVendorSequence	= $dsSalesPortal->query("ALTER SEQUENCE dealer_vendor_id_seq RESTART WITH 1;");
+			if (MDB2::isError($resDealerVendorSequence)) {
+				throw new Exception($resDealerVendorSequence->getMessage()." :: ".$resDealerVendorSequence->getUserInfo());
+			}
+
 			// Recreate the SP Table from Flex Data
 			$resDealerCustomerGroup	= $qryQuery->Execute("SELECT * FROM dealer_customer_group");
 			if ($resDealerCustomerGroup === FALSE)
@@ -463,7 +472,7 @@ class Cli_App_Sales extends Cli
 				}
 			}
 			//----------------------------------------------------------------//
-			
+
 			// All seems to have worked fine -- Commit the Transaction
 			$dsSalesPortal->commit();
 		}
@@ -475,7 +484,7 @@ class Cli_App_Sales extends Cli
 		}
 	}
 	//------------------------------------------------------------------------//
-	
+
 	//---------------------------- PULL OPERATIONS ---------------------------//
 	// _pullAll()	-- Pulls all shared Data from the Sales Portal to Flex
 	protected function _pullAll()
@@ -484,25 +493,25 @@ class Cli_App_Sales extends Cli
 		{
 			throw new Exception("Billing is in progress.  The PULL operation cannot be run at this time.");
 		}
-		
+
 		$this->_pullSales();
 	}
-	
+
 	// _pullSales()	-- Pulls all new Sales from the Sales Portal
 	protected function _pullSales()
 	{
 		// HACK! HACK! HACK! This function should be converted to use the DO_Sales_ classes instead of directly querying the sales database
-		
+
 		$this->log("\t* Pulling Sales from the Sales Portal to Flex...");
 		$arrManualInterventionSales = array();
-		
+
 		$dsSalesPortal	= Data_Source::get('sales');
 		$dacFlex		= DataAccess::getDataAccess();
-		
+
 		// Start a transaction for both Databases
 		$dsSalesPortal->beginTransaction();
 		$dacFlex->TransactionStart();
-		
+
 		$strPullDatetime	= Data_Source_Time::currentTimestamp();
 		$intPullDatetime	= strtotime($strPullDatetime);
 		try
@@ -510,9 +519,9 @@ class Cli_App_Sales extends Cli
 			$qryQuery		= new Query();
 			$insBankAccount	= new StatementInsert("DirectDebit");
 			$insCreditCard	= new StatementInsert("CreditCard");
-			
+
 			$this->log("\t\t* Getting a list of New Sales from the Sales Portal...");
-			
+
 			// Get a list of New Sales from the SP
 			$resNewSales = $dsSalesPortal->query("SELECT * FROM sale WHERE sale_status_id = ". DO_Sales_SaleStatus::AWAITING_DISPATCH ." ORDER BY id ASC");
 			if (MDB2::isError($resNewSales))
@@ -522,7 +531,7 @@ class Cli_App_Sales extends Cli
 			while ($arrSPSale = $resNewSales->fetchRow(MDB2_FETCHMODE_ASSOC))
 			{
 				$this->log("\t\t* Sale Id #{$arrSPSale['id']}...");
-				
+
 				// Created a new Savepoint for this Sale
 				$strSaleSavePoint	= "Flex_SP_Pull_Sale_{$arrSPSale['id']}";
 				if ($qryQuery->Execute("SAVEPOINT {$strSaleSavePoint}") === FALSE)
@@ -534,17 +543,17 @@ class Cli_App_Sales extends Cli
 				{
 					throw new Exception($resCreateSavepoint->getMessage()." :: ".$resCreateSavepoint->getUserInfo());
 				}
-				
+
 				try
 				{
 					$arrContacts	= Array();
 					$arrServices	= Array();
-					
+
 					// Is this for a new Account?
 					if ($arrSPSale['sale_type_id'] == DO_Sales_SaleType::NEW_CUSTOMER)
 					{
 						$this->log("\t\t\t+ Creating new Account...");
-						
+
 						//--------------------- ACCOUNT GROUP --------------------//
 						// Yes -- Create a new AccountGroup/Account for this Customer
 						$objAccountGroup			= new Account_Group();
@@ -553,7 +562,7 @@ class Cli_App_Sales extends Cli
 						$objAccountGroup->Archived	= ACCOUNT_STATUS_ACTIVE;
 						$objAccountGroup->save();
 						//--------------------------------------------------------//
-						
+
 						//------------------------ ACCOUNT -----------------------//
 						// Get sale_account Details for this Sale
 						$resSaleAccount	= $dsSalesPortal->query("SELECT sale_account.*, state.code AS state_name " .
@@ -566,7 +575,7 @@ class Cli_App_Sales extends Cli
 						}
 						$arrSPSaleAccount	= $resSaleAccount->fetchRow(MDB2_FETCHMODE_ASSOC);
 						$this->log("\t\t\t\t* SP Sale Account Id #{$arrSPSaleAccount['id']}...");
-						
+
 						$objAccount						= new Account();
 						$objAccount->BusinessName		= ($arrSPSaleAccount['business_name']) ? $arrSPSaleAccount['business_name'] : '';
 						$objAccount->TradingName		= ($arrSPSaleAccount['trading_name']) ? $arrSPSaleAccount['trading_name'] : '';
@@ -579,12 +588,12 @@ class Cli_App_Sales extends Cli
 						$objAccount->State				= $arrSPSaleAccount['state_name'];
 						$objAccount->Country			= 'AU';
 						$objAccount->CustomerGroup		= $arrSPSaleAccount['vendor_id'];
-						
+
 						$objAccount->AccountGroup		= $objAccountGroup->Id;
 						$objAccount->BillingFreq		= BILLING_DEFAULT_FREQ;
 						$objAccount->BillingFreqType	= BILLING_DEFAULT_FREQ_TYPE;
 						$objAccount->BillingMethod		= $this->_convertSalesPortalToFlex('billdeliverytype', $arrSPSaleAccount['bill_delivery_type_id']);
-						
+
 						$resPaymentTerms	= $qryQuery->Execute("SELECT * FROM payment_terms WHERE customer_group_id = {$objAccount->CustomerGroup} ORDER BY id DESC LIMIT 1");
 						if ($resPaymentTerms === FALSE)
 						{
@@ -600,7 +609,7 @@ class Cli_App_Sales extends Cli
 							$objAccount->BillingDate	= self::BILLING_DATE_DEFAULT;
 							$objAccount->PaymentTerms	= self::PAYMENT_TERMS_DEFAULT;
 						}
-						
+
 						if ($arrSPSaleAccount['bill_payment_type_id'] == DO_Sales_BillPaymentType::DIRECT_DEBIT)
 						{
 							// Paying via direct debit
@@ -610,7 +619,7 @@ class Cli_App_Sales extends Cli
 						{
 							$objAccount->BillingType		= BILLING_TYPE_ACCOUNT;
 						}
-						
+
 						$objAccount->CreatedBy			= Employee::SYSTEM_EMPLOYEE_ID;
 						$objAccount->CreatedOn			= $strPullDatetime;
 						$objAccount->DisableDDR			= 0;
@@ -618,19 +627,19 @@ class Cli_App_Sales extends Cli
 						$objAccount->DisableLateNotices	= 0;
 						$objAccount->Sample				= 0;
 						$objAccount->Archived			= 0;
-						
+
 						$objAccount->credit_control_status			= CREDIT_CONTROL_STATUS_UP_TO_DATE;
 						$objAccount->last_automatic_invoice_action	= AUTOMATIC_INVOICE_ACTION_NONE;
 						$objAccount->automatic_barring_status		= AUTOMATIC_BARRING_STATUS_NONE;
 						$objAccount->vip							= 0;
-												
+
 						// Default account class from Customer Group
 						$oAccountClass 					= Customer_Group::getDefaultAccountClassForCustomerGroup($objAccount->CustomerGroup);
 						$objAccount->account_class_id	= $oAccountClass->id;
-						
+
 						// Default collection severity
 						$objAccount->collection_severity_id = Collection_Severity::getForSystemName('UNRESTRICTED')->id;
-						
+
 						// Save the Account
 						$objAccount->save();
 
@@ -640,7 +649,7 @@ class Cli_App_Sales extends Cli
 						// Save the Account... again
 						$objAccount->save();
 						//--------------------------------------------------------//
-						
+
 						if ($arrSPSaleAccount['bill_payment_type_id'] == DO_Sales_BillPaymentType::DIRECT_DEBIT)
 						{
 							//---------------------- DIRECT DEBIT --------------------//
@@ -659,7 +668,7 @@ class Cli_App_Sales extends Cli
 										throw new Exception($resSPBankAccount->getMessage()." :: ".$resSPBankAccount->getUserInfo());
 									}
 									$arrSPBankAccount	= $resSPBankAccount->fetchRow(MDB2_FETCHMODE_ASSOC);
-									
+
 									// Create new DirectDebit record
 									$arrBankAccount	= array();
 									$arrBankAccount['AccountGroup']		= $objAccount->AccountGroup;
@@ -675,10 +684,10 @@ class Cli_App_Sales extends Cli
 									{
 										throw new Exception_Database($insBankAccount->Error());
 									}
-									
+
 									$objAccount->DirectDebit	= $insBankAccount->intInsertId;
 									break;
-								
+
 								// Credit Card
 								case 2:
 									$this->log("\t\t\t\t+ Adding Credit Card...");
@@ -692,7 +701,7 @@ class Cli_App_Sales extends Cli
 										throw new Exception($resSPCreditCard->getMessage()." :: ".$resSPCreditCard->getUserInfo());
 									}
 									$arrSPCreditCard	= $resSPCreditCard->fetchRow(MDB2_FETCHMODE_ASSOC);
-									
+
 									// Create new CreditCard record
 									$arrCreditCard	= array();
 									$arrCreditCard['AccountGroup']	= $objAccount->AccountGroup;
@@ -710,15 +719,15 @@ class Cli_App_Sales extends Cli
 									{
 										throw new Exception_Database($insCreditCard->Error());
 									}
-									
+
 									$objAccount->CreditCard	= $insCreditCard->intInsertId;
 									break;
 							}
 						}
-						
+
 						// Finalise Account
 						$objAccount->save();
-						
+
 						$this->log("\t\t\t\t+ Updating Sales Portal Remote Reference to {$objAccount->Id}...");
 						// Update the SP Sale Account Remote Reference
 						$resSPSaleAccount	= $dsSalesPortal->query("UPDATE sale_account SET external_reference = 'Account.Id={$objAccount->Id}' WHERE id = {$arrSPSaleAccount['id']}");
@@ -732,22 +741,22 @@ class Cli_App_Sales extends Cli
 					{
 						// We will not be updating account details or bill_payment_type details or bill_delivery_type details
 						$this->log("\t\t\t+ Finding existing Account...");
-						
+
 						// Grab the associated sale_account record
 						// HACK! The list of sales that we are looping through, to import, should be DO_Sales_Sale objects, but for now, grab it here
 						// This is efectively doubling up on the number of times we retrieve each EXISTING_CUSTOMER sale, but it's not that much of an issue
 						$doSale = DO_Sales_Sale::getForId($arrSPSale['id']);
 						$arrSaleAccounts = DO_Sales_SaleAccount::listForSale($doSale);
-						
+
 						if (count($arrSaleAccounts) == 0)
 						{
 							throw new Exception("Sale {$arrSPSale['id']} (sale to an existing customer) has no sale_account record associated with it");
 						}
 						$doSaleAccount = $arrSaleAccounts[0];
-						
+
 						// Retrieve the Account Record
 						$objAccount = Account::getForId($doSaleAccount->getExternalReferenceValue());
-						
+
 						if ($objAccount === NULL)
 						{
 							throw new Exception("Can't find account: ". $doSaleAccount->getExternalReferenceValue() ." referenced by the 'Existing Customer' sale {$arrSPSale['id']}");
@@ -758,7 +767,7 @@ class Cli_App_Sales extends Cli
 						//// We only support New Customer Sales at the moment
 						throw new Exception("'{$arrSPSale['sale_type_id']}' Sales are not supported by Flex!");
 					}
-					
+
 					// Get the date on which the Sale was Verified
 					$resVerifiedOn	= $dsSalesPortal->query("SELECT changed_on " .
 															"FROM sale_status_history " .
@@ -770,7 +779,7 @@ class Cli_App_Sales extends Cli
 						throw new Exception($resVerifiedOn->getMessage()." :: ".$resVerifiedOn->getUserInfo());
 					}
 					$arrVerifiedOn = $resVerifiedOn->fetchRow(MDB2_FETCHMODE_ASSOC);
-					
+
 					// Create a new Sale record in Flex
 					$objFlexSale	= new FlexSale();
 					$objFlexSale->external_reference	= "sale.id={$arrSPSale['id']}";
@@ -778,9 +787,9 @@ class Cli_App_Sales extends Cli
 					$objFlexSale->verified_on			= $arrVerifiedOn['changed_on'];
 					$objFlexSale->sale_type_id			= $arrSPSale['sale_type_id'];
 					$objFlexSale->save();
-					
+
 					$objFlexSale->intCouldntComplete	= 0;
-					
+
 					$this->log("\t\t\t* Getting list of new Contacts...");
 					//-------------------------- CONTACT -------------------------//
 					// Get the new Contacts associated with this Sale
@@ -794,7 +803,7 @@ class Cli_App_Sales extends Cli
 					while ($arrSPContact = $resNewContacts->fetchRow(MDB2_FETCHMODE_ASSOC))
 					{
 						$this->log("\t\t\t\t+ Adding a new Contact for Account #{$objAccount->Id}...");
-						
+
 						// Add this Contact to Flex
 						$objContact	= new Contact();
 						$objContact->AccountGroup		= $objAccount->AccountGroup;
@@ -809,7 +818,7 @@ class Cli_App_Sales extends Cli
 						$objContact->SessionId			= '';
 						$objContact->SessionExpire		= '0000-00-00 00:00:00';
 						$objContact->Archived			= 0;
-						
+
 						// Get the Contact Methods from SP
 						$objContact->Phone				= '';
 						$objContact->Mobile				= '';
@@ -830,29 +839,29 @@ class Cli_App_Sales extends Cli
 								case 1:
 									$objContact->Email	= trim($arrSPContactMethod['details']);
 									break;
-									
+
 								// Fax
 								case 2:
 									$objContact->Fax	= $arrSPContactMethod['details'];
 									break;
-									
+
 								// Phone
 								case 3:
 									$objContact->Phone	= $arrSPContactMethod['details'];
 									break;
-									
+
 								// Mobile
 								case 4:
 									$objContact->Mobile	= $arrSPContactMethod['details'];
 									break;
 							}
 						}
-						
+
 						// Is there already a Contact with this Email Address?
 						if ($objContact->Email && Contact::isEmailInUse($objContact->Email))
 						{
 							$this->log("\t\t\t\t\t! Contact's Email Address is already in use!  Aborting Sale...");
-							
+
 							// Rollback to the savepoint for this Sale
 							if ($qryQuery->Execute("ROLLBACK TO {$strSaleSavePoint}") === FALSE)
 							{
@@ -863,13 +872,13 @@ class Cli_App_Sales extends Cli
 							{
 								throw new Exception($resRollbackSavepoint->getMessage()." :: ".$resRollbackSavepoint->getUserInfo());
 							}
-							
+
 							throw new Exception_Sale_Manual_Intervention("Contact {$objContact->FirstName} {$objContact->LastName}'s specified Email Address ({$objContact->Email}) is already in use!");
 						}
-						
+
 						// Save the Flex Contact
 						$objContact->save();
-						
+
 						// Update the SP Contact Remote Reference
 						$this->log("\t\t\t\t\t+ Updating Sales Portal Remote Reference to {$objContact->Id}...");
 						$resSPContact	= $dsSalesPortal->query("UPDATE contact SET external_reference = 'Contact.Id={$objContact->Id}' WHERE id = {$arrSPContact['id']}");
@@ -877,7 +886,7 @@ class Cli_App_Sales extends Cli
 						{
 							throw new Exception($resSPContact->getMessage()." :: ".$resSPContact->getUserInfo());
 						}
-						
+
 						// Is it the Primary Contact for the Account?
 						if ($arrSPContact['contact_association_type_id'] == 1)
 						{
@@ -885,14 +894,14 @@ class Cli_App_Sales extends Cli
 							$objAccount->PrimaryContact	= $objContact->Id;
 							$objAccount->save();
 						}
-						
+
 						$arrContacts[]	= $objContact;
 					}
 					//------------------------------------------------------------//
-					
+
 					//------------------------ SALE ITEMS ------------------------//
 					$this->log("\t\t\t* Getting list of Items sold...");
-					
+
 					// Get all items that were sold
 					$resSPSaleItems	= $dsSalesPortal->query("SELECT sale_item.*, product.product_type_id, product_type.product_category_id " .
 															"FROM sale_item JOIN product ON sale_item.product_id = product.id JOIN product_type ON product_type.id = product.product_type_id " .
@@ -904,7 +913,7 @@ class Cli_App_Sales extends Cli
 					while ($arrSPSaleItem = $resSPSaleItems->fetchRow(MDB2_FETCHMODE_ASSOC))
 					{
 						$this->log("\t\t\t\t* Adding Sale Item #{$arrSPSaleItem['id']}...");
-						
+
 						// Create a Savepoint for this Sale Item
 						$strSaleItemSavePoint	= "Flex_SP_Pull_Sale_Item_{$arrSPSaleItem['id']}";
 						if ($qryQuery->Execute("SAVEPOINT {$strSaleItemSavePoint}") === FALSE)
@@ -916,7 +925,7 @@ class Cli_App_Sales extends Cli
 						{
 							throw new Exception($resCreateSavepoint->getMessage()." :: ".$resCreateSavepoint->getUserInfo());
 						}
-						
+
 						try
 						{
 							// What Category of Product is the item?
@@ -925,12 +934,12 @@ class Cli_App_Sales extends Cli
 								// Service
 								case 1:
 									$this->log("\t\t\t\t\t+ Adding new Service to Account {$objAccount->Id}...");
-									
+
 									// Create a new Service
 									$objService	= new Service();
 									$objService->Account		= $objAccount->Id;
 									$objService->AccountGroup	= $objAccount->AccountGroup;
-									
+
 									// Defaults
 									$objService->Indial100			= 0;
 									$objService->CappedCharge		= 0;
@@ -941,7 +950,7 @@ class Cli_App_Sales extends Cli
 									$objService->Status				= SERVICE_PENDING;
 									$objService->Dealer				= $arrSPSaleItem['created_by'];
 									$objService->Cost				= 0;
-									
+
 									// Get the Sale Status Date
 									$resSPSaleItemStatusDate	= $dsSalesPortal->query("SELECT changed_on " .
 																						"FROM sale_item_status_history " .
@@ -954,7 +963,7 @@ class Cli_App_Sales extends Cli
 									}
 									$arrSPSaleItemStatusDate	= $resSPSaleItemStatusDate->fetchRow(MDB2_FETCHMODE_ASSOC);
 									$objService->CreatedOn		= $strPullDatetime;
-									
+
 									// Additional Details -- What product type is this?
 									$insAdditionalDetails	= NULL;
 									$arrAdditionalDetails	= NULL;
@@ -973,13 +982,13 @@ class Cli_App_Sales extends Cli
 												throw new Exception($resSPLandLineDetails->getMessage()." :: ".$resSPLandLineDetails->getUserInfo());
 											}
 											$arrSPLandLineDetails	= $resSPLandLineDetails->fetchRow(MDB2_FETCHMODE_ASSOC);
-											
+
 											// Service Details
 											$objService->FNN			= $arrSPLandLineDetails['fnn'];
 											$objService->ServiceType	= SERVICE_TYPE_LAND_LINE;
 											$objService->Indial100		= ($arrSPLandLineDetails['is_indial_100'] === 't') ? TRUE : FALSE;
 											$objService->ELB			= ($arrSPLandLineDetails['has_extension_level_billing'] === 't') ? TRUE : FALSE;
-											
+
 											// Service Address Details
 											$arrAdditionalDetails	= array();
 											$arrAdditionalDetails['AccountGroup']	= $objService->AccountGroup;
@@ -990,7 +999,7 @@ class Cli_App_Sales extends Cli
 											$arrAdditionalDetails['BillAddress2']	= $arrSPLandLineDetails['bill_address_line_2'];
 											$arrAdditionalDetails['BillLocality']	= $arrSPLandLineDetails['bill_locality'];
 											$arrAdditionalDetails['BillPostcode']	= $arrSPLandLineDetails['bill_postcode'];
-											
+
 											$arrAdditionalDetails['ServiceAddressType']			= ($arrSPLandLineDetails['landline_service_address_type_id'] !== NULL)? $this->_salesPortalEnum('landline_service_address_type', $arrSPLandLineDetails['landline_service_address_type_id'], 'code') : NULL;
 											$arrAdditionalDetails['ServiceAddressTypeNumber']	= $arrSPLandLineDetails['service_address_type_number'];
 											$arrAdditionalDetails['ServiceAddressTypeSuffix']	= $arrSPLandLineDetails['service_address_type_suffix'];
@@ -1004,7 +1013,7 @@ class Cli_App_Sales extends Cli
 											$arrAdditionalDetails['ServiceLocality']			= $arrSPLandLineDetails['service_locality'];
 											$arrAdditionalDetails['ServiceState']				= $this->_salesPortalEnum('landline_service_state', $arrSPLandLineDetails['landline_service_state_id'], 'code');
 											$arrAdditionalDetails['ServicePostcode']			= $arrSPLandLineDetails['service_postcode'];
-											
+
 											switch ($arrSPLandLineDetails['landline_type_id'])
 											{
 												// Residential
@@ -1021,7 +1030,7 @@ class Cli_App_Sales extends Cli
 													{
 														throw new Exception("Could not find sale_item_service_landline_residential record relating to the sale_item_service_landline record having id: {$arrSPLandLineDetails['id']}");
 													}
-													
+
 													$arrAdditionalDetails['Residential']		= 1;
 													$arrAdditionalDetails['EndUserTitle']		= $this->_salesPortalEnum('landline_end_user_title', $arrResidentialLandlineDetails['landline_end_user_title_id'], 'code');
 													$arrAdditionalDetails['EndUserGivenName']	= $arrResidentialLandlineDetails['end_user_given_name'];
@@ -1030,7 +1039,7 @@ class Cli_App_Sales extends Cli
 													$arrAdditionalDetails['Employer']			= $arrResidentialLandlineDetails['end_user_employer'];
 													$arrAdditionalDetails['Occupation']			= $arrResidentialLandlineDetails['end_user_occupation'];
 													break;
-												
+
 												// Business
 												case 2:
 													$arrBusinessLandlineDetails	= $dsSalesPortal->queryRow(	"SELECT * ".
@@ -1050,13 +1059,13 @@ class Cli_App_Sales extends Cli
 													$arrAdditionalDetails['ABN']				= $arrBusinessLandlineDetails['abn'];
 													$arrAdditionalDetails['TradingName']		= $arrBusinessLandlineDetails['trading_name'];
 													break;
-													
+
 												default:
 													throw new Exception("'{$arrSPLandLineDetails['landline_type_id']}' is not a valid Land Line Type!");
 													break;
 											}
 											break;
-											
+
 										// Mobile
 										case 2:
 											// Get the additional Mobile details
@@ -1070,11 +1079,11 @@ class Cli_App_Sales extends Cli
 												throw new Exception($resSPMobileDetails->getMessage()." :: ".$resSPMobileDetails->getUserInfo());
 											}
 											$arrSPMobileDetails		= $resSPMobileDetails->fetchRow(MDB2_FETCHMODE_ASSOC);
-											
+
 											// Service Details
 											$objService->FNN			= $arrSPMobileDetails['fnn'];
 											$objService->ServiceType	= SERVICE_TYPE_MOBILE;
-											
+
 											// Mobile Details
 											$arrAdditionalDetails	= array();
 											$arrAdditionalDetails['AccountGroup']	= $objService->AccountGroup;
@@ -1085,14 +1094,14 @@ class Cli_App_Sales extends Cli
 											$arrAdditionalDetails['SimState']		= ($arrSPMobileDetails['sim_state_id']) ? $this->_salesPortalEnum('state', $arrSPMobileDetails['sim_state_id'], 'code') : '';
 											$arrAdditionalDetails['DOB']			= ($arrSPMobileDetails['dob']) ? $arrSPMobileDetails['dob'] : '0000-00-00';
 											$arrAdditionalDetails['Comments']		= ($arrSPMobileDetails['comments']) ? $arrSPMobileDetails['comments'] : '';
-											
+
 											// Current Account Information
 											$strChurnDetails						= ($arrSPMobileDetails['current_provider']) ? "\nCurrent Provider\t\t: {$arrSPMobileDetails['current_provider']}" : '';
 											$strChurnDetails						.= ($arrSPMobileDetails['current_account_number']) ? "\nCurrent Account Number\t: {$arrSPMobileDetails['current_account_number']}" : '';
 											$arrAdditionalDetails['Comments']		.= ($strChurnDetails) ? "\n{$strChurnDetails}" : '';
 											$arrAdditionalDetails['Comments']		= trim($arrAdditionalDetails['Comments']);
 											break;
-											
+
 										// ADSL
 										case 3:
 											// Get the additional ADSL details
@@ -1105,13 +1114,13 @@ class Cli_App_Sales extends Cli
 												throw new Exception($resSPADSLDetails->getMessage()." :: ".$resSPADSLDetails->getUserInfo());
 											}
 											$arrSPADSLDetails		= $resSPADSLDetails->fetchRow(MDB2_FETCHMODE_ASSOC);
-											
+
 											// Service Details
 											// ADSL services in flex have an "i" appended to their FNN, but this isn't the case in the sales system
 											$objService->FNN			= $arrSPADSLDetails['fnn'] ."i";
 											$objService->ServiceType	= SERVICE_TYPE_ADSL;
 											break;
-											
+
 										// Inbound
 										case 4:
 											// Get the additional Inbound details
@@ -1125,11 +1134,11 @@ class Cli_App_Sales extends Cli
 												throw new Exception($resSPInboundDetails->getMessage()." :: ".$resSPInboundDetails->getUserInfo());
 											}
 											$arrSPInboundDetails	= $resSPInboundDetails->fetchRow(MDB2_FETCHMODE_ASSOC);
-											
+
 											// Service Details
 											$objService->FNN			= $arrSPInboundDetails['fnn'];
 											$objService->ServiceType	= SERVICE_TYPE_INBOUND;
-											
+
 											// Mobile Details
 											$arrAdditionalDetails	= array();
 											$arrAdditionalDetails['Service']		= $objService->Id;
@@ -1138,17 +1147,17 @@ class Cli_App_Sales extends Cli
 											$arrAdditionalDetails['Configuration']	= ($arrSPInboundDetails['configuration']) ? $arrSPInboundDetails['configuration'] : '';
 											break;
 									}
-									
+
 									// Was an FNN provided? (new Mobile Services won't have an MSN)
 									if ($objService->FNN === NULL)
 									{
 										$this->log("\t\t\t\t\t\t\t! No FNN has been provided!  Aborting Sale...");
 										throw new Exception_Sale_Product_Manual_Intervention("This Service does not have an FNN assigned.  Please complete any manual provisioning required to determine the FNN, and reset to Awaiting Dispatch.");
 									}
-									
+
 									$this->log("\t\t\t\t\t\t* FNN: {$objService->FNN}");
 									$this->log("\t\t\t\t\t\t* Service Type: {$objService->ServiceType}");
-									
+
 									// Is the FNN in use already?
 									$this->log("\t\t\t\t\t\t* Checking if FNN is in use... ({$objService->FNN}; {$objService->Indial100}; {$objService->CreatedOn})");
 									$mixFNNInUse	= IsFNNInUse($objService->FNN, $objService->Indial100, $objService->CreatedOn);
@@ -1161,10 +1170,10 @@ class Cli_App_Sales extends Cli
 										$this->log("\t\t\t\t\t\t\t! FNN is in use!  Aborting Sale...");
 										throw new Exception_Sale_Product_Manual_Intervention("The FNN {$objService->FNN} is already in use.  Please close the existing Service in Flex, or revoke the sale if it is a duplicate.");
 									}
-									
+
 									// Save the Service
 									$objService->save();
-									
+
 									// Add in the Addition Details
 									if ($insAdditionalDetails)
 									{
@@ -1174,14 +1183,14 @@ class Cli_App_Sales extends Cli
 											throw new Exception_Database($insAdditionalDetails->Error());
 										}
 									}
-									
+
 									// Extension Level Billing
 									if ($objService->Indial100 && $objService->ELB)
 									{
 										$this->log("\t\t\t\t\t\t+ Enabling Extension Level Billing...");
 										$GLOBALS['fwkFramework']->EnableELB($objService->Id);
 									}
-									
+
 									// Set Service Plan
 									$resProduct	= $dsSalesPortal->query("SELECT external_reference FROM product WHERE id = {$arrSPSaleItem['product_id']}");
 									if (MDB2::isError($resProduct))
@@ -1193,17 +1202,17 @@ class Cli_App_Sales extends Cli
 									$objRatePlan	= new Rate_Plan(Array('Id'=>(int)$arrRatePlanId[1]), TRUE);
 									$this->log("\t\t\t\t\t\t+ Setting Plan to '{$objRatePlan->Name}'...");
 									$objService->changePlan($objRatePlan, TRUE, TRUE);
-									
+
 									$objService->objRatePlan	= $objRatePlan;
-									
+
 									$arrServices[]	= $objService;
 									break;
-								
+
 								// Unknown
 								default:
 									throw new Exception("Product Category '{$arrSPSaleItem['product_category_id']}' is unsupported by Flex!");
 							}
-							
+
 							// Create a new Sale_Item record in Flex
 							$objFlexSaleItem	= new FlexSaleItem();
 							$objFlexSaleItem->external_reference	= "sale_item.id={$arrSPSaleItem['id']}";
@@ -1214,13 +1223,13 @@ class Cli_App_Sales extends Cli
 								case 1:
 									$objFlexSaleItem->service_id	= $objService->Id;
 									break;
-								
+
 								// Unknown
 								default:
 									throw new Exception("Product Category '{$arrSPSaleItem['product_category_id']}' is unsupported by Flex!");
 							}
 							$objFlexSaleItem->save();
-							
+
 							// Set Item Status
 							$this->_updateSaleItemStatus($arrSPSaleItem['id'], 'Dispatched');
 							if ($objService->Status === SERVICE_ACTIVE)
@@ -1232,7 +1241,7 @@ class Cli_App_Sales extends Cli
 								// There is at least one non-Completed Item in this Sale
 								$objFlexSale->intCouldntComplete++;
 							}
-						
+
 							// All seems to have worked, release the Sale Item savepoints
 							if ($qryQuery->Execute("RELEASE SAVEPOINT {$strSaleItemSavePoint}") === FALSE)
 							{
@@ -1247,7 +1256,7 @@ class Cli_App_Sales extends Cli
 						catch (Exception_Sale_Product_Manual_Intervention $eException)
 						{
 							$this->log("\t\t\t\t\t\t\t! Setting Sale Product Status to Manual Intervention...");
-							
+
 							// Rollback to the savepoint for this Sale
 							if ($qryQuery->Execute("ROLLBACK TO {$strSaleSavePoint}") === FALSE)
 							{
@@ -1258,23 +1267,23 @@ class Cli_App_Sales extends Cli
 							{
 								throw new Exception($resRollbackSavepoint->getMessage()." :: ".$resRollbackSavepoint->getUserInfo());
 							}
-							
+
 							// There was an issue with one of the Items which needs manual intervention to resolve
 							$this->_updateSaleItemStatus($arrSPSaleItem['id'], 'Manual Intervention', $eException->getMessage());
-							
+
 							// Revoke the whole Sale
 							throw $eException;
 						}
 					}
 					//------------------------------------------------------------//
-					
+
 					// Add System Note detailing Account Creation
 					if ((int)$objFlexSale->sale_type_id == DO_Sales_SaleType::NEW_CUSTOMER)
 					{
 						// New Sale
 						$strNote  = "This Account has been created from the Sales Portal with the following details:\n\n" .
 									"Sale Reference ID: {$arrSPSale['id']}\n";
-						
+
 						if (count($arrContacts))
 						{
 							$strNote .= "\nContacts:\n";
@@ -1283,7 +1292,7 @@ class Cli_App_Sales extends Cli
 								$strNote .= "\t{$objContact->FirstName} {$objContact->LastName} " . (($objAccount->PrimaryContact == $objContact->Id) ? "(Primary Contact)" : '') . "\n";
 							}
 						}
-						
+
 						if (count($arrServices))
 						{
 							$strNote .= "\nServices:\n";
@@ -1292,7 +1301,7 @@ class Cli_App_Sales extends Cli
 								$strNote .= "\t{$objService->FNN} (".trim($objService->objRatePlan->Name).")\n";
 							}
 						}
-						
+
 						Note::createSystemNote(trim($strNote), NULL, $objAccount->id);
 					}
 					elseif ((int)$objFlexSale->sale_type_id == DO_Sales_SaleType::EXISTING_CUSTOMER)
@@ -1300,7 +1309,7 @@ class Cli_App_Sales extends Cli
 						// Existing Sale
 						$strNote  = "Sale imported from the Sales Portal with the following details:\n\n" .
 									"Sale Reference ID: {$arrSPSale['id']}\n";
-						
+
 						if (count($arrContacts))
 						{
 							$strNote .= "\nContacts:\n";
@@ -1309,7 +1318,7 @@ class Cli_App_Sales extends Cli
 								$strNote .= "\t{$objContact->FirstName} {$objContact->LastName} " . (($objAccount->PrimaryContact == $objContact->Id) ? "(Primary Contact)" : '') . "\n";
 							}
 						}
-						
+
 						if (count($arrServices))
 						{
 							$strNote .= "\nServices:\n";
@@ -1318,7 +1327,7 @@ class Cli_App_Sales extends Cli
 								$strNote .= "\t{$objService->FNN} (".trim($objService->objRatePlan->Name).")\n";
 							}
 						}
-						
+
 						Note::createSystemNote(trim($strNote), NULL, $objAccount->id);
 					}
 
@@ -1328,7 +1337,7 @@ class Cli_App_Sales extends Cli
 					{
 						$this->_updateSaleStatus($arrSPSale['id'], 'Completed');
 					}
-					
+
 					// All seems to have worked, release the Sale savepoints
 					if ($qryQuery->Execute("RELEASE SAVEPOINT {$strSaleSavePoint}") === FALSE)
 					{
@@ -1344,8 +1353,8 @@ class Cli_App_Sales extends Cli
 				{
 					// There was an issue with the Sale which needs manual intervention to resolve
 					$this->_updateSaleStatus($arrSPSale['id'], 'Manual Intervention', $eException->getMessage());
-					
-					
+
+
 					if (isset($doSaleAccount))
 					{
 						$strBusinessName	= $doSaleAccount->businessName;
@@ -1361,7 +1370,7 @@ class Cli_App_Sales extends Cli
 						$strBusinesName	= NULL;
 						$intVendorId	= NULL;
 					}
-					
+
 					// Append Details to the list of sales that have been set to Manual Intervention
 					$arrManualInterventionSales[] = array(
 															"SaleId"			=> $arrSPSale['id'],
@@ -1371,7 +1380,7 @@ class Cli_App_Sales extends Cli
 														);
 				}
 			}
-			
+
 			// All seems to have worked fine -- Commit the Transaction
 			$dsSalesPortal->commit();
 			$dacFlex->TransactionCommit();
@@ -1383,23 +1392,23 @@ class Cli_App_Sales extends Cli
 			$dacFlex->TransactionRollback();
 			throw $eException;
 		}
-		
+
 		// Compile email detailing Sales set to manual intervention and send to the registered parties (found in email_notification_address table)
 		// But only if there were sales that require manual intervention
 		// This batch process is being run every 5 minutes, so we only want to notify people when manual intervention is required
 		if (count($arrManualInterventionSales))
 		{
 			$this->log("Sending Manual Intervention report");
-			
+
 			// To create the links to the sales, use the first customer group's flex URL, in the hope that that is the one most users log into
 			$arrCustomerGroups	= Customer_Group::getAll();
-			
+
 			$strEmailSubject	= "Sales requiring manual intervention for sale import run ". Data_Source_Time::currentTimestamp();
-			
+
 			$arrReport		= array();
 			$arrReport[]	= "The following sales require manual intervention so that they can be imported into flex.";
 			$arrReport[]	= "";
-			
+
 			foreach ($arrManualInterventionSales as $arrDetails)
 			{
 				$strSale		= (array_key_exists($arrDetails['CustomerGroupId'], $arrCustomerGroups) &&  is_string($arrCustomerGroups[$arrDetails['CustomerGroupId']]->flexUrl))? "<a href='{$arrCustomerGroups[$arrDetails['CustomerGroupId']]->flexUrl}/admin/reflex.php/Sales/ViewSale/{$arrDetails['SaleId']}/'>{$arrDetails['SaleId']}</a>" : $arrDetails['SaleId'];
@@ -1409,14 +1418,14 @@ class Cli_App_Sales extends Cli
 				$arrReport[]	= $strReason;
 				$arrReport[]	= "";
 			}
-			
+
 			$arrReport[]	= "";
 			$arrReport[]	= "Regards";
 			$arrReport[]	= "Flexor";
 			$strEmailBody	= "<div style='font-family: Calibri,sans-serif;'>\n" . implode("\n<br />", $arrReport) . "</div>";
 
 			$objEmailNotification = Email_Notification::getForSystemName('SALE_IMPORT_REPORT');
-			
+
 			$objEmailNotification->setSubject($strEmailSubject);
 			$objEmailNotification->setBodyHtml($strEmailBody);
 			$objEmailNotification->send();
@@ -1424,15 +1433,15 @@ class Cli_App_Sales extends Cli
 		}
 	}
 	//------------------------------------------------------------------------//
-	
+
 	// _convertFlexToSalesPortal()	-- Converts Values from Flex to Sales Portal Forms
 	protected static function _convertFlexToSalesPortal($strType, $mixFlexValue)
 	{
 		static	$arrConversion	= array();
-		
+
 		static	$dsSalesPortal;
 		$dsSalesPortal	= (isset($dsSalesPortal)) ? $dsSalesPortal : Data_Source::get('sales');
-		
+
 		$strType	= str_replace('_', '', strtolower($strType));
 		switch ($strType)
 		{
@@ -1444,34 +1453,34 @@ class Cli_App_Sales extends Cli
 														102 => 1,
 														103 => 4
 													);
-				
+
 				return $arrConversion[$strType][(int)$mixFlexValue];
 				break;
-				
+
 			case 'planarchived':
 				// HACK: These should work, at least for now
 				$arrConversion[$strType]	= array(
 														0	=> 1,
 														1	=> 2
 													);
-				
+
 				return $arrConversion[$strType][(int)$mixFlexValue];
 				break;
-			
+
 			default:
 				throw new Exception("Unknown Flex-to-SP Conversion Type: '{$strType}'!");
 				break;
 		}
 	}
-	
+
 	// _convertSalesPortalToFlex()	-- Converts Values from Sales Portal to Flex Forms
 	protected static function _convertSalesPortalToFlex($strType, $mixFlexValue)
 	{
 		static	$arrConversion	= array();
-		
+
 		static	$dsSalesPortal;
 		$dsSalesPortal	= (isset($dsSalesPortal)) ? $dsSalesPortal : Data_Source::get('sales');
-		
+
 		$strType	= str_replace('_', '', strtolower($strType));
 		switch ($strType)
 		{
@@ -1481,20 +1490,20 @@ class Cli_App_Sales extends Cli
 														1 	=> DELIVERY_METHOD_POST,
 														2	=> DELIVERY_METHOD_EMAIL
 													);
-				
+
 				return $arrConversion[$strType][(int)$mixFlexValue];
 				break;
-				
+
 			case 'directdebittype':
 				// HACK: These should work, at least for now
 				$arrConversion[$strType]	= array(
 														1 	=> BILLING_TYPE_DIRECT_DEBIT,
 														2	=> BILLING_TYPE_CREDIT_CARD
 													);
-				
+
 				return $arrConversion[$strType][(int)$mixFlexValue];
 				break;
-				
+
 			case 'producttype':
 				// HACK: These should work, at least for now
 				$arrConversion[$strType]	= array(
@@ -1503,23 +1512,23 @@ class Cli_App_Sales extends Cli
 														1	=> 102,
 														4	=> 103
 													);
-				
+
 				return $arrConversion[$strType][(int)$mixFlexValue];
 				break;
-			
+
 			default:
 				throw new Exception("Unknown Flex-to-SP Conversion Type: '{$strType}'!");
 				break;
 		}
 	}
-	
+
 	// _salesPortalEnum()	-- Gets the Name/Description for a given table/id pair from the Sales Portal
 	private static function _salesPortalEnum($strTable, $intId, $strMode='name')
 	{
 		static	$arrEnumerations	= array();
 		static	$dsSalesPortal;
 		$dsSalesPortal	= (isset($dsSalesPortal)) ? $dsSalesPortal : Data_Source::get('sales');
-		
+
 		// If it isn't cached, then retrieve the enumeration data
 		if (!isset($arrEnumerations[$strTable]))
 		{
@@ -1536,17 +1545,17 @@ class Cli_App_Sales extends Cli
 				}
 			}
 		}
-		
+
 		// Return the Value
 		return $arrEnumerations[$strTable][$intId][$strMode];
 	}
-	
+
 	// _updateSaleHistory()	-- Updates the Sale Status (and History) in the Sales Portal
 	private static function _updateSaleStatus($intSPSaleId, $mixNewStatus, $strReason=NULL)
 	{
 		static	$dsSalesPortal;
 		$dsSalesPortal	= (isset($dsSalesPortal)) ? $dsSalesPortal : Data_Source::get('sales');
-		
+
 		// Save the new Status
 		$strSaleStatus	= (is_int($mixNewStatus)) ? $mixNewStatus : "(SELECT id FROM sale_status WHERE name = '{$mixNewStatus}')";
 		$resSaleUpdate	= $dsSalesPortal->query("UPDATE sale " .
@@ -1556,9 +1565,9 @@ class Cli_App_Sales extends Cli
 		{
 			throw new Exception($resSaleUpdate->getMessage()." :: ".$resSaleUpdate->getUserInfo());
 		}
-		
+
 		$strCurrentTimestamp = Data_Source_Time::currentTimestamp($dsSalesPortal);
-		
+
 		// Update the History
 		$strReasonSQL			= ($strReason === NULL) ? 'NULL' : "'".str_replace("'", "\\'", $strReason)."'";
 		$resSaleStatusInsert	= $dsSalesPortal->query("INSERT INTO sale_status_history (sale_id, sale_status_id, changed_by, changed_on, description) " .
@@ -1568,16 +1577,16 @@ class Cli_App_Sales extends Cli
 			throw new Exception($resSaleStatusInsert->getMessage()." :: ".$resSaleStatusInsert->getUserInfo());
 		}
 	}
-	
+
 	// _updateSaleItemHistory()	-- Updates the Sale Item Status (and History) in the Sales Portal
 	private static function _updateSaleItemStatus($intSPSaleItemId, $mixNewStatus, $strReason=NULL)
 	{
 		static	$dsSalesPortal;
 		$dsSalesPortal	= (isset($dsSalesPortal)) ? $dsSalesPortal : Data_Source::get('sales');
-		
+
 		// Save the new Status
 		$strSaleItemStatus	= (is_int($mixNewStatus)) ? $mixNewStatus : "(SELECT id FROM sale_item_status WHERE name = '{$mixNewStatus}')";
-		
+
 		$resSaleItemUpdate	= $dsSalesPortal->query("UPDATE sale_item " .
 													"SET sale_item_status_id = {$strSaleItemStatus} " .
 													"WHERE id = {$intSPSaleItemId}");
@@ -1585,9 +1594,9 @@ class Cli_App_Sales extends Cli
 		{
 			throw new Exception($resSaleItemUpdate->getMessage()." :: ".$resSaleItemUpdate->getUserInfo());
 		}
-		
+
 		$strCurrentTimestamp = Data_Source_Time::currentTimestamp($dsSalesPortal);
-		
+
 		// Update the History
 		$strReasonSQL				= ($strReason === NULL) ? 'NULL' : "'".str_replace("'", "\\'", $strReason)."'";
 		$resSaleItemStatusInsert	= $dsSalesPortal->query("INSERT INTO sale_item_status_history (sale_item_id, sale_item_status_id, changed_by, changed_on, description) " .
@@ -1597,7 +1606,7 @@ class Cli_App_Sales extends Cli
 			throw new Exception($resSaleItemStatusInsert->getMessage()." :: ".$resSaleItemStatusInsert->getUserInfo());
 		}
 	}
-	
+
 	// _toDBValue()	-- Converts a variable into its DB-compatible form
 	private static function _toDBValue($mixValue)
 	{
@@ -1618,48 +1627,48 @@ class Cli_App_Sales extends Cli
 		}
 		return $mixValue;
 	}
-	
+
 	// _automaticProvisioning()	: checks to see if there are any Sales that are ready to be automatically provisioned
 	private function _automaticProvisioning()
 	{
 		$this->log("\t* Performing Automatic Provisioning...");
-		
+
 		$dsSalesPortal	= Data_Source::get('sales');
 		$dacFlex		= DataAccess::getDataAccess();
-		
+
 		$strCurrentTimestamp = Data_Source_Time::currentTimestamp($dsSalesPortal);
-		
+
 		// This will store all Service objects that are eligible for provisioning, and their related FlexSaleItem records
 		$arrServices = array();
-		
+
 		$arrAccounts = array();
-		
+
 		// This will store the ids of all services that were successfully provisioned
 		$arrServicesSuccessfullyProvisioned = array();
-		
+
 		// The provisioning process may find services that are flagged as pending activation, but their associated SaleItem has been cancelled.
 		// These need to be manually cancelled, or at the very least, brought to the attention of administrative staff
 		// This will store the ids of the services that need to be cancelled in flex
 		$arrServicesToCancel = array();
-		
+
 		// All Services, other than Landlines, currently need manual provisioning
 		// These need to be brought to the attention of administrative staff
 		// This will store the ids of the services that need to be manually provisioned in flex
 		$arrServicesNeedingManualProvisioning = array();
-		
+
 		// This will store details of all other scenarios that can't be easily categorised
 		$arrOddServiceCases = array();
-		
+
 		$arrSaleItemStatuses = DO_Sales_SaleItemStatus::getAll();
-		
+
 		// Start a transaction for both Databases
 		$dsSalesPortal->beginTransaction();
 		$dacFlex->TransactionStart();
-		
+
 		try
 		{
 			$qryQuery	= new Query();
-			
+
 			// Get the list of Services which are Pending Activation, originated from the Sales Portal, and have exceeded the Provisioning Amnesty Period
 			// NOTE that this list can reference sale items that have since been cancelled, and thus should not be auto provisioned
 
@@ -1672,7 +1681,7 @@ class Cli_App_Sales extends Cli
 														$strPendingServicesWhereClause, "Service.Account ASC, Service.ServiceType ASC, Service.FNN ASC");
 
 			// Get list of sale items that currently have a status of dispatched, and are now eligible for auto provisioning (this will not retrieve sale items that have been cancelled)
-			
+
 			// NOTE that we are currently defining the start of the Provisioning Amnesty Period as the timestamp of when the sale_item was first submitted (sale_item.created_on).
 			//			At some point it should be swapped back to being the timestamp of when the sale_item was verified
 			// $strEligibleSaleItemsFromClause	= "sale_item AS si INNER JOIN sale_item_status_history AS sish ON si.id = sish.sale_item_id";
@@ -1683,10 +1692,10 @@ class Cli_App_Sales extends Cli
 														"FROM $strEligibleSaleItemsFromClause ".
 														"WHERE $strEligibleSaleItemsWhereClause ;",
 														array("integer", "boolean"), MDB2_FETCHMODE_ASSOC);
-			
+
 			// This will store an array of Sales_Sale objects, which have been updated (have had sale items provisioned)
 			$arrProvisionedSales = array();
-			
+
 			if (MDB2::isError($resSaleItems))
 			{
 				throw new Exception($resSaleItems->getMessage()." :: ".$resSaleItems->getUserInfo());
@@ -1697,7 +1706,7 @@ class Cli_App_Sales extends Cli
 			{
 				$arrSPEligibleSaleItems[$arrSaleItem['id']] = $arrSaleItem;
 			}
-			
+
 			if ($selPendingServices->Execute() === FALSE)
 			{
 				throw new Exception();
@@ -1715,7 +1724,7 @@ class Cli_App_Sales extends Cli
 					// The service is not yet eligible for activation
 					continue;
 				}
-				
+
 				$arrServices[$objService->id]	= array("Service"		=> $objService,
 														"FlexSaleItem"	=> $objFlexSaleItem
 														);
@@ -1724,13 +1733,13 @@ class Cli_App_Sales extends Cli
 				{
 					$arrAccounts[$objService->account] = Account::getForId($objService->account);
 				}
-				
+
 				// Check that the service's sale item is currently flagged as being dispatched (as opposed to cancelled or completed)
 				if (!array_key_exists($intSPSaleItemId, $arrSPEligibleSaleItems))
 				{
 					// Retrieve the sp sale item
 					$doSPSaleItem = Sales_SaleItem::getForId($intSPSaleItemId);
-					
+
 					if ($doSPSaleItem === NULL)
 					{
 						// Could not find the service's corresponding sale-item
@@ -1738,7 +1747,7 @@ class Cli_App_Sales extends Cli
 														"Description"	=> "Could not find service's corresponding sale-item. External Reference: {$objFlexSaleItem->externalReference}");
 						continue;
 					}
-					
+
 					if ($doSPSaleItem->saleItemStatusId == DO_Sales_SaleItemStatus::CANCELLED)
 					{
 						// The Sale Item associated with this pending service has been cancelled, but has not yet been 'Closed' in flex
@@ -1750,7 +1759,7 @@ class Cli_App_Sales extends Cli
 						$arrOddServiceCases[] = array(	"ServiceId"		=> $objService->id,
 														"Description"	=> "Sale-item (External Reference: {$objFlexSaleItem->externalReference}) is currently flagged as '{$arrSaleItemStatuses[$doSPSaleItem->saleItemStatusId]->description}', but the service is pending activation");
 					}
-					
+
 					// Move on to the next service
 					continue;
 				}
@@ -1762,7 +1771,7 @@ class Cli_App_Sales extends Cli
 				$this->log("\t\t\t* Sale\t: {$objSale->id} ...");
 				$this->log("\t\t\t* Sale Item\t: ". $objFlexSaleItem->getExternalReferenceValue() ." ...");
 				$this->log("\t\t\t* Rate Plan\t: {$objRatePlan->Name} ...");
-				
+
 				// Create requests
 
 				// First determine what is required, based on the service type and the configured carriers
@@ -1817,21 +1826,21 @@ class Cli_App_Sales extends Cli
 					$arrServicesNeedingManualProvisioning[] = $objService->id;
 					continue;
 				}
-								
+
 				// Set this Service to Active in Flex
 				$objService->Status	= SERVICE_ACTIVE;
 				$objService->save();
-				
+
 				// Set the Sale Item to Completed in the Sales Portal
 				$this->_updateSaleItemStatus($objFlexSaleItem->getExternalReferenceValue(), DO_Sales_SaleItemStatus::COMPLETED);
-				
+
 				$arrServicesSuccessfullyProvisioned[] = $objService->id;
-				
+
 				if (!array_key_exists($objSale->id, $arrProvisionedSales))
 				{
 					$arrProvisionedSales[$objSale->id] = $objSale;
 				}
-				
+
 			}
 
 			// Finalise Sales/Accounts
@@ -1840,7 +1849,7 @@ class Cli_App_Sales extends Cli
 			{
 				$objSale->setCompletedOrCancelledBasedOnSaleItems();
 			}
-			
+
 			// All seems to have worked fine -- Commit the Transactions
 			$dsSalesPortal->commit();
 			$dacFlex->TransactionCommit();
@@ -1850,7 +1859,7 @@ class Cli_App_Sales extends Cli
 			// Rollback the Transaction
 			$dsSalesPortal->rollback();
 			$dacFlex->TransactionRollback();
-			
+
 			// Send Email Notification
 			$strEmailSubject = "[FAILURE] Automatic Provisioning of Sales - $strCurrentTimestamp";
 			$arrReport = array();
@@ -1860,28 +1869,28 @@ class Cli_App_Sales extends Cli
 			$arrReport[] = "";
 			$arrReport[] = "Regards";
 			$arrReport[] = "Flexor";
-			
+
 			$strEmailBody = implode("\r\n", $arrReport);
-			
+
 			$objEmailNotification = Email_Notification::getForSystemName('SALE_AUTOMATIC_PROVISIONING_REPORT');
 			$objEmailNotification->setSubject($strEmailSubject);
 			$objEmailNotification->setBodyText($strEmailBody);
 			$objEmailNotification->send();
 			throw $eException;
 		}
-		
+
 		// Email the EMAIL_NOTIFICATION_SALE_AUTOMATIC_PROVISIONING_REPORT to the registered recipients
 		$arrCustomerGroups	= Customer_Group::getAll();
 		$arrReport			= array();
 		$strEmailSubject	= "[SUCCESS] Automatic Provisioning of Sales - $strCurrentTimestamp";
-		
+
 		$intTotalAccounts						= count($arrAccounts);
 		$intTotalServices						= count($arrServices);
 		$intTotalProvisionedServices			= count($arrServicesSuccessfullyProvisioned);
 		$intTotalServicesToCancel				= count($arrServicesToCancel);
 		$intTotalServicesToManuallyProvision	= count($arrServicesNeedingManualProvisioning);
 		$intOddCases							= count($arrOddServiceCases);
-		
+
 		if ($intOddCases > 0)
 		{
 			// There were some odd cases
@@ -1894,10 +1903,10 @@ class Cli_App_Sales extends Cli
 		{
 			$strOddCases = "";
 		}
-		
+
 		$arrReport[]	= "<strong>Summary of Automatic Provisioning of Sales - $strCurrentTimestamp</strong>";
 		$arrReport[]	= "";
-		
+
 		$arrReport[]	= "
 <table>
 	<tbody style='vertical-align:top'>
@@ -1924,9 +1933,9 @@ $strOddCases
 		</tr>
 	</tbody>
 </table>";
-		
+
 		$arrReport[]	= "";
-		
+
 		if (count($arrOddServiceCases))
 		{
 			$arrReport[]	= "<strong style='color: #F00'>The following services are out of sync with their corresponding sale-items.  These cases should be investigated and rectified</strong>";
@@ -1945,7 +1954,7 @@ $strOddCases
 			}
 			$arrReport[] = "";
 		}
-		
+
 		if (count($arrServicesToCancel))
 		{
 			$arrReport[]	= "<strong>The following services are pending activation, but have had their related sale-items cancelled.  These services should be set to disconnected:</strong>";
@@ -1962,7 +1971,7 @@ $strOddCases
 			}
 			$arrReport[] = "";
 		}
-		
+
 		if (count($arrServicesNeedingManualProvisioning))
 		{
 			$arrReport[]	= "<strong>Breakdown of services requiring manual provisioning:</strong>";
@@ -1979,7 +1988,7 @@ $strOddCases
 			}
 			$arrReport[]	= "";
 		}
-		
+
 		if (count($arrServicesSuccessfullyProvisioned))
 		{
 			$arrReport[]	= "<strong>Breakdown of services that were successfully activated and provisioned:</strong>";
@@ -1998,7 +2007,7 @@ $strOddCases
 		}
 		$arrReport[]	= "Regards";
 		$arrReport[]	= "Flexor";
-		
+
 		$strEmailBody	= "<div style='font-family: Calibri,sans-serif;'>\n" . implode("\n<br />", $arrReport) . "</div>";
 		$objEmailNotification = Email_Notification::getForSystemName('SALE_AUTOMATIC_PROVISIONING_REPORT');
 		$objEmailNotification->setSubject($strEmailSubject);
@@ -2027,7 +2036,7 @@ $strOddCases
 				self::ARG_DEFAULT		=> 'ALL',
 				self::ARG_VALIDATION	=> 'Cli::_validInArray(strtoupper("%1$s"), array("DEALERS","PRODUCTS","VENDORS","SALES","ALL"))'
 			),
-		
+
 		);
 	}
 }

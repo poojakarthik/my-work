@@ -148,19 +148,23 @@ class Ticketing_Import_MailServer extends Ticketing_Import {
 						Log::get()->logIf($this->_bLoggingEnabled, "[*] Attachment: Type 2, headers: ".var_export($aHeaders, true));
 
 						// Determine the name of the attachment file (there is not content-description header so check content-type and content-disposition)
-						preg_match('/; name="(.*)"$/', $oMessagePart->contentType, $aContentTypeMatch);
 						$sFilename = null;
-						if (isset($aContentTypeMatch[1])) {
-							// The filename was in the content type
-							$sFilename = $aContentTypeMatch[1];
-						} else {
-							// Check the content-disposition header
-							if (isset($aHeaders['content-disposition'])) {
-								preg_match('/; filename="(.*)"$/', $aHeaders['content-disposition'], $aContentDispositionMatch);
-								if (isset($aContentDispositionMatch[1])) {
-									// The filename was in the content disposition
-									$sFilename = $aContentDispositionMatch[1];
-								}
+
+						// Check content-disposition first (according to spec)
+						if (isset($aHeaders['content-disposition'])) {
+							preg_match('/; filename=("?)(?P<filename>.*)\1$/', $aHeaders['content-disposition'], $aContentDispositionMatch);
+							if (isset($aContentDispositionMatch['filename'])) {
+								// The filename was in the content disposition
+								$sFilename = $aContentDispositionMatch['filename'];
+							}
+						}
+
+						// Fall back to content-type
+						if ($sFilename === null) {
+							preg_match('/; name=("?)(?P<filename>.*)\1$/', $oMessagePart->contentType, $aContentTypeMatch);
+							if (isset($aContentTypeMatch['filename'])) {
+								// The filename was in the content disposition
+								$sFilename = $aContentTypeMatch['filename'];
 							}
 						}
 

@@ -1,28 +1,29 @@
 <?php
 class Invoice_Export_XML {
 	const DEFAULT_CUSTOMER_NAME = 'Customer';
-	
+	const INVOICE_HISTORY_LIMIT = 3;
+
 	function __construct() {
 		// Call Parent Constructor
 		parent::__construct();
 	}
-	
+
 	static public function export($arrInvoice, $bolDebug=false) {
 		// Init Output Array
 		$arrOutputData = array();
-		
+
 		// Get Customer Information
 		$arrCustomer = Invoice_Export::getCustomerData($arrInvoice);
-		
+
 		// Init our XML Document
 		$domDocument = new DOMDocument('1.0');
 		$domDocument->formatOutput = true;
-		
+
 		//--------------------------------------------------------------------//
 		// Service (Data retrieval only)
 		//--------------------------------------------------------------------//
 		$arrServices = Invoice_Export::getServices($arrInvoice);
-		
+
 		//--------------------------------------------------------------------//
 		// Document Object
 		//--------------------------------------------------------------------//
@@ -33,7 +34,8 @@ class Invoice_Export_XML {
 		self::_addElement($xmlDocument, 'CreationDate', date('Y-m-d H:i:s', strtotime($arrInvoice['CreatedOn'])));
 		self::_addElement($xmlDocument, 'DeliveryMethod', GetConstantName($arrInvoice['DeliveryMethod'], 'delivery_method'));
 		self::_addAttribute($xmlDocument, 'DateIssued', date('j M y', strtotime($arrInvoice['CreatedOn'])));
-		
+		self::_addAttribute($xmlDocument, 'DateIssuedISO', $arrInvoice['CreatedOn']);
+
 		//--------------------------------------------------------------------//
 		// Invoice Object
 		//--------------------------------------------------------------------//
@@ -41,7 +43,7 @@ class Invoice_Export_XML {
 		self::_addAttribute($xmlInvoice, 'Id', $arrInvoice['Id']);
 		$oInvoiceRun = Invoice_Run::getForId($arrInvoice['invoice_run_id']);
 		self::_addAttribute($xmlInvoice, 'InvoiceRunType', Constant_Group::getConstantGroup('invoice_run_type')->getConstantAlias($oInvoiceRun->invoice_run_type_id));
-		
+
 		//--------------------------------------------------------------------//
 		// Currency Symbol (at the moment, we always use AUD, so $)
 		//--------------------------------------------------------------------//
@@ -50,12 +52,12 @@ class Invoice_Export_XML {
 		self::_addAttribute($xmlSymbol, 'Location', 'Prefix');
 		$xmlNegative = self::_addElement($xmlCurrency, 'Negative', 'CR');
 		self::_addAttribute($xmlNegative, 'Location', 'Suffix');
-		
+
 		//--------------------------------------------------------------------//
 		// Rate Classes
 		//--------------------------------------------------------------------//
 		$aRateClasses = Invoice_Export::getRateClasses();
-		
+
 		$xmlRateClasses = self::_addElement($xmlInvoice, 'RateClasses');
 		foreach ($aRateClasses as $oRateClass) {
 			$xmlRateClass = self::_addElement($xmlRateClasses, 'RateClass');
@@ -63,7 +65,7 @@ class Invoice_Export_XML {
 			self::_addElement($xmlRateClass, 'Name', $oRateClass->name);
 			self::_addElement($xmlRateClass, 'Code', $oRateClass->invoice_code);
 		}
-		
+
 		//--------------------------------------------------------------------//
 		// Account Information
 		//--------------------------------------------------------------------//
@@ -81,35 +83,57 @@ class Invoice_Export_XML {
 		$oPrimaryContact = Contact::getForId(Account::getForId($arrInvoice['Account'])->PrimaryContact);
 		$sContactPerson = ($oPrimaryContact) ? $oPrimaryContact->title." ".$oPrimaryContact->getName() : self::DEFAULT_CUSTOMER_NAME;
 		self::_addElement($xmlAccount, 'ContactPerson', $sContactPerson);
-		
+
+		//--------------------------------------------------------------------//
+		// Invoice History
+		//--------------------------------------------------------------------//
+		$xmlInvoiceHistory = self::_addElement($xmlInvoice, 'InvoiceHistory');
+		$iInvoiceHistoryProgress = 1;
+		while ($aHistoricInvoice = Invoice_Export::getOldInvoice($arrInvoice, $iInvoiceHistoryProgress)) {
+			$xmlHistoricInvoice = $domDocument->createElement('HistoricInvoice');
+			$xmlInvoiceHistory->appendChild($xmlHistoricInvoice);
+
+			$xmlHistoricInvoice->setAttributeNode(new DOMAttr('Id', $aHistoricInvoice['Id']));
+			$xmlHistoricInvoice->setAttributeNode(new DOMAttr('InvoiceRunType', Constant_Group::getConstantGroup('invoice_run_type')->getConstantAlias($aHistoricInvoice['invoice_run_id'])));
+
+			$xmlHistoricInvoice->appendChild(new DOMElement('DateIssued', date('j M y', $aHistoricInvoice['CreatedOn'])));
+			$xmlHistoricInvoice->setAttributeNode(new DOMAttr('ISO', $aHistoricInvoice['CreatedOn']));
+
+			$xmlHistoricInvoice->appendChild(new DOMElement('Adjustments', number_format($arrInvoice['adjustment_total'] + $arrInvoice['adjustment_tax'], 2, '.', '')));
+			$xmlHistoricInvoice->appendChild(new DOMElement('NewCharges', number_format($arrInvoice['charge_total'] + $arrInvoice['charge_tax'], 2, '.', '')));
+			$xmlHistoricInvoice->appendChild(new DOMElement('InvoiceTotal', number_format($arrInvoice['Total'] + $arrInvoice['Tax'], 2, '.', '')));
+
+			$iInvoiceHistoryProgress++;
+		}
+
 		//--------------------------------------------------------------------//
 		// Adjustments
 		//--------------------------------------------------------------------//
 		$aAdjustments = Invoice_Export::getAccountAdjustments($arrInvoice);
 		$xmlAdjustments = self::_addElement($xmlInvoice, 'Adjustments');
-		
+
 		foreach ($aAdjustments['Itemisation'] as $aItem) {
 			$xmlItem = self::_addElement($xmlAdjustments, 'Item');
 			self::_addElement($xmlItem, 'Description', $aItem['Description']);
 			self::_addElement($xmlItem, 'Items', $aItem['Units']);
 			self::_addElement($xmlItem, 'Charge', number_format($aItem['Charge'], 2, '.', ''));
-			
+
 			$arrItem = self::_itemiseCDR($aItem, RECORD_DISPLAY_S_AND_E);
 			foreach ($arrItem as $strField=>$mixValue) {
 				self::_addElement($xmlItem, $strField, $mixValue);
 			}
 		}
-		
+
 		$xmlAdjustmentTax = self::_addElement($xmlAdjustments, 'Item');
 		self::_addElement($xmlAdjustmentTax, 'Description', 'GST Total');
 		self::_addElement($xmlAdjustmentTax, 'Charge', number_format($aAdjustments['TaxComponent'], 2, '.', ''));
-		
+
 		//--------------------------------------------------------------------//
 		// Account Summary & Itemisation
 		//--------------------------------------------------------------------//
 		$arrAccountCategories = Invoice_Export::getAccountSummary($arrInvoice);
 		$xmlItemisation = self::_addElement($xmlInvoice, 'Charges');
-		
+
 		// Charge Itemisation
 		foreach ($arrAccountCategories as $strName=>$arrCategory) {
 			$xmlItemisationType = self::_addElement($xmlItemisation, 'Category');
@@ -117,15 +141,15 @@ class Invoice_Export_XML {
 			self::_addAttribute($xmlItemisationType, 'GrandTotal', number_format($arrCategory['TotalCharge'], 2, '.', ''));
 			self::_addAttribute($xmlItemisationType, 'Records', @count($arrCategory['Itemisation']));
 			self::_addAttribute($xmlItemisationType, 'RenderType', GetConstantName($arrCategory['DisplayType'], 'DisplayType'));
-			
+
 			$xmlItemisationItems = self::_addElement($xmlItemisationType, 'Items');
 			if ($arrCategory['Itemisation']) {
 				foreach ($arrCategory['Itemisation'] as $arrCDR) {
 					$xmlItem = self::_addElement($xmlItemisationItems, 'Item');
-					
+
 					// Process the CDR
 					$arrItem = self::_itemiseCDR($arrCDR, $arrCategory['DisplayType']);
-					
+
 					// Item Fields
 					foreach ($arrItem as $strField=>$mixValue) {
 						self::_addElement($xmlItem, $strField, $mixValue);
@@ -133,7 +157,7 @@ class Invoice_Export_XML {
 				}
 			}
 		}
-		
+
 		//--------------------------------------------------------------------//
 		// Payment Information
 		//--------------------------------------------------------------------//
@@ -142,28 +166,26 @@ class Invoice_Export_XML {
 		self::_addElement($xmlBPay, 'CustomerReference', $arrInvoice['Account'].MakeLuhn($arrInvoice['Account']));
 		$xmlBillExpress = self::_addElement($xmlPayment, 'BillExpress');
 		self::_addElement($xmlBillExpress, 'CustomerReference', $arrInvoice['Account'].MakeLuhn($arrInvoice['Account'])); // FIXME
-		
+
 		self::_addAttribute($xmlPayment, 'DirectDebit', (in_array($arrCustomer['BillingType'], array(BILLING_TYPE_CREDIT_CARD, BILLING_TYPE_DIRECT_DEBIT)) ? 1 : 0));
-		
+
 		$xmlPaymentMethod = self::_addElement($xmlPayment, 'PaymentMethod');
 		self::_addAttribute($xmlPaymentMethod, 'Method', Payment_Method::getForId(Billing_Type::getForId((int)$arrCustomer['BillingType'])->payment_method_id)->const_name);
-		
+
 		$oAccount = Account::getForId($arrInvoice['Account']);
 		$oPaymentMethodDetails = $oAccount->getPaymentMethodDetails();
 		if (is_object($oPaymentMethodDetails)) {
 			$xmlPaymentMethodDetails = self::_addElement($xmlPaymentMethod, 'Details');
-			
+
 			$sClassName = get_class((method_exists($oPaymentMethodDetails, 'getDetails')) ? $oPaymentMethodDetails->getDetails() : $oPaymentMethodDetails);
 			self::_addAttribute($xmlPaymentMethodDetails, 'Type', $sClassName);
 		}
-		
+
 		//--------------------------------------------------------------------//
 		// Statement
 		//--------------------------------------------------------------------//
 		$intBillingDate = strtotime($arrInvoice['CreatedOn']);
-		$strBillingPeriodStart = date("j M y", strtotime($arrInvoice['billing_period_start_datetime']));
-		$strBillingPeriodEnd = date("j M y", strtotime($arrInvoice['billing_period_end_datetime']));
-		
+
 		// Add to XML schema
 		$arrLastInvoice = Invoice_Export::getOldInvoice($arrInvoice, 1);
 		$xmlStatement = self::_addElement($xmlInvoice, 'Statement');
@@ -175,10 +197,16 @@ class Invoice_Export_XML {
 		self::_addElement($xmlStatement, 'NewCharges', number_format($arrInvoice['charge_total'] + $arrInvoice['charge_tax'], 2, '.', ''));
 		self::_addElement($xmlStatement, 'InvoiceTotal', number_format($arrInvoice['Total'] + $arrInvoice['Tax'], 2, '.', ''));
 		self::_addElement($xmlStatement, 'TotalOwing', number_format(Invoice::roundOut($arrInvoice['TotalOwing'], 2), 2, '.', ''));
-		self::_addElement($xmlStatement, 'BillingPeriodStart', $strBillingPeriodStart);
-		self::_addElement($xmlStatement, 'BillingPeriodEnd', $strBillingPeriodEnd);
-		self::_addElement($xmlStatement, 'DueDate', date("j M y", strtotime($arrInvoice['DueOn'])));
-		
+
+		$xmlBillingPeriodStart = self::_addElement($xmlStatement, 'BillingPeriodStart', date("j M y", strtotime($arrInvoice['billing_period_start_datetime'])));
+		$xmlBillingPeriodStart->setAttributeNode(new DOMAttr('ISO', date("Y-m-d", strtotime($arrInvoice['billing_period_start_datetime']))));
+
+		$xmlBillingPeriodEnd = self::_addElement($xmlStatement, 'BillingPeriodEnd', date("j M y", strtotime($arrInvoice['billing_period_end_datetime'])));
+		$xmlBillingPeriodEnd->setAttributeNode(new DOMAttr('ISO', date("Y-m-d", strtotime($arrInvoice['billing_period_start_datetime']))));
+
+		$xmlDueDate = self::_addElement($xmlStatement, 'DueDate', date("j M y", strtotime($arrInvoice['DueOn'])));
+		$xmlDueDate->setAttributeNode(new DOMAttr('ISO', date("Y-m-d", strtotime($arrInvoice['DueOn']))));
+
 		//--------------------------------------------------------------------//
 		// Calculated Statement Info
 		//--------------------------------------------------------------------//
@@ -190,7 +218,7 @@ class Invoice_Export_XML {
 		$fTotalOwing = Rate::roundToCurrencyStandard($fOpeningBalance + $fPaymentTotal + $fAdjustmentTotal + $fNewCharges);
 		$fTotalOverdue = Rate::roundToCurrencyStandard(Invoice_Export::getTotalOverdue($arrInvoice));
 		$fBalanceBroughtForward = Rate::roundToCurrencyStandard($fOpeningBalance + $fPaymentTotal + $fAdjustmentTotal);
-		
+
 		$xmlCalculatedStatement = self::_addElement($xmlInvoice, 'CalculatedStatement');
 		self::_addElement($xmlCalculatedStatement, 'OpeningBalance', number_format($fOpeningBalance, 2, '.', ''));
 		self::_addElement($xmlCalculatedStatement, 'Payments', number_format($fPaymentTotal, 2, '.', ''));
@@ -199,7 +227,7 @@ class Invoice_Export_XML {
 		self::_addElement($xmlCalculatedStatement, 'TotalOwing', number_format($fTotalOwing, 2, '.', ''));
 		self::_addElement($xmlCalculatedStatement, 'TotalOverdue', number_format($fTotalOverdue, 2, '.', ''));
 		self::_addElement($xmlCalculatedStatement, 'BalanceBroughtForward', number_format($fBalanceBroughtForward, 2, '.', ''));
-		
+
 		//--------------------------------------------------------------------//
 		// Cost Centre Summary
 		//--------------------------------------------------------------------//
@@ -211,20 +239,20 @@ class Invoice_Export_XML {
 				$arrCostCentres[$arrService['CostCentre']]['GrandTotal'] += (float)$arrService['ServiceTotal'];
 			}
 		}
-		
+
 		$xmlCostCentreSummary = self::_addElement($xmlInvoice, 'CostCentreSummary');
 		foreach ($arrCostCentres as $strName=>$arrCostCentre) {
 			// Get Cost Centre Services
 			$xmlCostCentre = self::_addElement($xmlCostCentreSummary, 'CostCentre');
 			self::_addAttribute($xmlCostCentre, 'Name', $strName);
 			self::_addAttribute($xmlCostCentre, 'Total', number_format($arrCostCentre['GrandTotal'], 2, '.', ''));
-			
+
 			foreach ($arrCostCentre['Services'] as $strFNN=>$fltServiceTotal) {
 				$xmlService = self::_addElement($xmlCostCentre, 'Service', number_format($fltServiceTotal, 2, '.', ''));
 				self::_addAttribute($xmlService, 'FNN', $strFNN);
 			}
 		}
-		
+
 		//--------------------------------------------------------------------//
 		// Services XML
 		//--------------------------------------------------------------------//
@@ -232,7 +260,7 @@ class Invoice_Export_XML {
 		$xmlServices = self::_addElement($xmlInvoice, 'Services');
 		foreach ($arrServices as $arrService) {
 			//Cli_App_Billing::debug("XML for {$arrService['FNN']}::{$arrService['Extension']}: ", false);
-			
+
 			// Only Render if there is data or ForceInvoiceRender is set
 			if (!$arrService['IsRendered']) {
 				//Cli_App_Billing::debug("NOT RENDERING!");
@@ -240,38 +268,39 @@ class Invoice_Export_XML {
 				continue;
 			}
 			//Cli_App_Billing::debug("Rendering...");
-			
+
 			$xmlService = self::_addElement($xmlServices, 'Service');
 			self::_addAttribute($xmlService, 'FNN', ($arrService['Extension']) ? $arrService['Extension'] : $arrService['FNN']);
+			$xmlService->setAttributeNode(new DOMAttr('ServiceType', Service_Type::getForId($arrService['ServiceType'])->const_name));
 			self::_addAttribute($xmlService, 'CostCentre', $arrService['CostCentre']);
 			self::_addAttribute($xmlService, 'Plan', $arrService['RatePlan']);
 			self::_addAttribute($xmlService, 'GrandTotal', number_format($arrService['ServiceTotal'], 2, '.', ''));
-			
+
 			// Service Itemisation
 			$xmlItemisation = self::_addElement($xmlService, 'Itemisation');
 			foreach ($arrService['RecordTypes'] as $strName=>$arrChargeType) {
 				//Debug($arrService['RecordTypes']);
-				
+
 				$xmlItemisationType = self::_addElement($xmlItemisation, 'Category');
 				self::_addAttribute($xmlItemisationType, 'Name', $strName);
 				self::_addAttribute($xmlItemisationType, 'GrandTotal', number_format($arrChargeType['TotalCharge'], 2, '.', ''));
 				self::_addAttribute($xmlItemisationType, 'Records', count($arrChargeType['Itemisation']));
 				self::_addAttribute($xmlItemisationType, 'RenderType', GetConstantName($arrChargeType['DisplayType'], 'DisplayType'));
 				self::_addAttribute($xmlItemisationType, 'UnitsTotal', $arrChargeType['UnitsTotal']);
-				
+
 				// Charge Itemisation
 				$xmlItemisationItems = self::_addElement($xmlItemisationType, 'Items');
 				foreach ($arrChargeType['Itemisation'] as $arrCDR) {
 					$xmlItem = self::_addElement($xmlItemisationItems, 'Item');
-					
+
 					// Process the CDR
 					$arrItem = self::_itemiseCDR($arrCDR, $arrChargeType['DisplayType']);
-					
+
 					// Item Fields
 					foreach ($arrItem as $strField=>$mixValue) {
 						self::_addElement($xmlItem, $strField, $mixValue);
 					}
-					
+
 					// Debug SUM of CDR values
 					$arrDebugCallTypes[$strName][$arrService['FNN']] += (float)$arrItem['Charge'];
 					$arrDebugCallTypes[$strName]['**Total'] += (float)$arrItem['Charge'];
@@ -280,7 +309,7 @@ class Invoice_Export_XML {
 		}
 		//Cli_App_Billing::debug("Call Types:");
 		//Cli_App_Billing::debug($arrDebugCallTypes);
-		
+
 		// Determine Output/Return data
 		$strXMLOutput = $domDocument->saveXML();
 		if (!$bolDebug) {
@@ -288,11 +317,11 @@ class Invoice_Export_XML {
 			$intAccount = $arrInvoice['Account'];
 			$intCustomerGroup = $arrCustomer['CustomerGroup'];
 			$strFullDirectory = FILES_BASE_PATH.'invoices/xml/'.$arrInvoice['invoice_run_id'];
-			
+
 			if (!file_exists($strFullDirectory)) {
 				mkdir($strFullDirectory, 0777, true);
 			}
-			
+
 			// Write the xml file using bzip2 compression
 			$strFilename = "{$strFullDirectory}/{$intAccount}.xml.bz2";
 			$mixReturn = (bool)file_put_contents("compress.bzip2://{$strFilename}", $strXMLOutput);
@@ -306,12 +335,12 @@ class Invoice_Export_XML {
 			// Return XML Data
 			$mixReturn = $strXMLOutput;
 		}
-		
+
 		// Destroy XML object and return
 		unset($domDocument);
 		return $mixReturn;
 	 }
-	
+
 	//------------------------------------------------------------------------//
 	// deliver()
 	//------------------------------------------------------------------------//
@@ -330,30 +359,30 @@ class Invoice_Export_XML {
 	 */
 	static public function deliver($strInvoiceRun, $arrModes = null, $bolGeneratePDFs = true) {
 		throw new Exception(__CLASS__."::deliver() has not been implemented yet!");
-		
+
 		// Get list of CustomerGroups
 		$selCustomerGroups = new StatementSelect("CustomerGroup", "internal_name", "1");
 		$selCustomerGroups->Execute();
 		$arrCustomerGroups = $selCustomerGroups->FetchAll();
-		
+
 		// Define Output Modes
 		$arrOutputModes = array();
 		$arrSupportedModes = array();
-		
+
 		$arrSupportedModes['PRINT']['Archive'] = true;
 		$arrSupportedModes['PRINT']['Delivery'] = 'SFTP';
-		
+
 		$arrSupportedModes['EMAIL']['Archive'] = false;
 		$arrSupportedModes['EMAIL']['Delivery'] = 'EmailAttachment';
-		
+
 		if (is_array($arrModes)) {
 			foreach ($arrModes as $strMode) {
 				$arrOutputModes[$strMode] = $arrSupportedModes[$strMode];
 			}
 		}
-		
+
 		CliEcho("Delivering for InvoiceRun '$strInvoiceRun'...");
-		
+
 		// Generate the PDFs
 		$strCommandDir = FLEX_BASE_PATH."cli/";
 		$strXMLPath = INVOICE_XML_PATH.$strInvoiceRun.'/';
@@ -367,7 +396,7 @@ class Invoice_Export_XML {
 					$strTARPath = ($arrOptions['Archive']) ? "-f ".$strXMLPath.$strTARName : "";
 					$strCommand = "cd {$strCommandDir}; php pdf.php -c $strCustomerGroup -x $strXMLPath {$strTARPath} -m $strMode";
 					$arrOptions['CustomerGroup'][$arrCustomerGroup['internal_name']]['FilePath'] = $strTARPath;
-					
+
 					// Start the PDF generation process
 					$arrOptions['CustomerGroup'][$arrCustomerGroup['internal_name']]['Pipes'] = array();
 					$arrOptions['CustomerGroup'][$arrCustomerGroup['internal_name']]['Descriptor'][0] = array('pipe', 'r');
@@ -385,7 +414,7 @@ class Invoice_Export_XML {
 					}
 				}
 			}
-			
+
 			// Monitor PDF Generation Processes
 			while ($intRunning) {
 				foreach ($arrOutputModes as $strMode=>&$arrOptions) {
@@ -408,7 +437,7 @@ class Invoice_Export_XML {
 				}
 			}
 		}
-		
+
 		// Deliver the PDFs
 		foreach ($arrOutputModes as $strMode=>&$arrOptions) {
 			switch ($arrOptions['Delivery']) {
@@ -424,7 +453,7 @@ class Invoice_Export_XML {
 						CliEcho("Unexpected Delivery Mode '{$arrOptions['Delivery']}'!");
 						break;
 					}
-					
+
 					if ($ptrConnection) {
 						// Log in to the FTP Server
 						if (ftp_login($ptrConnection, 'yellowbilling', '9uA8;mGL')) {
@@ -447,25 +476,25 @@ class Invoice_Export_XML {
 						CliEcho("Unable to establish a connection with the Salmat Server");
 					}
 					break;
-				
+
 				case 'EmailAttachment':
 					// Get list of PDFs
 					$arrPDFs = glob($strPDFPath."*.pdf");
-					
+
 					// Email Content Template
 		 			$strContentTemplate = "Please find attached your most recent Invoice from <CustomerGroup>\n\n" .
 											"Regards\n" .
 											"The Team at <CustomerGroup>";
-					
+
 					// Get Billing Period
 					$strBillingPeriod = date("F Y", strtotime("-1 month", strtotime($strInvoiceRun)));
-					
+
 					foreach ($arrPDFs as $strPDF) {
 						// Get Account Number from the filename
 						$arrPDFSplit = explode('.', basename($strPDF));
 						$intAccount = (int)$arrPDFSplit[0];
 						//CliEcho(basename($strPDF)." >> ".$intAccount);
-						
+
 						// Is this Invoice set to be Emailed?
 						$selAccountEmail = new StatementSelect(
 							"((Invoice JOIN Account ON Invoice.Account = Account.Id) JOIN Contact ON Contact.Account = Account.Id) JOIN CustomerGroup ON Account.CustomerGroup = CustomerGroup.Id",
@@ -473,7 +502,7 @@ class Invoice_Export_XML {
 							"Email != '' AND Contact.Archived = 0 AND InvoiceRun = <InvoiceRun> AND Invoice.Account = <Account> AND Invoice.DeliveryMethod = ".DELIVERY_METHOD_EMAIL
 						);
 						$updDeliveryMethod = new StatementUpdate("Invoice", "InvoiceRun = <InvoiceRun> AND Account = <Account>", array('DeliveryMethod' => null));
-						
+
 						if ($selAccountEmail->Execute(array('Account' => $intAccount, 'InvoiceRun' => $strInvoiceRun)) === false) {
 			 				Debug($selAccountEmail->Error());
 			 				return false;
@@ -482,9 +511,9 @@ class Invoice_Export_XML {
 			 				// Bad Account Number or Non-Email Account
 			 				continue;
 			 			}
-			 			
+
 				 		CliEcho("\n\t+ Emailing Invoice(s) for Account #$intAccount...");
-			 			
+
 			 			// for each email-able contact
 			 			foreach ($arrDetails as $arrDetail) {
 				 			// Set email headers
@@ -493,19 +522,19 @@ class Invoice_Export_XML {
 								'Subject' => "Telephone Billing for $strBillingPeriod"
 							);
 		 					$strContent = str_replace('<CustomerGroup>', $arrDetail['external_name'], $strContentTemplate);
-					 		
+
 					 		// Does the customer have a first name?
 					 		if (trim($arrDetail['FirstName'])) {
 					 			$strContent = "Dear ".$arrDetail['FirstName']."\n\n" . $strContent;
 					 		}
-					 		
+
 				 			// Account for , separated email addresses
 				 			$arrEmails = explode(',', $arrDetail['Email']);
 				 			foreach ($arrEmails as $strEmail) {
 					 			$strEmail = trim($strEmail);
-					 			
+
 					 			CliEcho(str_pad("\t\tAddress: '$strEmail'...", 70, " ", STR_PAD_RIGHT), false);
-					 			
+
 					 			// Validate email address
 					 			if (!preg_match('/^([[:alnum:]]([+-_.]?[[:alnum:]])*)@([[:alnum:]]([.]?[-[:alnum:]])*[[:alnum:]])\.([[:alpha:]]){2,25}$/', $strEmail)) {
 					 				CliEcho("[ FAILED ]\n\t\t\t-Reason: Email address is invalid");
@@ -520,10 +549,10 @@ class Invoice_Export_XML {
 								$oEmailFlex->setBodyText($strContent);
 								// Attachment (file to deliver)
 								$oEmailFlex->createAttachment(
-									file_get_contents($strPDF), 
-									'application/pdf', 
-									Zend_Mime::DISPOSITION_ATTACHMENT, 
-									Zend_Mime::ENCODING_BASE64, 
+									file_get_contents($strPDF),
+									'application/pdf',
+									Zend_Mime::DISPOSITION_ATTACHMENT,
+									Zend_Mime::ENCODING_BASE64,
 									"{$intAccount}_{$arrDetail['InvoiceNumber']}.pdf"
 								);
 								// Send the email
@@ -538,7 +567,7 @@ class Invoice_Export_XML {
 										//Debug("Success!");
 									} else {
 										//Debug("Failure!");
-									}			
+									}
 									CliEcho("[   OK   ]");
 								} catch (Zend_Mail_Transport_Exception $oException) {
 									// Sending the email failed
@@ -555,10 +584,10 @@ class Invoice_Export_XML {
 								$strBody = $mimMime->get();
 								$strHeaders = $mimMime->headers($arrHeaders);
 					 			$emlMail = &Mail::factory('mail');
-					 			
+
 					 			// Uncomment this to Debug
 					 			//$strEmail = 'rdavis@ybs.net.au, turdminator@hotmail.com, rj.davis@student.qut.edu.au';
-					 			
+
 					 			// Send the email
 					 			if (!$emlMail->send($strEmail, $strHeaders, $strBody)) {
 					 				CliEcho("[ FAILED ]\n\t\t\t-Reason: Mail send failed");
@@ -566,7 +595,7 @@ class Invoice_Export_XML {
 					 			} else {
 						 			// Uncomment this to Debug
 						 			//die;
-					 			
+
 									// Update DeliveryMethod
 									$arrUpdateData = array();
 									$arrUpdateData['DeliveryMethod'] = DELIVERY_METHOD_EMAIL_SENT;
@@ -578,7 +607,7 @@ class Invoice_Export_XML {
 									} else {
 										//Debug("Failure!");
 									}
-									
+
 				 					CliEcho("[   OK   ]");
 								}
 								*/
@@ -588,10 +617,10 @@ class Invoice_Export_XML {
 					break;
 			}
 		}
-		
+
 		return true;
 	}
-	
+
 	protected static function _addElement(&$xmlParent, $strName, $mixValue = null) {
 		if ($xmlParent instanceof DOMNode) {
 			// Valid Parent
@@ -600,10 +629,10 @@ class Invoice_Export_XML {
 			// $xmlParent is not a valid Parent Node
 			$mixReturn = false;
 		}
-		
+
 		return $mixReturn;
 	}
-	
+
 	protected static function _addAttribute(&$xmlParent, $strName, $mixValue = null) {
 		if ($xmlParent instanceof DOMNode) {
 			// Valid Parent
@@ -613,50 +642,65 @@ class Invoice_Export_XML {
 			return false;
 		}
 	}
-	
+
 	// Converts a CDR Record to an Itemised Item, based on it's DisplayType
 	protected static function _itemiseCDR($arrCDR, $intDisplayType) {
 		$arrItem = array();
 		switch ($intDisplayType) {
 			case RECORD_DISPLAY_S_AND_E:
-				//$arrItem['Date'] = date("j M y", strtotime($arrCDR['StartDatetime']));
+				$arrItem['Date'] = date("j M y", strtotime($arrCDR['StartDatetime']));
 				$arrItem['Description'] = $arrCDR['Description'];
 				$arrItem['Items'] = (int)$arrCDR['Units'];
 				$arrItem['Charge'] = number_format($arrCDR['Charge'], 2, '.', '');
+
+				// Some S&E-style records have duration (e.g. actual S&E, Plan Charges)
+				$arrItem['ShortDescription'] = $arrCDR['ShortDescription'];
+				$arrItem['ChargeType'] = $arrCDR['ChargeType'];
+				$arrItem['StartDatetimeISO'] = isset($arrCDR['StartDatetime']) ? date("Y-m-dTH:i:s", strtotime($arrCDR['StartDatetime'])) : null;
+				$arrItem['EndDatetimeISO'] = isset($arrCDR['EndDatetime']) ? date("Y-m-dTH:i:s", strtotime($arrCDR['EndDatetime'])) : null;
 				break;
-			
+
 			case RECORD_DISPLAY_DATA:
 				$arrItem['Date'] = date("j M y", strtotime($arrCDR['StartDatetime']));
 				$arrItem['Time'] = date("H:i:s", strtotime($arrCDR['StartDatetime']));
+				$arrItem['CallingParty'] = $arrCDR['Source'];
 				$arrItem['CalledParty'] = $arrCDR['Destination'];
 				$arrItem['Description'] = $arrCDR['Description'];
 				$arrItem['Data'] = (int)$arrCDR['Units'];
 				$arrItem['Charge'] = number_format($arrCDR['Charge'], 2, '.', '');
+
+				$arrItem['StartDatetimeISO'] = date("Y-m-dTH:i:s", strtotime($arrCDR['StartDatetime']));
 				break;
-			
+
 			case RECORD_DISPLAY_SMS:
 				$arrItem['Date'] = date("j M y", strtotime($arrCDR['StartDatetime']));
 				$arrItem['Time'] = date("H:i:s", strtotime($arrCDR['StartDatetime']));
+				$arrItem['CallingParty'] = $arrCDR['Source'];
 				$arrItem['CalledParty'] = $arrCDR['Destination'];
 				$arrItem['Items'] = (int)$arrCDR['Units'];
 				$arrItem['Description'] = $arrCDR['Description'];
 				$arrItem['Charge'] = number_format($arrCDR['Charge'], 2, '.', '');
+
+				$arrItem['StartDatetimeISO'] = date("Y-m-dTH:i:s", strtotime($arrCDR['StartDatetime']));
 				break;
-			
+
 			case RECORD_DISPLAY_CALL:
 			default:
 				$intHours = floor((int)$arrCDR['Units'] / 3600);
 				$strDuration = "$intHours:".date("i:s", (int)$arrCDR['Units']);
-				
+
 				$arrItem['Date'] = date("j M y", strtotime($arrCDR['StartDatetime']));
 				$arrItem['Time'] = date("H:i:s", strtotime($arrCDR['StartDatetime']));
+				$arrItem['CallingParty'] = $arrCDR['Source'];
 				$arrItem['CalledParty'] = $arrCDR['Destination'];
 				$arrItem['Description'] = $arrCDR['Description'];
 				$arrItem['Duration'] = $strDuration;
 				$arrItem['Charge'] = number_format($arrCDR['Charge'], 2, '.', '');
+
+				$arrItem['StartDatetimeISO'] = date("Y-m-dTH:i:s", strtotime($arrCDR['StartDatetime']));
 				break;
 		}
-		
+
 		$arrItem['TaxExempt'] = $arrCDR['TaxExempt'];
 		$arrItem['RateClass'] = $arrCDR['RateClass'];
 		return $arrItem;

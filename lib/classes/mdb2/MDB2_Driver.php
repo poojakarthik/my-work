@@ -8,6 +8,12 @@ class MDB2_Driver {
 		'escape_pattern' => false,
 	);
 
+	protected $identifier_quoting = array(
+		'start' => '"',
+		'end' => '"',
+		'escape' => '"'
+	);
+
 	// Equivalent to the default MDB2 fetch mode.
 	private $_iPDOFetchMode = PDO::FETCH_ASSOC;
 
@@ -37,6 +43,16 @@ class MDB2_Driver {
 
 	public function setPDOFetchMode($iFetchMode) {
 		$this->_iPDOFetchMode = $this->getPDOFetchMode($iFetchMode);
+	}
+
+	public function queryAll($sQuery, array $aTypes=null, $iFetchMode=MDB2_FETCHMODE_DEFAULT, $bReKey=false, $bForceArray=false, $bGroup=false) {
+		$oResult = $this->query($sQuery, $aTypes);
+
+		if ($oResult instanceof Exception) {
+			return $oResult;
+		}
+
+		return $oResult->fetchAll($iFetchMode, $bReKey, $bForceArray, $bGroup);
 	}
 
 	function splitTableSchema($table) {
@@ -90,5 +106,23 @@ class MDB2_Driver {
 			}
 		}
 		return $text;
+	}
+
+	function quoteIdentifier($sIdentifier, $bCheckOption=false) {
+		if ($bCheckOption) {
+			throw new Exception("Error in method quoteIdentifier(), unimplemented parameter: \$bCheckOption");
+		}
+
+		if ($bCheckOption && !$this->options['quote_identifier']) {
+			return $sIdentifier;
+		}
+
+		$sIdentifier = str_replace($this->identifier_quoting['end'], $this->identifier_quoting['escape'] . $this->identifier_quoting['end'], $sIdentifier);
+		$aParts = explode('.', $sIdentifier);
+		foreach (array_keys($aParts) as $sPart) {
+			$aParts[$sPart] = $this->identifier_quoting['start'] . $aParts[$sPart] . $this->identifier_quoting['end'];
+		}
+
+		return implode('.', $aParts);
 	}
 }
