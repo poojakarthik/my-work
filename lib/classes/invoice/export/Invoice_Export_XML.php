@@ -94,7 +94,7 @@ class Invoice_Export_XML {
 			$xmlInvoiceHistory->appendChild($xmlHistoricInvoice);
 
 			$xmlHistoricInvoice->setAttributeNode(new DOMAttr('Id', $aHistoricInvoice['Id']));
-			$xmlHistoricInvoice->setAttributeNode(new DOMAttr('InvoiceRunType', Invoice_Run_Type::getForId(Invoice_Run::getForId($aHistoricInvoice['invoice_run_id']))->const_name));
+			$xmlHistoricInvoice->setAttributeNode(new DOMAttr('InvoiceRunType', Constant_Group::getConstantGroup('invoice_run_type')->getConstantAlias($aHistoricInvoice['invoice_run_id'])));
 
 			$xmlHistoricInvoice->appendChild(new DOMElement('DateIssued', date('j M y', $aHistoricInvoice['CreatedOn'])));
 			$xmlHistoricInvoice->setAttributeNode(new DOMAttr('ISO', $aHistoricInvoice['CreatedOn']));
