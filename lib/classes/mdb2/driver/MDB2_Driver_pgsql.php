@@ -637,6 +637,18 @@ class MDB2_Driver_pgsql extends MDB2_Driver {
 		}
 	}
 
+	public function lastInsertID($sTable=null, $sField=null) {
+		if (!$sTable && !$sField) {
+			return $this->queryOne('SELECT lastval()', 'integer');
+		}
+
+		$sSequence = $sTable;
+		if ($sField) {
+			$sSequence .= '_' $sField;
+		}
+		return $this->queryOne("SELECT currval('" . $this->quoteIdentifier($sSequence) . "')", 'integer');
+	}
+
 	private function _validatePortabilityOptions() {
 		$aErrors = array();
 		// Not allowed options.
@@ -652,10 +664,9 @@ class MDB2_Driver_pgsql extends MDB2_Driver {
 	private function _isPortabilityOptionSet($iPortabilityConstant) {
 		return (isset($this->aPortabilityOptions['portability']) && $this->aPortabilityOptions['portability'] & $iPortabilityConstant);
 	}
+
 	// Method inspired by MDB2.
 	private static function _getNativeDataType($sDatatype) {
 		return preg_replace('/^([a-z]+)[^a-z].*/i', '\\1', $sDatatype);
 	}
-
-
 }
