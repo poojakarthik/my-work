@@ -39,6 +39,16 @@ class MDB2_Driver {
 		$this->_iPDOFetchMode = $this->getPDOFetchMode($iFetchMode);
 	}
 
+	public function queryAll($sQuery, array $aTypes=null, $iFetchMode=MDB2_FETCHMODE_DEFAULT, $bReKey=false, $bForceArray=false, $bGroup=false) {
+		$oResult = $this->query($sQuery, $aTypes);
+
+		if ($oResult instanceof Exception) {
+			return $oResult;
+		}
+
+		return $oResult->fetchAll($iFetchMode, $bReKey, $bForceArray, $bGroup);
+	}
+
 	function splitTableSchema($table) {
 		$ret = array();
 		if (strpos($table, '.') !== false) {
