@@ -90,7 +90,7 @@ class Invoice_Export_XML {
 		$xmlInvoiceHistory = self::_addElement($xmlInvoice, 'InvoiceHistory');
 		$iInvoiceHistoryProgress = 1;
 		while ($aHistoricInvoice = Invoice_Export::getOldInvoice($arrInvoice, $iInvoiceHistoryProgress)) {
-			$xmlHistoricInvoice = $xmlDocument->createElement('HistoricInvoice');
+			$xmlHistoricInvoice = $domDocument->createElement('HistoricInvoice');
 			$xmlInvoiceHistory->appendChild($xmlHistoricInvoice);
 
 			$xmlHistoricInvoice->setAttributeNode(new DOMAttr('Id', $aHistoricInvoice['Id']));
@@ -271,6 +271,7 @@ class Invoice_Export_XML {
 
 			$xmlService = self::_addElement($xmlServices, 'Service');
 			self::_addAttribute($xmlService, 'FNN', ($arrService['Extension']) ? $arrService['Extension'] : $arrService['FNN']);
+			$xmlService->setAttributeNode(new DOMAttr('ServiceType', Service_Type::getForId($arrService['ServiceType'])->const_name));
 			self::_addAttribute($xmlService, 'CostCentre', $arrService['CostCentre']);
 			self::_addAttribute($xmlService, 'Plan', $arrService['RatePlan']);
 			self::_addAttribute($xmlService, 'GrandTotal', number_format($arrService['ServiceTotal'], 2, '.', ''));

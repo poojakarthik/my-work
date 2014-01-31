@@ -565,6 +565,7 @@ class Invoice_Export {
 
 				case 'selServiceDetails':
 					$arrService = array();
+					$arrService['ServiceType'] = "Service.ServiceType";
 					$arrService['CostCentre'] = "(CASE WHEN CostCentreExtension.Id IS NULL THEN CostCentre.Name ELSE CostCentreExtension.Name END)";
 					$arrService['Indial100'] = "MAX(Service.Indial100)";
 					$arrService['ForceRender'] = "Service.ForceInvoiceRender";
