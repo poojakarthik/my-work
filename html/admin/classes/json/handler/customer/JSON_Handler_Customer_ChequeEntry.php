@@ -289,6 +289,7 @@ class JSON_Handler_Customer_ChequeEntry extends JSON_Handler implements JSON_Han
 				cg.bank_account_number AS customer_group_bank_account,
 				ptd_bsb.value AS cheque_bsb,
 				ptd_account.value AS cheque_account,
+				ptd_cheque.value AS cheque_number,
 				p.paid_date AS paid_date,
 				p.amount AS amount
 			FROM payment p
@@ -327,6 +328,7 @@ class JSON_Handler_Customer_ChequeEntry extends JSON_Handler implements JSON_Han
 			'Account',
 			'Account Name',
 			'Trading Name',
+			'Cheque Number',
 			'Cheque BSB',
 			'Cheque Account #',
 			'Date',
@@ -342,6 +344,7 @@ class JSON_Handler_Customer_ChequeEntry extends JSON_Handler implements JSON_Han
 				$payment->id,
 				$payment->account_name,
 				$payment->trading_name,
+				$payment->cheque_number,
 				$payment->cheque_bsb,
 				$payment->cheque_account,
 				$payment->paid_date,
