@@ -656,8 +656,8 @@ class Invoice_Export_XML {
 				// Some S&E-style records have duration (e.g. actual S&E, Plan Charges)
 				$arrItem['ShortDescription'] = $arrCDR['ShortDescription'];
 				$arrItem['ChargeType'] = $arrCDR['ChargeType'];
-				$arrItem['StartDatetimeISO'] = isset($arrCDR['StartDatetime']) ? date("Y-m-dTH:i:s", strtotime($arrCDR['StartDatetime'])) : null;
-				$arrItem['EndDatetimeISO'] = isset($arrCDR['EndDatetime']) ? date("Y-m-dTH:i:s", strtotime($arrCDR['EndDatetime'])) : null;
+				$arrItem['StartDatetimeISO'] = isset($arrCDR['StartDatetime']) ? date("Y-m-d\TH:i:s", strtotime($arrCDR['StartDatetime'])) : null;
+				$arrItem['EndDatetimeISO'] = isset($arrCDR['EndDatetime']) ? date("Y-m-d\TH:i:s", strtotime($arrCDR['EndDatetime'])) : null;
 				break;
 
 			case RECORD_DISPLAY_DATA:
@@ -669,7 +669,7 @@ class Invoice_Export_XML {
 				$arrItem['Data'] = (int)$arrCDR['Units'];
 				$arrItem['Charge'] = number_format($arrCDR['Charge'], 2, '.', '');
 
-				$arrItem['StartDatetimeISO'] = date("Y-m-dTH:i:s", strtotime($arrCDR['StartDatetime']));
+				$arrItem['StartDatetimeISO'] = date("Y-m-d\TH:i:s", strtotime($arrCDR['StartDatetime']));
 				break;
 
 			case RECORD_DISPLAY_SMS:
@@ -681,7 +681,7 @@ class Invoice_Export_XML {
 				$arrItem['Description'] = $arrCDR['Description'];
 				$arrItem['Charge'] = number_format($arrCDR['Charge'], 2, '.', '');
 
-				$arrItem['StartDatetimeISO'] = date("Y-m-dTH:i:s", strtotime($arrCDR['StartDatetime']));
+				$arrItem['StartDatetimeISO'] = date("Y-m-d\TH:i:s", strtotime($arrCDR['StartDatetime']));
 				break;
 
 			case RECORD_DISPLAY_CALL:
@@ -697,7 +697,7 @@ class Invoice_Export_XML {
 				$arrItem['Duration'] = $strDuration;
 				$arrItem['Charge'] = number_format($arrCDR['Charge'], 2, '.', '');
 
-				$arrItem['StartDatetimeISO'] = date("Y-m-dTH:i:s", strtotime($arrCDR['StartDatetime']));
+				$arrItem['StartDatetimeISO'] = date("Y-m-d\TH:i:s", strtotime($arrCDR['StartDatetime']));
 				break;
 		}
 
