@@ -117,15 +117,15 @@ class Application_Handler_CustomerGroup extends Application_Handler
 	{
 
 		$iCustomerGroupId 		= $subPath[0];
-		$sTemplateName		 	= $subPath[1];
-		$iTemplateId			= $subPath[2];
+		// $sTemplateName		 	= $subPath[1];
+		$iTemplateId			= $subPath[1];
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL));
 
 		$aDetailsToRender	= array();
 
 		$aDetailsToRender['customerGroup'] 		= $iCustomerGroupId ? Customer_Group::getForId($iCustomerGroupId) : NULL;
-		$aDetailsToRender['sTemplateName']		= $sTemplateName;
+		$aDetailsToRender['sTemplateName']		= Email_Template::getForId($iTemplateId)->name;
 		$aDetailsToRender['iTemplateId'] 		= $iTemplateId;
 
 		BreadCrumb()->Employee_Console();

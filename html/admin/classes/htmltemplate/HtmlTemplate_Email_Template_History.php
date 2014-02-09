@@ -1,9 +1,6 @@
 <?php
-
-class HtmlTemplate_Email_Template_History extends FlexHtmlTemplate
-{
-	public function __construct($intContext=NULL, $strId=NULL, $mxdDataToRender=NULL)
-	{
+class HtmlTemplate_Email_Template_History extends FlexHtmlTemplate {
+	public function __construct($intContext=null, $strId=null, $mxdDataToRender=null) {
 		parent::__construct($intContext, $strId, $mxdDataToRender);
 
 		// AJAX and pagination
@@ -33,49 +30,27 @@ class HtmlTemplate_Email_Template_History extends FlexHtmlTemplate
 		$this->LoadJavascript('email_template_table');
 		$this->LoadJavascript('control_field_text');
 
-
-
-
 		// Classes that renders the page
 		$this->LoadJavascript('popup_email_text_editor');
 		$this->LoadJavascript('popup_email_html_preview');
 		$this->LoadJavascript('popup_email_save_confirm');
 		$this->LoadJavascript('popup_email_test_email');
 
-
 		$this->LoadJavascript('page_email_template_history');
 		$this->LoadJavascript('component_email_template_history');
-
-
-
-
-
-
-
-
-
 	}
 
-	public function Render()
-	{
-
-
+	public function Render() {
 		echo "
 		<div id='TemplateVersionContainer'></div>
-		<script type='text/javascript'>
+		<script>
 			Event.observe(
 				window,
 				'load',
-				function()
-				{
-
-					objFollowUpList = new Page_Email_Template_History(\$ID('TemplateVersionContainer'),". $this->mxdDataToRender['iTemplateId'].",'". $this->mxdDataToRender['sTemplateName']."', '".$this->mxdDataToRender['customerGroup']->external_name."');
-
-
+				function () {
+					new Page_Email_Template_History(\$ID('TemplateVersionContainer'),". $this->mxdDataToRender['iTemplateId'].",'". $this->mxdDataToRender['sTemplateName']."', '".$this->mxdDataToRender['customerGroup']->external_name."');
 				}
-			)
+			);
 		</script>\n";
 	}
 }
-
-?>

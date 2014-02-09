@@ -72,7 +72,7 @@ class HtmlTemplateCustomerGroupEmailTemplates extends HtmlTemplate
 			$strEffectiveOn	= OutputMask()->ShortDate($aTemplate['effective_datetime']);
 
 			Table()->EmailTemplate->AddRow($strTemplateType, $strVersion, $strEffectiveOn);
-			$strLoadTemplateHistory = Href()->ViewEmailTemplateHistory(DBO()->CustomerGroup->Id->value, $aTemplate['name'], $aTemplate['id']);
+			$strLoadTemplateHistory = Href()->ViewEmailTemplateHistory(DBO()->CustomerGroup->Id->value, $aTemplate['id']);
 			Table()->EmailTemplate->SetOnClick("window.location='$strLoadTemplateHistory'");
 		}
 

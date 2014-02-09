@@ -544,13 +544,13 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function ViewEmailTemplateHistory($iCustomerGroupId, $sTemplateName, $intTemplateId)
+	function ViewEmailTemplateHistory($iCustomerGroupId, $intTemplateId)
 	{
 		$this->strLabel = "Email Template History";
 		$this->strContextMenuLabel = "Email Template History";
 		//return self :: NEW_FRAMEWORK . "flex.php/CustomerGroup/ViewEmailTemplateHistory/?CustomerGroup.Id=$iCustomerGroupId&Template.Name=$sTemplateName&EmailTemplate.Id=$intTemplateId";
-		return self :: NEW_FRAMEWORK . "reflex.php/CustomerGroup/ViewEmailTemplateHistory/$iCustomerGroupId/$sTemplateName/$intTemplateId";
-
+		//return self::NEW_FRAMEWORK . "reflex.php/CustomerGroup/ViewEmailTemplateHistory/$iCustomerGroupId/$sTemplateName/$intTemplateId";
+		return self::NEW_FRAMEWORK . "reflex.php/CustomerGroup/ViewEmailTemplateHistory/$iCustomerGroupId/$intTemplateId";
 	}
 
 
