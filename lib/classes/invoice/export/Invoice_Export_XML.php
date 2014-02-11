@@ -99,9 +99,9 @@ class Invoice_Export_XML {
 			$xmlHistoricInvoice->appendChild(new DOMElement('DateIssued', date('j M y', $aHistoricInvoice['CreatedOn'])));
 			$xmlHistoricInvoice->setAttributeNode(new DOMAttr('ISO', $aHistoricInvoice['CreatedOn']));
 
-			$xmlHistoricInvoice->appendChild(new DOMElement('Adjustments', number_format($arrInvoice['adjustment_total'] + $arrInvoice['adjustment_tax'], 2, '.', '')));
-			$xmlHistoricInvoice->appendChild(new DOMElement('NewCharges', number_format($arrInvoice['charge_total'] + $arrInvoice['charge_tax'], 2, '.', '')));
-			$xmlHistoricInvoice->appendChild(new DOMElement('InvoiceTotal', number_format($arrInvoice['Total'] + $arrInvoice['Tax'], 2, '.', '')));
+			$xmlHistoricInvoice->appendChild(new DOMElement('Adjustments', number_format($aHistoricInvoice['adjustment_total'] + $aHistoricInvoice['adjustment_tax'], 2, '.', '')));
+			$xmlHistoricInvoice->appendChild(new DOMElement('NewCharges', number_format($aHistoricInvoice['charge_total'] + $aHistoricInvoice['charge_tax'], 2, '.', '')));
+			$xmlHistoricInvoice->appendChild(new DOMElement('InvoiceTotal', number_format($aHistoricInvoice['Total'] + $aHistoricInvoice['Tax'], 2, '.', '')));
 
 			$iInvoiceHistoryProgress++;
 		}
