@@ -1,33 +1,27 @@
 <?php
-
-class Application_Handler_CustomerGroup extends Application_Handler
-{
-	public function CreditCardConfig($subPath)
-	{
+class Application_Handler_CustomerGroup extends Application_Handler {
+	public function CreditCardConfig($subPath) {
 		$detailsToRender = array();
 
 		// We need to load the configuration record for the customer group
-		$customerGroupId = count($subPath) ? intval(array_shift($subPath)) : NULL;
+		$customerGroupId = count($subPath) ? intval(array_shift($subPath)) : null;
 		$action = count($subPath) ? strtolower(array_shift($subPath)) : 'view';
 
-		$detailsToRender['customerGroup'] = $customerGroupId ? Customer_Group::getForId($customerGroupId) : NULL;
-		$detailsToRender['config'] = $detailsToRender['customerGroup'] ? Credit_Card_Payment_Config::getForCustomerGroup($detailsToRender['customerGroup'], TRUE) : NULL;
+		$detailsToRender['customerGroup'] = $customerGroupId ? Customer_Group::getForId($customerGroupId) : null;
+		$detailsToRender['config'] = $detailsToRender['customerGroup'] ? Credit_Card_Payment_Config::getForCustomerGroup($detailsToRender['customerGroup'], true) : null;
 
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->ViewAllCustomerGroups();
-		BreadCrumb()->ViewCustomerGroup($customerGroupId, $detailsToRender['customerGroup'] ? $detailsToRender['customerGroup']->name : NULL);
+		BreadCrumb()->ViewCustomerGroup($customerGroupId, $detailsToRender['customerGroup'] ? $detailsToRender['customerGroup']->name : null);
 		BreadCrumb()->SetCurrentPage("Secure Pay Configuration");
 
-		if (!$detailsToRender['customerGroup'] || !$detailsToRender['config'])
-		{
+		if (!$detailsToRender['customerGroup'] || !$detailsToRender['config']) {
 			$action = 'error';
 		}
 
-		switch ($action)
-		{
+		switch ($action) {
 			case 'delete':
-				if (!$detailsToRender['config']->isSaved())
-				{
+				if (!$detailsToRender['config']->isSaved()) {
 					$action = 'no_config';
 					break;
 				}
@@ -45,55 +39,42 @@ class Application_Handler_CustomerGroup extends Application_Handler
 				$detailsToRender['config']->directDebitDisclaimer = array_key_exists('directDebitDisclaimer', $_REQUEST) && trim($_REQUEST['directDebitDisclaimer']) ? trim($_REQUEST['directDebitDisclaimer']) : '';
 				$detailsToRender['config']->directDebitText = array_key_exists('directDebitText', $_REQUEST) && trim($_REQUEST['directDebitText']) ? trim($_REQUEST['directDebitText']) : '';
 				$detailsToRender['config']->directDebitEmail = array_key_exists('directDebitEmail', $_REQUEST) && trim($_REQUEST['directDebitEmail']) ? trim($_REQUEST['directDebitEmail']) : '';
-				if (!$detailsToRender['config']->merchantId)
-				{
+				if (!$detailsToRender['config']->merchantId) {
 					$detailsToRender['error'] .= ($detailsToRender['error'] ? '<br/>' : '') . "Please enter a valid Secure Pay Merchant ID.";
-					$detailsToRender['invalid_values']['merchantId'] = TRUE;
+					$detailsToRender['invalid_values']['merchantId'] = true;
 				}
-				if (!$detailsToRender['config']->password)
-				{
+				if (!$detailsToRender['config']->password) {
 					$detailsToRender['error'] .= ($detailsToRender['error'] ? '<br/>' : '') . "Please enter a password for the Secure Pay account.";
-					$detailsToRender['invalid_values']['password'] = TRUE;
+					$detailsToRender['invalid_values']['password'] = true;
 				}
-				if (!$detailsToRender['config']->confirmationText)
-				{
+				if (!$detailsToRender['config']->confirmationText) {
 					$detailsToRender['error'] .= ($detailsToRender['error'] ? '<br/>' : '') . "Please enter a message to be displayed to a customer after making a credit card payment.";
-					$detailsToRender['invalid_values']['confirmationText'] = TRUE;
+					$detailsToRender['invalid_values']['confirmationText'] = true;
 				}
-				if (!$detailsToRender['config']->confirmationEmail)
-				{
+				if (!$detailsToRender['config']->confirmationEmail) {
 					$detailsToRender['error'] .= ($detailsToRender['error'] ? '<br/>' : '') . "Please enter a message to be emailed to a customer after making a credit card payment.";
-					$detailsToRender['invalid_values']['confirmationEmail'] = TRUE;
+					$detailsToRender['invalid_values']['confirmationEmail'] = true;
 				}
-				if (!$detailsToRender['config']->directDebitDisclaimer)
-				{
+				if (!$detailsToRender['config']->directDebitDisclaimer) {
 					$detailsToRender['error'] .= ($detailsToRender['error'] ? '<br/>' : '') . "Please enter the disclaimer/terms and conditions to be displayed to a user about to set up a direct debit.";
-					$detailsToRender['invalid_values']['directDebitDisclaimer'] = TRUE;
+					$detailsToRender['invalid_values']['directDebitDisclaimer'] = true;
 				}
-				if (!$detailsToRender['config']->directDebitText)
-				{
+				if (!$detailsToRender['config']->directDebitText) {
 					$detailsToRender['error'] .= ($detailsToRender['error'] ? '<br/>' : '') . "Please enter a message to be displayed to a customer after making a credit card payment and setting up a direct debit.";
-					$detailsToRender['invalid_values']['directDebitText'] = TRUE;
+					$detailsToRender['invalid_values']['directDebitText'] = true;
 				}
-				if (!$detailsToRender['config']->directDebitEmail)
-				{
+				if (!$detailsToRender['config']->directDebitEmail) {
 					$detailsToRender['error'] .= ($detailsToRender['error'] ? '<br/>' : '') . "Please enter a message to be emailed to a customer after making a credit card payment and setting up a direct debit.";
-					$detailsToRender['invalid_values']['directDebitEmail'] = TRUE;
+					$detailsToRender['invalid_values']['directDebitEmail'] = true;
 				}
 
-				try
-				{
-					if (!$detailsToRender['error'])
-					{
+				try {
+					if (!$detailsToRender['error']) {
 						$detailsToRender['config']->save();
-					}
-					else
-					{
+					} else {
 						$action = 'edit';
 					}
-				}
-				catch (Exception $e)
-				{
+				} catch (Exception $e) {
 					$detailsToRender['error'] = 'Failed to save details: ' . $e->getMessage();
 					$action = 'edit';
 				}
@@ -102,8 +83,10 @@ class Application_Handler_CustomerGroup extends Application_Handler
 			case 'edit':
 				$detailsToRender['invalid_values'] = array();
 				break;
+
 			case 'error':
 				break;
+
 			case 'view':
 			default:
 				break;
@@ -113,41 +96,30 @@ class Application_Handler_CustomerGroup extends Application_Handler
 		$this->LoadPage('customer_group_credit_card_config', HTML_CONTEXT_DEFAULT, $detailsToRender);
 	}
 
-	function ViewEmailTemplateHistory($subPath)
-	{
+	function ViewEmailTemplateHistory($subPath) {
+		$iCustomerGroupId = $subPath[0];
+		$iTemplateId = $subPath[1];
 
-		$iCustomerGroupId 		= $subPath[0];
-		// $sTemplateName		 	= $subPath[1];
-		$iTemplateId			= $subPath[1];
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL));
 
-		$aDetailsToRender	= array();
+		$aDetailsToRender = array();
 
-		$aDetailsToRender['customerGroup'] 		= $iCustomerGroupId ? Customer_Group::getForId($iCustomerGroupId) : NULL;
-		$aDetailsToRender['sTemplateName']		= Email_Template::getForId($iTemplateId)->name;
-		$aDetailsToRender['iTemplateId'] 		= $iTemplateId;
+		$aDetailsToRender['customerGroup'] = $iCustomerGroupId ? Customer_Group::getForId($iCustomerGroupId) : null;
+		$aDetailsToRender['sTemplateName'] = Email_Template::getForId(Email_Template_Customer_Group::getForId($iTemplateId)->email_template_id)->name;
+		$aDetailsToRender['iTemplateId'] = $iTemplateId;
 
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->ViewAllCustomerGroups();
-		BreadCrumb()->ViewCustomerGroup($iCustomerGroupId, $aDetailsToRender['customerGroup'] ? $aDetailsToRender['customerGroup']->name : NULL);
+		BreadCrumb()->ViewCustomerGroup($iCustomerGroupId, $aDetailsToRender['customerGroup'] ? $aDetailsToRender['customerGroup']->name : null);
 		BreadCrumb()->SetCurrentPage("View Email Template History");
 
-		try
-		{
+		try {
 			$this->LoadPage('email_template_history', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
-		}
-		catch (Exception $e)
-		{
-			$aDetailsToRender['Message'] 		= "An error occured while trying to build the \"View Email History\" page";
-			$aDetailsToRender['ErrorMessage']	= $e->getMessage();
+		} catch (Exception $e) {
+			$aDetailsToRender['Message'] = "An error occured while trying to build the \"View Email History\" page";
+			$aDetailsToRender['ErrorMessage'] = $e->getMessage();
 			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
 		}
-
-
-
-
 	}
 }
-
-?>
