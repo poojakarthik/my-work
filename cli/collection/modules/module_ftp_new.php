@@ -9,17 +9,17 @@
  class CollectionModuleFTPNew extends CollectionModuleBase
  {
 	const	RESOURCE_TYPE	= RESOURCE_TYPE_FILE_RESOURCE_FTP;
-	
+
 	protected	$_resConnection;
 	protected	$_strWrapper;
-	
+
 	public $intBaseFileType			= RESOURCE_TYPE_FILE_RESOURCE_FTP;
-	
+
 	const	DIRECTORY_NAME_REGEX_PREFIX	= 'regex:';
 	const	SKIP_IS_DIR_AFTER_REGEX		= true;
-	
+
 	const	ENABLE_DEBUG_OUTPUT	= false;
-	
+
 	protected function _cliEcho($sMessage='', $bNewLine=true)
 	{
 		if (self::ENABLE_DEBUG_OUTPUT)
@@ -27,7 +27,7 @@
 			CliEcho($sMessage, $bNewLine);
 		}
 	}
-	
+
 	public static function getConfigDefinition()
 	{
 		// Values defined in here are DEFAULT values
@@ -61,7 +61,7 @@
 									)
 				);
 	}
- 	
+
 	/**
 	 * Connect()
 	 *
@@ -76,7 +76,7 @@
 		$strHost = $this->_oConfig->Host;
 		$strUsername = $this->_oConfig->Username;
 		$strPassword = $this->_oConfig->Password;
-		
+
 		// Init wrapper
 		if ($this->_resConnection = ftp_connect($strHost))
 		{
@@ -104,7 +104,7 @@
 			return "Unable to connect to host {$strHost}";
 		}
 	}
-	
+
  	function Disconnect()
  	{
 		if ($this->_resConnection)
@@ -113,7 +113,7 @@
 		}
 		return true;
  	}
-	
+
 	/**
 	 * Download()
 	 *
@@ -136,20 +136,20 @@
 		{
 			// Advance the arrDownloadPaths internal pointer
 			next($this->_arrDownloadPaths);
-			
+
 			// Calculate Local Download Path
 			$arrCurrentFile['LocalPath']	= $strDestination.ltrim(basename($arrCurrentFile['RemotePath']), '/');
-			
+
 			// Attempt to download this file
 			if (!@ftp_get($this->_resConnection, $arrCurrentFile['LocalPath'], $arrCurrentFile['RemotePath'], FTP_BINARY))
 			{
 				return "Error downloading from the remote path '{$arrCurrentFile['RemotePath']}' to '{$arrCurrentFile['LocalPath']}': ".$php_errormsg;
 			}
-			
+
 			return $arrCurrentFile;
 		}
  	}
- 	
+
 	/**
 	 * _getDownloadPaths()
 	 *
@@ -162,10 +162,10 @@
 	protected function _getDownloadPaths()
 	{
 		$this->_cliEcho("\nGetting Download Paths...");
-		
+
 		// Get Path Definitions
 		$arrDefinitions		= $this->_oConfig->FileDefine;
-		
+
 		$arrDownloadPaths	= array();
 		try
 		{
@@ -175,36 +175,37 @@
 		{
 			$this->_cliEcho("Error retrieving download paths: ".$eException->getMessage());
 		}
-		
+
 		return $arrDownloadPaths;
 	}
-	
+
 	protected function _getDownloadPathsForDirectories(&$arrDirectories, $strCurrentPath='')
 	{
 		$arrDownloadPaths	= array();
-		
+
 		while (list($strDirectory, $arrDefinition) = each($arrDirectories))
 		{
 			$this->_cliEcho("Currently ".(count($arrDirectories))." subdirectories for path '{$strCurrentPath}'");
-			
+
 			// Is this a Regex/Variable Directory?
 			if (stripos($strDirectory, self::DIRECTORY_NAME_REGEX_PREFIX) === 0)
 			{
 				$this->_cliEcho("'{$strDirectory}' is a Regex/Variable Directory");
-				
+
 				// Regex -- get list of subdirectories that match this criteria
 				$strRegex	= substr($strDirectory, strlen(self::DIRECTORY_NAME_REGEX_PREFIX));
 				$this->_cliEcho("Checking for Subdirectory matches against '{$strRegex}'");
-				
+
 				$arrDirectoryContents	= ftp_nlist($this->_resConnection, $strCurrentPath);
-				
+
 				if (is_array($arrDirectoryContents))
 				{
 					$this->_cliEcho("Found ".count($arrDirectoryContents)." remote subdirectories...");
 					foreach ($arrDirectoryContents as $intIndex=>$strSubItem)
 					{
+						$strSubItem	= basename(preg_replace('/\\\\/' , '/', $strSubItem));
 						$this->_cliEcho("Subitem {$intIndex}: {$strSubItem}");
-						
+
 						$strSubItemFullPath	= $strCurrentPath.'/'.$strSubItem;
 						if (preg_match($strRegex, $strSubItem) && $this->_isDir($strSubItemFullPath))
 						{
@@ -226,15 +227,15 @@
 			else
 			{
 				$this->_cliEcho("'{$strDirectory}' is a Normal Directory");
-				
+
 				// Normal Directory
 				$strDirectoryFullPath	= $strCurrentPath.'/'.$strDirectory;
-				
+
 				// Browse Subdirectories
 				if (array_key_exists('arrSubdirectories', $arrDirectories[$strDirectory]) && is_array($arrDirectories[$strDirectory]['arrSubdirectories']) && count($arrDirectories[$strDirectory]['arrSubdirectories']))
 				{
 					$this->_cliEcho("Traversing subdirectories for '{$strDirectory}'");
-					
+
 					$arrSubdirectoryDownloadPaths	= $this->_getDownloadPathsForDirectories($arrDirectories[$strDirectory]['arrSubdirectories'], $strDirectoryFullPath);
 					foreach ($arrSubdirectoryDownloadPaths as $arrSubdirectoryDownloadPath)
 					{
@@ -245,18 +246,18 @@
 				{
 					$this->_cliEcho("'{$strDirectory}' has no Subdirectory definitions");
 				}
-				
+
 				// Get any Files in this Directory
 				if (array_key_exists('arrFileTypes', $arrDirectories[$strDirectory]) && is_array($arrDirectories[$strDirectory]['arrFileTypes']) && count($arrDirectories[$strDirectory]['arrFileTypes']))
 				{
 					$arrDirectoryContents	= ftp_nlist($this->_resConnection, $strDirectoryFullPath);
-					
+
 					$intFileCount	= count($arrDirectoryContents);
-					
+
 					$this->_cliEcho("{$intFileCount} files (including '.' and '..')");
-					
+
 					$this->_cliEcho("\033[s");
-					
+
 					if (is_array($arrDirectoryContents))
 					{
 						$intProgress	= 0;
@@ -264,12 +265,12 @@
 						foreach ($arrDirectoryContents as $strSubItem)
 						{
 							$intProgress++;
-							
-							$strSubItem	= basename($strSubItem);
+
+							$strSubItem	= basename(preg_replace('/\\\\/' , '/', $strSubItem));
 							$this->_cliEcho("\033[2K\033[uProcessing File '{$strSubItem}' {$intProgress}/{$intFileCount}; Matches: {$intMatches}", false);
-							
+
 							$strSubItemFullPath	= $strDirectoryFullPath.'/'.$strSubItem;
-							
+
 							foreach ($arrDirectories[$strDirectory]['arrFileTypes'] as $intResourceTypeId=>$arrFileType)
 							{
 								if (preg_match($arrFileType['Regex'], $strSubItem) && !$this->_isDir($strSubItemFullPath))
@@ -280,7 +281,7 @@
 										// Yes, so we should skip this file
 										break;
 									}
-									
+
 									// Regex matches -- is this a directory?
 									if (self::SKIP_IS_DIR_AFTER_REGEX || !$this->_isDir($strSubItemFullPath))
 									{
@@ -307,16 +308,16 @@
 				}
 			}
 		}
-		
+
 		unset($arrDefinition);
-		
+
 		return $arrDownloadPaths;
 	}
-	
+
 	protected function _isDir($sPath)
 	{
 		$sPWD	= ftp_pwd($this->_resConnection);
-		
+
 		if (@ftp_chdir($this->_resConnection, $sPath))
 		{
 			ftp_chdir($this->_resConnection, $sPWD);
@@ -328,4 +329,3 @@
 		}
 	}
 }
-?>
