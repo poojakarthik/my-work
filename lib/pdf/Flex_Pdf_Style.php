@@ -791,9 +791,9 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 	{
 		$size = trim($strSize);
 		$factor = 1;
-		if (preg_match('/mm$/')) {
+		if (preg_match('/mm$/', $strSize)) {
 			$factor = 2.83464567;
-		} elseif (preg_match('/em$/')) {
+		} elseif (preg_match('/em$/', $strSize)) {
 			$factor = $this->getUnitsPerEm();
 		}
 
