@@ -27,7 +27,10 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 	const MEDIA_PRINT = DOCUMENT_TEMPLATE_MEDIA_TYPE_PRINT;
 	const MEDIA_EMAIL = DOCUMENT_TEMPLATE_MEDIA_TYPE_EMAIL;
 	const MEDIA_ALL = DOCUMENT_TEMPLATE_MEDIA_TYPE_ALL;
-	
+
+	const BORDER_STYLE_SOLID = 'solid';
+	const BORDER_STYLE_DASHED = 'dashed';
+
 	// Inherited properties
 	private $intTextDecoration = self::TEXT_DECORATION_NONE;
 	private $lineHeight = 0;
@@ -41,12 +44,16 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 	private $intRight 				= NULL;
 	private $intWidth 				= NULL;
 	private $intHeight 				= NULL;
-	private $intBorderCornerRadius	= 0;
+	private $intBorderTopLeftRadius = 0;
+	private $intBorderTopRightRadius = 0;
+	private $intBorderBottomLeftRadius = 0;
+	private $intBorderBottomRightRadius = 0;
 	private $intBorderWidthTop		= 0;
 	private $intBorderWidthBottom	= 0;
 	private $intBorderWidthLeft		= 0;
 	private $intBorderWidthRight	= 0;
 	private $objBorderColor			= NULL;
+	private $strBorderStyle = self::BORDER_STYLE_SOLID;
 	private $intPaddingTop			= 0;
 	private $intPaddingBottom		= 0;
 	private $intPaddingLeft			= 0;
@@ -55,7 +62,6 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 	private $objColor				= NULL;
 	private $intTextAlign 			= self::TEXT_ALIGN_LEFT;
 	private $intOverflow 			= self::OVERFLOW_VISIBLE;
-	private $intCornerRadius 		= 0;
 	private $strPageSize 			= Zend_Pdf_Page::SIZE_A4;
 	private $intMedia 				= self::MEDIA_ALL;
 	private $fltRotateAngle 		= 0;
@@ -93,14 +99,14 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 		foreach ($style as $stylePart)
 		{
 			$styleParts = explode(":", $stylePart);
-			
+
 			/* This should really be uncommented, but I don't want to break any existing templates =\
 			if ($stylePart && count($styleParts) < 2)
 			{
 				throw new Exception("Invalid Style Definition '{$stylePart}' in node style '{$styleAttribute}'");
 			}
 			*/
-			
+
 			switch (strtoupper(trim($styleParts[0])))
 			{
 				case "MEDIA":
@@ -135,7 +141,24 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 					break;
 
 				case "CORNER-RADIUS":
+				case "BORDER-RADIUS":
 					$this->setCornerRadius($styleParts[1]);
+					break;
+
+				case "BORDER-TOP-LEFT-RADIUS":
+					$this->setBorderTopLeftRadius($styleParts[1]);
+					break;
+
+				case "BORDER-TOP-RIGHT-RADIUS":
+					$this->setBorderTopRightRadius($styleParts[1]);
+					break;
+
+				case "BORDER-BOTTOM-LEFT-RADIUS":
+					$this->setBorderBottomLeftRadius($styleParts[1]);
+					break;
+
+				case "BORDER-BOTTOM-RIGHT-RADIUS":
+					$this->setBorderBottomRightRadius($styleParts[1]);
 					break;
 
 				case "BORDER-WIDTH-TOP":
@@ -152,6 +175,10 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 
 				case "BORDER-WIDTH-LEFT":
 					$this->setBorderWidthLeft($styleParts[1]);
+					break;
+
+				case 'BORDER-STYLE':
+					$this->setBorderStyle($styleParts[1]);
 					break;
 
 				case "PADDING":
@@ -228,15 +255,15 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 				case "PAGE-SIZE":
 					$this->setPageSize($styleParts[1]);
 					break;
-				
+
 				case "ROTATE-ANGLE":
 					$this->setRotateAngle($styleParts[1]);
 					break;
-				
+
 				case "OPACITY":
 					$this->setOpacity($styleParts[1]);
 					break;
-					
+
 					// Ignore - not supported!
 
 			}
@@ -421,12 +448,43 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 
 	function setCornerRadius($int)
 	{
-		$this->intCornerRadius = $this->getPointSize($int);
+		// $this->intCornerRadius = $this->getPointSize($int);
+		$this->setBorderTopLeftRadius($int);
+		$this->setBorderTopRightRadius($int);
+		$this->setBorderBottomLeftRadius($int);
+		$this->setBorderBottomRightRadius($int);
+	}
+
+	function setBorderTopLeftRadius($size) {
+		$this->intBorderTopLeftRadius = $this->getPointSize($size);
+	}
+	function setBorderTopRightRadius($size) {
+		$this->intBorderTopRightRadius = $this->getPointSize($size);
+	}
+	function setBorderBottomLeftRadius($size) {
+		$this->intBorderBottomLeftRadius = $this->getPointSize($size);
+	}
+	function setBorderBottomRightRadius($size) {
+		$this->intBorderBottomRightRadius = $this->getPointSize($size);
 	}
 
 	function getCornerRadius()
 	{
-		return $this->intCornerRadius;
+		throw new Exception('Single corner radius deprecated; use getBorderTopLeftRadius, etc.');
+		//return $this->intCornerRadius;
+	}
+
+	function getBorderTopLeftRadius() {
+		return $this->intBorderTopLeftRadius;
+	}
+	function getBorderTopRightRadius() {
+		return $this->intBorderTopRightRadius;
+	}
+	function getBorderBottomLeftRadius() {
+		return $this->intBorderBottomLeftRadius;
+	}
+	function getBorderBottomRightRadius() {
+		return $this->intBorderBottomRightRadius;
 	}
 
 	function setBorderWidth($int)
@@ -495,6 +553,22 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 	function getBorderColor()
 	{
 		return $this->objBorderColor;
+	}
+
+	function setBorderStyle($borderStyle) {
+		switch (strtolower(trim($borderStyle))) {
+			case self::BORDER_STYLE_SOLID:
+				$this->strBorderStyle = self::BORDER_STYLE_SOLID;
+				break;
+
+			case self::BORDER_STYLE_DASHED:
+				$this->strBorderStyle = self::BORDER_STYLE_DASHED;
+				break;
+		}
+	}
+
+	function getBorderStyle() {
+		return $this->strBorderStyle;
 	}
 
 	function setBackgroundColor($objColor)
@@ -715,6 +789,14 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 
 	static function getPointSize($strSize)
 	{
+		$size = trim($strSize);
+		$factor = 1;
+		if (preg_match('/mm$/')) {
+			$factor = 2.83464567;
+		} elseif (preg_match('/em$/')) {
+			$factor = $this->getUnitsPerEm();
+		}
+
 		$strSize = trim($strSize);
 		$mm = preg_match("/mm$/", $strSize);
 		$fltSize = floatval($strSize);
@@ -848,7 +930,11 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 		}
 
 		// Corners
-		$style[] = "corner-radius: " . $this->getCornerRadius() . "pt";
+		//$style[] = "corner-radius: " . $this->getCornerRadius() . "pt";
+		$style[] = "border-top-left-radius: " . $this->getBorderTopLeftRadius() . "pt";
+		$style[] = "border-top-right-radius: " . $this->getBorderTopRightRadius() . "pt";
+		$style[] = "border-bottom-left-radius: " . $this->getBorderBottomLeftRadius() . "pt";
+		$style[] = "border-bottom-right-radius: " . $this->getBorderBottomRightRadius() . "pt";
 
 		// Rotate Angle
 		$style[] = "rotate-angle: " . $this->getRotateAngle();
