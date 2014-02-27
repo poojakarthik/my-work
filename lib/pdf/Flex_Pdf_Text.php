@@ -231,7 +231,7 @@ class Flex_Pdf_Text
 		// }
 		// return $characters;
 		// $drawingString = $strString;//iconv('', 'UTF-16BE', $strString);
-		$drawingString = iconv('', 'UTF-8', $strString);
+		$drawingString = iconv(mb_detect_encoding($strString), 'UTF-8', $strString);
 		$characters = array();
 		while (count($characters) < mb_strlen($drawingString, 'UTF-8')) {
 			$character = mb_substr($drawingString, count($characters), 1, 'UTF-8');
