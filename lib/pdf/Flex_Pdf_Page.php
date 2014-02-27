@@ -452,7 +452,7 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 
 		$this->setFillColor($this->getStyle()->getColor());
 
-		parent::drawText($text, $x, $y);
+		parent::drawText($text, $x, $y, mb_detect_encoding($text));
 
 		if ($this->getStyle()->hasTextDecoration())
 		{
