@@ -7,7 +7,7 @@ class Invoice_Export {
 			throw new Exception("\$intPeriodsAgo with value '{$intPeriodsAgo}' is less than the minimum of 0");
 		}
 
-		$selOldInvoice = new StatementSelect("Invoice", "*", "Account = <Account> AND CreatedOn =< <CreatedOn>", "CreatedOn DESC", "$intPeriodsAgo, 1");
+		$selOldInvoice = new StatementSelect("Invoice", "*", "Account = <Account> AND CreatedOn <= <CreatedOn>", "CreatedOn DESC", "$intPeriodsAgo, 1");
 		if ($selOldInvoice->Execute($arrInvoice) === false) {
 			throw new Exception_Database($selOldInvoice->Error());
 		}
