@@ -88,7 +88,7 @@ class Invoice_Export_XML {
 		// Invoice History
 		//--------------------------------------------------------------------//
 		$xmlInvoiceHistory = self::_addElement($xmlInvoice, 'InvoiceHistory');
-		$iInvoiceHistoryProgress = 1;
+		$iInvoiceHistoryProgress = 0;
 		while ($aHistoricInvoice = Invoice_Export::getOldInvoice($arrInvoice, $iInvoiceHistoryProgress)) {
 			$xmlHistoricInvoice = $domDocument->createElement('HistoricInvoice');
 			$xmlInvoiceHistory->appendChild($xmlHistoricInvoice);
