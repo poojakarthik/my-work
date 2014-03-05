@@ -12,7 +12,7 @@ class CollectionModuleTelcoBlue extends CollectionModuleBase {
 	public $intBaseFileType = RESOURCE_TYPE_FILE_RESOURCE_TELCOBLUE;
 
 	protected $_aMissingPeriods;
-	
+
 	function __construct($iCarrierModuleId) {
 		parent::__construct($iCarrierModuleId);
 	}
@@ -28,7 +28,7 @@ class CollectionModuleTelcoBlue extends CollectionModuleBase {
 
 		return true;
  	}
- 	
+
  	public function Disconnect() {
 		// No-op
 	}
@@ -47,7 +47,7 @@ class CollectionModuleTelcoBlue extends CollectionModuleBase {
 
 						// Make sure there is something to collect
 						if (empty($aResponses) && empty($aNotifications)) {
-							// There is no responses or notifications. 
+							// There is no responses or notifications.
 							if ($this->_canDeferPeriod($iKey, $aPeriod)) {
 								throw new CollectionModuleTelcoBlue_Exception_NoDataForLastPeriod();
 							}
@@ -156,7 +156,7 @@ class CollectionModuleTelcoBlue extends CollectionModuleBase {
 				)
 			);
 		}
-		
+
 		// No more files
 		return false;
 	}
@@ -175,14 +175,14 @@ class CollectionModuleTelcoBlue extends CollectionModuleBase {
 
 		return ($iMaxKeyForImportFileType == $iKey);
 	}
-	
+
 	private function _getMissingDates() {
 		if (!isset($this->_aMissingPeriods)) {
 			// Get a list of files we already have
 			Log::get()->logIf(self::DEBUG_LOGGING, "\n\n".self::LOG_TABS."Retrieving list of already downloaded files");
 			$mResult = Query::run("
 				SELECT	*,
-						CASE 
+						CASE
 							WHEN FileName LIKE '______________-______________.provisioning.csv'
 							THEN <import_file_type_provisioning>
 							ELSE <import_file_type_usage>
@@ -219,7 +219,7 @@ class CollectionModuleTelcoBlue extends CollectionModuleBase {
 				// Check if there is a gap between the end date of the previous file to the start date of this file
 				$sLatestDate = $aLatestDateByFileImportType[$iImportFileType];
 				if ($sLatestDate < $sFromDate) {
-					Log::get()->logIf(self::DEBUG_LOGGING, self::LOG_TABS."There is a gap period: $sLatestDate < $sFromDate");					
+					Log::get()->logIf(self::DEBUG_LOGGING, self::LOG_TABS."There is a gap period: $sLatestDate < $sFromDate");
 					$this->_aMissingPeriods[] = array(
 						'iImportFileType' => $iImportFileType,
 						'sFrom' => $sLatestDate,
@@ -264,7 +264,7 @@ class CollectionModuleTelcoBlue extends CollectionModuleBase {
 			foreach ($this->_aMissingPeriods as $aPeriod) {
 				Log::get()->logIf(self::DEBUG_LOGGING, self::LOG_TABS."\tFrom: {$aPeriod['sFrom']}; To: {$aPeriod['sTo']}; Import File Type: {$aPeriod['iImportFileType']};");
 			}
-			
+
 			reset($this->_aMissingPeriods);
 			Log::get()->logIf(self::DEBUG_LOGGING, self::LOG_TABS, false);
 		}
@@ -292,7 +292,7 @@ class CollectionModuleTelcoBlue extends CollectionModuleBase {
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_SSL_VERIFYPEER => false,
 			CURLOPT_FOLLOWLOCATION => 1,
-			CURLOPT_TIMEOUT => 40,
+			CURLOPT_TIMEOUT => 300,
 			CURLOPT_PORT => $this->_oConfig->APIPort,
 			CURLOPT_HTTPHEADER => array(
 				"Content-Type: application/json;",
@@ -321,11 +321,11 @@ class CollectionModuleTelcoBlue extends CollectionModuleBase {
 			// No header, weird response
 			throw new Exception("Unexpected response from API, no HTTP header: {$mResult}");
 		}
-		
+
 		$sBody = $aResponseParts[$iBodyPartIndex];
 		$mJSONResponse = JSON_Services::decode($sBody);
 		$bInvalidJSONResponse = ($mJSONResponse === null && trim($sBody) != 'null');
-		
+
 		if ($bInvalidJSONResponse) {
 			// JSON decode error
 			throw new Exception("Invalid JSON response from API. URL='{$sRemoteURL}' Response='{$sBody}'");
