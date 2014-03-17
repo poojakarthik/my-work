@@ -169,6 +169,14 @@ class Ticketing_Import_MailServer extends Ticketing_Import {
 							}
 						}
 
+						// Fall back to content-id
+						if ($sFilename === null) {
+							if (isset($aHeaders['content-id']) && strlen(trim($aHeaders['content-id']))) {
+								// Use the Content-ID as a pseudo-filename
+								$sFilename = trim($aHeaders['content-id']);
+							}
+						}
+
 						if ($sFilename === null) {
 							throw new Exception("Failed to determine filename of attachment. Headers: ".var_export($aHeaders, true));
 						}
