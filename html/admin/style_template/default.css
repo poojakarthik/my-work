@@ -3,7 +3,7 @@
  * All styling of new functionality (Framework 3 or 2) should have its
  * styling defined in style.css
  *
- * You should only add styling rules to this file if they are for a Framework 2 page 
+ * You should only add styling rules to this file if they are for a Framework 2 page
  * (or popup that is only ever openned on a Framework 2 page), and adding the rules to
  * style.css has an adverse affect on existing Framework 3 functionality.
  * In these cases I would encourage you to fix the conflict with the Framework 3 functionality
@@ -15,11 +15,11 @@
 /* Flex CSS file														  */
 /*																		  */
 /* Contains these sections:												  */
-/* 	GENERIC																  */							
-/*	DIVS																  */																		
+/* 	GENERIC																  */
+/*	DIVS																  */
 /*	IMAGES																  */
 /*	DEFAULT I/O															  */
-/*	POSITIONS															  */	
+/*	POSITIONS															  */
 /*	COLOURS																  */
 /*	SIZES																  */
 /*	BLOCK LAYOUTS														  */
@@ -60,7 +60,7 @@ img[onclick]
 a:link, a:visited
 {
 	color: #003399;
-	text-decoration:	none;		
+	text-decoration:	none;
 }
 
 a:hover
@@ -72,7 +72,7 @@ a:hover
 a:active
 {
 	color: #003399;
-	text-decoration:	none;		
+	text-decoration:	none;
 }
 
 a[onclick],
@@ -146,7 +146,7 @@ label
 	cursor:				pointer;
 }
 
-/* 
+/*
  * This contains the same styling as the DefaultOutputSpan class
  */
 td,
@@ -154,7 +154,8 @@ span
 {
 	font-family: 		Arial, sans-serif;
 /*	line-height: 		18pt;*/
-	font-size: 			10pt;
+	/*font-size: 			10pt;*/
+	font-style: inherit;
 /*	left:				0px;
 	top:				0px;*/
 	overflow:			hidden;
@@ -357,10 +358,10 @@ table.Listing tr.Even th,
 table.Listing tr.Even td
 {
 	background-color:    #ddd;
-	vertical-align:			top;		
+	vertical-align:			top;
 }
 
-table.Listing tr.First th.VixenTableSortColumn div.VixenTableSortColumnWrapper 
+table.Listing tr.First th.VixenTableSortColumn div.VixenTableSortColumnWrapper
 {
 	display: 				inline;
 	background-repeat:   	no-repeat;
@@ -383,14 +384,14 @@ table.Listing tr.First th.VixenTableSortColumnDesc div.VixenTableSortColumnWrapp
 table.Listing tr.Archived td
 {
 	background-color:    #C0C0C0;
-	vertical-align:			top;		
+	vertical-align:			top;
 }
 
 table.Listing tr.Selected th,
 table.Listing tr.Selected td
 {
 	background-color:	#99FF33;
-	vertical-align:		top;		
+	vertical-align:		top;
 }
 
 table.Listing tr.PrimarySelected th,
@@ -405,13 +406,13 @@ table.Listing tr.Hover th,
 table.Listing tr.Hover td
 {
 	background-color:    #FFFFAA;
-	vertical-align:			top;		
+	vertical-align:			top;
 }
 
 
 table.Listing a:link, table.Listing a:visited {
 	color: #333333;
-	text-decoration: none;		
+	text-decoration: none;
 }
 
 table.Listing a:hover {
@@ -421,12 +422,12 @@ table.Listing a:hover {
 
 table.Listing a:active {
 	color: #333333;
-	text-decoration: none;		
+	text-decoration: none;
 }
 
 table.Summary
 {
-	background-color:    #C0C0C0;		
+	background-color:    #C0C0C0;
 }
 
 /**************************************************************************/
@@ -626,7 +627,7 @@ h2.ConstantGroup
 	background-image:				url('img/template/article.png');
 }
 
-h2.CustomerGroup	
+h2.CustomerGroup
 {
 	background-image:				url('img/template/article.png');
 }
@@ -655,7 +656,7 @@ h2.Tickets
 
 /**************************************************************************/
 /* DISPLAY FORMATS														  */
-/**************************************************************************/	
+/**************************************************************************/
 .Currency
 {
 	font-family:		"Courier New", monospace;
@@ -807,7 +808,7 @@ table.flexModalWrapper td.flexModalWrapper
 	border: 0px;
 	text-align: center;
 	vertical-align: middle;
-}	
+}
 
 table.flexModalContainer
 {

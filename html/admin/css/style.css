@@ -1055,7 +1055,7 @@ div.clearing {
 	/************************** END - Reflex Table - END **************************/
 
 	/******************* START - Reflex Input Controls - START ********************/
-	input[type='text'],select,textarea {
+	input[type='color'],input[type='date'],input[type='datetime'],input[type='datetime-local'],input[type='email'],input[type='month'],input[type='number'],input[type='password'],input[type='range'],input[type='search'],input[type='tel'],input[type='text'],input[type='time'],input[type='url'],input[type='week'],select,textarea {
 		border : .1em solid #333;
 	}
 	input,select,textarea {
@@ -1064,7 +1064,7 @@ div.clearing {
 		font-size: 1em;
 	}
 
-	input[type='text'][disabled],select[disabled],textarea[disabled],.control-field.mandatory input[type='text'][disabled],.control-field.mandatory input[type='number'][disabled],.control-field.mandatory input[type='date'][disabled],.control-field.mandatory select[disabled],.control-field.mandatory textarea[disabled],.control-field.invalid input[type='text'][disabled],.control-field.invalid input[type='number'][disabled],.control-field.invalid input[type='date'][disabled],.control-field.invalid select[disabled],.control-field.invalid textarea[disabled],.control-field.valid input[type='text'][disabled],.control-field.valid input[type='number'][disabled],.control-field.valid input[type='date'][disabled],.control-field.valid select[disabled],.control-field.valid textarea[disabled] {
+	input[type='color'][disabled],input[type='date'][disabled],input[type='datetime'][disabled],input[type='datetime-local'][disabled],input[type='email'][disabled],input[type='month'][disabled],input[type='number'][disabled],input[type='password'][disabled],input[type='range'][disabled],input[type='search'][disabled],input[type='tel'][disabled],input[type='text'][disabled],input[type='time'][disabled],input[type='url'][disabled],input[type='week'][disabled],select[disabled],textarea[disabled],.control-field.mandatory input[type='text'][disabled],.control-field.mandatory input[type='number'][disabled],.control-field.mandatory input[type='date'][disabled],.control-field.mandatory select[disabled],.control-field.mandatory textarea[disabled],.control-field.invalid input[type='text'][disabled],.control-field.invalid input[type='number'][disabled],.control-field.invalid input[type='date'][disabled],.control-field.invalid select[disabled],.control-field.invalid textarea[disabled],.control-field.valid input[type='text'][disabled],.control-field.valid input[type='number'][disabled],.control-field.valid input[type='date'][disabled],.control-field.valid select[disabled],.control-field.valid textarea[disabled] {
 		background-color: #EFEBE7;
 		color			: #888;
 	}
@@ -1161,7 +1161,7 @@ div.clearing {
 		background-repeat:	repeat-x !important;
 		background-color:	#ddd !important;
 		color:				#000 !important;
-		font-family: 		Arial, sans-serif !important;
+		font-family:		Arial, sans-serif !important;
 		font-size:			inherit !important;
 		font-weight:		bold !important;
 		margin:				.2em !important;
@@ -1171,7 +1171,7 @@ div.clearing {
 		border-bottom:		solid .1em #666 !important;
 		border-right:		solid .1em #666 !important;
 		border-radius :	4px !important;
-		cursor: 			pointer !important;
+		cursor:			pointer !important;
 		-moz-user-select:	none;
 		-webkit-user-select	: none;
 
@@ -1911,11 +1911,11 @@ div.clearing {
 	}
 
 	div.action-list div.item {
-		margin 				: 0.25em;
-		padding 			: 0.25em 0em 0.25em 0.25em;
+		margin				: 0.25em;
+		padding			: 0.25em 0em 0.25em 0.25em;
 		/*padding				: 0.25em;*/
-		border 				: 1px solid #000;
-		background-color 	: #EFEBE7;
+		border				: 1px solid #000;
+		background-color	: #EFEBE7;
 
 		/* Force auto-clearing of child floats */
 		overflow : hidden;
@@ -1930,8 +1930,8 @@ div.clearing {
 	}
 
 	div.action-list div.item.action {
-		border-color 		: #000;
-		background-color 	: #bcd;
+		border-color		: #000;
+		background-color	: #bcd;
 	}
 
 	div.action-list div.item div.header {
@@ -1954,7 +1954,7 @@ div.clearing {
 	}
 
 	div.action-list div.item div.details {
-		/*margin-top 	: 0.5em;*/
+		/*margin-top	: 0.5em;*/
 		display		: inline-block;
 		width		: 100%;
 	}
@@ -2256,7 +2256,7 @@ div.clearing {
 	}
 
 	.ButtonContainer {
-		height: 	25px;
+		height:	25px;
 		padding:	3px 0px 3px 0px;
 	}
 
@@ -2936,10 +2936,10 @@ div.clearing {
 	}
 
 	table.listing-fw3 thead th.VixenTableSortColumn div.VixenTableSortColumnWrapper {
-		display: 				inline;
+		display:				inline;
 		background-repeat:		no-repeat;
-		background-position: 	100% 50%;
-		padding-right: 			10px;
+		background-position:	100% 50%;
+		padding-right:			10px;
 		background-image:		url('../../admin/img/template/order_none.png');
 		cursor:					pointer;
 	}
@@ -4921,8 +4921,8 @@ div.clearing {
 	}
 
 	.followup-status-overdue {
-		color		: #dd0000 	!important;
-		font-weight	: bold 		!important;
+		color		: #dd0000	!important;
+		font-weight	: bold		!important;
 	}
 
 	div.followup-list-all {
@@ -6862,17 +6862,17 @@ div.clearing {
 	}
 
 	.TD_DefaultLabel {
-		font-family: 		Arial, sans-serif;
-	/*	line-height: 		18pt;*/
-		font-size: 			10pt;
+		font-family:		Arial, sans-serif;
+	/*	line-height:		18pt;*/
+		font-size:			10pt;
 		position:			absolute;
 		height:				20px;
 	}
 
 	.DefaultLabel,.DefaultInvalidLabel {
-		font-family: 		Arial, sans-serif;
-		line-height: 		18pt; /* Things break down if this isn't here */
-		font-size: 			10pt;
+		font-family:		Arial, sans-serif;
+		line-height:		18pt; /* Things break down if this isn't here */
+		font-size:			10pt;
 		position:			absolute;
 		height:				20px;
 		overflow:			hidden;
@@ -6882,9 +6882,9 @@ div.clearing {
 	}
 
 	.DefaultOutput {
-		font-family: 		Arial, sans-serif;
-		line-height: 		18pt;
-		font-size: 			10pt;
+		font-family:		Arial, sans-serif;
+		line-height:		18pt;
+		font-size:			10pt;
 		position:			relative;
 		top:				0px;
 		padding-left:		200px;
@@ -6892,9 +6892,9 @@ div.clearing {
 	}
 
 	.DefaultRegularOutput {
-		font-family: 		Arial, sans-serif;
-		line-height: 		18pt;
-		font-size: 			10pt;
+		font-family:		Arial, sans-serif;
+		line-height:		18pt;
+		font-size:			10pt;
 		position:			relative;
 		top:				0px;
 		overflow:			hidden;
@@ -6905,9 +6905,9 @@ div.clearing {
 	}
 
 	.DefaultInvalidOutput {
-		font-family: 		Arial, sans-serif;
-		line-height: 		18pt;
-		font-size: 			10pt;
+		font-family:		Arial, sans-serif;
+		line-height:		18pt;
+		font-size:			10pt;
 		position:			relative;
 		top:				0px;
 		padding-left:		200px;
@@ -6926,7 +6926,7 @@ div.clearing {
 	}
 
 	.DefaultInputCheckBox2 {
-		line-height: 		18pt;
+		line-height:		18pt;
 		font-size:			10pt;
 		position:			relative;
 		left:				197px;
@@ -6952,9 +6952,9 @@ div.clearing {
 
 	.DefaultInputTextSmall {
 
-		font-family: 		Arial, sans-serif;
-		line-height: 		18pt;
-		font-size: 			10pt;
+		font-family:		Arial, sans-serif;
+		line-height:		18pt;
+		font-size:			10pt;
 		position:			relative;
 		left:				0px;
 		top:				0px;
@@ -6971,9 +6971,9 @@ div.clearing {
 	}
 
 	.DefaultInvalidInputRadioButtons,.DefaultInvalidInputCheckBox,.DefaultInvalidInputComboBox,.DefaultInvalidInputText,.DefaultInvalidInputTextArea,.DefaultInvalidInput {
-		font-family: 		Arial, sans-serif;
-		line-height: 		1.2;
-		font-size: 			10pt;
+		font-family:		Arial, sans-serif;
+		line-height:		1.2;
+		font-size:			10pt;
 		position:			relative;
 		left:				200px;
 		top:				0px;
@@ -6993,14 +6993,14 @@ div.clearing {
 	}
 
 	.DefaultInputSpan,.DefaultInvalidInputSpan,.DefaultOutputSpan,.DefaultInvalidOutputSpan {
-		font-family: 		Arial, sans-serif;
-		line-height: 		18pt;
-		font-size: 			10pt;
+		font-family:		Arial, sans-serif;
+		line-height:		18pt;
+		font-size:			10pt;
 		position:			relative;
 		left:				0px;
 		top:				0px;
 		overflow:			hidden;
-		line-height: 		1.2;
+		line-height:		1.2;
 	}
 
 	.DefaultInvalidInputSpan {
@@ -7149,7 +7149,7 @@ div.clearing {
 		text-align		: left;
 		font-size		: 0.80em;
 		list-style-type	: none;
-		margin-left 	: 3px;
+		margin-left	: 3px;
 		padding-left	: 3px;
 		margin-top		: 1px;
 		padding-top		:1px;
@@ -7405,7 +7405,7 @@ div.clearing {
 		font-style		: italic;
 		font-size		: 0.85em;
 		list-style-type	: none;
-		margin-left 	: 1px;
+		margin-left	: 1px;
 		padding-left	: 1px;
 	}
 
@@ -7515,7 +7515,7 @@ div.clearing {
 	}
 
 	div.email-template-error>div.error-details {
-		background 	: white;
+		background	: white;
 		border		:1px solid black;
 	}
 
@@ -10146,7 +10146,7 @@ div.clearing {
 	/************************** END - Customer Group Email Template List - END **************************/
 
 	.customer-group-email-template-list-title {
-		background-image 	: url("../img/template/article.png");
+		background-image	: url("../img/template/article.png");
 		background-position	: left center;
 		background-repeat	: no-repeat;
 		height				: 21px;
@@ -11372,11 +11372,11 @@ div.clearing {
 
 	.component-account-user-edit-buttons {
 		margin-top	: 0.5em;
-		text-align 	: center;
+		text-align	: center;
 	}
 
 	.component-account-user-edit .reflex-propertylist {
-		margin 					: 0;
+		margin					: 0;
 		border					: solid 1px #bbb;
 		border-radius			: 4px 4px 4px 4px;
 		-moz-border-radius		: 4px 4px 4px 4px;
@@ -11706,7 +11706,7 @@ div.clearing {
   height: 16px;
   width: 16px;
   display: inline-block;
-  margin-right: 0.2em;
+  margin-right: 0.5ch;
   vertical-align: bottom;
 }
 .flex-page-customer-payments-chequeentry-processeddialog .fw-popup-header-icon {
@@ -11743,16 +11743,34 @@ div.clearing {
   align-content: stretch;
   border: 1px solid #d1d1d1;
   background: #ddd;
-  padding: 0;
+  padding: 0 0.25em;
   margin: 0;
   background: linear-gradient(to right, transparent 6.5em, #d1d1d1 6.5em);
+}
+.flex-popup-customer-payments-chequereport-constraints :required {
+  background: #fff;
+  color: #111;
+  border: 0.1em solid #da8;
+}
+.flex-popup-customer-payments-chequereport-constraints :invalid {
+  background: #ffecf0;
+  color: #111;
+  border: 0.1em solid #d30;
+}
+.flex-popup-customer-payments-chequereport-constraints :invalid:required {
+  border: 0.1em solid #da8;
+}
+.flex-popup-customer-payments-chequereport-constraints :valid {
+  background: #ecfff0;
+  color: #111;
+  border-color: #00c72b;
 }
 .flex-popup-customer-payments-chequereport-customergroup[data-disabled] [name='customergroup.id'] {
   visibility: hidden;
 }
 .flex-popup-customer-payments-chequereport [name='date.from'],
 .flex-popup-customer-payments-chequereport [name='date.to'] {
-  margin: 0.25em;
+  margin: 0.25em 0;
   font-family: Menlo, Consolas, monospace;
   margin-right: 0;
 }
@@ -11772,7 +11790,7 @@ div.clearing {
   height: 16px;
   width: 16px;
   display: inline-block;
-  margin-right: 0.2em;
+  margin-right: 0.5ch;
   vertical-align: bottom;
   margin: 0;
 }
@@ -11784,12 +11802,13 @@ div.clearing {
   margin: 0;
   padding: 0;
   justify-content: flex-start;
+  align-items: center;
 }
 .flex-popup-customer-payments-chequereport-constraints-datefrom-label,
 .flex-popup-customer-payments-chequereport-constraints-dateto-label,
 .flex-popup-customer-payments-chequereport-constraints-customergroup-label {
   border: 0;
-  margin: 0.25em;
+  margin: 0.25em 0.5em 0.25em 0;
   font-weight: bold;
   text-align: right;
   width: 6em;
@@ -11801,6 +11820,7 @@ div.clearing {
   margin: 0;
   padding: 0;
   justify-content: flex-start;
+  align-items: center;
 }
 .flex-popup-customer-payments-chequereport-constraints-customergroup-controls {
   display: flex;
@@ -11809,10 +11829,10 @@ div.clearing {
   align-content: stretch;
   border: 0;
   padding: 0;
-  margin: 0.25em;
+  margin: 0.25em 0;
 }
 .flex-popup-customer-payments-chequereport-constraints-customergroup-enable {
-  margin: 0.25em;
+  margin: 0.25em 0;
 }
 .flex-popup-customer-payments-chequereport-constraints-customergroup-enable * {
   vertical-align: middle;
@@ -11828,7 +11848,7 @@ div.clearing {
   height: 16px;
   width: 16px;
   display: inline-block;
-  margin-right: 0.2em;
+  margin-right: 0.5ch;
   vertical-align: bottom;
 }
 .flex-popup-customer-payments-chequereport-buttons-close::before {
@@ -11836,7 +11856,7 @@ div.clearing {
   height: 16px;
   width: 16px;
   display: inline-block;
-  margin-right: 0.2em;
+  margin-right: 0.5ch;
   vertical-align: bottom;
 }
 /********************************** Component: Datepicker *********************************/
@@ -11927,4 +11947,381 @@ div.clearing {
 }
 .fw-datepicker-active {
   cursor: pointer;
+}
+/********************************** Component: Service Add *********************************/
+.flex-page-service-add-debugwindow {
+  width: 1160px;
+  background-color: #fff;
+}
+.flex-page-service-add-servicelist {
+  padding: 0;
+}
+.flex-page-service-add-buttons {
+  border: 0;
+  margin: 0;
+  padding: 0.5em 0.25em;
+  text-align: center;
+}
+.flex-page-service-add-accountstatusmessage:empty {
+  display: none;
+}
+/************************ Component: Service Add Entry ************************/
+.flex-page-service-add-servicelist-service {
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  background-color: #ddd;
+}
+.flex-page-service-add-servicelist-service-heading {
+  color: #fff;
+  background-color: #499fcf;
+  text-align: left;
+  display: flex;
+  width: 100%;
+  margin: 0;
+}
+.flex-page-service-add-servicelist-service-heading [name='remove'] {
+  border: 0 !important;
+  background: transparent !important;
+  width: auto !important;
+  height: auto !important;
+  font-size: 100% !important;
+}
+.flex-page-service-add-servicelist-service-heading [name='remove']::before {
+  content: url("/admin/img/template/remove.png");
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+  margin: 0;
+}
+.flex-page-service-add-servicelist-service-heading-rateplan {
+  flex: 1;
+}
+.flex-page-service-add-servicelist-service-details {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  align-content: stretch;
+  border: 1px solid #d1d1d1;
+  background: #ddd;
+  padding: 0 0.25em;
+  flex: 1;
+}
+.flex-page-service-add-servicelist-service-details :required {
+  background: #fff;
+  color: #111;
+  border: 0.1em solid #da8;
+}
+.flex-page-service-add-servicelist-service-details :invalid {
+  background: #ffecf0;
+  color: #111;
+  border: 0.1em solid #d30;
+}
+.flex-page-service-add-servicelist-service-details :invalid:required {
+  border: 0.1em solid #da8;
+}
+.flex-page-service-add-servicelist-service-details :valid {
+  background: #ecfff0;
+  color: #111;
+  border-color: #00c72b;
+}
+.flex-page-service-add-servicelist-service-details [name='service_type_id'],
+.flex-page-service-add-servicelist-service-details [name='service_identifier'],
+.flex-page-service-add-servicelist-service-details [name='rate_plan_id'],
+.flex-page-service-add-servicelist-service-details [name='activate_immediately'] {
+  margin: 0.25em 0;
+}
+.flex-page-service-add-servicelist-service-details [name='activate_immediately'] {
+  margin-right: 0.5ch;
+}
+.flex-page-service-add-servicelist-service-details [name='rate_plan_id'] {
+  flex-grow: 1;
+}
+.flex-page-service-add-servicelist-service-details-activateimmediately[data-disabled] {
+  display: none;
+}
+.flex-page-service-add-servicelist-service-details-rateplan-message,
+.flex-page-service-add-servicelist-service-details-activateimmediately-controls {
+  margin: 0.25em 0;
+}
+.flex-page-service-add-servicelist-service-details-servicetype,
+.flex-page-service-add-servicelist-service-details-rateplan,
+.flex-page-service-add-servicelist-service-details-activateimmediately {
+  display: flex;
+  flex-direction: row;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  justify-content: flex-start;
+  align-items: center;
+}
+.flex-page-service-add-servicelist-service-details-servicetype-label,
+.flex-page-service-add-servicelist-service-details-rateplan-label,
+.flex-page-service-add-servicelist-service-details-activateimmediately-label {
+  border: 0;
+  margin: 0.25em 0.5em 0.25em 0;
+  font-weight: bold;
+  text-align: right;
+  width: 10em;
+  min-width: 10em;
+}
+.flex-page-service-add-servicelist-service-properties {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  align-content: stretch;
+  border: 1px solid #d1d1d1;
+  background: #ddd;
+  padding: 0 0.25em;
+  background: rgba(0,0,0,0.05);
+  flex: 1;
+}
+.flex-page-service-add-servicelist-service-properties :required {
+  background: #fff;
+  color: #111;
+  border: 0.1em solid #da8;
+}
+.flex-page-service-add-servicelist-service-properties :invalid {
+  background: #ffecf0;
+  color: #111;
+  border: 0.1em solid #d30;
+}
+.flex-page-service-add-servicelist-service-properties :invalid:required {
+  border: 0.1em solid #da8;
+}
+.flex-page-service-add-servicelist-service-properties :valid {
+  background: #ecfff0;
+  color: #111;
+  border-color: #00c72b;
+}
+/****************** Component: Service Add Entry (Landline) *******************/
+.flex-servicetype-landline-create [name='line_type'],
+[name='fnn'] [name='line_type'],
+.flex-servicetype-landline-create [name='address.category'],
+[name='fnn'] [name='address.category'],
+.flex-servicetype-landline-create [name='address.subdivision.type'],
+[name='fnn'] [name='address.subdivision.type'],
+.flex-servicetype-landline-create [name='address.subdivision.number'],
+[name='fnn'] [name='address.subdivision.number'],
+.flex-servicetype-landline-create [name='address.property_name'],
+[name='fnn'] [name='address.property_name'],
+.flex-servicetype-landline-create [name='address.street.number.composite'],
+[name='fnn'] [name='address.street.number.composite'],
+.flex-servicetype-landline-create [name='address.street.name'],
+[name='fnn'] [name='address.street.name'],
+.flex-servicetype-landline-create [name='address.street.type'],
+[name='fnn'] [name='address.street.type'],
+.flex-servicetype-landline-create [name='address.street.type_suffix'],
+[name='fnn'] [name='address.street.type_suffix'],
+.flex-servicetype-landline-create [name='address.locality'],
+[name='fnn'] [name='address.locality'],
+.flex-servicetype-landline-create [name='address.state'],
+[name='fnn'] [name='address.state'],
+.flex-servicetype-landline-create [name='address.postcode'],
+[name='fnn'] [name='address.postcode'] {
+  margin: 0.25em 0;
+  margin-right: 0.5ch;
+}
+.flex-servicetype-landline-create [name$='address.subdivision.number'],
+[name='fnn'] [name$='address.subdivision.number'],
+.flex-servicetype-landline-create [name$='address.street.number.composite'],
+[name='fnn'] [name$='address.street.number.composite'] {
+  text-align: center;
+}
+.flex-servicetype-landline-create-address-heading {
+  font-size: 1.2em;
+  border-bottom: 1px solid #d1d1d1;
+  border-bottom-color: rgba(0,0,0,0.25);
+}
+.flex-servicetype-landline-create-address-heading::before {
+  content: url("/admin/img/template/address.png");
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+  margin-bottom: 0.2ch;
+}
+.flex-servicetype-landline-create-linetype-residential,
+.flex-servicetype-landline-create-linetype-business {
+  display: block;
+}
+.flex-servicetype-landline-create-address-category-standard,
+.flex-servicetype-landline-create-address-category-postal,
+.flex-servicetype-landline-create-address-category-allotment {
+  display: block;
+}
+.flex-servicetype-landline-create-address-standard,
+.flex-servicetype-landline-create-address-postal,
+.flex-servicetype-landline-create-address-allotment {
+  display: none;
+}
+.flex-servicetype-landline-create-address[data-address-category='standard'] .flex-servicetype-landline-create-address-standard,
+.flex-servicetype-landline-create-address[data-address-category='postal'] .flex-servicetype-landline-create-address-postal,
+.flex-servicetype-landline-create-address[data-address-category='allotment'] .flex-servicetype-landline-create-address-allotment {
+  display: block;
+}
+.flex-servicetype-landline-create-fnn,
+.flex-servicetype-landline-create-linetype,
+.flex-servicetype-landline-create-address-category,
+.flex-servicetype-landline-create-address-standard-subdivision,
+.flex-servicetype-landline-create-address-standard-propertyname,
+.flex-servicetype-landline-create-address-standard-street,
+.flex-servicetype-landline-create-address-standard-locality,
+.flex-servicetype-landline-create-address-standard-state,
+.flex-servicetype-landline-create-address-standard-postcode,
+.flex-servicetype-landline-create-address-postal-subdivision,
+.flex-servicetype-landline-create-address-postal-locality,
+.flex-servicetype-landline-create-address-postal-state,
+.flex-servicetype-landline-create-address-postal-postcode,
+.flex-servicetype-landline-create-address-allotment-subdivision,
+.flex-servicetype-landline-create-address-allotment-propertyname,
+.flex-servicetype-landline-create-address-allotment-street,
+.flex-servicetype-landline-create-address-allotment-locality,
+.flex-servicetype-landline-create-address-allotment-state,
+.flex-servicetype-landline-create-address-allotment-postcode {
+  display: flex;
+  flex-direction: row;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  justify-content: flex-start;
+  align-items: center;
+}
+.flex-servicetype-landline-create-fnn-label,
+.flex-servicetype-landline-create-linetype-label,
+.flex-servicetype-landline-create-address-category-label,
+.flex-servicetype-landline-create-address-standard-subdivision-label,
+.flex-servicetype-landline-create-address-standard-propertyname-label,
+.flex-servicetype-landline-create-address-standard-street-label,
+.flex-servicetype-landline-create-address-standard-locality-label,
+.flex-servicetype-landline-create-address-standard-state-label,
+.flex-servicetype-landline-create-address-standard-postcode-label,
+.flex-servicetype-landline-create-address-postal-subdivision-label,
+.flex-servicetype-landline-create-address-postal-locality-label,
+.flex-servicetype-landline-create-address-postal-state-label,
+.flex-servicetype-landline-create-address-postal-postcode-label,
+.flex-servicetype-landline-create-address-allotment-subdivision-label,
+.flex-servicetype-landline-create-address-allotment-propertyname-label,
+.flex-servicetype-landline-create-address-allotment-street-label,
+.flex-servicetype-landline-create-address-allotment-locality-label,
+.flex-servicetype-landline-create-address-allotment-state-label,
+.flex-servicetype-landline-create-address-allotment-postcode-label {
+  border: 0;
+  margin: 0.25em 0.5em 0.25em 0;
+  font-weight: bold;
+  text-align: right;
+  width: 10em;
+  min-width: 10em;
+}
+.flex-servicetype-landline-create-linetype-label,
+.flex-servicetype-landline-create-address-category-label {
+  align-self: flex-start;
+}
+/******************* Component: Service Add Entry (Mobile) ********************/
+.flex-servicetype-mobile-create [name='msn'],
+.flex-servicetype-mobile-create [name='puk'],
+.flex-servicetype-mobile-create [name='esn'],
+.flex-servicetype-mobile-create [name='state'],
+.flex-servicetype-mobile-create [name='date_of_birth'],
+.flex-servicetype-mobile-create [name='comments'] {
+  margin: 0.25em 0;
+}
+.flex-servicetype-mobile-create [name='comments'] {
+  width: 100%;
+}
+.flex-servicetype-mobile-create-msn,
+.flex-servicetype-mobile-create-puk,
+.flex-servicetype-mobile-create-esn,
+.flex-servicetype-mobile-create-state,
+.flex-servicetype-mobile-create-dateofbirth,
+.flex-servicetype-mobile-create-comments {
+  display: flex;
+  flex-direction: row;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  justify-content: flex-start;
+  align-items: center;
+}
+.flex-servicetype-mobile-create-msn-label,
+.flex-servicetype-mobile-create-puk-label,
+.flex-servicetype-mobile-create-esn-label,
+.flex-servicetype-mobile-create-state-label,
+.flex-servicetype-mobile-create-dateofbirth-label,
+.flex-servicetype-mobile-create-comments-label {
+  border: 0;
+  margin: 0.25em 0.5em 0.25em 0;
+  font-weight: bold;
+  text-align: right;
+  width: 10em;
+  min-width: 10em;
+}
+.flex-servicetype-mobile-create-comments-label {
+  align-self: flex-start;
+}
+/******************* Component: Service Add Entry (Inbound) *******************/
+.flex-servicetype-inbound-create [name='fnn'],
+.flex-servicetype-inbound-create [name='answerpoint'],
+.flex-servicetype-inbound-create [name='complex'],
+.flex-servicetype-inbound-create [name='configuration'] {
+  margin: 0.25em 0;
+}
+.flex-servicetype-inbound-create [name='complex'] {
+  margin-right: 0.5ch;
+}
+.flex-servicetype-inbound-create [name='configuration'] {
+  width: 100%;
+}
+.flex-servicetype-inbound-create-fnn,
+.flex-servicetype-inbound-create-answerpoint,
+.flex-servicetype-inbound-create-complex,
+.flex-servicetype-inbound-create-configuration {
+  display: flex;
+  flex-direction: row;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  justify-content: flex-start;
+  align-items: center;
+}
+.flex-servicetype-inbound-create-fnn-label,
+.flex-servicetype-inbound-create-answerpoint-label,
+.flex-servicetype-inbound-create-complex-label,
+.flex-servicetype-inbound-create-configuration-label {
+  border: 0;
+  margin: 0.25em 0.5em 0.25em 0;
+  font-weight: bold;
+  text-align: right;
+  width: 10em;
+  min-width: 10em;
+}
+.flex-servicetype-inbound-create-configuration-label {
+  align-self: flex-start;
+}
+/********************* Component: Service Add Entry (ADSL) ********************/
+.flex-servicetype-adsl-create [name='fnn'] {
+  margin: 0.25em 0;
+}
+.flex-servicetype-adsl-create-fnn {
+  display: flex;
+  flex-direction: row;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  justify-content: flex-start;
+  align-items: center;
+}
+.flex-servicetype-adsl-create-fnn-label {
+  border: 0;
+  margin: 0.25em 0.5em 0.25em 0;
+  font-weight: bold;
+  text-align: right;
+  width: 10em;
+  min-width: 10em;
+}
+.flex-servicetype-adsl-create-fnn-suffix {
+  margin-left: 0.5ch;
 }

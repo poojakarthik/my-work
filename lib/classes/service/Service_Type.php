@@ -27,6 +27,10 @@ class Service_Type extends ORM_Enumerated
 		)->fetch_assoc();
 	}
 
+	public static function getForCarrierModule($carrierModuleId) {
+		return new self(DataAccess::get()->query('SELECT * FROM ServiceType WHERE carrier_module_id = <carrier_module_id>', array('carrier_module_id' => $carrierModuleId)));
+	}
+
 	protected static function getCacheName()
 	{
 		// It's safest to keep the cache name the same as the class name, to ensure uniqueness

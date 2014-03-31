@@ -112,7 +112,12 @@
 		var	_thisModule				= this,
 			aNormalisedDependencies	= require.normaliseDependencies(aDependencies),
 			oPending				= {},
-			fnOnLoad				= function (sModuleId) {
+			fnOnLoad				= function (error, sModuleId) {
+				if (error) {
+					_thisModule.eventually(fnCallback.bind(null, error));
+					return;
+				}
+
 				delete oPending[sModuleId];
 				if (!Object.keys(oPending).length) {
 					// Everything is loaded
@@ -166,7 +171,8 @@
 
 			onException	: function (oEvent, oException) {
 				_log(oException);
-				throw oException;
+				//throw oException;
+				fnCallback(oException);
 			},
 
 			onFailure	: function (oAJAXResponse) {
@@ -191,6 +197,12 @@
 					_log("Unable to load module '"+sModuleIdentifier+"': response data is invalid", oAJAXResponse);
 					throw new Error("Unable to load module '"+sModuleIdentifier+"': response data is invalid");
 				}
+				if (oSources.oException) {
+					_log("Unable to load module: " + sModuleIdentifier);
+					var error = new Error("Unable to load module: " + sModuleIdentifier);
+					error.serverException = oSources.oException;
+					throw error;
+				}
 
 				var	_onAfterModuleDeclared	= function (sDeclaredIdentifier) {
 					delete oSources[sDeclaredIdentifier];
@@ -210,6 +222,10 @@
 					if (oSources.hasOwnProperty(sLoadedIdentifier)) {
 						sLoadedId	= require.id(sLoadedIdentifier);
 						sSource		= oSources[sLoadedId];
+
+						if (typeof sSource !== 'string') {
+							throw new Error('Source for module ' + sLoadedId + ' was not loaded as part of ' + sModuleId);
+						}
 
 						// Allow Modules/1.* modules as well
 						if (!_isModules2(sSource)) {

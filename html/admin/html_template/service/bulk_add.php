@@ -61,7 +61,7 @@ class HtmlTemplateServiceBulkAdd extends HtmlTemplate
 	{
 		$this->_intContext = $intContext;
 		$this->_strContainerDivId = $strId;
-		
+
 		$this->LoadJavascript("service_bulk_add");
 		$this->LoadJavascript("service_extra_details_inbound");
 		$this->LoadJavascript("service_extra_details_mobile");
@@ -83,8 +83,12 @@ class HtmlTemplateServiceBulkAdd extends HtmlTemplate
 	 */
 	function Render()
 	{
+		if (Employee::getForId(Flex::getUserId())->isGod()) {
+			?><button onclick="module.provide(['flex/component/page/service/add'], function () {require('flex/component/page/service/add').createAsPopup({accountId: 1}).display();});">New UI</button><?
+		}
+
 		$arrDealers = DBO()->Dealers->AsArray->Value;
-		
+
 		// Build the Dealer combobox options
 		$strDealerOptions = "<option value='0'></option>";
 		foreach ($arrDealers as $arrDealer)
@@ -92,18 +96,18 @@ class HtmlTemplateServiceBulkAdd extends HtmlTemplate
 			$strName = htmlspecialchars($arrDealer['Name'], ENT_QUOTES) . " (Id: {$arrDealer['Id']})";
 			$strDealerOptions .= "<option value='{$arrDealer['Id']}'>$strName</option>";
 		}
-		
+
 		// Build the table and add a single row to it, which can then be cloned to add more rows
 		Table()->Services->SetHeader("&nbsp;", "FNN", "Confirm FNN", "Active", "Plan", "Cost Centre", "Dealer", "Cost (\$)");
 		Table()->Services->SetWidth("4%", "12%", "12%", "5%", "22%", "18%", "19%", "8%");
 		Table()->Services->SetAlignment("Center", "Left", "Left", "Center", "Left", "Left", "Left", "Left");
-		
+
 		$strFnnCell			= "<input id='FnnTextBox' type='text' maxlength='20' style='width:100%'></input>";
 		$strFnnConfirmCell	= "<input id='FnnConfirmTextBox' type='text' maxlength='20' style='width:100%'></input>";
 		$strServiceTypeCell	= "<div class='ServiceTypeIconBlank'></div>";
 		$strDealerCell		= "<select id='DealerCombo' style='width:100%'>$strDealerOptions</select>";
 		$strCostCell		= "<input id='CostTextBox' type='text' maxlength='7' style='width:100%'></input>";
-		
+
 		$strDisabled = "";
 		if (DBO()->Account->Archived->Value == ACCOUNT_STATUS_PENDING_ACTIVATION)
 		{
@@ -112,7 +116,7 @@ class HtmlTemplateServiceBulkAdd extends HtmlTemplate
 			echo "<div class='MsgNotice'>The account is pending activation.  New services cannot be activated until the account is activated.</div>";
 		}
 		$strActivateCell	= "<input id='ActivateCheckBox' type='checkbox' $strDisabled></input>";
-		
+
 		$strCostCentreCell	 = "<select id='CostCentreCombo' style='width:100%'>";
 		$strCostCentreCell	.= "<option value='0'>&nbsp;</option>";
 		$arrCostCenters	= DBO()->Account->AllCostCenters->Value;
@@ -121,19 +125,19 @@ class HtmlTemplateServiceBulkAdd extends HtmlTemplate
 			$strCostCentreCell .= "<option value='$intId'>$strName</option>";
 		}
 		$strCostCentreCell	.= "</select>";
-		
+
 		$strPlanCell		= "<select id='PlanCombo' style='width:100%'></select>";
-		
+
 		Table()->Services->AddRow($strServiceTypeCell, $strFnnCell, $strFnnConfirmCell, $strActivateCell, $strPlanCell, $strCostCentreCell, $strDealerCell, $strCostCell);
-		
+
 		Table()->Services->Render();
-		
+
 		// Initialise the Javascript object which facilitates this page
 		$arrRatePlans	= DBO()->Account->AllRatePlans->Value;
 		$jsonRatePlans	= Json()->encode($arrRatePlans);
 		$intAccountId	= DBO()->Account->Id->Value;
 		$strJsScript	= "Vixen.ServiceBulkAdd.Initialise($intAccountId, $jsonRatePlans);";
-		
+
 		echo "
 <div class='ButtonContainer'>
 	<input type='button' value='Save' onclick='Vixen.ServiceBulkAdd.ValidateServices()' style='float:right'></input>
