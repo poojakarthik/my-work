@@ -9,26 +9,34 @@
 class Rate extends ORM_Cached
 {
 	const	RATING_PRECISION	= 2;	// Round to the nearest whole cent
-	
+
+	const LOGGING_RATING_PRECISION = 2;
 	const	RATE_SEARCH_LOGGING				= true;
 	const	RATE_ALGORITHM_LOGGING			= true;
 	const	RATE_ALGORITHM_STAGE_LOGGING	= true;
-	
+
 	protected 			$_strTableName			= "Rate";
 	protected static	$_strStaticTableName	= "Rate";
-	
+
 	protected static	$_bLoggingEnabled	= false;
-	
+
+	public function getChargePrecision() {
+		if ($this->charge_precision) {
+			return $this->charge_precision
+		}
+		return self::RATING_PRECISION;
+	}
+
 	public static function setRateLoggingEnabled($bEnabled)
 	{
 		self::$_bLoggingEnabled	= !!$bEnabled;
 	}
-	
+
 	public static function isRateLoggingEnabled()
 	{
 		return self::$_bLoggingEnabled;
 	}
-	
+
 	protected static function _logRateSearch($sMessage, $bNewLine=true)
 	{
 		if (self::RATE_SEARCH_LOGGING && self::$_bLoggingEnabled)
@@ -36,7 +44,7 @@ class Rate extends ORM_Cached
 			Log::getLog()->log($sMessage, $bNewLine);
 		}
 	}
-	
+
 	protected static function _logRateAlgorithm($sMessage, $bNewLine=true)
 	{
 		if (self::RATE_ALGORITHM_LOGGING && self::$_bLoggingEnabled)
@@ -44,7 +52,7 @@ class Rate extends ORM_Cached
 			Log::getLog()->log($sMessage, $bNewLine);
 		}
 	}
-	
+
 	protected static function _logRateAlgorithmStage($sMessage, $bNewLine=true)
 	{
 		if (self::RATE_ALGORITHM_STAGE_LOGGING && self::$_bLoggingEnabled)
@@ -52,13 +60,13 @@ class Rate extends ORM_Cached
 			Log::getLog()->log($sMessage, $bNewLine);
 		}
 	}
-	
+
 	public static function getForCDR($mCDR)
 	{
 		$oCDR		= CDR::getForId(ORM::extractId($mCDR));
-		
+
 		self::_logRateSearch("Finding a Rate for CDR {$oCDR->Id}...");
-		
+
 		// Is this a Fleet call?
 		$bFleet					= false;
 		$oDestinationService	= Service::getCurrentForFNN($oCDR->Destination, $oCDR->StartDatetime);
@@ -73,7 +81,7 @@ class Rate extends ORM_Cached
 				$bFleet	= true;
 			}
 		}
-		
+
 		// Search for a Rate (try Fleet first, if eligible)
 		if ($bFleet && null !== ($oRate = Rate::getForServiceAndDefinition($oCDR->Service, $oCDR->RecordType, $oCDR->StartDatetime, $oCDR->DestinationCode, true)))
 		{
@@ -90,16 +98,16 @@ class Rate extends ORM_Cached
 		}
 		return $oRate;
 	}
-	
+
 	public static function getForServiceAndDefinition($mService, $mRecordType, $mDatetime, $iDestinationCode=null, $bFleet=false, $bPerfectMatch=true)
 	{
 		$oService		= Service::getForId(ORM::extractId($mService));
 		$oRecordType	= ($mRecordType !== null) ? Record_Type::getForId(ORM::extractId($mRecordType)) : null;
 		$oDestination	= ($iDestinationCode) ? Destination::getForCode($iDestinationCode) : null;
-		
+
 		$iDatetime	= (is_string($mDatetime)) ? strtotime($mDatetime) : (int)$mDatetime;
 		$sDay		= date('l', $iDatetime);
-		
+
 	 	$aWhere							= array();
 	 	$aWhere['service_id']			= $oService->Id;
 	 	$aWhere['effective_datetime']	= date('Y-m-d H:i:s', $iDatetime);
@@ -108,7 +116,7 @@ class Rate extends ORM_Cached
 		$aWhere['is_fleet']				= (int)!!$bFleet;
 		$aWhere['use_perfect_match']	= (int)!!$bPerfectMatch;
 		$aWhere['is_fleet_check_only']	= ($oRecordType === null) ? 1 : 0;
-		
+
 		self::_logRateSearch("Search for ", false);
 		self::_logRateSearch(($bFleet) ? 'Fleet' : 'Standard', false);
 		self::_logRateSearch(" Rate for Service {$aWhere['service_id']} ({$oService->FNN}) on {$aWhere['effective_datetime']} ({$sDay}) for ", false);
@@ -124,13 +132,13 @@ class Rate extends ORM_Cached
 		{
 			self::_logRateSearch("Call Type {$oRecordType->Name}: {$oDestination->Description} ({$oRecordType->Id}:{$oDestination->Code})");
 		}
-		
+
 		$selForServiceAndDefinition	= self::_preparedStatement('selForServiceAndDefinition');
 		if ($selForServiceAndDefinition->Execute($aWhere) === false)
 		{
 			throw new Exception_Database($selForServiceAndDefinition->Error());
 		}
-		
+
 		// NOTE: This query isn't limited to one result, though it is ordered so that the first result is the best match
 		if ($aRate = $selForServiceAndDefinition->Fetch())
 		{
@@ -141,18 +149,18 @@ class Rate extends ORM_Cached
 			return null;
 		}
 	}
-	
+
 	public static function roundToCurrencyStandard($fAmountInDollars, $iDecimalPlaces=self::RATING_PRECISION)
 	{
 		return Rate::roundToPrecision($fAmountInDollars, $iDecimalPlaces);
 	}
-	
+
 	public static function roundToPrecision($fAmountInDollars, $iDecimalPlaces=self::RATING_PRECISION)
 	{
 		$fRounded = round(abs($fAmountInDollars), $iDecimalPlaces);
 		return ($fAmountInDollars < 0) ? 0 - $fRounded : $fRounded;
 	}
-	
+
 	// Round up to the specified precision
 	public static function roundToRatingStandard($fAmountInDollars, $iDecimalPlaces=self::RATING_PRECISION) {
 		// Current implementation is to ceil to the nearest whole precision
@@ -178,28 +186,29 @@ class Rate extends ORM_Cached
 		$fRounded	= round(ceil(round(abs($fAmountInDollars) * $iFraction, 8)) / $iFraction, $iDecimalPlaces);
 		return ($fAmountInDollars < 0) ? 0 - $fRounded : $fRounded;
 	}
-	
+
 	public function calculateChargeForCDR($mCDR)
 	{
 		$oCDR	= CDR::getForId(ORM::extractId($mCDR));
 		return $this->calculateCharge($oCDR->Units, $oCDR->Cost, $oCDR->StartDatetime, ($oCDR->EndDatetime) ? $oCDR->EndDatetime : $oCDR->StartDatetime);
 	}
-	
+
 	public function calculateCharge($iUnits, $fCost, $sStartDatetime, $sEndDatetime)
 	{
-		$this->_logRateAlgorithm("Rating {$iUnits} Units at \$".number_format($fCost, '4', '.', '')." Cost from {$sStartDatetime} to {$sEndDatetime}");
-		
+		$iLoggingRatingPrecision = $oRate->getChargePrecision() + self::LOGGING_RATING_PRECISION;
+		$this->_logRateAlgorithm("Rating {$iUnits} Units at \$".number_format($fCost, $iLoggingRatingPrecision, '.', '')." Cost from {$sStartDatetime} to {$sEndDatetime}");
+
 		$fCost					= (float)$fCost;
 		$iUnits					= (int)$iUnits;
 		$bPassthrough			= !!$this->PassThrough;
 		$bProrate				= !!$this->Prorate;
 		$fStandardMinimumCharge	= (float)$this->StdMinCharge;
-		
+
 		$iCapUnits		= (int)$this->CapUnits;		// Maximum Units for Standard Rate
 		$fCapCost		= (float)$this->CapCost;	// Maximum Charge for Standard Rate
 		$iCapUsage		= (int)$this->CapUsage;		// Minimum Units for Excess Rate
 		$fCapLimit		= (float)$this->CapLimit;	// Minimum Charge for Excess Rate
-		
+
 		$aStandardRate	= array(
 									'fRatePerUnitBlock'				=> (float)$this->StdRatePerUnit,
 									'fFlagfall'						=> (float)$this->StdFlagfall,
@@ -214,7 +223,7 @@ class Rate extends ORM_Cached
 									'fMarkupDollarsPerUnitBlock'	=> (float)$this->ExsMarkup,
 									'iUnitBlockSize'				=> (int)$this->ExsUnits
 								);
-		
+
 		// Calculate
 		//--------------------------------------------------------------------//
 		$fCharge	= 0.0;
@@ -223,7 +232,7 @@ class Rate extends ORM_Cached
 			// PASSTHROUGH
 			// Passthroughs have a much simpler calculation
 			$fCharge	= max($fCost + $aStandardRate['fFlagfall'], $fStandardMinimumCharge);
-			$this->_logRateAlgorithm("PASSTHROUGH: \$".number_format($fCharge, '4', '.', '')."\t= max({$fCost} + {$aStandardRate['fFlagfall']}, {$fStandardMinimumCharge})");
+			$this->_logRateAlgorithm("PASSTHROUGH: \$".number_format($fCharge, $iLoggingRatingPrecision, '.', '')."\t= max({$fCost} + {$aStandardRate['fFlagfall']}, {$fStandardMinimumCharge})");
 		}
 		else
 		{
@@ -231,16 +240,16 @@ class Rate extends ORM_Cached
 			// Apply Standard Rate
 			$fStandardCharge	= $this->_calculateChargeStage($iUnits, $fCost, $aStandardRate);
 			$fCharge			= $fStandardCharge;
-			
-			$this->_logRateAlgorithm("STANDARD CHARGE: \$".number_format($fCharge, '4', '.', ''));
-			
+
+			$this->_logRateAlgorithm("STANDARD CHARGE: \$".number_format($fCharge, $iLoggingRatingPrecision, '.', ''));
+
 			// STANDARD MINIMUM CHARGE
 			if ($fStandardMinimumCharge)
 			{
 				$fCharge	= max($fCharge, $fStandardMinimumCharge);
-				$this->_logRateAlgorithm("STANDARD MINIMUM CHARGE: \$".number_format($fCharge, '4', '.', '')."\t= max({$fCharge}, {$fStandardMinimumCharge})");
+				$this->_logRateAlgorithm("STANDARD MINIMUM CHARGE: \$".number_format($fCharge, $iLoggingRatingPrecision, '.', '')."\t= max({$fCharge}, {$fStandardMinimumCharge})");
 			}
-			
+
 			// CAPPING
 			// Apply Capping (unit-based capping takes priority over charge-based capping)
 			if ($iCapUnits > 0)
@@ -249,7 +258,7 @@ class Rate extends ORM_Cached
 				{
 					// Reapply Standard Rate but capped to $iCapUnits Units
 					$fCharge	= $this->_calculateChargeStage($iCapUnits, $fCost, $aStandardRate);
-					$this->_logRateAlgorithm("STANDARD CHARGE UNIT CAPPED: \$".number_format($fCharge, '4', '.', '')." @ {$iCapUnits} Units");
+					$this->_logRateAlgorithm("STANDARD CHARGE UNIT CAPPED: \$".number_format($fCharge, $iLoggingRatingPrecision, '.', '')." @ {$iCapUnits} Units");
 				}
 			}
 			elseif ($fCapCost > 0.0)
@@ -258,10 +267,10 @@ class Rate extends ORM_Cached
 				{
 					// Limit the Standard Rate to our dollar Cap
 					$fCharge	= $fCapCost;
-					$this->_logRateAlgorithm("STANDARD CHARGE DOLLAR CAPPED: \$".number_format($fCharge, '4', '.', '')." @ \$".number_format($fCapCost, '4', '.', ''));
+					$this->_logRateAlgorithm("STANDARD CHARGE DOLLAR CAPPED: \$".number_format($fCharge, $iLoggingRatingPrecision, '.', '')." @ \$".number_format($fCapCost, $iLoggingRatingPrecision, '.', ''));
 				}
 			}
-			
+
 			// EXCESS RATE
 			// Apply Excess Rate
 			if ($iCapUsage && $iUnits > $iCapUsage)
@@ -270,18 +279,18 @@ class Rate extends ORM_Cached
 				$iExcessUnits	= $iUnits - $iCapUsage;
 				$fExcessCharge	= $this->_calculateChargeStage($iExcessUnits, $fCost, $aExcessRate);
 				$fCharge		+= $fExcessCharge;
-				$this->_logRateAlgorithm("EXCESS CHARGE UNIT START: \$".number_format($fExcessCharge, '4', '.', '')." @ {$iExcessUnits} Excess Units (Excess Start: {$iCapUsage} Units)");
+				$this->_logRateAlgorithm("EXCESS CHARGE UNIT START: \$".number_format($fExcessCharge, $iLoggingRatingPrecision, '.', '')." @ {$iExcessUnits} Excess Units (Excess Start: {$iCapUsage} Units)");
 			}
 			elseif ($fCapLimit && $fStandardCharge > $fCapLimit)
 			{
 				// Add Excess Charge & Excess Flagfall to our Charge
 				$fExcessCharge	= ($fStandardCharge - $fCapLimit);
 				$fCharge		+= $fExcessCharge + $aExcessRate['fFlagfall'];
-				$this->_logRateAlgorithm("EXCESS CHARGE DOLLAR START: \$".number_format($fExcessCharge, '4', '.', '')." @ \$".number_format($fCapLimit, '4', '.', '')." + \$".number_format($aExcessRate['fFlagfall'], '4', '.', '')." Flagfall");
+				$this->_logRateAlgorithm("EXCESS CHARGE DOLLAR START: \$".number_format($fExcessCharge, $iLoggingRatingPrecision, '.', '')." @ \$".number_format($fCapLimit, $iLoggingRatingPrecision, '.', '')." + \$".number_format($aExcessRate['fFlagfall'], $iLoggingRatingPrecision, '.', '')." Flagfall");
 			}
-			
-			$this->_logRateAlgorithm("STANDARD + EXCESS CHARGES: \$".number_format($fCharge, '4', '.', ''));
-			
+
+			$this->_logRateAlgorithm("STANDARD + EXCESS CHARGES: \$".number_format($fCharge, $iLoggingRatingPrecision, '.', ''));
+
 			// PRORATE
 			if ($bProrate)
 			{
@@ -289,44 +298,44 @@ class Rate extends ORM_Cached
 				$iChargeEndDate		= strtotime($sEndDatetime);
 				$iPeriodStartDate	= strtotime($sStartDatetime);
 				$iPeriodEndDate		= strtotime('+1 month', $iChargeStartDate) - 1;
-				
+
 				$fCharge	= Invoice::prorate($fCharge, $iChargeStartDate, $iChargeEndDate, $iPeriodStartDate, $iPeriodEndDate, DATE_TRUNCATE_DAY, false, null);
-				$this->_logRateAlgorithm("PRORATED: \$".number_format($fCharge, '4', '.', ''));
+				$this->_logRateAlgorithm("PRORATED: \$".number_format($fCharge, $iLoggingRatingPrecision, '.', ''));
 			}
 		}
-		
+
 		// ROUNDING
 		// Round according to the Rating Standard
-		$fCharge	= Rate::roundToRatingStandard($fCharge);
-		$this->_logRateAlgorithm("ROUNDED: \$".number_format($fCharge, '4', '.', ''));
-		
+		$fCharge	= Rate::roundToRatingStandard($fCharge, $oRate->getChargePrecision());
+		$this->_logRateAlgorithm("ROUNDED: \$".number_format($fCharge, $iLoggingRatingPrecision, '.', ''));
+
 		return $fCharge;
 	}
-	
+
 	protected function _calculateChargeStage($iUnits, $fCost, $aRateDefinition)
 	{
-		
+
 		self::_logRateAlgorithmStage("RATING STAGE\n{");
-		
+
 		$fRatePerUnitBlock			= (float)$aRateDefinition['fRatePerUnitBlock'];
 		$fFlagfall					= (float)$aRateDefinition['fFlagfall'];
 		$fMarkupPercentage			= (float)$aRateDefinition['fMarkupPercentage'];
 		$fMarkupDollarsPerUnitBlock	= (float)$aRateDefinition['fMarkupDollarsPerUnitBlock'];
 		$iUnitBlockSize				= (int)$aRateDefinition['iUnitBlockSize'];
-		
+
 		Flex::assert($iUnitBlockSize > 0, "Rate Unit Block Size ({$iUnitBlockSize}) is less than 1", print_r($aRateDefinition, true));
-		
+
 		// Calculate Unit Blocks to Charge
 		$iUnitBlocks	= ceil($iUnits / $iUnitBlockSize);
-		
+
 		self::_logRateAlgorithmStage("\t"."{$iUnitBlocks} = ceil({$iUnits} / {$iUnitBlockSize})", false);
 		self::_logRateAlgorithmStage("\t".'[iUnitBlocks = ceil(iUnits / iUnitBlockSize)]');
-		
+
 		// Base Charge
 		$fCharge	= ($iUnitBlocks * $fRatePerUnitBlock) + $fFlagfall;
 		self::_logRateAlgorithmStage("\t"."{$fCharge} = ({$iUnitBlocks} * {$fRatePerUnitBlock}) + {$fFlagfall}", false);
 		self::_logRateAlgorithmStage("\t".'[fCharge = (iUnitBlocks * fRatePerUnitBlock) + fFlagfall]');
-		
+
 		// Markup
 		if ($fMarkupPercentage || $fMarkupDollarsPerUnitBlock)
 		{
@@ -335,12 +344,12 @@ class Rate extends ORM_Cached
 			self::_logRateAlgorithmStage("\t"."{$fCharge} = {$fBaseCharge} + ({$fCost} + (({$fMarkupPercentage} / 100) * {$fCost}) + ({$iUnitBlocks} * {$fMarkupDollarsPerUnitBlock}))", false);
 			self::_logRateAlgorithmStage("\t".'[fCharge = fCharge + (fCost + ((fMarkupPercentage / 100) * fCost) + (iUnitBlocks * fMarkupDollarsPerUnitBlock))]');
 		}
-		
+
 		self::_logRateAlgorithmStage('} = '.$fCharge);
-		
+
 		return $fCharge;
 	}
-	
+
 	protected static function getCacheName()
 	{
 		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
@@ -351,12 +360,12 @@ class Rate extends ORM_Cached
 		}
 		return $strCacheName;
 	}
-	
+
 	protected static function getMaxCacheSize()
 	{
 		return 100;
 	}
-	
+
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
 	//---------------------------------------------------------------------------------------------------------------------------------//
@@ -370,7 +379,7 @@ class Rate extends ORM_Cached
 	{
 		return parent::getCachedObjects(__CLASS__);
 	}
-	
+
 	protected static function addToCache($mixObjects)
 	{
 		parent::addToCache($mixObjects, __CLASS__);
@@ -380,12 +389,12 @@ class Rate extends ORM_Cached
 	{
 		return parent::getForId($intId, $bolSilentFail, __CLASS__);
 	}
-	
+
 	public static function getAll($bolForceReload=false)
 	{
 		return parent::getAll($bolForceReload, __CLASS__);
 	}
-	
+
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
@@ -456,19 +465,19 @@ class Rate extends ORM_Cached
 																						srg.CreatedOn DESC,
 																						srg.Id DESC");
 					break;
-				
+
 				// INSERTS
 				case 'insSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);
 					break;
-				
+
 				// UPDATE BY IDS
 				case 'ubiSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementUpdateById(self::$_strStaticTableName);
 					break;
-				
+
 				// UPDATES
-				
+
 				default:
 					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
 			}
