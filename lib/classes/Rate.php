@@ -99,55 +99,149 @@ class Rate extends ORM_Cached
 		return $oRate;
 	}
 
-	public static function getForServiceAndDefinition($mService, $mRecordType, $mDatetime, $iDestinationCode=null, $bFleet=false, $bPerfectMatch=true)
-	{
-		$oService		= Service::getForId(ORM::extractId($mService));
-		$oRecordType	= ($mRecordType !== null) ? Record_Type::getForId(ORM::extractId($mRecordType)) : null;
-		$oDestination	= ($iDestinationCode) ? Destination::getForCode($iDestinationCode) : null;
+	public static function getForServiceAndDefinition($mService, $mRecordType, $mDatetime, $iDestinationCode=null, $bFleet=false, $bPerfectMatch=true) {
+		$oService = Service::getForId(ORM::extractId($mService));
+		$oRecordType = ($mRecordType !== null) ? Record_Type::getForId(ORM::extractId($mRecordType)) : null;
+		$oDestination = ($iDestinationCode) ? Destination::getForCode($iDestinationCode) : null;
 
-		$iDatetime	= (is_string($mDatetime)) ? strtotime($mDatetime) : (int)$mDatetime;
-		$sDay		= date('l', $iDatetime);
+		$iDatetime = (is_string($mDatetime)) ? strtotime($mDatetime) : (int)$mDatetime;
+		$sDay = date('l', $iDatetime);
 
-	 	$aWhere							= array();
-	 	$aWhere['service_id']			= $oService->Id;
-	 	$aWhere['effective_datetime']	= date('Y-m-d H:i:s', $iDatetime);
-		$aWhere['record_type_id']		= ($oRecordType === null) ? null : $oRecordType->Id;
-		$aWhere['destination_code']		= ($oDestination) ? $oDestination->Code : 0;
-		$aWhere['is_fleet']				= (int)!!$bFleet;
-		$aWhere['use_perfect_match']	= (int)!!$bPerfectMatch;
-		$aWhere['is_fleet_check_only']	= ($oRecordType === null) ? 1 : 0;
+	 	$aWhere = array();
+	 	$aWhere['service_id'] = $oService->Id;
+	 	$aWhere['effective_datetime'] = date('Y-m-d H:i:s', $iDatetime);
+		$aWhere['record_type_id'] = ($oRecordType === null) ? null : $oRecordType->Id;
+		$aWhere['destination_code'] = ($oDestination) ? $oDestination->Code : 0;
+		$aWhere['is_fleet'] = (int)!!$bFleet;
+		$aWhere['use_perfect_match'] = (int)!!$bPerfectMatch;
+		$aWhere['is_fleet_check_only'] = ($oRecordType === null) ? 1 : 0;
 
 		self::_logRateSearch("Search for ", false);
 		self::_logRateSearch(($bFleet) ? 'Fleet' : 'Standard', false);
 		self::_logRateSearch(" Rate for Service {$aWhere['service_id']} ({$oService->FNN}) on {$aWhere['effective_datetime']} ({$sDay}) for ", false);
-		if ($oRecordType === null)
-		{
+		if ($oRecordType === null) {
 			self::_logRateSearch("any Call Type and date/time restrictions (Destination Fleet eligibility)");
-		}
-		elseif ($oDestination === null)
-		{
+		} elseif ($oDestination === null) {
 			self::_logRateSearch("Call Type {$oRecordType->Name} ({$oRecordType->Id})");
-		}
-		else
-		{
+		} else {
 			self::_logRateSearch("Call Type {$oRecordType->Name}: {$oDestination->Description} ({$oRecordType->Id}:{$oDestination->Code})");
 		}
 
-		$selForServiceAndDefinition	= self::_preparedStatement('selForServiceAndDefinition');
-		if ($selForServiceAndDefinition->Execute($aWhere) === false)
-		{
-			throw new Exception_Database($selForServiceAndDefinition->Error());
+		// Rate precedence:
+		//	1. Is an effective override rate
+		//	2. Is an effective rate
+		//	3. If not an effective rate closest to effective date
+		//	4. Is an override rate
+		//	5. Created timestamp
+		//	6. AUTO_INCREMENT id
+		$oRateResult = DataAccess::get()->query('
+			(
+				/* ServiceRateGroup-based */
+				SELECT r.*,
+					srg.StartDatetime AS start_datetime,
+					srg.EndDatetime AS end_datetime,
+					srg.CreatedOn AS created_datetime,
+					srg.Id AS service_rate_group_id,
+					NULL AS service_rate_id
+
+				FROM ServiceRateGroup srg
+					JOIN RateGroupRate rgr ON (
+						srg.RateGroup = rgr.RateGroup
+						AND <effective_datetime> BETWEEN rgr.effective_start_datetime AND rgr.effective_end_datetime
+					)
+					JOIN Rate r ON (rgr.Rate = r.Id)
+
+				WHERE srg.Service = <service_id>
+					AND r.Fleet = <is_fleet>
+					AND (
+						/* For Destination-end Fleet checking, we don\'t care about RecordType, DestinationCode, or Time of Day */
+						(<is_fleet_check_only> != 0)
+						OR (
+							r.RecordType = <record_type_id>
+							AND r.Destination = <destination_code>
+							AND (
+								(r.Monday = 1 AND DAYOFWEEK(<effective_datetime>) = 2)
+								OR (r.Tuesday = 1 AND DAYOFWEEK(<effective_datetime>) = 3)
+								OR (r.Wednesday = 1 AND DAYOFWEEK(<effective_datetime>) = 4)
+								OR (r.Thursday = 1 AND DAYOFWEEK(<effective_datetime>) = 5)
+								OR (r.Friday = 1 AND DAYOFWEEK(<effective_datetime>) = 6)
+								OR (r.Saturday = 1 AND DAYOFWEEK(<effective_datetime>) = 7)
+								OR (r.Sunday = 1 AND DAYOFWEEK(<effective_datetime>) = 1)
+							)
+							AND EXTRACT(HOUR_SECOND FROM <effective_datetime>) BETWEEN r.StartTime AND r.EndTime
+						)
+					)
+					AND (<use_perfect_match> = 0 OR <effective_datetime> BETWEEN srg.StartDatetime AND srg.EndDatetime)
+			) UNION (
+				/* service_rate-based */
+				SELECT r.*,
+					sr.start_datetime AS start_datetime,
+					sr.end_datetime AS end_datetime,
+					sr.created_datetime AS created_datetime,
+					NULL AS service_rate_group_id,
+					sr.id AS service_rate_id
+
+				FROM service_rate sr
+					JOIN Rate r ON (r.Id = sr.rate_id)
+
+				WHERE sr.service_id = <service_id>
+					AND r.Fleet = <is_fleet>
+					AND (
+						/* For Destination-end Fleet checking, we don\'t care about RecordType, DestinationCode, or Time of Day */
+						(<is_fleet_check_only> != 0)
+						OR (
+							r.RecordType = <record_type_id>
+							AND r.Destination = <destination_code>
+							AND (
+								(r.Monday = 1 AND DAYOFWEEK(<effective_datetime>) = 2)
+								OR (r.Tuesday = 1 AND DAYOFWEEK(<effective_datetime>) = 3)
+								OR (r.Wednesday = 1 AND DAYOFWEEK(<effective_datetime>) = 4)
+								OR (r.Thursday = 1 AND DAYOFWEEK(<effective_datetime>) = 5)
+								OR (r.Friday = 1 AND DAYOFWEEK(<effective_datetime>) = 6)
+								OR (r.Saturday = 1 AND DAYOFWEEK(<effective_datetime>) = 7)
+								OR (r.Sunday = 1 AND DAYOFWEEK(<effective_datetime>) = 1)
+							)
+							AND EXTRACT(HOUR_SECOND FROM <effective_datetime>) BETWEEN r.StartTime AND r.EndTime
+						)
+					)
+					AND (<use_perfect_match> = 0 OR <effective_datetime> BETWEEN sr.start_datetime AND sr.end_datetime)
+			)
+			ORDER BY (service_rate_id IS NOT NULL AND <effective_datetime> BETWEEN start_datetime AND end_datetime) DESC,
+				(<effective_datetime> BETWEEN start_datetime AND end_datetime) DESC,
+				IF(
+					<effective_datetime> NOT BETWEEN start_datetime AND end_datetime,
+					LEAST(ABS(TIMESTAMPDIFF(SECOND, <effective_datetime>, start_datetime)), ABS(TIMESTAMPDIFF(SECOND, <effective_datetime>, end_datetime))),
+					NULL
+				) ASC,
+				(service_rate_id IS NOT NULL) DESC,
+				created_datetime DESC,
+				service_rate_id DESC,
+				service_rate_group_id DESC
+		', $aWhere);
+
+		// $selForServiceAndDefinition	= self::_preparedStatement('selForServiceAndDefinition');
+		// if ($selForServiceAndDefinition->Execute($aWhere) === false) {
+		// 	throw new Exception_Database($selForServiceAndDefinition->Error());
+		// }
+
+		$aRates = array();
+		while ($aMatchedRate = $oRateResult->fetch_assoc()) {
+			$aRates[] = $aMatchedRate;
+		}
+		// self::_logRateSearch(sprintf('Found %d Rates: %s', count($aRates), var_export($aRates, true)));
+
+		if (count($aRates)) {
+			return new Rate($aRates[0]);
+		} else {
+			return null;
 		}
 
 		// NOTE: This query isn't limited to one result, though it is ordered so that the first result is the best match
-		if ($aRate = $selForServiceAndDefinition->Fetch())
-		{
-			return new Rate($aRate);
-		}
-		else
-		{
-			return null;
-		}
+		// if ($aRate = $selForServiceAndDefinition->Fetch()) {
+		// 	return new Rate($aRate);
+		// } else {
+		// 	return null;
+		// }
 	}
 
 	public static function roundToCurrencyStandard($fAmountInDollars, $iDecimalPlaces=self::RATING_PRECISION)
