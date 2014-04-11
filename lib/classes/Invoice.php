@@ -503,13 +503,11 @@ class Invoice extends ORM_Cached {
 						CDR.Account,
 						{$intServiceId} AS Service,
 						CDR.RecordType,
-						CEILING(SUM(
-							CASE WHEN CDR.Credit = 1 THEN
-								0 - CDR.Charge
-							ELSE
-								CDR.Charge
-							END
-						) * {$iPrecisionMultiplier}) / {$iPrecisionMultiplier} AS Charge,
+						(
+							(CEILING(ABS(SUM(IF(CDR.Credit = 1, 0 - CDR.Charge, CDR.Charge))) * {$iPrecisionMultiplier}) / {$iPrecisionMultiplier})
+							*
+							SIGN(SUM(IF(CDR.Credit = 1, 0 - CDR.Charge, CDR.Charge)))
+						) AS Charge,
 						SUM(
 							CASE WHEN CDR.Credit = 1 THEN
 								0 - CDR.Units
@@ -576,8 +574,8 @@ class Invoice extends ORM_Cached {
 			$strCapped = ($arrCDRTotal['Uncapped'])  	? 'Uncapped' : 'Capped';
 			$strCredit = ($arrCDRTotal['Credit']) ? 'Credit' : 'Debit';
 			$strTax = ($arrCDRTotal['global_tax_exempt']) ? 'ExTax' : 'IncTax';
-			$arrCDRTotals['Charge'] [$strCapped][$strCredit][$strTax] = $arrCDRTotal['TotalCharge'];
-			$arrCDRTotals['Cost'] [$strCapped][$strCredit][$strTax] = $arrCDRTotal['TotalCost'];
+			$arrCDRTotals['Charge'][$strCapped][$strCredit][$strTax] = $arrCDRTotal['TotalCharge'];
+			$arrCDRTotals['Cost'][$strCapped][$strCredit][$strTax] = $arrCDRTotal['TotalCost'];
 
 			$intDebitCDRCount += (!$arrCDRTotal['Credit']) ? $arrCDRTotal['CDRCount'] : 0;
 		}
@@ -717,6 +715,7 @@ class Invoice extends ORM_Cached {
 		//Log::getLog()->log("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
 		$arrServiceTotal['Tax'] -= self::calculateGlobalTaxComponent($arrChargeTotals['CR']['IncTax'], $this->intInvoiceDatetime);
 		//Log::getLog()->log("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
+
 		$fltServiceCredits = $arrChargeTotals['CR']['IncTax'] + $arrChargeTotals['CR']['ExTax'];
 		$fltServiceDebits = $arrChargeTotals['DR']['IncTax'] + $arrChargeTotals['DR']['ExTax'];
 
@@ -1504,8 +1503,9 @@ class Invoice extends ORM_Cached {
 									0 - c.Charge
 								ELSE
 									c.Charge
-								END
-							), 0) AS total_undiscounted
+								END,
+								0
+							)) AS total_undiscounted
 						FROM ServiceTypeTotal stt
 							JOIN CDR c ON (
 								c.RecordType = stt.RecordType
@@ -1531,30 +1531,17 @@ class Invoice extends ORM_Cached {
 							$aServiceTypeTotals[$aServiceTypeTotal['Service']][$aServiceTypeTotal['FNN']] = array();
 						}
 						$aServiceTypeTotals[$aServiceTypeTotal['Service']][$aServiceTypeTotal['FNN']][$aServiceTypeTotal['RecordType']] = $aServiceTypeTotal;
-						$aServiceTypeTotals[$aServiceTypeTotal['Service']][$aServiceTypeTotal['FNN']][$aServiceTypeTotal['RecordType']]['discounted'] = false;
+						$aServiceTypeTotals[$aServiceTypeTotal['Service']][$aServiceTypeTotal['FNN']][$aServiceTypeTotal['RecordType']]['totalDiscount'] = 0.0;
+						$aServiceTypeTotals[$aServiceTypeTotal['Service']][$aServiceTypeTotal['FNN']][$aServiceTypeTotal['RecordType']]['totalDiscountTaxOffset'] = 0.0;
 					}
 
 					$iTotalUnits = 0;
 					$fTotalCharge = 0.0;
-					$fTaxOffset = 0.0;
-					$fTotalCredit = 0.0;
+					$fTaxOffsetUnrounded = 0.0;
+					$fTotalCreditUnrounded = 0.0;
 
 					$mRemainingDiscount = $mProratedDiscountLimit;
 					while ($aDataCDR = $oResult->fetch_assoc()) {
-						if (!$aServiceRecordTypesDiscounted[$aDataCDR['Service']][$aDataCDR['FNN']][$aDataCDR['RecordType']]['discounted']) {
-							$aServiceTypeTotals[$aDataCDR['Service']][$aDataCDR['FNN']][$aDataCDR['RecordType']]['discounted'] = true;
-
-							// Discount rounding (wholly, always, without affecting remaining discount)
-							// This is to avoid situations where all usage in a record type is discounted, but
-							// there is still a rounding charge. This effectively means that rounding at the
-							// ServiceTypeTotal level is floor'd rather than ceil'd when there is discounting
-							// It results in possible overdiscounting, but only by at most 1 cent per ServiceTypeTotal
-							$fRoundingDifference = $aServiceTypeTotals[$aDataCDR['Service']][$aDataCDR['FNN']][$aDataCDR['RecordType']]['total_charge_rounded'] - $aServiceTypeTotals[$aDataCDR['Service']][$aDataCDR['FNN']][$aDataCDR['RecordType']]['total_charge_unrounded'];
-							$fTotalCredit += $fRoundingDifference;
-							$fTaxOffset -= self::calculateGlobalTaxComponent($fRoundingDifference, $this->intInvoiceDatetime);
-							break;
-						}
-
 						$iUnits = ($aDataCDR['Credit']) ? 0 - $aDataCDR['Units'] : $aDataCDR['Units'];
 						$fCharge = ($aDataCDR['Credit']) ? 0 - $aDataCDR['Charge'] : $aDataCDR['Charge'];
 
@@ -1584,13 +1571,30 @@ class Invoice extends ORM_Cached {
 
 							// Add a global tax offset against the credited CDR
 							if (!$aDataCDR['global_tax_exempt']) {
-								$fTaxOffset -= self::calculateGlobalTaxComponent($fCharge, $this->intInvoiceDatetime);
+								$fCDRTaxOffset = self::calculateGlobalTaxComponent($fCharge, $this->intInvoiceDatetime);
+								$aServiceTypeTotals[$aDataCDR['Service']][$aDataCDR['FNN']][$aDataCDR['RecordType']]['totalDiscountTaxOffset'] -= $$fCDRTaxOffset;
+								$fTaxOffsetUnrounded -= $fCDRTaxOffset;
 							}
 
-							$fTotalCredit += $fCharge;
+							$aServiceTypeTotals[$aDataCDR['Service']][$aDataCDR['FNN']][$aDataCDR['RecordType']]['totalDiscount'] += $fCharge;
+							$fTotalCreditUnrounded += $fCharge;
 						}
 					}
 					$mTotalUsage = ($iUnitLimit) ? $iTotalUnits : $fTotalCharge;
+
+					// Sum the rounded discount subtotals for each ServiceTypeTotal, ensuring it doesn't exceed the maximum discount allowance
+					$fSummedTotalCredit = 0.0;
+					$fSummedTaxOffset = 0.0;
+					foreach ($aServiceTypeTotals as $aServiceTypeTotalFNNs) {
+						foreach ($aServiceTypeTotalFNNs as $aServiceTypeTotalFNNRecordTypes) {
+							foreach ($aServiceTypeTotalFNNRecordTypes as $aServiceTypeTotalFNNRecordType) {
+								$fSummedTotalCredit += Rate::roundToRatingStandard($aServiceTypeTotalFNNRecordType['totalDiscount']);
+								$fSummedTaxOffset += Rate::roundToRatingStandard($aServiceTypeTotalFNNRecordType['totalDiscountTaxOffset']);
+							}
+						}
+					}
+					$fTotalCredit = min($fSummedTotalCredit, $mProratedDiscountLimit); // Total Credit can't exceed the maximum allowable discount
+					$fTaxOffset = Rate::roundToRatingStandard(($fTotalCredit / $fSummedTotalCredit) * $fSummedTaxOffset); // Adjust the tax offset relative to the total credit
 
 					Log::getLog()->log("Total Usage Units: {$iTotalUnits}");
 					Log::getLog()->log("Total Usage Charge: \${$fTotalCharge}");
@@ -1608,9 +1612,12 @@ class Invoice extends ORM_Cached {
 							break;
 					}
 
+					Log::getLog()->log("Creditback (unrounded): \${$fTotalCreditUnrounded}");
+					Log::getLog()->log("Tax Offset (unrounded): \${$fTaxOffsetUnrounded}");
+					Log::getLog()->log("Overusage Charge (unrounded): \$".($fTotalCharge - $fTotalCreditUnrounded));
 					Log::getLog()->log("Creditback: \${$fTotalCredit}");
 					Log::getLog()->log("Tax Offset: \${$fTaxOffset}");
-					Log::getLog()->log("Overusage Charge: \$".($fTotalCharge - $fTotalCredit));
+					Log::getLog()->log("Overusage Charge: \$".($fTotalCharge - $fTotalCreditUnrounded));
 
 					if ($mTotalUsage > 0) {
 						// Add the Credit
