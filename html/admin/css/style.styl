@@ -12319,6 +12319,9 @@
 	list-style-type none
 	padding 0
 
-	&:empty::before
-		content 'There are no override rates currently active or upcoming.'
-		font-style oblique
+	&:empty
+		appearance-flex-panel()
+
+		&::before
+			content 'There are no override rates currently active or upcoming.'
+			font-style oblique

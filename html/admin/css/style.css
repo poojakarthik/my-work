@@ -12024,6 +12024,11 @@ div.clearing {
   list-style-type: none;
   padding: 0;
 }
+.flex-page-account-service-plan-overriderates-recordtypes:empty {
+  background-color: #eceef2;
+  border: 1px solid #d1d1d1;
+  padding: 0.5em;
+}
 .flex-page-account-service-plan-overriderates-recordtypes:empty::before {
   content: 'There are no override rates currently active or upcoming.';
   font-style: oblique;
