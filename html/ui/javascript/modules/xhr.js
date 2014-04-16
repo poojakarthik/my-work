@@ -1,3 +1,5 @@
+"use strict";
+
 var READYSTATE = {
 	UNSENT: 0,
 	OPENED: 1,

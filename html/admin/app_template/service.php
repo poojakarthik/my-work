@@ -2670,6 +2670,37 @@ class AppTemplateService extends ApplicationTemplate
 			DBL()->PlanRateGroup->OrderBy("RecordType");
 			DBL()->PlanRateGroup->Load();
 		}
+
+		// Load all override Rates in service_rate
+		DBL()->CurrentServiceRate->SetTable('
+			service_rate sr
+			JOIN Rate r ON (r.Id = sr.rate_id)
+			JOIN RecordType rt ON (rt.Id = r.RecordType)
+		');
+		DBL()->CurrentServiceRate->SetColumns(array(
+			'id' => 'sr.id',
+			'name' => 'r.Name',
+			'description' => 'r.Description',
+			'record_type_id' => 'r.RecordType',
+			'record_type_name' => 'rt.Name',
+			'record_type_description' => 'rt.Description',
+			'is_fleet' => 'r.Fleet',
+			'start_datetime' => 'sr.start_datetime',
+			'end_datetime' => 'sr.end_datetime'
+		));
+		DBL()->CurrentServiceRate->Where->Set('
+			sr.service_id = <service_id>
+			AND <effective_date> <= sr.end_datetime
+		', array(
+			'service_id' => DBO()->Service->Id->Value,
+			'effective_date' => $strEarliestAllowableEndDatetime
+		));
+		DBL()->CurrentServiceRate->OrderBy('
+			(' . Query::prepareByPHPType($strEarliestAllowableEndDatetime) . ' BETWEEN sr.start_datetime AND sr.end_datetime) DESC,
+			sr.created_datetime DESC,
+			sr.id DESC
+		');
+		DBL()->CurrentServiceRate->Load();
 	}
 
 
