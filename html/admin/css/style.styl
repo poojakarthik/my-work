@@ -12288,3 +12288,37 @@
 
 .fw-datepicker-active
 	cursor pointer
+
+/**************************** Component: Service Override Rates ***************************/
+.flex-page-account-service-plan-overriderates
+	& h2
+		&::before
+			button-icon('/admin/img/template/charge_small.png')
+			vertical-align middle
+
+	& table
+		skin-flex-table()
+		width 100%
+		border-top 0
+		margin 1em 0
+
+		& thead
+			appearance-flex-table-subheader()
+
+		& caption
+			appearance-flex-table-caption-title()
+			text-align left
+
+		& td:nth-child(2)
+		& th:nth-child(2)
+		& td:nth-child(3)
+		& th:nth-child(3)
+			width 10%
+
+.flex-page-account-service-plan-overriderates-recordtypes
+	list-style-type none
+	padding 0
+
+	&:empty::before
+		content 'There are no override rates currently active or upcoming.'
+		font-style oblique

@@ -7112,7 +7112,7 @@ div.clearing {
 
 	div.popup-email-text-edit {
 		margin	: 0.5em;
-    max-height: 90vh;
+		max-height: 90vh;
 	}
 
 	.popup-email-text-edit .buttons, .popup-email-test .buttons {
@@ -7142,9 +7142,9 @@ div.clearing {
 		padding				: 0.5em;
 		-moz-border-radius	: 4px 4px 4px 4px;
 		border				: 1px solid #000000;
-    background-color	: rgba(255, 255, 255, 0.6);
-    overflow: scroll;
-    max-height: 370px;
+		background-color	: rgba(255, 255, 255, 0.6);
+		overflow: scroll;
+		max-height: 370px;
 	}
 
 	.popup-email-text-edit .variables ul {
@@ -11570,6 +11570,7 @@ div.clearing {
   padding-top: 0.25em;
   padding-bottom: 0.25em;
   background-repeat: repeat-x;
+  font-weight: bold;
 }
 .flex-page-customer-payments-chequeentry-data > * > tr > td,
 .flex-page-customer-payments-chequeentry-data > * > tr > th {
@@ -11853,6 +11854,7 @@ div.clearing {
   padding-top: 0.25em;
   padding-bottom: 0.25em;
   background-repeat: repeat-x;
+  font-weight: bold;
   text-align: center;
 }
 .fw-datepicker .bar img {
@@ -11878,6 +11880,7 @@ div.clearing {
   padding-top: 0.25em;
   padding-bottom: 0.25em;
   background-repeat: repeat-x;
+  font-weight: bold;
 }
 .fw-datepicker .dateChooser > * > tr > td,
 .fw-datepicker .dateChooser > * > tr > th {
@@ -11923,10 +11926,105 @@ div.clearing {
   padding-top: 0.25em;
   padding-bottom: 0.25em;
   background-repeat: repeat-x;
+  font-weight: bold;
 }
 .fw-datepicker-active-today {
   font-weight: bold;
 }
 .fw-datepicker-active {
   cursor: pointer;
+}
+/**************************** Component: Service Override Rates ***************************/
+.flex-page-account-service-plan-overriderates h2::before {
+  content: url("/admin/img/template/charge_small.png");
+  height: auto;
+  width: auto;
+  display: inline-block;
+  margin-right: 0.2em;
+  vertical-align: bottom;
+  vertical-align: middle;
+}
+.flex-page-account-service-plan-overriderates table {
+  box-sizing: border-box;
+  width: 99%;
+  margin-left: auto;
+  margin-right: auto;
+  border: 0.1em solid #d1d1d1;
+  border-spacing: 0;
+  font-size: inherit;
+  width: 100%;
+  border-top: 0;
+  margin: 1em 0;
+}
+.flex-page-account-service-plan-overriderates table > thead {
+  color: #fff;
+  background-color: #499fcf;
+  text-align: left;
+}
+.flex-page-account-service-plan-overriderates table > thead > tr > th {
+  padding-top: 0.25em;
+  padding-bottom: 0.25em;
+  background-repeat: repeat-x;
+  font-weight: bold;
+}
+.flex-page-account-service-plan-overriderates table > * > tr > td,
+.flex-page-account-service-plan-overriderates table > * > tr > th {
+  vertical-align: top;
+  padding: 0.25em 0.5em;
+  font-size: inherit;
+}
+.flex-page-account-service-plan-overriderates table > tbody {
+  vertical-align: top;
+  font-size: inherit;
+}
+.flex-page-account-service-plan-overriderates table > tbody > tr > td,
+.flex-page-account-service-plan-overriderates table > tbody > tr > th {
+  background-color: #fff;
+  color: #333;
+}
+.flex-page-account-service-plan-overriderates table > tbody > tr:nth-child(even) > td,
+.flex-page-account-service-plan-overriderates table > tbody > tr:nth-child(even) > th {
+  background-color: #ddd;
+}
+.flex-page-account-service-plan-overriderates table > tfoot {
+  color: #fff;
+  background-color: #499fcf;
+  text-align: left;
+  text-align: right;
+}
+.flex-page-account-service-plan-overriderates table > tfoot a:link {
+  color: #fff;
+}
+.flex-page-account-service-plan-overriderates table thead {
+  color: #fff;
+  background-color: #666;
+  text-align: left;
+  font-size: 0.85em;
+}
+.flex-page-account-service-plan-overriderates table caption {
+  background-color: #499fcf;
+  background-repeat: repeat-x;
+  color: #fff;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  padding: 0.25em 0.5em;
+  font-size: inherit;
+  border: 0.1em solid #d1d1d1;
+  border-bottom: 0;
+  text-align: left;
+}
+.flex-page-account-service-plan-overriderates table td:nth-child(2),
+.flex-page-account-service-plan-overriderates table th:nth-child(2),
+.flex-page-account-service-plan-overriderates table td:nth-child(3),
+.flex-page-account-service-plan-overriderates table th:nth-child(3) {
+  width: 10%;
+}
+.flex-page-account-service-plan-overriderates-recordtypes {
+  list-style-type: none;
+  padding: 0;
+}
+.flex-page-account-service-plan-overriderates-recordtypes:empty::before {
+  content: 'There are no override rates currently active or upcoming.';
+  font-style: oblique;
 }

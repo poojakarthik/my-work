@@ -1,3 +1,5 @@
+"use strict";
+
 function _isPlainObject(subject) {
 	return (subject != null && subject.constructor === Object);
 }
