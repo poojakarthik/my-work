@@ -3,9 +3,9 @@ final class Flex {
 	// Define the session cookie names used by flex
 	const FLEX_ADMIN_SESSION = 'flex_admin_sess_id';
 	const FLEX_CUSTOMER_SESSION = 'flex_cust_sess_id';
-	
+
 	const FLEX_SCRIPT_LOG_RELATIVE_DIR	= 'logs/running/';
-	
+
 	private static	$_resLockFile;
 
 	// This is a static library - prevent initialisation!
@@ -15,7 +15,7 @@ final class Flex {
 	public static function startSession($username, $password) {
 		// TODO :: Login to application
 	}
-	
+
 	public static function continueSession($sessionName=self::FLEX_CUSTOMER_SESSION) {
 		// Start the session
 		session_cache_limiter('private');
@@ -23,7 +23,7 @@ final class Flex {
 		session_start();
 
 		if (
-			!self::loggedIn() 
+			!self::loggedIn()
 			|| $_SESSION['SessionExpire'] < time() // or the user's session has expired due to inactivity
 		) {
 			return false;
@@ -52,10 +52,10 @@ final class Flex {
 		}
 		return null;
 	}
-	
+
 	public static function getUser() {
 		$iUserId = self::getUserId();
-		
+
 		try {
 			$oEmployee = Employee::getForId($iUserId);
 			if ($oEmployee->Id !== null) {
@@ -64,13 +64,13 @@ final class Flex {
 		} catch (Exception $oEx) {
 			// Ignore, try contact instead
 		}
-		
+
 		if ($oContact = Contact::getForId($iUserId)) {
 			if ($oContact->Id !== null) {
 				return $oContact;
 			}
 		}
-		
+
 		return Employee::getForId(Employee::SYSTEM_EMPLOYEE_ID);
 	}
 
@@ -121,7 +121,7 @@ final class Flex {
 	public static function isAdminSession() {
 		return session_name() == self::FLEX_ADMIN_SESSION;
 	}
-	
+
 	public static function authenticatedUserIsGod() {
 		return self::loggedIn() && $_SESSION["User"]["Privileges"] == USER_PERMISSION_GOD;
 	}
@@ -169,7 +169,7 @@ final class Flex {
 		}
 		return $relativeApplicationBase;
 	}
-	
+
 	// Returns the absolute base path of the web application
 	public static function applicationBase() {
 		static $applicationBase;
@@ -240,14 +240,14 @@ final class Flex {
 			$accumulatedPath .= $subDir . '/';
 
 			// Check the specific application for the class
-			// Classes specific to the web application (admin or customer) will be located here 
+			// Classes specific to the web application (admin or customer) will be located here
 			if (self::applicationBase() && file_exists(self::applicationBase().'classes'.$accumulatedPath.$strClassName.'.php')) {
 				require_once self::applicationBase().'classes'.$accumulatedPath.$strClassName.'.php';
 				if (class_exists($strClassName, false) || interface_exists($strClassName, false)) {
 					return true;
 				}
 			}
-			
+
 			// Check the applications framework for the class
 			// Classes that are used by all of the web applications will be located here
 			if (self::frameworkBase() && file_exists(self::frameworkBase().'classes'.$accumulatedPath.$strClassName.'.php')) {
@@ -267,7 +267,7 @@ final class Flex {
 			}
 
 			// Check the lib directory for the class the autoload function should not really be used for loading these classes.
-			// Libraries should really be included explicitly and each should load it's own classes 
+			// Libraries should really be included explicitly and each should load it's own classes
 			// (otherwise it isn't much use as a stand-alone library!)
 			if (file_exists(self::getBase().'lib'.$accumulatedPath.$strClassName.'.php')) {
 				require_once self::getBase().'lib'.$accumulatedPath.$strClassName.'.php';
@@ -294,7 +294,7 @@ final class Flex {
 		if (class_exists($strClassName, false) || interface_exists($strClassName, false)) {
 			return true;
 		}
-		
+
 		return true;
 	}
 
@@ -342,11 +342,11 @@ final class Flex {
 	private static function oldAutoload($strClassName) {
 		/* 	What the function currently does:
 		 *		if the class is a template
-		 *			load the appropriate file	
+		 *			load the appropriate file
 		 *		else
 		 *			nothing for now
-		 */		
-	
+		 */
+
 		// Retrieve the class name and its associated directory
 		if (substr($strClassName, 0, 6) == "Module" && defined('MODULE_BASE_DIR')) {
 			$strClassPath = MODULE_BASE_DIR . "module";
@@ -359,20 +359,20 @@ final class Flex {
 			// Not run from the UI
 			return false;
 		}
-	
+
 		// If $strClassName couldn't be exploded on "template" or "module" then die
 		if (!$strClassName) {
 			// The class trying to be loaded is not a template class
 			// This function does not currently handle any other kinds of class
 			return false;
 		}
-		
+
 		// Load a directory listing for $strClassPath
 		self::oldLoadDirectoryListing($strClassPath);
-	
+
 		// Find the file that should contain the class which needs to be loaded
 		$mixClassPointer = array_search(strtolower($strClassName) . ".php", $GLOBALS['*arrAvailableFiles'][$strClassPath]['CorrectedFilename']);
-		
+
 		if ($mixClassPointer === false) {
 			// The file could not be found so check for a subdirectory of $strClassPath matching the first word in $strClassName
 			$aMatches = array();
@@ -382,21 +382,21 @@ final class Flex {
 				// the class's file cannot be found
 				return false;
 			}
-			
+
 			// Grab the first word (the sub directory)
 			$strSubDir = $aMatches[1];
 			$strClassPath .= strtolower("/{$strSubDir}");
-			
+
 			// Grab the filename
 			$strClassName = substr($strClassName, strlen($strSubDir));
-			
+
 			// Load a directory listing for $strClassPath
 			self::oldLoadDirectoryListing($strClassPath);
-			
+
 			// search again for the file that should contain the class which needs to be loaded
 			$mixClassPointer = array_search(strtolower($strClassName) . ".php", $GLOBALS['*arrAvailableFiles'][$strClassPath]['CorrectedFilename']);
 		}
-		
+
 		// include the php file that defines the class
 		if ($mixClassPointer !== false) {
 			include_once($strClassPath . "/" . $GLOBALS['*arrAvailableFiles'][$strClassPath]['ActualFilename'][$mixClassPointer]);
@@ -406,16 +406,16 @@ final class Flex {
 	}
 
 	private static function oldLoadDirectoryListing($strPath) {
-		if (!isset($GLOBALS['*arrAvailableFiles'][$strPath])) { 
+		if (!isset($GLOBALS['*arrAvailableFiles'][$strPath])) {
 			$GLOBALS['*arrAvailableFiles'][$strPath]['ActualFilename'] = array();
-			$GLOBALS['*arrAvailableFiles'][$strPath]['CorrectedFilename'] = array();	
-			
+			$GLOBALS['*arrAvailableFiles'][$strPath]['CorrectedFilename'] = array();
+
 			// $strClassPath has not had its directory listing loaded before, so do it now
 			foreach (glob($strPath . "/*.php") as $strAbsoluteFilename) {
 				// Grab the filename part
 				$arrFilename = explode("/", $strAbsoluteFilename);
 				$strFilename = $arrFilename[count($arrFilename)-1];
-				
+
 				// $strClassName will have to be compared with each file in the directory, therefore
 				// a modified version of the filename (all lowercase and underscores removed) should be stored
 				// and the actual filename should be stored
@@ -429,32 +429,32 @@ final class Flex {
 		try {
 			if (strlen($strDetails) == 0) {
 				$strDetails = "[No Details Given]";
-	
+
 				// Include environment details
 				$bolIncludeEnvironmentDetails = true;
 			}
-	
+
 			$strBody = $strDetails;
-			
+
 			if (!is_string($strSubject) || strlen($strSubject) == 0) {
 				$strSubject = trim(substr($strDetails, 0, 50)) . "...";
 			}
-			
+
 			if ($bolIncludeEnvironmentDetails) {
 				// Include the Call Stack (backtrace)
 				ob_start();
 				debug_print_backtrace();
 				$strBacktrace = ob_get_clean();
-				
+
 				// Truncate the backtrace to 10K if it is in excess of this
 				if (strlen($strBacktrace) > 10000) {
 					$strBacktrace = substr($strBacktrace, 0, 10000) . "... (Function Call Backtrace has been truncated)";
 				}
-				
+
 				// Include SESSION details
 				if (isset($_SESSION) && is_array($_SESSION) && array_key_exists('User', $_SESSION)) {
 					$strSessionDetails = print_r($_SESSION, true);
-	
+
 					// Truncate the Session details to 10K if it is in excess of this
 					if (strlen($strSessionDetails) > 10000) {
 						$strSessionDetails = substr($strSessionDetails, 0, 10000) . "... (Session details have been truncated)";
@@ -462,13 +462,13 @@ final class Flex {
 				} else {
 					$strSessionDetails = "[ No session details defined ]";
 				}
-							
+
 				// Include $_SERVER details
 				$strServerDetails = print_r($_SERVER, true);
-				
+
 				// Include $_REQUEST details (if there are any)
 				$strRequestDetails = print_r($_REQUEST, true);
-				
+
 				$strEnvDetails = "\n\nFunction Call Backtrace:".
 								"\n{$strBacktrace}".
 								"\n\Session Details:".
@@ -477,25 +477,25 @@ final class Flex {
 								"\n{$strServerDetails}".
 								"\n\nRequest Details:".
 								"\n{$strRequestDetails}";
-				
+
 				if ($bolAsHtml) {
 					$strEnvDetails = "<pre>{$strEnvDetails}</pre>";
 				}
-				
+
 				$strBody .= $strEnvDetails;
 			}
-			
+
 			$strSignature = "\n\nRegards\nFlexor";
-			
+
 			$strBody .= ($bolAsHtml) ? nl2br($strSignature) : $strSignature;
 			$email = Email_Notification::getForSystemName('ALERT');
-			
+
 			if ($bolAsHtml) {
 				$email->html = $strBody;
 			} else {
 				$email->text = $strBody;
 			}
-			
+
 			$email->subject = "Flex Alert - {$strSubject}";
 			$email->addHeader("X-Priority", "1 (Highest)");
 			$email->addHeader("X-MSMail-Priority", "High");
@@ -548,7 +548,7 @@ final class Flex {
 	}
 
 	public static function errorHandlerException($iLevel, $sMessage, $sFile, $iLine, $aContext) {
-		if (!self::_isErrorLevelSuppressed($iLevel)) {
+		if (self::_isErrorLevelSuppressed($iLevel)) {
 			// Suppressed: Do nothing (or do we want to pass through?  Probably not)
 			return true;
 		}

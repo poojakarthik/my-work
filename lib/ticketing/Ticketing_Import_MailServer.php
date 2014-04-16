@@ -87,7 +87,8 @@ class Ticketing_Import_MailServer extends Ticketing_Import {
 						Log::get()->logIf($this->_bLoggingEnabled, "[+] Correspondance #{$oCorrespondance->id} created");
 						$oCorrespondance->acknowledgeReceipt();
 					} else {
-						throw new Exception("No Ticket Correspondance was created");
+						Log::get()->logIf($this->_bLoggingEnabled, '[!] No Ticket Correspondence was created; message will be marked as read. To reprocess, mark as unread.');
+						//throw new Exception("No Ticket Correspondance was created");
 					}
 				} else {
 					Log::get()->logIf($this->_bLoggingEnabled, "[*] Already read");
@@ -165,6 +166,14 @@ class Ticketing_Import_MailServer extends Ticketing_Import {
 							if (isset($aContentTypeMatch['filename'])) {
 								// The filename was in the content disposition
 								$sFilename = $aContentTypeMatch['filename'];
+							}
+						}
+
+						// Fall back to content-id
+						if ($sFilename === null) {
+							if (isset($aHeaders['content-id']) && strlen(trim($aHeaders['content-id']))) {
+								// Use the Content-ID as a pseudo-filename
+								$sFilename = trim($aHeaders['content-id']);
 							}
 						}
 

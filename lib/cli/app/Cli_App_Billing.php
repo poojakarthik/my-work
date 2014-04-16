@@ -62,6 +62,8 @@ class Cli_App_Billing extends Cli
 			Log::registerFunctionLog('Cli_App_Billing', 'debug', 'Cli_App_Billing');
 			Log::setDefaultLog('Cli_App_Billing');
 
+			set_error_handler('Flex::errorHandlerException');
+
 			// Start a new Transcation
 			//$bolTransactionResult	= DataAccess::getDataAccess()->TransactionStart();
 			//Log::getLog()->log("Transaction was " . ((!$bolTransactionResult) ? 'not ' : '') . "successfully started!");

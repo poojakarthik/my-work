@@ -1,3 +1,4 @@
+"use strict";
 var P = require('promise'),
 	mixin = require('mixin');
 

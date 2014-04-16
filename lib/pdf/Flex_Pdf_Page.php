@@ -26,9 +26,11 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 
 	private $saveFillColours = array();
 	private $saveLineColours = array();
-	
+
 	protected $_arrLinkTargets = array();
-	
+
+	static protected $_lineDashingPattern = array(5, 5);
+
 	public function drawImage($zendPdfImageResource, $top, $left, $height, $width)
 	{
 		parent::drawImage($zendPdfImageResource, $left, $this->getHeight() - ($top + $height), $left + $width, $this->getHeight() - $top);
@@ -60,9 +62,46 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 		$height = $templateElement->getPreparedHeight() + $pt + $pb;
 		$width = $templateElement->getPreparedWidth() + $pl + $pr;
 
-		$cornerRadius = $templateElement->getStyle()->getCornerRadius();
-		$cornerRadius = (2 * $cornerRadius) > $width  ? ($width  / 2) : $cornerRadius;
-		$cornerRadius = (2 * $cornerRadius) > $height ? ($height / 2) : $cornerRadius;
+		// $cornerRadius = $templateElement->getStyle()->getCornerRadius();
+		// $cornerRadius = (2 * $cornerRadius) > $width  ? ($width  / 2) : $cornerRadius;
+		// $cornerRadius = (2 * $cornerRadius) > $height ? ($height / 2) : $cornerRadius;
+
+		// Border Radius
+		$borderTopLeftRadius = $templateElement->getStyle()->getBorderTopLeftRadius();
+		$borderTopRightRadius = $templateElement->getStyle()->getBorderTopRightRadius();
+		$borderBottomLeftRadius = $templateElement->getStyle()->getBorderBottomLeftRadius();
+		$borderBottomRightRadius = $templateElement->getStyle()->getBorderBottomRightRadius();
+		$hasBorderRadius = $borderTopLeftRadius || $borderTopRightRadius || $borderBottomLeftRadius || $borderBottomRightRadius;
+
+		// Maintain radius ratio if the sum of radii on a side is greater than the side's length
+		if (($borderTopLeftRadius + $borderTopRightRadius) > $width) {
+			$ratio = $width / ($borderTopLeftRadius + $borderTopRightRadius);
+			$borderTopLeftRadius = $borderTopLeftRadius * $ratio;
+			$borderTopRightRadius = $borderTopRightRadius * $ratio;
+		}
+		if (($borderBottomLeftRadius + $borderBottomRightRadius) > $width) {
+			$ratio = $width / ($borderBottomLeftRadius + $borderBottomRightRadius);
+			$borderBottomLeftRadius = $borderBottomLeftRadius * $ratio;
+			$borderBottomRightRadius = $borderBottomRightRadius * $ratio;
+		}
+		if (($borderTopLeftRadius + $borderBottomLeftRadius) > $height) {
+			$ratio = $height / ($borderTopLeftRadius + $borderBottomLeftRadius);
+			$borderTopLeftRadius = $borderTopLeftRadius * $ratio;
+			$borderBottomLeftRadius = $borderBottomLeftRadius * $ratio;
+		}
+		if (($borderTopRightRadius + $borderBottomRightRadius) > $height) {
+			$ratio = $height / ($borderTopRightRadius + $borderBottomRightRadius);
+			$borderTopRightRadius = $borderTopRightRadius * $ratio;
+			$borderBottomRightRadius = $borderBottomRightRadius * $ratio;
+		}
+
+		$borderStyle = $templateElement->getStyle()->getBorderStyle();
+		if ($borderStyle === Flex_Pdf_Style::BORDER_STYLE_DASHED) {
+			$lineDashingPattern = self::$_lineDashingPattern;
+		} else {
+			$lineDashingPattern = Zend_Pdf_Page::LINE_DASHING_SOLID;
+		}
+
 
 		// Rectangular area contained entirely within border (corners cropped by corner radius curves)
 		$x1 = $left;
@@ -84,17 +123,18 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 
 			if ($lineColor != NULL)
 			{
-				$rawInnerBoxData = $this->getBoxBoundsData($x1, $y1, $x2, $y2, $cornerRadius);
+				$rawInnerBoxData = $this->getBoxBoundsDataFourRadii($x1, $y1, $x2, $y2, $borderTopLeftRadius, $borderTopRightRadius, $borderBottomRightRadius, $borderBottomLeftRadius);
 
 				$this->saveGS();
 				$this->setFillColor($lineColor);
+				// $this->setLineDashingPattern($lineDashingPattern);
 
-				if ($cornerRadius)
+				if ($hasBorderRadius)
 				{
-					$crtl = $cornerRadius + min($t, $l);
-					$crtr = $cornerRadius + min($t, $r);
-					$crbr = $cornerRadius + min($b, $r);
-					$crbl = $cornerRadius + min($b, $l);
+					$crtl = $borderTopLeftRadius + min($t, $l);
+					$crtr = $borderTopRightRadius + min($t, $r);
+					$crbr = $borderBottomRightRadius + min($b, $r);
+					$crbl = $borderBottomLeftRadius + min($b, $l);
 
 					$rawDataOuterBox = $this->getBoxBoundsDataFourRadii($bx1, $by1, $bx2, $by2, $crtl, $crtr, $crbr, $crbl);
 
@@ -115,12 +155,13 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 			// Draw the fill area for a box with uneven sides
 			if ($fillColor != NULL)
 			{
-				$rawInnerBoxData = $this->getBoxBoundsData($x1, $y1, $x2, $y2, $cornerRadius);
+				$rawInnerBoxData = $this->getBoxBoundsDataFourRadii($x1, $y1, $x2, $y2, $borderTopLeftRadius, $borderTopRightRadius, $borderBottomRightRadius, $borderBottomLeftRadius);
 
 				$this->saveGS();
 				$this->setFillColor($fillColor);
+				// $this->setLineDashingPattern($lineDashingPattern);
 
-				if ($cornerRadius)
+				if ($hasBorderRadius)
 				{
 					$this->appendToRawContents($rawInnerBoxData);
 					// Set the fill style
@@ -152,10 +193,10 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 			if ($fillColor != NULL) $this->setFillColor($fillColor);
 			if ($lineColor != NULL) $this->setLineColor($lineColor);
 
-			if ($cornerRadius)
+			if ($hasBorderRadius)
 			{
 				// Get the box bounds data...
-				$rawData = $this->getBoxBoundsData($x1, $y1, $x2, $y2, $cornerRadius);
+				$rawData = $this->getBoxBoundsDataFourRadii($x1, $y1, $x2, $y2, $borderTopLeftRadius, $borderTopRightRadius, $borderBottomRightRadius, $borderBottomLeftRadius);
 				$this->appendToRawContents($rawData);
 
 				// Set the fill style
@@ -352,7 +393,7 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 			$string = $pageCountMatch[3];
 
 			$nrPageCounts = preg_match_all("/\<\\0?\<\\0?p\\0?c\\0?\>\\0?\>/", $string, $array=array());
-			
+
 			$isNullSplit = strpos($string, "\0") !== FALSE;
 
 			$style = $this->pageCountStyles[$i];
@@ -382,12 +423,12 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 
 
 			$textElement = $pageCountMatch[0];
-			
+
 			if ($isNullSplit)
 			{
 				$nrPages = implode("\0", str_split($nrPages, 1));
 			}
-			
+
 			$textElement = str_replace("BT\n".$pageCountMatch[1], "BT\n".$x, $textElement);
 
 			$textElement = str_replace(($isNullSplit ? "<\0<\0p\0c\0>\0>" : "<<pc>>"), $nrPages, $textElement);
@@ -411,7 +452,7 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 
 		$this->setFillColor($this->getStyle()->getColor());
 
-		parent::drawText($text, $x, $y);
+		parent::drawText($text, $x, $y, mb_detect_encoding($text));
 
 		if ($this->getStyle()->hasTextDecoration())
 		{
@@ -524,7 +565,14 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 
 			if ($overflow === self::TEXT_BLOCK_OVERFLOW_HIDDEN)
 			{
-				$remainingString = ltrim(substr($remainingString, strlen($strings[$i])));
+				$remainingString = ltrim(
+					mb_substr(
+						$remainingString,
+						mb_strlen($strings[$i], mb_detect_encoding($strings[$i])),
+						null,
+						mb_detect_encoding($remainingString)
+					)
+				);
 			}
 			$t -= $lineHeight;
 			if ($overflow === self::TEXT_BLOCK_OVERFLOW_HIDDEN && $t < $y)
@@ -670,7 +718,7 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 	protected function _attachAnnotation(Flex_Pdf_Annotation_Link_From $objLinkFrom)
 	{
 		$pageDictionary = $this->getPageDictionary();
-		
+
 		if (!($pageDictionary->Annots instanceof Flex_Pdf_Element_Array))
 		{
 			if ($pageDictionary->Annots instanceof Zend_Pdf_Element_Array)
@@ -684,7 +732,7 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 				$pageDictionary->Annots = new Flex_Pdf_Element_Array();
 			}
 		}
-		
+
         $this->_objFactory->attach($objLinkFrom->getFactory());
         $pageDictionary->Annots->add(null, $objLinkFrom->getResource());
 	}
@@ -692,7 +740,7 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 	/**
 	 * Draw a link at the specified position on the page to the named target.
 	 *
-	 * @param $strTargetName String name of target to link to 
+	 * @param $strTargetName String name of target to link to
 	 * @param $top		float
 	 * @param $left		float
 	 * @param $height	float
@@ -709,7 +757,7 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 		$objY1 = new Zend_Pdf_Element_Numeric($h - $top - $height);
 		$objX2 = new Zend_Pdf_Element_Numeric($left + $width);
 		$objY2 = new Zend_Pdf_Element_Numeric($h - $top);
-		
+
 		$objLinkFrom = new Flex_Pdf_Annotation_Link_From($objX1, $objY1, $objX2, $objY2, $objName);
 		$this->_attachAnnotation($objLinkFrom);
 	}
@@ -717,7 +765,7 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 	/**
 	 * Draw a link target at the specified position on the page
 	 *
-	 * @param $strTargetName String name of target to link to 
+	 * @param $strTargetName String name of target to link to
 	 * @param $top		float
 	 * @param $left		float
 	 */
@@ -730,7 +778,7 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 		$h = $this->getHeight();
 		$objX1 = new Zend_Pdf_Element_Numeric($left);
 		$objY1 = new Zend_Pdf_Element_Numeric($h - $top);
-		
+
 		$objLinkTo = new Flex_Pdf_Annotation_Link_To($this->getPageDictionary(), $objX1, $objY1, $objName);
 		$this->_arrLinkTargets[$strTargetName] = $objLinkTo->getResource();
         $this->_objFactory->attach($objLinkTo->getFactory());

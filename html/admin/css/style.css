@@ -7112,6 +7112,7 @@ div.clearing {
 
 	div.popup-email-text-edit {
 		margin	: 0.5em;
+		max-height: 90vh;
 	}
 
 	.popup-email-text-edit .buttons, .popup-email-test .buttons {
@@ -7142,7 +7143,8 @@ div.clearing {
 		-moz-border-radius	: 4px 4px 4px 4px;
 		border				: 1px solid #000000;
 		background-color	: rgba(255, 255, 255, 0.6);
-		overflow-y			: auto;
+		overflow: scroll;
+		max-height: 370px;
 	}
 
 	.popup-email-text-edit .variables ul {
@@ -11568,6 +11570,7 @@ div.clearing {
   padding-top: 0.25em;
   padding-bottom: 0.25em;
   background-repeat: repeat-x;
+  font-weight: bold;
 }
 .flex-page-customer-payments-chequeentry-data > * > tr > td,
 .flex-page-customer-payments-chequeentry-data > * > tr > th {
@@ -11871,6 +11874,7 @@ div.clearing {
   padding-top: 0.25em;
   padding-bottom: 0.25em;
   background-repeat: repeat-x;
+  font-weight: bold;
   text-align: center;
 }
 .fw-datepicker .bar img {
@@ -11896,6 +11900,7 @@ div.clearing {
   padding-top: 0.25em;
   padding-bottom: 0.25em;
   background-repeat: repeat-x;
+  font-weight: bold;
 }
 .fw-datepicker .dateChooser > * > tr > td,
 .fw-datepicker .dateChooser > * > tr > th {
@@ -11941,6 +11946,7 @@ div.clearing {
   padding-top: 0.25em;
   padding-bottom: 0.25em;
   background-repeat: repeat-x;
+  font-weight: bold;
 }
 .fw-datepicker-active-today {
   font-weight: bold;
@@ -11950,10 +11956,20 @@ div.clearing {
 }
 /********************************** Component: Service Add *********************************/
 .flex-page-service-add-debugwindow {
+/**************************** Component: Service Override Rates ***************************/
+.flex-page-account-service-plan-overriderates h2::before {
+  content: url("/admin/img/template/charge_small.png");
+  height: auto;
   width: 1160px;
+  width: auto;
+  display: inline-block;
+  margin-right: 0.2em;
+  vertical-align: bottom;
   background-color: #fff;
+  vertical-align: middle;
 }
 .flex-page-service-add-servicelist {
+.flex-page-account-service-plan-overriderates table {
   padding: 0;
 }
 .flex-page-service-add-buttons {
@@ -11971,8 +11987,18 @@ div.clearing {
   display: flex;
   flex-wrap: wrap;
   background-color: #ddd;
+  width: 99%;
+  margin-left: auto;
+  margin-right: auto;
+  border: 0.1em solid #d1d1d1;
+  border-spacing: 0;
+  font-size: inherit;
+  width: 100%;
+  border-top: 0;
+  margin: 1em 0;
 }
 .flex-page-service-add-servicelist-service-heading {
+.flex-page-account-service-plan-overriderates table > thead {
   color: #fff;
   background-color: #499fcf;
   text-align: left;
@@ -11981,6 +12007,7 @@ div.clearing {
   margin: 0;
 }
 .flex-page-service-add-servicelist-service-heading [name='remove'] {
+.flex-page-account-service-plan-overriderates table > thead > tr > th {
   border: 0 !important;
   background: transparent !important;
   width: auto !important;
@@ -12032,6 +12059,7 @@ div.clearing {
 .flex-page-service-add-servicelist-service-details [name='rate_plan_id'],
 .flex-page-service-add-servicelist-service-details [name='activate_immediately'] {
   margin: 0.25em 0;
+  padding-top: 0.25em;
 }
 .flex-page-service-add-servicelist-service-details [name='activate_immediately'] {
   margin-right: 0.5ch;
@@ -12045,12 +12073,14 @@ div.clearing {
 .flex-page-service-add-servicelist-service-details-rateplan-message,
 .flex-page-service-add-servicelist-service-details-activateimmediately-controls {
   margin: 0.25em 0;
+  padding-bottom: 0.25em;
 }
 .flex-page-service-add-servicelist-service-details-servicetype,
 .flex-page-service-add-servicelist-service-details-rateplan,
 .flex-page-service-add-servicelist-service-details-activateimmediately {
   display: flex;
   flex-direction: row;
+  background-repeat: repeat-x;
   border: 0;
   margin: 0;
   padding: 0;
@@ -12226,10 +12256,15 @@ div.clearing {
 .flex-servicetype-mobile-create [name='esn'],
 .flex-servicetype-mobile-create [name='state'],
 .flex-servicetype-mobile-create [name='date_of_birth'],
+  color: #fff;
+  background-color: #666;
+  text-align: left;
 .flex-servicetype-mobile-create [name='comments'] {
   margin: 0.25em 0;
+  font-size: 0.85em;
 }
 .flex-servicetype-mobile-create [name='comments'] {
+.flex-page-account-service-plan-overriderates table caption {
   width: 100%;
 }
 .flex-servicetype-mobile-create-msn,
@@ -12241,10 +12276,13 @@ div.clearing {
   display: flex;
   flex-direction: row;
   border: 0;
+  background-color: #499fcf;
+  background-repeat: repeat-x;
   margin: 0;
   padding: 0;
   justify-content: flex-start;
   align-items: center;
+  color: #fff;
 }
 .flex-servicetype-mobile-create-msn-label,
 .flex-servicetype-mobile-create-puk-label,
@@ -12256,18 +12294,32 @@ div.clearing {
   margin: 0.25em 0.5em 0.25em 0;
   font-weight: bold;
   text-align: right;
+  text-align: center;
+  vertical-align: middle;
+  padding: 0.25em 0.5em;
+  font-size: inherit;
+  border: 0.1em solid #d1d1d1;
   width: 10em;
   min-width: 10em;
+  border-bottom: 0;
+  text-align: left;
 }
 .flex-servicetype-mobile-create-comments-label {
+.flex-page-account-service-plan-overriderates table td:nth-child(2),
+.flex-page-account-service-plan-overriderates table th:nth-child(2),
+.flex-page-account-service-plan-overriderates table td:nth-child(3),
   align-self: flex-start;
+.flex-page-account-service-plan-overriderates table th:nth-child(3) {
+  width: 10%;
 }
 /******************* Component: Service Add Entry (Inbound) *******************/
 .flex-servicetype-inbound-create [name='fnn'],
+.flex-page-account-service-plan-overriderates-recordtypes {
 .flex-servicetype-inbound-create [name='answerpoint'],
 .flex-servicetype-inbound-create [name='complex'],
 .flex-servicetype-inbound-create [name='configuration'] {
   margin: 0.25em 0;
+  list-style-type: none;
 }
 .flex-servicetype-inbound-create [name='complex'] {
   margin-right: 0.5ch;
@@ -12288,17 +12340,22 @@ div.clearing {
   align-items: center;
 }
 .flex-servicetype-inbound-create-fnn-label,
+.flex-page-account-service-plan-overriderates-recordtypes:empty {
 .flex-servicetype-inbound-create-answerpoint-label,
 .flex-servicetype-inbound-create-complex-label,
 .flex-servicetype-inbound-create-configuration-label {
   border: 0;
+  background-color: #eceef2;
   margin: 0.25em 0.5em 0.25em 0;
   font-weight: bold;
   text-align: right;
+  border: 1px solid #d1d1d1;
   width: 10em;
   min-width: 10em;
+  padding: 0.5em;
 }
 .flex-servicetype-inbound-create-configuration-label {
+.flex-page-account-service-plan-overriderates-recordtypes:empty::before {
   align-self: flex-start;
 }
 /********************* Component: Service Add Entry (ADSL) ********************/
@@ -12318,6 +12375,7 @@ div.clearing {
   border: 0;
   margin: 0.25em 0.5em 0.25em 0;
   font-weight: bold;
+  font-style: oblique;
   text-align: right;
   width: 10em;
   min-width: 10em;

@@ -350,12 +350,12 @@ class Service extends ORM
 		$sCurrentDateAndTime	= Data_Source_Time::currentTimestamp();
 		$iStartDatetime			= strtotime($sStartDatetime);
 
-		// Work out the EndDatetime for the old records of the ServiceRatePlan and ServiceRateGroup tables, which have an EndDatetime greater than $strStartDatetime
+		// Work out the EndDatetime for the old records of the ServiceRatePlan, ServiceRateGroup, and service_rate tables, which have an EndDatetime greater than $strStartDatetime
 		// The EndDatetime will be set to 1 second before the StartDatetime of the records relating to the new plan
 		$iOldPlanEndDatetime	= $iStartDatetime - 1;
 		$sOldPlanEndDatetime	= date("Y-m-d H:i:s", $iOldPlanEndDatetime);
 
-		// Set the EndDatetime to $sOldPlanEndDatetime for all records in the ServiceRatePlan and ServiceRateGroup tables
+		// Set the EndDatetime to $sOldPlanEndDatetime for all records in the ServiceRatePlan, ServiceRateGroup, and service_rate tables
 		// which relate this service.  Do not alter the records' "Active" property regardless of what it is.
 
 		// Update existing ServiceRateGroup records
@@ -373,6 +373,18 @@ class Service extends ORM
 			// Could not update records in ServiceRatePlan table. Exit gracefully
 			throw new Exception_Database("Failed to update existing ServiceRatePlan records. ".$oServiceRatePlan->Error());
 		}
+
+		// Update existing service_rate records
+		DataAccess::get()->query('
+			UPDATE service_rate
+			SET end_datetime = <end_datetime>
+			WHERE service_id = <service_id>
+				AND end_datetime >= <new_start_datetime>
+		', array(
+			'service_id' => $this->Id,
+			'end_datetime' => $sOldPlanEndDatetime,
+			'new_start_datetime' => $sStartDatetime
+		));
 
 		// Get the current User
 		$iUserId	= Flex::getUserId();

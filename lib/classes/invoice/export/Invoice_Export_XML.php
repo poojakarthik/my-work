@@ -16,7 +16,7 @@ class Invoice_Export_XML {
 		$arrCustomer = Invoice_Export::getCustomerData($arrInvoice);
 
 		// Init our XML Document
-		$domDocument = new DOMDocument('1.0');
+		$domDocument = new DOMDocument('1.0', 'UTF-8');
 		$domDocument->formatOutput = true;
 
 		//--------------------------------------------------------------------//
@@ -88,7 +88,7 @@ class Invoice_Export_XML {
 		// Invoice History
 		//--------------------------------------------------------------------//
 		$xmlInvoiceHistory = self::_addElement($xmlInvoice, 'InvoiceHistory');
-		$iInvoiceHistoryProgress = 1;
+		$iInvoiceHistoryProgress = 0;
 		while ($aHistoricInvoice = Invoice_Export::getOldInvoice($arrInvoice, $iInvoiceHistoryProgress)) {
 			$xmlHistoricInvoice = $domDocument->createElement('HistoricInvoice');
 			$xmlInvoiceHistory->appendChild($xmlHistoricInvoice);
@@ -624,6 +624,7 @@ class Invoice_Export_XML {
 	protected static function _addElement(&$xmlParent, $strName, $mixValue = null) {
 		if ($xmlParent instanceof DOMNode) {
 			// Valid Parent
+			$mixValue = iconv('ISO-8859-1' , 'UTF-8', $mixValue);
 			$mixReturn = $xmlParent->appendChild(new DOMElement($strName, EscapeXML($mixValue)));
 		} else {
 			// $xmlParent is not a valid Parent Node
@@ -636,6 +637,7 @@ class Invoice_Export_XML {
 	protected static function _addAttribute(&$xmlParent, $strName, $mixValue = null) {
 		if ($xmlParent instanceof DOMNode) {
 			// Valid Parent
+			$mixValue = iconv('ISO-8859-1' , 'UTF-8', $mixValue);
 			return (bool)$xmlParent->setAttributeNode(new DOMAttr($strName, $mixValue));
 		} else {
 			// $xmlParent is not a valid Parent Node

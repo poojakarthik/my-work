@@ -2,13 +2,12 @@
 class Invoice_Export {
 	// Returns the Invoice Data from the Xth last Invoice
 	public static function getOldInvoice($arrInvoice, $intPeriodsAgo) {
-		if ((int)$intPeriodsAgo < 1) {
+		if ((int)$intPeriodsAgo < 0) {
 			// Either not an integer, or an invalid number of periods ago
-			throw new Exception("\$intPeriodsAgo with value '{$intPeriodsAgo}' is less than the minimum of 1");
+			throw new Exception("\$intPeriodsAgo with value '{$intPeriodsAgo}' is less than the minimum of 0");
 		}
 
-		$intPeriodsAgo--;
-		$selOldInvoice = new StatementSelect("Invoice", "*", "Account = <Account> AND CreatedOn < <CreatedOn>", "CreatedOn DESC", "$intPeriodsAgo, 1");
+		$selOldInvoice = new StatementSelect("Invoice", "*", "Account = <Account> AND CreatedOn <= <CreatedOn>", "CreatedOn DESC", "$intPeriodsAgo, 1");
 		if ($selOldInvoice->Execute($arrInvoice) === false) {
 			throw new Exception_Database($selOldInvoice->Error());
 		}

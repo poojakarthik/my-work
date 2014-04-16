@@ -52,7 +52,7 @@ class AppTemplateService extends ApplicationTemplate
 	 * __construct()
 	 *
 	 * Initialises the ApplicationTemplate object
-	 * 
+	 *
 	 * Initialises the ApplicationTemplate object
 	 *
 	 * @return		void
@@ -61,12 +61,12 @@ class AppTemplateService extends ApplicationTemplate
 	function __construct()
 	{
 		parent::__construct();
-		
+
 		// If a service's Id has been passed by GET, POST or ajax request, make sure it references
 		// the most recent Service record which belongs to the Account and models the physical Service
 		if (DBO()->Service->Id->IsSet)
 		{
-			DBO()->ActualRequestedService->Id = DBO()->Service->Id->Value;			
+			DBO()->ActualRequestedService->Id = DBO()->Service->Id->Value;
 			$intNewestServiceId = $this->GetMostRecentServiceRecordId(DBO()->Service->Id->Value);
 			if ($intNewestServiceId != FALSE)
 			{
@@ -74,28 +74,28 @@ class AppTemplateService extends ApplicationTemplate
 			}
 		}
 	}
-	
+
 	public static function BuildContextMenu($intAccountId, $intServiceId, $intServiceType)
 	{
 		$bolUserHasOperatorPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 		$bolUserHasViewPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW);
 		$bolUserHasExternalPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_EXTERNAL);
-		
+
 		$objService				= Service::getForId($intServiceId);
 		$strServiceType			= GetConstantDescription($intServiceType, 'service_type');
-		
+
 		if ($bolUserHasViewPerm)
 		{
 			ContextMenu()->Service->View_Unbilled_Charges($intServiceId);
 			ContextMenu()->Service->View_Service_History($intServiceId);
 		}
-		
+
 		ContextMenu()->Service->Plan->View_Service_Rate_Plan($intServiceId);
-		
+
 		if ($bolUserHasOperatorPerm)
 		{
 			ContextMenu()->Service->Edit_Service($intServiceId);
-			ContextMenu()->Service->Plan->Change_Plan($intServiceId);	
+			ContextMenu()->Service->Plan->Change_Plan($intServiceId);
 			ContextMenu()->Service->Move_Service($intServiceId);
 			ContextMenu()->Service->Charges->Add_Charge($intAccountId, $intServiceId);
 			ContextMenu()->Service->Charges->Add_Recurring_Charge($intAccountId, $intServiceId);
@@ -116,7 +116,7 @@ class AppTemplateService extends ApplicationTemplate
 		}
 		ContextMenu()->Service->{"Actions / Notes"}->ActionsAndNotesListPopup(ACTION_ASSOCIATION_TYPE_SERVICE, $intServiceId, true, 99999, "$strServiceType - {$objService->fNN}");
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// View
 	//------------------------------------------------------------------------//
@@ -124,7 +124,7 @@ class AppTemplateService extends ApplicationTemplate
 	 * View()
 	 *
 	 * Performs the logic for viewing a service
-	 * 
+	 *
 	 * Performs the logic for viewing a service
 	 *
 	 * @return		void
@@ -152,7 +152,7 @@ class AppTemplateService extends ApplicationTemplate
 			$this->LoadPage('error');
 			return FALSE;
 		}
-		
+
 		// Check that ClosedOn >= CreatedOn if ClosedOn IS NOT NULL
 		if (DBO()->Service->ClosedOn->Value != NULL && DBO()->Service->ClosedOn->Value < DBO()->Service->CreatedOn->Value)
 		{
@@ -162,7 +162,7 @@ class AppTemplateService extends ApplicationTemplate
 			$intAccount		= DBO()->Service->Account->Value;
 			$strAccountLink	= Href()->AccountOverview($intAccount);
 			$strErrorMsg	= "This is an invalid service record.  It belonged to account <a href='$strAccountLink' title='Account Overview'>$intAccount</a>";
-			
+
 			if ($intOwner == FALSE)
 			{
 				$strErrorMsg .= "<br />The current owning account cannot be established.";
@@ -176,7 +176,7 @@ class AppTemplateService extends ApplicationTemplate
 			$this->LoadPage('error');
 			return FALSE;
 		}
-		
+
 		if (DBO()->Service->Indial100->Value)
 		{
 			DBL()->ServiceExtension->Service = DBO()->Service->Id->Value;
@@ -184,7 +184,7 @@ class AppTemplateService extends ApplicationTemplate
 			DBL()->ServiceExtension->Load();
 			DBO()->Service->ELB = (bool)DBL()->ServiceExtension->RecordCount();
 		}
-		
+
 		// If the Service has a CostCentre then retrieve the name of it
 		if (DBO()->Service->CostCentre->Value)
 		{
@@ -192,8 +192,8 @@ class AppTemplateService extends ApplicationTemplate
 			DBO()->CostCentre->Load();
 			DBO()->Service->CostCentre = DBO()->CostCentre->Name->Value;
 		}
-		
-		
+
+
 		// Get the details of the current plan for the service
 		DBO()->CurrentRatePlan->Id = GetCurrentPlan(DBO()->Service->Id->Value);
 		if (DBO()->CurrentRatePlan->Id->Value)
@@ -201,30 +201,30 @@ class AppTemplateService extends ApplicationTemplate
 			DBO()->CurrentRatePlan->SetTable("RatePlan");
 			DBO()->CurrentRatePlan->Load();
 		}
-		
+
 		DBO()->FutureRatePlan->Id = GetPlanScheduledForNextBillingPeriod(DBO()->Service->Id->Value);
 		if (DBO()->FutureRatePlan->Id->Value)
 		{
 			DBO()->FutureRatePlan->SetTable("RatePlan");
 			DBO()->FutureRatePlan->Load();
 		}
-		
+
 		// Calculate unbilled charges (this includes all unbilled Charges(charges) and CDRs for the service)
 		$fltUnbilledCharges					= UnbilledServiceChargeTotal(DBO()->Service->Id->Value);
 		$fltUnbilledCDRs						= UnbilledServiceCDRTotal(DBO()->Service->Id->Value);
 		DBO()->Service->TotalUnbilledAdjustments 	= AddGST($fltUnbilledCharges + $fltUnbilledCDRs);
-		
+
 		//DEPRECATED! Old Notes Functionality
 		// Load the notes
 		//LoadNotes(NULL, DBO()->Service->Id->Value);
-		
+
 		// Retrieve the Provisioning History for the Service
 		DBO()->History->CategoryFilter	= PROVISIONING_HISTORY_CATEGORY_BOTH;
 		DBO()->History->TypeFilter		= PROVISIONING_HISTORY_FILTER_ALL;
 		DBO()->History->MaxItems		= 10;
 		$appProvisioning = new AppTemplateProvisioning();
 		DBO()->History->Records = $appProvisioning->GetHistory(DBO()->History->CategoryFilter->Value, DBO()->History->TypeFilter->Value, DBO()->Account->Id->Value, DBO()->Service->Id->Value, DBO()->History->MaxItems->Value);
-		
+
 		// Context menu
 		AppTemplateAccount::BuildContextMenu(DBO()->Account->Id->Value);
 		self::BuildContextMenu(DBO()->Account->Id->Value, DBO()->Service->Id->Value, DBO()->Service->ServiceType->Value);
@@ -256,7 +256,7 @@ class AppTemplateService extends ApplicationTemplate
 
 		$intService = DBO()->Service->Id->Value;
 		$objService = ModuleService::GetServiceById($intService);
-		
+
 		if ($objService === FALSE)
 		{
 			// Instantiating the Service object failed
@@ -269,7 +269,7 @@ class AppTemplateService extends ApplicationTemplate
 			Ajax()->AddCommand("Alert", "ERROR: Could not find the service with Service Id: $intService");
 			return TRUE;
 		}
-		
+
 		// The Service object was successfully created
 		DBO()->Service->AsObject = $objService;
 
@@ -287,7 +287,7 @@ class AppTemplateService extends ApplicationTemplate
 	 * GetService()
 	 *
 	 * Builds an array structure defining a service, the service's ServiceType specific extra details, a history of its status, and its plan details
-	 * 
+	 *
 	 * Builds an array structure defining a service, the service's ServiceType specific extra details, a history of its status, and its plan details
 	 * The history details when the service was activated(or created) and Closed(disconnected or archived)
 	 * It will always have at least one record
@@ -309,27 +309,27 @@ class AppTemplateService extends ApplicationTemplate
 	 * 								['LineStatus']
 	 * 								['LineStatusDate']
 	 * 				['ExtraDetail']	[]					Stores the ServiceType specific details of the service
-	 * 
+	 *
 	 * @param	int		$intService		Id of any of the service records used to model this service
 	 *
 	 * @return	mixed					FALSE:	On database error
 	 * 									Array:  $arrService
-	 * 	
+	 *
 	 * @method
 	 */
 	static function GetService($intService)
 	{
 		//TODO! This currently does not retrieve the ServiceType specific Extra Details
-		$strTables	= "	Service AS S 
-						LEFT JOIN ServiceRatePlan AS SRP1 ON S.Id = SRP1.Service AND SRP1.Id = (SELECT SRP2.Id 
-								FROM ServiceRatePlan AS SRP2 
+		$strTables	= "	Service AS S
+						LEFT JOIN ServiceRatePlan AS SRP1 ON S.Id = SRP1.Service AND SRP1.Id = (SELECT SRP2.Id
+								FROM ServiceRatePlan AS SRP2
 								WHERE SRP2.Service = S.Id AND NOW() BETWEEN SRP2.StartDatetime AND SRP2.EndDatetime
 								ORDER BY SRP2.CreatedOn DESC
 								LIMIT 1
 								)
 						LEFT JOIN RatePlan AS RP1 ON SRP1.RatePlan = RP1.Id
-						LEFT JOIN ServiceRatePlan AS SRP3 ON S.Id = SRP3.Service AND SRP3.Id = (SELECT SRP4.Id 
-								FROM ServiceRatePlan AS SRP4 
+						LEFT JOIN ServiceRatePlan AS SRP3 ON S.Id = SRP3.Service AND SRP3.Id = (SELECT SRP4.Id
+								FROM ServiceRatePlan AS SRP4
 								WHERE SRP4.Service = S.Id AND SRP4.StartDatetime BETWEEN NOW() AND SRP4.EndDatetime
 								ORDER BY SRP4.CreatedOn DESC
 								LIMIT 1
@@ -337,13 +337,13 @@ class AppTemplateService extends ApplicationTemplate
 						LEFT JOIN RatePlan AS RP2 ON SRP3.RatePlan = RP2.Id";
 		$arrColumns	= Array("Id" 						=> "S.Id",
 							"FNN"						=> "S.FNN",
-							"ServiceType"				=> "S.ServiceType", 
+							"ServiceType"				=> "S.ServiceType",
 							"Status"		 			=> "S.Status",
 							"LineStatus"				=> "S.LineStatus",
 							"LineStatusDate"			=> "S.LineStatusDate",
-							"CreatedOn"					=> "S.CreatedOn", 
+							"CreatedOn"					=> "S.CreatedOn",
 							"ClosedOn"					=> "S.ClosedOn",
-							"CreatedBy"					=> "S.CreatedBy", 
+							"CreatedBy"					=> "S.CreatedBy",
 							"ClosedBy"					=> "S.ClosedBy",
 							"NatureOfCreation"			=> "S.NatureOfCreation",
 							"NatureOfClosure"			=> "S.NatureOfClosure",
@@ -360,14 +360,14 @@ class AppTemplateService extends ApplicationTemplate
 						S.FNN = (SELECT FNN FROM Service WHERE Id = <ServiceId>)";
 		$arrWhere	= Array("ServiceId" => $intService);
 		$strOrderBy	= ("S.Id DESC");
-		
+
 		$selServices = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy);
 		if ($selServices->Execute($arrWhere) == FALSE)
 		{
 			// An error occurred, or no records could be returned
 			return FALSE;
 		}
-		
+
 		$arrRecord	= $selServices->Fetch();
 		$arrService = Array (
 								"Id"			=> $arrRecord['Id'],
@@ -388,7 +388,7 @@ class AppTemplateService extends ApplicationTemplate
 		{
 			$arrService['CurrentPlan'] = NULL;
 		}
-		
+
 		// Add details about the Service's Future scheduled plan, if it has one
 		if ($arrRecord['FuturePlanId'] != NULL)
 		{
@@ -402,7 +402,7 @@ class AppTemplateService extends ApplicationTemplate
 		{
 			$arrService['FuturePlan'] = NULL;
 		}
-		
+
 		// Add this record's details to the history array
 		$arrService['History']		= Array();
 		$arrService['History'][]	= Array	(
@@ -419,8 +419,8 @@ class AppTemplateService extends ApplicationTemplate
 												"LineStatus"		=> $arrRecord['LineStatus'],
 												"LineStatusDate"	=> $arrRecord['LineStatusDate'],
 											);
-		 
-		
+
+
 		// If multiple Service records relate to the one actual service then they will be consecutive in the RecordSet
 		// Find each one and add it to the Status history
 		while (($arrRecord = $selServices->Fetch()) !== FALSE)
@@ -437,7 +437,7 @@ class AppTemplateService extends ApplicationTemplate
 													"LineStatusDate"	=> $arrService['LineStatusDate'],
 												);
 		}
-		
+
 		return $arrService;
 	}
 
@@ -448,7 +448,7 @@ class AppTemplateService extends ApplicationTemplate
 	 * ViewAddress()
 	 *
 	 * Performs the logic for viewing the service's address details
-	 * 
+	 *
 	 * Performs the logic for viewing the service's address details
 	 * It assumes the following data has been declared
 	 * 	DBO()->Service->Id		Id of the service to view the details of
@@ -468,9 +468,9 @@ class AppTemplateService extends ApplicationTemplate
 			Ajax()->AddCommand("Alert", "ERROR: Could not find service with Id = ". DBO()->Service->Id->Value);
 			return TRUE;
 		}
-		
+
 		DBO()->ServiceAddress->Where->Service = DBO()->Service->Id->Value;
-		
+
 		if (!DBO()->ServiceAddress->Load())
 		{
 			Ajax()->AddCommand("Alert", "ERROR: Address Details have not been defined for this service. Please configure them from the Provisioning page");
@@ -479,11 +479,11 @@ class AppTemplateService extends ApplicationTemplate
 
 		// Store the Physical Address Description
 		DBO()->ServiceAddress->PhysicalAddressDescription = $this->BuildPhysicalAddressDescription(DBO()->ServiceAddress->_arrProperties, "<br />");
-		
+
 		$this->LoadPage('service_address_view');
 		return TRUE;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// EditAddress
 	//------------------------------------------------------------------------//
@@ -491,7 +491,7 @@ class AppTemplateService extends ApplicationTemplate
 	 * EditAddress()
 	 *
 	 * Performs the logic for editting the service's address details
-	 * 
+	 *
 	 * Performs the logic for editting the service's address details
 	 * It assumes the following data has been declared
 	 * 	DBO()->Service->Id		Id of the service to view the details of
@@ -511,23 +511,23 @@ class AppTemplateService extends ApplicationTemplate
 			Ajax()->AddCommand("Alert", "ERROR: Could not find service with Id = ". DBO()->Service->Id->Value);
 			return TRUE;
 		}
-		
+
 		DBO()->Account->Id = DBO()->Service->Account->Value;
 		DBO()->Account->Load();
-		
+
 		// Retrieve the address details of this service
 		DBO()->ServiceAddress->Where->Service = DBO()->Service->Id->Value;
 		DBO()->ServiceAddress->Load();
-		
+
 		if (!DBO()->ServiceAddress->Id->Value)
 		{
 			// The Service does not currently have a ServiceAddress record
 			// Define default values, from the Account and Service records
 			DBO()->ServiceAddress->Service = DBO()->Service->Id->Value;
-			
+
 			$this->_SetDefaultValuesForServiceAddress(DBO()->ServiceAddress, DBO()->Account);
 		}
-		
+
 		// Retrieve the address details of each service belonging to this account
 		DBO()->Account->AllAddresses = $this->_GetAllServiceAddresses(DBO()->Account->Id->Value);
 
@@ -542,12 +542,12 @@ class AppTemplateService extends ApplicationTemplate
 	 * SaveAddress()
 	 *
 	 * Saves a ServiceAddress record
-	 * 
+	 *
 	 * Saves a ServiceAddress record
 	 * It assumes the following data has been declared
 	 * 	DBO()->Service->Id		Id of the service to view the details of
 	 * 	etc
-	 * 
+	 *
 	 * On success it will fire the "OnServiceUpdate" event and the "OnNewNote" event
 	 *
 	 * @return		void
@@ -565,19 +565,19 @@ class AppTemplateService extends ApplicationTemplate
 			Ajax()->AddCommand("Alert", "ERROR: Could not find service with Id = ". DBO()->Service->Id->Value);
 			return TRUE;
 		}
-		
+
 		DBO()->Account->Id = DBO()->Service->Account->Value;
 		DBO()->Account->Load();
-		
+
 		// Retrieve the current address details of this service
 		DBO()->CurrentServiceAddress->SetTable("ServiceAddress");
 		DBO()->CurrentServiceAddress->Where->Service = DBO()->Service->Id->Value;
 		DBO()->CurrentServiceAddress->Load();
-		
+
 		$dboServiceAddress	= DBO()->ServiceAddress;
 		$arrProblems 		= Array();
 		$bolIsValid			= $this->ValidateAndCleanServiceAddress($dboServiceAddress, $arrProblems);
-		
+
 		if (!$bolIsValid)
 		{
 			// The Service Address record is invalid
@@ -585,10 +585,10 @@ class AppTemplateService extends ApplicationTemplate
 			Ajax()->AddCommand("Alert", "ERROR: The following problems were found with the submitted data:<br />$strProblems");
 			return TRUE;
 		}
-		
+
 		// The Service Address is valid, save it
 		DBO()->ServiceAddress->Id = (DBO()->CurrentServiceAddress->Id->Value)? DBO()->CurrentServiceAddress->Id->Value : 0;
-		
+
 		DBO()->ServiceAddress->AccountGroup	= DBO()->Service->AccountGroup->Value;
 		DBO()->ServiceAddress->Account		= DBO()->Service->Account->Value;
 		DBO()->ServiceAddress->Service		= DBO()->Service->Id->Value;
@@ -599,7 +599,7 @@ class AppTemplateService extends ApplicationTemplate
 			Ajax()->AddCommand("Alert", "ERROR: Saving the address details failed, unexpectedly");
 			return TRUE;
 		}
-		
+
 		// Create a system note
 		if (DBO()->CurrentServiceAddress->Id->Value)
 		{
@@ -609,14 +609,14 @@ class AppTemplateService extends ApplicationTemplate
 		{
 			$strSystemNote = "Address details have been defined";
 		}
-		
+
 		SaveSystemNote($strSystemNote, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, DBO()->Service->Id->Value);
 		Ajax()->FireOnNewNoteEvent();
-		
+
 		// Fire the OnServiceUpdate event
 		$arrEvent['Service']['Id'] = DBO()->Service->Id->Value;
 		Ajax()->FireEvent(EVENT_ON_SERVICE_UPDATE, $arrEvent);
-		
+
 		// View the Address
 		Ajax()->AddCommand("ClosePopup", DBO()->Popup->Id->Value);
 		Ajax()->AddCommand("Alert", "Address successfully saved");
@@ -632,7 +632,7 @@ class AppTemplateService extends ApplicationTemplate
 		foreach ($dboServiceAddress as $strName=>$objProperty)
 		{
 			$objProperty->Trim();
-			
+
 			// Nullify any properties that equate to empty strings
 			if ($objProperty->Value === "")
 			{
@@ -644,10 +644,10 @@ class AppTemplateService extends ApplicationTemplate
 		// Convert to upper case, those values that should be in upper case
 		$dboServiceAddress->ServiceAddressTypeSuffix	= ($dboServiceAddress->ServiceAddressTypeSuffix->Value) ? strtoupper($dboServiceAddress->ServiceAddressTypeSuffix->Value) : NULL;
 		$dboServiceAddress->ServiceStreetNumberSuffix	= ($dboServiceAddress->ServiceStreetNumberSuffix->Value) ? strtoupper($dboServiceAddress->ServiceStreetNumberSuffix->Value) : NULL;
-		
+
 		// Run the UiAppDocumentation defined validation rules on the record
 		$dboServiceAddress->Validate();
-		
+
 		// Handle the user details
 		if ($dboServiceAddress->Residential->Value)
 		{
@@ -674,7 +674,7 @@ class AppTemplateService extends ApplicationTemplate
 				$arrDate = explode("/", $dboServiceAddress->DateOfBirth->Value);
 				$dboServiceAddress->DateOfBirth = "{$arrDate[2]}{$arrDate[1]}{$arrDate[0]}";
 			}
-			
+
 			// Clear the "business" specific fields
 			$dboServiceAddress->ABN					= NULL;
 			$dboServiceAddress->EndUserCompanyName	= NULL;
@@ -684,9 +684,9 @@ class AppTemplateService extends ApplicationTemplate
 		{
 			// It's a business service
 			// Remove all spaces from the ABN
-			$dboServiceAddress->ABN = str_replace(" ", "", $dboServiceAddress->ABN->Value);  
+			$dboServiceAddress->ABN = str_replace(" ", "", $dboServiceAddress->ABN->Value);
 			$dboServiceAddress->ABN->Validate();
-			
+
 			if (!$dboServiceAddress->ABN->Valid)
 			{
 				$arrProblems[] = "A valid ABN must be declared";
@@ -695,7 +695,7 @@ class AppTemplateService extends ApplicationTemplate
 			{
 				$arrProblems[] = "Company Name must be declared";
 			}
-			
+
 			// Clear the "residential" specific fields
 			$dboServiceAddress->EndUserTitle		= NULL;
 			$dboServiceAddress->EndUserGivenName	= NULL;
@@ -704,7 +704,7 @@ class AppTemplateService extends ApplicationTemplate
 			$dboServiceAddress->Employer			= NULL;
 			$dboServiceAddress->Occupation			= NULL;
 		}
-		
+
 		// Check the Billing Address fields
 		if (!$dboServiceAddress->BillName->Valid)
 		{
@@ -722,7 +722,7 @@ class AppTemplateService extends ApplicationTemplate
 		{
 			$arrProblems[] = "Billing Address Postcode must be declared";
 		}
-		
+
 		// Validate the service's physical address
 		$strAddressType = $dboServiceAddress->ServiceAddressType->Value;
 		if (array_key_exists($strAddressType, $GLOBALS['*arrConstant']['ServiceAddrType']))
@@ -770,9 +770,9 @@ class AppTemplateService extends ApplicationTemplate
 			else
 			{
 				// Validate the Street Number
-				$this->ValidateStreetNumber($dboServiceAddress, $arrProblems);				
+				$this->ValidateStreetNumber($dboServiceAddress, $arrProblems);
 			}
-			
+
 			if ($dboServiceAddress->ServiceStreetName->Value != NULL)
 			{
 				// A street name has been declared
@@ -788,11 +788,11 @@ class AppTemplateService extends ApplicationTemplate
 				// A street name has not been declared
 				$dboServiceAddress->ServiceStreetType		= NULL;
 				$dboServiceAddress->ServiceStreetTypeSuffix	= NULL;
-				
+
 				$dboServiceAddress->ServiceStreetNumberStart	= NULL;
 				$dboServiceAddress->ServiceStreetNumberEnd		= NULL;
 				$dboServiceAddress->ServiceStreetNumberSuffix	= NULL;
-				
+
 				// Check that a Property Name has been declared
 				if ($dboServiceAddress->ServicePropertyName->Value == NULL)
 				{
@@ -800,7 +800,7 @@ class AppTemplateService extends ApplicationTemplate
 				}
 			}
 		}
-		
+
 		if (!$dboServiceAddress->ServiceLocality->Valid)
 		{
 			$arrProblems[] = "Physical Address Locality must be declared";
@@ -813,10 +813,10 @@ class AppTemplateService extends ApplicationTemplate
 		{
 			$arrProblems[] = "Physical Address Postcode must be declared";
 		}
-		
+
 		return (count($arrProblems)) ? FALSE : TRUE;
 	}
-	
+
 	function ValidateStreetNumber(&$dboServiceAddress, &$arrProblems)
 	{
 		if ($dboServiceAddress->ServiceStreetNumberStart->Value == NULL)
@@ -825,19 +825,19 @@ class AppTemplateService extends ApplicationTemplate
 			// Reset the Number End and Suffix
 			$dboServiceAddress->ServiceStreetNumberEnd		= NULL;
 			$dboServiceAddress->ServiceStreetNumberSuffix	= NULL;
-			
+
 			if ($dboServiceAddress->ServiceStreetName->Value !== NULL)
 			{
 				$arrProblems[] = "Street Number Start must be declared";
 			}
 			return;
 		}
-		
+
 		if (!$dboServiceAddress->ServiceStreetNumberStart->Valid)
 		{
 			$arrProblems[] = "Street Number Start must be declared";
 		}
-		
+
 		if ($dboServiceAddress->ServiceStreetNumberEnd->Value !== NULL)
 		{
 			// An end number has been declared
@@ -851,14 +851,14 @@ class AppTemplateService extends ApplicationTemplate
 				$arrProblems[] = "Street Number End must be greater than Street Number Start";
 			}
 		}
-		
+
 		if ($dboServiceAddress->ServiceStreetNumberSuffix->Value !== NULL && (!$dboServiceAddress->ServiceStreetNumberSuffix->Valid))
 		{
 			// A suffix has been specified but is invalid
 			$arrProblems[] = "Street Number Suffix must consist only of letters";
 		}
 	}
-	
+
 	// Converts a physical service address into its descriptive format, as you would see on an envelope
 	function BuildPhysicalAddressDescription($arrAddress, $strLineSeperator="\n")
 	{
@@ -868,7 +868,7 @@ class AppTemplateService extends ApplicationTemplate
 		$strPostCode		= $arrAddress['ServicePostcode'];
 		$strAddressTypeLine = "";
 		$strStreetLine		= "";
-		
+
 		if ($arrAddress['ServiceAddressType'] == SERVICE_ADDR_TYPE_LOT)
 		{
 			// The service address is a "LOT"
@@ -885,7 +885,7 @@ class AppTemplateService extends ApplicationTemplate
 		{
 			// The service address is a standard address, and may or may not have an Address Type
 			$strAddressTypeLine = trim(GetConstantDescription($arrAddress['ServiceAddressType'], "ServiceAddrType") ." {$arrAddress['ServiceAddressTypeNumber']} {$arrAddress['ServiceAddressTypeSuffix']}");
-			
+
 			$strStreetNumber = "";
 			if ($arrAddress['ServiceStreetNumberStart'] != "")
 			{
@@ -896,12 +896,12 @@ class AppTemplateService extends ApplicationTemplate
 				$strStreetNumber .= " - ". $arrAddress['ServiceStreetNumberEnd'];
 			}
 			$strStreetNumber = trim($strStreetNumber ." ". $arrAddress['ServiceStreetNumberSuffix']);
-			
+
 			$strStreetType = ($arrAddress['ServiceStreetType'] == SERVICE_STREET_TYPE_NOT_REQUIRED)? "" : GetConstantDescription($arrAddress['ServiceStreetType'], "ServiceStreetType");
 			$strStreetTypeSuffix = GetConstantDescription($arrAddress['ServiceStreetTypeSuffix'], "StreetTypeSuffix");
 			$strStreetLine = trim("$strStreetNumber {$arrAddress['ServiceStreetName']} $strStreetType ". GetConstantDescription($arrAddress['ServiceStreetTypeSuffix'], "ServiceStreetSuffixType"));
 		}
-		
+
 		$strAddress = "";
 		if ($strPropertyName != "")
 		{
@@ -916,10 +916,10 @@ class AppTemplateService extends ApplicationTemplate
 			$strAddress .= $strStreetLine . $strLineSeperator;
 		}
 		$strAddress .= "$strLocality{$strLineSeperator}$strState $strPostCode";
-		
+
 		return ucwords($strAddress);
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// BulkAdd
 	//------------------------------------------------------------------------//
@@ -927,7 +927,7 @@ class AppTemplateService extends ApplicationTemplate
 	 * BulkAdd()
 	 *
 	 * Performs the logic for building the "bulk add service" page
-	 * 
+	 *
 	 * Performs the logic for building the "bulk add service" page
 	 * It assumes DBO()->Account->Id has been set
 	 *
@@ -946,10 +946,10 @@ class AppTemplateService extends ApplicationTemplate
 			$this->LoadPage('error');
 			return FALSE;
 		}
-		
+
 		// Load the ServiceAddress details for all Services currently belonging to the account
 		DBO()->Account->AllAddresses = $this->_GetAllServiceAddresses(DBO()->Account->Id->Value);
-		
+
 		// Retrieve all usable Cost Centers
 		$strWhere		= "Account IN (0, ". DBO()->Account->Id->Value .")";
 		$selCostCenters	= new StatementSelect("CostCentre", "Id, Name", $strWhere, "Account DESC, Name ASC");
@@ -964,7 +964,7 @@ class AppTemplateService extends ApplicationTemplate
 			}
 		}
 		DBO()->Account->AllCostCenters = $arrCostCenters;
-		
+
 		// Retrieve all usable RatePlans
 		$strWhere		= "Archived = <RatePlanActive> AND customer_group = <CustomerGroup>";
 		$arrWhere		= array(
@@ -983,7 +983,7 @@ class AppTemplateService extends ApplicationTemplate
 			}
 		}
 		DBO()->Account->AllRatePlans = $arrRatePlans;
-		
+
 		// Retrieve all Dealer details
 		$arrColumns = array("id", "first_name", "last_name");
 		$strWhere	= "dealer_status_id = ". Dealer_Status::ACTIVE ." AND (termination_date IS NULL OR termination_date > NOW()) AND id != ". Dealer::SYSTEM_DEALER_ID;
@@ -996,16 +996,16 @@ class AppTemplateService extends ApplicationTemplate
 			foreach ($arrRecordSet as $arrRecord)
 			{
 				$strName = trim($arrRecord['first_name'] ." ". $arrRecord['last_name']);
-				$arrDealers[] = array(	"Id"	=> $arrRecord['id'], 
+				$arrDealers[] = array(	"Id"	=> $arrRecord['id'],
 										"Name"	=> $strName);
 			}
 		}
-		
+
 		DBO()->Dealers->AsArray = $arrDealers;
-		
+
 		// Context menu
 		AppTemplateAccount::BuildContextMenu(DBO()->Account->Id->Value);
-		
+
 		// Breadcrumb menu
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->AccountOverview(DBO()->Account->Id->Value, TRUE);
@@ -1015,7 +1015,7 @@ class AppTemplateService extends ApplicationTemplate
 		$this->LoadPage('service_bulk_add');
 		return TRUE;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// BulkValidateServices
 	//------------------------------------------------------------------------//
@@ -1023,10 +1023,10 @@ class AppTemplateService extends ApplicationTemplate
 	 * BulkValidateServices()
 	 *
 	 * Performs preliminary Validation of services defined using the "Bulk Add Services" webpage
-	 * 
+	 *
 	 * Performs preliminary Validation of services defined using the "Bulk Add Services" webpage
-	 * It currently Validates the FNNs and checks that a plan has been specified 
-	 * 
+	 * It currently Validates the FNNs and checks that a plan has been specified
+	 *
 	 *
 	 * @return		void
 	 * @method		BulkValidateServices
@@ -1042,11 +1042,11 @@ class AppTemplateService extends ApplicationTemplate
 			Ajax()->AddCommand("Alert", "ERROR: Could not find account with Id: ". DBO()->Account->Id->Value);
 			return TRUE;
 		}
-		
+
 		// Retrieve the array of new services
 		// Note that this is an array of objects (structs), not an array of associative arrays
 		$arrServices = DBO()->Services->Data->Value;
-		
+
 		$JsCode = $this->_BulkValidateServices($arrServices);
 		if ($JsCode !== NULL)
 		{
@@ -1054,12 +1054,12 @@ class AppTemplateService extends ApplicationTemplate
 			Ajax()->AddCommand("ExecuteJavascript", $JsCode);
 			return TRUE;
 		}
-		
+
 		// To have gotten this far, the FNNs must all be valid
 		Ajax()->AddCommand("ExecuteJavascript", "Vixen.ServiceBulkAdd.ValidateServicesReturnHandler(true);");
 		return TRUE;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// BulkSave
 	//------------------------------------------------------------------------//
@@ -1067,9 +1067,9 @@ class AppTemplateService extends ApplicationTemplate
 	 * BulkSave()
 	 *
 	 * Performs final Validation of services defined using the "Bulk Add Services" webpage, and Saves the services
-	 * 
+	 *
 	 * Performs final Validation of services defined using the "Bulk Add Services" webpage, and Saves the services
-	 * 
+	 *
 	 *
 	 * @return		void
 	 * @method		BulkSave
@@ -1085,11 +1085,11 @@ class AppTemplateService extends ApplicationTemplate
 			Ajax()->AddCommand("Alert", "ERROR: Could not find account with Id: ". DBO()->Account->Id->Value .". Action aborted.");
 			return TRUE;
 		}
-		
+
 		// Retrieve the array of new services
 		// Note that this is an array of objects (structs), not an array of associative arrays
 		$arrServices = DBO()->Services->Data->Value;
-		
+
 		$JsCode = $this->_BulkValidateServices($arrServices);
 		if ($JsCode !== NULL)
 		{
@@ -1097,16 +1097,16 @@ class AppTemplateService extends ApplicationTemplate
 			Ajax()->AddCommand("ExecuteJavascript", $JsCode);
 			return TRUE;
 		}
-		
+
 		// Retrieve a list of all RatePlans required, and their Carrier details
 		$arrRatePlanIds = array();
 		foreach ($arrServices as $objService)
 		{
 			$arrRatePlanIds[] = $objService->intPlanId;
 		}
-		
+
 		$arrRatePlanIds = array_unique($arrRatePlanIds);
-		
+
 		$strWhere		= "Id IN (". implode(", ", $arrRatePlanIds) .")";
 		$selRatePlans	= new StatementSelect("RatePlan", "Id, ServiceType, CarrierFullService, CarrierPreselection, Archived", $strWhere, "Id");
 		$mixResult		= $selRatePlans->Execute();
@@ -1116,7 +1116,7 @@ class AppTemplateService extends ApplicationTemplate
 			Ajax()->AddCommand("Alert", "ERROR: Could not retrieve all the Plans required.  Bulk service creation aborted.  Please report this to the system administrators");
 			return TRUE;
 		}
-		
+
 		// Convert the retrieved RatePlan records into an Array where the Id of the RatePlan is the key
 		$arrRecordSet = $selRatePlans->FetchAll();
 		$arrRatePlans = Array();
@@ -1124,21 +1124,21 @@ class AppTemplateService extends ApplicationTemplate
 		{
 			$arrRatePlans[$arrRecord['Id']] = $arrRecord;
 		}
-		
+
 		// Declare variables that are common amoungst the services being added
 		$strNowDateTime		= GetCurrentISODateTime();
 		$strNowDate			= substr($strNowDateTime, 0, 10);
 		$intEmployeeId		= AuthenticatedUser()->_arrUser['Id'];
 		$intAccountGroup	= DBO()->Account->AccountGroup->Value;
 		$intAccount			= DBO()->Account->Id->Value;
-		
+
 		// Validate And Prepare the details of each service
 		$arrServicesDetails = Array();
 		foreach ($arrServices as $intIndex=>$objService)
 		{
 			// If the Account is pending activation, then the status has to be SERVICE_PENDING
 			$intServiceStatus = (DBO()->Account->Archived->Value != ACCOUNT_STATUS_PENDING_ACTIVATION && $objService->bolActive)? SERVICE_ACTIVE : SERVICE_PENDING;
-			
+
 			$arrServiceRec = Array("FNN"				=> $objService->strFNN,
 									"ServiceType"		=> $objService->intServiceType,
 									"Indial100"			=> 0,
@@ -1154,7 +1154,7 @@ class AppTemplateService extends ApplicationTemplate
 									"Dealer"			=> ($objService->intDealer)? $objService->intDealer : NULL,
 									"Cost"				=> $objService->fltCost
 								);
-								
+
 			switch ($objService->intServiceType)
 			{
 				case SERVICE_TYPE_MOBILE:
@@ -1174,7 +1174,7 @@ class AppTemplateService extends ApplicationTemplate
 					{
 						$strDOB = "";
 					}
-					
+
 					// Prepare Mobile Details
 					$arrExtraDetailsRec = Array("Account"		=> $intAccount,
 												"AccountGroup"	=> $intAccountGroup,
@@ -1185,36 +1185,36 @@ class AppTemplateService extends ApplicationTemplate
 												"Comments"		=> $objService->strComments
 											);
 					break;
-					
+
 				case SERVICE_TYPE_INBOUND:
 					// No validation required
 					$arrExtraDetailsRec = Array("AnswerPoint"	=> $objService->strAnswerPoint,
 												"Configuration"	=> $objService->strConfiguration
 											);
 					break;
-					
+
 				case SERVICE_TYPE_ADSL:
 					// No validation required
 					$arrExtraDetailsRec = NULL;
 					break;
-				
+
 				case SERVICE_TYPE_LAND_LINE:
 					$arrServiceRec['Indial100']	= ($objService->bolIndial100) ? 1 : 0;
 					$arrServiceRec['ELB']		= ($objService->bolIndial100 && $objService->bolELB)? TRUE : FALSE;
-					
-					
+
+
 					// Check that the AuthorisationDate date is not in the future, and is no more than 30 days in the past
 					$intNowDate		= strtotime($strNowDate);
 					$intAuthDate	= strtotime(ConvertUserDateToMySqlDate($objService->strAuthorisationDate));
-					if ((!Validate("ShortDate", $objService->strAuthorisationDate)) || ($intAuthDate > $intNowDate || $intAuthDate <= strtotime("-30 days", $intNowDate))) 
+					if ((!Validate("ShortDate", $objService->strAuthorisationDate)) || ($intAuthDate > $intNowDate || $intAuthDate <= strtotime("-30 days", $intNowDate)))
 					{
 						// Authorisation Date is incorrect
 						Ajax()->AddCommand("Alert", "ERROR: Service: {$objService->strFNN}, has invalid Authorisation Date.  Authorisation Date must be in the format dd/mm/yyyy and must be within the last 30 days.  Bulk service creation aborted.");
 						return TRUE;
 					}
-					
+
 					$arrServiceRec['AuthorisationDate'] = ConvertUserDateToMySqlDate($objService->strAuthorisationDate);
-					
+
 					// Validate the AddressDetails
 					// Build a DBObject for the ServiceAddress record so that we can use
 					$dboServiceAddress = new DBObject("ServiceAddress");
@@ -1225,7 +1225,7 @@ class AppTemplateService extends ApplicationTemplate
 					}
 					$arrProblems = Array();
 					$bolAddressValid = $this->ValidateAndCleanServiceAddress($dboServiceAddress, $arrProblems);
-					
+
 					if (!$bolAddressValid)
 					{
 						// The Service Address record is invalid
@@ -1233,31 +1233,31 @@ class AppTemplateService extends ApplicationTemplate
 						Ajax()->AddCommand("Alert", "ERROR: Bulk service creation aborted.  The following problems were found with the address details for service: {$objService->strFNN}<br />$strProblems");
 						return TRUE;
 					}
-					
+
 					$arrExtraDetailsRec = Array("Account" => $intAccount, "AccountGroup" => $intAccountGroup);
 					foreach ($dboServiceAddress as $strProperty=>$objProperty)
 					{
 						$arrExtraDetailsRec[$strProperty] = $objProperty->Value;
 					}
 					break;
-				
+
 				default:
 					// This should never happen
 					Ajax()->AddCommand("Alert", "ERROR: Could not handle service {$objService->strFNN} as it is of unknown ServiceType: {$objService->intServiceType}.  Bulk service creation aborted");
 					return TRUE;
 					break;
 			}
-			
+
 			// Add all the details of this service to the array
 			$arrServicesDetails[] = Array("ServiceRec" => $arrServiceRec,
 											"ExtraDetailsRec" => $arrExtraDetailsRec,
 											"PlanId" => $objService->intPlanId
 											);
 		}
-		
+
 		// Now add each Service to the database
 		TransactionStart();
-		
+
 		$arrColumns = Array("FNN"				=> NULL,
 							"ServiceType"		=> NULL,
 							"Indial100"			=> NULL,
@@ -1273,9 +1273,9 @@ class AppTemplateService extends ApplicationTemplate
 							"Dealer"			=> NULL,
 							"Cost"				=> 0
 							);
-		
+
 		$insService = new StatementInsert("Service", $arrColumns);
-		
+
 		$arrServicesToProvision = Array();
 		$strNote = "New services created:";
 		foreach ($arrServicesDetails as $arrServiceDetails)
@@ -1285,7 +1285,7 @@ class AppTemplateService extends ApplicationTemplate
 			$intPlanId			= $arrServiceDetails['PlanId'];
 			$strStatus			= GetConstantDescription($arrServiceRec['Status'], "service_status");
 			$strNote .= "\n". GetConstantDescription($arrServiceRec['ServiceType'], "service_type") ." - {$arrServiceRec['FNN']} ($strStatus)";
-			
+
 			$mixResult = $insService->Execute($arrServiceRec);
 			if ($mixResult === FALSE)
 			{
@@ -1295,10 +1295,10 @@ class AppTemplateService extends ApplicationTemplate
 				return TRUE;
 			}
 			$intServiceId = $mixResult;
-			
+
 			// The ExtraDetails record will require the Service Id
 			$arrExtraDetails['Service'] = $intServiceId;
-			
+
 			$bolOk = TRUE;
 
 			// Add this service to the list of those to provision, but only if the Service will be immediately activated
@@ -1327,7 +1327,7 @@ class AppTemplateService extends ApplicationTemplate
 						$strErrorMsg = "ERROR: Adding the Mobile specific details for Service: {$arrServiceRec['FNN']}, failed unexpectedly.  Process Aborted. (Error adding record to the ServiceMobileDetail table)";
 					}
 					break;
-					
+
 				case SERVICE_TYPE_INBOUND:
 					if (!isset($insInbound))
 					{
@@ -1340,7 +1340,7 @@ class AppTemplateService extends ApplicationTemplate
 						$strErrorMsg = "ERROR: Adding the Inbound specific details for Service: {$arrServiceRec['FNN']}, failed unexpectedly.  Process Aborted. (Error adding record to the ServiceInboundDetail table)";
 					}
 					break;
-					
+
 				case SERVICE_TYPE_LAND_LINE:
 					if (!isset($insLandLine))
 					{
@@ -1364,12 +1364,12 @@ class AppTemplateService extends ApplicationTemplate
 						}
 					}
 					break;
-					
+
 				case SERVICE_TYPE_ADSL:
 					// Don't have to do anything
 					break;
 			}
-			
+
 			if ($bolOk === FALSE)
 			{
 				// An error has occurred
@@ -1377,7 +1377,7 @@ class AppTemplateService extends ApplicationTemplate
 				Ajax()->AddCommand("Alert", $strErrorMsg);
 				return TRUE;
 			}
-			
+
 			// Add the plan details
 			$bolOk = $this->_SetPlan($intPlanId, $intServiceId, $strNowDateTime, $strNowDateTime);
 			if ($bolOk === FALSE)
@@ -1388,14 +1388,14 @@ class AppTemplateService extends ApplicationTemplate
 				return TRUE;
 			}
 		}
-		
+
 		// Commit the transaction
 		TransactionCommit();
-		
+
 		// Perform all Automatic provisioning
 		if (count($arrServicesToProvision) > 0)
 		{
-			
+
 			// Prepare the object to add the provisioning requests
 			$arrInsertValues = Array(	"AccountGroup"			=> DBO()->Account->AccountGroup->Value,
 										"Account"				=> DBO()->Account->Id->Value,
@@ -1405,12 +1405,12 @@ class AppTemplateService extends ApplicationTemplate
 										"Carrier"				=> NULL,
 										"Type"					=> NULL,
 										"RequestedOn"			=> $strNowDateTime,
-										"AuthorisationDate"		=> NULL, 
+										"AuthorisationDate"		=> NULL,
 										"scheduled_datetime"	=> $strNowDateTime,
 										"Status"				=> REQUEST_STATUS_WAITING
 									);
 			$insRequest = new StatementInsert("ProvisioningRequest", $arrInsertValues);
-			
+
 			TransactionStart();
 			$bolSuccess = TRUE;
 			foreach ($arrServicesToProvision as $arrService)
@@ -1418,12 +1418,12 @@ class AppTemplateService extends ApplicationTemplate
 				$arrInsertValues['Service']				= $arrService['Id'];
 				$arrInsertValues['FNN']					= $arrService['FNN'];
 				$arrInsertValues['AuthorisationDate']	= $arrService['AuthorisationDate'];
-				
+
 				// Full Service Request
 				if ($arrService['Carrier'] !== null) {
 					$arrInsertValues['Carrier']	= $arrService['Carrier'];
 					$arrInsertValues['Type'] = null;
-					
+
 					switch ($arrService['ServiceType']) {
 						case SERVICE_TYPE_LAND_LINE:
 							$arrInsertValues['Type'] = PROVISIONING_TYPE_FULL_SERVICE;
@@ -1440,7 +1440,7 @@ class AppTemplateService extends ApplicationTemplate
 						}
 					}
 				}
-				
+
 				if (($arrService['ServiceType'] === SERVICE_TYPE_LAND_LINE) && ($arrService['CarrierPreselect'] !== null)) {
 					// Preselection Request
 					$arrInsertValues['Carrier'] = $arrService['CarrierPreselect'];
@@ -1462,18 +1462,18 @@ class AppTemplateService extends ApplicationTemplate
 			}
 			TransactionCommit();
 		}
-		
+
 		// If any of this fails, notify the user
 		// TODO! We should also fire off an Email to our Tech Support email account
-		
+
 		// Add a system note
 		SaveSystemNote($strNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value);
-		
+
 		// Success
 		Ajax()->AddCommand("Alert", "Service creation was successful");
 		return TRUE;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// _SetPlan
 	//------------------------------------------------------------------------//
@@ -1481,12 +1481,12 @@ class AppTemplateService extends ApplicationTemplate
 	 * _SetPlan()
 	 *
 	 * Declares a new plan for a service (handles all database interactions)
-	 * 
+	 *
 	 * Declares a new plan for a service (handles all database interactions)
 	 * Note the this MUST ALWAYS be used within a Database Transaction, and if this function
 	 * returns FALSE (signifying failure) the transaction should be rolled back.
 	 * This function does not currently handle automatic note generation or automatic provisioning
-	 * 
+	 *
 	 * @param	int		$intPlan			Id of the plan to assign to the service
 	 * @param	int		$intService			Id of the Service
 	 * @param	string	$strCreatedOn		optional, DateTime string representing when the plan
@@ -1495,7 +1495,7 @@ class AppTemplateService extends ApplicationTemplate
 	 * @param	string	$strStartDatetime	optional, DateTime string representing when the plan
 	 * 										comes into effect.  If set to NULL (default)
 	 * 										It will use $strCreatedOn
-	 * 
+	 *
 	 * @param	bool	$bolUpdateServiceCarrierDetails		optional, if set to TRUE then the Carriers details stored in the Service
 	 * 														record will be updated with those of the RatePlan record
 	 * @param	bool	$bolRerateCDRs		optional, if set to TRUE then all CDRs belonging to the Service that have
@@ -1503,7 +1503,7 @@ class AppTemplateService extends ApplicationTemplate
 	 * 										rerated.  If the StartDatetime is in the past, then it is recommended that
 	 * 										this variable be set to TRUE
 	 * @param	bool	$bolActive			optional, defaults to TRUE.  This value will be used for the "Active" property
-	 * 										of the ServiceRateGroup and ServiceRatePlan tables.  It is recommended that it 
+	 * 										of the ServiceRateGroup and ServiceRatePlan tables.  It is recommended that it
 	 * 										only be set to FALSE if the Plan is supposed to come into effect at a future date
 	 *
 	 * @return	bool						Returns FALSE if any of the database interactions fail
@@ -1536,8 +1536,8 @@ class AppTemplateService extends ApplicationTemplate
 		{
 			return FALSE;
 		}
-		$arrRateGroups = $selRateGroup->FetchAll(); 
-		
+		$arrRateGroups = $selRateGroup->FetchAll();
+
 		// Retrieve the RatePlan record
 		if (!isset($selRatePlan))
 		{
@@ -1559,12 +1559,12 @@ class AppTemplateService extends ApplicationTemplate
 		{
 			$updServiceRateGroup = new StatementUpdate("ServiceRateGroup", $strWhere, $arrColumns);
 		}
-		
+
 		if ($updServiceRateGroup->Execute($arrColumns, $arrWhere) === FALSE)
 		{
 			return FALSE;
 		}
-		
+
 		// Update all the records currently in the ServiceRatePlan table so that any that end after the new one begins, now end 1 second before the new one begins
 		if (!isset($updServiceRatePlan))
 		{
@@ -1593,12 +1593,12 @@ class AppTemplateService extends ApplicationTemplate
 		{
 			$insServiceRatePlan = new StatementInsert("ServiceRatePlan", $arrColumns);
 		}
-		
+
 		if ($insServiceRatePlan->Execute($arrColumns) === FALSE)
 		{
 			return FALSE;
 		}
-		
+
 		// Insert the new records into the ServiceRateGroup table
 		unset($arrColumns['RatePlan']);
 		unset($arrColumns['contract_scheduled_end_datetime']);
@@ -1618,25 +1618,25 @@ class AppTemplateService extends ApplicationTemplate
 				return FALSE;
 			}
 		}
-		
+
 		// Update the Carrier details in the Service table (if specified to do so)
 		if ($bolUpdateServiceCarrierDetails)
 		{
-			$arrColumns = Array(	"Id" => $intService, 
-									"Carrier" => $arrRatePlan['CarrierFullService'], 
+			$arrColumns = Array(	"Id" => $intService,
+									"Carrier" => $arrRatePlan['CarrierFullService'],
 									"CarrierPreselect" => $arrRatePlan['CarrierPreselection']
 								);
 			if (!isset($updService))
 			{
 				$updService = new StatementUpdateById("Service", $arrColumns);
 			}
-			
+
 			if ($updService->Execute($arrColumns) === FALSE)
 			{
 				return FALSE;
 			}
 		}
-		
+
 		// Update the CDRs in the CDR table (if specified to do so)
 		if ($bolRerateCDRs)
 		{
@@ -1647,7 +1647,7 @@ class AppTemplateService extends ApplicationTemplate
 			{
 				$updCDR = new StatementUpdate("CDR", $strWhere, $arrColumns);
 			}
-			
+
 			if ($updCDR->Execute($arrColumns, $arrWhere) === FALSE)
 			{
 				return FALSE;
@@ -1657,14 +1657,14 @@ class AppTemplateService extends ApplicationTemplate
 		// I think that's it
 		return TRUE;
 	}
-	
-	
+
+
 	// Checks the array of objects, $arrServices, for duplicates within the array, and then in the database
 	// returns javascript to execute if there are duplicates, else returns NULL if they are all valid
 	// It is assumed that all the FNNs are already valid Australian FNNs
 	function _BulkValidateServices($arrServices)
 	{
-		// Check that there are not duplicate numbers in the list, or FNNs in the 
+		// Check that there are not duplicate numbers in the list, or FNNs in the
 		// Indial100 range of any newly specified Indial100 landlines
 		// This has already been done in javascript, but I want to check again
 		$arrInvalidServiceIndexes = array();
@@ -1677,25 +1677,25 @@ class AppTemplateService extends ApplicationTemplate
 				$bolIndial100 = TRUE;
 				$strFNNIndial = substr($arrServices[$i]->strFNN, 0, -2);
 			}
-			
+
 			for ($j = 0; $j < count($arrServices); $j++)
 			{
 				if ($j == $i)
 				{
 					continue;
 				}
-				
+
 				if (($arrServices[$i]->strFNN == $arrServices[$j]->strFNN) || ($bolIndial100 && $strFNNIndial == substr($arrServices[$j]->strFNN, 0, -2)))
 				{
 					// Add these services to the list of invalid ones
-					$arrInvalidServiceIndexes[] = $arrServices[$i]->intArrayIndex; 
+					$arrInvalidServiceIndexes[] = $arrServices[$i]->intArrayIndex;
 					$arrInvalidServiceIndexes[] = $arrServices[$j]->intArrayIndex;
 				}
 			}
 		}
 		// Remove any duplicates from the array
 		$arrInvalidServiceIndexes = array_unique($arrInvalidServiceIndexes);
-		
+
 		if (count($arrInvalidServiceIndexes) > 0)
 		{
 			// At least 2 of the new services have the same FNN
@@ -1703,7 +1703,7 @@ class AppTemplateService extends ApplicationTemplate
 			$strJs = "Vixen.ServiceBulkAdd.ValidateServicesReturnHandler(false, $jsonInvalidServiceIndexes, 'ERROR: Duplicate services are highlighted');";
 			return $strJs;
 		}
-		
+
 		// Check that none of these new numbers are already in the database
 		$strNow		= Data_Source_Time::currentTimestamp();
 		$arrFNNs	= Array();
@@ -1721,7 +1721,7 @@ class AppTemplateService extends ApplicationTemplate
 			$strJs = "Vixen.ServiceBulkAdd.ValidateServicesReturnHandler(false, $jsonInvalidServiceIndexes, 'ERROR: highlighted FNNs are currently active in the database and can not be used for new services');";
 			return $strJs;
 		}
-		
+
 		// Check that each Service has a plan declared
 		foreach ($arrServices as $objService)
 		{
@@ -1737,11 +1737,11 @@ class AppTemplateService extends ApplicationTemplate
 			$strJs = "Vixen.ServiceBulkAdd.ValidateServicesReturnHandler(false, $jsonInvalidServiceIndexes, 'ERROR: Plans must be specified');";
 			return $strJs;
 		}
-		
+
 		// All FNNs are valid
 		return NULL;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// LoadExtraDetailsPopup
 	//------------------------------------------------------------------------//
@@ -1749,11 +1749,11 @@ class AppTemplateService extends ApplicationTemplate
 	 * LoadExtraDetailsPopup()
 	 *
 	 * Loads the ExtraDetailsPopup specific to the ServiceType of the Service passed to this function
-	 * 
+	 *
 	 * Loads the ExtraDetailsPopup specific to the ServiceType of the Service passed to this function
 	 * This is used by the BulkAddServices functionality to declare all the properties that are specific
 	 * to the ServiceType of the service
-	 * 
+	 *
 	 *
 	 * @return		void
 	 * @method		LoadExtraDetailsPopup
@@ -1770,22 +1770,22 @@ class AppTemplateService extends ApplicationTemplate
 
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
 		{
-			// Accomodate the extra LaneLine details 
+			// Accomodate the extra LaneLine details
 			DBO()->Account->Load();
-			
+
 			// Retrieve the address details of each service belonging to this account
 			DBO()->Account->AllAddresses = $this->_GetAllServiceAddresses(DBO()->Account->Id->Value);
-			
+
 			if (DBO()->Service->AddressDetails->IsSet)
 			{
 				// The service has already had details defined, load them
 				$arrAddressDetails = DBO()->Service->AddressDetails->Value;
-				
+
 				foreach ($arrAddressDetails as $strProperty=>$mixValue)
 				{
 					DBO()->ServiceAddress->{$strProperty} = $mixValue;
 				}
-				
+
 			}
 			else
 			{
@@ -1804,7 +1804,7 @@ class AppTemplateService extends ApplicationTemplate
 			DBO()->ServiceMobileDetail->SimState	= DBO()->Service->SimState->Value;
 			DBO()->ServiceMobileDetail->DOB			= DBO()->Service->DOB->Value;
 			DBO()->ServiceMobileDetail->Comments	= DBO()->Service->Comments->Value;
-			
+
 			// Set values that have been passed through
 		}
 		elseif (DBO()->Service->ServiceType->Value == SERVICE_TYPE_INBOUND)
@@ -1819,11 +1819,11 @@ class AppTemplateService extends ApplicationTemplate
 			Ajax()->AddCommand("Alert", "ERROR: AppTemplateService->LoadExtraDetailsPopup: ServiceType '". $objService->intServiceType ."' does not require any extra details defined");
 			return TRUE;
 		}
-		
+
 		$this->LoadPage('service_bulk_add_extra_details');
 		return TRUE;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// Edit
 	//------------------------------------------------------------------------//
@@ -1831,12 +1831,12 @@ class AppTemplateService extends ApplicationTemplate
 	 * Edit()
 	 *
 	 * Performs the logic for th "Edit Service" popup
-	 * 
+	 *
 	 * Performs the logic for th "Edit Service" popup
 	 * If the service is successfully updated then it will fire an EVENT_ON_SERVICE_UPDATE event
 	 * passing the following object:
 	 *		objObject.Service.Id	= id of the service which has been updated
-	 *		objObject.NewService.Id	= id of the new service, if the service being updated, 
+	 *		objObject.NewService.Id	= id of the new service, if the service being updated,
 	 *		was activated, and a new service had to be made.  See KB article KB00005
 	 *
 	 * @return		void
@@ -1859,7 +1859,7 @@ class AppTemplateService extends ApplicationTemplate
 				Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 				return TRUE;
 			}
-			
+
 			// Retrieve properties of the Service record that arent already set
 			DBO()->Service->LoadMerge();
 
@@ -1870,10 +1870,10 @@ class AppTemplateService extends ApplicationTemplate
 				Ajax()->AddCommand("Alert", "This action is temporarily unavailable because a related, live invoice run is currently outstanding");
 				return TRUE;
 			}
-			
+
 			DBO()->Service->FNN = trim(DBO()->Service->FNN->Value);
 			DBO()->Service->FNNConfirm = trim(DBO()->Service->FNNConfirm->Value);
-			
+
 			// If these have been updated record the details
 			if (DBO()->Service->Indial100->Value != DBO()->Service->CurrentIndial100->Value)
 			{
@@ -1888,7 +1888,7 @@ class AppTemplateService extends ApplicationTemplate
 			{
 				$strChangesNote .= "'Always shown on invoice' has been set to ".  ((DBO()->Service->ForceInvoiceRender->Value)? "'Yes'":"'No'") . "\n";
 			}
-			
+
 			if (DBO()->Service->FNN->Value != DBO()->Service->CurrentFNN->Value)
 			{
 				// The user wants to change the FNN
@@ -1901,7 +1901,7 @@ class AppTemplateService extends ApplicationTemplate
 					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 					return TRUE;
 				}
-				
+
 				// Check that the FFN is valid
 				if (!isValidFNN(DBO()->Service->FNN->Value))
 				{
@@ -1911,7 +1911,7 @@ class AppTemplateService extends ApplicationTemplate
 					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 					return TRUE;
 				}
-				
+
 				// Make sure the new FNN is valid for the service type
 				$intServiceType = ServiceType(DBO()->Service->FNN->Value);
 				if ($intServiceType != DBO()->Service->ServiceType->Value)
@@ -1922,7 +1922,7 @@ class AppTemplateService extends ApplicationTemplate
 					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 					return TRUE;
 				}
-				
+
 				// Check that the FNN is not currently being used
 				$bolIsIndial = (DBO()->Service->Indial100->Value == TRUE);
 				if ($bolIsIndial && (substr(DBO()->Service->FNN->Value, 0, -2) == substr(DBO()->Service->CurrentFNN->Value, 0, -2)))
@@ -1952,7 +1952,7 @@ class AppTemplateService extends ApplicationTemplate
 					$strWarningForFNNChange = "WARNING: The FNN has been changed.  Any provisioning requests, that have not been sent yet, should be cancelled.";
 				}
 			}
-			
+
 			// Check if the CostCentre property has been updated
 			if (DBO()->Service->CostCentre->Value !== NULL)
 			{
@@ -1961,7 +1961,7 @@ class AppTemplateService extends ApplicationTemplate
 				{
 					DBO()->Service->CostCentre = NULL;
 				}
-				
+
 				// Check if the value of the Service's cost centre property has been changed
 				if (DBO()->Service->CostCentre->Value != DBO()->Service->CurrentCostCentre->Value)
 				{
@@ -1976,7 +1976,7 @@ class AppTemplateService extends ApplicationTemplate
 						// Retrieve the name of the CostCentre
 						DBO()->CostCentre->Id = DBO()->Service->CostCentre->Value;
 						DBO()->CostCentre->Load();
-						
+
 						// Retrieve the name of the last CostCentre
 						if (DBO()->Service->CurrentCostCentre->Value == NULL)
 						{
@@ -2030,7 +2030,7 @@ class AppTemplateService extends ApplicationTemplate
 					}
 				}
 			}
-			
+
 			// If the FNN is changing and the service has ELB, then you will have to update the the FNNs in the ServiceExtension table
 			// relating to this service
 			if ((DBO()->Service->FNN->Value != DBO()->Service->CurrentFNN->Value) && (DBO()->Service->ELB->Value !== NULL))
@@ -2058,14 +2058,14 @@ class AppTemplateService extends ApplicationTemplate
 				return TRUE;
 			}
 
-			// Handle mobile phone details			
+			// Handle mobile phone details
 			if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE)
 			{
 				// Load the current ServiceMobileDetail record
 				DBO()->CurrentServiceMobileDetail->Where->Service = DBO()->Service->Id->Value;
 				DBO()->CurrentServiceMobileDetail->SetTable("ServiceMobileDetail");
 				$bolRecordFound = DBO()->CurrentServiceMobileDetail->Load();
-				
+
 				if ($bolRecordFound)
 				{
 					// The service already has a ServiceMobileDetail record associated with it
@@ -2076,17 +2076,17 @@ class AppTemplateService extends ApplicationTemplate
 					}
 					if (DBO()->ServiceMobileDetail->SimESN->Value != DBO()->CurrentServiceMobileDetail->SimESN->Value)
 					{
-						$strChangesNote .= "SimESN was changed from '". DBO()->CurrentServiceMobileDetail->SimESN->Value ."' to '" . DBO()->ServiceMobileDetail->SimESN->Value ."'\n";				
+						$strChangesNote .= "SimESN was changed from '". DBO()->CurrentServiceMobileDetail->SimESN->Value ."' to '" . DBO()->ServiceMobileDetail->SimESN->Value ."'\n";
 					}
 					if (DBO()->ServiceMobileDetail->SimState->Value != DBO()->CurrentServiceMobileDetail->SimState->Value)
 					{
-						$strChangesNote .= "SimState was changed from '". 
-											GetConstantDescription(DBO()->CurrentServiceMobileDetail->SimState->Value, 'ServiceStateType') . 
+						$strChangesNote .= "SimState was changed from '".
+											GetConstantDescription(DBO()->CurrentServiceMobileDetail->SimState->Value, 'ServiceStateType') .
 											"' to '" . GetConstantDescription(DBO()->ServiceMobileDetail->SimState->Value, 'ServiceStateType') . "'\n";
 					}
 					if (DBO()->ServiceMobileDetail->Comments->Value != DBO()->CurrentServiceMobileDetail->Comments->Value)
 					{
-						$strChangesNote .= "Comments were changed from '". DBO()->CurrentServiceMobileDetail->Comments->Value . 
+						$strChangesNote .= "Comments were changed from '". DBO()->CurrentServiceMobileDetail->Comments->Value .
 											"' to '" . DBO()->ServiceMobileDetail->Comments->Value ."'\n";
 					}
 				}
@@ -2100,7 +2100,7 @@ class AppTemplateService extends ApplicationTemplate
 					}
 					if (DBO()->ServiceMobileDetail->SimESN->Value)
 					{
-						$strChangesNote .= "SimESN has been defined\n";				
+						$strChangesNote .= "SimESN has been defined\n";
 					}
 					if (DBO()->ServiceMobileDetail->SimState->Value)
 					{
@@ -2111,7 +2111,7 @@ class AppTemplateService extends ApplicationTemplate
 						$strChangesNote .= "Mobile Comments have been defined\n";
 					}
 				}
-			
+
 				// Validate entered Birth Date
 				if (trim(DBO()->ServiceMobileDetail->DOB->Value) != "")
 				{
@@ -2124,14 +2124,14 @@ class AppTemplateService extends ApplicationTemplate
 						Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 						return TRUE;
 					}
-					
+
 					// Set DOB to MySql date format
 					DBO()->ServiceMobileDetail->DOB = ConvertUserDateToMySqlDate(DBO()->ServiceMobileDetail->DOB->Value);
 					if ($bolRecordFound)
 					{
 						if (DBO()->ServiceMobileDetail->DOB->Value != DBO()->CurrentServiceMobileDetail->DOB->Value)
 						{
-							$strChangesNote .= "DOB was changed from '". OutputMask()->ShortDate(DBO()->CurrentServiceMobileDetail->DOB->Value) ."' to '" . DBO()->ServiceMobileDetail->DOB->FormattedValue() ."'\n";			
+							$strChangesNote .= "DOB was changed from '". OutputMask()->ShortDate(DBO()->CurrentServiceMobileDetail->DOB->Value) ."' to '" . DBO()->ServiceMobileDetail->DOB->FormattedValue() ."'\n";
 						}
 					}
 					else
@@ -2149,7 +2149,7 @@ class AppTemplateService extends ApplicationTemplate
 				if ($bolRecordFound)
 				{
 					DBO()->ServiceMobileDetail->Id = DBO()->CurrentServiceMobileDetail->Id->Value;
-					
+
 					// Update the existing MobileServiceDetail Record
 					DBO()->ServiceMobileDetail->SetColumns("SimPUK, SimESN, SimState, DOB, Comments");
 				}
@@ -2160,7 +2160,7 @@ class AppTemplateService extends ApplicationTemplate
 					DBO()->ServiceMobileDetail->Id = 0;
 					DBO()->ServiceMobileDetail->AccountGroup = DBO()->Service->AccountGroup->Value;
 					DBO()->ServiceMobileDetail->Account = DBO()->Service->Account->Value;
-					DBO()->ServiceMobileDetail->Service = DBO()->Service->Id->Value;					
+					DBO()->ServiceMobileDetail->Service = DBO()->Service->Id->Value;
 				}
 
 				if (DBO()->ServiceMobileDetail->SimPUK->Value == NULL)
@@ -2183,7 +2183,7 @@ class AppTemplateService extends ApplicationTemplate
 				{
 					DBO()->ServiceMobileDetail->Comments  = "";
 				}
-				
+
 				if (!DBO()->ServiceMobileDetail->Save())
 				{
 					// The ServiceMobileDetail did not save
@@ -2193,7 +2193,7 @@ class AppTemplateService extends ApplicationTemplate
 				}
 				// The mobile details saved successfully
 			}
-			
+
 			// Handle inbound call details
 			if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_INBOUND)
 			{
@@ -2204,9 +2204,9 @@ class AppTemplateService extends ApplicationTemplate
 				}
 				if (DBO()->ServiceInboundDetail->Configuration->Value != DBO()->ServiceInboundDetail->CurrentConfiguration->Value)
 				{
-					$strChangesNote = "Configuration was changed to: " . DBO()->ServiceInboundDetail->Configuration->Value ."\n";					
+					$strChangesNote = "Configuration was changed to: " . DBO()->ServiceInboundDetail->Configuration->Value ."\n";
 				}
-			
+
 				// If Id is passed set the columns to Update
 				if (DBO()->ServiceInboundDetail->Id->Value)
 				{
@@ -2243,7 +2243,7 @@ class AppTemplateService extends ApplicationTemplate
 				}
 				// The inbound details saved successfully
 			}
-			
+
 			// All details regarding the service have been successfully updated
 
 			// Handle updating the Service Status
@@ -2269,13 +2269,13 @@ class AppTemplateService extends ApplicationTemplate
 					Ajax()->AddCommand("Alert", "<pre>ERROR:\n". print_r($objService, TRUE) ."</pre>");
 					return TRUE;
 				}
-				
+
 				if ($objService->ChangeStatus(DBO()->Service->NewStatus->Value) === FALSE)
 				{
 					TransactionRollback();
 					Ajax()->AddCommand("Alert", "ERROR: Changing the Status of the Service failed.<br />". $objService->GetErrorMsg() ."<br />All modifications to the service have been aborted");
 					return TRUE;
-				}				
+				}
 				// The status was successfully changed
 				// Check if a new record was created
 				if ($objService->GetId() > DBO()->Service->Id->Value)
@@ -2283,7 +2283,7 @@ class AppTemplateService extends ApplicationTemplate
 					// A new record was made
 					DBO()->NewService->Id = $objService->GetId();
 				}
-				
+
 				$intService				= $objService->GetId();
 				$strProvisioningNote	= "";
 				if (DBO()->Service->NewStatus->Value == SERVICE_ACTIVE && DBO()->Service->Status->Value == SERVICE_PENDING)
@@ -2305,7 +2305,7 @@ class AppTemplateService extends ApplicationTemplate
 
 							$iFullServiceCount = 1;
 						}
-						
+
 						$iPreselectionCount = 0;
 						if (($objService->GetServiceType() === SERVICE_TYPE_LAND_LINE) && ($aCurrentRatePlan['CarrierPreselection'] !== null)) {
 							// The service is a land line and there is a preselection carrier, attempt to send request
@@ -2318,11 +2318,11 @@ class AppTemplateService extends ApplicationTemplate
 
 							$iPreselectionCount = 1;
 						}
-						
+
 						$strProvisioningNote = " {$iFullServiceCount} FullService and {$iPreselectionCount} Preselection provisioning requests have been made.";
 					}
 				}
-				
+
 				// Build the note part detailing the Status change
 				$strOldStatus	= GetConstantDescription(DBO()->Service->Status->Value, "service_status");
 				$strNewStatus	= GetConstantDescription(DBO()->Service->NewStatus->Value, "service_status");
@@ -2340,10 +2340,10 @@ class AppTemplateService extends ApplicationTemplate
 			{
 				$dsSales->commit();
 			}
-			
+
 			// Close the popup
 			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-			
+
 			// Check that something was actually changed
 			if ($strChangesNote != "")
 			{
@@ -2356,7 +2356,7 @@ class AppTemplateService extends ApplicationTemplate
 				{
 					$strAlert .= "<br />$strWarningForFNNChange";
 				}
-				
+
 				Ajax()->AddCommand("Alert", $strAlert);
 
 				// Build event object
@@ -2367,20 +2367,20 @@ class AppTemplateService extends ApplicationTemplate
 					$arrEvent['NewService']['Id'] = DBO()->NewService->Id->Value;
 				}
 				Ajax()->FireEvent(EVENT_ON_SERVICE_UPDATE, $arrEvent);
-				
+
 				// Fire the OnNewNote Event
 				Ajax()->FireOnNewNoteEvent();
 			}
 			return TRUE;
 		}
-		
+
 		// Load the service record
 		if (!DBO()->Service->Load())
 		{
 			Ajax()->AddCommand("Alert", "ERROR: The service with id: ". DBO()->Service->Id->Value ." could not be found");
 			return FALSE;
 		}
-		
+
 		// Load the Account record
 		DBO()->Account->Id = DBO()->Service->Account->Value;
 		if (!DBO()->Account->Load())
@@ -2403,21 +2403,21 @@ class AppTemplateService extends ApplicationTemplate
 			Ajax()->AddCommand("Alert", "ERROR: Due to the service's status, and your permissions, you cannot edit this service");
 			return TRUE;
 		}
-		
+
 		// load mobile detail if the service is a mobile
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE)
 		{
 			DBO()->ServiceMobileDetail->Where->Service = DBO()->Service->Id->Value;
 			DBO()->ServiceMobileDetail->Load();
 		}
-		
+
 		// load inbound detail if the service is an inbound 1300/1800
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_INBOUND)
 		{
 			DBO()->ServiceInboundDetail->Where->Service = DBO()->Service->Id->Value;
 			DBO()->ServiceInboundDetail->Load();
 		}
-		
+
 		// Set up the ELB checkbox, if service is an indial100
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE && DBO()->Service->Indial100->Value)
 		{
@@ -2427,22 +2427,22 @@ class AppTemplateService extends ApplicationTemplate
 			DBL()->ServiceExtension->Load();
 			DBO()->Service->ELB = (bool)DBL()->ServiceExtension->RecordCount();
 		}
-		
+
 		// Store the current FNN to check between states that the FNN textbox has been changed
 		DBO()->Service->CurrentFNN							= DBO()->Service->FNN->Value;
 		DBO()->Service->CurrentStatus 						= DBO()->Service->Status->Value;
 		DBO()->Service->CurrentIndial100 					= DBO()->Service->Indial100->Value;
 		DBO()->Service->CurrentELB 							= DBO()->Service->ELB->Value;
 		DBO()->Service->CurrentCostCentre 					= DBO()->Service->CostCentre->Value;
-		DBO()->Service->CurrentForceInvoiceRender			= DBO()->Service->ForceInvoiceRender->Value; 
+		DBO()->Service->CurrentForceInvoiceRender			= DBO()->Service->ForceInvoiceRender->Value;
 		DBO()->ServiceInboundDetail->CurrentAnswerPoint		= DBO()->ServiceInboundDetail->AnswerPoint->Value;
 		DBO()->ServiceInboundDetail->CurrentConfiguration 	= DBO()->ServiceInboundDetail->Configuration->Value;
-		
+
 		// Declare which page to use
 		$this->LoadPage('service_edit');
 		return TRUE;
-	}	
-	
+	}
+
 	//------------------------------------------------------------------------//
 	// ViewPlan
 	//------------------------------------------------------------------------//
@@ -2450,7 +2450,7 @@ class AppTemplateService extends ApplicationTemplate
 	 * ViewPlan()
 	 *
 	 * Performs the logic for the View Service RatePlan page
-	 * 
+	 *
 	 * Performs the logic for the View Service RatePlan page
 	 * It assumes:
 	 * 		DBO()->Service->Id		is set to the Id of the service
@@ -2483,24 +2483,24 @@ class AppTemplateService extends ApplicationTemplate
 		// context menu
 		AppTemplateAccount::BuildContextMenu(DBO()->Account->Id->Value);
 		self::BuildContextMenu(DBO()->Account->Id->Value, DBO()->Service->Id->Value, DBO()->Service->ServiceType->Value);
-		
+
 		// Breadcrumb menu
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->AccountOverview(DBO()->Account->Id->Value, TRUE);
 		BreadCrumb()->ViewService(DBO()->Service->Id->Value, TRUE);
 		BreadCrumb()->SetCurrentPage("Plan");
-		
+
 		// Retrieve all RecordTypes applicable for this service
 		DBL()->RecordType->ServiceType = DBO()->Service->ServiceType->Value;
 		DBL()->RecordType->OrderBy("Name, Id");
 		DBL()->RecordType->Load();
-		
+
 		$this->_LoadPlanDetails();
-		
+
 		$this->LoadPage('service_plan_view');
 		return TRUE;
-	}	
-	
+	}
+
 	//------------------------------------------------------------------------//
 	// RenderServiceRateGroupList
 	//------------------------------------------------------------------------//
@@ -2508,10 +2508,10 @@ class AppTemplateService extends ApplicationTemplate
 	 * RenderServiceRateGroupList()
 	 *
 	 * Renders the ServiceRateGroupList Html Template
-	 * 
+	 *
 	 * Renders the ServiceRateGroupList Html Template for viewing
-	 * It expects	DBO()->Service->Id 		service Id 
-	 *				DBO()->Container->Id	id of the container div in which to place the 
+	 * It expects	DBO()->Service->Id 		service Id
+	 *				DBO()->Container->Id	id of the container div in which to place the
 	 *										Rendered HtmlTemplate
 	 *
 	 * @return		void
@@ -2524,19 +2524,19 @@ class AppTemplateService extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
 
 		DBO()->Service->Load();
-		
+
 		// Retrieve all RecordTypes applicable for this service
 		DBL()->RecordType->ServiceType = DBO()->Service->ServiceType->Value;
 		DBL()->RecordType->OrderBy("Name, Id");
 		DBL()->RecordType->Load();
-		
+
 		$this->_LoadPlanDetails();
-		
+
 		// Render the ServiceRateGroupList HtmlTemplate
 		Ajax()->RenderHtmlTemplate("ServiceRateGroupList", HTML_CONTEXT_DEFAULT, DBO()->Container->Id->Value);
 
 		return TRUE;
-	}	
+	}
 
 	//------------------------------------------------------------------------//
 	// _LoadPlanDetails
@@ -2545,10 +2545,10 @@ class AppTemplateService extends ApplicationTemplate
 	 * _LoadPlanDetails()
 	 *
 	 * Loads all details required of the ServiceRateGroupList Html Template
-	 * 
+	 *
 	 * Loads all details required of the ServiceRateGroupList Html Template
 	 * It expects	DBO()->Service->Id 		service Id
-	 * 
+	 *
 	 * POST: Sets up the following objects
 	 * DBO()->CurrentRatePlan				RatePlan record for the currently active plan (if there is one)
 	 * DBO()->CurrentServiceRatePlan		ServiceRatePlan record for the currently active plan (if there is one)
@@ -2564,7 +2564,7 @@ class AppTemplateService extends ApplicationTemplate
 	private function _LoadPlanDetails()
 	{
 		$arrPlans = Array();
-		
+
 		// Load the current RatePlan
 		DBO()->CurrentRatePlan->Id = GetCurrentPlan(DBO()->Service->Id->Value);
 		$strEarliestAllowableEndDatetime = NULL;
@@ -2581,20 +2581,20 @@ class AppTemplateService extends ApplicationTemplate
 			DBO()->CurrentServiceRatePlan->SetTable("ServiceRatePlan");
 			DBO()->CurrentServiceRatePlan->Where->Set($strWhere, Array("Service" => DBO()->Service->Id->Value));
 			DBO()->CurrentServiceRatePlan->Load();
-			
+
 			DBO()->CurrentRatePlan->StartDatetime	= DBO()->CurrentServiceRatePlan->StartDatetime->Value;
 			DBO()->CurrentRatePlan->EndDatetime		= DBO()->CurrentServiceRatePlan->EndDatetime->Value;
-			
+
 			// This will be used to retrieve all ServiceRateGroup records that have an EndDatetime greater than this
 			$strEarliestAllowableEndDatetime = DBO()->CurrentServiceRatePlan->StartDatetime->Value;
 		}
-		
+
 		// If $strEarliestAllowableEndDatetime hasn't yet been defined then define it now
 		if (!$strEarliestAllowableEndDatetime)
 		{
 			$strEarliestAllowableEndDatetime = GetCurrentDateAndTimeForMySQL();
 		}
-		
+
 		// Load the future RatePlan if there is one scheduled to begin next billing period
 		DBO()->FutureRatePlan->Id = GetPlanScheduledForNextBillingPeriod(DBO()->Service->Id->Value);
 		if (DBO()->FutureRatePlan->Id->Value)
@@ -2602,20 +2602,20 @@ class AppTemplateService extends ApplicationTemplate
 			// The Service has a plan scheduled to begin at the start of the next billing period
 			DBO()->FutureRatePlan->SetTable("RatePlan");
 			DBO()->FutureRatePlan->Load();
-			
+
 			$arrPlanIds[] = DBO()->FutureRatePlan->Id->Value;
-			
+
 			// Load the Future RatePlan record (this is only really needed to get the StartDatetime and EndDatetime)
 			$strStartOfNextBillingPeriod = ConvertUnixTimeToMySQLDateTime(GetStartDateTimeForNextBillingPeriod());
 			$strWhere = "Service = <Service> AND StartDatetime = <StartOfNextBillingPeriod> AND StartDatetime < EndDatetime ORDER BY CreatedOn DESC";
 			DBO()->FutureServiceRatePlan->SetTable("ServiceRatePlan");
 			DBO()->FutureServiceRatePlan->Where->Set($strWhere, Array("Service" => DBO()->Service->Id->Value, "StartOfNextBillingPeriod" => $strStartOfNextBillingPeriod));
 			DBO()->FutureServiceRatePlan->Load();
-			
+
 			DBO()->FutureRatePlan->StartDatetime	= DBO()->FutureServiceRatePlan->StartDatetime->Value;
 			DBO()->FutureRatePlan->EndDatetime		= DBO()->FutureServiceRatePlan->EndDatetime->Value;
 		}
-		
+
 		if (DBO()->CurrentRatePlan->Id->Value)
 		{
 			// Do not show ServiceRateGroup records that were created before the current ServiceRatePlan record was created
@@ -2631,26 +2631,26 @@ class AppTemplateService extends ApplicationTemplate
 			// The Service has no plans, so just show all ServiceRateGroup records that are still active
 			$strEarliestAllowableCreatedOn = "";
 		}
-		
+
 		// Retrieve all ServiceRateGroup records (with accompanying RateGroup details) that have an EndDatetime > $strEarliestAllowableEndDatetime
 		// and StartDatetime < EndDatetime AND (were created after the current plan was created or are fleet RateGroups)
-		$arrColumns	= Array("Id" => "SRG.Id", "RateGroup" => "SRG.RateGroup", "CreatedOn" => "SRG.CreatedOn", "StartDatetime" => "SRG.StartDatetime", 
+		$arrColumns	= Array("Id" => "SRG.Id", "RateGroup" => "SRG.RateGroup", "CreatedOn" => "SRG.CreatedOn", "StartDatetime" => "SRG.StartDatetime",
 							"EndDatetime" => "SRG.EndDatetime", "Name" => "RG.Name", "Description" => "RG.Description", "Fleet" => "RG.Fleet",
 							"RecordType" => "RG.RecordType", "RateGroupId" => "RG.Id");
 		$strTable	= "ServiceRateGroup AS SRG INNER JOIN RateGroup AS RG ON SRG.RateGroup = RG.Id";
-		
+
 		// OLD WHERE CLAUSE Includes RateGroups that Start after the current plan finishes as well as all of those that finished after the CurrentPlan Started but before now
 		//$strWhere	= "SRG.Service = <Service> AND SRG.EndDatetime > <EarliestAllowableEndDatetime> AND SRG.StartDatetime < SRG.EndDatetime";
 		//$arrWhere	= Array("Service" => DBO()->Service->Id->Value, "EarliestAllowableEndDatetime" => $strEarliestAllowableEndDatetime);
 
 		// Retrieve all ServiceRateGroup records that have EndDatetime > CurrentRatePlan.StartDatetime (<EarliestAllowableEndDatetime>)
-		// AND StartDatetime < EndDatetime AND (RG.Fleet = 1 OR (CreatedOn + 5 seconds) > CurrentRatePlan.CreatedOn)
+		// AND StartDatetime < EndDatetime AND (RG.Fleet = 1 OR CreatedOn >= CurrentRatePlan.CreatedOn)
 		// Which means retrieve all RateGroups that have an EndDatetime greater than the StartDatetime of the Current RatePlan, and (are fleet
 		// RateGroups OR were created at or after the CurrentRatePlan was created
 		$strWhere	= "SRG.Service = <Service> AND SRG.EndDatetime > <EarliestAllowableEndDatetime> AND SRG.StartDatetime < SRG.EndDatetime".
-						" AND (RG.Fleet = 1 OR ADDTIME(SRG.CreatedOn, SEC_TO_TIME(5)) > '$strEarliestAllowableCreatedOn')";
+						" AND (RG.Fleet = 1 OR SRG.CreatedOn >= '$strEarliestAllowableCreatedOn')";
 		$arrWhere	= Array("Service" => DBO()->Service->Id->Value, "EarliestAllowableEndDatetime" => $strEarliestAllowableEndDatetime);
-		
+
 		$strOrderBy = "SRG.CreatedOn DESC";
 
 		DBL()->CurrentServiceRateGroup->SetColumns($arrColumns);
@@ -2658,7 +2658,7 @@ class AppTemplateService extends ApplicationTemplate
 		DBL()->CurrentServiceRateGroup->Where->Set($strWhere, $arrWhere);
 		DBL()->CurrentServiceRateGroup->OrderBy($strOrderBy);
 		DBL()->CurrentServiceRateGroup->Load();
-		
+
 		// Load all the RateGroups belonging to either plans defined for the service (current and/or future)
 		// Assuming there are plans associated with this service
 		if (count($arrPlanIds) > 0)
@@ -2670,6 +2670,37 @@ class AppTemplateService extends ApplicationTemplate
 			DBL()->PlanRateGroup->OrderBy("RecordType");
 			DBL()->PlanRateGroup->Load();
 		}
+
+		// Load all override Rates in service_rate
+		DBL()->CurrentServiceRate->SetTable('
+			service_rate sr
+			JOIN Rate r ON (r.Id = sr.rate_id)
+			JOIN RecordType rt ON (rt.Id = r.RecordType)
+		');
+		DBL()->CurrentServiceRate->SetColumns(array(
+			'id' => 'sr.id',
+			'name' => 'r.Name',
+			'description' => 'r.Description',
+			'record_type_id' => 'r.RecordType',
+			'record_type_name' => 'rt.Name',
+			'record_type_description' => 'rt.Description',
+			'is_fleet' => 'r.Fleet',
+			'start_datetime' => 'sr.start_datetime',
+			'end_datetime' => 'sr.end_datetime'
+		));
+		DBL()->CurrentServiceRate->Where->Set('
+			sr.service_id = <service_id>
+			AND <effective_date> <= sr.end_datetime
+		', array(
+			'service_id' => DBO()->Service->Id->Value,
+			'effective_date' => $strEarliestAllowableEndDatetime
+		));
+		DBL()->CurrentServiceRate->OrderBy('
+			(' . Query::prepareByPHPType($strEarliestAllowableEndDatetime) . ' BETWEEN sr.start_datetime AND sr.end_datetime) DESC,
+			sr.created_datetime DESC,
+			sr.id DESC
+		');
+		DBL()->CurrentServiceRate->Load();
 	}
 
 
@@ -2680,7 +2711,7 @@ class AppTemplateService extends ApplicationTemplate
 	 * RemoveServiceRateGroup()
 	 *
 	 * Removes a ServiceRateGroup record, if it can be safely removed
-	 * 
+	 *
 	 * Removes a ServiceRateGroup record, if it can be safely removed
 	 * (This function is not currently used as we cannot allow them to remove
 	 * a RateGroup that was used to rate a CDR which has already been invoiced.
@@ -2688,13 +2719,13 @@ class AppTemplateService extends ApplicationTemplate
 	 * to 1 second after the StartDatetime of the most recent CDR it was applied
 	 * to, which has been invoiced, or if there are none, then set the EndDatetime
 	 * to 1 second before the StartDatetime)
-	 * 
+	 *
 	 * A ServiceRateGroup record can only be removed if:
 	 * 		It is a fleet RateGroup
 	 * OR
 	 * 		The entire length of time that the RateGroup is applicable to, is covered
 	 * 		by other ServiceRateGroup records (of the same RecordType)
-	 * It expects	DBO()->ServiceRateGroup->Id 		Record to be removed 
+	 * It expects	DBO()->ServiceRateGroup->Id 		Record to be removed
 	 *
 	 * @return		void
 	 * @method
@@ -2709,7 +2740,7 @@ class AppTemplateService extends ApplicationTemplate
 		Ajax()->AddCommand("Alert", "ERROR: This functionality has been prohibited, as it currently compromises the integrity and accuracy of the history of the Service's plan details");
 		return TRUE;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// ChangePlan
 	//------------------------------------------------------------------------//
@@ -2717,9 +2748,9 @@ class AppTemplateService extends ApplicationTemplate
 	 * ChangePlan()
 	 *
 	 * Performs the logic for "Change Plan" popup
-	 * 
+	 *
 	 * Performs the logic for "Change Plan" popup
-	 * If the service successfully has its plan changed then it will fire an 
+	 * If the service successfully has its plan changed then it will fire an
 	 * EVENT_ON_SERVICE_UPDATE event passing the following Event object data:
 	 *		Service.Id		= id of the service which has had its plan changed
 	 *
@@ -2727,9 +2758,9 @@ class AppTemplateService extends ApplicationTemplate
 	 *		following properties to be defined
 	 *		DBO()->Service->Id			Id of the service that the change is affecting
 	 *		DBO()->NewPlan->Id			Id of the rate plan to change to
-	 *		DBO()->NewPlan->StartTime	0 signifies that the new plan should be 
+	 *		DBO()->NewPlan->StartTime	0 signifies that the new plan should be
 	 *										used for the current billing period
-	 *									1 signifies that the new plan should 
+	 *									1 signifies that the new plan should
 	 *										come into affect, starting the next
 	 *										billing period
 	 *
@@ -2749,7 +2780,7 @@ class AppTemplateService extends ApplicationTemplate
 			Ajax()->AddCommand("Alert", "The Service id: ". DBO()->Service->Id->value ." you were attempting to view could not be found");
 			return TRUE;
 		}
-		
+
 		// Retrieve the Account Details
 		DBO()->Account->Id = DBO()->Service->Account->Value;
 		if (!DBO()->Account->Load())
@@ -2757,13 +2788,13 @@ class AppTemplateService extends ApplicationTemplate
 			Ajax()->AddCommand("Alert", "Can not find Account: ". DBO()->Service->Account->Value . " associated with this service");
 			return TRUE;
 		}
-		
+
 		if (Invoice_Run::checkTemporary(DBO()->Account->CustomerGroup->Value, DBO()->Account->Id->Value))
 		{
 			Ajax()->AddCommand("Alert", "This action is temporarily unavailable because a related, live invoice run is currently outstanding");
 			return TRUE;
 		}
-		
+
 		$qryQuery			= new Query();
 		$rLastInvoiceType	= $qryQuery->Execute("SELECT ir.Id, ir.BillingDate, ir.invoice_run_type_id FROM Invoice i JOIN InvoiceRun ir ON (i.invoice_run_id = ir.Id) WHERE i.Account = ".DBO()->Account->Id->Value." AND i.Status != ".INVOICE_TEMP." ORDER BY BillingDate DESC");
 		if ($rLastInvoiceType === false)
@@ -2777,7 +2808,7 @@ class AppTemplateService extends ApplicationTemplate
 			$aPermittedStartTimes[]	= 0;
 		}
 		DBO()->NewPlan->PermittedStartTimes	= $aPermittedStartTimes;
-		
+
 		if (SubmittedForm("ChangePlan","Change Plan"))
 		{
 
@@ -2787,14 +2818,14 @@ class AppTemplateService extends ApplicationTemplate
 				Ajax()->AddCommand("Alert", "You are not able to start this Rate Plan as of the start of the current billing period, as the last Invoice Run was a ".GetConstantDescription($aLastInvoiceType['invoice_run_type_id'], 'invoice_run_type').", dated ".date('d/m/Y', strtotime($aLastInvoiceType['BillingDate'])).".");
 				return TRUE;
 			}
-			
+
 			try
 			{
 				TransactionStart();
 				$objService = Service::getForId(intval(DBO()->Service->Id->Value));
-				
+
 				$mixResult = $objService->changePlan(intval(DBO()->NewPlan->Id->Value), $bolStartThisMonth);
-				
+
 				if ($mixResult !== TRUE)
 				{
 					if (is_string($mixResult))
@@ -2806,21 +2837,21 @@ class AppTemplateService extends ApplicationTemplate
 						throw new exception("An unidentified error occurred");
 					}
 				}
-				
+
 				TransactionCommit();
-				
+
 				// Close the popup, alert the user
 				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
 				Ajax()->AddCommand("Alert", "The service's plan has been successfully changed");
-	
+
 				// Build event object
 				// The contents of this object should be declared in the doc block of this method
 				$arrEvent['Service']['Id'] = DBO()->Service->Id->Value;
 				Ajax()->FireEvent(EVENT_ON_SERVICE_UPDATE, $arrEvent);
-	
+
 				// Since a system note has been added, fire the OnNewNote event
 				Ajax()->FireOnNewNoteEvent();
-	
+
 				return TRUE;
 			}
 			catch (Exception $e)
@@ -2829,9 +2860,9 @@ class AppTemplateService extends ApplicationTemplate
 				Ajax()->AddCommand("Alert", "ERROR: ". $e->getMessage());
 				return TRUE;
 			}
-		}		
-		
-		
+		}
+
+
 		// Retrieve all available plans for this ServiceType/CustomerGroup
 		$strWhere	= "ServiceType = <ServiceType> AND customer_group = <CustomerGroup> AND Archived = <ActiveStatus>";
 		$arrWhere	= array("ServiceType"	=> DBO()->Service->ServiceType->Value,
@@ -2840,20 +2871,20 @@ class AppTemplateService extends ApplicationTemplate
 		DBL()->RatePlan->Where->Set($strWhere, $arrWhere);
 		DBL()->RatePlan->OrderBy("Name");
 		DBL()->RatePlan->Load();
-		
+
 		// Retrieve all active Contacts for this Account
 		DBL()->Contact->Where->Set("Archived = 0 AND (Account = <Account> OR (Id = (SELECT PrimaryContact FROM Account WHERE Id = <Account>)) OR (CustomerContact = 1 AND AccountGroup = (SELECT AccountGroup FROM Account WHERE Id = <Account>)))", array('Account' => DBO()->Account->Id->Value));
 		DBL()->Contact->OrderBy("FirstName, LastName");
 		DBL()->Contact->Load();
-		
+
 		// Set the default for the scheduled start time of the new plan
 		// Defaults to "Start billing at begining of next billing period"
 		DBO()->NewPlan->StartTime = 1;
-		
+
 		$this->LoadPage('plan_change');
 		return TRUE;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// _ActivateService DEPRECATED
 	//------------------------------------------------------------------------//
@@ -2861,21 +2892,21 @@ class AppTemplateService extends ApplicationTemplate
 	 * _ActivateService() DEPRECATED
 	 *
 	 * Performs the database modifications required of activating the service
-	 * 
+	 *
 	 * Performs the database modifications required of activating the service
 	 * If a new Service record has to be created, then DBO()->NewService will store the
 	 * contents of this new service.
 	 *
 	 * @precondition	This function should be encapsulated by a database transaction (TransactionStart),
 	 *					which should be rolled back if the function returns anything other than TRUE
-	 * 		
+	 *
 	 * @param			integer		$intService		Id of the service to activate
 	 * @param			string		$strFNN			FNN of the service to activate
 	 * @param			bool		$bolIsIndial	TRUE if the service is an Indial100
 	 * @param			string		$strCreatedOn	CreatedOn date for the Service record identified by $intService (YYYY-MM-DD)
 	 * @param			string		$strClosedOn	date on which the service was closed (YYYY-MM-DD)
-	 *	 
-	 * @return			mix			returns TRUE if the service can be activated, else it returns an error 
+	 *
+	 * @return			mix			returns TRUE if the service can be activated, else it returns an error
 	 *								message (string) detailing why the service could not be activated
 	 * @method
 	 */
@@ -2887,16 +2918,16 @@ class AppTemplateService extends ApplicationTemplate
 			$strClosedOn	= OutputMask()->ShortDate($strClosedOn);
 			return "ERROR: This service cannot be activated as its CreatedOn date ($strCreatedOn) is greater than its ClosedOn date ($strClosedOn) signifying that it was never actually used by this account";
 		}
-		
+
 		$strNow = GetCurrentDateForMySQL();
-		
+
 		// Check if the FNN is currently in use
 		$arrWhere					= Array();
-		$arrWhere['FNN']			= ($bolIsIndial) ? substr($strFNN, 0, -2) . "__" : $strFNN; 
+		$arrWhere['FNN']			= ($bolIsIndial) ? substr($strFNN, 0, -2) . "__" : $strFNN;
 		$arrWhere['IndialRange']	= substr($strFNN, 0, -2) . "__";
 		$arrWhere['Service']		= $intService;
 		$arrWhere['ClosedOn']		= $strClosedOn;
-		
+
 		$selFNNInUse = new StatementSelect("Service", "Id", "(FNN LIKE <FNN> OR (FNN LIKE <IndialRange> AND Indial100 = 1)) AND (ClosedOn IS NULL OR (ClosedOn >= CreatedOn AND NOW() <= ClosedOn)) AND Id != <Service>");
 		if ($selFNNInUse->Execute($arrWhere))
 		{
@@ -2907,7 +2938,7 @@ class AppTemplateService extends ApplicationTemplate
 			}
 			return 	"ERROR: Cannot activate this service as the FNN: $strFNN is currently being used by another service.  The other service must be disconnected or archived before this service can be activated";
 		}
-		
+
 		// If the Service hasn't closed yet, then just update the ClosedOn and Status properties
 		// You do not need to create a new record, or renormalise CDRs
 		if ($strClosedOn >= $strNow)
@@ -2923,13 +2954,13 @@ class AppTemplateService extends ApplicationTemplate
 				// There was an error while trying to activate the service
 				return "ERROR: Activating the service failed, unexpectedly";
 			}
-			
+
 			// Service was activated successfully
 			return TRUE;
 		}
-		
-		
-		
+
+
+
 		// Check if the FNN has been used by another de-activated service since $intService was de-activated
 		/* This check is no longer required because we now always create a new service record when activating a
 		 * service irregardless of whether or not the FNN has since been used by a now disconnected service
@@ -2947,18 +2978,18 @@ class AppTemplateService extends ApplicationTemplate
 				// There was an error while trying to activate the service
 				return "ERROR: Activating the service failed, unexpectedly";
 			}
-			
+
 			// Service was activated successfully
 			return TRUE;
 		}
 		*/
-		
+
 		// Create the new service record, based on the old service record
 		$intOldServiceId = $intService;
 		DBO()->NewService->SetTable("Service");
 		DBO()->NewService->Id = $intOldServiceId;
 		DBO()->NewService->Load();
-		
+
 		// By setting the Id to zero, a new record will be inserted when the Save method is executed
 		DBO()->NewService->Id						= 0;
 		DBO()->NewService->CreatedOn				= $strNow;
@@ -2972,12 +3003,12 @@ class AppTemplateService extends ApplicationTemplate
 		DBO()->NewService->LineStatusDate			= NULL;
 		DBO()->NewService->PreselectionStatus		= NULL;
 		DBO()->NewService->PreselectionStatusDate	= NULL;
-		
+
 		if (!DBO()->NewService->Save())
 		{
 			return "ERROR: Activating the service failed, unexpectedly";
 		}
-		
+
 		// Save extra service details like mobile details, and inbound details and address details
 		switch (DBO()->NewService->ServiceType->Value)
 		{
@@ -3010,7 +3041,7 @@ class AppTemplateService extends ApplicationTemplate
 					DBO()->NewServiceAddress->Id		= 0;
 					DBO()->NewServiceAddress->Save();
 				}
-				
+
 				// Handle ELB if in use
 				if (DBO()->NewService->Indial100->Value)
 				{
@@ -3031,25 +3062,25 @@ class AppTemplateService extends ApplicationTemplate
 			default:
 				break;
 		}
-		
+
 		// Copy all ServiceRatePlan records across from the old service where EndDatetime is in the future and StartDatetime < EndDatetime
 		$intNewServiceId = DBO()->NewService->Id->Value;
 		$strCopyServiceRatePlanRecordsToNewService =	"INSERT INTO ServiceRatePlan (Id, Service, RatePlan, CreatedBy, CreatedOn, StartDatetime, EndDatetime, LastChargedOn, Active) ".
 														"SELECT NULL, $intNewServiceId, RatePlan, CreatedBy, CreatedOn, StartDatetime, EndDatetime, LastChargedOn, Active ".
 														"FROM ServiceRatePlan WHERE Service = $intOldServiceId AND EndDatetime > NOW() AND StartDatetime < EndDatetime";
 		$qryInsertServicePlanDetails = new Query();
-		
+
 		if ($qryInsertServicePlanDetails->Execute($strCopyServiceRatePlanRecordsToNewService) === FALSE)
 		{
 			// Inserting the records into the ServiceRatePlan table failed
 			return "ERROR: Activating the service failed, unexpectedly.  Inserting records into the ServiceRatePlan table failed";
 		}
-		
+
 		// Copy all ServiceRateGroup records across from the old service where EndDatetime is in the future and StartDatetime < EndDatetime
 		$strCopyServiceRateGroupRecordsToNewService =	"INSERT INTO ServiceRateGroup (Id, Service, RateGroup, CreatedBy, CreatedOn, StartDatetime, EndDatetime, Active) ".
 														"SELECT NULL, $intNewServiceId, RateGroup, CreatedBy, CreatedOn, StartDatetime, EndDatetime, Active ".
 														"FROM ServiceRateGroup WHERE Service = $intOldServiceId AND EndDatetime > NOW() AND StartDatetime < EndDatetime";
-														
+
 		if ($qryInsertServicePlanDetails->Execute($strCopyServiceRateGroupRecordsToNewService) === FALSE)
 		{
 			// Inserting the records into the ServiceRateGroup table failed
@@ -3065,21 +3096,21 @@ class AppTemplateService extends ApplicationTemplate
 		{
 			return "ERROR: Activating the service failed, unexpectedly.  Updating CDRs to be re-normalised failed";
 		}
-		
+
 		// Activating the account was successfull
 		return TRUE;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// _GetAllServiceAddresses
 	//------------------------------------------------------------------------//
 	/**
 	 * _GetAllServiceAddresses()
 	 *
-	 * Retrieves the address details of each service belonging to the account 
-	 * 
 	 * Retrieves the address details of each service belonging to the account
-	 * 
+	 *
+	 * Retrieves the address details of each service belonging to the account
+	 *
 	 * @param	int		$intAccount		Id of the Account
 	 *
 	 * @return		array				All ServiceAddress Records associated with the account
@@ -3122,13 +3153,13 @@ class AppTemplateService extends ApplicationTemplate
 		$strWhere	= "S.Account = <AccountId>";
 		$selAddresses = new StatementSelect($strTables, $arrColumns, $strWhere, "S.FNN ASC, S.Status ASC");
 		$mixResult = $selAddresses->Execute(Array("AccountId" => $intAccount));
-		
+
 		$arrAddresses = Array();
 		if ($mixResult)
 		{
 			// The account has addresses associated with it
 			$arrRecordSet = $selAddresses->FetchAll();
-			
+
 			foreach ($arrRecordSet as $arrRecord)
 			{
 				// Format the DateOfBirth property if it is not NULL
@@ -3136,32 +3167,32 @@ class AppTemplateService extends ApplicationTemplate
 				{
 					$arrRecord['DateOfBirth'] = substr($arrRecord['DateOfBirth'], 6, 2) ."/". substr($arrRecord['DateOfBirth'], 4, 2) ."/". substr($arrRecord['DateOfBirth'], 0, 4);
 				}
-				
+
 				$arrAddresses[$arrRecord["Service"]] = $arrRecord;
-				
+
 				// Build the Physical address description
 				$arrAddresses[$arrRecord["Service"]]['PhysicalAddressDescription'] = $this->BuildPhysicalAddressDescription($arrRecord, ", ");
 			}
 		}
-		
+
 		return $arrAddresses;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// _SetDefaultValuesForServiceAddress
 	//------------------------------------------------------------------------//
 	/**
 	 * _SetDefaultValuesForServiceAddress()
 	 *
-	 * Sets default values for a ServiceAddress DBObject based on an Account DBObject 
-	 * 
+	 * Sets default values for a ServiceAddress DBObject based on an Account DBObject
+	 *
 	 * Sets default values for a ServiceAddress DBObject based on an Account DBObject
 	 * Sets the following parameters with values taken from the Account DBObject:
 	 * 	ABN, EndUserCompanyName, TradingName, BillName, BillAddress1, BillAddress2,
 	 * 	BillLocality, BillPostcode, ServiceState
-	 * 
+	 *
 	 * Also sets ServiceAddress->Residential to 0 representing a business landline service
-	 * 
+	 *
 	 * @param	DBObject	$dboServiceAddress	The ServiceAddress DBObject to initialise with default
 	 * 											values
 	 * @param	DBObject	$dboAccount			The Account DBObject from which the initial values come
@@ -3176,7 +3207,7 @@ class AppTemplateService extends ApplicationTemplate
 		$dboServiceAddress->ABN = str_replace(" ", "", $dboAccount->ABN->Value);
 		if ($dboAccount->BusinessName->Value != "")
 		{
-			$strCompanyName = $dboAccount->BusinessName->Value; 
+			$strCompanyName = $dboAccount->BusinessName->Value;
 		}
 		else
 		{
@@ -3184,14 +3215,14 @@ class AppTemplateService extends ApplicationTemplate
 		}
 		$strCompanyName = substr($strCompanyName, 0, 50);
 		$dboServiceAddress->EndUserCompanyName = ($strCompanyName !== FALSE) ? $strCompanyName : "";
-		
+
 		$strTradingName = substr($dboAccount->TradingName->Value, 0, 50);
 		$dboServiceAddress->TradingName = ($strTradingName !== FALSE) ? $strTradingName : "";
-		
+
 		// Bill Address should default to the billing address for the account
 		$strCompanyName = substr($strCompanyName, 0, 30);
 		$dboServiceAddress->BillName = ($strCompanyName !== FALSE) ? $strCompanyName : "";
-		
+
 		$strAddress1 = substr($dboAccount->Address1->Value, 0, 30);
 		$dboServiceAddress->BillAddress1 = ($strAddress1 !== FALSE) ? $strAddress1 : "";
 
@@ -3204,8 +3235,8 @@ class AppTemplateService extends ApplicationTemplate
 		$dboServiceAddress->BillPostcode = $dboAccount->Postcode->Value;
 		$dboServiceAddress->ServiceState = $dboAccount->State->Value;
 	}
-	
-	
+
+
 	//------------------------------------------------------------------------//
 	// GetMostRecentServiceRecordId
 	//------------------------------------------------------------------------//
@@ -3213,11 +3244,11 @@ class AppTemplateService extends ApplicationTemplate
 	 * GetMostRecentServiceRecordId()
 	 *
 	 * Returns the Id of the most recently added Service record which models the same Service as the record referenced by $intService
-	 * 
+	 *
 	 * Returns the Id of the most recently added Service record which models the same Service as the record referenced by $intService
 	 * If $intService is the most recent, then it will be returned
-	 * 
-	 * @param	int		$intService		Id of any of the service records modelling the service 
+	 *
+	 * @param	int		$intService		Id of any of the service records modelling the service
 	 * 									for the account that the service record belongs to
 	 *
 	 * @return	int 					Service record Id
@@ -3231,11 +3262,11 @@ class AppTemplateService extends ApplicationTemplate
 		{
 			return FALSE;
 		}
-		
+
 		$arrRecord = $selMostRecentService->Fetch();
 		return $arrRecord['Id'];
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// GetAllServiceRecordIds
 	//------------------------------------------------------------------------//
@@ -3243,11 +3274,11 @@ class AppTemplateService extends ApplicationTemplate
 	 * GetAllServiceRecordIds()
 	 *
 	 * Retrieves an array storing all Service Ids which are used to model the same Service that $intService references
-	 * 
+	 *
 	 * Retrieves an array storing all Service Ids which are used to model the same Service that $intService references
 	 * (for the account the $intService references)
-	 * 
-	 * @param	int		$intService		Id of any of the service records modelling the service 
+	 *
+	 * @param	int		$intService		Id of any of the service records modelling the service
 	 * 									for the account that the service record belongs to
 	 *
 	 * @return	array					indexed array of Service Ids
@@ -3261,17 +3292,17 @@ class AppTemplateService extends ApplicationTemplate
 		{
 			return FALSE;
 		}
-		
+
 		$arrRecordSet	= $selAllServices->FetchAll();
 		$arrServiceIds	= Array();
-		
+
 		foreach ($arrRecordSet as $arrRecord)
 		{
 			$arrServiceIds[] = $arrRecord['Id'];
 		}
-		
+
 		return $arrServiceIds;
 	}
-	
+
 }
 ?>
