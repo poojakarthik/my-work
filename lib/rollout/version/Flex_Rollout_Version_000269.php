@@ -20,6 +20,7 @@ class Flex_Rollout_Version_000269 extends Flex_Rollout_Version {
 				",
 				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
 			),
+
 			array(
 				'sDescription' => "Populate service_type.module field",
 				'sAlterSQL' => "
@@ -36,6 +37,7 @@ class Flex_Rollout_Version_000269 extends Flex_Rollout_Version {
 				",
 				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
 			),
+
 			array(
 				'sDescription' => "Set service_type.module to NOT NULLable",
 				'sAlterSQL' => "
@@ -45,6 +47,20 @@ class Flex_Rollout_Version_000269 extends Flex_Rollout_Version {
 				",
 				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
 			),
+
+			array(
+				'sDescription' => "Change Service.FNN to VARCHAR(2048)",
+				'sAlterSQL' => "
+					ALTER TABLE Service
+						MODIFY COLUMN FNN VARCHAR(512) NOT NULL;
+				",
+				'sRollbackSQL' => "
+					ALTER TABLE Service
+						MODIFY COLUMN FNN CHAR(25) NOT NULL;
+				",
+				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
+			),
+
 			array(
 				'sDescription' => "Add service_type_config table",
 				'sAlterSQL' => "
@@ -66,6 +82,7 @@ class Flex_Rollout_Version_000269 extends Flex_Rollout_Version {
 				'sRollbackSQL' => "DROP TABLE service_type_config;",
 				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
 			),
+
 			array(
 				'sDescription' => "Add service_property table",
 				'sAlterSQL' => "
@@ -93,6 +110,7 @@ class Flex_Rollout_Version_000269 extends Flex_Rollout_Version {
 				'sRollbackSQL' => "DROP TABLE service_property;",
 				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
 			),
+
 			array(
 				'sDescription' => "Add service_property_history table",
 				'sAlterSQL' => "

@@ -84,7 +84,7 @@ class HtmlTemplateServiceBulkAdd extends HtmlTemplate
 	function Render()
 	{
 		if (Employee::getForId(Flex::getUserId())->isGod()) {
-			?><button onclick="module.provide(['flex/component/page/service/add'], function () {require('flex/component/page/service/add').createAsPopup({accountId: 1}).display();});">New UI</button><?
+			?><button onclick="module.provide(['flex/component/page/service/add'], function () {require('flex/component/page/service/add').createAsPopup({accountId: <?=DBO()->Account->Id->Value?>}).display();});">New UI</button><?
 		}
 
 		$arrDealers = DBO()->Dealers->AsArray->Value;

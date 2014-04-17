@@ -113,6 +113,18 @@ class PropertyToken {
 		return array_key_exists($this->_strProperty, $this->_dboOwner->_arrProperties) ? $this->_dboOwner->_arrProperties[$this->_strProperty] : null;
 	}
 
+	function RenderOutputAs(array $arrDefinition, $intContext=CONTEXT_DEFAULT) {
+		$intContext = $this->_CalculateContext($intContext);
+
+		// Build up parameters for HtmlElements
+		$arrParams = $this->_BuildParams($intContext, RENDER_OUTPUT);
+		$arrParams['Definition'] = array_merge($arrParams['Definition'], $arrDefinition);
+
+		echo HtmlElements()->$arrParams['Definition'][RENDER_OUTPUT.'Type']($arrParams, $arrAdditionalArgs);
+
+		return array_key_exists($this->_strProperty, $this->_dboOwner->_arrProperties) ? $this->_dboOwner->_arrProperties[$this->_strProperty] : null;
+	}
+
 	function RenderOutput($intContext=CONTEXT_DEFAULT) {
 		echo $this->_RenderIO(RENDER_OUTPUT, $intContext);
 
