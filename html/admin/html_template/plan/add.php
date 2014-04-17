@@ -381,7 +381,6 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		echo "   <div class='DefaultLabel'><span class='RequiredInput'>*&nbsp;</span>Service Type :</div>\n";
 		echo "      <select id='ServiceTypeCombo' name='RatePlan.ServiceType' class='DefaultInputComboBox' style='width:155px;' onchange='javascript: Vixen.RatePlanAdd.ChangeServiceType(this.value, true);' $strServiceTypeDisabled>\n";
 		echo "         <option value='0' selected='selected'>&nbsp;</option>\n";
-		// foreach ($GLOBALS['*arrConstant']['service_type'] as $intKey=>$arrValue)
 		foreach (Service_Type::getAll() as $iServiceTypeId=>$oServiceType) {
 			// If the ServiceType has default values for the Carrier fields, then include them in the <option> tag as attributes
 			$strCarrierDefaults = "";
@@ -611,7 +610,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 
 		if (DBL()->RecordType->RecordCount() == 0)
 		{
-			$strServiceType = DBO()->RatePlan->ServiceType->AsCallback("GetConstantDescription", Array("service_type"));
+			$strServiceType = Service_Type::getForId(DBO()->RatePlan->ServiceType->Value)->name;
 			// There are no RecordTypes required for the ServiceType chosen
 			Table()->RateGroups->AddRow("<span class='DefaultOutputSpan Default'>No Record Types required for Service Type: $strServiceType</span>");
 			Table()->RateGroups->SetRowAlignment("left");
