@@ -64,7 +64,7 @@ class AppTemplateInvoice extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL));
-		
+
 		// Set up some variables to use
 		$arrEmails			= Array(); // List of emails from Other Email address box
 		$arrEmailList		= Array(); // Emails from checkboxes
@@ -75,7 +75,7 @@ class AppTemplateInvoice extends ApplicationTemplate
 		$intYear			= DBO()->Invoice->Year->Value;
 		$intMonth			= DBO()->Invoice->Month->Value;
 		$intAccount			= DBO()->Account->Id->Value;
-		
+
 		// check if the form was submitted
 		if (SubmittedForm('EmailPDFInvoice', 'Email Invoice'))
 		{
@@ -94,7 +94,7 @@ class AppTemplateInvoice extends ApplicationTemplate
 					// Load the Contact's info
 					DBO()->Contact->Id = $strPropertyName;
 					DBO()->Contact->Load();
-					
+
 					// Extract emails from comma-separated list
 					foreach (explode(',', DBO()->Contact->Email->Value) as $strEmail)
 					{
@@ -141,10 +141,10 @@ class AppTemplateInvoice extends ApplicationTemplate
 				$oEmailFlex->setBodyText($strContent);
 				// Attachment (file to deliver)
 				$oEmailFlex->createAttachment(
-					$strPDFtoSend, 
-					'application/pdf', 
-					Zend_Mime::DISPOSITION_ATTACHMENT, 
-					Zend_Mime::ENCODING_BASE64, 
+					$strPDFtoSend,
+					'application/pdf',
+					Zend_Mime::DISPOSITION_ATTACHMENT,
+					Zend_Mime::ENCODING_BASE64,
 					$strInvoiceFileName
 				);
 				// Send the email
@@ -174,7 +174,7 @@ class AppTemplateInvoice extends ApplicationTemplate
 		$strWhere  = "(Account = ". DBO()->Account->Id->Value ." OR ";
 		$strWhere .= "(AccountGroup = ". DBO()->Account->AccountGroup->Value ." AND CustomerContact = 1))";
 		$strWhere .= " AND Email != '' AND Email != 'no email'";
-		
+
 		DBL()->Contact->Where->SetString($strWhere);
 		DBL()->Contact->Load();
 
@@ -211,9 +211,9 @@ class AppTemplateInvoice extends ApplicationTemplate
 			$this->LoadPage('error');
 			return TRUE;
 		}
-		
+
 		$cdrs = CDR::getForInvoice(DBO()->Invoice->Id->Value);
-		
+
 		// Load all RecordTypes
 		$db				= Data_Source::get();
 		$sqlRecordTypes	= "SELECT Id, Name, Description, DisplayType FROM RecordType";
@@ -223,19 +223,19 @@ class AppTemplateInvoice extends ApplicationTemplate
 			throw new Exception("Failed to load call record types: " . $res->getMessage());
 		}
 		$arrRecordTypes = KeyifyArray($res->fetchAll(MDB2_FETCHMODE_ASSOC), "Id");
-		
-		
+
+
 		$strCallDetailsCSV = "";
 		$arrColumnNames = Array("ServiceType", "FNN", "Source", "Call Type", "Start Time", "Called Party", "Duration", "Units", "Charge (\$)", "Description");
 		$arrColumnOrder = Array("ServiceType", "FNN", "Source", "Call Type", "Start Time", "Called Party", "Duration", "UnitType", "Charge", "Description");
 		$arrBlankRecord = Array(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-		
+
 		// Add the head record to the CSV file
 		$strCallDetailsCSV = MakeCSVLine($arrColumnNames);
-		
+
 		// This is used to work out where blank records should be made in the csv file
 		$intLastFNN = NULL;
-		
+
 		// Add each call (CDR) to the CSV file
 		foreach ($cdrs as $arrCDR)
 		{
@@ -244,9 +244,9 @@ class AppTemplateInvoice extends ApplicationTemplate
 				// The FNN has changed.  Stick in a blank record
 				$strCallDetailsCSV .= MakeCSVLine($arrBlankRecord);
 			}
-			
+
 			$intRecordDisplayType = $arrRecordTypes[$arrCDR['RecordType']]['DisplayType'];
-			
+
 			// Set up the values for the record
 			$arrCDR['Start Time']	= $arrCDR['StartDatetime'];
 			$arrCDR['ServiceType']	= GetConstantDescription($arrCDR['ServiceType'], "service_type");
@@ -254,26 +254,26 @@ class AppTemplateInvoice extends ApplicationTemplate
 			$arrCDR['Called Party'] = $arrCDR['Destination'];
 			$arrCDR['Duration']		= $arrCDR['Units'];
 			$arrCDR['UnitType']		= GetConstantDescription($intRecordDisplayType, 'DisplayTypeSuffix');
-			
+
 			if ($arrCDR['Credit'] == 1)
 			{
 				// Negate the charge, to signify a credit
 				$arrCDR['Charge'] = $arrCDR['Charge'] * (-1);
 			}
-			
-			// Truncate the charge to 2 decimal places (it should already be calculated as 2 dec-plac, but will be to 4 dec-plac)
-			$arrCDR['Charge'] = number_format($arrCDR['Charge'], 2, '.', '');
-						
+
+			// Truncate the charge to the precision defined in the Rate
+			$arrCDR['Charge'] = number_format($arrCDR['Charge'], Rate::getForId($arrCDR['Rate'])->getChargePrecision(), '.', '');
+
 			$strCallDetailsCSV .= MakeCSVLine($arrCDR, $arrColumnOrder);
-			
+
 			// Update the details used for spacing
 			$intLastFNN = $arrCDR['FNN'];
 		}
-		
+
 		// Build the Filename (<InvoiceDate>_<AccountId>_<InvoiceId>.csv)
 		$strFilename = date("Ymd", strtotime(DBO()->Invoice->CreatedOn->Value)) . "_" . DBO()->Invoice->Account->Value .
 							"_". DBO()->Invoice->Id->Value .".csv";
-							
+
 		// Send the csv file to the user
 		header("Content-Type: text/csv");
 		header("Content-Disposition: attachment; filename=\"$strFilename\"");
@@ -282,6 +282,5 @@ class AppTemplateInvoice extends ApplicationTemplate
 	}
 
     //----- DO NOT REMOVE -----//
-	
+
 }
-?>

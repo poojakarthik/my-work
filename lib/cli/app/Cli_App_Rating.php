@@ -272,7 +272,7 @@ class Cli_App_Rating extends Cli
 					{
 						// Compare our two rated values
 						$aCDRChanges[$oCDR->Id]['DIFF']	= (object)array(
-							'Charge'	=> $oCDRPostRate->Charge - $oCDRPreRate->Charge,
+							'Charge'	=> round($oCDRPostRate->Charge - $oCDRPreRate->Charge, max(Rate::getForId($oCDRPostRate->Rate)->getChargePrecision(), Rate::getForId($oCDRPreRate->Rate)->getChargePrecision())),
 						);
 					}
 
@@ -282,15 +282,15 @@ class Cli_App_Rating extends Cli
 						Log::getLog()->log(" (previously: {$oCDRPreRate->Rate})", false);
 					}
 
-					Log::getLog()->log("; Cost: \$".number_format($oCDRPostRate->Cost, Rate::RATING_PRECISION, '.', ''), false);
+					Log::getLog()->log("; Cost: \$".$oCDRPostRate->Cost, false);
 
 					if ($oCDRPostRate->Rate)
 					{
-						Log::getLog()->log("; Charge: \$".number_format($oCDRPostRate->Charge, Rate::RATING_PRECISION, '.', ''), false);
+						Log::getLog()->log("; Charge: \$".$oCDRPostRate->Charge, false);
 					}
 					if ($oCDRPreRate->Rate)
 					{
-						Log::getLog()->log(" (previously: \$".number_format($oCDRPreRate->Charge, Rate::RATING_PRECISION, '.', '').")", false);
+						Log::getLog()->log(" (previously: \$".$oCDRPreRate->Charge.")", false);
 					}
 
 					if ($oCDRPreRate->Rate && $oCDRPostRate->Rate)
@@ -301,7 +301,7 @@ class Cli_App_Rating extends Cli
 						}
 						if (isset($aCDRChanges[$oCDR->Id]['DIFF']->Charge) && round($aCDRChanges[$oCDR->Id]['DIFF']->Charge, 2) != 0.0)
 						{
-							Log::getLog()->log(' [CHARGE DIFFERENCE: $'.number_format($aCDRChanges[$oCDR->Id]['DIFF']->Charge, Rate::RATING_PRECISION, '.', '').']', false);
+							Log::getLog()->log(' [CHARGE DIFFERENCE: $'.$aCDRChanges[$oCDR->Id]['DIFF']->Charge.']', false);
 						}
 					}
 

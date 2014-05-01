@@ -17,9 +17,9 @@ class CDR extends ORM_Cached {
 			$oService->EarliestCDR = ($oService->EarliestCDR) ? min($oService->EarliestCDR, $this->StartDatetime) : $this->StartDatetime;
 			$oService->LatestCDR = ($oService->LatestCDR) ? max($oService->LatestCDR, $this->StartDatetime) : $this->StartDatetime;
 			$oService->save();
-			
+
 			$oRate = ($bUseExistingRate && $this->Rate) ? Rate::getForId($this->Rate) : Rate::getForCDR($this);
-			
+
 			// Did we find a Rate?
 			if (!$oRate) {
 				$this->Charge = null;
@@ -28,8 +28,8 @@ class CDR extends ORM_Cached {
 				$this->save();
 
 				// Get debugging info on this cdr
-				$aInfo = Query::run("	SELECT rt.Id AS record_type_id, 
-											rt.Name AS record_type_name, 
+				$aInfo = Query::run("	SELECT rt.Id AS record_type_id,
+											rt.Name AS record_type_name,
 											rp.Id AS rate_plan_id,
 											rp.Name AS rate_plan_name,
 											d.Code AS destination_code,
@@ -38,7 +38,7 @@ class CDR extends ORM_Cached {
 										FROM CDR c
 											JOIN RecordType rt ON (rt.id = c.RecordType)
 											JOIN ServiceRatePlan srp ON (
-												srp.Service = c.Service 
+												srp.Service = c.Service
 												AND c.StartDatetime BETWEEN srp.StartDatetime AND srp.EndDatetime
 											)
 											JOIN RatePlan rp ON (rp.Id = srp.RatePlan)
@@ -102,7 +102,7 @@ class CDR extends ORM_Cached {
 			}
 
 			// ROUNDING
-			$this->Charge = Rate::roundToRatingStandard($this->Charge);
+			$this->Charge = Rate::roundToRatingStandard($this->Charge, $oRate->getChargePrecision());
 
 			// SERVICE TOTALS: Update progressive totals (deprecated, but we'll copy the functionality anyway)
 			if ($this->Charge > 0 && $this->Credit == 0) {
@@ -566,13 +566,13 @@ class CDR extends ORM_Cached {
 			// The CDR database has one table for the invoiced CDRs, but the table is partitioned
 			// by the invoice_run_id of the invoice. To query this table we MUST include the
 			// invoice_run_id in the where clause of the query.
-	
+
 			$objInvoice = is_numeric($mxdInvoice) ? new Invoice(array('Id'=>$mxdInvoice), true) : $mxdInvoice;
-	
+
 			$dataSource = self::getDataSourceForInvoiceRunCDRs($objInvoice->invoiceRunId);
-	
+
 			// We now have all the details needed to load the CDRs from either database
-	
+
 			// Try to load the records from the cdr_invoiced table of the CDR db
 			$cdrDb = Data_Source::get($dataSource);
 			if ($dataSource == FLEX_DATABASE_CONNECTION_CDR) {
@@ -651,17 +651,17 @@ class CDR extends ORM_Cached {
 								StartDatetime ASC
 				";
 			}
-	
+
 			// Proceed with a query...
 			$res =& $cdrDb->query($strCdrSelect);
-	
+
 			// Always check that result is not an error
 			if (MDB2::isError($res)) {
 				throw new Exception($res->getMessage() . "\n{$strCdrSelect}");
 			}
-	
+
 			$rows = $res->fetchAll(MDB2_FETCHMODE_ASSOC);
-	
+
 			// Otherwise, we should assume that there weren't any.
 			return $rows;
 		} catch (Exception_Database $oEx) {
