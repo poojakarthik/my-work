@@ -272,6 +272,7 @@ class Invoice_Export_XML {
 			$xmlService = self::_addElement($xmlServices, 'Service');
 			self::_addAttribute($xmlService, 'FNN', ($arrService['Extension']) ? $arrService['Extension'] : $arrService['FNN']);
 			$xmlService->setAttributeNode(new DOMAttr('ServiceType', Service_Type::getForId($arrService['ServiceType'])->const_name));
+			$xmlService->setAttributeNode(new DOMAttr('Module', Service_Type::getForId($arrService['ServiceType'])->module));
 			self::_addAttribute($xmlService, 'CostCentre', $arrService['CostCentre']);
 			self::_addAttribute($xmlService, 'Plan', $arrService['RatePlan']);
 			self::_addAttribute($xmlService, 'GrandTotal', number_format($arrService['ServiceTotal'], 2, '.', ''));
