@@ -11,35 +11,9 @@ var H = require('fw/dom/factory'), // HTML
 	Hidden = require('fw/component/control/hidden'),
 	xhr = require('xhr'),
 	DatePickerPopup = require('fw/component/popup/datepicker'),
-	jsonForm = require('json-form')
+	jsonForm = require('json-form'),
+	inputDate = require('dom/input/date')
 ;
-
-function _isInputDateSupported() {
-	var input = document.createElement('input');
-	input.type = 'date';
-	return input.type === 'date';
-}
-
-function _createDatePickerButton(input) {
-	var button = H.button({class: 'flex-popup-customer-payments-chequereport-button-datepicker', type: 'button', title: 'Show Date Picker', onclick: function () {
-		var picker = new DatePickerPopup({
-			bTimePicker: false,
-			oDate: Date.$parseDate(input.value, 'd/m/Y'),
-			iYearStart: Date.$parseDate(input.min, 'Y-m-d').$format('Y'),
-			iYearEnd: Date.$parseDate(input.max, 'Y-m-d').$format('Y')
-		});
-		picker.observe('change', function () {
-			input.value = picker.get('oDate').$format('d/m/Y');
-
-			var inputEvent = document.createEvent('HTMLEvents');
-			inputEvent.initEvent('change', false, true);
-			input.dispatchEvent(inputEvent);
-		});
-		picker.show(input);
-	}});
-
-	return button;
-}
 
 function _getDateValue(input) {
 	var value;
@@ -125,9 +99,15 @@ var self = new Class({
 		);
 
 		// Add datepickers for legacy browsers
-		if (!_isInputDateSupported()) {
-			this.dateFromInput.parentNode.appendChild(_createDatePickerButton(this.dateFromInput));
-			this.dateToInput.parentNode.appendChild(_createDatePickerButton(this.dateToInput));
+		if (!inputDate.isNativelySupported()) {
+			var dateFromButton = inputDate.createDatePickerButton(this.dateFromInput);
+			var dateToButton = inputDate.createDatePickerButton(this.dateToInput);
+
+			dateToButton.classList.add('flex-popup-customer-payments-chequereport-button-datepicker');
+			dateToButton.classList.add('flex-popup-customer-payments-chequereport-button-datepicker');
+
+			this.dateFromInput.parentNode.appendChild(dateFromButton);
+			this.dateToInput.parentNode.appendChild(dateToButton);
 
 			this.dateFromInput.value = Date.$parseDate(this.dateFromInput.value, 'Y-m-d').$format('d/m/Y');
 			this.dateToInput.value = Date.$parseDate(this.dateToInput.value, 'Y-m-d').$format('d/m/Y');

@@ -41,7 +41,7 @@
  * @class	ModuleService
  * @abstract
  */
-abstract class ModuleService
+class ModuleService
 {
 	protected $_strErrorMsg				= NULL;
 
@@ -1480,7 +1480,9 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 	 * @protected
 	 * @abstract
 	 */
-	abstract protected function _CopySupplementaryDetails($intDestServiceId, $intDestAccountId, $intDestAccountGroup);
+	protected function _CopySupplementaryDetails($intDestServiceId, $intDestAccountId, $intDestAccountGroup) {
+		return true;
+	}
 
 	//------------------------------------------------------------------------//
 	// _CopyPlanDetails
@@ -2301,7 +2303,9 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 	 * @return	bool	TRUE if the service can be provisioned
 	 * @method
 	 */
-	abstract public function CanBeProvisioned();
+	public function CanBeProvisioned() {
+		return false;
+	}
 
 /******************************************************************************/
 // Static Methods
@@ -2391,7 +2395,9 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 					break;
 
 				default;
-					return FALSE;
+					$objService = new self($intServiceId);
+					break;
+					//return FALSE;
 			}
 		}
 		catch (Exception $e)

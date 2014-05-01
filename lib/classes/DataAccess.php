@@ -67,6 +67,10 @@ class DataAccess
 		return $bAsTimestamp ? strtotime($sDatetime) : $sDatetime;
 	}
 
+	public function now($bAsTimestamp=false) {
+		return $this->getNow($bAsTimestamp);
+	}
+
 
 	/**
 	 * connected()

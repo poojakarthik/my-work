@@ -15,6 +15,8 @@ class Service extends ORM
 {
 	protected	$_strTableName	= "Service";
 
+	private $_propertySet;
+
 	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
@@ -848,7 +850,20 @@ class Service extends ORM
 
 	}
 
+	public function getServiceType() {
+		return new self(DataAccess::get()->query('
+			SELECT *
+			FROM service_type
+			WHERE id = <service_type_id>
+		', array('service_type_id' => $this->ServiceType))->fetch_assoc());
+	}
 
+	public function getPropertySet() {
+		if (!$this->_propertySet) {
+			$this->_propertySet = ServiceType_PropertySet::getForService($this->Id);
+		}
+		return $this->_propertySet;
+	}
 
 	//------------------------------------------------------------------------//
 	// _preparedStatement
