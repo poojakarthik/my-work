@@ -32,20 +32,25 @@ abstract class Resource_Type_File_Export_Payment extends Resource_Type_File_Expo
 			$sModuleClassName = $oCarrierModule->Module;
 			$oResourceTypeHandler = new $sModuleClassName($oCarrierModule);
 
-			// Get all pending payment requests for the customer groups & payment type associated
+			// Get all pending payment requests for the customer groups & payment types associated
 			// with the carrier module
 			$aExportedPaymentRequests = array();
 			$aPaymentRequests = array();
 			Log::get()->log('Customer Groups:');
 			foreach ($oResourceTypeHandler->getCustomerGroups() as $iCustomerGroup) {
 				Log::get()->log('  ' . Customer_Group::getForId($iCustomerGroup)->internal_name, false);
-				$aCustomerGroupPaymentRequests = Payment_Request::getForStatusAndCustomerGroupAndPaymentType(
-					PAYMENT_REQUEST_STATUS_PENDING,
-					$iCustomerGroup,
-					$oResourceTypeHandler->getAssociatedPaymentType(),
-					false
-				);
-				Log::get()->log(' (' . count($aCustomerGroupPaymentRequests) . ' requests)');
+
+				$aCustomerGroupPaymentRequests = array();
+				foreach ($oResourceTypeHandler->getAssociatedPaymentTypes() as $iPaymentType) {
+					Log::get()->log('    ' . Payment_Type::getForId($iPaymentType)->name, false);
+					$aCustomerGroupPaymentRequests += Payment_Request::getForStatusAndCustomerGroupAndPaymentType(
+						PAYMENT_REQUEST_STATUS_PENDING,
+						$iCustomerGroup,
+						$iPaymentType,
+						false
+					);
+				}
+				Log::get()->log('    (' . count($aCustomerGroupPaymentRequests) . ' requests)');
 				$aPaymentRequests += $aCustomerGroupPaymentRequests;
 			}
 
