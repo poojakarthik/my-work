@@ -1,5 +1,5 @@
 <?php
-class ORM_Cached_Example extends ORM_Cached {
+class Payment_Type extends ORM_Cached {
 	protected $_strTableName = "payment_type";
 	protected static $_strStaticTableName = "payment_type";
 
