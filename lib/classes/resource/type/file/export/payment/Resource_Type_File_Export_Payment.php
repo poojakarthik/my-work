@@ -38,17 +38,20 @@ abstract class Resource_Type_File_Export_Payment extends Resource_Type_File_Expo
 			$aPaymentRequests = array();
 			Log::get()->log('Customer Groups:');
 			foreach ($oResourceTypeHandler->getCustomerGroups() as $iCustomerGroup) {
-				Log::get()->log('  ' . Customer_Group::getForId($iCustomerGroup)->internal_name, false);
+				Log::get()->log('  ' . Customer_Group::getForId($iCustomerGroup)->internal_name);
 
 				$aCustomerGroupPaymentRequests = array();
 				foreach ($oResourceTypeHandler->getAssociatedPaymentTypes() as $iPaymentType) {
 					Log::get()->log('    ' . Payment_Type::getForId($iPaymentType)->name, false);
-					$aCustomerGroupPaymentRequests += Payment_Request::getForStatusAndCustomerGroupAndPaymentType(
+					$aCustomerGroupPaymentTypeRequests = Payment_Request::getForStatusAndCustomerGroupAndPaymentType(
 						PAYMENT_REQUEST_STATUS_PENDING,
 						$iCustomerGroup,
 						$iPaymentType,
 						false
 					);
+
+					Log::get()->log(' (' . count($aCustomerGroupPaymentTypeRequests) . ' requests)');
+					$aCustomerGroupPaymentRequests += $aCustomerGroupPaymentTypeRequests;
 				}
 				Log::get()->log('    (' . count($aCustomerGroupPaymentRequests) . ' requests)');
 				$aPaymentRequests += $aCustomerGroupPaymentRequests;
