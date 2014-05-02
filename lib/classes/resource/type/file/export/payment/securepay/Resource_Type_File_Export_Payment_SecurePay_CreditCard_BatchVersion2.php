@@ -134,8 +134,8 @@ class Resource_Type_File_Export_Payment_SecurePay_CreditCard_BatchVersion2 exten
 		);
 	}
 
-	public static function getAssociatedPaymentType() {
-		return PAYMENT_TYPE_DIRECT_DEBIT_VIA_CREDIT_CARD;
+	public function getAssociatedPaymentTypes() {
+		return array(PAYMENT_TYPE_DIRECT_DEBIT_VIA_CREDIT_CARD);
 	}
 
 	/***************************************************************************

@@ -134,9 +134,9 @@ class Resource_Type_File_Export_Payment_SecurePay extends Resource_Type_File_Exp
 		);
 	}
 
-	public static function getAssociatedPaymentType()
+	public function getAssociatedPaymentTypes()
 	{
-		return PAYMENT_TYPE_DIRECT_DEBIT_VIA_CREDIT_CARD;
+		return array(PAYMENT_TYPE_DIRECT_DEBIT_VIA_CREDIT_CARD);
 	}
 
 	/***************************************************************************

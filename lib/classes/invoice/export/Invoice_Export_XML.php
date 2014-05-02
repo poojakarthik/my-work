@@ -648,13 +648,17 @@ class Invoice_Export_XML {
 
 	// Converts a CDR Record to an Itemised Item, based on it's DisplayType
 	protected static function _itemiseCDR($arrCDR, $intDisplayType) {
-		$arrItem = array();
+		$arrItem = array(
+			'Date' => date("j M y", strtotime($arrCDR['StartDatetime'])),
+			'Time' => date("H:i:s", strtotime($arrCDR['StartDatetime'])),
+			'ChargePrecision' => isset($arrCDR['Rate']) ? Rate::getForId($arrCDR['Rate'])->getChargePrecision() : Rate::RATING_PRECISION
+		);
+		$arrItem['Charge'] = number_format($arrCDR['Charge'], $arrItem['ChargePrecision'], '.', '');
+
 		switch ($intDisplayType) {
 			case RECORD_DISPLAY_S_AND_E:
-				$arrItem['Date'] = date("j M y", strtotime($arrCDR['StartDatetime']));
 				$arrItem['Description'] = $arrCDR['Description'];
 				$arrItem['Items'] = (int)$arrCDR['Units'];
-				$arrItem['Charge'] = number_format($arrCDR['Charge'], 2, '.', '');
 
 				// Some S&E-style records have duration (e.g. actual S&E, Plan Charges)
 				$arrItem['ShortDescription'] = $arrCDR['ShortDescription'];
@@ -664,25 +668,19 @@ class Invoice_Export_XML {
 				break;
 
 			case RECORD_DISPLAY_DATA:
-				$arrItem['Date'] = date("j M y", strtotime($arrCDR['StartDatetime']));
-				$arrItem['Time'] = date("H:i:s", strtotime($arrCDR['StartDatetime']));
 				$arrItem['CallingParty'] = $arrCDR['Source'];
 				$arrItem['CalledParty'] = $arrCDR['Destination'];
 				$arrItem['Description'] = $arrCDR['Description'];
 				$arrItem['Data'] = (int)$arrCDR['Units'];
-				$arrItem['Charge'] = number_format($arrCDR['Charge'], 2, '.', '');
 
 				$arrItem['StartDatetimeISO'] = date("Y-m-d\TH:i:s", strtotime($arrCDR['StartDatetime']));
 				break;
 
 			case RECORD_DISPLAY_SMS:
-				$arrItem['Date'] = date("j M y", strtotime($arrCDR['StartDatetime']));
-				$arrItem['Time'] = date("H:i:s", strtotime($arrCDR['StartDatetime']));
 				$arrItem['CallingParty'] = $arrCDR['Source'];
 				$arrItem['CalledParty'] = $arrCDR['Destination'];
 				$arrItem['Items'] = (int)$arrCDR['Units'];
 				$arrItem['Description'] = $arrCDR['Description'];
-				$arrItem['Charge'] = number_format($arrCDR['Charge'], 2, '.', '');
 
 				$arrItem['StartDatetimeISO'] = date("Y-m-d\TH:i:s", strtotime($arrCDR['StartDatetime']));
 				break;
@@ -692,13 +690,10 @@ class Invoice_Export_XML {
 				$intHours = floor((int)$arrCDR['Units'] / 3600);
 				$strDuration = "$intHours:".date("i:s", (int)$arrCDR['Units']);
 
-				$arrItem['Date'] = date("j M y", strtotime($arrCDR['StartDatetime']));
-				$arrItem['Time'] = date("H:i:s", strtotime($arrCDR['StartDatetime']));
 				$arrItem['CallingParty'] = $arrCDR['Source'];
 				$arrItem['CalledParty'] = $arrCDR['Destination'];
 				$arrItem['Description'] = $arrCDR['Description'];
 				$arrItem['Duration'] = $strDuration;
-				$arrItem['Charge'] = number_format($arrCDR['Charge'], 2, '.', '');
 
 				$arrItem['StartDatetimeISO'] = date("Y-m-d\TH:i:s", strtotime($arrCDR['StartDatetime']));
 				break;

@@ -54,11 +54,11 @@ class Invoice extends ORM_Cached {
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	// END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
-	
+
 	public static function getForInvoiceRunAndAccount($mInvoiceRun, $mAccount) {
 		$iInvoiceRunId = ORM::extractId($mInvoiceRun);
 		$iAccountId = ORM::extractId($mAccount);
-		
+
 		$oGetForInvoiceRunAndAccount = self::_preparedStatement('selForInvoiceRunAndAccount');
 		if (false === $oGetForInvoiceRunAndAccount->Execute(array('invoice_run_id'=>$iInvoiceRunId,'account_id'=>$iAccountId))) {
 			throw new Exception_Database($oGetForInvoiceRunAndAccount->Error());
@@ -69,7 +69,7 @@ class Invoice extends ORM_Cached {
 			throw new Exception("No Invoice for Account #{$iAccountId} and Invoice Run #{$iInvoiceRunId}");
 		}
 	}
-	
+
 	public static function generateForInvoiceRunAndAccount($oInvoiceRun, $oAccount) {
 		$iLocksEncountered = 0;
 		while (!isset($oInvoice)) {
@@ -112,14 +112,14 @@ class Invoice extends ORM_Cached {
 	public static function getSampleDataForCustomerGroupId($iCustomerGroup) {
 		$sSql = "
 			SELECT i.Id as 'invoice_id', c.Id as 'contact_id', a.Id as 'account_id'
-			FROM Invoice i 
+			FROM Invoice i
 			JOIN Account a ON (
-						i.Account = a.Id 
+						i.Account = a.Id
 						AND i.Id = (
-							SELECT max(i2.Id) 
-							FROM Invoice i2 
+							SELECT max(i2.Id)
+							FROM Invoice i2
 							JOIN Account a2 ON (
-								i2.Account = a2.Id 
+								i2.Account = a2.Id
 								AND a2.CustomerGroup = {$iCustomerGroup}
 							)
 						)
@@ -319,20 +319,20 @@ class Invoice extends ORM_Cached {
 				// Database Error -- throw Exception
 				throw new Exception_Database("DB ERROR: ".$updMarkAccountCharges->Error());
 			}
-			
+
 			// Mark Adjustments (Payment-like)
 			//----------------------------------------------------------------//
 			$mResult = Query::run("
-				UPDATE adjustment 
-				SET invoice_run_id = {$this->invoice_run_id} 
-				WHERE account_id = {$this->Account} 
+				UPDATE adjustment
+				SET invoice_run_id = {$this->invoice_run_id}
+				WHERE account_id = {$this->Account}
 				AND invoice_run_id IS NULL
 				AND effective_date <= '{$this->billing_period_end_datetime}'
 				AND reviewed_datetime <= '{$this->billing_period_end_datetime}'
 				AND adjustment_status_id = ".ADJUSTMENT_STATUS_APPROVED
 			);
 			Log::getLog()->log("Updated {$mResult} Adjustments");
-			
+
 			// Get Preliminary Charge Totals
 			//----------------------------------------------------------------//
 			$selAccountChargeTotals = self::_preparedStatement('selAccountChargeTotals');
@@ -494,6 +494,7 @@ class Invoice extends ORM_Cached {
 		Log::getLog()->log("Inserting ServiceTypeTotals");
 
 		// Generate ServiceTypeTotals
+		$iPrecisionMultiplier = pow(10, Rate::RATING_PRECISION);
 		$strExtensionsQuery = "
 			INSERT INTO ServiceTypeTotal
 				(FNN, AccountGroup, Account, Service, RecordType, Charge, Units, Records, RateGroup, Cost, invoice_run_id)
@@ -502,12 +503,10 @@ class Invoice extends ORM_Cached {
 						CDR.Account,
 						{$intServiceId} AS Service,
 						CDR.RecordType,
-						SUM(
-							CASE WHEN CDR.Credit = 1 THEN
-								0 - CDR.Charge
-							ELSE
-								CDR.Charge
-							END
+						(
+							(CEILING(ABS(SUM(IF(CDR.Credit = 1, 0 - CDR.Charge, CDR.Charge))) * {$iPrecisionMultiplier}) / {$iPrecisionMultiplier})
+							*
+							SIGN(SUM(IF(CDR.Credit = 1, 0 - CDR.Charge, CDR.Charge)))
 						) AS Charge,
 						SUM(
 							CASE WHEN CDR.Credit = 1 THEN
@@ -575,8 +574,8 @@ class Invoice extends ORM_Cached {
 			$strCapped = ($arrCDRTotal['Uncapped'])  	? 'Uncapped' : 'Capped';
 			$strCredit = ($arrCDRTotal['Credit']) ? 'Credit' : 'Debit';
 			$strTax = ($arrCDRTotal['global_tax_exempt']) ? 'ExTax' : 'IncTax';
-			$arrCDRTotals['Charge'] [$strCapped][$strCredit][$strTax] = $arrCDRTotal['TotalCharge'];
-			$arrCDRTotals['Cost'] [$strCapped][$strCredit][$strTax] = $arrCDRTotal['TotalCost'];
+			$arrCDRTotals['Charge'][$strCapped][$strCredit][$strTax] = $arrCDRTotal['TotalCharge'];
+			$arrCDRTotals['Cost'][$strCapped][$strCredit][$strTax] = $arrCDRTotal['TotalCost'];
 
 			$intDebitCDRCount += (!$arrCDRTotal['Credit']) ? $arrCDRTotal['CDRCount'] : 0;
 		}
@@ -716,6 +715,7 @@ class Invoice extends ORM_Cached {
 		//Log::getLog()->log("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
 		$arrServiceTotal['Tax'] -= self::calculateGlobalTaxComponent($arrChargeTotals['CR']['IncTax'], $this->intInvoiceDatetime);
 		//Log::getLog()->log("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
+
 		$fltServiceCredits = $arrChargeTotals['CR']['IncTax'] + $arrChargeTotals['CR']['ExTax'];
 		$fltServiceDebits = $arrChargeTotals['DR']['IncTax'] + $arrChargeTotals['DR']['ExTax'];
 
@@ -759,7 +759,7 @@ class Invoice extends ORM_Cached {
 		return $arrServiceTotal;
 		//--------------------------------------------------------------------//
 	}
-	
+
 	// Revokes all Temporary Invoices for a given Account
 	public static function revokeByAccount($objAccount) {
 		$selTemporaryInvoicesByAccount = self::_preparedStatement('selTemporaryInvoicesByAccount');
@@ -848,9 +848,9 @@ class Invoice extends ORM_Cached {
 
 			// Remove Invoice Run reference for Adjustments
 			$mResult = Query::run("
-				UPDATE	adjustment 
+				UPDATE	adjustment
 				SET		invoice_run_id = NULL
-				WHERE	account_id = {$this->Account} 
+				WHERE	account_id = {$this->Account}
 						AND invoice_run_id = {$this->invoice_run_id}
 			");
 			Log::getLog()->log("Un-marked {$mResult} Adjustments");
@@ -994,7 +994,7 @@ class Invoice extends ORM_Cached {
 
 	}
 
-	
+
 	// Exports an Invoice to XML
 	public function export() {
 		$oInvoiceRun = new Invoice_Run(array('Id'=>$this->invoice_run_id), true);
@@ -1024,7 +1024,7 @@ class Invoice extends ORM_Cached {
 		$fRoundOut = round(abs($mValue), $iPrecision);
 		return ($mValue < 0.0) ? 0.0 - $fRoundOut : $fRoundOut;
 	}
-	
+
 	public static function getDatasetForAccount($bCountOnly, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null) {
 		$aAliases = array(
 			'id' => "i.Id",
@@ -1040,7 +1040,7 @@ class Invoice extends ORM_Cached {
 			'has_unarchived_cdrs' => "COALESCE((SELECT Id FROM CDR WHERE invoice_run_id = ir.Id AND Account = i.Account LIMIT 1), 0)",
 			'invoice_run_status_id' => "ir.invoice_run_status_id"
 		);
-		
+
 		if ($bCountOnly) {
 			$sSelect = "COUNT(i.Id) AS count";
 			$sFrom = " Invoice i
@@ -1059,25 +1059,25 @@ class Invoice extends ORM_Cached {
 			$sOrderBy = Statement::generateOrderBy($aAliases, get_object_vars($oSort));
 			$sLimit = Statement::generateLimit($iLimit, $iOffset);
 		}
-		
+
 		$aWhere = Statement::generateWhere($aAliases, get_object_vars($oFilter));
 		$sWhere = $aWhere['sClause'];
 		$sWhere .= ($sWhere != '' ? '' : '1');
-		
+
 		if (!$bCountOnly) {
 			$sWhere .= " GROUP BY i.Id";
 		}
-		
+
 		$oSelect = new StatementSelect($sFrom, $sSelect, $sWhere, $sOrderBy, $sLimit);
 		if ($oSelect->Execute($aWhere['aValues']) === false) {
 			throw new Exception_Database("Failed to get invoice dataset results. ".$oSelect->Error());
 		}
-		
+
 		if ($bCountOnly) {
 			$aRow = $oSelect->Fetch();
 			return $aRow['count'];
 		}
-		
+
 		return $oSelect->FetchAll();
 	}
 
@@ -1274,7 +1274,7 @@ class Invoice extends ORM_Cached {
 			$bHasChargedInAdvance = false;
 			$bHasInvoicedOnAnotherPlan = false;
 			if ($arrPlanDetails['InAdvance']) {
-				$rResult = $qryQuery->Execute(" 
+				$rResult = $qryQuery->Execute("
 					SELECT	*
 					FROM	Charge
 					WHERE	ChargeType = 'PCAD'
@@ -1473,7 +1473,8 @@ class Invoice extends ORM_Cached {
 								AND cdr.invoice_run_id = {$this->invoice_run_id}
 								AND r.Uncapped = 0
 								AND cdr.RecordType IN ($sRecordTypes)
-					ORDER BY	cdr.StartDatetime
+					ORDER BY	cdr.StartDatetime,
+								cdr.Id
 				";
 				Log::getLog()->log("Included Usage Query: $sIncludedUsage");
 
@@ -1484,10 +1485,60 @@ class Invoice extends ORM_Cached {
 
 				// If there are any CDRs
 				if ($oResult->num_rows) {
+					// Get ServiceTypeTotals
+					$oServiceTypeTotalsResult = DataAccess::get()->query('
+						SELECT stt.Service AS service_id,
+							stt.FNN AS service_fnn,
+							stt.RecordType AS record_type_id,
+							stt.Charge AS total_charge_rounded,
+							SUM(
+								CASE WHEN c.Credit = 1 THEN
+									0 - c.Charge
+								ELSE
+									c.Charge
+								END
+							) AS total_charge_unrounded,
+							SUM(IF(r.Uncapped = 1,
+								CASE WHEN c.Credit = 1 THEN
+									0 - c.Charge
+								ELSE
+									c.Charge
+								END,
+								0
+							)) AS total_undiscounted
+						FROM ServiceTypeTotal stt
+							JOIN CDR c ON (
+								c.RecordType = stt.RecordType
+								AND c.Service = stt.Service
+								AND c.FNN = stt.FNN
+							)
+							JOIN Rate r ON (r.Id = c.Rate)
+						WHERE stt.invoice_run_id = <invoice_run_id>
+							AND stt.Service IN (<service_ids>)
+							AND stt.RecordType IN (<record_type_ids>)
+					', array(
+						'rounding_precision_multiplier' => pow(10, Rate::RATING_PRECISION),
+						'invoice_run_id' => $this->invoice_run_id,
+						'service_ids' => self::_extractServiceIds($aServices),
+						'record_type_ids' => array_keys($aRecordTypes)
+					));
+					$aServiceTypeTotals = array();
+					while ($aServiceTypeTotal = $oServiceTypeTotalsResult->fetch_assoc()) {
+						if (!isset($aServiceTypeTotals[$aServiceTypeTotal['Service']])) {
+							$aServiceTypeTotals[$aServiceTypeTotal['Service']] = array();
+						}
+						if (!isset($aServiceTypeTotals[$aServiceTypeTotal['Service']][$aServiceTypeTotal['FNN']])) {
+							$aServiceTypeTotals[$aServiceTypeTotal['Service']][$aServiceTypeTotal['FNN']] = array();
+						}
+						$aServiceTypeTotals[$aServiceTypeTotal['Service']][$aServiceTypeTotal['FNN']][$aServiceTypeTotal['RecordType']] = $aServiceTypeTotal;
+						$aServiceTypeTotals[$aServiceTypeTotal['Service']][$aServiceTypeTotal['FNN']][$aServiceTypeTotal['RecordType']]['totalDiscount'] = 0.0;
+						$aServiceTypeTotals[$aServiceTypeTotal['Service']][$aServiceTypeTotal['FNN']][$aServiceTypeTotal['RecordType']]['totalDiscountTaxOffset'] = 0.0;
+					}
+
 					$iTotalUnits = 0;
 					$fTotalCharge = 0.0;
-					$fTaxOffset = 0.0;
-					$fTotalCredit = 0.0;
+					$fTaxOffsetUnrounded = 0.0;
+					$fTotalCreditUnrounded = 0.0;
 
 					$mRemainingDiscount = $mProratedDiscountLimit;
 					while ($aDataCDR = $oResult->fetch_assoc()) {
@@ -1520,13 +1571,30 @@ class Invoice extends ORM_Cached {
 
 							// Add a global tax offset against the credited CDR
 							if (!$aDataCDR['global_tax_exempt']) {
-								$fTaxOffset -= self::calculateGlobalTaxComponent($fCharge, $this->intInvoiceDatetime);
+								$fCDRTaxOffset = self::calculateGlobalTaxComponent($fCharge, $this->intInvoiceDatetime);
+								$aServiceTypeTotals[$aDataCDR['Service']][$aDataCDR['FNN']][$aDataCDR['RecordType']]['totalDiscountTaxOffset'] -= $$fCDRTaxOffset;
+								$fTaxOffsetUnrounded -= $fCDRTaxOffset;
 							}
 
-							$fTotalCredit += $fCharge;
+							$aServiceTypeTotals[$aDataCDR['Service']][$aDataCDR['FNN']][$aDataCDR['RecordType']]['totalDiscount'] += $fCharge;
+							$fTotalCreditUnrounded += $fCharge;
 						}
 					}
 					$mTotalUsage = ($iUnitLimit) ? $iTotalUnits : $fTotalCharge;
+
+					// Sum the rounded discount subtotals for each ServiceTypeTotal, ensuring it doesn't exceed the maximum discount allowance
+					$fSummedTotalCredit = 0.0;
+					$fSummedTaxOffset = 0.0;
+					foreach ($aServiceTypeTotals as $aServiceTypeTotalFNNs) {
+						foreach ($aServiceTypeTotalFNNs as $aServiceTypeTotalFNNRecordTypes) {
+							foreach ($aServiceTypeTotalFNNRecordTypes as $aServiceTypeTotalFNNRecordType) {
+								$fSummedTotalCredit += Rate::roundToRatingStandard($aServiceTypeTotalFNNRecordType['totalDiscount']);
+								$fSummedTaxOffset += Rate::roundToRatingStandard($aServiceTypeTotalFNNRecordType['totalDiscountTaxOffset']);
+							}
+						}
+					}
+					$fTotalCredit = min($fSummedTotalCredit, $mProratedDiscountLimit); // Total Credit can't exceed the maximum allowable discount
+					$fTaxOffset = Rate::roundToRatingStandard(($fTotalCredit / $fSummedTotalCredit) * $fSummedTaxOffset); // Adjust the tax offset relative to the total credit
 
 					Log::getLog()->log("Total Usage Units: {$iTotalUnits}");
 					Log::getLog()->log("Total Usage Charge: \${$fTotalCharge}");
@@ -1544,9 +1612,12 @@ class Invoice extends ORM_Cached {
 							break;
 					}
 
+					Log::getLog()->log("Creditback (unrounded): \${$fTotalCreditUnrounded}");
+					Log::getLog()->log("Tax Offset (unrounded): \${$fTaxOffsetUnrounded}");
+					Log::getLog()->log("Overusage Charge (unrounded): \$".($fTotalCharge - $fTotalCreditUnrounded));
 					Log::getLog()->log("Creditback: \${$fTotalCredit}");
 					Log::getLog()->log("Tax Offset: \${$fTaxOffset}");
-					Log::getLog()->log("Overusage Charge: \$".($fTotalCharge - $fTotalCredit));
+					Log::getLog()->log("Overusage Charge: \$".($fTotalCharge - $fTotalCreditUnrounded));
 
 					if ($mTotalUsage > 0) {
 						// Add the Credit
@@ -1750,7 +1821,7 @@ class Invoice extends ORM_Cached {
 			if ($mChargeResult === false) {
 				throw new Exception_Database("Failed to copy Charge records. ".$oQuery->Error());
 			}
-			
+
 			Log::getLog()->log("... ".$oQuery->AffectedRows()." records copied");
 			Log::getLog()->log("Copying adjustment records from the original invoice, ");
 
@@ -1763,7 +1834,7 @@ class Invoice extends ORM_Cached {
 						AND effective_date <= '{$oOriginalInvoiceRun->BillingDate}'
 						AND reviewed_datetime <= '{$oOriginalInvoiceRun->BillingDate}'
 			");
-			
+
 			Log::getLog()->log("... {$iAdjustmentRows} records copied");
 			Log::getLog()->log("Copying CDR records from the original invoice, setting status to CDR_RATED (".CDR_RATED.") and changing the invoice_run_id");
 
@@ -2113,15 +2184,15 @@ class Invoice extends ORM_Cached {
 	public function getCollectables($bIncludePromised=false) {
 		return Collectable::getForInvoice($this, $bIncludePromised);
 	}
-	
+
 	// getPaymentTotal: Returns the total amount for all payments within the invoices bill period. Can optionally return a
 	// 'revised' total which excludes reversals that affect payments before the bill period.
 	// Simply put the balance needs to exclude 'new' reversals of 'old' payments (if revised).
 	public function getPaymentTotal($bRevised=false) {
 		// By default, allows only payments created during the invoices bill period
-		$sExtraWhereClause = "AND p.created_datetime BETWEEN <billing_period_start_datetime> AND <billing_period_end_datetime>"; 
+		$sExtraWhereClause = "AND p.created_datetime BETWEEN <billing_period_start_datetime> AND <billing_period_end_datetime>";
 		if ($bRevised) {
-			// Allow payments created within to the Billing Period and that aren't reversals, 
+			// Allow payments created within to the Billing Period and that aren't reversals,
 			// if they are reversed they must be reversing another payment within the bill period
 			$sExtraWhereClause = " AND (
 										(
@@ -2134,7 +2205,7 @@ class Invoice extends ORM_Cached {
 									)";
 		}
 
-		$aTotal = Query::run(" 
+		$aTotal = Query::run("
 			SELECT	COALESCE(SUM(p.amount * pn.value_multiplier), 0) AS payment_total
 			FROM	payment p
 					JOIN payment_nature pn ON (pn.id = p.payment_nature_id)
@@ -2148,7 +2219,7 @@ class Invoice extends ORM_Cached {
 		))->fetch_assoc();
 		return $aTotal['payment_total'];
 	}
-	
+
 	public function getAdjustmentTotal() {
 		$aTotal = Query::run("
 			SELECT (
@@ -2204,7 +2275,7 @@ class Invoice extends ORM_Cached {
 		)->fetch_assoc();
 		return $aTotal['adjustment_total'];
 	}
-	
+
 	public function getOpeningBalance($bRevised=false) {
 		// Returns historical outstanding balance for the invoices account, as of the start of the billing period minus 1 second
 		$sEffectiveDatetime = date('Y-m-d H:i:s', strtotime($this->billing_period_start_datetime) - 1);
@@ -2344,7 +2415,7 @@ class Invoice extends ORM_Cached {
 				case 'selForAccount':
 					$arrPreparedStatements[$strStatement] = new StatementSelect( "Invoice", "*", "Account = <account_id> AND (<committed_only> = 0 OR Invoice.Status != ".INVOICE_TEMP.")", "CreatedOn ASC, Id ASC");
 					break;
-					
+
 
 				// INSERTS
 				case 'insServiceTotal':
