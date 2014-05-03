@@ -1593,8 +1593,13 @@ class Invoice extends ORM_Cached {
 							}
 						}
 					}
-					$fTotalCredit = min($fSummedTotalCredit, $mProratedDiscountLimit); // Total Credit can't exceed the maximum allowable discount
-					$fTaxOffset = Rate::roundToRatingStandard(($fTotalCredit / $fSummedTotalCredit) * $fSummedTaxOffset); // Adjust the tax offset relative to the total credit
+					if ($fSummedTotalCredit > 0) {
+						$fTotalCredit = min($fSummedTotalCredit, $mProratedDiscountLimit); // Total Credit can't exceed the maximum allowable discount
+						$fTaxOffset = Rate::roundToRatingStandard(($fTotalCredit / $fSummedTotalCredit) * $fSummedTaxOffset); // Adjust the tax offset relative to the total credit
+					} else {
+						$fTotalCredit = 0;
+						$fTaxOffset = 0;
+					}
 
 					Log::getLog()->log("Total Usage Units: {$iTotalUnits}");
 					Log::getLog()->log("Total Usage Charge: \${$fTotalCharge}");
