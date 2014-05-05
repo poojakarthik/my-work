@@ -15,6 +15,8 @@ class Service extends ORM
 {
 	protected	$_strTableName	= "Service";
 
+	private $_propertySet;
+
 	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
@@ -37,7 +39,7 @@ class Service extends ORM
 		// Parent constructor
 		parent::__construct($arrProperties, $bolLoadById);
 	}
-	
+
 	/**
 	 * getCurrentServiceRatePlan()
 	 *
@@ -53,10 +55,10 @@ class Service extends ORM
 	{
 		$strEffectiveDatetime		= ($strEffectiveDatetime !== NULL) ? $strEffectiveDatetime : Data_Source_Time::currentTimestamp();
 		$selCurrentServiceRatePlan	= self::_preparedStatement('selCurrentServiceRatePlan');
-		
+
 		$arrWhere = array(	"service_id"			=> $this->id,
 							"effective_datetime"	=> $strEffectiveDatetime);
-		
+
 		if ($selCurrentServiceRatePlan->Execute($arrWhere) === FALSE)
 		{
 			throw new Exception_Database($selCurrentServiceRatePlan->Error());
@@ -71,7 +73,7 @@ class Service extends ORM
 			return NULL;
 		}
 	}
-	
+
 	/**
 	 * getCurrentPlan()
 	 *
@@ -124,7 +126,7 @@ class Service extends ORM
         {
             return CDR::getForServiceAndStatus($this->Id,$aStatus);
         }
-	
+
 	/**
 	 * changePlan()
 	 *
@@ -144,13 +146,13 @@ class Service extends ORM
 		$objAccount	= new Account(array('Id'=>$this->Account), FALSE, TRUE);
 		$intUserId = Flex::getUserId();
 		$intUserId = ($intUserId) ? $intUserId : Employee::SYSTEM_EMPLOYEE_ID;
-		
+
 		// Check if the billing/invoice process is being run
 		if (Invoice_Run::checkTemporary($objAccount->customerGroup, $objAccount->id))
 		{
 			throw new Exception("The Plan Change action is temporarily unavailable because a related, live invoice run is currently outstanding");
 		}
-		
+
 		// Load the new RatePlan details
 		$objNewRatePlan	= NULL;
 		if ($mixRatePlan instanceof Rate_Plan)
@@ -165,7 +167,7 @@ class Service extends ORM
 		{
 			throw new Exception("Invalid RatePlan ('{$mixRatePlan}') passed");
 		}
-		
+
 		// Work out the StartDatetime for the new records of the ServiceRatePlan and ServiceRateGroup tables
 		$strCurrentDateAndTime						= Data_Source_Time::currentTimestamp();
 		$intStartDateTimeForCurrentBillingPeriod	= strtotime($objAccount->getBillingPeriodStart($strCurrentDateAndTime));
@@ -174,20 +176,20 @@ class Service extends ORM
 		if (!$bolStartThisBillingPeriod)
 		{
 			// Snap the plan change to the begining of the next billing period
-			
+
 			// Get the StartDatetime for the next billing period
 			$intStartDatetime = $intStartDateTimeForNextBillingPeriod;
-			
+
 			// Active field has been effectively deprecated, so just set it to 1
 			$intActive = 1;
-			
+
 			// Declare the note part detailing when the Plan Change will come into effect
 			$strNotePlanStart = "This plan change will come into effect as of the start of the next billing period. (". date("d/m/Y", $intStartDatetime) .")";
 		}
 		else
 		{
 			// Snap the plan change to the begining of the current billing period
-			
+
 			// First make sure the start of the current billing period isn't in the future (IF an interim or final invoice was produced today for the account, then this could be the case, because the BillingDate will be set to tomorrow)
 			if ($intStartDateTimeForCurrentBillingPeriod > strtotime($strCurrentDateAndTime))
 			{
@@ -196,10 +198,10 @@ class Service extends ORM
 
 			// Get the StartDatetime for the current billing period
 			$intStartDatetime = $intStartDateTimeForCurrentBillingPeriod;
-			
+
 			// The records defining the new plan should have their "Active" property set to 1 (Active)
 			$intActive = 1;
-			
+
 			// Declare the note part detailing when the Plan Change will come into effect
 			$strNotePlanStart = "This plan change has come into effect as of the beginning of the current billing period. (". date("d/m/Y", $intStartDatetime) .")";
 		}
@@ -221,10 +223,10 @@ class Service extends ORM
 		{
 			throw new Exception("Plan '{$objNewRatePlan->name}' (id: {$objNewRatePlan->id}) does not belong to the CustomerGroup that this account belongs to");
 		}
-		
+
 		// Make the rate plan effective for the deterimined period
 		$oNewServiceRatePlan = $this->setPlanFromStartDatetime($objNewRatePlan, $intActive, $strStartDatetime);
-		
+
 		// If the plan goes into affect at the begining of the current month, then you must rerate all the cdrs which are currently
 		// rated but not billed
 		if ($bolStartThisBillingPeriod)
@@ -239,19 +241,19 @@ class Service extends ORM
 			{
 				throw new Exception_Database($updCDRs->Error());
 			}
-			
+
 			// Only update the Carrier and CarrierPreselect fields of the Service record,
 			// if the new plan comes into affect at the beging of the current billing period
 			$arrUpdate = Array(	"Carrier"			=> $objNewRatePlan->CarrierFullService,
 								"CarrierPreselect"	=> $objNewRatePlan->CarrierPreselection);
-			
+
 			$updService = new StatementUpdate("Service", "Id = <Service>", $arrUpdate);
 			if ($updService->Execute($arrUpdate, Array("Service" => $this->Id)) === FALSE)
 			{
 				throw new Exception_Database($updService->Error());
 			}
 		}
-		
+
 		// Perform Automatic provisioning
 		// Don't provision Pending or Archived Services
 		if (($this->Status != SERVICE_PENDING) && ($this->Status != SERVICE_ARCHIVED)) {
@@ -312,7 +314,7 @@ class Service extends ORM
 					"Carrier"				=> NULL,
 					"Type"					=> NULL,
 					"RequestedOn"			=> $sNow,
-					"AuthorisationDate"		=> $sNow, 
+					"AuthorisationDate"		=> $sNow,
 					'scheduled_datetime'	=> $strStartDatetime,
 					"Status"				=> REQUEST_STATUS_WAITING
 				);
@@ -327,35 +329,35 @@ class Service extends ORM
 					// Update the ServiceRatePlan with the provisioning_request_id
 					$oNewServiceRatePlan->$aInfo['sReferenceProperty'] = $oNewRequest->id;
 				}
-				
+
 				$oNewServiceRatePlan->save();
 			}
 		}
-		
+
 		// Add a system note describing the change of plan
 		$strCurrentRatePlan = ($objCurrentRatePlan) ? $objCurrentRatePlan->Name : "undefined";
 		$strNote = "This service has had its plan changed from '{$strCurrentRatePlan}' to '{$objNewRatePlan->Name}'.  $strNotePlanStart";
 		Note::createSystemNote($strNote, $intUserId, $this->Account, $this->Id);
-		
+
 		return TRUE;
 	}
 
-       
-	
+
+
 	// setPlanFromStartDatetime
 	public function setPlanFromStartDatetime($oNewRatePlan, $iActive, $sStartDatetime)
 	{
 		$sCurrentDateAndTime	= Data_Source_Time::currentTimestamp();
 		$iStartDatetime			= strtotime($sStartDatetime);
-		
-		// Work out the EndDatetime for the old records of the ServiceRatePlan and ServiceRateGroup tables, which have an EndDatetime greater than $strStartDatetime
+
+		// Work out the EndDatetime for the old records of the ServiceRatePlan, ServiceRateGroup, and service_rate tables, which have an EndDatetime greater than $strStartDatetime
 		// The EndDatetime will be set to 1 second before the StartDatetime of the records relating to the new plan
 		$iOldPlanEndDatetime	= $iStartDatetime - 1;
 		$sOldPlanEndDatetime	= date("Y-m-d H:i:s", $iOldPlanEndDatetime);
-		
-		// Set the EndDatetime to $sOldPlanEndDatetime for all records in the ServiceRatePlan and ServiceRateGroup tables
+
+		// Set the EndDatetime to $sOldPlanEndDatetime for all records in the ServiceRatePlan, ServiceRateGroup, and service_rate tables
 		// which relate this service.  Do not alter the records' "Active" property regardless of what it is.
-		
+
 		// Update existing ServiceRateGroup records
 		$aUpdate			= array('EndDatetime' => $sOldPlanEndDatetime);
 		$oServiceRateGroup	= new StatementUpdate("ServiceRateGroup", "Service = <Service> AND EndDatetime >= <StartDatetime>", $aUpdate);
@@ -363,7 +365,7 @@ class Service extends ORM
 		{
 			throw new Exception_Database("Failed to update existing ServiceRateGroup records. ".$oServiceRateGroup->Error());
 		}
-		
+
 		// Update existing ServiceRatePlan records
 		$oServiceRatePlan	= new StatementUpdate("ServiceRatePlan", "Service = <Service> AND EndDatetime >= <StartDatetime>", $aUpdate);
 		if ($oServiceRatePlan->Execute($aUpdate, Array("Service" => $this->Id, "StartDatetime" => $sStartDatetime)) === FALSE)
@@ -371,11 +373,23 @@ class Service extends ORM
 			// Could not update records in ServiceRatePlan table. Exit gracefully
 			throw new Exception_Database("Failed to update existing ServiceRatePlan records. ".$oServiceRatePlan->Error());
 		}
-		
+
+		// Update existing service_rate records
+		DataAccess::get()->query('
+			UPDATE service_rate
+			SET end_datetime = <end_datetime>
+			WHERE service_id = <service_id>
+				AND end_datetime >= <new_start_datetime>
+		', array(
+			'service_id' => $this->Id,
+			'end_datetime' => $sOldPlanEndDatetime,
+			'new_start_datetime' => $sStartDatetime
+		));
+
 		// Get the current User
 		$iUserId	= Flex::getUserId();
 		$iUserId	= ($iUserId) ? $iUserId : 0;
-		
+
 		// Declare the new plan for the service. Insert a record into the ServiceRatePlan table
 		$oServiceRatePlan					= new Service_Rate_Plan();
 		$oServiceRatePlan->Service			= $this->Id;
@@ -386,20 +400,20 @@ class Service extends ORM
 		$oServiceRatePlan->EndDatetime		= Data_Source_Time::END_OF_TIME;
 		$oServiceRatePlan->LastChargedOn	= NULL;
 		$oServiceRatePlan->Active			= $iActive;
-		
+
 		$iContractTerm	= (int)$oNewRatePlan->ContractTerm;
-		
+
 		$oServiceRatePlan->contract_scheduled_end_datetime	= ($iContractTerm && $iContractTerm > 0) ? date('Y-m-d H:i:s', strtotime("-1 second", strtotime("+{$iContractTerm} months", $iStartDatetime))) : NULL;
 		$oServiceRatePlan->contract_effective_end_datetime	= NULL;
 		$oServiceRatePlan->contract_status_id				= ($iContractTerm && $iContractTerm > 0) ? CONTRACT_STATUS_ACTIVE : NULL;
-		
+
 		$oServiceRatePlan->save();
-		
+
 		// Declare the new RateGroups for the service
 		$sInsertRateGroupsIntoServiceRateGroup	=  "INSERT INTO ServiceRateGroup (Id, Service, RateGroup, CreatedBy, CreatedOn, StartDatetime, EndDatetime, Active) ";
 		$sInsertRateGroupsIntoServiceRateGroup	.= "SELECT NULL, {$this->Id}, RateGroup, {$iUserId}, '{$sCurrentDateAndTime}', '{$sStartDatetime}', '".Data_Source_Time::END_OF_TIME."', {$iActive} ";
 		$sInsertRateGroupsIntoServiceRateGroup	.= "FROM RatePlanRateGroup WHERE RatePlan = {$oNewRatePlan->Id} ORDER BY RateGroup";
-		
+
 		// Perform insert
 		$oInsertServiceRateGroup	= new Query();
 		if ($oInsertServiceRateGroup->Execute($sInsertRateGroupsIntoServiceRateGroup) === FALSE)
@@ -407,10 +421,10 @@ class Service extends ORM
 			// Inserting the records into the ServiceRateGroup table failed.  Exit gracefully
 			throw new Exception_Database("Failed to insert ServiceRateGroup records. ".$oInsertServiceRateGroup->Error());
 		}
-		
+
 		return $oServiceRatePlan;
 	}
-	
+
 	// isCurrentlyActive: Returns TRUE if the service is currently active, or is not scheduled for closure until a future date
 	function isCurrentlyActive()
 	{
@@ -419,13 +433,13 @@ class Service extends ORM
 			// The service is active if the ClosedOn date is in the future
 			return (bool)($this->ClosedOn > GetCurrentISODateTime());
 		}
-		
+
 		// The most recently added service record does not have a ClosedOn set
 		// It will either be active or pending activation
-		
+
 		return (bool)($this->Status == SERVICE_ACTIVE);
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// getForId
 	//------------------------------------------------------------------------//
@@ -451,9 +465,9 @@ class Service extends ORM
 	public static function getForId($intServiceId, $bolSilentFail=FALSE, $bolGetNewestRecordModellingService=FALSE)
 	{
 		$objQuery = new Query();
-		
+
 		$intServiceId = intval($intServiceId);
-		
+
 		if ($bolGetNewestRecordModellingService)
 		{
 			// Retrieve the newest service record modelling this service (FNN) on the account that $intServiceId is associated with
@@ -470,14 +484,14 @@ class Service extends ORM
 						"FROM Service ".
 						"WHERE Id = $intServiceId;";
 		}
-		
+
 		if (($mixResult = $objQuery->Execute($strQuery)) === FALSE)
 		{
 			throw new Exception_Database(__METHOD__ ." Failed to retrieve Service record using query - $strQuery - ". $objQuery->Error());
 		}
-		
+
 		$mixRecord = $mixResult->fetch_assoc();
-		
+
 		if ($mixRecord === NULL)
 		{
 			if ($bolSilentFail)
@@ -491,7 +505,7 @@ class Service extends ORM
 			return new self($mixRecord);
 		}
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// onSaleItemCancellation
 	//------------------------------------------------------------------------//
@@ -514,7 +528,7 @@ class Service extends ORM
 		/* The following code sets the service to disconnected, however I don't think we should automatically do anything to the service when cancelling a sale,
 		 * because a sale associated with a service, could represent the plan changing on the service, but nothing else.
 		 */
-		 
+
 		/*if ($this->closedOn !== NULL)
 		{
 			throw new Exception("Cannot cancel a service that isn't currently active or pending activation");
@@ -522,7 +536,7 @@ class Service extends ORM
 
 		$this->closedBy = $intEmployeeId;
 		$this->natureOfClosure = SERVICE_CLOSURE_DISCONNECTED;
-		
+
 		if ($this->archived == SERVICE_PENDING)
 		{
 			// The service has not been activated yet.  Set the closedOn timestamp to be 1 second before the createdOn timestamp
@@ -533,11 +547,11 @@ class Service extends ORM
 			// The service has already been activated.  Set the closedOn timestamp to now
 			$this->closedOn = GetCurrentISODateTime();
 		}
-		
+
 		$this->save();
 		*/
 	}
-	
+
 	/**
 	 * getFNNInstances()
 	 *
@@ -559,7 +573,7 @@ class Service extends ORM
 		{
 			throw new Exception_Database($selFNNInstances->Error());
 		}
-		
+
 		if ($bolAsArray)
 		{
 			return $selFNNInstances->FetchAll();
@@ -574,11 +588,11 @@ class Service extends ORM
 			return $arrFNNInstances;
 		}
 	}
-	
+
 	public static function getCurrentForFNN($sFNN, $sEffectiveDatetime=null)
 	{
 		$sEffectiveDatetime	= ($sEffectiveDatetime === null) ? $sEffectiveDatetime : DataAccess::getDataAccess()->getNow();
-		
+
 		$selCurrentForFNN	= self::_preparedStatement('selCurrentForFNN');
 		if ($selCurrentForFNN->Execute(array('fnn'=>$sFNN, 'effective_datetime'=>$sEffectiveDatetime)) === false)
 		{
@@ -586,7 +600,7 @@ class Service extends ORM
 		}
 		return ($aService = $selCurrentForFNN->Fetch()) ? new Service($aService) : null;
 	}
-	
+
 	/**
 	 * getServiceAddress()
 	 *
@@ -614,69 +628,69 @@ class Service extends ORM
 			return null;
 		}
 	}
-	
+
 	public function getCDRs($iInvoiceRunId=null, $iRecordType=null, $iLimit=30, $iOffset=0)
 	{
 		$iAccountId	= $this->Account;
-		
+
 		// Get string (for WHERE clause) representing the related service ids
 		$aRelatedServices	= self::getFNNInstances($this->FNN, $iAccountId);
 		$aServiceIds		= array();
-		
+
 		foreach ($aRelatedServices as $aService)
 		{
 			$aServiceIds[]	= $aService['Id'];
 		}
-		
+
 		$sWhereServiceEquals	= implode(',', $aServiceIds);
-		
+
 		// Get the CDRs
 		if ($iInvoiceRunId !== null)
 		{
 			// Get the data source for the service CDR data
 			$sDataSource	= CDR::getDataSourceForInvoiceRunCDRs($iInvoiceRunId);
-			
+
 			if ($sDataSource == FLEX_DATABASE_CONNECTION_DEFAULT)
 			{
 				// MySQL Database, invoiced
-				$sSelect		= "SELECT c.Id as \"Id\", c.RecordType as \"RecordTypeId\", c.Description as \"Description\", c.Source as \"Source\", c.Destination as \"Destination\", c.StartDatetime as \"StartDatetime\", c.Units as \"Units\", c.Charge as \"Charge\", c.Credit as \"Credit\" ";
+				$sSelect		= "SELECT c.Id as \"Id\", c.RecordType as \"RecordTypeId\", c.Description as \"Description\", c.Source as \"Source\", c.Destination as \"Destination\", c.StartDatetime as \"StartDatetime\", c.Units as \"Units\", c.Charge as \"Charge\", c.Credit as \"Credit\", c.Rate as \"Rate\" ";
 				$sCountSelect	= "SELECT COUNT(*) ";
 				$sCdrs			=	"FROM 	CDR c " .
 									"WHERE 	invoice_run_id = $iInvoiceRunId " .
 									"AND 	Account = $iAccountId " .
 								    "AND	c.Service in ($sWhereServiceEquals) ".
 								    "AND	c.Status in (".CDR_TEMP_INVOICE.", ".CDR_INVOICED.") ";
-				
+
 				if ($iRecordType)
 				{
 					$sCdrs	.= " AND c.RecordType = " . $iRecordType . " ";
 				}
-	
+
 				$sCountCdrs		= "$sCountSelect $sCdrs";
 				$sCdrs			.= 	"ORDER BY c.StartDatetime ASC " .
 								"LIMIT ".$iLimit." OFFSET ".$iOffset." ";
 				$sCdrs			= "$sSelect $sCdrs";
-				
+
 				$oCountQuery	= new Query();
 				$oResultCount	= $oCountQuery->Execute($sCountCdrs);
-				
+
 				if (!$oResultCount)
 				{
 					throw new Exception_Database('Failed to count CDRs (invoiced, default db). '.$oCountQuery->Error());
 				}
-				
+
 				$oCDRsQuery		= new Query();
 				$oResultCDRs	= $oCDRsQuery->Execute($sCdrs);
-				
+
 				if (!$oResultCDRs)
 				{
 					throw new Exception_Database('Failed to retrieve CDRs (invoiced, default db). '.$oCDRsQuery->Error());
 				}
-				
+
 				$oCountResult			= $oResultCount->fetch_row();
 				$aResult['recordCount']	= $oCountResult[0];
 				$aResult['CDRs'] 		= array();
-				
+
 				while($aCDR = $oResultCDRs->fetch_assoc())
 				{
 					$aResult['CDRs'][]	= $aCDR;
@@ -688,7 +702,7 @@ class Service extends ORM
 				try
 				{
 					$cdrDb = Data_Source::get($sDataSource, false, true);
-					$sSelect		= "SELECT c.id as \"Id\", c.record_type as \"RecordTypeId\", c.description as \"Description\", c.source as \"Source\", c.destination as \"Destination\", c.start_date_time as \"StartDatetime\", c.units as \"Units\", c.charge as \"Charge\", c.credit as \"Credit\" ";
+					$sSelect		= "SELECT c.id as \"Id\", c.record_type as \"RecordTypeId\", c.description as \"Description\", c.source as \"Source\", c.destination as \"Destination\", c.start_date_time as \"StartDatetime\", c.units as \"Units\", c.charge as \"Charge\", c.credit as \"Credit\", c.rate as \"Rate\" ";
 					$sCountSelect	= "SELECT	COUNT(*)";
 					/*
 					$sCdrs			= 	"FROM 	cdr_invoiced_$iInvoiceRunId c " .
@@ -699,30 +713,30 @@ class Service extends ORM
 										"WHERE 	c.invoice_run_id = {$iInvoiceRunId} " .
 										"AND	account = {$iAccountId} " .
 										"AND	c.service in ({$sWhereServiceEquals}) ";
-		
+
 					if ($iRecordType)
 					{
 						$sCdrs		.= " AND c.record_type = " . $iRecordType . " ";
 					}
-		
+
 					$sCountCdrs		= "$sCountSelect $sCdrs";
 					$sCdrs			.= 	"ORDER BY c.start_date_time ASC " .
 										"LIMIT ".$iLimit." OFFSET ".$iOffset." ";
 					$sCdrs			= "$sSelect $sCdrs";
 					$oResultCount	= $cdrDb->query($sCountCdrs);
-					
+
 					if (MDB2::isError($oResultCount))
 					{
 						throw new Exception_Database("Failed to count CDRs ($sCountCdrs): " . $oResultCount->getMessage());
 					}
-					
+
 					$oResultCDRs	= $cdrDb->query($sCdrs);
-					
+
 					if (MDB2::isError($oResultCDRs))
 					{
 						throw new Exception_Database("Failed to load CDRs: " . $oResultCDRs->getMessage());
 					}
-			
+
 					$aResult['recordCount']	= ($oResultCount ? $oResultCount->fetchOne() : 0);
 					$aResult['CDRs'] 		= ($oResultCDRs ? $oResultCDRs->fetchAll(MDB2_FETCHMODE_ASSOC) : array());
 				}
@@ -737,13 +751,13 @@ class Service extends ORM
 		else
 		{
 			// MySQL Database, not invoiced
-			$sSelect		= "SELECT c.Id as \"Id\", c.RecordType as \"RecordTypeId\", c.Description as \"Description\", c.Source as \"Source\", c.Destination as \"Destination\", c.StartDatetime as \"StartDatetime\", c.Units as \"Units\", c.Charge as \"Charge\", c.Credit as \"Credit\" ";
+			$sSelect		= "SELECT c.Id as \"Id\", c.RecordType as \"RecordTypeId\", c.Description as \"Description\", c.Source as \"Source\", c.Destination as \"Destination\", c.StartDatetime as \"StartDatetime\", c.Units as \"Units\", c.Charge as \"Charge\", c.Credit as \"Credit\", c.Rate as \"Rate\" ";
 			$sCountSelect	= "SELECT COUNT(*) ";
 			$sCdrs			=	"FROM 	CDR c " .
 								"WHERE 	Account = $iAccountId " .
 							    "AND	c.Service in ({$sWhereServiceEquals}) " .
 							    "AND	c.Status IN (".CDR_RATED.", ".CDR_TEMP_INVOICE.") ";
-			
+
 			if ($iRecordType)
 			{
 				$sCdrs	.= " AND c.RecordType = " . $iRecordType . " ";
@@ -753,43 +767,43 @@ class Service extends ORM
 			$sCdrs		.= 	"ORDER BY c.StartDatetime ASC " .
 							"LIMIT ".$iLimit." OFFSET ".$iOffset." ";
 			$sCdrs		= "$sSelect $sCdrs";
-			
+
 			$oCountQuery	= new Query();
 			$oResultCount	= $oCountQuery->Execute($sCountCdrs);
-			
+
 			if (!$oResultCount)
 			{
 				throw new Exception_Database('Failed to count CDRs (NOT invoiced, default db). '.$oCountQuery->Error());
 			}
-			
+
 			$oCDRsQuery		= new Query();
 			$oResultCDRs	= $oCDRsQuery->Execute($sCdrs);
-			
+
 			if (!$oResultCDRs)
 			{
 				throw new Exception_Database('Failed to retrieve CDRs (NOT invoiced, default db). '.$oCDRsQuery->Error());
 			}
-			
+
 			$oCountResult			= $oResultCount->fetch_row();
 			$aResult['recordCount']	= $oCountResult[0];
 			$aResult['CDRs'] 		= array();
-			
+
 			while($aCDR = $oResultCDRs->fetch_assoc())
 			{
 				$aResult['CDRs'][]	= $aCDR;
 			}
-			
+
 			//throw new Exception($sCdrs);
 		}
-		
+
 		return $aResult;
 	}
-	
+
 	public function getCharges($iInvoiceRunId=null)
 	{
 		// Need to load up the Charges for the invoice
 		$aVisibleChargeTypes	= array(CHARGE_TYPE_VISIBILITY_VISIBLE);
-		
+
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
 		{
 			$aVisibleChargeTypes[]	= CHARGE_TYPE_VISIBILITY_CREDIT_CONTROL;
@@ -811,33 +825,46 @@ class Service extends ORM
 		   	AND 	c.Service = {$this->Id}
 		    AND 	ct.charge_type_visibility_id IN (".implode(', ', $aVisibleChargeTypes).")
 		";
-		
+
 		$oQuery		= new Query();
 		$oResult	= $oQuery->Execute($sQuery);
-		
+
 		if (!$oResult)
 		{
 			throw new Exception_Database('Could not retrieve the charges for the service:: Error Message='.$oQuery->Error());
 		}
-		
+
 		// Add result into an array
 		$aCharges	= array();
-		
+
 		while ($oCharge = $oResult->fetch_assoc())
 		{
 			$aCharges[]	= $oCharge;
 		}
-		
+
 		return $aCharges;
 	}
-	
+
 	public function getRelatedServices()
 	{
-		
+
 	}
 
-        
-	
+	public function getServiceType() {
+		return new self(DataAccess::get()->query('
+			SELECT *
+			FROM service_type
+			WHERE id = <service_type_id>
+		', array('service_type_id' => $this->ServiceType))->fetch_assoc());
+	}
+
+	public function getPropertySet() {
+		if (!$this->_propertySet) {
+			$this->_propertySet = ServiceType_PropertySet::getForService($this->Id);
+		}
+		return $this->_propertySet;
+	}
+
 	//------------------------------------------------------------------------//
 	// _preparedStatement
 	//------------------------------------------------------------------------//
@@ -881,19 +908,19 @@ class Service extends ORM
 				case 'selCurrentForFNN':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Service s", "s.*", "s.FNN = <fnn> AND <effective_datetime> >= s.CreatedOn AND (s.ClosedOn IS NULL OR <effective_datetime> <= s.ClosedOn)", "CreatedOn DESC, Id DESC", 1);
 					break;
-				
+
 				// INSERTS
 				case 'insSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementInsert("Service");
 					break;
-				
+
 				// UPDATE BY IDS
 				case 'ubiSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementUpdateById("Service");
 					break;
-				
+
 				// UPDATES
-				
+
 				default:
 					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
 			}

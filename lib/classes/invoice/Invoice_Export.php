@@ -716,6 +716,7 @@ class Invoice_Export {
 					$arrColumns['RecordGroup'] = "RecordGroup.Description";
 					$arrColumns['TaxExempt'] = "RecordType.global_tax_exempt";
 					//$arrColumns['allow_cdr_hiding'] = "Rate.allow_cdr_hiding";
+					$arrColumns['Rate'] = "CDR.Rate";
 					$arrColumns['RateClass'] = "Rate.rate_class_id";
  					$arrPreparedStatements[$strStatement][$intCount] = new StatementSelect(
 						"	CDR

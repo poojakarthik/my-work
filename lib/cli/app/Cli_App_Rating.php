@@ -17,10 +17,10 @@ class Cli_App_Rating extends Cli
 	const	SWITCH_COMPARISON_KEEP_RATE	= 'k';
 	const	SWITCH_COMPARISON_EMAIL		= 'e';
 	const	SWITCH_RATING_LIMIT			= 'm';
-	
+
 	const	RATING_LIMIT_NONE			= null;
 	const	DEFAULT_RATING_LIMIT		= null;
-	
+
 	const	REPORT_COLUMN_CDR_ID			= 0;
 	const	REPORT_COLUMN_RATE_ORIGINAL		= 1;
 	const	REPORT_COLUMN_RATE_NEW			= 2;
@@ -28,25 +28,25 @@ class Cli_App_Rating extends Cli
 	const	REPORT_COLUMN_CHARGE_ORIGINAL	= 4;
 	const	REPORT_COLUMN_CHARGE_NEW		= 5;
 	const	REPORT_COLUMN_CHARGE_DIFFERENCE	= 6;
-	
+
 	const	COMPARISON_CHARGE_DIFFERENCE_THRESHOLD	= 0.01;
-	
+
 	const	RATING_EXCEPTION_CONTINUE		= true;
 	const	DELETE_COMPARISON_REPORT_FILE	= false;
-	
+
 	function run()
 	{
 		try
 		{
 			// The arguments are present and in a valid format if we get past this point.
 			$this->_arrArgs = $this->getValidatedArguments();
-			
+
 			$iCDRId	= (isset($this->_arrArgs[self::SWITCH_CDR_ID])) ? (int)$this->_arrArgs[self::SWITCH_CDR_ID] : null;
-			
+
 			if ($this->_arrArgs[self::SWITCH_COMPARISON_MODE])
 			{
 				Log::getLog()->log('[ Comparison Mode ]');
-				
+
 				// Comparison Mode (higher priority than re-Rate mode)
 				$aCDRIds	= array();
 				if ($iCDRId > 0)
@@ -59,16 +59,16 @@ class Cli_App_Rating extends Cli
 					// Full Comparison Run
 					$aCDRIds	= $this->_getComparisonCDRs();
 				}
-				
+
 				// Enable Rating Logging
 				Rate::setRateLoggingEnabled(true);
-				
+
 				// Encase Comparison in a Transaction
 				if (!DataAccess::getDataAccess()->TransactionStart())
 				{
 					throw new Exception_Database_Transaction("Unable to start a Transaction for Comparison Run");
 				}
-				
+
 				try
 				{
 					$aCDRChanges	= $this->_rateCDRs($aCDRIds);
@@ -77,29 +77,29 @@ class Cli_App_Rating extends Cli
 				{
 					// Do nothing just yet
 				}
-				
+
 				// Always Rollback in Comparison Mode
 				if (!DataAccess::getDataAccess()->TransactionRollback())
 				{
 					throw new Exception_Database_Transaction("Unable to roll back a Transaction for Comparison Run -- some data may have been inadvertently saved!");
 				}
-				
+
 				// Rethrow the Exception (if one occurred)
-				if ($oComparisonException)
+				if (isset($oComparisonException))
 				{
 					throw $oComparisonException;
 				}
-				
+
 				if (count($aCDRIds) > 1)
 				{
 					// Generate Comparison Report (only if there is more than 1 CDR)
 					$sComparisonReportContent	= $this->_buildComparisonReport($aCDRChanges);
 					$sComparisonReportFileName	= 'rating-comparison-report-'.date('YmdHis').'.xls';
-					
+
 					if ($this->_arrArgs[self::SWITCH_COMPARISON_EMAIL])
 					{
 						Log::getLog()->log("Sending Rating Comparison Report to {$this->_arrArgs[self::SWITCH_COMPARISON_EMAIL]}");
-						
+
 						// Email Comparison Report
 						$oEmail	= new Email_Flex();
 						$oEmail->setSubject("Rating Comparison Report from ".date('d/m/y H:i:s')." (".count($aCDRIds)." CDRs)");
@@ -114,10 +114,10 @@ class Cli_App_Rating extends Cli
 			{
 				Log::getLog()->log('[ Standard Rating Mode ]');
 				//Rate::setRateLoggingEnabled(true);
-				
+
 				// Ensure that Rating isn't already running, then identify that it is now running
 				Flex_Process::factory(Flex_Process::PROCESS_CDR_RATING)->lock();
-				
+
 				// Standard Rating mode
 				$aCDRIds	= array();
 				if ($iCDRId > 0)
@@ -139,7 +139,7 @@ class Cli_App_Rating extends Cli
 			return 1;
 		}
 	}
-	
+
 	protected function _getComparisonCDRs()
 	{
 		$aCDRStatuses	= array(
@@ -147,9 +147,9 @@ class Cli_App_Rating extends Cli
 			'ReRate'		=> CDR_RERATE,
 			'Temp Invoice'	=> CDR_TEMP_INVOICE
 		);
-		
+
 		Log::getLog()->log("Pulling Comparison CDRs (Statuses: ".implode(', ', array_keys($aCDRStatuses)).")");
-		
+
 		$oQuery	= new Query();
 		$sSQL	= "	SELECT		Id
 					FROM		CDR
@@ -161,30 +161,30 @@ class Cli_App_Rating extends Cli
 		{
 			throw new Exception_Database($oQuery->Error());
 		}
-		
+
 		$aCDRIds	= array();
 		while ($aCDRId = $mResult->fetch_assoc())
 		{
 			$aCDRIds[]	= (int)$aCDRId['Id'];
 		}
-		
+
 		return $aCDRIds;
 	}
-	
+
 	protected function _getPendingCDRIds($iLimit=self::DEFAULT_RATING_LIMIT, $bIncludeReRateCDRs=false)
 	{
 		$iLimit	= (int)$iLimit;
 		$iLimit	= ($iLimit > 0 || $iLimit === self::RATING_LIMIT_NONE) ? $iLimit : self::RATING_LIMIT_NONE;
 		$sLimit	= ($iLimit > 0) ? "LIMIT		{$iLimit}" : '';
-		
+
 		$aCDRStatuses	= array('Normalised'=>CDR_NORMALISED);
 		if ($bIncludeReRateCDRs)
 		{
 			$aCDRStatuses['ReRate']	= CDR_RERATE;
 		}
-		
+
 		Log::getLog()->log("Pulling Pending CDRs (Limit: ".(($iLimit === null) ? 'No Limit' : $iLimit)."; Statuses: ".implode(', ', array_keys($aCDRStatuses)).")");
-		
+
 		$oQuery	= new Query();
 		$sSQL	= "	SELECT		Id
 					FROM		CDR
@@ -196,56 +196,56 @@ class Cli_App_Rating extends Cli
 		{
 			throw new Exception_Database($oQuery->Error());
 		}
-		
+
 		$aCDRIds	= array();
 		while ($aCDRId = $mResult->fetch_assoc())
 		{
 			$aCDRIds[]	= (int)$aCDRId['Id'];
 		}
-		
+
 		return $aCDRIds;
 	}
-	
+
 	protected function _rateCDRs(array $aCDRIds)
 	{
 		$oStopwatch	= new Stopwatch();
 		$fStartTime	= $oStopwatch->start();
-		
+
 		$aCDRChanges	= array();
-		
+
 		$iTotalCDRs		= count($aCDRIds);
 		$iBatchProgress	= 0;
-		
+
 		Log::getLog()->log("Rating {$iTotalCDRs} CDRs");
 		foreach ($aCDRIds as $iCDRId)
 		{
 			$iBatchProgress++;
-			
+
 			// Clear the cache before each CDR (to lower memory usage)
 			CDR::clearCache();
-			
+
 			try
 			{
 				if (!DataAccess::getDataAccess()->TransactionStart())
 				{
 					throw new Exception_Database_Transaction("Unable to start a Transaction for CDR {$iCDRId}: ".DataAccess::getDataAccess()->Error());
 				}
-				
+
 				try
 				{
 					Log::getLog()->log("[ CDR {$iCDRId} ({$iBatchProgress}/{$iTotalCDRs}) ]", false);
-					
+
 					if (Rate::isRateLoggingEnabled())
 					{
 						Log::getLog()->log('');
 						Log::getLog()->log('{');
 					}
-					
+
 					$oCDR	= CDR::getForId($iCDRId);
-					
+
 					// Rate
 					$oCDRPreRate	= $oCDR->toStdClass();
-					
+
 					try
 					{
 						$oCDR->rate($this->_arrArgs[self::SWITCH_COMPARISON_MODE], $this->_arrArgs[self::SWITCH_COMPARISON_MODE] && $this->_arrArgs[self::SWITCH_COMPARISON_KEEP_RATE]);
@@ -254,45 +254,45 @@ class Cli_App_Rating extends Cli
 					{
 						// Do nothing -- we don't care if this happens
 					}
-					
+
 					if (Rate::isRateLoggingEnabled())
 					{
 						Log::getLog()->log('');
 						Log::getLog()->log('}', false);
 					}
-					
+
 					$oCDRPostRate	= $oCDR->toStdClass();
-					
+
 					$aCDRChanges[$oCDR->Id]			= array();
 					$aCDRChanges[$oCDR->Id]['PRE']	= $oCDRPreRate;
 					$aCDRChanges[$oCDR->Id]['POST']	= $oCDRPostRate;
-					
+
 					// If we have two Charges to compare...
 					if ($oCDRPreRate->Rate && $oCDRPostRate->Rate)
 					{
 						// Compare our two rated values
 						$aCDRChanges[$oCDR->Id]['DIFF']	= (object)array(
-							'Charge'	=> $oCDRPostRate->Charge - $oCDRPreRate->Charge,
+							'Charge'	=> round($oCDRPostRate->Charge - $oCDRPreRate->Charge, max(Rate::getForId($oCDRPostRate->Rate)->getChargePrecision(), Rate::getForId($oCDRPreRate->Rate)->getChargePrecision())),
 						);
 					}
-					
+
 					Log::getLog()->log(" Rate: ".(($oCDRPostRate->Rate) ? $oCDRPostRate->Rate : 'No Rate Found!'), false);
 					if ($oCDRPreRate->Rate)
 					{
 						Log::getLog()->log(" (previously: {$oCDRPreRate->Rate})", false);
 					}
-					
-					Log::getLog()->log("; Cost: \$".number_format($oCDRPostRate->Cost, Rate::RATING_PRECISION, '.', ''), false);
-					
+
+					Log::getLog()->log("; Cost: \$".$oCDRPostRate->Cost, false);
+
 					if ($oCDRPostRate->Rate)
 					{
-						Log::getLog()->log("; Charge: \$".number_format($oCDRPostRate->Charge, Rate::RATING_PRECISION, '.', ''), false);
+						Log::getLog()->log("; Charge: \$".$oCDRPostRate->Charge, false);
 					}
 					if ($oCDRPreRate->Rate)
 					{
-						Log::getLog()->log(" (previously: \$".number_format($oCDRPreRate->Charge, Rate::RATING_PRECISION, '.', '').")", false);
+						Log::getLog()->log(" (previously: \$".$oCDRPreRate->Charge.")", false);
 					}
-					
+
 					if ($oCDRPreRate->Rate && $oCDRPostRate->Rate)
 					{
 						if ($oCDRPreRate->Rate !== $oCDRPostRate->Rate)
@@ -301,10 +301,10 @@ class Cli_App_Rating extends Cli
 						}
 						if (isset($aCDRChanges[$oCDR->Id]['DIFF']->Charge) && round($aCDRChanges[$oCDR->Id]['DIFF']->Charge, 2) != 0.0)
 						{
-							Log::getLog()->log(' [CHARGE DIFFERENCE: $'.number_format($aCDRChanges[$oCDR->Id]['DIFF']->Charge, Rate::RATING_PRECISION, '.', '').']', false);
+							Log::getLog()->log(' [CHARGE DIFFERENCE: $'.$aCDRChanges[$oCDR->Id]['DIFF']->Charge.']', false);
 						}
 					}
-					
+
 					// Force line break
 					Log::getLog()->log(' in '.round($oStopwatch->lap(), 2).' seconds');
 				}
@@ -313,7 +313,7 @@ class Cli_App_Rating extends Cli
 					DataAccess::getDataAccess()->TransactionRollback();
 					throw $oException;
 				}
-				
+
 				// Commit our changes
 				if (!DataAccess::getDataAccess()->TransactionCommit())
 				{
@@ -339,211 +339,222 @@ class Cli_App_Rating extends Cli
 				}
 			}
 		}
-		
+
 		$fTotalTime	= $oStopwatch->split();
 		if ($iTotalCDRs > 0) {
 			Log::getLog()->log("Rated {$iTotalCDRs} CDRs in ".round($fTotalTime, 2).' seconds (average '.round(($fTotalTime / $iTotalCDRs), 2).' CDRs/second)');
 		}
-		
+
 		return $aCDRChanges;
 	}
-	
-	protected function _buildComparisonReport(array $aCDRChanges)
-	{
-		if (($sTempFileName = tempnam(sys_get_temp_dir(), 'flex-rating-comparison-report.')) === false)
-		{
+
+	protected function _buildComparisonReport(array $aCDRChanges) {
+		if (($sTempFileName = tempnam(sys_get_temp_dir(), 'flex-rating-comparison-report.')) === false) {
 			throw new Exception("Unable to create a temporary file for the Comparison Report: ".$php_errormsg);
 		}
-		
+
 		Log::getLog()->log("Writing Comparison Report to '{$sTempFileName}'...");
-		
+
 		// Create an XLS
 		// OLD
-		/*$oWorkbook	= new Spreadsheet_Excel_Writer($sTempFileName);*/
+		/*$oWorkbook = new Spreadsheet_Excel_Writer($sTempFileName);*/
 		// NEW
 		// Create a new PHPExcel object
 		$oWorkbook = new PHPExcel();
-		
-		$aWorksheets	= array(
-			'SIGNIFICANT'	=> array(
-				//'oWorksheet'	=> $oWorkbook->addWorksheet('Significant Differences'),
-				'oWorksheet'	=> $oWorkbook->createSheet('Significant Differences'),
-				'iCount'		=> 0
+
+		$aWorksheets = array(
+			'SIGNIFICANT' => array(
+				//'oWorksheet' => $oWorkbook->addWorksheet('Significant Differences'),
+				'oWorksheet' => $oWorkbook->createSheet()->setTitle('Significant Differences'),
+				'iCount' => 1
 			),
-			'MINOR'			=> array(
-				//'oWorksheet'	=> $oWorkbook->addWorksheet('Minor Differences'),
-				'oWorksheet'	=> $oWorkbook->createSheet('Minor Differences'),
-				'iCount'		=> 0
+			'MINOR' => array(
+				//'oWorksheet' => $oWorkbook->addWorksheet('Minor Differences'),
+				'oWorksheet' => $oWorkbook->createSheet()->setTitle('Minor Differences'),
+				'iCount' => 1
 			),
-			'NONE'			=> array(
-				//'oWorksheet'	=> $oWorkbook->addWorksheet('No Differences'),
-				'oWorksheet'	=> $oWorkbook->createSheet('No Differences'),
-				'iCount'		=> 0
+			'NONE' => array(
+				//'oWorksheet' => $oWorkbook->addWorksheet('No Differences'),
+				'oWorksheet' => $oWorkbook->createSheet()->setTitle('No Differences'),
+				'iCount' => 1
 			),
-			'NO_OLD_RATE'	=> array(
-				//'oWorksheet'	=> $oWorkbook->addWorksheet('No Old Rate'),
-				'oWorksheet'	=> $oWorkbook->createSheet('No Old Rate'),
-				'iCount'		=> 0
+			'NO_OLD_RATE' => array(
+				//'oWorksheet' => $oWorkbook->addWorksheet('No Old Rate'),
+				'oWorksheet' => $oWorkbook->createSheet()->setTitle('No Old Rate'),
+				'iCount' => 1
 			),
-			'NO_NEW_RATE'	=> array(
-				//'oWorksheet'	=> $oWorkbook->addWorksheet('No New Rate'),
-				'oWorksheet'	=> $oWorkbook->createSheet('No New Rate'),
-				'iCount'		=> 0
+			'NO_NEW_RATE' => array(
+				//'oWorksheet' => $oWorkbook->addWorksheet('No New Rate'),
+				'oWorksheet' => $oWorkbook->createSheet()->setTitle('No New Rate'),
+				'iCount' => 1
 			),
-			'NO_NEW_OLD_RATE'	=> array(
-				//'oWorksheet'	=> $oWorkbook->addWorksheet('No New or Old Rate'),
-				'oWorksheet'	=> $oWorkbook->createSheet('No New or Old Rate'),
-				'iCount'		=> 0
+			'NO_NEW_OLD_RATE' => array(
+				//'oWorksheet' => $oWorkbook->addWorksheet('No New or Old Rate'),
+				'oWorksheet' => $oWorkbook->createSheet()->setTitle('No New or Old Rate'),
+				'iCount' => 1
 			)
 		);
-		
+
+		// Remove initial sheet
+		$oWorkbook->removeSheetByIndex(0);
+
 		// Formats
-		$aFormats	= array(
-			'HEADER'	=> $oWorkbook->addFormat(
-				array(
-					'Bold'		=> 1,
-					'Color'		=> 'white',
-					'FgColor'	=> 63
+		$aFormats = array(
+			'HEADER' => array(
+				'font' => array(
+					'bold' => true,
+					'color' => array('argb' => 'FFFFFFFF')
+				),
+				'fill' => array(
+					'type' => PHPExcel_Style_Fill::FILL_SOLID,
+					'startcolor' => array('argb' => 'FF333333')
 				)
 			),
-			'CURRENCY'	=> $oWorkbook->addFormat(
-				array(
-					'NumFormat'		=> '$0.0000'
+			'CURRENCY' => array(
+				'numberformat' => array(
+					'code' => '$#,##0.00;$#,##0.00 CR'
 				)
 			)
 		);
-		
+
 		// Header Rows & Columns
-		foreach ($aWorksheets as $sAlias=>$aWorksheetDefinition)
-		{
-			$oWorksheet	= $aWorksheetDefinition['oWorksheet'];
-			
+		foreach ($aWorksheets as $sAlias=>$aWorksheetDefinition) {
+			$oWorksheet = $aWorksheetDefinition['oWorksheet'];
+
+			$oWorksheet->getStyle('1')->applyFromArray($aFormats['HEADER']);
+
 			// Columns Headers
-			$oWorksheet->write(0, self::REPORT_COLUMN_CDR_ID			, 'CDR Id'			, $aFormats['HEADER']);
-			$oWorksheet->write(0, self::REPORT_COLUMN_RATE_ORIGINAL		, 'Original Rate'	, $aFormats['HEADER']);
-			$oWorksheet->write(0, self::REPORT_COLUMN_RATE_NEW			, 'New Rate'		, $aFormats['HEADER']);
-			$oWorksheet->write(0, self::REPORT_COLUMN_COST				, 'Cost'			, $aFormats['HEADER']);
-			$oWorksheet->write(0, self::REPORT_COLUMN_CHARGE_ORIGINAL	, 'Original Charge'	, $aFormats['HEADER']);
-			$oWorksheet->write(0, self::REPORT_COLUMN_CHARGE_NEW		, 'New Charge'		, $aFormats['HEADER']);
-			
+			$oWorksheet->getCellByColumnAndRow(self::REPORT_COLUMN_CDR_ID, 1)->setValue('CDR Id');
+			$oWorksheet->getCellByColumnAndRow(self::REPORT_COLUMN_RATE_ORIGINAL, 1)->setValue('Original Rate');
+			$oWorksheet->getCellByColumnAndRow(self::REPORT_COLUMN_RATE_NEW, 1)->setValue('New Rate');
+			$oWorksheet->getCellByColumnAndRow(self::REPORT_COLUMN_COST, 1)->setValue('Cost');
+			$oWorksheet->getCellByColumnAndRow(self::REPORT_COLUMN_CHARGE_ORIGINAL, 1)->setValue('Original Charge');
+			$oWorksheet->getCellByColumnAndRow(self::REPORT_COLUMN_CHARGE_NEW, 1)->setValue('New Charge');
+
 			// Column Widths
-			$oWorksheet->setColumn(self::REPORT_COLUMN_CDR_ID	, self::REPORT_COLUMN_CHARGE_NEW	, 15);
+			$oWorksheet->getDefaultColumnDimension()->setAutoSize(true);
+			//$oWorksheet->setColumn(self::REPORT_COLUMN_CDR_ID , self::REPORT_COLUMN_CHARGE_NEW , 15);
+
+			$oWorksheet->freezePane('A1');
+
+			// Column Styling
+			$oWorksheet->getStyleByColumnAndRow(self::REPORT_COLUMN_COST)->applyFromArray($aFormats['CURRENCY']);
+			$oWorksheet->getStyleByColumnAndRow(self::REPORT_COLUMN_CHARGE_ORIGINAL)->applyFromArray($aFormats['CURRENCY']);
+			$oWorksheet->getStyleByColumnAndRow(self::REPORT_COLUMN_CHARGE_NEW)->applyFromArray($aFormats['CURRENCY']);
 		}
-		
+
 		// Data
-		foreach ($aCDRChanges as $iCDRId=>$aCDRData)
-		{
-			$aWorksheetDefinition	= null;
-			if ($aCDRData['DIFF'])
-			{
-				if ($aCDRData['DIFF']->Charge == 0.0)
-				{
-					$aWorksheetDefinition	= &$aWorksheets['NONE'];
+		foreach ($aCDRChanges as $iCDRId=>$aCDRData) {
+			$aWorksheetDefinition = null;
+			if ($aCDRData['DIFF']) {
+				if ($aCDRData['DIFF']->Charge == 0.0) {
+					$aWorksheetDefinition = &$aWorksheets['NONE'];
+				} elseif (Rate::roundToRatingStandard(abs($aCDRData['DIFF']->Charge)) <= self::COMPARISON_CHARGE_DIFFERENCE_THRESHOLD) {
+					$aWorksheetDefinition = &$aWorksheets['MINOR'];
+				} else {
+					$aWorksheetDefinition = &$aWorksheets['SIGNIFICANT'];
 				}
-				elseif (Rate::roundToRatingStandard(abs($aCDRData['DIFF']->Charge)) <= self::COMPARISON_CHARGE_DIFFERENCE_THRESHOLD)
-				{
-					$aWorksheetDefinition	= &$aWorksheets['MINOR'];
-				}
-				else
-				{
-					$aWorksheetDefinition	= &$aWorksheets['SIGNIFICANT'];
-				}
-			}
-			elseif ($aCDRData['PRE']->Rate)
-			{
+			} elseif ($aCDRData['PRE']->Rate) {
 				// We have a PRE Rate, so we must be missing a POST Rate
-				$aWorksheetDefinition	= &$aWorksheets['NO_NEW_RATE'];
-			}
-			elseif ($aCDRData['POST']->Rate)
-			{
+				$aWorksheetDefinition = &$aWorksheets['NO_NEW_RATE'];
+			} elseif ($aCDRData['POST']->Rate) {
 				// We have a POST Rate, so we must be missing a PRE Rate
-				$aWorksheetDefinition	= &$aWorksheets['NO_OLD_RATE'];
-			}
-			else
-			{
+				$aWorksheetDefinition = &$aWorksheets['NO_OLD_RATE'];
+			} else {
 				// We don't have a PRE or POST Rate
-				$aWorksheetDefinition	= &$aWorksheets['NO_NEW_OLD_RATE'];
+				$aWorksheetDefinition = &$aWorksheets['NO_NEW_OLD_RATE'];
 			}
-			
+
 			$aWorksheetDefinition['iCount']++;
-			
+
 			//Log::getLog()->log("Logging CDR {$iCDRId} to '".$aWorksheetDefinition['oWorksheet']->getName()."' in row {$aWorksheetDefinition['iCount']}");
-			
-			$oWorksheet	= $aWorksheetDefinition['oWorksheet'];
-			
-			$oWorksheet->write($aWorksheetDefinition['iCount'], self::REPORT_COLUMN_CDR_ID			, (int)$iCDRId);
-			$oWorksheet->write($aWorksheetDefinition['iCount'], self::REPORT_COLUMN_COST			, (float)$aCDRData['PRE']->Cost										, $aFormats['CURRENCY']);
-			
-			if ($aCDRData['PRE']->Rate !== null)
-			{
-				$oWorksheet->write($aWorksheetDefinition['iCount'], self::REPORT_COLUMN_RATE_ORIGINAL	, ($aCDRData['PRE']->Rate) ? (int)$aCDRData['PRE']->Rate : null);
-				$oWorksheet->write($aWorksheetDefinition['iCount'], self::REPORT_COLUMN_CHARGE_ORIGINAL	, (float)$aCDRData['PRE']->Charge									, $aFormats['CURRENCY']);
+
+			$oWorksheet = $aWorksheetDefinition['oWorksheet'];
+
+			$oWorksheet->getCellByColumnAndRow(self::REPORT_COLUMN_CDR_ID, $aWorksheetDefinition['iCount'])->setValue((int)$iCDRId);
+			$oWorksheet->getCellByColumnAndRow(self::REPORT_COLUMN_COST, $aWorksheetDefinition['iCount'])->setValue((float)$aCDRData['PRE']->Cost);
+
+			if ($aCDRData['PRE']->Rate !== null) {
+				$oWorksheet->getCellByColumnAndRow(self::REPORT_COLUMN_RATE_ORIGINAL, $aWorksheetDefinition['iCount'])->setValue(($aCDRData['PRE']->Rate) ? (int)$aCDRData['PRE']->Rate : null);
+				$oWorksheet->getCellByColumnAndRow(self::REPORT_COLUMN_CHARGE_ORIGINAL, $aWorksheetDefinition['iCount'])->setValue((float)$aCDRData['PRE']->Charge);
 			}
-			if ($aCDRData['POST']->Rate !== null)
-			{
-				$oWorksheet->write($aWorksheetDefinition['iCount'], self::REPORT_COLUMN_RATE_NEW		, ($aCDRData['POST']->Rate) ? (int)$aCDRData['POST']->Rate : null);
-				$oWorksheet->write($aWorksheetDefinition['iCount'], self::REPORT_COLUMN_CHARGE_NEW		, (float)$aCDRData['POST']->Charge									, $aFormats['CURRENCY']);
+
+			if ($aCDRData['POST']->Rate !== null) {
+				$oWorksheet->getCellByColumnAndRow(self::REPORT_COLUMN_RATE_NEW, $aWorksheetDefinition['iCount'])->setValue(($aCDRData['POST']->Rate) ? (int)$aCDRData['POST']->Rate : null);
+				$oWorksheet->getCellByColumnAndRow(self::REPORT_COLUMN_CHARGE_NEW, $aWorksheetDefinition['iCount'])->setValue((float)$aCDRData['POST']->Charge);
 			}
-			
+
+
+			// $oWorksheet->write($aWorksheetDefinition['iCount'], self::REPORT_COLUMN_CDR_ID , (int)$iCDRId);
+			// $oWorksheet->write($aWorksheetDefinition['iCount'], self::REPORT_COLUMN_COST , (float)$aCDRData['PRE']->Cost , $aFormats['CURRENCY']);
+
+			// if ($aCDRData['PRE']->Rate !== null) {
+			// 	$oWorksheet->write($aWorksheetDefinition['iCount'], self::REPORT_COLUMN_RATE_ORIGINAL , ($aCDRData['PRE']->Rate) ? (int)$aCDRData['PRE']->Rate : null);
+			// 	$oWorksheet->write($aWorksheetDefinition['iCount'], self::REPORT_COLUMN_CHARGE_ORIGINAL , (float)$aCDRData['PRE']->Charge , $aFormats['CURRENCY']);
+			// }
+			// if ($aCDRData['POST']->Rate !== null) {
+			// 	$oWorksheet->write($aWorksheetDefinition['iCount'], self::REPORT_COLUMN_RATE_NEW , ($aCDRData['POST']->Rate) ? (int)$aCDRData['POST']->Rate : null);
+			// 	$oWorksheet->write($aWorksheetDefinition['iCount'], self::REPORT_COLUMN_CHARGE_NEW , (float)$aCDRData['POST']->Charge , $aFormats['CURRENCY']);
+			// }
+
 			unset($aWorksheetDefinition);
 		}
-		
+
 		// Close the Workbook
-		$oWorkbook->close();
-		
+		// $oWorkbook->close();
+		PHPExcel_IOFactory::createWriter($oWorkbook, "Excel2007")->save($sTempFileName);
+
 		// Pull data from our temp file
-		if (($sTempFileData = @file_get_contents($sTempFileName)) === false)
-		{
+		if (($sTempFileData = @file_get_contents($sTempFileName)) === false) {
 			throw new Exception("Unable to get Comparison Report temp file data from '{$sTempFileName}': ".$php_errormsg);
 		}
-		
-		if (self::DELETE_COMPARISON_REPORT_FILE)
-		{
+
+		if (self::DELETE_COMPARISON_REPORT_FILE) {
 			// Remove the temp file (we don't really care if it fails)
 			@unlink($sTempFileData);
 		}
-		
+
 		return $sTempFileData;
 	}
-	
+
 	function getCommandLineArguments()
 	{
 		return array(
 			/*self::SWITCH_TEST_RUN => array(
-				self::ARG_REQUIRED		=> false,
-				self::ARG_DESCRIPTION	=> "No changes to the database.",
-				self::ARG_DEFAULT		=> false,
-				self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
+				self::ARG_REQUIRED => false,
+				self::ARG_DESCRIPTION => "No changes to the database.",
+				self::ARG_DEFAULT => false,
+				self::ARG_VALIDATION => 'Cli::_validIsSet()'
 			),*/
-		
+
 			self::SWITCH_INCLUDE_RERATE => array(
 				self::ARG_REQUIRED		=> false,
 				self::ARG_DESCRIPTION	=> "Includes CDRs marked for ReRating in the Rating Run",
 				self::ARG_DEFAULT		=> false,
 				self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
 			),
-			
+
 			self::SWITCH_COMPARISON_MODE => array(
 				self::ARG_REQUIRED		=> false,
 				self::ARG_DESCRIPTION	=> "Compares current CDR details to its rerated details",
 				self::ARG_DEFAULT		=> false,
 				self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
 			),
-			
+
 			self::SWITCH_COMPARISON_KEEP_RATE => array(
 				self::ARG_REQUIRED		=> false,
 				self::ARG_DESCRIPTION	=> "Retains the current rate in comparison mode (for comparing Rating engine changes)",
 				self::ARG_DEFAULT		=> false,
 				self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
 			),
-			
+
 			self::SWITCH_CDR_ID => array(
 				self::ARG_REQUIRED		=> false,
 				self::ARG_LABEL			=> "CDR_ID",
 				self::ARG_DESCRIPTION	=> "CDR Id (limits run to this CDR only)",
 				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
 			),
-			
+
 			self::SWITCH_RATING_LIMIT => array(
 				self::ARG_REQUIRED		=> false,
 				self::ARG_LABEL			=> "RATING_LIMIT",
@@ -551,7 +562,7 @@ class Cli_App_Rating extends Cli
 				self::ARG_DEFAULT		=> self::DEFAULT_RATING_LIMIT,
 				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
 			),
-			
+
 			self::SWITCH_COMPARISON_EMAIL => array(
 				self::ARG_LABEL			=> "EMAIL_ADDRESS",
 				self::ARG_REQUIRED		=> false,

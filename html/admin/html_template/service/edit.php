@@ -65,10 +65,10 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 	{
 		$this->_intContext = $intContext;
 		$this->_strContainerDivId = $strId;
-		
+
 		$this->LoadJavascript("service_edit");
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// Render
 	//------------------------------------------------------------------------//
@@ -87,28 +87,28 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		$bolIsProperAdminUser	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
 		$intCurrentSatatus		= DBO()->Service->CurrentStatus->Value;
 		echo "<!-- Actual Service Declared : ". DBO()->ActualRequestedService->Id->Value ." -->\n";
-		
+
 		// Start the form
 		$this->FormStart("EditService", "Service", "Edit");
 
 		echo "<div class='GroupedContent'>\n";
-		
+
 		$intClosedOn = strtotime(DBO()->Service->ClosedOn->Value);
 		$intCurrentDate = strtotime(GetCurrentDateForMySQL());
-		
+
 		$strViewHistoryLink	= Href()->ViewServiceHistory(DBO()->Service->Id->Value);
 		$strViewHistory		= "<a href='$strViewHistoryLink'>history</a>";
-		$objService			= ModuleService::GetServiceById(DBO()->Service->Id->Value, DBO()->Service->RecordType->Value);		
+		$objService			= ModuleService::GetServiceById(DBO()->Service->Id->Value, DBO()->Service->RecordType->Value);
 		$arrLastEvent		= HtmlTemplateServiceHistory::GetLastEvent($objService);
 		$strLastEvent		= "{$arrLastEvent['Event']}<br />on {$arrLastEvent['TimeStamp']}<br />by {$arrLastEvent['EmployeeName']} ({$strViewHistory})";
 		DBO()->Service->MostRecentEvent = $strLastEvent;
 		DBO()->Service->MostRecentEvent->RenderOutput();
-		
+
 		echo "<div class='ContentSeparator'></div>\n";
-		
+
 		// Render hidden properties
 		DBO()->Service->Id->RenderHidden();
-		
+
 		// Maintaining State (This shouldn't be done here)
 		DBO()->Service->CurrentFNN->RenderHidden();
 		DBO()->Service->CurrentStatus->RenderHidden();
@@ -119,14 +119,15 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		DBO()->ServiceInboundDetail->CurrentAnswerPoint->RenderHidden();
 		DBO()->ServiceInboundDetail->CurrentConfiguration->RenderHidden();
 		DBO()->Account->Archived->RenderHidden();
-		
+
 		DBO()->Service->Account->RenderHidden();
 		DBO()->Service->AccountGroup->RenderHidden();
 		DBO()->Service->Indial100->RenderHidden();
 		DBO()->Service->Status->RenderHidden();
-		
-		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("service_type"), RENDER_OUTPUT);	
-		
+
+		DBO()->service_type->Load(DBO()->Service->ServiceType->Value);
+		DBO()->service_type->name->RenderOutputAs(array('Label' => 'Service Type'));
+
 		// The user can only change the FNN if the service was created today
 		// (They should only need to change the FNN if they accidently got it wrong to begin with)
 		$objService = ModuleService::GetServiceById(DBO()->Service->Id->Value);
@@ -140,21 +141,21 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		{
 			// The service wasn't created today, so they can't change the FNN
 			$strFNN = DBO()->Service->FNN->Value . (DBO()->Service->Indial100->Value ? " (Indial 100)":"");
-			
+
 			DBO()->Service->FNN->RenderArbitrary($strFNN, RENDER_OUTPUT);
-			
+
 			// This shouldn't really be included at all, but if I just render it as a hidden, then I don't have
 			// to worry about updating the logic
 			DBO()->Service->FNN->RenderHidden();
 			DBO()->Service->FNNConfirm->RenderHidden();
 		}
-		
+
 		// Intialise the value for the Service Status combobox
 		if (!DBO()->Service->NewStatus->IsSet)
 		{
 			DBO()->Service->NewStatus = DBO()->Service->CurrentStatus->Value;
 		}
-		
+
 		// Work out what options should be available in the Status combobox
 		if (DBO()->Account->Archived->Value == ACCOUNT_STATUS_PENDING_ACTIVATION)
 		{
@@ -168,7 +169,7 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			{
 				// Remove the SERVICE_PENDING option
 				unset($arrStatusOptions[SERVICE_PENDING]);
-				
+
 				if ($objService->GetStatus() != SERVICE_ARCHIVED && !$bolUserHasAdminPerm)
 				{
 					// Remove the ARCHIVE option as only admin users can archive services
@@ -208,18 +209,18 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 				}
 			}
 		}
-		
+
 		$strStatusOptions = "";
 		foreach ($arrStatusOptions as $intStatus=>$arrStatus)
 		{
 			$strSelected		= (DBO()->Service->NewStatus->Value == $intStatus) ? "selected='selected'" : "";
-			
+
 			if ($bolIsProperAdminUser || $strSelected)
 			{
 				$strStatusOptions	.= "<option value='$intStatus' $strSelected>{$arrStatus['Description']}</option>";
 			}
 		}
-		
+
 		// Render the Service Status Combobox
 		echo "
 <div class='DefaultElement'>
@@ -229,13 +230,13 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 	</div>
 </div>
 ";
-		
+
 		// load cost centre details
 		$strWhere = "Account IN (0, ". DBO()->Service->Account->Value .")";
 		DBL()->CostCentre->Where->SetString($strWhere);
 		DBL()->CostCentre->OrderBy("Name");
 		DBL()->CostCentre->Load();
-	
+
 		// Draw a CostCentre combo box, but only if there have been cost centers defined for this Account
 		if (DBL()->CostCentre->RecordCount() > 0)
 		{
@@ -245,25 +246,25 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			echo "      <select name='Service.CostCentre' style='width:155px'>\n";
 			$strSelected = (DBO()->Service->CostCentre->Value == NULL) ? "selected='selected'" : "";
 			echo "<option value='0' $strSelected>&nbsp;</option>";
-			
+
 			foreach (DBL()->CostCentre as $dboCostCentre)
 			{
 				$strSelected = (DBO()->Service->CostCentre->Value == $dboCostCentre->Id->Value) ? "selected='selected'" : "";
 				echo "<option value='".$dboCostCentre->Id->Value."' $strSelected>". $dboCostCentre->Name->Value ."</option>";
 			}
-			
+
 			echo "      </select>\n";
 			echo "   </div>\n";
 			echo "</div>\n";
 		}
 
 		DBO()->Service->ForceInvoiceRender->RenderInput();
-		
+
 		if (DBO()->Service->Indial100->Value)
 		{
 			DBO()->Service->ELB->RenderInput();
 		}
-		
+
 		// handle extra inbound phone details
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_INBOUND)
 		{
@@ -272,14 +273,14 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			DBO()->ServiceInboundDetail->AnswerPoint->RenderInput();
 			DBO()->ServiceInboundDetail->Configuration->RenderInput();
 		}
-		
+
 		// handle extra mobile phone details
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE)
 		{
 			echo "<div class='ContentSeparator'></div>\n";
 			DBO()->ServiceMobileDetail->SimPUK->RenderInput();
 			DBO()->ServiceMobileDetail->SimESN->RenderInput();
-			
+
 			echo "<div class='DefaultElement'>\n";
 			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;State :</div>\n";
 			echo "   <div class='DefaultOutput'>\n";
@@ -293,8 +294,8 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			echo "      </select>\n";
 			echo "   </div>\n";
 			echo "</div>\n";
-			
-			DBO()->ServiceMobileDetail->DOB->RenderInput();				
+
+			DBO()->ServiceMobileDetail->DOB->RenderInput();
 
 			echo "<div class='DefaultElement'>\n";
 			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Comments :</div>\n";
@@ -302,9 +303,9 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			echo "</div>\n";
 
 		}
-		
+
 		echo "</div>\n";  // GroupedContent
-		
+
 		// Render buttons
 		echo "
 <div class='ButtonContainer'>
@@ -317,7 +318,7 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 ";
 
 		$this->FormEnd();
-		
+
 		// Initialise the javascript object
 		if ($objService->GetCurrentPlan() != NULL)
 		{
@@ -329,7 +330,7 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			$strCanBeProvisioned = "false";
 		}
 		echo "<script type='text/javascript'>Vixen.ServiceEdit.Initialise($intCurrentSatatus, $strCanBeProvisioned)</script>\n";
-	}	
+	}
 }
 
 ?>

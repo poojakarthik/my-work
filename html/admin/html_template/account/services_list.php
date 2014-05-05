@@ -26,7 +26,7 @@
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
- 
+
 //----------------------------------------------------------------------------//
 // HtmlTemplateAccountServicesList
 //----------------------------------------------------------------------------//
@@ -65,18 +65,18 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 	{
 		$this->_intContext = $intContext;
 		$this->_strContainerDivId = $strId;
-		
+
 		$this->LoadJavascript("account_services");
 		$this->LoadJavascript("highlight");
 		$this->LoadJavascript("retractable");
 
 		$this->LoadJavascript("credit_card_type");
 		$this->LoadJavascript("credit_card_payment");
-		
+
 		$this->LoadJavascript("control_field");
 		$this->LoadJavascript("control_field_checkbox");
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// Render
 	//------------------------------------------------------------------------//
@@ -93,7 +93,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 	{
 		// Declare the id of the container div for the VixenTable which displays all the services
 		$strTableContainerDivId = "AccountServicesTableDiv";
-		
+
 		switch ($this->_intContext)
 		{
 			case HTML_CONTEXT_POPUP:
@@ -106,7 +106,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 				$this->RenderTable();
 		}
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// RenderPopup
 	//------------------------------------------------------------------------//
@@ -125,15 +125,15 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 	{
 		// Work out if a virtical scroll bar will be required
 		$strTableContainerStyle = (DBL()->Service->RecordCount() > 14) ? "style='overflow:auto; height:450px'": "";
-		
+
 		// Draw the table container
 		echo "<div id='$strTableContainerDivId' $strTableContainerStyle>\n";
-		
+
 		// Draw the table
 		$this->RenderTable();
-		
+
 		echo "</div>\n";  // Table Container
-	
+
 		echo "<div class='ButtonContainer'><div class='Right'>\n";
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
 		{
@@ -146,14 +146,14 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 		// Initialise the javascript object that facilitates this popup (Vixen.AccountServices)
 		echo "<script type='text/javascript'>Vixen.AccountServices.Initialise('{$this->_objAjax->strId}')</script>";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// RenderInPage
 	//------------------------------------------------------------------------//
 	/**
 	 * RenderInPage()
 	 *
-	 * Render this HTML Template for use in a page.  
+	 * Render this HTML Template for use in a page.
 	 *
 	 * Render this HTML Template for use in a page.
 	 *
@@ -164,11 +164,11 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 	function RenderInPage($strTableContainerDivId)
 	{
 		$sFilter	= (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW)) ? '' : "display: none;";
-		
+
 		echo "
 <div style='width:100%;height:auto'>
 	<h2 class='Services' style='float:left'>Services</h2>
-			
+
 	<select id='ServicesListFilterCombo' style='{$sFilter}float:left;margin-left:20px' onChange='Vixen.AccountServices.ReloadList(true)'>
 		<option value='0'>Show All</option>
 		<option value='". SERVICE_ACTIVE ."' selected='selected'>Active Only</option>
@@ -183,7 +183,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 		$this->RenderTable();
 
 		echo "</div>\n";
-		
+
 		echo "<div class='ButtonContainer'><div class='Right'>\n";
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
 		{
@@ -191,12 +191,12 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			$this->Button("Add Services", "window.location = \"$strBulkAddServiceLink\"");
 		}
 		echo "</div></div>\n";
-		
+
 		$intAccountId = DBO()->Account->Id->Value;
 		// Initialise the javascript object that facilitates this HtmlTemplate
 		echo "<script type='text/javascript'>Vixen.AccountServices.Initialise($intAccountId, null, '$strTableContainerDivId')</script>\n";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// RenderTable
 	//------------------------------------------------------------------------//
@@ -219,14 +219,14 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 		$intAccountId				= DBO()->Account->Id->Value;
 		$bolTicketingModuleIsActive	= Flex_Module::isActive(FLEX_MODULE_TICKETING);
 		$arrAllowableServiceStatusesForTickets = array(SERVICE_ACTIVE, SERVICE_PENDING, SERVICE_DISCONNECTED);
-		
-		
+
+
 		Table()->Services->SetHeader("&nbsp;", "FNN", "Plan", "&nbsp;", "&nbsp;", "Actions");
-		
-		Table()->Services->SetAlignment("Left", "Left", "Left", "Right", "Left", "Left");
-		
+
+		Table()->Services->SetAlignment("Center", "Left", "Left", "Right", "Left", "Left");
+
 		$strStatusTitles = "Status :<br />Line :";
-		
+
 		foreach ($arrServices as $arrService)
 		{
 			// Build the Actions Cell
@@ -241,20 +241,20 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 				// The user can edit stuff
 				$strEditServiceLink	= Href()->EditService($arrService['Id']);
 				$strEditService		= "<img src='img/template/edit.png' title='Edit Service' onclick='$strEditServiceLink'/>";
-				
+
 				$strChangePlanLink	= Href()->ChangePlan($arrService['Id']);
 				$strChangePlan		= "<img src='img/template/plan.png' title='Change Plan' onclick='$strChangePlanLink'/>";
-				
+
 				$strMoveServiceLink	= Href()->MoveService($arrService['Id']);
 				$strMoveService		= "<img src='img/template/move.png' title='Move Service' onclick='$strMoveServiceLink'/>";
-	
+
 				// Include a button for provisioning
 				$strProvisioningLink	= Href()->Provisioning($arrService['Id']);
 				$strProvisioning		= "<a href='$strProvisioningLink' title='Provisioning'><img src='img/template/provisioning.png'></img></a>";
-				
+
 				$strViewProvisioningHistoryLink = Href()->ViewProvisioningHistory($arrService['Id']);
 				$strViewProvisioningHistory		= "<img src='img/template/provisioning_history.png' title='View Provisioning History' onclick='$strViewProvisioningHistoryLink'/>";
-				
+
 				if ($arrService['ServiceType'] === SERVICE_TYPE_LAND_LINE) {
 					// Include a button for service address, if the service is a landline
 					$strViewAddressLink			= Href()->ViewServiceAddress($arrService['Id']);
@@ -266,17 +266,17 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 					$strCreateTicket = "<a href='". Href()->AddTicket($intAccountId, $arrService['Id']) ."' title='Create Ticket'><img src='img/template/create_ticket.png'></img></a>";
 				}
 			}
-			
+
 			$strPopupTitle = GetConstantDescription($arrService['ServiceType'], "service_type") ." - ". $arrService['FNN'];
 			$strViewServiceNotesLink	= Href()->ActionsAndNotesListPopup(ACTION_ASSOCIATION_TYPE_SERVICE, $arrService['Id'], true, 99999, $strPopupTitle);
 			$strViewServiceNotes		= "<img src='img/template/note.png' title='View Notes' onclick='$strViewServiceNotesLink'/>";
-			
+
 			$strViewUnbilledChargesLink = Href()->ViewUnbilledCharges($arrService['Id']);
 			$strViewUnbilledCharges 	= ($bolUserHasViewPerm) ? "<a href='$strViewUnbilledChargesLink' title='View Unbilled Charges'><img src='img/template/cdr.png'></img></a>" : '';
-			
-			
-			
-			
+
+
+
+
 			$strActionsCell				= "{$strViewServiceNotes} {$strEditService} {$strChangePlan} {$strViewUnbilledCharges} {$strMoveService} {$strProvisioning} {$strViewProvisioningHistory} {$strViewAddress} {$strCreateTicket}";
 
 			// Create a link to the View Plan for Service page
@@ -286,22 +286,22 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			{
 				// The Service has a current plan
 				$strPlanCell = "<a href='$strViewServiceRatePlanLink' title='View Service Specific Plan'>{$arrService['CurrentPlan']['Name']}</a>";
-				
+
 				if ($bolUserHasViewPerm && Flex_Module::isActive(FLEX_MODULE_PLAN_BROCHURE))
 				{
 					if ($arrService['CurrentPlan']['brochure_document_id'])
 					{
 						$objBrochureDocument		= new Document(array('id'=>$arrService['CurrentPlan']['brochure_document_id']), true);
 						$objBrochureDocumentContent	= $objBrochureDocument->getContentDetails();
-						
+
 						if ($objBrochureDocumentContent && $objBrochureDocumentContent->bolHasContent)
 						{
 							$objBrochureIcon			= new File_Type(array('id'=>$objBrochureDocumentContent->file_type_id), true);
-							
+
 							$strImageSrc		= "../admin/reflex.php/File/Image/FileTypeIcon/{$objBrochureIcon->id}/16x16";
 							$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrService['CurrentPlan']['brochure_document_id']}";
 							$strPlanCell		.= " <a href='{$strBrochureLink}' title='Download Plan Brochure'><img src='{$strImageSrc}' alt='Download Plan Brochure' /></a>";
-							
+
 							$arrRatePlan		= $arrService['CurrentPlan'];
 							$strEmailOnClick	= Rate_Plan::generateEmailButtonOnClick(DBO()->Account->CustomerGroup->Value, array($arrRatePlan), DBO()->Account->Id->Value);
 							$strPlanCell		.= "&nbsp;<a onclick='{$strEmailOnClick}' title='Email Plan Brochure'><img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /></a>";
@@ -317,27 +317,27 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 				// There is no current plan for the service
 				$strPlanCell = "<span class='Red'>No Plan Selected</span>";
 			}
-			
+
 			if ($arrService['FuturePlan'] != NULL)
 			{
-				$strStartDate = OutputMask()->ShortDate($arrService['FuturePlan']['StartDatetime']); 
+				$strStartDate = OutputMask()->ShortDate($arrService['FuturePlan']['StartDatetime']);
 				$strPlanCell .= "<br />As from $strStartDate : <a href='$strViewServiceRatePlanLink' title='View Service Specific Plan'>{$arrService['FuturePlan']['Name']}</a>";
-				
+
 				if ($bolUserHasViewPerm && Flex_Module::isActive(FLEX_MODULE_PLAN_BROCHURE))
 				{
 					if ($arrService['FuturePlan']['brochure_document_id'])
 					{
 						$objBrochureDocument		= new Document(array('id'=>$arrService['FuturePlan']['brochure_document_id']), true);
 						$objBrochureDocumentContent	= $objBrochureDocument->getContentDetails();
-						
+
 						if ($objBrochureDocumentContent && $objBrochureDocumentContent->bolHasContent)
 						{
 							$objBrochureIcon			= new File_Type(array('id'=>$objBrochureDocumentContent->file_type_id), true);
-							
+
 							$strImageSrc		= "../admin/reflex.php/File/Image/FileTypeIcon/{$objBrochureIcon->id}/16x16";
 							$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrService['FuturePlan']['brochure_document_id']}";
 							$strPlanCell		.= " <a href='{$strBrochureLink}' title='Download Plan Brochure'><img src='{$strImageSrc}' alt='Download Plan Brochure' /></a>";
-							
+
 							$arrRatePlan		= $arrService['FuturePlan'];
 							$strEmailOnClick	= Rate_Plan::generateEmailButtonOnClick(DBO()->Account->CustomerGroup->Value, array($arrRatePlan), DBO()->Account->Id->Value);
 							$strPlanCell		.= "&nbsp;<a onclick='{$strEmailOnClick}' title='Email Plan Brochure'><img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /></a>";
@@ -348,7 +348,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 				// Contract Data panel
 				$strPlanCell	.= "<br />\n".$this->_buildContractData($arrService['FuturePlan']);
 			}
-			
+
 			// This is no longer used (but they might want to use it again in the future)
 			// Work out the Date to display along with the status
 			// Check if the ClosedOn date has been set
@@ -398,7 +398,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 				// Highlight the status
 				$strStatus = "<span style='color:#FF0000'>$strStatus</span>";
 			}
-			
+
 			$strLineStatusDesc = NULL;
 			if ($strLineStatus === FALSE)
 			{
@@ -417,17 +417,17 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			{
 				$strStatusCell = "<span title='$strLineStatusDesc'>$strStatusCell</span>";
 			}
-			
+
 			$strStatusDescCell = "$strStatusDesc $strStatusDescDate";
 			if ($bolFlagStatus)
 			{
 				$strStatusDescCell = "<span class='Red'>$strStatusDescCell</span>";
 			}
-			
+
 			$strViewServiceLink	= Href()->ViewService($arrService['Id']);
 			$strFnnDescription	= ($arrService['FNN'] != NULL)? $arrService['FNN'] : "[not specified]";
 			$strIndial100Flag	= ($arrService['Indial100'])? " (Indial&nbsp;100&nbsp;range)" : "";
-			
+
 			/*if ($bolUserHasViewPerm)
 			{*/
 				$strFnnCell			= "<a href='$strViewServiceLink' title='View Service Details'>$strFnnDescription{$strIndial100Flag}</a>";
@@ -436,7 +436,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			{
 				$strFnnCell			= "<span>$strFnnDescription{$strIndial100Flag}</span>";
 			}*/
-			
+
 			switch ($arrService['ServiceType'])
 			{
 				case SERVICE_TYPE_MOBILE:
@@ -455,8 +455,11 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 					$strServiceTypeClass = "ServiceTypeIconBlank";
 					break;
 			}
-			
-			$strServiceTypeCell = "<div class='$strServiceTypeClass'></div>";
+
+			// $strServiceTypeCell = "<div class='$strServiceTypeClass'></div>";
+			$oServiceType = Service_Type::getForId($arrService['ServiceType']);
+			$sServiceTypeNameEncoded = htmlspecialchars($oServiceType->name);
+			$strServiceTypeCell = "<img src='../admin/img/template/servicetype/" . strtolower($oServiceType->module) . ".png' alt='{$sServiceTypeNameEncoded}' title='{$sServiceTypeNameEncoded}' />";
 
 			$strHistoryDetailsTable = HtmlTemplateServiceHistory::GetHistoryForTableDropDownDetail($arrService['History']);
 			$strDropDownDetail = "
@@ -466,11 +469,11 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 	</div>
 </div>
 ";
-			
+
 			Table()->Services->AddRow($strServiceTypeCell, $strFnnCell,	$strPlanCell, $strStatusTitles, $strStatusCell, $strActionsCell);
 			Table()->Services->SetDetail($strDropDownDetail);
 		}
-		
+
 		// If the account has no services then output an appropriate message in the table
 		if (Table()->Services->RowCount() == 0)
 		{
@@ -479,7 +482,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			Table()->Services->SetRowAlignment("left");
 			Table()->Services->SetRowColumnSpan(6);
 		}
-		
+
 		// Row highlighting doesn't seem to be working with popups
 		// Row highlighting has been turned off, because it stops working if the Service table is ever redrawn
 		Table()->Services->RowHighlighting = TRUE;
@@ -510,7 +513,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			$oContractPanel	= $D->span(array('class'=>implode(' ', $aClasses)), 'No Contract');
 		} else {
 			$sContractEnd	= ($aService['ContractEnd']) ? date('Y-m-d H:i:s', min(strtotime($aService['ContractEnd']), strtotime($aService['ContractEndScheduled']))) : $aService['ContractEndScheduled'];
-			
+
 			$oContractPanel	= $D->span(array('class'=>implode(' ', $aClasses), 'onclick'=>$sDetailsClick),
 				$D->img(array('class'=>'icon', 'src'=>'../admin/img/template/contract.png', 'alt'=>"{$aService['ContractTerm']}-month Contract")),
 				$D->time(array('class'=>'account-service-list-contract-start'),
@@ -522,7 +525,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 				)
 			);
 		}
-		
+
 		return $D->getDOMDocument()->saveXML($oContractPanel);
 	}
 }

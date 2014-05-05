@@ -63,10 +63,10 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 	function __construct($intContext)
 	{
 		$this->_intContext = $intContext;
-		
+
 		$this->LoadJavascript("service_update_listener");
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// Render
 	//------------------------------------------------------------------------//
@@ -91,7 +91,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 				break;
 			case HTML_CONTEXT_BARE_DETAIL:
 				$this->_RenderBareDetail();
-				break;		
+				break;
 			default:
 				$this->_RenderFullDetail();
 				break;
@@ -119,10 +119,10 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		DBO()->Service->FNN->RenderOutput();
 		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("service_status"), RENDER_OUTPUT);
 		echo "</div>\n";
-		
+
 		// Register a listener to handle when the service has been updated
 		echo "<script type='text/javascript'>Vixen.EventHandler.AddListener('". EVENT_ON_SERVICE_UPDATE ."', Vixen.ServiceUpdateListener.OnUpdate);</script>\n";
-		
+
 		echo "<div class='SmallSeperator'></div>\n";
 	}
 
@@ -152,11 +152,11 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		{
 			DBO()->Account->TradingName->RenderOutput();
 		}
-		
+
 		DBO()->Service->FNN->RenderOutput();
-		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("service_status"), RENDER_OUTPUT);		
+		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("service_status"), RENDER_OUTPUT);
 		echo "</div>\n";
-		echo "<div class='SmallSeperator'></div>\n";	
+		echo "<div class='SmallSeperator'></div>\n";
 	}
 
 	//------------------------------------------------------------------------//
@@ -176,9 +176,11 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		echo "<h2 class='service'>Service Details</h2>\n";
 		echo "<div class='GroupedContent'>\n";
 		echo "<!-- Actual Service Declared : ". DBO()->ActualRequestedService->Id->Value ." -->\n";
-		DBO()->Service->FNN->RenderOutput();	
-		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("service_type"), RENDER_OUTPUT);	
-		
+		DBO()->Service->FNN->RenderOutput();
+
+		DBO()->service_type->Load(DBO()->Service->ServiceType->Value);
+		DBO()->service_type->name->RenderOutputAs(array('Label' => 'Service Type'));
+
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
 		{
 			echo "<div class='ContentSeparator'></div>\n";
@@ -197,7 +199,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 			$strWhere = "Service = <Service>";
 			DBO()->ServiceMobileDetail->Where->Set($strWhere, Array('Service' => DBO()->Service->Id->Value));
 			DBO()->ServiceMobileDetail->Load();
-		
+
 			DBO()->ServiceMobileDetail->SimPUK->RenderOutput();
 			DBO()->ServiceMobileDetail->SimESN->RenderOutput();
 			DBO()->ServiceMobileDetail->SimState->RenderCallback("GetConstantDescription", Array("ServiceStateType"), RENDER_OUTPUT);
@@ -215,9 +217,9 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 			$strWhere = "Service = <Service>";
 			DBO()->ServiceInboundDetail->Where->Set($strWhere, Array('Service' => DBO()->Service->Id->Value));
 			DBO()->ServiceInboundDetail->Load();
-		
+
 			DBO()->ServiceInboundDetail->AnswerPoint->RenderOutput();
-			DBO()->ServiceInboundDetail->Configuration->RenderOutput();			
+			DBO()->ServiceInboundDetail->Configuration->RenderOutput();
 		}
 
 		echo "<div class='ContentSeparator'></div>\n";
@@ -226,9 +228,9 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		{
 			DBO()->Service->CostCentre->RenderOutput();
 		}
-		
+
 		DBO()->Service->ForceInvoiceRender->RenderOutput();
-		
+
 		DBO()->Service->TotalUnbilledAdjustments->RenderOutput();
 		// Display the current rate plan, if there is one
 		if (DBO()->CurrentRatePlan->Id->Value)
@@ -239,13 +241,13 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		{
 			DBO()->CurrentRatePlan->Name->RenderArbitrary("No Plan", RENDER_OUTPUT);
 		}
-		
+
 		// Display the plan scheduled to start for the next billing period, if there is one
 		if (DBO()->FutureRatePlan->Id->Value)
 		{
 			DBO()->FutureRatePlan->Name->RenderOutput();
 		}
-		
+
 		// Separate the Service status properties from the rest
 		echo "<div class='ContentSeparator'></div>\n";
 		$strViewHistoryLink	= Href()->ViewServiceHistory(DBO()->Service->Id->Value);
@@ -257,20 +259,20 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		if (DBO()->Service->LineStatus->Value !== NULL)
 		{
 			DBO()->Service->LineStatus->RenderCallback("GetConstantDescription", Array("service_line_status"), RENDER_OUTPUT);
-		
+
 			if (DBO()->Service->LineStatusDate->Value !== NULL && DBO()->Service->LineStatusDate->Value != "0000-00-00 00:00:00")
 			{
 				$intLineStatusDate = strtotime(DBO()->Service->LineStatusDate->Value);
 				$strLineStatusDate = date("M j, Y g:i:s A", $intLineStatusDate);
-				
+
 				DBO()->Service->LineStatusLastUpdated = $strLineStatusDate;
 				DBO()->Service->LineStatusLastUpdated->RenderOutput();
 			}
 		}
-		
+
 		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("service_status"), RENDER_OUTPUT);
-		
-		$objService		= ModuleService::GetServiceById(DBO()->Service->Id->Value, DBO()->Service->RecordType->Value);		
+
+		$objService		= ModuleService::GetServiceById(DBO()->Service->Id->Value, DBO()->Service->RecordType->Value);
 		$arrLastEvent	= HtmlTemplateServiceHistory::GetLastEvent($objService);
 		$strLastEvent	= "{$arrLastEvent['Event']}<br />on {$arrLastEvent['TimeStamp']}<br />by {$arrLastEvent['EmployeeName']} ({$strViewHistory})";
 		DBO()->Service->MostRecentEvent = $strLastEvent;

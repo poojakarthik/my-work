@@ -10,7 +10,7 @@ class JSON_Handler_Account extends JSON_Handler
 		Log::registerLog('JSON_Handler_Debug', Log::LOG_TYPE_STRING, $this->_JSONDebug);
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
-	
+
 	public function getForId($iAccountId)
 	{
 		$bIsGod	= Employee::getForId(Flex::getUserId())->isGod();
@@ -19,7 +19,8 @@ class JSON_Handler_Account extends JSON_Handler
 			$oAccount	= Account::getForId($iAccountId);
 			$aAccount	= $oAccount->toArray();
 			$aAccount['customer_group']	= Customer_Group::getForId($oAccount->CustomerGroup)->toArray();
-			
+			$aAccount['account_status'] = Account_Status::getForId($oAccount->Archived)->toArray();
+
 			return	array(
 						'bSuccess'	=> true,
 						'oAccount'	=> $aAccount,
@@ -36,8 +37,8 @@ class JSON_Handler_Account extends JSON_Handler
 		}
 	}
 
-	// searchCustomerGroup: Search for accounts within the given customer group (within filter data) using 
-	//						the given search term (within filter data) which can be used to search the 
+	// searchCustomerGroup: Search for accounts within the given customer group (within filter data) using
+	//						the given search term (within filter data) which can be used to search the
 	//						fields: Id, BusinessName & TradingName
 	public function searchCustomerGroup($bCountOnly=false, $iLimit=0, $iOffset=0, $oSort=null, $oFilter=null)
 	{
@@ -48,13 +49,13 @@ class JSON_Handler_Account extends JSON_Handler
 			// NOTE: 	This is designed to be used by a Control_Field_Text_AJAX object on the client side
 			//			As a result, the count only, offset and sorting data are ignored.
 			//
-			
+
 			// Extract filter data
 			$sSearchTerm		= $oFilter->search_term;
 			$iCustomerGroupId	= $oFilter->customer_group;
-			
+
 			// Split the search term by spaces then use each part as a search term
-			$sWhere	= '';	
+			$sWhere	= '';
 			$aTerms	= preg_split('/\s+/', $sSearchTerm);
 			foreach ($aTerms as $sTerm)
 			{
@@ -62,7 +63,7 @@ class JSON_Handler_Account extends JSON_Handler
 				{
 					continue;
 				}
-				
+
 				// Create constraint
 				// By default every term is checked against BusinessName & TradingName
 				$sConstraint	= "(BusinessName LIKE '%{$sTerm}%') OR (TradingName LIKE '%{$sTerm}%')";
@@ -71,11 +72,11 @@ class JSON_Handler_Account extends JSON_Handler
 					// The term is numeric, so Id is checked also
 					$sConstraint	.= " OR (Id LIKE '%{$sTerm}%')";
 				}
-				
+
 				// Add constraint to where clause
 				$sWhere	.= ($sWhere == '') ? "({$sConstraint})" : " AND ({$sConstraint})";
 			}
-			
+
 			// Perform the search query
 			$sQuery		= "	SELECT	*
 							FROM	Account
@@ -90,14 +91,14 @@ class JSON_Handler_Account extends JSON_Handler
 			{
 				throw new Exception_Database("Failed account customer group search. ".$oQuery->Error());
 			}
-			
+
 			// Create array of results
 			$aResults	= array();
 			while($aRow = $mResult->fetch_assoc())
 			{
 				$aResults[]	= $aRow;
 			}
-			
+
 			return	array(
 						'bSuccess'		=> true,
 						'Success'		=> true,
@@ -425,7 +426,7 @@ class JSON_Handler_Account extends JSON_Handler
 		try
 		{
 			self::_setPaymentMethod($iAccountId, $iPaymentMethodType, $iPaymentMethodSubType, $iBillingDetail);
-			
+
 			return array('Success' => true);
 		}
 		catch (JSON_Handler_Account_Exception $oException)
@@ -448,7 +449,7 @@ class JSON_Handler_Account extends JSON_Handler
 					);
 		}
 	}
-	
+
 	public function getAccountGroupInformationForAccount($iAccountId) {
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 		try {
@@ -456,7 +457,7 @@ class JSON_Handler_Account extends JSON_Handler
 			$oCustomerGroup	= Customer_Group::getForId($oSourceAccount->CustomerGroup);
 			$oAccountGroup	= Account_Group::getForId($oSourceAccount->AccountGroup);
 			$aAccounts		= $oAccountGroup->getAccounts(true);
-			
+
 			$aStdAccounts	= array();
 			$aStdContacts	= array();
 			foreach($aAccounts as $iId => $oAccount) {
@@ -481,7 +482,7 @@ class JSON_Handler_Account extends JSON_Handler
 					}
 				}
 			}
-			
+
 			return array(
 				'bSuccess' 	=> true,
 				'oData'		=> array(
@@ -501,7 +502,7 @@ class JSON_Handler_Account extends JSON_Handler
 			);
 		}
 	}
-	
+
 	public function linkAccounts($iParentAccountId, $iChildAccountId) {
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 		try {
@@ -514,7 +515,7 @@ class JSON_Handler_Account extends JSON_Handler
 				$oOldChildAccountGroup = Account_Group::getForId($oChildAccount->AccountGroup);
 				$oChildAccount->AccountGroup = $oParentAccount->AccountGroup;
 				$oChildAccount->save();
-				
+
 				// Update all references to the account group for this accounts associated records
 				self::_updateAccountGroupReferences($iChildAccountId, $iOldAccountGroup, $oChildAccount->AccountGroup);
 
@@ -531,9 +532,9 @@ class JSON_Handler_Account extends JSON_Handler
 			}
 
 			$oDataAccess->TransactionCommit(false);
-			
+
 			return array(
-				'bSuccess'	=> true, 
+				'bSuccess'	=> true,
 				'sDebug' 	=> $bUserIsGod ? $this->_JSONDebug : ''
 			);
 		} catch (Exception $oException) {
@@ -544,7 +545,7 @@ class JSON_Handler_Account extends JSON_Handler
 			);
 		}
 	}
-	
+
 	public function unlinkAccount($iAccountId) {
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 		try {
@@ -558,14 +559,14 @@ class JSON_Handler_Account extends JSON_Handler
 				$oAccountGroup->Archived = 0;
 				$oAccountGroup->save();
 				Log::getLog()->log("Created account group {$oAccountGroup->Id}");
-				
+
 				// Set the accounts account group to the new one (isolating it)
 				$oAccount = Account::getForId($iAccountId);
 				$oOldAccountGroup = Account_Group::getForId($oAccount->AccountGroup);
 				$oAccount->AccountGroup = $oAccountGroup->Id;
 				$oAccount->save();
 				Log::getLog()->log("Update account group on account {$oAccount->Id}");
-				
+
 				// Update all references to the account group for this accounts associated records
 				self::_updateAccountGroupReferences($iAccountId, $oOldAccountGroup->Id, $oAccount->AccountGroup);
 
@@ -580,12 +581,12 @@ class JSON_Handler_Account extends JSON_Handler
 				$oDataAccess->TransactionRollback(false);
 				throw $oEx;
 			}
-			
+
 			$oDataAccess->TransactionCommit(false);
-			
+
 			return array(
-				'bSuccess' 			=> true, 
-				'iAccountGroupId' 	=> $oAccountGroup->Id, 
+				'bSuccess' 			=> true,
+				'iAccountGroupId' 	=> $oAccountGroup->Id,
 				'sDebug' 			=> $bUserIsGod ? $this->_JSONDebug : ''
 			);
 		} catch (Exception $oException) {
@@ -596,7 +597,7 @@ class JSON_Handler_Account extends JSON_Handler
 			);
 		}
 	}
-	
+
 	public function getCreditCardTypes()
 	{
 		try
@@ -634,7 +635,7 @@ class JSON_Handler_Account extends JSON_Handler
 	public function addCreditCard($iAccountId, $oDetails)
 	{
 		$bGod	= Employee::getForId(Flex::getUserId())->isGod();
-		
+
 		// Start a new database transaction
 		$oDataAccess	= DataAccess::getDataAccess();
 		if (!$oDataAccess->TransactionStart())
@@ -717,15 +718,15 @@ class JSON_Handler_Account extends JSON_Handler
 			{
 				// Create orm object
 				$oCreditCard	= new Credit_Card();
-	
+
 				// Set the account group
 				$oAccountGroup				= Account_Group::getForAccountId($iAccountId);
 				$oCreditCard->AccountGroup	= $oAccountGroup->Id;
-	
+
 				// Default values, that aren't supplied by interface
 				$oCreditCard->Archived		= 0;
 				$oCreditCard->employee_id	= Flex::getUserId();
-				
+
 				// Update object & save
 				$oCreditCard->CardType		= $oDetails->iCardType;
 				$oCreditCard->Name			= $oDetails->sCardHolderName;
@@ -752,8 +753,8 @@ class JSON_Handler_Account extends JSON_Handler
 						throw new JSON_Handler_Account_Exception("Failed to modify the payment method for the Account. ".$oException->getMessage());
 					}
 				}
-				
-				// Make credit card payment if necessary 
+
+				// Make credit card payment if necessary
 				$oTransactionDetails	= null;
 				if ($oDetails->bSubmitPayment)
 				{
@@ -772,31 +773,31 @@ class JSON_Handler_Account extends JSON_Handler
 					{
 						$fAmount	= (float)$oDetails->sPaymentAmount;
 					}
-					
+
 					if ($fAmount === null)
 					{
 						throw new Exception("Invalid amount supplied");
 					}
-					
+
 					// Make the credit card transaction
 					$oContact	= Contact::getForId($oAccount->PrimaryContact);
 					if (!$oContact)
 					{
 						throw new Exception("Failed to load primary contact details for the account.");
 					}
-					
+
 					$oTransactionDetails	=	Credit_Card_Payment::makeCreditCardPayment(
-													$iAccountId, 
-													$oContact->Id, 
-													Flex::getUserId(), 
-													$oDetails->iCardType, 
+													$iAccountId,
+													$oContact->Id,
+													Flex::getUserId(),
+													$oDetails->iCardType,
 													$oDetails->iCardNumber,
-													$oDetails->iCVV, 
-													$oDetails->iExpiryMonth, 
-													$oDetails->iExpiryYear, 
-													$oDetails->sCardHolderName, 
-													$fAmount, 
-													$oContact->Email, 
+													$oDetails->iCVV,
+													$oDetails->iExpiryMonth,
+													$oDetails->iExpiryYear,
+													$oDetails->sCardHolderName,
+													$fAmount,
+													$oContact->Email,
 													false	// Use details for direct debit
 												);
 				}
@@ -849,17 +850,17 @@ class JSON_Handler_Account extends JSON_Handler
 			{
 				$sMessage	.= ' '.$oException->getMessage();
 			}
-			
+
 			self::_sendCreditCardPaymentErrorEmail(
-				$iAccountId, 
-				$oContact->Email, 
-				$oDetails->iCardNumber, 
-				$oDetails->sCardHolderName, 
-				$fAmount, 
-				$sMessage, 
+				$iAccountId,
+				$oContact->Email,
+				$oDetails->iCardNumber,
+				$oDetails->sCardHolderName,
+				$fAmount,
+				$sMessage,
 				$oException
 			);
-			
+
 			return 	array(
 						"Success"		=> false,
 						"Message"		=> $sMessage,
@@ -875,17 +876,17 @@ class JSON_Handler_Account extends JSON_Handler
 			{
 				$sMessage	.= ' '.$oException->getMessage();
 			}
-			
+
 			self::_sendCreditCardPaymentErrorEmail(
-				$iAccountId, 
-				$oContact->Email, 
-				$oDetails->iCardNumber, 
-				$oDetails->sCardHolderName, 
-				$fAmount, 
-				$sMessage, 
+				$iAccountId,
+				$oContact->Email,
+				$oDetails->iCardNumber,
+				$oDetails->sCardHolderName,
+				$fAmount,
+				$sMessage,
 				$oException
 			);
-			
+
 			return 	array(
 						"Success"		=> false,
 						"Message"		=> $sMessage,
@@ -901,7 +902,7 @@ class JSON_Handler_Account extends JSON_Handler
 			{
 				$sMessage	.= ' '.$oException->getMessage();
 			}
-			
+
 			return 	array(
 						"Success"		=> false,
 						"Message"		=> $sMessage,
@@ -917,7 +918,7 @@ class JSON_Handler_Account extends JSON_Handler
 			{
 				$sMessage	.= ' '.$oException->getMessage();
 			}
-			
+
 			return 	array(
 						"Success"		=> false,
 						"Message"		=> $sMessage,
@@ -933,26 +934,26 @@ class JSON_Handler_Account extends JSON_Handler
 				// Reversal failed as well
 				$sMessage .= " however the reversal was NOT successful.";
 			}
-			else 
+			else
 			{
 				$sMessage .= " and was successful.";
 			}
-			
+
 			if (Credit_Card_Payment::isTestMode())
 			{
 				$sMessage .= ' '.$oEx->getMessage();
 			}
-			
+
 			self::_sendCreditCardPaymentErrorEmail(
-				$iAccountId, 
-				$oContact->Email, 
-				$oDetails->iCardNumber, 
-				$oDetails->sCardHolderName, 
-				$fAmount, 
-				$sMessage, 
+				$iAccountId,
+				$oContact->Email,
+				$oDetails->iCardNumber,
+				$oDetails->sCardHolderName,
+				$fAmount,
+				$sMessage,
 				$oEx
 			);
-			
+
 			return	array(
 						'Success' 		=> false,
 						'Message'		=> $sMessage,
@@ -1050,15 +1051,15 @@ class JSON_Handler_Account extends JSON_Handler
 			{
 				// Create orm object
 				$oDirectDebit	= new DirectDebit();
-	
+
 				// Set the account group
 				$oAccountGroup				= Account_Group::getForAccountId($iAccountId);
 				$oDirectDebit->AccountGroup	= $oAccountGroup->Id;
-	
+
 				// Default values, that aren't supplied by interface
 				$oDirectDebit->Archived		= 0;
 				$oDirectDebit->employee_id	= Flex::getUserId();
-				
+
 				// Update object & save
 				$oDirectDebit->BankName			= $oDetails->sBankName;
 				$oDirectDebit->BSB				= $oDetails->sBSB;
@@ -1066,7 +1067,7 @@ class JSON_Handler_Account extends JSON_Handler
 				$oDirectDebit->AccountName		= $oDetails->sAccountName;
 				$oDirectDebit->created_on		= DataAccess::getDataAccess()->getNow();
 				$oDirectDebit->save();
-				
+
 				// Modify the payment method for the account
 				if ($oDetails->bSetPaymentMethod)
 				{
@@ -1080,7 +1081,7 @@ class JSON_Handler_Account extends JSON_Handler
 						throw new JSON_Handler_Account_Exception("Failed to modify the payment method for the Account. ".$oException->getMessage());
 					}
 				}
-				
+
 				if ($oDetails->bSubmitPayment)
 				{
 					// Payment to be submitted
@@ -1098,29 +1099,29 @@ class JSON_Handler_Account extends JSON_Handler
 					{
 						$fAmount	= (float)$oDetails->sPaymentAmount;
 					}
-					
+
 					if ($fAmount === null || round($fAmount, 2) === 0.0)
 					{
 						throw new JSON_Handler_Account_Exception("Invalid amount supplied");
 					}
-					
+
 					$iEmployeeId	= Flex::getUserId();
-					
+
 					// Create payment
 					$oPayment =	Logic_Payment::factory(
-									$iAccountId, 
-									PAYMENT_TYPE_DIRECT_DEBIT_VIA_EFT, 
-									$fAmount, 
-									PAYMENT_NATURE_PAYMENT, 
+									$iAccountId,
+									PAYMENT_TYPE_DIRECT_DEBIT_VIA_EFT,
+									$fAmount,
+									PAYMENT_NATURE_PAYMENT,
 									'',
-									date('Y-m-d', DataAccess::getDataAccess()->getNow(true)), 
+									date('Y-m-d', DataAccess::getDataAccess()->getNow(true)),
 									array(
 										'aPaymentTransactionData' =>	array(
 																			Payment_Transaction_Data::BANK_ACCOUNT_NUMBER => $oDirectDebit->AccountNumber
 																		)
 									)
 								);
-					
+
 					// Create payment_request
 					$oPaymentRequest	= 	Payment_Request::generatePending(
 												$iAccountId, 						// Account id
@@ -1130,34 +1131,34 @@ class JSON_Handler_Account extends JSON_Handler
 												$iEmployeeId,						// Employee id
 												$oPayment->id						// Payment id
 											);
-					
+
 					// Update the payments transaction reference
 					$oPayment->transaction_reference = $oPaymentRequest->generateTransactionReference();
 					$oPayment->save();
-											
+
 					$aPaymentReceipt	= 	array(
 												'sTransactionId'	=> $oPayment->transaction_reference,
 												'iAccount'			=> $iAccountId,
 												'sPaidOn'			=> $oPaymentRequest->created_datetime,
 												'fAmount'			=> $oPaymentRequest->amount
 											);
-					
+
 					// Create 'EFT One Time Payment' action
 					$sAmount	= number_format($fAmount, 2);
 					Action::createAction(
-						'EFT One Time Payment', 
-						"Amount: \${$sAmount}\n Receipt Number: {$oPayment->transaction_reference}", 
-						$iAccountId, 
-						NULL, 
-						NULL, 
-						$iEmployeeId, 
+						'EFT One Time Payment',
+						"Amount: \${$sAmount}\n Receipt Number: {$oPayment->transaction_reference}",
+						$iAccountId,
+						NULL,
+						NULL,
+						$iEmployeeId,
 						Employee::SYSTEM_EMPLOYEE_ID
 					);
 				}
-				
+
 				// Everything looks OK -- Commit!
 				$oDataAccess->TransactionCommit();
-				
+
 				// All good
 				return 	array(
 							"Success"			=> true,
@@ -1310,7 +1311,7 @@ class JSON_Handler_Account extends JSON_Handler
 			foreach ($aContacts as $oContact)
 			{
 				$aResults[$oContact->Id]	=	array(
-													'sName'			=> $oContact->getName(), 
+													'sName'			=> $oContact->getName(),
 													'sEmail' 		=> $oContact->Email,
 													'bIsPrimary'	=> ($oContact->Id == $oAccount->PrimaryContact)
 												);
@@ -1358,7 +1359,7 @@ class JSON_Handler_Account extends JSON_Handler
 	{
 		// for debug purposes only
 		//$oDetails = json_decode('{"account_id":32,"account_account_number":"1000174123","account_account_name":"sfsafdadf","account_business_commencement_date":"2010-08-01","account_motorpass_business_structure_id":"4","account_business_structure_description":"","account_motorpass_promotion_code_id":"1","card_motorpass_card_type_id":"2","card_card_type_description":"","card_card_expiry_date":"2011-2","card_shared":true,"card_holder_contact_title_id":null,"card_holder_first_name":"","card_holder_last_name":"","card_vehicle_model":"","card_vehicle_rego":"","card_vehicle_make":"","street_address_line_1":"asdfasdf","street_address_line_2":"","street_address_suburb":"asdfdsa","street_address_state_id":"2","street_address_postcode":"3333","postal_address_line_1":"","postal_address_line_2":"","postal_address_suburb":"","postal_address_state_id":null,"postal_address_postcode":"","contact_contact_title_id":null,"contact_first_name":"sdafdsfa","contact_last_name":"adsfsdaf","contact_dob":"2010-08-01","contact_drivers_license":"","contact_position":"asdffsda","contact_landline_number":"0765555555","reference1_company_name":"sdfgf","reference1_contact_person":"sdfgds","reference1_phone_number":"0765555555","reference2_company_name":"sghgh","reference2_contact_person":"hdh","reference2_phone_number":"0756555555"}');
-		
+
 		$oDataAccess	= DataAccess::getDataAccess();
 		$bIsGod			= Employee::getForId(Flex::getUserId())->isGod();
 		if (!$oDataAccess->TransactionStart())
@@ -1408,7 +1409,7 @@ class JSON_Handler_Account extends JSON_Handler
 									"aValidationErrors"	=> $aErrors
 								);
 					}*/
-					
+
 					//
 					// NOTE : 	This has been added so that the old way of editing rebill payment methods could
 					//			work temporarily. It is to be removed and replaced with the commented section above
@@ -1422,22 +1423,22 @@ class JSON_Handler_Account extends JSON_Handler
 					$oRebill->created_employee_id	= Flex::getUserId();
 					$oRebill->created_timestamp		= DataAccess::getDataAccess()->getNow();
 					$oRebill->save();
-					
+
 					$oRebillMotorpass					= new Rebill_Motorpass();
 					$oRebillMotorpass->rebill_id		= $oRebill->id;
 					$oRebillMotorpass->account_number	= $oDetails->account_number;
 					$oRebillMotorpass->account_name		= $oDetails->account_name;
 					$oRebillMotorpass->card_expiry_date	= $oDetails->card_expiry_date;
-					
+
 					$oRebillMotorpass->save();
-					
+
 					// Return the created rebill
 					$oCurrent						= Rebill::getForAccountId($iAccountId);
 					$oCurrentStdClass				= $oCurrent->toStdClass();
 					$oCurrentStdClass->oDetails 	= $oCurrent->getDetails()->toStdClass();
-					
+
 					$oDataAccess->TransactionCommit();
-					
+
 					return 	array(
 								"Success"	=> true,
 								"oRebill"	=> $oCurrentStdClass
@@ -1466,7 +1467,7 @@ class JSON_Handler_Account extends JSON_Handler
 					);
 		}
 	}
-	
+
 	public function getDeliveredCorrespondence($bCountOnly=false, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null)
 	{
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
@@ -1478,7 +1479,7 @@ class JSON_Handler_Account extends JSON_Handler
 			{
 				throw new JSON_Handler_Account_Exception('You do not have permission to view Correspdondence.');
 			}
-			
+
 			$aFilter		= get_object_vars($oFilter);
 			$aSort			= get_object_vars($oSort);
 			$iRecordCount	= Correspondence::getLedgerInformation(true, null, null, $aFilter, $aSort, true);
@@ -1489,7 +1490,7 @@ class JSON_Handler_Account extends JSON_Handler
 							'iRecordCount'	=> $iRecordCount
 						);
 			}
-			
+
 			$iLimit		= is_null($iLimit) ? 0 : $iLimit;
 			$iOffset	= is_null($iOffset) ? 0 : $iOffset;
 			$aItems		= Correspondence::getLedgerInformation(false, $iLimit, $iOffset, $aFilter, $aSort, true);
@@ -1501,7 +1502,7 @@ class JSON_Handler_Account extends JSON_Handler
 				$aResults[$iOffset + $i]	= $aItem;
 				$i++;
 			}
-			
+
 			return	array(
 						'Success'		=> true,
 						'aRecords'		=> $aResults,
@@ -1523,7 +1524,7 @@ class JSON_Handler_Account extends JSON_Handler
 					);
 		}
 	}
-	
+
 	public function getPaymentInfo($iAccountId)
 	{
 		$bGod	= Employee::getForId(Flex::getUserId())->isGod();
@@ -1533,7 +1534,7 @@ class JSON_Handler_Account extends JSON_Handler
 			$oContact		= Contact::getForId($oAccount->PrimaryContact);
 			$aPaymentMethod	= $this->getCurrentPaymentMethod($iAccountId);
 			$oPaymentMethod	= $aPaymentMethod['oPaymentMethod'];
-			
+
 			$aInfo	= 	array(
 							'sABN'					=> $oAccount->ABN,
 							'sBusinessName'			=> $oAccount->BusinessName,
@@ -1545,7 +1546,7 @@ class JSON_Handler_Account extends JSON_Handler
 							'iPaymentMethodSubType'	=> $aPaymentMethod['iPaymentMethodSubType'],
 							'oPaymentMethod'		=> $oPaymentMethod
 						);
-				
+
 			return	array(
 						'bSuccess'	=> true,
 						'aInfo'		=> $aInfo
@@ -1559,7 +1560,7 @@ class JSON_Handler_Account extends JSON_Handler
 					);
 		}
 	}
-	
+
 	public function sendDirectDebitReceiptEmail($oPaymentReceipt, $aEmails)
 	{
 		$bGod	= Employee::getForId(Flex::getUserId())->isGod();
@@ -1569,7 +1570,7 @@ class JSON_Handler_Account extends JSON_Handler
 			$oCustomerGroup	= Customer_Group::getForId($oAccount->CustomerGroup);
 			$sPaidOn		= date('d/m/Y', strtotime($oPaymentReceipt->sPaidOn));
 			$sAmount		= number_format($oPaymentReceipt->fAmount, 2);
-			
+
 			$oEmail	= new Email_Flex();
 			$oEmail->setSubject("Direct Debit Payment Receipt for {$oCustomerGroup->external_name} Account #{$oPaymentReceipt->iAccount}");
 			$oEmail->setBodyText(
@@ -1587,7 +1588,7 @@ class JSON_Handler_Account extends JSON_Handler
 				$oEmail->addTo($sEmail);
 			}
 			$oEmail->send();
-			
+
 			return	array(
 						'bSuccess'		=> true,
 						'sRecipients'	=> implode(', ', $oEmail->getRecipients())
@@ -1601,7 +1602,7 @@ class JSON_Handler_Account extends JSON_Handler
 					);
 		}
 	}
-	
+
 	public function doesPrimaryContactHaveEmail($iAccountId)
 	{
 		try
@@ -1619,7 +1620,7 @@ class JSON_Handler_Account extends JSON_Handler
 					);
 		}
 	}
-	
+
 	public function changeCollectionScenario($iAccountId, $iScenarioId, $bEndCurrentScenario=true)
 	{
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
@@ -1639,14 +1640,14 @@ class JSON_Handler_Account extends JSON_Handler
 					);
 		}
 	}
-	
+
 	public function hasAccountGotOCAReferral($iAccountId)
 	{
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 		try
 		{
 			return	array(
-						'bSuccess' 					=> true, 
+						'bSuccess' 					=> true,
 						'bAccountHasOCAReferral' 	=> Account_OCA_Referral::accountExists($iAccountId, true)
 					);
 		}
@@ -1659,7 +1660,7 @@ class JSON_Handler_Account extends JSON_Handler
 					);
 		}
 	}
-	
+
 	public function getAllowedInterimInvoiceType($iAccountId)
 	{
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
@@ -1668,7 +1669,7 @@ class JSON_Handler_Account extends JSON_Handler
 			// Get the allowed next interim invoice (run) type
 			$oAccount 			= Account::getForId($iAccountId);
 			$iInvoiceRunTypeId 	= $oAccount->getInterimInvoiceType();
-			
+
 			// Determine if the appropriate flex module is active
 			$bInterimAllowed	= false;
 			switch ($iInvoiceRunTypeId)
@@ -1681,15 +1682,15 @@ class JSON_Handler_Account extends JSON_Handler
 					$bInterimAllowed = Flex_Module::isActive(FLEX_MODULE_INVOICE_INTERIM);
 					break;
 			}
-			
+
 			if (!$bInterimAllowed)
 			{
 				// Module is inactive, clear the result
 				$iInvoiceRunTypeId = null;
 			}
-			
+
 			return	array(
-						'bSuccess'	 				=> true, 
+						'bSuccess'	 				=> true,
 						'iInterimInvoiceRunType'	=> $iInvoiceRunTypeId
 					);
 		}
@@ -1702,7 +1703,7 @@ class JSON_Handler_Account extends JSON_Handler
 					);
 		}
 	}
-	
+
 	public function redistributeBalance($iAccountId)
 	{
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
@@ -1722,7 +1723,7 @@ class JSON_Handler_Account extends JSON_Handler
 					);
 		}
 	}
-	
+
 	private function _getRebill($iAccountId)
 	{
 		$oRebill	= Rebill::getForAccountId($iAccountId);
@@ -1734,7 +1735,7 @@ class JSON_Handler_Account extends JSON_Handler
 		}
 		return $mResult;
 	}
-	
+
 	private static function _sendCreditCardPaymentErrorEmail($iAccountId, $sEmail, $sCardNumber, $sName, $fAmount, $sMessage, $oException)
 	{
 		$aCustomerDetails = array(
@@ -1747,7 +1748,7 @@ class JSON_Handler_Account extends JSON_Handler
 		$sCustomerDetails	= print_r($aCustomerDetails, TRUE);
 		$sMessageSentToUser	= $sMessage;
 		$sExceptionMessage	= $oException->getMessage();
-		
+
 		$sDetails	= "SecurePay Credit Card transaction failed via the Flex Customer Management System";
 		$sDetails 	.= "Exception Message:\n";
 		$sDetails 	.= "\t$sExceptionMessage\n\n";
@@ -1755,16 +1756,16 @@ class JSON_Handler_Account extends JSON_Handler
 		$sDetails 	.= "\t$sMessageSentToUser\n\n";
 		$sDetails 	.= "CustomerDetails:\n";
 		$sDetails 	.= "\t$sCustomerDetails\n\n";
-		
+
 		Flex::sendEmailNotificationAlert(
-			(Credit_Card_Payment::isTestMode() ? '[TEST MODE] ' : '')."SecurePay Transaction Failure", 
-			$sDetails, 
-			FALSE, 
-			TRUE, 
+			(Credit_Card_Payment::isTestMode() ? '[TEST MODE] ' : '')."SecurePay Transaction Failure",
+			$sDetails,
+			FALSE,
+			TRUE,
 			TRUE
 		);
 	}
-	
+
 	private static function _setPaymentMethod($iAccountId, $iPaymentMethodType, $iPaymentMethodSubType, $iBillingDetail)
 	{
 		// Start a new database transaction
@@ -1791,11 +1792,11 @@ class JSON_Handler_Account extends JSON_Handler
 			 * ----------------------------------------------------------------------------------------
 			 * IF YOU CHANGE THE CONTENTS OF THE NOTE THAT IS ADDED DURING THIS PROCESS, MAKE SURE THAT
 			 * YOU UPDATE THE Motorpass Sales Portal IMPLEMENTATION OF IT AS WELL.
-			 * 
-			 * THE CODE TO DO SO IS LOCATED IN Cli_App_FlexSync.php WITHIN THE SPMP APPLICATION.			 * 
+			 *
+			 * THE CODE TO DO SO IS LOCATED IN Cli_App_FlexSync.php WITHIN THE SPMP APPLICATION.			 *
 			 * ----------------------------------------------------------------------------------------
 			 */
-			 
+
 			// Get the old billing type description
 			$sOldBillingType	= '';
 
@@ -1949,14 +1950,14 @@ class JSON_Handler_Account extends JSON_Handler
 			throw $oException;
 		}
 	}
-	
+
 	public function getActivityLog($iAccountId)
 	{
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 		try
 		{
 			$aDataByDate = array();
-			
+
 			// Invoices
 			$aInvoices = Invoice::getForAccount($iAccountId);
 			foreach ($aInvoices as $oInvoice)
@@ -1966,7 +1967,7 @@ class JSON_Handler_Account extends JSON_Handler
 				$oStdInvoice->collectable_balance	= $oInvoice->getCollectableBalance();
 				self::_createActivityLogRecord($oInvoice->CreatedOn, 'aInvoices', $oStdInvoice, $aDataByDate);
 			}
-			
+
 			// Payments
 			$aPayments = Payment::getForAccountId($iAccountId, null, false);
 			foreach ($aPayments as $oPayment)
@@ -1978,35 +1979,35 @@ class JSON_Handler_Account extends JSON_Handler
 				$oStdPayment->proper_balance	= $oPayment->balance * $oPaymentNature->value_multiplier;
 				$oStdPayment->is_reversed		= ($oReversal ? true : false);
 				$oStdPayment->reversal_reason	= Payment_Reversal_Reason::getForId($oReversal ? $oReversal->payment_reversal_reason_id : $oPayment->payment_reversal_reason_id)->name;
-				
+
 				self::_createActivityLogRecord($oPayment->created_datetime, 'aPayments', $oStdPayment, $aDataByDate);
 			}
-			
+
 			// Promises
 			$aPromises = Collection_Promise::getForAccountId($iAccountId, false);
 			foreach ($aPromises as $oPromise)
 			{
 				$oStdPromise 			= $oPromise->toStdClass();
 				$oStdPromise->reason	= Collection_Promise_Reason::getForId($oPromise->collection_promise_reason_id)->name;
-				
+
 				self::_createActivityLogRecord($oPromise->created_datetime, 'aCreatedPromises', $oStdPromise, $aDataByDate);
-				
+
 				if ($oPromise->completed_datetime !== null)
 				{
 					self::_createActivityLogRecord($oPromise->completed_datetime, 'aCompletedPromises', $oStdPromise, $aDataByDate);
 				}
-				
+
 				$aInstalments = Collection_Promise_Instalment::getForPromiseId($oPromise->id);
 				foreach ($aInstalments as $oInstalment)
 				{
 					$iInstalmentDue							= strtotime($oInstalment->due_date);
 					$oStdInstalment 						= $oInstalment->toStdClass();
 					$oStdInstalment->within_promise_range	= ($iInstalmentDue >= strtotime($oPromise->created_datetime)) && ($iInstalmentDue <= strtotime($oPromise->completed_datetime));
-					
+
 					self::_createActivityLogRecord($oInstalment->due_date, 'aDuePromiseInstalments', $oStdInstalment, $aDataByDate);
 				}
 			}
-			
+
 			// Adjustments
 			$aAdjustments = Adjustment::getForAccountId($iAccountId, null, null, false);
 			foreach ($aAdjustments as $oAdjustment)
@@ -2022,11 +2023,11 @@ class JSON_Handler_Account extends JSON_Handler
 					$oStdAdjustment->reversal_reason		= Adjustment_Reversal_Reason::getForId($oReversal ? $oReversal->adjustment_reversal_reason_id : $oAdjustment->adjustment_reversal_reason_id)->name;
 					$oStdAdjustment->created_employee_name	= Employee::getForId($oAdjustment->created_employee_id)->getName();
 					$oStdAdjustment->reviewed_employee_name	= Employee::getForId($oAdjustment->reviewed_employee_id)->getName();
-					
+
 					self::_createActivityLogRecord($oAdjustment->reviewed_datetime, 'aAdjustments', $oStdAdjustment, $aDataByDate);
 				}
 			}
-			
+
 			// Collection events
 			$aEvents = Account_Collection_Event_History::getForAccountId($iAccountId);
 			foreach ($aEvents as $oEvent)
@@ -2037,11 +2038,11 @@ class JSON_Handler_Account extends JSON_Handler
 					$oStdEvent->collection_event_name			= $oEvent->getEvent()->name;
 					$oStdEvent->completed_employee_name			= Employee::getForId($oEvent->completed_employee_id)->getName();
 					$oStdEvent->collection_event_invocation_id	= Logic_Collection_Event_Instance::getForId($oStdEvent->id)->getInvocationId();
-					
+
 					self::_createActivityLogRecord($oEvent->completed_datetime, 'aCollectionEvents', $oStdEvent, $aDataByDate);
 				}
 			}
-			
+
 			// Collection suspensions
 			$aSuspensions = Collection_Suspension::getForAccountId($iAccountId);
 			foreach ($aSuspensions as $oSuspension)
@@ -2049,23 +2050,23 @@ class JSON_Handler_Account extends JSON_Handler
 				$oStdSuspension 						= $oSuspension->toStdClass();
 				$oStdSuspension->start_employee_name	= Employee::getForId($oSuspension->start_employee_id)->getName();
 				$oStdSuspension->reason					= Collection_Suspension_Reason::getForId($oSuspension->collection_suspension_reason_id)->name;
-				
+
 				self::_createActivityLogRecord($oSuspension->start_datetime, 'aStartedCollectionSuspensions', $oStdSuspension, $aDataByDate);
-				
+
 				if ($oSuspension->proposed_end_datetime != Data_Source_Time::END_OF_TIME)
 				{
 					self::_createActivityLogRecord($oSuspension->proposed_end_datetime, 'aProposedCompleteCollectionSuspensions', $oStdSuspension, $aDataByDate);
 				}
-				
+
 				if ($oSuspension->effective_end_datetime !== null)
 				{
 					$oStdSuspension->end_employee_name	= Employee::getForId($oSuspension->end_employee_id ? $oSuspension->end_employee_id : Employee::SYSTEM_EMPLOYEE_ID)->getName();
 					$oStdSuspension->end_reason			= Collection_Suspension_End_Reason::getForId($oSuspension->collection_suspension_end_reason_id)->name;
-				
+
 					self::_createActivityLogRecord($oSuspension->effective_end_datetime, 'aCompletedCollectionSuspensions', $oStdSuspension, $aDataByDate);
 				}
 			}
-			
+
 			// Scenario changes
 			$aAccountCollectionScenario = Account_Collection_Scenario::getForAccountId($iAccountId);
 			foreach ($aAccountCollectionScenario as $oAccountCollectionScenario)
@@ -2078,17 +2079,17 @@ class JSON_Handler_Account extends JSON_Handler
 					self::_createActivityLogRecord($oAccountCollectionScenario->end_datetime, 'aScenarioChangeEnd', $oStdScenarioChange, $aDataByDate);
 				}
 			}
-			
+
 			// Sort the dates in descending order
 			$aDates = array_keys($aDataByDate);
 			sort($aDates);
-			
+
 			$aActivityData = array();
 			foreach ($aDates as $sDate)
 			{
 				$aActivityData[] = $aDataByDate[$sDate];
 			}
-			
+
 			return	array(
 						'aActivityData'	=> $aActivityData,
 						'bSuccess'		=> true,
@@ -2104,7 +2105,7 @@ class JSON_Handler_Account extends JSON_Handler
 					);
 		}
 	}
-	
+
 	public function getHistoricBalance($iAccountId, $sEffectiveDate)
 	{
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
@@ -2125,10 +2126,10 @@ class JSON_Handler_Account extends JSON_Handler
 					);
 		}
 	}
-	
+
 	private static function _createActivityLogRecord($sDate, $sTargetSubList, $oData, &$aDataByDate)
 	{
-		$sDate = date('Y-m-d', strtotime($sDate));		
+		$sDate = date('Y-m-d', strtotime($sDate));
 		if (!isset($aDataByDate[$sDate]))
 		{
 			$aDataByDate[$sDate] = 	array(
@@ -2171,7 +2172,7 @@ class JSON_Handler_Account extends JSON_Handler
 			'ServiceTotal' => array('AccountGroup', 'Account'),
 			'ServiceTypeTotal' => array('AccountGroup', 'Account')
 		);
-		
+
 		foreach ($aTablesToUpdate as $sTable => $aFields) {
 			$sAccountGroupField = $aFields[0];
 			$sAccountField = $aFields[1];
