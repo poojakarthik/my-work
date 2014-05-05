@@ -287,6 +287,7 @@ class Invoice_Export_XML {
 				self::_addAttribute($xmlItemisationType, 'Records', count($arrChargeType['Itemisation']));
 				self::_addAttribute($xmlItemisationType, 'RenderType', GetConstantName($arrChargeType['DisplayType'], 'DisplayType'));
 				self::_addAttribute($xmlItemisationType, 'UnitsTotal', $arrChargeType['UnitsTotal']);
+				self::_addAttribute($xmlItemisationType, 'Visibility', self::__getItemisationCategoryVisibilityForAccountIdAndRecordTypeId($arrInvoice['Account'], $arrChargeType['RecordTypeId']));
 
 				// Charge Itemisation
 				$xmlItemisationItems = self::_addElement($xmlItemisationType, 'Items');
@@ -339,6 +340,39 @@ class Invoice_Export_XML {
 		// Destroy XML object and return
 		unset($domDocument);
 		return $mixReturn;
+	 }
+
+
+	//------------------------------------------------------------------------//
+	// __getItemisationCategoryVisibilityForAccountIdAndRecordTypeId()
+	//------------------------------------------------------------------------//
+	/**
+	 * __getItemisationCategoryVisibilityForAccountIdAndRecordTypeId()
+	 *
+	 * Returns Itemisation Category Visibility
+	 *
+	 * @param int record type id required, int account id required
+	 *
+	 * @return int
+	 *
+	 * @method
+	 */
+	 protected static function __getItemisationCategoryVisibilityForAccountIdAndRecordTypeId($iAccountId, $iRecordTypeId) {
+		// Get Account and CustomerGroup Information
+		$oAccount = Account::getForId($iAccountId);
+		$oCustomerGroup = Customer_Group::getForId($oAccount->CustomerGroup);
+		// Get available visibility statuses
+		$AccountRecordTypeVisibility = Account_Record_Type_Visibility::getForAccountIdAndRecordTypeId($oAccount->Id, $iRecordTypeId);
+		$CustomerGroupRecordTypeVisibility = Customer_Group_Record_Type_Visibility::getForCustomerGroupIdAndRecordTypeId($oCustomerGroup->Id, $iRecordTypeId);
+		// Calculate the visibility
+		if ($AccountRecordTypeVisibility) {
+			$iVisibility = $AccountRecordTypeVisibility->is_visible;
+		} else if ($CustomerGroupRecordTypeVisibility) {
+			$iVisibility = $CustomerGroupRecordTypeVisibility->is_visible;
+		} else {
+			$iVisibility = $oCustomerGroup->default_record_type_visibility;
+		}
+		return $iVisibility;
 	 }
 
 	//------------------------------------------------------------------------//
