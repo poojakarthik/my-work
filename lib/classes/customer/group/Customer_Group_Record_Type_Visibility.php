@@ -41,11 +41,11 @@ class Customer_Group_Record_Type_Visibility {
 
 	private static function getFor($where, $arrWhere, $bolAsArray=FALSE) {
 		$selUsers = new StatementSelect(
-			"Customer_Group_Record_Type_Visibility",
+			"customer_group_record_type_visibility",
 			self::getColumns(),
 			$where);
 		if (($outcome = $selUsers->Execute($arrWhere)) === FALSE) {
-			throw new Exception_Database("Failed to check for existing Customer_Group_Record_Type_Visibility: " . $selUsers->Error());
+			throw new Exception_Database("Failed to check for existing customer_group_record_type_visibility: " . $selUsers->Error());
 		}
 		if (!$outcome && !$bolAsArray) {
 			return NULL;
