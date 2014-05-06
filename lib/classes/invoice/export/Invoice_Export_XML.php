@@ -287,7 +287,7 @@ class Invoice_Export_XML {
 				self::_addAttribute($xmlItemisationType, 'Records', count($arrChargeType['Itemisation']));
 				self::_addAttribute($xmlItemisationType, 'RenderType', GetConstantName($arrChargeType['DisplayType'], 'DisplayType'));
 				self::_addAttribute($xmlItemisationType, 'UnitsTotal', $arrChargeType['UnitsTotal']);
-				self::_addAttribute($xmlItemisationType, 'Visibility', self::__getItemisationCategoryVisibilityForAccountIdAndRecordTypeId($arrInvoice['Account'], $arrChargeType['RecordTypeId']));
+				self::_addAttribute($xmlItemisationType, 'Visibility', self::_getItemisationCategoryVisibilityForAccountIdAndRecordTypeId($arrInvoice['Account'], $arrChargeType['RecordTypeId']));
 
 				// Charge Itemisation
 				$xmlItemisationItems = self::_addElement($xmlItemisationType, 'Items');
@@ -344,10 +344,10 @@ class Invoice_Export_XML {
 
 
 	//------------------------------------------------------------------------//
-	// __getItemisationCategoryVisibilityForAccountIdAndRecordTypeId()
+	// _getItemisationCategoryVisibilityForAccountIdAndRecordTypeId()
 	//------------------------------------------------------------------------//
 	/**
-	 * __getItemisationCategoryVisibilityForAccountIdAndRecordTypeId()
+	 * _getItemisationCategoryVisibilityForAccountIdAndRecordTypeId()
 	 *
 	 * Returns Itemisation Category Visibility
 	 *
@@ -357,7 +357,7 @@ class Invoice_Export_XML {
 	 *
 	 * @method
 	 */
-	 protected static function __getItemisationCategoryVisibilityForAccountIdAndRecordTypeId($iAccountId, $iRecordTypeId) {
+	 protected static function _getItemisationCategoryVisibilityForAccountIdAndRecordTypeId($iAccountId, $iRecordTypeId) {
 		// Get Account and CustomerGroup Information
 		$oAccount = Account::getForId($iAccountId);
 		$oCustomerGroup = Customer_Group::getForId($oAccount->CustomerGroup);

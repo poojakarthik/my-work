@@ -1,76 +1,53 @@
 <?php
-
-class Customer_Group_Record_Type_Visibility {
-
-	protected static $cache = array();
-
-	private	$_arrTidyNames	= array();
-	private	$_arrProperties	= array();
-
-	public function __construct($arrProperties=NULL, $bolLoadById=FALSE) {
-		// Get list of columns from Data Model
-		$arrTableDefine	= DataAccess::getDataAccess()->FetchTableDefine('Customer_Group_Record_Type_Visibility');
-		foreach ($arrTableDefine['Column'] as $strName=>$arrColumn) {
-			$this->_arrProperties[$strName]					= NULL;
-			$this->_arrTidyNames[self::tidyName($strName)]	= $strName;
+class Customer_Group_Record_Type_Visibility extends ORM_Cached {
+	protected $_strTableName = "customer_group_record_type_visibility";
+	protected static $_strStaticTableName = "customer_group_record_type_visibility";
+	
+	protected static function getCacheName() {
+		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
+		static $strCacheName;
+		if (!isset($strCacheName)) {
+			$strCacheName = __CLASS__;
 		}
-		$this->_arrProperties[$arrTableDefine['Id']]				= NULL;
-		$this->_arrTidyNames[self::tidyName($arrTableDefine['Id'])]	= $arrTableDefine['Id'];
+		return $strCacheName;
+	}
+	
+	protected static function getMaxCacheSize() {
+		return 100;
+	}
+	
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
+	//---------------------------------------------------------------------------------------------------------------------------------//
 
-		// Automatically load the Invoice using the passed Id
-		$intId	= ($arrProperties['Id']) ? $arrProperties['Id'] : (($arrProperties['id']) ? $arrProperties['id'] : NULL);
-		if ($bolLoadById && $intId) {
-			$selById	= $this->_preparedStatement('selById');
-			if ($selById->Execute(Array('Id' => $intId))) {
-				$arrProperties	= $selById->Fetch();
-			} elseif ($selById->Error()) {
-				throw new Exception_Database("DB ERROR: ".$selById->Error());
-			} else {
-				throw new Exception(__CLASS__." with Id {$intId} does not exist!");
-			}
-		}
-
-		// Set Properties
-		if (is_array($arrProperties)) {
-			foreach ($arrProperties as $strName=>$mixValue) {
-				// Load from the Database
-				$this->{$strName}	= $mixValue;
-			}
-		}
+	public static function clearCache() {
+		parent::clearCache(__CLASS__);
 	}
 
-	private static function getFor($where, $arrWhere, $bolAsArray=FALSE) {
-		$selUsers = new StatementSelect(
-			"customer_group_record_type_visibility",
-			self::getColumns(),
-			$where);
-		if (($outcome = $selUsers->Execute($arrWhere)) === FALSE) {
-			throw new Exception_Database("Failed to check for existing customer_group_record_type_visibility: " . $selUsers->Error());
-		}
-		if (!$outcome && !$bolAsArray) {
-			return NULL;
-		}
-
-		$records = array();
-		while ($props = $selUsers->Fetch()) {
-			if (!array_key_exists($props['Id'], self::$cache)) {
-				self::$cache[$props['Id']] = new Account($props);
-			}
-			$records[] = self::$cache[$props['Id']];
-			if (!$bolAsArray) {
-				return $records[0];
-			}
-		}
-		return $records;
+	protected static function getCachedObjects() {
+		return parent::getCachedObjects(__CLASS__);
+	}
+	
+	protected static function addToCache($mixObjects) {
+		parent::addToCache($mixObjects, __CLASS__);
 	}
 
-	public static function getForId($id) {
-		if (array_key_exists($id, self::$cache)) {
-			return self::$cache[$id];
-		}
-		$oCustomerGroupRecordTypeVisibility = self::getFor("id = <Id>", array("Id" => $id));
-		return $oCustomerGroupRecordTypeVisibility;
+	public static function getForId($intId, $bolSilentFail=false) {
+		return parent::getForId($intId, $bolSilentFail, __CLASS__);
 	}
+	
+	public static function getAll($bolForceReload=false) {
+		return parent::getAll($bolForceReload, __CLASS__);
+	}
+	
+	public static function importResult($aResultSet) {
+		return parent::importResult($aResultSet, __CLASS__);
+	}
+	
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
+	//---------------------------------------------------------------------------------------------------------------------------------//
+
 
 	public static function getForCustomerGroupIdAndRecordTypeId($customer_group_id, $record_type_id) {
 		$oSelect	= self::_preparedStatement('selByCustomerGroupIdAndRecordTypeId');
@@ -82,118 +59,37 @@ class Customer_Group_Record_Type_Visibility {
 		}
 	}
 
-	protected function getValuesToSave() {
-		$arrColumns = self::getColumns();
-		$arrValues = array();
-		foreach($arrColumns as $strColumn) {
-			if ($strColumn == 'id') {
-				continue;
-			}
-			$arrValues[$strColumn] = $this->{$strColumn};
-		}
-		return $arrValues;
-	}
-
-	// Empties the cache
-	public static function emptyCache() {
-		self::$cache = array();
-	}
-
-	protected static function getColumns() {
-		return array(
-			'id',
-			'customer_group_id',
-			'record_type_id',
-			'is_visible'
-		);
-	}
-
-	public function __get($strName) {
-		$strName	= array_key_exists($strName, $this->_arrTidyNames) ? $this->_arrTidyNames[$strName] : $strName;
-		return (array_key_exists($strName, $this->_arrProperties)) ? $this->_arrProperties[$strName] : NULL;
-	}
-
-	public function __set($strName, $mxdValue) {
-		$strName	= array_key_exists($strName, $this->_arrTidyNames) ? $this->_arrTidyNames[$strName] : $strName;
-
-		if (array_key_exists($strName, $this->_arrProperties)) {
-			$mixOldValue					= $this->_arrProperties[$strName];
-			$this->_arrProperties[$strName]	= $mxdValue;
-
-			if ($mixOldValue !== $mxdValue) {
-				$this->_saved = FALSE;
-			}
-		} else {
-			$this->{$strName} = $mxdValue;
-		}
-	}
-
-	private function tidyName($name) {
-		if (preg_match("/^[A-Z]+$/", $name)) $name = strtolower($name);
-		$tidy = str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
-		$tidy[0] = strtolower($tidy[0]);
-		return $tidy;
-	}
-
-	//------------------------------------------------------------------------//
-	// toArray()
-	//------------------------------------------------------------------------//
-	/**
-	 * toArray()
-	 *
-	 * Returns an associative array modelling the Database Record
-	 *
-	 * Returns an associative array modelling the Database Record
-	 *
-	 * @return	array										DB Record
-	 *
-	 * @method
-	 */
-	public function toArray() {
-		return $this->_arrProperties;
-	}
-
-	//------------------------------------------------------------------------//
-	// _preparedStatement
-	//------------------------------------------------------------------------//
-	/**
-	 * _preparedStatement()
-	 *
-	 * Access a Static Cache of Prepared Statements used by this Class
-	 *
-	 * Access a Static Cache of Prepared Statements used by this Class
-	 *
-	 * @param	string		$strStatement						Name of the statement
-	 *
-	 * @return	Statement										The requested Statement
-	 *
-	 * @method
-	 */
-	private static function _preparedStatement($strStatement) {
-		static	$arrPreparedStatements	= Array();
+	protected static function _preparedStatement($strStatement) {
+		static $arrPreparedStatements = array();
 		if (isset($arrPreparedStatements[$strStatement])) {
 			return $arrPreparedStatements[$strStatement];
 		} else {
 			switch ($strStatement) {
 				// SELECTS
 				case 'selById':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect("customer_group_record_type_visibility", "*", "id = <Id>", NULL, 1);
+					$arrPreparedStatements[$strStatement] = new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
 					break;
+
+				case 'selAll':
+					$arrPreparedStatements[$strStatement] = new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
+					break;
+
 				case 'selByCustomerGroupIdAndRecordTypeId':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("customer_group_record_type_visibility", "*", "record_type_id = <RecordTypeId> AND customer_group_id = <CustomerGroupId>");
 					break;
-
+				
 				// INSERTS
 				case 'insSelf':
-					$arrPreparedStatements[$strStatement]	= new StatementInsert("customer_group_record_type_visibility");
+					$arrPreparedStatements[$strStatement] = new StatementInsert(self::$_strStaticTableName);
 					break;
-
+				
 				// UPDATE BY IDS
 				case 'ubiSelf':
-					$arrPreparedStatements[$strStatement]	= new StatementUpdateById("customer_group_record_type_visibility");
+					$arrPreparedStatements[$strStatement] = new StatementUpdateById(self::$_strStaticTableName);
 					break;
-
+				
 				// UPDATES
+				
 				default:
 					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
 			}
