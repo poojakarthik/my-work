@@ -14,17 +14,9 @@ class Flex_Rollout_Version_000271 extends Flex_Rollout_Version {
 			array(
 				'sDescription' => "Add default_record_type_visibility column to CustomerGroup",
 				'sAlterSQL' => "ALTER TABLE 	CustomerGroup
-								ADD COLUMN 		default_record_type_visibility 		BIGINT UNSIGNED NULL;",
+								ADD COLUMN 		default_record_type_visibility 		TINYINT UNSIGNED NOT NULL DEFAULT 1;",
 				'sRollbackSQL' => "	ALTER TABLE 		CustomerGroup
 									DROP COLUMN 		default_record_type_visibility;",
-				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
-			),
-			array(
-				'sDescription' => "Set default_record_type_visibility to ON for all CustomerGroups",
-				'sAlterSQL' => "UPDATE 		CustomerGroup
-								SET			default_record_type_visibility=1;",
-				'sRollbackSQL' => "UPDATE 	CustomerGroup
-									SET 	default_record_type_visibility=NULL;",
 				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
 			),
 			/* Show Bill Itemisation setting for Customer Groups */
