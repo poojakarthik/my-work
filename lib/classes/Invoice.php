@@ -1572,7 +1572,7 @@ class Invoice extends ORM_Cached {
 							// Add a global tax offset against the credited CDR
 							if (!$aDataCDR['global_tax_exempt']) {
 								$fCDRTaxOffset = self::calculateGlobalTaxComponent($fCharge, $this->intInvoiceDatetime);
-								$aServiceTypeTotals[$aDataCDR['Service']][$aDataCDR['FNN']][$aDataCDR['RecordType']]['totalDiscountTaxOffset'] -= $$fCDRTaxOffset;
+								$aServiceTypeTotals[$aDataCDR['Service']][$aDataCDR['FNN']][$aDataCDR['RecordType']]['totalDiscountTaxOffset'] -= $fCDRTaxOffset;
 								$fTaxOffsetUnrounded -= $fCDRTaxOffset;
 							}
 

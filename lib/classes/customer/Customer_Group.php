@@ -246,7 +246,8 @@ class Customer_Group
 						"cooling_off_period",
 						"invoice_cdr_credits",
 						"interim_invoice_delivery_method_id",
-						"default_account_class_id"
+						"default_account_class_id",
+						"default_record_type_visibility"
 					);
 	}
 

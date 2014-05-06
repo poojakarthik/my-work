@@ -774,6 +774,7 @@ class Invoice_Export {
 	 			case 'selRecordTypes':
 					$arrRecordType = array();
 					$arrRecordType['RecordGroup'] = "RecordGroup.Description";
+					$arrRecordType['RecordTypeId'] = "RecordType.Id";
 					$arrRecordType['GroupId'] = "RecordGroup.Id";
 					/*$arrRecordType['Itemised'] = "RecordGroup.Itemised";*/
 					$arrRecordType['DisplayType'] = "RecordGroup.DisplayType";
