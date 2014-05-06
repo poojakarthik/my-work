@@ -11,9 +11,9 @@
 /**
  * group_details
  *
- * HTML Template for the details of a CustomerGroup 
+ * HTML Template for the details of a CustomerGroup
  *
- * HTML Template for the details of a CustomerGroup 
+ * HTML Template for the details of a CustomerGroup
  *
  * @file		group_details.php
  * @language	PHP
@@ -24,7 +24,7 @@
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
- 
+
 //----------------------------------------------------------------------------//
 // HtmlTemplateCustomerGroupDetails
 //----------------------------------------------------------------------------//
@@ -78,10 +78,10 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 	{
 		$this->_intContext = $intContext;
 		$this->_strContainerDivId = $strId;
-		
+
 		$this->LoadJavascript("customer_group_details");
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// Render
 	//------------------------------------------------------------------------//
@@ -122,7 +122,7 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 	private function _RenderForViewing()
 	{
 		$bolUserIsSuperAdmin = AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN);
-		
+
 		echo "<h2 class='CustomerGroup'>Details</h2>\n";
 		echo "<div class='GroupedContent'>\n";
 
@@ -163,7 +163,8 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 			DBO()->CustomerGroup->cooling_off_period = DBO()->CustomerGroup->cooling_off_period->Value . " hours";
 		}
 		DBO()->CustomerGroup->cooling_off_period->RenderOutput();
-		
+		DBO()->CustomerGroup->default_record_type_visibility->RenderOutput();
+
 		echo "</div>\n"; // GroupedContent
 
 		// Render the buttons
@@ -216,7 +217,7 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 		$strJavascript = "Vixen.CustomerGroupDetails.InitialiseView($intCustomerGroupId, '{$this->_strContainerDivId}');";
 		echo "<script type='text/javascript'>$strJavascript</script>\n";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// _RenderForEditing
 	//------------------------------------------------------------------------//
@@ -231,20 +232,20 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 	 */
 	private function _RenderForEditing()
 	{
-	
+
 		$this->FormStart("EditCustomerGroup", "CustomerGroup", "SaveDetails");
 		echo "<h2 class='CustomerGroup'>Details</h2>\n";
 		echo "<div class='GroupedContent'>\n";
 
 		// Render hidden values
 		DBO()->CustomerGroup->Id->RenderHidden();
-		
+
 		// Render the details of the CustomerGroup
 		DBO()->CustomerGroup->internal_name->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
 		DBO()->CustomerGroup->external_name->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
-		
+
 		DBO()->CustomerGroup->external_name_possessive->RenderInput(CONTEXT_DEFAULT, FALSE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
-		
+
 		DBO()->CustomerGroup->outbound_email->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
 		DBO()->CustomerGroup->flex_url->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
 		DBO()->CustomerGroup->email_domain->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
@@ -273,7 +274,8 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 
 		DBO()->CustomerGroup->customer_advert_url->RenderInput(CONTEXT_DEFAULT, FALSE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
 		DBO()->CustomerGroup->cooling_off_period->RenderInput(CONTEXT_DEFAULT, FALSE, TRUE, Array("attribute:maxlength"=>5, "style:width"=>"100px"));
-		
+		DBO()->CustomerGroup->default_record_type_visibility->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>1, "style:width"=>"15px"));
+
 		echo "</div>\n"; // GroupedContent
 
 		// Render the buttons
@@ -281,12 +283,12 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 		$this->Button("Cancel", "Vixen.CustomerGroupDetails.CancelEdit();");
 		$this->AjaxSubmit("Commit Changes");
 		echo "</div></div>\n";
-		
+
 		// Initialise the CustomerGroupDetails object
 		$intCustomerGroupId = DBO()->CustomerGroup->Id->Value;
 		$strJavascript = "Vixen.CustomerGroupDetails.InitialiseEdit($intCustomerGroupId, '{$this->_strContainerDivId}');";
 		echo "<script type='text/javascript'>$strJavascript</script>\n";
-		
+
 		$this->FormEnd();
 	}
 }

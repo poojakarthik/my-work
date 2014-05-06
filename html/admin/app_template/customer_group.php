@@ -307,7 +307,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate {
 		DBO()->CustomerGroup->customer_primary_color = preg_replace("/[^a-zA-Z0-9]/", "", DBO()->CustomerGroup->customer_primary_color->Value);
 		DBO()->CustomerGroup->customer_secondary_color = preg_replace("/[^a-zA-Z0-9]/", "", DBO()->CustomerGroup->customer_secondary_color->Value);
 
-		DBO()->CustomerGroup->SetColumns("Id,internal_name,external_name,outbound_email,flex_url,email_domain,customer_primary_color,customer_secondary_color,customer_exit_url,external_name_possessive,bill_pay_biller_code,abn,acn,business_phone,business_fax,business_web,business_contact_email,business_info_email,customer_service_phone,customer_service_email,customer_service_contact_name,business_payable_name,business_payable_address,credit_card_payment_phone,faults_phone,customer_advert_url,cooling_off_period");
+		DBO()->CustomerGroup->SetColumns("Id,internal_name,external_name,outbound_email,flex_url,email_domain,customer_primary_color,customer_secondary_color,customer_exit_url,external_name_possessive,bill_pay_biller_code,abn,acn,business_phone,business_fax,business_web,business_contact_email,business_info_email,customer_service_phone,customer_service_email,customer_service_contact_name,business_payable_name,business_payable_address,credit_card_payment_phone,faults_phone,customer_advert_url,cooling_off_period,default_record_type_visibility");
 		// The CustomerGroup is valid.  Save it
 		if (!DBO()->CustomerGroup->Save()) {
 			// The CustomerGroup could not be saved for some unforseen reason
@@ -1263,7 +1263,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate {
 		if ($blobFileContent === false) {
 			return "ERROR: Could not read the file ({$php_errormsg})";
 		}
-		
+
 		// Add the DocumentResource Record
 		TransactionStart();
 		$arrResource = array(

@@ -44,13 +44,13 @@ class Customer_Group
 	private $coolingOffPeriod				= NULL;
 	private $invoiceCDRCredits				= NULL;
 	private $interimInvoiceDeliveryMethodId	= NULL;
-	
+
 	private $value							= NULL;
 	private $name							= NULL;
 	private $description					= NULL;
 	private $constant						= NULL;
-	
-	
+
+
 	protected $arrProperties = array();
 
 	//------------------------------------------------------------------------//
@@ -86,13 +86,13 @@ class Customer_Group
 		if (!isset($arrCustomerGroups) || $bolForceRefresh)
 		{
 			$arrCustomerGroups = array();
-			
+
 			$selCustomerGroups = new StatementSelect("CustomerGroup", self::getColumns(), "", "internal_name ASC");
 			if (($outcome = $selCustomerGroups->Execute()) === FALSE)
 			{
 				throw new Exception_Database("Failed to retrieve all Customer Groups: ". $selCustomerGroups->Error());
 			}
-	
+
 			while ($arrCustomerGroup = $selCustomerGroups->Fetch())
 			{
 				$arrCustomerGroups[$arrCustomerGroup['Id']] = new self($arrCustomerGroup);
@@ -125,12 +125,12 @@ class Customer_Group
 	{
 		return self::_makeConstantName($this->internalName);
 	}
-	
+
 	public function getPaymentMethods()
 	{
 		return Customer_Group_Payment_Method::getForCustomerGroup($this->Id);
 	}
-	
+
 	public function setDefaultAccountClassId($iAccountClassId)
 	{
 		$oQuery 	= new Query();
@@ -141,10 +141,10 @@ class Customer_Group
 		{
 			throw new Exception_Database("Failed to update customer group default account class. ".$oQuery->Error());
 		}
-		
+
 		return true;
 	}
-	
+
 	public function toArray()
 	{
 		$aMe		= array();
@@ -155,7 +155,7 @@ class Customer_Group
 		}
 		return $aMe;
 	}
-	
+
 	public static function getDefaultAccountClassForCustomerGroup($iCustomerGroupId)
 	{
 		$oQuery 	= new Query();
@@ -166,16 +166,16 @@ class Customer_Group
 		{
 			throw new Exception_Database("Failed to get Customer Group default Account Class. ".$oQuery->Error());
 		}
-		
+
 		$aRow = $mResult->fetch_assoc();
 		if (!$aRow)
 		{
 			throw new Exception("Failed to get Customer Group default Account Class. Invalid Customer Group Id supplied '{$iCustomerGroupId}'");
 		}
-		
+
 		return Account_Class::getForId($aRow['default_account_class_id']);
 	}
-	
+
 	public static function getForDefaultAccountClassId($iAccountClassId)
 	{
 		$oQuery 	= new Query();
@@ -186,7 +186,7 @@ class Customer_Group
 		{
 			throw new Exception_Database("Failed to get Customer Group default Account Class. ".$oQuery->Error());
 		}
-		
+
 		$aCustomerGroups = array();
 		while ($aRow = $mResult->fetch_assoc())
 		{
@@ -194,12 +194,12 @@ class Customer_Group
 		}
 		return $aCustomerGroups;
 	}
-	
+
 	private static function _makeConstantName($sInternalName)
 	{
 		return 'CUSTOMER_GROUP_'.strtoupper(str_replace(' ', '_', $sInternalName));
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// getColumns
 	//------------------------------------------------------------------------//
@@ -306,7 +306,7 @@ class Customer_Group
 		}
 		return NULL;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// tidyName
 	//------------------------------------------------------------------------//
@@ -345,7 +345,7 @@ class Customer_Group
 		}
 		return $aMatches;
 	}
-	
+
 }
 
 ?>
