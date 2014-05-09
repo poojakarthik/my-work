@@ -1,6 +1,6 @@
 <?php
 class JSON_Handler_Service_Contract extends JSON_Handler implements JSON_Handler_Loggable, JSON_Handler_Catchable {
-	
+
 	public function getDetails($iServiceRatePlanId) {
 		$oServiceRatePlan = Service_Rate_Plan::getForId((int)$iServiceRatePlanId);
 		$oService = Service::getForId($oServiceRatePlan->Service);
@@ -55,7 +55,8 @@ class JSON_Handler_Service_Contract extends JSON_Handler implements JSON_Handler
 				'contract_term' => $oRatePlan->ContractTerm,
 				'minimum_charge' => $oRatePlan->MinMonthly,
 				'contract_exit_fee' => $oRatePlan->contract_exit_fee,
-				'contract_payout_percentage' => $oRatePlan->contract_payout_percentage
+				'contract_payout_percentage' => $oRatePlan->contract_payout_percentage,
+				'minimum_charge_override' => $oServiceRatePlan->min_monthly
 			),
 			// Contract
 			'contract_start_datetime' => $oServiceRatePlan->StartDatetime,
