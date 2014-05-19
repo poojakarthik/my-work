@@ -172,7 +172,7 @@ class Resource_Type_File_Import_Payment_Westpac_RECall extends Resource_Type_Fil
 
 	private function _processTransactionAustraliaPost($oRecord, Payment_Response $oPaymentResponse) {
 		// Payment Type
-		$oPaymentResponse->payment_type_id = PAYMENT_TYPE_AUSTRALIA_POST;
+		$oPaymentResponse->payment_type_id = PAYMENT_TYPE_AUSTRALIAPOST;
 
 		// Paid Date
 		// NOTE: No date more specific than file processing date
