@@ -60,7 +60,7 @@ class Application_Handler_Ticketing extends Application_Handler
 			BreadCrumb()->EmployeeConsole();
 			BreadCrumb()->AccountOverview($objAccount->id, TRUE);
 			BreadCrumb()->SetCurrentPage("Tickets");
-			
+
 			AppTemplateAccount::BuildContextMenu($objAccount->id);
 		}
 		else
@@ -86,7 +86,7 @@ class Application_Handler_Ticketing extends Application_Handler
 				// A query has been cahced for the AllTickets context
 				$lastQuery = unserialize($_SESSION['ticketing']['lastTicketList']["AllTickets"]);
 			}
-			
+
 			if ($lastQuery !== NULL)
 			{
 				$sort			= $lastQuery['sort'];
@@ -99,8 +99,8 @@ class Application_Handler_Ticketing extends Application_Handler
 				$limit			= $lastQuery['limit'];
 				$offset			= $lastQuery['offset'];
 			}
-			
-		} 
+
+		}
 
 		if (array_key_exists('offset', $_REQUEST))
 		{
@@ -109,7 +109,7 @@ class Application_Handler_Ticketing extends Application_Handler
 
 		if (array_key_exists('limit', $_REQUEST))
 		{
-			$limit = intval($_REQUEST['limit']); 
+			$limit = intval($_REQUEST['limit']);
 		}
 
 		if ($limit <= 0)
@@ -201,7 +201,7 @@ class Application_Handler_Ticketing extends Application_Handler
 		$detailsToRender['filter'] = $filter;
 
 		$quickSearch = array_key_exists('quickSearch', $_REQUEST) ? trim($_REQUEST['quickSearch']) : $quickSearch;
-		
+
 		if ($quickSearch)
 		{
 			$quickSearch = trim(implode(' ', array_slice(array_unique(explode(' ', $quickSearch)), 0, 8)));
@@ -215,12 +215,12 @@ class Application_Handler_Ticketing extends Application_Handler
 		}
 
 		$detailsToRender['quickSearch'] = $quickSearch;
-		
+
 		$detailsToRender['offset'] = $offset;
 		$detailsToRender['limit'] = $limit;
 
 		$lastTicketList = serialize($detailsToRender);
-		
+
 		// Store the query details in the session (but only store the details of the last 10 queries)
 		$strLastQueryKey = ($objAccount)? $objAccount->id : "AllTickets";
 		if (array_key_exists('ticketing', $_SESSION) && is_array($_SESSION['ticketing']) && array_key_exists('lastTicketList', $_SESSION['ticketing']) && is_array($_SESSION['ticketing']['lastTicketList']) && array_key_exists($strLastQueryKey, $_SESSION['ticketing']['lastTicketList']))
@@ -231,7 +231,7 @@ class Application_Handler_Ticketing extends Application_Handler
 		}
 		// Now add the query
 		$_SESSION['ticketing']['lastTicketList'][$strLastQueryKey] = $lastTicketList;
-		
+
 		if (count($_SESSION['ticketing']['lastTicketList']) > 10)
 		{
 			// There are now more than 10 "last queries" in the session
@@ -355,14 +355,14 @@ class Application_Handler_Ticketing extends Application_Handler
 
 				case 'create':
 					$ticket = Ticketing_Ticket::createBlank();
-					
+
 					// Initial correspondence
 					$correspondence = Ticketing_Correspondance::createBlank();
 					$editableValues[] = 'customerGroupEmailId';
 					$editableValues[] = 'sourceId';
 					$editableValues[] = 'deliveryStatusId';
 					$editableValues[] = 'details';
-					
+
 					// Tickets are no longer auto-assigned to the creator
 					$ticket->statusId	= TICKETING_STATUS_UNASSIGNED;
 					if ($currentUser->isAdminUser())
@@ -375,7 +375,7 @@ class Application_Handler_Ticketing extends Application_Handler
 					{
 						$bolChangeOwner		= false;
 					}
-					
+
 					if (array_key_exists('accountId', $_REQUEST))
 					{
 						$ticket->accountId = intval($_REQUEST['accountId']);
@@ -402,12 +402,12 @@ class Application_Handler_Ticketing extends Application_Handler
 					$editableValues[] = 'serviceId';
 
 					$ticketServices = $ticket->getServiceIds();
-					
+
 					if (array_key_exists('save', $_REQUEST))
 					{
 						// Validate the passed details and save if valid
 						$validatedValues = array();
-						
+
 						// Order the editable values so that they are in the same order as the fields on the ticket form
 						$editableValuesOrdered = array();
 						foreach ($_REQUEST as $key=>$value)
@@ -425,7 +425,7 @@ class Application_Handler_Ticketing extends Application_Handler
 								$editableValuesOrdered[$editableValue] = $editableValue;
 							}
 						}
-						
+
 						$intOldTicketStatus	= $ticket->statusId;
 						foreach ($editableValuesOrdered as $editableValue)
 						{
@@ -507,7 +507,7 @@ class Application_Handler_Ticketing extends Application_Handler
 									{
 										// return the invalid value
 										$ticket->accountId = $value;
-										
+
 										$invalidValues[$editableValue] = 'The account number is invalid.';
 									}
 									else
@@ -517,7 +517,7 @@ class Application_Handler_Ticketing extends Application_Handler
 										{
 											$invalidValues[$editableValue] = 'The account number is not for the current account.';
 										}
-										
+
 										$ticket->accountId = $account->id;
 										$ticket->customerGroupId = $account->customerGroup;
 									}
@@ -578,7 +578,7 @@ class Application_Handler_Ticketing extends Application_Handler
 								case 'serviceId':
 									$ticketServices = is_array($value) ? $value : array();
 									break;
-									
+
 								case 'customerGroupEmailId':
 									// It is assumed $ticket->accountId has already been processed
 									// Note that if the account has been specified, subsequent calls to $ticket->getAccount will retrieve a cached version of the account object
@@ -592,7 +592,7 @@ class Application_Handler_Ticketing extends Application_Handler
 											$invalidValues[$editableValue] = 'You must specify a Customer Group email address to use, for the initial correspondence';
 											break;
 										}
-										
+
 										// Check that the email is valid for the customer group that the account belongs to
 										foreach ($arrCustEmails as $objCustEmail)
 										{
@@ -603,12 +603,12 @@ class Application_Handler_Ticketing extends Application_Handler
 												break 2;
 											}
 										}
-										
+
 										// The Email is not valid for the customer group
 										$invalidValues[$editableValue] = 'You must specify a Customer Group email address to use, for the initial correspondence';
 									}
 									break;
-									
+
 								case 'sourceId':
 									$objSource				= Ticketing_Correspondance_Source::getForId(intval($value));
 									$arrAvailableSources	= Ticketing_Correspondance_Source::getAvailableSourcesForUser();
@@ -626,11 +626,11 @@ class Application_Handler_Ticketing extends Application_Handler
 											break 2;
 										}
 									}
-									
+
 									// The Source is not valid
 									$invalidValues[$editableValue] = "You do not have permission to specify the correspondence source, {$objSource->name}";
 									break;
-									
+
 								case 'deliveryStatusId':
 									$objStatus				= Ticketing_Correspondance_Delivery_Status::getForId(intval($value));
 									$arrAvailableStatuses	= Ticketing_Correspondance_Delivery_Status::getAvailableStatusesForUser();
@@ -648,11 +648,11 @@ class Application_Handler_Ticketing extends Application_Handler
 											break 2;
 										}
 									}
-									
+
 									// The Status is not valid
 									$invalidValues[$editableValue] = "You do not have permission to specify the correspondence delivery status, {$objStatus->name}";
 									break;
-									
+
 								case 'details':
 									$strDetails = trim($value);
 									if ($strDetails == "")
@@ -701,7 +701,7 @@ class Application_Handler_Ticketing extends Application_Handler
 							{
 								$ticket->statusId = TICKETING_STATUS_UNASSIGNED;
 							}
-							
+
 							// HACK! If it's a new ticket, and its category is TICKETING_CATEGORY_FAULTS, then set its Owner to unassigned and its status to unassigned;
 							/* We don't currently do this
 							if ($ticket->id == NULL && $ticket->categoryId == TICKETING_CATEGORY_FAULTS)
@@ -715,7 +715,7 @@ class Application_Handler_Ticketing extends Application_Handler
 
 							$ticket->save();
 							$ticket->setServices($ticketServices);
-							
+
 							// Handle initial correspondence
 							if (isset($correspondence))
 							{
@@ -725,7 +725,7 @@ class Application_Handler_Ticketing extends Application_Handler
 								$correspondence->contactId			= $ticket->contactId;
 								$correspondence->userId				= $currentUser->id;
 								$correspondence->creationDatetime	= $ticket->creationDatetime;
-								
+
 								$initialCorrespondenceCouldNotBeSent = FALSE;
 								if ($correspondence->deliveryStatusId == TICKETING_CORRESPONDANCE_DELIVERY_STATUS_SENT && $correspondence->isEmail() && $correspondence->isOutgoing())
 								{
@@ -738,27 +738,27 @@ class Application_Handler_Ticketing extends Application_Handler
 									$correspondence->deliveryDatetime = GetCurrentISODateTime();
 								}
 								$correspondence->save();
-								
+
 								if ($initialCorrespondenceCouldNotBeSent)
 								{
 									// This will notify the user that their initial correspondence could not be sent
 									$detailsToRender['notes'][] = "WARNING: The initial correspondence has not been sent";
 								}
 							}
-							
+
 							$detailsToRender['saved'] = TRUE;
 							$action = 'save';
-							
+
 							// Hacky check to see if we had a change of ownership
 							if ($bolChangeOwner)
 							{
 								$ticket->assignTo(Ticketing_User::getForId($ticket->ownerId));
 							}
-							
+
 							// Handle the possible changing of account context
 							/*if ($objCurrentAccount)
 							{
-								// The page is being viewed in the context of a single account, but if the ticket's associated account changed, 
+								// The page is being viewed in the context of a single account, but if the ticket's associated account changed,
 								// then we want to change this account context to that of the ticket
 								$objCurrentAccount = Account::getForId($ticket->accountId);
 							}*/
@@ -776,7 +776,7 @@ class Application_Handler_Ticketing extends Application_Handler
 									// An accout has been specified, but a customer group hasn't
 									$ticket->customerGroupId = $account->customerGroup;
 								}
-								
+
 								$arrAccountServices = $account->listServices(array(SERVICE_ACTIVE, SERVICE_DISCONNECTED, SERVICE_PENDING));
 								if ($ticket->id == NULL)
 								{
@@ -811,12 +811,12 @@ class Application_Handler_Ticketing extends Application_Handler
 		$detailsToRender['editable_values'] = $editableValues;
 		$detailsToRender['invalid_values'] = $invalidValues;
 		$detailsToRender['currentAccount'] = $objCurrentAccount;
-		
+
 		// Convert the services into associative arrays
 		if (isset($arrAccountServices) && is_array($arrAccountServices))
 		{
 			$detailsToRender['services'] = array();
-			
+
 			foreach ($arrAccountServices as $objService)
 			{
 				$detailsToRender['services'][] = array(	"service_id"			=> $objService->id,
@@ -825,21 +825,21 @@ class Application_Handler_Ticketing extends Application_Handler
 														);
 			}
 		}
-		
+
 		// Build breadcrumb and dropdown menus
 		BreadCrumb()->EmployeeConsole();
 		if ($objCurrentAccount)
 		{
 			BreadCrumb()->AccountOverview($objCurrentAccount->id, TRUE);
 			BreadCrumb()->ViewTicketsForAccount($objCurrentAccount->id, TRUE);
-			
+
 			AppTemplateAccount::BuildContextMenu($objCurrentAccount->id);
 		}
 		else
 		{
 			BreadCrumb()->TicketingConsole(TRUE);
 		}
-		
+
 		$this->LoadPage('ticketing_ticket', HTML_CONTEXT_DEFAULT, $detailsToRender);
 	}
 
@@ -850,7 +850,7 @@ class Application_Handler_Ticketing extends Application_Handler
 		if ($ticket && $ticket->isSaved())
 		{
 			$permittedActions[] = 'view';
-			
+
 			if ($user->isNormalUser() || $user->isAdminUser())
 			{
 				$permittedActions[] = 'edit';
@@ -863,7 +863,7 @@ class Application_Handler_Ticketing extends Application_Handler
 				{
 					$permittedActions[] = 'take';
 				}
-				
+
 				$permittedActions[] = 'reassign';
 			}
 			else
@@ -881,7 +881,7 @@ class Application_Handler_Ticketing extends Application_Handler
 					{
 						$permittedActions[] = 'take';
 					}
-					
+
 					$permittedActions[] = 'reassign';
 				}
 				else
@@ -889,7 +889,7 @@ class Application_Handler_Ticketing extends Application_Handler
 					$permittedActions[] = 'take';
 					$permittedActions[] = 'assign';
 				}
-				
+
 				// Admin user
 				$permittedActions[] = 'delete';
 			}
@@ -968,8 +968,8 @@ class Application_Handler_Ticketing extends Application_Handler
 			}
 
 			$sendError = '';
-			
-			// Check that the correspondence's ticket is associated with the current account, if the page is being viewed in the context of a single account 
+
+			// Check that the correspondence's ticket is associated with the current account, if the page is being viewed in the context of a single account
 			if ($objCurrentAccount)
 			{
 				if ($correspondence)
@@ -979,14 +979,14 @@ class Application_Handler_Ticketing extends Application_Handler
 				if ($ticketId)
 				{
 					$objTicket = Ticketing_Ticket::getForId($ticketId);
-					
+
 					if ($objTicket && $objTicket->accountId != $objCurrentAccount->id)
 					{
 						throw new Exception("This item of correspondence relates to ticket {$ticketId} which is not associated with account: ". $objCurrentAccount->getName());
 					}
 				}
 			}
-			
+
 
 			switch ($action)
 			{
@@ -996,7 +996,7 @@ class Application_Handler_Ticketing extends Application_Handler
 					{
 						$correspondence->delete();
 						TransactionCommit();
-						
+
 						// Deleted the correspondence. Where to now? The ticket?
 						return $this->Ticket(array($correspondence->ticketId, 'view'));
 					}
@@ -1006,7 +1006,7 @@ class Application_Handler_Ticketing extends Application_Handler
 						throw new Exception('Failed to delete correspondence item: '. $e->getMessage());
 					}
 					break;
-					
+
 				case 'send':
 					TransactionStart();
 					try
@@ -1024,16 +1024,16 @@ class Application_Handler_Ticketing extends Application_Handler
 					break;
 
 				case 'edit_as_new':
-					
+
 					// This is really a 'create' operation, where we set some of the initial values to reflect that of an existing correspondence item
 					$action = 'create';
-					
+
 					$ticketId					= $correspondence->ticketId;
 					$detailsToRender['ticket']	= $correspondence->getTicket();
-					
+
 					$oldCorrespondence	= $correspondence;
 					$correspondence		= Ticketing_Correspondance::createBlank();
-					
+
 					// Set initial values for things
 					$correspondence->user					= $currentUser;
 					$correspondence->ticketId				= $oldCorrespondence->ticketId;
@@ -1053,7 +1053,7 @@ class Application_Handler_Ticketing extends Application_Handler
 					$editableValues[] = 'deliveryStatusId';
 
 					break;
-					
+
 				case 'create':
 
 					if ($ticketId === NULL)
@@ -1090,7 +1090,7 @@ class Application_Handler_Ticketing extends Application_Handler
 						// Can only set the source of the correspondence, at creation time
 						$editableValues[] = 'sourceId';
 					}
-					
+
 					if ($action == 'create' || ($correspondence->isOutgoing() && $correspondence->isNotSent()))
 					{
 						$editableValues[] = 'customerGroupEmailId';
@@ -1203,7 +1203,7 @@ class Application_Handler_Ticketing extends Application_Handler
 						}
 						else
 						{
-							if ($oldDeliveryStatus == TICKETING_CORRESPONDANCE_DELIVERY_STATUS_NOT_SENT && 
+							if ($oldDeliveryStatus == TICKETING_CORRESPONDANCE_DELIVERY_STATUS_NOT_SENT &&
 								$correspondence->deliveryStatusId == TICKETING_CORRESPONDANCE_DELIVERY_STATUS_SENT &&
 								$correspondence->isEmail() && $correspondence->isOutgoing())
 							{
@@ -1228,7 +1228,7 @@ class Application_Handler_Ticketing extends Application_Handler
 					}
 
 					break;
-	
+
 				case 'error':
 				case 'view':
 				default:
@@ -1248,7 +1248,7 @@ class Application_Handler_Ticketing extends Application_Handler
 			BreadCrumb()->AccountOverview($objCurrentAccount->id, TRUE);
 			BreadCrumb()->ViewTicketsForAccount($objCurrentAccount->id, TRUE);
 			BreadCrumb()->TicketingTicket($ticketId, $objCurrentAccount->id);
-			
+
 			AppTemplateAccount::BuildContextMenu($objCurrentAccount->id);
 		}
 		else
@@ -1282,7 +1282,7 @@ class Application_Handler_Ticketing extends Application_Handler
 		if ($correspondence && $correspondence->isSaved())
 		{
 			$permittedActions[] = 'view';
-			
+
 			if ($correspondence->userId == $user->id && $correspondence->isEmail() && $correspondence->isNotSent())
 			{
 				// The user created this email, and it has not been sent yet, so they should still be able to edit it and even delete it
@@ -1294,7 +1294,7 @@ class Application_Handler_Ticketing extends Application_Handler
 		if ($correspondence && ($user->isNormalUser() || $user->isAdminUser()))
 		{
 			// We are omitting the external user at this stage
-			
+
 			if ($correspondence->isOutgoing() && $correspondence->isEmail() && $correspondence->isSaved())
 			{
 				// Outgoing saved email
@@ -1313,7 +1313,7 @@ class Application_Handler_Ticketing extends Application_Handler
 
 
 		$permittedActions[] = 'create';
-		
+
 		// Remove any duplicated actions from the list of permitted actions
 		$permittedActions = array_values(array_unique($permittedActions));
 
@@ -1365,7 +1365,7 @@ class Application_Handler_Ticketing extends Application_Handler
 		{
 			AuthenticatedUser()->InsufficientPrivilegeDie();
 		}
-		
+
 		BreadCrumb()->EmployeeConsole();
 		BreadCrumb()->TicketingConsole();
 		BreadCrumb()->SetCurrentPage("Summary Report");
@@ -1376,8 +1376,8 @@ class Application_Handler_Ticketing extends Application_Handler
 			if ($strAction == "getreport")
 			{
 				// The user wants to retrieve the cached SummaryReport
-				if (	is_array($_SESSION['Ticketing']) && 
-						is_array($_SESSION['Ticketing']['SummaryReport']) && 
+				if (	is_array($_SESSION['Ticketing']) &&
+						is_array($_SESSION['Ticketing']['SummaryReport']) &&
 						array_key_exists("Content", $_SESSION['Ticketing']['SummaryReport'])
 					)
 				{
@@ -1386,29 +1386,29 @@ class Application_Handler_Ticketing extends Application_Handler
 					header("Content-Type: application/excel");
 					header("Content-Disposition: attachment; filename=\"" . "ticketing_summary_report_". date("Y_m_d") . ".xls" . "\"");
 					echo $_SESSION['Ticketing']['SummaryReport']['Content'];
-					
+
 					// Remove it from the Session
 					unset($_SESSION['Ticketing']['SummaryReport']['Content']);
 					exit;
 				}
 			}
 		}
-		
-		
+
+
 		// Build Owner combo box data
 		$arrOwners = array();
 		$arrOwners[] = array(	"Id"	=> "all",
 								"Name"	=> "all"
 							);
-		
+
 		$arrTicketUsers = Ticketing_User::listAll();
 		foreach ($arrTicketUsers as $objUser)
 		{
 			$arrOwners[] = array(	"Id"	=> $objUser->id,
 									"Name"	=> $objUser->getName()
-								); 
+								);
 		}
-		
+
 		// Build Category combo box data
 		$arrCategories = array();
 		$arrCategories[] = array(	"Id"		=> "all",
@@ -1421,7 +1421,7 @@ class Application_Handler_Ticketing extends Application_Handler
 										"Name"		=> $objCategory->description
 									);
 		}
-		
+
 		// Build Status combo box data
 		$arrStatuses = array();
 		foreach ($GLOBALS['*arrConstant']['ticketing_status_type'] as $intStatusType=>$arrStatusType)
@@ -1438,7 +1438,7 @@ class Application_Handler_Ticketing extends Application_Handler
 									"IsStatusType"	=> FALSE
 									);
 		}
-		
+
 		$arrTimeRange		= array(	//"Earliest"	=> date("00:00:00 d/m/Y", strtotime("-3 months")),
 										"Earliest"		=> NULL,
 										"Latest"	=> date("23:59:59 d/m/Y"),
@@ -1447,16 +1447,16 @@ class Application_Handler_Ticketing extends Application_Handler
 										"DefaultYear"	=> intval(date("Y")),
 										"DefaultMonth"	=> intval(date("m")),
 										"DefaultDay"	=> intval(date("d")),
-										
+
 									);
-		
+
 		$arrData = array(
 							"Owners"		=> $arrOwners,
 							"Categories"	=> $arrCategories,
 							"Statuses"		=> $arrStatuses,
 							"TimeRange"		=> $arrTimeRange
 						);
-		
+
 		$this->LoadPage('ticketing_summary_report', HTML_CONTEXT_DEFAULT, $arrData);
 	}
 
@@ -1538,7 +1538,7 @@ class Application_Handler_Ticketing extends Application_Handler
 		$detailsToRender['error'] = '';
 		$invalidValues = array();
 
-		try 
+		try
 		{
 			// Return an error if there is no customer group
 			if (!$customerGroup)

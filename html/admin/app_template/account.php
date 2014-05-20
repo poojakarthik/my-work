@@ -42,96 +42,86 @@
  * @class	AppTemplateAccount
  * @extends	ApplicationTemplate
  */
-class AppTemplateAccount extends ApplicationTemplate
-{
-	public static function BuildContextMenu($intAccountId)
-	{
+class AppTemplateAccount extends ApplicationTemplate {
+
+	public static function BuildContextMenu($intAccountId) {
 		$bolUserHasOperatorPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 		$bolUserHasViewPerm			= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW);
 		$bolUserHasExternalPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_EXTERNAL);
 		$bolUserHasCreditManagement	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
 		$bUserHasProperAdmin		= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
 		$bUserHasAdmin				= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
-		
+
 		$objAccount = Account::getForId($intAccountId);
-		
+
 		ContextMenu()->Account->Account_Overview($intAccountId);
-		
-		if ($bolUserHasViewPerm)
-		{
+
+		if ($bolUserHasViewPerm) {
 			ContextMenu()->Account->Invoices_And_Payments($intAccountId);
 		}
-		
+
 		ContextMenu()->Account->Services->List_Services($intAccountId);
 		ContextMenu()->Account->Contacts->List_Contacts($intAccountId);
-		
-		if ($bolUserHasViewPerm)
-		{
+
+		if ($bolUserHasViewPerm) {
 			ContextMenu()->Account->View_Cost_Centres($intAccountId);
 		}
-		if ($bolUserHasOperatorPerm)
-		{
+		if ($bolUserHasOperatorPerm) {
 			ContextMenu()->Account->Services->Add_Services($intAccountId);
 			ContextMenu()->Account->Contacts->Add_Contact($intAccountId);
-			
-			if ($objAccount->BillingType !== BILLING_TYPE_REBILL || ($objAccount->getBalance() > 0.0 && $bolUserHasCreditManagement))
-			{
+
+			if ($objAccount->BillingType !== BILLING_TYPE_REBILL || ($objAccount->getBalance() > 0.0 && $bolUserHasCreditManagement)) {
 				ContextMenu()->Account->Payments->Make_Payment($intAccountId);
 			}
-			
+
 			ContextMenu()->Account->Payments->AccountNewPromise($intAccountId);
-			
 			// Charges
 			ContextMenu()->Account->Charges_and_Adjustments->Charges->Add_Charge($intAccountId);
 			ContextMenu()->Account->Charges_and_Adjustments->Charges->Add_Recurring_Charge($intAccountId);
-			
 			// Adjustments
 			ContextMenu()->Account->Charges_and_Adjustments->Adjustments->Add_Adjustment($intAccountId);
-			
+
 			// Collections Suspension
 			ContextMenu()->Account->Collections->NewCollectionSuspension($intAccountId);
 			ContextMenu()->Account->Collections->EndCollectionSuspension($intAccountId);
 		}
-		if ($bolUserHasOperatorPerm || $bolUserHasExternalPerm)
-		{
+		if ($bolUserHasOperatorPerm || $bolUserHasExternalPerm) {
 			ContextMenu()->Account->Payments->Change_Payment_Method($intAccountId);
 		}
-		if ($bolUserHasOperatorPerm)
-		{
+		if ($bolUserHasOperatorPerm) {
 			ContextMenu()->Account->Add_Associated_Account($intAccountId);
 			ContextMenu()->Account->Provisioning->Provisioning(NULL, $intAccountId);
 			ContextMenu()->Account->Provisioning->ViewProvisioningHistory(NULL, $intAccountId);
-			if (Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL) && count(FlexSale::listForAccountId($intAccountId, NULL, 1)))
-			{
+			if (Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL) && count(FlexSale::listForAccountId($intAccountId, NULL, 1))) {
 				// The account has sales associated with it
 				ContextMenu()->Account->Sales->ViewSalesForAccount($intAccountId);
 			}
 			ContextMenu()->Account->{"Actions / Notes"}->ActionsAndNotesCreatorPopup($intAccountId, null, null, "$intAccountId - ". $objAccount->getName());
 		}
-		if (Flex_Module::isActive(FLEX_MODULE_TICKETING) && Ticketing_User::currentUserIsTicketingUser())
-		{
+		if (Flex_Module::isActive(FLEX_MODULE_TICKETING) && Ticketing_User::currentUserIsTicketingUser()) {
 			ContextMenu()->Account->Tickets->ViewTicketsForAccount($intAccountId);
 			ContextMenu()->Account->Tickets->AddTicket($intAccountId);
 		}
-		
+
 		ContextMenu()->Account->{"Actions / Notes"}->ActionsAndNotesListPopup(ACTION_ASSOCIATION_TYPE_ACCOUNT, $intAccountId, true, 99999, "$intAccountId - ". $objAccount->getName());
-		
+
 		// TODO: Check for permission to view correspondence
 		ContextMenu()->Account->ViewAccountCorrespondenceLedger($intAccountId);
-		
+
 		ContextMenu()->Account->AccountActivityLog($intAccountId);
-		
-		if ($bUserHasProperAdmin)
-		{
+
+		if ($bUserHasProperAdmin) {
 			ContextMenu()->Account->ManageLinkedAccounts($intAccountId);
 		}
-		
-		if ($bolUserHasOperatorPerm) 
-		{
+
+		if ($bolUserHasOperatorPerm) {
 			ContextMenu()->Account->CustomerPortalLogins($intAccountId);
 		}
+		if ($bUserHasAdmin) {
+			ContextMenu()->Account->Account_Record_Type_Visibility($intAccountId);
+		}
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// ViewServices
 	//------------------------------------------------------------------------//
@@ -155,52 +145,52 @@ class AppTemplateAccount extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR_VIEW, PERMISSION_OPERATOR_EXTERNAL));
 		$bolUserHasOperatorPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
-		
+
 		// If Account.Id is not set, but Service.Id is, then find the account that the service belongs to
 		if ((!DBO()->Account->Id->Value) && (DBO()->Service->Id->Value))
 		{
 			if (!DBO()->Service->Load())
 			{
 				// The service could not be found
-				
+
 				// For when it is used as a popup
 				//Ajax()->AddCommand("AlertReload", "The service with Id: ". DBO()->Service->Id->Value ." could not be found");
-				
+
 				// For when it is used as a page
 				DBO()->Error->Message = "The service with id: ". DBO()->Service->Id->value ." could not be found";
 				$this->LoadPage('error');
 				return TRUE;
 			}
-			
+
 			// We want to view all services belonging to the account that this service belongs to
 			DBO()->Account->Id = DBO()->Service->Account->Value;
 		}
-		
+
 		// Attempt to load the account
 		if (!DBO()->Account->Load())
 		{
 			// For when it is used as a popup
 			//Ajax()->AddCommand("AlertReload", "The account ". DBO()->Account->Id->Value ." could not be found");
-			
+
 			// For when it is used as a page
 			DBO()->Error->Message = "The account with account id: ". DBO()->Account->Id->value ." could not be found";
 			$this->LoadPage('error');
 			return TRUE;
 		}
-		
+
 		$intAccountId = DBO()->Account->Id->Value;
-		
+
 		// breadcrumb menu
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->AccountOverview($intAccountId, TRUE);
 		BreadCrumb()->SetCurrentPage("Services");
-		
+
 		// context menu
 		self::BuildContextMenu($intAccountId);
-		
+
 		// Load all the services belonging to the account, that the user has permission to view
 		DBO()->Account->Services = $this->GetServices(DBO()->Account->Id->Value, SERVICE_ACTIVE);
-		
+
 		$this->LoadPage('account_services');
 		return TRUE;
 	}
@@ -233,14 +223,14 @@ class AppTemplateAccount extends ApplicationTemplate
 			Ajax()->AddCommand("Alert", "The account ". DBO()->Account->Id->Value ." could not be found");
 			return TRUE;
 		}
-		
+
 		// Load all the contacts who belong to the AccountGroup and can view the Account
 		$strWhere = "(AccountGroup = <AccountGroup> AND CustomerContact = 1) OR Account = <Account> OR Id = <AccountPrimaryContact>";
 		$arrWhere = array("AccountGroup"=>DBO()->Account->AccountGroup->Value, "Account"=>DBO()->Account->Id->Value, "AccountPrimaryContact"=>DBO()->Account->PrimaryContact->Value);
 		DBL()->Contact->Where->Set($strWhere, $arrWhere);
 		DBL()->Contact->OrderBy("FirstName, LastName");
 		DBL()->Contact->Load();
-		
+
 		$this->LoadPage('account_contacts');
 		return TRUE;
 	}
@@ -265,12 +255,12 @@ class AppTemplateAccount extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
 		$bolUserHasOperatorPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
-		
+
 		// breadcrumb menu
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->AccountOverview(DBO()->Account->Id->Value, TRUE);
 		BreadCrumb()->SetCurrentPage("Invoices and Payments");
-		
+
 		// Setup all DBO and DBL objects required for the page
 		// The account should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
 		if (!DBO()->Account->Load())
@@ -280,18 +270,18 @@ class AppTemplateAccount extends ApplicationTemplate
 			return FALSE;
 		}
 		$intAccountId = DBO()->Account->Id->Value;
-		
+
 		// context menu
 		self::BuildContextMenu($intAccountId);
-		
+
 		// NOTE: CR137 - DEPRECATED
 		// the DBList storing the invoices should be ordered so that the most recent is first
 		// same with the payments list
 		//$this->loadInvoices();
-		
+
 		// Sets the page size of the invoice table
 		DBO()->InvoicesToLoad = 10;
-		
+
 		// NOTE: Deprecated, payments are now listed use JS class Component_Account_Payment_List
 		// Retrieve the Payments
 		//"WHERE ((Account = <accId>) OR (AccountGroup = <accGrpId> AND Account IS NULL)) AND (Status conditions)"
@@ -299,7 +289,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		$strWhere .= " OR (Payment.AccountGroup = ". DBO()->Account->AccountGroup->Value ." AND Payment.Account IS NULL))";
 		$strWhere .= " AND Payment.Status IN (". PAYMENT_WAITING .", ". PAYMENT_PAYING .", ". PAYMENT_FINISHED .", ". PAYMENT_REVERSED .")";
 		DBL()->Payment->Where->SetString($strWhere);
-		
+
 		$arrColumns = Array(	"Id"			=> "Payment.Id",
 								"AccountGroup"	=> "Payment.AccountGroup",
 								"Account"		=> "Payment.Account",
@@ -315,23 +305,23 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->Payment->SetTable("Payment LEFT OUTER JOIN FileImport ON Payment.File = FileImport.Id");
 		DBL()->Payment->OrderBy("Payment.PaidOn DESC, Payment.Id DESC");
 		DBL()->Payment->Load();
-		
+
 		DBL()->InvoicePayment->Account = DBO()->Account->Id->Value;
 		DBL()->InvoicePayment->OrderBy("Id DESC");
 		DBL()->InvoicePayment->Load();*/
-		
+
 		// Build the list of columns to use for the Charge DBL (as it is pulling this information from 2 tables)
 		$aVisibleChargeTypes	= array(CHARGE_TYPE_VISIBILITY_VISIBLE);
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
 		{
 			$aVisibleChargeTypes[]	= CHARGE_TYPE_VISIBILITY_CREDIT_CONTROL;
 		}
-		
+
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
 		{
 			$aVisibleChargeTypes[]	= CHARGE_TYPE_VISIBILITY_HIDDEN;
 		}
-		
+
 		// NOTE: Deprecated, recurring charges are now listed use JS class Component_Account_Recurring_Charge_List
 		// Build the list of columns to use for the RecurringCharge DBL (as it is pulling this information from 2 tables)
 		/*$arrColumns = Array(	'Id' => 'RC.Id',	'AccountGroup'=>'RC.AccountGroup',	'Account'=>'RC.Account',	'Service'=>'RC.Service',
@@ -344,68 +334,68 @@ class AppTemplateAccount extends ApplicationTemplate
 								'recurring_charge_status_id'=>'RC.recurring_charge_status_id', 'in_advance'=>'RC.in_advance', 'FNN'=>'S.FNN');
 		DBL()->RecurringCharge->SetColumns($arrColumns);
 		DBL()->RecurringCharge->SetTable("RecurringCharge AS RC LEFT JOIN Service AS S ON RC.Service = S.Id");
-		
+
 		$intRecChargeStatusAwaitingApproval	= Recurring_Charge_Status::getIdForSystemName('AWAITING_APPROVAL');
 		$intRecChargeStatusDeclined			= Recurring_Charge_Status::getIdForSystemName('DECLINED');
 		$intRecChargeStatusCancelled		= Recurring_Charge_Status::getIdForSystemName('CANCELLED');
 		$intRecChargeStatusActive			= Recurring_Charge_Status::getIdForSystemName('ACTIVE');
 		$intRecChargeStatusCompleted		= Recurring_Charge_Status::getIdForSystemName('COMPLETED');
-		
+
 		// Only retrieve the recurring charges that are AwaitingApproval, Active, Completed OR (Cancelled after having been Approved)
 		$strRecChargeWhere = "RC.Account = <Account> AND (RC.recurring_charge_status_id IN ($intRecChargeStatusAwaitingApproval, $intRecChargeStatusActive, $intRecChargeStatusCompleted) OR (RC.recurring_charge_status_id = $intRecChargeStatusCancelled AND RC.ApprovedBy IS NOT NULL))";
-		
+
 		// I can't directly use a DBObject property or method as a parameter of another DBObject or DBList method
 		// On account of how the Property token works
 		DBL()->RecurringCharge->Where->Set($strRecChargeWhere, Array("Account"=>$intAccountId));
 		DBL()->RecurringCharge->OrderBy("StartedOn DESC, Id DESC");
 		DBL()->RecurringCharge->Load();*/
-		
+
 		// Calculate the Account Balance
 		$oAccount 				= Account::getForId($intAccountId);
 		DBO()->Account->Balance	= $oAccount->getBalance();
-		
+
 		// Calculate the Account Overdue Amount
 		DBO()->Account->Overdue = $oAccount->getOverdueBalance();
-		
+
 		// Calculate the Account's total unbilled charges
 		DBO()->Account->TotalUnbilledAdjustments = $oAccount->getUnbilledAdjustments();
-		
+
 		// Load all contacts, with the primary being listed first, and then those belonging to this account specifically, then those belonging to the account group who can access this account
 		if (DBO()->Account->PrimaryContact->Value)
 		{
 			// Make sure the contact specified belongs to the AccountGroup
 			$intPrimaryContactId	= DBO()->Account->PrimaryContact->Value;
 			$intAccountGroupId		= DBO()->Account->AccountGroup->Value;
-			
+
 			DBL()->Contact->Where->SetString("Id = $intPrimaryContactId OR Account = $intAccountId OR (CustomerContact = 1 AND AccountGroup = $intAccountGroupId)");
 			DBL()->Contact->OrderBy("(Id = $intPrimaryContactId) DESC, (Account = $intAccountId) DESC, FirstName ASC, LastName ASC");
 			DBL()->Contact->SetLimit(3);
 			DBL()->Contact->Load();
 		}
-		
+
 		//DEPRECATED! Old Notes Functionality
 		//Load the notes
 		//LoadNotes(DBO()->Account->Id->Value);
 
 		// Build list of warnings to show
 		DBO()->SeverityWarnings = self::_getSeverityWarnings($intAccountId);
-		
+
 		// Flag the Account as being shown in the InvoicesAndPayments Page
 		DBO()->Account->InvoicesAndPaymentsPage = 1;
-		
+
 		// Set up stuff for listing of Actions and Notes
 		DBO()->ActionList->AATContextId = ACTION_ASSOCIATION_TYPE_ACCOUNT;
 		DBO()->ActionList->AATContextReferenceId = DBO()->Account->Id->Value;
 		DBO()->ActionList->IncludeAllRelatableAATTypes = true;
 		DBO()->ActionList->MaxRecordsPerPage = 5;
-		
-		
+
+
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('invoices_and_payments');
 
 		return TRUE;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// Overview
 	//------------------------------------------------------------------------//
@@ -426,11 +416,11 @@ class AppTemplateAccount extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR_VIEW, PERMISSION_OPERATOR_EXTERNAL));
 		$bolUserHasOperatorPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
-		
+
 		// breadcrumb menu
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->SetCurrentPage("Account");
-		
+
 		// Setup all DBO and DBL objects required for the page
 		// The account should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
 		if (!DBO()->Account->Load())
@@ -440,13 +430,13 @@ class AppTemplateAccount extends ApplicationTemplate
 			return FALSE;
 		}
 		$intAccountId = DBO()->Account->Id->Value;
-		
+
 		// context menu
 		self::BuildContextMenu($intAccountId);
 
 		// NOTE: CR137 -- DEPRECATED
 		//$this->loadInvoices(3);
-		
+
 		// Sets the page size of the invoice table
 		DBO()->InvoicesToLoad = 3;
 
@@ -456,10 +446,10 @@ class AppTemplateAccount extends ApplicationTemplate
 
 		// Calculate the Account Overdue Amount
 		DBO()->Account->Overdue = $oAccount->getOverdueBalance();
-		
+
 		// Calculate the Account's total unbilled charges
 		DBO()->Account->TotalUnbilledAdjustments = $oAccount->getUnbilledAdjustments();
-		
+
 		// Make sure the contact specified belongs to the AccountGroup
 		$intPrimaryContactId		= DBO()->Account->PrimaryContact->Value;
 		$intAccountGroupId			= DBO()->Account->AccountGroup->Value;
@@ -474,25 +464,25 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->Contact->OrderBy($strContactOrderByClause);
 		DBL()->Contact->SetLimit(3);
 		DBL()->Contact->Load();
-		
+
 		// Load the List of services
 		// Load all the services belonging to the account, that the user has permission to view (which is currently all of them)
 		DBO()->Account->Services = $this->GetServices(DBO()->Account->Id->Value, SERVICE_ACTIVE);
-		
+
 		//DEPRECATED! Old Notes Functionality
 		// Load the user notes
 		//LoadNotes(DBO()->Account->Id->Value);
-		
+
 		// Retrieve the Account_Group object
 		DBO()->Account->AccountGroupObject = Account_Group::getForId(DBO()->Account->AccountGroup->Value, TRUE);
-		
+
 		// Actions built on this page will be associated with an AccountId only
 		DBO()->ActionCreator->AccountId = DBO()->Account->Id->Value;
 		DBO()->ActionList->AATContextId = ACTION_ASSOCIATION_TYPE_ACCOUNT;
 		DBO()->ActionList->AATContextReferenceId = DBO()->Account->Id->Value;
 		DBO()->ActionList->IncludeAllRelatableAATTypes = true;
 		DBO()->ActionList->MaxRecordsPerPage = 5;
-		
+
 		// Billing Type is now 'Payment Method' and is determined differently for rebill methods
 		if (DBO()->Account->BillingType->Value == BILLING_TYPE_REBILL)
 		{
@@ -506,16 +496,16 @@ class AppTemplateAccount extends ApplicationTemplate
 			// Use billing type name
 			DBO()->Account->BillingType->BillingTypeName	= Constant_Group::getConstantGroup('billing_type')->getConstantDescription(DBO()->Account->BillingType->Value);
 		}
-		
+
 		// Build list of warnings to show
 		DBO()->SeverityWarnings = self::_getSeverityWarnings($intAccountId);
-		
+
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('account_overview');
 
 		return TRUE;
 	}
-	
+
 	private static function _getSeverityWarnings($iAccountId)
 	{
 		// Fetch/Create the employee account log record
@@ -530,7 +520,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 		return null;
 	}
-	
+
 	function loadInvoices($limit=FALSE)
 	{
 		$intAccountId = DBO()->Account->Id->Value;
@@ -556,15 +546,15 @@ class AppTemplateAccount extends ApplicationTemplate
 									"charge_total"		=> "I.charge_total",
 									"charge_tax"		=> "I.charge_tax"
 									);
-		
-		
+
+
 		$arrPermittedTypes = array(INVOICE_RUN_TYPE_SAMPLES, INVOICE_RUN_TYPE_LIVE, INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_INTERIM_FIRST, INVOICE_RUN_TYPE_FINAL);
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
 		{
 			$arrPermittedTypes[] = INVOICE_RUN_TYPE_INTERNAL_SAMPLES;
 		}
 		$strInvoiceTables = "Invoice AS I INNER JOIN InvoiceRun AS ir ON I.invoice_run_id = ir.Id";
-		
+
 		$strInvoiceWhere = "I.Account = $intAccountId AND I.Status != ". INVOICE_TEMP ." AND ir.invoice_run_status_id = ". INVOICE_RUN_STATUS_COMMITTED ." AND ir.invoice_run_type_id IN (". INVOICE_RUN_TYPE_LIVE.", ".INVOICE_RUN_TYPE_INTERIM.", ".INVOICE_RUN_TYPE_INTERIM_FIRST.", ".INVOICE_RUN_TYPE_FINAL.")";
 
 		DBL()->InvoicedInvoice->SetTable($strInvoiceTables);
@@ -605,13 +595,13 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->Invoice->Where->SetString($strInvoiceWhere);
 		DBL()->Invoice->OrderBy("I.CreatedOn DESC, I.Id DESC");
 		DBL()->Invoice->Load();
-		
+
 		foreach (DBL()->InvoicedInvoice as $dboInvoicedInvoice)
 		{
 			DBL()->Invoice->AddRecord($dboInvoicedInvoice->AsArray());
 		}
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// RenderAccountServicesTable
 	//------------------------------------------------------------------------//
@@ -634,17 +624,17 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
-		
+
 		// Load all the services belonging to the account, that the user has permission to view
 		DBO()->Account->Services = $this->GetServices(DBO()->ServiceList->Account->Value, DBO()->ServiceList->Filter->Value);
 		DBO()->Account->Id = DBO()->ServiceList->Account->Value;
-		
+
 		//Render the AccountServices table
 		Ajax()->RenderHtmlTemplate("AccountServicesList", HTML_CONTEXT_DEFAULT, DBO()->ServiceList->ContainerDivId->Value);
 
 		return TRUE;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// GetServices
 	//------------------------------------------------------------------------//
@@ -697,7 +687,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		//DBL()->Service->Where->Set("Account = <Account>", Array("Account"=>DBO()->Account->Id->Value));
 		//DBL()->Service->OrderBy("ServiceType ASC, FNN ASC, Id DESC");
 		//DBL()->Service->Load();
-		
+
 		// Retrieve all the services belonging to the account
 		$strTables	= "	Service AS S
 						LEFT JOIN ServiceRatePlan AS SRP1 ON S.Id = SRP1.Service AND SRP1.Id = (SELECT SRP2.Id
@@ -751,14 +741,14 @@ class AppTemplateAccount extends ApplicationTemplate
 		$strWhere	= "S.Account = <AccountId> AND (S.ClosedOn IS NULL OR S.CreatedOn <= S.ClosedOn)";
 		$arrWhere	= Array("AccountId" => $intAccount);
 		$strOrderBy	= ("S.ServiceType ASC, S.FNN ASC, S.Id DESC");
-		
+
 		$selServices = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy);
 		if ($selServices->Execute($arrWhere) === FALSE)
 		{
 			// An error occurred
 			return FALSE;
 		}
-		
+
 		$arrServices	= Array();
 		$arrRecord		= $selServices->Fetch();
 		while ($arrRecord !== FALSE)
@@ -790,7 +780,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			{
 				$arrService['CurrentPlan'] = NULL;
 			}
-			
+
 			// Add details about the Service's Future scheduled plan, if it has one
 			if ($arrRecord['FuturePlanId'] != NULL)
 			{
@@ -811,7 +801,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			{
 				$arrService['FuturePlan'] = NULL;
 			}
-			
+
 			// Add this record's details to the history array
 			$arrService['History']		= Array();
 			$arrService['History'][]	= Array	(
@@ -828,8 +818,8 @@ class AppTemplateAccount extends ApplicationTemplate
 													"LineStatus"		=> $arrRecord['LineStatus'],
 													"LineStatusDate"	=> $arrRecord['LineStatusDate']
 												);
-			 
-			
+
+
 			// If multiple Service records relate to the one actual service then they will be consecutive in the RecordSet
 			// Find each one and add it to the Status history
 			while (($arrRecord = $selServices->Fetch()) !== FALSE)
@@ -858,18 +848,18 @@ class AppTemplateAccount extends ApplicationTemplate
 					break;
 				}
 			}
-			
+
 			// Add the Service to the array of Services
 			$arrServices[] = $arrService;
 		}
-		
+
 		// Apply the filter
 		$strNow = GetCurrentISODateTime();
 		if ($intFilter)
 		{
 			$arrTempServices	= $arrServices;
 			$arrServices		= Array();
-			
+
 			foreach ($arrTempServices as $arrService)
 			{
 				switch ($intFilter)
@@ -882,7 +872,7 @@ class AppTemplateAccount extends ApplicationTemplate
 							$arrServices[] = $arrService;
 						}
 						break;
-					
+
 					case SERVICE_DISCONNECTED:
 						// Only keep the Service if Status == Disconnected AND ClosedOn < NOW()
 						if ($arrService['History'][0]['Status'] == SERVICE_DISCONNECTED && $arrService['History'][0]['ClosedOn'] < $strNow)
@@ -891,7 +881,7 @@ class AppTemplateAccount extends ApplicationTemplate
 							$arrServices[] = $arrService;
 						}
 						break;
-					
+
 					case SERVICE_ARCHIVED:
 						// Only keep the Service if Status == Archived AND ClosedOn < NOW()
 						if ($arrService['History'][0]['Status'] == SERVICE_ARCHIVED && $arrService['History'][0]['ClosedOn'] < $strNow)
@@ -903,11 +893,11 @@ class AppTemplateAccount extends ApplicationTemplate
 				}
 			}
 		}
-		
+
 		return $arrServices;
 	}
-	
-	
+
+
 	//------------------------------------------------------------------------//
 	// RenderAccountDetailsForViewing
 	//------------------------------------------------------------------------//
@@ -932,22 +922,22 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
-		
+
 		// Load the account
 		DBO()->Account->LoadMerge();
-		
+
 		// Calculate the Balance, Amount Overdue, and the Total Un-billed charges
 		$oAccount = Account::getForId(DBO()->Account->Id->Value);
 		DBO()->Account->Balance = $oAccount->getBalance();
 		DBO()->Account->Overdue = $oAccount->getOverdueBalance();
 		DBO()->Account->TotalUnbilledAdjustments = $oAccount->getUnbilledAdjustments();
-		
+
 		// Render the AccountDetails HtmlTemplate for Viewing
 		Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_VIEW, DBO()->Container->Id->Value);
 
 		return TRUE;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// RenderAccountDetailsForEditing
 	//------------------------------------------------------------------------//
@@ -974,20 +964,20 @@ class AppTemplateAccount extends ApplicationTemplate
 
 		// Load the account
 		DBO()->Account->LoadMerge();
-		
+
 		// Accounts can not have their details editted while an invoice run is processing
 		if (Invoice_Run::checkTemporary(DBO()->Account->CustomerGroup->Value, DBO()->Account->Id->Value))
 		{
 			Ajax()->AddCommand("Alert", "This action is temporarily unavailable because a related, live invoice run is currently outstanding");
 			return TRUE;
 		}
-		
+
 		// Render the AccountDetails HtmlTemplate for Editing
 		Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT, DBO()->Container->Id->Value);
 
 		return TRUE;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// SaveDetails
 	//------------------------------------------------------------------------//
@@ -1012,7 +1002,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		$bolIsSuperAdminUser = AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN);
 
 		$qryQuery	= new Query();
-		
+
 		// Accounts can not have their details editted while an invoice run is processing
 		if (Invoice_Run::checkTemporary(DBO()->Account->CustomerGroup->Value, DBO()->Account->Id->Value))
 		{
@@ -1027,7 +1017,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 			return TRUE;
 		}
-		
+
 		// Merge the Account data from the database with the newly defined details
 		DBO()->Account->LoadMerge();
 
@@ -1055,7 +1045,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		// to tables other than the Account table, which I believe is only the
 		// ServiceAddress table at the moment
 		$arrCascadingFields = Array();
-		
+
 		// Load the current account details, so you can work out what has been changed, and include these details in the system note
 		DBO()->CurrentAccount->Id = DBO()->Account->Id->Value;
 		DBO()->CurrentAccount->SetTable("Account");
@@ -1104,13 +1094,13 @@ class AppTemplateAccount extends ApplicationTemplate
 		{
 			$strChangesNote .= "State was changed from ". DBO()->CurrentAccount->State->Value ." to " . DBO()->Account->State->Value . "\n";
 		}
-		
+
 		// NOTE: CR137 - Removed, deprecated collections concept (vip status)
 		/*if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT) && DBO()->Account->vip->Value != DBO()->CurrentAccount->vip->Value)
 		{
 			$strChangesNote .= "VIP status was changed from ". (DBO()->CurrentAccount->vip->Value ? '' :  'in') ."active to " . (DBO()->Account->vip->Value ? '' :  'in') . "active\n";
 		}*/
-		
+
 		if (DBO()->Account->BillingMethod->Value != DBO()->CurrentAccount->BillingMethod->Value)
 		{
 			$strChangesNote .= "Billing Method was changed from ". GetConstantDescription(DBO()->CurrentAccount->BillingMethod->Value, 'delivery_method') ." to " . GetConstantDescription(DBO()->Account->BillingMethod->Value, 'delivery_method') . "\n";
@@ -1121,7 +1111,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			// Only Super Admins can change the CustomerGroup of an Account
 			DBO()->Account->CustomerGroup->Value = DBO()->CurrentAccount->CustomerGroup->Value;
 		}
-		
+
 		if (DBO()->Account->CustomerGroup->Value != DBO()->CurrentAccount->CustomerGroup->Value)
 		{
 			// Check the current CustomerGroup does not have a live invoice run outstanding
@@ -1130,13 +1120,13 @@ class AppTemplateAccount extends ApplicationTemplate
 				Ajax()->AddCommand("Alert", "This action is temporarily unavailable because a related, live invoice run is currently outstanding");
 				return TRUE;
 			}
-			
+
 			$selCustomerGroup = new StatementSelect("CustomerGroup", "Id, internal_name", "Id = <Id>");
 			$selCustomerGroup->Execute(Array("Id" => DBO()->CurrentAccount->CustomerGroup->Value));
 			$arrCurrentCustomerGroup = $selCustomerGroup->Fetch();
 			$selCustomerGroup->Execute(Array("Id" => DBO()->Account->CustomerGroup->Value));
 			$arrNewCustomerGroup = $selCustomerGroup->Fetch();
-			
+
 			$strChangesNote .= "Customer Group was changed from {$arrCurrentCustomerGroup['internal_name']} to {$arrNewCustomerGroup['internal_name']}\n";
 		}
 		DBO()->Account->DisableDDR = !(DBO()->Account->ChargeAdminFee->Value);
@@ -1144,7 +1134,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		{
 			$strChangesNote .= "This account is ". ((DBO()->Account->DisableDDR->Value == 1) ? "no longer" : "now") ." charged an admin fee\n";
 		}
-		
+
 		// NOTE: CR137 - Removed, deprecated collections concept (late payment fee)
 		// if DisableLatePayment === NULL, then, in this context, it logically equals 0
 		/*if (DBO()->CurrentAccount->DisableLatePayment->Value === NULL)
@@ -1166,7 +1156,7 @@ class AppTemplateAccount extends ApplicationTemplate
 								DBO()->Account->DisableLatePayment->FormattedValue(CONTEXT_DEFAULT, $intCurrentValue) .
 								"' to '" . DBO()->Account->DisableLatePayment->FormattedValue() . "'\n";
 		}*/
-		
+
 		if (DBO()->Account->Sample->Value != DBO()->CurrentAccount->Sample->Value)
 		{
 			$intCurrentValue = DBO()->CurrentAccount->Sample->Value;
@@ -1174,19 +1164,19 @@ class AppTemplateAccount extends ApplicationTemplate
 								DBO()->Account->Sample->FormattedValue(CONTEXT_DEFAULT, $intCurrentValue) .
 								"' to '" . DBO()->Account->Sample->FormattedValue() . "'\n";
 		}
-		
+
 		// NOTE: CR137 - Removed, deprecated collections concept (late notices)
 		/*if (DBO()->Account->LatePaymentAmnesty->Value != DBO()->CurrentAccount->LatePaymentAmnesty->Value)
 		{
 			// When refering to END_OF_TIME, we just want the date part, not the time part
 			$strEndOfTime = substr(END_OF_TIME, 0, 10);
-			
+
 			if (DBO()->Account->LatePaymentAmnesty->Value == NULL)
 			{
 				// Explicity set it to NULL, if it loosely equals NULL
 				DBO()->Account->LatePaymentAmnesty = NULL;
 			}
-			
+
 			if (DBO()->CurrentAccount->LatePaymentAmnesty->Value != $strEndOfTime)
 			{
 				if (DBO()->CurrentAccount->LatePaymentAmnesty->Value < date("Y-m-d"))
@@ -1208,7 +1198,7 @@ class AppTemplateAccount extends ApplicationTemplate
 				$bolAmnestyExpired = FALSE;
 				$strOldSetting = "Never send late notices";
 			}
-			
+
 			// Interpret the new LatePaymentAmnesty value
 			if (DBO()->Account->LatePaymentAmnesty->Value == NULL)
 			{
@@ -1225,7 +1215,7 @@ class AppTemplateAccount extends ApplicationTemplate
 				// An explicit date has been set for the LatePaymentAmnesty
 				$strNewSetting = "Not eligible for late notices until after ". date("jS F, Y", strtotime(DBO()->Account->LatePaymentAmnesty->Value));
 			}
-			
+
 			if (DBO()->Account->LatePaymentAmnesty->Value == NULL && $bolAmnestyExpired)
 			{
 				// The user has set the property to "Send late notices", however the existing amnesty has expired which means it is logically
@@ -1242,7 +1232,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			DBO()->Account->LatePaymentAmnesty = NULL;
 		}
 		*/
-		
+
 		if (DBO()->Account->account_class_id->Value != DBO()->CurrentAccount->account_class_id->Value)
 		{
 			$sOldAccountClass 	= Account_Class::getForId(DBO()->CurrentAccount->account_class_id->Value)->name;
@@ -1278,10 +1268,10 @@ class AppTemplateAccount extends ApplicationTemplate
 				return TRUE;
 			}
 		}*/
-		
+
 		// Set the columns to save
 		DBO()->Account->SetColumns("BusinessName, TradingName, ABN, ACN, Address1, Address2, Suburb, Postcode, State, BillingMethod, CustomerGroup, Archived, DisableDDR, Sample, account_class_id");
-														
+
 		if (!DBO()->Account->Save())
 		{
 			// Saving the account record failed
@@ -1289,7 +1279,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			Ajax()->AddCommand("Alert", "ERROR: Updating the account details failed, unexpectedly");
 			return TRUE;
 		}
-		
+
 		// Check if the Status property has been changed
 		$arrModifiedServices = array();
 		if (DBO()->Account->Archived->Value != DBO()->CurrentAccount->Archived->Value)
@@ -1297,13 +1287,13 @@ class AppTemplateAccount extends ApplicationTemplate
 			// Define one variable for MYSQL date/time and one of the EmployeeID
 			$strTodaysDate = GetCurrentDateForMySQL();
 			$intEmployeeId = AuthenticatedUser()->GetUserId();
-		
+
 			// This will store the Status that services are changed to, due to the changing of the account status
 			$intModifiedServicesNewStatus	= NULL;
-			
+
 			// Stores details of services that should have been automatically provisioned, but failed
 			$arrServicesFailedToProvision	= array();
-		
+
 			$strChangesNote .= "Account Status was changed from ". GetConstantDescription(DBO()->CurrentAccount->Archived->Value, 'account_status') ." to ". GetConstantDescription(DBO()->Account->Archived->Value, 'account_status') . "\n";
 
 			DBO()->account_status_history->account			= DBO()->Account->Id->Value;
@@ -1318,7 +1308,7 @@ class AppTemplateAccount extends ApplicationTemplate
 				Ajax()->AddCommand("Alert", "ERROR: Recording account status change history failed");
 				return TRUE;
 			}
-	
+
 			switch (DBO()->Account->Archived->Value)
 			{
 				case ACCOUNT_STATUS_ACTIVE:
@@ -1328,7 +1318,7 @@ class AppTemplateAccount extends ApplicationTemplate
 						// The account is being activated for the first time
 						// Activate all services that are pending activation
 						$arrServices = $this->GetServices(DBO()->Account->Id->Value);
-						
+
 						foreach ($arrServices as $arrService)
 						{
 							// Check that the service is pending activation (they all should be in this scenario)
@@ -1342,7 +1332,7 @@ class AppTemplateAccount extends ApplicationTemplate
 									Ajax()->AddCommand("Alert", "ERROR: Unexpected problem occurred when trying to activate Service: {$arrService['FNN']}.  The account has not been updated");
 									return TRUE;
 								}
-								
+
 								// Activate the service
 								if (!$objService->ChangeStatus($intModifiedServicesNewStatus))
 								{
@@ -1351,7 +1341,7 @@ class AppTemplateAccount extends ApplicationTemplate
 									Ajax()->AddCommand("Alert", "ERROR: Could not activate Service: {$arrService['FNN']}.  {$objService->GetErrorMsg()}.  The account has not been updated.");
 									return TRUE;
 								}
-								
+
 								// Do FullService and Preselection provisioning requests
 								if ($objService->CanBeProvisioned())
 								{
@@ -1362,7 +1352,7 @@ class AppTemplateAccount extends ApplicationTemplate
 																				"ServiceType"	=> $arrService['ServiceType']);
 									}
 								}
-								
+
 								// Add the details of the service to the list of modified services
 								$arrModifiedServices[] = array(	"FNN"			=> $arrService['FNN'],
 																"ServiceType"	=> $arrService['ServiceType']);
@@ -1370,7 +1360,7 @@ class AppTemplateAccount extends ApplicationTemplate
 						}
 					}
 					break;
-					
+
 				case ACCOUNT_STATUS_DEBT_COLLECTION:
 					// If the Telemarketing Flex Module is active
 					if (Flex_Module::isActive(FLEX_MODULE_TELEMARKETING))
@@ -1378,7 +1368,7 @@ class AppTemplateAccount extends ApplicationTemplate
 						// Add the FNNs on this Account to the Telemarketing Blacklist
 						$oAccount	= Account::getForId(DBO()->Account->Id->Value);
 						$aServices	= $oAccount->listServices();
-						
+
 						foreach ($aServices as $iServiceId=>$oService)
 						{
 							switch ($oService->ServiceType)
@@ -1409,7 +1399,7 @@ class AppTemplateAccount extends ApplicationTemplate
 					// their ClosedOn date is in the future (signifying a change of lessee) or today).  We don't have to worry about
 					// the Services where their status is set to Disconnected and their ClosedOn Date is set to today, because that
 					// is how we are going to update the records anyway.
-					
+
 					//$strWhere = "Account = <AccountId> AND (Status = <ServiceActive> OR (Status = <ServiceDisconnected> AND ClosedOn > NOW()))";
 					//$arrWhere = Array("AccountId" => DBO()->Account->Id->Value, "ServiceActive" => SERVICE_ACTIVE, "ServiceDisconnected" => SERVICE_DISCONNECTED);
 					$strWhere = "Account = <AccountId> AND (Status IN (<ServiceActive>, <ServicePending>) OR (Status = <ServiceDisconnected> AND ClosedOn > NOW())) AND Id = (SELECT MAX(S2.Id) FROM Service AS S2 WHERE S2.Account = <AccountId> AND Service.FNN = S2.FNN) AND (ClosedOn IS NULL OR (ClosedOn >= CreatedOn))";
@@ -1419,7 +1409,7 @@ class AppTemplateAccount extends ApplicationTemplate
 					DBL()->Service->SetColumns("Id, FNN, ServiceType, Status");
 					DBL()->Service->Where->Set($strWhere, $arrWhere);
 					DBL()->Service->Load();
-					
+
 					// Iterate through the services and try to disconnect each one
 					foreach (DBL()->Service as $dboService)
 					{
@@ -1431,7 +1421,7 @@ class AppTemplateAccount extends ApplicationTemplate
 							Ajax()->AddCommand("Alert", "ERROR: Unexpected problem occurred when trying to disconnect Service: {$dboService->FNN->Value}.  The account has not been updated");
 							return TRUE;
 						}
-						
+
 						if ($objService->ChangeStatus($intModifiedServicesNewStatus) === FALSE)
 						{
 							// Could not change the status of the service
@@ -1439,26 +1429,26 @@ class AppTemplateAccount extends ApplicationTemplate
 							Ajax()->AddCommand("Alert", "ERROR: Could not disconnect service: {$dboService->FNN->Value}.  {$objService->GetErrorMsg()}<br />The account has not been updated");
 							return TRUE;
 						}
-						
+
 						// The service has been successfully updated
 						// Add the details of the service to the list of modified services
 						$arrModifiedServices[] = array(	"FNN"			=> $dboService->FNN->Value,
 														"ServiceType"	=> $dboService->ServiceType->Value);
 					}
 					break;
-					
+
 				case ACCOUNT_STATUS_ARCHIVED:
 					$intModifiedServicesNewStatus = SERVICE_ARCHIVED;
 					// If user has selected "Archived" for the account status only Active, Pending and Disconnected services have their Status and
 					// ClosedOn/CloseBy properties changed
 					$strWhere = "Account = <AccountId> AND Status IN (<ServiceActive>, <ServicePending>, <ServiceDisconnected>) AND Id = (SELECT MAX(S2.Id) FROM Service AS S2 WHERE S2.Account = <AccountId> AND Service.FNN = S2.FNN) AND (ClosedOn IS NULL OR (ClosedOn >= CreatedOn))";
 					$arrWhere = Array("AccountId" => DBO()->Account->Id->Value, "ServiceActive" => SERVICE_ACTIVE, "ServicePending" => SERVICE_PENDING, "ServiceDisconnected" => SERVICE_DISCONNECTED);
-					
+
 					// Retrieve all services attached to this Account where the Status is Active/Disconnected/Pending
 					DBL()->Service->SetColumns("Id, FNN, ServiceType, Status");
 					DBL()->Service->Where->Set($strWhere, $arrWhere);
 					DBL()->Service->Load();
-					
+
 					// Iterate through the services and try to disconnect each one
 					foreach (DBL()->Service as $dboService)
 					{
@@ -1470,7 +1460,7 @@ class AppTemplateAccount extends ApplicationTemplate
 							Ajax()->AddCommand("Alert", "ERROR: Unexpected problem occurred when trying to archive Service: {$dboService->FNN->Value}.  The account has not been updated");
 							return TRUE;
 						}
-						
+
 						if ($objService->ChangeStatus($intModifiedServicesNewStatus) === FALSE)
 						{
 							// Could not change the status of the service
@@ -1478,14 +1468,14 @@ class AppTemplateAccount extends ApplicationTemplate
 							Ajax()->AddCommand("Alert", "ERROR: Could not archive service: {$dboService->FNN->Value}.  {$objService->GetErrorMsg()}<br />The account has not been updated");
 							return TRUE;
 						}
-						
+
 						// The service has been successfully updated
 						// Add the details of the service to the list of modified services
 						$arrModifiedServices[] = array(	"FNN"			=> $dboService->FNN->Value,
 														"ServiceType"	=> $dboService->ServiceType->Value);
 					}
 					break;
-					
+
 				case ACCOUNT_STATUS_PENDING_ACTIVATION:
 					// The account's status should never be changed to this
 				default:
@@ -1495,7 +1485,7 @@ class AppTemplateAccount extends ApplicationTemplate
 					return;
 			}
 		}
-		
+
 		// Changes have been made
 		if ($strChangesNote)
 		{
@@ -1518,7 +1508,7 @@ class AppTemplateAccount extends ApplicationTemplate
 					$strChangesNote .= "\n". GetConstantDescription($arrService['ServiceType'], "service_type") .": {$arrService['FNN']}";
 				}
 			}
-			
+
 			SaveSystemNote($strChangesNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value);
 		}
 
@@ -1537,27 +1527,27 @@ class AppTemplateAccount extends ApplicationTemplate
 
 		// All Database interactions were successfull
 		TransactionCommit();
-		
+
 		// NOTE: CR137 - Removed, deprecated collections concept (credit control status)
 		// Email the Credit Control Manager about any Credit Control Status Changes
 		/*if (DBO()->Account->credit_control_status->Value != DBO()->CurrentAccount->credit_control_status->Value)
 		{
 			$objEmailNotification	= Email_Notification::getForSystemName('CREDIT_CONTROL_STATUS_CHANGE', DBO()->Account->CustomerGroup);
-			
+
 			$objCCStatuses	= Constant_Group::getConstantGroup('credit_control_status');
-			
+
 			$objNewEmployee			= Employee::getForId(Flex::getUserId());
 			$strNewEmployeeName		= $objNewEmployee->firstName . (($objNewEmployee->lastName) ? " {$objNewEmployee->lastName}" : '');
 			$strNewTimestamp		= date("H:i:s", strtotime(GetCurrentISODateTime()));
 			$strNewDatestamp		= date("d/m/Y", strtotime(GetCurrentISODateTime()));
 			$strNewCCStatus			= $objCCStatuses->getConstantName(DBO()->Account->credit_control_status->Value);
-			
+
 			$resPreviousCCHistory	= $qryQuery->Execute("SELECT * FROM credit_control_status_history WHERE account = ".DBO()->Account->Id->Value." ORDER BY id DESC LIMIT 1 OFFSET 1");
 			if ($resPreviousCCHistory === false)
 			{
 				throw new Exception_Database($qryQuery->Error());
 			}
-			
+
 			$arrPreviousCCHistory	= $resPreviousCCHistory->fetch_assoc();
 
 			if ($arrPreviousCCHistory !== NULL)
@@ -1568,18 +1558,18 @@ class AppTemplateAccount extends ApplicationTemplate
 				$strPreviousEmployeeName	= $objPreviousEmployee->firstName . (($objPreviousEmployee->lastName) ? " {$objPreviousEmployee->lastName}" : '');
 				$strPreviousTimestamp		= date("H:i:s", strtotime($arrPreviousCCHistory['change_datetime']));
 				$strPreviousDatestamp		= date("d/m/Y", strtotime($arrPreviousCCHistory['change_datetime']));
-				
+
 				$strPreviousCCHSettingDetails = "set on {$strNewTimestamp} on {$strNewDatestamp} by {$strNewEmployeeName}";
 			}
 			else
 			{
 				$strPreviousCCHSettingDetails = "(not known when set)";
 			}
-			
+
 			$strPreviousCCStatus	= $objCCStatuses->getConstantName(DBO()->CurrentAccount->credit_control_status->Value);
-			
+
 			$strMessage			= "{$strNewEmployeeName} changed the Credit Control Status for Account number ".DBO()->Account->Id->Value." from '{$strPreviousCCStatus}' to '{$strNewCCStatus}' at {$strNewTimestamp} on {$strNewDatestamp}.";
-			
+
 			$strTHStyle			= "text-align: right; color: #eee; background-color: #333; width: 15em;";
 			$strTDStyle			= "text-align: left; color: #333; background-color: #eee;";
 			$strTDAutoStyle		= "";
@@ -1616,12 +1606,12 @@ class AppTemplateAccount extends ApplicationTemplate
 								"	</div>\n" .
 								"</body>";
 			$objEmailNotification->setBodyHtml($strHTMLContent);
-			
+
 			$strTextContent	=	"{$strMessage}\n\n" .
 								"Regards\n" .
 								"Flexor";
 			$objEmailNotification->setBodyText($strTextContent);
-			
+
 			$objEmailNotification->setSubject("[NOTICE] Flex Account #".DBO()->Account->Id->Value." Credit Control Status changed from {$strPreviousCCStatus} to {$strNewCCStatus}");
 			$objEmailNotification->send();
 		}*/
@@ -1633,26 +1623,26 @@ class AppTemplateAccount extends ApplicationTemplate
 			$strAlertMsg .= "<br />Fields: ". implode(", ", $arrCascadingFields);
 			Ajax()->AddCommand("Alert", $strAlertMsg);
 		}
-		
+
 		// Fire the OnAccountDetailsUpdate Event
 		$arrEvent['Account']['Id'] = DBO()->Account->Id->Value;
 		Ajax()->FireEvent(EVENT_ON_ACCOUNT_DETAILS_UPDATE, $arrEvent);
-		
+
 		// Fire the OnNewNote event
 		if ($strChangesNote)
 		{
 			Ajax()->FireOnNewNoteEvent();
 		}
-		
+
 		// Fire the OnAccountServicesUpdate Event
 		if (count($arrModifiedServices) > 0)
 		{
 			Ajax()->FireEvent(EVENT_ON_ACCOUNT_SERVICES_UPDATE, $arrEvent);
 		}
-		
+
 		return TRUE;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// DeleteRecord
 	//------------------------------------------------------------------------//
@@ -1674,7 +1664,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		$bolUserHasProperAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
 		$bolHasCreditManagementPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
 		$bolHasAdminPerm			= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
-		
+
 		$bolCanDeleteCharges			= ($bolUserHasProperAdminPerm || $bolHasCreditManagementPerm);
 		$bolCanReversePayments			= $bolHasAdminPerm;
 		$bolCanCancelRecurringCharges	= ($bolUserHasProperAdminPerm || $bolHasCreditManagementPerm);
@@ -1691,7 +1681,7 @@ class AppTemplateAccount extends ApplicationTemplate
 					null,
 					"Deprecated Functionality DeleteRecord (RecordType = 'Payment')"
 				);
-				 
+
 				/*if (!$bolCanReversePayments)
 				{
 					Ajax()->AddCommand("Alert", "You do not have the required permissions to reverse payments");
@@ -1721,7 +1711,7 @@ class AppTemplateAccount extends ApplicationTemplate
 					null,
 					"Deprecated Functionality DeleteRecord (RecordType = 'Adjustment')"
 				);
-				
+
 				if (!$bolCanDeleteCharges)
 				{
 					Ajax()->AddCommand("Alert", "You do not have the required permissions to delete an adjustment");
@@ -1747,7 +1737,7 @@ class AppTemplateAccount extends ApplicationTemplate
 				Ajax()->AddCommand("Alert", "ERROR: No record type has been declared to be deleted");
 				return TRUE;
 		}
-		
+
 		if (DBO()->Account->Id->Value && DBO()->Account->Load())
 		{
 			$intCustomerGroupId	= DBO()->Account->CustomerGroup->Value;
@@ -1758,21 +1748,21 @@ class AppTemplateAccount extends ApplicationTemplate
 			$intCustomerGroupId	= NULL;
 			$intAccountId		= NULL;
 		}
-		
-		
+
+
 		if (Invoice_Run::checkTemporary($intCustomerGroupId, $intAccountId))
 		{
 			// Records cannot be deleted while the Invoicing process is running
 			Ajax()->AddCommand("Alert", "This action is temporarily unavailable because a related, live invoice run is currently outstanding");
 			return TRUE;
 		}
-		
+
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('delete_record');
 
 		return TRUE;
 	}
-	
+
 	// $intPaymentTerms is the number of days the customer has to pay their bill
 	// Returns the LatePaymentAmnesty Date as a string "dd/mm/yyyy"
 	function GetLatePaymentAmnestyDate($intPaymentTerms)
@@ -1780,13 +1770,13 @@ class AppTemplateAccount extends ApplicationTemplate
 		// This date should be 1 month after the due date of the most recently committed bill
 		// If the bill was committed today, then you would probably be refering to last month's bill
 		// however the DisableLateNotices property only gets revereted from -1 to 0 when the bill is committed
-		
+
 		// Retrieve the date that the most recent bill was committed
 		$selBillDate = new StatementSelect("InvoiceRun", Array("BillingDate"=>"MAX(BillingDate)"), "TRUE");
 		$selBillDate->Execute();
 		$arrBillDate = $selBillDate->Fetch();
 		$intBillDate = strtotime($arrBillDate['BillingDate']);
-		
+
 		/*
 		if (date("d/m/Y", $intBillDate) == date("d/m/Y"))
 		{
@@ -1799,16 +1789,16 @@ class AppTemplateAccount extends ApplicationTemplate
 			$strDaysToAdd = "+ 1 month $intPaymentTerms days";
 		}
 		*/
-		
+
 		$strDaysToAdd = "+ 1 month $intPaymentTerms days";
-		
+
 		$strAmnestyDate = date("Y-m-d", strtotime($strDaysToAdd, $intBillDate));
-		
+
 		return $strAmnestyDate;
 	}
 
     //----- DO NOT REMOVE -----//
-	
-	
+
+
 }
 ?>

@@ -14,7 +14,7 @@ abstract class Application_Handler extends ApplicationTemplate
 	 * LoadPage()
 	 *
 	 * Loads a Page to the Application
-	 * 
+	 *
 	 * Loads a Page to the Application, using any AJAX templates it finds
 	 *
 	 * @param		string	$strPageName	The name of the page to load (can contain '_' to match namespacing sub-directories)
@@ -47,13 +47,13 @@ abstract class Application_Handler extends ApplicationTemplate
 		{
 			// create new page object
 			$this->Page = new Application_Page($mxdDataToRender);
-			
+
 			// Pass on modality
 			if ($this->IsModal())
 			{
 				$this->Page->SetModal(TRUE);
 			}
-			
+
 			// load required page
 			require_once($file);
 		}

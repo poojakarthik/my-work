@@ -2,7 +2,7 @@
 
 class Application_Handler_Account extends Application_Handler
 {
-	
+
 	const DEFAULT_DISABLE_LATE_PAYMENT_NOTICES	= 0;
 	const DEFAULT_SAMPLE						= 0;
 	const DEFAULT_CUSTOMER_CONTACT				= 0;
@@ -10,15 +10,30 @@ class Application_Handler_Account extends Application_Handler
 	const DEFAULT_CONTACT_ARCHIVED				= 0;
 	const DEFAULT_VIP_STATUS					= 0;
 	const DEFAULT_PASSWORD_LENGTH_REQUIREMENT	= 6;
-	
+
+	public function RecordTypeVisibility($subPath) {
+
+		// Check user permissions
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
+
+		$oAccount = Account::getForId(DBO()->Account->Id->Value);
+
+		$detailsToRender = array();
+		$detailsToRender['iAccountId'] = $oAccount->Id;
+
+		// context menu
+		AppTemplateAccount::BuildContextMenu($oAccount->Id);
+
+		$this->LoadPage('account_record_type_visibility', HTML_CONTEXT_DEFAULT, $detailsToRender);
+	}
 
 	// Renders the page for Account Creation
 	public function Create($subPath)
 	{
-			
+
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
-		
+
 		try
 		{
 
@@ -38,7 +53,7 @@ class Application_Handler_Account extends Application_Handler
 			//----------------------------------------------------------------//
 			// Retrieve Associated Accounts
 			//----------------------------------------------------------------//
-			
+
 			if (array_key_exists("Associated", $_GET))
 			{
 				$iAssociated = (int)$_GET['Associated'];
@@ -66,24 +81,24 @@ class Application_Handler_Account extends Application_Handler
 						while ($arrContact = $resAssociatedContacts->fetch_assoc())
 						{
 							$arrDetailsToRender['arrAssociatedContacts'][$arrContact['Id']]	= $arrContact;
-							
+
 						}
 					}
-				
+
 				}
-				
+
 			}
-			
+
 			BreadCrumb()->Employee_Console();
 			if(array_key_exists("Associated", $_GET))
 			{
 				BreadCrumb()->AccountOverview((int)$_GET['Associated']);
 			}
 			BreadCrumb()->SetCurrentPage("Add Customer");
-			
+
 			// Merge the PHP with the HTML template
 			$this->LoadPage('account_create', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
-			
+
 		}
 		catch (Exception $eException)
 		{
@@ -92,16 +107,16 @@ class Application_Handler_Account extends Application_Handler
 			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
 		}
 	}
-	
+
 	public function Save()
 	{
-	
+
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
-		
+
 		try
 		{
-			
+
 			//----------------------------------------------------------------//
 			// Validate Proposed Account
 			//----------------------------------------------------------------//
@@ -152,11 +167,11 @@ class Application_Handler_Account extends Application_Handler
 			{
 				throw new Exception('Invalid Collection Scenario');
 			}
-			
+
 			//----------------------------------------------------------------//
 			// Validate Proposed Billing Details
 			//----------------------------------------------------------------//
-			
+
 			if(!array_key_exists('DisableLatePayment', $_POST['Account']))
 			{
 				throw new Exception('No Late Payment option has been selected');
@@ -191,12 +206,12 @@ class Application_Handler_Account extends Application_Handler
 					throw new Exception('Invalid Credit Card CVV');
 				}
 			}
-			
-			
+
+
 			//----------------------------------------------------------------//
 			// Validate Proposed Primary Contact
 			//----------------------------------------------------------------//
-			
+
 			if(!array_key_exists('USE', $_POST['Contact']))
 			{
 				throw new Exception('Invalid Primary Contact Selected (Needs to be either Existing or New)');
@@ -247,7 +262,7 @@ class Application_Handler_Account extends Application_Handler
 			//----------------------------------------------------------------//
 			// 1. Create Account Group or Assign Existing
 			//----------------------------------------------------------------//
-			
+
 			if(array_key_exists("Associated", $_POST))
 			{
 				$intAccountGroupId = Account_Group::getForAccountId($_POST['Associated'])->Id;
@@ -267,11 +282,11 @@ class Application_Handler_Account extends Application_Handler
 			//----------------------------------------------------------------//
 			// 2. Add Payment Method
 			//----------------------------------------------------------------//
-			
+
 			$intBillingType		= (array_key_exists((int)$_POST['Account']['BillingType'], $GLOBALS['*arrConstant']['billing_type'])) ? $_POST['Account']['BillingType'] : BILLING_TYPE_ACCOUNT;
 			$intDirectDebitId	= null;
 			$intCreditCardId	= null;
-			
+
 			if($_POST['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT)
 			{
 				$oDirectDebit = new DirectDebit();
@@ -302,12 +317,12 @@ class Application_Handler_Account extends Application_Handler
 				$oCreditCard->save();
 				$intCreditCardId									= $oCreditCard->Id;
 			}
-			
-			
+
+
 			//----------------------------------------------------------------//
 			// 3. Assign properties of new Account
 			//----------------------------------------------------------------//
-			
+
 			$oAccount = new Account();
 			$oAccount->BusinessName								= $_POST['Account']['BusinessName'];
 			$oAccount->TradingName								= $_POST['Account']['TradingName'];
@@ -354,11 +369,11 @@ class Application_Handler_Account extends Application_Handler
 			// 3a. Create collection scenario link
 			//----------------------------------------------------------------//
 			Account_Collection_Scenario::factory($oAccount->Id, $_POST['Account']['collection_scenario_id']);
-			
+
 			//----------------------------------------------------------------//
 			// 4. Assign properties of new Contact
 			//----------------------------------------------------------------//
-			
+
 			switch ($_POST['Contact']['USE'])
 			{
 				case 0:
@@ -394,19 +409,19 @@ class Application_Handler_Account extends Application_Handler
 					$intPrimaryContactId = null;
 					break;
 			}
-			
+
 			//----------------------------------------------------------------//
 			// 5. Assign additional properties of New Account
 			//----------------------------------------------------------------//
-			
+
 			$oAccount->PrimaryContact							= $intPrimaryContactId;
 			$oAccount->save(AuthenticatedUser()->getUserId());
-			
-			
+
+
 			//----------------------------------------------------------------//
 			// 6. Add A System Note
 			//----------------------------------------------------------------//
-						
+
 			$strNote  = "Account created with the following details:\n";
 			$strNote .= "Business Name:			{$oAccount->BusinessName}\n";
 			$strNote .= "Trading Name:			{$oAccount->TradingName}\n";
@@ -421,24 +436,24 @@ class Application_Handler_Account extends Application_Handler
 			$strNote .= "Account Group:			{$oAccount->AccountGroup}\n";
 			$strNote .= "Billing Type:			{$oAccount->BillingType}\n";
 			$strNote .= "Billing Method:		{$oAccount->BillingMethod}\n";
-			
+
 			Note::createSystemNote($strNote, AuthenticatedUser()->getUserId(), $oAccount->Id, null, null);
-			
+
 
 			//----------------------------------------------------------------//
 			// 7. Send Response
 			//----------------------------------------------------------------//
-						
+
 			// Redirect to the Account Overview
 			header ('Location: /' . MenuItems::AccountOverview($oAccount->Id));
 			exit;
-				
+
 		}
-		
+
 		//----------------------------------------------------------------//
 		// Fail
 		//----------------------------------------------------------------//
-					
+
 		// When we fail to create an account, load the error page
 		catch (Exception $eException)
 		{
@@ -446,9 +461,9 @@ class Application_Handler_Account extends Application_Handler
 			$arrDetailsToRender['ErrorMessage']	= $eException->getMessage();
 			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
 		}
-			
+
 	}
-	
+
 	public function ManageClasses($aSubPath)
 	{
 		$aDetailsToRender = array();
@@ -456,7 +471,7 @@ class Application_Handler_Account extends Application_Handler
 		{
 			BreadCrumb()->Employee_Console();
 			BreadCrumb()->SetCurrentPage("Account Class Management");
-			
+
 			// Merge the PHP with the HTML template
 			$this->LoadPage('account_class_management', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
 		}

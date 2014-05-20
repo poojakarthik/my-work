@@ -4,21 +4,21 @@
 	<xsl:import href="../../lib/date-time.xsl" />
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
-	
+
 	<xsl:template name="Content">
 		<!-- TODO!bash! [  DONE  ]		Use a msgbox for blank note errors like all other messages! DO THIS EVERYWHERE!!-->
 		<!-- Error === X"Please enter details to create a new note." -->
-		
+
 		<!-- Page for Viewing Account Details -->
 		<h1>View Account Details</h1>
-		
+
 		<script language="javascript" src="js/note_add.js"></script>
-		
+
 		<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td valign="top">
 					<h2 class="Account">Account Details</h2>
-					
+
 					<div class="Narrow-Form">
 						<div class="Form-Content">
 							<form method="POST" action="account_edit.php">
@@ -289,7 +289,7 @@
 											</xsl:choose>
 										</td>
 									</tr>
-									
+
 									<tr>
 										<td colspan="2"><div class="MicroSeperator"></div></td>
 									</tr>
@@ -335,14 +335,14 @@
 							<xsl:text>Edit Account Details</xsl:text>
 						</a>
 					</div>
-					
+
 					<div class="Clear"></div>
 					<div class="Seperator"></div>
-					
-					
+
+
 					<!-- Active Contacts -->
 					<h2 class="Contacts">Active Contacts</h2>
-					
+
 					<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 						<tr class="First">
 							<th></th>
@@ -392,10 +392,10 @@
 						</a>
 					</div>
 				</td>
-				
+
 				<!-- column spacer -->
 				<td class="ColumnSpacer"></td>
-				
+
 				<!-- second column -->
 				<td valign="top">
 					<!-- options -->
@@ -437,7 +437,7 @@
 								<xsl:text>View Cost Centres</xsl:text>
 							</a>
 						</li>
-						
+
 						<li>
 							<a>
 								<xsl:attribute name="href">
@@ -493,12 +493,12 @@
 							</a>
 						</li>
 					</ul>
-					
+
 					<div class="Seperator"></div>
-					
+
 					<!-- Account Notes -->
 					<h2 class="Notes">Account Notes</h2>
-					
+
 					<form method="post" action="note_add.php" onsubmit="return noteAdd (this)" name="NoteAdd">
 						<input type="hidden" name="AccountGroup">
 							<xsl:attribute name="value">
@@ -514,7 +514,7 @@
 						</input>
 						Type new note for this account in the field below:
 						<textarea name="Note" class="input-summary" rows="6" />
-						
+
 						<select class="Left" name="NoteType">
 							<xsl:for-each select="/Response/NoteTypes/NoteType">
 								<option>
@@ -522,11 +522,11 @@
 										<xsl:text>background-color: #</xsl:text>
 										<xsl:value-of select="./BackgroundColor" />
 										<xsl:text>;</xsl:text>
-										
+
 										<xsl:text>border: solid 1px #</xsl:text>
 										<xsl:value-of select="./BorderColor" />
 										<xsl:text>;</xsl:text>
-										
+
 										<xsl:text>color: #</xsl:text>
 										<xsl:value-of select="./TextColor" />
 										<xsl:text>;</xsl:text>
@@ -539,14 +539,14 @@
 								</option>
 							</xsl:for-each>
 						</select>
-						
+
 						<div class="Right">
 							<input type="submit" value="Add Note &#0187;" class="input-submit-disabled" disabled="disabled" />
 						</div>
 					</form>
-					
+
 					<div class="Clear"></div>
-					
+
 					<!--Recent Notes-->
 					<h3>Recent Notes</h3>
 					<xsl:choose>
@@ -563,18 +563,18 @@
 										<xsl:text>background-color: #</xsl:text>
 										<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/BackgroundColor" />
 										<xsl:text>;</xsl:text>
-										
+
 										<xsl:text>border: solid 1px #</xsl:text>
 										<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/BorderColor" />
 										<xsl:text>;</xsl:text>
-										
+
 										<xsl:text>color: #</xsl:text>
 										<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/TextColor" />
 										<xsl:text>;</xsl:text>
 									</xsl:attribute>
-									
+
 									<div class="small">
-										Created on 
+										Created on
 											<strong>
 												<xsl:call-template name="dt:format-date-time">
 													<xsl:with-param name="year"		select="./Datetime/year" />
@@ -594,7 +594,7 @@
 											</strong>.
 									</div>
 									<div class="Seperator"></div>
-									
+
 									<xsl:value-of select="./Note" disable-output-escaping="yes" />
 								</div>
 							</xsl:for-each>
@@ -614,10 +614,10 @@
 		</table>
 		<div class="Clear"></div>
 		<div class="Seperator"></div>
-		
+
 		<!-- Services -->
 		<h2 class="Services">Services</h2>
-		
+
 		<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 			<tr class="First">
 				<th width="30">#</th>
@@ -639,10 +639,10 @@
 							</xsl:otherwise>
 						</xsl:choose>
 					</xsl:attribute>
-					
+
 					<td><xsl:value-of select="/Response/Services/Results/rangeStart + position()" />.</td>
-					<td>		
-						
+					<td>
+
 						<a title="View Service Details">
 							<xsl:attribute name="href">
 								<xsl:text>service_view.php?Id=</xsl:text>
@@ -650,10 +650,10 @@
 							</xsl:attribute>
 							<xsl:choose>
 								<xsl:when test="./FNN=''">
-									<span class="Red"><strong>None</strong></span> 
+									<span class="Red"><strong>None</strong></span>
 								</xsl:when>
 								<xsl:otherwise>
-									<xsl:value-of select="./FNN" /> 
+									<xsl:value-of select="./FNN" />
 								</xsl:otherwise>
 							</xsl:choose>
 						</a>
@@ -733,7 +733,7 @@
 							</xsl:attribute>
 							<xsl:text>View Unbilled Charges</xsl:text>
 						</a>
-						
+
 					</td>
 				</tr>
 			</xsl:for-each>
@@ -745,7 +745,7 @@
 				</div>
 			</xsl:when>
 		</xsl:choose>
-		
+
 		<div class="LinkAdd">
 			<a>
 				<xsl:attribute name="href">

@@ -1,5 +1,21 @@
 <?php
 class AppTemplateCustomerGroup extends ApplicationTemplate {
+
+	public static function BuildContextMenu($intCustomerGroupId) {
+		$bolUserHasOperatorPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
+		$bolUserHasViewPerm			= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW);
+		$bolUserHasExternalPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_EXTERNAL);
+		$bolUserHasCreditManagement	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
+		$bUserHasProperAdmin		= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
+		$bUserHasAdmin				= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+
+		ContextMenu()->Customer_Group->Customer_Group_Overview($intCustomerGroupId);
+
+		if ($bUserHasAdmin) {
+			ContextMenu()->Customer_Group->Customer_Group_Record_Type_Visibility($intCustomerGroupId);
+		}
+	}
+
 	function ViewAll() {
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
@@ -212,6 +228,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate {
 		}
 
 		$intCustomerGroupId = DBO()->CustomerGroup->Id->Value;
+
 		// Load the currently used DocumentTemplates
 		$arrColumns = array(
 			"TypeId" => "DTT.Id",
@@ -242,6 +259,9 @@ class AppTemplateCustomerGroup extends ApplicationTemplate {
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->ViewAllCustomerGroups();
 		BreadCrumb()->SetCurrentPage("Customer Group");
+
+		// context menu
+		self::BuildContextMenu($intCustomerGroupId);
 
 		// Declare which Page Template to use
 		$this->LoadPage('customer_group_view');

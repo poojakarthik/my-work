@@ -18,9 +18,9 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 		$limit			= $this->mxdDataToRender['limit'];
 		$quickSearch	= $this->mxdDataToRender['quickSearch'];
 		$objAccount		= $this->mxdDataToRender['account'];
-		
+
 		$strAccountGetVar = ($objAccount)? "Account={$objAccount->id}" : "";
-		
+
 		if ($quickSearch === NULL)
 		{
 			$quickSearch = '';
@@ -159,7 +159,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 				Filter:
 				<input type="text" id="ticketFilter" name="quickSearch" value="<?=htmlspecialchars($quickSearch)?>"/>
 
-				Owner: 
+				Owner:
 				<select id="ownerId" name="ownerId">
 					<option value=""<?=($ownerId===NULL ? $selected : '')?>>all</option>
 
@@ -174,7 +174,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 		}
 ?>
 				</select>
-				Category: 
+				Category:
 				<select id="categoryId" name="categoryId">
 					<option value=""<?=($categoryId===NULL ? $selected : '')?>>all</option>
 <?php
@@ -188,7 +188,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 		}
 ?>
 				</select>
-				Status: 
+				Status:
 				<select id="statusId" name="statusId">
 					<option value=""<?=($statusId===NULL ? $selected : '')?>>all</option>
 <?php
@@ -224,7 +224,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 					$link = Flex::getUrlBase() . "reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection&{$strAccountGetVar}";
 					echo ' onclick="document.location = \''. $link . '\'"';
 				?>>ID</th>
-				<th<?php 
+				<th<?php
 					$col = 'subject';
 					$sortDirection = 'a';
 					if (array_key_exists($col, $sort))
@@ -240,7 +240,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection&{$strAccountGetVar}";
 					echo ' onclick="document.location = \''. $link . '\'"';
 				?>>Subject</th>
-				<th<?php 
+				<th<?php
 					$col = 'modifiedDatetime';
 					$sortDirection = 'd';
 					if (array_key_exists($col, $sort))
@@ -256,7 +256,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection&{$strAccountGetVar}";
 					echo ' onclick="document.location = \''. $link . '\'"';
 				?> title="Last time the ticket details were modified">Last Modified</th>
-				<th<?php 
+				<th<?php
 					$col = 'userCorrespondenceLastActionedOn';
 					$sortDirection = 'd';
 					if (array_key_exists($col, $sort))
@@ -272,7 +272,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection&{$strAccountGetVar}";
 					echo ' onclick="document.location = \''. $link . '\'"';
 				?> title="Last time a user created or sent correspondence">Last Actioned</th>
-				<th<?php 
+				<th<?php
 					$col = 'creationDatetime';
 					$sortDirection = 'd';
 					if (array_key_exists($col, $sort))
@@ -288,7 +288,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection&{$strAccountGetVar}";
 					echo ' onclick="document.location = \''. $link . '\'"';
 				?> title='Ticket creation timestamp'>Received</th>
-				<th<?php 
+				<th<?php
 					$col = 'ownerId';
 					$sortDirection = 'a';
 					if (array_key_exists($col, $sort))
@@ -304,7 +304,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection&{$strAccountGetVar}";
 					echo ' onclick="document.location = \''. $link . '\'"';
 				?>>Owner</th>
-				<th<?php 
+				<th<?php
 					$col = 'categoryId';
 					$sortDirection = 'a';
 					if (array_key_exists($col, $sort))
@@ -320,7 +320,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection&{$strAccountGetVar}";
 					echo ' onclick="document.location = \''. $link . '\'"';
 				?>>Category</th>
-				<th<?php 
+				<th<?php
 					$col = 'statusId';
 					$sortDirection = 'a';
 					if (array_key_exists($col, $sort))
@@ -336,7 +336,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection&{$strAccountGetVar}";
 					echo ' onclick="document.location = \''. $link . '\'"';
 				?>>Status</th>
-				<th<?php 
+				<th<?php
 					$col = 'priorityId';
 					$sortDirection = 'a';
 					if (array_key_exists($col, $sort))
@@ -368,7 +368,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 		$i = 0;
 		$noRecords = TRUE;
 		$strToday = date("d-m-Y", strtotime(Data_Source_Time::currentDate()));
-		foreach ($this->mxdDataToRender['tickets'] as $ticket) 
+		foreach ($this->mxdDataToRender['tickets'] as $ticket)
 		{
 			$noRecords = FALSE;
 			$tr_alt = ($i++ % 2) ? "alt" : "";
@@ -404,7 +404,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 			{
 				$strModifiedOn = "<span title='$strModifiedOnDate ". date("g:i:s a", $intModifiedOn) ."'>$strModifiedOnDate</span>";
 			}
-			
+
 			$intCreatedOn		= strtotime($ticket->creationDatetime);
 			$strCreatedOnDate	= date("d-m-Y", $intCreatedOn);
 			if ($strCreatedOnDate == $strToday)
@@ -416,7 +416,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 			{
 				$strCreatedOn = "<span title='$strCreatedOnDate ". date("g:i:s a", $intCreatedOn) ."'>$strCreatedOnDate</span>";
 			}
-			
+
 			// Process the "Last Actioned" value
 			$objLastUserCorrespondence = Ticketing_Correspondance::getMostRecentlyActionedUserCreatedCorrespondenceForTicketId($ticket->id);
 			if ($objLastUserCorrespondence !== null)
@@ -439,7 +439,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 				// No user created correspondence
 				$strLastActionedOn = "";
 			}
-			
+
 		?>
 
 			<tr class="<?=$tr_alt?>">
@@ -477,7 +477,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 		if ($ticket && $ticket->isSaved())
 		{
 			$permittedActions['View'] = TRUE;
-			
+
 			if ($user->isNormalUser() || $user->isAdminUser())
 			{
 				$permittedActions['Edit'] = TRUE;
@@ -514,7 +514,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 					$permittedActions['Take'] = TRUE;
 					$permittedActions['Assign'] = TRUE;
 				}
-				
+
 				// Admin users
 				$permittedActions['Delete'] = TRUE;
 			}

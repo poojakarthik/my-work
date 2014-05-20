@@ -1,5 +1,25 @@
 <?php
 class Application_Handler_CustomerGroup extends Application_Handler {
+	public function RecordTypeVisibility($subPath) {
+
+		// Check user permissions
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
+
+		$oCustomerGroup = Customer_Group::getForId(DBO()->CustomerGroup->Id->Value);
+
+		$detailsToRender = array();
+		$detailsToRender['iCustomerGroupId'] = $oCustomerGroup->Id;
+
+		AppTemplateCustomerGroup::BuildContextMenu($oCustomerGroup->Id);
+
+		BreadCrumb()->Employee_Console();
+		BreadCrumb()->ViewAllCustomerGroups();
+		BreadCrumb()->ViewCustomerGroup($oCustomerGroup->Id, $oCustomerGroup->name);
+		BreadCrumb()->SetCurrentPage("Record Type Visibility");
+
+		$this->LoadPage('customer_group_record_type_visibility', HTML_CONTEXT_DEFAULT, $detailsToRender);
+	}
+
 	public function CreditCardConfig($subPath) {
 		$detailsToRender = array();
 

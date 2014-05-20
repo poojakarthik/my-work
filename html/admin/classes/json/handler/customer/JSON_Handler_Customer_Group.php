@@ -57,7 +57,7 @@ class JSON_Handler_Customer_Group extends JSON_Handler implements JSON_Handler_L
 					);
 		}
 	}
-	
+
 	public function setDefaultAccountClasses($hCustomerGroupDefaultAccountClassIds)
 	{
 		$bUserIsGod = Employee::getForId(Flex::getUserId())->isGod();
