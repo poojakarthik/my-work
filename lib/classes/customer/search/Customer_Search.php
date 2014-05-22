@@ -440,9 +440,7 @@ class Customer_Search
 	private static function _findAccountsForFNN($strFNN, $bolIncludeArchived)
 	{
 		// Strip invalid chars from FNN
-		// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
-		// $strFNN = ereg_replace("[^0-9a-zA-Z]", "", $strFNN);
-		$strFNN = preg_replace("/[^0-9a-zA-Z]/", "", $strFNN);
+		$strFNN = preg_replace("/\s/", "", $strFNN);
 
 		$strFnnIndial = substr($strFNN, 0, -2) . '__';
 
