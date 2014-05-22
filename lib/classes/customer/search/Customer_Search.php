@@ -23,7 +23,7 @@ class Customer_Search
 	const CONSTRAINT_TYPE_ACN			= 8;
 	const CONSTRAINT_TYPE_EMAIL			= 9;
 	const CONSTRAINT_TYPE_TIO_REF_NUM	= 10;
-	
+
 	private static $arrConstraintTypes = array(	self::CONSTRAINT_TYPE_ACCOUNT_ID	=> array(	"Name"			=> "Account Id",
 																								"Description"	=> "Account Id"
 																							),
@@ -55,11 +55,11 @@ class Customer_Search
 																								"Description"	=> "T.I.O Ref Num"
 																							)
 												);
-	
+
 	const SEARCH_TYPE_ACCOUNTS			= 1;
 	const SEARCH_TYPE_CONTACTS			= 2;
 	const SEARCH_TYPE_SERVICES			= 3;
-	
+
 	private static $arrSearchTypes = array(	self::SEARCH_TYPE_ACCOUNTS	=> array(	"Name"			=> "Accounts",
 																					"Description"	=> "Accounts"
 																				),
@@ -70,15 +70,15 @@ class Customer_Search
 																					"Description"	=> "Services"
 																				)
 							);
-	
+
 	// Maximum records that a single query can return
 	const MAX_RECORDS = 1000;
-	
+
 	public static function getConstraintTypes()
 	{
 		return self::$arrConstraintTypes;
 	}
-	
+
 	public static function getAllowableConstraintTypes($intSearchType = self::SEARCH_TYPE_ACCOUNTS)
 	{
 		$arrConstraints = array();
@@ -95,25 +95,25 @@ class Customer_Search
 				$arrConstraints[self::CONSTRAINT_TYPE_TIO_REF_NUM]	= self::$arrConstraintTypes[self::CONSTRAINT_TYPE_TIO_REF_NUM];
 
 				break;
-			
+
 			case self::SEARCH_TYPE_CONTACTS:
 				$arrConstraints[self::CONSTRAINT_TYPE_CONTACT_NAME]	= self::$arrConstraintTypes[self::CONSTRAINT_TYPE_CONTACT_NAME];
 				$arrConstraints[self::CONSTRAINT_TYPE_ACCOUNT_ID]	= self::$arrConstraintTypes[self::CONSTRAINT_TYPE_ACCOUNT_ID];
 				$arrConstraints[self::CONSTRAINT_TYPE_EMAIL]		= self::$arrConstraintTypes[self::CONSTRAINT_TYPE_EMAIL];
 				break;
-			
+
 			case self::SEARCH_TYPE_SERVICES:
 				$arrConstraints[self::CONSTRAINT_TYPE_FNN]			= self::$arrConstraintTypes[self::CONSTRAINT_TYPE_FNN];
 				$arrConstraints[self::CONSTRAINT_TYPE_SERVICE_ID]	= self::$arrConstraintTypes[self::CONSTRAINT_TYPE_SERVICE_ID];
 				break;
-			
+
 			default:
 				throw new exception("Invalid Search Type: $intServiceType");
 				break;
 		}
 		return $arrConstraints;
 	}
-	
+
 	public static function getSearchTypes()
 	{
 		// I currently have not implemented the search functionality for finding services
@@ -122,10 +122,10 @@ class Customer_Search
 		{
 			unset($arrSearchTypes[self::SEARCH_TYPE_SERVICES]);
 		}
-		
+
 		return $arrSearchTypes;
 	}
-	
+
 	// returns an array of account Ids, based on the search
 	// $intSearchType must be one of the SearchType constants
 	// $mixSearchItem cannot be NULL or an empty string
@@ -145,18 +145,18 @@ class Customer_Search
 			$arrSearchTypes = self::getSearchTypes();
 			throw new exception("Invalid constraint type ($intConstraintType) for {$arrSearchTypes[$intSearchType]['Name']} searches");
 		}
-		
+
 		$arrIds = array();
 		switch ($intSearchType)
 		{
 			case self::SEARCH_TYPE_ACCOUNTS:
 				$arrIds = self::_findAccountsFor($mixConstraint, $intConstraintType, $bolIncludeArchived);
 				break;
-				
+
 			case self::SEARCH_TYPE_SERVICES:
 				$arrIds = self::_findServicesFor($mixConstraint, $intConstraintType, $bolIncludeArchived);
 				break;
-				
+
 			case self::SEARCH_TYPE_CONTACTS:
 				$arrIds = self::_findContactsFor($mixConstraint, $intConstraintType, $bolIncludeArchived);
 				break;
@@ -164,7 +164,7 @@ class Customer_Search
 
 		// The array of Ids should already have duplicates removed
 		return $arrIds;
-	} 
+	}
 
 	private static function _findAccountsFor($mixConstraint, $intConstraintType, $bolIncludeArchived)
 	{
@@ -178,30 +178,28 @@ class Customer_Search
 					$arrAccounts[] = $mixConstraint;
 				}
 				break;
-			
+
 			case self::CONSTRAINT_TYPE_ACCOUNT_NAME:
 				// BusinessName and TradingName
 				$arrAccounts = self::_findAccountsForAccountName($mixConstraint, $bolIncludeArchived);
 				break;
-				
+
 			case self::CONSTRAINT_TYPE_FNN:
-				// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0. 
-				// $strConstraintAsFNN = ereg_replace("[^0-9a-zA-Z]", "", $mixConstraint);
-				$strConstraintAsFNN = preg_replace("/[^0-9a-zA-Z]/", "", $mixConstraint);
+				$strConstraintAsFNN = preg_replace("/\s/", "", $mixConstraint);
 				$arrAccounts = self::_findAccountsForFNN($strConstraintAsFNN, $bolIncludeArchived);
 				break;
-				
+
 			case self::CONSTRAINT_TYPE_INVOICE_ID:
 				if (($intAccountId = self::_findAccountForInvoiceId($mixConstraint, $bolIncludeArchived)) !== NULL)
 				{
 					$arrAccounts[] = $intAccountId;
 				}
 				break;
-				
+
 			case self::CONSTRAINT_TYPE_ABN:
 				$arrAccounts = self::_findAccountsForABN($mixConstraint, $bolIncludeArchived);
 				break;
-				
+
 			case self::CONSTRAINT_TYPE_ACN:
 				$arrAccounts = self::_findAccountsForACN($mixConstraint, $bolIncludeArchived);
 				break;
@@ -212,7 +210,7 @@ class Customer_Search
 			case self::CONSTRAINT_TYPE_TIO_REF_NUM:
 				$arrAccounts = self::_findAccountsForTIORefNum($mixConstraint, $bolIncludeArchived);
 				break;
-				
+
 			default:
 				// We don't know what sort of search it is
 				if (is_numeric($mixConstraint))
@@ -227,11 +225,9 @@ class Customer_Search
 					{
 						$arrAccounts[] = $intAccountId;
 					}
-					
+
 					// Remove none FNN valid chars from the search string
-					// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
-					// $strConstraintAsFNN = ereg_replace("[^0-9a-zA-Z]", "", $mixConstraint);
-					$strConstraintAsFNN = preg_replace("/[^0-9a-zA-Z]/", "", $mixConstraint);
+					$strConstraintAsFNN = preg_replace("/\s/", "", $mixConstraint);
 					if (IsValidFNN($strConstraintAsFNN))
 					{
 						$arrAccounts = array_merge($arrAccounts, self::_findAccountsForFNN($strConstraintAsFNN, $bolIncludeArchived));
@@ -259,16 +255,14 @@ class Customer_Search
 				{
 					// It must be a string.  Test for AccountName and FNN
 					$arrAccounts = array_merge($arrAccounts, self::_findAccountsForAccountName($mixConstraint, $bolIncludeArchived));
-					
+
 					// Remove none FNN valid chars from the search string
-					// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
-					// $strConstraintAsFNN = ereg_replace("[^0-9a-zA-Z]", "", $mixConstraint);
-					$strConstraintAsFNN = preg_replace("/[^0-9a-zA-Z]/", "", $mixConstraint);
+					$strConstraintAsFNN = preg_replace("/\s/", "", $mixConstraint);
 					if (IsValidFNN($strConstraintAsFNN))
 					{
 						$arrAccounts = array_merge($arrAccounts, self::_findAccountsForFNN($strConstraintAsFNN, $bolIncludeArchived));
 					}
-					
+
 					// Check if it is a tio ref num
 					// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
 					// $strConstraintAsTIORefNum = ereg_replace("[^0-9\/]", "", $mixConstraint);
@@ -277,14 +271,14 @@ class Customer_Search
 					{
 						$arrAccounts = array_merge($arrAccounts, self::_findAccountsForTIORefNum($strConstraintAsTIORefNum, $bolIncludeArchived));
 					}
-					
-					
+
+
 					$arrAccounts = array_merge($arrAccounts, self::_findAccountsForEmail($mixConstraint, $bolIncludeArchived));
 				}
-				
+
 				break;
 		}
-		
+
 		return array_values(array_unique($arrAccounts));
 	}
 
@@ -294,7 +288,7 @@ class Customer_Search
 		$arrServices = array();
 		return array_values(array_unique($arrServices));
 	}
-	
+
 	private static function _findContactsFor($mixConstraint, $intConstraintType, $bolIncludeArchived)
 	{
 		$arrContacts = array();
@@ -303,15 +297,15 @@ class Customer_Search
 			case self::CONSTRAINT_TYPE_ACCOUNT_ID:
 				$arrContacts = self::_findContactsForAccountId($mixConstraint, $bolIncludeArchived);
 				break;
-			
+
 			case self::CONSTRAINT_TYPE_CONTACT_NAME:
 				$arrContacts = self::_findContactsForContactName($mixConstraint, $bolIncludeArchived);
 				break;
-				
+
 			case self::CONSTRAINT_TYPE_EMAIL:
 				$arrContacts = self::_findContactsForEmail($mixConstraint, $bolIncludeArchived);
 				break;
-			
+
 			default:
 				if (is_numeric($mixConstraint))
 				{
@@ -324,10 +318,10 @@ class Customer_Search
 				}
 				break;
 		}
-		
+
 		return array_values(array_unique($arrContacts));
 	}
-	
+
 	// If $strFieldToKeep is specified, then this field is extracted from each record of the record set, and the function returns an indexed array of only these values
 	// If $strFieldToKeep is NULL, then the function returns the entire recordset
 	private static function _find($strQuery, $strFieldToKeep=NULL)
@@ -357,14 +351,14 @@ class Customer_Search
 		{
 			while ($arrRecord = $objRecordSet->fetch_assoc())
 			{
-				
+
 				$arrRecordSet[] = $arrRecord[$strFieldToKeep];
 			}
 		}
 
 		return $arrRecordSet;
 	}
-	
+
 
 	// Returns NULL if the account cannot be found
 	// Returns the account id if the account can be found
@@ -374,13 +368,13 @@ class Customer_Search
 		{
 			throw new Exception("Invalid Account Id: ". $intAccountId);
 		}
-		
+
 		$strArchivedConstraint = ($bolIncludeArchived)? "" : "AND Archived != ". ACCOUNT_STATUS_ARCHIVED;
-		
+
 		$strQuery = "SELECT Id FROM Account WHERE Id = $intAccountId $strArchivedConstraint";
 
 		$arrRecordSet = self::_find($strQuery);
-		
+
 		if (count($arrRecordSet) == 0)
 		{
 			// Could not find the account
@@ -388,7 +382,7 @@ class Customer_Search
 		}
 		return $intAccountId;
 	}
-	
+
 	// Returns NULL if the service cannot be found
 	// Returns the service id if the service can be found
 	private static function _findAccountForServiceId($intServiceId, $bolIncludeArchived)
@@ -399,20 +393,20 @@ class Customer_Search
 		}
 
 		$strArchivedConstraint = ($bolIncludeArchived)? "" : "AND a.Archived != ". ACCOUNT_STATUS_ARCHIVED;
-		
-		$strQuery = "	SELECT DISTINCT a.Id AS AccountId 
+
+		$strQuery = "	SELECT DISTINCT a.Id AS AccountId
 						FROM Account AS a INNER JOIN Service AS s ON a.Id = s.Account
 						WHERE s.Id = $intServiceId $strArchivedConstraint";
-		
+
 		$arrRecordSet = self::_find($strQuery, "AccountId");
-		
+
 		if (count($arrRecordSet) == 0)
 		{
 			return NULL;
 		}
 		return $arrRecordSet[0];
 	}
-	
+
 	// Returns array of all Accounts (account ids) matching the name passed.  If there aren't any, then this will be an empty array
 	private static function _findAccountsForAccountName($strAccountName, $bolIncludeArchived)
 	{
@@ -428,7 +422,7 @@ class Customer_Search
 			$arrTradingNameConditionParts[]		= "TradingName LIKE '%$strToken%'";
 			$strToken = strtok(" \n\t,");
 		}
-		
+
 		$strBusinessNameCondition	= implode(" AND ", $arrBusinessNameConditionParts);
 		$strTradingNameCondition	= implode(" AND ", $arrTradingNameConditionParts);
 
@@ -440,7 +434,7 @@ class Customer_Search
 
 		return self::_find($strQuery, "Id");
 	}
-	
+
 	// Returns array of all Accounts (account ids) that have at some point owned the FNN.  If there aren't any, then this will be an empty array
 	// This will also account for Indial100 ranges
 	private static function _findAccountsForFNN($strFNN, $bolIncludeArchived)
@@ -449,20 +443,20 @@ class Customer_Search
 		// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
 		// $strFNN = ereg_replace("[^0-9a-zA-Z]", "", $strFNN);
 		$strFNN = preg_replace("/[^0-9a-zA-Z]/", "", $strFNN);
-		
+
 		$strFnnIndial = substr($strFNN, 0, -2) . '__';
-		
+
 		$strArchivedConstraint = ($bolIncludeArchived)? "" : "AND a.Archived != ". ACCOUNT_STATUS_ARCHIVED;
-		
+
 		$strQuery = "	SELECT DISTINCT a.Id AS AccountId
 						FROM Account AS a INNER JOIN Service AS s ON a.Id = s.Account
 						WHERE ((s.FNN = '$strFNN' OR (s.Indial100 = 1 AND s.FNN LIKE '$strFnnIndial')) AND (s.ClosedOn IS NULL OR s.CreatedOn <= s.ClosedOn)) $strArchivedConstraint
 						ORDER BY a.BusinessName ASC, a.TradingName ASC, a.Id DESC
 						LIMIT ". self::MAX_RECORDS;
-		
+
 		return self::_find($strQuery, "AccountId");
 	}
-	
+
 	// returns the account id if it can be found, else returns NULL
 	private static function _findAccountForInvoiceId($intInvoiceId, $bolIncludeArchived)
 	{
@@ -470,13 +464,13 @@ class Customer_Search
 		{
 			throw new Exception("Invalid Invoice Id: ". $intInvoiceId);
 		}
-		
+
 		$strArchivedConstraint = ($bolIncludeArchived)? "" : "AND a.Archived != ". ACCOUNT_STATUS_ARCHIVED;
-		
+
 		$strQuery = "	SELECT DISTINCT a.Id AS AccountId
 						FROM Account AS a INNER JOIN Invoice AS i ON a.Id = i.Account
 						WHERE i.Id = $intInvoiceId $strArchivedConstraint";
-		
+
 		$arrRecordSet = self::_find($strQuery, "AccountId");
 		if (count($arrRecordSet) == 0)
 		{
@@ -484,36 +478,36 @@ class Customer_Search
 		}
 		return $arrRecordSet[0];
 	}
-	
+
 	private static function _findAccountsForABN($strABN, $bolIncludeArchived)
 	{
 		// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
 		// $strABN = ereg_replace("[^0-9]", "", $strABN);
 		$strABN = preg_replace("/[^0-9]/", "", $strABN);
-		
+
 		$strArchivedConstraint = ($bolIncludeArchived)? "" : "AND Archived != ". ACCOUNT_STATUS_ARCHIVED;
 		$strQuery = "	SELECT DISTINCT Id
 						FROM Account
 						WHERE REPLACE(ABN, ' ', '') = '$strABN' $strArchivedConstraint
 						ORDER BY BusinessName ASC, TradingName ASC, Id DESC
 						LIMIT ". self::MAX_RECORDS;
-		
+
 		return self::_find($strQuery, "Id");
 	}
-	
+
 	private static function _findAccountsForACN($strACN, $bolIncludeArchived)
 	{
 		// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
 		// $strACN = ereg_replace("[^0-9]", "", $strACN);
 		$strACN = preg_replace("/[^0-9]/", "", $strACN);
-		
+
 		$strArchivedConstraint = ($bolIncludeArchived)? "" : "AND Archived != ". ACCOUNT_STATUS_ARCHIVED;
 		$strQuery = "	SELECT DISTINCT Id
 						FROM Account
 						WHERE REPLACE(ACN, ' ', '') = '$strACN' $strArchivedConstraint
 						ORDER BY BusinessName ASC, TradingName ASC, Id DESC
 						LIMIT ". self::MAX_RECORDS;
-		
+
 		return self::_find($strQuery, "Id");
 	}
 
@@ -525,19 +519,19 @@ class Customer_Search
 		// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
 		// $strTIORefNum = ereg_replace("[^0-9\/]", "", $strTIORefNum);
 		$strTIORefNum = preg_replace("/[^0-9\/]/", "", $strTIORefNum);
-		
+
 		$strArchivedConstraint = ($bolIncludeArchived)? "" : "AND a.Archived != ". ACCOUNT_STATUS_ARCHIVED;
-		
+
 		$strQuery = "	SELECT DISTINCT a.Id AS AccountId
 						FROM Account AS a INNER JOIN account_history AS ah ON a.Id = ah.account_id
 						WHERE ah.tio_reference_number = '$strTIORefNum' $strArchivedConstraint
 						ORDER BY a.BusinessName ASC, a.TradingName ASC, a.Id DESC
 						LIMIT ". self::MAX_RECORDS;
-		
+
 		return self::_find($strQuery, "AccountId");
 	}
 
-	
+
 	// Returns array of all Contacts matching the name passed.  If there aren't any, then this will be an empty array
 	private static function _findContactsForContactName($strContactName, $bolIncludeArchived)
 	{
@@ -551,9 +545,9 @@ class Customer_Search
 			$arrNameConditionParts[] = "FullName LIKE '%$strToken%'";
 			$strToken = strtok(" \n\t,");
 		}
-		
+
 		$strNameCondition = implode(" AND ", $arrNameConditionParts);
-				
+
 		$strQuery = "	SELECT Id, LastName, FirstName, Title, CONCAT(FirstName, ' ', LastName) AS FullName
 						FROM Contact
 						WHERE TRUE $strArchivedConstraint
@@ -564,7 +558,7 @@ class Customer_Search
 
 		return self::_find($strQuery, "Id");
 	}
-	
+
 	// Returns array of all Contacts that match the email address passed.  If there aren't any, then this will be an empty array
 	private static function _findContactsForEmail($strEmail, $bolIncludeArchived)
 	{
@@ -587,10 +581,10 @@ class Customer_Search
 						WHERE c.Email LIKE '%$strEmail%' $strArchivedConstraint
 						ORDER BY a.BusinessName ASC, a.TradingName ASC, a.Id DESC
 						LIMIT ". self::MAX_RECORDS;
-		
+
 		return self::_find($strQuery, "AccountId");
 	}
-	
+
 	// Returns array of AccountIds for the Contact Id passed.  If there aren't any then it returns an empty array
 	private static function _findAccountsForContactId($intContactId, $bolIncludeArchived)
 	{
@@ -598,14 +592,14 @@ class Customer_Search
 		{
 			throw new Exception("Invalid Contact Id: ". $intContactId);
 		}
-		
+
 		$strArchivedConstraint = ($bolIncludeArchived)? "" : "AND a.Archived != ". ACCOUNT_STATUS_ARCHIVED;
 		$strQuery = "	SELECT DISTINCT a.Id AS AccountId
 						FROM Account AS a INNER JOIN Contact AS c ON (c.CustomerContact = 1 AND a.AccountGroup = c.AccountGroup) OR (c.Account = a.Id) OR (c.Id = a.PrimaryContact)
 						WHERE c.Id = $intContactId $strArchivedConstraint
 						ORDER BY a.BusinessName ASC, a.TradingName ASC, a.Id DESC
 						LIMIT ". self::MAX_RECORDS;
-		
+
 		return self::_find($strQuery, "AccountId");
 	}
 
@@ -616,18 +610,18 @@ class Customer_Search
 		{
 			throw new Exception("Invalid Account Id: ". $intAccountId);
 		}
-		
+
 		$strArchivedConstraint = ($bolIncludeArchived)? "" : "AND c.Archived != 1";
 		$strQuery = "	SELECT DISTINCT c.Id AS ContactId
 						FROM Account AS a INNER JOIN Contact AS c ON (c.CustomerContact = 1 AND a.AccountGroup = c.AccountGroup) OR (c.Account = a.Id) OR (c.Id = a.PrimaryContact)
 						WHERE a.Id = $intAccountId $strArchivedConstraint
 						ORDER BY c.LastName ASC, c.FirstName ASC, c.Id DESC
 						LIMIT ". self::MAX_RECORDS;
-		
+
 		return self::_find($strQuery, "ContactId");
 	}
-	
-	
+
+
 }
- 
+
 ?>
