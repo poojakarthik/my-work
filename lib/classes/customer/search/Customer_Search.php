@@ -228,10 +228,8 @@ class Customer_Search
 
 					// Remove none FNN valid chars from the search string
 					$strConstraintAsFNN = preg_replace("/\s/", "", $mixConstraint);
-					if (IsValidFNN($strConstraintAsFNN))
-					{
-						$arrAccounts = array_merge($arrAccounts, self::_findAccountsForFNN($strConstraintAsFNN, $bolIncludeArchived));
-					}
+					$arrAccounts = array_merge($arrAccounts, self::_findAccountsForFNN($strConstraintAsFNN, $bolIncludeArchived));
+
 					// Check if $mixSearchItem is a valid ABN
 					// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
 					// $strConstraintAsABN = ereg_replace("[^0-9]", "", $mixConstraint);
@@ -258,10 +256,7 @@ class Customer_Search
 
 					// Remove none FNN valid chars from the search string
 					$strConstraintAsFNN = preg_replace("/\s/", "", $mixConstraint);
-					if (IsValidFNN($strConstraintAsFNN))
-					{
-						$arrAccounts = array_merge($arrAccounts, self::_findAccountsForFNN($strConstraintAsFNN, $bolIncludeArchived));
-					}
+					$arrAccounts = array_merge($arrAccounts, self::_findAccountsForFNN($strConstraintAsFNN, $bolIncludeArchived));
 
 					// Check if it is a tio ref num
 					// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
