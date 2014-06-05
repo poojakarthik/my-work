@@ -10,13 +10,13 @@ class HtmlTemplate_Invoice_CDR extends FlexHtmlTemplate
 	public function Render()
 	{
 		$this->renderCDRDetails($this->mxdDataToRender);
-	}	
-	
+	}
+
 	public static function renderCDRDetails($aDataToRender)
 	{
 		$strUnitType 	= array_key_exists($aDataToRender['DisplayType'], $GLOBALS['*arrConstant']['DisplayTypeSuffix'])? $GLOBALS['*arrConstant']['DisplayTypeSuffix'][$aDataToRender['DisplayType']]['Description'] : "Unit(s)";
 		$strUnits 		= intval($aDataToRender['Units']) ." ". $strUnitType;
-		
+
 		echo "
 <table class='reflex'>
 	<caption>
@@ -42,7 +42,7 @@ class HtmlTemplate_Invoice_CDR extends FlexHtmlTemplate
 			<td>CDR Id: </td>
 			<td>" . htmlspecialchars($aDataToRender['Id']) . "</td>
 		</tr>";
-		
+
 		if (isset($aDataToRender['InvoiceId']))
 		{
 			echo"
@@ -52,7 +52,7 @@ class HtmlTemplate_Invoice_CDR extends FlexHtmlTemplate
 		</tr>
 		<tr>";
 		}
-		
+
 		echo"
 			<td>File: </td>
 			<td>" . htmlspecialchars($aDataToRender['FileName']) . "</td>
@@ -101,13 +101,13 @@ class HtmlTemplate_Invoice_CDR extends FlexHtmlTemplate
 			<td>Record Type: </td>
 			<td>". htmlspecialchars($aDataToRender['RecordType']) . "</td>
 		</tr>
-		" . 
-		
+		" .
+
 		(Flex::authenticatedUserIsGod() ? ("<tr>
 			<td>Cost: </td>
 			<td>". htmlspecialchars(self::tidyAmount($aDataToRender['Cost'])) . "</td>
 		</tr>") : "")
-		
+
 		. "
 		<tr>
 			<td>Charge: </td>
@@ -125,7 +125,7 @@ class HtmlTemplate_Invoice_CDR extends FlexHtmlTemplate
 			<td>Rated On: </td>
 			<td class='" . ($aDataToRender['RatedOn'] ? '' : 'attention') . "'>". htmlspecialchars($aDataToRender['RatedOn'] ? self::tidyDateTime($aDataToRender['RatedOn']) : 'Not Rated') . "</td>
 		</tr>";
-		
+
 		if (isset($aDataToRender['InvoiceId']))
 		{
 			echo "
@@ -134,7 +134,7 @@ class HtmlTemplate_Invoice_CDR extends FlexHtmlTemplate
 			<td>". htmlspecialchars($aDataToRender['InvoiceRunId']) . "</td>
 		</tr>";
 		}
-		
+
 		echo "
 		<tr>
 			<td>Sequence Number: </td>
@@ -169,17 +169,16 @@ class HtmlTemplate_Invoice_CDR extends FlexHtmlTemplate
 	}
 
 
-	public static function tidyAmount($amount)
+	public static function tidyAmount($amount, $precision=null)
 	{
-		if (strpos($amount, '.') === FALSE)
-		{
-			$amount .= '.';
-		}
-		$amount .= '000';
-		$amount = substr($amount, 0, strrpos($amount, '.') + 3);
-		return '$' . $amount;
+		return '$' . number_format(
+			$amount,
+			isset($precision) ? $precision : max(Rate::RATING_PRECISION, strlen(strrchr((float)$amount, '.')) - 1),
+			'.',
+			''
+		);
 	}
-	
+
 	public static function tidyDateTime($strDateTime)
 	{
 		$parts = explode(' ', $strDateTime);

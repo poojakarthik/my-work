@@ -14,32 +14,25 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 		$this->renderCharges($this->mxdDataToRender['Charges']);
 
 		$this->renderCDRs(
-			$this->mxdDataToRender['CDRs'], 
-			$this->mxdDataToRender['RecordTypes'], 
-			$this->mxdDataToRender['filter'], 
+			$this->mxdDataToRender['CDRs'],
+			$this->mxdDataToRender['RecordTypes'],
+			$this->mxdDataToRender['filter'],
 			$this->mxdDataToRender['Invoice'],
 			$this->mxdDataToRender['ServiceType'],
 			$this->mxdDataToRender['ServiceType']['ServiceId']
 		);
 	}
 
-	public static function tidyAmount($amount, $bolIsCredit=false)
+	public static function tidyAmount($amount, $bolIsCredit=false, $precision=null)
 	{
-		if ($bolIsCredit && ($amount > 0.000000))
-		{
-			$amount = $amount * (-1);
-		}
-
-		if (strpos($amount, '.') === FALSE)
-		{
-			$amount .= '.';
-		}
-		$amount .= '000';
-		$amount = substr($amount, 0, strrpos($amount, '.') + 3);
-		
-		return $amount;
+		return ($bolIsCredit ? '-' : '') . '$' . number_format(
+			$amount,
+			isset($precision) ? $precision : max(Rate::RATING_PRECISION, strlen(strrchr((float)$amount, '.')) - 1),
+			'.',
+			''
+		);
 	}
-	
+
 	public static function tidyDateTime($strDateTime)
 	{
 		$parts = explode(' ', $strDateTime);
@@ -57,7 +50,7 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 		$paginated = $arrCurrentFilter['limit'] < $arrCurrentFilter['recordCount'];
 		$firstPage = $arrCurrentFilter['offset'] > 0 ? '<button onclick="return goto(0);">&#124;&lt;- First</button>' : '<button disabled="disabled">&#124;&lt;- First</button>';
 		$previousPage = $arrCurrentFilter['offset'] > 0 ? '<button onclick="return goto(' . ($arrCurrentFilter['offset'] - $arrCurrentFilter['limit']) . ');">&lt;- Back</button>' : '<button disabled="disabled">&lt;- Back</button>';
-		
+
 		$onLast = ($arrCurrentFilter['offset'] + $arrCurrentFilter['limit']) > $arrCurrentFilter['recordCount'];
 		$nextPage = $onLast ? '<button disabled="disabled">Next -&gt;</button>' : '<button onclick="return goto(' . ($arrCurrentFilter['offset'] + $arrCurrentFilter['limit']) . ');">Next -&gt;</button>';
 		$lastPageOffset = ($arrCurrentFilter['recordCount'] - ($arrCurrentFilter['recordCount'] % $arrCurrentFilter['limit']));
@@ -76,7 +69,7 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 							$firstPage . '&nbsp;' . $previousPage . "&nbsp;";
 			}
 			$strRange .= "Showing " . ($arrCurrentFilter['offset'] + 1) . " to " . (($arrCurrentFilter['limit'] + $arrCurrentFilter['offset']) >= $arrCurrentFilter['recordCount'] ? $arrCurrentFilter['recordCount'] : ($arrCurrentFilter['limit'] + $arrCurrentFilter['offset'])) . " of " . $arrCurrentFilter['recordCount'];
-			if ($paginated) 
+			if ($paginated)
 			{
 				$strRange .= "&nbsp;" . $nextPage . '&nbsp;' . $lastPage;
 			}
@@ -122,22 +115,27 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 	<tbody>";
 
 		$nr = $arrCurrentFilter['offset'];
-		
+
+		$iMaxPrecision = Rate::RATING_PRECISION;
+		foreach ($arrCDRs as $aCDR) {
+			$iMaxPrecision = max($iMaxPrecision, Rate::getForId($aCDR['Rate'])->getChargePrecision());
+		}
+
 		// RecordType DisplayType Source Destination Duration StartDatetime Currency Charge
 		foreach ($arrCDRs as $cdr)
 		{
 			$className = $className ? '' : ' class="alt"';
 			$nr++;
-			
+
 			if (is_null($arrInvoice))
 			{
-				$url	= Href()->ViewCDRDetails($iServiceId, $cdr['Id']); 
+				$url	= Href()->ViewCDRDetails($iServiceId, $cdr['Id']);
 			}
 			else
 			{
 				$url 	= Href()->ViewInvoicedCDR($arrInvoice['ServiceTotal'], $arrInvoice['InvoiceRunId'], $cdr['Id']);
 			}
-			
+
 			echo "
 		<tr$className>
 			<td>" . htmlspecialchars($nr) . "</td>
@@ -168,9 +166,9 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 			}
 
 			$bolIsCredit = ($cdr['Credit'] == 1)? true : false;
-			
+
 			echo "
-			<td class='amount'>" . htmlspecialchars(self::tidyAmount($cdr['Charge'], $bolIsCredit)) . "</td>
+			<td class='amount'>" . htmlspecialchars(self::tidyAmount($cdr['Charge'], $bolIsCredit, $iMaxPrecision)) . "</td>
 			<td><a href = \"$url\">View</a></td>
 		</tr>
 			";
@@ -187,7 +185,7 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 		echo "
 	</tbody>
 </table>
-<br/>		";	
+<br/>		";
 	}
 
 	public static function renderCharges($arrChargeDetails)
@@ -283,7 +281,7 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 			<td>Service Number: </td>
 			<td>" . htmlspecialchars($arrInvoiceDetails['FNN']) . "</td>
 		</tr>
-		
+
 	</tbody>
 </table>
 <br/>

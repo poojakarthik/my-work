@@ -136,8 +136,8 @@ class Resource_Type_File_Export_Payment_Westpac_RecurringBilling extends Resourc
 		);
 	}
 
-	public static function getAssociatedPaymentType() {
-		return PAYMENT_TYPE_DIRECT_DEBIT_VIA_CREDIT_CARD;
+	public function getAssociatedPaymentTypes() {
+		return $this->getConfig()->PaymentTypes;
 	}
 
 	/***************************************************************************
@@ -151,6 +151,10 @@ class Resource_Type_File_Export_Payment_Westpac_RecurringBilling extends Resourc
 	static public function defineCarrierModuleConfig() {
 		return array_merge(parent::defineCarrierModuleConfig(), array(
 			'FileNamePrefix' => array('Description' => 'Optional prefix to apply to the exported file for uniqueness and descriptiveness. Resulting filename will look like [prefix].[yyyymmdd].csv'),
+			'PaymentTypes' => array(
+				'Type' => DATA_TYPE_ARRAY,
+				'Description' => 'Payment Types of Payment Requests to be associated with this module'
+			),
 			'CustomerGroups' => array(
 				'Type' => DATA_TYPE_ARRAY,
 				'Description' => 'Customer Groups allowed in this file',

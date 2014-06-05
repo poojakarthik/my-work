@@ -1,20 +1,21 @@
 <?php
-class Flex_Rollout_Version_000270 extends Flex_Rollout_Version {
+class Flex_Rollout_Version_000273 extends Flex_Rollout_Version {
 	private $rollbackSQL = array();
 
 	public function rollout() {
 		$aOperations = array(
 			array(
-				'sDescription' => 'Add Rate.charge_precision field',
+				'sDescription' => 'Add Payment Type: Australia Post',
 				'sAlterSQL' => "
-					ALTER TABLE Rate
-						ADD COLUMN charge_precision INT UNSIGNED NULL COMMENT 'Number of decimal places to round the resulting charge to. NULL uses system default.'
+					INSERT INTO payment_type
+						(name, description, const_name)
+					VALUES
+						('Australia Post', 'Australia Post', 'PAYMENT_TYPE_AUSTRALIAPOST')
 					;
 				",
 				'sRollbackSQL' => "
-					ALTER TABLE Rate
-						DROP COLUMN charge_precision
-					;
+					DELETE FROM payment_type
+					WHERE const_name = 'PAYMENT_TYPE_AUSTRALIAPOST';
 				",
 				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
 			),

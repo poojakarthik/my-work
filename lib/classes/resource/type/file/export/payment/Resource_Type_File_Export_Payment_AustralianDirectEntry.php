@@ -368,8 +368,8 @@ class Resource_Type_File_Export_Payment_AustralianDirectEntry extends Resource_T
 		);
 	}
 
-	public static function getAssociatedPaymentType() {
-		return PAYMENT_TYPE_DIRECT_DEBIT_VIA_EFT;
+	public static function getAssociatedPaymentTypes() {
+		return array(PAYMENT_TYPE_DIRECT_DEBIT_VIA_EFT);
 	}
 
 	/***************************************************************************

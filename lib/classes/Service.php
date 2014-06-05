@@ -653,7 +653,7 @@ class Service extends ORM
 			if ($sDataSource == FLEX_DATABASE_CONNECTION_DEFAULT)
 			{
 				// MySQL Database, invoiced
-				$sSelect		= "SELECT c.Id as \"Id\", c.RecordType as \"RecordTypeId\", c.Description as \"Description\", c.Source as \"Source\", c.Destination as \"Destination\", c.StartDatetime as \"StartDatetime\", c.Units as \"Units\", c.Charge as \"Charge\", c.Credit as \"Credit\" ";
+				$sSelect		= "SELECT c.Id as \"Id\", c.RecordType as \"RecordTypeId\", c.Description as \"Description\", c.Source as \"Source\", c.Destination as \"Destination\", c.StartDatetime as \"StartDatetime\", c.Units as \"Units\", c.Charge as \"Charge\", c.Credit as \"Credit\", c.Rate as \"Rate\" ";
 				$sCountSelect	= "SELECT COUNT(*) ";
 				$sCdrs			=	"FROM 	CDR c " .
 									"WHERE 	invoice_run_id = $iInvoiceRunId " .
@@ -702,7 +702,7 @@ class Service extends ORM
 				try
 				{
 					$cdrDb = Data_Source::get($sDataSource, false, true);
-					$sSelect		= "SELECT c.id as \"Id\", c.record_type as \"RecordTypeId\", c.description as \"Description\", c.source as \"Source\", c.destination as \"Destination\", c.start_date_time as \"StartDatetime\", c.units as \"Units\", c.charge as \"Charge\", c.credit as \"Credit\" ";
+					$sSelect		= "SELECT c.id as \"Id\", c.record_type as \"RecordTypeId\", c.description as \"Description\", c.source as \"Source\", c.destination as \"Destination\", c.start_date_time as \"StartDatetime\", c.units as \"Units\", c.charge as \"Charge\", c.credit as \"Credit\", c.rate as \"Rate\" ";
 					$sCountSelect	= "SELECT	COUNT(*)";
 					/*
 					$sCdrs			= 	"FROM 	cdr_invoiced_$iInvoiceRunId c " .
@@ -751,7 +751,7 @@ class Service extends ORM
 		else
 		{
 			// MySQL Database, not invoiced
-			$sSelect		= "SELECT c.Id as \"Id\", c.RecordType as \"RecordTypeId\", c.Description as \"Description\", c.Source as \"Source\", c.Destination as \"Destination\", c.StartDatetime as \"StartDatetime\", c.Units as \"Units\", c.Charge as \"Charge\", c.Credit as \"Credit\" ";
+			$sSelect		= "SELECT c.Id as \"Id\", c.RecordType as \"RecordTypeId\", c.Description as \"Description\", c.Source as \"Source\", c.Destination as \"Destination\", c.StartDatetime as \"StartDatetime\", c.Units as \"Units\", c.Charge as \"Charge\", c.Credit as \"Credit\", c.Rate as \"Rate\" ";
 			$sCountSelect	= "SELECT COUNT(*) ";
 			$sCdrs			=	"FROM 	CDR c " .
 								"WHERE 	Account = $iAccountId " .

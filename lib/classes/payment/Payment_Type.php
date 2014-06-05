@@ -1,7 +1,7 @@
 <?php
-class ORM_Cached_Example extends ORM_Cached {
-	protected $_strTableName = "insert_table_name_here";
-	protected static $_strStaticTableName = "insert_table_name_here";
+class Payment_Type extends ORM_Cached {
+	protected $_strTableName = "payment_type";
+	protected static $_strStaticTableName = "payment_type";
 
 	protected static function getCacheName() {
 		// It's safest to keep the cache name the same as the class name, to ensure uniqueness

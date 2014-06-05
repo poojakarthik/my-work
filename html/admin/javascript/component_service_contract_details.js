@@ -59,6 +59,11 @@ Component_Service_Contract_Details	= Class.create(/* extends */Reflex_Component,
 							$T.span('$'),
 							$T.span({'class':'component-service-contract-details-contract-rateplan-charge-value'}, '[RATE_PLAN_CHARGE]'),
 							$T.span('/month')
+						),
+						$T.p({'class':'component-service-contract-details-contract-rateplan-charge-override'},
+							$T.span('$'),
+							$T.span({'class':'component-service-contract-details-contract-rateplan-charge-override-value'}, '[RATE_PLAN_CHARGE_OVERRIDE]'),
+							$T.span('/month')
 						)
 					),
 
@@ -202,16 +207,23 @@ Component_Service_Contract_Details	= Class.create(/* extends */Reflex_Component,
 			var	oServiceIdentifier	= this.$$('.component-service-contract-details-customer-service-identifier')[0];
 			oServiceIdentifier.innerHTML	= this._oData.service.service_identifier;
 			oServiceIdentifier.setAttribute('title', 'Service ID: '+this._oData.service.id);
-			
+
 			var	oServiceType	= this.$$('.component-service-contract-details-customer-service-servicetype')[0];
-			oServiceType.setAttribute('src', '../admin/img/template/phonetypes/' + (Component_Service_Contract_Details.PHONE_TYPES[this._oData.service.service_type.constant] || Component_Service_Contract_Details.PHONE_TYPES['__DEFAULT__'])+'.png');
+			oServiceType.setAttribute('src', '../admin/img/template/phonetypes/' + (Component_Service_Contract_Details.PHONE_TYPES[this._oData.service.service_type.constant] || Component_Service_Contract_Details.PHONE_TYPES.__DEFAULT__)+'.png');
 			oServiceType.setAttribute('alt', this._oData.service.service_type.name);
 			oServiceType.setAttribute('title', this._oData.service.service_type.name);
 
 			// Contract: Rate Plan
-			this.$$('.component-service-contract-details-contract-rateplan-name')[0].innerHTML			= this._oData.rate_plan.name.escapeHTML();
-			this.$$('.component-service-contract-details-contract-rateplan-charge-value')[0].innerHTML	= parseFloat(this._oData.rate_plan.minimum_charge).toFixed(2).escapeHTML();
-			
+			this.$$('.component-service-contract-details-contract-rateplan-name')[0].innerHTML = this._oData.rate_plan.name.escapeHTML();
+			this.$$('.component-service-contract-details-contract-rateplan-charge-value')[0].innerHTML = parseFloat(this._oData.rate_plan.minimum_charge).toFixed(2).escapeHTML();
+			if (this._oData.rate_plan.minimum_charge_override != null) {
+				this.$$('.component-service-contract-details-contract-rateplan')[0].setAttribute('charge-overridden', '');
+				this.$$('.component-service-contract-details-contract-rateplan-charge-override-value')[0].innerHTML = parseFloat(this._oData.rate_plan.minimum_charge_override).toFixed(2).escapeHTML();
+			} else {
+				this.$$('.component-service-contract-details-contract-rateplan')[0].removeAttribute('charge-overridden');
+				this.$$('.component-service-contract-details-contract-rateplan-charge-override-value')[0].innerHTML = '';
+			}
+
 			// Contract: Starting Date
 			var	oStartingDate	= this.$$('.component-service-contract-details-contract-startingdate')[0];
 			oStartingDate.innerHTML	= Date.$parseDate(this._oData.contract_start_datetime, 'Y-m-d H:i:s').$format('j M Y');
@@ -221,7 +233,7 @@ Component_Service_Contract_Details	= Class.create(/* extends */Reflex_Component,
 			var	oEndingDate	= this.$$('.component-service-contract-details-contract-endingdate')[0];
 			oEndingDate.innerHTML		= (this._oData.contract_end_datetime === '9999-12-31 23:59:59') ? 'Indefinite' : Date.$parseDate(this._oData.contract_end_datetime, 'Y-m-d H:i:s').$format('j M Y');
 			oEndingDate.setAttribute('datetime', Date.$parseDate(this._oData.contract_end_datetime, 'Y-m-d H:i:s').$format('Y-m-d\\TH:i:s') + '+10:00');
-			
+
 			// Contract: Status
 			var	oStatus				= this.$$('.component-service-contract-details-contract-status')[0],
 				oStatusDescription	= this.$$('.component-service-contract-details-contract-status-description')[0],
@@ -250,7 +262,6 @@ Component_Service_Contract_Details	= Class.create(/* extends */Reflex_Component,
 					break;
 				default:
 					throw "Unhandled Contract Status "+this._oData.contract_status.id+': '+this._oData.contract_status.name;
-					break;
 			}
 
 			// Contract: Term
@@ -258,13 +269,14 @@ Component_Service_Contract_Details	= Class.create(/* extends */Reflex_Component,
 			this.$$('.component-service-contract-details-contract-term-remaining-value')[0].innerHTML	= this._oData.contract_term_remaining;
 
 			// Contract: Value
-			this.$$('.component-service-contract-details-contract-value-total-value')[0].innerHTML		= ((this._oData.rate_plan.contract_term || 0) * parseFloat(this._oData.rate_plan.minimum_charge)).toFixed(2).escapeHTML();
-			this.$$('.component-service-contract-details-contract-value-remaining-value')[0].innerHTML	= ((this._oData.contract_term_remaining || 0) * parseFloat(this._oData.rate_plan.minimum_charge)).toFixed(2).escapeHTML();
+			var minimumCharge = this._oData.rate_plan.minimum_charge_override != null ? this._oData.rate_plan.minimum_charge_override : this._oData.rate_plan.minimum_charge;
+			this.$$('.component-service-contract-details-contract-value-total-value')[0].innerHTML		= ((this._oData.rate_plan.contract_term || 0) * parseFloat(minimumCharge)).toFixed(2).escapeHTML();
+			this.$$('.component-service-contract-details-contract-value-remaining-value')[0].innerHTML	= ((this._oData.contract_term_remaining || 0) * parseFloat(minimumCharge)).toFixed(2).escapeHTML();
 
 			// Penalties: Status
 			var	oPenaltiesStatus		= this.$$('.component-service-contract-details-penalties-status')[0],
 				oPenaltiesStatusValue	= this.$$('.component-service-contract-details-penalties-status-value')[0],
-				oPenaltiesStatusDate	= this.$$('.component-service-contract-details-penalties-status-date')[0]
+				oPenaltiesStatusDate	= this.$$('.component-service-contract-details-penalties-status-date')[0],
 				bPenaltiesReviewed		= false;
 			if (!this._oData.rate_plan.contract_term) {
 				// No Contract
@@ -285,10 +297,10 @@ Component_Service_Contract_Details	= Class.create(/* extends */Reflex_Component,
 			} else {
 				// Penalties Applied/Waived
 				bPenaltiesReviewed	= true;
-				
+
 				var	sAction	= (this._oData.contract_payout_charge_id || this._oData.exit_fee_charge_id) ? 'Applied' : 'Waived';
 				oPenaltiesStatusValue.innerHTML	= 'Contract Breached: Penalties ' + sAction;
-				
+
 				this.$$('.component-service-contract-details-penalties-status-employee')[0].innerHTML	= (this._oData.contract_breach_fees_employee.first_name + ' ' + this._oData.contract_breach_fees_employee.last_name).escapeHTML();
 				oPenaltiesStatusDate.innerHTML	= Date.$parseDate(this._oData.contract_breach_fees_datetime, 'Y-m-d H:i:s').$format('j M Y');
 				oPenaltiesStatusDate.setAttribute('datetime', Date.$parseDate(this._oData.contract_breach_fees_datetime, 'Y-m-d H:i:s').$format('Y-m-d\\TH:i:s') + '+10:00');
@@ -407,7 +419,7 @@ Component_Service_Contract_Details.PHONE_TYPES	= {
 
 Component_Service_Contract_Details.createAsPopup	= function () {
 	var	aArguments							= $A(arguments),
-		oLoading							= new Reflex_Popup.Loading("Fetching Details...", true);
+		oLoading							= new Reflex_Popup.Loading("Fetching Details...", true),
 		oPopup								= new Reflex_Popup(40),
 		oFooterCloseButton					= $T.button(
 			$T.img({src:'../admin/img/template/tick.png','class':'icon',alt:''}),

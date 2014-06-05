@@ -48,7 +48,7 @@ class Cli_App_Billing extends Cli
 
 			// Any additional Includes
 			//$this->requireOnce('flex.require.php');
-			require_once("Spreadsheet/Excel/Writer.php");
+			// require_once("Spreadsheet/Excel/Writer.php");
 			$this->requireOnce('lib/classes/Flex.php');
 			Flex::load();
 
@@ -62,7 +62,7 @@ class Cli_App_Billing extends Cli
 			Log::registerFunctionLog('Cli_App_Billing', 'debug', 'Cli_App_Billing');
 			Log::setDefaultLog('Cli_App_Billing');
 
-			set_error_handler('Flex::errorHandlerException');
+			// set_error_handler('Flex::errorHandlerException');
 
 			// Start a new Transcation
 			//$bolTransactionResult	= DataAccess::getDataAccess()->TransactionStart();
@@ -391,7 +391,7 @@ class Cli_App_Billing extends Cli
 						catch (Exception $eException)
 						{
 							// Perform a Revoke on the Temporary Invoice Run
-							if ($objInvoiceRun->Id)
+							if (isset($objInvoiceRun) && $objInvoiceRun->Id)
 							{
 								$objInvoiceRun->revoke();
 							}

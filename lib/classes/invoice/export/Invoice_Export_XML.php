@@ -142,6 +142,10 @@ class Invoice_Export_XML {
 			self::_addAttribute($xmlItemisationType, 'Records', @count($arrCategory['Itemisation']));
 			self::_addAttribute($xmlItemisationType, 'RenderType', GetConstantName($arrCategory['DisplayType'], 'DisplayType'));
 
+			if (isset($arrCategory['RecordTypeId'])) {
+				self::_addAttribute($xmlItemisationType, 'RecordType', $arrCategory['RecordTypeId']);
+			}
+
 			$xmlItemisationItems = self::_addElement($xmlItemisationType, 'Items');
 			if ($arrCategory['Itemisation']) {
 				foreach ($arrCategory['Itemisation'] as $arrCDR) {
@@ -268,10 +272,12 @@ class Invoice_Export_XML {
 				continue;
 			}
 			//Cli_App_Billing::debug("Rendering...");
+			$oServiceType = Service_Type::getForId($arrService['ServiceType']);
 
 			$xmlService = self::_addElement($xmlServices, 'Service');
 			self::_addAttribute($xmlService, 'FNN', ($arrService['Extension']) ? $arrService['Extension'] : $arrService['FNN']);
-			$xmlService->setAttributeNode(new DOMAttr('ServiceType', Service_Type::getForId($arrService['ServiceType'])->const_name));
+			$xmlService->setAttributeNode(new DOMAttr('ServiceType', $oServiceType->const_name ? $oServiceType->const_name : ''));
+			$xmlService->setAttributeNode(new DOMAttr('ServiceTypeId', $oServiceType->id));
 			self::_addAttribute($xmlService, 'CostCentre', $arrService['CostCentre']);
 			self::_addAttribute($xmlService, 'Plan', $arrService['RatePlan']);
 			self::_addAttribute($xmlService, 'GrandTotal', number_format($arrService['ServiceTotal'], 2, '.', ''));
@@ -283,10 +289,12 @@ class Invoice_Export_XML {
 
 				$xmlItemisationType = self::_addElement($xmlItemisation, 'Category');
 				self::_addAttribute($xmlItemisationType, 'Name', $strName);
+				self::_addAttribute($xmlItemisationType, 'RecordType', $arrChargeType['RecordTypeId']);
 				self::_addAttribute($xmlItemisationType, 'GrandTotal', number_format($arrChargeType['TotalCharge'], 2, '.', ''));
 				self::_addAttribute($xmlItemisationType, 'Records', count($arrChargeType['Itemisation']));
 				self::_addAttribute($xmlItemisationType, 'RenderType', GetConstantName($arrChargeType['DisplayType'], 'DisplayType'));
 				self::_addAttribute($xmlItemisationType, 'UnitsTotal', $arrChargeType['UnitsTotal']);
+				self::_addAttribute($xmlItemisationType, 'Visible', self::_getItemisationCategoryVisibilityForAccountIdAndRecordTypeId($arrInvoice['Account'], $arrChargeType['RecordTypeId']));
 
 				// Charge Itemisation
 				$xmlItemisationItems = self::_addElement($xmlItemisationType, 'Items');
@@ -309,6 +317,22 @@ class Invoice_Export_XML {
 		}
 		//Cli_App_Billing::debug("Call Types:");
 		//Cli_App_Billing::debug($arrDebugCallTypes);
+
+		//--------------------------------------------------------------------//
+		// Service Types
+		//--------------------------------------------------------------------//
+		$X = new DOM_Factory($domDocument);
+		$aServiceTypes = Service_Type::getAll();
+		$xmlInvoice->appendChild($xmlServiceTypes = $X->ServiceTypes());
+		foreach ($aServiceTypes as $oServiceType) {
+			$xmlServiceTypes->appendChild(
+				$X->ServiceType(array(
+					'Id' => $oServiceType->id,
+					'Name' => $oServiceType->name,
+					'Module' => $oServiceType->module
+				))
+			);
+		}
 
 		// Determine Output/Return data
 		$strXMLOutput = $domDocument->saveXML();
@@ -339,6 +363,39 @@ class Invoice_Export_XML {
 		// Destroy XML object and return
 		unset($domDocument);
 		return $mixReturn;
+	 }
+
+
+	//------------------------------------------------------------------------//
+	// _getItemisationCategoryVisibilityForAccountIdAndRecordTypeId()
+	//------------------------------------------------------------------------//
+	/**
+	 * _getItemisationCategoryVisibilityForAccountIdAndRecordTypeId()
+	 *
+	 * Returns Itemisation Category Visibility
+	 *
+	 * @param int record type id required, int account id required
+	 *
+	 * @return int
+	 *
+	 * @method
+	 */
+	 protected static function _getItemisationCategoryVisibilityForAccountIdAndRecordTypeId($iAccountId, $iRecordTypeId) {
+		// Get Account and CustomerGroup Information
+		$oAccount = Account::getForId($iAccountId);
+		$oCustomerGroup = Customer_Group::getForId($oAccount->CustomerGroup);
+		// Get available visibility statuses
+		$oAccountRecordTypeVisibility = Account_Record_Type_Visibility::getForAccountIdAndRecordTypeId($oAccount->Id, $iRecordTypeId);
+		$oCustomerGroupRecordTypeVisibility = Customer_Group_Record_Type_Visibility::getForCustomerGroupIdAndRecordTypeId($oCustomerGroup->Id, $iRecordTypeId);
+		// Calculate the visibility
+		if ($oAccountRecordTypeVisibility) {
+			$iVisibility = $oAccountRecordTypeVisibility->is_visible;
+		} else if ($oCustomerGroupRecordTypeVisibility) {
+			$iVisibility = $oCustomerGroupRecordTypeVisibility->is_visible;
+		} else {
+			$iVisibility = $oCustomerGroup->default_record_type_visibility;
+		}
+		return $iVisibility;
 	 }
 
 	//------------------------------------------------------------------------//
@@ -647,13 +704,17 @@ class Invoice_Export_XML {
 
 	// Converts a CDR Record to an Itemised Item, based on it's DisplayType
 	protected static function _itemiseCDR($arrCDR, $intDisplayType) {
-		$arrItem = array();
+		$arrItem = array(
+			'Date' => date("j M y", strtotime($arrCDR['StartDatetime'])),
+			'Time' => date("H:i:s", strtotime($arrCDR['StartDatetime'])),
+			'ChargePrecision' => isset($arrCDR['Rate']) ? Rate::getForId($arrCDR['Rate'])->getChargePrecision() : Rate::RATING_PRECISION
+		);
+		$arrItem['Charge'] = number_format($arrCDR['Charge'], $arrItem['ChargePrecision'], '.', '');
+
 		switch ($intDisplayType) {
 			case RECORD_DISPLAY_S_AND_E:
-				$arrItem['Date'] = date("j M y", strtotime($arrCDR['StartDatetime']));
 				$arrItem['Description'] = $arrCDR['Description'];
 				$arrItem['Items'] = (int)$arrCDR['Units'];
-				$arrItem['Charge'] = number_format($arrCDR['Charge'], 2, '.', '');
 
 				// Some S&E-style records have duration (e.g. actual S&E, Plan Charges)
 				$arrItem['ShortDescription'] = $arrCDR['ShortDescription'];
@@ -663,25 +724,19 @@ class Invoice_Export_XML {
 				break;
 
 			case RECORD_DISPLAY_DATA:
-				$arrItem['Date'] = date("j M y", strtotime($arrCDR['StartDatetime']));
-				$arrItem['Time'] = date("H:i:s", strtotime($arrCDR['StartDatetime']));
 				$arrItem['CallingParty'] = $arrCDR['Source'];
 				$arrItem['CalledParty'] = $arrCDR['Destination'];
 				$arrItem['Description'] = $arrCDR['Description'];
 				$arrItem['Data'] = (int)$arrCDR['Units'];
-				$arrItem['Charge'] = number_format($arrCDR['Charge'], 2, '.', '');
 
 				$arrItem['StartDatetimeISO'] = date("Y-m-d\TH:i:s", strtotime($arrCDR['StartDatetime']));
 				break;
 
 			case RECORD_DISPLAY_SMS:
-				$arrItem['Date'] = date("j M y", strtotime($arrCDR['StartDatetime']));
-				$arrItem['Time'] = date("H:i:s", strtotime($arrCDR['StartDatetime']));
 				$arrItem['CallingParty'] = $arrCDR['Source'];
 				$arrItem['CalledParty'] = $arrCDR['Destination'];
 				$arrItem['Items'] = (int)$arrCDR['Units'];
 				$arrItem['Description'] = $arrCDR['Description'];
-				$arrItem['Charge'] = number_format($arrCDR['Charge'], 2, '.', '');
 
 				$arrItem['StartDatetimeISO'] = date("Y-m-d\TH:i:s", strtotime($arrCDR['StartDatetime']));
 				break;
@@ -691,13 +746,10 @@ class Invoice_Export_XML {
 				$intHours = floor((int)$arrCDR['Units'] / 3600);
 				$strDuration = "$intHours:".date("i:s", (int)$arrCDR['Units']);
 
-				$arrItem['Date'] = date("j M y", strtotime($arrCDR['StartDatetime']));
-				$arrItem['Time'] = date("H:i:s", strtotime($arrCDR['StartDatetime']));
 				$arrItem['CallingParty'] = $arrCDR['Source'];
 				$arrItem['CalledParty'] = $arrCDR['Destination'];
 				$arrItem['Description'] = $arrCDR['Description'];
 				$arrItem['Duration'] = $strDuration;
-				$arrItem['Charge'] = number_format($arrCDR['Charge'], 2, '.', '');
 
 				$arrItem['StartDatetimeISO'] = date("Y-m-d\TH:i:s", strtotime($arrCDR['StartDatetime']));
 				break;

@@ -11615,6 +11615,7 @@
 	.component-service-contract-details-penalties-status-audit,
 	.component-service-contract-details-contract-status-expiry,
 	.component-service-contract-details-contract-rateplan-charge,
+	.component-service-contract-details-contract-rateplan-charge-override,
 	.component-service-contract-details-customer-customergroup {
 		margin-left	: 0.15em	!important;
 	}
@@ -11650,8 +11651,20 @@
 	.component-service-contract-details-contract-value-remaining,
 	.component-service-contract-details-penalties-status-audit,
 	.component-service-contract-details-contract-status-expiry,
-	.component-service-contract-details-contract-rateplan-charge {
+	.component-service-contract-details-contract-rateplan-charge,
+	.component-service-contract-details-contract-rateplan-charge-override {
 		font-style	: oblique;
+	}
+
+	.component-service-contract-details-contract-rateplan-charge-override {
+		display: none;
+	}
+
+	.component-service-contract-details-contract-rateplan[charge-overridden] .component-service-contract-details-contract-rateplan-charge {
+		text-decoration: line-through;
+	}
+	.component-service-contract-details-contract-rateplan[charge-overridden] .component-service-contract-details-contract-rateplan-charge-override {
+		display: inline;
 	}
 
 	/* STATE */
@@ -12570,6 +12583,84 @@
 
 .flex-servicetype-adsl-create-fnn-suffix
 	margin-left .5ch
+
+/*********** Component: Service Add Entry (IFTel: Business Connect) ***********/
+.flex-servicetype-iftel-businessconnect-create
+	& [name='fnn']
+		appearance-flex-form-fieldset-field-control()
+
+.flex-servicetype-iftel-businessconnect-create-fnn
+	appearance-flex-form-fieldset-field()
+
+.flex-servicetype-iftel-businessconnect-create-fnn-label
+	appearance-flex-form-fieldset-field-label()
+	width 10em
+	min-width 10em
+
+/**************** Component: Service Add Entry (IFTel: Dialup) ****************/
+.flex-servicetype-iftel-dialup-create
+	& [name='email']
+		appearance-flex-form-fieldset-field-control()
+
+.flex-servicetype-iftel-dialup-create-email
+	appearance-flex-form-fieldset-field()
+
+.flex-servicetype-iftel-dialup-create-email-label
+	appearance-flex-form-fieldset-field-label()
+	width 10em
+	min-width 10em
+
+/********** Component: Service Add Entry (IFTel: Domain/Web Hosting) **********/
+.flex-servicetype-iftel-domainwebhosting-create
+	& [name='domain']
+		appearance-flex-form-fieldset-field-control()
+
+.flex-servicetype-iftel-domainwebhosting-create-domain
+	appearance-flex-form-fieldset-field()
+
+.flex-servicetype-iftel-domainwebhosting-create-domain-label
+	appearance-flex-form-fieldset-field-label()
+	width 10em
+	min-width 10em
+
+/**************** Component: Service Add Entry (IFTel: Email) *****************/
+.flex-servicetype-iftel-email-create
+	& [name='email']
+		appearance-flex-form-fieldset-field-control()
+
+.flex-servicetype-iftel-email-create-email
+	appearance-flex-form-fieldset-field()
+
+.flex-servicetype-iftel-email-create-email-label
+	appearance-flex-form-fieldset-field-label()
+	width 10em
+	min-width 10em
+
+/************** Component: Service Add Entry (IFTel: Engin VOIP) **************/
+.flex-servicetype-iftel-engin-voip-create
+	& [name='fnn']
+		appearance-flex-form-fieldset-field-control()
+
+.flex-servicetype-iftel-engin-voip-create-fnn
+	appearance-flex-form-fieldset-field()
+
+.flex-servicetype-iftel-engin-voip-create-fnn-label
+	appearance-flex-form-fieldset-field-label()
+	width 10em
+	min-width 10em
+
+/*************** Component: Service Add Entry (IFTel: Ethernet) ***************/
+.flex-servicetype-iftel-ethernet-create
+	& [name='email']
+		appearance-flex-form-fieldset-field-control()
+
+.flex-servicetype-iftel-ethernet-create-identifier
+	appearance-flex-form-fieldset-field()
+
+.flex-servicetype-iftel-ethernet-create-identifier-label
+	appearance-flex-form-fieldset-field-label()
+	width 10em
+	min-width 10em
 
 /**************************** Component: Service Override Rates ***************************/
 .flex-page-account-service-plan-overriderates

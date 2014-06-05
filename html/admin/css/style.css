@@ -11122,7 +11122,7 @@ div.clearing {
 		text-shadow	: 0 1px 0 #fff;
 	}
 
-	.component-service-contract-details-penalties-status-audit,.component-service-contract-details-contract-status-expiry,.component-service-contract-details-contract-rateplan-charge,.component-service-contract-details-customer-customergroup {
+	.component-service-contract-details-penalties-status-audit,.component-service-contract-details-contract-status-expiry,.component-service-contract-details-contract-rateplan-charge,.component-service-contract-details-contract-rateplan-charge-override,.component-service-contract-details-customer-customergroup {
 		margin-left	: 0.15em	!important;
 	}
 
@@ -11151,8 +11151,19 @@ div.clearing {
 		margin-left	: 0.25em;
 	}
 
-	.component-service-contract-details-contract-term-remaining,.component-service-contract-details-contract-value-remaining,.component-service-contract-details-penalties-status-audit,.component-service-contract-details-contract-status-expiry,.component-service-contract-details-contract-rateplan-charge {
+	.component-service-contract-details-contract-term-remaining,.component-service-contract-details-contract-value-remaining,.component-service-contract-details-penalties-status-audit,.component-service-contract-details-contract-status-expiry,.component-service-contract-details-contract-rateplan-charge,.component-service-contract-details-contract-rateplan-charge-override {
 		font-style	: oblique;
+	}
+
+	.component-service-contract-details-contract-rateplan-charge-override {
+		display: none;
+	}
+
+	.component-service-contract-details-contract-rateplan[charge-overridden] .component-service-contract-details-contract-rateplan-charge {
+		text-decoration: line-through;
+	}
+	.component-service-contract-details-contract-rateplan[charge-overridden] .component-service-contract-details-contract-rateplan-charge-override {
+		display: inline;
 	}
 
 	/* STATE */
@@ -12330,6 +12341,132 @@ div.clearing {
 }
 .flex-servicetype-adsl-create-fnn-suffix {
   margin-left: 0.5ch;
+}
+/*********** Component: Service Add Entry (IFTel: Business Connect) ***********/
+.flex-servicetype-iftel-businessconnect-create [name='fnn'] {
+  margin: 0.25em 0;
+}
+.flex-servicetype-iftel-businessconnect-create-fnn {
+  display: flex;
+  flex-direction: row;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  justify-content: flex-start;
+  align-items: center;
+}
+.flex-servicetype-iftel-businessconnect-create-fnn-label {
+  border: 0;
+  margin: 0.25em 0.5em 0.25em 0;
+  font-weight: bold;
+  text-align: right;
+  width: 10em;
+  min-width: 10em;
+}
+/**************** Component: Service Add Entry (IFTel: Dialup) ****************/
+.flex-servicetype-iftel-dialup-create [name='email'] {
+  margin: 0.25em 0;
+}
+.flex-servicetype-iftel-dialup-create-email {
+  display: flex;
+  flex-direction: row;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  justify-content: flex-start;
+  align-items: center;
+}
+.flex-servicetype-iftel-dialup-create-email-label {
+  border: 0;
+  margin: 0.25em 0.5em 0.25em 0;
+  font-weight: bold;
+  text-align: right;
+  width: 10em;
+  min-width: 10em;
+}
+/********** Component: Service Add Entry (IFTel: Domain/Web Hosting) **********/
+.flex-servicetype-iftel-domainwebhosting-create [name='domain'] {
+  margin: 0.25em 0;
+}
+.flex-servicetype-iftel-domainwebhosting-create-domain {
+  display: flex;
+  flex-direction: row;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  justify-content: flex-start;
+  align-items: center;
+}
+.flex-servicetype-iftel-domainwebhosting-create-domain-label {
+  border: 0;
+  margin: 0.25em 0.5em 0.25em 0;
+  font-weight: bold;
+  text-align: right;
+  width: 10em;
+  min-width: 10em;
+}
+/**************** Component: Service Add Entry (IFTel: Email) *****************/
+.flex-servicetype-iftel-email-create [name='email'] {
+  margin: 0.25em 0;
+}
+.flex-servicetype-iftel-email-create-email {
+  display: flex;
+  flex-direction: row;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  justify-content: flex-start;
+  align-items: center;
+}
+.flex-servicetype-iftel-email-create-email-label {
+  border: 0;
+  margin: 0.25em 0.5em 0.25em 0;
+  font-weight: bold;
+  text-align: right;
+  width: 10em;
+  min-width: 10em;
+}
+/************** Component: Service Add Entry (IFTel: Engin VOIP) **************/
+.flex-servicetype-iftel-engin-voip-create [name='fnn'] {
+  margin: 0.25em 0;
+}
+.flex-servicetype-iftel-engin-voip-create-fnn {
+  display: flex;
+  flex-direction: row;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  justify-content: flex-start;
+  align-items: center;
+}
+.flex-servicetype-iftel-engin-voip-create-fnn-label {
+  border: 0;
+  margin: 0.25em 0.5em 0.25em 0;
+  font-weight: bold;
+  text-align: right;
+  width: 10em;
+  min-width: 10em;
+}
+/*************** Component: Service Add Entry (IFTel: Ethernet) ***************/
+.flex-servicetype-iftel-ethernet-create [name='email'] {
+  margin: 0.25em 0;
+}
+.flex-servicetype-iftel-ethernet-create-identifier {
+  display: flex;
+  flex-direction: row;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  justify-content: flex-start;
+  align-items: center;
+}
+.flex-servicetype-iftel-ethernet-create-identifier-label {
+  border: 0;
+  margin: 0.25em 0.5em 0.25em 0;
+  font-weight: bold;
+  text-align: right;
+  width: 10em;
+  min-width: 10em;
 }
 /**************************** Component: Service Override Rates ***************************/
 .flex-page-account-service-plan-overriderates h2::before {

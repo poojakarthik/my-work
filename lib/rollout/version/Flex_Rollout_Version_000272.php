@@ -1,19 +1,19 @@
 <?php
-class Flex_Rollout_Version_000270 extends Flex_Rollout_Version {
+class Flex_Rollout_Version_000272 extends Flex_Rollout_Version {
 	private $rollbackSQL = array();
 
 	public function rollout() {
 		$aOperations = array(
 			array(
-				'sDescription' => 'Add Rate.charge_precision field',
+				'sDescription' => 'Add ServiceRatePlan.min_monthly field',
 				'sAlterSQL' => "
-					ALTER TABLE Rate
-						ADD COLUMN charge_precision INT UNSIGNED NULL COMMENT 'Number of decimal places to round the resulting charge to. NULL uses system default.'
+					ALTER TABLE ServiceRatePlan
+						ADD COLUMN min_monthly DECIMAL(13,4) NULL COMMENT 'Override for RatePlan.MinMonthly'
 					;
 				",
 				'sRollbackSQL' => "
-					ALTER TABLE Rate
-						DROP COLUMN charge_precision
+					ALTER TABLE ServiceRatePlan
+						DROP COLUMN min_monthly
 					;
 				",
 				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
