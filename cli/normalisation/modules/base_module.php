@@ -94,7 +94,7 @@ abstract class NormalisationModule extends CarrierModule {
 		}
 
 		// destination : empty or valid FNN
-		if ($this->_arrNormalisedData["Destination"] != "") { // 4
+		if (isset($this->_arrNormalisedData["Destination"]) && $this->_arrNormalisedData["Destination"] != "") { // 4
 			$arrValid['Destination'] = preg_match("/^\d+$|^\+\d+$|^\d+(X+|\d+| +|\d+REV)I?$/i", $this->_arrNormalisedData["Destination"]);
 		} else {
 			$arrValid['Destination'] = true;
@@ -105,7 +105,7 @@ abstract class NormalisationModule extends CarrierModule {
 		$arrValid['StartDatetime'] = preg_match("/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/",	$this->_arrNormalisedData["StartDatetime"]);
 
 		// end time : empty or valid date/time
-		if ($this->_arrNormalisedData["EndDatetime"] != "") { // 6
+		if (isset($this->_arrNormalisedData["EndDatetime"]) && $this->_arrNormalisedData["EndDatetime"] != "") { // 6
 			$arrValid['EndDatetime'] = preg_match("/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/", $this->_arrNormalisedData["EndDatetime"]);
 		} else {
 			$arrValid['EndDatetime'] = true;

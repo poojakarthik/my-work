@@ -261,6 +261,47 @@ class File_CSV implements Iterator
 		return count($this->_aRows);
 	}
 
+	public static function parseLineRFC4180($sLine) {
+		$sEncoding = mb_detect_encoding($sLine);
+		$iLineLength = mb_strlen($sLine, $sEncoding);
+
+		$aParsed = array();
+		$bQuoted = false;
+		$bEscaped = false;
+		$sField = '';
+		for ($i = 0; $i < $iLineLength; $i++) {
+			$sCharacter = mb_substr($sLine, $i, 1, $sEncoding);
+			if ($sCharacter === self::RFC4180_DELIMITER) {
+				if (!$bQuoted || $bEscaped) {
+					$aParsed[] = $sField;
+					$sField = '';
+					$bQuoted = false;
+					continue;
+				}
+			}
+			if ($sCharacter === self::RFC4180_QUOTE) {
+				if (!$sField) {
+					$bQuoted = true;
+					continue;
+				}
+				if (!$bQuoted) {
+					// NOTE: RFC4180 says that quotes as data can only appear in quoted fields, and as long as they're escaped
+					// It also says to be liberal in what we accept, so we could choose to relax this rule
+					throw new DomainException('Illegal quote data character in an unquoted CSV field');
+				}
+				if (!$bEscaped) {
+					$bEscaped = true;
+					continue;
+				}
+				$bEscaped = false;
+			}
+			$sField .= $sCharacter;
+		}
+		// Clean up last field
+		$aParsed[] = $sField;
+		return $aParsed;
+	}
+
 	// Mimic the fgetcsv() function from PHP 5.3
 	public static function parseLine($sLine, $sDelimiter=',', $sQuote='"', $sEscape='\\')
 	{
