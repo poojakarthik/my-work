@@ -51,6 +51,10 @@ class NormalisationModuleEnginVOIP extends NormalisationModule {
 		//--------------------------------------------------------------------//
 		Log::get()->logIf(self::DEBUG_LOGGING, "Record #{$this->_iSequence}");
 		$aParsed = File_CSV::parseLineRFC4180($aCDR['CDR']);
+		if (count($aParsed) === 7) {
+			return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
+		}
+
 		$this->_arrRawData = array_associate(array(
 			0 => 'call_id',
 			1 => 'calling_number',
@@ -63,8 +67,8 @@ class NormalisationModuleEnginVOIP extends NormalisationModule {
 			8 => 'call_type_description',
 			9 => 'plan_name',
 			10 => 'charge_rate',
-			10 => 'charge_type',
-			10 => 'call_charge'
+			11 => 'charge_type',
+			12 => 'call_charge'
 		), $aParsed);
 		Log::get()->log(print_r($this->_arrRawData, true));
 		$this->_normalise();

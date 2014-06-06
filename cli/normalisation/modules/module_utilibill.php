@@ -64,7 +64,7 @@ class NormalisationModuleUtilibill extends NormalisationModule {
 		// Re-check rules for filtering CDRs
 		if ($this->_shouldExcludeCDR($aCDR['CDR'])) {
 			// NOTE: Not really a "non-CDR", but most appropriate. The record should really be pulled out in the pre-processor, anyway.
-			return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);;
+			return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
 		}
 
 		$aParsed = File_CSV::parseLineRFC4180($aCDR['CDR']);
