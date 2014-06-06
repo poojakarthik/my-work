@@ -1,5 +1,6 @@
 <?php
 class NormalisationModuleUtilibill extends NormalisationModule {
+	public $intBaseFileType	= RESOURCE_TYPE_FILE_IMPORT_CDR_UTILIBILL_WHOLESALECDRFILE;
 	const DEBUG_LOGGING = true;
 
 	function __construct($iCarrier) {
@@ -219,15 +220,12 @@ class NormalisationModuleUtilibill extends NormalisationModule {
 				break;
 
 			case RECORD_DISPLAY_DATA:
-				Flex::assert('Utilibill: Unimplemented support for data-based usage encountered (Call Type: ' . $this->getRaw('call_type') . ')');
-				// NOTE: Current assumption is that duration_seconds represents combined download/upload in KB
+				// NOTE: duration_seconds represents combined download/upload in KB
 				$this->setNormalised('Units', $iDuration);
 				break;
 
 			case RECORD_DISPLAY_SMS:
-				// Flex::assert('Utilibill: Unimplemented support for SMS-like usage encountered (Call Type: ' . $this->getRaw('call_type') . ')');
-				// NOTE: Observations indicate that SMS items have a duration_seconds of 0
-				Flex::assert($iDuration === 0, 'Utilibill: Non-zero duration encountered in SMS record');
+				// NOTE: SMS-like items have a duration_seconds of 0
 				$this->setNormalised('Units', 1);
 				break;
 		}
