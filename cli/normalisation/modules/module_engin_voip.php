@@ -51,7 +51,7 @@ class NormalisationModuleEnginVOIP extends NormalisationModule {
 		//--------------------------------------------------------------------//
 		Log::get()->logIf(self::DEBUG_LOGGING, "Record #{$this->_iSequence}");
 		$aParsed = File_CSV::parseLineRFC4180($aCDR['CDR']);
-		if (count($aParsed) === 8) {
+		if (count($aParsed) < 13) {
 			return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
 		}
 
