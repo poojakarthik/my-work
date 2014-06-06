@@ -4228,1752 +4228,1758 @@ function CreateDefaultPaymentTerms($customerGroupId)
  *									returns	Array['Successful']	= number of successfully generated notices of the NoticeType
  *											Array['Failed'] 	= number of notices that failed to generate, of the NoticeType
  * @function
-	 */
-	function GenerateLatePaymentNotices($intAutomaticInvoiceActionType, $intEffectiveDate=0, $strBasePath=FILES_BASE_PATH)
-	{
-		// NOTE: This functionality is deprecated
-			Flex::assert(
-				false,
-				"GenerateLatePaymentNotices has been deprecated, late notices are sent using a collection event of type 'Correspondence'.",
-				null,
-				"Deprecated function accessed: GenerateLatePaymentNotices."
-			);
-		$selPriorNotices = new StatementSelect("account_letter_log", "id", "invoice_id = <InvoiceId> AND document_template_type_id = <NoticeType>", "", 1);
-
-		// Append a backslash to the path, if it doesn't already end in one
-		if (substr($strBasePath, -1) != "/")
-		{
-			$strBasePath .= "/";
-		}
-
-		// Retrieve the list of CustomerGroups
-		$selCustomerGroups = new StatementSelect("CustomerGroup", "Id, internal_name, external_name");
-		$selCustomerGroups->Execute();
-		$arrCustomerGroups = Array();
-		while (($arrCustomerGroup = $selCustomerGroups->Fetch()) !== FALSE)
-		{
-			$arrCustomerGroups[$arrCustomerGroup['Id']] = $arrCustomerGroup;
-		}
-
-		$intEffectiveDate = $intEffectiveDate ? $intEffectiveDate : time();
-
-		// Find all Accounts that fit the requirements for Late Notice generation
-		$arrAccounts = ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDate);
-
-		if ($arrAccounts === FALSE)
-		{
-			// Failed to retrieve the data from the database
-			return FALSE;
-		}
-
-		// Store a running total of how many were successfully generated, and how many failed, for each notice type
-		$arrGeneratedNotices = Array("Successful" => 0, "Failed" => 0, "Details" => array());
-		$arrSummary = Array();
-
-		VixenRequire('lib/dom/Flex_Dom_Document.php');
-		$dom = new Flex_Dom_Document();
-
-		// For each account retrieved, build the late payment notice for it
-		foreach ($arrAccounts as $arrAccount)
-		{
-			$mxdSuccess = NULL;
-
-			switch ($intAutomaticInvoiceActionType)
-			{
-			case AUTOMATIC_INVOICE_ACTION_FRIENDLY_REMINDER:
-				// If the account has a status of "Active" or "Closed", then they are eligible for recieving late notices
-				// This condition is forced in the WHERE clause of the $selOverdue StatementSelect object
-				$intNoticeType = DOCUMENT_TEMPLATE_TYPE_FRIENDLY_REMINDER;
-				$mxdSuccess = BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath, $intEffectiveDate, $intAutomaticInvoiceActionType);
-				break;
-
-			case AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE:
-				// If the account has a status of "Active" or "Closed", then they are eligible for recieving late notices
-				// This condition is forced in the WHERE clause of the $selOverdue StatementSelect object
-				$intNoticeType = DOCUMENT_TEMPLATE_TYPE_OVERDUE_NOTICE;
-				$mxdSuccess = BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath, $intEffectiveDate, $intAutomaticInvoiceActionType);
-				break;
-
-			case AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE:
-				$intNoticeType = DOCUMENT_TEMPLATE_TYPE_SUSPENSION_NOTICE;
-				$mxdSuccess = BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath, $intEffectiveDate, $intAutomaticInvoiceActionType);
-				break;
-
-			case AUTOMATIC_INVOICE_ACTION_FINAL_DEMAND:
-				$intNoticeType = DOCUMENT_TEMPLATE_TYPE_FINAL_DEMAND;
-				$mxdSuccess = BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath, $intEffectiveDate, $intAutomaticInvoiceActionType);
-				break;
-			}
-
-			if ($mxdSuccess !== NULL)
-			{
-				if ($mxdSuccess !== FALSE)
-				{
-					$arrGeneratedNotices['Successful'] += 1;
-					$i = count($arrGeneratedNotices['Details']);
-					$arrGeneratedNotices['Details'][$i]['Account'] = $arrAccount;
-					$arrGeneratedNotices['Details'][$i]['XMLFilePath'] = $mxdSuccess;
-					$bolSuccess = TRUE;
-				}
-				else
-				{
-					$arrGeneratedNotices['Failed'] += 1;
-					$bolSuccess = FALSE;
-				}
-
-				$arrSummary[] = Array(	"AccountId"					=> $arrAccount['AccountId'],
-					"Outcome"					=> ($bolSuccess ? "Successful":"Failed"),
-					"BusinessName"				=> $arrAccount['BusinessName'],
-					"TradingName"				=> $arrAccount['TradingName'],
-					"CustomerGroupinternal_name"	=> $arrCustomerGroups[$arrAccount['CustomerGroup']]['internal_name'],
-					"CustomerGroupexternal_name"	=> $arrCustomerGroups[$arrAccount['CustomerGroup']]['external_name'],
-					"OutstandingNotOverdue"		=> $arrAccount['OutstandingNotOverdue'],
-					"Overdue"					=> $arrAccount['Overdue'],
-					"TotalOutstanding"			=> $arrAccount['TotalOutstanding']);
-			}
-		}
-		// Build the summary file
-		$strFilename = 	str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "DocumentTemplateType"))).
-			"_summary_". date("Y_m_d") .".csv";
-		$ptrSummaryFile = fopen($strBasePath . $strFilename, 'wt');
-		if ($ptrSummaryFile !== FALSE)
-		{
-			fputcsv($ptrSummaryFile, Array("Account Id", "Outcome", "Business Name", "Trading Name", "Customer Group (internal)", "Customer Group (external)", "Outstanding Not Overdue", "Overdue", "Total Outstanding"), ";");
-			foreach ($arrSummary as $arrAccount)
-			{
-				fputcsv($ptrSummaryFile, $arrAccount, ";");
-			}
-
-			fclose($ptrSummaryFile);
-		}
-
-		// Record the summary file in the FileExport table
-		//TODO! Fix up the Carrier, Status and FileType values so that they are meaningful
-		$arrFileLog = Array(	'FileName'		=>	$strFilename,
-			'Location'		=>	ltrim($strBasePath, "."),
-			'Carrier'		=>	0,
-			'ExportedOn'	=>	date("Y-m-d H:i:s"),
-			'Status'		=>	0,
-			'FileType'		=>	0,
-			'SHA1'			=>	sha1($strFilename));
-
-		$insFileExport = new StatementInsert("FileExport", $arrFileLog);
-		$insFileExport->Execute($arrFileLog);
-
-		return $arrGeneratedNotices;
-	}
-
-
-	//------------------------------------------------------------------------//
-	// RecursiveMkdir
-	//------------------------------------------------------------------------//
-	/**
-	 * RecursiveMkdir()
-	 *
-	 * Performs the mkdir function recursively to allow construction of an entire directory path in one go
-	 *
-	 * Performs the mkdir function recursively to allow construction of an entire directory path in one go
-	 *
-	 * @param	string	$strPath		path to make ie "./This/is/a/path"
-	 * @param	integer	$intMode		permissions for the directories
-	 *
-	 * @return	bool					TRUE on success, else FALSE
-	 *
-	 * @function
-	 */
-	function RecursiveMkdir($strPath, $intMode = 0777)
-	{
-		// Remove leading / on absolute paths
-		$strCumulativePath = "";
-		if (substr($strPath, 0, 1) == '/')
-		{
-			$strPath			= substr($strPath, 1);
-			$strCumulativePath	= '/';
-		}
-
-		$arrDirs = explode('/' , $strPath);
-		foreach ($arrDirs as $strDir)
-		{
-			$strCumulativePath .= $strDir;
-			if (!is_dir($strCumulativePath) && !mkdir($strCumulativePath, $intMode))
-			{
-				return FALSE;
-			}
-
-			$strCumulativePath .= '/';
-		}
-		return TRUE;
-	}
-
-	function GetAutomaticInvoiceActionResponseTime($intActionId, $intCustomerGroupId)
-	{
-		static $cache;
-		if (!isset($cache))
-		{
-			$cache = array();
-		}
-		if (!array_key_exists($intActionId, $cache))
-		{
-			$arrColumns = array('response_days' => 'response_days');
-			$strTables = "automatic_invoice_action_config";
-			$strWhere = "automatic_invoice_action_id = $intActionId AND " . ($intCustomerGroupId ? "customer_group_id = $intCustomerGroupId" : " IS NULL");
-			$selDays = new StatementSelect($strTables, $arrColumns, $strWhere);
-			$mxdReturn = $selDays->Execute();
-			$result = FALSE;
-			if ($mxdReturn !== FALSE)
-			{
-				$days = $selDays->Fetch();
-				if ($days)
-				{
-					$result = $days['response_days'];
-				}
-			}
-			$cache[$intActionId] = $result;
-		}
-		return $cache[$intActionId];
-	}
-
-	//------------------------------------------------------------------------//
-	// BuildLatePaymentNotice
-	//------------------------------------------------------------------------//
-	/**
-	 * BuildLatePaymentNotice()
-	 *
-	 * Generates the chosen Late Payment Notice for an Account
-	 *
-	 * Generates the chosen Late Payment Notice for an Account
-	 *
-	 * @param	integer	$intNoticeType	Type of notice to generate DOCUMENT_TEMPLATE_TYPE_[OVERDUE_NOTICE|SUSPENSION_NOTICE|FINAL_DEMAND|FRIENDLY_REMINDER]
-	 * @param	array	$arrAccount		All Account, Contact and Invoice data required for the notice
-	 * @param	string	$strBasePath	optional, base path where the generated notices will be placed. Must end with a '/'
-	 *
-	 * @return	bool					TRUE if the notice was successfully generated, else FALSE
-	 *
-	 * @function
-	 */
-	function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath=FILES_BASE_PATH, $intEffectiveDate)
-	{
-		VixenRequire('lib/classes/note/Note.php');
-		// Static instances of the db access objects used to add records to the AccountNotice and FileExport tables
-		// are used so that the same objects don't have to be built for each individual Late Payment Notice that gets
-		// made in a run
-		static $insNotice;
-		static $insFileExport;
-
-		// Directory structure = BasePath/CustomerGroup/NoticeType/YYYY/MM/DD/
-		$strFullPath = 	$strBasePath . str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "DocumentTemplateType"))) . "/xml/" . date("Ymd");
-
-		// Make the directory structure if it hasn't already been made
-		if (!is_dir($strFullPath))
-		{
-			RecursiveMkdir($strFullPath);
-		}
-
-		// Create the filename
-		$strFilename = $arrAccount['AccountId'] . ".xml.bz2";
-
-		// Build XML for the data...
-		VixenRequire('lib/dom/Flex_Dom_Document.php');
-		$dom = new Flex_Dom_Document();
-		$dom->formatOutput = true;
-		$D = new DOM_Factory($dom->getDomDocument());
-
-		// Set up all values required of the notice, which have not been defined yet
-		$dom->Document->DocumentType->setValue(GetConstantName($intNoticeType, 'DocumentTemplateType'));
-
-		$responseDays 	= Collections_Config::get()->event_action_offset_days;
-		$actionDate 	= ($responseDays * 24 * 60 * 60) + $intEffectiveDate;
-
-		// Always issue on the scheduled date!
-		$dom->Document->DateIssued = date("d M Y", $intEffectiveDate);
-
-		switch($arrAccount['DeliveryMethod'])
-		{
-		case DELIVERY_METHOD_POST:
-			$strDeliveryMethod='DELIVERY_METHOD_POST';
-			break;
-		case DELIVERY_METHOD_EMAIL:
-		case DELIVERY_METHOD_EMAIL_SENT:
-			$strDeliveryMethod='DELIVERY_METHOD_EMAIL';
-			break;
-		case DELIVERY_METHOD_DO_NOT_SEND:
-		default;
-			$strDeliveryMethod='DELIVERY_METHOD_DO_NOT_SEND';
-			break;
-		}
-
-		//$dom->Document->CustomerGroup->setValue(GetConstantName($arrAccount['CustomerGroup'], 'CustomerGroup'));
-		$dom->Document->CustomerGroup->setValue(Customer_Group::getForId($arrAccount['CustomerGroup'])->getConstantName());
-		$dom->Document->CreationDate->setValue(date("Y-m-d H:i:s"));
-		$dom->Document->DeliveryMethod->setValue($strDeliveryMethod);
-
-		$dom->Document->Currency->Symbol->Location = 'Prefix';
-		$dom->Document->Currency->Symbol->setValue('$');
-		$dom->Document->Currency->Negative->Location = 'Suffix';
-		$dom->Document->Currency->Negative->setValue('CR');
-
-		$dom->Document->Account->Id = $arrAccount['AccountId'];
-		$dom->Document->Account->Name = $arrAccount['BusinessName'];
-		//$dom->Document->Account->CustomerGroup = GetConstantName($arrAccount['CustomerGroup'], 'CustomerGroup');
-		$dom->Document->Account->CustomerGroup = Customer_Group::getForId($arrAccount['CustomerGroup'])->getConstantName();
-		$dom->Document->Account->Email->setValue($arrAccount['Email']);
-		$dom->Document->Account->Addressee->setValue($arrAccount['BusinessName']);
-		$dom->Document->Account->AddressLine1;
-		if (trim($arrAccount['AddressLine1']))
-		{
-			$dom->Document->Account->AddressLine1->setValue(trim($arrAccount['AddressLine1']));
-		}
-		$dom->Document->Account->AddressLine2;
-		if (trim($arrAccount['AddressLine2']))
-		{
-			$dom->Document->Account->AddressLine2->setValue(trim($arrAccount['AddressLine2']));
-		}
-		$dom->Document->Account->Suburb->setValue(strtoupper($arrAccount['Suburb']));
-		$dom->Document->Account->Postcode->setValue($arrAccount['Postcode']);
-		$dom->Document->Account->State->setValue(strtoupper($arrAccount['State']));
-
-		$dom->Document->PrimaryContact->FirstName->setValue($arrAccount['FirstName']);
-		$dom->Document->PrimaryContact->LastName->setValue($arrAccount['LastName']);
-		$dom->Document->PrimaryContact->Title->setValue($arrAccount['Title']);
-		$dom->Document->PrimaryContact->FullName->setValue(
-			($arrAccount['Title'] ? $arrAccount['Title'] . ' ' : '') .
-			($arrAccount['FirstName'] ? $arrAccount['FirstName'] . ' ' : '') .
-			$arrAccount['LastName']);
-
-		$dom->Document->Payment->BPay->CustomerReference->setValue($arrAccount['AccountId'] . MakeLuhn($arrAccount['AccountId']));
-		$dom->Document->Payment->BillExpress->CustomerReference->setValue($arrAccount['AccountId'] . MakeLuhn($arrAccount['AccountId']));
-
-		$dom->Document->Outstanding->Overdue->setValue(number_format($arrAccount['Overdue'], 2, ".", ""));
-		$dom->Document->Outstanding->NotOverdue->setValue(number_format($arrAccount['OutstandingNotOverdue'], 2, ".", ""));
-		$dom->Document->Outstanding->Total->setValue(number_format($arrAccount['TotalOutstanding'], 2, ".", ""));
-		$dom->Document->Outstanding->CurrentInvoiceId->setValue($arrAccount['InvoiceId']);
-
-		$dom->Document->Outstanding->ActionDate->setValue(date("d M Y", $actionDate));
-
-		// Collections Events
-		//--------------------//
-		$dom->Document->getDomNode()->appendChild($D->__fragment(
-			$D->Scenario(array('CollectionScenarioId' => $arrAccount['CurrentScenario']->id),
-				$oEvents = $D->Events(array('CurrentAccountCollectionEventHistoryId'=>$arrAccount['CurrentEvent']->id))
-			)
-		));
-		// Prior Events
-		foreach ($arrAccount['PriorEvents'] as $oPriorAccountCollectionEvent) {
-			$oEvents->appendChild($D->Event(array(
-					'CollectionEventId' => $oPriorAccountCollectionEvent->collection_event_id,
-					'AccountCollectionEventHistoryId' => $oPriorAccountCollectionEvent->id,
-					'CollectionEventTypeId' => $oPriorAccountCollectionEvent->getEvent()->collection_event_type_id
-				),
-				$D->Name($oPriorAccountCollectionEvent->getEvent()->name),
-				$D->Description($oPriorAccountCollectionEvent->getEvent()->description),
-				$D->Date(date('d M Y', strtotime($oPriorAccountCollectionEvent->completed_datetime))),
-				$D->SystemDate(date('Y-m-d', strtotime($oPriorAccountCollectionEvent->completed_datetime)))
-			));
-		}
-		// Current Event
-		$oEvents->appendChild($D->Event(array(
-				'CollectionEventId' => $arrAccount['CurrentEvent']->collection_event_id,
-				'AccountCollectionEventHistoryId' => $arrAccount['CurrentEvent']->id,
-				'CollectionEventTypeId' => $arrAccount['CurrentEvent']->getEvent()->collection_event_type_id
-			),
-			$D->Name($arrAccount['CurrentEvent']->getEvent()->name),
-			$D->Description($arrAccount['CurrentEvent']->getEvent()->description),
-			$D->Date(date('d M Y', strtotime($arrAccount['CurrentEvent']->completed_datetime ? $arrAccount['CurrentEvent']->completed_datetime : $arrAccount['CurrentEvent']->scheduled_datetime))),
-			$D->SystemDate(date('Y-m-d', strtotime($arrAccount['CurrentEvent']->completed_datetime ? $arrAccount['CurrentEvent']->completed_datetime : $arrAccount['CurrentEvent']->scheduled_datetime)))
-		));
-		// Predicted Events
-		foreach ($arrAccount['PredictedEvents'] as $oPredictedAccountCollectionEvent) {
-			$oEvents->appendChild($D->Event(array(
-					'CollectionEventId' => $oPredictedAccountCollectionEvent->collection_event_id,
-					'CollectionEventTypeId' => $oPredictedAccountCollectionEvent->getEvent()->collection_event_type_id
-				),
-				$D->Name($oPredictedAccountCollectionEvent->getEvent()->name),
-				$D->Description($oPredictedAccountCollectionEvent->getEvent()->description),
-				$D->Date(date('d M Y', strtotime($oPredictedAccountCollectionEvent->scheduled_datetime))),
-				$D->SystemDate(date('Y-m-d', strtotime($oPredictedAccountCollectionEvent->scheduled_datetime)))
-			));
-		}
-		//--------------------//
-
-		$strXML = $dom->saveXML();
-		$return = $strFullPath ."/". $strFilename;
-
-		// Open the file in text mode
-		$ptrNoticeFile = bzopen($return, 'w');
-		if ($ptrNoticeFile === FALSE)
-		{
-			// The file could not be opened
-			return FALSE;
-		}
-
-		bzwrite($ptrNoticeFile, $strXML);
-		bzclose($ptrNoticeFile);
-		Log::get()->log("[*] XML Written to file: {$return}");
-
-		$strNow = date("Y-m-d H:i:s");
-		// Log the Notice in the account_letter_log Table
-		$arrLetterLog = Array(
-			'account_id'		=> $arrAccount['AccountId'],
-			'invoice_id'		=> $arrAccount['InvoiceId'],
-			'document_template_type_id'	=> $intNoticeType,
-			'created_on'		=> $strNow
+ */
+function GenerateLatePaymentNotices($intAutomaticInvoiceActionType, $intEffectiveDate=0, $strBasePath=FILES_BASE_PATH)
+{
+	// NOTE: This functionality is deprecated
+		Flex::assert(
+			false,
+			"GenerateLatePaymentNotices has been deprecated, late notices are sent using a collection event of type 'Correspondence'.",
+			null,
+			"Deprecated function accessed: GenerateLatePaymentNotices."
 		);
+	$selPriorNotices = new StatementSelect("account_letter_log", "id", "invoice_id = <InvoiceId> AND document_template_type_id = <NoticeType>", "", 1);
 
-		// Only define the StatementInsert object if it hasn't already been defined
-		if (!isset($insNotice))
-		{
-			$insNotice = new StatementInsert("account_letter_log", $arrLetterLog);
-		}
-		$insNotice->Execute($arrLetterLog);
-
-		// Record the File in the FileExport table
-		//TODO! Fix up the Carrier, Status and FileType values so that they are meaningful
-		$arrFileLog = Array(	'FileName'		=>	$strFilename,
-			'Location'		=>	ltrim($strFullPath, ".") . "/",
-			'Carrier'		=>	0,
-			'ExportedOn'	=>	$strNow,
-			'Status'		=>	0,
-			'FileType'		=>	0,
-			'SHA1'			=>	sha1($strXML));
-
-		// Only define the StatementInsert object if it hasn't already been defined
-		if (!isset($insFileExport))
-		{
-			$insFileExport = new StatementInsert("FileExport", $arrFileLog);
-		}
-		$insFileExport->Execute($arrFileLog);
-
-		// Create a system note for the account
-		$strNote = 	GetConstantDescription($intNoticeType, "DocumentTemplateType") . " has been generated\n".
-			"Outstanding Overdue: \$" . number_format($arrAccount['Overdue'], 2, '.', '') . "\n".
-			"Outstanding Not Overdue: \$" . number_format($arrAccount['OutstandingNotOverdue'], 2, '.', '');
-
-		$GLOBALS['fwkFramework']->AddNote($strNote, Note::SYSTEM_NOTE_TYPE_ID, NULL, $arrAccount['AccountGroup'], $arrAccount['AccountId']);
-
-		return $return;
+	// Append a backslash to the path, if it doesn't already end in one
+	if (substr($strBasePath, -1) != "/")
+	{
+		$strBasePath .= "/";
 	}
 
-
-	//------------------------------------------------------------------------//
-	// SaveConstantGroup
-	//------------------------------------------------------------------------//
-	/**
-	 * SaveConstantGroup()
-	 *
-	 * Inserts a ConstantGroup into the ConfigConstant and ConfigConstantGroup tables of the database
-	 *
-	 * Inserts a ConstantGroup into the ConfigConstant and ConfigConstantGroup tables of the database
-	 *
-	 * @param	array	$arrConstGroup	constant group array.  This must be in the format of ConstantGroups
-	 * 									defined within $GLOBALS['*arrConstant'] array
-	 * @param	string	$strName		name of the constant group
-	 * @param	integer	$intDataType	the DatatType of the constants within the constant group.  This must be a constant
-	 * 									from the DATA_TYPE_ constant group
-	 * @param	string	$strDescription optional, description of the constant group.  Defaults to NULL
-	 *
-	 * @return	mix						int  : Id of the ConstantGroup on success
-	 * 									bool : FALSE on failure
-	 *
-	 * @function
-	 */
-	function SaveConstantGroup($arrConstGroup, $strName, $intDataType, $strDescription=NULL)
+	// Retrieve the list of CustomerGroups
+	$selCustomerGroups = new StatementSelect("CustomerGroup", "Id, internal_name, external_name");
+	$selCustomerGroups->Execute();
+	$arrCustomerGroups = Array();
+	while (($arrCustomerGroup = $selCustomerGroups->Fetch()) !== FALSE)
 	{
-		// THIS IS DEPRECATED
-		return false;
+		$arrCustomerGroups[$arrCustomerGroup['Id']] = $arrCustomerGroup;
+	}
 
-		/*static $insConstGroup;
+	$intEffectiveDate = $intEffectiveDate ? $intEffectiveDate : time();
 
-		// If the StatementInsert objects have not yet been created, create them now
-		if (!isset($insConstGroup))
+	// Find all Accounts that fit the requirements for Late Notice generation
+	$arrAccounts = ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDate);
+
+	if ($arrAccounts === FALSE)
+	{
+		// Failed to retrieve the data from the database
+		return FALSE;
+	}
+
+	// Store a running total of how many were successfully generated, and how many failed, for each notice type
+	$arrGeneratedNotices = Array("Successful" => 0, "Failed" => 0, "Details" => array());
+	$arrSummary = Array();
+
+	VixenRequire('lib/dom/Flex_Dom_Document.php');
+	$dom = new Flex_Dom_Document();
+
+	// For each account retrieved, build the late payment notice for it
+	foreach ($arrAccounts as $arrAccount)
+	{
+		$mxdSuccess = NULL;
+
+		switch ($intAutomaticInvoiceActionType)
 		{
-			$insConstGroup	= new StatementInsert("ConfigConstantGroup");
+		case AUTOMATIC_INVOICE_ACTION_FRIENDLY_REMINDER:
+			// If the account has a status of "Active" or "Closed", then they are eligible for recieving late notices
+			// This condition is forced in the WHERE clause of the $selOverdue StatementSelect object
+			$intNoticeType = DOCUMENT_TEMPLATE_TYPE_FRIENDLY_REMINDER;
+			$mxdSuccess = BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath, $intEffectiveDate, $intAutomaticInvoiceActionType);
+			break;
+
+		case AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE:
+			// If the account has a status of "Active" or "Closed", then they are eligible for recieving late notices
+			// This condition is forced in the WHERE clause of the $selOverdue StatementSelect object
+			$intNoticeType = DOCUMENT_TEMPLATE_TYPE_OVERDUE_NOTICE;
+			$mxdSuccess = BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath, $intEffectiveDate, $intAutomaticInvoiceActionType);
+			break;
+
+		case AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE:
+			$intNoticeType = DOCUMENT_TEMPLATE_TYPE_SUSPENSION_NOTICE;
+			$mxdSuccess = BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath, $intEffectiveDate, $intAutomaticInvoiceActionType);
+			break;
+
+		case AUTOMATIC_INVOICE_ACTION_FINAL_DEMAND:
+			$intNoticeType = DOCUMENT_TEMPLATE_TYPE_FINAL_DEMAND;
+			$mxdSuccess = BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath, $intEffectiveDate, $intAutomaticInvoiceActionType);
+			break;
 		}
 
-		// Set up the data for the ConfigConstantGroup record
-		$arrConstGroupData = Array("Name" => $strName, "Description" => $strDescription, "Type" => $intDataType);
+		if ($mxdSuccess !== NULL)
+		{
+			if ($mxdSuccess !== FALSE)
+			{
+				$arrGeneratedNotices['Successful'] += 1;
+				$i = count($arrGeneratedNotices['Details']);
+				$arrGeneratedNotices['Details'][$i]['Account'] = $arrAccount;
+				$arrGeneratedNotices['Details'][$i]['XMLFilePath'] = $mxdSuccess;
+				$bolSuccess = TRUE;
+			}
+			else
+			{
+				$arrGeneratedNotices['Failed'] += 1;
+				$bolSuccess = FALSE;
+			}
 
-		TransactionStart();
+			$arrSummary[] = Array(	"AccountId"					=> $arrAccount['AccountId'],
+				"Outcome"					=> ($bolSuccess ? "Successful":"Failed"),
+				"BusinessName"				=> $arrAccount['BusinessName'],
+				"TradingName"				=> $arrAccount['TradingName'],
+				"CustomerGroupinternal_name"	=> $arrCustomerGroups[$arrAccount['CustomerGroup']]['internal_name'],
+				"CustomerGroupexternal_name"	=> $arrCustomerGroups[$arrAccount['CustomerGroup']]['external_name'],
+				"OutstandingNotOverdue"		=> $arrAccount['OutstandingNotOverdue'],
+				"Overdue"					=> $arrAccount['Overdue'],
+				"TotalOutstanding"			=> $arrAccount['TotalOutstanding']);
+		}
+	}
+	// Build the summary file
+	$strFilename = 	str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "DocumentTemplateType"))).
+		"_summary_". date("Y_m_d") .".csv";
+	$ptrSummaryFile = fopen($strBasePath . $strFilename, 'wt');
+	if ($ptrSummaryFile !== FALSE)
+	{
+		fputcsv($ptrSummaryFile, Array("Account Id", "Outcome", "Business Name", "Trading Name", "Customer Group (internal)", "Customer Group (external)", "Outstanding Not Overdue", "Overdue", "Total Outstanding"), ";");
+		foreach ($arrSummary as $arrAccount)
+		{
+			fputcsv($ptrSummaryFile, $arrAccount, ";");
+		}
 
-		// Insert the ConfigConstantGroup record
-		$mixConstGroupId = $insConstGroup->Execute($arrConstGroupData);
-		if ($mixConstGroupId === FALSE)
+		fclose($ptrSummaryFile);
+	}
+
+	// Record the summary file in the FileExport table
+	//TODO! Fix up the Carrier, Status and FileType values so that they are meaningful
+	$arrFileLog = Array(	'FileName'		=>	$strFilename,
+		'Location'		=>	ltrim($strBasePath, "."),
+		'Carrier'		=>	0,
+		'ExportedOn'	=>	date("Y-m-d H:i:s"),
+		'Status'		=>	0,
+		'FileType'		=>	0,
+		'SHA1'			=>	sha1($strFilename));
+
+	$insFileExport = new StatementInsert("FileExport", $arrFileLog);
+	$insFileExport->Execute($arrFileLog);
+
+	return $arrGeneratedNotices;
+}
+
+
+//------------------------------------------------------------------------//
+// RecursiveMkdir
+//------------------------------------------------------------------------//
+/**
+ * RecursiveMkdir()
+ *
+ * Performs the mkdir function recursively to allow construction of an entire directory path in one go
+ *
+ * Performs the mkdir function recursively to allow construction of an entire directory path in one go
+ *
+ * @param	string	$strPath		path to make ie "./This/is/a/path"
+ * @param	integer	$intMode		permissions for the directories
+ *
+ * @return	bool					TRUE on success, else FALSE
+ *
+ * @function
+ */
+function RecursiveMkdir($strPath, $intMode = 0777)
+{
+	// Remove leading / on absolute paths
+	$strCumulativePath = "";
+	if (substr($strPath, 0, 1) == '/')
+	{
+		$strPath			= substr($strPath, 1);
+		$strCumulativePath	= '/';
+	}
+
+	$arrDirs = explode('/' , $strPath);
+	foreach ($arrDirs as $strDir)
+	{
+		$strCumulativePath .= $strDir;
+		if (!is_dir($strCumulativePath) && !mkdir($strCumulativePath, $intMode))
+		{
+			return FALSE;
+		}
+
+		$strCumulativePath .= '/';
+	}
+	return TRUE;
+}
+
+function GetAutomaticInvoiceActionResponseTime($intActionId, $intCustomerGroupId)
+{
+	static $cache;
+	if (!isset($cache))
+	{
+		$cache = array();
+	}
+	if (!array_key_exists($intActionId, $cache))
+	{
+		$arrColumns = array('response_days' => 'response_days');
+		$strTables = "automatic_invoice_action_config";
+		$strWhere = "automatic_invoice_action_id = $intActionId AND " . ($intCustomerGroupId ? "customer_group_id = $intCustomerGroupId" : " IS NULL");
+		$selDays = new StatementSelect($strTables, $arrColumns, $strWhere);
+		$mxdReturn = $selDays->Execute();
+		$result = FALSE;
+		if ($mxdReturn !== FALSE)
+		{
+			$days = $selDays->Fetch();
+			if ($days)
+			{
+				$result = $days['response_days'];
+			}
+		}
+		$cache[$intActionId] = $result;
+	}
+	return $cache[$intActionId];
+}
+
+//------------------------------------------------------------------------//
+// BuildLatePaymentNotice
+//------------------------------------------------------------------------//
+/**
+ * BuildLatePaymentNotice()
+ *
+ * Generates the chosen Late Payment Notice for an Account
+ *
+ * Generates the chosen Late Payment Notice for an Account
+ *
+ * @param	integer	$intNoticeType	Type of notice to generate DOCUMENT_TEMPLATE_TYPE_[OVERDUE_NOTICE|SUSPENSION_NOTICE|FINAL_DEMAND|FRIENDLY_REMINDER]
+ * @param	array	$arrAccount		All Account, Contact and Invoice data required for the notice
+ * @param	string	$strBasePath	optional, base path where the generated notices will be placed. Must end with a '/'
+ *
+ * @return	bool					TRUE if the notice was successfully generated, else FALSE
+ *
+ * @function
+ */
+function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath=FILES_BASE_PATH, $intEffectiveDate)
+{
+	VixenRequire('lib/classes/note/Note.php');
+	// Static instances of the db access objects used to add records to the AccountNotice and FileExport tables
+	// are used so that the same objects don't have to be built for each individual Late Payment Notice that gets
+	// made in a run
+	static $insNotice;
+	static $insFileExport;
+
+	// Directory structure = BasePath/CustomerGroup/NoticeType/YYYY/MM/DD/
+	$strFullPath = 	$strBasePath . str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "DocumentTemplateType"))) . "/xml/" . date("Ymd");
+
+	// Make the directory structure if it hasn't already been made
+	if (!is_dir($strFullPath))
+	{
+		RecursiveMkdir($strFullPath);
+	}
+
+	// Create the filename
+	$strFilename = $arrAccount['AccountId'] . ".xml.bz2";
+
+	// Build XML for the data...
+	VixenRequire('lib/dom/Flex_Dom_Document.php');
+	$dom = new Flex_Dom_Document();
+	$dom->formatOutput = true;
+	$D = new DOM_Factory($dom->getDomDocument());
+
+	// Set up all values required of the notice, which have not been defined yet
+	$dom->Document->DocumentType->setValue(GetConstantName($intNoticeType, 'DocumentTemplateType'));
+
+	$responseDays 	= Collections_Config::get()->event_action_offset_days;
+	$actionDate 	= ($responseDays * 24 * 60 * 60) + $intEffectiveDate;
+
+	// Always issue on the scheduled date!
+	$dom->Document->DateIssued = date("d M Y", $intEffectiveDate);
+
+	switch($arrAccount['DeliveryMethod'])
+	{
+	case DELIVERY_METHOD_POST:
+		$strDeliveryMethod='DELIVERY_METHOD_POST';
+		break;
+	case DELIVERY_METHOD_EMAIL:
+	case DELIVERY_METHOD_EMAIL_SENT:
+		$strDeliveryMethod='DELIVERY_METHOD_EMAIL';
+		break;
+	case DELIVERY_METHOD_DO_NOT_SEND:
+	default;
+		$strDeliveryMethod='DELIVERY_METHOD_DO_NOT_SEND';
+		break;
+	}
+
+	//$dom->Document->CustomerGroup->setValue(GetConstantName($arrAccount['CustomerGroup'], 'CustomerGroup'));
+	$dom->Document->CustomerGroup->setValue(Customer_Group::getForId($arrAccount['CustomerGroup'])->getConstantName());
+	$dom->Document->CreationDate->setValue(date("Y-m-d H:i:s"));
+	$dom->Document->DeliveryMethod->setValue($strDeliveryMethod);
+
+	$dom->Document->Currency->Symbol->Location = 'Prefix';
+	$dom->Document->Currency->Symbol->setValue('$');
+	$dom->Document->Currency->Negative->Location = 'Suffix';
+	$dom->Document->Currency->Negative->setValue('CR');
+
+	$dom->Document->Account->Id = $arrAccount['AccountId'];
+	$dom->Document->Account->Name = $arrAccount['BusinessName'];
+	//$dom->Document->Account->CustomerGroup = GetConstantName($arrAccount['CustomerGroup'], 'CustomerGroup');
+	$dom->Document->Account->CustomerGroup = Customer_Group::getForId($arrAccount['CustomerGroup'])->getConstantName();
+	$dom->Document->Account->Email->setValue($arrAccount['Email']);
+	$dom->Document->Account->Addressee->setValue($arrAccount['BusinessName']);
+	$dom->Document->Account->AddressLine1;
+	if (trim($arrAccount['AddressLine1']))
+	{
+		$dom->Document->Account->AddressLine1->setValue(trim($arrAccount['AddressLine1']));
+	}
+	$dom->Document->Account->AddressLine2;
+	if (trim($arrAccount['AddressLine2']))
+	{
+		$dom->Document->Account->AddressLine2->setValue(trim($arrAccount['AddressLine2']));
+	}
+	$dom->Document->Account->Suburb->setValue(strtoupper($arrAccount['Suburb']));
+	$dom->Document->Account->Postcode->setValue($arrAccount['Postcode']);
+	$dom->Document->Account->State->setValue(strtoupper($arrAccount['State']));
+
+	$dom->Document->PrimaryContact->FirstName->setValue($arrAccount['FirstName']);
+	$dom->Document->PrimaryContact->LastName->setValue($arrAccount['LastName']);
+	$dom->Document->PrimaryContact->Title->setValue($arrAccount['Title']);
+	$dom->Document->PrimaryContact->FullName->setValue(
+		($arrAccount['Title'] ? $arrAccount['Title'] . ' ' : '') .
+		($arrAccount['FirstName'] ? $arrAccount['FirstName'] . ' ' : '') .
+		$arrAccount['LastName']);
+
+	$dom->Document->Payment->BPay->CustomerReference->setValue($arrAccount['AccountId'] . MakeLuhn($arrAccount['AccountId']));
+	$dom->Document->Payment->BillExpress->CustomerReference->setValue($arrAccount['AccountId'] . MakeLuhn($arrAccount['AccountId']));
+
+	$dom->Document->Outstanding->Overdue->setValue(number_format($arrAccount['Overdue'], 2, ".", ""));
+	$dom->Document->Outstanding->NotOverdue->setValue(number_format($arrAccount['OutstandingNotOverdue'], 2, ".", ""));
+	$dom->Document->Outstanding->Total->setValue(number_format($arrAccount['TotalOutstanding'], 2, ".", ""));
+	$dom->Document->Outstanding->CurrentInvoiceId->setValue($arrAccount['InvoiceId']);
+
+	$dom->Document->Outstanding->ActionDate->setValue(date("d M Y", $actionDate));
+
+	// Collections Events
+	//--------------------//
+	$dom->Document->getDomNode()->appendChild($D->__fragment(
+		$D->Scenario(array('CollectionScenarioId' => $arrAccount['CurrentScenario']->id),
+			$oEvents = $D->Events(array('CurrentAccountCollectionEventHistoryId'=>$arrAccount['CurrentEvent']->id))
+		)
+	));
+	// Prior Events
+	foreach ($arrAccount['PriorEvents'] as $oPriorAccountCollectionEvent) {
+		$oEvents->appendChild($D->Event(array(
+				'CollectionEventId' => $oPriorAccountCollectionEvent->collection_event_id,
+				'AccountCollectionEventHistoryId' => $oPriorAccountCollectionEvent->id,
+				'CollectionEventTypeId' => $oPriorAccountCollectionEvent->getEvent()->collection_event_type_id
+			),
+			$D->Name($oPriorAccountCollectionEvent->getEvent()->name),
+			$D->Description($oPriorAccountCollectionEvent->getEvent()->description),
+			$D->Date(date('d M Y', strtotime($oPriorAccountCollectionEvent->completed_datetime))),
+			$D->SystemDate(date('Y-m-d', strtotime($oPriorAccountCollectionEvent->completed_datetime)))
+		));
+	}
+	// Current Event
+	$oEvents->appendChild($D->Event(array(
+			'CollectionEventId' => $arrAccount['CurrentEvent']->collection_event_id,
+			'AccountCollectionEventHistoryId' => $arrAccount['CurrentEvent']->id,
+			'CollectionEventTypeId' => $arrAccount['CurrentEvent']->getEvent()->collection_event_type_id
+		),
+		$D->Name($arrAccount['CurrentEvent']->getEvent()->name),
+		$D->Description($arrAccount['CurrentEvent']->getEvent()->description),
+		$D->Date(date('d M Y', strtotime($arrAccount['CurrentEvent']->completed_datetime ? $arrAccount['CurrentEvent']->completed_datetime : $arrAccount['CurrentEvent']->scheduled_datetime))),
+		$D->SystemDate(date('Y-m-d', strtotime($arrAccount['CurrentEvent']->completed_datetime ? $arrAccount['CurrentEvent']->completed_datetime : $arrAccount['CurrentEvent']->scheduled_datetime)))
+	));
+	// Predicted Events
+	foreach ($arrAccount['PredictedEvents'] as $oPredictedAccountCollectionEvent) {
+		$oEvents->appendChild($D->Event(array(
+				'CollectionEventId' => $oPredictedAccountCollectionEvent->collection_event_id,
+				'CollectionEventTypeId' => $oPredictedAccountCollectionEvent->getEvent()->collection_event_type_id
+			),
+			$D->Name($oPredictedAccountCollectionEvent->getEvent()->name),
+			$D->Description($oPredictedAccountCollectionEvent->getEvent()->description),
+			$D->Date(date('d M Y', strtotime($oPredictedAccountCollectionEvent->scheduled_datetime))),
+			$D->SystemDate(date('Y-m-d', strtotime($oPredictedAccountCollectionEvent->scheduled_datetime)))
+		));
+	}
+	//--------------------//
+
+	$strXML = $dom->saveXML();
+	$return = $strFullPath ."/". $strFilename;
+
+	// Open the file in text mode
+	$ptrNoticeFile = bzopen($return, 'w');
+	if ($ptrNoticeFile === FALSE)
+	{
+		// The file could not be opened
+		return FALSE;
+	}
+
+	bzwrite($ptrNoticeFile, $strXML);
+	bzclose($ptrNoticeFile);
+	Log::get()->log("[*] XML Written to file: {$return}");
+
+	$strNow = date("Y-m-d H:i:s");
+	// Log the Notice in the account_letter_log Table
+	$arrLetterLog = Array(
+		'account_id'		=> $arrAccount['AccountId'],
+		'invoice_id'		=> $arrAccount['InvoiceId'],
+		'document_template_type_id'	=> $intNoticeType,
+		'created_on'		=> $strNow
+	);
+
+	// Only define the StatementInsert object if it hasn't already been defined
+	if (!isset($insNotice))
+	{
+		$insNotice = new StatementInsert("account_letter_log", $arrLetterLog);
+	}
+	$insNotice->Execute($arrLetterLog);
+
+	// Record the File in the FileExport table
+	//TODO! Fix up the Carrier, Status and FileType values so that they are meaningful
+	$arrFileLog = Array(	'FileName'		=>	$strFilename,
+		'Location'		=>	ltrim($strFullPath, ".") . "/",
+		'Carrier'		=>	0,
+		'ExportedOn'	=>	$strNow,
+		'Status'		=>	0,
+		'FileType'		=>	0,
+		'SHA1'			=>	sha1($strXML));
+
+	// Only define the StatementInsert object if it hasn't already been defined
+	if (!isset($insFileExport))
+	{
+		$insFileExport = new StatementInsert("FileExport", $arrFileLog);
+	}
+	$insFileExport->Execute($arrFileLog);
+
+	// Create a system note for the account
+	$strNote = 	GetConstantDescription($intNoticeType, "DocumentTemplateType") . " has been generated\n".
+		"Outstanding Overdue: \$" . number_format($arrAccount['Overdue'], 2, '.', '') . "\n".
+		"Outstanding Not Overdue: \$" . number_format($arrAccount['OutstandingNotOverdue'], 2, '.', '');
+
+	$GLOBALS['fwkFramework']->AddNote($strNote, Note::SYSTEM_NOTE_TYPE_ID, NULL, $arrAccount['AccountGroup'], $arrAccount['AccountId']);
+
+	return $return;
+}
+
+
+//------------------------------------------------------------------------//
+// SaveConstantGroup
+//------------------------------------------------------------------------//
+/**
+ * SaveConstantGroup()
+ *
+ * Inserts a ConstantGroup into the ConfigConstant and ConfigConstantGroup tables of the database
+ *
+ * Inserts a ConstantGroup into the ConfigConstant and ConfigConstantGroup tables of the database
+ *
+ * @param	array	$arrConstGroup	constant group array.  This must be in the format of ConstantGroups
+ * 									defined within $GLOBALS['*arrConstant'] array
+ * @param	string	$strName		name of the constant group
+ * @param	integer	$intDataType	the DatatType of the constants within the constant group.  This must be a constant
+ * 									from the DATA_TYPE_ constant group
+ * @param	string	$strDescription optional, description of the constant group.  Defaults to NULL
+ *
+ * @return	mix						int  : Id of the ConstantGroup on success
+ * 									bool : FALSE on failure
+ *
+ * @function
+ */
+function SaveConstantGroup($arrConstGroup, $strName, $intDataType, $strDescription=NULL)
+{
+	// THIS IS DEPRECATED
+	return false;
+
+	/*static $insConstGroup;
+
+	// If the StatementInsert objects have not yet been created, create them now
+	if (!isset($insConstGroup))
+	{
+		$insConstGroup	= new StatementInsert("ConfigConstantGroup");
+	}
+
+	// Set up the data for the ConfigConstantGroup record
+	$arrConstGroupData = Array("Name" => $strName, "Description" => $strDescription, "Type" => $intDataType);
+
+	TransactionStart();
+
+	// Insert the ConfigConstantGroup record
+	$mixConstGroupId = $insConstGroup->Execute($arrConstGroupData);
+	if ($mixConstGroupId === FALSE)
+	{
+		TransactionRollback();
+		return FALSE;
+	}
+
+	// Insert each constant of the ConstantGroup, into the ConfigConstant table
+	foreach ($arrConstGroup as $mixValue=>$arrValue)
+	{
+		$mixResult = SaveConstant($arrValue['Constant'], $mixValue, $intDataType, $arrValue['Description'], $mixConstGroupId);
+		if ($mixResult === FALSE)
 		{
 			TransactionRollback();
 			return FALSE;
 		}
+	}
 
-		// Insert each constant of the ConstantGroup, into the ConfigConstant table
-		foreach ($arrConstGroup as $mixValue=>$arrValue)
+	TransactionCommit();
+	return $mixConstGroupId;*/
+}
+
+//------------------------------------------------------------------------//
+// SaveConstant
+//------------------------------------------------------------------------//
+/**
+ * SaveConstant()
+ *
+ * Inserts a Constant into the ConfigConstant table of the database
+ *
+ * Inserts a Constant into the ConfigConstant table of the database
+ *
+ * @param	string	$strName			name of the constant (ie CONST_NAME)
+ * @param	mix		$mixValue			value of the constant (either a string, int, float or bool)
+ * @param	integer	$intDataType		optional, the DatatType of the constants within the constant group.
+ * 										This must be a constant from the DATA_TYPE_ constant group.  If
+ * 										$intConstantGroupId is declared, then $intDataType is considered NULL.
+ * 										Defaults to NULL
+ * @param	string	$strDescription 	optional, description of the constant.  Defaults to NULL
+ * @param	integer	$intConstantGroupId	optional, Id of the ConstantGroup that this constant belongs to.
+ * 										Defaults to NULL
+ *
+ * @return	mix							int  : Id of the Constant on success
+ * 										bool : FALSE on failure
+ *
+ * @function
+ */
+function SaveConstant($strName, $mixValue, $intDataType=NULL, $strDescription=NULL, $intConstantGroupId=NULL)
+{
+	// THIS IS DEPRECATED
+	return false;
+
+	/*static $insConst;
+
+	if (!isset($insConst))
+	{
+		$insConst = new StatementInsert("ConfigConstant");
+	}
+
+	if ($intConstantGroupId !== NULL)
+	{
+		// A constant group has been specified
+		$intDataType = NULL;
+	}
+	if ($intConstantGroupId === NULL && $intDataType === NULL)
+	{
+		// We cannot work out the data type for the constant.  Assume it is a string
+		$intDataType = DATA_TYPE_STRING;
+	}
+
+	if ($intDataType == DATA_TYPE_BOOLEAN)
+	{
+		$mixValue = ($mixValue)? "1" : "0";
+	}
+
+	$arrConst = Array(	"ConstantGroup" => $intConstantGroupId, "Name" => $strName,
+		"Description" => $strDescription, "Value" => "$mixValue",
+		"Type" => $intDataType);
+
+	$mixResult = $insConst->Execute($arrConst);
+	return $mixResult;*/
+}
+
+//------------------------------------------------------------------------//
+// BuildConstantsFromDB
+//------------------------------------------------------------------------//
+/**
+ * BuildConstantsFromDB()
+ *
+ * Declares all constants and ConstantGroups stored in the database, so long as the constants have not already been defined
+ *
+ * Declares all constants and ConstantGroups stored in the database, so long as the constants have not already been defined
+ * If a constant declared in the database, has aleady been declared in the php process,
+ * then it will not be changed.  All ConstantGroups defined in the database are also loaded into the
+ * $GLOBALS['*arrConstant'][ConstantGroupName] structure
+ *
+ * @param	boolean		$bolExceptionOnError			optional, if TRUE then an exception is thrown if
+ * 														it cannot resolve the data type of the constant
+ * 														or if it is declaring a constant in a ConstantGroup
+ * 														with a value that is already used by another constant
+ * 														within the constant group. Defaults to FALSE
+ * @param	booleab		$bolExceptionOnRedefinition		optional, if TRUE then an exception is thrown if
+ * 														a constant in the database has already been defined
+ * 														in the php global namespace. Defaults to FALSE
+ *
+ * @return	boolean								TRUE on success, else FALSE
+ *
+ * @function
+ */
+function BuildConstantsFromDB($bolExceptionOnError=FALSE, $bolExceptionOnRedefinition=FALSE)
+{
+	// THIS IS DEPRECATED
+	return false;
+
+	/*$strTables	= "ConfigConstant AS CC INNER JOIN ConfigConstantGroup AS CCG ON CC.ConstantGroup = CCG.Id";
+	$arrColumns	= Array("Id"				=> "CC.Id",
+		"Name"				=> "CC.Name",
+		"Value"				=> "CC.Value",
+		"ConstDesc"			=> "CC.Description",
+		"Type"				=> "CASE WHEN CCG.Special THEN CCG.Type ELSE CC.Type END",
+		"ConstGroupName"	=> "CCG.Name",
+		"Special" 			=> "CCG.Special");
+	$strOrderBy	= "CC.ConstantGroup, CC.Id";
+	$strWhere	= "TRUE";
+	$selConstants = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy);
+
+	$selConstants->Execute();
+	$arrConstants = $selConstants->FetchAll();
+
+	foreach ($arrConstants as $arrConstant)
+	{
+		// Check if the constant has already been defined
+		if (defined($arrConstant['Name']))
 		{
-			$mixResult = SaveConstant($arrValue['Constant'], $mixValue, $intDataType, $arrValue['Description'], $mixConstGroupId);
-			if ($mixResult === FALSE)
+			// The constant has already been defined.
+			if ($bolExceptionOnRedefinition)
 			{
-				TransactionRollback();
-				return FALSE;
+				// Throw an exception
+				$strMsg = "Error: Attempting to declare constant: {$arrConstant['Name']} with value: {$arrConstant['Value']}, but this has already been declared within the php global namespace with value: ". constant($arrConstant['Name']);
+				throw new Exception($strMsg);
 			}
+
+			// Move on to the next constant
+			continue;
 		}
 
-		TransactionCommit();
-		return $mixConstGroupId;*/
-	}
-
-	//------------------------------------------------------------------------//
-	// SaveConstant
-	//------------------------------------------------------------------------//
-	/**
-	 * SaveConstant()
-	 *
-	 * Inserts a Constant into the ConfigConstant table of the database
-	 *
-	 * Inserts a Constant into the ConfigConstant table of the database
-	 *
-	 * @param	string	$strName			name of the constant (ie CONST_NAME)
-	 * @param	mix		$mixValue			value of the constant (either a string, int, float or bool)
-	 * @param	integer	$intDataType		optional, the DatatType of the constants within the constant group.
-	 * 										This must be a constant from the DATA_TYPE_ constant group.  If
-	 * 										$intConstantGroupId is declared, then $intDataType is considered NULL.
-	 * 										Defaults to NULL
-	 * @param	string	$strDescription 	optional, description of the constant.  Defaults to NULL
-	 * @param	integer	$intConstantGroupId	optional, Id of the ConstantGroup that this constant belongs to.
-	 * 										Defaults to NULL
-	 *
-	 * @return	mix							int  : Id of the Constant on success
-	 * 										bool : FALSE on failure
-	 *
-	 * @function
-	 */
-	function SaveConstant($strName, $mixValue, $intDataType=NULL, $strDescription=NULL, $intConstantGroupId=NULL)
-	{
-		// THIS IS DEPRECATED
-		return false;
-
-		/*static $insConst;
-
-		if (!isset($insConst))
+		// Type cast the constant's value to its data type
+		if ($arrConstant['Value'] === NULL)
 		{
-			$insConst = new StatementInsert("ConfigConstant");
+			// Don't bother type casting it if it is equal to NULL
+			$mixValue = NULL;
 		}
-
-		if ($intConstantGroupId !== NULL)
+		else
 		{
-			// A constant group has been specified
-			$intDataType = NULL;
-		}
-		if ($intConstantGroupId === NULL && $intDataType === NULL)
-		{
-			// We cannot work out the data type for the constant.  Assume it is a string
-			$intDataType = DATA_TYPE_STRING;
-		}
-
-		if ($intDataType == DATA_TYPE_BOOLEAN)
-		{
-			$mixValue = ($mixValue)? "1" : "0";
-		}
-
-		$arrConst = Array(	"ConstantGroup" => $intConstantGroupId, "Name" => $strName,
-			"Description" => $strDescription, "Value" => "$mixValue",
-			"Type" => $intDataType);
-
-		$mixResult = $insConst->Execute($arrConst);
-		return $mixResult;*/
-	}
-
-	//------------------------------------------------------------------------//
-	// BuildConstantsFromDB
-	//------------------------------------------------------------------------//
-	/**
-	 * BuildConstantsFromDB()
-	 *
-	 * Declares all constants and ConstantGroups stored in the database, so long as the constants have not already been defined
-	 *
-	 * Declares all constants and ConstantGroups stored in the database, so long as the constants have not already been defined
-	 * If a constant declared in the database, has aleady been declared in the php process,
-	 * then it will not be changed.  All ConstantGroups defined in the database are also loaded into the
-	 * $GLOBALS['*arrConstant'][ConstantGroupName] structure
-	 *
-	 * @param	boolean		$bolExceptionOnError			optional, if TRUE then an exception is thrown if
-	 * 														it cannot resolve the data type of the constant
-	 * 														or if it is declaring a constant in a ConstantGroup
-	 * 														with a value that is already used by another constant
-	 * 														within the constant group. Defaults to FALSE
-	 * @param	booleab		$bolExceptionOnRedefinition		optional, if TRUE then an exception is thrown if
-	 * 														a constant in the database has already been defined
-	 * 														in the php global namespace. Defaults to FALSE
-	 *
-	 * @return	boolean								TRUE on success, else FALSE
-	 *
-	 * @function
-	 */
-	function BuildConstantsFromDB($bolExceptionOnError=FALSE, $bolExceptionOnRedefinition=FALSE)
-	{
-		// THIS IS DEPRECATED
-		return false;
-
-		/*$strTables	= "ConfigConstant AS CC INNER JOIN ConfigConstantGroup AS CCG ON CC.ConstantGroup = CCG.Id";
-		$arrColumns	= Array("Id"				=> "CC.Id",
-			"Name"				=> "CC.Name",
-			"Value"				=> "CC.Value",
-			"ConstDesc"			=> "CC.Description",
-			"Type"				=> "CASE WHEN CCG.Special THEN CCG.Type ELSE CC.Type END",
-			"ConstGroupName"	=> "CCG.Name",
-			"Special" 			=> "CCG.Special");
-		$strOrderBy	= "CC.ConstantGroup, CC.Id";
-		$strWhere	= "TRUE";
-		$selConstants = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy);
-
-		$selConstants->Execute();
-		$arrConstants = $selConstants->FetchAll();
-
-		foreach ($arrConstants as $arrConstant)
-		{
-			// Check if the constant has already been defined
-			if (defined($arrConstant['Name']))
+			switch ($arrConstant['Type'])
 			{
-				// The constant has already been defined.
-				if ($bolExceptionOnRedefinition)
+			case 1: //DATA_TYPE_STRING:
+				$mixValue = (string)$arrConstant['Value'];
+				break;
+			case 2: //DATA_TYPE_INTEGER:
+				$mixValue = (integer)$arrConstant['Value'];
+				break;
+			case 3: //DATA_TYPE_FLOAT:
+				$mixValue = (float)$arrConstant['Value'];
+				break;
+			case 4: //DATA_TYPE_BOOLEAN:
+				$mixValue = (bool)$arrConstant['Value'];
+				break;
+			default:
+				// Unknown data type
+				if ($bolExceptionOnError)
 				{
 					// Throw an exception
-					$strMsg = "Error: Attempting to declare constant: {$arrConstant['Name']} with value: {$arrConstant['Value']}, but this has already been declared within the php global namespace with value: ". constant($arrConstant['Name']);
+					$strMsg = "Error: Constant: {$arrConstant['Name']} with value: {$arrConstant['Value']}, has unknown datatype {$arrConstant['Type']}";
 					throw new Exception($strMsg);
 				}
 
-				// Move on to the next constant
+				return FALSE;
+				break;
+			}
+		}
+
+		// If the constant is part of a special ConstantGroup then add it to the $GLOBALS['*arrConstant'] array
+		if ($arrConstant['Special'])
+		{
+			// Check that the value is not already in use by another constant within the ConstantGroup
+			if (isset($GLOBALS['*arrConstant'][$arrConstant['ConstGroupName']][$mixValue]))
+			{
+				// This value is already being used
+				if ($bolExceptionOnRedefinition)
+				{
+					// Throw an exception
+					$strMsg = 	"Error: ConstantGroup: {$arrConstant['ConstGroupName']} already has constant ".
+						$GLOBALS['*arrConstant'][$arrConstant['ConstGroupName']][$mixValue]['Constant'] .
+						" set to $mixValue so it cannot also contain the constant {$arrConstant['Name']} which ".
+						"is also set to $mixValue";
+					throw new Exception($strMsg);
+				}
 				continue;
 			}
 
-			// Type cast the constant's value to its data type
-			if ($arrConstant['Value'] === NULL)
+			$GLOBALS['*arrConstant'][$arrConstant['ConstGroupName']][$mixValue]['Constant']		= $arrConstant['Name'];
+			$GLOBALS['*arrConstant'][$arrConstant['ConstGroupName']][$mixValue]['Description']	= $arrConstant['ConstDesc'];
+		}
+
+		// Declare the constant
+		define($arrConstant['Name'], $mixValue);
+
+		//Debug stuff
+	/*
+	if ($arrConstant['ConstGroupName'] !== NULL)
+	{
+		echo "\$GLOBALS['*arrConstant']['{$arrConstant['ConstGroupName']}'][{$mixValue}]['Constant'] &nbsp;&nbsp;&nbsp;&nbsp;= {$arrConstant['Name']}<br />\n";
+		echo "\$GLOBALS['*arrConstant']['{$arrConstant['ConstGroupName']}'][{$mixValue}]['Description'] = {$arrConstant['Name']}<br />\n";
+	}
+	else
+	{
+		echo "define('{$arrConstant['Name']}', $mixValue)<br />";
+	}
+ */
+	//}
+}
+
+
+
+
+//------------------------------------------------------------------------//
+// GetCustomerName
+//------------------------------------------------------------------------//
+/**
+ * GetCustomerName()
+ *
+ * Returns the customer (eg. TelcoBlue) name
+ *
+ * Returns the customer (eg. TelcoBlue) name
+ *
+ * @return	string		Customer Name (eg. "telcoblue")
+ *
+ * @function
+ */
+function GetCustomerName()
+{
+	return $GLOBALS['**arrCustomerConfig']['Customer'];
+}
+
+
+//------------------------------------------------------------------------//
+// TruncateTime()
+//------------------------------------------------------------------------//
+/**
+ * TruncateTime()
+ *
+ * Truncates a Unix Timestamp to a specified degree of accuracy
+ *
+ * Truncates a Unix Timestamp to a specified degree of accuracy.
+ *
+ * @param	integer	$intTime					The timestamp to truncate
+ * @param	string	$strAccuracy				Where to truncate the timestamp.  Accepts 'y', 'm', 'd', 'h', 'i', or 's'.
+ * @param	string	$strRound					'floor': Rounded Down; 'ceil': Rounded Up
+ *
+ * @return	integer								Truncated Timestamp
+ *
+ * @function
+ */
+function TruncateTime($intTime, $strAccuracy, $strRound)
+{
+	// Set up default values
+	$arrParts		= Array();
+	if ($strRound == 'ceil')
+	{
+		$arrParts['Y']	= 2037;
+		$arrParts['m']	= 12;
+		$arrParts['d']	= 31;
+		$arrParts['H']	= 23;
+		$arrParts['i']	= 59;
+		$arrParts['s']	= 59;
+	}
+	else
+	{
+		$arrParts['Y']	= 1970;
+		$arrParts['m']	= 1;
+		$arrParts['d']	= 1;
+		$arrParts['H']	= 0;
+		$arrParts['i']	= 0;
+		$arrParts['s']	= 0;
+	}
+
+	// Truncate time
+	$bolTruncated	= FALSE;
+	foreach ($arrParts as $strPart=>$intValue)
+	{
+		// If we're already truncated
+		if ($bolTruncated)
+		{
+			// Use default
+			continue;
+		}
+		elseif (strtolower($strPart) === strtolower($strAccuracy))
+		{
+			// Truncate from here onwards
+			$bolTruncated	= TRUE;
+		}
+
+		// Set passed value
+		$arrParts[$strPart]	= (int)date($strPart, $intTime);
+	}
+
+	return mktime($arrParts['H'], $arrParts['i'], $arrParts['s'], $arrParts['m'], $arrParts['d'], $arrParts['Y']);
+}
+
+
+
+//------------------------------------------------------------------------//
+// FlexCast()
+//------------------------------------------------------------------------//
+/**
+ * FlexCast()
+ *
+ * Casts a variable to a type defined by Flex DataType constants
+ *
+ * Casts a variable to a type defined by Flex DataType constants
+ *
+ * @param	mixed	$mixVariable				The variable to cast
+ * @param	integer	$intDataType				The Flex DataType constant to cast to
+ *
+ * @return	mixed								Cast variable
+ *
+ * @function
+ */
+function FlexCast($mixVariable, $intDataType)
+{
+	switch ($intDataType)
+	{
+	case DATA_TYPE_INTEGER:
+		return (int)$mixVariable;
+
+	case DATA_TYPE_FLOAT:
+		return (float)$mixVariable;
+
+	case DATA_TYPE_BOOLEAN:
+		return (bool)$mixVariable;
+
+	case DATA_TYPE_STRING:
+		return (string)$mixVariable;
+
+	case DATA_TYPE_SERIALISED:
+		return unserialize($mixVariable);
+
+	default:
+		// If we don't recognise the type, return in its original value
+		return $mixVariable;
+	}
+}
+
+//------------------------------------------------------------------------//
+// EscapeXML()
+//------------------------------------------------------------------------//
+/**
+ * EscapeXML()
+ *
+ * Escapes a string for use in XML
+ *
+ * Escapes a string for use in XML
+ *
+ * @param	string	$strText					The string to escape
+ * @param	boolean	$bolAttribute				TRUE	: This string is for use in an Attribute (only escape quotes)
+ * 												FALSE	: This string is for general XML use (escape everything)
+ *
+ * @return	string								Escaped string
+ *
+ * @function
+ */
+function EscapeXML($strText, $bolAttribute = FALSE)
+{
+	if (!$bolAttribute)
+	{
+		$strText	= str_replace('&', '&amp;', $strText);
+		$strText	= str_replace('<', '&lt;', $strText);
+		$strText	= str_replace('>', '&gt;', $strText);
+	}
+
+	$strText	= str_replace('"', '&quot;', $strText);
+	$strText	= str_replace("'", '&apos;', $strText);
+
+	return $strText;
+}
+
+//------------------------------------------------------------------------//
+// Encrypt($strKey, $strDecryptedString)
+//------------------------------------------------------------------------//
+/**
+ * Encrypt($strKey, $strDecryptedString)
+ *
+ * Encrypts a string
+ *
+ * Encrypts a string
+ *
+ * @param	boolean	$strDecryptedString	The string to encrypt
+ *
+ * @return	string						Encrypted string base 64 encoded
+ *
+ * @function
+ */
+function Encrypt($strDecryptedString)
+{
+	if (!array_key_exists('**arrCustomerConfig', $GLOBALS) || !array_key_exists('Key', $GLOBALS['**arrCustomerConfig']))
+	{
+		throw new Exception("Encryption key has not been configurred in customer configuration.");
+	}
+	$strKey = $GLOBALS['**arrCustomerConfig']['Key'];
+	if ($strDecryptedString === '' || $strDecryptedString === NULL) return '';
+	$cipher = mcrypt_module_open(MCRYPT_RIJNDAEL_256, '', MCRYPT_MODE_CFB, '');
+	$iv = substr(sha1($strKey), 0, mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CFB));
+	$ks = mcrypt_enc_get_key_size($cipher);
+	$key = substr($strKey.sha1($strKey), 0, $ks);
+	mcrypt_generic_init($cipher, $key, $iv);
+	$strEncryptedString = mcrypt_generic($cipher, $strDecryptedString);
+	mcrypt_generic_deinit($cipher);
+	mcrypt_module_close($cipher);
+	return base64_encode($strEncryptedString);
+}
+
+//------------------------------------------------------------------------//
+// Decrypt($strKey, $strBase64EncodedEncryptedString)
+//------------------------------------------------------------------------//
+/**
+ * Decrypt($strKey, $strBase64EncodedEncryptedString)
+ *
+ * Decrypts a string
+ *
+ * Decrypts a string
+ *
+ * @param	boolean	$strBase64EncodedEncryptedString	The encrypted string, base 64 encoded
+ * 														(as returned by Encrypt() function)
+ *
+ * @return	string										Decrypted string
+ *
+ * @function
+ */
+function Decrypt($strBase64EncodedEncryptedString)
+{
+	if (!array_key_exists('**arrCustomerConfig', $GLOBALS) || !array_key_exists('Key', $GLOBALS['**arrCustomerConfig']))
+	{
+		throw new Exception("Encryption key has not been configurred in customer configuration.");
+	}
+	$strKey = $GLOBALS['**arrCustomerConfig']['Key'];
+	if ($strBase64EncodedEncryptedString === '' || $strBase64EncodedEncryptedString === NULL) return '';
+	$strEncryptedString = base64_decode($strBase64EncodedEncryptedString);
+	$cipher = mcrypt_module_open(MCRYPT_RIJNDAEL_256, '', MCRYPT_MODE_CFB, '');
+	$iv = substr(sha1($strKey), 0, mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CFB));
+	$ks = mcrypt_enc_get_key_size($cipher);
+	$key = substr($strKey.sha1($strKey), 0, $ks);
+	mcrypt_generic_init($cipher, $key, $iv);
+	$strDecryptedString = mdecrypt_generic($cipher, $strEncryptedString);
+	mcrypt_generic_deinit($cipher);
+	mcrypt_module_close($cipher);
+	return $strDecryptedString;
+}
+
+//------------------------------------------------------------------------//
+// Decrypt($strKey, $strBase64EncodedEncryptedString)
+//------------------------------------------------------------------------//
+/**
+ * DecryptAndStripSpaces($strKey, $strBase64EncodedEncryptedString)
+ *
+ * Decrypts a string and strips spaces from it
+ *
+ * Decrypts a string and strips spaces from it. Used by the "Credit Card Payments Report"
+ *
+ * @param	boolean	$strBase64EncodedEncryptedString	The encrypted string, base 64 encoded
+ * 														(as returned by Encrypt() function and
+ * 														stored in the database)
+ *
+ * @return	string										Decrypted string with spaces removed
+ *
+ * @function
+ */
+function DecryptAndStripSpaces($strBase64EncodedEncryptedString)
+{
+	return str_replace(' ', '', Decrypt($strBase64EncodedEncryptedString));
+}
+
+
+//------------------------------------------------------------------------//
+// UnpackArchive
+//------------------------------------------------------------------------//
+/**
+ * UnpackArchive()
+ *
+ * Unpacks an Archive
+ *
+ * Unpacks an Archive to a given location.  Accepted Force Types are 'zip', 'tar', 'tar.bz2'
+ *
+ * @param	string	$strSourcePath						Full path to the Source Archive
+ * @param	string	$strDestinationPath		[optional]	Full path to where the Archive should be extracted. (Default: NULL - Current Working Directory)
+ * @param	boolean	$bolJunkPaths			[optional]	TRUE: Do not recreate Archive directory structure. (Default: FALSE)
+ * @param	string	$strPassword			[optional]	Archive password. (Default: NULL)
+ * @param	string	$strType				[optional]	Archive is of this type. (Default: NULL)
+ *
+ * @return	mixed										Array: full paths to the files extracted; string: Error Message
+ *
+ * @method
+ */
+function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths = FALSE, $strPassword = NULL, $strType = NULL)
+{
+	$arrHandledTypes			= Array();
+
+	// ZIP types
+	$arrHandledTypes['zip']		= 'zip';
+
+	// TAR types
+	$arrHandledTypes['tar']		= 'tar';
+	$arrHandledTypes['tar.bz2']	= 'tar';
+	$arrHandledTypes['tbz']		= 'tar';
+	$arrHandledTypes['tbz2']	= 'tar';
+	$arrHandledTypes['tb2']		= 'tar';
+	$arrHandledTypes['tar.gz']	= 'tar';
+	$arrHandledTypes['tgz']		= 'tar';
+
+	// Source and Destination manipulation
+	$strBasename	= basename($strSourcePath);
+	$strDirname		= dirname($strSourcePath);
+	if (!file_exists($strSourcePath))
+	{
+		// Source file does not exist
+		return "Unable to locate Source file '$strSourcePath'";
+	}
+	if (!(file_exists($strDestinationPath) && is_dir($strDestinationPath)))
+	{
+		if (!@mkdir($strDestinationPath, 0644, TRUE))
+		{
+			// Unable to create the Destination Path
+			return "Unable to create Destination path '$strDestinationPath'";
+		}
+	}
+
+	// Get the type
+	$strExtension	= '';
+	if ($strType === NULL)
+	{
+		foreach ($arrHandledTypes as $strHandledExtension=>$strBaseType)
+		{
+			if ($strHandledExtension === strtolower(substr($strBasename, strripos($strBasename, $strHandledExtension))))
 			{
-				// Don't bother type casting it if it is equal to NULL
-				$mixValue = NULL;
+				$strType		= $strBaseType;
+				$strExtension	= $strHandledExtension;
+				break;
+			}
+		}
+	}
+
+	// Unpack
+	$arrOutput	= Array();
+	$intReturn	= NULL;
+	$strCommand	= NULL;
+	$arrFiles	= Array($strSourcePath);
+	switch (strtolower($strType))
+	{
+	case 'zip':
+		$strCommand		= "unzip ";
+		$strCommand		.= ($bolJunkPaths) ? '-j ' : '';
+		$strCommand		.= ($strPassword !== NULL) ? "-P {$strPassword} " : '';
+		$strCommand		.= "$strSourcePath ";
+		$strCommand		.= ($strDestinationPath !== NULL) ? "-d $strDestinationPath" : "-d $strDirname";
+
+		$strLastLine	= exec($strCommand, $arrOutput, $intReturn);
+
+		if ($intReturn > 0)
+		{
+			// An error occurred
+			return "Unable to unzip archive '$strSourcePath'";
+		}
+
+		// Get list of files extracted
+		$arrFiles	= Array();
+		foreach ($arrOutput as $strLine)
+		{
+			if (stripos($strLine, 'Archive: ') === FALSE)
+			{
+				$arrLine	= explode(': ', $strLine, 2);
+				if (is_file($arrLine[1]))
+				{
+					$arrFiles[]	= $arrLine[1];
+				}
+			}
+		}
+		break;
+
+	case 'tar':
+		$strCommand		= "tar";
+		$strCommand		.= ($bolJunkPaths) ? " --transform='s,\/?(\w+\/)*,,x'" : '';
+		$strCommand		.= " -xv ";
+		$strCommand		.= (in_array(strtolower($strHandledExtension), Array('tar.bz2', 'tbz', 'tbz2', 'tb2'))) ? '--bzip2 ' : '';
+		$strCommand		.= (in_array(strtolower($strHandledExtension), Array('tar.gz', 'tgz'))) ? '--gzip ' : '';
+		$strCommand		.= "-f $strSourcePath";
+		$strCommand		.= ($strDestinationPath !== NULL) ? " -C $strDestinationPath" : '';
+		$strCommand		.= ($bolJunkPaths) ? " --show-transformed-names" : '';
+
+		$strLastLine	= exec($strCommand, $arrOutput, $intReturn);
+
+		if ($intReturn > 0)
+		{
+			// An error occurred
+			return "Unable to untar file '$strSourcePath'";
+		}
+
+		// Get list of files extracted
+		$arrFiles		= $arrOutput;
+		foreach ($arrFiles as &$strFile)
+		{
+			if ($strDestinationPath !== NULL)
+			{
+				$strFile	= rtrim($strDestinationPath, '/').'/'.$strFile;
 			}
 			else
 			{
-				switch ($arrConstant['Type'])
-				{
-				case 1: //DATA_TYPE_STRING:
-					$mixValue = (string)$arrConstant['Value'];
-					break;
-				case 2: //DATA_TYPE_INTEGER:
-					$mixValue = (integer)$arrConstant['Value'];
-					break;
-				case 3: //DATA_TYPE_FLOAT:
-					$mixValue = (float)$arrConstant['Value'];
-					break;
-				case 4: //DATA_TYPE_BOOLEAN:
-					$mixValue = (bool)$arrConstant['Value'];
-					break;
-				default:
-					// Unknown data type
-					if ($bolExceptionOnError)
-					{
-						// Throw an exception
-						$strMsg = "Error: Constant: {$arrConstant['Name']} with value: {$arrConstant['Value']}, has unknown datatype {$arrConstant['Type']}";
-						throw new Exception($strMsg);
-					}
-
-					return FALSE;
-					break;
-				}
+				$strFile	= getcwd().'/'.$strFile;
 			}
 
-			// If the constant is part of a special ConstantGroup then add it to the $GLOBALS['*arrConstant'] array
-			if ($arrConstant['Special'])
+			if (!is_file($strFile))
 			{
-				// Check that the value is not already in use by another constant within the ConstantGroup
-				if (isset($GLOBALS['*arrConstant'][$arrConstant['ConstGroupName']][$mixValue]))
-				{
-					// This value is already being used
-					if ($bolExceptionOnRedefinition)
-					{
-						// Throw an exception
-						$strMsg = 	"Error: ConstantGroup: {$arrConstant['ConstGroupName']} already has constant ".
-							$GLOBALS['*arrConstant'][$arrConstant['ConstGroupName']][$mixValue]['Constant'] .
-							" set to $mixValue so it cannot also contain the constant {$arrConstant['Name']} which ".
-							"is also set to $mixValue";
-						throw new Exception($strMsg);
-					}
-					continue;
-				}
+				unset($strFile);
+			}
+		}
+		break;
 
-				$GLOBALS['*arrConstant'][$arrConstant['ConstGroupName']][$mixValue]['Constant']		= $arrConstant['Name'];
-				$GLOBALS['*arrConstant'][$arrConstant['ConstGroupName']][$mixValue]['Description']	= $arrConstant['ConstDesc'];
+	default:
+		return Array('Files' => Array($strSourcePath));
+	}
+
+	//Debug("Command\t: '$strCommand'");
+	//Debug("Last Line\t: '$strLastLine'");
+	return Array('Files' => $arrFiles, 'Processed' => TRUE);
+}
+
+function BarAccount($intAccountId, $intAccountGroup, $bolAutomatic=FALSE, $invoiceRun=NULL)
+{
+	// Throw exception if fails
+
+	// Bar the account
+
+	$arrAccountServices = ListServicesAndCarriersForAccount($intAccountId);
+
+	$arrAutomaticallyBarrableCarriers = ListAutomaticallyBarrableCarriers();
+
+	$arrUnbarrableAccountServices = array();
+	$arrBarrableAccountServices = array();
+
+	$bolBarred = FALSE;
+
+	$bolBarredFNNs = array();
+
+	foreach($arrAccountServices as $intServiceId => $arrDetails)
+	{
+		if ($arrDetails['CarrierId'] !== NULL && array_search($arrDetails['CarrierId'], $arrAutomaticallyBarrableCarriers) !== FALSE)
+		{
+			// Write the record to bar the service
+			$sNow		= new MySQLFunction('NOW()');
+			$arrColumns = array(
+				'AccountGroup' 			=> $intAccountGroup,
+				'Account'				=> $intAccountId,
+				'Service'				=> $intServiceId,
+				'FNN'					=> $arrDetails['FNN'],
+				'Employee'				=> USER_ID,
+				'Carrier'				=> $arrDetails['CarrierId'],
+				'Type'					=> PROVISIONING_TYPE_BAR,
+				'RequestedOn'			=> $sNow,
+				'AuthorisationDate'		=> $sNow,
+				'scheduled_datetime'	=> $sNow,
+				'Status'				=> REQUEST_STATUS_WAITING
+			);
+			$insProvisioningRequest = new StatementInsert('ProvisioningRequest', $arrColumns, FALSE);
+			$mxdResult = $insProvisioningRequest->Execute($arrColumns);
+			if ($mxdResult === FALSE)
+			{
+				throw new Exception_Database('Failed to create provisioning request for barring service ' . $arrDetails['FNN'] . '(' . $intServiceId . '): ' . $insProvisioningRequest->Error());
 			}
 
-			// Declare the constant
-			define($arrConstant['Name'], $mixValue);
+			// Add a note to the service
+			$GLOBALS['fwkFramework']->AddNote('Service automatically barred.', Note::SYSTEM_NOTE_TYPE_ID, USER_ID, $intAccountGroup, NULL, $intServiceId);
 
-			//Debug stuff
-		/*
-		if ($arrConstant['ConstGroupName'] !== NULL)
-		{
-			echo "\$GLOBALS['*arrConstant']['{$arrConstant['ConstGroupName']}'][{$mixValue}]['Constant'] &nbsp;&nbsp;&nbsp;&nbsp;= {$arrConstant['Name']}<br />\n";
-			echo "\$GLOBALS['*arrConstant']['{$arrConstant['ConstGroupName']}'][{$mixValue}]['Description'] = {$arrConstant['Name']}<br />\n";
+			$bolBarred = TRUE;
+			$bolBarredFNNs[] = $arrDetails['FNN'];
+			$arrBarrableAccountServices[$intServiceId] = $arrDetails;
 		}
 		else
 		{
-			echo "define('{$arrConstant['Name']}', $mixValue)<br />";
+			$arrUnbarrableAccountServices[$intServiceId] = $arrDetails;
 		}
-	 */
-		//}
 	}
 
-
-
-
-	//------------------------------------------------------------------------//
-	// GetCustomerName
-	//------------------------------------------------------------------------//
-	/**
-	 * GetCustomerName()
-	 *
-	 * Returns the customer (eg. TelcoBlue) name
-	 *
-	 * Returns the customer (eg. TelcoBlue) name
-	 *
-	 * @return	string		Customer Name (eg. "telcoblue")
-	 *
-	 * @function
-	 */
-	function GetCustomerName()
+	// If automatic, change auto_barring_status for the account
+	if ($bolAutomatic && $bolBarred)
 	{
-		return $GLOBALS['**arrCustomerConfig']['Customer'];
+		$strReason = 'Automatically barred the following services: ' . implode(', ', $bolBarredFNNs) . '. ';
+		ChangeAccountAutomaticBarringStatus($intAccountId, $intAccountGroup, AUTOMATIC_BARRING_STATUS_BARRED, $strReason);
+		ChangeAccountAutomaticInvoiceAction($intAccountId, NULL, AUTOMATIC_INVOICE_ACTION_BARRING, $strReason, NULL, $invoiceRun);
 	}
 
+	$outcome = array('BARRED' => $arrBarrableAccountServices, 'NOT_BARRED' => $arrUnbarrableAccountServices);
 
-	//------------------------------------------------------------------------//
-	// TruncateTime()
-	//------------------------------------------------------------------------//
-	/**
-	 * TruncateTime()
-	 *
-	 * Truncates a Unix Timestamp to a specified degree of accuracy
-	 *
-	 * Truncates a Unix Timestamp to a specified degree of accuracy.
-	 *
-	 * @param	integer	$intTime					The timestamp to truncate
-	 * @param	string	$strAccuracy				Where to truncate the timestamp.  Accepts 'y', 'm', 'd', 'h', 'i', or 's'.
-	 * @param	string	$strRound					'floor': Rounded Down; 'ceil': Rounded Up
-	 *
-	 * @return	integer								Truncated Timestamp
-	 *
-	 * @function
-	 */
-	function TruncateTime($intTime, $strAccuracy, $strRound)
+	// Return a list of services that could and could not be barred
+	return $outcome;
+}
+
+function UnbarAccount($intAccountId, $intAccountGroup, $bolAutomatic=FALSE, $invoiceRun=NULL)
+{
+	require_once(SHARED_BASE_PATH.'classes/note/Note.php');
+
+	// Throw exception if fails
+
+	// Bar the account
+
+	$arrAccountServices = ListServicesAndCarriersForAccount($intAccountId);
+
+	$arrAutomaticallyUnbarrableCarriers = ListAutomaticallyUnbarrableCarriers();
+
+	$arrNonUnbarrableAccountServices = array();
+	$arrUnbarrableAccountServices = array();
+
+	$bolUnbarred = FALSE;
+	$bolManualUnbars = FALSE;
+
+	$bolUnbarredFNNs = array();
+
+	foreach($arrAccountServices as $intServiceId => $arrDetails)
 	{
-		// Set up default values
-		$arrParts		= Array();
-		if ($strRound == 'ceil')
+		if ($arrDetails['CarrierId'] !== NULL && array_search($arrDetails['CarrierId'], $arrAutomaticallyUnbarrableCarriers) !== FALSE)
 		{
-			$arrParts['Y']	= 2037;
-			$arrParts['m']	= 12;
-			$arrParts['d']	= 31;
-			$arrParts['H']	= 23;
-			$arrParts['i']	= 59;
-			$arrParts['s']	= 59;
+			// Write the record to unbar the service
+			$sNow		= new MySQLFunction('NOW()');
+			$arrColumns = array(
+				'AccountGroup' 			=> $intAccountGroup,
+				'Account'				=> $intAccountId,
+				'Service'				=> $intServiceId,
+				'FNN'					=> $arrDetails['FNN'],
+				'Employee'				=> USER_ID,
+				'Carrier'				=> $arrDetails['CarrierId'],
+				'Type'					=> PROVISIONING_TYPE_UNBAR,
+				'RequestedOn'			=> $sNow,
+				'AuthorisationDate'		=> $sNow,
+				'scheduled_datetime'	=> $sNow,
+				'Status'				=> REQUEST_STATUS_WAITING
+			);
+			$insProvisioningRequest = new StatementInsert('ProvisioningRequest', $arrColumns, FALSE);
+			$mxdResult = $insProvisioningRequest->Execute($arrColumns);
+			if ($mxdResult === FALSE)
+			{
+				throw new Exception_Database('Failed to create provisioning request for unbarring service ' . $arrDetails['FNN'] . '(' . $intServiceId . '): ' . $insProvisioningRequest->Error());
+			}
+
+			// Add a note to the service
+			$GLOBALS['fwkFramework']->AddNote('Service automatically unbarred.', Note::SYSTEM_NOTE_TYPE_ID, USER_ID, $intAccountGroup, NULL, $intServiceId);
+
+			$bolUnbarred = TRUE;
+			$bolUnbarredFNNs[] = $arrDetails['FNN'];
+			$arrUnbarrableAccountServices[$intServiceId] = $arrDetails;
 		}
 		else
 		{
-			$arrParts['Y']	= 1970;
-			$arrParts['m']	= 1;
-			$arrParts['d']	= 1;
-			$arrParts['H']	= 0;
-			$arrParts['i']	= 0;
-			$arrParts['s']	= 0;
-		}
-
-		// Truncate time
-		$bolTruncated	= FALSE;
-		foreach ($arrParts as $strPart=>$intValue)
-		{
-			// If we're already truncated
-			if ($bolTruncated)
-			{
-				// Use default
-				continue;
-			}
-			elseif (strtolower($strPart) === strtolower($strAccuracy))
-			{
-				// Truncate from here onwards
-				$bolTruncated	= TRUE;
-			}
-
-			// Set passed value
-			$arrParts[$strPart]	= (int)date($strPart, $intTime);
-		}
-
-		return mktime($arrParts['H'], $arrParts['i'], $arrParts['s'], $arrParts['m'], $arrParts['d'], $arrParts['Y']);
-	}
-
-
-
-	//------------------------------------------------------------------------//
-	// FlexCast()
-	//------------------------------------------------------------------------//
-	/**
-	 * FlexCast()
-	 *
-	 * Casts a variable to a type defined by Flex DataType constants
-	 *
-	 * Casts a variable to a type defined by Flex DataType constants
-	 *
-	 * @param	mixed	$mixVariable				The variable to cast
-	 * @param	integer	$intDataType				The Flex DataType constant to cast to
-	 *
-	 * @return	mixed								Cast variable
-	 *
-	 * @function
-	 */
-	function FlexCast($mixVariable, $intDataType)
-	{
-		switch ($intDataType)
-		{
-		case DATA_TYPE_INTEGER:
-			return (int)$mixVariable;
-
-		case DATA_TYPE_FLOAT:
-			return (float)$mixVariable;
-
-		case DATA_TYPE_BOOLEAN:
-			return (bool)$mixVariable;
-
-		case DATA_TYPE_STRING:
-			return (string)$mixVariable;
-
-		case DATA_TYPE_SERIALISED:
-			return unserialize($mixVariable);
-
-		default:
-			// If we don't recognise the type, return in its original value
-			return $mixVariable;
+			$arrNonUnbarrableAccountServices[$intServiceId] = $arrDetails;
+			$bolManualUnbars = TRUE;
 		}
 	}
 
-	//------------------------------------------------------------------------//
-	// EscapeXML()
-	//------------------------------------------------------------------------//
-	/**
-	 * EscapeXML()
-	 *
-	 * Escapes a string for use in XML
-	 *
-	 * Escapes a string for use in XML
-	 *
-	 * @param	string	$strText					The string to escape
-	 * @param	boolean	$bolAttribute				TRUE	: This string is for use in an Attribute (only escape quotes)
-	 * 												FALSE	: This string is for general XML use (escape everything)
-	 *
-	 * @return	string								Escaped string
-	 *
-	 * @function
-	 */
-	function EscapeXML($strText, $bolAttribute = FALSE)
+	// If automatic, change auto_barring_status for the account
+	// Note: We do this regardless of whether any services were unbarred automatically, manuall or even if there were no services
+	if ($bolAutomatic)
 	{
-		if (!$bolAttribute)
-		{
-			$strText	= str_replace('&', '&amp;', $strText);
-			$strText	= str_replace('<', '&lt;', $strText);
-			$strText	= str_replace('>', '&gt;', $strText);
-		}
-
-		$strText	= str_replace('"', '&quot;', $strText);
-		$strText	= str_replace("'", '&apos;', $strText);
-
-		return $strText;
+		$strReason = 'Automatically unbarred the following services: ' . implode(', ', $bolUnbarredFNNs) . '. ';
+		ChangeAccountAutomaticBarringStatus($intAccountId, $intAccountGroup, AUTOMATIC_BARRING_STATUS_UNBARRED, $strReason);
+		ChangeAccountAutomaticInvoiceAction($intAccountId, NULL, AUTOMATIC_INVOICE_ACTION_UNBARRING, $strReason, NULL, $invoiceRun);
 	}
 
-	//------------------------------------------------------------------------//
-	// Encrypt($strKey, $strDecryptedString)
-	//------------------------------------------------------------------------//
-	/**
-	 * Encrypt($strKey, $strDecryptedString)
-	 *
-	 * Encrypts a string
-	 *
-	 * Encrypts a string
-	 *
-	 * @param	boolean	$strDecryptedString	The string to encrypt
-	 *
-	 * @return	string						Encrypted string base 64 encoded
-	 *
-	 * @function
-	 */
-	function Encrypt($strDecryptedString)
+	$outcome = array('UNBARRED' => $arrUnbarrableAccountServices, 'NOT_UNBARRED' => $arrNonUnbarrableAccountServices);
+
+	// Return a list of services that could and could not be unbarred
+	return $outcome;
+}
+
+function ChangeAccountAutomaticBarringStatus($intAccount, $intAccountGroup, $intTo, $strReason)
+{
+	$error = '';
+
+	$strDate = date('Y-m-d H:i:s');
+
+	// Need to find out the current status of the account
+	$selQuery = new StatementSelect('Account', array('automatic_barring_status' => 'automatic_barring_status'), 'Id=<Id>');
+	if (!$outcome = $selQuery->Execute(array('Id' => $intAccount)))
 	{
-		if (!array_key_exists('**arrCustomerConfig', $GLOBALS) || !array_key_exists('Key', $GLOBALS['**arrCustomerConfig']))
-		{
-			throw new Exception("Encryption key has not been configurred in customer configuration.");
-		}
-		$strKey = $GLOBALS['**arrCustomerConfig']['Key'];
-		if ($strDecryptedString === '' || $strDecryptedString === NULL) return '';
-		$cipher = mcrypt_module_open(MCRYPT_RIJNDAEL_256, '', MCRYPT_MODE_CFB, '');
-		$iv = substr(sha1($strKey), 0, mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CFB));
-		$ks = mcrypt_enc_get_key_size($cipher);
-		$key = substr($strKey.sha1($strKey), 0, $ks);
-		mcrypt_generic_init($cipher, $key, $iv);
-		$strEncryptedString = mcrypt_generic($cipher, $strDecryptedString);
-		mcrypt_generic_deinit($cipher);
-		mcrypt_module_close($cipher);
-		return base64_encode($strEncryptedString);
+		throw new Exception_Database('Failed to retreive current automatic barring status for account $intAccount. ' .  $qryQuery->Error());
+	}
+	$arrFrom =  $selQuery->Fetch();
+	$intFrom = intval($arrFrom['automatic_barring_status']);
+
+	$qryQuery = new Query();
+	$strSQL = 'UPDATE Account SET automatic_barring_status = ' . $intTo . ', automatic_barring_datetime = \'' . $strDate . '\' WHERE Id = ' . $intAccount;
+	if (!$outcome = $qryQuery->Execute($strSQL))
+	{
+		$message = ' Failed to update Account ' . $intAccount . ' automatic_barring_status from ' . $intFrom . ' to ' . $intTo . '. '. $qryQuery->Error();
+		throw new Exception($message);
 	}
 
-	//------------------------------------------------------------------------//
-	// Decrypt($strKey, $strBase64EncodedEncryptedString)
-	//------------------------------------------------------------------------//
-	/**
-	 * Decrypt($strKey, $strBase64EncodedEncryptedString)
-	 *
-	 * Decrypts a string
-	 *
-	 * Decrypts a string
-	 *
-	 * @param	boolean	$strBase64EncodedEncryptedString	The encrypted string, base 64 encoded
-	 * 														(as returned by Encrypt() function)
-	 *
-	 * @return	string										Decrypted string
-	 *
-	 * @function
-	 */
-	function Decrypt($strBase64EncodedEncryptedString)
+	// and creating a corresponding automatic_barring_status_history entry.
+	$qryQuery = new Query();
+	$strSQL = 'INSERT INTO automatic_barring_status_history (account, from_status, to_status, reason, change_datetime) ' .
+		' VALUES (' .
+		$intAccount . ', ' .
+		$intFrom . ', ' .
+		$intTo .', ' .
+		'\'' . $qryQuery->EscapeString($strReason) . '\', ' .
+		'\'' . $strDate . '\'' .
+		')';
+	if (!$outcome = $qryQuery->Execute($strSQL))
 	{
-		if (!array_key_exists('**arrCustomerConfig', $GLOBALS) || !array_key_exists('Key', $GLOBALS['**arrCustomerConfig']))
-		{
-			throw new Exception("Encryption key has not been configurred in customer configuration.");
-		}
-		$strKey = $GLOBALS['**arrCustomerConfig']['Key'];
-		if ($strBase64EncodedEncryptedString === '' || $strBase64EncodedEncryptedString === NULL) return '';
-		$strEncryptedString = base64_decode($strBase64EncodedEncryptedString);
-		$cipher = mcrypt_module_open(MCRYPT_RIJNDAEL_256, '', MCRYPT_MODE_CFB, '');
-		$iv = substr(sha1($strKey), 0, mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CFB));
-		$ks = mcrypt_enc_get_key_size($cipher);
-		$key = substr($strKey.sha1($strKey), 0, $ks);
-		mcrypt_generic_init($cipher, $key, $iv);
-		$strDecryptedString = mdecrypt_generic($cipher, $strEncryptedString);
-		mcrypt_generic_deinit($cipher);
-		mcrypt_module_close($cipher);
-		return $strDecryptedString;
+		$message = ' Failed to create automatic_barring_status_history entry for ' . $intAccount . ' change from ' . $intFrom . ' to ' . $intTo . '. '. $qryQuery->Error();
+		throw new Exception($message);
 	}
 
-	//------------------------------------------------------------------------//
-	// Decrypt($strKey, $strBase64EncodedEncryptedString)
-	//------------------------------------------------------------------------//
-	/**
-	 * DecryptAndStripSpaces($strKey, $strBase64EncodedEncryptedString)
-	 *
-	 * Decrypts a string and strips spaces from it
-	 *
-	 * Decrypts a string and strips spaces from it. Used by the "Credit Card Payments Report"
-	 *
-	 * @param	boolean	$strBase64EncodedEncryptedString	The encrypted string, base 64 encoded
-	 * 														(as returned by Encrypt() function and
-	 * 														stored in the database)
-	 *
-	 * @return	string										Decrypted string with spaces removed
-	 *
-	 * @function
-	 */
-	function DecryptAndStripSpaces($strBase64EncodedEncryptedString)
+	// Add a note to the account
+	$GLOBALS['fwkFramework']->AddNote($strReason, Note::SYSTEM_NOTE_TYPE_ID, USER_ID, $intAccountGroup, $intAccount);
+
+	return TRUE;
+}
+
+function ChangeAccountAutomaticInvoiceAction($intAccount, $intFrom, $intTo, $strReason, $strDateTime=NULL, $intInvoiceRunId)
+{
+	$error = '';
+
+	if ($strDateTime == NULL)
 	{
-		return str_replace(' ', '', Decrypt($strBase64EncodedEncryptedString));
+		$strDateTime = date("Y-m-d H:i:s");
 	}
 
-
-	//------------------------------------------------------------------------//
-	// UnpackArchive
-	//------------------------------------------------------------------------//
-	/**
-	 * UnpackArchive()
-	 *
-	 * Unpacks an Archive
-	 *
-	 * Unpacks an Archive to a given location.  Accepted Force Types are 'zip', 'tar', 'tar.bz2'
-	 *
-	 * @param	string	$strSourcePath						Full path to the Source Archive
-	 * @param	string	$strDestinationPath		[optional]	Full path to where the Archive should be extracted. (Default: NULL - Current Working Directory)
-	 * @param	boolean	$bolJunkPaths			[optional]	TRUE: Do not recreate Archive directory structure. (Default: FALSE)
-	 * @param	string	$strPassword			[optional]	Archive password. (Default: NULL)
-	 * @param	string	$strType				[optional]	Archive is of this type. (Default: NULL)
-	 *
-	 * @return	mixed										Array: full paths to the files extracted; string: Error Message
-	 *
-	 * @method
-	 */
-	function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths = FALSE, $strPassword = NULL, $strType = NULL)
+	if ($intFrom === NULL)
 	{
-		$arrHandledTypes			= Array();
-
-		// ZIP types
-		$arrHandledTypes['zip']		= 'zip';
-
-		// TAR types
-		$arrHandledTypes['tar']		= 'tar';
-		$arrHandledTypes['tar.bz2']	= 'tar';
-		$arrHandledTypes['tbz']		= 'tar';
-		$arrHandledTypes['tbz2']	= 'tar';
-		$arrHandledTypes['tb2']		= 'tar';
-		$arrHandledTypes['tar.gz']	= 'tar';
-		$arrHandledTypes['tgz']		= 'tar';
-
-		// Source and Destination manipulation
-		$strBasename	= basename($strSourcePath);
-		$strDirname		= dirname($strSourcePath);
-		if (!file_exists($strSourcePath))
-		{
-			// Source file does not exist
-			return "Unable to locate Source file '$strSourcePath'";
-		}
-		if (!(file_exists($strDestinationPath) && is_dir($strDestinationPath)))
-		{
-			if (!@mkdir($strDestinationPath, 0644, TRUE))
-			{
-				// Unable to create the Destination Path
-				return "Unable to create Destination path '$strDestinationPath'";
-			}
-		}
-
-		// Get the type
-		$strExtension	= '';
-		if ($strType === NULL)
-		{
-			foreach ($arrHandledTypes as $strHandledExtension=>$strBaseType)
-			{
-				if ($strHandledExtension === strtolower(substr($strBasename, strripos($strBasename, $strHandledExtension))))
-				{
-					$strType		= $strBaseType;
-					$strExtension	= $strHandledExtension;
-					break;
-				}
-			}
-		}
-
-		// Unpack
-		$arrOutput	= Array();
-		$intReturn	= NULL;
-		$strCommand	= NULL;
-		$arrFiles	= Array($strSourcePath);
-		switch (strtolower($strType))
-		{
-		case 'zip':
-			$strCommand		= "unzip ";
-			$strCommand		.= ($bolJunkPaths) ? '-j ' : '';
-			$strCommand		.= ($strPassword !== NULL) ? "-P {$strPassword} " : '';
-			$strCommand		.= "$strSourcePath ";
-			$strCommand		.= ($strDestinationPath !== NULL) ? "-d $strDestinationPath" : "-d $strDirname";
-
-			$strLastLine	= exec($strCommand, $arrOutput, $intReturn);
-
-			if ($intReturn > 0)
-			{
-				// An error occurred
-				return "Unable to unzip archive '$strSourcePath'";
-			}
-
-			// Get list of files extracted
-			$arrFiles	= Array();
-			foreach ($arrOutput as $strLine)
-			{
-				if (stripos($strLine, 'Archive: ') === FALSE)
-				{
-					$arrLine	= explode(': ', $strLine, 2);
-					if (is_file($arrLine[1]))
-					{
-						$arrFiles[]	= $arrLine[1];
-					}
-				}
-			}
-			break;
-
-		case 'tar':
-			$strCommand		= "tar";
-			$strCommand		.= ($bolJunkPaths) ? " --transform='s,\/?(\w+\/)*,,x'" : '';
-			$strCommand		.= " -xv ";
-			$strCommand		.= (in_array(strtolower($strHandledExtension), Array('tar.bz2', 'tbz', 'tbz2', 'tb2'))) ? '--bzip2 ' : '';
-			$strCommand		.= (in_array(strtolower($strHandledExtension), Array('tar.gz', 'tgz'))) ? '--gzip ' : '';
-			$strCommand		.= "-f $strSourcePath";
-			$strCommand		.= ($strDestinationPath !== NULL) ? " -C $strDestinationPath" : '';
-			$strCommand		.= ($bolJunkPaths) ? " --show-transformed-names" : '';
-
-			$strLastLine	= exec($strCommand, $arrOutput, $intReturn);
-
-			if ($intReturn > 0)
-			{
-				// An error occurred
-				return "Unable to untar file '$strSourcePath'";
-			}
-
-			// Get list of files extracted
-			$arrFiles		= $arrOutput;
-			foreach ($arrFiles as &$strFile)
-			{
-				if ($strDestinationPath !== NULL)
-				{
-					$strFile	= rtrim($strDestinationPath, '/').'/'.$strFile;
-				}
-				else
-				{
-					$strFile	= getcwd().'/'.$strFile;
-				}
-
-				if (!is_file($strFile))
-				{
-					unset($strFile);
-				}
-			}
-			break;
-
-		default:
-			return Array('Files' => Array($strSourcePath));
-		}
-
-		//Debug("Command\t: '$strCommand'");
-		//Debug("Last Line\t: '$strLastLine'");
-		return Array('Files' => $arrFiles, 'Processed' => TRUE);
+		// Need to find the current status for the account (do this as part of the other queries)
+		$intFrom = "(SELECT last_automatic_invoice_action FROM Account WHERE Id = $intAccount)";
 	}
 
-	function BarAccount($intAccountId, $intAccountGroup, $bolAutomatic=FALSE, $invoiceRun=NULL)
+	// Creating an automatic_invoice_action_history entry.
+	$qryQuery = new Query();
+	$strReason = $qryQuery->EscapeString($strReason);
+	$strSQL = "INSERT INTO automatic_invoice_action_history (account, from_action, to_action, reason, change_datetime, invoice_run_id)
+		VALUES ($intAccount, $intFrom, $intTo, '$strReason', '$strDateTime', $intInvoiceRunId)";
+	//echo "\n\n$strSQL\n\n";
+	if (!$outcome = $qryQuery->Execute($strSQL))
 	{
-		// Throw exception if fails
-
-		// Bar the account
-
-		$arrAccountServices = ListServicesAndCarriersForAccount($intAccountId);
-
-		$arrAutomaticallyBarrableCarriers = ListAutomaticallyBarrableCarriers();
-
-		$arrUnbarrableAccountServices = array();
-		$arrBarrableAccountServices = array();
-
-		$bolBarred = FALSE;
-
-		$bolBarredFNNs = array();
-
-		foreach($arrAccountServices as $intServiceId => $arrDetails)
-		{
-			if ($arrDetails['CarrierId'] !== NULL && array_search($arrDetails['CarrierId'], $arrAutomaticallyBarrableCarriers) !== FALSE)
-			{
-				// Write the record to bar the service
-				$sNow		= new MySQLFunction('NOW()');
-				$arrColumns = array(
-					'AccountGroup' 			=> $intAccountGroup,
-					'Account'				=> $intAccountId,
-					'Service'				=> $intServiceId,
-					'FNN'					=> $arrDetails['FNN'],
-					'Employee'				=> USER_ID,
-					'Carrier'				=> $arrDetails['CarrierId'],
-					'Type'					=> PROVISIONING_TYPE_BAR,
-					'RequestedOn'			=> $sNow,
-					'AuthorisationDate'		=> $sNow,
-					'scheduled_datetime'	=> $sNow,
-					'Status'				=> REQUEST_STATUS_WAITING
-				);
-				$insProvisioningRequest = new StatementInsert('ProvisioningRequest', $arrColumns, FALSE);
-				$mxdResult = $insProvisioningRequest->Execute($arrColumns);
-				if ($mxdResult === FALSE)
-				{
-					throw new Exception_Database('Failed to create provisioning request for barring service ' . $arrDetails['FNN'] . '(' . $intServiceId . '): ' . $insProvisioningRequest->Error());
-				}
-
-				// Add a note to the service
-				$GLOBALS['fwkFramework']->AddNote('Service automatically barred.', Note::SYSTEM_NOTE_TYPE_ID, USER_ID, $intAccountGroup, NULL, $intServiceId);
-
-				$bolBarred = TRUE;
-				$bolBarredFNNs[] = $arrDetails['FNN'];
-				$arrBarrableAccountServices[$intServiceId] = $arrDetails;
-			}
-			else
-			{
-				$arrUnbarrableAccountServices[$intServiceId] = $arrDetails;
-			}
-		}
-
-		// If automatic, change auto_barring_status for the account
-		if ($bolAutomatic && $bolBarred)
-		{
-			$strReason = 'Automatically barred the following services: ' . implode(', ', $bolBarredFNNs) . '. ';
-			ChangeAccountAutomaticBarringStatus($intAccountId, $intAccountGroup, AUTOMATIC_BARRING_STATUS_BARRED, $strReason);
-			ChangeAccountAutomaticInvoiceAction($intAccountId, NULL, AUTOMATIC_INVOICE_ACTION_BARRING, $strReason, NULL, $invoiceRun);
-		}
-
-		$outcome = array('BARRED' => $arrBarrableAccountServices, 'NOT_BARRED' => $arrUnbarrableAccountServices);
-
-		// Return a list of services that could and could not be barred
-		return $outcome;
+		return ' Failed to create automatic_invoice_action_history entry for ' . $intAccount . ' change to ' . $intTo . '. '. $qryQuery->Error();
 	}
 
-	function UnbarAccount($intAccountId, $intAccountGroup, $bolAutomatic=FALSE, $invoiceRun=NULL)
+	$qryQuery = new Query();
+	$strSQL = "UPDATE Account SET last_automatic_invoice_action = $intTo, last_automatic_invoice_action_datetime = '$strDateTime' WHERE Id = $intAccount";
+	if (!$outcome = $qryQuery->Execute($strSQL))
 	{
-		require_once(SHARED_BASE_PATH.'classes/note/Note.php');
-
-		// Throw exception if fails
-
-		// Bar the account
-
-		$arrAccountServices = ListServicesAndCarriersForAccount($intAccountId);
-
-		$arrAutomaticallyUnbarrableCarriers = ListAutomaticallyUnbarrableCarriers();
-
-		$arrNonUnbarrableAccountServices = array();
-		$arrUnbarrableAccountServices = array();
-
-		$bolUnbarred = FALSE;
-		$bolManualUnbars = FALSE;
-
-		$bolUnbarredFNNs = array();
-
-		foreach($arrAccountServices as $intServiceId => $arrDetails)
-		{
-			if ($arrDetails['CarrierId'] !== NULL && array_search($arrDetails['CarrierId'], $arrAutomaticallyUnbarrableCarriers) !== FALSE)
-			{
-				// Write the record to unbar the service
-				$sNow		= new MySQLFunction('NOW()');
-				$arrColumns = array(
-					'AccountGroup' 			=> $intAccountGroup,
-					'Account'				=> $intAccountId,
-					'Service'				=> $intServiceId,
-					'FNN'					=> $arrDetails['FNN'],
-					'Employee'				=> USER_ID,
-					'Carrier'				=> $arrDetails['CarrierId'],
-					'Type'					=> PROVISIONING_TYPE_UNBAR,
-					'RequestedOn'			=> $sNow,
-					'AuthorisationDate'		=> $sNow,
-					'scheduled_datetime'	=> $sNow,
-					'Status'				=> REQUEST_STATUS_WAITING
-				);
-				$insProvisioningRequest = new StatementInsert('ProvisioningRequest', $arrColumns, FALSE);
-				$mxdResult = $insProvisioningRequest->Execute($arrColumns);
-				if ($mxdResult === FALSE)
-				{
-					throw new Exception_Database('Failed to create provisioning request for unbarring service ' . $arrDetails['FNN'] . '(' . $intServiceId . '): ' . $insProvisioningRequest->Error());
-				}
-
-				// Add a note to the service
-				$GLOBALS['fwkFramework']->AddNote('Service automatically unbarred.', Note::SYSTEM_NOTE_TYPE_ID, USER_ID, $intAccountGroup, NULL, $intServiceId);
-
-				$bolUnbarred = TRUE;
-				$bolUnbarredFNNs[] = $arrDetails['FNN'];
-				$arrUnbarrableAccountServices[$intServiceId] = $arrDetails;
-			}
-			else
-			{
-				$arrNonUnbarrableAccountServices[$intServiceId] = $arrDetails;
-				$bolManualUnbars = TRUE;
-			}
-		}
-
-		// If automatic, change auto_barring_status for the account
-		// Note: We do this regardless of whether any services were unbarred automatically, manuall or even if there were no services
-		if ($bolAutomatic)
-		{
-			$strReason = 'Automatically unbarred the following services: ' . implode(', ', $bolUnbarredFNNs) . '. ';
-			ChangeAccountAutomaticBarringStatus($intAccountId, $intAccountGroup, AUTOMATIC_BARRING_STATUS_UNBARRED, $strReason);
-			ChangeAccountAutomaticInvoiceAction($intAccountId, NULL, AUTOMATIC_INVOICE_ACTION_UNBARRING, $strReason, NULL, $invoiceRun);
-		}
-
-		$outcome = array('UNBARRED' => $arrUnbarrableAccountServices, 'NOT_UNBARRED' => $arrNonUnbarrableAccountServices);
-
-		// Return a list of services that could and could not be unbarred
-		return $outcome;
+		return ' Failed to update Account ' . $intAccount . ' last_automatic_invoice_action to ' . $intTo . '. '. $qryQuery->Error();
 	}
 
-	function ChangeAccountAutomaticBarringStatus($intAccount, $intAccountGroup, $intTo, $strReason)
+	return TRUE;
+}
+
+
+
+function ListServicesAndCarriersForAccount($accountId)
+{
+	$arrServices = ListAccountServices($accountId);
+
+	// Build an array of service ids
+	$arrServiceIds = array();
+	$arrServicesById = array();
+	foreach($arrServices as $arrService)
 	{
-		$error = '';
-
-		$strDate = date('Y-m-d H:i:s');
-
-		// Need to find out the current status of the account
-		$selQuery = new StatementSelect('Account', array('automatic_barring_status' => 'automatic_barring_status'), 'Id=<Id>');
-		if (!$outcome = $selQuery->Execute(array('Id' => $intAccount)))
-		{
-			throw new Exception_Database('Failed to retreive current automatic barring status for account $intAccount. ' .  $qryQuery->Error());
-		}
-		$arrFrom =  $selQuery->Fetch();
-		$intFrom = intval($arrFrom['automatic_barring_status']);
-
-		$qryQuery = new Query();
-		$strSQL = 'UPDATE Account SET automatic_barring_status = ' . $intTo . ', automatic_barring_datetime = \'' . $strDate . '\' WHERE Id = ' . $intAccount;
-		if (!$outcome = $qryQuery->Execute($strSQL))
-		{
-			$message = ' Failed to update Account ' . $intAccount . ' automatic_barring_status from ' . $intFrom . ' to ' . $intTo . '. '. $qryQuery->Error();
-			throw new Exception($message);
-		}
-
-		// and creating a corresponding automatic_barring_status_history entry.
-		$qryQuery = new Query();
-		$strSQL = 'INSERT INTO automatic_barring_status_history (account, from_status, to_status, reason, change_datetime) ' .
-			' VALUES (' .
-			$intAccount . ', ' .
-			$intFrom . ', ' .
-			$intTo .', ' .
-			'\'' . $qryQuery->EscapeString($strReason) . '\', ' .
-			'\'' . $strDate . '\'' .
-			')';
-		if (!$outcome = $qryQuery->Execute($strSQL))
-		{
-			$message = ' Failed to create automatic_barring_status_history entry for ' . $intAccount . ' change from ' . $intFrom . ' to ' . $intTo . '. '. $qryQuery->Error();
-			throw new Exception($message);
-		}
-
-		// Add a note to the account
-		$GLOBALS['fwkFramework']->AddNote($strReason, Note::SYSTEM_NOTE_TYPE_ID, USER_ID, $intAccountGroup, $intAccount);
-
-		return TRUE;
+		$arrServiceIds[] = $arrService['Id'];
+		$arrServicesById[$arrService['Id']] = $arrService;
+		$arrServicesById[$arrService['Id']]['CarrierId'] = NULL;
+		$arrServicesById[$arrService['Id']]['CarrierName'] = NULL;
 	}
 
-	function ChangeAccountAutomaticInvoiceAction($intAccount, $intFrom, $intTo, $strReason, $strDateTime=NULL, $intInvoiceRunId)
+	// Retreive the carriers for the services
+	$arrCarriersForServices = ListCarriersForServices($arrServiceIds);
+
+	foreach($arrCarriersForServices as $serviceId => $carrierDetails)
 	{
-		$error = '';
-
-		if ($strDateTime == NULL)
-		{
-			$strDateTime = date("Y-m-d H:i:s");
-		}
-
-		if ($intFrom === NULL)
-		{
-			// Need to find the current status for the account (do this as part of the other queries)
-			$intFrom = "(SELECT last_automatic_invoice_action FROM Account WHERE Id = $intAccount)";
-		}
-
-		// Creating an automatic_invoice_action_history entry.
-		$qryQuery = new Query();
-		$strReason = $qryQuery->EscapeString($strReason);
-		$strSQL = "INSERT INTO automatic_invoice_action_history (account, from_action, to_action, reason, change_datetime, invoice_run_id)
-			VALUES ($intAccount, $intFrom, $intTo, '$strReason', '$strDateTime', $intInvoiceRunId)";
-		//echo "\n\n$strSQL\n\n";
-		if (!$outcome = $qryQuery->Execute($strSQL))
-		{
-			return ' Failed to create automatic_invoice_action_history entry for ' . $intAccount . ' change to ' . $intTo . '. '. $qryQuery->Error();
-		}
-
-		$qryQuery = new Query();
-		$strSQL = "UPDATE Account SET last_automatic_invoice_action = $intTo, last_automatic_invoice_action_datetime = '$strDateTime' WHERE Id = $intAccount";
-		if (!$outcome = $qryQuery->Execute($strSQL))
-		{
-			return ' Failed to update Account ' . $intAccount . ' last_automatic_invoice_action to ' . $intTo . '. '. $qryQuery->Error();
-		}
-
-		return TRUE;
+		$arrServicesById[$serviceId]['CarrierId'] = $carrierDetails['CarrierId'];
+		$arrServicesById[$serviceId]['CarrierName'] = $carrierDetails['CarrierName'];
 	}
 
+	return $arrServicesById;
+}
+
+function ListAccountServices($accountId)
+{
+	$strServiceStatuses = implode(', ', array(SERVICE_ACTIVE, SERVICE_DISCONNECTED, SERVICE_ARCHIVED));
+	$arrColumns = array('Id' => 'Service.Id', 'FNN' => 'Service.FNN');
+	$strTables = "Service
+		INNER JOIN (
+			SELECT MAX(Service.Id) serviceId
+			FROM Service
+			WHERE
+			(
+				Service.ClosedOn IS NULL
+				OR NOW() < Service.ClosedOn
+			)
+			AND Service.CreatedOn < NOW()
+			AND Service.FNN IN (SELECT FNN FROM Service WHERE Account = $accountId)
+			GROUP BY Service.FNN
+		) CurrentService
+		ON Service.Account = $accountId
+		AND Service.Id = CurrentService.serviceId
+		AND Service.Status IN ($strServiceStatuses)";
+
+	$strOrderBy = "Service.FNN ASC";
+
+/*
+// DEBUG: Output the query that gets run
+$select = array();
+foreach($arrColumns as $alias => $column) $select[] = "$column '$alias'";
+echo "\n\nSELECT " . implode(",\n       ", $select) . "\nFROM $strTables\nORDER BY $strOrderBy\n\n";
+//*/
 
 
-	function ListServicesAndCarriersForAccount($accountId)
+$selServices = new StatementSelect($strTables, $arrColumns, "", $strOrderBy);
+$mxdReturn = $selServices->Execute();
+if ($mxdReturn === FALSE)
+{
+	throw new Exception_Database("Failed to list services for account $accountId: " . $qryQuery->Error());
+}
+return $selServices->FetchAll();
+}
+
+/*
+ * Returns an array of carrier details indexed by Service Id
+ * [ServiceId] = array('ServiceId'=>$serviceId, 'CarrierId'=>$carrierId, 'CarrierName'=>$carrierName);
+ */
+function ListCarriersForServices($arrServiceIds)
+{
+	$carriers = array();
+	if (count($arrServiceIds))
 	{
-		$arrServices = ListAccountServices($accountId);
-
-		// Build an array of service ids
-		$arrServiceIds = array();
-		$arrServicesById = array();
-		foreach($arrServices as $arrService)
-		{
-			$arrServiceIds[] = $arrService['Id'];
-			$arrServicesById[$arrService['Id']] = $arrService;
-			$arrServicesById[$arrService['Id']]['CarrierId'] = NULL;
-			$arrServicesById[$arrService['Id']]['CarrierName'] = NULL;
-		}
-
-		// Retreive the carriers for the services
-		$arrCarriersForServices = ListCarriersForServices($arrServiceIds);
-
-		foreach($arrCarriersForServices as $serviceId => $carrierDetails)
-		{
-			$arrServicesById[$serviceId]['CarrierId'] = $carrierDetails['CarrierId'];
-			$arrServicesById[$serviceId]['CarrierName'] = $carrierDetails['CarrierName'];
-		}
-
-		return $arrServicesById;
-	}
-
-	function ListAccountServices($accountId)
-	{
-		$strServiceStatuses = implode(', ', array(SERVICE_ACTIVE, SERVICE_DISCONNECTED, SERVICE_ARCHIVED));
-		$arrColumns = array('Id' => 'Service.Id', 'FNN' => 'Service.FNN');
-		$strTables = "Service
-			INNER JOIN (
-				SELECT MAX(Service.Id) serviceId
-				FROM Service
-				WHERE
-				(
-					Service.ClosedOn IS NULL
-					OR NOW() < Service.ClosedOn
-				)
-				AND Service.CreatedOn < NOW()
-				AND Service.FNN IN (SELECT FNN FROM Service WHERE Account = $accountId)
-				GROUP BY Service.FNN
-			) CurrentService
-			ON Service.Account = $accountId
-			AND Service.Id = CurrentService.serviceId
-			AND Service.Status IN ($strServiceStatuses)";
-
-		$strOrderBy = "Service.FNN ASC";
+		// We also want the carriers for these services
+		$strServiceIds = implode(', ', $arrServiceIds);
+		$arrColumns = array('ServiceId' => 'Services.Id', 'CarrierId' => ' Carrier.Id', 'CarrierName' => 'Carrier.Name');
+		$strTables = "
+			(SELECT Service.Id FROM Service WHERE Service.Id IN ($strServiceIds)) Services
+			LEFT JOIN (SELECT MAX(Id) Id, ServiceRatePlan.Service Service
+			FROM ServiceRatePlan
+			WHERE ServiceRatePlan.Service IN ($strServiceIds)
+			AND ServiceRatePlan.Active = 1
+			AND ServiceRatePlan.StartDateTime < ServiceRatePlan.EndDateTime
+			AND NOW() BETWEEN ServiceRatePlan.StartDateTime AND ServiceRatePlan.EndDateTime
+			GROUP BY ServiceRatePlan.Service
+		) ServiceRatePlans
+		ON ServiceRatePlans.Service = Services.Id
+		LEFT JOIN ServiceRatePlan
+		ON ServiceRatePlan.Id = ServiceRatePlans.Id
+		LEFT JOIN RatePlan
+		ON ServiceRatePlan.RatePlan = RatePlan.Id
+		LEFT JOIN Carrier
+		ON RatePlan.CarrierPreselection = Carrier.Id
+		";
 
 	/*
 	// DEBUG: Output the query that gets run
 	$select = array();
 	foreach($arrColumns as $alias => $column) $select[] = "$column '$alias'";
-	echo "\n\nSELECT " . implode(",\n       ", $select) . "\nFROM $strTables\nORDER BY $strOrderBy\n\n";
-	//*/
+	echo "\n\nSELECT " . implode(",\n       ", $select) . "\nFROM $strTables\n\n";
+//*/
 
 
-	$selServices = new StatementSelect($strTables, $arrColumns, "", $strOrderBy);
-	$mxdReturn = $selServices->Execute();
+	$selCarriers = new StatementSelect($strTables, $arrColumns);
+	$mxdReturn = $selCarriers->Execute();
 	if ($mxdReturn === FALSE)
 	{
-		throw new Exception_Database("Failed to list services for account $accountId: " . $qryQuery->Error());
+		throw new Exception_Database("Failed to list carriers for services $strServiceIds: " . $qryQuery->Error());
 	}
-	return $selServices->FetchAll();
+	$arrCarriers = $selCarriers->FetchAll();
+	foreach($arrCarriers as $carrier)
+	{
+		$carriers[$carrier['ServiceId']] = $carrier;
 	}
+	}
+	return $carriers;
+}
 
-	/*
-	 * Returns an array of carrier details indexed by Service Id
-	 * [ServiceId] = array('ServiceId'=>$serviceId, 'CarrierId'=>$carrierId, 'CarrierName'=>$carrierName);
-	 */
-	function ListCarriersForServices($arrServiceIds)
+function ListAutomaticallyBarrableCarriers()
+{
+	return ListAutomatableCarriers(PROVISIONING_TYPE_BAR, FALSE, TRUE);
+}
+
+function ListAutomaticallyUnbarrableCarriers()
+{
+	return ListAutomatableCarriers(PROVISIONING_TYPE_UNBAR, FALSE, TRUE);
+}
+
+function ListAutomatableCarriers($intProvisioningTypeConstant, $bolInbound=FALSE, $bolOutbound=FALSE)
+{
+	// The result of this query is highly unlikely to change, so cache the result statically
+	static $carriers;
+	if (!isset($carriers))
 	{
 		$carriers = array();
-		if (count($arrServiceIds))
-		{
-			// We also want the carriers for these services
-			$strServiceIds = implode(', ', $arrServiceIds);
-			$arrColumns = array('ServiceId' => 'Services.Id', 'CarrierId' => ' Carrier.Id', 'CarrierName' => 'Carrier.Name');
-			$strTables = "
-				(SELECT Service.Id FROM Service WHERE Service.Id IN ($strServiceIds)) Services
-				LEFT JOIN (SELECT MAX(Id) Id, ServiceRatePlan.Service Service
-				FROM ServiceRatePlan
-				WHERE ServiceRatePlan.Service IN ($strServiceIds)
-				AND ServiceRatePlan.Active = 1
-				AND ServiceRatePlan.StartDateTime < ServiceRatePlan.EndDateTime
-				AND NOW() BETWEEN ServiceRatePlan.StartDateTime AND ServiceRatePlan.EndDateTime
-				GROUP BY ServiceRatePlan.Service
-			) ServiceRatePlans
-			ON ServiceRatePlans.Service = Services.Id
-			LEFT JOIN ServiceRatePlan
-			ON ServiceRatePlan.Id = ServiceRatePlans.Id
-			LEFT JOIN RatePlan
-			ON ServiceRatePlan.RatePlan = RatePlan.Id
-			LEFT JOIN Carrier
-			ON RatePlan.CarrierPreselection = Carrier.Id
-			";
-
-		/*
-		// DEBUG: Output the query that gets run
-		$select = array();
-		foreach($arrColumns as $alias => $column) $select[] = "$column '$alias'";
-		echo "\n\nSELECT " . implode(",\n       ", $select) . "\nFROM $strTables\n\n";
-	//*/
-
+	}
+	$key = $intProvisioningTypeConstant . '|' . $bolInbound . '|' . $bolOutbound;
+	if (!array_key_exists($key, $carriers))
+	{
+		$strInbound = $bolInbound ? ' AND provisioning_type.inbound = 1' : '';
+		$strOutbound = $bolInbound ? ' AND provisioning_type.outbound = 1' : '';
+		$arrColumns = array("Id" => "DISTINCT(Carrier.Id)");
+		$strTables = "
+			Carrier
+			JOIN carrier_provisioning_support
+			ON carrier_provisioning_support.carrier_id = Carrier.Id
+			JOIN active_status
+			ON carrier_provisioning_support.status_id = active_status.id
+			AND active_status.active = 1
+			JOIN provisioning_type
+			ON provisioning_type.id = $intProvisioningTypeConstant
+			AND provisioning_type.id = carrier_provisioning_support.provisioning_type_id	";
 
 		$selCarriers = new StatementSelect($strTables, $arrColumns);
-		$mxdReturn = $selCarriers->Execute();
-		if ($mxdReturn === FALSE)
+		$mxdResult = $selCarriers->Execute();
+		if ($mxdResult === FALSE)
 		{
-			throw new Exception_Database("Failed to list carriers for services $strServiceIds: " . $qryQuery->Error());
+			throw new Exception_Database("Failed to load automatable carriers for provisioning type $intProvisioningTypeConstant (inbound: $bolInbound, outbound: $bolOutbound): " . $qryQuery->Error());
 		}
-		$arrCarriers = $selCarriers->FetchAll();
-		foreach($arrCarriers as $carrier)
+		$arrResults = $selCarriers->FetchAll();
+		foreach($arrResults as $arrCarrier)
 		{
-			$carriers[$carrier['ServiceId']] = $carrier;
+			$carriers[$key][] = intval($arrCarrier['Id']);
 		}
-		}
-		return $carriers;
 	}
+	return $carriers[$key];
+}
 
-	function ListAutomaticallyBarrableCarriers()
+
+//------------------------------------------------------------------------//
+// FlexModuleActive
+//------------------------------------------------------------------------//
+/**
+ * FlexModuleActive()
+ *
+ * Determines whether a Flex Module is activated or not
+ *
+ * Determines whether a Flex Module is activated or not.  If the module doesn't exist
+ * in the database, it returns NULL (and should be treated as inactive)
+ *
+ * @param	string	$strModuleName		The name of the Module to Check
+ *
+ * @return	mixed						TRUE: Active; FALSE: Inactive; NULL: Not present
+ *
+ * @function
+ *
+ */
+function FlexModuleActive($strModuleName)
+{
+	// Init Statement
+	static	$selFlexModule;
+	$selFlexModule	= (isset($selFlexModule)) ? $selFlexModule : new StatementSelect("flex_module", "status_id", "name = <Name>");
+
+	// Check Module Status
+	if ($selFlexModule->Execute(Array('Name' => $strModuleName)) === FALSE)
 	{
-		return ListAutomatableCarriers(PROVISIONING_TYPE_BAR, FALSE, TRUE);
+		// DB Error
+		throw new Exception_Database("DB ERROR: ".$selFlexModule->Error());
 	}
-
-	function ListAutomaticallyUnbarrableCarriers()
+	elseif ($arrModule = $selFlexModule->Fetch())
 	{
-		return ListAutomatableCarriers(PROVISIONING_TYPE_UNBAR, FALSE, TRUE);
-	}
-
-	function ListAutomatableCarriers($intProvisioningTypeConstant, $bolInbound=FALSE, $bolOutbound=FALSE)
-	{
-		// The result of this query is highly unlikely to change, so cache the result statically
-		static $carriers;
-		if (!isset($carriers))
+		// Module Exists - is it active?
+		if ($arrModule['status_id'] === ACTIVE_STATUS_ACTIVE)
 		{
-			$carriers = array();
+			// Active
+			return TRUE;
 		}
-		$key = $intProvisioningTypeConstant . '|' . $bolInbound . '|' . $bolOutbound;
-		if (!array_key_exists($key, $carriers))
+		else
 		{
-			$strInbound = $bolInbound ? ' AND provisioning_type.inbound = 1' : '';
-			$strOutbound = $bolInbound ? ' AND provisioning_type.outbound = 1' : '';
-			$arrColumns = array("Id" => "DISTINCT(Carrier.Id)");
-			$strTables = "
-				Carrier
-				JOIN carrier_provisioning_support
-				ON carrier_provisioning_support.carrier_id = Carrier.Id
-				JOIN active_status
-				ON carrier_provisioning_support.status_id = active_status.id
-				AND active_status.active = 1
-				JOIN provisioning_type
-				ON provisioning_type.id = $intProvisioningTypeConstant
-				AND provisioning_type.id = carrier_provisioning_support.provisioning_type_id	";
+			// Inactive
+			return FALSE;
+		}
+	}
+	else
+	{
+		// Module doesn't exist
+		return NULL;
+	}
+}
 
-			$selCarriers = new StatementSelect($strTables, $arrColumns);
-			$mxdResult = $selCarriers->Execute();
-			if ($mxdResult === FALSE)
+//------------------------------------------------------------------------//
+// signalHandler
+//------------------------------------------------------------------------//
+/**
+ * signalHandler()
+ *
+ * Handles POSIX Signals
+ *
+ * Handles POSIX Signals
+ *
+ * @param	integer	$intSignalId		POSIX Signal Id
+ *
+ * @return	void
+ *
+ * @function
+ *
+ */
+function signalHandler($intSignalId)
+{
+	// What Signal did we get passed?
+	switch ((int)$intSignalId)
+	{
+	case SIGTERM:
+		// Rollback any active Transactions
+		DataAccess::getDataAccess()->TransactionRollback();
+		break;
+	}
+}
+
+
+//------------------------------------------------------------------------//
+// IsValidTIOReferenceNumber
+//------------------------------------------------------------------------//
+/**
+ * IsValidTIOReferenceNumber()
+ *
+ * Check if a TIO reference number is valid
+ *
+ * Check if a TIO reference number is valid
+ * Valid TIO reference numbers have the format: \d{2}\/\d{6,7}
+ *
+ * @param	string		$strTIORefNum		The TIO Reference number to check for validity
+ *
+ * @return	boolean
+ */
+function IsValidTIOReferenceNumber($strTIORefNum) {
+	return (
+		// Old Format
+		preg_match("/^\d{2}\/\d{6,7}$/", $strTIORefNum) ||
+		// New Format
+		preg_match("/^\d{4}\/\d{2}\/\d{2,}$/", $strTIORefNum)
+	);
+}
+
+/**
+ * ConvertToSimpleArray()
+ *
+ * Converts an array of objects (or array of associative arrays) into a simple array,
+ * where each cell of the resultant array is a single property of the associated object/assoc-array of the original RecordSet
+ *
+ * @param	array	$arrRecordSet			Array of associative arrays or array of objects
+ * @param	string	$strValueProperty		The property of the object, or the key into the associative array,
+ * 											of the value to keep in the resultant array
+ * @param	string	[ $strKeyProperty ]		Defaults to null.  If null, then the RecordSet's original keys are retained.
+ * 											If a property (or key into the associative array), is given, then this will be used for the keys
+ *
+ * @return	array							The simplfied array, somewhat of the form array[$strKeyPropertyValue] = $strValuePropertyValue
+ */
+function ConvertToSimpleArray($arrRecordSet, $strValueProperty, $strKeyProperty=null)
+{
+	$arrSimpleArray = array();
+	if (count($arrRecordSet))
+	{
+		if (is_object(reset($arrRecordSet)))
+		{
+			if ($strKeyProperty !== null)
 			{
-				throw new Exception_Database("Failed to load automatable carriers for provisioning type $intProvisioningTypeConstant (inbound: $bolInbound, outbound: $bolOutbound): " . $qryQuery->Error());
-			}
-			$arrResults = $selCarriers->FetchAll();
-			foreach($arrResults as $arrCarrier)
-			{
-				$carriers[$key][] = intval($arrCarrier['Id']);
-			}
-		}
-		return $carriers[$key];
-	}
-
-
-	//------------------------------------------------------------------------//
-	// FlexModuleActive
-	//------------------------------------------------------------------------//
-	/**
-	 * FlexModuleActive()
-	 *
-	 * Determines whether a Flex Module is activated or not
-	 *
-	 * Determines whether a Flex Module is activated or not.  If the module doesn't exist
-	 * in the database, it returns NULL (and should be treated as inactive)
-	 *
-	 * @param	string	$strModuleName		The name of the Module to Check
-	 *
-	 * @return	mixed						TRUE: Active; FALSE: Inactive; NULL: Not present
-	 *
-	 * @function
-	 *
-	 */
-	function FlexModuleActive($strModuleName)
-	{
-		// Init Statement
-		static	$selFlexModule;
-		$selFlexModule	= (isset($selFlexModule)) ? $selFlexModule : new StatementSelect("flex_module", "status_id", "name = <Name>");
-
-		// Check Module Status
-		if ($selFlexModule->Execute(Array('Name' => $strModuleName)) === FALSE)
-		{
-			// DB Error
-			throw new Exception_Database("DB ERROR: ".$selFlexModule->Error());
-		}
-		elseif ($arrModule = $selFlexModule->Fetch())
-		{
-			// Module Exists - is it active?
-			if ($arrModule['status_id'] === ACTIVE_STATUS_ACTIVE)
-			{
-				// Active
-				return TRUE;
+				// A particular property should be used for the key
+				foreach ($arrRecordSet as $objObject)
+				{
+					$arrSimpleArray[$objObject->{$strKeyProperty}] = $objObject->{$strValueProperty};
+				}
 			}
 			else
 			{
-				// Inactive
-				return FALSE;
+				// Retain the original keys
+				foreach ($arrRecordSet as $key=>$objObject)
+				{
+					$arrSimpleArray[$key] = $objObject->{$strValueProperty};
+				}
 			}
 		}
 		else
 		{
-			// Module doesn't exist
-			return NULL;
-		}
-	}
-
-	//------------------------------------------------------------------------//
-	// signalHandler
-	//------------------------------------------------------------------------//
-	/**
-	 * signalHandler()
-	 *
-	 * Handles POSIX Signals
-	 *
-	 * Handles POSIX Signals
-	 *
-	 * @param	integer	$intSignalId		POSIX Signal Id
-	 *
-	 * @return	void
-	 *
-	 * @function
-	 *
-	 */
-	function signalHandler($intSignalId)
-	{
-		// What Signal did we get passed?
-		switch ((int)$intSignalId)
-		{
-		case SIGTERM:
-			// Rollback any active Transactions
-			DataAccess::getDataAccess()->TransactionRollback();
-			break;
-		}
-	}
-
-
-	//------------------------------------------------------------------------//
-	// IsValidTIOReferenceNumber
-	//------------------------------------------------------------------------//
-	/**
-	 * IsValidTIOReferenceNumber()
-	 *
-	 * Check if a TIO reference number is valid
-	 *
-	 * Check if a TIO reference number is valid
-	 * Valid TIO reference numbers have the format: \d{2}\/\d{6,7}
-	 *
-	 * @param	string		$strTIORefNum		The TIO Reference number to check for validity
-	 *
-	 * @return	boolean
-	 */
-	function IsValidTIOReferenceNumber($strTIORefNum) {
-		return (
-			// Old Format
-			preg_match("/^\d{2}\/\d{6,7}$/", $strTIORefNum) ||
-			// New Format
-			preg_match("/^\d{4}\/\d{2}\/\d{2,}$/", $strTIORefNum)
-		);
-	}
-
-	/**
-	 * ConvertToSimpleArray()
-	 *
-	 * Converts an array of objects (or array of associative arrays) into a simple array,
-	 * where each cell of the resultant array is a single property of the associated object/assoc-array of the original RecordSet
-	 *
-	 * @param	array	$arrRecordSet			Array of associative arrays or array of objects
-	 * @param	string	$strValueProperty		The property of the object, or the key into the associative array,
-	 * 											of the value to keep in the resultant array
-	 * @param	string	[ $strKeyProperty ]		Defaults to null.  If null, then the RecordSet's original keys are retained.
-	 * 											If a property (or key into the associative array), is given, then this will be used for the keys
-	 *
-	 * @return	array							The simplfied array, somewhat of the form array[$strKeyPropertyValue] = $strValuePropertyValue
-	 */
-	function ConvertToSimpleArray($arrRecordSet, $strValueProperty, $strKeyProperty=null)
-	{
-		$arrSimpleArray = array();
-		if (count($arrRecordSet))
-		{
-			if (is_object(reset($arrRecordSet)))
+			// The array is an array of associative arrays
+			if ($strKeyProperty !== null)
 			{
-				if ($strKeyProperty !== null)
-				{
-					// A particular property should be used for the key
-					foreach ($arrRecordSet as $objObject)
-					{
-						$arrSimpleArray[$objObject->{$strKeyProperty}] = $objObject->{$strValueProperty};
-					}
-				}
-				else
-				{
-					// Retain the original keys
-					foreach ($arrRecordSet as $key=>$objObject)
-					{
-						$arrSimpleArray[$key] = $objObject->{$strValueProperty};
-					}
-				}
-			}
-			else
-			{
-				// The array is an array of associative arrays
-				if ($strKeyProperty !== null)
-				{
-					// A particular property should be used for the key
-					foreach ($arrRecordSet as $arrRecord)
-					{
-						$arrSimpleArray[$arrRecord[$strKeyProperty]] = $arrRecord[$strValueProperty];
-					}
-				}
-				else
-				{
-					// Retain the original keys
-					foreach ($arrRecordSet as $key=>$arrRecord)
-					{
-						$arrSimpleArray[$key] = $arrRecord[$strValueProperty];
-					}
-				}
-			}
-		}
-		return $arrSimpleArray;
-	}
-
-	/**
-	 * KeyifyArray()
-	 *
-	 * Sets the keys for an array of objects (or array of associative arrays) using one of the properties of the object/associative array
-	 * Note that if the value of the property used as the key, isn't unique across the objects, then some of the objects will be lost in the translation
-	 *
-	 * @param	array	$arrRecordSet		Array of associative arrays or array of objects
-	 * @param	string	$strKeyProperty		For each object (or assoc-array) in the recordset, this property will be used for the object corresponding key
-	 *
-	 * @return	array						The simplfied array, somewhat of the form array[$objObject->{$strKeyPropertyValue}] = $objObject
-	 */
-	function KeyifyArray($arrRecordSet, $strKeyProperty)
-	{
-		$arrKeyedArray = array();
-		if (count($arrRecordSet))
-		{
-			if (is_object(reset($arrRecordSet)))
-			{
-				// The array is an array of objects
-				foreach ($arrRecordSet as $objObject)
-				{
-					$arrKeyedArray[$objObject->{$strKeyProperty}] = $objObject;
-				}
-			}
-			else
-			{
-				// The array is an array of associative arrays
+				// A particular property should be used for the key
 				foreach ($arrRecordSet as $arrRecord)
 				{
-					$arrKeyedArray[$arrRecord[$strKeyProperty]] = $arrRecord;
+					$arrSimpleArray[$arrRecord[$strKeyProperty]] = $arrRecord[$strValueProperty];
 				}
-			}
-		}
-		return $arrKeyedArray;
-	}
-
-	function objectifyArray($arrArray)
-	{
-		$objObjectified	= new stdClass();
-		foreach ($arrArray as $strField=>$mixValue)
-		{
-			if (isValidPHPVariableName($strField))
-			{
-				$objObjectified->{$strField}	= $mixValue;
 			}
 			else
 			{
-				throw new Exception("'{$strField}' is not a valid PHP variable name (ref: http://php.net/manual/en/language.variables.basics.php)");
+				// Retain the original keys
+				foreach ($arrRecordSet as $key=>$arrRecord)
+				{
+					$arrSimpleArray[$key] = $arrRecord[$strValueProperty];
+				}
 			}
 		}
-		return $objObjectified;
 	}
+	return $arrSimpleArray;
+}
 
-	function isValidPHPVariableName($strVariableName)
+/**
+ * KeyifyArray()
+ *
+ * Sets the keys for an array of objects (or array of associative arrays) using one of the properties of the object/associative array
+ * Note that if the value of the property used as the key, isn't unique across the objects, then some of the objects will be lost in the translation
+ *
+ * @param	array	$arrRecordSet		Array of associative arrays or array of objects
+ * @param	string	$strKeyProperty		For each object (or assoc-array) in the recordset, this property will be used for the object corresponding key
+ *
+ * @return	array						The simplfied array, somewhat of the form array[$objObject->{$strKeyPropertyValue}] = $objObject
+ */
+function KeyifyArray($arrRecordSet, $strKeyProperty)
+{
+	$arrKeyedArray = array();
+	if (count($arrRecordSet))
 	{
-		return (strtolower($strVariableName) !== 'this' && preg_match("/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/", $strVariableName));
-	}
-
-	function array_value($aArray, $mKey) {
-		return $aArray[$mKey];
-	}
-
-	function coalesce() {
-		foreach (func_get_args() as $mArgument) {
-			if ($mArgument !== null) {
-				return $mArgument;
+		if (is_object(reset($arrRecordSet)))
+		{
+			// The array is an array of objects
+			foreach ($arrRecordSet as $objObject)
+			{
+				$arrKeyedArray[$objObject->{$strKeyProperty}] = $objObject;
 			}
 		}
-		return null;
-	}
-
-	function referencialiseArrayValues(array &$aSubject) {
-		$aReferencialised = array();
-		foreach ($aSubject as $mKey=>&$mValue) {
-			$aReferencialised[$mKey] = &$mValue;
+		else
+		{
+			// The array is an array of associative arrays
+			foreach ($arrRecordSet as $arrRecord)
+			{
+				$arrKeyedArray[$arrRecord[$strKeyProperty]] = $arrRecord;
+			}
 		}
-		return $aReferencialised;
 	}
+	return $arrKeyedArray;
+}
 
-?>
+function objectifyArray($arrArray)
+{
+	$objObjectified	= new stdClass();
+	foreach ($arrArray as $strField=>$mixValue)
+	{
+		if (isValidPHPVariableName($strField))
+		{
+			$objObjectified->{$strField}	= $mixValue;
+		}
+		else
+		{
+			throw new Exception("'{$strField}' is not a valid PHP variable name (ref: http://php.net/manual/en/language.variables.basics.php)");
+		}
+	}
+	return $objObjectified;
+}
+
+function isValidPHPVariableName($strVariableName)
+{
+	return (strtolower($strVariableName) !== 'this' && preg_match("/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/", $strVariableName));
+}
+
+function array_value($aArray, $mKey) {
+	return $aArray[$mKey];
+}
+
+function coalesce() {
+	foreach (func_get_args() as $mArgument) {
+		if ($mArgument !== null) {
+			return $mArgument;
+		}
+	}
+	return null;
+}
+
+function referencialiseArrayValues(array &$aSubject) {
+	$aReferencialised = array();
+	foreach ($aSubject as $mKey=>&$mValue) {
+		$aReferencialised[$mKey] = &$mValue;
+	}
+	return $aReferencialised;
+}
+
+function array_associate(array $keys, array $values) {
+	$associative = array();
+	foreach ($keys as $index=>$key) {
+		$associative[$key] = $values[$index];
+	}
+	return $associative;
+}

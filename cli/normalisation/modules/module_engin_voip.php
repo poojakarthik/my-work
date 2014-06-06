@@ -1,48 +1,39 @@
 <?php
 class NormalisationModuleEnginVOIP extends NormalisationModule {
+	public $intBaseFileType	= RESOURCE_TYPE_FILE_IMPORT_CDR_ENGIN_WHOLESALECDR;
 	const DEBUG_LOGGING = true;
 
 	function __construct($iCarrier) {
 		$this->_arrModuleConfig['service_type_id'] = array(
 			'Type' => DATA_TYPE_INTEGER,
-			'Description' => "Service Type `service_type.id` associated with this normaliser"
+			'Description' => "Service Type that represents this Engin VOIP wholesale account"
+		);
+		$this->_arrModuleConfig['call_type_carrier_translation_context_id'] = array(
+			'Type' => DATA_TYPE_INTEGER,
+			'Description' => "Translation Set used to translate Utilibill Call Type to Flex Service Type, Record Type, and Destination"
 		);
 
 		parent::__construct($iCarrier);
 
-		// Ensure Service Type reference is valid
-		try {
-			$oServiceType = Service_Type::getForId($this->GetConfigField('service_type_id'));
-		} catch (Exception_ORM_LoadById $oException) {
-			throw new Exception('Configured Service Type is not valid');
+		// Verify linked Service Type
+		if (
+			!$this->GetConfigField('service_type_id') ||
+			(false === ($this->_oServiceType = Service_Type::getForId($this->GetConfigField('service_type_id'), false)))
+		) {
+			// Flex::assert(false, 'Engin Usage Normalisation Module #' . $this->_arrCarrierModule['Id'] . ' is missing, or has an invalid, Service Type');
+			throw new Exception('Engin Usage Normalisation Module #' . $this->_arrCarrierModule['Id'] . ' is missing, or has an invalid, Service Type');
 		}
 
-		// TODO?: Ensure $oServiceType->module is engin_voip
-
-		// define the column delimiter
-		$this->_strDelimiter = ',';
-
-		// define row start (account for header rows)
-		$this->_intStartRow = 0;
+		// Verify linked Carrier Translation Context
+		if (
+			(!$this->GetConfigField('call_type_carrier_translation_context_id')) ||
+			(false === Carrier_Translation_Context::getForId($this->GetConfigField('call_type_carrier_translation_context_id'), false))
+		) {
+			// Flex::assert(false, 'Engin Usage Normalisation Module #' . $this->_arrCarrierModule['Id'] . ' is missing, or has an invalid, Carrier Translation Context for translating Call Types');
+			throw new Exception('Engin Usage Normalisation Module #' . $this->_arrCarrierModule['Id'] . ' is missing, or has an invalid, Carrier Translation Context for translating Call Types');
+		}
 
 		$this->_iSequence = 0;
-
-		// define the carrier CDR format
-		$this->_arrDefineCarrier = array(
-			'call_id' => array('Index' => 0),
-			'calling_number' => array('Index' => 1),
-			'called_number' => array('Index' => 2),
-			'country' => array('Index' => 3),
-			'start_datetime' => array('Index' => 4),
-			'end_datetime' => array('Index' => 5),
-			'duration_seconds' => array('Index' => 6),
-			'call_type' => array('Index' => 7),
-			'call_type_description' => array('Index' => 8),
-			'plan_name' => array('Index' => 9),
-			'charge_rate' => array('Index' => 10),
-			'charge_type' => array('Index' => 11),
-			'call_charge' => array('Index' => 12)
-		);
 	}
 
 	const CALL_TYPE_INTERNATIONAL = 3;
@@ -54,11 +45,25 @@ class NormalisationModuleEnginVOIP extends NormalisationModule {
 		// SequenceNo
 		$this->setNormalised('SequenceNo', $this->_iSequence++);
 
-		$this->_SplitRawCDR($aCDR['CDR']);
-
 		//--------------------------------------------------------------------//
 		Log::get()->logIf(self::DEBUG_LOGGING, "Record #{$this->_iSequence}");
-		$this->_SplitRawCDR($aCDR['CDR']);
+		$aParsed = File_CSV::parseLineRFC4180($aCDR['CDR']);
+		$this->_arrRawData = array_associate(array(
+			0 => 'call_id',
+			1 => 'calling_number',
+			2 => 'called_number',
+			3 => 'country',
+			4 => 'start_datetime',
+			5 => 'end_datetime',
+			6 => 'call_duration',
+			7 => 'call_type',
+			8 => 'call_type_description',
+			9 => 'plan_name',
+			10 => 'charge_rate',
+			10 => 'charge_type',
+			10 => 'call_charge'
+		), $aParsed);
+		Log::get()->log(print_r($this->_arrRawData, true));
 		$this->_normalise();
 		//--------------------------------------------------------------------//
 
@@ -70,7 +75,7 @@ class NormalisationModuleEnginVOIP extends NormalisationModule {
 		// Validation of Normalised data
 		$this->Validate();
 
-		// throw new Exception("TESTING");
+		throw new Exception("TESTING");
 
 		// return output array
 		return $this->_OutputCDR();
@@ -78,6 +83,11 @@ class NormalisationModuleEnginVOIP extends NormalisationModule {
 
 	// Usage Records
 	private function _normalise() {
+		$oCallTypeTranslation = $this->_translateCallType((object)array(
+			'call_type' => intval(trim($this->getRaw('call_type'))),
+			'country' => trim($this->getRaw('country'))
+		));
+
 		// CarrierRef
 		$this->setNormalised('CarrierRef', trim($this->getRaw('call_id')));
 		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('CarrierRef', 'call_id'));
@@ -86,7 +96,7 @@ class NormalisationModuleEnginVOIP extends NormalisationModule {
 		// NOTE: This is a best guess. There is no explicit "charged number" field
 		$sCallingNumber = trim($this->getRaw('calling_number'));
 		$this->setNormalised('FNN', $sCallingNumber);
-		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('FNN', 'calling_number'));
+		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('FNN', 'calling_number', 'called_number'));
 
 		// Source
 		$this->setNormalised('Source', $sCallingNumber);
@@ -94,46 +104,46 @@ class NormalisationModuleEnginVOIP extends NormalisationModule {
 
 		// Destination
 		$sCalledNumber = trim($this->getRaw('called_number'));
-		if (preg_match('/^61/', $sCalledNumber)) {
-			// Remove 61 prefix for Australian destinations for fleet matching
-			$sCalledNumber = preg_replace('/^61(.+)$/', '0$1', $sCalledNumber);
-		}
-		$this->setNormalised('Destination', $sCalledNumber);
+		$this->setNormalised('Destination', self::_localiseAustralianNumber($sCalledNumber));
 		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Destination', 'called_number'));
 
 		// Cost
-		$fCallCharge = ((int)$this->getRaw('call_charge')) / 100; // call_charge is in cents
+		$fCallCharge = ((float)$this->getRaw('call_charge')) / 100; // call_charge is in cents
 		$this->setNormalised('Cost', $fCallCharge);
 		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Cost', 'call_charge'));
 
 		// ServiceType
-		$iServiceType = $this->GetConfigField('service_type_id');
-		$this->setNormalised('ServiceType', $iServiceType);
-		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('ServiceType', 'calling_number'));
+		$this->setNormalised('ServiceType', $this->_oServiceType->id);
+		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('ServiceType', 'calling_number', 'call_type_description', 'plan_name'));
 
 		// RecordType (Call Type Group)
-		$iCallType = (int)$this->getRaw('call_type');
-		$this->setNormalised('RecordType', $this->translateRecordType($iServiceType, (string)$iCallType));
+		$oRecordType = Record_Type::getForServiceTypeAndCode($this->_oServiceType->id, (string)$oCallTypeTranslation->record_type_code);
+		$this->setNormalised('RecordType', $oRecordType->Id);
 		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('RecordType', 'call_type', 'call_type_description'));
 
 		// Destination (sub-Call Type)
-		if ($iCallType === self::CALL_TYPE_INTERNATIONAL && $this->_intContext > 0) { // Only resolve Destination if there is a Destination Context & International
-			$aDestination = $this->translateDestination(trim($this->getRaw('country')));
-			$this->setNormalised('DestinationCode', $aDestination['Code']);
-			Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('DestinationCode', 'call_type', 'call_type_description', 'country'));
+		$this->_intContext = $oRecordType->Context;
+		if ($oRecordType->Context > 0) {
+			if (isset($oCallTypeTranslation->destination_code)) {
+				$this->setNormalised('DestinationCode', $oCallTypeTranslation->destination_code);
+			} else {
+				Log::get()->log('No Destination Code, using fallback for Carrier Translation Context #' . $oRecordType->Context);
+				$this->setNormalised('DestinationCode', Destination::getForId(Destination_Context::getForId($oRecordType->Context)->fallback_destination_id)->code);
+			}
 		}
+		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('DestinationCode', 'call_type', 'call_type_description', 'country'));
 
 		// Description
 		// NOTE: Only useful description is Country in the case of International
-		if ($iCallType === self::CALL_TYPE_INTERNATIONAL) {
+		if (intval(trim($this->getRaw('call_type'))) === self::CALL_TYPE_INTERNATIONAL) {
 			$this->setNormalised('Description', trim($this->getRaw('country')));
 			Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Description', 'call_type', 'call_type_description', 'country'));
 		}
 
 		// Units
-		$iDuration = (int)$this->getRaw('duration_seconds');
+		$iDuration = (int)$this->getRaw('call_duration');
 		$this->setNormalised('Units', $iDuration);
-		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Units', 'duration_seconds'));
+		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Units', 'call_duration'));
 
 		// StartDatetime
 		$this->setNormalised('StartDatetime', trim($this->getRaw('start_datetime')));
@@ -152,6 +162,100 @@ class NormalisationModuleEnginVOIP extends NormalisationModule {
 		if ($iDuration < 0) throw new Exception('Duration is less than 0 seconds!');
 
 		// throw new Exception("TESTING");
+	}
+
+	/*
+		call_type => Service Type, Record Type, and Destination mapping:
+
+		in_value should be in the form:
+		{
+			call_type: 123,
+			country: '456' (nullable)
+		}
+
+		out_value should be in the form:
+		{
+			record_type_code: '456',
+			destination_code: 789 (nullable)
+		}
+	*/
+
+	private $_aTranslations;
+	private function _translateCallType(stdClass $oCallTypeDetails) {
+		// Fetch translations
+		if (!isset($this->_aTranslations)) {
+			$oTranslationsResult = DataAccess::get()->query('
+				SELECT *
+				FROM carrier_translation
+				WHERE carrier_translation_context_id = <carrier_translation_context_id>
+			', array(
+				'carrier_translation_context_id' => $this->GetConfigField('call_type_carrier_translation_context_id')
+			));
+
+			$this->_aTranslations = array();
+			while ($oTranslation = $oTranslationsResult->fetch_object()) {
+				$this->_aTranslations[] = $oTranslation;
+			}
+		}
+
+		// Find the best translation
+		$oFallbackTranslation = null;
+		$oBestTranslation = null;
+		foreach ($this->_aTranslations as $oTranslation) {
+			$oInValue = @json_decode($oTranslation->in_value);
+			if (false === $oInValue || !is_object($oInValue)) {
+				throw new Exception(
+					'Translation Set #' .
+					$this->GetConfigField('call_type_carrier_translation_context_id') . ': ' . Carrier_Translation_Context::getForId($this->GetConfigField('call_type_carrier_translation_context_id'))->name .
+					' "in" value (#' . $oTranslation->carrier_translation_context_id .') should be a JSON object: ' . var_export($oTranslation->in_value, true)
+				);
+			}
+			// Log::get()->log(print_r($oInValue, true));
+
+			// Attempt to match
+			if (property_exists($oInValue, 'call_type') && $oCallTypeDetails->call_type === $oInValue->call_type) {
+				// We only care about country matches if call_type also matches
+				if (property_exists($oInValue, 'country') && trim($oCallTypeDetails->country) !== trim($oInValue->country)) {
+					// We can't get a better match, so break out
+					// Log::get()->formatLog('Perfect Translation: %s', var_export((array)$oTranslation, true));
+					$oBestTranslation = $oTranslation;
+					break;
+				} elseif (!isset($oFallbackTranslation)) {
+					// Log::get()->formatLog('Fallback Translation: %s', var_export((array)$oTranslation, true));
+					$oFallbackTranslation = $oTranslation;
+				}
+			}
+		}
+
+		// If we don't have a perfect match, use a fallback (if one was found)
+		if (!$oBestTranslation) {
+			if (!$oFallbackTranslation) {
+				throw new Exception(
+					'Translation Set #' .
+					$this->GetConfigField('call_type_carrier_translation_context_id') . ': ' . Carrier_Translation_Context::getForId($this->GetConfigField('call_type_carrier_translation_context_id'))->name .
+					' is missing a translation for: ' . var_export((array)$oCallTypeDetails, true)
+				);
+			}
+			$oBestTranslation = $oFallbackTranslation;
+		}
+
+		$oTranslationValue = @json_decode($oBestTranslation->out_value);
+		if (false === $oTranslationValue) {
+			throw new Exception(
+				'Translation Set #' .
+				$this->GetConfigField('call_type_carrier_translation_context_id') . ': ' . Carrier_Translation_Context::getForId($this->GetConfigField('call_type_carrier_translation_context_id'))->name .
+				' result for ' . var_export($sCallType, true) . ' (#' . $oBestTranslation->carrier_translation_context_id .') should be a JSON object (Error: ' . $php_errormsg . '): ' . var_export($oBestTranslation->out_value, true)
+			);
+		}
+		return $oTranslationValue;
+	}
+
+	private static function _localiseAustralianNumber($sNumber) {
+		if (preg_match('/^((00)?11)?61/', $sNumber)) {
+			// Remove 61 prefix for Australian destinations for fleet matching
+			return preg_replace('/^(?:(?:00)?11)?61(.+)$/', '0$1', $sNumber);
+		}
+		return $sNumber;
 	}
 
 	/* SUGGESTED RECORD TYPES
