@@ -1,5 +1,4 @@
 <?php
-
 class File_CSV implements Iterator
 {
 	protected	$_aColumns	= array();
@@ -264,41 +263,60 @@ class File_CSV implements Iterator
 	public static function parseLineRFC4180($sLine) {
 		$sEncoding = mb_detect_encoding($sLine);
 		$iLineLength = mb_strlen($sLine, $sEncoding);
+		$iLineByteLength = strlen($sLine);
+
+		$sPreparedQuote = preg_quote(self::RFC4180_QUOTE);
+		$sPreparedDelimiter = preg_quote(self::RFC4180_DELIMITER);
 
 		$aParsed = array();
-		$bQuoted = false;
-		$bEscaped = false;
-		$sField = '';
-		for ($i = 0; $i < $iLineLength; $i++) {
-			$sCharacter = mb_substr($sLine, $i, 1, $sEncoding);
-			if ($sCharacter === self::RFC4180_DELIMITER) {
-				if (!$bQuoted || $bEscaped) {
-					$aParsed[] = $sField;
-					$sField = '';
-					$bQuoted = false;
-					continue;
+		$iLineByteOffset = 0;
+		while ($iLineByteOffset < $iLineByteLength) {
+			$iFieldByteOffset = $iLineByteOffset;
+			// Log::get()->log('Trying to match: ' . substr($sLine, $iLineByteOffset));
+
+			if (preg_match("/^{$sPreparedQuote}/u", substr($sLine, $iFieldByteOffset))) {
+				// Encapsulated field
+				$iFieldByteOffset += strlen(self::RFC4180_QUOTE);
+
+				// Match sequence of non-quote (unless escaped) characters
+				$sFieldData = '';
+				$aFieldMatches = array();
+				if (preg_match("/^(?:[^{$sPreparedQuote}]|{$sPreparedQuote}{2})*/u", substr($sLine, $iFieldByteOffset), $aFieldMatches)) {
+					// Log::get()->log(var_export($aFieldMatches, true));
+					$sFieldData = $aFieldMatches[0];
+					$iFieldByteOffset += strlen($sFieldData);
+				}
+
+				// Match end-quote for encapsulation
+				$aEncapsulationEndMatches = array();
+				if (preg_match("/^[^{$sPreparedQuote}]/u", substr($sLine, $iFieldByteOffset), $aEncapsulationEndMatches)) {
+					throw new DomainException('Encapsulated field ' . var_export($sFieldData, true) .  ' at byte offset ' . $iLineByteOffset . ' not terminated by a quote, instead found: ' . var_export($aEncapsulationEndMatches[0], true));
+				}
+				$iFieldByteOffset += strlen(self::RFC4180_QUOTE);
+
+				$sFieldContents = preg_replace("/{$sPreparedQuote}{2}/u", self::RFC4180_QUOTE, $sFieldData);
+			} else {
+				// Unencapsulated field
+				$sFieldContents = '';
+				$aFieldMatches = array();
+				if (preg_match("/^[^{$sPreparedDelimiter}]*/u", substr($sLine, $iFieldByteOffset), $aFieldMatches)) {
+					$sFieldContents = $aFieldMatches[0];
+					$iFieldByteOffset += strlen($sFieldContents);
 				}
 			}
-			if ($sCharacter === self::RFC4180_QUOTE) {
-				if (!$sField) {
-					$bQuoted = true;
-					continue;
+
+			// Match delimiter or end-of-line
+			if ($iFieldByteOffset < $iLineByteLength) {
+				$aFieldDelimiterMatches = array();
+				if (preg_match("/^[^{$sPreparedDelimiter}]/u", substr($sLine, $iFieldByteOffset), $aFieldDelimiterMatches)) {
+					throw new DomainException('Field ' . var_export($sFieldContents, true) .  ' at byte offset ' . $iLineByteOffset . ' not terminated by a delimiter or end-of-line, instead found: ' . var_export($aFieldDelimiterMatches[0], true));
 				}
-				if (!$bQuoted) {
-					// NOTE: RFC4180 says that quotes as data can only appear in quoted fields, and as long as they're escaped
-					// It also says to be liberal in what we accept, so we could choose to relax this rule
-					throw new DomainException('Illegal quote data character in an unquoted CSV field');
-				}
-				if (!$bEscaped) {
-					$bEscaped = true;
-					continue;
-				}
-				$bEscaped = false;
+				$iFieldByteOffset += strlen(self::RFC4180_DELIMITER);
 			}
-			$sField .= $sCharacter;
+
+			$iLineByteOffset = $iFieldByteOffset;
+			$aParsed[] = $sFieldContents;
 		}
-		// Clean up last field
-		$aParsed[] = $sField;
 		return $aParsed;
 	}
 
@@ -433,5 +451,3 @@ class File_CSV implements Iterator
 		return $mValue;
 	}
 }
-
-?>
