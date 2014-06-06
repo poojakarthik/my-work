@@ -82,7 +82,7 @@ class NormalisationModuleEnginVOIP extends NormalisationModule {
 		// Validation of Normalised data
 		$this->Validate();
 
-		throw new Exception("TESTING");
+		// throw new Exception("TESTING");
 
 		// return output array
 		return $this->_OutputCDR();
