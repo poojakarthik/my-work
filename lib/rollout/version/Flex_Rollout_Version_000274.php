@@ -1,5 +1,5 @@
 <?php
-class Flex_Rollout_Version_000276 extends Flex_Rollout_Version {
+class Flex_Rollout_Version_000274 extends Flex_Rollout_Version {
 	private $rollbackSQL = array();
 
 	public function rollout() {
