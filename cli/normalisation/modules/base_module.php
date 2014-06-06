@@ -87,18 +87,18 @@ abstract class NormalisationModule extends CarrierModule {
 		$arrValid['CarrierRef'] = ($this->_arrNormalisedData["CarrierRef"] != ""); // 2
 
 		// source : empty or valid FNN
-		if ($this->_arrNormalisedData["Source"] != "") { // 3
-			$arrValid['Source'] = preg_match("/^\d+$|^\+\d+$|^\d+(X+|\d+| +|\d+REV)I?$/i", $this->_arrNormalisedData["Source"]);
-		} else {
-			$arrValid['Source'] = true;
-		}
+		// if ($this->_arrNormalisedData["Source"] != "") { // 3
+		// 	$arrValid['Source'] = preg_match("/^\d+$|^\+\d+$|^\d+(X+|\d+| +|\d+REV)I?$/i", $this->_arrNormalisedData["Source"]);
+		// } else {
+		// 	$arrValid['Source'] = true;
+		// }
 
 		// destination : empty or valid FNN
-		if (isset($this->_arrNormalisedData["Destination"]) && $this->_arrNormalisedData["Destination"] != "") { // 4
-			$arrValid['Destination'] = preg_match("/^\d+$|^\+\d+$|^\d+(X+|\d+| +|\d+REV)I?$/i", $this->_arrNormalisedData["Destination"]);
-		} else {
-			$arrValid['Destination'] = true;
-		}
+		// if (isset($this->_arrNormalisedData["Destination"]) && $this->_arrNormalisedData["Destination"] != "") { // 4
+		// 	$arrValid['Destination'] = preg_match("/^\d+$|^\+\d+$|^\d+(X+|\d+| +|\d+REV)I?$/i", $this->_arrNormalisedData["Destination"]);
+		// } else {
+		// 	$arrValid['Destination'] = true;
+		// }
 
 		// 5
 		// start time : valid date/time
