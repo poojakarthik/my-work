@@ -10,7 +10,7 @@ class NormalisationModuleEnginVOIP extends NormalisationModule {
 		);
 		$this->_arrModuleConfig['call_type_carrier_translation_context_id'] = array(
 			'Type' => DATA_TYPE_INTEGER,
-			'Description' => "Translation Set used to translate Utilibill Call Type to Flex Service Type, Record Type, and Destination"
+			'Description' => "Translation Set used to translate Engin VOIP Call Type to Flex Record Type and Destination"
 		);
 
 		parent::__construct($iCarrier);
@@ -32,6 +32,9 @@ class NormalisationModuleEnginVOIP extends NormalisationModule {
 			// Flex::assert(false, 'Engin Usage Normalisation Module #' . $this->_arrCarrierModule['Id'] . ' is missing, or has an invalid, Carrier Translation Context for translating Call Types');
 			throw new Exception('Engin Usage Normalisation Module #' . $this->_arrCarrierModule['Id'] . ' is missing, or has an invalid, Carrier Translation Context for translating Call Types');
 		}
+
+		// define row start (account for header rows)
+		$this->_intStartRow = 1;
 
 		$this->_iSequence = 0;
 	}
