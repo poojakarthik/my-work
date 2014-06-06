@@ -379,8 +379,12 @@ class NormalisationModuleUtilibill extends NormalisationModule {
 	}
 
 	private static function _localiseAustralianNumber($sNumber) {
-		if (preg_match('/^((00)?11)61/', $sNumber)) {
-			// Remove 61 prefix for Australian destinations for fleet matching
+		// Remove 61 prefix for Australian destinations for fleet matching
+		if (preg_match('/^((00)?11)611/', $sNumber)) {
+			// Inbound (13/1300/1800/19) don't get a 0 prepended
+			return preg_replace('/^(?:(?:00)?11)61(.+)$/', '$1', $sNumber);
+		} elseif (preg_match('/^((00)?11)61[23456789]/', $sNumber)) {
+			// Everything else gets a 0 prepended
 			return preg_replace('/^(?:(?:00)?11)61(.+)$/', '0$1', $sNumber);
 		}
 		return $sNumber;
