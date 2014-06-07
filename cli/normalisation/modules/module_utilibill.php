@@ -84,8 +84,8 @@ class NormalisationModuleUtilibill extends NormalisationModule {
 					8 => 'wholesale_cost',
 					9 => 'retail_cost',
 					10 => 'call_type',
-					13 => 'b_party_location',
-					14 => 'a_party_location'
+					13 => 'originating_location',
+					14 => 'destination_location'
 				), $aParsed);
 				Log::get()->log(print_r($this->_arrRawData, true));
 				$this->_normaliseUsage();
@@ -133,6 +133,10 @@ class NormalisationModuleUtilibill extends NormalisationModule {
 
 	private function _normaliseUsage() {
 		$oCallTypeTranslation = $this->_translateCallType($this->getRaw('call_type'));
+
+		if (property_exists($oCallTypeTranslation, 'non_usage') && $oCallTypeTranslation->non_usage === true) {
+			return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
+		}
 
 		// FNN
 		$sChargedParty = trim($this->getRaw('charged_party'));
@@ -200,12 +204,12 @@ class NormalisationModuleUtilibill extends NormalisationModule {
 
 		// Description
 		// NOTE: Not particulary important for usage
-		// $sDescription = trim($this->getRaw('b_party_location'));
+		// $sDescription = trim($this->getRaw('origin_destination'));
 		// if (preg_match('/[a-z]/i', $sDescription)) {
 		// 	// Some descriptions/locations are numeric (or empty), and therefore a bit useless
 		// 	$this->setNormalised('Description', $sDescription);
 		// }
-		// Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Description', 'b_party_location'));
+		// Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Description', 'originating_location'));
 
 		// Units
 		$iDuration = (int)$this->getRaw('duration_seconds');
