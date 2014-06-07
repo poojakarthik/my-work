@@ -81,7 +81,7 @@ abstract class NormalisationModule extends CarrierModule {
 		}
 
 		// FNN : valid FNN
-		$arrValid['FNN'] = preg_match("/^0\d{9}[i]?|13\d{4}|1[89]00\d{6}$/", $this->_arrNormalisedData["FNN"]); // 1
+		// $arrValid['FNN'] = preg_match("/^0\d{9}[i]?|13\d{4}|1[89]00\d{6}$/", $this->_arrNormalisedData["FNN"]); // 1
 
 		// CarrierRef : required (non empty)
 		$arrValid['CarrierRef'] = ($this->_arrNormalisedData["CarrierRef"] != ""); // 2
