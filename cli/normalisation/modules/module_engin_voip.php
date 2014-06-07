@@ -20,8 +20,7 @@ class NormalisationModuleEnginVOIP extends NormalisationModule {
 			!$this->GetConfigField('service_type_id') ||
 			(false === ($this->_oServiceType = Service_Type::getForId($this->GetConfigField('service_type_id'), false)))
 		) {
-			// Flex::assert(false, 'Engin Usage Normalisation Module #' . $this->_arrCarrierModule['Id'] . ' is missing, or has an invalid, Service Type');
-			throw new Exception('Engin Usage Normalisation Module #' . $this->_arrCarrierModule['Id'] . ' is missing, or has an invalid, Service Type');
+			throw new Exception_Assertion('Engin Usage Normalisation Module #' . $this->_arrCarrierModule['Id'] . ' is missing, or has an invalid, Service Type');
 		}
 
 		// Verify linked Carrier Translation Context
@@ -29,8 +28,7 @@ class NormalisationModuleEnginVOIP extends NormalisationModule {
 			(!$this->GetConfigField('call_type_carrier_translation_context_id')) ||
 			(false === Carrier_Translation_Context::getForId($this->GetConfigField('call_type_carrier_translation_context_id'), false))
 		) {
-			// Flex::assert(false, 'Engin Usage Normalisation Module #' . $this->_arrCarrierModule['Id'] . ' is missing, or has an invalid, Carrier Translation Context for translating Call Types');
-			throw new Exception('Engin Usage Normalisation Module #' . $this->_arrCarrierModule['Id'] . ' is missing, or has an invalid, Carrier Translation Context for translating Call Types');
+			throw new Exception_Assertion('Engin Usage Normalisation Module #' . $this->_arrCarrierModule['Id'] . ' is missing, or has an invalid, Carrier Translation Context for translating Call Types');
 		}
 
 		// define row start (account for header rows)
@@ -165,8 +163,8 @@ class NormalisationModuleEnginVOIP extends NormalisationModule {
 		$this->setNormalised('Credit', 0);
 
 		// Potential methods of detecting Credits
-		if ($fCallCharge < 0) throw new Exception('Call Charge is less than $0.00!');
-		if ($iDuration < 0) throw new Exception('Duration is less than 0 seconds!');
+		if ($fCallCharge < 0) throw new Exception_Assertion("Engin Usage Normalisation Module #{$this->_arrCarrierModule['Id']}: Call Charge is less than $0.00!", $this->_arrRawData);
+		if ($iDuration < 0) throw new Exception_Assertion("Engin Usage Normalisation Module #{$this->_arrCarrierModule['Id']}: Duration is less than 0 seconds!", $this->_arrRawData);
 
 		// throw new Exception("TESTING");
 	}
@@ -211,7 +209,7 @@ class NormalisationModuleEnginVOIP extends NormalisationModule {
 		foreach ($this->_aTranslations as $oTranslation) {
 			$oInValue = @json_decode($oTranslation->in_value);
 			if (false === $oInValue || !is_object($oInValue)) {
-				throw new Exception(
+				throw new Exception_Assertion(
 					'Translation Set #' .
 					$this->GetConfigField('call_type_carrier_translation_context_id') . ': ' . Carrier_Translation_Context::getForId($this->GetConfigField('call_type_carrier_translation_context_id'))->name .
 					' "in" value (#' . $oTranslation->carrier_translation_context_id .') should be a JSON object: ' . var_export($oTranslation->in_value, true)
@@ -237,7 +235,7 @@ class NormalisationModuleEnginVOIP extends NormalisationModule {
 		// If we don't have a perfect match, use a fallback (if one was found)
 		if (!$oBestTranslation) {
 			if (!$oFallbackTranslation) {
-				throw new Exception(
+				throw new Exception_Assertion(
 					'Translation Set #' .
 					$this->GetConfigField('call_type_carrier_translation_context_id') . ': ' . Carrier_Translation_Context::getForId($this->GetConfigField('call_type_carrier_translation_context_id'))->name .
 					' is missing a translation for: ' . var_export((array)$oCallTypeDetails, true)
@@ -248,7 +246,7 @@ class NormalisationModuleEnginVOIP extends NormalisationModule {
 
 		$oTranslationValue = @json_decode($oBestTranslation->out_value);
 		if (false === $oTranslationValue) {
-			throw new Exception(
+			throw new Exception_Assertion(
 				'Translation Set #' .
 				$this->GetConfigField('call_type_carrier_translation_context_id') . ': ' . Carrier_Translation_Context::getForId($this->GetConfigField('call_type_carrier_translation_context_id'))->name .
 				' result for ' . var_export($sCallType, true) . ' (#' . $oBestTranslation->carrier_translation_context_id .') should be a JSON object (Error: ' . $php_errormsg . '): ' . var_export($oBestTranslation->out_value, true)

@@ -19,8 +19,8 @@ class NormalisationModuleUtilibill extends NormalisationModule {
 			(!$this->GetConfigField('call_type_carrier_translation_context_id')) ||
 			(false === Carrier_Translation_Context::getForId($this->GetConfigField('call_type_carrier_translation_context_id'), false))
 		) {
-			// Flex::assert(false, 'Utilibill Usage Normalisation Module #' . $this->_arrCarrierModule['Id'] . ' is missing, or has an invalid, Carrier Translation Context');
-			throw new Exception('Utilibill Usage Normalisation Module #' . $this->_arrCarrierModule['Id'] . ' is missing, or has an invalid, Carrier Translation Context for translating Call Types');
+			Flex::assert(false, 'Utilibill Usage Normalisation Module #' . $this->_arrCarrierModule['Id'] . ' is missing, or has an invalid, Carrier Translation Context for translating Call Types');
+			// throw new Exception('Utilibill Usage Normalisation Module #' . $this->_arrCarrierModule['Id'] . ' is missing, or has an invalid, Carrier Translation Context for translating Call Types');
 		}
 
 		$this->_sCallTypeExclusionFilter = $this->GetConfigField('call_type_exclusion_filter');
@@ -370,7 +370,7 @@ class NormalisationModuleUtilibill extends NormalisationModule {
 			if (trim($oTranslation->in_value) === trim($sCallType)) {
 				$oTranslationValue = @json_decode($oTranslation->out_value);
 				if (false === $oTranslationValue) {
-					throw new Exception(
+					throw new Exception_Assertion(
 						'Translation Set #' .
 						$this->GetConfigField('call_type_carrier_translation_context_id') . ':' . Carrier_Translation_Context::getForId($this->GetConfigField('call_type_carrier_translation_context_id'))->name .
 						' result for ' . var_export($sCallType, true) . ' (#' . $oTranslation->carrier_translation_context_id .') should be a JSON object (Error: ' . $php_errormsg . '): ' . var_export($oTranslation->out_value, true)
@@ -379,7 +379,7 @@ class NormalisationModuleUtilibill extends NormalisationModule {
 				return $oTranslationValue;
 			}
 		}
-		throw new Exception(
+		throw new Exception_Assertion(
 			'Translation Set #' .
 			$this->GetConfigField('call_type_carrier_translation_context_id') . ':' . Carrier_Translation_Context::getForId($this->GetConfigField('call_type_carrier_translation_context_id'))->name .
 			' is missing a translation for: ' . var_export($sCallType, true)
