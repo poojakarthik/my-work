@@ -257,6 +257,10 @@ class NormalisationModuleUtilibill extends NormalisationModule {
 	private function _normaliseNonUsage() {
 		$oCallTypeTranslation = $this->_translateCallType($this->getRaw('call_type'));
 
+		if (property_exists($oCallTypeTranslation, 'non_usage') && $oCallTypeTranslation->non_usage === true) {
+			return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
+		}
+
 		// FNN
 		$sChargedParty = trim($this->getRaw('charged_party'));
 		$this->setNormalised('FNN', $sChargedParty);
