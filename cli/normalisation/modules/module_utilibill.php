@@ -19,8 +19,8 @@ class NormalisationModuleUtilibill extends NormalisationModule {
 			(!$this->GetConfigField('call_type_carrier_translation_context_id')) ||
 			(false === Carrier_Translation_Context::getForId($this->GetConfigField('call_type_carrier_translation_context_id'), false))
 		) {
-			// Flex::assert(false, 'Utilibill Usage Normalisation Module #' . $this->_arrCarrierModule['Id'] . ' is missing, or has an invalid, Carrier Translation Context');
-			throw new Exception('Utilibill Usage Normalisation Module #' . $this->_arrCarrierModule['Id'] . ' is missing, or has an invalid, Carrier Translation Context for translating Call Types');
+			Flex::assert(false, 'Utilibill Usage Normalisation Module #' . $this->_arrCarrierModule['Id'] . ' is missing, or has an invalid, Carrier Translation Context for translating Call Types');
+			// throw new Exception('Utilibill Usage Normalisation Module #' . $this->_arrCarrierModule['Id'] . ' is missing, or has an invalid, Carrier Translation Context for translating Call Types');
 		}
 
 		$this->_sCallTypeExclusionFilter = $this->GetConfigField('call_type_exclusion_filter');
@@ -64,7 +64,7 @@ class NormalisationModuleUtilibill extends NormalisationModule {
 		// Re-check rules for filtering CDRs
 		if ($this->_shouldExcludeCDR($aCDR['CDR'])) {
 			// NOTE: Not really a "non-CDR", but most appropriate. The record should really be pulled out in the pre-processor, anyway.
-			return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);;
+			return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
 		}
 
 		$aParsed = File_CSV::parseLineRFC4180($aCDR['CDR']);
@@ -84,8 +84,8 @@ class NormalisationModuleUtilibill extends NormalisationModule {
 					8 => 'wholesale_cost',
 					9 => 'retail_cost',
 					10 => 'call_type',
-					13 => 'b_party_location',
-					14 => 'a_party_location'
+					13 => 'originating_location',
+					14 => 'destination_location'
 				), $aParsed);
 				Log::get()->log(print_r($this->_arrRawData, true));
 				$this->_normaliseUsage();
@@ -133,6 +133,10 @@ class NormalisationModuleUtilibill extends NormalisationModule {
 
 	private function _normaliseUsage() {
 		$oCallTypeTranslation = $this->_translateCallType($this->getRaw('call_type'));
+
+		if (property_exists($oCallTypeTranslation, 'non_usage') && $oCallTypeTranslation->non_usage === true) {
+			return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
+		}
 
 		// FNN
 		$sChargedParty = trim($this->getRaw('charged_party'));
@@ -200,12 +204,12 @@ class NormalisationModuleUtilibill extends NormalisationModule {
 
 		// Description
 		// NOTE: Not particulary important for usage
-		// $sDescription = trim($this->getRaw('b_party_location'));
+		// $sDescription = trim($this->getRaw('origin_destination'));
 		// if (preg_match('/[a-z]/i', $sDescription)) {
 		// 	// Some descriptions/locations are numeric (or empty), and therefore a bit useless
 		// 	$this->setNormalised('Description', $sDescription);
 		// }
-		// Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Description', 'b_party_location'));
+		// Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Description', 'originating_location'));
 
 		// Units
 		$iDuration = (int)$this->getRaw('duration_seconds');
@@ -252,6 +256,10 @@ class NormalisationModuleUtilibill extends NormalisationModule {
 
 	private function _normaliseNonUsage() {
 		$oCallTypeTranslation = $this->_translateCallType($this->getRaw('call_type'));
+
+		if (property_exists($oCallTypeTranslation, 'non_usage') && $oCallTypeTranslation->non_usage === true) {
+			return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
+		}
 
 		// FNN
 		$sChargedParty = trim($this->getRaw('charged_party'));
@@ -362,7 +370,7 @@ class NormalisationModuleUtilibill extends NormalisationModule {
 			if (trim($oTranslation->in_value) === trim($sCallType)) {
 				$oTranslationValue = @json_decode($oTranslation->out_value);
 				if (false === $oTranslationValue) {
-					throw new Exception(
+					throw new Exception_Assertion(
 						'Translation Set #' .
 						$this->GetConfigField('call_type_carrier_translation_context_id') . ':' . Carrier_Translation_Context::getForId($this->GetConfigField('call_type_carrier_translation_context_id'))->name .
 						' result for ' . var_export($sCallType, true) . ' (#' . $oTranslation->carrier_translation_context_id .') should be a JSON object (Error: ' . $php_errormsg . '): ' . var_export($oTranslation->out_value, true)
@@ -371,7 +379,7 @@ class NormalisationModuleUtilibill extends NormalisationModule {
 				return $oTranslationValue;
 			}
 		}
-		throw new Exception(
+		throw new Exception_Assertion(
 			'Translation Set #' .
 			$this->GetConfigField('call_type_carrier_translation_context_id') . ':' . Carrier_Translation_Context::getForId($this->GetConfigField('call_type_carrier_translation_context_id'))->name .
 			' is missing a translation for: ' . var_export($sCallType, true)
@@ -379,8 +387,12 @@ class NormalisationModuleUtilibill extends NormalisationModule {
 	}
 
 	private static function _localiseAustralianNumber($sNumber) {
-		if (preg_match('/^((00)?11)61/', $sNumber)) {
-			// Remove 61 prefix for Australian destinations for fleet matching
+		// Remove 61 prefix for Australian destinations for fleet matching
+		if (preg_match('/^((00)?11)611/', $sNumber)) {
+			// Inbound (13/1300/1800/19) don't get a 0 prepended
+			return preg_replace('/^(?:(?:00)?11)61(.+)$/', '$1', $sNumber);
+		} elseif (preg_match('/^((00)?11)61[23456789]/', $sNumber)) {
+			// Everything else gets a 0 prepended
 			return preg_replace('/^(?:(?:00)?11)61(.+)$/', '0$1', $sNumber);
 		}
 		return $sNumber;

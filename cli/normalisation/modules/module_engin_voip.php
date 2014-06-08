@@ -10,7 +10,7 @@ class NormalisationModuleEnginVOIP extends NormalisationModule {
 		);
 		$this->_arrModuleConfig['call_type_carrier_translation_context_id'] = array(
 			'Type' => DATA_TYPE_INTEGER,
-			'Description' => "Translation Set used to translate Utilibill Call Type to Flex Service Type, Record Type, and Destination"
+			'Description' => "Translation Set used to translate Engin VOIP Call Type to Flex Record Type and Destination"
 		);
 
 		parent::__construct($iCarrier);
@@ -20,8 +20,7 @@ class NormalisationModuleEnginVOIP extends NormalisationModule {
 			!$this->GetConfigField('service_type_id') ||
 			(false === ($this->_oServiceType = Service_Type::getForId($this->GetConfigField('service_type_id'), false)))
 		) {
-			// Flex::assert(false, 'Engin Usage Normalisation Module #' . $this->_arrCarrierModule['Id'] . ' is missing, or has an invalid, Service Type');
-			throw new Exception('Engin Usage Normalisation Module #' . $this->_arrCarrierModule['Id'] . ' is missing, or has an invalid, Service Type');
+			throw new Exception_Assertion('Engin Usage Normalisation Module #' . $this->_arrCarrierModule['Id'] . ' is missing, or has an invalid, Service Type');
 		}
 
 		// Verify linked Carrier Translation Context
@@ -29,9 +28,11 @@ class NormalisationModuleEnginVOIP extends NormalisationModule {
 			(!$this->GetConfigField('call_type_carrier_translation_context_id')) ||
 			(false === Carrier_Translation_Context::getForId($this->GetConfigField('call_type_carrier_translation_context_id'), false))
 		) {
-			// Flex::assert(false, 'Engin Usage Normalisation Module #' . $this->_arrCarrierModule['Id'] . ' is missing, or has an invalid, Carrier Translation Context for translating Call Types');
-			throw new Exception('Engin Usage Normalisation Module #' . $this->_arrCarrierModule['Id'] . ' is missing, or has an invalid, Carrier Translation Context for translating Call Types');
+			throw new Exception_Assertion('Engin Usage Normalisation Module #' . $this->_arrCarrierModule['Id'] . ' is missing, or has an invalid, Carrier Translation Context for translating Call Types');
 		}
+
+		// define row start (account for header rows)
+		$this->_intStartRow = 1;
 
 		$this->_iSequence = 0;
 	}
@@ -48,6 +49,10 @@ class NormalisationModuleEnginVOIP extends NormalisationModule {
 		//--------------------------------------------------------------------//
 		Log::get()->logIf(self::DEBUG_LOGGING, "Record #{$this->_iSequence}");
 		$aParsed = File_CSV::parseLineRFC4180($aCDR['CDR']);
+		if (count($aParsed) < 13) {
+			return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
+		}
+
 		$this->_arrRawData = array_associate(array(
 			0 => 'call_id',
 			1 => 'calling_number',
@@ -60,8 +65,8 @@ class NormalisationModuleEnginVOIP extends NormalisationModule {
 			8 => 'call_type_description',
 			9 => 'plan_name',
 			10 => 'charge_rate',
-			10 => 'charge_type',
-			10 => 'call_charge'
+			11 => 'charge_type',
+			12 => 'call_charge'
 		), $aParsed);
 		Log::get()->log(print_r($this->_arrRawData, true));
 		$this->_normalise();
@@ -75,7 +80,7 @@ class NormalisationModuleEnginVOIP extends NormalisationModule {
 		// Validation of Normalised data
 		$this->Validate();
 
-		throw new Exception("TESTING");
+		// throw new Exception("TESTING");
 
 		// return output array
 		return $this->_OutputCDR();
@@ -158,8 +163,8 @@ class NormalisationModuleEnginVOIP extends NormalisationModule {
 		$this->setNormalised('Credit', 0);
 
 		// Potential methods of detecting Credits
-		if ($fCallCharge < 0) throw new Exception('Call Charge is less than $0.00!');
-		if ($iDuration < 0) throw new Exception('Duration is less than 0 seconds!');
+		if ($fCallCharge < 0) throw new Exception_Assertion("Engin Usage Normalisation Module #{$this->_arrCarrierModule['Id']}: Call Charge is less than $0.00!", $this->_arrRawData);
+		if ($iDuration < 0) throw new Exception_Assertion("Engin Usage Normalisation Module #{$this->_arrCarrierModule['Id']}: Duration is less than 0 seconds!", $this->_arrRawData);
 
 		// throw new Exception("TESTING");
 	}
@@ -204,7 +209,7 @@ class NormalisationModuleEnginVOIP extends NormalisationModule {
 		foreach ($this->_aTranslations as $oTranslation) {
 			$oInValue = @json_decode($oTranslation->in_value);
 			if (false === $oInValue || !is_object($oInValue)) {
-				throw new Exception(
+				throw new Exception_Assertion(
 					'Translation Set #' .
 					$this->GetConfigField('call_type_carrier_translation_context_id') . ': ' . Carrier_Translation_Context::getForId($this->GetConfigField('call_type_carrier_translation_context_id'))->name .
 					' "in" value (#' . $oTranslation->carrier_translation_context_id .') should be a JSON object: ' . var_export($oTranslation->in_value, true)
@@ -230,7 +235,7 @@ class NormalisationModuleEnginVOIP extends NormalisationModule {
 		// If we don't have a perfect match, use a fallback (if one was found)
 		if (!$oBestTranslation) {
 			if (!$oFallbackTranslation) {
-				throw new Exception(
+				throw new Exception_Assertion(
 					'Translation Set #' .
 					$this->GetConfigField('call_type_carrier_translation_context_id') . ': ' . Carrier_Translation_Context::getForId($this->GetConfigField('call_type_carrier_translation_context_id'))->name .
 					' is missing a translation for: ' . var_export((array)$oCallTypeDetails, true)
@@ -241,7 +246,7 @@ class NormalisationModuleEnginVOIP extends NormalisationModule {
 
 		$oTranslationValue = @json_decode($oBestTranslation->out_value);
 		if (false === $oTranslationValue) {
-			throw new Exception(
+			throw new Exception_Assertion(
 				'Translation Set #' .
 				$this->GetConfigField('call_type_carrier_translation_context_id') . ': ' . Carrier_Translation_Context::getForId($this->GetConfigField('call_type_carrier_translation_context_id'))->name .
 				' result for ' . var_export($sCallType, true) . ' (#' . $oBestTranslation->carrier_translation_context_id .') should be a JSON object (Error: ' . $php_errormsg . '): ' . var_export($oBestTranslation->out_value, true)
@@ -251,8 +256,12 @@ class NormalisationModuleEnginVOIP extends NormalisationModule {
 	}
 
 	private static function _localiseAustralianNumber($sNumber) {
-		if (preg_match('/^((00)?11)?61/', $sNumber)) {
-			// Remove 61 prefix for Australian destinations for fleet matching
+		// Remove 61 prefix for Australian destinations for fleet matching
+		if (preg_match('/^((00)?11)?611/', $sNumber)) {
+			// Inbound (13/1300/1800/19) don't get a 0 prepended
+			return preg_replace('/^(?:(?:00)?11)?61(.+)$/', '$1', $sNumber);
+		} elseif (preg_match('/^((00)?11)?61[23456789]/', $sNumber)) {
+			// Everything else gets a 0 prepended
 			return preg_replace('/^(?:(?:00)?11)?61(.+)$/', '0$1', $sNumber);
 		}
 		return $sNumber;
