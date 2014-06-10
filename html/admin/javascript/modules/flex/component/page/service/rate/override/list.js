@@ -93,7 +93,14 @@ var self = new Class({
 
 	_buildRateUI: function (rate) {
 		return H.tr({class: 'flex-page-account-service-plan-overriderates-recordtypes-recordtype-rates-rate'},
-			H.td(rate.name),
+			// javascript:Vixen.Popup.ShowAjaxPopup("ViewRatePopupId_54546", "medium", "Rate", "Rate", "View", {"Rate":{"Id":54546}}, "nonmodal")
+			H.td(
+				H.a({
+						href: "javascript: Vixen.Popup.ShowAjaxPopup('ViewRatePopupId_' + " + rate.rate_id + ", 'medium', 'Rate', 'Rate', 'View', {Rate: {'Id': " + rate.rate_id + "}}, 'nonmodal');"
+					},
+					rate.name
+				)
+			),
 			// H.td(Date.$parseDate(rate.start_datetime, 'Y-m-d H:i:s').$format('M j, Y')),
 			H.td(rate.start_datetime === '0000-00-00 00:00:00' ? 'Indefinite' : Date.$parseDate(rate.start_datetime, 'Y-m-d H:i:s').$format('M j, Y')),
 			H.td(rate.end_datetime === '9999-12-31 23:59:59' ? 'Indefinite' : Date.$parseDate(rate.end_datetime, 'Y-m-d H:i:s').$format('M j, Y'))
