@@ -95,7 +95,7 @@ class HtmlTemplateRateView extends HtmlTemplate
 	{
 
 		echo "<div class='GroupedContent'>\n";
-		
+
 		// Handle the Archived property
 		if (DBO()->Rate->Archived->Value)
 		{
@@ -111,20 +111,20 @@ class HtmlTemplateRateView extends HtmlTemplate
 			}
 			echo "<div class='ContentSeparator'></div>\n";
 		}
-		
+
 		$this->_RenderDetails();
 		echo "</div>\n"; // GroupedContent
 
 		echo "<div class='ButtonContainer'><div class='right'>\n";
 		$this->Button("Close", "Vixen.Popup.Close(this);");
-		echo "</div></div>\n";		
+		echo "</div></div>\n";
 	}
-	
+
 	function _RenderDetails()
 	{
 		// Work out what days the rate applies to
 		$arrWeekdays = Array("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
-		
+
 		$bolAvailableEveryDay = TRUE;
 		foreach ($arrWeekdays as $strDay)
 		{
@@ -137,12 +137,12 @@ class HtmlTemplateRateView extends HtmlTemplate
 				$bolAvailableEveryDay = FALSE;
 			}
 		}
-		
+
 		if ($bolAvailableEveryDay)
 		{
 			$strAvailability = "Every Day";
 		}
-		
+
 		if (DBO()->Rate->StartTime->Value == "00:00:00" && DBO()->Rate->EndTime->Value == "23:59:59")
 		{
 			if ($bolAvailableEveryDay)
@@ -158,16 +158,18 @@ class HtmlTemplateRateView extends HtmlTemplate
 		{
 			DBO()->Rate->Times = DBO()->Rate->StartTime->Value ." - ". DBO()->Rate->EndTime->Value;
 		}
-		
+
 		DBO()->Rate->Name->RenderOutput();
 		DBO()->Rate->Description->RenderOutput();
-		DBO()->Rate->ServiceType->RenderCallback("GetConstantDescription", Array("service_type"), RENDER_OUTPUT);
-		
+
+		DBO()->Rate->ServiceTypeDescription = Service_Type::getForId(DBO()->Rate->ServiceType->Value)->description;
+		DBO()->Rate->ServiceTypeDescription->RenderOutputAs(array('Label' => 'Service Type'));
+
 		if (DBO()->Rate->Destination->Value)
 		{
 			DBO()->Destination->Description->RenderOutput();
 		}
-		
+
 		DBO()->RecordType->Name->RenderOutput();
 		DBO()->Rate->Fleet->RenderOutput();
 		DBO()->Rate->AvailableDays = $strAvailability;
@@ -175,8 +177,8 @@ class HtmlTemplateRateView extends HtmlTemplate
 		if (DBO()->Rate->Times->IsSet)
 		{
 			DBO()->Rate->Times->RenderOutput();
-		} 
-		
+		}
+
 
 		$bolPassThrough = (DBO()->Rate->PassThrough->Value) ? TRUE : FALSE;
 		DBO()->Rate->PassThrough->RenderOutput();
@@ -185,7 +187,7 @@ class HtmlTemplateRateView extends HtmlTemplate
 			DBO()->Rate->Prorate->RenderOutput();
 		}
 		DBO()->Rate->Uncapped->RenderOutput();
-		
+
 		// Allow CDR Hiding
 		if (DBO()->Rate->allow_cdr_hiding->Value)
 		{
@@ -195,17 +197,17 @@ class HtmlTemplateRateView extends HtmlTemplate
 		{
 			DBO()->Rate->allow_cdr_hiding->RenderArbitrary('No', RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
 		}
-		
+
 		DBO()->Rate->StdMinCharge->RenderOutput();
 		DBO()->Rate->StdFlagfall->RenderOutput();
-		
+
 		if (DBO()->Rate->discount_percentage->Value != NULL)
 		{
 			// HACK! HACK! HACK! I'm doing this so it truncates the float to 2 decimal places.  All other properties are "Decimals", and don't have this problem
 			DBO()->Rate->discount_percentage = OutputMask()->FormatFloat(DBO()->Rate->discount_percentage->Value, 2, 2);
 			DBO()->Rate->discount_percentage->RenderOutput();
 		}
-		
+
 		if ($bolPassThrough)
 		{
 			// No more details are required for PassThrough Rates
@@ -229,7 +231,7 @@ class HtmlTemplateRateView extends HtmlTemplate
 		// Standard Rate details
 		$strUnitType = GetConstantDescription(DBO()->RecordType->DisplayType->Value, 'DisplayTypeSuffix');
 		$intStdUnits = DBO()->Rate->StdUnits->Value;
-		
+
 		if (DBO()->Rate->StdRatePerUnit->Value > 0)
 		{
 			$strRate = DBO()->Rate->StdRatePerUnit->FormattedValue() . " Per $intStdUnits $strUnitType";
@@ -252,7 +254,7 @@ class HtmlTemplateRateView extends HtmlTemplate
 			$strRate = DBO()->Rate->StdRatePerUnit->FormattedValue() . " Per $intStdUnits $strUnitType";
 			DBO()->Rate->StdRatePerUnit->RenderArbitrary($strRate, RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
 		}
-		
+
 		// Cap Start details
 		if (DBO()->Rate->CapUnits->Value > 0 || (DBO()->Rate->CapCost->Value == 0 && (DBO()->Rate->CapLimit->Value > 0 || DBO()->Rate->CapUsage->Value > 0)))
 		{
@@ -270,7 +272,7 @@ class HtmlTemplateRateView extends HtmlTemplate
 			return;
 		}
 		DBO()->Rate->CapStart->RenderOutput();
-		
+
 		// Cap Stop details
 		if (DBO()->Rate->CapUsage->Value > 0)
 		{
@@ -290,9 +292,9 @@ class HtmlTemplateRateView extends HtmlTemplate
 			return;
 		}
 		DBO()->Rate->CapStop->RenderOutput();
-		
+
 		DBO()->Rate->ExsFlagfall->RenderOutput();
-		
+
 		// Excess Rate details
 		$intExsUnits = DBO()->Rate->ExsUnits->Value;
 		if (DBO()->Rate->ExsRatePerUnit->Value > 0)
@@ -309,7 +311,7 @@ class HtmlTemplateRateView extends HtmlTemplate
 		{
 			DBO()->Rate->ExsPercentage->RenderOutput();
 		}
-		
+
 		if (DBO()->Rate->Archived->Value != RATE_STATUS_ACTIVE)
 		{
 			DBO()->Rate->Status = GetConstantDescription(DBO()->Rate->Archived->Value, "RateStatus");

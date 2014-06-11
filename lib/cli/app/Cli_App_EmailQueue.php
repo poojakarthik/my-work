@@ -11,15 +11,16 @@ class Cli_App_EmailQueue extends Cli {
 	const SWITCH_CLEANUP = 'c';
 	const SWITCH_CLEANUP_AGE = 'a';
 	const SWITCH_CLEANUP_UNDELIVERED = 'u';
+	const SWITCH_CLEANUP_OPTIMISE = 'o';
 
 	const CLEANUP_TEST_SUMMARY_ONLY = false;
 	const CLEANUP_AGE_DEFAULT = 60;
-	
+
 	function run() {
 		try {
 			// The arguments are present and in a valid format if we get past this point.
 			$arrArgs = $this->getValidatedArguments();
-			
+
 			if ((int)$arrArgs[self::SWITCH_DEBUG_EMAIL_ID]) {
 				$this->_debugEmail();
 			} elseif ((bool)$arrArgs[self::SWITCH_CLEANUP]) {
@@ -29,7 +30,7 @@ class Cli_App_EmailQueue extends Cli {
 			} else {
 				throw new Exception("No mode of operation supplied.");
 			}
-			
+
 			return 0;
 		} catch(Exception $oException) {
 			$this->showUsage('Error: '.$oException->getMessage());
@@ -50,14 +51,14 @@ class Cli_App_EmailQueue extends Cli {
 			if (!$oEmail) {
 				throw new Exception("Invalid debug email id supplied");
 			}
-			
+
 			Log::getLog()->log("SENDING DEBUG EMAIL");
-			
+
 			// TODO: MOVE THIS INTO THE EMAIL CLASS
 			$oEmailFlex = new Email_Flex();
 			$oEmailFlex->addTo($sDebugAddress);
 			Log::getLog()->log("\trecipients: ".print_r(implode(',', $oEmailFlex->getRecipients()), true));
-			
+
 			Log::getLog()->log("\tsender: $oEmail->sender");
 			$oEmailFlex->setFrom($oEmail->sender);
 			$oEmailFlex->setSubject('[FLEX EMAIL QUEUE TEST RE-SEND] '.$oEmail->subject);
@@ -65,22 +66,22 @@ class Cli_App_EmailQueue extends Cli {
 			if ($oEmail->html !== null) {
 				$oEmailFlex->setBodyHtml($oEmail->html);
 			}
-			
+
 			// Add attachments
 			$aAttachments = $oEmail->getAttachments();
 			foreach ($aAttachments as $oAttachment) {
 				// Defaults for nullable fields
 				$sDisposition = ($oAttachment->disposition === null ? Zend_Mime::DISPOSITION_ATTACHMENT : $oAttachment->disposition);
 				$sEncoding = ($oAttachment->encoding === null ? Zend_Mime::ENCODING_BASE64 : $oAttachment->encoding);
-				
+
 				Log::getLog()->log("\tattachment: $oAttachment->filename ({$oAttachment->mime_type})");
-				
+
 				// Create/add the attachment
 				$oEmailFlex->createAttachment($oAttachment->content, $oAttachment->mime_type, $sDisposition, $sEncoding, $oAttachment->filename);
 			}
-			
+
 			$oEmailFlex->send();
-			Log::getLog()->log("SENT"); 
+			Log::getLog()->log("SENT");
 		} else {
 			throw new Exception("Cannot debug email {$iDebugEmailId}. Must be in test mode and have supplied a debug email address");
 		}
@@ -101,7 +102,7 @@ class Cli_App_EmailQueue extends Cli {
 			if ($oDataAccess->TransactionStart() === false) {
 				throw Exception("Failed to start database transaction");
 			}
-			
+
 			Log::getLog()->log("-----");
 			Log::getLog()->log("Test Mode Enabled - None of the email queues will be commited.");
 			if ($sDebugAddress !== null) {
@@ -109,30 +110,30 @@ class Cli_App_EmailQueue extends Cli {
 			}
 			Log::getLog()->log("-----");
 		}
-		
+
 		$aEmailQueues = array();
 		if($iQueueId && is_numeric($iQueueId)) {
 			Log::getLog()->log("Will attempt to deliver single queue: {$iQueueId}");
-			
+
 			// Deliver the single queue
 			$aEmailQueues[] = Email_Queue::getForId($iQueueId);
 		} else {
 			// Deliver all waiting email_queue records
 			$aEmailQueues = Email_Queue::getWaitingQueues();
 		}
-		
+
 		$iQueueCount = count($aEmailQueues);
 		Log::getLog()->log("{$iQueueCount} queue".($iQueueCount == 1 ? '' : 's')." to deliver");
-		
+
 		if ($iQueueCount > 0) {
 			foreach ($aEmailQueues as $oEmailQueue) {
 				// Deliver the email queue, only commits (actually sends) if NOT in test mode
 				$oEmailQueue->deliver($bTestRun, $sDebugAddress);
 			}
-			
+
 			Log::getLog()->log("All queues delivered");
 		}
-		
+
 		if ($bTestRun) {
 			// Rollback transaction, in test mode
 			Log::getLog()->log("Test mode, rolling back all database changes");
@@ -148,6 +149,7 @@ class Cli_App_EmailQueue extends Cli {
 		$bCleanupUndelivered = (bool)$arrArgs[self::SWITCH_CLEANUP_UNDELIVERED];
 		$iMinimumAge = (int)$arrArgs[self::SWITCH_CLEANUP_AGE];
 		$iQueueId = ($arrArgs[self::SWITCH_QUEUE_ID]) ? (int)$arrArgs[self::SWITCH_QUEUE_ID] : null;
+		$bOptimise = (bool)$arrArgs[self::SWITCH_CLEANUP_OPTIMISE];
 		$bTestRun = (bool)$arrArgs[self::SWITCH_TEST_RUN];
 
 		if (!is_int($iMinimumAge) || $iMinimumAge < 0) {
@@ -274,6 +276,24 @@ class Cli_App_EmailQueue extends Cli {
 		// Commit changes
 		Log::get()->log("[+] Committing DB Transaction");
 		DataAccess::getDataAccess()->TransactionCommit(false);
+
+		if ($bOptimise) {
+			// Optimise related database tables
+			$iOptimiseEmailAttachmentStartTimestamp = time();
+			Log::get()->log('[*] Optimising `email_attachment`');
+			DataAccess::get()->query('OPTIMIZE TABLE email_attachment;');
+			Log::get()->formatLog('  [*] %ds', time() - $iOptimiseEmailAttachmentStartTimestamp);
+
+			$iOptimiseEmailStartTimestamp = time();
+			Log::get()->log('Optimising `email` table');
+			DataAccess::get()->query('OPTIMIZE TABLE email;');
+			Log::get()->formatLog('  [*] %ds', time() - $iOptimiseEmailStartTimestamp);
+
+			$iOptimiseEmailQueueStartTimestamp = time();
+			Log::get()->log('Optimising `email_queue`');
+			DataAccess::get()->query('OPTIMIZE TABLE email_queue;');
+			Log::get()->formatLog('  [*] %ds', time() - $iOptimiseEmailQueueStartTimestamp);
+		}
 	}
 
 	function getCommandLineArguments() {
@@ -331,6 +351,13 @@ class Cli_App_EmailQueue extends Cli {
 			self::SWITCH_CLEANUP_UNDELIVERED => array(
 				self::ARG_REQUIRED => false,
 				self::ARG_DESCRIPTION => "Cleans up old undelivered email queues in addition to delivered ones",
+				self::ARG_DEFAULT => false,
+				self::ARG_VALIDATION => 'Cli::_validIsSet()'
+			),
+
+			self::SWITCH_CLEANUP_OPTIMISE => array(
+				self::ARG_REQUIRED => false,
+				self::ARG_DESCRIPTION => "OPTIMIZEs cleaned up email queue tables",
 				self::ARG_DEFAULT => false,
 				self::ARG_VALIDATION => 'Cli::_validIsSet()'
 			)
