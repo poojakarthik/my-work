@@ -260,8 +260,8 @@ class ApplicationProvisioning extends ApplicationBaseClass {
 				// No module
 				$arrRequest['Status'] = REQUEST_STATUS_NO_MODULE;
 
-				$oCarrier = Carrier::getForId($arrRequest['Carrier'], false);
-				$strCarrier = $oCarrier ? $oCarrier->description : '[ No Carrier ]';
+				$oRequestCarrier = Carrier::getForId($arrRequest['Carrier'], true);
+				$strCarrier = $oRequestCarrier ? $oRequestCarrier->description : '[ No Carrier ]';
 				$strType = GetConstantDescription($arrRequest['Type'], 'provisioning_type');
 				CliEcho("[ FAILED ]\n\t\t- No module ($strCarrier: $strType)");
 			}
