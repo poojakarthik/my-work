@@ -41,7 +41,7 @@ class Logic_Payment extends Logic_Distributable implements DataLogic{
 	{
 		$this->oDO = Payment::getForId($this->id);
 	}
-	
+
 	public function reverse($iReversalReasonId, $bDistribute=true) {
 		$oDataAccess = DataAccess::getDataAccess();
 		$oDataAccess->TransactionStart(false);
@@ -50,18 +50,18 @@ class Logic_Payment extends Logic_Distributable implements DataLogic{
 			$this->oDO->reverse($iReversalReasonId, $bDistribute);
 			$oAccount = Logic_Account::getInstance($this->oDO->account_id);
 			$oPromise = Logic_Collection_Promise::getForAccount($oAccount);
-			
+
 			// Rather than merely distributing the reversed payment, we need to do a full redistribution of balances at this point.
 			// The reaon for this is that if the original payment had any distributable balance left, this would need to be applied after distributing the reversed payment's balance in full, or else the collectable balance will be wrong.
 			if ($bDistribute || ($oPromise !== NULL && $oReason->payment_reversal_type_id == PAYMENT_REVERSAL_TYPE_DISHONOUR)) {
 				$oAccount->redistributeBalances();
 				$this->refreshData();
-			}			
+			}
 
 			// Check the reason type
 			$oReason = Payment_Reversal_reason::getForId($iReversalReasonId);
 			if ($oReason->payment_reversal_type_id == PAYMENT_REVERSAL_TYPE_DISHONOUR) {
-				// The rule is that a dishonoured payment scenario takes precedence over a broken promise scenario, thats why we process any active promises at this point				
+				// The rule is that a dishonoured payment scenario takes precedence over a broken promise scenario, thats why we process any active promises at this point
 				if ($oPromise !== NULL) {
 					$oPromise->process();
 				}
@@ -77,7 +77,7 @@ class Logic_Payment extends Logic_Distributable implements DataLogic{
 			$oDataAccess->TransactionRollback(false);
 			throw $oEx;
 		}
-		
+
 		$oDataAccess->TransactionCommit(false);
 	}
 
@@ -88,10 +88,10 @@ class Logic_Payment extends Logic_Distributable implements DataLogic{
 
 	public function applyPaymentResponses($bDistribute=true) {
 		/*	There are essentially only two results from this:
-			
+
 				1: No changes to Payment
 				2: Reverse Payment
-				
+
 			Reversed Payments can't be unreversed (or reversed again), so just return out
 		*/
 		if ($this->getReversal() instanceof self) {
@@ -105,7 +105,7 @@ class Logic_Payment extends Logic_Distributable implements DataLogic{
 					// Nothing really to do, as you can't un-reverse a payment
 					Log::getLog()->log("Payment Confirmed");
 					break;
-					
+
 				case PAYMENT_RESPONSE_TYPE_REJECTION:
 					// Not yet reversed, Reverse the Payment
 					$this->reverse(
@@ -117,18 +117,18 @@ class Logic_Payment extends Logic_Distributable implements DataLogic{
 			}
 		}
 	}
-	
+
 	public function applySurcharges() {
 		// Get Payment Merchant details
 		if ($oCarrierPaymentType = Carrier_Payment_Type::getForCarrierAndPaymentType($this->oDO->carrier_id, $this->oDO->payment_type_id)) {
 			// Calculate Surcharge
 			$fSurcharge	= $oCarrierPaymentType->calculateSurcharge($this->oDO->amount);
-			
+
 			// Apply Charge
 			$oCharge = null;
 			if ($fSurcharge > 0.0) {
 				$oChargeType = Charge_Type::getByCode('PMF');
-				
+
 				$oCharge					= new Charge();
 				$oCharge->AccountGroup		= Account::getForId($this->oDO->account_id)->AccountGroup;
 				$oCharge->Account			= $this->oDO->account_id;
@@ -149,25 +149,25 @@ class Logic_Payment extends Logic_Distributable implements DataLogic{
 				$oCharge->Status			= CHARGE_APPROVED;
 				$oCharge->Notes				= '';
 				$oCharge->global_tax_exempt	= 0;
-				
+
 				$oCharge->save();
-				
+
 				Log::getLog()->log("Surcharge applied {$oCharge->Id}");
 			}
-			
+
 			return $oCharge;
 		} else {
 			return null;
 		}
 	}
-	
+
 	public function applyCreditCardSurcharge($iCreditCardType=null) {
 		if ($this->oDO->payment_type_id != PAYMENT_TYPE_CREDIT_CARD) {
 			// Payment doesn't qualify, no error, just don't do it.
 			Log::getLog()->log("Payment is not a credit card payment, no surcharge (payment type id = {$this->oDO->payment_type_id}).");
 			return null;
 		}
-		
+
 		// Get the credit card type
 		$oCreditCardType = null;
 		if ($iCreditCardType === null) {
@@ -178,18 +178,22 @@ class Logic_Payment extends Logic_Distributable implements DataLogic{
 					$oCreditCardType = Credit_Card_Type::getForCardNumber($oData->value);
 					break;
 				}
+				if ($oData->name == Payment_Transaction_Data::CREDIT_CARD_TYPE) {
+					$oCreditCardType = Credit_Card_Type::getForId($oData->value);
+					break;
+				}
 			}
 		} else {
 			// Use the supplied credit card type id
 			$oCreditCardType = Credit_Card_Type::getForId($iCreditCardType);
 		}
-		
+
 		if ($oCreditCardType === null) {
 			throw new Exception("Cannot create credit card surcharge, could not determine credit card type.");
 		}
-		
+
 		$oAccount = Account::getForId($this->oDO->account_id);
-		
+
 		// Calculate surcharge, also remove global tax component
 		$fSurcharge = $oCreditCardType->calculateSurcharge($this->oDO->amount);
 		$oTaxType	= Tax_Type::getGlobalTaxType();
@@ -199,9 +203,9 @@ class Logic_Payment extends Logic_Distributable implements DataLogic{
 			$fSurcharge	= $fSurcharge / (1 + $oTaxType->rate_percentage);
 			Log::getLog()->log("Removed global tax: {$fSurcharge}");
 		}
-		
+
 		$sNow = DataAccess::getDataAccess()->getNow();
-		
+
 		// Create a charge for the transaction surcharge
 		$oCharge					= new Charge();
 		$oCharge->AccountGroup		= $oAccount->AccountGroup;
@@ -220,18 +224,18 @@ class Logic_Payment extends Logic_Distributable implements DataLogic{
 		$oCharge->charge_model_id	= CHARGE_MODEL_CHARGE;
 		$oCharge->Notes				= '';
 		$oCharge->save();
-		
+
 		Log::getLog()->log("Credit Card surcharge created '{$oCharge->Description}'.");
-		
+
 		// Update the payments surcharge charge link
 		$this->oDO->surcharge_charge_id = $oCharge->Id;
 		$this->oDO->save();
-		
+
 		return $oCharge;
 	}
-	
+
 	public function __get($sField) {
-	   
+
 	   switch($sField)
 	   {
 		   case 'balance':
@@ -240,7 +244,7 @@ class Logic_Payment extends Logic_Distributable implements DataLogic{
 			default:
 				return $this->oDO->$sField;
 	   }
-	
+
 	}
 
 	public function __set($sField, $mValue) {
@@ -260,7 +264,7 @@ class Logic_Payment extends Logic_Distributable implements DataLogic{
 	}
 
 	public function toArray() {
-
+		return $this->oDO->toArray();
 	}
 
 	public function isCredit() {
@@ -337,7 +341,7 @@ class Logic_Payment extends Logic_Distributable implements DataLogic{
 		Log::getLog()->log("Processed {$iTotalPayments} Payments in ".round($oStopwatch->split(), 4).'s');
 	}
 
-    
+
     // factory: Creates a Logic_Payment object, as well as surcharge if credit card payment (and flagged to be created).
     // 			aConfig is an array of values that will be used if passed:
     //				- aTransactionData 		: array of key => value items which will create payment_transaction_data records linked to the payment
@@ -353,12 +357,12 @@ class Logic_Payment extends Logic_Distributable implements DataLogic{
 			{
 				throw new Exception_Database("Failed to start db transaction.");
 			}
-			
+
 			$iNow		= DataAccess::getDataAccess()->getNow(true);
 			$sPaidDate 	= ($sPaidDate === null ? date('Y-m-d', $iNow) : $sPaidDate);
 			$oAccount	= Account::getForId($iAccountId);
 			$oUser 		= Flex::getUser();
-			
+
 			// Create payment
 			$oPayment 							= new Payment();
 			$oPayment->account_id 				= $iAccountId;
@@ -370,19 +374,19 @@ class Logic_Payment extends Logic_Distributable implements DataLogic{
 			$oPayment->payment_nature_id		= $iPaymentNature;
 			$oPayment->amount 					= Rate::roundToRatingStandard($fAmount, 2);
 			$oPayment->balance 					= $oPayment->amount;
-			
+
 			if (isset($aConfig['iPaymentResponseId']) && $aConfig['iPaymentResponseId'] !== null)
 			{
 				$oPayment->latest_payment_response_id = $aConfig['iPaymentResponseId'];
 			}
-			
+
 			if (isset($aConfig['iCarrierId']) && $aConfig['iCarrierId'] !== null)
 			{
 				$oPayment->carrier_id = $aConfig['iCarrierId'];
 			}
-			
+
 			$oPayment->save();
-			
+
 			if (isset($aConfig['aTransactionData']) && $aConfig['aTransactionData'] !== null)
 			{
 				foreach ($aConfig['aTransactionData'] as $sName => $mValue)
@@ -397,27 +401,27 @@ class Logic_Payment extends Logic_Distributable implements DataLogic{
 					//$oTransactionData->save();
 				}
 			}
-			
+
 			// Process the payment
 			$oNewLogic 		= new self($oPayment);
 			$oLogicAccount 	= Logic_Account::getInstance($iAccountId);
-			
+
 			// Simply distributing the balance of the new adjustment is not enough
 			// because there might be other distributables that could previously not distribute their balance
 			// which after distributing this one can distribute theirs.
-			// 
+			//
 			// Example	: if this adjustment is a debit adjustment, and before distributing it the sum(collectable.balance) === 0, and there is a payment with remaining balance, that payment's balance must be distributed after distributing the current adjustment's balance.
 			// @TODO	: in order to optimise this, implement functionality that allows for just distributing balances of any distributables that currently have a balance remaining, instead of a full redistribution.
 			//$oLogicAccount->redistributeBalances();
 			if ($bDistribute) {
 				$oNewLogic->distribute();
 			}
-			
+
 			if ($oDataAccess->TransactionCommit() === false)
 			{
 				throw new Exception_Database("Failed to commit db transaction.");
 			}
-			
+
 			return $oNewLogic;
 		}
 		catch (Exception $oException)
