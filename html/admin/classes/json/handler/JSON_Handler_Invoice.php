@@ -230,7 +230,7 @@ class JSON_Handler_Invoice extends JSON_Handler
 			$oAccount	= Account::getForId($oInvoice->Account);
 
 			// Ticketing_Customer_Group_Email for the accounts customer group
-			$oCustomerGroupConfig = Ticketing_Customer_Group_Config::getForId($oAccount->CustomerGroup);
+			$oCustomerGroupConfig = Ticketing_Customer_Group_Config::getForCustomerGroupId($oAccount->CustomerGroup);
 			if (!$oCustomerGroupConfig) {
 				throw new Exception(sprintf('The %s Customer Group is not fully configured for Ticketing. Please see your Flex administrators.', Customer_Group::getForId($oAccount->CustomerGroup)->internal_name));
 			}
