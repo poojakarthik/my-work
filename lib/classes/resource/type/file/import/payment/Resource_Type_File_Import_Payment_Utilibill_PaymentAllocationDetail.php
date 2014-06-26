@@ -100,6 +100,31 @@ class Resource_Type_File_Import_Payment_Utilibill_PaymentAllocationDetail extend
 			date('YmdHis', strtotime(self::_parseDate($oRecord->transaction_date, $oRecord)))
 		);
 
+		// NOTE: Because this is not a true payment export file (just a report), there can be gaps/duplicates, and we want to prevent these issues,
+		// 	and because there is no "unique identifier" for PADR records, we need to use our hacked-together transaction reference to detect this.
+		$bDuplicate = !!(DataAccess::get()->query('
+			SELECT pr.id
+			FROM payment_response pr
+				JOIN payment_response_status prs ON (
+					prs.id = pr.payment_response_status_id
+					AND prs.system_name = \'PROCESSED\'
+				)
+				JOIN file_import_data fid ON (fid.id = pr.file_import_data_id)
+				JOIN FileImport fi ON (
+					fi.Id = fid.file_import_id
+					AND fi.Carrier = <carrier_id>
+					AND fi.FileType = <resource_type_id>
+				)
+			WHERE pr.transaction_reference = <transaction_reference>
+		', array(
+			'carrier_id' => $this->getCarrierModule()->Carrier,
+			'resource_type_id' => $this->getCarrierModule()->FileType,
+			'transaction_reference' => $oPaymentResponse->transaction_reference
+		))->num_rows);
+		if ($bDuplicate) {
+			throw new Exception('Utilibill Payment Allocation Detail: Duplicate payment response found with transaction reference: ' . var_export($oPaymentResponse->transaction_reference, true) . ' and same Carrier/Resource Type');
+		}
+
 		// Return an Array of Records added/modified
 		//--------------------------------------------------------------------//
 		return array(
