@@ -11,6 +11,7 @@ class Payment_Transaction_Data extends ORM_Cached
 	const	CREDIT_CARD_NUMBER		= 'credit_card_number';
 	const	CREDIT_CARD_TYPE		= 'credit_card_type';
 	const	BANK_ACCOUNT_NUMBER		= 'bank_account_number';
+	const	BANK_ACCOUNT_BSB		= 'bank_account_bsb';
 	const	ORIGINAL_PAYMENT_TYPE	= 'original_payment_type_id';
 
 	protected static	$aSchema	= array(
@@ -21,6 +22,9 @@ class Payment_Transaction_Data extends ORM_Cached
 								'iDataType'	=> DATA_TYPE_INTEGER
 							),
 							self::BANK_ACCOUNT_NUMBER	=> array(
+								'iDataType'	=> DATA_TYPE_STRING
+							),
+							self::BANK_ACCOUNT_BSB		=> array(
 								'iDataType'	=> DATA_TYPE_STRING
 							),
 							self::ORIGINAL_PAYMENT_TYPE	=> array(
