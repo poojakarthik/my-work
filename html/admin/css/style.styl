@@ -666,7 +666,131 @@
 		stroke: none;
 	}
 
+	.flex-page-account-record-type-visibility .visibility {
+		display: inline-block;
+		border: 0;
+		margin: 0;
+		padding: 0;
+	}
+	.flex-page-account-record-type-visibility .visibility > label {
+		display: inline-block;
+		border: 1px solid #8F8F8F;
+		padding: 0;
+		overflow: hidden;
+	}
+	.flex-page-account-record-type-visibility .visibility > label:first-child {
+		border-top-left-radius: .5ch;
+		border-bottom-left-radius: .5ch;
+	}
+	.flex-page-account-record-type-visibility .visibility > label:last-child {
+		border-top-right-radius: .5ch;
+		border-bottom-right-radius: .5ch;
+	}
+	.flex-page-account-record-type-visibility .visibility > label:not(:last-child) {
+		border-right: 0;
+	}
+	.flex-page-account-record-type-visibility .visibility input {
+		display: none;
+	}
+	.flex-page-account-record-type-visibility .visibility span {
+		display: block;
+		font-size: 0;
+		background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4));
+		height: 1.5rem;
+		width: 1.5rem;
+		line-height: 1.5rem;
+		text-align: center;
+		color: #444;
+	}
+	.flex-page-account-record-type-visibility .visibility input:checked + span {
+		color: green;
+		background: linear-gradient(to top, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, .6));
+	}
+	.flex-page-account-record-type-visibility .visibility input[value='hidden'] + span::before {
+		content: url('/admin/img/record-type-visibility-hidden.png');
+		font-size: 1rem;
+		top: 0.1em;
+		position: relative;
+	}
+	.flex-page-account-record-type-visibility .visibility input[value='visible'] + span::before {
+		content: url('/admin/img/record-type-visibility-visible.png');
+		font-size: 1rem;
+		top: 0.1em;
+		position: relative;
+	}
+	.flex-page-account-record-type-visibility .visibility input[value='inherit'] + span::before {
+		content: url('/admin/img/record-type-visibility-inherit.png');
+		font-size: 1rem;
+		top: 0.2em;
+		position: relative;
+	}
+	.flex-page-customer-group-record-type-visibility .visibility {
+		display: inline-block;
+		border: 0;
+		margin: 0;
+		padding: 0;
+	}
+	.flex-page-customer-group-record-type-visibility .visibility > label {
+		display: inline-block;
+		border: 1px solid #8F8F8F;
+		padding: 0;
+		overflow: hidden;
+	}
+	.flex-page-customer-group-record-type-visibility .visibility > label:first-child {
+		border-top-left-radius: .5ch;
+		border-bottom-left-radius: .5ch;
+	}
+	.flex-page-customer-group-record-type-visibility .visibility > label:last-child {
+		border-top-right-radius: .5ch;
+		border-bottom-right-radius: .5ch;
+	}
+	.flex-page-customer-group-record-type-visibility .visibility > label:not(:last-child) {
+		border-right: 0;
+	}
+	.flex-page-customer-group-record-type-visibility .visibility input {
+		display: none;
+	}
+	.flex-page-customer-group-record-type-visibility .visibility span {
+		display: block;
+		font-size: 0;
+		background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4));
+		height: 1.5rem;
+		width: 1.5rem;
+		line-height: 1.5rem;
+		text-align: center;
+		color: #444;
+	}
+	.flex-page-customer-group-record-type-visibility .visibility input:checked + span {
+		color: green;
+		background: linear-gradient(to top, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, .6));
+	}
+	.flex-page-customer-group-record-type-visibility .visibility input[value='hidden'] + span::before {
+		content: url('/admin/img/record-type-visibility-hidden.png');
+		font-size: 1rem;
+		top: 0.1em;
+		position: relative;
+	}
+	.flex-page-customer-group-record-type-visibility .visibility input[value='visible'] + span::before {
+		content: url('/admin/img/record-type-visibility-visible.png');
+		font-size: 1rem;
+		top: 0.1em;
+		position: relative;
+	}
+	.flex-page-customer-group-record-type-visibility .visibility input[value='inherit'] + span::before {
+		content: url('/admin/img/record-type-visibility-inherit.png');
+		font-size: 1rem;
+		top: 0.2em;
+		position: relative;
+	}
 
+	.flex-page-customer-group-record-type-visibility-configuration-buttons {
+		margin-right: 1em;
+		margin-bottom: 1em;
+		float: right;
+	}
+	.flex-page-account-record-type-visibility-configuration-buttons {
+		float: right;
+	}
 
 	/************************ START - Page Header - START *************************/
 	div#header {

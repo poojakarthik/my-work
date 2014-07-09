@@ -163,6 +163,10 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 			DBO()->CustomerGroup->cooling_off_period = DBO()->CustomerGroup->cooling_off_period->Value . " hours";
 		}
 		DBO()->CustomerGroup->cooling_off_period->RenderOutput();
+
+		if (DBO()->CustomerGroup->default_record_type_visibility->Value !== NULL) {
+			DBO()->CustomerGroup->default_record_type_visibility = ((int)DBO()->CustomerGroup->default_record_type_visibility->Value === 1) ? "Visible" : "Not Visible";
+		}
 		DBO()->CustomerGroup->default_record_type_visibility->RenderOutput();
 
 		echo "</div>\n"; // GroupedContent
@@ -186,31 +190,30 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 			 $$key=$val;
 		}
 		print "
-			<form enctype=\"multipart/form-data\" action=\"./flex.php/CustomerGroup/ChangeLogo/\" method=\"POST\">
-			   <!-- MAX_FILE_SIZE must precede the file input field -->
-			   <input type=\"hidden\" name=\"CustomerGroup_Id\" value=\"$CustomerGroup_Id\" />
-			   <input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"30000\" />
-			   <!-- Name of input element determines name in $_FILES array -->
-			   Send this file: <input name=\"userfile\" type=\"file\" />
-			   <input type=\"submit\" value=\"Send File\" /> (320x60 pixel gif, e.g. voicetalk_logo_320x60.gif)
-			</form>
-			</div>
-			<br/><br/>";
-
+		<form enctype=\"multipart/form-data\" action=\"./flex.php/CustomerGroup/ChangeLogo/\" method=\"POST\">
+		   <!-- MAX_FILE_SIZE must precede the file input field -->
+		   <input type=\"hidden\" name=\"CustomerGroup_Id\" value=\"$CustomerGroup_Id\" />
+		   <input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"30000\" />
+		   <!-- Name of input element determines name in $_FILES array -->
+		   Send this file: <input name=\"userfile\" type=\"file\" />
+		   <input type=\"submit\" value=\"Send File\" /> (320x60 pixel gif, e.g. voicetalk_logo_320x60.gif)
+		</form>
+		</div>
+		<br/><br/>";
 
 		echo "<h2 class='CustomerGroup'>Add/Change Advertisement Image</h2>\n";
 		echo "<div class='GroupedContent'>\n";
 		print "
-			<form enctype=\"multipart/form-data\" action=\"./flex.php/CustomerGroup/ChangeAdvertisement/\" method=\"POST\">
-			   <!-- MAX_FILE_SIZE must precede the file input field -->
-			   <input type=\"hidden\" name=\"CustomerGroup_Id\" value=\"$CustomerGroup_Id\" />
-			   <input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"9000000\" />
-			   <!-- Name of input element determines name in $_FILES array -->
-			   Send this file: <input name=\"userfile\" type=\"file\" />
-			   <input type=\"submit\" value=\"Send File\" />
-			</form>
-			</div>
-			<br/><br/>";
+		<form enctype=\"multipart/form-data\" action=\"./flex.php/CustomerGroup/ChangeAdvertisement/\" method=\"POST\">
+		   <!-- MAX_FILE_SIZE must precede the file input field -->
+		   <input type=\"hidden\" name=\"CustomerGroup_Id\" value=\"$CustomerGroup_Id\" />
+		   <input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"9000000\" />
+		   <!-- Name of input element determines name in $_FILES array -->
+		   Send this file: <input name=\"userfile\" type=\"file\" />
+		   <input type=\"submit\" value=\"Send File\" />
+		</form>
+		</div>
+		<br/><br/>";
 
 		// Initialise the CustomerGroupDetails object and register the OnCustomerGroupDetailsUpdate Listener
 		$intCustomerGroupId = DBO()->CustomerGroup->Id->Value;
@@ -283,6 +286,37 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 		$this->Button("Cancel", "Vixen.CustomerGroupDetails.CancelEdit();");
 		$this->AjaxSubmit("Commit Changes");
 		echo "</div></div>\n";
+
+		echo "<h2 class='CustomerGroup'>Add/Change Primary Logo</h2>\n";
+		echo "<div class='GroupedContent'>\n";
+		foreach($_GET as $key=>$val) {
+			 $$key=$val;
+		}
+		print "
+		<form enctype=\"multipart/form-data\" action=\"./flex.php/CustomerGroup/ChangeLogo/\" method=\"POST\">
+		   <!-- MAX_FILE_SIZE must precede the file input field -->
+		   <input type=\"hidden\" name=\"CustomerGroup_Id\" value=\"$CustomerGroup_Id\" />
+		   <input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"30000\" />
+		   <!-- Name of input element determines name in $_FILES array -->
+		   Send this file: <input name=\"userfile\" type=\"file\" />
+		   <input type=\"submit\" value=\"Send File\" /> (320x60 pixel gif, e.g. voicetalk_logo_320x60.gif)
+		</form>
+		</div>
+		<br/><br/>";
+
+		echo "<h2 class='CustomerGroup'>Add/Change Advertisement Image</h2>\n";
+		echo "<div class='GroupedContent'>\n";
+		print "
+		<form enctype=\"multipart/form-data\" action=\"./flex.php/CustomerGroup/ChangeAdvertisement/\" method=\"POST\">
+		   <!-- MAX_FILE_SIZE must precede the file input field -->
+		   <input type=\"hidden\" name=\"CustomerGroup_Id\" value=\"$CustomerGroup_Id\" />
+		   <input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"9000000\" />
+		   <!-- Name of input element determines name in $_FILES array -->
+		   Send this file: <input name=\"userfile\" type=\"file\" />
+		   <input type=\"submit\" value=\"Send File\" />
+		</form>
+		</div>
+		<br/><br/>";
 
 		// Initialise the CustomerGroupDetails object
 		$intCustomerGroupId = DBO()->CustomerGroup->Id->Value;

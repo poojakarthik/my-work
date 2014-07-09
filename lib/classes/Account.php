@@ -394,7 +394,7 @@ class Account
 								 $sExcludeSql
 
 
-						) accounts 
+						) accounts
 			";
 
 			$oQuery = new Query();
@@ -500,7 +500,7 @@ class Account
 				case  Account::BALANCE_REDISTRIBUTION_REGULAR:
 					$sSingleAccountClause = $iAccountId === NULL ? NULL : "AND c.account_id = {$iAccountId}";
 					Log::getLog()->log("Retrieving accounts that have for some reason been wrongly distributed");
-					//1 create the temporary table, and populate it with all collectables that are not part of a promise					
+					//1 create the temporary table, and populate it with all collectables that are not part of a promise
 					$sSQL = "   CREATE  TEMPORARY TABLE tmp_payable
 								SELECT  due_date, amount, c.account_id, balance
 								FROM collectable c
@@ -707,7 +707,7 @@ class Account
 							$aReport['amount_balance_problem'][] = $aRow;
 						}
 					}
-					
+
 					$iCount = count($aAccountsForRedistribution) - $iCount;
 					Log::getLog()->log("$iCount Accounts found.");
 
@@ -720,12 +720,12 @@ class Account
 					}
 
 					$aAccountsForRedistribution = $aResult;
-					
+
 					///EMAIL THE REPORT
-					
+
 					$oEmail = Correspondence_Email::getForEmailNotificationSystemName('ALERT');
-					$oEmail->setSubject("Account Balance Redistribution Process Report");										
-					
+					$oEmail->setSubject("Account Balance Redistribution Process Report");
+
 					if (count($aReport['gaps']) > 0 || count($aReport['distributable_balance']) || count($aReport['amount_balance_problem']))
 					{
 						$sTimeStamp = str_replace(array(' ',':','-'), '',Data_Source_Time::currentTimestamp());
@@ -768,9 +768,9 @@ class Account
 					$oEmail->setBodyHTML();
 					$oEmail->send();
 
-			/////END EMAIL REPORT		
-					
-					
+			/////END EMAIL REPORT
+
+
 					break;
 				case Account::BALANCE_REDISTRIBUTION_FORCED:
 
@@ -794,7 +794,7 @@ class Account
 
 				   $sSQL = "    SELECT DISTINCT a.*
 								FROM Account a {$sSingleAccountClause}
-								";				              
+								";
 
 					$mResult = Query::run($sSQL);
 					if ($mResult)
@@ -1258,7 +1258,7 @@ class Account
 				'ServiceToDisconnect' => $oServiceToDisconnect
 			));
 			*/
-	
+
 			// NOTE: There are some pre-Flex Services that have invalid Service Types, causing problems (just skip them)
 			if ($oServiceToDisconnect !== false) {
 				if($oServiceToDisconnect->Status != SERVICE_ARCHIVED && $oServiceToDisconnect->Status != SERVICE_DISCONNECTED) {
@@ -1301,24 +1301,24 @@ class Account
 		if ($bIncludeActivePromises)
 		{
 			// Don't exclude promise collectables
-			$sCollectableFilterClause = "	WHERE 	c.account_id = {$this->Id} 
+			$sCollectableFilterClause = "	WHERE 	c.account_id = {$this->Id}
 											AND 	(
-														c.due_date < '{$sEffectiveDate}' 
+														c.due_date < '{$sEffectiveDate}'
 														OR c.amount < 0
 													)";
 		}
 		else
 		{
 			// Exclude promise collectables
-			$sCollectableFilterClause = "	LEFT JOIN 	collection_promise cp ON (c.collection_promise_id = cp.id) 
-											WHERE 		(c.collection_promise_id IS NULL OR cp.completed_datetime IS NOT NULL) 
-											AND 		c.account_id = {$this->Id} 
+			$sCollectableFilterClause = "	LEFT JOIN 	collection_promise cp ON (c.collection_promise_id = cp.id)
+											WHERE 		(c.collection_promise_id IS NULL OR cp.completed_datetime IS NOT NULL)
+											AND 		c.account_id = {$this->Id}
 											AND 		(
-															c.due_date < '{$sEffectiveDate}' 
+															c.due_date < '{$sEffectiveDate}'
 															OR c.amount < 0
 														)";
 		}
-		
+
 		$oQuery = new Query();
 		$sQuery = "	SELECT	COALESCE((
 								SELECT 	SUM(p.amount * pn.value_multiplier)
@@ -1354,28 +1354,28 @@ class Account
 		}
 
 	}
-	
+
 	// getHistoricalBalance: 	Retrieves the balance as at the given effective date. Can optionally return the overdue balance.
-	// 							Can optionally return the 'revised' balance, which means that payment reversals that affect payments 
+	// 							Can optionally return the 'revised' balance, which means that payment reversals that affect payments
 	//							before the effective date are included.
 	public function getHistoricalBalance($mEffectiveDate=null, $bOverdueBalance=false, $bRevisedBalance=false) {
 		// Effective (start) date defaults to the now if not given
 		$sEffectiveDate = ($mEffectiveDate === null) ? DataAccess::getDataAccess()->getNow() : $mEffectiveDate;
-		
+
 		// The effective end date is calculated to be the end of the current billing period or if at the end of the current
 		// billing period, the end of the next billing period. Effective date +1 second is given as the effective when calculating
 		// the end of the current billing period to account for the 'at end of current billing period' scenario.
 		$sEffectiveEndDate = self::getNextBillingPeriodEndDatetime(date('Y-m-d H:i:s', strtotime($sEffectiveDate) + 1));
-		
+
 		// Add overdue clause if needed
 		$sOverdueClause = '';
 		if ($bOverdueBalance) {
 			$sOverdueClause	= "	AND (
-									c.due_date < <effective_date> 
+									c.due_date < <effective_date>
 									OR c.amount < 0
 								)";
 		}
-		
+
 		// Payments are selected differently depending on bRevised
 		$sPaymentBalanceClause = "AND p.created_datetime < <effective_date>";
 		if ($bRevisedBalance) {
@@ -1388,7 +1388,7 @@ class Account
 											)
 										)";
 		}
-		
+
 		// Got effective end date, get the balance
 		$mResult	= Query::run("
 			SELECT		COALESCE((
@@ -1450,7 +1450,7 @@ class Account
 			'effective_date'		=> $sEffectiveDate,
 			'effective_end_date'	=> $sEffectiveEndDate
 		));
-		
+
 		return ($mResult) ? array_value($mResult->fetch_assoc(), 'balance') : 0.0;
 	}
 
@@ -1558,7 +1558,7 @@ class Account
 	public function getNextBillingPeriodEndDatetime($sEffectiveDate=null)
 	{
 		$sEffectiveDate = ($sEffectiveDate === null ? DataAccess::getDataAccess()->getNow() : $sEffectiveDate);
-		
+
 		// Look for an invoice with a billing period end datetime after (or on) the effective date
 		$aRow = Query::run("SELECT	*
 							FROM	Invoice
@@ -1571,7 +1571,7 @@ class Account
 		{
 			return $aRow['billing_period_end_datetime'];
 		}
-		
+
 		// Calculate the effective end date
 		$aPaymentTerms = Query::run("	SELECT	*
 										FROM	payment_terms
@@ -1583,7 +1583,7 @@ class Account
 		{
 			throw new Exception("No Payment Terms specified for Customer Group {$this->CustomerGroup}");
 		}
-		
+
 		// See if the effective date is after (or at) the end of next billing period, if so move to the end of the next one (+1 month)
 		$sEndDay		= str_pad(($aPaymentTerms['invoice_day'] - 1), 2, '0', STR_PAD_LEFT);
 		$iEndDatetime	= strtotime(date("Y-m-{$sEndDay} 23:59:59", strtotime($sEffectiveDate)));
@@ -1592,7 +1592,7 @@ class Account
 			// End Date is next Month
 			$iEndDatetime = strtotime("+1 month", $iEndDatetime);
 		}
-		
+
 		return date("Y-m-d H:i:s", $iEndDatetime);
 	}
 
@@ -1644,7 +1644,8 @@ class Account
 			'tio_reference_number',
 			'vip',
 			'account_class_id',
-			'collection_severity_id'
+			'collection_severity_id',
+			'default_record_type_visibility'
 		);
 	}
 

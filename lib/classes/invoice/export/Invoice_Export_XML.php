@@ -365,13 +365,17 @@ class Invoice_Export_XML {
 		$oAccountRecordTypeVisibility = Account_Record_Type_Visibility::getForAccountIdAndRecordTypeId($oAccount->Id, $iRecordTypeId);
 		$oCustomerGroupRecordTypeVisibility = Customer_Group_Record_Type_Visibility::getForCustomerGroupIdAndRecordTypeId($oCustomerGroup->Id, $iRecordTypeId);
 		// Calculate the visibility
+		// account/recordtype > account > customergroup/recordtype > customergroup
 		if ($oAccountRecordTypeVisibility) {
 			$iVisibility = $oAccountRecordTypeVisibility->is_visible;
+		} else if ($oAccount->default_record_type_visibility !== null) {
+			$iVisibility = $oAccount->default_record_type_visibility;
 		} else if ($oCustomerGroupRecordTypeVisibility) {
 			$iVisibility = $oCustomerGroupRecordTypeVisibility->is_visible;
 		} else {
 			$iVisibility = $oCustomerGroup->default_record_type_visibility;
 		}
+
 		return $iVisibility;
 	 }
 

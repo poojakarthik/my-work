@@ -16,7 +16,8 @@ class HtmlTemplate_Account_Record_Type_Visibility extends FlexHtmlTemplate {
 					// Instantiate Component
 					new require('flex/component/page/account/record-type-visibility')({
 						// Component.CONFIG
-						'iAccountId' :  <?php echo $this->mxdDataToRender['iAccountId']; ?>
+						'iAccountId' :  <?php echo $this->mxdDataToRender['iAccountId']; ?>,
+						'mAccountDefaultRecordTypeVisibility' : <?php echo "'{$this->mxdDataToRender['mAccountDefaultRecordTypeVisibility']}'" ?>
 					});
 				})
 			);

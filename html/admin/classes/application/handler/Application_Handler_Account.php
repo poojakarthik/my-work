@@ -20,9 +20,14 @@ class Application_Handler_Account extends Application_Handler
 
 		$detailsToRender = array();
 		$detailsToRender['iAccountId'] = $oAccount->Id;
+		$detailsToRender['mAccountDefaultRecordTypeVisibility'] = $oAccount->default_record_type_visibility;
 
 		// context menu
 		AppTemplateAccount::BuildContextMenu($oAccount->Id);
+
+		BreadCrumb()->Employee_Console();
+		BreadCrumb()->AccountOverview($oAccount->Id);
+		BreadCrumb()->SetCurrentPage("Record Type Visibility");
 
 		$this->LoadPage('account_record_type_visibility', HTML_CONTEXT_DEFAULT, $detailsToRender);
 	}

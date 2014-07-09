@@ -2,6 +2,19 @@
 
 class JSON_Handler_Customer_Group extends JSON_Handler implements JSON_Handler_Loggable
 {
+	public function updateDefaultReordTypeVisibility($oData) {
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
+		// Save
+		$oQuery = new Query();
+		$oQuery->Execute("
+			UPDATE	CustomerGroup
+			SET		default_record_type_visibility = {$oData->default_record_type_visibility}
+			WHERE	Id = {$oData->customer_group_id}
+			LIMIT	1");
+	}
+
 	public function getEmailTemplateHistory($iEmailTemplateId)
 	{
 		try

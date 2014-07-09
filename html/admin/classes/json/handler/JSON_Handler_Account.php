@@ -11,6 +11,19 @@ class JSON_Handler_Account extends JSON_Handler
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 
+	public function updateDefaultReordTypeVisibility($oData) {
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
+		// Save
+		$oQuery = new Query();
+		$oQuery->Execute("
+			UPDATE	Account
+			SET		default_record_type_visibility = {$oData->default_record_type_visibility}
+			WHERE	Id = {$oData->account_id}
+			LIMIT	1");
+	}
+
 	public function getForId($iAccountId)
 	{
 		$bIsGod	= Employee::getForId(Flex::getUserId())->isGod();
