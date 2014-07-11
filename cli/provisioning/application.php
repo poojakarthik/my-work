@@ -234,7 +234,7 @@ class ApplicationProvisioning extends ApplicationBaseClass {
 		CliEcho(" * Processing Requests...");
 		while ($arrRequest = $selRequests->Fetch()) {
 			CliEcho("\t+ Exporting #{$arrRequest['Id']}...\t\t\t", false);
-			
+
 			// Final sanity check that the service being requested against supports the request type
 			$oService = Service::getForId($arrRequest['Service']);
 			$oServiceType = Service_Type::getForId($oService->ServiceType);
@@ -260,7 +260,8 @@ class ApplicationProvisioning extends ApplicationBaseClass {
 				// No module
 				$arrRequest['Status'] = REQUEST_STATUS_NO_MODULE;
 
-				$strCarrier = Carrier::getForId($arrRequest['Carrier'])->description;
+				$oRequestCarrier = Carrier::getForId($arrRequest['Carrier'], true);
+				$strCarrier = $oRequestCarrier ? $oRequestCarrier->description : '[ No Carrier ]';
 				$strType = GetConstantDescription($arrRequest['Type'], 'provisioning_type');
 				CliEcho("[ FAILED ]\n\t\t- No module ($strCarrier: $strType)");
 			}

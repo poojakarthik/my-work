@@ -4,37 +4,37 @@ class JSON_Handler_Invoice extends JSON_Handler
 {
 	protected	$_sJSONDebug				= '';
 	private		$_oNewInvoiceSummary		= null;
-			
+
 	public function __construct()
 	{
 		// Send Log output to a debug string
 		Log::registerLog('JSON_Handler_Debug', Log::LOG_TYPE_STRING, $this->_sJSONDebug);
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
-	
+
 	public function getServicesForInvoice($iInvoiceId)
 	{
 		$bIsGod	= Employee::getForId(Flex::getUserId())->isGod();
-		
+
 		try
 		{
 			$aServices	= array();
 			$oInvoice	= Invoice::getForId($iInvoiceId);
-			
+
 			// Get service totals info
 			$aServiceTotals		= Service_Total::getForInvoiceRunAndAccount($oInvoice->invoice_run_id, $oInvoice->Account);
 			foreach ($aServiceTotals as $oServiceTotal)
 			{
 				$oService		= Service::getForId($oServiceTotal->Service);
 				$oStdService	= $oService->toStdClass();
-				
+
 				// Get the rate plan for the service during the time of invoice
 				$oQuery		= new Query();
-				$mResult	= $oQuery->Execute("	SELECT 	* 
-													FROM 	ServiceRatePlan 
-													WHERE Service = {$oService->Id}  
-													AND '{$oInvoice->billing_period_end_datetime}' BETWEEN StartDatetime AND EndDatetime 
-													ORDER BY CreatedOn DESC 
+				$mResult	= $oQuery->Execute("	SELECT 	*
+													FROM 	ServiceRatePlan
+													WHERE Service = {$oService->Id}
+													AND '{$oInvoice->billing_period_end_datetime}' BETWEEN StartDatetime AND EndDatetime
+													ORDER BY CreatedOn DESC
 													LIMIT 1");
 				if ($mResult === false)
 				{
@@ -45,11 +45,11 @@ class JSON_Handler_Invoice extends JSON_Handler
 				{
 					throw new Exception("Failed to find ServiceRatePlan record, query result empty. ");
 				}
-				
+
 				$oStdService->rate_plan		= Rate_Plan::getForId($aRow['RatePlan'])->toStdClass();
 				$aServices[$oService->Id]	= $oStdService;
 			}
-			
+
 			return	array(
 						'bSuccess'	=> true,
 						'aServices'	=> $aServices,
@@ -65,7 +65,7 @@ class JSON_Handler_Invoice extends JSON_Handler
 					);
 		}
 	}
-	
+
 	public function hasUnarchivedCDRs($iInvoiceId)
 	{
 		$bIsGod	= Employee::getForId(Flex::getUserId())->isGod();
@@ -87,53 +87,53 @@ class JSON_Handler_Invoice extends JSON_Handler
 					);
 		}
 	}
-	
+
 	public function rerateInvoice($iInvoiceId, $aServiceRatePlans)
 	{
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
-		
+
 		// Start transaction (never to be commited)
 		$oDA = DataAccess::getDataAccess();
 		$oDA->TransactionStart();
 		try
 		{
 			Log::getLog()->log("Rerating Invoice {$iInvoiceId}");
-			
+
 			// Retrieve the original invoice to re-rate
 			$oOriginalInvoice	= Invoice::getForId($iInvoiceId);
-			
+
 			Log::getLog()->log("START: Changing rate plans for services");
-			
+
 			// Change the rate plans for the services temporarily (is rolled back at the end of this process)
 			foreach ($aServiceRatePlans as $iService => $iRatePlan)
 			{
 				Log::getLog()->log("Service {$iService} -> RatePlan {$iRatePlan}");
-				
+
 				$oRatePlan	= new Rate_Plan(array('Id' => $iRatePlan), true);
 				Service::getForId($iService)->setPlanFromStartDatetime($oRatePlan, 1, $oOriginalInvoice->billing_period_start_datetime);
-				
+
 				Log::getLog()->log("... Complete");
 			}
-			
+
 			Log::getLog()->log("END: Changing rate plans for services");
-			
+
 			// Regenerate the invoice (re-rating of CDRs is done within)
 			$oNewInvoice	= Invoice::regenerate($oOriginalInvoice, Callback::create('regenerateFinished', $this, array($oOriginalInvoice)));
-			
+
 			Log::getLog()->log("Rolling back transaction");
-			
+
 			// ALWAYS ROLLBACK THIS TRANSACTION, NEVER COMMIT. ALL CHANGES ARE TEMPORARY
 			$oDA->TransactionRollback();
-			
+
 			Log::getLog()->log("Getting summary of the ORIGINAL invoice");
-		
+
 			$oOriginalInvoiceSummary	= $this->_generateInvoiceSummary($oOriginalInvoice);
-			
+
 			Log::getLog()->log("Complete with no errors");
-			
+
 			return	array(
 						'bSuccess' 			=> true,
-						'oNewInvoice' 		=> $this->_oNewInvoiceSummary, 
+						'oNewInvoice' 		=> $this->_oNewInvoiceSummary,
 						'oOriginalInvoice' 	=> $oOriginalInvoiceSummary,
 						'sDebug'			=> ($bUserIsGod ? $this->_sJSONDebug : false)
 					);
@@ -142,21 +142,21 @@ class JSON_Handler_Invoice extends JSON_Handler
 		{
 			$oDA->TransactionRollback();
 			return array(
-				'bSuccess' => false, 
+				'bSuccess' => false,
 				'sMessage' => $oException->getMessage(),
 				'sDebug' => ($bUserIsGod ? $this->_sJSONDebug : false),
 				'sExceptionClass' => get_class($oException)
 			);
 		}
 	}
-	
+
 	public function regenerateFinished($oOriginalInvoice, $oNewInvoice)
 	{
 		Log::getLog()->log("Getting summary of the NEW (Rerated) invoice");
-		
+
 		$this->_oNewInvoiceSummary	= $this->_generateInvoiceSummary($oNewInvoice);
 	}
-	
+
 	public function getReratableInvoicesForAccount($iAccountId)
 	{
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
@@ -166,13 +166,13 @@ class JSON_Handler_Invoice extends JSON_Handler
 			{
 				throw new JSON_Handler_Invoice_Exception('Invalid Account Id supplied');
 			}
-			
+
 			$sQuery		= "	SELECT	i.*
 							FROM	Invoice i
 							JOIN	Account a ON a.Id = i.Account
 							WHERE	1 = (
 										SELECT 	1
-										FROM 	CDR 
+										FROM 	CDR
 										WHERE 	invoice_run_id = i.invoice_run_id
 										AND		Account = a.Id
 										LIMIT 1
@@ -184,14 +184,14 @@ class JSON_Handler_Invoice extends JSON_Handler
 			{
 				throw new Exception_Database("Failed to get reratable invoices for account {$iAccountId}. ".$oQuery->Error());
 			}
-			
+
 			$aResults	= array();
 			while ($aRow = $mResult->fetch_assoc())
 			{
 				$aRow['CreatedOn']	= date('d/m/y', strtotime($aRow['CreatedOn']));
 				$aResults[]			= $aRow;
 			}
-			
+
 			return 	array(
 						'bSuccess'	=> true,
 						'aResults'	=> $aResults,
@@ -215,24 +215,27 @@ class JSON_Handler_Invoice extends JSON_Handler
 					);
 		}
 	}
-	
+
 	public function createRerateTicket($iInvoiceId, $iRerateInvoiceRunId, $iAdjustmentId=null, $sAdditionalComments=null)
 	{
 		try
 		{
 			// Employee who will create the ticket
 			$oEmployee	= Employee::getForId(Flex::getUserId());
-			
+
 			// Original Invoice
 			$oInvoice	= Invoice::getForId($iInvoiceId);
-			
+
 			// Account invoice belongs to
 			$oAccount	= Account::getForId($oInvoice->Account);
-			
+
 			// Ticketing_Customer_Group_Email for the accounts customer group
-			$oCustomerGroupConfig	= Ticketing_Customer_Group_Config::getForId($oAccount->CustomerGroup);
-			$oCustomerGroupEmail 	= $oCustomerGroupConfig->getDefaultCustomerGroupEmail();
-			
+			$oCustomerGroupConfig = Ticketing_Customer_Group_Config::getForCustomerGroupId($oAccount->CustomerGroup);
+			if (!$oCustomerGroupConfig) {
+				throw new Exception(sprintf('The %s Customer Group is not fully configured for Ticketing. Please see your Flex administrators.', Customer_Group::getForId($oAccount->CustomerGroup)->internal_name));
+			}
+			$oCustomerGroupEmail = $oCustomerGroupConfig->getDefaultCustomerGroupEmail();
+
 			// Get PDF content
 			$iBillingDate	= strtotime($oInvoice->CreatedOn);
 			$iYear 			= (int)date('Y', $iBillingDate);
@@ -242,10 +245,10 @@ class JSON_Handler_Invoice extends JSON_Handler
 			{
 				throw new Exception("Rerated Invoice PDF not found.");
 			}
-			
+
 			// Get PDF Filename
 			$sInvoiceFilename	= GetPdfFilename($oAccount->Id, $iYear, $iMonth, $iInvoiceId, $iRerateInvoiceRunId);
-			
+
 			// Build the message
 			$sMessage	= "Invoice {$iInvoiceId} has been rerated, the PDF is attached.\n";
 			if ($iAdjustmentId !== null)
@@ -255,12 +258,12 @@ class JSON_Handler_Invoice extends JSON_Handler
 				$sMessage	.= "Adjustment Type: {$oCharge->ChargeType}.\n";
 				$sMessage	.= "Amount: $".round($oCharge->Amount, 2)."\n";
 			}
-			
+
 			if ($sAdditionalComments !== null)
 			{
 				$sMessage	.= "\nAdditional Comments:\n{$sAdditionalComments}";
 			}
-			
+
 			// Details used to create the ticketing correspondence (& the ticket)
 			$aDetails	=	array(
 								'default_email_id'	=> $oCustomerGroupEmail->id,
@@ -281,19 +284,19 @@ class JSON_Handler_Invoice extends JSON_Handler
 															)
 														)
 							);
-			
+
 			// Create the ticketing correspondence
 			$oCorrespondence	= Ticketing_Correspondance::createForDetails($aDetails);
 			if ($oCorrespondence === null)
 			{
 				throw new Exception("Ticketing Correspondence not created, most likely invalid customer group.");
 			}
-			
+
 			// Set the account id of the ticket
 			$oTicket			= $oCorrespondence->getTicket();
 			$oTicket->accountId	= $oAccount->Id;
 			$oTicket->save();
-			
+
 			// Success!
 			return	array(
 						'bSuccess'	=> true,
@@ -309,7 +312,7 @@ class JSON_Handler_Invoice extends JSON_Handler
 					);
 		}
 	}
-	
+
 	public function getDatasetForAccount($bCountOnly=false, $iLimit=null, $iOffset=null, $oSort=null, $oFilter=null)
 	{
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
@@ -320,13 +323,13 @@ class JSON_Handler_Invoice extends JSON_Handler
 			{
 				return array('bSuccess' => true, 'iRecordCount' => $iRecordCount);
 			}
-			
+
 			$iLimit		= ($iLimit === null ? 0 : $iLimit);
 			$iOffset	= ($iOffset === null ? 0 : $iOffset);
 			$aData	 	= Invoice::getDatasetForAccount(false, $iLimit, $iOffset, $oSort, $oFilter);
 			$aResults	= array();
 			$i			= $iOffset;
-			
+
 			foreach ($aData as $aRecord)
 			{
 				$iDate 					= strtotime("-1 month", strtotime($aRecord['created_on']));
@@ -336,7 +339,7 @@ class JSON_Handler_Invoice extends JSON_Handler
 				$aResults[$i] 			= $aRecord;
 				$i++;
 			}
-			
+
 			return	array(
 						'bSuccess'		=> true,
 						'aRecords'		=> $aResults,
@@ -351,7 +354,7 @@ class JSON_Handler_Invoice extends JSON_Handler
 					);
 		}
 	}
-	
+
 	public function getInvoiceListPermissions()
 	{
 		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
@@ -383,7 +386,7 @@ class JSON_Handler_Invoice extends JSON_Handler
 					);
 		}
 	}
-	
+
 	private function _generateInvoiceSummary($oInvoice)
 	{
 		try
@@ -391,9 +394,9 @@ class JSON_Handler_Invoice extends JSON_Handler
 			Log::getLog()->log("START: Generating summary for invoice '{$oInvoice->Id}'");
 			// Get the invoice object
 			$oStdInvoice	= $oInvoice->toStdClass();
-			
+
 			Log::getLog()->log("Getting service totals");
-			
+
 			// Attach service totals
 			$aServiceTotals		= Service_Total::getForInvoiceRunAndAccount($oInvoice->invoice_run_id, $oInvoice->Account);
 			$aStdServiceTotals	= array();
@@ -404,11 +407,11 @@ class JSON_Handler_Invoice extends JSON_Handler
 				$oStdServiceTotal->rate_plan_name	= $oRatePlan->Name;
 				$aStdServiceTotals[$iId]			= $oStdServiceTotal;
 			}
-			
+
 			$oStdInvoice->service_totals	= $aStdServiceTotals;
-			
+
 			Log::getLog()->log("Getting charges (CHARGE_MODE_CHARGE only, no adjustments)");
-			
+
 			// Attach charges (CHARGE_MODEL_CHARGE only)
 			$aFilter 		= 	array(
 									array(
@@ -425,9 +428,9 @@ class JSON_Handler_Invoice extends JSON_Handler
 									)
 								);
 			$aCharges		= Charge::searchFor($aFilter, array(Charge::ORDER_BY_CREATED_ON => true), null, 0);
-			
+
 			Log::getLog()->log("Building charge totals summary");
-			
+
 			$aStdCharges				= array();
 			$fAccountChargesAndCredits	= 0;
 			$fSharedPlanCharges			= 0;
@@ -439,13 +442,13 @@ class JSON_Handler_Invoice extends JSON_Handler
 					$aStdCharges[$oCharge->ChargeType]	= array('name' => Charge_Type::getByCode($oCharge->ChargeType)->Description, 'charges' => array());
 				}
 				$aStdCharges[$oCharge->ChargeType]['charges'][$iId]	= $oCharge->toStdClass();
-				
+
 				$fAmount	= $oCharge->Amount;
 				if ($oCharge->Nature == 'CR')
 				{
 					$fAmount	= 0 - $fAmount;
 				}
-				
+
 				$bPlanCharge	= in_array($oCharge->ChargeType, array('PCAD', 'PCAR', 'PCR', 'PDCR'));
 				$bCredit		= in_array($oCharge->ChargeType, array('PCR', 'PDCR'));
 				if ($oCharge->Service !== null)
@@ -463,19 +466,19 @@ class JSON_Handler_Invoice extends JSON_Handler
 						$fSharedPlanCharges	+= $fAmount;
 					}
 				}
-				else 
+				else
 				{
 					$fAccountChargesAndCredits	+= $fAmount;
-					
+
 					Log::getLog()->log("Adding to account charges and credits total: {$fAmount}, current total is {$fAccountChargesAndCredits}");
 				}
 			}
-			
+
 			$oStdInvoice->charges						= $aStdCharges;
 			$oStdInvoice->account_charges_and_credits	= $fAccountChargesAndCredits;
 			$oStdInvoice->shared_plan_charges			= $fSharedPlanCharges;
 			$oStdInvoice->shared_plan_discounts			= $fSharedPlanDiscounts;
-			
+
 			// NOTE: Extra debugging info, hidden in the interface by default
 			$oStdInvoice->payment_total		= $oInvoice->getPaymentTotal(true);
 			$oStdInvoice->opening_balance 	= $oInvoice->getOpeningBalance(true);
@@ -484,9 +487,9 @@ class JSON_Handler_Invoice extends JSON_Handler
 			$fAdjustments					= Rate::roundToCurrencyStandard($oInvoice->getAdjustmentTotal());
 			$oStdInvoice->adjustment_total	= Rate::roundToCurrencyStandard($fAdjustments / (1 + ($oTaxType ? $oTaxType->rate_percentage : 0)));
 			$oStdInvoice->adjustment_tax	= Rate::roundToCurrencyStandard($oStdInvoice->adjustment_total * ($oTaxType ? $oTaxType->rate_percentage : 1));
-			
+
 			Log::getLog()->log("Getting CDR usages totals per service");
-			
+
 			// Attach CDR usage totals per service
 			$sCDRQuery	= "	SELECT 	Service, SUM(Charge) AS \"Usage\"
 							FROM 	CDR
@@ -499,17 +502,17 @@ class JSON_Handler_Invoice extends JSON_Handler
 			{
 				throw new Exception_Database("Failed to retrieve CDR usage totals per service. ".$oQuery->Error());
 			}
-			
+
 			$aCDRUsage	= array();
 			while ($aRow = $mResult->fetch_assoc())
 			{
 				$aCDRUsage[$aRow['Service']]	= $aRow['Usage'];
 			}
-			
+
 			$oStdInvoice->cdr_usage	= $aCDRUsage;
-			
+
 			Log::getLog()->log("END: Generating summary for invoice '{$oInvoice->Id}'");
-			
+
 			return $oStdInvoice;
 		}
 		catch (Exception $oException)

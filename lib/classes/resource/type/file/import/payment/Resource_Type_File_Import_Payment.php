@@ -1,11 +1,4 @@
 <?php
-/**
- * Resource_Type_File_Import_Payment
- *
- * Models a record of the resource_type table
- *
- * @class	Resource_Type_File_Import_Payment
- */
 abstract class Resource_Type_File_Import_Payment extends Resource_Type_File_Import
 {
 	const	CARRIER_MODULE_TYPE	= MODULE_TYPE_NORMALISATION_PAYMENT;
@@ -42,7 +35,7 @@ abstract class Resource_Type_File_Import_Payment extends Resource_Type_File_Impo
 			", array(
 				'maximum-records'	=> $iMaximumRecords ? $iMaximumRecords : PHP_INT_MAX	// This is the only way to do LIMIT with no limit
 			));
-			
+
 			while ($aFileImport = $mFileImportsResult->fetch_assoc()) {
 				$aFileImports[$aFileImport['Id']]	= new File_Import($aFileImport);
 			}
@@ -58,7 +51,7 @@ abstract class Resource_Type_File_Import_Payment extends Resource_Type_File_Impo
 			$iProgress++;
 			Log::getLog()->log("({$iProgress}/".count($aFileImports).") Importing {$oFileImport->Id}");
 			Log::getLog()->log("\t[ ] Resource Type: ".GetConstantDescription($oFileImport->FileType, 'resource_type'));
-			
+
 			// Process each FileImport within a Transaction
 			DataAccess::getDataAccess()->TransactionStart(false);
 			try {
@@ -118,7 +111,7 @@ abstract class Resource_Type_File_Import_Payment extends Resource_Type_File_Impo
 		// TODO: Report?  Probably no need
 		Log::getLog()->log("Imported ".count($aFileImports)." Payment Import Files in ".round($oStopwatch->split(), 2)."s");
 	}
-	
+
 	static public function processRecords($mFileImportData=null, $iMaximumRecords=null)
 	{
 		$oStopwatch	= new Stopwatch();
@@ -157,13 +150,13 @@ abstract class Resource_Type_File_Import_Payment extends Resource_Type_File_Impo
 			", array(
 				'maximum-records'	=> $iMaximumRecords ? $iMaximumRecords : PHP_INT_MAX	// This is the only way to do LIMIT with no limit
 			));
-			
+
 			while ($aFileImportData = $mFileImportDataResult->fetch_assoc()) {
 				$aFileImportDataRecords[$aFileImportData['id']]	= new File_Import_Data($aFileImportData);
 			}
 			Log::getLog()->log("Retrieved ".count($aFileImportDataRecords)." Payment Import Data Records for Processing ".round($oStopwatch->split(), 2)."s");
 		}
-		
+
 		// Process each Record
 		//--------------------------------------------------------------------//
 		$iProgress		= 0;
@@ -173,15 +166,15 @@ abstract class Resource_Type_File_Import_Payment extends Resource_Type_File_Impo
 		foreach ($aFileImportDataRecords as $iFileImportDataId=>$oFileImportData) {
 			$iProgress++;
 			Log::getLog()->log("({$iProgress}/".count($aFileImportDataRecords).") Processing {$oFileImportData->file_import_id}:{$iFileImportDataId}");
-			
+
 			// Ensure we're reusing the same File instances when appropriate
 			if (!isset($aFileImports[$oFileImportData->file_import_id]))
 			{
 				$oFileImport	= File_Import::getForId($oFileImportData->file_import_id);
-				
+
 				// Get the Carrier Module
 				$oCarrierModule	= reset(Carrier_Module::getForDefinition(self::CARRIER_MODULE_TYPE, $oFileImport->FileType, $oFileImport->Carrier));
-				
+
 				// Initialise the Importer Class
 				$sImporterClass	= $oCarrierModule->Module;
 				Flex::assert(
@@ -194,23 +187,23 @@ abstract class Resource_Type_File_Import_Payment extends Resource_Type_File_Impo
 					"Payment Processing: Carrier Module with Invalid Class"
 				);
 				$oImporter		= new $sImporterClass($oCarrierModule, $oFileImport);
-				
+
 				$aFileImports[$oFileImportData->file_import_id]	= array(
 					'oFileImport'		=> $oFileImport,
 					'oCarrierModule'	=> $oCarrierModule,
 					'oImporter'			=> $oImporter
 				);
 			}
-			
+
 			Log::getLog()->log("\t[ ] Module: {$aFileImports[$oFileImportData->file_import_id]['oCarrierModule']->Module}");
-			
+
 			// Normalise each Record within a Transaction
 			//----------------------------------------------------------------//
 			DataAccess::getDataAccess()->TransactionStart(false);
 			$sDBDatetime	= DataAccess::getDataAccess()->getNow();
 			try {
 				$oRecordStopwatch	= new Stopwatch(true);
-				
+
 				// Process the Record
 				//------------------------------------------------------------//
 				$aData				= $aFileImports[$oFileImportData->file_import_id]['oImporter']->processRecord($oFileImportData->data);
@@ -242,14 +235,14 @@ abstract class Resource_Type_File_Import_Payment extends Resource_Type_File_Impo
 					//Log::getLog()->log(print_r($oPaymentResponse->toArray(), true));
 
 					$oPaymentResponse->save();
-					Log::getLog()->log("\t[+] Saved Payment_Response #{$oORMObject->id} in ".$oRecordStopwatch->lap(4).'s');
+					Log::getLog()->log("\t[+] Saved Payment_Response #{$oPaymentResponse->id} in ".$oRecordStopwatch->lap(4).'s');
 
 					// Save the Transaction Data
 					foreach ($aTransactionData as $oTransactionData) {
 						$oTransactionData->payment_response_id	= $oPaymentResponse->id;
 						$oTransactionData->save();
 					}
-					Log::getLog()->log("\t[+] Saved Transaction Data #{$oORMObject->id} in ".$oRecordStopwatch->lap(4).'s');
+					Log::getLog()->log("\t[+] Saved Transaction Data for #{$oPaymentResponse->id} in ".$oRecordStopwatch->lap(4).'s');
 
 					// Mark the Data as Processed
 					$oFileImportData->file_import_data_status_id	= FILE_IMPORT_DATA_STATUS_NORMALISED;
@@ -257,6 +250,26 @@ abstract class Resource_Type_File_Import_Payment extends Resource_Type_File_Impo
 					// Action the Payment Response
 					$sPaymentLink	= ($oPaymentResponse->payment_id) ? 'pre-existing' : 'new';
 					$oPaymentResponse->action();
+
+					Log::get()->formatLog("\t[*] %s: Reponse #%d => Payment #%d on #%d; $%0.2f; %s (#%d); @ %s; Ref: \"%s\"",
+						Payment_Response_Type::getForId($oPaymentResponse->payment_response_type_id)->system_name,
+						$oPaymentResponse->id,
+						$oPaymentResponse->payment_id,
+						$oPaymentResponse->account_id,
+						$oPaymentResponse->amount,
+						Payment_Type::getForId($oPaymentResponse->payment_type_id)->name,
+						$oPaymentResponse->payment_type_id,
+						$oPaymentResponse->paid_date,
+						$oPaymentResponse->transaction_reference
+					);
+
+					foreach ($aTransactionData as $oTransactionData) {
+						Log::get()->formatLog("\t\t[*] %s: %s",
+							$oTransactionData->name,
+							$oTransactionData->value
+						);
+					}
+
 					Log::getLog()->log("\t[+] Actioned Payment_Response #{$oPaymentResponse->id} against {$sPaymentLink} Payment #{$oPaymentResponse->payment_id} in ".$oRecordStopwatch->lap(4).'s');
 				} else {
 					// No Data -- Mark as Ignored
@@ -269,19 +282,19 @@ abstract class Resource_Type_File_Import_Payment extends Resource_Type_File_Impo
 			} catch (Exception $oException) {
 				// Error Normalising the Record
 				Log::getLog()->log("\t[!] Normalisation Error: ".$oException->getMessage());
-				
+
 				$oFileImportData->file_import_data_status_id	= FILE_IMPORT_DATA_STATUS_NORMALISATION_FAILED;
 				$oFileImportData->reason						= $oException->getMessage();
 			}
-			
+
 			// Update the Data Record
 			$oFileImportData->save();
 			Log::getLog()->log("\t[~] {$oFileImportData->file_import_id}:{$iFileImportDataId} saved with Status ".GetConstantDescription($oFileImportData->file_import_data_status_id, 'file_import_data_status')." in ".$oRecordStopwatch->split(4)."s");
-			
+
 			// Commit
 			DataAccess::getDataAccess()->TransactionCommit(false);
 		}
-		
+
 		// TODO: Report?  Probably no need
 		Log::getLog()->log("Processed ".count($aFileImportDataRecords)." Payment Import Records in ".round($oStopwatch->split(), 2)."s");
 	}
@@ -293,4 +306,3 @@ abstract class Resource_Type_File_Import_Payment extends Resource_Type_File_Impo
 		parent::createCarrierModule($iCarrier, null, $sClassName, $iResourceType, self::CARRIER_MODULE_TYPE);
 	}
 }
-?>

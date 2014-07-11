@@ -58,7 +58,7 @@ class Ticketing_Correspondance
 			$this->{$name} = $value;
 		}
 		$this->_saved = TRUE;
-		
+
 	}
 
 	public static function createBlank()
@@ -68,14 +68,14 @@ class Ticketing_Correspondance
 
 	/**
 	 * Create a new correspondence for the given details
-	 * 
+	 *
 	 * @param array $arrDetails An array containing the following:
-	 * 
+	 *
 	 * 			source_id 	=>	The source id (TICKETING_CORRESPONDANCE_SOURCE_xxx)
-	 * 
+	 *
 	 * 			summary		=>	String summary (single line) (eg: Email subject) of the correspondence
 	 * 			details		=>	String description of the email, much more detailed than the summary
-	 * 
+	 *
 	 * 		Either:
 	 * 			user_id		=>	FOR OUTBOUND EMAILS Integer id of ticketing system user creating the record (NULL if created by customer)
 	 * 		-or-
@@ -86,7 +86,7 @@ class Ticketing_Correspondance
 	 *			ticket_id			=> If not specified, a new ticket will be created for the correspondence
 	 *
 	 * 			creation_datetime	=> Date in 'YYYY-mm-dd HH:ii:ss' format (Defaults to current date/time)
-	 * 
+	 *
 	 * 			delivery_status		=> Delivery status (Default is TICKETING_CORRESPONDANCE_DELIVERY_STATUS_NOT_SENT)
 	 * 			delivery_datetime	=> Date in 'YYYY-mm-dd HH:ii:ss' format (Defaults to null (not sent))
 	 *
@@ -126,7 +126,7 @@ class Ticketing_Correspondance
 					throw new Exception('Unable to create correspondence as email address could not be determined for a sender.');
 				}
 
-				$oCustGroupConfig = Ticketing_Customer_Group_Config::getForId($aDetails['customer_group_id']);
+				$oCustGroupConfig = Ticketing_Customer_Group_Config::getForCustomerGroupId($aDetails['customer_group_id']);
 				$oCustGroupEmail = $oCustGroupConfig->getDefaultCustomerGroupEmail();
 			} else {
 				Log::get()->logIf($bLoggingEnabled, "[*] Inbound correspondance, find the customer group email");
@@ -158,7 +158,7 @@ class Ticketing_Correspondance
 
 		$oCorrespondence->userId = $aDetails['user_id'];
 		$oCorrespondence->sourceId = $aDetails['source_id'];
-		
+
 		if (!array_key_exists('creation_datetime', $aDetails) || !$aDetails['creation_datetime']) {
 			$oCorrespondence->creationDatetime = GetCurrentISODateTime();
 		} else {
@@ -193,10 +193,10 @@ class Ticketing_Correspondance
 		// Check the subject for a ticket number
 		// TODO: Q: Could this apply to more than one ticket?
 		$aMatches = array();
-		
+
 		// Check for the ticket number in the summary searching for [T<ticket_id>Z] where the square brackets are optional, and the T & Z can be upper or lower case
 		$strTReg = "/\[?T[0-9 ]+Z\]? */i";
-		
+
 		// Check for the ticket number in the body of the email searching for [T<ticket_id>Z] where the square brackets are manditory and the T & Z have to be in upper case
 		$strBReg = "/\[T[0-9]+Z\]/";
 		if (preg_match($strTReg, $oCorrespondence->summary, $aMatches)) {
@@ -219,7 +219,7 @@ class Ticketing_Correspondance
 		// Update this instance's ticket id, as a new ticket may have been created if an existing ticket was not found
 		$oCorrespondence->ticketId = $ticket->id;
 
-		// Need to save this correspondence to get assigned the id, 
+		// Need to save this correspondence to get assigned the id,
 		// which we need in order that we may create associated attchments
 		$oCorrespondence->save();
 
@@ -309,16 +309,16 @@ class Ticketing_Correspondance
 	protected static function getColumns()
 	{
 		return array(
-			'id', 
-			'ticket_id', 
-			'summary', 
-			'details', 
-			'user_id', 
-			'contact_id', 
-			'source_id', 
+			'id',
+			'ticket_id',
+			'summary',
+			'details',
+			'user_id',
+			'contact_id',
+			'source_id',
 			'delivery_status_id',
-			'creation_datetime', 
-			'customer_group_email_id', 
+			'creation_datetime',
+			'customer_group_email_id',
 			'delivery_datetime',
 		);
 	}
@@ -329,7 +329,7 @@ class Ticketing_Correspondance
 		$arrValues = array();
 		foreach ($arrColumns as $strColumn)
 		{
-			if ($strColumn == 'id') 
+			if ($strColumn == 'id')
 			{
 				continue;
 			}
@@ -387,19 +387,19 @@ class Ticketing_Correspondance
 		return $this->sourceId === TICKETING_CORRESPONDANCE_SOURCE_EMAIL;
 	}
 
-	/* 
-	 * Returns null if there isn't any correspondence created by a user, for this particular ticket, 
+	/*
+	 * Returns null if there isn't any correspondence created by a user, for this particular ticket,
 	 * else returns a Ticketing_Correspondance object representing the most recently created or delivered
 	 * correspondance by a user of the ticketing system
-	 */ 
+	 */
 	public static function getMostRecentlyActionedUserCreatedCorrespondenceForTicketId($intTicketId)
 	{
 		// Protect against SQL Injection, because we are not using a prepared statement
 		$intTicketId = intval($intTicketId);
-		
+
 		// This query will retrieve the most recent user created correspondence record for the ticket, if one exists
 		$strQuery = "SELECT tc.*
-						FROM ticketing_correspondance AS tc 
+						FROM ticketing_correspondance AS tc
 							INNER JOIN
 							(
 								/* Find the ticketing_correspondance record relating to the most recently actioned (created or delivered) correspondence by a ticketing user */
@@ -415,14 +415,14 @@ class Ticketing_Correspondance
 		{
 			throw new Exception_Database("Failed to retrieve most recently actioned user-created correspondence for ticket id $intTicketId : '$strQuery' - ". $qryQuery->Error());
 		}
-		
+
 		$objCorrespondence = null;
 		while ($arrRecord = $objRecordSet->fetch_assoc())
 		{
 			// A record was retrieved (at most, only one record will be retrieved)
 			$objCorrespondence = new self($arrRecord);
 		}
-		
+
 		return $objCorrespondence;
 	}
 
@@ -434,8 +434,8 @@ class Ticketing_Correspondance
 			$strSort = 'creation_datetime DESC, id DESC';
 		}
 		$selMatches = new StatementSelect(
-			strtolower(__CLASS__), 
-			self::getColumns(), 
+			strtolower(__CLASS__),
+			self::getColumns(),
 			$strWhere,
 			$strSort,
 			$strLimit);
@@ -473,7 +473,7 @@ class Ticketing_Correspondance
 				return;
 			}
 		}
-		
+
 		if (!$custGroupEmail->autoReply())
 		{
 			return;
@@ -571,7 +571,7 @@ class Ticketing_Correspondance
 			// The ticketing_customer_group_email record referenced by this correspondence item, has been archived.
 			// Check if there is an active one with the same email address and customer group
 			$objActiveCGEmail = $customerGroupEmail->getActiveVersion();
-			
+
 			if ($objActiveCGEmail === null)
 			{
 				throw new Exception("The Customer Group Email, '{$objActiveCGEmail->email}' has been archived.  Please use an active one");
@@ -587,7 +587,7 @@ class Ticketing_Correspondance
 
 		$email->addTo($contact->email, $contact->getName()); // The contact from the ticket (contact_id)
 
-		// TODO: Check for previous outgoing correspondences and send from same address 
+		// TODO: Check for previous outgoing correspondences and send from same address
 		$email->setFrom($customerGroupEmail->email, $customerGroupEmail->name);
 
 		$email->subject = $this->summary . " [T" . $this->ticketId . "Z]";
@@ -628,7 +628,7 @@ class Ticketing_Correspondance
 			return TRUE;
 		}
 		$arrValues = $this->getValuesToSave();
-		
+
 		$now = GetCurrentISODateTime();
 
 		// No id means that this must be a new record

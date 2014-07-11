@@ -79,7 +79,7 @@ class HtmlTemplateRateGroupView extends HtmlTemplate
 	{
 		// Render the RateGroup Details
 		echo "<div class='GroupedContent'>\n";
-		
+
 		// Handle the Archived property
 		if (DBO()->RateGroup->Archived->Value)
 		{
@@ -95,13 +95,16 @@ class HtmlTemplateRateGroupView extends HtmlTemplate
 			}
 			echo "<div class='ContentSeparator'></div>\n";
 		}
-		
+
 		DBO()->RateGroup->Name->RenderOutput();
 		DBO()->RateGroup->Description->RenderOutput();
-		DBO()->RateGroup->ServiceType->RenderCallback("GetConstantDescription", Array("service_type"), RENDER_OUTPUT);
+
+		DBO()->RateGroup->ServiceTypeDescription = Service_Type::getForId(DBO()->RateGroup->ServiceType->Value)->description;
+		DBO()->RateGroup->ServiceTypeDescription->RenderOutputAs(array('Label' => 'Service Type'));
+
 		DBO()->RecordType->Name->RenderOutput();
 		DBO()->RateGroup->Fleet->RenderOutput();
-		
+
 		$fltCapLimit = DBO()->RateGroup->CapLimit->Value;
 		if ($fltCapLimit !== NULL)
 		{
@@ -113,16 +116,16 @@ class HtmlTemplateRateGroupView extends HtmlTemplate
 			// HACK! HACK! HACK!
 			//DBO()->RateGroup->CapLimit->RenderArbitrary($fltCapLimit, RENDER_OUTPUT);
 		}
-		
+
 		$iRetrievedRatesCount = DBL()->Rate->RecordCount();
-		
+
 		// Draw the search components
 		if (DBO()->RateGroup->TotalRateCount->Value > 10)
 		{
 			$this->FormStart("SearchRateGroupRates", "RateGroup", "View");
 			$strSearchString = DBO()->Rate->SearchString->Value;
 			DBO()->RateGroup->Id->RenderHidden();
-			
+
 			// Create a combobox containing all the filter options
 			echo "<div style='height:25px'>\n";
 			echo "<div class='Left'>\n";
@@ -131,12 +134,12 @@ class HtmlTemplateRateGroupView extends HtmlTemplate
 			echo "</div><div class='Right'>\n";
 			$this->AjaxSubmit("Search");
 			echo "</div></div>\n";
-			
+
 			// Hidden values to enable pagination
 			echo "<input type='hidden' name='Pagination.PageNumber' value='".(string)DBO()->Pagination->PageNumber->Value."'/>";
 			echo "<input type='hidden' name='Pagination.Limit' value='".(string)DBO()->Pagination->Limit->Value."'/>";
 			echo "<input type='hidden' name='Pagination.TotalSearchCount' value='".(string)DBO()->Pagination->TotalSearchCount->Value."'/>";
-			
+
 			// DEBUGGING INFORMATION FOR PAGINATION
 			/*
 			echo "Page : ".(string)DBO()->Pagination->PageNumber->Value."<br/>";
@@ -147,11 +150,11 @@ class HtmlTemplateRateGroupView extends HtmlTemplate
 			echo "Total Rate Count : ".(string)DBO()->RateGroup->TotalRateCount->Value."<br/>";
 			echo "Shown Up To: ".(DBO()->Pagination->Offset->Value + $iRetrievedRatesCount);
 			*/
-			
+
 			$this->FormEnd();
 		}
 		echo "<div class='SmallSeperator'></div>\n";
-		
+
 		// Number of results will never exceed 10, the limit is set to 10
 		/*
 		// Only draw the scrollable div container if there are more than 10 Rates to display
@@ -161,17 +164,17 @@ class HtmlTemplateRateGroupView extends HtmlTemplate
 			echo "<div id='ScrollableContainer_RateGroupRates' style='padding: 0px 3px 0px 3px;overflow:auto; height:300px;'>\n";
 		}
 		*/
-	
+
 		Table()->RateTable->SetHeader("Rates");
 		Table()->RateTable->SetAlignment("Left");
 		Table()->RateTable->SetWidth("100%");
-	
+
 		foreach (DBL()->Rate as $dboRate)
 		{
 			$strViewRateLink = Href()->ViewRate($dboRate->Id->Value, FALSE);
 			$strRateName = htmlspecialchars($dboRate->Name->Value, ENT_QUOTES);
 			$strRateDescription = htmlspecialchars($dboRate->Description->Value, ENT_QUOTES);
-			
+
 			switch ($dboRate->Archived->Value)
 			{
 				case RATE_STATUS_DRAFT:
@@ -183,12 +186,12 @@ class HtmlTemplateRateGroupView extends HtmlTemplate
 				default:
 					$strNamePrefix = "";
 			}
-			
+
 			Table()->RateTable->AddRow("$strNamePrefix<a href='$strViewRateLink' title='$strRateDescription'>$strRateName</a>");
 		}
-		
+
 		Table()->RateTable->Render();
-		
+
 		// Number of results will never exceed 10, the limit is set to 10
 		/*
 		if ($iRetrievedRatesCount > 10)
@@ -197,12 +200,12 @@ class HtmlTemplateRateGroupView extends HtmlTemplate
 			echo "</div></div>\n";
 		}
 		*/
-		
+
 		// Display details of how many records are being shown
 		if (DBO()->RateGroup->TotalRateCount->Value > 10)
 		{
 			echo "<div class='TinySeperator'></div>";
-			
+
 			// Record summary
 			if (DBO()->Pagination->TotalSearchCount->Value == 0)
 			{
@@ -213,7 +216,7 @@ class HtmlTemplateRateGroupView extends HtmlTemplate
 				$sRecordSummary = "Showing ".(DBO()->Pagination->Offset->Value + 1)." to ".(DBO()->Pagination->Offset->Value + $iRetrievedRatesCount)." of ". DBO()->Pagination->TotalSearchCount->Value ." Rates";
 			}
 			echo "<div class='rate-group-search'><div class='record-summary'>$sRecordSummary</div>";
-			
+
 			// Pagination buttons
 			if (DBO()->Pagination->TotalSearchCount->Value > 0)
 			{
@@ -221,7 +224,7 @@ class HtmlTemplateRateGroupView extends HtmlTemplate
 				$bNotFirstPage	= DBO()->Pagination->PageNumber->Value > 0;
 				$this->_generatePaginationButton('First', $bNotFirstPage);
 				$this->_generatePaginationButton('Previous', $bNotFirstPage);
-				
+
 				$iTotalShown	= DBO()->Pagination->Offset->Value + DBO()->Pagination->Limit->Value;
 				$bNotLastPage	= $iTotalShown < DBO()->Pagination->TotalSearchCount->Value;
 				$this->_generatePaginationButton('Next', $bNotLastPage);
@@ -229,12 +232,12 @@ class HtmlTemplateRateGroupView extends HtmlTemplate
 				echo "</div></div>\n";
 			}
 		}
-		
+
 		echo "</div>\n"; // GroupedContent
 		echo "<div class='ButtonContainer'><div class='right'>\n";
 		$this->Button("Close", "Vixen.Popup.Close(this);");
 		echo "</div></div>\n";
-		
+
 		// If there is only 1 rate then open the Rate Details popup to display the rate
 		if (DBO()->RateGroup->TotalRateCount->Value == 1)
 		{
@@ -244,7 +247,7 @@ class HtmlTemplateRateGroupView extends HtmlTemplate
 			echo "<script type='text/javascript'>$strDisplayRatePopup</script>\n";
 		}
 	}
-	
+
 	private function _generatePaginationButton($sPage, $bEnabled=true)
 	{
 		$sTarget 	= '';
@@ -252,14 +255,14 @@ class HtmlTemplateRateGroupView extends HtmlTemplate
 		$sSize 		= '';
 		$sTemplate	= $this->_strTemplate;
 		$sMethod 	= "View{$sPage}Page";
-		
+
 		if (is_object($this->_objAjax))
 		{
 			$sTarget 	= $this->_objAjax->TargetType;
 			$sId 		= $this->_objAjax->strId;
 			$sSize 		= $this->_objAjax->strSize;
 		}
-		
+
 		$sImageSrc	= strtolower($sPage);
 		echo "<button ".($bEnabled ? '' : "disabled='disabled'")." class='$sStyleClass' id='$sButtonId' name='VixenButtonId' onclick=\"Vixen.Ajax.SendForm('{$this->_strForm}', '$sLabel','$sTemplate', '$sMethod', '$sTarget', '$sId', '$sSize', '{$this->_strContainerDivId}')\"><img src='../admin/img/template/resultset_{$sImageSrc}.png'/></button>\n";
 	}

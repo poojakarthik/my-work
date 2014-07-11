@@ -20,7 +20,6 @@ class Resource_Type_File_Export_Payment_Westpac_RecurringBilling extends Resourc
 		$this->_iTimestamp = time();
 		$this->_oFileExporter = new File_Exporter_CSV();
 		$this->_configureFileExporter();
-		$this->_addHeaderRecord();
 	}
 
 	protected function getCustomerGroups() {
@@ -66,8 +65,24 @@ class Resource_Type_File_Export_Payment_Westpac_RecurringBilling extends Resourc
 		$sFilename = sprintf('%s.%s.csv', $this->getConfig()->FileNamePrefix, date('Ymd', $this->_iTimestamp));
 		$this->_sFilePath = self::getExportPath($this->getCarrierModule()->Carrier, __CLASS__).$sFilename;
 
+		// Data
+		// NOTE: There are special quoting rules for the header row (not allowed to be quoted, where regular data records can be)
+		$sContent = File_CSV::buildLine(
+				array('Recurring Billing Upload', ' v1.00', date('j M Y', $this->_iTimestamp)),
+				self::FIELD_DELIMITER,
+				'', // No quoting
+				'' // No escaping
+			) . self::NEW_LINE_DELIMITER
+			. $this->_oFileExporter->render(); // Rest of file is OK for regular quoting/escaping rules
+
 		// Render and write to disk
-		$this->_oFileExporter->renderToFile($this->_sFilePath);
+		@mkdir(dirname($this->_sFilePath), 0777, true);
+		if (false === @file_put_contents($this->_sFilePath, $sContent)) {
+			throw new Exception(sprintf('Unable to render file to: %s%s',
+				$this->_sFilePath,
+				$php_errormsg ? " ({$php_errormsg})" : ''
+			));
+		}
 
 		// TODO: Do we need to return anything special?
 		return $this;
@@ -76,20 +91,6 @@ class Resource_Type_File_Export_Payment_Westpac_RecurringBilling extends Resourc
 	public function deliver() {
 		$this->_oFileDeliver->connect()->deliver($this->_sFilePath)->disconnect();
 		return $this;
-	}
-
-	protected function _addHeaderRecord() {
-		$oRecord = $this->_oFileExporter->getRecordType(self::RECORD_TYPE_HEADER)->newRecord();
-
-		// NOTE: The following fields have default values
-		// - FileType
-		// - FileTypeVersion
-		$oRecord->SettlementDate = date('j M Y', $this->_iTimestamp);
-
-		// Add to the file
-		$this->_oFileExporter->addRecord($oRecord, File_Exporter::RECORD_GROUP_BODY);
-
-		return;
 	}
 
 	protected function _configureFileExporter() {
@@ -101,22 +102,6 @@ class Resource_Type_File_Export_Payment_Westpac_RecurringBilling extends Resourc
 			->setEscape(self::ESCAPE_CHARACTER)
 			->setQuoteMode(File_Exporter_CSV::QUOTE_MODE_REACTIVE)
 			->setEscapeMode(File_Exporter_CSV::ESCAPE_MODE_RFC4180);
-
-		// Header Record
-		$this->_oFileExporter->registerRecordType(self::RECORD_TYPE_HEADER,
-			File_Exporter_RecordType::factory()
-				->addField('FileType',
-					File_Exporter_Field::factory()
-						->setDefaultValue('Recurring Billing Upload')
-						->setValidationRegex('/^Recurring Billing Upload$/')
-				)->addField('FileTypeVersion',
-					File_Exporter_Field::factory()
-						->setDefaultValue(' v1.00')
-				)->addField('SettlementDate',
-					File_Exporter_Field::factory()
-						->setValidationRegex('/^([1-9]|[12][0-9]|3[01]) ([A-Z][a-z]+) (\d{4})$/')
-				)
-		);
 
 		// Detail Record
 		$this->_oFileExporter->registerRecordType(self::RECORD_TYPE_TRANSACTION,

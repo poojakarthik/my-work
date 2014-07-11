@@ -51,7 +51,7 @@ class Invoice_Run
 		$this->_arrTidyNames[self::tidyName($arrTableDefine['Id'])]	= $arrTableDefine['Id'];
 
 		// Automatically load the Invoice using the passed Id
-		$intId	= ($arrProperties['Id']) ? $arrProperties['Id'] : (($arrProperties['id']) ? $arrProperties['id'] : NULL);
+		$intId	= (isset($arrProperties['Id'])) ? $arrProperties['Id'] : (isset($arrProperties['id']) ? $arrProperties['id'] : NULL);
 		if ($bolLoadById && $intId)
 		{
 			$selById	= $this->_preparedStatement('selById');
@@ -280,8 +280,6 @@ class Invoice_Run
 	 */
 	public function generateCustomerGroup($intCustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, $intScheduledInvoiceRun=null)
 	{
-		$intAccount	= (int)$intAccount;
-
 		// Init variables
 		$dbaDB					= DataAccess::getDataAccess();
 
@@ -630,6 +628,9 @@ class Invoice_Run
 			$dbaDB->TransactionRollback();
 			throw $eException;
 		}
+
+		// Ensure we don't have any lingering cached invoices
+		Invoice::clearCache();
 	}
 
 	private function _revokeOptimised()
@@ -676,7 +677,7 @@ class Invoice_Run
 								SET 	invoice_run_id = NULL
 								WHERE	invoice_run_id = {$this->Id}");
 		Log::getLog()->log("Un-marked {$mResult} Adjustments");
-		
+
 		// Remove service_total_service Records
 		if ($qryQuery->Execute("DELETE FROM service_total_service WHERE service_total_id = (SELECT Id FROM ServiceTotal WHERE invoice_run_id = {$this->Id} AND Id = service_total_id)") === FALSE)
 		{
@@ -768,7 +769,7 @@ class Invoice_Run
 		$sInvoiceRunPDFBasePath	= PATH_INVOICE_PDFS ."pdf/$this->Id/";
 		$oDeliveryMethod		= Constant_Group::getConstantGroup('delivery_method');
 		$iBillingDate			= strtotime($this->BillingDate);
-		
+
 		Log::getLog()->log("Generate PDF's");
 
 		try
@@ -777,7 +778,7 @@ class Invoice_Run
 			$aInvoices		= Invoice::getForInvoiceRunId($this->Id);
 			$aPDFFilenames	= array();
 			foreach ($aInvoices as $iId => $oInvoice)
-			{			
+			{
 				// Generate the PDF file
 				$iCreatedOn 			= strtotime("-1 month", strtotime($oInvoice->CreatedOn));
 				$iYear 					= (int)date("Y", $iCreatedOn);
@@ -787,7 +788,7 @@ class Invoice_Run
 				{
 					throw new Exception("PDF Generation failed: Account=$oInvoice->Account, Invoice=$iId, Invoice Run=$this->Id");
 				}
-				
+
 				Log::getLog()->log("Generated PDF '".basename($aPDFFilenames[$iId])."' for invoice {$iId}. (Total Memory Usage: ".memory_get_usage().")");
 			}
 		}
@@ -795,7 +796,7 @@ class Invoice_Run
 		{
 			throw new Exception("Failed to generate invoice PDFs. ".$oException->getMessage());
 		}
-		
+
 		try
 		{
 			Log::getLog()->log("Generate correspondence data & emails");
@@ -807,7 +808,7 @@ class Invoice_Run
 			{
 				Log::getLog()->log("\nInvoice {$iInvoiceId}");
 				Log::getLog()->log("----------------------");
-				
+
 				// Determine the correspondence_delivery_method for the invoice
 				$oInvoice	= $aInvoices[$iInvoiceId];
 				$oAccount	= Account::getForId($oInvoice->Account);
@@ -817,15 +818,15 @@ class Invoice_Run
 					case DELIVERY_METHOD_POST:
 						// Create correspondence data
 						$sDeliveryMethodSystemName	= Correspondence_Delivery_Method::getForId(CORRESPONDENCE_DELIVERY_METHOD_POST)->system_name;
-						
+
 						// Only post to the accounts primary contact
 						$aContacts[]	= Contact::getForId($oAccount->PrimaryContact);
 						break;
-					
+
 					case DELIVERY_METHOD_EMAIL:
 						// Create correspondence data
 						$sDeliveryMethodSystemName	= Correspondence_Delivery_Method::getForId(CORRESPONDENCE_DELIVERY_METHOD_EMAIL)->system_name;
-						
+
 						// Get all active contacts for the account
 						$aContacts	= $oAccount->getContacts(true);
 						foreach ($aContacts as $iId => $oContact)
@@ -838,29 +839,29 @@ class Invoice_Run
 								unset($aContacts[$iId]);
 							}
 						}
-						
+
 						// Mark the invoice to have it's delivery method updated
 						$aEmailInvoiceIds[] = $oInvoice->Id;
 						Log::getLog()->log("Invoice {$oInvoice->Id} to be emailed to ".count($aContacts)." contacts");
 						break;
-						
+
 					case DELIVERY_METHOD_EMAIL_SENT:
 						// Email has already been sent, this shouldn't happen
 						Log::getLog()->log("Invoice {$iInvoiceId} has already been delivered an email. This shouldn't happen, invoices only get delivered once.");
 						break;
-						
+
 					default:
 						// Skip delivering the invoice
 						Log::getLog()->log("No appropriate delivery method for Invoice {$iInvoiceId}. The delivery method is '".$oDeliveryMethod->getConstantName($oInvoice->DeliveryMethod)."'");
 				}
-				
+
 				// Skip to the next Invoice if there are no contacts to send to
 				if (count($aContacts) == 0)
 				{
 					Log::getLog()->log("Skipping delivery of Invoice {$iInvoiceId}, no eligible contacts.");
 					continue;
 				}
-				
+
 				Log::getLog()->log("Delivery method for Invoice {$iInvoiceId} is '{$sDeliveryMethodSystemName}'");
 
 				// Cache the correspondence data for the Invoice
@@ -887,7 +888,7 @@ class Invoice_Run
 				Log::getLog()->log("Got template");
 				$oRun	= $oTemplate->createRun(true, $aCorrespondenceData);
 				Log::getLog()->log("Run created");
-				
+
 				// Update delivery method to DELIVERY_METHOD_EMAIL_SENT for each invoice with email as it's delivery method
 				Log::getLog()->log("Update delivery method to DELIVERY_METHOD_EMAIL_SENT for each Invoice with EMAIL as it's delivery method");
 				foreach ($aEmailInvoiceIds as $iInvoiceId)
@@ -917,7 +918,7 @@ class Invoice_Run
 			Log::getLog()->log("\nNo correspondence to post, no run created");
 		}
 	}
-	
+
 	private function _commitOptimised()
 	{
 		static	$qryQuery;
@@ -970,7 +971,7 @@ class Invoice_Run
 		{
 			throw new Exception_Database($qryQuery->Error());
 		}
-		
+
 		Log::getLog()->log(" * Updating Invoices...");
 		$resUpdateInvoices	= $qryQuery->Execute("	UPDATE	Invoice i
 															JOIN collectable c ON (i.id = c.invoice_id)
@@ -1441,12 +1442,12 @@ class Invoice_Run
 		$sDataSourceName	= $oRes->fetchOne();
 		return ($sDataSourceName == FLEX_DATABASE_CONNECTION_DEFAULT);
 	}
-	
+
 	public function isProductionRun()
 	{
 		return in_array($this->invoice_run_type_id, array(INVOICE_RUN_TYPE_LIVE, INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL, INVOICE_RUN_TYPE_INTERIM_FIRST));
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// save
 	//------------------------------------------------------------------------//

@@ -81,31 +81,31 @@ abstract class NormalisationModule extends CarrierModule {
 		}
 
 		// FNN : valid FNN
-		$arrValid['FNN'] = preg_match("/^0\d{9}[i]?|13\d{4}|1[89]00\d{6}$/", $this->_arrNormalisedData["FNN"]); // 1
+		// $arrValid['FNN'] = preg_match("/^0\d{9}[i]?|13\d{4}|1[89]00\d{6}$/", $this->_arrNormalisedData["FNN"]); // 1
 
 		// CarrierRef : required (non empty)
 		$arrValid['CarrierRef'] = ($this->_arrNormalisedData["CarrierRef"] != ""); // 2
 
 		// source : empty or valid FNN
-		if ($this->_arrNormalisedData["Source"] != "") { // 3
-			$arrValid['Source'] = preg_match("/^\d+$|^\+\d+$|^\d+(X+|\d+| +|\d+REV)I?$/i", $this->_arrNormalisedData["Source"]);
-		} else {
-			$arrValid['Source'] = true;
-		}
+		// if ($this->_arrNormalisedData["Source"] != "") { // 3
+		// 	$arrValid['Source'] = preg_match("/^\d+$|^\+\d+$|^\d+(X+|\d+| +|\d+REV)I?$/i", $this->_arrNormalisedData["Source"]);
+		// } else {
+		// 	$arrValid['Source'] = true;
+		// }
 
 		// destination : empty or valid FNN
-		if ($this->_arrNormalisedData["Destination"] != "") { // 4
-			$arrValid['Destination'] = preg_match("/^\d+$|^\+\d+$|^\d+(X+|\d+| +|\d+REV)I?$/i", $this->_arrNormalisedData["Destination"]);
-		} else {
-			$arrValid['Destination'] = true;
-		}
+		// if (isset($this->_arrNormalisedData["Destination"]) && $this->_arrNormalisedData["Destination"] != "") { // 4
+		// 	$arrValid['Destination'] = preg_match("/^\d+$|^\+\d+$|^\d+(X+|\d+| +|\d+REV)I?$/i", $this->_arrNormalisedData["Destination"]);
+		// } else {
+		// 	$arrValid['Destination'] = true;
+		// }
 
 		// 5
 		// start time : valid date/time
 		$arrValid['StartDatetime'] = preg_match("/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/",	$this->_arrNormalisedData["StartDatetime"]);
 
 		// end time : empty or valid date/time
-		if ($this->_arrNormalisedData["EndDatetime"] != "") { // 6
+		if (isset($this->_arrNormalisedData["EndDatetime"]) && $this->_arrNormalisedData["EndDatetime"] != "") { // 6
 			$arrValid['EndDatetime'] = preg_match("/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/", $this->_arrNormalisedData["EndDatetime"]);
 		} else {
 			$arrValid['EndDatetime'] = true;
@@ -264,45 +264,104 @@ abstract class NormalisationModule extends CarrierModule {
 		return $this->_arrNormalisedData;
 	}
 
-	protected function ApplyOwnership($bolOwnerNow=false, $bolUpdateCDRStatus=true) {
-		// Determine Timestamp to Use
-		if ($bolOwnerNow) {
-			// Use the current timestamp
-			$strDate = date("Y-m-d");
+	protected function _findOwners($sEffectiveDatetime=null) {
+		$oOwnersResult = DataAccess::get()->query("
+			SELECT s.Id AS Service,
+				s.Account AS Account,
+				a.AccountGroup AS AccountGroup,
+				s.ServiceType AS ServiceType,
+				s.FNN AS FNN,
+				s.Indial100 AS Indial100,
+				s.CreatedOn AS CreatedOn,
+				s.ClosedOn AS ClosedOn
+			FROM Service s
+				JOIN Account a ON (a.Id = s.Account)
+			WHERE s.ServiceType = <service_type_id>
+				AND (
+					(
+						s.Indial100 = 1
+						AND s.FNN LIKE CONCAT(SUBSTRING(<fnn>, 1, LENGTH(<fnn>) - 2), '__')
+					)
+					OR (s.FNN = <fnn>)
+				)
+				AND (
+					(<effective_datetime> IS NULL)
+					OR (
+						<effective_datetime> BETWEEN s.CreatedOn AND COALESCE(s.ClosedOn, '9999-12-31 23:59:59')
+					)
+				)
+		", array(
+			'service_type_id' => $this->_arrNormalisedData['ServiceType'],
+			'fnn' => $this->_arrNormalisedData['FNN'],
+			'effective_datetime' => $sEffectiveDatetime
+		));
+
+		$aOwners = array();
+		while ($aOwner = $oOwnersResult->fetch_assoc()) {
+			$aOwners[] = $aOwner;
+		}
+		return $aOwners;
+	}
+
+	protected function ApplyOwnership($bOwnerNow=false, $bUpdateCDRStatus=true) {
+		$this->strFNN = $this->_arrNormalisedData['FNN'];
+
+		if ($bOwnerNow) {
+			$sEffectiveDatetime = DataAccess::get()->getNow();
 		} else {
-			// Use the CDR's StartDatetime
-			$strDate = $this->_arrNormalisedData['StartDatetime'];
+			$sEffectiveDatetime = $this->_arrNormalisedData['StartDatetime'];
 		}
 
-		// Find the Owner
-		if (is_array($mixResult = FindFNNOwner($this->_arrNormalisedData['FNN'], $strDate))) {
+		Log::get()->formatLog('Searching for exact owners: [Service Type: %d; FNN: %s, Effective: %s]', $this->_arrNormalisedData['ServiceType'], $this->_arrNormalisedData['FNN'], var_export($sEffectiveDatetime, true));
+		$aExactOwners = $this->_findOwners($sEffectiveDatetime);
+		if (count($aExactOwners) === 1) {
 			// Found an Owner
-			$this->_arrNormalisedData['AccountGroup'] = $mixResult['AccountGroup'];
-			$this->_arrNormalisedData['Account'] = $mixResult['Account'];
-			$this->_arrNormalisedData['Service'] = $mixResult['Service'];
+			Log::get()->formatLog('  Found exact owner: [Service Type: %d; FNN: %s, Indial100: %s, Created: %s, Closed: %s, Account: %d]',
+				$aExactOwners[0]['ServiceType'],
+				$aExactOwners[0]['FNN'],
+				var_export($aExactOwners[0]['Indial100'], true),
+				var_export($aExactOwners[0]['CreatedOn'], true),
+				var_export($aExactOwners[0]['ClosedOn'], true),
+				$aExactOwners[0]['Account']
+			);
+			$this->_arrNormalisedData['AccountGroup'] = $aExactOwners[0]['AccountGroup'];
+			$this->_arrNormalisedData['Account'] = $aExactOwners[0]['Account'];
+			$this->_arrNormalisedData['Service'] = $aExactOwners[0]['Service'];
 			return true;
 		}
-
-		// Is there only one instance of this FNN?
-		$arrFNNInstances = Service::getFNNInstances($this->_arrNormalisedData['FNN'], null, true);
-		//CliEcho("There are ".count($arrFNNInstances)." instances of {$this->_arrNormalisedData['FNN']}");
-		if (count($arrFNNInstances) === 1) {
-			//CliEcho("Only one instance");
-
-			// Yes, automatically assume that this is the correct Service
-			$this->_arrNormalisedData['AccountGroup'] = $arrFNNInstances[0]['AccountGroup'];
-			$this->_arrNormalisedData['Account'] = $arrFNNInstances[0]['Account'];
-			$this->_arrNormalisedData['Service'] = $arrFNNInstances[0]['Id'];
-			return true;
+		if (count($aExactOwners) > 1) {
+			// Multiple exact owners: fail
+			Log::get()->log('  Found multiple exact owners');
+			if ($bUpdateCDRStatus) {
+				$this->_UpdateStatus(CDR_BAD_OWNER);
+			}
+			return false;
 		}
 
-		// Return false if there was no match, or more than one match
-		if ($bolUpdateCDRStatus) {
+		// No exact owner: use looser constraints to find a possible match
+		Log::get()->formatLog('Searching for potential owners: [Service Type: %d; FNN: %s]', $this->_arrNormalisedData['ServiceType'], $this->_arrNormalisedData['FNN']);
+		$aPotentialOwners = $this->_findOwners($sEffectiveDatetime);
+		if (count($aPotentialOwners) === 1) {
+			// Only one potential owner: win
+			Log::get()->formatLog('  Found single potential owner: [Service Type: %d; FNN: %s, Indial100: %s, Created: %s, Closed: %s, Account: %d]',
+				$aPotentialOwners[0]['ServiceType'],
+				$aPotentialOwners[0]['FNN'],
+				var_export($aPotentialOwners[0]['Indial100'], true),
+				var_export($aPotentialOwners[0]['CreatedOn'], true),
+				var_export($aPotentialOwners[0]['ClosedOn'], true),
+				$aPotentialOwners[0]['Account']
+			);
+			$this->_arrNormalisedData['AccountGroup'] = $aPotentialOwners[0]['AccountGroup'];
+			$this->_arrNormalisedData['Account'] = $aPotentialOwners[0]['Account'];
+			$this->_arrNormalisedData['Service'] = $aPotentialOwners[0]['Service'];
+		}
+
+		// Either 0 or 2+ potential owners: fail
+		Log::get()->formatLog('Found %d potential owners', count($aPotentialOwners));
+		if ($bUpdateCDRStatus) {
 			$this->_UpdateStatus(CDR_BAD_OWNER);
 		}
 
-		//Debug("Cannot match FNN: ".$this->_arrNormalisedData['FNN']);
-		$this->strFNN = $this->_arrNormalisedData['FNN'];
 		return false;
 	}
 

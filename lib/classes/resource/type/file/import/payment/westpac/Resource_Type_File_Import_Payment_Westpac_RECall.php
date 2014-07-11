@@ -107,12 +107,22 @@ class Resource_Type_File_Import_Payment_Westpac_RECall extends Resource_Type_Fil
 		// TODO: Support all originating systems/transaction types
 		switch ($oRecord->originating_system) {
 			case self::ORIGINATING_SYSTEM_BPAY:
-					$oPaymentResponse = $this->_processTransactionBPAY($oRecord, $oPaymentResponse);
+				$oPaymentResponse = $this->_processTransactionBPAY($oRecord, $oPaymentResponse);
+				break;
+
+			case self::ORIGINATING_SYSTEM_AUSPOST:
+				$oPaymentResponse = $this->_processTransactionAustraliaPost($oRecord, $oPaymentResponse);
 				break;
 
 			default:
 				throw new Exception_Assertion(
-					'Westpac RECall: Encountered unhanded/unrecognised "originating system": ' . var_export($oRecord->originating_system, true),
+					'Westpac RECall: Encountered unhanded/unrecognised "originating system": '
+						. var_export($oRecord->originating_system, true)
+						. (
+							isset(self::$_aPayWayModules[$oRecord->originating_system])
+								? '(' . self::$_aPayWayModules[$oRecord->originating_system] . ')'
+								: ''
+						),
 					array(
 						'Source' => $sRecord,
 						'Parsed' => $oRecord
@@ -160,6 +170,32 @@ class Resource_Type_File_Import_Payment_Westpac_RECall extends Resource_Type_Fil
 		return $oPaymentResponse;
 	}
 
+	private function _processTransactionAustraliaPost($oRecord, Payment_Response $oPaymentResponse) {
+		// Payment Type
+		$oPaymentResponse->payment_type_id = PAYMENT_TYPE_AUSTRALIAPOST;
+
+		// Paid Date
+		// NOTE: No date more specific than file processing date
+		$oPaymentResponse->paid_date = $this->_sProcessingDate;
+
+		// Account
+		$sCustomerReference = trim($oRecord->customer_reference);
+		$iCustomerReferenceCheckDigit = (int)substr($sCustomerReference, -1);
+		$oPaymentResponse->account_id = (int)substr($sCustomerReference, 0, -1);
+		$iCalculatedAccountCheckDigit = (int)MakeLuhn($oPaymentResponse->account_id);
+		if ($iCalculatedAccountCheckDigit !== $iCustomerReferenceCheckDigit) {
+			throw new Exception("Client Reference Check Digit '{$iCustomerReferenceCheckDigit}' doesn't match calculated value of '{$iCalculatedAccountCheckDigit}' for Account '{$oPaymentResponse->account_id}'");
+		}
+
+		// Transaction Data
+		// No additional transaction data
+
+		// Transaction Reference
+		$oPaymentResponse->transaction_reference = trim($oRecord->extended_receipt_number);
+
+		return $oPaymentResponse;
+	}
+
 	private static function _processTransactionRecurringBilling() {
 		// TODO
 	}
@@ -182,6 +218,7 @@ class Resource_Type_File_Import_Payment_Westpac_RECall extends Resource_Type_Fil
 	const TRANSACTION_NATURE_REFUND = 'R';
 
 	const ORIGINATING_SYSTEM_BPAY = 'IB';
+	const ORIGINATING_SYSTEM_AUSPOST = 'AP';
 	private static $_aPayWayModules = array(
 		'CD' => 'PayWay Phone',
 		'NC' => 'PayWay Net and PayWay Virtual Terminal',
@@ -189,7 +226,7 @@ class Resource_Type_File_Import_Payment_Westpac_RECall extends Resource_Type_Fil
 		'RD' => 'PayWay Recurring Billing Direct Debit',
 		'RC' => 'PayWay Recurring Billing Credit Card',
 		self::ORIGINATING_SYSTEM_BPAY => 'BPAY',
-		'AP' => 'Australia Post'
+		self::ORIGINATING_SYSTEM_AUSPOST => 'Australia Post'
 	);
 
 	private static $_aRECallTransacitonTypes = array(

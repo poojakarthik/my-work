@@ -344,6 +344,7 @@ class Invoice_Export {
 			throw new Exception_Database($selAccountSummary->Error());
 		} else {
 			while ($arrSummary = $selAccountSummary->Fetch()) {
+				$arrAccountSummary[$arrSummary['Description']]['RecordTypeId'] = $arrSummary['RecordTypeId'];
 				$arrAccountSummary[$arrSummary['Description']]['TotalCharge'] = number_format($arrSummary['Total'], 2, '.', '');
 				$arrAccountSummary[$arrSummary['Description']]['DisplayType'] = $arrSummary['DisplayType'];
 			}
@@ -588,7 +589,7 @@ class Invoice_Export {
 				case 'selAccountSummary':
 					$arrPreparedStatements[$strStatement] = new StatementSelect(
 						"(ServiceTypeTotal STT JOIN RecordType RT ON STT.RecordType = RT.Id) JOIN RecordType RG ON RT.GroupId = RG.Id",
-						"RG.Description AS Description, SUM(STT.Charge) AS Total, SUM(Records) AS Records, RG.DisplayType AS DisplayType",
+						"RG.Id AS RecordTypeId, RG.Description AS Description, SUM(STT.Charge) AS Total, SUM(Records) AS Records, RG.DisplayType AS DisplayType",
 						"Account = <Account> AND invoice_run_id = <invoice_run_id>",
 						"RG.Description",
 						null,

@@ -1,33 +1,4 @@
 <?php
-//----------------------------------------------------------------------------//
-// (c) copyright 2007 VOIPTEL Pty Ltd
-//
-// NOT FOR EXTERNAL DISTRIBUTION
-//----------------------------------------------------------------------------//
-
-
-//----------------------------------------------------------------------------//
-// require
-//----------------------------------------------------------------------------//
-/**
- * require
- *
- * Handles all file requirements for an application
- *
- * This file should load all files required by an application.
- * This file should not set up any objects or produce any output
- *
- * @file		require.php
- * @language	PHP
- * @package		framework
- * @author		Rich 'Waste' Davis
- * @version		7.07
- * @copyright	2007 VOIPTEL Pty Ltd
- * @license		NOT FOR EXTERNAL DISTRIBUTION
- *
- */
-
-
 // load application modules
 $strApplicationDir = "cli/normalisation/modules/";
 VixenRequire($strApplicationDir."base_module.php");
@@ -46,4 +17,5 @@ VixenRequire($strApplicationDir."module_acenet.php");
 VixenRequire($strApplicationDir."module_ispone.php");
 VixenRequire($strApplicationDir."module_iseek_mobile.php");
 VixenRequire($strApplicationDir."module_telcoblue.php");
- ?>
+VixenRequire($strApplicationDir."module_utilibill.php");
+VixenRequire($strApplicationDir."module_engin_voip.php");

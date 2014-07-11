@@ -142,6 +142,10 @@ class Invoice_Export_XML {
 			self::_addAttribute($xmlItemisationType, 'Records', @count($arrCategory['Itemisation']));
 			self::_addAttribute($xmlItemisationType, 'RenderType', GetConstantName($arrCategory['DisplayType'], 'DisplayType'));
 
+			if (isset($arrCategory['RecordTypeId'])) {
+				self::_addAttribute($xmlItemisationType, 'RecordType', $arrCategory['RecordTypeId']);
+			}
+
 			$xmlItemisationItems = self::_addElement($xmlItemisationType, 'Items');
 			if ($arrCategory['Itemisation']) {
 				foreach ($arrCategory['Itemisation'] as $arrCDR) {
@@ -268,10 +272,12 @@ class Invoice_Export_XML {
 				continue;
 			}
 			//Cli_App_Billing::debug("Rendering...");
+			$oServiceType = Service_Type::getForId($arrService['ServiceType']);
 
 			$xmlService = self::_addElement($xmlServices, 'Service');
 			self::_addAttribute($xmlService, 'FNN', ($arrService['Extension']) ? $arrService['Extension'] : $arrService['FNN']);
-			$xmlService->setAttributeNode(new DOMAttr('ServiceType', Service_Type::getForId($arrService['ServiceType'])->const_name));
+			$xmlService->setAttributeNode(new DOMAttr('ServiceType', $oServiceType->const_name ? $oServiceType->const_name : ''));
+			$xmlService->setAttributeNode(new DOMAttr('ServiceTypeId', $oServiceType->id));
 			self::_addAttribute($xmlService, 'CostCentre', $arrService['CostCentre']);
 			self::_addAttribute($xmlService, 'Plan', $arrService['RatePlan']);
 			self::_addAttribute($xmlService, 'GrandTotal', number_format($arrService['ServiceTotal'], 2, '.', ''));
@@ -283,6 +289,7 @@ class Invoice_Export_XML {
 
 				$xmlItemisationType = self::_addElement($xmlItemisation, 'Category');
 				self::_addAttribute($xmlItemisationType, 'Name', $strName);
+				self::_addAttribute($xmlItemisationType, 'RecordType', $arrChargeType['RecordTypeId']);
 				self::_addAttribute($xmlItemisationType, 'GrandTotal', number_format($arrChargeType['TotalCharge'], 2, '.', ''));
 				self::_addAttribute($xmlItemisationType, 'Records', count($arrChargeType['Itemisation']));
 				self::_addAttribute($xmlItemisationType, 'RenderType', GetConstantName($arrChargeType['DisplayType'], 'DisplayType'));
@@ -310,6 +317,22 @@ class Invoice_Export_XML {
 		}
 		//Cli_App_Billing::debug("Call Types:");
 		//Cli_App_Billing::debug($arrDebugCallTypes);
+
+		//--------------------------------------------------------------------//
+		// Service Types
+		//--------------------------------------------------------------------//
+		$X = new DOM_Factory($domDocument);
+		$aServiceTypes = Service_Type::getAll();
+		$xmlInvoice->appendChild($xmlServiceTypes = $X->ServiceTypes());
+		foreach ($aServiceTypes as $oServiceType) {
+			$xmlServiceTypes->appendChild(
+				$X->ServiceType(array(
+					'Id' => $oServiceType->id,
+					'Name' => $oServiceType->name,
+					'Module' => $oServiceType->module
+				))
+			);
+		}
 
 		// Determine Output/Return data
 		$strXMLOutput = $domDocument->saveXML();

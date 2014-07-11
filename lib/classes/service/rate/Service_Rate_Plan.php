@@ -48,7 +48,7 @@ class Service_Rate_Plan extends ORM_Cached
 	// END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 
-	
+
 	/**
 	 * contractMonthsRemaining()
 	 *
@@ -56,9 +56,9 @@ class Service_Rate_Plan extends ORM_Cached
 	 *
 	 * @param [boolean $bInclusive ] TRUE : The months remaining is rounded up (includes this month) (Default)
 	 * FALSE : The months remaining is rounded down (excludes this month)
-	 * 
+	 *
 	 * @return integer
-	 * 
+	 *
 	 * @method
 	 */
 	public function contractMonthsRemaining($bInclusive=true) {
@@ -66,10 +66,10 @@ class Service_Rate_Plan extends ORM_Cached
 		$iEffectiveEndDatetime = $this->contract_effective_end_datetime ? strtotime($this->contract_effective_end_datetime) : null;
 		$iStartDatetime = strtotime($this->StartDatetime);
 		//throw new Exception("Scheduled Contract End: {$this->contract_scheduled_end_datetime}");
-		
+
 		if ($iScheduledEndDatetime) {
 			$iCurrentDate = time();
-			
+
 			// End Date
 			$sEndDate = date("Y-m-d", $iScheduledEndDatetime + 1);
 
@@ -78,13 +78,13 @@ class Service_Rate_Plan extends ORM_Cached
 			// Never later than the Contract End (effective or scheduled)
 			$iFromDate = max($iCurrentDate, $iStartDatetime);
 			$iFromDate = min($iFromDate, $iScheduledEndDatetime, coalesce($iEffectiveEndDatetime, PHP_INT_MAX));
-			
+
 			return max(0, min(Flex_Date::difference(date('Y-m-d', $iFromDate), $sEndDate, 'm', 'ceil'), Rate_Plan::getForId($this->RatePlan)->ContractTerm));
 		} else {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * calculatePayout()
 	 *
@@ -92,24 +92,24 @@ class Service_Rate_Plan extends ORM_Cached
 	 *
 	 * @param [boolean $bInclusive ] TRUE : The months remaining is rounded up (includes this month) (Default)
 	 * FALSE : The months remaining is rounded down (excludes this month)
-	 * 
+	 *
 	 * @return integer
-	 * 
+	 *
 	 * @method
 	 */
 	public function calculatePayout($bInclusive=true) {
 		$oContractTerms = Contract_Terms::getCurrent();
 		$oRatePlan = Rate_Plan::getForId($this->RatePlan);
-		
+
 		$fTotalPayout = 0.0;
-		
+
 		$iContractMonthsRemaining = $this->contractMonthsRemaining($bInclusive);
 		//throw new Exception("Months Remaining: {$iContractMonthsRemaining}; Invoice Count: {$iInvoiceCount}");
-		
+
 		if ($iContractMonthsRemaining) {
 			// Payout
 			$fTotalPayout += coalesce($this->calculateContractPayout($bInclusive), 0.0);
-			
+
 			// Early Exit Fee
 			$fTotalPayout += coalesce($this->calculateContractExitFee($bInclusive), 0.0);
 		}
@@ -125,7 +125,7 @@ class Service_Rate_Plan extends ORM_Cached
 		$fPayout = 0.0;
 		if ($iContractMonthsRemaining) {
 			if ($iInvoiceCount >= $oContractTerms->contract_payout_minimum_invoices) {
-				return Rate::roundToCurrencyStandard(($iContractMonthsRemaining * $oRatePlan->MinMonthly) * ($oRatePlan->contract_payout_percentage / 100), 2);
+				return Rate::roundToCurrencyStandard(($iContractMonthsRemaining * coalesce($this->min_monthly, $oRatePlan->MinMonthly)) * ($oRatePlan->contract_payout_percentage / 100), 2);
 			}
 		}
 		return null;
@@ -144,7 +144,7 @@ class Service_Rate_Plan extends ORM_Cached
 		}
 		return null;
 	}
-	
+
 	public function getInvoiceCount($bolInclusive=true) {
 		$selInvoiceCount = self::_preparedStatement('selInvoiceCount');
 		if ($selInvoiceCount->Execute($this->toArray()) === false) {
@@ -166,7 +166,7 @@ class Service_Rate_Plan extends ORM_Cached
 		$aRecords = $oStatement->FetchAll();
 		return count($aRecords) > 0 ? new self($aRecords[0]) : null;
 	}
-	
+
 	protected static function _preparedStatement($strStatement) {
 		static $arrPreparedStatements = Array();
 		if (isset($arrPreparedStatements[$strStatement])) {
@@ -196,9 +196,9 @@ class Service_Rate_Plan extends ORM_Cached
 				case 'ubiSelf':
 					$arrPreparedStatements[$strStatement] = new StatementUpdateById(self::$_strStaticTableName);
 					break;
-				
+
 				// UPDATES
-				
+
 				default:
 					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
 			}

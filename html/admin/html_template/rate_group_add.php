@@ -66,10 +66,10 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 	{
 		$this->_intContext = $intContext;
 		$this->_strContainerDivId = $strId;
-		
+
 		$this->LoadJavascript("rate_group_add");
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// Render
 	//------------------------------------------------------------------------//
@@ -79,7 +79,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 	 * Render this HTML Template
 	 *
 	 * Render this HTML Template
-	 * 
+	 *
 	 *
 	 * @method
 	 */
@@ -98,20 +98,20 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 			case HTML_CONTEXT_DEFAULT:
 			default:
 				// This should only be called when the popup window is initially drawn
-			
+
 				// Set Up the form for adding a rate group
 				$this->FormStart("RateGroup", "RateGroup", "Add");
-			
+
 				// Include the flag which specifies whether this Rate Group will be added to a RatePlan
 				DBO()->CallingPage->AddRatePlan->RenderHidden();
-				
+
 				// Include RateGroup.Id as a hidden, and BaseRateGroup.Id if it is set
 				DBO()->RateGroup->Id->RenderHidden();
 				if (DBO()->BaseRateGroup->Id->IsSet)
 				{
 					DBO()->BaseRateGroup->Id->RenderHidden();
 				}
-				
+
 				// Render the RateGroupDetails
 				echo "<div class='GroupedContent'>\n";
 
@@ -133,7 +133,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 							<div class='DefaultLabel'>&nbsp;&nbsp;Cap Limit (\$):</div>
 						</div>";
 
-		
+
 				DBO()->RateGroup->Fleet->RenderInput(CONTEXT_DEFAULT, TRUE);
 
 				// Set the record type and service type, if they have already been defined
@@ -142,32 +142,34 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 				if (DBO()->RecordType->Id->Value)
 				{
 					DBO()->RecordType->Load();
-					$intRecordType	= DBO()->RecordType->Id->Value;
-					$intServiceType	= DBO()->RecordType->ServiceType->Value;
+					$intRecordType	= (int)DBO()->RecordType->Id->Value;
+					$intServiceType	= (int)DBO()->RecordType->ServiceType->Value;
 				}
 				if (DBO()->RateGroup->RecordType->Value)
 				{
-					$intRecordType = DBO()->RateGroup->RecordType->Value;
+					$intRecordType = (int)DBO()->RateGroup->RecordType->Value;
 				}
 				if (DBO()->RateGroup->ServiceType->Value)
 				{
-					$intServiceType = DBO()->RateGroup->ServiceType->Value;
+					$intServiceType = (int)DBO()->RateGroup->ServiceType->Value;
 				}
-				
+
 				// Build the ServiceType Combobox
 				echo "<div class='DefaultElement'>\n";
 				echo "   <div class='DefaultLabel'><span class='RequiredInput'>*&nbsp;</span>Service Type:</div>\n";
 				echo "      <select id='ServiceTypeCombo' name='RateGroup.ServiceType' class='DefaultInputComboBox' style='width:152px;' onchange='Vixen.RateGroupAdd.ChangeServiceType(this.value)'>\n";
 				echo "         <option value='0' selected='selected'>&nbsp;</option>";
-				foreach ($GLOBALS['*arrConstant']['service_type'] as $intKey=>$arrValue)
-				{
-					// Check if this is the currently selected ServiceType
-					$strSelected = ($intServiceType == $intKey) ? "selected='selected'" : "";
-					echo "         <option value='". $intKey ."' $strSelected>". $arrValue['Description'] ."</option>\n";
+
+				foreach (Service_Type::getAll() as $oServiceType) {
+					$sSelected = ($oServiceType->id === $intServiceType) ? 'selected' : '';
+					echo "
+						<option value='{$oServiceType->id}' {$sSelected}>" . htmlspecialchars($oServiceType->description) . "</option>
+					";
 				}
+
 				echo "      </select>\n";
 				echo "</div>\n"; // DefaultElement
-				
+
 				// Build the RecordType Combobox
 				echo "<div class='DefaultElement'>\n";
 				echo "   <div class='DefaultLabel'><span class='RequiredInput'>*&nbsp;</span>Record Type:</div>\n";
@@ -175,12 +177,12 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 				echo "         <option value='0' selected='selected'>&nbsp;</option>";
 				echo "      </select>\n";
 				echo "</div>\n"; // DefaultElement
-				
-				
+
+
 				// Retrieve a list of all Record Types
 				DBL()->RecordType->OrderBy("Name");
 				DBL()->RecordType->Load();
-				
+
 				// Load all the record types into an array.  This will be used by javascript to populate the RecordTypeCombo when a Service Type has been selected
 				$arrRecordTypes = Array();
 				$arrRecordType = Array();
@@ -189,13 +191,13 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 					$arrRecordType['Id'] = $dboRecordType->Id->Value;
 					$arrRecordType['ServiceType'] = $dboRecordType->ServiceType->Value;
 					$arrRecordType['Description'] = $dboRecordType->Description->Value;
-					
+
 					$arrRecordTypes[] = $arrRecordType;
 				}
-				
+
 				// Define the data required of the javascript that handles events and validation of this form
 				$strJsonCode = Json()->encode($arrRecordTypes);
-		
+
 				// Initialise the javascript object
 				echo "<script type='text/javascript'>Vixen.RateGroupAdd.Initialise($strJsonCode, true, '{$this->_objAjax->strId}');</script>\n";
 				if ($intServiceType != 0)
@@ -206,7 +208,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 				{
 					echo "<script type='text/javascript'>Vixen.RateGroupAdd.ChangeRecordType($intRecordType);</script>\n";
 				}
-				
+
 				echo "</div>\n"; // GroupedContent (RateGroup Details)
 				echo "<div class='SmallSeparator'></div>\n";
 
@@ -214,20 +216,20 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 				echo "<div id='RateSelectorControlDiv'>\n";
 				$this->_RenderRateSelectorControl();
 				echo "</div>\n";
-				
+
 				// create the buttons
 				echo "<div class='ButtonContainer'><div class='Right'>\n";
 				$this->Button("Cancel", "Vixen.Popup.Close(this);");
 				$this->Button("Save as Draft", "Vixen.RateGroupAdd.SaveAsDraft()");
 				$this->Button("Commit", "Vixen.RateGroupAdd.Commit()");
 				echo "</div></div>\n"; // Buttons
-				
+
 				$this->FormEnd();
 				break;
 		}
 	}
-	
-	
+
+
 	//------------------------------------------------------------------------//
 	// _RenderRateGroupDetails
 	//------------------------------------------------------------------------//
@@ -248,7 +250,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		DBO()->RateGroup->Name->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask, Array("style:width"=>"380px", "attribute:maxlength"=>255));
 		DBO()->RateGroup->Description->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask, Array("style:width"=>"380px", "attribute:maxlength"=>255));
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// _RenderRateSelectorControl
 	//------------------------------------------------------------------------//
@@ -270,7 +272,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		$strSelectedRates = "";
 
 		// Work out which column each of the rates should go
-		//NOTE: The value of DBO()->Rates->ArrRates->Value is an array.  
+		//NOTE: The value of DBO()->Rates->ArrRates->Value is an array.
 		//This list of rates should be done as a DBList, but this method drastically cuts down the amount of memory required
 		if (DBO()->Rates->ArrRates->Value)
 		{
@@ -287,7 +289,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 					$strDraft = "draft='draft'";
 					$strRateName  = "DRAFT: " . $strRateName;
 				}
-				
+
 				if ($arrRate['Selected'])
 				{
 					// The rate is currently selected
@@ -300,15 +302,15 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 				}
 			}
 		}
-		
+
 		// Draw the controls in a table to space them
 		echo "<table border='0' cellspacing='0' cellpadding='0' width='100%'>\n";
-		
-		// Draw the Titles 
+
+		// Draw the Titles
 		echo "<tr>\n";
 		echo "   <th align='left' width='45%'>Available Rates</th><th align='center' width='10%'>&nbsp;</th><th align='left' width='45%'>Selected Rates</th>";
 		echo "</tr>\n";
-		
+
 		echo "<tr>\n";
 
 		// Draw the Available Rates multi-select combo box
@@ -319,7 +321,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		echo "</select>\n";
 		echo "</div>\n";
 		echo "</td>\n";
-		
+
 		// Draw the buttons
 		echo "<td align='center'>\n";
 		echo "<div class='ButtonContainer'>\n";
@@ -329,7 +331,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		$this->Button("<<", "Vixen.RateGroupAdd.MoveSelectedOptions(\"SelectedRatesCombo\", \"AvailableRatesCombo\");");
 		echo "</div>";
 		echo "</td>\n";
-		
+
 		// Draw the Selected Rates multi-select combo box
 		echo "<td>\n";
 		echo "<div class='DefaultElement'>\n";
@@ -338,9 +340,9 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		echo "</select>\n";
 		echo "</div>\n";
 		echo "</td>\n";
-		
+
 		echo "</tr>\n";
-		
+
 		// Draw the buttons ("Add New Rate", "Edit Rate" and "View Rate Summary")
 		// also used for adding a rate based on an existing
 		echo "<tr>\n";
@@ -357,13 +359,13 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 
 		// Finish the table
 		echo "</table>\n";
-		
+
 		echo "</div>"; // GroupedContent
-		
+
 		echo "<script type='text/javascript'>Vixen.RateGroupAdd.InitialiseRateSelector();</script>";
 	}
-	
-	
+
+
 }
 
 ?>

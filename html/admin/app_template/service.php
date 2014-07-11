@@ -2679,6 +2679,7 @@ class AppTemplateService extends ApplicationTemplate
 		');
 		DBL()->CurrentServiceRate->SetColumns(array(
 			'id' => 'sr.id',
+			'rate_id' => 'r.Id',
 			'name' => 'r.Name',
 			'description' => 'r.Description',
 			'record_type_id' => 'r.RecordType',

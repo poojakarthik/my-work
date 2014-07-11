@@ -510,9 +510,9 @@ class Invoice extends ORM_Cached {
 						) AS Charge,
 						SUM(
 							CASE WHEN CDR.Credit = 1 THEN
-								0 - CDR.Units
+								0 - CAST(CDR.Units AS SIGNED)
 							ELSE
-								CDR.Units
+								CAST(CDR.Units AS SIGNED)
 							END
 						) AS Units,
 						COUNT(CDR.Charge) AS Records,
@@ -612,7 +612,7 @@ class Invoice extends ORM_Cached {
 			}
 		} else {
 			$arrUsageDetails = $this->_addPlanCharges($arrPlanDetails, array($arrServiceDetails), $intServiceId, $oInvoiceSource);
-			$fltMinimumCharge = (float)$arrUsageDetails['MinMonthly'];
+			$fltMinimumCharge = $arrUsageDetails['MinMonthly'];
 		}
 
 		//--------------------------------------------------------------------//
@@ -1192,7 +1192,7 @@ class Invoice extends ORM_Cached {
 		$intLevel = 0;
 		Log::getLog()->log("Earliest CDR: {$strEarliestCDR}");
 		if ($strEarliestCDR) {
-			$fltMinimumCharge = (float)$arrPlanDetails['MinMonthly'];
+			$fltMinimumCharge = (float)coalesce($arrPlanDetails['min_monthly_override'], $arrPlanDetails['MinMonthly']);
 
 			// Scalable Plans
 			if ($arrPlanDetails['Shared']) {
@@ -2314,7 +2314,7 @@ class Invoice extends ORM_Cached {
 				case 'selPlanDetails':
 					$arrPreparedStatements[$strStatement] = new StatementSelect(
 						"ServiceRatePlan JOIN RatePlan ON RatePlan.Id = ServiceRatePlan.RatePlan",
-						"RatePlan.*, ServiceRatePlan.Id AS ServiceRatePlan, ServiceRatePlan.StartDatetime AS EarliestStartDatetime",
+						"RatePlan.*, ServiceRatePlan.Id AS ServiceRatePlan, ServiceRatePlan.StartDatetime AS EarliestStartDatetime, ServiceRatePlan.min_monthly AS min_monthly_override",
 						"ServiceRatePlan.Service = <Service> AND <EffectiveDate> BETWEEN StartDatetime AND EndDatetime",
 						"CreatedOn DESC",
 						"1"

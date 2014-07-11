@@ -1,5 +1,4 @@
 <?php
-
 class File_CSV implements Iterator
 {
 	protected	$_aColumns	= array();
@@ -261,6 +260,66 @@ class File_CSV implements Iterator
 		return count($this->_aRows);
 	}
 
+	public static function parseLineRFC4180($sLine) {
+		$sEncoding = mb_detect_encoding($sLine);
+		$iLineLength = mb_strlen($sLine, $sEncoding);
+		$iLineByteLength = strlen($sLine);
+
+		$sPreparedQuote = preg_quote(self::RFC4180_QUOTE);
+		$sPreparedDelimiter = preg_quote(self::RFC4180_DELIMITER);
+
+		$aParsed = array();
+		$iLineByteOffset = 0;
+		while ($iLineByteOffset < $iLineByteLength) {
+			$iFieldByteOffset = $iLineByteOffset;
+			// Log::get()->log('Trying to match: ' . substr($sLine, $iLineByteOffset));
+
+			if (preg_match("/^{$sPreparedQuote}/u", substr($sLine, $iFieldByteOffset))) {
+				// Encapsulated field
+				$iFieldByteOffset += strlen(self::RFC4180_QUOTE);
+
+				// Match sequence of non-quote (unless escaped) characters
+				$sFieldData = '';
+				$aFieldMatches = array();
+				if (preg_match("/^(?:[^{$sPreparedQuote}]|{$sPreparedQuote}{2})*/u", substr($sLine, $iFieldByteOffset), $aFieldMatches)) {
+					// Log::get()->log(var_export($aFieldMatches, true));
+					$sFieldData = $aFieldMatches[0];
+					$iFieldByteOffset += strlen($sFieldData);
+				}
+
+				// Match end-quote for encapsulation
+				$aEncapsulationEndMatches = array();
+				if (preg_match("/^[^{$sPreparedQuote}]/u", substr($sLine, $iFieldByteOffset), $aEncapsulationEndMatches)) {
+					throw new DomainException('Encapsulated field ' . var_export($sFieldData, true) .  ' at byte offset ' . $iLineByteOffset . ' not terminated by a quote, instead found: ' . var_export($aEncapsulationEndMatches[0], true));
+				}
+				$iFieldByteOffset += strlen(self::RFC4180_QUOTE);
+
+				$sFieldContents = preg_replace("/{$sPreparedQuote}{2}/u", self::RFC4180_QUOTE, $sFieldData);
+			} else {
+				// Unencapsulated field
+				$sFieldContents = '';
+				$aFieldMatches = array();
+				if (preg_match("/^[^{$sPreparedDelimiter}]*/u", substr($sLine, $iFieldByteOffset), $aFieldMatches)) {
+					$sFieldContents = $aFieldMatches[0];
+					$iFieldByteOffset += strlen($sFieldContents);
+				}
+			}
+
+			// Match delimiter or end-of-line
+			if ($iFieldByteOffset < $iLineByteLength) {
+				$aFieldDelimiterMatches = array();
+				if (preg_match("/^[^{$sPreparedDelimiter}]/u", substr($sLine, $iFieldByteOffset), $aFieldDelimiterMatches)) {
+					throw new DomainException('Field ' . var_export($sFieldContents, true) .  ' at byte offset ' . $iLineByteOffset . ' not terminated by a delimiter or end-of-line, instead found: ' . var_export($aFieldDelimiterMatches[0], true));
+				}
+				$iFieldByteOffset += strlen(self::RFC4180_DELIMITER);
+			}
+
+			$iLineByteOffset = $iFieldByteOffset;
+			$aParsed[] = $sFieldContents;
+		}
+		return $aParsed;
+	}
+
 	// Mimic the fgetcsv() function from PHP 5.3
 	public static function parseLine($sLine, $sDelimiter=',', $sQuote='"', $sEscape='\\')
 	{
@@ -392,5 +451,3 @@ class File_CSV implements Iterator
 		return $mValue;
 	}
 }
-
-?>
