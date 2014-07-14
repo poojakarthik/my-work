@@ -15,6 +15,72 @@ button-icon(url, width=auto, height=auto)
 	margin-right .5ch
 	vertical-align bottom
 
+button-icon-background(url, width=auto, height=auto)
+	content '\0020'
+	background-image url(url)
+	background-size width height
+	height width
+	width height
+	display inline-block
+	margin-right .5ch
+	vertical-align bottom
+
+// Buttons
+appearance-flex-button()
+	background-image linear-gradient(to bottom, rgba(255, 255, 255, .6), rgba(255, 255, 255, 0)) // NOTE: Original gradient curve isn't linear, more exponential, and height-limited
+	background-color #ddd
+	color #000
+	font-family Arial, sans-serif
+	font-size inherit
+	font-weight bold
+	margin .2em
+	padding .1em
+	border-top solid 1px #999
+	border-left solid 1px #999
+	border-bottom solid 1px #666
+	border-right solid 1px #666
+	border-radius 4px
+	cursor pointer
+	-moz-user-select none
+	-webkit-user-select none
+	text-shadow 0 1px 0 rgba(255, 255, 255, 0.8)
+
+appearance-flex-button-active()
+	background-image linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .6))
+
+skin-flex-radiogroupfieldset()
+	defieldsetify()
+	appearance-flex-button()
+	background-image none
+	background-color transparent
+
+	display inline-block
+	white-space nowrap
+	overflow hidden
+	padding 0
+
+	& > label
+		appearance-flex-radiogroupfieldset-inactive()
+		cursor pointer
+		margin 0
+		display inline-block
+		height 100%
+
+		&:not(:first-child)
+			border-left solid 1px #999
+
+	& input[type='radio']
+		display none
+
+appearance-flex-radiogroupfieldset-inactive()
+	background-image linear-gradient(to bottom, rgba(255, 255, 255, .6), rgba(255, 255, 255, 0))
+	background-color #ddd
+
+appearance-flex-radiogroupfieldset-active()
+	background-image linear-gradient(to top, #489ecf, #61bbde)
+	color #fff
+	text-shadow 0 -1px 0 rgba(0, 0, 0, 0.3)
+
 // Forms
 defieldsetify()
 	border none

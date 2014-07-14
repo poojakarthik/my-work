@@ -668,134 +668,6 @@ div.clearing {
 		stroke: none;
 	}
 
-	.flex-page-account-record-type-visibility .visibility {
-		display: inline-block;
-		border: 0;
-		margin: 0;
-		padding: 0;
-	}
-	.flex-page-account-record-type-visibility .visibility > label {
-		display: inline-block;
-		border: 1px solid #8F8F8F;
-		padding: 0;
-		overflow: hidden;
-	}
-	.flex-page-account-record-type-visibility .visibility > label:first-child {
-		border-top-left-radius: .5ch;
-		border-bottom-left-radius: .5ch;
-	}
-	.flex-page-account-record-type-visibility .visibility > label:last-child {
-		border-top-right-radius: .5ch;
-		border-bottom-right-radius: .5ch;
-	}
-	.flex-page-account-record-type-visibility .visibility > label:not(:last-child) {
-		border-right: 0;
-	}
-	.flex-page-account-record-type-visibility .visibility input {
-		display: none;
-	}
-	.flex-page-account-record-type-visibility .visibility span {
-		display: block;
-		font-size: 0;
-		background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4));
-		height: 1.5rem;
-		width: 1.5rem;
-		line-height: 1.5rem;
-		text-align: center;
-		color: #444;
-	}
-	.flex-page-account-record-type-visibility .visibility input:checked + span {
-		color: green;
-		background: linear-gradient(to top, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, .6));
-	}
-	.flex-page-account-record-type-visibility .visibility input[value='hidden'] + span::before {
-		content: url('/admin/img/record-type-visibility-hidden.png');
-		font-size: 1rem;
-		top: 0.1em;
-		position: relative;
-	}
-	.flex-page-account-record-type-visibility .visibility input[value='visible'] + span::before {
-		content: url('/admin/img/record-type-visibility-visible.png');
-		font-size: 1rem;
-		top: 0.1em;
-		position: relative;
-	}
-	.flex-page-account-record-type-visibility .visibility input[value='inherit'] + span::before {
-		content: url('/admin/img/record-type-visibility-inherit.png');
-		font-size: 1rem;
-		top: 0.2em;
-		position: relative;
-	}
-	.flex-page-customer-group-record-type-visibility .visibility {
-		display: inline-block;
-		border: 0;
-		margin: 0;
-		padding: 0;
-	}
-	.flex-page-customer-group-record-type-visibility .visibility > label {
-		display: inline-block;
-		border: 1px solid #8F8F8F;
-		padding: 0;
-		overflow: hidden;
-	}
-	.flex-page-customer-group-record-type-visibility .visibility > label:first-child {
-		border-top-left-radius: .5ch;
-		border-bottom-left-radius: .5ch;
-	}
-	.flex-page-customer-group-record-type-visibility .visibility > label:last-child {
-		border-top-right-radius: .5ch;
-		border-bottom-right-radius: .5ch;
-	}
-	.flex-page-customer-group-record-type-visibility .visibility > label:not(:last-child) {
-		border-right: 0;
-	}
-	.flex-page-customer-group-record-type-visibility .visibility input {
-		display: none;
-	}
-	.flex-page-customer-group-record-type-visibility .visibility span {
-		display: block;
-		font-size: 0;
-		background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4));
-		height: 1.5rem;
-		width: 1.5rem;
-		line-height: 1.5rem;
-		text-align: center;
-		color: #444;
-	}
-	.flex-page-customer-group-record-type-visibility .visibility input:checked + span {
-		color: green;
-		background: linear-gradient(to top, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, .6));
-	}
-	.flex-page-customer-group-record-type-visibility .visibility input[value='hidden'] + span::before {
-		content: url('/admin/img/record-type-visibility-hidden.png');
-		font-size: 1rem;
-		top: 0.1em;
-		position: relative;
-	}
-	.flex-page-customer-group-record-type-visibility .visibility input[value='visible'] + span::before {
-		content: url('/admin/img/record-type-visibility-visible.png');
-		font-size: 1rem;
-		top: 0.1em;
-		position: relative;
-	}
-	.flex-page-customer-group-record-type-visibility .visibility input[value='inherit'] + span::before {
-		content: url('/admin/img/record-type-visibility-inherit.png');
-		font-size: 1rem;
-		top: 0.2em;
-		position: relative;
-	}
-
-	.flex-page-customer-group-record-type-visibility-buttons {
-		border: 0;
-		margin: 0;
-		float: right;
-	}
-	.flex-page-account-record-type-visibility-buttons {
-		border: 0;
-		margin: 0;
-		float: right;
-	}
-
 	/************************ START - Page Header - START *************************/
 	div#header {
 		width: 100%;
@@ -12692,4 +12564,230 @@ div.clearing {
 .flex-page-account-service-plan-overriderates-recordtypes:empty::before {
   content: 'There are no override rates currently active or upcoming.';
   font-style: oblique;
+}
+/**************************** Component: Account Invoice Itemisation ***************************/
+.flex-page-account-record-type-visibility table.reflex {
+  width: 100%;
+}
+.flex-page-account-record-type-visibility-recordtype-setting,
+.flex-page-account-record-type-visibility-account-setting {
+  border: none;
+  margin: 0;
+  padding: 0;
+  background-image: linear-gradient(to bottom, rgba(255,255,255,0.6), rgba(255,255,255,0));
+  background-color: #ddd;
+  color: #000;
+  font-family: Arial, sans-serif;
+  font-size: inherit;
+  font-weight: bold;
+  margin: 0.2em;
+  padding: 0.1em;
+  border-top: solid 1px #999;
+  border-left: solid 1px #999;
+  border-bottom: solid 1px #666;
+  border-right: solid 1px #666;
+  border-radius: 4px;
+  cursor: pointer;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+  background-image: none;
+  background-color: transparent;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  padding: 0;
+  background-image: none;
+}
+.flex-page-account-record-type-visibility-recordtype-setting > label,
+.flex-page-account-record-type-visibility-account-setting > label {
+  background-image: linear-gradient(to bottom, rgba(255,255,255,0.6), rgba(255,255,255,0));
+  background-color: #ddd;
+  cursor: pointer;
+  margin: 0;
+  display: inline-block;
+  height: 100%;
+}
+.flex-page-account-record-type-visibility-recordtype-setting > label:not(:first-child),
+.flex-page-account-record-type-visibility-account-setting > label:not(:first-child) {
+  border-left: solid 1px #999;
+}
+.flex-page-account-record-type-visibility-recordtype-setting input[type='radio'],
+.flex-page-account-record-type-visibility-account-setting input[type='radio'] {
+  display: none;
+}
+.flex-page-account-record-type-visibility-recordtype-setting label,
+.flex-page-account-record-type-visibility-account-setting label {
+  padding: 0;
+}
+.flex-page-account-record-type-visibility-recordtype-setting input[type='radio'] + span,
+.flex-page-account-record-type-visibility-account-setting input[type='radio'] + span {
+  background-image: linear-gradient(to bottom, rgba(255,255,255,0.6), rgba(255,255,255,0));
+  background-color: #ddd;
+  display: inline-block;
+  font-size: 0;
+  padding: 0.2rem;
+}
+.flex-page-account-record-type-visibility-recordtype-setting input[type='radio'] + span::before,
+.flex-page-account-record-type-visibility-account-setting input[type='radio'] + span::before {
+  margin: 0;
+}
+.flex-page-account-record-type-visibility-recordtype-setting input[type='radio']:checked + span,
+.flex-page-account-record-type-visibility-account-setting input[type='radio']:checked + span {
+  background-image: linear-gradient(to top, #489ecf, #61bbde);
+  color: #fff;
+  text-shadow: 0 -1px 0 rgba(0,0,0,0.3);
+}
+.flex-page-account-record-type-visibility-recordtype-setting input[value='hidden'] + span::before,
+.flex-page-account-record-type-visibility-account-setting input[value='hidden'] + span::before {
+  content: '\0020';
+  background-image: url("/admin/img/record-type-visibility-hidden.png");
+  background-size: 16px 16px;
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.flex-page-account-record-type-visibility-recordtype-setting input[value='visible'] + span::before,
+.flex-page-account-record-type-visibility-account-setting input[value='visible'] + span::before {
+  content: '\0020';
+  background-image: url("/admin/img/record-type-visibility-visible.png");
+  background-size: 16px 16px;
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.flex-page-account-record-type-visibility-recordtype-setting input[value='inherit'] + span::before,
+.flex-page-account-record-type-visibility-account-setting input[value='inherit'] + span::before {
+  content: '\0020';
+  background-image: url("/admin/img/record-type-visibility-inherit.png");
+  background-size: 16px 16px;
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.flex-page-account-record-type-visibility-account-buttons,
+.flex-page-account-record-type-visibility-recordtype-buttons {
+  border: none;
+  margin: 0;
+  padding: 0;
+  text-align: right;
+}
+/**************************** Component: Customer Group Invoice Itemisation ***************************/
+.flex-page-customer-group-record-type-visibility table.reflex {
+  width: 100%;
+}
+.flex-page-customer-group-record-type-visibility-recordtype-setting,
+.flex-page-customer-group-record-type-visibility-customergroup-setting {
+  border: none;
+  margin: 0;
+  padding: 0;
+  background-image: linear-gradient(to bottom, rgba(255,255,255,0.6), rgba(255,255,255,0));
+  background-color: #ddd;
+  color: #000;
+  font-family: Arial, sans-serif;
+  font-size: inherit;
+  font-weight: bold;
+  margin: 0.2em;
+  padding: 0.1em;
+  border-top: solid 1px #999;
+  border-left: solid 1px #999;
+  border-bottom: solid 1px #666;
+  border-right: solid 1px #666;
+  border-radius: 4px;
+  cursor: pointer;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+  background-image: none;
+  background-color: transparent;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  padding: 0;
+  background-image: none;
+}
+.flex-page-customer-group-record-type-visibility-recordtype-setting > label,
+.flex-page-customer-group-record-type-visibility-customergroup-setting > label {
+  background-image: linear-gradient(to bottom, rgba(255,255,255,0.6), rgba(255,255,255,0));
+  background-color: #ddd;
+  cursor: pointer;
+  margin: 0;
+  display: inline-block;
+  height: 100%;
+}
+.flex-page-customer-group-record-type-visibility-recordtype-setting > label:not(:first-child),
+.flex-page-customer-group-record-type-visibility-customergroup-setting > label:not(:first-child) {
+  border-left: solid 1px #999;
+}
+.flex-page-customer-group-record-type-visibility-recordtype-setting input[type='radio'],
+.flex-page-customer-group-record-type-visibility-customergroup-setting input[type='radio'] {
+  display: none;
+}
+.flex-page-customer-group-record-type-visibility-recordtype-setting label,
+.flex-page-customer-group-record-type-visibility-customergroup-setting label {
+  padding: 0;
+}
+.flex-page-customer-group-record-type-visibility-recordtype-setting input[type='radio'] + span,
+.flex-page-customer-group-record-type-visibility-customergroup-setting input[type='radio'] + span {
+  background-image: linear-gradient(to bottom, rgba(255,255,255,0.6), rgba(255,255,255,0));
+  background-color: #ddd;
+  display: inline-block;
+  font-size: 0;
+  padding: 0.2rem;
+}
+.flex-page-customer-group-record-type-visibility-recordtype-setting input[type='radio'] + span::before,
+.flex-page-customer-group-record-type-visibility-customergroup-setting input[type='radio'] + span::before {
+  margin: 0;
+}
+.flex-page-customer-group-record-type-visibility-recordtype-setting input[type='radio']:checked + span,
+.flex-page-customer-group-record-type-visibility-customergroup-setting input[type='radio']:checked + span {
+  background-image: linear-gradient(to top, #489ecf, #61bbde);
+  color: #fff;
+  text-shadow: 0 -1px 0 rgba(0,0,0,0.3);
+}
+.flex-page-customer-group-record-type-visibility-recordtype-setting input[value='hidden'] + span::before,
+.flex-page-customer-group-record-type-visibility-customergroup-setting input[value='hidden'] + span::before {
+  content: '\0020';
+  background-image: url("/admin/img/record-type-visibility-hidden.png");
+  background-size: 16px 16px;
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.flex-page-customer-group-record-type-visibility-recordtype-setting input[value='visible'] + span::before,
+.flex-page-customer-group-record-type-visibility-customergroup-setting input[value='visible'] + span::before {
+  content: '\0020';
+  background-image: url("/admin/img/record-type-visibility-visible.png");
+  background-size: 16px 16px;
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.flex-page-customer-group-record-type-visibility-recordtype-setting input[value='inherit'] + span::before,
+.flex-page-customer-group-record-type-visibility-customergroup-setting input[value='inherit'] + span::before {
+  content: '\0020';
+  background-image: url("/admin/img/record-type-visibility-inherit.png");
+  background-size: 16px 16px;
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.flex-page-customer-group-record-type-visibility-customergroup-buttons,
+.flex-page-customer-group-record-type-visibility-recordtype-buttons {
+  border: none;
+  margin: 0;
+  padding: 0;
+  text-align: right;
 }

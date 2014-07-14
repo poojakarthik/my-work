@@ -1,12 +1,13 @@
+"use strict";
 
-var H						= require('fw/dom/factory'), // HTML
-	S						= H.S, // SVG
-	Class					= require('fw/class'),
-	Component				= require('fw/component'),
-	XHRRequest				= require('fw/xhrrequest'),
-	Form					= require('fw/component/form'),
-	Checkbox				= require('fw/component/control/checkbox'),
-	RecordTypeVisibilityNew	= require('./record-type-visibility/new');
+var H = require('fw/dom/factory'), // HTML
+	S = H.S, // SVG
+	Class = require('fw/class'),
+	Component = require('fw/component'),
+	XHRRequest = require('fw/xhrrequest'),
+	Form = require('fw/component/form'),
+	Checkbox = require('fw/component/control/checkbox'),
+	RecordTypeVisibilityNew = require('./record-type-visibility/new');
 
 
 var self = new Class({
@@ -27,7 +28,7 @@ var self = new Class({
 	// ----------------------------------------------------------------------------------- //
 	_buildUI	: function() {
 		// Overriding default layout style.
-		$$('.maximum-area-body')[0].addClassName('flex-page-customer-group-record-type-visibility-container');
+		// $$('.maximum-area-body')[0].addClassName('flex-page-customer-group-record-type-visibility-container');
 
 		this.NODE = H.div(
 			this._oConfiguration = new Form({onsubmit: function() {/*this._handleSubmit();*/}.bind(this)},
@@ -48,21 +49,21 @@ var self = new Class({
 						H.tr(
 							H.td({class: 'configuration-default-record-type-visibility-label'}, 'Default for all Record Types'),
 							H.td(
-								H.fieldset({class: 'visibility configuration-default-record-type-visibility'},
-									this._oConfigurationNotVisible = H.label({class: 'visibility-inherit', title: 'Always Hidden'},
-										H.input({type: 'radio', name: 'default_record_type_visibility', value: 'hidden'}),
-										H.span('Hidden')
-									),
-									this._oConfigurationVisible = H.label({class: 'visibility-inherit', title: 'Always Visible'},
+								H.fieldset({class: 'flex-page-customer-group-record-type-visibility-customergroup-setting'},
+									this._oConfigurationVisible = H.label({title: 'Always Visible'},
 										H.input({type: 'radio', name: 'default_record_type_visibility', value: 'visible'}),
 										H.span('Visible')
+									),
+									this._oConfigurationNotVisible = H.label({title: 'Always Hidden'},
+										H.input({type: 'radio', name: 'default_record_type_visibility', value: 'hidden'}),
+										H.span('Hidden')
 									)
 								)
 							)
 						)
 					)
 				),
-				H.fieldset({class: 'flex-page-customer-group-record-type-visibility-buttons'},
+				H.fieldset({class: 'flex-page-customer-group-record-type-visibility-customergroup-buttons'},
 					this._oConfigurationSaveButton = H.button({'type':'button', 'class':'icon-button'},
 						H.img({src: '/admin/img/template/tick.png','width':'16','height':'16'}),
 						H.span('Save Customer Group Setting')
@@ -94,10 +95,10 @@ var self = new Class({
 						)
 					)*/
 				),
-				H.fieldset({class: 'flex-page-customer-group-record-type-visibility-buttons'},
+				H.fieldset({class: 'flex-page-customer-group-record-type-visibility-recordtype-buttons'},
 					this._oSaveButton = H.button({'type':'button', 'class':'icon-button'},
 						H.img({src: '/admin/img/template/tick.png','width':'16','height':'16'}),
-						H.span('Save')
+						H.span('Save Individual Settings')
 					).observe('click', this._handleSaveCustomerGroupRecordTypes.bind(this))
 				)
 			)
@@ -165,7 +166,7 @@ var self = new Class({
 					H.input({type: 'radio', name: 'record_types.'+oRecordTypes[iIndex].Id+'.visibility', value: 'visible'}),
 					H.span({}, 'Visible')
 				);
-				var oCustomerGroupRecordTypeVisibilityRecord = H.fieldset({class: 'visibility'},
+				var oCustomerGroupRecordTypeVisibilityRecord = H.fieldset({class: 'flex-page-customer-group-record-type-visibility-recordtype-setting'},
 					oVisibleElement,
 					oInheritElement,
 					oNotVisibleElement
@@ -200,7 +201,7 @@ var self = new Class({
 
 	_getFormData : function() {
 		var aData = [];
-		var aRecordTypes = this.NODE.querySelectorAll(".flex-page-customer-group-record-type-visibility fieldset input:checked")
+		var aRecordTypes = this.NODE.querySelectorAll(".flex-page-customer-group-record-type-visibility-recordtype-setting input:checked");
 		for(var iIndex=0; iIndex<aRecordTypes.length; iIndex++){
 			if(aRecordTypes.hasOwnProperty(iIndex) && iIndex !== 'length') {
 				var iRecordTypeId	= parseInt(aRecordTypes[iIndex].getAttribute('name').split(".")[1]);
@@ -220,7 +221,7 @@ var self = new Class({
 	_handleSaveConfiguration : function() {
 		try {
 			// Get configuration
-			var oNode = this.NODE.querySelectorAll(".configuration-default-record-type-visibility input:checked")
+			var oNode = this.NODE.querySelectorAll(".flex-page-customer-group-record-type-visibility-customergroup-setting input:checked");
 			var sVisibility = oNode[0].getAttribute("value");
 			var iDefaultRecordTypeVisibility = (sVisibility == "visible") ? 1 : 0;
 			var oData = {
@@ -247,7 +248,7 @@ var self = new Class({
 			this._save(this._getFormData(), function() {
 				this._saveCompleted();
 				this._oSaveButton.enable();
-				this._oSaveButton.select('span')[0].update('Save');
+				this._oSaveButton.select('span')[0].update('Save Individual Settings');
 			}.bind(this));
 		} catch (sError) {
 			// Alert
@@ -327,18 +328,7 @@ var self = new Class({
 				}
 			}.bind(this)
 		});
-	},
-
-	// ----------------------------------------------------------------------------------- //
-	// Statics
-	// ----------------------------------------------------------------------------------- //
-	statics : {
-		STATIC_DEFINITION : null,
-		staticMethod : function() {
-			// Sample
-		}
 	}
-
 });
 
 return self;
