@@ -15,6 +15,7 @@ var self = new Class({
 	construct	: function() {
 		this.CONFIG = Object.extend({
 			iCustomerGroupId : {},
+			sCustomerGroupInternalName : {},
 			iCustomerGroupDefaultRecordTypeVisibility : {}
 		}, this.CONFIG || {});
 		this._super.apply(this, arguments);
@@ -27,6 +28,7 @@ var self = new Class({
 	_buildUI	: function() {
 		// Overriding default layout style.
 		$$('.maximum-area-body')[0].addClassName('flex-page-customer-group-record-type-visibility-container');
+
 		this.NODE = H.div(
 			this._oConfiguration = new Form({onsubmit: function() {/*this._handleSubmit();*/}.bind(this)},
 				H.table({class: 'reflex highlight-rows'},
@@ -44,7 +46,7 @@ var self = new Class({
 					),
 					H.tbody(
 						H.tr(
-							H.td({}, 'Default Invoice Itemisation'),
+							H.td({class: 'configuration-default-record-type-visibility-label'}, 'Default for all Record Types'),
 							H.td(
 								H.fieldset({class: 'visibility configuration-default-record-type-visibility'},
 									this._oConfigurationNotVisible = H.label({class: 'visibility-inherit', title: 'Always Hidden'},
@@ -111,6 +113,11 @@ var self = new Class({
 	_syncUI	: function() {
 		try {
 			if (!this._bInitialised) {
+
+				if(this.get('sCustomerGroupInternalName')) {
+					this.NODE.select('.configuration-default-record-type-visibility-label').first().update('Default for all Record Types in '+this.get('sCustomerGroupInternalName'));
+				}
+
 				// Set the Default Record Type Visibility Radio.
 				if(this.get('iCustomerGroupDefaultRecordTypeVisibility') === 1) {
 					this._oConfigurationVisible.select('input').first().checked = true;

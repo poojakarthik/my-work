@@ -45,7 +45,7 @@ var self = new Class({
 					),
 					H.tbody(
 						H.tr(
-							H.td({}, 'Default Invoice Itemisation'),
+							H.td({}, 'Default for all Record Types on this Account'),
 							H.td(
 								H.fieldset({class: 'visibility configuration-default-record-type-visibility'},
 									this._oConfigurationNotVisible = H.label({class: 'visibility-inherit', title: 'Always Hidden'},

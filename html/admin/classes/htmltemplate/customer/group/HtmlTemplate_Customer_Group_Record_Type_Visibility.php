@@ -17,6 +17,7 @@ class HtmlTemplate_Customer_Group_Record_Type_Visibility extends FlexHtmlTemplat
 					new require('flex/component/page/customer/group/record-type-visibility')({
 						// Component.CONFIG
 						'iCustomerGroupId' : <?php echo $this->mxdDataToRender['iCustomerGroupId']; ?>,
+						'sCustomerGroupInternalName' : '<?php echo $this->mxdDataToRender['sCustomerGroupInternalName']; ?>',
 						'iCustomerGroupDefaultRecordTypeVisibility' : <?php echo $this->mxdDataToRender['iCustomerGroupDefaultRecordTypeVisibility']; ?>
 					});
 				})

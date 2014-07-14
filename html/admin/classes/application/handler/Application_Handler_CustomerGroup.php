@@ -9,6 +9,7 @@ class Application_Handler_CustomerGroup extends Application_Handler {
 
 		$detailsToRender = array();
 		$detailsToRender['iCustomerGroupId'] = $oCustomerGroup->Id;
+		$detailsToRender['sCustomerGroupInternalName'] = $oCustomerGroup->internal_name;
 		$detailsToRender['iCustomerGroupDefaultRecordTypeVisibility'] = $oCustomerGroup->default_record_type_visibility;
 
 		AppTemplateCustomerGroup::BuildContextMenu($oCustomerGroup->Id);
