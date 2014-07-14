@@ -12,14 +12,6 @@ class Flex_Rollout_Version_000271 extends Flex_Rollout_Version {
 		$aOperations = array(
 
 			array(
-				'sDescription' => "Add default_record_type_visibility column to Account",
-				'sAlterSQL' => "ALTER TABLE 	Account
-								ADD COLUMN 		default_record_type_visibility 		TINYINT UNSIGNED DEFAULT NULL;",
-				'sRollbackSQL' => "	ALTER TABLE 		Account
-									DROP COLUMN 		default_record_type_visibility;",
-				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
-			),
-			array(
 				'sDescription' => "Add default_record_type_visibility column to CustomerGroup",
 				'sAlterSQL' => "ALTER TABLE 	CustomerGroup
 								ADD COLUMN 		default_record_type_visibility 		TINYINT UNSIGNED NOT NULL DEFAULT 1;",

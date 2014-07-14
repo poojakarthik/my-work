@@ -18,46 +18,6 @@ class Flex_Rollout_Version_000278 extends Flex_Rollout_Version {
 				'sRollbackSQL' => "	ALTER TABLE 		Account
 									DROP COLUMN 		default_record_type_visibility;",
 				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
-			),
-			array(
-				'sDescription' => "Add default_record_type_visibility column to CustomerGroup",
-				'sAlterSQL' => "ALTER TABLE 	CustomerGroup
-								ADD COLUMN 		default_record_type_visibility 		TINYINT UNSIGNED NOT NULL DEFAULT 1;",
-				'sRollbackSQL' => "	ALTER TABLE 		CustomerGroup
-									DROP COLUMN 		default_record_type_visibility;",
-				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
-			),
-			/* Show Bill Itemisation setting for Customer Groups */
-			array(
-				'sDescription'		=> "Create customer_group_record_type_visibility table",
-				'sAlterSQL'			=> "CREATE TABLE customer_group_record_type_visibility (
-											id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Unique Id for the Customer Group Record Type',
-											customer_group_id BIGINT NOT NULL COMMENT 'Customer Group',
-											record_type_id BIGINT UNSIGNED NOT NULL COMMENT 'Record Type',
-											is_visible TINYINT	UNSIGNED NOT NULL COMMENT 'Visibility Status, 1=Visible, 0=Invisible',
-
-											CONSTRAINT pk_customer_group_record_type_visibility_id PRIMARY KEY (id),
-											CONSTRAINT fk_customer_group_record_type_visibility_customer_group_id FOREIGN KEY (customer_group_id) REFERENCES CustomerGroup(Id) ON UPDATE CASCADE ON DELETE RESTRICT,
-											CONSTRAINT fk_customer_group_record_type_visibility_record_type_id FOREIGN KEY (record_type_id) REFERENCES RecordType(Id) ON UPDATE CASCADE ON DELETE RESTRICT
-										) ENGINE=InnoDB;",
-				'sRollbackSQL'		=> "DROP TABLE customer_group_record_type_visibility;",
-				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
-			),
-			/* Show Bill Itemisation setting for Accounts */
-			array(
-				'sDescription'		=> "Create account_record_type_visibility table",
-				'sAlterSQL'			=> "CREATE TABLE account_record_type_visibility (
-											id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Unique Id for the Account Record Type',
-											account_id BIGINT UNSIGNED NOT NULL COMMENT 'Account',
-											record_type_id BIGINT UNSIGNED NOT NULL COMMENT 'Record Type',
-											is_visible TINYINT	UNSIGNED NOT NULL COMMENT 'Visibility Status, 1=Visible, 0=Invisible',
-
-											CONSTRAINT pk_account_record_type_visibility_id PRIMARY KEY (id),
-											CONSTRAINT fk_account_record_type_visibility_account_id FOREIGN KEY (account_id) REFERENCES Account(Id) ON UPDATE CASCADE ON DELETE RESTRICT,
-											CONSTRAINT fk_account_record_type_visibility_record_type_id FOREIGN KEY (record_type_id) REFERENCES RecordType(Id) ON UPDATE CASCADE ON DELETE RESTRICT
-										) ENGINE=InnoDB;",
-				'sRollbackSQL'		=> "DROP TABLE account_record_type_visibility;",
-				'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 			)
 
 		);
