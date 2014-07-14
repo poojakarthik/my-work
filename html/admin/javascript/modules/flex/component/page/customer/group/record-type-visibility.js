@@ -115,7 +115,7 @@ var self = new Class({
 			if (!this._bInitialised) {
 
 				if(this.get('sCustomerGroupInternalName')) {
-					this.NODE.select('.configuration-default-record-type-visibility-label').first().update('Default for all Record Types in '+this.get('sCustomerGroupInternalName'));
+					this.NODE.select('.configuration-default-record-type-visibility-label').first().update('Default for all Record Types on '+this.get('sCustomerGroupInternalName'));
 				}
 
 				// Set the Default Record Type Visibility Radio.
