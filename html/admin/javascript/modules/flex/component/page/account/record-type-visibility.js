@@ -68,7 +68,7 @@ var self = new Class({
 				H.section({class: 'flex-page-account-record-type-visibility-configuration-buttons'},
 					this._oConfigurationSaveButton = H.button({'type':'button', 'class':'icon-button'},
 						H.img({src: '/admin/img/template/tick.png','width':'16','height':'16'}),
-						H.span('Save')
+						H.span('Save Account Setting')
 					).observe('click', this._handleSaveConfiguration.bind(this))
 				)
 			),
@@ -241,7 +241,7 @@ var self = new Class({
 			this._saveConfiguration(oData, function() {
 				this._saveCompleted();
 				this._oConfigurationSaveButton.enable();
-				this._oConfigurationSaveButton.select('span')[0].update('Save');
+				this._oConfigurationSaveButton.select('span')[0].update('Save Account Setting');
 			}.bind(this));
 		} catch (sError) {
 			// Alert
