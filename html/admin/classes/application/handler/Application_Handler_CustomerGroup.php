@@ -16,7 +16,7 @@ class Application_Handler_CustomerGroup extends Application_Handler {
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->ViewAllCustomerGroups();
 		BreadCrumb()->ViewCustomerGroup($oCustomerGroup->Id, $oCustomerGroup->name);
-		BreadCrumb()->SetCurrentPage("Record Type Visibility");
+		BreadCrumb()->SetCurrentPage("Invoice Itemisation Visibility");
 
 		$this->LoadPage('customer_group_record_type_visibility', HTML_CONTEXT_DEFAULT, $detailsToRender);
 	}

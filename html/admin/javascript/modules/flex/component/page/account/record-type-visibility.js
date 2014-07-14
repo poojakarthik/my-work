@@ -45,7 +45,7 @@ var self = new Class({
 					),
 					H.tbody(
 						H.tr(
-							H.td({}, 'Default Record Type Visibility'),
+							H.td({}, 'Default Invoice Itemisation Visibility'),
 							H.td(
 								H.fieldset({class: 'visibility configuration-default-record-type-visibility'},
 									this._oConfigurationNotVisible = H.label({class: 'visibility-inherit', title: 'Always Hidden'},
@@ -76,7 +76,7 @@ var self = new Class({
 				H.table({class: 'reflex highlight-rows'},
 					H.caption(
 						H.div({id: 'caption_bar', class: 'caption_bar'},
-							H.div({id: "caption_title", class: "caption_title"}, 'Account Record Type Visibility'),
+							H.div({id: "caption_title", class: "caption_title"}, 'Account Invoice Itemisation Visibility'),
 							H.div({id: 'caption_options', class: 'caption_options'})
 						)
 					),
