@@ -62,7 +62,7 @@ var self = new Class({
 						)
 					)
 				),
-				H.section({class: 'flex-page-customer-group-record-type-visibility-configuration-buttons'},
+				H.fieldset({class: 'flex-page-customer-group-record-type-visibility-buttons'},
 					this._oConfigurationSaveButton = H.button({'type':'button', 'class':'icon-button'},
 						H.img({src: '/admin/img/template/tick.png','width':'16','height':'16'}),
 						H.span('Save Customer Group Setting')
@@ -94,7 +94,7 @@ var self = new Class({
 						)
 					)*/
 				),
-				H.section({class: 'flex-page-customer-group-record-type-visibility-configuration-buttons'},
+				H.fieldset({class: 'flex-page-customer-group-record-type-visibility-buttons'},
 					this._oSaveButton = H.button({'type':'button', 'class':'icon-button'},
 						H.img({src: '/admin/img/template/tick.png','width':'16','height':'16'}),
 						H.span('Save')

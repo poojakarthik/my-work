@@ -65,7 +65,7 @@ var self = new Class({
 						)
 					)
 				),
-				H.section({class: 'flex-page-account-record-type-visibility-configuration-buttons'},
+				H.fieldset({class: 'flex-page-account-record-type-visibility-buttons'},
 					this._oConfigurationSaveButton = H.button({'type':'button', 'class':'icon-button'},
 						H.img({src: '/admin/img/template/tick.png','width':'16','height':'16'}),
 						H.span('Save Account Setting')
@@ -97,7 +97,7 @@ var self = new Class({
 						)
 					)*/
 				),
-				H.section({class: 'flex-page-account-record-type-visibility-configuration-buttons'},
+				H.fieldset({class: 'flex-page-account-record-type-visibility-buttons'},
 					H.th({colspan: '3'},
 						this._oSaveButton = H.button({'type':'button', 'class':'icon-button'},
 							H.img({src: '/admin/img/template/tick.png','width':'16','height':'16'}),
