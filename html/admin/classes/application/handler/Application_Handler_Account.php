@@ -27,7 +27,7 @@ class Application_Handler_Account extends Application_Handler
 
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->AccountOverview($oAccount->Id);
-		BreadCrumb()->SetCurrentPage("Invoice Itemisation Visibility");
+		BreadCrumb()->SetCurrentPage("Invoice Itemisation");
 
 		$this->LoadPage('account_record_type_visibility', HTML_CONTEXT_DEFAULT, $detailsToRender);
 	}

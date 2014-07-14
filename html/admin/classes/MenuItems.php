@@ -118,13 +118,13 @@ class MenuItems {
 	}
 
 	function CustomerGroupRecordTypeVisibility($iCustomerGroupId) {
-		$this->strContextMenuLabel = "Invoice Itemisation Visibility";
+		$this->strContextMenuLabel = "Invoice Itemisation";
 		$this->strLabel = "Customer Group";
 		return self :: NEW_FRAMEWORK . "reflex.php/CustomerGroup/RecordTypeVisibility/?CustomerGroup.Id={$iCustomerGroupId}";
 	}
 
 	function AccountRecordTypeVisibility($iAccountId) {
-		$this->strContextMenuLabel = "Invoice Itemisation Visibility";
+		$this->strContextMenuLabel = "Invoice Itemisation";
 		$this->strLabel = "Account";
 		return self :: NEW_FRAMEWORK . "reflex.php/Account/RecordTypeVisibility/?Account.Id={$iAccountId}";
 	}
