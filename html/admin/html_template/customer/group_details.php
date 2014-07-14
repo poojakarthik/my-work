@@ -164,11 +164,6 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 		}
 		DBO()->CustomerGroup->cooling_off_period->RenderOutput();
 
-		if (DBO()->CustomerGroup->default_record_type_visibility->Value !== NULL) {
-			DBO()->CustomerGroup->default_record_type_visibility = ((int)DBO()->CustomerGroup->default_record_type_visibility->Value === 1) ? "Visible" : "Not Visible";
-		}
-		DBO()->CustomerGroup->default_record_type_visibility->RenderOutput();
-
 		echo "</div>\n"; // GroupedContent
 
 		// Render the buttons
@@ -277,7 +272,6 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 
 		DBO()->CustomerGroup->customer_advert_url->RenderInput(CONTEXT_DEFAULT, FALSE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
 		DBO()->CustomerGroup->cooling_off_period->RenderInput(CONTEXT_DEFAULT, FALSE, TRUE, Array("attribute:maxlength"=>5, "style:width"=>"100px"));
-		DBO()->CustomerGroup->default_record_type_visibility->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>1, "style:width"=>"15px"));
 
 		echo "</div>\n"; // GroupedContent
 
