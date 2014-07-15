@@ -30,6 +30,9 @@ class JSON_Handler_Customer_Group_Record_Type_Visibility extends JSON_Handler im
 					$aCustomer[] = $aRow;
 				}
 			}
+			return array(
+				"aRecordTypes" => $aCustomer
+			);
 			return $aCustomer;
 		} catch (JSON_Handler_Customer_Group_Run_Exception $oException) {
 			return 	array(

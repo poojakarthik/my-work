@@ -7,8 +7,7 @@ var H = require('fw/dom/factory'), // HTML
 	XHRRequest = require('fw/xhrrequest'),
 	Form = require('fw/component/form'),
 	Checkbox = require('fw/component/control/checkbox'),
-	Radio = require('fw/component/control/radio'),
-	RecordTypeVisibilityNew = require('./record-type-visibility/new');
+	Radio = require('fw/component/control/radio');
 
 
 var self = new Class({
@@ -328,10 +327,10 @@ var self = new Class({
 			postBody	: "json="+encodeURIComponent(JSON.stringify([oData])),
 			onSuccess: function (oResponse){
 				var oServerResponse = JSON.parse(oResponse.responseText);
-				if (fnCallback) {
-					fnCallback(oServerResponse);
+				if (fnCallback && oServerResponse && oServerResponse.aRecordTypes) {
+					fnCallback(oServerResponse.aRecordTypes);
 				} else {
-					return (oServerResponse) ? oServerResponse : null;
+					return (oServerResponse && oServerResponse.aRecordTypes) ? oServerResponse.aRecordTypes : null;
 				}
 			}.bind(this)
 		});

@@ -6,8 +6,7 @@ var H = require('fw/dom/factory'), // HTML
 	Component = require('fw/component'),
 	XHRRequest = require('fw/xhrrequest'),
 	Form = require('fw/component/form'),
-	Checkbox = require('fw/component/control/checkbox'),
-	RecordTypeVisibilityNew = require('./record-type-visibility/new');
+	Checkbox = require('fw/component/control/checkbox');
 
 
 var self = new Class({
@@ -321,10 +320,10 @@ var self = new Class({
 			postBody	: "json="+encodeURIComponent(JSON.stringify([oData])),
 			onSuccess: function (oResponse){
 				var oServerResponse = JSON.parse(oResponse.responseText);
-				if (fnCallback) {
-					fnCallback(oServerResponse);
+				if (fnCallback && oServerResponse && oServerResponse.aRecordTypes) {
+					fnCallback(oServerResponse.aRecordTypes);
 				} else {
-					return (oServerResponse) ? oServerResponse : null;
+					return (oServerResponse && oServerResponse.aRecordTypes) ? oServerResponse.aRecordTypes : null;
 				}
 			}.bind(this)
 		});

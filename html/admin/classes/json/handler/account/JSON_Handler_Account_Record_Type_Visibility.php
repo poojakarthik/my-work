@@ -30,7 +30,9 @@ class JSON_Handler_Account_Record_Type_Visibility extends JSON_Handler implement
 					$aCustomer[] = $aRow;
 				}
 			}
-			return $aCustomer;
+			return array(
+				"aRecordTypes" => $aCustomer
+			);
 		} catch (JSON_Handler_Account_Run_Exception $oException) {
 			return 	array(
 						'Success'	=> false,
