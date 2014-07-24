@@ -223,9 +223,9 @@ class Application_Handler_Account extends Application_Handler
 			}
 			if ($_POST['Contact']['USE'] == 0)
 			{
-				if(Contact::isEmailInUse($_POST['Contact']['Email']) || !Validation::IsValidEmail($_POST['Contact']['Email']))
+				if(!Validation::IsValidEmail($_POST['Contact']['Email']))
 				{
-					throw new Exception('Invalid Email address or the Email address is already in use');
+					throw new Exception('Invalid Email address');
 				}
 				if(!checkdate((int)$_POST ['Contact']['DOB']['Month'], (int)$_POST ['Contact']['DOB']['Day'], (int)$_POST ['Contact']['DOB']['Year']))
 				{

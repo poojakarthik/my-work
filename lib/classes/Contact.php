@@ -50,13 +50,13 @@ class Contact extends ORM
 		{
 			$contact = new Contact();
 		}
-		
+
 		foreach ($properties as $strName=>$mixValue)
 		{
 			// Load from the Database
 			$this->{$strName}	= $mixValue;
 		}
-		
+
 		$contact->save();
 		return $contact;
 	}
@@ -79,7 +79,7 @@ class Contact extends ORM
 		 */
 		return ($this->customerContact == 1 && $this->accountGroup == $objAccount->accountGroup) || ($this->account == $objAccount->id) || ($objAccount->primaryContact == $this->account);
 	}
-	
+
 	// Returns a list of AccountIds or Account objects, defining the Accounts that can be associated with this contact
 	// In both cases, the key to the array will be the id of the account
 	// This will return an empty string if there are no Accounts for this Contact
@@ -89,7 +89,7 @@ class Contact extends ORM
 						FROM Account AS a INNER JOIN Contact AS c ON (c.CustomerContact = 1 AND a.AccountGroup = c.AccountGroup) OR (c.Account = a.Id) OR (c.Id = a.PrimaryContact)
 						WHERE c.Id = {$this->id}";
 		$qryQuery = new Query();
-		
+
 		$objRecordSet = $qryQuery->Execute($strQuery);
 		if (!$objRecordSet)
 		{
@@ -105,7 +105,7 @@ class Contact extends ORM
 
 		return $arrAccounts;
 	}
-	
+
 	// Retrieve the notes for this contact, the cached list is returned if it is available and bForceLoad is false.
 	public function getNotes($bForceLoad=false)
 	{
@@ -113,7 +113,7 @@ class Contact extends ORM
 		{
 			$this->aNotesCache	= Note::getForContact($this->Id);
 		}
-		
+
 		return $this->aNotesCache;
 	}
 
@@ -124,9 +124,10 @@ class Contact extends ORM
 
 	public static function isEmailInUse($strEmailAddress)
 	{
+		// NOTE: No parts of Flex should actually care if the email is in use anymore
 		return (bool)count(self::getForEmailAddress($strEmailAddress));
 	}
-	
+
 	public static function getForEmailAddress($strEmailAddress)
 	{
 		$selContactByEmail	= self::_preparedStatement('selContactByEmail');
@@ -134,7 +135,7 @@ class Contact extends ORM
 		{
 			throw new Exception_Database($selContactByEmail->Error());
 		}
-		
+
 		$aContacts	= array();
 		while ($aContact = $selContactByEmail->Fetch())
 		{
@@ -142,7 +143,7 @@ class Contact extends ORM
 		}
 		return $aContacts;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// _preparedStatement
 	//------------------------------------------------------------------------//
@@ -177,19 +178,19 @@ class Contact extends ORM
 				case 'selContactByEmail':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Contact", "*", "Email LIKE <Email> AND (<IncludeArchived> = 1 OR Archived = 0)");
 					break;
-				
+
 				// INSERTS
 				case 'insSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementInsert("Contact");
 					break;
-				
+
 				// UPDATE BY IDS
 				case 'ubiSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementUpdateById("Contact");
 					break;
-				
+
 				// UPDATES
-				
+
 				default:
 					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
 			}
