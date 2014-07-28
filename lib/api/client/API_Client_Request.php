@@ -8,7 +8,7 @@ class API_Client_Request extends API_Request {
 	private function __construct($sQueryString, $sRequestMethod, $sData = NULL) {
 		$this->cURL = new CURL();
 		$this->oCurlHandler = curl_init();
-		$this->sURL = $GLOBALS['**API']['host'].$sQueryString;
+		$this->sURL = "https://" . $GLOBALS['**API']['url'] . "/" . $sQueryString;
 
 		$this->cURL->setOption(CURLOPT_URL, $this->sURL);
 		$this->cURL ->setOption( CURLOPT_HEADER, 1);
