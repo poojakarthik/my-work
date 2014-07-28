@@ -857,25 +857,6 @@ class Cli_App_Sales extends Cli
 							}
 						}
 
-						// Is there already a Contact with this Email Address?
-						if ($objContact->Email && Contact::isEmailInUse($objContact->Email))
-						{
-							$this->log("\t\t\t\t\t! Contact's Email Address is already in use!  Aborting Sale...");
-
-							// Rollback to the savepoint for this Sale
-							if ($qryQuery->Execute("ROLLBACK TO {$strSaleSavePoint}") === FALSE)
-							{
-								throw new Exception_Database($qryQuery->Error());
-							}
-							$resRollbackSavepoint	= $dsSalesPortal->query("ROLLBACK TO {$strSaleSavePoint}");
-							if (MDB2::isError($resRollbackSavepoint))
-							{
-								throw new Exception($resRollbackSavepoint->getMessage()." :: ".$resRollbackSavepoint->getUserInfo());
-							}
-
-							throw new Exception_Sale_Manual_Intervention("Contact {$objContact->FirstName} {$objContact->LastName}'s specified Email Address ({$objContact->Email}) is already in use!");
-						}
-
 						// Save the Flex Contact
 						$objContact->save();
 
