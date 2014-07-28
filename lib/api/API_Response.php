@@ -1,14 +1,4 @@
 <?php
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- * Description of API_Response
- *
- * @author JanVanDerBreggen
- */
 class API_Response {
    	const STATUS_CODE_OK					= 200;
 	const STATUS_CODE_CREATED				= 201;
@@ -72,10 +62,7 @@ class API_Response {
 	protected $sBody;
 	protected $sContentType;
 
-
-	public function getStatusCodeMessage()
-	{
+	public function getStatusCodeMessage() {
 		return (isset(self::$aCodes[$this->iResponseStatus])) ? self::$aCodes[$this->iResponseStatus] : '';
 	}
 }
-?>

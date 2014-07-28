@@ -2737,6 +2737,51 @@ function GetPDFContent($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId, 
 	}
 }
 
+function getAccountInvoicePDF($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId, $iTargetMedia=0) {
+	try {
+		if (!strpos($iInvoiceRunId, '-')) {
+			$iInvoiceRunId = intval($iInvoiceRunId);
+		}
+		$sInvoicePath = InvoicePDFExists($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId);
+		if (!$sInvoicePath) {
+			// PDF does not exist locally, fetch PDF from API.
+			return getFlexAPIAccountInvoicePDF($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId, $iTargetMedia=0);
+		} else {
+			$sExtension = substr($sInvoicePath, strrpos($sInvoicePath, '.'));
+			if($sExtension == '.pdf') {
+				// Cached PDF found, return that instead of generating a new one.
+				$sPDF = file_get_contents($sInvoicePath);
+			} else {
+				// PDF does not exist locally, fetch PDF from API.
+				$sPDF = getFlexAPIAccountInvoicePDF($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId, $iTargetMedia=0);
+			}
+			return $sPDF;
+		}
+	} catch(Exception $oException) {
+		throw $oException;
+	}
+}
+
+function getFlexAPIAccountInvoicePDF($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId, $iTargetMedia=0) {
+	try {
+		// Create a new request
+		$oRequest				= API_Client_Request::create("accounts/{$iAccount}/invoices/{$iInvoiceId}.pdf", "get");
+		$oResponse				= $oRequest->send();
+		// HTTP Response Code
+		$iResponseStatusCode	= $oResponse->getResponseStatusCode();
+		// PDF Content
+		$sResponseBody			= $oResponse->getBody();
+		// Return a response
+		if($iResponseStatusCode === API_Response::STATUS_CODE_OK) {
+			return $sResponseBody;
+		} else {
+			throw new Exception("PDF Not Found, HTTP Response Code (" . $iResponseStatusCode . ")");
+		}
+	} catch(Exception $oException) {
+		throw $oException;
+	}
+}
+
 function generateInvoicePDF($strXML, $intInvoiceId, $intTargetMedia, $iInvoiceRunId, $iAccountId)
 {
 	static	$qryQuery;

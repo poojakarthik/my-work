@@ -189,17 +189,13 @@ class Application_Handler_Invoice extends Application_Handler
 		}
 	}
 
-	public function PDF($subPath)
-	{
-		try
-		{
-			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR_VIEW, PERMISSION_OPERATOR_EXTERNAL)))
-			{
+	public function PDF($subPath) {
+		try {
+			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR_VIEW, PERMISSION_OPERATOR_EXTERNAL))) {
 				throw new Exception('You do not have permission to view this PDF.');
 			}
 
-			if (!isset($subPath[0]) || !isset($_GET['Account']) || !isset($_GET['Invoice_Run_Id']) || !isset($_GET['Year']) || !isset($_GET['Month']))
-			{
+			if (!isset($subPath[0]) || !isset($_GET['Account']) || !isset($_GET['Invoice_Run_Id']) || !isset($_GET['Year']) || !isset($_GET['Month'])) {
 				throw new Exception('Invalid arguments passed to page');
 			}
 
@@ -210,10 +206,12 @@ class Application_Handler_Invoice extends Application_Handler
 			$iMonth 		= $_GET['Month'];
 
 			// Try to pull the Invoice PDF
-			$sInvoice 		= GetPDFContent($iAccountId, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId);
+			//$sInvoice 		= GetPDFContent($iAccountId, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId);
 
-			if (!$sInvoice)
-			{
+			// Call the Flex API to pull the Invoice PDF (if one is not cached locally already.)
+			$sInvoice 		= getAccountInvoicePDF($iAccountId, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId);
+
+			if (!$sInvoice) {
 				throw new Exception("PDF Not Found");
 			}
 
@@ -223,9 +221,7 @@ class Application_Handler_Invoice extends Application_Handler
 			header("Content-Disposition: filename=\"$sInvoiceFilename\"");
 			echo $sInvoice;
 			exit;
-		}
-		catch (Exception $e)
-		{
+		} catch (Exception $e) {
 			$aDetailsToRender['Message'] = "An error occured when trying to retrieve the PDF";
 			$aDetailsToRender['ErrorMessage'] = $e->getMessage();
 			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
