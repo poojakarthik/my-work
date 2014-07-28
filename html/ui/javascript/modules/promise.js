@@ -74,6 +74,12 @@ function promise(implementor) {
 			} catch (error) {
 				_promise.reject(error);
 			}
+		},
+		catch: function (onRejected) {
+			return _promise.then(null, onRejected);
+		},
+		finally: function (onResolved) {
+			return _promise.then(onResolved, onResolved);
 		}
 	};
 	_promise.fulfill = _promise.resolve;

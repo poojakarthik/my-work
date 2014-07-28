@@ -1,3 +1,5 @@
+"use strict";
+
 var xhr = require('xhr');
 
 function mixin(target) {
@@ -14,20 +16,28 @@ var SUCCESS_PROPERTIES = ['success', 'Success', 'bSuccess'];
 var ERROR_MESSAGE_PROPERTIES = ['message', 'Message', 'sMessage'];
 var DEBUG_PROPERTIES = ['debug', 'Debug', 'sDebug'];
 function parseJSONResponse() {
+	// Exception
 	var response = JSON.parse(this.responseText);
 	if (response.oException) {
-		throw response.oException;
+		throw mixin({
+			response: response,
+			message: response.oException.sMessage
+		}, response.oException);
 	}
 
+	// Success/Message` conventions
 	SUCCESS_PROPERTIES.some(function (successProperty) {
 		if (response[successProperty] === false) {
-			throw new Error(ERROR_MESSAGE_PROPERTIES.reduce(function (currentMessage, messageProperty) {
+			var errorMessage = (ERROR_MESSAGE_PROPERTIES.reduce(function (currentMessage, messageProperty) {
 				if (currentMessage) return currentMessage;
 
 				if (response.hasOwnProperty(messageProperty)) {
 					return response[messageProperty];
 				}
-			}) || DEFAULT_ERROR_MESSAGE);
+			}, null) || DEFAULT_ERROR_MESSAGE);
+			var error = new Error(errorMessage);
+			error.response = response;
+			throw error;
 		}
 		if (response[successProperty] === true) {
 			return true;
@@ -42,7 +52,8 @@ return function jsonHandlerRequest(handler, method, options, callback) {
 	options = mixin({
 		sync: false,
 		headers: {},
-		arguments: []
+		arguments: [],
+		parseJSONResponse: false
 	}, options || {});
 
 	options.headers = mixin({
@@ -56,6 +67,9 @@ return function jsonHandlerRequest(handler, method, options, callback) {
 		callback
 	).then(function (request) {
 		request.parseJSONResponse = parseJSONResponse;
+		if (options.parseJSONResponse) {
+			return request.parseJSONResponse();
+		}
 		return request;
 	});
 };

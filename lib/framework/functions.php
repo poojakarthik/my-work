@@ -6028,3 +6028,21 @@ function array_associate(array $keys, array $values) {
 	}
 	return $associative;
 }
+
+function iconv_properties($inCharset, $outCharset, stdClass $object) {
+	foreach (get_object_vars($object) as $property=>$value) {
+		if (is_string($value)) {
+			$object->$property = iconv($inCharset, $outCharset, $value);
+		}
+	}
+}
+
+function object_merge($target) {
+	$args = func_get_args();
+	foreach (array_slice($args, 1) as $source) {
+		foreach (get_object_vars($source) as $property=>$value) {
+			$target->$property = $value;
+		}
+	}
+	return $target;
+}

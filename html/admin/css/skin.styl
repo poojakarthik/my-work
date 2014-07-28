@@ -1,5 +1,24 @@
 font-monospace = Menlo, Consolas, monospace
 
+@-webkit-keyframes flex-fade-out {
+	from {
+		opacity 1
+	}
+
+	to {
+		opacity 0
+	}
+}
+@keyframes flex-fade-out {
+	from {
+		opacity 1
+	}
+
+	to {
+		opacity 0
+	}
+}
+
 debuttonify(important='')
 	border 0 unquote(important)
 	background transparent unquote(important)
@@ -27,12 +46,9 @@ button-icon-background(url, width=auto, height=auto)
 
 // Buttons
 appearance-flex-button()
+	appearance-flex-button-text()
 	background-image linear-gradient(to bottom, rgba(255, 255, 255, .6), rgba(255, 255, 255, 0)) // NOTE: Original gradient curve isn't linear, more exponential, and height-limited
 	background-color #ddd
-	color #000
-	font-family Arial, sans-serif
-	font-size inherit
-	font-weight bold
 	margin .2em
 	padding .1em
 	border-top solid 1px #999
@@ -43,10 +59,16 @@ appearance-flex-button()
 	cursor pointer
 	-moz-user-select none
 	-webkit-user-select none
-	text-shadow 0 1px 0 rgba(255, 255, 255, 0.8)
 
 appearance-flex-button-active()
 	background-image linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .6))
+
+appearance-flex-button-text()
+	color #000
+	font-family Arial, sans-serif
+	font-size inherit
+	font-weight bold
+	text-shadow 0 1px 0 rgba(255, 255, 255, 0.8)
 
 skin-flex-radiogroupfieldset()
 	defieldsetify()
@@ -94,25 +116,29 @@ appearance-flex-form-fieldset()
 	align-content stretch
 	border 1px solid #d1d1d1
 	background #ddd
-	padding 0 .25em
+	padding 1em 1em 0 1em
 
-	& :required
-		background #fff
-		color #111
-		border .1em solid #da8
+	& input
+		padding .25em
 
-	& :invalid
-		background #ffecf0
-		color #111
-		border .1em solid #d30
-
+	& :not(:disabled)
 		&:required
-			border .1em solid #da8
+			background #fff
+			color #111
+			border 1px solid #da8
 
-	& :valid
-		background: #ecfff0
-		color #111
-		border-color #00c72b
+		&:invalid
+			background #ffecf0
+			color #111
+			border 1px solid #d30
+
+			&:required
+				border 1px solid #da8
+
+		&:valid
+			background #ecfff0
+			color #111
+			border-color #00c72b
 
 appearance-flex-form-heading()
 	font-size 1.2em
@@ -122,22 +148,19 @@ appearance-flex-form-fieldset-field()
 	display flex
 	flex-direction row
 	border 0
-	margin 0
+	margin 0 0 1em 0
 	padding 0
 	justify-content flex-start
-	align-items center
+	align-items baseline
 
 appearance-flex-form-fieldset-field-label()
 	border 0
-	margin .25em .5em .25em 0
+	// margin .5em 1em .5em 0
+	margin 0 1em 0 0
+	font-size inherit
 	font-weight bold
 	text-align right
 	//background-color #efefef
-
-appearance-flex-form-fieldset-field-control()
-	//padding .2em
-	margin .25em 0
-	//flex-grow 1
 
 appearance-flex-form-controlset()
 	display flex
@@ -146,12 +169,21 @@ appearance-flex-form-controlset()
 	align-content stretch
 	border 0
 	padding 0
-	margin .25em 0
+	// margin .25em 0
 
-appearange-flex-form-buttonpanel()
+appearance-flex-form-controlset-control()
+	margin 0 0 .5em 0
+
+appearance-flex-form-fieldset-field-control()
+	//padding .2em
+	// margin .5em 0 0 0
+	margin 0
+	//flex-grow 1
+
+appearance-flex-form-buttonpanel()
 	border 0
 	margin 0
-	padding .5em .25em
+	padding 1em .5em
 	text-align center
 
 // Page Heading
@@ -205,7 +237,7 @@ skin-flex-table()
 
 appearance-flex-table()
 	box-sizing border-box
-	width 99%
+	width 100%
 	margin-left auto
 	margin-right auto
 	border .1em solid #d1d1d1

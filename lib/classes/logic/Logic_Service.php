@@ -8,14 +8,14 @@
 abstract class Logic_Service implements DataLogic
 {
     protected $oDO;
-   
 
-    
+
+
    public function __construct($mDefinition)
     {
         $this->oDO = is_numeric($mDefinition) ? Service::getForId($mDefinition) : (get_class($mDefinition) == 'Service' ? $mDefinition : null);
     }
-    
+
      //------------------------------------------------------------------------//
 	// ChangeStatus
 	//------------------------------------------------------------------------//
@@ -97,7 +97,7 @@ abstract class Logic_Service implements DataLogic
 				return FALSE;
 			}
 
-			
+
 		}
 
 		return $mResult;
@@ -106,7 +106,7 @@ abstract class Logic_Service implements DataLogic
 	public static function canServiceBeAutomaticallyBarred($iServiceId, $iBarringLevelId, $sEffectiveDateTime=null)
 	{
 		$sEffectiveDate	= ($sEffectiveDate === null ? DataAccess::getDataAccess()->getNow() : $sEffectiveDate);
-		
+
 		$oQuery	= new Query();
 		$sQuery = "	SELECT      CASE
 					                WHEN 	{$iBarringLevelId} = ".BARRING_LEVEL_UNRESTRICTED."
@@ -146,11 +146,11 @@ abstract class Logic_Service implements DataLogic
 		{
 			throw new Exception_Database("Failed to get active_status for carrier_provisioning_support for service {$iServiceId}. ".$oQuery->Error());
 		}
-		
+
 		$aRow = $mResult->fetch_assoc();
 		return ($aRow['active_status_id'] == ACTIVE_STATUS_ACTIVE);
 	}
-	
+
 	public static function createProvisioningRequest($iServiceId, $iProvisioningTypeId, $sAuthorisationDate=null, $iEmployeeId=null)
 	{
 		$oQuery	= new Query();
@@ -183,9 +183,9 @@ abstract class Logic_Service implements DataLogic
 		{
 			throw new Exception_Database("Failed to get service details for service {$iServiceId}. ".$oQuery->Error());
 		}
-		
+
 		$aDetailsRow = $mResult->fetch_assoc();
-		
+
 		// Create the provisioning request record
 		$oProvisioningRequest 						= new Provisioning_Request();
 		$oProvisioningRequest->AccountGroup 		= $aDetailsRow['account_group_id'];
@@ -402,13 +402,38 @@ abstract class Logic_Service implements DataLogic
 			$this->_strErrorMsg = "Unexpected Database error occurred while trying to insert records into the ServiceRateGroup table";
 			return FALSE;
 		}
+
+		// Copy all valid service_rate records across from the old service
+		try {
+			DataAccess::get()->query('
+				INSERT INTO service_rate
+					(service_id, rate_id, created_employee_id, created_datetime, start_datetime, end_datetime)
+				SELECT <new_service_id> AS service_id,
+					rate_id AS rate_id,
+					created_employee_id AS created_employee_id,
+					created_datetime AS created_datetime,
+					start_datetime AS start_datetime,
+					end_datetime AS end_datetime
+				FROM service_rate
+				WHERE service_id = <old_service_id>
+					AND (<earliest_allowable_end_dateime> IS NULL OR end_datetime > <earliest_allowable_end_dateime>)
+			', array(
+				'new_service_id' => $intNewServiceId,
+				'old_service_id' => $intOldServiceId,
+				'earliest_allowable_end_dateime' => $strEarliestAllowableEndDateTime
+			));
+		} catch (Exception $oException) {
+			$this->_strErrorMsg = "Unexpected Database error occurred while trying to insert records into the service_rate table";
+			return false;
+		}
+
 		return TRUE;
 	}
 
-   
+
     abstract protected function _CopySupplementaryDetails($intDestServiceId, $intDestAccountId, $intDestAccountGroup);
-    
-    public function __get($sField) 
+
+    public function __get($sField)
     {
     	if ($sField == 'id')
             $sField = 'Id';
@@ -422,19 +447,19 @@ abstract class Logic_Service implements DataLogic
         return call_user_func_array(array($this->oDO, $function),$args);
     }
 
-   
 
-    public function __set($sField, $mValue) 
+
+    public function __set($sField, $mValue)
     {
 		$this->oDO->{$sField} = $mValue;
     }
 
-    public function save() 
+    public function save()
     {
 		return $this->oDO->save();
     }
 
-    public function toArray() 
+    public function toArray()
     {
 		return $this->oDO->toArray();
     }
@@ -522,6 +547,6 @@ abstract class Logic_Service implements DataLogic
 		return $objService;
 	}
 
-   
+
 }
 ?>
