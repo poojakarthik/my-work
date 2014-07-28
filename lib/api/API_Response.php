@@ -14,7 +14,7 @@ class API_Response {
 	const CONTENT_TYPE_JSON = 'application/json';
 
 
-	protected static $aCodes = Array(
+	public static $aCodes = Array(
 							100 => 'Continue',
 							101 => 'Switching Protocols',
 							200 => 'OK',
