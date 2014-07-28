@@ -40,7 +40,7 @@ class API_Server_Request extends API_Request {
 
 	public function setMethod($method) {
 		$this->method = $method;
-	}	
+	}
 
 	public function getData() {
 		return $this->data;
@@ -59,7 +59,7 @@ class API_Server_Request extends API_Request {
 	}
 
 	public function getParameters() {
-		$aTokens	= $this->_tokeniseURL();		
+		$aTokens	= $this->_tokeniseURL();
 		return $aTokens;
 	}
 

@@ -17,10 +17,12 @@ class API_Server_RequestHandler_Account_Invoice_PDF implements API_Server_Reques
 			));
 		}
 
+		$iStatusCodeOk = API_Response::STATUS_CODE_OK;
+		$iStatusCodeOkDescription = API_Response::$aCodes[$iStatusCodeOk];
 		$response->send(
-			API_Response::STATUS_CODE_OK,
 			array(
-				'content-type' => 'application/pdf'
+				"HTTP/1.1 {$iStatusCodeOk} {$iStatusCodeOkDescription}",
+				"Content-Type: application/pdf"
 			),
 			GetPDFContent($invoice->Account, $iYear=null, $iMonth=null, $invoice->Id, $invoice->invoice_run_id)
 		);

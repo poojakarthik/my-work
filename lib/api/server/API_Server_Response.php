@@ -12,16 +12,11 @@ class API_Server_Response extends API_Response {
 	public function setContentType($sContentType) {
 		$this->sContentType = $sContentType;
 	}
-	
-	public function send($iResponseStatusCode, $aHeaders, $sBody) {
-		/*
-		$sStatusHeader = 'HTTP/1.1 ' . $this->iResponseStatus . ' ' . self::getStatusCodeMessage();
-		header($sStatusHeader);
-		header('Content-type: ' . $this->sContentType);		
-		echo $this->sBody;
-		*/
-		$sStatusHeader = 'HTTP/1.1 200 OK';
-		header('Content-type: application/pdf');		
+
+	public function send($aHeaders, $sBody) {
+		foreach($aHeaders as $sHeader) {
+			header("{$sHeader}");
+		}
 		echo $sBody;
 	}
 
