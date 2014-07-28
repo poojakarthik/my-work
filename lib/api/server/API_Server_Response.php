@@ -13,9 +13,10 @@ class API_Server_Response extends API_Response {
 		$this->sContentType = $sContentType;
 	}
 
-	public function send($aHeaders, $sBody) {
-		foreach($aHeaders as $sHeader) {
-			header("{$sHeader}");
+	public function send($iResponseCode, $aHeaders, $sBody) {
+		header("HTTP/1.1 {$iResponseCode} " . API_Response::$aCodes[$iResponseCode]);
+		foreach($aHeaders as $sHeaderName=>$sHeaderValue) {
+			header("{$sHeaderName}: {$sHeaderValue}");
 		}
 		echo $sBody;
 	}
