@@ -8,14 +8,15 @@ class API_Client_Request extends API_Request {
 	private function __construct($sQueryString, $sRequestMethod, $sData = NULL) {
 		$this->cURL = new CURL();
 		$this->oCurlHandler = curl_init();
-		$this->sURL = "https://" . $GLOBALS['**API']['url'] . "/" . $sQueryString;
-
+		$this->sURL = "https://" . $GLOBALS['**API']['host'] . "/" . $sQueryString;
 		$this->cURL->setOption(CURLOPT_URL, $this->sURL);
-		$this->cURL ->setOption( CURLOPT_HEADER, 1);
-		$this->cURL->setOption(CURLOPT_RETURNTRANSFER, TRUE);
+		$this->cURL->setOption(CURLOPT_HEADER, 1);
+		$this->cURL->setOption(CURLOPT_USERPWD, "{$GLOBALS['**API']['user']}:{$GLOBALS['**API']['pass']}");
 		$this->cURL->setOption(CURLOPT_SSL_VERIFYPEER, FALSE);
+		$this->cURL->setOption(CURLOPT_RETURNTRANSFER, TRUE);
 		$this->cURL->setOption(CURLOPT_FOLLOWLOCATION, 1);
 		$this->cURL->setOption(CURLOPT_TIMEOUT, 40);
+
 		//set the server port as configured in the flex.cfg file
 		$this->cURL->setOption(CURLOPT_PORT, $GLOBALS['**API']['port']);
 

@@ -2775,7 +2775,7 @@ function getFlexAPIAccountInvoicePDF($iAccount, $iYear, $iMonth, $iInvoiceId, $i
 		if($iResponseStatusCode === API_Response::STATUS_CODE_OK) {
 			return $sResponseBody;
 		} else {
-			throw new Exception(API_Response::$aCodes[401]);
+			throw new Exception(API_Response::$aCodes[$iResponseStatusCode]);
 		}
 	} catch(Exception $oException) {
 		throw $oException;
