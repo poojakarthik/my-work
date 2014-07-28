@@ -10,7 +10,7 @@ if ($_SERVER['PHP_AUTH_USER'] == "" || $_SERVER['PHP_AUTH_USER'] == NULL) {
 	header("HTTP/1.0 401 Unauthorized");
 	print "Authorization Required.";
 	exit;
-} else if($GLOBALS['**arrAPI']['user'] !== $_SERVER['PHP_AUTH_USER'] || $GLOBALS['**arrAPI']['pass'] !== $_SERVER['PHP_AUTH_PW']) {
+} else if($GLOBALS['**API']['user'] !== $_SERVER['PHP_AUTH_USER'] || $GLOBALS['**API']['pass'] !== $_SERVER['PHP_AUTH_PW']) {
 	// Username and password do not match.
 	header('WWW-Authenticate: Basic realm="Flex API"');
 	header("HTTP/1.0 401 Unauthorized");
