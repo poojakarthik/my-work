@@ -10,15 +10,19 @@ var H = require('fw/dom/factory'), // HTML
 	Text = require('fw/component/control/text'),
 	Hidden = require('fw/component/control/hidden'),
 	xhr = require('xhr'),
+	jhr = require('xhr/json-handler'),
 	jsonForm = require('json-form'),
-	promise = require('promise')
+	promise = require('promise'),
+	mixin = require('mixin')
 ;
+var ServiceRateAdd = require('flex/component/popup/service/rate/override/add');
 
 function objectValues(object) {
 	return Object.keys(object).map(function (key) {
 		return object[key];
 	});
 }
+
 function extractRecordTypes(rates) {
 	return objectValues(rates.reduce(function (recordTypesDict, rate) {
 		if (recordTypesDict[rate.record_type_id] == null) {
@@ -34,6 +38,11 @@ function extractRecordTypes(rates) {
 	}, {}));
 }
 
+function replacePromise(old, replacement) {
+	old.resolve(replacement);
+	return replacement;
+}
+
 var self = new Class({
 	extends: Component,
 
@@ -41,7 +50,7 @@ var self = new Class({
 		this.CONFIG = Object.extend({
 			serviceId: {
 				fnSetter: function (serviceId) {
-					this.CONFIG.serviceRates.mValue = promise(); // Need a new promise for related rates
+					this.CONFIG.serviceRates.mValue = replacePromise(this.CONFIG.serviceRates.mValue, promise()); // Need a new promise for related rates
 					return serviceId;
 				}.bind(this)
 			},
@@ -49,25 +58,31 @@ var self = new Class({
 			// serviceRates is internally a promise. Setting fulfills, getting returns a thenable
 			serviceRates: {
 				fnSetter: function (serviceRates) {
-					this.CONFIG.serviceRates.mValue.fulfill(serviceRates);
-					return this.CONFIG.serviceRates.mValue;
+					// Replace existing promise with a new one, filled with the provided rates
+					return replacePromise(this.CONFIG.serviceRates.mValue, promise(function (resolve) {
+						resolve(serviceRates);
+					}));
 				}.bind(this),
 				fnGetter: function (serviceRatesPromise) {
 					return serviceRatesPromise.thenable();
 				},
 				mValue: promise()
+			},
+
+			permissions: {
+				mValue: {}
 			}
 		}, this.CONFIG || {});
 		this._super.apply(this, arguments);
 		this.NODE.addClassName('flex-page-account-service-plan-overriderates');
-
-		this._syncUIPromise = promise();
-		this._configCache = {};
 	},
 
 	_buildUI: function () {
 		this.NODE = H.section(
-			H.h2('Rate Overrides'),
+			H.h2(
+				H.span({class: 'flex-page-account-service-plan-overriderates-heading-label'}, 'Rate Overrides'),
+				this._addOverrideButton = H.button({type: 'button', class: 'flex-page-account-service-plan-overriderates-add', disabled: '', onclick: this._showAddServiceRatePopup.bind(this)}, 'New Override Rate')
+			),
 
 			this._recordTypesElement = H.ol({class: 'flex-page-account-service-plan-overriderates-recordtypes'})
 		);
@@ -93,11 +108,8 @@ var self = new Class({
 
 	_buildRateUI: function (rate) {
 		return H.tr({class: 'flex-page-account-service-plan-overriderates-recordtypes-recordtype-rates-rate'},
-			// javascript:Vixen.Popup.ShowAjaxPopup("ViewRatePopupId_54546", "medium", "Rate", "Rate", "View", {"Rate":{"Id":54546}}, "nonmodal")
 			H.td(
-				H.a({
-						href: "javascript: Vixen.Popup.ShowAjaxPopup('ViewRatePopupId_' + " + rate.rate_id + ", 'medium', 'Rate', 'Rate', 'View', {Rate: {'Id': " + rate.rate_id + "}}, 'nonmodal');"
-					},
+				H.a({href: "javascript: Vixen.Popup.ShowAjaxPopup('ViewRatePopupId_' + " + rate.rate_id + ", 'medium', 'Rate', 'Rate', 'View', {Rate: {'Id': " + rate.rate_id + "}}, 'nonmodal');"},
 					rate.name
 				)
 			),
@@ -111,32 +123,49 @@ var self = new Class({
 		var serviceId = this.get('serviceId');
 		var serviceRatesPromise = this.get('serviceRates');
 
-		serviceRatesPromise.then(function (serviceRates) {
+		// NOTE: These are re-checked on the server at time of submission
+		var permissions = this.get('permissions');
+		if (permissions && permissions.newOverrideRate) {
+			this._addOverrideButton.disabled = false;
+		} else {
+			this._addOverrideButton.disabled = true;
+		}
+
+		// Dynamically pull serviceRates based on serviceId (if they weren't provided up front)
+		this._syncServiceRates().then(this._onReady.bind(this));
+	},
+
+	_fetchServiceRates: function (force) {
+		return jhr('Service_Rate', 'getActiveOrUpcoming', {arguments: [this.get('serviceId')], parseJSONResponse: true}).then(
+			function success(response) {
+				this.CONFIG.serviceRates.mValue.resolve(response.serviceRates);
+			}.bind(this),
+			function failure(reason) {
+				var failureWindow = new Alert(reason.message);
+			}
+		);
+	},
+
+	_syncServiceRates: function (force) {
+		if (force) {
+			this.CONFIG.serviceRates.mValue = replacePromise(this.CONFIG.serviceRates.mValue, this._fetchServiceRates());
+		}
+
+		return this.CONFIG.serviceRates.mValue.then(function (serviceRates) {
+			this._recordTypesElement.innerHTML = '';
 			this._recordTypesElement.appendChild(
 				H.$fragment.apply(H,
 					extractRecordTypes(serviceRates).map(this._buildRecordTypeUI.bind(this))
 				)
 			);
-			this._onReady();
 		}.bind(this));
+	},
 
-		// TODO: Dynamically pull serviceRates based on serviceId
-		// if (serviceId !== this._configCache.serviceId) {
-		// 	// New Service
-		// 	// TODO
-
-		// 	if (serviceRatesPromise !== this._configCache.serviceRatesPromise) {
-		// 		// New Service Rates
-		// 		this._recordTypesElement.innerHTML = '';
-		// 		serviceRatesPromise.then(function (serviceRates) {
-		// 			this._recordTypesElement.appendChild(
-		// 				H.$fragment.apply(H,
-		// 					extractRecordTypes(serviceRates).map(this._buildRecordTypeUI.bind(this))
-		// 				)
-		// 			);
-		// 		}.bind(this));
-		// 	}
-		// }
+	_showAddServiceRatePopup: function () {
+		ServiceRateAdd.createAsPopup({
+			serviceId: this.get('serviceId'),
+			onsave: this._syncServiceRates.bind(this, true)
+		});
 	}
 });
 

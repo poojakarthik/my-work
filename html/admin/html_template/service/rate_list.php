@@ -18,7 +18,8 @@ class HtmlTemplateServiceRateList extends HtmlTemplate {
 				module.provide(['flex/component/page/service/rate/override/list'], function () {
 					var component = new (require('flex/component/page/service/rate/override/list'))({
 						serviceId: " . DBO()->Service->Id->Value . ",
-						serviceRates: " . json_encode($aServiceRates) . "
+						serviceRates: " . json_encode($aServiceRates) . ",
+						permissions: " . json_encode(array('newOverrideRate' => AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))) . "
 					});
 
 					document.querySelector('#ServiceRateListDiv').appendChild(component.getNode());

@@ -1,3 +1,57 @@
+@-webkit-keyframes flex-fade-out {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+@-moz-keyframes flex-fade-out {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+@-webkit-keyframes flex-fade-out {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+@-o-keyframes flex-fade-out {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+@-ms-keyframes flex-fade-out {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes flex-fade-out {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
 body {
   background-color: #fff;
   font-family: Arial, Verdana, Helvetica;
@@ -11562,7 +11616,7 @@ div.clearing {
 }
 .flex-page-customer-payments-chequeentry-data {
   box-sizing: border-box;
-  width: 99%;
+  width: 100%;
   margin-left: auto;
   margin-right: auto;
   border: 0.1em solid #d1d1d1;
@@ -11740,6 +11794,9 @@ div.clearing {
 .flex-popup-customer-payments-chequereport {
   width: 30em;
 }
+.flex-popup-customer-payments-chequereport > .fw-popup-content {
+  padding: 1em 1em 0 1em;
+}
 .flex-popup-customer-payments-chequereport .fw-popup-header-title::before {
   content: url("/admin/img/template/table.png");
   height: 16px;
@@ -11755,34 +11812,39 @@ div.clearing {
   align-content: stretch;
   border: 1px solid #d1d1d1;
   background: #ddd;
-  padding: 0 0.25em;
-  margin: 0;
-  background: linear-gradient(to right, transparent 6.5em, #d1d1d1 6.5em);
+  padding: 1em 1em 0 1em;
+  margin: 0 -1em 0 -1em;
 }
-.flex-popup-customer-payments-chequereport-constraints :required {
+.flex-popup-customer-payments-chequereport-constraints input {
+  padding: 0.25em;
+}
+.flex-popup-customer-payments-chequereport-constraints :not(:disabled):required {
   background: #fff;
   color: #111;
-  border: 0.1em solid #da8;
+  border: 1px solid #da8;
 }
-.flex-popup-customer-payments-chequereport-constraints :invalid {
+.flex-popup-customer-payments-chequereport-constraints :not(:disabled):invalid {
   background: #ffecf0;
   color: #111;
-  border: 0.1em solid #d30;
+  border: 1px solid #d30;
 }
-.flex-popup-customer-payments-chequereport-constraints :invalid:required {
-  border: 0.1em solid #da8;
+.flex-popup-customer-payments-chequereport-constraints :not(:disabled):invalid:required {
+  border: 1px solid #da8;
 }
-.flex-popup-customer-payments-chequereport-constraints :valid {
+.flex-popup-customer-payments-chequereport-constraints :not(:disabled):valid {
   background: #ecfff0;
   color: #111;
   border-color: #00c72b;
+}
+.flex-popup-customer-payments-chequereport [name='customergroup.id'] {
+  margin: 0.5em 0 0 1em;
 }
 .flex-popup-customer-payments-chequereport-customergroup[data-disabled] [name='customergroup.id'] {
   visibility: hidden;
 }
 .flex-popup-customer-payments-chequereport [name='date.from'],
 .flex-popup-customer-payments-chequereport [name='date.to'] {
-  margin: 0.25em 0;
+  margin: 0;
   font-family: Menlo, Consolas, monospace;
   margin-right: 0;
 }
@@ -11811,16 +11873,17 @@ div.clearing {
   display: flex;
   flex-direction: row;
   border: 0;
-  margin: 0;
+  margin: 0 0 1em 0;
   padding: 0;
   justify-content: flex-start;
-  align-items: center;
+  align-items: baseline;
 }
 .flex-popup-customer-payments-chequereport-constraints-datefrom-label,
 .flex-popup-customer-payments-chequereport-constraints-dateto-label,
 .flex-popup-customer-payments-chequereport-constraints-customergroup-label {
   border: 0;
-  margin: 0.25em 0.5em 0.25em 0;
+  margin: 0 1em 0 0;
+  font-size: inherit;
   font-weight: bold;
   text-align: right;
   width: 6em;
@@ -11829,10 +11892,10 @@ div.clearing {
   display: flex;
   flex-direction: row;
   border: 0;
-  margin: 0;
+  margin: 0 0 1em 0;
   padding: 0;
   justify-content: flex-start;
-  align-items: center;
+  align-items: baseline;
 }
 .flex-popup-customer-payments-chequereport-constraints-customergroup-controls {
   display: flex;
@@ -11841,10 +11904,9 @@ div.clearing {
   align-content: stretch;
   border: 0;
   padding: 0;
-  margin: 0.25em 0;
 }
 .flex-popup-customer-payments-chequereport-constraints-customergroup-enable {
-  margin: 0.25em 0;
+  margin: 0;
 }
 .flex-popup-customer-payments-chequereport-constraints-customergroup-enable * {
   vertical-align: middle;
@@ -11852,7 +11914,7 @@ div.clearing {
 .flex-popup-customer-payments-chequereport-buttons {
   border: 0;
   margin: 0;
-  padding: 0.5em 0.25em;
+  padding: 1em 0.5em;
   text-align: center;
 }
 .flex-popup-customer-payments-chequereport-buttons-generate::before {
@@ -11892,7 +11954,7 @@ div.clearing {
 .fw-datepicker .dateChooser {
   width: 100%;
   box-sizing: border-box;
-  width: 99%;
+  width: 100%;
   margin-left: auto;
   margin-right: auto;
   border: 0.1em solid #d1d1d1;
@@ -11974,7 +12036,7 @@ div.clearing {
 .flex-page-service-add-buttons {
   border: 0;
   margin: 0;
-  padding: 0.5em 0.25em;
+  padding: 1em 0.5em;
   text-align: center;
 }
 .flex-page-service-add-accountstatusmessage:empty {
@@ -11987,12 +12049,42 @@ div.clearing {
   flex-wrap: wrap;
   background-color: #ddd;
 }
+.flex-page-service-add-servicelist-service[data-collapsed] .flex-page-service-add-servicelist-service-details,
+.flex-page-service-add-servicelist-service[data-collapsed] .flex-page-service-add-servicelist-service-properties {
+  display: none;
+}
+.flex-page-service-add-servicelist-service[data-collapsed] .flex-page-service-add-servicelist-service-heading [name='collapse']::before {
+  content: url("/admin/img/template/tree_closed.png");
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
 .flex-page-service-add-servicelist-service-heading {
   color: #fff;
   background-color: #499fcf;
   text-align: left;
   display: flex;
+  align-items: center;
   width: 100%;
+  margin: 0;
+  font-size: inherit;
+}
+.flex-page-service-add-servicelist-service-heading [name='collapse'] {
+  border: 0 !important;
+  background: transparent !important;
+  width: auto !important;
+  height: auto !important;
+  font-size: 100% !important;
+}
+.flex-page-service-add-servicelist-service-heading [name='collapse']::before {
+  content: url("/admin/img/template/tree_open.png");
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
   margin: 0;
 }
 .flex-page-service-add-servicelist-service-heading [name='remove'] {
@@ -12011,8 +12103,25 @@ div.clearing {
   vertical-align: bottom;
   margin: 0;
 }
+.flex-page-service-add-servicelist-service-heading-servicetype {
+  max-width: 16px;
+  max-height: 16px;
+  margin-right: 1ch;
+}
+.flex-page-service-add-servicelist-service-heading-servicetype:not([src]) {
+  visibility: hidden;
+}
+.flex-page-service-add-servicelist-service-heading-serviceidentifier {
+  margin-right: 1ch;
+}
+.flex-page-service-add-servicelist-service-heading-serviceidentifier:empty {
+  display: none;
+}
 .flex-page-service-add-servicelist-service-heading-rateplan {
   flex: 1;
+  margin-right: 1ch;
+  font-size: 90%;
+  font-weight: normal;
 }
 .flex-page-service-add-servicelist-service-details {
   display: flex;
@@ -12021,23 +12130,26 @@ div.clearing {
   align-content: stretch;
   border: 1px solid #d1d1d1;
   background: #ddd;
-  padding: 0 0.25em;
+  padding: 1em 1em 0 1em;
   flex: 1;
 }
-.flex-page-service-add-servicelist-service-details :required {
+.flex-page-service-add-servicelist-service-details input {
+  padding: 0.25em;
+}
+.flex-page-service-add-servicelist-service-details :not(:disabled):required {
   background: #fff;
   color: #111;
-  border: 0.1em solid #da8;
+  border: 1px solid #da8;
 }
-.flex-page-service-add-servicelist-service-details :invalid {
+.flex-page-service-add-servicelist-service-details :not(:disabled):invalid {
   background: #ffecf0;
   color: #111;
-  border: 0.1em solid #d30;
+  border: 1px solid #d30;
 }
-.flex-page-service-add-servicelist-service-details :invalid:required {
-  border: 0.1em solid #da8;
+.flex-page-service-add-servicelist-service-details :not(:disabled):invalid:required {
+  border: 1px solid #da8;
 }
-.flex-page-service-add-servicelist-service-details :valid {
+.flex-page-service-add-servicelist-service-details :not(:disabled):valid {
   background: #ecfff0;
   color: #111;
   border-color: #00c72b;
@@ -12046,7 +12158,7 @@ div.clearing {
 .flex-page-service-add-servicelist-service-details [name='service_identifier'],
 .flex-page-service-add-servicelist-service-details [name='rate_plan_id'],
 .flex-page-service-add-servicelist-service-details [name='activate_immediately'] {
-  margin: 0.25em 0;
+  margin: 0;
 }
 .flex-page-service-add-servicelist-service-details [name='activate_immediately'] {
   margin-right: 0.5ch;
@@ -12059,7 +12171,7 @@ div.clearing {
 }
 .flex-page-service-add-servicelist-service-details-rateplan-message,
 .flex-page-service-add-servicelist-service-details-activateimmediately-controls {
-  margin: 0.25em 0;
+  margin: 0;
 }
 .flex-page-service-add-servicelist-service-details-servicetype,
 .flex-page-service-add-servicelist-service-details-rateplan,
@@ -12067,16 +12179,17 @@ div.clearing {
   display: flex;
   flex-direction: row;
   border: 0;
-  margin: 0;
+  margin: 0 0 1em 0;
   padding: 0;
   justify-content: flex-start;
-  align-items: center;
+  align-items: baseline;
 }
 .flex-page-service-add-servicelist-service-details-servicetype-label,
 .flex-page-service-add-servicelist-service-details-rateplan-label,
 .flex-page-service-add-servicelist-service-details-activateimmediately-label {
   border: 0;
-  margin: 0.25em 0.5em 0.25em 0;
+  margin: 0 1em 0 0;
+  font-size: inherit;
   font-weight: bold;
   text-align: right;
   width: 10em;
@@ -12089,24 +12202,27 @@ div.clearing {
   align-content: stretch;
   border: 1px solid #d1d1d1;
   background: #ddd;
-  padding: 0 0.25em;
+  padding: 1em 1em 0 1em;
   background: rgba(0,0,0,0.05);
   flex: 1;
 }
-.flex-page-service-add-servicelist-service-properties :required {
+.flex-page-service-add-servicelist-service-properties input {
+  padding: 0.25em;
+}
+.flex-page-service-add-servicelist-service-properties :not(:disabled):required {
   background: #fff;
   color: #111;
-  border: 0.1em solid #da8;
+  border: 1px solid #da8;
 }
-.flex-page-service-add-servicelist-service-properties :invalid {
+.flex-page-service-add-servicelist-service-properties :not(:disabled):invalid {
   background: #ffecf0;
   color: #111;
-  border: 0.1em solid #d30;
+  border: 1px solid #d30;
 }
-.flex-page-service-add-servicelist-service-properties :invalid:required {
-  border: 0.1em solid #da8;
+.flex-page-service-add-servicelist-service-properties :not(:disabled):invalid:required {
+  border: 1px solid #da8;
 }
-.flex-page-service-add-servicelist-service-properties :valid {
+.flex-page-service-add-servicelist-service-properties :not(:disabled):valid {
   background: #ecfff0;
   color: #111;
   border-color: #00c72b;
@@ -12114,6 +12230,8 @@ div.clearing {
 /****************** Component: Service Add Entry (Landline) *******************/
 .flex-servicetype-landline-create [name='line_type'],
 [name='fnn'] [name='line_type'],
+.flex-servicetype-landline-create [name='is_indial100'],
+[name='fnn'] [name='is_indial100'],
 .flex-servicetype-landline-create [name='address.category'],
 [name='fnn'] [name='address.category'],
 .flex-servicetype-landline-create [name='address.subdivision.type'],
@@ -12136,7 +12254,7 @@ div.clearing {
 [name='fnn'] [name='address.state'],
 .flex-servicetype-landline-create [name='address.postcode'],
 [name='fnn'] [name='address.postcode'] {
-  margin: 0.25em 0;
+  margin: 0;
   margin-right: 0.5ch;
 }
 .flex-servicetype-landline-create [name$='address.subdivision.number'],
@@ -12180,6 +12298,7 @@ div.clearing {
 }
 .flex-servicetype-landline-create-fnn,
 .flex-servicetype-landline-create-linetype,
+.flex-servicetype-landline-create-indial100,
 .flex-servicetype-landline-create-address-category,
 .flex-servicetype-landline-create-address-standard-subdivision,
 .flex-servicetype-landline-create-address-standard-propertyname,
@@ -12200,13 +12319,14 @@ div.clearing {
   display: flex;
   flex-direction: row;
   border: 0;
-  margin: 0;
+  margin: 0 0 1em 0;
   padding: 0;
   justify-content: flex-start;
-  align-items: center;
+  align-items: baseline;
 }
 .flex-servicetype-landline-create-fnn-label,
 .flex-servicetype-landline-create-linetype-label,
+.flex-servicetype-landline-create-indial100-label,
 .flex-servicetype-landline-create-address-category-label,
 .flex-servicetype-landline-create-address-standard-subdivision-label,
 .flex-servicetype-landline-create-address-standard-propertyname-label,
@@ -12225,7 +12345,8 @@ div.clearing {
 .flex-servicetype-landline-create-address-allotment-state-label,
 .flex-servicetype-landline-create-address-allotment-postcode-label {
   border: 0;
-  margin: 0.25em 0.5em 0.25em 0;
+  margin: 0 1em 0 0;
+  font-size: inherit;
   font-weight: bold;
   text-align: right;
   width: 10em;
@@ -12235,6 +12356,16 @@ div.clearing {
 .flex-servicetype-landline-create-address-category-label {
   align-self: flex-start;
 }
+.flex-servicetype-landline-create-indial100 {
+  flex-wrap: wrap;
+}
+.flex-servicetype-landline-create-indial100-fnnnotice {
+  font-style: italic;
+  opacity: 0.8;
+  font-size: 90%;
+  flex-basis: 100%;
+  margin-left: calc((10rem * 0.8) + 1.5em + 0.5ch);
+}
 /******************* Component: Service Add Entry (Mobile) ********************/
 .flex-servicetype-mobile-create [name='msn'],
 .flex-servicetype-mobile-create [name='puk'],
@@ -12242,7 +12373,7 @@ div.clearing {
 .flex-servicetype-mobile-create [name='state'],
 .flex-servicetype-mobile-create [name='date_of_birth'],
 .flex-servicetype-mobile-create [name='comments'] {
-  margin: 0.25em 0;
+  margin: 0;
 }
 .flex-servicetype-mobile-create [name='comments'] {
   width: 100%;
@@ -12256,10 +12387,10 @@ div.clearing {
   display: flex;
   flex-direction: row;
   border: 0;
-  margin: 0;
+  margin: 0 0 1em 0;
   padding: 0;
   justify-content: flex-start;
-  align-items: center;
+  align-items: baseline;
 }
 .flex-servicetype-mobile-create-msn-label,
 .flex-servicetype-mobile-create-puk-label,
@@ -12268,7 +12399,8 @@ div.clearing {
 .flex-servicetype-mobile-create-dateofbirth-label,
 .flex-servicetype-mobile-create-comments-label {
   border: 0;
-  margin: 0.25em 0.5em 0.25em 0;
+  margin: 0 1em 0 0;
+  font-size: inherit;
   font-weight: bold;
   text-align: right;
   width: 10em;
@@ -12282,7 +12414,7 @@ div.clearing {
 .flex-servicetype-inbound-create [name='answerpoint'],
 .flex-servicetype-inbound-create [name='complex'],
 .flex-servicetype-inbound-create [name='configuration'] {
-  margin: 0.25em 0;
+  margin: 0;
 }
 .flex-servicetype-inbound-create [name='complex'] {
   margin-right: 0.5ch;
@@ -12297,17 +12429,18 @@ div.clearing {
   display: flex;
   flex-direction: row;
   border: 0;
-  margin: 0;
+  margin: 0 0 1em 0;
   padding: 0;
   justify-content: flex-start;
-  align-items: center;
+  align-items: baseline;
 }
 .flex-servicetype-inbound-create-fnn-label,
 .flex-servicetype-inbound-create-answerpoint-label,
 .flex-servicetype-inbound-create-complex-label,
 .flex-servicetype-inbound-create-configuration-label {
   border: 0;
-  margin: 0.25em 0.5em 0.25em 0;
+  margin: 0 1em 0 0;
+  font-size: inherit;
   font-weight: bold;
   text-align: right;
   width: 10em;
@@ -12318,20 +12451,21 @@ div.clearing {
 }
 /********************* Component: Service Add Entry (ADSL) ********************/
 .flex-servicetype-adsl-create [name='fnn'] {
-  margin: 0.25em 0;
+  margin: 0;
 }
 .flex-servicetype-adsl-create-fnn {
   display: flex;
   flex-direction: row;
   border: 0;
-  margin: 0;
+  margin: 0 0 1em 0;
   padding: 0;
   justify-content: flex-start;
-  align-items: center;
+  align-items: baseline;
 }
 .flex-servicetype-adsl-create-fnn-label {
   border: 0;
-  margin: 0.25em 0.5em 0.25em 0;
+  margin: 0 1em 0 0;
+  font-size: inherit;
   font-weight: bold;
   text-align: right;
   width: 10em;
@@ -12342,20 +12476,21 @@ div.clearing {
 }
 /*********** Component: Service Add Entry (IFTel: Business Connect) ***********/
 .flex-servicetype-iftel-businessconnect-create [name='fnn'] {
-  margin: 0.25em 0;
+  margin: 0;
 }
 .flex-servicetype-iftel-businessconnect-create-fnn {
   display: flex;
   flex-direction: row;
   border: 0;
-  margin: 0;
+  margin: 0 0 1em 0;
   padding: 0;
   justify-content: flex-start;
-  align-items: center;
+  align-items: baseline;
 }
 .flex-servicetype-iftel-businessconnect-create-fnn-label {
   border: 0;
-  margin: 0.25em 0.5em 0.25em 0;
+  margin: 0 1em 0 0;
+  font-size: inherit;
   font-weight: bold;
   text-align: right;
   width: 10em;
@@ -12363,20 +12498,21 @@ div.clearing {
 }
 /**************** Component: Service Add Entry (IFTel: Dialup) ****************/
 .flex-servicetype-iftel-dialup-create [name='email'] {
-  margin: 0.25em 0;
+  margin: 0;
 }
 .flex-servicetype-iftel-dialup-create-email {
   display: flex;
   flex-direction: row;
   border: 0;
-  margin: 0;
+  margin: 0 0 1em 0;
   padding: 0;
   justify-content: flex-start;
-  align-items: center;
+  align-items: baseline;
 }
 .flex-servicetype-iftel-dialup-create-email-label {
   border: 0;
-  margin: 0.25em 0.5em 0.25em 0;
+  margin: 0 1em 0 0;
+  font-size: inherit;
   font-weight: bold;
   text-align: right;
   width: 10em;
@@ -12384,20 +12520,21 @@ div.clearing {
 }
 /********** Component: Service Add Entry (IFTel: Domain/Web Hosting) **********/
 .flex-servicetype-iftel-domainwebhosting-create [name='domain'] {
-  margin: 0.25em 0;
+  margin: 0;
 }
 .flex-servicetype-iftel-domainwebhosting-create-domain {
   display: flex;
   flex-direction: row;
   border: 0;
-  margin: 0;
+  margin: 0 0 1em 0;
   padding: 0;
   justify-content: flex-start;
-  align-items: center;
+  align-items: baseline;
 }
 .flex-servicetype-iftel-domainwebhosting-create-domain-label {
   border: 0;
-  margin: 0.25em 0.5em 0.25em 0;
+  margin: 0 1em 0 0;
+  font-size: inherit;
   font-weight: bold;
   text-align: right;
   width: 10em;
@@ -12405,20 +12542,21 @@ div.clearing {
 }
 /**************** Component: Service Add Entry (IFTel: Email) *****************/
 .flex-servicetype-iftel-email-create [name='email'] {
-  margin: 0.25em 0;
+  margin: 0;
 }
 .flex-servicetype-iftel-email-create-email {
   display: flex;
   flex-direction: row;
   border: 0;
-  margin: 0;
+  margin: 0 0 1em 0;
   padding: 0;
   justify-content: flex-start;
-  align-items: center;
+  align-items: baseline;
 }
 .flex-servicetype-iftel-email-create-email-label {
   border: 0;
-  margin: 0.25em 0.5em 0.25em 0;
+  margin: 0 1em 0 0;
+  font-size: inherit;
   font-weight: bold;
   text-align: right;
   width: 10em;
@@ -12426,20 +12564,21 @@ div.clearing {
 }
 /************** Component: Service Add Entry (IFTel: Engin VOIP) **************/
 .flex-servicetype-iftel-engin-voip-create [name='fnn'] {
-  margin: 0.25em 0;
+  margin: 0;
 }
 .flex-servicetype-iftel-engin-voip-create-fnn {
   display: flex;
   flex-direction: row;
   border: 0;
-  margin: 0;
+  margin: 0 0 1em 0;
   padding: 0;
   justify-content: flex-start;
-  align-items: center;
+  align-items: baseline;
 }
 .flex-servicetype-iftel-engin-voip-create-fnn-label {
   border: 0;
-  margin: 0.25em 0.5em 0.25em 0;
+  margin: 0 1em 0 0;
+  font-size: inherit;
   font-weight: bold;
   text-align: right;
   width: 10em;
@@ -12447,26 +12586,31 @@ div.clearing {
 }
 /*************** Component: Service Add Entry (IFTel: Ethernet) ***************/
 .flex-servicetype-iftel-ethernet-create [name='email'] {
-  margin: 0.25em 0;
+  margin: 0;
 }
 .flex-servicetype-iftel-ethernet-create-identifier {
   display: flex;
   flex-direction: row;
   border: 0;
-  margin: 0;
+  margin: 0 0 1em 0;
   padding: 0;
   justify-content: flex-start;
-  align-items: center;
+  align-items: baseline;
 }
 .flex-servicetype-iftel-ethernet-create-identifier-label {
   border: 0;
-  margin: 0.25em 0.5em 0.25em 0;
+  margin: 0 1em 0 0;
+  font-size: inherit;
   font-weight: bold;
   text-align: right;
   width: 10em;
   min-width: 10em;
 }
 /**************************** Component: Service Override Rates ***************************/
+.flex-page-account-service-plan-overriderates h2 {
+  display: flex;
+  align-items: center;
+}
 .flex-page-account-service-plan-overriderates h2::before {
   content: url("/admin/img/template/charge_small.png");
   height: auto;
@@ -12474,11 +12618,10 @@ div.clearing {
   display: inline-block;
   margin-right: 0.5ch;
   vertical-align: bottom;
-  vertical-align: middle;
 }
 .flex-page-account-service-plan-overriderates table {
   box-sizing: border-box;
-  width: 99%;
+  width: 100%;
   margin-left: auto;
   margin-right: auto;
   border: 0.1em solid #d1d1d1;
@@ -12552,6 +12695,24 @@ div.clearing {
 .flex-page-account-service-plan-overriderates table th:nth-child(3) {
   width: 10%;
 }
+.flex-page-account-service-plan-overriderates-heading-label {
+  flex-grow: 1;
+}
+.flex-page-account-service-plan-overriderates-add {
+  font-size: 0.8rem !important;
+}
+.flex-page-account-service-plan-overriderates-add::before {
+  content: url("/admin/img/template/new.png");
+  height: auto;
+  width: auto;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+  height: 16px;
+}
+.flex-page-account-service-plan-overriderates-add:disabled {
+  display: none;
+}
 .flex-page-account-service-plan-overriderates-recordtypes {
   list-style-type: none;
   padding: 0;
@@ -12574,12 +12735,13 @@ div.clearing {
   border: none;
   margin: 0;
   padding: 0;
-  background-image: linear-gradient(to bottom, rgba(255,255,255,0.6), rgba(255,255,255,0));
-  background-color: #ddd;
   color: #000;
   font-family: Arial, sans-serif;
   font-size: inherit;
   font-weight: bold;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+  background-image: linear-gradient(to bottom, rgba(255,255,255,0.6), rgba(255,255,255,0));
+  background-color: #ddd;
   margin: 0.2em;
   padding: 0.1em;
   border-top: solid 1px #999;
@@ -12590,7 +12752,6 @@ div.clearing {
   cursor: pointer;
   -moz-user-select: none;
   -webkit-user-select: none;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.8);
   background-image: none;
   background-color: transparent;
   display: inline-block;
@@ -12687,12 +12848,13 @@ div.clearing {
   border: none;
   margin: 0;
   padding: 0;
-  background-image: linear-gradient(to bottom, rgba(255,255,255,0.6), rgba(255,255,255,0));
-  background-color: #ddd;
   color: #000;
   font-family: Arial, sans-serif;
   font-size: inherit;
   font-weight: bold;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+  background-image: linear-gradient(to bottom, rgba(255,255,255,0.6), rgba(255,255,255,0));
+  background-color: #ddd;
   margin: 0.2em;
   padding: 0.1em;
   border-top: solid 1px #999;
@@ -12703,7 +12865,6 @@ div.clearing {
   cursor: pointer;
   -moz-user-select: none;
   -webkit-user-select: none;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.8);
   background-image: none;
   background-color: transparent;
   display: inline-block;
@@ -12790,4 +12951,441 @@ div.clearing {
   margin: 0;
   padding: 0;
   text-align: right;
+}
+/******** Component: Service: Add Override Rate ********/
+.flex-popup-account-service-plan-overriderates-add {
+  min-width: 80em;
+  max-width: 95%;
+  box-sizing: border-box;
+}
+.flex-popup-account-service-plan-overriderates-add * {
+  box-sizing: border-box;
+}
+.flex-popup-account-service-plan-overriderates-add > .fw-popup-content {
+  padding: 0 1em 0 1em;
+}
+.flex-popup-account-service-plan-overriderates-add .fw-popup-header::before {
+  content: url("/admin/img/template/charge_small.png");
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.flex-component-account-service-plan-overriderates-add input[name='starts'],
+.flex-component-account-service-plan-overriderates-add input[name='ends'] {
+  margin-right: 0.5em;
+}
+.flex-component-account-service-plan-overriderates-add input[name='start_date'],
+.flex-component-account-service-plan-overriderates-add input[name='end_date'] {
+  margin-left: 0.5em;
+}
+.flex-component-account-service-plan-overriderates-add input[name='search'] {
+  width: 100%;
+  margin-bottom: 0;
+}
+.flex-component-account-service-plan-overriderates-add [name='apply']::before {
+  content: '\0020';
+  background-image: url("/admin/img/template/tick.png");
+  background-size: 16px 16px;
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.flex-component-account-service-plan-overriderates-add [name='cancel']::before {
+  content: '\0020';
+  background-image: url("/admin/img/template/close.png");
+  background-size: 16px 16px;
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.flex-component-account-service-plan-overriderates-add.-saving [name='apply'] {
+  letter-spacing: -1em;
+  color: transparent !important;
+  text-shadow: none !important;
+}
+.flex-component-account-service-plan-overriderates-add.-saving [name='apply']::before {
+  content: '\0020';
+  background-image: url("/admin/img/template/loading.gif");
+  background-size: 16px 16px;
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.flex-component-account-service-plan-overriderates-add.-saving [name='apply']::after {
+  color: #000;
+  font-family: Arial, sans-serif;
+  font-size: inherit;
+  font-weight: bold;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+  letter-spacing: initial;
+  content: 'Saving…';
+  font-size: 0.8rem;
+}
+.flex-component-account-service-plan-overriderates-add-search,
+.flex-component-account-service-plan-overriderates-add-dates-starts,
+.flex-component-account-service-plan-overriderates-add-dates-ends {
+  display: flex;
+  flex-direction: row;
+  border: 0;
+  margin: 0 0 1em 0;
+  padding: 0;
+  justify-content: flex-start;
+  align-items: baseline;
+  align-items: baseline;
+}
+.flex-component-account-service-plan-overriderates-add-dates-starts,
+.flex-component-account-service-plan-overriderates-add-dates-ends {
+  width: 50%;
+}
+.flex-component-account-service-plan-overriderates-add-search-controlset,
+.flex-component-account-service-plan-overriderates-add-dates-starts-controlset,
+.flex-component-account-service-plan-overriderates-add-dates-ends-controlset {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  align-content: stretch;
+  border: 0;
+  padding: 0;
+}
+.flex-component-account-service-plan-overriderates-add-search-controlset {
+  width: 100%;
+}
+.flex-component-account-service-plan-overriderates-add-search,
+.flex-component-account-service-plan-overriderates-add-dates {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  align-content: stretch;
+  border: 1px solid #d1d1d1;
+  background: #ddd;
+  padding: 1em 1em 0 1em;
+  margin-top: 1em;
+  margin-left: -1em;
+  margin-right: -1em;
+  padding-left: 1em;
+  padding-right: 1em;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.flex-component-account-service-plan-overriderates-add-search input,
+.flex-component-account-service-plan-overriderates-add-dates input {
+  padding: 0.25em;
+}
+.flex-component-account-service-plan-overriderates-add-search :not(:disabled):required,
+.flex-component-account-service-plan-overriderates-add-dates :not(:disabled):required {
+  background: #fff;
+  color: #111;
+  border: 1px solid #da8;
+}
+.flex-component-account-service-plan-overriderates-add-search :not(:disabled):invalid,
+.flex-component-account-service-plan-overriderates-add-dates :not(:disabled):invalid {
+  background: #ffecf0;
+  color: #111;
+  border: 1px solid #d30;
+}
+.flex-component-account-service-plan-overriderates-add-search :not(:disabled):invalid:required,
+.flex-component-account-service-plan-overriderates-add-dates :not(:disabled):invalid:required {
+  border: 1px solid #da8;
+}
+.flex-component-account-service-plan-overriderates-add-search :not(:disabled):valid,
+.flex-component-account-service-plan-overriderates-add-dates :not(:disabled):valid {
+  background: #ecfff0;
+  color: #111;
+  border-color: #00c72b;
+}
+.flex-component-account-service-plan-overriderates-add-dates {
+  flex-direction: row;
+}
+.flex-component-account-service-plan-overriderates-add-search-controlset {
+  padding-bottom: 1em;
+}
+.flex-component-account-service-plan-overriderates-add-dates-starts-immediately,
+.flex-component-account-service-plan-overriderates-add-dates-starts-ondate,
+.flex-component-account-service-plan-overriderates-add-dates-ends-indefinite,
+.flex-component-account-service-plan-overriderates-add-dates-ends-ondate {
+  margin: 0 0 0.5em 0;
+}
+.flex-component-account-service-plan-overriderates-add-search-label,
+.flex-component-account-service-plan-overriderates-add-dates-starts-label,
+.flex-component-account-service-plan-overriderates-add-dates-ends-label {
+  border: 0;
+  margin: 0 1em 0 0;
+  font-size: inherit;
+  font-weight: bold;
+  text-align: right;
+}
+.flex-component-account-service-plan-overriderates-add-search-label {
+  margin-bottom: 0.5em;
+}
+.flex-component-account-service-plan-overriderates-add-dates-starts-label,
+.flex-component-account-service-plan-overriderates-add-dates-ends-label {
+  width: 6em;
+}
+.flex-component-account-service-plan-overriderates-add-dates-starts-ondate-message {
+  border: 1px solid #d1d1d1;
+  background-color: #ffc;
+  margin-top: 0.5em;
+  margin-bottom: 0;
+  padding: 0.5em;
+}
+.flex-component-account-service-plan-overriderates-add-dates-starts-ondate-message:empty {
+  display: none;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches {
+  box-sizing: border-box;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  border: 0.1em solid #d1d1d1;
+  border-spacing: 0;
+  font-size: inherit;
+  border-top: 0;
+  width: 100%;
+  transform-origin: top;
+  transform: scale3d(1, 1, 1);
+  transition: transform 0.1s ease-in;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches:empty {
+  transform: scale3d(1, 0, 1);
+}
+.flex-component-account-service-plan-overriderates-add-search-matches [name='rate.id'] {
+  margin: 0 0.5em;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate {
+  background-color: #fff;
+  color: #333;
+  display: flex;
+  align-items: center;
+  padding: 0.25em;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate:nth-child(even) {
+  background-color: #ddd;
+  background-color: #efefef;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-calltype {
+  display: inline-flex;
+  flex-direction: column;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-calltype-destination {
+  font-size: 80%;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm {
+  flex-grow: 1;
+  display: inline-flex;
+  justify-content: flex-end;
+  align-content: center;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm * {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm [data-rate-component],
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm .flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm-restrictions-days,
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm .flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm-restrictions-times {
+  background: #fff;
+  color: #000;
+  height: 100%;
+  margin-left: 0.5ch;
+  margin-right: 0.5ch;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm [data-rate-component='flagfall']::before {
+  content: '\0020';
+  background-image: url("/admin/img/template/flag_red.png");
+  background-size: 12px 12px;
+  height: 12px;
+  width: 12px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm [data-rate-component='rate']::before {
+  content: '\0020';
+  background-image: url("/admin/img/template/clock.png");
+  background-size: 12px 12px;
+  height: 12px;
+  width: 12px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm [data-rate-stage] {
+  border: 1px solid;
+  border-radius: 4px;
+  padding: 0.5ch 0;
+  font-size: 80%;
+  margin-left: 1ch;
+  font-weight: bold;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm [data-rate-stage][data-rate-stage='free'] {
+  border-color: #00c72b;
+  background-color: #00c72b;
+  color: #fff;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm [data-rate-stage][data-rate-stage='passthrough'] {
+  border-color: #666;
+  background-color: #666;
+  color: #fff;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm [data-rate-stage][data-rate-stage='passthrough']::before {
+  content: 'Passthrough Tariff';
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm [data-rate-stage][data-rate-stage='passthrough']:hover::before {
+  content: 'Passthrough Tariff';
+  max-width: 18ch;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm [data-rate-stage][data-rate-stage='standard'] {
+  border-color: #489ecf;
+  background-color: #489ecf;
+  color: #fff;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm [data-rate-stage][data-rate-stage='standard']::before {
+  content: 'Standard Tariff';
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm [data-rate-stage][data-rate-stage='standard']:hover::before {
+  content: 'Standard Tariff';
+  max-width: 15ch;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm [data-rate-stage][data-rate-stage='excess'] {
+  border-color: #f17e23;
+  background-color: #f17e23;
+  color: #fff;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm [data-rate-stage][data-rate-stage='excess']::before {
+  content: 'Excess Tariff';
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm [data-rate-stage][data-rate-stage='excess']:hover::before {
+  content: 'Excess Tariff';
+  max-width: 13ch;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm [data-rate-stage][data-rate-stage='no-discounting'] {
+  border-color: #ef1b16;
+  border-width: calc(1px + 0.5ch);
+  background-color: #fff;
+  color: #000;
+  padding: 0.5ch;
+  font-weight: normal;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm [data-rate-stage][data-rate-stage='excess']::before,
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm [data-rate-stage][data-rate-stage='standard']::before,
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm [data-rate-stage][data-rate-stage='passthrough']::before {
+  content: '\0020';
+  max-width: 0;
+  will-change: max-width;
+  transition: max-width 0.1s ease-in;
+  white-space: nowrap;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm [data-rate-stage][data-rate-stage='excess']:hover::before,
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm [data-rate-stage][data-rate-stage='standard']:hover::before,
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm [data-rate-stage][data-rate-stage='passthrough']:hover::before {
+  overflow: hidden;
+  margin-right: 1ch;
+  margin-left: 0.2em;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm [data-rate-stage] > [data-rate-component] {
+  font-weight: normal;
+  border-radius: 2px;
+  padding: 0.5ch;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm-restrictions {
+  border: 1px solid;
+  border-radius: 4px;
+  padding: 0.5ch 0;
+  font-size: 80%;
+  margin-left: 1ch;
+  font-weight: bold;
+  border-color: #7e70a9;
+  background-color: #7e70a9;
+  color: #fff;
+  text-indent: 0.5ch;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm-restrictions-days,
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm-restrictions-times {
+  text-indent: 0;
+  font-weight: normal;
+  border-radius: 2px;
+  padding: 0.5ch;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm-restrictions-days {
+  padding: 0;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm-restrictions-days [data-rate-day] {
+  font-size: 0;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm-restrictions-days [data-rate-day]::before {
+  padding: 0.5ch 0;
+  width: 3ch;
+  text-align: center;
+  content: attr(data-rate-day);
+  font-size: calc(0.8rem * 0.8);
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm-restrictions-days [data-rate-day]:not(:last-child)::before {
+  border-right: 1px solid #7e70a9;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-algorithm-stage-name {
+  font-size: 0;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-details {
+  border: 0 !important;
+  background: transparent !important;
+  width: auto !important;
+  height: auto !important;
+  font-size: 100% !important;
+  font-size: 0 !important;
+}
+.flex-component-account-service-plan-overriderates-add-search-matches-rate-details::before {
+  content: '\0020';
+  background-image: url("/admin/img/template/article.png");
+  background-size: 16px 16px;
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.flex-component-account-service-plan-overriderates-add-buttons {
+  border: 0;
+  margin: 0;
+  padding: 1em 0.5em;
+  text-align: center;
+}
+.flex-popup-account-service-plan-overriderates-add-saved {
+  -webkit-animation: flex-fade-out 0.25s ease 1.25s forwards;
+  animation: flex-fade-out 0.25s ease 1.25s forwards;
+}
+.flex-popup-account-service-plan-overriderates-add-saved .fw-popup-header {
+  display: none;
+}
+.flex-popup-account-service-plan-overriderates-add-saved .fw-popup-content {
+  padding: 1em;
+}
+.flex-popup-account-service-plan-overriderates-add-saved .fw-popup-content p::before {
+  content: url("/admin/img/template/tick.png");
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.flex-popup-account-service-plan-overriderates-add-savefailed .fw-popup-header::before {
+  content: url("/admin/img/template/MsgNotice.png");
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.flex-popup-account-service-plan-overriderates-add-savefailed fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+  text-align: center;
 }

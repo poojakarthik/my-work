@@ -79,7 +79,7 @@
 			}
 		}
 		$sQuery	= preg_replace(array_keys($aReplaceData), array_values($aReplaceData), (string)$sQuery);
-		//Log::getLog()->log("Final Query form: {\n{$sQuery}\n}");
+		// Log::getLog()->log("Final Query form: {\n{$sQuery}\n}");
 
 		// Run Query
 		//Log::getLog()->log("Executing Query");
@@ -101,6 +101,13 @@
 				throw new Exception_Database("Exceeded Query::prepareByPHPType() maximum nesting depth of ".self::PREPARE_CALLBACK_NESTING_MAX);
 			}
 			$mValue = $mValue->invoke();
+		}
+
+		// Query_Placeholder instance: allows for complex expressions
+		if ($mValue instanceof Query_Placeholder) {
+			$sExpression = $mValue->evaluate($sConnectionType);
+			Log::get()->formatLog('Query Placeholder of type %s evaluated to: %s', get_class($mValue), $sExpression);
+			return $sExpression;
 		}
 
 		// Escape/Cast/Convert value
