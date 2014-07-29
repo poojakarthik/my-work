@@ -2737,6 +2737,7 @@ function GetPDFContent($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId, 
 	}
 }
 
+// Fetch Cached PDF if exists, otherwise generate a new PDF from API.
 function getAccountInvoicePDF($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId, $iTargetMedia=0) {
 	try {
 		if (!strpos($iInvoiceRunId, '-')) {
@@ -2763,22 +2764,28 @@ function getAccountInvoicePDF($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoice
 }
 
 function getFlexAPIAccountInvoicePDF($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId, $iTargetMedia=0) {
-	try {
-		// Create a new request
-		$oRequest				= API_Client_Request::create("accounts/{$iAccount}/invoices/{$iInvoiceId}.pdf", "get");
-		$oResponse				= $oRequest->send();
-		// HTTP Response Code
-		$iResponseStatusCode	= $oResponse->getResponseStatusCode();
-		// PDF Content
-		$sResponseBody			= $oResponse->getBody();
-		// Return a response
-		if($iResponseStatusCode === API_Response::STATUS_CODE_OK) {
-			return $sResponseBody;
-		} else {
-			throw new Exception(API_Response::$aCodes[$iResponseStatusCode]);
+	if (isset($GLOBALS['**API']) {
+		// API is configured, generate PDF using API.
+		try {
+			// Create a new request
+			$oRequest				= API_Client_Request::create("accounts/{$iAccount}/invoices/{$iInvoiceId}.pdf", "get");
+			$oResponse				= $oRequest->send();
+			// HTTP Response Code
+			$iResponseStatusCode	= $oResponse->getResponseStatusCode();
+			// PDF Content
+			$sResponseBody			= $oResponse->getBody();
+			// Return a response
+			if($iResponseStatusCode === API_Response::STATUS_CODE_OK) {
+				return $sResponseBody;
+			} else {
+				throw new Exception(API_Response::$aCodes[$iResponseStatusCode]);
+			}
+		} catch(Exception $oException) {
+			throw $oException;
 		}
-	} catch(Exception $oException) {
-		throw $oException;
+	} else {
+		// API not configured, Generate PDF internally
+		return GetPDFContent($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId, $iTargetMedia);
 	}
 }
 
