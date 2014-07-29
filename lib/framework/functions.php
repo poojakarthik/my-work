@@ -2745,7 +2745,7 @@ function getAccountInvoicePDF($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoice
 		$sInvoicePath = InvoicePDFExists($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId);
 		if (!$sInvoicePath) {
 			// PDF does not exist locally, fetch PDF from API.
-			return getFlexAPIAccountInvoicePDF($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId, $iTargetMedia=0);
+			return getFlexAPIAccountInvoicePDF($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId, $iTargetMedia);
 		} else {
 			$sExtension = substr($sInvoicePath, strrpos($sInvoicePath, '.'));
 			if($sExtension == '.pdf') {
@@ -2753,7 +2753,7 @@ function getAccountInvoicePDF($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoice
 				$sPDF = file_get_contents($sInvoicePath);
 			} else {
 				// PDF does not exist locally, fetch PDF from API.
-				$sPDF = getFlexAPIAccountInvoicePDF($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId, $iTargetMedia=0);
+				$sPDF = getFlexAPIAccountInvoicePDF($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId, $iTargetMedia);
 			}
 			return $sPDF;
 		}
