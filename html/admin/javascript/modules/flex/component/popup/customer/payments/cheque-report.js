@@ -100,10 +100,10 @@ var self = new Class({
 
 		// Add datepickers for legacy browsers
 		if (!inputDate.isNativelySupported()) {
-			var dateFromButton = inputDate.createDatePickerButton(this.dateFromInput);
-			var dateToButton = inputDate.createDatePickerButton(this.dateToInput);
+			var dateFromButton = inputDate.createDatePickerButton(this.dateFromInput, 'd/m/Y');
+			var dateToButton = inputDate.createDatePickerButton(this.dateToInput, 'd/m/Y');
 
-			dateToButton.classList.add('flex-popup-customer-payments-chequereport-button-datepicker');
+			dateFromButton.classList.add('flex-popup-customer-payments-chequereport-button-datepicker');
 			dateToButton.classList.add('flex-popup-customer-payments-chequereport-button-datepicker');
 
 			this.dateFromInput.parentNode.appendChild(dateFromButton);

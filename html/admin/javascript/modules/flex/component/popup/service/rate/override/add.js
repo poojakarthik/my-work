@@ -10,7 +10,8 @@ var H = require('fw/dom/factory'), // HTML
 	jhr = require('xhr/json-handler'),
 	jsonForm = require('json-form'),
 	promise = require('promise'),
-	delegate = require('delegate')
+	delegate = require('delegate'),
+	inputDate = require('dom/input/date')
 ;
 
 var SUCCESS_LAYER_TIMEOUT = 1.5 * 1000; // 2 seconds
@@ -347,7 +348,7 @@ var self = new Class({
 
 				H.div({class: 'flex-component-account-service-plan-overriderates-add-search-controlset'},
 					// this._rateGroupElement = H.select({name: 'rate_group_id'}),
-					this._rateSearchElement = H.input({type: 'search', name: 'search', 'aria-label': 'Search available rates', placeholder: 'Search available rates…', required: '', oninput: this._searchRates.bind(this)}),
+					this._rateSearchElement = H.input({type: 'search', name: 'search', 'aria-label': 'Search available rates', placeholder: 'Search available rates…', required: '', autocomplete: 'off', oninput: this._searchRates.bind(this)}),
 					this._rateSearchMatchesElement = H.div({class: 'flex-component-account-service-plan-overriderates-add-search-matches'})
 				)
 			),
@@ -407,6 +408,24 @@ var self = new Class({
 				this._cancelButton = H.button({type: 'button', name: 'cancel', onclick: this.fire.bind(this, 'cancel')}, 'Cancel')
 			)
 		);
+
+		// Date input polyfills
+		if (!inputDate.isNativelySupported()) {
+			var dateStartPickerButton = inputDate.createDatePickerButton(this._dateStartsDateValue);
+			var dateEndPickerButton = inputDate.createDatePickerButton(this._dateEndsDateValue);
+
+			dateStartPickerButton.classList.add('flex-component-account-service-plan-overriderates-add-dates-starts-ondate-datepicker');
+			dateEndPickerButton.classList.add('flex-component-account-service-plan-overriderates-add-dates-ends-ondate-datepicker');
+
+			this._dateStartsDateValue.parentNode.insertBefore(dateStartPickerButton, this._dateStartsDateValue.nextSibling);
+			this._dateEndsDateValue.parentNode.insertBefore(dateEndPickerButton, this._dateEndsDateValue.nextSibling);
+
+			this._dateStartsDateValue.placeholder = 'yyyy-mm-dd';
+			this._dateEndsDateValue.placeholder = 'yyyy-mm-dd';
+
+			this._dateStartsDateValue.pattern = '^(\\d{4})\\-([0-1]?\\d)\\-([0-3]?\\d)$';
+			this._dateEndsDateValue.pattern = '^(\\d{4})\\-([0-1]?\\d)\\-([0-3]?\\d)$';
+		}
 	},
 
 	_buildRateUI: function (rate) {
@@ -432,19 +451,31 @@ var self = new Class({
 	},
 
 	_searchRates: function (event) {
+		this._rateSearchMatchesElement.innerHTML = '';
+		var constraints = this._getConstraints();
+
+		// Only search if we have some constraints
+		if (!constraints.include_terms.length && !constraints.exclude_terms.length) {
+			return;
+		}
+
 		// Search
 		jhr(
 			'Service',
 			'searchAvailableRates',
-			{arguments: [this.get('serviceId'), this._getConstraints()]}
-		).then(function (request) {
-			// Empty list of previous matches and append to resultset
-			this._rateSearchMatchesElement.innerHTML = '';
-			this._rateSearchMatchesElement.appendChild(
-				H.$fragment.apply(H, request.parseJSONResponse().rates.map(this._buildRateUI.bind(this)))
-			);
-			this._validateSearch();
-		}.bind(this));
+			{arguments: [this.get('serviceId'), constraints]}
+		).then(
+			function searchComplete(request) {
+				// If the constraints now are the same as they were at time of request, we're good to go
+				if (JSON.stringify(constraints) === JSON.stringify(this._getConstraints())) {
+					// Populate to resultset
+					this._rateSearchMatchesElement.appendChild(
+						H.$fragment.apply(H, request.parseJSONResponse().rates.map(this._buildRateUI.bind(this)))
+					);
+					this._validateSearch();
+				}
+			}.bind(this)
+		);
 	},
 
 	_getConstraints: function () {
@@ -454,15 +485,23 @@ var self = new Class({
 		// debugger;
 		var termRegex = /(?:"([^"]+)"|(\S+))/g,
 			search = this._rateSearchElement.value,
-			terms = [],
+			inclusiveTerms = [],
+			exclusiveTerms = [],
+			termMatch,
 			term;
-		while (term = termRegex.exec(search)) {
+		while (termMatch = termRegex.exec(search)) {
 			// Replace opening and closing " with nothing, and " pairs with just a single " to unescape
-			terms.push(term[0].replace(/(^"|"$)/g, '').replace(/""/g, '"'));
+			term = termMatch[0].replace(/(^"|"$)/g, '').replace(/""/g, '"');
+			if (term[0] === '-') {
+				exclusiveTerms.push(term.substr(1));
+			} else {
+				inclusiveTerms.push(term);
+			}
 		}
 
 		return {
-			terms: terms,
+			include_terms: inclusiveTerms,
+			exclude_terms: exclusiveTerms,
 			record_type_id: null // TODO
 		};
 	},
@@ -488,11 +527,11 @@ var self = new Class({
 		if (this._dateStartsDate.checked) {
 			startDate = new Date(this._dateStartsDateValue.value);
 			if (startDate < getToday()) {
-				this._dateStartsDateMessage.innerText = 'Warning: Making an override rate start in the past can result in charge inconsistencies between already-invoiced and yet-to-be-invoiced usage.';
+				this._dateStartsDateMessage.textContent = 'Warning: Making an override rate start in the past can result in charge inconsistencies between already-invoiced and yet-to-be-invoiced usage.';
 				return;
 			}
 		}
-		this._dateStartsDateMessage.innerText = '';
+		this._dateStartsDateMessage.textContent = '';
 	},
 
 	_validateSearch: function () {

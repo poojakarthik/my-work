@@ -12295,6 +12295,8 @@
 
 /********************************** Component: Datepicker *********************************/
 .fw-datepicker
+	position fixed !important
+
 	& .fw-popup-content
 		padding 0
 
@@ -12873,17 +12875,23 @@
 		button-icon-background('/admin/img/template/close.png', 16px, 16px)
 
 	&.-saving [name='apply']
-		letter-spacing -1em
+		// letter-spacing -1em
+		position relative
 		color transparent !important
 		text-shadow none !important
 
 		&::before
 			button-icon-background('/admin/img/template/loading.gif', 16px, 16px)
-		&::after
 			appearance-flex-button-text()
-			letter-spacing initial
+			width auto
+			height auto
+			// letter-spacing initial
 			content 'Saving…'
 			font-size .8rem
+			text-indent calc(16px + .5ch)
+			position absolute
+			left 50%
+			transform translateX(-50%)
 
 .flex-component-account-service-plan-overriderates-add-search
 .flex-component-account-service-plan-overriderates-add-dates-starts
@@ -12937,6 +12945,21 @@
 .flex-component-account-service-plan-overriderates-add-dates-starts-label
 .flex-component-account-service-plan-overriderates-add-dates-ends-label
 	width 6em
+
+.flex-component-account-service-plan-overriderates-add-dates-starts-ondate-datepicker
+.flex-component-account-service-plan-overriderates-add-dates-ends-ondate-datepicker
+	debuttonify(!important)
+	transform translateX(-100%)
+	&::before
+		button-icon-background('/admin/img/template/calendar_small.png', 16px, 16px)
+		vertical-align middle
+		margin 0
+
+
+.flex-component-account-service-plan-overriderates-add
+	& input[name='start_date']:disabled + .flex-component-account-service-plan-overriderates-add-dates-starts-ondate-datepicker
+	& input[name='end_date']:disabled + .flex-component-account-service-plan-overriderates-add-dates-ends-ondate-datepicker
+		display none
 
 .flex-component-account-service-plan-overriderates-add-dates-starts-ondate-message
 	border 1px solid #d1d1d1;

@@ -11934,6 +11934,9 @@ div.clearing {
   vertical-align: bottom;
 }
 /********************************** Component: Datepicker *********************************/
+.fw-datepicker {
+  position: fixed !important;
+}
 .fw-datepicker .fw-popup-content {
   padding: 0;
 }
@@ -12804,6 +12807,7 @@ div.clearing {
   content: '\0020';
   background-image: url("/admin/img/record-type-visibility-hidden.png");
   background-size: 16px 16px;
+  background-repeat: no-repeat;
   height: 16px;
   width: 16px;
   display: inline-block;
@@ -12815,6 +12819,7 @@ div.clearing {
   content: '\0020';
   background-image: url("/admin/img/record-type-visibility-visible.png");
   background-size: 16px 16px;
+  background-repeat: no-repeat;
   height: 16px;
   width: 16px;
   display: inline-block;
@@ -12826,6 +12831,7 @@ div.clearing {
   content: '\0020';
   background-image: url("/admin/img/record-type-visibility-inherit.png");
   background-size: 16px 16px;
+  background-repeat: no-repeat;
   height: 16px;
   width: 16px;
   display: inline-block;
@@ -12917,6 +12923,7 @@ div.clearing {
   content: '\0020';
   background-image: url("/admin/img/record-type-visibility-hidden.png");
   background-size: 16px 16px;
+  background-repeat: no-repeat;
   height: 16px;
   width: 16px;
   display: inline-block;
@@ -12928,6 +12935,7 @@ div.clearing {
   content: '\0020';
   background-image: url("/admin/img/record-type-visibility-visible.png");
   background-size: 16px 16px;
+  background-repeat: no-repeat;
   height: 16px;
   width: 16px;
   display: inline-block;
@@ -12939,6 +12947,7 @@ div.clearing {
   content: '\0020';
   background-image: url("/admin/img/record-type-visibility-inherit.png");
   background-size: 16px 16px;
+  background-repeat: no-repeat;
   height: 16px;
   width: 16px;
   display: inline-block;
@@ -12988,6 +12997,7 @@ div.clearing {
   content: '\0020';
   background-image: url("/admin/img/template/tick.png");
   background-size: 16px 16px;
+  background-repeat: no-repeat;
   height: 16px;
   width: 16px;
   display: inline-block;
@@ -12998,6 +13008,7 @@ div.clearing {
   content: '\0020';
   background-image: url("/admin/img/template/close.png");
   background-size: 16px 16px;
+  background-repeat: no-repeat;
   height: 16px;
   width: 16px;
   display: inline-block;
@@ -13005,7 +13016,7 @@ div.clearing {
   vertical-align: bottom;
 }
 .flex-component-account-service-plan-overriderates-add.-saving [name='apply'] {
-  letter-spacing: -1em;
+  position: relative;
   color: transparent !important;
   text-shadow: none !important;
 }
@@ -13013,21 +13024,25 @@ div.clearing {
   content: '\0020';
   background-image: url("/admin/img/template/loading.gif");
   background-size: 16px 16px;
+  background-repeat: no-repeat;
   height: 16px;
   width: 16px;
   display: inline-block;
   margin-right: 0.5ch;
   vertical-align: bottom;
-}
-.flex-component-account-service-plan-overriderates-add.-saving [name='apply']::after {
   color: #000;
   font-family: Arial, sans-serif;
   font-size: inherit;
   font-weight: bold;
   text-shadow: 0 1px 0 rgba(255,255,255,0.8);
-  letter-spacing: initial;
+  width: auto;
+  height: auto;
   content: 'Saving…';
   font-size: 0.8rem;
+  text-indent: calc(16px + 0.5ch);
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 .flex-component-account-service-plan-overriderates-add-search,
 .flex-component-account-service-plan-overriderates-add-dates-starts,
@@ -13129,6 +13144,33 @@ div.clearing {
 .flex-component-account-service-plan-overriderates-add-dates-ends-label {
   width: 6em;
 }
+.flex-component-account-service-plan-overriderates-add-dates-starts-ondate-datepicker,
+.flex-component-account-service-plan-overriderates-add-dates-ends-ondate-datepicker {
+  border: 0 !important;
+  background: transparent !important;
+  width: auto !important;
+  height: auto !important;
+  font-size: 100% !important;
+  transform: translateX(-100%);
+}
+.flex-component-account-service-plan-overriderates-add-dates-starts-ondate-datepicker::before,
+.flex-component-account-service-plan-overriderates-add-dates-ends-ondate-datepicker::before {
+  content: '\0020';
+  background-image: url("/admin/img/template/calendar_small.png");
+  background-size: 16px 16px;
+  background-repeat: no-repeat;
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+  vertical-align: middle;
+  margin: 0;
+}
+.flex-component-account-service-plan-overriderates-add input[name='start_date']:disabled + .flex-component-account-service-plan-overriderates-add-dates-starts-ondate-datepicker,
+.flex-component-account-service-plan-overriderates-add input[name='end_date']:disabled + .flex-component-account-service-plan-overriderates-add-dates-ends-ondate-datepicker {
+  display: none;
+}
 .flex-component-account-service-plan-overriderates-add-dates-starts-ondate-message {
   border: 1px solid #d1d1d1;
   background-color: #ffc;
@@ -13201,6 +13243,7 @@ div.clearing {
   content: '\0020';
   background-image: url("/admin/img/template/flag_red.png");
   background-size: 12px 12px;
+  background-repeat: no-repeat;
   height: 12px;
   width: 12px;
   display: inline-block;
@@ -13211,6 +13254,7 @@ div.clearing {
   content: '\0020';
   background-image: url("/admin/img/template/clock.png");
   background-size: 12px 12px;
+  background-repeat: no-repeat;
   height: 12px;
   width: 12px;
   display: inline-block;
@@ -13345,6 +13389,7 @@ div.clearing {
   content: '\0020';
   background-image: url("/admin/img/template/article.png");
   background-size: 16px 16px;
+  background-repeat: no-repeat;
   height: 16px;
   width: 16px;
   display: inline-block;

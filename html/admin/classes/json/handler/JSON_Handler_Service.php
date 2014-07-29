@@ -7,17 +7,26 @@ class JSON_Handler_Service extends JSON_Handler implements JSON_Handler_Loggable
 		$db->refMysqliConnection->set_charset('utf8');
 
 		$constraints = object_merge((object)array(
-			'terms' => array(),
+			'include_terms' => array(),
+			'exclude_terms' => array(),
 			'record_type_id' => null
 		), $constraints);
 
 		Log::get()->formatLog('Constraints: %s', print_r($constraints, true));
 
 		// Prepare search terms
-		// A single "record" has to match all terms, but it can match on any property of the record
+		// A single "record" has to match all inclusive terms (and not match all exclusive terms), but it can match on any property of the record
 		$likeTerms = array();
-		foreach ($constraints->terms as $term) {
+		foreach ($constraints->include_terms as $term) {
 			$likeTerms []= new Query_Placeholder_LikeExpressionSet(
+				array('r.Name', 'r.Description', 'rt.Name', 'rt.Description', 'd.Description', 'r.StdFlagfall', 'r.StdRatePerUnit', 'r.StdMarkup', 'r.StdPercentage', 'r.StdMinCharge'),
+				$term,
+				Query_Placeholder_LikeExpressionSet::OPERATOR_OR
+			);
+		}
+		$notLikeTerms = array();
+		foreach ($constraints->exclude_terms as $term) {
+			$notLikeTerms []= new Query_Placeholder_LikeExpressionSet(
 				array('r.Name', 'r.Description', 'rt.Name', 'rt.Description', 'd.Description'),
 				$term,
 				Query_Placeholder_LikeExpressionSet::OPERATOR_OR
@@ -45,7 +54,8 @@ class JSON_Handler_Service extends JSON_Handler implements JSON_Handler_Loggable
 			WHERE s.Id = <service_id>
 				AND (
 					(ISNULL(<record_type_id>) OR rt.Id = <record_type_id>)
-					AND <LIKE-terms>
+					AND (<LIKE-terms-count> = 0 OR <LIKE-terms>)
+					AND (<NOT-LIKE-terms-count> = 0 OR (NOT <NOT-LIKE-terms>))
 				)
 			ORDER BY r.Id DESC
 			LIMIT <rate_search_limit>;
@@ -53,6 +63,9 @@ class JSON_Handler_Service extends JSON_Handler implements JSON_Handler_Loggable
 			'service_id' => $serviceId,
 			'record_type_id' => $constraints->record_type_id,
 			'LIKE-terms' => new Query_Placeholder_QueryPlaceholderSet($likeTerms, Query_Placeholder_QueryPlaceholderSet::OPERATOR_AND),
+			'LIKE-terms-count' => count($likeTerms),
+			'NOT-LIKE-terms' => new Query_Placeholder_QueryPlaceholderSet($notLikeTerms, Query_Placeholder_QueryPlaceholderSet::OPERATOR_OR),
+			'NOT-LIKE-terms-count' => count($notLikeTerms),
 			'rate_status_id' => RATE_STATUS_ACTIVE,
 			'rate_search_limit' => self::RATE_SEARCH_LIMIT
 		));
