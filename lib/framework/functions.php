@@ -2764,7 +2764,7 @@ function getAccountInvoicePDF($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoice
 }
 
 function getFlexAPIAccountInvoicePDF($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId, $iTargetMedia=0) {
-	if (isset($GLOBALS['**API'])) {
+	if (isset($GLOBALS['**API']) && isset($GLOBALS['**API']['host'])) {
 		// API is configured, generate PDF using API.
 		try {
 			// Create a new request
