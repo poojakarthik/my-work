@@ -6,6 +6,11 @@ class API_Client_Request extends API_Request {
 	protected $cURL;
 
 	private function __construct($sQueryString, $sRequestMethod, $sData = NULL) {
+		$verifyHost = 2;
+		if (isset($GLOBALS['**API']['verify_host']) && $GLOBALS['**API']['verify_host'] === false) {
+			$verifyHost = 0;
+		}
+
 		$this->cURL = new CURL();
 		$this->oCurlHandler = curl_init();
 		$this->sURL = "https://" . $GLOBALS['**API']['host'] . "/" . $sQueryString;
@@ -13,6 +18,7 @@ class API_Client_Request extends API_Request {
 		$this->cURL->setOption(CURLOPT_HEADER, 1);
 		$this->cURL->setOption(CURLOPT_USERPWD, "{$GLOBALS['**API']['user']}:{$GLOBALS['**API']['pass']}");
 		$this->cURL->setOption(CURLOPT_SSL_VERIFYPEER, FALSE);
+		$this->cURL->setOption(CURLOPT_SSL_VERIFYHOST, $verifyHost);
 		$this->cURL->setOption(CURLOPT_RETURNTRANSFER, TRUE);
 		$this->cURL->setOption(CURLOPT_FOLLOWLOCATION, 1);
 		$this->cURL->setOption(CURLOPT_TIMEOUT, 40);
