@@ -1,14 +1,22 @@
 <?php
 class JSON_Handler_Service extends JSON_Handler implements JSON_Handler_Loggable, JSON_Handler_Catchable {
 	const RATE_SEARCH_LIMIT = 15;
+	private static $_searchFieldMap = array(
+		'standard_flagfall' => 'r.StdFlagfall',
+		'standard_rate_per_unit_block' => 'r.StdRatePerUnit',
+		'standard_minimum_charge' => 'r.StdMinCharge',
+		'standard_markup_percent' => 'r.StdPercentage',
+		'standard_markup_dollars_per_unit_block' => 'r.StdMarkup'
+	);
+	private static $_searchPermittedComparators = array('=', '<', '>', '<=', '>=');
 	public function searchAvailableRates($serviceId, stdClass $constraints) {
 		$db = DataAccess::get();
 		$oldCharset = $db->refMysqliConnection->character_set_name();
 		$db->refMysqliConnection->set_charset('utf8');
 
 		$constraints = object_merge((object)array(
-			'include_terms' => array(),
-			'exclude_terms' => array(),
+			'include' => array(),
+			'exclude' => array(),
 			'record_type_id' => null
 		), $constraints);
 
@@ -16,23 +24,43 @@ class JSON_Handler_Service extends JSON_Handler implements JSON_Handler_Loggable
 
 		// Prepare search terms
 		// A single "record" has to match all inclusive terms (and not match all exclusive terms), but it can match on any property of the record
+		$comparisons = array();
 		$likeTerms = array();
-		foreach ($constraints->include_terms as $term) {
-			$likeTerms []= new Query_Placeholder_LikeExpressionSet(
-				array('r.Name', 'r.Description', 'rt.Name', 'rt.Description', 'd.Description', 'r.StdFlagfall', 'r.StdRatePerUnit', 'r.StdMarkup', 'r.StdPercentage', 'r.StdMinCharge'),
-				$term,
-				Query_Placeholder_LikeExpressionSet::OPERATOR_OR
-			);
-		}
-		$notLikeTerms = array();
-		foreach ($constraints->exclude_terms as $term) {
-			$notLikeTerms []= new Query_Placeholder_LikeExpressionSet(
-				array('r.Name', 'r.Description', 'rt.Name', 'rt.Description', 'd.Description'),
-				$term,
-				Query_Placeholder_LikeExpressionSet::OPERATOR_OR
-			);
+		foreach ($constraints->include as $term) {
+			if (is_object($term)) {
+				// Comparison
+				if (isset(self::$_searchFieldMap[$term->field]) && in_array($term->comparator, self::$_searchPermittedComparators)) {
+					$comparisons []= new Query_Placeholder_Expression(self::$_searchFieldMap[$term->field] . " {$term->comparator} <value>",  array('value' => $term->value));
+				}
+			} else {
+				// LIKE
+				$likeTerms []= new Query_Placeholder_LikeExpressionSet(
+					array('r.Name', 'r.Description', 'rt.Name', 'rt.Description', 'd.Description IS NOT NULL AND d.Description'),
+					$term,
+					Query_Placeholder_LikeExpressionSet::OPERATOR_OR
+				);
+			}
 		}
 
+		$notComparisons = array();
+		$notLikeTerms = array();
+		foreach ($constraints->exclude as $term) {
+			if (is_object($term)) {
+				// Comparison
+				if (isset(self::$_searchFieldMap[$term->field]) && in_array($term->comparator, self::$_searchPermittedComparators)) {
+					$notComparisons []= new Query_Placeholder_Expression(self::$_searchFieldMap[$term->field] . " {$term->comparator} <value>",  array('value' => $term->value));
+				}
+			} else {
+				// NOT LIKE
+				$notLikeTerms []= new Query_Placeholder_LikeExpressionSet(
+					array('r.Name', 'r.Description', 'rt.Name', 'rt.Description', 'd.Description IS NOT NULL AND d.Description'),
+					$term,
+					Query_Placeholder_LikeExpressionSet::OPERATOR_OR
+				);
+			}
+		}
+
+		// Perform Search
 		$ratesResult = $db->query("
 			SELECT r.*,
 				d.Description AS destination_description,
@@ -56,6 +84,8 @@ class JSON_Handler_Service extends JSON_Handler implements JSON_Handler_Loggable
 					(ISNULL(<record_type_id>) OR rt.Id = <record_type_id>)
 					AND (<LIKE-terms-count> = 0 OR <LIKE-terms>)
 					AND (<NOT-LIKE-terms-count> = 0 OR (NOT <NOT-LIKE-terms>))
+					AND (<comparisons-count> = 0 OR <comparisons>)
+					AND (<NOT-comparisons-count> = 0 OR (NOT <NOT-comparisons>))
 				)
 			ORDER BY r.Id DESC
 			LIMIT <rate_search_limit>;
@@ -66,6 +96,10 @@ class JSON_Handler_Service extends JSON_Handler implements JSON_Handler_Loggable
 			'LIKE-terms-count' => count($likeTerms),
 			'NOT-LIKE-terms' => new Query_Placeholder_QueryPlaceholderSet($notLikeTerms, Query_Placeholder_QueryPlaceholderSet::OPERATOR_OR),
 			'NOT-LIKE-terms-count' => count($notLikeTerms),
+			'comparisons' => new Query_Placeholder_QueryPlaceholderSet($comparisons, Query_Placeholder_QueryPlaceholderSet::OPERATOR_AND),
+			'comparisons-count' => count($comparisons),
+			'NOT-comparisons' => new Query_Placeholder_QueryPlaceholderSet($notComparisons, Query_Placeholder_QueryPlaceholderSet::OPERATOR_OR),
+			'NOT-comparisons-count' => count($notComparisons),
 			'rate_status_id' => RATE_STATUS_ACTIVE,
 			'rate_search_limit' => self::RATE_SEARCH_LIMIT
 		));

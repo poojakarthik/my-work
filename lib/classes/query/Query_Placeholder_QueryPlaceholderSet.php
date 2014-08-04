@@ -20,7 +20,9 @@ class Query_Placeholder_QueryPlaceholderSet implements Query_Placeholder {
 		if ($this->_queryPlaceholders && count($this->_queryPlaceholders)) {
 			$evalutedValues = array();
 			foreach ($this->_queryPlaceholders as $queryPlaceholder) {
-				$evalutedValues []= $queryPlaceholder->evaluate();
+				$evaluated = $queryPlaceholder->evaluate();
+				// Log::get()->formatLog('Query Placeholder of type %s evaluated to: %s', get_class($queryPlaceholder), $evaluated);
+				$evalutedValues []= $evaluated;
 			}
 			return sprintf('(%s)', implode(" {$this->_setOperator} ", $evalutedValues));
 		} else {

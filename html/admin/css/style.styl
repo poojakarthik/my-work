@@ -103,7 +103,8 @@
 	.fw-popup-header {
 		height: auto;
 		padding: 3px;
-		background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0.10) 0%, rgba(0, 0, 0, 0.20) 100%);
+		/*background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0.10) 0%, rgba(0, 0, 0, 0.20) 100%);*/
+		background: linear-gradient(to bottom, rgba(0, 0, 0, .05), rgba(0, 0, 0, .15));
 		box-shadow: 0 -8px 8px 8px black;
 		-moz-user-select: none;
 		-webkit-user-select: none;
@@ -12757,7 +12758,7 @@
 	padding 0
 
 	&:empty
-		appearance-flex-panel()
+		appearance-flex-legacy-panel()
 
 		&::before
 			content 'There are no override rates currently active or upcoming.'
@@ -12912,6 +12913,9 @@
 	width 100%
 
 .flex-component-account-service-plan-overriderates-add-search
+	position relative
+
+.flex-component-account-service-plan-overriderates-add-search
 .flex-component-account-service-plan-overriderates-add-dates
 	appearance-flex-form-fieldset()
 	margin-top 1em
@@ -12941,6 +12945,49 @@
 
 .flex-component-account-service-plan-overriderates-add-search-label
 	margin-bottom .5em
+
+.flex-component-account-service-plan-overriderates-add-search-help
+	debuttonify(!important)
+	font-size 0 !important
+	position absolute
+	top .8rem
+	right .8rem
+
+	&::before
+		button-icon-background('/admin/img/template/information.png', 16px, 16px)
+
+.flex-component-account-service-plan-overriderates-add-search-help-details
+	width 50em
+	box-sizing border-box
+	& *
+		box-sizing border-box
+
+	& > .fw-popup-content
+		padding 0 1em 0 1em
+
+	& .fw-popup-header::before
+		button-icon('/admin/img/template/information.png', 16px, 16px)
+
+	& .fw-popup-header-icon
+		display none
+
+	& .fw-popup-alert-buttons
+		padding 0
+		margin-bottom 1em
+
+	& dl
+		appearance-flex-panel()
+		margin-left -1em
+		margin-right -1em
+		padding-left 2em
+		padding-right 1em
+		padding-bottom 1em
+
+		& dt
+			font-weight bold
+
+		& dd + dt
+			margin-top 1em
 
 .flex-component-account-service-plan-overriderates-add-dates-starts-label
 .flex-component-account-service-plan-overriderates-add-dates-ends-label
