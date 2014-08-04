@@ -11,7 +11,8 @@ var H = require('fw/dom/factory'), // HTML
 	jsonForm = require('json-form'),
 	promise = require('promise'),
 	delegate = require('delegate'),
-	inputDate = require('dom/input/date')
+	inputDate = require('dom/input/date'),
+	mixin = require('mixin')
 ;
 
 var SUCCESS_LAYER_TIMEOUT = 1.5 * 1000; // 2 seconds
@@ -63,6 +64,42 @@ var UNIT_TYPES = {
 	},
 };
 
+
+var CONSTRAINT_NAME_MAP = {
+	flagfall: 'standard_flagfall',
+	rate: 'standard_rate_per_unit_block',
+	minimum: 'standard_minimum_charge',
+	'markup-percent': 'standard_markup_percent',
+	'markup-dollars': 'standard_markup_dollars_per_unit_block',
+	'markup%': 'standard_markup_percent',
+	'markup$': 'standard_markup_dollars_per_unit_block'
+};
+function processSpecialTermConstraint(term, comparison, value) {
+	if (!(comparison && value != null && value.length)) {
+		comparison = '>';
+		value = 0;
+	}
+
+	var constraint;
+	switch (term.toLowerCase()) {
+		case 'flagfall':
+		case 'rate':
+		case 'minimum':
+		case 'markup-percent':
+		case 'markup-dollars':
+		case 'markup%':
+		case 'markup$':
+			// constraint[CONSTRAINT_NAME_MAP[term.toLowerCase()]] = {};
+			// constraint[CONSTRAINT_NAME_MAP[term.toLowerCase()]][comparison] = Number(value);
+			constraint = {
+				field: CONSTRAINT_NAME_MAP[term.toLowerCase()],
+				comparator: comparison,
+				value: Number(value)
+			};
+			break;
+	}
+	return constraint;
+}
 
 function getToday() {
 	var date = new Date();
@@ -325,6 +362,52 @@ function buildRateDescription(rate) {
 	return descriptionFragment;
 }
 
+function showSearchHelpDialog() {
+	var popup = new Alert({sExtraClass: 'flex-component-account-service-plan-overriderates-add-search-help-details', sTitle: 'Rate Search Help', sOKLabel: 'Close'},
+		H.p('Search for your Rate by typing in terms, separated by spaces. Prefixing the term with a hyphen/minus (', H.code('-'), ') will only match on Rates that do ', H.em('not'), ' contain that term.'),
+		H.p('If you want to search (or exclude) an exact phrase, enclose the phrase with double-quotes (' , H.code('"'), ').'),
+		H.p('You can also match against certain Rate values by using the following special terms:'),
+		H.dl(
+			H.dt(H.code(':flagfall')),
+			H.dd('Match if the Rate has a standard flagfall'),
+
+			H.dt(H.code(':rate')),
+			H.dd('Match if the Rate has a standard rate-per-unit component'),
+
+			H.dt(H.code(':minimum')),
+			H.dd('Match if the Rate has a standard minimum charge'),
+
+			H.dt(H.code(':markup%')),
+			H.dt(H.code(':markup-percent')),
+			H.dd('Match if the Rate has a markup specified as a percentage of cost'),
+
+			H.dt(H.code(':markup$')),
+			H.dt(H.code(':markup-dollars')),
+			H.dd('Match if the Rate has a markup specified as a rate per unit on top of cost')
+		),
+		H.p('You can compare these properties to specific values, by adding any of the following to the end of the special term:'),
+		H.dl(
+			H.dt(H.code('=VALUE')),
+			H.dd('Match if the property is exactly ', H.code('VALUE')),
+
+			H.dt(H.code('<VALUE')),
+			H.dd('Match if the property is less than ', H.code('VALUE')),
+
+			H.dt(H.code('>VALUE')),
+			H.dd('Match if the property is greater than ', H.code('VALUE'))
+		),
+		H.p('Examples:'),
+		H.dl(
+			H.dt(H.code('local -program -:flagfall -:rate -:markup% -:markup$')),
+			H.dd('Match Local (non-programmed) calls that are "free"'),
+
+			H.dt(H.code('international uk -raine -mobile :flagfall<1.50')),
+			H.dd('Match calls to UK (not Ukraine) which are not to mobile endpoints with a flagfall less than $1.50')
+		)
+	);
+	popup.display();
+}
+
 var self = new Class({
 	extends: Component,
 
@@ -345,6 +428,8 @@ var self = new Class({
 
 			H.div({role: 'group', class: 'flex-component-account-service-plan-overriderates-add-search'},
 				H.h3({class: 'flex-component-account-service-plan-overriderates-add-search-label'}, 'Override Rate'),
+
+				H.button({type: 'button', class: 'flex-component-account-service-plan-overriderates-add-search-help', onclick: showSearchHelpDialog}, 'Help'),
 
 				H.div({class: 'flex-component-account-service-plan-overriderates-add-search-controlset'},
 					// this._rateGroupElement = H.select({name: 'rate_group_id'}),
@@ -455,7 +540,7 @@ var self = new Class({
 		var constraints = this._getConstraints();
 
 		// Only search if we have some constraints
-		if (!constraints.include_terms.length && !constraints.exclude_terms.length) {
+		if (!constraints.include.length && !constraints.exclude.length) {
 			return;
 		}
 
@@ -479,31 +564,42 @@ var self = new Class({
 	},
 
 	_getConstraints: function () {
-		// TODO: -markup -flagfall -excess +flagfall -rate -markup$ -markup%
-
+		// local :flagfall<10 -:rate
 		// Allows space separated terms or "quoted ""exact"" phrases"
-		// debugger;
-		var termRegex = /(?:"([^"]+)"|(\S+))/g,
+		var termRegex = /(-)?(?:(?::(([a-z]+-)*[a-z]+[%\$]?)(?:([=<>])((\d*\.)?\d+)?)?)|"((?:[^"]|"")+)"|(\S+))/gi,
 			search = this._rateSearchElement.value,
-			inclusiveTerms = [],
-			exclusiveTerms = [],
+			constraints = {
+				include: [],
+				exclude: []
+			},
 			termMatch,
-			term;
+			termSet,
+			term,
+			exclude;
 		while (termMatch = termRegex.exec(search)) {
-			// Replace opening and closing " with nothing, and " pairs with just a single " to unescape
-			term = termMatch[0].replace(/(^"|"$)/g, '').replace(/""/g, '"');
-			if (term[0] === '-') {
-				exclusiveTerms.push(term.substr(1));
+			exclude = termMatch[1] === '-';
+
+			// Handle different kinds of terms/matches
+			if (termMatch[2]) {
+				// Special term
+				term = processSpecialTermConstraint(termMatch[2], termMatch[4], termMatch[5]);
+			} else if (termMatch[7]) {
+				// Quoted phrase: Replace " pairs with just a single " to unescape
+				term = termMatch[7].replace(/""/g, '"');
 			} else {
-				inclusiveTerms.push(term);
+				// Regular term
+				term = termMatch[8];
+			}
+
+			// Include/exclude
+			if (exclude) {
+				constraints.exclude.push(term);
+			} else {
+				constraints.include.push(term);
 			}
 		}
 
-		return {
-			include_terms: inclusiveTerms,
-			exclude_terms: exclusiveTerms,
-			record_type_id: null // TODO
-		};
+		return constraints;
 	},
 
 	_syncDateStarts: function () {
