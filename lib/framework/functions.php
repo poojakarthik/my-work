@@ -2749,17 +2749,55 @@ function getAccountInvoicePDF($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoice
 			return getFlexAPIAccountInvoicePDF($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId, $iTargetMedia);
 		} else {
 			$sExtension = substr($sInvoicePath, strrpos($sInvoicePath, '.'));
-			if($sExtension == '.pdf') {
-				// Cached PDF found, return that instead of generating a new one.
-				$sPDF = file_get_contents($sInvoicePath);
-			} else {
-				// PDF does not exist locally, fetch PDF from API.
-				$sPDF = getFlexAPIAccountInvoicePDF($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId, $iTargetMedia);
+			// Decide how to Generate a new PDF
+			switch ($sExtension) {
+				case '.pdf':
+					// Found PDF, return that, no generation is required
+					$sPDF = file_get_contents($sInvoicePath);
+					break;
+				case '.bz2':
+					$sXML = file_get_contents("compress.bzip2://{$sInvoicePath}");
+					// Found XML, generate a new PDF from the API using this XML
+					$sPDF = getFlexAPIAccountInvoicePDFForXML($iAccount, $iInvoiceId, $sXML);
+				case '.xml':
+					if ($sExtension == '.xml') {
+						$sXML = file_get_contents($sInvoicePath);
+					} else {
+						// The xml file was bzipped
+					}
+					// Found XML, generate a new PDF from the API using this XML
+					$sPDF = getFlexAPIAccountInvoicePDFForXML($iAccount, $iInvoiceId, $sXML);
+					break;
+				default:
+					// Couldnt find a PDF or XML file. Generate a new PDF from the API
+					$sPDF = getFlexAPIAccountInvoicePDF($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId, $iTargetMedia);
 			}
+
 			return $sPDF;
 		}
 	} catch(Exception $oException) {
 		throw $oException;
+	}
+}
+
+function getFlexAPIAccountInvoicePDFForXML($iAccount, $iInvoiceId, $sXML) {
+	if (isset($GLOBALS['**API']) && isset($GLOBALS['**API']['host'])) {
+		// API is configured, generate PDF using API.
+		try {
+			// Create a new request
+			$oRequest				= API_Client_Request::create("accounts/{$iAccount}/invoices/{$iInvoiceId}.pdf", "post", $sXML);
+			$oResponse				= $oRequest->send();
+			// HTTP Response Code
+			$iResponseStatusCode	= $oResponse->getResponseStatusCode();
+			// PDF Content
+			$sResponseBody			= $oResponse->getBody();
+			return $sResponseBody;
+		} catch(Exception $oException) {
+			throw $oException;
+		}
+	} else {
+		// API not configured
+		throw "API Not Configured, failed to generate PDF in getFlexAPIAccountInvoicePDFForXML()";
 	}
 }
 

@@ -15,10 +15,8 @@ class API_Client_Response extends API_Response {
 			$aStatusDetails = explode(':', $sStatus);
 			$this->aHeaders[$aStatusDetails[0]] = $aStatusDetails[1];
 		}
-
 		$this->sBody = $sBody;
 	}
-
 
 	public function getBody() {
 		return $this->sBody;
@@ -27,5 +25,4 @@ class API_Client_Response extends API_Response {
 	public function getResponseStatusCode() {
 		return $this->iResponseStatus;
 	}
-
 }

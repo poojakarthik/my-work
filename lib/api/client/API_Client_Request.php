@@ -27,7 +27,7 @@ class API_Client_Request extends API_Request {
 		$this->cURL->setOption(CURLOPT_PORT, $GLOBALS['**API']['port']);
 
 		if ($sData !== NULL) {
-			$sData = "data = ".urlencode(json_encode($sData));
+			$sData = "data=".urlencode(json_encode($sData));
 		}
 		if ($sRequestMethod === API_request::HTTP_METHOD_PUT) {
 			$fh = fopen(FILES_BASE_PATH.'temp/'.'tmp_putvars.txt', 'w') or die("can't open file");
