@@ -11,7 +11,7 @@ class API_Server_Request extends API_Request {
 
 	public function __construct($requestData) {
 		//$this->sQueryString = ltrim( substr($_SERVER['PHP_SELF'], strlen($_SERVER['SCRIPT_NAME'])), "/");
-		$this->path = $requestData['SCRIPT_URL'];
+		$this->path = parse_url($requestData['REQUEST_URI'], PHP_URL_PATH);
 		$this->_setMethod($requestData['REQUEST_METHOD']);
 		switch($this->method) {
 			case 'post':
