@@ -14,7 +14,7 @@ class API_Server_Response extends API_Response {
 	}
 
 	public function send($iResponseCode, $aHeaders, $sBody) {
-		header("HTTP/1.1 {$iResponseCode} " . API_Response::$aCodes[$iResponseCode]);
+		header("HTTP/1.1 {$iResponseCode} " . API_Response::$aCodes[$iResponseCode] . "\n");
 		foreach($aHeaders as $sHeaderName=>$sHeaderValue) {
 			header("{$sHeaderName}: {$sHeaderValue}");
 		}

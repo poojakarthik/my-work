@@ -2,16 +2,29 @@
 class API_Server_Request extends API_Request {
 
 	private $request_vars;
-	private $data;
 	private $http_accept;
 	private $method;
+	private $data;
 	private $sQueryString;
 	public $path;
 	public $url;
 
 	public function __construct($requestData) {
 		//$this->sQueryString = ltrim( substr($_SERVER['PHP_SELF'], strlen($_SERVER['SCRIPT_NAME'])), "/");
-		$this->path = $_SERVER['SCRIPT_URL'];
+		$this->path = $requestData['SCRIPT_URL'];
+		$this->_setMethod($requestData['REQUEST_METHOD']);
+		switch($this->method) {
+			case 'post':
+				$this->setData($_POST);
+				break;
+			case 'get':
+				$this->setData($_GET);
+				break;
+			case 'put':
+				$this->setData($_PUT);
+				break;
+			default:
+		}
 	}
 
 	public function saveRegexMatchedNamedSubpatternsAsProperties($aMatches) {
@@ -25,7 +38,7 @@ class API_Server_Request extends API_Request {
     }
 
     public function getHTTPMethod() {
-    	return strtolower($_SERVER['REQUEST_METHOD']);
+    	return $this->method;
     }
 
 	public function setData($data) {
@@ -38,8 +51,8 @@ class API_Server_Request extends API_Request {
 		}
 	}
 
-	public function setMethod($method) {
-		$this->method = $method;
+	private function _setMethod($method) {
+		$this->method = trim(strtolower($method));
 	}
 
 	public function getData() {
