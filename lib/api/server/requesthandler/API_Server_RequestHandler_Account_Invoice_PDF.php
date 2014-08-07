@@ -49,7 +49,7 @@ class API_Server_RequestHandler_Account_Invoice_PDF implements API_Server_Reques
 			array(
 				'Content-Type' => 'application/pdf'
 			),
-			generateInvoicePDF($sXML, $invoice->Id, $iTargetMedia=2, $invoice->invoice_run_id, $invoice->Account)
+			generateInvoicePDF($sXML, $invoice->Id, null, $invoice->invoice_run_id, $invoice->Account)
 		);
 	}
 }
