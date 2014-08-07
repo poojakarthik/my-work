@@ -12,7 +12,7 @@ class API_Server_Request extends API_Request {
 	public function __construct($requestData) {
 		//$this->sQueryString = ltrim( substr($_SERVER['PHP_SELF'], strlen($_SERVER['SCRIPT_NAME'])), "/");
 		$this->path = $requestData['SCRIPT_URL'];
-		$this->setMethod($requestData['REQUEST_METHOD']);
+		$this->_setMethod($requestData['REQUEST_METHOD']);
 		switch($this->method) {
 			case 'post':
 				$this->setData($_POST);
@@ -51,7 +51,7 @@ class API_Server_Request extends API_Request {
 		}
 	}
 
-	private function setMethod($method) {
+	private function _setMethod($method) {
 		$this->method = trim(strtolower($method));
 	}
 
