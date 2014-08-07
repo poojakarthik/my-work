@@ -22,7 +22,7 @@ class API_Server_RequestHandler_Account_Invoice_PDF implements API_Server_Reques
 			array(
 				'Content-Type' => 'application/pdf'
 			),
-			GetPDFContent($invoice->Account, $iYear=null, $iMonth=null, $invoice->Id, $invoice->invoice_run_id)
+			GetPDFContent($invoice->Account, $iYear = null, $iMonth = null, $invoice->Id, $invoice->invoice_run_id)
 		);
 	}
 	static public function post(API_Server_Request $request, API_Server_Response $response) {
@@ -49,7 +49,7 @@ class API_Server_RequestHandler_Account_Invoice_PDF implements API_Server_Reques
 			array(
 				'Content-Type' => 'application/pdf'
 			),
-			generateInvoicePDF($sXML, $invoice->Id, null, $invoice->invoice_run_id, $invoice->Account)
+			generateInvoicePDF($sXML, $invoice->Id, $iTargetMedia = null, $invoice->invoice_run_id, $invoice->Account)
 		);
 	}
 }
