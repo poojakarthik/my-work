@@ -48,7 +48,7 @@ class API_Client_Request extends API_Request {
 
 		// Headers
 		if (count($options['headers'])) {
-			$this->cURL->HTTPHEADER = array_map('self::_formatHeader', array_keys($options['headers']), array_values($options['headers']));
+			$this->cURL->HTTPHEADER = array_map(array($this, '_formatHeader'), array_keys($options['headers']), array_values($options['headers']));
 		}
 	}
 
