@@ -25,21 +25,14 @@ class API_Server_RequestHandler_Account_Invoice_PDF implements API_Server_Reques
 			GetPDFContent($invoice->Account, $iYear = null, $iMonth = null, $invoice->Id, $invoice->invoice_run_id)
 		);
 	}
+
 	static public function post(API_Server_Request $request, API_Server_Response $response) {
 		$accountId = $request->url->account_id;
 		$invoiceId = $request->url->invoice_id;
-		try {
-			$invoice = Invoice::getForId($invoiceId);
-			if ($invoice->Account !== intval($accountId)) {
-				throw new Exception('Invoice/Account mismatch');
-			}
-		} catch (Exception $exception) {
+		if (!($account = Account::getForId($accountId))) {
 			$response->send(API_Response::STATUS_CODE_NOT_FOUND, array(
 				'content-type' => 'text/plain'
-			), sprintf('No Invoice #%s on Account #%s',
-				$accountId,
-				$invoiceId
-			));
+			), sprintf('No such Account #%s', $accountId));
 		}
 
 		$sXML = $request->getData();
@@ -49,7 +42,7 @@ class API_Server_RequestHandler_Account_Invoice_PDF implements API_Server_Reques
 			array(
 				'Content-Type' => 'application/pdf'
 			),
-			generateInvoicePDF($sXML, $invoice->Id, $iTargetMedia = null, $invoice->invoice_run_id, $invoice->Account)
+			generateInvoicePDF($sXML, $request->url->invoice_id, $iTargetMedia = null, $invoiceRunId = null, $request->url->account_id)
 		);
 	}
 }

@@ -2785,8 +2785,12 @@ function getFlexAPIAccountInvoicePDFForXML($iAccount, $iInvoiceId, $sXML) {
 		// API is configured, generate PDF using API.
 		try {
 			// Create a new request
-			$oRequest				= API_Client_Request::create("accounts/{$iAccount}/invoices/{$iInvoiceId}.pdf", "post", $sXML);
-			$oResponse				= $oRequest->send();
+			$oResponse = API_Client_Request::post("accounts/{$iAccount}/invoices/{$iInvoiceId}.pdf", $sXML, array(
+				'headers' => array(
+					'Content-type' => 'application/xml',
+					'Accepts' => 'application/pdf'
+				)
+			));
 			// HTTP Response Code
 			$iResponseStatusCode	= $oResponse->getResponseStatusCode();
 			// PDF Content
@@ -2806,8 +2810,12 @@ function getFlexAPIAccountInvoicePDF($iAccount, $iYear, $iMonth, $iInvoiceId, $i
 		// API is configured, generate PDF using API.
 		try {
 			// Create a new request
-			$oRequest				= API_Client_Request::create("accounts/{$iAccount}/invoices/{$iInvoiceId}.pdf", "get");
-			$oResponse				= $oRequest->send();
+			$oResponse = API_Client_Request::get("accounts/{$iAccount}/invoices/{$iInvoiceId}.pdf", array(
+				'headers' => array(
+					'Accepts' => 'application/pdf'
+				)
+			));
+
 			// HTTP Response Code
 			$iResponseStatusCode	= $oResponse->getResponseStatusCode();
 			// PDF Content
@@ -2877,7 +2885,12 @@ function generateInvoicePDF($strXML, $intInvoiceId, $intTargetMedia, $iInvoiceRu
 	require_once(SHARED_BASE_PATH.'classes/invoice/Invoice_Run.php');
 	require_once(SHARED_BASE_PATH.'classes/Account.php');
 
-	$custGroupId = coalesce(Invoice_Run::getForId($iInvoiceRunId)->customer_group_id, Account::getForId($iAccountId)->CustomerGroup);
+	if ($iInvoiceRunId) {
+		$custGroupId = Invoice_Run::getForId($iInvoiceRunId)->customer_group_id;
+	}
+	if (!isset($custGroupId)) {
+		$custGroupId = Account::getForId($iAccountId)->CustomerGroup;
+	}
 
 	VixenRequire('lib/pdf/Flex_Pdf.php');
 
@@ -2909,11 +2922,13 @@ function generateInvoicePDF($strXML, $intInvoiceId, $intTargetMedia, $iInvoiceRu
 			throw new Exception("Unable to load Invoice with Id '{$intInvoiceId}'");
 		}*/
 
-		$strPDFPath	= PATH_INVOICE_PDFS."pdf/{$iInvoiceRunId}/{$iAccountId}.pdf";
-		@mkdir(dirname($strPDFPath), 0777, true);
-		if (!file_exists(dirname($strPDFPath)) || !@file_put_contents($strPDFPath, $strPDFContent))
-		{
-			throw new Exception(print_r(error_get_last(), true));
+		if ($iInvoiceRunId) {
+			$strPDFPath	= PATH_INVOICE_PDFS."pdf/{$iInvoiceRunId}/{$iAccountId}.pdf";
+			@mkdir(dirname($strPDFPath), 0777, true);
+			if (!file_exists(dirname($strPDFPath)) || !@file_put_contents($strPDFPath, $strPDFContent))
+			{
+				throw new Exception(print_r(error_get_last(), true));
+			}
 		}
 
 		return $strPDFContent;

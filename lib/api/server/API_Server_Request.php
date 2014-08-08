@@ -1,88 +1,57 @@
 <?php
 class API_Server_Request extends API_Request {
-
-	private $request_vars;
-	private $http_accept;
-	private $method;
-	private $data;
-	private $sQueryString;
+	private $_aURLTokens;
+	private $_httpAccept;
+	private $_method;
+	private $_data;
+	private $_queryString;
 	public $path;
 	public $url;
 
 	public function __construct($requestData) {
-		//$this->sQueryString = ltrim( substr($_SERVER['PHP_SELF'], strlen($_SERVER['SCRIPT_NAME'])), "/");
 		$this->path = parse_url($requestData['REQUEST_URI'], PHP_URL_PATH);
 		$this->_setMethod($requestData['REQUEST_METHOD']);
-		switch($this->method) {
-			case 'post':
-				$this->setData($_POST);
-				break;
-			case 'get':
-				$this->setData($_GET);
-				break;
-			case 'put':
-				$this->setData($_PUT);
-				break;
-			default:
-		}
+		$this->_data = file_get_contents('php://input');
 	}
 
 	public function saveRegexMatchedNamedSubpatternsAsProperties($aMatches) {
-    	// Populate url object.
+    	// Populate url object
     	$this->url = new StdClass();
     	foreach($aMatches as $mKey=>$sValue) {
     		if(is_string($mKey)) {
-    			$this->url->$mKey = "{$sValue}";
+    			$this->url->$mKey = strval($sValue);
     		}
     	}
     }
 
     public function getHTTPMethod() {
-    	return $this->method;
+    	return $this->_method;
     }
 
-	public function setData($data) {
-		$this->request_vars = $data;
-		if(isset($data['data_'])) {
-			$this->data = json_decode($data['data_']);
-		}
-		if(isset($data['data'])) {
-			$this->data = json_decode($data['data']);
-		}
-	}
-
 	private function _setMethod($method) {
-		$this->method = trim(strtolower($method));
+		$this->_method = trim(strtolower($method));
 	}
 
 	public function getData() {
-		return $this->data;
+		return $this->_data;
 	}
 
 	public function getMethod() {
-		return $this->method;
+		return $this->_method;
 	}
 
 	public function getHttpAccept() {
-		return $this->http_accept;
-	}
-
-	public function getRequestVars() {
-		return $this->request_vars;
+		return $this->_httpAccept;
 	}
 
 	public function getParameters() {
-		$aTokens	= $this->_tokeniseURL();
-		return $aTokens;
+		return $this->_tokeniseURL();
 	}
 
 	protected function _tokeniseURL() {
 		if (!isset($this->_aURLTokens)) {
-			//$aTokens	= explode(API_REQUEST::TOKEN_DELIMITER, $this->sQueryString);
-			$aTokens	= explode(API_REQUEST::TOKEN_DELIMITER, $this->path);
-			// Remove the blank string (first element)
-			//array_splice($aTokens, 0, 1);
-			$this->_aURLTokens	= $aTokens;
+			$aTokens = explode(API_REQUEST::TOKEN_DELIMITER, $this->path);
+			$this->_aURLTokens = $aTokens;
 		}
 		return $this->_aURLTokens;
 	}
@@ -92,13 +61,11 @@ class API_Server_Request extends API_Request {
 			$aQueryPattern = call_user_func(array($sHandlerClassName, "getQueryRegex"));
 			foreach ($aQueryPattern as $sPattern) {
 				if (preg_match("/^$sPattern$/", $this->path) >0) {
-				//if (preg_match("/^$sPattern$/", $this->sQueryString) >0) {
 					return $sHandlerClassName;
 				}
 			}
 		}
-		//throw new API_Exception ("No API Request Handler defined for query string: $this->sQueryString", API_Response::STATUS_CODE_NOT_IMPLEMENTED);
-		throw new API_Exception ("No API Request Handler defined for query string: $this->path", API_Response::STATUS_CODE_NOT_IMPLEMENTED);
+		throw new API_Exception ("No API Request Handler defined for path: $this->path", API_Response::STATUS_CODE_NOT_IMPLEMENTED);
 	}
 
 	public function toString() {
@@ -121,10 +88,13 @@ class API_Server_Request extends API_Request {
 		$aArray					= array();
 		$aArray['data']			= $this->data;
 		$aArray['method']		= $this->method;
-		//$aArray['query_string'] = $this->sQueryString;
+		//$aArray['query_string'] = $this->_queryString;
 		$aArray['path']			= $this->path;
-		$aArray['request_vars'] = $this->request_vars;
-		return $aArray;
+		return array(
+			'data' => $this->_data,
+			'method' => $this->_method,
+			//'queryString' => $this->_queryString,
+			'path' => $this->path
+		);
 	}
-
 }
