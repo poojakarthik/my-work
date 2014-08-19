@@ -1,0 +1,51 @@
+# Replace `[DEPLOYMENT_DOMAIN]` with your primary domain
+# Add `ServerAlias`es for any addition
+# Only path that must match a convention is /data/www/[hostname]
+<VirtualHost *:80>
+	ServerName [DEPLOYMENT_DOMAIN]
+	#ServerAlias [DEPLOYMENT_ALIAS]
+	DocumentRoot /data/www/[DEPLOYMENT_DOMAIN]/html
+	ServerAdmin webmaster@[DEPLOYMENT_DOMAIN]
+
+	# [DEPLOYMENT_DOMAIN] rewrites
+	RewriteEngine On
+	RewriteCond %{HTTP_HOST} ^[DEPLOYMENT_DOMAIN]$
+	RewriteCond %{SERVER_PORT} !^443$
+	RewriteRule ^/(.*) https://[DEPLOYMENT_DOMAIN]/$1 [L,R]
+
+	# Logging
+	ErrorLog "|/usr/sbin/rotatelogs /data/www/[DEPLOYMENT_DOMAIN]/logs/[DEPLOYMENT_DOMAIN].errorlog.%Y%m%d.log 86400"
+	CustomLog "|/usr/sbin/rotatelogs /data/www/[DEPLOYMENT_DOMAIN]/logs/[DEPLOYMENT_DOMAIN].referrer.%Y%m%d.log 86400" combined
+</VirtualHost>
+
+<VirtualHost *:443>
+	ServerName [DEPLOYMENT_DOMAIN]
+	#ServerAlias [DEPLOYMENT_ALIAS]
+	DocumentRoot /data/www/[DEPLOYMENT_DOMAIN]/html
+	ServerAdmin webmaster@[DEPLOYMENT_DOMAIN]
+
+	SSLEngine on
+	SSLCipherSuite ALL:!ADH:!EXP56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP:+eNULL
+	SSLCertificateFile /data/keys/[DEPLOYMENT_DOMAIN].crt
+	SSLCertificateKeyFile /data/keys/[DEPLOYMENT_DOMAIN].key
+
+	# [DEPLOYMENT_DOMAIN] rewrites
+	RewriteEngine On
+
+	# `ScriptAlias` can probably be removed
+	ScriptAlias /cgi-bin/ /data/www/[DEPLOYMENT_DOMAIN]/cgi-bin/
+
+	<Directory "/data/www/[DEPLOYMENT_DOMAIN]/html">
+		Options FollowSymLinks MultiViews Includes ExecCGI Indexes
+		AllowOverride All
+		Order allow,deny
+		Allow from all
+	</Directory>
+
+	# Set valid directory pages
+	DirectoryIndex index.html index.htm index.shtml index.php
+
+	# Logging
+	ErrorLog "|/usr/sbin/rotatelogs /data/www/[DEPLOYMENT_DOMAIN]/logs/[DEPLOYMENT_DOMAIN].errorlog.%Y%m%d.log 86400"
+	CustomLog "|/usr/sbin/rotatelogs /data/www/[DEPLOYMENT_DOMAIN]/logs/[DEPLOYMENT_DOMAIN].referrer.%Y%m%d.log 86400" combined
+</VirtualHost>
