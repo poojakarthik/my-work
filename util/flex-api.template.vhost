@@ -1,0 +1,31 @@
+# Replace `[DEPLOYMENT_DOMAIN]` with your API domain
+# Add `ServerAlias`es for any addition
+# Only path that must match a convention is /data/www/[hostname]
+<VirtualHost *:443>
+	ServerName [DEPLOYMENT_DOMAIN]
+	#ServerAlias [DEPLOYMENT_ALIAS]
+	DocumentRoot /data/www/[DEPLOYMENT_DOMAIN]/lib/api/
+	ServerAdmin webmaster@[DEPLOYMENT_DOMAIN]
+
+	SSLEngine on
+	SSLCipherSuite ALL:!ADH:!EXP56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP:+eNULL
+	SSLCertificateFile /data/keys/[DEPLOYMENT_DOMAIN].crt
+	SSLCertificateKeyFile /data/keys/[DEPLOYMENT_DOMAIN].key
+
+	# [DEPLOYMENT_DOMAIN] rewrites
+	RewriteEngine On
+
+	<Directory "/data/www/[DEPLOYMENT_DOMAIN]/lib/api">
+		Options FollowSymLinks MultiViews Includes ExecCGI Indexes
+		AllowOverride All
+		Order allow,deny
+		Allow from all
+	</Directory>
+
+	# Set valid directory pages
+	DirectoryIndex index.html index.htm index.shtml index.php
+
+	# Logging
+	ErrorLog "|/usr/sbin/rotatelogs /data/www/[DEPLOYMENT_DOMAIN]/logs/[DEPLOYMENT_DOMAIN].api.errorlog.%Y%m%d.log 86400"
+	CustomLog "|/usr/sbin/rotatelogs /data/www/[DEPLOYMENT_DOMAIN]/logs/[DEPLOYMENT_DOMAIN].api.referrer.%Y%m%d.log 86400" combined
+</VirtualHost>
