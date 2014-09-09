@@ -13213,3 +13213,29 @@
 	& fieldset
 		defieldsetify()
 		text-align center
+/******** Component: Report: Add New Report ********/
+.flex-component-report-add
+	appearance-flex-form-fieldset()
+	margin-top 80px
+
+.flex-component-report-add-title
+.flex-component-report-add-summary
+.flex-component-report-add-query
+.flex-component-report-add-reportemployee
+	appearance-flex-form-fieldset-field()
+
+.flex-component-report-add-title-label
+.flex-component-report-add-summary-label
+.flex-component-report-add-query-label
+.flex-component-report-add-reportemployee-label
+	appearance-flex-form-fieldset-field-label()
+	width 10em
+
+.flex-component-report-add-reportemployee-label
+	align-self flex-start
+
+.flex-component-report-add-buttonset
+	appearance-flex-form-buttonpanel()
+
+	& [name='save']::before
+		button-icon-background('/admin/img/template/tick.png', 16px, 16px)
