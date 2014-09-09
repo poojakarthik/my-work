@@ -1,35 +1,8 @@
 <?php
-class Report_Constraint extends ORM_Cached {
-	protected $_strTableName = "report_constraint";
-	protected static $_strStaticTableName = "report_constraint";
 
-	/**
-	 * getConstraintForReportId
-	 *
-	 * Returns an array of Report_Constraint objects associated with a given Report.
-	 * This method will add results to the Cache, however it will not read from the Cache
-	 *
-	 * @return	array
-	 */
-	public static function getConstraintForReportId($iReportId)	{
-		$aReportConstraints	= array();
-
-		$oSelectReportConstraints	= self::_preparedStatement('selByReportId');
-		$iResult					= $oSelectReportConstraints->Execute(array('report_id'=>$iReportId));
-
-		if ($iResult === false)	{
-			throw new Exception_Database($oSelectReportConstraints->Error());
-		}
-		while ($aReportConstraint = $oSelectReportConstraints->Fetch())	{
-			// Create new Report Constraint object and manually add to the Cache
-			$oReportConstraint	= new self($aReportConstraint);
-			self::addToCache($oReportConstraint);
-
-			$aReportConstraints[$oReportConstraint->id]	= $oReportConstraint;
-		}
-
-		return $aReportConstraints;
-	}
+class Report_Schedule extends ORM_Cached {
+	protected $_strTableName = "report_schedule";
+	protected static $_strStaticTableName = "report_schedule";
 
 	protected static function getCacheName() {
 		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
@@ -89,10 +62,6 @@ class Report_Constraint extends ORM_Cached {
 
 				case 'selAll':
 					$arrPreparedStatements[$strStatement] = new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
-					break;
-
-				case 'selByReportId':
-					$arrPreparedStatements[$strStatement] = new StatementSelect(self::$_strStaticTableName, "*", "report_id = <report_id>" );
 					break;
 
 				// INSERTS

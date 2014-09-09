@@ -13488,217 +13488,55 @@ li {
   padding: 0;
   text-align: center;
 }
-/******** Component: Report: Add New Report ********/
-.flex-component-report-add h1 {
-  display: block;
-  margin-top: 0;
-  margin-bottom: 20px;
-  padding-bottom: 5px;
-  border-bottom: solid 1px #369;
-  color: #369;
-  font-weight: bold;
+
+.flex-page-report-edit-details > label,
+.flex-page-report-constraint-edit-details > label,
+.flex-page-report-schedule-edit-details > label {
+	float: left;
+	width: 30%;
 }
-.flex-component-report-add [name='summary'],
-.flex-component-report-add [name='query'] {
-  resize: vertical;
+.flex-page-report-edit-details > span,
+.flex-page-report-constraint-edit-details > span,
+.flex-page-report-schedule-edit-details > span {
+	width: 70%;
+	display: inline-block;
 }
-.flex-component-report-add form {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  align-content: stretch;
-  border: 1px solid #d1d1d1;
-  background: #ddd;
-  padding: 1em 1em 0 1em;
-  max-width: 40em;
+
+.flex-page-report-edit,
+.flex-page-report-constraint-edit,
+.flex-page-report-schedule-edit {
+	width: 500px;
 }
-.flex-component-report-add form input {
-  padding: 0.25em;
+.flex-component-report-edit-buttonset {
+	border: 0;
+	margin: 0;
 }
-.flex-component-report-add form :not(:disabled):required {
-  background: #fff;
-  color: #111;
-  border: 1px solid #da8;
+.flex-page-report-edit-details,
+.flex-page-report-constraint-edit-details,
+.flex-page-report-schedule-edit-details {
+	border: 1px solid #dedede;
+	margin: 0.5em;
+	padding: 0.5em;
 }
-.flex-component-report-add form :not(:disabled):invalid {
-  background: #ffecf0;
-  color: #111;
-  border: 1px solid #d30;
+.flex-page-report-edit-buttonset,
+.flex-page-report-constraint-edit-buttonset,
+.flex-page-report-schedule-edit-buttonset {
+	border: 0;
+	margin: 1em 0 0 0;
+	background-color: #dedede;
+	text-align: center;
 }
-.flex-component-report-add form :not(:disabled):invalid:required {
-  border: 1px solid #da8;
+.flex-page-report-edit-details-name input,
+.flex-page-report-edit-details-summary textarea,
+.flex-page-report-edit-details-query textarea {
+	width: 95%;
 }
-.flex-component-report-add form :not(:disabled):valid {
-  background: #ecfff0;
-  color: #111;
-  border-color: #00c72b;
+.flex-page-report-edit-details-summary textarea {
+	height: 50px;
 }
-.flex-component-report-add-title,
-.flex-component-report-add-summary,
-.flex-component-report-add-query,
-.flex-component-report-add-reportemployee {
-  display: flex;
-  flex-direction: row;
-  border: 0;
-  margin: 0 0 1em 0;
-  padding: 0;
-  justify-content: flex-start;
-  align-items: baseline;
+.flex-page-report-edit-details-query textarea {
+	height: 150px;
 }
-.flex-component-report-add-title-label,
-.flex-component-report-add-summary-label,
-.flex-component-report-add-query-label,
-.flex-component-report-add-reportemployee-label {
-  border: 0;
-  margin: 0 1em 0 0;
-  font-size: inherit;
-  font-weight: bold;
-  text-align: right;
-  width: 10em;
-}
-.flex-component-report-add-reportemployee-label {
-  align-self: flex-start;
-}
-.flex-component-report-add-buttonset {
-  border: 0;
-  margin: 0;
-  padding: 1em 0.5em;
-  text-align: center;
-}
-.flex-component-report-add-buttonset [name='save']::before {
-  content: '\0020';
-  background-image: url("/admin/img/template/tick.png");
-  background-size: 16px 16px;
-  background-repeat: no-repeat;
-  height: 16px;
-  width: 16px;
-  display: inline-block;
-  margin-right: 0.5ch;
-  vertical-align: bottom;
-}
-.flex-component-report-add-buttonset [name='editConstraint']::before {
-  content: '\0020';
-  background-image: url("/admin/img/template/pencil.png");
-  background-size: 16px 16px;
-  background-repeat: no-repeat;
-  height: 16px;
-  width: 16px;
-  display: inline-block;
-  margin-right: 0.5ch;
-  vertical-align: bottom;
-}
-.flex-component-report-add-reportemployee-div {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  align-content: stretch;
-  border: 1px solid #d1d1d1;
-  background: #ddd;
-  padding: 1em 1em 0 1em;
-  align-self: flex-start;
-  border-color: #999;
-  max-height: 10em;
-  overflow: auto;
-  overflow-x: hidden;
-  padding: 5px;
-}
-.flex-component-report-add-reportemployee-div input {
-  padding: 0.25em;
-}
-.flex-component-report-add-reportemployee-div :not(:disabled):required {
-  background: #fff;
-  color: #111;
-  border: 1px solid #da8;
-}
-.flex-component-report-add-reportemployee-div :not(:disabled):invalid {
-  background: #ffecf0;
-  color: #111;
-  border: 1px solid #d30;
-}
-.flex-component-report-add-reportemployee-div :not(:disabled):invalid:required {
-  border: 1px solid #da8;
-}
-.flex-component-report-add-reportemployee-div :not(:disabled):valid {
-  background: #ecfff0;
-  color: #111;
-  border-color: #00c72b;
-}
-.flex-component-report-add-reportemployee-div-container {
-  display: block;
-  min-height: 1.4em;
-}
-.flex-component-report-add-reportemployee-div-container span {
-  align-self: flex-start;
-  margin: 0 0.5em 0 0;
-  min-width: 15em;
-  text-align: right;
-}
-.flex-component-report-add-reportemployee-div-container input {
-  align-self: flex-end;
-  float: right;
-}
-/******** Component: Report: Add New Constraint ********/
-.flex-component-report-constraint-add form {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  align-content: stretch;
-  border: 1px solid #d1d1d1;
-  background: #ddd;
-  padding: 1em 1em 0 1em;
-  max-width: 20em;
-  margin-bottom: 10px;
-}
-.flex-component-report-constraint-add form input {
-  padding: 0.25em;
-}
-.flex-component-report-constraint-add form :not(:disabled):required {
-  background: #fff;
-  color: #111;
-  border: 1px solid #da8;
-}
-.flex-component-report-constraint-add form :not(:disabled):invalid {
-  background: #ffecf0;
-  color: #111;
-  border: 1px solid #d30;
-}
-.flex-component-report-constraint-add form :not(:disabled):invalid:required {
-  border: 1px solid #da8;
-}
-.flex-component-report-constraint-add form :not(:disabled):valid {
-  background: #ecfff0;
-  color: #111;
-  border-color: #00c72b;
-}
-.flex-component-report-constraint-add-name,
-.flex-component-report-constraint-add-type,
-.flex-component-report-constraint-add-sourcequery,
-.flex-component-report-constraint-add-validationregex,
-.flex-component-report-constraint-add-placeholder {
-  display: flex;
-  flex-direction: row;
-  border: 0;
-  margin: 0 0 1em 0;
-  padding: 0;
-  justify-content: flex-start;
-  align-items: baseline;
-}
-.flex-component-report-constraint-add-name-label,
-.flex-component-report-constraint-add-type-label,
-.flex-component-report-constraint-add-sourcequery-label,
-.flex-component-report-constraint-add-validationregex-label,
-.flex-component-report-constraint-add-placeholder-label {
-  border: 0;
-  margin: 0 1em 0 0;
-  font-size: inherit;
-  font-weight: bold;
-  text-align: right;
-  width: 7em;
-  align-self: flex-start;
-  padding-top: 2px;
-}
-.flex-component-report-constraint-list:empty:before {
-  content: "There are no constraints.";
-  color: #333;
-  text-align: center;
+.flex-page-report-edit-report-employee input {
+	float: right;
 }

@@ -1,5 +1,5 @@
 <?php
-class HtmlTemplate_Report_AddNewReport extends FlexHtmlTemplate {
+class HtmlTemplate_Report_Manage extends FlexHtmlTemplate {
 
 	public function Render() {
 		?>
@@ -7,9 +7,9 @@ class HtmlTemplate_Report_AddNewReport extends FlexHtmlTemplate {
 		<script>
 			// Provide component once all dom content has been loaded.
 			document.observe('DOMContentLoaded',
-				module.provide.bind(module, ["flex/component/page/report/add"], function () {
+				module.provide.bind(module, ["flex/component/page/report/manage"], function () {
 					// Instantiate Component
-					new require('flex/component/page/report/add')();
+					new require('flex/component/page/report/manage')();
 				})
 			);
 		</script>
