@@ -1,0 +1,58 @@
+Check out the "Outstanding issues regarding the client app" document found in my home directory
+(DONE)
+
+TODO
+You should add functionality to the DBObject class so that you can specify another property as the property to set when loading the record
+Currently it has to be the Id property.
+talk to Jared about this
+
+
+I think the current way that the CheckClientAuth and CheckAuth work, prohibits the user from logging in on more than 1 machine at a time.
+Who gives a shit?  You have bigger things to worry about.
+
+
+TODO!
+Make sure the user can only download their own invoice pdfs and noone elses
+(DONE)
+
+
+Currently in the Invoices and payments page of ui_app, it doesn't check when the email is sent, that it exists.  It checks
+when the Invoices and Payments page is loaded and it is assumed that if the invoice exists at that point in time, it will exist
+indefinately in the future.  This should still probably be safe guarded against.
+
+
+I wrote the client web app to be run in firefox but it would have to be runable in Internet Explorer.  This is an issue which
+has not been addressed yet.
+
+
+TODO!
+EnableELB and Disable ELB only needs to be run if the service is an indial100
+Make sure it is implemented
+3
+
+TODO!
+Define the Where functionality for DBObjects so that you don't require the Id to retrieve a record
+1
+
+TODO!
+Check out the adding of properties to a DBList during a foreach loop, because you are supposed to be able to do it,
+but it has been my experience that it doesn't work.
+Do this in a test environment.
+Apparantly a DBList stores an array of DBObjects and objects are always passed by reference
+2
+(DONE.  DBLists do currently work with foreach loops, so that you can add properties to each individual DBObject of the list)
+
+Test all the debugging of the Invoices and Payments page with catwalk.
+
+TODO!
+There is a merge data function in the DBObject class.  This should probably be used when editting a record
+
+TODO!!!
+DBO()->Object->Where->Property = Value
+we also need DBO()->Object->Where->Clean() which clears the contents of the DBWhere object.
+
+
+The new pages to choose rates.  
+There should be some made, but I don't think they are accessable through the current intranet_app
+
+

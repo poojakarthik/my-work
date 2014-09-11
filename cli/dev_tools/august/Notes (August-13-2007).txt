@@ -1,0 +1,62 @@
+Moved the "Change Service Plan" logic from AppTemplatePlan->Change() to AppTemplateService->ChangePlan()
+Completed the functionality of this method.
+
+Added a function to ui_app/functions.php called SaveSystemNote()
+
+I am currently working on the Logic for editing a service.
+Has the Enable ELB stuff been done for ServiceEdit?
+Check the Archive/Unarchive logic for ServiceEdit to make sure it conforms to the knowledge base article
+When adding a new Service, or changing the FNN of an existing service, make sure it is checking that the FNN
+is not currently in use and is not scheduled to be used.
+
+TODO!
+When adding a service, you must declare a plan for it. So add this functionality into AppTemplateService->Add()
+The functionality to declare the Plan will be exactly the same as in AppTemplateService->ChangePlan() so you should
+stick it into its own private method of the AppTemplateService class
+
+TODO!
+In the web_app Invoices and Payments page, only retrieve the Invoices and Payments that have status's denoting that
+they are good/healthy.  I.E. Do not include Reversed Payments.
+DONE
+I only retrieve payments with Status == PAYMENT_PAYING or PAYMENT_FINISHED and invoices where Status != INVOICE_TEMP
+
+
+TODO!
+Do that page Jared wants you to do
+Where you can declare a plan for each Service that has an FNN, but does not currently have a plan.  He said there should already
+be a report that retrieves this list of services.
+If a service does not currently have a plan, then it should have one.
+This page will look similar to the "Manage Adjustments" page, currently in Vixen.
+
+TODO!
+I have to change the way I archive the old plan, when a new plan has been selected.  Before adding the records to the 
+ServiceRateGroup and ServiceRatePlan tables, update all records that are currently in this table and set the EndDatetime to NOW()
+for records who's EndDatetime > NOW(); (Actually this may not be required if rich adds a RecordType column to the table)
+It was only going to be required to find all the currently used RateGroups for a service.
+
+
+TODO! I AM STILL WORKING ON THIS!
+The last thing I was working on, on Monday, was the logic behind unarchiving a service
+private function _GetFNNStatus($intService, $strFNN)
+I looked at the EnableELB() functions and can't see why they would be fucking up.  I also can't intuitively work out, when EnableELB
+and DisableELB should be executed. (17-08-2007: I've now accomodated these)
+ASSUMPTION: I have assumed that if the user is unarchiving a service, they have not also tried to change the FNN.  I might eventually
+have to accomodate this scenario.
+WHAT happens if between the user choosing to archive the service and pressing commit, someone else has archived the same service?
+
+
+
+TODO! NEXT
+The ChangePlan logic has to be performed for the "Add Service", "Change Plan" and "Declare Plan for all Services that have an FNN but
+don't already have a plan" pages.  I should make it its own function within AppTemplateService so that all these pages can use it.
+$this->_ChangePlan($intService, $intRatePlan)
+It will change the ClosedOn date to NOW() for all records in ServiceRateGroup and ServiceRatePlan relating to $intService, 
+and then copy the new records into these two tables.
+DO THIS AFTER YOU HAVE PERFECTED THE LOGIC FOR UNARCHIVING A SERVICE
+Don't make it change the ClosedOn datetime in ServiceRatePlan and ServiceRateGroup
+
+
+
+
+
+

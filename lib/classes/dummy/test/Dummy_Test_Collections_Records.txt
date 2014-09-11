@@ -1,0 +1,71 @@
+// Account
+[Account]
+1000180352,	1
+VT1,	1
+1000004847,	1
+A1,		2
+
+// account_collection_scenario
+[Account_Collection_Scenario]
+1,	2,	2010-12-01 00:00:00,	2010-12-01 00:00:00, 9999-12-31 23:59:59
+2,	2,	2010-12-01 00:00:00,	2010-12-01 00:00:00, 9999-12-31 23:59:59
+3,	2,	2010-12-01 00:00:00,	2010-12-01 00:00:00, 9999-12-31 23:59:59
+4,	1,	2010-12-01 00:00:00,	2010-12-01 00:00:00, 9999-12-31 23:59:59
+
+// Employee
+[Employee]
+System,	User,				System
+Rod,	McTainsh,			rmctainsh
+Rich,	Davis,				rdavis
+Jan,	van der Breggen,	jvanderbreggen
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[Collection_Promise]
+// account_id, collection_scenario_id, created_datetime, created_employee_id, completed_datetime, collection_promise_completion_id, completed_employee_id
+// Incomplete promise for account 1 (cancel scenario is Promise Unmet, not completed)
+1,	4,	2011-01-01 00:00:00,	0
+2,	4,	2011-01-01 00:00:00,	0, 2011-01-02 00:00:00, 3
+2,	4,	2011-01-01 00:00:00,	0, 2011-01-02 00:00:00, 3
+3,	4,	2011-01-01 00:00:00,	0
+
+[Collection_Promise_Instalment]
+// collection_promise_id, due_date, amount
+1,	2011-01-05,	25
+1,	2011-01-10,	25
+4,2011-01-10, 100
+4, 2011-01-20, 100
+4, 2011-01-31, 100
+
+[Collection_Suspension]
+//account_id, start_datetime, proposed_end_datetime, start_employee_id, collection_suspension_type_id, effective_end_datetime,end_employee_id, collection_suspension_end_reason_id
+2, 2010-12-31, 2011-01-01, 237, 1
+1, 2010-12-31, 2011-01-20, 237,1, 2011-01-20, 237, 1
+1, 2011-01-21, 2011-01-31,237, 1
+3, 2011-01-01, 2011-01-08,237, 1, 2011-01-08, 237, 1
+
+
+
+[Invoice]
+1
+//2
+//3
+//4
+
+[Collectable]
+// this one is linked to promise 1 (last field)
+1,		50,		20,		2010-12-11 00:00:00,	2010-12-25,	1
+1,		50,		0,		2010-12-11 00:00:00,	2010-12-25,	1,	1
+//2,	200,	200,	2010-12-11 00:00:00,	2010-12-25,	1
+3,	300,	300,	2010-12-11 00:00:00,	2010-12-25,	1, 4
+//4,	400,	400,	2010-12-11 00:00:00,	2010-12-25,	1
+
+[Account_Collection_Event_History]
+// Friendly Reminder
+1,	1,	1,	4,	2011-01-01 11:55:38,	2011-01-01 11:55:38,	229,	2
+// Overdue Notice
+1,	1,	2,	5,	2011-01-06 11:55:38,	2011-01-06 11:55:38,	229,	2
+// Late Fees List
+1,	1,	3,	6,	2011-01-11 11:55:38,	2011-01-11 11:55:38,	229,	2

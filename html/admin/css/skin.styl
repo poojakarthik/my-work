@@ -1,0 +1,308 @@
+font-monospace = Menlo, Consolas, monospace
+
+@-webkit-keyframes flex-fade-out {
+	from {
+		opacity 1
+	}
+
+	to {
+		opacity 0
+	}
+}
+@keyframes flex-fade-out {
+	from {
+		opacity 1
+	}
+
+	to {
+		opacity 0
+	}
+}
+
+debuttonify(important='')
+	border 0 unquote(important)
+	background transparent unquote(important)
+	width auto unquote(important)
+	height auto unquote(important)
+	font-size 100% unquote(important)
+
+button-icon(url, width=auto, height=auto)
+	content url(url)
+	height width
+	width height
+	display inline-block
+	margin-right .5ch
+	vertical-align bottom
+
+button-icon-background(url, width=auto, height=auto)
+	content '\0020'
+	background-image url(url)
+	background-size width height
+	background-repeat no-repeat
+	height width
+	width height
+	display inline-block
+	margin-right .5ch
+	vertical-align bottom
+
+// Buttons
+appearance-flex-button()
+	appearance-flex-button-text()
+	background-image linear-gradient(to bottom, rgba(255, 255, 255, .6), rgba(255, 255, 255, 0)) // NOTE: Original gradient curve isn't linear, more exponential, and height-limited
+	background-color #ddd
+	margin .2em
+	padding .1em
+	border-top solid 1px #999
+	border-left solid 1px #999
+	border-bottom solid 1px #666
+	border-right solid 1px #666
+	border-radius 4px
+	cursor pointer
+	-moz-user-select none
+	-webkit-user-select none
+
+appearance-flex-button-active()
+	background-image linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .6))
+
+appearance-flex-button-text()
+	color #000
+	font-family Arial, sans-serif
+	font-size inherit
+	font-weight bold
+	text-shadow 0 1px 0 rgba(255, 255, 255, 0.8)
+
+skin-flex-radiogroupfieldset()
+	defieldsetify()
+	appearance-flex-button()
+	background-image none
+	background-color transparent
+
+	display inline-block
+	white-space nowrap
+	overflow hidden
+	padding 0
+
+	& > label
+		appearance-flex-radiogroupfieldset-inactive()
+		cursor pointer
+		margin 0
+		display inline-block
+		height 100%
+
+		&:not(:first-child)
+			border-left solid 1px #999
+
+	& input[type='radio']
+		display none
+
+appearance-flex-radiogroupfieldset-inactive()
+	background-image linear-gradient(to bottom, rgba(255, 255, 255, .6), rgba(255, 255, 255, 0))
+	background-color #ddd
+
+appearance-flex-radiogroupfieldset-active()
+	background-image linear-gradient(to top, #489ecf, #61bbde)
+	color #fff
+	text-shadow 0 -1px 0 rgba(0, 0, 0, 0.3)
+
+// Forms
+defieldsetify()
+	border none
+	margin 0
+	padding 0
+
+appearance-flex-form-fieldset()
+	display flex
+	flex-direction column
+	align-items stretch
+	align-content stretch
+	border 1px solid #d1d1d1
+	background #ddd
+	padding 1em 1em 0 1em
+
+	& input
+		padding .25em
+
+	& :not(:disabled)
+		&:required
+			background #fff
+			color #111
+			border 1px solid #da8
+
+		&:invalid
+			background #ffecf0
+			color #111
+			border 1px solid #d30
+
+			&:required
+				border 1px solid #da8
+
+		&:valid
+			background #ecfff0
+			color #111
+			border-color #00c72b
+
+appearance-flex-form-heading()
+	font-size 1.2em
+	border-bottom 1px solid #d1d1d1
+
+appearance-flex-form-fieldset-field()
+	display flex
+	flex-direction row
+	border 0
+	margin 0 0 1em 0
+	padding 0
+	justify-content flex-start
+	align-items baseline
+
+appearance-flex-form-fieldset-field-label()
+	border 0
+	// margin .5em 1em .5em 0
+	margin 0 1em 0 0
+	font-size inherit
+	font-weight bold
+	text-align right
+	//background-color #efefef
+
+appearance-flex-form-controlset()
+	display flex
+	flex-direction column
+	align-items stretch
+	align-content stretch
+	border 0
+	padding 0
+	// margin .25em 0
+
+appearance-flex-form-controlset-control()
+	margin 0 0 .5em 0
+
+appearance-flex-form-fieldset-field-control()
+	//padding .2em
+	// margin .5em 0 0 0
+	margin 0
+	//flex-grow 1
+
+appearance-flex-form-buttonpanel()
+	border 0
+	margin 0
+	padding 1em .5em
+	text-align center
+
+// Page Heading
+appearance-flex-page-heading()
+	display block
+
+	margin-top 0
+	margin-bottom 20px
+
+	padding-bottom 5px
+
+	border-bottom solid 1px #369
+
+	color #369
+	//font-size 18pt
+	font-weight bold
+
+appearance-flex-page-heading-label()
+	margin-bottom 0
+
+// "Reflex" table appearance
+skin-flex-table()
+	appearance-flex-table()
+
+	& > thead
+		appearance-flex-table-header()
+
+		& > tr > th
+			appearance-flex-table-header-cell()
+
+	& > * > tr > td
+	& > * > tr > th
+		appearance-flex-table-cell()
+
+	& > tbody
+		appearance-flex-table-body()
+
+		& > tr > td
+		& > tr > th
+			appearance-flex-table-body-cell()
+
+		& > tr:nth-child(even) > td
+		& > tr:nth-child(even) > th
+			appearance-flex-table-body-cell-alternate()
+
+	& > tfoot
+		appearance-flex-table-footer()
+
+		& a:link
+			appearance-flex-table-footer-link()
+
+appearance-flex-table()
+	box-sizing border-box
+	width 100%
+	margin-left auto
+	margin-right auto
+	border .1em solid #d1d1d1
+	border-spacing 0
+	font-size inherit
+
+appearance-flex-table-header()
+	color #fff
+	background-color #499fcf
+	text-align left
+
+appearance-flex-table-footer()
+	appearance-flex-table-header()
+	text-align right
+
+appearance-flex-table-header-cell()
+	padding-top .25em
+	padding-bottom .25em
+	background-repeat repeat-x
+	font-weight bold
+
+appearance-flex-table-body()
+	vertical-align top
+	font-size inherit
+
+appearance-flex-table-footer-link()
+	color #fff
+
+appearance-flex-table-cell()
+	vertical-align top
+	padding .25em .5em
+	font-size inherit
+
+appearance-flex-table-body-cell()
+	background-color #fff
+	color #333
+
+appearance-flex-table-body-cell-alternate()
+	background-color #ddd
+
+appearance-flex-table-subheader()
+	color #fff
+	background-color #666
+	text-align left
+	font-size .85em
+
+appearance-flex-table-caption-title()
+	background-color #499fcf
+	background-repeat repeat-x
+	color #fff
+	font-weight bold
+	text-align center
+	vertical-align middle
+	padding .25em .5em
+	font-size inherit
+	border .1em solid #d1d1d1
+	border-bottom 0
+
+appearance-flex-panel()
+	border 1px solid #d1d1d1
+	background #ddd
+	padding 1em 1em 0 1em
+
+appearance-flex-legacy-panel()
+	background-color #eceef2
+	border 1px solid #d1d1d1
+	padding .5em

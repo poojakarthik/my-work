@@ -1,0 +1,52 @@
+# Replace [DEPLOYMENT] with your primary domain
+FLEXDIR=/data/www/[DEPLOYMENT]/
+
+# m h dom mon dow user command
+# [ Failed Emails ]
+0 6 * * * root cd $FLEXDIR/cli/ && /usr/bin/php $FLEXDIR/cli/send_failed_email_notifications.php -f /var/log/mail.log
+
+# [ File Collection ]
+30 * * * * root cd $FLEXDIR/cli/collection/ && /usr/bin/php $FLEXDIR/cli/collection/collection.php
+
+# [ CDR Import ]
+30 3-17 * * * root cd $FLEXDIR/cli/normalisation/ && /usr/bin/php $FLEXDIR/cli/normalisation/import.php 100000
+0 21 * * * root cd $FLEXDIR/cli/normalisation/ && /usr/bin/php $FLEXDIR/cli/normalisation/import.php
+
+# [ CDR Normalisation ]
+0 4-18 * * * root cd $FLEXDIR/cli/normalisation/ && /usr/bin/php $FLEXDIR/cli/normalisation/normalisation.php -n 100000 # Batch Run: Hourly
+0 22 * * * root cd $FLEXDIR/cli/normalisation/ && /usr/bin/php $FLEXDIR/cli/normalisation/normalisation.php # Full Run: Daily
+
+# [ CDR Rating ]
+30 4-18 * * * root cd $FLEXDIR/cli/rating/ && /usr/bin/php $FLEXDIR/cli/rating.php -m 100000 -v # Batch Run: Hourly
+0 23 * * * root cd $FLEXDIR/cli/ && /usr/bin/php $FLEXDIR/cli/rating.php -r -v # Full Run: Daily
+
+# [ Billing ]
+30 1 * * * root cd $FLEXDIR/cli/ && /usr/bin/php $FLEXDIR/cli/billing.php -m GENERATE -v
+
+# [ Provisioning ]
+0 2-22 * * * root cd $FLEXDIR/cli/provisioning/ && /usr/bin/php $FLEXDIR/cli/provisioning/export_new.php # Export: Hourly
+0 2-22 * * * root cd $FLEXDIR/cli/provisioning/ && /usr/bin/php $FLEXDIR/cli/provisioning/import_new.php # Import: Hourly
+0 6 * * * root cd $FLEXDIR/cli/provisioning/ && /usr/bin/php $FLEXDIR/cli/provisioning/recalculate_line_status.php # Recalculate Line Statuses: Daily
+
+# [ Payments Processing ]
+15,45 * * * * root cd $FLEXDIR/cli/ && /usr/bin/php $FLEXDIR/cli/payments.php -m PREPROCESS -v
+0,30 * * * * root cd $FLEXDIR/cli/ && /usr/bin/php $FLEXDIR/cli/payments.php -m PROCESS -v
+0 5 * * 1-5 root cd $FLEXDIR/cli/ && /usr/bin/php $FLEXDIR/cli/payments.php -m DIRECTDEBIT -v
+0 8 * * 1-5 root cd $FLEXDIR/cli/ && /usr/bin/php $FLEXDIR/cli/payments.php -m EXPORT -v
+
+# [ Recurring Charges ]
+0 3 * * * root cd $FLEXDIR/cli/ && /usr/bin/php $FLEXDIR/cli/recurring_charges.php -v
+
+# [ Contract Calculation ]
+0 8-16/2 * * * root cd $FLEXDIR/cli/ && /usr/bin/php $FLEXDIR/cli/calculate_contract_status.php -m UPDATE -v
+
+# [ Ticketing ]
+*/10 * * * * root cd $FLEXDIR/cli/ && /usr/bin/php $FLEXDIR/cli/ticketing_check_mail.php -v
+
+#15 * * * * root /data/bin/email2xml.pl -r -n=[TICKET_INBOX@TICKET_DOMAIN] -p='[TICKET_INBOX_PASSWORD]' -h=[TICKET_HOST] -d=$FLEXDIR/files/email/xml/
+
+# [ PDF Cache Cleanup ]
+0 0 * * * root cd $FLEXDIR/cli/ && /usr/bin/php billing.php -m CLEAN_PDF_CACHE -x 60 -v # Clean PDF Cache
+
+# [ Email Queue Cleanup ]
+0 22 * * * root cd $FLEXDIR/cli/ && /usr/bin/php email_queue.php -c -u -v # Email Queue Cleanup

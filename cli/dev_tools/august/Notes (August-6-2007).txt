@@ -1,0 +1,70 @@
+TODO
+Limit the filter box in the CDR table to include only records types, applicable to the ServiceType of the service.
+You can still include the option to "show all records"
+(DONE)
+
+TODO
+Test the download pdf functionality
+
+TODO
+You should add functionality to the DBObject class so that you can specify another property as the property to set when loading the record
+Currently it has to be the Id property.
+talk to Jared about this
+
+The web app should probably have a minimum length to the page rendered so that things look uniform.  Right now, if an error
+message is displayed, the page is only about 150 pixels long
+
+I think the current way that the CheckClientAuth and CheckAuth work, prohibits the user from logging in on more than 1 machine at a time.
+Who gives a shit?  You have bigger things to worry about.
+
+TODO
+The popup windows have "TelcoBlue Internal System" in their menubar.  This shouldn't be included in the client web app
+
+TODO
+Stick the buttons on the console menu
+(DONE)
+
+TODO
+Fix up the bread crumb menu on the error pages so the user can find their way back
+(DONE)
+
+TODO
+fix up the actual error messages displayed on the error pages
+(DONE)
+
+TODO
+fix up the login screen that that it matches the rest of the interface
+I should only have one login screen.  If the user goes anywhere and they are not logged in, then they should be redirected to the login screen.
+(DONE)
+
+TODO
+Add a logout button to the right of the TelcoBlue logo, so the user can logout at any time.
+Once logged out, the login screen should be displayed.
+(DONE)
+
+TODO!
+Stick buttons where they should be so that you can navigate through the system.
+This would just be the View Unbilled Charges for an Account (On the console page) and View Invoices and Payments (On the console page)
+6
+(DONE)
+
+TODO!
+Test the download pdf functionality by having the InvoicePDFExists() and GetPDF functions point to a directory that
+you can actually access.
+5
+
+TODO!
+Currently the title of the page (which appears in the title bar of the firefox window) includes "Vixen: Employee Intranet System"
+Get rid of this
+8
+(DONE)
+
+TODO!
+I should include the bread crumb menu when ever any of the error pages load so that the user can get back to where they were
+9
+(DONE)
+
+TODO!
+There is the distinct possibilty that when account details are loaded into the console page, the balance is incorrect, because we are
+now looking at it through the point of view of the client.  This will either be an issue with the coloring of the balance, or the signage of the balance
+10
