@@ -1,0 +1,144 @@
+<?php
+class Record_Type extends ORM_Cached {
+	protected 			$_strTableName			= "RecordType";
+	protected static	$_strStaticTableName	= "RecordType";
+
+	public static function getForServiceTypeAndCode($mServiceType, $sCode) {
+		$iServiceType = ORM::extractId($mServiceType);
+		$mResult = Query::run("
+			SELECT	*
+			FROM	RecordType
+			WHERE	ServiceType = <service_type_id>
+					AND Code = <code>
+		", array(
+			'service_type_id' => $iServiceType,
+			'code' => $sCode
+		));
+		if ($aRecordType = $mResult->fetch_assoc()) {
+			return new self($aRecordType);
+		}
+		throw new Exception("Unable to resolve Record Type with Service Type {$iServiceType} and Code ".var_export($sCode, true));
+	}
+	
+	protected static function getCacheName()
+	{
+		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
+		static $strCacheName;
+		if (!isset($strCacheName))
+		{
+			$strCacheName = __CLASS__;
+		}
+		return $strCacheName;
+	}
+	
+	protected static function getMaxCacheSize()
+	{
+		return 100;
+	}
+	
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
+	//---------------------------------------------------------------------------------------------------------------------------------//
+
+	public static function clearCache()
+	{
+		parent::clearCache(__CLASS__);
+	}
+
+	protected static function getCachedObjects()
+	{
+		return parent::getCachedObjects(__CLASS__);
+	}
+	
+	protected static function addToCache($mixObjects)
+	{
+		parent::addToCache($mixObjects, __CLASS__);
+	}
+
+	public static function getForId($intId, $bolSilentFail=false)
+	{
+		return parent::getForId($intId, $bolSilentFail, __CLASS__);
+	}
+	
+	public static function getAll($bolForceReload=false)
+	{
+		return parent::getAll($bolForceReload, __CLASS__);
+	}
+	
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
+	//---------------------------------------------------------------------------------------------------------------------------------//
+
+	public static function getForServiceType($iServiceType)
+	{
+		$oStatement	= self::_preparedStatement('selForServiceType');
+		$oStatement->Execute(array('ServiceType' => $iServiceType));
+		
+		$aRecordTypes	= array();
+		
+		while($aRecordType = $oStatement->Fetch())
+		{
+			$aRecordTypes[$aRecordType['Id']]	= 	array(
+														'Id'			=> $aRecordType['Id'],
+														'Name'			=> $aRecordType['Name'],
+														'Description'	=> $aRecordType['Description'],
+														'DisplayType'	=> $aRecordType['DisplayType']
+													);
+		}
+		
+		return $aRecordTypes;
+	}
+
+	/**
+	 * _preparedStatement()
+	 *
+	 * Access a Static Cache of Prepared Statements used by this Class
+	 *
+	 * @param	string		$strStatement						Name of the statement
+	 * 
+	 * @return	Statement										The requested Statement
+	 *
+	 * @method
+	 */
+	protected static function _preparedStatement($strStatement)
+	{
+		static	$arrPreparedStatements	= Array();
+		if (isset($arrPreparedStatements[$strStatement]))
+		{
+			return $arrPreparedStatements[$strStatement];
+		}
+		else
+		{
+			switch ($strStatement)
+			{
+				// SELECTS
+				case 'selById':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
+					break;
+				case 'selAll':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "name ASC");
+					break;
+				case 'selForServiceType':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "ServiceType = <ServiceType>");
+					break;
+				
+				// INSERTS
+				case 'insSelf':
+					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);
+					break;
+				
+				// UPDATE BY IDS
+				case 'ubiSelf':
+					$arrPreparedStatements[$strStatement]	= new StatementUpdateById(self::$_strStaticTableName);
+					break;
+				
+				// UPDATES
+				
+				default:
+					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
+			}
+			return $arrPreparedStatements[$strStatement];
+		}
+	}
+}
+?>

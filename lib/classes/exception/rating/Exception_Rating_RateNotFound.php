@@ -1,0 +1,1 @@
+<?php class Exception_Rating_RateNotFound extends Exception {} ?>
