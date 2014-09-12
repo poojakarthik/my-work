@@ -193,24 +193,27 @@ var self = new Class({
 	},
 
 	_save: function() {
-		var oData = {
-			"name" : this._oName.getValue(),
-			"summary" : this._oSummary.getValue(),
-			"query" : this._oQuery.getValue(),
-			"report" : this._oReport,
-			"constraint" : this._aReportConstraint,
-			//"schedule" : this._aReportSchedule,
-			"report_employee" : this._getSelectedReportEmployees()
+		var bValidation = this._oForm.validate();
+		if(bValidation) {
+			var oData = {
+				"name" : this._oName.getValue(),
+				"summary" : this._oSummary.getValue(),
+				"query" : this._oQuery.getValue(),
+				"report" : this._oReport,
+				"constraint" : this._aReportConstraint,
+				//"schedule" : this._aReportSchedule,
+				"report_employee" : this._getSelectedReportEmployees()
+			}
+			new Ajax.Request('/admin/reflex_json.php/Report/save', {
+				method		: 'post',
+				contentType	: 'application/x-www-form-urlencoded',
+				postBody	: "json="+encodeURIComponent(JSON.stringify([oData])),
+				onSuccess: function (oResponse){
+					var oServerResponse = JSON.parse(oResponse.responseText);
+					this.fire('complete');
+				}.bind(this)
+			});
 		}
-		new Ajax.Request('/admin/reflex_json.php/Report/save', {
-			method		: 'post',
-			contentType	: 'application/x-www-form-urlencoded',
-			postBody	: "json="+encodeURIComponent(JSON.stringify([oData])),
-			onSuccess: function (oResponse){
-				var oServerResponse = JSON.parse(oResponse.responseText);
-				this.fire('complete');
-			}.bind(this)
-		});
 	},
 
 	_cancel : function(event) {

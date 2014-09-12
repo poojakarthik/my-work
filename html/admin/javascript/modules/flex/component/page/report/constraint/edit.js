@@ -43,29 +43,29 @@ var     self = new Class({
 						}
 					}),
 					H.label('Type'),
-					new Select({
+					this._oReportConstraintType = new Select({
 						sName 		: 'report_constraint_type_id',
 						sLabel		: 'Constraint Type',
 						mMandatory	: true,
 						fnPopulate	: this._populateConstraintTypes.bind(this)
 					}),
 					H.label('Source Query'),
-					new Textarea({
+					this._oReportConstraintSourceQuery = new Textarea({
 						sName 		: 'source_query',
 						sLabel		: 'Source Query',
-						mMandatory	: true,
+						mMandatory	: false,
 						fnValidate	: function(oControl) {
 							if(oControl.getValue().length>10000) {
 								throw new Error("Max length is 10000 characters");
 							}
 							return true;
-						}
+						}.bind(this)
 					}),
 					H.label('Regex Pattern'),
 					new Text({
 						sName 		: 'validation_regex',
 						sLabel		: 'Regex Pattern',
-						mMandatory	: true,
+						mMandatory	: false,
 						fnValidate	: function(oControl) {
 							if(oControl.getValue().length>200) {
 								throw new Error("Max length is 200 characters");
@@ -77,7 +77,7 @@ var     self = new Class({
 					new Text({
 						sName 		: 'placeholder',
 						sLabel		: 'Hint Text',
-						mMandatory	: true,
+						mMandatory	: false,
 						fnValidate	: function(oControl) {
 							if(oControl.getValue().length>100) {
 								throw new Error("Max length is 100 characters");
@@ -91,8 +91,8 @@ var     self = new Class({
 							H.span('Add')
 						),
 						H.button({type: 'button', name: 'cancel', onclick: this._save.bind(this)},
-							H.img({src: '/admin/img/template/decline.png','width':'16','height':'16'}),
-							H.span('Close')
+							H.img({src: '/admin/img/template/invoice_commit.png','width':'16','height':'16'}),
+							H.span('Finish')
 						)
 					)
 				),
@@ -186,7 +186,7 @@ var     self = new Class({
 			for (var iKey=0; iKey<aData.length; iKey++) {
 				var oReportConstraint = aData[iKey];
 				this._oConstraintList.appendChild(
-					H.tr({class: 'flex-component-report-constraint-list'},
+					H.tr({class: 'flex-component-report-constraint-list', id: 'flex-component-report-constraint-list-row-'+oReportConstraint.id},
 						H.td(
 							new Hidden({sName: 'constraint['+this._iConstraintCount+'].name', mValue: oReportConstraint.name}),
 							H.span(oReportConstraint.name)
@@ -204,32 +204,40 @@ var     self = new Class({
 					)
 				);
 				this._iConstraintCount++;
-			};
+			};			
 		},
 
 		_add : function() {
-			this._oConstraintList.appendChild(
-				H.tr({class: 'flex-component-report-constraint-list'},
-					H.td(
-						H.span(this._oForm.control('name').getValue())
-					),
-					H.td(
-						H.span(this._oForm.control('report_constraint_type_id').getNode().select('select :selected').first().innerHTML)
-					),
-					H.td(
-						new Hidden({sName: 'constraint['+this._iConstraintCount+'].placeholder', mValue: this._oForm.control('placeholder').getValue()}),
-						new Hidden({sName: 'constraint['+this._iConstraintCount+'].validation_regex', mValue: this._oForm.control('validation_regex').getValue()}),
-						new Hidden({sName: 'constraint['+this._iConstraintCount+'].source_query', mValue: this._oForm.control('source_query').getValue()}),
-						new Hidden({sName: 'constraint['+this._iConstraintCount+'].name', mValue: this._oForm.control('name').getValue()}),
-						new Hidden({sName: 'constraint['+this._iConstraintCount+'].report_constraint_type_id', mValue: this._oForm.control('report_constraint_type_id').getValue()}),
-						H.button({type: 'button'},
-							H.img({src: '/admin/img/template/delete.png','width':'16','height':'16'}),
-							H.span('Remove')
-						).observe('click', function(){ this.parentElement.parentElement.remove(); })
+			var bValidation = this._oForm.validate();
+			if(bValidation) {
+				
+				if(this._oForm.control('report_constraint_type_id').getValue() == 2 && this._oForm.control('source_query').getValue() == ""){
+					new Alert('Source query cannnot be empty');
+					return;
+				}
+				this._oConstraintList.appendChild(
+					H.tr({class: 'flex-component-report-constraint-list'},
+						H.td(
+							H.span(this._oForm.control('name').getValue())
+						),
+						H.td(
+							H.span(this._oForm.control('report_constraint_type_id').getNode().select('select :selected').first().innerHTML)
+						),
+						H.td(
+							new Hidden({sName: 'constraint['+this._iConstraintCount+'].placeholder', mValue: this._oForm.control('placeholder').getValue()}),
+							new Hidden({sName: 'constraint['+this._iConstraintCount+'].validation_regex', mValue: this._oForm.control('validation_regex').getValue()}),
+							new Hidden({sName: 'constraint['+this._iConstraintCount+'].source_query', mValue: this._oForm.control('source_query').getValue()}),
+							new Hidden({sName: 'constraint['+this._iConstraintCount+'].name', mValue: this._oForm.control('name').getValue()}),
+							new Hidden({sName: 'constraint['+this._iConstraintCount+'].report_constraint_type_id', mValue: this._oForm.control('report_constraint_type_id').getValue()}),
+							H.button({type: 'button'},
+								H.img({src: '/admin/img/template/delete.png','width':'16','height':'16'}),
+								H.span('Remove')
+							).observe('click', function(){ this.parentElement.parentElement.remove(); })
+						)
 					)
-				)
-			);
-			this._iConstraintCount++;
+				);
+				this._iConstraintCount++;
+			}
 		},
 		_remove : function() {
 			// Remove constraint from list.

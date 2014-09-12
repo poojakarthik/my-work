@@ -273,18 +273,20 @@ var self = new Class({
 	},
 
 	_executeReport: function() {
-		this._oForm.control('selectedDeliveryEmployees').set('mValue', this._getSelectedDeliveryEmployees());
-		
-		jhr('Report', 'generate', {arguments: this._oForm.getData()}).then(
-			function success(request) {
-				var oResponse = request.parseJSONResponse();
-				this._executeReponse(oResponse);
-				this.fire('complete');
-			}.bind(this),
-			function (error) {
-				// TODO: Handle Error
-			}
-		);
+		if(this._oForm.validate()) {
+			this._oForm.control('selectedDeliveryEmployees').set('mValue', this._getSelectedDeliveryEmployees());
+			
+			jhr('Report', 'generate', {arguments: this._oForm.getData()}).then(
+				function success(request) {
+					var oResponse = request.parseJSONResponse();
+					this._executeReponse(oResponse);
+					this.fire('complete');
+				}.bind(this),
+				function (error) {
+					// TODO: Handle Error
+				}
+			);
+		}
 	},
 
 	_executeReponse	: function(oResponse)

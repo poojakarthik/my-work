@@ -336,16 +336,19 @@ var     self = new Class({
         },
 
 		_save : function(event) {
-			jhr('Report_Schedule', 'saveSchedule', {arguments: this._oForm.getData()}).then(
-				function success(request) {
-					var oResponse = request.parseJSONResponse();
-					new Alert(oResponse.sMessage);
-					this.fire('complete');
-				}.bind(this),
-				function (error) {
-					// TODO: Handle Error
-				}
-			);
+			var bValidation = this._oForm.validate();
+			if(bValidation) {
+				jhr('Report_Schedule', 'saveSchedule', {arguments: this._oForm.getData()}).then(
+					function success(request) {
+						var oResponse = request.parseJSONResponse();
+						new Alert(oResponse.sMessage);
+						this.fire('complete');
+					}.bind(this),
+					function (error) {
+						// TODO: Handle Error
+					}
+				);
+			}
         },
 
         statics : {
