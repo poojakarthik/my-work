@@ -6,6 +6,8 @@ var H			= require('fw/dom/factory'), // HTML
 	Component	= require('fw/component'),
 	XHRRequest	= require('fw/xhrrequest'),
 	Edit		= require('./edit'),
+	Run			= require('./run'),
+	Schedule	= require('./schedule/add'),
     Popup		= require('fw/component/popup'),
 	Form		= require('fw/component/form');
 
@@ -105,7 +107,35 @@ var self = new Class({
 		});
 	},
 
-	_run : function() {},
+	_run : function(iReportId) {
+		var oPopup = Run.createAsPopup({
+			'iReportId' : iReportId,
+			oncomplete : function(oData) {
+				oPopup.hide();
+			}.bind(this),
+			onready : function () {
+				oPopup.display();
+			}.bind(this),
+			oncancel : function() {
+				oPopup.hide();
+			}
+		});
+	},
+
+	_schedule : function(iReportId) {
+		var oPopup = Schedule.createAsPopup({
+			'iReportId' : iReportId,
+			oncomplete : function(oData) {
+				oPopup.hide();
+			}.bind(this),
+			onready : function () {
+				oPopup.display();
+			}.bind(this),
+			oncancel : function() {
+				oPopup.hide();
+			}
+		});
+	},
 
 	_getReports : function(fnCallback, oXHREvent) {
 		if (!oXHREvent) {
@@ -134,6 +164,10 @@ var self = new Class({
 							H.img({src:'img/template/options.png'}),
 							H.span('Configure')
 						).observe('click', this._edit.bind(this, aData[i].id)),
+						H.button({type: 'button'},
+							H.img({src:'img/template/clock.png'}),
+							H.span('Schedule')
+						).observe('click', this._schedule.bind(this, aData[i].id)),
 						H.button({type: 'button'},
 							H.img({src:'img/template/play.png'}),
 							H.span('Run')

@@ -9,10 +9,9 @@ class Report_New extends ORM_Cached {
 		Takes $aValues as Params so that they can pass the constraint values directly without creating a schedule instance 
 		$aValues is NULL by default but can be set for debugging purpose
 	*/
-	public function generate($aValues=NULL) {
+	public function generate($aValues) {
 		try {
 			$oResult = Query::run($this->query,$aValues);
-			
 			return $oResult;
 		}
 		catch (Exception $e) {

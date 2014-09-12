@@ -1,5 +1,7 @@
 <?php
 class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable, JSON_Handler_Catchable {
+	const TEMP_REPORT_UPLOAD_PATH = "files/temp/";
+
 	public function save($mData) {
 		try {
 			// Check user authorization and permissions
@@ -12,7 +14,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 				$oQuery = new Query();
 				$oQuery->Execute("DELETE FROM report_employee WHERE report_id = {$mData->report->id}");
 				$oQuery->Execute("DELETE FROM report_constraint WHERE report_id = {$mData->report->id}");
-				$oQuery->Execute("UPDATE report_schedule SET is_enabled = 0 WHERE report_id = {$mData->report->id}");
+				//$oQuery->Execute("UPDATE report_schedule SET is_enabled = 0 WHERE report_id = {$mData->report->id}");
 
 				// Save existing Report.
 				$aRow = (array)$mData->report;
@@ -49,6 +51,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 					$oReportConstraint->placeholder = $oConstraint->placeholder;
 					$oReportConstraint->save();
 				}
+				/*
 				// Create Schedules
 				$aSchedule = $mData->schedule;
 				foreach($aSchedule as $oSchedule) {
@@ -63,6 +66,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 					$oReportSchedule->scheduled_datetime = date("Y-m-d H:i:s");
 					$oReportSchedule->save();
 				}
+				*/
 
 			} else {
 				// Save new Report.
@@ -131,6 +135,63 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 		}
 	}
 
+	public function saveSchedule($mData) {
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
+
+		$oReportSchedule = new Report_Schedule();
+		$oReportSchedule->report_id = $mData->id;
+		$oReportSchedule->report_frequency_type_id = (int)$mData->report_frequency_type_id;
+		$oReportSchedule->frequency_multiple = (int)$mData->frequency_multiple;
+		$oReportSchedule->schedule_datetime = $mData->schedule_datetime;
+		$oReportSchedule->is_enabled = 1;
+		$oReportSchedule->compiled_query = '';
+		$oReportSchedule->scheduled_employee_id = Flex::getUserId();
+		$oReportSchedule->scheduled_datetime = date("Y-m-d H:i:s");
+		$oReportSchedule->save();
+
+		$aConstraintResult = Report_Constraint::getConstraintForReportId($mData->id);
+		
+		$aConstraintValues = array();
+		if (sizeof($aConstraintResult)) {
+			foreach ($aConstraintResult as $oConstraint) {
+				$sConstraintName = $oConstraint->name;
+
+				if(isset($mData->{$sConstraintName})) {
+					$oReportScheduleConstraintValue = new Report_Schedule_Constraint_Value();
+					$oReportScheduleConstraintValue->report_constraint_id = $oConstraint->id;
+					$oReportScheduleConstraintValue->report_schedule_id = $oReportSchedule->id;
+					$oReportScheduleConstraintValue->value = $mData->{$sConstraintName};
+
+					$oReportScheduleConstraintValue->save();
+				}
+				else {
+					return 	array(
+						'success'	=> true,
+						'bSuccess'	=> false,
+						'sMessage'	=> "Constraint Missing:"
+					);
+				}
+			}
+		}
+		return 	array(
+			'success'	=> true,
+			'bSuccess'	=> true,
+			'sMessage'	=> "Report scheduled successfully"
+		);
+	}
+
+	public function getScheduleForReportId($mData) {
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
+
+		return array(
+				'success' => true,
+				'aReportSchedule' =>$this->_getScheduleForReportId($mData->iReportId)
+				);
+	}
 	public function getEmployees() {
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
@@ -310,6 +371,172 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 				'bSuccess'	=> false,
 				'sMessage'	=> $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'
 			);
+		}
+	}
+
+	public function generate($mData) {
+		$oReport = Report_New::getForId($mData->id);
+
+		$aConstraintResult = Report_Constraint::getConstraintForReportId($mData->id);
+		
+		$aConstraintValues = array();
+		if (sizeof($aConstraintResult)) {
+			foreach ($aConstraintResult as $oConstraint) {
+				$sConstraintName = $oConstraint->name;
+
+				if(isset($mData->{$sConstraintName})) {
+					$aConstraintValues[$sConstraintName] = $mData->{$sConstraintName};
+				}
+				else {
+					return 	array(
+						'success'	=> true,
+						'bSuccess'	=> false,
+						'sMessage'	=> "Constraint Missing:"
+					);
+				}
+			}
+		}
+		$oResult = Query::run($oReport->query, $aConstraintValues);
+		if ($oResult){
+			
+			$iResultCount = $oResult->num_rows;
+
+			
+			if($iResultCount > 0) {
+				$oSpreadsheet = new Logic_Spreadsheet(array());
+			
+				$iRow = 0;
+				while ($aRow = $oResult->fetch_assoc())	{
+					$aKeys = array_keys($aRow);
+					$aValues = array_values($aRow);
+
+					//Get the Field names if first row and write them to sheet before inserting any data
+					if(!$iRow) {
+						$oSpreadsheet->addRecord($aKeys);
+					}
+
+					$oSpreadsheet->addRecord($aValues);
+
+					$iRow++;
+				}
+
+				$sReportTempPath = FLEX_BASE_PATH.self::TEMP_REPORT_UPLOAD_PATH.date('Y')."/".date('F')."/".date('j')."/";
+
+				//Create required file path folder if it doesn't exist
+				while (!is_dir($sReportTempPath)) {
+					mkdir($sReportTempPath,'0777',true);
+					chmod(FLEX_BASE_PATH.self::TEMP_REPORT_UPLOAD_PATH.date('Y'), 0777);
+					chmod(FLEX_BASE_PATH.self::TEMP_REPORT_UPLOAD_PATH.date('Y')."/".date('F'), 0777);
+					chmod(FLEX_BASE_PATH.self::TEMP_REPORT_UPLOAD_PATH.date('Y')."/".date('F')."/".date('j'), 0777);
+				}
+				
+				//Create Workbook
+				$sFilename = str_replace(" ", "_", $oReport->name) . "." .strtolower($mData->delivery_format);
+				$sTmpFilePath = $sReportTempPath . $sFilename;
+				@unlink($sFilename);
+
+				// Set File type for Logic Spreadsheet as CSV
+				$oSpreadsheet->saveAs($sTmpFilePath, ($mData->delivery_format == 'XLS'?'Excel2007':$mData->delivery_format));
+				chmod($sTmpFilePath,0777);
+
+
+				//Use Proper Delivery Method
+				if($mData->delivery_method == 'EMAIL') {
+					
+					$sAttachmentContent = file_get_contents($sTmpFilePath);
+
+					$sCurrentTimestamp = date('d/m/Y h:i:s');
+					//TODO Write Code To Send Email Here
+					//$arrHeaders = Array('From' => "test@smartbusinesstelecom.com.au", 'Subject' => "Report Attached - " . $oReport->Name);
+					$arrHeaders = Array	(
+							'From'		=> "reports@yellowbilling.com.au",
+							'Subject'	=> "{$oReport->Name} requested on {$sCurrentTimestamp}"
+						);
+
+
+					$oEmailFlex	= new Email_Flex();
+					$oEmailFlex->setSubject($arrHeaders['Subject']);
+
+					$delivery_employees = explode(",",$mData->selectedDeliveryEmployees);
+
+					
+					$aReceivers = array();
+					for($i=0; $i<sizeof($delivery_employees);$i++) {
+
+						$oEmployee = Employee::getForId($delivery_employees[$i]);
+
+						$aEmployee = $oEmployee->toArray();
+
+						$oEmailFlex->addTo($oEmployee->Email);
+
+						
+						$oEmailFlex->setFrom($arrHeaders['From']);
+
+						$
+						// Generate Content
+			 			$strContent	=	"Dear {$aEmployee['FirstName']},\n\n";
+						
+						$strContent .= "Attached is the Ad-Hoc Report ({$oReport->name}) you requested on {$sCurrentTimestamp}.";
+						$strContent 	.= "\n\nPablo\nYellow Billing Mascot";
+						
+						$oEmailFlex->setBodyText($strContent);
+						// Attachment (file to deliver)
+						if($mData->delivery_format == "XLS") {
+							$sMimeType = "application/x-msexcel";
+						}
+						else if($mData->delivery_format == "CSV") {
+							$sMimeType = "text/csv";
+						}
+						$oEmailFlex->createAttachment(
+							$sAttachmentContent,
+							$sMimeType,
+							Zend_Mime::DISPOSITION_ATTACHMENT,
+							Zend_Mime::ENCODING_BASE64,
+							$sFilename
+						);
+						// Send the email
+						try {
+							$oEmailFlex->send();
+							$aReceivers[] = $aEmployee['FirstName'];
+ 						} catch (Zend_Mail_Transport_Exception $oException) {
+							// Sending the email failed
+							return 	array(
+								'success'	=> true,
+								'bSuccess'	=> false,
+								'sMessage'	=> $oException->getMessage()
+							);
+						}
+					}
+					return 	array(
+							'success'	=> true,
+							'bSuccess'	=> true,
+							'bIsEmail'	=> true,
+							'sMessage'	=> "Report emailed successfully to " . implode(", ",$aReceivers)
+						);
+				}
+				else if($mData->delivery_method == "DOWNLOAD") {
+					return 	array(
+							'success'	=> true,
+							'bSuccess'	=> true,
+							'bIsEmail'	=> false,
+							'sFilename'	=> $sFilename
+						);
+				}
+			}
+			else {
+				return 	array(
+						'success'	=> true,
+						'bSuccess'	=> false,
+						'sMessage'	=> "No Result Available for Report"
+				);
+			}
+		}
+		else {
+			return 	array(
+					'success'	=> true,
+					'bSuccess'	=> false,
+					'sMessage'	=> "Error While Generating report"
+				);
 		}
 	}
 }

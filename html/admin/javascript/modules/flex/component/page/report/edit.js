@@ -79,10 +79,12 @@ var self = new Class({
 					this._oEmployeeContainer = H.div({style: 'max-height: 150px; max-width: 200px; overflow-y: scroll; overflow-x: hidden;'})
 				),
 				H.fieldset({class: 'flex-page-report-edit-buttonset'},
+					/*
 					H.button({type: 'button', name: 'editSchedule'},
 						H.img({src: '/admin/img/template/options.png','width':'16','height':'16'}),
 						H.span('Edit Schedules')
 					).observe('click', this._editSchedules.bind(this, null)),
+					*/
 					H.button({type: 'button', name: 'editConstraint'},
 						H.img({src: '/admin/img/template/options.png','width':'16','height':'16'}),
 						H.span('Edit Constraints')
@@ -197,7 +199,7 @@ var self = new Class({
 			"query" : this._oQuery.getValue(),
 			"report" : this._oReport,
 			"constraint" : this._aReportConstraint,
-			"schedule" : this._aReportSchedule,
+			//"schedule" : this._aReportSchedule,
 			"report_employee" : this._getSelectedReportEmployees()
 		}
 		new Ajax.Request('/admin/reflex_json.php/Report/save', {
@@ -231,7 +233,7 @@ var self = new Class({
 				}
 		});
 	},
-
+/*
 	_editSchedules : function() {
 		var oPopup = Schedule.createAsPopup({
 				aReportSchedule : this._aReportSchedule,
@@ -247,7 +249,7 @@ var self = new Class({
 				}
 		});
 	},
-
+*/
 	statics : {
 		createAsPopup : function() {
 			var oComponent      = self.applyAsConstructor($A(arguments)),

@@ -39,13 +39,22 @@ class Cli_App_Report extends Cli {
 					
 					$oReportScheduleInstance = new Report_Schedule($oReportSchedule->toArray(),TRUE); //bolLoadById set true
 
+					//Create ReportScheduleLog Entry
+					$oReportScheduleLogAdd = new Report_Schedule_Log();
+
+					$oReportScheduleLogAdd->report_schedule_id = $oReportSchedule->id;
+					$oReportScheduleLogAdd->executed_datetime = new MySQLFunction("NOW()");
+					$oReportScheduleLogAdd->is_error = -1; //Initial Setup before completion
+					$oReportScheduleLogAdd->download_path = "";
+					$oReportScheduleLogAdd->save();
+
 					if ($aResult = $oReportScheduleInstance->generate()) {
 
 						//Create date specific File Save Path
 						$sReportSavePath = FLEX_BASE_PATH.self::REPORT_UPLOAD_PATH.date('Y')."/".date('F')."/".date('j')."/";
 
 						//Create required file path folder if it doesn't exist
-						if (!is_dir($sReportSavePath)) {
+						while (!is_dir($sReportSavePath)) {
 							mkdir($sReportSavePath,'0777',true);
 							chmod(FLEX_BASE_PATH.self::REPORT_UPLOAD_PATH.date('Y'), 0777);
 							chmod(FLEX_BASE_PATH.self::REPORT_UPLOAD_PATH.date('Y')."/".date('F'), 0777);
@@ -77,13 +86,10 @@ class Cli_App_Report extends Cli {
 						$oSpreadsheet->saveAs($sFilename, "CSV");
 						chmod($sFilename,0777);
 
-						// Save Report Schedule Log as Successfull Run Log
-						$aReportScheduleLogValue = Array();
-						$aReportScheduleLogValue["report_schedule_id"] = $oReportSchedule->id;
-						$aReportScheduleLogValue["executed_datetime"] = new MySQLFunction("NOW()");
-						$aReportScheduleLogValue["is_error"] = 0;
-						$aReportScheduleLogValue["download_path"] = $sFilename;
-						Report_Schedule_Log::insertReportScheduleLog($aReportScheduleLogValue);
+						// Update Download Path for ReportScheduleLog Entry
+						$oReportScheduleLogAdd->is_error = 0;
+						$oReportScheduleLogAdd->download_path = $sFilename;
+						$oReportScheduleLogAdd->save();
 					}
 					else {
 						print_r("Query Compilation Failed");

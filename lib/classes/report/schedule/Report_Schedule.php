@@ -24,12 +24,10 @@ class Report_Schedule extends ORM_Cached {
 			return $oResult;
 		}
 		catch (Exception $e) {
-			// Save Report Schedule Log
-			$aReportScheduleLogValue = Array();
-			$aReportScheduleLogValue["report_schedule_id"] = $this->id;
-			$aReportScheduleLogValue["executed_datetime"] = new MySQLFunction("NOW()");
-			$aReportScheduleLogValue["is_error"] = 1;
-			Report_Schedule_Log::insertReportScheduleLog($aReportScheduleLogValue);
+			// Update  ReportScheduleLog Entry
+			$oReportScheduleLog = Report_Schedule_Log::getLastReportScheduledLogForScheduleId($this->id);
+			$oReportScheduleLog->is_error = 1; //Set the error flag
+			$oReportScheduleLog->save();
 			return false;
 		}
 	}

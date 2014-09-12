@@ -24,10 +24,8 @@ class Report_Constraint extends ORM_Cached {
 			// Create new Report Constraint object and manually add to the Cache
 			$oReportConstraint	= new self($aReportConstraint);
 			self::addToCache($oReportConstraint);
-
 			$aReportConstraints[$oReportConstraint->id]	= $oReportConstraint;
 		}
-
 		return $aReportConstraints;
 	}
 

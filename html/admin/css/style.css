@@ -13488,55 +13488,61 @@ li {
   padding: 0;
   text-align: center;
 }
-
 .flex-page-report-edit-details > label,
 .flex-page-report-constraint-edit-details > label,
-.flex-page-report-schedule-edit-details > label {
-	float: left;
-	width: 30%;
+.flex-page-report-schedule-edit-details > label,
+.flex-page-report-schedule-add-details > label,
+.flex-page-report-schedule-add-details-constraintContainer > label {
+  float: left;
+  width: 30%;
 }
 .flex-page-report-edit-details > span,
 .flex-page-report-constraint-edit-details > span,
-.flex-page-report-schedule-edit-details > span {
-	width: 70%;
-	display: inline-block;
+.flex-page-report-schedule-edit-details > span,
+.flex-page-report-schedule-add-details > span,
+.flex-page-report-schedule-add-details-constraintContainer > span {
+  width: 70%;
+  display: inline-block;
 }
-
 .flex-page-report-edit,
 .flex-page-report-constraint-edit,
 .flex-page-report-schedule-edit {
-	width: 500px;
+  width: 500px;
 }
 .flex-component-report-edit-buttonset {
-	border: 0;
-	margin: 0;
+  border: 0;
+  margin: 0;
 }
 .flex-page-report-edit-details,
 .flex-page-report-constraint-edit-details,
 .flex-page-report-schedule-edit-details {
-	border: 1px solid #dedede;
-	margin: 0.5em;
-	padding: 0.5em;
+  border: 1px solid #dedede;
+  margin: 0.5em;
+  padding: 0.5em;
 }
 .flex-page-report-edit-buttonset,
 .flex-page-report-constraint-edit-buttonset,
-.flex-page-report-schedule-edit-buttonset {
-	border: 0;
-	margin: 1em 0 0 0;
-	background-color: #dedede;
-	text-align: center;
+.flex-page-report-schedule-edit-buttonset,
+.flex-page-report-schedule-add-buttonset {
+  border: 0;
+  margin: 1em 0 0 0;
+  background-color: #dedede;
+  text-align: center;
 }
 .flex-page-report-edit-details-name input,
 .flex-page-report-edit-details-summary textarea,
 .flex-page-report-edit-details-query textarea {
-	width: 95%;
+  width: 95%;
 }
 .flex-page-report-edit-details-summary textarea {
-	height: 50px;
+  height: 50px;
 }
 .flex-page-report-edit-details-query textarea {
-	height: 150px;
+  height: 150px;
 }
 .flex-page-report-edit-report-employee input {
-	float: right;
+  float: right;
+}
+.flex-page-report-schedule-add-details-constraintContainer select {
+  width: 150px;
 }
