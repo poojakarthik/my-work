@@ -133,7 +133,7 @@ var self = new Class({
 				response.employees.forEach(function (oEmployee) {
 					this._oEmployeeContainer.appendChild(
 						H.div({class: 'flex-component-report-run-deliverytemployee-div-container'},
-							H.span({class: 'flex-component-report-run-deliveryemployee-div-container-label'},oEmployee.FirstName + ' ' + oEmployee.LastName),
+							H.label({class: 'flex-component-report-run-deliveryemployee-div-container-label'},oEmployee.FirstName + ' ' + oEmployee.LastName),
 							new Checkbox({
 								bChecked	: (oEmployee.report_id) ? true : false,
 								sName		: 'delivery_employee[]',

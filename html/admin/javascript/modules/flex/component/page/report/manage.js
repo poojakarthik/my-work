@@ -8,8 +8,7 @@ var H			= require('fw/dom/factory'), // HTML
 	Edit		= require('./edit'),
 	Run			= require('./run'),
 	Schedule	= require('./schedule/add'),
-    Popup		= require('fw/component/popup'),
-	Form		= require('fw/component/form');
+    Popup		= require('fw/component/popup');
 
 var self = new Class({
 	'extends' : Component,
@@ -25,7 +24,6 @@ var self = new Class({
 	// ----------------------------------------------------------------------------------- //
 	_buildUI	: function() {
 		this.NODE = H.div(
-			this._oConfiguration = new Form({onsubmit: function() {/*this._handleSubmit();*/}.bind(this)},
 				H.table({class: 'reflex highlight-rows'},
 					H.caption(
 						H.div({id: 'caption_bar', class: 'caption_bar'},
@@ -38,7 +36,7 @@ var self = new Class({
 							H.th({align: 'Left'}, 'Name'),
 							H.th({width: '160px', align: 'Left'}, 'Created'),
 							H.th({width: '160px', align: 'Left'}, 'Created By'),
-							H.th({width: '240px', align: 'Left'}, 'Options')
+							H.th({width: '270px', align: 'Left'}, 'Options')
 						)
 					),
 					this._oReports = H.tbody()
@@ -52,7 +50,6 @@ var self = new Class({
 						H.span('Create New Report')
 					).observe('click', this._new.bind(this, null))
 				)
-			)
 		);
 		// Add to DOM
 		$$('.flex-page')[0].appendChild(this.NODE);
@@ -154,33 +151,54 @@ var self = new Class({
 		this._oReports.innerHTML = '';
 		for(var i in aData){
 			if(aData.hasOwnProperty(i)){
-				// Build the report dom elements.
-				var oReportNode = H.tr(
-					H.td({}, aData[i].name),
-					H.td(aData[i].created_datetime),
-					H.td(aData[i].created_employee_full_name),
-					H.td(
-						H.button({type: 'button'},
-							H.img({src:'img/template/options.png'}),
-							H.span('Configure')
-						).observe('click', this._edit.bind(this, aData[i].id)),
-						H.button({type: 'button'},
-							H.img({src:'img/template/clock.png'}),
-							H.span('Schedule')
-						).observe('click', this._schedule.bind(this, aData[i].id)),
-						H.button({type: 'button'},
-							H.img({src:'img/template/play.png'}),
-							H.span('Run')
-						).observe('click', this._run.bind(this, aData[i].id))
+			
+			this._oReports.appendChild(
+					this._oReportNode = H.tr(	// Build the report dom elements.
+						H.td({}, aData[i].name),
+						H.td(aData[i].created_datetime),
+						H.td(aData[i].created_employee_full_name),
+						H.td(
+							H.button({type: 'button'},
+								H.img({src:'img/template/options.png'}),
+								H.span('Configure')
+							).observe('click', this._edit.bind(this, aData[i].id)),
+							H.button({type: 'button'},
+								H.img({src:'img/template/clock.png'}),
+								H.span('Schedule')
+							).observe('click', this._schedule.bind(this, aData[i].id)),
+							H.button({type: 'button'},
+								H.img({src:'img/template/play.png'}),
+								H.span('Run')
+							).observe('click', this._run.bind(this, aData[i].id))
+						)
 					)
 				);
+
 				// Attach the report to the list.
-				this._oReports.appendChild(oReportNode);
+				//this._oReports.appendChild(this.oReportNode);
+
+				// Add alternating table row colours.
+				if (!self._isNumberOdd(this._oReports.select('tr').length))
+				{
+					this._oReportNode.addClassName('alt');
+				}
 			}
+
 		}
+
 	},
 
-    statics : {}
+    statics : {
+
+		_isNumberOdd : function(iNumber) {
+			// This static method returns true or false.
+			// The Modulus operator '%' returns the division remainder.
+			return (iNumber % 2) === 1;
+		}
+
+    }
+
+
 });
 
 return self;

@@ -829,6 +829,7 @@ li {
 
 	table.reflex caption {
 		text-align	: left;
+		margin-top  : 10px;
 	}
 
 	table.reflex caption div.caption_bar {
@@ -13492,7 +13493,8 @@ li {
 .flex-page-report-constraint-edit-details > label,
 .flex-page-report-schedule-edit-details > label,
 .flex-page-report-schedule-add-details > label,
-.flex-page-report-schedule-add-details-constraintContainer > label {
+.flex-page-report-schedule-add-details-constraintContainer > label,
+.flex-page-report-run-details > label {
   float: left;
   width: 30%;
 }
@@ -13500,7 +13502,8 @@ li {
 .flex-page-report-constraint-edit-details > span,
 .flex-page-report-schedule-edit-details > span,
 .flex-page-report-schedule-add-details > span,
-.flex-page-report-schedule-add-details-constraintContainer > span {
+.flex-page-report-schedule-add-details-constraintContainer > span,
+.flex-page-report-run-details > span {
   width: 70%;
   display: inline-block;
 }
@@ -13520,10 +13523,15 @@ li {
   margin: 0.5em;
   padding: 0.5em;
 }
+.flex-page-report-run-details > div {
+  margin: 0.3em;
+  padding: 0.3em;
+}
 .flex-page-report-edit-buttonset,
 .flex-page-report-constraint-edit-buttonset,
 .flex-page-report-schedule-edit-buttonset,
-.flex-page-report-schedule-add-buttonset {
+.flex-page-report-schedule-add-buttonset,
+.flex-page-report-run-buttonset {
   border: 0;
   margin: 1em 0 0 0;
   background-color: #dedede;
@@ -13540,9 +13548,20 @@ li {
 .flex-page-report-edit-details-query textarea {
   height: 150px;
 }
-.flex-page-report-edit-report-employee input {
-  float: right;
+.flex-page-report-edit-report-employee input,
+.flex-component-report-run-deliverytemployee-div-container input,
+.flex-page-report-run-delivery-employee input {
+  float: left;
 }
 .flex-page-report-schedule-add-details-constraintContainer select {
   width: 150px;
+}
+.flex-page-report-edit textarea {
+  resize: vertical;
+}
+.flex-page-report-manage img,
+.flex-page-report-manage button span,
+.flex-page-report-edit-buttonset img,
+.flex-page-report-edit-buttonset span {
+  vertical-align: middle;
 }
