@@ -38,6 +38,7 @@ var self = new Class({
 							H.th({align: 'Left'}, 'Name'),
 							H.th({width: '160px', align: 'Left'}, 'Created'),
 							H.th({width: '160px', align: 'Left'}, 'Created By'),
+							H.th({width: '160px', align: 'Left'}, 'Report Category'),
 							H.th({width: '240px', align: 'Left'}, 'Options')
 						)
 					),
@@ -77,7 +78,7 @@ var self = new Class({
 	},
 
 	_new : function() {
-		var oPopup = Edit.createAsPopup({
+		var oPopup = Edit.createAsAddPopup( {
 			oncomplete : function(formData) {
 				this._getReports(this._populateReports.bind(this));
 				oPopup.hide();
@@ -159,6 +160,7 @@ var self = new Class({
 					H.td({}, aData[i].name),
 					H.td(aData[i].created_datetime),
 					H.td(aData[i].created_employee_full_name),
+					H.td(aData[i].report_category),
 					H.td(
 						H.button({type: 'button'},
 							H.img({src:'img/template/options.png'}),

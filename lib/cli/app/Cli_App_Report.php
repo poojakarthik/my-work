@@ -10,30 +10,7 @@ class Cli_App_Report extends Cli {
 			//Get all scheduled reports
 			$aReportSchedules = Report_Schedule::getScheduledReports();
 			foreach ($aReportSchedules as $oReportSchedule) {
-				$iNow = time();
-
-				// Compute lastday of scheduled execution
-				$oReportFrequencyType = Report_Frequency_Type::getForId($oReportSchedule->report_frequency_type_id);
-
-				$iFrequencyMultiple = $oReportSchedule->frequency_multiple;
-				$sFrequencyType = strtolower($oReportFrequencyType->name)."s";
-
-				
-				$dFinalScheduledDateTime = date_add(new DateTime($oReportSchedule->schedule_datetime), date_interval_create_from_date_string($iFrequencyMultiple.' '.$sFrequencyType));
-				
-				//Compute the next scheduled datetime
-
-				if ($oReportScheduleLog = Report_Schedule_Log::getLastReportScheduledLogForScheduleId($oReportSchedule->id)) {
-					$dLastExecutedDateTime = $oReportScheduleLog->executed_datetime;
-					$dNextScheduledDateTime = date_add(new DateTime($dLastExecutedDateTime), date_interval_create_from_date_string('1 '.$sFrequencyType));
-				}
-				else {
-					$dNextScheduledDateTime = new DateTime($oReportSchedule->scheduled_datetime);
-				}
-
-				//Check if current time has passed next scheduled datetime of the report
-
-				if ($iNow > $dNextScheduledDateTime->getTimestamp() && $iNow < $dFinalScheduledDateTime->getTimestamp()) {
+				if ($this->_isScheduledToRun($oReportSchedule)) {
 					
 					//Creating the current report Schedule instance
 					
@@ -50,20 +27,34 @@ class Cli_App_Report extends Cli {
 
 					if ($aResult = $oReportScheduleInstance->generate()) {
 
-						//Create date specific File Save Path
-						$sReportSavePath = FLEX_BASE_PATH.self::REPORT_UPLOAD_PATH.date('Y')."/".date('F')."/".date('j')."/";
-
-						//Create required file path folder if it doesn't exist
-						while (!is_dir($sReportSavePath)) {
-							mkdir($sReportSavePath,'0777',true);
-							chmod(FLEX_BASE_PATH.self::REPORT_UPLOAD_PATH.date('Y'), 0777);
-							chmod(FLEX_BASE_PATH.self::REPORT_UPLOAD_PATH.date('Y')."/".date('F'), 0777);
-							chmod(FLEX_BASE_PATH.self::REPORT_UPLOAD_PATH.date('Y')."/".date('F')."/".date('j'), 0777);
-						}
+						
 						
 						//Create Workbook
 						$oReport = Report_New::getForId($oReportSchedule->report_id);
-						$sFilename = $sReportSavePath. str_replace(" ", "_", $oReport->name) .".csv";
+
+						$oReportCategory = Report_Category::getForId($oReport->report_category_id);
+
+						$oReportDeliveryFormat = Report_Delivery_Format::getForId($oReportSchedule->report_delivery_format_id);
+						$oReportDeliveryMethod = Report_Delivery_Method::getForId($oReportSchedule->report_delivery_method_id);
+
+						//Create date specific File Save Path
+						$sReportSavePath = FLEX_BASE_PATH.self::REPORT_UPLOAD_PATH.$oReportCategory->name."/";
+
+						//Create required file path folder if it doesn't exist
+						if (!is_dir($sReportSavePath)) {
+							mkdir($sReportSavePath,'0777',true);
+							chmod(FLEX_BASE_PATH.self::REPORT_UPLOAD_PATH.oReportCategory->name, 0777);
+							
+						}
+
+						if($oReportSchedule->filename == "NULL") {
+							$sReportName = str_replace(" ", "_", $oReport->name);
+						}
+						else {
+							$sReportName = str_replace(" ", "_", $oReportSchedule->filename);
+						}
+
+						$sFilename = $sReportSavePath . $oReport->id . "_" . $sReportName . "_" . date('YmdHis') . "." . strtolower($oReportDeliveryFormat->name);
 						@unlink($sFilename);
 						$oSpreadsheet = new Logic_Spreadsheet(array());
 						
@@ -83,13 +74,78 @@ class Cli_App_Report extends Cli {
 						}
 						
 						// Set File type for Logic Spreadsheet as CSV
-						$oSpreadsheet->saveAs($sFilename, "CSV");
+						$oSpreadsheet->saveAs($sFilename, ($oReportDeliveryFormat->name == 'XLS'?'Excel2007':$oReportDeliveryFormat->name));
 						chmod($sFilename,0777);
 
 						// Update Download Path for ReportScheduleLog Entry
 						$oReportScheduleLogAdd->is_error = 0;
 						$oReportScheduleLogAdd->download_path = $sFilename;
 						$oReportScheduleLogAdd->save();
+
+						//Use Proper Delivery Method
+						if(strtolower($oReportDeliveryMethod->delivery_method) == 'email') {
+							
+							$sAttachmentContent = file_get_contents($sFilename);
+
+							$sCurrentTimestamp = date('d/m/Y h:i:s');
+							//TODO Write Code To Send Email Here
+							//$arrHeaders = Array('From' => "test@smartbusinesstelecom.com.au", 'Subject' => "Report Attached - " . $oReport->Name);
+							$arrHeaders = Array	(
+									'From'		=> "reports@yellowbilling.com.au",
+									'Subject'	=> "{$oReport->Name} executed on {$sCurrentTimestamp}"
+								);
+
+
+							$oEmailFlex	= new Email_Flex();
+							$oEmailFlex->setSubject($arrHeaders['Subject']);
+
+							$aReportDeliveryEmployees = Report_Delivery_Employee::getForReportScheduleId($oReportSchedule->id); 
+
+							
+							$aReceivers = array();
+							foreach($aReportDeliveryEmployees as $oReportDeliveryEmployee){
+
+								$oEmployee = Employee::getForId($oReportDeliveryEmployee->employee_id);
+
+								$aEmployee = $oEmployee->toArray();
+
+								$oEmailFlex->addTo($oEmployee->Email);
+
+								
+								$oEmailFlex->setFrom($arrHeaders['From']);
+
+								$
+								// Generate Content
+					 			$strContent	=	"Dear {$aEmployee['FirstName']},\n\n";
+								
+								$strContent .= "Attached is the Scheduled Report ({$oReport->name}) .";
+								$strContent 	.= "\n\nPablo\nYellow Billing Mascot";
+								
+								$oEmailFlex->setBodyText($strContent);
+								// Attachment (file to deliver)
+								if(strtoupper($oReportDeliveryFormat->name) == "XLS") {
+									$sMimeType = "application/x-msexcel";
+								}
+								else if(strtoupper($oReportDeliveryFormat->name) == "CSV") {
+									$sMimeType = "text/csv";
+								}
+								$oEmailFlex->createAttachment(
+									$sAttachmentContent,
+									$sMimeType,
+									Zend_Mime::DISPOSITION_ATTACHMENT,
+									Zend_Mime::ENCODING_BASE64,
+									$sFilename
+								);
+								// Send the email
+								try {
+									$oEmailFlex->send();
+									$aReceivers[] = $aEmployee['FirstName'];
+		 						} catch (Zend_Mail_Transport_Exception $oException) {
+									// Sending the email failed
+									print_r("Failed to Send Email to " . $aEmployee['FirstName'])
+								}
+							}
+						}
 					}
 					else {
 						print_r("Query Compilation Failed");
@@ -148,5 +204,38 @@ class Cli_App_Report extends Cli {
 			$sCompiledQuery = str_ireplace("<".$sConstraintName.">", $oScheduleConstraintValue->value,	$sCompiledQuery);
 		}
 		return $sCompiledQuery;
+	}
+	function _isScheduledToRun($oReportSchedule){
+		$iNow = time();
+
+		// Compute lastday of scheduled execution
+		$oReportFrequencyType = Report_Frequency_Type::getForId($oReportSchedule->report_frequency_type_id);
+
+		$iFrequencyMultiple = $oReportSchedule->frequency_multiple;
+		$sFrequencyType = strtolower($oReportFrequencyType->name)."s";
+
+		if($oReportSchedule->schedule_end_datetime == "NULL") {
+			$iEndScheduletedDateTimeTimestamp = time() + 1000;
+		}
+		else {
+			$dFinalScheduledDateTime = new DateTime($oReportSchedule->schedule_end_datetime);
+			$iEndScheduletedDateTimeTimestamp = $dFinalScheduledDateTime->getTimestamp();
+		}		
+		//$dFinalScheduledDateTime = date_add(new DateTime($oReportSchedule->schedule_datetime), date_interval_create_from_date_string($iFrequencyMultiple.' '.$sFrequencyType));
+		
+		//Compute the next scheduled datetime
+		if ($oReportScheduleLog = Report_Schedule_Log::getLastReportScheduledLogForScheduleId($oReportSchedule->id)) {
+			$dLastExecutedDateTime = $oReportScheduleLog->executed_datetime;
+			$dNextScheduledDateTime = date_add(new DateTime($dLastExecutedDateTime), date_interval_create_from_date_string($oReportSchedule->frequency_multiple.' '.$sFrequencyType));
+		}
+		else {
+			$dNextScheduledDateTime = new DateTime($oReportSchedule->scheduled_datetime);
+		}
+		if ($iNow > $dNextScheduledDateTime->getTimestamp() && $iNow < $iEndScheduletedDateTimeTimestamp) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 }

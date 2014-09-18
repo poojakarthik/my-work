@@ -11,7 +11,9 @@ var     H               = require('fw/dom/factory'), // HTML
         Hidden			= require('fw/component/control/hidden'),
         Text			= require('fw/component/control/text'),
         Select			= require('fw/component/control/select'),
+        Radio			= require('fw/component/control/radio'),
         Datetime		= require('fw/component/control/datetime'),
+        Checkbox		= require('fw/component/control/checkbox'),
 		Textarea		= require('fw/component/control/textarea'),
         jsonForm = require('json-form');
 
@@ -38,17 +40,20 @@ var     self = new Class({
 					sName : 'id',
 					mValue: this.get('iReportId')
 				}),
+				new Hidden({
+					sName : 'selectedDeliveryEmployees'
+				}),
 				H.fieldset({'class': 'flex-page-report-schedule-add-details'},
 					H.label('Frequency Type'),
-					this.oReportFrequencyType = new Select({
-						sName 		: 'report_frequency_type_id',
+					this._oReportFrequencyType = new Select({
+						sName		: 'report_frequency_type_id',
 						sLabel		: 'Frequency Type',
 						mMandatory	: true,
 						fnPopulate	: this._populateFrequencyTypes.bind(this)
 					}),
 					H.label('Frequency Multiple'),
 					new Number({
-						sName 		: 'frequency_multiple',
+						sName		: 'frequency_multiple',
 						sLabel		: 'Frequency Multiple',
 						mMandatory	: true,
 						fnValidate	: function(oControl) {
@@ -58,14 +63,42 @@ var     self = new Class({
 							return true;
 						}
 					}),
-					H.label('Schedule Datetime'),
+					H.label('Start Datetime'),
 					new Datetime({
 						bTimePicker	: true,
-						sName 		: 'schedule_datetime',
+						sName		: 'schedule_datetime',
 						sLabel		: 'Schedule Datetime',
 						mMandatory	: true
 					}),
+					H.label('End DateTime'),
+					new Datetime({
+						bTimePicker	: true,
+						sName		: 'schedule_end_datetime',
+						sLabel		: 'Schedule End Datetime',
+						mMandatory	: false
+					}),
+					H.label('Filename'),
+					new	Text({
+						sExtraClass	: 'flex-page-report-schedule-add-details-filename',
+						sName		: 'filename',
+						sLabel		: 'Filename',
+						mMandatory	: false,
+						fnValidate	: function(oControl) {
+							if(oControl.getValue().length>100) {
+								throw new Error("Max length is 100 characters");
+							}
+							return true;
+						}
+					}),
 					this._oConstraintContainer = H.div(),
+					H.label('Delivery Format'),
+					this._oDeliveryFormatContainer = H.div(),
+					H.label('Delivery Method'),
+					this._oDeliveryMethodContainer = H.div(),
+					this._oDeliveryEmployeeContainer = H.div({class: 'flex-page-report-schedule-add-details-deliveryEmployeeContainer',style: 'display: none'},
+						H.label('Delivery Employee'),
+						this._oEmployeeContainer = H.div({style: 'max-height: 150px; max-width: 200px; overflow-y: scroll; overflow-x: hidden;'})
+					),
 					H.fieldset({class: 'flex-page-report-schedule-add-buttonset'},
 						H.button({type: 'button', name: 'run'},
 							H.img({src: 'img/template/tick.png','width':'16','height':'16'}),
@@ -107,6 +140,8 @@ var     self = new Class({
 					this._oForm.control('id').set('mValue', this.get('iReportId'));
 					this._loadSchedules(this.get('iReportId'));
 					this._loadReportConstraints();
+					this._loadDeliveryFormats();
+					this._loadDeliveryMethods();
 				}
 				this._onReady();
 			}
@@ -125,6 +160,57 @@ var     self = new Class({
 					this._populateReportSchedule(oServerResponse.aReportSchedule);
 				}.bind(this)
 			});
+		},
+
+		_loadDeliveryFormats: function() {
+			jhr('Report_Delivery_Format', 'getAll', {arguments: []}).then(
+				function success(request) {
+					var response = request.parseJSONResponse();
+					for (var i = 0; i < response.report_delivery_formats.length; i++) {
+						var oReportDeliveryFormat = response.report_delivery_formats[i];
+						this._oDeliveryFormatContainer.appendChild(
+							H.label({title: oReportDeliveryFormat.name},
+								new Radio({
+									sName		: 'delivery_format',
+									sLabel		: oReportDeliveryFormat.name,
+									mMandatory	: false,
+									mValue		: oReportDeliveryFormat.id
+								}),
+								H.span(oReportDeliveryFormat.name)
+							)
+						);
+					}
+				}.bind(this),
+				function (error) {
+					// TODO: Handle Error
+				}
+			);
+		},
+
+		_loadDeliveryMethods: function() {
+			jhr('Report_Delivery_Method', 'getAll', {arguments: []}).then(
+				function success(request) {
+					var response = request.parseJSONResponse();
+					for (var i = 0; i < response.report_delivery_methods.length; i++) {
+						var oReportDeliveryMethod = response.report_delivery_methods[i];
+						this._oDeliveryMethodContainer.appendChild(
+							H.label({title: oReportDeliveryMethod.name},
+								new Radio({
+									sName		: 'delivery_method',
+									sLabel		: oReportDeliveryMethod.name,
+									mMandatory	: false,
+									mValue		: oReportDeliveryMethod.id
+								}),
+								H.span(oReportDeliveryMethod.name)
+							).observe('click', this._showDeliveryEmployees.bind(this, oReportDeliveryMethod.name))
+						);
+
+					}
+				}.bind(this),
+				function (error) {
+					// TODO: Handle Error
+				}
+			);
 		},
 
 		_loadReportConstraints : function() {
@@ -329,6 +415,41 @@ var     self = new Class({
 			});
 		},
 
+		_showDeliveryEmployees: function(sReportDeliveryName) {
+			if(sReportDeliveryName == "Email") {
+				this._oDeliveryEmployeeContainer.show();
+				this._loadDeliveryEmployees();
+			}
+			else {
+				this._oDeliveryEmployeeContainer.hide();
+			}
+		},
+
+		_loadDeliveryEmployees: function() {
+			jhr('Report', 'getEmployees', {arguments: []}).then(
+				function success(request) {
+					var response = request.parseJSONResponse();
+					response.employees.forEach(function (oEmployee) {
+						this._oEmployeeContainer.appendChild(
+							H.div({class: 'flex-component-report-schedule-add-deliverytemployee-div-container'},
+								H.span({class: 'flex-component-report-schedule-add-deliveryemployee-div-container-label'},oEmployee.FirstName + ' ' + oEmployee.LastName),
+								new Checkbox({
+									bChecked	: (oEmployee.report_id) ? true : false,
+									sName		: 'delivery_employee[]',
+									sLabel		: 'Delivery Employee',
+									mValue		: oEmployee.Id,
+									sExtraClass	: 'flex-page-report-schedule-add-deliveryemployee'
+								})
+							)
+						);
+					}.bind(this));
+				}.bind(this),
+				function (error) {
+					// TODO: Handle Error
+				}
+			);
+		},
+
 		_cancel : function(event) {
 			//var formData = jsonForm(this._oForm);
 			//this.fire('complete', formData);
@@ -338,6 +459,7 @@ var     self = new Class({
 		_save : function(event) {
 			var bValidation = this._oForm.validate();
 			if(bValidation) {
+				this._oForm.control('selectedDeliveryEmployees').set('mValue', this._getSelectedDeliveryEmployees());
 				jhr('Report_Schedule', 'saveSchedule', {arguments: this._oForm.getData()}).then(
 					function success(request) {
 						var oResponse = request.parseJSONResponse();
@@ -350,6 +472,19 @@ var     self = new Class({
 				);
 			}
         },
+
+        _getSelectedDeliveryEmployees : function() {
+			var aElements = this._oEmployeeContainer.select('input:checked');
+			var aEmployee = [];
+			for(var i in aElements) {
+				if(aElements.hasOwnProperty(i)) {
+					var oElement = aElements[i];
+					var iEmployeeId = parseInt(oElement.value);
+					aEmployee.push(iEmployeeId);
+				}
+			}
+			return aEmployee;
+		},
 
         statics : {
 			createAsPopup : function() {

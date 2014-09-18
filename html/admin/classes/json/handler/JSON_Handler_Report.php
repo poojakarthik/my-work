@@ -25,6 +25,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 				$oReport->created_employee_id = $aRow['created_employee_id'];
 				$oReport->created_datetime = $aRow['created_datetime'];
 				$oReport->is_enabled = $aRow['is_enabled'];
+				$oReport->report_category_id =$mData->category;
 				$oReport->save();
 
 				// Create Report Employee
@@ -77,6 +78,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 				$oReport->created_datetime = date("Y-m-d H:i:s");
 				$oReport->created_employee_id = Flex::getUserId();
 				$oReport->is_enabled = 1;
+				$oReport->report_category_id =$mData->category;
 				$oReport->save();
 
 				// Create Report Employee
@@ -301,9 +303,10 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			$aCustomer = array();
 			// TODO send customer group id as part of request.
 			$mResult = Query::run("
-				SELECT		r.*, CONCAT(e.FirstName, ' ', e.LastName) AS created_employee_full_name
+				SELECT		r.*, CONCAT(e.FirstName, ' ', e.LastName) AS created_employee_full_name, rc.name AS report_category
 				FROM		report r
 				JOIN		Employee e ON e.Id = r.created_employee_id
+				JOIN 		report_category rc ON rc.id = r.report_category_id
 			");
 			if ($mResult) {
 				while ($aRow = $mResult->fetch_assoc()) {

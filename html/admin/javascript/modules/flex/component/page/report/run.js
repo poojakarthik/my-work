@@ -46,7 +46,7 @@ var self = new Class({
 						new Radio({
 							sName		: 'delivery_format',
 							sLabel		: 'XLS',
-							mMandatory	: true,
+							mMandatory	: false,
 							mValue		: 'XLS'
 						}),
 						H.span('XLS')
@@ -55,19 +55,19 @@ var self = new Class({
 						new Radio({
 							sName		: 'delivery_format',
 							sLabel		: 'CSV',
-							mMandatory	: true,
+							mMandatory	: false,
 							mValue		: 'CSV'
 						}),
 						H.span('CSV')
 					)
 				),
 				H.div({class: 'flex-page-report-run-deliverymethod-details'},
-					H.label('Delivery Format'),
+					H.label('Delivery Method'),
 					H.label({title: 'Browser Download'},
 						new Radio({
 							sName		: 'delivery_method',
 							sLabel		: 'DOWNLOAD',
-							mMandatory	: true,
+							mMandatory	: false,
 							mValue		: 'DOWNLOAD'
 						}),
 						H.span('Download')
@@ -76,7 +76,7 @@ var self = new Class({
 						new Radio({
 							sName		: 'delivery_method',
 							sLabel		: 'EMAIL',
-							mMandatory	: true,
+							mMandatory	: false,
 							mValue		: 'EMAIL'
 						}),
 						H.span('Email')
@@ -274,6 +274,15 @@ var self = new Class({
 
 	_executeReport: function() {
 		if(this._oForm.validate()) {
+			//Add Manual Validation for Delivery Method and Delivery Format radio buttons
+			if(this._oForm.control('delivery_method') == null) {
+				new Alert("Please Select Delivery Method");
+				return;
+			}
+			if(this._oForm.control('delivery_format') == null) {
+				new Alert("Please Select Delivery Format");
+				return;
+			}
 			this._oForm.control('selectedDeliveryEmployees').set('mValue', this._getSelectedDeliveryEmployees());
 			
 			jhr('Report', 'generate', {arguments: this._oForm.getData()}).then(

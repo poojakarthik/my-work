@@ -1,29 +1,31 @@
 <?php
-class Report_Schedule_Constraint_Value extends ORM_Cached {
-	protected $_strTableName = "report_schedule_constraint_value";
-	protected static $_strStaticTableName = "report_schedule_constraint_value";
+class Report_Delivery_Employee extends ORM_Cached {
+	protected $_strTableName = "report_delivery_employee";
+	protected static $_strStaticTableName = "report_delivery_employee";
 
 	/**
-	 * getConstraintValueForScheduleIdConstraintId
+	 * getForReportScheduleId
 	 * 
-	 * Returns an object of Report_Constraint_Value object associated with a given Report Schedule and Constraint.
+	 * Returns an array of Report_Delivery_Employee objects associated with a given Report Schedule.
 	 * This method will add results to the Cache, however it will not read from the Cache
 	 * 
-	 * returns Report_Schedule_Constraint_Value Object
+	 * returns Report_Delivery_Employee Array
 	 */
-	public static function getConstraintValueForScheduleIdConstraintId($iReportScheduleId,$iReportConstraintId)	{
-		
-		$oSelectReportScheduleConstraintValue = self::_preparedStatement('selByReportScheduleIdConstraintId');
-		$iResult = $oSelectReportScheduleConstraintValue->Execute(array('report_schedule_id'=>$iReportScheduleId, 'report_constraint_id'=>$iReportConstraintId));
+	public static function getForReportScheduleId($iReportScheduleId)	{
+		$aReportDeliveryEmployees	= array();
+
+		$oSelectReportDeliveryEmployee = self::_preparedStatement('selByReportScheduleId');
+		$iResult = $oSelectReportDeliveryEmployee->Execute(array('report_schedule_id'=>$iReportScheduleId));
 		if ($iResult === false) {
-			throw new Exception_Database($oSelectReportScheduleConstraintValue->Error());
+			throw new Exception_Database($oSelectReportDeliveryEmployee->Error());
 		}
-		$aReportScheduleConstraintValue = $oSelectReportScheduleConstraintValue->Fetch();
-		// Create new Report Constraint Value object and manually add to the Cache
-		$oReportScheduleConstraintValue	= new self($aReportScheduleConstraintValue);
-		self::addToCache($oReportScheduleConstraintValue);
-			
-		return $oReportScheduleConstraintValue;
+		while ($aReportDeliveryEmployee = $oSelectReportDeliveryEmployee->Fetch()) {
+			// Create new Report Constraint Value object and manually add to the Cache
+			$oReportDeliveryEmployee	= new self($aReportDeliveryEmployee);
+			self::addToCache($oReportDeliveryEmployee);
+			$aReportDeliveryEmployees[$oReportDeliveryEmployee->id]	= $oReportDeliveryEmployee;
+		}
+		return $aReportDeliveryEmployees;
 	}
 
 	protected static function getCacheName() {
@@ -84,10 +86,6 @@ class Report_Schedule_Constraint_Value extends ORM_Cached {
 
 				case 'selAll':
 					$arrPreparedStatements[$strStatement] = new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
-					break;
-
-				case 'selByReportScheduleIdConstraintId':
-					$arrPreparedStatements[$strStatement] = new StatementSelect(self::$_strStaticTableName, "*", "report_schedule_id = <report_schedule_id> and report_constraint_id = <report_constraint_id>" );
 					break;
 
 				// INSERTS
