@@ -260,6 +260,12 @@ var self = new Class({
 					bCloseButton    : true
 				}, oComponent.getNode()
 			);
+			// Set popup title.
+			if(oComponent.get('iReportId')) {
+				oPopup.set('sTitle', 'Edit Report');
+			} else {
+				oPopup.set('sTitle', 'Create New Report');
+			}
 			return oPopup;
 		}
 	}

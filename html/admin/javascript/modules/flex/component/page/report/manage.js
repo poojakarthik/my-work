@@ -176,12 +176,6 @@ var self = new Class({
 
 				// Attach the report to the list.
 				//this._oReports.appendChild(this.oReportNode);
-
-				// Add alternating table row colours.
-				if (!self._isNumberOdd(this._oReports.select('tr').length))
-				{
-					this._oReportNode.addClassName('alt');
-				}
 			}
 
 		}
@@ -189,12 +183,6 @@ var self = new Class({
 	},
 
     statics : {
-
-		_isNumberOdd : function(iNumber) {
-			// This static method returns true or false.
-			// The Modulus operator '%' returns the division remainder.
-			return (iNumber % 2) === 1;
-		}
 
     }
 

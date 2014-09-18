@@ -286,8 +286,10 @@ var     self = new Class({
 		},
 
 		_populateReportSchedule : function(aData) {
+			
 			for (var iKey=0; iKey<aData.length; iKey++) {
 				var oReportSchedule = aData[iKey];
+				
 				this._oScheduleList.appendChild(
 					H.tr({class: 'flex-component-report-schedule-list-schedule', id: 'flex-component-report-schedule-list-row-'+oReportSchedule.id},
 						H.td(
@@ -309,6 +311,7 @@ var     self = new Class({
 							).observe('click', this._archiveSchedule.bind(this,oReportSchedule.id)) // Original function(){ this.parentElement.parentElement.remove();
 						)
 					)
+						
 				);
 				this._iScheduleCount++;
 			};
@@ -361,6 +364,7 @@ var     self = new Class({
 			);
 			return oPopup;
 		}
+			
 	}
 });
 
