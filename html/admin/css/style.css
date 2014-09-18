@@ -13495,7 +13495,8 @@ li {
 .flex-page-report-schedule-edit-details > label,
 .flex-page-report-schedule-add-details > label,
 .flex-page-report-schedule-add-details-constraintContainer > label,
-.flex-page-report-run-details > label {
+.flex-page-report-run-details > label,
+.flex-page-report-schedule-add-details-deliveryEmployeeContainer > label {
   float: left;
   width: 30%;
 }
@@ -13510,7 +13511,8 @@ li {
 }
 .flex-page-report-edit,
 .flex-page-report-constraint-edit,
-.flex-page-report-schedule-edit {
+.flex-page-report-schedule-edit,
+.flex-page-report-schedule-add {
   width: 500px;
 }
 .flex-component-report-edit-buttonset {
@@ -13540,6 +13542,9 @@ li {
   background-color: #dedede;
   text-align: center;
 }
+.flex-page-report-schedule-add-buttonset {
+  width: 96%;
+}
 .flex-page-report-edit-details-name input,
 .flex-page-report-edit-details-summary textarea,
 .flex-page-report-edit-details-query textarea {
@@ -13553,17 +13558,21 @@ li {
 }
 .flex-page-report-edit-report-employee input,
 .flex-component-report-run-deliverytemployee-div-container input,
-.flex-page-report-run-delivery-employee input {
+.flex-page-report-run-delivery-employee input,
+.flex-component-report-schedule-add-deliverytemployee-div-container input {
   float: left;
 }
+.flex-page-report-schedule-add-details select,
 .flex-page-report-schedule-add-details-constraintContainer select {
   width: 150px;
 }
-.flex-page-report-edit textarea {
+.flex-page-report-edit textarea,
+.fw-control-textarea textarea {
   resize: vertical;
 }
 .flex-component-report-add-reportemployee-div-container-label,
-.flex-component-report-run-deliveryemployee-div-container-label {
+.flex-component-report-run-deliveryemployee-div-container-label,
+.flex-component-report-schedule-add-deliveryemployee-div-container-label {
   margin-left: 5px;
 }
 .flex-page-report-manage img,
@@ -13583,7 +13592,8 @@ li {
   display: inline-block;
 }
 .flex-page-report-schedule-add table,
-.flex-page-report-manage table {
+.flex-page-report-manage table,
+.flex-page-report-constraint-edit-details table {
   box-sizing: border-box;
   width: 100%;
   margin-left: auto;
@@ -13593,13 +13603,15 @@ li {
   font-size: inherit;
 }
 .flex-page-report-schedule-add table > thead,
-.flex-page-report-manage table > thead {
+.flex-page-report-manage table > thead,
+.flex-page-report-constraint-edit-details table > thead {
   color: #fff;
   background-color: #499fcf;
   text-align: left;
 }
 .flex-page-report-schedule-add table > thead > tr > th,
-.flex-page-report-manage table > thead > tr > th {
+.flex-page-report-manage table > thead > tr > th,
+.flex-page-report-constraint-edit-details table > thead > tr > th {
   padding-top: 0.25em;
   padding-bottom: 0.25em;
   background-repeat: repeat-x;
@@ -13607,38 +13619,47 @@ li {
 }
 .flex-page-report-schedule-add table > * > tr > td,
 .flex-page-report-manage table > * > tr > td,
+.flex-page-report-constraint-edit-details table > * > tr > td,
 .flex-page-report-schedule-add table > * > tr > th,
-.flex-page-report-manage table > * > tr > th {
+.flex-page-report-manage table > * > tr > th,
+.flex-page-report-constraint-edit-details table > * > tr > th {
   vertical-align: top;
   padding: 0.25em 0.5em;
   font-size: inherit;
 }
 .flex-page-report-schedule-add table > tbody,
-.flex-page-report-manage table > tbody {
+.flex-page-report-manage table > tbody,
+.flex-page-report-constraint-edit-details table > tbody {
   vertical-align: top;
   font-size: inherit;
 }
 .flex-page-report-schedule-add table > tbody > tr > td,
 .flex-page-report-manage table > tbody > tr > td,
+.flex-page-report-constraint-edit-details table > tbody > tr > td,
 .flex-page-report-schedule-add table > tbody > tr > th,
-.flex-page-report-manage table > tbody > tr > th {
+.flex-page-report-manage table > tbody > tr > th,
+.flex-page-report-constraint-edit-details table > tbody > tr > th {
   background-color: #fff;
   color: #333;
 }
 .flex-page-report-schedule-add table > tbody > tr:nth-child(even) > td,
 .flex-page-report-manage table > tbody > tr:nth-child(even) > td,
+.flex-page-report-constraint-edit-details table > tbody > tr:nth-child(even) > td,
 .flex-page-report-schedule-add table > tbody > tr:nth-child(even) > th,
-.flex-page-report-manage table > tbody > tr:nth-child(even) > th {
+.flex-page-report-manage table > tbody > tr:nth-child(even) > th,
+.flex-page-report-constraint-edit-details table > tbody > tr:nth-child(even) > th {
   background-color: #ddd;
 }
 .flex-page-report-schedule-add table > tfoot,
-.flex-page-report-manage table > tfoot {
+.flex-page-report-manage table > tfoot,
+.flex-page-report-constraint-edit-details table > tfoot {
   color: #fff;
   background-color: #499fcf;
   text-align: left;
   text-align: right;
 }
 .flex-page-report-schedule-add table > tfoot a:link,
-.flex-page-report-manage table > tfoot a:link {
+.flex-page-report-manage table > tfoot a:link,
+.flex-page-report-constraint-edit-details table > tfoot a:link {
   color: #fff;
 }

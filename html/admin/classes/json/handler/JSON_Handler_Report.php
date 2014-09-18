@@ -25,6 +25,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 				$oReport->created_employee_id = $aRow['created_employee_id'];
 				$oReport->created_datetime = $aRow['created_datetime'];
 				$oReport->is_enabled = $aRow['is_enabled'];
+				$oReport->report_category_id =$mData->category;
 				$oReport->save();
 
 				// Create Report Employee
@@ -77,6 +78,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 				$oReport->created_datetime = date("Y-m-d H:i:s");
 				$oReport->created_employee_id = Flex::getUserId();
 				$oReport->is_enabled = 1;
+				$oReport->report_category_id =$mData->category;
 				$oReport->save();
 
 				// Create Report Employee
@@ -103,6 +105,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 					$oReportConstraint->save();
 				}
 				// Create Schedules
+				/*
 				$aSchedule = $mData->schedule;
 				foreach($aSchedule as $oSchedule) {
 					$oReportSchedule = new Report_Schedule();
@@ -116,6 +119,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 					$oReportSchedule->scheduled_datetime = date("Y-m-d H:i:s");
 					$oReportSchedule->save();
 				}
+				*/
 			}
 			return array(
 				'bSuccess'	=> true
@@ -133,53 +137,6 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 				'sMessage'	=> $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'
 			);
 		}
-	}
-
-	public function saveSchedule($mData) {
-		// Check user authorization and permissions
-		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
-
-		$oReportSchedule = new Report_Schedule();
-		$oReportSchedule->report_id = $mData->id;
-		$oReportSchedule->report_frequency_type_id = (int)$mData->report_frequency_type_id;
-		$oReportSchedule->frequency_multiple = (int)$mData->frequency_multiple;
-		$oReportSchedule->schedule_datetime = $mData->schedule_datetime;
-		$oReportSchedule->is_enabled = 1;
-		$oReportSchedule->compiled_query = '';
-		$oReportSchedule->scheduled_employee_id = Flex::getUserId();
-		$oReportSchedule->scheduled_datetime = date("Y-m-d H:i:s");
-		$oReportSchedule->save();
-
-		$aConstraintResult = Report_Constraint::getConstraintForReportId($mData->id);
-		
-		$aConstraintValues = array();
-		if (sizeof($aConstraintResult)) {
-			foreach ($aConstraintResult as $oConstraint) {
-				$sConstraintName = $oConstraint->name;
-
-				if(isset($mData->{$sConstraintName})) {
-					$oReportScheduleConstraintValue = new Report_Schedule_Constraint_Value();
-					$oReportScheduleConstraintValue->report_constraint_id = $oConstraint->id;
-					$oReportScheduleConstraintValue->report_schedule_id = $oReportSchedule->id;
-					$oReportScheduleConstraintValue->value = $mData->{$sConstraintName};
-
-					$oReportScheduleConstraintValue->save();
-				}
-				else {
-					return 	array(
-						'success'	=> true,
-						'bSuccess'	=> false,
-						'sMessage'	=> "Constraint Missing:"
-					);
-				}
-			}
-		}
-		return 	array(
-			'success'	=> true,
-			'bSuccess'	=> true,
-			'sMessage'	=> "Report scheduled successfully"
-		);
 	}
 
 	public function getScheduleForReportId($mData) {
@@ -346,9 +303,10 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			$aCustomer = array();
 			// TODO send customer group id as part of request.
 			$mResult = Query::run("
-				SELECT		r.*, CONCAT(e.FirstName, ' ', e.LastName) AS created_employee_full_name
+				SELECT		r.*, CONCAT(e.FirstName, ' ', e.LastName) AS created_employee_full_name, rc.name AS report_category
 				FROM		report r
 				JOIN		Employee e ON e.Id = r.created_employee_id
+				JOIN 		report_category rc ON rc.id = r.report_category_id
 			");
 			if ($mResult) {
 				while ($aRow = $mResult->fetch_assoc()) {

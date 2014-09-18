@@ -14,7 +14,24 @@ class JSON_Handler_Report_Schedule extends JSON_Handler implements JSON_Handler_
 		$oReportSchedule->compiled_query = '';
 		$oReportSchedule->scheduled_employee_id = Flex::getUserId();
 		$oReportSchedule->scheduled_datetime = date("Y-m-d H:i:s");
+		$oReportSchedule->report_delivery_format_id = $mData->delivery_format;
+		$oReportSchedule->report_delivery_method_id = $mData->delivery_method;
+		$oReportSchedule->filename = $mData->filename;
 		$oReportSchedule->save();
+
+		if(strpos($mData->selectedDeliveryEmployees, ",")) {
+			$aReportDeliveryEmployee = explode(",",$mData->selectedDeliveryEmployees);
+			foreach($aReportDeliveryEmployee as $iReportDeliveryEmployeeId) {
+				//Create ORM Object First and Save it to Delivery Employee Object
+				$oReportDeliveryEmployee = new Report_Delivery_Employee();
+				$oReportDeliveryEmployee->report_schedule_id = $oReportSchedule->id;
+				$oReportDeliveryEmployee->employee_id = $iReportDeliveryEmployeeId;
+				$oReportDeliveryEmployee->created_employee_id = Flex::getUserId();
+				$oReportDeliveryEmployee->created_datetime = date("Y-m-d H:i:s");
+				$oReportDeliveryEmployee->save();
+			}
+		}
+		
 
 		$aConstraintResult = Report_Constraint::getConstraintForReportId($mData->id);
 		

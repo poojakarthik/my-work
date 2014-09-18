@@ -36,7 +36,12 @@ var self = new Class({
 							H.th({align: 'Left'}, 'Name'),
 							H.th({width: '160px', align: 'Left'}, 'Created'),
 							H.th({width: '160px', align: 'Left'}, 'Created By'),
+<<<<<<< HEAD
 							H.th({width: '270px', align: 'Left'}, 'Options')
+=======
+							H.th({width: '160px', align: 'Left'}, 'Report Category'),
+							H.th({width: '240px', align: 'Left'}, 'Options')
+>>>>>>> smaharjan/master
 						)
 					),
 					this._oReports = H.tbody()
@@ -74,7 +79,7 @@ var self = new Class({
 	},
 
 	_new : function() {
-		var oPopup = Edit.createAsPopup({
+		var oPopup = Edit.createAsAddPopup( {
 			oncomplete : function(formData) {
 				this._getReports(this._populateReports.bind(this));
 				oPopup.hide();
@@ -151,6 +156,7 @@ var self = new Class({
 		this._oReports.innerHTML = '';
 		for(var i in aData){
 			if(aData.hasOwnProperty(i)){
+<<<<<<< HEAD
 			
 			this._oReports.appendChild(
 					this._oReportNode = H.tr(	// Build the report dom elements.
@@ -171,6 +177,27 @@ var self = new Class({
 								H.span('Run')
 							).observe('click', this._run.bind(this, aData[i].id))
 						)
+=======
+				// Build the report dom elements.
+				var oReportNode = H.tr(
+					H.td({}, aData[i].name),
+					H.td(aData[i].created_datetime),
+					H.td(aData[i].created_employee_full_name),
+					H.td(aData[i].report_category),
+					H.td(
+						H.button({type: 'button'},
+							H.img({src:'img/template/options.png'}),
+							H.span('Configure')
+						).observe('click', this._edit.bind(this, aData[i].id)),
+						H.button({type: 'button'},
+							H.img({src:'img/template/clock.png'}),
+							H.span('Schedule')
+						).observe('click', this._schedule.bind(this, aData[i].id)),
+						H.button({type: 'button'},
+							H.img({src:'img/template/play.png'}),
+							H.span('Run')
+						).observe('click', this._run.bind(this, aData[i].id))
+>>>>>>> smaharjan/master
 					)
 				);
 

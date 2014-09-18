@@ -3,6 +3,7 @@
 var H			= require('fw/dom/factory'), // HTML
 	Class		= require('fw/class'),
 	Component	= require('fw/component'),
+	XHRRequest  = require('fw/xhrrequest'),
 	jhr			= require('xhr/json-handler'),
 	Constraint	= require('./constraint/edit'),
 	Schedule	= require('./schedule/edit'),
@@ -10,6 +11,7 @@ var H			= require('fw/dom/factory'), // HTML
     Popup		= require('fw/component/popup'),
 	Hidden		= require('fw/component/control/hidden'),
 	Checkbox	= require('fw/component/control/checkbox'),
+	Select		= require('fw/component/control/select'),
 	Text		= require('fw/component/control/text'),
 	Textarea	= require('fw/component/control/textarea'),
 	Form		= require('fw/component/form');
@@ -74,6 +76,13 @@ var self = new Class({
 						return true;
 					}
 				}),
+				H.label('Category'),
+				this._oReportCategory = new Select({
+						sName 		: 'category',
+						sLabel		: 'Category',
+						mMandatory	: true,
+						fnPopulate	: this._populateReportCategory.bind(this)
+					}),
 				H.label('Report Employee'),
 				H.span(
 					this._oEmployeeContainer = H.div({style: 'max-height: 150px; max-width: 200px; overflow-y: scroll; overflow-x: hidden;'})
@@ -134,6 +143,31 @@ var self = new Class({
 		}
 	},
 
+	_populateReportCategory : function(fnCallback, oEvent, oTest) {
+		if (!oEvent) {
+			// Request
+			var oReq = new XHRRequest('reflex_json.php/Report_Category/getAll', this._populateReportCategory.bind(this, fnCallback));
+			oReq.send();
+		} else {
+			// Got response
+			var oResponse	= oEvent.getData();
+			var aData	= oResponse.getData();
+			var aOptions = [];
+
+			for(var i in aData.report_categories){
+				if(aData.report_categories.hasOwnProperty(i)){
+					aOptions.push(
+						H.option({value: aData.report_categories[i].id},
+							aData.report_categories[i].name
+						)
+					);
+				}
+			}
+			if(fnCallback) {
+				fnCallback(aOptions);
+			}
+		}
+	},
 
 	_loadReport : function(fnCallback, oXHREvent) {
 		var oData = {
@@ -150,7 +184,7 @@ var self = new Class({
 				this._oForm.control('name').set('mValue', oServerResponse.aReport.name);
 				this._oForm.control('summary').set('mValue', oServerResponse.aReport.summary);
 				this._oForm.control('query').set('mValue', oServerResponse.aReport.query);
-
+				this._oForm.control('category').set('mValue', oServerResponse.aReport.report_category_id);
 				// Save report
 				this._oReport = oServerResponse.aReport;
 
@@ -193,24 +227,28 @@ var self = new Class({
 	},
 
 	_save: function() {
-		var oData = {
-			"name" : this._oName.getValue(),
-			"summary" : this._oSummary.getValue(),
-			"query" : this._oQuery.getValue(),
-			"report" : this._oReport,
-			"constraint" : this._aReportConstraint,
-			//"schedule" : this._aReportSchedule,
-			"report_employee" : this._getSelectedReportEmployees()
+		var bValidation = this._oForm.validate();
+		if(bValidation) {
+			var oData = {
+				"name" : this._oName.getValue(),
+				"summary" : this._oSummary.getValue(),
+				"query" : this._oQuery.getValue(),
+				"report" : this._oReport,
+				"constraint" : this._aReportConstraint,
+				//"schedule" : this._aReportSchedule,
+				"category" : this._oReportCategory.getValue(),
+				"report_employee" : this._getSelectedReportEmployees()
+			}
+			new Ajax.Request('/admin/reflex_json.php/Report/save', {
+				method		: 'post',
+				contentType	: 'application/x-www-form-urlencoded',
+				postBody	: "json="+encodeURIComponent(JSON.stringify([oData])),
+				onSuccess: function (oResponse){
+					var oServerResponse = JSON.parse(oResponse.responseText);
+					this.fire('complete');
+				}.bind(this)
+			});
 		}
-		new Ajax.Request('/admin/reflex_json.php/Report/save', {
-			method		: 'post',
-			contentType	: 'application/x-www-form-urlencoded',
-			postBody	: "json="+encodeURIComponent(JSON.stringify([oData])),
-			onSuccess: function (oResponse){
-				var oServerResponse = JSON.parse(oResponse.responseText);
-				this.fire('complete');
-			}.bind(this)
-		});
 	},
 
 	_cancel : function(event) {
@@ -260,16 +298,22 @@ var self = new Class({
 					bCloseButton    : true
 				}, oComponent.getNode()
 			);
-			// Set popup title.
-			if(oComponent.get('iReportId')) {
-				oPopup.set('sTitle', 'Edit Report');
-			} else {
-				oPopup.set('sTitle', 'Create New Report');
-			}
+			oPopup.set()
+			return oPopup;
+		},
+		createAsAddPopup : function() {
+			var oComponent      = self.applyAsConstructor($A(arguments)),
+			oPopup = new Popup({
+					sExtraClass     : 'flex-page-report-edit-popup',
+					sTitle          : 'Add Report',
+					sIconURI        : './img/template/new.png',
+					bCloseButton    : true
+				}, oComponent.getNode()
+			);
+			oPopup.set()
 			return oPopup;
 		}
 	}
-
 });
 
 return self;
