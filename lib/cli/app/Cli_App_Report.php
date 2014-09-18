@@ -31,9 +31,7 @@ class Cli_App_Report extends Cli {
 						
 						//Create Workbook
 						$oReport = Report_New::getForId($oReportSchedule->report_id);
-
 						$oReportCategory = Report_Category::getForId($oReport->report_category_id);
-
 						$oReportDeliveryFormat = Report_Delivery_Format::getForId($oReportSchedule->report_delivery_format_id);
 						$oReportDeliveryMethod = Report_Delivery_Method::getForId($oReportSchedule->report_delivery_method_id);
 
@@ -43,8 +41,7 @@ class Cli_App_Report extends Cli {
 						//Create required file path folder if it doesn't exist
 						if (!is_dir($sReportSavePath)) {
 							mkdir($sReportSavePath,'0777',true);
-							chmod(FLEX_BASE_PATH.self::REPORT_UPLOAD_PATH.oReportCategory->name, 0777);
-							
+							chmod(FLEX_BASE_PATH.self::REPORT_UPLOAD_PATH.$oReportCategory->name, 0777);
 						}
 
 						if($oReportSchedule->filename == "NULL") {
@@ -73,7 +70,7 @@ class Cli_App_Report extends Cli {
 							$iRow++;
 						}
 						
-						// Set File type for Logic Spreadsheet as CSV
+						// Set File type for Logic Spreadsheet as Selected Delivery Format Type
 						$oSpreadsheet->saveAs($sFilename, ($oReportDeliveryFormat->name == 'XLS'?'Excel2007':$oReportDeliveryFormat->name));
 						chmod($sFilename,0777);
 
@@ -114,7 +111,6 @@ class Cli_App_Report extends Cli {
 								
 								$oEmailFlex->setFrom($arrHeaders['From']);
 
-								$
 								// Generate Content
 					 			$strContent	=	"Dear {$aEmployee['FirstName']},\n\n";
 								
@@ -165,46 +161,6 @@ class Cli_App_Report extends Cli {
 		);
 	}
 
-	function _getCompiledQuery($oReportSchedule) {
-		//Get the report from reports table
-		
-		$oReport = Report_New::getForId($oReportSchedule->report_id);
-		$aConstraints = Report_Constraint::getConstraintForReportId($oReport->id);
-
-		$sCompiledQuery = $oReport->query;
-		
-		if (!sizeof($aConstraints)) {
-			return $sCompiledQuery;
-		}
-
-
-		/*
-			Querys with Constraints should look like following:
-			Select * 
-			from 
-				(
-				Select * 
-				from tableA
-				where aFieldName = <aConstraintName>
-				) AS a 
-			where bFieldName = <bConstraintName> and cFieldName Like '<cConstraintName>%'
-			group by xFieldName 
-			order by <dConstraintName>
-			having eFieldName > <eConstraintName>
-			limit 0, <fConstraintName>
-
-		*/
-		
-		foreach ($aConstraints as $oConstraint) {
-			$sConstraintName = $oConstraint->name;
-
-			$oScheduleConstraintValue = Report_Schedule_ConstraintValue::getConstraintValueForScheduleIdConstraintId($oReportSchedule->id, $oConstraint->id);
-
-			//Replace constraint placeholder in query
-			$sCompiledQuery = str_ireplace("<".$sConstraintName.">", $oScheduleConstraintValue->value,	$sCompiledQuery);
-		}
-		return $sCompiledQuery;
-	}
 	function _isScheduledToRun($oReportSchedule){
 		$iNow = time();
 
@@ -221,7 +177,6 @@ class Cli_App_Report extends Cli {
 			$dFinalScheduledDateTime = new DateTime($oReportSchedule->schedule_end_datetime);
 			$iEndScheduletedDateTimeTimestamp = $dFinalScheduledDateTime->getTimestamp();
 		}		
-		//$dFinalScheduledDateTime = date_add(new DateTime($oReportSchedule->schedule_datetime), date_interval_create_from_date_string($iFrequencyMultiple.' '.$sFrequencyType));
 		
 		//Compute the next scheduled datetime
 		if ($oReportScheduleLog = Report_Schedule_Log::getLastReportScheduledLogForScheduleId($oReportSchedule->id)) {
