@@ -296,18 +296,38 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 
 	public function getAll() {
 		try {
+			$sRequestContent = file_get_contents('php://input');
+			$oRequest = json_decode($sRequestContent);
+			
+			$bCountOnly = $oRequest->bCountOnly;
+			$iLimit = $oRequest->iLimit;
+			$iOffset = $oRequest->iOffset;
+			$oSort = $oRequest->oSort;
+			$oFilter = $oRequest->oFilter;
 			// Check user authorization and permissions
 			AuthenticatedUser()->CheckAuth();
 			AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 
-			$aCustomer = array();
+			$sOrderBy = Statement::generateOrderBy($aAliases, get_object_vars($oSort));
+			
+			if($sOrderBy != "") {
+				$sOrderBy = " Order By " . $sOrderBy;
+			}
+			$sLimit		= Statement::generateLimit($iLimit, $iOffset);
 			// TODO send customer group id as part of request.
-			$mResult = Query::run("
-				SELECT		r.*, CONCAT(e.FirstName, ' ', e.LastName) AS created_employee_full_name, rc.name AS report_category
-				FROM		report r
-				JOIN		Employee e ON e.Id = r.created_employee_id
-				JOIN 		report_category rc ON rc.id = r.report_category_id
-			");
+			$mResult = Query::run(
+				"SELECT		r.*, CONCAT(e.FirstName, ' ', e.LastName) AS created_employee_full_name, rc.name AS report_category
+				 FROM		report r
+				 JOIN		Employee e ON e.Id = r.created_employee_id
+				 JOIN 		report_category rc ON rc.id = r.report_category_id
+				" . $sOrderBy . " LIMIT " .$sLimit);
+			if ($bCountOnly) {
+				return array('iRecordCount' => $mResult->num_rows);
+			}
+			
+			$iLimit		= ($iLimit === null ? 0 : $iLimit);
+			$iOffset	= ($iOffset === null ? 0 : $iOffset);
+			$i			= $iOffset;
 			if ($mResult) {
 				while ($aRow = $mResult->fetch_assoc()) {
 					$aReport[] = $aRow;
@@ -315,7 +335,9 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			}
 			return array(
 				'bSuccess'	=> true,
-				"aReport" => $aReport
+				"aRecords" => $aReport,
+				'iRecordCount'	=> $mResult->num_rows,
+				'sOrderBy'	=> $sOrderBy
 			);
 		} catch (JSON_Handler_Account_Run_Exception $oException) {
 			return 	array(
@@ -327,11 +349,12 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
 			return 	array(
 				'bSuccess'	=> false,
-				'sMessage'	=> $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'
+				'sMessage'	=> $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.',
+				'sOrderBy'	=> $sOrderBy
 			);
 		}
 	}
-
+	
 	public function generate($mData) {
 		$oReport = Report_New::getForId($mData->id);
 

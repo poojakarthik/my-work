@@ -12,7 +12,22 @@ var self = new Class({
 	
 	getData : function() {
 		return this._oData;
-	}
+	},
+
+	hasException : function(sClass) {
+		if (this._oData && this._oData.oException) {
+			if (!sClass) {
+				return true;
+			} else {
+				return !!(this._oData.oException.aClasses.indexOf(sClass) !== -1);
+			}
+		}
+		return false;
+	},
+	
+	getException : function() {
+		return (this._oData ? this._oData.oException : null);
+	},
 });
 
 return self;
