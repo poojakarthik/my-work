@@ -13663,3 +13663,11 @@ li {
 .flex-page-report-constraint-edit-details table > tfoot a:link {
   color: #fff;
 }
+.flex-page-report-run-details div label,
+.flex-page-report-schedule-add-details-deliverymethod-label label,
+.flex-page-report-schedule-add-details-deliveryformat-label label,
+.flex-page-report-run-deliveryformat-details label,
+.flex-page-report-run-deliverymethod-details label {
+  margin-right: 10px;
+  width: 200px;
+}

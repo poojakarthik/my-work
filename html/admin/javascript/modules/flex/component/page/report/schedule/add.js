@@ -92,9 +92,9 @@ var     self = new Class({
 					}),
 					this._oConstraintContainer = H.div(),
 					H.label('Delivery Format'),
-					this._oDeliveryFormatContainer = H.div(),
+					this._oDeliveryFormatContainer = H.div({class: 'flex-page-report-schedule-add-details-deliveryformat-label'}),
 					H.label('Delivery Method'),
-					this._oDeliveryMethodContainer = H.div(),
+					this._oDeliveryMethodContainer = H.div({class: 'flex-page-report-schedule-add-details-deliverymethod-label'}),
 					this._oDeliveryEmployeeContainer = H.div({class: 'flex-page-report-schedule-add-details-deliveryEmployeeContainer',style: 'display: none'},
 						H.label('Delivery Employee'),
 						this._oEmployeeContainer = H.div({style: 'max-height: 150px; max-width: 200px; overflow-y: scroll; overflow-x: hidden;'})
