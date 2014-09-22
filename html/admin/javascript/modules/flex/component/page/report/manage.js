@@ -324,5 +324,3 @@ var self = new Class({
 
     statics : {}
 });
-
-return self;	

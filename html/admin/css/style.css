@@ -163,6 +163,7 @@ li {
 		overflow: hidden;
 		white-space: nowrap;
 		text-overflow: ellipsis;
+		text-indent: 0.5em;
 	}
 	.fw-popup-header-close {
 		float: right;
@@ -829,6 +830,7 @@ li {
 
 	table.reflex caption {
 		text-align	: left;
+		margin-top  : 10px;
 	}
 
 	table.reflex caption div.caption_bar {
@@ -13493,6 +13495,7 @@ li {
 .flex-page-report-schedule-edit-details > label,
 .flex-page-report-schedule-add-details > label,
 .flex-page-report-schedule-add-details-constraintContainer > label,
+.flex-page-report-run-details > label,
 .flex-page-report-schedule-add-details-deliveryEmployeeContainer > label {
   float: left;
   width: 30%;
@@ -13501,7 +13504,8 @@ li {
 .flex-page-report-constraint-edit-details > span,
 .flex-page-report-schedule-edit-details > span,
 .flex-page-report-schedule-add-details > span,
-.flex-page-report-schedule-add-details-constraintContainer > span {
+.flex-page-report-schedule-add-details-constraintContainer > span,
+.flex-page-report-run-details > span {
   width: 70%;
   display: inline-block;
 }
@@ -13517,19 +13521,29 @@ li {
 }
 .flex-page-report-edit-details,
 .flex-page-report-constraint-edit-details,
-.flex-page-report-schedule-edit-details {
+.flex-page-report-schedule-edit-details,
+.flex-page-report-schedule-add-details,
+.flex-page-report-run-details {
   border: 1px solid #dedede;
   margin: 0.5em;
   padding: 0.5em;
 }
+.flex-page-report-run-details > div {
+  margin: 0.3em;
+  padding: 0.3em;
+}
 .flex-page-report-edit-buttonset,
 .flex-page-report-constraint-edit-buttonset,
 .flex-page-report-schedule-edit-buttonset,
-.flex-page-report-schedule-add-buttonset {
+.flex-page-report-schedule-add-buttonset,
+.flex-page-report-run-buttonset {
   border: 0;
   margin: 1em 0 0 0;
   background-color: #dedede;
   text-align: center;
+}
+.flex-page-report-schedule-add-buttonset {
+  width: 96%;
 }
 .flex-page-report-edit-details-name input,
 .flex-page-report-edit-details-summary textarea,
@@ -13542,10 +13556,118 @@ li {
 .flex-page-report-edit-details-query textarea {
   height: 150px;
 }
-.flex-page-report-edit-report-employee input {
-  float: right;
+.flex-page-report-edit-report-employee input,
+.flex-component-report-run-deliverytemployee-div-container input,
+.flex-page-report-run-delivery-employee input,
+.flex-component-report-schedule-add-deliverytemployee-div-container input {
+  float: left;
 }
 .flex-page-report-schedule-add-details select,
 .flex-page-report-schedule-add-details-constraintContainer select {
   width: 150px;
+}
+.flex-page-report-edit textarea,
+.fw-control-textarea textarea {
+  resize: vertical;
+}
+.flex-component-report-add-reportemployee-div-container-label,
+.flex-component-report-run-deliveryemployee-div-container-label,
+.flex-component-report-schedule-add-deliveryemployee-div-container-label {
+  margin-left: 5px;
+}
+.flex-page-report-manage img,
+.flex-page-report-manage button span,
+.flex-page-report-edit-buttonset img,
+.flex-page-report-edit-buttonset span,
+.flex-page-report-schedule-add-buttonset span,
+.flex-page-report-schedule-add-buttonset img,
+.flex-page-report-run-buttonset span,
+.flex-page-report-run-buttonset img,
+.flex-component-report-schedule-list-schedule img,
+.flex-component-report-schedule-list-schedule span,
+.flex-page-report-constraint-edit-buttonset span,
+.flex-page-report-constraint-edit-buttonset img {
+  vertical-align: middle;
+  text-indent: 0.2em;
+  display: inline-block;
+}
+.flex-page-report-schedule-add table,
+.flex-page-report-manage table,
+.flex-page-report-constraint-edit-details table {
+  box-sizing: border-box;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  border: 0.1em solid #d1d1d1;
+  border-spacing: 0;
+  font-size: inherit;
+}
+.flex-page-report-schedule-add table > thead,
+.flex-page-report-manage table > thead,
+.flex-page-report-constraint-edit-details table > thead {
+  color: #fff;
+  background-color: #499fcf;
+  text-align: left;
+}
+.flex-page-report-schedule-add table > thead > tr > th,
+.flex-page-report-manage table > thead > tr > th,
+.flex-page-report-constraint-edit-details table > thead > tr > th {
+  padding-top: 0.25em;
+  padding-bottom: 0.25em;
+  background-repeat: repeat-x;
+  font-weight: bold;
+}
+.flex-page-report-schedule-add table > * > tr > td,
+.flex-page-report-manage table > * > tr > td,
+.flex-page-report-constraint-edit-details table > * > tr > td,
+.flex-page-report-schedule-add table > * > tr > th,
+.flex-page-report-manage table > * > tr > th,
+.flex-page-report-constraint-edit-details table > * > tr > th {
+  vertical-align: top;
+  padding: 0.25em 0.5em;
+  font-size: inherit;
+}
+.flex-page-report-schedule-add table > tbody,
+.flex-page-report-manage table > tbody,
+.flex-page-report-constraint-edit-details table > tbody {
+  vertical-align: top;
+  font-size: inherit;
+}
+.flex-page-report-schedule-add table > tbody > tr > td,
+.flex-page-report-manage table > tbody > tr > td,
+.flex-page-report-constraint-edit-details table > tbody > tr > td,
+.flex-page-report-schedule-add table > tbody > tr > th,
+.flex-page-report-manage table > tbody > tr > th,
+.flex-page-report-constraint-edit-details table > tbody > tr > th {
+  background-color: #fff;
+  color: #333;
+}
+.flex-page-report-schedule-add table > tbody > tr:nth-child(even) > td,
+.flex-page-report-manage table > tbody > tr:nth-child(even) > td,
+.flex-page-report-constraint-edit-details table > tbody > tr:nth-child(even) > td,
+.flex-page-report-schedule-add table > tbody > tr:nth-child(even) > th,
+.flex-page-report-manage table > tbody > tr:nth-child(even) > th,
+.flex-page-report-constraint-edit-details table > tbody > tr:nth-child(even) > th {
+  background-color: #ddd;
+}
+.flex-page-report-schedule-add table > tfoot,
+.flex-page-report-manage table > tfoot,
+.flex-page-report-constraint-edit-details table > tfoot {
+  color: #fff;
+  background-color: #499fcf;
+  text-align: left;
+  text-align: right;
+}
+.flex-page-report-schedule-add table > tfoot a:link,
+.flex-page-report-manage table > tfoot a:link,
+.flex-page-report-constraint-edit-details table > tfoot a:link {
+  color: #fff;
+}
+.flex-page-report-run-details div label,
+.flex-page-report-schedule-add-details-deliverymethod-label label,
+.flex-page-report-schedule-add-details-deliveryformat-label label,
+.flex-page-report-run-deliveryformat-details label,
+.flex-page-report-run-deliverymethod-details label {
+  margin-right: 10px;
+  width: 200px;
 }

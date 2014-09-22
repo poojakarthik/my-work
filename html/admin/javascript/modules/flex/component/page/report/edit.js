@@ -128,8 +128,8 @@ var self = new Class({
 						response.employees.forEach(function (employee) {
 							this._oEmployeeContainer.appendChild(
 								H.div({class: 'flex-component-report-add-reportemployee-div-container'},
-									H.span({class: 'flex-component-report-add-reportemployee-div-container-label'},employee.FirstName + ' ' + employee.LastName),
-									H.input({style: 'float: right;', type: 'checkbox', name: 'report_employee[]', value: employee.Id})
+									H.input({style: 'float:left ;', type: 'checkbox', name: 'report_employee[]', value: employee.Id}),
+									H.label({class: 'flex-component-report-add-reportemployee-div-container-label'},employee.FirstName + ' ' + employee.LastName)
 								)
 							);
 						}.bind(this));
@@ -198,7 +198,7 @@ var self = new Class({
 				oServerResponse.aEmployee.forEach(function (oEmployee) {
 					this._oEmployeeContainer.appendChild(
 						H.div({class: 'flex-component-report-add-reportemployee-div-container'},
-							H.span({class: 'flex-component-report-add-reportemployee-div-container-label'},oEmployee.FirstName + ' ' + oEmployee.LastName),
+							H.label({class: 'flex-component-report-add-reportemployee-div-container-label'},oEmployee.FirstName + ' ' + oEmployee.LastName),
 							new Checkbox({
 								bChecked	: (oEmployee.report_id) ? true : false,
 								sName 		: 'report_employee[]',
@@ -314,7 +314,6 @@ var self = new Class({
 			return oPopup;
 		}
 	}
-
 });
 
 return self;

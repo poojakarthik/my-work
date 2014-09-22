@@ -92,9 +92,9 @@ var     self = new Class({
 					}),
 					this._oConstraintContainer = H.div(),
 					H.label('Delivery Format'),
-					this._oDeliveryFormatContainer = H.div(),
+					this._oDeliveryFormatContainer = H.div({class: 'flex-page-report-schedule-add-details-deliveryformat-label'}),
 					H.label('Delivery Method'),
-					this._oDeliveryMethodContainer = H.div(),
+					this._oDeliveryMethodContainer = H.div({class: 'flex-page-report-schedule-add-details-deliverymethod-label'}),
 					this._oDeliveryEmployeeContainer = H.div({class: 'flex-page-report-schedule-add-details-deliveryEmployeeContainer',style: 'display: none'},
 						H.label('Delivery Employee'),
 						this._oEmployeeContainer = H.div({style: 'max-height: 150px; max-width: 200px; overflow-y: scroll; overflow-x: hidden;'})
@@ -372,8 +372,10 @@ var     self = new Class({
 		},
 
 		_populateReportSchedule : function(aData) {
+			
 			for (var iKey=0; iKey<aData.length; iKey++) {
 				var oReportSchedule = aData[iKey];
+				
 				this._oScheduleList.appendChild(
 					H.tr({class: 'flex-component-report-schedule-list-schedule', id: 'flex-component-report-schedule-list-row-'+oReportSchedule.id},
 						H.td(
@@ -395,6 +397,7 @@ var     self = new Class({
 							).observe('click', this._archiveSchedule.bind(this,oReportSchedule.id)) // Original function(){ this.parentElement.parentElement.remove();
 						)
 					)
+						
 				);
 				this._iScheduleCount++;
 			};
@@ -432,7 +435,7 @@ var     self = new Class({
 					response.employees.forEach(function (oEmployee) {
 						this._oEmployeeContainer.appendChild(
 							H.div({class: 'flex-component-report-schedule-add-deliverytemployee-div-container'},
-								H.span({class: 'flex-component-report-schedule-add-deliveryemployee-div-container-label'},oEmployee.FirstName + ' ' + oEmployee.LastName),
+								H.label({class: 'flex-component-report-schedule-add-deliveryemployee-div-container-label'},oEmployee.FirstName + ' ' + oEmployee.LastName),
 								new Checkbox({
 									bChecked	: (oEmployee.report_id) ? true : false,
 									sName		: 'delivery_employee[]',
@@ -499,6 +502,7 @@ var     self = new Class({
 			);
 			return oPopup;
 		}
+			
 	}
 });
 
