@@ -68,10 +68,10 @@ var self = new Class({
 					),
 					H.thead(
 						H.tr({class: 'First'},
-							H.th({align: 'Left'}, 'Name').observe('click', this._toggleSort.bind(this, 'name')),
-							H.th({width: '160px', align: 'Left'}, 'Created').observe('click', this._toggleSort.bind(this, 'created_datetime')),
-							H.th({width: '160px', align: 'Left'}, 'Created By').observe('click',this._toggleSort.bind(this,'created_employee_full_name')),
-							H.th({width: '160px', align: 'Left'}, 'Report Category').observe('click',this._toggleSort.bind(this,'report_category')),
+							H.th({align: 'Left', class: 'pointer'}, 'Name').observe('click', this._toggleSort.bind(this, 'name')),
+							H.th({width: '160px', align: 'Left', class: 'pointer'}, 'Created').observe('click', this._toggleSort.bind(this, 'created_datetime')),
+							H.th({width: '160px', align: 'Left', class: 'pointer'}, 'Created By').observe('click',this._toggleSort.bind(this,'created_employee_full_name')),
+							H.th({width: '160px', align: 'Left', class: 'pointer'}, 'Report Category').observe('click',this._toggleSort.bind(this,'report_category')),
 							H.th({width: '240px', align: 'Left'}, 'Options')
 						)
 					),
@@ -324,3 +324,5 @@ var self = new Class({
 
     statics : {}
 });
+
+return self;
