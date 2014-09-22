@@ -132,7 +132,7 @@ var self = new Class({
 				var response = request.parseJSONResponse();
 				response.employees.forEach(function (oEmployee) {
 					this._oEmployeeContainer.appendChild(
-						H.div({class: 'flex-component-report-run-deliverytemployee-div-container'},
+						H.div({class: 'flex-component-report-run-deliveryemployee-div-container'},
 							H.label({class: 'flex-component-report-run-deliveryemployee-div-container-label'},oEmployee.FirstName + ' ' + oEmployee.LastName),
 							new Checkbox({
 								bChecked	: (oEmployee.report_id) ? true : false,
