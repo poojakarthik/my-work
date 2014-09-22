@@ -13559,7 +13559,7 @@ li {
 .flex-page-report-edit-report-employee input,
 .flex-component-report-run-deliverytemployee-div-container input,
 .flex-page-report-run-delivery-employee input,
-.flex-component-report-schedule-add-deliverytemployee-div-container input {
+.flex-component-report-schedule-add-deliveryemployee-div-container input {
   float: left;
 }
 .flex-page-report-schedule-add-details select,
@@ -13670,4 +13670,10 @@ li {
 .flex-page-report-run-deliverymethod-details label {
   margin-right: 10px;
   width: 200px;
+}
+.flex-component-report-add-reportemployee-div-container,
+.flex-component-report-run-deliveryemployee-div-container,
+.flex-component-report-schedule-add-deliveryemployee-div-container {
+  display: inline-block;
+  width: 100%;
 }
