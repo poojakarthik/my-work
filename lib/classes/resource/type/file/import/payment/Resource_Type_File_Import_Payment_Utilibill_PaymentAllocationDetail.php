@@ -141,29 +141,27 @@ class Resource_Type_File_Import_Payment_Utilibill_PaymentAllocationDetail extend
 	}
 
 	protected function _createProcessTransactionExceptionTicket($oRecord, $oPaymentResponse) {
-
 		try {
-
 			// Each email should be processed in its own db transaction,
 			// as each email will be deleted separately
 			$dbAccess = DataAccess::getDataAccess();
 			$dbAccess->TransactionStart();
 
-			$oAccount 						= Account::getForId($oPaymentResponse->account_id);
-			$oCustomerGroup 				= Customer_Group::getForId($oAccount->CustomerGroup);
-			$oCustGroupConfig				= Ticketing_Customer_Group_Config::getForCustomerGroupId($oCustomerGroup->Id);
+			$oAccount = Account::getForId($oPaymentResponse->account_id);
+			$oCustomerGroup = Customer_Group::getForId($oAccount->CustomerGroup);
+			$oCustGroupConfig = Ticketing_Customer_Group_Config::getForCustomerGroupId($oCustomerGroup->Id);
 
 			// Ticket Details
 			$aTicketDetails = array();
-			$aTicketDetails['default_email_id']	= $oCustGroupConfig->default_email_id;
-			$aTicketDetails['customer_group_id']	= $oCustGroupConfig->customer_group_id;
-			$aTicketDetails['from']				= array();
-			$aTicketDetails['from']['address']		= $oCustomerGroup->outbound_email;
-			$aTicketDetails['from']['name']		= null;
-			$aTicketDetails['subject']				= 'Exception report failed payment import check';
-			$aTicketDetails['timestamp']			= date('Y-m-d H-i-s');
+			$aTicketDetails['default_email_id'] = $oCustGroupConfig->default_email_id;
+			$aTicketDetails['customer_group_id'] = $oCustGroupConfig->customer_group_id;
+			$aTicketDetails['from'] = array();
+			$aTicketDetails['from']['address'] = $oCustomerGroup->outbound_email;
+			$aTicketDetails['from']['name'] = null;
+			$aTicketDetails['subject'] = 'Exception report failed payment import check';
+			$aTicketDetails['timestamp'] = date('Y-m-d H-i-s');
 
-			$aTicketDetails['message']				= "
+			$aTicketDetails['message'] = "
 			Utilibill Payment Allocation Detail: Duplicate payment response found with transaction reference
 
 			Group Name: {$oRecord->group_name}
@@ -175,7 +173,7 @@ class Resource_Type_File_Import_Payment_Utilibill_PaymentAllocationDetail extend
 			Allocated Statement Number: {$oRecord->allocated_statement_number}
 
 			Please investigate and manually apply payment if required.";
-			$aTicketDetails['attachments']			= array();
+			$aTicketDetails['attachments'] = array();
 
 			// Check that there is a sender
 			$oCorrespondence = false;
@@ -199,14 +197,11 @@ class Resource_Type_File_Import_Payment_Utilibill_PaymentAllocationDetail extend
 					// $oCorrespondence->acknowledgeReceipt();
 				}
 			}
-
 			$dbAccess->TransactionCommit();
-
 		} catch (Exception $oException) {
 			$dbAccess->TransactionRollback();
 			throw $oException;
 		}
-
 	}
 
 	private static function _parseDate($sUtilibillDate, $oRecord) {
