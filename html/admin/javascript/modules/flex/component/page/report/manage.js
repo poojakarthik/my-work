@@ -220,7 +220,7 @@ var self = new Class({
 	_new : function() {
 		var oPopup = Edit.createAsAddPopup( {
 			oncomplete : function(formData) {
-				this._getReports(this._populateReports.bind(this));
+				this._refreshData();
 				oPopup.hide();
 			}.bind(this),
 			onready : function () {

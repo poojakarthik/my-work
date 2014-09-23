@@ -67,7 +67,7 @@ class Report_Schedule extends ORM_Cached {
 		foreach ($aConstraints as $oConstraint) {
 			$sConstraintName = $oConstraint->name;
 
-			$oScheduleConstraintValue = Report_Schedule_Constraint_Value::getConstraintValueForScheduleIdConstraintId($oReportSchedule->id, $oConstraint->id);
+			$oScheduleConstraintValue = Report_Schedule_Constraint_Value::getConstraintValueForScheduleIdConstraintId($this->id, $oConstraint->id);
 
 			//Replace constraint placeholder in query
 			$sCompiledQuery = str_ireplace("<".$sConstraintName.">", $oScheduleConstraintValue->value,	$sCompiledQuery);

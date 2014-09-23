@@ -10,6 +10,7 @@ class JSON_Handler_Report_Schedule extends JSON_Handler implements JSON_Handler_
 		$oReportSchedule->report_frequency_type_id = (int)$mData->report_frequency_type_id;
 		$oReportSchedule->frequency_multiple = (int)$mData->frequency_multiple;
 		$oReportSchedule->schedule_datetime = $mData->schedule_datetime;
+		$oReportSchedule->schedule_end_datetime = $mData->schedule_end_datetime;
 		$oReportSchedule->is_enabled = 1;
 		$oReportSchedule->compiled_query = '';
 		$oReportSchedule->scheduled_employee_id = Flex::getUserId();
@@ -19,7 +20,7 @@ class JSON_Handler_Report_Schedule extends JSON_Handler implements JSON_Handler_
 		$oReportSchedule->filename = $mData->filename;
 		$oReportSchedule->save();
 
-		if(strpos($mData->selectedDeliveryEmployees, ",")) {
+		if(trim($mData->selectedDeliveryEmployees) != "") {
 			$aReportDeliveryEmployee = explode(",",$mData->selectedDeliveryEmployees);
 			foreach($aReportDeliveryEmployee as $iReportDeliveryEmployeeId) {
 				//Create ORM Object First and Save it to Delivery Employee Object

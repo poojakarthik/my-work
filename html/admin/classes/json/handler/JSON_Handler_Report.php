@@ -379,7 +379,6 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 		}
 		$oResult = Query::run($oReport->query, $aConstraintValues);
 		if ($oResult){
-			
 			$iResultCount = $oResult->num_rows;
 
 			
@@ -402,6 +401,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 				}
 
 				$sReportTempPath = FLEX_BASE_PATH.self::TEMP_REPORT_UPLOAD_PATH.date('Y')."/".date('F')."/".date('j')."/";
+
 
 				//Create required file path folder if it doesn't exist
 				while (!is_dir($sReportTempPath)) {

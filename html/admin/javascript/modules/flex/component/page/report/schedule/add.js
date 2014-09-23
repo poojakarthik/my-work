@@ -359,7 +359,7 @@ var     self = new Class({
 				for(var i in aData.report_frequency_types){
 					if(aData.report_frequency_types.hasOwnProperty(i)){
 						aOptions.push(
-							H.option({value: i},
+							H.option({value: aData.report_frequency_types[i].id},
 								aData.report_frequency_types[i].name
 							)
 						);

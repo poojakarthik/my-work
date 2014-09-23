@@ -88,6 +88,10 @@ class Report_Delivery_Employee extends ORM_Cached {
 					$arrPreparedStatements[$strStatement] = new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
 					break;
 
+				case 'selByReportScheduleId':
+					$arrPreparedStatements[$strStatement] = new StatementSelect(self::$_strStaticTableName, "*", "report_schedule_id = <report_schedule_id>");
+					break;
+
 				// INSERTS
 				case 'insSelf':
 					$arrPreparedStatements[$strStatement] = new StatementInsert(self::$_strStaticTableName);

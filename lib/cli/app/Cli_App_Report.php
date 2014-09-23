@@ -20,7 +20,7 @@ class Cli_App_Report extends Cli {
 					$oReportScheduleLogAdd = new Report_Schedule_Log();
 
 					$oReportScheduleLogAdd->report_schedule_id = $oReportSchedule->id;
-					$oReportScheduleLogAdd->executed_datetime = new MySQLFunction("NOW()");
+					$oReportScheduleLogAdd->executed_datetime = date("Y-m-d H:i:s");
 					$oReportScheduleLogAdd->is_error = -1; //Initial Setup before completion
 					$oReportScheduleLogAdd->download_path = "";
 					$oReportScheduleLogAdd->save();
@@ -80,7 +80,7 @@ class Cli_App_Report extends Cli {
 						$oReportScheduleLogAdd->save();
 
 						//Use Proper Delivery Method
-						if(strtolower($oReportDeliveryMethod->delivery_method) == 'email') {
+						if(strtolower($oReportDeliveryMethod->name) == 'email') {
 							
 							$sAttachmentContent = file_get_contents($sFilename);
 
@@ -108,6 +108,7 @@ class Cli_App_Report extends Cli {
 
 								$oEmailFlex->addTo($oEmployee->Email);
 
+								echo $oEmployee->Email;
 								
 								$oEmailFlex->setFrom($arrHeaders['From']);
 
@@ -138,7 +139,7 @@ class Cli_App_Report extends Cli {
 									$aReceivers[] = $aEmployee['FirstName'];
 		 						} catch (Zend_Mail_Transport_Exception $oException) {
 									// Sending the email failed
-									print_r("Failed to Send Email to " . $aEmployee['FirstName'])
+									print_r("Failed to Send Email to " . $aEmployee['FirstName']);
 								}
 							}
 						}
@@ -171,7 +172,7 @@ class Cli_App_Report extends Cli {
 		$sFrequencyType = strtolower($oReportFrequencyType->name)."s";
 
 		if($oReportSchedule->schedule_end_datetime == "NULL") {
-			$iEndScheduletedDateTimeTimestamp = time() + 1000;
+			$iEndScheduletedDateTimeTimestamp = $iNow;
 		}
 		else {
 			$dFinalScheduledDateTime = new DateTime($oReportSchedule->schedule_end_datetime);
@@ -186,7 +187,7 @@ class Cli_App_Report extends Cli {
 		else {
 			$dNextScheduledDateTime = new DateTime($oReportSchedule->scheduled_datetime);
 		}
-		if ($iNow > $dNextScheduledDateTime->getTimestamp() && $iNow < $iEndScheduletedDateTimeTimestamp) {
+		if ($iNow > $dNextScheduledDateTime->getTimestamp() && $iNow <= $iEndScheduletedDateTimeTimestamp) {
 			return true;
 		}
 		else {
