@@ -93,7 +93,7 @@ class Resource_Type_File_Import_Payment_Utilibill_PaymentAllocationDetail extend
 		}
 
 		// Transaction Reference
-		$oPaymentResponse->transaction_reference = sprintf('%s%s:%s:%s:%s:%s@%s',
+		$oPaymentResponse->transaction_reference = sprintf('%s%s:%s:%s:%d:%f@%s',
 			$this->getConfig()->transaction_reference_prefix ? $this->getConfig()->transaction_reference_prefix . ':' : '',
 			$oRecord->group_number,
 			$oRecord->customer_number,
@@ -141,12 +141,11 @@ class Resource_Type_File_Import_Payment_Utilibill_PaymentAllocationDetail extend
 	}
 
 	protected function _createProcessTransactionExceptionTicket($oRecord, $oPaymentResponse) {
+		// Each email should be processed in its own db transaction,
+		// as each email will be deleted separately
+		$dbAccess = DataAccess::getDataAccess();
+		$dbAccess->TransactionStart(false)
 		try {
-			// Each email should be processed in its own db transaction,
-			// as each email will be deleted separately
-			$dbAccess = DataAccess::getDataAccess();
-			$dbAccess->TransactionStart();
-
 			$oAccount = Account::getForId($oPaymentResponse->account_id);
 			$oCustomerGroup = Customer_Group::getForId($oAccount->CustomerGroup);
 			$oCustGroupConfig = Ticketing_Customer_Group_Config::getForCustomerGroupId($oCustomerGroup->Id);
@@ -159,24 +158,24 @@ class Resource_Type_File_Import_Payment_Utilibill_PaymentAllocationDetail extend
 			$aTicketDetails['from']['address'] = $oCustomerGroup->outbound_email;
 			$aTicketDetails['from']['name'] = null;
 			$aTicketDetails['subject'] = 'Exception report failed payment import check';
-			$aTicketDetails['timestamp'] = date('Y-m-d H-i-s');
+			$aTicketDetails['timestamp'] = date('Y-m-d H:i:s');
 
 			$aTicketDetails['message'] = "
-			Utilibill Payment Allocation Detail: Duplicate payment response found with transaction reference
+				Utilibill Payment Allocation Detail: Duplicate payment response found with transaction reference
 
-			Group Name: {$oRecord->group_name}
-			Customer: {$oAccount->Id}
-			Transaction Date: {$oRecord->transaction_date}
-			Cleared Payment Date: {$oRecord->cleared_payment_date}
-			Payment Type: {$oRecord->payment_type}
-			Allocated Amount: {$oRecord->allocated_amount}
-			Allocated Statement Number: {$oRecord->allocated_statement_number}
+				Group Name: {$oRecord->group_name}
+				Customer: {$oAccount->Id}
+				Transaction Date: {$oRecord->transaction_date}
+				Cleared Payment Date: {$oRecord->cleared_payment_date}
+				Payment Type: {$oRecord->payment_type}
+				Allocated Amount: {$oRecord->allocated_amount}
+				Allocated Statement Number: {$oRecord->allocated_statement_number}
 
-			Please investigate and manually apply payment if required.";
+				Please investigate and manually apply payment if required.";
 			$aTicketDetails['attachments'] = array();
 
 			// Check that there is a sender
-			$oCorrespondence = false;
+			$oCorrespondence = null;
 
 			if (array_key_exists('from', $aTicketDetails)) {
 				// Set delivery status to received (this is inbound)
@@ -187,15 +186,10 @@ class Resource_Type_File_Import_Payment_Utilibill_PaymentAllocationDetail extend
 				$aTicketDetails['user_id'] = null;
 
 				// Set delivery time (to system) same as creation time (now)
-				$aTicketDetails['delivery_datetime'] = $aTicketDetails['creation_datetime'] = date('Y-m-d H-i-s');
+				$aTicketDetails['delivery_datetime'] = $aTicketDetails['creation_datetime'] = date('Y-m-d H:i:s');
 
 				// Load the details into the ticketing system
 				$oCorrespondence = Ticketing_Correspondance::createForDetails($aTicketDetails, true);
-				// If a correspondence was created...
-				if ($oCorrespondence) {
-					// Acknowledge receipt of the correspondence
-					// $oCorrespondence->acknowledgeReceipt();
-				}
 			}
 			$dbAccess->TransactionCommit();
 		} catch (Exception $oException) {
