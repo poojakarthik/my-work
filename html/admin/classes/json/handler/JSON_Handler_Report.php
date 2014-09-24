@@ -354,6 +354,69 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			);
 		}
 	}
+
+	public function getAllReportsForUser() {
+		try {
+			$sRequestContent = file_get_contents('php://input');
+			$oRequest = json_decode($sRequestContent);
+			
+			$bCountOnly = $oRequest->bCountOnly;
+			$iLimit = $oRequest->iLimit;
+			$iOffset = $oRequest->iOffset;
+			$oSort = $oRequest->oSort;
+			$oFilter = $oRequest->oFilter;
+			// Check user authorization and permissions
+			AuthenticatedUser()->CheckAuth();
+			AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
+
+			$sOrderBy = Statement::generateOrderBy($aAliases, get_object_vars($oSort));
+			
+			if($sOrderBy != "") {
+				$sOrderBy = " Order By " . $sOrderBy;
+			}
+			$sLimit		= Statement::generateLimit($iLimit, $iOffset);
+			// TODO send customer group id as part of request.
+			$mResult = Query::run(
+				"SELECT		r.*, CONCAT(e.FirstName, ' ', e.LastName) AS created_employee_full_name, rc.name AS report_category
+				 FROM		report r
+				 JOIN		Employee e ON e.Id = r.created_employee_id
+				 JOIN 		report_category rc ON rc.id = r.report_category_id
+				 JOIN 		report_employee re ON re.report_id = r.id
+				 WHERE 		re.employee_id = " . Flex::getUserId() . "
+				" . $sOrderBy . " LIMIT " .$sLimit);
+			if ($bCountOnly) {
+				return array('iRecordCount' => $mResult->num_rows);
+			}
+			
+			$iLimit		= ($iLimit === null ? 0 : $iLimit);
+			$iOffset	= ($iOffset === null ? 0 : $iOffset);
+			$i			= $iOffset;
+			if ($mResult) {
+				while ($aRow = $mResult->fetch_assoc()) {
+					$aReport[] = $aRow;
+				}
+			}
+			return array(
+				'bSuccess'	=> true,
+				"aRecords" => $aReport,
+				'iRecordCount'	=> $mResult->num_rows,
+				'sOrderBy'	=> $sOrderBy
+			);
+		} catch (JSON_Handler_Account_Run_Exception $oException) {
+			return 	array(
+						'Success'	=> false,
+						'bSuccess'	=> false,
+						'sMessage'	=> $oException->getMessage()
+					);
+		} catch (Exception $e) {
+			$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+			return 	array(
+				'bSuccess'	=> false,
+				'sMessage'	=> $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.',
+				'sOrderBy'	=> $sOrderBy
+			);
+		}
+	}
 	
 	public function generate($mData) {
 		$oReport = Report_New::getForId($mData->id);
@@ -410,7 +473,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 					chmod(FLEX_BASE_PATH.self::TEMP_REPORT_UPLOAD_PATH.date('Y')."/".date('F'), 0777);
 					chmod(FLEX_BASE_PATH.self::TEMP_REPORT_UPLOAD_PATH.date('Y')."/".date('F')."/".date('j'), 0777);
 				}
-				
+
 				//Create Workbook
 				$sFilename = str_replace(" ", "_", $oReport->name) . "." .strtolower($mData->delivery_format);
 				$sTmpFilePath = $sReportTempPath . $sFilename;

@@ -11,7 +11,7 @@ class Report_Delivery_Employee extends ORM_Cached {
 	 * 
 	 * returns Report_Delivery_Employee Array
 	 */
-	public static function getForReportScheduleId($iReportScheduleId)	{
+	public static function getForReportScheduleId($iReportScheduleId) {
 		$aReportDeliveryEmployees	= array();
 
 		$oSelectReportDeliveryEmployee = self::_preparedStatement('selByReportScheduleId');

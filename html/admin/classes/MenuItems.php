@@ -3446,6 +3446,44 @@ class MenuItems {
 	}
 
 	//------------------------------------------------------------------------//
+	// listAllReports
+	//------------------------------------------------------------------------//
+	/**
+	 * listAllReports()
+	 *
+	 * Compiles the Href to be executed when the listAllReports menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the listAllReports menu item is triggered
+	 *
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function listAllReports() {
+		$this->strContextMenuLabel = "List Reports";
+		$this->strLabel = "List Reports";
+		return self::NEW_FRAMEWORK . "reflex.php/Report/ListAll/";
+	}
+
+	//------------------------------------------------------------------------//
+	// manageAllReports
+	//------------------------------------------------------------------------//
+	/**
+	 * listAllReports()
+	 *
+	 * Compiles the Href to be executed when the manageAllReports menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the manageAllReports menu item is triggered
+	 *
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function manageAllReports() {
+		$this->strContextMenuLabel = "Manage Reports";
+		$this->strLabel = "Manage Reports";
+		return self::NEW_FRAMEWORK . "reflex.php/Report/Manage/";
+	}
+
+	//------------------------------------------------------------------------//
 	// ManageEmployees
 	//------------------------------------------------------------------------//
 	/**
