@@ -151,28 +151,29 @@ class Resource_Type_File_Import_Payment_Utilibill_PaymentAllocationDetail extend
 			$oCustGroupConfig = Ticketing_Customer_Group_Config::getForCustomerGroupId($oCustomerGroup->Id);
 
 			// Ticket Details
-			$aTicketDetails = array();
-			$aTicketDetails['default_email_id'] = $oCustGroupConfig->default_email_id;
-			$aTicketDetails['customer_group_id'] = $oCustGroupConfig->customer_group_id;
-			$aTicketDetails['from'] = array();
-			$aTicketDetails['from']['address'] = $oCustomerGroup->outbound_email;
-			$aTicketDetails['from']['name'] = null;
-			$aTicketDetails['subject'] = 'Exception report failed payment import check';
-			$aTicketDetails['timestamp'] = date('Y-m-d H:i:s');
+			$aTicketDetails = array(
+				'default_email_id' => $oCustGroupConfig->default_email_id,
+				'customer_group_id' => $oCustGroupConfig->customer_group_id,
+				'subject' => 'Exception report failed payment import check',
+				'timestamp' => date('Y-m-d H:i:s'),
+				'from' => array(
+					'address' => $oCustomerGroup->outbound_email,
+					'name' => null
+				),
+				'message' => "
+					Utilibill Payment Allocation Detail: Duplicate payment response found with transaction reference
 
-			$aTicketDetails['message'] = "
-				Utilibill Payment Allocation Detail: Duplicate payment response found with transaction reference
+					Group Name: {$oRecord->group_name}
+					Customer: {$oAccount->Id}
+					Transaction Date: {$oRecord->transaction_date}
+					Cleared Payment Date: {$oRecord->cleared_payment_date}
+					Payment Type: {$oRecord->payment_type}
+					Allocated Amount: {$oRecord->allocated_amount}
+					Allocated Statement Number: {$oRecord->allocated_statement_number}
 
-				Group Name: {$oRecord->group_name}
-				Customer: {$oAccount->Id}
-				Transaction Date: {$oRecord->transaction_date}
-				Cleared Payment Date: {$oRecord->cleared_payment_date}
-				Payment Type: {$oRecord->payment_type}
-				Allocated Amount: {$oRecord->allocated_amount}
-				Allocated Statement Number: {$oRecord->allocated_statement_number}
-
-				Please investigate and manually apply payment if required.";
-			$aTicketDetails['attachments'] = array();
+					Please investigate and manually apply payment if required.",
+				'attachments' => array()
+			);
 
 			// Check that there is a sender
 			$oCorrespondence = null;
