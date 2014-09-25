@@ -144,7 +144,7 @@ class Resource_Type_File_Import_Payment_Utilibill_PaymentAllocationDetail extend
 		// Each email should be processed in its own db transaction,
 		// as each email will be deleted separately
 		$dbAccess = DataAccess::getDataAccess();
-		$dbAccess->TransactionStart(false)
+		$dbAccess->TransactionStart(false);
 		try {
 			$oAccount = Account::getForId($oPaymentResponse->account_id);
 			$oCustomerGroup = Customer_Group::getForId($oAccount->CustomerGroup);
