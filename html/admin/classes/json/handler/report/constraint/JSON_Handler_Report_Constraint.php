@@ -7,11 +7,10 @@ class JSON_Handler_Report_Constraint extends JSON_Handler implements JSON_Handle
 			AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 			$aConstraints = array();
 			$aConstraintResult = Report_Constraint::getConstraintForReportId($mData->iReportId);
-			foreach($aConstraintResult as $iReportConstraintId=>$oReportConstraintObject)
-			{
-				 $aConstraint = $oReportConstraintObject->toArray();
-
-				 switch($aConstraint['report_constraint_type_id']) {
+			foreach ($aConstraintResult as $iReportConstraintId=>$oReportConstraintObject) {
+				$aConstraint = $oReportConstraintObject->toArray();
+				//Mapping Constraint Type to UI Elements
+				switch($aConstraint['report_constraint_type_id']) {
 				 	case 1:
 				 		$aConstraint['component_type'] = "Text";
 				 		break;
@@ -20,7 +19,7 @@ class JSON_Handler_Report_Constraint extends JSON_Handler implements JSON_Handle
 
 						$rQuery	= $oQuery->Execute($aConstraint['source_query']);
 						$aDataSet= array();
-						while($aResultSet = $rQuery->fetch_assoc()) {
+						while ($aResultSet = $rQuery->fetch_assoc()) {
 							$aDataSet[] = $aResultSet;
 						}
 						$aConstraint['component_type'] = "Select";
@@ -35,7 +34,7 @@ class JSON_Handler_Report_Constraint extends JSON_Handler implements JSON_Handle
 				 		break;
 				 	default:
 				 		break;
-				 }
+				}
 				$aConstraints[] = $aConstraint;
 			}
 			return $aConstraints;

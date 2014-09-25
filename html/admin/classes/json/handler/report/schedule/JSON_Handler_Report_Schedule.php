@@ -20,7 +20,7 @@ class JSON_Handler_Report_Schedule extends JSON_Handler implements JSON_Handler_
 		$oReportSchedule->filename = $mData->filename;
 		$oReportSchedule->save();
 
-		if(trim($mData->selectedDeliveryEmployees) != "") {
+		if (trim($mData->selectedDeliveryEmployees) != "") {
 			$aReportDeliveryEmployee = explode(",",$mData->selectedDeliveryEmployees);
 			foreach($aReportDeliveryEmployee as $iReportDeliveryEmployeeId) {
 				//Create ORM Object First and Save it to Delivery Employee Object
@@ -31,17 +31,15 @@ class JSON_Handler_Report_Schedule extends JSON_Handler implements JSON_Handler_
 				$oReportDeliveryEmployee->created_datetime = date("Y-m-d H:i:s");
 				$oReportDeliveryEmployee->save();
 			}
-		}
-		
+		}		
 
 		$aConstraintResult = Report_Constraint::getConstraintForReportId($mData->id);
-		
 		$aConstraintValues = array();
 		if (sizeof($aConstraintResult)) {
 			foreach ($aConstraintResult as $oConstraint) {
 				$sConstraintName = $oConstraint->name;
 
-				if(isset($mData->{$sConstraintName})) {
+				if (isset($mData->{$sConstraintName})) {
 					$oReportScheduleConstraintValue = new Report_Schedule_Constraint_Value();
 					$oReportScheduleConstraintValue->report_constraint_id = $oConstraint->id;
 					$oReportScheduleConstraintValue->report_schedule_id = $oReportSchedule->id;

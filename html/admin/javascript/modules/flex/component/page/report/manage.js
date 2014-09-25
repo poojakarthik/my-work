@@ -1,20 +1,20 @@
 "use strict";
 
-var H			= require('fw/dom/factory'), // HTML
-	S			= H.S, // SVG
-	Class		= require('fw/class'),
-	Component	= require('fw/component'),
-	XHRRequest	= require('fw/xhrrequest'),
-	Dataset		= require('fw/dataset'),
-	DatasetXHR	= require('fw/dataset/xhr'),
-	Sort		= require('fw/dataset/sort'),
-	Filter		= require('fw/dataset/filter'),
-	Pagination	= require('fw/dataset/pagination'),
-	Edit		= require('./edit'),
-	Run			= require('./run'),
-	Schedule	= require('./schedule/add'),
-    Popup		= require('fw/component/popup'),
-	Form		= require('fw/component/form');
+var H = require('fw/dom/factory'), // HTML
+	S = H.S, // SVG
+	Class = require('fw/class'),
+	Component = require('fw/component'),
+	XHRRequest = require('fw/xhrrequest'),
+	Dataset	= require('fw/dataset'),
+	DatasetXHR = require('fw/dataset/xhr'),
+	Sort = require('fw/dataset/sort'),
+	Filter = require('fw/dataset/filter'),
+	Pagination = require('fw/dataset/pagination'),
+	Edit = require('./edit'),
+	Run	= require('./run'),
+	Schedule = require('./schedule/add'),
+    Popup = require('fw/component/popup'),
+	Form = require('fw/component/form');
 
 var self = new Class({
 	'extends' : Component,
@@ -116,9 +116,8 @@ var self = new Class({
 			}
 		};
 		// Add to DOM
-		$$('.flex-page')[0].appendChild(this.NODE);
+		$('.flex-page')[0].appendChild(this.NODE);
 	},
-
 
 	// ----------------------------------------------------------------------------------- //
 	// Sync UI
@@ -184,7 +183,6 @@ var self = new Class({
 			this.oPagination.getPageCount(this._updatePagination.bind(this));
 		}
 		else {
-			//debugger;;
 			// Update Page ? of ?, show 1 for page count if it is 0 because there is technically still a page even though it's empty
 			var oPageInfo		= this.NODE.select('span.flex-page-report-manage-pagination-info').first();
 			oPageInfo.innerHTML	= ' (Page '+ (this.oPagination.iCurrentPage + 1) +' of ' + (iPageCount == 0 ? 1 : iPageCount) + ')';
@@ -215,8 +213,6 @@ var self = new Class({
 	// ---------------------------------------------------------------------------------- //
 	// Sorting Pagination code End
 	// ---------------------------------------------------------------------------------- //
-	
-
 	_new : function() {
 		var oPopup = Edit.createAsAddPopup( {
 			oncomplete : function(formData) {
@@ -293,8 +289,8 @@ var self = new Class({
 
 	_populateReports : function(aData) {
 		this._oReports.innerHTML = '';
-		for(var i in aData){
-			if(aData.hasOwnProperty(i)){
+		for (var i in aData){
+			if (aData.hasOwnProperty(i)){
 				// Build the report dom elements.
 				var oReportNode = H.tr(
 					H.td({}, aData[i].name),

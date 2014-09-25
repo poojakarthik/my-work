@@ -12,7 +12,7 @@ class Report_Delivery_Employee extends ORM_Cached {
 	 * returns Report_Delivery_Employee Array
 	 */
 	public static function getForReportScheduleId($iReportScheduleId) {
-		$aReportDeliveryEmployees	= array();
+		$aReportDeliveryEmployees = array();
 
 		$oSelectReportDeliveryEmployee = self::_preparedStatement('selByReportScheduleId');
 		$iResult = $oSelectReportDeliveryEmployee->Execute(array('report_schedule_id'=>$iReportScheduleId));
@@ -21,7 +21,7 @@ class Report_Delivery_Employee extends ORM_Cached {
 		}
 		while ($aReportDeliveryEmployee = $oSelectReportDeliveryEmployee->Fetch()) {
 			// Create new Report Constraint Value object and manually add to the Cache
-			$oReportDeliveryEmployee	= new self($aReportDeliveryEmployee);
+			$oReportDeliveryEmployee = new self($aReportDeliveryEmployee);
 			self::addToCache($oReportDeliveryEmployee);
 			$aReportDeliveryEmployees[$oReportDeliveryEmployee->id]	= $oReportDeliveryEmployee;
 		}

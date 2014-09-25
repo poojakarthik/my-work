@@ -11,7 +11,7 @@ class Report_Schedule extends ORM_Cached {
 	public function generate() {
 		$sCompiledQuery = $this->getCompiledQuery();
 
-		$aReportSchedule =$this->toArray();
+		$aReportSchedule = $this->toArray();
 		$aReportSchedule['compiled_query'] = $sCompiledQuery;
 		
 		//Update Compiled Query into Report Schedule Object
@@ -48,22 +48,6 @@ class Report_Schedule extends ORM_Cached {
 			return $sCompiledQuery;
 		}
 
-		/*
-			Querys with Constraints should look like following:
-			Select * 
-			from 
-				(
-				Select * 
-				from tableA
-				where aFieldName = <aConstraintName>
-				) AS a 
-			where bFieldName = <bConstraintName> and cFieldName Like '<cConstraintName>%'
-			group by xFieldName 
-			order by <dConstraintName>
-			having eFieldName > <eConstraintName>
-			limit 0, <fConstraintName>
-
-		*/
 		foreach ($aConstraints as $oConstraint) {
 			$sConstraintName = $oConstraint->name;
 
@@ -78,13 +62,13 @@ class Report_Schedule extends ORM_Cached {
 	/**
 	 * getScheduledReports
 	 * 
-	 * Returns an array of ReportS chedule objects associated which are actually scheduled.
+	 * Returns an array of Reports chedule objects associated which are actually scheduled.
 	 * This method will add results to the Cache, however it will not read from the Cache
 	 * 
 	 * return	array
 	 */
 	public static function getScheduledReports() {
-		$aReportSchedules	= array();
+		$aReportSchedules = array();
 		
 		$oSelectReportSchedules	= self::_preparedStatement('selScheduledReports');
 		$iResult = $oSelectReportSchedules->Execute();

@@ -14,8 +14,8 @@ class Report_Constraint extends ORM_Cached {
 	public static function getConstraintForReportId($iReportId)	{
 		$aReportConstraints	= array();
 
-		$oSelectReportConstraints	= self::_preparedStatement('selByReportId');
-		$iResult					= $oSelectReportConstraints->Execute(array('report_id'=>$iReportId));
+		$oSelectReportConstraints = self::_preparedStatement('selByReportId');
+		$iResult = $oSelectReportConstraints->Execute(array('report_id'=>$iReportId));
 
 		if ($iResult === false)	{
 			throw new Exception_Database($oSelectReportConstraints->Error());

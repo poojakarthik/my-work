@@ -67,10 +67,10 @@ class Cli_App_Report extends Cli {
 						if (strtolower($oReportDeliveryMethod->name) == 'email') {
 							$sAttachmentContent = file_get_contents($sFilename);
 							$sCurrentTimestamp = date('d/m/Y h:i:s');
-							//TODO Write Code To Send Email Here
+							
 							$arrHeaders = Array	(
 									'From'		=> "reports@yellowbilling.com.au",
-									'Subject'	=> "{$oReport->Name} executed on {$sCurrentTimestamp}"
+									'Subject'	=> "{$oReport->name} executed on {$sCurrentTimestamp}"
 								);
 							$oEmailFlex	= new Email_Flex();
 							$oEmailFlex->setSubject($arrHeaders['Subject']);
@@ -120,7 +120,7 @@ class Cli_App_Report extends Cli {
 			}
 			return 0;
 		}
-		catch(Exception $oException) {
+		catch (Exception $oException) {
 			$this->showUsage($oException->getMessage());
 			return 1;
 		}
@@ -133,21 +133,18 @@ class Cli_App_Report extends Cli {
 
 	function _isScheduledToRun($oReportSchedule){
 		$iNow = time();
-
 		// Compute lastday of scheduled execution
 		$oReportFrequencyType = Report_Frequency_Type::getForId($oReportSchedule->report_frequency_type_id);
-
 		$iFrequencyMultiple = $oReportSchedule->frequency_multiple;
 		$sFrequencyType = strtolower($oReportFrequencyType->name) . "s";
 
-		if($oReportSchedule->schedule_end_datetime == "NULL") {
+		if ($oReportSchedule->schedule_end_datetime == "NULL") {
 			$iEndScheduletedDateTimeTimestamp = $iNow;
 		}
 		else {
 			$dFinalScheduledDateTime = new DateTime($oReportSchedule->schedule_end_datetime);
 			$iEndScheduletedDateTimeTimestamp = $dFinalScheduledDateTime->getTimestamp();
 		}		
-		
 		//Compute the next scheduled datetime
 		if ($oReportScheduleLog = Report_Schedule_Log::getLastReportScheduledLogForScheduleId($oReportSchedule->id)) {
 			$dLastExecutedDateTime = $oReportScheduleLog->executed_datetime;

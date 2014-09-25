@@ -1,6 +1,9 @@
 <?php
 class JSON_Handler_Report_Frequency_Type extends JSON_Handler implements JSON_Handler_Loggable, JSON_Handler_Catchable {
 	public function getAll() {
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 		$aReportFrequencyType = Report_Frequency_Type::getAll();
 		$aResultSet = array();
 		foreach ($aReportFrequencyType as $iKey=>$oReportFrequencyType) {

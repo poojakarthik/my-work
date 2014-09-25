@@ -1,19 +1,19 @@
 "use strict";
 
-var H			= require('fw/dom/factory'), // HTML
-	S			= H.S, // SVG
-	Class		= require('fw/class'),
-	Component	= require('fw/component'),
-	XHRRequest	= require('fw/xhrrequest'),
-	Dataset		= require('fw/dataset'),
-	DatasetXHR	= require('fw/dataset/xhr'),
-	Sort		= require('fw/dataset/sort'),
-	Filter		= require('fw/dataset/filter'),
-	Pagination	= require('fw/dataset/pagination'),
-	Run			= require('./run'),
-	Schedule	= require('./schedule/add'),
-    Popup		= require('fw/component/popup'),
-	Form		= require('fw/component/form');
+var H = require('fw/dom/factory'), // HTML
+	S = H.S, // SVG
+	Class = require('fw/class'),
+	Component = require('fw/component'),
+	XHRRequest = require('fw/xhrrequest'),
+	Dataset	= require('fw/dataset'),
+	DatasetXHR = require('fw/dataset/xhr'),
+	Sort = require('fw/dataset/sort'),
+	Filter = require('fw/dataset/filter'),
+	Pagination = require('fw/dataset/pagination'),
+	Run = require('./run'),
+	Schedule = require('./schedule/add'),
+    Popup = require('fw/component/popup'),
+	Form = require('fw/component/form');
 
 var self = new Class({
 	'extends' : Component,
@@ -79,23 +79,16 @@ var self = new Class({
 			)
 		);
 
-		
-
 		// Bind events to the pagination buttons
 		var aTopPageButtons		= this.NODE.select('div.caption_options button.flex-page-report-list-pagination-button');
-		
 		// First
 		aTopPageButtons[0].observe('click', this._changePage.bind(this, 'firstPage'));
-		
 		//Previous		
 		aTopPageButtons[1].observe('click', this._changePage.bind(this, 'previousPage'));
-		
 		// Next
 		aTopPageButtons[2].observe('click', this._changePage.bind(this, 'nextPage'));
-		
 		// Last
 		aTopPageButtons[3].observe('click', this._changePage.bind(this, 'lastPage'));
-		
 		// Setup pagination button object
 		this.oPaginationButtons = {
 			oTop	: {
@@ -106,10 +99,8 @@ var self = new Class({
 			}
 		};
 		// Add to DOM
-		$$('.flex-page')[0].appendChild(this.NODE);
+		$('.flex-page')[0].appendChild(this.NODE);
 	},
-
-
 	// ----------------------------------------------------------------------------------- //
 	// Sync UI
 	// ----------------------------------------------------------------------------------- //
@@ -237,8 +228,8 @@ var self = new Class({
 
 	_populateReports : function(aData) {
 		this._oReports.innerHTML = '';
-		for(var i in aData){
-			if(aData.hasOwnProperty(i)){
+		for (var i in aData){
+			if (aData.hasOwnProperty(i)){
 				// Build the report dom elements.
 				var oReportNode = H.tr(
 					H.td({}, aData[i].name),
@@ -261,7 +252,6 @@ var self = new Class({
 			}
 		}
 	},
-
     statics : {}
 });
 

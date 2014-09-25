@@ -12,7 +12,7 @@ class Report_Schedule_Log extends ORM_Cached {
 	 * returns	Last Report Schedule Log Object 
 	 */
 	public static function getLastReportScheduledLogForScheduleId($iReportScheduleId) {
-		$aReportScheduleLogs	= array();
+		$aReportScheduleLogs = array();
 		
 		$oSelectReportScheduleLogs	= self::_preparedStatement('selByReportScheduleId');
 		$iResult = $oSelectReportScheduleLogs->Execute(array( 'report_schedule_id' => $iReportScheduleId));

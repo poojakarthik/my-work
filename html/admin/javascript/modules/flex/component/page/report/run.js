@@ -1,21 +1,20 @@
 "use strict";
 
-var H			= require('fw/dom/factory'), // HTML
-	Class		= require('fw/class'),
-	Component	= require('fw/component'),
-	jhr			= require('xhr/json-handler'),
-	jsonForm	= require('json-form'),
-    Popup		= require('fw/component/popup'),
-    Alert 		= require('fw/component/popup/alert'),
-	Hidden		= require('fw/component/control/hidden'),
-	Select		= require('fw/component/control/select'),
-	Checkbox 	= require('fw/component/control/checkbox'),
-	Text		= require('fw/component/control/text'),
-	Radio		= require('fw/component/control/radio'),
-	Form		= require('fw/component/form');
+var H = require('fw/dom/factory'), // HTML
+	Class = require('fw/class'),
+	Component = require('fw/component'),
+	jhr	= require('xhr/json-handler'),
+	jsonForm = require('json-form'),
+    Popup = require('fw/component/popup'),
+    Alert = require('fw/component/popup/alert'),
+	Hidden = require('fw/component/control/hidden'),
+	Select = require('fw/component/control/select'),
+	Checkbox = require('fw/component/control/checkbox'),
+	Text = require('fw/component/control/text'),
+	Radio = require('fw/component/control/radio'),
+	Form = require('fw/component/form');
 
 var self = new Class({
-
 	extends: Component,
 	_aReportSchedule : {},
 	_oReport : {},
@@ -102,8 +101,6 @@ var self = new Class({
 		);
 
 		this.NODE = this._oForm.getNode();
-		// Add to DOM
-		//$('.flex-page')[0].appendChild(this.NODE);
 	},
 
 	_syncUI: function () {
@@ -166,8 +163,8 @@ var self = new Class({
 				for (var i = 0;i < oServerResponse.length; i++) {
 					//Check for type here
 
-					if(oServerResponse[i]['component_type'] == "Text") {
-						if(oServerResponse[i]['validation_regex'] == "null") {
+					if (oServerResponse[i]['component_type'] == "Text") {
+						if (oServerResponse[i]['validation_regex'] == "null") {
 							this._oConstraintContainer.appendChild(
 								H.div({class: 'flex-page-report-run-details-constraintContainer'},
 									H.label(oServerResponse[i]['name']),
@@ -200,7 +197,7 @@ var self = new Class({
 							);
 						}
 					}
-					else if(oServerResponse[i]['component_type'] == "Select") {
+					else if (oServerResponse[i]['component_type'] == "Select") {
 						//debugger;
 						this._oConstraintContainer.appendChild(
 							H.div({class: 'flex-page-report-run-details-constraintContainer'},
@@ -226,7 +223,7 @@ var self = new Class({
 						);
 
 					}
-					if(oServerResponse[i]['component_type'] == "Date") {	
+					else if (oServerResponse[i]['component_type'] == "Date") {	
 						this._oConstraintContainer.appendChild(
 							H.div({class: 'flex-page-report-run-details-constraintContainer'},
 								H.label(oServerResponse[i]['name']),
@@ -239,7 +236,7 @@ var self = new Class({
 							)
 						);
 					}
-					else if(oServerResponse[i]['component_type'] == "DateTime") {
+					else if (oServerResponse[i]['component_type'] == "DateTime") {
 						this._oConstraintContainer.appendChild(
 							H.div({class: 'flex-page-report-run-details-constraintContainer'},
 								H.label(oServerResponse[i]['name']),
@@ -262,8 +259,8 @@ var self = new Class({
 	_getSelectedDeliveryEmployees : function() {
 		var aElements = this._oEmployeeContainer.select('input:checked');
 		var aEmployee = [];
-		for(var i in aElements) {
-			if(aElements.hasOwnProperty(i)) {
+		for (var i in aElements) {
+			if (aElements.hasOwnProperty(i)) {
 				var oElement = aElements[i];
 				var iEmployeeId = parseInt(oElement.value);
 				aEmployee.push(iEmployeeId);
@@ -273,13 +270,13 @@ var self = new Class({
 	},
 
 	_executeReport: function() {
-		if(this._oForm.validate()) {
+		if (this._oForm.validate()) {
 			//Add Manual Validation for Delivery Method and Delivery Format radio buttons
-			if(this._oForm.control('delivery_method') == null) {
+			if (this._oForm.control('delivery_method') == null) {
 				new Alert("Please Select Delivery Method");
 				return;
 			}
-			if(this._oForm.control('delivery_format') == null) {
+			if (this._oForm.control('delivery_format') == null) {
 				new Alert("Please Select Delivery Format");
 				return;
 			}
@@ -324,7 +321,7 @@ var self = new Class({
 	
 	statics : {
 		createAsPopup : function() {
-			var oComponent      = self.applyAsConstructor($A(arguments)),
+			var oComponent = self.applyAsConstructor($A(arguments)),
 			oPopup = new Popup({
 					sExtraClass     : 'flex-page-report-run-popup',
 					sTitle          : 'Run Report',
