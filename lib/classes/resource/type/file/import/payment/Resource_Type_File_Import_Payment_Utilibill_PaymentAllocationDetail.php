@@ -157,8 +157,8 @@ class Resource_Type_File_Import_Payment_Utilibill_PaymentAllocationDetail extend
 				'subject' => 'Exception report failed payment import check',
 				'timestamp' => date('Y-m-d H:i:s'),
 				'from' => array(
-					'address' => $oCustomerGroup->outbound_email,
-					'name' => null
+					'address' => "payments@telcoblue.yellowbilling.com.au",
+					'name' => "Flex Payments"
 				),
 				'message' => "
 					Utilibill Payment Allocation Detail: Duplicate payment response found with transaction reference
