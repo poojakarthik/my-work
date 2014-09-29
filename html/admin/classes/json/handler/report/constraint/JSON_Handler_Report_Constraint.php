@@ -15,7 +15,7 @@ class JSON_Handler_Report_Constraint extends JSON_Handler implements JSON_Handle
 				 		$aConstraint['component_type'] = "Text";
 				 		break;
 				 	case 2:
-				 		$oQuery = new Query();
+				 		$oQuery = DataAccess::get()->query();
 
 						$rQuery	= $oQuery->Execute($aConstraint['source_query']);
 						$aDataSet= array();

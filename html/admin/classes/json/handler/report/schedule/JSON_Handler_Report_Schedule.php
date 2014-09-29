@@ -35,7 +35,7 @@ class JSON_Handler_Report_Schedule extends JSON_Handler implements JSON_Handler_
 
 		$aConstraintResult = Report_Constraint::getConstraintForReportId($mData->id);
 		$aConstraintValues = array();
-		if (sizeof($aConstraintResult)) {
+		if (count($aConstraintResult)) {
 			foreach ($aConstraintResult as $oConstraint) {
 				$sConstraintName = $oConstraint->name;
 
@@ -64,7 +64,7 @@ class JSON_Handler_Report_Schedule extends JSON_Handler implements JSON_Handler_
 	}
 
 	public function archiveSchedule($mData) {
-		// Check user authorization and permissions
+		// Check user authorisation and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 

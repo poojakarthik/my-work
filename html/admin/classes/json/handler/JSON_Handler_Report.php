@@ -10,7 +10,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 
 			if (property_exists($mData->report, "id")) {
 				// Clear existing data
-				$oQuery = new Query();
+				$oQuery = DataAccess::get()->query();
 				$oQuery->Execute("DELETE FROM report_employee WHERE report_id = {$mData->report->id}");
 				$oQuery->Execute("DELETE FROM report_constraint WHERE report_id = {$mData->report->id}");
 				
@@ -144,14 +144,18 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 
-		$oQuery = new Query();
+		$oQuery = DataAccess::get()->query();
 
 		$sSQL	= "
-			SELECT		e.*,
-						re.report_id
-			FROM		Employee e
-			LEFT JOIN	report_employee re ON (re.employee_id = e.Id AND re.report_id = {$iReportId})
-			WHERE		e.Archived = 0";
+			SELECT e.*,
+				re.report_id
+			FROM Employee e
+				LEFT JOIN report_employee re ON (
+					re.employee_id = e.Id
+					AND re.report_id = {$iReportId}
+				)
+			WHERE e.Archived = 0
+		";
 
 		$rQuery	= $oQuery->Execute($sSQL);
 		$aDataSet= array();
@@ -166,11 +170,11 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 
-		$oQuery = new Query();
+		$oQuery = DataAccess::get()->query();
 
 		$sSQL	= "
-			SELECT		rs.*
-			FROM		report_schedule rs
+			SELECT rs.*
+			FROM report_schedule rs
 			WHERE		report_id = {$iReportId} AND is_enabled = 1";
 
 		$rQuery	= $oQuery->Execute($sSQL);
@@ -181,12 +185,12 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 		return $aDataSet;
 	}
 	public function _getConstraintForReportId($iReportId) {
-		$oQuery = new Query();
+		$oQuery = DataAccess::get()->query();
 
 		$sSQL	= "
-			SELECT		rc.*
-			FROM		report_constraint rc
-			WHERE		report_id = {$iReportId}";
+			SELECT rc.*
+			FROM report_constraint rc
+			WHERE report_id = {$iReportId}";
 
 		$rQuery	= $oQuery->Execute($sSQL);
 		$aDataSet= array();
@@ -211,13 +215,13 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			AuthenticatedUser()->CheckAuth();
 			AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 
-			$qryQuery = new Query();
+			$qryQuery = DataAccess::get()->query();
 			$strSQL	= "
-				SELECT		r.*
-				FROM		report r
-				WHERE		id = {$mData->iReportId}";
+				SELECT r.*
+				FROM report r
+				WHERE id = {$mData->iReportId}";
 
-			$resQuery		= $qryQuery->Execute($strSQL);
+			$resQuery = $qryQuery->Execute($strSQL);
 			if ($resQuery === false) {
 				throw new Exception($qryQuery->Error());
 			}
@@ -268,15 +272,17 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			$sOrderBy = Statement::generateOrderBy($aAliases, get_object_vars($oSort));
 			
 			if ($sOrderBy != "") {
-				$sOrderBy = " Order By " . $sOrderBy;
+				$sOrderBy = " ORDER BY " . $sOrderBy;
 			}
 			$sLimit	= Statement::generateLimit($iLimit, $iOffset);
 			// TODO send customer group id as part of request.
 			$mResult = Query::run(
-				"SELECT		r.*, CONCAT(e.FirstName, ' ', e.LastName) AS created_employee_full_name, rc.name AS report_category
-				 FROM		report r
-				 JOIN		Employee e ON e.Id = r.created_employee_id
-				 JOIN 		report_category rc ON rc.id = r.report_category_id
+				"SELECT	r.*, CONCAT(e.FirstName, ' ', e.LastName) AS created_employee_full_name, rc.name AS report_category
+				 FROM report r
+				 JOIN Employee e ON
+				 	e.Id = r.created_employee_id
+				 JOIN report_category rc ON 
+				 	rc.id = r.report_category_id
 				" . $sOrderBy . " LIMIT " .$sLimit);
 			if ($bCountOnly) {
 				return array('iRecordCount' => $mResult->num_rows);
@@ -383,7 +389,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 		$aConstraintResult = Report_Constraint::getConstraintForReportId($mData->id);
 		
 		$aConstraintValues = array();
-		if (sizeof($aConstraintResult)) {
+		if (count($aConstraintResult)) {
 			foreach ($aConstraintResult as $oConstraint) {
 				$sConstraintName = $oConstraint->name;
 
@@ -456,7 +462,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 
 					$delivery_employees = explode(",",$mData->selectedDeliveryEmployees);
 					$aReceivers = array();
-					for ($i=0; $i<sizeof($delivery_employees);$i++) {
+					for ($i=0; $i<count($delivery_employees);$i++) {
 						$oEmployee = Employee::getForId($delivery_employees[$i]);
 						$aEmployee = $oEmployee->toArray();
 						$oEmailFlex->addTo($oEmployee->Email);
