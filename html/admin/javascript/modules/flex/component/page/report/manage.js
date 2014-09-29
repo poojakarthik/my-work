@@ -47,7 +47,7 @@ var self = new Class({
 							),
 							H.div({id: 'caption_options', class: 'caption_options'},
 								H.div({class: 'flex-page-report-manage-pagination'},
-									H.span({class: 'pagination-loading', style: 'display: none;'},
+									H.span({class: 'pagination-loading'},
 										'Loading...'
 									),
 									H.button({class: 'flex-page-report-manage-pagination-button'},

@@ -431,7 +431,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 
 				//Create required file path folder if it doesn't exist
 				while (!is_dir($sReportTempPath)) {
-					mkdir($sReportTempPath,'0777',true);
+					mkdir($sReportTempPath, '0777',true);
 					chmod(FLEX_BASE_PATH.self::TEMP_REPORT_UPLOAD_PATH.date('Y'), 0777);
 					chmod(FLEX_BASE_PATH.self::TEMP_REPORT_UPLOAD_PATH.date('Y')."/".date('F'), 0777);
 					chmod(FLEX_BASE_PATH.self::TEMP_REPORT_UPLOAD_PATH.date('Y')."/".date('F')."/".date('j'), 0777);
@@ -444,7 +444,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 
 				// Set File type for Logic Spreadsheet as CSV
 				$oSpreadsheet->saveAs($sTmpFilePath, ($mData->delivery_format == 'XLS'?'Excel2007':$mData->delivery_format));
-				chmod($sTmpFilePath,0777);
+				chmod($sTmpFilePath, 0777);
 
 				//Use Proper Delivery Method
 				if ($mData->delivery_method == 'EMAIL') {
