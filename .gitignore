@@ -19,3 +19,6 @@ sftp-config.json
 /lib/framework/database_constants.php*
 /html/ui/javascript/credit_card_type.js
 /lib/classes/do/sales/base
+
+# keys
+/keys
