@@ -17,7 +17,7 @@ class Cli_App_Report extends Cli {
 					$oReportScheduleLogAdd = new Report_Schedule_Log();
 					$oReportScheduleLogAdd->report_schedule_id = $oReportSchedule->id;
 					$oReportScheduleLogAdd->executed_datetime = date("Y-m-d H:i:s");
-					$oReportScheduleLogAdd->is_error = -1; //Initial Setup before completion
+					$oReportScheduleLogAdd->is_error = null; //Initial Setup before completion
 					$oReportScheduleLogAdd->download_path = "";
 					$oReportScheduleLogAdd->save();
 
@@ -57,7 +57,7 @@ class Cli_App_Report extends Cli {
 							$iRow++;
 						}		
 						// Set File type for Logic Spreadsheet as Selected Delivery Format Type
-						$oSpreadsheet->saveAs($sFilename, ($oReportDeliveryFormat->name == 'XLS'?'Excel2007':$oReportDeliveryFormat->name));
+						$oSpreadsheet->saveAs($sFilename, ($oReportDeliveryFormat->name === 'XLS'?'Excel2007':$oReportDeliveryFormat->name));
 						chmod($sFilename,0777);
 						// Update Download Path for ReportScheduleLog Entry
 						$oReportScheduleLogAdd->is_error = 0;

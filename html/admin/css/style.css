@@ -13496,7 +13496,8 @@ li {
 .flex-page-report-schedule-add-details > label,
 .flex-page-report-schedule-add-details-constraintContainer > label,
 .flex-page-report-run-details > label,
-.flex-page-report-schedule-add-details-deliveryEmployeeContainer > label {
+.flex-page-report-schedule-add-details-deliveryEmployeeContainer > label,
+.flex-page-report-run-details-constraintContainer > label {
   float: left;
   width: 30%;
 }
@@ -13505,7 +13506,8 @@ li {
 .flex-page-report-schedule-edit-details > span,
 .flex-page-report-schedule-add-details > span,
 .flex-page-report-schedule-add-details-constraintContainer > span,
-.flex-page-report-run-details > span {
+.flex-page-report-run-details > span,
+.flex-page-report-run-details-constraintContainer > span {
   width: 70%;
   display: inline-block;
 }
@@ -13514,6 +13516,9 @@ li {
 .flex-page-report-schedule-edit,
 .flex-page-report-schedule-add {
   width: 500px;
+}
+.flex-page-report-run {
+  width: 400px;
 }
 .flex-component-report-edit-buttonset {
   border: 0;
@@ -13663,11 +13668,10 @@ li {
 .flex-page-report-constraint-edit-details table > tfoot a:link {
   color: #fff;
 }
-.flex-page-report-run-details div label,
 .flex-page-report-schedule-add-details-deliverymethod-label label,
 .flex-page-report-schedule-add-details-deliveryformat-label label,
-.flex-page-report-run-deliveryformat-details label,
-.flex-page-report-run-deliverymethod-details label {
+.flex-page-report-run-details-deliveryformat label,
+.flex-page-report-run-details-deliverymethod label {
   margin-right: 10px;
   width: 200px;
 }

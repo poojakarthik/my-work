@@ -410,6 +410,9 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			$iResultCount = $oResult->num_rows;
 			
 			if ($iResultCount > 0) {
+				$oReportDeliveryFormat = Report_Delivery_Format::getForId($mData->delivery_format);
+				$oReportDeliveryMethod = Report_Delivery_Method::getForId($mData->delivery_method);
+				
 				$oSpreadsheet = new Logic_Spreadsheet(array());
 			
 				$iRow = 0;
@@ -438,16 +441,16 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 				}
 
 				//Create Workbook
-				$sFilename = str_replace(" ", "_", $oReport->name) . "." .strtolower($mData->delivery_format);
+				$sFilename = str_replace(" ", "_", $oReport->name) . "." .strtolower($oReportDeliveryFormat->name);
 				$sTmpFilePath = $sReportTempPath . $sFilename;
 				@unlink($sFilename);
 
 				// Set File type for Logic Spreadsheet as CSV
-				$oSpreadsheet->saveAs($sTmpFilePath, ($mData->delivery_format == 'XLS'?'Excel2007':$mData->delivery_format));
+				$oSpreadsheet->saveAs($sTmpFilePath, ($oReportDeliveryFormat->name === 'XLS'?'Excel2007':$oReportDeliveryFormat->name));
 				chmod($sTmpFilePath, 0777);
 
 				//Use Proper Delivery Method
-				if ($mData->delivery_method == 'EMAIL') {
+				if (strtoupper($oReportDeliveryMethod->name) == 'EMAIL') {
 					
 					$sAttachmentContent = file_get_contents($sTmpFilePath);
 					$sCurrentTimestamp = date('d/m/Y h:i:s');
@@ -473,10 +476,10 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 						$strContent 	.= "\n\nPablo\nYellow Billing Mascot";
 						$oEmailFlex->setBodyText($strContent);
 						// Attachment (file to deliver)
-						if ($mData->delivery_format == "XLS") {
+						if (strtoupper($oReportDeliveryFormat->name) == "XLS") {
 							$sMimeType = "application/x-msexcel";
 						}
-						else if ($mData->delivery_format == "CSV") {
+						else if (strtoupper($oReportDeliveryFormat->name) == "CSV") {
 							$sMimeType = "text/csv";
 						}
 						$oEmailFlex->createAttachment(
@@ -506,7 +509,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 							'sMessage'	=> "Report emailed successfully to " . implode(", ",$aReceivers)
 						);
 				}
-				else if($mData->delivery_method == "DOWNLOAD") {
+				else if(strtoupper($oReportDeliveryMethod->name) == "DOWNLOAD") {
 					return 	array(
 							'success'	=> true,
 							'bSuccess'	=> true,

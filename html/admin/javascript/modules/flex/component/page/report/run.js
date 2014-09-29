@@ -39,48 +39,10 @@ var self = new Class({
 			}),
 			H.fieldset({'class': 'flex-page-report-run-details'},
 				this._oConstraintContainer = H.div(),
-				H.div({class: 'flex-page-report-run-deliveryformat-details'},
-					H.label('Delivery Format'),
-					H.label({title: 'Excel Format'},
-						new Radio({
-							sName		: 'delivery_format',
-							sLabel		: 'XLS',
-							mMandatory	: false,
-							mValue		: 'XLS'
-						}),
-						H.span('XLS')
-					),
-					H.label({title: 'CSV Format'},
-						new Radio({
-							sName		: 'delivery_format',
-							sLabel		: 'CSV',
-							mMandatory	: false,
-							mValue		: 'CSV'
-						}),
-						H.span('CSV')
-					)
-				),
-				H.div({class: 'flex-page-report-run-deliverymethod-details'},
-					H.label('Delivery Method'),
-					H.label({title: 'Browser Download'},
-						new Radio({
-							sName		: 'delivery_method',
-							sLabel		: 'DOWNLOAD',
-							mMandatory	: false,
-							mValue		: 'DOWNLOAD'
-						}),
-						H.span('Download')
-					).observe('click', this._hideDeliveryEmployees.bind(this, null)),
-					H.label({title: 'Email Report to Selected Employees'},
-						new Radio({
-							sName		: 'delivery_method',
-							sLabel		: 'EMAIL',
-							mMandatory	: false,
-							mValue		: 'EMAIL'
-						}),
-						H.span('Email')
-					).observe('click', this._showDeliveryEmployees.bind(this, null))
-				),
+				H.label('Delivery Format'),
+				this._oDeliveryFormatContainer = H.div({class: 'flex-page-report-run-details-deliveryformat'}),
+				H.label('Delivery Method'),
+				this._oDeliveryMethodContainer = H.div({class: 'flex-page-report-run-details-deliverymethod'}),
 				this._oDeliveryEmployeeContainer = H.div({class: 'flex-page-report-run-deliverymethod-details', style: 'display: none'},
 					H.label('Delivery Employee'),
 					H.span(
@@ -109,6 +71,9 @@ var self = new Class({
 				// Get Report Constraints
 				this._loadConstraints();
 				this._oForm.control('id').set('mValue', this.get('iReportId'));
+				this._loadDeliveryFormats();
+				this._loadDeliveryMethods();
+
 			}
 			this._onReady();
 		}
@@ -121,6 +86,57 @@ var self = new Class({
 
 	_hideDeliveryEmployees: function() {
 		this._oDeliveryEmployeeContainer.hide();
+	},
+
+	_loadDeliveryFormats: function() {
+		jhr('Report_Delivery_Format', 'getAll', {arguments: []}).then(
+			function success(request) {
+				var response = request.parseJSONResponse();
+				for (var i = 0; i < response.report_delivery_formats.length; i++) {
+					var oReportDeliveryFormat = response.report_delivery_formats[i];
+					this._oDeliveryFormatContainer.appendChild(
+						H.label({title: oReportDeliveryFormat.name},
+							new Radio({
+								sName		: 'delivery_format',
+								sLabel		: oReportDeliveryFormat.name,
+								mMandatory	: false,
+								mValue		: oReportDeliveryFormat.id
+							}),
+							H.span(oReportDeliveryFormat.name)
+						)
+					);
+				}
+			}.bind(this),
+			function (error) {
+				// TODO: Handle Error
+			}
+		);
+	},
+
+	_loadDeliveryMethods: function() {
+		jhr('Report_Delivery_Method', 'getAll', {arguments: []}).then(
+			function success(request) {
+				var response = request.parseJSONResponse();
+				for (var i = 0; i < response.report_delivery_methods.length; i++) {
+					var oReportDeliveryMethod = response.report_delivery_methods[i];
+					this._oDeliveryMethodContainer.appendChild(
+						H.label({title: oReportDeliveryMethod.name},
+							new Radio({
+								sName		: 'delivery_method',
+								sLabel		: oReportDeliveryMethod.name,
+								mMandatory	: false,
+								mValue		: oReportDeliveryMethod.id
+							}),
+							H.span(oReportDeliveryMethod.name)
+						).observe('click', this._showDeliveryEmployees.bind(this, oReportDeliveryMethod.name))
+					);
+
+				}
+			}.bind(this),
+			function (error) {
+				// TODO: Handle Error
+			}
+		);
 	},
 
 	_loadDeliveryEmployees: function() {

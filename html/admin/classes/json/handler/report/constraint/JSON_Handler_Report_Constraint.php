@@ -11,13 +11,11 @@ class JSON_Handler_Report_Constraint extends JSON_Handler implements JSON_Handle
 				$aConstraint = $oReportConstraintObject->toArray();
 				//Mapping Constraint Type to UI Elements
 				switch($aConstraint['report_constraint_type_id']) {
-				 	case 1:
+				 	case REPORT_CONSTRAINT_TYPE_FREETEXT:
 				 		$aConstraint['component_type'] = "Text";
 				 		break;
-				 	case 2:
-				 		$oQuery = DataAccess::get()->query();
-
-						$rQuery	= $oQuery->Execute($aConstraint['source_query']);
+				 	case REPORT_CONSTRAINT_TYPE_DATABASELIST:
+				 		$rQuery	= Query::run($aConstraint['source_query']);
 						$aDataSet= array();
 						while ($aResultSet = $rQuery->fetch_assoc()) {
 							$aDataSet[] = $aResultSet;
@@ -26,10 +24,10 @@ class JSON_Handler_Report_Constraint extends JSON_Handler implements JSON_Handle
 						$aConstraint['source_data'] = $aDataSet;
 						unset($aConstraint['source_query']);
 						break;
-					case 3:
+					case REPORT_CONSTRAINT_TYPE_DATE:
 						$aConstraint['component_type'] = "Date";
 				 		break;
-				 	case 4:
+				 	case REPORT_CONSTRAINT_TYPE_DATETIME:
 						$aConstraint['component_type'] = "DateTime";
 				 		break;
 				 	default:
