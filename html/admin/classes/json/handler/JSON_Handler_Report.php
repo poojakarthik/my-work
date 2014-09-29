@@ -4,7 +4,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 
 	public function save($mData) {
 		try {
-			// Check user authorization and permissions
+			// Check user authorisfation and permissions
 			AuthenticatedUser()->CheckAuth();
 			AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
 
@@ -106,7 +106,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 	}
 
 	public function getScheduleForReportId($mData) {
-		// Check user authorization and permissions
+		// Check user authorisation and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 
@@ -116,7 +116,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 				);
 	}
 	public function getEmployees() {
-		// Check user authorization and permissions
+		// Check user authorisation and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 
@@ -140,7 +140,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 	}
 
 	private function _getActiveEmployeesForReportId($iReportId) {
-		// Check user authorization and permissions
+		// Check user authorisation and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 
@@ -162,7 +162,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 	}
 
 	public function _getScheduleForReportId($iReportId) {
-		// Check user authorization and permissions
+		// Check user authorisation and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 
@@ -207,7 +207,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 
 	public function getForId($mData) {
 		try {
-			// Check user authorization and permissions
+			// Check user authorisation and permissions
 			AuthenticatedUser()->CheckAuth();
 			AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 
@@ -254,7 +254,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 
 	public function getAll() {
 		try {
-			// Check user authorization and permissions
+			// Check user authorisation and permissions
 			AuthenticatedUser()->CheckAuth();
 			AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 			$sRequestContent = file_get_contents('php://input');
@@ -314,7 +314,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 
 	public function getAllReportsForUser() {
 		try {
-			// Check user authorization and permissions
+			// Check user authorisation and permissions
 			AuthenticatedUser()->CheckAuth();
 			AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 			$sRequestContent = file_get_contents('php://input');
@@ -375,7 +375,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 	}
 	
 	public function generate($mData) {
-		// Check user authorization and permissions
+		// Check user authorisation and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 		$oReport = Report_New::getForId($mData->id);

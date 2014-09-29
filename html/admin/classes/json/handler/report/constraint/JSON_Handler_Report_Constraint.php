@@ -2,7 +2,7 @@
 class JSON_Handler_Report_Constraint extends JSON_Handler implements JSON_Handler_Loggable, JSON_Handler_Catchable {
 	public function getForReportId($mData) {
 		try {
-			// Check user authorization and permissions
+			// Check user authorisation and permissions
 			AuthenticatedUser()->CheckAuth();
 			AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 			$aConstraints = array();
