@@ -253,6 +253,8 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			// Check user authorisation and permissions
 			AuthenticatedUser()->CheckAuth();
 			AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
+
+			//JSON Object from Dataset could not be parsed into an JSON parameter to this function and hence php://input is used as an alternative way to capture the request payload
 			$sRequestContent = file_get_contents('php://input');
 			$oRequest = json_decode($sRequestContent);
 			
