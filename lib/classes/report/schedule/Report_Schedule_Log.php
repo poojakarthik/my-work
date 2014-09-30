@@ -3,60 +3,23 @@ class Report_Schedule_Log extends ORM_Cached {
 	protected $_strTableName = "report_schedule_log";
 	protected static $_strStaticTableName = "report_schedule_log";
 	
-	/**
-	 * getLastReportScheduledLogForScheduleId
-	 * 
-	 * Returns an object of Report Schedule Log objects for a Report Schedule ID which was last run
-	 * This method will add results to the Cache, however it will not read from the Cache
-	 * 
-	 * returns	Last Report Schedule Log Object 
-	 */
 	public static function getLastReportScheduledLogForScheduleId($iReportScheduleId) {
-		$aReportScheduleLogs = array();
+		$aReportScheduleLogs = Query::run("
+			SELECT *
+			FROM report_schedule_log
+			WHERE report_schedule_id= <report_schedule_id>
+			ORDER BY executed_datetime DESC
+		", array('report_schedule_id' => $iReportScheduleId));
 		
-		$oSelectReportScheduleLogs	= self::_preparedStatement('selByReportScheduleId');
-		$iResult = $oSelectReportScheduleLogs->Execute(array( 'report_schedule_id' => $iReportScheduleId));
-		if ($iResult === false)	{
-			throw new Exception_Database($oSelectReportScheduleLogs->Error());
-		}
-		if ($oSelectReportScheduleLogs->Count()) {
-			$aReportScheduleLog = $oSelectReportScheduleLogs->Fetch();
+		if ($aReportScheduleLogs->num_rows()) {
+			$aReportScheduleLog = $aReportScheduleLogs->fetch_assoc();
 		
-			// Create new Report Schedule Log object and manually add to the Cache
 			$oReportScheduleLog	= new self($aReportScheduleLog);
-			self::addToCache($oReportScheduleLog);
-			
 			return $oReportScheduleLog;
 		}
 		else {
 			return false;
 		}
-	}
-
-	/**
-	 * insertReportScheduleLog()
-	 * 
-	 * Inserts a new report schedule log
-	 * 
-	 * @return	array
-	 */
-	public static function insertReportScheduleLog($aReportScheduleLog)	{
-		$sReportScheduleLogInsertStatement = new StatementInsert(self::$_strStaticTableName,$aReportScheduleLog);
-		if (($outcome = $sReportScheduleLogInsertStatement->Execute($aReportScheduleLog)) === FALSE) {
-			throw new Exception_Database('Failed to save ' . (str_replace('_', ' ', self::$_strStaticTableName)) . ' details: ' . $sReportScheduleLogInsertStatement->Error());	
-		}
-	}
-
-	/**
-	* updateReportScheduleLog()
-	* Updated the Report Schedule Log Object with updated values
-	*/
-	public static function updateReportScheduleLog($aValues) {
-		$sCompliedQueryUpdateStatement = new StatementUpdateById(self::$_strStaticTableName,$aValues);
-		if (($outcome = $sCompliedQueryUpdateStatement->Execute($aValues)) === FALSE) {
-			throw new Exception_Database('Failed to save ' . (str_replace('_', ' ', self::$_strStaticTableName)) . ' details: ' . $sCompliedQueryUpdateStatement->Error());
-		}
-		
 	}
 
 	protected static function getCacheName() {
@@ -117,10 +80,6 @@ class Report_Schedule_Log extends ORM_Cached {
 
 				case 'selAll':
 					$arrPreparedStatements[$strStatement] = new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
-					break;
-
-				case 'selByReportScheduleId':
-					$arrPreparedStatements[$strStatement] = new StatementSelect(self::$_strStaticTableName,"*", "report_schedule_id= <report_schedule_id>","executed_datetime DESC", 1);
 					break;
 
 				// INSERTS

@@ -3,26 +3,17 @@ class Report_Delivery_Employee extends ORM_Cached {
 	protected $_strTableName = "report_delivery_employee";
 	protected static $_strStaticTableName = "report_delivery_employee";
 
-	/**
-	 * getForReportScheduleId
-	 * 
-	 * Returns an array of Report_Delivery_Employee objects associated with a given Report Schedule.
-	 * This method will add results to the Cache, however it will not read from the Cache
-	 * 
-	 * returns Report_Delivery_Employee Array
-	 */
 	public static function getForReportScheduleId($iReportScheduleId) {
 		$aReportDeliveryEmployees = array();
 
-		$oSelectReportDeliveryEmployee = self::_preparedStatement('selByReportScheduleId');
-		$iResult = $oSelectReportDeliveryEmployee->Execute(array('report_schedule_id'=>$iReportScheduleId));
-		if ($iResult === false) {
-			throw new Exception_Database($oSelectReportDeliveryEmployee->Error());
-		}
-		while ($aReportDeliveryEmployee = $oSelectReportDeliveryEmployee->Fetch()) {
-			// Create new Report Constraint Value object and manually add to the Cache
+		$aResult = Query::run("
+			SELECT *
+			FROM report_delivery_employee
+			where report_schedule_id = <report_schedule_id>
+		", array('report_schedule_id' => $iReportScheduleId));
+		
+		while ($aReportDeliveryEmployee = $aResult->fetch_assoc()) {
 			$oReportDeliveryEmployee = new self($aReportDeliveryEmployee);
-			self::addToCache($oReportDeliveryEmployee);
 			$aReportDeliveryEmployees[$oReportDeliveryEmployee->id]	= $oReportDeliveryEmployee;
 		}
 		return $aReportDeliveryEmployees;
@@ -86,10 +77,6 @@ class Report_Delivery_Employee extends ORM_Cached {
 
 				case 'selAll':
 					$arrPreparedStatements[$strStatement] = new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
-					break;
-
-				case 'selByReportScheduleId':
-					$arrPreparedStatements[$strStatement] = new StatementSelect(self::$_strStaticTableName, "*", "report_schedule_id = <report_schedule_id>");
 					break;
 
 				// INSERTS

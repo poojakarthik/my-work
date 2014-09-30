@@ -43,7 +43,7 @@ var self = new Class({
 				this._oDeliveryFormatContainer = H.div({class: 'flex-page-report-run-details-deliveryformat'}),
 				H.label('Delivery Method'),
 				this._oDeliveryMethodContainer = H.div({class: 'flex-page-report-run-details-deliverymethod'}),
-				this._oDeliveryEmployeeContainer = H.div({class: 'flex-page-report-run-deliverymethod-details', style: 'display: none'},
+				this._oDeliveryEmployeeContainer = H.div({class: 'flex-page-report-run-details-deliveryemployees', style: 'display: none'},
 					H.label('Delivery Employee'),
 					H.span(
 						this._oEmployeeContainer = H.div({style: 'max-height: 150px; max-width: 200px; overflow-y: scroll; overflow-x: hidden;'})
@@ -79,13 +79,14 @@ var self = new Class({
 		}
 	},
 
-	_showDeliveryEmployees: function() {
-		this._oDeliveryEmployeeContainer.show();
-		this._loadDeliveryEmployees();
-	},
-
-	_hideDeliveryEmployees: function() {
-		this._oDeliveryEmployeeContainer.hide();
+	_showDeliveryEmployees: function(sReportDeliveryName) {
+		if(sReportDeliveryName == "Email") {
+			this._oDeliveryEmployeeContainer.show();
+			this._loadDeliveryEmployees();
+		}
+		else {
+			this._oDeliveryEmployeeContainer.hide();
+		}
 	},
 
 	_loadDeliveryFormats: function() {

@@ -14,7 +14,7 @@ class Report_Schedule extends ORM_Cached {
 		//Update Compiled Query into Report Schedule Object if compiled query is not yet set
 		if ($aReportSchedule['compiled_query'] == ""){
 			$aReportSchedule['compiled_query'] = $sCompiledQuery;
-			Report_Schedule::updateReportScheduleCompiledQuery($aReportSchedule);
+			$this->save();
 		}
 		
 		try {
@@ -53,47 +53,25 @@ class Report_Schedule extends ORM_Cached {
 			$oScheduleConstraintValue = Report_Schedule_Constraint_Value::getConstraintValueForScheduleIdConstraintId($this->id, $oConstraint->id);
 
 			//Replace constraint placeholder in query
-			$sCompiledQuery = str_ireplace("<".$sConstraintName.">", $oScheduleConstraintValue->value,	$sCompiledQuery);
+			$sCompiledQuery = str_ireplace("<".$sConstraintName.">", $oScheduleConstraintValue,	$sCompiledQuery);
 		}
 		return $sCompiledQuery;
 	}
 
-	/**
-	 * getScheduledReports
-	 * 
-	 * Returns an array of Reports chedule objects associated which are actually scheduled.
-	 * This method will add results to the Cache, however it will not read from the Cache
-	 * 
-	 * return	array
-	 */
 	public static function getScheduledReports() {
 		$aReportSchedules = array();
+		$aResult = Query::run("
+			SELECT *
+			FROM report_schedule
+			WHERE frequency_multiple > 0 and is_enabled = 1
+		");
 		
-		$oSelectReportSchedules	= self::_preparedStatement('selScheduledReports');
-		$iResult = $oSelectReportSchedules->Execute();
-		if ($iResult === false)	{
-			throw new Exception_Database($oSelectReportSchedules->Error());
-		}
-		while ($aReportSchedule = $oSelectReportSchedules->Fetch())	{
-			// Create new Report Schedule object and manually add to the Cache
+		while ($aReportSchedule = $aResult->fetch_assoc())	{
 			$oReportSchedule	= new self($aReportSchedule);
-			self::addToCache($oReportSchedule);
-			
 			$aReportSchedules[$oReportSchedule->id]	= $oReportSchedule;
 		}
 		
 		return $aReportSchedules;
-	}
-
-	/**
-	* updateReportScheduleCompiledQuery()
-	* Updated the Report Schedule Object with Compiled Query created during execution
-	*/
-	public static function updateReportScheduleCompiledQuery($aValues) {
-		$sCompliedQueryUpdateStatement = new StatementUpdateById(self::$_strStaticTableName,$aValues);
-		if (($outcome = $sCompliedQueryUpdateStatement->Execute($aValues)) === FALSE) {
-			throw new Exception_Database('Failed to save ' . (str_replace('_', ' ', self::$_strStaticTableName)) . ' details: ' . $sCompliedQueryUpdateStatement->Error());
-		}
 	}
 
 	protected static function getCacheName() {
@@ -154,10 +132,6 @@ class Report_Schedule extends ORM_Cached {
 
 				case 'selAll':
 					$arrPreparedStatements[$strStatement] = new StatementSelect(self::$_strStaticTableName, "*", "1", "id ASC");
-					break;
-
-				case 'selScheduledReports':
-					$arrPreparedStatements[$strStatement] = new StatementSelect(self::$_strStaticTableName,"*", "frequency_multiple > 0 and is_enabled = 1");
 					break;
 
 				// INSERTS
