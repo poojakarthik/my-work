@@ -196,7 +196,7 @@ class Application
 
 
 			ContextMenu()->Admin->Delinquent_CDRs->moveDelinquentCDRs();
-			ContextMenu()->Admin->Report->listAllReports();
+			ContextMenu()->Admin->Reports->manageAllReports();
 
 			ContextMenu()->Admin->Employees->ManageEmployees();
 
@@ -243,7 +243,6 @@ class Application
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
 			{
 				ContextMenu()->Admin->System_Settings->ManageLogo();
-				ContextMenu()->Admin->Report->manageAllReports();
 			}
 
 			if (Flex_Module::isActive(FLEX_MODULE_CONTRACT_MANAGEMENT))
@@ -484,7 +483,7 @@ class Application
 
 
 			ContextMenu()->Admin->Delinquent_CDRs->moveDelinquentCDRs();
-			ContextMenu()->Admin->DataReports();
+			ContextMenu()->Admin->Reports->manageAllReports();
 
 			ContextMenu()->Admin->Employees->ManageEmployees();
 

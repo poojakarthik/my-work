@@ -10,9 +10,8 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 
 			if (property_exists($mData->report, "id")) {
 				// Clear existing data
-				$oQuery = DataAccess::get()->query();
-				$oQuery->Execute("DELETE FROM report_employee WHERE report_id = {$mData->report->id}");
-				$oQuery->Execute("DELETE FROM report_constraint WHERE report_id = {$mData->report->id}");
+				DataAccess::get()->query("DELETE FROM report_employee WHERE report_id = {$mData->report->id}");
+				DataAccess::get()->query("DELETE FROM report_constraint WHERE report_id = {$mData->report->id}");
 				
 				// Save existing Report.
 				$aRow = (array)$mData->report;
@@ -144,8 +143,6 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 
-		$oQuery = DataAccess::get()->query();
-
 		$sSQL	= "
 			SELECT e.*,
 				re.report_id
@@ -157,7 +154,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			WHERE e.Archived = 0
 		";
 
-		$rQuery	= $oQuery->Execute($sSQL);
+		$rQuery	= DataAccess::get()->query($sSQL);
 		$aDataSet= array();
 		while($aResultSet = $rQuery->fetch_assoc()) {
 			$aDataSet[] = $aResultSet;
@@ -169,15 +166,12 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 		// Check user authorisation and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
-
-		$oQuery = DataAccess::get()->query();
-
 		$sSQL	= "
 			SELECT rs.*
 			FROM report_schedule rs
 			WHERE		report_id = {$iReportId} AND is_enabled = 1";
 
-		$rQuery	= $oQuery->Execute($sSQL);
+		$rQuery	= DataAccess::get()->query($sSQL);
 		$aDataSet= array();
 		while($aResultSet = $rQuery->fetch_assoc()) {
 			$aDataSet[] = $aResultSet;
@@ -185,14 +179,12 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 		return $aDataSet;
 	}
 	public function _getConstraintForReportId($iReportId) {
-		$oQuery = DataAccess::get()->query();
-
 		$sSQL	= "
 			SELECT rc.*
 			FROM report_constraint rc
 			WHERE report_id = {$iReportId}";
 
-		$rQuery	= $oQuery->Execute($sSQL);
+		$rQuery	= DataAccess::get()->query($sSQL);
 		$aDataSet= array();
 		while($aResultSet = $rQuery->fetch_assoc()) {
 			$aDataSet[] = $aResultSet;
@@ -215,13 +207,12 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			AuthenticatedUser()->CheckAuth();
 			AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 
-			$qryQuery = DataAccess::get()->query();
 			$strSQL	= "
 				SELECT r.*
 				FROM report r
 				WHERE id = {$mData->iReportId}";
 
-			$resQuery = $qryQuery->Execute($strSQL);
+			$resQuery = Query::run($strSQL);
 			if ($resQuery === false) {
 				throw new Exception($qryQuery->Error());
 			}
@@ -249,6 +240,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 					);
 		} catch (Exception $e) {
 			$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+			var_dump($e);
 			return 	array(
 				'bSuccess'	=> false,
 				'sMessage'	=> $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.'
@@ -276,14 +268,26 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			}
 			$sLimit	= Statement::generateLimit($iLimit, $iOffset);
 			// TODO send customer group id as part of request.
-			$mResult = Query::run(
-				"SELECT	r.*, CONCAT(e.FirstName, ' ', e.LastName) AS created_employee_full_name, rc.name AS report_category
-				 FROM report r
-				 JOIN Employee e ON
-				 	e.Id = r.created_employee_id
-				 JOIN report_category rc ON 
-				 	rc.id = r.report_category_id
-				" . $sOrderBy . " LIMIT " .$sLimit);
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN)){
+				$mResult = Query::run(
+					"SELECT	r.*, CONCAT(e.FirstName, ' ', e.LastName) AS created_employee_full_name, rc.name AS report_category
+					 FROM report r
+					 JOIN Employee e ON
+					 	e.Id = r.created_employee_id
+					 JOIN report_category rc ON 
+					 	rc.id = r.report_category_id
+					" . $sOrderBy . " LIMIT " .$sLimit);
+			}
+			else {
+				$mResult = Query::run(
+					"SELECT		r.*, CONCAT(e.FirstName, ' ', e.LastName) AS created_employee_full_name, rc.name AS report_category
+					 FROM		report r
+					 JOIN		Employee e ON e.Id = r.created_employee_id
+					 JOIN 		report_category rc ON rc.id = r.report_category_id
+					 JOIN 		report_employee re ON re.report_id = r.id
+					 WHERE 		re.employee_id = " . Flex::getUserId() . "
+					" . $sOrderBy . " LIMIT " .$sLimit);
+			}
 			if ($bCountOnly) {
 				return array('iRecordCount' => $mResult->num_rows);
 			}
@@ -293,9 +297,26 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			$i = $iOffset;
 			if ($mResult) {
 				while ($aRow = $mResult->fetch_assoc()) {
+					$bCanManage = false;
+
+					if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN)){
+						$bCanManage = true;
+					}
+					$aRow['bCanManage'] = $bCanManage; 
 					$aReport[] = $aRow;
 				}
 			}
+			else {
+				$aRow['message'] = "There are no reports added for you";
+				$bCanManage = false;
+				if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN)){
+					$bCanManage = true;
+				}
+				$aRow['bCanManage'] = $bCanManage; 
+				$aReport[] = $aRow;
+			}
+			
+
 			return array(
 				'bSuccess'	=> true,
 				"aRecords" => $aReport,
@@ -318,68 +339,6 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 		}
 	}
 
-	public function getAllReportsForUser() {
-		try {
-			// Check user authorisation and permissions
-			AuthenticatedUser()->CheckAuth();
-			AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
-			$sRequestContent = file_get_contents('php://input');
-			$oRequest = json_decode($sRequestContent);
-			
-			$bCountOnly = $oRequest->bCountOnly;
-			$iLimit = $oRequest->iLimit;
-			$iOffset = $oRequest->iOffset;
-			$oSort = $oRequest->oSort;
-			$oFilter = $oRequest->oFilter;
-			$sOrderBy = Statement::generateOrderBy($aAliases, get_object_vars($oSort));
-			
-			if($sOrderBy != "") {
-				$sOrderBy = " Order By " . $sOrderBy;
-			}
-			$sLimit	= Statement::generateLimit($iLimit, $iOffset);
-			// TODO send customer group id as part of request.
-			$mResult = Query::run(
-				"SELECT		r.*, CONCAT(e.FirstName, ' ', e.LastName) AS created_employee_full_name, rc.name AS report_category
-				 FROM		report r
-				 JOIN		Employee e ON e.Id = r.created_employee_id
-				 JOIN 		report_category rc ON rc.id = r.report_category_id
-				 JOIN 		report_employee re ON re.report_id = r.id
-				 WHERE 		re.employee_id = " . Flex::getUserId() . "
-				" . $sOrderBy . " LIMIT " .$sLimit);
-			if ($bCountOnly) {
-				return array('iRecordCount' => $mResult->num_rows);
-			}
-			
-			$iLimit	= ($iLimit === null ? 0 : $iLimit);
-			$iOffset = ($iOffset === null ? 0 : $iOffset);
-			$i = $iOffset;
-			if ($mResult) {
-				while ($aRow = $mResult->fetch_assoc()) {
-					$aReport[] = $aRow;
-				}
-			}
-			return array(
-				'bSuccess'	=> true,
-				"aRecords" => $aReport,
-				'iRecordCount'	=> $mResult->num_rows,
-				'sOrderBy'	=> $sOrderBy
-			);
-		} catch (JSON_Handler_Account_Run_Exception $oException) {
-			return 	array(
-						'Success'	=> false,
-						'bSuccess'	=> false,
-						'sMessage'	=> $oException->getMessage()
-					);
-		} catch (Exception $e) {
-			$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
-			return 	array(
-				'bSuccess'	=> false,
-				'sMessage'	=> $bUserIsGod ? $e->getMessage() : 'There was an error getting the accessing the database. Please contact YBS for assistance.',
-				'sOrderBy'	=> $sOrderBy
-			);
-		}
-	}
-	
 	public function generate($mData) {
 		// Check user authorisation and permissions
 		AuthenticatedUser()->CheckAuth();

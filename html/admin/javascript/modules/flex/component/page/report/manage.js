@@ -79,7 +79,7 @@ var self = new Class({
 				),
 				H.fieldset({
 					class: 'flex-page-report-manage-buttons',
-					style: 'border: 0; margin:0 auto; float: right;'
+					style: 'border: 0; margin:0 auto; float: right; display:none;'
 					},
 					this._oSaveButton = H.button({'type':'button', 'class':'icon-button'},
 						H.img({src: '/admin/img/template/new.png','width':'16','height':'16'}),
@@ -289,32 +289,66 @@ var self = new Class({
 
 	_populateReports : function(aData) {
 		this._oReports.innerHTML = '';
+		var bCanAdd = false;
 		for (var i in aData){
 			if (aData.hasOwnProperty(i)){
+
+				if (aData[i].message != undefined) {
+					var oReportNode = H. tr(
+						H.td({colspan: 5}, aData[i].message)						
+					);
+					this._oReports.appendChild(oReportNode);
+					if (aData[i].bCanManage) {
+						bCanAdd = true;
+					}
+					break;
+				}
 				// Build the report dom elements.
 				var oReportNode = H.tr(
 					H.td({}, aData[i].name),
 					H.td(aData[i].created_datetime),
 					H.td(aData[i].created_employee_full_name),
-					H.td(aData[i].report_category),
-					H.td(
-						H.button({type: 'button'},
-							H.img({src:'img/template/options.png'}),
-							H.span('Configure')
-						).observe('click', this._edit.bind(this, aData[i].id)),
-						H.button({type: 'button'},
-							H.img({src:'img/template/clock.png'}),
-							H.span('Schedule')
-						).observe('click', this._schedule.bind(this, aData[i].id)),
-						H.button({type: 'button'},
-							H.img({src:'img/template/play.png'}),
-							H.span('Run')
-						).observe('click', this._run.bind(this, aData[i].id))
-					)
+					H.td(aData[i].report_category)
 				);
+				if (aData[i].bCanManage) {
+					oReportNode.appendChild(
+						H.td(
+							H.button({type: 'button'},
+								H.img({src:'img/template/options.png'}),
+								H.span('Configure')
+							).observe('click', this._edit.bind(this, aData[i].id)),
+							H.button({type: 'button'},
+								H.img({src:'img/template/clock.png'}),
+								H.span('Schedule')
+							).observe('click', this._schedule.bind(this, aData[i].id)),
+							H.button({type: 'button'},
+								H.img({src:'img/template/play.png'}),
+								H.span('Run')
+							).observe('click', this._run.bind(this, aData[i].id))
+						)
+					);
+					bCanAdd = true;
+				}
+				else {
+					oReportNode.appendChild(
+						H.td(
+							H.button({type: 'button'},
+								H.img({src:'img/template/clock.png'}),
+								H.span('Schedule')
+							).observe('click', this._schedule.bind(this, aData[i].id)),
+							H.button({type: 'button'},
+								H.img({src:'img/template/play.png'}),
+								H.span('Run')
+							).observe('click', this._run.bind(this, aData[i].id))
+						)
+					);
+				}
 				// Attach the report to the list.
 				this._oReports.appendChild(oReportNode);
 			}
+		}
+		if (bCanAdd) {
+			$('.flex-page-report-manage-buttons').show();
 		}
 	},
 

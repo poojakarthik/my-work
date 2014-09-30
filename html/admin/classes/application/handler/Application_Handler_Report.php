@@ -2,10 +2,10 @@
 class Application_Handler_Report extends Application_Handler {
 	const TEMPORARY_DIRECTORY = "temp/";
 
-	// Manage Reports: Admin View
+	// Manage Reports: List of reports with privilege to configure, schedule, and run as per their PERMISSION Level
 	public function Manage($subPath) {
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_SUPER_ADMIN));
+		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_PROPER_ADMIN));
 
 		try	{
 			$aDetailsToRender = array();
@@ -18,21 +18,6 @@ class Application_Handler_Report extends Application_Handler {
 		}
 	}
 
-	// View Reports: User View
-	public function ListAll($subPath) {
-		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_ADMIN, PERMISSION_ACCOUNTS));
-
-		try	{
-			$aDetailsToRender = array();
-			$this->LoadPage('report_list', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
-		}
-		catch (Exception $e) {
-			$aDetailsToRender['Message'] = "An error occured";
-			$aDetailsToRender['ErrorMessage'] = $e->getMessage();
-			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
-		}
-	}
 
 	public function Download() {
 		// Check user permissions
