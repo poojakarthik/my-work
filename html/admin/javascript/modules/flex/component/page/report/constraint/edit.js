@@ -30,71 +30,75 @@ var self = new Class({
 	_buildUI : function() {
 		this._oForm = new Form({onsubmit: this._save.bind(this, null)},
 			H.fieldset({'class': 'flex-page-report-constraint-edit-details'},
-				H.label('Title'),
-				new Text({
-					sName       : 'name',
-					sLabel      : 'Name',
-					mMandatory  : true,
-					fnValidate  : function(oControl) {
-						if(oControl.getValue().length>256) {
-							throw new Error("Max length is 256 characters");
+				H.label({class: 'flex-page-report-constraint-edit-details-name'},
+					H.span({class: 'flex-page-report-constraint-edit-details-name-label'}, 'Title'),
+					new Text({
+						sName       : 'name',
+						sLabel      : 'Name',
+						mMandatory  : true,
+						fnValidate  : function(oControl) {
+							if(oControl.getValue().length>256) {
+								throw new Error("Max length is 256 characters");
+							}
+							return true;
 						}
-						return true;
-					}
-				}),
-				H.label('Type'),
-				this._oReportConstraintType = new Select({
-					sName       : 'report_constraint_type_id',
-					sLabel      : 'Constraint Type',
-					mMandatory  : true,
-					fnPopulate  : this._populateConstraintTypes.bind(this)
-				}),
-				H.label('Source Query'),
-				this._oReportConstraintSourceQuery = new Textarea({
-					sName       : 'source_query',
-					sLabel      : 'Source Query',
-					mMandatory  : false,
-					fnValidate  : function(oControl) {
-						if(oControl.getValue().length>10000) {
-							throw new Error("Max length is 10000 characters");
+					})
+				),
+				H.label({class: 'flex-page-report-constraint-edit-details-type'}, 
+					H.span({class: 'flex-page-report-constraint-edit-details-type-label'}, 'Type'),
+					this._oReportConstraintType = new Select({
+						sName       : 'report_constraint_type_id',
+						sLabel      : 'Constraint Type',
+						mMandatory  : true,
+						fnPopulate  : this._populateConstraintTypes.bind(this)
+					})
+				),
+				H.label({class: 'flex-page-report-constraint-edit-details-query'},
+					H.span({class: 'flex-page-report-constraint-edit-details-query-label'}, 'Source Query'),
+					this._oReportConstraintSourceQuery = new Textarea({
+						sName       : 'source_query',
+						sLabel      : 'Source Query',
+						mMandatory  : false,
+						fnValidate  : function(oControl) {
+							if(oControl.getValue().length>10000) {
+								throw new Error("Max length is 10000 characters");
+							}
+							return true;
+						}.bind(this)
+					})
+				),
+				H.label({class: 'flex-page-report-constraint-edit-details-validation'}, 
+					H.span({class: 'flex-page-report-constraint-edit-details-validation-label'}, 'Regex Pattern'),
+					new Text({
+						sName       : 'validation_regex',
+						sLabel      : 'Regex Pattern',
+						mMandatory  : false,
+						fnValidate  : function(oControl) {
+							if(oControl.getValue().length>200) {
+								throw new Error("Max length is 200 characters");
+							}
+							return true;
 						}
-						return true;
-					}.bind(this)
-				}),
-				H.label('Regex Pattern'),
-				new Text({
-					sName       : 'validation_regex',
-					sLabel      : 'Regex Pattern',
-					mMandatory  : false,
-					fnValidate  : function(oControl) {
-						if(oControl.getValue().length>200) {
-							throw new Error("Max length is 200 characters");
+					})
+				),
+				H.label({class: 'flex-page-report-constraint-edit-details-placeholder'}, 
+					H.span({class: 'flex-page-report-constraint-edit-details-placeholder-label'}, 'Hint Text'),
+					new Text({
+						sName       : 'placeholder',
+						sLabel      : 'Hint Text',
+						mMandatory  : false,
+						fnValidate  : function(oControl) {
+							if(oControl.getValue().length>100) {
+								throw new Error("Max length is 100 characters");
+							}
+							return true;
 						}
-						return true;
-					}
-				}),
-				H.label('Hint Text'),
-				new Text({
-					sName       : 'placeholder',
-					sLabel      : 'Hint Text',
-					mMandatory  : false,
-					fnValidate  : function(oControl) {
-						if(oControl.getValue().length>100) {
-							throw new Error("Max length is 100 characters");
-						}
-						return true;
-					}
-				}),
-				H.fieldset({class: 'flex-page-report-constraint-edit-buttonset'},
-					H.button({type: 'button', name: 'add', onclick: this._add.bind(this)},
-						H.img({src: '/admin/img/template/new.png','width':'16','height':'16'}),
-						H.span('Add')
-					),
-					H.button({type: 'button', name: 'cancel', onclick: this._save.bind(this)},
-						H.img({src: '/admin/img/template/invoice_commit.png','width':'16','height':'16'}),
-						H.span('Finish')
-					)
-				)
+					})
+				)				
+			),
+			H.fieldset({class: 'flex-page-report-constraint-edit-buttonset'},
+				H.button({type: 'button', name: 'add', onclick: this._add.bind(this)}, 'Add'),
+				H.button({type: 'button', name: 'cancel', onclick: this._save.bind(this)}, 'Finish')
 			),
 			this._oConstraint = new Form({onsubmit: this._save.bind(this, null)},
 				H.table({class: 'reflex highlight-rows'},
@@ -196,10 +200,7 @@ var self = new Class({
 						H.span(oReportConstraint.report_constraint_type_id)
 					),
 					H.td(
-						H.button({type: 'button'},
-							H.img({src: '/admin/img/template/delete.png', 'width':'16', 'height':'16'}),
-							H.span('Remove')
-						).observe('click', function(){ this.parentElement.parentElement.remove(); })
+						H.button({type: 'button', name: 'remove'}, 'Remove').observe('click', function(){ this.parentElement.parentElement.remove(); })
 					)
 				)
 			);
@@ -229,10 +230,7 @@ var self = new Class({
 						new Hidden({sName: 'constraint['+this._iConstraintCount+'].source_query', mValue: this._oForm.control('source_query').getValue()}),
 						new Hidden({sName: 'constraint['+this._iConstraintCount+'].name', mValue: this._oForm.control('name').getValue()}),
 						new Hidden({sName: 'constraint['+this._iConstraintCount+'].report_constraint_type_id', mValue: this._oForm.control('report_constraint_type_id').getValue()}),
-						H.button({type: 'button'},
-							H.img({src: '/admin/img/template/delete.png','width':'16','height':'16'}),
-							H.span('Remove')
-						).observe('click', function(){ this.parentElement.parentElement.remove(); })
+						H.button({type: 'button', name: 'remove'}, 'Remove').observe('click', function(){ this.parentElement.parentElement.remove(); })
 					)
 				)
 			);

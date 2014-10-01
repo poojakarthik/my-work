@@ -43,71 +43,66 @@ var self = new Class({
 				sName : 'selectedDeliveryEmployees'
 			}),
 			H.fieldset({'class': 'flex-page-report-schedule-add-details'},
-				H.label('Frequency Type'),
-				this._oReportFrequencyType = new Select({
-					sName		: 'report_frequency_type_id',
-					sLabel		: 'Frequency Type',
-					mMandatory	: true,
-					fnPopulate	: this._populateFrequencyTypes.bind(this)
-				}),
-				H.label('Frequency Multiple'),
-				new Number({
-					sName		: 'frequency_multiple',
-					sLabel		: 'Frequency Multiple',
-					mMandatory	: true,
-					fnValidate	: function(oControl) {
-						if(oControl.getValue().length>256) {
-							throw new Error("Max length is 256 characters");
-						}
-						return true;
-					}
-				}),
-				H.label('Start Datetime'),
-				new Datetime({
-					bTimePicker	: true,
-					sName		: 'schedule_datetime',
-					sLabel		: 'Schedule Datetime',
-					mMandatory	: true
-				}),
-				H.label('End DateTime'),
-				new Datetime({
-					bTimePicker	: true,
-					sName		: 'schedule_end_datetime',
-					sLabel		: 'Schedule End Datetime',
-					mMandatory	: false
-				}),
-				H.label('Filename'),
-				new	Text({
-					sExtraClass	: 'flex-page-report-schedule-add-details-filename',
-					sName		: 'filename',
-					sLabel		: 'Filename',
-					mMandatory	: false,
-					fnValidate	: function(oControl) {
-						if(oControl.getValue().length>100) {
-							throw new Error("Max length is 100 characters");
-						}
-						return true;
-					}
-				}),
-				this._oConstraintContainer = H.div(),
-				H.label('Delivery Format'),
-				this._oDeliveryFormatContainer = H.div({class: 'flex-page-report-schedule-add-details-deliveryformat-label'}),
-				H.label('Delivery Method'),
-				this._oDeliveryMethodContainer = H.div({class: 'flex-page-report-schedule-add-details-deliverymethod-label'}),
-				this._oDeliveryEmployeeContainer = H.div({class: 'flex-page-report-schedule-add-details-deliveryEmployeeContainer',style: 'display: none'},
-					H.label('Delivery Employee'),
-					this._oEmployeeContainer = H.div({style: 'max-height: 150px; max-width: 200px; overflow-y: scroll; overflow-x: hidden;'})
+				H.div({role:'group', class: 'flex-page-report-schedule-add-details-frequency'},
+					H.span({class: 'flex-page-report-schedule-add-details-frequency-label'}, 'Set Frequency Every'),
+					H.input({name: 'frequency_multiple', 'placeholder': 'No of Intervals', type: 'number', min: '1'}),
+					this._oReportFrequencyType = new Select({
+						sName		: 'report_frequency_type_id',
+						sLabel		: 'Frequency Type',
+						mMandatory	: true,
+						fnPopulate	: this._populateFrequencyTypes.bind(this)
+					})
 				),
-				H.fieldset({class: 'flex-page-report-schedule-add-buttonset'},
-					H.button({type: 'button', name: 'run'},
-						H.img({src: 'img/template/tick.png','width':'16','height':'16'}),
-						H.span('Save')
-					).observe('click',this._save.bind(this, null)),
-					H.button({type: 'button', name: 'cancel'},
-						H.img({src: '/admin/img/template/decline.png','width':'16','height':'16'}),
-						H.span('Cancel')
-					).observe('click',this._cancel.bind(this, null))
+				H.label({class: 'flex-page-report-schedule-add-details-schedule-datetime'},
+					H.span('Start Datetime'),
+					new Datetime({
+						bTimePicker	: true,
+						sName		: 'schedule_datetime',
+						sLabel		: 'Schedule Datetime',
+						mMandatory	: true
+					})
+				),
+				H.label({class: 'flex-page-report-schedule-add-details-schedule-end-datetime'},
+					H.span('End Datetime'),
+					new Datetime({
+						bTimePicker	: true,
+						sName		: 'schedule_end_datetime',
+						sLabel		: 'Schedule End Datetime',
+						mMandatory	: false
+					})
+				),
+				H.label({class: 'flex-page-report-schedule-add-details-filename'},
+					H.span('Filename'),
+					new	Text({
+						sExtraClass	: 'flex-page-report-schedule-add-details-filename',
+						sName		: 'filename',
+						sLabel		: 'Filename',
+						mMandatory	: false,
+						fnValidate	: function(oControl) {
+							if(oControl.getValue().length>100) {
+								throw new Error("Max length is 100 characters");
+							}
+							return true;
+						}
+					})
+				),
+				this._oConstraintContainer = H.div(),
+				H.div({role:'group', class: 'flex-page-report-schedule-add-details-deliveryformat'},
+					H.span({class: 'flex-page-report-schedule-add-details-deliveryformat-label'}, 'Delivery Format'),
+					this._oDeliveryFormatContainer = H.div({class: 'flex-page-report-schedule-add-details-deliveryformat-container'})
+				),
+				H.div({role:'group', class: 'flex-page-report-schedule-add-details-deliverymethod'},
+					H.span({class: 'flex-page-report-schedule-add-details-deliverymethod-label'}, 'Delivery Method'),
+					this._oDeliveryMethodContainer = H.div({class: 'flex-page-report-schedule-add-details-deliverymethod-container'})
+				),
+				H.div({role: 'group', class: 'flex-page-report-schedule-add-details-deliveryemployee', style: 'display: none;'},
+					H.span({class: 'flex-page-report-schedule-add-details-deliveryemployee-label'}, 'Delivery Employee'),
+					this._oEmployeeContainer = H.div({class: 'flex-page-report-schedule-add-details-deliveryemployee-controlset'})
 				)
+			),
+			H.fieldset({class: 'flex-page-report-schedule-add-buttonset'},
+				H.button({type: 'button', name: 'run'}, 'Save').observe('click',this._save.bind(this, null)),
+				H.button({type: 'button', name: 'cancel'}, 'Cancel').observe('click',this._cancel.bind(this, null))
 			),
 			this._oSchedule = new Form({onsubmit: this._save.bind(this, null)},
 				H.table({class: 'reflex highlight-rows'},
@@ -228,8 +223,8 @@ var self = new Class({
 					if (oServerResponse[i]['component_type'] == "Text") {
 						if (oServerResponse[i]['validation_regex'] == "null") {
 							this._oConstraintContainer.appendChild(
-								H.div({class: 'flex-page-report-schedule-add-details-constraintContainer'},
-									H.label(oServerResponse[i]['name']),
+								H.label({class: 'flex-page-report-schedule-add-details-constraintContainer'},
+									H.span({class: 'flex-page-report-schedule-add-details-constraintContainer-label'}, oServerResponse[i]['name']),
 									new Text({
 										sName		: oServerResponse[i]['name'],
 										sLabel		: oServerResponse[i]['name'],
@@ -240,8 +235,8 @@ var self = new Class({
 						}
 						else {
 							this._oConstraintContainer.appendChild(
-								H.div({class: 'flex-page-report-schedule-add-details-constraintContainer'},
-									H.label(oServerResponse[i]['name']),
+								H.label({class: 'flex-page-report-schedule-add-details-constraintContainer'},
+									H.span({class: 'flex-page-report-schedule-add-details-constraintContainer-label'},oServerResponse[i]['name']),
 									new Text({
 										sName		: oServerResponse[i]['name'],
 										sLabel		: oServerResponse[i]['name'],
@@ -260,8 +255,8 @@ var self = new Class({
 					else if (oServerResponse[i]['component_type'] == "Select") {
 						//debugger;
 						this._oConstraintContainer.appendChild(
-							H.div({class: 'flex-page-report-schedule-add-details-constraintContainer'},
-								H.label(oServerResponse[i]['name']),
+							H.label({class: 'flex-page-report-schedule-add-details-constraintContainer'},
+								H.span({class: 'flex-page-report-schedule-add-details-constraintContainer-label'},oServerResponse[i]['name']),
 								new Select({
 									sName		: oServerResponse[i]['name'],
 									sLabel		: oServerResponse[i]['name'],
@@ -284,26 +279,28 @@ var self = new Class({
 					}
 					else if (oServerResponse[i]['component_type'] == "Date") {	
 						this._oConstraintContainer.appendChild(
-							H.div({class: 'flex-page-report-schedule-add-details-constraintContainer'},
-								H.label(oServerResponse[i]['name']),
+							H.label({class: 'flex-page-report-schedule-add-details-constraintContainer'},
+								H.span({class: 'flex-page-report-schedule-add-details-constraintContainer-label'},oServerResponse[i]['name']),
 								new Datetime({
 									bTimePicker	: false,
 									sName		: oServerResponse[i]['name'],
 									sLabel		: oServerResponse[i]['name'],
-									mMandatory	: true
+									mMandatory	: true,
+									sExtraClass	: 'flex-page-report-schedule-add-details-constraintContainer-datetime'
 								})
 							)
 						);
 					}
 					else if(oServerResponse[i]['component_type'] == "DateTime") {
 						this._oConstraintContainer.appendChild(
-							H.div({class: 'flex-page-report-schedule-add-details-constraintContainer'},
-								H.label(oServerResponse[i]['name']),
+							H.label({class: 'flex-page-report-schedule-add-details-constraintContainer'},
+								H.span({class: 'flex-page-report-schedule-add-details-constraintContainer-label'},oServerResponse[i]['name']),
 								new Datetime({
 									bTimePicker	: true,
 									sName		: oServerResponse[i]['name'],
 									sLabel		: oServerResponse[i]['name'],
-									mMandatory	: true
+									mMandatory	: true,
+									sExtraClass	: 'flex-page-report-schedule-add-details-constraintContainer-datetime'
 								})
 							)
 						);
@@ -388,10 +385,7 @@ var self = new Class({
 						H.span(oReportSchedule.schedule_datetime)
 					),
 					H.td(
-						H.button({type: 'button'},
-							H.img({src: '/admin/img/template/archive.png','width':'16','height':'16'}),
-							H.span('Archive')
-						).observe('click', this._archiveSchedule.bind(this,oReportSchedule.id)) // Original function(){ this.parentElement.parentElement.remove();
+						H.button({type: 'button', name: 'archive'}, 'Archive').observe('click', this._archiveSchedule.bind(this,oReportSchedule.id)) // Original function(){ this.parentElement.parentElement.remove();
 					)
 				)
 					
@@ -417,11 +411,11 @@ var self = new Class({
 
 	_showDeliveryEmployees: function(sReportDeliveryName) {
 		if(sReportDeliveryName == "Email") {
-			this._oDeliveryEmployeeContainer.show();
+			$('.flex-page-report-schedule-add-details-deliveryemployee').show();
 			this._loadDeliveryEmployees();
 		}
 		else {
-			this._oDeliveryEmployeeContainer.hide();
+			$('.flex-page-report-schedule-add-details-deliveryemployee').hide();
 		}
 	},
 

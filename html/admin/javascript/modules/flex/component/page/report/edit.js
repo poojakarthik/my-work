@@ -35,70 +35,66 @@ var self = new Class({
 				sName : 'id'
 			}),
 			H.fieldset({'class': 'flex-page-report-edit-details'},
-				H.label('Name'),
-				this._oName = new Text({
-					sExtraClass	: 'flex-page-report-edit-details-name',
-					sName 		: 'name',
-					sLabel		: 'Name',
-					mMandatory	: true,
-					fnValidate	: function(oControl) {
-						if(oControl.getValue().length>256) {
-							throw new Error("Max length is 256 characters");
-						}
-						return true;
-					}
-				}),
-				H.label('Summary'),
-				this._oSummary = new Textarea({
-					sExtraClass	: 'flex-page-report-edit-details-summary',
-					sName 		: 'summary',
-					sLabel		: 'Name',
-					mMandatory	: true,
-					fnValidate	: function(oControl) {
-						if(oControl.getValue().length>512) {
-							throw new Error("Max length is 512 characters");
-						}
-						return true;
-					}
-				}),
-				H.label('SQL Query'),
-				this._oQuery = new Textarea({
-					sExtraClass	: 'flex-page-report-edit-details-query',
-					sName 		: 'query',
-					sLabel		: 'Name',
-					mMandatory	: true,
-					fnValidate	: function(oControl) {
-						if(oControl.getValue().length>10000) {
-							throw new Error("Max length is 10000 characters");
-						}
-						return true;
-					}
-				}),
-				H.label('Category'),
-				this._oReportCategory = new Select({
-						sName 		: 'category',
-						sLabel		: 'Category',
+				H.label({class: 'flex-page-report-edit-details-name'},
+					H.span({class: 'flex-page-report-edit-details-name-label'}, 'Name'),
+					this._oName = new Text({
+						sName 		: 'name',
+						sLabel		: 'Name',
 						mMandatory	: true,
-						fnPopulate	: this._populateReportCategory.bind(this)
-					}),
-				H.label('Report Employee'),
-				H.span(
-					this._oEmployeeContainer = H.div({style: 'max-height: 150px; max-width: 200px; overflow-y: scroll; overflow-x: hidden;'})
+						fnValidate	: function(oControl) {
+							if(oControl.getValue().length>256) {
+								throw new Error("Max length is 256 characters");
+							}
+							return true;
+						}
+					})
 				),
-				H.fieldset({class: 'flex-page-report-edit-buttonset'},
-					H.button({type: 'button', name: 'editConstraint'},
-						H.img({src: '/admin/img/template/options.png','width':'16','height':'16'}),
-						H.span('Edit Constraints')
-					).observe('click', this._editConstraints.bind(this, null)),
-					H.button({type: 'button', name: 'save'},
-						H.img({src: '/admin/img/template/approve.png','width':'16','height':'16'}),
-						H.span('Save')
-					).observe('click',this._save.bind(this, null)),
-					H.button({type: 'button', name: 'cancel'},
-						H.img({src: '/admin/img/template/decline.png','width':'16','height':'16'}),
-						H.span('Cancel')
-					).observe('click',this._cancel.bind(this, null))
+				H.label({class: 'flex-page-report-edit-details-summary'},
+					H.span({class: 'flex-page-report-edit-details-summary-label'}, 'Summary'),
+					this._oName = new Text({
+						sName 		: 'summary',
+						sLabel		: 'Name',
+						mMandatory	: true,
+						fnValidate	: function(oControl) {
+							if(oControl.getValue().length>512) {
+								throw new Error("Max length is 512 characters");
+							}
+							return true;
+						}
+					})
+				),
+				H.label({class: 'flex-page-report-edit-details-query'},
+					H.span({class: 'flex-page-report-edit-details-query-label'}, 'SQL Query'),
+					this._oQuery = new Textarea({
+						sName 		: 'query',
+						sLabel		: 'Name',
+						mMandatory	: true,
+						fnValidate	: function(oControl) {
+							if(oControl.getValue().length>10000) {
+								throw new Error("Max length is 10000 characters");
+							}
+							return true;
+						}
+					})
+				),
+				H.label({class: 'flex-page-report-edit-details-category'},
+					H.span({class: 'flex-page-report-edit-details-category-label'}, 'Category'),
+					this._oReportCategory = new Select({
+							sName 		: 'category',
+							sLabel		: 'Category',
+							mMandatory	: true,
+							fnPopulate	: this._populateReportCategory.bind(this)
+						})
+				),
+				H.div({role: 'group', class: 'flex-page-report-edit-details-reportemployee'},
+					H.span({class: 'flex-page-report-edit-details-reportemployee-label'}, 'Report Employee'),
+					this._oEmployeeContainer = H.div({class: 'flex-page-report-edit-details-reportemployee-controlset'})
 				)
+			),
+			H.div({class: 'flex-page-report-edit-buttonset'},
+				H.button({type: 'button', name: 'editConstraint'}, 'Edit Constraints').observe('click', this._editConstraints.bind(this, null)),
+				H.button({type: 'button', name: 'save'}, 'Save').observe('click',this._save.bind(this, null)),
+				H.button({type: 'button', name: 'cancel'}, 'Cancel').observe('click',this._cancel.bind(this, null))
 			)
 		);
 
@@ -119,9 +115,9 @@ var self = new Class({
 						var response = request.parseJSONResponse();
 						response.employees.forEach(function (employee) {
 							this._oEmployeeContainer.appendChild(
-								H.div({class: 'flex-component-report-add-reportemployee-div-container'},
+								H.label({class: 'flex-component-report-add-reportemployee-div-container'},
 									H.input({style: 'float:left ;', type: 'checkbox', name: 'report_employee[]', value: employee.Id}),
-									H.label({class: 'flex-component-report-add-reportemployee-div-container-label'},employee.FirstName + ' ' + employee.LastName)
+									H.span({class: 'flex-component-report-add-reportemployee-div-container-label'},employee.FirstName + ' ' + employee.LastName)
 								)
 							);
 						}.bind(this));
@@ -186,8 +182,8 @@ var self = new Class({
 				// Load Employees
 				oServerResponse.aEmployee.forEach(function (oEmployee) {
 					this._oEmployeeContainer.appendChild(
-						H.div({class: 'flex-component-report-add-reportemployee-div-container'},
-							H.label({class: 'flex-component-report-add-reportemployee-div-container-label'},oEmployee.FirstName + ' ' + oEmployee.LastName),
+						H.label({class: 'flex-component-report-add-reportemployee-div-container'},
+							H.span({class: 'flex-component-report-add-reportemployee-div-container-label'},oEmployee.FirstName + ' ' + oEmployee.LastName),
 							new Checkbox({
 								bChecked	: (oEmployee.report_id) ? true : false,
 								sName 		: 'report_employee[]',

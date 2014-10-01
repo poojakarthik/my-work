@@ -72,7 +72,7 @@ var self = new Class({
 							H.th({style: 'text-align: left; width: 160px;', class: 'pointer'}, 'Created').observe('click', this._toggleSort.bind(this, 'created_datetime')),
 							H.th({style: 'text-align: left; width: 160px;', class: 'pointer'}, 'Created By').observe('click',this._toggleSort.bind(this,'created_employee_full_name')),
 							H.th({style: 'text-align: left; width: 160px;', class: 'pointer'}, 'Report Category').observe('click',this._toggleSort.bind(this,'report_category')),
-							H.th({style: 'text-align: left; width: 240px;'}, 'Options')
+							H.th({style: 'text-align: left; width: 245px;'}, 'Options')
 						)
 					),
 					this._oReports = H.tbody()
@@ -81,10 +81,7 @@ var self = new Class({
 					class: 'flex-page-report-manage-buttons',
 					style: 'border: 0; margin:0 auto; float: right; display:none;'
 					},
-					this._oSaveButton = H.button({'type':'button', 'class':'icon-button'},
-						H.img({src: '/admin/img/template/new.png','width':'16','height':'16'}),
-						H.span('Create New Report')
-					).observe('click', this._new.bind(this, null))
+					this._oSaveButton = H.button({type:'button', name:'create'}, 'Create New Report').observe('click', this._new.bind(this, null))
 				)
 			)
 		);
@@ -313,18 +310,9 @@ var self = new Class({
 				if (aData[i].bCanManage) {
 					oReportNode.appendChild(
 						H.td(
-							H.button({type: 'button'},
-								H.img({src:'img/template/options.png'}),
-								H.span('Configure')
-							).observe('click', this._edit.bind(this, aData[i].id)),
-							H.button({type: 'button'},
-								H.img({src:'img/template/clock.png'}),
-								H.span('Schedule')
-							).observe('click', this._schedule.bind(this, aData[i].id)),
-							H.button({type: 'button'},
-								H.img({src:'img/template/play.png'}),
-								H.span('Run')
-							).observe('click', this._run.bind(this, aData[i].id))
+							H.button({type: 'button', name: 'configure'}, 'Configure').observe('click', this._edit.bind(this, aData[i].id)),
+							H.button({type: 'button', name: 'schedule'}, 'Schedule').observe('click', this._schedule.bind(this, aData[i].id)),
+							H.button({type: 'button', name: 'run'}, 'Run').observe('click', this._run.bind(this, aData[i].id))
 						)
 					);
 					bCanAdd = true;
@@ -332,14 +320,8 @@ var self = new Class({
 				else {
 					oReportNode.appendChild(
 						H.td(
-							H.button({type: 'button'},
-								H.img({src:'img/template/clock.png'}),
-								H.span('Schedule')
-							).observe('click', this._schedule.bind(this, aData[i].id)),
-							H.button({type: 'button'},
-								H.img({src:'img/template/play.png'}),
-								H.span('Run')
-							).observe('click', this._run.bind(this, aData[i].id))
+							H.button({type: 'button', name: 'schedule'}, 'Schedule').observe('click', this._schedule.bind(this, aData[i].id)),
+							H.button({type: 'button', name: 'run'}, 'Run').observe('click', this._run.bind(this, aData[i].id))
 						)
 					);
 				}

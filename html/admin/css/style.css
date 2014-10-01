@@ -13490,26 +13490,471 @@ li {
   padding: 0;
   text-align: center;
 }
-.flex-page-report-edit-details > label,
-.flex-page-report-constraint-edit-details > label,
-.flex-page-report-schedule-edit-details > label,
-.flex-page-report-schedule-add-details > label,
-.flex-page-report-schedule-add-details-constraintContainer > label,
-.flex-page-report-run-details > label,
-.flex-page-report-schedule-add-details-deliveryEmployeeContainer > label,
-.flex-page-report-run-details-constraintContainer > label {
-  float: left;
-  width: 30%;
+/*************************Reporting UI****************************/
+.flex-page-report-edit-details,
+.flex-page-report-run-details,
+.flex-page-report-schedule-add-details,
+.flex-page-report-constraint-edit-details {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  align-content: stretch;
+  border: 1px solid #d1d1d1;
+  background: #ddd;
+  padding: 1em 1em 0 1em;
 }
-.flex-page-report-edit-details > span,
-.flex-page-report-constraint-edit-details > span,
-.flex-page-report-schedule-edit-details > span,
-.flex-page-report-schedule-add-details > span,
-.flex-page-report-schedule-add-details-constraintContainer > span,
-.flex-page-report-run-details > span,
-.flex-page-report-run-details-constraintContainer > span {
-  width: 70%;
+.flex-page-report-edit-details input,
+.flex-page-report-run-details input,
+.flex-page-report-schedule-add-details input,
+.flex-page-report-constraint-edit-details input {
+  padding: 0.25em;
+}
+.flex-page-report-edit-details :not(:disabled):required,
+.flex-page-report-run-details :not(:disabled):required,
+.flex-page-report-schedule-add-details :not(:disabled):required,
+.flex-page-report-constraint-edit-details :not(:disabled):required {
+  background: #fff;
+  color: #111;
+  border: 1px solid #da8;
+}
+.flex-page-report-edit-details :not(:disabled):invalid,
+.flex-page-report-run-details :not(:disabled):invalid,
+.flex-page-report-schedule-add-details :not(:disabled):invalid,
+.flex-page-report-constraint-edit-details :not(:disabled):invalid {
+  background: #ffecf0;
+  color: #111;
+  border: 1px solid #d30;
+}
+.flex-page-report-edit-details :not(:disabled):invalid:required,
+.flex-page-report-run-details :not(:disabled):invalid:required,
+.flex-page-report-schedule-add-details :not(:disabled):invalid:required,
+.flex-page-report-constraint-edit-details :not(:disabled):invalid:required {
+  border: 1px solid #da8;
+}
+.flex-page-report-edit-details :not(:disabled):valid,
+.flex-page-report-run-details :not(:disabled):valid,
+.flex-page-report-schedule-add-details :not(:disabled):valid,
+.flex-page-report-constraint-edit-details :not(:disabled):valid {
+  background: #ecfff0;
+  color: #111;
+  border-color: #00c72b;
+}
+.flex-page-report-edit-details-name,
+.flex-page-report-edit-details-summary,
+.flex-page-report-edit-details-query,
+.flex-page-report-edit-details-category,
+.flex-page-report-run-details-constraintContainer,
+.flex-page-report-schedule-add-details-schedule-datetime,
+.flex-page-report-schedule-add-details-schedule-end-datetime,
+.flex-page-report-schedule-add-details-filename,
+.flex-page-report-schedule-add-details-constraintContainer,
+.flex-page-report-constraint-edit-details-name,
+.flex-page-report-constraint-edit-details-type,
+.flex-page-report-constraint-edit-details-query,
+.flex-page-report-constraint-edit-details-validation,
+.flex-page-report-constraint-edit-details-placeholder {
+  display: flex;
+  flex-direction: row;
+  border: 0;
+  margin: 0 0 1em 0;
+  padding: 0;
+  justify-content: flex-start;
+  align-items: baseline;
+}
+.flex-page-report-edit-details-name-label,
+.flex-page-report-edit-details-summary-label,
+.flex-page-report-edit-details-query-label,
+.flex-page-report-edit-details-category-label,
+.flex-page-report-run-details-constraintContainer-label,
+.flex-page-report-schedule-add-details-constraintContainer-label,
+.flex-page-report-schedule-add-details-schedule-datetime > span,
+.flex-page-report-schedule-add-details-schedule-end-datetime > span,
+.flex-page-report-schedule-add-details-filename > span,
+.flex-page-report-constraint-edit-details-name-label,
+.flex-page-report-constraint-edit-details-type-label,
+.flex-page-report-constraint-edit-details-query-label,
+.flex-page-report-constraint-edit-details-validation-label,
+.flex-page-report-constraint-edit-details-placeholder-label {
+  border: 0;
+  margin: 0 1em 0 0;
+  font-size: inherit;
+  font-weight: bold;
+  text-align: right;
+  width: 12em;
+  align-self: flex-start;
+  padding-top: 2px;
+}
+.flex-page-report-edit-details-name input,
+.flex-page-report-edit-details-summary input,
+.flex-page-report-schedule-add-details-filename input,
+.flex-page-report-run-details-constraintContainer input,
+.flex-page-report-schedule-add-details-constraintContainer input,
+.flex-page-report-constraint-edit-details-name input,
+.flex-page-report-constraint-edit-details-validation input,
+.flex-page-report-constraint-edit-details-placeholder input {
+  margin: 0;
+  width: 10em;
+}
+.flex-page-report-schedule-add-details-schedule-datetime input,
+.flex-page-report-schedule-add-details-schedule-end-datetime input,
+.flex-page-report-run-details-constraintContainer-datetime input,
+.flex-page-report-schedule-add-details-constraintContainer-datetime input {
+  margin: 0;
+  width: 10em;
+  float: left;
+}
+.flex-page-report-schedule-add-details-schedule-datetime img,
+.flex-page-report-schedule-add-details-schedule-end-datetime img,
+.flex-page-report-run-details-constraintContainer-datetime img,
+.flex-page-report-schedule-add-details-constraintContainer-datetime img {
+  float: left;
+  align-self: flex-end;
+}
+.flex-page-report-edit-details-query textarea,
+.flex-page-report-constraint-edit-details-query textarea {
+  margin: 0;
+  width: 18em;
+  resize: vertical;
+  height: 60px;
+}
+.flex-page-report-edit-details-category select,
+.flex-page-report-run-details-constraintContainer select,
+.flex-page-report-constraint-edit-details-type select {
+  margin: 0;
+  width: 12em;
+}
+.flex-page-report-schedule-add-details-constraintContainer select {
+  margin: 0;
+  width: 11em;
+}
+.flex-page-report-edit-details-reportemployee {
+  display: flex;
+  flex-direction: row;
+  border: 0;
+  margin: 0 0 1em 0;
+  padding: 0;
+  justify-content: flex-start;
+  align-items: baseline;
+  align-items: baseline;
+}
+.flex-page-report-edit-details-reportemployee .flex-page-report-edit-details-reportemployee-label {
+  border: 0;
+  margin: 0 1em 0 0;
+  font-size: inherit;
+  font-weight: bold;
+  text-align: right;
+  width: 12em;
+}
+.flex-page-report-run-details-deliveryformat {
+  display: flex;
+  flex-direction: row;
+  border: 0;
+  margin: 0 0 1em 0;
+  padding: 0;
+  justify-content: flex-start;
+  align-items: baseline;
+  align-items: baseline;
+}
+.flex-page-report-run-details-deliveryformat .flex-page-report-run-details-deliveryformat-label {
+  border: 0;
+  margin: 0 1em 0 0;
+  font-size: inherit;
+  font-weight: bold;
+  text-align: right;
+  width: 12em;
+}
+.flex-page-report-schedule-add-details-deliveryformat {
+  display: flex;
+  flex-direction: row;
+  border: 0;
+  margin: 0 0 1em 0;
+  padding: 0;
+  justify-content: flex-start;
+  align-items: baseline;
+  align-items: baseline;
+}
+.flex-page-report-schedule-add-details-deliveryformat .flex-page-report-schedule-add-details-deliveryformat-label {
+  border: 0;
+  margin: 0 1em 0 0;
+  font-size: inherit;
+  font-weight: bold;
+  text-align: right;
+  width: 12em;
+}
+.flex-page-report-run-details-deliverymethod {
+  display: flex;
+  flex-direction: row;
+  border: 0;
+  margin: 0 0 1em 0;
+  padding: 0;
+  justify-content: flex-start;
+  align-items: baseline;
+  align-items: baseline;
+}
+.flex-page-report-run-details-deliverymethod .flex-page-report-run-details-deliverymethod-label {
+  border: 0;
+  margin: 0 1em 0 0;
+  font-size: inherit;
+  font-weight: bold;
+  text-align: right;
+  width: 12em;
+}
+.flex-page-report-schedule-add-details-deliverymethod {
+  display: flex;
+  flex-direction: row;
+  border: 0;
+  margin: 0 0 1em 0;
+  padding: 0;
+  justify-content: flex-start;
+  align-items: baseline;
+  align-items: baseline;
+}
+.flex-page-report-schedule-add-details-deliverymethod .flex-page-report-schedule-add-details-deliverymethod-label {
+  border: 0;
+  margin: 0 1em 0 0;
+  font-size: inherit;
+  font-weight: bold;
+  text-align: right;
+  width: 12em;
+}
+.flex-page-report-run-details-deliveryemployee {
+  display: flex;
+  flex-direction: row;
+  border: 0;
+  margin: 0 0 1em 0;
+  padding: 0;
+  justify-content: flex-start;
+  align-items: baseline;
+  align-items: baseline;
+}
+.flex-page-report-run-details-deliveryemployee .flex-page-report-run-details-deliveryemployee-label {
+  border: 0;
+  margin: 0 1em 0 0;
+  font-size: inherit;
+  font-weight: bold;
+  text-align: right;
+  width: 12em;
+}
+.flex-page-report-schedule-add-details-deliveryemployee {
+  display: flex;
+  flex-direction: row;
+  border: 0;
+  margin: 0 0 1em 0;
+  padding: 0;
+  justify-content: flex-start;
+  align-items: baseline;
+  align-items: baseline;
+}
+.flex-page-report-schedule-add-details-deliveryemployee .flex-page-report-schedule-add-details-deliveryemployee-label {
+  border: 0;
+  margin: 0 1em 0 0;
+  font-size: inherit;
+  font-weight: bold;
+  text-align: right;
+  width: 12em;
+}
+.flex-page-report-schedule-add-details-frequency {
+  display: flex;
+  flex-direction: row;
+  border: 0;
+  margin: 0 0 1em 0;
+  padding: 0;
+  justify-content: flex-start;
+  align-items: baseline;
+  align-items: baseline;
+}
+.flex-page-report-schedule-add-details-frequency .flex-page-report-schedule-add-details-frequency-label {
+  border: 0;
+  margin: 0 1em 0 0;
+  font-size: inherit;
+  font-weight: bold;
+  text-align: right;
+  width: 12em;
+}
+.flex-page-report-schedule-add-details-frequency input {
+  width: 10em;
+}
+.flex-page-report-edit-details-reportemployee-controlset,
+.flex-page-report-run-details-deliveryemployee-controlset,
+.flex-page-report-schedule-add-details-deliveryemployee-controlset {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  align-content: stretch;
+  border: 0;
+  padding: 0;
+  max-height: 150px;
+  width: 200px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  background-color: #fff;
+}
+.flex-page-report-edit-details-reportemployee-controlset label,
+.flex-page-report-run-details-deliveryemployee-controlset label,
+.flex-page-report-schedule-add-details-deliveryemployee-controlset label {
+  padding: 0.6em 0.3em;
+  margin-right: 10px;
+}
+.flex-page-report-run-details-deliverymethod-container,
+.flex-page-report-run-details-deliveryformat-container,
+.flex-page-report-schedule-add-details-deliverymethod-container,
+.flex-page-report-schedule-add-details-deliveryformat-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  align-content: stretch;
+  border: 0;
+  padding: 0;
+}
+.flex-page-report-run-details-deliverymethod-container label,
+.flex-page-report-run-details-deliveryformat-container label,
+.flex-page-report-schedule-add-details-deliverymethod-container label,
+.flex-page-report-schedule-add-details-deliveryformat-container label {
+  margin-right: 10px;
+}
+.flex-page-report-edit-buttonset {
+  border: 0;
+  margin: 0;
+  padding: 1em 0.5em;
+  text-align: center;
+}
+.flex-page-report-edit-buttonset button[name="editConstraint"]::before {
+  content: url("/admin/img/template/options.png");
+  height: 16px;
+  width: 16px;
   display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.flex-page-report-edit-buttonset button[name="save"]::before {
+  content: url("/admin/img/template/approve.png");
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.flex-page-report-edit-buttonset button[name="cancel"]::before {
+  content: url("/admin/img/template/decline.png");
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.flex-page-report-manage-buttons button::before {
+  content: url("/admin/img/template/new.png");
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.flex-page-report-manage table button[name="configure"]::before {
+  content: url("/admin/img/template/options.png");
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.flex-page-report-manage table button[name="schedule"]::before {
+  content: url("/admin/img/template/clock.png");
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.flex-page-report-manage table button[name="run"]::before {
+  content: url("/admin/img/template/play.png");
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.flex-page-report-run-buttonset {
+  border: 0;
+  margin: 0;
+  padding: 1em 0.5em;
+  text-align: center;
+}
+.flex-page-report-run-buttonset button[name="run"]::before {
+  content: url("/admin/img/template/play.png");
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.flex-page-report-run-buttonset button[name="cancel"]::before {
+  content: url("/admin/img/template/decline.png");
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.flex-page-report-schedule-add-buttonset {
+  border: 0;
+  margin: 0;
+  padding: 1em 0.5em;
+  text-align: center;
+}
+.flex-page-report-schedule-add-buttonset button[name="run"]::before {
+  content: url("/admin/img/template/approve.png");
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.flex-page-report-schedule-add-buttonset button[name="cancel"]::before {
+  content: url("/admin/img/template/decline.png");
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.flex-page-report-schedule-add table button[name="archive"]::before {
+  content: url("/admin/img/template/archive.png");
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.flex-page-report-constraint-edit-buttonset {
+  border: 0;
+  margin: 0;
+  padding: 1em 0.5em;
+  text-align: center;
+}
+.flex-page-report-constraint-edit-buttonset button[name="add"]::before {
+  content: url("/admin/img/template/new.png");
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.flex-page-report-constraint-edit-buttonset button[name="cancel"]::before {
+  content: url("/admin/img/template/decline.png");
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
+}
+.flex-page-report-constraint-edit table button[name="remove"]::before {
+  content: url("/admin/img/template/delete.png");
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 0.5ch;
+  vertical-align: bottom;
 }
 .flex-page-report-edit,
 .flex-page-report-constraint-edit,
@@ -13520,46 +13965,10 @@ li {
 .flex-page-report-run {
   width: 400px;
 }
-.flex-component-report-edit-buttonset {
-  border: 0;
-  margin: 0;
-}
-.flex-page-report-edit-details,
-.flex-page-report-constraint-edit-details,
-.flex-page-report-schedule-edit-details,
-.flex-page-report-schedule-add-details,
-.flex-page-report-run-details {
+.flex-page-report-constraint-edit-details {
   border: 1px solid #dedede;
   margin: 0.5em;
   padding: 0.5em;
-}
-.flex-page-report-run-details > div {
-  margin: 0.3em;
-  padding: 0.3em;
-}
-.flex-page-report-edit-buttonset,
-.flex-page-report-constraint-edit-buttonset,
-.flex-page-report-schedule-edit-buttonset,
-.flex-page-report-schedule-add-buttonset,
-.flex-page-report-run-buttonset {
-  border: 0;
-  margin: 1em 0 0 0;
-  background-color: #dedede;
-  text-align: center;
-}
-.flex-page-report-schedule-add-buttonset {
-  width: 96%;
-}
-.flex-page-report-edit-details-name input,
-.flex-page-report-edit-details-summary textarea,
-.flex-page-report-edit-details-query textarea {
-  width: 95%;
-}
-.flex-page-report-edit-details-summary textarea {
-  height: 50px;
-}
-.flex-page-report-edit-details-query textarea {
-  height: 150px;
 }
 .flex-page-report-edit-report-employee input,
 .flex-component-report-run-deliveryemployee-div-container input,
@@ -13567,34 +13976,10 @@ li {
 .flex-component-report-schedule-add-deliveryemployee-div-container input {
   float: left;
 }
-.flex-page-report-schedule-add-details select,
-.flex-page-report-schedule-add-details-constraintContainer select {
-  width: 150px;
-}
-.flex-page-report-edit textarea,
-.fw-control-textarea textarea {
-  resize: vertical;
-}
 .flex-component-report-add-reportemployee-div-container-label,
 .flex-component-report-run-deliveryemployee-div-container-label,
 .flex-component-report-schedule-add-deliveryemployee-div-container-label {
   margin-left: 5px;
-}
-.flex-page-report-manage img,
-.flex-page-report-manage button span,
-.flex-page-report-edit-buttonset img,
-.flex-page-report-edit-buttonset span,
-.flex-page-report-schedule-add-buttonset span,
-.flex-page-report-schedule-add-buttonset img,
-.flex-page-report-run-buttonset span,
-.flex-page-report-run-buttonset img,
-.flex-component-report-schedule-list-schedule img,
-.flex-component-report-schedule-list-schedule span,
-.flex-page-report-constraint-edit-buttonset span,
-.flex-page-report-constraint-edit-buttonset img {
-  vertical-align: middle;
-  text-indent: 0.2em;
-  display: inline-block;
 }
 .flex-page-report-schedule-add table,
 .flex-page-report-manage table,
@@ -13668,15 +14053,7 @@ li {
 .flex-page-report-constraint-edit-details table > tfoot a:link {
   color: #fff;
 }
-.flex-page-report-schedule-add-details-deliverymethod-label label,
-.flex-page-report-schedule-add-details-deliveryformat-label label,
-.flex-page-report-run-details-deliveryformat label,
-.flex-page-report-run-details-deliverymethod label {
-  margin-right: 10px;
-  width: 200px;
-}
 .flex-component-report-add-reportemployee-div-container,
-.flex-component-report-run-deliveryemployee-div-container,
 .flex-component-report-schedule-add-deliveryemployee-div-container {
   display: inline-block;
   width: 100%;
