@@ -36,7 +36,10 @@ var self = new Class({
 		this.oPagination	= new Pagination(10, this.oDataset);
 
 		var sButtonPathBase	= '../admin/img/template/resultset_';
-		this.NODE = H.div(
+		this.NODE = H.section(
+			H.header({class: 'flex-page-report-manage-heading'},
+				H.h2('Manage Reports')
+			),
 			this._oConfiguration = new Form({onsubmit: function() {/*this._handleSubmit();*/}.bind(this)},
 				H.table({class: 'reflex highlight-rows'},
 					H.caption(

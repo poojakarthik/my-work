@@ -14058,3 +14058,18 @@ li {
   display: inline-block;
   width: 100%;
 }
+.flex-page-report-manage-heading {
+  display: block;
+  margin-top: 0;
+  margin-bottom: 20px;
+  padding-bottom: 5px;
+  border-bottom: solid 1px #369;
+  color: #369;
+  font-weight: bold;
+  display: flex;
+  align-items: flex-end;
+}
+.flex-page-report-manage-heading h2 {
+  flex-grow: 1;
+  margin-bottom: 0;
+}
