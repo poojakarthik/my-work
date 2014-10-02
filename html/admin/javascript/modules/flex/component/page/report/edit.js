@@ -30,6 +30,7 @@ var self = new Class({
 	},
 
 	_buildUI: function () {
+		this._oReport = null;
 		this._oForm = new Form({onsubmit: this._save.bind(this, null)},
 			new Hidden({
 				sName : 'id'
@@ -51,7 +52,7 @@ var self = new Class({
 				),
 				H.label({class: 'flex-page-report-edit-details-summary'},
 					H.span({class: 'flex-page-report-edit-details-summary-label'}, 'Summary'),
-					this._oName = new Text({
+					this._oSummary = new Textarea({
 						sName 		: 'summary',
 						sLabel		: 'Name',
 						mMandatory	: true,
@@ -87,7 +88,7 @@ var self = new Class({
 						})
 				),
 				H.div({role: 'group', class: 'flex-page-report-edit-details-reportemployee'},
-					H.span({class: 'flex-page-report-edit-details-reportemployee-label'}, 'Report Employee'),
+					H.span({class: 'flex-page-report-edit-details-reportemployee-label'}, 'Runnable By'),
 					this._oEmployeeContainer = H.div({class: 'flex-page-report-edit-details-reportemployee-controlset'})
 				)
 			),
@@ -261,8 +262,8 @@ var self = new Class({
 			var oComponent      = self.applyAsConstructor($A(arguments)),
 			oPopup = new Popup({
 					sExtraClass     : 'flex-page-report-edit-popup',
-					sTitle          : 'Edit Report',
-					sIconURI        : './img/template/pencil.png',
+					sTitle          : 'Configure Report',
+					sIconURI        : './img/template/options.png',
 					bCloseButton    : true
 				}, oComponent.getNode()
 			);

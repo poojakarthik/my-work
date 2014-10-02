@@ -25,6 +25,7 @@ var self = new Class({
 	construct : function() {
 		this.CONFIG = Object.extend({
 			iReportId : {},
+			sReportTitle: {},
 			aReportSchedule : {}
 		}, this.CONFIG || {});
 		// Call the parent constructor
@@ -54,7 +55,7 @@ var self = new Class({
 					})
 				),
 				H.label({class: 'flex-page-report-schedule-add-details-schedule-datetime'},
-					H.span('Start Datetime'),
+					H.span('First Run On'),
 					new Datetime({
 						bTimePicker	: true,
 						sName		: 'schedule_datetime',
@@ -63,7 +64,7 @@ var self = new Class({
 					})
 				),
 				H.label({class: 'flex-page-report-schedule-add-details-schedule-end-datetime'},
-					H.span('End Datetime'),
+					H.span('Stop Running On'),
 					new Datetime({
 						bTimePicker	: true,
 						sName		: 'schedule_end_datetime',
@@ -86,7 +87,6 @@ var self = new Class({
 						}
 					})
 				),
-				this._oConstraintContainer = H.div(),
 				H.div({role:'group', class: 'flex-page-report-schedule-add-details-deliveryformat'},
 					H.span({class: 'flex-page-report-schedule-add-details-deliveryformat-label'}, 'Delivery Format'),
 					this._oDeliveryFormatContainer = H.div({class: 'flex-page-report-schedule-add-details-deliveryformat-container'})
@@ -99,6 +99,9 @@ var self = new Class({
 					H.span({class: 'flex-page-report-schedule-add-details-deliveryemployee-label'}, 'Delivery Employee'),
 					this._oEmployeeContainer = H.div({class: 'flex-page-report-schedule-add-details-deliveryemployee-controlset'})
 				)
+			),
+			H.fieldset({'class': 'flex-page-report-schedule-add-details-constraints', style: "margin-top: 10px; display: none;"},
+				this._oConstraintContainer = H.div()
 			),
 			H.fieldset({class: 'flex-page-report-schedule-add-buttonset'},
 				H.button({type: 'button', name: 'run'}, 'Save').observe('click',this._save.bind(this, null)),
@@ -114,10 +117,9 @@ var self = new Class({
 					),
 					H.thead(
 						H.tr({class: 'First'},
-							H.th({align: 'Left'}, 'Frequency Multiple'),
-							H.th({align: 'Left'}, 'Frequency Type'),
-							H.th({align: 'Left'}, 'Schedule Datetime'),
-							H.th({align: 'Left'}, 'Action')
+							H.th('Frequency'),
+							H.th('First Run On'),
+							H.th('Action')
 						)
 					),
 					this._oScheduleList = H.tbody({class: 'flex-component-report-schedule-list'})
@@ -216,7 +218,9 @@ var self = new Class({
 			postBody	: "json="+encodeURIComponent(JSON.stringify([oData])),
 			onSuccess: function (oResponse){
 				var oServerResponse = JSON.parse(oResponse.responseText);
-				
+				if (oServerResponse.length) {
+					$('.flex-page-report-schedule-add-details-constraints').show();
+				}
 				for (var i = 0;i < oServerResponse.length; i++) {
 					//Check for type here
 
@@ -374,11 +378,8 @@ var self = new Class({
 				H.tr({class: 'flex-component-report-schedule-list-schedule', id: 'flex-component-report-schedule-list-row-'+oReportSchedule.id},
 					H.td(
 						new Hidden({sName: 'frequency_schedule['+this._iScheduleCount+'].frequency_multiple', mValue: oReportSchedule.frequency_multiple}),
-						H.span(oReportSchedule.frequency_multiple)
-					),
-					H.td(
 						new Hidden({sName: 'frequency_schedule['+this._iScheduleCount+'].report_frequency_type_id', mValue: oReportSchedule.report_frequency_type_id}),
-						H.span(oReportSchedule.report_frequency_type_id)
+						H.span('Every '+ oReportSchedule.frequency_multiple + ' ' + oReportSchedule.frequency_type)
 					),
 					H.td(
 						new Hidden({sName: 'frequency_schedule['+this._iScheduleCount+'].schedule_datetime', mValue: oReportSchedule.schedule_datetime}),
@@ -391,7 +392,7 @@ var self = new Class({
 					
 			);
 			this._iScheduleCount++;
-		};
+		}; 	
 	},
 
 	_archiveSchedule: function(iReportScheduleId) {
@@ -411,6 +412,7 @@ var self = new Class({
 
 	_showDeliveryEmployees: function(sReportDeliveryName) {
 		if(sReportDeliveryName == "Email") {
+			$('.flex-page-report-schedule-add-details-deliveryemployee-controlset').empty();
 			$('.flex-page-report-schedule-add-details-deliveryemployee').show();
 			this._loadDeliveryEmployees();
 		}
@@ -425,14 +427,14 @@ var self = new Class({
 				var response = request.parseJSONResponse();
 				response.employees.forEach(function (oEmployee) {
 					this._oEmployeeContainer.appendChild(
-						H.div({class: 'flex-component-report-schedule-add-deliveryemployee-div-container'},
-							H.label({class: 'flex-component-report-schedule-add-deliveryemployee-div-container-label'},oEmployee.FirstName + ' ' + oEmployee.LastName),
+						H.label({class: 'flex-component-report-schedule-add-deliveryemployee-div-container'},
+							H.span({class: 'flex-component-report-schedule-add-deliveryemployee-div-container-label'},oEmployee.FirstName + ' ' + oEmployee.LastName),
 							new Checkbox({
 								bChecked	: (oEmployee.report_id) ? true : false,
 								sName		: 'delivery_employee[]',
 								sLabel		: 'Delivery Employee',
 								mValue		: oEmployee.Id,
-								sExtraClass	: 'flex-page-report-schedule-add-deliveryemployee'
+								sExtraClass	: 'flex-page-report-schedule-add-delivery-employee'
 							})
 						)
 					);
@@ -483,7 +485,7 @@ var self = new Class({
 			var oComponent = self.applyAsConstructor($A(arguments)),
 				oPopup = new Popup({
 					sExtraClass : 'css-class-name',
-					sTitle : 'Add Report Schedules',
+					sTitle : 'Schedule: ' + arguments[0].sReportTitle,
 					sIconURI : './img/template/pencil.png',
 					bCloseButton : true
 				},

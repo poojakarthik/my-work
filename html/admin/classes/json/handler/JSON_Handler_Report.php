@@ -167,9 +167,10 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 		$sSQL	= "
-			SELECT rs.*
+			SELECT rs.*, rft.name as 'frequency_type'
 			FROM report_schedule rs
-			WHERE		report_id = {$iReportId} AND is_enabled = 1";
+			LEFT JOIN report_frequency_type rft ON rft.id = rs.report_frequency_type_id
+			WHERE report_id = {$iReportId} AND is_enabled = 1";
 
 		$rQuery	= DataAccess::get()->query($sSQL);
 		$aDataSet= array();
@@ -180,8 +181,9 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 	}
 	public function _getConstraintForReportId($iReportId) {
 		$sSQL	= "
-			SELECT rc.*
+			SELECT rc.*, rct.Name AS 'constraint_name'
 			FROM report_constraint rc
+			LEFT JOIN report_constraint_type rct ON rct.id = rc.report_constraint_type_id
 			WHERE report_id = {$iReportId}";
 
 		$rQuery	= DataAccess::get()->query($sSQL);

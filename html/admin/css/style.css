@@ -13494,7 +13494,8 @@ li {
 .flex-page-report-edit-details,
 .flex-page-report-run-details,
 .flex-page-report-schedule-add-details,
-.flex-page-report-constraint-edit-details {
+.flex-page-report-constraint-edit-details,
+.flex-page-report-schedule-add-details-constraints {
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -13502,17 +13503,23 @@ li {
   border: 1px solid #d1d1d1;
   background: #ddd;
   padding: 1em 1em 0 1em;
+  margin-left: -0.5em;
+  margin-right: -0.5em;
+  border-left-width: 0;
+  border-right-width: 0;
 }
 .flex-page-report-edit-details input,
 .flex-page-report-run-details input,
 .flex-page-report-schedule-add-details input,
-.flex-page-report-constraint-edit-details input {
+.flex-page-report-constraint-edit-details input,
+.flex-page-report-schedule-add-details-constraints input {
   padding: 0.25em;
 }
 .flex-page-report-edit-details :not(:disabled):required,
 .flex-page-report-run-details :not(:disabled):required,
 .flex-page-report-schedule-add-details :not(:disabled):required,
-.flex-page-report-constraint-edit-details :not(:disabled):required {
+.flex-page-report-constraint-edit-details :not(:disabled):required,
+.flex-page-report-schedule-add-details-constraints :not(:disabled):required {
   background: #fff;
   color: #111;
   border: 1px solid #da8;
@@ -13520,7 +13527,8 @@ li {
 .flex-page-report-edit-details :not(:disabled):invalid,
 .flex-page-report-run-details :not(:disabled):invalid,
 .flex-page-report-schedule-add-details :not(:disabled):invalid,
-.flex-page-report-constraint-edit-details :not(:disabled):invalid {
+.flex-page-report-constraint-edit-details :not(:disabled):invalid,
+.flex-page-report-schedule-add-details-constraints :not(:disabled):invalid {
   background: #ffecf0;
   color: #111;
   border: 1px solid #d30;
@@ -13528,13 +13536,15 @@ li {
 .flex-page-report-edit-details :not(:disabled):invalid:required,
 .flex-page-report-run-details :not(:disabled):invalid:required,
 .flex-page-report-schedule-add-details :not(:disabled):invalid:required,
-.flex-page-report-constraint-edit-details :not(:disabled):invalid:required {
+.flex-page-report-constraint-edit-details :not(:disabled):invalid:required,
+.flex-page-report-schedule-add-details-constraints :not(:disabled):invalid:required {
   border: 1px solid #da8;
 }
 .flex-page-report-edit-details :not(:disabled):valid,
 .flex-page-report-run-details :not(:disabled):valid,
 .flex-page-report-schedule-add-details :not(:disabled):valid,
-.flex-page-report-constraint-edit-details :not(:disabled):valid {
+.flex-page-report-constraint-edit-details :not(:disabled):valid,
+.flex-page-report-schedule-add-details-constraints :not(:disabled):valid {
   background: #ecfff0;
   color: #111;
   border-color: #00c72b;
@@ -13610,7 +13620,13 @@ li {
   float: left;
   align-self: flex-end;
 }
-.flex-page-report-edit-details-query textarea,
+.flex-page-report-edit-details-query textarea {
+  margin: 0;
+  width: 30em;
+  resize: vertical;
+  height: 100px;
+}
+.flex-page-report-edit-details-summary textarea,
 .flex-page-report-constraint-edit-details-query textarea {
   margin: 0;
   width: 18em;
@@ -13644,6 +13660,8 @@ li {
   font-weight: bold;
   text-align: right;
   width: 12em;
+  align-self: flex-start;
+  padding-top: 2px;
 }
 .flex-page-report-run-details-deliveryformat {
   display: flex;
@@ -13734,6 +13752,8 @@ li {
   font-weight: bold;
   text-align: right;
   width: 12em;
+  align-self: flex-start;
+  padding-top: 2px;
 }
 .flex-page-report-schedule-add-details-deliveryemployee {
   display: flex;
@@ -13752,6 +13772,8 @@ li {
   font-weight: bold;
   text-align: right;
   width: 12em;
+  align-self: flex-start;
+  padding-top: 2px;
 }
 .flex-page-report-schedule-add-details-frequency {
   display: flex;
@@ -13787,7 +13809,9 @@ li {
   width: 200px;
   overflow-y: scroll;
   overflow-x: hidden;
-  background-color: #fff;
+  background: #ecfff0;
+  color: #111;
+  border-color: #00c72b;
 }
 .flex-page-report-edit-details-reportemployee-controlset label,
 .flex-page-report-run-details-deliveryemployee-controlset label,
@@ -13811,6 +13835,13 @@ li {
 .flex-page-report-schedule-add-details-deliverymethod-container label,
 .flex-page-report-schedule-add-details-deliveryformat-container label {
   margin-right: 10px;
+  margin-bottom: 0.5em;
+}
+.flex-page-report-run-details-deliverymethod-container input[type="radio"],
+.flex-page-report-run-details-deliveryformat-container input[type="radio"],
+.flex-page-report-schedule-add-details-deliverymethod-container input[type="radio"],
+.flex-page-report-schedule-add-details-deliveryformat-container input[type="radio"] {
+  margin-right: 0.5ch;
 }
 .flex-page-report-edit-buttonset {
   border: 0;
@@ -13956,7 +13987,9 @@ li {
   margin-right: 0.5ch;
   vertical-align: bottom;
 }
-.flex-page-report-edit,
+.flex-page-report-edit {
+  width: 600px;
+}
 .flex-page-report-constraint-edit,
 .flex-page-report-schedule-edit,
 .flex-page-report-schedule-add {
@@ -13971,19 +14004,13 @@ li {
   padding: 0.5em;
 }
 .flex-page-report-edit-report-employee input,
-.flex-component-report-run-deliveryemployee-div-container input,
 .flex-page-report-run-delivery-employee input,
-.flex-component-report-schedule-add-deliveryemployee-div-container input {
+.flex-page-report-schedule-add-details-deliveryemployee input {
   float: left;
-}
-.flex-component-report-add-reportemployee-div-container-label,
-.flex-component-report-run-deliveryemployee-div-container-label,
-.flex-component-report-schedule-add-deliveryemployee-div-container-label {
-  margin-left: 5px;
 }
 .flex-page-report-schedule-add table,
 .flex-page-report-manage table,
-.flex-page-report-constraint-edit-details table {
+.flex-page-report-constraint-edit table {
   box-sizing: border-box;
   width: 100%;
   margin-left: auto;
@@ -13994,14 +14021,14 @@ li {
 }
 .flex-page-report-schedule-add table > thead,
 .flex-page-report-manage table > thead,
-.flex-page-report-constraint-edit-details table > thead {
+.flex-page-report-constraint-edit table > thead {
   color: #fff;
   background-color: #499fcf;
   text-align: left;
 }
 .flex-page-report-schedule-add table > thead > tr > th,
 .flex-page-report-manage table > thead > tr > th,
-.flex-page-report-constraint-edit-details table > thead > tr > th {
+.flex-page-report-constraint-edit table > thead > tr > th {
   padding-top: 0.25em;
   padding-bottom: 0.25em;
   background-repeat: repeat-x;
@@ -14009,40 +14036,40 @@ li {
 }
 .flex-page-report-schedule-add table > * > tr > td,
 .flex-page-report-manage table > * > tr > td,
-.flex-page-report-constraint-edit-details table > * > tr > td,
+.flex-page-report-constraint-edit table > * > tr > td,
 .flex-page-report-schedule-add table > * > tr > th,
 .flex-page-report-manage table > * > tr > th,
-.flex-page-report-constraint-edit-details table > * > tr > th {
+.flex-page-report-constraint-edit table > * > tr > th {
   vertical-align: top;
   padding: 0.25em 0.5em;
   font-size: inherit;
 }
 .flex-page-report-schedule-add table > tbody,
 .flex-page-report-manage table > tbody,
-.flex-page-report-constraint-edit-details table > tbody {
+.flex-page-report-constraint-edit table > tbody {
   vertical-align: top;
   font-size: inherit;
 }
 .flex-page-report-schedule-add table > tbody > tr > td,
 .flex-page-report-manage table > tbody > tr > td,
-.flex-page-report-constraint-edit-details table > tbody > tr > td,
+.flex-page-report-constraint-edit table > tbody > tr > td,
 .flex-page-report-schedule-add table > tbody > tr > th,
 .flex-page-report-manage table > tbody > tr > th,
-.flex-page-report-constraint-edit-details table > tbody > tr > th {
+.flex-page-report-constraint-edit table > tbody > tr > th {
   background-color: #fff;
   color: #333;
 }
 .flex-page-report-schedule-add table > tbody > tr:nth-child(even) > td,
 .flex-page-report-manage table > tbody > tr:nth-child(even) > td,
-.flex-page-report-constraint-edit-details table > tbody > tr:nth-child(even) > td,
+.flex-page-report-constraint-edit table > tbody > tr:nth-child(even) > td,
 .flex-page-report-schedule-add table > tbody > tr:nth-child(even) > th,
 .flex-page-report-manage table > tbody > tr:nth-child(even) > th,
-.flex-page-report-constraint-edit-details table > tbody > tr:nth-child(even) > th {
+.flex-page-report-constraint-edit table > tbody > tr:nth-child(even) > th {
   background-color: #ddd;
 }
 .flex-page-report-schedule-add table > tfoot,
 .flex-page-report-manage table > tfoot,
-.flex-page-report-constraint-edit-details table > tfoot {
+.flex-page-report-constraint-edit table > tfoot {
   color: #fff;
   background-color: #499fcf;
   text-align: left;
@@ -14050,13 +14077,13 @@ li {
 }
 .flex-page-report-schedule-add table > tfoot a:link,
 .flex-page-report-manage table > tfoot a:link,
-.flex-page-report-constraint-edit-details table > tfoot a:link {
+.flex-page-report-constraint-edit table > tfoot a:link {
   color: #fff;
 }
-.flex-component-report-add-reportemployee-div-container,
-.flex-component-report-schedule-add-deliveryemployee-div-container {
-  display: inline-block;
-  width: 100%;
+.flex-page-report-schedule-add table .First td,
+.flex-page-report-manage table .First td,
+.flex-page-report-constraint-edit table .First td {
+  text-align: left;
 }
 .flex-page-report-manage-heading {
   display: block;

@@ -98,7 +98,7 @@ var self = new Class({
 			),
 			H.fieldset({class: 'flex-page-report-constraint-edit-buttonset'},
 				H.button({type: 'button', name: 'add', onclick: this._add.bind(this)}, 'Add'),
-				H.button({type: 'button', name: 'cancel', onclick: this._save.bind(this)}, 'Finish')
+				H.button({type: 'button', name: 'cancel', onclick: this._save.bind(this)}, 'Close')
 			),
 			this._oConstraint = new Form({onsubmit: this._save.bind(this, null)},
 				H.table({class: 'reflex highlight-rows'},
@@ -110,9 +110,9 @@ var self = new Class({
 					),
 					H.thead(
 						H.tr({class: 'First'},
-							H.th({align: 'Left'}, 'Name'),
-							H.th({align: 'Left'}, 'Constraint Type'),
-							H.th({align: 'Left'}, 'Action')
+							H.th('Name'),
+							H.th('Constraint Type'),
+							H.th('Action')
 						)
 					),
 					this._oConstraintList = H.tbody({class: 'flex-component-report-constraint-list'})
@@ -197,7 +197,7 @@ var self = new Class({
 					),
 					H.td(
 						new Hidden({sName: 'constraint['+this._iConstraintCount+'].report_constraint_type_id', mValue: oReportConstraint.report_constraint_type_id}),
-						H.span(oReportConstraint.report_constraint_type_id)
+						H.span(oReportConstraint.constraint_name)
 					),
 					H.td(
 						H.button({type: 'button', name: 'remove'}, 'Remove').observe('click', function(){ this.parentElement.parentElement.remove(); })

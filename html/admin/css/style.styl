@@ -13220,7 +13220,12 @@
 .flex-page-report-run-details
 .flex-page-report-schedule-add-details
 .flex-page-report-constraint-edit-details
+.flex-page-report-schedule-add-details-constraints
 	appearance-flex-form-fieldset()
+	margin-left: -.5em
+	margin-right: -.5em
+	border-left-width: 0
+	border-right-width: 0
 
 .flex-page-report-edit-details-name
 .flex-page-report-edit-details-summary
@@ -13282,7 +13287,14 @@
 		float left
 		align-self flex-end
 
-.flex-page-report-edit-details-query 
+.flex-page-report-edit-details-query
+	& textarea
+		appearance-flex-form-fieldset-field-control()
+		width: 30.0em
+		resize: vertical
+		height: 100px
+
+.flex-page-report-edit-details-summary
 .flex-page-report-constraint-edit-details-query
 	& textarea
 		appearance-flex-form-fieldset-field-control()
@@ -13308,6 +13320,8 @@
 	& .flex-page-report-edit-details-reportemployee-label
 		appearance-flex-form-fieldset-field-label()
 		width 12.0em
+		align-self flex-start
+		padding-top 2px
 
 .flex-page-report-run-details-deliveryformat
 	appearance-flex-form-fieldset-field()
@@ -13343,6 +13357,8 @@
 	& .flex-page-report-run-details-deliveryemployee-label
 		appearance-flex-form-fieldset-field-label()
 		width 12.0em
+		align-self flex-start
+		padding-top 2px
 
 .flex-page-report-schedule-add-details-deliveryemployee
 	appearance-flex-form-fieldset-field()
@@ -13350,6 +13366,8 @@
 	& .flex-page-report-schedule-add-details-deliveryemployee-label
 		appearance-flex-form-fieldset-field-label()
 		width 12.0em
+		align-self flex-start
+		padding-top 2px
 
 .flex-page-report-schedule-add-details-frequency
 	appearance-flex-form-fieldset-field()
@@ -13368,7 +13386,9 @@
 	width 200px 
 	overflow-y scroll 
 	overflow-x hidden 
-	background-color white
+	background: #ecfff0
+	color: #111
+	border-color: #00c72b
 
 	& label
 		padding 0.6em 0.3em
@@ -13381,6 +13401,9 @@
 	appearance-flex-form-controlset()
 	& label
 		margin-right 10px
+		margin-bottom: .5em
+	& input[type="radio"]
+		margin-right: .5ch
 
 .flex-page-report-edit-buttonset
 	appearance-flex-form-buttonpanel()
@@ -13437,6 +13460,8 @@
 			button-icon('/admin/img/template/delete.png', 16px, 16px)
 
 .flex-page-report-edit
+	width: 600px;
+
 .flex-page-report-constraint-edit
 .flex-page-report-schedule-edit
 .flex-page-report-schedule-add
@@ -13451,25 +13476,18 @@
 	padding: 0.5em;
 
 .flex-page-report-edit-report-employee input
-.flex-component-report-run-deliveryemployee-div-container  input
 .flex-page-report-run-delivery-employee input
-.flex-component-report-schedule-add-deliveryemployee-div-container input
+.flex-page-report-schedule-add-details-deliveryemployee input
 	float:left;
-
-.flex-component-report-add-reportemployee-div-container-label
-.flex-component-report-run-deliveryemployee-div-container-label
-.flex-component-report-schedule-add-deliveryemployee-div-container-label
-	margin-left : 5px;
 
 .flex-page-report-schedule-add table
 .flex-page-report-manage table
-.flex-page-report-constraint-edit-details table
+.flex-page-report-constraint-edit table
 	skin-flex-table()
 
-.flex-component-report-add-reportemployee-div-container
-.flex-component-report-schedule-add-deliveryemployee-div-container
-	display: inline-block
-	width: 100%
+	& .First
+		& td 
+			text-align left
 
 .flex-page-report-manage-heading
 	appearance-flex-page-heading()

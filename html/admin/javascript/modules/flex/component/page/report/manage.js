@@ -40,52 +40,50 @@ var self = new Class({
 			H.header({class: 'flex-page-report-manage-heading'},
 				H.h2('Manage Reports')
 			),
-			this._oConfiguration = new Form({onsubmit: function() {/*this._handleSubmit();*/}.bind(this)},
-				H.table({class: 'reflex highlight-rows'},
-					H.caption(
-						H.div({id: 'caption_bar', class: 'caption_bar'},
-							H.div({id: "caption_title", class: "caption_title"}, 
-								H.span('Manage Reports'),
-								H.span({class: 'flex-page-report-manage-pagination-info'})
-							),
-							H.div({id: 'caption_options', class: 'caption_options'},
-								H.div({class: 'flex-page-report-manage-pagination'},
-									H.span({class: 'pagination-loading'},
-										'Loading...'
-									),
-									H.button({class: 'flex-page-report-manage-pagination-button'},
-										H.img({src: sButtonPathBase + 'first.png'})
-									),
-									H.button({class: 'flex-page-report-manage-pagination-button'},
-										H.img({src: sButtonPathBase + 'previous.png'})
-									),
-									H.button({class: 'flex-page-report-manage-pagination-button'},
-										H.img({src: sButtonPathBase + 'next.png'})
-									),
-									H.button({class: 'flex-page-report-manage-pagination-button'},
-										H.img({src: sButtonPathBase + 'last.png'})
-									)
+			this._oConfiguration = H.table({class: 'reflex highlight-rows'},
+				H.caption(
+					H.div({id: 'caption_bar', class: 'caption_bar'},
+						H.div({id: "caption_title", class: "caption_title"}, 
+							H.span('Manage Reports'),
+							H.span({class: 'flex-page-report-manage-pagination-info'})
+						),
+						H.div({id: 'caption_options', class: 'caption_options'},
+							H.div({class: 'flex-page-report-manage-pagination'},
+								H.span({class: 'pagination-loading'},
+									'Loading...'
+								),
+								H.button({class: 'flex-page-report-manage-pagination-button'},
+									H.img({src: sButtonPathBase + 'first.png'})
+								),
+								H.button({class: 'flex-page-report-manage-pagination-button'},
+									H.img({src: sButtonPathBase + 'previous.png'})
+								),
+								H.button({class: 'flex-page-report-manage-pagination-button'},
+									H.img({src: sButtonPathBase + 'next.png'})
+								),
+								H.button({class: 'flex-page-report-manage-pagination-button'},
+									H.img({src: sButtonPathBase + 'last.png'})
 								)
 							)
 						)
-					),
-					H.thead(
-						H.tr({class: 'First'},
-							H.th({style: 'text-align: left;', class: 'pointer'}, 'Name').observe('click', this._toggleSort.bind(this, 'name')),
-							H.th({style: 'text-align: left; width: 160px;', class: 'pointer'}, 'Created').observe('click', this._toggleSort.bind(this, 'created_datetime')),
-							H.th({style: 'text-align: left; width: 160px;', class: 'pointer'}, 'Created By').observe('click',this._toggleSort.bind(this,'created_employee_full_name')),
-							H.th({style: 'text-align: left; width: 160px;', class: 'pointer'}, 'Report Category').observe('click',this._toggleSort.bind(this,'report_category')),
-							H.th({style: 'text-align: left; width: 245px;'}, 'Options')
-						)
-					),
-					this._oReports = H.tbody()
+					)
 				),
-				H.fieldset({
-					class: 'flex-page-report-manage-buttons',
-					style: 'border: 0; margin:0 auto; float: right; display:none;'
-					},
-					this._oSaveButton = H.button({type:'button', name:'create'}, 'Create New Report').observe('click', this._new.bind(this, null))
-				)
+				H.thead(
+					H.tr({class: 'First'},
+						H.th({style: 'text-align: left;', class: 'pointer'}, 'Name').observe('click', this._toggleSort.bind(this, 'name')),
+						H.th({style: 'text-align: left; width: 160px;', class: 'pointer'}, 'Created').observe('click', this._toggleSort.bind(this, 'created_datetime')),
+						H.th({style: 'text-align: left; width: 160px;', class: 'pointer'}, 'Created By').observe('click',this._toggleSort.bind(this,'created_employee_full_name')),
+						H.th({style: 'text-align: left; width: 160px;', class: 'pointer'}, 'Report Category').observe('click',this._toggleSort.bind(this,'report_category')),
+						H.th({style: 'text-align: left; width: 245px;'}, 'Options')
+					)
+				),
+				this._oReports = H.tbody()
+			),
+			H.fieldset({
+				class: 'flex-page-report-manage-buttons',
+				style: 'border: 0; margin:0 auto; float: right; display:none;'
+				},
+				this._oSaveButton = H.button({type:'button', name:'create'}, 'Create New Report').observe('click', this._new.bind(this, null))
 			)
 		);
 
@@ -262,6 +260,7 @@ var self = new Class({
 	_schedule : function(iReportId) {
 		var oPopup = Schedule.createAsPopup({
 			'iReportId' : iReportId,
+			'sReportTitle': this._aReportTitles[iReportId],
 			oncomplete : function(oData) {
 				oPopup.hide();
 			}.bind(this),
@@ -289,6 +288,7 @@ var self = new Class({
 
 	_populateReports : function(aData) {
 		this._oReports.innerHTML = '';
+		this._aReportTitles = new Array();
 		var bCanAdd = false;
 		for (var i in aData){
 			if (aData.hasOwnProperty(i)){
@@ -303,6 +303,8 @@ var self = new Class({
 					}
 					break;
 				}
+
+				this._aReportTitles[aData[i].id] = aData[i].name;
 				// Build the report dom elements.
 				var oReportNode = H.tr(
 					H.td({}, aData[i].name),
