@@ -241,7 +241,7 @@ class NormalisationModuleUtilibill extends NormalisationModule {
 		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Units', 'duration_seconds'));
 
 		// StartDatetime
-		$sStartDatetime = trim($this->getRaw('start_datetime'));
+		$sStartDatetime = preg_replace('/\s+/', ' ', trim($this->getRaw('start_datetime')));
 		$this->setNormalised('StartDatetime', self::_extractStartDatetime($sStartDatetime));
 		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('StartDatetime', 'start_datetime'));
 
