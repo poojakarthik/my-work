@@ -315,13 +315,13 @@ class NormalisationModuleUtilibill extends NormalisationModule {
 		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('Units', 'quantity'));
 
 		// StartDatetime
-		$sStartDatetime = trim($this->getRaw('start_datetime'));
+		$sStartDatetime = preg_replace('/\s+/', ' ', trim($this->getRaw('start_datetime')));
 		$this->setNormalised('StartDatetime', self::_extractStartDatetime($sStartDatetime));
 		Log::get()->logIf(self::DEBUG_LOGGING, '  '.$this->_describeNormalisedField('StartDatetime', 'start_datetime'));
 
 		// EndDatetime
 		// NOTE: end_date field only appears to be applicable to non-usage, and only for range charges
-		$sEndDate = $this->getRaw('end_date');
+		$sEndDate = preg_replace('/\s+/', ' ', $this->getRaw('end_date'));
 		if (trim($sEndDate)) {
 			$this->setNormalised('EndDatetime', self::_extractEndDatetime($sEndDate));
 		}
