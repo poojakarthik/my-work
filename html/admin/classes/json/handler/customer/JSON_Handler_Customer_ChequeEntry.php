@@ -59,8 +59,8 @@ class JSON_Handler_Customer_ChequeEntry extends JSON_Handler implements JSON_Han
 
 	private static $_chequeTransactionDataSchema = array(
 		'cheque_bsb' => array('iDataType' => DATA_TYPE_STRING),
-		'cheque_account' => array('iDataType' => DATA_TYPE_INTEGER),
-		'cheque_number' => array('iDataType' => DATA_TYPE_INTEGER)
+		'cheque_account' => array('iDataType' => DATA_TYPE_STRING),
+		'cheque_number' => array('iDataType' => DATA_TYPE_STRING)
 	);
 	public function process($cheques) {
 		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_PROPER_ADMIN));
