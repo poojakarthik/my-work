@@ -61,6 +61,11 @@ class NormalisationModuleUtilibill extends NormalisationModule {
 		// SequenceNo
 		$this->setNormalised('SequenceNo', $this->_iSequence++);
 
+		// Ignore header rows
+		if (preg_match('/^[\'"]?Call\s+Number/', $aCDR['CDR'])) {
+			return $this->_ErrorCDR(CDR_CANT_NORMALISE_HEADER);
+		}
+
 		// Re-check rules for filtering CDRs
 		if ($this->_shouldExcludeCDR($aCDR['CDR'])) {
 			// NOTE: Not really a "non-CDR", but most appropriate. The record should really be pulled out in the pre-processor, anyway.
