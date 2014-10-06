@@ -3,7 +3,7 @@ class JSON_Handler_Report_Delivery_Format extends JSON_Handler implements JSON_H
 	public function getAll() {
 		// Check user authorisation and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_REPORT_USER);
 		$aReportDeliveryFormat = Report_Delivery_Format::getAll();
 		$aResultSet = array();
 		foreach ($aReportDeliveryFormat as $iKey=>$oReportDeliveryFormat) {

@@ -3,7 +3,7 @@ class JSON_Handler_Report_Frequency_Type extends JSON_Handler implements JSON_Ha
 	public function getAll() {
 		// Check user authorisation and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_REPORT_USER);
 		$aReportFrequencyType = Report_Frequency_Type::getAll();
 		$aResultSet = array();
 		foreach ($aReportFrequencyType as $iKey=>$oReportFrequencyType) {

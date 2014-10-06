@@ -6,6 +6,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 		try {
 			// Check user authorisfation and permissions
 			AuthenticatedUser()->CheckAuth();
+			AuthenticatedUser()->PermissionOrDie(PERMISSION_REPORT_USER);
 			AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
 
 			if (property_exists($mData->report, "id")) {
@@ -104,20 +105,20 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 		}
 	}
 
-	public function getScheduleForReportId($mData) {
+	public function getScheduleForReportId() {
 		// Check user authorisation and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_REPORT_USER);
 
 		return array(
 				'success' => true,
 				'aReportSchedule' =>$this->_getScheduleForReportId($mData->iReportId)
 				);
 	}
-	public function getEmployees() {
+	public function getEmployees($bReportingUserOnly = false) {
 		// Check user authorisation and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_REPORT_USER);
 
 		$employees = Employee::getAll();
 		Log::get()->log(print_r($employees, true));
@@ -126,9 +127,9 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			if ($employee->Archived) {
 				continue;
 			}
-			/*if(($employee->Permission & PERMISSION_ADMIN)!=PERMISSION_ADMIN && ($employee->Permission & PERMISSION_ACCOUNTS)!=PERMISSION_ACCOUNTS){
+			if ($bReportingUserOnly && (($employee->Permission & PERMISSION_REPORT_USER) != PERMISSION_REPORT_USER)) {
 				continue;
-			}*/
+			}
 			array_push($filteredEmployees, $employee->toArray());
 		}
 		return array(
@@ -141,7 +142,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 	private function _getActiveEmployeesForReportId($iReportId) {
 		// Check user authorisation and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_REPORT_USER);
 
 		$sSQL	= "
 			SELECT e.*,
@@ -165,7 +166,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 	public function _getScheduleForReportId($iReportId) {
 		// Check user authorisation and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_REPORT_USER);
 		$sSQL	= "
 			SELECT rs.*, rft.name as 'frequency_type'
 			FROM report_schedule rs
@@ -207,7 +208,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 		try {
 			// Check user authorisation and permissions
 			AuthenticatedUser()->CheckAuth();
-			AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
+			AuthenticatedUser()->PermissionOrDie(PERMISSION_REPORT_USER);
 
 			$strSQL	= "
 				SELECT r.*
@@ -254,7 +255,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 		try {
 			// Check user authorisation and permissions
 			AuthenticatedUser()->CheckAuth();
-			AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
+			AuthenticatedUser()->PermissionOrDie(PERMISSION_REPORT_USER);
 
 			//JSON Object from Dataset could not be parsed into an JSON parameter to this function and hence php://input is used as an alternative way to capture the request payload
 			$sRequestContent = file_get_contents('php://input');
@@ -272,7 +273,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			}
 			$sLimit	= Statement::generateLimit($iLimit, $iOffset);
 			// TODO send customer group id as part of request.
-			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN)){
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN) && AuthenticatedUser()->UserHasPerm(PERMISSION_REPORT_USER)) {					
 				$mResult = Query::run(
 					"SELECT	r.*, CONCAT(e.FirstName, ' ', e.LastName) AS created_employee_full_name, rc.name AS report_category
 					 FROM report r
@@ -303,7 +304,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 				while ($aRow = $mResult->fetch_assoc()) {
 					$bCanManage = false;
 
-					if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN)){
+					if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN) && AuthenticatedUser()->UserHasPerm(PERMISSION_REPORT_USER)) {
 						$bCanManage = true;
 					}
 					$aRow['bCanManage'] = $bCanManage; 
@@ -313,7 +314,8 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			else {
 				$aRow['message'] = "There are no reports added for you";
 				$bCanManage = false;
-				if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN)){
+				if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN) && AuthenticatedUser()->UserHasPerm(PERMISSION_REPORT_USER)){
+					
 					$bCanManage = true;
 				}
 				$aRow['bCanManage'] = $bCanManage; 
@@ -346,7 +348,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 	public function generate($mData) {
 		// Check user authorisation and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_REPORT_USER);
 		$oReport = Report_New::getForId($mData->id);
 
 		$aConstraintResult = Report_Constraint::getConstraintForReportId($mData->id);

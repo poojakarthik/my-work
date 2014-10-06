@@ -3,7 +3,7 @@ class JSON_Handler_Report_Category extends JSON_Handler implements JSON_Handler_
 	public function getAll() {
 		// Check user authorisation and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_REPORT_USER);
 		$aReportCategory = Report_Category::getAll();
 		$aResultSet = array();
 		foreach ($aReportCategory as $iKey=>$oReportCategory) {

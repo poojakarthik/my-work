@@ -4,7 +4,7 @@ class JSON_Handler_Report_Constraint extends JSON_Handler implements JSON_Handle
 		try {
 			// Check user authorisation and permissions
 			AuthenticatedUser()->CheckAuth();
-			AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
+			AuthenticatedUser()->PermissionOrDie(PERMISSION_REPORT_USER);
 			$aConstraints = array();
 			$aConstraintResult = Report_Constraint::getConstraintForReportId($mData->iReportId);
 			foreach ($aConstraintResult as $iReportConstraintId=>$oReportConstraintObject) {

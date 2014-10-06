@@ -5,7 +5,7 @@ class Application_Handler_Report extends Application_Handler {
 	// Manage Reports: List of reports with privilege to configure, schedule, and run as per their PERMISSION Level
 	public function Manage($subPath) {
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_PROPER_ADMIN));
+		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_REPORT_USER));
 
 		try	{
 			$aDetailsToRender = array();
@@ -21,7 +21,7 @@ class Application_Handler_Report extends Application_Handler {
 
 	public function Download() {
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_ADMIN, PERMISSION_ACCOUNTS));
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_REPORT_USER);
 		if (isset($_REQUEST['sFileName']) && isset($_REQUEST['iCSV'])) {
 			$sFileName = urldecode($_REQUEST['sFileName']);
 			$sDecodedPath = FILES_BASE_PATH . self::TEMPORARY_DIRECTORY . date('Y') . "/" . date('F') . "/" . date('j') . "/" . $sFileName;

@@ -111,7 +111,7 @@ var self = new Class({
 				this._loadReport(function(){});
 			} else {
 				// Create new
-				jhr('Report', 'getEmployees', {arguments: []}).then(
+				jhr('Report', 'getEmployees', {arguments: [true]}).then(
 					function success(request) {
 						var response = request.parseJSONResponse();
 						response.employees.forEach(function (employee) {

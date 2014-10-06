@@ -3,7 +3,7 @@ class JSON_Handler_Report_Schedule extends JSON_Handler implements JSON_Handler_
 	public function saveSchedule($mData) {
 		// Check user authorisation and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_REPORT_USER);
 
 		$oReportSchedule = new Report_Schedule();
 		$oReportSchedule->report_id = $mData->id;
@@ -66,7 +66,7 @@ class JSON_Handler_Report_Schedule extends JSON_Handler implements JSON_Handler_
 	public function archiveSchedule($mData) {
 		// Check user authorisation and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_REPORT_USER);
 
 		$oReportSchedule = Report_Schedule::getForId($mData->iReportScheduleId);
 		$oReportSchedule->is_enabled = 0;
