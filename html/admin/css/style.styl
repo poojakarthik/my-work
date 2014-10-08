@@ -13221,12 +13221,18 @@
 .flex-page-report-schedule-add-details
 .flex-page-report-constraint-edit-details
 .flex-page-report-schedule-add-details-constraints
+.flex-page-report-run-details-constraints
 	appearance-flex-form-fieldset()
 	margin-left: -.5em
 	margin-right: -.5em
 	border-left-width: 0
 	border-right-width: 0
 
+.flex-page-report-run-details-constraints
+.flex-page-report-schedule-add-details-constraints
+	margin-top: 10px
+	display: none
+	
 .flex-page-report-edit-details-name
 .flex-page-report-edit-details-summary
 .flex-page-report-edit-details-query
@@ -13386,13 +13392,15 @@
 	width 200px 
 	overflow-y scroll 
 	overflow-x hidden 
-	background: #ecfff0
+	background: #fff
 	color: #111
-	border-color: #00c72b
+	border-color: #000
+	border-width: 1px
 
 	& label
 		padding 0.6em 0.3em
 		margin-right 10px
+		margin-bottom: 0.5em
 
 .flex-page-report-run-details-deliverymethod-container
 .flex-page-report-run-details-deliveryformat-container
@@ -13416,6 +13424,10 @@
 		button-icon('/admin/img/template/decline.png', 16px, 16px)
 
 .flex-page-report-manage-buttons
+	border: 0
+	margin:0 auto
+	float: right
+	display:none
 	& button::before
 		button-icon('/admin/img/template/new.png', 16px, 16px)
 
@@ -13470,11 +13482,6 @@
 .flex-page-report-run
 	width: 400px;
 
-.flex-page-report-constraint-edit-details
-	border: 1px solid #dedede;
-	margin: 0.5em;
-	padding: 0.5em;
-
 .flex-page-report-edit-report-employee input
 .flex-page-report-run-delivery-employee input
 .flex-page-report-schedule-add-details-deliveryemployee input
@@ -13486,8 +13493,17 @@
 	skin-flex-table()
 
 	& .First
-		& td 
+		& th 
 			text-align left
+
+.flex-page-report-manage table
+	& tr
+		td:nth-child(2)
+		td:nth-child(3)
+		td:nth-child(4) 
+			width 160px
+		td:nth-child(5)
+			width 245px
 
 .flex-page-report-manage-heading
 	appearance-flex-page-heading()

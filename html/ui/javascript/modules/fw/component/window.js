@@ -72,6 +72,7 @@ var	self	= new Class({
 			this.NODE.addClassName('-closable');
 		} else {
 			this.NODE.removeClassName('-closable');
+			this._oCloseIcon.hide();
 		}
 		this._onReady();
 	},

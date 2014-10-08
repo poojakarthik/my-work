@@ -46,7 +46,7 @@ var self = new Class({
 			H.fieldset({'class': 'flex-page-report-schedule-add-details'},
 				H.div({role:'group', class: 'flex-page-report-schedule-add-details-frequency'},
 					H.span({class: 'flex-page-report-schedule-add-details-frequency-label'}, 'Set Frequency Every'),
-					H.input({name: 'frequency_multiple', 'placeholder': 'No of Intervals', type: 'number', min: '1'}),
+					H.input({name: 'frequency_multiple', 'placeholder': 'No of Intervals', type: 'number', min: '1', required: 'required'}),
 					this._oReportFrequencyType = new Select({
 						sName		: 'report_frequency_type_id',
 						sLabel		: 'Frequency Type',
@@ -95,12 +95,12 @@ var self = new Class({
 					H.span({class: 'flex-page-report-schedule-add-details-deliverymethod-label'}, 'Delivery Method'),
 					this._oDeliveryMethodContainer = H.div({class: 'flex-page-report-schedule-add-details-deliverymethod-container'})
 				),
-				H.div({role: 'group', class: 'flex-page-report-schedule-add-details-deliveryemployee', style: 'display: none;'},
-					H.span({class: 'flex-page-report-schedule-add-details-deliveryemployee-label'}, 'Delivery Employee'),
+				this._oDeliveryEmployeeContainer = H.div({role: 'group', class: 'flex-page-report-schedule-add-details-deliveryemployee'},
+					H.span({class: 'flex-page-report-schedule-add-details-deliveryemployee-label'}, 'Deliver To'),
 					this._oEmployeeContainer = H.div({class: 'flex-page-report-schedule-add-details-deliveryemployee-controlset'})
 				)
 			),
-			H.fieldset({'class': 'flex-page-report-schedule-add-details-constraints', style: "margin-top: 10px; display: none;"},
+			H.fieldset({'class': 'flex-page-report-schedule-add-details-constraints'},
 				this._oConstraintContainer = H.div()
 			),
 			H.fieldset({class: 'flex-page-report-schedule-add-buttonset'},
@@ -130,6 +130,7 @@ var self = new Class({
 	},
 
 	_syncUI : function() {
+		this._oDeliveryEmployeeContainer.hide();
 		if (!this._bInitialised || !this._onReady) {
 			if (this.get('iReportId')) {
 				this._oForm.control('id').set('mValue', this.get('iReportId'));
@@ -453,6 +454,14 @@ var self = new Class({
 	_save : function(event) {
 		var bValidation = this._oForm.validate();
 		if(bValidation) {
+			if (this._oForm.control('delivery_method') == null) {
+				new Alert("Please Select Delivery Method");
+				return;
+			}
+			if (this._oForm.control('delivery_format') == null) {
+				new Alert("Please Select Delivery Format");
+				return;
+			}
 			this._oForm.control('selectedDeliveryEmployees').set('mValue', this._getSelectedDeliveryEmployees());
 			jhr('Report_Schedule', 'saveSchedule', {arguments: this._oForm.getData()}).then(
 				function success(request) {

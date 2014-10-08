@@ -38,7 +38,6 @@ var self = new Class({
 				sName : 'selectedDeliveryEmployees'
 			}),
 			H.fieldset({'class': 'flex-page-report-run-details'},
-				this._oConstraintContainer = H.div(),
 				H.div({role:'group', class: 'flex-page-report-run-details-deliveryformat'},
 					H.span({class: 'flex-page-report-run-details-deliveryformat-label'}, 'Delivery Format'),
 					this._oDeliveryFormatContainer = H.div({class: 'flex-page-report-run-details-deliveryformat-container'})
@@ -47,21 +46,24 @@ var self = new Class({
 					H.span({class: 'flex-page-report-run-details-deliverymethod-label'}, 'Delivery Method'),
 					this._oDeliveryMethodContainer = H.div({class: 'flex-page-report-run-details-deliverymethod-container'})
 				),
-				H.div({role: 'group', class: 'flex-page-report-run-details-deliveryemployee', style: 'display: none;'},
-					H.span({class: 'flex-page-report-run-details-deliveryemployee-label'}, 'Delivery Employee'),
+				this._oDeliveryEmployeeContainer = H.div({role: 'group', class: 'flex-page-report-run-details-deliveryemployee'},
+					H.span({class: 'flex-page-report-run-details-deliveryemployee-label'}, 'Deliver To'),
 					this._oEmployeeContainer = H.div({class: 'flex-page-report-run-details-deliveryemployee-controlset'})
 				)
+			),
+			H.fieldset({'class': 'flex-page-report-run-details-constraints'},
+				this._oConstraintContainer = H.div()
 			),
 			H.div({class: 'flex-page-report-run-buttonset'},
 				H.button({type: 'button', name: 'run'}, 'Run').observe('click',this._executeReport.bind(this, null)),
 				H.button({type: 'button', name: 'cancel'}, 'Cancel').observe('click',this._cancel.bind(this, null))
 			)
 		);
-
 		this.NODE = this._oForm.getNode();
 	},
 
 	_syncUI: function () {
+		this._oDeliveryEmployeeContainer.hide();
 		if (!this._bInitialised || !this._bReady) {
 			if (this.get('iReportId')) {
 				// Get Report Constraints
@@ -172,7 +174,9 @@ var self = new Class({
 			postBody	: "json="+encodeURIComponent(JSON.stringify([oData])),
 			onSuccess: function (oResponse){
 				var oServerResponse = JSON.parse(oResponse.responseText);
-				
+				if (oServerResponse.length) {
+					$('.flex-page-report-run-details-constraints').show();
+				}
 				for (var i = 0;i < oServerResponse.length; i++) {
 					//Check for type here
 

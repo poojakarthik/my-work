@@ -13495,7 +13495,8 @@ li {
 .flex-page-report-run-details,
 .flex-page-report-schedule-add-details,
 .flex-page-report-constraint-edit-details,
-.flex-page-report-schedule-add-details-constraints {
+.flex-page-report-schedule-add-details-constraints,
+.flex-page-report-run-details-constraints {
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -13512,14 +13513,16 @@ li {
 .flex-page-report-run-details input,
 .flex-page-report-schedule-add-details input,
 .flex-page-report-constraint-edit-details input,
-.flex-page-report-schedule-add-details-constraints input {
+.flex-page-report-schedule-add-details-constraints input,
+.flex-page-report-run-details-constraints input {
   padding: 0.25em;
 }
 .flex-page-report-edit-details :not(:disabled):required,
 .flex-page-report-run-details :not(:disabled):required,
 .flex-page-report-schedule-add-details :not(:disabled):required,
 .flex-page-report-constraint-edit-details :not(:disabled):required,
-.flex-page-report-schedule-add-details-constraints :not(:disabled):required {
+.flex-page-report-schedule-add-details-constraints :not(:disabled):required,
+.flex-page-report-run-details-constraints :not(:disabled):required {
   background: #fff;
   color: #111;
   border: 1px solid #da8;
@@ -13528,7 +13531,8 @@ li {
 .flex-page-report-run-details :not(:disabled):invalid,
 .flex-page-report-schedule-add-details :not(:disabled):invalid,
 .flex-page-report-constraint-edit-details :not(:disabled):invalid,
-.flex-page-report-schedule-add-details-constraints :not(:disabled):invalid {
+.flex-page-report-schedule-add-details-constraints :not(:disabled):invalid,
+.flex-page-report-run-details-constraints :not(:disabled):invalid {
   background: #ffecf0;
   color: #111;
   border: 1px solid #d30;
@@ -13537,17 +13541,24 @@ li {
 .flex-page-report-run-details :not(:disabled):invalid:required,
 .flex-page-report-schedule-add-details :not(:disabled):invalid:required,
 .flex-page-report-constraint-edit-details :not(:disabled):invalid:required,
-.flex-page-report-schedule-add-details-constraints :not(:disabled):invalid:required {
+.flex-page-report-schedule-add-details-constraints :not(:disabled):invalid:required,
+.flex-page-report-run-details-constraints :not(:disabled):invalid:required {
   border: 1px solid #da8;
 }
 .flex-page-report-edit-details :not(:disabled):valid,
 .flex-page-report-run-details :not(:disabled):valid,
 .flex-page-report-schedule-add-details :not(:disabled):valid,
 .flex-page-report-constraint-edit-details :not(:disabled):valid,
-.flex-page-report-schedule-add-details-constraints :not(:disabled):valid {
+.flex-page-report-schedule-add-details-constraints :not(:disabled):valid,
+.flex-page-report-run-details-constraints :not(:disabled):valid {
   background: #ecfff0;
   color: #111;
   border-color: #00c72b;
+}
+.flex-page-report-run-details-constraints,
+.flex-page-report-schedule-add-details-constraints {
+  margin-top: 10px;
+  display: none;
 }
 .flex-page-report-edit-details-name,
 .flex-page-report-edit-details-summary,
@@ -13809,15 +13820,17 @@ li {
   width: 200px;
   overflow-y: scroll;
   overflow-x: hidden;
-  background: #ecfff0;
+  background: #fff;
   color: #111;
-  border-color: #00c72b;
+  border-color: #000;
+  border-width: 1px;
 }
 .flex-page-report-edit-details-reportemployee-controlset label,
 .flex-page-report-run-details-deliveryemployee-controlset label,
 .flex-page-report-schedule-add-details-deliveryemployee-controlset label {
   padding: 0.6em 0.3em;
   margin-right: 10px;
+  margin-bottom: 0.5em;
 }
 .flex-page-report-run-details-deliverymethod-container,
 .flex-page-report-run-details-deliveryformat-container,
@@ -13872,6 +13885,12 @@ li {
   display: inline-block;
   margin-right: 0.5ch;
   vertical-align: bottom;
+}
+.flex-page-report-manage-buttons {
+  border: 0;
+  margin: 0 auto;
+  float: right;
+  display: none;
 }
 .flex-page-report-manage-buttons button::before {
   content: url("/admin/img/template/new.png");
@@ -13998,11 +14017,6 @@ li {
 .flex-page-report-run {
   width: 400px;
 }
-.flex-page-report-constraint-edit-details {
-  border: 1px solid #dedede;
-  margin: 0.5em;
-  padding: 0.5em;
-}
 .flex-page-report-edit-report-employee input,
 .flex-page-report-run-delivery-employee input,
 .flex-page-report-schedule-add-details-deliveryemployee input {
@@ -14080,10 +14094,18 @@ li {
 .flex-page-report-constraint-edit table > tfoot a:link {
   color: #fff;
 }
-.flex-page-report-schedule-add table .First td,
-.flex-page-report-manage table .First td,
-.flex-page-report-constraint-edit table .First td {
+.flex-page-report-schedule-add table .First th,
+.flex-page-report-manage table .First th,
+.flex-page-report-constraint-edit table .First th {
   text-align: left;
+}
+.flex-page-report-manage table tr td:nth-child(2),
+.flex-page-report-manage table tr td:nth-child(3),
+.flex-page-report-manage table tr td:nth-child(4) {
+  width: 160px;
+}
+.flex-page-report-manage table tr td:nth-child(5) {
+  width: 245px;
 }
 .flex-page-report-manage-heading {
   display: block;

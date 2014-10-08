@@ -121,13 +121,16 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_REPORT_USER);
 
 		$employees = Employee::getAll();
-		Log::get()->log(print_r($employees, true));
 		$filteredEmployees = array();
+
 		foreach ($employees as $key=>$employee) {
 			if ($employee->Archived) {
 				continue;
 			}
-			if ($bReportingUserOnly && (($employee->Permission & PERMISSION_REPORT_USER) != PERMISSION_REPORT_USER)) {
+			if(($employee->Privileges & PERMISSION_GOD) == PERMISSION_GOD) {
+				continue;
+			}
+			if ($bReportingUserOnly && (($employee->Privileges & PERMISSION_REPORT_USER) != PERMISSION_REPORT_USER)) {
 				continue;
 			}
 			array_push($filteredEmployees, $employee->toArray());
@@ -158,6 +161,12 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 		$rQuery	= DataAccess::get()->query($sSQL);
 		$aDataSet= array();
 		while($aResultSet = $rQuery->fetch_assoc()) {
+			if(($aResultSet['Privileges'] & PERMISSION_GOD) == PERMISSION_GOD) {
+				continue;
+			}
+			if (($aResultSet['Privileges'] & PERMISSION_REPORT_USER) != PERMISSION_REPORT_USER) {
+				continue;
+			}
 			$aDataSet[] = $aResultSet;
 		}
 		return $aDataSet;

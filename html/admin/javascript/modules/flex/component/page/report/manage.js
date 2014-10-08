@@ -70,19 +70,16 @@ var self = new Class({
 				),
 				H.thead(
 					H.tr({class: 'First'},
-						H.th({style: 'text-align: left;', class: 'pointer'}, 'Name').observe('click', this._toggleSort.bind(this, 'name')),
-						H.th({style: 'text-align: left; width: 160px;', class: 'pointer'}, 'Created').observe('click', this._toggleSort.bind(this, 'created_datetime')),
-						H.th({style: 'text-align: left; width: 160px;', class: 'pointer'}, 'Created By').observe('click',this._toggleSort.bind(this,'created_employee_full_name')),
-						H.th({style: 'text-align: left; width: 160px;', class: 'pointer'}, 'Report Category').observe('click',this._toggleSort.bind(this,'report_category')),
-						H.th({style: 'text-align: left; width: 245px;'}, 'Options')
+						H.th({class: 'pointer'}, 'Name').observe('click', this._toggleSort.bind(this, 'name')),
+						H.th({class: 'pointer'}, 'Created').observe('click', this._toggleSort.bind(this, 'created_datetime')),
+						H.th({class: 'pointer'}, 'Created By').observe('click',this._toggleSort.bind(this,'created_employee_full_name')),
+						H.th({class: 'pointer'}, 'Report Category').observe('click',this._toggleSort.bind(this,'report_category')),
+						H.th('Options')
 					)
 				),
 				this._oReports = H.tbody()
 			),
-			H.fieldset({
-				class: 'flex-page-report-manage-buttons',
-				style: 'border: 0; margin:0 auto; float: right; display:none;'
-				},
+			H.fieldset({class: 'flex-page-report-manage-buttons'},
 				this._oSaveButton = H.button({type:'button', name:'create'}, 'Create New Report').observe('click', this._new.bind(this, null))
 			)
 		);

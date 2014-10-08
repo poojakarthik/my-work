@@ -8,6 +8,7 @@ var H = require('fw/dom/factory'), // HTML
 	Constraint = require('./constraint/edit'),
 	jsonForm = require('json-form'),
     Popup = require('fw/component/popup'),
+    Confirm = require('fw/component/popup/confirm'),
 	Hidden = require('fw/component/control/hidden'),
 	Checkbox = require('fw/component/control/checkbox'),
 	Select = require('fw/component/control/select'),
@@ -31,6 +32,7 @@ var self = new Class({
 
 	_buildUI: function () {
 		this._oReport = null;
+		this._bSaveChangesTrigger = false;
 		this._oForm = new Form({onsubmit: this._save.bind(this, null)},
 			new Hidden({
 				sName : 'id'
@@ -114,11 +116,17 @@ var self = new Class({
 				jhr('Report', 'getEmployees', {arguments: [true]}).then(
 					function success(request) {
 						var response = request.parseJSONResponse();
-						response.employees.forEach(function (employee) {
+						response.employees.forEach(function (oEmployee) {
 							this._oEmployeeContainer.appendChild(
 								H.label({class: 'flex-component-report-add-reportemployee-div-container'},
-									H.input({style: 'float:left ;', type: 'checkbox', name: 'report_employee[]', value: employee.Id}),
-									H.span({class: 'flex-component-report-add-reportemployee-div-container-label'},employee.FirstName + ' ' + employee.LastName)
+									H.span({class: 'flex-component-report-add-reportemployee-div-container-label'},oEmployee.FirstName + ' ' + oEmployee.LastName),
+									new Checkbox({
+										bChecked	: (oEmployee.report_id) ? true : false,
+										sName 		: 'report_employee[]',
+										sLabel		: 'Report Employee',
+										mValue		: oEmployee.Id,
+										sExtraClass	: 'flex-page-report-edit-report-employee'
+									})
 								)
 							);
 						}.bind(this));
@@ -177,9 +185,12 @@ var self = new Class({
 				// Save report
 				this._oReport = oServerResponse.aReport;
 
+				if(oServerResponse.aReportSchedule.length > 0) {
+					this._oForm.control('query').set('iControlState', 3);
+				}
 				// Load Constraints
 				this._aReportConstraint = oServerResponse.aReportConstraint;
-
+				this._iReportConstraintCount = this._aReportConstraint.length;
 				// Load Employees
 				oServerResponse.aEmployee.forEach(function (oEmployee) {
 					this._oEmployeeContainer.appendChild(
@@ -237,6 +248,16 @@ var self = new Class({
 	},
 
 	_cancel : function(event) {
+		if(this._bSaveChangesTrigger) {
+			var oConfirm = new Confirm({sIconURI : './img/template/confirm.png'}, 'There are some unsaved changes in Report Constraints. Are you sure you want cancel?');
+			oConfirm.observe('yes', this._close.bind(this));
+		}
+		else {
+			this._close();
+		}			
+	},
+
+	_close : function(event) {
 		this.fire('cancel');
 	},
 
@@ -245,6 +266,9 @@ var self = new Class({
 				aReportConstraint : this._aReportConstraint,
 				oncomplete      : function(oData) {
 					this._aReportConstraint = oData.oEvent.oTarget.get('aReportConstraint');
+					if(this._iReportConstraintCount != this._aReportConstraint.length) {
+						this._bSaveChangesTrigger = true;
+					}
 					oPopup.hide();
 
 				}.bind(this),
@@ -264,7 +288,7 @@ var self = new Class({
 					sExtraClass     : 'flex-page-report-edit-popup',
 					sTitle          : 'Configure Report',
 					sIconURI        : './img/template/options.png',
-					bCloseButton    : true
+					bCloseButton    : false
 				}, oComponent.getNode()
 			);
 			oPopup.set()
@@ -276,7 +300,7 @@ var self = new Class({
 					sExtraClass     : 'flex-page-report-edit-popup',
 					sTitle          : 'Add Report',
 					sIconURI        : './img/template/new.png',
-					bCloseButton    : true
+					bCloseButton    : false
 				}, oComponent.getNode()
 			);
 			oPopup.set()
