@@ -105,7 +105,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 		}
 	}
 
-	public function getScheduleForReportId() {
+	public function getScheduleForReportId($mData) {
 		// Check user authorisation and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_REPORT_USER);
@@ -181,7 +181,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			FROM report_schedule rs
 			LEFT JOIN report_frequency_type rft ON rft.id = rs.report_frequency_type_id
 			WHERE report_id = {$iReportId} AND is_enabled = 1";
-
+		
 		$rQuery	= DataAccess::get()->query($sSQL);
 		$aDataSet= array();
 		while($aResultSet = $rQuery->fetch_assoc()) {

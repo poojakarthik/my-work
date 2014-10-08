@@ -204,7 +204,7 @@ var self = new Class({
 										sLabel		: oServerResponse[i]['name'],
 										mMandatory	: true,
 										fnValidate	: function(oControl) {
-											if(!preg_match(oServerResponse['validation_regex'], oControl.getValue())) {
+											if(!oControl.getValue().match(oServerResponse['validation_regex'])) {
 												throw new Error("Pattern validation failed");
 											}
 											return true;

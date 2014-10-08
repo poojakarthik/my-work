@@ -46,7 +46,18 @@ var self = new Class({
 			H.fieldset({'class': 'flex-page-report-schedule-add-details'},
 				H.div({role:'group', class: 'flex-page-report-schedule-add-details-frequency'},
 					H.span({class: 'flex-page-report-schedule-add-details-frequency-label'}, 'Set Frequency Every'),
-					H.input({name: 'frequency_multiple', 'placeholder': 'No of Intervals', type: 'number', min: '1', required: 'required'}),
+					new	Text({
+						sExtraClass	: 'flex-page-report-schedule-add-details-frequencymultiple',
+						sName		: 'frequency_multiple',
+						sLabel		: 'Frequency Multiple',
+						mMandatory	: true,
+						fnValidate	: function(oControl) {
+							if (isNaN(oControl.getValue())) {
+								throw new Error("Frequency Multiple should be a number");
+							}
+							return true;
+						}
+					}),
 					this._oReportFrequencyType = new Select({
 						sName		: 'report_frequency_type_id',
 						sLabel		: 'Frequency Type',
@@ -247,7 +258,7 @@ var self = new Class({
 										sLabel		: oServerResponse[i]['name'],
 										mMandatory	: true,
 										fnValidate	: function(oControl) {
-											if(!preg_match(oServerResponse['validation_regex'], oControl.getValue())) {
+											if(!oControl.getValue().match(oServerResponse['validation_regex'])) {
 												throw new Error("Pattern validation failed");
 											}
 											return true;
