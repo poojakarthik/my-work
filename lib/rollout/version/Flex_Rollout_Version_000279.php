@@ -27,49 +27,6 @@ class Flex_Rollout_Version_000279 extends Flex_Rollout_Version {
 				'sRollbackSQL' => "	DROP TABLE `report` ;",
 				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
 			),
-			/* Constraint Rollout put on hold until business needs them
-			array(
-				'sDescription' => "Add report_constraint_type table",
-				'sAlterSQL' => "
-					CREATE TABLE `report_constraint_type` (
-						`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-						`name` VARCHAR(256) NOT NULL,
-						`description` VARCHAR(256) NOT NULL,
-						`const_name` VARCHAR(1000) NOT NULL,
-						PRIMARY KEY (`id`))
-					ENGINE = InnoDB;",
-				'sRollbackSQL' => "	DROP TABLE `report_constraint_type` ;",
-				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
-			),
-			array(
-				'sDescription' => "Add report_constraint table",
-				'sAlterSQL' => "
-					CREATE TABLE `report_constraint` (
-						`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-						`report_id` INT UNSIGNED NOT NULL,
-						`name` VARCHAR(256) NOT NULL,
-						`report_constraint_type_id` UNSIGNED INT NOT NULL,
-						`source_query` VARCHAR(5000) NULL,
-						`validation_regex` VARCHAR(200) NULL,
-						`placeholder` VARCHAR(100) NULL,
-						PRIMARY KEY (`id`),
-						INDEX `fk_report_constraint_report_id` (`report_id` ASC),
-						INDEX `fk_report_constraint_report_constraint_type_id` (`report_constraint_type_id` ASC),
-						CONSTRAINT `fk_report_constraint_report_id`
-							FOREIGN KEY (`report_id`)
-							REFERENCES `report` (`id`)
-							ON DELETE CASCADE
-							ON UPDATE CASCADE,
-						CONSTRAINT `fk_report_constraint_report_constraint_type_id`
-							FOREIGN KEY (`report_constraint_type_id`)
-							REFERENCES `report_constraint_type` (`id`)
-							ON DELETE CASCADE
-							ON UPDATE CASCADE)
-					ENGINE = InnoDB;",
-				'sRollbackSQL' => "	DROP TABLE `report_constraint` ;",
-				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
-			),
-			*/
 			array(
 				'sDescription' => "Add report_frequency_type table",
 				'sAlterSQL' => "

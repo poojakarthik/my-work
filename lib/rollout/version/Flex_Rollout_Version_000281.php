@@ -65,21 +65,6 @@ class Flex_Rollout_Version_000281 extends Flex_Rollout_Version {
 				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
 			),
 			array(
-				'sDescription' => "Populate report_category table",
-				'sAlterSQL' => "
-					INSERT INTO report_category 
-						(name, description, const_name)
-					VALUES
-						('Finance', 'All finance related report group', 'REPORT_FTP_GROUP_FINANCE'),
-						('Collection', 'All collection related report group', 'REPORT_FTP_GROUP_COLLECTION'),
-						('Billing', 'All billing related report group', 'REPORT_FTP_GROUP_BILLING'),
-						('Provisioning', 'All provisioning related report group', 'REPORT_FTP_GROUP_PROVISIONING'),
-						('Sales', 'All sales and customer related report group', 'REPORT_FTP_GROUP_SALES'),
-						('Executive', 'All management related report group', 'REPORT_FTP_GROUP_EXECUTIVE'),
-						('ADHOC', 'All other ad-hoc related report group', 'REPORT_FTP_GROUP_ADHOC');",
-				'sDataSourceName' => FLEX_DATABASE_CONNECTION_ADMIN
-			),
-			array(
 				'sDescription' => "Add report_delivery_employee table",
 				'sAlterSQL' => "
 					CREATE TABLE `report_delivery_employee` (
