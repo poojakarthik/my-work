@@ -211,7 +211,7 @@ var self = new Class({
 	_new : function() {
 		var oPopup = Edit.createAsAddPopup( {
 			oncomplete : function(formData) {
-				this._refreshData();
+				this.oPagination.getCurrentPage();
 				oPopup.hide();
 			}.bind(this),
 			onready : function () {
@@ -227,7 +227,7 @@ var self = new Class({
 		var oPopup = Edit.createAsPopup({
 			'iReportId' : iReportId,
 			oncomplete : function(oData) {
-				this._getReports(this._populateReports.bind(this));
+				this.oPagination.getCurrentPage();
 				oPopup.hide();
 			}.bind(this),
 			onready : function () {

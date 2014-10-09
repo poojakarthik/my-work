@@ -58,7 +58,6 @@ class Flex_Rollout_Version_000281 extends Flex_Rollout_Version {
 						`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
 						`name` VARCHAR(256) NOT NULL,
 						`description` VARCHAR(256) NOT NULL,
-						`const_name` VARCHAR(1000) NOT NULL,
 						PRIMARY KEY (`id`))
 					ENGINE = InnoDB;",
 				'sRollbackSQL' => "	DROP TABLE `report_category` ;",

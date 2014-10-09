@@ -79,6 +79,7 @@ var self = new Class({
 
 	_showDeliveryEmployees: function(sReportDeliveryName) {
 		if(sReportDeliveryName == "Email") {
+			$('.flex-page-report-run-details-deliveryemployee-controlset').empty();
 			$('.flex-page-report-run-details-deliveryemployee').show();
 			this._loadDeliveryEmployees();
 		}

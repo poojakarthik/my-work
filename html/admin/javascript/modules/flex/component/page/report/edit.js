@@ -8,6 +8,7 @@ var H = require('fw/dom/factory'), // HTML
 	Constraint = require('./constraint/edit'),
 	jsonForm = require('json-form'),
     Popup = require('fw/component/popup'),
+    Alert = require('fw/component/popup/alert'),
     Confirm = require('fw/component/popup/confirm'),
 	Hidden = require('fw/component/control/hidden'),
 	Checkbox = require('fw/component/control/checkbox'),
@@ -33,6 +34,8 @@ var self = new Class({
 	_buildUI: function () {
 		this._oReport = null;
 		this._bSaveChangesTrigger = false;
+		this._aReportConstraint = Array();
+
 		this._oForm = new Form({onsubmit: this._save.bind(this, null)},
 			new Hidden({
 				sName : 'id'
@@ -187,6 +190,7 @@ var self = new Class({
 
 				if(oServerResponse.aReportSchedule.length > 0) {
 					this._oForm.control('query').set('iControlState', 3);
+					$('.flex-page-report-edit-buttonset button[name="editConstraint"]').hide();
 				}
 				// Load Constraints
 				this._aReportConstraint = oServerResponse.aReportConstraint;
@@ -225,7 +229,14 @@ var self = new Class({
 
 	_save: function() {
 		var bValidation = this._oForm.validate();
-		if (bValidation) {
+		if (bValidation) { 
+			for (var i = 0; i < this._aReportConstraint.length; i++) {
+				if(!this._oQuery.getValue().match("<" + this._aReportConstraint[i].name + ">")) {
+					debugger;;
+					new Alert("Cannot save the report. Constraint not found in query.")
+					return;
+				}
+			}
 			var oData = {
 				"name" : this._oName.getValue(),
 				"summary" : this._oSummary.getValue(),

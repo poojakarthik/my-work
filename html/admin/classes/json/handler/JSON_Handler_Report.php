@@ -40,7 +40,6 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 				// Create Constraints
 				$aConstraint = $mData->constraint;
 				foreach ($aConstraint as $oConstraint) {
-					var_dump($oConstraint);
 					$oReportConstraint = new Report_Constraint();
 					$oReportConstraint->report_id = $oReport->id;
 					$oReportConstraint->name = $oConstraint->name;
@@ -280,7 +279,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 			if ($sOrderBy != "") {
 				$sOrderBy = " ORDER BY " . $sOrderBy;
 			}
-			$sLimit	= Statement::generateLimit($iLimit, $iOffset);
+			//$sLimit	= Statement::generateLimit($iLimit, $iOffset);
 			// TODO send customer group id as part of request.
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN) && AuthenticatedUser()->UserHasPerm(PERMISSION_REPORT_USER)) {					
 				$mResult = Query::run(
@@ -290,7 +289,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 					 	e.Id = r.created_employee_id
 					 JOIN report_category rc ON 
 					 	rc.id = r.report_category_id
-					" . $sOrderBy . " LIMIT " .$sLimit);
+					" . $sOrderBy);
 			}
 			else {
 				$mResult = Query::run(
@@ -300,7 +299,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 					 JOIN 		report_category rc ON rc.id = r.report_category_id
 					 JOIN 		report_employee re ON re.report_id = r.id
 					 WHERE 		re.employee_id = " . Flex::getUserId() . "
-					" . $sOrderBy . " LIMIT " .$sLimit);
+					" . $sOrderBy);
 			}
 			if ($bCountOnly) {
 				return array('iRecordCount' => $mResult->num_rows);
@@ -368,7 +367,7 @@ class JSON_Handler_Report extends JSON_Handler implements JSON_Handler_Loggable,
 				$sConstraintName = $oConstraint->name;
 
 				if(isset($mData->{$sConstraintName})) {
-					$aConstraintValues[$sConstraintName] = $mData->{$sConstraintName};
+					$aConstraintValues[$sConstraintName] = Query::prepareByPHPType($mData->{$sConstraintName});
 				}
 				else {
 					return 	array(

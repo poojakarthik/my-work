@@ -51,4 +51,35 @@ class JSON_Handler_Report_Constraint extends JSON_Handler implements JSON_Handle
 			);
 		}
 	}
+	public function validateSourceQuery($sSourceQuery) {
+		try {
+			$aResultSet = Query::run($sSourceQuery);
+			$aRow = $aResultSet->fetch_assoc();
+			if (count($aRow) > 2) {
+				return 	array(
+					'success' => true,
+					'bSuccess'	=> false,
+					'sMessage'	=> 'Select query cannot have more than two columns'
+				);
+			}
+			if(!isset($aRow['label']) || ! isset($aRow['value'])) {
+				return 	array(
+					'success' => true,
+					'bSuccess'	=> false,
+					'sMessage'	=> 'Select columns are not named properly as "label" and "value" (case sensitive)'
+				);
+			}
+			return array(
+				'success' => true,
+				'bSuccess' => true
+			);
+		} catch (Exception $e) {
+			return 	array(
+				'success' => true,
+				'bSuccess'	=> false,
+				'sMessage'	=> 'Source query is not a valid query'
+			);
+		}
+			
+	}
 }
