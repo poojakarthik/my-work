@@ -76,8 +76,11 @@ var self = new Class({
 						sLabel		: 'Name',
 						mMandatory	: true,
 						fnValidate	: function(oControl) {
-							if(oControl.getValue().length>10000) {
+							if (oControl.getValue().length>10000) {
 								throw new Error("Max length is 10000 characters");
+							}
+							else if (/^update|delete|alter|insert|drop|create|replace/.test(oControl.getValue().toLowerCase())) {
+								throw new Error("Only Select statements are allowed");
 							}
 							return true;
 						}
