@@ -424,7 +424,6 @@ var self = new Class({
 
 	_showDeliveryEmployees: function(sReportDeliveryName) {
 		if(sReportDeliveryName == "Email") {
-			$('.flex-page-report-schedule-add-details-deliveryemployee-controlset').empty();
 			$('.flex-page-report-schedule-add-details-deliveryemployee').show();
 			this._loadDeliveryEmployees();
 		}
@@ -437,6 +436,9 @@ var self = new Class({
 		jhr('Report', 'getEmployees', {arguments: []}).then(
 			function success(request) {
 				var response = request.parseJSONResponse();
+				while (this._oEmployeeContainer.firstChild) {
+					this._oEmployeeContainer.removeChild(this._oEmployeeContainer.firstChild);
+				}
 				response.employees.forEach(function (oEmployee) {
 					this._oEmployeeContainer.appendChild(
 						H.label({class: 'flex-component-report-schedule-add-deliveryemployee-div-container'},

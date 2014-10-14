@@ -11473,10 +11473,15 @@ li {
 }
 .fw-control.-novalue input[required],
 .fw-control.-novalue select[required],
-.fw-control.-novalue textarea[required] {
-  background: #fcfaf9;
+.fw-control.-novalue textarea[required],
+background #fcfaf9 {
   color: #111;
   border: 0.1em solid #da8;
+}
+.fw-control.-invalid input[required],
+.fw-control.-invalid textarea[required] {
+  background: #ffecf0;
+  border: 0.1em solid #d30;
 }
 .fw-control.-invalid input,
 .fw-control.-invalid select,

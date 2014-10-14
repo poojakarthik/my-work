@@ -40,7 +40,7 @@ var self = new Class({
 							if(oControl.getValue().length>256) {
 								throw new Error("Max length is 256 characters");
 							}
-							if(/^[A-Z,0-9,-, ]$/.test(oControl.getValue()))	{
+							if(!/^[a-z ]$/.test(oControl.getValue()))	{
 								throw new Error("Please use lowercase alphabets only");
 							}
 							return true;
@@ -67,7 +67,7 @@ var self = new Class({
 								if (oControl.getValue().length>10000) {
 									throw new Error("Max length is 10000 characters");
 								}
-								else if (/^update|delete|alter|insert|drop|create|replace/.test(oControl.getValue().toLowerCase())) {
+								else if (/^update |delete |alter |insert |drop |create |replace /.test(oControl.getValue().toLowerCase())) {
 									throw new Error("Only Select statements are allowed");
 								}
 								return true;
@@ -166,6 +166,9 @@ var self = new Class({
 			case self.REPORT_CONSTRAINT_TYPE_DATE:
 			case self.REPORT_CONSTRAINT_TYPE_DATETIME:
 			default:
+				this._oSourceQueryContainer.hide();
+				this._oValidationContainer.hide();
+				this._oPlaceholderContainer.hide();
 				break;
 		}
 	},
